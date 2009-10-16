@@ -16,6 +16,8 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
+namespace shogun
+{
 /** @brief The Constant Kernel returns a constant for all elements.
  *
  * A ``kernel'' that simply returns a single constant, i.e.
@@ -95,5 +97,5 @@ class CConstKernel: public CKernel
 		/** const value */
 		float64_t const_value;
 };
-
+}
 #endif /* _CONSTKERNEL_H__ */

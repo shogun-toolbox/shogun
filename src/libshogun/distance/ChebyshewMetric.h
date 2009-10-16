@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class ChebyshewMetric 
  *
  * The Chebyshev distance (\f$L_{\infty}\f$ norm) returns the maximum of
@@ -70,4 +72,5 @@ class CChebyshewMetric: public CSimpleDistance<float64_t>
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
+} // namespace shogun
 #endif  /* _CHEBYSHEWMETRIC_H___ */

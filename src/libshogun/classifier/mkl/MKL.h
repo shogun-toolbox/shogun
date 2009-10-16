@@ -25,6 +25,8 @@ extern "C" {
 #include "kernel/Kernel.h"
 #include "classifier/svm/SVM.h"
 
+namespace shogun
+{
 /** @brief Multiple Kernel Learning
  * 
  * A support vector machine based method for use with multiple kernels.  In
@@ -411,4 +413,5 @@ class CMKL : public CSVM
 		/** if lp is initialized */
 		bool lp_initialized ;
 };
+}
 #endif //__MKL_H__

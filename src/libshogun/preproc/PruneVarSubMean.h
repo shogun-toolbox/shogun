@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** @brief Preprocessor PruneVarSubMean will substract the mean and remove
  * features that have zero variance.
  *
@@ -73,4 +75,5 @@ class CPruneVarSubMean : public CSimplePreProc<float64_t>
 		/// true when already initialized
 		bool initialized;
 };
+}
 #endif

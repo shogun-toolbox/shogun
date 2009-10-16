@@ -14,6 +14,8 @@
 #include "distance/Distance.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 /** @brief template class StringDistance */
 template <class ST> class CStringDistance : public CDistance
 {
@@ -96,5 +98,6 @@ template<> inline EFeatureType CStringDistance<uint8_t>::get_feature_type() { re
  */
 template<> inline EFeatureType CStringDistance<char>::get_feature_type() { return F_CHAR; }
 
+} // namespace shogun
 #endif
 

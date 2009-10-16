@@ -20,6 +20,7 @@
 #include "features/StringFeatures.h"
 #include "features/SparseFeatures.h"
 
+using namespace shogun;
 
 CFile::CFile(FILE* f)
 : CSGObject()

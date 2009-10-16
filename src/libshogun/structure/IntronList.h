@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 /** @brief class IntronList */
 class CIntronList : public CSGObject 
 {
@@ -71,4 +73,5 @@ class CIntronList : public CSGObject
 		 */
 		int32_t** m_quality_list;
 };
+}
 #endif

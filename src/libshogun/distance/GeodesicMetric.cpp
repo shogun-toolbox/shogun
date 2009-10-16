@@ -15,6 +15,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CGeodesicMetric::CGeodesicMetric()
 : CSimpleDistance<float64_t>()
 {

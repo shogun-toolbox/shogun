@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class Bray-Curtis distance 
  *
  * The Bray-Curtis distance (Sorensen distance) is similar to the 
@@ -69,5 +71,5 @@ class CBrayCurtisDistance: public CSimpleDistance<float64_t>
 		/// in the corresponding feature object
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
-
+} // namespace shogun
 #endif /* _BRAYCURTISDISTANCE_H___ */

@@ -10,6 +10,8 @@
 #include "lib/Mathematics.h"
 #include "classifier/svm/Tron.h"
 
+using namespace shogun;
+
 CTron::CTron(const function *f, float64_t e, int32_t it)
 : CSGObject()
 {

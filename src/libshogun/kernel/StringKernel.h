@@ -14,6 +14,8 @@
 #include "kernel/Kernel.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 /** @brief Template class StringKernel, is the base class of all String Kernels.
  *
  * For a (very complex) example see e.g. CWeightedDegreeStringKernel
@@ -102,6 +104,6 @@ template<> inline EFeatureType CStringKernel<int16_t>::get_feature_type() { retu
 template<> inline EFeatureType CStringKernel<uint8_t>::get_feature_type() { return F_BYTE; }
 
 template<> inline EFeatureType CStringKernel<char>::get_feature_type() { return F_CHAR; }
-
+}
 #endif /* _STRINGKERNEL_H__ */
 

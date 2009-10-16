@@ -11,6 +11,8 @@
 #include "features/ExplicitSpecFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
 {
 	ASSERT(str);

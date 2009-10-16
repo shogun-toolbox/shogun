@@ -18,6 +18,8 @@
 #include "kernel/Kernel.h"
 #include "distance/Distance.h"
 
+namespace shogun
+{
 /** @brief The Distance kernel takes a distance as input.
  *
  * It turns a distance into something kernel like by computing
@@ -97,6 +99,5 @@ class CDistanceKernel: public CKernel
 		/** width */
 		float64_t width;
 };
-
+}
 #endif /* _DISTANCEKERNEL_H__ */
-

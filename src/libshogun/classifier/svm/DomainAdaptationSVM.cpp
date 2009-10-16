@@ -23,6 +23,7 @@
 BOOST_CLASS_EXPORT(CDomainAdaptationSVM);
 #endif //HAVE_BOOST_SERIALIZATION
 
+using namespace shogun;
 
 CDomainAdaptationSVM::CDomainAdaptationSVM() : CSVMLight()
 {

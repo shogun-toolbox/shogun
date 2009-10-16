@@ -16,6 +16,8 @@
 #include "features/Labels.h"
 #include "classifier/PluginEstimate.h"
 
+using namespace shogun;
+
 CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, CPluginEstimate* pie, CLabels* labels)
 : CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),

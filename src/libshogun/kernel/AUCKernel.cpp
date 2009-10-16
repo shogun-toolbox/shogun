@@ -15,6 +15,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CAUCKernel::CAUCKernel(int32_t size, CKernel* s)
 : CSimpleKernel<uint16_t>(size), subkernel(s)
 {

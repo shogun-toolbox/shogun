@@ -15,7 +15,8 @@
 #include "features/Features.h"
 #include "distributions/Distribution.h"
 
-
+namespace shogun
+{
 /** @brief class GHMM - this class is non-functional and was meant to implement a
  * Generalize Hidden Markov Model (aka Semi Hidden Markov HMM). */
 class CGHMM : public CDistribution
@@ -63,4 +64,5 @@ class CGHMM : public CDistribution
 		 */
 		virtual float64_t get_log_likelihood_example(int32_t num_example);
 };
+}
 #endif

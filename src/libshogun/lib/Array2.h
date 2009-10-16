@@ -15,6 +15,8 @@
 #include "base/SGObject.h"
 #include "lib/Array.h"
 
+namespace shogun
+{
 template <class T> class CArray2;
 
 /** @brief Template class Array2 implements a dense two dimensional array.
@@ -268,4 +270,5 @@ template <class T> class CArray2: public CArray<T>
 		/** size of array's dimension 2 */
 		int32_t dim2_size;
 };
+}
 #endif

@@ -24,6 +24,8 @@
 
 #include <stdlib.h>
 
+using namespace shogun;
+
 const EMessageType CIO::levels[NUM_LOG_LEVELS]={MSG_GCDEBUG, MSG_DEBUG, MSG_INFO, MSG_NOTICE,
 	MSG_WARN, MSG_ERROR, MSG_CRITICAL, MSG_ALERT, MSG_EMERGENCY, MSG_MESSAGEONLY};
 

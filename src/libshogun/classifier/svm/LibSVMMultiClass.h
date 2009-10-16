@@ -16,6 +16,8 @@
 #include "classifier/svm/SVM_libsvm.h"
 #include "classifier/svm/LibSVM.h"
 
+namespace shogun
+{
 /** @brief class LibSVMMultiClass */
 class CLibSVMMultiClass : public CMultiClassSVM
 {
@@ -63,5 +65,5 @@ class CLibSVMMultiClass : public CMultiClassSVM
 		/** solver type */
 		LIBSVM_SOLVER_TYPE solver_type;
 };
+}
 #endif
-

@@ -15,6 +15,8 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 /** @brief Class ListElement, defines how an element of the the list looks like */
 template <class T> class CListElement
 {
@@ -430,4 +432,5 @@ template <class T> class CList : public CSGObject
 		/** number of elements */
 		int32_t num_elements;
 };
+}
 #endif

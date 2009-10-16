@@ -17,6 +17,8 @@
 #include "features/StringFeatures.h"
 #include "distance/StringDistance.h"
 
+namespace shogun
+{
 /** @brief class ManhattanWordDistance */
 class CManhattanWordDistance: public CStringDistance<uint16_t>
 {
@@ -78,4 +80,5 @@ class CManhattanWordDistance: public CStringDistance<uint16_t>
 		/** dictionary weights */
 		float64_t* dictionary_weights;
 };
+} // namespace shogun
 #endif /* _MANHATTANWORDDISTANCE_H___ */

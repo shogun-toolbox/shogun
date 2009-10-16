@@ -11,6 +11,8 @@
 #include "classifier/mkl/MKLMultiClass.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 lpwrapper::lpwrapper()
 {
 	lpwrappertype=-1;

@@ -20,6 +20,9 @@
 template <class ST> class TSparse;
 template <class ST> class CSparseFeatures;
 
+
+namespace shogun
+{
 /** @brief Template class SparsePreProc, base class for preprocessors (cf. CPreProc)
  * that apply to CSparseFeatures
  *
@@ -53,4 +56,5 @@ public:
   inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
   
 };
+}
 #endif

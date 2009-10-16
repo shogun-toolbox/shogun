@@ -22,6 +22,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+namespace shogun
+{
 /** @brief memory mapped file
 *
 * Implements a memory mapped file for super fast file access.
@@ -247,5 +249,5 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		/** last_written_byte */
 		uint64_t last_written_byte;
 };
+}
 #endif
-

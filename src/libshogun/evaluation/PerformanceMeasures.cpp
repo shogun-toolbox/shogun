@@ -13,6 +13,8 @@
 #include "lib/ShogunException.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CPerformanceMeasures::CPerformanceMeasures()
 : CSGObject(), m_true_labels(NULL), m_output(NULL), m_sortedROC(NULL)
 {

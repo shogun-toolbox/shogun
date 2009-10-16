@@ -11,6 +11,8 @@
 #include "features/WDFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 		int32_t order, int32_t from_order) : CDotFeatures()
 {

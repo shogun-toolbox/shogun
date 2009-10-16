@@ -15,6 +15,8 @@
 #include "distance/SparseDistance.h"
 #include "features/SparseFeatures.h"
 
+namespace shogun
+{
 /** @brief class SparseEucldianDistance */
 class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 {
@@ -78,4 +80,5 @@ class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 
 };
 
+} // namespace shogun
 #endif /* _SPARSEEUCLIDIANDISTANCE_H__ */

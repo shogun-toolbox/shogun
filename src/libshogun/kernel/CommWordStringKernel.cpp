@@ -14,6 +14,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CCommWordStringKernel::CCommWordStringKernel(int32_t size, bool s)
 : CStringKernel<uint16_t>(size), dictionary_size(0), dictionary_weights(NULL),
 	use_sign(s), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)

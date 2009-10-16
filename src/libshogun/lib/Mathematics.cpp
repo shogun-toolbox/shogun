@@ -23,22 +23,18 @@
 #include <stdlib.h>
 #include <math.h>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+using namespace shogun;
 
 #ifdef USE_LOGCACHE
-//gene/math specific constants
 #ifdef USE_HMMDEBUG
 #define MAX_LOG_TABLE_SIZE 10*1024*1024
 #define LOG_TABLE_PRECISION 1e-6
-#else
+#else //USE_HMMDEBUG
 #define MAX_LOG_TABLE_SIZE 123*1024*1024
 #define LOG_TABLE_PRECISION 1e-15
-#endif
-
+#endif //USE_HMMDEBUG
 int32_t CMath::LOGACCURACY         = 0; // 100000 steps per integer
-#endif
+#endif // USE_LOGCACHE
 
 int32_t CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <= x <= 0
 
@@ -418,6 +414,8 @@ float64_t* CMath::pinv(
 }
 #endif
 
+namespace shogun
+{
 template <>
 void CMath::display_vector(const uint8_t* vector, int32_t n, const char* name)
 {
@@ -500,4 +498,5 @@ void CMath::display_matrix(
 		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
 	}
 	SG_SPRINT("]\n");
+}
 }

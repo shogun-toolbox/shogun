@@ -22,7 +22,8 @@
 #include "features/Features.h"
 #include "lib/common.h"
 
-
+namespace shogun
+{
 /** @brief Preprocessor PCACut performs principial component analysis on the input
  * vectors and keeps only the n eigenvectors with eigenvalues above a certain
  * threshold.
@@ -85,5 +86,6 @@ class CPCACut : public CSimplePreProc<float64_t>
 		/** thresh */
 		float64_t thresh;
 };
+}
 #endif
 #endif

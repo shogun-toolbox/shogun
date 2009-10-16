@@ -12,6 +12,8 @@
 #include "lib/io.h"
 #include "classifier/svm/MultiClassSVM.h"
 
+using namespace shogun;
+
 CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type)
 : CSVM(0), multiclass_type(type), m_num_svms(0), m_svms(NULL)
 {

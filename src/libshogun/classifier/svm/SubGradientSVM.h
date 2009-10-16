@@ -17,6 +17,8 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
+namespace shogun
+{
 /** @brief class SubGradientSVM */
 class CSubGradientSVM : public CLinearClassifier
 {
@@ -240,5 +242,5 @@ class CSubGradientSVM : public CLinearClassifier
 		/** timing measurement */
 		float64_t tim;
 };
+}
 #endif
-

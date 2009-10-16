@@ -17,7 +17,8 @@
 
 #include <stdio.h>
 
-
+namespace shogun
+{
 /** @brief class DomainAdaptiveSVM */
 class CDomainAdaptationSVM : public CSVMLight
 {
@@ -144,5 +145,5 @@ class CDomainAdaptationSVM : public CSVMLight
 		float64_t train_factor;
 
 };
+}
 #endif
-

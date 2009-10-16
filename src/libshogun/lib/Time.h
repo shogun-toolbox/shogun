@@ -18,6 +18,8 @@
 #include "lib/io.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 /** @brief Class Time that implements a stopwatch based on either cpu time or wall
  * clock time. */
 class CTime : public CSGObject
@@ -114,4 +116,5 @@ class CTime : public CSGObject
 		/** stop time */
 		float64_t stop_time;
 };
+}
 #endif

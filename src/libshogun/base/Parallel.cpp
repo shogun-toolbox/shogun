@@ -10,6 +10,8 @@
 
 #include "base/Parallel.h"
 
+using namespace shogun;
+
 CParallel::CParallel() : refcount(0), num_threads(1)
 {
 }

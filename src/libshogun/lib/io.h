@@ -25,10 +25,15 @@
 #include "lib/common.h"
 #include "base/init.h"
 
+namespace shogun
+{
 class CIO;
+}
+extern shogun::CIO* sg_io;
 
-extern CIO* sg_io;
 
+namespace shogun
+{
 /** The io libs output [DEBUG] etc in front of every message 'higher' messages
  * filter output depending on the loglevel, i.e. CRITICAL messages will print
  * all MSG_CRITICAL TO MSG_EMERGENCY messages.
@@ -57,8 +62,6 @@ enum EMessageType
 #define CONST_DIRENT_T const struct dirent
 #endif //DARWIN
 
-class CIO;
-
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
 #define SG_GCDEBUG(...) io->message(MSG_GCDEBUG, __VA_ARGS__)
@@ -85,7 +88,7 @@ class CIO;
 #define SG_SABS_PROGRESS(...) sg_io->absolute_progress(__VA_ARGS__)
 #define SG_SDONE() sg_io->done()
 #define SG_SNOTIMPLEMENTED sg_io->not_implemented()
-#define SG_SDEPRECATED io->deprecated()
+#define SG_SDEPRECATED sg_io->deprecated()
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
@@ -355,5 +358,5 @@ class CIO
 	private:
 		int32_t refcount;
 };
-
+}
 #endif // __CIO_H__

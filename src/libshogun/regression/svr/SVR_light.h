@@ -19,6 +19,8 @@
 #endif //USE_SVMLIGHT
 
 #ifdef USE_SVMLIGHT
+namespace shogun
+{
 /** @brief Class SVRLight, performs support vector regression using SVMLight.
  *
  * The SVR solution can be expressed as 
@@ -241,5 +243,6 @@ class CSVRLight: public CSVMLight
 		/** number of train elements */
 		int32_t num_vectors;
 };
+}
 #endif //USE_SVMLIGHT
 #endif

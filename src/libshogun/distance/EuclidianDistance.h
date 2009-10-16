@@ -15,6 +15,8 @@
 #include "distance/RealDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class EuclidianDistance 
  *
  * The familiar Euclidian distance for real valued features computes
@@ -109,4 +111,5 @@ class CEuclidianDistance: public CRealDistance
 		bool disable_sqrt;
 };
 
+} // namespace shogun
 #endif /* _EUCLIDIANDISTANCE_H__ */

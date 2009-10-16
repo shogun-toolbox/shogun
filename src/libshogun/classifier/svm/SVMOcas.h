@@ -17,6 +17,8 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
+namespace shogun
+{
 enum E_SVM_TYPE
 {
 	SVM_OCAS = 0,
@@ -199,4 +201,5 @@ class CSVMOcas : public CLinearClassifier
 		/** bias dimensions */
 		float64_t* cp_bias;
 };
+}
 #endif

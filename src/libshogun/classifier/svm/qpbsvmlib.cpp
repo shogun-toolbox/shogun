@@ -58,6 +58,8 @@
 #include "classifier/svm/qpbsvmlib.h"
 #include "classifier/svm/pr_loqo.h"
 
+using namespace shogun;
+
 #define HISTORY_BUF 1000000
 
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)

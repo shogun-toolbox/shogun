@@ -18,6 +18,8 @@
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
 
+namespace shogun
+{
 /** @brief class WDSVMOcas */
 class CWDSVMOcas : public CClassifier
 {
@@ -338,4 +340,5 @@ class CWDSVMOcas : public CClassifier
 		/** bias dimensions */
 		float64_t* cp_bias;
 };
+}
 #endif

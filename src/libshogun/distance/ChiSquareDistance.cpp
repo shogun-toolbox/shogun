@@ -15,6 +15,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CChiSquareDistance::CChiSquareDistance()
 : CSimpleDistance<float64_t>()
 {

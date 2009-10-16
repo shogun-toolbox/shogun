@@ -9,6 +9,8 @@
 #include "classifier/svm/Tron.h"
 #include "features/DotFeatures.h"
 
+using namespace shogun;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -15,6 +15,9 @@
 #include "features/Features.h"
 #include "lib/DynamicArray.h"
 
+namespace shogun
+{
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** Attribute Struct */
 struct T_ATTRIBUTE
@@ -158,4 +161,5 @@ protected:
 	///list of attributes (sorted)
 	CDynamicArray<T_ATTRIBUTE> features;
 };
+}
 #endif

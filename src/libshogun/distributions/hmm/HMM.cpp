@@ -25,6 +25,8 @@
 #define VAL_MACRO log((default_value == 0) ? (CMath::random(MIN_RAND, MAX_RAND)) : default_value)
 #define ARRAY_SIZE 65336
 
+using namespace shogun;
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -5552,4 +5554,3 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 
 	return true;
 }
-

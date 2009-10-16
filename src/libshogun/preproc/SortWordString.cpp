@@ -13,6 +13,8 @@
 #include "features/StringFeatures.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CSortWordString::CSortWordString()
 : CStringPreProc<uint16_t>("SortWordString", "STWS") 
 {

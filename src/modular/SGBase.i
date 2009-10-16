@@ -53,7 +53,7 @@
         SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
         SWIG_fail;
     }
-    catch (ShogunException e)
+    catch (shogun::ShogunException e)
     {
         SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
         SWIG_fail;

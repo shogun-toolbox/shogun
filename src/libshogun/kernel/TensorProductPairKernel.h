@@ -15,6 +15,8 @@
 #include "kernel/SimpleKernel.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief Computes the Tensor Product Pair Kernel (TPPK).
  *
  * Formally, it computes
@@ -87,5 +89,5 @@ class CTensorProductPairKernel: public CSimpleKernel<int32_t>
 		/** the subkernel */
 		CKernel* subkernel;
 };
-
+}
 #endif /* _TPPKKERNEL_H__ */

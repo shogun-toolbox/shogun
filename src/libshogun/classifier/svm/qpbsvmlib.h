@@ -24,6 +24,9 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+namespace shogun
+{
+
 enum E_QPB_SOLVER
 {
 	QPB_SOLVER_SCA,	// sequential coordinate wise (gaussian seidel based)
@@ -142,4 +145,5 @@ class CQPBSVMLib: public CSGObject
 		/** solver */
 		E_QPB_SOLVER m_solver;
 };
+}
 #endif //QPBSVMLIB_H__

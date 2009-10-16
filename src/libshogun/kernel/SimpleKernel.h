@@ -15,6 +15,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+namespace shogun
+{
 /** @brief Template class SimpleKernel is the base class for kernels working on
  * Simple features.
  *
@@ -116,5 +118,5 @@ template<> inline EFeatureType CSimpleKernel<uint8_t>::get_feature_type() { retu
 
 template<> inline EFeatureType CSimpleKernel<char>::get_feature_type() { return F_CHAR; }
 
-
+}
 #endif /* _SIMPLEKERNEL_H__ */

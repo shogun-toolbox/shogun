@@ -13,6 +13,8 @@
 
 #include "kernel/KernelNormalizer.h"
 
+namespace shogun
+{
 /** @brief Normalize the kernel by a constant obtained from the first element of the
  * kernel matrix, i.e. \f$ c=k({\bf x},{\bf x})\f$
  *
@@ -90,5 +92,5 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		/// scale constant obtained from k(0,0)
 		float64_t scale;
 };
-
+}
 #endif

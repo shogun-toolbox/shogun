@@ -15,6 +15,8 @@
 #include "kernel/StringKernel.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 /** @brief The class MatchWordStringKernel computes a variant of the polynomial
  * kernel on strings of same length converted to a word alphabet.
  *
@@ -87,5 +89,5 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		/** degree */
 		int32_t degree;
 };
-
+}
 #endif /* _MATCHWORDSTRINGKERNEL_H__ */

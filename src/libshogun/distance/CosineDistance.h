@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class CosineDistance 
  *
  * The Cosine distance is obtained by using the Cosine similarity (Orchini
@@ -75,4 +77,5 @@ class CCosineDistance: public CSimpleDistance<float64_t>
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
+} // namespace shogun
 #endif /* _COSINEDISTANCE_H___ */

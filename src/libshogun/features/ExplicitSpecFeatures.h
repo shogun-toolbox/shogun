@@ -16,6 +16,8 @@
 #include "features/DotFeatures.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 template <class ST> class CStringFeatures;
 
 /**@brief Features that compute the Spectrum Kernel feature space explicitly.
@@ -156,4 +158,5 @@ class CExplicitSpecFeatures : public CDotFeatures
 		/** k-mer counts for all strings */
 		float64_t** k_spectrum;
 };
+}
 #endif // _EXPLICITSPECFEATURES_H___

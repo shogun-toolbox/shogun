@@ -16,6 +16,8 @@
 #include "classifier/svm/Tron.h"
 #include "features/DotFeatures.h"
 
+using namespace shogun;
+
 CLibLinear::CLibLinear(LIBLINEAR_LOSS l)
 : CLinearClassifier()
 {

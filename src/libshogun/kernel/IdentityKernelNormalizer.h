@@ -13,6 +13,8 @@
 
 #include "kernel/KernelNormalizer.h"
 
+namespace shogun
+{
 /** @brief Identity Kernel Normalization, i.e. no normalization is applied. */
 class CIdentityKernelNormalizer : public CKernelNormalizer
 {
@@ -66,5 +68,5 @@ class CIdentityKernelNormalizer : public CKernelNormalizer
 		/** @return object name */
 		inline virtual const char* get_name() const { return "IdentityKernelNormalizer"; }
 };
-
+}
 #endif

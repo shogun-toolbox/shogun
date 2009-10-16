@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+namespace shogun
+{
 /** @brief The Diagonal Kernel returns a constant for the diagonal and zero
  * otherwise.
  *
@@ -92,5 +94,5 @@ class CDiagKernel: public CKernel
 		/** diagonal */
 		float64_t diag;
 };
-
+}
 #endif /* _DIAGKERNEL_H__ */

@@ -15,6 +15,8 @@
 #include "base/SGObject.h"
 #include "lib/Mathematics.h"
 
+namespace shogun
+{
 /** @brief class PlifBase */
 class CPlifBase : public CSGObject
 {
@@ -107,4 +109,5 @@ class CPlifBase : public CSGObject
 		virtual void list_plif() const = 0 ;
 
 };
+}
 #endif

@@ -25,6 +25,8 @@
 #include <pthread.h>
 #endif
 
+using namespace shogun;
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM
 {

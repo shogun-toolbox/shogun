@@ -13,6 +13,8 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CTOPFeatures::CTOPFeatures(
 	int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
 : CSimpleFeatures<float64_t>(size), neglinear(neglin), poslinear(poslin)

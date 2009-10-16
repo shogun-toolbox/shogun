@@ -15,6 +15,8 @@
 #include "kernel/SparseKernel.h"
 #include "features/SparseFeatures.h"
 
+namespace shogun
+{
 /** @brief The well known Gaussian kernel (swiss army knife for SVMs)
  * on sparse real valued features.
  *
@@ -96,5 +98,5 @@ class CSparseGaussianKernel: public CSparseKernel<float64_t>
 		/** squared right-hand side */
 		float64_t* sq_rhs;
 };
-
+}
 #endif /* _SPARSEGAUSSIANKERNEL_H__ */

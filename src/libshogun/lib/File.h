@@ -20,6 +20,8 @@
 #include "lib/SimpleFile.h"
 #include "features/Features.h"
 
+namespace shogun
+{
 template <class ST> struct T_STRING;
 template <class ST> struct TSparse;
 
@@ -324,4 +326,5 @@ protected:
 	/** fourcc */
 	char fourcc[4];
 };
+}
 #endif

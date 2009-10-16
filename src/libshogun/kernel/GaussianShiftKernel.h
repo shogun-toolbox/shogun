@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "kernel/GaussianKernel.h"
 
+namespace shogun
+{
 /** @brief An experimental kernel inspired by the WeightedDegreePositionStringKernel
  * and the Gaussian kernel.
  *
@@ -90,5 +92,5 @@ class CGaussianShiftKernel: public CGaussianKernel
 		/** shift step */
 		int32_t shift_step;
 };
-
+}
 #endif /* _GAUSSIANSHIFTKERNEL_H__ */

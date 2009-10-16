@@ -15,6 +15,8 @@
 #include "kernel/DistanceKernel.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, CDistance* d)
 : CKernel(size), distance(d), width(w)
 {

@@ -15,6 +15,8 @@
 #include "kernel/SimpleKernel.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief Computes the standard linear kernel on dense byte valued features.
  *
  * Formally, it computes
@@ -111,5 +113,5 @@ class CLinearByteKernel: public CSimpleKernel<uint8_t>
 		/** normal vector (used in case of optimized kernel) */
 		float64_t* normal;
 };
-
+}
 #endif /* _LINEARBYTEKERNEL_H__ */

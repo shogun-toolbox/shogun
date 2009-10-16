@@ -23,6 +23,8 @@
 #include "classifier/svm/SVMSGD.h"
 #include "lib/Signal.h"
 
+using namespace shogun;
+
 // Available losses
 #define HINGELOSS 1
 #define SMOOTHHINGELOSS 2

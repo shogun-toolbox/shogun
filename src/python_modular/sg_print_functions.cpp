@@ -7,6 +7,8 @@ extern "C" {
 #include <shogun/lib/io.h>
 #include <stdio.h>
 
+using namespace shogun;
+
 void sg_global_print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);

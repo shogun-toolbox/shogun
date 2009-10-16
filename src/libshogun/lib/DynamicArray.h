@@ -15,6 +15,8 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 /** @brief Template Dynamic array class that creates an array that can be used
  * like a list or an array.
  *
@@ -321,4 +323,5 @@ template <class T> class CDynamicArray : public CSGObject
 		/** the element in the array that has largest index */
 		int32_t last_element_idx;
 };
+}
 #endif

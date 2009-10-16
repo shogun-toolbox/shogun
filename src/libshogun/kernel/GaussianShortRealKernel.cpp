@@ -14,6 +14,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CGaussianShortRealKernel::CGaussianShortRealKernel(int32_t size, float64_t w)
 : CSimpleKernel<float32_t>(size), width(w)
 {

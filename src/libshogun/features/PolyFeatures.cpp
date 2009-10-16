@@ -1,5 +1,6 @@
-
 #include "features/PolyFeatures.h"
+
+using namespace shogun;
 
 CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize)
 	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL), 

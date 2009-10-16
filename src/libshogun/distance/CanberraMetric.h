@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class CanberraMetric 
  *
  * The Canberra distance sums up the dissimilarity (ratios) between feature 
@@ -72,4 +74,5 @@ class CCanberraMetric: public CSimpleDistance<float64_t>
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
+} // namespace shogun
 #endif /* _CANBERRAMETRIC_H__ */

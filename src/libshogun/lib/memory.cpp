@@ -15,6 +15,8 @@
 #include "lib/common.h"
 #include "lib/Set.h"
 
+using namespace shogun;
+
 #ifdef TRACE_MEMORY_ALLOCS
 extern CSet<CMemoryBlock>* sg_mallocs;
 #endif

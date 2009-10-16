@@ -16,6 +16,8 @@
 #include "lib/lapack.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CKRR::CKRR()
 : CKernelMachine()
 {

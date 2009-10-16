@@ -18,6 +18,8 @@
 
 #include <stdlib.h>
 
+namespace shogun
+{
 /** @brief Template class Cache implements a simple cache. 
  *
  * When the cache is full -- elements that are least used are freed from the
@@ -243,4 +245,5 @@ template<class T> class CCache : public CSGObject
 	/** cache block */
 	T* cache_block;
 };
+}
 #endif

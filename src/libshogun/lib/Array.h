@@ -20,6 +20,8 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 #ifdef ARRAY_STATISTICS
 struct array_statistics {
 	int32_t const_element;
@@ -385,4 +387,5 @@ template <class T> class CArray : public CSGObject
 		DECLARE_ARRAY_STATISTICS;
 
 };
+}
 #endif /* _ARRAY_H_ */

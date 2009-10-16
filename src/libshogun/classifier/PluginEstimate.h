@@ -16,6 +16,8 @@
 #include "features/Labels.h"
 #include "distributions/hmm/LinearHMM.h"
 
+namespace shogun
+{
 /** @brief class PluginEstimate
  *
  * The class PluginEstimate takes as input two probabilistic models (of type
@@ -218,4 +220,5 @@ class CPluginEstimate: public CClassifier
 		/** features */
 		CStringFeatures<uint16_t>* features;
 };
+}
 #endif

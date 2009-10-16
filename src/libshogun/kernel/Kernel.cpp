@@ -35,6 +35,8 @@
 #include <pthread.h>
 #endif
 
+using namespace shogun;
+
 CKernel::CKernel(int32_t size)
 : CSGObject(), kernel_matrix(NULL), lhs(NULL),
 	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),

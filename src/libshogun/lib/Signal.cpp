@@ -19,6 +19,8 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 
+using namespace shogun;
+
 int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGURG};
 struct sigaction CSignal::oldsigaction[NUMTRAPPEDSIGS];
 bool CSignal::active=false;

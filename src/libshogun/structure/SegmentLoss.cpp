@@ -11,6 +11,8 @@
 #include "base/SGObject.h" 
 //# define DEBUG
 
+using namespace shogun;
+
 CSegmentLoss::CSegmentLoss()
 	:CSGObject(),
 	m_segment_loss_matrix(1,1),

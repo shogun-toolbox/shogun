@@ -12,6 +12,8 @@
 #include "classifier/svm/LibSVMOneClass.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CLibSVMOneClass::CLibSVMOneClass()
 : CSVM(), model(NULL)
 {

@@ -26,6 +26,8 @@
 #include <string.h>
 #include "kernel/LocalAlignmentStringKernel.h"
 
+using namespace shogun;
+
 /****************/
 /* The alphabet */
 /****************/

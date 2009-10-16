@@ -14,6 +14,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CTensorProductPairKernel::CTensorProductPairKernel(int32_t size, CKernel* s)
 : CSimpleKernel<int32_t>(size), subkernel(s)
 {

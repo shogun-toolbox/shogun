@@ -14,6 +14,8 @@
 #include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/SparseFeatures.h"
 
+using namespace shogun;
+
 CSparsePolyKernel::CSparsePolyKernel(int32_t size, int32_t d, bool i)
 : CSparseKernel<float64_t>(size), degree(d), inhomogene(i)
 {

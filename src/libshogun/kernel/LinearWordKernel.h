@@ -15,6 +15,8 @@
 #include "kernel/SimpleKernel.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief Computes the standard linear kernel on dense word (2-byte) valued
  * features.
  *
@@ -111,5 +113,5 @@ class CLinearWordKernel: public CSimpleKernel<uint16_t>
 		/** normal vector (used in case of optimized kernel) */
 		float64_t* normal;
 };
-
+}
 #endif /* _LINEARWORDKERNEL_H__ */

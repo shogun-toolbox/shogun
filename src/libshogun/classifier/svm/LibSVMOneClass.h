@@ -17,6 +17,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** @brief class LibSVMOneClass */
 class CLibSVMOneClass : public CSVM
 {
@@ -60,4 +62,5 @@ class CLibSVMOneClass : public CSVM
 		/** SVM model */
 		struct svm_model* model;
 };
+}
 #endif

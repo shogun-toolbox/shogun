@@ -11,6 +11,8 @@
 #include "classifier/svm/LibSVM.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
 BOOST_CLASS_EXPORT(CLibSVM);

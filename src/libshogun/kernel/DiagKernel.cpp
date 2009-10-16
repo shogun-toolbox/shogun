@@ -14,6 +14,8 @@
 #include "kernel/DiagKernel.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CDiagKernel::CDiagKernel(int32_t size, float64_t d)
 : CKernel(size), diag(d)
 {

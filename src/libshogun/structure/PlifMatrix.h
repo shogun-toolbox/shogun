@@ -19,6 +19,8 @@
 #include "lib/Array2.h"
 #include "lib/Array3.h"
 
+namespace shogun
+{
 /** store plif arrays for all transitions 
  *  in the model
  *
@@ -215,4 +217,5 @@ class CPlifMatrix: public CSGObject
 		/** state signals*/
 		CPlifBase** m_state_signals;
 };
+}
 #endif /* _PLIFMATRIX_H_ */

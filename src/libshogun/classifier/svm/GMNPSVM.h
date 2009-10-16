@@ -17,6 +17,8 @@
 #include "classifier/svm/MultiClassSVM.h"
 #include "features/Features.h"
 
+namespace shogun
+{
 /** @brief Class GMNPSVM implements a one vs. rest MultiClass SVM.
  *
  * It uses CGMNPLib for training (in true multiclass-SVM fashion).
@@ -59,6 +61,6 @@ class CGMNPSVM : public CMultiClassSVM
 		
 	protected: 
 		::std::vector< ::std::vector<float64_t> > basealphas; // is the basic untransformed alpha, needed for MKL 
-		
 };
+}
 #endif

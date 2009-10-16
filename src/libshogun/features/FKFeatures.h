@@ -15,6 +15,8 @@
 #include "features/SimpleFeatures.h"
 #include "distributions/hmm/HMM.h"
 
+namespace shogun
+{
 /** @brief The class FKFeatures implements Fischer kernel features obtained from
  * two Hidden Markov models.
  *
@@ -133,4 +135,5 @@ class CFKFeatures: public CSimpleFeatures<float64_t>
 		/** weight a */
 		float64_t weight_a;
 };
+}
 #endif

@@ -19,6 +19,8 @@
 #include "features/SimpleFeatures.h"
 #include "classifier/LinearClassifier.h"
 
+namespace shogun
+{
 /** @brief Class LDA implements regularized Linear Discriminant Analysis.
  *
  * LDA learns a linear classifier and requires examples to be CSimpleFeatures.
@@ -121,5 +123,6 @@ class CLDA : public CLinearClassifier
 		/** gamma */
 		float64_t m_gamma;
 };
+}
 #endif
 #endif

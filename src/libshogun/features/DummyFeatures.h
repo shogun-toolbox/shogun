@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "features/Features.h"
 
+namespace shogun
+{
 /** @brief The class DummyFeatures implements features that only know the
  * number of feature objects (but don't actually contain any).
  *
@@ -77,4 +79,5 @@ class CDummyFeatures : public CFeatures
 		/** number of feature vectors */
 		int32_t num_vectors;
 };
+}
 #endif

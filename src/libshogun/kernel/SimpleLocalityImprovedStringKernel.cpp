@@ -14,6 +14,8 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
+using namespace shogun;
+
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	int32_t size, int32_t l, int32_t id, int32_t od)
 : CStringKernel<char>(size), length(l), inner_degree(id), outer_degree(od),

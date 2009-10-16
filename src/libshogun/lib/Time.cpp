@@ -12,6 +12,8 @@
 #include "lib/io.h"
 #include "lib/common.h"
 
+using namespace shogun;
+
 CTime::CTime(bool st)
 : CSGObject()
 {

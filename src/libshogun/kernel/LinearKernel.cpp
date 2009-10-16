@@ -14,6 +14,8 @@
 #include "features/SimpleFeatures.h"
 #include "kernel/LinearKernel.h"
 
+using namespace shogun;
+
 CLinearKernel::CLinearKernel()
 : CSimpleKernel<float64_t>(0), normal(NULL), normal_length(0)
 {

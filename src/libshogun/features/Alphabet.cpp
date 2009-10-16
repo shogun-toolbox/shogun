@@ -14,6 +14,8 @@
 #include "features/Alphabet.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 //define numbers for the bases 
 const uint8_t CAlphabet::B_A=0;
 const uint8_t CAlphabet::B_C=1;

@@ -15,6 +15,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CCanberraWordDistance::CCanberraWordDistance()
 : CStringDistance<uint16_t>()
 {

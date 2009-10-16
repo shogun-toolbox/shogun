@@ -24,6 +24,8 @@
 
 #define PAR_THRESH  10
 
+using namespace shogun;
+
 CKMeans::CKMeans()
 : CDistanceMachine(), max_iter(10000), k(3), dimensions(0), R(NULL),
 	mus(NULL), Weights(NULL)

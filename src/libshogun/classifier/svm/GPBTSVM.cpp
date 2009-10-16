@@ -13,6 +13,8 @@
 #include "classifier/svm/gpdtsolve.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CGPBTSVM::CGPBTSVM()
 : CSVM(), model(NULL)
 {

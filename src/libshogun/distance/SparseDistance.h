@@ -14,6 +14,8 @@
 #include "distance/Distance.h"
 #include "features/SparseFeatures.h"
 
+namespace shogun
+{
 /** @brief template class SparseDistance */
 template <class ST> class CSparseDistance : public CDistance
 {
@@ -98,4 +100,5 @@ template<> inline EFeatureType CSparseDistance<uint8_t>::get_feature_type() { re
  * @return feature type CHAR
  */
 template<> inline EFeatureType CSparseDistance<char>::get_feature_type() { return F_CHAR; }
+} // namespace shogun
 #endif

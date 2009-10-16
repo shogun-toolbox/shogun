@@ -19,6 +19,8 @@
 #include "base/SGObject.h"
 #include "features/Features.h"
 
+namespace shogun
+{
 enum EDistanceType
 {
 	D_UNKNOWN = 0,
@@ -293,4 +295,5 @@ class CDistance : public CSGObject
 		CFeatures* rhs;
 
 };
+} // namespace shogun
 #endif

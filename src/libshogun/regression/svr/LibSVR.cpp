@@ -11,6 +11,8 @@
 #include "regression/svr/LibSVR.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CLibSVR::CLibSVR()
 : CSVM()
 {

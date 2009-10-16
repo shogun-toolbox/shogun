@@ -15,6 +15,8 @@
 #include "kernel/StringKernel.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief The Regulaty Modules kernel, based on the WD kernel,
  * as published in Schultheiss et al., Bioinformatics (2009)
  * on regulatory sequences.
@@ -128,4 +130,5 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		/** weights of WD kernel */
 		float64_t* weights;
 };
+}
 #endif /* _REGULATORYMODULESSTRINGKERNEL_H__ */

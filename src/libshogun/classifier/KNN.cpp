@@ -15,6 +15,8 @@
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
 
+using namespace shogun;
+
 CKNN::CKNN()
 : CDistanceMachine(), k(3), num_classes(0), num_train_labels(0), train_labels(NULL)
 {

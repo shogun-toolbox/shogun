@@ -15,6 +15,8 @@
 #include "kernel/SimpleKernel.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief Computes the standard polynomial kernel on dense real valued
  * features.
  *
@@ -93,5 +95,5 @@ class CPolyKernel: public CSimpleKernel<float64_t>
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
 };
-
+}
 #endif /* _POLYKERNEL_H__ */

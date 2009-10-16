@@ -16,6 +16,8 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 /** @brief The SalzbergWordString kernel implements the Salzberg kernel.
  *
  * It is described in
@@ -145,5 +147,5 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		/** if kernel is initialized */
 		bool initialized;
 };
-
+}
 #endif /* _SALZBERGWORDKERNEL_H__ */

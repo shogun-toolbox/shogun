@@ -17,6 +17,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** @brief Preprocessor NormOne, normalizes vectors to have norm 1.
  *
  * Formally, it computes
@@ -60,4 +62,5 @@ class CNormOne : public CSimplePreProc<float64_t>
 		/** @return object name */
 		inline virtual const char* get_name() { return "NormOne"; }
 };
+}
 #endif

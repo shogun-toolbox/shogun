@@ -14,6 +14,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CChi2Kernel::CChi2Kernel(int32_t size, float64_t w)
 : CSimpleKernel<float64_t>(size), width(w)
 {

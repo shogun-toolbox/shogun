@@ -16,6 +16,8 @@
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 
+namespace shogun
+{
 template <class ST> class CSimpleFeatures;
 
 /** @brief Template class SimplePreProc, base class for preprocessors (cf.
@@ -81,5 +83,5 @@ template<> inline EFeatureType CSimplePreProc<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }
-
+}
 #endif

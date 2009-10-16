@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "features/Features.h"
 
+namespace shogun
+{
 /** @brief Features that support dot products among other operations.
  *
  * DotFeatures support the following operations:
@@ -181,4 +183,5 @@ class CDotFeatures : public CFeatures
 		/// feature weighting in combined dot features
 		float64_t combined_weight;
 };
+}
 #endif // _DOTFEATURES_H___

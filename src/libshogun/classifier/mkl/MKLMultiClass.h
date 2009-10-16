@@ -27,6 +27,8 @@
 #ifdef USE_GLPK
 #include <glpk.h>
 
+namespace shogun
+{
 /** @brief MKLMultiClass is a class for L1-norm multiclass MKL.
  *
  * L1-norm MKL for the multiclass svm CGMNPSVM kit is to be used as all
@@ -272,5 +274,5 @@ protected:
 
 	
 };
-
+}
 #endif // GMNPMKL_H_

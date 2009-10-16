@@ -17,6 +17,8 @@
 #include "kernel/StringKernel.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 
 enum EWDKernType
 {
@@ -969,5 +971,5 @@ namespace boost
 	} // serialization
 } // namespace boost
 #endif //HAVE_BOOST_SERIALIZATION
-
+}
 #endif /* _WEIGHTEDDEGREESTRINGKERNEL_H__ */

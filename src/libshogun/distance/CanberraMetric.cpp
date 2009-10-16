@@ -15,6 +15,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CCanberraMetric::CCanberraMetric()
 : CSimpleDistance<float64_t>()
 {

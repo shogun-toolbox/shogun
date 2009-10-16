@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+using namespace shogun;
+
 ShogunException::ShogunException(const char* str)
 {
 #ifndef WIN32

@@ -12,6 +12,8 @@
 #include "classifier/svm/MCSVM.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CMCSVM::CMCSVM()
 : CMultiClassSVM(ONE_VS_REST), model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0)
 {

@@ -27,6 +27,7 @@
 #include <time.h>
 #include <ctype.h>
 
+using namespace shogun;
 
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG

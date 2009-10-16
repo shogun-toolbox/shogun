@@ -28,6 +28,8 @@
 #include "features/SparseFeatures.h"
 #include "classifier/svm/ssl.h"
 
+using namespace shogun;
+
 #define VERBOSE 1
 
 void ssl_train(struct data *Data, 

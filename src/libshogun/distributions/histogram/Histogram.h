@@ -14,6 +14,8 @@
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 
+namespace shogun
+{
 /** @brief Class Histogram computes a histogram over all 16bit unsigned
  * integers in the features.
  *
@@ -89,4 +91,5 @@ class CHistogram : public CDistribution
 		/** histogram */
 		float64_t* hist;
 };
+}
 #endif

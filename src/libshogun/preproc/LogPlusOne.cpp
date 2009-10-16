@@ -14,6 +14,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CLogPlusOne::CLogPlusOne()
 : CSimplePreProc<float64_t>("LogPlusOne", "LG+1")
 {

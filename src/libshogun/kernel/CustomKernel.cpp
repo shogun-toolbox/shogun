@@ -14,6 +14,8 @@
 #include "features/DummyFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CCustomKernel::CCustomKernel()
 : CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
 {

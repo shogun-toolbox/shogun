@@ -14,6 +14,8 @@
 #include "kernel/Kernel.h"
 #include "features/SparseFeatures.h"
 
+namespace shogun
+{
 /** @brief Template class SparseKernel, is the base class of kernels working on sparse
  * features.
  *
@@ -87,5 +89,5 @@ template<> inline EFeatureType CSparseKernel<int16_t>::get_feature_type() { retu
 template<> inline EFeatureType CSparseKernel<uint8_t>::get_feature_type() { return F_BYTE; }
 
 template<> inline EFeatureType CSparseKernel<char>::get_feature_type() { return F_CHAR; }
-
+}
 #endif /* _SPARSEKERNEL_H__ */

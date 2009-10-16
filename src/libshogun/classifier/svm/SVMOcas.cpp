@@ -19,6 +19,8 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
+using namespace shogun;
+
 CSVMOcas::CSVMOcas(E_SVM_TYPE type)
 : CLinearClassifier(), use_bias(true), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)

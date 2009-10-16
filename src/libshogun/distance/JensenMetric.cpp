@@ -15,6 +15,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CJensenMetric::CJensenMetric()
 : CSimpleDistance<float64_t>()
 {

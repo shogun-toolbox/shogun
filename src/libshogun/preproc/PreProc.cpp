@@ -12,6 +12,8 @@
 #include "preproc/PreProc.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CPreProc::CPreProc(const char* name, const char* id)
 : CSGObject(), preproc_name(name), preproc_id(id)
 {

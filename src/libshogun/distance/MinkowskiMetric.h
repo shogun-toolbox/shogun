@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class MinkowskiMetric 
  *
  * The Minkowski metric is one general class of metrics for a 
@@ -86,4 +88,5 @@ class CMinkowskiMetric: public CSimpleDistance<float64_t>
 		float64_t k;
 };
 
+} // namespace shogun
 #endif /* _MINKOWSKIMETRIC_H___ */

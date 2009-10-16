@@ -17,7 +17,10 @@
 #include "kernel/WeightedDegreeStringKernel.h"
 #include "lib/Trie.h"
 
-class CSVM ;
+namespace shogun
+{
+
+class CSVM;
 
 /** @brief The Weighted Degree Position String kernel (Weighted Degree kernel
  * with shifts).
@@ -761,4 +764,5 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/** alphabet of features */
 		CAlphabet* alphabet;
 };
+}
 #endif /* _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H__ */

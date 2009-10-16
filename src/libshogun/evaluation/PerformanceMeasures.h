@@ -15,6 +15,8 @@
 #include "features/Labels.h"
 #include "lib/DynamicArray.h"
 
+namespace shogun
+{
 /** @brief Class to implement various performance measures.
  *
  * - Receiver Operating Curve (ROC)
@@ -468,4 +470,5 @@ class CPerformanceMeasures : public CSGObject
 		/** area under DET; 1 - area over DET */
 		float64_t m_auDET;
 };
+} // namespace shogun
 #endif /* __PERFORMANCEMEASURES_H_ */

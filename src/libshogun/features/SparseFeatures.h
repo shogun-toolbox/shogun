@@ -27,6 +27,9 @@
 #include "features/SimpleFeatures.h"
 #include "preproc/SparsePreProc.h"
 
+namespace shogun
+{
+
 template <class ST> class CSparsePreProc;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -1414,5 +1417,6 @@ template<> inline EFeatureType CSparseFeatures<float64_t>::get_feature_type()
 template<> inline EFeatureType CSparseFeatures<floatmax_t>::get_feature_type()
 {
 	return F_LONGREAL;
+}
 }
 #endif /* _SPARSEFEATURES__H__ */

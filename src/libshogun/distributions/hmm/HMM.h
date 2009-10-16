@@ -26,6 +26,8 @@
 #define USE_HMMPARALLEL_STRUCTURES 1
 #endif
 
+namespace shogun
+{
 /**@name HMM specific types*/
 //@{
 
@@ -1559,4 +1561,5 @@ protected:
 	}
 
 };
+}
 #endif

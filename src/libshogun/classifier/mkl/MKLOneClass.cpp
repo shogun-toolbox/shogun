@@ -1,6 +1,8 @@
 #include "classifier/mkl/MKLOneClass.h"
 #include "classifier/svm/LibSVMOneClass.h"
 
+using namespace shogun;
+
 CMKLOneClass::CMKLOneClass(CSVM* s) : CMKL(s)
 {
 	if (!s)

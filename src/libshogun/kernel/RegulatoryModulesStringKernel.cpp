@@ -14,6 +14,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
 		int32_t size, float64_t w, int32_t d, int32_t s, int32_t wl)
 : CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl), 

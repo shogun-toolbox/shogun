@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class JensenMetric 
  *
  * The Jensen-Shannon distance/divergence measures the similarity between
@@ -73,5 +75,6 @@ class CJensenMetric: public CSimpleDistance<float64_t>
 		/// in the corresponding feature object
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
+} // namespace shogun
 
 #endif /* _JENSENMETRIC_H___ */

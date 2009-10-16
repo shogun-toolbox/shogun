@@ -15,6 +15,8 @@
 #include "kernel/SparseKernel.h"
 #include "features/SparseFeatures.h"
 
+namespace shogun
+{
 /** @brief Computes the standard linear kernel on sparse real valued features.
  * 
  * Formally, it computes
@@ -126,5 +128,5 @@ class CSparseLinearKernel: public CSparseKernel<float64_t>
 		/** length of normal vector */
 		int32_t normal_length;
 };
-
+}
 #endif /* _SPARSELINEARKERNEL_H__ */

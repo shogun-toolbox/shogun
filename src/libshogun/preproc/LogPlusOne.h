@@ -17,6 +17,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** @brief Preprocessor LogPlusOne does what the name says, it adds one to a dense
  * real valued vector and takes the logarithm of each component of it.
  *
@@ -61,5 +63,5 @@ class CLogPlusOne : public CSimplePreProc<float64_t>
 		/** @return object name */
 		inline virtual const char* get_name() { return "LogPlusOne"; }
 };
+}
 #endif
-

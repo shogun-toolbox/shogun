@@ -11,6 +11,8 @@
 #ifndef _SHOGUN_EXCEPTION_H_
 #define _SHOGUN_EXCEPTION_H_
 
+namespace shogun
+{
 /** @brief Class ShogunException defines an exception which is thrown whenever an
  * error inside of shogun occurs.
  */ 
@@ -36,5 +38,5 @@ class ShogunException {
 		/** exception string */
 		char* val;
 };
-
+}
 #endif // _SHOGUN_EXCEPTION_H_

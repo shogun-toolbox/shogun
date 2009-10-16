@@ -13,6 +13,8 @@
 #include "features/Features.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CConstKernel::CConstKernel(float64_t c)
 : CKernel(0), const_value(c)
 {

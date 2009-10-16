@@ -16,6 +16,8 @@
 #include "lib/DynamicArray.h"
 #include "kernel/StringKernel.h"
 
+namespace shogun
+{
 /** @brief The CommUlongString kernel may be used to compute the spectrum kernel
  * from strings that have been mapped into unsigned 64bit integers.
  *
@@ -203,5 +205,5 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		/** if sign shall be used */
 		bool use_sign;
 };
-
+}
 #endif /* _COMMULONGFSTRINGKERNEL_H__ */

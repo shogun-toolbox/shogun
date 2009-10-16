@@ -18,6 +18,8 @@
 #include <vector>
 #include <string>
 
+namespace shogun
+{
 /**
  * @brief This class offers access to the Oligo Kernel introduced 
  * by Meinicke et al. in 2004
@@ -154,4 +156,5 @@ class COligoStringKernel : public CStringKernel<char>
 		/** cache for exp (see getExpFunctionCache above) */
 		float64_t* gauss_table;
 };
+}
 #endif // _OLIGOSTRINGKERNEL_H_

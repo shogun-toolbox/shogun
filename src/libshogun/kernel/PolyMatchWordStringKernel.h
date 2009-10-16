@@ -15,6 +15,8 @@
 #include "kernel/StringKernel.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 /** @brief The class PolyMatchWordStringKernel computes a variant of the
  * polynomial kernel on word-features.
  *
@@ -95,5 +97,5 @@ class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
 };
-
+}
 #endif /* _POLYMATCHWORDSTRINGKERNEL_H__ */

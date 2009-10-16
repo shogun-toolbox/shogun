@@ -19,6 +19,8 @@
 
 class CDistanceMachine;
 
+namespace shogun
+{
 /** @brief Agglomerative hierarchical single linkage clustering.
  *
  * Starting with each object being assigned to its own cluster clusters are
@@ -209,4 +211,5 @@ class CHierarchical : public CDistanceMachine
 		/// distance at which pair i/j was added
 		float64_t* merge_distance;
 };
+}
 #endif

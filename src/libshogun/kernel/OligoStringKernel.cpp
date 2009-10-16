@@ -19,6 +19,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace shogun;
+
 COligoStringKernel::COligoStringKernel(int32_t cache_sz, int32_t kmer_len, float64_t w)
 : CStringKernel<char>(cache_sz), k(kmer_len), width(w), gauss_table(NULL)
 {

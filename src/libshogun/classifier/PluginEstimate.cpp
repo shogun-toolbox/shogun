@@ -15,6 +15,7 @@
 #include "distributions/hmm/LinearHMM.h"
 #include "classifier/PluginEstimate.h"
 
+using namespace shogun;
 
 CPluginEstimate::CPluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
 : CClassifier(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10),

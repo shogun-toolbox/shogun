@@ -22,6 +22,8 @@
 #include <sys/sysctl.h>
 #endif
 
+namespace shogun
+{
 /** @brief Class Parallel provides helper functions for multithreading.
  *
  * For example it can be used to determine the number of CPU cores in your
@@ -87,4 +89,5 @@ private:
 	int32_t refcount;
 	int32_t num_threads;
 };
+}
 #endif

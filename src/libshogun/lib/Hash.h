@@ -44,6 +44,8 @@
 #include "base/SGObject.h"
 #include "lib/common.h"
 
+namespace shogun
+{
 /** @brief Collection of Hashing Functions
  *
  * This class implements a number of hashing functions like
@@ -136,4 +138,5 @@ class CHash : public CSGObject
 		 */
 		static void MD5Transform(uint32_t buf[4], uint32_t const in[16]);
 };
+}
 #endif

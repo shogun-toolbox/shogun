@@ -18,6 +18,8 @@
 #include "lib/common.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 #if defined(HAVE_MKL) || defined(HAVE_ACML) 
 #define DSYEV dsyev
 #define DGESVD dgesvd

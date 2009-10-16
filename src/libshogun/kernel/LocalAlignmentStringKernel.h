@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
+namespace shogun
+{
 #define LOGSUM_TBL 10000      /* span of the logsum table */
 
 /** @brief The LocalAlignmentString kernel compares two sequences through all
@@ -132,6 +134,5 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		/** scaled blosum */
 		int32_t* scaled_blosum;
 };
-
+}
 #endif /* _LOCALALIGNMENTSTRINGKERNEL_H__ */
-

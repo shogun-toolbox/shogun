@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+namespace shogun
+{
 class CFile;
 
 template <class ST> class CStringPreProc;
@@ -1769,4 +1771,5 @@ template<> 	inline void CStringFeatures<floatmax_t>::unembed_word(floatmax_t wor
 {
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+}
 #endif // _CSTRINGFEATURES__H__

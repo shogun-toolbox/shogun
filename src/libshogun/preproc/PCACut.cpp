@@ -25,6 +25,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CPCACut::CPCACut(int32_t do_whitening_, float64_t thresh_)
 : CSimplePreProc<float64_t>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
 	initialized(false), do_whitening(do_whitening_), thresh(thresh_)

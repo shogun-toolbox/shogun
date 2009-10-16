@@ -66,6 +66,8 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 #include <string.h>
 #include <limits.h>
 
+using namespace shogun;
+
 #define HISTORY_BUF 1000000
 
 #define MINUS_INF INT_MIN

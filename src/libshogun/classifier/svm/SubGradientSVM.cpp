@@ -21,6 +21,8 @@
 
 #undef DEBUG_SUBGRADIENTSVM
 
+using namespace shogun;
+
 CSubGradientSVM::CSubGradientSVM()
 : CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)

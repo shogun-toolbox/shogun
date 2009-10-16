@@ -16,6 +16,9 @@
 #include "features/DotFeatures.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
+
 template <class ST> class CStringFeatures;
 
 /** @brief Features that compute the Weighted Spectrum Kernel feature space
@@ -173,4 +176,5 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		/** weights for each of the subkernels of degree 1...d */
 		float64_t* spec_weights;
 };
+}
 #endif // _IMPLICITSPECFEATURES_H___

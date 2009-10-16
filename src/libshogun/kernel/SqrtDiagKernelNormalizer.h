@@ -14,6 +14,8 @@
 #include "kernel/KernelNormalizer.h"
 #include "kernel/CommWordStringKernel.h"
 
+namespace shogun
+{
 /** @brief SqrtDiagKernelNormalizer divides by the Square Root of the product of
  * the diagonal elements.
  *
@@ -140,5 +142,5 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		/** f optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };
-
+}
 #endif

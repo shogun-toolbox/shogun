@@ -35,6 +35,8 @@
 #include <stdio.h>
 #include <limits.h>
 
+namespace shogun
+{
 //#define DYNPROG_TIMING
 
 #ifdef USE_BIGSTATES
@@ -794,4 +796,5 @@ protected:
 	static bool sign_words_default[16];
 	static int32_t string_words_default[16];
 };
+}
 #endif

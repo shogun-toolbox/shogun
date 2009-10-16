@@ -21,6 +21,7 @@
 #include "features/Alphabet.h"
 #include "features/Labels.h"
 
+using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct wdocas_thread_params_output

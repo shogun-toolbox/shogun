@@ -15,6 +15,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+namespace shogun
+{
 /** @brief template class SimpleDistance */
 template <class ST> class CSimpleDistance : public CDistance
 {
@@ -102,4 +104,5 @@ template<> inline EFeatureType CSimpleDistance<uint8_t>::get_feature_type() { re
  */
 template<> inline EFeatureType CSimpleDistance<char>::get_feature_type() { return F_CHAR; }
 
+} // namespace shogun
 #endif

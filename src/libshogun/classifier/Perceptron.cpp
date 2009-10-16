@@ -12,6 +12,8 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CPerceptron::CPerceptron()
 : CLinearClassifier(), learn_rate(0.1), max_iter(1000)
 {

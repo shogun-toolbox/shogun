@@ -49,6 +49,8 @@
 #define pthread_mutex_unlock(x)
 #endif
 
+namespace shogun
+{
 class CIO;
 
 // define reference counter macros
@@ -207,4 +209,5 @@ public:
 	CParallel* parallel;
 	CVersion* version;
 };
+}
 #endif // __SGOBJECT_H__

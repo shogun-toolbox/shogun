@@ -23,6 +23,8 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+namespace shogun
+{
 /** @brief class GNPPLib, a Library of solvers for Generalized Nearest Point
  * Problem (GNPP).
  */
@@ -111,6 +113,5 @@ class CGNPPLib: public CSGObject
   CKernel* m_kernel;
 
 };
-
+}
 #endif // GNPPLIB_H__ 
-

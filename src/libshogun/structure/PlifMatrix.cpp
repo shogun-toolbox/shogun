@@ -3,6 +3,8 @@
 #include "structure/PlifArray.h"
 #include "structure/PlifBase.h"
 
+using namespace shogun;
+
 CPlifMatrix::CPlifMatrix() : m_PEN(NULL), m_num_plifs(0), m_num_limits(0),
 	m_plif_matrix(NULL), m_state_signals(NULL)
 {

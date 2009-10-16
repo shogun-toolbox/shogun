@@ -14,6 +14,8 @@
 #include "classifier/svm/LibSVM.h"
 #include "kernel/CombinedKernel.h"
 
+using namespace shogun;
+
 CMKL::CMKL(CSVM* s)
 	: CSVM(), svm(NULL), C_mkl(0), mkl_norm(1),
 	mkl_iterations(0), mkl_epsilon(1e-5), interleaved_optimization(true),

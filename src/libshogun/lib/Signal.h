@@ -11,19 +11,21 @@
 #ifndef __SIGNAL__H_
 #define __SIGNAL__H_
 
+#ifndef DISABLE_CANCEL_CALLBACK
+extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
+#endif
+
 #include "lib/config.h"
 #include "lib/ShogunException.h"
 #include "base/SGObject.h"
+#include "base/init.h"
 
 #ifndef WIN32
 #include <signal.h>
 #define NUMTRAPPEDSIGS 2
 
-
-#ifndef DISABLE_CANCEL_CALLBACK
-extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
-#endif
-
+namespace shogun
+{
 /** @brief Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
  * long running process.
  *
@@ -109,4 +111,5 @@ class CSignal : public CSGObject
 		static bool cancel_immediately;
 };
 #endif // WIN32
+}
 #endif // __SIGNAL__H_

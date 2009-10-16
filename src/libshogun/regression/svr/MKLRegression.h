@@ -13,6 +13,8 @@
 #include "lib/common.h"
 #include "classifier/mkl/MKL.h"
 
+namespace shogun
+{
 /** @brief Multiple Kernel Learning for regression
  * 
  * Performs support vector regression while learning kernel weights at the same
@@ -56,4 +58,5 @@ class CMKLRegression : public CMKL
 		 */
 		virtual float64_t compute_mkl_dual_objective();
 };
+}
 #endif //__MKLREGRESSION_H__

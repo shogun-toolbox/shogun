@@ -11,7 +11,10 @@
 #include "base/Version.h"
 #include "lib/versionstring.h"
 
+using namespace shogun;
 
+namespace shogun
+{
 const int32_t CVersion::version_revision = VERSION_REVISION;
 const int32_t CVersion::version_year = VERSION_YEAR;
 const int32_t CVersion::version_month = VERSION_MONTH;
@@ -20,6 +23,7 @@ const int32_t CVersion::version_hour = VERSION_HOUR;
 const int32_t CVersion::version_minute = VERSION_MINUTE;
 const char CVersion::version_extra[128] = VERSION_EXTRA;
 const char CVersion::version_release[128] = VERSION_RELEASE;
+}
 
 CVersion::CVersion() : refcount(0)
 {

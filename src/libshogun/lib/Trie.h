@@ -19,6 +19,8 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 // sentinel is 0xFFFFFFFC or float -2
@@ -2133,5 +2135,6 @@ void CTrie<Trie>::fill_backtracking_table(
 			//SG_PRINT("entry[%d]: str:0%0llx sc:%f bt:%d\n",i, entry.string,entry.score,entry.bt);
 		}
 	}
+}
 }
 #endif // _TRIE_H___

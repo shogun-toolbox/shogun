@@ -16,7 +16,8 @@
 #include "lib/common.h"
 
 #include <stdio.h>
-
+namespace shogun
+{
 /** @brief Preprocessor NormDerivativeLem3, performs the normalization used in Lemma3
  * in Jaakola Hausslers Fischer Kernel paper <b>currently not implemented</b>*/
 class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
@@ -44,4 +45,5 @@ class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
 		/// result in feature matrix
 		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t len);
 };
+}
 #endif

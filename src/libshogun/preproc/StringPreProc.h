@@ -16,6 +16,8 @@
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 
+namespace shogun
+{
 template <class ST> class CStringFeatures;
 
 /** @brief Template class StringPreProc, base class for preprocessors (cf.
@@ -68,5 +70,5 @@ template<> inline EFeatureType CStringPreProc<char>::get_feature_type()
 {
 	return F_CHAR;
 }
-
+}
 #endif

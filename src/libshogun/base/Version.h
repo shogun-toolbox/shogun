@@ -18,6 +18,8 @@
 #ifndef VERSION_H__
 #define VERSION_H__
 
+namespace shogun
+{
 class CIO;
 
 /** @brief Class Version provides version information.
@@ -125,4 +127,5 @@ protected:
 private:
 	int32_t refcount;
 };
+}
 #endif

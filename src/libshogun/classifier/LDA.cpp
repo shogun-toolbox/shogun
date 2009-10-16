@@ -18,6 +18,8 @@
 #include "lib/Mathematics.h"
 #include "lib/lapack.h"
 
+using namespace shogun;
+
 CLDA::CLDA(float64_t gamma)
 : CLinearClassifier(), m_gamma(gamma)
 {

@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class Tanimoto coefficient 
  *
  * The Tanimoto distance/coefficient (extended Jaccard coefficient)
@@ -73,5 +75,5 @@ class CTanimotoDistance: public CSimpleDistance<float64_t>
 		/// in the corresponding feature object
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
-
+} // namespace shogun
 #endif /* _TANIMOTODISTANCE_H___ */

@@ -19,6 +19,9 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
+
 /** @brief A generic DistanceMachine interface.
  *
  * A distance machine is based on a a-priori choosen distance.
@@ -51,4 +54,5 @@ class CDistanceMachine : public CClassifier
 		/** the distance */
 		CDistance* distance;
 };
+}
 #endif

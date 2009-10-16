@@ -19,6 +19,8 @@
 
 #include "classifier/KernelMachine.h"
 
+namespace shogun
+{
 /** @brief Class KRR implements Kernel Ridge Regression - a regularized least square
  * method for classification and regression.
  *
@@ -135,7 +137,6 @@ class CKRR : public CKernelMachine
 		/** regularization parameter tau */
 		float64_t tau;
 };
-
+}
 #endif // HAVE_LAPACK
-
 #endif // _KRR_H__

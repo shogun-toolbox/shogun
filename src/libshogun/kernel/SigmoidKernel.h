@@ -15,6 +15,8 @@
 #include "kernel/SimpleKernel.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief The standard Sigmoid kernel computed on dense real valued features.
  *
  * Formally, it is computed as
@@ -87,5 +89,5 @@ class CSigmoidKernel: public CSimpleKernel<float64_t>
 		/** coefficient 0 */
 		float64_t coef0;
 };
-
+}
 #endif /* _SIGMOIDKERNEL_H__ */

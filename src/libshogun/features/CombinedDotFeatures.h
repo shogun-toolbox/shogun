@@ -16,6 +16,8 @@
 #include "features/DotFeatures.h"
 #include "features/Features.h"
 
+namespace shogun
+{
 /** @brief Features that allow stacking of a number of DotFeatures.
  *
  * They transparently provide all the operations of DotFeatures, i.e.
@@ -268,4 +270,5 @@ class CCombinedDotFeatures : public CDotFeatures
 		/// total number of dimensions
 		int32_t num_dimensions;
 };
+}
 #endif // _DOTFEATURES_H___

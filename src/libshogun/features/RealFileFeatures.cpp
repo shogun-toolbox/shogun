@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <string.h>
 
+using namespace shogun;
+
 CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
 : CSimpleFeatures<float64_t>(size)
 {

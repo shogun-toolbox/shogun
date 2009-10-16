@@ -14,6 +14,8 @@
 #include "kernel/LinearStringKernel.h"
 #include "features/StringFeatures.h"
 
+using namespace shogun;
+
 CLinearStringKernel::CLinearStringKernel()
 : CStringKernel<char>(0), normal(NULL)
 {

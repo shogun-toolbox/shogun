@@ -16,6 +16,9 @@
 #include "lib/DynamicArray.h"
 #include "structure/PlifBase.h"
 
+namespace shogun
+{
+
 /** @brief class PlifArray */
 class CPlifArray: public CPlifBase
 {
@@ -127,5 +130,5 @@ class CPlifArray: public CPlifBase
 		/** minimum value */
 		float64_t min_value;
 };
-
+}
 #endif

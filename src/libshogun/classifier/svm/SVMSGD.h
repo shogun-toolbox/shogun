@@ -27,6 +27,8 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
+namespace shogun
+{
 /** @brief class SVMSGD */
 class CSVMSGD : public CLinearClassifier
 {
@@ -140,4 +142,5 @@ class CSVMSGD : public CLinearClassifier
 		bool use_bias;
 		bool use_regularized_bias;
 };
+}
 #endif

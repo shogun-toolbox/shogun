@@ -55,7 +55,7 @@ struct data
 	int32_t nz;
 
 	/** features */
-	CDotFeatures* features;
+	shogun::CDotFeatures* features;
 	/** labels */
 	float64_t *Y;
 	/** cost associated with each example */

@@ -16,6 +16,8 @@
 #include "lib/DynamicArray.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 /** @brief Template Set class 
  *
  * Lazy implementation of a set. Set grows and shrinks dynamically and can be
@@ -109,5 +111,5 @@ template <class T> class CSet : public CSGObject
 		/** dynamic array the set is based on */
 		CDynamicArray<T>* array;
 };
-
+}
 #endif //_SET_H_

@@ -16,6 +16,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CSigmoidKernel::CSigmoidKernel(int32_t size, float64_t g, float64_t c)
 : CSimpleKernel<float64_t>(size),gamma(g), coef0(c)
 {

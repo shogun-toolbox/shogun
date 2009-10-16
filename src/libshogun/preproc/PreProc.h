@@ -14,8 +14,11 @@
 
 #include "lib/common.h"
 #include "base/SGObject.h"
+#include "features/FeatureTypes.h"
+#include "features/Features.h"
 
-
+namespace shogun
+{
 enum EPreProcType
 {
 	P_UNKNOWN=0,
@@ -27,10 +30,7 @@ enum EPreProcType
 	P_PRUNEVARSUBMEAN=60
 };
 
-
-#include "features/Features.h"
 class CFeatures;
-
 
 /** @brief Class PreProc defines a preprocessor interface.
  *
@@ -90,4 +90,5 @@ public:
 	/** preprocessor id */
 	const char* preproc_id;
 };
+}
 #endif

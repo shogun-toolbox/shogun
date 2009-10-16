@@ -15,6 +15,8 @@
 #include "base/SGObject.h"
 #include "lib/Array.h"
 
+namespace shogun
+{
 template <class T> class CArray3;
 
 /** @brief Template class Array3 implements a dense three dimensional array.
@@ -313,4 +315,5 @@ template <class T> class CArray3: public CArray<T>
 		/** size of array's dimension 3 */
 		int32_t dim3_size;
 };
+}
 #endif

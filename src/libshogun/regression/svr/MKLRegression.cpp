@@ -4,6 +4,8 @@
 #include "regression/svr/SVR_light.h"
 #endif //USE_SVMLIGHT
 
+using namespace shogun;
+
 CMKLRegression::CMKLRegression(CSVM* s) : CMKL(s)
 {
 	if (!s)

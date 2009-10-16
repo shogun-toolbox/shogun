@@ -31,6 +31,8 @@ extern "C" {
 }
 #endif
 
+using namespace shogun;
+
 #define PREDICTOR 1
 #define CORRECTOR 2
 

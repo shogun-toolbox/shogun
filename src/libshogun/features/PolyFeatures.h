@@ -13,6 +13,8 @@
 #include "features/SimpleFeatures.h"
 
 
+namespace shogun
+{
 /** @brief implement DotFeatures for the polynomial kernel
  *
  * see DotFeatures for further discription
@@ -201,3 +203,4 @@ class CPolyFeatures : public CDotFeatures
 		float32_t* m_normalization_values; 
 
 };
+}

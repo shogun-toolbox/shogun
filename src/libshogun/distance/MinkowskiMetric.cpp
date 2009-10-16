@@ -15,6 +15,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CMinkowskiMetric::CMinkowskiMetric(float64_t k_)
 : CSimpleDistance<float64_t>(), k(k_)
 {

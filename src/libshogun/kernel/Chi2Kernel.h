@@ -16,6 +16,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief The Chi2 kernel operating on realvalued vectors computes
  * the chi-squared distance between sets of histograms.
  *
@@ -84,7 +86,5 @@ class CChi2Kernel: public CSimpleKernel<float64_t>
 		/** width */
 		float64_t width;
 };
-
+}
 #endif /* _CHI2KERNEL_H__ */
-
-

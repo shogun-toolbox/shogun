@@ -20,6 +20,8 @@
 BOOST_CLASS_EXPORT(CLabels);
 #endif //HAVE_BOOST_SERIALIZATION
 
+using namespace shogun;
+
 CLabels::CLabels()
 : CSGObject()
 {

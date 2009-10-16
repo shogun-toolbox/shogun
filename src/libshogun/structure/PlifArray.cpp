@@ -20,6 +20,8 @@
 
 //#define PLIFARRAY_DEBUG
 
+using namespace shogun;
+
 CPlifArray::CPlifArray()
 : CPlifBase()
 {

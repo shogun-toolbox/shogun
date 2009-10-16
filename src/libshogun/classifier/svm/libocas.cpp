@@ -29,6 +29,8 @@
 #include "classifier/svm/libocas_common.h"
 #include "classifier/svm/qpssvmlib.h"
 
+using namespace shogun;
+
 static const uint32_t QPSolverMaxIter = 10000000;
 
 static float64_t *H;

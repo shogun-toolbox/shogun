@@ -15,6 +15,9 @@
 #include "lib/Mathematics.h"
 #include "structure/PlifBase.h"
 
+namespace shogun
+{
+
 enum ETransformType
 {
 	T_LINEAR,
@@ -455,6 +458,5 @@ class CPlif: public CPlifBase
 		 *  else: lookup_penalty returns the p_value untransformed*/
 		bool do_calc;
 };
-
-
+}
 #endif

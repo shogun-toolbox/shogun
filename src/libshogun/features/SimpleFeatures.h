@@ -23,6 +23,8 @@
 
 #include <string.h>
 
+namespace shogun
+{
 template <class ST> class CStringFeatures;
 template <class ST> class CSimpleFeatures;
 template <class ST> class CSimplePreProc;
@@ -1153,4 +1155,5 @@ template<> inline float64_t CSimpleFeatures<floatmax_t>:: dense_dot(int32_t vec_
 	return result;
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+}
 #endif // _SIMPLEFEATURES__H__

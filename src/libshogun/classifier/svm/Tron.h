@@ -6,6 +6,8 @@
 #ifdef HAVE_LAPACK
 #include "base/SGObject.h"
 
+namespace shogun
+{
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** class function */
 class function
@@ -81,6 +83,6 @@ private:
 	int32_t max_iter;
 	function *fun_obj;
 };
-
+}
 #endif
 #endif //HAVE_LAPACK

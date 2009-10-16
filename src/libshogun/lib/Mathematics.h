@@ -116,10 +116,10 @@ template <class T1, class T2> struct thread_qsort
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-class CSGObject;
-
 /** @brief Class which collects generic mathematical functions
  */
+namespace shogun
+{
 class CMath : public CSGObject
 {
 	public:
@@ -1469,5 +1469,6 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 	}
 	swap(output[0], output[min_index]);
 	swap(index[0], index[min_index]);
+}
 }
 #endif

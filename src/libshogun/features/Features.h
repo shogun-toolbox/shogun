@@ -9,60 +9,21 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-
 #ifndef _CFEATURES__H__
 #define _CFEATURES__H__
 
 #include "lib/common.h"
 #include "base/SGObject.h"
-
-/// shogun feature type
-enum EFeatureType
-{
-	F_UNKNOWN = 0,
-	F_BOOL = 5,
-	F_CHAR = 10,
-	F_BYTE = 20,
-	F_SHORT = 30,
-	F_WORD = 40,
-	F_INT = 50,
-	F_UINT = 60,
-	F_LONG = 70,
-	F_ULONG = 80,
-	F_SHORTREAL = 90,
-	F_DREAL = 100,
-	F_LONGREAL = 110,
-	F_ANY = 1000
-};
-
-/// shogun feature class
-enum EFeatureClass
-{
-	C_UNKNOWN = 0,
-	C_SIMPLE = 10,
-	C_SPARSE = 20,
-	C_STRING = 30,
-	C_COMBINED = 40,
-	C_COMBINED_DOT = 60,
-	C_WD = 70,
-	C_SPEC = 80,
-	C_WEIGHTEDSPEC = 90,
-	C_POLY = 100,
-	C_ANY = 1000
-};
-
-/// shogun feature properties
-enum EFeatureProperty
-{
-	FP_NONE = 0,
-	FP_DOT = 1
-};
-
-
 #include "preproc/PreProc.h"
-class CPreProc;
-class CFeatures;
+#include "features/FeatureTypes.h"
 
+namespace shogun
+{
+	class CPreProc;
+}
+
+namespace shogun
+{
 
 /** @brief The class Features is the base class of all feature objects.
  *
@@ -329,5 +290,5 @@ class CFeatures : public CSGObject
 		/// i'th entry is true if features were already preprocessed with preproc i
 		bool* preprocessed;
 };
+}
 #endif
-

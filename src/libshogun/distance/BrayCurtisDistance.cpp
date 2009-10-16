@@ -15,6 +15,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CBrayCurtisDistance::CBrayCurtisDistance()
 : CSimpleDistance<float64_t>()
 {

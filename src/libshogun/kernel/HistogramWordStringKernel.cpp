@@ -16,6 +16,8 @@
 #include "classifier/PluginEstimate.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie)
 : CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),

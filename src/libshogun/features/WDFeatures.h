@@ -15,6 +15,8 @@
 #include "features/DotFeatures.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 template <class ST> class CStringFeatures;
 
 /** @brief Features that compute the Weighted Degreee Kernel feature space
@@ -154,4 +156,5 @@ class CWDFeatures : public CDotFeatures
 		/** wd weights */
 		float64_t* wd_weights;
 };
+}
 #endif // _WDFEATURES_H___

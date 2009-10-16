@@ -16,6 +16,8 @@
 #include "features/DotFeatures.h"
 #include "classifier/LinearClassifier.h"
 
+namespace shogun
+{
 /** @brief Class Perceptron implements the standard linear (online) perceptron.
  *
  * Given a maximum number of iterations (the standard perceptron algorithm is
@@ -76,4 +78,5 @@ class CPerceptron : public CLinearClassifier
 		/** maximum number of iterations */
 		int32_t max_iter;
 };
+}
 #endif

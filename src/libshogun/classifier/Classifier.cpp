@@ -16,6 +16,7 @@
 BOOST_IS_ABSTRACT(CClassifier);
 #endif //HAVE_BOOST_SERIALIZATION
 
+using namespace shogun;
 
 CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL),
 	solver_type(ST_AUTO)

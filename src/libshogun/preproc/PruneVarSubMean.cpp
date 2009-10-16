@@ -16,6 +16,8 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
 : CSimplePreProc<float64_t>("PruneVarSubMean","PVSM"), idx(NULL), mean(NULL),
 	std(NULL), num_idx(0), divide_by_std(divide), initialized(false)

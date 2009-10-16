@@ -15,6 +15,8 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparseKernel.h"
 
+using namespace shogun;
+
 CSparseLinearKernel::CSparseLinearKernel()
 : CSparseKernel<float64_t>(0), normal(NULL), normal_length(0)
 {

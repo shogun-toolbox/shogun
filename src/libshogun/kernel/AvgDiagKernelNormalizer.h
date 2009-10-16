@@ -12,7 +12,8 @@
 #define _AVGDIAGKERNELNORMALIZER_H___
 
 #include "kernel/KernelNormalizer.h"
-
+namespace shogun
+{
 /** @brief Normalize the kernel by either a constant or the average value of the
  * diagonal elements (depending on argument c of the constructor).
  *
@@ -108,5 +109,5 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		/// the constant scaling factor (avg of diagonal or user given const)
 		float64_t scale;
 };
-
+}
 #endif

@@ -15,6 +15,8 @@
 #include "features/SimpleFeatures.h"
 #include "distributions/hmm/HMM.h"
 
+namespace shogun
+{
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** HMM indices */
 struct T_HMM_INDIZES
@@ -142,4 +144,5 @@ class CTOPFeatures : public CSimpleFeatures<float64_t>
 		/** negative relevant indices */
 		T_HMM_INDIZES neg_relevant_indizes;
 };
+}
 #endif

@@ -16,7 +16,8 @@
 #include "lib/common.h"
 
 #include <stdio.h>
-
+namespace shogun
+{
 /** @brief Preprocessor SortUlongString, sorts the indivual strings in ascending order.
  *
  * This is useful in conjunction with the CCommUlongStringKernel and will result
@@ -57,4 +58,5 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() { return "SortUlongString"; }
 };
+}
 #endif

@@ -15,6 +15,8 @@
 #include "features/Features.h"
 #include "lib/List.h"
 
+namespace shogun
+{
 class CFeatures;
 
 /** @brief The class CombinedFeatures is used to combine a number of of feature objects
@@ -213,4 +215,5 @@ class CCombinedFeatures : public CFeatures
 		 */
 		int32_t num_vec;
 };
+}
 #endif

@@ -10,7 +10,6 @@
 
 #include "base/SGObject.h"
 #include "lib/io.h"
-#include "lib/Mathematics.h"
 #include "base/Parallel.h"
 #include "base/init.h"
 #include "base/Version.h"
@@ -24,11 +23,20 @@
 BOOST_IS_ABSTRACT(CSGObject);
 #endif //HAVE_BOOST_SERIALIZATION
 
+namespace shogun
+{
+	class CMath;
+	class CParallel;
+	class CIO;
+	class CVersion;
+}
 
-extern CParallel* sg_parallel;
-extern CIO* sg_io;
-extern CVersion* sg_version;
-extern CMath* sg_math;
+extern shogun::CMath* sg_math;
+extern shogun::CParallel* sg_parallel;
+extern shogun::CIO* sg_io;
+extern shogun::CVersion* sg_version;
+
+using namespace shogun;
 
 void CSGObject::set_global_objects()
 {

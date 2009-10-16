@@ -15,6 +15,8 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CPyramidChi2::CPyramidChi2(
 	int32_t size, float64_t width2, int32_t* pyramidlevels2,int32_t
 	numlevels2, int32_t  numbinsinhistogram2, float64_t* weights2,

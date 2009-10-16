@@ -17,6 +17,8 @@
 #include "features/StringFeatures.h"
 #include "distance/StringDistance.h"
 
+namespace shogun
+{
 /** @brief class HammingWordDistance */
 class CHammingWordDistance: public CStringDistance<uint16_t>
 {
@@ -84,4 +86,5 @@ class CHammingWordDistance: public CStringDistance<uint16_t>
 		/** if sign shall be used */
 		bool use_sign;
 };
+} // namespace shogun
 #endif /* _HAMMINGWORDDISTANCE_H___ */

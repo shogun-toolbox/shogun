@@ -17,6 +17,8 @@
 #include "lib/Array3.h"
 
                    
+namespace shogun
+{
 /** @brief class IntronList */   
 class CSegmentLoss : public CSGObject
 {                         
@@ -173,6 +175,5 @@ inline float32_t CSegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t
 
 	return diff_contrib;
 }
-
+}
 #endif                 
-

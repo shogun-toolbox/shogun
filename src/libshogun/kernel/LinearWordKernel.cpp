@@ -14,6 +14,8 @@
 #include "kernel/LinearWordKernel.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CLinearWordKernel::CLinearWordKernel()
 : CSimpleKernel<uint16_t>(0), normal(NULL)
 {

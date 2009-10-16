@@ -16,6 +16,8 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
+namespace shogun
+{
 /** @brief The Custom Kernelallows for custom user provided kernel matrices.
  *
  * For squared training matrices it allows to store only the upper triangle of
@@ -193,4 +195,5 @@ class CCustomKernel: public CKernel
 		/** upper diagonal */
 		bool upper_diagonal;
 };
+}
 #endif /* _CUSTOMKERNEL_H__ */

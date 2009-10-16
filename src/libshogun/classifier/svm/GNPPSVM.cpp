@@ -12,6 +12,7 @@
 #include "classifier/svm/GNPPSVM.h"
 #include "classifier/svm/gnpplib.h"
 
+using namespace shogun;
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW)) 
 
 CGNPPSVM::CGNPPSVM()

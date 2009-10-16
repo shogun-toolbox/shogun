@@ -14,6 +14,8 @@
 #include "distance/SimpleDistance.h"
 #include "lib/common.h"
 
+namespace shogun
+{
 /** @brief class RealDistance */
 class CRealDistance : public CSimpleDistance<float64_t>
 {
@@ -43,4 +45,5 @@ class CRealDistance : public CSimpleDistance<float64_t>
 		 */
 		inline virtual EFeatureType get_feature_type() { return F_DREAL; }
 };
+} // namespace shogun
 #endif

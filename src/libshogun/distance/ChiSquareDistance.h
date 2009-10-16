@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class ChiSquareDistance
  *
  * This implementation of \f$\chi^{2}\f$ distance extends the
@@ -72,4 +74,5 @@ class CChiSquareDistance: public CSimpleDistance<float64_t>
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
+} // namespace shogun
 #endif /* _CHISQUAREDISTANCE_H___ */

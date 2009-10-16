@@ -15,6 +15,8 @@
 #include "kernel/SimpleKernel.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief The well known Gaussian kernel (swiss army knife for SVMs)
  * on dense real valued features.
  *
@@ -103,5 +105,5 @@ class CGaussianKernel: public CSimpleKernel<float64_t>
 		/** width */
 		float64_t width;
 };
-
+}
 #endif /* _GAUSSIANKERNEL_H__ */

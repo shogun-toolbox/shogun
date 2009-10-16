@@ -18,6 +18,8 @@
 
 //#define PLIF_DEBUG
 
+using namespace shogun;
+
 CPlif::CPlif(int32_t l)
 : CPlifBase()
 {

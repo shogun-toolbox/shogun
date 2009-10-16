@@ -17,6 +17,8 @@
 #include "lib/common.h"
 #include "classifier/LinearClassifier.h"
 
+namespace shogun
+{
 enum LIBLINEAR_LOSS
 {
 	LR = 0,
@@ -120,5 +122,6 @@ class CLibLinear : public CLinearClassifier
 		/** loss */
 		LIBLINEAR_LOSS loss;
 };
+}
 #endif //HAVE_LAPACK
 #endif //_LIBLINEAR_H___

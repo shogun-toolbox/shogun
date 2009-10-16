@@ -17,6 +17,8 @@
 #include "features/StringFeatures.h"
 #include "distance/StringDistance.h"
 
+namespace shogun
+{
 /**@brief class CanberraWordDistance */
 class CCanberraWordDistance: public CStringDistance<uint16_t>
 {
@@ -78,4 +80,5 @@ class CCanberraWordDistance: public CStringDistance<uint16_t>
 		/** dictionary weights */
 		float64_t* dictionary_weights;
 };
+} // namespace shogun
 #endif /* _CANBERRAWORDDISTANCE_H___ */

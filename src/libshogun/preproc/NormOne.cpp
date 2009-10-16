@@ -14,6 +14,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CNormOne::CNormOne()
 : CSimplePreProc<float64_t>("NormOne", "NRM1")
 {

@@ -16,6 +16,9 @@
 #include "kernel/Kernel.h"
 #include "classifier/KernelMachine.h"
 
+namespace shogun
+{
+
 class CMKL;
 
 /** @brief A generic Support Vector Machine Interface.
@@ -310,4 +313,5 @@ class CSVM : public CKernelMachine
 		 * function */
 		CMKL* mkl;
 };
+}
 #endif

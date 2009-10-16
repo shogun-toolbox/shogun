@@ -41,6 +41,8 @@
 #include "lib/common.h"
 #include "lib/Hash.h"
 
+using namespace shogun;
+
 uint32_t CHash::crc32(uint8_t *data, int32_t len)
 {
 	uint32_t result;

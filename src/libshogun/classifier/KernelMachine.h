@@ -12,12 +12,15 @@
 #define _KERNEL_MACHINE_H__
 
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/Kernel.h"
 #include "features/Labels.h"
 #include "classifier/Classifier.h"
 
 #include <stdio.h>
 
+namespace shogun
+{
 class CClassifier;
 
 /** @brief A generic KernelMachine interface.
@@ -418,5 +421,5 @@ class CKernelMachine : public CClassifier
 		/** number of ``support vectors'' */
 		int32_t num_svs;
 };
-
+}
 #endif /* _KERNEL_MACHINE_H__ */

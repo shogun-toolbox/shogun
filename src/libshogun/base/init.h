@@ -35,7 +35,6 @@ void init_shogun(void (*print_message)(FILE* target, const char* str) = NULL,
  * perform a number of cleanups */
 void exit_shogun();
 
-
 /// function called to print normal messages
 extern void (*sg_print_message)(FILE* target, const char* str);
 
@@ -47,5 +46,4 @@ extern void (*sg_print_error)(FILE* target, const char* str);
 
 /// function called to cancel things
 extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
-
 #endif //__SG_INIT__

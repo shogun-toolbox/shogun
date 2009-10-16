@@ -16,6 +16,8 @@
 #include "features/Labels.h"
 #include "distributions/Distribution.h"
 
+namespace shogun
+{
 /** @brief The class LinearHMM is for learning Higher Order Markov chains.
  *
  * While learning the parameters \f${\bf \theta}\f$ in
@@ -220,4 +222,5 @@ class CLinearHMM : public CDistribution
 		/** logarithm of transition probs */
 		float64_t* log_transition_probs;
 };
+}
 #endif

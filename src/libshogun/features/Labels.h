@@ -16,6 +16,8 @@
 #include "lib/io.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 /** @brief The class Labels models labels, i.e. class assignments of objects.
  *
  * Labels here are always real-valued and thus applicable to classification
@@ -264,11 +266,7 @@ class CLabels : public CSGObject
             ia >> *this;
 
         }
-
-
-
 #endif //HAVE_BOOST_SERIALIZATION
-
 
 	protected:
 		/** number of labels */
@@ -276,4 +274,5 @@ class CLabels : public CSGObject
 		/** the labels */
 		float64_t* labels;
 };
+}
 #endif

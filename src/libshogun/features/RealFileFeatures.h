@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief The class RealFileFeatures implements a dense double-precision floating
  * point matrix <b>from a file</b>.
  *
@@ -118,4 +120,5 @@ class CRealFileFeatures: public CSimpleFeatures<float64_t>
 		/** filepos */
 		int64_t filepos;
 };
+}
 #endif

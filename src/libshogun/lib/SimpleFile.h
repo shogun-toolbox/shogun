@@ -18,6 +18,8 @@
 #include <string.h>
 #include <sys/mman.h>
 
+namespace shogun
+{
 /** @brief Template class SimpleFile to read and write from files.
  *
  * Currently only simple reading and writing of blocks is supported. 
@@ -212,4 +214,5 @@ template <class T> class CSimpleFile : public CSGObject
 		/** line buffer */
 		char* line_buffer;
 };
+}
 #endif

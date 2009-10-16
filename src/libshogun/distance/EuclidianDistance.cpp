@@ -14,6 +14,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CEuclidianDistance::CEuclidianDistance()
 : CRealDistance()
 {

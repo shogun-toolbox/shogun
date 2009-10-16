@@ -7,6 +7,8 @@
 #include "lib/io.h"
 #include "structure/IntronList.h"
 
+using namespace shogun;
+
 CIntronList::CIntronList()
 :CSGObject()
 {

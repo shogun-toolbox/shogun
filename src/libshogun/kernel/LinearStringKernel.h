@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
+namespace shogun
+{
 /** @brief Computes the standard linear kernel on dense char valued features.
  *
  * Formally, it computes
@@ -115,5 +117,5 @@ class CLinearStringKernel: public CStringKernel<char>
 		/** normal vector (used in case of optimized kernel) */
 		float64_t* normal;
 };
-
+}
 #endif /* _LINEARSTRINGKERNEL_H___ */

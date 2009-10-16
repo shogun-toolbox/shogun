@@ -15,6 +15,8 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
+using namespace shogun;
+
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(int32_t size, int32_t d, bool i)
 : CStringKernel<uint16_t>(size),degree(d),inhomogene(i)
 {

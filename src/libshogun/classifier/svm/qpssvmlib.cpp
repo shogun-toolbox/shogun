@@ -77,6 +77,7 @@ Inputs/Outputs:
 #include "classifier/svm/libocas_common.h"
 #include "classifier/svm/qpssvmlib.h"
 
+using namespace shogun;
 /* --------------------------------------------------------------
  QPSSVM solver 
 

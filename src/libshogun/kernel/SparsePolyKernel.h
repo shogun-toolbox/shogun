@@ -15,6 +15,8 @@
 #include "kernel/SparseKernel.h"
 #include "features/SparseFeatures.h"
 
+namespace shogun
+{
 /** @brief Computes the standard polynomial kernel on sparse real valued features.
  *
  * Formally, it computes
@@ -99,5 +101,5 @@ class CSparsePolyKernel: public CSparseKernel<float64_t>
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
 };
-
+}
 #endif /* _SPARSEPOLYKERNEL_H__ */

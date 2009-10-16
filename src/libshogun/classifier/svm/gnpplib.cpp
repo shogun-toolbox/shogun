@@ -21,6 +21,8 @@
 #include "classifier/svm/gnpplib.h"
 #include "kernel/Kernel.h"
 
+using namespace shogun;
+
 #define HISTORY_BUF 1000000
 
 #define MINUS_INF INT_MIN
@@ -706,6 +708,3 @@ float64_t* CGNPPLib::get_col(int64_t a, int64_t b)
 
   return( col_ptr );
 }
-
-
-

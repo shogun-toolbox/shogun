@@ -15,13 +15,16 @@
 #include "features/Features.h"
 #include "classifier/svm/SVM.h"
 
-class CSVM;
+namespace shogun
+{
 
 enum EMultiClassSVM
 {
 	ONE_VS_REST,
 	ONE_VS_ONE,
 };
+
+class CSVM;
 
 /** @brief class MultiClassSVM */
 class CMultiClassSVM : public CSVM
@@ -144,4 +147,5 @@ class CMultiClassSVM : public CSVM
 		/** the SVMs */
 		CSVM** m_svms;
 };
+}
 #endif

@@ -18,6 +18,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** @brief MCSVM */
 class CMCSVM : public CMultiClassSVM
 {
@@ -83,4 +85,5 @@ class CMCSVM : public CMultiClassSVM
 		/** MCSVM rho */
 		float64_t rho;
 };
+}
 #endif // MCSVM

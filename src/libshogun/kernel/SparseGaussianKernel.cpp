@@ -14,6 +14,8 @@
 #include "features/Features.h"
 #include "features/SparseFeatures.h"
 
+using namespace shogun;
+
 CSparseGaussianKernel::CSparseGaussianKernel(int32_t size, float64_t w)
 : CSparseKernel<float64_t>(size), width(w), sq_lhs(NULL), sq_rhs(NULL)
 {

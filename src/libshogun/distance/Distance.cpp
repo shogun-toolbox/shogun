@@ -27,6 +27,8 @@
 #include <pthread.h>
 #endif
 
+using namespace shogun;
+
 CDistance::CDistance()
 : CSGObject(), precomputed_matrix(NULL), precompute_matrix(false),
 	lhs(NULL), rhs(NULL)

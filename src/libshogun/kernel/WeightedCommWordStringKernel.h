@@ -16,6 +16,8 @@
 #include "lib/Mathematics.h"
 #include "kernel/CommWordStringKernel.h"
 
+namespace shogun
+{
 class CCommWordStringKernel;
 
 /** @brief The WeightedCommWordString kernel may be used to compute the weighted
@@ -161,5 +163,5 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		/** weights for each of the subkernels of degree 1...d */
 		float64_t* weights;
 };
-
+}
 #endif /* _WEIGHTEDCOMMWORDSTRINGKERNEL_H__ */

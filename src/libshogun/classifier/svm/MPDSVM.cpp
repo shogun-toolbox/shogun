@@ -13,6 +13,8 @@
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CMPDSVM::CMPDSVM()
 : CSVM()
 {

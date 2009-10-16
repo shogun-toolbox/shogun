@@ -19,6 +19,8 @@
 #include "features/Features.h"
 #include "features/CombinedFeatures.h"
 
+namespace shogun
+{
 /**
  * @brief The Combined kernel is used to combine a number of kernels into a
  * single CombinedKernel object by linear combination.
@@ -462,5 +464,5 @@ class CCombinedKernel : public CKernel
 		/** whether kernel is ready to be used */
 		bool initialized;
 };
-
+}
 #endif /* _COMBINEDKERNEL_H__ */

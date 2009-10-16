@@ -15,6 +15,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(int32_t size, int32_t d)
 : CStringKernel<char>(size), degree(d)
 {

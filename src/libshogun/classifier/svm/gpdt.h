@@ -69,6 +69,8 @@
  ******************************************************************************/
 #include "kernel/Kernel.h"
 
+using namespace shogun;
+
 #define MAXLENGTH 256
 #define cachetype KERNELCACHE_ELEM
 #define EPS_SV    1.0e-9   /* precision for multipliers */
@@ -117,7 +119,7 @@ public:
    * @param k kernel
    * @param ell ell
    */
-  sKernel (CKernel* k, int32_t ell);
+  sKernel (shogun::CKernel* k, int32_t ell);
   ~sKernel();
 
   /** set data

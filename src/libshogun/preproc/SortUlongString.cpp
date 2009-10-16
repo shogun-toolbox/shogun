@@ -14,6 +14,8 @@
 #include "features/StringFeatures.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CSortUlongString::CSortUlongString()
 : CStringPreProc<uint64_t>("SortUlongString", "STUS")
 {

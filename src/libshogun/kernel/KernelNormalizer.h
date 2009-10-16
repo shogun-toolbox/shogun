@@ -11,9 +11,11 @@
 #ifndef _KERNELNORMALIZER_H___
 #define _KERNELNORMALIZER_H___
 
-class CKernel;
 #include "kernel/Kernel.h"
 
+namespace shogun
+{
+class CKernel;
 /** @brief The class Kernel Normalizer defines a function to postprocess kernel values. 
  *
  * Formally it defines f(.,.,.)
@@ -69,4 +71,5 @@ class CKernelNormalizer : public CSGObject
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)=0;
 };
+}
 #endif

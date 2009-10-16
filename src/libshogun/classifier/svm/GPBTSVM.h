@@ -16,6 +16,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** @brief class GPBTSVM */
 class CGPBTSVM : public CSVM
 {
@@ -55,4 +57,5 @@ class CGPBTSVM : public CSVM
 		/** SVM model */
 		struct svm_model* model;
 };
+}
 #endif

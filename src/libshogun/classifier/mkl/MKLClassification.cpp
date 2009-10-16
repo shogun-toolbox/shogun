@@ -4,6 +4,8 @@
 #endif //USE_SVMLIGHT
 #include "classifier/svm/LibSVM.h"
 
+using namespace shogun;
+
 CMKLClassification::CMKLClassification(CSVM* s) : CMKL(s)
 {
 	if (!s)

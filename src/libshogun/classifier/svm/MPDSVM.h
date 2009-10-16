@@ -14,6 +14,8 @@
 #include "classifier/svm/SVM.h"
 #include "lib/Cache.h"
 
+namespace shogun
+{
 /** @brief class MPDSVM */
 class CMPDSVM : public CSVM
 {
@@ -100,5 +102,5 @@ class CMPDSVM : public CSVM
 		/** kernel cache */
 		CCache<KERNELCACHE_ELEM>* kernel_cache;
 };
-
+}
 #endif  /* _MPDSVM_H___ */

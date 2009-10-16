@@ -18,7 +18,8 @@
 #include "classifier/svm/SVM_libsvm.h"
 #include "regression/Regression.h"
 
-
+namespace shogun
+{
 /** @brief Class LibSVR, performs support vector regression using LibSVM.
  *
  * The SVR solution can be expressed as 
@@ -90,5 +91,5 @@ class CLibSVR : public CSVM
 		/** SVM model */
 		struct svm_model* model;
 };
+}
 #endif
-

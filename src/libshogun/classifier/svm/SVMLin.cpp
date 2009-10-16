@@ -16,6 +16,8 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
+using namespace shogun;
+
 CSVMLin::CSVMLin()
 : CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
 {

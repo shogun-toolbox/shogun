@@ -11,6 +11,8 @@
 #include "classifier/svm/LibSVMMultiClass.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CLibSVMMultiClass::CLibSVMMultiClass(LIBSVM_SOLVER_TYPE st)
 : CMultiClassSVM(ONE_VS_ONE), model(NULL), solver_type(st)
 {

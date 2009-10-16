@@ -15,6 +15,8 @@
 #include "classifier/svm/SVM.h"
 #include "classifier/svm/SVM_libsvm.h"
 
+namespace shogun
+{
 enum LIBSVM_SOLVER_TYPE
 {
 	LIBSVM_C_SVC = 1,
@@ -68,4 +70,5 @@ class CLibSVM : public CSVM
 		/** solver type */
 		LIBSVM_SOLVER_TYPE solver_type;
 };
+}
 #endif

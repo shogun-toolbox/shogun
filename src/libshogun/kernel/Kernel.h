@@ -20,6 +20,8 @@
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
 
+namespace shogun
+{
 #ifdef USE_SHORTREAL_KERNELCACHE
 	typedef float32_t KERNELCACHE_ELEM;
 #else
@@ -772,5 +774,5 @@ class CKernel : public CSGObject
 		 * function */
 		CKernelNormalizer* normalizer;
 };
-
+}
 #endif /* _KERNEL_H__ */

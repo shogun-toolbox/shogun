@@ -36,6 +36,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+namespace shogun
+{
 # define VERSION       "V3.50 -- correct??"
 # define VERSION_DATE  "01.11.00 -- correct??"
 
@@ -767,5 +769,6 @@ public:
   /** mkl converged */
   bool mkl_converged;
 };
+}
 #endif //USE_SVMLIGHT
 #endif //_SVMLight_H___

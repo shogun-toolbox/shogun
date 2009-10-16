@@ -17,7 +17,8 @@
 #include "features/Labels.h"
 #include "features/Features.h"
 
-
+namespace shogun
+{
 enum EClassifierType
 {
 	CT_NONE = 0,
@@ -226,5 +227,5 @@ class CClassifier : public CSGObject
 		/** solver type */
 		ESolverType solver_type;
 };
-
+}
 #endif // _CLASSIFIER_H__

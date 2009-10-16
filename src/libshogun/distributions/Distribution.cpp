@@ -11,6 +11,8 @@
 #include "distributions/Distribution.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CDistribution::CDistribution()
 : CSGObject(), features(NULL), pseudo_count(1e-10)
 {

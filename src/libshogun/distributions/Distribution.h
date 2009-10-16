@@ -15,6 +15,8 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
 /** @brief Base class Distribution from which all methods implementing a
  * distribution are derived.
  *
@@ -173,5 +175,5 @@ class CDistribution : public CSGObject
 		/** pseudo count */
 		float64_t pseudo_count;
 };
+}
 #endif
-

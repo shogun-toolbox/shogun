@@ -8,20 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/Mathematics.h"
-#include "lib/memory.h"
-#include "lib/Set.h"
 #include "base/init.h"
-#include "base/Parallel.h"
-#include "base/Version.h"
-
-CParallel* sg_parallel=NULL;
-CIO* sg_io=NULL;
-CVersion* sg_version=NULL;
-CMath* sg_math=NULL;
-#ifdef TRACE_MEMORY_ALLOCS
-CSet<CMemoryBlock>* sg_mallocs=NULL;
-#endif
 
 /// function called to print normal messages
 void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -35,22 +22,37 @@ void (*sg_print_error)(FILE* target, const char* str) = NULL;
 /// function called to cancel things
 void (*sg_cancel_computations)(bool &delayed, bool &immediately)=NULL;
 
+#include "lib/Mathematics.h"
+#include "lib/memory.h"
+#include "lib/Set.h"
+#include "base/Parallel.h"
+#include "base/Version.h"
+
+shogun::CParallel* sg_parallel=NULL;
+shogun::CIO* sg_io=NULL;
+shogun::CVersion* sg_version=NULL;
+shogun::CMath* sg_math=NULL;
+#ifdef TRACE_MEMORY_ALLOCS
+shogun::CSet<CMemoryBlock>* sg_mallocs=NULL;
+#endif
+
+
 void init_shogun(void (*print_message)(FILE* target, const char* str),
 		void (*print_warning)(FILE* target, const char* str),
 		void (*print_error)(FILE* target, const char* str),
 		void (*cancel_computations)(bool &delayed, bool &immediately))
 {
 	if (!sg_io)
-		sg_io = new CIO();
+		sg_io = new shogun::CIO();
 	if (!sg_parallel)
-		sg_parallel=new CParallel();
+		sg_parallel=new shogun::CParallel();
 	if (!sg_version)
-		sg_version = new CVersion();
+		sg_version = new shogun::CVersion();
 	if (!sg_math)
-		sg_math = new CMath();
+		sg_math = new shogun::CMath();
 #ifdef TRACE_MEMORY_ALLOCS
 	if (!sg_mallocs)
-		sg_mallocs = new CSet<CMemoryBlock>();
+		sg_mallocs = new shogun::CSet<CMemoryBlock>();
 
 	SG_REF(sg_mallocs);
 #endif
@@ -78,4 +80,4 @@ void exit_shogun()
 	SG_UNREF(sg_io);
 
 // will leak memory alloc statistics on exit
-};
+}

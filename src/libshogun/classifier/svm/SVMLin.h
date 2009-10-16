@@ -16,6 +16,8 @@
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
+namespace shogun
+{
 /** @brief class SVMLin */
 class CSVMLin : public CLinearClassifier
 {
@@ -107,4 +109,5 @@ class CSVMLin : public CLinearClassifier
 		/** if bias is used */
 		bool use_bias;
 };
+}
 #endif

@@ -18,6 +18,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** @brief Class LinearClassifier is a generic interface for all kinds of linear
  * classifiers.
  *
@@ -176,4 +178,5 @@ class CLinearClassifier : public CClassifier
 		/** features */
 		CDotFeatures* features;
 };
+}
 #endif

@@ -14,6 +14,8 @@
 #include "kernel/LinearByteKernel.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CLinearByteKernel::CLinearByteKernel()
 : CSimpleKernel<uint8_t>(0), normal(NULL)
 {

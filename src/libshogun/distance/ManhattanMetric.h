@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class ManhattanMetric 
  *
  * The Manhattan distance (city block distance,\f$L_{1}\f$ norm, rectilinear
@@ -75,5 +77,6 @@ class CManhattanMetric: public CSimpleDistance<float64_t>
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
+} // namespace shogun
 #endif /* _MANHATTANMETRIC_H___ */
 

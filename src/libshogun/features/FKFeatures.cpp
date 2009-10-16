@@ -13,6 +13,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
 : CSimpleFeatures<float64_t>(size)
 {

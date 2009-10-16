@@ -11,6 +11,8 @@
 #include "features/Features.h"
 #include "features/AttributeFeatures.h"
 
+using namespace shogun;
+
 CAttributeFeatures::CAttributeFeatures()
 : CFeatures(0)
 {

@@ -15,6 +15,8 @@
 #include "distance/SimpleDistance.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief class GeodesicMetric
  *
  * The Geodesic distance (Great circle distance) computes the shortest path
@@ -74,4 +76,5 @@ class CGeodesicMetric: public CSimpleDistance<float64_t>
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
+} // namespace shogun
 #endif /* _GEODESICMETRIC_H___ */

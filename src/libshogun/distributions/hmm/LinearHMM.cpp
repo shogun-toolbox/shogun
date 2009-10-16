@@ -14,6 +14,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
 : CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
 {

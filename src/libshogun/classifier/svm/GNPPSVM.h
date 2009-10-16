@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "classifier/svm/SVM.h"
 
+namespace shogun
+{
 /** @brief class GNPPSVM */
 class CGNPPSVM : public CSVM
 {
@@ -50,4 +52,5 @@ class CGNPPSVM : public CSVM
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GNPPSVM"; }
 };
+}
 #endif

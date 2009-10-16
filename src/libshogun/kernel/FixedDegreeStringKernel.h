@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
+namespace shogun
+{
 /** @brief The FixedDegree String kernel takes as input two strings of same size
  * and counts the number of matches of length d.
  *
@@ -87,5 +89,5 @@ class CFixedDegreeStringKernel: public CStringKernel<char>
 		/** the degree */
 		int32_t degree;
 };
-
+}
 #endif /* _FIXEDDEGREESTRINGKERNEL_H___ */

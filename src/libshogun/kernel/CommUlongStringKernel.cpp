@@ -14,6 +14,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CCommUlongStringKernel::CCommUlongStringKernel(int32_t size, bool us)
 : CStringKernel<uint64_t>(size), use_sign(us)
 {

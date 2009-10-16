@@ -12,7 +12,7 @@
 #include "features/CombinedFeatures.h"
 #include "lib/io.h"
 
-class CCombinedFeatures;
+using namespace shogun;
 
 CCombinedFeatures::CCombinedFeatures()
 : CFeatures(0)

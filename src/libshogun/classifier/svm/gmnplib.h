@@ -23,6 +23,8 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+namespace shogun
+{
 /** @brief class GMNPLib
  * Library of solvers for Generalized Minimal Norm Problem (GMNP).
  *  
@@ -163,6 +165,5 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 		/** number of classes */
 		int32_t m_num_classes;
 };
-
-
+}
 #endif //GMNPLIB_H__

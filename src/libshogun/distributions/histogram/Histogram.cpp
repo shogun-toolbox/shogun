@@ -15,6 +15,7 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
 
 CHistogram::CHistogram()
 : CDistribution()

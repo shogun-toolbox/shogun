@@ -15,6 +15,8 @@
 #include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/SimpleFeatures.h"
 
+using namespace shogun;
+
 CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
 : CSimpleKernel<float64_t>(size), degree(d), inhomogene(i)
 {

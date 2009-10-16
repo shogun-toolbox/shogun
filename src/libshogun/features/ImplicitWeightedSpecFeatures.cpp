@@ -11,6 +11,8 @@
 #include "features/ImplicitWeightedSpecFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
 {
 	ASSERT(str);

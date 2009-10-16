@@ -49,6 +49,9 @@
 #include <float.h>
 #include <string.h>
 #include <stdarg.h>
+
+using namespace shogun;
+
 typedef KERNELCACHE_ELEM Qfloat;
 typedef float64_t schar;
 

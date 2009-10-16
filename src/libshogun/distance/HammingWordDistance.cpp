@@ -15,6 +15,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CHammingWordDistance::CHammingWordDistance(bool sign)
 : CStringDistance<uint16_t>(), use_sign(sign)
 {

@@ -10,6 +10,8 @@
 
 #include "distributions/hmm/GHMM.h"
 
+using namespace shogun;
+
 CGHMM::CGHMM()
 : CDistribution()
 {

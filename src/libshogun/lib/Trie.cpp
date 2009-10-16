@@ -13,6 +13,8 @@
 #include "lib/Trie.h"
 #include "lib/Mathematics.h"
 
+namespace shogun
+{
 template <>
 void CTrie<POIMTrie>::POIMs_extract_W_helper(
 	const int32_t nodeIdx, const int32_t depth, const int32_t offset,
@@ -429,4 +431,5 @@ void CTrie<POIMTrie>::POIMs_add_SLR(
     POIMs_add_SLR_helper1( trees[i], 0, i, 0*NUM_SYMS, poims, K, debug );
   }
   delete[] nofsKmers;
+}
 }

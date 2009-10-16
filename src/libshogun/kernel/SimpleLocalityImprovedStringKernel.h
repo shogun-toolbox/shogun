@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
+namespace shogun
+{
 /** @brief SimpleLocalityImprovedString kernel, is a ``simplified'' and better
  * performing version of the Locality improved kernel.
  *
@@ -115,5 +117,5 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		/** pyramid weights */
 		float64_t *pyramid_weights;
 };
-
+}
 #endif /* _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___ */

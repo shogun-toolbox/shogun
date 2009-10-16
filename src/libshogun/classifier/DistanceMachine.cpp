@@ -10,6 +10,8 @@
 
 #include "classifier/DistanceMachine.h"
 
+using namespace shogun;
+
 CDistanceMachine::CDistanceMachine()
 : CClassifier(), distance(NULL)
 {

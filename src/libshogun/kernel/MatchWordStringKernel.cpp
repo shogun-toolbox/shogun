@@ -15,6 +15,8 @@
 #include "kernel/AvgDiagKernelNormalizer.h"
 #include "features/StringFeatures.h"
 
+using namespace shogun;
+
 CMatchWordStringKernel::CMatchWordStringKernel(int32_t size, int32_t d)
 : CStringKernel<uint16_t>(size), degree(d)
 {

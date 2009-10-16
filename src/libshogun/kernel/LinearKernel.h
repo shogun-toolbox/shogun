@@ -15,6 +15,8 @@
 #include "kernel/SimpleKernel.h"
 #include "features/SimpleFeatures.h"
 
+namespace shogun
+{
 /** @brief Computes the standard linear kernel on dense real valued features.
  *
  * Formally, it computes
@@ -160,5 +162,5 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		/** length of normal vector */
 		int32_t normal_length;
 };
-
+}
 #endif /* _LINEARKERNEL_H__ */

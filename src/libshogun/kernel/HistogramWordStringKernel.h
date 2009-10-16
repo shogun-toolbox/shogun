@@ -17,6 +17,8 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
+namespace shogun
+{
 /** @brief The HistogramWordString computes the TOP kernel on inhomogeneous
  * Markov Chains. */
 class CHistogramWordStringKernel: public CStringKernel<uint16_t>
@@ -122,5 +124,5 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		/** if kernel is initialized */
 		bool initialized;
 };
-
+}
 #endif /* _HISTOGRAMWORDKERNEL_H__ */

@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
+namespace shogun
+{
 /** @brief The class PolyMatchStringKernel computes a variant of the polynomial
  * kernel on strings of same length.
  *
@@ -98,5 +100,5 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
 };
-
+}
 #endif /* _POLYMATCHSTRINGKERNEL_H___ */

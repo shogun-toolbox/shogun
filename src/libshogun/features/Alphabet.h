@@ -15,7 +15,8 @@
 #include "lib/Mathematics.h"
 #include "lib/common.h"
 
-
+namespace shogun
+{
 /// Alphabet of charfeatures/observations
 enum EAlphabet
 {
@@ -650,5 +651,5 @@ namespace serialization {
 } // serialization
 } // namespace boost
 #endif //HAVE_BOOST_SERIALIZATION
-
+}
 #endif

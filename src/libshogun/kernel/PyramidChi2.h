@@ -16,7 +16,8 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
-
+namespace shogun
+{
 /** @brief Pyramid Kernel over Chi2 matched histograms.
  *
  * \todo port to CCombinedKernel (if it is the appropriate) as the pyramid is a
@@ -113,5 +114,5 @@ protected:
 	int32_t numweights;
 	//bool sanitycheckbit;
 };
-
+}
 #endif /*PYRAMIDCHI2_H_*/

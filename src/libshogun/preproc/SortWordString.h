@@ -17,6 +17,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** @brief Preprocessor SortWordString, sorts the indivual strings in ascending order.
  *
  * This is useful in conjunction with the CCommWordStringKernel and will result
@@ -57,4 +59,5 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() { return "SortWordString"; }
 };
+}
 #endif

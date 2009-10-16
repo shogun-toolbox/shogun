@@ -14,6 +14,8 @@
 #include "features/Features.h"
 #include "features/SparseFeatures.h"
 
+using namespace shogun;
+
 CSparseEuclidianDistance::CSparseEuclidianDistance()
 : CSparseDistance<float64_t>(), sq_lhs(NULL), sq_rhs(NULL)
 {

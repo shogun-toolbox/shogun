@@ -13,6 +13,8 @@
 #include "lib/common.h"
 #include "classifier/mkl/MKL.h"
 
+namespace shogun
+{
 /** @brief Multiple Kernel Learning for two-class-classification
  * 
  * Learns an SVM classifier and its kernel weights. Makes only sense if
@@ -50,4 +52,5 @@ class CMKLClassification : public CMKL
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_MKLCLASSIFICATION; }
 };
+}
 #endif //__MKLCLASSIFICATION_H__

@@ -21,6 +21,8 @@
 
 class CDistanceMachine;
 
+namespace shogun
+{
 /** @brief Class KNN, an implementation of the standard k-nearest neigbor
  * classifier.
  *
@@ -138,5 +140,5 @@ class CKNN : public CDistanceMachine
 		/// the actual trainlabels
 		int32_t* train_labels;
 };
+}
 #endif
-

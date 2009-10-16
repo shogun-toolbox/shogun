@@ -12,6 +12,8 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
+using namespace shogun;
+
 CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
 	feature_list=new CList<CDotFeatures*>(true);

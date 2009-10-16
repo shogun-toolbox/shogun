@@ -26,6 +26,8 @@
 #include <pthread.h>
 #endif
 
+using namespace shogun;
+
 #define TRIES(X) ((use_poim_tries) ? (poim_tries.X) : (tries.X))
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

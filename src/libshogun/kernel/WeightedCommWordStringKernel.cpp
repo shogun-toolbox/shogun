@@ -13,6 +13,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
+using namespace shogun;
+
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	int32_t size, bool us)
 : CCommWordStringKernel(size, us), degree(0), weights(NULL)

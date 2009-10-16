@@ -15,6 +15,8 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
+namespace shogun
+{
 /** @brief The LocalityImprovedString kernel is inspired by the polynomial kernel.
  * Comparing neighboring characters it puts emphasize on local features.
  *
@@ -91,6 +93,5 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		/** outer degree */
 		int32_t outer_degree;
 };
-
+}
 #endif /* _LOCALITYIMPROVEDSTRINGKERNEL_H__ */
-

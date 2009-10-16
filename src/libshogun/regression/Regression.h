@@ -11,12 +11,15 @@
 #ifndef _REGRESSION_H__
 #define _REGRESSION_H__
 
-enum ERegressionType
+namespace shogun
 {
-	RT_NONE = 0,
-	RT_LIGHT = 10,
-	RT_LIBSVM = 20
-};
+	enum ERegressionType
+	{
+		RT_NONE = 0,
+		RT_LIGHT = 10,
+		RT_LIBSVM = 20
+	};
+}
 
 #endif // _REGRESSION_H__
 

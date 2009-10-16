@@ -16,6 +16,8 @@
 #include "features/Features.h"
 #include "classifier/KernelMachine.h"
 
+namespace shogun
+{
 /** @brief Class KernelPerceptron -
  * currently unfinished implementation of a Kernel Perceptron
  */
@@ -69,5 +71,5 @@ class CKernelPerceptron : public CKernelMachine
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KernelPerceptron"; }
 };
+}
 #endif
-

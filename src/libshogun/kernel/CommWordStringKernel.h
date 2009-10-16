@@ -16,6 +16,8 @@
 #include "lib/Mathematics.h"
 #include "kernel/StringKernel.h"
 
+namespace shogun
+{
 /** @brief The CommWordString kernel may be used to compute the spectrum kernel
  * from strings that have been mapped into unsigned 16bit integers.
  *
@@ -244,5 +246,5 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		/** array to hold counters for all strings */
 		int32_t* dict_diagonal_optimization;
 };
-
+}
 #endif /* _COMMWORDSTRINGKERNEL_H__ */
