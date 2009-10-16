@@ -79,6 +79,12 @@
 %include <shogun/base/Parallel.h>
 %include "swig_typemaps.i"
 
+%include stl.i
+/* instantiate the required template specializations */
+namespace std {
+  %template(IntVector)    vector<int32_t>;
+  %template(DoubleVector) vector<float64_t>;
+}
 
 #ifdef HAVE_BOOST_SERIALIZATION
 
