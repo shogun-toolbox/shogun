@@ -115,7 +115,7 @@ public:
 	
 protected:
 	
-	//prohibit copying, copy constructor by declaring protected?
+	//prohibit copying, copy constructor by declaring it protected, do not know how to copy the glpk basis structure, it is too C like :) and seemingly not intended to be copied 
 	glpkwrapper operator=(glpkwrapper & gl);
 	glpkwrapper(glpkwrapper & gl);
 };
@@ -174,11 +174,9 @@ public:
 	//returns the subkernelweights or NULL if none such have been computed, caller has to delete the returned pointer
 	float64_t* getsubkernelweights(int32_t & numweights);
 	
-	float64_t thresh; // at what l2 norm of sub kernel weights change to quit
-	int32_t maxiters; // how many iters of silp at max or <0 to ignore this
-	int32_t lpwrappertype; // what kind of LP solver: 0 - glpk (default)
 
-
+	void set_mkl_epsilon(float64_t eps ); 
+	void set_max_num_mkliters(int32_t maxnum);
 	
 protected:
 	
@@ -194,9 +192,7 @@ protected:
 	
 	virtual bool evaluatefinishcriterion(const int32_t numberofsilpiterations);
 	
-	CGMNPSVM* svm; //the svm in the silp training
-	
-	lpwrapper* lpw; // the lp solver wrapper
+
 	
 	void addingweightsstep( const std::vector<float64_t> & curweights);
 	//the following two is the actual know how in this class :)
@@ -206,13 +202,21 @@ protected:
 	float64_t getsquarenormofprimalcoefficients(
 			const int32_t ind);
 	
+		
 	
-	//numberofsilpiterations
+
+public:	
 	
+
+protected:
+	CGMNPSVM* svm; //the svm in the silp training
+	
+	lpwrapper* lpw; // the lp solver wrapper
 	::std::vector< std::vector< float64_t> > weightshistory;
-	
-	
-	int32_t numdat,numcl,numker;
+
+	float64_t mkl_eps; // at what l2 norm of sub kernel weights change to quit
+	int32_t max_num_mkl_iters; // how many iters of silp at max or <0 to ignore this
+
 	
 };
 

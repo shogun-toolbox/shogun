@@ -13,6 +13,8 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/mkl/MKLMultiClass.h>
 
+//c++ -I /home/data/THESEUS/installed_software/shogunnewest_cur/include/ -L /home/data/THESEUS/installed_software/shogunnewest_cur/lib -I /home/data/THESEUS/installed_software/glpk_cur/include -L /home/data/THESEUS/installed_software/glpk_cur/lib -lglpk -lshogun mklmulticlass.cpp -O3 -g3 -o mkl
+
 void print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);
@@ -213,8 +215,8 @@ void tester()
 
 	tsvm->set_epsilon(0.0001); // SVM epsilon
 	// MKL parameters
-	tsvm->thresh=0.01; // subkernel weight L2 norm termination criterion
-	tsvm->maxiters=120; // well it will be just three iterations
+	tsvm->set_mkl_epsilon(0.01); // subkernel weight L2 norm termination criterion
+	tsvm->set_max_num_mkliters(120); // well it will be just three iterations
 
 	//starting svm training
 	tsvm->train();

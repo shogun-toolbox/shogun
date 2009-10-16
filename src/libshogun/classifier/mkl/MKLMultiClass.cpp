@@ -29,14 +29,12 @@ void lpwrapper::setup(const int32_t numkernels)
 void lpwrapper::addconstraint(const ::std::vector<float64_t> & normw2,
 		const float64_t sumofpositivealphas)
 {
-	throw ShogunException("void lpwrapper::addconstraint(...): not implemented in derived class");
-
+	SG_ERROR("void lpwrapper::addconstraint(...): not implemented in derived class");
 }
 
 void lpwrapper::computeweights(std::vector<float64_t> & weights2)
 {
-	throw ShogunException("void lpwrapper::computeweights(...): not implemented in derived class");
-
+	SG_ERROR("void lpwrapper::computeweights(...): not implemented in derived class\n");
 }
 
 // ***************************************************************************
@@ -52,7 +50,7 @@ glpkwrapper::glpkwrapper()
 glpkwrapper::~glpkwrapper()
 {
 #if defined(USE_GLPK)
-	if (linearproblem!=NULL)
+	if (linearproblem)
 	{
 		glp_delete_prob(linearproblem);
 		linearproblem=NULL;
@@ -64,12 +62,13 @@ glpkwrapper::~glpkwrapper()
 
 glpkwrapper glpkwrapper::operator=(glpkwrapper & gl)
 {
-	throw ShogunException(" glpkwrapper glpkwrapper::operator=(...): must not be called, glpk structure is currently not copiable");
+	SG_ERROR(" glpkwrapper glpkwrapper::operator=(...): must not be called, glpk structure is currently not copiable");
+	return(*this);
 
 }
 glpkwrapper::glpkwrapper(glpkwrapper & gl)
 {
-	throw ShogunException(" glpkwrapper::glpkwrapper(glpkwrapper & gl): must not be called, glpk structure is currently not copiable");
+	SG_ERROR(" glpkwrapper::glpkwrapper(glpkwrapper & gl): must not be called, glpk structure is currently not copiable");
 
 }
 
@@ -82,57 +81,43 @@ glpkwrapper4CGMNPMKL::~glpkwrapper4CGMNPMKL()
 {
 
 }
-//TODO: check for correctness of
+
 void glpkwrapper4CGMNPMKL::setup(const int32_t numkernels2)
 {
 #if defined(USE_GLPK)
 	numkernels=numkernels2;
-	if(numkernels<=1)
+	if (numkernels<=1)
 	{
-		//std::ostringstream helper;
-		//helper << "void glpkwrapper::setup(const int32_tnumkernels): input numkernels out of bounds: "<<numkernels <<std::endl;
-		char bla[1000];
-		sprintf(bla,"void glpkwrapper::setup(const int32_tnumkernels): input numkernels out of bounds: %d\n",numkernels);
-		throw ShogunException(bla);
+		SG_ERROR("void glpkwrapper::setup(const int32_tnumkernels): input numkernels out of bounds: %d\n",numkernels);
 	}
 
-	if(NULL==linearproblem)
+	if (!linearproblem)
 	{
 		linearproblem=glp_create_prob();
 	}
 
 	glp_set_obj_dir(linearproblem, GLP_MAX);
 
-	glp_add_cols(linearproblem,1+numkernels); // one for theta (objectivelike), all others for betas=weights
+	glp_add_cols(linearproblem,1+numkernels); // one for theta (objective), all others for betas=weights
 
 	//set up theta
-	glp_set_col_name(linearproblem,1,"theta");
 	glp_set_col_bnds(linearproblem,1,GLP_FR,0.0,0.0);
 	glp_set_obj_coef(linearproblem,1,1.0);
 
 	//set up betas
 	int32_t offset=2;
-	for(int32_t i=0; i<numkernels;++i)
+	for (int32_t i=0; i<numkernels;++i)
 	{
-		//std::ostringstream helper;
-		//helper << "beta_"<<i;
-		char bla[100];
-		sprintf(bla,"beta_%d",i);
-		glp_set_col_name(linearproblem,offset+i,bla);
 		glp_set_col_bnds(linearproblem,offset+i,GLP_DB,0.0,1.0);
 		glp_set_obj_coef(linearproblem,offset+i,0.0);
-
 	}
-
-	// objective is maximize theta over { beta and theta } subject to constraints
 
 	//set sumupconstraint32_t/sum_l \beta_l=1
 	glp_add_rows(linearproblem,1);
-	glp_set_row_name(linearproblem,1,"betas_sumupto_one");
 
 	int32_t*betainds(NULL);
 	betainds=new int[1+numkernels];
-	for(int32_t i=0; i<numkernels;++i)
+	for (int32_t i=0; i<numkernels;++i)
 	{
 		betainds[1+i]=2+i; // coefficient for theta stays zero, therefore start at 2 not at 1 !
 	}
@@ -140,7 +125,7 @@ void glpkwrapper4CGMNPMKL::setup(const int32_t numkernels2)
 	float64_t *betacoeffs(NULL);
 	betacoeffs=new float64_t[1+numkernels];
 
-	for(int32_t i=0; i<numkernels;++i)
+	for (int32_t i=0; i<numkernels;++i)
 	{
 		betacoeffs[1+i]=1;
 	}
@@ -154,7 +139,7 @@ void glpkwrapper4CGMNPMKL::setup(const int32_t numkernels2)
 	delete[] betacoeffs;
 	betacoeffs=NULL;
 #else
-	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary in gmnpmkl.cpp/.h");
+	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary here");
 #endif
 
 }
@@ -164,24 +149,18 @@ void glpkwrapper4CGMNPMKL::addconstraint(const ::std::vector<float64_t> & normw2
 {
 #if defined(USE_GLPK)
 
-	ASSERT((int)normw2.size()==numkernels);
-	ASSERT(sumofpositivealphas>=0);
+	ASSERT ((int)normw2.size()==numkernels);
+	ASSERT (sumofpositivealphas>=0);
 
 	glp_add_rows(linearproblem,1);
 
 	int32_t curconstraint=glp_get_num_rows(linearproblem);
 
-	//std::ostringstream helper;
-	//helper << "constraintno_"<<curconstraint;
-	char bla[100];
-	sprintf(bla,"constraintno_%d",curconstraint);
-	glp_set_row_name(linearproblem,curconstraint,bla);
-
 	int32_t *betainds(NULL);
 	betainds=new int[1+1+numkernels];
 
 	betainds[1]=1;
-	for(int32_t i=0; i<numkernels;++i)
+	for (int32_t i=0; i<numkernels;++i)
 	{
 		betainds[2+i]=2+i; // coefficient for theta stays zero, therefore start at 2 not at 1 !
 	}
@@ -191,8 +170,7 @@ void glpkwrapper4CGMNPMKL::addconstraint(const ::std::vector<float64_t> & normw2
 
 	betacoeffs[1]=-1;
 
-
-	for(int32_t i=0; i<numkernels;++i)
+	for (int32_t i=0; i<numkernels;++i)
 	{
 		betacoeffs[2+i]=0.5*normw2[i];
 	}
@@ -205,7 +183,6 @@ void glpkwrapper4CGMNPMKL::addconstraint(const ::std::vector<float64_t> & normw2
 	delete[] betacoeffs;
 	betacoeffs=NULL;
 
-	//addedconstraint=true;
 #else
 	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary in gmnpmkl.cpp/.h");
 #endif
@@ -216,20 +193,19 @@ void glpkwrapper4CGMNPMKL::computeweights(std::vector<float64_t> & weights2)
 #if defined(USE_GLPK)
 	weights2.resize(numkernels);
 
-	glp_simplex(linearproblem,NULL); // standard parameters
+	glp_simplex(linearproblem,NULL); 
 
 	float64_t sum=0;
-	for(int32_t i=0; i< numkernels;++i)
+	for (int32_t i=0; i< numkernels;++i)
 	{
 		weights2[i]=glp_get_col_prim(linearproblem, i+2);
 		weights2[i]=  ::std::max(0.0, ::std::min(1.0,weights2[i]));
 		sum+= weights2[i];
-		//
 	}
 
-	if(sum>0)
+	if (sum>0)
 	{
-		for(int32_t i=0; i< numkernels;++i)
+		for (int32_t i=0; i< numkernels;++i)
 		{
 			weights2[i]/=sum;
 		}
@@ -237,7 +213,7 @@ void glpkwrapper4CGMNPMKL::computeweights(std::vector<float64_t> & weights2)
 	else
 		SG_ERROR("void glpkwrapper::computeweights(std::vector<float64_t> & weights2): sum of weights nonpositive %f\n",sum);
 #else
-	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary in gmnpmkl.cpp/.h");
+	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary here");
 #endif
 }
 
@@ -248,13 +224,8 @@ CMKLMultiClass::CMKLMultiClass()
 	svm=NULL;
 	lpw=NULL;
 
-	lpwrappertype=0;
-	thresh=0.01;
-	maxiters=999;
-
-	numdat=0;
-	numcl=0;
-	numker=0;
+	mkl_eps=0.01;
+	max_num_mkl_iters=999;
 }
 
 CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
@@ -262,10 +233,9 @@ CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
 {
 	svm=NULL;
 	lpw=NULL;
-
-	lpwrappertype=0;
-	thresh=0.01;
-	maxiters=999;
+	
+	mkl_eps=0.01;
+	max_num_mkl_iters=999;
 
 }
 
@@ -280,31 +250,14 @@ CMKLMultiClass::~CMKLMultiClass()
 
 void CMKLMultiClass::lpsetup(const int32_t numkernels)
 {
-	numker=numkernels;
-	ASSERT(numker>0);
-	switch(lpwrappertype)
+	ASSERT(numkernels>0);
+
+	if (lpw)
 	{
-		case 0:
-			if(lpw!=NULL)
-			{
-				delete lpw;
-			}
-			lpw=new glpkwrapper4CGMNPMKL;
-			lpw->setup(numkernels);
-		break;
-
-		default:
-		{
-			//std::ostringstream helper;
-			//helper << "CMKLMultiClass::setup(const int32_tnumkernels): unknown value for lpwrappertype "<<lpwrappertype <<std::endl;
-			//throw ShogunException(helper.str().c_str());
-
-			char bla[1000];
-			sprintf(bla,"CMKLMultiClass::setup(const int32_tnumkernels): unknown value for lpwrappertype %d\n ",lpwrappertype);
-			throw ShogunException(bla);
-		}
-		break;
+		delete lpw;
 	}
+	lpw=new glpkwrapper4CGMNPMKL;
+	lpw->setup(numkernels);
 }
 
 void CMKLMultiClass::initsvm()
@@ -318,13 +271,9 @@ void CMKLMultiClass::initsvm()
 	svm->set_C(get_C1(),get_C2());
 	svm->set_epsilon(epsilon);
 
-	//CGNMPSVM->set_labels(get_labels());
-
 	int32_t numlabels;
 	float64_t * lb=labels->get_labels ( numlabels);
 	ASSERT(numlabels>0);
-	numdat=numlabels;
-	numcl=labels->get_num_classes();
 
 	CLabels* newlab=new CLabels(lb, labels->get_num_labels() );
 	delete[] lb;
@@ -337,21 +286,17 @@ void CMKLMultiClass::initsvm()
 
 void CMKLMultiClass::init()
 {
-	if (!kernel)
-		SG_ERROR("CMKLMultiClass::init(): the set kernel is NULL\n");
-
-	if(kernel->get_kernel_type()!=K_COMBINED)
+	if (!kernel)	
 	{
-		//std::ostringstream helper;
-		//helper << "CMKLMultiClass::init(): given kernel is not of type K_COMBINED "<<k->get_kernel_type() <<std::endl;
-		//throw ShogunException(helper.str().c_str());
-
-		char bla[1000];
-		sprintf(bla,"CMKLMultiClass::init(): given kernel is not of type K_COMBINED %d \n",kernel->get_kernel_type());
-		throw ShogunException(bla);
+		SG_ERROR("CMKLMultiClass::init(): the set kernel is NULL\n");
 	}
 
-	numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
+	if (kernel->get_kernel_type()!=K_COMBINED)
+	{
+		SG_ERROR("CMKLMultiClass::init(): given kernel is not of type K_COMBINED %d required by Multiclass Mkl \n",kernel->get_kernel_type());
+	}
+
+	int numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
 
 	lpsetup(numker);
 }
@@ -359,12 +304,12 @@ void CMKLMultiClass::init()
 
 bool CMKLMultiClass::evaluatefinishcriterion(const int32_t numberofsilpiterations)
 {
-	if ((maxiters>0) && (numberofsilpiterations>=maxiters) )
+	if ( (max_num_mkl_iters>0) && (numberofsilpiterations>=max_num_mkl_iters) )
 	{
 		return(true);
 	}
 
-	if(weightshistory.size()>1)
+	if (weightshistory.size()>1)
 	{
 		std::vector<float64_t> wold,wnew;
 
@@ -372,17 +317,15 @@ bool CMKLMultiClass::evaluatefinishcriterion(const int32_t numberofsilpiteration
 		wnew=weightshistory.back();
 		float64_t delta=0;
 
-		ASSERT(wold.size()==wnew.size());
+		ASSERT (wold.size()==wnew.size());
 
-		for(size_t i=0;i< wnew.size();++i)
+		for (size_t i=0;i< wnew.size();++i)
 		{
 			delta+=(wold[i]-wnew[i])*(wold[i]-wnew[i]);
 		}
 		delta=sqrt(delta);
 
-		SG_SPRINT( "CMKLMultiClass::evaluatefinishcriterion(): L2 norm of changes= %f, required for termination by member variables thresh= %f \n",delta, thresh);
-
-		if( (delta < thresh)&&(numberofsilpiterations>=1) )
+		if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 		{
 			return(true);
 		}
@@ -393,9 +336,8 @@ bool CMKLMultiClass::evaluatefinishcriterion(const int32_t numberofsilpiteration
 
 void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> & curweights)
 {
-	//weightshistory.push_back(curweights);
-	//error prone?
-	if(weightshistory.size()>2)
+
+	if (weightshistory.size()>2)
 	{
 		weightshistory.erase(weightshistory.begin());
 	}
@@ -410,19 +352,6 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> & curweight
 
 	initsvm();
 
-	//number of labels equal to number of features?
-	if (numdat!=kernel->get_num_vec_lhs())
-	{
-		SG_ERROR("numdat (%ld) does not match kernel->get_num_vec_lhs() (%ld)\n",
-				numdat, kernel->get_num_vec_lhs());
-	}
-
-	if (numdat!=kernel->get_num_vec_rhs())
-	{
-		SG_ERROR("numdat (%ld) does not match kernel->get_num_vec_rhs() (%ld)\n",
-				numdat, kernel->get_num_vec_rhs());
-	}
-
 	svm->set_kernel(kernel);
 	svm->train();
 
@@ -431,12 +360,11 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> & curweight
 
 
 	std::vector<float64_t> normw2(numkernels);
-	for(int32_t ind=0; ind < numkernels; ++ind )
+	for (int32_t ind=0; ind < numkernels; ++ind )
 	{
 		normw2[ind]=getsquarenormofprimalcoefficients( ind );
 	}
 
-	//add a constraint
 	lpw->addconstraint(normw2,sumofsignfreealphas);
 }
 
@@ -452,10 +380,10 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 	lab=NULL;
 
 
-	ASSERT(trainlabels2.size()>0);
+	ASSERT (trainlabels2.size()>0);
 	float64_t sum=0;
 
-	for(int32_t nc=0; nc< labels->get_num_classes();++nc)
+	for (int32_t nc=0; nc< labels->get_num_classes();++nc)
 	{
 		CSVM * sm=svm->get_svm(nc);
 
@@ -468,15 +396,13 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 	::std::vector< ::std::vector<float64_t> > basealphas;
 	svm->getbasealphas( basealphas);
 
-	for(size_t lb=0; lb< trainlabels2.size();++lb)
+	for (size_t lb=0; lb< trainlabels2.size();++lb)
 	{
-		for(int32_t nc=0; nc< labels->get_num_classes();++nc)
+		for (int32_t nc=0; nc< labels->get_num_classes();++nc)
 		{
-
 			CSVM * sm=svm->get_svm(nc);
 
-
-			if((int)nc!=trainlabels2[lb])
+			if ((int)nc!=trainlabels2[lb])
 			{
 				CSVM * sm2=svm->get_svm(trainlabels2[lb]);
 
@@ -486,10 +412,7 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 
 				sum+= -basealphas[nc][lb]*(bia1-bia2-1);
 			}
-
 			SG_UNREF(sm);
-
-
 		}
 	}
 
@@ -499,20 +422,18 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 		const int32_t ind)
 {
-	// alphas are already correctly transformed!
-
 	CKernel * ker=dynamic_cast<CCombinedKernel *>(kernel)->get_kernel(ind);
 
 	float64_t tmp=0;
 
-	for(int32_t classindex=0; classindex< labels->get_num_classes();++classindex)
+	for (int32_t classindex=0; classindex< labels->get_num_classes();++classindex)
 	{
 		CSVM * sm=svm->get_svm(classindex);
 
 		for (int32_t i=0; i < sm->get_num_support_vectors(); ++i)
 		{
-			float64_t alphai=sm->get_alpha(i);// svmstuff[classindex].alphas[i];
-			int32_t svindi= sm->get_support_vector(i); //svmstuff[classindex].svind[i];
+			float64_t alphai=sm->get_alpha(i);
+			int32_t svindi= sm->get_support_vector(i); 
 
 			for (int32_t k=0; k < sm->get_num_support_vectors(); ++k)
 			{
@@ -535,6 +456,10 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 
 bool CMKLMultiClass::train(CFeatures* data)
 {
+	//makes glpk quiet
+	glp_term_out(GLP_OFF);
+
+	int numcl=labels->get_num_classes();
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
 
@@ -553,32 +478,17 @@ bool CMKLMultiClass::train(CFeatures* data)
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);
 
-	SG_PRINT("initial weights in silp \n");
-	for(size_t i=0; i< curweights.size();++i)
-	{
-		SG_PRINT("%f ",curweights[i]);
-	}
-	SG_PRINT("\n");
-
-
 	addingweightsstep(curweights);
-
 
 	int32_t numberofsilpiterations=0;
 	bool final=false;
-	while(false==final)
+	while (!final)
 	{
 
 		curweights.clear();
 		lpw->computeweights(curweights);
 		weightshistory.push_back(curweights);
 
-		SG_SPRINT("SILP iteration %d weights in silp \n",numberofsilpiterations);
-		for(size_t i=0; i< curweights.size();++i)
-		{
-			SG_SPRINT("%f ",curweights[i]);
-		}
-		SG_SPRINT("\n");
 
 		final=evaluatefinishcriterion(numberofsilpiterations);
 		++numberofsilpiterations;
@@ -619,17 +529,26 @@ bool CMKLMultiClass::train(CFeatures* data)
 
 float64_t* CMKLMultiClass::getsubkernelweights(int32_t & numweights)
 {
-	if((numker<=0 )||weightshistory.empty() )
+	if ( weightshistory.empty() )
 	{
 		numweights=0;
 		return NULL;
 	}
 
 	std::vector<float64_t> subkerw=weightshistory.back();
-	ASSERT(numker=subkerw.size());
-	numweights=numker;
+	numweights=weightshistory.back().size();
 
-	float64_t* res=new float64_t[numker];
-	std::copy(subkerw.begin(), subkerw.end(),res);
+	float64_t* res=new float64_t[numweights];
+	std::copy(weightshistory.back().begin(), weightshistory.back().end(),res);
 	return res;
+}
+
+void CMKLMultiClass::set_mkl_epsilon(float64_t eps )
+{
+	mkl_eps=eps;
+}
+
+void CMKLMultiClass::set_max_num_mkliters(int32_t maxnum)
+{
+	max_num_mkl_iters=maxnum;
 }
