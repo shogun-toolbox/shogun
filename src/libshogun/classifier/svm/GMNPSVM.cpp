@@ -39,8 +39,11 @@ bool CGMNPSVM::train(CFeatures* data)
 
 	if (data)
 	{
-		if (data->get_num_vectors() != labels->get_num_labels());
-			SG_ERROR("Numbert of vectors does not match number of labels\n");
+		if (data->get_num_vectors() != labels->get_num_labels())
+		{
+			SG_ERROR("Numbert of vectors (%d) does not match number of labels (%d)\n",
+					data->get_num_vectors(), labels->get_num_labels());
+		}
 		kernel->init(data, data);
 	}
 
