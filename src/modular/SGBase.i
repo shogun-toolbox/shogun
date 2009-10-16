@@ -28,39 +28,36 @@
 %}
 
 %init %{
-    fprintf(stderr, "initing shogun\n");
-    init_shogun();
-    /*
 #ifndef DISABLE_CANCEL_CALLBACK
     init_shogun(&sg_global_print_message, &sg_global_print_warning,
             &sg_global_print_error, &sg_global_cancel_computations);
 #else
     init_shogun(&sg_global_print_message, &sg_global_print_warning,
             &sg_global_print_error);
-#endif*/
+#endif
 
 #ifdef SWIGPYTHON
-	  import_array();
+    import_array();
 #endif
 
 %}
 
 %exception
 {
-	try
-	{
-		$action
-	}
-	catch (std::bad_alloc)
-	{
-		SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
-		SWIG_fail;
-	}
-	catch (ShogunException e)
-	{
-		SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
-		SWIG_fail;
-	}
+    try
+    {
+        $action
+    }
+    catch (std::bad_alloc)
+    {
+        SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
+        SWIG_fail;
+    }
+    catch (ShogunException e)
+    {
+        SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
+        SWIG_fail;
+    }
 }
 
 %ignore NUM_LOG_LEVELS;
