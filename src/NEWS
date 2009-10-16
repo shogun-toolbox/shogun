@@ -22,6 +22,7 @@
 		- CClassifier::classify() no longer has a label as argument.
 		- Introduce CClassifier::train(CFeatures* ) and classify(CFeatures*)
           for more effective training/testing.
+		- Remove unnecessary global symbols.
 
 2009-08-16 Soeren Sonnenburg <sonne@debian.org>
 
