@@ -12,7 +12,10 @@
 #define __SIGNAL__H_
 
 #ifndef DISABLE_CANCEL_CALLBACK
+namespace shogun
+{
 extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
+}
 #endif
 
 #include "lib/config.h"

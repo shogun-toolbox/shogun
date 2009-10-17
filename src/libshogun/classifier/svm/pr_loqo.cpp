@@ -31,7 +31,8 @@ extern "C" {
 }
 #endif
 
-using namespace shogun;
+namespace shogun
+{
 
 #define PREDICTOR 1
 #define CORRECTOR 2
@@ -680,4 +681,5 @@ exit_optimizer:
 
   /* and return to sender */
   return status;
+}
 }

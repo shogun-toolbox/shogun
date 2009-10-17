@@ -29,12 +29,13 @@ namespace shogun
 	class CParallel;
 	class CIO;
 	class CVersion;
-}
 
-extern shogun::CMath* sg_math;
-extern shogun::CParallel* sg_parallel;
-extern shogun::CIO* sg_io;
-extern shogun::CVersion* sg_version;
+	extern CMath* sg_math;
+	extern CParallel* sg_parallel;
+	extern CIO* sg_io;
+	extern CVersion* sg_version;
+
+}
 
 using namespace shogun;
 

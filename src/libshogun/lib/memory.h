@@ -24,6 +24,8 @@ void operator delete[](void *p);
 
 
 #ifdef TRACE_MEMORY_ALLOCS
+namespace shogun
+{
 class CMemoryBlock
 {
 	public:
@@ -62,5 +64,6 @@ class CMemoryBlock
 };
 
 void list_memory_allocs();
+}
 #endif
 #endif // __MEMORY_H__

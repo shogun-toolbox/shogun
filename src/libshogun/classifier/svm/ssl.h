@@ -39,7 +39,8 @@
 #include "lib/common.h"
 #include "features/DotFeatures.h"
 
-
+namespace shogun
+{
 /** Data: Input examples are stored in sparse (Compressed Row Storage) format */
 struct data
 {
@@ -227,7 +228,7 @@ float64_t entropy(const  float64_t *p, int32_t u);
 
 /* KL-divergence */
 float64_t KL(const  float64_t *p, const  float64_t *q, int32_t u);
-
+}
 #endif // _SSL_H
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS

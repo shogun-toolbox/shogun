@@ -95,6 +95,8 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
  * 
  */
 
+namespace shogun
+{
 /*  DSYEV computes all eigenvalues and, optionally, eigenvectors of a
  *  real symmetric matrix A.
  */
@@ -132,6 +134,7 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, work, &lwork, info);
 	delete[] work;
 #endif
+}
 }
 #undef DGESVD
 #endif //HAVE_LAPACK

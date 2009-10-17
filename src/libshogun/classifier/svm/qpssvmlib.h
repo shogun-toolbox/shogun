@@ -6,7 +6,8 @@
  *
  * Written (W) 2007-2008 Vojtech Franc
  */
-
+namespace shogun
+{
 int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
                   float64_t *diag_H,
                   float64_t *f,
@@ -20,3 +21,4 @@ int8_t qpssvm_solver(const void* (*get_col)(uint32_t),
                   float64_t *QP,
                   float64_t *QD,
                   uint32_t verb);
+}

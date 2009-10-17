@@ -76,6 +76,8 @@
 #include "classifier/svm/gpdt.h"
 #include "classifier/svm/gpdtsolve.h"
 
+using namespace shogun;
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 void    fatalError(const char *msg1, const char *msg2);
 
@@ -125,6 +127,8 @@ void QPproblem::Subproblem(QPproblem &p, int32_t len, int32_t *perm)
       y[k] = p.y[perm[k]];
 }
 
+namespace shogun
+{
 /******************************************************************************/
 /*** Extract the samples information from an SVMlight-compliant data file   ***/
 /******************************************************************************/
@@ -167,6 +171,7 @@ int32_t prescan_document(char *file, int32_t *lines, int32_t *vlen, int32_t *ll)
   fclose(fl);
   return(0);
 }
+}
 /******************************************************************************/
 /*** return 1 if problem is single class, 0 if two-class                    ***/
 /******************************************************************************/
@@ -180,6 +185,8 @@ int32_t QPproblem::Check2Class(void)
   return 1;
 }
 
+namespace shogun
+{
 /******************************************************************************/
 /*** Compute the size of data splitting for preprocessing                   ***/
 /******************************************************************************/
@@ -199,8 +206,7 @@ void SplitParts(
   else
      *off = *dim * part + r;
 }
-
-
+}
 /******************************************************************************/
 /*** Kernel class constructor                                               ***/
 /******************************************************************************/

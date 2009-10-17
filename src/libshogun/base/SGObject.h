@@ -49,6 +49,9 @@
 #define pthread_mutex_unlock(x)
 #endif
 
+/** \namespace shogun
+ * @brief all of classes and functions are contained in the shogun namespace
+ */
 namespace shogun
 {
 class CIO;

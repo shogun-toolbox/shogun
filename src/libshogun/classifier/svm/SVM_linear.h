@@ -9,7 +9,8 @@
 #include "classifier/svm/Tron.h"
 #include "features/DotFeatures.h"
 
-using namespace shogun;
+namespace shogun
+{
 
 #ifdef __cplusplus
 extern "C" {
@@ -193,6 +194,7 @@ private:
 	float64_t *D;
 	const problem *prob;
 };
+}
 #endif //HAVE_LAPACK
 #endif //_LIBLINEAR_H
 

@@ -27,9 +27,9 @@
 
 namespace shogun
 {
-class CIO;
+	class CIO;
+	extern CIO* sg_io;
 }
-extern shogun::CIO* sg_io;
 
 
 namespace shogun

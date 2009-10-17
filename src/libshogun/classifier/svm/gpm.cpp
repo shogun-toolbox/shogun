@@ -75,6 +75,8 @@
 #include "classifier/svm/gpdt.h"
 #include "lib/io.h"
 
+namespace shogun
+{
 #define maxvpm           30000  /* max number of method iterations allowed  */
 #define maxprojections   200
 #define in               8000   /* max size of the QP problem to solve      */
@@ -1225,7 +1227,7 @@ int32_t InnerProjector(
   else
       return ProjectDai(n, iy, e, qk, l, u, x, lambda);
 }
-
+}
 /******************************************************************************/
 /*** End of gpm.cpp file                                                    ***/
 /******************************************************************************/

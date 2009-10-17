@@ -13,7 +13,8 @@
  * Copyright (C) 1997-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-
+namespace shogun
+{
 /* verbosity levels */
 
 #define QUIET 0
@@ -78,16 +79,4 @@ int32_t pr_loqo(
 	float64_t b[], float64_t l[], float64_t u[], float64_t primal[],
 	float64_t dual[], int32_t verb, float64_t sigfig_max, int32_t counter_max,
 	float64_t margin, float64_t bound, int32_t restart);
-
-/* 
- * compile with
- cc -O4 -c pr_loqo.c
- cc -xO4 -fast -xarch=v8plus -xchip=ultra -xparallel -c pr_loqo.c
- mex pr_loqo_c.c pr_loqo.o
- cmex4 pr_loqo_c.c pr_loqo.o -DMATLAB4 -o pr_loqo_c4
- *
- */
-
-
-
-
+}

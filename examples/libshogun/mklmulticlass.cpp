@@ -309,8 +309,11 @@ void tester()
 	SG_SPRINT( "finished \n");
 }
 
-extern CVersion* sg_version;
-extern CIO* sg_io;
+namespace shogun
+{
+	extern CVersion* sg_version;
+	extern CIO* sg_io;
+}
 
 int main()
 {

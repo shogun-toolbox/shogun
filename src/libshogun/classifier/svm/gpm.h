@@ -28,7 +28,10 @@
 
 #include "lib/common.h"
 
+namespace shogun
+{
 int32_t gpm_solver(
 	int32_t Solver, int32_t Projector, int32_t n, float32_t *A, float64_t *b,
 	float64_t c, float64_t e, int32_t *iy, float64_t *x, float64_t tol,
 	int32_t *ls = 0, int32_t *proj = 0);
+}

@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 
+namespace shogun
+{
 /** This function must be called before libshogun is used. Usually shogun does
  * not provide any output messages (neither debugging nor error; apart from
  * exceptions). This function allows one to specify customized output
@@ -46,4 +48,5 @@ extern void (*sg_print_error)(FILE* target, const char* str);
 
 /// function called to cancel things
 extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
+}
 #endif //__SG_INIT__

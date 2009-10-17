@@ -11,6 +11,8 @@
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
 
+using namespace shogun;
+
 l2_lr_fun::l2_lr_fun(const problem *p, float64_t Cp, float64_t Cn)
 : function()
 {

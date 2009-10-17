@@ -84,7 +84,10 @@ namespace shogun
 
 /* Template Class GCArray */
 %include <shogun/lib/GCArray.h>
-%template(PlifGCArray) CGCArray<CPlifBase*>;
+namespace shogun
+{
+    %template(PlifGCArray) CGCArray<CPlifBase*>;
+}
 
 /* Hash */
 %apply (uint8_t* IN_ARRAY1, int32_t DIM1) {(uint8_t* data, int32_t len)};

@@ -50,7 +50,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-using namespace shogun;
+namespace shogun
+{
 
 typedef KERNELCACHE_ELEM Qfloat;
 typedef float64_t schar;
@@ -2569,5 +2570,6 @@ const char *svm_check_parameter(
 	}
 
 	return NULL;
+}
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS

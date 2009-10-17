@@ -43,11 +43,14 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		double *B, const int ldb);
 #endif
 
+namespace shogun
+{
 void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, 
 		double *w, int *info);
 void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, 
 		double *sing, double *u, int ldu, double *vt, int ldvt, 
 		int *info);
+}
 
 // only MKL and ACML provide a header file for the lapack routines
 #if !defined(HAVE_ACML) && !defined(HAVE_MKL)

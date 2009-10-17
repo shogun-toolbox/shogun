@@ -29,7 +29,8 @@
 #include "classifier/svm/libocas_common.h"
 #include "classifier/svm/qpssvmlib.h"
 
-using namespace shogun;
+namespace shogun
+{
 
 static const uint32_t QPSolverMaxIter = 10000000;
 
@@ -432,63 +433,4 @@ cleanup:
 
   return(ocas);
 }
-
-
-/*----------------------------------------------------------------------
- Sort array value and index in asceding order according to value.
-  ----------------------------------------------------------------------*/
-static void swapf(float64_t* a, float64_t* b)
-{
-	float64_t dummy=*b;
-	*b=*a;
-	*a=dummy;
-}
-
-static void swapi(uint32_t* a, uint32_t* b)
-{
-	uint32_t dummy=*b;
-	*b=*a;
-	*a=dummy;
-}
-
-void qsort_index(float64_t* value, uint32_t* index, uint32_t size)
-{
-	if (size==2)
-	{
-		if (value[0] > value[1])
-		{
-			swapf(&value[0], &value[1]);
-			swapi(&index[0], &index[1]);
-		}
-		return;
-	}
-	float64_t split=value[size/2];
-
-	uint32_t left=0;
-	uint32_t right=size-1;
-
-	while (left<=right)
-	{
-		while (value[left] < split)
-			left++;
-		while (value[right] > split)
-			right--;
-
-		if (left<=right)
-		{
-			swapf(&value[left], &value[right]);
-			swapi(&index[left], &index[right]);
-			left++;
-			right--;
-		}
-	}
-
-	if (right+1> 1)
-		qsort_index(value,index,right+1);
-
-	if (size-left> 1)
-		qsort_index(&value[left],&index[left], size-left);
-
-
-    return;
 }

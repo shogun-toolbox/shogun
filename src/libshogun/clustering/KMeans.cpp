@@ -91,6 +91,8 @@ struct thread_data
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
+namespace shogun
+{
 void *sqdist_thread_func(void * P)
 {
 	struct thread_data *TD=(struct thread_data*) P;
@@ -122,6 +124,7 @@ void *sqdist_thread_func(void * P)
 	}
 	return NULL;
 } 
+}
 
 void CKMeans::sqdist(
 	float64_t* x, CSimpleFeatures<float64_t>* y, float64_t* z, int32_t n1, int32_t offs,

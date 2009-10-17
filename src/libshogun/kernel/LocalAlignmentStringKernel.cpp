@@ -34,7 +34,7 @@ using namespace shogun;
 
 #define NAA 20                                  /* Number of amino-acids */
 #define NLET 26                                 /* Number of letters in the alphabet */
-static const char *aaList= "ARNDCQEGHILKMFPSTWYV";    /* The list of amino acids */
+const char* CLocalAlignmentStringKernel::aaList= "ARNDCQEGHILKMFPSTWYV";    /* The list of amino acids */
 
 /*****************/
 /* SW parameters */

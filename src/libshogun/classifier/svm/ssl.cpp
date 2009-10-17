@@ -28,10 +28,8 @@
 #include "features/SparseFeatures.h"
 #include "classifier/svm/ssl.h"
 
-using namespace shogun;
-
-#define VERBOSE 1
-
+namespace shogun
+{
 void ssl_train(struct data *Data, 
 		struct options *Options, 
 		struct vector_double *Weights,
@@ -1134,4 +1132,5 @@ void GetLabeledData(struct data *D, const struct data *Data)
 	D->n=Data->n;
 	D->u=0;
 	delete [] J;*/
+}
 }

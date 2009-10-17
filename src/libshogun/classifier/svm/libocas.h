@@ -16,6 +16,8 @@
 #include "lib/common.h"
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+namespace shogun
+{
 /** ocas return value */
 typedef struct {
   /** number of iterations */
@@ -49,7 +51,6 @@ typedef struct {
    */
   int8_t exitflag;
 } ocas_return_value_T;
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 ocas_return_value_T svm_ocas_solver(
 		float64_t C,            /* regularizarion constant */
@@ -65,5 +66,5 @@ ocas_return_value_T svm_ocas_solver(
 		void (*compute_output)( float64_t*, void* ),
 		void (*sort)(float64_t*, uint32_t*, uint32_t),
 		void* user_data);
-
-void qsort_index(float64_t* value, uint32_t* index, uint32_t size);
+}
+#endif // DOXYGEN_SHOULD_SKIP_THIS

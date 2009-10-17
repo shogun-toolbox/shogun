@@ -133,6 +133,8 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		static const int32_t blosum[];
 		/** scaled blosum */
 		int32_t* scaled_blosum;
+		/** List of amino acids */
+		static const char* aaList;
 };
 }
 #endif /* _LOCALALIGNMENTSTRINGKERNEL_H__ */

@@ -6,9 +6,9 @@
 #ifdef HAVE_LAPACK
 #include "base/SGObject.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace shogun
 {
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** class function */
 class function
 {

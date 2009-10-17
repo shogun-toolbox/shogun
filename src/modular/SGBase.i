@@ -14,6 +14,8 @@
  #include <shogun/base/Parallel.h>
  #include <shogun/base/SGObject.h>
 
+ using namespace shogun;
+
  extern void sg_global_print_message(FILE* target, const char* str);
  extern void sg_global_print_warning(FILE* target, const char* str);
  extern void sg_global_print_error(FILE* target, const char* str);
@@ -25,7 +27,6 @@
 #ifdef SWIGR
  #include <Rdefines.h>
 #endif
- using namespace shogun;
 %}
 
 %init %{
@@ -40,7 +41,6 @@
 #ifdef SWIGPYTHON
     import_array();
 #endif
-    using namespace shogun;
 %}
 
 %exception
@@ -78,7 +78,6 @@
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
-using namespace shogun;
 
 %include "swig_typemaps.i"
 
