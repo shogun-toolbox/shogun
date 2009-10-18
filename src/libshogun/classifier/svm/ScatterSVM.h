@@ -9,8 +9,8 @@
  * Copyright (C) 2009 TU Berlin and Max-Planck-Society
  */
 
-#ifndef _MCSVM_H___
-#define _MCSVM_H___
+#ifndef _SCATTERSVM_H___
+#define _SCATTERSVM_H___
 
 #include "lib/common.h"
 #include "classifier/svm/MultiClassSVM.h"
@@ -20,21 +20,33 @@
 
 namespace shogun
 {
-/** @brief MCSVM */
-class CMCSVM : public CMultiClassSVM
+/** @brief ScatterSVM - Multiclass SVM
+ *
+ * The ScatterSVM is an unpublished experimental
+ * true multiclass SVM. Details are availabe
+ * in the following technical report.
+ *
+ * Robert Jenssen and Marius Kloft and Alexander Zien and S\"oren Sonnenburg and
+ *           Klaus-Robert M\"{u}ller,
+ * A Multi-Class Support Vector Machine Based on Scatter Criteria, TR 014-2009
+ * TU Berlin, 2009
+ *
+ * */
+class CScatterSVM : public CMultiClassSVM
 {
 	public:
 		/** constructor */
-		CMCSVM();
+		CScatterSVM();
 		/** constructor
 		 *
 		 * @param C constant C
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CMCSVM(float64_t C, CKernel* k, CLabels* lab);
+		CScatterSVM(float64_t C, CKernel* k, CLabels* lab);
 
-		virtual ~CMCSVM();
+		/** default destructor */
+		virtual ~CScatterSVM();
 
 		/** train SVM classifier
 		 *
@@ -50,7 +62,7 @@ class CMCSVM : public CMultiClassSVM
 		 *
 		 * @return classifier type LIBSVM
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_MCSVM; }
+		virtual inline EClassifierType get_classifier_type() { return CT_SCATTERSVM; }
 
 		/** classify one example
 		 *
@@ -59,10 +71,14 @@ class CMCSVM : public CMultiClassSVM
 		 */
 		virtual float64_t classify_example(int32_t num);
 
-		CLabels* classify_one_vs_rest(CLabels* output);
+		/** classify one vs rest
+		 *
+		 * @return resulting labels
+		 */
+		virtual CLabels* classify_one_vs_rest();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "MCSVM"; }
+		inline virtual const char* get_name() const { return "ScatterSVM"; }
 
 	private:
 		void compute_norm_wc();
@@ -82,8 +98,8 @@ class CMCSVM : public CMultiClassSVM
 		/** norm of w_cw */
 		float64_t* norm_wcw;
 
-		/** MCSVM rho */
+		/** ScatterSVM rho */
 		float64_t rho;
 };
 }
-#endif // MCSVM
+#endif // ScatterSVM

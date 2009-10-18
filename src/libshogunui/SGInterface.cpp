@@ -4781,7 +4781,7 @@ bool CSGInterface::cmd_train_classifier()
 	{
 		case CT_LIGHT:
 		case CT_LIBSVM:
-		case CT_MCSVM:
+		case CT_SCATTERSVM:
 		case CT_MPD:
 		case CT_GPBT:
 		case CT_CPLEXSVM:

@@ -54,7 +54,7 @@
 #include <shogun/classifier/svm/MPDSVM.h>
 #include <shogun/classifier/svm/GNPPSVM.h>
 #include <shogun/classifier/svm/GMNPSVM.h>
-#include <shogun/classifier/svm/MCSVM.h>
+#include <shogun/classifier/svm/ScatterSVM.h>
 
 #include <shogun/classifier/svm/SVMLin.h>
 #include <shogun/classifier/svm/SubGradientSVM.h>
@@ -128,11 +128,11 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		classifier= new CLibSVMMultiClass(LIBSVM_NU_SVC);
 		SG_INFO("created SVMlibsvm object for multiclass\n") ;
 	}
-	else if (strcmp(name,"MCSVM")==0)
+	else if (strcmp(name,"SCATTERSVM")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CMCSVM();
-		SG_INFO("created MCSVM object\n") ;
+		classifier= new CScatterSVM();
+		SG_INFO("created ScatterSVM object\n") ;
 	}
 	else if (strcmp(name,"LIBSVM_NU")==0)
 	{
@@ -1036,7 +1036,7 @@ CLabels* CGUIClassifier::classify()
 	{
 		case CT_LIGHT:
 		case CT_LIBSVM:
-		case CT_MCSVM:
+		case CT_SCATTERSVM:
 		case CT_MPD:
 		case CT_GPBT:
 		case CT_CPLEXSVM:
@@ -1117,7 +1117,7 @@ bool CGUIClassifier::get_trained_classifier(
 
 	switch (classifier->get_classifier_type())
 	{
-		case CT_MCSVM:
+		case CT_SCATTERSVM:
 		case CT_GNPPSVM:
 		case CT_LIBSVMMULTICLASS:
 		case CT_LIGHT:
@@ -1484,11 +1484,11 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		constraint_generator= new CLibSVMMultiClass(LIBSVM_NU_SVC);
 		SG_INFO("created SVMlibsvm object for multiclass\n") ;
 	}
-	else if (strcmp(name,"MCSVM")==0)
+	else if (strcmp(name,"SCATTERSVM")==0)
 	{
 		SG_UNREF(constraint_generator);
-		constraint_generator= new CMCSVM();
-		SG_INFO("created MCSVM object\n") ;
+		constraint_generator= new CScatterSVM();
+		SG_INFO("created ScatterSVM object\n") ;
 	}
 	else if (strcmp(name,"LIBSVM_NU")==0)
 	{

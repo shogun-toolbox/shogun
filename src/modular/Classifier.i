@@ -40,7 +40,7 @@
  #include <shogun/classifier/KNN.h>
  #include <shogun/classifier/LDA.h>
  #include <shogun/classifier/svm/LibLinear.h>
- #include <shogun/classifier/svm/MCSVM.h>
+ #include <shogun/classifier/svm/ScatterSVM.h>
  #include <shogun/classifier/svm/LibSVM.h>
  #include <shogun/classifier/svm/LibSVMMultiClass.h>
  #include <shogun/classifier/svm/LibSVMOneClass.h>
@@ -89,7 +89,7 @@
 %rename(KNN) CKNN;
 %rename(LDA) CLDA;
 %rename(LibLinear) CLibLinear;
-%rename(MCSVM) CMCSVM;
+%rename(ScatterSVM) CScatterSVM;
 %rename(LibSVM) CLibSVM;
 %rename(LibSVMMultiClass) CLibSVMMultiClass;
 %rename(LibSVMOneClass) CLibSVMOneClass;
@@ -137,7 +137,7 @@
 %include <shogun/classifier/KNN.h>
 %include <shogun/classifier/LDA.h>
 %include <shogun/classifier/svm/LibLinear.h>
-%include <shogun/classifier/svm/MCSVM.h>
+%include <shogun/classifier/svm/ScatterSVM.h>
 %include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/classifier/svm/LibSVMMultiClass.h>
 %include <shogun/classifier/svm/LibSVMOneClass.h>
