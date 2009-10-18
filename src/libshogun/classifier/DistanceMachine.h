@@ -21,6 +21,9 @@
 
 namespace shogun
 {
+	class CLabels;
+	class CDistance;
+	class CClassifier;
 
 /** @brief A generic DistanceMachine interface.
  *

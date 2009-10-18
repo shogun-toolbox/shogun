@@ -21,6 +21,8 @@
 
 namespace shogun
 {
+template <class T> class T_STRING;
+
 /** store plif arrays for all transitions 
  *  in the model
  *

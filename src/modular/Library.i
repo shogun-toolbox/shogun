@@ -79,14 +79,14 @@ namespace shogun
     %template(DynamicULongArray) CDynamicArray<uint64_t>;
     %template(DynamicShortRealArray) CDynamicArray<float32_t>;
     %template(DynamicRealArray) CDynamicArray<float64_t>;
-    %template(DynamicPlifArray) CDynamicArray<CPlifBase*>;
+    %template(DynamicPlifArray) CDynamicArray<shogun::CPlifBase*>;
 }
 
 /* Template Class GCArray */
 %include <shogun/lib/GCArray.h>
 namespace shogun
 {
-    %template(PlifGCArray) CGCArray<CPlifBase*>;
+    %template(PlifGCArray) CGCArray<shogun::CPlifBase*>;
 }
 
 /* Hash */
@@ -97,7 +97,7 @@ namespace shogun
 %include <shogun/lib/Array.h>
 namespace shogun
 {
-    %template(CharArray) shogun::CArray<char>;
+    %template(CharArray) CArray<char>;
     %template(ByteArray) CArray<uint8_t>;
     %template(ShortArray) CArray<int16_t>;
     %template(WordArray) CArray<uint16_t>;

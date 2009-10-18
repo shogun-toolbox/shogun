@@ -55,6 +55,8 @@
 namespace shogun
 {
 class CIO;
+class CParallel;
+class CVersion;
 
 // define reference counter macros
 //

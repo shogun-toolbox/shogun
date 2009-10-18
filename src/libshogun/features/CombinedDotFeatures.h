@@ -18,6 +18,9 @@
 
 namespace shogun
 {
+class CFeatures;
+template <class T> class CList;
+template <class T> class CListElement;
 /** @brief Features that allow stacking of a number of DotFeatures.
  *
  * They transparently provide all the operations of DotFeatures, i.e.

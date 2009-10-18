@@ -16,6 +16,8 @@
 
 namespace shogun
 {
+	template <class ST> class CStringFeatures;
+
 /** @brief Class Histogram computes a histogram over all 16bit unsigned
  * integers in the features.
  *

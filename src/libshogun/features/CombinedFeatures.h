@@ -18,6 +18,8 @@
 namespace shogun
 {
 class CFeatures;
+template <class T> class CList;
+template <class T> class CListElement;
 
 /** @brief The class CombinedFeatures is used to combine a number of of feature objects
  * into a single CombinedFeatures object.

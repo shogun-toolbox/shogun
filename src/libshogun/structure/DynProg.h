@@ -37,6 +37,11 @@
 
 namespace shogun
 {
+	template <class T> class CSparseFeatures;
+	class CIntronList;
+	class CPlifMatrix;
+	class CSegmentLoss;
+
 //#define DYNPROG_TIMING
 
 #ifdef USE_BIGSTATES

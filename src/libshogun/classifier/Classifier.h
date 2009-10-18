@@ -19,6 +19,11 @@
 
 namespace shogun
 {
+
+class CFeatures;
+class CLabels;
+class CMath;
+
 enum EClassifierType
 {
 	CT_NONE = 0,

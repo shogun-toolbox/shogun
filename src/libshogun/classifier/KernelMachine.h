@@ -22,6 +22,8 @@
 namespace shogun
 {
 class CClassifier;
+class CLabels;
+class CKernel;
 
 /** @brief A generic KernelMachine interface.
  *

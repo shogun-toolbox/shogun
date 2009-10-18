@@ -28,6 +28,8 @@
 
 namespace shogun
 {
+	class CFeatures;
+	template <class ST> class CStringFeatures;
 /**@name HMM specific types*/
 //@{
 

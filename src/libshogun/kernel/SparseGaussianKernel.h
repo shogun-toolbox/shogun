@@ -17,6 +17,7 @@
 
 namespace shogun
 {
+	template <class T> class CSparseFeatures;
 /** @brief The well known Gaussian kernel (swiss army knife for SVMs)
  * on sparse real valued features.
  *

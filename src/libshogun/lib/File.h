@@ -22,6 +22,11 @@
 
 namespace shogun
 {
+	class DynamicArray;
+	class SimpleFile;
+	class Features;
+	enum EFeatureType;
+
 template <class ST> struct T_STRING;
 template <class ST> struct TSparse;
 

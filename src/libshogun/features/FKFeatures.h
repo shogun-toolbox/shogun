@@ -17,6 +17,10 @@
 
 namespace shogun
 {
+
+template <class T> class CSimpleFeatures;
+class CHMM;
+
 /** @brief The class FKFeatures implements Fischer kernel features obtained from
  * two Hidden Markov models.
  *

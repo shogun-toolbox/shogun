@@ -17,6 +17,9 @@
 
 namespace shogun
 {
+template <class T> class CSimpleFeatures;
+class CHMM;
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** HMM indices */
 struct T_HMM_INDIZES

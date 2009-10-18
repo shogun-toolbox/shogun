@@ -20,6 +20,9 @@
 
 namespace shogun
 {
+	class CDotFeatures;
+	class CLabels;
+
 /** @brief Class LinearClassifier is a generic interface for all kinds of linear
  * classifiers.
  *

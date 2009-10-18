@@ -21,6 +21,11 @@
 
 namespace shogun
 {
+class CMath;
+class CFeatures;
+enum EFeatureType;
+enum EFeatureClass;
+
 enum EDistanceType
 {
 	D_UNKNOWN = 0,

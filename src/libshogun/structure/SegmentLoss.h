@@ -19,6 +19,9 @@
                    
 namespace shogun
 {
+	template <class T> class CArray;
+	template <class T> class CArray2;
+	template <class T> class CArray3;
 /** @brief class IntronList */   
 class CSegmentLoss : public CSGObject
 {                         
@@ -26,9 +29,9 @@ class CSegmentLoss : public CSGObject
 
 		/** constructor
 		 */	
-                CSegmentLoss();
+		CSegmentLoss();
 
-                virtual ~CSegmentLoss();
+		virtual ~CSegmentLoss();
 
 		/** get segment loss for a given range
 		 * 

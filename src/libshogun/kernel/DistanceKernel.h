@@ -20,6 +20,8 @@
 
 namespace shogun
 {
+	class CDistance;
+
 /** @brief The Distance kernel takes a distance as input.
  *
  * It turns a distance into something kernel like by computing

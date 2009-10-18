@@ -20,6 +20,9 @@
 namespace shogun
 {
 	class CPreProc;
+	enum EFeatureType;
+	enum EFeatureClass;
+	enum EFeatureProperty;
 }
 
 namespace shogun

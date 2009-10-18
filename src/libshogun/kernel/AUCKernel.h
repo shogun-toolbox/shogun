@@ -19,6 +19,9 @@
 
 namespace shogun
 {
+	class CLabels;
+	template <class T> class CSimpleFeatures;
+
 /** @brief The AUC kernel can be used to maximize the area under the receiver operator
  * characteristic curve (AUC) instead of margin in SVM training.
  *

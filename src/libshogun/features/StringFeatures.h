@@ -15,7 +15,6 @@
 #include "preproc/PreProc.h"
 #include "preproc/StringPreProc.h"
 #include "features/Features.h"
-#include "features/SimpleFeatures.h"
 #include "features/Alphabet.h"
 #include "lib/common.h"
 #include "lib/io.h"
@@ -33,9 +32,14 @@
 
 namespace shogun
 {
+class CAlphabet;
+enum EAlphabet;
+template <class T> class CDynamicArray;
 class CFile;
-
+template <class T> class CMemoryMappedFile;
+class CMath;
 template <class ST> class CStringPreProc;
+template <class T> class T_STRING;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** template class T_STRING */

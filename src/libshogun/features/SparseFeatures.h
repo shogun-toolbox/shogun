@@ -30,6 +30,10 @@
 namespace shogun
 {
 
+class CLabels;
+class CFeatures;
+class CDotFeatures;
+template <class ST> class CSimpleFeatures;
 template <class ST> class CSparsePreProc;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

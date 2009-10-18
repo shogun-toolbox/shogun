@@ -17,6 +17,8 @@
 
 namespace shogun
 {
+    class CLabels;
+
 /** @brief Class to implement various performance measures.
  *
  * - Receiver Operating Curve (ROC)

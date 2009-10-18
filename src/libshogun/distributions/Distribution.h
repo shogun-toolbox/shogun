@@ -17,6 +17,8 @@
 
 namespace shogun
 {
+class CFeatures;
+class CMath;
 /** @brief Base class Distribution from which all methods implementing a
  * distribution are derived.
  *

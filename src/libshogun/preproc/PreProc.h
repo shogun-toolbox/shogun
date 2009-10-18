@@ -19,6 +19,10 @@
 
 namespace shogun
 {
+	class CFeatures;
+	enum EFeatureType;
+	enum EFeatureClass;
+
 enum EPreProcType
 {
 	P_UNKNOWN=0,

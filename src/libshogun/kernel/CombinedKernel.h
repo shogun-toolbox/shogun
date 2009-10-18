@@ -21,6 +21,10 @@
 
 namespace shogun
 {
+class CFeatures;
+class CCombinedFeatures;
+template <class T> class CList;
+template <class T> class CListElement;
 /**
  * @brief The Combined kernel is used to combine a number of kernels into a
  * single CombinedKernel object by linear combination.

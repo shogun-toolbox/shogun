@@ -1,11 +1,10 @@
 def mkl_multiclass ():
 	print 'mkl_multiclass'
 
-	from shogun.Features import RealFeatures, Labels
-	from shogun.Kernel import GaussianKernel
-	from shogun.Kernel import LinearKernel
+	from shogun.Features import CombinedFeatures, RealFeatures, Labels
+	from shogun.Kernel import CombinedKernel, GaussianKernel, LinearKernel
 	from shogun.Kernel import Chi2Kernel
-	from shogun.Classifier.MKL import MKLMultiClass
+	from shogun.Classifier import MKLMultiClass
 
 
 
@@ -23,7 +22,7 @@ def mkl_multiclass ():
 
 	subkfeats_train=RealFeatures(fm_train_real)
 	subkfeats_test=RealFeatures(fm_test_real)
-	subkernel=LinearKernel(10)
+	subkernel=LinearKernel()
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.append_kernel(subkernel)
@@ -39,18 +38,19 @@ def mkl_multiclass ():
 
 	C=1
 	epsilon=1e-5
+	num_threads=1
 	labels=Labels(label_train_multiclass)
 
-	svm=MKLMultiClass(C, kernel, labels)
-	svm.set_epsilon(epsilon);
-	svm.parallel.set_num_threads(num_threads)
+	mkl=MKLMultiClass(C, kernel, labels)
+	mkl.set_epsilon(epsilon);
+	mkl.parallel.set_num_threads(num_threads)
 
 	mkl_eps=0.01
 	mkl_norm=1
-	svm.set_mkl_parameters(mkl_eps,0,mkl_norm)
-	svm.train(feats_train)
+	#mkl.set_mkl_parameters(mkl_eps,0,mkl_norm)
+	#mkl.train(feats_train)
 	#kernel.init(feats_train, feats_test)
-	svm.classify(feats_test).get_labels()
+	#mkl.classify(feats_test).get_labels()
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
