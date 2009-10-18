@@ -44,6 +44,24 @@ CMKLMultiClass::~CMKLMultiClass()
 	lpw=NULL;
 }
 
+CMKLMultiClass::CMKLMultiClass( const CMKLMultiClass & cm)
+: CMultiClassSVM(ONE_VS_REST)
+{
+	svm=NULL;
+	lpw=NULL;
+	SG_ERROR(
+			" CMKLMultiClass::CMKLMultiClass(const CMKLMultiClass & cm): must "
+			"not be called, glpk structure is currently not copyable");
+}
+
+CMKLMultiClass CMKLMultiClass::operator=( const CMKLMultiClass & cm)
+{
+		SG_ERROR(
+			" CMKLMultiClass CMKLMultiClass::operator=(...): must "
+			"not be called, glpk structure is currently not copyable");
+	return (*this);
+}
+
 
 void CMKLMultiClass::initsvm()
 {
@@ -94,11 +112,12 @@ void CMKLMultiClass::initlpsolver()
 	int numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
 
 	ASSERT(numker>0);
-
+	/*
 	if (lpw)
 	{
 		delete lpw;
 	}
+	*/
 	lpw=new MKLMultiClass2glpk;
 	lpw->setup(numker);
 }
@@ -277,7 +296,9 @@ bool CMKLMultiClass::train(CFeatures* data)
 	}
 
 	initlpsolver();
+	std::cout << "Pre crash\n"<<std::endl;
 	weightshistory.clear();
+	std::cout <<"Post crash\n"<<std::endl;
 
 	int32_t numkernels=
 			dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
@@ -328,6 +349,11 @@ bool CMKLMultiClass::train(CFeatures* data)
 
 	SG_UNREF(svm);
 	svm=NULL;
+	if (lpw)
+	{
+		delete lpw;
+	}
+	lpw=NULL;
 	return(true);
 }
 

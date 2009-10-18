@@ -34,6 +34,9 @@ class CMKLMultiClass : public CMultiClassSVM
 public:
 	CMKLMultiClass();
 	CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab);
+
+	CMKLMultiClass( const CMKLMultiClass & cm);
+	CMKLMultiClass operator=( const CMKLMultiClass & cm);
 	
 	virtual ~CMKLMultiClass();
 
@@ -85,6 +88,8 @@ public:
 	
 protected:
 	
+
+
 	/** performs some sanity checks (on the provided kernel), inits the
 	 * GLPK-based LP solver
 	 * 

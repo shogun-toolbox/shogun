@@ -368,7 +368,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_UNREF(classifier);
 		classifier= new CMKLOneClass();
 	}
-	else if (strcmp(name,"MKL_MULTICLASS")==0)
+	else if (strcmp(name,"MKL_MULTICLASSGLPK")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CMKLMultiClass();

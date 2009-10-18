@@ -1,0 +1,24 @@
+% GMNPSVM
+print MKL_MultiClass
+
+
+set_labels TRAIN ../data/label_train_multiclass.dat
+
+
+clean_features TRAIN
+clean_features TEST
+set_kernel COMBINED 10
+
+add_kernel 1 LINEAR REAL 10
+add_features TRAIN ../data/fm_train_real.dat
+add_features TEST ../data/fm_test_real.dat
+
+add_kernel 1 GAUSSIAN REAL 10 1.
+add_features TRAIN ../data/fm_train_real.dat
+add_features TEST ../data/fm_test_real.dat
+
+new_classifier MKL_MULTICLASSGLPK
+train_classifier
+
+
+out.txt = classify
