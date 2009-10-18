@@ -39,4 +39,4 @@ if __name__=='__main__':
 	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
 	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
 	label_train_multiclass=lm.load_labels('../data/label_train_multiclass.dat')
-	gmnpsvm()
+	mkl_multiclass()
