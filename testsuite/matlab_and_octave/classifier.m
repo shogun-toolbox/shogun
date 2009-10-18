@@ -5,10 +5,10 @@ function y = classifier(filename)
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	%
-	system(sprintf('ln -sf ../data/classifier/%s.m testscript.m', filename));
-	testscript;
-	system('rm -f testscript.m'); %avoid ultra long filenames (>63 chars)
-	%eval(filename);
+	%system(sprintf('ln -sf ../data/classifier/%s.m testscript.m', filename));
+	%testscript;
+	%system('rm -f testscript.m'); %avoid ultra long filenames (>63 chars)
+	eval(filename);
 
 	% b0rked, skip these
 	if strcmp(classifier_name, 'Perceptron')==1 || strcmp(classifier_name, 'SubGradientSVM')==1

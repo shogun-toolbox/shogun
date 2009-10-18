@@ -4793,17 +4793,16 @@ bool CSGInterface::cmd_train_classifier()
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
 			return ui_classifier->train_svm();
+		case CT_MKLMULTICLASS:
+			return ui_classifier->train_mkl_multiclass();
 		case CT_MKLCLASSIFICATION:
 		case CT_MKLREGRESSION:
 		case CT_MKLONECLASS:
-		
 			return ui_classifier->train_mkl();
 
 		case CT_KRR:
 			return ui_classifier->train_krr();
 
-		case CT_MKLMULTICLASS:
-			return ui_classifier->train_svm();
 		case CT_KNN:
 		{
 			if (m_nrhs<2)

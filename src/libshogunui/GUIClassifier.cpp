@@ -388,6 +388,51 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	return (classifier!=NULL);
 }
 
+bool CGUIClassifier::train_mkl_multiclass()
+{
+	CMKLMultiClass* mkl= (CMKLMultiClass*) classifier;
+	if (!mkl)
+		SG_ERROR("No MKL available.\n");
+
+	CLabels* trainlabels=ui->ui_labels->get_train_labels();
+	if (!trainlabels)
+		SG_ERROR("No trainlabels available.\n");
+
+	CKernel* kernel=ui->ui_kernel->get_kernel();
+	if (!kernel)
+		SG_ERROR("No kernel available.\n");
+
+	bool success=ui->ui_kernel->init_kernel("TRAIN");
+
+	if (!success || !ui->ui_kernel->is_initialized() || !kernel->has_features())
+		SG_ERROR("Kernel not initialized / no train features available.\n");
+
+	int32_t num_vec=kernel->get_num_vec_lhs();
+	if (trainlabels->get_num_labels() != num_vec)
+		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec);
+
+	SG_INFO("Starting MC-MKL training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
+
+	mkl->set_mkl_epsilon(svm_weight_epsilon);
+	//mkl->set_max_num_mkliters(-1);
+	mkl->set_solver_type(solver_type);
+	mkl->set_bias_enabled(svm_use_bias);
+	mkl->set_epsilon(svm_epsilon);
+	mkl->set_max_train_time(max_train_time);
+	mkl->set_tube_epsilon(svm_tube_epsilon);
+	mkl->set_nu(svm_nu);
+	mkl->set_C(svm_C1, svm_C2);
+	mkl->set_qpsize(svm_qpsize);
+	mkl->set_shrinking_enabled(svm_use_shrinking);
+	mkl->set_linadd_enabled(svm_use_linadd);
+	mkl->set_batch_computation_enabled(svm_use_batch_computation);
+
+	((CKernelMachine*) mkl)->set_labels(trainlabels);
+	((CKernelMachine*) mkl)->set_kernel(kernel);
+
+	return mkl->train();
+}
+
 bool CGUIClassifier::train_mkl()
 {
 	CMKL* mkl= (CMKL*) classifier;

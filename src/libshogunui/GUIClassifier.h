@@ -91,6 +91,8 @@ class CGUIClassifier : public CSGObject
 		/** set constraint generator */
 		bool set_constraint_generator(char* cg);
 
+		/** train MKL multiclass*/
+		bool train_mkl_multiclass();
 		/** train MKL */
 		bool train_mkl();
 		/** train SVM */
