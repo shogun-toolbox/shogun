@@ -5,6 +5,9 @@ C=1.2;
 use_bias=false;
 epsilon=1e-5;
 width=2.1;
+mkl_eps=0.01;
+mkl_norm=1; % only L1 by now 
+
 max_train_time=600;
 
 addpath('tools');
@@ -13,8 +16,8 @@ fm_train_real=load_matrix('../data/fm_train_real.dat');
 fm_test_real=load_matrix('../data/fm_test_real.dat');
 
 % MKL_MULTICLASSGLPK
-disp('MKL_MULTICLASSGLPK');
-sg('new_classifier', 'MKL_MULTICLASSGLPK');
+disp('MKL_MULTICLASS');
+sg('new_classifier', 'MKL_MULTICLASS');
 
 disp('Combined');
 
@@ -32,18 +35,16 @@ sg('add_kernel', 1, 'GAUSSIAN', 'REAL', size_cache, 1);
 sg('add_features', 'TRAIN', fm_train_real);
 sg('add_features', 'TEST', fm_test_real);
 
-%sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 3, false);
-%sg('add_features', 'TRAIN', fm_train_real);
-%sg('add_features', 'TEST', fm_test_real);
+sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 3, false);
+sg('add_features', 'TRAIN', fm_train_real);
+sg('add_features', 'TEST', fm_test_real);
 
 sg('set_labels', 'TRAIN', label_train_multiclass);
-%sg('svm_epsilon', epsilon);
-%sg('c', C);
+sg('svm_epsilon', epsilon);
+sg('c', C);
+sg('mkl_parameters', mkl_eps, 0, mkl_norm);
 
-%keyboard
-warning('pretrain')
 sg('train_classifier');
-warning('posttrain')
 
 result=sg('classify');
 
