@@ -15,7 +15,7 @@ label_train_multiclass=load_matrix('../data/label_train_multiclass.dat');
 fm_train_real=load_matrix('../data/fm_train_real.dat');
 fm_test_real=load_matrix('../data/fm_test_real.dat');
 
-% MKL_MULTICLASSGLPK
+% MKL_MULTICLASS
 disp('MKL_MULTICLASS');
 sg('new_classifier', 'MKL_MULTICLASS');
 
