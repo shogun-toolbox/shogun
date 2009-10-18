@@ -14,35 +14,38 @@ using namespace shogun;
 
 MKLMultiClass2glpk::MKLMultiClass2glpk()
 {
-	numkernels=0;
-	#if defined(USE_GLPK)
+	numkernels = 0;
+#if defined(USE_GLPK)
 	linearproblem=NULL;
-	#endif
+#endif
 }
 MKLMultiClass2glpk::~MKLMultiClass2glpk()
 {
-	#if defined(USE_GLPK)
-		if (linearproblem)
-		{
-			glp_delete_prob(linearproblem);
-			linearproblem=NULL;
-		}
-		
-	#endif
+#if defined(USE_GLPK)
+	if (linearproblem)
+	{
+		glp_delete_prob(linearproblem);
+		linearproblem=NULL;
+	}
+
+#endif
 }
 
 MKLMultiClass2glpk MKLMultiClass2glpk::operator=(MKLMultiClass2glpk & gl)
 {
-	SG_ERROR(" MKLMultiClass2glpk MKLMultiClass2glpk::operator=(...): must not be called, glpk structure is currently not copyable");
-	return(*this);
+	SG_ERROR(
+			" MKLMultiClass2glpk MKLMultiClass2glpk::operator=(...): must "
+			"not be called, glpk structure is currently not copyable");
+	return (*this);
 
 }
 MKLMultiClass2glpk::MKLMultiClass2glpk(MKLMultiClass2glpk & gl)
 {
-	SG_ERROR(" MKLMultiClass2glpk::MKLMultiClass2glpk(MKLMultiClass2glpk & gl): must not be called, glpk structure is currently not copyable");
+	SG_ERROR(
+			" MKLMultiClass2glpk::MKLMultiClass2glpk(MKLMultiClass2glpk & gl):"
+			" must not be called, glpk structure is currently not copyable");
 
 }
-
 
 void MKLMultiClass2glpk::setup(const int32_t numkernels2)
 {
@@ -50,7 +53,8 @@ void MKLMultiClass2glpk::setup(const int32_t numkernels2)
 	numkernels=numkernels2;
 	if (numkernels<=1)
 	{
-		SG_ERROR("void glpkwrapper::setup(const int32_tnumkernels): input numkernels out of bounds: %d\n",numkernels);
+		SG_ERROR("void glpkwrapper::setup(const int32_tnumkernels): input "
+				"numkernels out of bounds: %d\n",numkernels);
 	}
 
 	if (!linearproblem)
@@ -60,7 +64,7 @@ void MKLMultiClass2glpk::setup(const int32_t numkernels2)
 
 	glp_set_obj_dir(linearproblem, GLP_MAX);
 
-	glp_add_cols(linearproblem,1+numkernels); 
+	glp_add_cols(linearproblem,1+numkernels);
 
 	//set up theta
 	glp_set_col_bnds(linearproblem,1,GLP_FR,0.0,0.0);
@@ -81,7 +85,8 @@ void MKLMultiClass2glpk::setup(const int32_t numkernels2)
 	betainds=new int[1+numkernels];
 	for (int32_t i=0; i<numkernels;++i)
 	{
-		betainds[1+i]=2+i; // coefficient for theta stays zero, therefore start at 2 not at 1 !
+		betainds[1+i]=2+i; // coefficient for theta stays zero, therefore
+							//start at 2 not at 1 !
 	}
 
 	float64_t *betacoeffs(NULL);
@@ -101,13 +106,15 @@ void MKLMultiClass2glpk::setup(const int32_t numkernels2)
 	delete[] betacoeffs;
 	betacoeffs=NULL;
 #else
-	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary here\n");
+	SG_ERROR(
+			"glpk.h from GNU glpk not included at compile time necessary "
+			"here\n");
 #endif
 
 }
 
 void MKLMultiClass2glpk::addconstraint(const ::std::vector<float64_t> & normw2,
-			const float64_t sumofpositivealphas)
+		const float64_t sumofpositivealphas)
 {
 #if defined(USE_GLPK)
 
@@ -124,7 +131,8 @@ void MKLMultiClass2glpk::addconstraint(const ::std::vector<float64_t> & normw2,
 	betainds[1]=1;
 	for (int32_t i=0; i<numkernels;++i)
 	{
-		betainds[2+i]=2+i; // coefficient for theta stays zero, therefore start at 2 not at 1 !
+		betainds[2+i]=2+i; // coefficient for theta stays zero, therefore start
+			//at 2 not at 1 !
 	}
 
 	float64_t *betacoeffs(NULL);
@@ -136,8 +144,10 @@ void MKLMultiClass2glpk::addconstraint(const ::std::vector<float64_t> & normw2,
 	{
 		betacoeffs[2+i]=0.5*normw2[i];
 	}
-	glp_set_mat_row(linearproblem,curconstraint,1+numkernels, betainds,betacoeffs);
-	glp_set_row_bnds(linearproblem,curconstraint,GLP_LO,sumofpositivealphas,sumofpositivealphas);
+	glp_set_mat_row(linearproblem,curconstraint,1+numkernels, betainds,
+			betacoeffs);
+	glp_set_row_bnds(linearproblem,curconstraint,GLP_LO,sumofpositivealphas,
+			sumofpositivealphas);
 
 	delete[] betainds;
 	betainds=NULL;
@@ -146,7 +156,9 @@ void MKLMultiClass2glpk::addconstraint(const ::std::vector<float64_t> & normw2,
 	betacoeffs=NULL;
 
 #else
-	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary here\n");
+	SG_ERROR(
+			"glpk.h from GNU glpk not included at compile time necessary "
+			"here\n");
 #endif
 }
 
@@ -155,13 +167,13 @@ void MKLMultiClass2glpk::computeweights(std::vector<float64_t> & weights2)
 #if defined(USE_GLPK)
 	weights2.resize(numkernels);
 
-	glp_simplex(linearproblem,NULL); 
+	glp_simplex(linearproblem,NULL);
 
 	float64_t sum=0;
 	for (int32_t i=0; i< numkernels;++i)
 	{
 		weights2[i]=glp_get_col_prim(linearproblem, i+2);
-		weights2[i]=  ::std::max(0.0, ::std::min(1.0,weights2[i]));
+		weights2[i]= ::std::max(0.0, ::std::min(1.0,weights2[i]));
 		sum+= weights2[i];
 	}
 
@@ -173,8 +185,11 @@ void MKLMultiClass2glpk::computeweights(std::vector<float64_t> & weights2)
 		}
 	}
 	else
-		SG_ERROR("void glpkwrapper::computeweights(std::vector<float64_t> & weights2): sum of weights nonpositive %f\n",sum);
+	SG_ERROR("void glpkwrapper::computeweights(std::vector<float64_t> & "
+			"weights2): sum of weights nonpositive %f\n",sum);
 #else
-	SG_ERROR("glpk.h from GNU glpk not included at compile time necessary here\n");
+	SG_ERROR(
+			"glpk.h from GNU glpk not included at compile time necessary "
+			"here\n");
 #endif
 }

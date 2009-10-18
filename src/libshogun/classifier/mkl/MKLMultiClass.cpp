@@ -64,7 +64,8 @@ void CMKLMultiClass::initsvm()
 
 	if (numlabels<=0)	
 	{
-		SG_ERROR("CMKLMultiClass::initsvm(): the number of labels is nonpositive, do not know how to handle this!\n");
+		SG_ERROR("CMKLMultiClass::initsvm(): the number of labels is "
+				"nonpositive, do not know how to handle this!\n");
 	}
 
 	CLabels* newlab=new CLabels(lb, labels->get_num_labels() );
@@ -85,7 +86,9 @@ void CMKLMultiClass::initlpsolver()
 
 	if (kernel->get_kernel_type()!=K_COMBINED)
 	{
-		SG_ERROR("CMKLMultiClass::initlpsolver(): given kernel is not of type K_COMBINED %d required by Multiclass Mkl \n",kernel->get_kernel_type());
+		SG_ERROR("CMKLMultiClass::initlpsolver(): given kernel is not of type"
+				" K_COMBINED %d required by Multiclass Mkl \n",
+				kernel->get_kernel_type());
 	}
 
 	int numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
@@ -101,7 +104,8 @@ void CMKLMultiClass::initlpsolver()
 }
 
 
-bool CMKLMultiClass::evaluatefinishcriterion(const int32_t numberofsilpiterations)
+bool CMKLMultiClass::evaluatefinishcriterion(const int32_t
+		numberofsilpiterations)
 {
 	if ( (max_num_mkl_iters>0) && (numberofsilpiterations>=max_num_mkl_iters) )
 	{
@@ -133,7 +137,8 @@ bool CMKLMultiClass::evaluatefinishcriterion(const int32_t numberofsilpiteration
 	return(false);
 }
 
-void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> & curweights)
+void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
+		curweights)
 {
 
 	if (weightshistory.size()>2)
@@ -155,7 +160,8 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> & curweight
 	svm->train();
 
 	float64_t sumofsignfreealphas=getsumofsignfreealphas();
-	int32_t numkernels=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
+	int32_t numkernels=
+			dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
 
 
 	std::vector<float64_t> normw2(numkernels);
@@ -224,7 +230,8 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 
 	float64_t tmp=0;
 
-	for (int32_t classindex=0; classindex< labels->get_num_classes();++classindex)
+	for (int32_t classindex=0; classindex< labels->get_num_classes();
+			++classindex)
 	{
 		CSVM * sm=svm->get_svm(classindex);
 
@@ -264,14 +271,16 @@ bool CMKLMultiClass::train(CFeatures* data)
 	if (data)
 	{
 		if (labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of "
+					"labels\n");
 		kernel->init(data, data);
 	}
 
 	initlpsolver();
 	weightshistory.clear();
 
-	int32_t numkernels=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
+	int32_t numkernels=
+			dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
 
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);

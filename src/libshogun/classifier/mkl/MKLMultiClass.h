@@ -26,7 +26,8 @@ namespace shogun
 /** @brief MKLMultiClass is a class for L1-norm multiclass MKL.
 *
 *	It is based on the GMNPSVM Multiclass SVM.
-*	Its own parameters are the L2 norm weight change based MKL termination criterion set by void set_mkl_epsilon(float64_t eps ); and the maximal number of MKL iterations set by void set_max_num_mkliters(int32_t maxnum); It passes the regularization constants C1 and C2 to GMNPSVM. 
+*	Its own parameters are the L2 norm weight change based MKL
+*	Its termination criterion set by void set_mkl_epsilon(float64_t eps ); and the maximal number of MKL iterations set by void set_max_num_mkliters(int32_t maxnum); It passes the regularization constants C1 and C2 to GMNPSVM.
  */
 class CMKLMultiClass : public CMultiClassSVM
 {
@@ -50,28 +51,33 @@ public:
 	 *
 	 * @return classifier type GMNPMKL
 	 */
-	virtual inline EClassifierType get_classifier_type() { return CT_MKLMULTICLASS; }
+	virtual inline EClassifierType get_classifier_type()
+		{ return CT_MKLMULTICLASS; }
 	
 
 	/** returns MKL weights for the different kernels
 	 *
-	 * @param numweights is output parameter, is set to zero if no weights have been computed or to the number of MKL weights which is equal to the number of kernels
+	 * @param numweights is output parameter, is set to zero if no weights
+	 * have been computed or to the number of MKL weights which is equal to the number of kernels
 	 * 
-	 * @return NULL if no weights have been computed or otherwise an array with the weights
+	 * @return NULL if no weights have been computed or otherwise an array
+	 * with the weights
 	 */
 	float64_t* getsubkernelweights(int32_t & numweights);
 	
 	/** sets MKL termination threshold
 	 *
 	 * @param eps is the desired threshold value
-	 * the termination criterion is the L2 norm between the current MKL weights and their counterpart from the previous iteration
+	 * the termination criterion is the L2 norm between the current MKL weights
+	 *  and their counterpart from the previous iteration
 	 * 
 	 */
 	void set_mkl_epsilon(float64_t eps ); 
 
 	/** sets maximal number of MKL iterations
 	 *
-	 * @param maxnum is the desired maximal number of MKL iterations; when it is reached the MKL terminates irrespective of the MKL progress 
+	 * @param maxnum is the desired maximal number of MKL iterations; when it
+	 *  is reached the MKL terminates irrespective of the MKL progress
 	 * set it to a nonpositive value in order to turn it off
 	 * 
 	 */
@@ -79,7 +85,8 @@ public:
 	
 protected:
 	
-	/** performs some sanity checks (on the provided kernel), inits the GLPK-based LP solver
+	/** performs some sanity checks (on the provided kernel), inits the
+	 * GLPK-based LP solver
 	 * 
 	 */
 	void initlpsolver();
@@ -97,7 +104,8 @@ protected:
 	 * @param numberofsilpiterations is the number of currently done iterations
 	 * 
 	 */
-	virtual bool evaluatefinishcriterion(const int32_t numberofsilpiterations);
+	virtual bool evaluatefinishcriterion(const int32_t
+			numberofsilpiterations);
 	
 
 	/** adds a constraint to the LP used in MKL
@@ -111,12 +119,15 @@ protected:
 	 */
 	void addingweightsstep( const std::vector<float64_t> & curweights);
 	/** computes the first svm-dependent part used for generating MKL constraints
-	 * it is \f$ \sum_y b_y^2-\sum_i \sum_{ y | y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1) \f$
+	 * it is
+	 * \f$ \sum_y b_y^2-\sum_i \sum_{ y | y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1) \f$
 	 */
 	float64_t getsumofsignfreealphas();
-	/** computes the second svm-dependent part used for generating MKL constraints
+	/** computes the second svm-dependent part used for generating MKL
+	 * constraints
 	 *
-	 * @param ind is the index of the kernel for which to compute \f$ \|w \|^2  \f$
+	 * @param ind is the index of the kernel for which
+	 * to compute \f$ \|w \|^2  \f$
 	 */
 	float64_t getsquarenormofprimalcoefficients(
 			const int32_t ind);

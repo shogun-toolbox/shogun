@@ -21,62 +21,68 @@
 namespace shogun
 {
 /** @brief MKLMultiClass2glpk is a helper class for MKLMultiClass. 
-*
-*	it solves the corresponding linear problem arising in SIP formulation for MKL using glpk
-*
-*/
+ *
+ *	it solves the corresponding linear problem arising in SIP formulation for
+ * 	MKL using glpk
+ */
 class MKLMultiClass2glpk: public CSGObject
 {
 public:
-	
 
 	MKLMultiClass2glpk();
 	virtual ~MKLMultiClass2glpk();
-	
+
 	/** initializes GLPK LP sover 
 	 *
 	 * @param numkernels2 is the number of kernels
 	 * 
 	 * 
 	 */
-	virtual void setup(const int32_t numkernels2); 
+	virtual void setup(const int32_t numkernels2);
 
 	/** adds a constraint to the LP arising in L1 MKL based on two parameters
 	 *
 	 * @param normw2 is the vector of \f$ \|w_k \|^2 \f$ for all kernels
-	 * @param sumofpositivealphas is a term depending on alphas, labels and biases, see in the function float64_t getsumofsignfreealphas() from MKLMultiClass.h, it depends on the formulation of the underlying GMNPSVM.
+	 * @param sumofpositivealphas is a term depending on alphas, labels and
+	 * biases, see in the function float64_t getsumofsignfreealphas() from
+	 * MKLMultiClass.h, it depends on the formulation of the underlying GMNPSVM.
 	 * 
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
-			const float64_t sumofpositivealphas); 
+			const float64_t sumofpositivealphas);
 
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
 	 * 
 	 */
-	virtual void computeweights(std::vector<float64_t> & weights2); 
+	virtual void computeweights(std::vector<float64_t> & weights2);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "MKLMultiClass2glpk"; }
+	inline virtual const char* get_name() const
+	{
+		return "MKLMultiClass2glpk";
+	}
 
 protected:
-	///prohibits copying the copy constructor by declaring it protected, do not know how to copy the glpk basis structure, it is too C like :) and seemingly not intended to be copied 
-	MKLMultiClass2glpk( MKLMultiClass2glpk & gl);
-	MKLMultiClass2glpk operator=( MKLMultiClass2glpk & gl);
+	/// prohibits copying the copy constructor by declaring it protected, do
+	/// not know how to copy the glpk basis structure, it is too C like :)
+	/// and seemingly not intended to be copied
+	MKLMultiClass2glpk(MKLMultiClass2glpk & gl);
+	MKLMultiClass2glpk operator=(MKLMultiClass2glpk & gl);
 
 protected:
 	/** stores the number of kernels which acts as a parameter for the LP
-	*
-	*/
+	 *
+	 */
 	int32_t numkernels;
 	/** GLPK data structure, is not defined in the case #ifndef USE_GLPK
-	*
-	*/
+	 *
+	 */
 #ifdef USE_GLPK
 	glp_prob* linearproblem;
 #endif
-};	
+};
 }
 
 #endif
