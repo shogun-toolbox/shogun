@@ -16,6 +16,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/features/StringFeatures.h>
 
+using namespace shogun;
+
 class CMatlabInterface : public CSGInterface
 {
 	public:
