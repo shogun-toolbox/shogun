@@ -358,17 +358,17 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_UNREF(classifier);
 		classifier= new CMKLClassification();
 	}
-	else if (strcmp(name,"MKL_MULTICLASS")==0)
-	{
-		SG_UNREF(classifier);
-		classifier= new CMKLClassification();
-	}
+	//else if (strcmp(name,"MKL_MULTICLASS")==0)
+	//{
+	//	SG_UNREF(classifier);
+	//	classifier= new CMKLClassification();
+	//}
 	else if (strcmp(name,"MKL_ONECLASS")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CMKLOneClass();
 	}
-	else if (strcmp(name,"MKL_MULTICLASSGLPK")==0)
+	else if (strcmp(name,"MKL_MULTICLASS")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CMKLMultiClass();
@@ -496,6 +496,11 @@ bool CGUIClassifier::train_svm()
 	svm->set_shrinking_enabled(svm_use_shrinking);
 	svm->set_linadd_enabled(svm_use_linadd);
 	svm->set_batch_computation_enabled(svm_use_batch_computation);
+
+	if(svm->get_classifier_type()==CT_MKLMULTICLASS)
+	{
+		((CMKLMultiClass *)svm)->set_mkl_epsilon(svm_weight_epsilon ); 
+	}
 
 	if (svm_do_auc_maximization)
 	{

@@ -296,9 +296,8 @@ bool CMKLMultiClass::train(CFeatures* data)
 	}
 
 	initlpsolver();
-	std::cout << "Pre crash\n"<<std::endl;
+
 	weightshistory.clear();
-	std::cout <<"Post crash\n"<<std::endl;
 
 	int32_t numkernels=
 			dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();

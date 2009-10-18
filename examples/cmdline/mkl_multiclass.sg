@@ -17,7 +17,8 @@ add_kernel 1 GAUSSIAN REAL 10 1.
 add_features TRAIN ../data/fm_train_real.dat
 add_features TEST ../data/fm_test_real.dat
 
-new_classifier MKL_MULTICLASSGLPK
+new_classifier MKL_MULTICLASS
+mkl_parameters 0.01 1 1
 train_classifier
 
 
