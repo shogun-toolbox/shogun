@@ -22,7 +22,9 @@ namespace shogun
 
 /** @brief Pyramid Kernel over Chi2 matched histograms.
  *
- * \todo port to CCombinedKernel (if it is the appropriate) as the pyramid is a
+ * The Pyramid Chi2 Kernel often used in image classification.
+ *
+ * TODO: port to CCombinedKernel as the pyramid is a
  * weighted linear combination of kernels
  */
 class CPyramidChi2 : public CSimpleKernel<float64_t>

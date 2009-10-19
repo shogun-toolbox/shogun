@@ -45,15 +45,15 @@ labels=Labels(label_train_multiclass);
 
 % MKL_MULTICLASS
 disp('MKL_MULTICLASS')
-svm=MKLMultiClass(C, kernel, labels);
-svm.set_epsilon(epsilon);
-svm.parallel.set_num_threads(num_threads);
+mkl=MKLMultiClass(C, kernel, labels);
+mkl.set_epsilon(epsilon);
+mkl.parallel.set_num_threads(num_threads);
 
 mkl_eps=0.01;
 mkl_norm=1; % only L1 by now 
-svm.set_mkl_parameters(mkl_eps,0,mkl_norm);
-
-svm.train();
+#mkl.set_mkl_parameters(mkl_eps,0,mkl_norm);
+mkl.io.set_loglevel(0)
+mkl.train();
 
 kernel.init(feats_train, feats_test);
-svm.classify().get_labels();
+mkl.classify().get_labels();

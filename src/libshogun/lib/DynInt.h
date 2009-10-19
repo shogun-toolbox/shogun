@@ -31,7 +31,7 @@ namespace shogun
  * bit-mapped strings. Therefore, currently only comparison, assignment and
  * bit operations are implemented.
  *
- * \todo implement add,mul,div
+ * TODO: implement add,mul,div
  */
 template <class T, int sz> class CDynInt
 {
