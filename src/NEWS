@@ -6,7 +6,7 @@
 	    - Implement set_linear_classifier for static interfaces.
 		- Implement Polynomial DotFeatures.
 		- Implement domain adaptation SVM
-		- Speed up MCSVM.
+		- Speed up ScatterSVM.
 		- Saving and Loading of shogun objects.
 		- Examples have been polished/split up into separate files.
 	* Bugfixes:
@@ -20,6 +20,8 @@
 		- Removed preproc {load,save}_init.
 		- Move the mkl code from classifier/svm to classifier/mkl.
 		- Removed obsolete mindy support.
+		- Rename MCSVM to ScatterSVM
+		- Move distributions to distributions/ directory.
 		- CClassifier::classify() no longer has a label as argument.
 		- Introduce CClassifier::train(CFeatures* ) and classify(CFeatures*)
           for more effective training/testing.

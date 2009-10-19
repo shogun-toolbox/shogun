@@ -20,9 +20,9 @@ def histogram ():
 
 	num_examples=feats.get_num_vectors()
 	num_param=histo.get_num_model_parameters()
-	for i in xrange(num_examples):
-		for j in xrange(num_param):
-			histo.get_log_derivative(j, i)
+	#for i in xrange(num_examples):
+	#	for j in xrange(num_param):
+	#		histo.get_log_derivative(j, i)
 
 	histo.get_log_likelihood()
 	histo.get_log_likelihood_sample()

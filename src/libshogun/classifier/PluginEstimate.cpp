@@ -12,7 +12,7 @@
 #include "lib/io.h"
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
-#include "distributions/hmm/LinearHMM.h"
+#include "distributions/LinearHMM.h"
 #include "classifier/PluginEstimate.h"
 
 using namespace shogun;

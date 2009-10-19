@@ -9,7 +9,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "distributions/hmm/LinearHMM.h"
+#include "distributions/LinearHMM.h"
 #include "lib/common.h"
 #include "features/StringFeatures.h"
 #include "lib/io.h"

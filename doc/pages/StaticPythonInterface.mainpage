@@ -1,5 +1,4 @@
 /** \page staticpython Static Python Interface Function Reference
-deleting cmd
 
 
 \section Features_sec Features
@@ -104,8 +103,6 @@ deleting cmd
 \section Preprocessors_sec Preprocessors
 \arg \b add_preproc \verbatim sg('add_preproc', preproc[, preproc-specific parameters]) \endverbatim
 \arg \b del_preproc \verbatim sg('del_preproc') \endverbatim
-\arg \b load_preproc \verbatim sg('load_preproc', filename) \endverbatim
-\arg \b save_preproc \verbatim sg('save_preproc', filename) \endverbatim
 \arg \b attach_preproc \verbatim sg('attach_preproc', 'TRAIN|TEST', force) \endverbatim
 \arg \b clean_preproc \verbatim sg('clean_preproc') \endverbatim
 
@@ -207,5 +204,4 @@ deleting cmd
 \arg \b run_octave \verbatim [results]=sg('run_octave', 'Var1', Var1, 'Var2', Var2,..., octave_function) \endverbatim
 \arg \b run_r \verbatim [results]=sg('run_r', 'Var1', Var1, 'Var2', Var2,..., r_function) \endverbatim
 
-deleting cmd
 */

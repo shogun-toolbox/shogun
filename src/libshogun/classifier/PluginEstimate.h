@@ -14,7 +14,7 @@
 #include "classifier/Classifier.h"
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
-#include "distributions/hmm/LinearHMM.h"
+#include "distributions/LinearHMM.h"
 
 namespace shogun
 {

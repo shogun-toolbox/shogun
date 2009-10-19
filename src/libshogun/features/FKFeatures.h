@@ -13,7 +13,7 @@
 #define _CFKFEATURES__H__
 
 #include "features/SimpleFeatures.h"
-#include "distributions/hmm/HMM.h"
+#include "distributions/HMM.h"
 
 namespace shogun
 {

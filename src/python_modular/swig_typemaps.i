@@ -879,7 +879,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
 /* input typemap for Sparse Features */
 %define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
+        (shogun::TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
 {
     $1 = ( PyObject_HasAttrString($input, "indptr") &&
             PyObject_HasAttrString($input, "indices") &&
@@ -888,7 +888,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
          ) ? 1 : 0;
 }
 
-%typemap(in) (TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
+%typemap(in) (shogun::TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
 {
     PyObject* o=(PyObject*) $input;
 
@@ -977,7 +977,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
         if (len_indices!=len_data)
             SWIG_fail;
 
-        TSparse<type>* sfm = new TSparse<type>[num_vec];
+        shogun::TSparse<type>* sfm = new shogun::TSparse<type>[num_vec];
 
         for (int32_t i=0; i<num_vec; i++)
         {
@@ -992,7 +992,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
             
             if (num>0)
             {
-                TSparseEntry<type>* features=new TSparseEntry<type>[num];
+                shogun::TSparseEntry<type>* features=new shogun::TSparseEntry<type>[num];
 
                 for (int32_t j=0; j<num; j++)
                 {
@@ -1048,17 +1048,17 @@ TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for sparse features returns (data, row, ptr) */
 %define TYPEMAP_SPARSEFEATURES_ARGOUT(type,typecode)
-%typemap(in, numinputs=0) (TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
-    $1 = (TSparse<type>**) malloc(sizeof(TSparse<type>*));
+%typemap(in, numinputs=0) (shogun::TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+    $1 = (shogun::TSparse<type>**) malloc(sizeof(shogun::TSparse<type>*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
     $3 = (int32_t*) malloc(sizeof(int32_t));
     $4 = (int64_t*) malloc(sizeof(int64_t));
 }
-%typemap(argout) (TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+%typemap(argout) (shogun::TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
     if (!$1 || !$2 || !$3 || !$4)
         SWIG_fail;
 
-    TSparse<type>* sfm=*$1;
+    shogun::TSparse<type>* sfm=*$1;
     int32_t num_feat=*$2;
     int32_t num_vec=*$3;
     int64_t nnz=*$4;

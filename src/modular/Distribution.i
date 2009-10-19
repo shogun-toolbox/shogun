@@ -31,10 +31,10 @@
 %include "SGBase.i"
 %{
 #include <shogun/distributions/Distribution.h>
-#include <shogun/distributions/histogram/Histogram.h>
-#include <shogun/distributions/hmm/HMM.h>
-#include <shogun/distributions/hmm/GHMM.h>
-#include <shogun/distributions/hmm/LinearHMM.h>
+#include <shogun/distributions/Histogram.h>
+#include <shogun/distributions/HMM.h>
+#include <shogun/distributions/GHMM.h>
+#include <shogun/distributions/LinearHMM.h>
 %}
 
 /* Typemaps */
@@ -54,7 +54,7 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>
-%include <shogun/distributions/histogram/Histogram.h>
-%include <shogun/distributions/hmm/HMM.h>
-%include <shogun/distributions/hmm/GHMM.h>
-%include <shogun/distributions/hmm/LinearHMM.h>
+%include <shogun/distributions/Histogram.h>
+%include <shogun/distributions/HMM.h>
+%include <shogun/distributions/GHMM.h>
+%include <shogun/distributions/LinearHMM.h>

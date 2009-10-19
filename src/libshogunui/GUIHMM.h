@@ -14,7 +14,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/distributions/hmm/HMM.h>
+#include <shogun/distributions/HMM.h>
 #include <shogun/features/Labels.h>
 
 namespace shogun

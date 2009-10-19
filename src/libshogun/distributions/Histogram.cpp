@@ -9,7 +9,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "distributions/histogram/Histogram.h"
+#include "distributions/Histogram.h"
 #include "lib/common.h"
 #include "features/StringFeatures.h"
 #include "lib/io.h"

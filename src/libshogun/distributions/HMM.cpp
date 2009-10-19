@@ -8,7 +8,7 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include "distributions/hmm/HMM.h"
+#include "distributions/HMM.h"
 #include "lib/Mathematics.h"
 #include "lib/io.h"
 #include "lib/config.h"
