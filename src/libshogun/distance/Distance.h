@@ -175,7 +175,17 @@ class CDistance : public CSGObject
 		 * @return right-hand side features
 		 */
 		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; };
-
+    
+		/** replace right-hand side features used in distance matrix
+		 *
+                 * make sure to check that your distance can deal with the
+                 * supplied features (!)
+                 *
+                 * @param rhs features of right-hand side
+		 * @return replaced right-hand side features
+		 */
+		CFeatures* replace_rhs(CFeatures* rhs);
+            
 		/** remove lhs and rhs from distance */
 		virtual void remove_lhs_and_rhs();
 

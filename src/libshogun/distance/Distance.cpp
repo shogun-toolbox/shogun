@@ -137,6 +137,25 @@ void CDistance::remove_rhs()
 	rhs = NULL;
 }
 
+CFeatures* CDistance::replace_rhs(CFeatures* r)
+{
+     //make sure features were indeed supplied
+     ASSERT(r);
+
+     //make sure features are compatible
+     ASSERT(lhs->get_feature_class()==r->get_feature_class());
+     ASSERT(lhs->get_feature_type()==r->get_feature_type());
+
+     //remove references to previous rhs features
+     CFeatures* tmp=rhs;
+     
+     rhs=r;
+
+     delete[] precomputed_matrix ;
+     precomputed_matrix=NULL ;
+
+     return tmp;
+}
 
 void CDistance::do_precompute_matrix()
 {
