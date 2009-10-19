@@ -52,6 +52,19 @@ struct svm_node
 /** SVM problem */
 struct svm_problem
 {
+
+
+public:
+
+	/** default constructor */
+	svm_problem() {
+		y = NULL;
+		x = NULL;
+		C = NULL;
+		pv = NULL;
+	}
+
+
 	/** l */
 	int32_t l;
 	/** y */

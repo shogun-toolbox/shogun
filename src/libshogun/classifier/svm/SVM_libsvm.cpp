@@ -2267,18 +2267,21 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		float64_t *pv = Malloc(float64_t,l);
 
 
-		/* //crasher
-		for(int32_t i=0;i<5;i++)
-		{
-			std::cout << "train" << i << ": " << prob->pv[i] << ", ";
-		}
-		std::cout << std::endl;*/
-
 		int32_t i;
 		for(i=0;i<l;i++) {
 			x[i] = prob->x[perm[i]];
             C[i] = prob->C[perm[i]];
-			pv[i] = prob->pv[perm[i]];
+
+            if (prob->pv)
+            {
+            	pv[i] = prob->pv[perm[i]];
+            }
+            else
+            {
+				//no custom linear term is set
+            	pv[i] = -1.0;
+            }
+
 		}
 
 

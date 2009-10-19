@@ -51,25 +51,23 @@ bool CLibSVM::train(CFeatures* data)
 	SG_INFO( "%d trainlabels\n", problem.l);
 
 
-	// set linear term
+	// check length of linear term
 	if (!linear_term.empty() && labels->get_num_labels() != (int32_t)linear_term.size())
 		SG_ERROR("Number of training vectors does not match length of linear term\n");
 
+	// set linear term
 	if (!linear_term.empty()) {
 
-		std::cout << "using manual linear term!!!!!" << std::endl;
 		// set with linear term from base class
 		problem.pv = get_linear_term_array();
 
 	} else {
 
-		std::cout << "using minus ones of length: " << problem.l << std::endl;
-
 		// fill with minus ones
 		problem.pv = new float64_t[problem.l];
 
 		for (int i=0; i!=problem.l; i++) {
-		        problem.pv[i] = -1.0;
+			problem.pv[i] = -1.0;
 		}
 	}
 

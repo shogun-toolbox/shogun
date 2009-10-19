@@ -32,6 +32,8 @@ bool CLibSVMMultiClass::train(CFeatures* data)
 {
 	struct svm_node* x_space;
 
+    problem = svm_problem();
+
 	ASSERT(labels && labels->get_num_labels());
 	int32_t num_classes = labels->get_num_classes();
 	problem.l=labels->get_num_labels();
@@ -46,10 +48,14 @@ bool CLibSVMMultiClass::train(CFeatures* data)
 
 	problem.y=new float64_t[problem.l];
 	problem.x=new struct svm_node*[problem.l];
+	problem.pv=new float64_t[problem.l];
+    problem.C=new float64_t[problem.l];
+
 	x_space=new struct svm_node[2*problem.l];
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
+        problem.pv[i]=-1.0;
 		problem.y[i]=labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
