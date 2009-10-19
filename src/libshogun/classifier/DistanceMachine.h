@@ -52,10 +52,27 @@ class CDistanceMachine : public CClassifier
 		 * @return distance
 		 */
 		inline CDistance* get_distance() { SG_REF(distance); return distance; }
-		
+
+                /**
+                 * get distance functions for lhs feature vectors
+                 * going from a1 to a2 and rhs feature vector b
+                 * 
+                 * @param result array of distance values
+                 * @param idx_a1 first feature vector a1 at idx_a1 
+                 * @param idx_a2 last feature vector a2 at idx_a2
+                 * @param idx_b feature vector b at idx_b
+                 */
+                void distances(float64_t* result,int32_t idx_a1,int32_t idx_a2,int32_t idx_b);		
 	protected:
 		/** the distance */
 		CDistance* distance;
+                
+                /** 
+                 * pthread function for compute distance values
+                 *
+                 * @param p thread parameter 
+                 */
+		static void* run_distance_thread(void* p);
 };
 }
 #endif

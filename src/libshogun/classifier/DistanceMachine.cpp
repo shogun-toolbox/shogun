@@ -12,6 +12,18 @@
 
 using namespace shogun;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct D_THREAD_PARAM
+{
+    CDistance* d;
+    float64_t* r;
+    int32_t idx_r_start;
+    int32_t idx_a_start;
+    int32_t idx_a_stop;
+    int32_t idx_b;
+};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
 CDistanceMachine::CDistanceMachine()
 : CClassifier(), distance(NULL)
 {
@@ -20,4 +32,84 @@ CDistanceMachine::CDistanceMachine()
 CDistanceMachine::~CDistanceMachine()
 {
 	SG_UNREF(distance);
+}
+
+void CDistanceMachine::distances(float64_t* result,int32_t idx_a1,int32_t idx_a2,int32_t idx_b)
+{
+    int32_t num_threads=parallel->get_num_threads();
+    ASSERT(num_threads>0);
+
+    ASSERT(result);
+
+    if (num_threads < 2)
+    {
+        D_THREAD_PARAM param;
+        param.d=distance;
+        param.r=result;
+        param.idx_r_start=idx_a1;
+        param.idx_a_start=idx_a1;
+        param.idx_a_stop=idx_a2+1;
+        param.idx_b=idx_b;
+
+        run_distance_thread((void*) &param);
+    }
+#ifndef WIN32
+    else
+    {
+        pthread_t* threads = new pthread_t[num_threads];
+        D_THREAD_PARAM* params = new D_THREAD_PARAM[num_threads];
+        int32_t num_vec=idx_a2-idx_a1+1; 
+        int32_t step= num_vec/num_threads;
+        int32_t t;
+
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+        for (t=0; t<num_threads-1; t++)
+        {
+            params[t].d = distance;
+            params[t].r = result;
+            params[t].idx_r_start=t*step;
+            params[t].idx_a_start = (t*step)+idx_a1;
+            params[t].idx_a_stop = ((t+1)*step)+idx_a1;
+            params[t].idx_b=idx_b;
+
+            pthread_create(&threads[t], &attr, CDistanceMachine::run_distance_thread, (void*)&params[t]);
+        }
+        params[t].d = distance;
+        params[t].r = result;
+        params[t].idx_r_start=t*step;
+        params[t].idx_a_start = (t*step)+idx_a1;
+        params[t].idx_a_stop = idx_a2+1;
+        params[t].idx_b=idx_b;
+
+        run_distance_thread(&params[t]);
+            
+        for (t=0; t<num_threads; t++)
+            pthread_join(threads[t], NULL);
+
+        pthread_attr_destroy(&attr);
+        delete[] params;
+        delete[] threads;
+    }
+#endif
+}
+
+void* CDistanceMachine::run_distance_thread(void* p)
+{
+    D_THREAD_PARAM* params= (D_THREAD_PARAM*) p;
+    CDistance* distance=params->d;
+    float64_t* res=params->r;
+    int32_t idx_res_start=params->idx_r_start;
+    int32_t idx_a_act=params->idx_a_start;
+    int32_t idx_a_stop=params->idx_a_stop;
+    int32_t idx_b=params->idx_b;
+
+    for (int32_t i=idx_res_start; idx_a_act<idx_a_stop; i++,idx_a_act++)
+    {
+        res[i] =distance->distance(idx_a_act,idx_b);
+    }
+    //pthread_exit(NULL);
+    return NULL;
 }
