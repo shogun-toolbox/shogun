@@ -102,14 +102,14 @@ CLabels* CKNN::classify()
 	{
 		if ((i%(num_lab/10+1))== 0)
 			SG_PROGRESS(i, 0, num_lab);
-
+                distances(dists,0,num_train_labels-1,i);
 		int32_t j;
 		for (j=0; j<num_train_labels; j++)
 		{
 			//copy back train labels and compute distance
 			train_lab[j]=train_labels[j];
 			
-			dists[j]=distance->distance(j,i);
+//			dists[j]=distance->distance(j,i);
 		}
 
 		//sort the distance vector for test example j to all train examples
