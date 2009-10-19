@@ -1,0 +1,14 @@
+/*! \page examples Examples
+  \section static_examples Examples for Static Interfaces
+  
+  \li \subpage static_python_examples
+  \li \subpage static_octave_examples
+  \li \subpage static_matlab_examples
+  \li \subpage static_r_examples
+  \li \subpage static_cmdline_examples
+
+  \section modular_examples Examples for Modular Interfaces
+  \li \subpage modular_python_examples
+  \li \subpage modular_octave_examples
+  \li \subpage modular_r_examples
+*/

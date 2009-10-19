@@ -1,0 +1,103 @@
+/*! \page static_cmdline_examples Examples for Static Command Line Interfaces
+
+  This page lists ready to run shogun examples for the static command line interface.
+
+  \li \subpage static_cmdline_classifier_examples
+  \li \subpage static_cmdline_clustering_examples
+  \li \subpage static_cmdline_distance_examples
+  \li \subpage static_cmdline_distribution_examples
+  \li \subpage static_cmdline_kernel_examples
+  \li \subpage static_cmdline_preproc_examples
+  \li \subpage static_cmdline_regression_examples
+
+  Ru
+
+\verbatim
+\endverbatim
+
+
+  \section static_cmdline_classifier_examples Classifier
+\verbinclude classifier_gmnpsvm.sg
+\verbinclude classifier_gpbtsvm.sg
+\verbinclude classifier_knn.sg
+\verbinclude classifier_lda.sg
+\verbinclude classifier_liblinear.sg
+\verbinclude classifier_libsvmmulticlass.sg
+\verbinclude classifier_libsvmoneclass.sg
+\verbinclude classifier_libsvm.sg
+\verbinclude classifier_mpd.sg
+\verbinclude classifier_perceptron.sg
+\verbinclude classifier_subgradientsvm.sg
+\verbinclude classifier_svmlight.sg
+\verbinclude classifier_svmlin.sg
+\verbinclude classifier_svmocas.sg
+\verbinclude classifier_svmsgd.sg
+
+\section static_cmdline_clustering_examples Clustering
+\verbinclude clustering_hierarchical.sg
+\verbinclude clustering_kmeans.sg
+
+\section static_cmdline_distance_examples Distance
+\verbinclude distance_braycurtis.sg
+\verbinclude distance_canberra.sg
+\verbinclude distance_canberraword.sg
+\verbinclude distance_chebyshew.sg
+\verbinclude distance_chisquare.sg
+\verbinclude distance_cosine.sg
+\verbinclude distance_euclidean.sg
+\verbinclude distance_geodesic.sg
+\verbinclude distance_hammingword.sg
+\verbinclude distance_jensen.sg
+\verbinclude distance_manhatten.sg
+\verbinclude distance_manhattenword.sg
+\verbinclude distance_minkowski.sg
+\verbinclude distance_tanimoto.sg
+
+\section static_cmdline_distribution_examples Distribution
+\verbinclude distribution_histogram.sg
+\verbinclude distribution_hmm.sg
+\verbinclude distribution_linearhmm.sg
+
+\section static_cmdline_kernel_examples Kernel
+\verbinclude kernel_chi2.sg
+\verbinclude kernel_combined.sg
+\verbinclude kernel_commulongstring.sg
+\verbinclude kernel_commwordstring.sg
+\verbinclude kernel_const.sg
+\verbinclude kernel_diag.sg
+\verbinclude kernel_distancetokernel.sg
+\verbinclude kernel_fixeddegreestring.sg
+\verbinclude kernel_gaussian.sg
+\verbinclude kernel_gaussianshift.sg
+\verbinclude kernel_linearbyte.sg
+\verbinclude kernel_linear.sg
+\verbinclude kernel_linearstring.sg
+\verbinclude kernel_linearword.sg
+\verbinclude kernel_localalignmentstring.sg
+\verbinclude kernel_localityimprovedstring.sg
+\verbinclude kernel_oligostring.sg
+\verbinclude kernel_polymatchstring.sg
+\verbinclude kernel_polymatchword.sg
+\verbinclude kernel_poly.sg
+\verbinclude kernel_sigmoid.sg
+\verbinclude kernel_simplelocalityimprovedstring.sg
+\verbinclude kernel_sparsegaussian.sg
+\verbinclude kernel_sparse_linear.sg
+\verbinclude kernel_sparsepoly.sg
+\verbinclude kernel_top.sg
+\verbinclude kernel_weightedcommwordstring.sg
+\verbinclude kernel_weighteddegreepositionstring.sg
+\verbinclude kernel_weighteddegreestring.sg
+
+\section static_cmdline_preproc_examples Preprocessors
+\verbinclude preproc_logplusone.sg
+\verbinclude preproc_normone.sg
+\verbinclude preproc_prunevarsubmean.sg
+\verbinclude preproc_sortulongstring.sg
+\verbinclude preproc_sortwordstring.sg
+
+\section static_cmdline_regression_examples Regression
+\verbinclude regression_krr.sg
+\verbinclude regression_libsvr.sg
+\verbinclude regression_svrlight.sg
+*/
