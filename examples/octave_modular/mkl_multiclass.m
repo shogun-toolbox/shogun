@@ -32,7 +32,7 @@ kernel.append_kernel(subkernel);
 
 subkfeats_train=RealFeatures(fm_train_real);
 subkfeats_test=RealFeatures(fm_test_real);
-subkernel=Chi2Kernel(10,1.2);
+subkernel=PolyKernel(10,2);
 feats_train.append_feature_obj(subkfeats_train);
 feats_test.append_feature_obj(subkfeats_test);
 kernel.append_kernel(subkernel);

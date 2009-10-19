@@ -36,7 +36,7 @@ feats_test <- CombinedFeatures()
 
 subkfeats_train <- RealFeatures(fm_train_real)
 subkfeats_test <- RealFeatures(fm_test_real)
-subkernel <- Chi2Kernel(as.integer(10), 1.6)
+subkernel <- PolyKernel(as.integer(10), as.integer(2))
 dump <- feats_train$append_feature_obj(feats_train, subkfeats_train)
 dump <- feats_test$append_feature_obj(feats_test, subkfeats_test)
 dump <- kernel$append_kernel(kernel, subkernel)
