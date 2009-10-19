@@ -45,12 +45,16 @@ def mkl_multiclass ():
 	mkl.set_epsilon(epsilon);
 	mkl.parallel.set_num_threads(num_threads)
 
-	mkl_eps=0.01
-	mkl_norm=1
-	#mkl.set_mkl_parameters(mkl_eps,0,mkl_norm)
-	#mkl.train(feats_train)
-	#kernel.init(feats_train, feats_test)
+	#mkl_eps=0.01
+	#mkl_norm=1.0
+	#mkl.set_mkl_parameters(mkl_eps,0.0,mkl_norm)
+	print 'pre train'
+	mkl.train()
+	print 'post train'
+	kernel.init(feats_train, feats_test)
+	print 'post kernel init'
 	#mkl.classify(feats_test).get_labels()
+	mkl.classify().get_labels()
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
