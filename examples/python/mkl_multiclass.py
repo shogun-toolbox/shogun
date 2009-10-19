@@ -6,7 +6,8 @@ def mkl_multiclass ():
 	C=1.2
 	epsilon=1e-5
 	mkl_eps=0.01
-	mkl_norm=1
+	mkl_norm=1.0
+	weight=1.0
 
 	from sg import sg
 	sg('clean_kernel')
@@ -27,11 +28,12 @@ def mkl_multiclass ():
 	sg('new_classifier', 'MKL_MULTICLASS')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
-	sg('mkl_parameters', mkl_eps, 0, mkl_norm)
+	sg('mkl_parameters', mkl_eps, 0.0, mkl_norm)
 	sg('train_classifier')
 
-	sg('set_features', 'TEST', fm_test_real)
+	#sg('set_features', 'TEST', fm_test_real)
 	result=sg('classify')
+	print result
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
