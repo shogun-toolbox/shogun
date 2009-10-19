@@ -35,11 +35,21 @@ CHistogram::~CHistogram()
 	delete[] hist;
 }
 
-bool CHistogram::train()
+bool CHistogram::train(CFeatures* data)
 {
 	int32_t vec;
 	int32_t feat;
 	int32_t i;
+
+	if (data)
+	{
+		if (data->get_feature_class() != C_STRING ||
+				data->get_feature_type() != F_WORD)
+		{
+			SG_ERROR("Expected features of class string type word\n");
+		}
+		set_features(data);
+	}
 
 	ASSERT(features);
 	ASSERT(features->get_feature_class()==C_STRING);

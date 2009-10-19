@@ -72,14 +72,10 @@ protected:
 	MKLMultiClass2glpk operator=(MKLMultiClass2glpk & gl);
 
 protected:
-	/** stores the number of kernels which acts as a parameter for the LP
-	 *
-	 */
+	/** stores the number of kernels which acts as a parameter for the LP */
 	int32_t numkernels;
-	/** GLPK data structure, is not defined in the case #ifndef USE_GLPK
-	 *
-	 */
 #ifdef USE_GLPK
+	/** GLPK data structure */
 	glp_prob* linearproblem;
 #endif
 };

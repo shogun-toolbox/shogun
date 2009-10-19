@@ -53,11 +53,7 @@ class CDistribution : public CSGObject
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL)
-		{
-			SG_NOTIMPLEMENTED;
-			return false;
-		}
+		virtual bool train(CFeatures* data=NULL)=0;
 
 		/** get number of parameters in model
 		 *
