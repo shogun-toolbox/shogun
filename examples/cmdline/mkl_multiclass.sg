@@ -13,18 +13,18 @@ add_kernel 1 LINEAR REAL 10
 add_features TRAIN ../data/fm_train_real.dat
 add_features TEST ../data/fm_test_real.dat
 
-add_kernel 1 GAUSSIAN REAL 10 1.
+add_kernel 1 GAUSSIAN REAL 10 1.2
 add_features TRAIN ../data/fm_train_real.dat
 add_features TEST ../data/fm_test_real.dat
 
-add_kernel 1 POLY REAL 10 3 0
+add_kernel 1 POLY REAL 10 2 0
 add_features TRAIN ../data/fm_train_real.dat
 add_features TEST ../data/fm_test_real.dat
 
 new_classifier MKL_MULTICLASS
-mkl_parameters 0.01 1 1
+mkl_parameters 0.001 1 1
 svm_epsilon 1e-5
-c 2
+c 1.2
 train_classifier
 
 

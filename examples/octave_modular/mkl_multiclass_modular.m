@@ -48,12 +48,9 @@ disp('MKL_MULTICLASS')
 mkl=MKLMultiClass(C, kernel, labels);
 mkl.set_epsilon(epsilon);
 mkl.parallel.set_num_threads(num_threads);
-
-mkl_eps=0.01;
-mkl_norm=1; % only L1 by now 
-#mkl.set_mkl_parameters(mkl_eps,0,mkl_norm);
-mkl.io.set_loglevel(0)
+mkl.set_mkl_epsilon(0.001);
 mkl.train();
 
 kernel.init(feats_train, feats_test);
-mkl.classify().get_labels();
+result=mkl.classify().get_labels();
+result

@@ -4,8 +4,8 @@ size_cache=10;
 C=1.2;
 use_bias=false;
 epsilon=1e-5;
-width=2.1;
-mkl_eps=0.01;
+width=1.2;
+mkl_eps=0.001;
 mkl_norm=1; % only L1 by now 
 
 max_train_time=600;
@@ -35,7 +35,7 @@ sg('add_kernel', 1, 'GAUSSIAN', 'REAL', size_cache, 1);
 sg('add_features', 'TRAIN', fm_train_real);
 sg('add_features', 'TEST', fm_test_real);
 
-sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 3, false);
+sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 2);
 sg('add_features', 'TRAIN', fm_train_real);
 sg('add_features', 'TEST', fm_test_real);
 
@@ -47,4 +47,4 @@ sg('mkl_parameters', mkl_eps, 0, mkl_norm);
 sg('train_classifier');
 
 result=sg('classify');
-
+result

@@ -1,12 +1,12 @@
 library("sg")
 
 size_cache <- 10
-C <- 10
+C <- 1.2
 epsilon <- 1e-5
 mkl_eps <- 0.01 
 mkl_norm <- 1
 
-width <- 2.1
+width <- 1.2
 
 fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
 fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
@@ -21,10 +21,10 @@ dump <- sg('set_kernel', 'COMBINED', size_cache)
 dump <- sg('add_kernel', 1, 'LINEAR', 'REAL', size_cache)
 dump <- sg('add_features', 'TRAIN', fm_train_real)
 dump <- sg('add_features', 'TEST', fm_test_real)
-dump <- sg('add_kernel', 1, 'GAUSSIAN', 'REAL', size_cache, 1)
+dump <- sg('add_kernel', 1, 'GAUSSIAN', 'REAL', size_cache, width)
 dump <- sg('add_features', 'TRAIN', fm_train_real)
 dump <- sg('add_features', 'TEST', fm_test_real)
-dump <- sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 3, FALSE)
+dump <- sg('add_kernel', 1, 'POLY', 'REAL', size_cache, 2)
 dump <- sg('add_features', 'TRAIN', fm_train_real)
 dump <- sg('add_features', 'TEST', fm_test_real)
 
