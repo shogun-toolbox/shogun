@@ -48,7 +48,7 @@ def mkl_multiclass ():
 	
 	mkl.set_epsilon(epsilon);
 	mkl.parallel.set_num_threads(num_threads)
-
+	mkl.set_mkl_epsilon(0.001)
 
 	mkl.train()
 
