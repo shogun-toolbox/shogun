@@ -90,6 +90,8 @@ class CHash : public CSGObject
 		inline virtual const char* get_name() const { return "Hash"; }
 
 	protected:
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** MD5Context */
 		struct MD5Context {
 			/** 16 byte buffer */
@@ -99,6 +101,7 @@ class CHash : public CSGObject
 			/** 64 byte buffer */
 			unsigned char in[64];
 		};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 		/**
 		 * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious

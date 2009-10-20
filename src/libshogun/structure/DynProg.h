@@ -558,6 +558,7 @@ protected:
 	inline int32_t raw_intensities_interval_query(
 		const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type);
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	/** @brief SVM values */
 	struct svm_values_struct
 	{
@@ -577,6 +578,7 @@ protected:
 		/** number of unique words */
 		int32_t **num_unique_words;
 	};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 	/** extend orf
 	 *
