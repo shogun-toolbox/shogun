@@ -26,7 +26,7 @@
   \li \b examples/octave_modular
   \li \b examples/python_modular
 
-  directories.
+  directories and online \subpage examples "here".
 
   Note that we always keep the python-modular examples complete and up-to-date
   and also perform regression tests using a test-suite. Finally, we provide a

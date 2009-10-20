@@ -4,22 +4,22 @@
 
   \subsection oct_interf Octave Interface
 
-  Examples for octave can be found in the octave/examples directory.
+  Examples for octave can be found online \subpage octave_examples "here" or in the examples/octave directory.
 
   \image html OctaveDemo.png "Screenshot of the static octave interface (see http://www.octave.org)"
 
   \subsection mat_interf Matlab Interface
-  Examples for matlab can be found in the matlab/examples directory.
+  Examples for matlab can be found \subpage octave_examples "here" or in the examples/matlab directory.
 
   \image html MatlabDemo.png "Screenshot of the static matlab interface (see http://www.mathworks.com)"
   
   \subsection py_interf Python Interface
-  Examples for python can be found in the python/examples directory.
+  Examples for python can be found \subpage python_examples "here" or in the examples/python directory.
 
   \image html PythonDemo.png "Screenshot of the static python interface (see http://www.python.org)"
 
   \subsection r_interf R Interface
-  Examples for R can be found in the R/examples directory.
+  Examples for R can be found \subpage r_examples "here" or in the examples/R directory.
 
   \image html RDemo.png "Screenshot of the static R interface (see http://www.r-project.org)."
 
@@ -27,10 +27,20 @@
   In contrast to the static interfaces, the modular interfaces allow multiple
   objects of the same kind. Thus they are well suited for complex applications
   requiring e.g. multiple classifiers. Currently the only supported modular
-  interface uses python as a front-end.
+  interface uses python as a front-end. However, the modular octave interface is
+  build by default too and works reliably albeit a bug in octave (octave will crash on
+  exit unregistering global variables).  Due to a bug in the swig
+  (http://swig.org) R wrapper, the R modular interface will only work when
+  shogun is configured with
+
+\verbatim
+  ./configure --disable-reference-counting
+\endverbatim
+
+  and will leak memory.
 
   \subsection py_mod_interf Python-Modular Interface
-  Examples for python-modular can be found in the python-modular/examples directory.
+  Examples for python-modular can be found \subpage python_modular_examples "here" or in the examples/python_modular directory.
 
   \image html PythonDemo.png "Screenshot of the python-modular interface (see http://www.python.org)"
 */

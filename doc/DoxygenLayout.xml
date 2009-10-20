@@ -4,9 +4,9 @@
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="pages" visible="yes" title=""/>
     <tab type="modules" visible="yes" title=""/>
-    <tab type="namespaces" visible="yes" title="">
-      <tab type="namespaces" visible="yes" title=""/>
-      <tab type="namespacemembers" visible="yes" title=""/>
+    <tab type="namespaces" visible="no" title="">
+      <tab type="namespaces" visible="no" title=""/>
+      <tab type="namespacemembers" visible="no" title=""/>
     </tab>
     <tab type="classes" visible="yes" title="">
       <tab type="classes" visible="yes" title=""/>
@@ -18,7 +18,7 @@
       <tab type="files" visible="yes" title=""/>
       <tab type="globals" visible="yes" title=""/>
     </tab>
-    <tab type="dirs" visible="yes" title=""/>
+    <tab type="dirs" visible="no" title=""/>
     <tab type="examples" visible="yes" title=""/>  
   </navindex>
 
@@ -107,7 +107,7 @@
     <sourcelink visible="yes"/>
     <memberdecl>
       <classes visible="yes" title=""/>
-      <namespaces visible="yes" title=""/>
+      <namespaces visible="no" title=""/>
       <defines title=""/>
       <typedefs title=""/>
       <enums title=""/>
@@ -132,7 +132,7 @@
     <groupgraph visible="$GROUP_GRAPHS"/>
     <memberdecl>
       <classes visible="yes" title=""/>
-      <namespaces visible="yes" title=""/>
+      <namespaces visible="no" title=""/>
       <dirs visible="yes" title=""/>
       <nestedgroups visible="yes" title=""/>
       <files visible="yes" title=""/>

@@ -7,6 +7,7 @@
   \li \subpage cmdline_examples
 
   \section modular_examples Examples for Modular Interfaces
+  \li \subpage libshogun_examples
   \li \subpage python_modular_examples
   \li \subpage octave_modular_examples
   \li \subpage r_modular_examples

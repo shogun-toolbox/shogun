@@ -119,8 +119,8 @@ testerr=mean(sign(out)~=testlab)
 
 That's really it. For any of the advanced topics please have a look one of the \b many self-explanatory examples in
 
-\li examples/octave-modular
-\li examples/python-modular
+\li examples/octave-modular also available online \subpage octave_modular_examples "here"
+\li examples/python-modular also available online \subpage python_modular_examples "here"
 
 The full, working example is shown below:
 

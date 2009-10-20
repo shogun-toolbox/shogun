@@ -87,6 +87,40 @@ source('name_of_example.R')
 '''
 		),
 
+		'libshogun': ('C++ libshogun', 'ExamplesLibshogun.mainpage',
+		'''\nTo run the examples you will need to manually compile them via
+\\verbatim
+g++ name_of_example.cpp -lshogun
+\\endverbatim
+
+in case you installed libshogun to a nonstandard directory you will need to specify the appropriate library and include paths, e.g.
+\\verbatim
+g++ -I/path/to/libshogun/includes name_of_example.cpp -L/path/to/libshogun/sofile -lshogun
+\\endverbatim
+
+Then the examples are standard binary executables and can be started via
+\\verbatim
+./name_of_example
+\\endverbatim
+respectively if the libraries are in nonstandard locations (such that they cannot be found by the dynamic linker)
+\\verbatim
+LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
+\\endverbatim
+		'''),
+
+		'r' : ('Static R', 'ExamplesStaticR.mainpage',
+		'''\nTo run the examples issue
+\\verbatim
+R -f name_of_example.R
+\\endverbatim
+
+or start R and then type
+\\verbatim
+source('name_of_example.R')
+\\endverbatim
+'''
+		),
+
 		'cmdline' :('Static Command Line', 'ExamplesStaticCmdline.mainpage',
 		'''\nTo run the examples issue
 \\verbatim
@@ -95,7 +129,7 @@ shogun name_of_example.sg
 		'''
 			)}
 
-valid_endings=['.py', '.m', '.R', '.sg']
+valid_endings=['.py', '.m', '.R', '.sg', '.cpp']
 
 import os
 import os.path

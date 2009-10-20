@@ -8,7 +8,8 @@ ifneq (,$(LIB_PATH))
 	LINKFLAGS+=-L$(LIB_PATH)
 endif
 LINKFLAGS=-L$(LIB_PATH) -lshogun
-TARGETS = rbf_svm mklmulticlass minimal minimal_svm dyn_int rbf_kernel revlin_kernel indirect_object gc_array
+TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm classifier_mklmulticlass \
+	kernel_gaussian kernel_revlin library_dyn_int library_gc_array library_indirect_object
 CC=c++
 
 all: $(TARGETS)
