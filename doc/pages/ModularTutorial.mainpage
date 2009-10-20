@@ -126,8 +126,8 @@ The full, working example is shown below:
 
 For octave:
 
-\verbinclude classifier_libsvm_minimal.m
+\verbinclude classifier_libsvm_minimal_modular.m
 
 For python:
-\verbinclude classifier_libsvm_minimal.py
+\verbinclude classifier_libsvm_minimal_modular.py
 */

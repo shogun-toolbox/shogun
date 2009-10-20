@@ -12,7 +12,7 @@ This can be easily done as a number of examples in examples/libshogun document.
 
 The simplest libshogun based program would be
 
-\verbinclude minimal.cpp
+\verbinclude basic_minimal.cpp
 
 which could be compiled with g++ -lshogun minimal.cpp -o minimal and obviously
 does nothing (apart from initializing and destroying a couple of global shogun
@@ -45,7 +45,7 @@ init_shogun(&print_message, &print_warning,
 To finally see some action one has to include the appropriate header files,
 e.g. we create some features and a gaussian kernel
 
-\verbinclude minimal_svm.cpp
+\verbinclude classifier_minimal_svm.cpp
 
 Now you probably wonder why this example does not leak memory. First of all,
 supplying pointers to arrays allocated with new[] will make shogun objects own
@@ -145,7 +145,7 @@ could potentially perform on-the-fly processing operations.
 
 A complete, fully working example could look like this
 
-\verbinclude revlin_kernel.cpp
+\verbinclude kernel_revlin.cpp
 
 As you notice only a few other functions are defined returning name of the
 object, and object id and allow for loading/saving of kernel initialization
