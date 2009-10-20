@@ -45,16 +45,20 @@ template <class T> class T_STRING;
 /** template class T_STRING */
 template <class T> class T_STRING
 {
+
+
 #ifdef HAVE_BOOST_SERIALIZATION
+
   private:
 
-  friend class boost::serialization::access;
+
+  friend class ::boost::serialization::access;
   template<class Archive>
   void save(Archive & ar, const unsigned int archive_version) const
   {
 
     //std::cout << "archiving T_STRING" << std::endl;
- 
+
   	ar & length;
 
     for (int i=0; i < length; ++i) {
@@ -83,9 +87,9 @@ template <class T> class T_STRING
 
   }
 
-  BOOST_SERIALIZATION_SPLIT_MEMBER();
- 
-        
+  GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
+
+
 #endif //HAVE_BOOST_SERIALIZATION
 
     public:
@@ -104,7 +108,7 @@ template <class T> class T_STRING
  * point numbers etc. Strings differ from matrices (cf. CSimpleFeatures) in a
  * way that the dimensionality of the feature vectors (i.e. the strings) is not
  * fixed; it may vary between strings.
- * 
+ *
  * Most string kernels require StringFeatures but a number of them actually
  * requires strings to have same length.
  *
@@ -116,7 +120,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		/** default constructor
 		 *
 		 */
-        CStringFeatures() : CFeatures(0), alphabet(NULL), num_vectors(0), features(NULL), 
+        CStringFeatures() : CFeatures(0), alphabet(NULL), num_vectors(0), features(NULL),
         single_string(NULL),length_of_single_string(0),
         max_string_length(0), order(0), symbol_mask_table(NULL)
         {
@@ -197,7 +201,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					features[i].string=new ST[orig.features[i].length];
 					ASSERT(features[i].string);
 					features[i].length=orig.features[i].length;
-					memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].length); 
+					memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].length);
 				}
 			}
 
@@ -259,7 +263,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			/* start with a fresh alphabet, but instead of emptying the histogram
 			 * create a new object (to leave the alphabet object alone if it is used
-			 * by others) 
+			 * by others)
 			 */
 			CAlphabet* alpha=new CAlphabet(alphabet->get_alphabet());
 			SG_UNREF(alphabet);
@@ -772,7 +776,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				bool ignore_invalid=false, bool bitremap_in_single_string=false)
 		{
 			CMemoryMappedFile<char> f(fname);
-			
+
 			int32_t i=0;
 			uint64_t len=0;
 			uint64_t offs=0;
@@ -789,7 +793,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			alphabet=new CAlphabet(DNA);
 
 			T_STRING<ST>* strings;
-			
+
 			ST* str;
 			if (bitremap_in_single_string)
 			{
@@ -895,7 +899,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				int32_t num=0;
 				int32_t max_len=-1;
 
-				//usually n==num_vec, but it might not in race conditions 
+				//usually n==num_vec, but it might not in race conditions
 				//(file perms modified, file erased)
 				strings=new T_STRING<ST>[n];
 
@@ -981,7 +985,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			return false;
 		}
 
-		/** get_features 
+		/** get_features
 		 *
 		 * @param num_str number of strings (returned)
 		 * @param max_str_len maximal string length (returned)
@@ -1031,7 +1035,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_DEBUG( "force: %d\n", force_preprocessing);
 
 			for (int32_t i=0; i<get_num_preproc(); i++)
-			{ 
+			{
 				if ( (!is_preprocessed(i) || force_preprocessing) )
 				{
 					set_preprocessed(i);
@@ -1043,7 +1047,7 @@ template <class ST> class CStringFeatures : public CFeatures
 						SG_UNREF(p);
 						return false;
 					}
-					else 
+					else
 						SG_UNREF(p);
 				}
 			}
@@ -1245,7 +1249,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					features[line].length-=start+gap ;
 					if (features[line].length<0)
 						features[line].length=0 ;
-				}         
+				}
 
 				compute_symbol_mask_table(max_val);
 
@@ -1333,7 +1337,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		}
 
 		/** compute symbol mask table
-		 * 
+		 *
 		 * required to access bit-based symbols
 		 */
 		inline void compute_symbol_mask_table(int64_t max_val)

@@ -12,6 +12,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+
+
+
 #include "lib/memory.h"
 
 #ifndef __COMMON_H__
@@ -27,7 +30,7 @@
 #define RANDOM_MAX RAND_MAX
 #endif
 
-/**@name Standard Types 
+/**@name Standard Types
  * Definition of Platform independent Types
 */
 //@{
@@ -45,3 +48,18 @@ typedef long double floatmax_t;
 //@}
 
 #endif
+
+
+
+#ifdef HAVE_BOOST_SERIALIZATION
+// split member function serialize funcition into save/load
+#define GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()                       \
+template<class Archive>                                          \
+void serialize(                                                  \
+    Archive &ar,                                                 \
+    const unsigned int file_version                              \
+){                                                               \
+    ::boost::serialization::split_member(ar, *this, file_version); \
+}                                                                \
+/**/
+#endif //HAVE_BOOST_SERIALIZATION
