@@ -1,6 +1,7 @@
 /* base includes required by any module */
 %include "stdint.i"
 %include "exception.i"
+%include "std_string.i"
 
 %{
  /* required for python */
@@ -78,6 +79,7 @@
 
 %include "swig_typemaps.i"
 
+
 %include stl.i
 /* instantiate the required template specializations */
 namespace std {
@@ -86,8 +88,6 @@ namespace std {
 }
 
 #ifdef HAVE_BOOST_SERIALIZATION
-
-%include "std_string.i"
 
 #ifdef SWIGPYTHON
 %pythoncode %{
