@@ -896,6 +896,14 @@ template<> inline const char* CSimpleFeatures<floatmax_t>::get_name() const
 	return "LongRealFeatures";
 }
 
+/** align strings and compute emperical kernel map based on alignment scores
+ *
+ * non functional code - needs updating
+ *
+ * @param cf strings to be aligned to reference
+ * @param Ref reference strings to be aligned to
+ * @param gapCost costs for a gap
+ */
 template<> inline bool CSimpleFeatures<float64_t>::Align_char_features(
 		CStringFeatures<char>* cf, CStringFeatures<char>* Ref, float64_t gapCost)
 {
