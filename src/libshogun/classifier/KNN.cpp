@@ -102,7 +102,8 @@ CLabels* CKNN::classify()
 	{
 		if ((i%(num_lab/10+1))== 0)
 			SG_PROGRESS(i, 0, num_lab);
-                distances(dists,0,num_train_labels-1,i);
+                // lhs idx 1..n and rhs idx i
+                distances_lhs(dists,0,num_train_labels-1,i);
 		int32_t j;
 		for (j=0; j<num_train_labels; j++)
 		{
