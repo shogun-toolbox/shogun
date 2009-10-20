@@ -2,11 +2,11 @@ def mkl_multiclass ():
 	print 'mkl_multiclass'
 
 	size_cache=10
-	width=2.1
+	width=1.2
 	C=1.2
 	epsilon=1e-5
-	mkl_eps=0.01
-	mkl_norm=1.0
+	#mkl_eps=0.01
+	#mkl_norm=1.0
 	weight=1.0
 
 	from sg import sg
@@ -28,7 +28,8 @@ def mkl_multiclass ():
 	sg('new_classifier', 'MKL_MULTICLASS')
 	sg('svm_epsilon', epsilon)
 	sg('c', C)
-	sg('mkl_parameters', mkl_eps, 0.0, mkl_norm)
+	
+	#sg('mkl_parameters', mkl_eps, 0.0, mkl_norm)
 	sg('train_classifier')
 
 	#sg('set_features', 'TEST', fm_test_real)

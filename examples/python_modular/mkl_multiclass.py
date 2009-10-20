@@ -2,19 +2,23 @@ def mkl_multiclass ():
 	print 'mkl_multiclass'
 
 	from shogun.Features import CombinedFeatures, RealFeatures, Labels
-	from shogun.Kernel import CombinedKernel, GaussianKernel, LinearKernel
-	from shogun.Kernel import PolyKernel
+	from shogun.Kernel import CombinedKernel, GaussianKernel, LinearKernel,PolyKernel
 	from shogun.Classifier import MKLMultiClass
-	#from shogun import shogun
 
-	#init_shogun()
+
+	width=1.2
+	C=1.2
+	epsilon=1e-5
+	num_threads=1
+
+
 	kernel=CombinedKernel()
 	feats_train=CombinedFeatures()
 	feats_test=CombinedFeatures()
 
 	subkfeats_train=RealFeatures(fm_train_real)
 	subkfeats_test=RealFeatures(fm_test_real)
-	subkernel=GaussianKernel(10, 1.2)
+	subkernel=GaussianKernel(10, width)
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.append_kernel(subkernel)
@@ -37,9 +41,7 @@ def mkl_multiclass ():
 	
 	kernel.init(feats_train, feats_train)
 
-	C=1
-	epsilon=1e-5
-	num_threads=1
+
 	labels=Labels(label_train_multiclass)
 
 	mkl=MKLMultiClass(C, kernel, labels)
@@ -52,7 +54,9 @@ def mkl_multiclass ():
 
 	kernel.init(feats_train, feats_test)
 
-	mkl.classify().get_labels()
+	out= mkl.classify().get_labels()
+
+	print out
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
