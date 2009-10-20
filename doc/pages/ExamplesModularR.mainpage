@@ -1,0 +1,206 @@
+/*! \page r_modular_examples Examples for R Modular Interface
+
+This page lists ready to run shogun examples for the R Modular interface.
+
+\li \subpage r_modular_classifier_examples 
+\li \subpage r_modular_distribution_examples 
+\li \subpage r_modular_kernel_examples 
+\li \subpage r_modular_mkl_examples 
+\li \subpage r_modular_preproc_examples 
+
+To run the examples issue
+\verbatim
+R -f name_of_example.R
+\endverbatim
+
+or start R and then type
+\verbatim
+source('name_of_example.R')
+\endverbatim
+
+\section r_modular_classifier_examples Classifier
+
+
+\li <b>../examples/r_modular/classifier_gmnpsvm.R</b>
+\verbinclude classifier_gmnpsvm.R
+
+\li <b>../examples/r_modular/classifier_gpbtsvm.R</b>
+\verbinclude classifier_gpbtsvm.R
+
+\li <b>../examples/r_modular/classifier_knn.R</b>
+\verbinclude classifier_knn.R
+
+\li <b>../examples/r_modular/classifier_lda.R</b>
+\verbinclude classifier_lda.R
+
+\li <b>../examples/r_modular/classifier_liblinear.R</b>
+\verbinclude classifier_liblinear.R
+
+\li <b>../examples/r_modular/classifier_libsvm.R</b>
+\verbinclude classifier_libsvm.R
+
+\li <b>../examples/r_modular/classifier_libsvmmulticlass.R</b>
+\verbinclude classifier_libsvmmulticlass.R
+
+\li <b>../examples/r_modular/classifier_libsvmoneclass.R</b>
+\verbinclude classifier_libsvmoneclass.R
+
+\li <b>../examples/r_modular/classifier_mpdsvm.R</b>
+\verbinclude classifier_mpdsvm.R
+
+\li <b>../examples/r_modular/classifier_perceptron.R</b>
+\verbinclude classifier_perceptron.R
+
+\li <b>../examples/r_modular/classifier_subgradientsvm.R</b>
+\verbinclude classifier_subgradientsvm.R
+
+\li <b>../examples/r_modular/classifier_svmlight.R</b>
+\verbinclude classifier_svmlight.R
+
+\li <b>../examples/r_modular/classifier_svmlin.R</b>
+\verbinclude classifier_svmlin.R
+
+\li <b>../examples/r_modular/classifier_svmocas.R</b>
+\verbinclude classifier_svmocas.R
+
+\li <b>../examples/r_modular/classifier_svmsgd.R</b>
+\verbinclude classifier_svmsgd.R
+
+\section r_modular_distribution_examples Distribution
+
+
+\li <b>../examples/r_modular/distribution_histogram.R</b>
+\verbinclude distribution_histogram.R
+
+\li <b>../examples/r_modular/distribution_hmm.R</b>
+\verbinclude distribution_hmm.R
+
+\li <b>../examples/r_modular/distribution_linearhmm.R</b>
+\verbinclude distribution_linearhmm.R
+
+\section r_modular_kernel_examples Kernel
+
+
+\li <b>../examples/r_modular/kernel_auc.R</b>
+\verbinclude kernel_auc.R
+
+\li <b>../examples/r_modular/kernel_chi2.R</b>
+\verbinclude kernel_chi2.R
+
+\li <b>../examples/r_modular/kernel_combined.R</b>
+\verbinclude kernel_combined.R
+
+\li <b>../examples/r_modular/kernel_commulongstring.R</b>
+\verbinclude kernel_commulongstring.R
+
+\li <b>../examples/r_modular/kernel_commwordstring.R</b>
+\verbinclude kernel_commwordstring.R
+
+\li <b>../examples/r_modular/kernel_const.R</b>
+\verbinclude kernel_const.R
+
+\li <b>../examples/r_modular/kernel_custom.R</b>
+\verbinclude kernel_custom.R
+
+\li <b>../examples/r_modular/kernel_diag.R</b>
+\verbinclude kernel_diag.R
+
+\li <b>../examples/r_modular/kernel_distancetokernel.R</b>
+\verbinclude kernel_distancetokernel.R
+
+\li <b>../examples/r_modular/kernel_fixeddegreestring.R</b>
+\verbinclude kernel_fixeddegreestring.R
+
+\li <b>../examples/r_modular/kernel_gaussian.R</b>
+\verbinclude kernel_gaussian.R
+
+\li <b>../examples/r_modular/kernel_gaussianshift.R</b>
+\verbinclude kernel_gaussianshift.R
+
+\li <b>../examples/r_modular/kernel_histogramword.R</b>
+\verbinclude kernel_histogramword.R
+
+\li <b>../examples/r_modular/kernel_linear.R</b>
+\verbinclude kernel_linear.R
+
+\li <b>../examples/r_modular/kernel_linearbyte.R</b>
+\verbinclude kernel_linearbyte.R
+
+\li <b>../examples/r_modular/kernel_linearstring.R</b>
+\verbinclude kernel_linearstring.R
+
+\li <b>../examples/r_modular/kernel_linearword.R</b>
+\verbinclude kernel_linearword.R
+
+\li <b>../examples/r_modular/kernel_localalignmentstring.R</b>
+\verbinclude kernel_localalignmentstring.R
+
+\li <b>../examples/r_modular/kernel_localityimprovedstring.R</b>
+\verbinclude kernel_localityimprovedstring.R
+
+\li <b>../examples/r_modular/kernel_oligostring.R</b>
+\verbinclude kernel_oligostring.R
+
+\li <b>../examples/r_modular/kernel_poly.R</b>
+\verbinclude kernel_poly.R
+
+\li <b>../examples/r_modular/kernel_polymatchstring.R</b>
+\verbinclude kernel_polymatchstring.R
+
+\li <b>../examples/r_modular/kernel_polymatchword.R</b>
+\verbinclude kernel_polymatchword.R
+
+\li <b>../examples/r_modular/kernel_sigmoid.R</b>
+\verbinclude kernel_sigmoid.R
+
+\li <b>../examples/r_modular/kernel_simplelocalityimprovedstring.R</b>
+\verbinclude kernel_simplelocalityimprovedstring.R
+
+\li <b>../examples/r_modular/kernel_sparsegaussian.R</b>
+\verbinclude kernel_sparsegaussian.R
+
+\li <b>../examples/r_modular/kernel_sparselinear.R</b>
+\verbinclude kernel_sparselinear.R
+
+\li <b>../examples/r_modular/kernel_sparsepoly.R</b>
+\verbinclude kernel_sparsepoly.R
+
+\li <b>../examples/r_modular/kernel_topfisher.R</b>
+\verbinclude kernel_topfisher.R
+
+\li <b>../examples/r_modular/kernel_weightedcommwordstring.R</b>
+\verbinclude kernel_weightedcommwordstring.R
+
+\li <b>../examples/r_modular/kernel_weighteddegreepositionstring.R</b>
+\verbinclude kernel_weighteddegreepositionstring.R
+
+\li <b>../examples/r_modular/kernel_weighteddegreestring.R</b>
+\verbinclude kernel_weighteddegreestring.R
+
+\li <b>../examples/r_modular/kernel_wordmatch.R</b>
+\verbinclude kernel_wordmatch.R
+
+\section r_modular_mkl_examples Mkl
+
+
+\li <b>../examples/r_modular/mkl_multiclass.R</b>
+\verbinclude mkl_multiclass.R
+
+\section r_modular_preproc_examples Preproc
+
+
+\li <b>../examples/r_modular/preproc_commulongstring.R</b>
+\verbinclude preproc_commulongstring.R
+
+\li <b>../examples/r_modular/preproc_commwordstring.R</b>
+\verbinclude preproc_commwordstring.R
+
+\li <b>../examples/r_modular/preproc_logplusone.R</b>
+\verbinclude preproc_logplusone.R
+
+\li <b>../examples/r_modular/preproc_normone.R</b>
+\verbinclude preproc_normone.R
+
+\li <b>../examples/r_modular/preproc_prunevarsubmean.R</b>
+\verbinclude preproc_prunevarsubmean.R
+*/

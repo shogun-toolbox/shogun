@@ -11,6 +11,10 @@ a=RealFeatures(A)
 b=LongIntFeatures(B)
 c=ByteFeatures(C)
 
+# or 16bit wide ...
+#feat1 = f.ShortFeatures(N.zeros((10,5),N.short))
+#feat2 = f.WordFeatures(N.zeros((10,5),N.uint16))
+
 
 # print some statistics about a
 print a.get_num_vectors()

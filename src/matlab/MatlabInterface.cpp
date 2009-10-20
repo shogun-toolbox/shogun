@@ -19,8 +19,6 @@
 #include "../r/RInterface.h"
 #endif
 
-#include "../libshogun/lib/memory.cpp"
-
 void matlab_print_message(FILE* target, const char* str)
 {
 	if (target==stdout)

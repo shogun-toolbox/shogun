@@ -3693,7 +3693,7 @@ EOF
 
 clean_up()
 {
-	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
+	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS" "$TMPSO"
 }
 
 test_static_linking()

@@ -122,7 +122,8 @@ sg('set_classifier', b, alphas)
 here.
 
 Finally, the complete example looks like this
-\verbinclude libsvm.sg
+\verbinclude classifier_libsvm.sg
 
-and can be found in examples/cmdline/libsvm.sg .
+and can be found together with many other \subpage examples "examples"
+in examples/cmdline/classifier_libsvm.sg . 
 */
