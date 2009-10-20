@@ -676,7 +676,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
         /*
-           friend class boost::serialization::access;
+           friend class ::boost::serialization::access;
 
            template<class Archive>
            void serialize(Archive & ar, const unsigned int archive_version)
@@ -684,7 +684,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
            SG_DEBUG("archiving CWeightedDegreeStringKernel\n");
 
-           ar & boost::serialization::base_object<CStringKernel<char> >(*this);
+           ar & ::boost::serialization::base_object<CStringKernel<char> >(*this);
 
            SG_DEBUG("done with CWeightedDegreeStringKernel\n");
 
@@ -694,17 +694,17 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
         // serialization needs to split up in save/load because 
         // the serialization of pointers to natives (int* & friends) 
         // requires a workaround 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         //  friend std::ostream & operator<<(std::ostream &os, const CWeightedDegreeStringKernel &gp);
         //template<class Archive>
-        //friend void boost::serialization::save_construct_data(Archive & ar, const CWeightedDegreeStringKernel* t, const unsigned int file_version);
+        //friend void ::boost::serialization::save_construct_data(Archive & ar, const CWeightedDegreeStringKernel* t, const unsigned int file_version);
         template<class Archive>
             void save(Archive & ar, const unsigned int archive_version) const
             {
 
                 SG_DEBUG("archiving CWeightedDegreeStringKernel\n");
 
-                ar & boost::serialization::base_object<CStringKernel<char> >(*this);
+                ar & ::boost::serialization::base_object<CStringKernel<char> >(*this);
 
 
                 ///degree*length weights
@@ -759,7 +759,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
             {
                 SG_DEBUG("archiving CWeightedDegreeStringKernel\n");
 
-                ar & boost::serialization::base_object<CStringKernel<char> >(*this);
+                ar & ::boost::serialization::base_object<CStringKernel<char> >(*this);
 
 
                 ///degree*length weights
@@ -807,7 +807,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
             }
 
-        BOOST_SERIALIZATION_SPLIT_MEMBER();
+        GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 
     public:
@@ -816,7 +816,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
         {
             std::ostringstream s;
 
-            boost::archive::text_oarchive oa(s);
+            ::boost::archive::text_oarchive oa(s);
 
             oa << *this;
 
@@ -828,7 +828,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
             std::istringstream is(str);
 
-            boost::archive::text_iarchive ia(is);
+            ::boost::archive::text_iarchive ia(is);
 
             ia >> *this;
 

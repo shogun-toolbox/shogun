@@ -697,14 +697,14 @@ class CKernel : public CSGObject
 #ifdef HAVE_BOOST_SERIALIZATION  
     private:
 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         template<class Archive>
             void serialize(Archive & ar, const unsigned int archive_version)
             {
 
                 SG_DEBUG("archiving CKernel\n");
 
-                ar & boost::serialization::base_object<CSGObject>(*this);
+                ar & ::boost::serialization::base_object<CSGObject>(*this);
 
                 ar & cache_size;
 

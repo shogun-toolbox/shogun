@@ -629,14 +629,14 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
         /// serialization needs to split up in save/load because 
         ///  the serialization of pointers to natives (int* & friends) 
         ///  requires a workaround 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         template<class Archive>
             void save(Archive & ar, const unsigned int archive_version) const
             {
 
                 SG_DEBUG("archiving SimpleFeatures\n");
 
-                ar & boost::serialization::base_object<CDotFeatures>(*this);
+                ar & ::boost::serialization::base_object<CDotFeatures>(*this);
 
                 //TODO
                 //ar & feature_cache;
@@ -660,7 +660,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
                 SG_DEBUG("archiving SimpleFeatures\n");
 
-                ar & boost::serialization::base_object<CDotFeatures>(*this);
+                ar & ::boost::serialization::base_object<CDotFeatures>(*this);
 
                 //TODO
                 //ar & feature_cache;
@@ -678,7 +678,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
             }
 
-        BOOST_SERIALIZATION_SPLIT_MEMBER();
+        GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 #endif //HAVE_BOOST_SERIALIZATION
 

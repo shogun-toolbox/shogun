@@ -495,7 +495,7 @@ class CAlphabet : public CSGObject
 #ifdef HAVE_BOOST_SERIALIZATION  
     private:
 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
 
         template<class Archive>
             void serialize(Archive & ar, const unsigned int archive_version)
@@ -503,7 +503,7 @@ class CAlphabet : public CSGObject
 
                 SG_DEBUG("archiving CAlphabet");
 
-                ar & boost::serialization::base_object<CSGObject>(*this);
+                ar & ::boost::serialization::base_object<CSGObject>(*this);
 
                 ar & num_symbols;
                 ar & num_bits;
@@ -524,7 +524,7 @@ class CAlphabet : public CSGObject
            const unsigned int // file_version 
            ){
         // variable used for construction
-        ar << boost::serialization::make_nvp("i", a->get_i());
+        ar << ::boost::serialization::make_nvp("i", a->get_i());
         }
 
         template<class Archive>
@@ -534,7 +534,7 @@ class CAlphabet : public CSGObject
         const unsigned int // file_version 
         ){
         int i;
-        ar >> boost::serialization::make_nvp("i", i);
+        ar >> ::boost::serialization::make_nvp("i", i);
         ::new(a)A(i);
         }
 

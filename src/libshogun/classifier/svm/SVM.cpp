@@ -21,10 +21,14 @@
 #include <pthread.h>
 #endif
 
+namespace shogun
+{
+class CSVM;
+}
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_IS_ABSTRACT(CSVM);
+BOOST_IS_ABSTRACT(shogun::CSVM);
 #endif //HAVE_BOOST_SERIALIZATION
 
 using namespace shogun;

@@ -221,14 +221,14 @@ class CFeatures : public CSGObject
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         template<class Archive>
             void save(Archive & ar, const unsigned int archive_version) const
             {
 
                 std::cout << "archiving Features" << std::endl;
 
-                ar & boost::serialization::base_object<CSGObject>(*this);
+                ar & ::boost::serialization::base_object<CSGObject>(*this);
 
                 ar & properties;
                 ar & cache_size;
@@ -250,7 +250,7 @@ class CFeatures : public CSGObject
 
                 std::cout << "archiving Features" << std::endl;
 
-                ar & boost::serialization::base_object<CSGObject>(*this);
+                ar & ::boost::serialization::base_object<CSGObject>(*this);
 
                 ar & properties;
                 ar & cache_size;
@@ -272,7 +272,7 @@ class CFeatures : public CSGObject
 
             }
 
-        BOOST_SERIALIZATION_SPLIT_MEMBER();
+        GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 
 #endif //HAVE_BOOST_SERIALIZATION

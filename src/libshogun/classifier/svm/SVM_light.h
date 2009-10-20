@@ -658,14 +658,14 @@ protected:
 #ifdef HAVE_BOOST_SERIALIZATION
 private:
 
-    friend class boost::serialization::access;
+    friend class ::boost::serialization::access;
     template<class Archive>
         void serialize(Archive & ar, const unsigned int archive_version)
         {
 
             SG_DEBUG("archiving CSVMLight\n");
 
-            ar & boost::serialization::base_object<CSVM>(*this);
+            ar & ::boost::serialization::base_object<CSVM>(*this);
 
             // ar & svm_cost;
 
@@ -681,7 +681,7 @@ public:
     {
         std::ostringstream s;
 
-        boost::archive::text_oarchive oa(s);
+        ::boost::archive::text_oarchive oa(s);
 
         oa << *this;
 
@@ -693,7 +693,7 @@ public:
 
         std::istringstream is(str);
 
-        boost::archive::text_iarchive ia(is);
+        ::boost::archive::text_iarchive ia(is);
 
         ia >> *this;
 
@@ -703,9 +703,9 @@ public:
     {
 
         //std::ofstream os(filename.c_str(), std::ios::binary);
-        //boost::archive::binary_oarchive oa(os);
+        //::boost::archive::binary_oarchive oa(os);
         std::ofstream os(filename.c_str());
-        boost::archive::text_oarchive oa(os);
+        ::boost::archive::text_oarchive oa(os);
 
         oa << *this;
 
@@ -715,10 +715,10 @@ public:
     {
 
         //std::ifstream is(filename.c_str(), std::ios::binary);
-        //boost::archive::binary_iarchive ia(is);
+        //::boost::archive::binary_iarchive ia(is);
 
         std::ifstream is(filename.c_str());
-        boost::archive::text_iarchive ia(is);
+        ::boost::archive::text_iarchive ia(is);
 
         ia >> *this;
 

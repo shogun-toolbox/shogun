@@ -334,7 +334,7 @@ class CKernelMachine : public CClassifier
     private:
 
 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         // When the class Archive corresponds to an output archive, the
         // & operator is defined similar to <<.  Likewise, when the class Archive
         // is a type of input archive the & operator is defined similar to >>.
@@ -343,7 +343,7 @@ class CKernelMachine : public CClassifier
             {
 
                 std::cout << "archiving CKernelMachine" << std::endl;
-                ar & boost::serialization::base_object<CClassifier>(*this);
+                ar & ::boost::serialization::base_object<CClassifier>(*this);
 
                 //TODO register other kernels... (not needed if every class is exported)
                 //if it doesn't work, one might need to include the respective headers
@@ -364,7 +364,7 @@ class CKernelMachine : public CClassifier
 			/// serialization needs to split up in save/load because 
 			///  the serialization of pointers to natives (int* & friends) 
 			///  requires a workaround 
-			friend class boost::serialization::access;
+			friend class ::boost::serialization::access;
 			template<class Archive>
 				void save(Archive & ar, const unsigned int archive_version) const
 				{
@@ -401,7 +401,7 @@ class CKernelMachine : public CClassifier
 
 				}
 
-			BOOST_SERIALIZATION_SPLIT_MEMBER()
+			GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()
             */
 #endif //HAVE_BOOST_SERIALIZATION
 

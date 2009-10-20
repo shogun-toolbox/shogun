@@ -49,7 +49,7 @@
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(CSVMLight);
+BOOST_CLASS_EXPORT(shogun::CSVMLight);
 #endif //HAVE_BOOST_SERIALIZATION
 
 using namespace shogun;

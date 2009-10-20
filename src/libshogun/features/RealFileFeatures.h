@@ -80,14 +80,14 @@ class CRealFileFeatures: public CSimpleFeatures<float64_t>
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         template<class Archive>
             void serialize(Archive & ar, const unsigned int archive_version)
             {
 
                 SG_DEBUG("archiving CRealFeatures\n");
 
-                ar & boost::serialization::base_object<CSimpleFeatures<float64_t> >(*this);
+                ar & ::boost::serialization::base_object<CSimpleFeatures<float64_t> >(*this);
 
                 SG_DEBUG("done with CRealFeatures\n");
 

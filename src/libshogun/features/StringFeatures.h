@@ -1446,14 +1446,14 @@ template <class ST> class CStringFeatures : public CFeatures
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         template<class Archive>
             void save(Archive & ar, const unsigned int archive_version) const
             {
 
                 std::cout << "archiving CStringFeatures" << std::endl;
 
-                ar & boost::serialization::base_object<CFeatures>(*this);
+                ar & ::boost::serialization::base_object<CFeatures>(*this);
 
                 ar & alphabet;
 
@@ -1487,7 +1487,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
                 std::cout << "archiving CStringFeatures" << std::endl;
 
-                ar & boost::serialization::base_object<CFeatures>(*this);
+                ar & ::boost::serialization::base_object<CFeatures>(*this);
 
 
                 ar & alphabet;
@@ -1522,7 +1522,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
             }
 
-        BOOST_SERIALIZATION_SPLIT_MEMBER();
+        GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 
 #endif //HAVE_BOOST_SERIALIZATION

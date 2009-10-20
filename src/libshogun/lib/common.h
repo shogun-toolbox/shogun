@@ -12,9 +12,6 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-
-
-
 #include "lib/memory.h"
 
 #ifndef __COMMON_H__
@@ -47,10 +44,6 @@ typedef long double floatmax_t;
 
 //@}
 
-#endif
-
-
-
 #ifdef HAVE_BOOST_SERIALIZATION
 // split member function serialize funcition into save/load
 #define GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()                       \
@@ -63,3 +56,5 @@ void serialize(                                                  \
 }                                                                \
 /**/
 #endif //HAVE_BOOST_SERIALIZATION
+
+#endif //__COMMON_H__

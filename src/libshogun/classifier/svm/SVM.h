@@ -218,7 +218,7 @@ class CSVM : public CKernelMachine
 		inline virtual const char* get_name() const { return "SVM"; }
 
 #ifdef HAVE_BOOST_SERIALIZATION
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         // When the class Archive corresponds to an output archive, the
         // & operator is defined similar to <<.  Likewise, when the class Archive
         // is a type of input archive the & operator is defined similar to >>.
@@ -228,7 +228,7 @@ class CSVM : public CKernelMachine
 
                 SG_DEBUG("archiving CSVM\n");
 
-                ar & boost::serialization::base_object<CKernelMachine>(*this);
+                ar & ::boost::serialization::base_object<CKernelMachine>(*this);
 
                 ar & linear_term;
 
@@ -257,7 +257,7 @@ class CSVM : public CKernelMachine
         {
 
             std::ofstream os(filename.c_str(), std::ios::binary);
-            boost::archive::binary_oarchive oa(os);
+            ::boost::archive::binary_oarchive oa(os);
 
             oa << *this;
 
@@ -267,7 +267,7 @@ class CSVM : public CKernelMachine
         {
 
             std::ifstream is(filename.c_str(), std::ios::binary);
-            boost::archive::binary_iarchive ia(is);
+            ::boost::archive::binary_iarchive ia(is);
 
             ia >> *this;
 

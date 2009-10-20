@@ -193,14 +193,14 @@ class CLabels : public CSGObject
         // serialization needs to split up in save/load because 
         // the serialization of pointers to natives (int* & friends) 
         // requires a workaround 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         template<class Archive>
             void save(Archive & ar, const unsigned int archive_version) const
             {
 
                 SG_DEBUG("archiving Labels\n");
 
-                ar & boost::serialization::base_object<CSGObject>(*this);
+                ar & ::boost::serialization::base_object<CSGObject>(*this);
 
                 ar & num_labels;
                 for (int32_t i=0; i < num_labels; ++i) 
@@ -218,7 +218,7 @@ class CLabels : public CSGObject
 
                 SG_DEBUG("archiving Labels\n");
 
-                ar & boost::serialization::base_object<CSGObject>(*this);
+                ar & ::boost::serialization::base_object<CSGObject>(*this);
 
                 ar & num_labels;
 
@@ -239,7 +239,7 @@ class CLabels : public CSGObject
 
             }
 
-        BOOST_SERIALIZATION_SPLIT_MEMBER();
+        GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 
     public:
@@ -248,7 +248,7 @@ class CLabels : public CSGObject
         {
             std::ostringstream s;
 
-            boost::archive::text_oarchive oa(s);
+            ::boost::archive::text_oarchive oa(s);
 
             oa << *this;
 
@@ -261,7 +261,7 @@ class CLabels : public CSGObject
 
             std::istringstream is(str);
 
-            boost::archive::text_iarchive ia(is);
+            ::boost::archive::text_iarchive ia(is);
 
             ia >> *this;
 

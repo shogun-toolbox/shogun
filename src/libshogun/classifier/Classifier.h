@@ -205,14 +205,14 @@ class CClassifier : public CSGObject
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         template<class Archive>
             void serialize(Archive & ar, const unsigned int archive_version)
             {
 
                 SG_DEBUG("archiving Classifier");
 
-                ar & boost::serialization::base_object<CSGObject>(*this);
+                ar & ::boost::serialization::base_object<CSGObject>(*this);
                 //ar & max_train_time;
                 SG_DEBUG("before labels");
                 ar & labels;

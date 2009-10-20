@@ -77,13 +77,13 @@ template <class ST> class CStringKernel : public CKernel
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 
-        friend class boost::serialization::access;
+        friend class ::boost::serialization::access;
         template<class Archive>
             void serialize(Archive & ar, const unsigned int archive_version)
             {
 
                 SG_DEBUG("archiving CStringKernel\n");
-                ar & boost::serialization::base_object<CKernel>(*this);
+                ar & ::boost::serialization::base_object<CKernel>(*this);
 
                 SG_DEBUG("done CStringKernel\n");
             }
