@@ -17,7 +17,7 @@
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(CLabels);
+BOOST_CLASS_EXPORT(shogun::CLabels);
 #endif //HAVE_BOOST_SERIALIZATION
 
 using namespace shogun;

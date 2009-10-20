@@ -46,14 +46,12 @@ typedef long double floatmax_t;
 
 #ifdef HAVE_BOOST_SERIALIZATION
 // split member function serialize funcition into save/load
-#define GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()                       \
-template<class Archive>                                          \
-void serialize(                                                  \
-    Archive &ar,                                                 \
-    const unsigned int file_version                              \
-){                                                               \
+#define GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()                  \
+template<class Archive>                                            \
+void serialize(Archive &ar, const unsigned int file_version)       \
+{                                                                  \
     ::boost::serialization::split_member(ar, *this, file_version); \
-}                                                                \
+}
 /**/
 #endif //HAVE_BOOST_SERIALIZATION
 

@@ -13,7 +13,7 @@
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_IS_ABSTRACT(shogun::CKernelMachine);
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(shogun::CKernelMachine);
 #endif //HAVE_BOOST_SERIALIZATION
 
 using namespace shogun;

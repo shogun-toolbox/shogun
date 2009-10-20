@@ -21,14 +21,9 @@
 #include <pthread.h>
 #endif
 
-namespace shogun
-{
-class CSVM;
-}
-
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_IS_ABSTRACT(shogun::CSVM);
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(CSVM);
 #endif //HAVE_BOOST_SERIALIZATION
 
 using namespace shogun;
@@ -51,7 +46,6 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 CSVM::~CSVM()
 {
 	SG_UNREF(mkl);
-
 }
 
 void CSVM::set_defaults(int32_t num_sv)
