@@ -20,7 +20,8 @@
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_IS_ABSTRACT(CSGObject);
+//BOOST_IS_ABSTRACT(CSGObject);
+//BOOST_SERIALIZATION_ASSUME_ABSTRACT(shogun::CSGObject);
 #endif //HAVE_BOOST_SERIALIZATION
 
 namespace shogun
@@ -89,6 +90,6 @@ void CSGObject::from_file(std::string filename)
 	std::ifstream is(filename.c_str(), std::ios::binary);
 	boost::archive::binary_iarchive ia(is);
 	CSGObject* tmp= const_cast<CSGObject*>(this);
-	ia >> tmp; 
+	ia >> tmp;
 }
 #endif //HAVE_BOOST_SERIALIZATION

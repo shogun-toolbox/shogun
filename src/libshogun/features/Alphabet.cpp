@@ -16,13 +16,20 @@
 
 using namespace shogun;
 
-//define numbers for the bases 
+//define numbers for the bases
 const uint8_t CAlphabet::B_A=0;
 const uint8_t CAlphabet::B_C=1;
 const uint8_t CAlphabet::B_G=2;
 const uint8_t CAlphabet::B_T=3;
 const uint8_t CAlphabet::MAPTABLE_UNDEF=0xff;
 const char* CAlphabet::alphabet_names[12]={"DNA", "RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
+
+
+CAlphabet::CAlphabet()
+: CSGObject()
+{
+
+}
 
 CAlphabet::CAlphabet(char* al, int32_t len)
 : CSGObject()
@@ -43,7 +50,7 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 		alpha = ALPHANUM;
 	else if (len>=(int32_t) strlen("CUBE") && !strncmp(al, "CUBE", strlen("CUBE")))
 		alpha = CUBE;
-	else if ((len>=(int32_t) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE"))) || 
+	else if ((len>=(int32_t) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE"))) ||
 			(len>=(int32_t) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
 		alpha = RAWBYTE;
 	else if (len>=(int32_t) strlen("IUPAC_NUCLEIC_ACID") && !strncmp(al, "IUPAC_NUCLEIC_ACID", strlen("IUPAC_NUCLEIC_ACID")))
@@ -53,7 +60,7 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 	else {
       SG_ERROR( "unknown alphabet %s\n", al);
    }
-	
+
 	set_alphabet(alpha);
 }
 
@@ -144,15 +151,15 @@ void CAlphabet::init_map_table()
 			valid_chars[(uint8_t) '1']=true;
 			valid_chars[(uint8_t) '2']=true;
 			valid_chars[(uint8_t) '3']=true;
-			valid_chars[(uint8_t) '4']=true;	
-			valid_chars[(uint8_t) '5']=true;	
+			valid_chars[(uint8_t) '4']=true;
+			valid_chars[(uint8_t) '5']=true;
 			valid_chars[(uint8_t) '6']=true;	//Translation '123456' -> 012345
 
 			maptable_to_bin[(uint8_t) '1']=0;
 			maptable_to_bin[(uint8_t) '2']=1;
 			maptable_to_bin[(uint8_t) '3']=2;
-			maptable_to_bin[(uint8_t) '4']=3;	
-			maptable_to_bin[(uint8_t) '5']=4;	
+			maptable_to_bin[(uint8_t) '4']=3;
+			maptable_to_bin[(uint8_t) '5']=4;
 			maptable_to_bin[(uint8_t) '6']=5;	//Translation '123456' -> 012345
 
 			maptable_to_char[(uint8_t) 0]='1';
@@ -180,8 +187,8 @@ void CAlphabet::init_map_table()
 			break;
 
 		case BINARY:
-			valid_chars[(uint8_t) '0']=true;	
-			valid_chars[(uint8_t) '1']=true;	
+			valid_chars[(uint8_t) '0']=true;
+			valid_chars[(uint8_t) '1']=true;
 
 			maptable_to_bin[(uint8_t) '0']=0;
 			maptable_to_bin[(uint8_t) '1']=1;
@@ -223,12 +230,12 @@ void CAlphabet::init_map_table()
 			valid_chars[(uint8_t) 'A']=true;
 			valid_chars[(uint8_t) 'C']=true;
 			valid_chars[(uint8_t) 'G']=true;
-			valid_chars[(uint8_t) 'T']=true;	
+			valid_chars[(uint8_t) 'T']=true;
 
 			maptable_to_bin[(uint8_t) 'A']=B_A;
 			maptable_to_bin[(uint8_t) 'C']=B_C;
 			maptable_to_bin[(uint8_t) 'G']=B_G;
-			maptable_to_bin[(uint8_t) 'T']=B_T;	
+			maptable_to_bin[(uint8_t) 'T']=B_T;
 
 			maptable_to_char[B_A]='A';
 			maptable_to_char[B_C]='C';
@@ -251,12 +258,12 @@ void CAlphabet::init_map_table()
 			valid_chars[(uint8_t) 'A']=true;
 			valid_chars[(uint8_t) 'C']=true;
 			valid_chars[(uint8_t) 'G']=true;
-			valid_chars[(uint8_t) 'U']=true;	
+			valid_chars[(uint8_t) 'U']=true;
 
 			maptable_to_bin[(uint8_t) 'A']=B_A;
 			maptable_to_bin[(uint8_t) 'C']=B_C;
 			maptable_to_bin[(uint8_t) 'G']=B_G;
-			maptable_to_bin[(uint8_t) 'U']=B_T;	
+			maptable_to_bin[(uint8_t) 'U']=B_T;
 
 			maptable_to_char[B_A]='A';
 			maptable_to_char[B_C]='C';
@@ -493,7 +500,7 @@ void CAlphabet::copy_histogram(CAlphabet* a)
 
 const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 {
-	
+
 	int32_t idx;
 	switch (alphabet)
 	{
@@ -570,6 +577,6 @@ void CAlphabet::from_file(std::string filename)
 	std::ifstream is(filename.c_str(), std::ios::binary);
 	::boost::archive::binary_iarchive ia(is);
 	CAlphabet* tmp= const_cast<CAlphabet*>(this);
-	ia >> tmp; 
+	ia >> tmp;
 }
 #endif //HAVE_BOOST_SERIALIZATION

@@ -226,7 +226,7 @@ class CFeatures : public CSGObject
             void save(Archive & ar, const unsigned int archive_version) const
             {
 
-                std::cout << "archiving Features" << std::endl;
+				SG_DEBUG("archiving Features\n");
 
                 ar & ::boost::serialization::base_object<CSGObject>(*this);
 
@@ -240,7 +240,7 @@ class CFeatures : public CSGObject
                     ar & preprocessed[i];
                 }
 
-                std::cout << "done with Features" << std::endl;
+                SG_DEBUG("done archiving Features\n");
 
             }
 
@@ -248,7 +248,7 @@ class CFeatures : public CSGObject
             void load(Archive & ar, const unsigned int archive_version)
             {
 
-                std::cout << "archiving Features" << std::endl;
+				SG_DEBUG("archiving Features\n");
 
                 ar & ::boost::serialization::base_object<CSGObject>(*this);
 
@@ -268,7 +268,7 @@ class CFeatures : public CSGObject
 
                 }
 
-                std::cout << "done with Features" << std::endl;
+                SG_DEBUG("done archiving Features\n");
 
             }
 

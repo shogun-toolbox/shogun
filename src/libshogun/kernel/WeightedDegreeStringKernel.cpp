@@ -35,6 +35,7 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM
 {
+
 	int32_t* vec;
 	float64_t* result;
 	float64_t* weights;
@@ -48,6 +49,25 @@ struct S_THREAD_PARAM
 	int32_t* vec_idx;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+
+CWeightedDegreeStringKernel::CWeightedDegreeStringKernel ()
+: CStringKernel<char>(10),weights(NULL),position_weights(NULL),
+	weights_buffer(NULL), mkl_stepsize(1),degree(0), length(0),
+	max_mismatch(0), seq_length(0), block_computation(true),
+	num_block_weights_external(0), block_weights_external(NULL),
+	block_weights(NULL), type(E_WD), which_degree(-1), tries(NULL),
+	tree_initialized(false), alphabet(NULL)
+{
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
+	lhs=NULL;
+	rhs=NULL;
+
+	if (type!=E_EXTERNAL)
+		set_wd_weights_by_type(type);
+
+	set_normalizer(new CFirstElementKernelNormalizer());
+}
+
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	int32_t degree_, EWDKernType type_)
@@ -122,7 +142,7 @@ CWeightedDegreeStringKernel::~CWeightedDegreeStringKernel()
 
 
 void CWeightedDegreeStringKernel::remove_lhs()
-{ 
+{
 	SG_DEBUG( "deleting CWeightedDegreeStringKernel optimization\n");
 	delete_optimization();
 
@@ -142,7 +162,7 @@ void CWeightedDegreeStringKernel::create_empty_tries()
 		tries->create(seq_length, max_mismatch==0) ;
 	}
 }
-  
+
 bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	int32_t lhs_changed=(lhs!=l);
@@ -166,7 +186,7 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	SG_UNREF(alphabet);
 	alphabet=sf_l->get_alphabet();
 	CAlphabet* ralphabet=sf_r->get_alphabet();
-	
+
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties &= ((uint64_t) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
@@ -225,7 +245,7 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 		{
 			if ( (i % (count/10+1)) == 0)
 				SG_PROGRESS(i, 0, count);
-			
+
 			if (max_mismatch==0)
 				add_example_to_tree(IDX[i], alphas[i]) ;
 			else
@@ -241,7 +261,7 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 				add_example_to_single_tree_mismatch(IDX[i], alphas[i], tree_num) ;
 		}
 	}
-	
+
 	if (tree_num<0)
 		SG_DONE();
 
@@ -252,15 +272,15 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 }
 
 bool CWeightedDegreeStringKernel::delete_optimization()
-{ 
+{
 	if (get_is_initialized())
 	{
 		if (tries!=NULL)
-			tries->delete_trees(max_mismatch==0); 
+			tries->delete_trees(max_mismatch==0);
 		set_is_initialized(false);
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -402,7 +422,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree(
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	
+
 	if (length == 0 || max_mismatch > 0)
 	{
 		for (int32_t i=0; i<len; i++)
@@ -421,7 +441,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree(
 		for (int32_t i=0; i<len; i++)
 		{
 			float64_t alpha_pw=alpha;
-			/*if (position_weights!=NULL) 
+			/*if (position_weights!=NULL)
 			  alpha_pw = alpha*position_weights[i] ;*/
 			if (alpha_pw==0.0)
 				continue ;
@@ -434,7 +454,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree(
 }
 
 void CWeightedDegreeStringKernel::add_example_to_single_tree(
-	int32_t idx, float64_t alpha, int32_t tree_num) 
+	int32_t idx, float64_t alpha, int32_t tree_num)
 {
 	ASSERT(alphabet);
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
@@ -446,7 +466,7 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(
 
 	for (int32_t i=tree_num; i<tree_num+degree && i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	
+
 	ASSERT(tries);
 	if (alpha!=0.0)
 		tries->add_to_trie(tree_num, 0, vec, normalizer->normalize_lhs(alpha, idx), weights, (length!=0));
@@ -463,18 +483,18 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(int32_t idx, floa
 
 	int32_t len ;
 	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
-	
+
 	int32_t *vec = new int32_t[len] ;
-	
+
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
-	
+
 	for (int32_t i=0; i<len; i++)
 	{
 		if (alpha!=0.0)
 			tries->add_example_to_tree_mismatch_recursion(NO_CHILD, i, normalizer->normalize_lhs(alpha, idx), &vec[i], len-i, 0, 0, max_mismatch, weights);
 	}
-	
+
 	delete[] vec ;
 	tree_initialized=true ;
 }
@@ -616,7 +636,7 @@ bool CWeightedDegreeStringKernel::set_weights(
 	ASSERT(tries);
 	tries->set_degree(degree);
 	length=len;
-	
+
 	if (length==0) length=1;
 	int32_t num_weights=degree*(length+max_mismatch);
 	delete[] weights;
@@ -651,7 +671,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 	position_weights=new float64_t[len];
 	ASSERT(tries);
 	tries->set_position_weights(position_weights);
-	
+
 	if (position_weights)
 	{
 		for (int32_t i=0; i<len; i++)

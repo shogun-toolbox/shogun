@@ -13,7 +13,7 @@
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_SERIALIZATION_ASSUME_ABSTRACT(shogun::CKernelMachine);
+//BOOST_SERIALIZATION_ASSUME_ABSTRACT(shogun::CKernelMachine);
 #endif //HAVE_BOOST_SERIALIZATION
 
 using namespace shogun;
@@ -192,7 +192,7 @@ CLabels* CKernelMachine::classify()
 #endif
 			SG_DONE();
 	}
-	else 
+	else
 		return NULL;
 
 	return lab;
@@ -244,7 +244,7 @@ void* CKernelMachine::classify_example_helper(void* p)
 #ifdef WIN32
 	for (int32_t vec=params->start; vec<params->end; vec++)
 #else
-	for (int32_t vec=params->start; vec<params->end && 
+	for (int32_t vec=params->start; vec<params->end &&
 			!CSignal::cancel_computations(); vec++)
 #endif
 	{

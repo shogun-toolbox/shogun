@@ -26,6 +26,7 @@ CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
 CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
 {
+	problem = svm_problem();
 }
 
 CLibSVM::~CLibSVM()

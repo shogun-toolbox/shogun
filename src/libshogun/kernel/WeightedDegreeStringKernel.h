@@ -52,6 +52,12 @@ enum EWDKernType
 class CWeightedDegreeStringKernel: public CStringKernel<char>
 {
 	public:
+
+		/** default constructor
+		 *
+		 */
+		CWeightedDegreeStringKernel();
+
 		/** constructor
 		 *
 		 * @param degree degree
@@ -92,7 +98,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @return weighting type
 		 *
-		 * 
+		 *
 		 * \sa EWDKernType
 		 */
 		EWDKernType get_type() const
@@ -169,7 +175,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 	 	* @return optimized value at given index
 	 	*/
 		virtual float64_t compute_optimized(int32_t idx)
-		{ 
+		{
 			if (get_is_initialized())
 				return compute_by_tree(idx);
 
@@ -245,7 +251,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		inline void compute_by_subkernel(
 			int32_t idx, float64_t * subkernel_contrib)
-		{ 
+		{
 			if (get_is_initialized())
 			{
 				compute_by_tree(idx, subkernel_contrib);
@@ -691,9 +697,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
            }
 
 */
-        // serialization needs to split up in save/load because 
-        // the serialization of pointers to natives (int* & friends) 
-        // requires a workaround 
+        // serialization needs to split up in save/load because
+        // the serialization of pointers to natives (int* & friends)
+        // requires a workaround
         friend class ::boost::serialization::access;
         //  friend std::ostream & operator<<(std::ostream &os, const CWeightedDegreeStringKernel &gp);
         //template<class Archive>
@@ -706,6 +712,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
                 ar & ::boost::serialization::base_object<CStringKernel<char> >(*this);
 
+
+    			ar & lhs;
+    			ar & rhs;
 
                 ///degree*length weights
                 ///length must match seq_length if != 0
@@ -731,7 +740,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
                 ar & num_block_weights_external;
                 //float64_t* block_weights_external;
-                for (int32_t i=0; i < num_block_weights_external; ++i) 
+                for (int32_t i=0; i < num_block_weights_external; ++i)
                 {
                     ar & block_weights_external[i];
                 }
@@ -761,6 +770,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
                 ar & ::boost::serialization::base_object<CStringKernel<char> >(*this);
 
+    			ar & lhs;
+    			ar & rhs;
 
                 ///degree*length weights
                 ///length must match seq_length if != 0
@@ -789,7 +800,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
                 ar & num_block_weights_external;
                 //float64_t* block_weights_external;
                 block_weights_external = new float64_t[num_block_weights_external];
-                for (int32_t i=0; i < num_block_weights_external; ++i) 
+                for (int32_t i=0; i < num_block_weights_external; ++i)
                 {
                     ar & block_weights_external[i];
                 }
@@ -886,11 +897,11 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		CAlphabet* alphabet;
 };
 
-
-#ifdef HAVE_BOOST_SERIALIZATION  
+/*
+#ifdef HAVE_BOOST_SERIALIZATION
 //http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx
 namespace boost
-{ 
+{
 	namespace serialization
 	{
 		template<class Archive>
@@ -910,12 +921,11 @@ namespace boost
 				int32_t max_mismatch = t->get_max_mismatch();
 				ar << max_mismatch;
 
-				/*
-				   TODO solution to the problem is that create_empty_tries has to be called
-				   _after_ lhs, and rhs are set.
+				//   TODO solution to the problem is that create_empty_tries has to be called
+				//   _after_ lhs, and rhs are set.
 
-				   other solution -> serialize tree
-				   */
+				//   other solution -> serialize tree
+
 
 				ar.register_type(static_cast<CStringFeatures<char> *>(NULL));
 
@@ -971,5 +981,7 @@ namespace boost
 	} // serialization
 } // namespace boost
 #endif //HAVE_BOOST_SERIALIZATION
+*/
+
 }
 #endif /* _WEIGHTEDDEGREESTRINGKERNEL_H__ */

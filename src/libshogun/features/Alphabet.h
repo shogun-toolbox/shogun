@@ -71,6 +71,13 @@ enum EAlphabet
 class CAlphabet : public CSGObject
 {
 	public:
+
+		/** default constructor
+		 *
+		 */
+		CAlphabet();
+
+
 		/** constructor
 		 *
 		 * @param alpha alphabet to use
@@ -467,7 +474,7 @@ class CAlphabet : public CSGObject
 						value= value << max_val;
 						if (j>=0 && j<sequence_length)
 							value|=obs[j];
-					}			
+					}
 				}
 				obs[i]=value;
 			}
@@ -492,7 +499,8 @@ class CAlphabet : public CSGObject
 		void copy_histogram(CAlphabet* src);
 
 
-#ifdef HAVE_BOOST_SERIALIZATION  
+
+#ifdef HAVE_BOOST_SERIALIZATION
     private:
 
         friend class ::boost::serialization::access;
@@ -505,6 +513,7 @@ class CAlphabet : public CSGObject
 
                 ar & ::boost::serialization::base_object<CSGObject>(*this);
 
+                ar & alphabet;
                 ar & num_symbols;
                 ar & num_bits;
 
@@ -514,14 +523,14 @@ class CAlphabet : public CSGObject
 
 
         /*
-           namespace boost { 
+           namespace boost {
            namespace serialization {
 
            template<class Archive>
            inline void save_construct_data(
-           Archive & ar, 
-           const A * a, 
-           const unsigned int // file_version 
+           Archive & ar,
+           const A * a,
+           const unsigned int // file_version
            ){
         // variable used for construction
         ar << ::boost::serialization::make_nvp("i", a->get_i());
@@ -529,9 +538,9 @@ class CAlphabet : public CSGObject
 
         template<class Archive>
         inline void load_construct_data(
-        Archive & ar, 
-        A * a, 
-        const unsigned int // file_version 
+        Archive & ar,
+        A * a,
+        const unsigned int // file_version
         ){
         int i;
         ar >> ::boost::serialization::make_nvp("i", i);
@@ -627,15 +636,16 @@ template<> inline void CAlphabet::translate_from_single_order_reversed(floatmax_
 }
 #endif
 
-#ifdef HAVE_BOOST_SERIALIZATION  
+/*
+#ifdef HAVE_BOOST_SERIALIZATION
 //http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx
-namespace boost { 
+namespace boost {
 namespace serialization {
    template<class Archive>
     inline void save_construct_data(Archive & ar, const CAlphabet* t, const unsigned int archive_version)
     {
       EAlphabet a = t->get_alphabet();
-      ar << a; 
+      ar << a;
 
     }
 
@@ -651,5 +661,7 @@ namespace serialization {
 } // serialization
 } // namespace boost
 #endif //HAVE_BOOST_SERIALIZATION
+*/
+
 }
 #endif

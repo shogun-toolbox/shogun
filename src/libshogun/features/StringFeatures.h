@@ -57,7 +57,7 @@ template <class T> class T_STRING
   void save(Archive & ar, const unsigned int archive_version) const
   {
 
-    //std::cout << "archiving T_STRING" << std::endl;
+    //SG_DEBUG("archiving T_STRING\n");
 
   	ar & length;
 
@@ -65,7 +65,7 @@ template <class T> class T_STRING
       ar & string[i];
     }
 
-    //std::cout << "done with T_STRING" << std::endl;
+    //SG_DEBUG("done archiving T_STRING\n");
 
   }
 
@@ -73,7 +73,7 @@ template <class T> class T_STRING
   void load(Archive & ar, const unsigned int archive_version)
   {
 
-    //std::cout << "archiving T_STRING" << std::endl;
+	//SG_DEBUG("archiving T_STRING\n");
 
   	ar & length;
 
@@ -83,7 +83,7 @@ template <class T> class T_STRING
       ar & string[i];
     }
 
-    //std::cout << "done with T_STRING" << std::endl;
+    //SG_DEBUG("done archiving T_STRING\n");
 
   }
 
@@ -1451,7 +1451,7 @@ template <class ST> class CStringFeatures : public CFeatures
             void save(Archive & ar, const unsigned int archive_version) const
             {
 
-                std::cout << "archiving CStringFeatures" << std::endl;
+				SG_DEBUG("archiving StringFeatures\n");
 
                 ar & ::boost::serialization::base_object<CFeatures>(*this);
 
@@ -1476,8 +1476,7 @@ template <class ST> class CStringFeatures : public CFeatures
                 //TODO?! how long
                 //ST* symbol_mask_table;
 
-
-                std::cout << "done with CStringFeatures" << std::endl;
+                SG_DEBUG("done archiving StringFeatures\n");
 
             }
 
@@ -1485,7 +1484,7 @@ template <class ST> class CStringFeatures : public CFeatures
             void load(Archive & ar, const unsigned int archive_version)
             {
 
-                std::cout << "archiving CStringFeatures" << std::endl;
+				SG_DEBUG("archiving StringFeatures\n");
 
                 ar & ::boost::serialization::base_object<CFeatures>(*this);
 
@@ -1518,7 +1517,7 @@ template <class ST> class CStringFeatures : public CFeatures
                 //TODO?! how long -> num_of_symbols?
                 //ST* symbol_mask_table;
 
-                std::cout << "done with CStringFeatures" << std::endl;
+                SG_DEBUG("done archiving StringFeatures\n");
 
             }
 
