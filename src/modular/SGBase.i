@@ -89,24 +89,19 @@ namespace std {
 
 %include "std_string.i"
 
+#ifdef SWIGPYTHON
 %pythoncode %{
-   #some guerillapatching 
    def __getstate__(self):
-
       state=self.toString()
-
       return state
 
-
    def __setstate__(self, state):
-
       self.__init__()
       self.fromString(state)
 
-   #attach methods
    SGObject.__setstate__=__setstate__
    SGObject.__getstate__=__getstate__
-
 %}
+#endif
 
 #endif //HAVE_BOOST_SERIALIZATION
