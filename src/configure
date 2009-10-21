@@ -459,8 +459,22 @@ check_doxygen()
 	then
 		if doxygen --version 2>&1 >/dev/null 2>&1
 		then
-			echores "`doxygen --version`"
-			_doxygen=yes
+
+			DOXY_MAJOR=`doxygen --version | cut -d '.' -f 1`
+			DOXY_MINOR=`doxygen --version | cut -d '.' -f 2`
+
+			if test "$DOXY_MAJOR" -ge 1 && test "$DOXY_MINOR" -ge 6
+			then
+				echores "`doxygen --version`"
+				_doxygen=yes
+			else
+				if test "$_doxygen" = yes
+				then
+					die "doxygen version 1.6.0 or higher required for documentation"
+				else
+					echores "doxygen version 1.6.0 or higher required for documentation"
+				fi
+			fi
 		else
 			if test "$_doxygen" = yes
 			then
