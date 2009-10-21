@@ -68,7 +68,7 @@ template <class T> class CSimpleFile : public CSGObject
 					{
 						if (!fseek(file, 0, SEEK_END))
 						{
-							if ((num=(int)ftell(file)) != -1)
+							if ((num=(int64_t) ftell(file)) != -1)
 							{
 								SG_INFO( "file of size %ld bytes == %ld entries detected\n", num,num/sizeof(T));
 								num/=sizeof(T);
