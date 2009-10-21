@@ -795,12 +795,31 @@ protected:
 	 */
 	int32_t m_long_transition_max ;
 
+	/**default values defining the k-mer degrees
+	 * used for content type prediction
+	 */
 	static int32_t word_degree_default[4];
+
+	/**default values storing the cumulative sum 
+	 * of the number of kmers that exist for the 
+	 * different degrees e.g. matlab spoken: cumsum(4.^[3 4 5 6])*/
 	static int32_t cum_num_words_default[5];
+
+	/**default values defining which of the plif are the 
+	 * frame specific plifs*/
 	static int32_t frame_plifs[3];
+
+	/**default values like cum_num_words_default 
+	 * but not cumsumed: e.g. 4.^[3 4 5 6]*/
 	static int32_t num_words_default[4];
+
+	/**default values*/
 	static int32_t mod_words_default[32];
+
+	/**default values*/
 	static bool sign_words_default[16];
+
+	/**default values*/
 	static int32_t string_words_default[16];
 };
 }
