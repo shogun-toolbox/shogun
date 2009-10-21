@@ -13,6 +13,7 @@ This page lists ready to run shogun examples for the Python Modular interface.
 \li \subpage python_modular_preproc_examples 
 \li \subpage python_modular_regression_examples 
 \li \subpage python_modular_serialization_examples 
+\li \subpage python_modular_structure_examples 
 \li \subpage python_modular_tests_examples 
 
 To run the examples issue
@@ -340,6 +341,12 @@ python name_of_example.py
 
 \li <b>../examples/python_modular/serialization_svmlight_modular.py</b>
 \verbinclude serialization_svmlight_modular.py
+
+\section python_modular_structure_examples Structure
+
+
+\li <b>../examples/python_modular/structure_dynprog_modular.py</b>
+\verbinclude structure_dynprog_modular.py
 
 \section python_modular_tests_examples Tests
 

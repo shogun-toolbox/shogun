@@ -52,6 +52,7 @@
   In addition, labels are represented in CLabels and the alphabet of a string in CAlphabet.
 
 
+
   \section preproc_sec Preprocessors
   The aforementioned features can be on-the-fly preprocessed to e.g. substract the mean or normalize vectors to norm 1 etc. The following pre-processors are implemented
   \li CNormOne - Normalizes vectors to norm 1.
@@ -60,6 +61,8 @@
   \li CPruneVarSubMean - removes dimensions with little variance, substracting the mean.
   \li CSortUlongString - Sorts vectors.
   \li CSortWordString - Sorts vectors.
+
+
 
   \section classifiers_sec Classifiers
 
@@ -81,7 +84,7 @@
   \li CSubgradientSVM - SVM based on steepest subgradient descent
   \li CSubgradientLPM - LPM based on steepest subgradient descent
 
-  \subsection kernclassi_sec Kernel Methods
+
   \subsubsection svmclassi_sec Support Vector Machines
   \li CSVMLight - A variant of SVMlight using pr_loqo as its internal solver.
   \li CLibSVM - LibSVM modified to use shoguns kernel framework.
@@ -94,8 +97,12 @@
   \li CLibSVMMultiClass - LibSVMs one vs. one multiclass SVM solver
   \li CLibSVMOneClass - LibSVMs one-class SVM
 
+
   \subsection distmachine_sec Distance Machines
   \li k-Nearest Neighbor - Standard k-NN
+
+
+
 
   \section regression_sec Regression
   \subsection Support Vector Regression
@@ -105,20 +112,31 @@
   \subsection other_regress Others
   \li CKRR - Kernel Ridge Regression
 
+  
+
   \section distrib_sec Distributions
   \li CHMM - Hidden Markov Models
   \li CHistogram - Histogram
   \li CLinearHMM - Markov chains (embedded in ``Linear'' HMMs)
 
+
+
+
   \section cluster_sec Clustering
   \li CHierarchical - Agglomerative hierarchical single linkage clustering.
   \li CKMeans - k-Means Clustering
+
+
+
 
   \section mkl_sec Multiple Kernel Learning
   \li CMKLRegression for q-norm MKL with Regression
   \li CMKLOneClass for q-norm 1-class MKL
   \li CMKLClassification for q-norm 2-class MKL
   \li CGMNPMKL for 1-norm multi-class MKL
+
+
+
 
   \section kernels_sec Kernels
   \li CAUCKernel - To maximize AUC in SVM training (takes a kernel as input)
@@ -159,6 +177,9 @@
   \li CWeightedDegreePositionStringKernel - Weighted Degree kernel with shift
   \li CWeightedDegreeStringKernel - Weighted Degree string kernel
 
+
+
+
   \subsection kernel_normalizer Kernel Normalizers
   Since several of the kernels pose numerical challenges to SVM optimizers,
   kernels can be ``normalized'' for example to have ones on the diagonal.
@@ -171,6 +192,9 @@
   \li CRidgeKernelNormalizer - adds a ridge on the kernel diagonal
   \li CTanimotoKernelNormalizer - tanimoto coefficient inspired normalizer
   \li CVarianceKernelNormalizer - normalize vectors in feature space to norm 1
+
+
+
 
   \section dist_sec Distances
   Distance Measures to measure the distance between objects. They can be used
@@ -188,6 +212,9 @@
   \li CManhattanMetric - Manhatten metric
   \li CMinkowskiMetric - Minkowski metric
   \li CTanimotoDistance - Tanimoto distance
+
+
+
 
   \section eval_sec Evaluation
   \subsection perf_sec Performance Measures
