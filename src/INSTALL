@@ -46,7 +46,8 @@ performance computing should be done under linux only anyway). In case
 atlas/lapack is unavailable, don't worry most of shogun will work without,
 though slightly slower versions are used. For standard 1-norm
 multiple kernel learning (MKL) the GNU Linear Programming Kit (GLPK) version at
-least 4.29 or CPLEX is required.
+least 4.29 or CPLEX is required. If you want to build the html documentation or
+python online help you will need doxygen version 1.6.0 or higher.
 
 
 SPECIFIC BUILD INSTRUCTIONS
