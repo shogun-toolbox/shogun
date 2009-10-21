@@ -1,4 +1,4 @@
-2009-10-XX Soeren Sonnenburg <sonne@debian.org>
+2009-10-23 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.9.0 (libshogun 5.0, libshogunui 3.0)
 	* This release contains several cleanups and enhancements:
@@ -9,6 +9,7 @@
 		- Speed up ScatterSVM.
 		- Saving and Loading of shogun objects.
 		- Examples have been polished/split up into separate files.
+		- Documentation and webpage improvements.
 	* Bugfixes:
 		- Fix one class MKL for static interfaces.
 		- Fix performance measures integer overflow.

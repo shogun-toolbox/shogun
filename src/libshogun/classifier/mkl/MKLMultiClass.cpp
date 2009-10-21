@@ -280,9 +280,6 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 
 bool CMKLMultiClass::train(CFeatures* data)
 {
-	//makes glpk quiet
-	glp_term_out(GLP_OFF);
-
 	int numcl=labels->get_num_classes();
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());

@@ -15,7 +15,9 @@ using namespace shogun;
 MKLMultiClass2glpk::MKLMultiClass2glpk()
 {
 	numkernels = 0;
-#if defined(USE_GLPK)
+#ifdef USE_GLPK
+	//makes glpk quiet
+	glp_term_out(GLP_OFF);
 	linearproblem=NULL;
 #endif
 }
