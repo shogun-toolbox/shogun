@@ -28,8 +28,13 @@ namespace shogun
 class MKLMultiClass2glpk: public CSGObject
 {
 public:
-
+	/** Class default Constructor
+	 * 
+	 */
 	MKLMultiClass2glpk();
+	/** Class default Destructor
+	 * 
+	 */
 	virtual ~MKLMultiClass2glpk();
 
 	/** initializes GLPK LP sover 
@@ -65,10 +70,15 @@ public:
 	}
 
 protected:
-	/// prohibits copying the copy constructor by declaring it protected, do
-	/// not know how to copy the glpk basis structure, it is too C like :)
-	/// and seemingly not intended to be copied
+	/** Class Copy Constructor
+	 * protected to avoid its usage because member glp_prob* linearproblem;
+	 * from GLPK package is not copyable
+	 */
 	MKLMultiClass2glpk(MKLMultiClass2glpk & gl);
+	/** Class Assignment operator
+	 * protected to avoid its usage because member glp_prob* linearproblem;
+	 * from GLPK package is not copyable
+	 */
 	MKLMultiClass2glpk operator=(MKLMultiClass2glpk & gl);
 
 protected:

@@ -32,12 +32,21 @@ namespace shogun
 class CMKLMultiClass : public CMultiClassSVM
 {
 public:
+	/** Class default Constructor
+	 * 
+	 */
 	CMKLMultiClass();
+	/** Class Constructor commonly used in Shogun Toolbox
+	 * @param C constant C
+	 * @param k kernel
+	 * @param lab labels
+	 */
 	CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab);
 
-	CMKLMultiClass( const CMKLMultiClass & cm);
-	CMKLMultiClass operator=( const CMKLMultiClass & cm);
-	
+
+	/** Class default Destructor
+	 * 
+	 */
 	virtual ~CMKLMultiClass();
 
 	/** train Multiclass MKL classifier
@@ -64,7 +73,7 @@ public:
 	 * have been computed or to the number of MKL weights which is equal to the number of kernels
 	 * 
 	 * @return NULL if no weights have been computed or otherwise an array
-	 * with the weights
+	 * with the weights, caller has to delete[] the output by itself
 	 */
 	float64_t* getsubkernelweights(int32_t & numweights);
 	
@@ -87,8 +96,16 @@ public:
 	void set_max_num_mkliters(int32_t maxnum);
 	
 protected:
-	
-
+	/** Class Copy Constructor
+	 * protected to avoid its usage 
+	 * 
+	 */
+	CMKLMultiClass( const CMKLMultiClass & cm);
+	/** Class Assignment operator
+	 * protected to avoid its usage
+	 * 
+	 */
+	CMKLMultiClass operator=( const CMKLMultiClass & cm);
 
 	/** performs some sanity checks (on the provided kernel), inits the
 	 * GLPK-based LP solver
