@@ -141,7 +141,7 @@ object oriented python/swig interface:
 proceed as for the python interface but now in addition install the swig package and
 configure+compile shogun with:
 
-  ./configure --interfaces=libshogun,libshogunui,python,python-modular
+  ./configure --interfaces=libshogun,libshogunui,python,python_modular
   make
   sudo make install
 
