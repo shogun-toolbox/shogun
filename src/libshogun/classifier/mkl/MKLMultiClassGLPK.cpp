@@ -8,11 +8,11 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "MKLMultiClass2glpk.h"
+#include "MKLMultiClassGLPK.h"
 
 using namespace shogun;
 
-MKLMultiClass2glpk::MKLMultiClass2glpk()
+MKLMultiClassGLPK::MKLMultiClassGLPK()
 {
 	numkernels = 0;
 #ifdef USE_GLPK
@@ -21,7 +21,7 @@ MKLMultiClass2glpk::MKLMultiClass2glpk()
 	linearproblem=NULL;
 #endif
 }
-MKLMultiClass2glpk::~MKLMultiClass2glpk()
+MKLMultiClassGLPK::~MKLMultiClassGLPK()
 {
 #if defined(USE_GLPK)
 	if (linearproblem)
@@ -33,23 +33,23 @@ MKLMultiClass2glpk::~MKLMultiClass2glpk()
 #endif
 }
 
-MKLMultiClass2glpk MKLMultiClass2glpk::operator=(MKLMultiClass2glpk & gl)
+MKLMultiClassGLPK MKLMultiClassGLPK::operator=(MKLMultiClassGLPK & gl)
 {
 	SG_ERROR(
-			" MKLMultiClass2glpk MKLMultiClass2glpk::operator=(...): must "
+			" MKLMultiClassGLPK MKLMultiClassGLPK::operator=(...): must "
 			"not be called, glpk structure is currently not copyable");
 	return (*this);
 
 }
-MKLMultiClass2glpk::MKLMultiClass2glpk(MKLMultiClass2glpk & gl)
+MKLMultiClassGLPK::MKLMultiClassGLPK(MKLMultiClassGLPK & gl)
 {
 	SG_ERROR(
-			" MKLMultiClass2glpk::MKLMultiClass2glpk(MKLMultiClass2glpk & gl):"
+			" MKLMultiClassGLPK::MKLMultiClassGLPK(MKLMultiClassGLPK & gl):"
 			" must not be called, glpk structure is currently not copyable");
 
 }
 
-void MKLMultiClass2glpk::setup(const int32_t numkernels2)
+void MKLMultiClassGLPK::setup(const int32_t numkernels2)
 {
 #if defined(USE_GLPK)
 	numkernels=numkernels2;
@@ -115,7 +115,7 @@ void MKLMultiClass2glpk::setup(const int32_t numkernels2)
 
 }
 
-void MKLMultiClass2glpk::addconstraint(const ::std::vector<float64_t> & normw2,
+void MKLMultiClassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 		const float64_t sumofpositivealphas)
 {
 #if defined(USE_GLPK)
@@ -164,7 +164,7 @@ void MKLMultiClass2glpk::addconstraint(const ::std::vector<float64_t> & normw2,
 #endif
 }
 
-void MKLMultiClass2glpk::computeweights(std::vector<float64_t> & weights2)
+void MKLMultiClassGLPK::computeweights(std::vector<float64_t> & weights2)
 {
 #if defined(USE_GLPK)
 	weights2.resize(numkernels);

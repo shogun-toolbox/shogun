@@ -17,7 +17,7 @@
 #include "kernel/Kernel.h"  
 #include "kernel/CombinedKernel.h" 
 #include "classifier/svm/GMNPSVM.h"
-#include "classifier/mkl/MKLMultiClass2glpk.h"
+#include "classifier/mkl/MKLMultiClassGLPK.h"
 
 
 
@@ -166,7 +166,7 @@ protected:
 	/** the lp solver wrapper
 	*	
 	*/
-	MKLMultiClass2glpk* lpw; 
+	MKLMultiClassGLPK* lpw; 
 	/** stores the last two mkl iteration weights 
 	*	
 	*/

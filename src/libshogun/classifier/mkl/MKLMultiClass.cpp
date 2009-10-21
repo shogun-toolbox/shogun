@@ -118,7 +118,7 @@ void CMKLMultiClass::initlpsolver()
 		delete lpw;
 	}
 	*/
-	lpw=new MKLMultiClass2glpk;
+	lpw=new MKLMultiClassGLPK;
 	lpw->setup(numker);
 }
 

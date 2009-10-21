@@ -8,8 +8,8 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef MKLMULTICLASS2GLPK_H_
-#define MKLMULTICLASS2GLPK_H_
+#ifndef MKLMULTICLASSGLPK_H_
+#define MKLMULTICLASSGLPK_H_
 
 #include <vector>
 #include "base/SGObject.h"
@@ -20,22 +20,22 @@
 
 namespace shogun
 {
-/** @brief MKLMultiClass2glpk is a helper class for MKLMultiClass. 
+/** @brief MKLMultiClassGLPK is a helper class for MKLMultiClass. 
  *
  *	it solves the corresponding linear problem arising in SIP formulation for
  * 	MKL using glpk
  */
-class MKLMultiClass2glpk: public CSGObject
+class MKLMultiClassGLPK: public CSGObject
 {
 public:
 	/** Class default Constructor
 	 * 
 	 */
-	MKLMultiClass2glpk();
+	MKLMultiClassGLPK();
 	/** Class default Destructor
 	 * 
 	 */
-	virtual ~MKLMultiClass2glpk();
+	virtual ~MKLMultiClassGLPK();
 
 	/** initializes GLPK LP sover 
 	 *
@@ -66,7 +66,7 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
-		return "MKLMultiClass2glpk";
+		return "MKLMultiClassGLPK";
 	}
 
 protected:
@@ -74,12 +74,12 @@ protected:
 	 * protected to avoid its usage because member glp_prob* linearproblem;
 	 * from GLPK package is not copyable
 	 */
-	MKLMultiClass2glpk(MKLMultiClass2glpk & gl);
+	MKLMultiClassGLPK(MKLMultiClassGLPK & gl);
 	/** Class Assignment operator
 	 * protected to avoid its usage because member glp_prob* linearproblem;
 	 * from GLPK package is not copyable
 	 */
-	MKLMultiClass2glpk operator=(MKLMultiClass2glpk & gl);
+	MKLMultiClassGLPK operator=(MKLMultiClassGLPK & gl);
 
 protected:
 	/** stores the number of kernels which acts as a parameter for the LP */
