@@ -1,44 +1,48 @@
 /*!
 \page modular_tutorial Tutorial for Modular Interfaces
 
-SHOGUN's "modular" interfaces to Python and Octave are the most powerful
-basically allow for unlimited extensibility (multiple methods like classifiers
-potentially sharing data and interacting). In case you didn't use shogun yet,
-this is what you want (still there are the simpler/less flexible
-\subpage staticinterfaces).
+SHOGUN's "modular" interfaces to Python and Octave 
+give intuitive and easy access to the shogun's functionality.
+Compared to the static interfaces (\subpage staticinterfaces), 
+the modular ones are much more flexible and allow for nearly unlimited extensibility. 
 
-In this tutorial we demonstrate how to use shogun to create a simple
-gaussian kernel based support vector machine classifier but first
-things first. Lets start up python or octave and load the modular
+If this is your first time using shogun, you've found the right place to start!
+
+
+In this tutorial, we demonstrate how to use shogun to create a simple
+Gaussian kernel based Support Vector Machine (SVM) classifier, but first
+things first. Let's fire up python or octave and load the modular
 shogun environment.
 
 \section start_shogun_modular Starting SHOGUN
 
-To load all of shoguns modules under octave start octave and issue
+To load all of shogun's modules under octave start octave and issue
 \verbatim
 init_shogun
 \endverbatim
 
-Under python your have to specify what you want. From We will need
-features and labels to represent our input data, classifier and a
-kernel to compare the similarity of features.
+Under python we have to specify what we'd like to import. 
+For this example, we will need features and labels to represent our input data, 
+a classifier, a kernel to compare the similarity of features and
+some evaluation procedures.
 
 \verbatim
 from shogun.Features import *
 from shogun.Kernel import *
 from shogun.Classifier import *
+from shogun.Evaluation import *
 \endverbatim
 
-(Note here that shogun.Features contains Labels).
+(Note here that the module shogun.Features contains the class Labels).
 
 \section docu_shogun_modular Getting Help
 
-Finding the Documentation If you wonder what object classes are there
-and for documentation of the particular class use the classes tab
-above and browse through the the class list. All classes are rather
-thorougly documented (if documentation is not good enough in a
+If you would like to get an overview of the classes in shogun or 
+if you are looking for the documentation of a particular class,
+use the "Classes" tab above and browse through the class list. 
+All classes are rather well documented (if documentation is not good enough in a
 particular class, please notify us). Note that all classes in the
-classes list (classes tab abov) are all prefixed with a 'C' - that
+classes list (classes tab above) are all prefixed with a 'C' - that
 really is the only difference to using them from within the python or
 octave modular interfaces (where the C prefix is missing).
 
@@ -62,59 +66,99 @@ import shogun.Kernel
 help(shogun.Kernel)
 \endverbatim
 
-The tutorial below will now just work fine (same syntax) for python
-and octave (though we use a trailing semicolon in octave which is not
-necessary in python).
+
+\section toy_tutorial_modular Generating a toy dataset
+
+To start with, we will generate a small toy dataset. In python, we need to import numpy to do this. We'll generate real valued training (and testing) data drawn from a Gaussian distribution. The data is in matrix shape with each column describing an object and as many columns as we have examples. Additionally, we need a vector of labels (that is a vector of ones or minus ones) that indicates the class of each example.
+
+\verbatim
+from numpy import *
+from numpy.random import randn
+traindata_real = concatenate((randn(2,100)-1, randn(2,100)+1), axis=1)
+testdata_real = concatenate((randn(2,100)-1, randn(2,100)+1), axis=1)
+train_labels = concatenate((-ones(100), ones(100)))
+test_labels = concatenate((-ones(100), ones(100)))
+\endverbatim
+
+In octave, this is is done as follows:
+
+\verbatim
+traindata_real = [randn(2,100)-dist, randn(2,100)+dist];
+testdata_real = [randn(2,100)-dist, randn(2,100)+dist];
+train_labels = [-ones(1,100), ones(1,100)];
+test_labels = [-ones(1,100), ones(1,100)];
+\endverbatim
+
+The rest of this tutorial below will now work the same (identical syntax) for python
+and octave (when using a trailing semicolon for each command, which is optional in python).
 
 \section svm_tutorial_modular Creating an SVM classifier
 
-Lets say we have real valued training (and testing) data available in matrix shape with each column describing an object and as many columns as we have examples. To use these within shogun we need to create a shogun feature object, here RealFeatures (for dense real valued feature matrices) like this
+
+To process the above toy data in shogun, we need to create a shogun feature object, here RealFeatures (for dense real valued feature matrices) like this
 
 \verbatim
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
+feats_train = RealFeatures(traindata_real);
+feats_test = RealFeatures(testdata_real);
 \endverbatim
 
-Using the these feature object we can now create, e.g., a Gausian
-kernel of a certain width (see also CGaussianKernel) based on our
-training features
+Using the above feature object we can now create a kernel object.
+Here, we create a Gaussian kernel of a certain width (see also CGaussianKernel) 
+based on our training features
 
 \verbatim
-kernel=GaussianKernel(feats_train, feats_train, width);
+width = 2;
+kernel = GaussianKernel(feats_train, feats_train, width);
 \endverbatim
 
-and could now compute the kernel matrix
+and can now compute the kernel matrix
 \verbatim
-km=kernel.get_kernel_matrix()
+km = kernel.get_kernel_matrix();
 \endverbatim
 
-To train an SVM we need labeled examples, which is a vector of ones
-and minus ones, say stored in the variable trainlab. We now create a
-shogun label object from it
+To train an SVM, we need labeled examples, which is a vector of ones
+and minus ones, such as the one we have previously stored in the variable train_labels.
+We now create a shogun label object from it (the same goes for our test labels, which we'll
+use later):
 
 \verbatim
-labels=Labels(trainlab);
+labels = Labels(train_labels);
+labels_test = Labels(test_labels);
 \endverbatim
 
-and well now we only need to specify labels, kernel and the SVM-C parameter (say contained in the variable 'C') and get an SVM:
+Given the labels object and the kernel all that is left to do is to specify a cost parameter C
+(used to control generalization performance) and we can construct an SVM object. To start the
+training, we simply invoke the train method of the SVM object. Quiet easy, isn't it?
 
 \verbatim
-svm=LibSVM(C, kernel, labels);
+C = 1.0;
+svm = LibSVM(C, kernel, labels);
 svm.train();
 \endverbatim
 
-The train command above already trains an SVM. Quiet easy!
-To apply the SVM to unseen test features, initialize the kernel with the test features on the right hand side.
+To apply the SVM to unseen test data, we simply need to pass a feature object to the 
+SVM's classify method, which returns a shogun Label object (note that we could alternatively
+initialize the kernel object with the train and test data manually and then call classify
+without arguments, which is done in some of the other example scripts).
+If we would like to analyze the outputs directly in python/octave, we can obtain the vector 
+of outputs in native python/octave representation via get_labels(). 
 
 \verbatim
-kernel.init(feats_train, feats_test);
+output = svm.classify(feats_test);
+output_vector = output.get_labels();
 \endverbatim
 
-and issue classify() to get a shogun Label object from which we can obtain the vector of outputs in native python/octave representation via get_labels() and compute the test error, like
+
+Given the output and the test labels, we can now assess the prediction performance. For this, 
+we create an instance of the class PerformanceMeasures, which provides a convenient
+way of obtaining various performance measures, such as accuracy (acc), area under
+the receiver operator characteristic curve (auROC), F-score and others:
 
 \verbatim
-out=svm.classify().get_labels();
-testerr=mean(sign(out)~=testlab)
+pm = PerformanceMeasures(labels_test, output);
+acc = pm.get_accuracy();
+roc = pm.get_auROC();
+fms = pm.get_fmeasure();
 \endverbatim
 
 That's really it. For any of the advanced topics please have a look one of the \b many self-explanatory examples in
@@ -122,7 +166,7 @@ That's really it. For any of the advanced topics please have a look one of the \
 \li examples/octave-modular also available online \subpage octave_modular_examples "here"
 \li examples/python-modular also available online \subpage python_modular_examples "here"
 
-The full, working example is shown below:
+A full, working example similar to the one presented above is shown below:
 
 For octave:
 
