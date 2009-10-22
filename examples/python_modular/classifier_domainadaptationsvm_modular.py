@@ -25,7 +25,7 @@ fm_test_dna = ['AGCACGTACGTAGCTCGAT',
 label_test_dna = numpy.array(5*[-1.0] + 5*[1.0])
 
 
-fm_train_dna = ['AGACAGTCAGTCGATAGCT',
+fm_train_dna2 = ['AGACAGTCAGTCGATAGCT',
 		      'AGCAGTCGTAGTCGTAGTC',
 		      'AGCAGGGGGGGGGGTAGTC',
 		      'AGCAATCGTAGTCGTAGTC',
