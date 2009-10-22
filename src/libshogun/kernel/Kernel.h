@@ -694,7 +694,7 @@ class CKernel : public CSGObject
 		//@}
 
 
-#ifdef HAVE_BOOST_SERIALIZATION  
+#ifdef HAVE_BOOST_SERIALIZATION
     private:
 
         friend class ::boost::serialization::access;
@@ -725,8 +725,8 @@ class CKernel : public CSGObject
                 //ar.register_type(static_cast<CRealFeatures *>(NULL));
                 //ar.register_type(static_cast<CStringFeatures<CHAR> *>(NULL));
 
-                ar & rhs;
-                ar & lhs;
+                //ar & rhs;
+                //ar & lhs;
 
                 ar & combined_kernel_weight ;
 
