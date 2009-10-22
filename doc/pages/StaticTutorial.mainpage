@@ -82,29 +82,33 @@ For training a supervised method like an SVM we need a labeling of the training 
 set_labels TRAIN ../data/label_train_twoclass.dat
 \endverbatim
 
+(For other interfaces, e.g. matlab/octave sth. like
+\verbatim
+sg('set_labels', 'TRAIN', sign(randn(1, 100)))
+\endverbatim
+would work)
+
 Now we create an SVM and set the SVM-C parameter to some hopefully sane value (which in real applications needs tuning; like the kernel parameters (here kernel width)).
 \verbatim
 new_classifier LIBSVM
 c 1
 \endverbatim
 
-We then assign the training data to the kernel and train our SVM:
+We then train our SVM:
 \verbatim
-init_kernel TRAIN
 train_classifier
 \endverbatim
 
 We can now apply our classifier to unseen test data by loading some
-test data, initializing the kernel with test data and classifying the
-examples:
+test data and classifying the examples:
 
 \verbatim
 set_features TEST ../data/fm_test_real.dat
-init_kernel TEST
 out.txt = classify
 \endverbatim
 
-In case we want to save the classifiers, such that we don't have to perform potentially time consuming training again we can save and load like this
+In case we want to save the classifiers, such that we don't have to perform
+potentially time consuming training again we can save and load like this
 
 \verbatim
 save_classifier libsvm.model
@@ -112,18 +116,26 @@ save_classifier libsvm.model
 load_classifier libsvm.model LIBSVM
 \endverbatim
 
-Other interfaces (python,r...) would use
+Other interfaces (python,r...) could use the load/save functions but typically
+one manually obtains and restores the model parameters, like
+
 \verbatim
 [b,alphas]=sg('get_classifier')
 
 sg('set_classifier', b, alphas)
 \endverbatim
 
-here.
+in this case.
 
 Finally, the complete example looks like this
 \verbinclude classifier_libsvm.sg
 
 and can be found together with many other \subpage examples "examples"
 in examples/cmdline/classifier_libsvm.sg . 
+
+For users of other interfaces we show the translated example for completeness:
+
+\li Static R Interface \verbinclude classifier_libsvm.R
+\li Static Matlab/Octave Interface \verbinclude classifier_libsvm.m
+\li Static Python Interface \verbinclude classifier_libsvm.py
 */

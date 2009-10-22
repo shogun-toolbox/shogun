@@ -24,6 +24,9 @@ name_of_example
 \section octave_modular_classifier_examples Classifier
 
 
+\li <b>../examples/octave_modular/classifier_domainadaptationsvm_modular.m</b>
+\verbinclude classifier_domainadaptationsvm_modular.m
+
 \li <b>../examples/octave_modular/classifier_gmnpsvm_modular.m</b>
 \verbinclude classifier_gmnpsvm_modular.m
 

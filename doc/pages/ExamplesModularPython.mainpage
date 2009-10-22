@@ -24,6 +24,9 @@ python name_of_example.py
 \section python_modular_classifier_examples Classifier
 
 
+\li <b>../examples/python_modular/classifier_domainadaptationsvm_modular.py</b>
+\verbinclude classifier_domainadaptationsvm_modular.py
+
 \li <b>../examples/python_modular/classifier_gmnpsvm_modular.py</b>
 \verbinclude classifier_gmnpsvm_modular.py
 

@@ -96,9 +96,9 @@ and then a help text appears giving a short description of all commands.
 
 \subsection staticiffeatures_sec Features
 These functions transfer data from the interface to shogun and back.
-Suppose you have a matlab matrix or R vector  "features" which
+Suppose you have a matlab matrix or R matrix  "features" which
 contains your training data and you want to register this data, you simply
-type::
+type:
 
 Transfer the features to shogun
 \arg \b set_features \verbatim sg('set_features', 'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]) \endverbatim
@@ -116,7 +116,7 @@ different features (real valued and strings) and multiple kernels.
 In case a single string was set using \b set_features, it can be "multiplexed" by sliding a window over it using
 \arg \b from_position_list \verbatim sg('from_position_list', 'TRAIN|TEST', winsize, shift[, skip]) \endverbatim
 or
-\arg \b obtain_from_sliding_window \verbatim sg('obtain_from_sliding_window, winsize, skip) \endverbatim
+\arg \b obtain_from_sliding_window \verbatim sg('obtain_from_sliding_window', winsize, skip) \endverbatim
 
 Deletes the features which we assigned before in the actual SHOGUN session.
 \arg clean_features \verbatim sg('clean_features') \endverbatim
@@ -131,15 +131,17 @@ The commands
 \arg \b get_labels \verbatim [labels]=sg('get_labels', 'TRAIN|TEST') \endverbatim
 
 tell SHOGUN that the labels of the assigned training data reside in trainlab,
-respectively return the current labels.
+respectively return the current labels (note that currently all data is
+\b copied into SHOGUN, so modifications to trainlab are local within the
+interface).
 
 \subsection staticifkernel_sec Kernel & Distances
 
 Kernel and DistanceMatrix specific commands, used to create, obtain and setting the kernel matrix.
 
 Creating a kernel in shogun
-\arg \b set_kernel \verbatim sg('set_kernel KERNELNAME FEATURETYPE CACHESIZE PARAMETERS') \endverbatim
-\arg \b add_kernel \verbatim sg('add_kernel WEIGHT KERNELNAME FEATURETYPE CACHESIZE PARAMETERS') \endverbatim
+\arg \b set_kernel \verbatim sg('set_kernel', 'KERNELNAME', 'FEATURETYPE', CACHESIZE, PARAMETERS) \endverbatim
+\arg \b add_kernel \verbatim sg('add_kernel', WEIGHT, 'KERNELNAME', 'FEATURETYPE', CACHESIZE, PARAMETERS) \endverbatim
 
 Here KERNELNAME is the name of the kernel one wishes to use, FEATURETYPE the type of features (e.g. REAL for standard realvalued feature vectors), CACHESIZE the size of the kernel cache in megabytes and PARAMETERS kernel specific additional parameters.
 
@@ -158,10 +160,10 @@ The following kernels are implemented in SHOGUN:
 \li Gaussian \f$ k(x,x')=e^{-\frac{||x-x'||^2}{\sigma}} \f$
 
 To work with a gaussian kernel on real values one issues:
-\verbatim sg('set_kernel GAUSSIAN TYPE CACHESIZE SIGMA')\endverbatim
+\verbatim sg('set_kernel', 'GAUSSIAN', 'TYPE', CACHESIZE, SIGMA)\endverbatim
 
 For example:
-\verbatim sg('set_kernel GAUSSIAN REAL 40 1')\endverbatim
+\verbatim sg('set_kernel', 'GAUSSIAN', 'REAL', 40, 1)\endverbatim
 creates a gaussian kernel on real values with a cache size of 40MB and a sigma
 value of one. Available types for the gaussian kernel: REAL, SPARSEREAL.
 
@@ -170,10 +172,10 @@ value of one. Available types for the gaussian kernel: REAL, SPARSEREAL.
 \li Linear \f$k(x,x')=x\cdot x'\f$
 
 A linear kernel is created via:
-\verbatim sg('set_kernel LINEAR TYPE CACHESIZE')\endverbatim
+\verbatim sg('set_kernel', 'LINEAR', 'TYPE', CACHESIZE)\endverbatim
 
 For example:
-\verbatim sg('send_command', 'add_kernel 1.0 LINEAR REAL 50')\endverbatim
+\verbatim sg('add_kernel', 1.0, 'LINEAR', 'REAL', 50')\endverbatim
 
 creates a linear kernel of cache size 50 for real datavalues, with weight 1.0.
 
@@ -184,10 +186,10 @@ Available types for the linear kernel: BYTE, WORD CHAR, REAL, SPARSEREAL.
 \li Polynomial Kernel \f$k(x,x')=(x\cdot x')^d\f$
 
 A polynomial kernel is created via:
-\verbatim sg('set_kernel POLY TYPE CACHESIZE DEGREE INHOMOGENE NORMALIZE') \endverbatim
+\verbatim sg('set_kernel', 'POLY', 'TYPE', CACHESIZE, DEGREE, INHOMOGENE, NORMALIZE) \endverbatim
 
 For example:
-\verbatim sg('add_kernel 0.1 POLY REAL 50 3 0') \endverbatim
+\verbatim sg('add_kernel', 0.1, 'POLY', 'REAL', 50, 3, 0) \endverbatim
 adds a polynomial kernel.  Available types for the polynomial kernel: REAL,
 CHAR, SPARSEREAL.
 
@@ -195,11 +197,11 @@ CHAR, SPARSEREAL.
 \li Sigmoid Kernel
 To work with a sigmoid kernel on real values one issues:
 
-\verbatim sg("send_command", "set_kernel SIGMOID TYPE CACHESIZE GAMMA COEFF")\endverbatim
+\verbatim sg('set_kernel', 'SIGMOID', 'TYPE', CACHESIZE, GAMMA, COEFF)\endverbatim
 
 For example:
 
-\verbatim sg('set_kernel SIGMOID REAL 40 0.1 0.1') \endverbatim
+\verbatim sg('set_kernel', 'SIGMOID', 'REAL', 40, 0.1, 0.1) \endverbatim
 
 creates a sigmoid kernel on real values with a cache size of 40MB, a gamma
 value of 0.1 and a coefficient of 0.1. Available types for the gaussian kernel: REAL.
@@ -214,29 +216,29 @@ Assign a user defined custom kernel, fo which only the upper triangle may be giv
 
 The purpose of the get_kernel_matrix and get_distance_matrix commands is to return a kernel or distance matrix representing the kernel/distance matrix for the actual problem. 
 
-\arg \b get_distance_matrix \verbatim [D]=sg('get_distance_matrix') \endverbatim
-\arg \b get_kernel_matrix \verbatim [K]=sg('get_kernel_matrix') \endverbatim
+\arg \b get_distance_matrix \verbatim [D]=sg('get_distance_matrix', 'TRAIN|TEST') \endverbatim
+\arg \b get_kernel_matrix \verbatim [K]=sg('get_kernel_matrix', 'TRAIN|TEST') \endverbatim
 
 km refers to a matrix object.
 
 \subsection staticifsvm_sec SVM
-\arg new_svm Creates a new SVM instance.
-\arg init_kernel Initializes the kernel
-\arg svm_train Starts the training of the SVM on the assigned features and kernels.
+\arg new_classifier Creates a new classifier (e.g. SVM instance).
+\arg train_classifier Starts the training of the SVM on the assigned features and kernels.
 
 The get_svm command returns some properties of an SVM such as the Langrange
 multipliers alpha, the bias b and the index of the support vectors SV (zero
 based).
-\arg \b get_svm \verbatim [bias, alphas]=sg('get_svm') \endverbatim
-\arg \b set_svm \verbatim sg('set_svm', bias, alphas) \endverbatim
+\arg \b get_classifier \verbatim [bias, alphas]=sg('get_svm') \endverbatim
+\arg \b set_classifier \verbatim sg('set_classifier', bias, alphas) \endverbatim
 
-This commands returns a list of arguments, which may need special treatment
-different in the different target interfaces. \b set_svm may be later on used (after creating an SVM classifier) to set alphas and bias again.
+This commands returns a list of arguments. \b set_classifier may be later on used (after creating an SVM classifier) to set alphas and bias again.
 
-The result of the classification of the test samples is obtained via:
+The result of the classification of the test sample is obtained via:
 \arg \b classify \verbatim [result]=sg('classify') \endverbatim
 \arg \b classify_example \verbatim [result]=sg('classify_example', feature_vector_index) \endverbatim
-where result is a vector containing the classification result for each datapoint and \b classify_example only obtains the output for a single example (index zero based).
+where result is a vector containing the classification result for each
+datapoint and \b classify_example only obtains the output for a single example
+(index is zero based like in python. note that octave, matlab, R are 1 based).
 
 \subsection staticifhmm_sec HMM
 \li get_hmm
@@ -261,18 +263,19 @@ Returns the svn version number
 
 Gives you a help text.
 \arg \b help \verbatim sg('help') \endverbatim
-\arg \b help \verbatim sg('help CMD') \endverbatim
+\arg \b help \verbatim sg('help', 'CMD') \endverbatim
 
 Sets a debugging log level - useful to trace errors.
-\arg loglevel \verbatim sg('loglevel LEVEL') \endverbatim
-LEVEL can be one of ALL, WARN, ERROR
-  \li ALL: verbose logging output (useful for debugging).
+\arg loglevel \verbatim sg('loglevel', 'LEVEL') \endverbatim
+LEVEL can be one of DEBUG, WARN, ERROR
+  \li ALL: very verbose logging output (useful only for hunting memory leaks)
+  \li DEBUG: verbose logging output (useful for debugging).
   \li WARN: less logging output (useful for error search).
   \li ERROR:  only logging output on critical errors.
 
 For example
 \verbatim
-  > sg('loglevel ALL')
+  > sg('loglevel', 'ALL')
 \endverbatim
 gives you a list of instructions.
 
@@ -284,33 +287,29 @@ commands you are now able to create your own SHOGUN applications.
 Let us discuss an example:
 
    \li \verbatim sg('set_features', 'TRAIN', traindat) \endverbatim
-   registers the training samples which reside in traindat.
+   registers the training sample which reside in traindat.
 
    \li \verbatim sg('set_labels', 'TRAIN', trainlab) \endverbatim
    registers the training labels.
 
-   \li \verbatim sg('set_kernel GAUSSIAN REAL 100 1.0') \endverbatim
+   \li \verbatim sg('set_kernel', 'GAUSSIAN', 'REAL', 100, 1.0) \endverbatim
    creates a new gaussian kernel for reals with cache size 100Mb and width = 1.
 
-   \li \verbatim sg('init_kernel TRAIN') \endverbatim
-   attaches the data to the kernel and does some initialization.
-
-   \li \verbatim sg('new_svm LIGHT') \endverbatim
+   \li \verbatim sg('new_classifier', 'SVMLIGHT') \endverbatim
    creates a new SVM object inside the SHOGUN core.
 
-   \li \verbatim sg('c 20.0')  \endverbatim
+   \li \verbatim sg('c', 20.0)  \endverbatim
    sets the C value of the new SVM to 20.0.
 
-   \li \verbatim sg('svm_train') \endverbatim
-   starts the training on the samples.
+   \li \verbatim sg('train_classifier') \endverbatim
+   attaches the data to the kernel and does some initialization then
+   starts the training on the sample.
 
-   \li \verbatim sg('TEST', testdat) \endverbatim
-   registers the test samples
+   \li \verbatim sg('set_features', 'TEST', testdat) \endverbatim
+   registers the test sample
 
-   \li \verbatim sg('init_kernel TEST') \endverbatim
-   attaches the data to the kernel.
-
-   \li \verbatim out=sg('svm_classify') \endverbatim
+   \li \verbatim out=sg('classify') \endverbatim
+   attaches the data to the kernel and classifies. Then
    gives you the classification result as a vector.
 
 
