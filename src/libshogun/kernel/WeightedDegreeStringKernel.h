@@ -967,7 +967,7 @@ namespace boost
 				ar >> lhs;
 				ar >> rhs;
 
-				new(t)shogun::CWeightedDegreeStringKernel(lhs, rhs, degree);
+				::new(t)shogun::CWeightedDegreeStringKernel(lhs, rhs, degree);
 
 				t->set_max_mismatch(max_mismatch);
 
