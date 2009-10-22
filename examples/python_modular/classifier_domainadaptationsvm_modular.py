@@ -57,30 +57,20 @@ from shogun.Classifier import SVMLight, DomainAdaptationSVM
 
 C = 1.0
 
-feats_train=StringCharFeatures(DNA)
-feats_train.set_features(fm_train_dna)
-feats_test=StringCharFeatures(DNA)
-feats_test.set_features(fm_test_dna)
-
+feats_train=StringCharFeatures(fm_train_dna, DNA)
+feats_test=StringCharFeatures(fm_test_dna, DNA)
 kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
-
 labels=Labels(label_train_dna)
-
 svm=SVMLight(C, kernel, labels)
 svm.train()
-
 
 #####################################
 
 print "obtaining DA SVM from previously trained SVM"
 
-feats_train2=StringCharFeatures(DNA)
-feats_train2.set_features(fm_train_dna)
-feats_test2=StringCharFeatures(DNA)
-feats_test2.set_features(fm_test_dna)
-
+feats_train2=StringCharFeatures(fm_train_dna, DNA)
+feats_test2=StringCharFeatures(fm_test_dna, DNA)
 kernel2=WeightedDegreeStringKernel(feats_train, feats_train, degree)
-
 labels2=Labels(label_train_dna)
 
 # we regularize versus the previously obtained solution
