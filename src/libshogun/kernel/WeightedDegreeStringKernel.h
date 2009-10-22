@@ -969,7 +969,7 @@ namespace boost
 
 				::new(t)shogun::CWeightedDegreeStringKernel(lhs, rhs, degree);
 
-				t->set_max_mismatch(max_mismatch);
+				//t->set_max_mismatch(max_mismatch);
 
 				std::cout << "done loading WDK from non-defaultconstruct data" << std::endl;
 			}
