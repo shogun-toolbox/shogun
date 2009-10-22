@@ -24,12 +24,13 @@ const uint8_t CAlphabet::B_T=3;
 const uint8_t CAlphabet::MAPTABLE_UNDEF=0xff;
 const char* CAlphabet::alphabet_names[12]={"DNA", "RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
-
+/*
 CAlphabet::CAlphabet()
 : CSGObject()
 {
 
 }
+*/
 
 CAlphabet::CAlphabet(char* al, int32_t len)
 : CSGObject()
