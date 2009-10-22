@@ -21,7 +21,7 @@ figure()
 clf
 
 j=0;
-cols='bgrc';
+cols='bgrcm';  % each of k=5 clusters has its own color
 ii=unique(assignments(:));
 for i=1:length(ii),
 	j=j+1;

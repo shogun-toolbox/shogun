@@ -22,6 +22,6 @@ end
 %%% local alignment kernel
 sg('set_features', 'TRAIN', traindat, 'PROTEIN');
 sg('set_kernel', 'LOCALALIGNMENT', 'CHAR', cache);
-km=sg('get_kernel_matrix', 'TRAIN");
+km=sg('get_kernel_matrix', 'TRAIN');
 
 imagesc(km)
