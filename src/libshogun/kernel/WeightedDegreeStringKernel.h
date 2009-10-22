@@ -53,11 +53,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 {
 	public:
 
-		/** default constructor
-		 *
-		 */
-		CWeightedDegreeStringKernel();
-
 		/** constructor
 		 *
 		 * @param degree degree
@@ -713,9 +708,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
                 ar & ::boost::serialization::base_object<CStringKernel<char> >(*this);
 
 
-    			ar & lhs;
-    			ar & rhs;
-
                 ///degree*length weights
                 ///length must match seq_length if != 0
                 ar & mkl_stepsize ;
@@ -770,8 +762,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
                 ar & ::boost::serialization::base_object<CStringKernel<char> >(*this);
 
-    			ar & lhs;
-    			ar & rhs;
 
                 ///degree*length weights
                 ///length must match seq_length if != 0
@@ -897,7 +887,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		CAlphabet* alphabet;
 };
 
-/*
+}
+
 #ifdef HAVE_BOOST_SERIALIZATION
 //http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx
 namespace boost
@@ -905,14 +896,14 @@ namespace boost
 	namespace serialization
 	{
 		template<class Archive>
-			inline void save_construct_data(Archive & ar, const CWeightedDegreeStringKernel* const t, const unsigned int file_version)
+			inline void save_construct_data(Archive & ar, const shogun::CWeightedDegreeStringKernel* const t, const unsigned int file_version)
 			{
 				//TODO it has to be possible to access protected fields directly
 				//CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
 				int32_t size = 10;
 				ar << size;
 
-				EWDKernType type = t->get_type();
+				shogun::EWDKernType type = t->get_type();
 				ar << type;
 
 				int32_t degree = t->get_degree();
@@ -927,10 +918,11 @@ namespace boost
 				//   other solution -> serialize tree
 
 
-				ar.register_type(static_cast<CStringFeatures<char> *>(NULL));
+				ar.register_type(static_cast<shogun::CStringFeatures<char> *>(NULL));
 
-				const CStringFeatures<char>* const lhs = dynamic_cast<CStringFeatures<char>* >(const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
-				const CStringFeatures<char>* const rhs = dynamic_cast<CStringFeatures<char>* >(const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
+				const shogun::CStringFeatures<char>* const lhs = dynamic_cast<shogun::CStringFeatures<char>* >(const_cast<shogun::CWeightedDegreeStringKernel*>(t)->get_lhs());
+
+				const shogun::CStringFeatures<char>* const rhs = dynamic_cast<shogun::CStringFeatures<char>* >(const_cast<shogun::CWeightedDegreeStringKernel*>(t)->get_rhs());
 				//CStringFeatures<char>* lhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
 				//CStringFeatures<char>* rhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
 
@@ -947,13 +939,14 @@ namespace boost
 			}
 
 		template<class Archive>
-			inline void load_construct_data(Archive & ar, CWeightedDegreeStringKernel * t, const unsigned int file_version)
+			inline void load_construct_data(Archive & ar, shogun::CWeightedDegreeStringKernel * t, const unsigned int file_version)
 			{
 
-				SG_SDEBUG("loading WDK from non-defaultconstruct data works\n");
+				std::cout << "loading WDK from non-defaultconstruct data works" << std::endl;
+
 
 				int32_t size;
-				EWDKernType type;
+				shogun::EWDKernType type;
 				int32_t degree;
 				int32_t max_mismatch;
 
@@ -967,21 +960,23 @@ namespace boost
 
 				//      ::new(t)CWeightedDegreeStringKernel(size, type, degree, max_mismatch);
 
-				CStringFeatures<char>* lhs;
-				CStringFeatures<char>* rhs;
+				shogun::CStringFeatures<char>* lhs;
+				shogun::CStringFeatures<char>* rhs;
+
 
 				ar >> lhs;
 				ar >> rhs;
 
-				::new(t)CWeightedDegreeStringKernel(lhs, rhs, degree);
+				new(t)shogun::CWeightedDegreeStringKernel(lhs, rhs, degree);
 
 				t->set_max_mismatch(max_mismatch);
 
+				std::cout << "done loading WDK from non-defaultconstruct data" << std::endl;
 			}
 	} // serialization
 } // namespace boost
 #endif //HAVE_BOOST_SERIALIZATION
-*/
 
-}
+
+
 #endif /* _WEIGHTEDDEGREESTRINGKERNEL_H__ */

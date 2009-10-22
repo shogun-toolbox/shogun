@@ -50,24 +50,6 @@ struct S_THREAD_PARAM
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel ()
-: CStringKernel<char>(10),weights(NULL),position_weights(NULL),
-	weights_buffer(NULL), mkl_stepsize(1),degree(0), length(0),
-	max_mismatch(0), seq_length(0), block_computation(true),
-	num_block_weights_external(0), block_weights_external(NULL),
-	block_weights(NULL), type(E_WD), which_degree(-1), tries(NULL),
-	tree_initialized(false), alphabet(NULL)
-{
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	lhs=NULL;
-	rhs=NULL;
-
-	if (type!=E_EXTERNAL)
-		set_wd_weights_by_type(type);
-
-	set_normalizer(new CFirstElementKernelNormalizer());
-}
-
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	int32_t degree_, EWDKernType type_)
