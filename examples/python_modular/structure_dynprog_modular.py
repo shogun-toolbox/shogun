@@ -1,13 +1,9 @@
 #!/usr/bin/env python 
 # -*- coding: utf-8 -*-
 
-import sys
-import pdb
-import cPickle
-import random
+from numpy.random import randn
+from shogun.Structure import *
 
-import shogun
-import shogun.Structure
 import numpy
 from numpy import array,Inf,float64,matrix,frompyfunc,zeros
 
@@ -23,7 +19,7 @@ def run_test():
 
 
    num_plifs,num_limits = len(data_dict['penalty_array']),len(data_dict['penalty_array'][0].limits)
-   pm = shogun.Structure.PlifMatrix()
+   pm = PlifMatrix()
    pm.create_plifs(num_plifs,num_limits)
 
    ids = numpy.array(range(num_plifs),dtype=numpy.int32)
@@ -48,8 +44,6 @@ def run_test():
       if all_transforms[plif_idx] == '[]':
          all_transforms[plif_idx] = 'linear'
 
-   from shogun.Features import StringCharFeatures, RAWBYTE
-
    pm.set_plif_ids(ids)
    pm.set_plif_min_values(min_values)
    pm.set_plif_max_values(max_values)
@@ -57,8 +51,8 @@ def run_test():
    pm.set_plif_use_svm(all_use_svm)
    pm.set_plif_limits(all_limits)
    pm.set_plif_penalties(all_penalties)
-   pm.set_plif_names(all_names)
-   pm.set_plif_transform_type(all_transforms)
+   #pm.set_plif_names(all_names)
+   #pm.set_plif_transform_type(all_transforms)
 
    transition_ptrs = data_dict['model'].transition_pointers
    transition_ptrs = transition_ptrs[:,:,0:2]
@@ -68,7 +62,7 @@ def run_test():
 
    # init_dyn_prog
    num_svms = 8
-   dyn = shogun.Structure.DynProg(num_svms)
+   dyn = DynProg(num_svms)
    orf_info = data_dict['model'].orf_info
    orf_info = orf_info.astype(numpy.int32)
    num_states = orf_info.shape[0]
