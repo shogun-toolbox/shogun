@@ -154,7 +154,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			{
 				numind= ((CSimpleFeatures<float64_t>*) lhs)->get_num_vectors();
 			}
-			float64_t featindices[numind];
+			float64_t* featindices = new float64_t[numind];
 
 			if (num_randfeats_forwidthcomputation >0)
 			{
@@ -200,6 +200,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 				}
 
 			}
+			delete[] featindices;
 		}
 		else
 		{
