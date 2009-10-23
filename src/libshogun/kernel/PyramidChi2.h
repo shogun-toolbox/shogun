@@ -22,10 +22,10 @@ namespace shogun
 
 /** @brief Pyramid Kernel over Chi2 matched histograms.
  *
- * The Pyramid Chi2 Kernel often used in image classification.
+ * The Pyramid Chi2 Kernel often used in image classification with sum inside the exponential.
+ * TODO: add adaptive width computation via median
+ * 
  *
- * TODO: port to CCombinedKernel as the pyramid is a
- * weighted linear combination of kernels
  */
 class CPyramidChi2 : public CSimpleKernel<float64_t>
 {
@@ -34,34 +34,47 @@ public:
 	/** constructor
 	 *
 	 * @param size size
-	 * @param width2 width2
-	 * @param pyramidlevels2 pyramidlevels2
-	 * @param numlevels2 numlevels2
-	 * @param numbinsinhistogram2 numbinsinhistogram2
-	 * @param weights2 weights2
-	 * @param numweights2 numweights2
+	 * @param num_cells2 - the number of pyramid cells	 
+	 * @param weights_foreach_cell2 the vector of weights for each cell with which the Chi2 distance gets weighted
+	 * @param width_computation_type - 0 use the following parameter as fixed 
+	 *	width, 1- use mean of inner distances, 2 - use median of inner distances
+	 *	in cases 1 and 2 the value of parameter width is important!!!
+ 	 *	
+	 * @param width2 - in case of width_computation_type ==0 it is the 
+	 * 	width, in case of width_computation_type > 0 its value determines
+	 *	the how many random features are used for determining the width
+	 *	in case of width_computation_type > 0 set width2 <=1 to use all 
+	 *	LEFT HAND SIDE features for width estimation
 	 */
-	CPyramidChi2(
-		int32_t size, float64_t width2,
-		int32_t* pyramidlevels2, int32_t numlevels2,
-		int32_t  numbinsinhistogram2, float64_t* weights2, int32_t numweights2);
+	CPyramidChi2(int32_t size, int32_t num_cells2,
+		float64_t* weights_foreach_cell2, 
+		int32_t width_computation_type2,
+		float64_t width2);
 
 	/** constructor
 	 *
 	 * @param l features lhs
+	 * 	convention: concatenated features along all cells, i.e. [feature for cell1, feature for cell2, ... feature for last cell] , the dimensionality of the base feature is equal to dividing the total feature length by the number ofcells
 	 * @param r features rhs
+	 * 	the same convention as for param l applies here
 	 * @param size size
-	 * @param width2 width2
-	 * @param pyramidlevels2 pyramidlevels2
-	 * @param numlevels2 numlevels2
-	 * @param numbinsinhistogram2 numbinsinhistogram2
-	 * @param weights2 weights2
-	 * @param numweights2 numweights2
+	 * @param num_cells2 - the number of pyramid cells
+	 * @param weights_foreach_cell2 the vector of weights for each cell with which the Chi2 distance gets weighted
+	 * @param width_computation_type - 0 use the following parameter as fixed 
+	 *	width, 1- use mean of inner distances
+	 *	in case 1 the value of parameter width is important!!!	
+	 * @param width2 - in case of width_computation_type ==0 it is the 
+	 * 	width, in case of width_computation_type > 0 its value determines
+	 *	the how many random features are used for determining the width
+	 *	in case of width_computation_type > 0 set width2 <=1 to use all 
+	 *	LEFT HAND SIDE features for width estimation
 	 */
 	CPyramidChi2(
-		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t size, float64_t width2,
-		int32_t* pyramidlevels2, int32_t numlevels2,
-		int32_t  numbinsinhistogram2, float64_t* weights2, int32_t numweights2);
+		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, 
+		int32_t size, int32_t num_cells2,
+		float64_t* weights_foreach_cell2, 
+		int32_t width_computation_type2,
+		float64_t width2 );
 
 	/** init
 	 *
@@ -86,13 +99,15 @@ public:
 	/** return the name of a kernel */
 	virtual const char* get_name() const { return "PyramidoverChi2"; }
 
-	/** sets standard weights */
-	void setstandardweights();
+	// /** sets standard weights */
+	//void setstandardweights();
 
-	/** performs a weak check, does not test for correct feature length */
-	bool sanitycheck_weak();
+	// /** performs a weak check, does not test for correct feature length */
+	// bool sanitycheck_weak();
 
 protected:
+	/** default constructor protected to avoid its usage */ 
+	CPyramidChi2();
 	/** compute kernel function for features a and b
 	 *
 	 * @param idx_a index of feature vector a
@@ -102,21 +117,23 @@ protected:
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 protected:
-	/** width */
-	float64_t width;
-	/** pyramidlevels */
-	int32_t* pyramidlevels;
 
-	/** length of vector pyramidlevels */
-	int32_t numlevels;
-	/** numbinsinhistogram */
-	int32_t numbinsinhistogram;
-	/** weights */
+	/** number of pyramidcells across all pyramidlevel */
+	int32_t num_cells;
+
+	/** vector of weights for each pyramid cell*/
 	float64_t* weights;
 
-	/** length of vector weights */
-	int32_t numweights;
-	//bool sanitycheckbit;
+	/** width_computation_type */
+	int32_t width_computation_type;
+		/** width */
+	float64_t width;
+	/** in case of adaptive width computation: how many features to use */
+	int32_t num_randfeats_forwidthcomputation;
+
+
+
+
 };
 }
 #endif /*PYRAMIDCHI2_H_*/

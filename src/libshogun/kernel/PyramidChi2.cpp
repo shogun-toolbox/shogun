@@ -14,41 +14,60 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
+#include "lib/Mathematics.h"
 
 using namespace shogun;
 
-CPyramidChi2::CPyramidChi2(
-	int32_t size, float64_t width2, int32_t* pyramidlevels2,int32_t
-	numlevels2, int32_t  numbinsinhistogram2, float64_t* weights2,
-	int32_t numweights2)
-: CSimpleKernel<float64_t>(size), width(width2), pyramidlevels(NULL),
-	numlevels(numlevels2), weights(NULL), numweights(numweights2)
+CPyramidChi2::CPyramidChi2()
+: weights(NULL)
 {
-	pyramidlevels=new int32_t[numlevels];
-	for(int32_t i=0; i<numlevels; ++i)
-		pyramidlevels[i]=pyramidlevels2[i];
+	// this will produce an erro in kernel computation!
+	num_cells=0;
+	width_computation_type=0;
+	width=1;
+	num_randfeats_forwidthcomputation=-1;
+}
+
+CPyramidChi2::CPyramidChi2(
+	int32_t size, int32_t num_cells2,
+		float64_t* weights_foreach_cell2, 
+		int32_t width_computation_type2,
+		float64_t width2)
+: CSimpleKernel<float64_t>(size), num_cells(num_cells2),weights(NULL),
+width_computation_type(width_computation_type2), width(width2),
+	 num_randfeats_forwidthcomputation(-1)
+{
+	if(num_cells<=0)
+		SG_ERROR("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
+	weights=new float64_t[num_cells];
+	if(weights_foreach_cell2)
+	{
+		for (int32_t i=0; i<num_cells; ++i)
+			weights[i]=weights_foreach_cell2[i];
+	}
+	else
+	{	for (int32_t i=0; i<num_cells; ++i)
+			weights[i]=1;
+	}
+
+	if (width_computation_type>0 )
+	{
+		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		width=-1;
+	}
+
 	
-	numbinsinhistogram=numbinsinhistogram2;
-	
-	weights=new float64_t[numweights];
-	for(int32_t i=0; i<numweights; ++i)
-		weights[i]=weights2[i];
-	
-	if (!sanitycheck_weak())
-		SG_ERROR("CPyramidChi2::CPyramidChi2(... first constructor): false==sanitycheck_weak() occurred! Someone messed up the initializing of the kernel.\0");
 }
 
 void CPyramidChi2::cleanup()
 {
-	//weights.clear();
-	//pyramidlevels.clear();
-	numlevels=-1;
-	numweights=-1;
-	numbinsinhistogram=-1;
-	//sanitycheckbit=false;
+	// this will produce an erro in kernel computation!
+	num_cells=0;
+	width_computation_type=0;
+	width=1;
 
-	delete[] pyramidlevels;
-	pyramidlevels=NULL;
+	num_randfeats_forwidthcomputation=-1;
+
 	delete[] weights;
 	weights=NULL;
 
@@ -62,24 +81,33 @@ bool CPyramidChi2::init(CFeatures* l, CFeatures* r)
 }
 
 CPyramidChi2::CPyramidChi2(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t size, float64_t width2,
-	int32_t* pyramidlevels2,int32_t numlevels2, int32_t  numbinsinhistogram2,
-	float64_t* weights2,int32_t numweights2)
-: CSimpleKernel<float64_t>(size), width(width2), pyramidlevels(NULL),
-	numlevels(numlevels2), weights(NULL), numweights(numweights2)
+	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, 
+		int32_t size, int32_t num_cells2,
+		float64_t* weights_foreach_cell2, 
+		int32_t width_computation_type2,
+		float64_t width2)
+: CSimpleKernel<float64_t>(size), num_cells(num_cells2), weights(NULL),
+width_computation_type(width_computation_type2), width(width2),
+	  num_randfeats_forwidthcomputation(-1)
 {
-	pyramidlevels=new int32_t[numlevels];
-	for(int32_t i=0; i<numlevels;++i )
-		pyramidlevels[i]=pyramidlevels2[i];
-	
-	numbinsinhistogram=numbinsinhistogram2;
-	
-	weights=new float64_t[numweights];
-	for(int32_t i=0; i<numweights;++i )
-		weights[i]=weights2[i];
-	
-	if(!sanitycheck_weak())
-		SG_ERROR("CPyramidChi2::CPyramidChi2(... second constructor): false==sanitycheck_weak() occurred! Someone messed up with initializing the kernel.\0");
+	if(num_cells<=0)
+		SG_ERROR("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
+	weights=new float64_t[num_cells];
+	if(weights_foreach_cell2)
+	{
+		for (int32_t i=0; i<num_cells; ++i)
+			weights[i]=weights_foreach_cell2[i];
+	}
+	else
+	{	for (int32_t i=0; i<num_cells; ++i)
+			weights[i]=1;
+	}
+
+	if (width_computation_type>0 )
+	{
+		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		width=-1;
+	}
 
 	init(l, r);
 }
@@ -89,111 +117,119 @@ CPyramidChi2::~CPyramidChi2()
 	cleanup();
 }
 
-bool CPyramidChi2::sanitycheck_weak()
-{
-	if (numbinsinhistogram<=0)
-	{
-		SG_ERROR("bool CPyramidChi2::sanitycheck_weak(): member value inconsistencer: numbinsinhistogram<=0");
-		return (false);
-	}
-	
-	if ((pyramidlevels!=NULL) && (numlevels<=0))
-	{
-		SG_ERROR("void CPyramidChi2::sanitycheck_weak(): inconsistency found: (pyramidlevels!=NULL) && (numlevels <=0)");
-		
-		return(false);
-	}
-	
-	if ((pyramidlevels==NULL) && (numlevels>0))
-	{
-		SG_ERROR("void CPyramidChi2::sanitycheck_weak(): inconsistency found: (pyramidlevels==NULL) && (numlevels>0)");
-		
-		return(false);
-	}
-	
-	if((weights!=NULL) &&(numweights<=0))
-	{
-		SG_ERROR("void CPyramidChi2::sanitycheck_weak(): inconsistency found: (weights!=NULL) && (numweights <=0)");
-		
-		return(false);
-	}
-	
-	if ((weights==NULL) && (numweights>0))
-	{
-		SG_ERROR("void CPyramidChi2::sanitycheck_weak(): inconsistency found: (weights==NULL) && (numweights >0)");
-		
-		return(false);
-	}
-	
-
-	int32_t sum=0;
-	for (int32_t levelind=0; levelind < numlevels; ++levelind)
-	{
-		sum+=CMath::pow(4, pyramidlevels[levelind]);
-	}
-	
-	if (sum!=numweights )
-	{
-		SG_ERROR("bool CPyramidChi2::sanitycheck_weak(): member value error: sum!=numweights ");
-		return (false);
-	}
-
-	return (true);
-
-}
 
 
 float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 {
-	// implied structure
-	// for each level l in pyramidlevels we have at level l we have 4^l histograms with numbinsinhistogram bins
-	//the features are a vector being a concatenation of histograms starting with all histograms at the largest level in pyramidlevels
-	// then followed by all histograms at the next largest level in pyramidlevels, then the next largest and so on
 
-
-	// the dimensionality is (LATEX) \sum_{ l \ in pyramidlevels } 4^l * numbinsinhistogram
+	if(num_cells<=0)
+		SG_ERROR("CPyramidChi2::compute(...) fatal error: parameter num_cells NOT positive");
 
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float64_t* avec=
-			((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
+	float64_t* avec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
 					alen, afree);
-	float64_t* bvec=
-			((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
+	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
 					blen, bfree);
-	ASSERT(alen==blen);
+	if(alen!=blen)
+		SG_ERROR("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim");	
 
-	int32_t dims=0;
-	for (int32_t levelind=0; levelind<numlevels; ++levelind)
-	{
-		dims+=CMath::pow(4, pyramidlevels[levelind])*numbinsinhistogram;
-	}
-	ASSERT(dims==alen);
+	int32_t dims=alen/num_cells;
 
-	//the actual computation - a weighted sum over chi2
-	float64_t result=0;
-	int32_t cursum=0;
-	
-	for (int32_t lvlind=0; lvlind< numlevels; ++lvlind)
+
+	if(width<=0)
 	{
-		for (int32_t histoind=0; histoind<CMath::pow(4, pyramidlevels[lvlind]); ++histoind)
+		if(width_computation_type >0)
 		{
-			float64_t curweight=weights[cursum+histoind];
 			
-			for (int32_t i=0; i< numbinsinhistogram; ++i)
+			//compute width
+			int32_t numind;
+
+			if (num_randfeats_forwidthcomputation >1)
 			{
-				int32_t index= (cursum+histoind)*numbinsinhistogram+i;
-				if(avec[index] + bvec[index]>0)
-				{	
-					result+= curweight*(avec[index] - bvec[index])*(avec[index]
-						- bvec[index])/(avec[index] + bvec[index]);
+				numind=CMath::min( ((CSimpleFeatures<float64_t>*) lhs)->get_num_vectors() , num_randfeats_forwidthcomputation);
+			}
+			else
+			{
+				numind= ((CSimpleFeatures<float64_t>*) lhs)->get_num_vectors();
+			}
+			float64_t featindices[numind];
+
+			if (num_randfeats_forwidthcomputation >0)
+			{
+				for(int32_t i=0; i< numind;++i)
+					featindices[i]=CMath::random(0, ((CSimpleFeatures<float64_t>*) lhs)->get_num_vectors()-1);
+			}
+			else
+			{
+				for(int32_t i=0; i< numind;++i)
+					featindices[i]=i;
+			}
+			
+
+			width=0;
+
+			//get avec, get bvec	only from lhs, do not free	
+			for (int32_t li=0; li < numind;++li)
+			{
+				avec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(featindices[li],
+					alen, afree);
+				for (int32_t ri=0; ri <=li;++ri)
+				{
+					// lhs is right here!!!
+					bvec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(featindices[ri],
+							blen, bfree);
+				
+					float64_t result=0;
+					for (int32_t histoind=0; histoind<num_cells; ++histoind)
+					{
+						float64_t curweight=weights[histoind];
+			
+						for (int32_t i=0; i< dims; ++i)
+						{
+							int32_t index= histoind*dims+i;
+							if(avec[index] + bvec[index]>0)
+							{	
+								result+= curweight*(avec[index] - bvec[index])*(avec[index]
+									- bvec[index])/(avec[index] + bvec[index]);
+							}
+						}
+					}
+					width+=result*2.0/((double)numind)/(numind+1.0);
 				}
+
 			}
 		}
-		cursum+=CMath::pow(4, pyramidlevels[lvlind]);
+		else
+		{
+			SG_ERROR("CPyramidChi2::compute(...) fatal error: width<=0");
+		}
 	}
-	result=exp(-result/(float64_t)width);
+
+
+	//the actual kernel computation
+	avec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
+					alen, afree);
+	bvec=((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
+					blen, bfree);
+
+	float64_t result=0;
+	for (int32_t histoind=0; histoind<num_cells; ++histoind)
+	{
+		float64_t curweight=weights[histoind];
+			
+		for (int32_t i=0; i< dims; ++i)
+		{
+			int32_t index= histoind*dims+i;
+			if(avec[index] + bvec[index]>0)
+			{	
+				result+= curweight*(avec[index] - bvec[index])*(avec[index]
+					- bvec[index])/(avec[index] + bvec[index]);
+			}
+		}
+	}
+	result= CMath::exp(-result/width);
 	
 	
 	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
@@ -203,58 +239,3 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 }
 
 
-void CPyramidChi2::setstandardweights()
-{
-	int32_t sum=0;
-	int32_t maxlvl=0;
-	for (int32_t levelind=0; levelind < numlevels; ++levelind)
-	{
-		sum+=CMath::pow(4, pyramidlevels[levelind]);
-		maxlvl=CMath::max(maxlvl,pyramidlevels[levelind]);
-	}
-
-	if (weights==NULL)
-	{
-		numweights=sum;
-		weights=new float64_t[numweights];
-	}
-
-	else if (numweights!=sum)
-	{
-		// a possible source of error or leak!
-		if (numweights>0)
-		{
-			delete[]  weights;
-		}
-		else
-		{
-			SG_ERROR("void CPyramidChi2::setstandardweights(): inconsistency found: (weights!=NULL) && (numweights <=0), continuing, but memory leak possible");
-		}
-
-		numweights=sum;
-		weights=new float64_t[numweights];
-	}
-	//weights.resize(sum);
-	
-	int32_t cursum=0;
-	for (int32_t levelind=0; levelind < numlevels; ++levelind)
-	{
-		if (pyramidlevels[levelind]==0)
-		{
-			for (int32_t histoind=0; histoind<CMath::pow(4, pyramidlevels[levelind]); ++histoind)
-			{
-				weights[cursum+histoind]=CMath::pow((float64_t)2.0,
-						-(float64_t)maxlvl);
-			}
-		}
-		else
-		{
-			for (int32_t histoind=0; histoind<CMath::pow(4, pyramidlevels[levelind]); ++histoind)
-			{
-				weights[cursum+histoind]=CMath::pow((float64_t)2.0,
-						(float64_t)(pyramidlevels[levelind]-1-maxlvl));
-			}
-		}
-		cursum+=CMath::pow(4, pyramidlevels[levelind]);
-	}
-}
