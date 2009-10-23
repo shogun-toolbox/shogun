@@ -69,13 +69,20 @@ help(shogun.Kernel)
 
 \section toy_tutorial_modular Generating a toy dataset
 
-To start with, we will generate a small toy dataset. In python, we need to import numpy to do this. We'll generate real valued training (and testing) data drawn from a Gaussian distribution. The data is in matrix shape with each column describing an object and as many columns as we have examples. Additionally, we need a vector of labels (that is a vector of ones or minus ones) that indicates the class of each example.
+To start with, we will generate a small toy dataset. In python, we need to
+import numpy to do this. We will generate real valued training (and testing)
+data drawn from Gaussians distribution. We will generate two Gauss bumps
+that are "dist" apart. The data is in matrix shape with each column
+describing an object and as many columns as we have examples. Additionally,
+we need a vector of labels (that is a vector of ones or minus ones) that
+indicates the class of each example.
 
 \verbatim
 from numpy import *
 from numpy.random import randn
-traindata_real = concatenate((randn(2,100)-1, randn(2,100)+1), axis=1)
-testdata_real = concatenate((randn(2,100)-1, randn(2,100)+1), axis=1)
+dist=0.5
+traindata_real = concatenate((randn(2,100)-dist, randn(2,100)+dist), axis=1)
+testdata_real = concatenate((randn(2,100)-dist, randn(2,100)+dist), axis=1)
 train_labels = concatenate((-ones(100), ones(100)))
 test_labels = concatenate((-ones(100), ones(100)))
 \endverbatim
@@ -83,6 +90,7 @@ test_labels = concatenate((-ones(100), ones(100)))
 In octave, this is is done as follows:
 
 \verbatim
+dist=0.5
 traindata_real = [randn(2,100)-dist, randn(2,100)+dist];
 testdata_real = [randn(2,100)-dist, randn(2,100)+dist];
 train_labels = [-ones(1,100), ones(1,100)];
@@ -95,15 +103,17 @@ and octave (when using a trailing semicolon for each command, which is optional 
 \section svm_tutorial_modular Creating an SVM classifier
 
 
-To process the above toy data in shogun, we need to create a shogun feature object, here RealFeatures (for dense real valued feature matrices) like this
+To process the above toy data in shogun, we need to create a shogun feature
+object, here RealFeatures (for dense real valued feature matrices, see also
+shogun::CSimpleFeatures) like this
 
 \verbatim
 feats_train = RealFeatures(traindata_real);
 feats_test = RealFeatures(testdata_real);
 \endverbatim
 
-Using the above feature object we can now create a kernel object.
-Here, we create a Gaussian kernel of a certain width (see also CGaussianKernel) 
+Using the above feature object we can now create a kernel object.  Here, we
+create a Gaussian kernel of a certain width (see also shogun::CGaussianKernel)
 based on our training features
 
 \verbatim
