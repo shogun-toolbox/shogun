@@ -140,14 +140,14 @@ bool CGMNPSVM::train(CFeatures* data)
 		set_svm(i, svm);
 	}
 
-	basealphas.resize(num_classes, ::std::vector<float64_t>(num_data,0));
+	m_basealphas.resize(num_classes, ::std::vector<float64_t>(num_data,0));
 	for(int j=0; j < num_virtual_data; j++ )
 	{
 		int inx1=0;
 		int inx2=0;
 
 		mnp.get_indices2( &inx1, &inx2, j );
-		basealphas[inx2-1][inx1]=alpha[j];
+		m_basealphas[inx2-1][inx1]=alpha[j];
 	}
 
 	delete[] vector_c;
@@ -160,7 +160,7 @@ bool CGMNPSVM::train(CFeatures* data)
 	return true;
 }
 
-void CGMNPSVM::getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas2)
+void CGMNPSVM::getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas)
 {
-	basealphas2=basealphas;
+	basealphas=m_basealphas;
 }

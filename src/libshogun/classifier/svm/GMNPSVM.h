@@ -36,6 +36,8 @@ class CGMNPSVM : public CMultiClassSVM
 		 * @param lab labels
 		 */
 		CGMNPSVM(float64_t C, CKernel* k, CLabels* lab);
+
+		/** default destructor */
 		virtual ~CGMNPSVM();
 
 		/** train SVM
@@ -53,14 +55,14 @@ class CGMNPSVM : public CMultiClassSVM
 		 * @return classifier type GMNPSVM
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_GMNPSVM; }
+
 		/** required for CMKLMulticlass constraint computation
-		 *  @param basealphas2[k][j] is the alpha for class k and 
+		 *
+		 *  @param basealphas basealphas[k][j] is the alpha for class k and 
 		 * 	sample j which is untransformed compared to the alphas
 		 * 	stored in CSVM* members
-		 * 	
-		 * 
 		 */
-		void getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas2);
+		void getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GMNPSVM"; }
@@ -69,10 +71,9 @@ class CGMNPSVM : public CMultiClassSVM
 		/** required for CMKLMulticlass 
 		 * stores the untransformed alphas of this algorithm
 		 * whereas CSVM* members stores a transformed version of it
-		 *  basealphas[k][j] is the alpha for class k and sample j
-		 * 
+		 * m_basealphas[k][j] is the alpha for class k and sample j
 		 */
-		::std::vector< ::std::vector<float64_t> > basealphas; // is the basic untransformed alpha, needed for MKL 
+		::std::vector< ::std::vector<float64_t> > m_basealphas; // is the basic untransformed alpha, needed for MKL 
 };
 }
 #endif
