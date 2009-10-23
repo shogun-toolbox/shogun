@@ -486,6 +486,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			CFile f(fname, 'r', F_CHAR);
 			char* feature_matrix=f.load_char_data(NULL, length);
 
+			SG_DEBUG("char data now at %p of length %ld\n", 
+					feature_matrix, (int64_t) length);
+
 			num_vectors=0;
 
 			if (f.is_ok())

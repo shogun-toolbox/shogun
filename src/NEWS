@@ -5,9 +5,9 @@
 	* Features:
 	    - Implement set_linear_classifier for static interfaces.
 		- Implement Polynomial DotFeatures.
-		- Implement domain adaptation SVM
+		- Implement domain adaptation SVM.
 		- Speed up ScatterSVM.
-		- Saving and Loading of shogun objects.
+		- Initial implementation for saving and Loading of shogun objects.
 		- Examples have been polished/split up into separate files.
 		- Documentation and webpage improvements.
 	* Bugfixes:
