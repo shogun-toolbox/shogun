@@ -1,5 +1,16 @@
 2009-10-23  Soeren Sonnenburg <sonne@debian.org>
 
+	* libshogun/kernel/PyramidChi2.cpp: remove a static allocation and
+	  replace with new/delete
+
+2009-10-23  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* libshogun/kernel/PyramidChi2.cpp, libshogun/kernel/PyramidChi2.h:
+	  refurbished PyrmidChi2 kernel
+
+2009-10-23  Soeren Sonnenburg <sonne@debian.org>
+
+	* ChangeLog: updated changelog
 	* libshogun/kernel/WeightedDegreeStringKernel.cpp,
 	  libshogunui/GUIKernel.h, libshogunui/SGInterface.cpp: get
 	  mkl_pseudo_dna example to run again
