@@ -1,9 +1,10 @@
 from shogun.Features import *
 from shogun.Library import MSG_DEBUG
 from shogun.Features import StringCharFeatures, Labels, DNA, Alphabet
-from shogun.Kernel import WeightedDegreeStringKernel
+from shogun.Kernel import WeightedDegreeStringKernel, GaussianKernel
 from shogun.Classifier import SVMLight
-import numpy
+from numpy import *
+from numpy.random import randn
 
 import sys
 import types
@@ -56,62 +57,29 @@ def load(filename):
     return myobj
 
 
-
-degree=3
-fm_train_dna=['CGCACGTACGTAGCTCGAT',
-		      'CGACGTAGTCGTAGTCGTA',
-		      'CGACGGGGGGGGGGTCGTA',
-		      'CGACCTAGTCGTAGTCGTA',
-		      'CGACCACAGTTATATAGTA',
-		      'CGACGTAGTCGTAGTCGTA',
-		      'CGACGTAGTTTTTTTCGTA',
-		      'CGACGTAGTCGTAGCCCCA',
-		      'CAAAAAAAAAAAAAAAATA',
-		      'CGACGGGGGGGGGGGCGTA']
-label_train_dna=numpy.array(5*[-1.0] + 5*[1.0])
-fm_test_dna=['AGCACGTACGTAGCTCGAT',
-		      'AGACGTAGTCGTAGTCGTA',
-		      'CAACGGGGGGGGGGTCGTA',
-		      'CGACCTAGTCGTAGTCGTA',
-		      'CGAACACAGTTATATAGTA',
-		      'CGACCTAGTCGTAGTCGTA',
-		      'CGACGTGGGGTTTTTCGTA',
-		      'CGACGTAGTCCCAGCCCCA',
-		      'CAAAAAAAAAAAACCAATA',
-		      'CGACGGCCGGGGGGGCGTA']
-label_test_dna=numpy.array(5*[-1.0] + 5*[1.0])
-
-
 ##################################################
+num=10
+dist=1
+width=2.1
 
-alpha = Alphabet(DNA)
-alpha.io.set_loglevel(MSG_DEBUG)
+traindata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1)
+testdata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1);
 
-feats_train=StringCharFeatures(DNA)
-feats_train.set_features(fm_train_dna)
-feats_test=StringCharFeatures(DNA)
-feats_test.set_features(fm_test_dna)
+trainlab=concatenate((-ones(num), ones(num)));
+testlab=concatenate((-ones(num), ones(num)));
 
-kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
+feats_train=RealFeatures(traindata_real);
+feats_test=RealFeatures(testdata_real);
+kernel=GaussianKernel(feats_train, feats_train, width);
 kernel.io.set_loglevel(MSG_DEBUG)
 
-C=10
-epsilon=1e-5
-num_threads=1
-labels=Labels(label_train_dna)
+labels=Labels(trainlab);
 
-svm=SVMLight(C, kernel, labels)
-svm.set_qpsize(3)
-svm.set_linear_term(-numpy.array([1,2,3,4,5,6,7,8,7,6], dtype=numpy.double));
-svm.set_epsilon(epsilon)
-svm.parallel.set_num_threads(num_threads)
+svm=SVMLight(2, kernel, labels)
 svm.train()
 svm.io.set_loglevel(MSG_DEBUG)
 
 ##################################################
-
-print "alphabet:"
-print alpha.to_string()
 
 print "labels:"
 print labels.to_string()
@@ -125,11 +93,24 @@ print kernel.to_string()
 print "svm"
 print svm.to_string()
 
-fn = "/tmp/myawesomesvm.bz2"
+print "#################################"
+
+fn = "serialized_svm.bz2"
+print "serializing SVM to file", fn
+
 save(fn, svm)
 
+print "#################################"
+
+print "unserializing SVM"
 svm2 = load(fn)
+
+
+print "#################################"
+print "comparing training"
 
 svm2.train()
 
+print "objective before serialization:", svm.get_objective()
+print "objective after serialization:", svm2.get_objective()
 
