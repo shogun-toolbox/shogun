@@ -156,7 +156,7 @@ update-webpage:
 	ssh vserver ./bin/shogun_doc_install.sh
 	rm -rf doc/html
 
-	cd ../../website && make
+	cd ../website && make
 
 src/libshogun/lib/versionstring.h:
 	rm -f src/ChangeLog
