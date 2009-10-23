@@ -13,6 +13,7 @@
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT_GUID(shogun::CClassifier, "CClassifier");
 //BOOST_SERIALIZATION_ASSUME_ABSTRACT(shogun::CClassifier);
 #endif //HAVE_BOOST_SERIALIZATION
 

@@ -8,12 +8,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+
+
 #include "classifier/KernelMachine.h"
 #include "lib/Signal.h"
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-//BOOST_SERIALIZATION_ASSUME_ABSTRACT(shogun::CKernelMachine);
+BOOST_CLASS_EXPORT_GUID(shogun::CKernelMachine, "CKernelMachine");
+//BOOST_IS_ABSTRACT(shogun::CKernelMachine);
 #endif //HAVE_BOOST_SERIALIZATION
 
 using namespace shogun;

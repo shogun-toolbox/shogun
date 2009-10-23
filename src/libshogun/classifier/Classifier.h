@@ -213,8 +213,7 @@ class CClassifier : public CSGObject
                 SG_DEBUG("archiving CClassifier\n");
 
                 ar & ::boost::serialization::base_object<CSGObject>(*this);
-                //ar & max_train_time;
-                SG_DEBUG("before labels");
+                ar & max_train_time;
                 ar & labels;
 
                 SG_DEBUG("done with CClassifier\n");

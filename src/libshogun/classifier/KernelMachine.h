@@ -34,7 +34,7 @@ class CKernel;
  *
  * where \f$N\f$ is the number of training examples
  * \f$\alpha_i\f$ are the weights assigned to each training example
- * \f$k(x,x')\f$ is the kernel 
+ * \f$k(x,x')\f$ is the kernel
  * and \f$b\f$ the bias.
  *
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
@@ -339,70 +339,86 @@ class CKernelMachine : public CClassifier
         // & operator is defined similar to <<.  Likewise, when the class Archive
         // is a type of input archive the & operator is defined similar to >>.
         template<class Archive>
+
             void serialize(Archive & ar, const unsigned int archive_version)
             {
 
-                std::cout << "archiving CKernelMachine" << std::endl;
+                SG_DEBUG("archiving CKernelMachine\n");
                 ar & ::boost::serialization::base_object<CClassifier>(*this);
 
-                //TODO register other kernels... (not needed if every class is exported)
-                //if it doesn't work, one might need to include the respective headers
-                //ar.register_type(static_cast<CGaussianKernel *>(NULL));
-                //ar.register_type(static_cast<CWeightedDegreeStringKernel *>(NULL));
-
                 ar & kernel;
-
                 ar & use_batch_computation;
                 ar & use_linadd;
                 ar & use_bias;
                 ar & m_bias;
 
-                std::cout << "done CKernelMachine" << std::endl;
+                SG_DEBUG("done with CKernelMachine\n");
             }
 
-            /*
-			/// serialization needs to split up in save/load because 
-			///  the serialization of pointers to natives (int* & friends) 
-			///  requires a workaround 
-			friend class ::boost::serialization::access;
-			template<class Archive>
-				void save(Archive & ar, const unsigned int archive_version) const
+
+		/*
+
+		/// serialization needs to split up in save/load because
+		///  the serialization of pointers to natives (int* & friends)
+		///  requires a workaround
+		friend class ::boost::serialization::access;
+		template<class Archive>
+			void save(Archive & ar, const unsigned int archive_version) const
+			{
+
+				SG_DEBUG("archiving CKernelMachine\n");
+
+				ar & kernel;
+				ar & use_batch_computation;
+				ar & use_linadd;
+				ar & use_bias;
+				ar & m_bias;
+				ar & num_svs;
+
+
+				for (int32_t i=0; i < num_svs; ++i) {
+					ar & m_alpha[i];
+					ar & m_svs[i];
+				}
+
+				SG_DEBUG("done with CKernelMachine\n");
+
+			}
+
+		template<class Archive>
+			void load(Archive & ar, const unsigned int archive_version)
+			{
+
+				SG_DEBUG("archiving CKernelMachine\n");
+
+				ar & kernel;
+				ar & use_batch_computation;
+				ar & use_linadd;
+				ar & use_bias;
+				ar & m_bias;
+				ar & num_svs;
+
+
+				if (num_svs > 0)
 				{
 
-					ar & b;
-					ar & num_svs;
-
-					for (int32_t i=0; i < num_svs; ++i) {
+					m_alpha = new float64_t[num_svs];
+					m_svs = new int32_t[num_svs];
+					for (int32_t i=0; i< num_svs; ++i){
 						ar & m_alpha[i];
-						ar & m_svs[i];
+						//ar & m_svs[i];
 					}
 
 				}
 
-			template<class Archive>
-				void load(Archive & ar, const unsigned int archive_version)
-				{
 
-					ar & b;
-					ar & num_svs;
+				SG_DEBUG("done with CKernelMachine\n");
+			}
 
-					if (num_svs > 0)
-					{
+		GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()
 
-						m_alpha = new float64_t[num_svs];
-						m_svs = new int32_t[num_svs];
-						for (int32_t i=0; i< num_svs; ++i){
-							ar & m_alpha[i];
-							ar & m_svs[i];
-						}
+		*/
 
-					}
-
-
-				}
-
-			GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()
-            */
 #endif //HAVE_BOOST_SERIALIZATION
 
 	protected:
