@@ -125,7 +125,7 @@ class CClassifier : public CSGObject
 		 * @return infinite float value
 		 */
 		virtual float64_t classify_example(int32_t num)
-		{ 
+		{
 			SG_NOTIMPLEMENTED;
 			return CMath::INFTY;
 		}
@@ -210,14 +210,14 @@ class CClassifier : public CSGObject
             void serialize(Archive & ar, const unsigned int archive_version)
             {
 
-                SG_DEBUG("archiving Classifier");
+                SG_DEBUG("archiving CClassifier\n");
 
                 ar & ::boost::serialization::base_object<CSGObject>(*this);
                 //ar & max_train_time;
                 SG_DEBUG("before labels");
                 ar & labels;
 
-                SG_DEBUG("done with Classifier");
+                SG_DEBUG("done with CClassifier\n");
 
             }
 #endif //HAVE_BOOST_SERIALIZATION
