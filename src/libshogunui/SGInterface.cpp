@@ -3357,6 +3357,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 		if (dim!=1 && len>0)
 			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
 
+		ui_kernel->init_kernel("TRAIN");
 		success=k->set_position_weights(weights, len);
 	}
 	else
@@ -3414,7 +3415,10 @@ bool CSGInterface::cmd_set_WD_position_weights()
 					success=k->set_position_weights_rhs(weights, dim, len);
 			}
 			else
+			{
+				ui_kernel->init_kernel("TRAIN");
 				success=k->set_position_weights(weights, len);
+			}
 		}
 
 		delete[] target;

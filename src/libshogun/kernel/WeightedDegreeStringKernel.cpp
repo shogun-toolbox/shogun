@@ -136,6 +136,8 @@ void CWeightedDegreeStringKernel::remove_lhs()
 
 void CWeightedDegreeStringKernel::create_empty_tries()
 {
+	ASSERT(lhs);
+
 	seq_length=((CStringFeatures<char>*) lhs)->get_max_vector_length();
 
 	if (tries!=NULL)
@@ -613,16 +615,18 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 bool CWeightedDegreeStringKernel::set_weights(
 	float64_t* ws, int32_t d, int32_t len)
 {
-	SG_DEBUG("degree = %i  d=%i\n", degree, d);
-	degree=d;
-	ASSERT(tries);
-	tries->set_degree(degree);
+	if (d!=degree || len<1)
+		SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+
 	length=len;
 
-	if (length==0) length=1;
+	if (length==0)
+		length=1;
+
 	int32_t num_weights=degree*(length+max_mismatch);
 	delete[] weights;
 	weights=new float64_t[num_weights];
+
 	if (weights)
 	{
 		for (int32_t i=0; i<num_weights; i++) {

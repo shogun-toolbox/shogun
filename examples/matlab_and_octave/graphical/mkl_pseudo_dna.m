@@ -49,8 +49,7 @@ LT=LT(p(1:1000));
 sg('set_features', 'TRAIN', XT, 'DNA');
 sg('set_labels', 'TRAIN', LT);
 
-sg('use_mkl', true);
-sg('new_classifier', 'SVMLIGHT');
+sg('new_classifier', 'MKL_CLASSIFICATION');
 sg('set_kernel', 'WEIGHTEDDEGREE', 'CHAR', 124, order, mismatch, false);
 sg('c', C);
 

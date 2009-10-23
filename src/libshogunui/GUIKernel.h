@@ -164,7 +164,6 @@ class CGUIKernel : public CSGObject
 
  private:
 	float64_t* get_weights(int32_t order, int32_t max_mismatch);
-
 };
 }
 #endif
