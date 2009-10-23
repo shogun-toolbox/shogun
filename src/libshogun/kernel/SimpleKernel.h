@@ -22,10 +22,15 @@ namespace shogun
  *
  * CSimpleFeatures are dense Matrix like Features and Kernels operating on them
  * all derive from this class (cf., e.g., CGaussianKernel)
- */ 
+ */
 template <class ST> class CSimpleKernel : public CKernel
 {
 	public:
+		/** default constructor
+		 *
+		 */
+		CSimpleKernel() : CKernel() {}
+
 		/** constructor
 		 *
 		 * @param cachesize cache size
@@ -62,7 +67,7 @@ template <class ST> class CSimpleKernel : public CKernel
 			ASSERT(r->get_feature_type()==this->get_feature_type());
 
 			if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
-			{  
+			{
 				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
 						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
 			}

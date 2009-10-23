@@ -31,6 +31,11 @@ namespace shogun
 class CGaussianKernel: public CSimpleKernel<float64_t>
 {
 	public:
+		/** default constructor
+		 *
+		 */
+		CGaussianKernel();
+
 		/** constructor
 		 *
 		 * @param size cache size
@@ -81,7 +86,7 @@ class CGaussianKernel: public CSimpleKernel<float64_t>
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-#ifdef HAVE_BOOST_SERIALIZATION  
+#ifdef HAVE_BOOST_SERIALIZATION
     private:
 
         friend class ::boost::serialization::access;

@@ -126,6 +126,13 @@ class CKernel : public CSGObject
 	friend class CDiceKernelNormalizer;
 
 	public:
+
+		/** default constructor
+		 *
+		 */
+		CKernel();
+
+
 		/** constructor
 		 *
 		 * @param size cache size
@@ -721,16 +728,12 @@ class CKernel : public CSGObject
                 //ar & precompute_subkernel_matrix ;
                 //ar & precompute_matrix ;
 
-                //TODO register other features
-                //ar.register_type(static_cast<CRealFeatures *>(NULL));
-                //ar.register_type(static_cast<CStringFeatures<CHAR> *>(NULL));
+                ar & rhs;
+                ar & lhs;
 
-                //ar & rhs;
-                //ar & lhs;
+                ar & combined_kernel_weight;
 
-                ar & combined_kernel_weight ;
-
-                ar & optimization_initialized ;
+                ar & optimization_initialized;
 
                 ar & opt_type;
 

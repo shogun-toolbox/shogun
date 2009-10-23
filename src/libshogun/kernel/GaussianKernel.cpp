@@ -14,7 +14,18 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT(shogun::CGaussianKernel);
+#endif //HAVE_BOOST_SERIALIZATION
+
 using namespace shogun;
+
+CGaussianKernel::CGaussianKernel()
+: CSimpleKernel<float64_t>(), width(1)
+{
+}
+
 
 CGaussianKernel::CGaussianKernel(int32_t size, float64_t w)
 : CSimpleKernel<float64_t>(size), width(w)

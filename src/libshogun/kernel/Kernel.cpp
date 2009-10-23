@@ -37,6 +37,19 @@
 
 using namespace shogun;
 
+CKernel::CKernel()
+: CSGObject(), kernel_matrix(NULL), lhs(NULL),
+	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
+	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL), cache_size(10)
+{
+
+#ifdef USE_SVMLIGHT
+	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
+#endif //USE_SVMLIGHT
+
+	set_normalizer(new CIdentityKernelNormalizer());
+}
+
 CKernel::CKernel(int32_t size)
 : CSGObject(), kernel_matrix(NULL), lhs(NULL),
 	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
@@ -298,7 +311,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 {
 	if (size<10)
 		size=10;
-	
+
 	kernel_cache_cleanup();
 	cache_size=size;
 
@@ -393,7 +406,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 		kernel_cache.max_elems=totdoc;
 	}
 
-	kernel_cache.elems=0;   // initialize cache 
+	kernel_cache.elems=0;   // initialize cache
 	for(i=0;i<totdoc;i++) {
 		kernel_cache.index[i]=-1;
 		kernel_cache.lru[i]=0;
@@ -409,8 +422,8 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 		kernel_cache.totdoc2active[i]=i;
 	}
 
-	kernel_cache.time=0;  
-} 
+	kernel_cache.time=0;
+}
 
 void CKernel::get_kernel_row(
 	int32_t docnum, int32_t *active2dnum, float64_t *buffer, bool full_line)
@@ -423,7 +436,7 @@ void CKernel::get_kernel_row(
 		docnum=2*num_vectors-1-docnum;
 
 	/* is cached? */
-	if(kernel_cache.index[docnum] != -1) 
+	if(kernel_cache.index[docnum] != -1)
 	{
 		kernel_cache.lru[kernel_cache.index[docnum]]=kernel_cache.time; /* lru */
 		start=((KERNELCACHE_IDX) kernel_cache.activenum)*kernel_cache.index[docnum];
@@ -449,7 +462,7 @@ void CKernel::get_kernel_row(
 			}
 		}
 	}
-	else 
+	else
 	{
 		if (full_line)
 		{
@@ -482,7 +495,7 @@ void CKernel::cache_kernel_row(int32_t m)
 		if(cache) {
 			l=kernel_cache.totdoc2active[m];
 
-			for(j=0;j<kernel_cache.activenum;j++)  // fill cache 
+			for(j=0;j<kernel_cache.activenum;j++)  // fill cache
 			{
 				k=kernel_cache.active2totdoc[j];
 
@@ -511,7 +524,7 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 		int32_t m = params->uncached_rows[i];
 		l=params->kernel_cache->totdoc2active[m];
 
-		for(j=0;j<params->kernel_cache->activenum;j++)  // fill cache 
+		for(j=0;j<params->kernel_cache->activenum;j++)  // fill cache
 		{
 			k=params->kernel_cache->active2totdoc[j];
 
@@ -529,20 +542,20 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 	return NULL;
 }
 
-// Fills cache for the rows in key 
+// Fills cache for the rows in key
 void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 {
 #ifndef WIN32
 	if (parallel->get_num_threads()<2)
 	{
 #endif
-		for(int32_t i=0;i<num_rows;i++) 
+		for(int32_t i=0;i<num_rows;i++)
 			cache_kernel_row(rows[i]);
 #ifndef WIN32
 	}
 	else
 	{
-		// fill up kernel cache 
+		// fill up kernel cache
 		int32_t* uncached_rows = new int32_t[num_rows];
 		KERNELCACHE_ELEM** cache = new KERNELCACHE_ELEM*[num_rows];
 		pthread_t* threads = new pthread_t[parallel->get_num_threads()-1];
@@ -643,7 +656,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 // which correspond to examples marked
 void CKernel::kernel_cache_shrink(
 	int32_t totdoc, int32_t numshrink, int32_t *after)
-{                           
+{
 	register int32_t i,j,jj,scount;     // 0 in after.
 	KERNELCACHE_IDX from=0,to=0;
 	int32_t *keep;
@@ -702,7 +715,7 @@ void CKernel::kernel_cache_reset_lru()
 	int32_t maxlru=0,k;
 
 	for(k=0;k<kernel_cache.max_elems;k++) {
-		if(maxlru < kernel_cache.lru[k]) 
+		if(maxlru < kernel_cache.lru[k])
 			maxlru=kernel_cache.lru[k];
 	}
 	for(k=0;k<kernel_cache.max_elems;k++) {
@@ -746,8 +759,8 @@ void CKernel::kernel_cache_free(int32_t cacheidx)
 
 // remove least recently used cache
 // element
-int32_t CKernel::kernel_cache_free_lru()  
-{                                     
+int32_t CKernel::kernel_cache_free_lru()
+{
   register int32_t k,least_elem=-1,least_time;
 
   least_time=kernel_cache.time+1;
@@ -772,7 +785,7 @@ int32_t CKernel::kernel_cache_free_lru()
 // Get a free cache entry. In case cache is full, the lru
 // element is removed.
 KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
-{             
+{
 	int32_t result;
 	if((result = kernel_cache_malloc()) == -1) {
 		if(kernel_cache_free_lru()) {
@@ -840,7 +853,7 @@ void CKernel::remove_lhs_and_rhs()
 }
 
 void CKernel::remove_lhs()
-{ 
+{
 	if (rhs==lhs)
 		rhs=NULL;
 	SG_UNREF(lhs);
@@ -1032,7 +1045,7 @@ bool CKernel::init_optimization(
 	return false ;
 }
 
-bool CKernel::delete_optimization() 
+bool CKernel::delete_optimization()
 {
    SG_ERROR( "kernel does not support linadd optimization\n");
 	return false;
