@@ -1,5 +1,6 @@
 2009-10-23  Soeren Sonnenburg <sonne@debian.org>
 
+	* ChangeLog: updated changelog
 	* libshogun/kernel/PyramidChi2.cpp: remove a static allocation and
 	  replace with new/delete
 
