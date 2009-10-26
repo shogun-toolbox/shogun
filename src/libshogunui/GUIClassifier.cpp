@@ -43,6 +43,7 @@
 #include <shogun/classifier/mkl/MKLOneClass.h>
 #include <shogun/classifier/mkl/MKLMultiClass.h>
 #include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/classifier/svm/LaRank.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
 #include <shogun/classifier/svm/LibSVMMultiClass.h>
@@ -145,6 +146,12 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_UNREF(classifier);
 		classifier= new CLibSVM();
 		SG_INFO("created SVMlibsvm object\n") ;
+	}
+	else if (strcmp(name,"LARANK")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CLaRank();
+		SG_INFO("created LaRank object\n") ;
 	}
 #ifdef USE_SVMLIGHT
 	else if ((strcmp(name,"LIGHT")==0) || (strcmp(name,"SVMLIGHT")==0))
@@ -1554,6 +1561,12 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CLibSVM();
 		SG_INFO("created SVMlibsvm object\n") ;
+	}
+	else if (strcmp(name,"LARANK")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CLaRank();
+		SG_INFO("created LaRank object\n") ;
 	}
 #ifdef USE_SVMLIGHT
 	else if ((strcmp(name,"LIGHT")==0) || (strcmp(name,"SVMLIGHT")==0))

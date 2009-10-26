@@ -38,9 +38,9 @@
 using namespace shogun;
 
 CKernel::CKernel()
-: CSGObject(), kernel_matrix(NULL), lhs(NULL),
+: CSGObject(), cache_size(10), kernel_matrix(NULL), lhs(NULL),
 	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
-	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL), cache_size(10)
+	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
 {
 
 #ifdef USE_SVMLIGHT

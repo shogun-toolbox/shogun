@@ -60,7 +60,8 @@ enum EClassifierType
 	CT_MKLONECLASS = 310,
 	CT_MKLREGRESSION = 320,
 	CT_SCATTERSVM = 330,
-	CT_DASVM = 340
+	CT_DASVM = 340,
+	CT_LARANK = 350
 };
 
 enum ESolverType
