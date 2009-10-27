@@ -579,6 +579,9 @@ die () {
   echo >&2
   rm -f "$TMPO" "$TMPC" "$TMPS" "$TMPCPP"
   echo "Check "$TMPLOG" if you do not understand why it failed."
+  echo "The last 20 lines of "$TMPLOG" are shown below"
+  echo
+  tail -n 20 "$TMPLOG"
   exit 1
 }
 
@@ -608,11 +611,11 @@ beos()    { issystem "BEOS"    ; return "$?" ; }
 
 # arch test boolean functions
 # x86/x86pc is used by QNX
-x86() {
-  case "$host_arch" in
-    i[3-9]86|x86|x86pc|k5|k6|k6-2|k6-3|pentium*|athlon*|i586-i686) return 0 ;;
-    *) return 1 ;;
-  esac
+x86_32() {
+	case "$host_arch" in
+		i[3-9]86|x86|x86pc|k5|k6|k6-2|k6-3|pentium*|athlon*|i586-i686) return 0 ;;
+		*) return 1 ;;
+	esac
 }
 
 x86_64() {
@@ -620,6 +623,10 @@ x86_64() {
     x86_64) return 0 ;;
     *) return 1 ;;
   esac
+}
+
+x86() {
+  x86_32 || x86_64
 }
 
 ppc() {
@@ -635,6 +642,14 @@ alpha() {
     *) return 1;;
   esac
 }
+
+arm() {
+	case "$host_arch" in
+		arm) return 0;;
+		*) return 1;;
+	esac
+}
+
 
 # not boolean test: implement the posix shell "!" operator for a
 # non-posix /bin/sh.
@@ -2503,6 +2518,10 @@ EOF
 						fi
 					fi
 				else
+					if test "$_cplex" = yes
+					then
+						die "CPLEX not found"
+					fi
 					echores "no"
 				fi
 			fi
