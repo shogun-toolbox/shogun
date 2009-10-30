@@ -1110,6 +1110,7 @@ CLabels* CGUIClassifier::classify()
 		case CT_MKLCLASSIFICATION:
 		case CT_MKLMULTICLASS:
 		case CT_MKLREGRESSION:
+		case CT_MKLONECLASS:
 		case CT_KRR:
 			return classify_kernelmachine();
 		case CT_KNN:
