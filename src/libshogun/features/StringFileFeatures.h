@@ -93,7 +93,10 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 			else
 			{
 				if (!CStringFeatures<ST>::alphabet->is_valid((uint8_t) c))
+				{
+					CStringFileFeatures<ST>::cleanup();
 					CStringFeatures<ST>::SG_ERROR("Invalid character (%c) in line %d\n", c, line_nr);
+				}
 			}
 		}
 
@@ -130,6 +133,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 		CStringFileFeatures<ST>::cleanup();
 		uint64_t file_size=file->get_size();
 		ASSERT(granularity>=1);
+		ASSERT(CStringFeatures<ST>::alphabet);
 
 		uint64_t buffer_size=granularity;
 		CStringFeatures<ST>::features=new T_STRING<ST>[buffer_size];
