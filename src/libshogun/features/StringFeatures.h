@@ -112,7 +112,7 @@ template <class T> class T_STRING
  * Most string kernels require StringFeatures but a number of them actually
  * requires strings to have same length.
  *
- * Note: StringFeatures do not support PreProcs
+ * Note: StringFeatures do not currently support PreProcs
  */
 template <class ST> class CStringFeatures : public CFeatures
 {
@@ -239,7 +239,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		}
 
 		/** cleanup string features */
-		void cleanup()
+		virtual void cleanup()
 		{
 			if (single_string)
 			{

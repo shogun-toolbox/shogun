@@ -215,6 +215,21 @@ class CMath : public CSGObject
 				b=c;
 			}
 
+		/** resize array from old_size to new_size (keeping as much array
+		 * content as possible intact)
+		 */
+		template <class T>
+			static inline void resize(T* &data, int64_t old_size, int64_t new_size)
+			{
+				if (old_size==new_size)
+					return;
+				T* new_data = new T[new_size];
+				for (int64_t i=0; i<old_size && i<new_size; i++)
+					new_data[i]=data[i];
+				delete[] data;
+				data=new_data;
+			}
+
 		/// || x ||_2
 		template <class T>
 			static inline T twonorm(T* x, int32_t len)

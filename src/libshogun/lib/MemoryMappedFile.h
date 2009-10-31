@@ -188,6 +188,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			offs+=length+1;
 			last_written_byte=offs-1;
 		}
+
 		/** set file size
 		 * 
 		 * When the file is opened for read/write mode, it will be truncated

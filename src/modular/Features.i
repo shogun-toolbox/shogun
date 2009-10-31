@@ -34,6 +34,7 @@
 %{
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/features/StringFileFeatures.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
@@ -326,6 +327,24 @@ namespace shogun
     %template(StringShortRealFeatures) CStringFeatures<float32_t>;
     %template(StringRealFeatures) CStringFeatures<float64_t>;
     %template(StringLongRealFeatures) CStringFeatures<floatmax_t>;
+}
+
+/* Templated Class StringFileFeatures */
+%include <shogun/features/StringFileFeatures.h>
+namespace shogun
+{
+    %template(StringFileBoolFeatures) CStringFileFeatures<bool>;
+    %template(StringFileCharFeatures) CStringFileFeatures<char>;
+    %template(StringFileByteFeatures) CStringFileFeatures<uint8_t>;
+    %template(StringFileShortFeatures) CStringFileFeatures<int16_t>;
+    %template(StringFileWordFeatures) CStringFileFeatures<uint16_t>;
+    %template(StringFileIntFeatures) CStringFileFeatures<int32_t>;
+    %template(StringFileUIntFeatures) CStringFileFeatures<uint32_t>;
+    %template(StringFileLongFeatures) CStringFileFeatures<int64_t>;
+    %template(StringFileUlongFeatures) CStringFileFeatures<uint64_t>;
+    %template(StringFileShortRealFeatures) CStringFileFeatures<float32_t>;
+    %template(StringFileRealFeatures) CStringFileFeatures<float64_t>;
+    %template(StringFileLongRealFeatures) CStringFileFeatures<floatmax_t>;
 }
 
 /* Templated Class SparseFeatures */

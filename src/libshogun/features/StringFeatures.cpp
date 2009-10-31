@@ -13,6 +13,4 @@
 #include "features/StringFeatures.h"
 #include <boost/serialization/export.hpp>
 BOOST_CLASS_EXPORT(shogun::CStringFeatures<char>);
-
 #endif //HAVE_BOOST_SERIALIZATION
-

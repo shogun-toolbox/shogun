@@ -1,11 +1,14 @@
 2009-XX-XX Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.9.1 (libshogun 5.1, libshogunui 3.1)
+	* SHOGUN Release version 0.9.1 (libshogun 6.0, libshogunui 3.1)
 	* This release contains several cleanups and bugfixes:
 	* Features:
-		- None.
+		- Integrate LaRank.
+		- Memory Mapped Features (for data sets that don't fit into memory).
 	* Bugfixes:
-		- None.
+		- Fix One class MKL testing in static interfaces.
+		- Configure fixes: Let octave not write history on configure and fail
+		when cplex is forcefully enabled but not found.
 	* Cleanup and API Changes:
 		- None.
 
