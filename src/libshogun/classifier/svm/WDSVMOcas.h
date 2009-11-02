@@ -180,7 +180,8 @@ class CWDSVMOcas : public CClassifier
 
 			int32_t len=0;
 			float64_t sum=0;
-			uint8_t* vec=features->get_feature_vector(num, len);
+			bool free_vec;
+			uint8_t* vec=features->get_feature_vector(num, len, free_vec);
 			//SG_INFO("len %d, string_length %d\n", len, string_length);
 			ASSERT(len==string_length);
 
@@ -195,6 +196,7 @@ class CWDSVMOcas : public CClassifier
 					offs+=w_offsets[k];
 				}
 			}
+			features->free_feature_vector(vec, len, free_vec);
 			return sum/normalization_const;
 		}
 

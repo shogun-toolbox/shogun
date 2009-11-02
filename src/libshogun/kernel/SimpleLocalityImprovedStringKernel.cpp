@@ -186,9 +186,10 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 	int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
+	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
@@ -197,5 +198,8 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 
 	dpt = dot_pyr(avec, bvec, alen, length, inner_degree, outer_degree, pyramid_weights);
 	dpt = dpt / pow((float64_t)alen, (float64_t)outer_degree);
+
+	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return (float64_t) dpt;
 }

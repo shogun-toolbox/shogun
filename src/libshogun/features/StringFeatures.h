@@ -353,15 +353,30 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @param num index of feature vector
 		 * @param len length is returned by reference
+		 * @param dofree whether returned vector must be freed by
+		 * caller via free_feature_vector
 		 * @return feature vector for sample num
 		 */
-		virtual ST* get_feature_vector(int32_t num, int32_t& len)
+		virtual ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree)
 		{
 			ASSERT(features);
 			ASSERT(num<num_vectors);
 
+			dofree=false;
 			len=features[num].length;
 			return features[num].string;
+		}
+
+		/** free feature vector
+		 *
+		 * @param feat_vec feature vector to free
+		 * @param num index in feature cache
+		 * @param dofree if vector should be really deleted
+		 */
+		void free_feature_vector(ST* feat_vec, int32_t num, bool dofree)
+		{
+			if (dofree)
+				delete[] feat_vec ;
 		}
 
 		/** get feature
@@ -1209,7 +1224,9 @@ template <class ST> class CStringFeatures : public CFeatures
 				for (int32_t i=0; i<num_vectors; i++)
 				{
 					int32_t len=-1;
-					CT* c=sf->get_feature_vector(i, len);
+					bool vfree;
+					CT* c=sf->get_feature_vector(i, len, vfree);
+					ASSERT(!vfree); // won't work when preprocessors are attached
 
 					features[i].string=new ST[len];
 					features[i].length=len;
@@ -1217,7 +1234,6 @@ template <class ST> class CStringFeatures : public CFeatures
 					ST* str=features[i].string;
 					for (int32_t j=0; j<len; j++)
 						str[j]=(ST) alpha->remap_to_bin(c[j]);
-
 				}
 
 				original_num_symbols=alpha->get_num_symbols();
@@ -1241,7 +1257,9 @@ template <class ST> class CStringFeatures : public CFeatures
 				for (int32_t line=0; line<num_vectors; line++)
 				{
 					int32_t len=0;
-					ST* fv=get_feature_vector(line, len);
+					bool vfree;
+					ST* fv=get_feature_vector(line, len, vfree);
+					ASSERT(!vfree); // won't work when preprocessors are attached
 
 					if (rev)
 						CAlphabet::translate_from_single_order_reversed(fv, len, start+gap, p_order+gap, max_val, gap);

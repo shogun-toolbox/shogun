@@ -587,7 +587,8 @@ class CHMM : public CDistribution
 		{
 			float64_t lik=0;
 			int32_t len=0;
-			uint16_t* o=p_observations->get_feature_vector(dimension, len);
+			bool free_vec;
+			uint16_t* o=p_observations->get_feature_vector(dimension, len, free_vec);
 			float64_t* obs_b=observation_matrix_b;
 
 			ASSERT(N==len);
@@ -597,6 +598,7 @@ class CHMM : public CDistribution
 				lik+=obs_b[*o++];
 				obs_b+=M;
 			}
+			p_observations->free_feature_vector(o, dimension, free_vec);
 			return lik;
 
 			// sorry, the above code is the speed optimized version of :

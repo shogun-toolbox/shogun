@@ -50,9 +50,10 @@ void CPolyMatchWordStringKernel::cleanup()
 float64_t CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
+	bool free_avec, free_bvec;
 
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
+	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
+	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	ASSERT(alen==blen);
 
@@ -69,5 +70,7 @@ float64_t CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	for (int32_t j=1; j<degree; j++)
 		result*=sum;
 
+	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }

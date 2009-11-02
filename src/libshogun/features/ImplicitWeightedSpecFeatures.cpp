@@ -97,8 +97,10 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 
 	int32_t len1=-1;
 	int32_t len2=-1;
-	uint16_t* vec1=strings->get_feature_vector(vec_idx1, len1);
-	uint16_t* vec2=strings->get_feature_vector(vec_idx2, len2);
+	bool free_vec1;
+	bool free_vec2;
+	uint16_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
+	uint16_t* vec2=strings->get_feature_vector(vec_idx2, len2, free_vec2);
 
 	float64_t result=0;
 	uint8_t mask=0;
@@ -137,6 +139,9 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 		}
 	}
 
+	strings->free_feature_vector(vec1, vec_idx1, free_vec1);
+	strings->free_feature_vector(vec2, vec_idx2, free_vec2);
+
 	if (normalization_factors)
 		return result*normalization_factors[vec_idx1]*normalization_factors[vec_idx2];
 	else
@@ -150,7 +155,8 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float
 
 	float64_t result=0;
 	int32_t len1=-1;
-	uint16_t* vec1=strings->get_feature_vector(vec_idx1, len1);
+	bool free_vec1;
+	uint16_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
 
 	if (vec1 && len1>0)
 	{
@@ -170,6 +176,8 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float
 			}
 		}
 
+		strings->free_feature_vector(vec1, vec_idx1, free_vec1);
+
 		if (normalization_factors)
 			result*=normalization_factors[vec_idx1];
 	}
@@ -182,7 +190,8 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float
 void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	int32_t len1=-1;
-	uint16_t* vec=strings->get_feature_vector(vec_idx1, len1);
+	bool free_vec1;
+	uint16_t* vec=strings->get_feature_vector(vec_idx1, len1, free_vec1);
 
 	if (normalization_factors)
 		alpha*=normalization_factors[vec_idx1];
@@ -206,6 +215,8 @@ void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t ve
 			}
 		}
 	}
+
+	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 
 CFeatures* CImplicitWeightedSpecFeatures::duplicate() const

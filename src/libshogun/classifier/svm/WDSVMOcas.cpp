@@ -307,7 +307,8 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 
 		for (int32_t k=0; k<lim; k++)
 		{
-			uint8_t* vec = f->get_feature_vector(j+k, len);
+			bool free_vec;
+			uint8_t* vec = f->get_feature_vector(j+k, len, free_vec);
 			float32_t wd = wd_weights[k]/normalization_const;
 
 			for(uint32_t i=0; i < cut_length; i++) 
@@ -316,6 +317,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 				new_a[offs+val[i]]+=wd * y[new_cut[i]];
 			}
 			offs+=w_offsets[k];
+			f->free_feature_vector(vec, j+k, free_vec);
 		}
 	}
 
@@ -454,7 +456,8 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 
 		for (int32_t k=0; k<lim; k++)
 		{
-			uint8_t* vec=f->get_feature_vector(j+k, len);
+			bool free_vec;
+			uint8_t* vec=f->get_feature_vector(j+k, len, free_vec);
 			float32_t wd = wd_weights[k];
 
 			for (int32_t i=start; i<end; i++) // quite fast 1.9s
@@ -499,6 +502,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 				out[ii+7]+=wd*w[offs+val[ii+7]];
 			}*/
 			offs+=w_offsets[k];
+			f->free_feature_vector(vec, j+k, free_vec);
 		}
 	}
 

@@ -1119,8 +1119,7 @@ float64_t CHMM::best_path(int32_t dimension)
 	if (!STATES_PER_OBSERVATION_PSI(dimension))
 		return -1 ;
 
-	int32_t len=0;
-	if (!p_observations->get_feature_vector(dimension,len))
+	if (dimension >= p_observations->get_num_vectors())
 		return -1;
 
 	if (PATH_PROB_UPDATED(dimension) && dimension==PATH_PROB_DIMENSION(dimension))
@@ -5115,13 +5114,16 @@ bool CHMM::linear_train(bool right_align)
 			for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
 				int32_t len=0;
-				uint16_t* obs=p_observations->get_feature_vector(dim, len);
+				bool free_vec;
+				uint16_t* obs=p_observations->get_feature_vector(dim, len, free_vec);
 
 				ASSERT(len<=get_N());
 				startendhist[(get_N()-len)]++;
 
 				for (i=0;i<len;i++)
 					hist[(get_N()-len+i)*get_M() + *obs++]++;
+
+				p_observations->free_feature_vector(obs, dim, free_vec);
 			}
 
 			set_q(get_N()-1, 1);
@@ -5147,13 +5149,16 @@ bool CHMM::linear_train(bool right_align)
 			for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 			{
 				int32_t len=0;
-				uint16_t* obs=p_observations->get_feature_vector(dim, len);
+				bool free_vec;
+				uint16_t* obs=p_observations->get_feature_vector(dim, len, free_vec);
 
 				ASSERT(len<=get_N());
 				for (i=0;i<len;i++)
 					hist[i*get_M() + *obs++]++;
 				
 				startendhist[len-1]++;
+
+				p_observations->free_feature_vector(obs, dim, free_vec);
 			}
 
 			set_p(0, 1);
@@ -5408,7 +5413,8 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 		for (sequence_number=min_sequence; sequence_number<max_sequence; sequence_number++)
 		{
 			int32_t sequence_length=0;
-			uint16_t* obs=p_observations->get_feature_vector(sequence_number, sequence_length);
+			bool free_vec;
+			uint16_t* obs=p_observations->get_feature_vector(sequence_number, sequence_length, free_vec);
 
 			int32_t histsize=get_M();
 			int64_t* hist=new int64_t[histsize];
@@ -5436,6 +5442,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 
 				SG_PRINT( "%f\n", perm_entropy);
 			}
+			p_observations->free_feature_vector(obs, sequence_number, free_vec);
 
 			delete[] hist;
 		}

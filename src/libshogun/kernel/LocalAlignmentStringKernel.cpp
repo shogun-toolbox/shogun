@@ -367,8 +367,9 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
   if (isAA == NULL)
     initialize();
 
-  char* x=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_x, lx);
-  char* y=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_y, ly);
+  bool free_x, free_y;
+  char* x=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_x, lx, free_x);
+  char* y=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_y, ly, free_y);
   ASSERT(x && y);
 
   if ((lx<1) || (ly<1))
@@ -401,6 +402,9 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
   /* Release memory */
   free(aax);
   free(aay);
+
+  ((CStringFeatures<char>*) lhs)->free_feature_vector(x, idx_x, free_x);
+  ((CStringFeatures<char>*) rhs)->free_feature_vector(y, idx_y, free_y);
 
   return result;
 }

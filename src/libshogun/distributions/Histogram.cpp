@@ -61,12 +61,16 @@ bool CHistogram::train(CFeatures* data)
 	for (vec=0; vec<features->get_num_vectors(); vec++)
 	{
 		int32_t len;
+		bool free_vec;
 
 		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-			get_feature_vector(vec, len);
+			get_feature_vector(vec, len, free_vec);
 
 		for (feat=0; feat<len ; feat++)
 			hist[vector[feat]]++;
+
+		((CStringFeatures<uint16_t>*) features)->
+			free_feature_vector(vector, vec, free_vec);
 	}
 
 	for (i=0; i< (int32_t) (1<<16); i++)
@@ -82,13 +86,17 @@ float64_t CHistogram::get_log_likelihood_example(int32_t num_example)
 	ASSERT(features->get_feature_type()==F_WORD);
 
 	int32_t len;
+	bool free_vec;
 	float64_t loglik=0;
 
 	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-		get_feature_vector(num_example, len);
+		get_feature_vector(num_example, len, free_vec);
 
 	for (int32_t i=0; i<len; i++)
 		loglik+=hist[vector[i]];
+
+	((CStringFeatures<uint16_t>*) features)->
+		free_feature_vector(vector, num_example, free_vec);
 
 	return loglik;
 }
@@ -104,10 +112,11 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 		ASSERT(features->get_feature_type()==F_WORD);
 
 		int32_t len;
+		bool free_vec;
 		float64_t deriv=0;
 
 		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-			get_feature_vector(num_example, len);
+			get_feature_vector(num_example, len, free_vec);
 
 		int32_t num_occurences=0;
 
@@ -118,6 +127,9 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 			if (vector[i]==num_param)
 				num_occurences++;
 		}
+
+		((CStringFeatures<uint16_t>*) features)->
+			free_feature_vector(vector, num_example, free_vec);
 
 		if (num_occurences>0)
 			deriv+=CMath::log((float64_t) num_occurences)-hist[num_param];

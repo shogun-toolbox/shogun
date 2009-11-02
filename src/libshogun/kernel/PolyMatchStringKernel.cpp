@@ -50,9 +50,10 @@ void CPolyMatchStringKernel::cleanup()
 float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t i, alen, blen, sum;
+	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	ASSERT(alen==blen);
 	for (i = 0, sum = inhomogene; i<alen; i++)
@@ -60,5 +61,7 @@ float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		if (avec[i]==bvec[i])
 			sum++;
 	}
+	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return CMath::pow((float64_t) sum, degree);
 }

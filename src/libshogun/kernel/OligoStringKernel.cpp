@@ -223,13 +223,15 @@ float64_t COligoStringKernel::kernelOligoFast(
 float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
+	bool free_a, free_b;
+	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_a);
+	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_b);
 	std::vector< std::pair<int32_t, float64_t> > aenc;
 	std::vector< std::pair<int32_t, float64_t> > benc;
 	encodeOligo(std::string(avec, alen), k, "ACGT", aenc);
 	encodeOligo(std::string(bvec, alen), k, "ACGT", benc);
 	float64_t result=kernelOligoFast(aenc, benc);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_a);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_b);
 	return result;
 }
-

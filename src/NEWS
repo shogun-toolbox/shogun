@@ -10,7 +10,9 @@
 		- Configure fixes: Let octave not write history on configure and fail
 		when cplex is forcefully enabled but not found.
 	* Cleanup and API Changes:
-		- None.
+		- String Features now (like SimpleFeatures) upon get_feature_vector
+		require and additional do_free argument and need to be freed using
+		free_feature_vector
 
 2009-10-23 Soeren Sonnenburg <sonne@debian.org>
 

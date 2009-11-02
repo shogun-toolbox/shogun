@@ -110,11 +110,13 @@ float64_t CPluginEstimate::classify_example(int32_t vec_idx)
 	ASSERT(features);
 
 	int32_t len;
-	uint16_t* vector=features->get_feature_vector(vec_idx, len);
+	bool free_vec;
+	uint16_t* vector=features->get_feature_vector(vec_idx, len, free_vec);
 
 	if ((!pos_model) || (!neg_model))
 		SG_ERROR( "model(s) not assigned\n");
 	  
 	float64_t result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
+	features->free_feature_vector(vector, vec_idx, free_vec);
 	return result;
 }

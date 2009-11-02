@@ -373,8 +373,9 @@ float64_t CWeightedDegreeStringKernel::compute_without_mismatch_matrix(
 float64_t CWeightedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
+	bool free_avec, free_bvec;
+	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	float64_t result=0;
 
 	if (max_mismatch==0 && length==0 && block_computation)
@@ -388,6 +389,8 @@ float64_t CWeightedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		else
 			result=compute_without_mismatch_matrix(avec, alen, bvec, blen);
 	}
+	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 
 	return result;
 }
@@ -400,12 +403,14 @@ void CWeightedDegreeStringKernel::add_example_to_tree(
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	int32_t len=0;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0);
 	int32_t *vec=new int32_t[len];
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	if (length == 0 || max_mismatch > 0)
 	{
@@ -443,13 +448,16 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(
 	ASSERT(alphabet);
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
-	int32_t len ;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
+	int32_t len;
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0);
 	int32_t *vec = new int32_t[len] ;
 
 	for (int32_t i=tree_num; i<tree_num+degree && i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+
 
 	ASSERT(tries);
 	if (alpha!=0.0)
@@ -466,12 +474,14 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(int32_t idx, floa
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	int32_t len ;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 
 	int32_t *vec = new int32_t[len] ;
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	for (int32_t i=0; i<len; i++)
 	{
@@ -491,11 +501,13 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	int32_t len=0;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 	int32_t *vec=new int32_t[len];
 
 	for (int32_t i=tree_num; i<len && i<tree_num+degree; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	if (alpha!=0.0)
 	{
@@ -515,12 +527,14 @@ float64_t CWeightedDegreeStringKernel::compute_by_tree(int32_t idx)
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	int32_t len=0;
-	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(char_vec && len>0);
 	int32_t *vec=new int32_t[len];
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	float64_t sum=0;
 	ASSERT(tries);
@@ -538,12 +552,14 @@ void CWeightedDegreeStringKernel::compute_by_tree(
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	int32_t len ;
-	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len, free_vec);
 
 	int32_t *vec = new int32_t[len] ;
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	ASSERT(tries);
 	for (int32_t i=0; i<len; i++)
@@ -878,9 +894,11 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 	for (int32_t i=params->start; i<params->end; i++)
 	{
 		int32_t len=0;
-		char* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len);
+		bool free_vec;
+		char* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len, free_vec);
 		for (int32_t k=j; k<CMath::min(len,j+wd->get_degree()); k++)
 			vec[k]=alpha->remap_to_bin(char_vec[k]);
+		rhs_feat->free_feature_vector(char_vec, vec_idx[i], free_vec);
 
 		ASSERT(tries);
 

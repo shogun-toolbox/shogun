@@ -132,7 +132,8 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		for (i=0; i<num_vectors; i++)
 		{
 			int32_t len;
-			uint16_t* vec=l->get_feature_vector(i, len);
+			bool free_vec;
+			uint16_t* vec=l->get_feature_vector(i, len, free_vec);
 
 			for (int32_t j=0; j<len; j++)
 			{
@@ -143,13 +144,15 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 				mean[idx]   += value/num_vectors ;
 			}
+			l->free_feature_vector(vec, i, free_vec);
 		}
 
 		// compute variance
 		for (i=0; i<num_vectors; i++)
 		{
 			int32_t len;
-			uint16_t* vec=l->get_feature_vector(i, len);
+			bool free_vec;
+			uint16_t* vec=l->get_feature_vector(i, len, free_vec);
 
 			for (int32_t j=0; j<len; j++)
 			{
@@ -168,6 +171,7 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 					}
 				}
 			}
+			l->free_feature_vector(vec, i, free_vec);
 		}
 
 
@@ -189,7 +193,8 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	for (i=0; i<l->get_num_vectors(); i++)
 	{
 		int32_t alen ;
-		uint16_t* avec=l->get_feature_vector(i, alen);
+		bool free_avec;
+		uint16_t* avec=l->get_feature_vector(i, alen, free_avec);
 		float64_t  result=0 ;
 		for (int32_t j=0; j<alen; j++)
 		{
@@ -202,6 +207,8 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 				result-=value*mean[a_idx]/variance[a_idx];
 		}
 		ld_mean_lhs[i]=result ;
+
+		l->free_feature_vector(avec, i, free_avec);
 	}
 
 	if (ld_mean_lhs!=ld_mean_rhs)
@@ -210,9 +217,11 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		//result -= feature*mean[b_idx]/variance[b_idx] ;
 		for (i=0; i<r->get_num_vectors(); i++)
 		{
-			int32_t alen ;
-			uint16_t* avec=r->get_feature_vector(i, alen);
-			float64_t  result=0 ;
+			int32_t alen;
+			bool free_avec;
+			uint16_t* avec=r->get_feature_vector(i, alen, free_avec);
+			float64_t  result=0;
+
 			for (int32_t j=0; j<alen; j++)
 			{
 				int32_t a_idx = compute_index(j, avec[j]) ;
@@ -224,9 +233,11 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 				result -= value*mean[a_idx]/variance[a_idx] ;
 			}
-			ld_mean_rhs[i]=result ;
-		} ;
-	} ;
+
+			ld_mean_rhs[i]=result;
+			l->free_feature_vector(avec, i, free_avec);
+		}
+	}
 
 	//warning hacky
 	//
@@ -302,8 +313,9 @@ void CSalzbergWordStringKernel::cleanup()
 float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen);
+	bool free_avec, free_bvec;
+	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
+	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
@@ -324,6 +336,8 @@ float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	}
 	result += ld_mean_lhs[idx_a] + ld_mean_rhs[idx_b] ;
 
+	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 
 	if (initialized)
 		result /=  (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) ;

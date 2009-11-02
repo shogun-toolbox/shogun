@@ -62,8 +62,11 @@ bool CSortUlongString::apply_to_string_features(CFeatures* f)
 	for (i=0; i<num_vec; i++)
 	{
 		int32_t len=0;
+		bool free_vec;
 		uint64_t* vec=((CStringFeatures<uint64_t>*)f)->
-			get_feature_vector(i, len);
+			get_feature_vector(i, len, free_vec);
+		ASSERT(!free_vec); // won't work with non-in-memory string features
+
 		SG_DEBUG( "sorting string of length %i\n", len);
 
 		//CMath::qsort(vec, len);

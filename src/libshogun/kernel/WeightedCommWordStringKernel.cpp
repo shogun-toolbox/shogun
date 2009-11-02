@@ -91,12 +91,13 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 	int32_t idx_a, int32_t idx_b, bool do_sort)
 {
 	int32_t alen, blen;
+	bool free_avec, free_bvec;
 
 	CStringFeatures<uint16_t>* l = (CStringFeatures<uint16_t>*) lhs;
 	CStringFeatures<uint16_t>* r = (CStringFeatures<uint16_t>*) rhs;
 
-	uint16_t* av=l->get_feature_vector(idx_a, alen);
-	uint16_t* bv=r->get_feature_vector(idx_b, blen);
+	uint16_t* av=l->get_feature_vector(idx_a, alen, free_avec);
+	uint16_t* bv=r->get_feature_vector(idx_b, blen, free_bvec);
 
 	uint16_t* avec=av;
 	uint16_t* bvec=bv;
@@ -175,6 +176,9 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 		delete[] bvec;
 	}
 
+	l->free_feature_vector(av, idx_a, free_avec);
+	r->free_feature_vector(bv, idx_b, free_bvec);
+
 	return result;
 }
 
@@ -182,8 +186,9 @@ void CWeightedCommWordStringKernel::add_to_normal(
 	int32_t vec_idx, float64_t weight)
 {
 	int32_t len=-1;
+	bool free_vec;
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) lhs;
-	uint16_t* vec=s->get_feature_vector(vec_idx, len);
+	uint16_t* vec=s->get_feature_vector(vec_idx, len, free_vec);
 
 	if (len>0)
 	{
@@ -203,6 +208,8 @@ void CWeightedCommWordStringKernel::add_to_normal(
 
 		set_is_initialized(true);
 	}
+
+	s->free_feature_vector(vec, vec_idx, free_vec);
 }
 
 void CWeightedCommWordStringKernel::merge_normal()
@@ -245,9 +252,10 @@ float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 	ASSERT(use_sign==false);
 
 	float64_t result=0;
+	bool free_vec;
 	int32_t len=-1;
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
-	uint16_t* vec=s->get_feature_vector(i, len);
+	uint16_t* vec=s->get_feature_vector(i, len, free_vec);
 
 	if (vec && len>0)
 	{
@@ -267,6 +275,7 @@ float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 
 		result=normalizer->normalize_rhs(result, i);
 	}
+	s->free_feature_vector(vec, i, free_vec);
 	return result;
 }
 

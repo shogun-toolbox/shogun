@@ -90,10 +90,13 @@ void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 		memset(k_spectrum[i], 0, sizeof(float64_t)*spec_size);
 
 		int32_t len=0;
-		uint16_t* fv=str->get_feature_vector(i, len);
+		bool free_fv;
+		uint16_t* fv=str->get_feature_vector(i, len, free_fv);
 
 		for (int32_t j=0; j<len; j++)
 			k_spectrum[i][fv[j]]++;
+
+		str->free_feature_vector(fv, i, free_fv);
 
 		if (use_normalization)
 		{

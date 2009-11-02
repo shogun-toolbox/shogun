@@ -604,9 +604,10 @@ float64_t CWeightedDegreePositionStringKernel::compute(
 	int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
+	bool free_avec, free_bvec;
 
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
+	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 	ASSERT(shift_len==alen);
@@ -635,6 +636,9 @@ float64_t CWeightedDegreePositionStringKernel::compute(
 	else
 		result = compute_without_mismatch_matrix(avec, alen, bvec, blen) ;
 
+	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+
 	return result ;
 }
 
@@ -648,12 +652,14 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	int32_t len=0;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0);
 	int32_t *vec = new int32_t[len] ;
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	if (opt_type==FASTBUTMEMHUNGRY)
 	{
@@ -700,7 +706,8 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	int32_t len=0;
-	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0);
 	int32_t *vec=new int32_t[len];
 	int32_t max_s=-1;
@@ -715,8 +722,12 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(
 	else {
 		SG_ERROR( "unknown optimization type\n");
 	}
-	for (int32_t i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+degree+max_shift); i++)
+	for (int32_t i=CMath::max(0,tree_num-max_shift);
+			i<CMath::min(len,tree_num+degree+max_shift); i++)
+	{
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+	} 
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	for (int32_t s=max_s; s>=0; s--)
 	{
@@ -751,12 +762,15 @@ float64_t CWeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 
 	float64_t sum=0;
 	int32_t len=0;
-	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0);
 	int32_t *vec=new int32_t[len];
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	for (int32_t i=0; i<len; i++)
 		sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0)) ;
@@ -787,12 +801,15 @@ void CWeightedDegreePositionStringKernel::compute_by_tree(
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
 
 	int32_t len=0;
-	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len);
+	bool free_vec;
+	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0);
 	int32_t *vec=new int32_t[len];
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
+
+	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	for (int32_t i=0; i<len; i++)
 	{
@@ -1248,9 +1265,11 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 		CStringFeatures<char>* rhs_feat=((CStringFeatures<char>*) wd->get_rhs());
 		CAlphabet* alpha=wd->alphabet;
 
-		char* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len);
+		bool free_vec;
+		char* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len, free_vec);
 		for (int32_t k=CMath::max(0,j-max_shift); k<CMath::min(len,j+wd->get_degree()+max_shift); k++)
 			vec[k]=alpha->remap_to_bin(char_vec[k]);
+		rhs_feat->free_feature_vector(char_vec, vec_idx[i], free_vec);
 
 		SG_UNREF(rhs_feat);
 

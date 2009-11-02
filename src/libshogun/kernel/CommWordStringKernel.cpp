@@ -84,7 +84,8 @@ float64_t CCommWordStringKernel::compute_diag(int32_t idx_a)
 	CStringFeatures<uint16_t>* l = (CStringFeatures<uint16_t>*) lhs;
 	CStringFeatures<uint16_t>* r = (CStringFeatures<uint16_t>*) rhs;
 
-	uint16_t* av=l->get_feature_vector(idx_a, alen);
+	bool free_av;
+	uint16_t* av=l->get_feature_vector(idx_a, alen, free_av);
 
 	float64_t result=0.0 ;
 	ASSERT(l==r);
@@ -116,6 +117,7 @@ float64_t CCommWordStringKernel::compute_diag(int32_t idx_a)
 				result+=dic[i]*dic[i];
 		}
 	}
+	l->free_feature_vector(av, idx_a, free_av);
 
 	return result;
 }
@@ -124,11 +126,13 @@ float64_t CCommWordStringKernel::compute_helper(
 	int32_t idx_a, int32_t idx_b, bool do_sort)
 {
 	int32_t alen, blen;
+	bool free_av, free_bv;
+
 	CStringFeatures<uint16_t>* l = (CStringFeatures<uint16_t>*) lhs;
 	CStringFeatures<uint16_t>* r = (CStringFeatures<uint16_t>*) rhs;
 
-	uint16_t* av=l->get_feature_vector(idx_a, alen);
-	uint16_t* bv=r->get_feature_vector(idx_b, blen);
+	uint16_t* av=l->get_feature_vector(idx_a, alen, free_av);
+	uint16_t* bv=r->get_feature_vector(idx_b, blen, free_bv);
 
 	uint16_t* avec=av;
 	uint16_t* bvec=bv;
@@ -224,14 +228,18 @@ float64_t CCommWordStringKernel::compute_helper(
 		delete[] bvec;
 	}
 
+	l->free_feature_vector(av, idx_a, free_av);
+	r->free_feature_vector(bv, idx_b, free_bv);
+
 	return result;
 }
 
 void CCommWordStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 {
 	int32_t len=-1;
+	bool free_vec;
 	uint16_t* vec=((CStringFeatures<uint16_t>*) lhs)->
-		get_feature_vector(vec_idx, len);
+		get_feature_vector(vec_idx, len, free_vec);
 
 	if (len>0)
 	{
@@ -267,6 +275,8 @@ void CCommWordStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 		}
 		set_is_initialized(true);
 	}
+
+	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(vec, vec_idx, free_vec);
 }
 
 void CCommWordStringKernel::clear_normal()
@@ -319,8 +329,9 @@ float64_t CCommWordStringKernel::compute_optimized(int32_t i)
 
 	float64_t result = 0;
 	int32_t len = -1;
+	bool free_vec;
 	uint16_t* vec=((CStringFeatures<uint16_t>*) rhs)->
-		get_feature_vector(i, len);
+		get_feature_vector(i, len, free_vec);
 
 	int32_t j, last_j=0;
 	if (vec && len>0)
@@ -353,6 +364,7 @@ float64_t CCommWordStringKernel::compute_optimized(int32_t i)
 
 		result=normalizer->normalize_rhs(result, i);
 	}
+	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(vec, i, free_vec);
 	return result;
 }
 

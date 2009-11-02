@@ -80,8 +80,9 @@ void CCommUlongStringKernel::cleanup()
 float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
-	uint64_t* avec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(idx_a, alen);
-	uint64_t* bvec=((CStringFeatures<uint64_t>*) rhs)->get_feature_vector(idx_b, blen);
+	bool free_avec, free_bvec;
+	uint64_t* avec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
+	uint64_t* bvec=((CStringFeatures<uint64_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	float64_t result=0;
 
@@ -135,6 +136,8 @@ float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 				right_idx++;
 		}
 	}
+	((CStringFeatures<uint64_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<uint64_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 
 	return result;
 }
@@ -146,7 +149,8 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 	int32_t k=0;
 	int32_t last_j=0;
 	int32_t len=-1;
-	uint64_t* vec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(vec_idx, len);
+	bool free_vec;
+	uint64_t* vec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(vec_idx, len, free_vec);
 
 	if (vec && len>0)
 	{
@@ -201,6 +205,7 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 		dictionary.set_array(dic, t, len+dictionary.get_num_elements());
 		dictionary_weights.set_array(dic_weights, t, len+dictionary.get_num_elements());
 	}
+	((CStringFeatures<uint64_t>*) lhs)->free_feature_vector(vec, vec_idx, free_vec);
 
 	set_is_initialized(true);
 }
@@ -264,8 +269,9 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 
 
 	int32_t alen = -1;
+	bool free_avec;
 	uint64_t* avec=((CStringFeatures<uint64_t>*) rhs)->
-		get_feature_vector(i, alen);
+		get_feature_vector(i, alen, free_avec);
 
 	if (avec && alen>0)
 	{
@@ -316,6 +322,8 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				result += dictionary_weights[idx+old_idx]*(alen-last_j);
 		}
 	}
+
+	((CStringFeatures<uint64_t>*) rhs)->free_feature_vector(avec, i, free_avec);
 
 	return normalizer->normalize_rhs(result, i);
 }

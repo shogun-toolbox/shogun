@@ -54,28 +54,32 @@ void CLinearStringKernel::clear_normal()
 void CLinearStringKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	int32_t vlen;
-	char* vec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx, vlen);
+	bool vfree;
+	char* vec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx, vlen, vfree);
 
 	for (int32_t i=0; i<vlen; i++)
 		normal[i] += weight*normalizer->normalize_lhs(vec[i], idx);
+
+	((CStringFeatures<char>*) lhs)->free_feature_vector(vec, idx, vfree);
 }
 
 float64_t CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
+	bool free_avec, free_bvec;
 
-	char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen);
-	char *bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
-
+	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	ASSERT(alen==blen);
-	return CMath::dot(avec, bvec, alen);
+	float64_t result=CMath::dot(avec, bvec, alen);
+	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	return result;
 }
 
 bool CLinearStringKernel::init_optimization(
 	int32_t num_suppvec, int32_t *sv_idx, float64_t *alphas)
 {
-	int32_t i, alen;
-
 	int32_t num_feat = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
 	ASSERT(num_feat);
 
@@ -83,9 +87,11 @@ bool CLinearStringKernel::init_optimization(
 	ASSERT(normal);
 	clear_normal();
 
-	for (i = 0; i<num_suppvec; i++)
+	for (int32_t i = 0; i<num_suppvec; i++)
 	{
-		char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(sv_idx[i], alen);
+		int32_t alen;
+		bool free_avec;
+		char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(sv_idx[i], alen, free_avec);
 		ASSERT(avec);
 
 		for (int32_t j = 0; j<num_feat; j++)
@@ -93,6 +99,7 @@ bool CLinearStringKernel::init_optimization(
 			normal[j] += alphas[i]*
 				normalizer->normalize_lhs(((float64_t) avec[j]), sv_idx[i]);
 		}
+		((CStringFeatures<char>*) lhs)->free_feature_vector(avec, sv_idx[i], free_avec);
 	}
 	set_is_initialized(true);
 	return true;
@@ -109,7 +116,9 @@ bool CLinearStringKernel::delete_optimization()
 float64_t CLinearStringKernel::compute_optimized(int32_t idx_b)
 {
 	int32_t blen;
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen);
-
-	return normalizer->normalize_rhs(CMath::dot(normal, bvec, blen), idx_b);
+	bool free_bvec;
+	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	float64_t result=normalizer->normalize_rhs(CMath::dot(normal, bvec, blen), idx_b);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	return result;
 }

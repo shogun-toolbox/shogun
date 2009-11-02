@@ -57,8 +57,10 @@ CWDFeatures::~CWDFeatures()
 float64_t CWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 {
 	int32_t len1, len2;
-	uint8_t* vec1=strings->get_feature_vector(vec_idx1, len1);
-	uint8_t* vec2=strings->get_feature_vector(vec_idx2, len2);
+	bool free_vec1, free_vec2;
+
+	uint8_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
+	uint8_t* vec2=strings->get_feature_vector(vec_idx2, len2, free_vec2);
 
 	ASSERT(len1==len2);
 
@@ -73,6 +75,8 @@ float64_t CWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 			sum += wd_weights[j]*wd_weights[j];
 		}
 	}
+	strings->free_feature_vector(vec1, vec_idx1, free_vec1);
+	strings->free_feature_vector(vec2, vec_idx2, free_vec2);
 	return sum;
 }
 
@@ -84,7 +88,8 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 	float64_t sum=0;
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
-	uint8_t* vec = strings->get_feature_vector(vec_idx1, len);
+	bool free_vec1;
+	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 	int32_t* val=new int32_t[len];
 	CMath::fill_vector(val, len, 0);
 
@@ -108,6 +113,8 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 		asizem1*=alphabet_size;
 	}
 	delete[] val;
+	strings->free_feature_vector(vec, vec_idx1, free_vec1);
+
 	return sum/normalization_const;
 }
 
@@ -118,7 +125,8 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
-	uint8_t* vec = strings->get_feature_vector(vec_idx1, len);
+	bool free_vec1;
+	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 	int32_t* val=new int32_t[len];
 	CMath::fill_vector(val, len, 0);
 
@@ -145,6 +153,8 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 		asizem1*=alphabet_size;
 	}
 	delete[] val;
+
+	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 
 void CWDFeatures::set_wd_weights()
