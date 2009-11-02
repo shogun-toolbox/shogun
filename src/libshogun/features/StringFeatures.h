@@ -12,12 +12,13 @@
 #ifndef _CSTRINGFEATURES__H__
 #define _CSTRINGFEATURES__H__
 
+#include "lib/common.h"
+#include "lib/io.h"
+#include "lib/Cache.h"
 #include "preproc/PreProc.h"
 #include "preproc/StringPreProc.h"
 #include "features/Features.h"
 #include "features/Alphabet.h"
-#include "lib/common.h"
-#include "lib/io.h"
 #include "lib/DynamicArray.h"
 #include "lib/File.h"
 #include "lib/MemoryMappedFile.h"
@@ -103,7 +104,7 @@ template <class T> class T_STRING
 
 /** @brief Template class StringFeatures implements a list of strings.
  *
- * As this class is template the underlying storage type is quite arbitrary and
+ * As this class is a template the underlying storage type is quite arbitrary and
  * not limited to character strings, but could also be sequences of floating
  * point numbers etc. Strings differ from matrices (cf. CSimpleFeatures) in a
  * way that the dimensionality of the feature vectors (i.e. the strings) is not
@@ -112,7 +113,12 @@ template <class T> class T_STRING
  * Most string kernels require StringFeatures but a number of them actually
  * requires strings to have same length.
  *
- * Note: StringFeatures do not currently support PreProcs
+ * When preprocessors are attached to string features they may shorten the
+ * string, but are not allowed to return strings longer than max_string_length,
+ * as some algorithms depend on this.
+ *
+ * Also note that string features cannot currently be computed on-the-fly.
+ *
  */
 template <class ST> class CStringFeatures : public CFeatures
 {
@@ -120,9 +126,10 @@ template <class ST> class CStringFeatures : public CFeatures
 		/** default constructor
 		 *
 		 */
-        CStringFeatures() : CFeatures(0), alphabet(NULL), num_vectors(0), features(NULL),
-        single_string(NULL),length_of_single_string(0),
-        max_string_length(0), order(0), symbol_mask_table(NULL)
+        CStringFeatures() : CFeatures(0), alphabet(NULL), num_vectors(0),
+		features(NULL), single_string(NULL),length_of_single_string(0),
+        max_string_length(0), order(0), symbol_mask_table(NULL),
+		preprocess_on_get(false), feature_cache(NULL)
         {
         }
 
@@ -133,7 +140,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		CStringFeatures(EAlphabet alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
-			max_string_length(0), order(0), symbol_mask_table(NULL)
+			max_string_length(0), order(0), symbol_mask_table(NULL),
+			preprocess_on_get(false), feature_cache(NULL)
 		{
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
@@ -152,7 +160,8 @@ template <class ST> class CStringFeatures : public CFeatures
 				int32_t p_max_string_length, EAlphabet alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
-			max_string_length(0), order(0), symbol_mask_table(NULL)
+			max_string_length(0), order(0), symbol_mask_table(NULL),
+			preprocess_on_get(false), feature_cache(NULL)
 		{
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
@@ -168,7 +177,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		CStringFeatures(CAlphabet* alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
-			max_string_length(0), order(0), symbol_mask_table(NULL)
+			max_string_length(0), order(0), symbol_mask_table(NULL),
+			preprocess_on_get(false), feature_cache(NULL)
 		{
 			ASSERT(alpha);
 			SG_REF(alpha);
@@ -185,7 +195,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_string_length(orig.max_string_length),
 			num_symbols(orig.num_symbols),
 			original_num_symbols(orig.original_num_symbols),
-			order(orig.order)
+			order(orig.order), preprocess_on_get(false),
+			feature_cache(NULL)
 		{
 			ASSERT(orig.single_string == NULL); //not implemented
 
@@ -219,10 +230,9 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param alpha alphabet (type) to use for string features
 		 */
 		CStringFeatures(char* fname, EAlphabet alpha=DNA)
-		: CFeatures(fname), num_vectors(0),
-			features(NULL), single_string(NULL),
-			length_of_single_string(0), max_string_length(0),
-			order(0), symbol_mask_table(NULL)
+		: CFeatures(fname), num_vectors(0), features(NULL), single_string(NULL),
+			length_of_single_string(0), max_string_length(0), order(0),
+			symbol_mask_table(NULL), preprocess_on_get(false), feature_cache(NULL)
 		{
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
@@ -357,14 +367,65 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * caller via free_feature_vector
 		 * @return feature vector for sample num
 		 */
-		virtual ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree)
+		ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree)
 		{
 			ASSERT(features);
 			ASSERT(num<num_vectors);
 
-			dofree=false;
-			len=features[num].length;
-			return features[num].string;
+			if (!preprocess_on_get)
+			{
+
+				dofree=false;
+				len=features[num].length;
+				return features[num].string;
+			}
+			else
+			{
+				SG_DEBUG( "computing feature vector!\n") ;
+
+				ST* feat=NULL;
+				dofree=false;
+
+				if (feature_cache)
+				{
+					feat=feature_cache->lock_entry(num);
+
+					if (feat)
+						return feat;
+					else
+					{
+						feat=feature_cache->set_entry(num);
+					}
+				}
+
+				if (!feat)
+					dofree=true;
+				feat=compute_feature_vector(num, len, feat);
+
+				if (get_num_preproc())
+				{
+					int32_t tmp_len=len;
+					ST* tmp_feat_before = feat;
+					ST* tmp_feat_after = NULL;
+
+					for (int32_t i=0; i<get_num_preproc(); i++)
+					{
+						CStringPreProc<ST>* p = (CStringPreProc<ST>*) get_preproc(i);
+						tmp_feat_after=p->apply_to_string(tmp_feat_before, tmp_len);
+						SG_UNREF(p);
+
+						if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
+							delete[] tmp_feat_before;
+						tmp_feat_before=tmp_feat_after;
+					}
+
+					memcpy(feat, tmp_feat_after, sizeof(ST)*tmp_len);
+					delete[] tmp_feat_after;
+
+					len=tmp_len;
+				}
+				return feat ;
+			}
 		}
 
 		/** free feature vector
@@ -375,6 +436,9 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		void free_feature_vector(ST* feat_vec, int32_t num, bool dofree)
 		{
+			if (feature_cache)
+				feature_cache->unlock_entry(num);
+
 			if (dofree)
 				delete[] feat_vec ;
 		}
@@ -1464,6 +1528,28 @@ template <class ST> class CStringFeatures : public CFeatures
 			features[num].string=string ;
 		}
 
+		/** compute feature vector for sample num
+		 * if target is set the vector is written to target
+		 * len is returned by reference
+		 *
+		 * default implementation returns
+		 *
+		 * @param num num
+		 * @param len len
+		 * @param target
+		 * @return feature vector
+		 */
+		virtual ST* compute_feature_vector(int32_t num, int32_t& len, ST* target=NULL)
+		{
+			ASSERT(features && num<num_vectors);
+
+			len=features[num].length;
+			if (len && !target) 
+				target=new ST[len];
+			memcpy(target, features[num].string, len*sizeof(ST));
+			return target;
+		}
+
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 
@@ -1579,6 +1665,12 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/// order used in higher order mapping
 		ST* symbol_mask_table;
+
+		/// preprocess on-the-fly?
+		bool preprocess_on_get;
+
+		/** feature cache */
+		CCache<ST>* feature_cache;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

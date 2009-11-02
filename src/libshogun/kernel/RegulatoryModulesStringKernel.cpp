@@ -80,7 +80,7 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_avec);
+	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	int32_t alen_pos, blen_pos;
 	bool afree_pos, bfree_pos;
@@ -114,7 +114,7 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result=exp(-result_rbf/width)+result_wds;
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_avec);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	((CSimpleFeatures<uint16_t>*) lhs)->free_feature_vector(positions_a, idx_a, afree_pos);
 	((CSimpleFeatures<uint16_t>*) rhs)->free_feature_vector(positions_b, idx_b, bfree_pos);
 
