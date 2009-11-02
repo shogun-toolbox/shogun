@@ -57,6 +57,8 @@ _cplex=auto
 _lpsolve=no
 _glpk=auto
 _lzo=auto
+_gzip=auto
+_bzip2=auto
 _doxygen=auto
 _shortrealkernelcache=yes
 _logcache=no
@@ -729,6 +731,8 @@ Optional features:
   --disable-lpsolve             disable code using lpsolve  [auto]
   --disable-glpk                disable code using GLPK [auto]
   --disable-lzo                 disable code using LZO compression [auto]
+  --disable-gzip                disable code using GZIP compression [auto]
+  --disable-bzip2               disable code using BZIP2 compression [auto]
   --disable-bigstates           disable big (16bit) state [enabled]
   --disable-hmmcache            disable HMM cache [enabled]
   --disable-svm-light           disable building of SVM-light and thus result in pure GPLv3 code [enabled]
@@ -904,6 +908,10 @@ for ac_option do
   --enable-glpk)		_glpk=yes;;
   --disable-lzo)		_lzo=no;;
   --enable-lzo)			_lzo=yes;;
+  --disable-gzip)		_gzip=no;;
+  --enable-gzip)		_gzip=yes;;
+  --disable-bzip2)		_bzip2=no;;
+  --enable-bzip2)		_bzip2=yes;;
   --disable-doxygen)	_doxygen=no	;;
   --enable-doxygen)		_doxygen=yes	;;
   --disable-bigstates)	_bigstates=no	;;
@@ -2567,7 +2575,7 @@ int main(int argc, char** argv)
     return (lzo_init() != LZO_E_OK) ? 1 : 0;
 }
 EOF
-				echocheck "LZO"
+				echocheck "lzo"
 				LZOLINKFLAGS="-llzo2"
 				if cc_check $LZOLINKFLAGS
 				then
@@ -2579,6 +2587,53 @@ EOF
 					echores "no"
 				fi
 			fi
+
+			if test "$_gzip" = yes || test "$_gzip" = auto
+			then
+cat >$TMPC<<EOF
+#include <zlib.h>
+int main(int argc, char** argv)
+{
+	uLongf l=argc;
+	return (compress2((Bytef*) argv, &l, (Bytef*) argv, l, argc) != Z_OK);
+}
+EOF
+				echocheck "gzip"
+				GZIPLINKFLAGS="-lz"
+				if cc_check $GZIPLINKFLAGS
+				then
+					echores "yes"
+					USE_GZIP='#define USE_GZIP 1'
+					LINKFLAGS="$LINKFLAGS $GZIPLINKFLAGS"
+					DEFINES="$DEFINES -DUSE_GZIP"
+				else
+					echores "no"
+				fi
+			fi
+
+			if test "$_bzip2" = yes || test "$_bzip2" = auto
+			then
+cat >$TMPC<<EOF
+#include <bzlib.h>
+int main(int argc, char** argv)
+{
+	bz_stream* strm=NULL;
+	return BZ2_bzCompress(strm, argc);
+}
+EOF
+				echocheck "bzip2"
+				BZIP2LINKFLAGS="-lbz2"
+				if cc_check $BZIP2LINKFLAGS
+				then
+					echores "yes"
+					USE_BZIP2='#define USE_BZIP2 1'
+					LINKFLAGS="$LINKFLAGS $BZIP2LINKFLAGS"
+					DEFINES="$DEFINES -DUSE_BZIP2"
+				else
+					echores "no"
+				fi
+			fi
+
 
 			if test "$_lpsolve" = yes || test "$_lpsolve" = auto
 			then
@@ -3721,6 +3776,8 @@ $USE_CPLEX
 $USE_LPSOLVE
 $USE_GLPK
 $USE_LZO
+$USE_GZIP
+$USE_BZIP2
 $TRACE_MEMORY_ALLOCS
 $USE_REFERENCE_COUNTING
 #define OCTAVE_APIVERSION $OCTAVE_APIVERSION
