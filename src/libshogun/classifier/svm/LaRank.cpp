@@ -30,13 +30,16 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 #include "classifier/svm/LaRank.h"
+#include "kernel/Kernel.h"
 
 using namespace shogun;
 // Initializing an output class (basically creating a kernel cache for it)
-void LaRankOutput::initialize (larank_kernel_t kfunc, long cache)
+void LaRankOutput::initialize (CKernel* kfunc, long cache)
 {
-	kernel = larank_kcache_create (kfunc, NULL);
+	kernel = larank_kcache_create (kfunc);
 	larank_kcache_set_maximum_size (kernel, cache * 1024 * 1024);
+	beta = new float[1];
+	g = new float[1];
 	l = 0;
 }
 
@@ -72,11 +75,13 @@ void LaRankOutput::update (int x_id, double lambda, double gp)
 	int *r2i = larank_kcache_r2i (kernel, l);
 	int xr = l + 1;
 	for (int r = 0; r < l; r++)
+	{
 		if (r2i[r] == x_id)
 		{
 			xr = r;
 			break;
 		}
+	}
 
 	// updates the cache order and the beta coefficient
 	if (xr < l)
@@ -85,9 +90,12 @@ void LaRankOutput::update (int x_id, double lambda, double gp)
 	}
 	else
 	{
+		SG_SPRINT("l=%d g=%p\n", l, g);
 		g[l]=gp;
 		beta[l]=lambda;
 		larank_kcache_swap_ri (kernel, l, x_id);
+		CMath::resize(g, l, l+1);
+		CMath::resize(beta, l, l+1);
 		l++;
 	}
 
@@ -131,13 +139,9 @@ int LaRankOutput::cleanup ()
 			g[r]=g[r + 1];
 		}
 	}
+	CMath::resize(beta, l+1, new_l+1);
+	CMath::resize(g, l+1, new_l+1);
 	l = new_l;
-	float* beta_resized=CMath::clone_vector(beta, l);
-	delete[] beta;
-	beta=beta_resized;
-
-	float* g_resized=CMath::clone_vector(g, l);
-	g=g_resized;
 	return count;
 }
 
@@ -193,11 +197,81 @@ int LaRankOutput::getSV (float* &sv) const
 	return l;
 }
 
-CLaRank::CLaRank (): nb_seen_examples (0), nb_removed (0),
+CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST), 
+	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0)
 {
 }
+
+CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
+	CMultiClassSVM(ONE_VS_REST, C, k, lab), 
+	nb_seen_examples (0), nb_removed (0),
+	n_pro (0), n_rep (0), n_opt (0),
+	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0)
+{
+}
+
+bool CLaRank::train(CFeatures* data)
+{
+	int step = 1;
+	int mode = 1;
+	tau = 0.0001;
+
+	ASSERT(kernel);
+	ASSERT(labels && labels->get_num_labels());
+
+	if (data)
+	{
+		if (data->get_num_vectors() != labels->get_num_labels())
+		{
+			SG_ERROR("Numbert of vectors (%d) does not match number of labels (%d)\n",
+					data->get_num_vectors(), labels->get_num_labels());
+		}
+		kernel->init(data, data);
+	}
+
+	ASSERT(kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs());
+
+	nb_train=labels->get_num_labels();
+	cache = kernel->get_cache_size();
+
+	int n_it = 1;
+	double initime = getTime (), gap = DBL_MAX;
+
+	std::cout << "\n--> Training on " << nb_train << "ex" << std::endl;
+	while (gap > C1)      // stopping criteria
+	{
+		double tr_err = 0;
+		int ind = step;
+		for (int i = 0; i < nb_train; i++)
+		{
+			if (add (i, labels->get_label(i)) != labels->get_label(i))   // call the add function
+				tr_err++;
+
+			if (i / ind)
+			{
+				std::cout << "Done: " << (int) (((double) i) / nb_train * 100) << "%, Train error (online): " << (tr_err / ((double) i + 1)) * 100 << "%" << std::endl;
+				printStuff (initime, false);
+				ind += step;
+			}
+		}
+
+		std::cout << "End of iteration " << n_it++ << std::endl;
+		std::cout << "Train error (online): " << (tr_err / nb_train) * 100 << "%" << std::endl;
+		gap = computeGap ();
+		std::cout << "Duality gap: " << gap << std::endl;
+		printStuff (initime, true);
+		if (mode == 0)        // skip stopping criteria if online mode
+			gap = 0;
+	}
+	std::cout << "---- End of training ----" << std::endl;
+
+	return true;
+}
+
+
+
 
 
 // LEARNING FUNCTION: add new patterns and run optimization steps selected with adaptative schedule
@@ -209,7 +283,7 @@ int CLaRank::add (int x_id, int yi)
 	{
 		outputs.insert (std::make_pair (yi, LaRankOutput ()));
 		LaRankOutput *cur = getOutput (yi);
-		cur->initialize (kfunc, cache);
+		cur->initialize (kernel, cache);
 		if (outputs.size () == 1)
 			y0 = outputs.begin ()->first;
 		// link the cache of this new output to a buddy 
@@ -329,7 +403,7 @@ double CLaRank::computeGap ()
 		}
 		sum_sl += CMath::max (0.0, gi - gmin);
 	}
-	return CMath::max (0.0, computeW2 () + C * sum_sl - sum_bi);
+	return CMath::max (0.0, computeW2 () + C1 * sum_sl - sum_bi);
 }
 
 // Display stuffs along learning
@@ -432,12 +506,19 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 			else
 				outputscores.push_back (outputgradient_t (it->first, -g));
 		}
+	SG_PRINT("sort outputgradients start\n");
+
+	//for (outputhash_t::iterator i=outputgradients.begin (); i<outputgradients.end (); i++)
+	//	SG_SPRINT("outputgradients[%d]=%f\n", i, outputgradients[i]);
 	std::sort (outputgradients.begin (), outputgradients.end ());
+	SG_PRINT("sort outputgradients end\n");
 
 	/*
 	 ** determine the prediction
 	 */
+	SG_PRINT("sort outputscores start\n");
 	std::sort (outputscores.begin (), outputscores.end ());
+	SG_PRINT("sort outputscores end\n");
 	pro_ret.ypred = outputscores[0].output;
 
 	/*
@@ -452,7 +533,7 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 		LaRankOutput *output = getOutput (current.output);
 		bool support = ptype == processOptimize || output->isSupportVector (pattern.x_id);
 		bool goodclass = current.output == pattern.y;
-		if ((!support && goodclass) || (support && output->getBeta (pattern.x_id) < (goodclass ? C : 0)))
+		if ((!support && goodclass) || (support && output->getBeta (pattern.x_id) < (goodclass ? C1 : 0)))
 		{
 			ygp = current;
 			outp = output;
@@ -501,12 +582,12 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 	{
 		double beta = outp->getBeta (pattern.x_id);
 		if (ygp.output == pattern.y)
-			lambda = CMath::min (lambda, C - beta);
+			lambda = CMath::min (lambda, C1 - beta);
 		else
 			lambda = CMath::min (lambda, fabs (beta));
 	}
 	else
-		lambda = CMath::min (lambda, C);
+		lambda = CMath::min (lambda, C1);
 
 	/*
 	 ** update the solution
@@ -605,10 +686,9 @@ namespace shogun
 {
 struct larank_kcache_s
 {
-  larank_kernel_t func;
+  CKernel* func;
   larank_kcache_t *prevbuddy;
   larank_kcache_t *nextbuddy;
-  void *closure;
   long maxsize;
   long cursize;
   int l;
@@ -679,7 +759,7 @@ xminsize (larank_kcache_t * self, int n)
 }
 
 larank_kcache_t *
-larank_kcache_create (larank_kernel_t kernelfunc, void *closure)
+larank_kcache_create (CKernel* kernelfunc)
 {
   larank_kcache_t *self;
   self = (larank_kcache_t *) xmalloc (sizeof (larank_kcache_t));
@@ -689,7 +769,6 @@ larank_kcache_create (larank_kernel_t kernelfunc, void *closure)
   self->func = kernelfunc;
   self->prevbuddy = self;
   self->nextbuddy = self;
-  self->closure = closure;
   self->cursize = sizeof (larank_kcache_t);
   self->maxsize = 256 * 1024 * 1024;
   self->qprev = (int *) xmalloc (sizeof (int));
@@ -905,7 +984,7 @@ xquery (larank_kcache_t * self, int i, int j)
     }
   while (cache != self);
   /* compute */
-  return (*self->func) (i, j, self->closure);
+  return self->func->kernel(i, j);
 }
 
 
@@ -954,7 +1033,7 @@ larank_kcache_query_row (larank_kcache_t * self, int i, int len)
 	{
 	  if (olen < 0)
 	    {
-	      self->rdiag[i] = (*self->func) (i, i, self->closure);
+	      self->rdiag[i] = self->func->kernel(i, i);
 	      olen = self->rsize[i] = 0;
 	    }
 	  xextend (self, i, len);

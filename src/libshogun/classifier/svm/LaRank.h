@@ -34,7 +34,7 @@
 # define std_hash_set STDEXT_NAMESPACE::hash_set
 
 #include "lib/io.h"
-#include "classifier/svm/SVM.h"
+#include "classifier/svm/MultiClassSVM.h"
 
 /***********************************************************************
  * 
@@ -68,19 +68,10 @@
 #ifndef KCACHE_H
 #define KCACHE_H
 
+#include "kernel/Kernel.h"
+
 namespace shogun
 {
-/* ------------------------------------- */
-/* GENERIC KERNEL TYPE */
-
-
-/* --- larank_kernel_t
-   This is the type for user defined symmetric kernel functions.
-   It returns the Gram matrix element at position <i>,<j>. 
-   Argument <closure> represents arbitrary additional information.
-*/
-  typedef double (*larank_kernel_t) (int i, int j, void *closure);
-
 /* ------------------------------------- */
 /* CACHE FOR KERNEL VALUES */
 
@@ -93,10 +84,8 @@ namespace shogun
 /* --- larank_kcache_create
    Returns a cache object for kernel <kernelfun>.
    The cache handles a Gram matrix of size <n>x<n> at most.
-   Argument <closure> is passed to the kernel function <kernelfun>.
  */
-  larank_kcache_t *larank_kcache_create (larank_kernel_t kernelfunc,
-					 void *closure);
+  larank_kcache_t *larank_kcache_create (CKernel* kernelfunc);
 
 /* --- larank_kcache_destroy
    Deallocates a kernel cache object.
@@ -187,11 +176,6 @@ namespace shogun
 
 namespace shogun
 {
-#ifndef larank_KERNEL_T_DEFINED
-#define larank_KERNEL_T_DEFINED
-  typedef double (*larank_kernel_t) (int i, int j, void *closure);
-#endif
-
 	/*
 	 **	LARANKPATTERN: to keep track of the support patterns
 	 */
@@ -319,38 +303,6 @@ namespace shogun
 
 
 	/*
-	 ** MACHINE: the main thing, which is trained.
-	 */
-	class Machine : public CSVM
-	{
-		public:
-			virtual ~ Machine () {};
-			virtual void destroy () = 0;
-
-			// MAIN functions for straining and testing      
-			virtual int add (int x_id, int classnumber) = 0;
-			virtual int predict (int x_id) = 0;
-
-			// Information functions
-			virtual void printStuff (double initime, bool print_dual) = 0;
-			virtual double computeGap () = 0;
-
-			std_hash_set < int >classes;
-
-			unsigned class_count () const
-			{
-				return classes.size ();
-			}
-
-			double C;
-			double tau;
-			int nb_train;
-			long cache;
-			larank_kernel_t kfunc;
-
-	};
-
-	/*
 	 ** OUTPUT: one per class of the raining set, keep tracks of support vectors and their beta coefficients
 	 */
 	class LaRankOutput
@@ -360,7 +312,7 @@ namespace shogun
 			~LaRankOutput () {}
 
 			// Initializing an output class (basically creating a kernel cache for it)
-			void initialize (larank_kernel_t kfunc, long cache);
+			void initialize (CKernel* kfunc, long cache);
 
 			// Destroying an output class (basically destroying the kernel cache)
 			void destroy ();
@@ -430,11 +382,26 @@ namespace shogun
 			int l;			// Number of support vectors 
 	};
 
-	class CLaRank:public Machine
+	/*
+	 ** MACHINE: the main thing, which is trained.
+	 */
+	class CLaRank:  public CMultiClassSVM
 	{
 		public:
 			CLaRank ();
+
+			/** constructor
+			 *
+			 * @param C constant C
+			 * @param k kernel
+			 * @param lab labels
+			 */
+			CLaRank(float64_t C, CKernel* k, CLabels* lab);
+
 			~CLaRank () {}
+
+			bool train(CFeatures* data);
+
 
 			// LEARNING FUNCTION: add new patterns and run optimization steps selected with adaptative schedule
 			virtual int add (int x_id, int yi);
@@ -546,6 +513,19 @@ namespace shogun
 
 			// remove patterns and return the number of patterns that were removed
 			unsigned cleanup ();
+
+		protected:
+
+			std_hash_set < int >classes;
+
+			unsigned class_count () const
+			{
+				return classes.size ();
+			}
+
+			double tau;
+			int nb_train;
+			long cache;
 	};
 
 	inline double getTime ()

@@ -202,7 +202,7 @@ float32_t* CKernel::get_kernel_matrix_shortreal(
 					result[i+j*num_vec1]=v;
 					result[j+i*num_vec1]=v;
 
-					if (num_done%100000)
+					if (num_done%1000)
 						SG_PROGRESS(num_done, 0, total_num-1);
 
 					if (i!=j)
@@ -210,6 +210,7 @@ float32_t* CKernel::get_kernel_matrix_shortreal(
 					else
 						num_done+=1;
 				}
+				SG_PROGRESS(num_done, 0, total_num-1);
 			}
 		}
 		else
@@ -220,11 +221,12 @@ float32_t* CKernel::get_kernel_matrix_shortreal(
 				{
 					result[i+j*num_vec1]=kernel(i,j) ;
 
-					if (num_done%100000)
+					if (num_done%1000)
 						SG_PROGRESS(num_done, 0, total_num-1);
 
 					num_done++;
 				}
+				SG_PROGRESS(num_done, 0, total_num-1);
 			}
 		}
 
