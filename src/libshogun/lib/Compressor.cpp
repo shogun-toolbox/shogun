@@ -37,93 +37,101 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 
 	switch (compression_type)
 	{
-#ifdef USE_LZO
-	case LZO:
-		{
-			ASSERT(level==1);
-			initial_buffer_size=uncompressed_size + uncompressed_size / 16 + 64 + 3;
-			compressed_size=initial_buffer_size;
-			compressed=new uint8_t[initial_buffer_size];
-
-			lzo_uint lzo_size=compressed_size;
-
-			if (lzo1x_1_compress(uncompressed, uncompressed_size,
-						compressed, &lzo_size, lzo_wrkmem) != LZO_E_OK)
+		case NONE:
 			{
-				SG_ERROR("Error lzo-compressing data\n");
+				compressed_size=uncompressed_size;
+				compressed=new uint8_t[compressed_size];
+				memcpy(compressed, uncompressed, uncompressed_size);
+				break;
 			}
-			compressed_size=lzo_size;
-			break;
-		}
+#ifdef USE_LZO
+		case LZO:
+			{
+				ASSERT(level==1);
+				initial_buffer_size=uncompressed_size +
+					uncompressed_size / 16+ 64 + 3;
+
+				compressed_size=initial_buffer_size;
+				compressed=new uint8_t[initial_buffer_size];
+
+				lzo_uint lzo_size=compressed_size;
+
+				if (lzo1x_1_compress(uncompressed, uncompressed_size,
+							compressed, &lzo_size, lzo_wrkmem) != LZO_E_OK)
+				{
+					SG_ERROR("Error lzo-compressing data\n");
+				}
+				compressed_size=lzo_size;
+				break;
+			}
 #endif
 #ifdef USE_GZIP
-	case GZIP:
-		{
-			initial_buffer_size=1.001*uncompressed_size + 12;
-			compressed_size=initial_buffer_size;
-			compressed=new uint8_t[initial_buffer_size];
-			uLongf gz_size=compressed_size;
-
-			if (compress2(compressed, &gz_size, uncompressed,
-						uncompressed_size, level) != Z_OK)
+		case GZIP:
 			{
-				SG_ERROR("Error gzip-compressing data\n");
+				initial_buffer_size=1.001*uncompressed_size + 12;
+				compressed_size=initial_buffer_size;
+				compressed=new uint8_t[initial_buffer_size];
+				uLongf gz_size=compressed_size;
+
+				if (compress2(compressed, &gz_size, uncompressed,
+							uncompressed_size, level) != Z_OK)
+				{
+					SG_ERROR("Error gzip-compressing data\n");
+				}
+				compressed_size=gz_size;
+				break;
 			}
-			compressed_size=gz_size;
-			break;
-		}
 #endif
 #ifdef USE_BZIP2
-	case BZIP2:
-		{
-			bz_stream strm;
-			initial_buffer_size=1.001*uncompressed_size + 12;
-			compressed_size=initial_buffer_size;
-			compressed=new uint8_t[initial_buffer_size];
-			if (BZ2_bzCompressInit(&strm, level, 0, 0)!=BZ_OK)
-				SG_ERROR("Error initializing bzip2 compressor\n");
+		case BZIP2:
+			{
+				bz_stream strm;
+				initial_buffer_size=1.001*uncompressed_size + 12;
+				compressed_size=initial_buffer_size;
+				compressed=new uint8_t[initial_buffer_size];
+				if (BZ2_bzCompressInit(&strm, level, 0, 0)!=BZ_OK)
+					SG_ERROR("Error initializing bzip2 compressor\n");
 
-			strm.next_in=(char*) uncompressed;
-			strm.avail_in=(unsigned int) uncompressed_size;
-			strm.next_out=(char*) compressed;
-			strm.avail_out=(unsigned int) compressed_size;
-			if (BZ2_bzCompress(&strm, BZ_RUN) != BZ_RUN_OK)
-				SG_ERROR("Error bzip2-compressing data\n");
-			if (BZ2_bzCompress(&strm, BZ_FINISH) != BZ_FINISH_OK)
-				SG_ERROR("Error bzip2-compressing data\n");
-			BZ2_bzCompressEnd(&strm);
+				strm.next_in=(char*) uncompressed;
+				strm.avail_in=(unsigned int) uncompressed_size;
+				strm.next_out=(char*) compressed;
+				strm.avail_out=(unsigned int) compressed_size;
+				if (BZ2_bzCompress(&strm, BZ_RUN) != BZ_RUN_OK)
+					SG_ERROR("Error bzip2-compressing data\n");
+				if (BZ2_bzCompress(&strm, BZ_FINISH) != BZ_FINISH_OK)
+					SG_ERROR("Error bzip2-compressing data\n");
+				BZ2_bzCompressEnd(&strm);
 
-			break;
-		}
+				break;
+			}
 #endif
 #ifdef USE_LZMA
-	case LZMA:
-		{
-			lzma_stream strm = LZMA_STREAM_INIT;
-			initial_buffer_size = lzma_stream_buffer_bound(uncompressed_size);
-			compressed_size=initial_buffer_size;
-			compressed=new uint8_t[initial_buffer_size];
-			strm.next_in=uncompressed;
-			strm.avail_in=(size_t) uncompressed_size;
-			strm.next_out=compressed;
-			strm.avail_out=(size_t) compressed_size;
+		case LZMA:
+			{
+				lzma_stream strm = LZMA_STREAM_INIT;
+				initial_buffer_size = lzma_stream_buffer_bound(uncompressed_size);
+				compressed_size=initial_buffer_size;
+				compressed=new uint8_t[initial_buffer_size];
+				strm.next_in=uncompressed;
+				strm.avail_in=(size_t) uncompressed_size;
+				strm.next_out=compressed;
+				strm.avail_out=(size_t) compressed_size;
 
-			if (lzma_easy_encoder(&strm, level, LZMA_CHECK_CRC32) != LZMA_OK)
-				SG_ERROR("Error initializing lzma compressor\n");
-			if (lzma_code(&strm, LZMA_RUN) != LZMA_OK)
-				SG_ERROR("Error lzma-compressing data\n");
-			if (lzma_code(&strm, LZMA_FINISH) != LZMA_OK)
-				SG_ERROR("Error lzma-compressing data\n");
-			lzma_end(&strm);
-			break;
-		}
+				if (lzma_easy_encoder(&strm, level, LZMA_CHECK_CRC32) != LZMA_OK)
+					SG_ERROR("Error initializing lzma compressor\n");
+				if (lzma_code(&strm, LZMA_RUN) != LZMA_OK)
+					SG_ERROR("Error lzma-compressing data\n");
+				if (lzma_code(&strm, LZMA_FINISH) != LZMA_OK)
+					SG_ERROR("Error lzma-compressing data\n");
+				lzma_end(&strm);
+				break;
+			}
 #endif
-		if (compressed)
-			CMath::resize(compressed, initial_buffer_size, compressed_size);
-	default:
-		break;
+			if (compressed)
+				CMath::resize(compressed, initial_buffer_size, compressed_size);
+		default:
+			break;
 	}
-
 }
 
 void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
@@ -131,71 +139,77 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 {
 	switch (compression_type)
 	{
-#ifdef USE_LZO
-	case LZO:
-		{
-			lzo_uint lzo_size=uncompressed_size;
-			if (lzo1x_decompress(compressed, compressed_size, uncompressed,
-						&lzo_size, NULL) != LZO_E_OK)
+		case NONE:
 			{
-				SG_ERROR("Error uncompressing lzo-data\n");
+				ASSERT(uncompressed_size>compressed_size);
+				uncompressed_size=compressed_size;
+				memcpy(uncompressed, compressed, uncompressed_size);
+				break;
 			}
-			uncompressed_size=lzo_size;
-			break;
-		}
+#ifdef USE_LZO
+		case LZO:
+			{
+				lzo_uint lzo_size=uncompressed_size;
+				if (lzo1x_decompress(compressed, compressed_size, uncompressed,
+							&lzo_size, NULL) != LZO_E_OK)
+				{
+					SG_ERROR("Error uncompressing lzo-data\n");
+				}
+				uncompressed_size=lzo_size;
+				break;
+			}
 #endif
 #ifdef USE_GZIP
-	case GZIP:
-		{
-			uLongf gz_size=uncompressed_size;
-			if (uncompress(uncompressed, &gz_size, compressed,
-						compressed_size) != Z_OK)
+		case GZIP:
 			{
-				SG_ERROR("Error uncompressing gzip-data\n");
+				uLongf gz_size=uncompressed_size;
+				if (uncompress(uncompressed, &gz_size, compressed,
+							compressed_size) != Z_OK)
+				{
+					SG_ERROR("Error uncompressing gzip-data\n");
+				}
+				uncompressed_size=gz_size;
+				break;
 			}
-			uncompressed_size=gz_size;
-			break;
-		}
 #endif
 #ifdef USE_BZIP2
-	case BZIP2:
-		{
-			bz_stream strm;
-			if (BZ2_bzDecompressInit(&strm, 0, 0)!=BZ_OK)
-				SG_ERROR("Error initializing bzip2 decompressor\n");
-			strm.next_in=(char*) compressed;
-			strm.avail_in=(unsigned int) compressed_size;
-			strm.next_out=(char*) uncompressed;
-			strm.avail_out=(unsigned int) uncompressed_size;
-			if (BZ2_bzDecompress(&strm) != BZ_STREAM_END)
-				SG_ERROR("Error uncompressing bzip2-data\n");
-			BZ2_bzDecompressEnd(&strm);
-			break;
-		}
+		case BZIP2:
+			{
+				bz_stream strm;
+				if (BZ2_bzDecompressInit(&strm, 0, 0)!=BZ_OK)
+					SG_ERROR("Error initializing bzip2 decompressor\n");
+				strm.next_in=(char*) compressed;
+				strm.avail_in=(unsigned int) compressed_size;
+				strm.next_out=(char*) uncompressed;
+				strm.avail_out=(unsigned int) uncompressed_size;
+				if (BZ2_bzDecompress(&strm) != BZ_STREAM_END)
+					SG_ERROR("Error uncompressing bzip2-data\n");
+				BZ2_bzDecompressEnd(&strm);
+				break;
+			}
 #endif
 #ifdef USE_LZMA
-	case LZMA:
-		{
-			lzma_stream strm = LZMA_STREAM_INIT;
-			strm.next_in=compressed;
-			strm.avail_in=(size_t) compressed_size;
-			strm.next_out=uncompressed;
-			strm.avail_out=(size_t) uncompressed_size;
+		case LZMA:
+			{
+				lzma_stream strm = LZMA_STREAM_INIT;
+				strm.next_in=compressed;
+				strm.avail_in=(size_t) compressed_size;
+				strm.next_out=uncompressed;
+				strm.avail_out=(size_t) uncompressed_size;
 
-			if (lzma_stream_decoder(&strm, uncompressed_size, 0)!= LZMA_OK)
-				SG_ERROR("Error initializing lzma decompressor\n");
-			if (lzma_code(&strm, LZMA_RUN) != LZMA_OK)
-				SG_ERROR("Error decompressing lzma data\n");
-			if (lzma_code(&strm, LZMA_FINISH) != LZMA_OK)
-				SG_ERROR("Error decompressing lzma data\n");
-			lzma_end(&strm);
-			break;
-		}
+				if (lzma_stream_decoder(&strm, uncompressed_size, 0)!= LZMA_OK)
+					SG_ERROR("Error initializing lzma decompressor\n");
+				if (lzma_code(&strm, LZMA_RUN) != LZMA_OK)
+					SG_ERROR("Error decompressing lzma data\n");
+				if (lzma_code(&strm, LZMA_FINISH) != LZMA_OK)
+					SG_ERROR("Error decompressing lzma data\n");
+				lzma_end(&strm);
+				break;
+			}
 #endif
-	default:
-		break;
+		default:
+			break;
 	}
-
 }
 
 void CCompressor::init()

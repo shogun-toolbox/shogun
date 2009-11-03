@@ -22,15 +22,6 @@
 
 namespace shogun
 {
-	enum E_COMPRESSION_TYPE
-	{
-		NONE,
-		LZO,
-		GZIP,
-		BZIP2,
-		LZMA
-	};
-
 	/** Compression library for compressing and decompressing buffers using 
 	 * one of the standard compression algorithms, LZO, GZIP, BZIP2 or LZMA.
 	 *
@@ -46,6 +37,16 @@ namespace shogun
 	class CCompressor : public CSGObject
 	{
 	public:
+
+		enum E_COMPRESSION_TYPE
+		{
+			NONE,
+			LZO,
+			GZIP,
+			BZIP2,
+			LZMA
+		};
+
 
 		/** default constructor
 		 *
@@ -90,6 +91,9 @@ namespace shogun
 		 */
 		void decompress(uint8_t* compressed, uint64_t compressed_size,
 				uint8_t* uncompressed, uint64_t& uncompressed_size);
+
+		/** @return object name */
+		inline virtual const char* get_name() const { return "Compressor"; }
 
 	protected:
 		/** compressor initialisation */

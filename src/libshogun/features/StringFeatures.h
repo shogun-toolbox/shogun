@@ -23,6 +23,7 @@
 #include "lib/File.h"
 #include "lib/MemoryMappedFile.h"
 #include "lib/Mathematics.h"
+#include "lib/Compressor.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -33,6 +34,7 @@
 
 namespace shogun
 {
+class CCompressor;
 class CAlphabet;
 enum EAlphabet;
 template <class T> class CDynamicArray;
@@ -1100,6 +1102,149 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			return false;
 		}
+
+		/** load compressed features from file
+		 *
+		 * @param src filename to load from
+		 * @param decompress whether to decompress on loading
+		 * @return if loading was successful
+		 */
+		virtual bool load_compressed(char* src, bool decompress)
+		{
+			FILE* file=NULL;
+
+			if (!(file=fopen(src, "r")))
+				return false;
+			cleanup();
+
+			// header shogun v0
+			char id[4];
+			fread(&id[0], sizeof(char), 1, file);
+			ASSERT(id[0]=='S');
+			fread(&id[1], sizeof(char), 1, file);
+			ASSERT(id[1]=='G');
+			fread(&id[2], sizeof(char), 1, file);
+			ASSERT(id[2]=='V');
+			fread(&id[3], sizeof(char), 1, file);
+			ASSERT(id[3]=='0');
+
+			//compression type
+			uint8_t c;
+			fread(&c, sizeof(uint8_t), 1, file);
+			CCompressor* compressor= new CCompressor((CCompressor::E_COMPRESSION_TYPE) c);
+			//alphabet
+			uint8_t a;
+			delete alphabet;
+			fread(&a, sizeof(uint8_t), 1, file);
+			alphabet=new CAlphabet((EAlphabet) a);
+			// number of vectors
+			fread(&num_vectors, sizeof(int32_t), 1, file);
+			ASSERT(num_vectors>0);
+			// maximum string length
+			fread(&max_string_length, sizeof(int32_t), 1, file);
+			ASSERT(max_string_length>0);
+
+			features=new T_STRING<ST>[num_vectors];
+
+			// vectors
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				// vector len compressed
+				int32_t len_compressed;
+				fread(&len_compressed, sizeof(int32_t), 1, file);
+				// vector len uncompressed
+				int32_t len_uncompressed;
+				fread(&len_uncompressed, sizeof(int32_t), 1, file);
+
+				// vector raw data
+				if (decompress)
+				{
+					//ST* compressed=NULL;
+					//fread(compressed, len_compressed, 1, file);
+
+					//uint64_t uncompressed_size=len_uncompressed;
+					//compressor->decompress(compressed, len_compressed,
+					//		uncompressed, uncompressed_size);
+					//ASSERT(compressed);
+					//features[i].string=new ST[
+					//features[i].length=len_compressed;
+				}
+				else
+				{
+					//features[i].string=new ST[
+					//features[i].length=len_compressed;
+				}
+			}
+
+			delete compressor;
+			fclose(file);
+			return false;
+		}
+
+		/** save compressed features to file
+		 *
+		 * @param dest filename to save to
+		 * @param compression compressor to use
+		 * @param compression level to use (1-9)
+		 * @return if saving was successful
+		 */
+		virtual bool save_compressed(char* dest, CCompressor::E_COMPRESSION_TYPE compression, int level)
+		{
+			FILE* file=NULL;
+
+			if (!(file=fopen(dest, "wb")))
+				return false;
+
+			CCompressor* compressor= new CCompressor(compression);
+
+			// header shogun v0
+			const char* id="SGV0";
+			fwrite(&id[0], sizeof(char), 1, file);
+			fwrite(&id[1], sizeof(char), 1, file);
+			fwrite(&id[2], sizeof(char), 1, file);
+			fwrite(&id[3], sizeof(char), 1, file);
+
+			//compression type
+			uint8_t c=(uint8_t) compression;
+			fwrite(&c, sizeof(uint8_t), 1, file);
+			//alphabet
+			uint8_t a=(uint8_t) alphabet->get_alphabet();
+			fwrite(&a, sizeof(uint8_t), 1, file);
+			// number of vectors
+			fwrite(&num_vectors, sizeof(int32_t), 1, file);
+			// maximum string length
+			fwrite(&max_string_length, sizeof(int32_t), 1, file);
+
+			// vectors
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				int32_t len=-1;
+				bool vfree;
+				ST* vec=get_feature_vector(i, len, vfree);
+
+				uint8_t* compressed=NULL;
+				uint64_t compressed_size=0;
+
+				compressor->compress((uint8_t*) vec, (uint64_t) sizeof(ST)*len,
+						compressed, compressed_size, level);
+				ASSERT(compressed);
+
+				int32_t len_compressed = (int32_t) compressed_size;
+				// vector len compressed
+				fwrite(&len_compressed, sizeof(int32_t), 1, file);
+				// vector len uncompressed
+				fwrite(&len, sizeof(int32_t), 1, file);
+				// vector raw data
+				fwrite(compressed, compressed_size, 1, file);
+
+				free_feature_vector(vec, i, vfree);
+			}
+
+			delete compressor;
+			fclose(file);
+			return true;
+		}
+
 
 		/** get memory footprint of one feature
 		 *
