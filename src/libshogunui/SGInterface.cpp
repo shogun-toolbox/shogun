@@ -5561,9 +5561,14 @@ bool CSGInterface::cmd_get_viterbi_path()
 	h->set_observations((CStringFeatures<uint16_t>*) feat);
 
 	int32_t num_feat=0;
-	uint16_t* vec=((CStringFeatures<uint16_t>*) feat)->get_feature_vector(dim, num_feat);
+	bool free_vec;
+	uint16_t* vec=((CStringFeatures<uint16_t>*) feat)->get_feature_vector(dim, num_feat, free_vec);
 	if (!vec || num_feat<=0)
+	{
+		((CStringFeatures<uint16_t>*) feat)->free_feature_vector(vec, dim, free_vec);
 		return false;
+	}
+	((CStringFeatures<uint16_t>*) feat)->free_feature_vector(vec, dim, free_vec);
 
 	SG_DEBUG( "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
 	float64_t likelihood=0;

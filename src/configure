@@ -59,6 +59,7 @@ _glpk=auto
 _lzo=auto
 _gzip=auto
 _bzip2=auto
+_lzma=auto
 _doxygen=auto
 _shortrealkernelcache=yes
 _logcache=no
@@ -733,6 +734,7 @@ Optional features:
   --disable-lzo                 disable code using LZO compression [auto]
   --disable-gzip                disable code using GZIP compression [auto]
   --disable-bzip2               disable code using BZIP2 compression [auto]
+  --disable-lzma                disable code using LZMA compression [auto]
   --disable-bigstates           disable big (16bit) state [enabled]
   --disable-hmmcache            disable HMM cache [enabled]
   --disable-svm-light           disable building of SVM-light and thus result in pure GPLv3 code [enabled]
@@ -912,6 +914,8 @@ for ac_option do
   --enable-gzip)		_gzip=yes;;
   --disable-bzip2)		_bzip2=no;;
   --enable-bzip2)		_bzip2=yes;;
+  --disable-lzma)		_lzma=no;;
+  --enable-lzma)		_lzma=yes;;
   --disable-doxygen)	_doxygen=no	;;
   --enable-doxygen)		_doxygen=yes	;;
   --disable-bigstates)	_bigstates=no	;;
@@ -2634,6 +2638,28 @@ EOF
 				fi
 			fi
 
+			if test "$_lzma" = yes || test "$_lzma" = auto
+			then
+cat >$TMPC<<EOF
+#include <lzma.h>
+int main(int argc, char** argv)
+{
+	return (int) lzma_stream_buffer_bound((size_t) argc) ;
+}
+EOF
+				echocheck "lzma"
+				LZMALINKFLAGS="-llzma"
+				if cc_check $LZMALINKFLAGS
+				then
+					echores "yes"
+					USE_LZMA='#define USE_LZMA 1'
+					LINKFLAGS="$LINKFLAGS $LZMALINKFLAGS"
+					DEFINES="$DEFINES -DUSE_LZMA"
+				else
+					echores "no"
+				fi
+			fi
+
 
 			if test "$_lpsolve" = yes || test "$_lpsolve" = auto
 			then
@@ -3778,6 +3804,7 @@ $USE_GLPK
 $USE_LZO
 $USE_GZIP
 $USE_BZIP2
+$USE_LZMA
 $TRACE_MEMORY_ALLOCS
 $USE_REFERENCE_COUNTING
 #define OCTAVE_APIVERSION $OCTAVE_APIVERSION

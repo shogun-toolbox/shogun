@@ -28,6 +28,10 @@
 #include <bzlib.h>
 #endif
 
+#ifdef USE_LZMA
+#include <lzma.h>
+#endif
+
 namespace shogun
 {
 	enum E_COMPRESSION_TYPE
@@ -39,11 +43,29 @@ namespace shogun
 		LZMA
 	}
 
+	/** Compression library for compressing and decompressing buffers using 
+	 * one of the standard compression algorithms, LZO, GZIP, BZIP2 or LZMA.
+	 *
+	 * The general recommendation is to use LZO whenever lightweight compression
+	 * is sufficient but high i/o throughputs are needed (at 1/2 the speed of memcpy).
+	 *
+	 * If size is all that matters use LZMA (which especially when compressing
+	 * can be very slow though).
+	 *
+	 * Note that besides lzo compression, this library is thread safe.
+	 *
+	 */
 	class CCompressor : public CSGObject
 	{
 	public:
-		CCompressor(E_COMPRESSION_TYPE ct) : compression_type(ct)
+		CCompressor(E_COMPRESSION_TYPE ct) : CSGObject(), compression_type(ct)
 		{
+			init();
+		}
+
+		virtual ~CCompressor()
+		{
+			cleanup();
 		}
 
 		void compress(uint8_t* uncompressed, uint64_t uncompressed,
@@ -97,6 +119,10 @@ namespace shogun
 
 				break
 #endif
+#ifdef USE_LZMA
+			case LZMA:
+					break;
+#endif
 				if (compressed_data)
 				{
 					CMath::resize(compressed_data,
@@ -142,7 +168,11 @@ namespace shogun
 				if (BZ2_bzDeCompress(&strm) != BZ_STREAM_END)
 					SG_ERROR("Error uncompressing bzip2-data\n");
 				BZ2_bzDeCompressEnd(&strm);
-				break
+				break;
+#endif
+#ifdef USE_LZMA
+			case LZMA:
+					break;
 #endif
 			default:
 				break;
