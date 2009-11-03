@@ -744,7 +744,7 @@ bool CGUIKernel::init_kernel(const char* target)
 				SG_ERROR("Kernel can not process this train feature type: %d %d.\n", fclass, ftype);
 		}
 		else
-			SG_ERROR("Assign train features first.\n");
+			SG_DEBUG("Not initing kernel - no train features assigned.\n");
 	}
 	else if (!strncmp(target, "TEST", 4))
 	{
@@ -771,7 +771,7 @@ bool CGUIKernel::init_kernel(const char* target)
 				SG_ERROR("Kernel can not process this test feature type: %d %d.\n", fclass, ftype);
 		}
 		else
-			SG_ERROR("Assign train and test features first.\n");
+			SG_DEBUG("Not initing kernel - no train and test features assigned.\n");
 	}
 	else
 		SG_ERROR("Unknown target %s.\n", target);
