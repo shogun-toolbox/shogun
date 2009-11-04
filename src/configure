@@ -983,7 +983,16 @@ test -z "$_mandir" && _mandir="$_prefix/man"
 test -z "$_confdir" && _confdir="$_prefix/etc/shogun"
 test -z "$_libdir" && _libdir="$_prefix/lib"
 test -z "$_incdir" && _incdir="$_prefix/include"
-test -z "$_pydir" && _pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
+
+python_major=`python --version 2>&1 | cut -f 2 -d ' ' | cut -f 1 -d '.'`
+python_minor=`python --version 2>&1 | cut -f 2 -d ' ' | cut -f 2 -d '.'`
+if test -z "$_pydir" ; then
+	if test "$python_major" -ge 2 && test "$python_minor" -ge 6 ; then
+		_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
+	else
+		_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/dist-package"
+	fi
+fi
 
 determine_system_name()
 {
@@ -2472,7 +2481,7 @@ EOF
 				echocheck "CPLEX support"
 				if echo quit | cplex >/dev/null 2>&1
 				then
-					CPLEXVER=`echo quit | cplex 2>&1 | grep ^ILOG | cut -d ' ' -f 3 | tr -d ','`
+					CPLEXVER=`echo quit | cplex 2>&1 | grep ^Welcome | cut -d ' ' -f 6`
 					if [ -z "$CPLEXVER" ]
 					then
 						echores "no"
@@ -2780,6 +2789,9 @@ test_modular()
 		if ${SWIG} -version >/dev/null 2>&1
 		then
 			_swig_version=`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`
+			if test -z "$_swig_version"; then
+				die "swig did not return version information"
+			fi
 			if [ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
 				[ `echo $_swig_version | cut -f 3 -d '.'` -ge 29 ]
 			then
