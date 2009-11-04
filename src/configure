@@ -984,13 +984,13 @@ test -z "$_confdir" && _confdir="$_prefix/etc/shogun"
 test -z "$_libdir" && _libdir="$_prefix/lib"
 test -z "$_incdir" && _incdir="$_prefix/include"
 
-python_major=`python --version 2>&1 | cut -f 2 -d ' ' | cut -f 1 -d '.'`
-python_minor=`python --version 2>&1 | cut -f 2 -d ' ' | cut -f 2 -d '.'`
+python_major=`$PYTHON --version 2>&1 | cut -f 2 -d ' ' | cut -f 1 -d '.'`
+python_minor=`$PYTHON --version 2>&1 | cut -f 2 -d ' ' | cut -f 2 -d '.'`
 if test -z "$_pydir" ; then
 	if test "$python_major" -ge 2 && test "$python_minor" -ge 6 ; then
-		_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
+		_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/dist-packages"
 	else
-		_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/dist-package"
+		_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 	fi
 fi
 
