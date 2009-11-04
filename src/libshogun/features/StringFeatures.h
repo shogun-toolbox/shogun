@@ -1233,7 +1233,6 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				compressor->compress((uint8_t*) vec, (uint64_t) len,
 						compressed, compressed_size, level);
-				ASSERT(compressed);
 
 				int32_t len_compressed = (int32_t) compressed_size;
 				// vector len compressed

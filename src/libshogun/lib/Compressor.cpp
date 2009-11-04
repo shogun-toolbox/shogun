@@ -36,6 +36,13 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 {
 	uint64_t initial_buffer_size=0;
 
+	if (uncompressed_size==0)
+	{
+		compressed=NULL;
+		compressed_size=0;
+		return;
+	}
+
 	switch (compression_type)
 	{
 		case UNCOMPRESSED:
@@ -88,7 +95,10 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 		case BZIP2:
 			{
 				bz_stream strm;
-				initial_buffer_size=1.001*uncompressed_size + 12;
+				strm.bzalloc=NULL;
+				strm.bzfree=NULL;
+				strm.opaque=NULL;
+				initial_buffer_size=1.01*uncompressed_size + 600;
 				compressed_size=initial_buffer_size;
 				compressed=new uint8_t[initial_buffer_size];
 				if (BZ2_bzCompressInit(&strm, level, 0, 0)!=BZ_OK)
@@ -99,11 +109,21 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				strm.next_out=(char*) compressed;
 				strm.avail_out=(unsigned int) compressed_size;
 				if (BZ2_bzCompress(&strm, BZ_RUN) != BZ_RUN_OK)
-					SG_ERROR("Error bzip2-compressing data\n");
-				if (BZ2_bzCompress(&strm, BZ_FINISH) != BZ_FINISH_OK)
-					SG_ERROR("Error bzip2-compressing data\n");
-				BZ2_bzCompressEnd(&strm);
+					SG_ERROR("Error bzip2-compressing data (BZ_RUN)\n");
 
+				int ret=0;
+				while (true)
+				{
+					ret=BZ2_bzCompress(&strm, BZ_FINISH);
+					if (ret==BZ_FINISH_OK)
+						continue;
+					if (ret==BZ_STREAM_END)
+						break;
+					else
+						SG_ERROR("Error bzip2-compressing data (BZ_FINISH)\n");
+				}
+				BZ2_bzCompressEnd(&strm);
+				compressed_size=(((uint64_t) strm.total_out_hi32) << 32) + strm.total_out_lo32;
 				break;
 			}
 #endif
@@ -122,10 +142,21 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				if (lzma_easy_encoder(&strm, level, LZMA_CHECK_CRC32) != LZMA_OK)
 					SG_ERROR("Error initializing lzma compressor\n");
 				if (lzma_code(&strm, LZMA_RUN) != LZMA_OK)
-					SG_ERROR("Error lzma-compressing data\n");
-				if (lzma_code(&strm, LZMA_FINISH) != LZMA_OK)
-					SG_ERROR("Error lzma-compressing data\n");
+					SG_ERROR("Error lzma-compressing data (LZMA_RUN)\n");
+
+				lzma_ret ret;
+				while (true)
+				{
+					ret=lzma_code(&strm, LZMA_FINISH);
+					if (ret==LZMA_OK)
+						continue;
+					if (ret==LZMA_STREAM_END)
+						break;
+					else
+						SG_ERROR("Error lzma-compressing data (LZMA_FINISH)\n");
+				}
 				lzma_end(&strm);
+				compressed_size=strm.total_out;
 				break;
 			}
 #endif
@@ -140,6 +171,12 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 		uint8_t* uncompressed, uint64_t& uncompressed_size)
 {
+	if (compressed_size==0)
+	{
+		uncompressed_size=0;
+		return;
+	}
+
 	switch (compression_type)
 	{
 		case UNCOMPRESSED:
@@ -179,13 +216,16 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 		case BZIP2:
 			{
 				bz_stream strm;
+				strm.bzalloc=NULL;
+				strm.bzfree=NULL;
+				strm.opaque=NULL;
 				if (BZ2_bzDecompressInit(&strm, 0, 0)!=BZ_OK)
 					SG_ERROR("Error initializing bzip2 decompressor\n");
 				strm.next_in=(char*) compressed;
 				strm.avail_in=(unsigned int) compressed_size;
 				strm.next_out=(char*) uncompressed;
 				strm.avail_out=(unsigned int) uncompressed_size;
-				if (BZ2_bzDecompress(&strm) != BZ_STREAM_END)
+				if (BZ2_bzDecompress(&strm) != BZ_STREAM_END || strm.avail_in!=0)
 					SG_ERROR("Error uncompressing bzip2-data\n");
 				BZ2_bzDecompressEnd(&strm);
 				break;
@@ -200,11 +240,11 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 				strm.next_out=uncompressed;
 				strm.avail_out=(size_t) uncompressed_size;
 
-				if (lzma_stream_decoder(&strm, uncompressed_size, 0)!= LZMA_OK)
+				uint64_t memory_limit=lzma_easy_decoder_memusage(9);
+
+				if (lzma_stream_decoder(&strm, memory_limit, 0)!= LZMA_OK)
 					SG_ERROR("Error initializing lzma decompressor\n");
-				if (lzma_code(&strm, LZMA_RUN) != LZMA_OK)
-					SG_ERROR("Error decompressing lzma data\n");
-				if (lzma_code(&strm, LZMA_FINISH) != LZMA_OK)
+				if (lzma_code(&strm, LZMA_RUN) != LZMA_STREAM_END)
 					SG_ERROR("Error decompressing lzma data\n");
 				lzma_end(&strm);
 				break;
