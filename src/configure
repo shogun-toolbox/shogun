@@ -2843,7 +2843,11 @@ test_modular()
 				OCTAVE_MODULAR_TARGET=octave_modular
 				echores "yes"
 			else
-				echores "too old version 1.3.36 or later required"
+				if test "$_octave_modular" = yes ; then
+					die "swig too old version 1.3.36 or later required"
+				else
+					echores "too old version 1.3.36 or later required"
+				fi
 			fi
 		fi
 
@@ -2865,8 +2869,19 @@ test_modular()
 				R_MODULAR_TARGET=r_modular
 				echores "yes"
 			else
-				echores "too old version 1.3.37 or later required"
+				if test "$_octave_modular" = yes ; then
+					die "swig too old version 1.3.37 or later required"
+				else
+					echores "too old version 1.3.37 or later required"
+				fi
 			fi
+		fi
+	else
+		if test "$_octave_modular" == yes || \
+			test "$_python_modular" == yes || \
+			test "$_r_modular" == yes
+		then
+				die "swig required for modular interfaces"
 		fi
 	fi
 }
