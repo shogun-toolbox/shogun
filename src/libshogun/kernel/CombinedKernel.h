@@ -405,7 +405,7 @@ class CCombinedKernel : public CKernel
 		virtual float64_t compute(int32_t x, int32_t y);
 
 		/** adjust the variables num_lhs, num_rhs and initialized
-		 * bast on the kernel to be appended/inserted 
+		 * based on the kernel to be appended/inserted 
 		 *
 		 * @param k kernel
 		 */

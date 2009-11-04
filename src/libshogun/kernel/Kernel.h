@@ -161,9 +161,11 @@ class CKernel : public CSGObject
 			if (idx_a < 0 || idx_b <0)
 				return 0;
 
-			if (lhs && lhs==rhs)
+			SG_PRINT("lhs==rhs?: %p %p %d\n", lhs, rhs, get_num_vec_lhs());
+			if (lhs==rhs)
 			{
-				int32_t num_vectors = lhs->get_num_vectors();
+				int32_t num_vectors = get_num_vec_lhs();
+				SG_PRINT("%p %p %d\n", lhs, rhs, num_vectors);
 
 				if (idx_a>=num_vectors)
 					idx_a=2*num_vectors-1-idx_a;

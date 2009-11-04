@@ -1148,7 +1148,8 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 
 	bool success=true;
 
-	if (ui->ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM)
+	if (ui->ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM &&
+			ui->ui_kernel->get_kernel()->get_kernel_type()!=K_COMBINED)
 	{
 		if (!trainfeatures)
 			SG_ERROR("No training features available.\n");

@@ -166,9 +166,12 @@ class CCustomKernel: public CKernel
 		 */
 		inline virtual float64_t compute(int32_t row, int32_t col)
 		{
-			ASSERT(row<num_rows);
-			ASSERT(col<num_cols);
 			ASSERT(kmatrix);
+			if (row>=num_rows || col>=num_cols)
+			{
+				SG_ERROR("accessing km[%d,%d] but matrix is of size %dx%d\n",
+						row,col, num_rows,num_cols);
+			}
 
 			if (upper_diagonal)
 			{
