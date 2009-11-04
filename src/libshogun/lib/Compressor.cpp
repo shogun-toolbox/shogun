@@ -9,6 +9,7 @@
  */
 #include "lib/Compressor.h"
 #include "lib/Mathematics.h"
+#include <string.h>
 
 #ifdef USE_LZO
 #include <lzo/lzoconf.h>
@@ -37,8 +38,9 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 
 	switch (compression_type)
 	{
-		case NONE:
+		case UNCOMPRESSED:
 			{
+				initial_buffer_size=uncompressed_size;
 				compressed_size=uncompressed_size;
 				compressed=new uint8_t[compressed_size];
 				memcpy(compressed, uncompressed, uncompressed_size);
@@ -127,11 +129,12 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				break;
 			}
 #endif
-			if (compressed)
-				CMath::resize(compressed, initial_buffer_size, compressed_size);
 		default:
-			break;
+			SG_ERROR("Unknown compression type\n");
 	}
+
+	if (compressed)
+		CMath::resize(compressed, initial_buffer_size, compressed_size);
 }
 
 void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
@@ -139,9 +142,9 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 {
 	switch (compression_type)
 	{
-		case NONE:
+		case UNCOMPRESSED:
 			{
-				ASSERT(uncompressed_size>compressed_size);
+				ASSERT(uncompressed_size>=compressed_size);
 				uncompressed_size=compressed_size;
 				memcpy(uncompressed, compressed, uncompressed_size);
 				break;
@@ -208,7 +211,7 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 			}
 #endif
 		default:
-			break;
+			SG_ERROR("Unknown compression type\n");
 	}
 }
 

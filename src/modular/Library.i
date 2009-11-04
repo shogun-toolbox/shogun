@@ -39,6 +39,7 @@
 #include <shogun/lib/Array2.h>
 #include <shogun/lib/Array3.h>
 #include <shogun/lib/GCArray.h>
+#include <shogun/lib/Compressor.h>
 %}
 
 /* Remove C Prefix */
@@ -151,3 +152,4 @@ namespace shogun
 %include <shogun/lib/Time.h>
 %include <shogun/lib/Trie.h>
 %include <shogun/lib/MemoryMappedFile.h>
+%include <shogun/lib/Compressor.h>

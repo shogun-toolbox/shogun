@@ -35,6 +35,7 @@
 namespace shogun
 {
 class CCompressor;
+enum E_COMPRESSION_TYPE;
 class CAlphabet;
 enum EAlphabet;
 template <class T> class CDynamicArray;
@@ -1131,7 +1132,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			//compression type
 			uint8_t c;
 			fread(&c, sizeof(uint8_t), 1, file);
-			CCompressor* compressor= new CCompressor((CCompressor::E_COMPRESSION_TYPE) c);
+			CCompressor* compressor= new CCompressor((E_COMPRESSION_TYPE) c);
 			//alphabet
 			uint8_t a;
 			delete alphabet;
@@ -1159,20 +1160,24 @@ template <class ST> class CStringFeatures : public CFeatures
 				// vector raw data
 				if (decompress)
 				{
-					//ST* compressed=NULL;
-					//fread(compressed, len_compressed, 1, file);
-
-					//uint64_t uncompressed_size=len_uncompressed;
-					//compressor->decompress(compressed, len_compressed,
-					//		uncompressed, uncompressed_size);
-					//ASSERT(compressed);
-					//features[i].string=new ST[
-					//features[i].length=len_compressed;
+					features[i].string=new ST[len_uncompressed/sizeof(ST)];
+					features[i].length=len_uncompressed/sizeof(ST);
+					uint8_t* compressed=new uint8_t[len_compressed];
+					fread(compressed, len_compressed, 1, file);
+					uint64_t uncompressed_size=len_uncompressed;
+					compressor->decompress(compressed, len_compressed,
+							(uint8_t*) features[i].string, uncompressed_size);
+					delete[] compressed;
+					ASSERT(uncompressed_size==(uint64_t) len_uncompressed);
 				}
 				else
 				{
-					//features[i].string=new ST[
-					//features[i].length=len_compressed;
+					features[i].string=new ST[len_compressed+
+						CMath::max(int32_t(sizeof(int32_t)/sizeof(ST)),1)];
+					features[i].length=len_uncompressed;
+					((int32_t*) (features[i].string))[0]=len_compressed;
+					uint8_t* compressed=(uint8_t*) (&((int32_t*) (features[i].string))[1]);
+					fread(compressed, len_compressed, 1, file);
 				}
 			}
 
@@ -1188,7 +1193,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param compression level to use (1-9)
 		 * @return if saving was successful
 		 */
-		virtual bool save_compressed(char* dest, CCompressor::E_COMPRESSION_TYPE compression, int level)
+		virtual bool save_compressed(char* dest, E_COMPRESSION_TYPE compression, int level)
 		{
 			FILE* file=NULL;
 
@@ -1221,11 +1226,12 @@ template <class ST> class CStringFeatures : public CFeatures
 				int32_t len=-1;
 				bool vfree;
 				ST* vec=get_feature_vector(i, len, vfree);
+				len*=sizeof(ST);
 
 				uint8_t* compressed=NULL;
 				uint64_t compressed_size=0;
 
-				compressor->compress((uint8_t*) vec, (uint64_t) sizeof(ST)*len,
+				compressor->compress((uint8_t*) vec, (uint64_t) len,
 						compressed, compressed_size, level);
 				ASSERT(compressed);
 
