@@ -250,24 +250,6 @@ class CCombinedKernel : public CKernel
 				return kernel_list->get_num_elements();
 		}
 
-		/** get number of vectors of lhs features
-		 *
-		 * @return number of vectors of left-hand side
-		 */
-		virtual inline int32_t get_num_vec_lhs()
-		{
-			return num_lhs;
-		}
-
-		/** get number of vectors of rhs features
-		 *
-		 * @return number of vectors of right-hand side
-		 */
-		virtual inline int32_t get_num_vec_rhs()
-		{
-			return num_rhs;
-		}
-
 		/** test whether features have been assigned to lhs and rhs
 		 *
 		 * @return true if features are assigned
@@ -461,10 +443,6 @@ class CCombinedKernel : public CKernel
 		float64_t* subkernel_weights_buffer;
 		/** if subkernel weights are appended */
 		bool append_subkernel_weights;
-		/** number of vectors on lhs */
-		int32_t num_lhs;
-		/** number of vectors on lhs */
-		int32_t num_rhs;
 		/** whether kernel is ready to be used */
 		bool initialized;
 };

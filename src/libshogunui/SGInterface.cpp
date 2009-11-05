@@ -5090,6 +5090,8 @@ bool CSGInterface::cmd_add_preproc()
 		preproc=ui_preproc->create_generic(P_SORTWORDSTRING);
 	else if (strmatch(type, "SORTULONGSTRING"))
 		preproc=ui_preproc->create_generic(P_SORTULONGSTRING);
+	else if (strmatch(type, "DECOMPRESSCHARSTRING"))
+		preproc=ui_preproc->create_generic(P_DECOMPRESSCHARSTRING);
 	else if (strmatch(type, "SORTWORD"))
 		preproc=ui_preproc->create_generic(P_SORTWORD);
 

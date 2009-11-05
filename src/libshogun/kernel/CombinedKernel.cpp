@@ -45,7 +45,7 @@ struct S_THREAD_PARAM
 CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 : CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
 	subkernel_weights_buffer(NULL), append_subkernel_weights(asw),
-	num_lhs(0), num_rhs(0), initialized(false)
+	initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);

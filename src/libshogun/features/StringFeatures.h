@@ -262,10 +262,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			else
 			{
 				for (int32_t i=0; i<num_vectors; i++)
-				{
-					delete[] features[i].string;
-					features[i].length=0;
-				}
+					cleanup_feature_vector(i);
 			}
 
 			num_vectors=0;
@@ -282,6 +279,18 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_UNREF(alphabet);
 			alphabet=alpha;
 			SG_REF(alphabet);
+		}
+
+		/** cleanup a single feature vector */
+		virtual void cleanup_feature_vector(int32_t num)
+		{
+			ASSERT(num<num_vectors);
+			if (features)
+			{
+				delete[] features[num].string;
+				features[num].string=NULL;
+				features[num].length=0;
+			}
 		}
 
 		/** get feature class
@@ -330,9 +339,13 @@ template <class ST> class CStringFeatures : public CFeatures
 						"requested %d)\n", num_vectors, num);
 			}
 
-			*len=features[num].length;
+			int32_t l;
+			bool free_vec;
+			ST* vec=get_feature_vector(num, l, free_vec);
+			*len=l;
 			*dst=(ST*) malloc(*len * sizeof(ST));
-			memcpy(*dst, features[num].string, *len * sizeof(ST));
+			memcpy(*dst, vec, *len * sizeof(ST));
+			free_feature_vector(vec, num, free_vec);
 		}
 
 		/** set string for selected example num
@@ -354,12 +367,27 @@ template <class ST> class CStringFeatures : public CFeatures
 				SG_ERROR("String has zero or negative length\n");
 
 
-			delete[] features[num].string;
+			cleanup_feature_vector(num);
 			features[num].length=len;
 			features[num].string=new ST[len];
 			memcpy(features[num].string, src, len*sizeof(ST));
 
 			determine_maximum_string_length();
+		}
+
+		/** call this to preprocess string features upon get_feature_vector
+		 */
+		void enable_on_the_fly_preprocessing()
+		{
+			preprocess_on_get=true;
+		}
+
+		/** call this to disable on the fly feature preprocessing on
+		 * get_feature_vector. Useful when you manually apply preprocessors.
+		 */
+		void disable_on_the_fly_preprocessing()
+		{
+			preprocess_on_get=false;
 		}
 
 		/** get feature vector for sample num
@@ -377,7 +405,6 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			if (!preprocess_on_get)
 			{
-
 				dofree=false;
 				len=features[num].length;
 				return features[num].string;
@@ -385,49 +412,25 @@ template <class ST> class CStringFeatures : public CFeatures
 			else
 			{
 				SG_DEBUG( "computing feature vector!\n") ;
-
-				ST* feat=NULL;
-				dofree=false;
-
-				if (feature_cache)
-				{
-					feat=feature_cache->lock_entry(num);
-
-					if (feat)
-						return feat;
-					else
-					{
-						feat=feature_cache->set_entry(num);
-					}
-				}
-
-				if (!feat)
-					dofree=true;
-				feat=compute_feature_vector(num, len, feat);
+				ST* feat=compute_feature_vector(num, len);
+				dofree=true;
 
 				if (get_num_preproc())
 				{
-					int32_t tmp_len=len;
 					ST* tmp_feat_before = feat;
-					ST* tmp_feat_after = NULL;
 
 					for (int32_t i=0; i<get_num_preproc(); i++)
 					{
+						SG_PRINT("decompressing\n");
 						CStringPreProc<ST>* p = (CStringPreProc<ST>*) get_preproc(i);
-						tmp_feat_after=p->apply_to_string(tmp_feat_before, tmp_len);
+						feat=p->apply_to_string(tmp_feat_before, len);
 						SG_UNREF(p);
-
-						if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
-							delete[] tmp_feat_before;
-						tmp_feat_before=tmp_feat_after;
+						delete[] tmp_feat_before;
+						tmp_feat_before=feat;
 					}
-
-					memcpy(feat, tmp_feat_after, sizeof(ST)*tmp_len);
-					delete[] tmp_feat_after;
-
-					len=tmp_len;
 				}
-				return feat ;
+				// TODO: implement caching
+				return feat;
 			}
 		}
 
@@ -454,10 +457,14 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual ST inline get_feature(int32_t vec_num, int32_t feat_num)
 		{
-			ASSERT(features && vec_num<num_vectors);
-			ASSERT(feat_num<features[vec_num].length);
+			int32_t len;
+			bool free_vec;
+			ST* vec=get_feature_vector(vec_num, len, free_vec);
+			ASSERT(feat_num<len);
+			ST result=vec[feat_num];
+			free_feature_vector(vec, vec_num, free_vec);
 
-			return features[vec_num].string[feat_num];
+			return result;
 		}
 
 		/** get vector length
@@ -467,8 +474,11 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual inline int32_t get_vector_length(int32_t vec_num)
 		{
-			ASSERT(features && vec_num<num_vectors);
-			return features[vec_num].length;
+			int32_t len;
+			bool free_vec;
+			ST* vec=get_feature_vector(vec_num, len, free_vec);
+			free_feature_vector(vec, vec_num, free_vec);
+			return len;
 		}
 
 		/** get maximum vector length
@@ -1083,6 +1093,34 @@ template <class ST> class CStringFeatures : public CFeatures
 			return features;
 		}
 
+		/** copy_features
+		 *
+		 * @param num_str number of strings (returned)
+		 * @param max_str_len maximal string length (returned)
+		 * @return string features
+		 */
+		virtual T_STRING<ST>* copy_features(int32_t& num_str, int32_t& max_str_len)
+		{
+			ASSERT(num_vectors>0);
+
+			num_str=num_vectors;
+			max_str_len=max_string_length;
+			T_STRING<ST>* new_feat=new T_STRING<ST>[num_str];
+
+			for (int i=0; i<num_str; i++)
+			{
+				int32_t len;
+				bool free_vec;
+				ST* vec=get_feature_vector(i, len, free_vec);
+				new_feat[i].string=new ST[len];
+				new_feat[i].length=len;
+				memcpy(new_feat[i].string, vec, ((size_t) len) * sizeof(ST));
+				free_feature_vector(vec, i, free_vec);
+			}
+
+			return new_feat;
+		}
+
 		/** get_features  (swig compatible)
 		 *
 		 * @param dst string features (returned)
@@ -1090,8 +1128,10 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual void get_features(T_STRING<ST>** dst, int32_t* num_str)
 		{
-			*num_str=num_vectors;
-			*dst=features;
+			int32_t num_vec;
+			int32_t max_str_len;
+			*dst=copy_features(num_vec, max_str_len);
+			*num_str=num_vec;
 		}
 
 		/** save features to file
@@ -1160,23 +1200,27 @@ template <class ST> class CStringFeatures : public CFeatures
 				// vector raw data
 				if (decompress)
 				{
-					features[i].string=new ST[len_uncompressed/sizeof(ST)];
-					features[i].length=len_uncompressed/sizeof(ST);
+					features[i].string=new ST[len_uncompressed];
+					features[i].length=len_uncompressed;
 					uint8_t* compressed=new uint8_t[len_compressed];
 					fread(compressed, len_compressed, 1, file);
 					uint64_t uncompressed_size=len_uncompressed;
+					uncompressed_size*=sizeof(ST);
 					compressor->decompress(compressed, len_compressed,
 							(uint8_t*) features[i].string, uncompressed_size);
 					delete[] compressed;
-					ASSERT(uncompressed_size==(uint64_t) len_uncompressed);
+					ASSERT(uncompressed_size==((uint64_t) len_uncompressed)*sizeof(ST));
 				}
 				else
 				{
-					features[i].string=new ST[len_compressed+
-						CMath::max(int32_t(sizeof(int32_t)/sizeof(ST)),1)];
-					features[i].length=len_uncompressed;
-					((int32_t*) (features[i].string))[0]=len_compressed;
-					uint8_t* compressed=(uint8_t*) (&((int32_t*) (features[i].string))[1]);
+					int32_t offs=CMath::ceil(2.0*sizeof(int32_t)/sizeof(ST));
+					features[i].string=new ST[len_compressed+offs];
+					features[i].length=len_compressed+offs;
+					int32_t* feat32ptr=((int32_t*) (features[i].string));
+					memset(features[i].string, 0, offs*sizeof(ST));
+					feat32ptr[0]=(int32_t) len_compressed;
+					feat32ptr[1]=(int32_t) len_uncompressed;
+					uint8_t* compressed=(uint8_t*) (&features[i].string[offs]);
 					fread(compressed, len_compressed, 1, file);
 				}
 			}
@@ -1226,21 +1270,21 @@ template <class ST> class CStringFeatures : public CFeatures
 				int32_t len=-1;
 				bool vfree;
 				ST* vec=get_feature_vector(i, len, vfree);
-				len*=sizeof(ST);
 
 				uint8_t* compressed=NULL;
 				uint64_t compressed_size=0;
 
-				compressor->compress((uint8_t*) vec, (uint64_t) len,
+				compressor->compress((uint8_t*) vec, ((uint64_t) len)*sizeof(ST),
 						compressed, compressed_size, level);
 
 				int32_t len_compressed = (int32_t) compressed_size;
-				// vector len compressed
+				// vector len compressed in bytes
 				fwrite(&len_compressed, sizeof(int32_t), 1, file);
-				// vector len uncompressed
+				// vector len uncompressed in number of elements of type ST
 				fwrite(&len, sizeof(int32_t), 1, file);
 				// vector raw data
 				fwrite(compressed, compressed_size, 1, file);
+				delete[] compressed;
 
 				free_feature_vector(vec, i, vfree);
 			}
@@ -1658,11 +1702,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			return s;
 		}
 
-		/** @return object name */
-		inline virtual const char* get_name() const { return "StringFeatures"; }
-
-	protected:
-
 		/** set feature vector for sample num
 		 *
 		 * @param num index of feature vector
@@ -1676,7 +1715,15 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			features[num].length=len ;
 			features[num].string=string ;
+
+			max_string_length=CMath::max(len, max_string_length);
 		}
+
+
+		/** @return object name */
+		inline virtual const char* get_name() const { return "StringFeatures"; }
+
+	protected:
 
 		/** compute feature vector for sample num
 		 * if target is set the vector is written to target
@@ -1684,18 +1731,19 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * default implementation returns
 		 *
-		 * @param num num
-		 * @param len len
-		 * @param target
+		 * @param num which vector
+		 * @param len length of vector
 		 * @return feature vector
 		 */
-		virtual ST* compute_feature_vector(int32_t num, int32_t& len, ST* target=NULL)
+		virtual ST* compute_feature_vector(int32_t num, int32_t& len)
 		{
 			ASSERT(features && num<num_vectors);
 
 			len=features[num].length;
-			if (len && !target) 
-				target=new ST[len];
+			if (len<=0)
+				return NULL;
+
+			ST* target=new ST[len];
 			memcpy(target, features[num].string, len*sizeof(ST));
 			return target;
 		}

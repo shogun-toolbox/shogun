@@ -158,7 +158,7 @@ class CKernel : public CSGObject
 		 */
 		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
-			if (idx_a<0 || idx_b<0 || idx_a>=num_vectors || idx_b>=num_vectors)
+			if (idx_a<0 || idx_b<0 || idx_a>=num_lhs || idx_b>=num_rhs)
 				SG_ERROR("Index out of Range: idx_a=%d idx_b=%d\n", idx_a,idx_b);
 
 			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
@@ -261,10 +261,7 @@ class CKernel : public CSGObject
 		 */
 		virtual inline int32_t get_num_vec_lhs()
 		{
-			if (!lhs)
-				return 0;
-			else
-				return lhs->get_num_vectors();
+			return num_lhs;
 		}
 
 		/** get number of vectors of rhs features
@@ -273,10 +270,7 @@ class CKernel : public CSGObject
 		 */
 		virtual inline int32_t get_num_vec_rhs()
 		{
-			if (!rhs)
-				return 0;
-			else
-				return rhs->get_num_vectors();
+			return num_rhs;
 		}
 
 		/** test whether features have been assigned to lhs and rhs
@@ -755,6 +749,11 @@ class CKernel : public CSGObject
 		CFeatures* lhs;
 		/// feature vectors to occur on right hand side
 		CFeatures* rhs;
+
+		/// number of feature vectors on left hand side
+		int32_t num_lhs;
+		/// number of feature vectors on right hand side
+		int32_t num_rhs;
 
 		/** combined kernel weight */
 		float64_t combined_kernel_weight;

@@ -19,6 +19,7 @@
 #include <shogun/preproc/NormOne.h>
 #include <shogun/preproc/PruneVarSubMean.h>
 #include <shogun/preproc/PCACut.h>
+#include <shogun/preproc/DecompressString.h>
 #include <shogun/preproc/SortWordString.h>
 #include <shogun/preproc/SortUlongString.h>
 #include <shogun/features/RealFileFeatures.h>
@@ -89,6 +90,8 @@ CPreProc* CGUIPreProc::create_generic(EPreProcType type)
 			preproc=new CSortWordString(); break;
 		case P_SORTULONGSTRING:
 			preproc=new CSortUlongString(); break;
+		case P_DECOMPRESSCHARSTRING:
+			preproc=new CDecompressString<char>(LZO); break;
 		default:
 			SG_ERROR("Unknown PreProc type %d\n", type);
 	}

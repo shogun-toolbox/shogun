@@ -41,7 +41,7 @@ public:
 	/// save preprocessor init-data to file
 	virtual bool save(FILE* f);
 
-	/// apply preproc on feature matrix
+	/// apply preproc to feature matrix
 	/// result in feature matrix
 	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 	virtual bool apply_to_string_features(CFeatures* f);

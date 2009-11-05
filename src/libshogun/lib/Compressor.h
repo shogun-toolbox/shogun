@@ -54,13 +54,11 @@ namespace shogun
 		 */
 		CCompressor(E_COMPRESSION_TYPE ct) : CSGObject(), compression_type(ct)
 		{
-			init();
 		}
 
 		/** default destructor */
 		virtual ~CCompressor()
 		{
-			cleanup();
 		}
 
 		/** compress data
@@ -96,19 +94,8 @@ namespace shogun
 		inline virtual const char* get_name() const { return "Compressor"; }
 
 	protected:
-		/** compressor initialisation */
-		void init();
-		/** compressor cleanup */
-		void cleanup();
-
-	protected:
 		/** compressor type */
 		E_COMPRESSION_TYPE compression_type;
-#ifdef USE_LZO
-		/** work memory needed by lzo compressor */
-		lzo_bytep lzo_wrkmem;
-#endif
-
 	};
 }
 #endif //__COMPRESSOR_H__

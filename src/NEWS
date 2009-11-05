@@ -5,10 +5,15 @@
 	* Features:
 		- Integrate LaRank.
 		- Memory Mapped Features (for data sets that don't fit into memory).
+        - Compressor module with compression and decompression support for
+        lzo, gzip, bzip2 and lzma.
+		- Compressed String Features with on-the-fly decompression.
 	* Bugfixes:
 		- Fix One class MKL testing in static interfaces.
 		- Configure fixes: Let octave not write history on configure and fail
 		when cplex is forcefully enabled but not found.
+		- Fix a problem with regression and CombinedKernels employing only
+		Custom kernels.
 	* Cleanup and API Changes:
 		- String Features now (like SimpleFeatures) upon get_feature_vector
 		require and additional do_free argument and need to be freed using

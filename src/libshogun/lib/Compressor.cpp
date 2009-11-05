@@ -56,7 +56,13 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 #ifdef USE_LZO
 		case LZO:
 			{
-				ASSERT(level==1);
+				if (lzo_init() != LZO_E_OK)
+					SG_ERROR("Error initializing LZO Compression\n");
+
+				lzo_bytep lzo_wrkmem = (lzo_bytep) lzo_malloc(LZO1X_999_MEM_COMPRESS);
+				if (!lzo_wrkmem)
+					SG_ERROR("Error allocating LZO workmem\n");
+
 				initial_buffer_size=uncompressed_size +
 					uncompressed_size / 16+ 64 + 3;
 
@@ -65,12 +71,24 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 
 				lzo_uint lzo_size=compressed_size;
 
-				if (lzo1x_1_compress(uncompressed, uncompressed_size,
-							compressed, &lzo_size, lzo_wrkmem) != LZO_E_OK)
+				int ret;
+				if (level<9)
 				{
-					SG_ERROR("Error lzo-compressing data\n");
+					ret=lzo1x_1_15_compress(uncompressed, uncompressed_size,
+								compressed, &lzo_size, lzo_wrkmem);
 				}
+				else
+				{
+					ret=lzo1x_999_compress(uncompressed, uncompressed_size,
+								compressed, &lzo_size, lzo_wrkmem);
+				}
+
 				compressed_size=lzo_size;
+				lzo_free(lzo_wrkmem);
+
+				if (ret!= LZO_E_OK)
+					SG_ERROR("Error lzo-compressing data\n");
+
 				break;
 			}
 #endif
@@ -189,6 +207,13 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 #ifdef USE_LZO
 		case LZO:
 			{
+				if (lzo_init() != LZO_E_OK)
+					SG_ERROR("Error initializing LZO Compression\n");
+
+				lzo_bytep lzo_wrkmem = (lzo_bytep) lzo_malloc(LZO1X_999_MEM_COMPRESS);
+				if (!lzo_wrkmem)
+					SG_ERROR("Error allocating LZO workmem\n");
+
 				lzo_uint lzo_size=uncompressed_size;
 				if (lzo1x_decompress(compressed, compressed_size, uncompressed,
 							&lzo_size, NULL) != LZO_E_OK)
@@ -196,6 +221,8 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 					SG_ERROR("Error uncompressing lzo-data\n");
 				}
 				uncompressed_size=lzo_size;
+
+				lzo_free(lzo_wrkmem);
 				break;
 			}
 #endif
@@ -252,38 +279,5 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 #endif
 		default:
 			SG_ERROR("Unknown compression type\n");
-	}
-}
-
-void CCompressor::init()
-{
-	switch (compression_type)
-	{
-#ifdef USE_LZO
-	case LZO:
-		if (lzo_init() != LZO_E_OK)
-			SG_ERROR("Error initializing LZO Compression\n");
-		lzo_wrkmem = (lzo_bytep) lzo_malloc(LZO1X_1_MEM_COMPRESS);
-		if (!lzo_wrkmem)
-			SG_ERROR("Error allocating LZO workmem\n");
-		
-		break;
-#endif
-	default:
-		break;
-	}
-}
-
-void CCompressor::cleanup()
-{
-	switch (compression_type)
-	{
-#ifdef USE_LZO
-	case LZO:
-		lzo_free(lzo_wrkmem);
-		break;
-#endif
-	default:
-		break;
 	}
 }

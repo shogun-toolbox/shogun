@@ -39,8 +39,9 @@ using namespace shogun;
 
 CKernel::CKernel()
 : CSGObject(), cache_size(10), kernel_matrix(NULL), lhs(NULL),
-	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
-	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
+	rhs(NULL), num_lhs(0), num_rhs(0), combined_kernel_weight(1),
+	optimization_initialized(false), opt_type(FASTBUTMEMHUNGRY),
+	properties(KP_NONE), normalizer(NULL)
 {
 
 #ifdef USE_SVMLIGHT
@@ -51,8 +52,8 @@ CKernel::CKernel()
 }
 
 CKernel::CKernel(int32_t size)
-: CSGObject(), kernel_matrix(NULL), lhs(NULL),
-	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
+: CSGObject(), kernel_matrix(NULL), lhs(NULL), rhs(NULL), num_lhs(0),
+	num_rhs(0), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
 {
 	if (size<10)
@@ -71,9 +72,9 @@ CKernel::CKernel(int32_t size)
 
 
 CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject(),
-	kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1),
-	optimization_initialized(false), opt_type(FASTBUTMEMHUNGRY),
-	properties(KP_NONE), normalizer(NULL)
+	kernel_matrix(NULL), lhs(NULL), rhs(NULL), num_lhs(0), num_rhs(0),
+	combined_kernel_weight(1), optimization_initialized(false),
+	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
 {
 	if (size<10)
 		size=10;
@@ -342,6 +343,9 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 
 	lhs=l;
 	rhs=r;
+
+	num_lhs=l->get_num_vectors();
+	num_rhs=r->get_num_vectors();
 
 	return true;
 }
@@ -856,9 +860,11 @@ void CKernel::remove_lhs_and_rhs()
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
+	num_rhs=NULL;
 
 	SG_UNREF(lhs);
 	lhs = NULL;
+	num_lhs=NULL;
 
 #ifdef USE_SVMLIGHT
 	cache_reset();
@@ -871,6 +877,7 @@ void CKernel::remove_lhs()
 		rhs=NULL;
 	SG_UNREF(lhs);
 	lhs = NULL;
+	num_lhs=NULL;
 
 #ifdef USE_SVMLIGHT
 	cache_reset();
@@ -883,6 +890,7 @@ void CKernel::remove_rhs()
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
+	num_rhs=NULL;
 
 #ifdef USE_SVMLIGHT
 	cache_reset();

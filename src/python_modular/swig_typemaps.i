@@ -851,7 +851,9 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
             }
 
             PyList_SetItem(list, i, s);
+            delete[] str[i].string;
         }
+        delete[] str;
         $result = list;
     }
     else

@@ -31,6 +31,7 @@
 #include <shogun/preproc/NormOne.h>
 #include <shogun/preproc/PCACut.h>
 #include <shogun/preproc/PruneVarSubMean.h>
+#include <shogun/preproc/DecompressString.h>
 #include <shogun/preproc/SortUlongString.h>
 #include <shogun/preproc/SortWordString.h>
 #include <shogun/preproc/SparsePreProc.h>
@@ -70,6 +71,16 @@ namespace shogun
     %template(StringWordPreProc) CStringPreProc<uint16_t>;
     %template(StringBytePreProc) CStringPreProc<uint8_t>;
     %template(StringCharPreProc) CStringPreProc<char>;
+}
+
+/* Templates Class DecompressString*/
+%include <shogun/preproc/DecompressString.h>
+namespace shogun
+{
+    %template(DecompressUlongString) CDecompressString<uint64_t>;
+    %template(DecompressWordString) CDecompressString<uint16_t>;
+    %template(DecompressByteString) CDecompressString<uint8_t>;
+    %template(DecompressCharString) CDecompressString<char>;
 }
 
 %include <shogun/preproc/LogPlusOne.h>

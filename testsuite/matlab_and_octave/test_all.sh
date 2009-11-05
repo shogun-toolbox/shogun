@@ -23,7 +23,7 @@ function test_all () {
 		fi
 
 		# thanks to matlab, 1 means ok and 0 means error
-		if [ $? -ne 0 -o ${ans} -eq 0 ]; then
+		if [ "$?" -ne 0 -o "${ans}" -eq 0 ]; then
 			echo ERROR
 			echo ${output}
 		else

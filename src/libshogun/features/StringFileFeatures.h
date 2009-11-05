@@ -124,6 +124,13 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 		SG_REF(CStringFeatures<ST>::alphabet);
 	}
 
+    /** cleanup a single feature vector */
+    virtual void cleanup_feature_vector(int32_t num)
+    {
+        CStringFeatures<ST>::SG_ERROR("Cleaning single feature vector not"
+                "supported by StringFileFeatures\n");
+    }
+
 	/** obtain meta information from file
 	 * 
 	 * i.e., determine number of strings and their lengths
