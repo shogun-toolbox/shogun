@@ -158,21 +158,8 @@ class CKernel : public CSGObject
 		 */
 		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
-			if (idx_a < 0 || idx_b <0)
-				return 0;
-
-			SG_PRINT("lhs==rhs?: %p %p %d\n", lhs, rhs, get_num_vec_lhs());
-			if (lhs==rhs)
-			{
-				int32_t num_vectors = get_num_vec_lhs();
-				SG_PRINT("%p %p %d\n", lhs, rhs, num_vectors);
-
-				if (idx_a>=num_vectors)
-					idx_a=2*num_vectors-1-idx_a;
-
-				if (idx_b>=num_vectors)
-					idx_b=2*num_vectors-1-idx_b;
-			}
+			if (idx_a<0 || idx_b<0 || idx_a>=num_vectors || idx_b>=num_vectors)
+				SG_ERROR("Index out of Range: idx_a=%d idx_b=%d\n", idx_a,idx_b);
 
 			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
 		}
@@ -688,6 +675,8 @@ class CKernel : public CSGObject
 			int32_t start;
 			/** end */
 			int32_t end;
+			/** of vectors */
+			int32_t num_vectors;
 		};
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 

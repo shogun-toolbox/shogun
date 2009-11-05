@@ -95,7 +95,7 @@ struct S_THREAD_PARAM_KERNEL
 	float64_t *Kval ;
 	int32_t *KI, *KJ ;
 	int32_t start, end;
-    CKernel * kernel;
+    CSVMLight* svmlight;
 };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -118,7 +118,7 @@ void* CSVMLight::compute_kernel_helper(void* p)
 
 	int32_t jj=0 ;
 	for (jj=params->start;jj<params->end;jj++)
-		params->Kval[jj]=params->kernel->kernel(params->KI[jj], params->KJ[jj]) ;
+		params->Kval[jj]=params->svmlight->compute_kernel(params->KI[jj], params->KJ[jj]) ;
 
 	return NULL ;
 }
@@ -1106,7 +1106,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		//SG_DEBUG( "\nkernel-step size: %i\n", step) ;
 		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 		{
-			params[t].kernel = kernel;
+			params[t].svmlight = this;
 			params[t].start = t*step;
 			params[t].end = (t+1)*step;
 			params[t].KI=KI ;
@@ -1115,7 +1115,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 			pthread_create(&threads[t], NULL, CSVMLight::compute_kernel_helper, (void*)&params[t]);
 		}
 		for (i=params[parallel->get_num_threads()-2].end; i<Knum; i++)
-			Kval[i]=kernel->kernel(KI[i],KJ[i]) ;
+			Kval[i]=compute_kernel(KI[i],KJ[i]) ;
 
 		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 			pthread_join(threads[t], NULL);
@@ -1581,7 +1581,7 @@ void CSVMLight::update_linear_component_mkl(
 				if(a[i] != a_old[i])
 				{
 					for (int32_t j=0;j<num;j++)
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(i,j)*(float64_t)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*compute_kernel(i,j)*(float64_t)label[i];
 				}
 			}
 			w1[n]=0.0 ;

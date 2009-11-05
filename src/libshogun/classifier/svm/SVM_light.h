@@ -753,7 +753,6 @@ public:
   /** dual */
   float64_t* dual;
 
-
   // MKL stuff
 
   /** Matrix that stores the contribution by each kernel for each example (for

@@ -1148,15 +1148,23 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 
 	bool success=true;
 
-	if (ui->ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM &&
-			ui->ui_kernel->get_kernel()->get_kernel_type()!=K_COMBINED)
+	if (ui->ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM)
 	{
-		if (!trainfeatures)
-			SG_ERROR("No training features available.\n");
-		if (!testfeatures)
-			SG_ERROR("No test features available.\n");
+		if (ui->ui_kernel->get_kernel()->get_kernel_type()==K_COMBINED
+				&& ( !trainfeatures || !testfeatures ))
+		{
+			SG_DEBUG("skipping initialisation of combined kernel "
+					"as train/test features are unavailable\n");
+		}
+		else
+		{
+			if (!trainfeatures)
+				SG_ERROR("No training features available.\n");
+			if (!testfeatures)
+				SG_ERROR("No test features available.\n");
 
-		success=ui->ui_kernel->init_kernel("TEST");
+			success=ui->ui_kernel->init_kernel("TEST");
+		}
 	}
 
 	if (!success || !ui->ui_kernel->is_initialized())

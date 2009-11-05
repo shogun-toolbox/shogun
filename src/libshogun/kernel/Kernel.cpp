@@ -506,7 +506,12 @@ void CKernel::cache_kernel_row(int32_t m)
 						*kernel_cache.index[k]+l];
 				}
 				else
+				{
+					if (k>=num_vectors)
+						k=2*num_vectors-1-k;
+
 					cache[j]=kernel(m, k);
+				}
 			}
 		}
 		else
@@ -535,7 +540,12 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 					*params->kernel_cache->index[k]+l];
 			}
 			else
-				cache[j]=params->kernel->kernel(m, k);
+				{
+					if (k>=params->num_vectors)
+						k=2*params->num_vectors-1-k;
+
+					cache[j]=params->kernel->kernel(m, k);
+				}
 		}
 
 		//now line m is cached
@@ -611,6 +621,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 				params[t].num_uncached = num;
 				params[t].start = t*step;
 				params[t].end = (t+1)*step;
+				params[t].num_vectors = get_num_vec_lhs();
 				end=params[t].end;
 
 				if (pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]) != 0)
@@ -635,6 +646,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		last_param.start = end;
 		last_param.num_uncached = num;
 		last_param.end = num;
+		last_param.num_vectors = get_num_vec_lhs();
 
 		cache_multiple_kernel_row_helper(&last_param);
 
@@ -822,10 +834,8 @@ bool CKernel::save(char* fname)
 	{
 		for (int32_t r=0; r< (int32_t) num_right && f.is_ok(); r++)
 		{
-			if (!(i % (num_total/10+1)))
-				SG_PRINT("%02d%%.", (int32_t) (100.0*i/num_total));
-			else if (!(i % (num_total/200+1)))
-				SG_PRINT(".");
+			 if (!(i % (num_total/200+1)))
+				SG_PROGRESS(i, 0, num_total-1);
 
 			float64_t k=kernel(l,r);
 			f.save_real_data(&k, 1);
@@ -833,6 +843,7 @@ bool CKernel::save(char* fname)
 			i++;
 		}
 	}
+	SG_DONE();
 
 	if (f.is_ok())
 		SG_INFO( "kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(KERNELCACHE_ELEM));
