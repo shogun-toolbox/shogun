@@ -260,7 +260,7 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	cd ../../examples/libshogun && make LIBRARY_PATH=$(LIBRARY_PATH) LIB_PATH=$(DESTDIR)$(LIBDIR) INCLUDES=-I$(DESTDIR)$(INCDIR) check-examples
+	cd ../../examples/libshogun && $(MAKE) clean && $(MAKE) LIBRARY_PATH=$(LIBRARY_PATH) LIB_PATH=$(DESTDIR)$(LIBDIR) INCLUDES=-I$(DESTDIR)$(INCDIR) check-examples
 
 run-testsuite-libshogunui:
 	true
@@ -317,7 +317,7 @@ lib/versionstring.h:    $(SVNEntries)
 
 doc-libshogun:	lib/versionstring.h
 		-@$(SEDMI) "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
-		cd ../../doc && make
+		cd ../../doc && $(MAKE)
 
 doc-libshogunui:
 	true

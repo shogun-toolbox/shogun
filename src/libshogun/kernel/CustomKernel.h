@@ -41,16 +41,6 @@ class CCustomKernel: public CKernel
 
 		virtual ~CCustomKernel();
 
-		/** get kernel matrix shortreal
-		 *
-		 * @param m dimension m of matrix
-		 * @param n dimension n of matrix
-		 * @param target target for kernel matrix
-		 * @return the kernel matrix
-		 */
-		virtual float32_t* get_kernel_matrix_shortreal(
-			int32_t &m, int32_t &n, float32_t* target=NULL);
-
 		/** initialize kernel with dummy features
 		 *
 		 * Kernels always need feature objects assigned. As the custom kernel

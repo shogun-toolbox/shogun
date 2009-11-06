@@ -75,12 +75,6 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(l->get_feature_type()==F_UNKNOWN);
 	ASSERT(r->get_feature_type()==F_UNKNOWN);
 
-	ASSERT(!num_lhs || num_lhs==l->get_num_vectors());
-	ASSERT(!num_rhs || num_rhs==l->get_num_vectors());
-
-	num_lhs=l->get_num_vectors();
-	num_rhs=r->get_num_vectors();
-
 	CFeatures* lf=NULL;
 	CFeatures* rf=NULL;
 	CKernel* k=NULL;

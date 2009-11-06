@@ -3312,7 +3312,7 @@ bool CSGInterface::cmd_get_kernel_matrix()
 		int32_t num_vec_lhs=0;
 		int32_t num_vec_rhs=0;
 		float64_t* kmatrix=NULL;
-		kmatrix=kernel->get_kernel_matrix_real(num_vec_lhs, num_vec_rhs, kmatrix);
+		kmatrix=kernel->get_kernel_matrix<float64_t>(num_vec_lhs, num_vec_rhs, kmatrix);
 
 		set_real_matrix(kmatrix, num_vec_lhs, num_vec_rhs);
 		delete[] kmatrix;

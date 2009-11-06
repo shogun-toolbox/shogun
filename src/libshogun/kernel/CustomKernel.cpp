@@ -69,19 +69,6 @@ CCustomKernel::~CCustomKernel()
 	cleanup();
 }
 
-float32_t* CCustomKernel::get_kernel_matrix_shortreal(
-	int32_t &num_vec1, int32_t &num_vec2, float32_t* target)
-{
-	if (target == NULL)
-		return CKernel::get_kernel_matrix_shortreal(num_vec1, num_vec2, target);
-	else
-	{
-		num_vec1=num_rows;
-		num_vec2=num_cols;
-		return kmatrix;
-	}
-}
-  
 bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
 {
 	return init(new CDummyFeatures(rows), new CDummyFeatures(cols));

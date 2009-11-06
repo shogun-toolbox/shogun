@@ -56,7 +56,7 @@ bool CKRR::train(CFeatures* data)
 	// Get kernel matrix
 	int32_t m=0;
 	int32_t n=0;
-	float64_t *K = kernel->get_kernel_matrix_real(m, n, NULL);
+	float64_t *K = kernel->get_kernel_matrix<float64_t>(m, n, NULL);
 	ASSERT(K && m>0 && n>0);
 
 	for(int32_t i=0; i < n; i++)
@@ -90,7 +90,7 @@ CLabels* CKRR::classify()
 	// Get kernel matrix
 	int32_t m=0;
 	int32_t n=0;
-	float64_t* K=kernel->get_kernel_matrix_real(m, n, NULL);
+	float64_t* K=kernel->get_kernel_matrix<float64_t>(m, n, NULL);
 	ASSERT(K && m>0 && n>0);
 	float64_t* Yh=new float64_t[n];
 
@@ -121,7 +121,7 @@ float64_t CKRR::classify_example(int32_t num)
 	int32_t m=0;
 	int32_t n=0;
 	// TODO: use get_kernel_column instead of computing the whole matrix!
-	float64_t* K=kernel->get_kernel_matrix_real(m, n, NULL);
+	float64_t* K=kernel->get_kernel_matrix<float64_t>(m, n, NULL);
 	ASSERT(K && m>0 && n>0);
 	float64_t Yh;
 

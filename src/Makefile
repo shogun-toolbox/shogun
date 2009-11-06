@@ -34,7 +34,7 @@ all:  $(PARTDEPS)
 endif
 
 install:  $(PARTDEPS)
-	+$(foreach part, $(PARTS), make -C $(part) install-$(part) &&) true
+	+$(foreach part, $(PARTS), $(MAKE) -C $(part) install-$(part) &&) true
 
 uninstall:
 	@test -z "$(LIBDIR)" || rm -f "$(DESTDIR)$(LIBDIR)/libshogun"*
@@ -51,21 +51,21 @@ tests:
 	$(MAKE) run-testsuite
 
 run-testsuite: $(PARTDEPS)
-	+$(foreach part, $(PARTS), make -C $(part) run-testsuite-$(part) &&) true
+	+$(foreach part, $(PARTS), $(MAKE) -C $(part) run-testsuite-$(part) &&) true
 
 check-examples: $(PARTDEPS)
-	+$(foreach part, $(PARTS), make -C $(part) check-examples-$(part) &&) true
+	+$(foreach part, $(PARTS), $(MAKE) -C $(part) check-examples-$(part) &&) true
 
 doc:  $(PARTDEPS)
-	+$(foreach part, $(PARTS), make -C $(part) doc-$(part) &&) true
+	+$(foreach part, $(PARTS), $(MAKE) -C $(part) doc-$(part) &&) true
 
 distclean: clean
-	@+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
 	@rm -f .config tags ui shogun libshogunui/shogun
 	@rm -f */Makefile
 
 clean:  $(PARTDEPS)
-	@+$(foreach part, $(PARTS), make -C $(part) $@ &&) true
+	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
 	@rm -f configure.log .cpuinfo ./configure-* cplex.log
 
 dist:	distclean

@@ -179,18 +179,77 @@ class CKernel : public CSGObject
 		 * @param target the kernel matrix
 		 * @return the kernel matrix
 		 */
-		virtual float64_t* get_kernel_matrix_real(
-			int32_t &m, int32_t &n, float64_t* target);
+		template <class T>
+		T* get_kernel_matrix(int32_t &m, int32_t &n, T* target)
+		{
+			T* result = NULL;
 
-		/** get kernel matrix shortreal
-		 *
-		 * @param m dimension m of matrix
-		 * @param n dimension n of matrix
-		 * @param target target for kernel matrix
-		 * @return the kernel matrix
-		 */
-		virtual float32_t* get_kernel_matrix_shortreal(
-			int32_t &m, int32_t &n, float32_t* target);
+			if (has_features())
+			{
+				if (target && (m!=get_num_vec_lhs() ||
+							n!=get_num_vec_rhs()) )
+					SG_ERROR( "kernel matrix size mismatch\n");
+
+				m=get_num_vec_lhs();
+				n=get_num_vec_rhs();
+
+				int64_t total_num = ((int64_t) m) * n;
+				int32_t num_done = 0;
+
+				SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n);
+
+				if (target)
+					result=target;
+				else
+					result=new T[total_num];
+
+				if (lhs && lhs==rhs && m==n)
+				{
+					for (int32_t i=0; i<m; i++)
+					{
+						for (int32_t j=i; j<m; j++)
+						{
+							float64_t v=kernel(i,j);
+
+							result[i+j*m]=v;
+							result[j+i*m]=v;
+
+							if (num_done%100)
+								SG_PROGRESS(num_done, 0, total_num-1);
+
+							if (i!=j)
+								num_done+=2;
+							else
+								num_done+=1;
+						}
+						SG_PROGRESS(num_done, 0, total_num-1);
+					}
+				}
+				else
+				{
+					for (int32_t i=0; i<m; i++)
+					{
+						for (int32_t j=0; j<n; j++)
+						{
+							result[i+j*m]=kernel(i,j);
+
+							if (num_done%100)
+								SG_PROGRESS(num_done, 0, total_num-1);
+
+							num_done++;
+						}
+						SG_PROGRESS(num_done, 0, total_num-1);
+					}
+				}
+
+				SG_DONE();
+			}
+			else
+				SG_ERROR( "no features assigned to kernel\n");
+
+			return result;
+		}
+
 
 		/** initialize kernel
 		 *  e.g. setup lhs/rhs of kernel, precompute normalization
@@ -772,5 +831,6 @@ class CKernel : public CSGObject
 		 * function */
 		CKernelNormalizer* normalizer;
 };
+
 }
 #endif /* _KERNEL_H__ */

@@ -115,199 +115,18 @@ void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
 		*n=num_vec2;
 
 		int64_t total_num = ((int64_t) num_vec1) * num_vec2;
-		int32_t num_done = 0;
-		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
+		SG_DEBUG( "allocating memory for a kernel matrix"
+				" of size %dx%d\n", num_vec1, num_vec2);
 
 		result=(float64_t*) malloc(sizeof(float64_t)*total_num);
 		ASSERT(result);
-
-		CSignal::clear_cancel();
-
-		if ( lhs && lhs==rhs && num_vec1==num_vec2 )
-		{
-			for (int32_t i=0; i<num_vec1 && (!CSignal::cancel_computations()); i++)
-			{
-				for (int32_t j=i; j<num_vec1; j++)
-				{
-					float64_t v=kernel(i,j);
-
-					result[i+j*num_vec1]=v;
-					result[j+i*num_vec1]=v;
-
-					if (num_done%100000)
-						SG_PROGRESS(num_done, 0, total_num-1);
-
-					if (i!=j)
-						num_done+=2;
-					else
-						num_done+=1;
-				}
-			}
-		}
-		else
-		{
-			for (int32_t i=0; i<num_vec1 && (!CSignal::cancel_computations()); i++)
-			{
-				for (int32_t j=0; j<num_vec2; j++)
-				{
-					result[i+j*num_vec1]=kernel(i,j) ;
-
-					if (num_done%100000)
-						SG_PROGRESS(num_done, 0, total_num-1);
-
-					num_done++;
-				}
-			}
-		}
-
-		SG_DONE();
+		get_kernel_matrix<float64_t>(num_vec1,num_vec2, result);
 	}
 	else
-      SG_ERROR( "no features assigned to kernel\n");
+		SG_ERROR( "no features assigned to kernel\n");
 
 	*dst=result;
 }
-
-float32_t* CKernel::get_kernel_matrix_shortreal(
-	int32_t &num_vec1, int32_t &num_vec2, float32_t* target)
-{
-	float32_t* result = NULL;
-
-	if (has_features())
-	{
-		if (target && (num_vec1!=get_num_vec_lhs() ||
-					num_vec2!=get_num_vec_rhs()) )
-			SG_ERROR( "kernel matrix size mismatch\n");
-
-		num_vec1=get_num_vec_lhs();
-		num_vec2=get_num_vec_rhs();
-
-		int64_t total_num = ((int64_t) num_vec1) * num_vec2;
-		int32_t num_done = 0;
-
-		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
-
-		if (target)
-			result=target;
-		else
-			result=new float32_t[total_num];
-
-		if (lhs && lhs==rhs && num_vec1==num_vec2)
-		{
-			for (int32_t i=0; i<num_vec1; i++)
-			{
-				for (int32_t j=i; j<num_vec1; j++)
-				{
-					float64_t v=kernel(i,j);
-
-					result[i+j*num_vec1]=v;
-					result[j+i*num_vec1]=v;
-
-					if (num_done%1000)
-						SG_PROGRESS(num_done, 0, total_num-1);
-
-					if (i!=j)
-						num_done+=2;
-					else
-						num_done+=1;
-				}
-				SG_PROGRESS(num_done, 0, total_num-1);
-			}
-		}
-		else
-		{
-			for (int32_t i=0; i<num_vec1; i++)
-			{
-				for (int32_t j=0; j<num_vec2; j++)
-				{
-					result[i+j*num_vec1]=kernel(i,j) ;
-
-					if (num_done%1000)
-						SG_PROGRESS(num_done, 0, total_num-1);
-
-					num_done++;
-				}
-				SG_PROGRESS(num_done, 0, total_num-1);
-			}
-		}
-
-		SG_DONE();
-	}
-	else
-      SG_ERROR( "no features assigned to kernel\n");
-
-	return result;
-}
-
-float64_t* CKernel::get_kernel_matrix_real(
-	int32_t &num_vec1, int32_t &num_vec2, float64_t* target)
-{
-	float64_t* result = NULL;
-
-	if (has_features())
-	{
-		if (target && (num_vec1!=get_num_vec_lhs() ||
-					num_vec2!=get_num_vec_rhs()) )
-			SG_ERROR( "kernel matrix size mismatch\n");
-
-		num_vec1=get_num_vec_lhs();
-		num_vec2=get_num_vec_rhs();
-
-		int64_t total_num = ((int64_t) num_vec1) * num_vec2;
-		int32_t num_done = 0;
-
-		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
-
-		if (target)
-			result=target;
-		else
-			result=new float64_t[total_num];
-
-		if (lhs && lhs==rhs && num_vec1==num_vec2)
-		{
-			for (int32_t i=0; i<num_vec1; i++)
-			{
-				for (int32_t j=i; j<num_vec1; j++)
-				{
-					float64_t v=kernel(i,j);
-
-					result[i+j*num_vec1]=v;
-					result[j+i*num_vec1]=v;
-
-					if (num_done%100000)
-						SG_PROGRESS(num_done, 0, total_num-1);
-
-					if (i!=j)
-						num_done+=2;
-					else
-						num_done+=1;
-				}
-			}
-		}
-		else
-		{
-			for (int32_t i=0; i<num_vec1; i++)
-			{
-				for (int32_t j=0; j<num_vec2; j++)
-				{
-					result[i+j*num_vec1]=kernel(i,j) ;
-
-					if (num_done%100000)
-						SG_PROGRESS(num_done, 0, total_num-1);
-
-					num_done++;
-				}
-			}
-		}
-
-		SG_DONE();
-	}
-	else
-      SG_ERROR( "no features assigned to kernel\n");
-
-	return result;
-}
-
 
 #ifdef USE_SVMLIGHT
 void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
@@ -318,7 +137,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 	kernel_cache_cleanup();
 	cache_size=size;
 
-	if (has_features())
+	if (has_features() && get_num_vec_lhs())
 		kernel_cache_init(cache_size, regression_hack);
 }
 #endif //USE_SVMLIGHT
@@ -343,6 +162,9 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 
 	lhs=l;
 	rhs=r;
+
+	ASSERT(!num_lhs || num_lhs==l->get_num_vectors());
+	ASSERT(!num_rhs || num_rhs==l->get_num_vectors());
 
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
@@ -381,7 +203,11 @@ void CKernel::cleanup()
 void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 {
 	int32_t totdoc=get_num_vec_lhs();
-	ASSERT(totdoc>0);
+	if (totdoc<=0)
+	{
+		SG_ERROR("kernel has zero rows: num_lhs=%d num_rhs=%d\n",
+				get_num_vec_lhs(), get_num_vec_rhs());
+	}
 	uint64_t buffer_size=0;
 	int32_t i;
 
@@ -860,11 +686,11 @@ void CKernel::remove_lhs_and_rhs()
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
-	num_rhs=NULL;
+	num_rhs=0;
 
 	SG_UNREF(lhs);
 	lhs = NULL;
-	num_lhs=NULL;
+	num_lhs=0;
 
 #ifdef USE_SVMLIGHT
 	cache_reset();

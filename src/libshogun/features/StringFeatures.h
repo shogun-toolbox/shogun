@@ -421,7 +421,6 @@ template <class ST> class CStringFeatures : public CFeatures
 
 					for (int32_t i=0; i<get_num_preproc(); i++)
 					{
-						SG_PRINT("decompressing\n");
 						CStringPreProc<ST>* p = (CStringPreProc<ST>*) get_preproc(i);
 						feat=p->apply_to_string(tmp_feat_before, len);
 						SG_UNREF(p);
