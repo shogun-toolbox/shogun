@@ -1,0 +1,3 @@
+in case your shogun library and header files are installed into your home directory, please use:
+make LIB_PATH=~/lib/ INCLUDES=~/include/
+

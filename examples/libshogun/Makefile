@@ -3,7 +3,12 @@
 
 LIBRARY_PATH=LD_LIBRARY_PATH
 LIB_PATH=/usr/lib
-CXXFLAGS=-O3 -g $(INCLUDES)
+CXXFLAGS=-O3 -g
+
+ifneq (,$(INCLUDES))
+	CXXFLAGS+= -I$(INCLUDES)
+endif
+
 ifneq (,$(LIB_PATH))
 	LINKFLAGS+=-L$(LIB_PATH)
 endif
