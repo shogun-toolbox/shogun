@@ -35,7 +35,7 @@ public:
 
 	MultitaskKernel();
 	MultitaskKernel(CKernel*);
-	//MultitaskKernel(CKernel*, std::vector<int32_t> task_vec_l, std::vector<int32_t> task_vec_r);
+	MultitaskKernel(CKernel*, std::vector<int32_t> task_vec_l, std::vector<int32_t> task_vec_r);
 
 	virtual ~MultitaskKernel();
 
@@ -97,6 +97,34 @@ public:
 	 * @return name Custom
 	 */
 	virtual const char* get_name() const { return "MultitaskKernel"; }
+
+
+    /** return feature type the kernel can deal with
+     *
+     * @return feature type
+     **/
+
+    virtual EFeatureType get_feature_type() {
+    	if (base_kernel) {
+    		return base_kernel->get_feature_type();
+    	} else {
+    		return F_UNKNOWN;
+    	}
+    }
+
+    /* return feature class the kernel can deal with
+     *
+     * @return feature class
+     */
+    virtual EFeatureClass get_feature_class() {
+    	if (base_kernel) {
+    		return base_kernel->get_feature_class();
+    	} else {
+    		return C_UNKNOWN;
+    	}
+
+    }
+
 
 protected:
 
