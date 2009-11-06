@@ -129,8 +129,6 @@ public:
 	/** return what type of kernel we are, e.g.
 	 * Linear,Polynomial, Gaussian,...
 	 *
-	 * abstract base method
-	 *
 	 * @return kernel type
 	 */
 	virtual EKernelType get_kernel_type() {
@@ -141,6 +139,61 @@ public:
     		return K_UNKNOWN;
     	}
 	}
+
+	/** check if optimization is initialized
+	 *
+	 * @return if optimization is initialized
+	 */
+	inline bool get_is_initialized() {
+    	if (base_kernel) {
+    		return base_kernel->get_is_initialized();
+    	} else {
+    		return false;
+    	}
+	}
+
+
+	/** test whether features have been assigned to lhs and rhs
+	 *
+	 * @return true if features are assigned
+	 */
+	virtual inline bool has_features()
+	{
+    	if (base_kernel) {
+    		return base_kernel->has_features();
+    	} else {
+    		return false;
+    	}
+	}
+
+
+
+	/** resize kernel cache
+	 *
+	 * @param size new size
+	 * @param regression_hack hack for regression
+	 */
+	/*
+	void resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack=false) {
+
+    	if (base_kernel) {
+    		return base_kernel->resize_kernel_cache(size, regression_hack);
+    	}
+
+	}
+	*/
+
+	/** cleanup kernel cache */
+	/*
+	void kernel_cache_cleanup() {
+
+		if (base_kernel) {
+			return base_kernel->kernel_cache_cleanup();
+		}
+
+	}
+	*/
+
 
 protected:
 

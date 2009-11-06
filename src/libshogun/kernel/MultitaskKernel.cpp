@@ -15,19 +15,20 @@
 using namespace shogun;
 
 
-MultitaskKernel::MultitaskKernel() {
-	// TODO Auto-generated constructor stub
+MultitaskKernel::MultitaskKernel() : CKernel() {
+
+	base_kernel = NULL;
 
 }
 
-MultitaskKernel::MultitaskKernel(CKernel* k) {
+MultitaskKernel::MultitaskKernel(CKernel* k) : CKernel() {
 
 	base_kernel = k;
 
 }
 
 
-MultitaskKernel::MultitaskKernel(CKernel* k, std::vector<int32_t> task_vec_l, std::vector<int32_t> task_vec_r) {
+MultitaskKernel::MultitaskKernel(CKernel* k, std::vector<int32_t> task_vec_l, std::vector<int32_t> task_vec_r) : CKernel() {
 
 	//base_kernel = k;
 	//base_kernel->init(l, r);
@@ -71,8 +72,9 @@ MultitaskKernel::~MultitaskKernel() {
 
 bool MultitaskKernel::init(CFeatures* l, CFeatures* r) {
 
+	CKernel::init(l,r);
 	bool is_init = base_kernel->init(lhs, rhs);
-	init_normalizer();
+	base_kernel->init_normalizer();
 	return is_init;
 
 }
