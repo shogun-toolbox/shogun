@@ -126,6 +126,22 @@ public:
     }
 
 
+	/** return what type of kernel we are, e.g.
+	 * Linear,Polynomial, Gaussian,...
+	 *
+	 * abstract base method
+	 *
+	 * @return kernel type
+	 */
+	virtual EKernelType get_kernel_type() {
+
+    	if (base_kernel) {
+    		return base_kernel->get_kernel_type();
+    	} else {
+    		return K_UNKNOWN;
+    	}
+	}
+
 protected:
 
 	CKernel* base_kernel;
