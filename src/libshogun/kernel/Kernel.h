@@ -16,6 +16,7 @@
 #define _KERNEL_H___
 
 #include "lib/common.h"
+#include "lib/Signal.h"
 #include "base/SGObject.h"
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
@@ -187,68 +188,61 @@ class CKernel : public CSGObject
 		{
 			T* result = NULL;
 
-			if (has_features())
-			{
-				if (target && (m!=get_num_vec_lhs() ||
-							n!=get_num_vec_rhs()) )
-					SG_ERROR( "kernel matrix size mismatch\n");
-
-				m=get_num_vec_lhs();
-				n=get_num_vec_rhs();
-
-				int64_t total_num = ((int64_t) m) * n;
-				int32_t num_done = 0;
-
-				SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n);
-
-				if (target)
-					result=target;
-				else
-					result=new T[total_num];
-
-				if (lhs && lhs==rhs && m==n)
-				{
-					for (int32_t i=0; i<m; i++)
-					{
-						for (int32_t j=i; j<m; j++)
-						{
-							float64_t v=kernel(i,j);
-
-							result[i+j*m]=v;
-							result[j+i*m]=v;
-
-							if (num_done%100)
-								SG_PROGRESS(num_done, 0, total_num-1);
-
-							if (i!=j)
-								num_done+=2;
-							else
-								num_done+=1;
-						}
-						SG_PROGRESS(num_done, 0, total_num-1);
-					}
-				}
-				else
-				{
-					for (int32_t i=0; i<m; i++)
-					{
-						for (int32_t j=0; j<n; j++)
-						{
-							result[i+j*m]=kernel(i,j);
-
-							if (num_done%100)
-								SG_PROGRESS(num_done, 0, total_num-1);
-
-							num_done++;
-						}
-						SG_PROGRESS(num_done, 0, total_num-1);
-					}
-				}
-
-				SG_DONE();
-			}
-			else
+			if (!has_features())
 				SG_ERROR( "no features assigned to kernel\n");
+
+			if (target && (m!=get_num_vec_lhs() ||
+						n!=get_num_vec_rhs()) )
+			{
+				SG_ERROR( "kernel matrix size mismatch\n");
+			}
+
+			m=get_num_vec_lhs();
+			n=get_num_vec_rhs();
+
+			int64_t total_num = ((int64_t) m) * n;
+			int32_t num_done = 0;
+
+			// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
+			bool symmetric= (lhs && lhs==rhs && m==n);
+
+			SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n);
+
+			if (target)
+				result=target;
+			else
+				result=new T[total_num];
+
+			for (int32_t i=0; i<m; i++)
+			{
+				int32_t start=0;
+
+				if (symmetric)
+					start=i;
+
+				for (int32_t j=start; j<n; j++)
+				{
+					float64_t v=kernel(i,j);
+					result[i+j*m]=v;
+					num_done++;
+
+					if (symmetric && i==j)
+					{
+						result[j+i*m]=v;
+						num_done++;
+					}
+
+					if (num_done%100)
+					{
+						SG_PROGRESS(num_done, 0, total_num-1);
+
+						if (CSignal::cancel_computations())
+							break;
+					}
+				}
+				SG_PROGRESS(num_done, 0, total_num-1);
+			}
+			SG_DONE();
 
 			return result;
 		}
