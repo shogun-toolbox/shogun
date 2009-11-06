@@ -291,9 +291,10 @@ void CKernel::get_kernel_row(
 					buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
 				else
 				{
-					if (j>=num_vectors)
-						j=2*num_vectors-1-j;
-					buffer[j]=(float64_t) kernel(docnum, j);
+					int32_t k=j;
+					if (k>=num_vectors)
+						k=2*num_vectors-1-k;
+					buffer[j]=(float64_t) kernel(docnum, k);
 				}
 			}
 		}
@@ -309,9 +310,10 @@ void CKernel::get_kernel_row(
 		{
 			for(i=0;(j=active2dnum[i])>=0;i++)
 			{
-				if (j>=num_vectors)
-					j=2*num_vectors-1-j;
-				buffer[j]=(KERNELCACHE_ELEM) kernel(docnum, j);
+				int32_t k=j;
+				if (k>=num_vectors)
+					k=2*num_vectors-1-k;
+				buffer[j]=(KERNELCACHE_ELEM) kernel(docnum, k);
 			}
 		}
 	}
