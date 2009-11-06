@@ -28,4 +28,4 @@ check-examples: $(TARGETS)
 	@for t in $(TARGETS) ; do echo $$t && $(LIBRARY_PATH)="$$$(LIBRARY_PATH):$(LIB_PATH)" ./$$t >/dev/null; done
 
 %: %.cpp
-	$(CC) $(CXXFLAGS) $< $(LINKFLAGS) -lshogun -o $@
+	$(CC) $(CXXFLAGS) $< $(LINKFLAGS) -o $@
