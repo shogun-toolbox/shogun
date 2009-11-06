@@ -17,6 +17,7 @@
 
 #include "lib/common.h"
 #include "lib/Signal.h"
+#include "lib/Mathematics.h"
 #include "base/SGObject.h"
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
@@ -88,6 +89,26 @@ enum EKernelProperty
 	KP_BATCHEVALUATION = 4  // Kernels that can on the fly generate normals in linadd and more quickly/memory efficient process batches instead of single examples
 };
 
+/** kernel thread parameters */
+template <class T> struct K_THREAD_PARAM
+{
+	/** kernel */
+	CKernel* kernel;
+	/** start */
+	int32_t start;
+	/** end */
+	int32_t end;
+	/** m */
+	int32_t m;
+	/** n */
+	int32_t n;
+	/** result */
+	T* result;
+	/** kernel matrix k(i,j)=k(j,i) */
+	bool symmetric;
+	/** output progress */
+	bool verbose;
+};
 
 class CSVM;
 
@@ -200,8 +221,7 @@ class CKernel : public CSGObject
 			m=get_num_vec_lhs();
 			n=get_num_vec_rhs();
 
-			int64_t total_num = ((int64_t) m) * n;
-			int32_t num_done = 0;
+			int64_t total_num = int64_t(m)*n;
 
 			// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
 			bool symmetric= (lhs && lhs==rhs && m==n);
@@ -213,35 +233,59 @@ class CKernel : public CSGObject
 			else
 				result=new T[total_num];
 
-			for (int32_t i=0; i<m; i++)
+			int32_t num_threads=parallel->get_num_threads();
+			if (num_threads < 2)
 			{
-				int32_t start=0;
-
-				if (symmetric)
-					start=i;
-
-				for (int32_t j=start; j<n; j++)
-				{
-					float64_t v=kernel(i,j);
-					result[i+j*m]=v;
-					num_done++;
-
-					if (symmetric && i==j)
-					{
-						result[j+i*m]=v;
-						num_done++;
-					}
-
-					if (num_done%100)
-					{
-						SG_PROGRESS(num_done, 0, total_num-1);
-
-						if (CSignal::cancel_computations())
-							break;
-					}
-				}
-				SG_PROGRESS(num_done, 0, total_num-1);
+				K_THREAD_PARAM<T> params;
+				params.kernel=this;
+				params.result=result;
+				params.start=0;
+				params.end=m;
+				params.n=n;
+				params.m=m;
+				params.symmetric=symmetric;
+				params.verbose=true;
+				get_kernel_matrix_helper<T>((void*) &params);
 			}
+			else
+			{
+				pthread_t* threads = new pthread_t[num_threads-1];
+				K_THREAD_PARAM<T>* params = new K_THREAD_PARAM<T>[num_threads];
+				int64_t step= total_num/num_threads;
+
+				int32_t t;
+
+				for (t=0; t<num_threads-1; t++)
+				{
+					params[t].kernel = this;
+					params[t].result = result;
+					params[t].start = compute_row_start(t*step, n, symmetric);
+					params[t].end = compute_row_start((t+1)*step, n, symmetric);
+					params[t].n=n;
+					params[t].m=m;
+					params[t].symmetric=symmetric;
+					params[t].verbose=false;
+					pthread_create(&threads[t], NULL,
+							CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]);
+				}
+
+				params[t].kernel = this;
+				params[t].result = result;
+				params[t].start = compute_row_start(t*step, n, symmetric);
+				params[t].end = m;
+				params[t].n=n;
+				params[t].m=m;
+				params[t].symmetric=symmetric;
+				params[t].verbose=true;
+				get_kernel_matrix_helper<T>(&params[t]);
+
+				for (t=0; t<num_threads-1; t++)
+					pthread_join(threads[t], NULL);
+
+				delete[] params;
+				delete[] threads;
+			}
+
 			SG_DONE();
 
 			return result;
@@ -674,6 +718,71 @@ class CKernel : public CSGObject
 		 * @return computed kernel function at indices a,b
 		 */
 		virtual float64_t compute(int32_t x, int32_t y)=0;
+
+
+		/** compute row start offset for parallel kernel matrix computation
+		 *
+		 * @param offs offset
+		 * @param n number of columns
+		 * @param symmetric whether matrix is symmetric 
+		 */
+		int32_t compute_row_start(int64_t offs, int32_t n, bool symmetric)
+		{
+			int32_t i_start;
+
+			if (symmetric)
+				i_start=(int32_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
+			else
+				i_start=(int32_t) (offs/int64_t(n));
+
+			return i_start;
+		}
+
+
+		/** helper for computing the kernel matrix in a parallel way
+		 *
+		 * @param p thread parameters
+		 */
+		template <class T>
+		static void* get_kernel_matrix_helper(void* p)
+		{
+			K_THREAD_PARAM<T>* params= (K_THREAD_PARAM<T>*) p;
+			int32_t i_start=params->start;
+			int32_t i_end=params->end;
+			CKernel* k=params->kernel;
+			T* result=params->result;
+			bool symmetric=params->symmetric;
+			int32_t n=params->n;
+			int32_t m=params->m;
+			bool verbose=params->verbose;
+
+			for (int32_t i=i_start; i<i_end; i++)
+			{
+				int32_t j_start=0;
+
+				if (symmetric)
+					j_start=i;
+
+				for (int32_t j=j_start; j<n; j++)
+				{
+					float64_t v=k->kernel(i,j);
+					result[i+j*m]=v;
+
+					if (symmetric && i!=j)
+						result[j+i*m]=v;
+				}
+
+				if (verbose)
+				{
+					k->SG_PROGRESS(i, i_start, i_end);
+
+					if (CSignal::cancel_computations())
+						break;
+				}
+			}
+
+			return NULL;
+		}
 
 #ifdef USE_SVMLIGHT
 		/**@ cache kernel evalutations to improve speed */
