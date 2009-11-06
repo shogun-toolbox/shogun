@@ -26,7 +26,7 @@ MultitaskKernel::MultitaskKernel(CKernel* k) {
 
 }
 
-
+/*
 MultitaskKernel::MultitaskKernel(CKernel* k, std::vector<int32_t> task_vec_l, std::vector<int32_t> task_vec_r) {
 
 	//base_kernel = k;
@@ -63,6 +63,7 @@ MultitaskKernel::MultitaskKernel(CKernel* k, std::vector<int32_t> task_vec_l, st
 
 
 }
+*/
 
 MultitaskKernel::~MultitaskKernel() {
 	SG_DEBUG("deleting MultitaskKernel");

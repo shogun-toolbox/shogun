@@ -18,6 +18,7 @@
 #include "lib/common.h"
 #include "features/Features.h"
 
+#include <algorithm>
 
 namespace shogun {
 
@@ -34,7 +35,7 @@ public:
 
 	MultitaskKernel();
 	MultitaskKernel(CKernel*);
-	MultitaskKernel(CKernel*, std::vector<int32_t> task_vec_l, std::vector<int32_t> task_vec_r);
+	//MultitaskKernel(CKernel*, std::vector<int32_t> task_vec_l, std::vector<int32_t> task_vec_r);
 
 	virtual ~MultitaskKernel();
 
