@@ -71,8 +71,8 @@ public:
 
 	float64_t get_task_similarity(int32_t task1, int32_t task2) {
 
-		assert(task1 < num_tasks && task1 >= 0);
-		assert(task2 < num_tasks && task2 >= 0);
+		ASSERT(task1 < num_tasks && task1 >= 0);
+		ASSERT(task2 < num_tasks && task2 >= 0);
 
 		return dependency_matrix[task1 * num_tasks + task2];
 
@@ -80,8 +80,8 @@ public:
 
 	void set_task_similarity(int32_t task1, int32_t task2, float64_t similarity) {
 
-		assert(task1 < num_tasks && task1 >= 0);
-		assert(task2 < num_tasks && task2 >= 0);
+		ASSERT(task1 < num_tasks && task1 >= 0);
+		ASSERT(task2 < num_tasks && task2 >= 0);
 
 		dependency_matrix[task1 * num_tasks + task2] = similarity;
 

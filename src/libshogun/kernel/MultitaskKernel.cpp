@@ -54,7 +54,7 @@ MultitaskKernel::MultitaskKernel(CKernel* k, std::vector<int32_t> task_vec_l, st
 
 
 	//make sure we have same number of tasks
-	assert(num_unique_tasks_lhs == num_unique_tasks_rhs);
+	ASSERT(num_unique_tasks_lhs == num_unique_tasks_rhs);
 
 
 	//initialize members
