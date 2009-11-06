@@ -159,7 +159,10 @@ class CKernel : public CSGObject
 		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
 			if (idx_a<0 || idx_b<0 || idx_a>=num_lhs || idx_b>=num_rhs)
-				SG_ERROR("Index out of Range: idx_a=%d idx_b=%d\n", idx_a,idx_b);
+			{
+				SG_ERROR("Index out of Range: idx_a=%d/%d idx_b=%d/%d\n",
+						idx_a,num_lhs, idx_b,num_rhs);
+			}
 
 			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
 		}

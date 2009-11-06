@@ -344,7 +344,7 @@ float64_t CSVRLight::compute_objective_function(
   {
 	  check+=a[i]*eps-a[i]*label[i]*c[i];
 	  for(int32_t j=0;j<totdoc;j++)
-		  check+= 0.5*a[i]*label[i]*a[j]*label[j]*kernel->kernel(regression_fix_index(i),regression_fix_index(j));
+		  check+= 0.5*a[i]*label[i]*a[j]*label[j]*compute_kernel(i,j);
 
   }
 
@@ -520,7 +520,7 @@ void CSVRLight::update_linear_component_mkl(
 				if(a[i] != a_old[i])
 				{
 					for(int32_t j=0;j<num;j++)
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*kernel->kernel(regression_fix_index(i),regression_fix_index(j))*(float64_t)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*compute_kernel(i,j)*(float64_t)label[i];
 				}
 			}
 			w1[n]=0.0 ;

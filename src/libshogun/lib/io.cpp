@@ -41,18 +41,22 @@ char CIO::directory_name[FBUFSIZE];
 
 CIO::CIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), loglevel(MSG_WARN), refcount(0)
+	last_progress(1), show_progress(false), show_file_and_line(false),
+	loglevel(MSG_WARN), refcount(0)
 {
 }
 
 CIO::CIO(const CIO& orig)
 : target(orig.get_target()), last_progress_time(0),
 	progress_start_time(0), last_progress(1),
-	show_progress(orig.get_show_progress()), loglevel(orig.get_loglevel()), refcount(0)
+	show_progress(orig.get_show_progress()),
+	show_file_and_line(orig.get_show_file_and_line()),
+	loglevel(orig.get_loglevel()), refcount(0)
 {
 }
 
-void CIO::message(EMessageType prio, const char *fmt, ... ) const
+void CIO::message(EMessageType prio, const char* file,
+		int32_t line, const char *fmt, ... ) const
 {
 	const char* msg_intro=get_msg_intro(prio);
 
@@ -62,6 +66,13 @@ void CIO::message(EMessageType prio, const char *fmt, ... ) const
 		snprintf(str, sizeof(str), "%s", msg_intro);
 		int len=strlen(msg_intro);
 		char* s=str+len;
+
+		if (show_file_and_line && line>0)
+		{
+			snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
+			len=strlen(str);
+			s=str+len;
+		}
 
 		va_list list;
 		va_start(list,fmt);
@@ -76,12 +87,12 @@ void CIO::message(EMessageType prio, const char *fmt, ... ) const
 			case MSG_NOTICE:
 			case MSG_MESSAGEONLY:
 				if (sg_print_message)
-					sg_print_message(target, s);
+					sg_print_message(target, str);
 				break;
 
 			case MSG_WARN:
 				if (sg_print_warning)
-					sg_print_warning(target, s);
+					sg_print_warning(target, str);
 				break;
 
 			case MSG_ERROR:
@@ -155,12 +166,12 @@ void CIO::progress(
 	if (estimate/100>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, str, prefix, v, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
+		message(MSG_MESSAGEONLY, "", -1, str, prefix, v, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, str, prefix, v, (float32_t)estimate/100, (float32_t)total_estimate/100);
+		message(MSG_MESSAGEONLY, "", -1, str, prefix, v, (float32_t)estimate/100, (float32_t)total_estimate/100);
 	}
 
     fflush(target);
@@ -207,12 +218,12 @@ void CIO::absolute_progress(
 	if (estimate/100>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, str, prefix, current_val, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
+		message(MSG_MESSAGEONLY, "", -1, str, prefix, current_val, (float32_t)estimate/100/60, (float32_t)total_estimate/100/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, str, prefix, current_val, (float32_t)estimate/100, (float32_t)total_estimate/100);
+		message(MSG_MESSAGEONLY, "", -1, str, prefix, current_val, (float32_t)estimate/100, (float32_t)total_estimate/100);
 	}
 
     fflush(target);
@@ -223,7 +234,7 @@ void CIO::done()
 	if (!show_progress)
 		return;
 
-	message(MSG_INFO, "done.\n");
+	message(MSG_INFO, "", -1, "done.\n");
 }
 
 char* CIO::skip_spaces(char* str)
@@ -262,11 +273,6 @@ EMessageType CIO::get_loglevel() const
 void CIO::set_loglevel(EMessageType level)
 {
 	loglevel=level;
-}
-
-bool CIO::get_show_progress() const
-{
-	return show_progress;
 }
 
 void CIO::set_target(FILE* t)

@@ -64,31 +64,32 @@ enum EMessageType
 
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
-#define SG_GCDEBUG(...) io->message(MSG_GCDEBUG, __VA_ARGS__)
-#define SG_DEBUG(...) io->message(MSG_DEBUG, __VA_ARGS__)
-#define SG_INFO(...) io->message(MSG_INFO, __VA_ARGS__)
-#define SG_WARNING(...) io->message(MSG_WARN, __VA_ARGS__)
-#define SG_ERROR(...) io->message(MSG_ERROR, __VA_ARGS__)
-#define SG_PRINT(...) io->message(MSG_MESSAGEONLY, __VA_ARGS__)
-#define SG_NOTIMPLEMENTED io->not_implemented()
-#define SG_DEPRECATED io->deprecated()
+#define SG_GCDEBUG(...) io->message(MSG_GCDEBUG, __FILE__, __LINE__, __VA_ARGS__)
+#define SG_DEBUG(...) io->message(MSG_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
+#define SG_INFO(...) io->message(MSG_INFO, __FILE__, __LINE__, __VA_ARGS__)
+#define SG_WARNING(...) io->message(MSG_WARN, __FILE__, __LINE__, __VA_ARGS__)
+#define SG_ERROR(...) io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__)
+
+#define SG_PRINT(...) io->message(MSG_MESSAGEONLY, __FILE__, __LINE__, __VA_ARGS__)
+#define SG_NOTIMPLEMENTED io->not_implemented(__FILE__, __LINE__)
+#define SG_DEPRECATED io->deprecated(__FILE__, __LINE__)
 
 #define SG_PROGRESS(...) io->progress(__VA_ARGS__)
 #define SG_ABS_PROGRESS(...) io->absolute_progress(__VA_ARGS__)
 #define SG_DONE() io->done()
 
 // printf like function using the global sg_io object
-#define SG_SGCDEBUG(...) sg_io->message(MSG_GCDEBUG,__VA_ARGS__)
-#define SG_SDEBUG(...) sg_io->message(MSG_DEBUG,__VA_ARGS__)
-#define SG_SINFO(...) sg_io->message(MSG_INFO,__VA_ARGS__)
-#define SG_SWARNING(...) sg_io->message(MSG_WARN,__VA_ARGS__)
-#define SG_SERROR(...) sg_io->message(MSG_ERROR,__VA_ARGS__)
-#define SG_SPRINT(...) sg_io->message(MSG_MESSAGEONLY,__VA_ARGS__)
+#define SG_SGCDEBUG(...) sg_io->message(MSG_GCDEBUG,__FILE__, __LINE__, __VA_ARGS__)
+#define SG_SDEBUG(...) sg_io->message(MSG_DEBUG,__FILE__, __LINE__, __VA_ARGS__)
+#define SG_SINFO(...) sg_io->message(MSG_INFO,__FILE__, __LINE__, __VA_ARGS__)
+#define SG_SWARNING(...) sg_io->message(MSG_WARN,__FILE__, __LINE__, __VA_ARGS__)
+#define SG_SERROR(...) sg_io->message(MSG_ERROR,__FILE__, __LINE__, __VA_ARGS__)
+#define SG_SPRINT(...) sg_io->message(MSG_MESSAGEONLY,__FILE__, __LINE__, __VA_ARGS__)
 #define SG_SPROGRESS(...) sg_io->progress(__VA_ARGS__)
 #define SG_SABS_PROGRESS(...) sg_io->absolute_progress(__VA_ARGS__)
 #define SG_SDONE() sg_io->done()
-#define SG_SNOTIMPLEMENTED sg_io->not_implemented()
-#define SG_SDEPRECATED sg_io->deprecated()
+#define SG_SNOTIMPLEMENTED sg_io->not_implemented(__FILE__, __LINE__)
+#define SG_SDEPRECATED sg_io->deprecated(__FILE__, __LINE__)
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
@@ -123,14 +124,27 @@ class CIO
 		 *
 		 * @return if progress bar is shown
 		 */
-		bool get_show_progress() const;
+		inline bool get_show_progress() const
+		{
+			return show_progress;
+		}
+
+		/** get show file and line
+		 *
+		 * @return if file and line should prefix messages
+		 */
+		inline bool get_show_file_and_line() const
+		{
+			return show_file_and_line;
+		}
 
 		/** print a message
 		 *
 		 * @param prio message priority
 		 * @param fmt format string
 		 */
-		void message(EMessageType prio, const char *fmt, ... ) const;
+		void message(EMessageType prio, const char* file,
+				int32_t line, const char *fmt, ... ) const;
 
 		/** print progress bar
 		 *
@@ -166,15 +180,16 @@ class CIO
 		void done();
 
 		/** print error message 'not implemented' */
-		inline void not_implemented() const
+		inline void not_implemented(const char* file, int32_t line) const
 		{
-			message(MSG_ERROR, "Sorry, not yet implemented.\n");
+			message(MSG_ERROR, file, line, "Sorry, not yet implemented .\n");
 		}
 
 		/** print warning message 'function deprecated' */
-		inline void deprecated() const
+		inline void deprecated(const char* file, int32_t line) const
 		{
-			message(MSG_WARN, "This function is deprecated and will be removed soon.\n");
+			message(MSG_WARN, file, line,
+					"This function is deprecated and will be removed soon.\n");
 		}
 
 		/** print a buffered message
@@ -237,6 +252,24 @@ class CIO
 			// static functions like CSVM::classify_example_helper call SG_PROGRESS
 			if (sg_io!=this)
 				sg_io->disable_progress();
+		}
+
+		/** enable displaying of file and line when printing messages*/
+		inline void enable_file_and_line()
+		{
+			show_file_and_line=true;
+
+			if (sg_io!=this)
+				sg_io->enable_file_and_line();
+		}
+
+		/** disable displaying of file and line when printing messages*/
+		inline void disable_file_and_line()
+		{
+			show_file_and_line=false;
+
+			if (sg_io!=this)
+				sg_io->disable_file_and_line();
 		}
 
 		/** set directory name
@@ -342,6 +375,9 @@ class CIO
 		float64_t last_progress;
 		/** if progress bar shall be shown */
 		bool show_progress;
+		/** if each print function should append filename and linenumber of
+		 * where the print occurs */
+		bool show_file_and_line;
 
 		/** log level */
 		EMessageType loglevel;
