@@ -1,0 +1,17 @@
+/*!
+\page authors 作者
+
+SHOGUN主要由以下人员开发
+\li Soeren Sonnenburg <Soeren.Sonnenburg@tuebingen.mpg.de>
+\li Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+\li Sebastian Henschel <shogun@kodeaffe.de>
+
+同时我们需要感谢
+
+Alexander Binder, Alexander Zien, Andre Noll, Cheng Soon Ong, Christian Gehl,
+Christian Widmer, Christoph Lampert, Fabio De Bona, Jonas Behr, Konrad Rieck,
+Mikio Braun, Torsten Werner, Vojtech Franc, Yaroslav Halchenko
+*/
+
+//:r !cat ../../src/.authors | cut -f 2 -d ':' | cut -f 1 -d '<' | sort -u | grep -v 'Gunnar Raetsch' | grep -v 'Sonnenburg' | grep -v Henschel | sed 's/ $/,/g' | tr '\012' ' '
+

@@ -1,0 +1,168 @@
+/*!
+\page developer_tutorial Libshogun使用指南和开发者指南
+
+Shogun分成两个部分：libshogun，它包含了已实现的所有机器学习算法；libshogunui，
+它是一个接口库，提供各种静态和模块化接口，静态接口包括python、octave、matlab和r，
+模块化接口包括python_modular、octave_modular和r_modular（各种接口可以在src/目录
+下找到相应的子目录）。关于如何安装shogun请看src/INSTALL。
+
+如果要想扩展shogun，最好方法就是开始使用它提供的库。通过查看examples/libshogun
+的例子你可以很容易学习使用它。
+
+最简单的基于libshogun的程序如下所示： 
+
+\verbinclude minimal.cpp
+
+它可以通过g++ -lshogun minimal.cpp -o minimal来编译，很显然它什么事情都没有做
+（除了在内部初始化了一组全局变量并销毁它们）。
+
+如果想重定向shogun的输出函数SG_DEBUG()、SG_INFO()、SG_WARN()、SG_ERROR()、SG_PRINT()
+等，你需要像下面这样把相应参数传给init_shogun()
+
+\verbatim
+void print_message(FILE* target, const char* str)
+{
+    fprintf(target, "%s", str);
+}
+
+void print_warning(FILE* target, const char* str)
+{
+    fprintf(target, "%s", str);
+}
+
+void print_error(FILE* target, const char* str)
+{
+    fprintf(target, "%s", str);
+}
+
+init_shogun(&print_message, &print_warning,
+            &print_error);
+\endverbatim
+
+如果要使用某些特性，你需要包含相应的头文件。例如，在下面的例子中我们创建了
+一些feature和一个高斯核函数：
+
+\verbinclude minimal_svm.cpp
+
+你很可能感到奇怪，为什么这个例子不会有内存泄漏。首先，向指向数组的指针申请内存
+后新建的shogun对象将使用这些内存，并会在shogun对象销毁的同时释放这此内存。每一个
+新建的shogun对象在内部都有一个引用计数器。每当一个shogun对象被返回或者作为参数
+传给某个函数时，它的引用计数就会增加，比如在上面的例子中
+
+\verbatim
+CLibSVM* svm = new CLibSVM(10, kernel, labels);
+\endverbatim
+
+kernel和labels的引用计数将会增加。析构对象的时候引用计数就会减少并且在引用计数
+<=0时释放所占用的内存。
+
+如果你有全局句柄指向某些对象，这些对象你在后面还要使用，那么你要保证那些对象不会
+被销毁。在上面的例子中，如果在调用SG_UNREF(svm)后再访问labels会造成段错误，因为在
+调用SVM的析构函数时Label对象也被销毁了。你可以通过调用SG_UNREF(obj)来保证obj指向的
+对象不被销毁。相反，调用SG_UNREF(obj)可以使obj的引用计数减一，并且在引用计数<= 0
+时销毁obj指向的对象并设置obj=NULL。
+
+
+一般地，所有的shogun的C++对象都以C为前缀，例如CSVM，它是继承于CSGObject。因为所有
+基类的成员变量都要在创建对象时被初始化，所以创建对象时会调用基类的构造函数，如CSVM
+调用CKernelMachine，CKernelMachine调用CClassifier，最后CClassifier调用CSGObject。
+
+如果你想实现一个自己的SVM（名为MySVM），你可以在MySVM的构造函数中这样做
+
+\verbatim
+class MySVM : public CSVM
+{
+    MySVM( ) : CSVM()
+    {
+
+    }
+
+    virtual ~MySVM()
+    {
+
+    }
+};
+\endverbatim
+
+同时要保证你的析构函数是\b 虚函数。
+
+现在我们开始定义一个自己的核函数，一个类线性的核函数，它定义在double精度的浮点向量上。
+定义如下：
+
+\f$k({\bf x}, {\bf x'}) = \sum_{i=1}^D x_i \cdot x'_{D-i+1}\f$
+
+其中D是数据的维数。
+要实现这个核函数需要新建一个类CReverseLinearKernel，该类继承于CSimpleKernel<float64_t>
+（如果输入是字符串，基类应该是CStringKernel,如果是稀疏feature向量，基类应该是CSparseKernel）
+
+实质上我们只需要用自己的实现来重载函数CKernel::compute()。其它都使用缺省的就可以了。
+compute()的实现可以像这样
+
+
+\verbatim
+virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+{
+    int32_t alen, blen;
+    bool afree, bfree;
+
+    float64_t* avec= 
+        ((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+    float64_t* bvec=
+        ((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+    ASSERT(alen==blen);
+
+    float64_t result=0;
+    for (int32_t i=0; i<alen; i++)
+        result+=avec[i]*bvec[alen-i-1];
+
+    ((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+    ((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+    return result;
+}
+\endverbatim
+
+对于两个索引idx_a和idx_b，我们可以得到它们相应的feature向量，然后使用它们进行计算
+（中间的for循环），最后释放这两个feature向量。需要注意的是在大多数情况下，获取feature向量
+实际上就是一个访问内存操作（free_feature_vector一般是一个空操作）。然而，当preprocessor
+对象被捆绑在某个feature对象时，feature对象会做一些预处理。
+
+一个完整的，可以工作的例子如下所示
+
+\verbinclude revlin_kernel.cpp
+
+你可以看到，还有其它一部分函数用于返回对象名，对象id，以及可以加载或保存核函数初始化
+数据。如果你新建了一个SVM（从CSVM或CLinearClassifier继承而来）或者新建了一些feature对象
+（从CFeatures，CSimpleFeatures,CStringFeatures，CSparseFeatures继承而来），这些函数
+依然可以使用。对于SVM，你只需要重载CSVM::train()，参数设置如epsilon,C以及SVM评价函数
+可以使用基类CSVM中的。
+
+如果你想整合你的类实现到shogun的模块化接口中，你所需要做的就是将该类放在一个头文件中并
+在相应的.i文件中包含这个头文件(上面实现了一个Kernel类，所以相应的.i文件是
+src/modular/Kernel.i)。你可以很容易找到一个类似的对象然后像它那样修改其中的三行：
+首先是修改%{ %}语句块（这个会被swig忽略，swig用于产生python/octave的模块化接口）
+
+\verbatim
+%{
+#include <shogun/kernel/ReverseLinearKernel.h>
+%}
+\endverbatim
+
+然后去掉类名的C前缀（如果有的话）
+
+\verbatim
+%rename(ReverseLinearKernel) CReverseLinearKernel;
+\endverbatim
+
+最后告诉swig封装所在包包含在头文件中的函数
+
+\verbatim
+%include <shogun/kernel/ReverseLinearKernel.h>
+\endverbatim
+
+如果你发现自己设计的对象工作良好，而且符合shogun约定的代码规范，我们很乐意将它整合到shogun中。
+代码规范的细节可见于 \subpage devel（其中包括格式、宏、类型、函数、命名等方面的约定）。请注意，
+如果你修改了某些API那将破坏ABI兼容性，那样你需要增加libshogun soname（见\subpage soname）的主号。
+
+*/

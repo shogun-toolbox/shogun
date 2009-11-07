@@ -1,0 +1,228 @@
+/*! \page methods 机器学习方法
+
+目前Shogun的机器学习功能分为几个部分：feature表示，feature预处理，
+核函数表示,核函数标准化，距离表示，分类器表示，聚类方法，分布，
+性能评价方法，回归方法，结构化输出学习器。以下是shogun已实现的机器学习
+相关算法和类。
+
+  \section featrep_sec Feature表示
+Shogun提供多种feature表示。它们分别是：简单feature（参照CSimpleFeatures），它们是标准的二维
+矩阵；字符串feature（参照CStringFeatures），它们其实是一个包含多个字符串的列表，每个字符串的
+长度不限；稀疏feature（参照CSparseFeatures），它们用于表示稀疏矩阵。
+
+  每一种对象
+
+  \li Simple Features (CSimpleFeatures)
+  \li Strings (CStringFeatures)
+  \li Sparse Features (CSparseFeatures)
+
+  支持下面这些数据类型:
+
+  \li bool
+  \li 8bit char
+  \li 8bit Byte
+  \li 16bit Integer
+  \li 16bit Word
+  \li 32bit Integer
+  \li 32bit Unsigned Integer
+  \li 32bit Float matrix
+  \li 64bit Float matrix
+  \li 96bit Float matrix
+
+  另外还有其它的feature类型。其中有些是基于上面的三种基本的feature类型，如CTOPFeatures
+  （CHMM中使用的TOP Kernel features），CFKFeatures（CHMM使用的Fisher Kernel features）
+  和CRealFileFeatures（从一个二进制文件获取向量）。请注意，所有feature类型都继承于
+  CFeatures。更加复杂的类型还有
+  \li CAttributeFeatures - Features of attribute value pairs.
+  \li CCombinedDotFeatures -  Features that allow stacking of dot features.
+  \li CCombinedFeatures - Features that allow stacking of arbitrary features.
+  \li CDotFeatures - Features that support a certain set of features (like multiplication with a scalar + addition to a dense vector). Examples are sparse and dense features.
+  \li CDummyFeatures - Features without content; Only number of vectors is known.
+  \li CExplicitSpecFeatures - Implement spectrum kernel feature space explicitly.
+  \li CImplicitWeightedSpecFeatures - DotFeatures that implicitly implement weighted spectrum kernel features.
+  \li CWDFeatures - DotFeatures that implicitly implement weighted degree kernel features.
+
+另外，label由CLabels表示，字母表由CAlphabet表示。
+
+
+  \section preproc_sec 预处理器
+  前面提到的所在feature类型都可以作预处理，如减去均值或将向量范数标准化为1等。以下是已实现的预处理器：
+  \li CNormOne - Normalizes vectors to norm 1.
+  \li CLogPlusOne - add 1 and applies log().
+  \li CPCACut - Keeps eigenvectors with the highest eigenvalues.
+  \li CPruneVarSubMean - removes dimensions with little variance, substracting the mean.
+  \li CSortUlongString - Sorts vectors.
+  \li CSortWordString - Sorts vectors.
+
+
+
+  \section classifiers_sec 分类器
+
+在shogun中实现了一系列分类器。它们中有些是标准的二类分类器，有些是一类分类器，有
+些是多类分类器。它们中有一部分是线性分类器和SVM。较快的线性SVM分类器有CSGD,
+CSVMOcas及CLibLinear，它们能处理上百万的样本及feature。
+
+  \subsection linclassi_sec 线性分类器
+  \li CPerceptron - standard online perceptron
+  \li CLDA - fishers linear discriminant
+  \li CLPM - linear programming machine (1-norm regularized SVM)
+  \li CLPBoost - linear programming machine using boosting on the features
+  \li CSVMPerf - a linear svm with l2-regularized bias
+  \li CLibLinear - a linear svm with l2-regularized bias
+  \li CSVMLin - a linear svm with l2-regularized bias
+  \li CSVMOcas - a linear svm with l2-regularized bias
+  \li CSubgradientSVM - SVM based on steepest subgradient descent
+  \li CSubgradientLPM - LPM based on steepest subgradient descent
+
+
+  \subsubsection svmclassi_sec 支持向量机（SVM）
+  \li CSVMLight - A variant of SVMlight using pr_loqo as its internal solver.
+  \li CLibSVM - LibSVM modified to use shoguns kernel framework.
+  \li CMPDSVM - Minimal Primal Dual SVM
+  \li CGPBTSVM - Gradient Projection Technique SVM
+  \li CWDSVMOcas - CSVMOcas based SVM using explicitly spanned WD-Kernel feature space
+  \li CGMNPSVM - A true multiclass one vs. rest SVM
+  \li CGNPPSVM - SVM solver based on the generalized nearest point problem
+  \li CMCSVM - An experimental multiclass SVM
+  \li CLibSVMMultiClass - LibSVMs one vs. one multiclass SVM solver
+  \li CLibSVMOneClass - LibSVMs one-class SVM
+
+
+  \subsection distmachine_sec 距离学习机
+  \li k-Nearest Neighbor - Standard k-NN
+
+
+
+
+  \section regression_sec 回归
+  \subsection 支持向量回归（SVR）
+  \li CSVRLight - SVMLight based SVR
+  \li CLibSVR - LIBSVM based SVR
+
+  \subsection other_regress 其它
+  \li CKRR - Kernel Ridge Regression
+
+  
+
+  \section distrib_sec 分布
+  \li CHMM - Hidden Markov Models
+  \li CHistogram - Histogram
+  \li CLinearHMM - Markov chains (embedded in ``Linear'' HMMs)
+
+
+
+
+  \section cluster_sec 聚类
+  \li CHierarchical - Agglomerative hierarchical single linkage clustering.
+  \li CKMeans - k-Means Clustering
+
+
+
+
+  \section mkl_sec 多核函数学习（Multiple Kernel Learning）
+  \li CMKLRegression for q-norm MKL with Regression
+  \li CMKLOneClass for q-norm 1-class MKL
+  \li CMKLClassification for q-norm 2-class MKL
+  \li CGMNPMKL for 1-norm multi-class MKL
+
+
+
+
+  \section kernels_sec 核函数
+  \li CAUCKernel - To maximize AUC in SVM training (takes a kernel as input)
+  \li CChi2Kernel - Chi^2 Kernel
+  \li CCombinedKernel - Combined kernel to work with multiple kernels
+  \li CCommUlongStringKernel - Spectrum Kernel with spectrums of up to 64bit 
+  \li CCommWordStringKernel - Spectrum kernel with spectrum of up to 16 bit
+  \li CConstKernel - A ``kernel'' returning a constant
+  \li CCustomKernel - A user supplied custom kernel
+  \li CDiagKernel - A kernel with nonzero elements only on the diagonal
+  \li CDistanceKernel - A transformation to transform distances into similarities
+  \li CFixedDegreeStringKernel - A string kernel
+  \li CGaussianKernel - The standard Gaussian kernel
+  \li CGaussianShiftKernel - Gaussian kernel with shift (inspired by the Weighted Degree shift kernel
+  \li CGaussianShortRealKernel - Gaussian Kernel on 32bit Floats
+  \li CHistogramWordStringKernel - A TOP kernel on Sequences
+  \li CLinearByteKernel - Linear Kernel on Bytes
+  \li CLinearKernel - Linear Kernel
+  \li CLinearStringKernel - Linear Kernel on Strings
+  \li CLinearWordKernel - Linear Kernel on Words
+  \li CLocalAlignmentStringKernel - The local alignment kernel
+  \li CLocalityImprovedStringKernel - The locality improved kernel
+  \li CMatchWordStringKernel - Another String kernel
+  \li COligoStringKernel - The oligo string kernel
+  \li CPolyKernel - the polynomial kernel
+  \li CPolyMatchStringKernel - polynomial kernel on strings
+  \li CPolyMatchWordStringKernel - polynomial kernel on strings
+  \li CPyramidChi2 - pyramid chi2 kernel (from image analysis)
+  \li CRegulatoryModulesStringKernel - regulatory modules string kernel
+  \li CSalzbergWordStringKernel - salzberg features based string kernel
+  \li CSigmoidKernel - Tanh sigmoidal kernel
+  \li CSimpleLocalityImprovedStringKernel - A variant of the locality improved kernel
+  \li CSparseGaussianKernel - Gaussian Kernel on sparse features
+  \li CSparseLinearKernel - Linear Kernel on sparse features
+  \li CSparsePolyKernel - Polynomial Kernel on sparse features
+  \li CTensorProductPairKernel - The Tensor Product Pair Kernel (TPPK)
+  \li CWeightedCommWordStringKernel - A weighted (or blended) spectrum kernel
+  \li CWeightedDegreePositionStringKernel - Weighted Degree kernel with shift
+  \li CWeightedDegreeStringKernel - Weighted Degree string kernel
+
+
+
+
+  \subsection kernel_normalizer 核函数标准化
+因为有些核函数对某些SVM来说数值不稳定，它们需要先作一些标准化。
+
+  \li CSqrtDiagKernelNormalizer - divide kernel by square root of product of diagonal
+  \li CAvgDiagKernelNormalizer - divide by average diagonal value
+  \li CFirstElementKernelNormalizer - divide by first kernel element k(0,0)
+  \li CIdentityKernelNormalizer - no normalization
+  \li CDiceKernelNormalizer - normalization inspired by the dice coefficient
+  \li CRidgeKernelNormalizer - adds a ridge on the kernel diagonal
+  \li CTanimotoKernelNormalizer - tanimoto coefficient inspired normalizer
+  \li CVarianceKernelNormalizer - normalize vectors in feature space to norm 1
+
+
+
+
+  \section dist_sec 距离
+距离用于度量两个对象之间的矩离。它们可以用在CDistanceMachine对象中，如CKNN。
+下面是已实现的矩离表示
+
+  \li CBrayCurtisDistance - Bray curtis distance
+  \li CCanberraMetric - Canberra metric
+  \li CChebyshewMetric - Chebyshew metric
+  \li CChiSquareDistance - Chi^2 distance
+  \li CCosineDistance - Cosine distance
+  \li CEuclidianDistance - Euclidian Distance
+  \li CGeodesicMetric - Geodesic metric
+  \li CHammingWordDistance - Hammin distance
+  \li CJensenMetric - Jensen metric
+  \li CManhattanMetric - Manhatten metric
+  \li CMinkowskiMetric - Minkowski metric
+  \li CTanimotoDistance - Tanimoto distance
+
+
+
+
+  \section eval_sec 评价
+  \subsection perf_sec 性能度量
+  性能度量用于评价预测质量，在shogun中CPerformanceMeasures实现。下面是已实现的
+  性能度量
+  \li  Receiver Operating Curve (ROC)
+  \li  Area under the ROC curve (auROC)
+  \li  Area over the ROC curve (aoROC)
+  \li  Precision Recall Curve (PRC)
+  \li  Area under the PRC (auPRC)
+  \li  Area over the PRC (aoPRC)
+  \li  Detection Error Tradeoff (DET)
+  \li  Area under the DET (auDET)
+  \li  Area over the DET (aoDET)
+  \li  Cross Correlation coefficient (CC)
+  \li  Weighted Relative Accuracy (WRAcc)
+  \li  Balanced Error (BAL)
+  \li  F-Measure
+  \li  Accuracy
+  \li  Error
+
+*/

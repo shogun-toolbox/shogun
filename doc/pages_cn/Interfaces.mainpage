@@ -1,0 +1,31 @@
+/*!
+\page interfaces 接口
+
+SHOGUN可以作为一个单独的程序接受命令行的输入，也可以用一个*脚本*作为输入，用脚本
+作为输入时使用文件IO来输入/输出数据（甚至可以使用用tcp/ip来作数据传输）。更重要的是，
+它为很多现有的处理矩阵和统计的语言或软件包提供接口，如Matlab(tm)、Octave、R及Python。SHOGUN
+有三种类型接口，分别是：
+\subpage staticinterfaces, \subpage elwmsinterface
+和
+\subpage modularinterfaces
+。
+
+\li
+静态接口在各语言间是兼容的，如在python,R,matlab,octave使用shogun命令的方法几乎一样
+（只有极少的例外）。但在静态接口中，每种类型的对象只能有一个（如一个SVM分类器）。
+如果你需要处理更加复杂的模型，建议你使用更加灵活的并且是面向对象的python-modular接口。
+注意每种接口都是做相同的事情，只是有些接口可能不支持一些高级数据类型，如字节矩阵。更多信息见
+\ref staticinterfaces "静态接口"
+
+\li
+Eierlegende Wollmilchsau (elwms)接口是一个混合接口，它允许在一个文件中同时使用
+python、R、matlab和octave接口。这样的一个好处是可以使用在octave中运行python或R
+脚本。更多信息见\ref elwmsinterface "ELWMS接口"
+
+\li
+模块化接口非常活，因为它允许有任意多个对象并且它们可以相互通信。例如，一些SVM可以有
+多个核函数或预处理器，核函数还可以使用别的机器学习方法（如HMM）。模块化接口主要通过
+swig实现，目前只支持python（虽然现在只在尝试支持octave和R）。更多信息见
+\ref modularinterfaces "模块化接口"
+
+*/

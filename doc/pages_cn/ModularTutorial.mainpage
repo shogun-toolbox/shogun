@@ -1,0 +1,156 @@
+/*!
+\page modular_tutorial 模块化接口使用指南
+
+SHOGUN为Python和Octave支持的模块化接口提供了一个直观和容易的使用shogun功能的方法。与
+静态接口（\subpage staticinterfaces）相比，模块化接口更加灵活并具有良好的扩展性。
+
+如果这是第一次使用shogun,这就是你首先要看的地方！
+
+在本指南中，我们将演示如使用shogun创建一个基于高斯核函数的SVM分类器。但是，
+首先需要启动python或者octave并加载shogun。
+
+\section start_shogun_modular 启动SHOGUN
+
+要加载shogun的模块，在octave下输入
+\verbatim
+init_shogun
+\endverbatim
+
+在python下需要指定我们要使用的函数。
+在这个例子中，我们需要feature和label表示数据，一个分类器，一个用于比较feature相似性的核函数
+及一些评价方法。
+
+\verbatim
+from shogun.Features import *
+from shogun.Kernel import *
+from shogun.Classifier import *
+from shogun.Evaluation import *
+\endverbatim
+
+（注意这里模块shogun.Features包含类Labels）。
+\section docu_shogun_modular 使用帮助
+
+如果想知道shogun中类的一些基本信息或者某一个类的文档，使用上面的Classes标签查看类
+列表。所有类都有良好的文档（如果你觉得文档不好，请告诉我们）。注意所有在类列表中类
+都有C作前缀，在python和octave模块化接口中使用时需要去掉C前缀。
+
+另外，在python下通过help命令也可以得到相同的文档，你只需要输入
+\verbatim
+help(<classname>)
+\endverbatim
+
+例如
+\verbatim
+from shogun.Kernel import GaussianKernel
+help(GaussianKernel)
+\endverbatim
+
+或者
+
+\verbatim
+import shogun.Kernel
+help(shogun.Kernel)
+\endverbatim
+
+
+\section toy_tutorial_modular 产生一个小数据集
+
+首先，我们先来产生一个小的数据集。在python中，我们需要加载numpy。我们产生
+一个基于高斯分布的训练数据集及测试数据集，每个数据集可以分为两块,两块的数据中心之间有一定的距离。
+数据保存在一个矩阵中，每一列代表一个个体。另外，我们还需要一个向量保存label（每项的值为1或-1）
+，分别说明属于哪一类。
+
+\verbatim
+from numpy import *
+from numpy.random import randn
+dist=0.5
+traindata_real = concatenate((randn(2,100)-dist, randn(2,100)+dist), axis=1)
+testdata_real = concatenate((randn(2,100)-dist, randn(2,100)+dist), axis=1)
+train_labels = concatenate((-ones(100), ones(100)))
+test_labels = concatenate((-ones(100), ones(100)))
+\endverbatim
+
+在octave下,可以这样
+\verbatim
+dist=0.5
+traindata_real = [randn(2,100)-dist, randn(2,100)+dist];
+testdata_real = [randn(2,100)-dist, randn(2,100)+dist];
+train_labels = [-ones(1,100), ones(1,100)];
+test_labels = [-ones(1,100), ones(1,100)];
+\endverbatim
+
+本指南的后面部分在python和octave都是一样的（相同的语法，略为不同的是，在octave分号是必需的）。
+\section svm_tutorial_modular 创建一个SVM分类器
+
+
+要在shogun中处理上面的数据集，我们需要新建一个feature对象，这里使用RealFeatures
+（用于实数矩阵，请参考shogun::CSimpleFeatures）
+
+\verbatim
+feats_train = RealFeatures(traindata_real);
+feats_test = RealFeatures(testdata_real);
+\endverbatim
+
+使用上面的feature对象我们可以新建一个kernel对象。基于上面的feature，我们创建了
+一个高斯kernel，另外还有一个width值（更多信息参考shogun::CGaussianKernel）。
+
+\verbatim
+width = 2;
+kernel = GaussianKernel(feats_train, feats_train, width);
+\endverbatim
+
+and can now compute the kernel matrix
+\verbatim
+km = kernel.get_kernel_matrix();
+\endverbatim
+
+要训练一个SVM,需要为样本提供label，一个值为1或-1的向量，像上面的train_labels变量。基于train_labels
+可创建一个label对象。
+
+\verbatim
+labels = Labels(train_labels);
+labels_test = Labels(test_labels);
+\endverbatim
+
+接下来只需要做的是，指定一个代价参数C（用于评价泛化效果），然后创建一个SVM，调用SVM的train方法来训练。
+很简单，是吧?
+\verbatim
+C = 1.0;
+svm = LibSVM(C, kernel, labels);
+svm.train();
+\endverbatim
+
+想要将SVM应用到测试数据，我们只需要传递一个feature对象给SVM的classify方法，该方法返回一个Label
+对象（注意我们还可以在初始化kernel对象时指定训练数据集和测试数据集，然后调用无参数的classify方法，
+在其它的一些例子中你可以看到这种情况）。
+如果我们想在python/octave分析这些输出，可以通过get_labels()方法获得输出的向量形式。
+
+\verbatim
+output = svm.classify(feats_test);
+output_vector = output.get_labels();
+\endverbatim
+
+
+根据这些输出及测试集的label，我们可评价SVM的预测性能。首先需要创建一个PerformanceMeasures对象，
+它可以多种衡量性能的方法，如accuracy (acc)，ROC曲线，F-score等等：
+
+\verbatim
+pm = PerformanceMeasures(labels_test, output);
+acc = pm.get_accuracy();
+roc = pm.get_auROC();
+fms = pm.get_fmeasure();
+\endverbatim
+
+这就是本指南要介绍的例子。要想知道更多高级使用可以看更多下面目录的例子
+
+\li examples/octave-modular also available online \subpage octave_modular_examples "here"
+\li examples/python-modular also available online \subpage python_modular_examples "here"
+
+作为一个完整的例子，下面给出两种接口的代码
+For octave:
+
+\verbinclude classifier_libsvm_minimal_modular.m
+
+For python:
+\verbinclude classifier_libsvm_minimal_modular.py
+*/

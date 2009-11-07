@@ -1,0 +1,35 @@
+/*! \page tutorial 使用指南
+  \section using_sec 使用 SHOGUN
+
+  \subsection tut_tut_sec 使用指南
+  我们提供这些指南是为了让C++开发者可以扩展shogun或者使用libshogun提供的C++接口,其他人
+  可以使用其它各种静态和模块化接口。要想知道shogun已实现的机器学习方法，请查看\subpage methods 。
+
+  \li \subpage developer_tutorial
+  \li \subpage static_tutorial
+  \li \subpage modular_tutorial
+
+  \subsection tut_examples_sec 例子
+
+  对于每种接口，都可以在下面的相应的examples目录下找到大量例子。   
+
+  \li \b examples/libshogun
+  \li \b examples/python
+  \li \b examples/octave
+  \li \b examples/matlab
+  \li \b examples/r
+  \li \b examples/elwms
+  \li \b examples/r_modular
+  \li \b examples/octave_modular
+  \li \b examples/python_modular
+
+  注意，我们总是保证python-modular的例子是最全并且是最新的，同时在更新的同时会使用一组测试程序
+  作回归测试。最后我们会提供所有静态和模块化接口的函数使用说明。
+
+\section refinterface_sec 函数使用说明
+  \li \subpage staticoctave
+  \li \subpage staticpython
+  \li \subpage staticcmdline
+  \li \subpage staticr
+  \li 对于模块化接口，可以点击上面的类标签
+*/

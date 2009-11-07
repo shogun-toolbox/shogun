@@ -1,0 +1,14 @@
+/*! \page license 许可证
+  Except for the files classifier/svm/Optimizer.{cpp,h},
+  classifier/svm/SVM_light.{cpp,h}, regression/svr/SVR_light.{cpp,h}
+  and the kernel caching functions in kernel/Kernel.{cpp,h}
+  which are (C) Torsten Joachims and follow a different
+  licensing scheme (cf. \ref svmlightlicense_sec) SHOGUN is licensed under the GPL
+  version 3 or any later version (cf. \ref license_sec).
+
+\section license_sec GNU General Public License
+\verbinclude LICENSE
+
+\section svmlightlicense_sec SVMLight License
+\verbinclude LICENSE.SVMlight
+*/

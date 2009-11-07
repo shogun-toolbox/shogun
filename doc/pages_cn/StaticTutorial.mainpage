@@ -1,0 +1,127 @@
+/*!
+\page static_tutorial 静态接口使用指南
+
+SHOGUN为Matlab(tm), R, Python, Octave提供静态接口，另外还有一个单独的命令行程序。静态接口背后的思想
+就是提供一个可以足够做简单实验的简单环境。例如，你可以训练和评价一个分类器，但额外的事情做不了。如果
+你想找一个有良好扩展性的接口（如同时使用多个分类器，它们可以共享数据并可以交互），你可以阅读\subpage modular_tutorial
+"模块化接口"这一节。
+
+本指南告诉你如何使用shogun来创建一个基于高斯核函数的SVM分类器。首先，你需要
+启动R, python, octave或者matlab来加载shogun。
+
+\section start_shogun_static 启动SHOGUN
+在python中加载SHOGUN，输入
+
+\verbatim
+  from sg import sg
+\endverbatim
+
+在R中输入
+
+\verbatim
+  library(sg)
+\endverbatim
+
+对于octave和matlab，你需要确保sg已添加在它们可访问的路径中。对于命令行接口，只需要执行shogun可执行文件
+
+现在在所有的语言中输入
+
+\verbatim
+  sg('help')
+\endverbatim
+
+在命令行接口中输入
+
+\verbatim
+  help
+\endverbatim
+
+将会看到帮助屏幕。如果没有出现，请查看\subpage installation学习如何安装shogun。
+
+\section svm_tutorial_static 创建一个SVM分类器
+
+本指南的剩下部分假设正在使用shogun可执行文件。它的基本语法是
+\verbatim
+  <command> <option1> <option2> ...
+\endverbatim
+选项之间用空格分开. 例如
+
+
+\verbatim
+set_kernel GAUSSIAN REAL 10 1.2
+\endverbatim
+
+将创建一个实值feature的高斯核函数，使用10MB缓存，核函数宽度为1.2。表示同样的意思，在其它接口(python,r,...)中是这样
+\verbatim
+sg('set_kernel', 'GAUSSIAN', 'REAL', 10, 1.2)
+\endverbatim
+
+可以看到在其它接口只有一点点不同。
+
+我们用两组正态分布的随机数来作为训练数据
+\verbatim
+set_features TRAIN ../data/fm_train_real.dat
+\endverbatim
+
+在其它接口中可以这样
+\verbatim
+sg('set_features', 'TRAIN', [ randn(2, 100)-1, randn(2,100)+1 ])
+\endverbatim
+
+训练一个有监督学习方法需要提供训练数据的label，我们可以设置
+\verbatim
+set_labels TRAIN ../data/label_train_twoclass.dat
+\endverbatim
+
+在其它接口中可以这样
+\verbatim
+sg('set_labels', 'TRAIN', sign(randn(1, 100)))
+\endverbatim
+
+
+现在我们创建一个SVM并设置SVM的C参数为一个合适值（在实际应用中需要参数需要调整，类似的还有核函数参数）
+\verbatim
+new_classifier LIBSVM
+c 1
+\endverbatim
+
+然后训练SVM
+\verbatim
+train_classifier
+\endverbatim
+
+现在可以将分类器应用到别的数据，先加载数据然后分类
+\verbatim
+set_features TEST ../data/fm_test_real.dat
+out.txt = classify
+\endverbatim
+
+我们可以保存分类器，那样不用每次都要训练。我们可以这样保存和加载分类器
+
+\verbatim
+save_classifier libsvm.model
+
+load_classifier libsvm.model LIBSVM
+\endverbatim
+
+在其它接口中也可以加载和保存分类，但还需要获取和恢复模型参数。如在这个例子中
+
+\verbatim
+[b,alphas]=sg('get_classifier')
+
+sg('set_classifier', b, alphas)
+\endverbatim
+
+in this case.
+
+最后，整个例子是这样的
+\verbinclude classifier_libsvm.sg
+
+这个例子及其它例子可以在 \subpage examples "例子"中找到,examples/cmdline/classifier_libsvm.sg。
+
+对于其它接口的用户可以看下面的文件
+
+\li Static R Interface \verbinclude classifier_libsvm.R
+\li Static Matlab/Octave Interface \verbinclude classifier_libsvm.m
+\li Static Python Interface \verbinclude classifier_libsvm.py
+*/

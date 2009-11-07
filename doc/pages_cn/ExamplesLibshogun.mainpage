@@ -1,0 +1,71 @@
+/*! \page libshogun_examples Examples for C++ libshogun Interface
+
+This page lists ready to run shogun examples for the C++ libshogun interface.
+本页面列出所有现有的C++ libshogun接口例子
+\li \subpage libshogun_basic_examples 
+\li \subpage libshogun_classifier_examples 
+\li \subpage libshogun_kernel_examples 
+\li \subpage libshogun_library_examples 
+
+To run the examples you will need to manually compile them via
+要运行这些例子你需要手动编译它们
+\verbatim
+g++ name_of_example.cpp -lshogun
+\endverbatim
+
+in case you installed libshogun to a nonstandard directory you will need to specify the appropriate library and include paths, e.g.
+如果你不是将libshogun安装到默认目录，你需要指定相应的库及包含路径，例如
+\verbatim
+g++ -I/path/to/libshogun/includes name_of_example.cpp -L/path/to/libshogun/sofile -lshogun
+\endverbatim
+
+Then the examples are standard binary executables and can be started via
+如果安装到默认目录，编译后的文件是二进制文件可以直接执行
+\verbatim
+./name_of_example
+\endverbatim
+respectively if the libraries are in nonstandard locations (such that they cannot be found by the dynamic linker)
+如果不是安装到默认目录，需要指定动态链接库路径（否则链接器找不到）
+\verbatim
+LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
+\endverbatim
+		
+\section libshogun_basic_examples Basic
+
+
+\li <b>../examples/libshogun/basic_minimal.cpp</b>
+\verbinclude basic_minimal.cpp
+
+\section libshogun_classifier_examples Classifier
+
+
+\li <b>../examples/libshogun/classifier_libsvm.cpp</b>
+\verbinclude classifier_libsvm.cpp
+
+\li <b>../examples/libshogun/classifier_minimal_svm.cpp</b>
+\verbinclude classifier_minimal_svm.cpp
+
+\li <b>../examples/libshogun/classifier_mklmulticlass.cpp</b>
+\verbinclude classifier_mklmulticlass.cpp
+
+\section libshogun_kernel_examples Kernel
+
+
+\li <b>../examples/libshogun/kernel_gaussian.cpp</b>
+\verbinclude kernel_gaussian.cpp
+
+\li <b>../examples/libshogun/kernel_revlin.cpp</b>
+\verbinclude kernel_revlin.cpp
+
+\section libshogun_library_examples Library
+
+
+\li <b>../examples/libshogun/library_dyn_int.cpp</b>
+\verbinclude library_dyn_int.cpp
+
+\li <b>../examples/libshogun/library_gc_array.cpp</b>
+\verbinclude library_gc_array.cpp
+
+\li <b>../examples/libshogun/library_indirect_object.cpp</b>
+\verbinclude library_indirect_object.cpp
+*/

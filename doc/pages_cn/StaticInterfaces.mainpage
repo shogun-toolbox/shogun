@@ -1,0 +1,298 @@
+/*! \page staticinterfaces 静态接口
+
+如前所述，SHOGUN可以为多种语言提供接口，其中包括Matlab(tm), R, Python以及Octave。
+下面是关于这些静态接口的简介。对所有的静态接口，我们力求在所有语言都保持相同的
+语法风格。然而在某些情况下这是不可能的，我们会在相关的文档中描述这些不同。在阅读这些
+文档之前，我们建议读者先看一下\b examples 目录下的大量例子。例如，在examples/R目录和examples/python
+目录。
+
+<b>静态接口概览和安装测试</b>
+\li \ref staticoctaveinterf_sec
+\li \ref staticpythoninterf_sec
+\li \ref staticrinterf_sec
+
+<b>接口命令</b>
+\li \ref staticiffeatures_sec
+\li \ref staticifkernel_sec
+\li \ref staticifsvm_sec
+\li \ref staticifhmm_sec
+\li \ref staticifpoim_sec
+\li \ref staticifutil_sec
+\li \ref staticifexample_sec
+
+<b>命令参考手册</b>
+\li \ref staticifcmdref_sec 
+
+\section staticifoverview_sec 静态接口概览和安装测试
+
+\subsection staticoctaveinterf_sec 静态matlab和octave接口
+
+因为目前octave与matlab基本相同，对这两个接口一个文档已经足够，该文档基于octave
+（matlab可以相同地使用）
+
+要在octave中使用SHOGUN，首先启动octave，使用以下命令检测SHOGUN是否被正确安装：
+
+\verbatim
+  sg('help')
+\endverbatim
+
+这将显示shogun的帮助文本。
+
+\subsection staticpythoninterf_sec 静态Python接口
+
+要在python中使用SHOGUN，首先启动python，使用以下命令检测SHOGUN是否被正确安装
+
+\verbatim
+  from sg import sg
+  sg('help')
+\endverbatim
+
+这将显示shogun的帮助文本。
+
+\subsection staticrinterf_sec  静态R接口
+
+要在R中使用SHOGUN，需要检测SHOGUN是否已被正确安装在R中。在R的命令行中输入（>为提示符）
+
+\verbatim
+  > library()
+\endverbatim
+
+将返回R的所有已安装包的列表，如果SHOGUN已安装会有sg这一项：
+
+\verbatim
+  sg                     The SHOGUN Machine Learning Toolbox
+\endverbatim
+当你确定SHOGUN已被正确安装，你可以通过下面命令加载它：
+
+\verbatim
+  > library(sg)
+\endverbatim
+
+你可以看到关于SHOGUN的一些信息，如编译选项等。使用这个命令加载后，你就可以使用
+SHOGUN提供的命令。
+
+一般来说，SHOGUN中的命令通过函数sg(...)来调用。如果你想查看SHOGUN命令的帮助，可以
+输入
+
+\verbatim
+  > sg('help')
+\endverbatim
+
+你可以看到一个帮助，该帮助对所有命令都有一个简单描述。
+
+\section staticifcmds 静态接口命令 
+
+\subsection staticiffeatures_sec feature相关函数
+这些函数在各种接口中将数据传给shogun或者从shogun获得数据。假如你有一个包含数据的matlab矩阵
+或者R矩阵，你想将这些数据传给shogun，你只需要像下面这样：
+
+\arg \b set_features \verbatim sg('set_features', 'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]) \endverbatim
+\arg \b add_features \verbatim sg('add_features', 'TRAIN|TEST', features[, DNABINFILE|<ALPHABET>]) \endverbatim
+
+feature可以是char/byte/word/int/real值的矩阵，实值稀疏矩阵及字符串。当处理字符串时，需要
+指定一个字母表（如DNA, RAW, ...）。
+使用'TRAIN'告诉SHOGUN这是你用于训练分类器的数据，使用'TEST'来说明这是测试数据。
+
+与\b set_features 相反，\b add_features 将新建一个feature对象并将输入的feature添加进去。
+这个命令在需要处理一组不同的feature（如实数和字符串）或者多个核函数时很有用。
+
+如果通过set_features传递了一个字符串，它可以通过滑动窗口来变成多个字符串。
+可以使用\arg \b from_position_list \verbatim sg('from_position_list', 'TRAIN|TEST', winsize, shift[, skip]) \endverbatim
+或者
+\arg \b obtain_from_sliding_window \verbatim sg('obtain_from_sliding_window', winsize, skip) \endverbatim
+
+
+通过下面的命令来删除features
+\arg clean_features \verbatim sg('clean_features') \endverbatim
+
+从shogun获取Features
+\arg \b get_features \verbatim [features]=sg('get_features', 'TRAIN|TEST') \endverbatim
+
+
+向训练数据传递labels及从shogun获取labels,也是采用类似的方法。下面这两个命令
+\arg \b set_labels \verbatim sg('set_labels', 'TRAIN', trainlab) \endverbatim
+\arg \b get_labels \verbatim [labels]=sg('get_labels', 'TRAIN|TEST') \endverbatim
+
+
+分别将labels赋给训练数据及从shogun返回labels(注意trainlab的数据已经传给shogun，对trainlab的修改不会影响训练)。
+
+\subsection staticifkernel_sec 核函数和距离
+
+这些命令用于创建、获取和设置核函数矩阵。
+
+在shogun中创建一个核函数
+\arg \b set_kernel \verbatim sg('set_kernel', 'KERNELNAME', 'FEATURETYPE', CACHESIZE, PARAMETERS) \endverbatim
+\arg \b add_kernel \verbatim sg('add_kernel', WEIGHT, 'KERNELNAME', 'FEATURETYPE', CACHESIZE, PARAMETERS) \endverbatim
+
+这里KERNELNAME是核函数名字，FEATURETYPE是feature的类型（例如，REAL代表标准实数feature向量），CACHESIZE是分配给核函数
+的缓存（以MB为单位），PARAMETERS为其它参数。
+\subsubsection staticifsuppkernels_sec 已实现的核函数
+
+在SHOGUN中已实现的核函数有以下这些：
+
+\li AUC
+\li Chi2
+\li Spectrum
+\li Const Kernel
+\li User defined CustomKernel
+\li Diagonal Kernel
+\li Kernel from Distance
+\li Fixed Degree StringKernel
+\li Gaussian \f$ k(x,x')=e^{-\frac{||x-x'||^2}{\sigma}} \f$
+
+想要在实数空间中使用一个高斯核函数，可以这样
+\verbatim sg('set_kernel', 'GAUSSIAN', 'TYPE', CACHESIZE, SIGMA)\endverbatim
+
+例如：
+\verbatim sg('set_kernel', 'GAUSSIAN', 'REAL', 40, 1)\endverbatim
+这样便创建了一个实数空间上的高斯核函数，它的缓存为40MB，sigma值为1。在高斯核函数
+可使用的值类型有：REAL, SPARSEREAL。
+
+\li Gaussian Shift Kernel
+\li Histogram Kernel
+\li Linear \f$k(x,x')=x\cdot x'\f$
+
+通过下面这样可以创建一个线性核函数：
+\verbatim sg('set_kernel', 'LINEAR', 'TYPE', CACHESIZE)\endverbatim
+
+
+例如：
+\verbatim sg('add_kernel', 1.0, 'LINEAR', 'REAL', 50')\endverbatim
+
+这样创建了一个实值的线性核函数，其中缓存为50MB，权重为1.0。
+
+线性核函数可使用的值类型：BYTE, WORD CHAR, REAL, SPARSEREAL。
+
+\li Local Alignment StringKernel
+\li Locality Improved StringKernel
+\li Polynomial Kernel \f$k(x,x')=(x\cdot x')^d\f$
+
+通过下面这样可以创建一个多项式核函数：
+\verbatim sg('set_kernel', 'POLY', 'TYPE', CACHESIZE, DEGREE, INHOMOGENE, NORMALIZE) \endverbatim
+
+例如：
+\verbatim sg('add_kernel', 0.1, 'POLY', 'REAL', 50, 3, 0) \endverbatim
+添加了一个多项式核函数。多项式核函数可使用的值类型：REAL,CHAR, SPARSEREAL。
+
+\li Salzberg Kernel
+\li Sigmoid Kernel
+下面这样可以创建一个Sigmoid核函数：
+
+\verbatim sg('set_kernel', 'SIGMOID', 'TYPE', CACHESIZE, GAMMA, COEFF)\endverbatim
+
+例如：
+
+\verbatim sg('set_kernel', 'SIGMOID', 'REAL', 40, 0.1, 0.1) \endverbatim
+
+创建了一个实值sigmoid核函数，缓存为40MB，gamma值为0.1，还有一个值为0.1的系数。sigmoid
+核函数可使用的值类型：REAL。
+
+\li Weighted Spectrum Kernel
+\li Weighted Degree Kernels
+\li Match Kernel
+\li Custom Kernel
+
+\arg \b set_custom_kernel \verbatim sg('set_custom_kernel', kernelmatrix, 'DIAG|FULL|FULL2DIAG') \endverbatim
+此外，用户也可以自定义核函数，定义时可以指定一个上三角矩阵（DIAG），全矩阵（FULL），或者用上三角矩阵保存的全矩阵（FULL2DIAG）。
+
+get_kernel_matrix和get_distance_matrix这两个命令分别用于返回核函数矩阵和距离矩阵。
+
+\arg \b get_distance_matrix \verbatim [D]=sg('get_distance_matrix', 'TRAIN|TEST') \endverbatim
+\arg \b get_kernel_matrix \verbatim [K]=sg('get_kernel_matrix', 'TRAIN|TEST') \endverbatim
+
+km refers to a matrix object.
+
+
+\subsection staticifsvm_sec SVM
+\arg new_classifier 新建一个分类器 (例如一个SVM实例).
+\arg train_classifier 利用设置的features和核函数训练SVM
+
+get_svm命令返回一个SVM的相关属性，如Langrange乘数alpha,偏置量b，支持向量的下标（从0开始）。
+\arg \b get_classifier \verbatim [bias, alphas]=sg('get_svm') \endverbatim
+\arg \b set_classifier \verbatim sg('set_classifier', bias, alphas) \endverbatim
+
+get_classifier命令返回一系列参数。\b set_classifier可用于设置alpha和b。
+
+测试样本的分类结果通过下面方式得到：
+\arg \b classify \verbatim [result]=sg('classify') \endverbatim
+\arg \b classify_example \verbatim [result]=sg('classify_example', feature_vector_index) \endverbatim
+结果是一个向量，包含每一个数据点的分类结果，\b classify_example 只返回一个指定数据点的分类结果（注意python中的下标是以0开始，
+而在octave, matlab, R中是以1开始的）。
+
+\subsection staticifhmm_sec HMM
+\li get_hmm
+\li set_hmm
+\li hmm_classify
+\li hmm_classify_example
+\li hmm_likelihood
+\li get_viterbi_path
+
+\subsection staticifpoim_sec POIM
+\li compute_poim_wd
+\li get_SPEC_consensus
+\li get_SPEC_scoring
+\li get_WD_consensus
+\li get_WD_scoring
+
+\subsection staticifutil_sec 实用程序 
+
+其它函数
+
+返回shogun版本号
+\arg \b help \verbatim sg('get_version') \endverbatim
+
+获取帮助文本
+\arg \b help \verbatim sg('help') \endverbatim
+\arg \b help \verbatim sg('help', 'CMD') \endverbatim
+
+设置调试日志等级，这在跟踪错误时有用。
+\arg loglevel \verbatim sg('loglevel', 'LEVEL') \endverbatim
+等级可为DEBUG, WARN, ERROR之一
+  \li ALL: 极为详细的日志输出 (只在内存泄漏时比较有用)。
+  \li DEBUG: 详细的日志输出 (调试时有用)。
+  \li WARN: 少量日志输出 (查找错误时有用)。
+  \li ERROR: 只在遇到致命错误时才输出日志。 
+
+例如
+\verbatim
+  > sg('loglevel', 'ALL')
+\endverbatim
+会显示所有操作。
+
+通过学习上面的相关命令，你现在可以编写自己的SHOGUN应用程序。
+
+\section staticifexample_sec 例子
+让我们来合并这个例子：
+
+   \li \verbatim sg('set_features', 'TRAIN', traindat) \endverbatim
+   将traindat中的数据注册为训练数据。
+
+   \li \verbatim sg('set_labels', 'TRAIN', trainlab) \endverbatim
+   注册训练label。
+
+   \li \verbatim sg('set_kernel', 'GAUSSIAN', 'REAL', 100, 1.0) \endverbatim
+   创建一个高斯核函数。
+
+   \li \verbatim sg('new_classifier', 'SVMLIGHT') \endverbatim
+   创建一个SVM对象。
+
+   \li \verbatim sg('c', 20.0)  \endverbatim
+   将SVM的C值高为20.0。
+
+   \li \verbatim sg('train_classifier') \endverbatim
+   将数据传给核函数并作使用这些样本训练分类器。
+
+   \li \verbatim sg('set_features', 'TEST', testdat) \endverbatim
+   注册测试样本
+
+   \li \verbatim out=sg('classify') \endverbatim
+   attaches the data to the kernel and classifies. Then
+   将数据传给核函数及分类器。然后通过一个向量返回分类结果。
+
+
+\section staticifcmdref_sec 函数参考
+  \li \subpage staticoctave
+  \li \subpage staticpython
+  \li \subpage staticcmdline
+  \li \subpage staticr
+*/

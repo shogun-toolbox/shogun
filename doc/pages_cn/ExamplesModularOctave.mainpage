@@ -1,0 +1,286 @@
+/*! \page octave_modular_examples Octave模块化接口例子
+
+This page lists ready to run shogun examples for the Octave Modular interface.
+本页面列出所有现有的Octave模块化接口例子
+\li \subpage octave_modular_classifier_examples 
+\li \subpage octave_modular_clustering_examples 
+\li \subpage octave_modular_distance_examples 
+\li \subpage octave_modular_distribution_examples 
+\li \subpage octave_modular_kernel_examples 
+\li \subpage octave_modular_mkl_examples 
+\li \subpage octave_modular_preproc_examples 
+\li \subpage octave_modular_regression_examples 
+
+To run the examples issue
+要运行这些例子只须
+\verbatim
+octave name_of_example.m
+\endverbatim
+
+or start up octave and then type
+或启动octave并输入
+\verbatim
+name_of_example
+\endverbatim
+
+\section octave_modular_classifier_examples Classifier
+
+
+\li <b>../examples/octave_modular/classifier_domainadaptationsvm_modular.m</b>
+\verbinclude classifier_domainadaptationsvm_modular.m
+
+\li <b>../examples/octave_modular/classifier_gmnpsvm_modular.m</b>
+\verbinclude classifier_gmnpsvm_modular.m
+
+\li <b>../examples/octave_modular/classifier_gpbtsvm_modular.m</b>
+\verbinclude classifier_gpbtsvm_modular.m
+
+\li <b>../examples/octave_modular/classifier_knn_modular.m</b>
+\verbinclude classifier_knn_modular.m
+
+\li <b>../examples/octave_modular/classifier_lda_modular.m</b>
+\verbinclude classifier_lda_modular.m
+
+\li <b>../examples/octave_modular/classifier_liblinear_modular.m</b>
+\verbinclude classifier_liblinear_modular.m
+
+\li <b>../examples/octave_modular/classifier_libsvm_minimal_modular.m</b>
+\verbinclude classifier_libsvm_minimal_modular.m
+
+\li <b>../examples/octave_modular/classifier_libsvm_modular.m</b>
+\verbinclude classifier_libsvm_modular.m
+
+\li <b>../examples/octave_modular/classifier_libsvmmulticlass_modular.m</b>
+\verbinclude classifier_libsvmmulticlass_modular.m
+
+\li <b>../examples/octave_modular/classifier_libsvmoneclass_modular.m</b>
+\verbinclude classifier_libsvmoneclass_modular.m
+
+\li <b>../examples/octave_modular/classifier_mpdsvm_modular.m</b>
+\verbinclude classifier_mpdsvm_modular.m
+
+\li <b>../examples/octave_modular/classifier_perceptron_modular.m</b>
+\verbinclude classifier_perceptron_modular.m
+
+\li <b>../examples/octave_modular/classifier_subgradientsvm_modular.m</b>
+\verbinclude classifier_subgradientsvm_modular.m
+
+\li <b>../examples/octave_modular/classifier_svmlight_modular.m</b>
+\verbinclude classifier_svmlight_modular.m
+
+\li <b>../examples/octave_modular/classifier_svmlin_modular.m</b>
+\verbinclude classifier_svmlin_modular.m
+
+\li <b>../examples/octave_modular/classifier_svmocas_modular.m</b>
+\verbinclude classifier_svmocas_modular.m
+
+\li <b>../examples/octave_modular/classifier_svmsgd_modular.m</b>
+\verbinclude classifier_svmsgd_modular.m
+
+\section octave_modular_clustering_examples Clustering
+
+
+\li <b>../examples/octave_modular/clustering_hierarchical_modular.m</b>
+\verbinclude clustering_hierarchical_modular.m
+
+\li <b>../examples/octave_modular/clustering_kmeans_modular.m</b>
+\verbinclude clustering_kmeans_modular.m
+
+\section octave_modular_distance_examples Distance
+
+
+\li <b>../examples/octave_modular/distance_braycurtis_modular.m</b>
+\verbinclude distance_braycurtis_modular.m
+
+\li <b>../examples/octave_modular/distance_canberra_modular.m</b>
+\verbinclude distance_canberra_modular.m
+
+\li <b>../examples/octave_modular/distance_canberraword_modular.m</b>
+\verbinclude distance_canberraword_modular.m
+
+\li <b>../examples/octave_modular/distance_chebyshew_modular.m</b>
+\verbinclude distance_chebyshew_modular.m
+
+\li <b>../examples/octave_modular/distance_chisquare_modular.m</b>
+\verbinclude distance_chisquare_modular.m
+
+\li <b>../examples/octave_modular/distance_cosine_modular.m</b>
+\verbinclude distance_cosine_modular.m
+
+\li <b>../examples/octave_modular/distance_euclidian_modular.m</b>
+\verbinclude distance_euclidian_modular.m
+
+\li <b>../examples/octave_modular/distance_geodesic_modular.m</b>
+\verbinclude distance_geodesic_modular.m
+
+\li <b>../examples/octave_modular/distance_hammingword_modular.m</b>
+\verbinclude distance_hammingword_modular.m
+
+\li <b>../examples/octave_modular/distance_jensen_modular.m</b>
+\verbinclude distance_jensen_modular.m
+
+\li <b>../examples/octave_modular/distance_manhatten_modular.m</b>
+\verbinclude distance_manhatten_modular.m
+
+\li <b>../examples/octave_modular/distance_manhattenword_modular.m</b>
+\verbinclude distance_manhattenword_modular.m
+
+\li <b>../examples/octave_modular/distance_minkowski_modular.m</b>
+\verbinclude distance_minkowski_modular.m
+
+\li <b>../examples/octave_modular/distance_sparseeuclidian_modular.m</b>
+\verbinclude distance_sparseeuclidian_modular.m
+
+\li <b>../examples/octave_modular/distance_tanimoto_modular.m</b>
+\verbinclude distance_tanimoto_modular.m
+
+\section octave_modular_distribution_examples Distribution
+
+
+\li <b>../examples/octave_modular/distribution_histogram_modular.m</b>
+\verbinclude distribution_histogram_modular.m
+
+\li <b>../examples/octave_modular/distribution_hmm_modular.m</b>
+\verbinclude distribution_hmm_modular.m
+
+\li <b>../examples/octave_modular/distribution_linearhmm_modular.m</b>
+\verbinclude distribution_linearhmm_modular.m
+
+\section octave_modular_kernel_examples Kernel
+
+
+\li <b>../examples/octave_modular/kernel_auc_modular.m</b>
+\verbinclude kernel_auc_modular.m
+
+\li <b>../examples/octave_modular/kernel_chi2_modular.m</b>
+\verbinclude kernel_chi2_modular.m
+
+\li <b>../examples/octave_modular/kernel_combined_modular.m</b>
+\verbinclude kernel_combined_modular.m
+
+\li <b>../examples/octave_modular/kernel_commulongstring_modular.m</b>
+\verbinclude kernel_commulongstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_commwordstring_modular.m</b>
+\verbinclude kernel_commwordstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_const_modular.m</b>
+\verbinclude kernel_const_modular.m
+
+\li <b>../examples/octave_modular/kernel_custom_modular.m</b>
+\verbinclude kernel_custom_modular.m
+
+\li <b>../examples/octave_modular/kernel_diag_modular.m</b>
+\verbinclude kernel_diag_modular.m
+
+\li <b>../examples/octave_modular/kernel_distance_modular.m</b>
+\verbinclude kernel_distance_modular.m
+
+\li <b>../examples/octave_modular/kernel_fixeddegreestring_modular.m</b>
+\verbinclude kernel_fixeddegreestring_modular.m
+
+\li <b>../examples/octave_modular/kernel_gaussian_modular.m</b>
+\verbinclude kernel_gaussian_modular.m
+
+\li <b>../examples/octave_modular/kernel_gaussianshift_modular.m</b>
+\verbinclude kernel_gaussianshift_modular.m
+
+\li <b>../examples/octave_modular/kernel_histogram_modular.m</b>
+\verbinclude kernel_histogram_modular.m
+
+\li <b>../examples/octave_modular/kernel_linear_modular.m</b>
+\verbinclude kernel_linear_modular.m
+
+\li <b>../examples/octave_modular/kernel_linearbyte_modular.m</b>
+\verbinclude kernel_linearbyte_modular.m
+
+\li <b>../examples/octave_modular/kernel_linearstring_modular.m</b>
+\verbinclude kernel_linearstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_linearword_modular.m</b>
+\verbinclude kernel_linearword_modular.m
+
+\li <b>../examples/octave_modular/kernel_localalignmentstring_modular.m</b>
+\verbinclude kernel_localalignmentstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_localityimprovedstring_modular.m</b>
+\verbinclude kernel_localityimprovedstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_matchwordstring_modular.m</b>
+\verbinclude kernel_matchwordstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_oligostring_modular.m</b>
+\verbinclude kernel_oligostring_modular.m
+
+\li <b>../examples/octave_modular/kernel_poly_modular.m</b>
+\verbinclude kernel_poly_modular.m
+
+\li <b>../examples/octave_modular/kernel_polymatchstring_modular.m</b>
+\verbinclude kernel_polymatchstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_polymatchwordstring_modular.m</b>
+\verbinclude kernel_polymatchwordstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_sigmoid_modular.m</b>
+\verbinclude kernel_sigmoid_modular.m
+
+\li <b>../examples/octave_modular/kernel_simplelocalityimprovedstring_modular.m</b>
+\verbinclude kernel_simplelocalityimprovedstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_sparsegaussian_modular.m</b>
+\verbinclude kernel_sparsegaussian_modular.m
+
+\li <b>../examples/octave_modular/kernel_sparselinear_modular.m</b>
+\verbinclude kernel_sparselinear_modular.m
+
+\li <b>../examples/octave_modular/kernel_sparsepoly_modular.m</b>
+\verbinclude kernel_sparsepoly_modular.m
+
+\li <b>../examples/octave_modular/kernel_top_modular.m</b>
+\verbinclude kernel_top_modular.m
+
+\li <b>../examples/octave_modular/kernel_weightedcommwordstring_modular.m</b>
+\verbinclude kernel_weightedcommwordstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_weighteddegreepositionstring_modular.m</b>
+\verbinclude kernel_weighteddegreepositionstring_modular.m
+
+\li <b>../examples/octave_modular/kernel_weighteddegreestring_modular.m</b>
+\verbinclude kernel_weighteddegreestring_modular.m
+
+\section octave_modular_mkl_examples Mkl
+
+
+\li <b>../examples/octave_modular/mkl_multiclass_modular.m</b>
+\verbinclude mkl_multiclass_modular.m
+
+\section octave_modular_preproc_examples Preproc
+
+
+\li <b>../examples/octave_modular/preproc_commulongstring_modular.m</b>
+\verbinclude preproc_commulongstring_modular.m
+
+\li <b>../examples/octave_modular/preproc_commwordstring_modular.m</b>
+\verbinclude preproc_commwordstring_modular.m
+
+\li <b>../examples/octave_modular/preproc_logplusone_modular.m</b>
+\verbinclude preproc_logplusone_modular.m
+
+\li <b>../examples/octave_modular/preproc_normone_modular.m</b>
+\verbinclude preproc_normone_modular.m
+
+\li <b>../examples/octave_modular/preproc_prunevarsubmean_modular.m</b>
+\verbinclude preproc_prunevarsubmean_modular.m
+
+\section octave_modular_regression_examples Regression
+
+
+\li <b>../examples/octave_modular/regression_krr_modular.m</b>
+\verbinclude regression_krr_modular.m
+
+\li <b>../examples/octave_modular/regression_libsvr_modular.m</b>
+\verbinclude regression_libsvr_modular.m
+
+\li <b>../examples/octave_modular/regression_svrlight_modular.m</b>
+\verbinclude regression_svrlight_modular.m
+*/

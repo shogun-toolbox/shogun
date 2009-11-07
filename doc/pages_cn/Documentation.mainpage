@@ -1,0 +1,33 @@
+/** \mainpage SHOGUN 项目文档
+ 
+ 
+  \image html shogun_logo.png 
+
+  \section intro_sec 简介
+  SHOGUN是一个关于大规模机器学习的工具包，它尤其关注支持向量机（SVM）。它提供
+  一个SVM的通用对象来支持不同的SVM实现，其中包括LibSVM,SVMLight, SVMLin及GPDT。
+  每一种SVM都可支持多种核函数。SHOGUN除了实现绝大部分常见的核函数，如线性核函数、
+  多项式核函数、高斯核函数及Sigmoid核函数等，同时还实现一些字符串核函数，如Locality Improved、
+  Fischer、TOP、Spectrum、 Weighted Degree等。对于字符串核函数，还实现了
+  LINADD优化。同时SHOGUN也支持自定义核函数。它的一个重要功能就是可以将许多个
+  子核函数作线性加权，并且这些子核函数不必作用于相同的定义域。子核函数的权重可
+  以通过多重核函数学习（Multiple Kernel Learning）获得。目前可以支持SVM处理二类
+  分类问题和回归问题。同时SHOGUN还实现了其它线性方法，如线性判别分析（LDA），
+  线性规划学习器（LPM），（核函数）感知器和训练HMM模型的特征算法等。输入可以是
+  密集矩阵、称疏矩阵或者字符串，数据类型可是int/short/double/char，并且可以将其中一种类型转换为
+ 另外一种。此外，还可以使用预处理器对输入feature进行预处理（如减去均值）。
+
+  SHOGUN使用C++实现，但同时为Matlab(tm)， R, Octave和Python 提供接口\ref interfaces "(参看接口)"
+  
+  \li \subpage installation
+  \li \subpage screenshots
+  \li \subpage tutorial
+  \li \subpage methods 
+  \li \subpage interfaces
+  \li \subpage faq
+  \li \subpage authors
+  \li \subpage license
+
+  
+  shogun作者致。
+*/

@@ -1,0 +1,23 @@
+/*! \page elwmsinterface Eierlegendewollmilchsau 接口
+
+如前如述，SHOGUN为多种语言提供接口。而Eierlegendewollmilchsau (elwms)接口可以一个文件里
+做所有事情。它是所有静态接口\subpage staticinterfaces 的混合体，因此那些例子和文档同样适合
+这个接口。
+
+这种接口的最主要功能就是它提供了命令互用性，可以同时运行外部语言的代码。
+\verbatim
+elwms('run_python', 'A', A, ..., pythoncode, '...')
+elwms('run_r', 'A', A, ..., 'rfile', '...')
+elwms('run_octave', 'A', A, ..., octavecode, '...')
+\endverbatim
+
+例如
+
+\verbinclude octave_matplotlib.m
+
+这个例子允许我们在octave中调用matplotlib来画图!当在不同语言之间转换变量时，shogun支持所有的数据
+类型。在这种情况下两个浮点数矩阵A和B被传给python，之后它们又原样传回来，还有一个
+字符串的列表和一个变量x。注意，这里使用\b elwms 而不是 \b sg 作为函数名。
+要了解更多信息，请查看examples/elwms的关于elwms的例子。
+*/
+
