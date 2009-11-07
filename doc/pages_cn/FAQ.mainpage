@@ -4,7 +4,7 @@
 \li Q: : shogun为这么多语言提供接口，哪一种语言和哪一种接口我应该使用？
 A: 这主要取决于你喜欢哪一种。我个人认为模块化接口（python_modular, octave_modular）是最好的。
 说最好主要是因为模块化接口灵活且易于扩展。但如果你只想使用一个或多个核函数来训练一个SVM，
-所有的静态接口都可以满足。此外，我推荐你使用\b python　http://www.python.org :-)。
+所有的静态接口都可以满足。此外，我推荐你使用\b python http://www.python.org :-)。
 
 \li Q: : 如果我发现一个bug,我应该在哪里报告？
 A: 你可以在我们的bug跟踪器http://trac.tuebingen.mpg.de/shogun报告，或者在邮件列表里提出来。

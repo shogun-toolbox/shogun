@@ -1,31 +1,27 @@
-/*! \page libshogun_examples Examples for C++ libshogun Interface
+/*! \page libshogun_examples C++ libshogun接口例子
 
-This page lists ready to run shogun examples for the C++ libshogun interface.
-本页面列出所有现有的C++ libshogun接口例子
+本页面包含了所有C++ libshogun接口的例子。
+
 \li \subpage libshogun_basic_examples 
 \li \subpage libshogun_classifier_examples 
 \li \subpage libshogun_kernel_examples 
 \li \subpage libshogun_library_examples 
 
-To run the examples you will need to manually compile them via
-要运行这些例子你需要手动编译它们
+如果要运行这些例子你需要像下面这样编译它们:
 \verbatim
 g++ name_of_example.cpp -lshogun
 \endverbatim
 
-in case you installed libshogun to a nonstandard directory you will need to specify the appropriate library and include paths, e.g.
-如果你不是将libshogun安装到默认目录，你需要指定相应的库及包含路径，例如
+如果你是将libshogun安装到非标准目录，你需要指定库目录和头文件目录，例如
 \verbatim
 g++ -I/path/to/libshogun/includes name_of_example.cpp -L/path/to/libshogun/sofile -lshogun
 \endverbatim
 
-Then the examples are standard binary executables and can be started via
-如果安装到默认目录，编译后的文件是二进制文件可以直接执行
+如果shogun被安装到标准目录，可以像下面这样运行例子
 \verbatim
 ./name_of_example
 \endverbatim
-respectively if the libraries are in nonstandard locations (such that they cannot be found by the dynamic linker)
-如果不是安装到默认目录，需要指定动态链接库路径（否则链接器找不到）
+相反如果被安装到非标准目录（那样它们不能被动态链接器找到），你需要指定
 \verbatim
 LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \endverbatim

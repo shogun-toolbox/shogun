@@ -1,7 +1,7 @@
-/*! \page octave_examples Matlab(tm)和Octave静态接口
+/*! \page octave_examples Matlab(tm)和Octave静态接口例子
 
-This page lists ready to run shogun examples for the Static Matlab(tm) and Octave interface.
-本页面列出所有现有的Matlab(tm)和Octave静态接口例子
+本页面包含了所有Matlab(tm)和Octave静态接口的例子。
+
 \li \subpage octave_classifier_examples 
 \li \subpage octave_clustering_examples 
 \li \subpage octave_distance_examples 
@@ -13,35 +13,31 @@ This page lists ready to run shogun examples for the Static Matlab(tm) and Octav
 \li \subpage octave_regression_examples 
 \li \subpage octave_structure_examples 
 
-To run the examples issue
-要运行这些例子只须
+要运行这些例子只需要
 \verbatim
 octave name_of_example.m
 \endverbatim
 
-or start up matlab or octave and then type
-或者启动matlab或octave，然后输入
+或者启动octave或Matlab并输入
 \verbatim
 name_of_example
 \endverbatim
 
-Note that you have to make sure that the sg.oct or sg.mexglx (name varies with architecture)
-has to be in the matlab/octave path. This can be achieved using the addpath command:
-注意，你必须确保sg.oct或者sg.mexglx已在matlab/octave的可访问路径下。可通过下面命令添加路径;
+注意，你要确保sg.oct或sg.mexglx（系统架构不同名字可能不同）已经在 matlab/octave可访问的路径中。
+可通过下面的命令添加到它们的路径中：
 \verbatim
 addpath /path/to/octave
 \endverbatim
-respectively
+以及
 \verbatim
 addpath /path/to/matlab
 \endverbatim
 
-Finally note that for non-root installations you will have to make sure that libshogun and libshogun ui can be found by the dynamic linker, e.g. you will need to set:
-最后非root用户安装需要确保libshogun和libshogunui能被动态链接器找到，例如你需要在启动matlab前作如下设置：
-
+最后请注意，如果是非root用户安装，你需要确保libshogun和libshogunui可以被动态链接器找到，你可能在启动matlab前需要设置：
 \verbatim
 LD_LIBRARY_PATH=path/to/libshogun:path/to/libshogunui
 \endverbatim
+
 		
 \section octave_classifier_examples Classifier
 

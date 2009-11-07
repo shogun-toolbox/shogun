@@ -4,15 +4,14 @@ EXAMPLE_FILES = $(shell find ../examples -name '*.py' -o -name '*.m' -o -name '*
 doc: examples
 	doxygen Doxyfile
 
-#examples_cn
-doc_cn:
+doc_cn: examples_cn
 	doxygen Doxyfile_cn
 
 examples: $(EXAMPLE_FILES)
 	python ./insert_examples.py pages/
 
 examples_cn: $(EXAMPLE_FILES) 
-	python ./insert_examples.py pages_cn/
+	python ./insert_examples_cn.py pages_cn/
 
 distclean: clean
 

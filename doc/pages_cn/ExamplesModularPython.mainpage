@@ -1,7 +1,7 @@
 /*! \page python_modular_examples Python模块化接口例子
 
-This page lists ready to run shogun examples for the Python Modular interface.
-本页面列出所有现有的Python模块化接口例子
+本页面包含了所有Python模块化接口的例子。
+
 \li \subpage python_modular_classifier_examples 
 \li \subpage python_modular_clustering_examples 
 \li \subpage python_modular_custom_examples 
@@ -16,8 +16,7 @@ This page lists ready to run shogun examples for the Python Modular interface.
 \li \subpage python_modular_structure_examples 
 \li \subpage python_modular_tests_examples 
 
-To run the examples issue
-要运行这些例子只须
+要运行这些例子只需要
 \verbatim
 python name_of_example.py
 \endverbatim
@@ -36,6 +35,9 @@ python name_of_example.py
 
 \li <b>../examples/python_modular/classifier_knn_modular.py</b>
 \verbinclude classifier_knn_modular.py
+
+\li <b>../examples/python_modular/classifier_larank_modular.py</b>
+\verbinclude classifier_larank_modular.py
 
 \li <b>../examples/python_modular/classifier_lda_modular.py</b>
 \verbinclude classifier_lda_modular.py
@@ -181,8 +183,14 @@ python name_of_example.py
 \li <b>../examples/python_modular/features_sparse_modular.py</b>
 \verbinclude features_sparse_modular.py
 
+\li <b>../examples/python_modular/features_string_char_compressed_modular.py</b>
+\verbinclude features_string_char_compressed_modular.py
+
 \li <b>../examples/python_modular/features_string_char_modular.py</b>
 \verbinclude features_string_char_modular.py
+
+\li <b>../examples/python_modular/features_string_file_char_modular.py</b>
+\verbinclude features_string_file_char_modular.py
 
 \li <b>../examples/python_modular/features_string_file_modular.py</b>
 \verbinclude features_string_file_modular.py

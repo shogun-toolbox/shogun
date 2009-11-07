@@ -1,7 +1,7 @@
 /*! \page cmdline_examples 命令行静态接口例子
 
-This page lists ready to run shogun examples for the Static Command Line interface.
-本页面列出所有现有的命令行静态接口例子
+本页面包含了所有命令行静态接口的例子。
+
 \li \subpage cmdline_classifier_examples 
 \li \subpage cmdline_clustering_examples 
 \li \subpage cmdline_distance_examples 
@@ -11,8 +11,7 @@ This page lists ready to run shogun examples for the Static Command Line interfa
 \li \subpage cmdline_preproc_examples 
 \li \subpage cmdline_regression_examples 
 
-To run the examples issue
-要想运行这些例子只需
+要运行这些例子只需要
 \verbatim
 shogun name_of_example.sg
 \endverbatim

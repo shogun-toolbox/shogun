@@ -1,7 +1,6 @@
 /*! \page r_examples R静态接口例子
 
-This page lists ready to run shogun examples for the Static R interface.
-本页面列出所有现成的关于R静态接口的例子
+本页面包含了所有R静态接口的例子。
 
 \li \subpage r_classifier_examples 
 \li \subpage r_clustering_examples 
@@ -12,14 +11,12 @@ This page lists ready to run shogun examples for the Static R interface.
 \li \subpage r_preproc_examples 
 \li \subpage r_regression_examples 
 
-To run the examples issue
-要运行这些例子只须
+要运行这些例子只需要
 \verbatim
 R -f name_of_example.R
 \endverbatim
 
-or start R and then type
-或者启动R然后输入
+或者启动R并输入
 \verbatim
 source('name_of_example.R')
 \endverbatim

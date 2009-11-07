@@ -1,7 +1,7 @@
 /*! \page octave_modular_examples Octave模块化接口例子
 
-This page lists ready to run shogun examples for the Octave Modular interface.
-本页面列出所有现有的Octave模块化接口例子
+本页面包含了所有Octave模块化接口的例子。
+
 \li \subpage octave_modular_classifier_examples 
 \li \subpage octave_modular_clustering_examples 
 \li \subpage octave_modular_distance_examples 
@@ -11,14 +11,12 @@ This page lists ready to run shogun examples for the Octave Modular interface.
 \li \subpage octave_modular_preproc_examples 
 \li \subpage octave_modular_regression_examples 
 
-To run the examples issue
-要运行这些例子只须
+要运行这些例子只需要
 \verbatim
 octave name_of_example.m
 \endverbatim
 
-or start up octave and then type
-或启动octave并输入
+或者启动octave并输入
 \verbatim
 name_of_example
 \endverbatim

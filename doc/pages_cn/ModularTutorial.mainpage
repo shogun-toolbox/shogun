@@ -132,7 +132,7 @@ output_vector = output.get_labels();
 
 
 根据这些输出及测试集的label，我们可评价SVM的预测性能。首先需要创建一个PerformanceMeasures对象，
-它可以多种衡量性能的方法，如accuracy (acc)，ROC曲线，F-score等等：
+它包含多种衡量性能的方法，如accuracy (acc)，ROC曲线，F-score等等：
 
 \verbatim
 pm = PerformanceMeasures(labels_test, output);

@@ -1,21 +1,19 @@
 /*! \page r_modular_examples R模块化接口例子
 
-This page lists ready to run shogun examples for the R Modular interface.
-本页面列出所有现有的R模块化接口例子
+本页面包含了所有R模块化接口的例子。
+
 \li \subpage r_modular_classifier_examples 
 \li \subpage r_modular_distribution_examples 
 \li \subpage r_modular_kernel_examples 
 \li \subpage r_modular_mkl_examples 
 \li \subpage r_modular_preproc_examples 
 
-To run the examples issue
-要运行这些例子只须
+要运行这些例子只需要
 \verbatim
 R -f name_of_example.R
 \endverbatim
 
-or start R and then type
-或启动R然后输入
+或者启动R并输入
 \verbatim
 source('name_of_example.R')
 \endverbatim

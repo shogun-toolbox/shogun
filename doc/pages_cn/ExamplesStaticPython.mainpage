@@ -1,7 +1,6 @@
 /*! \page python_examples Python静态接口例子
 
-This page lists ready to run shogun examples for the Static Python interface.
-本页面列出所有现有的Python静态接口例子
+本页面包含了所有Python静态接口的例子。
 
 \li \subpage python_classifier_examples 
 \li \subpage python_clustering_examples 
@@ -12,10 +11,9 @@ This page lists ready to run shogun examples for the Static Python interface.
 \li \subpage python_preproc_examples 
 \li \subpage python_regression_examples 
 
-To run the examples issue
-要运行这些例子只须
+要运行这些例子只需要
 \verbatim
-python name_of_example.m
+python name_of_example.py
 \endverbatim
 
 \section python_classifier_examples Classifier
