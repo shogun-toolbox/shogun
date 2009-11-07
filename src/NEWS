@@ -1,13 +1,18 @@
 2009-XX-XX Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.9.1 (libshogun 6.0, libshogunui 3.1)
-	* This release contains several cleanups and bugfixes:
+	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Integrate LaRank.
 		- Memory Mapped Features (for data sets that don't fit into memory).
         - Compressor module with compression and decompression support for
         lzo, gzip, bzip2 and lzma.
-		- Compressed String Features with on-the-fly decompression.
+		- Compressed String Features with on-the-fly decompression
+		(CDecompressString preproc).
+		- Parallel computation of get_kernel_matrix().
+		- One may now prefix all shogun print/outputs with file name and
+		line number (obj.io.enable_file_and_line())
+		- Chinese Documentation thanks Elpmis Lee.
 	* Bugfixes:
 		- Fix One class MKL testing in static interfaces.
 		- Configure fixes: Let octave not write history on configure and fail

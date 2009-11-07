@@ -3,6 +3,9 @@ We integrated the work of the following people:
  Alex J. Smola
 	- the pr_loqo optimizer
 
+ Antoine Bordes
+	- LaRank
+
  Thorsten Joachims 
 	- SVMLight
 
@@ -39,6 +42,13 @@ We integrated the work of the following people:
  Christian Gehl
 	- Distance Metrics
 
+ Christian Widmer
+	- Dual and Multitask Learning
+	- Serialization support
+
  Jonas Behr
 	- Structured Learning
+
+ Elpmis Lee
+	- Translation of the documentation to Chinese 
 
