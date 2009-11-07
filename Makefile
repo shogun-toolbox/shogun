@@ -156,7 +156,7 @@ update-webpage:
 	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh vserver tar -C /pub/shogun/doc_cn/ -xjvf -
 	ssh vserver chmod 644 /pub/shogun/doc*/*.*
 	ssh vserver ./bin/shogun_doc_install.sh
-	rm -rf doc/html
+	rm -rf doc/html*
 
 	cd ../../website && make
 
