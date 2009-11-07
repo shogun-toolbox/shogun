@@ -36,6 +36,9 @@ python name_of_example.py
 \li <b>../examples/python_modular/classifier_knn_modular.py</b>
 \verbinclude classifier_knn_modular.py
 
+\li <b>../examples/python_modular/classifier_larank_modular.py</b>
+\verbinclude classifier_larank_modular.py
+
 \li <b>../examples/python_modular/classifier_lda_modular.py</b>
 \verbinclude classifier_lda_modular.py
 
@@ -180,8 +183,14 @@ python name_of_example.py
 \li <b>../examples/python_modular/features_sparse_modular.py</b>
 \verbinclude features_sparse_modular.py
 
+\li <b>../examples/python_modular/features_string_char_compressed_modular.py</b>
+\verbinclude features_string_char_compressed_modular.py
+
 \li <b>../examples/python_modular/features_string_char_modular.py</b>
 \verbinclude features_string_char_modular.py
+
+\li <b>../examples/python_modular/features_string_file_char_modular.py</b>
+\verbinclude features_string_file_char_modular.py
 
 \li <b>../examples/python_modular/features_string_file_modular.py</b>
 \verbinclude features_string_file_modular.py

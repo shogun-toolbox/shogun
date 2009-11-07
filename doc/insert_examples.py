@@ -8,9 +8,6 @@ if len(sys.argv) > 1:
 	sys.argv[1]
 	target_dir=sys.argv[1]
 
-print example_dir
-print target_dir
-sys.exit(0)
 directories={
 		'python_modular' : ('Python Modular', 'ExamplesModularPython.mainpage',
 		'''\nTo run the examples issue
