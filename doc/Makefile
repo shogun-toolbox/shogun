@@ -4,7 +4,7 @@ EXAMPLE_FILES = $(shell find ../examples -name '*.py' -o -name '*.m' -o -name '*
 doc: examples
 	doxygen Doxyfile
 
-doc-cn: examples_cn
+doc_cn: examples_cn
 	doxygen Doxyfile_cn
 
 examples: $(EXAMPLE_FILES)
