@@ -13,7 +13,7 @@ This page lists ready to run shogun examples for the Static Python interface.
 
 To run the examples issue
 \verbatim
-python name_of_example.m
+python name_of_example.py
 \endverbatim
 
 \section python_classifier_examples Classifier

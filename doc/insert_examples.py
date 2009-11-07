@@ -46,7 +46,7 @@ name_of_example
 		'python': ('Static Python', 'ExamplesStaticPython.mainpage',
 		'''\nTo run the examples issue
 \\verbatim
-python name_of_example.m
+python name_of_example.py
 \\endverbatim
 '''
 		),
@@ -77,7 +77,7 @@ Finally note that for non-root installations you will have to make sure that lib
 \\verbatim
 LD_LIBRARY_PATH=path/to/libshogun:path/to/libshogunui
 \\endverbatim
-before startign matlab.
+before starting matlab.
 		'''),
 
 		'r' : ('Static R', 'ExamplesStaticR.mainpage',
@@ -113,19 +113,6 @@ respectively if the libraries are in nonstandard locations (such that they canno
 LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \\endverbatim
 		'''),
-
-		'r' : ('Static R', 'ExamplesStaticR.mainpage',
-		'''\nTo run the examples issue
-\\verbatim
-R -f name_of_example.R
-\\endverbatim
-
-or start R and then type
-\\verbatim
-source('name_of_example.R')
-\\endverbatim
-'''
-		),
 
 		'cmdline' :('Static Command Line', 'ExamplesStaticCmdline.mainpage',
 		'''\nTo run the examples issue

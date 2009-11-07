@@ -38,7 +38,7 @@ Finally note that for non-root installations you will have to make sure that lib
 \verbatim
 LD_LIBRARY_PATH=path/to/libshogun:path/to/libshogunui
 \endverbatim
-before startign matlab.
+before starting matlab.
 		
 \section octave_classifier_examples Classifier
 
