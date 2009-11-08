@@ -569,7 +569,7 @@ class CKernel : public CSGObject
 		inline bool has_property(EKernelProperty p) { return (properties & p) != 0; }
 
 		/** for optimizable kernels, i.e. kernels where the weight
-		 * vector can be computed explicitely (if it fits into memory)
+		 * vector can be computed explicitly (if it fits into memory)
 		 */
 		virtual void clear_normal();
 
