@@ -64,6 +64,12 @@ CCustomKernel::CCustomKernel(CKernel* k)
 
 }
 
+CCustomKernel::CCustomKernel(const float64_t* km, int32_t rows, int32_t cols)
+: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
+{
+	set_full_kernel_matrix_from_full(km, rows, cols);
+}
+
 CCustomKernel::~CCustomKernel()
 {
 	cleanup();

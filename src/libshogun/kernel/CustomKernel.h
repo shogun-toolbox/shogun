@@ -39,6 +39,18 @@ class CCustomKernel: public CKernel
 		 */
 		CCustomKernel(CKernel* k);
 
+		/** constructor
+		 *
+		 * sets full kernel matrix from full kernel matrix
+		 *
+		 * @param km kernel matrix
+		 * @param rows number of rows in matrix
+		 * @param cols number of cols in matrix
+		 * @return if setting was successful
+		 */
+		CCustomKernel(
+			const float64_t* km, int32_t rows, int32_t cols);
+
 		virtual ~CCustomKernel();
 
 		/** initialize kernel with dummy features
