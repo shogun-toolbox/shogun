@@ -187,7 +187,7 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @param src new logarithms of transition probs
 		 * @param num number of logarithms of transition probs
-		 * @return if setting was succesful
+		 * @return if setting was successful
 		 */
 		virtual bool set_log_transition_probs(
 			const float64_t* src, int32_t num);
@@ -203,7 +203,7 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @param src new transition probs
 		 * @param num number of transition probs
-		 * @return if setting was succesful
+		 * @return if setting was successful
 		 */
 		virtual bool set_transition_probs(const float64_t* src, int32_t num);
 

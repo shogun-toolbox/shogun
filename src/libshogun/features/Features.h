@@ -158,7 +158,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param num_features new number of features
 		 * @param num_vectors new number of vectors
-		 * @return if reshaping was succesful
+		 * @return if reshaping was successful
 		 */
 		virtual bool reshape(int32_t num_features, int32_t num_vectors) { return false; }
 

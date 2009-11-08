@@ -218,7 +218,7 @@ class CCombinedDotFeatures : public CDotFeatures
 
 		/** delete feature object
 		 *
-		 * @return if deleting was succesful
+		 * @return if deleting was successful
 		 */
 		inline bool delete_feature_obj()
 		{

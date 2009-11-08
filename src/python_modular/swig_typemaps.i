@@ -50,7 +50,7 @@ const char* typecode_string(PyObject* py_obj) {
   if (PyModule_Check(  py_obj)) return "module"      ;
   if (PyInstance_Check(py_obj)) return "instance"    ;
 
-  return "unkown type";
+  return "unknown type";
 }
 
 /* Given a numpy typecode, return a string describing the type, assuming

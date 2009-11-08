@@ -112,7 +112,7 @@ class CPlif: public CPlifBase
 		/** set transform type
 		 *
 		 * @param type_str type (string)
-		 * @return if setting was succesful
+		 * @return if setting was successful
 		 */
 		bool set_transform_type(const char *type_str);
 

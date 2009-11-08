@@ -306,7 +306,7 @@ class CKernel : public CSGObject
 
 		/** set the current kernel normalizer
 		 *
-		 * @return if succesful
+		 * @return if successful
 		 */
 		virtual bool set_normalizer(CKernelNormalizer* normalizer);
 
@@ -332,7 +332,7 @@ class CKernel : public CSGObject
 		/** load the kernel matrix
 		 *
 		 * @param fname filename to load from
-		 * @return if loading was succesful
+		 * @return if loading was successful
 		 */
 		bool load(char* fname);
 

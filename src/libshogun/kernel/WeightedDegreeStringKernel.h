@@ -497,7 +497,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** set maximum mismatch
 		 *
 		 * @param max new maximum mismatch
-		 * @return if setting was succesful
+		 * @return if setting was successful
 		 */
 		bool set_max_mismatch(int32_t max);
 
