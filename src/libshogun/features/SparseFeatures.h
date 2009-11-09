@@ -1017,9 +1017,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		/** load features from file
 		 *
 		 * @param fname filename to load from
+		 * @param do_sort_features if true features will be sorted to ensure they
+		 * 		 are in ascending order
 		 * @return label object with corresponding labels
 		 */
-		CLabels* load_svmlight_file(char* fname)
+		CLabels* load_svmlight_file(char* fname, bool do_sort_features=true)
 		{
 			CLabels* lab=NULL;
 
@@ -1178,7 +1180,54 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			delete[] dummy;
 
+			if (do_sort_features)
+				sort_features();
+
 			return lab;
+		}
+
+		/** ensure that features occur in ascending order, only call when no
+		 * preprocessors are attached */
+		void sort_features()
+		{
+			ASSERT(get_num_preproc()==0);
+
+			if (!sparse_feature_matrix)
+				SG_ERROR("Requires sparse feature matrix to be available in-memory\n");
+
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				int32_t len=sparse_feature_matrix[i].num_feat_entries;
+
+				if (!len)
+					continue;
+
+				TSparseEntry<ST>* sf_orig=sparse_feature_matrix[i].features;
+				int32_t* feat_idx=new int32_t[len];
+				int32_t* orig_idx=new int32_t[len];
+
+				for (int j=0; j<len; j++)
+				{
+					feat_idx[j]=sf_orig[j].feat_index;
+					orig_idx[j]=j;
+				}
+
+				CMath::qsort_index(feat_idx, orig_idx, len);
+
+				TSparseEntry<ST>* sf_new= new TSparseEntry<ST>[len];
+				for (int j=0; j<len; j++)
+					sf_new[j]=sf_orig[orig_idx[j]];
+
+				sparse_feature_matrix[i].features=sf_new;
+
+				// sanity check
+				for (int j=0; j<len-1; j++)
+					ASSERT(sf_new[j].feat_index<sf_new[j+1].feat_index);
+
+				delete[] orig_idx;
+				delete[] feat_idx;
+				delete[] sf_orig;
+			}
 		}
 
 		/** write features to file using svm light format
