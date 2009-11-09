@@ -92,8 +92,6 @@ CLabels* CKernelMachine::classify()
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
 		lab=new CLabels(num_vectors);
-		SG_REF(lab);
-
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
 		CSignal::clear_cancel();

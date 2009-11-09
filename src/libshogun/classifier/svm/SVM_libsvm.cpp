@@ -2431,6 +2431,8 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		free(perm);
 		free(start);
 		free(x);
+		free(C);
+		free(pv);
 		free(weighted_C);
 		free(nonzero);
 		for(i=0;i<nr_class*(nr_class-1)/2;i++)

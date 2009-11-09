@@ -122,8 +122,7 @@
 
 /* These functions return new Objects */
 %newobject classify;
-%newobject CClassifier::classify(CLabels* output);
-%newobject CClassifier::classify(CFeatures* data);
+%newobject classify(CFeatures* data);
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/classifier/Classifier.h>
