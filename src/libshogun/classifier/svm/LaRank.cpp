@@ -72,15 +72,13 @@ double LaRankOutput::computeGradient (int xi_id, int yi, int ythis)
 // Updating the solution in the actual output
 void LaRankOutput::update (int x_id, double lambda, double gp)
 {
-	int *r2i = larank_kcache_r2i (kernel, l);
-	int xr = l + 1;
-	for (int r = 0; r < l; r++)
+    int *r2i = larank_kcache_r2i (kernel, l);
+    int xr = l + 1;
+    for (int r = 0; r < l; r++)
+      if (r2i[r] == x_id)
 	{
-		if (r2i[r] == x_id)
-		{
-			xr = r;
-			break;
-		}
+	  xr = r;
+	  break;
 	}
 
 	// updates the cache order and the beta coefficient

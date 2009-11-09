@@ -44,7 +44,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 
 	/** constructor
 	 *
-	 * @param filename filename of the file containing line based features
+	 * @param fname filename of the file containing line based features
 	 * @param alpha alphabet (type) to use for string features
 	 */
 	CStringFileFeatures(const char* fname, EAlphabet alpha)
@@ -72,6 +72,9 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 	 * @param len length of line (returned via reference)
 	 * @param offs offset to be passed for reading next line, should be 0
 	 * 			initially (returned via reference)
+	 * @param line_nr used to indicate errors (returned as reference should be 0
+	 * 			initially)
+	 * @param file_length total length of the file (for error checking)
 	 *
 	 * @return line (NOT ZERO TERMINATED)
 	 */
@@ -183,6 +186,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 
 
 	protected:
+	/** memory mapped file*/
 	CMemoryMappedFile<ST>* file;
 };
 }

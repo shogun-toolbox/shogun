@@ -23,6 +23,16 @@ template <class ST> class CStringFeatures;
 class CCompressor;
 enum E_COMPRESSION_TYPE;
 
+/** @brief Preprocessor that decompresses compressed strings.
+ *
+ * Each string in CStringFeatures might be stored compressed in memory.
+ * This preprocessor decompresses these strings on the fly. This may be
+ * especially usefull for long strings and when datasets become too large
+ * to fit in memoryin uncompressed form but still when they are compressed.
+ *
+ * Then avoiding expensive disk i/o strings are on-the-fly decompressed.
+ *
+ */
 template <class ST> class CDecompressString : public CStringPreProc<ST>
 {
 	public:
@@ -110,6 +120,7 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 		}
 
 	protected:
+		/** compressor used to decompress strings */
 		CCompressor* compressor;
 };
 }

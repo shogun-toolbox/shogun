@@ -1775,7 +1775,7 @@ static void solve_c_svc(
 
 
 //two weighted datasets
-static void solve_c_svc_weighted(
+void solve_c_svc_weighted(
 	const svm_problem *prob, const svm_parameter* param,
 	float64_t *alpha, Solver::SolutionInfo* si, float64_t Cp, float64_t Cn)
 {

@@ -33,13 +33,12 @@ public:
 
 	/** constructor
 	 *
-	 * @param size size
+	 * @param size cache size in MB
 	 * @param num_cells2 - the number of pyramid cells	 
 	 * @param weights_foreach_cell2 the vector of weights for each cell with which the Chi2 distance gets weighted
-	 * @param width_computation_type - 0 use the following parameter as fixed 
+	 * @param width_computation_type2 - 0 use the following parameter as fixed 
 	 *	width, 1- use mean of inner distances, 2 - use median of inner distances
 	 *	in cases 1 and 2 the value of parameter width is important!!!
- 	 *	
 	 * @param width2 - in case of width_computation_type ==0 it is the 
 	 * 	width, in case of width_computation_type > 0 its value determines
 	 *	the how many random features are used for determining the width

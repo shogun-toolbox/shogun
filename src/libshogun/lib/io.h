@@ -140,7 +140,12 @@ class CIO
 
 		/** print a message
 		 *
+		 * optionally prefixed with file name and line number
+		 * from (use -1 in line to disable this)
+		 *
 		 * @param prio message priority
+		 * @param file file name from where the message is called
+		 * @param line line number from where the message is called
 		 * @param fmt format string
 		 */
 		void message(EMessageType prio, const char* file,
