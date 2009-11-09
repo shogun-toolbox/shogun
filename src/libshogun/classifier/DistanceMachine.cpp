@@ -169,10 +169,8 @@ void* CDistanceMachine::run_distance_thread_lhs(void* p)
     int32_t idx_c=params->idx_comp;
 
     for (int32_t i=idx_res_start; idx_act<idx_stop; i++,idx_act++)
-    {
         res[i] =distance->distance(idx_act,idx_c);
-    }
-    //pthread_exit(NULL);
+
     return NULL;
 }
 
@@ -187,9 +185,7 @@ void* CDistanceMachine::run_distance_thread_rhs(void* p)
     int32_t idx_c=params->idx_comp;
 
     for (int32_t i=idx_res_start; idx_act<idx_stop; i++,idx_act++)
-    {
         res[i] =distance->distance(idx_c,idx_act);
-    }
-    //pthread_exit(NULL);
+
     return NULL;
 }
