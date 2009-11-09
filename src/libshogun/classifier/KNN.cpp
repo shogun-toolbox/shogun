@@ -25,6 +25,9 @@ CKNN::CKNN()
 CKNN::CKNN(int32_t k_, CDistance* d, CLabels* trainlab)
 : CDistanceMachine(), k(k_), num_classes(0), train_labels(NULL)
 {
+	ASSERT(d);
+	ASSERT(trainlab);
+
     set_distance(d);
     set_labels(trainlab);
     num_train_labels=trainlab->get_num_labels();
