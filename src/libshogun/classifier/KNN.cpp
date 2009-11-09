@@ -103,18 +103,13 @@ CLabels* CKNN::classify()
 
 	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 	{
-		if ((i%(num_lab/10+1))== 0)
-			SG_PROGRESS(i, 0, num_lab);
-                // lhs idx 1..n and rhs idx i
-                distances_lhs(dists,0,num_train_labels-1,i);
+		SG_PROGRESS(i, 0, num_lab);
+
+		// lhs idx 1..n and rhs idx i
+		distances_lhs(dists,0,num_train_labels-1,i);
 		int32_t j;
 		for (j=0; j<num_train_labels; j++)
-		{
-			//copy back train labels and compute distance
 			train_lab[j]=train_labels[j];
-			
-//			dists[j]=distance->distance(j,i);
-		}
 
 		//sort the distance vector for test example j to all train examples
 		//classes[1..k] then holds the classes for minimum distance

@@ -12,7 +12,6 @@
 #ifndef __CIO_H__
 #define __CIO_H__
 
-#include <time.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -373,9 +372,9 @@ class CIO
 		/** target file */
 		FILE* target;
 		/** last progress time */
-		int64_t last_progress_time;
+		float64_t last_progress_time;
 		/** progress start time */
-		int64_t progress_start_time;
+		float64_t progress_start_time;
 		/** last progress */
 		float64_t last_progress;
 		/** if progress bar shall be shown */
