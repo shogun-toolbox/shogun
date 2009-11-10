@@ -85,7 +85,6 @@ CLabels* CKNN::classify()
 	ASSERT(k<=num_lab);
 
 	CLabels* output=new CLabels(num_lab);
-	SG_REF(output);
 
 	//distances to train data and working buffer of train_labels
 	float64_t* dists=new float64_t[num_train_labels];
@@ -160,6 +159,77 @@ CLabels* CKNN::classify(CFeatures* data)
 	SG_UNREF(lhs);
 
 	return classify();
+}
+
+void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_out)
+{
+	ASSERT(dst);
+	ASSERT(k_out);
+	ASSERT(num_vec);
+
+	ASSERT(num_classes>0);
+	ASSERT(distance);
+	ASSERT(distance->get_num_vec_rhs());
+
+	int32_t num_lab=distance->get_num_vec_rhs();
+	ASSERT(k<=num_lab);
+
+	int32_t* output=(int32_t*) malloc(sizeof(int32_t)*k*num_lab);
+
+	//distances to train data and working buffer of train_labels
+	float64_t* dists=new float64_t[num_train_labels];
+	int32_t* train_lab=new int32_t[num_train_labels];
+
+	///histogram of classes and returned output
+	int32_t* classes=new int32_t[num_classes];
+
+	SG_INFO( "%d test examples\n", num_lab);
+	CSignal::clear_cancel();
+
+	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+	{
+		SG_PROGRESS(i, 0, num_lab);
+
+		// lhs idx 1..n and rhs idx i
+		distances_lhs(dists,0,num_train_labels-1,i);
+		for (int32_t j=0; j<num_train_labels; j++)
+			train_lab[j]=train_labels[j];
+
+		//sort the distance vector for test example j to all train examples
+		//classes[1..k] then holds the classes for minimum distance
+		CMath::qsort_index(dists, train_lab, num_train_labels);
+
+		//compute histogram of class outputs of the first k nearest neighbours
+		for (int32_t j=0; j<num_classes; j++)
+			classes[j]=0;
+
+		for (int32_t j=0; j<k; j++)
+		{
+			classes[train_lab[j]]++;
+
+			//choose the class that got 'outputted' most often
+			int32_t out_idx=0;
+			int32_t out_max=0;
+
+			for (int32_t c=0; c<num_classes; c++)
+			{
+				if (out_max< classes[c])
+				{
+					out_idx= c;
+					out_max= classes[c];
+				}
+			}
+			output[j*num_lab+i]=out_idx+min_label;
+		}
+	}
+
+	delete[] dists;
+	delete[] train_lab;
+	delete[] classes;
+
+	*dst=output;
+	*k_out=k;
+	*num_vec=num_lab;
 }
 
 bool CKNN::load(FILE* srcfile)

@@ -88,6 +88,14 @@ class CKNN : public CDistanceMachine
 			return 0;
 		}
 
+		/** classify all examples for 1...k
+		 *
+		 * @param output resulting labels for all k
+		 * @param k_out number of columns (k)
+		 * @param num_vec number of outputs
+		 */
+		void classify_for_multiple_k(int32_t** output, int32_t* num_vec, int32_t* k_out);
+
 		/** load from file
 		 *
 		 * @param srcfile file to load from
@@ -106,7 +114,7 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @param p_k new k
 		 */
-		inline void set_k(float64_t p_k)
+		inline void set_k(int32_t p_k)
 		{
 			ASSERT(p_k>0);
 			this->k=p_k;
@@ -116,7 +124,7 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @return k
 		 */
-		inline float64_t get_k()
+		inline int32_t get_k()
 		{
 			return k;
 		}
@@ -126,7 +134,7 @@ class CKNN : public CDistanceMachine
 
 	protected:
 		/// the k parameter in KNN
-		float64_t k;
+		int32_t k;
 
 		///	number of classes (i.e. number of values labels can take)
 		int32_t num_classes;
