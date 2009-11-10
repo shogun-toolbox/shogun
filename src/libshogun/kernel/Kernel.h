@@ -94,10 +94,14 @@ template <class T> struct K_THREAD_PARAM
 {
 	/** kernel */
 	CKernel* kernel;
-	/** start */
+	/** start (unit row) */
 	int32_t start;
-	/** end */
+	/** end (unit row) */
 	int32_t end;
+	/** start (unit number of elements) */
+	int32_t total_start;
+	/** end (unit number of elements) */
+	int32_t total_end;
 	/** m */
 	int32_t m;
 	/** n */
@@ -241,6 +245,8 @@ class CKernel : public CSGObject
 				params.result=result;
 				params.start=0;
 				params.end=m;
+				params.total_start=0;
+				params.total_end=total_num;
 				params.n=n;
 				params.m=m;
 				params.symmetric=symmetric;
@@ -261,6 +267,8 @@ class CKernel : public CSGObject
 					params[t].result = result;
 					params[t].start = compute_row_start(t*step, n, symmetric);
 					params[t].end = compute_row_start((t+1)*step, n, symmetric);
+					params[t].total_start=t*step;
+					params[t].total_end=(t+1)*step;
 					params[t].n=n;
 					params[t].m=m;
 					params[t].symmetric=symmetric;
@@ -273,6 +281,8 @@ class CKernel : public CSGObject
 				params[t].result = result;
 				params[t].start = compute_row_start(t*step, n, symmetric);
 				params[t].end = m;
+				params[t].total_start=t*step;
+				params[t].total_end=total_num;
 				params[t].n=n;
 				params[t].m=m;
 				params[t].symmetric=symmetric;
@@ -755,6 +765,9 @@ class CKernel : public CSGObject
 			int32_t n=params->n;
 			int32_t m=params->m;
 			bool verbose=params->verbose;
+			int64_t total_start=params->total_start;
+			int64_t total_end=params->total_end;
+			int64_t total=total_start;
 
 			for (int32_t i=i_start; i<i_end; i++)
 			{
@@ -770,15 +783,22 @@ class CKernel : public CSGObject
 
 					if (symmetric && i!=j)
 						result[j+i*m]=v;
+
+					if (verbose)
+					{
+						total++;
+
+						if (symmetric && i!=j)
+							total++;
+
+						if (total%100 == 0)
+							k->SG_PROGRESS(total, total_start, total_end);
+
+						if (CSignal::cancel_computations())
+							break;
+					}
 				}
 
-				if (verbose)
-				{
-					k->SG_PROGRESS(i, i_start, i_end);
-
-					if (CSignal::cancel_computations())
-						break;
-				}
 			}
 
 			return NULL;
