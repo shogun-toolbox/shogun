@@ -29,6 +29,7 @@
 #include <cassert>
 
 #include "lib/io.h"
+#include "lib/Signal.h"
 #include "lib/Mathematics.h"
 #include "classifier/svm/LaRank.h"
 #include "kernel/Kernel.h"
@@ -50,8 +51,11 @@ void LaRankOutput::initialize (CKernel* kfunc, long cache)
 void LaRankOutput::destroy ()
 {
 	larank_kcache_destroy (kernel);
+	kernel=NULL;
 	delete[] beta;
 	delete[] g;
+	beta=NULL;
+	g=NULL;
 }
 
 // !Important! Computing the score of a given input vector for the actual output
@@ -139,8 +143,8 @@ int LaRankOutput::cleanup ()
 			g[r]=g[r + 1];
 		}
 	}
-	CMath::resize(beta, l+1, new_l+1);
-	CMath::resize(g, l+1, new_l+1);
+	CMath::resize(beta, l, new_l+1);
+	CMath::resize(g, l, new_l+1);
 	beta[new_l]=0;
 	g[new_l]=0;
 	l = new_l;
@@ -203,7 +207,7 @@ CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
-	batch_mode(true)
+	batch_mode(true), step(0)
 {
 }
 
@@ -212,17 +216,23 @@ CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
-	batch_mode(true)
+	batch_mode(true), step(0)
 {
+}
+
+CLaRank::~CLaRank ()
+{
+	destroy();
 }
 
 bool CLaRank::train(CFeatures* data)
 {
-	int step = 1;
 	tau = 0.0001;
 
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
+
+	CSignal::clear_cancel();
 
 	if (data)
 	{
@@ -240,10 +250,11 @@ bool CLaRank::train(CFeatures* data)
 	cache = kernel->get_cache_size();
 
 	int n_it = 1;
-	double initime = getTime (), gap = DBL_MAX;
+	//double initime = getTime ();
+	double gap = DBL_MAX;
 
-	std::cout << "\n--> Training on " << nb_train << "ex" << std::endl;
-	while (gap > C1)      // stopping criteria
+	SG_INFO("Training on %d examples\n", nb_train);
+	while (gap > C1 && (!CSignal::cancel_computations()))      // stopping criteria
 	{
 		double tr_err = 0;
 		int ind = step;
@@ -253,27 +264,29 @@ bool CLaRank::train(CFeatures* data)
 			if (add (i, y) != y)   // call the add function
 				tr_err++;
 
-			if (i / ind)
+			if (ind && i / ind)
 			{
-				std::cout << "Done: " << (int) (((double) i) / nb_train * 100) << "%, Train error (online): " << (tr_err / ((double) i + 1)) * 100 << "%" << std::endl;
-				printStuff (initime, false);
+				SG_DEBUG("Done: %d %% Train error (online): %f%%\n",
+						(int) (((double) i) / nb_train * 100), (tr_err / ((double) i + 1)) * 100);
+				//printStuff (initime, false);
 				ind += step;
 			}
 		}
 
-		std::cout << "End of iteration " << n_it++ << std::endl;
-		std::cout << "Train error (online): " << (tr_err / nb_train) * 100 << "%" << std::endl;
+		SG_DEBUG("End of iteration %d\n", n_it++);
+		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100);
 		gap = computeGap ();
-		std::cout << "Duality gap: " << gap << std::endl;
-		printStuff (initime, true);
+		//printStuff (initime, true);
+		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(C1), 6);
+
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
 	}
-	std::cout << "---- End of training ----" << std::endl;
+	SG_DONE();
 
 	int32_t num_classes = outputs.size();
 	create_multiclass_svm(num_classes);
-	SG_PRINT("%d classes\n", num_classes);
+	SG_DEBUG("%d classes\n", num_classes);
 
 	// Used for saving a model file
 	int32_t i=0;
@@ -301,7 +314,7 @@ bool CLaRank::train(CFeatures* data)
 		set_svm(i, svm);
 		i++;
 	}
-	outputs.clear();
+	destroy();
 
 	return true;
 }

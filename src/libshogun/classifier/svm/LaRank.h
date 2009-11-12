@@ -310,8 +310,13 @@ namespace shogun
 	class LaRankOutput
 	{
 		public:
-			LaRankOutput () {}
-			~LaRankOutput () {}
+			LaRankOutput () : beta(NULL), g(NULL), kernel(NULL), l(0)
+			{
+			}
+			virtual ~LaRankOutput ()
+			{
+				destroy();
+			}
 
 			// Initializing an output class (basically creating a kernel cache for it)
 			void initialize (CKernel* kfunc, long cache);
@@ -411,7 +416,7 @@ namespace shogun
 			 */
 			CLaRank(float64_t C, CKernel* k, CLabels* lab);
 
-			~CLaRank () {}
+			virtual ~CLaRank ();
 
 			bool train(CFeatures* data);
 
@@ -547,6 +552,9 @@ namespace shogun
 			long cache;
 			// whether to use online learning or batch training
 			bool batch_mode;
+
+			//progess output
+			int step;
 	};
 
 	inline double getTime ()
