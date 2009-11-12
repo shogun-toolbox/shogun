@@ -1,9 +1,9 @@
-def gmnpsvm ():
-	print 'GMNPSVM'
+def larank ():
+	print 'LaRank'
 
 	from shogun.Features import RealFeatures, Labels
 	from shogun.Kernel import GaussianKernel
-	from shogun.Classifier import GMNPSVM
+	from shogun.Classifier import LaRank
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
@@ -14,11 +14,13 @@ def gmnpsvm ():
 	epsilon=1e-5
 	labels=Labels(label_train_multiclass)
 
-	svm=GMNPSVM(C, kernel, labels)
+	svm=LaRank(C, kernel, labels)
+	#svm.set_tau(1e-3)
+	#svm.set_batch_mode(False)
+	#svm.io.enable_progress()
 	svm.set_epsilon(epsilon)
-	svm.train(feats_train)
-	#kernel.init(feats_train, feats_test)
-	out=svm.classify(feats_test).get_labels()
+	svm.train()
+	out=svm.classify(feats_train).get_labels()
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
@@ -26,4 +28,4 @@ if __name__=='__main__':
 	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
 	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
 	label_train_multiclass=lm.load_labels('../data/label_train_multiclass.dat')
-	gmnpsvm()
+	larank()
