@@ -1,6 +1,7 @@
 // -*- C++ -*-
 // Main functions of the LaRank algorithm for soving Multiclass SVM
 // Copyright (C) 2008- Antoine Bordes
+// Shogun specific adjustments (w) 2009 Soeren Sonnenburg
 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -40,6 +41,8 @@ void LaRankOutput::initialize (CKernel* kfunc, long cache)
 	larank_kcache_set_maximum_size (kernel, cache * 1024 * 1024);
 	beta = new float[1];
 	g = new float[1];
+	*beta=0;
+	*g=0;
 	l = 0;
 }
 
@@ -88,12 +91,11 @@ void LaRankOutput::update (int x_id, double lambda, double gp)
 	}
 	else
 	{
-		SG_SPRINT("l=%d g=%p\n", l, g);
-		g[l]=gp;
-		beta[l]=lambda;
 		larank_kcache_swap_ri (kernel, l, x_id);
 		CMath::resize(g, l, l+1);
 		CMath::resize(beta, l, l+1);
+		g[l]=gp;
+		beta[l]=lambda;
 		l++;
 	}
 
@@ -139,6 +141,8 @@ int LaRankOutput::cleanup ()
 	}
 	CMath::resize(beta, l+1, new_l+1);
 	CMath::resize(g, l+1, new_l+1);
+	beta[new_l]=0;
+	g[new_l]=0;
 	l = new_l;
 	return count;
 }
@@ -198,7 +202,8 @@ int LaRankOutput::getSV (float* &sv) const
 CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST), 
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
-	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0)
+	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
+	batch_mode(true)
 {
 }
 
@@ -206,14 +211,14 @@ CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
 	CMultiClassSVM(ONE_VS_REST, C, k, lab), 
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
-	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0)
+	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
+	batch_mode(true)
 {
 }
 
 bool CLaRank::train(CFeatures* data)
 {
 	int step = 1;
-	int mode = 1;
 	tau = 0.0001;
 
 	ASSERT(kernel);
@@ -244,7 +249,8 @@ bool CLaRank::train(CFeatures* data)
 		int ind = step;
 		for (int i = 0; i < nb_train; i++)
 		{
-			if (add (i, labels->get_label(i)) != labels->get_label(i))   // call the add function
+			int y=labels->get_label(i);
+			if (add (i, y) != y)   // call the add function
 				tr_err++;
 
 			if (i / ind)
@@ -260,10 +266,42 @@ bool CLaRank::train(CFeatures* data)
 		gap = computeGap ();
 		std::cout << "Duality gap: " << gap << std::endl;
 		printStuff (initime, true);
-		if (mode == 0)        // skip stopping criteria if online mode
+		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
 	}
 	std::cout << "---- End of training ----" << std::endl;
+
+	int32_t num_classes = outputs.size();
+	create_multiclass_svm(num_classes);
+	SG_PRINT("%d classes\n", num_classes);
+
+	// Used for saving a model file
+	int32_t i=0;
+	for (outputhash_t::const_iterator it = outputs.begin (); it != outputs.end (); ++it)
+	{
+		const LaRankOutput* o=&(it->second);
+
+		larank_kcache_t* k=o->getKernel();
+		int l=o->get_l();
+		float* beta=o->getBetas();
+		int *r2i = larank_kcache_r2i (k, l);
+
+		ASSERT(l>0);
+		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, l, 0.0);
+
+		CSVM* svm=new CSVM(l);
+
+		for (int32_t j=0; j<l; j++)
+		{
+			svm->set_alpha(j, beta[j]);
+			svm->set_support_vector(j, r2i[j]);
+		}
+
+		svm->set_bias(0);
+		set_svm(i, svm);
+		i++;
+	}
+	outputs.clear();
 
 	return true;
 }
@@ -487,6 +525,7 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 	 ** compute gradient and sort   
 	 */
 	std::vector < outputgradient_t > outputgradients;
+	
 	outputgradients.reserve (getNumOutputs ());
 
 	std::vector < outputgradient_t > outputscores;
@@ -504,19 +543,13 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 			else
 				outputscores.push_back (outputgradient_t (it->first, -g));
 		}
-	SG_PRINT("sort outputgradients start\n");
 
-	//for (outputhash_t::iterator i=outputgradients.begin (); i<outputgradients.end (); i++)
-	//	SG_SPRINT("outputgradients[%d]=%f\n", i, outputgradients[i]);
 	std::sort (outputgradients.begin (), outputgradients.end ());
-	SG_PRINT("sort outputgradients end\n");
 
 	/*
 	 ** determine the prediction
 	 */
-	SG_PRINT("sort outputscores start\n");
 	std::sort (outputscores.begin (), outputscores.end ());
-	SG_PRINT("sort outputscores end\n");
 	pro_ret.ypred = outputscores[0].output;
 
 	/*
@@ -618,7 +651,7 @@ double CLaRank::optimize ()
 		for (int n = 0; n < 10; ++n)
 		{
 			process_return_t pro_ret =
-				process (patterns.sample (), processOptimize);
+				process (patterns.sample(), processOptimize);
 			dual_increase += pro_ret.dual_increase;
 		}
 	return dual_increase;

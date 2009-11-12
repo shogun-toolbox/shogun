@@ -1,6 +1,7 @@
 // -*- C++ -*-
 // Main functions of the LaRank algorithm for soving Multiclass SVM
 // Copyright (C) 2008- Antoine Bordes
+// Shogun specific adjustments (w) 2009 Soeren Sonnenburg
 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -303,7 +304,8 @@ namespace shogun
 
 
 	/*
-	 ** OUTPUT: one per class of the raining set, keep tracks of support vectors and their beta coefficients
+	 ** OUTPUT: one per class of the raining set, keep tracks of support
+	 * vectors and their beta coefficients
 	 */
 	class LaRankOutput
 	{
@@ -336,9 +338,14 @@ namespace shogun
 			// --- Below are information or "get" functions --- //
 
 			//                            
-			inline larank_kcache_t *getKernel ()
+			inline larank_kcache_t *getKernel () const
 			{
 				return kernel;
+			}
+			//                            
+			inline int32_t get_l () const
+			{
+				return l;
 			}
 
 			//
@@ -352,6 +359,12 @@ namespace shogun
 
 			//
 			double getBeta (int x_id);
+
+			//
+			inline float* getBetas () const
+			{
+				return beta;
+			}
 
 			//
 			double getGradient (int x_id);
@@ -438,6 +451,12 @@ namespace shogun
 
 			/** @return object name */
 			inline virtual const char* get_name() const { return "LaRank"; }
+
+			void set_batch_mode(bool enable) { batch_mode=enable; };
+			bool get_batch_mode() { return batch_mode; };
+			void set_tau(double t) { tau=t; };
+			double get_tau() { return tau; };
+
 
 		private:
 			/*
@@ -526,6 +545,8 @@ namespace shogun
 			double tau;
 			int nb_train;
 			long cache;
+			// whether to use online learning or batch training
+			bool batch_mode;
 	};
 
 	inline double getTime ()
