@@ -257,9 +257,24 @@ bool CMKL::train(CFeatures* data)
 			SG_ERROR("Interleaved MKL optimization is currently "
 					"only supported with SVMlight\n");
 		}
+
+		//Note that there is currently no safe way to properly resolve this
+		//situation: the mkl object hands itself as a reference to the svm which
+		//in turn increases the reference count of mkl and when done decreases
+		//the count. Thus we have to protect the mkl object from deletion by
+		//ref()'ing it before we set the callback function and should also
+		//unref() it afterwards. However, when the reference count was zero
+		//before this unref() might actually try to destroy this (crash ahead)
+		//but if we don't actually unref() the object we might leak memory...
+		//So as a workaround we only unref when the reference count was >1
+		//before.
+		int32_t refs=this->ref();
 		svm->set_callback_function(this, perform_mkl_step_helper);
 		svm->train();
+		SG_DONE();
 		svm->set_callback_function(NULL, NULL);
+		if (refs>1)
+			this->unref();
 	}
 	else
 	{

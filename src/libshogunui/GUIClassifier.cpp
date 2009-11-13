@@ -953,9 +953,9 @@ bool CGUIClassifier::set_svm_mkl_parameters(
 	float64_t weight_epsilon, float64_t C, float64_t norm)
 {
 	if (weight_epsilon<0)
-		svm_weight_epsilon=1e-4;
+		weight_epsilon=1e-4;
 	if (C<0)
-		C_mkl=0;
+		C=0;
 	if (norm<=0)
 		SG_ERROR("MKL norm > 0\n");
 
