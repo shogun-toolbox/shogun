@@ -57,6 +57,7 @@
 #include <shogun/kernel/LocalAlignmentStringKernel.h>
 #include <shogun/kernel/LocalityImprovedStringKernel.h>
 #include <shogun/kernel/MatchWordStringKernel.h>
+#include <shogun/kernel/MultitaskKernelNormalizer.h>  
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/PolyMatchStringKernel.h>
@@ -125,6 +126,7 @@
 %rename(LocalAlignmentStringKernel) CLocalAlignmentStringKernel;
 %rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 %rename(MatchWordStringKernel) CMatchWordStringKernel;
+%rename(MultitaskKernelNormalizer) CMultitaskKernelNormalizer;
 %rename(OligoStringKernel) COligoStringKernel;
 %rename(PolyKernel) CPolyKernel;
 %rename(PolyMatchStringKernel) CPolyMatchStringKernel;
@@ -208,6 +210,7 @@ namespace shogun
 %include <shogun/kernel/LocalAlignmentStringKernel.h>
 %include <shogun/kernel/LocalityImprovedStringKernel.h>
 %include <shogun/kernel/MatchWordStringKernel.h>
+%include <shogun/kernel/MultitaskKernelNormalizer.h>
 %include <shogun/kernel/OligoStringKernel.h>
 %include <shogun/kernel/PolyKernel.h>
 %include <shogun/kernel/PolyMatchStringKernel.h>
