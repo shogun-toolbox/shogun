@@ -16,27 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
-
-#ifndef LARANK_H
-#define LARANK_H
-
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <fstream>
-#include <sstream>
-# include <ctime>
-# include <sys/time.h>
-# include <ext/hash_map>
-# include <ext/hash_set>
-# include <cmath>
-# define STDEXT_NAMESPACE __gnu_cxx
-# define std_hash_map STDEXT_NAMESPACE::hash_map
-# define std_hash_set STDEXT_NAMESPACE::hash_set
-
-#include "lib/io.h"
-#include "classifier/svm/MultiClassSVM.h"
-
+//
 /***********************************************************************
  * 
  *  LUSH Lisp Universal Shell
@@ -66,124 +46,140 @@
  * $Id: kcache.h,v 1.8 2007/01/25 22:42:09 leonb Exp $
  **********************************************************************/
 
-#ifndef KCACHE_H
-#define KCACHE_H
+#ifndef LARANK_H
+#define LARANK_H
 
+#include <ctime>
+#include <vector>
+#include <algorithm>
+#include <sys/time.h>
+#include <ext/hash_map>
+#include <ext/hash_set>
+
+#define STDEXT_NAMESPACE __gnu_cxx
+#define std_hash_map STDEXT_NAMESPACE::hash_map
+#define std_hash_set STDEXT_NAMESPACE::hash_set
+
+#include "lib/io.h"
 #include "kernel/Kernel.h"
+#include "classifier/svm/MultiClassSVM.h"
 
 namespace shogun
 {
-/* ------------------------------------- */
-/* CACHE FOR KERNEL VALUES */
+	struct larank_kcache_s;
+	typedef struct larank_kcache_s larank_kcache_t;
+	struct larank_kcache_s
+	{
+		CKernel* func;
+		larank_kcache_t *prevbuddy;
+		larank_kcache_t *nextbuddy;
+		long maxsize;
+		long cursize;
+		int32_t l;
+		int32_t *i2r;
+		int32_t *r2i;
+		int32_t maxrowlen;
+		/* Rows */
+		int32_t *rsize;
+		float32_t *rdiag;
+		float32_t **rdata;
+		int32_t *rnext;
+		int32_t *rprev;
+		int32_t *qnext;
+		int32_t *qprev;
+	};
 
+	/*
+	 ** OUTPUT: one per class of the raining set, keep tracks of support
+	 * vectors and their beta coefficients
+	 */
+	class LaRankOutput
+	{
+		public:
+			LaRankOutput () : beta(NULL), g(NULL), kernel(NULL), l(0)
+		{
+		}
+			virtual ~LaRankOutput ()
+			{
+				destroy();
+			}
 
-/* --- larank_kcache_t
-   This is the opaque data structure for a kernel cache.
-*/
-  typedef struct larank_kcache_s larank_kcache_t;
+			// Initializing an output class (basically creating a kernel cache for it)
+			void initialize (CKernel* kfunc, long cache);
 
-/* --- larank_kcache_create
-   Returns a cache object for kernel <kernelfun>.
-   The cache handles a Gram matrix of size <n>x<n> at most.
- */
-  larank_kcache_t *larank_kcache_create (CKernel* kernelfunc);
+			// Destroying an output class (basically destroying the kernel cache)
+			void destroy ();
 
-/* --- larank_kcache_destroy
-   Deallocates a kernel cache object.
-*/
-  void larank_kcache_destroy (larank_kcache_t * self);
+			// !Important! Computing the score of a given input vector for the actual output
+			float64_t computeScore (int32_t x_id);
 
-/* --- larank_kcache_set_maximum_size
-   Sets the maximum memory size used by the cache.
-   Argument <entries> indicates the maximum cache memory in bytes
-   The default size is 256Mb.
-*/
-  void larank_kcache_set_maximum_size (larank_kcache_t * self, long entries);
+			// !Important! Computing the gradient of a given input vector for the actual output           
+			float64_t computeGradient (int32_t xi_id, int32_t yi, int32_t ythis);
 
-/* --- larank_kcache_get_maximum_size
-   Returns the maximum cache memory.
- */
-  long larank_kcache_get_maximum_size (larank_kcache_t * self);
+			// Updating the solution in the actual output
+			void update (int32_t x_id, float64_t lambda, float64_t gp);
 
-/* --- larank_kcache_get_current_size
-   Returns the currently used cache memory.
-   This can slighly exceed the value specified by 
-   <larank_kcache_set_maximum_size>.
- */
-  long larank_kcache_get_current_size (larank_kcache_t * self);
+			// Linking the cache of this output to the cache of an other "buddy" output
+			// so that if a requested value is not found in this cache, you can
+			// ask your buddy if it has it.                              
+			void set_kernel_buddy (larank_kcache_t * bud);
 
-/* --- larank_kcache_query
-   Returns the possibly cached value of the Gram matrix element (<i>,<j>).
-   This function will not modify the cache geometry.
- */
-  double larank_kcache_query (larank_kcache_t * self, int i, int j);
+			// Removing useless support vectors (for which beta=0)                
+			int32_t cleanup ();
 
-/* --- larank_kcache_query_row
-   Returns the <len> first elements of row <i> of the Gram matrix.
-   The cache user can modify the order of the row elements
-   using the larank_kcache_swap() functions.  Functions larank_kcache_i2r() 
-   and larank_kcache_r2i() convert from example index to row position 
-   and vice-versa.
-*/
+			// --- Below are information or "get" functions --- //
 
-  float *larank_kcache_query_row (larank_kcache_t * self, int i, int len);
+			//                            
+			inline larank_kcache_t *getKernel () const
+			{
+				return kernel;
+			}
+			//                            
+			inline int32_t get_l () const
+			{
+				return l;
+			}
 
-/* --- larank_kcache_status_row
-   Returns the number of cached entries for row i.
-*/
+			//
+			float64_t getW2 ();
 
-  int larank_kcache_status_row (larank_kcache_t * self, int i);
+			//
+			float64_t getKii (int32_t x_id);
 
-/* --- larank_kcache_discard_row
-   Indicates that we wont need row i in the near future.
-*/
+			//
+			float64_t getBeta (int32_t x_id);
 
-  void larank_kcache_discard_row (larank_kcache_t * self, int i);
+			//
+			inline float32_t* getBetas () const
+			{
+				return beta;
+			}
 
+			//
+			float64_t getGradient (int32_t x_id);
 
-/* --- larank_kcache_i2r
-   --- larank_kcache_r2i
-   Return an array of integer of length at least <n> containing
-   the conversion table from example index to row position and vice-versa. 
-*/
+			//
+			bool isSupportVector (int32_t x_id) const;
 
-  int *larank_kcache_i2r (larank_kcache_t * self, int n);
-  int *larank_kcache_r2i (larank_kcache_t * self, int n);
+			//
+			int32_t getSV (float32_t* &sv) const;
 
+		private:
+			// the solution of LaRank relative to the actual class is stored in
+			// this parameters
+			float32_t* beta;		// Beta coefficiens
+			float32_t* g;		// Strored gradient derivatives
+			larank_kcache_t *kernel;	// Cache for kernel values
+			int32_t l;			// Number of support vectors 
+	};
 
-/* --- larank_kcache_swap_rr
-   --- larank_kcache_swap_ii
-   --- larank_kcache_swap_ri
-   Swaps examples in the row ordering table.
-   Examples can be specified by indicating their row position (<r1>, <r2>)
-   or by indicating the example number (<i1>, <i2>).
-*/
-
-  void larank_kcache_swap_rr (larank_kcache_t * self, int r1, int r2);
-  void larank_kcache_swap_ii (larank_kcache_t * self, int i1, int i2);
-  void larank_kcache_swap_ri (larank_kcache_t * self, int r1, int i2);
-
-
-/* --- larank_kcache_set_buddy
-   This function is called to indicate that the caches <self> and <buddy>
-   implement the same kernel function. When a buddy experiences a cache
-   miss, it can try querying its buddies instead of calling the 
-   kernel function.  Buddy relationship is transitive. */
-
-  void larank_kcache_set_buddy (larank_kcache_t * self,
-				larank_kcache_t * buddy);
-}
-#endif
-
-namespace shogun
-{
 	/*
 	 **	LARANKPATTERN: to keep track of the support patterns
 	 */
 	class LaRankPattern
 	{
 		public:
-			LaRankPattern (int x_index, int label) 
+			LaRankPattern (int32_t x_index, int32_t label) 
 				: x_id (x_index), y (label) {}
 			LaRankPattern () 
 				: x_id (0) {}
@@ -198,10 +194,9 @@ namespace shogun
 				x_id = -1;
 			}
 
-			int x_id;
-			int y;
+			int32_t x_id;
+			int32_t y;
 	};
-
 
 	/*
 	 **  LARANKPATTERNS: the collection of support patterns
@@ -218,7 +213,7 @@ namespace shogun
 				{
 					if (freeidx.size ())
 					{
-						std_hash_set < unsigned >::iterator it = freeidx.begin ();
+						std_hash_set < uint32_t >::iterator it = freeidx.begin ();
 						patterns[*it] = pattern;
 						x_id2rank[pattern.x_id] = *it;
 						freeidx.erase (it);
@@ -231,12 +226,12 @@ namespace shogun
 				}
 				else
 				{
-					int rank = getPatternRank (pattern.x_id);
+					int32_t rank = getPatternRank (pattern.x_id);
 					patterns[rank] = pattern;
 				}
 			}
 
-			void remove (unsigned i)
+			void remove (uint32_t i)
 			{
 				x_id2rank[patterns[i].x_id] = 0;
 				patterns[i].clear ();
@@ -248,7 +243,7 @@ namespace shogun
 				return patterns.size () == freeidx.size ();
 			}
 
-			unsigned size () const
+			uint32_t size () const
 			{
 				return patterns.size () - freeidx.size ();
 			}
@@ -258,147 +253,51 @@ namespace shogun
 				ASSERT (!empty ());
 				while (true)
 				{
-					unsigned r = rand () % patterns.size ();
+					uint32_t r = CMath::random(0, patterns.size ());
 					if (patterns[r].exists ())
 						return patterns[r];
 				}
 				return patterns[0];
 			}
 
-			unsigned getPatternRank (int x_id)
+			uint32_t getPatternRank (int32_t x_id)
 			{
 				return x_id2rank[x_id];
 			}
 
-			bool isPattern (int x_id)
+			bool isPattern (int32_t x_id)
 			{
 				return x_id2rank[x_id] != 0;
 			}
 
-			LaRankPattern & getPattern (int x_id)
+			LaRankPattern & getPattern (int32_t x_id)
 			{
-				unsigned rank = x_id2rank[x_id];
+				uint32_t rank = x_id2rank[x_id];
 				return patterns[rank];
 			}
 
-			unsigned maxcount () const
+			uint32_t maxcount () const
 			{
 				return patterns.size ();
 			}
 
-			LaRankPattern & operator [] (unsigned i)
+			LaRankPattern & operator [] (uint32_t i)
 			{
 				return patterns[i];
 			}
 
-			const LaRankPattern & operator [] (unsigned i) const
+			const LaRankPattern & operator [] (uint32_t i) const
 			{
 				return patterns[i];
 			}
 
 		private:
-			std_hash_set < unsigned >freeidx;
+			std_hash_set < uint32_t >freeidx;
 			std::vector < LaRankPattern > patterns;
-			std_hash_map < int, unsigned >x_id2rank;
+			std_hash_map < int32_t, uint32_t >x_id2rank;
 	};
 
 
-	/*
-	 ** OUTPUT: one per class of the raining set, keep tracks of support
-	 * vectors and their beta coefficients
-	 */
-	class LaRankOutput
-	{
-		public:
-			LaRankOutput () : beta(NULL), g(NULL), kernel(NULL), l(0)
-			{
-			}
-			virtual ~LaRankOutput ()
-			{
-				destroy();
-			}
-
-			// Initializing an output class (basically creating a kernel cache for it)
-			void initialize (CKernel* kfunc, long cache);
-
-			// Destroying an output class (basically destroying the kernel cache)
-			void destroy ();
-
-			// !Important! Computing the score of a given input vector for the actual output
-			double computeScore (int x_id);
-
-			// !Important! Computing the gradient of a given input vector for the actual output           
-			double computeGradient (int xi_id, int yi, int ythis);
-
-			// Updating the solution in the actual output
-			void update (int x_id, double lambda, double gp);
-
-			// Linking the cahe of this output to the cache of an other "buddy" output
-			// so that if a requested value is not found in this cache, you can ask your buddy if it has it.                              
-			void set_kernel_buddy (larank_kcache_t * bud);
-
-			// Removing useless support vectors (for which beta=0)                
-			int cleanup ();
-
-			// --- Below are information or "get" functions --- //
-
-			//                            
-			inline larank_kcache_t *getKernel () const
-			{
-				return kernel;
-			}
-			//                            
-			inline int32_t get_l () const
-			{
-				return l;
-			}
-
-			//
-			double getW2 ();
-
-			//
-			inline double getKii (int x_id)
-			{
-				return larank_kcache_query (kernel, x_id, x_id);
-			}
-
-			//
-			double getBeta (int x_id);
-
-			//
-			inline float* getBetas () const
-			{
-				return beta;
-			}
-
-			//
-			double getGradient (int x_id);
-
-			//
-			inline bool isSupportVector (int x_id) const
-			{
-				int *r2i = larank_kcache_r2i (kernel, l);
-				int xr = -1;
-				for (int r = 0; r < l; r++)
-					if (r2i[r] == x_id)
-					{
-						xr = r;
-						break;
-					}
-				return (xr >= 0);
-			}
-
-			//
-			int getSV (float* &sv) const;
-
-		private:
-			// the solution of LaRank relative to the actual class is stored in this parameters
-
-			float* beta;		// Beta coefficiens
-			float* g;		// Strored gradient derivatives
-			larank_kcache_t *kernel;	// Cache for kernel values
-			int l;			// Number of support vectors 
-	};
 
 	/*
 	 ** MACHINE: the main thing, which is trained.
@@ -421,32 +320,29 @@ namespace shogun
 			bool train(CFeatures* data);
 
 
-			// LEARNING FUNCTION: add new patterns and run optimization steps selected with adaptative schedule
-			virtual int add (int x_id, int yi);
+			// LEARNING FUNCTION: add new patterns and run optimization steps
+			// selected with adaptative schedule
+			virtual int32_t add (int32_t x_id, int32_t yi);
 
 			// PREDICTION FUNCTION: main function in la_rank_classify
-			virtual int predict (int x_id);
+			virtual int32_t predict (int32_t x_id);
 
 			virtual void destroy ();
 
 			// Compute Duality gap (costly but used in stopping criteria in batch mode)                     
-			virtual double computeGap ();
-
-			// Display stuffs along learning
-			virtual void printStuff (double initime, bool print_dual);
-
+			virtual float64_t computeGap ();
 
 			// Nuber of classes so far
-			virtual unsigned getNumOutputs () const;
+			virtual uint32_t getNumOutputs () const;
 
 			// Number of Support Vectors
-			int getNSV ();
+			int32_t getNSV ();
 
 			// Norm of the parameters vector
-			double computeW2 ();
+			float64_t computeW2 ();
 
 			// Compute Dual objective value
-			double getDual ();
+			float64_t getDual ();
 
 			/** get classifier type
 			 *
@@ -459,8 +355,8 @@ namespace shogun
 
 			void set_batch_mode(bool enable) { batch_mode=enable; };
 			bool get_batch_mode() { return batch_mode; };
-			void set_tau(double t) { tau=t; };
-			double get_tau() { return tau; };
+			void set_tau(float64_t t) { tau=t; };
+			float64_t get_tau() { return tau; };
 
 
 		private:
@@ -469,39 +365,41 @@ namespace shogun
 			 */
 
 			// Hash Table used to store the different outputs
-			typedef std_hash_map < int, LaRankOutput > outputhash_t;	// class index -> LaRankOutput
+			typedef std_hash_map < int32_t, LaRankOutput > outputhash_t;	// class index -> LaRankOutput
+
+
 			outputhash_t outputs;
-			LaRankOutput *getOutput (int index);
+			LaRankOutput *getOutput (int32_t index);
 
 			// 
 			LaRankPatterns patterns;
 
 			// Parameters
-			int nb_seen_examples;
-			int nb_removed;
+			int32_t nb_seen_examples;
+			int32_t nb_removed;
 
 			// Numbers of each operation performed so far
-			int n_pro;
-			int n_rep;
-			int n_opt;
+			int32_t n_pro;
+			int32_t n_rep;
+			int32_t n_opt;
 
 			// Running estimates for each operations 
-			double w_pro;
-			double w_rep;
-			double w_opt;
+			float64_t w_pro;
+			float64_t w_rep;
+			float64_t w_opt;
 
-			int y0;
-			double dual;
+			int32_t y0;
+			float64_t dual;
 
 			struct outputgradient_t
 			{
-				outputgradient_t (int result_output, double result_gradient)
+				outputgradient_t (int32_t result_output, float64_t result_gradient)
 					: output (result_output), gradient (result_gradient) {}
 				outputgradient_t ()
 					: output (0), gradient (0) {}
 
-				int output;
-				double gradient;
+				int32_t output;
+				float64_t gradient;
 
 				bool operator < (const outputgradient_t & og) const
 				{
@@ -519,56 +417,42 @@ namespace shogun
 
 			struct process_return_t
 			{
-				process_return_t (double dual, int yprediction) 
+				process_return_t (float64_t dual, int32_t yprediction) 
 					: dual_increase (dual), ypred (yprediction) {}
 				process_return_t () {}
-				double dual_increase;
-				int ypred;
+				float64_t dual_increase;
+				int32_t ypred;
 			};
 
 			// IMPORTANT Main SMO optimization step
 			process_return_t process (const LaRankPattern & pattern, process_type ptype);
 
 			// ProcessOld
-			double reprocess ();
+			float64_t reprocess ();
 
 			// Optimize
-			double optimize ();
+			float64_t optimize ();
 
 			// remove patterns and return the number of patterns that were removed
-			unsigned cleanup ();
+			uint32_t cleanup ();
 
 		protected:
 
-			std_hash_set < int >classes;
+			std_hash_set < int32_t >classes;
 
-			unsigned class_count () const
+			inline uint32_t class_count () const
 			{
 				return classes.size ();
 			}
 
-			double tau;
-			int nb_train;
+			float64_t tau;
+			int32_t nb_train;
 			long cache;
 			// whether to use online learning or batch training
 			bool batch_mode;
 
 			//progess output
-			int step;
+			int32_t step;
 	};
-
-	inline double getTime ()
-	{
-		struct timeval tv;
-		struct timezone tz;
-		long int sec;
-		long int usec;
-		double mytime;
-		gettimeofday (&tv, &tz);
-		sec = (long int) tv.tv_sec;
-		usec = (long int) tv.tv_usec;
-		mytime = (double) sec + usec * 0.000001;
-		return mytime;
-	}
 }
 #endif

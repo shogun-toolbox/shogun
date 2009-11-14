@@ -99,7 +99,7 @@ class CTime : public CSGObject
 		{
 			timeval tv;
 			if (gettimeofday(&tv, NULL)==0)
-				return (float64_t) (tv.tv_sec+((double)(tv.tv_usec))/1e6);
+				return tv.tv_sec+(tv.tv_usec*1e-6);
 			else
 				return 0.0;
 		}
