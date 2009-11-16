@@ -1,3 +1,15 @@
+2010-XX-XX Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 0.9.2 (libshogun 6.1, libshogunui 3.2)
+	* This release contains several enhancements, cleanups and bugfixes:
+	* Features:
+		- Implemented multi task kernel normalizer.
+		- Implement SNP kernel.
+	* Bugfixes:
+		- Fix set_w() for linear classifiers.
+	* Cleanup and API Changes:
+		- None
+
 2009-11-16 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.9.1 (libshogun 6.0, libshogunui 3.1)
