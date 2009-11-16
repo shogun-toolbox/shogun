@@ -1,5 +1,310 @@
+2009-11-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* Makefile.template: fix a compile failure occuring with the
+	  upcoming binutils-gold
+	  - workaround quality only though.
+	* NEWS: update news
+
+2009-11-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LaRank.cpp,
+	  libshogun/classifier/svm/LaRank.h, libshogun/lib/Mathematics.h,
+	  libshogun/lib/Time.h: use shogun types in LaRank and cleanup /
+	  reorder code
+
+2009-11-13  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/kernel/MultitaskKernelNormalizer.h, modular/Kernel.i:
+	  moved MultitaskKernel functionality into a kernel normalizer
+
+2009-11-13  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/MultitaskKernel.cpp,
+	  libshogun/kernel/MultitaskKernel.h, modular/Kernel.i: remove
+	  multitask kernel
+	* libshogun/classifier/mkl/MKL.cpp, libshogunui/GUIClassifier.cpp:
+	  - fix a crasher occurring with MKL and interleaved optimization
+	  - fix bug #143 thanks Thomas Fillon for the patch
+
+2009-11-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LaRank.cpp,
+	  libshogun/classifier/svm/LaRank.h: larank finally seems to work
+	  reliably
+	* configure, libshogun/classifier/svm/LaRank.cpp,
+	  libshogun/classifier/svm/LaRank.h: -don't warn on deprecated
+	  functions
+	  -get larank to work in most cases
+
+2009-11-10  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/KNN.cpp, libshogun/classifier/KNN.h,
+	  modular/Classifier.i: add a function that returns all k-NN
+	  solutions for 1...k
+	* libshogun/kernel/Kernel.h: improve get_kernel_matrix progress
+	  feedback
+
+2009-11-09  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/SparseFeatures.h: some sparse features don't
+	  come *sorted* with features in ascending order.
+	  introduce sort_features() function to remedy this and call it by
+	  default when
+	  loading svmlight files
+	* libshogun/classifier/KNN.cpp, libshogun/lib/io.cpp,
+	  libshogun/lib/io.h: - code beautifications in KNN
+	  - in io progress: measure current time not cpu runtime (as this
+	  will always stay the same even when more processors are used)
+	* libshogun/classifier/DistanceMachine.cpp,
+	  libshogun/classifier/DistanceMachine.h: whitespace cleanups
+	* libshogun/classifier/KNN.cpp: KNN fix crash when labels are not
+	  set
+	* libshogun/classifier/svm/LaRank.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogun/features/StringFileFeatures.h,
+	  libshogun/kernel/PyramidChi2.h, libshogun/lib/io.h,
+	  libshogun/preproc/DecompressString.h: fix a number of warnings
+	* libshogun/classifier/KernelMachine.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.cpp, modular/Classifier.i:
+	  fix two memory leaks
+
+2009-11-08  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/Kernel.h: spelling fix explicitly
+	* libshogun/distributions/LinearHMM.h,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/CombinedFeatures.h,
+	  libshogun/features/Features.h, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.h,
+	  libshogun/structure/Plif.h, python_modular/swig_typemaps.i: fix a
+	  few spelling mistakes as pointed out by lintian
+	* libshogun/kernel/CustomKernel.cpp,
+	  libshogun/kernel/CustomKernel.h: add convenience constructor for
+	  custom kernel
+
+2009-11-07  Soeren Sonnenburg <sonne@debian.org>
+
+	* CONTRIBUTIONS, NEWS: include chinese documentation on make
+	  update-webpage and update news and contributors
+
+2009-11-06  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/Kernel.h: compute matrix in a parallel way upon
+	  get_kernel_matrix()
+
+2009-11-06  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/kernel/MultitaskKernel.cpp,
+	  libshogun/kernel/MultitaskKernel.h: added has_features()
+	* libshogun/kernel/MultitaskKernel.h: added get_kernel_type
+	* libshogun/kernel/MultitaskKernel.cpp,
+	  libshogun/kernel/MultitaskKernel.h: added get_feature_type,
+	  get_feature_class
+	* libshogun/kernel/MultitaskKernel.cpp,
+	  libshogun/kernel/MultitaskKernel.h: added missing include
+
+2009-11-06  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/MultitaskKernel.cpp,
+	  libshogun/kernel/MultitaskKernel.h: use ASSERT instead of assert
+
+2009-11-06  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/kernel/MultitaskKernel.cpp,
+	  libshogun/kernel/MultitaskKernel.h: added MultitaskKernel
+	* modular/Kernel.i: added swig interface for MultitaskKernel
+
+2009-11-06  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/Kernel.h: simplify kernel computation, proper
+	  progress and cancel
+	* libshogun/kernel/Kernel.cpp: potentially more correct svr fix :)
+	* libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogun/lib/io.cpp, libshogun/lib/io.h,
+	  libshogun/regression/svr/SVR_light.cpp: - modify io functions:
+	  using obj.io.enable_file_and_line() it is now possible to
+	  prefix all of shogun's output with filename and line number
+	  (where the printing
+	  takes place). this allows for better tracing of where an error
+	  actually occured
+	  - fix problem with svr light + kernel access
+	* Makefile, Makefile.template, libshogun/features/StringFeatures.h,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CustomKernel.cpp,
+	  libshogun/kernel/CustomKernel.h, libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/Kernel.h, libshogun/regression/KRR.cpp,
+	  libshogunui/SGInterface.cpp: - remove
+	  get_kernel_matrix_{real,shortreal} and get_kernel_matrix() code
+	  duplication
+	  and use a template function instead, adjust callers accordingly
+	  - fix combined kernel init w/ svmlight
+	  - call make clean in libshogun examples on check-examples and
+	  always use
+	  $(MAKE) to get things work on non-gnumake systems
+
+2009-11-05  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/preproc/DecompressString.h: forgot to add decompress
+	  preproc
+	* NEWS, libshogun/features/StringFeatures.h,
+	  libshogun/features/StringFileFeatures.h,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h, libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/Kernel.h, libshogun/lib/Compressor.cpp,
+	  libshogun/lib/Compressor.h, libshogun/preproc/PreProc.h,
+	  libshogun/preproc/SortUlongString.h, libshogunui/GUIPreProc.cpp,
+	  libshogunui/SGInterface.cpp, modular/PreProc.i,
+	  python_modular/swig_typemaps.i: - hopefully really fix
+	  combined/custom kernel num_vec_lhs etc
+	  - add example on how to use compression features of all kinds
+	  - add decompression preproc
+	  - fix preproc processing in string features: now preprocs are
+	  allowed to return
+	  strings of arbitrary length. This requires to always return
+	  copies of the
+	  (processed) string / caching is currently not implemented.
+	  - change get_string_features and typemap accordingly: strings are
+	  now copied
+	  first within libshogun and then again to python etc: while this
+	  results in
+	  memory overhead (1 string is always duplicated), it works
+	  correcly with
+	  preprocessors.
+	  - update NEWS
+	* libshogun/kernel/CustomKernel.h: range check no loner necessary
+	  (is taken care of in CKernel)
+	* libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/SVM_light.h,
+	  libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogunui/GUIClassifier.cpp: intrusive change to get combined
+	  kernels with only custom kernels to work in svr
+
+2009-11-04  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/CombinedKernel.h,
+	  libshogun/kernel/CustomKernel.h, libshogun/kernel/Kernel.h,
+	  libshogunui/GUIClassifier.cpp: fix a few init problems with
+	  combined/custom kernel
+	* libshogun/features/StringFeatures.h,
+	  libshogun/lib/Compressor.cpp: (de)compression works now for other
+	  compressors too
+	* configure: really fix python 2.6 / 2.5 paths
+	* configure: fail when any of the modular interfaces is enabled but
+	  swig is not found or too old
+	* configure: add python 2.6 and cplex 12 detection
+	* libshogun/features/StringFeatures.h,
+	  libshogun/lib/Compressor.cpp, libshogun/lib/Compressor.h,
+	  modular/Library.i: add load_compressed/save_compressed - seems to
+	  work ok for UNCOMPRESSED, LZO, GZIP
+
+2009-11-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFeatures.h,
+	  libshogun/lib/Compressor.cpp, libshogun/lib/Compressor.h,
+	  libshogun/lib/Signal.h: add save_compressed and load_compressed
+	  functions to features
+	* libshogunui/GUIKernel.cpp: don't init kernel when no features are
+	  available (assume kernel does not need
+	  to be inited)
+	* libshogun/lib/Compressor.cpp, libshogun/lib/Compressor.h: add
+	  compression code + docu for gzip, bzip2, lzo and lzma
+	* configure, libshogun/lib/Compressor.h,
+	  libshogunui/SGInterface.cpp: fix compilation in static interfaces
+	  and add lzma detection / partial support
+
+2009-11-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure, libshogun/lib/Compressor.h: add lzo/gzip/bzip2
+	  compression / decompression support
+	* libshogun/features/StringFeatures.h,
+	  libshogun/kernel/RegulatoryModulesStringKernel.cpp: add preproc
+	  functionality to string features
+	* NEWS, configure, libshogun/classifier/PluginEstimate.cpp,
+	  libshogun/classifier/svm/WDSVMOcas.cpp,
+	  libshogun/classifier/svm/WDSVMOcas.h,
+	  libshogun/distance/CanberraWordDistance.cpp,
+	  libshogun/distance/HammingWordDistance.cpp,
+	  libshogun/distance/ManhattanWordDistance.cpp,
+	  libshogun/distributions/HMM.cpp, libshogun/distributions/HMM.h,
+	  libshogun/distributions/Histogram.cpp,
+	  libshogun/distributions/LinearHMM.cpp,
+	  libshogun/features/ExplicitSpecFeatures.cpp,
+	  libshogun/features/ImplicitWeightedSpecFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/kernel/CommUlongStringKernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/FixedDegreeStringKernel.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.cpp,
+	  libshogun/kernel/LinearStringKernel.cpp,
+	  libshogun/kernel/LocalAlignmentStringKernel.cpp,
+	  libshogun/kernel/LocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.cpp,
+	  libshogun/kernel/OligoStringKernel.cpp,
+	  libshogun/kernel/PolyMatchStringKernel.cpp,
+	  libshogun/kernel/PolyMatchWordStringKernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.cpp,
+	  libshogun/kernel/SalzbergWordStringKernel.cpp,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/WeightedCommWordStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/preproc/SortUlongString.cpp,
+	  libshogun/preproc/SortWordString.cpp: - add free argument to
+	  string features' get_feature_vector.
+	  - configure detection of ultra fast lzo (de-)compression
+	* libshogun/classifier/svm/LaRank.cpp,
+	  libshogun/classifier/svm/LaRank.h, libshogun/kernel/Kernel.cpp: a
+	  little larank progess: now starts and crashes
+
+2009-10-31  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFileFeatures.h: fix a crasher when
+	  invalid chars occur in the file
+	* NEWS, libshogun/features/StringFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/StringFileFeatures.h,
+	  libshogun/lib/Mathematics.h, libshogun/lib/MemoryMappedFile.h,
+	  modular/Features.i: add StringFileFeatures (file based memory
+	  mapped string features)
+
+2009-10-30  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LaRank.cpp,
+	  libshogun/classifier/svm/LaRank.h,
+	  libshogun/classifier/svm/kcache.cpp,
+	  libshogun/classifier/svm/kcache.h: fix compilation of modular
+	  interfaces by moving (at least temporarily) laranks kcache into
+	  larank
+	* libshogunui/GUIClassifier.cpp: enable testing for one class mkl,
+	  thanks gorden jemwa
+
+2009-10-27  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure: fill in x86_32 and fail when cplex is forefully
+	  enabled but not found
+
+2009-10-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/Classifier.h,
+	  libshogun/classifier/svm/LaRank.cpp,
+	  libshogun/classifier/svm/LaRank.h,
+	  libshogun/classifier/svm/kcache.cpp,
+	  libshogun/classifier/svm/kcache.h, libshogun/kernel/Kernel.cpp,
+	  libshogunui/GUIClassifier.cpp, libshogunui/SGInterface.cpp,
+	  modular/Classifier.i: integrate fast (one-pass) multiclass svm
+	  (LaRank) - only compiles for now
+
+2009-10-25  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure: let octave not write history on configure
+
 2009-10-23  Soeren Sonnenburg <sonne@debian.org>
 
+	* NEWS: now really prepare for the future :)
+	* NEWS: revert news
+	* NEWS: update news for things to come
+	* ChangeLog: updated changelog
 	* ChangeLog: updated changelog
 	* libshogun/kernel/PyramidChi2.cpp: remove a static allocation and
 	  replace with new/delete
@@ -1696,11 +2001,7 @@
 	  python/PythonInterface.cpp, python/PythonInterface.h,
 	  python_modular, python_modular/swig_typemaps.i, r,
 	  r/RInterface.cpp, r/RInterface.h, r_modular,
-	  r_modular/swig_typemaps.i: * merge in changes from mkl-branch
-	  (like more stable mkl impl., obj. computation, multiple features,
-	  other kernel normalizers,...)
-	  - move mkl functions from svmlight to MKL
-	  - move compute objective function for MKL across MKL objects
+	  r_modular/swig_typemaps.i:
 
 2009-07-16  Soeren Sonnenburg <sonne@debian.org>
 
@@ -2340,7 +2641,7 @@
 
 2009-04-16  Soeren Sonnenburg <sonne@debian.org>
 
-	* libshogun/lib/BitString.h: still debugging
+	* libshogun/lib/BitString.h:
 	* libshogun/lib/BitString.h: add example on how to access indirect
 	  objects
 
@@ -6217,8 +6518,7 @@
 	  interface/SGInterface.cpp, interface/SGInterface.h,
 	  structure/DynProg.cpp, structure/DynProg.h, structure/Plif.cpp,
 	  structure/Plif.h, structure/PlifArray.cpp, structure/PlifArray.h,
-	  structure/PlifBase.h, structure/Structure.i: merge jonas'
-	  structure changes back to svn-trunk
+	  structure/PlifBase.h, structure/Structure.i:
 	* lib/Mathematics.h, structure/DynProg.cpp: fix a couple of gcc-4.3
 	  compiler warnings
 	* interface/CmdLineInterface.cpp, interface/CmdLineInterface.h,
@@ -10696,7 +10996,7 @@
 	* configure, lib/Cplex.h: cplex 10 compat fixes as suggested by
 	  Gorden Jemwa
 	* Makefile: merge changes from 0.4.0
-	* ChangeLog, Makefile: release 0.4.0
+	* ChangeLog, Makefile:
 	* ChangeLog: update changelog
 	* configure: set default gcc first
 	* configure: forgotten break in pthread detection
@@ -10710,8 +11010,7 @@
 
 	* configure: remove undefined suppress from configure
 	* base/Version.cpp, base/Version.h, classifier/svm/LibSVM.cpp,
-	  classifier/svm/SVM_light.cpp: fix the remaining python-modular
-	  interface examples
+	  classifier/svm/SVM_light.cpp:
 
 2007-07-28  Soeren Sonnenburg <sonne@debian.org>
 
@@ -11667,18 +11966,14 @@
 
 	* kernel/GaussianKernel.cpp: remove debug output
 	* ChangeLog, TODO, kernel/WeightedDegreePositionCharKernel.i,
-	  kernel/WeightedDegreePositionStringKernel.i: * update to 0.3.2
-	  * start wds kernel python interf.
+	  kernel/WeightedDegreePositionStringKernel.i:
 
 2007-03-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/Version.h, distributions/hmm/HMM.cpp, gui/Octave.cpp: merge
 	  changes back to trunk
 	* NEWS, guilib/GUIHMM.cpp, guilib/GUIOctave.cpp,
-	  structure/DynProg.i: release shogun 0.3.2 fixing a number of bugs
-	  in the examples
-	  and several valgrind hits in octave/hmm adding support for
-	  numpy boolean -> for msplicer v0.2
+	  structure/DynProg.i:
 
 2007-03-05  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
 
@@ -11951,7 +12246,7 @@
 
 2007-02-20  Soeren Sonnenburg <sonne@debian.org>
 
-	* configure: 3.1 merging
+	* configure:
 	* ChangeLog: releasing
 	* base/Parallel.h, classifier/svm/SVMLin.cpp,
 	  classifier/svm/SVMLin.h: build fix on osx
@@ -12010,8 +12305,7 @@
 
 2007-02-14  Soeren Sonnenburg <sonne@debian.org>
 
-	* README.developer: * Release 0.3.0
-	  * update developer README
+	* README.developer:
 	* ChangeLog, NEWS, lib/io.cpp, lib/io.h: this will be version
 	  0.3.0, add io set_target_to_stderr/stdout functions
 
@@ -13303,8 +13597,7 @@
 
 2006-12-01  Soeren Sonnenburg <sonne@debian.org>
 
-	* Makefile: +make clean now also kills *wrap.h
-	  +more poster pics
+	* Makefile:
 
 2006-11-30  Soeren Sonnenburg <sonne@debian.org>
 
@@ -15411,17 +15704,7 @@
 	  preproc/SparsePreProc.h, preproc/StringPreProc.h,
 	  preproc/WordPreProc.cpp, preproc/WordPreProc.h,
 	  regression/svr/LibSVR.cpp, regression/svr/LibSVR.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h, svm: +a
-	  more useful general README, README.developer, LICENSE+INSTALL
-	  information
-	  +hmm example
-	  +make best_path work again
-	  +stringfeatures if order == 1 keep number of symbols
-	  +some more checks in GUIR
-	  +license information as a header to each file
-	  +update version information from svn, now sg('get_version')
-	  returns svn revision (not time in minutes since 197x)
-	  -empty svm directory
+	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h, svm:
 
 2006-06-13  Fabio De Bona <Fabio.De.Bona@tuebingen.mpg.de>
 
@@ -15461,2956 +15744,4 @@
 
 	* gui/R.cpp, guilib/GUIR.cpp: + classification example
 	* .:
-	* .:
-
-2006-06-03  Soeren Sonnenburg <sonne@debian.org>
-
-	* kernel/CanberraWordKernel.cpp: fixes..
-	* guilib/GUIKernel.cpp, kernel/CanberraWordKernel.cpp,
-	  kernel/CanberraWordKernel.h, kernel/HammingWordKernel.cpp,
-	  kernel/ManhattenWordKernel.h, lib/common.h: +canberra kernel
-
-2006-06-02  Soeren Sonnenburg <sonne@debian.org>
-
-	* kernel/HammingWordKernel.cpp, kernel/ManhattenWordKernel.cpp: +
-	  fixes in these kernels
-	* classifier/svm/SVM.cpp, guilib/GUIKernel.cpp,
-	  kernel/HammingWordKernel.cpp, kernel/ManhattenWordKernel.cpp,
-	  kernel/ManhattenWordKernel.h: +Manhattenwordkernel
-	  +ctrl+c allowed to cancel testing
-
-2006-05-31  Soeren Sonnenburg <sonne@debian.org>
-
-	* kernel/HammingWordKernel.cpp:
-
-2006-05-30  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/HammingWordKernel.cpp: +fixed hamming kernel
-	  +last checking before svn migration, disabled everyones login
-
-2006-05-29  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp, kernel/HammingWordKernel.cpp,
-	  kernel/HammingWordKernel.h, lib/common.h: +hamming word kernel
-	  (as suggested by konrad rieck)
-
-2006-05-25  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIR.cpp: still a bug in set features for strings
-	* gui/R.cpp, guilib/GUIR.cpp: wrapped Rprintf output via #ifdef
-	  DEBUG.
-
-2006-05-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* copyAll.sh: moved file
-	* guilib/GUIR.cpp: some changes
-
-2006-05-17  Soeren Sonnenburg, Gunnar Raetsch
-
-	* TODO, features/StringFeatures.h, guilib/GUIFeatures.cpp: +make
-	  gappy conversion work for STRING conversion functions
-	  +convert functions for STRING now take a alphabet argument as the
-	  SIMPLE/CHAR ones
-	  
-	  there are still valgrind errors and we should have a alphabet for
-	  all char/word features
-	  such that conversion does not require an alphabet argument
-
-2006-05-16  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIR.cpp: fixed some bug
-
-2006-05-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/Perceptron.cpp, gui/TextGUI.cpp,
-	  guilib/GUIClassifier.cpp, guilib/GUIClassifier.h: new classifier
-	  interface
-	  
-	  sg('send_command', 'new_classifier SVMLIGHT')
-	  sg('send_command', 'train_classifier')
-	  sg('classify')
-	  
-	  works for SVM and Perceptron
-
-2006-05-12  Soeren Sonnenburg, Gunnar Raetsch
-
-	* TODO: *** empty log message ***
-
-2006-05-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIMatlab.cpp: +entropy stuff works
-	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h:
-	  +entropy/relative entropy
-	* copyAll.sh, gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h: added some
-	  stuff
-
-2006-05-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h: added basic hmm
-	  functionality to R interface
-	* d-bug.py, gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h: some mods
-
-2006-05-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* d-bug.py: corrected some errors
-
-2006-05-03  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, gui/Octave.cpp, gui/R.cpp, guilib/GUIOctave.cpp,
-	  guilib/GUIR.cpp, guilib/GUIR.h: +make dist
-	  +svm_classify for R interf.
-	  +set_{features/labels} for octave
-	* d-bug.py, gui/R.cpp, guilib/GUIR.cpp: added some stuff
-
-2006-05-02  Soeren Sonnenburg, Gunnar Raetsch
-
-	* d-bug.py, gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h: The methods
-	  'get_kernel_matrix' get/set features are working.
-	  All svm methods are working.
-
-2006-05-01  Soeren Sonnenburg, Gunnar Raetsch
-
-	* d-bug.py, gui/R.cpp, guilib/GUIR.cpp: added comments, extended
-	  debug script
-
-2006-04-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure: added --enable-R in help option dialogue
-
-2006-04-26  Soeren Sonnenburg, Gunnar Raetsch
-
-	* d-bug.py: debugging script added
-
-2006-04-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/Optimizer.cpp, classifier/svm/Optimizer.h,
-	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h:
-	  +compute_objective was computed only on the active variables but
-	  should be
-	  (and is now) computed on all examples, should work for regression
-	  and
-	  classification now
-	  
-	  +svm_light was not as accurate as libsvm/gpbt as in optimizer
-	  PRECICSION was
-	  not enough (1e-8) ... it is now 1e-14 - the svmlight default.
-	  however from
-	  time to time one still gets a less accurate result (deviation
-	  from others
-	  <1e-5, usually it is around 1e-8). this enables us to use
-	  svm_epsilon < 1e6
-	  also. now a warning is printed if we terminate with a
-	  max_violation >
-	  svm_epsilon. we do unshrinking in the end and test/retrain to be
-	  more
-	  accurate (and compute the objective). this will slow doing things
-	  a bit.
-	  
-	  +shrinking is now completely disabled for mkl. there still is
-	  some deviation
-	  in the betas for precompute 2/3 vs. precompute 0 which I am
-	  unable to
-	  explain. however it is <1e-3 ... and the wrapper svm also
-	  deviates ~1e-3
-	  from both solutions.
-
-2006-04-12  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: ***
-	  empty log message ***
-
-2006-04-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-
-2006-04-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.h, regression/svr/SVR_light.h: *** empty
-	  log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp, regression/svr/SVR_light.cpp: ***
-	  empty log message ***
-	* guilib/GUISVM.cpp, kernel/Kernel.cpp, kernel/Kernel.h,
-	  lib/common.h, regression/svr/SVR_light.cpp: *** empty log message
-	  ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h: still
-	  not ok... deviations in get_svm_objective even w/o MKL
-
-2006-04-09  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h:
-	  +several MKL regression fixes... it should work w/ and w/o LAPACK
-	  and for precompute 2/3
-	  there is still some `offset' when used w/ kernel caching
-
-2006-04-07  Soeren Sonnenburg, Gunnar Raetsch
-
-	* README, TODO, gui/GUI.cpp, gui/Octave.cpp, gui/TextGUI.cpp,
-	  gui/TextGUI.h, guilib/GUIMatlab.h, guilib/GUIOctave.h,
-	  guilib/GUIR.h, lib/Version.cpp: genefinder -> shogun
-	* TODO, d-bug.py, features/WordFeatures.cpp, g.R, gui/GUI.cpp,
-	  gui/Matlab.cpp, gui/Octave.cpp, gui/Python.cpp, gui/Python.h,
-	  gui/R.cpp, guilib/GUIMatlab.h, guilib/GUIOctave.h,
-	  guilib/GUIPython.cpp, guilib/GUIR.h, lib/Signal.cpp, sg.m: gf ->
-	  sg
-	* classifier/svm/SVM_light.cpp, kernel/Kernel.cpp, kernel/Kernel.h:
-	  +fix MKL w/ kernel caching... we need to update W for all
-	  variables not just
-	  the active set. requires a compute_full_cacheline option in
-	  get_kernel_row
-	* Makefile, configure, gf.m, sg.m: gf -> sg
-	  genefinder -> shogun
-
-2006-04-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, distributions/hmm/HMM_bestpath.cpp,
-	  guilib/GUIMatlab.cpp: included a header in GuiMatlab.cpp, go get
-	  it compilable...
-	  G
-	* configure, guilib/GUIMatlab.cpp, guilib/GUIPython.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreeCharKernel_old.cpp,
-	  kernel/WeightedDegreeCharKernel_old.h,
-	  kernel/WeightedDegreeCharKernel_old.i,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel_old.cpp,
-	  kernel/WeightedDegreePositionCharKernel_old.h,
-	  kernel/WeightedDegreePositionCharKernel_old.i: +towards getting
-	  WD char kernel working again
-	  +get_kernel_optimization for COMMWORD kernel
-
-2006-03-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h: now even more b0rken
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  kernel/CustomKernel.cpp, kernel/CustomKernel.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h, kernel/Kernel.i,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h, lib/common.h,
-	  regression/svr/SVR_light.cpp, swigfiles/common.i: SHORTDREAL ->
-	  SHORTREAL
-
-2006-03-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/ShortFeatures.cpp: fixed a minor bug in Spectrum kernel
-	  also for the short features.
-	  
-	  G
-	* features/ShortFeatures.cpp, features/ShortFeatures.h,
-	  features/WordFeatures.cpp, features/WordFeatures.h,
-	  guilib/GUIFeatures.cpp, guilib/GUIMatlab.cpp: added gaps to the
-	  simple word and short features.
-	  Convert now takes an additional argument: the length of a central
-	  gap.
-	  
-	  G
-	* guilib/GUIKernel.cpp, kernel/ConstKernel.cpp,
-	  kernel/ConstKernel.h, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp, lib/common.h:
-	  +started WD kernel batchcomputation mode DON'T USE THE WD KENREL
-	  FOR NOW
-	  +a constant kernel for testing with MKL
-
-2006-02-27  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp, classifier/svm/SVM.h, gui/TextGUI.cpp,
-	  guilib/GUISVM.cpp, guilib/GUISVM.h: +option to disable batch
-	  computation at some point before getting svm output, e.g.
-	  
-	  gf('send_command', 'use_batch_computation 0'); %disable
-	  out=gf('svm_classify');
-	  
-	  HAS NO EFFECT ON TRAINING WHATSOEVER
-	* kernel/CombinedKernel.cpp: set optimization type for the combined
-	  kernel too (to avoid confusion :)
-	* gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h: added support for
-	  get_svm
-	* kernel/Kernel.cpp: made FASTBUTMEMHUNGRY the default
-	* classifier/svm/SVM_light.cpp, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIR.cpp, guilib/GUIR.h,
-	  kernel/Kernel.cpp, kernel/LinearKernel.h: mxDREAL ->mxREAL
-	  #ifdef HAVE_R for R related files
-	* features/Features.cpp, gui/R.cpp, gui/TextGUI.cpp,
-	  guilib/GUIFeatures.cpp, guilib/GUIKernel.cpp, guilib/GUIR.cpp,
-	  guilib/GUIR.h, kernel/Kernel.cpp: In allen Strings: DREAL in REAL
-	  umbenannt.
-	* d-bug.py, g.R, gui/R.cpp, guilib/GUIR.cpp: modified R interface
-	  to include -> set_features
-
-2006-02-24  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure, g.R, gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h:
-	  .External interface works for simple args matrix args have to be
-	  debugged
-
-2006-02-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, classifier/Classifier.h, classifier/Classifier.i,
-	  classifier/KNN.cpp, classifier/KNN.h,
-	  classifier/KernelPerceptron.cpp, classifier/KernelPerceptron.h,
-	  classifier/LDA.cpp, classifier/LDA.h, classifier/LPM.cpp,
-	  classifier/LPM.h, classifier/LinearClassifier.h,
-	  classifier/Perceptron.cpp, classifier/Perceptron.h,
-	  classifier/PluginEstimate.cpp, classifier/PluginEstimate.h,
-	  classifier/svm/CPLEXSVM.cpp, classifier/svm/KerthiPrimalSVM.cpp,
-	  classifier/svm/MPD.cpp, classifier/svm/MPD.h,
-	  classifier/svm/SVM.cpp, classifier/svm/SVM.h,
-	  classifier/svm/SVM.i, classifier/svm/SVM_libsvm.cpp,
-	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  distributions/Distribution.cpp, distributions/Distribution.h,
-	  distributions/histogram/Histogram.cpp,
-	  distributions/histogram/Histogram.h, distributions/hmm/GHMM.cpp,
-	  distributions/hmm/GHMM.h, distributions/hmm/HMM.cpp,
-	  distributions/hmm/HMM.h, distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/HMM_bestpath_2struct.cpp,
-	  distributions/hmm/HMM_bestpath_simple.cpp,
-	  distributions/hmm/LinearHMM.cpp, distributions/hmm/LinearHMM.h,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, features/FKFeatures.cpp,
-	  features/FKFeatures.h, features/Features.cpp,
-	  features/Features.h, features/Features.i, features/Labels.cpp,
-	  features/Labels.h, features/Labels.i, features/RealFeatures.cpp,
-	  features/RealFeatures.h, features/RealFileFeatures.cpp,
-	  features/RealFileFeatures.h, features/SparseFeatures.h,
-	  features/SparseRealFeatures.h, features/StringFeatures.h,
-	  features/TOPFeatures.cpp, features/TOPFeatures.h, gui/Matlab.cpp,
-	  gui/Octave.cpp, gui/TextGUI.cpp, guilib/GUIClassifier.cpp,
-	  guilib/GUIClassifier.h, guilib/GUIFeatures.cpp,
-	  guilib/GUIHMM.cpp, guilib/GUIHMM.h, guilib/GUIKNN.cpp,
-	  guilib/GUIKernel.cpp, guilib/GUIMath.cpp, guilib/GUIMath.h,
-	  guilib/GUIMatlab.cpp, guilib/GUIOctave.cpp,
-	  guilib/GUIPluginEstimate.cpp, guilib/GUIPluginEstimate.h,
-	  guilib/GUIPreProc.cpp, guilib/GUIPython.cpp, guilib/GUISVM.cpp,
-	  guilib/GUISVM.h, kernel/AUCKernel.cpp, kernel/AUCKernel.h,
-	  kernel/CharPolyKernel.cpp, kernel/CharPolyKernel.h,
-	  kernel/Chi2Kernel.cpp, kernel/Chi2Kernel.h,
-	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
-	  kernel/CommUlongStringKernel.cpp, kernel/CommUlongStringKernel.h,
-	  kernel/CommWordKernel.cpp, kernel/CommWordKernel.h,
-	  kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
-	  kernel/CustomKernel.cpp, kernel/CustomKernel.h,
-	  kernel/DiagKernel.cpp, kernel/DiagKernel.h,
-	  kernel/FixedDegreeCharKernel.cpp, kernel/FixedDegreeCharKernel.h,
-	  kernel/GaussianKernel.cpp, kernel/GaussianKernel.h,
-	  kernel/HistogramWordKernel.cpp, kernel/HistogramWordKernel.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h, kernel/Kernel.i,
-	  kernel/LinearByteKernel.cpp, kernel/LinearByteKernel.h,
-	  kernel/LinearCharKernel.cpp, kernel/LinearCharKernel.h,
-	  kernel/LinearKernel.cpp, kernel/LinearKernel.h,
-	  kernel/LinearWordKernel.cpp, kernel/LinearWordKernel.h,
-	  kernel/LocalityImprovedCharKernel.cpp,
-	  kernel/LocalityImprovedCharKernel.h, kernel/PolyKernel.cpp,
-	  kernel/PolyKernel.h, kernel/PolyMatchCharKernel.cpp,
-	  kernel/PolyMatchCharKernel.h, kernel/PolyMatchWordKernel.cpp,
-	  kernel/PolyMatchWordKernel.h, kernel/RealKernel.h,
-	  kernel/SalzbergWordKernel.cpp, kernel/SalzbergWordKernel.h,
-	  kernel/SigmoidKernel.cpp, kernel/SigmoidKernel.h,
-	  kernel/SimpleLocalityImprovedCharKernel.cpp,
-	  kernel/SimpleLocalityImprovedCharKernel.h,
-	  kernel/SparseGaussianKernel.cpp, kernel/SparseGaussianKernel.h,
-	  kernel/SparseLinearKernel.cpp, kernel/SparseLinearKernel.h,
-	  kernel/SparseNormSquaredKernel.cpp,
-	  kernel/SparseNormSquaredKernel.h, kernel/SparsePolyKernel.cpp,
-	  kernel/SparsePolyKernel.h, kernel/SparseRealKernel.h,
-	  kernel/WDCharKernel.cpp, kernel/WDCharKernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreeCharKernel.i,
-	  kernel/WeightedDegreeCharKernelPolyA.cpp,
-	  kernel/WeightedDegreeCharKernelPolyA.h,
-	  kernel/WeightedDegreeCharKernel_old.cpp,
-	  kernel/WeightedDegreeCharKernel_old.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.i,
-	  kernel/WeightedDegreePositionCharKernel_old.cpp,
-	  kernel/WeightedDegreePositionCharKernel_old.h,
-	  kernel/WordMatchKernel.cpp, kernel/WordMatchKernel.h,
-	  lib/Cplex.cpp, lib/Cplex.h, lib/File.cpp, lib/File.h,
-	  lib/Mathmatics.cpp, lib/Mathmatics.h, lib/common.h, lib/io.cpp,
-	  lib/io.h, preproc/LogPlusOne.cpp, preproc/LogPlusOne.h,
-	  preproc/NormDerivativeLem3.cpp, preproc/NormDerivativeLem3.h,
-	  preproc/NormOne.cpp, preproc/NormOne.h, preproc/PCACut.cpp,
-	  preproc/PCACut.h, preproc/PruneVarSubMean.cpp,
-	  preproc/PruneVarSubMean.h, preproc/RealPreProc.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h,
-	  swigfiles/common.i: REAL -> DREAL (double real)
-	* gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h: R interface gf('help')
-	  works
-
-2006-02-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure, gui/R.cpp: dyn.load('gf.so')
-	* gui/R.cpp, guilib/GUIR.cpp, guilib/GUIR.h: addded R module
-
-2006-02-20  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/Kernel.i, lib/common.h: addded R module
-
-2006-02-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* .version.sh: err year/month/day
-	* .version.sh, Makefile: version string now checks all
-	  ***/CVS/Entries files to produce some more meaningful
-	  versionstring :)
-	* kernel/CombinedKernel.cpp, kernel/CommWordKernel.cpp,
-	  kernel/CommWordStringKernel.cpp: +make sure kernel optimization
-	  is cleared on init_optimization
-	  +cleanup kernel optimization before/after batch_computation
-	* features/Features.cpp, features/Features.h,
-	  guilib/GUIPreProc.cpp, kernel/CombinedKernel.cpp: +do
-	  attach_preproc TEST now just once after all the test features are
-	  set up
-	  +GUIPreproc now checks whether testsubfeatures have >= #preprocs
-	  attached than
-	  trainsubfeatures (for each subfeatureobject) so one could add a
-	  features+attached
-	  preproc later.
-	  +fixes in del_preproc *shrug*
-
-2006-02-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIClassifier.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h: *dammed* there was/is
-	  no bug... this is all due to floating point accuracy.
-	  to improve accuracy the inner node is now REAL, leaves still
-	  SHORTREAL
-	* guilib/GUIClassifier.cpp, kernel/CombinedKernel.cpp,
-	  kernel/CombinedKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp, lib/io.h: +batch
-	  evaluation fixes for Combined Kernel / WDPosition ... works now.
-	* classifier/KNN.cpp, classifier/KNN.h,
-	  classifier/KernelPerceptron.cpp, classifier/KernelPerceptron.h,
-	  classifier/LDA.cpp, classifier/LDA.h, classifier/LPM.h,
-	  classifier/svm/KerthiPrimalSVM.cpp, classifier/svm/SVM.cpp,
-	  classifier/svm/SVM_libsvm.cpp, configure,
-	  distributions/hmm/HMM_bestpath.cpp, gui/Matlab.cpp,
-	  gui/TextGUI.cpp, guilib/GUIClassifier.cpp,
-	  guilib/GUIClassifier.h, guilib/GUIKNN.cpp, guilib/GUIMatlab.cpp,
-	  guilib/GUIMatlab.h, guilib/GUISVM.cpp, kernel/CombinedKernel.cpp,
-	  kernel/CombinedKernel.h, kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h, lib/common.h,
-	  regression/svr/SVR_light.cpp: +make configure use ccache if
-	  available
-	  +create generic classifier GUI/interface (should work for all
-	  SVMs/KNN/LDA/LPM/Perceptron...)
-	  +further optimize testing w/ wd-shift kernel (batch computation
-	  ...) if it does not workout now
-	  we have to use 1/n of the suppvec...
-	  +fix some warnings
-
-2006-02-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp, features/Features.h,
-	  guilib/GUIClassifier.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUISVM.cpp, kernel/CombinedKernel.cpp,
-	  kernel/CombinedKernel.h, kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/LinearKernel.cpp, kernel/SparseLinearKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h, lib/common.h: some
-	  kernels support 'faster' KP_BATCHEVALUATION...
-	  for WD+shift testing is now 10 times slower...
-	* kernel/Kernel.h: make set_optimization_type function virtual
-	* classifier/Classifier.cpp, classifier/KNN.cpp, classifier/KNN.h,
-	  classifier/KernelPerceptron.cpp, classifier/LDA.cpp,
-	  classifier/LPM.cpp, classifier/Perceptron.cpp,
-	  classifier/PluginEstimate.cpp, classifier/PluginEstimate.h,
-	  classifier/svm/CPLEXSVM.cpp, classifier/svm/GPBTSVM.cpp,
-	  classifier/svm/LibSVM.cpp, classifier/svm/MPD.h,
-	  classifier/svm/SVM.cpp, classifier/svm/SVM.h,
-	  classifier/svm/SVM.i, classifier/svm/SVM_light.cpp,
-	  distributions/Distribution.cpp,
-	  distributions/histogram/Histogram.cpp, distributions/hmm/HMM.cpp,
-	  distributions/hmm/HMM.h, distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/HMM_bestpath_2struct.cpp,
-	  distributions/hmm/HMM_bestpath_simple.cpp,
-	  distributions/hmm/LinearHMM.cpp, distributions/hmm/LinearHMM.h,
-	  distributions/hmm/penalty_info.cpp, features/FKFeatures.cpp,
-	  features/Features.cpp, features/Labels.cpp, features/Labels.h,
-	  features/Labels.i, features/RealFeatures.cpp,
-	  features/RealFileFeatures.cpp, features/ShortFeatures.cpp,
-	  features/SimpleFeatures.h, features/SimpleFeatures.i,
-	  features/SparseFeatures.h, features/StringFeatures.h,
-	  features/TOPFeatures.cpp, features/WordFeatures.cpp,
-	  features/WordFeatures.h, gui/Octave.cpp, gui/TextGUI.cpp,
-	  guilib/GUIClassifier.cpp, guilib/GUIFeatures.cpp,
-	  guilib/GUIHMM.cpp, guilib/GUIKNN.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUIKernel.h, guilib/GUIMatlab.cpp, guilib/GUIOctave.cpp,
-	  guilib/GUIPluginEstimate.cpp, guilib/GUIPreProc.cpp,
-	  guilib/GUIPython.cpp, guilib/GUISVM.cpp, guilib/GUITime.cpp,
-	  kernel/AUCKernel.cpp, kernel/ByteKernel.h, kernel/CharKernel.h,
-	  kernel/CharKernel.i, kernel/CharPolyKernel.cpp,
-	  kernel/Chi2Kernel.cpp, kernel/CombinedKernel.cpp,
-	  kernel/CombinedKernel.h, kernel/CommUlongStringKernel.cpp,
-	  kernel/CommUlongStringKernel.h, kernel/CommWordKernel.cpp,
-	  kernel/CommWordKernel.h, kernel/CommWordStringKernel.cpp,
-	  kernel/CommWordStringKernel.h, kernel/CustomKernel.cpp,
-	  kernel/CustomKernel.h, kernel/DiagKernel.cpp,
-	  kernel/FixedDegreeCharKernel.cpp, kernel/GaussianKernel.cpp,
-	  kernel/HistogramWordKernel.cpp, kernel/Kernel.cpp,
-	  kernel/Kernel.h, kernel/LinearByteKernel.cpp,
-	  kernel/LinearCharKernel.cpp, kernel/LinearKernel.cpp,
-	  kernel/LinearWordKernel.cpp,
-	  kernel/LocalityImprovedCharKernel.cpp, kernel/PolyKernel.cpp,
-	  kernel/PolyMatchCharKernel.cpp, kernel/PolyMatchWordKernel.cpp,
-	  kernel/RealKernel.h, kernel/SalzbergWordKernel.cpp,
-	  kernel/ShortKernel.h, kernel/SigmoidKernel.cpp,
-	  kernel/SimpleLocalityImprovedCharKernel.cpp,
-	  kernel/SparseGaussianKernel.cpp, kernel/SparseKernel.h,
-	  kernel/SparseLinearKernel.cpp,
-	  kernel/SparseNormSquaredKernel.cpp, kernel/SparsePolyKernel.cpp,
-	  kernel/SparseRealKernel.h, kernel/StringKernel.h,
-	  kernel/WDCharKernel.cpp, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernelPolyA.cpp,
-	  kernel/WeightedDegreeCharKernel_old.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel_old.cpp,
-	  kernel/WeightedDegreePositionCharKernel_old.h,
-	  kernel/WordKernel.h, kernel/WordMatchKernel.cpp, lib/Cache.h,
-	  lib/DynArray.h, lib/File.cpp, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h, lib/SimpleFile.h, lib/Time.h, lib/common.h,
-	  lib/io.h, preproc/LogPlusOne.cpp, preproc/NormDerivativeLem3.cpp,
-	  preproc/NormOne.cpp, preproc/PCACut.cpp,
-	  preproc/PruneVarSubMean.cpp, preproc/SortUlongString.cpp,
-	  preproc/SortWord.cpp, preproc/SortWordString.cpp,
-	  regression/svr/LibSVR.cpp, regression/svr/SVR_light.cpp: +new
-	  assert ASSERT macro
-	  +set_kernel_optimization_type FASTBUTMEMHUNGRY or
-	  SLOWBUTMEMEFFICIENT
-	  (currently applies to all sub kernels if combined kernel is used)
-
-2006-02-09  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h, lib/Cplex.cpp,
-	  lib/Version.cpp: +use_treemem is now default, use
-	  --disable-treemem in configure to disable it
-	  +bumped (C) to 2006
-	  +WDPosition Kernel combined-tree speedup, removed has_floats &
-	  other counts
-	  should be much faster now.
-
-2006-01-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile: make clean now no longer requires any config and does a
-	  hardcoded rm ...
-	* Makefile: scary, make clean could erase everything under src if
-	  .config does not exist...
-	* Makefile: also clean *.pyc files
-	* Makefile, processWrappers, processWrappers.py: -remove old
-	  wrapper scripts
-	  -don't erase __init__.py
-	* .generate_link_dependencies.py, Makefile,
-	  classifier/svm/gpdt.cpp, classifier/svm/gpm.cpp, configure,
-	  distributions/hmm/penalty_info.cpp, features/Features.cpp,
-	  features/Features.h, features/SimpleFeatures.i,
-	  features/TOPFeatures.cpp, gui/Matlab.cpp, guilib/GUIMatlab.h,
-	  kernel/SimpleKernel.i, lib/io.cpp, preproc/LogPlusOne.cpp,
-	  preproc/LogPlusOne.h, preproc/NormDerivativeLem3.cpp,
-	  preproc/NormDerivativeLem3.h, preproc/NormOne.cpp,
-	  preproc/NormOne.h, preproc/PCACut.cpp, preproc/PCACut.h,
-	  preproc/PreProc.cpp, preproc/PruneVarSubMean.cpp,
-	  preproc/PruneVarSubMean.h, preproc/ShortPreProc.cpp,
-	  preproc/SortUlongString.cpp, preproc/SortUlongString.h,
-	  preproc/SortWord.cpp, preproc/SortWord.h,
-	  preproc/SortWordString.cpp, preproc/SortWordString.h,
-	  preproc/WordPreProc.cpp: python w/ swig should now work just by
-	  ./configure --enable-python --enable-swig && make
-	  
-	  attention in all include files do #include
-	  "relative/to/your/path.h", (same for .i files)
-	  don't use i.e. #include "mex.h" although it should be #include
-	  <mex.h>
-
-2006-01-12  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/__init__.py: added init.py
-
-2006-01-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/Labels.i, kernel/Kernel.i,
-	  kernel/WeightedDegreeCharKernel.i, processWrappers,
-	  swigfiles/common.i: *** empty log message ***
-	* classifier/svm/__init__.py, processWrappers: added files
-
-2006-01-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* processWrappers: changed script name
-	* classifier/svm/__init__.py, features/__init__.py,
-	  kernel/__init__.py: added package initializers
-	* features/Labels.h, features/Labels.i,
-	  kernel/WeightedDegreeCharKernel.i, processWrappers.py,
-	  swigfiles/common.i: corrected some errors
-	* Makefile, classifier/svm/SVM.i, classifier/svm/SVM_light.i,
-	  features/CharFeatures.i, features/SimpleFeatures.i,
-	  kernel/CharKernel.i, kernel/Kernel.i, kernel/SimpleKernel.i,
-	  kernel/WeightedDegreeCharKernel.i,
-	  kernel/WeightedDegreePositionCharKernel.i, swigfiles/common.i:
-	  *** empty log message ***
-	* classifier/svm/CPLEXSVM.cpp, classifier/svm/CPLEXSVM.h,
-	  lib/Cplex.cpp, lib/Cplex.h: another tiny step towards working
-	  cplexsvm
-	  ifdef cplex in cplexsvm
-	* swigfiles, swigfiles/common.i: *** empty log message ***
-	* configure, features/Labels.i: addded common declarations
-	* guilib/GUIMatlab.cpp: *** empty log message ***
-	* processWrappers.py: This is the script for automated (swig)
-	  wrapper generation.
-	* lib/Cplex.h: removed #endif error
-
-2006-01-08  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/CPLEXSVM.cpp, guilib/GUIMatlab.cpp, lib/Cplex.cpp,
-	  lib/Cplex.h: worked on cplexsvm still not funcitonal
-
-2006-01-06  Soeren Sonnenburg, Gunnar Raetsch
-
-	* .generate_link_dependencies.py, Makefile,
-	  classifier/svm/SVM_light.i, configure: further reworked build
-	  system for swig (some objects work other have missing symbols
-	  due too missing build-deps)
-	  
-	  to compile w/ swig support use:
-	  
-	  ./configure --enable-python --enable-swig
-	  make
-	  
-	  TODO: we need a script to generate link dependencies correctly
-	  (i.e. for each
-	  .i file follow all includes within .h (and also .c .cpp!) until
-	  saturation. Then for all .c/.cpp files put all .cpp.o and .c.o
-	  files
-	  as dependencies (append to .depend file) for the .i file with _
-	  praefix
-	  and .so suffix i.e. for SimpleFeatures.i:
-	  
-	  ./features/_SimpleFeatures.so: features/Features.cpp.o
-	  preproc/PreProc.cpp.o lib/Mathmatics.cpp.o lib/io.cpp.o
-
-2006-01-05  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/Preprocessor.h, lib/Preprocessor.i: garbage cleanup
-	* Makefile, classifier/Classifier.i, classifier/KNN.i,
-	  classifier/KernelPerceptron.i, classifier/LDA.i,
-	  classifier/LPM.i, classifier/LinearClassifier.i,
-	  classifier/Perceptron.i, classifier/PluginEstimate.i,
-	  classifier/svm/LibSVM.i, classifier/svm/SVM.i,
-	  classifier/svm/SVM_light.h, classifier/svm/SVM_light.i,
-	  distributions/Distribution.i, features/ByteFeatures.i,
-	  features/CharFeatures.i, features/CombinedFeatures.i,
-	  features/FKFeatures.i, features/Features.i, features/Labels.h,
-	  features/Labels.i, features/RealFeatures.i,
-	  features/RealFileFeatures.i, features/ShortFeatures.i,
-	  features/SimpleFeatures.i, features/SparseFeatures.i,
-	  features/SparseRealFeatures.i, features/StringFeatures.i,
-	  features/TOPFeatures.i, features/WordFeatures.i,
-	  kernel/AUCKernel.i, kernel/ByteKernel.i, kernel/CharKernel.i,
-	  kernel/CharPolyKernel.i, kernel/Chi2Kernel.i,
-	  kernel/CombinedKernel.i, kernel/CommUlongStringKernel.i,
-	  kernel/CommWordKernel.i, kernel/CommWordStringKernel.i,
-	  kernel/CustomKernel.i, kernel/DiagKernel.i,
-	  kernel/FixedDegreeCharKernel.i, kernel/GaussianKernel.i,
-	  kernel/HistogramWordKernel.i, kernel/Kernel.i,
-	  kernel/KernelMachine.i, kernel/LinearByteKernel.i,
-	  kernel/LinearCharKernel.i, kernel/LinearKernel.i,
-	  kernel/LinearWordKernel.i, kernel/LocalityImprovedCharKernel.i,
-	  kernel/PolyKernel.i, kernel/PolyMatchCharKernel.i,
-	  kernel/PolyMatchWordKernel.i, kernel/RealKernel.i,
-	  kernel/SalzbergWordKernel.i, kernel/ShortKernel.i,
-	  kernel/SigmoidKernel.i, kernel/SimpleKernel.i,
-	  kernel/SimpleLocalityImprovedCharKernel.i,
-	  kernel/SparseGaussianKernel.i, kernel/SparseKernel.i,
-	  kernel/SparseLinearKernel.i, kernel/SparseNormSquaredKernel.i,
-	  kernel/SparsePolyKernel.i, kernel/SparseRealKernel.i,
-	  kernel/StringKernel.i, kernel/WDCharKernel.i,
-	  kernel/WeightedDegreeCharKernel.i,
-	  kernel/WeightedDegreeCharKernelPolyA.i,
-	  kernel/WeightedDegreeCharKernel_old.i,
-	  kernel/WeightedDegreePositionCharKernel.i,
-	  kernel/WeightedDegreePositionCharKernel_old.i,
-	  kernel/WordKernel.i, kernel/WordMatchKernel.i, lib/Cache.i,
-	  lib/DynArray.i, lib/File.i, lib/List.i, lib/Mathmatics.i,
-	  lib/Parallel.i, lib/Signal.i, lib/SimpleFile.i, lib/Time.i,
-	  lib/Version.i, lib/common.i, lib/config.i, lib/io.i,
-	  lib/lapack.i, lib/versionstring.i: one step closer to a fully
-	  functioning swig Makefile
-	  some files (like classifier/svm/SVM_light_wrap.cxx)
-	  currently don't compile and each .so is 1.5MB =:-)
-	  also the python wrappers are not generated so the .so's are
-	  useless
-	  
-	  fabio please try it out:
-	  ./configure --enable-python
-	  make swig
-	* Makefile: +swig target
-	* distributions/Distribution.i: added swig interface file
-	* classifier/Classifier.i, classifier/KNN.i,
-	  classifier/KernelPerceptron.i, classifier/LDA.i,
-	  classifier/LPM.i, classifier/LinearClassifier.i,
-	  classifier/Perceptron.i, classifier/PluginEstimate.i,
-	  classifier/svm/LibSVM.i, classifier/svm/SVM.i,
-	  classifier/svm/SVM_light.i, features/ByteFeatures.i,
-	  features/CharFeatures.i, features/CombinedFeatures.i,
-	  features/FKFeatures.i, features/Features.i, features/Labels.i,
-	  features/RealFeatures.i, features/RealFileFeatures.i,
-	  features/ShortFeatures.i, features/SimpleFeatures.i,
-	  features/SparseFeatures.i, features/SparseRealFeatures.i,
-	  features/StringFeatures.i, features/TOPFeatures.i,
-	  features/WordFeatures.i, lib/Cache.i, lib/DynArray.i, lib/File.i,
-	  lib/List.i, lib/Mathmatics.i, lib/Parallel.i, lib/Preprocessor.i,
-	  lib/Signal.i, lib/SimpleFile.i, lib/Time.i, lib/Version.i,
-	  lib/common.i, lib/config.i, lib/io.i, lib/lapack.i,
-	  lib/versionstring.i: added swig interface files
-	* guilib/GUIPython.cpp, kernel/CustomKernel.cpp: modified
-	  get_kernel_matrix method invocation
-	* kernel/AUCKernel.i, kernel/ByteKernel.i, kernel/CharKernel.i,
-	  kernel/CharPolyKernel.i, kernel/Chi2Kernel.i,
-	  kernel/CombinedKernel.i, kernel/CommUlongStringKernel.i,
-	  kernel/CommWordKernel.i, kernel/CommWordStringKernel.i,
-	  kernel/CustomKernel.i, kernel/DiagKernel.i,
-	  kernel/FixedDegreeCharKernel.i, kernel/GaussianKernel.i,
-	  kernel/HistogramWordKernel.i, kernel/Kernel.i,
-	  kernel/KernelMachine.i, kernel/LinearByteKernel.i,
-	  kernel/LinearCharKernel.i, kernel/LinearKernel.i,
-	  kernel/LinearWordKernel.i, kernel/LocalityImprovedCharKernel.i,
-	  kernel/PolyKernel.i, kernel/PolyMatchCharKernel.i,
-	  kernel/PolyMatchWordKernel.i, kernel/RealKernel.i,
-	  kernel/SalzbergWordKernel.i, kernel/ShortKernel.i,
-	  kernel/SigmoidKernel.i, kernel/SimpleKernel.i,
-	  kernel/SimpleLocalityImprovedCharKernel.i,
-	  kernel/SparseGaussianKernel.i, kernel/SparseKernel.i,
-	  kernel/SparseLinearKernel.i, kernel/SparseNormSquaredKernel.i,
-	  kernel/SparsePolyKernel.i, kernel/SparseRealKernel.i,
-	  kernel/StringKernel.i, kernel/WDCharKernel.i,
-	  kernel/WeightedDegreeCharKernel.i,
-	  kernel/WeightedDegreeCharKernelPolyA.i,
-	  kernel/WeightedDegreeCharKernel_old.i,
-	  kernel/WeightedDegreePositionCharKernel.i,
-	  kernel/WeightedDegreePositionCharKernel_old.i,
-	  kernel/WordKernel.i, kernel/WordMatchKernel.i: added interface
-	  files needed for swig
-	* kernel/Kernel.cpp: resolved ambiguity in overloading
-	* kernel/Kernel.h: modified get_kernel_matrix methods (resolved
-	  ambiguity in overloading)
-	* distributions/hmm/HMM_bestpath_2struct.cpp: *** empty log message
-	  ***
-	* distributions/hmm/HMM_bestpath.cpp: nothing changed.
-	  G
-	* distributions/hmm/penalty_info.cpp: corrected the "follow_next"
-	  parameter for svm penalties
-	  G
-
-2006-01-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/CPLEXSVM.cpp, classifier/svm/CPLEXSVM.h: /me
-	  learning how to use cplex
-
-2006-01-03  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM.h, distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: *** empty log message
-	  ***
-	* distributions/hmm/HMM_bestpath_2struct.cpp: tested version for
-	  secondary structure prediction ...
-	  G
-	* distributions/hmm/HMM.h, distributions/hmm/HMM_bestpath.cpp,
-	  gui/Matlab.cpp, guilib/GUIMatlab.cpp: *** empty log message ***
-
-2005-12-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h: *** empty log message ***
-
-2005-12-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/Features.cpp, kernel/CustomKernel.cpp,
-	  kernel/CustomKernel.h, kernel/Kernel.cpp, kernel/Kernel.h,
-	  lib/Signal.cpp, lib/common.h: +change prematurely abort signal to
-	  SIGURG (as all the others will kill matlab)
-	  +make combined kernel work with ULONG features/ COMMULONG kernel
-	  +custom kernel overloads get_kernel_matrix for efficiency (just
-	  returns inplace pointer)
-	* lib/Signal.cpp, lib/Signal.h: +SIGHUP makes svmlight prematurely
-	  finish (needed for non interactive use)
-
-2005-12-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_libsvm.cpp: +updated to libsvm 2.81
-
-2005-12-05  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp: +MKL separate WD kern fix
-
-2005-12-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp: +another WD kernel option to only enable
-	  computation of a single degree,
-	  setting the other weights to zero
-
-2005-12-01  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/LDA.cpp, classifier/LDA.h: +disable when no lapack
-	  available
-	* Makefile, configure: *** empty log message ***
-
-2005-11-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/LDA.cpp, lib/Mathmatics.h: +LDA non working
-	* regression/svr/SVR_light.cpp: +copy the mkl+cache code to
-	  regression
-	* classifier/svm/SVM_light.cpp: +enable kernel cache for MKL (it
-	  was intentionally disabled before...)
-
-2005-11-25  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/LDA.cpp, classifier/svm/SVM_light.cpp, gui/Python.h,
-	  guilib/GUIPython.cpp, guilib/GUIPython.h, lib/DynArray.h,
-	  lib/Mathmatics.h: +MKL with caching
-
-2005-11-19  Soeren Sonnenburg, Gunnar Raetsch
-
-	* preproc/SortUlongString.cpp, preproc/SortUlongString.h: *** empty
-	  log message ***
-	* features/StringFeatures.h, guilib/GUIFeatures.cpp,
-	  guilib/GUIPreProc.cpp, kernel/CommUlongStringKernel.cpp,
-	  kernel/CommUlongStringKernel.h, kernel/CommWordKernel.cpp,
-	  kernel/CommWordKernel.h, kernel/CommWordStringKernel.cpp,
-	  kernel/CommWordStringKernel.h, lib/DynArray.h, lib/Mathmatics.h,
-	  lib/common.h: hurray we can now train spectrum kernels of order
-	  32 on DNA :)
-	  
-	  However it is much much slower:
-	  commulongkernel vs commword*kernels
-	  O(n*log(n)) vs O(n) (for kernel computation)
-	  O(1) vs O(|sigma|) (for linadd_clear)
-	  O(N+n) vs O(n) (for linadd_add_normal, where N (>>> n) is number
-	  of elements in dictionary list)
-	  
-	  +fixed CommWordKernel, CommWordStringKernel
-	  +CommUlongKernel, preproc and feature conversion
-	  +Dynamic Array (list like array that behaves like a list and also
-	  like an array
-	  and grows/shrinks automagically with certain granularity)
-	  +working binary_search & binary_search_max_lower_equal functions
-	  -removed LLONG ULLONG types as there is currently no 128bit int
-	  type
-
-2005-11-16  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/pr_loqo.cpp: +(working!) lapack for cholesky
-	  decomposition... slightly slower for small qpsizes (maybe <200)
-	  faster for qpsize 500...
-	  
-	  further optimizations necessary...
-	* classifier/LinearClassifier.h, classifier/svm/SVM_light.cpp,
-	  classifier/svm/pr_loqo.cpp, configure, guilib/GUIPreProc.cpp,
-	  kernel/DiagKernel.cpp, kernel/LinearKernel.cpp,
-	  kernel/PolyKernel.cpp, kernel/SigmoidKernel.cpp,
-	  lib/Mathmatics.h, preproc/PCACut.cpp, preproc/PCACut.h,
-	  regression/svr/SVR_light.cpp: *** empty log message ***
-	* classifier/svm/pr_loqo.cpp, configure: *** empty log message ***
-	* classifier/svm/pr_loqo.cpp: *** empty log message ***
-	* classifier/Perceptron.cpp: *** empty log message ***
-
-2005-11-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/Perceptron.cpp, kernel/Kernel.cpp: *** empty log
-	  message ***
-	* configure, lib/Mathmatics.cpp, lib/Mathmatics.h: *** empty log
-	  message ***
-
-2005-10-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/GPBTSVM.cpp, classifier/svm/SVM_libsvm.cpp,
-	  classifier/svm/gpdt.h, classifier/svm/gpdtsolve.cpp: +fix obj.
-	  function value for GPBT/LIBSVM. it still does not work for
-	  svmlight
-	  +add a hack to surpress a valgrind uninitialised memory read
-	  (libsvm)
-	* classifier/svm/GPBTSVM.cpp: *** empty log message ***
-	* classifier/svm/SVM_libsvm.cpp: -runtime fix
-	* classifier/svm/SVM_libsvm.cpp: +updated to libsvm2.8
-	* classifier/svm/gpdt.cpp, classifier/svm/gpdt.h: -valgrind hit
-	  fixes
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  configure, gui/TextGUI.cpp, kernel/Kernel.cpp, lib/Parallel.cpp,
-	  regression/svr/SVR_light.cpp: -hmmhh, seems like I forgot to
-	  checking a couple of changes, hope I
-	  resolved the conflicts in SVM_light.{cpp,h} without creating new
-	  bugs
-	* classifier/svm/gpdt.cpp, classifier/svm/gpdt.h,
-	  classifier/svm/gpdtsolve.cpp, classifier/svm/gpm.cpp: +update to
-	  GPDTSVM 1.0
-
-2005-10-24  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/Classifier.h, classifier/KNN.h, classifier/LDA.cpp,
-	  classifier/LDA.h, classifier/LPM.cpp, classifier/Perceptron.h,
-	  classifier/svm/GPBTSVM.h, classifier/svm/LibSVM.h,
-	  classifier/svm/MPD.h, classifier/svm/SVM_light.h,
-	  guilib/GUIKernel.cpp, guilib/GUIPython.cpp, lib/common.h,
-	  regression/svr/LibSVR.h: +prepare for more general classifier
-	  guilib (to make things as KNN/LPM/LDA work in the GUI)
-
-2005-10-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, kernel/Kernel.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: alles bloedsinn. wird nur
-	  langsamer, das mit dem reihenfolge aendern. *aerger*
-	  Naja, ich raeum gleich wieder auf...
-	  G
-	* kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-	* kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel_old.h: version 0 of WD
-	  kernel with adaptive TreeMem and faster computation of outputs
-	  with kernel_optimization.
-	  Not TESTED!
-	  Gu
-
-2005-10-20  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: +make orig WD kernel thread
-	  safe (so that was the bug after all...)
-
-2005-10-19  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, kernel/Kernel.cpp, lib/Time.cpp,
-	  lib/Time.h: bummer:there is no bug in parallel computation but in
-	  the Weighted Degree Kernel
-	* classifier/LPM.cpp, classifier/LPM.h, kernel/Kernel.cpp:
-	  -parallel still not working ?!
-	  +possible fix for gabi-problem
-
-2005-10-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/Python.cpp, kernel/Kernel.cpp, kernel/Kernel.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h: +a
-	  working parallel svm
-
-2005-10-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/Python.cpp, guilib/GUIPython.cpp, kernel/Kernel.cpp: wtf ?
-	  parallel svm works with matlab interface but not with python ?!?
-	* configure, kernel/Kernel.cpp, regression/svr/SVR_light.cpp: still
-	  debugging the svm_parallel case w/o linadd
-
-2005-10-03  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, kernel/Kernel.cpp, kernel/Kernel.h:
-	  *** empty log message ***
-	* kernel/Kernel.cpp, kernel/Kernel.h: *** empty log message ***
-
-2005-09-30  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h, lib/Time.cpp, lib/Time.h: +
-	  (not yet working) parallel SVM_light, i.e.
-	  cache_multiple_kernel_rows impl.
-	* configure, gui/TextGUI.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, regression/svr/SVR_light.cpp:
-	  +parallel mkl linadd
-	* configure: remove -liberty, lapack/atlas work without
-	* classifier/svm/SVM_light.cpp, gui/TextGUI.cpp, lib/Parallel.cpp,
-	  lib/Parallel.h: +lots of parallel hacks, don't expect it to work
-	  yet when configured with --enable-svm-parallel
-	* classifier/LinearClassifier.h, lib/Mathmatics.h, lib/lapack.h,
-	  preproc/PCACut.cpp, regression/svr/SVR_light.cpp: +some
-	  atlas/lapack compile fixes
-
-2005-09-29  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, configure, lib/Version.cpp: +linadd
-	  fix for empty tree
-	  +verboser version info
-
-2005-09-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure: *** empty log message ***
-	* configure: + -fexceptions for matlab
-
-2005-09-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/Classifier.cpp, classifier/Classifier.h, gui/GUI.h,
-	  gui/TextGUI.cpp, guilib/GUIClassifier.cpp,
-	  guilib/GUIClassifier.h: on the way to a general
-	  
-	  new classifier XXX
-	  
-	  command, with unified training/testing
-
-2005-09-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath_simple.cpp: *** empty log message
-	  ***
-	* distributions/hmm/HMM.h,
-	  distributions/hmm/HMM_bestpath_simple.cpp, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp: *** empty log message ***
-	* distributions/hmm/HMM_bestpath_simple.cpp: simple version of
-	  best_path_trans.
-	  G
-	* distributions/hmm/HMM.h, gui/Matlab.cpp, guilib/GUIMatlab.cpp,
-	  guilib/GUIMatlab.h: ... a simpler version of best_path_trans.
-	  G
-
-2005-09-05  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/Classifier.cpp, classifier/Perceptron.cpp: fix CVS
-	  merge
-	* README, classifier/Classifier.cpp, classifier/Classifier.h,
-	  classifier/KNN.h, classifier/KernelPerceptron.cpp,
-	  classifier/LinearClassifier.cpp, classifier/LinearClassifier.h,
-	  classifier/Perceptron.cpp, classifier/Perceptron.h,
-	  classifier/svm/KerthiPrimalSVM.cpp,
-	  classifier/svm/KerthiPrimalSVM.h, classifier/svm/SVM_light.cpp,
-	  configure, distributions/hmm/HMM_bestpath.cpp,
-	  kernel/KernelMachine.cpp, kernel/KernelMachine.h,
-	  kernel/LinearKernel.cpp, kernel/SparseLinearKernel.cpp,
-	  lib/Mathmatics.h, lib/common.h, regression/svr/SVR_light.cpp: +
-	  fix warning in HMM_bestpath
-	  + perceptron
-	  + new classifier hierarchy: classifier ->
-	  (LinearClassifier/KernelMachine), LinearClassifier -> Perceptron,
-	  KernelMachine ->(SVM/KernelPerceptron/...)
-	  + add type LLONG/ULLONG (16 byte integer)
-
-2005-09-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/KernelPerceptron.cpp, classifier/Perceptron.cpp:
-	  +stubs for load/save to get the matlab interface working
-
-2005-09-02  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/fibheap.cpp, distributions/hmm/fibheap.h:
-	  Dinojs Version of HMM_bestpath.cpp with fibonacci heap (and also
-	  other versions).
-	  He says it is tested to be equivalent. I have not tested it yet.
-	  Gu
-
-2005-08-30  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/KernelPerceptron.cpp, classifier/KernelPerceptron.h,
-	  classifier/LinearClassifier.cpp, classifier/LinearClassifier.h,
-	  classifier/Perceptron.cpp, classifier/Perceptron.h,
-	  classifier/svm/KerthiPrimalSVM.cpp,
-	  classifier/svm/KerthiPrimalSVM.h, features/SparseFeatures.h,
-	  guilib/GUIKernel.cpp, kernel/DiagKernel.cpp, kernel/DiagKernel.h,
-	  kernel/SparseLinearKernel.cpp, kernel/SparseLinearKernel.h,
-	  lib/common.h: +diag kernel (just some const on diagonal)
-	  +started perceptron/kernel perceptron/kerthiprimalsvm ->non
-	  functional
-
-2005-08-25  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIMatlab.cpp, kernel/Kernel.cpp: *** empty log message
-	  ***
-
-2005-08-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/MPD.cpp, guilib/GUIMatlab.cpp,
-	  kernel/LinearKernel.h: +linadd test script /
-	  get_kernel_optimization for Linear kernel
-
-2005-08-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* TODO, guilib/GUIMatlab.cpp, kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/SimpleKernel.h, lib/Mathmatics.h: +get_kernel_matrix from
-	  kernel object only
-	  +check size for simplefeatures
-	  +dot() in mathm.
-
-2005-08-07  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreeCharKernel.h, regression/svr/SVR_light.cpp:
-	  fixed SVR_light with SVM_PARALLEL (did not test it... only needed
-	  classification)
-	  G
-
-2005-08-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/Cache.h: finally fixed the cache
-
-2005-08-03  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/Cache.h: *** empty log message ***
-	* classifier/svm/MPD.cpp, classifier/svm/MPD.h,
-	  classifier/svm/SVM.cpp, classifier/svm/SVM.h,
-	  classifier/svm/SVM_libsvm.cpp, lib/Cache.h: *** empty log message
-	  ***
-
-2005-07-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/LibSVM.cpp, regression/svr/LibSVR.cpp: +don't
-	  invert libsvm's decision function when regression is used
-	* .version.sh: +fix versionstring when hour/minute/second is 00
-
-2005-07-27  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure: +make configure work with cplex @fhg
-	* classifier/svm/LibSVM.cpp, regression/svr/LibSVR.cpp: +make
-	  libsvm not fail if trained SVM has no suppvec
-
-2005-07-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/Optimizer.cpp, classifier/svm/SVM.cpp,
-	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  configure, features/StringFeatures.h, gui/Python.cpp,
-	  gui/TextGUI.cpp, gui/TextGUI.h, guilib/GUIPython.cpp,
-	  guilib/GUIPython.h, lib/Signal.cpp, regression/svr/SVR_light.cpp,
-	  regression/svr/SVR_light.h: +gcc4 fixes (configure + templates in
-	  Stringfeatures)
-	  +make SVR_light a derivative of SVM_light
-	  +quieten SVM training (only warnings are shown now)
-	  +fix ctrl-c behaviour to work the python way(tm), (i.e. raise
-	  keyboard exception, no more signal handler)
-	  +remove linux specific signal handling (now hopefully 100% POSIX)
-	  +in python interface implement
-	  svm_classify_example(...)
-	  set_subkernel_weights(...)
-	  set_svm(...)
-	  get_labels(...)
-	  get_features(...)
-
-2005-07-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/Python.cpp, guilib/GUIPython.cpp, lib/Signal.cpp, lib/io.cpp,
-	  regression/svr/SVR_light.cpp: +python ctrl+c support,
-	  get_subkernelweighting
-	* classifier/svm/Optimizer.cpp, lib/Mathmatics.h,
-	  regression/svr/SVR_light.cpp: +svmlight pr_loqo convergence fix
-
-2005-07-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIFeatures.cpp: *** empty log message ***
-	* configure, gui/Matlab.cpp, guilib/GUIFeatures.cpp,
-	  guilib/GUIFeatures.h, guilib/GUIPython.cpp, kernel/Kernel.cpp,
-	  kernel/Kernel.h: b0VIM 6.3
-
-2005-07-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/Signal.cpp: +compile fixes for macosx
-
-2005-07-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure: +compile with python under 64bit nodes
-	* regression/svr/SVR_light.cpp: *** empty log message ***
-
-2005-07-01  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp: *** empty log message ***
-	* kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-
-2005-06-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* regression/svr/SVR_light.cpp: +mkl linadd + precompute + atlas..
-	* regression/svr/SVR_light.cpp: +fix for mkl using linadd
-	* regression/svr/SVR_light.cpp, regression/svr/SVR_light.h: +mkl
-	  svr fix
-
-2005-06-27  Soeren Sonnenburg, Gunnar Raetsch
-
-	* regression/svr/SVR_light.h: +linadd now working with svr
-	* classifier/svm/MPD.cpp, classifier/svm/SVM.h, lib/Cache.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h: +svr
-	  linadd fix ???
-
-2005-06-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/MPD.cpp: we now have a MPD CSVC
-
-2005-06-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/MPD.cpp, classifier/svm/MPD.h, configure,
-	  guilib/GUISVM.cpp, lib/Cache.h: +MPD SVM
-
-2005-06-08  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIPreProc.cpp: *** empty log message ***
-	* guilib/GUIPreProc.cpp: +fix case with mixed preproc/no preproc
-	  for subfeatures of combined features
-	* features/CombinedFeatures.cpp, features/Features.cpp,
-	  guilib/GUIPreProc.cpp: fixing preproc test once again. now run
-	  this for combined features just once for attach_preproc TEST
-	* features/CombinedFeatures.cpp: +fix infinite loop in feature
-	  compatibility check
-
-2005-06-02  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/Kernel.cpp: *** empty log message ***
-	* kernel/Kernel.cpp: *** empty log message ***
-	* features/Features.cpp: -replace ERROR
-	* kernel/Kernel.cpp: *** empty log message ***
-	* distributions/hmm/HMM_bestpath.cpp, regression/svr/SVR_light.cpp:
-	  *** empty log message ***
-
-2005-06-01  Soeren Sonnenburg, Gunnar Raetsch
-
-	* regression/svr/SVR_light.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, regression/svr/SVR_light.cpp: fix
-	  obj output
-
-2005-05-31  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
-	  classifier/svm/SVM_libsvm.cpp, classifier/svm/SVM_libsvm.h,
-	  classifier/svm/SVM_light.cpp, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
-	  regression/svr/LibSVR.cpp, regression/svr/SVR_light.cpp,
-	  regression/svr/SVR_light.h: +get_svm_objective for
-	  libsv{r,m}/sv{r,m}light. output objective for svmlight again
-
-2005-05-30  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/LibSVM.cpp, regression/svr/LibSVR.cpp,
-	  regression/svr/SVR_light.cpp: libsvr + svrlight now both get the
-	  same result (C was not set for libsvm..)
-	* .version.sh: version string fix
-
-2005-05-26  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/Python.cpp, gui/TextGUI.cpp, guilib/GUIMatlab.cpp,
-	  guilib/GUIPython.cpp, guilib/GUIPython.h, kernel/Kernel.cpp:
-	  +working svm classifier und regression test script
-
-2005-05-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* TODO, gui/Python.cpp, gui/Python.h, guilib/GUIPython.cpp,
-	  guilib/GUIPython.h, kernel/Kernel.cpp, kernel/Kernel.h,
-	  lib/common.h: +some more stuff for the python interface
-	  (get_kernel/set_features)
-
-2005-05-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/Kernel.cpp, regression/svr/SVR_light.cpp,
-	  regression/svr/SVR_light.h: +regression now also working with
-	  svmlight (actually mkl should also...)
-	* regression/svr/SVR_light.cpp: +test scripts, needs valgrinding
-	  @fhg
-	* configure, regression/svr/LibSVR.cpp,
-	  regression/svr/SVR_light.cpp: +fix configure to new matlab paths
-	  *arg*
-	  +SVR via libsvm works
-	* classifier/svm/SVM.h, classifier/svm/SVM_light.cpp,
-	  classifier/svm/SVM_light.h, gui/TextGUI.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUISVM.cpp, guilib/GUISVM.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h, regression, regression/svr,
-	  regression/svr/LibSVR.cpp, regression/svr/LibSVR.h,
-	  regression/svr/SVR_light.cpp, regression/svr/SVR_light.h:
-	  +libsvm/svmlight regression (though it is not yet clear how to
-	  get svmlights regression to work)
-
-2005-05-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: ->CPX free prob gives only a
-	  warning message
-
-2005-05-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure, distributions/hmm/HMM.cpp: +make it compile with
-	  matlab on older nodes
-	  +wrongly checked for <= in HMM #obs
-
-2005-04-26  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp, classifier/svm/SVM_light.cpp,
-	  guilib/GUISVM.cpp: -min SVM iterations -> 3
-	  -default qpsize back to 41 as optimizier died/hung several times
-	  :(
-	* classifier/svm/pr_loqo.cpp: +make terminating optimizer - choldc
-	  failed, matrix not positive definite a WARNING
-	* .version.sh, classifier/svm/SVM_light.cpp: +fix version for
-	  minute 00, cplex typos
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: +cplex
-	  (de)init fixes
-
-2005-04-25  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/Features.cpp, lib/io.cpp: *** empty log message ***
-
-2005-04-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* TODO, guilib/GUIPreProc.cpp, guilib/GUIPython.cpp:
-	  +attach_preproc TEST for combined features should not call
-	  preprocess for every
-	  sub-feature obj, but instead only once for the last test-train
-	  subfeature combination
-	  we should switch to dynarray instead of CList as this would avoid
-	  fishing out the right
-	  sub-trainfeature obj
-	  +updated TODO
-
-2005-04-19  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: +warning when mkl is enabled but
-	  disabled at compile time
-	* gui/Python.cpp, guilib/GUIPython.cpp, guilib/GUIPython.h,
-	  kernel/CombinedKernel.cpp: fix: combined kernel does not delete
-	  kernel_optimization of kernels that are not optimizable according
-	  to is_optimizable
-
-2005-04-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, lib/io.cpp, lib/io.h: *** empty log
-	  message ***
-
-2005-04-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/Signal.cpp: *** empty log message ***
-	* lib/io.cpp: +WARN -> blue
-	  +ERROR -> red
-	* classifier/svm/SVM_light.cpp, gui/GUI.cpp, gui/Matlab.cpp,
-	  gui/TextGUI.cpp, gui/TextGUI.h, lib/Signal.cpp, lib/Signal.h,
-	  lib/Version.cpp, lib/io.cpp, lib/io.h: +finally fixed signal +
-	  output
-	  +cancel knob
-	* lib/Signal.cpp: *** empty log message ***
-	* gui/TextGUI.cpp, lib/Signal.cpp, lib/Signal.h, lib/io.cpp,
-	  lib/io.h: *** empty log message ***
-	* features/StringFeatures.cpp, features/StringFeatures.h,
-	  gui/GUI.cpp, lib/Signal.cpp, lib/io.cpp: +signal / mexError
-	  finally works
-	* lib/Signal.cpp: *** empty log message ***
-	* lib/Signal.cpp, lib/Signal.h: +sighandler files
-	* gui/Matlab.cpp, gui/TextGUI.cpp, gui/TextGUI.h: +sighandler to
-	  trap SIGTERM from within matlab...
-	* kernel/Chi2Kernel.cpp, kernel/Chi2Kernel.h: +chi^2 kernel
-	* classifier/svm/SVM_light.cpp, configure, distributions/hmm/HMM.h,
-	  features/SparseFeatures.h, features/StringFeatures.cpp,
-	  features/StringFeatures.h, gui/Python.cpp,
-	  guilib/GUIFeatures.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUILabels.cpp, guilib/GUISVM.cpp,
-	  kernel/LinearByteKernel.cpp, kernel/LinearCharKernel.cpp,
-	  kernel/LinearKernel.cpp, kernel/LinearWordKernel.cpp,
-	  kernel/SparseLinearKernel.cpp, kernel/WDCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernelPolyA.cpp,
-	  kernel/WeightedDegreeCharKernel_old.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel_old.cpp,
-	  kernel/WordMatchKernel.cpp, lib/File.cpp, lib/List.h, lib/Time.h,
-	  lib/common.h, lib/io.cpp, lib/io.h, preproc/PruneVarSubMean.cpp:
-	  +svm training now checks for same number of training labels and
-	  vectors
-	  +matlab gui now uses mex* functions for CIO::message
-	  +made other List access functions thread safe
-	  +remove all load/safe stuff in Kernels/Features as we anyway
-	  won't use them
-
-2005-04-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/StringFeatures.h, guilib/GUIFeatures.cpp,
-	  guilib/GUIFeatures.h, guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp,
-	  kernel/CommUlongStringKernel.cpp, kernel/CommUlongStringKernel.h,
-	  kernel/CommWordKernel.cpp, kernel/CommWordKernel.h,
-	  kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
-	  lib/Mathmatics.h, lib/common.h: +CommUlongStringKernel
-	  +CommWordString now uses nonsparse table as CommWord
-
-2005-04-12  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIMatlab.cpp: +support for set/get_features for char cell
-	  arrays
-
-2005-04-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/GUI.cpp, gui/Python.cpp, gui/Python.h, guilib/GUIPython.cpp,
-	  guilib/GUIPython.h: +python gui forgotten files
-	* configure, gui/GUI.h, gui/TextGUI.cpp, gui/TextGUI.h,
-	  guilib/GUIMatlab.h, guilib/GUIOctave.h: +python interface
-
-2005-04-09  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreeCharKernel.cpp: *** empty log message ***
-	* guilib/GUISVM.cpp, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-
-2005-04-05  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp,
-	  features/CombinedFeatures.cpp, features/CombinedFeatures.h,
-	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h, lib/List.h:
-	  made CCombinedKernel, CCombinedFeatures and parts of CList
-	  multi-thread safe.
-	  G
-
-2005-03-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/GPBTSVM.cpp, classifier/svm/GPBTSVM.h,
-	  classifier/svm/gpdt.cpp, classifier/svm/gpdt.h,
-	  classifier/svm/gpdtsolve.cpp: +valgrinded+compared gpbt svm with
-	  libsvm+light -> gives same result :)
-
-2005-03-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/GPBTSVM.cpp, classifier/svm/GPBTSVM.h,
-	  classifier/svm/LibSVM.cpp, classifier/svm/LibSVM.h,
-	  classifier/svm/SVM_libsvm.cpp, classifier/svm/gpdt.cpp,
-	  classifier/svm/gpdt.h, classifier/svm/gpdtsolve.cpp,
-	  classifier/svm/gpm.cpp, guilib/GUIKernel.cpp, guilib/GUISVM.cpp,
-	  kernel/SigmoidKernel.cpp, kernel/SigmoidKernel.h, lib/common.h:
-	  +sigmoid-kernel
-	  +updated (resynced) to libsvm version 2.71
-	  +GPBTSVM
-
-2005-03-17  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/Kernel.cpp, lib/io.cpp: *** empty log message ***
-	* kernel/Kernel.cpp, lib/io.cpp: *** empty log message ***
-
-2005-03-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: require 10 iterations
-
-2005-03-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/lapack.h: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, kernel/CombinedKernel.cpp,
-	  kernel/CombinedKernel.h: *** empty log message ***
-	* kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h: speedup in gfwdp.
-	  Gu
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: fixed
-	  some mkl bug.
-	* classifier/svm/SVM_light.cpp, lib/io.cpp: improved CIO::progress.
-	  Gu
-	* kernel/CombinedKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h: improved speed of
-	  WDPos kernel for the case that many weights are zero.
-	  Gu
-	* lib/io.cpp, lib/io.h: extended cio::progress. It now has some
-	  time estimate and only outputs something at most every second;
-	  Gu
-	* guilib/GUIMatlab.cpp: *** empty log message ***
-	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: added
-	  {s,g}et_last_subkernel_weights and extended {g,s}et_WD_position
-	  weights.
-	  Gu
-
-2005-03-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: -polltime 60s fix
-	* configure: +cplex
-	* classifier/svm/SVM.h, classifier/svm/SVM_light.cpp,
-	  gui/TextGUI.cpp, guilib/GUISVM.cpp, guilib/GUISVM.h: +qpsize
-	  option
-
-2005-03-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreeCharKernel.cpp: +baum
-	* configure: +opteron
-
-2005-03-08  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: memory optimized hack
-	  Gu
-	* classifier/svm/SVM_light.cpp, distributions/hmm/HMM.h,
-	  distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-
-2005-03-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/CommWordKernel.cpp, kernel/CommWordKernel.h: *** empty log
-	  message ***
-
-2005-02-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp, distributions/hmm/HMM_bestpath.cpp,
-	  guilib/GUIMatlab.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h: fixed the
-	  kernel_optimization for WDpos kernel (was not fixed for the new
-	  kernel)
-	  Gu
-
-2005-02-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIMatlab.cpp, kernel/CombinedKernel.h: fixed CUSTOM
-	  kernel with COmbined Kernel...
-	  Gu
-
-2005-02-19  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, distributions/hmm/HMM_bestpath.cpp,
-	  guilib/GUIMatlab.cpp: fixed a (probably the) gf bug, that made
-	  the mSplicer results worse than before.
-	  (all due to some last minute hacking, which was not cleaned up
-	  aftwerwards)
-	  Gu
-
-2005-02-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* TODO, guilib/GUIKernel.cpp, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: + option to turn off blocking
-	  mode
-
-2005-02-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* preproc/cleaner.c, preproc/cleaner.h, preproc/cleaner.m,
-	  preproc/cleaner_main.c: -remove more obsolete stuff
-	* gui/TextGUI.cpp, guilib/GUIHMM.cpp, guilib/GUIHMM.h,
-	  guilib/GUISVM.cpp: -remove further obsolete hooks
-	* classifier/svm_cplex, classifier/svm_mpi, grad_descent: -remove
-	  obsolete stuff
-	* HISTORY, LICENSE, Makefile, TODO, kernel/CombinedKernel.h,
-	  kernel/CommWordKernel.cpp, kernel/CommWordKernel.h,
-	  kernel/CommWordStringKernel.cpp, kernel/Kernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp, preproc/PCACut.cpp: +linadd
-	  for COMMWORD kernel
-
-2005-02-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreeCharKernel.cpp: +argh forgot return
-	  statement
-	* kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: +block algo im wd
-
-2005-02-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIMatlab.cpp: +replaced mxGetPr with mxGetData + typecast
-	  fixes
-	* guilib/GUIFeatures.cpp, guilib/GUIFeatures.h,
-	  guilib/GUIMatlab.cpp: +fixes in convert
-	  +get_features for other matrix types
-
-2005-02-09  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIFeatures.cpp: *** empty log message ***
-	* gui/TextGUI.cpp, guilib/GUIFeatures.cpp, guilib/GUIFeatures.h: +
-	  new convert ala:
-	  
-	  convert SPARSE REAL SIMPLE REAL
-	  convert SIMPLE CHAR SIMPLE WORD DNA <order> <start>
-	  convert STRING CHAR STRING WORD DNA <order> <start>
-	  etc.
-
-2005-02-08  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/PolyMatchCharKernel.cpp, kernel/PolyMatchCharKernel.h: ***
-	  empty log message ***
-	* lib/io.cpp: no more INFO
-	* guilib/GUIKernel.cpp, kernel/PolyMatchWordKernel.h: +poly match
-	  no scale option
-
-2005-02-03  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/Version.cpp: updated version to 2005
-
-2005-01-31  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: fixed a minor bug in
-	  MKL/linadd/testing.
-	  Gunnar
-
-2005-01-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel_old.cpp,
-	  kernel/WeightedDegreePositionCharKernel_old.h, lib/common.h,
-	  lib/io.cpp: kernel optimization for WD Pos kernel does not work
-	  yet...
-	  Gu
-
-2005-01-27  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreeCharKernel.cpp, lib/common.h: first
-	  implementation of the correct WD kernel (L-k instead of L-d)
-	  Not tested yet.
-	  G
-	* kernel/WeightedDegreeCharKernel_old.h: fixed kernel name and id
-	  G
-	* kernel/WeightedDegreeCharKernel_old.cpp,
-	  kernel/WeightedDegreeCharKernel_old.h: *** empty log message ***
-
-2005-01-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WeightedDegreePositionCharKernel.cpp: len == 0 -> len <= 0
-	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: more
-	  fixes for custom kernel
-	* guilib/GUIMatlab.cpp, kernel/CustomKernel.cpp,
-	  kernel/CustomKernel.h: +save only upper diagonal for custom
-	  kernel
-
-2005-01-17  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIMatlab.cpp, kernel/CustomKernel.h: +get_kernel_matrix
-	  now twice as fast for training data
-	* guilib/GUIKernel.cpp: +progress function
-	  +for all kinds of polykernels (real/sparse/char/polymatch) allow
-	  to disable normalization
-	* classifier/svm/SVM.cpp, distributions/hmm/HMM_bestpath.cpp,
-	  gui/TextGUI.cpp, guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp,
-	  kernel/CharPolyKernel.cpp, kernel/CharPolyKernel.h,
-	  kernel/CommWordKernel.cpp, kernel/CommWordStringKernel.cpp,
-	  kernel/PolyKernel.cpp, kernel/PolyKernel.h,
-	  kernel/PolyMatchWordKernel.cpp, kernel/PolyMatchWordKernel.h,
-	  kernel/SparsePolyKernel.cpp, kernel/SparsePolyKernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp, lib/Mathmatics.h,
-	  lib/common.h, lib/io.cpp, lib/io.h, preproc/PCACut.cpp: *** empty
-	  log message ***
-
-2005-01-12  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, guilib/GUIMatlab.cpp,
-	  kernel/CustomKernel.cpp: custom kernel vs cache fixes
-
-2005-01-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, gui/TextGUI.cpp, guilib/GUISVM.cpp,
-	  guilib/GUISVM.h: *** empty log message ***
-	* guilib/GUIMatlab.cpp: *** empty log message ***
-	* classifier/svm/SVM.cpp, gui/Matlab.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h, guilib/GUISVM.cpp,
-	  kernel/CustomKernel.cpp, kernel/CustomKernel.h: +custom kernel
-	  fixes
-
-2005-01-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIFeatures.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-	* features/Features.cpp, guilib/GUIFeatures.cpp: finally found
-	  zzzzzzze bug
-	* guilib/GUIFeatures.cpp, lib/List.h: +remove replace from list as
-	  this seems buggy/dangerous
-	  +convert should now preprocess last feature obj from combined
-	  features
-	* guilib/GUIFeatures.cpp: *** empty log message ***
-	* guilib/GUIMatlab.cpp, guilib/GUIMatlab.h, kernel/AUCKernel.cpp,
-	  kernel/AUCKernel.h: *** empty log message ***
-	* kernel/CustomKernel.cpp, kernel/CustomKernel.h: +custom kernel
-	  (now really)
-	* classifier/svm/SVM_light.cpp, gui/Matlab.cpp,
-	  guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp, lib/common.h: +custom
-	  kernel
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  features/Labels.cpp, features/Labels.h, gui/Matlab.cpp,
-	  guilib/GUIFeatures.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h, lib/common.h:
-	  implemented AUC maximization.
-	  G
-
-2005-01-07  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h: optimized kernel
-	  precomputation: only store the symmetric part and in float.
-	  (allows to use it with more kernels and/or more examples)
-	  
-	  Gu
-
-2005-01-06  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, guilib/GUIKernel.cpp,
-	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
-	  kernel/Kernel.cpp: added a option to CombinedKernel to append the
-	  weights of the subkernels.
-	  set_kernel COMBINED <cache_size> [<flag>]
-	  
-	  default: false
-	  Now we can optimize WD weights in combination with other kernels
-	  (e.g. linear).
-	  :-)
-	  
-	  Gu
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  kernel/CombinedKernel.cpp: made it a bit more efficient....
-	  (disabled kernel caching and made use or precomputed matrices in
-	  the rest of svm-light)
-	  
-	  Gu
-	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
-	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  guilib/GUIKernel.cpp, guilib/GUISVM.cpp, guilib/GUISVM.h,
-	  kernel/CombinedKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h: implemented MKL for
-	  arbitrary kernels with the option to precompute the kernel before
-	  optimization (also works for WD).
-	  use
-	  use_precompute 3
-	  
-	  Gu
-	* guilib/GUISVM.cpp, kernel/PolyKernel.cpp: *** empty log message
-	  ***
-	* classifier/svm/SVM_light.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUISVM.cpp, guilib/GUISVM.h, kernel/CombinedKernel.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h: implement precomputation for
-	  subkernels to be used with MKL.
-	  Now its fast if you have a few kernels
-	  use command
-	  use_precompute 1
-	  for precomputation without MKL
-	  and
-	  use_precompute 2
-	  for precomputation of subkernels with MKL.
-	  Gu
-	* classifier/svm/SVM_light.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUISVM.cpp: implemented first version of general MKL.
-	  (easier than I thought).
-	  Gu
-
-2005-01-03  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
-	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  gui/TextGUI.cpp, guilib/GUISVM.cpp, guilib/GUISVM.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h: added new command
-	  use_precompute
-	  to turnn on/off kernel matrix precomputation (quite a bite
-	  faster, even if cache is large enough)
-	  Gu
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: removed
-	  active set algorithm.
-	  Gu
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h:
-	  implemented a LP active set algorithm. It works, but it does not
-	  improve speed (as expected). I'll remove it again in the next
-	  version.
-	  Gu
-
-2005-01-02  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: minor
-	  changes, prepared active set optimization for MKL.
-	  G
-	* classifier/svm/SVM.h, classifier/svm/SVM_light.cpp,
-	  classifier/svm/SVM_light.h, gui/TextGUI.cpp,
-	  guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp, guilib/GUISVM.cpp,
-	  guilib/GUISVM.h, kernel/CombinedKernel.cpp,
-	  kernel/CombinedKernel.h, kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/LinearKernel.cpp, kernel/LinearKernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h: quite a few
-	  extensions/modifications for MKL.
-	  G
-
-2005-01-01  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: works
-
-2004-12-29  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-
-2004-12-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/TextGUI.cpp, guilib/GUIKernel.cpp, lib/common.h: minor
-	  changes. G
-
-2004-12-26  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/TextGUI.cpp, gui/TextGUI.h, guilib/GUIKernel.cpp: *** empty
-	  log message ***
-
-2004-12-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUISVM.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, kernel/CombinedKernel.h: *** empty
-	  log message ***
-
-2004-12-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
-	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  configure, gui/TextGUI.cpp, guilib/GUISVM.cpp, guilib/GUISVM.h,
-	  kernel/CombinedKernel.cpp, kernel/LinearByteKernel.cpp,
-	  kernel/LinearByteKernel.h, kernel/LinearCharKernel.cpp,
-	  kernel/LinearCharKernel.h, kernel/LinearKernel.cpp,
-	  kernel/LinearKernel.h, kernel/LinearWordKernel.cpp,
-	  kernel/LinearWordKernel.h, kernel/WeightedDegreeCharKernel.h:
-	  +make mkl learning optional via ./configure
-	  +make mkl learning configurable: new command: use_kerncombination
-	  1 (or 0)
-	  +add linear{byte,word,char,real}kernel to fast learning kernels
-	  +prepare combined kernel mkl learning
-
-2004-11-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: ***
-	  empty log message ***
-
-2004-11-08  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
-	  classifier/svm/SVM_light.cpp, gui/TextGUI.cpp, guilib/GUISVM.cpp,
-	  guilib/GUISVM.h: +command
-	  epsilon 1e-4
-
-2004-10-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: minor
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-
-2004-10-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: fixed memory leak
-	  G
-
-2004-10-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, kernel/LinearKernel.cpp: fixed
-	  typos
-	  G
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: fixed
-	  wgap epsilon to 1e-4 ;
-	  G
-	* classifier/svm/SVM_light.cpp, configure, kernel/LinearKernel.cpp,
-	  preproc/PCACut.cpp: jaja atlas...
-	* classifier/svm/SVM_light.cpp: atlas geht
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  guilib/GUIMatlab.cpp, kernel/WeightedDegreeCharKernel.cpp: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  kernel/WeightedDegreeCharKernel.cpp: backup
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  guilib/GUIMatlab.cpp, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-
-2004-10-20  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIMatlab.cpp, kernel/WeightedDegreeCharKernel.cpp: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp, guilib/GUIMatlab.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp: *** empty log message ***
-	* kernel/WeightedDegreeCharKernel.cpp: *** empty log message ***
-	* guilib/GUIMatlab.cpp, kernel/WeightedDegreeCharKernel.cpp: ***
-	  empty log message ***
-	* guilib/GUIMatlab.cpp, kernel/WeightedDegreeCharKernel.cpp: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-	* guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  kernel/WeightedDegreeCharKernel.cpp: take this commit with
-	  extreme care:
-	  * a few hacky changes in svm_light.cpp
-	  * removed the normalization in the kernel
-	  G
-
-2004-10-19  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-
-2004-10-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: ***
-	  empty log message ***
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp: *** empty log message ***
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: another
-	  buggy(?) selfopt. version
-	* classifier/svm/SVM_light.cpp, kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h, lib/common.h: +gunnar mult.
-	  kern. zeug
-
-2004-10-17  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h, lib/common.h: +linear svmlight
-	  training
-
-2004-10-16  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
-	  kernel/WeightedDegreeCharKernel.h: added functions for changing
-	  the weighting of the WD kernel on the fly (first version, does
-	  not update the tree yet).
-	  G
-	* guilib/GUIMatlab.cpp, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: minor optimization.
-	  G
-	* classifier/svm/SVM.cpp, features/Features.h, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h: added a function
-	  compute_WD_by_levels which is needed when optimizing the weights
-	  of different substring lengths.
-	  G
-
-2004-10-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/Mathmatics.h: +qsort template build fix
-
-2004-10-06  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp, kernel/WDCharKernel.cpp,
-	  kernel/WDCharKernel.h: + option to disable WD kernel
-	  normalization
-
-2004-10-05  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp, kernel/WDCharKernel.cpp,
-	  kernel/WDCharKernel.h: +WD kernel now has an extra argument to
-	  compute only a specific linear component
-
-2004-10-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/Mathmatics.cpp, lib/Mathmatics.h: +double template in qsort
-	  functions with index
-	* classifier/KNN.cpp, classifier/svm/Optimizer.cpp,
-	  classifier/svm/SVM_libsvm.cpp, classifier/svm/SVM_light.cpp,
-	  classifier/svm/SVM_light.h, classifier/svm/pr_loqo.cpp,
-	  classifier/svm_cplex/SVM_cplex.cpp,
-	  distributions/Distribution.cpp, distributions/Distribution.h,
-	  distributions/histogram/Histogram.cpp, distributions/hmm/GHMM.h,
-	  distributions/hmm/HMM.cpp, distributions/hmm/HMM.h,
-	  distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp, features/FKFeatures.cpp,
-	  features/ShortFeatures.cpp, features/StringFeatures.h,
-	  features/TOPFeatures.cpp, features/WordFeatures.cpp,
-	  grad_descent/mnbrak.cpp, gui/Matlab.cpp, gui/Octave.cpp,
-	  guilib/GUIHMM.cpp, guilib/GUIKernel.cpp, guilib/GUIMath.cpp,
-	  kernel/CommWordKernel.cpp, kernel/CommWordStringKernel.cpp,
-	  kernel/HistogramWordKernel.cpp, kernel/LinearByteKernel.cpp,
-	  kernel/LinearCharKernel.cpp, kernel/LinearKernel.cpp,
-	  kernel/LinearWordKernel.cpp, kernel/SalzbergWordKernel.cpp,
-	  kernel/SparseLinearKernel.cpp,
-	  kernel/WeightedDegreeCharKernelPolyA.cpp,
-	  kernel/WordMatchKernel.cpp, lib/Cache.h, lib/DynArray.h,
-	  lib/Mathmatics.cpp, lib/Mathmatics.h, preproc/LogPlusOne.cpp,
-	  preproc/NormOne.cpp, preproc/PCACut.cpp,
-	  preproc/PruneVarSubMean.cpp, preproc/SortWord.cpp,
-	  preproc/SortWordString.cpp: global object math -> static CMath
-	  transition
-
-2004-10-01  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h: @gunnar: du musst template funktionen auch ins
-	  header file schreiben und
-	  wenn die static sachen benutzen die funktionen die du aus der
-	  klasse aus
-	  diesen funktionen aufrufst auch wieder static machen
-	  
-	  +fixed compilation... Mathmatics needs a big cleanup to really
-	  only use
-	  templates and static functions now. we should drop the math
-	  object
-	* lib/Mathmatics.cpp, lib/Mathmatics.h: Achtung: liefert
-	  undefininiertes Symbol nmin.
-	  habe was mit einem template versucht. klappt aber nicht, wie es
-	  aussieht.
-	  Soeren, hast du eine idee, wie man das fixt. syntax ok, aber
-	  funktion fehlt wohl doch (Mathmatics.cpp Cmath::nmin)
-	  Gunnar
-
-2004-09-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: svm retraining works now, just use
-	  set_svm with what you have as inital guess :D
-
-2004-09-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp: + support for different C's in
-	  svmlight
-	  + now svm's won't always learn from scratch (use set_svm to set
-	  initial parameters)
-
-2004-09-09  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h: -bias
-	  corrected
-	* classifier/svm/Optimizer.cpp, classifier/svm/Optimizer.h,
-	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h: +updated SVM_light* to
-	  svmlight6.01
-
-2004-08-31  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/Matlab.cpp, guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp,
-	  guilib/GUIMatlab.h, kernel/WDCharKernel.cpp: +fixed,
-	  tested+verified :)
-	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, kernel/Kernel.h,
-	  kernel/WDCharKernel.cpp, kernel/WDCharKernel.h:
-	  +set_kernel_parameters function (infect all kernels should use
-	  this...)
-
-2004-08-04  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/HistogramWordKernel.h, kernel/LinearKernel.cpp: fix return
-	  values
-	* TODO, guilib/GUIKernel.cpp, kernel/CharPolyKernel.cpp,
-	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
-	  kernel/CommWordKernel.cpp, kernel/CommWordKernel.h,
-	  kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
-	  kernel/FixedDegreeCharKernel.cpp, kernel/HistogramWordKernel.cpp,
-	  kernel/Kernel.cpp, kernel/Kernel.h, kernel/LinearByteKernel.cpp,
-	  kernel/LinearByteKernel.h, kernel/LinearCharKernel.cpp,
-	  kernel/LinearCharKernel.h, kernel/LinearKernel.cpp,
-	  kernel/LinearKernel.h, kernel/LinearWordKernel.cpp,
-	  kernel/LinearWordKernel.h, kernel/LocalityImprovedCharKernel.cpp,
-	  kernel/PolyKernel.cpp, kernel/PolyMatchWordKernel.cpp,
-	  kernel/SalzbergWordKernel.cpp,
-	  kernel/SimpleLocalityImprovedCharKernel.cpp,
-	  kernel/SparseGaussianKernel.cpp, kernel/SparseLinearKernel.cpp,
-	  kernel/SparseNormSquaredKernel.cpp, kernel/SparsePolyKernel.cpp,
-	  kernel/WDCharKernel.cpp, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreeCharKernelPolyA.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h,
-	  kernel/WordMatchKernel.cpp: changed cleanup for all kernels, as
-	  it was done in a very unclean way.
-	  
-	  - calling cleanup functions twice should not trigger crashes
-	  - delete_kernel_optimization is now called without checks for
-	  is_initialized
-	  
-	  - Kernel objects must call the cleanup function in destructor.
-	  everything that
-	  gets initialized in the constructor must be cleaned up in the
-	  destructor. all
-	  the rest has to be done via the cleanup() function (i.e. cleanup
-	  must call delete_kernel_optimization)
-	  
-	  -typos/thinkos might lead to IMMEDIATE CRASHES on deleting
-	  kernels NOW.
-	  
-	  I will run some tests and then pass this version over to alex to
-	  see whether
-	  it survives his complex scenario (which it did not in former
-	  versions)
-
-2004-07-28  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM_libsvm.cpp, configure, kernel/Kernel.cpp,
-	  kernel/Kernel.h, lib/common.h: *** empty log message ***
-
-2004-07-26  Soeren Sonnenburg, Gunnar Raetsch
-
-	* .version.sh, Makefile, README: +hints on how to cvs tag (create
-	  versions/branches) in genefinder
-	  +automatic versioning added which should be enough for most cases
-	* lib/Version.cpp, lib/Version.h: forgot to add version files
-	* .version.sh, Makefile, gui/Matlab.cpp, gui/TextGUI.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: +ver=gf('get_version')
-	  to obtain version from within matlab
-	* .version.sh: version script
-	* Makefile, features/ShortFeatures.cpp, gui/TextGUI.cpp:
-	  +versioning (only in textgui)
-	* TODO: *** empty log message ***
-	* guilib/GUIMatlab.h: forgot to change get_kernel_matrix function
-	  definition
-	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, kernel/LinearKernel.cpp,
-	  kernel/PolyKernel.cpp, kernel/SparseGaussianKernel.cpp,
-	  kernel/SparseGaussianKernel.h: +optimized sparsegaussiankernel
-	  +changed gf('get_kernel_matrix') to
-	  gf('get_kernel_matrix','TRAIN')
-	  +poly/gaussian kernel cleanups now in cleanup(), call cleanup()
-	  in destructor
-
-2004-07-25  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/LinearKernel.cpp: disabled ATLAS, as it induced some
-	  strange errors. also the HAVE_ATLAS switch did not seem to work.
-	  G
-
-2004-07-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM.cpp: *** empty log message ***
-	* distributions/hmm/HMM.cpp, features/ShortFeatures.cpp,
-	  features/ShortFeatures.h, features/StringFeatures.h,
-	  gui/Matlab.cpp, gui/TextGUI.cpp, guilib/GUIFeatures.cpp,
-	  guilib/GUIHMM.cpp: more hmm+char/stringfeature fixes
-	* configure, gui/Matlab.cpp, guilib/GUIFeatures.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: +hmm fixes, char
-	  features now have alphabet type
-
-2004-07-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: compile
-	  fixes
-	* distributions/hmm/HMM.cpp, distributions/hmm/HMM.h,
-	  gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h:
-	  +get_viterbi_path
-
-2004-07-20  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gf.m: updated help
-
-2004-07-19  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/PluginEstimate.h, distributions/hmm/HMM.cpp,
-	  distributions/hmm/HMM.h, distributions/hmm/LinearHMM.cpp,
-	  distributions/hmm/LinearHMM.h, gf.m, gui/Octave.cpp,
-	  guilib/GUIOctave.cpp, guilib/GUIOctave.h: initial octave support,
-	  get/set_hmm works all the rest is likely to be buggy(tm)
-	* guilib/GUIPreProc.cpp: preproc crash
-
-2004-07-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure: *** empty log message ***
-
-2004-07-16  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/CombinedFeatures.cpp, features/Features.cpp,
-	  features/Features.h, guilib/GUIPreProc.cpp: and even further
-	  preproc fixes
-	* configure, features/CombinedFeatures.cpp,
-	  features/CombinedFeatures.h, features/Features.cpp,
-	  features/Features.h, guilib/GUIPreProc.cpp, guilib/GUIPreProc.h:
-	  further preproc fixes
-	  
-	  rule is now to:
-	  
-	  add_features
-	  add_preproc
-	  ..
-	  add_preproc
-	  attach_preproc
-	  
-	  add_features
-	  add_preproc
-	  ..
-	  add_preproc
-	  attach_preproc TRAIN
-	  
-	  <do some stuff>
-	  
-	  attach_preproc TEST
-	  
-	  
-	  attach_preproc will attach & preprocess (if feature matrix is
-	  available) in both cases
-
-2004-07-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/SimpleFeatures.h, guilib/GUIPreProc.cpp,
-	  kernel/WDCharKernel.cpp: preproc fixes
-	* guilib/GUIKernel.cpp, guilib/GUIPreProc.cpp, preproc/PCACut.cpp:
-	  *** empty log message ***
-
-2004-07-12  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure, distributions/hmm/HMM.cpp, distributions/hmm/HMM.h,
-	  gui/TextGUI.cpp, guilib/GUIHMM.cpp: +make hmm work again
-
-2004-06-29  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/WDCharKernel.h: please the compiler (fixes a warning)
-	* guilib/GUIKernel.cpp, kernel/WDCharKernel.cpp,
-	  kernel/WDCharKernel.h, kernel/WeightedDegreeCharKernel.cpp: +
-	  different weightings (const,linear,log,exp,x^2 x^3)
-
-2004-06-25  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp, kernel/WDCharKernel.cpp,
-	  kernel/WDCharKernel.h: finally found the weighting for arbitrary
-	  sizes it is linear (3*l + const)
-	  and yes the kernel is >2 times faster
-
-2004-06-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/LinearByteKernel.cpp, kernel/LinearCharKernel.cpp,
-	  kernel/LinearWordKernel.cpp: fixed a stupid type casting bug with
-	  kernel optimization for Byte/Char/Word Kernels
-	* kernel/WDCharKernel.cpp, kernel/WDCharKernel.h: first tests of WD
-	  kernel following the XXX publication
-	* classifier/svm/SVM.cpp, gui/TextGUI.cpp, guilib/GUIFeatures.cpp,
-	  guilib/GUIFeatures.h, guilib/GUIKernel.cpp,
-	  guilib/GUIPreProc.cpp, guilib/GUIPreProc.h, guilib/GUISVM.cpp,
-	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
-	  kernel/CommWordStringKernel.h, kernel/Kernel.cpp,
-	  kernel/Kernel.h, kernel/LinearByteKernel.cpp,
-	  kernel/LinearByteKernel.h, kernel/LinearCharKernel.cpp,
-	  kernel/LinearCharKernel.h, kernel/LinearWordKernel.cpp,
-	  kernel/LinearWordKernel.h, kernel/OptimizableKernel.cpp,
-	  kernel/OptimizableKernel.h, kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreeCharKernelPolyA.h, lib/Mathmatics.h,
-	  lib/common.h: -removed optimizablekernel files as they are now in
-	  CKernel anyway
-	  -fixed comment in Mathmatics (long/real mixup)
-	  -added kernel optimizations for Linear*Kernels
-	  -rewrote gui - preproc. there is no longer a preprocess command
-	  but just a
-	  attach_preproc function which attaches the current preproc-list
-	  to
-	  TRAIN/TEST feature object and clears the list afterwards. this is
-	  needed for
-	  combined features to have different preprocs. for combined
-	  features the
-	  preproc is attached to the last feature object in the list
-
-2004-05-06  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, guilib/GUIMatlab.cpp: *** empty
-	  log message ***
-
-2004-04-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp: compile time fixes
-	* preproc/SortWordString.cpp, preproc/SortWordString.h: *** empty
-	  log message ***
-
-2004-04-02  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, guilib/GUIMatlab.cpp: *** empty
-	  log message ***
-	* distributions/hmm/HMM.h, distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
-	  kernel/CommWordStringKernel.h: viterbi with exon svm works now
-	  and is fast.
-	  G
-
-2004-04-01  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp, kernel/CommWordStringKernel.cpp,
-	  kernel/CommWordStringKernel.h: introduced more normalization
-	  options for faster normalization.
-	* distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, features/StringFeatures.h:
-	  first version of "svm in viterby".
-	  G
-	* distributions/hmm/HMM.h, guilib/GUIKernel.cpp:
-	  CommWordStringKernel is working and tested.
-	  G
-	* kernel/CommWordStringKernel.h: *** empty log message ***
-	* kernel/CommWordStringKernel.cpp: introduced a normalization
-	  option: no, sqrt, full.
-	  Might be worth transfering to other kernels..
-	  G
-	* distributions/hmm/HMM_bestpath.cpp, features/StringFeatures.h,
-	  guilib/GUIFeatures.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUIPreProc.cpp, kernel/CommWordStringKernel.cpp,
-	  kernel/CommWordStringKernel.h, kernel/StringKernel.h,
-	  preproc/StringPreProc.h: added StringKernel-Preproc support
-	  wrote SortPreProc for Strings
-	  changed CommWordStringKernel including kernel-optimization
-	  (to be tested)
-
-2004-03-31  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, guilib/GUIMatlab.cpp: typos..
-
-2004-03-24  Soeren Sonnenburg, Gunnar Raetsch
-
-	* classifier/svm/SVM.cpp: *** empty log message ***
-
-2004-03-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* TODO, classifier/svm/LibSVM.cpp, classifier/svm/SVM.cpp,
-	  classifier/svm/SVM.h, features/RealFeatures.cpp, gui/TextGUI.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUISVM.cpp, kernel/CombinedKernel.h,
-	  kernel/LinearKernel.cpp, kernel/LinearKernel.h: +workaround fix
-	  for libsvm (to handle the case - first example has positive label
-	  - correctly)
-	  +kernel optimizations for linear kernel (REAL)
-
-2004-03-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure, distributions/hmm/penalty_info.cpp, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: added #include
-	  "lib/config.h" as the first line to make HAVE_MATLAB work
-	  correctly
-	  remove cmdline -DMATLAB from configure
-
-2004-03-09  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/penalty_info.h, kernel/CharPolyKernel.cpp,
-	  kernel/CommWordKernel.cpp, kernel/CommWordStringKernel.cpp,
-	  kernel/FixedDegreeCharKernel.cpp, kernel/HistogramWordKernel.cpp,
-	  kernel/PolyKernel.cpp, kernel/PolyMatchWordKernel.cpp,
-	  kernel/SalzbergWordKernel.cpp, kernel/SparsePolyKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernelPolyA.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp: fixed kernel divide
-	  by zero bugs, not compiling bug when not using matlab
-
-2004-02-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp, kernel/WeightedDegreeCharKernelPolyA.cpp,
-	  kernel/WeightedDegreeCharKernelPolyA.h, lib/common.h: *** empty
-	  log message ***
-
-2004-02-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/HMM_bestpath.cpp: final bug and cleanup.
-	  G
-	* distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, guilib/GUIMatlab.cpp,
-	  lib/Mathmatics.cpp: fixed bugs
-	  G
-	* distributions/hmm/penalty_info.h: *** empty log message ***
-	* distributions/hmm/HMM.h, distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, guilib/GUIMatlab.cpp: the new
-	  viterby seems to work.
-	  TODO: put the penalty_struct in a class.
-	* distributions/hmm/HMM.h, distributions/hmm/HMM_bestpath.cpp,
-	  distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h, gui/Matlab.cpp,
-	  guilib/GUIMatlab.cpp, lib/Mathmatics.cpp, lib/Mathmatics.h: new
-	  trail version 0.9
-
-2004-02-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* distributions/hmm/penalty_info.cpp,
-	  distributions/hmm/penalty_info.h: *** empty log message ***
-	* distributions/hmm/HMM.h, distributions/hmm/HMM_bestpath.cpp,
-	  gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
-	  lib/Mathmatics.h: new trial with the shit viterbi...
-	  G
-	* distributions/hmm/HMM_bestpath.cpp: *** empty log message ***
-	* distributions/hmm/HMM_bestpath.cpp: *** empty log message ***
-
-2004-02-11  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/CombinedKernel.cpp, kernel/Kernel.cpp, kernel/Kernel.h:
-	  minor changes.
-	  G
-
-2004-02-10  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/TextGUI.cpp, guilib/GUIFeatures.cpp, guilib/GUIFeatures.h,
-	  guilib/GUIKernel.cpp, guilib/GUIKernel.h,
-	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
-	  kernel/CommWordKernel.cpp, kernel/CommWordKernel.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h: fixed a few bugs
-	  related to the propation of a changed feature object to the
-	  kernels.
-	  G
-	* gui/TextGUI.cpp, guilib/GUIFeatures.cpp, guilib/GUIFeatures.h,
-	  guilib/GUIKernel.cpp, guilib/GUIKernel.h, guilib/GUIPreProc.cpp,
-	  guilib/GUIPreProc.h: added
-	  clean_features
-	  clean_kernel
-	  clean_preproc
-	  as commands
-	  G
-
-2004-02-09  Soeren Sonnenburg, Gunnar Raetsch
-
-	* kernel/CombinedKernel.cpp: *** empty log message ***
-	* classifier/svm/SVM.cpp, classifier/svm/SVM.h, gui/Matlab.cpp,
-	  gui/TextGUI.cpp, guilib/GUIKernel.cpp, guilib/GUIKernel.h,
-	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
-	  kernel/CommWordKernel.cpp, kernel/CommWordKernel.h,
-	  kernel/CommWordStringKernel.h, kernel/Kernel.h,
-	  kernel/LinearKernel.h, kernel/OptimizableKernel.cpp,
-	  kernel/OptimizableKernel.h, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h, lib/common.h, lib/io.cpp: created new command
-	  "init_kernel_optimization" and "delete_kernel_optimization" which
-	  replace "init_kernel_tree" and "delete_kernel_tree".
-	  implemented the kernel optimization for commword kernel and
-	  WeightedDegreePositionKernel.
-	  improved output of progress while testing.
-	  needed a new class COptimizableKernel.
-	  
-	  Gu
-
-2004-02-06  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/CombinedFeatures.h, guilib/GUIFeatures.cpp,
-	  guilib/GUIKernel.cpp: fixed some more bugs and made some
-	  extensions
-	  G
-
-2004-02-05  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIKernel.cpp, kernel/CombinedKernel.cpp,
-	  kernel/Kernel.cpp, kernel/Kernel.h, lib/io.cpp: fixed the bugs in
-	  the combined kernel stuff.
-	  there is a new tester in matlab/test_combined2.m
-	  
-	  It should work now.
-	  Gu
-
-2004-02-02  Soeren Sonnenburg, Gunnar Raetsch
-
-	* features/CombinedFeatures.cpp, features/CombinedFeatures.h,
-	  guilib/GUIKernel.cpp, kernel/CombinedKernel.cpp,
-	  kernel/CombinedKernel.h: combined stuff still crashy
-	* gui/TextGUI.cpp, guilib/GUIFeatures.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUIKernel.h, kernel/CombinedKernel.cpp,
-	  kernel/CombinedKernel.h: untested support for
-	  combined{features,kernel}
-
-2004-01-30  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure: *** empty log message ***
-	* configure: *** empty log message ***
-	* features/Labels.cpp, gui/TextGUI.cpp: fixed readline vs. input
-	  from file problems
-
-2004-01-27  Soeren Sonnenburg, Gunnar Raetsch
-
-	* guilib/GUIFeatures.cpp: *** empty log message ***
-	* gui/TextGUI.cpp: *** empty log message ***
-	* gui/TextGUI.cpp: readline fixes
-	* gui/Matlab.cpp, guilib/GUIMatlab.cpp: *** empty log message ***
-	* Makefile, TODO, classifier/KNN.cpp,
-	  classifier/PluginEstimate.cpp, classifier/PluginEstimate.h,
-	  classifier/svm/LibSVM.cpp, classifier/svm/Optimizer.cpp,
-	  classifier/svm/SVM.cpp, classifier/svm/SVM_libsvm.cpp,
-	  classifier/svm/SVM_light.cpp, classifier/svm/pr_loqo.cpp,
-	  classifier/svm_cplex/SVM_cplex.cpp,
-	  classifier/svm_cplex/SVM_cplex.h,
-	  classifier/svm_cplex/cplex_init_mex_interface.c,
-	  classifier/svm_cplex/cplex_quit_mex_interface.c,
-	  classifier/svm_cplex/qp_solve_mex_interface.c,
-	  classifier/svm_cplex/spdiag.c, classifier/svm_cplex/train_svm.c,
-	  classifier/svm_cplex/train_svm_main.c,
-	  classifier/svm_mpi/bcache.h, classifier/svm_mpi/intpoint.h,
-	  classifier/svm_mpi/intpoint_mpi.h, classifier/svm_mpi/matrix.h,
-	  classifier/svm_mpi/mpi_base.cpp, classifier/svm_mpi/mpi_base.h,
-	  classifier/svm_mpi/mpi_oneclass.cpp,
-	  classifier/svm_mpi/mpi_oneclass.h,
-	  classifier/svm_mpi/mpi_svm.cpp, classifier/svm_mpi/mpi_svm.h,
-	  configure, distributions/hmm/HMM.cpp, distributions/hmm/HMM.h,
-	  features/ByteFeatures.cpp, features/CharFeatures.cpp,
-	  features/CombinedFeatures.cpp, features/FKFeatures.cpp,
-	  features/Features.cpp, features/Labels.cpp,
-	  features/RealFeatures.cpp, features/RealFileFeatures.cpp,
-	  features/SimpleFeatures.h, features/SparseFeatures.h,
-	  features/StringFeatures.h, features/TOPFeatures.cpp,
-	  features/WordFeatures.cpp, grad_descent/test.cpp, gui/Matlab.cpp,
-	  gui/TextGUI.cpp, guilib/GUIFeatures.cpp, guilib/GUIFeatures.h,
-	  guilib/GUIHMM.cpp, guilib/GUIKNN.cpp, guilib/GUIKernel.cpp,
-	  guilib/GUILabels.cpp, guilib/GUIMath.cpp,
-	  guilib/GUIPluginEstimate.cpp, guilib/GUIPreProc.cpp,
-	  guilib/GUISVM.cpp, kernel/CombinedKernel.cpp,
-	  kernel/HistogramWordKernel.cpp, kernel/Kernel.cpp,
-	  kernel/LinearByteKernel.cpp, kernel/LinearCharKernel.cpp,
-	  kernel/LinearKernel.cpp, kernel/LinearWordKernel.cpp,
-	  kernel/LocalityImprovedCharKernel.cpp, kernel/PolyKernel.cpp,
-	  kernel/SalzbergWordKernel.cpp, kernel/SalzbergWordKernel.h,
-	  kernel/SimpleLocalityImprovedCharKernel.cpp,
-	  kernel/SparseLinearKernel.cpp, kernel/SparsePolyKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WordMatchKernel.cpp, lib/Cache.h, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h, lib/SimpleFile.h, lib/Time.cpp, lib/common.h,
-	  lib/io.cpp, lib/io.h, preproc/PCACut.cpp, preproc/PCACut.h,
-	  preproc/PreProc.cpp, preproc/PruneVarSubMean.cpp: +useful CIO
-	  messages WARN/INFO/DEBUG/etc...
-	  +configure to generate lib/config.h
-
-2004-01-24  Soeren Sonnenburg, Gunnar Raetsch
-
-	* configure: *** empty log message ***
-	* .cpuinfo.c, Makefile, Makefile.env, README, TODO, classifier,
-	  classifier/KNN.cpp, classifier/KNN.h,
-	  classifier/PluginEstimate.cpp, classifier/PluginEstimate.h,
-	  classifier/svm, classifier/svm/LibSVM.cpp,
-	  classifier/svm/LibSVM.h, classifier/svm/Optimizer.cpp,
-	  classifier/svm/Optimizer.h, classifier/svm/SVM.cpp,
-	  classifier/svm/SVM.h, classifier/svm/SVM_libsvm.cpp,
-	  classifier/svm/SVM_libsvm.h, classifier/svm/SVM_light.cpp,
-	  classifier/svm/SVM_light.h, classifier/svm/pr_loqo.cpp,
-	  classifier/svm/pr_loqo.h, classifier/svm_cplex,
-	  classifier/svm_cplex/SVM_cplex.cpp,
-	  classifier/svm_cplex/SVM_cplex.h,
-	  classifier/svm_cplex/cplex_init_mex_interface.c,
-	  classifier/svm_cplex/cplex_init_mex_interface.h,
-	  classifier/svm_cplex/cplex_quit_mex_interface.c,
-	  classifier/svm_cplex/cplex_quit_mex_interface.h,
-	  classifier/svm_cplex/qp_solve_mex_interface.c,
-	  classifier/svm_cplex/qp_solve_mex_interface.h,
-	  classifier/svm_cplex/spdiag.c, classifier/svm_cplex/spdiag.h,
-	  classifier/svm_cplex/test_it.m, classifier/svm_cplex/train_lpm.m,
-	  classifier/svm_cplex/train_svm.c,
-	  classifier/svm_cplex/train_svm.h,
-	  classifier/svm_cplex/train_svm.m,
-	  classifier/svm_cplex/train_svm_main.c, classifier/svm_mpi,
-	  classifier/svm_mpi/bcache.h, classifier/svm_mpi/config.h,
-	  classifier/svm_mpi/intpoint.h, classifier/svm_mpi/intpoint_mpi.h,
-	  classifier/svm_mpi/libipallmpi.a,
-	  classifier/svm_mpi/libipallmpi_linux.a, classifier/svm_mpi/mat.h,
-	  classifier/svm_mpi/matlab_matrix.h, classifier/svm_mpi/matrix.h,
-	  classifier/svm_mpi/mpi_base.cpp, classifier/svm_mpi/mpi_base.h,
-	  classifier/svm_mpi/mpi_oneclass.cpp,
-	  classifier/svm_mpi/mpi_oneclass.h,
-	  classifier/svm_mpi/mpi_svm.cpp, classifier/svm_mpi/mpi_svm.h,
-	  classifier/svm_mpi/optimizer.h, classifier/svm_mpi/tmwtypes.h,
-	  classifier/svm_mpi/tt.m, configure, distributions,
-	  distributions/Distribution.cpp, distributions/Distribution.h,
-	  distributions/histogram, distributions/histogram/Histogram.cpp,
-	  distributions/histogram/Histogram.h, distributions/hmm,
-	  distributions/hmm/GHMM.cpp, distributions/hmm/GHMM.h,
-	  distributions/hmm/HMM.cpp, distributions/hmm/HMM.h,
-	  distributions/hmm/LinearHMM.cpp, distributions/hmm/LinearHMM.h,
-	  features, features/ByteFeatures.cpp, features/ByteFeatures.h,
-	  features/CharFeatures.cpp, features/CharFeatures.h,
-	  features/CombinedFeatures.cpp, features/CombinedFeatures.h,
-	  features/FKFeatures.cpp, features/FKFeatures.h,
-	  features/Features.cpp, features/Features.h, features/Labels.cpp,
-	  features/Labels.h, features/RealFeatures.cpp,
-	  features/RealFeatures.h, features/RealFileFeatures.cpp,
-	  features/RealFileFeatures.h, features/ShortFeatures.cpp,
-	  features/ShortFeatures.h, features/SimpleFeatures.h,
-	  features/SparseFeatures.h, features/SparseRealFeatures.cpp,
-	  features/SparseRealFeatures.h, features/StringFeatures.cpp,
-	  features/StringFeatures.h, features/TOPFeatures.cpp,
-	  features/TOPFeatures.h, features/WordFeatures.cpp,
-	  features/WordFeatures.h, gf.m, grad_descent,
-	  grad_descent/brent.cpp, grad_descent/f1dim.cpp,
-	  grad_descent/linmin.cpp, grad_descent/mnbrak.cpp,
-	  grad_descent/nrutil.cpp, grad_descent/nrutil.h,
-	  grad_descent/test.cpp, gui/GUI.h, gui/GeneFinder.cpp,
-	  gui/Matlab.cpp, gui/TextGUI.cpp, gui/TextGUI.h, guilib,
-	  guilib/GUIFeatures.cpp, guilib/GUIFeatures.h, guilib/GUIHMM.cpp,
-	  guilib/GUIHMM.h, guilib/GUIKNN.cpp, guilib/GUIKNN.h,
-	  guilib/GUIKernel.cpp, guilib/GUIKernel.h, guilib/GUILabels.cpp,
-	  guilib/GUILabels.h, guilib/GUIMath.cpp, guilib/GUIMath.h,
-	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
-	  guilib/GUIPluginEstimate.cpp, guilib/GUIPluginEstimate.h,
-	  guilib/GUIPreProc.cpp, guilib/GUIPreProc.h, guilib/GUISVM.cpp,
-	  guilib/GUISVM.h, guilib/GUITime.cpp, guilib/GUITime.h, hmm,
-	  kernel, kernel/ByteKernel.h, kernel/CharKernel.h,
-	  kernel/CharPolyKernel.cpp, kernel/CharPolyKernel.h,
-	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
-	  kernel/CommWordKernel.cpp, kernel/CommWordKernel.h,
-	  kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
-	  kernel/FixedDegreeCharKernel.cpp, kernel/FixedDegreeCharKernel.h,
-	  kernel/GaussianKernel.cpp, kernel/GaussianKernel.h,
-	  kernel/HistogramWordKernel.cpp, kernel/HistogramWordKernel.h,
-	  kernel/Kernel.cpp, kernel/Kernel.h, kernel/KernelMachine.cpp,
-	  kernel/KernelMachine.h, kernel/LinearByteKernel.cpp,
-	  kernel/LinearByteKernel.h, kernel/LinearCharKernel.cpp,
-	  kernel/LinearCharKernel.h, kernel/LinearKernel.cpp,
-	  kernel/LinearKernel.h, kernel/LinearWordKernel.cpp,
-	  kernel/LinearWordKernel.h, kernel/LocalityImprovedCharKernel.cpp,
-	  kernel/LocalityImprovedCharKernel.h, kernel/PolyKernel.cpp,
-	  kernel/PolyKernel.h, kernel/PolyMatchWordKernel.cpp,
-	  kernel/PolyMatchWordKernel.h, kernel/RealKernel.h,
-	  kernel/SalzbergWordKernel.cpp, kernel/SalzbergWordKernel.h,
-	  kernel/ShortKernel.h, kernel/SimpleKernel.h,
-	  kernel/SimpleLocalityImprovedCharKernel.cpp,
-	  kernel/SimpleLocalityImprovedCharKernel.h,
-	  kernel/SparseGaussianKernel.cpp, kernel/SparseGaussianKernel.h,
-	  kernel/SparseKernel.h, kernel/SparseLinearKernel.cpp,
-	  kernel/SparseLinearKernel.h, kernel/SparseNormSquaredKernel.cpp,
-	  kernel/SparseNormSquaredKernel.h, kernel/SparsePolyKernel.cpp,
-	  kernel/SparsePolyKernel.h, kernel/SparseRealKernel.h,
-	  kernel/StringKernel.h, kernel/WeightedDegreeCharKernel.cpp,
-	  kernel/WeightedDegreeCharKernel.h,
-	  kernel/WeightedDegreePositionCharKernel.cpp,
-	  kernel/WeightedDegreePositionCharKernel.h, kernel/WordKernel.h,
-	  kernel/WordMatchKernel.cpp, kernel/WordMatchKernel.h,
-	  lib/Cache.h, lib/DynArray.h, lib/File.cpp, lib/File.h,
-	  lib/List.h, lib/Mathmatics.cpp, lib/Mathmatics.h,
-	  lib/Observation.cpp, lib/Observation.h, lib/Preprocessor.h,
-	  lib/SimpleFile.h, lib/Time.cpp, lib/Time.h, lib/common.h,
-	  lib/io.cpp, lib/io.h, lib/lapack.c, lib/lapack.h, preproc,
-	  preproc/LogPlusOne.cpp, preproc/LogPlusOne.h,
-	  preproc/NormDerivativeLem3.cpp, preproc/NormDerivativeLem3.h,
-	  preproc/NormOne.cpp, preproc/NormOne.h, preproc/PCACut.cpp,
-	  preproc/PCACut.h, preproc/PreProc.cpp, preproc/PreProc.h,
-	  preproc/PruneVarSubMean.cpp, preproc/PruneVarSubMean.h,
-	  preproc/RealPreProc.h, preproc/ShortPreProc.cpp,
-	  preproc/ShortPreProc.h, preproc/SimplePreProc.h,
-	  preproc/SortWord.cpp, preproc/SortWord.h,
-	  preproc/SparsePreProc.h, preproc/WordPreProc.cpp,
-	  preproc/WordPreProc.h, preproc/cleaner.c, preproc/cleaner.h,
-	  preproc/cleaner.m, preproc/cleaner_main.c, svm/Optimizer.cpp,
-	  svm/Optimizer.h, svm/SVM.cpp, svm/SVM.h, svm/SVM_light.cpp,
-	  svm/SVM_light.h, svm/kernel.cpp, svm/kernel.h, svm/pr_loqo.cpp,
-	  svm/pr_loqo.h, svm_cplex, tests/script2: merged unstable branch
-	  into HEAD
-
-2002-01-26  Soeren Sonnenburg, Gunnar Raetsch
-
-	* lib/common.h: *** empty log message ***
-	* Makefile, Makefile.env, lib/common.h: *** empty log message ***
-
-2002-01-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile.env, svm/kernel.cpp: self introduced bug:
-	  kernel cache now uses 100MB not 100*sizeof(CFLOAT) igrrg.
-
-2002-01-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, hmm/HMM.cpp, hmm/HMM.h, svm/kernel.cpp:
-	  der verdammte mist should(TM) work.
-
-2002-01-20  Soeren Sonnenburg, Gunnar Raetsch
-
-	* hmm/HMM.cpp: -added feature normalization ( norm(x)=1 ) , enable
-	  with -DNORMALIZE_TO_ONE -DNORMALIZE_DERIVATIVE
-	  -jaahau feature normalization, enable with -DNORMALIZE_DERIVATIVE
-	  only
-	  -special negative model bw training, enable with
-	  -DNEGATIVE_MODEL_HACK
-
-2002-01-16  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, lib/common.h, svm/SVM_light.cpp,
-	  svm/kernel.cpp: -svm new/malloc races fixed
-	  -b had wrong sign
-	* svm/SVM_light.cpp, svm/kernel.cpp, svm/kernel.h: debugging the
-	  svm
-	* gui/GeneFinder.cpp, hmm/HMM.cpp, hmm/HMM.h, svm/kernel.cpp,
-	  svm/kernel.h: added
-	  save_features <filename>
-	  save_kernel <filename> <FK|TOP>
-
-2002-01-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, gui/GeneFinder.cpp, svm/SVM_light.cpp, svm/SVM_light.h,
-	  svm/kernel.cpp, svm/kernel.h: - added save_top_kernel <file>.
-	  since this is more or less straight forward
-	  (although I had to move some functions from svm to kernel) it
-	  *should* work.
-
-2002-01-09  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, hmm/HMM.cpp: copy'n'paste bugfix in linear_likelihood
-	* Makefile, gui/GeneFinder.cpp, hmm/HMM.cpp: fyab (fixed yet
-	  another bug):
-	  
-	  MAX_M - stands for the the representation of M in bit, i.e. for
-	  M==4 MAX_M=2
-	  it is *NOT* sizeof(M) nor 8*sizeof(M)
-	* Makefile, gui/GeneFinder.cpp, hmm/HMM.cpp, lib/Observation.h:
-	  -still bugfixing - mist verdammter.
-	* Makefile, gui/GeneFinder.cpp: linear higher order (WORK IN
-	  PROGRESS)
-
-2002-01-08  Soeren Sonnenburg, Gunnar Raetsch
-
-	* svm/SVM_light.cpp: arg I mean 5e-4
-	* Makefile, hmm/HMM.cpp, svm/SVM_light.cpp: -svm epsilon 5e-5
-	* Makefile, gui/GeneFinder.cpp, lib/Mathmatics.h: -kill observation
-	  @ linear train
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp,
-	  lib/Mathmatics.cpp, lib/Mathmatics.h: -infty now is 1e11, more
-	  finite check in logsum (fixes nan conditions)
-	  -alpha makefile adjustments
-
-2002-01-07  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, hmm/HMM.cpp, svm/kernel.cpp: -fixed some
-	  unitialized memory-reads
-	  -> there are some in SVM_LIGHT (our fault ?)
-
-2002-01-06  Soeren Sonnenburg, Gunnar Raetsch
-
-	* hmm/HMM.cpp, svm/SVM_light.cpp: - SVM convergence 1e-5
-	  - mem leak fixes (?)
-	* Makefile, gui/GeneFinder.cpp, hmm/HMM.cpp, hmm/HMM.h: - fixed
-	  nasty bug in add_states
-	  - fixes in append_model
-	  - fixes in alloc_state_dep...
-	  -> testing now
-
-2002-01-05  Soeren Sonnenburg, Gunnar Raetsch
-
-	* hmm/HMM.cpp, hmm/HMM.h: adding append_model
-	* hmm/HMM.cpp: some more FLOATING POINT EXCEPTION fixes in
-	  load_model,etc.
-
-2002-01-02  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, hmm/HMM.cpp, lib/Mathmatics.cpp: - fixed
-	  a bug in qsort (pivot element was sometimes taken from the right
-	  array bound)
-	  - make debug now uses dbx on alpha
-	  - add_state initializes values in the range 1e-2 - 2e-1 (for now)
-
-2001-12-31  Soeren Sonnenburg, Gunnar Raetsch
-
-	* hmm/HMM.cpp: alloc_... fixes
-	  set_observations(xxx, NULL) is required now (everything else
-	  crashes) -> FIXME!
-	  the memory allocation/freing stuff should be rewritten -> EXTRA
-	  CLASS CACHE,
-	  the way it is at the moment makes all additions somewhat painful.
-	* Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp, hmm/HMM.h: time to
-	  check add_state on the cluster
-
-2001-12-30  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, hmm/HMM.cpp, hmm/HMM.h: add_state *work in progress*
-	* Makefile, Makefile.env, hmm/HMM.cpp, hmm/HMM.h: -Floating Point
-	  exception on load_model fixed
-	  -makefile adjusted for sc - APAC
-
-2001-12-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, hmm/HMM.cpp, hmm/HMM.h: it at least
-	  compiles now.
-	* hmm/HMM.cpp, hmm/HMM.h: DONT USE
-
-2001-12-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile.env, hmm/HMM.cpp, hmm/HMM.h, lib/Mathmatics.h: parallel
-	  improvements.
-	  work in progress
-
-2001-12-12  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/GeneFinder.cpp, hmm/HMM.cpp, hmm/HMM.h: one_class_hmm_test
-	  one_class_linear_hmm_test
-	  +few fixes
-
-2001-11-30  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile.env, hmm/HMM.h: sqrt(1/n) only in model_probability(-1)
-
-2001-11-29  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp,
-	  lib/Mathmatics.h: bugfixes in Makefile and hopefully last in HMM
-
-2001-11-26  Soeren Sonnenburg, Gunnar Raetsch
-
-	* svm/SVM_light.cpp: *** empty log message ***
-	* svm/SVM_light.cpp: *** empty log message ***
-
-2001-11-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* hmm/HMM.cpp: try
-	  bw
-	  it gives you forward/backward variables in matlab format
-
-2001-11-21  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile.env: *** empty log message ***
-	* Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp, lib/common.h:
-	  grmpf
-
-2001-11-20  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h, lib/common.h, svm/SVM_light.cpp: log_table
-	  autoinit / new define NO_LOG_TABLE added
-	  REAL <-> double,float fixes
-
-2001-11-19  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/GeneFinder.cpp, hmm/HMM.cpp, hmm/HMM.h, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h, lib/Observation.cpp, lib/Observation.h,
-	  lib/common.h, lib/io.cpp, lib/io.h, svm/Optimizer.cpp,
-	  svm/SVM_light.cpp, svm/kernel.cpp, svm/pr_loqo.cpp,
-	  svm_cplex/SVM_cplex.cpp: -bugfixes and cleanups
-	  -REPLACE of printf() !!!
-	  use
-	  CIO::message("na klar %s", "soeren");
-	  or CIO::message(file, "na klar %s", "soeren");
-
-2001-11-18  Soeren Sonnenburg, Gunnar Raetsch
-
-	* hmm/HMM.cpp, lib/Mathmatics.cpp, svm/SVM_light.cpp,
-	  svm/SVM_light.h, svm/kernel.cpp: bugfixes
-
-2001-11-16  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp: bug
-	  fixes.
-	* Makefile.env: *** empty log message ***
-	* Makefile.env, hmm/HMM.cpp: *** empty log message ***
-	* svm/SVM_light.cpp: *** empty log message ***
-	* svm/SVM_light.cpp: *** empty log message ***
-	* Makefile, Makefile.env, hmm/HMM.cpp, svm/SVM_light.cpp,
-	  tests/test_it.scr, tests/test_it2.scr: *** empty log message ***
-	* Makefile, gui/GeneFinder.cpp: *** empty log message ***
-	* svm/SVM_light.cpp: *** empty log message ***
-
-2001-11-15  Soeren Sonnenburg, Gunnar Raetsch
-
-	* hmm/HMM.h, tests/test_it.scr: *** empty log message ***
-	* tests/test_it.scr: *** empty log message ***
-	* svm/SVM_light.cpp: disabled svm_cache
-	  to enable define KERNEL_CACHE
-	* Makefile: *** empty log message ***
-	* hmm/HMM.cpp, hmm/HMM.h, tests/script2: *** empty log message ***
-	* hmm/HMM.cpp: *** empty log message ***
-	* Makefile.env, hmm/HMM.cpp, hmm/HMM.h, tests, tests/script2: ***
-	  empty log message ***
-	* gui/GeneFinder.cpp, hmm/HMM.cpp, hmm/HMM.h, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h, lib/Observation.cpp: merged version with fancy
-	  caching, results to follow !!!
-	* Makefile.env, hmm/HMM.cpp: *** empty log message ***
-	* Makefile.env, hmm/HMM.cpp: *** empty log message ***
-	* hmm/HMM.cpp, hmm/HMM.h, lib/common.h: made threads more dynamic
-	  G
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp,
-	  hmm/HMM.h, lib/Mathmatics.h, svm/kernel.cpp,
-	  svm_cplex/cplex_init_mex_interface.c,
-	  svm_cplex/cplex_quit_mex_interface.c: *** empty log message ***
-
-2001-11-14  Soeren Sonnenburg, Gunnar Raetsch
-
-	* gui/GeneFinder.cpp, hmm/HMM.cpp, hmm/HMM.h, lib/Mathmatics.cpp:
-	  es geht nun cplex+svm_light zusammen, und very useful
-	  top_feature_cache stays in memory until invalid
-	  ---> training svms' with several C's goes in one abwasch.
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp,
-	  hmm/HMM.h, svm/SVM_light.cpp, svm/SVM_light.h, svm/kernel.cpp:
-	  FOUND THE BUG. a stupid flcose() in write_model :`-(
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp,
-	  lib/Mathmatics.cpp, lib/Observation.cpp, svm/SVM_light.cpp,
-	  svm/SVM_light.h, svm/pr_loqo.cpp: *** empty log message ***
-	* lib/Observation.cpp: *** empty log message ***
-
-2001-11-13  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp,
-	  svm/SVM_light.cpp: added comments to genefinder scripts, use % or
-	  # for them.
-	  slight Makefile HMM fixes.
-	* Makefile, Makefile.env, gui/GeneFinder.cpp: there is an
-	  INCLUDE_AUSTRALIA now !
-	* Makefile, Makefile.env, gui/GeneFinder.cpp,
-	  svm_cplex/SVM_cplex.cpp, svm_cplex/SVM_cplex.h,
-	  svm_cplex/cplex_init_mex_interface.c,
-	  svm_cplex/cplex_quit_mex_interface.c,
-	  svm_cplex/qp_solve_mex_interface.c, svm_cplex/spdiag.c,
-	  svm_cplex/train_svm.c, svm_cplex/train_svm_main.c: *** empty log
-	  message ***
-	* gui/GeneFinder.cpp, hmm/HMM.cpp, svm/kernel.cpp,
-	  svm_cplex/SVM_cplex.cpp: gunnar approved kernel included.
-	* Makefile.env: *** empty log message ***
-	* Makefile, hmm/HMM.h, svm/SVM_light.cpp, svm_cplex/SVM_cplex.cpp:
-	  *** empty log message ***
-
-2001-11-12  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, lib/Mathmatics.cpp,
-	  svm/SVM_light.cpp, svm/SVM_light.h, svm/kernel.cpp: it is still
-	  broken :`-(((
-	  CPLEX takes extremely long :-(
-	  Grmpf.
-	* Makefile, Makefile.deb, Makefile.env, gui/GeneFinder.cpp:
-	  Makefile cleanup
-	* Makefile, gui/GeneFinder.cpp, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h, svm/SVM.cpp, svm/SVM.h, svm/SVM_light.cpp,
-	  svm/SVM_light.h, svm_cplex/SVM_cplex.cpp, svm_cplex/SVM_cplex.h:
-	  work in progress
-	* Makefile.deb: *** empty log message ***
-	* Makefile, Makefile.deb: *** empty log message ***
-	* Makefile, Makefile.deb, Makefile.env, gui/GeneFinder.cpp,
-	  lib/Mathmatics.cpp, svm/SVM.cpp, svm/SVM.h, svm/SVM_light.cpp,
-	  svm/SVM_light.h, svm/kernel.cpp, svm/kernel.h, svm/svm_learn.h,
-	  svm_cplex/train_svm_main.c: *** empty log message ***
-	* svm/SVM_light.cpp, svm/SVM_light.h, svm_cplex/SVM_cplex.h: ***
-	  empty log message ***
-	* svm_cplex, svm_cplex/SVM_cplex.cpp, svm_cplex/SVM_cplex.h,
-	  svm_cplex/cplex_init_mex_interface.c,
-	  svm_cplex/cplex_init_mex_interface.h,
-	  svm_cplex/cplex_quit_mex_interface.c,
-	  svm_cplex/cplex_quit_mex_interface.h,
-	  svm_cplex/qp_solve_mex_interface.c,
-	  svm_cplex/qp_solve_mex_interface.h, svm_cplex/spdiag.c,
-	  svm_cplex/spdiag.h, svm_cplex/test_it.m, svm_cplex/train_lpm.m,
-	  svm_cplex/train_svm.c, svm_cplex/train_svm.h,
-	  svm_cplex/train_svm.m, svm_cplex/train_svm_main.c: *** empty log
-	  message ***
-	* Makefile, Makefile.env, gui/GeneFinder.cpp, hmm/HMM.cpp,
-	  hmm/HMM.h, lib/Mathmatics.h, lib/Observation.cpp,
-	  lib/Observation.h, lib/common.h, svm/Optimizer.cpp,
-	  svm/Optimizer.h, svm/SVM.cpp, svm/SVM.h, svm/kernel.cpp,
-	  svm/kernel.h, svm/svm_common.cpp, svm/svm_common.h,
-	  svm/svm_learn.cpp, svm/svm_learn.h, svm/svm_loqo.cpp: rather BIG
-	  changes:
-	  
-	  1. OO'ed SVM, i.e. svm_common.* svm_learn.* went into SVM.{cpp,h}
-	  2. added groovy compute_top_feature_cache function to HMM which
-	  increases speed at least 100 (!) times
-	  3. removed buggy -fastmath from Makefile.env (Oops it was on...)
-	  4. fixed kernel in general (it returns 0 for observation indices
-	  <0)
-	  5. top_kernel *should* be correct now. processing works as
-	  follows:
-	  5.1. if there is enough memory cached_top_kernel will be used
-	  5.2. else fallback to veryslowandthereforeunusable top_kernel is
-	  used (same scheme that has been applied to hmms and
-	  alphabetacache
-	  ...
-	  42. hopefully introduced some fancy bugs.
-
-2001-10-23  Soeren Sonnenburg, Gunnar Raetsch
-
-	* svm/svm_learn.cpp: limited nr. of iterations of SVM to 5000
-	  (since some models did not converge after 2 million it)
-
-2001-10-22  Soeren Sonnenburg, Gunnar Raetsch
-
-	* Makefile, gui/GeneFinder.cpp, svm/SVM.cpp, svm/SVM.h: added c
-	  option for SVM
-	  added matlab dir with hmm visualization scripts
-	* ., Makefile, Makefile.env, gui, gui/GeneFinder.cpp, hmm,
-	  hmm/HMM.cpp, hmm/HMM.h, lib, lib/Mathmatics.cpp,
-	  lib/Mathmatics.h, lib/Observation.cpp, lib/Observation.h,
-	  lib/common.h, svm, svm/SVM.cpp, svm/SVM.h, svm/kernel.cpp,
-	  svm/kernel.h, svm/pr_loqo.cpp, svm/pr_loqo.h, svm/svm_common.cpp,
-	  svm/svm_common.h, svm/svm_learn.cpp, svm/svm_learn.h,
-	  svm/svm_loqo.cpp: *** empty log message ***
 
