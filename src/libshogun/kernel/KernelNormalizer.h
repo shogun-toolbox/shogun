@@ -16,7 +16,7 @@
 namespace shogun
 {
 class CKernel;
-/** @brief The class Kernel Normalizer defines a function to postprocess kernel values. 
+/** @brief The class Kernel Normalizer defines a function to post-process kernel values.
  *
  * Formally it defines f(.,.,.)
  *

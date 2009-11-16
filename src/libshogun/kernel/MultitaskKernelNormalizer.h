@@ -8,12 +8,12 @@
  * Copyright (C) 2009 Max-Planck-Society
  */
 
-
 #ifndef _MULTITASKKERNELNORMALIZER_H___
 #define _MULTITASKKERNELNORMALIZER_H___
 
 #include "kernel/KernelNormalizer.h"
 #include "kernel/Kernel.h"
+#include <algorithm>
 
 namespace shogun
 {
@@ -26,188 +26,208 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = ...
  * \f]
  */
-class CMultitaskKernelNormalizer : public CKernelNormalizer
+class CMultitaskKernelNormalizer: public CKernelNormalizer
 {
 
-	public:
+public:
 
-		/** default constructor
-		 */
-		CMultitaskKernelNormalizer()
-		{
-		}
+	/** default constructor
+	 */
+	CMultitaskKernelNormalizer()
+	{
+	}
 
-		/** default constructor
-		 *
-		 * @param task_lhs task vector with containing task_id for each example for left hand side
-		 * @param task_rhs task vector with containing task_id for each example for right hand side
-		 */
-		CMultitaskKernelNormalizer(std::vector<int32_t> task_lhs, std::vector<int32_t> task_rhs)
-		{
+	/** default constructor
+	 *
+	 * @param task_lhs task vector with containing task_id for each example for left hand side
+	 * @param task_rhs task vector with containing task_id for each example for right hand side
+	 */
+	CMultitaskKernelNormalizer(std::vector<int32_t> task_lhs, std::vector<
+			int32_t> task_rhs)
+	{
 
-			set_task_vector_lhs(task_lhs);
-			set_task_vector_rhs(task_rhs);
+		std::cout << "constructing MTKNormalizer" << std::endl;
 
-			//run sanity checks
+		set_task_vector_lhs(task_lhs);
+		set_task_vector_rhs(task_rhs);
 
-			//invoke copy contructor
-			std::vector<int32_t> unique_tasks_lhs = std::vector<int32_t>(task_vector_lhs.begin(), task_vector_lhs.end());
-			std::vector<int32_t> unique_tasks_rhs = std::vector<int32_t>(task_vector_rhs.begin(), task_vector_rhs.end());
+		//run sanity checks
 
+		//invoke copy contructor
+		std::vector<int32_t> unique_tasks_lhs = std::vector<int32_t>(
+				task_vector_lhs.begin(), task_vector_lhs.end());
+		std::vector<int32_t> unique_tasks_rhs = std::vector<int32_t>(
+				task_vector_rhs.begin(), task_vector_rhs.end());
 
-			//reorder tasks with unique prefix
-			std::vector<int32_t>::iterator endLocation_lhs = std::unique(unique_tasks_lhs.begin(), unique_tasks_lhs.end());
-			std::vector<int32_t>::iterator endLocation_rhs = std::unique(unique_tasks_rhs.begin(), unique_tasks_rhs.end());
+		//reorder tasks with unique prefix
+		std::vector<int32_t>::iterator endLocation_lhs = std::unique(
+				unique_tasks_lhs.begin(), unique_tasks_lhs.end());
+		std::vector<int32_t>::iterator endLocation_rhs = std::unique(
+				unique_tasks_rhs.begin(), unique_tasks_rhs.end());
 
+		//count unique tasks
+		int32_t num_unique_tasks_lhs = std::distance(unique_tasks_lhs.begin(),
+				endLocation_lhs);
+		int32_t num_unique_tasks_rhs = std::distance(unique_tasks_rhs.begin(),
+				endLocation_rhs);
 
-			//count unique tasks
-			int32_t num_unique_tasks_lhs = std::distance(unique_tasks_lhs.begin(), endLocation_lhs);
-			int32_t num_unique_tasks_rhs = std::distance(unique_tasks_rhs.begin(), endLocation_rhs);
+		//initialize members (lhs has always more or equally many tasks than rhs)
+		num_tasks = num_unique_tasks_lhs;
+		dependency_matrix = std::vector<float64_t>(num_tasks * num_tasks);
 
+		std::cout << "done constructing MTKNormalizer" << std::endl;
+	}
 
-			//initialize members (lhs has always more or equally many tasks than rhs)
-			num_tasks = num_unique_tasks_lhs;
-			dependency_matrix = std::vector<float64_t>(num_tasks * num_tasks);
+	/** default destructor */
+	virtual ~CMultitaskKernelNormalizer()
+	{
+		std::cout << "MTKNormalizer destroyed" << std::endl;
+	}
 
-		}
+	/** initialization of the normalizer
+	 * @param k kernel */
+	virtual bool init(CKernel* k)
+	{
+		ASSERT(k);
+		int32_t num_lhs = k->get_num_vec_lhs();
+		int32_t num_rhs = k->get_num_vec_rhs();
+		ASSERT(num_lhs>0);
+		ASSERT(num_rhs>0);
 
+		return true;
+	}
 
-		/** default destructor */
-		virtual ~CMultitaskKernelNormalizer()
-		{
-		}
+	/** normalize the kernel value
+	 * @param value kernel value
+	 * @param idx_lhs index of left hand side vector
+	 * @param idx_rhs index of right hand side vector
+	 */
+	inline virtual float64_t normalize(float64_t value, int32_t idx_lhs,
+			int32_t idx_rhs)
+	{
 
-		/** initialization of the normalizer
-         * @param k kernel */
-		virtual bool init(CKernel* k)
-		{
-			ASSERT(k);
-			int32_t num_lhs=k->get_num_vec_lhs();
-			int32_t num_rhs=k->get_num_vec_rhs();
-			ASSERT(num_lhs>0);
-			ASSERT(num_rhs>0);
+		//lookup tasks
+		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
+		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
 
-			return true;
-		}
+		//lookup similarity
+		float64_t task_similarity = get_task_similarity(task_idx_lhs,
+				task_idx_rhs);
 
-		/** normalize the kernel value
-		 * @param value kernel value
-		 * @param idx_lhs index of left hand side vector
-		 * @param idx_rhs index of right hand side vector
-		 */
-		inline virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
-		{
+		//take task similarity into account
+		float64_t similarity = value * task_similarity;
 
-			//lookup tasks
-			int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
-			int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
+		std::cout << "tlhs: " << task_idx_lhs << ", trhs: " << task_idx_rhs
+				<< "lhs: " << idx_lhs << ", rhs: " << idx_rhs << ", tsim: "
+				<< task_similarity << ", sim: " << similarity << std::endl;
 
-			//lookup similarity
-			float64_t task_similarity = get_task_similarity(task_idx_lhs, task_idx_rhs);
+		return similarity;
 
-			std::cout << "lhs: " << task_idx_lhs << ", rhs: " << task_idx_rhs << ", sim: " << task_similarity << std::endl;
+	}
 
-			//take task similarity into account
-			float64_t similarity = value * task_similarity;
+	/** normalize only the left hand side vector
+	 * @param value value of a component of the left hand side feature vector
+	 * @param idx_lhs index of left hand side vector
+	 */
+	inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	{
+		SG_ERROR("normalize_lhs not implemented");
+		return 0;
+	}
 
-			return similarity;
+	/** normalize only the right hand side vector
+	 * @param value value of a component of the right hand side feature vector
+	 * @param idx_rhs index of right hand side vector
+	 */
+	inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	{
+		SG_ERROR("normalize_rhs not implemented");
+		return 0;
+	}
 
-		}
+public:
 
-		/** normalize only the left hand side vector
-		 * @param value value of a component of the left hand side feature vector
-		 * @param idx_lhs index of left hand side vector
-		 */
-		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
-		{
-			SG_ERROR("normalize_lhs not implemented");
-			return 0;
-		}
+	/** @return vec task vector with containing task_id for each example on left hand side */
+	std::vector<int32_t> get_task_vector_lhs() const
+	{
+		return task_vector_lhs;
+	}
 
-		/** normalize only the right hand side vector
-		 * @param value value of a component of the right hand side feature vector
-		 * @param idx_rhs index of right hand side vector
-		 */
-		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
-		{
-			SG_ERROR("normalize_rhs not implemented");
-			return 0;
-		}
+	/** @param vec task vector with containing task_id for each example */
+	void set_task_vector_lhs(std::vector<int32_t> vec)
+	{
+		task_vector_lhs = vec;
+	}
 
-    public:
+	/** @return vec task vector with containing task_id for each example on right hand side */
+	std::vector<int32_t> get_task_vector_rhs() const
+	{
+		return task_vector_rhs;
+	}
 
-    	/** @return vec task vector with containing task_id for each example on left hand side */
-    	std::vector<int32_t> get_task_vector_lhs() const {
-    		return task_vector_lhs;
-    	}
+	/** @param vec task vector with containing task_id for each example */
+	void set_task_vector_rhs(std::vector<int32_t> vec)
+	{
+		task_vector_rhs = vec;
+	}
 
-    	/** @param vec task vector with containing task_id for each example */
-    	void set_task_vector_lhs(std::vector<int32_t> vec) {
-    		task_vector_lhs = vec;
-    	}
+	/** @param vec task vector with containing task_id for each example */
+	void set_task_vector(std::vector<int32_t> vec)
+	{
+		task_vector_lhs = vec;
+		task_vector_rhs = vec;
+	}
 
-    	/** @return vec task vector with containing task_id for each example on right hand side */
-    	std::vector<int32_t> get_task_vector_rhs() const {
-    		return task_vector_rhs;
-    	}
+	/**
+	 * @param task_lhs task_id on left hand side
+	 * @param task_rhs task_id on right hand side
+	 * @return similarity between tasks
+	 */
+	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs)
+	{
 
-    	/** @param vec task vector with containing task_id for each example */
-    	void set_task_vector_rhs(std::vector<int32_t> vec) {
-    		task_vector_rhs = vec;
-    	}
+		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
+		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
 
-    	/** @param vec task vector with containing task_id for each example */
-    	void set_task_vector(std::vector<int32_t> vec) {
-    		task_vector_lhs = vec;
-    		task_vector_rhs = vec;
-    	}
+		return dependency_matrix[task_lhs * num_tasks + task_rhs];
 
-    	/**
-    	 * @param task_lhs task_id on left hand side
-    	 * @param task_rhs task_id on right hand side
-    	 * @return similarity between tasks
-    	 */
-    	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs) {
+	}
 
-    		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
-    		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
+	/**
+	 * @param task_lhs task_id on left hand side
+	 * @param task_rhs task_id on right hand side
+	 * @param similarity similarity between tasks
+	 */
+	void set_task_similarity(int32_t task_lhs, int32_t task_rhs,
+			float64_t similarity)
+	{
 
-    		return dependency_matrix[task_lhs * num_tasks + task_rhs];
+		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
+		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
 
-    	}
+		dependency_matrix[task_lhs * num_tasks + task_rhs] = similarity;
 
-    	/**
-    	 * @param task_lhs task_id on left hand side
-    	 * @param task_rhs task_id on right hand side
-    	 * @param similarity similarity between tasks
-    	 */
-    	void set_task_similarity(int32_t task_lhs, int32_t task_rhs, float64_t similarity) {
+	}
 
-    		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
-    		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
+	/** @return object name */
+	inline virtual const char* get_name() const
+	{
+		return "MultitaskKernelNormalizer";
+	}
 
-    		dependency_matrix[task_lhs * num_tasks + task_rhs] = similarity;
+protected:
 
-    	}
+	/** MxM matrix encoding similarity between tasks **/
+	std::vector<float64_t> dependency_matrix;
 
-		/** @return object name */
-		inline virtual const char* get_name() const { return "MultitaskKernelNormalizer"; }
+	/** number of tasks **/
+	int32_t num_tasks;
 
+	/** task vector indicating to which task each example on the left hand side belongs **/
+	std::vector<int32_t> task_vector_lhs;
 
-    protected:
-
-    	/** MxM matrix encoding similarity between tasks **/
-    	std::vector<float64_t> dependency_matrix;
-
-    	/** number of tasks **/
-    	int32_t num_tasks;
-
-    	/** task vector indicating to which task each example on the left hand side belongs **/
-    	std::vector<int32_t> task_vector_lhs;
-
-    	/** task vector indicating to which task each example on the right hand side belongs **/
-    	std::vector<int32_t> task_vector_rhs;
+	/** task vector indicating to which task each example on the right hand side belongs **/
+	std::vector<int32_t> task_vector_rhs;
 
 };
 }
