@@ -46,8 +46,6 @@ public:
 			int32_t> task_rhs)
 	{
 
-		std::cout << "constructing MTKNormalizer" << std::endl;
-
 		set_task_vector_lhs(task_lhs);
 		set_task_vector_rhs(task_rhs);
 
@@ -75,13 +73,11 @@ public:
 		num_tasks = num_unique_tasks_lhs;
 		dependency_matrix = std::vector<float64_t>(num_tasks * num_tasks);
 
-		std::cout << "done constructing MTKNormalizer" << std::endl;
 	}
 
 	/** default destructor */
 	virtual ~CMultitaskKernelNormalizer()
 	{
-		std::cout << "MTKNormalizer destroyed" << std::endl;
 	}
 
 	/** initialization of the normalizer
@@ -117,9 +113,6 @@ public:
 		//take task similarity into account
 		float64_t similarity = value * task_similarity;
 
-		std::cout << "tlhs: " << task_idx_lhs << ", trhs: " << task_idx_rhs
-				<< "lhs: " << idx_lhs << ", rhs: " << idx_rhs << ", tsim: "
-				<< task_similarity << ", sim: " << similarity << std::endl;
 
 		return similarity;
 
