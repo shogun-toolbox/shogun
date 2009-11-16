@@ -1233,7 +1233,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @param dest filename to save to
 		 * @param compression compressor to use
-		 * @param compression level to use (1-9)
+		 * @param level compression level to use (1-9)
 		 * @return if saving was successful
 		 */
 		virtual bool save_compressed(char* dest, E_COMPRESSION_TYPE compression, int level)

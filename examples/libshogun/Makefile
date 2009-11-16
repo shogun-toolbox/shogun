@@ -4,11 +4,12 @@ INC_PATH=/usr/include
 INCLUDES=
 LIBS=-lshogun -lblas
 
-LINKFLAGS=-L$(LIB_PATH) $(LIBS)
-CXXFLAGS=-O3 -g -I$(INC_PATH) $(INCLUDES)
+LINKFLAGS=
+CXXFLAGS=-O3 -g
 
 LIBRARY_PATH=LD_LIBRARY_PATH
-
+LINKFLAGS+=$(LIBS) -L$(LIB_PATH) 
+CXXFLAGS+=-I$(INC_PATH) $(INCLUDES)
 CC=c++
 
 TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm classifier_mklmulticlass \

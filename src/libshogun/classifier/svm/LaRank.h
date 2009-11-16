@@ -73,8 +73,8 @@ namespace shogun
 		CKernel* func;
 		larank_kcache_t *prevbuddy;
 		larank_kcache_t *nextbuddy;
-		long maxsize;
-		long cursize;
+		int64_t maxsize;
+		int64_t cursize;
 		int32_t l;
 		int32_t *i2r;
 		int32_t *r2i;
@@ -105,7 +105,7 @@ namespace shogun
 			}
 
 			// Initializing an output class (basically creating a kernel cache for it)
-			void initialize (CKernel* kfunc, long cache);
+			void initialize (CKernel* kfunc, int64_t cache);
 
 			// Destroying an output class (basically destroying the kernel cache)
 			void destroy ();
@@ -447,7 +447,7 @@ namespace shogun
 
 			float64_t tau;
 			int32_t nb_train;
-			long cache;
+			int64_t cache;
 			// whether to use online learning or batch training
 			bool batch_mode;
 
