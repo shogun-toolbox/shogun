@@ -146,15 +146,15 @@ update-webpage:
 	ssh vserver mkdir -m 0755 -p /pub/shogun-ftp/releases/$(VERSIONBASE)/sources
 	scp $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
 		vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/
-	ssh vserver chmod 644 /pub/shogun-ftp/releases/$(VERSIONBASE)/sources/*.*
+	ssh vserver chmod 644 "/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/*.*"
 	
 	rm -rf doc/html
 	make -C doc
-	ssh vserver rm -f /pub/shogun/doc/*.*
+	ssh vserver rm -f "/pub/shogun/doc/*.*"
 	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh vserver tar -C /pub/shogun/doc/ -xjvf -
 	make -C doc doc_cn
 	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh vserver tar -C /pub/shogun/doc_cn/ -xjvf -
-	ssh vserver chmod 644 /pub/shogun/doc*/*.*
+	ssh vserver chmod 644 "/pub/shogun/doc*/*.*"
 	ssh vserver ./bin/shogun_doc_install.sh
 	rm -rf doc/html*
 
