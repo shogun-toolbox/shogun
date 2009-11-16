@@ -1,4 +1,4 @@
-2009-XX-XX Soeren Sonnenburg <sonne@debian.org>
+2009-11-16 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.9.1 (libshogun 6.0, libshogunui 3.1)
 	* This release contains several enhancements, cleanups and bugfixes:
@@ -15,14 +15,14 @@
 		- Chinese Documentation thanks Elpmis Lee.
 	* Bugfixes:
 		- Fix One class MKL testing in static interfaces.
-		- Configure fixes: Let octave not write history on configure and fail
-		when cplex is forcefully enabled but not found.
+		- Configure fixes: Let octave not write history on configure; fail
+		when cplex is forcefully enabled but not found; add cplex 12 support.
 		- Fix a problem with regression and CombinedKernels employing only
 		Custom kernels.
 	* Cleanup and API Changes:
 		- String Features now (like SimpleFeatures) upon get_feature_vector
-		require and additional do_free argument and need to be freed using
-		free_feature_vector
+		require an additional do_free argument and need to be freed using
+		free_feature_vector.
 
 2009-10-23 Soeren Sonnenburg <sonne@debian.org>
 
