@@ -45,7 +45,7 @@ bool CCPLEXSVM::train(CFeatures* data)
 		int32_t n,m;
 		int32_t num_label=0;
 		float64_t* y = labels->get_labels(num_label);
-		float64_t* H = kernel->get_kernel_matrix_real(m, n, NULL);
+		float64_t* H = kernel->get_kernel_matrix<float64_t>(m, n, NULL);
 		ASSERT(n>0 && n==m && n==num_label);
 		float64_t* alphas=new float64_t[n];
 		float64_t* lb=new float64_t[n];
