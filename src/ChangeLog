@@ -1,5 +1,11 @@
 2009-11-16  Soeren Sonnenburg <sonne@debian.org>
 
+	* Makefile.template, libshogun/classifier/svm/LaRank.h,
+	  libshogun/features/StringFeatures.h: - fix type mismatch in
+	  larank
+	  - fix documentation in stringfeatures
+	  - fix compilation of examples upon make check-examples
+	* ChangeLog: updated changelog
 	* Makefile.template: fix a compile failure occuring with the
 	  upcoming binutils-gold
 	  - workaround quality only though.
