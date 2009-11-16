@@ -104,7 +104,9 @@ class CLinearClassifier : public CClassifier
 		 */
 		inline void set_w(float64_t* src_w, int32_t src_w_dim)
 		{
-			w=src_w;
+			delete[] w;
+			w=new float64_t[src_w_dim];
+			memcpy(w, src_w, size_t(src_w_dim)*sizeof(float64_t));
 			w_dim=src_w_dim;
 		}
 

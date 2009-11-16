@@ -104,6 +104,7 @@ bool CSVMLin::train(CFeatures* data)
 	set_w(Weights.vec, num_feat);
 	set_bias(Weights.vec[num_feat]);
 
+	delete[] Weights.vec;
 	delete[] Data.C;
 	delete[] train_labels;
 	delete[] Outputs.vec;

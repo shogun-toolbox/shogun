@@ -4660,6 +4660,8 @@ bool CSGInterface::cmd_set_linear_classifier()
 	c->set_w(w, len);
 	c->set_bias(bias);
 
+	delete[] w;
+
 	return true;
 }
 

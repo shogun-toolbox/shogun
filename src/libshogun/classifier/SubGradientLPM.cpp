@@ -437,13 +437,13 @@ void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 	// alloc normal and bias inited with 0
 	delete[] w;
 	w=new float64_t[num_feat];
+	w_dim=num_feat;
 	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0;
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
 	bias=0;
 	num_it_noimprovement=0;
 	grad_b=0;
-	set_w(w, num_feat);
 
 	w_pos=new int32_t[num_feat];
 	memset(w_pos,0,sizeof(int32_t)*num_feat);
