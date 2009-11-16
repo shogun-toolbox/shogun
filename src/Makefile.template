@@ -260,7 +260,7 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	cd ../../examples/libshogun && $(MAKE) clean && $(MAKE) LIBRARY_PATH=$(LIBRARY_PATH) LIB_PATH=$(DESTDIR)$(LIBDIR) INCLUDES=-I$(DESTDIR)$(INCDIR) check-examples
+	cd ../../examples/libshogun && $(MAKE) clean && $(MAKE) LIBRARY_PATH=$(LIBRARY_PATH) LIB_PATH=$(DESTDIR)$(LIBDIR)  INC_PATH=$(DESTDIR)$(INCDIR) LIBS=$(LINKFLAGS) check-examples
 
 run-testsuite-libshogunui:
 	true

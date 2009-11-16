@@ -1,21 +1,18 @@
-#CXXFLAGS=-I/usr/local/include/shogun
-#LINKFLAGS=-L/usr/local/lib -lshogun
+LIB_PATH=/usr/lib
+INC_PATH=/usr/include
+
+INCLUDES=
+LIBS=-lshogun -lblas
+
+LINKFLAGS=-L$(LIB_PATH) $(LIBS)
+CXXFLAGS=-O3 -g -I$(INC_PATH) $(INCLUDES)
 
 LIBRARY_PATH=LD_LIBRARY_PATH
-LIB_PATH=/usr/lib
-CXXFLAGS=-O3 -g
 
-ifneq (,$(INCLUDES))
-	CXXFLAGS+= -I$(INCLUDES)
-endif
+CC=c++
 
-ifneq (,$(LIB_PATH))
-	LINKFLAGS+=-L$(LIB_PATH)
-endif
-LINKFLAGS=-L$(LIB_PATH) -lshogun
 TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm classifier_mklmulticlass \
 	kernel_gaussian kernel_revlin library_dyn_int library_gc_array library_indirect_object
-CC=c++
 
 all: $(TARGETS)
 
