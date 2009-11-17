@@ -4,12 +4,12 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Berlin Institute of Technology
  */
 
-#ifndef _POLYMATCHSTRINGKERNEL_H___
-#define _POLYMATCHSTRINGKERNEL_H___
+#ifndef _SNPSTRINGKERNEL_H___
+#define _SNPSTRINGKERNEL_H___
 
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
@@ -19,7 +19,7 @@ namespace shogun
 /** @brief The class SNPStringKernel computes a variant of the polynomial
  * kernel on strings of same length.
  *
- * It is computed as
+ * It is computed as FIXME
  *
  * \f[
  * k({\bf x},{\bf x'})= (\sum_{i=0}^{L-1} I(x_i=x'_i)+c)^d
@@ -122,5 +122,4 @@ class CSNPStringKernel: public CStringKernel<char>
 		char* str_maj;
 };
 }
-#endif /* _POLYMATCHSTRINGKERNEL_H___ */
-
+#endif /* _SNPSTRINGKERNEL_H___ */

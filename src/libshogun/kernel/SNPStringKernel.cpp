@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2009 Soeren Sonnenburg
+ * Copyright (C) 2009 Berlin Institute of Technology
  */
 
 #include "lib/common.h"
@@ -63,9 +63,9 @@ void CSNPStringKernel::obtain_base_strings()
 		if (str_len==0)
 		{
 			str_len=len;
-			size_t tlen=len*sizeof(char);
-			str_min=(char*) malloc(len*sizeof(char));
-			str_maj=(char*) malloc(len*sizeof(char));
+			size_t tlen=(len+1)*sizeof(char);
+			str_min=(char*) malloc(tlen);
+			str_maj=(char*) malloc(tlen);
 			memset(str_min, 0, tlen);
 			memset(str_maj, 0, tlen);
 		}
@@ -82,8 +82,7 @@ void CSNPStringKernel::obtain_base_strings()
 
 			if (str_min[j]==0)
 				str_min[j]=vec[j];
-
-			if (str_maj[j]==0 && str_min[j]!=str_maj[j])
+            else if (str_maj[j]==0 && vec[j]!=str_min[j])
 				str_maj[j]=vec[j];
 		}
 
@@ -92,6 +91,12 @@ void CSNPStringKernel::obtain_base_strings()
 
 	for (int32_t j=0; j<str_len; j++)
 	{
+        // if only one one symbol occurs use 0
+		if (str_min[j]==0)
+            str_min[j]='0';
+		if (str_maj[j]==0)
+            str_maj[j]='0';
+
 		if (str_min[j]>str_maj[j])
 			CMath::swap(str_min[j], str_maj[j]);
 	}
@@ -114,7 +119,7 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t sumbb=0;
 	int32_t sumab=0;
 
-	for (int32_t i = 0; i<alen-1; i++)
+	for (int32_t i = 0; i<alen-1; i+=2)
 	{
 		char a1=avec[i];
 		char a2=avec[i+1];
@@ -126,7 +131,7 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		if (b1>b2)
 			CMath::swap(b1, b2);
 
-		if (a1!=a2 && b1!=b2)
+		if ((a1!=a2 || a1=='0' || a1=='0') && (b1!=b2 || b1=='0' || b2=='0'))
 			sumab++;
 		else if (a1==a2 && b1==b2 && a1==b1)
 		{
@@ -135,7 +140,10 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 			else if (a1==str_maj[i])
 				sumbb++;
 			else
-				SG_ERROR("The impossible happened\n");
+            {
+				SG_ERROR("The impossible happened i=%d a1=%c "
+                        "a2=%c b1=%c b2=%c min=%c maj=%c\n", i, a1,a2, b1,b2, str_min[i], str_maj[i]);
+            }
 		}
 	}
 
