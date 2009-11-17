@@ -73,8 +73,8 @@ void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 				value += m_segment_mask->element(pos)*m_segment_loss.element(cur_id, seg_type, 0);
 				last_id = cur_id;
 			}
-			//length contribution
-			value += m_segment_mask->element(pos)*m_segment_loss.element(cur_id, seg_type, 1)*(all_pos[pos]-last_pos);
+			//length contribution (nucleotide loss)
+			value += m_segment_mask->element(pos)*m_segment_loss.element(cur_id, seg_type, 1)*(last_pos-all_pos[pos]);
 			last_pos = all_pos[pos];
 			m_segment_loss_matrix.element(seg_type, pos)=value;
 		}
