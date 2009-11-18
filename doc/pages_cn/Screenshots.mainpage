@@ -31,7 +31,7 @@
 \verbatim
   ./configure --disable-reference-counting
 \endverbatim
-但这样会造成内存泄漏。
+ 但这样会造成内存泄漏。
   \subsection py_mod_interf python模块化接口
   python的使用例子在目录python-modular/examples下。
 
