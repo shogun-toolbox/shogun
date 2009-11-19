@@ -5217,7 +5217,7 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 
 	if (obs)
 		if (obs->get_num_symbols() > M)
-			SG_ERROR( "number of symbols in observation (%d) larger than M (%d)\n", obs->get_num_symbols(), M);
+			SG_ERROR( "number of symbols in observation (%ld) larger than M (%d)\n", (long) obs->get_num_symbols(), M);
 
 	if (!reused_caches)
 	{
@@ -5269,7 +5269,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 	{
 		if (obs->get_num_symbols() > M)
 		{
-			SG_ERROR( "number of symbols in observation (%d) larger than M (%d)\n", obs->get_num_symbols(), M);
+			SG_ERROR( "number of symbols in observation (%ld) larger than M (%d)\n", (long) obs->get_num_symbols(), M);
 		}
 	}
 
