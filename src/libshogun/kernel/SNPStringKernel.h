@@ -40,17 +40,22 @@ class CSNPStringKernel: public CStringKernel<char>
 		 *
 		 * @param size cache size
 		 * @param degree degree
+		 * @param win_len length of local window
+		 * @param inhomogene whether inhomogeneous poly
 		 */
-		CSNPStringKernel(int32_t size, int32_t degree);
+		CSNPStringKernel(int32_t size, int32_t degree, int32_t win_len, bool inhomogene);
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param degree degree
+		 * @param win_len length of local window
+		 * @param inhomogene whether inhomogeneous poly
 		 */
 		CSNPStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t degree);
+			CStringFeatures<char>* l, CStringFeatures<char>* r,
+			int32_t degree, int32_t win_len, bool inhomogene);
 
 		virtual ~CSNPStringKernel();
 
@@ -76,22 +81,22 @@ class CSNPStringKernel: public CStringKernel<char>
 
 		void set_minor_base_string(const char* str)
 		{
-			str_min=strdup(str);
+			m_str_min=strdup(str);
 		}
 
 		void set_major_base_string(const char* str)
 		{
-			str_maj=strdup(str);
+			m_str_maj=strdup(str);
 		}
 
 		char* get_minor_base_string()
 		{
-			return str_min;
+			return m_str_min;
 		}
 
 		char* get_major_base_string()
 		{
-			return str_maj;
+			return m_str_maj;
 		}
 
 		void obtain_base_strings();
@@ -116,10 +121,20 @@ class CSNPStringKernel: public CStringKernel<char>
 	protected:
 		/** degree */
 		int32_t m_degree;
+		/** window length */
+		int32_t m_win_len;
 
-		int32_t str_len;
-		char* str_min;
-		char* str_maj;
+		/** inhomogeneous poly kernel ? */
+		bool m_inhomogene;
+
+		/** total string length / must match length of min/maj strings and
+		 * string lenght of each vector */
+		int32_t m_str_len;
+
+		/** allele A */
+		char* m_str_min;
+		/** allele B */
+		char* m_str_maj;
 };
 }
 #endif /* _SNPSTRINGKERNEL_H___ */
