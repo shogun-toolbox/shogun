@@ -202,8 +202,9 @@ void CMatlabInterface::function_name(sg_type*& vector, int32_t& len)	\
 { 																	\
 	const mxArray* mx_vec=get_arg_increment();						\
 	if (!mx_vec || mxGetM(mx_vec)!=1 || !mxIsClass(mx_vec, mx_type))		\
-		SG_ERROR("Expected " error_string " Vector, got class %s as argument %d\n", \
-			mxGetClassName(mx_vec), m_rhs_counter); 				\
+		SG_ERROR("Expected " error_string " (1xN) Vector, got vector of " \
+				"class %s shape (%dx%d) as argument %d\n", \
+			mxGetClassName(mx_vec), mxGetM(mx_vec), mxGetN(mx_vec), m_rhs_counter); 				\
 																	\
 	len=mxGetNumberOfElements(mx_vec); 								\
 	vector=new sg_type[len];										\
