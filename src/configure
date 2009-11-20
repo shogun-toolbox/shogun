@@ -2496,13 +2496,12 @@ EOF
 						then
 							CPLEXVER=`echo $CPLEXVER | cut -f 1 -d '.'``echo $CPLEXVER | cut -f 2 -d '.' | cut -c 1`
 							CPLEXPATH=`env | grep ^ILOG_LICENSE_FILE | cut -f 2 -d '=' | sed 's/ilog.*$/ilog/'`/cplex$CPLEXVER
-							if x86
+							if x86_64
 							then
-								for cpx_path in "$CPLEXPATH/lib/i86_linux2_glibc2.3_gcc3.2/static_pic" \
-									"$CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic" \
-									"$CPLEXPATH/lib/x86_rhel4.0_3.4/static_pic" \
-									"$CPLEXPATH/lib/x86_debian4.0_4.1/static_pic" \
-									"$CPLEXPATH/lib/x86_sles9.0_3.3/static_pic"
+								for cpx_path in "$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic" \
+									"$CPLEXPATH/lib/x86-64_rhel4.0_3.4/static_pic" \
+									"$CPLEXPATH/lib/x86-64_debian4.0_4.1/static_pic" \
+									"$CPLEXPATH/lib/x86-64_sles9.0_3.3/static_pic"
 								do
 									if test -d $cpx_path
 									then
@@ -2511,12 +2510,13 @@ EOF
 										break
 									fi
 								done
-							elif x86_64
+							elif x86
 							then
-								for cpx_path in "$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic" \
-									"$CPLEXPATH/lib/x86-64_rhel4.0_3.4/static_pic" \
-									"$CPLEXPATH/lib/x86-64_debian4.0_4.1/static_pic" \
-									"$CPLEXPATH/lib/x86-64_sles9.0_3.3/static_pic"
+								for cpx_path in "$CPLEXPATH/lib/i86_linux2_glibc2.3_gcc3.2/static_pic" \
+									"$CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic" \
+									"$CPLEXPATH/lib/x86_rhel4.0_3.4/static_pic" \
+									"$CPLEXPATH/lib/x86_debian4.0_4.1/static_pic" \
+									"$CPLEXPATH/lib/x86_sles9.0_3.3/static_pic"
 								do
 									if test -d $cpx_path
 									then
