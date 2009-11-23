@@ -1,4 +1,9 @@
-#include <mexversion.c>
+// somehow this has to depend on the matlab version 
+// comment it out for now
+// 
+// #include <mexversion.c>
+//
+
 #include "MatlabInterface.h"
 
 #include <stdio.h>
