@@ -720,7 +720,10 @@ bool CGUIKernel::init_kernel(const char* target)
 
 	// no need to init custom kernel
 	if (kernel->get_kernel_type() == K_CUSTOM || !target)
+	{
+		initialized=true;
 		return true;
+	}
 
 	EFeatureClass k_fclass=kernel->get_feature_class();
 	EFeatureType k_ftype=kernel->get_feature_type();
