@@ -254,11 +254,15 @@ char* COctaveInterface::get_string(int32_t& len)
 void COctaveInterface::function_name(sg_type*& vec, int32_t& len)						\
 {																					\
 	const octave_value mat_feat=get_arg_increment();								\
-	if (!mat_feat.oct_type_check() || mat_feat.rows()!=1)	\
-		SG_ERROR("Expected " error_string " (1xN) Vector as argument %d, got vector " \
-			"of shape (%dx%d)\n", m_rhs_counter, mat_feat.rows(), mat_feat.cols()); \
+	if (!mat_feat.oct_type_check())													\
+		SG_ERROR("Expected " error_string " Vector as argument %d\n", m_rhs_counter); \
 																					\
 	oct_type m = mat_feat.oct_converter();											\
+																					\
+	if (m.rows()!=1)																\
+		SG_ERROR("Expected " error_string " (1xN) Vector as argument %d, got vector " \
+			"of shape (%dx%d)\n", m_rhs_counter, m.rows(), m.cols()); 				\
+																					\
 	len = m.cols();																	\
 	vec=new sg_type[len];															\
 																					\
