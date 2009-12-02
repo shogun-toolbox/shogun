@@ -513,7 +513,62 @@ public:
 		m_long_transition_threshold = threshold;
 		m_long_transition_max = max_len;
 	}
-		
+	/** @brief segment loss */
+	struct segment_loss_struct
+	{
+		/** maximum lookback */
+		int32_t maxlookback;
+		/** sequence length */
+		int32_t seqlen;
+		/** segments changed */
+		int32_t *segments_changed;
+		/** numb segment ID */
+		float64_t *num_segment_id;
+		/** length of segmend ID */
+		int32_t *length_segment_id ;
+	};
+
+	/** init segment loss
+	 *
+	 * @param loss segment loss to init
+	 * @param seqlen length of sequence
+	 * @param howmuchlookback how far to look back
+	 */
+	void init_segment_loss(struct segment_loss_struct & loss, int32_t seqlen,
+		int32_t howmuchlookback);
+
+	/** clear segment loss
+	 *
+	 * @param loss segment loss to clear
+	 */
+	void clear_segment_loss(struct segment_loss_struct & loss);
+
+	/** extend segment loss
+	 *
+	 * @param loss segment loss to extend
+	 * @param pos_array position array
+	 * @param segment_id ID of segment
+	 * @param pos position
+	 * @param last_pos last position
+	 * @param last_value last value
+	 * @return last value
+	 */
+	float64_t extend_segment_loss(struct segment_loss_struct & loss,
+		int32_t segment_id, int32_t pos, int32_t& last_pos, float64_t &last_value);
+
+	/** find segment loss till pos
+	 *
+	 * @param pos position
+	 * @param t_end t end
+	 * @param segment_ids segment IDs
+	 * @param segment_mask segmend mask
+	 * @param loss segment loss
+	 */
+	void find_segment_loss_till_pos(int32_t t_end,
+		CArray<int32_t>& segment_ids, CArray<float64_t>& segment_mask,
+		struct segment_loss_struct& loss);
+
+
 protected:
 
 	/* helper functions */
