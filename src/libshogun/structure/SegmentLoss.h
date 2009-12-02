@@ -146,7 +146,7 @@ inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos
 	SG_PRINT("break\n") ; */
 
 	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos)-m_segment_loss_matrix.element(segment_id, to_pos);
-
+	diff_contrib += m_segment_mask->element(to_pos)*m_segment_loss.element(segment_id, m_segment_ids->element(to_pos-1), 0);
 	return diff_contrib;
 }
 
@@ -172,6 +172,7 @@ inline float32_t CSegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t
 			 m_segment_ids->element(from_pos_shift+1),  m_segment_loss_matrix.element(segment_id, from_pos_shift+1)-m_segment_loss_matrix.element(segment_id, to_pos)) ;*/
 	
 	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos_shift)-m_segment_loss_matrix.element(segment_id, to_pos);
+	//diff_contrib += m_segment_mask->element(to_pos)*m_segment_loss.element(segment_id, m_segment_ids->element(to_pos), 0);
 
 	//if (from_pos_shift!=from_pos)
 	//	SG_PRINT("shifting from %i to %i, to_pos=%i, loss=%1.1f\n", from_pos, from_pos_shift, to_pos, diff_contrib) ;
