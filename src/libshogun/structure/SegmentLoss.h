@@ -146,7 +146,7 @@ inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos
 	SG_PRINT("break\n") ; */
 
 	float32_t diff_contrib = m_segment_loss_matrix.element(segment_id, from_pos)-m_segment_loss_matrix.element(segment_id, to_pos);
-	diff_contrib += m_segment_mask->element(to_pos)*m_segment_loss.element(segment_id, m_segment_ids->element(to_pos-1), 0);
+	diff_contrib += m_segment_mask->element(to_pos-1)*m_segment_loss.element(segment_id, m_segment_ids->element(to_pos-1), 0);
 	return diff_contrib;
 }
 
