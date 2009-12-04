@@ -53,17 +53,21 @@ bool CLibSVM::train(CFeatures* data)
 
 
 	// check length of linear term
-	if (!linear_term.empty() && labels->get_num_labels() != (int32_t)linear_term.size())
+	if (!linear_term.empty() &&
+			labels->get_num_labels() != (int32_t)linear_term.size())
+	{
 		SG_ERROR("Number of training vectors does not match length of linear term\n");
+	}
 
 	// set linear term
-	if (!linear_term.empty()) {
-
+	if (!linear_term.empty())
+	{
 		// set with linear term from base class
 		problem.pv = get_linear_term_array();
 
-	} else {
-
+	}
+	else
+	{
 		// fill with minus ones
 		problem.pv = new float64_t[problem.l];
 
@@ -72,12 +76,9 @@ bool CLibSVM::train(CFeatures* data)
 		}
 	}
 
-
-
 	problem.y=new float64_t[problem.l];
 	problem.x=new struct svm_node*[problem.l];
     problem.C=new float64_t[problem.l];
-
 
 	x_space=new struct svm_node[2*problem.l];
 
