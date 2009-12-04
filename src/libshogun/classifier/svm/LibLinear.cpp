@@ -106,13 +106,18 @@ bool CLibLinear::train(CFeatures* data)
 	{
 		CTron tron_obj(fun_obj, epsilon);
 		tron_obj.tron(w);
+
+		/*FIXME check if sign flip is necessary
 		float64_t sgn=prob.y[0];
 
 		for (int32_t i=0; i<w_dim; i++)
 			w[i]*=sgn;
 
 		if (use_bias)
-			set_bias(sgn*w[w_dim]);
+			set_bias(sgn*w[w_dim]);*/
+
+		if (use_bias)
+			set_bias(w[w_dim]);
 		else
 			set_bias(0);
 
