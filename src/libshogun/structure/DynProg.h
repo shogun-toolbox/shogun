@@ -41,6 +41,7 @@ namespace shogun
 	class CIntronList;
 	class CPlifMatrix;
 	class CSegmentLoss;
+	template <class T> class CArray;
 
 //#define DYNPROG_TIMING
 
@@ -50,6 +51,21 @@ typedef uint16_t T_STATES ;
 typedef uint8_t T_STATES ;
 #endif
 typedef T_STATES* P_STATES ;
+
+/** @brief segment loss */
+struct segment_loss_struct
+{
+    /** maximum lookback */
+    int32_t maxlookback;
+    /** sequence length */
+    int32_t seqlen;
+    /** segments changed */
+    int32_t *segments_changed;
+    /** numb segment ID */
+    float64_t *num_segment_id;
+    /** length of segmend ID */
+    int32_t *length_segment_id ;
+};
 
 /** @brief Dynamic Programming Class.
  *
@@ -513,21 +529,6 @@ public:
 		m_long_transition_threshold = threshold;
 		m_long_transition_max = max_len;
 	}
-	/** @brief segment loss */
-	struct segment_loss_struct
-	{
-		/** maximum lookback */
-		int32_t maxlookback;
-		/** sequence length */
-		int32_t seqlen;
-		/** segments changed */
-		int32_t *segments_changed;
-		/** numb segment ID */
-		float64_t *num_segment_id;
-		/** length of segmend ID */
-		int32_t *length_segment_id ;
-	};
-
 	/** init segment loss
 	 *
 	 * @param loss segment loss to init

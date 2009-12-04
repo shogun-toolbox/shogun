@@ -3105,8 +3105,8 @@ test_octave()
 		echocheck "Octave"
 		if echo version | octave --no-history >/dev/null 2>&1
 		then
-			VERSION="`echo version | octave --no-history | grep ans | cut -f 3- -d ' '`"
-			if [ `echo "$VERSION" | cut -f 1 -d '.'` -ge 3 ]
+			VERSION="`echo version | octave --no-history 2>&1 | grep ans | cut -f 3- -d ' '`"
+			if test "`echo $VERSION | cut -f 1 -d '.'`" -ge 3
 			then
 				echores "$VERSION"
 			else
