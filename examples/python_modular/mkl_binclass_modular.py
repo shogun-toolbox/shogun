@@ -1,7 +1,7 @@
 def combined_custom():
     from shogun.Features import CombinedFeatures, RealFeatures, Labels
     from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
-    from shogun.Classifier import LibSVM
+    from shogun.Classifier import SVMLight, MKLClassification
 
     kernel = CombinedKernel()
     feats_train = CombinedFeatures()
@@ -20,7 +20,9 @@ def combined_custom():
     kernel.init(feats_train, feats_train)
     
     labels = Labels(fm_label_twoclass)
-    svm = LibSVM(1.0, kernel, labels)
+    svm = MKLClassification(SVMLight())
+    svm.set_kernel(kernel)
+    svm.set_labels(labels)
     svm.train()
 
     kernel = CombinedKernel()
