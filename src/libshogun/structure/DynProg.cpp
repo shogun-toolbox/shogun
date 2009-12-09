@@ -2513,7 +2513,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 							break ;
 					}
 			delete seq_input;
-			delete svm_value;
+			delete[] svm_value;
 		}
 
 		// allow longer transitions than look_back
