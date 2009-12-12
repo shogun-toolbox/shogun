@@ -1,45 +1,44 @@
 def combined_custom():
     from shogun.Features import CombinedFeatures, RealFeatures, Labels
     from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
-    from shogun.Classifier import SVMLight, MKLClassification
+    from shogun.Classifier import LibSVM
 
-    kernel = CombinedKernel()
-    feats_train = CombinedFeatures()
-    
+    # create some poly train/test matrix
     tfeats = RealFeatures(fm_train_real)
     tkernel = PolyKernel(10,3)
     tkernel.init(tfeats, tfeats)
-    K = tkernel.get_kernel_matrix()
-    kernel.append_kernel(CustomKernel(K))
-        
-    subkfeats_train = RealFeatures(fm_train_real)
-    feats_train.append_feature_obj(subkfeats_train)
-    subkernel = PolyKernel(10,2)
-    kernel.append_kernel(subkernel)
-
-    kernel.init(feats_train, feats_train)
-    
-    labels = Labels(fm_label_twoclass)
-    svm = MKLClassification(SVMLight())
-    svm.set_kernel(kernel)
-    svm.set_labels(labels)
-    svm.train()
-
-    kernel = CombinedKernel()
-    feats_pred = CombinedFeatures()
+    K_train = tkernel.get_kernel_matrix()
 
     pfeats = RealFeatures(fm_test_real)
-    tkernel = PolyKernel(10,3)
     tkernel.init(tfeats, pfeats)
-    K = tkernel.get_kernel_matrix()
-    kernel.append_kernel(CustomKernel(K))
+    K_test = tkernel.get_kernel_matrix()
 
-    subkfeats_test = RealFeatures(fm_test_real)
-    feats_pred.append_feature_obj(subkfeats_test)
-    subkernel = PolyKernel(10, 2)
-    kernel.append_kernel(subkernel)
+    # create combined train features
+    feats_train = CombinedFeatures()
+    feats_train.append_feature_obj(RealFeatures(fm_train_real))
+
+    # and corresponding combined kernel
+    kernel = CombinedKernel()
+    kernel.append_kernel(CustomKernel(K_train))
+    kernel.append_kernel(PolyKernel(10,2))
+    kernel.init(feats_train, feats_train)
+
+    # train svm
+    labels = Labels(fm_label_twoclass)
+    svm = LibSVM(1.0, kernel, labels)
+    svm.train()
+
+    # create combined test features
+    feats_pred = CombinedFeatures()
+    feats_pred.append_feature_obj(RealFeatures(fm_test_real))
+
+    # and corresponding combined kernel
+    kernel = CombinedKernel()
+    kernel.append_kernel(CustomKernel(K_test))
+    kernel.append_kernel(PolyKernel(10, 2))
     kernel.init(feats_train, feats_pred)
 
+    # and classify
     svm.set_kernel(kernel)
     svm.classify()
 
@@ -49,4 +48,7 @@ if __name__=='__main__':
     fm_train_real = lm.load_numbers('../data/fm_train_real.dat')
     fm_test_real = lm.load_numbers('../data/fm_test_real.dat')
     fm_label_twoclass = lm.load_labels('../data/label_train_twoclass.dat')
+    fm_train_real.shape
+    fm_test_real.shape
     combined_custom()
+
