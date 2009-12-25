@@ -32,6 +32,14 @@
 #include <ieeefp.h>
 #endif
 
+/// workaround for log2 being a define on cygwin
+#ifdef log2
+#define cygwin_log2 log2
+#undef log2
+#endif
+
+
+
 /// workaround a bug in std cmath
 #ifdef _GLIBCXX_CMATH
 #if _GLIBCXX_USE_C99_MATH
@@ -339,17 +347,14 @@ class CMath : public CSGObject
 			return ::log(v)/::log(10.0);
 		}
 
+		static inline float64_t log2(float64_t v)
+		{
 #ifdef HAVE_LOG2
-		static inline float64_t log2(float64_t v)
-		{
 			return ::log2(v);
-		}
 #else
-		static inline float64_t log2(float64_t v)
-		{
 			return ::log(v)/::log(2.0);
-		}
 #endif //HAVE_LOG2
+		}
 
 		static inline float64_t log(float64_t v)
 		{

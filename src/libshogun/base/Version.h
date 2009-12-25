@@ -37,7 +37,7 @@ public:
 	static inline void print_version()
 	{
 		SG_SPRINT("libshogun (%s/%s%d)\n\n", MACHINE, VERSION_RELEASE, version_revision);
-		SG_SPRINT("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n")
+		SG_SPRINT("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n");
 		SG_SPRINT("Copyright (C) 1999-2010 Max Planck Society\n");
 		SG_SPRINT("Copyright (C) 2009-2010 Berlin Institute of Technology\n");
 		SG_SPRINT("Written   (W) 1999-2010 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n");

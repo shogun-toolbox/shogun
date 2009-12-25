@@ -2236,7 +2236,7 @@ cat > $TMPC << EOF
 #include <math.h>
 int main(int argc, char** argv)
 {
-	long double a=::powl((long double) argc, (long double) argc);
+	long double a=powl((long double) argc, (long double) argc);
 	return (int) a;
 }
 EOF
@@ -2254,7 +2254,7 @@ cat > $TMPC << EOF
 #include <math.h>
 int main(int argc, char** argv)
 {
-	long double a=::sqrtl((long double) argc);
+	long double a=sqrtl((long double) argc);
 	return (int) a;
 }
 EOF
@@ -2272,7 +2272,7 @@ cat > $TMPC << EOF
 #include <math.h>
 int main(int argc, char** argv)
 {
-	double a=::log2((double) argc);
+	double a=log2((double) argc);
 	return (int) a;
 }
 EOF
@@ -2903,7 +2903,7 @@ test_matlab()
 		if win32
 		then
 			echocheck "Matlab"
-			matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit"
+			matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit" >/dev/null 2>&1 
 			if test -f matlab_version.txt
 			then
 				echores `cat matlab_version.txt`
@@ -3246,7 +3246,6 @@ test_python()
 			if [ `$PYTHON -c 'import numpy; print numpy.__version__' | cut -c 1` -gt 0 ]
 			then
 				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
-				_python=yes
 			else
 				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`... too old version 1.0 or later required"
 				if test "$_python" = yes
