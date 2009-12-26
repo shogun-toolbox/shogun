@@ -35,7 +35,9 @@
 #undef length
 #endif
 
+#ifndef CYGWIN
 #include "../libshogun/lib/memory.cpp"
+#endif
 
 void octave_print_message(FILE* target, const char* str)
 {

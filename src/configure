@@ -150,6 +150,8 @@ LINKFLAGS_MODULAR_INTEFACES=
 LIBSHOGUN_MODE=
 LIBSHOGUN_SONAME=libshogun.so.${LIBSHOGUNSO}
 LIBSHOGUN_TARGET=libshogun.so.${LIBSHOGUNVER}
+LIBSHOGUN_DYNAMIC=libshogun.so
+LIBSHOGUN_STATIC=libshogun.a
 DEFINES_LIBSHOGUN=
 INCLUDES_LIBSHOGUN="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUN=
@@ -157,6 +159,8 @@ POSTLINKFLAGS_LIBSHOGUN=
 
 LIBSHOGUNUI_SONAME=libshogunui.so.${LIBSHOGUNUISO}
 LIBSHOGUNUI_TARGET=libshogunui.so.${LIBSHOGUNUIVER}
+LIBSHOGUNUI_DYNAMIC=libshogunui.a
+LIBSHOGUNUI_STATIC=libshogunui.a
 DEFINES_LIBSHOGUNUI=
 INCLUDES_LIBSHOGUNUI="-I../libshogun -I.."
 LINKFLAGS_LIBSHOGUNUI="-L../libshogun -lshogun"
@@ -2189,9 +2193,11 @@ EOF
 		SONAMEOPT="-install_name "
 		SHAREDOPTS="-dynamiclib"
 		LIBSHOGUN_TARGET="libshogun.${LIBSHOGUNVER}.dylib"
-		LIBSHOGUNUI_TARGET="libshogunui.${LIBSHOGUNUIVER}.dylib"
 		LIBSHOGUN_SONAME="libshogun.${LIBSHOGUNSO}.dylib"
+		LIBSHOGUN_DYNAMIC="libshogun.dylib"
+		LIBSHOGUNUI_TARGET="libshogunui.${LIBSHOGUNUIVER}.dylib"
 		LIBSHOGUNUI_SONAME="libshogunui.${LIBSHOGUNUISO}.dylib"
+		LIBSHOGUNUI_DYNAMIC="libshogun.dylib"
 
 		if test "$_matlab_static" = yes
 		then
@@ -2214,6 +2220,15 @@ EOF
 	elif win32
 	then
 		EXT_LIB=dll
+		LIBSHOGUN_SONAME=libshogun-${LIBSHOGUNSO}.dll
+		LIBSHOGUN_TARGET=libshogun-${LIBSHOGUNVER}.dll
+		LIBSHOGUN_DYNAMIC=libshogun.dll
+		LIBSHOGUN_STATIC=libshogun.a
+		LIBSHOGUNUI_SONAME=libshogunui-${LIBSHOGUNUISO}.dll
+		LIBSHOGUNUI_TARGET=libshogunui-${LIBSHOGUNUIVER}.dll
+		LIBSHOGUNUI_DYNAMIC=libshogunui.dll
+		LIBSHOGUNUI_STATIC=libshogunui.a
+		EXT_LIB_SWIG_PYTHON_MODULAR=dll
 	else
 		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
@@ -3073,7 +3088,7 @@ test_elwms()
 			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PYTHON $INCLUDES_OCTAVE $INCLUDES_MATLAB "
 			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON `echo $LINKFLAGS_R | sed 's/-dynamiclib//g'` `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
 
-			ELWMS_TARGET="elwms.so"
+			ELWMS_TARGET="elwms.${EXT_LIB}"
 		fi
 	fi
 }
@@ -3272,7 +3287,10 @@ test_python()
 			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
 			_pylibpath=""
 			#test -n "$_pylibpath" && _pylibpath="-I$_pylibpath"
-			#test -n "$_pylibpath" || _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
+			if win32
+			then
+				 _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
+			fi
 			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`
 			INCLUDES_PYTHON="$_pyinclude $INCLUDES_PYTHON"
 			COMPFLAGS_CPP_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP_PYTHON"
@@ -3552,7 +3570,7 @@ EOF
 			PARTS="$PARTS libshogunui"
 
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogunui"
-			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogunui -lshogunui"
+			LINKFLAGS_STATIC_INTERFACES="-L../libshogunui -lshogunui $LINKFLAGS_STATIC_INTERFACES"
 			_libshogunui=internal
 
 		else
@@ -3634,7 +3652,11 @@ PARTS			= ${PARTS}
 LIBRARY_PATH= ${LIBRARY_PATH}
 LIBSHOGUN_MODE= ${LIBSHOGUN_MODE}
 LIBSHOGUN_TARGET= ${LIBSHOGUN_TARGET}
+LIBSHOGUN_DYNAMIC= ${LIBSHOGUN_DYNAMIC}
+LIBSHOGUN_STATIC= ${LIBSHOGUN_STATIC}
 LIBSHOGUNUI_TARGET= ${LIBSHOGUNUI_TARGET}
+LIBSHOGUNUI_DYNAMIC= ${LIBSHOGUNUI_DYNAMIC}
+LIBSHOGUNUI_STATIC= ${LIBSHOGUNUI_STATIC}
 CMDLINE_TARGET	= ${CMDLINE_TARGET}
 R_TARGET		= ${R_TARGET}
 PYTHON_TARGET	= ${PYTHON_TARGET}

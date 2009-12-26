@@ -16,12 +16,10 @@ include ../.config-local
 endif
 
 ifeq (libshogun,$(findstring libshogun,$(TEMPLATE_TARGET)))
-	LIBNAME=$(shell echo $(TEMPLATE_TARGET) | cut -f 1 -d '.')
-	SONAME=$(TEMPLATE_SONAME)
-	OTHER_TARGETS=$(LIBNAME).a
-	LIBSYMLINKCMD=rm -f $(LIBNAME).$(EXT_LIB) $(SONAME); \
-				  ln -s $(TEMPLATE_TARGET) $(SONAME) ; \
-				  ln -s $(TEMPLATE_TARGET) $(LIBNAME).$(EXT_LIB)
+	OTHER_TARGETS=$(TEMPLATE_STATIC)
+	LIBSYMLINKCMD=rm -f $(TEMPLATE_DYNAMIC) $(TEMPLATE_SONAME); \
+				  ln -s $(TEMPLATE_TARGET) $(TEMPLATE_SONAME) ; \
+				  ln -s $(TEMPLATE_TARGET) $(TEMPLATE_DYNAMIC)
 
 ifeq (libshogun.,$(findstring libshogun.,$(TEMPLATE_TARGET)))
 DEPDEPS=lib/versionstring.h
@@ -165,7 +163,7 @@ install-libshogunui: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/ui"
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
-	install -m755 libshogunui.a $(DESTDIR)$(LIBDIR)
+	install -m755 $(TEMPLATE_STATIC) $(DESTDIR)$(LIBDIR)
 	install -m644 *.h "$(DESTDIR)$(INCDIR)/shogun/ui"
 	find "$(DESTDIR)$(INCDIR)/shogun/ui" -name '*.h' -exec $(SEDMI) \
 		's/#include "\([^"]*\)"/#include <shogun\/ui\/\1>/' {} \;
@@ -178,7 +176,7 @@ install-libshogun: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
-	install -m755 libshogun.a $(DESTDIR)$(LIBDIR)
+	install -m755 $(TEMPLATE_STATIC) $(DESTDIR)$(LIBDIR)
 
 	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o \
 		-name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
@@ -437,11 +435,7 @@ $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
 	@$(POSTLINKCMD) $@
 	@$(LIBSYMLINKCMD)
 
-libshogun.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
-	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
-		-name "*.$(EXT_OBJ_C)" 2>/dev/null)
-
-libshogunui.a: .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
+$(TEMPLATE_STATIC): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
 		-name "*.$(EXT_OBJ_C)" 2>/dev/null)
 
