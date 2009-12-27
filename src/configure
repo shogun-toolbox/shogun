@@ -3413,7 +3413,12 @@ test_r()
 		then
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
 			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
-			R_HOME=`echo 'system("env | grep \"^R_HOME\"")' | R -q --no-save | grep '^R_HOME' | cut -f 2 -d '='`
+			if cygwin
+			then
+				R_HOME=`echo 'system("c:/cygwin/bin/env.exe")' | R -q --no-save | grep '^R_HOME' | cut -f 2 -d '='`
+			else
+				R_HOME=`echo 'system("env")' | R -q --no-save | grep '^R_HOME' | cut -f 2 -d '='`
+			fi
 
 			PRE_LIB_SWIG_R_MODULAR=
 			EXT_LIB_SWIG_R_MODULAR='so'
