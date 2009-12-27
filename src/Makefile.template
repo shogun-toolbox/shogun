@@ -39,6 +39,7 @@ endif
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 INCLUDES += $(INCLUDES_MODULAR_INTERFACES)
 LINKFLAGS += $(LINKFLAGS_MODULAR_INTERFACES)
+POSTLINKFLAGS := $(LINKFLAGS_MODULAR_INTERFACES) $(POSTLINKFLAGS)
 SWIGFLAGS += $(SWIGFLAGS_TEMPLATE) $(INCLUDES_MODULAR_INTERFACES) -I.. -I.
 OTHERDEPS = $(SWIGSRCFILES) $(SWIGLIBFILES) 
 ifeq (yes,$(USE_DOXYGEN))
@@ -249,7 +250,8 @@ install-matlab: $(TEMPLATE_TARGET)
 
 install-python_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
-	install -m644 $(SWIGLIBFILES) $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
+	install -m644 $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
+	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PYDIR)/shogun"
 	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 	for i in $(SWIGPYFILES) ; do echo $$i \
 		| sed -e 's=.*/="=' -e 's/\.py/", /' \

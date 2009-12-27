@@ -29,6 +29,7 @@ EXT_INP_SWIG=i
 EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB=so
+EXT_LIB_SWIG_PYTHON_MODULAR=so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454 -fvirtual"
@@ -2220,6 +2221,7 @@ EOF
 	elif win32
 	then
 		EXT_LIB=dll
+		EXT_LIB_SWIG_PYTHON_MODULAR=dll
 		LIBSHOGUN_SONAME=libshogun-${LIBSHOGUNSO}.dll
 		LIBSHOGUN_TARGET=libshogun-${LIBSHOGUNVER}.dll
 		LIBSHOGUN_DYNAMIC=libshogun.dll
@@ -2228,7 +2230,6 @@ EOF
 		LIBSHOGUNUI_TARGET=libshogunui-${LIBSHOGUNUIVER}.dll
 		LIBSHOGUNUI_DYNAMIC=libshogunui.dll
 		LIBSHOGUNUI_STATIC=libshogunui.a
-		EXT_LIB_SWIG_PYTHON_MODULAR=dll
 	else
 		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
@@ -2854,9 +2855,28 @@ test_modular()
 			if [ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
 				[ `echo "$_swig_version" | cut -f 3 -d '.'` -ge 36 ]
 			then
-				PARTS="$PARTS octave_modular"
-				OCTAVE_MODULAR_TARGET=octave_modular
-				echores "yes"
+				if [ `echo "$_octave_version" | cut -f 1 -d '.'` -ge 3 ] || \
+					[ `echo "$_octave_version" | cut -f 2 -d '.'` -ge 2 ]
+				then
+					if [ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
+						[ `echo "$_swig_version" | cut -f 3 -d '.'` -ge 40 ]
+					then
+						PARTS="$PARTS octave_modular"
+						OCTAVE_MODULAR_TARGET=octave_modular
+						echores "yes"
+					else
+						if test "$_octave_modular" = yes ; then
+							die "swig too old: Version 1.3.40 or later required for octave 3.2.x or later; swig version 1.3.36 or later is sufficient for octave 3.0.x."
+						else
+							echores "swig too old: Version 1.3.40 or later required for octave 3.2.x or later; swig version 1.3.36 or later is sufficient for octave 3.0.x."
+						fi
+
+					fi
+				else
+					PARTS="$PARTS octave_modular"
+					OCTAVE_MODULAR_TARGET=octave_modular
+					echores "yes"
+				fi
 			else
 				if test "$_octave_modular" = yes ; then
 					die "swig too old version 1.3.36 or later required"
@@ -3120,16 +3140,16 @@ test_octave()
 		echocheck "Octave"
 		if echo version | octave --no-history >/dev/null 2>&1
 		then
-			VERSION="`echo version | octave --no-history 2>&1 | grep ans | cut -f 3- -d ' '`"
-			if test "`echo $VERSION | cut -f 1 -d '.'`" -ge 3
+			_octave_version="`echo version | octave --no-history 2>&1 | grep ans | cut -f 3- -d ' '`"
+			if test "`echo $_octave_version | cut -f 1 -d '.'`" -ge 3
 			then
-				echores "$VERSION"
+				echores "$_octave_version"
 			else
 				if test "$_octave" = yes
 				then
-					die "$VERSION - too old, at least octave version 3.0 required"
+					die "$_octave_version - too old, at least octave version 3.0 required"
 				fi
-				echores "$VERSION - too old, at least octave version 3.0 required"
+				echores "$_octave_version - too old, at least octave version 3.0 required"
 				_octave="no"
 			fi
 		else
@@ -3281,7 +3301,6 @@ test_python()
 		if test "$_python" != no
 		then
 			PRE_LIB_SWIG_PYTHON_MODULAR=_
-			EXT_LIB_SWIG_PYTHON_MODULAR='so'
 			EXT_IF_SWIG_PYTHON_MODULAR='.py'
 			test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
 			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
