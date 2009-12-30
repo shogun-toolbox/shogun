@@ -39,6 +39,7 @@
 #include "classifier/svm/SVM_libsvm.h"
 #include "kernel/Kernel.h"
 #include "lib/io.h"
+#include "lib/Time.h"
 #include "lib/Signal.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -208,6 +209,8 @@ public:
 	virtual Qfloat *get_QD() const = 0;
 	virtual void swap_index(int32_t i, int32_t j) const = 0;
 	virtual ~QMatrix() {}
+
+	float64_t max_train_time;
 };
 
 class LibSVMKernel: public QMatrix {
@@ -247,6 +250,7 @@ LibSVMKernel::LibSVMKernel(int32_t l, svm_node * const * x_, const svm_parameter
 	clone(x,x_,l);
 	x_square = 0;
 	kernel=param.kernel;
+	max_train_time=param.max_train_time;
 }
 
 LibSVMKernel::~LibSVMKernel()
@@ -416,6 +420,7 @@ void Solver::Solve(
 
 	// initialize gradient
 	CSignal::clear_cancel();
+	CTime start_time;
 	{
 		G = new float64_t[l];
 		G_bar = new float64_t[l];
@@ -452,6 +457,9 @@ void Solver::Solve(
 
 	while (!CSignal::cancel_computations())
 	{
+		if (Q->max_train_time > 0 && start_time.cur_time_diff() > Q->max_train_time)
+		  break;
+
 		// show progress and do shrinking
 
 		if(--counter == 0)

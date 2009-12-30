@@ -100,6 +100,8 @@ struct svm_parameter
 	/* these are for training only */
 	/** in MB */
 	float64_t cache_size;
+	/** maximum training time */
+	float64_t max_train_time;
 	/** stopping criteria */
 	float64_t eps;
 	/** for C_SVC, EPSILON_SVR and NU_SVR */
