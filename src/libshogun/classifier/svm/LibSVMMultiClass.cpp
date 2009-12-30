@@ -72,6 +72,7 @@ bool CLibSVMMultiClass::train(CFeatures* data)
 	param.nu = get_nu(); // Nu
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
+	param.max_train_time = max_train_time;
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = 0.1;
