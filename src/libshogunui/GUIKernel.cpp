@@ -740,6 +740,7 @@ bool CGUIKernel::init_kernel(const char* target)
 				(k_ftype==ftype || k_ftype==F_ANY || ftype==F_ANY))
 			
 			{
+				SG_INFO("Initialising kernel with TRAIN DATA, train: %p\n", train);
 				kernel->init(train, train);
 				initialized=true;
 			}
@@ -753,7 +754,7 @@ bool CGUIKernel::init_kernel(const char* target)
 	{
 		CFeatures* train=ui->ui_features->get_train_features();
 		CFeatures* test=ui->ui_features->get_test_features();
-		if (test)
+		if (train && test)
 		{
 			EFeatureClass fclass=test->get_feature_class();
 			EFeatureType ftype=test->get_feature_type();
@@ -762,13 +763,23 @@ bool CGUIKernel::init_kernel(const char* target)
 			
 			{
 				if (!initialized)
-					SG_ERROR("Kernel not initialized with training examples.\n");
-				else
 				{
-					SG_INFO("Initialising kernel with TEST DATA, train: %p test %p\n", train, test);
-					// lhs -> always train_features; rhs -> always test_features
-					kernel->init(train, test);
+					EFeatureClass tr_fclass=train->get_feature_class();
+					EFeatureType tr_ftype=train->get_feature_type();
+					if ((k_fclass==tr_fclass || k_fclass==C_ANY || tr_fclass==C_ANY) &&
+							(k_ftype==tr_ftype || k_ftype==F_ANY || tr_ftype==F_ANY))
+					{
+						SG_INFO("Initialising kernel with TRAIN DATA, train: %p\n", train);
+						kernel->init(train, train);
+						initialized=true;
+					}
+					else
+						SG_ERROR("Kernel can not process this train feature type: %d %d.\n", fclass, ftype);
 				}
+				
+				SG_INFO("Initialising kernel with TEST DATA, train: %p test %p\n", train, test);
+				// lhs -> always train_features; rhs -> always test_features
+				kernel->init(train, test);
 			}
 			else
 				SG_ERROR("Kernel can not process this test feature type: %d %d.\n", fclass, ftype);

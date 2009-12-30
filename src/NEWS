@@ -7,6 +7,10 @@
 		- Implement SNP kernel.
 	* Bugfixes:
 		- Fix set_w() for linear classifiers.
+		- Static Octave, Python, Cmdline and Modular Python interfaces Compile
+		cleanly under Windows/Cygwin again.
+		- In static interfaces testing could fail when not directly done after
+		training.
 	* Cleanup and API Changes:
 		- None
 
