@@ -230,14 +230,22 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		 * @return element at index
 		 */
 		inline T operator[](uint64_t index) const
-			{
-				return ((T*)address)[index];
-			}
-		/*inline T operator[](int32_t index) const
 		{
-			return ((T*)address)[index];
-			}*/
+		  return ((T*)address)[index];
+		}
 
+		/** operator overload for file read only access
+		 *
+		 * DOES NOT DO ANY BOUNDS CHECKING
+		 *
+		 * @param index index
+		 * @return element at index
+		 */
+		inline T operator[](int32_t index) const
+		{
+		  return ((T*)address)[index];
+		}
+		
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MemoryMappedFile"; }
 
