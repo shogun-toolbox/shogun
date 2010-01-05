@@ -229,10 +229,14 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		 * @param index index
 		 * @return element at index
 		 */
-		inline T operator[](int32_t index) const
+		inline T operator[](uint64_t index) const
+			{
+				return ((T*)address)[index];
+			}
+		/*inline T operator[](int32_t index) const
 		{
 			return ((T*)address)[index];
-		}
+			}*/
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MemoryMappedFile"; }
