@@ -538,17 +538,21 @@ void* CCmdLineInterface::get_return_values()
 
 void CCmdLineInterface::set_int(int32_t scalar)
 {
-	//set_arg_increment(ScalarInteger(scalar));
 }
 
 void CCmdLineInterface::set_real(float64_t scalar)
 {
-	//set_arg_increment(ScalarReal(scalar));
+	const char* filename=set_arg_increment();
+	CFile f((char*) filename, 'w', F_DREAL);
+	if (!f.is_ok())
+		SG_ERROR("Could not open file %s to write REAL scalar.\n", filename);
+
+	if (!f.write_real_valued_dense(&scalar, 1, 1))
+		SG_ERROR("Could not write REAL scalar to %s.\n", filename);
 }
 
 void CCmdLineInterface::set_bool(bool scalar)
 {
-	//set_arg_increment(ScalarLogical(scalar));
 }
 
 
