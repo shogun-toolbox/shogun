@@ -123,7 +123,8 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	ASSERT(alen==blen);
-	ASSERT(alen==m_str_len);
+	if (alen!=m_str_len)
+		SG_ERROR("alen (%d) !=m_str_len (%d)\n", alen, m_str_len);
 	ASSERT(m_str_min);
 	ASSERT(m_str_maj);
 

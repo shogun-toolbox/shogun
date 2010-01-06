@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Berlin Institute of Technology
+ * Written (W) 2009-2010 Soeren Sonnenburg
+ * Copyright (C) 2009-2010 Berlin Institute of Technology
  */
 
 #ifndef _SNPSTRINGKERNEL_H___
@@ -105,7 +105,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		 *
 		 * @return name PolyMatchString
 		 */
-		virtual const char* get_name() const { return "PolyMatchString"; }
+		virtual const char* get_name() const { return "SNPStringKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b
