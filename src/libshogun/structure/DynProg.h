@@ -527,7 +527,8 @@ public:
 	{
 		m_long_transitions = use_long_transitions;
 		m_long_transition_threshold = threshold;
-		m_long_transition_max = max_len;
+		SG_DEBUG("ignoring max_len\n") ;
+		//m_long_transition_max = max_len;
 	}
 	/** init segment loss
 	 *
@@ -849,7 +850,7 @@ protected:
 	 *  Note: is ignored in the current implementation
 	 *        => arbitrarily long transitions can be decoded
 	 */
-	int32_t m_long_transition_max ;
+	//int32_t m_long_transition_max ;
 
 	/**default values defining the k-mer degrees
 	 * used for content type prediction
