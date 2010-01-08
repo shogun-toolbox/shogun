@@ -432,11 +432,20 @@ class CSGInterface : public CSGObject
 		 * -set lin feat
 		 */
 		bool cmd_set_lin_feat();
+
 		/** 
 		 * -init dyn prog
 		 */
 		bool cmd_init_dyn_prog();
 
+		/** 
+		 * clean up dyn prog
+		 */
+		bool cmd_clean_up_dyn_prog();
+
+		/**
+		 * initialize list of introns as DynProg features
+		 */
 		bool cmd_init_intron_list();
 
 		/** settings for long transition approximation*/

@@ -50,6 +50,14 @@ class CPlifMatrix: public CSGObject
 		 */
 		inline CPlifBase** get_plif_matrix() { return m_plif_matrix; }
 
+		/** get number of states
+		 *  the number of states determines the size of the plif matrix
+		 * 
+		 * @return number of states
+		 */
+		inline int32_t get_num_states() { return m_num_states; }
+
+
 		/** get plifs defining the mapping of signals to states
 		 * 
 		 * @return plifs

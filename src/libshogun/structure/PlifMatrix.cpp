@@ -21,8 +21,6 @@ CPlifMatrix::~CPlifMatrix()
 
 	delete[] m_plif_matrix;	
 
-	for (int32_t i=0; i<m_feat_dim3*m_num_states; i++)
-		delete m_state_signals[i];
 	delete[] m_state_signals;
 }
 
@@ -199,13 +197,19 @@ bool CPlifMatrix::compute_plif_matrix(
 	{
 		for (int32_t j=0; j<num_states; j++)
 		{
-			CPlifArray * plif_array = new CPlifArray() ;
+			CPlifArray * plif_array = NULL;
 			CPlif * plif = NULL ;
-			plif_array->clear() ;
 			for (int32_t k=0; k<Dim[2]; k++)
 			{
 				if (penalties.element(i,j,k)==0)
 					continue ;
+
+				if (!plif_array)
+				{
+					plif_array = new CPlifArray() ;
+					plif_array->clear() ;
+				}
+
 				int32_t id = (int32_t) penalties.element(i,j,k)-1 ;
 
 				if ((id<0 || id>=num_plifs) && (id!=-1))
@@ -219,9 +223,8 @@ bool CPlifMatrix::compute_plif_matrix(
 				plif_array->add_plif(plif) ;
 			}
 
-			if (plif_array->get_num_plifs()==0)
+			if (!plif_array)
 			{
-				SG_UNREF(plif_array);
 				m_plif_matrix[i+j*num_states] = NULL ;
 			}
 			else if (plif_array->get_num_plifs()==1)
@@ -244,8 +247,6 @@ bool  CPlifMatrix::compute_signal_plifs(
 	int32_t Nplif = get_num_plifs();
 	CPlif** PEN = get_PEN();
 
-	for (int32_t i=0; i<m_feat_dim3*m_num_states; i++)
-		delete m_state_signals[i];
 	delete[] m_state_signals;
 	m_feat_dim3 = feat_dim3;
 

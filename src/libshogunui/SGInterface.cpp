@@ -896,6 +896,11 @@ CSGInterfaceMethod sg_methods[]=
 		(char*) USAGE_I(N_INIT_DYN_PROG, "num_svms")
 	},
 	{
+		(char*) N_CLEAN_UP_DYN_PROG,
+		(&CSGInterface::cmd_clean_up_dyn_prog),
+		(char*) USAGE(N_CLEAN_UP_DYN_PROG)
+	},
+	{
 		(char*) N_INIT_INTRON_LIST,
 		(&CSGInterface::cmd_init_intron_list),
 		(char*) USAGE_I(N_INIT_INTRON_LIST, "start_positions"
@@ -6081,6 +6086,14 @@ bool CSGInterface::cmd_set_plif_struct()
 
 	delete[] all_limits ;
 	delete[] all_penalties ;
+	delete[] names;
+	delete[] all_transform;
+	delete[] min_values;
+	delete[] max_values; 
+	delete[] all_use_cache; 
+	delete[] all_use_svm;
+	delete[] all_do_calc;
+
 	return true;
 }
 
@@ -6157,9 +6170,17 @@ bool CSGInterface::cmd_init_dyn_prog()
 	ui_structure->set_dyn_prog(h);
 	return true;
 }
+
+bool CSGInterface::cmd_clean_up_dyn_prog()
+{
+	return ui_structure->cleanup();
+}
+
 bool CSGInterface::cmd_set_model()
 {
+	
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
+	
 	CDynProg* h = ui_structure->get_dyn_prog();
 	int32_t num_svms = h->get_num_svms();
 	//CDynProg* h=new CDynProg(Nweights/* = num_svms */);
@@ -6174,6 +6195,7 @@ bool CSGInterface::cmd_set_model()
 	get_real_ndarray(penalties_array,Dim,numDim);
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
+
 	if (!pm->compute_plif_matrix(penalties_array, Dim, numDim))
 		SG_ERROR("error computing plif  matrix\n");
 	ui_structure->set_num_states(Dim[0]);
@@ -6204,6 +6226,7 @@ bool CSGInterface::cmd_set_model()
 	get_int_matrix(state_signals,num_states,feat_dim3);
 	ASSERT(num_states==Dim[0]);
 	pm->compute_signal_plifs(state_signals, feat_dim3, num_states);
+	delete[] state_signals;
 
 
 	// ARG 5
