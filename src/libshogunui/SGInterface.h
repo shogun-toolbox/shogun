@@ -22,6 +22,7 @@
 #include "GUIPreProc.h"
 #include "GUITime.h"
 #include "GUIStructure.h"
+#include "GUISignals.h"
 
 namespace shogun
 {
@@ -411,6 +412,38 @@ class CSGInterface : public CSGObject
 		 * precompute subkernels of a combined kernel
 		 */
 		bool cmd_precompute_subkernels();
+		/**
+		 * 
+		 */
+		bool cmd_signals_set_model();
+		/**
+		 * 
+		 */
+		bool cmd_signals_set_positions();
+		/**
+		 * 
+		 */
+		bool cmd_signals_set_labels();
+		/**
+		 * 
+		 */
+		bool cmd_signals_set_split();
+		/**
+		 * 
+		 */
+		bool cmd_signals_set_train_mask();
+		/**
+		 * 
+		 */
+		bool cmd_signals_add_feature();
+		/**
+		 * 
+		 */
+		bool cmd_signals_add_kernel();
+		/**
+		 * 
+		 */
+		bool cmd_signals_run();
 		/** 
 		 * -precompute content svms 
 		 *  and save the outputs 
@@ -709,6 +742,7 @@ class CSGInterface : public CSGObject
 		CGUIPreProc* ui_preproc;
 		CGUITime* ui_time;
 		CGUIStructure* ui_structure;
+		CGUISignals* ui_signals;
 
 	protected:
 		/* return true if str starts with cmd

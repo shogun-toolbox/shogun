@@ -820,6 +820,47 @@ CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::cmd_get_plugin_estimate),
 		USAGE_O(N_GET_PLUGIN_ESTIMATE, "emission_probs" USAGE_COMMA "model_sizes")
 	},
+	{ "Signals", NULL, NULL },
+	{
+		N_SIGNALS_SET_MODEL,
+		(&CSGInterface::cmd_signals_set_model),
+		USAGE_I(N_SIGNALS_SET_MODEL, "arg1")
+	},
+	{
+		N_SIGNALS_SET_POSITIONS,
+		(&CSGInterface::cmd_signals_set_positions),
+		USAGE_I(N_SIGNALS_SET_POSITIONS, "positions")
+	},
+	{
+		N_SIGNALS_SET_LABELS,
+		(&CSGInterface::cmd_signals_set_labels),
+		USAGE_I(N_SIGNALS_SET_LABELS, "labels")
+	},
+	{
+		N_SIGNALS_SET_SPLIT,
+		(&CSGInterface::cmd_signals_set_split),
+		USAGE_I(N_SIGNALS_SET_SPLIT, "split")
+	},
+	{
+		N_SIGNALS_SET_TRAIN_MASK,
+		(&CSGInterface::cmd_signals_set_train_mask),
+		USAGE_I(N_SIGNALS_SET_TRAIN_MASK, "")
+	},
+	{
+		N_SIGNALS_ADD_FEATURE,
+		(&CSGInterface::cmd_signals_add_feature),
+		USAGE_I(N_SIGNALS_ADD_FEATURE, "feature")
+	},
+	{
+		N_SIGNALS_ADD_KERNEL,
+		(&CSGInterface::cmd_signals_add_kernel),
+		USAGE_I(N_SIGNALS_ADD_KERNEL, "kernelparam")
+	},
+	{
+		N_SIGNALS_RUN,
+		(&CSGInterface::cmd_signals_run),
+		USAGE_I(N_SIGNALS_RUN, "arg1")
+	},
 	{ "Structure", NULL, NULL },
 	{
 		N_BEST_PATH,
@@ -1142,7 +1183,8 @@ CSGInterface::CSGInterface(bool print_copyright)
 	ui_pluginestimate(new CGUIPluginEstimate(this)),
 	ui_preproc(new CGUIPreProc(this)),
 	ui_time(new CGUITime(this)),
-	ui_structure(new CGUIStructure(this))
+	ui_structure(new CGUIStructure(this)),
+	ui_signals(new CGUISignals(this))
 {
 	if (print_copyright)
 	{
@@ -1172,6 +1214,7 @@ CSGInterface::~CSGInterface()
 	delete ui_labels;
 	delete ui_math;
 	delete ui_structure;
+	delete ui_signals;
 	delete ui_time;
 	delete ui_distance;
 
@@ -6158,6 +6201,47 @@ bool CSGInterface::cmd_get_plif_struct()
 	delete[] all_use_svm;
 	delete[] all_do_calc;
 
+	return true;
+}
+bool CSGInterface::cmd_signals_set_model()
+{
+	// ARG 1
+	int32_t len=0;
+	char* filename;
+	filename = get_string(len);
+
+	CTrainPredMaster* tpm = new CTrainPredMaster();
+
+	tpm->read_models_from_file(filename);
+
+	return true;
+}
+bool CSGInterface::cmd_signals_set_positions()
+{
+	return true;
+}
+bool CSGInterface::cmd_signals_set_labels()
+{
+	return true;
+}
+bool CSGInterface::cmd_signals_set_split()
+{
+	return true;
+}
+bool CSGInterface::cmd_signals_set_train_mask()
+{
+	return true;
+}
+bool CSGInterface::cmd_signals_add_feature()
+{
+	return true;
+}
+bool CSGInterface::cmd_signals_add_kernel()
+{
+	return true;
+}
+bool CSGInterface::cmd_signals_run()
+{
 	return true;
 }
 
