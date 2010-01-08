@@ -6133,7 +6133,18 @@ bool CSGInterface::cmd_get_plif_struct()
 	set_bool_vector(all_use_cache,N);
 	set_int_vector(all_use_svm,N);
 	set_bool_vector(all_do_calc,N);
-	
+
+	delete[] ids;
+	delete[] max_values;	
+	delete[] min_values;
+	delete[] names;
+	delete[] all_transform;
+	delete[] all_limits;
+	delete[] all_penalties;
+	delete[] all_use_cache;
+	delete[] all_use_svm;
+	delete[] all_do_calc;
+
 	return true;
 }
 
@@ -6651,6 +6662,9 @@ bool CSGInterface::cmd_best_path_trans()
 			d_my_pos[i*(nbest+nother)+k] = my_pos[i+k*M] ;
 		}
 	}
+	free(my_path);
+	free(my_pos);
+
 	set_real_vector(p_prob,nbest+nother);
 	set_real_vector(d_my_path, (nbest+nother)*M);
 	set_real_vector(d_my_pos, (nbest+nother)*M);

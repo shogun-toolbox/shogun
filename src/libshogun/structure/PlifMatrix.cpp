@@ -6,12 +6,24 @@
 using namespace shogun;
 
 CPlifMatrix::CPlifMatrix() : m_PEN(NULL), m_num_plifs(0), m_num_limits(0),
-	m_plif_matrix(NULL), m_state_signals(NULL)
+	m_num_states(0), m_feat_dim3(0), m_plif_matrix(NULL), m_state_signals(NULL)
 {
 }
 
 CPlifMatrix::~CPlifMatrix()
 {
+	for (int32_t i=0; i<m_num_plifs; i++)
+		delete m_PEN[i];	
+	delete[] m_PEN;
+	
+	for (int32_t i=0; i<m_num_states*m_num_states; i++)
+		delete m_plif_matrix[i];
+
+	delete[] m_plif_matrix;	
+
+	for (int32_t i=0; i<m_feat_dim3*m_num_states; i++)
+		delete m_state_signals[i];
+	delete[] m_state_signals;
 }
 
 void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
@@ -99,9 +111,9 @@ void CPlifMatrix::set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t 
 				m_num_plifs, m_num_limits, num_plifs, num_limits);
 	}
 
+	float64_t* lim = new float64_t[m_num_limits];
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
-		float64_t* lim = new float64_t[m_num_limits];
 
 		for (int32_t k=0; k<m_num_limits; k++)
 			lim[k] = limits[i*m_num_limits+k];
@@ -109,6 +121,7 @@ void CPlifMatrix::set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t 
 		int32_t id=get_plif_id(i);
 		m_PEN[id]->set_plif_limits(lim, m_num_limits);
 	}
+	delete[] lim;
 }
 
 void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, int32_t num_limits)
@@ -119,9 +132,9 @@ void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, in
 				m_num_plifs, m_num_limits, num_plifs, num_limits);
 	}
 
+	float64_t* pen = new float64_t[m_num_limits];
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
-		float64_t* pen = new float64_t[m_num_limits];
 
 		for (int32_t k=0; k<m_num_limits; k++)
 			pen[k] = penalties[i*m_num_limits+k];
@@ -129,6 +142,7 @@ void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, in
 		int32_t id=get_plif_id(i);
 		m_PEN[id]->set_plif_penalty(pen, m_num_limits);
 	}
+	delete[] pen;
 }
 
 void CPlifMatrix::set_plif_names(T_STRING<char>* names, int32_t num_values, int32_t maxlen)
@@ -172,7 +186,11 @@ bool CPlifMatrix::compute_plif_matrix(
 	int32_t num_states = Dim[0];
 	int32_t num_plifs = get_num_plifs();
 
+	for (int32_t i=0; i<m_num_states*m_num_states; i++)
+		delete  m_plif_matrix[i];
 	delete[] m_plif_matrix ;
+
+	m_num_states = num_states;
 	m_plif_matrix = new CPlifBase*[num_states*num_states] ;
 
 	CArray3<float64_t> penalties(penalties_array, num_states, num_states, Dim[2], true, true) ;
@@ -225,6 +243,11 @@ bool  CPlifMatrix::compute_signal_plifs(
 {
 	int32_t Nplif = get_num_plifs();
 	CPlif** PEN = get_PEN();
+
+	for (int32_t i=0; i<m_feat_dim3*m_num_states; i++)
+		delete m_state_signals[i];
+	delete[] m_state_signals;
+	m_feat_dim3 = feat_dim3;
 
 	CPlifBase **PEN_state_signal = new CPlifBase*[feat_dim3*num_states] ;
 	for (int32_t i=0; i<num_states*feat_dim3; i++)

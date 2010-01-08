@@ -208,6 +208,12 @@ class CPlifMatrix: public CSGObject
 		/** number of supporting points per plif*/
 		int32_t m_num_limits;
 
+		/** number of states in model*/
+		int32_t m_num_states;
+
+		/** maximal number of features for a given state*/
+		int m_feat_dim3;
+
 		/** plif ids*/
 		CArray<int32_t> m_ids;
 
