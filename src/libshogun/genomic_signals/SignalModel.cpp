@@ -6,6 +6,8 @@
 #include "lib/io.h"
 #include "SignalModel.h"
 
+using namespace shogun;
+
 CSignalModel::CSignalModel()
 :CSGObject()
 {

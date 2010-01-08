@@ -81,26 +81,6 @@ public:
 	 */
 	CDynProg(int32_t p_num_svms=8);
 	virtual ~CDynProg();
-
-	/** best path no b
-	 *
-	 * @param max_iter max iter
-	 * @param best_iter best iter
-	 * @param my_path my path
-	 *
-	 * @return best path no b
-	 */
-	float64_t best_path_no_b(int32_t max_iter, int32_t & best_iter, int32_t *my_path);
-
-	/** best path no b transition
-	 *
-	 * @param max_iter max iter
-	 * @param max_best_iter max best iter
-	 * @param nbest nbest
-	 * @param prob_nbest prob_nbest
-	 * @param my_paths my paths
-	 */
-	void best_path_no_b_trans(int32_t max_iter, int32_t & max_best_iter, int16_t nbest, float64_t *prob_nbest, int32_t *my_paths);
 	
 	// model related functions
 	/** set number of states

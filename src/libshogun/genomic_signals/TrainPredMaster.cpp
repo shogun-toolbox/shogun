@@ -4,12 +4,15 @@
 #include "lib/Mathematics.h"
 #include "lib/config.h"
 #include "lib/io.h"
-#include "signals/TrainPredMaster.h"
-#include "signals/KernelParam.h"
+#include "genomic_signals/TrainPredMaster.h"
+#include "genomic_signals/KernelFactory.h"
 #define MAXLINE 1000
 
+using namespace shogun;
+
+
 CTrainPredMaster::CTrainPredMaster(CGUIKernel* p_ui_kernel)
-:CSGObject()
+:CSGObject(), kernelplist(NULL)
 {
 	ui_kernel = p_ui_kernel;
 	SG_REF(ui_kernel);
@@ -56,7 +59,7 @@ void CTrainPredMaster::read_models_from_file(char* filename)
 			nofkernels++;
 			// enlarge the list of kernels by one
 			/////////////////////////////////////////
-			CKernelParam** kernelplist_tmp = new CKernelParam*[nofkernels];
+			CKernelFactory** kernelplist_tmp = new CKernelFactory*[nofkernels];
 			for (int32_t i=0; i<nofkernels-1; i++)
 				kernelplist_tmp[i] = kernelplist[i];
 			delete [] kernelplist;
@@ -64,7 +67,7 @@ void CTrainPredMaster::read_models_from_file(char* filename)
 
 			// append new kernel to the list
 			///////////////////////////////////////
-			kernelplist[nofkernels-1] = new CKernelParam();
+			kernelplist[nofkernels-1] = new CKernelFactory();
 			kernelplist[nofkernels-1]->set_kernelname(value);
 			
 		}

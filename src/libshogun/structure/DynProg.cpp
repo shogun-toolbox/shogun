@@ -31,8 +31,6 @@ using namespace shogun;
 
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
-//#define use_old_nbest
-//#define use_old_loss
 
 int32_t CDynProg::word_degree_default[4]={3,4,5,6} ;
 int32_t CDynProg::cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -911,448 +909,6 @@ void CDynProg::get_path_losses(float64_t** losses, int32_t* seq_len)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-float64_t CDynProg::best_path_no_b(
-	int32_t max_iter, int32_t &best_iter, int32_t *my_path)
-{
-	CArray2<T_STATES> psi(max_iter, m_N) ;
-   psi.set_name("psi");
-	CArray<float64_t>* delta = new CArray<float64_t>(m_N) ;
-	CArray<float64_t>* delta_new = new CArray<float64_t>(m_N) ;
-	
-	{ // initialization
-		for (int32_t i=0; i<m_N; i++)
-		{
-			delta->element(i) = get_p(i) ;
-			psi.element(0, i)= 0 ;
-		}
-	} 
-	
-	float64_t best_iter_prob = CMath::ALMOST_NEG_INFTY ;
-	best_iter = 0 ;
-	
-	// recursion
-	for (int32_t t=1; t<max_iter; t++)
-	{
-		CArray<float64_t>* dummy;
-		int32_t NN=m_N ;
-		for (int32_t j=0; j<NN; j++)
-		{
-			float64_t maxj = delta->element(0) + m_transition_matrix_a.element(0,j);
-			int32_t argmax=0;
-			
-			for (int32_t i=1; i<NN; i++)
-			{
-				float64_t temp = delta->element(i) + m_transition_matrix_a.element(i,j);
-				
-				if (temp>maxj)
-				{
-					maxj=temp;
-					argmax=i;
-				}
-			}
-			delta_new->element(j)=maxj ;
-			psi.element(t, j)=argmax ;
-		}
-		
-		dummy=delta;
-		delta=delta_new;
-		delta_new=dummy;	//switch delta/delta_new
-		
-		{ //termination
-			float64_t maxj=delta->element(0)+get_q(0);
-			int32_t argmax=0;
-			
-			for (int32_t i=1; i<m_N; i++)
-			{
-				float64_t temp=delta->element(i)+get_q(i);
-				
-				if (temp>maxj)
-				{
-					maxj=temp;
-					argmax=i;
-				}
-			}
-			//pat_prob=maxj;
-			
-			if (maxj>best_iter_prob)
-			{
-				my_path[t]=argmax;
-				best_iter=t ;
-				best_iter_prob = maxj ;
-			} ;
-		} ;
-	}
-
-	
-	{ //state sequence backtracking
-		for (int32_t t = best_iter; t>0; t--)
-		{
-			my_path[t-1]=psi.element(t, my_path[t]);
-		}
-	}
-
-	delete delta ;
-	delete delta_new ;
-	
-	return best_iter_prob ;
-}
-
-void CDynProg::best_path_no_b_trans(
-	int32_t max_iter, int32_t &max_best_iter, int16_t nbest,
-	float64_t *prob_nbest, int32_t *my_paths)
-{
-	//T_STATES *psi=new T_STATES[max_iter*m_N*nbest] ;
-	CArray3<T_STATES> psi(max_iter, m_N, nbest) ;
-   psi.set_name("psi");
-	CArray3<int16_t> ktable(max_iter, m_N, nbest) ;
-   ktable.set_name("ktable");
-	CArray2<int16_t> ktable_ends(max_iter, nbest) ;
-   ktable_ends.set_name("ktable_ends");
-
-	CArray<float64_t> tempvv(nbest*m_N) ;
-	CArray<int32_t> tempii(nbest*m_N) ;
-
-	CArray2<T_STATES> path_ends(max_iter, nbest) ;
-   path_ends.set_name("path_ends");
-	CArray2<float64_t> *delta=new CArray2<float64_t>(m_N, nbest) ;
-   delta->set_name("delta");
-	CArray2<float64_t> *delta_new=new CArray2<float64_t>(m_N, nbest) ;
-   delta_new->set_name("delta_new");
-	CArray2<float64_t> delta_end(max_iter, nbest) ;
-   delta_end.set_name("delta_end");
-
-	CArray2<int32_t> paths(max_iter, nbest) ;
-   paths.set_name("paths");
-	paths.set_array(my_paths, max_iter, nbest, false, false) ;
-
-	{ // initialization
-		for (T_STATES i=0; i<m_N; i++)
-		{
-			delta->element(i,0) = get_p(i) ;
-			for (int16_t k=1; k<nbest; k++)
-			{
-				delta->element(i,k)=-CMath::INFTY ;
-				ktable.element(0,i,k)=0 ;
-			}
-		}
-	}
-	
-	// recursion
-	for (int32_t t=1; t<max_iter; t++)
-	{
-		CArray2<float64_t>* dummy=NULL;
-
-		for (T_STATES j=0; j<m_N; j++)
-		{
-			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
-			const T_STATES *elem_list = trans_list_forward[j] ;
-			const float64_t *elem_val = trans_list_forward_val[j] ;
-			
-			int32_t list_len=0 ;
-			for (int16_t diff=0; diff<nbest; diff++)
-			{
-				for (int32_t i=0; i<num_elem; i++)
-				{
-					T_STATES ii = elem_list[i] ;
-					
-					tempvv.element(list_len) = -(delta->element(ii,diff) + elem_val[i]) ;
-					tempii.element(list_len) = diff*m_N + ii ;
-					list_len++ ;
-				}
-			}
-			CMath::qsort_index(tempvv.get_array(), tempii.get_array(), list_len) ;
-			
-			for (int16_t k=0; k<nbest; k++)
-			{
-				if (k<list_len)
-				{
-					delta_new->element(j,k)  = -tempvv[k] ;
-					psi.element(t,j,k)      = (tempii[k]%m_N) ;
-					ktable.element(t,j,k)   = (tempii[k]-(tempii[k]%m_N))/m_N ;
-				}
-				else
-				{
-					delta_new->element(j,k)  = -CMath::INFTY ;
-					psi.element(t,j,k)      = 0 ;
-					ktable.element(t,j,k)   = 0 ;
-				}
-			}
-		}
-		
-		dummy=delta;
-		delta=delta_new;
-		delta_new=dummy;	//switch delta/delta_new
-		
-		{ //termination
-			int32_t list_len = 0 ;
-			for (int16_t diff=0; diff<nbest; diff++)
-			{
-				for (T_STATES i=0; i<m_N; i++)
-				{
-					tempvv.element(list_len) = -(delta->element(i,diff)+get_q(i));
-					tempii.element(list_len) = diff*m_N + i ;
-					list_len++ ;
-				}
-			}
-			CMath::qsort_index(tempvv.get_array(), tempii.get_array(), list_len) ;
-			
-			for (int16_t k=0; k<nbest; k++)
-			{
-				delta_end.element(t-1,k) = -tempvv[k] ;
-				path_ends.element(t-1,k) = (tempii[k]%m_N) ;
-				ktable_ends.element(t-1,k) = (tempii[k]-(tempii[k]%m_N))/m_N ;
-			}
-		}
-	}
-	
-	{ //state sequence backtracking
-		max_best_iter=0 ;
-		
-		CArray<float64_t> sort_delta_end(max_iter*nbest) ;
-		CArray<int16_t> sort_k(max_iter*nbest) ;
-		CArray<int32_t> sort_t(max_iter*nbest) ;
-		CArray<int32_t> sort_idx(max_iter*nbest) ;
-		
-		int32_t i=0 ;
-		for (int32_t iter=0; iter<max_iter-1; iter++)
-			for (int16_t k=0; k<nbest; k++)
-			{
-				sort_delta_end[i]=-delta_end.element(iter,k) ;
-				sort_k[i]=k ;
-				sort_t[i]=iter+1 ;
-				sort_idx[i]=i ;
-				i++ ;
-			}
-		
-		CMath::qsort_index(sort_delta_end.get_array(), sort_idx.get_array(), (max_iter-1)*nbest) ;
-
-		for (int16_t n=0; n<nbest; n++)
-		{
-			int16_t k=sort_k[sort_idx[n]] ;
-			int32_t iter=sort_t[sort_idx[n]] ;
-			prob_nbest[n]=-sort_delta_end[n] ;
-
-			if (iter>max_best_iter)
-				max_best_iter=iter ;
-			
-			ASSERT(k<nbest) ;
-			ASSERT(iter<max_iter) ;
-			
-			paths.element(iter,n) = path_ends.element(iter-1, k) ;
-			int16_t q   = ktable_ends.element(iter-1, k) ;
-			
-			for (int32_t t = iter; t>0; t--)
-			{
-				paths.element(t-1,n)=psi.element(t, paths.element(t,n), q);
-				q = ktable.element(t, paths.element(t,n), q) ;
-			}
-		}
-	}
-
-	delete delta ;
-	delete delta_new ;
-}
-void CDynProg::init_segment_loss(
-	struct segment_loss_struct & loss, int32_t seqlen, int32_t howmuchlookback)
-{
-#ifdef DYNPROG_TIMING
-	MyTime.start() ;
-#endif
-	int32_t clear_size = CMath::min(howmuchlookback,seqlen) ;
-	
-	if (!loss.num_segment_id)
-	{
-		loss.segments_changed       = new int32_t[seqlen] ;
-		loss.num_segment_id         = new float64_t[(m_max_a_id+1)*seqlen] ;
-		loss.length_segment_id      = new int32_t[(m_max_a_id+1)*seqlen] ;
-
-		clear_size = seqlen ;
-	}
-	
-	for (int32_t j=0; j<clear_size; j++)
-	{
-		loss.segments_changed[j]=0 ;
-		for (int32_t i=0; i<m_max_a_id+1; i++)       
-		{
-			loss.num_segment_id[i*seqlen+j] = 0;
-			loss.length_segment_id[i*seqlen+j] = 0;
-		}
-	}
-
-	loss.maxlookback = howmuchlookback ;
-	loss.seqlen = seqlen;
-
-#ifdef DYNPROG_TIMING
-	MyTime.stop() ;
-	segment_init_time += MyTime.time_diff_sec() ;
-#endif
-}
-
-void CDynProg::clear_segment_loss(struct segment_loss_struct & loss) 
-{
-#ifdef DYNPROG_TIMING
-	MyTime.start() ;
-#endif
-	
-	if (loss.num_segment_id != NULL)
-	{
-		delete[] loss.segments_changed ;
-		delete[] loss.num_segment_id ;
-		delete[] loss.length_segment_id ;
-		loss.segments_changed = NULL ;
-		loss.num_segment_id = NULL ;
-		loss.length_segment_id = NULL ;
-	}
-#ifdef DYNPROG_TIMING
-	MyTime.stop() ;
-	segment_clean_time += MyTime.time_diff_sec() ;
-#endif
-}
-
-float64_t CDynProg::extend_segment_loss(
-	struct segment_loss_struct & loss,
-	int32_t segment_id, int32_t pos, int32_t & last_pos, float64_t &last_value)
-{
-#ifdef DYNPROG_TIMING_DETAIL
-	MyTime.start() ;
-#endif
-	
-	if (pos==last_pos)
-	{		
-#ifdef DYNPROG_TIMING_DETAIL
-		MyTime.stop() ;
-		segment_extend_time += MyTime.time_diff_sec() ;
-#endif
-		return last_value ;
-	}
-	
-	ASSERT(pos<last_pos) ;
-
-	last_pos-- ;
-	bool changed = false ;
-	while (last_pos>=pos)
-	{
-		if (loss.segments_changed[last_pos])
-		{
-			changed=true ;
-			break ;
-		}
-		last_pos-- ;
-	}
-	if (last_pos<pos)
-		last_pos = pos ;
-	
-	if (!changed)
-	{
-		ASSERT(last_pos>=0) ;
-		ASSERT(last_pos<loss.seqlen) ;
-		float64_t length_contrib = (m_pos[last_pos]-m_pos[pos])*m_segment_loss.element(m_segment_ids.element(pos), segment_id, 1) ;
-		float64_t ret = last_value + length_contrib ;
-		last_pos = pos ;
-		
-#ifdef DYNPROG_TIMING_DETAIL
-		MyTime.stop() ;
-		segment_extend_time += MyTime.time_diff_sec() ;
-#endif
-		return ret ;
-	}
-	
-	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
-	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
-	float64_t ret = 0.0 ;
-	for (int32_t i=0; i<m_max_a_id+1; i++)
-	{
-		//SG_DEBUG( "%i: %i, %i, %f (%f), %f (%f)\n", pos, num_segment_id.element(pos, i), length_segment_id.element(pos, i), num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id,0), m_segment_loss.element(i, segment_id, 0), length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1), m_segment_loss.element(i, segment_id,1)) ;
-
-		if (num_segment_id.element(pos, i)!=0)
-		{
-			ret += num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 0) ;
-		//	SG_PRINT("ret:%f pos:%i i:%i segment_id:%i \n",ret,pos,i,segment_id);
-		//	if (ret>0)
-		//	{
-		//		for (int32_t g=0; g<m_max_a_id+1; g++)
-		//			SG_PRINT("g:%i sid(pos, g):%i    ",g,num_segment_id.element(pos, g));
-		//		SG_PRINT("\n");
-		//	}
-		}
-		if (length_segment_id.element(pos, i)!=0)
-			ret += length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1) ;
-	}
-	last_pos = pos ;
-	last_value = ret ;
-
-#ifdef DYNPROG_TIMING_DETAIL
-	MyTime.stop() ;
-	segment_extend_time += MyTime.time_diff_sec() ;
-#endif
-	return ret ;
-}
-
-void CDynProg::find_segment_loss_till_pos(
-	int32_t t_end, CArray<int32_t>& segment_ids,
-	CArray<float64_t>& segment_mask, struct segment_loss_struct & loss)
-{
-#ifdef DYNPROG_TIMING
-	MyTime.start() ;
-#endif
-	CArray2<float64_t> num_segment_id(loss.num_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
-	CArray2<int32_t> length_segment_id(loss.length_segment_id, loss.seqlen, m_max_a_id+1, false, false) ;
-	
-	for (int32_t i=0; i<m_max_a_id+1; i++)
-	{
-		num_segment_id.element(t_end, i) = 0 ;
-		length_segment_id.element(t_end, i) = 0 ;
-	}
-	int32_t wobble_pos_segment_id_switch = 0 ;
-	int32_t last_segment_id = -1 ;
-	int32_t ts = t_end-1 ;       
-	while ((ts>=0) && (m_pos[t_end] - m_pos[ts] <= loss.maxlookback))
-	{
-		int32_t cur_segment_id = segment_ids.element(ts) ;
-		// allow at most one wobble
-		bool wobble_pos = (CMath::abs(segment_mask.element(ts))<1e-7) && (wobble_pos_segment_id_switch==0) ;
-		if (!(cur_segment_id<=m_max_a_id))
-			SG_ERROR("(cur_segment_id<=m_max_a_id), cur_segment_id:%i m_max_a_id:%i\n",cur_segment_id,m_max_a_id);
-		if (!(cur_segment_id>=0))
-			 SG_ERROR("cur_segment_id<0, cur_segment_id:%i m_max_a_id:%i ts:%i t_end:%i\n",cur_segment_id,m_max_a_id, ts, t_end);
-		
-		for (int32_t i=0; i<m_max_a_id+1; i++)
-		{
-			num_segment_id.element(ts, i) = num_segment_id.element(ts+1, i) ;
-			length_segment_id.element(ts, i) = length_segment_id.element(ts+1, i) ;
-		}
-		
-		if (cur_segment_id!=last_segment_id)
-		{
-			if (wobble_pos)
-			{
-				//SG_DEBUG( "no change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
-				wobble_pos_segment_id_switch++ ;
-				//ASSERT(wobble_pos_segment_id_switch<=1) ;
-			}
-			else
-			{
-				//SG_DEBUG( "change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
-				loss.segments_changed[ts] = true ;
-				num_segment_id.element(ts, cur_segment_id) += segment_mask.element(ts);
-				length_segment_id.element(ts, cur_segment_id) += (int32_t)((m_pos[ts+1]-m_pos[ts])*segment_mask.element(ts));
-				wobble_pos_segment_id_switch = 0 ;
-			}
-			last_segment_id = cur_segment_id ;
-		} 
-		else
-			if (!wobble_pos)
-				length_segment_id.element(ts, cur_segment_id) += m_pos[ts+1] - m_pos[ts] ;
-
-		ts--;
-	}
-#ifdef DYNPROG_TIMING
-	MyTime.stop() ;
-	segment_pos_time += MyTime.time_diff_sec() ;
-#endif
-}
-
-
 bool CDynProg::extend_orf(
 	int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos,
 	int32_t to)
@@ -1936,12 +1492,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 			}
 		}
 
-#ifdef use_old_loss
-		struct segment_loss_struct loss;
-		loss.segments_changed = NULL;
-		loss.num_segment_id = NULL;
-#endif
-
 		SG_DEBUG("START_RECURSION \n\n");
 
 		// recursion
@@ -1950,14 +1500,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 			//if (is_big && t%(1+(m_seq_len/1000))==1)
 			//	SG_PROGRESS(t, 0, m_seq_len);
 			//SG_PRINT("%i\n", t) ;
-
-#ifdef use_old_loss
-			if (with_loss)
-			{
-				init_segment_loss(loss, m_seq_len, max_look_back);
-				find_segment_loss_till_pos(t, m_segment_ids, m_segment_mask, loss);  
-			}
-#endif
 
 			for (T_STATES j=0; j<m_N; j++)
 			{
@@ -2019,10 +1561,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 						}
 
 						int32_t orf_last_pos = m_pos[t] ;
-#ifdef use_old_loss
-						int32_t loss_last_pos = t ;
-						float64_t last_loss = 0.0 ;
-#endif
 #ifdef DYNPROG_TIMING
 						MyTime3.start() ;
 #endif				
@@ -2055,11 +1593,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								float64_t segment_loss = 0.0 ;
 								if (with_loss)
 								{
-#ifdef use_old_loss
-									segment_loss = extend_segment_loss(loss, elem_id[i], ts, loss_last_pos, last_loss) ;
-#else
 									segment_loss = m_seg_loss_obj->get_segment_loss(ts, t, elem_id[i]);
-#endif
 									//if (segment_loss!=segment_loss2)
 										//SG_PRINT("segment_loss:%f segment_loss2:%f\n", segment_loss, segment_loss2);
 								}
@@ -2260,7 +1794,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								}
 
 								
-								if (0)//m_pos[end_5p_part] - m_pos[long_transition_content_start_position.get_element(ii, j)] > look_back_orig_/*m_long_transition_max*/) // unsure: should it be end_5p_part or t ??
+								if (0)//m_pos[end_5p_part] - m_pos[long_transition_content_start_position.get_element(ii, j)] > look_back_orig_/*m_long_transition_max*/)
 								{
 									// this restricts the maximal length of segments, 
 									// but the current implementation is not valid since the 
@@ -2306,9 +1840,11 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 									long_transition_content_end_position.set_element(end_5p_part, ii, j) ;
 #endif
 								}
-								// this line seems to be wrong, but somehow it would lead to an inconsistency between derivative and viterby score, which is not observed
 								//
-								// long_transition_content_start.set_element(start_5p_part, ii, j) ; // wrong???
+								// this sets the position where the search for better 5'parts is started the next time
+								// whithout this the prediction takes ages
+								//
+								long_transition_content_start.set_element(start_5p_part, ii, j) ; 
 							}
 
 							// consider the 3' part at the end of the long segment:
@@ -2460,10 +1996,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 				}
 			}
 		}
-#ifdef use_old_loss
-		if (with_loss)
-			clear_segment_loss(loss);
-#endif
 		{ //termination
 			int32_t list_len = 0 ;
 			for (int16_t diff=0; diff<nbest; diff++)
@@ -2652,11 +2184,6 @@ void CDynProg::best_path_trans_deriv(
 	//#ifdef DYNPROG_DEBUG
 	total_score += my_scores[0] + my_scores[my_seq_len-1] ;
 	//#endif 		
-#ifdef use_old_loss
-	struct segment_loss_struct loss;
-	loss.segments_changed = NULL;
-	loss.num_segment_id = NULL;
-#endif
 
 	SG_DEBUG( "m_seq_len=%i\n", my_seq_len) ;
 	for (int32_t i=0; i<my_seq_len-1; i++)
@@ -2668,19 +2195,8 @@ void CDynProg::best_path_trans_deriv(
 		int32_t from_pos   = my_pos_seq[i] ;
 		int32_t to_pos     = my_pos_seq[i+1] ;
 
-#ifdef use_old_loss
-		// compute loss relative to another segmentation using the segment_loss function
-		init_segment_loss(loss, m_seq_len, m_pos[to_pos]-m_pos[from_pos]+10);
-		find_segment_loss_till_pos(to_pos,m_segment_ids, m_segment_mask, loss);  
-		int32_t loss_last_pos = to_pos ;
-		float64_t last_loss = 0.0 ;
-#endif
 		int32_t elem_id = m_transition_matrix_a_id.element(from_state, to_state) ;
-#ifdef use_old_loss
-		my_losses[i] = extend_segment_loss(loss, elem_id, from_pos, loss_last_pos, last_loss) ;
-#else
 		my_losses[i] = m_seg_loss_obj->get_segment_loss(from_pos, to_pos, elem_id);
-#endif
 
 #ifdef DYNPROG_DEBUG
 
@@ -2727,6 +2243,7 @@ void CDynProg::best_path_trans_deriv(
 		{
 			if (is_long_transition)
 			{
+				
 				while (from_pos_thresh<to_pos && m_pos[from_pos_thresh+1] - m_pos[from_pos] <= m_long_transition_threshold) // *
 					from_pos_thresh++ ;
 				ASSERT(from_pos_thresh<to_pos) ;
@@ -2791,7 +2308,6 @@ void CDynProg::best_path_trans_deriv(
 				float64_t pen_value_part1 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
 				float64_t pen_value_part2 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
 				nscore= 0.5*pen_value_part1 + 0.5*pen_value_part2 ;
-				//fprintf(stdout, "pen_value_part1=%f  pen_value_part2=%f  nscore=%f\n", pen_value_part1, pen_value_part2, nscore) ;
 			}
 			else
 				nscore = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
@@ -2809,12 +2325,12 @@ void CDynProg::best_path_trans_deriv(
 #endif
 			if (is_long_transition)
 			{
+#ifdef DYNPROG_DEBUG
 				float64_t sum_score = 0.0 ;
 
 				for (int kk=0; kk<i; kk++)
 					sum_score += my_scores[i] ;
 
-#ifdef DYNPROG_DEBUG
 				SG_PRINT("is_long_transition=%i  (from_pos=%i (%i), to_pos=%i (%i)=> %1.5f, %1.5f --- 1: %1.6f (%i-%i)  2: %1.6f (%i-%i) \n", 
 						is_long_transition, m_pos[from_pos], from_state, m_pos[to_pos], to_state, 
 						nscore, sum_score, 

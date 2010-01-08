@@ -14,6 +14,9 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 
+namespace shogun
+{
+
 /** @brief class SignalModel */
 class CSignalModel : public CSGObject 
 {
@@ -35,4 +38,5 @@ class CSignalModel : public CSGObject
 		inline virtual const char* get_name() const { return "SignalModel"; }
 	protected:
 };
+}
 #endif

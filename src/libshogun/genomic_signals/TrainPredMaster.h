@@ -14,7 +14,10 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 #include "ui/GUIKernel.h"
-#include "signals/KernelParam.h"
+#include "genomic_signals/KernelFactory.h"
+
+namespace shogun
+{
 
 /** @brief class TrainPredMaster */
 class CTrainPredMaster : public CSGObject 
@@ -39,6 +42,7 @@ class CTrainPredMaster : public CSGObject
 	protected:
 
 		CGUIKernel* ui_kernel;
-		CKernelParam** kernelplist;
+		CKernelFactory** kernelplist;
 };
+}
 #endif

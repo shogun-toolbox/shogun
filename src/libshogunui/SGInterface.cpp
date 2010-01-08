@@ -6210,7 +6210,7 @@ bool CSGInterface::cmd_signals_set_model()
 	char* filename;
 	filename = get_string(len);
 
-	CTrainPredMaster* tpm = new CTrainPredMaster();
+	CTrainPredMaster* tpm = new CTrainPredMaster(ui_kernel);
 
 	tpm->read_models_from_file(filename);
 

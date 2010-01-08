@@ -8,14 +8,15 @@
  * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-
 #ifndef _GUISIGNALS_H__
 #define _GUISIGNALS_H__ 
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/signals/TrainPredMaster.h>
+#include <shogun/genomic_signals/TrainPredMaster.h>
 
+namespace shogun
+{
 class CSGInterface;
 
 class CGUISignals : public CSGObject
@@ -31,5 +32,6 @@ class CGUISignals : public CSGObject
 		CSGInterface* ui;
 		CTrainPredMaster* m_tpm;
 };
+}
 #endif
 
