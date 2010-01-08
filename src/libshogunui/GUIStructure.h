@@ -170,15 +170,15 @@ class CGUIStructure : public CSGObject
 		inline bool cleanup()
 		{
 			delete m_dp;
-			delete[] m_feature_matrix;
-			delete m_feature_matrix_sparse1;
-			delete m_feature_matrix_sparse2;
-			delete[] m_feature_dims;
-			delete[] m_all_positions;
-			delete[] m_content_svm_weights;
-			delete m_orf_info;
-			delete m_mod_words;
-			delete m_plif_matrix;
+			//delete[] m_feature_matrix;
+			//delete m_feature_matrix_sparse1;
+			//delete m_feature_matrix_sparse2;
+			//delete[] m_feature_dims;
+			//delete[] m_all_positions;
+			//delete[] m_content_svm_weights;
+			//delete m_orf_info;
+			//delete m_mod_words;
+			//delete m_plif_matrix;
 
 			return true;
 		}

@@ -151,7 +151,9 @@ void CPlifMatrix::set_plif_names(T_STRING<char>* names, int32_t num_values, int3
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_plif_name(CStringFeatures<char>::get_zero_terminated_string_copy(names[i]));
+		char* name = CStringFeatures<char>::get_zero_terminated_string_copy(names[i]);
+		m_PEN[id]->set_plif_name(name);
+		delete[] name;
 	}
 }
 
@@ -173,6 +175,7 @@ void CPlifMatrix::set_plif_transform_type(T_STRING<char>* transform_type, int32_
 			m_num_limits=0;
 			SG_ERROR( "transform type not recognized ('%s')\n", transform_str) ;
 		}
+		delete[] transform_str;
 	}
 }
 

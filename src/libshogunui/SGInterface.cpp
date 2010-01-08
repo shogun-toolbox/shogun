@@ -6864,6 +6864,9 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	delete[] p_A_deriv ;
 	delete[] p_p_deriv ;
 	delete[] p_q_deriv ;
+	delete[] p_Plif_deriv;
+	free(p_my_scores);
+	free(p_my_losses);
 
 	delete[] my_path ;
 	delete[] my_pos ;
