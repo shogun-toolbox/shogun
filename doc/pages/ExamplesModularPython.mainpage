@@ -4,7 +4,6 @@ This page lists ready to run shogun examples for the Python Modular interface.
 
 \li \subpage python_modular_classifier_examples 
 \li \subpage python_modular_clustering_examples 
-\li \subpage python_modular_custom_examples 
 \li \subpage python_modular_distance_examples 
 \li \subpage python_modular_distribution_examples 
 \li \subpage python_modular_features_examples 
@@ -23,6 +22,9 @@ python name_of_example.py
 
 \section python_modular_classifier_examples Classifier
 
+
+\li <b>../examples/python_modular/classifier_custom_kernel_modular.py</b>
+\verbinclude classifier_custom_kernel_modular.py
 
 \li <b>../examples/python_modular/classifier_domainadaptationsvm_modular.py</b>
 \verbinclude classifier_domainadaptationsvm_modular.py
@@ -69,6 +71,9 @@ python name_of_example.py
 \li <b>../examples/python_modular/classifier_svmlight_batch_linadd_modular.py</b>
 \verbinclude classifier_svmlight_batch_linadd_modular.py
 
+\li <b>../examples/python_modular/classifier_svmlight_linear_term.py</b>
+\verbinclude classifier_svmlight_linear_term.py
+
 \li <b>../examples/python_modular/classifier_svmlight_linear_term_modular.py</b>
 \verbinclude classifier_svmlight_linear_term_modular.py
 
@@ -92,12 +97,6 @@ python name_of_example.py
 
 \li <b>../examples/python_modular/clustering_kmeans_modular.py</b>
 \verbinclude clustering_kmeans_modular.py
-
-\section python_modular_custom_examples Custom
-
-
-\li <b>../examples/python_modular/custom_kernel_modular.py</b>
-\verbinclude custom_kernel_modular.py
 
 \section python_modular_distance_examples Distance
 
@@ -213,6 +212,9 @@ python name_of_example.py
 \li <b>../examples/python_modular/kernel_chi2_modular.py</b>
 \verbinclude kernel_chi2_modular.py
 
+\li <b>../examples/python_modular/kernel_combined_custom_poly_modular.py</b>
+\verbinclude kernel_combined_custom_poly_modular.py
+
 \li <b>../examples/python_modular/kernel_combined_modular.py</b>
 \verbinclude kernel_combined_modular.py
 
@@ -314,6 +316,9 @@ python name_of_example.py
 
 \section python_modular_mkl_examples Mkl
 
+
+\li <b>../examples/python_modular/mkl_binclass_modular.py</b>
+\verbinclude mkl_binclass_modular.py
 
 \li <b>../examples/python_modular/mkl_multiclass_modular.py</b>
 \verbinclude mkl_multiclass_modular.py
