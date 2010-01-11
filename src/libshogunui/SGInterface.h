@@ -415,7 +415,7 @@ class CSGInterface : public CSGObject
 		/**
 		 * 
 		 */
-		bool cmd_signals_set_model();
+		bool cmd_signals_set_model() {} ;
 		/**
 		 * 
 		 */
@@ -742,7 +742,7 @@ class CSGInterface : public CSGObject
 		CGUIPreProc* ui_preproc;
 		CGUITime* ui_time;
 		CGUIStructure* ui_structure;
-		CGUISignals* ui_signals;
+		//CGUISignals* ui_signals;
 
 	protected:
 		/* return true if str starts with cmd

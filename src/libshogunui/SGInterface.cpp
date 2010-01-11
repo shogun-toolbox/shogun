@@ -1183,8 +1183,8 @@ CSGInterface::CSGInterface(bool print_copyright)
 	ui_pluginestimate(new CGUIPluginEstimate(this)),
 	ui_preproc(new CGUIPreProc(this)),
 	ui_time(new CGUITime(this)),
-	ui_structure(new CGUIStructure(this)),
-	ui_signals(new CGUISignals(this))
+  ui_structure(new CGUIStructure(this))/*,
+/	ui_signals(new CGUISignals(this))*/
 {
 	if (print_copyright)
 	{
@@ -1214,7 +1214,7 @@ CSGInterface::~CSGInterface()
 	delete ui_labels;
 	delete ui_math;
 	delete ui_structure;
-	delete ui_signals;
+	//delete ui_signals; 
 	delete ui_time;
 	delete ui_distance;
 
@@ -6203,7 +6203,7 @@ bool CSGInterface::cmd_get_plif_struct()
 
 	return true;
 }
-bool CSGInterface::cmd_signals_set_model()
+/*bool CSGInterface::cmd_signals_set_model()
 {
 	// ARG 1
 	int32_t len=0;
@@ -6215,7 +6215,7 @@ bool CSGInterface::cmd_signals_set_model()
 	tpm->read_models_from_file(filename);
 
 	return true;
-}
+	}*/
 bool CSGInterface::cmd_signals_set_positions()
 {
 	return true;
