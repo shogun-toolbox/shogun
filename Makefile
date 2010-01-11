@@ -143,19 +143,22 @@ update-webpage:
 	md5sum $(DESTDIR).tar.bz2 >$(DESTDIR).md5sum
 	gpg --sign $(DESTDIR).tar.bz2
 
-	ssh vserver mkdir -m 0755 -p /pub/shogun-ftp/releases/$(VERSIONBASE)/sources
+	ssh km mkdir -m 0755 -p /var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources
 	scp $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
-		vserver:/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/
-	ssh vserver chmod 644 "/pub/shogun-ftp/releases/$(VERSIONBASE)/sources/*.*"
+		km:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
+	ssh km chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.*"
 	
 	rm -rf doc/html
 	make -C doc
-	ssh vserver rm -f "/pub/shogun/doc/*.*"
-	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh vserver tar -C /pub/shogun/doc/ -xjvf -
+	ssh km rm -f "/var/www/shogun-toolbox.org/doc/*.*"
+	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/ -xjvf -
+	ssh km find /var/www/shogun-toolbox.org/doc/ -type f -exec chmod 644 \{\} "\;"
+	ssh km find /var/www/shogun-toolbox.org/doc/ -type d -exec chmod 755 \{\} "\;"
 	make -C doc doc_cn
-	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh vserver tar -C /pub/shogun/doc_cn/ -xjvf -
-	ssh vserver chmod 644 "/pub/shogun/doc*/*.*"
-	ssh vserver ./bin/shogun_doc_install.sh
+	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc_cn/ -xjvf -
+	ssh km find /var/www/shogun-toolbox.org/doc_cn/ -type f -exec chmod 644 \{\} "\;"
+	ssh km find /var/www/shogun-toolbox.org/doc_cn/ -type d -exec chmod 755 \{\} "\;"
+	ssh km ./bin/shogun_doc_install.sh
 	rm -rf doc/html*
 
 	cd ../../website && make
