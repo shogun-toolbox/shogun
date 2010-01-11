@@ -63,9 +63,9 @@ namespace shogun
  * Soeren Sonnenburg, Gunnar Raetsch, Christin Schaefer, and Bernhard Schoelkopf.
  * Large Scale Multiple Kernel Learning. Journal of Machine Learning Research, 7:1531-1565, July 2006.
  *
- * The first approach (also called the wrapper algorithm) wrapps around a
+ * The first approach (also called the wrapper algorithm) wraps around a
  * single kernel SVMs, alternatingly solving for \f$\alpha\f$ and \f$\beta\f$.
- * It is using a traditional SVM to generate new violated constraings and thus
+ * It is using a traditional SVM to generate new violated constraints and thus
  * requires a single kernel SVM and any of the SVMs contained in shogun
  * can be used. In the MKL step either a linear program is solved via glpk or
  * cplex or analytically or a newton (for norms>1) step is performed.
