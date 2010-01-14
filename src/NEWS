@@ -5,6 +5,7 @@
 	* Features:
 		- Implemented multi task kernel normalizer.
 		- Implement SNP kernel.
+		- Implement time limit for libsvm.
 	* Bugfixes:
 		- Fix set_w() for linear classifiers.
 		- Static Octave, Python, Cmdline and Modular Python interfaces Compile

@@ -147,7 +147,7 @@ template <class Trie> class CTrie;
  * recursion in computing positional oligomer importance matrices (POIMs) where
  * the structure requires * 20+3*8 (POIMTrie) bytes.
  *
- * Finally note that this try may use compact internal nodes (for strings that
+ * Finally note that this tree may use compact internal nodes (for strings that
  * appear without modifications, thus not requiring further branches), which
  * may save a lot of memory on higher degree tries.
  *
