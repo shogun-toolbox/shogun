@@ -17,6 +17,9 @@ CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 		int32_t start_order, int32_t order, int32_t from_order,
 		int32_t hash_bits) : CDotFeatures()
 {
+	ASSERT(start_order>=0);
+	ASSERT(start_order<order);
+	ASSERT(hash_bits>0);
 	ASSERT(str);
 	ASSERT(str->have_same_length());
 	SG_REF(str);
@@ -31,9 +34,9 @@ CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 	degree=order;
 	start_degree=start_order;
 	from_degree=from_order;
+	m_hash_bits=hash_bits;
 	set_wd_weights();
 	set_normalization_const();
-	m_hash_bits=hash_bits;
 }
 
 CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
@@ -158,7 +161,10 @@ void CHashedWDFeatures::set_wd_weights()
 	for (int32_t i=0; i<degree; i++)
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 
-	SG_DEBUG("created HashedWDFeatures with d=%d (%d), alphabetsize=%d, dim=%d partial_dim=%d num=%d, len=%d\n", degree, from_degree, alphabet_size, w_dim, partial_w_dim, num_strings, string_length);
+	SG_DEBUG("created HashedWDFeatures with d=%d (%d), alphabetsize=%d, "
+			"dim=%d partial_dim=%d num=%d, len=%d\n", 
+			degree, from_degree, alphabet_size, 
+			w_dim, partial_w_dim, num_strings, string_length);
 }
 
 
