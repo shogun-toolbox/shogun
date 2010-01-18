@@ -7,7 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  *
- * The MD5 and Murmor hashing functions were integrated from public sources.
+ * The MD5 and Murmur hashing functions were integrated from public sources.
  * Their respective copyrights follow.
  *
  * MD5
