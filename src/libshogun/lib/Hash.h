@@ -84,7 +84,7 @@ class CHash : public CSGObject
 		 *
 		 * @return hash
 		 */
-		uint32_t MurmurHash2(uint8_t* data, int32_t len, uint32_t seed);
+		static uint32_t MurmurHash2(uint8_t* data, int32_t len, uint32_t seed);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Hash"; }
