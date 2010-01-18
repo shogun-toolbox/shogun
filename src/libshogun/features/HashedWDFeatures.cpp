@@ -14,7 +14,7 @@
 using namespace shogun;
 
 CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
-		int32_t order, int32_t start_order, int32_t from_order,
+		int32_t start_order, int32_t order, int32_t from_order,
 		int32_t hash_bits) : CDotFeatures()
 {
 	ASSERT(str);
@@ -95,9 +95,9 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 
-	int32_t offs=0;
+	int32_t offs=partial_w_dim*len*start_degree;
 
-	for (int32_t k=0; k<lim; k++)
+	for (int32_t k=start_degree; k<lim; k++)
 	{
 		float64_t wd = wd_weights[k];
 
@@ -124,9 +124,9 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 
-	int32_t offs=0;
+	int32_t offs=partial_w_dim*len*start_degree;
 
-	for (int32_t k=0; k<lim; k++)
+	for (int32_t k=start_degree; k<lim; k++)
 	{
 		float64_t wd = alpha*wd_weights[k]/normalization_const;
 
