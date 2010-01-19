@@ -139,7 +139,11 @@ class CHashedWDFeatures : public CDotFeatures
 		/** compute hash for string str of len l*/
 		inline uint32_t hash(uint8_t* str, int32_t len)
 		{
-			return CHash::MurmurHash2(str, len, 0xDE234217) & mask;
+			uint32_t h=CHash::MurmurHash2(str, len, 0xDEADBEAF);
+#ifdef DEBUG_HASHEDWD
+			SG_PRINT("hash=%d masked_hash=%d mask=%x\n", h, h & mask, mask);
+#endif
+			return h  & mask;
 		}
 
 

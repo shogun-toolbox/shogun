@@ -19,6 +19,7 @@ CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 {
 	ASSERT(start_order>=0);
 	ASSERT(start_order<order);
+	ASSERT(order<=from_order);
 	ASSERT(hash_bits>0);
 	ASSERT(str);
 	ASSERT(str->have_same_length());
@@ -98,7 +99,7 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 
-	int32_t offs=partial_w_dim*len*start_degree;
+	uint32_t offs=partial_w_dim*len*start_degree;
 
 	for (int32_t k=start_degree; k<lim; k++)
 	{
@@ -107,7 +108,11 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 		uint32_t o=offs;
 		for (int32_t i=0; i+k < len; i++) 
 		{
-			sum+=vec2[o+hash(&vec[i], k)]*wd;
+			const uint32_t h=hash(&vec[i], k);
+#ifdef DEBUG_HASHEDWD
+			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h);
+#endif
+			sum+=vec2[o+h]*wd;
 			o+=partial_w_dim;
 		}
 		offs+=partial_w_dim*len;
@@ -127,7 +132,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 
-	int32_t offs=partial_w_dim*len*start_degree;
+	uint32_t offs=partial_w_dim*len*start_degree;
 
 	for (int32_t k=start_degree; k<lim; k++)
 	{
@@ -136,10 +141,14 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 		if (abs_val)
 			wd=CMath::abs(wd);
 
-		int32_t o=offs;
+		uint32_t o=offs;
 		for (int32_t i=0; i+k < len; i++) 
 		{
-			vec2[o+hash(&vec[i], k)]+=wd;
+			const uint32_t h=hash(&vec[i], k);
+#ifdef DEBUG_HASHEDWD
+			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h);
+#endif
+			vec2[o+h]+=wd;
 			o+=partial_w_dim;
 		}
 		offs+=partial_w_dim*len;
@@ -152,7 +161,7 @@ void CHashedWDFeatures::set_wd_weights()
 {
 	ASSERT(degree>0);
 
-	mask=(uint32_t) (((uint64_t) 2)<<m_hash_bits)-1;
+	mask=(uint32_t) (((uint64_t) 1)<<m_hash_bits)-1;
 	partial_w_dim=1<<m_hash_bits;
 	w_dim=partial_w_dim*string_length*(degree-start_degree);
 
