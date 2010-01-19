@@ -141,7 +141,7 @@ class CHashedWDFeatures : public CDotFeatures
 		{
 			uint32_t h=CHash::MurmurHash2(str, len, 0xDEADBEAF);
 #ifdef DEBUG_HASHEDWD
-			SG_PRINT("hash=%d masked_hash=%d mask=%x\n", h, h & mask, mask);
+			SG_PRINT("str[0]=%d len=%d hash=%d masked_hash=%d mask=%x\n", str[0], len, h, h & mask, mask);
 #endif
 			return h  & mask;
 		}
