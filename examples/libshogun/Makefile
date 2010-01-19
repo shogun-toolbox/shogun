@@ -12,8 +12,10 @@ LINKFLAGS+=$(LIBS) -L$(LIB_PATH)
 CXXFLAGS+=-I$(INC_PATH) $(INCLUDES)
 CC=c++
 
-TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm classifier_mklmulticlass \
-	kernel_gaussian kernel_revlin library_dyn_int library_gc_array library_indirect_object
+TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
+		  classifier_mklmulticlass kernel_gaussian kernel_revlin \
+		  library_dyn_int library_gc_array library_indirect_object \
+		  library_hash
 
 all: $(TARGETS)
 
