@@ -52,6 +52,7 @@ CWDFeatures::CWDFeatures(const CWDFeatures& orig)
 CWDFeatures::~CWDFeatures()
 {
 	SG_UNREF(strings);
+	delete[] wd_weights;
 }
 
 float64_t CWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)

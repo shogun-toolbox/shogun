@@ -59,6 +59,7 @@ CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
 CHashedWDFeatures::~CHashedWDFeatures()
 {
 	SG_UNREF(strings);
+	delete[] wd_weights;
 }
 
 float64_t CHashedWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
@@ -99,7 +100,7 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 
-	uint32_t offs=partial_w_dim*len*start_degree;
+	uint32_t offs=0;
 
 	for (int32_t k=start_degree; k<lim; k++)
 	{
@@ -132,7 +133,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 
-	uint32_t offs=partial_w_dim*len*start_degree;
+	uint32_t offs=0;
 
 	for (int32_t k=start_degree; k<lim; k++)
 	{
@@ -181,7 +182,7 @@ void CHashedWDFeatures::set_wd_weights()
 void CHashedWDFeatures::set_normalization_const()
 {
 	normalization_const=0;
-	for (int32_t i=0; i<degree; i++)
+	for (int32_t i=start_degree; i<degree; i++)
 		normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
 
 	normalization_const=CMath::sqrt(normalization_const);
