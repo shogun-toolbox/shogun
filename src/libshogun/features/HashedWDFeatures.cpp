@@ -99,6 +99,8 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
+	uint32_t* val=new uint32_t[len];
+	CMath::fill_vector(val, len, 0xDEADBEAF);
 
 	uint32_t offs=0;
 
@@ -109,15 +111,18 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 		uint32_t o=offs;
 		for (int32_t i=0; i+k < len; i++) 
 		{
-			const uint32_t h=hash(&vec[i], k+1);
+			const uint32_t h=CHash::IncrementalMurmurHash2(vec[i+k], val[i]);
+			val[i]=h;
+			//const uint32_t h=hash(&vec[i], k+1);
 #ifdef DEBUG_HASHEDWD
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h);
 #endif
-			sum+=vec2[o+h]*wd;
+			sum+=vec2[o+(h & mask)]*wd;
 			o+=partial_w_dim;
 		}
 		offs+=partial_w_dim*len;
 	}
+	delete[] val;
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 
 	return sum/normalization_const;
@@ -132,6 +137,8 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
+	uint32_t* val=new uint32_t[len];
+	CMath::fill_vector(val, len, 0xDEADBEAF);
 
 	uint32_t offs=0;
 
@@ -145,7 +152,9 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 		uint32_t o=offs;
 		for (int32_t i=0; i+k < len; i++) 
 		{
-			const uint32_t h=hash(&vec[i], k+1);
+			const uint32_t h=CHash::IncrementalMurmurHash2(vec[i+k], val[i]);
+			val[i]=h;
+			//const uint32_t h=CHash::MurmurHash2(&vec[i], k+1, 0xDEADBEAF);
 #ifdef DEBUG_HASHEDWD
 			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h);
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h);
@@ -156,6 +165,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 		offs+=partial_w_dim*len;
 	}
 
+	delete[] val;
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 

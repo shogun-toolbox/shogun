@@ -136,17 +136,6 @@ class CHashedWDFeatures : public CDotFeatures
 		/** create wd kernel weighting heuristic */
 		void set_wd_weights();
 
-		/** compute hash for string str of len l*/
-		inline uint32_t hash(uint8_t* str, int32_t len)
-		{
-			uint32_t h=CHash::MurmurHash2(str, len, 0xDEADBEAF);
-#ifdef DEBUG_HASHEDWD
-			SG_PRINT("str[0]=%d len=%d hash=%d masked_hash=%d mask=%x\n", str[0], len, h, h & mask, mask);
-#endif
-			return h  & mask;
-		}
-
-
 	protected:
 		/** stringfeatures the wdfeatures are based on*/
 		CStringFeatures<uint8_t>* strings;
