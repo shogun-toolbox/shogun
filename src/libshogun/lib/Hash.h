@@ -86,6 +86,15 @@ class CHash : public CSGObject
 		 */
 		static uint32_t MurmurHash2(uint8_t* data, int32_t len, uint32_t seed);
 
+		/** Incremental Murmur like Hash
+		 *
+		 * @param data byte to hash
+		 * @param seed initial seed / hash on subsequent calls
+		 *
+		 * @return hash
+		 */
+		static uint32_t IncrementalMurmurHash2(uint8_t data, uint32_t h);
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Hash"; }
 

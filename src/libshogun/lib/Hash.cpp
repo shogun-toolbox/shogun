@@ -369,6 +369,7 @@ void CHash::MD5Transform(uint32_t buf[4], uint32_t const in[16])
     buf[2] += c;
     buf[3] += d;
 }
+#endif
 
 uint32_t CHash::MurmurHash2(uint8_t* data, int32_t len, uint32_t seed)
 {
@@ -419,4 +420,22 @@ uint32_t CHash::MurmurHash2(uint8_t* data, int32_t len, uint32_t seed)
 	return h;
 } 
 
-#endif
+uint32_t CHash::IncrementalMurmurHash2(uint8_t data, uint32_t h)
+{
+	// 'm' and 'r' are mixing constants generated offline.
+	// They're not really 'magic', they just happen to work well.
+
+	const uint32_t m = 0x5bd1e995;
+
+	h ^= data;
+	h *= m;
+
+	// Do a few final mixes of the hash to ensure the last few
+	// bytes are well-incorporated.
+
+	h ^= h >> 13;
+	h *= m;
+	h ^= h >> 15;
+
+	return h;
+} 
