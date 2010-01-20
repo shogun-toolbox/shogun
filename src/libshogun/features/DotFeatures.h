@@ -162,7 +162,7 @@ class CDotFeatures : public CFeatures
 			}
 			t.stop();
 
-			SG_PRINT("Time to process %dxnum=%d add_to_dense_vec ops %f\n",
+			SG_PRINT("Time to process %d x num=%d add_to_dense_vec ops %fs\n",
 					repeats, num, t.time_diff_sec());
 
 			delete[] w;
@@ -177,14 +177,14 @@ class CDotFeatures : public CFeatures
 			float64_t* out= new float64_t[num];
 			float64_t* alphas= new float64_t[num];
 			CMath::fill_vector(w, d, 1.172343);
-			CMath::fill_vector(alphas, d, 2.3417);
+			CMath::fill_vector(alphas, num, 2.3417);
 
 			CTime t;
 			for (int32_t r=0; r<repeats; r++)
 					dense_dot_range(out, 0, num, alphas, w, d, 23);
 			t.stop();
 
-			SG_PRINT("Time to process %dxnum=%d add_to_dense_vec ops %f\n",
+			SG_PRINT("Time to process %d x num=%d dense_dot_range ops: %fs\n",
 					repeats, num, t.time_diff_sec());
 
 			delete[] alphas;
