@@ -4,14 +4,17 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2009-2010 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
  */
 
 #ifndef _DOTFEATURES_H___
 #define _DOTFEATURES_H___
 
 #include "lib/common.h"
+#include "lib/Time.h"
+#include "lib/Mathematics.h"
 #include "features/Features.h"
 
 namespace shogun
@@ -142,6 +145,52 @@ class CDotFeatures : public CFeatures
 		 * @param num_vec number of vectors (columns of matrix)
 		 */
 		virtual void get_feature_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_vec);
+
+		/** run benchmark for add_to_dense_vec */
+		void benchmark_add_to_dense_vector(int32_t repeats=5)
+		{
+			int32_t num=get_num_vectors();
+			int32_t d=get_dim_feature_space();
+			float64_t* w= new float64_t[d];
+			CMath::fill_vector(w, d, 0.0);
+
+			CTime t;
+			for (int32_t r=0; r<repeats; r++)
+			{
+				for (int32_t i=0; i<num; i++)
+					add_to_dense_vec(1.172343*(r+1), i, w, d);
+			}
+			t.stop();
+
+			SG_PRINT("Time to process %dxnum=%d add_to_dense_vec ops %f\n",
+					repeats, num, t.time_diff_sec());
+
+			delete[] w;
+		}
+
+		/** run benchmark for dense_dot_range */
+		void benchmark_dense_dot_range(int32_t repeats=5)
+		{
+			int32_t num=get_num_vectors();
+			int32_t d=get_dim_feature_space();
+			float64_t* w= new float64_t[d];
+			float64_t* out= new float64_t[num];
+			float64_t* alphas= new float64_t[num];
+			CMath::fill_vector(w, d, 1.172343);
+			CMath::fill_vector(alphas, d, 2.3417);
+
+			CTime t;
+			for (int32_t r=0; r<repeats; r++)
+					dense_dot_range(out, 0, num, alphas, w, d, 23);
+			t.stop();
+
+			SG_PRINT("Time to process %dxnum=%d add_to_dense_vec ops %f\n",
+					repeats, num, t.time_diff_sec());
+
+			delete[] alphas;
+			delete[] out;
+			delete[] w;
+		}
 
 	protected:
 		/** display progress output

@@ -214,6 +214,11 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		upper_bound[2] = Cp;
 	}
 
+	int n = prob->n;
+
+	if (prob->use_bias)
+		n--;
+
 	for(i=0; i<w_size; i++)
 		w[i] = 0;
 	for(i=0; i<l; i++)
@@ -243,11 +248,6 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			int j = i+rand()%(active_size-i);
 			CMath::swap(index[i], index[j]);
 		}
-
-		int n = prob->n;
-
-		if (prob->use_bias)
-			n--;
 
 		for (s=0;s<active_size;s++)
 		{
@@ -299,14 +299,11 @@ void CLibLinear::solve_l2r_l1l2_svc(
 				double alpha_old = alpha[i];
 				alpha[i] = CMath::min(CMath::max(alpha[i] - G/QD[i], 0.0), C);
 				d = (alpha[i] - alpha_old)*yi;
-				int n = prob->n;
+
+				prob->x->add_to_dense_vec(d, i, w, n);
+
 				if (prob->use_bias)
-				{
-					prob->x->add_to_dense_vec(d, i, w, n-1);
-					w[n-1]+=d;
-				}
-				else
-					prob->x->add_to_dense_vec(d, i, w, n);
+					w[n]+=d;
 			}
 		}
 
@@ -379,7 +376,7 @@ void CLibLinear::solve_l1r_l2_svc(
 	problem *prob_col, double eps, double Cp, double Cn)
 {
 	SG_NOTIMPLEMENTED;
-/*
+	/*
 	int l = prob_col->l;
 	int w_size = prob_col->n;
 	int j, s, iter = 0;
@@ -403,6 +400,10 @@ void CLibLinear::solve_l1r_l2_svc(
 	feature_node *x;
 
 	double C[3] = {Cn,0,Cp};
+
+	int n = prob_col->n;
+	if (prob->use_bias)
+		n--;
 
 	for(j=0; j<l; j++)
 	{
@@ -660,6 +661,7 @@ void CLibLinear::solve_l1r_lr(
 	const problem *prob_col, double eps, 
 	double Cp, double Cn)
 {
+	SG_NOTIMPLEMENTED;
 	/*
 	int l = prob_col->l;
 	int w_size = prob_col->n;

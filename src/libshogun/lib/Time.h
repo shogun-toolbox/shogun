@@ -47,6 +47,7 @@ class CTime : public CSGObject
 		clock_t cur_runtime_diff(bool verbose=false);
 
 		/** get time difference between start and NOW in seconds
+		 * (wall clock time)
 		 *
 		 * @param verbose if time difference shall be printed
 		 * @return time difference between start and NOW in seconds
@@ -61,6 +62,7 @@ class CTime : public CSGObject
 		float64_t start(bool verbose=false);
 
 		/** get time difference between start and NOW in seconds
+		 * (wall clock time)
 		 *
 		 * @param verbose if time difference shall be printed
 		 * @return time difference between start and NOW in seconds
