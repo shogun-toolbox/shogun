@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007-2010 Soeren Sonnenburg
+ * Copyright (c) 2007-2009 The LIBLINEAR Project.
+ * Copyright (C) 2007-2010 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _LIBLINEAR_H___
@@ -16,14 +17,29 @@
 #ifdef HAVE_LAPACK
 #include "lib/common.h"
 #include "classifier/LinearClassifier.h"
+#include "classifier/svm/SVM_linear.h"
 
 namespace shogun
 {
-enum LIBLINEAR_LOSS
-{
-	LR = 0,
-	L2 = 1
-};
+	/** liblinar solver type */
+	enum LIBLINEAR_SOLVER_TYPE
+	{
+		/// L2 regularized linear logistic regression
+		L2R_LR,
+		/// L2 regularized SVM with L2-loss using dual coordinate descent
+		L2R_L2LOSS_SVC_DUAL,
+		/// L2 regularized SVM with L2-loss using newton in the primal
+		L2R_L2LOSS_SVC,
+		/// L2 regularized linear SVM with L1-loss using dual coordinate descent
+		// (default since this is the standard SVM)
+		L2R_L1LOSS_SVC_DUAL,
+		/// linear multi-class svm by Crammer and Singer
+		MCSVM_CS,
+		/// L1 regularized SVM with L2-loss using dual coordinate descent
+		L1R_L2LOSS_SVC,
+		/// L1 regularized logistic regression
+		L1R_LR
+	};
 
 /** @brief class to implement LibLinear */
 class CLibLinear : public CLinearClassifier
@@ -31,9 +47,9 @@ class CLibLinear : public CLinearClassifier
 	public:
 		/** constructor
 		 *
-		 * @param loss loss
+		 * @param liblinear_solver_type liblinear_solver_type
 		 */
-		CLibLinear(LIBLINEAR_LOSS loss);
+		CLibLinear(LIBLINEAR_SOLVER_TYPE liblinear_solver_type);
 
 		/** constructor
 		 *
@@ -46,6 +62,16 @@ class CLibLinear : public CLinearClassifier
 			CLabels* trainlab);
 
 		virtual ~CLibLinear();
+
+		inline LIBLINEAR_SOLVER_TYPE get_liblinear_solver_type()
+		{
+			return liblinear_solver_type;
+		}
+
+		inline void set_liblinear_solver_type(LIBLINEAR_SOLVER_TYPE st)
+		{
+			liblinear_solver_type=st;
+		}
 
 		/** train linear SVM classifier
 		 *
@@ -109,6 +135,15 @@ class CLibLinear : public CLinearClassifier
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LibLinear"; }
 
+	private:
+		void train_one(const problem *prob, const parameter *param, double Cp, double Cn);
+		void solve_l2r_l1l2_svc(
+			const problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st);
+
+		void solve_l1r_l2_svc(problem *prob_col, double eps, double Cp, double Cn); 
+		void solve_l1r_lr(const problem *prob_col, double eps, double Cp, double Cn);
+
+
 	protected:
 		/** C1 */
 		float64_t C1;
@@ -119,8 +154,8 @@ class CLibLinear : public CLinearClassifier
 		/** epsilon */
 		float64_t epsilon;
 
-		/** loss */
-		LIBLINEAR_LOSS loss;
+		/** solver type */
+		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;
 };
 }
 #endif //HAVE_LAPACK

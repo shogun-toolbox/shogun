@@ -469,7 +469,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		void add_to_dense_vec(float64_t alpha, int32_t num, float64_t* vec, int32_t dim, bool abs_val=false)
 		{
 			ASSERT(vec);
-			ASSERT(dim==num_features);
+			if (dim!=num_features)
+			{
+				SG_ERROR("dimension of vec (=%d) does not match number of features (=%d)\n",
+						dim, num_features);
+			}
 
 			bool vfree;
 			int32_t num_feat;
@@ -1311,7 +1315,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 		{
 			ASSERT(vec2);
-			ASSERT(vec2_len==num_features);
+			if (vec2_len!=num_features)
+			{
+				SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
+						vec2_len, num_features);
+			}
 			float64_t result=0;
 
 			bool vfree;
