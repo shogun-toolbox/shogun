@@ -130,6 +130,12 @@ class CHashedWDFeatures : public CDotFeatures
 		 * @param n n=0 means automagic */
 		void set_normalization_const(float64_t n=0);
 
+		/** get normalization constant */
+		inline float64_t get_normalization_const()
+		{
+			return normalization_const;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "HashedWDFeatures"; }
 
