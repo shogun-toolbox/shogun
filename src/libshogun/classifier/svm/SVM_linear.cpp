@@ -139,20 +139,17 @@ void l2r_lr_fun::Hv(double *s, double *Hs)
 
 void l2r_lr_fun::Xv(double *v, double *res_Xv)
 {
-	int i;
-	int l=prob->l;
+	int32_t l=prob->l;
 	int32_t n=prob->n;
+	float64_t bias=0;
 
 	if (prob->use_bias)
-		n--;
-
-	for(i=0;i<l;i++)
 	{
-		res_Xv[i]=prob->x->dense_dot(i, v, n);
-
-		if (prob->use_bias)
-			res_Xv[i]+=v[n];
+		n--;
+		bias=v[n];
 	}
+
+	prob->x->dense_dot_range(res_Xv, 0, l, NULL, v, n, bias);
 }
 
 void l2r_lr_fun::XTv(double *v, double *res_XTv)
@@ -275,17 +272,15 @@ void l2r_l2_svc_fun::Xv(double *v, double *res_Xv)
 {
 	int32_t l=prob->l;
 	int32_t n=prob->n;
+	float64_t bias=0;
 
 	if (prob->use_bias)
-		n--;
-
-	for (int32_t i=0;i<l;i++)
 	{
-		res_Xv[i]=prob->x->dense_dot(i, v, n);
-
-		if (prob->use_bias)
-			res_Xv[i]+=v[n];
+		n--;
+		bias=v[n];
 	}
+
+	prob->x->dense_dot_range(res_Xv, 0, l, NULL, v, n, bias);
 }
 
 void l2r_l2_svc_fun::subXv(double *v, double *res_Xv)
