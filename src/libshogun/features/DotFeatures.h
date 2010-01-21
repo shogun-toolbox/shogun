@@ -147,50 +147,10 @@ class CDotFeatures : public CFeatures
 		virtual void get_feature_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_vec);
 
 		/** run benchmark for add_to_dense_vec */
-		void benchmark_add_to_dense_vector(int32_t repeats=5)
-		{
-			int32_t num=get_num_vectors();
-			int32_t d=get_dim_feature_space();
-			float64_t* w= new float64_t[d];
-			CMath::fill_vector(w, d, 0.0);
-
-			CTime t;
-			for (int32_t r=0; r<repeats; r++)
-			{
-				for (int32_t i=0; i<num; i++)
-					add_to_dense_vec(1.172343*(r+1), i, w, d);
-			}
-			t.stop();
-
-			SG_PRINT("Time to process %d x num=%d add_to_dense_vec ops %fs\n",
-					repeats, num, t.time_diff_sec());
-
-			delete[] w;
-		}
+		void benchmark_add_to_dense_vector(int32_t repeats=5);
 
 		/** run benchmark for dense_dot_range */
-		void benchmark_dense_dot_range(int32_t repeats=5)
-		{
-			int32_t num=get_num_vectors();
-			int32_t d=get_dim_feature_space();
-			float64_t* w= new float64_t[d];
-			float64_t* out= new float64_t[num];
-			float64_t* alphas= new float64_t[num];
-			CMath::fill_vector(w, d, 1.172343);
-			CMath::fill_vector(alphas, num, 2.3417);
-
-			CTime t;
-			for (int32_t r=0; r<repeats; r++)
-					dense_dot_range(out, 0, num, alphas, w, d, 23);
-			t.stop();
-
-			SG_PRINT("Time to process %d x num=%d dense_dot_range ops: %fs\n",
-					repeats, num, t.time_diff_sec());
-
-			delete[] alphas;
-			delete[] out;
-			delete[] w;
-		}
+		void benchmark_dense_dot_range(int32_t repeats=5);
 
 	protected:
 		/** display progress output

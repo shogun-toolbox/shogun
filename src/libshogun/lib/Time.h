@@ -86,11 +86,10 @@ class CTime : public CSGObject
 		 *
 		 * @return runtime
 		 */
-		static int64_t get_runtime()
+		static float64_t get_runtime()
 		{
 			clock_t start_runtime = clock();
-			return(
-				(int64_t) ((float64_t)start_runtime*100.0/(float64_t)CLOCKS_PER_SEC));
+			return ((float64_t) start_runtime)/CLOCKS_PER_SEC;
 		}
 
 		/** get current time in seconds
