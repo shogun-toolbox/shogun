@@ -43,7 +43,8 @@ CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
 	: CDotFeatures(orig), strings(orig.strings),
 	degree(orig.degree), start_degree(orig.start_degree), 
-	from_degree(orig.from_degree), m_hash_bits(orig.m_hash_bits)
+	from_degree(orig.from_degree), m_hash_bits(orig.m_hash_bits),
+	normalization_const(orig.normalization_const)
 {
 	SG_REF(strings);
 	string_length=strings->get_max_vector_length();
@@ -53,7 +54,6 @@ CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
 	SG_UNREF(alpha);
 
 	set_wd_weights();
-	set_normalization_const();
 }
 
 CHashedWDFeatures::~CHashedWDFeatures()
@@ -100,9 +100,17 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 	uint32_t* val=new uint32_t[len];
-	CMath::fill_vector(val, len, 0xDEADBEAF);
 
 	uint32_t offs=0;
+
+	if (start_degree>0)
+	{
+		// compute hash for strings of length start_degree-1
+		for (int32_t i=0; i+start_degree < len; i++) 
+			val[i]=CHash::MurmurHash2(&vec[i], start_degree, 0xDEADBEAF);
+	}
+	else
+		CMath::fill_vector(val, len, 0xDEADBEAF);
 
 	for (int32_t k=start_degree; k<lim; k++)
 	{
@@ -113,7 +121,6 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 		{
 			const uint32_t h=CHash::IncrementalMurmurHash2(vec[i+k], val[i]);
 			val[i]=h;
-			//const uint32_t h=hash(&vec[i], k+1);
 #ifdef DEBUG_HASHEDWD
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h);
 #endif
@@ -138,9 +145,17 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 	uint32_t* val=new uint32_t[len];
-	CMath::fill_vector(val, len, 0xDEADBEAF);
 
 	uint32_t offs=0;
+
+	if (start_degree>0)
+	{
+		// compute hash for strings of length start_degree-1
+		for (int32_t i=0; i+start_degree < len; i++) 
+			val[i]=CHash::MurmurHash2(&vec[i], start_degree, 0xDEADBEAF);
+	}
+	else
+		CMath::fill_vector(val, len, 0xDEADBEAF);
 
 	for (int32_t k=start_degree; k<lim; k++)
 	{
@@ -154,7 +169,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 		{
 			const uint32_t h=CHash::IncrementalMurmurHash2(vec[i+k], val[i]);
 			val[i]=h;
-			//const uint32_t h=CHash::MurmurHash2(&vec[i], k+1, 0xDEADBEAF);
+
 #ifdef DEBUG_HASHEDWD
 			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h);
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h);
@@ -189,13 +204,19 @@ void CHashedWDFeatures::set_wd_weights()
 }
 
 
-void CHashedWDFeatures::set_normalization_const()
+void CHashedWDFeatures::set_normalization_const(float64_t n)
 {
-	normalization_const=0;
-	for (int32_t i=start_degree; i<degree; i++)
-		normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
+	if (n==0)
+	{
+		normalization_const=0;
+		for (int32_t i=0; i<degree; i++)
+			normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
 
-	normalization_const=CMath::sqrt(normalization_const);
+		normalization_const=CMath::sqrt(normalization_const);
+	}
+	else
+		normalization_const=n;
+
 	SG_DEBUG("normalization_const:%f\n", normalization_const);
 }
 

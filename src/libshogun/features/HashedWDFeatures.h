@@ -126,12 +126,14 @@ class CHashedWDFeatures : public CDotFeatures
 			return sizeof(float64_t);
 		}
 
+		/** set normalization constant
+		 * @param n n=0 means automagic */
+		void set_normalization_const(float64_t n=0);
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "HashedWDFeatures"; }
 
 	protected:
-		/** set normalization constant */
-		void set_normalization_const();
 
 		/** create wd kernel weighting heuristic */
 		void set_wd_weights();
@@ -139,9 +141,6 @@ class CHashedWDFeatures : public CDotFeatures
 	protected:
 		/** stringfeatures the wdfeatures are based on*/
 		CStringFeatures<uint8_t>* strings;
-
-		/** normalization const */
-		float64_t normalization_const;
 
 		/** degree */
 		int32_t degree;
@@ -165,6 +164,9 @@ class CHashedWDFeatures : public CDotFeatures
 		uint32_t mask;
 		/** number of bits in hash */
 		int32_t m_hash_bits;
+
+		/** normalization const */
+		float64_t normalization_const;
 };
 }
 #endif // _HASHEDWDFEATURES_H___
