@@ -159,7 +159,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h);
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h);
 #endif
-			vec2[o+h]+=wd;
+			vec2[o+(h & mask)]+=wd;
 			o+=partial_w_dim;
 		}
 		offs+=partial_w_dim*len;
