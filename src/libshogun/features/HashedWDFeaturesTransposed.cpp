@@ -152,8 +152,8 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", vec_len, w_dim);
 
 	int32_t num_rows=degree-1;
-	uint32_t* index=new uint32_t[num_strings*num_rows*degree];
-	CMath::fill_vector(index, num_strings*num_rows*degree, 0xDEADBEAF);
+	uint32_t* index=new uint32_t[num_strings*degree];
+	CMath::fill_vector(&index[start], stop-start, 0xDEADBEAF);
 	CMath::fill_vector(&output[start], stop-start, 0.0);
 
 	uint32_t offs=0;
@@ -165,13 +165,13 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		{
 			float64_t wd = wd_weights[k];
 			uint8_t* dim=transposed_strings[i+k].string;
+			uint32_t* cur_row=&index[num_strings*((i+k) % degree)];
+			uint32_t* next_row=&index[num_strings*((i+k+1) % degree)];
 
 			for (int32_t j=start; j<stop; j++)
 			{
-				//const uint32_t h=CHash::IncrementalMurmurHash2(dim[j], index[j]);
-				uint32_t ii=num_rows*num_strings*(i%num_rows)+j*num_rows+k;
-				const uint32_t h=CHash::IncrementalMurmurHash2(dim[j], index[ii]);
-				index[ii+1]=h;
+				const uint32_t h=CHash::IncrementalMurmurHash2(dim[j], cur_row[j]);
+				next_row[j]=h;
 				output[j]+=vec[o + (h & mask)]*wd;
 			}
 			o+=partial_w_dim;
