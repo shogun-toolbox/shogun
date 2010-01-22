@@ -82,6 +82,19 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
 
+		/** Compute the dot product for a range of vectors. This function makes use of dense_dot
+		 * alphas[i] * sparse[i]^T * w + b
+		 *
+		 * @param output result for the given vector range
+		 * @param start start vector range from this idx
+		 * @param stop stop vector range at this idx
+		 * @param alphas scalars to multiply with, may be NULL
+		 * @param vec dense vector to compute dot product with
+		 * @param dim length of the dense vector
+		 * @param b bias
+		 */
+		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+
 		/** add vector 1 multiplied with alpha to dense vector2
 		 *
 		 * @param alpha scalar alpha

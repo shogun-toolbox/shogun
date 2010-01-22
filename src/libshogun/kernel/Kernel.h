@@ -150,6 +150,7 @@ class CKernel : public CSGObject
 	friend class CFirstElementKernelNormalizer;
 	friend class CTanimotoKernelNormalizer;
 	friend class CDiceKernelNormalizer;
+	friend class CMultitaskKernelNormalizer;
 
 	public:
 
