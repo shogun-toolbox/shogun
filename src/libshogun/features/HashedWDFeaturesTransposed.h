@@ -8,8 +8,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#ifndef _HASHEDWDFEATURES_H___
-#define _HASHEDWDFEATURES_H___
+#ifndef _HASHEDWDFEATURESTRANSPOSED_H___
+#define _HASHEDWDFEATURESTRANSPOSED_H___
 
 #include "lib/common.h"
 #include "features/DotFeatures.h"
@@ -191,4 +191,4 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		float64_t normalization_const;
 };
 }
-#endif // _HASHEDWDFEATURES_H___
+#endif // _HASHEDWDFEATURESTRANSPOSED_H___

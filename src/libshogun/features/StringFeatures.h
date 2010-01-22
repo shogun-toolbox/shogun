@@ -454,7 +454,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			T_STRING<ST>* sf=new T_STRING<ST>[num_vec];
 
-			for (int32_t i=0; i<num_vectors; i++)
+			for (int32_t i=0; i<num_vec; i++)
 			{
 				sf[i].string=new ST[num_feat];
 				sf[i].length=num_feat;
