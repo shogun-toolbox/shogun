@@ -126,7 +126,10 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 	while (f)
 	{
 		if (first)
+		{
 			f->dense_dot_range(output, start, stop, alphas, vec, dim, b);
+			first=false;
+		}
 		else
 		{
 			f->dense_dot_range(tmp, start, stop, alphas, vec, dim, b);
