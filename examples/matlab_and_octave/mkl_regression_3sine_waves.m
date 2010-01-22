@@ -60,7 +60,7 @@ for kk = 1:length(f)   % Big loop
 	sg('new_classifier', 'MKL_REGRESSION');
 	sg('mkl_parameters', mkl_eps, 0, mkl_norm);
 	sg('mkl_use_interleaved_optimization', 1); % 0, 1
-	sg('set_solver', 'DIRECT'); % DIRECT, NEWTON, CPLEX, AUTO, GLPK
+	sg('set_solver', 'DIRECT'); % DIRECT, NEWTON, CPLEX, AUTO, GLPK, ELASTICNET
 	sg('c', C);
 	sg('svm_epsilon',svm_eps);
 	sg('svr_tube_epsilon',svr_tube);

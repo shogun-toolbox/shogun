@@ -76,7 +76,7 @@ for kk = 1:size(radius_star,1)
   sg('set_labels','TRAIN', train_y);         % set the labels
   sg('new_classifier', 'MKL_CLASSIFICATION');
   sg('mkl_use_interleaved_optimization', 1); % 0, 1
-  sg('set_solver', 'DIRECT'); % DIRECT, NEWTON, CPLEX, AUTO, GLPK
+  sg('set_solver', 'DIRECT'); % DIRECT, NEWTON, CPLEX, AUTO, GLPK, ELASTICNET
   %sg('set_constraint_generator', 'LIBSVM');
   sg('mkl_parameters', mkl_eps, 0, mkl_norm);
   sg('svm_epsilon', svm_eps);
