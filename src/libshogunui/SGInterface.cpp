@@ -5041,10 +5041,7 @@ bool CSGInterface::cmd_set_svm_mkl_parameters()
 	float64_t mkl_norm=1.0;
 	
 	if (m_nrhs==4)
-	{
 		mkl_norm=get_real_from_real_or_str();
-		ASSERT(mkl_norm>0);
-	}
 
 	return ui_classifier->set_svm_mkl_parameters(weight_epsilon, C_mkl, mkl_norm);
 }

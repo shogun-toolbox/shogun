@@ -415,7 +415,7 @@ class CSGInterface : public CSGObject
 		/**
 		 * 
 		 */
-		bool cmd_signals_set_model() {} ;
+		bool cmd_signals_set_model() { return false; };
 		/**
 		 * 
 		 */

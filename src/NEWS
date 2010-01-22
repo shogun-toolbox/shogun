@@ -6,6 +6,9 @@
 		- Implemented multi task kernel normalizer.
 		- Implement SNP kernel.
 		- Implement time limit for libsvm.
+		- Implement Elastic Net MKL
+		- Implement Hashed WD Features
+		- Integrate liblinear 1.51
 	* Bugfixes:
 		- Fix set_w() for linear classifiers.
 		- Static Octave, Python, Cmdline and Modular Python interfaces Compile

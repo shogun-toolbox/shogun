@@ -142,14 +142,10 @@ class CMKL : public CSVM
 
 		/** set mkl norm
 		 *
-		 * @param norm new mkl norm (must be greater equal 1)
+		 * @param norm new mkl norm (must be greater equal 1 except for elastic
+		 * net solver, for which it can be between zero and one (including 0/1!))
 		 */
-		inline void set_mkl_norm(float64_t norm)
-		{
-			if (norm<1)
-				SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; norms>1 nonsparse MKL\n");
-			mkl_norm = norm;
-		}
+		void set_mkl_norm(float64_t norm);
 
 		/** set state of optimization (interleaved or wrapper)
 		 *
@@ -185,6 +181,13 @@ class CMKL : public CSVM
 		 */
 		virtual float64_t compute_mkl_dual_objective();
 
+
+		/** compute ElasticnetMKL dual objective
+		 *
+		 * @return computed dual objective
+		 */
+		float64_t compute_elastic_net_dual_objective();
+		
 		/** set mkl epsilon (optimization accuracy for kernel weights)
 		 *
 		 * @param eps new weight_epsilon
@@ -307,6 +310,40 @@ class CMKL : public CSVM
 		 *
 		 * @return new objective value
 		 */
+		float64_t compute_optimal_betas_elasticnet(
+				float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
+				const float64_t* sumw, const float64_t suma, const float64_t mkl_objective);
+
+		/** helper function to compute the elastic net objective */
+		inline void elastic_net_transform(float64_t *beta, float64_t lmd, int32_t len)
+		{
+			for (int32_t i=0;i <len;i++)
+				beta[i]=beta[i]/(1.0-lmd+lmd*beta[i]);
+		}
+
+		/** helper function to compute the elastic net objective */
+		inline void elastic_net_itransform(float64_t *beta, float64_t lmd, int32_t len)
+		{
+			for (int32_t i=0;i <len;i++)
+				beta[i]=(1-lmd)*beta[i]/(1.0-lmd*beta[i]);
+		}
+
+		/** helper function to compute the elastic net objective */
+		void elastic_net_dual(float64_t *ff, float64_t *gg, float64_t *hh,
+				const float64_t &del, const float64_t* nm, int32_t len,
+				const float64_t &lambda);
+
+		/** given the alphas, compute the corresponding optimal betas
+		 *
+		 * @param beta new betas (kernel weights)
+		 * @param old_beta old betas (previous kernel weights)
+		 * @param num_kernels number of kernels
+		 * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
+		 * @param suma (sum over alphas)
+		 * @param mkl_objective the current mkl objective
+		 *
+		 * @return new objective value
+		 */
 		float64_t compute_optimal_betas_directly(
 				float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
 				const float64_t* sumw, const float64_t suma, const float64_t mkl_objective);
@@ -382,8 +419,11 @@ class CMKL : public CSVM
 		CSVM* svm;
 		/** C_mkl */
 		float64_t C_mkl;
-		/** norm used in mkl must be > 0 */
+		/** norm used in mkl must be > 0
+		 * if ST_ELASTICNET, must be 0<=norm<=1 (0=L1-MKL, 1=Linfty-MKL) */
 		float64_t mkl_norm;
+		/** subkernel weight on the L1-term of ElasticnetMKL */
+		float64_t* beta_local;
 		/** number of mkl steps */
 		int32_t mkl_iterations;
 		/** mkl_epsilon for multiple kernel learning */

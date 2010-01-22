@@ -219,23 +219,38 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_INFO("created Perceptron object\n") ;
 	}
 #ifdef HAVE_LAPACK
-	else if (strcmp(name,"LIBLINEAR_LR")==0)
+	else if (strncmp(name,"LIBLINEAR",9)==0)
 	{
+		LIBLINEAR_SOLVER_TYPE st=L2R_LR;
+		
+		if (strcmp(name,"LIBLINEAR_L2R_LR")==0)
+		{
+			st=L2R_LR;
+			SG_INFO("created LibLinear l2 regularized logistic regression object\n") ;
+		}
+		else if (strcmp(name,"LIBLINEAR_L2R_L2LOSS_SVC_DUAL")==0)
+		{
+			st=L2R_L2LOSS_SVC_DUAL;
+			SG_INFO("created LibLinear l2 regularized l2 loss SVM dual object\n") ;
+		}
+		else if (strcmp(name,"LIBLINEAR_L2R_L2LOSS_SVC")==0)
+		{
+			st=L2R_L2LOSS_SVC;
+			SG_INFO("created LibLinear l2 regularized l2 loss SVM primal object\n") ;
+		}
+		else if (strcmp(name,"LIBLINEAR_L2R_L1LOSS_SVC_DUAL")==0)
+		{
+			st=L2R_L1LOSS_SVC_DUAL;
+			SG_INFO("created LibLinear l2 regularized l1 loss dual SVM object\n") ;
+		}
+		else
+			SG_ERROR("unknown liblinear type\n");
+
 		SG_UNREF(classifier);
-		classifier= new CLibLinear(LR);
+		classifier= new CLibLinear(st);
 		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
 		((CLibLinear*) classifier)->set_epsilon(svm_epsilon);
 		((CLibLinear*) classifier)->set_bias_enabled(svm_use_bias);
-		SG_INFO("created LibLinear logistic regression object\n") ;
-	}
-	else if (strcmp(name,"LIBLINEAR_L2")==0)
-	{
-		SG_UNREF(classifier);
-		classifier= new CLibLinear(L2);
-		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
-		((CLibLinear*) classifier)->set_epsilon(svm_epsilon);
-		((CLibLinear*) classifier)->set_bias_enabled(svm_use_bias);
-		SG_INFO("created LibLinear l2 loss object\n") ;
 	}
 	else if (strcmp(name,"LDA")==0)
 	{
@@ -956,8 +971,8 @@ bool CGUIClassifier::set_svm_mkl_parameters(
 		weight_epsilon=1e-4;
 	if (C<0)
 		C=0;
-	if (norm<=0)
-		SG_ERROR("MKL norm > 0\n");
+	if (norm<0)
+		SG_ERROR("MKL norm >= 0\n");
 
 	svm_weight_epsilon=weight_epsilon;
 	C_mkl=C;
@@ -1506,6 +1521,11 @@ bool CGUIClassifier::set_solver(char* solver)
 	{
 		SG_INFO("Using DIRECT solver\n");
 		s=ST_DIRECT;
+	}
+	else if (strncmp(solver,"ELASTICNET", 10)==0)
+	{
+		SG_INFO("Using ELASTICNET solver\n");
+		s=ST_ELASTICNET;
 	}
 	else if (strncmp(solver,"AUTO", 4)==0)
 	{

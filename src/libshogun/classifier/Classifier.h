@@ -70,7 +70,8 @@ enum ESolverType
 	ST_CPLEX=1,
 	ST_GLPK=2,
 	ST_NEWTON=3,
-	ST_DIRECT=4
+	ST_DIRECT=4,
+	ST_ELASTICNET=5
 };
 
 /** @brief A generic classifier interface.
