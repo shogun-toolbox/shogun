@@ -15,6 +15,8 @@
 #include "kernel/Kernel.h"
 #include <algorithm>
 
+
+
 namespace shogun
 {
 /** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function.
@@ -33,7 +35,7 @@ public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelNormalizer()
+	CMultitaskKernelNormalizer() : scale(1.0)
 	{
 	}
 
@@ -43,7 +45,7 @@ public:
 	 * @param task_rhs task vector with containing task_id for each example for right hand side
 	 */
 	CMultitaskKernelNormalizer(std::vector<int32_t> task_lhs, std::vector<
-			int32_t> task_rhs)
+			int32_t> task_rhs) : scale(1.0)
 	{
 
 		set_task_vector_lhs(task_lhs);
@@ -84,11 +86,25 @@ public:
 	 * @param k kernel */
 	virtual bool init(CKernel* k)
 	{
+
+		//same as first-element normalizer
+		CFeatures* old_lhs=k->lhs;
+		CFeatures* old_rhs=k->rhs;
+		k->lhs=old_lhs;
+		k->rhs=old_lhs;
+
+		scale=k->compute(0, 0);
+
+		k->lhs=old_lhs;
+		k->rhs=old_rhs;
+
 		ASSERT(k);
 		int32_t num_lhs = k->get_num_vec_lhs();
 		int32_t num_rhs = k->get_num_vec_rhs();
 		ASSERT(num_lhs>0);
 		ASSERT(num_rhs>0);
+
+		std::cout << "scale: " << scale << std::endl;
 
 		return true;
 	}
@@ -111,7 +127,7 @@ public:
 				task_idx_rhs);
 
 		//take task similarity into account
-		float64_t similarity = value * task_similarity;
+		float64_t similarity = (value/scale) * task_similarity;
 
 
 		return similarity;
@@ -221,6 +237,9 @@ protected:
 
 	/** task vector indicating to which task each example on the right hand side belongs **/
 	std::vector<int32_t> task_vector_rhs;
+
+	/** scale constant obtained from k(0,0) **/
+	float64_t scale;
 
 };
 }
