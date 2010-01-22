@@ -213,7 +213,6 @@ template <class ST> class CStringFeatures : public CFeatures
 				for (int32_t i=0; i<num_vectors; i++)
 				{
 					features[i].string=new ST[orig.features[i].length];
-					ASSERT(features[i].string);
 					features[i].length=orig.features[i].length;
 					memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].length);
 				}
@@ -431,6 +430,48 @@ template <class ST> class CStringFeatures : public CFeatures
 				// TODO: implement caching
 				return feat;
 			}
+		}
+
+		/** compute and return the transpose of string features matrix
+		 * which will be prepocessed.
+		 * num_feat, num_vectors are returned by reference
+		 * caller has to clean up
+		 *
+		 * note that strings all have to have same length
+		 *
+		 * @param num_feat number of features in matrix
+		 * @param num_vec number of vectors in matrix
+		 * @return transposed string features
+		 */
+		T_STRING<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec)
+		{
+			num_feat=num_vectors;
+			num_vec=get_max_vector_length();
+			ASSERT(have_same_length());
+
+			SG_DEBUG("Allocating memory for transposed string features of size %ld\n",
+					int64_t(num_feat)*num_vec);
+
+			T_STRING<ST>* sf=new T_STRING<ST>[num_vec];
+
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				sf[i].string=new ST[num_feat];
+				sf[i].length=num_feat;
+			}
+
+			for (int32_t i=0; i<num_feat; i++)
+			{
+				int32_t len=0;
+				bool free_vec=false;
+				ST* vec=get_feature_vector(i, len, free_vec);
+
+				for (int32_t j=0; j<num_vec; j++)
+					sf[j].string[i]=vec[j];
+
+				free_feature_vector(vec, i, free_vec);
+			}
+			return sf;
 		}
 
 		/** free feature vector
