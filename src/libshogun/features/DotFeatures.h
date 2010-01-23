@@ -146,6 +146,15 @@ class CDotFeatures : public CFeatures
 		 */
 		virtual void get_feature_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_vec);
 
+		/** get a copy of the feature matrix (in feature space)
+		 * num_feat,num_vectors are returned by reference
+		 *
+		 * @param dst destination to store matrix in
+		 * @param len number of features
+		 * @param num index of vector
+		 */
+		virtual void get_feature_vector(float64_t** dst, int32_t* len, int32_t num);
+
 		/** run benchmark for add_to_dense_vec */
 		void benchmark_add_to_dense_vector(int32_t repeats=5);
 

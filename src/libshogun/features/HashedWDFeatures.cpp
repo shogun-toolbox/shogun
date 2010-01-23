@@ -86,7 +86,7 @@ float64_t CHashedWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 	}
 	strings->free_feature_vector(vec1, vec_idx1, free_vec1);
 	strings->free_feature_vector(vec2, vec_idx2, free_vec2);
-	return sum;
+	return sum/CMath::sq(normalization_const);
 }
 
 float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
