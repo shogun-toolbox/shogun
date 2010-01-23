@@ -47,7 +47,7 @@ void CTron::tron(float64_t *w)
 	for (i=0; i<n; i++)
 		w[i] = 0;
 
-        f = fun_obj->fun(w);
+	f = fun_obj->fun(w);
 	fun_obj->grad(w, g);
 	delta = cblas_dnrm2(n, g, inc);
 	float64_t gnorm1 = delta;
@@ -69,7 +69,7 @@ void CTron::tron(float64_t *w)
 
 		gs = cblas_ddot(n, g, inc, s, inc);
 		prered = -0.5*(gs-cblas_ddot(n, s, inc, r, inc));
-                fnew = fun_obj->fun(w_new);
+			fnew = fun_obj->fun(w_new);
 
 		// Compute the actual reduction.
 	        actred = f - fnew;

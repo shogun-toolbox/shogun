@@ -217,10 +217,7 @@ double l2r_l2_svc_fun::fun(double *w)
 		if (d > 0)
 			f += C[i]*d*d;
 	}
-	f = 2*f;
-	for(i=0;i<w_size;i++)
-		f += w[i]*w[i];
-	f /= 2.0;
+	f += 0.5*CMath::dot(w, w, w_size);
 
 	return(f);
 }
