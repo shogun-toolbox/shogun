@@ -118,24 +118,31 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 
 void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
-	CListElement<CDotFeatures*> * current = NULL ;
+	if (stop<=start)
+		return;
+	ASSERT(dim==num_dimensions);
+
+	CListElement<CDotFeatures*> * current = NULL;
 	CDotFeatures* f=get_first_feature_obj(current);
+	uint32_t offs=0;
 	bool first=true;
 	float64_t* tmp=new float64_t[stop];
 
 	while (f)
 	{
+		int32_t f_dim = f->get_dim_feature_space();
 		if (first)
 		{
-			f->dense_dot_range(output, start, stop, alphas, vec, dim, b);
+			f->dense_dot_range(output, start, stop, alphas, vec+offs, f_dim, b);
 			first=false;
 		}
 		else
 		{
-			f->dense_dot_range(tmp, start, stop, alphas, vec, dim, b);
+			f->dense_dot_range(tmp, start, stop, alphas, vec+offs, f_dim, b);
 			for (int32_t i=start; i<stop; i++)
 				output[i]+=tmp[i];
 		}
+		offs += f_dim;
 		f=get_next_feature_obj(current);
 	}
 	delete[] tmp;
