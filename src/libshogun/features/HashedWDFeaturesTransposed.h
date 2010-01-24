@@ -157,6 +157,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 
 		/** create wd kernel weighting heuristic */
 		void set_wd_weights();
+		static void* dense_dot_range_helper(void* p);
 
 	protected:
 		/** stringfeatures the wdfeatures are based on*/

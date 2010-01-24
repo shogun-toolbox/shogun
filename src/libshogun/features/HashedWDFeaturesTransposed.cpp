@@ -10,8 +10,29 @@
 
 #include "features/HashedWDFeaturesTransposed.h"
 #include "lib/io.h"
+#include "lib/Signal.h"
+#include "base/Parallel.h"
+
+#ifndef WIN32
+#include <pthread.h>
+#endif
 
 using namespace shogun;
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct HASHEDWD_THREAD_PARAM
+{
+	CHashedWDFeaturesTransposed* hf;
+	float64_t* output;
+	int32_t start;
+	int32_t stop;
+	float64_t* alphas;
+	float64_t* vec;
+	float64_t bias;
+	bool progress;
+	uint32_t* index;
+};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t>* str,
 		int32_t start_order, int32_t order, int32_t from_order,
@@ -139,16 +160,114 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 	return sum/normalization_const;
 }
 
-void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t vec_len, float64_t bias)
+void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
-	if (vec_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", vec_len, w_dim);
+	ASSERT(output);
+	ASSERT(start>=0);
+	ASSERT(start<stop);
+	ASSERT(stop<=get_num_vectors());
+	uint32_t* index=new uint32_t[stop];
 
-	uint32_t* index=new uint32_t[stop-start];
+	int32_t num_vectors=stop-start;
+	ASSERT(num_vectors>0);
+
+	int32_t num_threads=parallel->get_num_threads();
+	ASSERT(num_threads>0);
+
+	CSignal::clear_cancel();
+
+	if (dim != w_dim)
+		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim);
+
+#ifndef WIN32
+	if (num_threads < 2)
+	{
+#endif
+		HASHEDWD_THREAD_PARAM params;
+		params.hf=this;
+		params.output=output;
+		params.start=start;
+		params.stop=stop;
+		params.alphas=alphas;
+		params.vec=vec;
+		params.bias=b;
+		params.progress=false; //true;
+		params.index=index;
+		dense_dot_range_helper((void*) &params);
+#ifndef WIN32
+	}
+	else
+	{
+		pthread_t* threads = new pthread_t[num_threads-1];
+		HASHEDWD_THREAD_PARAM* params = new HASHEDWD_THREAD_PARAM[num_threads];
+		int32_t step= num_vectors/num_threads;
+
+		int32_t t;
+
+		for (t=0; t<num_threads-1; t++)
+		{
+			params[t].hf = this;
+			params[t].output = output;
+			params[t].start = start+t*step;
+			params[t].stop = start+(t+1)*step;
+			params[t].alphas=alphas;
+			params[t].vec=vec;
+			params[t].bias=b;
+			params[t].progress = false;
+			params[t].index=index;
+			pthread_create(&threads[t], NULL,
+					CHashedWDFeaturesTransposed::dense_dot_range_helper, (void*)&params[t]);
+		}
+
+		params[t].hf = this;
+		params[t].output = output;
+		params[t].start = start+t*step;
+		params[t].stop = stop;
+		params[t].alphas=alphas;
+		params[t].vec=vec;
+		params[t].bias=b;
+		params[t].progress = false; //true;
+		params[t].index=index;
+		CHashedWDFeaturesTransposed::dense_dot_range_helper((void*) &params[t]);
+
+		for (t=0; t<num_threads-1; t++)
+			pthread_join(threads[t], NULL);
+
+		delete[] params;
+		delete[] threads;
+		delete[] index;
+	}
+#endif
+
+#ifndef WIN32
+		if ( CSignal::cancel_computations() )
+			SG_INFO( "prematurely stopped.           \n");
+#endif
+}
+
+void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
+{
+	HASHEDWD_THREAD_PARAM* par=(HASHEDWD_THREAD_PARAM*) p;
+	CHashedWDFeaturesTransposed* hf=par->hf;
+	float64_t* output=par->output;
+	int32_t start=par->start;
+	int32_t stop=par->stop;
+	float64_t* alphas=par->alphas;
+	float64_t* vec=par->vec;
+	float64_t bias=par->bias;
+	bool progress=par->progress;
+	uint32_t* index=par->index;
+	int32_t string_length=hf->string_length;
+	int32_t degree=hf->degree;
+	float64_t* wd_weights=hf->wd_weights;
+	T_STRING<uint8_t>* transposed_strings=hf->transposed_strings;
+	uint32_t mask=hf->mask;
+	int32_t partial_w_dim=hf->partial_w_dim;
+	float64_t normalization_const=hf->normalization_const;
+
 	CMath::fill_vector(&output[start], stop-start, 0.0);
 
 	uint32_t offs=0;
-	int32_t cur_row_idx=0;
 	for (int32_t i=0; i<string_length; i++)
 	{
 		uint32_t o=offs;
@@ -163,14 +282,16 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 				if (k==0)
 					h=CHash::IncrementalMurmurHash2(dim[j], 0xDEADBEAF);
 				else
-					h=CHash::IncrementalMurmurHash2(dim[j], index[j-start]);
-				index[j-start]=h;
+					h=CHash::IncrementalMurmurHash2(dim[j], index[j]);
+				index[j]=h;
 				output[j]+=vec[o + (h & mask)]*wd;
 			}
 			o+=partial_w_dim;
 		}
 		offs+=partial_w_dim*degree;
-		//SG_PROGRESS(i, 0, string_length);
+
+		if (progress)
+			hf->io->progress(i, 0,string_length, i);
 	}
 
 	if (alphas)
@@ -184,7 +305,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 			output[j]=output[j]/normalization_const+bias;
 	}
 
-	delete[] index;
+	return NULL;
 }
 
 void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)

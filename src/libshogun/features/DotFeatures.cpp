@@ -232,15 +232,19 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 			dense_dot_range(out, 0, num, alphas, w, d, 23);
 
 #ifdef DEBUG_DOTFEATURES
-    CMath::display_vector(out, 10, "dense_dot_range");
+    CMath::display_vector(out, 40, "dense_dot_range");
+	float64_t* out2= new float64_t[num];
 
 	for (int32_t r=0; r<repeats; r++)
     {
-        CMath::fill_vector(out, num, 0.0);
+        CMath::fill_vector(out2, num, 0.0);
         for (int32_t i=0; i<num; i++)
-            out[i]+=dense_dot(i, w, d)*alphas[i]+23;
+            out2[i]+=dense_dot(i, w, d)*alphas[i]+23;
     }
-    CMath::display_vector(out, 10, "dense_dot");
+    CMath::display_vector(out2, 40, "dense_dot");
+	for (int32_t i=0; i<num; i++)
+		out2[i]-=out[i];
+    CMath::display_vector(out2, 40, "diff");
 #endif
 	SG_PRINT("Time to process %d x num=%d dense_dot_range ops: cputime %fs walltime %fs\n",
 			repeats, num, (t.get_runtime()-start_cpu)/repeats,
