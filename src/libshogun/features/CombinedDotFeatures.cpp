@@ -126,7 +126,8 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 	bool first=true;
-	float64_t* tmp=new float64_t[stop];
+	int32_t num=stop-start;
+	float64_t* tmp=new float64_t[num];
 
 	while (f)
 	{
@@ -139,7 +140,39 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 		else
 		{
 			f->dense_dot_range(tmp, start, stop, alphas, vec+offs, f_dim, b);
-			for (int32_t i=start; i<stop; i++)
+			for (int32_t i=0; i<num; i++)
+				output[i]+=tmp[i];
+		}
+		offs += f_dim;
+		f=get_next_feature_obj(current);
+	}
+	delete[] tmp;
+}
+
+void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+{
+	if (num<=0)
+		return;
+	ASSERT(dim==num_dimensions);
+
+	CListElement<CDotFeatures*> * current = NULL;
+	CDotFeatures* f=get_first_feature_obj(current);
+	uint32_t offs=0;
+	bool first=true;
+	float64_t* tmp=new float64_t[num];
+
+	while (f)
+	{
+		int32_t f_dim = f->get_dim_feature_space();
+		if (first)
+		{
+			f->dense_dot_range_subset(sub_index, num, output, alphas, vec+offs, f_dim, b);
+			first=false;
+		}
+		else
+		{
+			f->dense_dot_range_subset(sub_index, num, tmp, alphas, vec+offs, f_dim, b);
+			for (int32_t i=0; i<num; i++)
 				output[i]+=tmp[i];
 		}
 		offs += f_dim;

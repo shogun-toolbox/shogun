@@ -23,6 +23,7 @@ using namespace shogun;
 struct DF_THREAD_PARAM
 {
 	CDotFeatures* df;
+	int32_t* sub_index;
 	float64_t* output;
 	int32_t start;
 	int32_t stop;
@@ -37,6 +38,9 @@ struct DF_THREAD_PARAM
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
 	ASSERT(output);
+	// write access is internally between output[start..stop] so the following
+	// line is necessary to write to output[0...(stop-start-1)]
+	output-=start; 
 	ASSERT(start>=0);
 	ASSERT(start<stop);
 	ASSERT(stop<=get_num_vectors());
@@ -114,10 +118,89 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 #endif
 }
 
+void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+{
+	ASSERT(sub_index);
+	ASSERT(output);
+
+	int32_t num_threads=parallel->get_num_threads();
+	ASSERT(num_threads>0);
+
+	CSignal::clear_cancel();
+
+#ifndef WIN32
+	if (num_threads < 2)
+	{
+#endif
+		DF_THREAD_PARAM params;
+		params.df=this;
+		params.sub_index=sub_index;
+		params.output=output;
+		params.start=0;
+		params.stop=num;
+		params.alphas=alphas;
+		params.vec=vec;
+		params.dim=dim;
+		params.bias=b;
+		params.progress=false; //true;
+		dense_dot_range_helper((void*) &params);
+#ifndef WIN32
+	}
+	else
+	{
+		pthread_t* threads = new pthread_t[num_threads-1];
+		DF_THREAD_PARAM* params = new DF_THREAD_PARAM[num_threads];
+		int32_t step= num/num_threads;
+
+		int32_t t;
+
+		for (t=0; t<num_threads-1; t++)
+		{
+			params[t].df = this;
+			params[t].sub_index=sub_index;
+			params[t].output = output;
+			params[t].start = t*step;
+			params[t].stop = (t+1)*step;
+			params[t].alphas=alphas;
+			params[t].vec=vec;
+			params[t].dim=dim;
+			params[t].bias=b;
+			params[t].progress = false;
+			pthread_create(&threads[t], NULL,
+					CDotFeatures::dense_dot_range_helper, (void*)&params[t]);
+		}
+
+		params[t].df = this;
+		params[t].sub_index=sub_index;
+		params[t].output = output;
+		params[t].start = t*step;
+		params[t].stop = num;
+		params[t].alphas=alphas;
+		params[t].vec=vec;
+		params[t].dim=dim;
+		params[t].bias=b;
+		params[t].progress = false; //true;
+		dense_dot_range_helper((void*) &params[t]);
+
+		for (t=0; t<num_threads-1; t++)
+			pthread_join(threads[t], NULL);
+
+		delete[] params;
+		delete[] threads;
+	}
+#endif
+
+#ifndef WIN32
+		if ( CSignal::cancel_computations() )
+			SG_INFO( "prematurely stopped.           \n");
+#endif
+}
+
 void* CDotFeatures::dense_dot_range_helper(void* p)
 {
 	DF_THREAD_PARAM* par=(DF_THREAD_PARAM*) p;
 	CDotFeatures* df=par->df;
+	int32_t* sub_index=par->sub_index;
 	float64_t* output=par->output;
 	int32_t start=par->start;
 	int32_t stop=par->stop;
@@ -127,7 +210,7 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 	float64_t bias=par->bias;
 	bool progress=par->progress;
 
-	if (alphas)
+	if (sub_index)
 	{
 #ifdef WIN32
 		for (int32_t i=start; i<stop i++)
@@ -136,16 +219,28 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 				!CSignal::cancel_computations(); i++)
 #endif
 		{
-			output[i]=alphas[i]*df->dense_dot(i, vec, dim)+bias;
+			if (alphas)
+				output[i]=alphas[sub_index[i]]*df->dense_dot(sub_index[i], vec, dim)+bias;
+			else
+				output[i]=df->dense_dot(sub_index[i], vec, dim)+bias;
 			if (progress)
 				df->display_progress(start, stop, i);
 		}
+
 	}
 	else
 	{
-		for (int32_t i=start; i<stop; i++)
+#ifdef WIN32
+		for (int32_t i=start; i<stop i++)
+#else
+		for (int32_t i=start; i<stop &&
+				!CSignal::cancel_computations(); i++)
+#endif
 		{
-			output[i]=df->dense_dot(i, vec, dim)+bias;
+			if (alphas)
+				output[i]=alphas[i]*df->dense_dot(i, vec, dim)+bias;
+			else
+				output[i]=df->dense_dot(i, vec, dim)+bias;
 			if (progress)
 				df->display_progress(start, stop, i);
 		}

@@ -23,6 +23,7 @@ using namespace shogun;
 struct HASHEDWD_THREAD_PARAM
 {
 	CHashedWDFeaturesTransposed* hf;
+	int32_t* sub_index;
 	float64_t* output;
 	int32_t start;
 	int32_t stop;
@@ -163,6 +164,9 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
 	ASSERT(output);
+	// write access is internally between output[start..stop] so the following
+	// line is necessary to write to output[0...(stop-start-1)]
+	output-=start; 
 	ASSERT(start>=0);
 	ASSERT(start<stop);
 	ASSERT(stop<=get_num_vectors());
@@ -245,10 +249,95 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 #endif
 }
 
+void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+{
+	ASSERT(sub_index);
+	ASSERT(output);
+
+	uint32_t* index=new uint32_t[num];
+
+	int32_t num_threads=parallel->get_num_threads();
+	ASSERT(num_threads>0);
+
+	CSignal::clear_cancel();
+
+	if (dim != w_dim)
+		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim);
+
+#ifndef WIN32
+	if (num_threads < 2)
+	{
+#endif
+		HASHEDWD_THREAD_PARAM params;
+		params.hf=this;
+		params.sub_index=sub_index;
+		params.output=output;
+		params.start=0;
+		params.stop=num;
+		params.alphas=alphas;
+		params.vec=vec;
+		params.bias=b;
+		params.progress=false; //true;
+		params.index=index;
+		dense_dot_range_helper((void*) &params);
+#ifndef WIN32
+	}
+	else
+	{
+		pthread_t* threads = new pthread_t[num_threads-1];
+		HASHEDWD_THREAD_PARAM* params = new HASHEDWD_THREAD_PARAM[num_threads];
+		int32_t step= num/num_threads;
+
+		int32_t t;
+
+		for (t=0; t<num_threads-1; t++)
+		{
+			params[t].hf = this;
+			params[t].sub_index=sub_index;
+			params[t].output = output;
+			params[t].start = t*step;
+			params[t].stop = (t+1)*step;
+			params[t].alphas=alphas;
+			params[t].vec=vec;
+			params[t].bias=b;
+			params[t].progress = false;
+			params[t].index=index;
+			pthread_create(&threads[t], NULL,
+					CHashedWDFeaturesTransposed::dense_dot_range_helper, (void*)&params[t]);
+		}
+
+		params[t].hf = this;
+		params[t].sub_index=sub_index;
+		params[t].output = output;
+		params[t].start = t*step;
+		params[t].stop = num;
+		params[t].alphas=alphas;
+		params[t].vec=vec;
+		params[t].bias=b;
+		params[t].progress = false; //true;
+		params[t].index=index;
+		CHashedWDFeaturesTransposed::dense_dot_range_helper((void*) &params[t]);
+
+		for (t=0; t<num_threads-1; t++)
+			pthread_join(threads[t], NULL);
+
+		delete[] params;
+		delete[] threads;
+		delete[] index;
+	}
+#endif
+
+#ifndef WIN32
+		if ( CSignal::cancel_computations() )
+			SG_INFO( "prematurely stopped.           \n");
+#endif
+}
+
 void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 {
 	HASHEDWD_THREAD_PARAM* par=(HASHEDWD_THREAD_PARAM*) p;
 	CHashedWDFeaturesTransposed* hf=par->hf;
+	int32_t* sub_index=par->sub_index;
 	float64_t* output=par->output;
 	int32_t start=par->start;
 	int32_t stop=par->stop;
@@ -265,44 +354,86 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	int32_t partial_w_dim=hf->partial_w_dim;
 	float64_t normalization_const=hf->normalization_const;
 
-	CMath::fill_vector(&output[start], stop-start, 0.0);
-
-	uint32_t offs=0;
-	for (int32_t i=0; i<string_length; i++)
-	{
-		uint32_t o=offs;
-		for (int32_t k=0; k<degree && i+k<string_length; k++)
-		{
-			const float64_t wd = wd_weights[k];
-			uint8_t* dim=transposed_strings[i+k].string;
-			uint32_t h;
-
-			for (int32_t j=start; j<stop; j++)
-			{
-				if (k==0)
-					h=CHash::IncrementalMurmurHash2(dim[j], 0xDEADBEAF);
-				else
-					h=CHash::IncrementalMurmurHash2(dim[j], index[j]);
-				index[j]=h;
-				output[j]+=vec[o + (h & mask)]*wd;
-			}
-			o+=partial_w_dim;
-		}
-		offs+=partial_w_dim*degree;
-
-		if (progress)
-			hf->io->progress(i, 0,string_length, i);
-	}
-
-	if (alphas)
+	if (sub_index)
 	{
 		for (int32_t j=start; j<stop; j++)
-			output[j]=output[j]*alphas[j]/normalization_const+bias;
+			output[sub_index[j]]=0.0;
+
+		uint32_t offs=0;
+		for (int32_t i=0; i<string_length; i++)
+		{
+			uint32_t o=offs;
+			for (int32_t k=0; k<degree && i+k<string_length; k++)
+			{
+				const float64_t wd = wd_weights[k];
+				uint8_t* dim=transposed_strings[i+k].string;
+				uint32_t h;
+
+				for (int32_t j=start; j<stop; j++)
+				{
+					int32_t jj=sub_index[j];
+					if (k==0)
+						h=CHash::IncrementalMurmurHash2(dim[jj], 0xDEADBEAF);
+					else
+						h=CHash::IncrementalMurmurHash2(dim[jj], index[jj]);
+					index[jj]=h;
+					output[jj]+=vec[o + (h & mask)]*wd;
+				}
+				o+=partial_w_dim;
+			}
+			offs+=partial_w_dim*degree;
+
+			if (progress)
+				hf->io->progress(i, 0,string_length, i);
+		}
+
+		for (int32_t j=start; j<stop; j++)
+		{
+			int32_t jj=sub_index[j];
+			if (alphas)
+				output[jj]=output[jj]*alphas[jj]/normalization_const+bias;
+			else
+				output[jj]=output[jj]*alphas[jj]/normalization_const+bias;
+		}
 	}
 	else
 	{
+		CMath::fill_vector(&output[start], stop-start, 0.0);
+
+		uint32_t offs=0;
+		for (int32_t i=0; i<string_length; i++)
+		{
+			uint32_t o=offs;
+			for (int32_t k=0; k<degree && i+k<string_length; k++)
+			{
+				const float64_t wd = wd_weights[k];
+				uint8_t* dim=transposed_strings[i+k].string;
+				uint32_t h;
+
+				for (int32_t j=start; j<stop; j++)
+				{
+					if (k==0)
+						h=CHash::IncrementalMurmurHash2(dim[j], 0xDEADBEAF);
+					else
+						h=CHash::IncrementalMurmurHash2(dim[j], index[j]);
+					index[j]=h;
+					output[j]+=vec[o + (h & mask)]*wd;
+				}
+				o+=partial_w_dim;
+			}
+			offs+=partial_w_dim*degree;
+
+			if (progress)
+				hf->io->progress(i, 0,string_length, i);
+		}
+
 		for (int32_t j=start; j<stop; j++)
-			output[j]=output[j]/normalization_const+bias;
+		{
+			if (alphas)
+				output[j]=output[j]*alphas[j]/normalization_const+bias;
+			else
+				output[j]=output[j]/normalization_const+bias;
+		}
 	}
 
 	return NULL;
