@@ -59,6 +59,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 #endif
 		DF_THREAD_PARAM params;
 		params.df=this;
+		params.sub_index=NULL;
 		params.output=output;
 		params.start=start;
 		params.stop=stop;
@@ -81,6 +82,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		for (t=0; t<num_threads-1; t++)
 		{
 			params[t].df = this;
+			params[t].sub_index=NULL;
 			params[t].output = output;
 			params[t].start = start+t*step;
 			params[t].stop = start+(t+1)*step;
@@ -95,6 +97,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 
 		params[t].df = this;
 		params[t].output = output;
+		params[t].sub_index=NULL;
 		params[t].start = start+t*step;
 		params[t].stop = stop;
 		params[t].alphas=alphas;

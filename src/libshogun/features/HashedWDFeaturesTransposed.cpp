@@ -189,6 +189,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 #endif
 		HASHEDWD_THREAD_PARAM params;
 		params.hf=this;
+		params.sub_index=NULL;
 		params.output=output;
 		params.start=start;
 		params.stop=stop;
@@ -211,6 +212,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		for (t=0; t<num_threads-1; t++)
 		{
 			params[t].hf = this;
+			params[t].sub_index=NULL;
 			params[t].output = output;
 			params[t].start = start+t*step;
 			params[t].stop = start+(t+1)*step;
@@ -224,6 +226,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		}
 
 		params[t].hf = this;
+		params[t].sub_index=NULL;
 		params[t].output = output;
 		params[t].start = start+t*step;
 		params[t].stop = stop;
