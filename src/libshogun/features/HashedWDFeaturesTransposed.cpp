@@ -360,7 +360,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	if (sub_index)
 	{
 		for (int32_t j=start; j<stop; j++)
-			output[sub_index[j]]=0.0;
+			output[j]=0.0;
 
 		uint32_t offs=0;
 		for (int32_t i=0; i<string_length; i++)
@@ -374,13 +374,13 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 
 				for (int32_t j=start; j<stop; j++)
 				{
-					int32_t jj=sub_index[j];
+					uint8_t bval=dim[sub_index[j]];
 					if (k==0)
-						h=CHash::IncrementalMurmurHash2(dim[jj], 0xDEADBEAF);
+						h=CHash::IncrementalMurmurHash2(bval, 0xDEADBEAF);
 					else
-						h=CHash::IncrementalMurmurHash2(dim[jj], index[jj]);
-					index[jj]=h;
-					output[jj]+=vec[o + (h & mask)]*wd;
+						h=CHash::IncrementalMurmurHash2(bval, index[j]);
+					index[j]=h;
+					output[j]+=vec[o + (h & mask)]*wd;
 				}
 				o+=partial_w_dim;
 			}
@@ -392,11 +392,10 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 
 		for (int32_t j=start; j<stop; j++)
 		{
-			int32_t jj=sub_index[j];
 			if (alphas)
-				output[jj]=output[jj]*alphas[jj]/normalization_const+bias;
+				output[j]=output[j]*alphas[sub_index[j]]/normalization_const+bias;
 			else
-				output[jj]=output[jj]*alphas[jj]/normalization_const+bias;
+				output[j]=output[j]/normalization_const+bias;
 		}
 	}
 	else
