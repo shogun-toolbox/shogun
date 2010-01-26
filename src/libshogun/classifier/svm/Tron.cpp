@@ -107,6 +107,7 @@ void CTron::tron(float64_t *w)
 			gnorm = cblas_dnrm2(n, g, inc);
 			if (gnorm < eps*gnorm1)
 				break;
+			SG_SABS_PROGRESS(gnorm, -CMath::log10(gnorm), -CMath::log10(1), -CMath::log10(eps*gnorm1), 6);
 		}
 		if (f < -1.0e+32)
 		{
@@ -125,6 +126,8 @@ void CTron::tron(float64_t *w)
 			break;
 		}
 	}
+
+	SG_DONE();
 
 	delete[] g;
 	delete[] r;

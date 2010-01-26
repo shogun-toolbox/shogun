@@ -308,17 +308,16 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		}
 
 		iter++;
-		if(iter % 10 == 0)
-			SG_INFO(".");
+		float64_t gap=PGmax_new - PGmin_new;
+		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6);
 
-		if(PGmax_new - PGmin_new <= eps)
+		if(gap <= eps)
 		{
 			if(active_size == l)
 				break;
 			else
 			{
 				active_size = l;
-				SG_INFO("*");
 				PGmax_old = CMath::INFTY;
 				PGmin_old = -CMath::INFTY;
 				continue;
@@ -332,9 +331,13 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			PGmin_old = -CMath::INFTY;
 	}
 
+	SG_DONE();
 	SG_INFO("\noptimization finished, #iter = %d\n",iter);
 	if (iter >= max_iter)
-		SG_INFO("\nWARNING: reaching max number of iterations\nUsing -s 2 may be faster (also see FAQ)\n\n");
+	{
+		SG_WARNING("reaching max number of iterations\nUsing -s 2 may be faster"
+				"(also see liblinear FAQ)\n\n");
+	}
 
 	// calculate objective value
 
