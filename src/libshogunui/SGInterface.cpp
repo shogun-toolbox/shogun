@@ -3542,7 +3542,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 			(CWeightedDegreeStringKernel*) kernel;
 		int32_t degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree);
 
 		if (len==1)
 			len=0;
@@ -3555,7 +3555,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 			(CWeightedDegreePositionStringKernel*) kernel;
 		int32_t degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("WDPos: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree);
 
 		if (len==1)
 			len=0;
@@ -3566,7 +3566,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 	{
 		int32_t num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
-			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+			SG_ERROR("All: Dimension mismatch (should be 1 x num_subkernels)\n");
 
 		kernel->set_subkernel_weights(weights, len);
 		success=true;

@@ -631,8 +631,8 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 bool CWeightedDegreeStringKernel::set_weights(
 	float64_t* ws, int32_t d, int32_t len)
 {
-	if (d!=degree || len<1)
-		SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+	if (d!=degree || len<0)
+		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree);
 
 	length=len;
 
