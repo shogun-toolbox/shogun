@@ -379,7 +379,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param blen bvec's length
 		 * @return dot product between the two sparse feature vectors
 		 */
-		ST sparse_dot(ST alpha, TSparseEntry<ST>* avec, int32_t alen, TSparseEntry<ST>* bvec, int32_t blen)
+		static ST sparse_dot(ST alpha, TSparseEntry<ST>* avec, int32_t alen, TSparseEntry<ST>* bvec, int32_t blen)
 		{
 			ST result=0;
 

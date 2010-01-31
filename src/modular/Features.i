@@ -51,6 +51,7 @@
 #include <shogun/features/HashedWDFeatures.h>
 #include <shogun/features/HashedWDFeaturesTransposed.h>
 #include <shogun/features/PolyFeatures.h>
+#include <shogun/features/SparsePolyFeatures.h>
 #include <shogun/features/ExplicitSpecFeatures.h>
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
 %}
@@ -308,6 +309,7 @@
 %rename(HashedWDFeatures) CHashedWDFeatures;
 %rename(HashedWDFeaturesTransposed) CHashedWDFeaturesTransposed;
 %rename(PolyFeatures) CPolyFeatures;
+%rename(SparsePolyFeatures) CSparsePolyFeatures;
 %rename(ExplicitSpecFeatures) CExplicitSpecFeatures;
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
 
@@ -401,5 +403,6 @@ namespace shogun
 %include <shogun/features/HashedWDFeatures.h>
 %include <shogun/features/HashedWDFeaturesTransposed.h>
 %include <shogun/features/PolyFeatures.h>
+%include <shogun/features/SparsePolyFeatures.h>
 %include <shogun/features/ExplicitSpecFeatures.h>
 %include <shogun/features/ImplicitWeightedSpecFeatures.h>

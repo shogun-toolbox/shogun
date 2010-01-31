@@ -4,16 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Jonas Behr
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2010 Soeren Sonnenburg
+ * Copyright (C) 2010 Berlin Institute of Technology
  */
-#ifndef _POLYFEATURES__H__
-#define _POLYFEATURES__H__
+#ifndef _SPARSEPOLYFEATURES__H__
+#define _SPARSEPOLYFEATURES__H__
 
 #include "lib/common.h"
-#include "features/DotFeatures.h"
-#include "features/SimpleFeatures.h"
-
+#include "features/SparseFeatures.h"
 
 namespace shogun
 {
@@ -22,18 +20,19 @@ namespace shogun
  * see DotFeatures for further discription
  *
  */
-class CPolyFeatures : public CDotFeatures
+class CSparsePolyFeatures : public CDotFeatures
 {
 	public:
 		/** constructor
 		 * 
 		 * @param feat real features
 		 * @param degree degree of the polynomial kernel
+		 * 					(only degree 2 & 3 are supported)
 		 * @param normalize normalize kernel
 		 */
-		CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize);
+		CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize);
 
-		virtual ~CPolyFeatures();
+		virtual ~CSparsePolyFeatures();
 
 		/** copy constructor
 		 * 
@@ -41,8 +40,8 @@ class CPolyFeatures : public CDotFeatures
 		 *
 		 * @param orig original PolyFeature
 		 */ 
-		CPolyFeatures(const CPolyFeatures & orig){ 
-			SG_PRINT("CPolyFeatures:\n");
+		CSparsePolyFeatures(const CSparsePolyFeatures & orig){ 
+			SG_PRINT("CSparsePolyFeatures:\n");
 			SG_NOTIMPLEMENTED;};
 
 		/** get dimensions of feature space
@@ -122,7 +121,7 @@ class CPolyFeatures : public CDotFeatures
 		 *
 		 * @return name of class
 		 */
-		inline virtual const char* get_name() const { return "PolyFeatures"; }
+		inline virtual const char* get_name() const { return "SparsePolyFeatures"; }
 
 		/** compute dot product of vector with index arg1 
 		 *  with an given second vector 
@@ -148,46 +147,12 @@ class CPolyFeatures : public CDotFeatures
 		/** store the norm of each training example */
 		void store_normalization_values();
 
-		/** caller function for the recursive function enumerate_multi_index */
-		void store_multi_index();
-
-		/** recursive function enumerating all multi-indices that sum 
-		 *  up to the degree of the polynomial kernel */
-		void enumerate_multi_index(const int32_t feat_idx, uint16_t** index, uint16_t* exponents, const int32_t degree);
-		/** function calculating the multinomial coefficients for all 
-		 *  multi indices */
-		void store_multinomial_coefficients();
-
-		/** simple recursive implementation of binomial coefficient 
-		 *  which is very efficient if k is small, otherwise it calls 
-		 *  a more sophisticated implementation */
-		int32_t bico2(int32_t n, int32_t k);
-
-		/** efficient implementation for the binomial coefficient function 
-		 *  for larger values of k*/
-		int32_t  bico(int32_t n, int32_t k);
-
-		/** recursion to calculate the dimensions of the feature space:
-		 *  A(N, D)= sum_d=0^D A(N-1, d) 
-		 *  A(1, D)==1
-		 *  A(N, 0)==1
-		 *  where N is the dimensionality of the input space 
-		 *  and D is the degree */
 		int32_t calc_feature_space_dimensions(int32_t N, int32_t D);
-
-		/** calculate the multinomial coefficient */
-		int32_t multinomialcoef(int32_t* exps, int32_t len);
-
-		/** efficient implementation of the ln(gamma(x)) function*/
-		float64_t gammln(float64_t xx);
-
-		/** implementation of the ln(x!) function*/
-		float64_t factln(int32_t n);
 
 	protected:
 
 		/** features in original space*/
-		CSimpleFeatures<float64_t>* m_feat;
+		CSparseFeatures<float64_t>* m_feat;
 		/** degree of the polynomial kernel */
 		int32_t m_degree;
 		/** normalize */
@@ -196,14 +161,9 @@ class CPolyFeatures : public CDotFeatures
 		int32_t m_input_dimensions;
 		/** dimensions of the feature space of the polynomial kernel */
 		int32_t m_output_dimensions;
-		/** flattened matrix of all multi indices that 
-		 *  sum do the degree of the polynomial kernel */
-		uint16_t* m_multi_index;
-		/** multinomial coefficients for all multi-indices */
-		float64_t* m_multinomial_coefficients; 
 		/**store norm of each training example */
-		float32_t* m_normalization_values; 
+		float64_t* m_normalization_values; 
 
 };
 }
-#endif // _POLYFEATURES__H__
+#endif // _SPARSEPOLYFEATURES__H__
