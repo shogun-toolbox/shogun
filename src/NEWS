@@ -1,6 +1,6 @@
 2010-XX-XX Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.9.2 (libshogun 6.1, libshogunui 3.2)
+	* SHOGUN Release version 0.9.2 (libshogun 7.0, libshogunui 4.0)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Implemented multi task kernel normalizer.
@@ -8,6 +8,7 @@
 		- Implement time limit for libsvm.
 		- Implement Elastic Net MKL
 		- Implement Hashed WD Features
+		- Implement Hashed Sparse Poly Features
 		- Integrate liblinear 1.51
 	* Bugfixes:
 		- Fix set_w() for linear classifiers.

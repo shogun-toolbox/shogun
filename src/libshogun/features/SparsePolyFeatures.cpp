@@ -176,4 +176,6 @@ int32_t CSparsePolyFeatures::calc_feature_space_dimensions(int32_t N, int32_t D)
 		for (int32_t j=i; j<N; j++)
 			dims++;
 	}
+
+	return dims;
 }
