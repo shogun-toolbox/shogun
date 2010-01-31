@@ -11,6 +11,7 @@
 #define _SPARSEPOLYFEATURES__H__
 
 #include "lib/common.h"
+#include "features/DotFeatures.h"
 #include "features/SparseFeatures.h"
 
 namespace shogun
@@ -30,7 +31,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * 					(only degree 2 & 3 are supported)
 		 * @param normalize normalize kernel
 		 */
-		CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize);
+		CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize, int32_t hash_bits);
 
 		virtual ~CSparsePolyFeatures();
 
@@ -130,7 +131,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param vec2 second vector
 		 * @param vec2_len length of second vector
 		 */
-		float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
+		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
 
 		/** compute alpha*x+vec2
 		 * 
@@ -140,17 +141,13 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param vec2_len length of vec2
 		 * @param abs_val if true add the absolute value
 		 */
-		void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val);
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
 	protected: 
-
 		/** store the norm of each training example */
 		void store_normalization_values();
 
-		int32_t calc_feature_space_dimensions(int32_t N, int32_t D);
-
 	protected:
-
 		/** features in original space*/
 		CSparseFeatures<float64_t>* m_feat;
 		/** degree of the polynomial kernel */
@@ -163,7 +160,10 @@ class CSparsePolyFeatures : public CDotFeatures
 		int32_t m_output_dimensions;
 		/**store norm of each training example */
 		float64_t* m_normalization_values; 
-
+		/** mask */
+		uint32_t mask;
+		/** number of bits in hash */
+		int32_t m_hash_bits;
 };
 }
 #endif // _SPARSEPOLYFEATURES__H__

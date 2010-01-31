@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize)
+CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize, int32_t hash_bits)
 	: CDotFeatures(), m_normalization_values(NULL)
 {
 	ASSERT(feat);
@@ -21,8 +21,10 @@ CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32
 	SG_REF(m_feat);
 	m_degree=degree;
 	m_normalize=normalize;
+	m_hash_bits=hash_bits;
+	mask=(uint32_t) (((uint64_t) 1)<<m_hash_bits)-1;
+	m_output_dimensions=1<<m_hash_bits;
 	m_input_dimensions=feat->get_num_features();
-	m_output_dimensions=calc_feature_space_dimensions(m_input_dimensions, m_degree);
 
 	if (m_normalize)
 		store_normalization_values();
@@ -71,17 +73,22 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 			for (int32_t i=0; i<vlen; i++)
 			{
 				idx[0]=vec[i].feat_index;
+				float64_t v1=vec[i].entry;
 
 				for (int32_t j=i; j<vlen; j++)
 				{
 					idx[1]=vec[j].feat_index;
-					uint32_t h=CHash::MurmurHash2((uint8_t*) idx, sizeof(idx), 0xDEADBEAF);
-					float64_t v=vec2[h] * vec[i].entry;
+					float64_t v2=vec[j].entry;
+
+					uint32_t h=CHash::MurmurHash2((uint8_t*) idx, sizeof(idx), 0xDEADBEAF) & mask;
+					float64_t v;
 
 					if (i==j)
-						result+=v*v;
+						v=v1*v1;
 					else
-						result+=2*v;
+						v=CMath::sqrt(2.0)*v1*v2;
+
+					result+=v*vec2[h];
 				}
 			}
 		}
@@ -106,7 +113,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 	bool do_free;
 	TSparseEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
 
-	float64_t norm_val=1;
+	float64_t norm_val=1.0;
 	if (m_normalize)
 		norm_val = m_normalization_values[vec_idx1];
 	alpha/=norm_val;
@@ -117,17 +124,20 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 		for (int32_t i=0; i<vlen; i++)
 		{
 			idx[0]=vec[i].feat_index;
+			float64_t v1=vec[i].entry;
 
 			for (int32_t j=i; j<vlen; j++)
 			{
 				idx[1]=vec[j].feat_index;
-				uint32_t h=CHash::MurmurHash2((uint8_t*) idx, sizeof(idx), 0xDEADBEAF);
-				float64_t v=vec[i].entry;
+				float64_t v2=vec[j].entry;
+
+				uint32_t h=CHash::MurmurHash2((uint8_t*) idx, sizeof(idx), 0xDEADBEAF) & mask;
+				float64_t v;
 
 				if (i==j)
-					v=alpha*v*v;
+					v=alpha*v1*v1;
 				else
-					v=alpha*CMath::sqrt(2.0)*v;
+					v=alpha*CMath::sqrt(2.0)*v1*v2;
 
 				if (abs_val)
 					vec2[h]+=CMath::abs(v); 
@@ -164,18 +174,4 @@ void CSparsePolyFeatures::store_normalization_values()
 CFeatures* CSparsePolyFeatures::duplicate() const
 {
 	return new CSparsePolyFeatures(*this);
-}
-
-int32_t CSparsePolyFeatures::calc_feature_space_dimensions(int32_t N, int32_t D)
-{
-	ASSERT(D==2);
-
-	uint32_t dims=0;
-	for (int32_t i=0; i<N; i++)
-	{
-		for (int32_t j=i; j<N; j++)
-			dims++;
-	}
-
-	return dims;
 }
