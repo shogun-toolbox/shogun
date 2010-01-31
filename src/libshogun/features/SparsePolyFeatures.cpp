@@ -58,7 +58,6 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions);
 
-	int32_t idx[2];
 	int32_t vlen;
 	bool do_free;
 	TSparseEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
@@ -72,15 +71,13 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 			/* (a+b)^2 = a^2 + 2ab +b^2 */
 			for (int32_t i=0; i<vlen; i++)
 			{
-				idx[0]=vec[i].feat_index;
 				float64_t v1=vec[i].entry;
+				uint32_t seed=CHash::MurmurHash2((uint8_t*) &(vec[i].feat_index), sizeof(int32_t), 0xDEADBEAF);
 
 				for (int32_t j=i; j<vlen; j++)
 				{
-					idx[1]=vec[j].feat_index;
 					float64_t v2=vec[j].entry;
-
-					uint32_t h=CHash::MurmurHash2((uint8_t*) idx, sizeof(idx), 0xDEADBEAF) & mask;
+					uint32_t h=CHash::MurmurHash2((uint8_t*) &(vec[j].feat_index), sizeof(int32_t), seed) & mask;
 					float64_t v;
 
 					if (i==j)
@@ -108,7 +105,6 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions);
 
-	int32_t idx[2];
 	int32_t vlen;
 	bool do_free;
 	TSparseEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
@@ -123,15 +119,13 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 		/* (a+b)^2 = a^2 + 2ab +b^2 */
 		for (int32_t i=0; i<vlen; i++)
 		{
-			idx[0]=vec[i].feat_index;
 			float64_t v1=vec[i].entry;
+			uint32_t seed=CHash::MurmurHash2((uint8_t*) &(vec[i].feat_index), sizeof(int32_t), 0xDEADBEAF);
 
 			for (int32_t j=i; j<vlen; j++)
 			{
-				idx[1]=vec[j].feat_index;
 				float64_t v2=vec[j].entry;
-
-				uint32_t h=CHash::MurmurHash2((uint8_t*) idx, sizeof(idx), 0xDEADBEAF) & mask;
+				uint32_t h=CHash::MurmurHash2((uint8_t*) &(vec[j].feat_index), sizeof(int32_t), seed) & mask;
 				float64_t v;
 
 				if (i==j)
