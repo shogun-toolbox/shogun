@@ -93,8 +93,14 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 */
 		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
 		{
-			SG_NOTIMPLEMENTED;
-			return 0;
+			int32_t vlen=-1;
+			bool free_vec;
+			uint16_t* vec1=strings->get_feature_vector(num, vlen, free_vec);
+			strings->free_feature_vector(vec1, num, free_vec);
+			int32_t nnz=0;
+			for (int32_t i=1; i<=degree; i++)
+				nnz+=CMath::min(CMath::pow(alphabet_size,i), vlen);
+			return nnz;
 		}
 
 		/** get feature type

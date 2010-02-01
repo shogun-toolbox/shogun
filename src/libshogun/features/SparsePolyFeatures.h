@@ -61,7 +61,11 @@ class CSparsePolyFeatures : public CDotFeatures
 		 */
 		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
 		{
-			return m_output_dimensions;
+			int32_t vlen;
+			bool do_free;
+			TSparseEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(num, vlen, do_free);
+			m_feat->free_feature_vector(vec, vlen, do_free);
+			return vlen*(vlen+1)/2;
 		}
 
 		/** get feature type

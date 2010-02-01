@@ -87,7 +87,11 @@ class CWDFeatures : public CDotFeatures
 		 */
 		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
 		{
-			return w_dim/alphabet_size;
+			int32_t vlen=-1;
+			bool free_vec;
+			uint8_t* vec=strings->get_feature_vector(num, vlen, free_vec);
+			strings->free_feature_vector(vec, num, free_vec);
+			return degree*vlen;
 		}
 
 		/** duplicate feature object
