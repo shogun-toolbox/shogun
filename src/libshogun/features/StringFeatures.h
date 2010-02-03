@@ -175,6 +175,27 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** constructor
 		 *
+		 * @param p_features new features
+		 * @param p_num_vectors number of vectors
+		 * @param p_max_string_length maximum string length
+		 * @param alpha an actual alphabet
+		 */
+		CStringFeatures(T_STRING<ST>* p_features, int32_t p_num_vectors,
+				int32_t p_max_string_length, CAlphabet* alpha)
+		: CFeatures(0), num_vectors(0), features(NULL),
+			single_string(NULL),length_of_single_string(0),
+			max_string_length(0), order(0), symbol_mask_table(NULL),
+			preprocess_on_get(false), feature_cache(NULL)
+		{
+			alphabet=new CAlphabet(alpha);
+			SG_REF(alphabet);
+			num_symbols=alphabet->get_num_symbols();
+			original_num_symbols=num_symbols;
+			set_features(p_features, p_num_vectors, p_max_string_length);
+		}
+
+		/** constructor
+		 *
 		 * @param alpha alphabet to use for string features
 		 */
 		CStringFeatures(CAlphabet* alpha)
@@ -430,6 +451,15 @@ template <class ST> class CStringFeatures : public CFeatures
 				// TODO: implement caching
 				return feat;
 			}
+		}
+
+		CStringFeatures<ST>* get_transposed()
+		{
+			int32_t num_feat;
+			int32_t num_vec;
+			T_STRING<ST>* s=get_transposed(num_feat, num_vec);
+
+			CStringFeatures<ST>* f= new CStringFeatures<ST>(s, num_feat, num_vec, alphabet);
 		}
 
 		/** compute and return the transpose of string features matrix
