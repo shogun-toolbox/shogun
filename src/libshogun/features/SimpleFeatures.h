@@ -311,6 +311,46 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			return feature_matrix;
 		}
 
+		CSimpleFeatures<ST>* get_transposed()
+		{
+			int32_t num_feat;
+			int32_t num_vec;
+			ST* fm=get_transposed(num_feat, num_vec);
+
+			CSimpleFeatures<ST>* f= new CSimpleFeatures<ST>(fm, num_feat, num_vec);
+		}
+
+		/** compute and return the transpose of the feature matrix
+		 * which will be prepocessed.
+		 * num_feat, num_vectors are returned by reference
+		 * caller has to clean up
+		 *
+		 * @param num_feat number of features in matrix
+		 * @param num_vec number of vectors in matrix
+		 * @return transposed sparse feature matrix
+		 */
+		ST* get_transposed(int32_t &num_feat, int32_t &num_vec)
+		{
+			num_feat=num_vectors;
+			num_vec=num_features;
+
+			ST* fm=new ST[num_feat*num_vec];
+
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				int32_t vlen;
+				bool vfree;
+				ST* vec=get_feature_vector(i, vlen, vfree);
+
+				for (int32_t j=0; j<vlen; j++)
+					fm[j*num_vectors+i]=vec[j];
+
+				free_feature_vector(vec, i, vfree);
+			}
+
+			return fm;
+		}
+
 		/** set feature matrix
 		 * necessary to set feature_matrix, num_features,
 		 * num_vectors, where num_features is the column offset,
