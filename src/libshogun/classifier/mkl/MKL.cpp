@@ -6,8 +6,8 @@
  *
  * Written (W) 2004-2009 Soeren Sonnenburg, Gunnar Raetsch
  *                       Alexander Zien, Marius Kloft, Chen Guohua
- *                       Ryota Tomioka
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Ryota Tomioka (University of Tokyo)
  */
 
 #include <list>
@@ -19,7 +19,7 @@
 using namespace shogun;
 
 CMKL::CMKL(CSVM* s)
-  : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), beta_local(NULL),
+  : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0), beta_local(NULL),
 	mkl_iterations(0), mkl_epsilon(1e-5), interleaved_optimization(true),
 	w_gap(1.0), rho(0)
 {
@@ -218,6 +218,7 @@ bool CMKL::train(CFeatures* data)
 	SG_INFO("C_mkl = %1.1e\n", C_mkl) ;
 	SG_INFO("mkl_norm = %1.3e\n", mkl_norm);
 	SG_INFO("solver = %d\n", get_solver_type());
+	SG_INFO("ent_lambda = %f\n",ent_lambda);
 
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels();
@@ -234,7 +235,7 @@ bool CMKL::train(CFeatures* data)
 	  if (beta_local) { delete [] beta_local; }
 	  beta_local = CMath::clone_vector(beta, num_kernels);
 
-	  elastic_net_transform(beta, mkl_norm, num_kernels);
+	  elasticnet_transform(beta, ent_lambda, num_kernels);
 	}
 	else
 	{
@@ -338,22 +339,24 @@ bool CMKL::train(CFeatures* data)
 
 void CMKL::set_mkl_norm(float64_t norm)
 {
-	if (get_solver_type()==ST_ELASTICNET)
-	{
-		if (norm>1 || norm<0)
-			SG_ERROR("0<=lambda<=1\n");
 
-		if (norm==0)
-			norm = 1e-6;
-		else if (norm==1.0)
-			norm = 1.0-1e-6;
-	}
-	else
-	{
-		if (norm<1)
-			SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; norms>1 nonsparse MKL\n");
-	}
-	mkl_norm = norm;
+  if (norm<1)
+    SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; norms>1 nonsparse MKL\n");
+  
+  mkl_norm = norm;
+}
+
+void CMKL::set_elasticnet_lambda(float64_t lambda)
+{
+  if (lambda>1 || lambda<0)
+    SG_ERROR("0<=lambda<=1\n");
+  
+  if (lambda==0)
+    lambda = 1e-6;
+  else if (lambda==1.0)
+    lambda = 1.0-1e-6;
+
+  ent_lambda=lambda;
 }
 
 bool CMKL::perform_mkl_step(
@@ -491,19 +494,19 @@ float64_t CMKL::compute_optimal_betas_elasticnet(
 		beta_local[p] = beta[p];
 
 	// --- elastic-net transform
-	elastic_net_transform(beta, mkl_norm, num_kernels);
+	elasticnet_transform(beta, ent_lambda, num_kernels);
 
 	// --- objective
 	obj = -suma;
 	for (p=0; p<num_kernels; ++p )
 	{
 		//obj += sumw[p] * old_beta[p]*old_beta[p] / beta[p];
-		obj += sumw[p] * beta[p]; /*-.5*(1-mkl_norm)*(1-mkl_norm)*beta[p]/(1.0-beta[p]*mkl_norm);*/
+		obj += sumw[p] * beta[p];
 	}
 	return obj;
 }
 
-void CMKL::elastic_net_dual(float64_t *ff, float64_t *gg, float64_t *hh,
+void CMKL::elasticnet_dual(float64_t *ff, float64_t *gg, float64_t *hh,
 		const float64_t &del, const float64_t* nm, int32_t len,
 		const float64_t &lambda)
 {
@@ -530,7 +533,7 @@ void CMKL::elastic_net_dual(float64_t *ff, float64_t *gg, float64_t *hh,
 }
 
 // assumes that all constraints are satisfied
-float64_t CMKL::compute_elastic_net_dual_objective()
+float64_t CMKL::compute_elasticnet_dual_objective()
 {
 	int32_t n=get_num_support_vectors();
 	int32_t num_kernels = kernel->get_num_subkernels();
@@ -568,12 +571,12 @@ float64_t CMKL::compute_elastic_net_dual_objective()
 			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 		// initial delta
-		del = del/CMath::sqrt(2*(1-mkl_norm));
+		del = del/CMath::sqrt(2*(1-ent_lambda));
 
 		// Newton's method to optimize delta
 		k=0;
 		float64_t ff, gg, hh;
-		elastic_net_dual(&ff, &gg, &hh, del, nm, num_kernels, mkl_norm);
+		elasticnet_dual(&ff, &gg, &hh, del, nm, num_kernels, ent_lambda);
 		while (CMath::abs(gg)>+1e-8 && k<100)
 		{
 			float64_t ff_old = ff;
@@ -586,7 +589,7 @@ float64_t CMKL::compute_elastic_net_dual_objective()
 			do
 			{
 				del=del_old*CMath::exp(-step*gg/(hh*del+gg));
-				elastic_net_dual(&ff, &gg, &hh, del, nm, num_kernels, mkl_norm);
+				elasticnet_dual(&ff, &gg, &hh, del, nm, num_kernels, ent_lambda);
 				step/=2;
 			} while(ff>ff_old+1e-4*gg_old*(del-del_old));
 
@@ -1427,7 +1430,7 @@ float64_t CMKL::compute_mkl_dual_objective()
 	if (get_solver_type()==ST_ELASTICNET)
 	{
 		// -- Compute ElasticnetMKL dual objective
-		return compute_elastic_net_dual_objective();
+		return compute_elasticnet_dual_objective();
 	}
 
 	int32_t n=get_num_support_vectors();

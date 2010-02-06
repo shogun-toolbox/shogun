@@ -6,6 +6,7 @@
  *
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Ryota Tomioka (University of Tokyo)
  */
 #ifndef __MKL_H__
 #define __MKL_H__
@@ -79,6 +80,14 @@ namespace shogun
  * Marius Kloft, Ulf Brefeld, Soeren Sonnenburg, and Alexander Zien. Efficient
  * and accurate lp-norm multiple kernel learning. In Advances in Neural
  * Information Processing Systems 21. MIT Press, Cambridge, MA, 2009.
+ *
+ * An alternative way to control the sparsity is the elastic-net regularization, which can be formulated into the following optimization problem:
+ * \f{eqnarray*}
+ *    \mbox{min} && C\sum_{i=1}^N\ell\left(\sum_{k=1}^Kf_k(x_i)+b,y_i\right)+(1-\lambda)\left(\sum_{k=1}^K\|f_k\|_{\mathcal{H}_k}\right)^2+\lambda\sum_{k=1}^K\|f_k\|_{\mathcal{H}_k}^2\\
+ *    \mbox{w.r.t.} && f_1\in\mathcal{H}_1,f_2\in\mathcal{H}_2,\ldots,f_K\in\mathcal{H}_K,\,b\in R \nonumber\\
+ * \f}
+ * where \f$\ell\f$ is a loss function. Here \f$\lambda\f$ controls the trade-off between the two regularization terms. \f$\lambda=0\f$ corresponds to \f$L_1\f$-MKL, whereas \f$\lambda=1\f$ corresponds to the uniform-weighted combination of kernels (\f$L_\infty\f$-MKL). This approach was studied by Shawe-Taylor (2008) "Kernel Learning for Novelty Detection" (NIPS MKL Workshop 2008) and Tomioka & Suzuki (2009) "Sparsity-accuracy trade-off in MKL" (NIPS MKL Workshop 2009).
+ * 
  */
 class CMKL : public CSVM
 {
@@ -142,10 +151,17 @@ class CMKL : public CSVM
 
 		/** set mkl norm
 		 *
-		 * @param norm new mkl norm (must be greater equal 1 except for elastic
-		 * net solver, for which it can be between zero and one (including 0/1!))
+		 * @param norm new mkl norm (must be greater equal 1)
 		 */
 		void set_mkl_norm(float64_t norm);
+
+		/** set elasticnet lambda
+		 *
+		 * @param lambda new elastic net lambda (must be 0<=lambda<=1)
+		 *               lambda=0: L1-MKL
+		 *               lambda=1: Linfinity-MKL
+		 */
+		void set_elasticnet_lambda(float64_t lambda);
 
 		/** set state of optimization (interleaved or wrapper)
 		 *
@@ -186,7 +202,7 @@ class CMKL : public CSVM
 		 *
 		 * @return computed dual objective
 		 */
-		float64_t compute_elastic_net_dual_objective();
+		float64_t compute_elasticnet_dual_objective();
 		
 		/** set mkl epsilon (optimization accuracy for kernel weights)
 		 *
@@ -314,22 +330,15 @@ class CMKL : public CSVM
 				float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
 				const float64_t* sumw, const float64_t suma, const float64_t mkl_objective);
 
-		/** helper function to compute the elastic net objective */
-		inline void elastic_net_transform(float64_t *beta, float64_t lmd, int32_t len)
+		/** helper function to compute the elastic-net sub-kernel weights */
+		inline void elasticnet_transform(float64_t *beta, float64_t lmd, int32_t len)
 		{
 			for (int32_t i=0;i <len;i++)
 				beta[i]=beta[i]/(1.0-lmd+lmd*beta[i]);
 		}
 
-		/** helper function to compute the elastic net objective */
-		inline void elastic_net_itransform(float64_t *beta, float64_t lmd, int32_t len)
-		{
-			for (int32_t i=0;i <len;i++)
-				beta[i]=(1-lmd)*beta[i]/(1.0-lmd*beta[i]);
-		}
-
-		/** helper function to compute the elastic net objective */
-		void elastic_net_dual(float64_t *ff, float64_t *gg, float64_t *hh,
+		/** helper function to compute the elastic-net objective */
+		void elasticnet_dual(float64_t *ff, float64_t *gg, float64_t *hh,
 				const float64_t &del, const float64_t* nm, int32_t len,
 				const float64_t &lambda);
 
@@ -419,10 +428,16 @@ class CMKL : public CSVM
 		CSVM* svm;
 		/** C_mkl */
 		float64_t C_mkl;
-		/** norm used in mkl must be > 0
-		 * if ST_ELASTICNET, must be 0<=norm<=1 (0=L1-MKL, 1=Linfty-MKL) */
+		/** norm used in mkl must be > 0 */
 		float64_t mkl_norm;
-		/** subkernel weight on the L1-term of ElasticnetMKL */
+		/** Sparsity trade-off parameter used in ElasticnetMKL
+		    must be 0<=lambda<=1 
+		    lambda=0: L1-MKL
+		    lambda=1: Linfinity-MKL
+		 */
+		float64_t ent_lambda;
+
+		/** sub-kernel weights on the L1-term of ElasticnetMKL */
 		float64_t* beta_local;
 		/** number of mkl steps */
 		int32_t mkl_iterations;
