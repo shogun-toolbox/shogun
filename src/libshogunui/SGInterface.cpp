@@ -530,6 +530,11 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_MKL_PARAMETERS, "weight_epsilon" USAGE_COMMA "C_MKL [" USAGE_COMMA "mkl_norm ]")
 	},
 	{
+	  N_ENT_LAMBDA,
+	  (&CSGInterface::cmd_set_elasticnet_lambda),
+	  USAGE_I(N_ENT_LAMBDA, "ent_lambda")
+	},
+	{
 		N_SVM_MAX_TRAIN_TIME,
 		(&CSGInterface::cmd_set_max_train_time),
 		USAGE_I(N_SVM_MAX_TRAIN_TIME, "max_train_time")
@@ -5044,6 +5049,14 @@ bool CSGInterface::cmd_set_svm_mkl_parameters()
 		mkl_norm=get_real_from_real_or_str();
 
 	return ui_classifier->set_svm_mkl_parameters(weight_epsilon, C_mkl, mkl_norm);
+}
+
+bool CSGInterface::cmd_set_elasticnet_lambda()
+{
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+	float64_t lambda=get_real_from_real_or_str();
+	return ui_classifier->set_elasticnet_lambda(lambda);
 }
 
 bool CSGInterface::cmd_set_max_train_time()

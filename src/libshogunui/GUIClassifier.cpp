@@ -82,6 +82,7 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_bufsize=3000;
 	svm_max_qpsize=1000;
 	mkl_norm=1;
+	ent_lambda=0;
 	svm_C1=1;
 	svm_C2=1;
 	C_mkl=0;
@@ -499,6 +500,7 @@ bool CGUIClassifier::train_mkl()
 	mkl->set_batch_computation_enabled(svm_use_batch_computation);
 	mkl->set_mkl_epsilon(svm_weight_epsilon);
 	mkl->set_mkl_norm(mkl_norm); 
+	mkl->set_elasticnet_lambda(ent_lambda);
 	mkl->set_C_mkl(C_mkl);
 	mkl->set_interleaved_optimization_enabled(mkl_use_interleaved);
 
@@ -983,6 +985,15 @@ bool CGUIClassifier::set_svm_mkl_parameters(
 	SG_INFO("Set to mkl_norm=%f.\n", mkl_norm);
 
 	return true;
+}
+
+bool CGUIClassifier::set_elasticnet_lambda(float64_t lambda)
+{
+  if (lambda<0 || lambda>1) {
+    SG_ERROR("0 <= ent_lambda <= 1\n");
+  }
+  ent_lambda = lambda;
+  return true;
 }
 
 bool CGUIClassifier::set_svm_C(float64_t C1, float64_t C2)

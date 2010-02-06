@@ -277,6 +277,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_svm_nu();
 		/** set SVM MKL parameters */
 		bool cmd_set_svm_mkl_parameters();
+		/** set ElasticnetMKL parameter lambda */
+		bool cmd_set_elasticnet_lambda();
 		/** set max train time */
 		bool cmd_set_max_train_time();
 		/** set SVM MKL enabled */

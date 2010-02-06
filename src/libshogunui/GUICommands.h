@@ -186,6 +186,7 @@
 #define N_SVMMAXQPSIZE					"svm_max_qpsize"
 #define N_THREADS						"threads"
 #define N_MKL_PARAMETERS				"mkl_parameters"
+#define N_ENT_LAMBDA                                    "elasticnet_lambda"
 #define N_SVM_EPSILON					"svm_epsilon"
 #define N_SVM_MAX_TRAIN_TIME			"svm_max_train_time"
 #define N_SVR_TUBE_EPSILON				"svr_tube_epsilon"
