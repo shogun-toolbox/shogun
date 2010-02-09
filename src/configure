@@ -659,6 +659,13 @@ arm() {
 	esac
 }
 
+sh() {
+  case "$host_arch" in
+    sh*) return 0;;
+    *) return 1;;
+  esac
+}
+
 
 # not boolean test: implement the posix shell "!" operator for a
 # non-posix /bin/sh.
@@ -1063,6 +1070,7 @@ determine_system_name()
 		  mips) host_arch=mips ;;
 		  vax) host_arch=vax ;;
 		  m68|m68k) host_arch=m68 ;;
+		  sh*) host_arch=sh ;;
 		  *) host_arch=UNKNOWN ;;
 		esac
 		;;
@@ -1807,6 +1815,14 @@ EOF
     _def_arch='#define ARCH_ARMV4L 1'
     _target_arch='TARGET_ARCH_ARMV4L = yes'
     iproc='arm'
+    proc=''
+    _march=''
+    _mcpu=''
+    ;;
+  sh)
+    _def_arch='#define ARCH_SH 1'
+    _target_arch='TARGET_ARCH_SH = yes'
+    iproc='sh'
     proc=''
     _march=''
     _mcpu=''
