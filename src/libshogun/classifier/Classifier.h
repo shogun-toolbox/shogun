@@ -172,7 +172,13 @@ class CClassifier : public CSGObject
 		 * @param i index of label to get
 		 * @return value of label at index i
 		 */
-		virtual inline float64_t get_label(int32_t i) { return labels->get_label(i); }
+		virtual inline float64_t get_label(int32_t i)
+		{
+			if (!labels)
+				SG_ERROR("No Labels assigned\n");
+
+			return labels->get_label(i);
+		}
 
 		/** set maximum training time
 		 *
