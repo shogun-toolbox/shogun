@@ -34,6 +34,7 @@ all:  $(PARTDEPS)
 endif
 
 install:  $(PARTDEPS)
+	$(MAKE) -C../examples
 	+$(foreach part, $(PARTS), $(MAKE) -C $(part) install-$(part) &&) true
 
 uninstall:

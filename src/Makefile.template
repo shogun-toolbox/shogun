@@ -206,7 +206,7 @@ install-r: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(RDIR)/sg/libs
-	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
+	install -m644 ../../examples/documented/r/*.R ../../examples/documented/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
 	../.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB)
 
 install-elwms: $(TEMPLATE_TARGET)
@@ -235,7 +235,7 @@ ifneq ($(R_TARGET),)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/R
 	rm -f $(DESTDIR)$(RDIR)/elwms/libs/$(TEMPLATE_TARGET)
 	cd $(DESTDIR)$(RDIR)/elwms/libs && ln -s $(RRELPATH)/$(TEMPLATE_TARGET) 
-	install -m644 ../../examples/r/*.R ../../examples/r/graphical/*.R \
+	install -m644 ../../examples/documented/r/*.R ../../examples/documented/r/graphical/*.R \
 		$(DESTDIR)$(RDIR)/elwms/demo
 	../.r-install.sh $(DESTDIR)$(RDIR) elwms $(EXT_LIB)
 endif
@@ -263,7 +263,7 @@ install-r_modular: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
-	install -m644 ../../examples/r_modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
+	install -m644 ../../examples/documented/r_modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
 	install -m755 *.$(EXT_LIB) $(DESTDIR)$(RDIR)/shogun/libs
 	install -m755 *.RData $(DESTDIR)$(RDIR)/shogun/R
 	../.r-install.sh $(DESTDIR)$(RDIR) shogun $(EXT_LIB)
@@ -282,7 +282,7 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	cd ../../examples/libshogun && $(MAKE) clean && \
+	cd ../../examples/undocumented/libshogun && $(MAKE) clean && \
 		$(MAKE) LIBRARY_PATH="$(LIBRARY_PATH)" LIB_PATH="$(DESTDIR)$(LIBDIR)" \
 		INC_PATH="$(DESTDIR)$(INCDIR)" LIBS="$(LINKFLAGS) -lshogun" check-examples
 
@@ -301,7 +301,7 @@ run-testsuite-python:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples-python:
-	cd ../../examples/python && \
+	cd ../../examples/undocumented/python && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 
@@ -310,7 +310,7 @@ run-testsuite-r:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r:
-	cd ../../examples/r && \
+	cd ../../examples/undocumented/r && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
@@ -319,7 +319,7 @@ run-testsuite-cmdline:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR)"  ./test_all.sh )
 check-examples-cmdline:
-	cd ../../examples/cmdline && \
+	cd ../../examples/undocumented/cmdline && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR)"  ./check.sh )
 
@@ -328,7 +328,7 @@ run-testsuite-octave:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
 check-examples-octave:
-	cd ../../examples/octave && \
+	cd ../../examples/undocumented/octave && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
 
@@ -337,14 +337,14 @@ run-testsuite-matlab:
 		( ln -sf ../../src/matlab/$(TEMPLATE_TARGET) ; \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
 check-examples-matlab:
-	cd ../../examples/matlab && ./check.sh
+	cd ../../examples/undocumented/matlab && ./check.sh
 
 run-testsuite-python_modular:
 	cd ../../testsuite/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
 check-examples-python_modular:
-	cd ../../examples/python_modular && \
+	cd ../../examples/undocumented/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
 
@@ -353,7 +353,7 @@ run-testsuite-r_modular:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_modular:
-	cd ../../examples/r_modular && \
+	cd ../../examples/undocumented/r_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
@@ -362,7 +362,7 @@ run-testsuite-octave_modular:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
 check-examples-octave_modular:
-	cd ../../examples/octave_modular && \
+	cd ../../examples/undocumented/octave_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 
