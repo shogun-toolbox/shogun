@@ -6,5 +6,5 @@ examples:
 distclean: clean
 
 clean: 
-	(cd documented && rm -rf cmdline data elwms libshogun matlab_and_octave \
+	(cd documented && rm -rf cmdline elwms libshogun matlab_and_octave \
 		octave_modular python python_modular r r_modular )
