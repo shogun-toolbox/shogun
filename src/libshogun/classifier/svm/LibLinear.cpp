@@ -60,7 +60,24 @@ bool CLibLinear::train(CFeatures* data)
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
+	if (liblinear_solver_type == L1R_L2LOSS_SVC ||
+			(liblinear_solver_type == L1R_LR) )
+	{
+		if (num_feat!=num_train_labels);
+		{
+			SG_ERROR("L1 methods require the data to be transposed"
+					"number of features %d does not match number of training labels\n",
+					num_feat, num_train_labels);
+		}
+	}
+	else
+	{
+		if (num_vec!=num_train_labels);
+		{
+			SG_ERROR("number of vectors %d does not match number of training labels\n",
+					num_vec, num_train_labels);
+		}
+	}
 	delete[] w;
 	if (use_bias)
 		w=new float64_t[num_feat+1];
@@ -378,8 +395,6 @@ void CLibLinear::solve_l2r_l1l2_svc(
 void CLibLinear::solve_l1r_l2_svc(
 	problem *prob_col, double eps, double Cp, double Cn)
 {
-	SG_NOTIMPLEMENTED;
-	/*
 	int l = prob_col->l;
 	int w_size = prob_col->n;
 	int j, s, iter = 0;
@@ -400,12 +415,16 @@ void CLibLinear::solve_l1r_l2_svc(
 	int32_t *y = new int32_t[l];
 	double *b = new double[l]; // b = 1-ywTx
 	double *xj_sq = new double[w_size];
-	feature_node *x;
+
+	CDotFeatures* x = (CDotFeatures*) prob_col->x;
+	void* iterator;
+	int ind;
+	double val;
 
 	double C[3] = {Cn,0,Cp};
 
 	int n = prob_col->n;
-	if (prob->use_bias)
+	if (prob_col->use_bias)
 		n--;
 
 	for(j=0; j<l; j++)
@@ -416,20 +435,17 @@ void CLibLinear::solve_l1r_l2_svc(
 		else
 			y[j] = -1;
 	}
+
 	for(j=0; j<w_size; j++)
 	{
 		w[j] = 0;
 		index[j] = j;
 		xj_sq[j] = 0;
-		x = prob_col->x[j];
-		while(x->index != -1)
-		{
-			int ind = x->index-1;
-			double val = x->value;
-			x->value *= y[ind]; // x->value stores yi*xij
+		iterator=x->get_feature_iterator(j);
+		while (x->get_next_feature(ind, val, iterator))
 			xj_sq[j] += C[GETI(ind)]*val*val;
-			x++;
-		}
+
+		x->free_feature_iterator(iterator);
 	}
 
 	while(iter < max_iter)
@@ -448,19 +464,18 @@ void CLibLinear::solve_l1r_l2_svc(
 			G_loss = 0;
 			H = 0;
 
-			x = prob_col->x[j];
-			while(x->index != -1)
+			iterator=x->get_feature_iterator(j);
+
+			while (x->get_next_feature(ind, val, iterator))
 			{
-				int ind = x->index-1;
 				if(b[ind] > 0)
 				{
-					double val = x->value;
-					double tmp = C[GETI(ind)]*val;
+					double tmp = C[GETI(ind)]*val*y[ind];
 					G_loss -= tmp*b[ind];
-					H += tmp*val;
+					H += tmp*val*y[ind];
 				}
-				x++;
 			}
+			x->free_feature_iterator(iterator);
 			G_loss *= 2;
 
 			G = G_loss;
@@ -513,12 +528,11 @@ void CLibLinear::solve_l1r_l2_svc(
 				appxcond = xj_sq[j]*d*d + G_loss*d + cond;
 				if(appxcond <= 0)
 				{
-					x = prob_col->x[j];
-					while(x->index != -1)
-					{
-						b[x->index-1] += d_diff*x->value;
-						x++;
-					}
+					iterator=x->get_feature_iterator(j);
+					while (x->get_next_feature(ind, val, iterator))
+						b[ind] += d_diff*val*y[ind];
+
+					x->free_feature_iterator(iterator);
 					break;
 				}
 
@@ -526,32 +540,31 @@ void CLibLinear::solve_l1r_l2_svc(
 				{
 					loss_old = 0;
 					loss_new = 0;
-					x = prob_col->x[j];
-					while(x->index != -1)
+					iterator=x->get_feature_iterator(j);
+					while (x->get_next_feature(ind, val, iterator))
 					{
-						int ind = x->index-1;
 						if(b[ind] > 0)
 							loss_old += C[GETI(ind)]*b[ind]*b[ind];
-						double b_new = b[ind] + d_diff*x->value;
+						double b_new = b[ind] + d_diff*val*y[ind];
 						b[ind] = b_new;
 						if(b_new > 0)
 							loss_new += C[GETI(ind)]*b_new*b_new;
-						x++;
 					}
+					x->free_feature_iterator(iterator);
 				}
 				else
 				{
 					loss_new = 0;
-					x = prob_col->x[j];
-					while(x->index != -1)
+					iterator=x->get_feature_iterator(j);
+					while (x->get_next_feature(ind, val, iterator))
 					{
-						int ind = x->index-1;
-						double b_new = b[ind] + d_diff*x->value;
+						double b_new = b[ind] + d_diff*val*y[ind];
 						b[ind] = b_new;
 						if(b_new > 0)
 							loss_new += C[GETI(ind)]*b_new*b_new;
 						x++;
 					}
+					x->free_feature_iterator(iterator);
 				}
 
 				cond = cond + loss_new - loss_old;
@@ -576,13 +589,13 @@ void CLibLinear::solve_l1r_l2_svc(
 
 				for(int i=0; i<w_size; i++)
 				{
-					if(w[i]==0) continue;
-					x = prob_col->x[i];
-					while(x->index != -1)
-					{
-						b[x->index-1] -= w[i]*x->value;
-						x++;
-					}
+					if(w[i]==0)
+						continue;
+
+					iterator=x->get_feature_iterator(i);
+					while (x->get_next_feature(ind, val, iterator))
+						b[ind] -= w[i]*val*y[ind];
+					x->free_feature_iterator(iterator);
 				}
 			}
 		}
@@ -619,12 +632,6 @@ void CLibLinear::solve_l1r_l2_svc(
 	int nnz = 0;
 	for(j=0; j<w_size; j++)
 	{
-		x = prob_col->x[j];
-		while(x->index != -1)
-		{
-			x->value *= prob_col->y[x->index-1]; // restore x->value
-			x++;
-		}
 		if(w[j] != 0)
 		{
 			v += fabs(w[j]);
@@ -642,7 +649,6 @@ void CLibLinear::solve_l1r_l2_svc(
 	delete [] y;
 	delete [] b;
 	delete [] xj_sq;
-	*/
 }
 
 // A coordinate descent algorithm for 
@@ -664,8 +670,6 @@ void CLibLinear::solve_l1r_lr(
 	const problem *prob_col, double eps, 
 	double Cp, double Cn)
 {
-	SG_NOTIMPLEMENTED;
-	/*
 	int l = prob_col->l;
 	int w_size = prob_col->n;
 	int j, s, iter = 0;
@@ -691,7 +695,11 @@ void CLibLinear::solve_l1r_lr(
 	double *C_sum = new double[w_size];
 	double *xjneg_sum = new double[w_size];
 	double *xjpos_sum = new double[w_size];
-	feature_node *x;
+
+	CDotFeatures* x = prob_col->x;
+	void* iterator;
+	int ind;
+	double val;
 
 	double C[3] = {Cn,0,Cp};
 
@@ -711,11 +719,9 @@ void CLibLinear::solve_l1r_lr(
 		C_sum[j] = 0;
 		xjneg_sum[j] = 0;
 		xjpos_sum[j] = 0;
-		x = prob_col->x[j];
-		while(x->index != -1)
+		iterator=x->get_feature_iterator(j);
+		while (x->get_next_feature(ind, val, iterator))
 		{
-			int ind = x->index-1;
-			double val = x->value;
 			x_min = CMath::min(x_min, val);
 			xj_max[j] = CMath::max(xj_max[j], val);
 			C_sum[j] += C[GETI(ind)];
@@ -723,8 +729,8 @@ void CLibLinear::solve_l1r_lr(
 				xjneg_sum[j] += C[GETI(ind)]*val;
 			else
 				xjpos_sum[j] += C[GETI(ind)]*val;
-			x++;
 		}
+		x->free_feature_iterator(iterator);
 	}
 
 	while(iter < max_iter)
@@ -744,19 +750,18 @@ void CLibLinear::solve_l1r_lr(
 			sum2 = 0;
 			H = 0;
 
-			x = prob_col->x[j];
-			while(x->index != -1)
+			iterator=x->get_feature_iterator(j);
+			while (x->get_next_feature(ind, val, iterator))
 			{
-				int ind = x->index-1;
 				double exp_wTxind = exp_wTx[ind];
-				double tmp1 = x->value/(1+exp_wTxind);
+				double tmp1 = val/(1+exp_wTxind);
 				double tmp2 = C[GETI(ind)]*tmp1;
 				double tmp3 = tmp2*exp_wTxind;
 				sum2 += tmp2;
 				sum1 += tmp3;
 				H += tmp1*tmp3;
-				x++;
 			}
+			x->free_feature_iterator(iterator);
 
 			G = -sum2 + xjneg_sum[j];
 
@@ -810,12 +815,10 @@ void CLibLinear::solve_l1r_lr(
 					appxcond2 = log(1+sum2*(1/tmp-1)/xj_max[j]/C_sum[j])*C_sum[j] + cond + d*xjneg_sum[j];
 					if(CMath::min(appxcond1,appxcond2) <= 0)
 					{
-						x = prob_col->x[j];
-						while(x->index != -1)
-						{
-							exp_wTx[x->index-1] *= exp(d*x->value);
-							x++;
-						}
+						iterator=x->get_feature_iterator(j);
+						while (x->get_next_feature(ind, val, iterator))
+							exp_wTx[ind] *= exp(d*val);
+						x->free_feature_iterator(iterator);
 						break;
 					}
 				}
@@ -823,26 +826,26 @@ void CLibLinear::solve_l1r_lr(
 				cond += d*xjneg_sum[j];
 
 				int i = 0;
-				x = prob_col->x[j];
-				while(x->index != -1)
+				iterator=x->get_feature_iterator(j);
+				while (x->get_next_feature(ind, val, iterator))
 				{
-					int ind = x->index-1;
-					double exp_dx = exp(d*x->value);
+					double exp_dx = exp(d*val);
 					exp_wTx_new[i] = exp_wTx[ind]*exp_dx;
 					cond += C[GETI(ind)]*log((1+exp_wTx_new[i])/(exp_dx+exp_wTx_new[i]));
-					x++; i++;
+					i++;
 				}
+				x->free_feature_iterator(iterator);
 
 				if(cond <= 0)
 				{
 					i = 0;
-					x = prob_col->x[j];
-					while(x->index != -1)
+					iterator=x->get_feature_iterator(j);
+					while (x->get_next_feature(ind, val, iterator))
 					{
-						int ind = x->index-1;
 						exp_wTx[ind] = exp_wTx_new[i];
-						x++; i++;
+						i++;
 					}
+					x->free_feature_iterator(iterator);
 					break;
 				}
 				else
@@ -864,12 +867,11 @@ void CLibLinear::solve_l1r_lr(
 				for(int i=0; i<w_size; i++)
 				{
 					if(w[i]==0) continue;
-					x = prob_col->x[i];
-					while(x->index != -1)
-					{
-						exp_wTx[x->index-1] += w[i]*x->value;
-						x++;
-					}
+					iterator=x->get_feature_iterator(i);
+					while (x->get_next_feature(ind, val, iterator))
+						exp_wTx[ind] += w[i]*val;
+
+					x->free_feature_iterator(iterator);
 				}
 
 				for(int i=0; i<l; i++)
@@ -930,7 +932,6 @@ void CLibLinear::solve_l1r_lr(
 	delete [] C_sum;
 	delete [] xjneg_sum;
 	delete [] xjpos_sum;
-	*/
 }
 
 

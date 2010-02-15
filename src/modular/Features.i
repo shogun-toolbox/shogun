@@ -56,6 +56,9 @@
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
 %}
 
+/* These functions return new Objects */
+%newobject get_transposed();
+
 /* Typemaps */
 
 %apply (bool* IN_ARRAY1, int32_t DIM1) {(bool* src, int32_t len)};
