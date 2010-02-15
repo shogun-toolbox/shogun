@@ -317,7 +317,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			int32_t num_vec;
 			ST* fm=get_transposed(num_feat, num_vec);
 
-			CSimpleFeatures<ST>* f= new CSimpleFeatures<ST>(fm, num_feat, num_vec);
+			return new CSimpleFeatures<ST>(fm, num_feat, num_vec);
 		}
 
 		/** compute and return the transpose of the feature matrix

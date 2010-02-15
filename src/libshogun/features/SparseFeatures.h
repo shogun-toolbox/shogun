@@ -565,7 +565,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			int32_t num_vec;
 			TSparse<ST>* s=get_transposed(num_feat, num_vec);
 
-			CSparseFeatures<ST>* f= new CSparseFeatures<ST>(s, num_feat, num_vec);
+			
+			return new CSparseFeatures<ST>(s, num_feat, num_vec);
 		}
 
 		/** compute and return the transpose of the sparse feature matrix

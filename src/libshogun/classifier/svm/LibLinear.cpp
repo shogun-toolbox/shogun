@@ -63,18 +63,20 @@ bool CLibLinear::train(CFeatures* data)
 	if (liblinear_solver_type == L1R_L2LOSS_SVC ||
 			(liblinear_solver_type == L1R_LR) )
 	{
-		if (num_feat!=num_train_labels);
+		if (num_feat!=num_train_labels)
 		{
-			SG_ERROR("L1 methods require the data to be transposed"
-					"number of features %d does not match number of training labels\n",
+			SG_ERROR("L1 methods require the data to be transposed: "
+					"number of features %d does not match number of "
+					"training labels %d\n",
 					num_feat, num_train_labels);
 		}
 	}
 	else
 	{
-		if (num_vec!=num_train_labels);
+		if (num_vec!=num_train_labels)
 		{
-			SG_ERROR("number of vectors %d does not match number of training labels\n",
+			SG_ERROR("number of vectors %d does not match "
+					"number of training labels %d\n",
 					num_vec, num_train_labels);
 		}
 	}
