@@ -237,8 +237,8 @@ float64_t* CFKFeatures::set_feature_matrix()
 
 	SG_DONE();
 	
-	num_vectors=get_num_vectors() ;
-	num_features=get_num_features() ;
+	num_vectors=get_num_vectors();
+	num_features=get_num_features();
 
 	return feature_matrix;
 }

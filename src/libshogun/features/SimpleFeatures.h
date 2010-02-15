@@ -659,6 +659,81 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			return true;
 		}
 
+		/** iterator for simple features */
+		struct simple_feature_iterator
+		{
+			/** pointer to feature vector */
+			ST* vec;
+			/** index of vector */
+			int32_t vidx;
+			/** length of vector */
+			int32_t vlen;
+			/** if we need to free the vector*/
+			bool vfree;
+
+			/** feature index */
+			int32_t index;
+		};
+
+		/** iterate over the non-zero features
+		 *
+		 * call get_feature_iterator first, followed by get_next_feature and
+		 * free_feature_iterator to cleanup
+		 *
+		 * @param vector_index the index of the vector over whose components to
+		 * 			iterate over
+		 * @return feature iterator (to be passed to get_next_feature)
+		 */
+		virtual void* get_feature_iterator(int32_t vector_index)
+		{
+			if (vector_index>=num_vectors)
+			{
+				SG_ERROR("Index out of bounds (number of vectors %d, you "
+						"requested %d)\n", num_vectors, vector_index);
+			}
+
+			simple_feature_iterator* iterator=new simple_feature_iterator[1];
+			iterator->vec= get_feature_vector(vector_index, iterator->vlen, iterator->vfree);
+			iterator->vidx=vector_index;
+			iterator->index=0;
+			return iterator;
+		}
+
+		/** iterate over the non-zero features
+		 *
+		 * call this function with the iterator returned by get_first_feature
+		 * and call free_feature_iterator to cleanup
+		 *
+		 * @param index is returned by reference (-1 when not available)
+		 * @param value is returned by reference
+		 * @param iterator as returned by get_first_feature
+		 * @return true if a new non-zero feature got returned
+		 */
+		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
+		{
+			simple_feature_iterator* it=(simple_feature_iterator*) iterator;
+			if (!it && it->index>=it->vlen)
+				return false;
+
+			index=it->index++;
+			value = (float64_t) it->vec[index];
+
+			return true;
+		}
+
+		/** clean up iterator
+		 * call this function with the iterator returned by get_first_feature
+		 *
+		 * @param iterator as returned by get_first_feature
+		 */
+		virtual void free_feature_iterator(void* iterator)
+		{
+			ASSERT(iterator);
+			simple_feature_iterator* it=(simple_feature_iterator*) iterator;
+			free_feature_vector(it->vec, it->vidx, it->vfree);
+			delete[] it;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SimpleFeatures"; }
 

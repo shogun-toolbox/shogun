@@ -223,3 +223,46 @@ CFeatures* CImplicitWeightedSpecFeatures::duplicate() const
 {
 	return new CImplicitWeightedSpecFeatures(*this);
 }
+
+void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
+{
+	if (vector_index>=num_strings)
+	{
+		SG_ERROR("Index out of bounds (number of strings %d, you "
+				"requested %d)\n", num_strings, vector_index);
+	}
+
+	wspec_feature_iterator* iterator=new wspec_feature_iterator[1];
+	iterator->vec= strings->get_feature_vector(vector_index, iterator->vlen, iterator->vfree);
+	iterator->vidx=vector_index;
+
+	iterator->offs=0;
+	iterator->idx=0;
+	iterator->d=0;
+	iterator->j=0;
+	iterator->mask=0;
+	iterator->alpha=normalization_factors[vector_index];
+
+	iterator->index=0;
+	return iterator;
+}
+
+bool CImplicitWeightedSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+{
+	wspec_feature_iterator* it=(wspec_feature_iterator*) iterator;
+	if (!it && it->index>=it->vlen)
+		return false;
+
+	index=it->index++;
+	value = (float64_t) it->vec[index];
+
+	return true;
+}
+
+void CImplicitWeightedSpecFeatures::free_feature_iterator(void* iterator)
+{
+	ASSERT(iterator);
+	wspec_feature_iterator* it=(wspec_feature_iterator*) iterator;
+	strings->free_feature_vector(it->vec, it->vidx, it->vfree);
+	delete[] it;
+}

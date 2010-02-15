@@ -143,6 +143,64 @@ class CPolyFeatures : public CDotFeatures
 		 */
 		void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val);
 
+		/** iterator for weighted spectrum features */
+		struct poly_feature_iterator
+		{
+			/** pointer to feature vector */
+			uint16_t* vec;
+			/** index of vector */
+			int32_t vidx;
+			/** length of vector */
+			int32_t vlen;
+			/** if we need to free the vector*/
+			bool vfree;
+
+			/** feature index */
+			int32_t index;
+
+		};
+
+		/** iterate over the non-zero features
+		 *
+		 * call get_feature_iterator first, followed by get_next_feature and
+		 * free_feature_iterator to cleanup
+		 *
+		 * @param vector_index the index of the vector over whose components to
+		 * 			iterate over
+		 * @return feature iterator (to be passed to get_next_feature)
+		 */
+		virtual void* get_feature_iterator(int32_t vector_index)
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
+		}
+
+		/** iterate over the non-zero features
+		 *
+		 * call this function with the iterator returned by get_first_feature
+		 * and call free_feature_iterator to cleanup
+		 *
+		 * @param index is returned by reference (-1 when not available)
+		 * @param value is returned by reference
+		 * @param iterator as returned by get_first_feature
+		 * @return true if a new non-zero feature got returned
+		 */
+		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
+		}
+
+		/** clean up iterator
+		 * call this function with the iterator returned by get_first_feature
+		 *
+		 * @param iterator as returned by get_first_feature
+		 */
+		virtual void free_feature_iterator(void* iterator)
+		{
+			SG_NOTIMPLEMENTED;
+		}
+
 	protected: 
 
 		/** store the norm of each training example */
