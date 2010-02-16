@@ -70,6 +70,8 @@ bool CLibLinear::train(CFeatures* data)
 					"training labels %d\n",
 					num_feat, num_train_labels);
 		}
+		CMath::swap(num_feat, num_vec);
+
 	}
 	else
 	{
@@ -420,12 +422,13 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	CDotFeatures* x = (CDotFeatures*) prob_col->x;
 	void* iterator;
-	int ind;
-	double val;
+	int32_t ind;
+	float64_t val;
 
 	double C[3] = {Cn,0,Cp};
 
 	int n = prob_col->n;
+	SG_PRINT("n=%d l=%d\n", n, l);
 	if (prob_col->use_bias)
 		n--;
 

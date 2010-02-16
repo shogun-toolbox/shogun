@@ -1361,6 +1361,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			/** index */
 			int32_t index;
+
+			void print_info()
+			{
+				SG_SPRINT("sv=%p, vidx=%d, num_feat_entries=%d, index=%d\n",
+						sv, vidx, num_feat_entries, index);
+			}
 		};
 
 		/** iterate over the non-zero features
@@ -1383,11 +1389,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			if (!sparse_feature_matrix)
 				SG_ERROR("Requires a in-memory feature matrix\n");
 
-			sparse_feature_iterator* iterator=new sparse_feature_iterator[1];
-			iterator->sv=get_sparse_feature_vector(vector_index, iterator->num_feat_entries, iterator->vfree);
-			iterator->vidx=vector_index;
-			iterator->index=0;
-			return iterator;
+			sparse_feature_iterator* it=new sparse_feature_iterator[1];
+			it->sv=get_sparse_feature_vector(vector_index, it->num_feat_entries, it->vfree);
+			it->vidx=vector_index;
+			it->index=0;
+
+			return it;
 		}
 
 		/** iterate over the non-zero features
@@ -1403,12 +1410,13 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
 		{
 			sparse_feature_iterator* it=(sparse_feature_iterator*) iterator;
-			ASSERT(sparse_feature_matrix);
-			if (!it && it->index>=it->num_feat_entries)
+			if (!it || it->index >= it->num_feat_entries)
 				return false;
 
-			index =  it->sv[it->index++].feat_index;
-			value = (float64_t) it->sv[index].entry;
+			int32_t i=it->index++;
+
+			index =  it->sv[i].feat_index;
+			value = (float64_t) it->sv[i].entry;
 
 			return true;
 		}

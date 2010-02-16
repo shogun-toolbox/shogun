@@ -712,7 +712,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
 		{
 			simple_feature_iterator* it=(simple_feature_iterator*) iterator;
-			if (!it && it->index>=it->vlen)
+			if (!it || it->index>=it->vlen)
 				return false;
 
 			index=it->index++;
