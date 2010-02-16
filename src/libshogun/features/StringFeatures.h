@@ -459,7 +459,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			int32_t num_vec;
 			T_STRING<ST>* s=get_transposed(num_feat, num_vec);
 
-			return new CStringFeatures<ST>(s, num_feat, num_vec, alphabet);
+			return new CStringFeatures<ST>(s, num_vec, num_feat, alphabet);
 		}
 
 		/** compute and return the transpose of string features matrix
