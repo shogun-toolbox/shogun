@@ -4,8 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2009-2010 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
+ *
  */
 
 #ifndef _COMBINEDDOTFEATURES_H___
@@ -140,18 +142,10 @@ class CCombinedDotFeatures : public CDotFeatures
 		/** iterator for weighted spectrum features */
 		struct combined_feature_iterator
 		{
-			/** pointer to feature vector */
-			uint16_t* vec;
-			/** index of vector */
-			int32_t vidx;
-			/** length of vector */
-			int32_t vlen;
-			/** if we need to free the vector*/
-			bool vfree;
-
-			/** feature index */
-			int32_t index;
-
+			CDotFeatures* f;
+			CListElement<CDotFeatures*>* current;
+			void* iterator;
+			int32_t vector_index;
 		};
 
 		/** iterate over the non-zero features
@@ -165,8 +159,13 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index)
 		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
+			combined_feature_iterator* it=new combined_feature_iterator[1];
+
+			it->current=NULL;
+			it->f=get_first_feature_obj(it->current);
+			it->iterator=it->f->get_feature_iterator(vector_index);
+			it->vector_index=vector_index;
+			return it;
 		}
 
 		/** iterate over the non-zero features
@@ -181,8 +180,22 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
 		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
+			ASSERT(iterator);
+			combined_feature_iterator* it = (combined_feature_iterator*) iterator;
+
+			while (it->f)
+			{
+				if (it->f->get_next_feature(index, value, it->iterator))
+					return true;
+
+				it->f->free_feature_iterator(it->iterator);
+				it->f=get_next_feature_obj(it->current);
+				if (it->f)
+					it->iterator=it->f->get_feature_iterator(it->vector_index);
+				else
+					it->iterator=NULL;
+			}
+			return false;
 		}
 
 		/** clean up iterator
@@ -192,7 +205,13 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		virtual void free_feature_iterator(void* iterator)
 		{
-			SG_NOTIMPLEMENTED;
+			if (iterator)
+			{
+				combined_feature_iterator* it = (combined_feature_iterator*) iterator;
+				if (it->iterator && it->f)
+					it->f->free_feature_iterator(it->iterator);
+				delete[] it;
+			}
 		}
 
 		/** duplicate feature object

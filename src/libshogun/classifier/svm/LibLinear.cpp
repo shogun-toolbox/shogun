@@ -412,7 +412,7 @@ void CLibLinear::solve_l1r_l2_svc(
 	double Gmax_new;
 	double Gmax_init;
 	double d_old, d_diff;
-	double loss_old, loss_new;
+	double loss_old=0, loss_new;
 	double appxcond, cond;
 
 	int *index = new int[w_size];
@@ -687,7 +687,7 @@ void CLibLinear::solve_l1r_lr(
 	double d, G, H;
 	double Gmax_old = CMath::INFTY;
 	double Gmax_new;
-	double Gmax_init;
+	double Gmax_init=0;
 	double sum1, appxcond1;
 	double sum2, appxcond2;
 	double cond;

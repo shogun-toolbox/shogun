@@ -4,9 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
  */
 
 #ifndef _SPARSEFEATURES__H__
@@ -1428,7 +1429,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		virtual void free_feature_iterator(void* iterator)
 		{
-			ASSERT(iterator);
+			if (!iterator)
+				return;
+
 			sparse_feature_iterator* it=(sparse_feature_iterator*) iterator;
 			free_sparse_feature_vector(it->sv, it->vidx, it->vfree);
 			delete[] it;

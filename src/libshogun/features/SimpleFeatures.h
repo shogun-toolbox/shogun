@@ -4,9 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
  */
 
 #ifndef _SIMPLEFEATURES__H__
@@ -728,7 +729,9 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		virtual void free_feature_iterator(void* iterator)
 		{
-			ASSERT(iterator);
+			if (!iterator)
+				return;
+
 			simple_feature_iterator* it=(simple_feature_iterator*) iterator;
 			free_feature_vector(it->vec, it->vidx, it->vfree);
 			delete[] it;
