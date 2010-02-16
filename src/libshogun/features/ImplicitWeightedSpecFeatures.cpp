@@ -232,30 +232,46 @@ void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
 				"requested %d)\n", num_strings, vector_index);
 	}
 
-	wspec_feature_iterator* iterator=new wspec_feature_iterator[1];
-	iterator->vec= strings->get_feature_vector(vector_index, iterator->vlen, iterator->vfree);
-	iterator->vidx=vector_index;
+	wspec_feature_iterator* it=new wspec_feature_iterator[1];
+	it->vec= strings->get_feature_vector(vector_index, it->vlen, it->vfree);
+	it->vidx=vector_index;
 
-	iterator->offs=0;
-	iterator->idx=0;
-	iterator->d=0;
-	iterator->j=0;
-	iterator->mask=0;
-	iterator->alpha=normalization_factors[vector_index];
+	it->offs=0;
+	it->d=0;
+	it->j=0;
+	it->mask=0;
+	it->alpha=normalization_factors[vector_index];
 
-	iterator->index=0;
-	return iterator;
+	return it;
 }
 
 bool CImplicitWeightedSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	wspec_feature_iterator* it=(wspec_feature_iterator*) iterator;
-	if (!it && it->index>=it->vlen)
-		return false;
 
-	index=it->index++;
-	value = (float64_t) it->vec[index];
+	if (it->d>=degree)
+	{
+		if (it->j < it->vlen-1)
+		{
+			it->j++;
+			it->d=0;
+			it->mask=0;
+			it->offs=0;
+		}
+		else
+			return false;
+	}
 
+	int32_t d=it->d;
+
+	it->mask = it->mask | (1 << (degree-d-1));
+	int32_t idx=strings->get_masked_symbols(it->vec[it->j], it->mask);
+	idx=strings->shift_symbol(idx, degree-d-1);
+	value=it->alpha*spec_weights[d];
+	index=it->offs + idx;
+	it->offs+=strings->shift_offset(1,d+1);
+
+	it->d=d+1;
 	return true;
 }
 

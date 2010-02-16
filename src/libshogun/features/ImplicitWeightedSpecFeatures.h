@@ -168,15 +168,10 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 
 			/** parameters of interal feature gen loop */
 			int32_t offs;
-			int32_t idx;
 			int32_t d;
 			int32_t j;
 			uint8_t mask;
 			float64_t alpha;
-
-			/** feature index */
-			int32_t index;
-
 		};
 
 		/** iterate over the non-zero features

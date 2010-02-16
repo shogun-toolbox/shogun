@@ -189,6 +189,75 @@ void CWDFeatures::set_normalization_const(float64_t n)
 	SG_DEBUG("normalization_const:%f\n", normalization_const);
 }
 
+void* CWDFeatures::get_feature_iterator(int32_t vector_index)
+{
+	if (vector_index>=num_strings)
+	{
+		SG_ERROR("Index out of bounds (number of strings %d, you "
+				"requested %d)\n", num_strings, vector_index);
+	}
+
+	wd_feature_iterator* it=new wd_feature_iterator[1];
+
+	it->lim=CMath::min(degree, string_length);
+	it->vec= strings->get_feature_vector(vector_index, it->vlen, it->vfree);
+	it->vidx=vector_index;
+
+	it->vec = strings->get_feature_vector(vector_index, it->vlen, it->vfree);
+	it->val=new int32_t[it->vlen];
+	CMath::fill_vector(it->val, it->vlen, 0);
+
+	it->asize=alphabet_size;
+	it->asizem1=1;
+	it->offs=0;
+	it->k=0;
+	it->i=0;
+	it->o=0;
+
+	return it;
+}
+
+bool CWDFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+{
+	wd_feature_iterator* it=(wd_feature_iterator*) iterator;
+
+	if (it->i + it->k >= it->vlen)
+	{
+		if (it->k < it->lim-1)
+		{
+			it->k++;
+			it->i=0;
+			it->o=it->offs;
+		}
+		else
+			return false;
+	}
+
+	int32_t i=it->i;
+	int32_t k=it->k;
+
+	it->val[i]+=it->asizem1*it->vec[i+k];
+	value=wd_weights[k]/normalization_const;
+	index=it->val[i]+it->o;
+	it->o+=it->asize;
+
+	it->offs+=it->asize*it->vlen;
+	it->asize*=alphabet_size;
+	it->asizem1*=alphabet_size;
+	it->i=i+1;
+
+	return true;
+}
+
+void CWDFeatures::free_feature_iterator(void* iterator)
+{
+	ASSERT(iterator);
+	wd_feature_iterator* it=(wd_feature_iterator*) iterator;
+	strings->free_feature_vector(it->vec, it->vidx, it->vfree);
+	delete[] it->val;
+	delete[] it;
+}
+
 CFeatures* CWDFeatures::duplicate() const
 {
 	return new CWDFeatures(*this);
