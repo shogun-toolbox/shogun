@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <deque>
 
 namespace shogun
 {
@@ -27,66 +28,85 @@ class CNode: public CSGObject
 public:
 
 
-	float64_t beta;
 
-	CNode() {
-		parent = NULL;
-		beta = 1.0;
-	}
+    CNode()
+    {
+        parent = NULL;
+        beta = 1.0;
+        node_id = 0;
+    }
 
-    /**
-    fetch all ancesters of current node (excluding self)
-    until root is reached including root
-
-    @return: list of nodes on the path to root
-    @rtype: list<TreeNode>
-    **/
-    std::set<CNode*> get_path_root() {
-
+    std::set<CNode*> get_path_root()
+    {
         std::set<CNode*> nodes_on_path = std::set<CNode*>();
-
-        CNode* node = this;
-
+        CNode *node = this;
         while (node != NULL) {
             nodes_on_path.insert(node);
             node = node->parent;
         }
-
         return nodes_on_path;
     }
 
+    std::vector<int32_t> get_task_ids_below()
+    {
 
+        std::vector<int32_t> task_ids;
+        std::deque<CNode*> grey_nodes;
+        grey_nodes.push_back(this);
 
-    /**
-    add node as child of current leaf
+        while(grey_nodes.size() > 0)
+        {
 
-    @param node: child node
-    @type node: TreeNode
-    **/
-	void add_child(CNode* node)
-	{
+            CNode *current_node = grey_nodes.front();
+            grey_nodes.pop_front();
+
+            for(int32_t i = 0; i!=int32_t(current_node->children.size()); i++){
+                grey_nodes.push_back(current_node->children[i]);
+            }
+
+            if(current_node->is_leaf()){
+            	task_ids.push_back(current_node->getNode_id());
+            }
+        }
+
+        return task_ids;
+    }
+
+    void add_child(CNode *node)
+    {
         node->parent = this;
         this->children.push_back(node);
-	}
+    }
 
+    inline virtual const char *get_name() const
+    {
+        return "CNode";
+    }
 
-	/** @return object name */
-	inline virtual const char* get_name() const
-	{
-		return "CNode";
-	}
-
-	/** @return boolen to indicate, whether node has children */
-	bool is_leaf()
+    bool is_leaf()
 	{
 		return children.empty();
 
 	}
 
+    int32_t getNode_id() const
+    {
+        return node_id;
+    }
+
+    void setNode_id(int32_t node_idx)
+    {
+        this->node_id = node_idx;
+    }
+
+
+	float64_t beta;
+
 protected:
 
 	CNode* parent;
 	std::vector<CNode*> children;
+	int32_t node_id;
 
 };
 
@@ -131,6 +151,9 @@ public:
 
 		name2id[child_name] = id;
 
+		child_node->setNode_id(id);
+
+
 		//create edge
 		CNode* parent = nodes[name2id[parent_name]];
 
@@ -145,6 +168,21 @@ public:
 		return name2id[name];
 	}
 
+	std::set<CNode*> intersect_root_path(CNode* node_lhs, CNode* node_rhs) {
+
+		std::set<CNode*> root_path_lhs = node_lhs->get_path_root();
+		std::set<CNode*> root_path_rhs = node_rhs->get_path_root();
+
+		std::set<CNode*> intersection;
+
+		std::set_intersection(root_path_lhs.begin(), root_path_lhs.end(),
+							  root_path_rhs.begin(), root_path_rhs.end(),
+							  std::inserter(intersection, intersection.end()));
+
+		return intersection;
+
+	}
+
 	/**
 	 * @param task_lhs task_id on left hand side
 	 * @param task_rhs task_id on right hand side
@@ -156,24 +194,76 @@ public:
 		CNode* node_lhs = get_node(task_lhs);
 		CNode* node_rhs = get_node(task_rhs);
 
-		std::set<CNode*> root_path_lhs = node_lhs->get_path_root();
-		std::set<CNode*> root_path_rhs = node_rhs->get_path_root();
-
-		std::set<CNode*> intersection;
-
-		std::set_intersection(root_path_lhs.begin(), root_path_lhs.end(),
-							  root_path_rhs.begin(), root_path_rhs.end(),
-							  std::inserter(intersection, intersection.end()));
+		// compute intersection of paths to root
+		std::set<CNode*> intersection = intersect_root_path(node_lhs, node_rhs);
 
 		// sum up weights
 		float64_t gamma = 0;
 		for (std::set<CNode*>::const_iterator p = intersection.begin(); p != intersection.end(); ++p) {
+
+			/*
+			std::vector<int32_t> task_ids = (*p)->get_task_ids_below();
+
+			std::cout << "node name:" << (*p)->getNode_id() << ", num node underneath: " << task_ids.size() << std::endl;
+
+			float64_t task_sizes = 0.0;
+
+			for (std::vector<int32_t>::const_iterator id_iter = task_ids.begin(); id_iter != task_ids.end(); ++id_iter) {
+				 std::cout << "task_id: " << *id_iter << ", size: " << task_histogram[*id_iter] << std::endl;
+				 //task_sizes += task_histogram[*id_iter];
+				 task_sizes += 0.3333;
+			}
+
+			std::cout << "cumulative size:" << task_sizes << std::endl;
+
+			std::cout << "================" << std::endl << std::endl;
+
+			float64_t fraction_ones = 1.0 / (task_sizes * task_sizes);
+
+			gamma += (*p)->beta * fraction_ones;
+			*/
+
 			gamma += (*p)->beta;
 		}
 
 		return gamma;
 
 	}
+
+
+	void update_task_histogram(std::vector<int32_t> task_vector_lhs) {
+
+		//empty map
+		task_histogram.clear();
+
+
+		//fill map with zeros
+		for (std::vector<int32_t>::const_iterator it=task_vector_lhs.begin(); it!=task_vector_lhs.end(); it++)
+		{
+			task_histogram[*it] = 0.0;
+		}
+
+		//fill map
+		for (std::vector<int32_t>::const_iterator it=task_vector_lhs.begin(); it!=task_vector_lhs.end(); it++)
+		{
+			task_histogram[*it] += 1.0;
+		}
+
+		//compute fractions
+		for (std::map<int32_t, float64_t>::const_iterator it=task_histogram.begin(); it!=task_histogram.end(); it++)
+		{
+			task_histogram[it->first] = task_histogram[it->first] / float64_t(task_vector_lhs.size());
+
+			std::cout << "task_histogram:" << task_histogram[it->first] << std::endl;
+
+		}
+
+
+
+
+	}
+
+
 
 
 	int32_t get_num_nodes()
@@ -225,6 +315,7 @@ protected:
 	CNode* root;
 	std::map<std::string, int32_t> name2id;
 	std::vector<CNode*> nodes;
+	std::map<int32_t, float64_t> task_histogram;
 
 };
 
@@ -309,9 +400,13 @@ public:
 		return true;
 	}
 
+
+
 	/** update cache */
 	void update_cache()
 	{
+
+
 		for (int32_t i=0; i!=num_nodes; i++)
 		{
 			for (int32_t j=0; j!=num_nodes; j++)
@@ -391,6 +486,9 @@ public:
 		{
 			task_vector_lhs.push_back(taxonomy.get_id(vec[i]));
 		}
+
+		//update task histogram
+		taxonomy.update_task_histogram(task_vector_lhs);
 
 	}
 
@@ -503,16 +601,6 @@ public:
 
 
 protected:
-
-
-	void init_dependency_matrix()
-	{
-
-		int32_t i = 0;
-
-	}
-
-
 
 
 
