@@ -225,6 +225,9 @@ bool CWDFeatures::get_next_feature(int32_t& index, float64_t& value, void* itera
 	{
 		if (it->k < it->lim-1)
 		{
+			it->offs+=it->asize*it->vlen;
+			it->asize*=alphabet_size;
+			it->asizem1*=alphabet_size;
 			it->k++;
 			it->i=0;
 			it->o=it->offs;
@@ -235,15 +238,18 @@ bool CWDFeatures::get_next_feature(int32_t& index, float64_t& value, void* itera
 
 	int32_t i=it->i;
 	int32_t k=it->k;
+#ifdef DEBUG_WDFEATURES
+	SG_PRINT("i=%d k=%d offs=%d o=%d asize=%d asizem1=%d\n", i, k, it->offs, it->o, it->asize, it->asizem1);
+#endif
 
 	it->val[i]+=it->asizem1*it->vec[i+k];
 	value=wd_weights[k]/normalization_const;
 	index=it->val[i]+it->o;
-	it->o+=it->asize;
+#ifdef DEBUG_WDFEATURES
+	SG_PRINT("index=%d val=%f w_size=%d lim=%d vlen=%d\n", index, value, w_dim, it->lim, it->vlen);
+#endif
 
-	it->offs+=it->asize*it->vlen;
-	it->asize*=alphabet_size;
-	it->asizem1*=alphabet_size;
+	it->o+=it->asize;
 	it->i=i+1;
 
 	return true;
