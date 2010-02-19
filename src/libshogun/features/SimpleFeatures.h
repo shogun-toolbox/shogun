@@ -29,6 +29,7 @@ namespace shogun
 template <class ST> class CStringFeatures;
 template <class ST> class CSimpleFeatures;
 template <class ST> class CSimplePreProc;
+class CDotFeatures;
 
 /** @brief The class SimpleFeatures implements dense feature matrices.
  *
@@ -387,6 +388,33 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 			num_features=num_feat;
 			num_vectors=num_vec;
+		}
+
+		/** obtain simpe features from other dotfeatures
+		 *
+		 * @param sf simple features
+		 * @return if obtaining was successful
+		 */
+		void obtain_from_simple(CDotFeatures* df)
+		{
+			int32_t num_feat=df->get_dim_feature_space();
+			int32_t num_vec=df->get_num_vectors();
+			free_feature_matrix();
+			ST* fm=new ST[((int64_t) num_feat)*num_vec];
+
+			for (int32_t i=0; i<num_vec; i++)
+			{
+				float64_t* dst;
+				int32_t len;
+				df->get_feature_vector(&dst, &len, i);
+
+				for (int32_t j=0; j<num_feat; j++)
+					feature_matrix[i*num_feat+j]=(ST) dst[j];
+
+				delete[] dst;
+			}
+
+			set_feature_matrix(fm, num_feat, num_vec);
 		}
 
 		/** apply preprocessor

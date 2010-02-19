@@ -320,6 +320,7 @@ protected:
 
 
 
+class CMultitaskKernelMklNormalizer;
 
 /** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function.
  *

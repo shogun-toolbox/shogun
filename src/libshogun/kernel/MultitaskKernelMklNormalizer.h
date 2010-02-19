@@ -22,7 +22,6 @@
 namespace shogun
 {
 
-class CMultitaskKernelMklNormalizer;
 
 /** @brief Base-class for parameterized Kernel Normalizers
  *
