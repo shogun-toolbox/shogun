@@ -22,6 +22,7 @@
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
 
+
 namespace shogun
 {
 	class CFeatures;
@@ -148,6 +149,9 @@ class CKernel : public CSGObject
 	friend class CAvgDiagKernelNormalizer;
 	friend class CRidgeKernelNormalizer;
 	friend class CFirstElementKernelNormalizer;
+	friend class CMultitaskKernelNormalizer;
+	friend class CMultitaskKernelMklNormalizer;
+	friend class CMultitaskKernelMaskNormalizer;
 	friend class CTanimotoKernelNormalizer;
 	friend class CDiceKernelNormalizer;
 	friend class CMultitaskKernelNormalizer;
@@ -735,7 +739,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param offs offset
 		 * @param n number of columns
-		 * @param symmetric whether matrix is symmetric 
+		 * @param symmetric whether matrix is symmetric
 		 */
 		int32_t compute_row_start(int64_t offs, int32_t n, bool symmetric)
 		{

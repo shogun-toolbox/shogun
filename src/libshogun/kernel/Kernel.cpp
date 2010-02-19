@@ -35,6 +35,13 @@
 #include <pthread.h>
 #endif
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT(shogun::CKernel);
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 using namespace shogun;
 
 CKernel::CKernel()
