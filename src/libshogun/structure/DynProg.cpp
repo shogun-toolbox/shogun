@@ -2311,6 +2311,11 @@ void CDynProg::best_path_trans_deriv(
 			}
 			else
 				nscore = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
+			
+			if (false)//(nscore<-1e9)
+					SG_PRINT("is_long_transition=%i  (from_pos=%i (%i), to_pos=%i (%i)=> %1.5f\n", 
+						is_long_transition, m_pos[from_pos], from_state, m_pos[to_pos], to_state, nscore) ;
+	
 			my_scores[i] += nscore ;
 
 			for (int32_t s=m_num_svms;s<m_num_lin_feat_plifs_cum[m_num_raw_data]; s++)/*set tiling plif values to neutral values (that do not influence derivative calculation)*/
@@ -2425,6 +2430,20 @@ void CDynProg::best_path_trans_deriv(
 			{
 				float64_t nscore = PEN_state_signals.element(to_state,k)->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
 				my_scores[i] += nscore ;
+#ifdef DYNPROG_DEBUG
+				if (false)//(nscore<-1e9)
+				{
+					SG_PRINT("is_long_transition=%i  (from_pos=%i (%i), from_state=%i, to_pos=%i (%i) to_state=%i=> %1.5f, dim3:%i, seq_input.element(to_state, to_pos, k): %1.4f\n", 
+						is_long_transition, m_pos[from_pos], from_pos, from_state, m_pos[to_pos], to_pos, to_state, nscore, k, seq_input.element(to_state, to_pos, k)) ;
+					for (int x=0; x<23; x++)
+					{
+						for (int i=-10; i<10; i++)
+							SG_PRINT("%1.4f\t", seq_input.element(x, to_pos+i, k));
+						SG_PRINT("\n");
+					}
+					
+				}
+#endif
 				//break ;
 				//int32_t num_current_svms=0;
 				//int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};

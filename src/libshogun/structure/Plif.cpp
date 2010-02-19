@@ -180,7 +180,10 @@ float64_t CPlif::lookup_penalty(int32_t p_value, float64_t* svm_values) const
 		return lookup_penalty_svm(p_value, svm_values) ;
 
 	if ((p_value<min_value) || (p_value>max_value))
+	{
+		//SG_PRINT("Feature:%s, %s.lookup_penalty(%i): return -inf min_value: %f, max_value: %f\n", name, get_name(), p_value, min_value, max_value) ;
 		return -CMath::INFTY ;
+	}
 	if (!do_calc)
 		return p_value;
 	if (cache!=NULL && (p_value>=0) && (p_value<=max_value))
@@ -202,7 +205,10 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 
 
 	if ((p_value<min_value) || (p_value>max_value))
+	{
+		//SG_PRINT("Feature:%s, %s.lookup_penalty(%f): return -inf min_value: %f, max_value: %f\n", name, get_name(), p_value, min_value, max_value) ;
 		return -CMath::INFTY ;
+	}
 
 	if (!do_calc)
 		return p_value;
