@@ -154,7 +154,6 @@ class CKernel : public CSGObject
 	friend class CMultitaskKernelMaskNormalizer;
 	friend class CTanimotoKernelNormalizer;
 	friend class CDiceKernelNormalizer;
-	friend class CMultitaskKernelNormalizer;
 
 	public:
 
