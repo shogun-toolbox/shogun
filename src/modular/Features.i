@@ -48,7 +48,6 @@
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/WDFeatures.h>
-#include <shogun/features/TransposedWDFeatures.h>
 #include <shogun/features/HashedWDFeatures.h>
 #include <shogun/features/HashedWDFeaturesTransposed.h>
 #include <shogun/features/PolyFeatures.h>
@@ -309,7 +308,6 @@
 %rename(RealFileFeatures) CRealFileFeatures;
 %rename(FKFeatures) CFKFeatures;
 %rename(TOPFeatures) CTOPFeatures;
-%rename(TransposedWDFeatures) CTransposedWDFeatures;
 %rename(WDFeatures) CWDFeatures;
 %rename(HashedWDFeatures) CHashedWDFeatures;
 %rename(HashedWDFeaturesTransposed) CHashedWDFeaturesTransposed;
@@ -404,7 +402,6 @@ namespace shogun
 %include <shogun/features/RealFileFeatures.h>
 %include <shogun/features/FKFeatures.h>
 %include <shogun/features/TOPFeatures.h>
-%include <shogun/features/TransposedWDFeatures.h>
 %include <shogun/features/WDFeatures.h>
 %include <shogun/features/HashedWDFeatures.h>
 %include <shogun/features/HashedWDFeaturesTransposed.h>
