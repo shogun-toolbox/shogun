@@ -25,16 +25,16 @@
 //#include <boost/archive/xml_oarchive.hpp>
 //#include <boost/archive/xml_iarchive.hpp>
 
-//some STL modules needed for serialization
-
-#include <string>
 #include <sstream>
 #include <fstream>
 
 #endif //HAVE_BOOST_SERIALIZATION
 
+//some STL modules
 #include <iostream>
+#include <string>
 #include <vector>
+#include <set>
 
 #include "lib/io.h"
 #include "base/Parallel.h"
@@ -194,7 +194,7 @@ public:
 		void serialize(Archive & ar, const unsigned int archive_version)
 		{
 			//ar & test;
-			SG_DEBUG("SERIALIZING SGObject");
+			SG_DEBUG("SERIALIZING SGObject (done)\n");
 		}
 
 #endif //HAVE_BOOST_SERIALIZATION
