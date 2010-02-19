@@ -77,6 +77,7 @@ bool CLibSVR::train(CFeatures* data)
 	param.nu = 0.5;
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
+	param.max_train_time = max_train_time;
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = tube_epsilon;
