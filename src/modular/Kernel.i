@@ -57,7 +57,11 @@
 #include <shogun/kernel/LocalAlignmentStringKernel.h>
 #include <shogun/kernel/LocalityImprovedStringKernel.h>
 #include <shogun/kernel/MatchWordStringKernel.h>
-#include <shogun/kernel/MultitaskKernelNormalizer.h>  
+#include <shogun/kernel/MultitaskKernelNormalizer.h>
+#include <shogun/kernel/MultitaskKernelTreeNormalizer.h>
+#include <shogun/kernel/MultitaskKernelMaskNormalizer.h>
+#include <shogun/kernel/MultitaskKernelPlifNormalizer.h>
+#include <shogun/kernel/MultitaskKernelMklNormalizer.h>    
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/PolyMatchStringKernel.h>
@@ -128,6 +132,10 @@
 %rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 %rename(MatchWordStringKernel) CMatchWordStringKernel;
 %rename(MultitaskKernelNormalizer) CMultitaskKernelNormalizer;
+%rename(MultitaskKernelTreeNormalizer) CMultitaskKernelTreeNormalizer;
+%rename(MultitaskKernelMaskNormalizer) CMultitaskKernelMaskNormalizer;
+%rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
+%rename(MultitaskKernelMklNormalizer) CMultitaskKernelMklNormalizer;
 %rename(OligoStringKernel) COligoStringKernel;
 %rename(PolyKernel) CPolyKernel;
 %rename(PolyMatchStringKernel) CPolyMatchStringKernel;
@@ -185,6 +193,36 @@ namespace shogun
     %template(StringByteKernel) CStringKernel<uint8_t>;
 }
 
+
+
+/* Provide some cast functionality available to target languages */
+%inline %{
+
+/* C++-style cast */
+shogun::CMultitaskKernelNormalizer *KernelNormalizerToMultitaskKernelNormalizer(shogun::CKernelNormalizer* n) {
+   return dynamic_cast<shogun::CMultitaskKernelNormalizer*>(n);
+}
+
+shogun::CMultitaskKernelTreeNormalizer *KernelNormalizerToMultitaskKernelTreeNormalizer(shogun::CKernelNormalizer* n) {
+   return dynamic_cast<shogun::CMultitaskKernelTreeNormalizer*>(n);
+}
+
+shogun::CMultitaskKernelMaskNormalizer *KernelNormalizerToMultitaskKernelMaskNormalizer(shogun::CKernelNormalizer* n) {
+   return dynamic_cast<shogun::CMultitaskKernelMaskNormalizer*>(n);
+}
+
+shogun::CMultitaskKernelPlifNormalizer *KernelNormalizerToMultitaskKernelPlifNormalizer(shogun::CKernelNormalizer* n) {
+   return dynamic_cast<shogun::CMultitaskKernelPlifNormalizer*>(n);
+}
+
+shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
+   return dynamic_cast<shogun::CCombinedKernel*>(n);
+}
+
+
+%}
+
+
 %include <shogun/kernel/KernelNormalizer.h>
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/AUCKernel.h> 
@@ -213,6 +251,10 @@ namespace shogun
 %include <shogun/kernel/LocalityImprovedStringKernel.h>
 %include <shogun/kernel/MatchWordStringKernel.h>
 %include <shogun/kernel/MultitaskKernelNormalizer.h>
+%include <shogun/kernel/MultitaskKernelTreeNormalizer.h>
+%include <shogun/kernel/MultitaskKernelMaskNormalizer.h>
+%include <shogun/kernel/MultitaskKernelPlifNormalizer.h>
+%include <shogun/kernel/MultitaskKernelMklNormalizer.h>
 %include <shogun/kernel/OligoStringKernel.h>
 %include <shogun/kernel/PolyKernel.h>
 %include <shogun/kernel/PolyMatchStringKernel.h>
@@ -231,3 +273,9 @@ namespace shogun
 %include <shogun/kernel/WeightedCommWordStringKernel.h>
 %include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 %include <shogun/kernel/WeightedDegreeStringKernel.h>
+
+
+%include std_vector.i
+/* instantiate the required template specializations */
+%template(NodeSet) std::vector<shogun::CNode *>;
+

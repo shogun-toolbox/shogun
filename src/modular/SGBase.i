@@ -85,6 +85,7 @@
 namespace std {
   %template(IntVector)    vector<int32_t>;
   %template(DoubleVector) vector<float64_t>;
+  %template(StringVector) vector<string>;
 }
 
 #ifdef HAVE_BOOST_SERIALIZATION
