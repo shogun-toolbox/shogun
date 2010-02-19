@@ -15,7 +15,13 @@
 #include "lib/common.h"
 #include "lib/Trie.h"
 #include "kernel/StringKernel.h"
+#include "kernel/MultitaskKernelMklNormalizer.h"
 #include "features/StringFeatures.h"
+
+
+
+
+
 
 namespace shogun
 {
@@ -206,6 +212,10 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		{
 			if (get_is_initialized())
 			{
+
+				if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
+					SG_ERROR("not implemented");
+
 				tries->delete_trees(max_mismatch==0);
 				set_is_initialized(false);
 			}
@@ -218,6 +228,10 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		inline virtual void add_to_normal(int32_t idx, float64_t weight)
 		{
+
+			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
+				SG_ERROR("not implemented");
+
 			if (max_mismatch==0)
 				add_example_to_tree(idx, weight);
 			else
@@ -232,6 +246,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		inline virtual int32_t get_num_subkernels()
 		{
+			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
+				return ((CMultitaskKernelMklNormalizer*)normalizer)->get_num_betas();
 			if (position_weights!=NULL)
 				return (int32_t) ceil(1.0*seq_length/mkl_stepsize) ;
 			if (length==0)
@@ -247,8 +263,13 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		inline void compute_by_subkernel(
 			int32_t idx, float64_t * subkernel_contrib)
 		{
+
 			if (get_is_initialized())
 			{
+
+				if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
+					SG_ERROR("not implemented");
+
 				compute_by_tree(idx, subkernel_contrib);
 				return ;
 			}
@@ -263,12 +284,16 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		inline const float64_t* get_subkernel_weights(int32_t& num_weights)
 		{
+
 			num_weights = get_num_subkernels();
 
 			delete[] weights_buffer ;
 			weights_buffer = new float64_t[num_weights];
 
-			if (position_weights!=NULL)
+			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
+				for (int32_t i=0; i<num_weights; i++)
+					weights_buffer[i] = ((CMultitaskKernelMklNormalizer*)normalizer)->get_beta(i);
+			else if (position_weights!=NULL)
 				for (int32_t i=0; i<num_weights; i++)
 					weights_buffer[i] = position_weights[i*mkl_stepsize];
 			else
@@ -290,7 +315,11 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			if (num_weights!=num_weights2)
 				SG_ERROR( "number of weights do not match\n");
 
-			if (position_weights!=NULL)
+
+			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
+				for (int32_t i=0; i<num_weights; i++)
+					((CMultitaskKernelMklNormalizer*)normalizer)->set_beta(i, weights2[i]);
+			else if (position_weights!=NULL)
 			{
 				for (int32_t i=0; i<num_weights; i++)
 				{
@@ -323,6 +352,27 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 					}
 				}
 			}
+		}
+
+		/** set the current kernel normalizer
+		 *
+		 * @return if successful
+		 */
+		virtual bool set_normalizer(CKernelNormalizer* normalizer_) {
+
+			if (normalizer_ && strcmp(normalizer_->get_name(),"MultitaskKernelTreeNormalizer")==0) {
+				unset_property(KP_LINADD);
+				unset_property(KP_BATCHEVALUATION);
+			}
+			else
+			{
+				set_property(KP_LINADD);
+				set_property(KP_BATCHEVALUATION);
+			}
+
+
+			return CStringKernel<char>::set_normalizer(normalizer_);
+
 		}
 
 		// other kernel tree operations
@@ -366,6 +416,10 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		inline float64_t *get_weights(int32_t& num_weights)
 		{
+
+			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
+				SG_ERROR("not implemented");
+
 			if (position_weights!=NULL)
 			{
 				num_weights = seq_length ;
@@ -675,27 +729,17 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 
 #ifdef HAVE_BOOST_SERIALIZATION
+
+
+
+
     private:
-        /*
-           friend class ::boost::serialization::access;
 
-           template<class Archive>
-           void serialize(Archive & ar, const unsigned int archive_version)
-           {
-
-           SG_DEBUG("archiving CWeightedDegreeStringKernel\n");
-
-           ar & ::boost::serialization::base_object<CStringKernel<char> >(*this);
-
-           SG_DEBUG("done with CWeightedDegreeStringKernel\n");
-
-           }
-
-*/
         // serialization needs to split up in save/load because
         // the serialization of pointers to natives (int* & friends)
         // requires a workaround
         friend class ::boost::serialization::access;
+
         //  friend std::ostream & operator<<(std::ostream &os, const CWeightedDegreeStringKernel &gp);
         //template<class Archive>
         //friend void ::boost::serialization::save_construct_data(Archive & ar, const CWeightedDegreeStringKernel* t, const unsigned int file_version);
@@ -711,12 +755,12 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
                 ///degree*length weights
                 ///length must match seq_length if != 0
                 ar & mkl_stepsize ;
-                ar & degree;
+                //ar & degree;
                 ar & length;
                 ar & max_mismatch ;
 
-                for (int32_t i=0; i<degree*(1+max_mismatch); i++)
-                    ar & weights[i];
+                //for (int32_t i=0; i<degree*(1+max_mismatch); i++)
+                //    ar & weights[i];
 
                 //TODO how long?
                 //float64_t* position_weights ;
@@ -731,7 +775,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
                 //ar & normalization_const;
 
                 ar & num_block_weights_external;
-                //float64_t* block_weights_external;
                 for (int32_t i=0; i < num_block_weights_external; ++i)
                 {
                     ar & block_weights_external[i];
@@ -739,7 +782,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
                 //TODO how long
                 //float64_t* block_weights;
-                ar & type;
+                //ar & type;
                 ar & which_degree;
 
                 //TODO implement
@@ -770,9 +813,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
                 ar & length;
                 ar & max_mismatch ;
 
-                weights=new float64_t[degree*(1+max_mismatch)];
-                for (int32_t i=0; i<degree*(1+max_mismatch); i++)
-                    ar & weights[i];
+                //weights=new float64_t[degree*(1+max_mismatch)];
+                //for (int32_t i=0; i<degree*(1+max_mismatch); i++)
+                //    ar & weights[i];
 
 
                 //TODO how long?
@@ -797,7 +840,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
                 //TODO how long
                 //float64_t* block_weights;
-                ar & type;
+                //ar & type;
                 ar & which_degree;
 
                 //TODO implement
@@ -889,40 +932,45 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 }
 
+
+
 #ifdef HAVE_BOOST_SERIALIZATION
-//http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx
+#include <boost/serialization/export.hpp>
+
+#endif //HAVE_BOOST_SERIALIZATION
+
+
+#ifdef HAVE_BOOST_SERIALIZATION
+
 namespace boost
 {
 	namespace serialization
 	{
 		template<class Archive>
-			inline void save_construct_data(Archive & ar, const shogun::CWeightedDegreeStringKernel* const t, const unsigned int file_version)
+			//inline void save_construct_data(Archive & ar, const shogun::CWeightedDegreeStringKernel* const t, const unsigned int file_version)
+			inline void save_construct_data(Archive & ar, shogun::CWeightedDegreeStringKernel* t, const unsigned int file_version)
 			{
-				//TODO it has to be possible to access protected fields directly
-				//CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
-				int32_t size = 10;
-				ar << size;
 
-				shogun::EWDKernType type = t->get_type();
-				ar << type;
+				std::cout << "saving WDK from non-defaultconstruct data works" << std::endl;
 
-				int32_t degree = t->get_degree();
-				ar << degree;
+				//CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1);
 
-				int32_t max_mismatch = t->get_max_mismatch();
-				ar << max_mismatch;
+				//ar << t->cache_size;
 
-				//   TODO solution to the problem is that create_empty_tries has to be called
-				//   _after_ lhs, and rhs are set.
+				ar << t->type;
 
-				//   other solution -> serialize tree
+				ar << t->degree;
 
+				//ar << t->max_mismatch;
+				/*
 
 				ar.register_type(static_cast<shogun::CStringFeatures<char> *>(NULL));
+
 
 				const shogun::CStringFeatures<char>* const lhs = dynamic_cast<shogun::CStringFeatures<char>* >(const_cast<shogun::CWeightedDegreeStringKernel*>(t)->get_lhs());
 
 				const shogun::CStringFeatures<char>* const rhs = dynamic_cast<shogun::CStringFeatures<char>* >(const_cast<shogun::CWeightedDegreeStringKernel*>(t)->get_rhs());
+
 				//CStringFeatures<char>* lhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_lhs());
 				//CStringFeatures<char>* rhs = (CStringFeatures<char>*) (const_cast<CWeightedDegreeStringKernel*>(t)->get_rhs());
 
@@ -935,6 +983,8 @@ namespace boost
 				//ar << dynamic_cast<CStringFeatures<char>*>(rhs);
 				//ar << t->get_lhs();
 				//ar << t->get_rhs();
+				*/
+				std::cout << "done saving WDK from non-defaultconstruct data" << std::endl;
 
 			}
 
@@ -942,16 +992,18 @@ namespace boost
 			inline void load_construct_data(Archive & ar, shogun::CWeightedDegreeStringKernel * t, const unsigned int file_version)
 			{
 
-				std::cout << "loading WDK from non-defaultconstruct data works" << std::endl;
+				std::cout << "loading WDK from non-defaultconstruct data" << std::endl;
 
 
-				int32_t size;
+
 				shogun::EWDKernType type;
 				int32_t degree;
-				int32_t max_mismatch;
 
-				//      CStringFeatures<char>* lhs;
-				//      CStringFeatures<char>* rhs;
+				ar >> type;
+				ar >> degree;
+				/*
+				int32_t size;
+				int32_t max_mismatch;
 
 				ar >> size;
 				ar >> type;
@@ -968,7 +1020,9 @@ namespace boost
 				ar >> rhs;
 
 				::new(t)shogun::CWeightedDegreeStringKernel(lhs, rhs, degree);
+				*/
 
+				::new(t)shogun::CWeightedDegreeStringKernel(degree, type);
 				//t->set_max_mismatch(max_mismatch);
 
 				std::cout << "done loading WDK from non-defaultconstruct data" << std::endl;
@@ -977,6 +1031,7 @@ namespace boost
 } // namespace boost
 #endif //HAVE_BOOST_SERIALIZATION
 
+//BOOST_CLASS_EXPORT_KEY2(shogun::CWeightedDegreeStringKernel, "CWeightedDegreeStringKernel");
 
 
 #endif /* _WEIGHTEDDEGREESTRINGKERNEL_H__ */

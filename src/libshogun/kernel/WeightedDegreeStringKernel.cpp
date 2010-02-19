@@ -30,6 +30,7 @@
 BOOST_CLASS_EXPORT(shogun::CWeightedDegreeStringKernel);
 #endif //HAVE_BOOST_SERIALIZATION
 
+
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

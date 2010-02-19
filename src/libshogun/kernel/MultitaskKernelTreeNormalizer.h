@@ -12,6 +12,7 @@
 #define _MULTITASKKERNELTREENORMALIZER_H___
 
 #include "kernel/KernelNormalizer.h"
+#include "kernel/MultitaskKernelMklNormalizer.h"
 #include "kernel/Kernel.h"
 #include <algorithm>
 #include <map>
@@ -258,9 +259,6 @@ public:
 
 		}
 
-
-
-
 	}
 
 
@@ -332,7 +330,7 @@ protected:
  * k'({\bf x},{\bf x'}) = ...
  * \f]
  */
-class CMultitaskKernelTreeNormalizer: public CKernelNormalizer
+class CMultitaskKernelTreeNormalizer: public CMultitaskKernelMklNormalizer
 {
 
 
@@ -341,7 +339,7 @@ public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelTreeNormalizer() : scale(1.0)
+	CMultitaskKernelTreeNormalizer()
 	{
 	}
 
@@ -352,7 +350,7 @@ public:
 	 */
 	CMultitaskKernelTreeNormalizer(std::vector<std::string> task_lhs,
 								   std::vector<std::string> task_rhs,
-								   CTaxonomy tax) : scale(1.0)
+								   CTaxonomy tax)
 	{
 
 		taxonomy = tax;
@@ -373,33 +371,6 @@ public:
 	virtual ~CMultitaskKernelTreeNormalizer()
 	{
 	}
-
-	/** initialization of the normalizer
-	 * @param k kernel */
-	virtual bool init(CKernel* k)
-	{
-		ASSERT(k);
-		int32_t num_lhs = k->get_num_vec_lhs();
-		int32_t num_rhs = k->get_num_vec_rhs();
-		ASSERT(num_lhs>0);
-		ASSERT(num_rhs>0);
-
-
-		//same as first-element normalizer
-		CFeatures* old_lhs=k->lhs;
-		CFeatures* old_rhs=k->rhs;
-		k->lhs=old_lhs;
-		k->rhs=old_lhs;
-
-		scale=k->compute(0, 0);
-
-		k->lhs=old_lhs;
-		k->rhs=old_rhs;
-
-
-		return true;
-	}
-
 
 
 	/** update cache */
@@ -535,21 +506,21 @@ public:
 		set_task_vector_rhs(vec);
 	}
 
-	int32_t get_num_nodes()
+	int32_t get_num_betas()
 	{
 
 		return taxonomy.get_num_nodes();
 
 	}
 
-	float64_t get_node_weight(int32_t idx)
+	float64_t get_beta(int32_t idx)
 	{
 
 		return taxonomy.get_node_weight(idx);
 
 	}
 
-	void set_node_weight(int32_t idx, float64_t weight)
+	void set_beta(int32_t idx, float64_t weight)
 	{
 
 		taxonomy.set_node_weight(idx, weight);
@@ -603,7 +574,6 @@ public:
 protected:
 
 
-
 	/** taxonomy **/
 	CTaxonomy taxonomy;
 
@@ -615,9 +585,6 @@ protected:
 
 	/** task vector indicating to which task each example on the right hand side belongs **/
 	std::vector<int32_t> task_vector_rhs;
-
-	/** value of first element **/
-	float64_t scale;
 
 	/** MxM matrix encoding similarity between tasks **/
 	std::vector<float64_t> dependency_matrix;
