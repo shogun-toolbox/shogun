@@ -395,26 +395,30 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param sf simple features
 		 * @return if obtaining was successful
 		 */
-		void obtain_from_simple(CDotFeatures* df)
+		void obtain_from_dot(CDotFeatures* df)
 		{
 			int32_t num_feat=df->get_dim_feature_space();
 			int32_t num_vec=df->get_num_vectors();
+
+			ASSERT(num_feat>0 && num_vec>0);
+
 			free_feature_matrix();
-			ST* fm=new ST[((int64_t) num_feat)*num_vec];
+			feature_matrix=new ST[((int64_t) num_feat)*num_vec];
 
 			for (int32_t i=0; i<num_vec; i++)
 			{
 				float64_t* dst;
 				int32_t len;
 				df->get_feature_vector(&dst, &len, i);
+				ASSERT(num_feat==len);
 
 				for (int32_t j=0; j<num_feat; j++)
 					feature_matrix[i*num_feat+j]=(ST) dst[j];
 
 				delete[] dst;
 			}
-
-			set_feature_matrix(fm, num_feat, num_vec);
+			num_features=num_feat;
+			num_vectors=num_vec;
 		}
 
 		/** apply preprocessor

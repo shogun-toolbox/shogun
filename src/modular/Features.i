@@ -165,6 +165,8 @@
 %apply (shogun::TSparse<float64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<float64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 %apply (shogun::TSparse<floatmax_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<floatmax_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* weights, int32_t d)};
+
 /* There seems to be a bug(?) in swig type reduction, e.g. int32_t** does not
  * match int**, therefore apply's are repeated here for ordinary types. While
  * this might introduce compile failures when types mismatch, it should never

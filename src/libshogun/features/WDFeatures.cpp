@@ -29,6 +29,7 @@ CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 
 	degree=order;
 	from_degree=from_order;
+	wd_weights=NULL;
 	set_wd_weights();
 	set_normalization_const();
 
@@ -46,6 +47,7 @@ CWDFeatures::CWDFeatures(const CWDFeatures& orig)
 	alphabet_size=alpha->get_num_symbols();
 	SG_UNREF(alpha);
 
+	wd_weights=NULL;
 	set_wd_weights();
 }
 
@@ -161,6 +163,7 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 void CWDFeatures::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
+	delete[] wd_weights;
 	wd_weights=new float64_t[degree];
 	w_dim=0;
 

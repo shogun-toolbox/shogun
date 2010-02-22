@@ -195,7 +195,20 @@ class CWDFeatures : public CDotFeatures
 		/** @return object name */
 		inline virtual const char* get_name() const { return "WDFeatures"; }
 
-	protected:
+		/** set wd weights
+		 *
+		 * @param p_weights new eights
+		 * @param d degree
+		 * @return if setting was successful
+		 */
+		void set_wd_weights(float64_t* weights, int32_t d)
+		{
+			ASSERT(d==degree);
+
+			for (int32_t i=0; i<degree; i++)
+				wd_weights[i]=weights[i];
+		}
+
 		/** create wd kernel weighting heuristic */
 		void set_wd_weights();
 
