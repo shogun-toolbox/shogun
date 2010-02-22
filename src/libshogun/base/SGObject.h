@@ -155,6 +155,42 @@ public:
 	 */
 	virtual const char* get_name() const=0;
 
+	/** set the io object
+	 *
+	 * @param io io object to use
+	 */
+	void set_io(CIO* io);
+
+	/** get the io object
+	 *
+	 * @return io object
+	 */
+	CIO* get_io();
+
+	/** set the parallel object
+	 *
+	 * @param parallel parallel object to use
+	 */
+	void set_parallel(CParallel* parallel);
+
+	/** get the parallel object
+	 *
+	 * @return parallel object
+	 */
+	CParallel* get_parallel();
+
+	/** set the version object
+	 *
+	 * @param version version object to use
+	 */
+	void set_version(CVersion* version);
+
+	/** get the version object
+	 *
+	 * @return version object
+	 */
+	CVersion* get_version();
+
 #ifdef HAVE_BOOST_SERIALIZATION
 	/** Serialization Function: Convert object to a string
 	 *

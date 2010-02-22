@@ -81,4 +81,56 @@ namespace shogun
 
 		// will leak memory alloc statistics on exit
 	}
+
+	void set_global_io(CIO* io)
+	{
+		SG_UNREF(sg_io);
+		sg_io=io;
+		SG_REF(sg_io);
+	}
+
+	CIO* get_global_io()
+	{
+		SG_REF(sg_io);
+		return sg_io;
+	}
+
+	void set_global_parallel(CParallel* parallel)
+	{
+		SG_UNREF(sg_parallel);
+		sg_parallel=parallel;
+		SG_REF(sg_parallel);
+	}
+
+	CParallel* get_global_parallel()
+	{
+		SG_REF(sg_parallel);
+		return sg_parallel;
+	}
+
+	void set_global_version(CVersion* version)
+	{
+		SG_UNREF(sg_version);
+		sg_version=version;
+		SG_REF(sg_version);
+	}
+
+	CVersion* get_global_version()
+	{
+		SG_REF(sg_version);
+		return sg_version;
+	}
+
+	void set_global_math(CMath* math)
+	{
+		SG_UNREF(sg_math);
+		sg_math=math;
+		SG_REF(sg_math);
+	}
+
+	CMath* get_global_math()
+	{
+		SG_REF(sg_math);
+		return sg_math;
+	}
 }

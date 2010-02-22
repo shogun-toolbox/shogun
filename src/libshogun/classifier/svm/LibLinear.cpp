@@ -410,7 +410,7 @@ void CLibLinear::solve_l1r_l2_svc(
 	double d, G_loss, G, H;
 	double Gmax_old = CMath::INFTY;
 	double Gmax_new;
-	double Gmax_init;
+	double Gmax_init=0;
 	double d_old, d_diff;
 	double loss_old=0, loss_new;
 	double appxcond, cond;

@@ -15,6 +15,11 @@
 
 namespace shogun
 {
+	class CIO;
+	class CMath;
+	class CVersion;
+	class CParallel;
+
 /** This function must be called before libshogun is used. Usually shogun does
  * not provide any output messages (neither debugging nor error; apart from
  * exceptions). This function allows one to specify customized output
@@ -36,6 +41,54 @@ void init_shogun(void (*print_message)(FILE* target, const char* str) = NULL,
 /** This function must be called when one stops using libshogun. It will
  * perform a number of cleanups */
 void exit_shogun();
+
+/** set the global io object
+ *
+ * @param io io object to use
+ */
+void set_global_io(CIO* io);
+
+/** get the global io object
+ *
+ * @return io object
+ */
+CIO* get_global_io();
+
+/** set the global parallel object
+ *
+ * @param parallel parallel object to use
+ */
+void set_global_parallel(CParallel* parallel);
+
+/** get the global parallel object
+ *
+ * @return parallel object
+ */
+CParallel* get_global_parallel();
+
+/** set the global version object
+ *
+ * @param version version object to use
+ */
+void set_global_version(CVersion* version);
+
+/** get the global version object
+ *
+ * @return version object
+ */
+CVersion* get_global_version();
+
+/** set the global math object
+ *
+ * @param math math object to use
+ */
+void set_global_math(CMath* math);
+
+/** get the global math object
+ *
+ * @return math object
+ */
+CMath* get_global_math();
 
 /// function called to print normal messages
 extern void (*sg_print_message)(FILE* target, const char* str);
