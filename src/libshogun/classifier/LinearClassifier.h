@@ -77,9 +77,9 @@ class CLinearClassifier : public CClassifier
 		 */
 		inline void get_w(float64_t*& dst_w, int32_t& dst_dims)
 		{
-			ASSERT(w && features);
+			ASSERT(w && w_dim>0);
 			dst_w=w;
-			dst_dims=features->get_dim_feature_space();
+			dst_dims=w_dim;
 		}
 
 		/** get w (swig compatible)
@@ -90,8 +90,8 @@ class CLinearClassifier : public CClassifier
 		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(dst_w && dst_dims);
-			ASSERT(w && features);
-			*dst_dims=features->get_dim_feature_space();
+			ASSERT(w && w_dim>0);
+			*dst_dims=w_dim;
 			*dst_w=(float64_t*) malloc(sizeof(float64_t)*(*dst_dims));
 			ASSERT(*dst_w);
 			memcpy(*dst_w, w, sizeof(float64_t) * (*dst_dims));

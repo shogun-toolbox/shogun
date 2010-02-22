@@ -165,7 +165,6 @@ bool CLibLinear::train(CFeatures* data)
 			break;
 	}
 
-
 	if (use_bias)
 		set_bias(w[w_dim]);
 	else
@@ -353,7 +352,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	}
 
 	SG_DONE();
-	SG_INFO("\noptimization finished, #iter = %d\n",iter);
+	SG_INFO("optimization finished, #iter = %d\n",iter);
 	if (iter >= max_iter)
 	{
 		SG_WARNING("reaching max number of iterations\nUsing -s 2 may be faster"
@@ -428,7 +427,6 @@ void CLibLinear::solve_l1r_l2_svc(
 	double C[3] = {Cn,0,Cp};
 
 	int n = prob_col->n;
-	SG_PRINT("n=%d l=%d\n", n, l);
 	if (prob_col->use_bias)
 		n--;
 
@@ -446,12 +444,21 @@ void CLibLinear::solve_l1r_l2_svc(
 		w[j] = 0;
 		index[j] = j;
 		xj_sq[j] = 0;
-		iterator=x->get_feature_iterator(j);
-		while (x->get_next_feature(ind, val, iterator))
-			xj_sq[j] += C[GETI(ind)]*val*val;
 
-		x->free_feature_iterator(iterator);
+		if (use_bias && j==n)
+		{
+			for (ind=0; ind<l; ind++)
+				xj_sq[n] += C[GETI(ind)];
+		}
+		else
+		{
+			iterator=x->get_feature_iterator(j);
+			while (x->get_next_feature(ind, val, iterator))
+				xj_sq[j] += C[GETI(ind)]*val*val;
+			x->free_feature_iterator(iterator);
+		}
 	}
+	
 
 	while(iter < max_iter)
 	{
@@ -469,18 +476,34 @@ void CLibLinear::solve_l1r_l2_svc(
 			G_loss = 0;
 			H = 0;
 
-			iterator=x->get_feature_iterator(j);
-
-			while (x->get_next_feature(ind, val, iterator))
+			if (use_bias && j==n)
 			{
-				if(b[ind] > 0)
+				for (ind=0; ind<l; ind++)
 				{
-					double tmp = C[GETI(ind)]*val*y[ind];
-					G_loss -= tmp*b[ind];
-					H += tmp*val*y[ind];
+					if(b[ind] > 0)
+					{
+						double tmp = C[GETI(ind)]*y[ind];
+						G_loss -= tmp*b[ind];
+						H += tmp*y[ind];
+					}
 				}
 			}
-			x->free_feature_iterator(iterator);
+			else
+			{
+				iterator=x->get_feature_iterator(j);
+
+				while (x->get_next_feature(ind, val, iterator))
+				{
+					if(b[ind] > 0)
+					{
+						double tmp = C[GETI(ind)]*val*y[ind];
+						G_loss -= tmp*b[ind];
+						H += tmp*val*y[ind];
+					}
+				}
+				x->free_feature_iterator(iterator);
+			}
+
 			G_loss *= 2;
 
 			G = G_loss;
@@ -533,43 +556,80 @@ void CLibLinear::solve_l1r_l2_svc(
 				appxcond = xj_sq[j]*d*d + G_loss*d + cond;
 				if(appxcond <= 0)
 				{
-					iterator=x->get_feature_iterator(j);
-					while (x->get_next_feature(ind, val, iterator))
-						b[ind] += d_diff*val*y[ind];
+					if (use_bias && j==n)
+					{
+						for (ind=0; ind<l; ind++)
+							b[ind] += d_diff*y[ind];
+						break;
+					}
+					else
+					{
+						iterator=x->get_feature_iterator(j);
+						while (x->get_next_feature(ind, val, iterator))
+							b[ind] += d_diff*val*y[ind];
 
-					x->free_feature_iterator(iterator);
-					break;
+						x->free_feature_iterator(iterator);
+						break;
+					}
 				}
 
 				if(num_linesearch == 0)
 				{
 					loss_old = 0;
 					loss_new = 0;
-					iterator=x->get_feature_iterator(j);
-					while (x->get_next_feature(ind, val, iterator))
+
+					if (use_bias && j==n)
 					{
-						if(b[ind] > 0)
-							loss_old += C[GETI(ind)]*b[ind]*b[ind];
-						double b_new = b[ind] + d_diff*val*y[ind];
-						b[ind] = b_new;
-						if(b_new > 0)
-							loss_new += C[GETI(ind)]*b_new*b_new;
+						for (ind=0; ind<l; ind++)
+						{
+							if(b[ind] > 0)
+								loss_old += C[GETI(ind)]*b[ind]*b[ind];
+							double b_new = b[ind] + d_diff*y[ind];
+							b[ind] = b_new;
+							if(b_new > 0)
+								loss_new += C[GETI(ind)]*b_new*b_new;
+						}
 					}
-					x->free_feature_iterator(iterator);
+					else
+					{
+						iterator=x->get_feature_iterator(j);
+						while (x->get_next_feature(ind, val, iterator))
+						{
+							if(b[ind] > 0)
+								loss_old += C[GETI(ind)]*b[ind]*b[ind];
+							double b_new = b[ind] + d_diff*val*y[ind];
+							b[ind] = b_new;
+							if(b_new > 0)
+								loss_new += C[GETI(ind)]*b_new*b_new;
+						}
+						x->free_feature_iterator(iterator);
+					}
 				}
 				else
 				{
 					loss_new = 0;
-					iterator=x->get_feature_iterator(j);
-					while (x->get_next_feature(ind, val, iterator))
+					if (use_bias && j==n)
 					{
-						double b_new = b[ind] + d_diff*val*y[ind];
-						b[ind] = b_new;
-						if(b_new > 0)
-							loss_new += C[GETI(ind)]*b_new*b_new;
-						x++;
+						for (ind=0; ind<l; ind++)
+						{
+							double b_new = b[ind] + d_diff*y[ind];
+							b[ind] = b_new;
+							if(b_new > 0)
+								loss_new += C[GETI(ind)]*b_new*b_new;
+						}
 					}
-					x->free_feature_iterator(iterator);
+					else
+					{
+						iterator=x->get_feature_iterator(j);
+						while (x->get_next_feature(ind, val, iterator))
+						{
+							double b_new = b[ind] + d_diff*val*y[ind];
+							b[ind] = b_new;
+							if(b_new > 0)
+								loss_new += C[GETI(ind)]*b_new*b_new;
+						}
+						x->free_feature_iterator(iterator);
+					}
 				}
 
 				cond = cond + loss_new - loss_old;
@@ -592,7 +652,7 @@ void CLibLinear::solve_l1r_l2_svc(
 				for(int i=0; i<l; i++)
 					b[i] = 1;
 
-				for(int i=0; i<w_size; i++)
+				for(int i=0; i<n; i++)
 				{
 					if(w[i]==0)
 						continue;
@@ -602,14 +662,20 @@ void CLibLinear::solve_l1r_l2_svc(
 						b[ind] -= w[i]*val*y[ind];
 					x->free_feature_iterator(iterator);
 				}
+
+				if (use_bias && w[n])
+				{
+					for (ind=0; ind<l; ind++)
+						b[ind] -= w[n]*y[ind];
+				}
 			}
 		}
 
 		if(iter == 0)
 			Gmax_init = Gmax_new;
 		iter++;
-		if(iter % 10 == 0)
-			SG_INFO(".");
+
+		SG_SABS_PROGRESS(Gmax_new, -CMath::log10(Gmax_new), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6);
 
 		if(Gmax_new <= eps*Gmax_init)
 		{
@@ -618,7 +684,6 @@ void CLibLinear::solve_l1r_l2_svc(
 			else
 			{
 				active_size = w_size;
-				SG_INFO("*");
 				Gmax_old = CMath::INFTY;
 				continue;
 			}
@@ -627,9 +692,10 @@ void CLibLinear::solve_l1r_l2_svc(
 		Gmax_old = Gmax_new;
 	}
 
-	SG_INFO("\noptimization finished, #iter = %d\n", iter);
+	SG_DONE();
+	SG_INFO("optimization finished, #iter = %d\n", iter);
 	if(iter >= max_iter)
-		SG_INFO("\nWARNING: reaching max number of iterations\n");
+		SG_WARNING("\nWARNING: reaching max number of iterations\n");
 
 	// calculate objective value
 
@@ -708,6 +774,10 @@ void CLibLinear::solve_l1r_lr(
 
 	double C[3] = {Cn,0,Cp};
 
+	int n = prob_col->n;
+	if (prob_col->use_bias)
+		n--;
+
 	for(j=0; j<l; j++)
 	{
 		exp_wTx[j] = 1;
@@ -724,18 +794,35 @@ void CLibLinear::solve_l1r_lr(
 		C_sum[j] = 0;
 		xjneg_sum[j] = 0;
 		xjpos_sum[j] = 0;
-		iterator=x->get_feature_iterator(j);
-		while (x->get_next_feature(ind, val, iterator))
+
+		if (use_bias && j==n)
 		{
-			x_min = CMath::min(x_min, val);
-			xj_max[j] = CMath::max(xj_max[j], val);
-			C_sum[j] += C[GETI(ind)];
-			if(y[ind] == -1)
-				xjneg_sum[j] += C[GETI(ind)]*val;
-			else
-				xjpos_sum[j] += C[GETI(ind)]*val;
+			for (ind=0; ind<l; ind++)
+			{
+				x_min = CMath::min(x_min, 1.0);
+				xj_max[j] = CMath::max(xj_max[j], 1.0);
+				C_sum[j] += C[GETI(ind)];
+				if(y[ind] == -1)
+					xjneg_sum[j] += C[GETI(ind)];
+				else
+					xjpos_sum[j] += C[GETI(ind)];
+			}
 		}
-		x->free_feature_iterator(iterator);
+		else
+		{
+			iterator=x->get_feature_iterator(j);
+			while (x->get_next_feature(ind, val, iterator))
+			{
+				x_min = CMath::min(x_min, val);
+				xj_max[j] = CMath::max(xj_max[j], val);
+				C_sum[j] += C[GETI(ind)];
+				if(y[ind] == -1)
+					xjneg_sum[j] += C[GETI(ind)]*val;
+				else
+					xjpos_sum[j] += C[GETI(ind)]*val;
+			}
+			x->free_feature_iterator(iterator);
+		}
 	}
 
 	while(iter < max_iter)
@@ -755,18 +842,34 @@ void CLibLinear::solve_l1r_lr(
 			sum2 = 0;
 			H = 0;
 
-			iterator=x->get_feature_iterator(j);
-			while (x->get_next_feature(ind, val, iterator))
+			if (use_bias && j==n)
 			{
-				double exp_wTxind = exp_wTx[ind];
-				double tmp1 = val/(1+exp_wTxind);
-				double tmp2 = C[GETI(ind)]*tmp1;
-				double tmp3 = tmp2*exp_wTxind;
-				sum2 += tmp2;
-				sum1 += tmp3;
-				H += tmp1*tmp3;
+				for (ind=0; ind<l; ind++)
+				{
+					double exp_wTxind = exp_wTx[ind];
+					double tmp1 = 1.0/(1+exp_wTxind);
+					double tmp2 = C[GETI(ind)]*tmp1;
+					double tmp3 = tmp2*exp_wTxind;
+					sum2 += tmp2;
+					sum1 += tmp3;
+					H += tmp1*tmp3;
+				}
 			}
-			x->free_feature_iterator(iterator);
+			else
+			{
+				iterator=x->get_feature_iterator(j);
+				while (x->get_next_feature(ind, val, iterator))
+				{
+					double exp_wTxind = exp_wTx[ind];
+					double tmp1 = val/(1+exp_wTxind);
+					double tmp2 = C[GETI(ind)]*tmp1;
+					double tmp3 = tmp2*exp_wTxind;
+					sum2 += tmp2;
+					sum1 += tmp3;
+					H += tmp1*tmp3;
+				}
+				x->free_feature_iterator(iterator);
+			}
 
 			G = -sum2 + xjneg_sum[j];
 
@@ -820,10 +923,19 @@ void CLibLinear::solve_l1r_lr(
 					appxcond2 = log(1+sum2*(1/tmp-1)/xj_max[j]/C_sum[j])*C_sum[j] + cond + d*xjneg_sum[j];
 					if(CMath::min(appxcond1,appxcond2) <= 0)
 					{
-						iterator=x->get_feature_iterator(j);
-						while (x->get_next_feature(ind, val, iterator))
-							exp_wTx[ind] *= exp(d*val);
-						x->free_feature_iterator(iterator);
+						if (use_bias && j==n)
+						{
+							for (ind=0; ind<l; ind++)
+								exp_wTx[ind] *= exp(d);
+						}
+
+						else
+						{
+							iterator=x->get_feature_iterator(j);
+							while (x->get_next_feature(ind, val, iterator))
+								exp_wTx[ind] *= exp(d*val);
+							x->free_feature_iterator(iterator);
+						}
 						break;
 					}
 				}
@@ -831,26 +943,52 @@ void CLibLinear::solve_l1r_lr(
 				cond += d*xjneg_sum[j];
 
 				int i = 0;
-				iterator=x->get_feature_iterator(j);
-				while (x->get_next_feature(ind, val, iterator))
+
+				if (use_bias && j==n)
 				{
-					double exp_dx = exp(d*val);
-					exp_wTx_new[i] = exp_wTx[ind]*exp_dx;
-					cond += C[GETI(ind)]*log((1+exp_wTx_new[i])/(exp_dx+exp_wTx_new[i]));
-					i++;
+					for (ind=0; ind<l; ind++)
+					{
+						double exp_dx = exp(d);
+						exp_wTx_new[i] = exp_wTx[ind]*exp_dx;
+						cond += C[GETI(ind)]*log((1+exp_wTx_new[i])/(exp_dx+exp_wTx_new[i]));
+						i++;
+					}
 				}
-				x->free_feature_iterator(iterator);
+				else
+				{
+
+					iterator=x->get_feature_iterator(j);
+					while (x->get_next_feature(ind, val, iterator))
+					{
+						double exp_dx = exp(d*val);
+						exp_wTx_new[i] = exp_wTx[ind]*exp_dx;
+						cond += C[GETI(ind)]*log((1+exp_wTx_new[i])/(exp_dx+exp_wTx_new[i]));
+						i++;
+					}
+					x->free_feature_iterator(iterator);
+				}
 
 				if(cond <= 0)
 				{
 					i = 0;
-					iterator=x->get_feature_iterator(j);
-					while (x->get_next_feature(ind, val, iterator))
+					if (use_bias && j==n)
 					{
-						exp_wTx[ind] = exp_wTx_new[i];
-						i++;
+						for (ind=0; ind<l; ind++)
+						{
+							exp_wTx[ind] = exp_wTx_new[i];
+							i++;
+						}
 					}
-					x->free_feature_iterator(iterator);
+					else
+					{
+						iterator=x->get_feature_iterator(j);
+						while (x->get_next_feature(ind, val, iterator))
+						{
+							exp_wTx[ind] = exp_wTx_new[i];
+							i++;
+						}
+						x->free_feature_iterator(iterator);
+					}
 					break;
 				}
 				else
@@ -872,11 +1010,19 @@ void CLibLinear::solve_l1r_lr(
 				for(int i=0; i<w_size; i++)
 				{
 					if(w[i]==0) continue;
-					iterator=x->get_feature_iterator(i);
-					while (x->get_next_feature(ind, val, iterator))
-						exp_wTx[ind] += w[i]*val;
 
-					x->free_feature_iterator(iterator);
+					if (use_bias && i==n)
+					{
+						for (ind=0; ind<l; ind++)
+							exp_wTx[ind] += w[i];
+					}
+					else
+					{
+						iterator=x->get_feature_iterator(i);
+						while (x->get_next_feature(ind, val, iterator))
+							exp_wTx[ind] += w[i]*val;
+						x->free_feature_iterator(iterator);
+					}
 				}
 
 				for(int i=0; i<l; i++)
@@ -887,8 +1033,7 @@ void CLibLinear::solve_l1r_lr(
 		if(iter == 0)
 			Gmax_init = Gmax_new;
 		iter++;
-		if(iter % 10 == 0)
-			SG_INFO(".");
+		SG_SABS_PROGRESS(Gmax_new, -CMath::log10(Gmax_new), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6);
 
 		if(Gmax_new <= eps*Gmax_init)
 		{
@@ -897,7 +1042,6 @@ void CLibLinear::solve_l1r_lr(
 			else
 			{
 				active_size = w_size;
-				SG_INFO("*");
 				Gmax_old = CMath::INFTY;
 				continue;
 			}
@@ -906,9 +1050,10 @@ void CLibLinear::solve_l1r_lr(
 		Gmax_old = Gmax_new;
 	}
 
-	SG_INFO("\noptimization finished, #iter = %d\n", iter);
+	SG_DONE();
+	SG_INFO("optimization finished, #iter = %d\n", iter);
 	if(iter >= max_iter)
-		SG_INFO("\nWARNING: reaching max number of iterations\n");
+		SG_WARNING("\nWARNING: reaching max number of iterations\n");
 
 	// calculate objective value
 	
