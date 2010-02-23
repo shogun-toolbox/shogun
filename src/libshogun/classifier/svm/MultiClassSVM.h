@@ -136,6 +136,13 @@ class CMultiClassSVM : public CSVM
 		 */
 		bool save(FILE* svm_file);
 
+		/** get the type of multiclass'ness
+		 *
+		 * @return multiclass type 1 vs one etc
+		 */
+		inline EMultiClassSVM get_multiclass_type() { return multiclass_type; }
+
+
 	protected:
 		/** type of MultiClassSVM */
 		EMultiClassSVM multiclass_type;
