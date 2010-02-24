@@ -12,6 +12,8 @@
 
 #ifdef HAVE_LAPACK
 #include "lib/io.h"
+#include "lib/Signal.h"
+#include "lib/Time.h"
 #include "classifier/svm/LibLinear.h"
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
@@ -26,6 +28,7 @@ CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
 	use_bias=false;
 	C1=1;
 	C2=1;
+	set_max_iterations();
 }
 
 CLibLinear::CLibLinear(
@@ -35,6 +38,7 @@ CLibLinear::CLibLinear(
 	set_features(traindat);
 	set_labels(trainlab);
 	liblinear_solver_type=L2R_L1LOSS_SVC_DUAL;
+	set_max_iterations();
 }
 
 
@@ -44,6 +48,7 @@ CLibLinear::~CLibLinear()
 
 bool CLibLinear::train(CFeatures* data)
 {
+	CSignal::clear_cancel();
 	ASSERT(labels);
 	if (data)
 	{
@@ -127,9 +132,9 @@ bool CLibLinear::train(CFeatures* data)
 		case L2R_LR:
 		{
 			fun_obj=new l2r_lr_fun(&prob, Cp, Cn);
-			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l);
+			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
 			SG_DEBUG("starting L2R_LR training via tron\n");
-			tron_obj.tron(w);
+			tron_obj.tron(w, max_train_time);
 			SG_DEBUG("done with tron\n");
 			delete fun_obj;
 			break;
@@ -137,8 +142,8 @@ bool CLibLinear::train(CFeatures* data)
 		case L2R_L2LOSS_SVC:
 		{
 			fun_obj=new l2r_l2_svc_fun(&prob, Cp, Cn);
-			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l);
-			tron_obj.tron(w);
+			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
+			tron_obj.tron(w, max_train_time);
 			delete fun_obj;
 			break;
 		}
@@ -223,7 +228,6 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	int i, s, iter = 0;
 	double C, d, G;
 	double *QD = new double[l];
-	int max_iter = 1000;
 	int *index = new int[l];
 	double *alpha = new double[l];
 	int32_t *y = new int32_t[l];
@@ -270,8 +274,12 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		index[i] = i;
 	}
 
-	while (iter < max_iter)
+	CTime start_time;
+	while (iter < max_iterations && !CSignal::cancel_computations())
 	{
+		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
+		  break;
+
 		PGmax_new = -CMath::INFTY;
 		PGmin_new = CMath::INFTY;
 
@@ -365,7 +373,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	SG_DONE();
 	SG_INFO("optimization finished, #iter = %d\n",iter);
-	if (iter >= max_iter)
+	if (iter >= max_iterations)
 	{
 		SG_WARNING("reaching max number of iterations\nUsing -s 2 may be faster"
 				"(also see liblinear FAQ)\n\n");
@@ -413,7 +421,6 @@ void CLibLinear::solve_l1r_l2_svc(
 	int l = prob_col->l;
 	int w_size = prob_col->n;
 	int j, s, iter = 0;
-	int max_iter = 1000;
 	int active_size = w_size;
 	int max_num_linesearch = 20;
 
@@ -472,8 +479,12 @@ void CLibLinear::solve_l1r_l2_svc(
 	}
 	
 
-	while(iter < max_iter)
+	CTime start_time;
+	while (iter < max_iterations && !CSignal::cancel_computations())
 	{
+		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
+		  break;
+
 		Gmax_new  = 0;
 
 		for(j=0; j<active_size; j++)
@@ -706,7 +717,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	SG_DONE();
 	SG_INFO("optimization finished, #iter = %d\n", iter);
-	if(iter >= max_iter)
+	if(iter >= max_iterations)
 		SG_WARNING("\nWARNING: reaching max number of iterations\n");
 
 	// calculate objective value
@@ -756,7 +767,6 @@ void CLibLinear::solve_l1r_lr(
 	int l = prob_col->l;
 	int w_size = prob_col->n;
 	int j, s, iter = 0;
-	int max_iter = 1000;
 	int active_size = w_size;
 	int max_num_linesearch = 20;
 
@@ -837,8 +847,12 @@ void CLibLinear::solve_l1r_lr(
 		}
 	}
 
-	while(iter < max_iter)
+	CTime start_time;
+	while (iter < max_iterations && !CSignal::cancel_computations())
 	{
+		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
+		  break;
+
 		Gmax_new = 0;
 
 		for(j=0; j<active_size; j++)
@@ -1064,7 +1078,7 @@ void CLibLinear::solve_l1r_lr(
 
 	SG_DONE();
 	SG_INFO("optimization finished, #iter = %d\n", iter);
-	if(iter >= max_iter)
+	if(iter >= max_iterations)
 		SG_WARNING("\nWARNING: reaching max number of iterations\n");
 
 	// calculate objective value

@@ -432,7 +432,7 @@ void Solver::Solve(
 		}
 		SG_SINFO("Computing gradient for initial set of non-zero alphas\n");
 		//CMath::display_vector(alpha, l, "alphas");
-		for(i=0;i<l && !CSignal::cancel_computations();i++)
+		for(i=0;i<l && !CSignal::cancel_computations(); i++)
 		{
 			if(!is_lower_bound(i))
 			{

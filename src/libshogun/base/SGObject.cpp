@@ -57,10 +57,10 @@ void CSGObject::set_global_objects()
 	version=sg_version;
 }
 
-void CSGObject::set_io(CIO* io)
+void CSGObject::set_io(CIO* new_io)
 {
 	SG_UNREF(sg_io);
-	sg_io=io;
+	sg_io=new_io;
 	SG_REF(sg_io);
 }
 
@@ -70,10 +70,10 @@ CIO* CSGObject::get_io()
 	return sg_io;
 }
 
-void CSGObject::set_parallel(CParallel* parallel)
+void CSGObject::set_parallel(CParallel* new_parallel)
 {
 	SG_UNREF(sg_parallel);
-	sg_parallel=parallel;
+	sg_parallel=new_parallel;
 	SG_REF(sg_parallel);
 }
 
@@ -83,10 +83,10 @@ CParallel* CSGObject::get_parallel()
 	return sg_parallel;
 }
 
-void CSGObject::set_version(CVersion* version)
+void CSGObject::set_version(CVersion* new_version)
 {
 	SG_UNREF(sg_version);
-	sg_version=version;
+	sg_version=new_version;
 	SG_REF(sg_version);
 }
 

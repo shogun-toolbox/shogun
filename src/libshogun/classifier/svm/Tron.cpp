@@ -5,6 +5,7 @@
 
 #include "lib/config.h"
 #include "lib/Signal.h"
+#include "lib/Time.h"
 
 #ifdef HAVE_LAPACK
 #include "lib/Mathematics.h"
@@ -24,7 +25,7 @@ CTron::~CTron()
 {
 }
 
-void CTron::tron(float64_t *w)
+void CTron::tron(float64_t *w, float64_t max_train_time)
 {
 	// Parameters for updating the iterates.
 	float64_t eta0 = 1e-4, eta1 = 0.25, eta2 = 0.75;
@@ -59,9 +60,13 @@ void CTron::tron(float64_t *w)
 	iter = 1;
 
 	CSignal::clear_cancel();
+	CTime start_time;
 
 	while (iter <= max_iter && search && (!CSignal::cancel_computations()))
 	{
+		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
+		  break;
+
 		cg_iter = trcg(delta, g, s, r);
 
 		memcpy(w_new, w, sizeof(float64_t)*n);

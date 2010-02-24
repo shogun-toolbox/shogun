@@ -135,6 +135,18 @@ class CLibLinear : public CLinearClassifier
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LibLinear"; }
 
+		/** get the maximum number of iterations liblinear is allowed to do */
+		inline int32_t get_max_iterations()
+		{
+			return max_iterations;
+		}
+
+		/** set the maximum number of iterations liblinear is allowed to do */
+		inline void set_max_iterations(int32_t max_iter=1000)
+		{
+			max_iterations=max_iter;
+		}
+
 	private:
 		void train_one(const problem *prob, const parameter *param, double Cp, double Cn);
 		void solve_l2r_l1l2_svc(
@@ -153,6 +165,8 @@ class CLibLinear : public CLinearClassifier
 		bool use_bias;
 		/** epsilon */
 		float64_t epsilon;
+		/** maximum number of iterations */
+		int32_t max_iterations;
 
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;

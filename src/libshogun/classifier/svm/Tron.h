@@ -69,8 +69,9 @@ public:
 	/** tron
 	 *
 	 * @param w w
+	 * @param max_train_time maximum training time
 	 */
-	void tron(float64_t *w);
+	void tron(float64_t *w, float64_t max_train_time);
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "LibLinear"; }
