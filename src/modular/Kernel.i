@@ -42,6 +42,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/DiagKernel.h>
 #include <shogun/kernel/DiceKernelNormalizer.h>
+#include <shogun/kernel/ScatterKernelNormalizer.h>
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/FixedDegreeStringKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
