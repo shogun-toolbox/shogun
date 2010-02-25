@@ -665,7 +665,10 @@ void Solver::Solve(
 
 	// calculate rho
 
-	p_si->rho = calculate_rho();
+	if (!use_bias)
+		p_si->rho = 0;
+	else
+		p_si->rho = calculate_rho();
 
 	// calculate objective value
 	{
