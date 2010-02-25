@@ -71,9 +71,8 @@ bool CLibSVM::train(CFeatures* data)
 		// fill with minus ones
 		problem.pv = new float64_t[problem.l];
 
-		for (int i=0; i!=problem.l; i++) {
+		for (int i=0; i!=problem.l; i++)
 			problem.pv[i] = -1.0;
-		}
 	}
 
 	problem.y=new float64_t[problem.l];
