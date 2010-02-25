@@ -98,15 +98,17 @@ class CSVM : public CKernelMachine
 		 */
 		inline void set_nu(float64_t nue) { nu=nue; }
 
+
 		/** set C
 		 *
-		 * @param c1 new C constant for negatively labelled examples
-		 * @param c2 new C constant for positively labelled examples
+		 * @param c_neg new C constant for negatively labeled examples
+		 * @param c_pos new C constant for positively labeled examples
 		 *
 		 * Note that not all SVMs support this (however at least CLibSVM and
 		 * CSVMLight do)
 		 */
-		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
+
 
 		/** set epsilon
 		 *

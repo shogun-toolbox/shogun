@@ -66,7 +66,13 @@ class CSubGradientLPM : public CLinearClassifier
 		 */
 		virtual bool train(CFeatures* data=NULL);
 
-		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
+		/** set C
+		 *
+		 * @param c_neg new C constant for negatively labeled examples
+		 * @param c_pos new C constant for positively labeled examples
+		 *
+		 */
+		inline void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
 
 		inline float64_t get_C1() { return C1; }
 		inline float64_t get_C2() { return C2; }
@@ -114,7 +120,7 @@ class CSubGradientLPM : public CLinearClassifier
 
 		/// alloc helper arrays
 		void init(int32_t num_vec, int32_t num_feat);
-		
+
 		/// de-alloc helper arrays
 		void cleanup();
 
@@ -145,7 +151,7 @@ class CSubGradientLPM : public CLinearClassifier
 		float64_t* proj;
 		float64_t* tmp_proj;
 		int32_t* tmp_proj_idx;
-		
+
 		//vector of length num_feat
 		float64_t* sum_CXy_active;
 		float64_t* v;

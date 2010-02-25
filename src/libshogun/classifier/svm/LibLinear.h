@@ -91,10 +91,10 @@ class CLibLinear : public CLinearClassifier
 
 		/** set C
 		 *
-		 * @param c1 C1
-		 * @param c2 C2
+		 * @param c_neg C1
+		 * @param c_pos C2
 		 */
-		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
 
 		/** get C1
 		 *
@@ -152,7 +152,7 @@ class CLibLinear : public CLinearClassifier
 		void solve_l2r_l1l2_svc(
 			const problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st);
 
-		void solve_l1r_l2_svc(problem *prob_col, double eps, double Cp, double Cn); 
+		void solve_l1r_l2_svc(problem *prob_col, double eps, double Cp, double Cn);
 		void solve_l1r_lr(const problem *prob_col, double eps, double Cp, double Cn);
 
 

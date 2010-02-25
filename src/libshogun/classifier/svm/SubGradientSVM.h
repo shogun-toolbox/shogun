@@ -55,10 +55,11 @@ class CSubGradientSVM : public CLinearClassifier
 
 		/** set C
 		 *
-		 * @param c1 new C1
-		 * @param c2 new C2
+		 * @param c_neg C1
+		 * @param c_pos C2
 		 */
-		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
+
 
 		/** get C1
 		 *
@@ -151,7 +152,7 @@ class CSubGradientSVM : public CLinearClassifier
 
 		/// alloc helper arrays
 		void init(int32_t num_vec, int32_t num_feat);
-		
+
 		/// de-alloc helper arrays
 		void cleanup();
 
@@ -202,7 +203,7 @@ class CSubGradientSVM : public CLinearClassifier
 		float64_t* tmp_proj;
 		/** tmp proj index */
 		int32_t* tmp_proj_idx;
-		
+
 		//vector of length num_feat
 		/** sum CXy active */
 		float64_t* sum_CXy_active;

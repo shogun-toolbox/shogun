@@ -37,7 +37,7 @@ namespace shogun
  *
  * Note that currently CPLEX is required to solve this problem. A
  * faster implementation is available in CLPBoost.
- * 
+ *
  * \sa CLPBoost
  */
 class CLPM : public CLinearClassifier
@@ -74,7 +74,13 @@ class CLPM : public CLinearClassifier
 			CLinearClassifier::set_features(feat);
 		}
 
-		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
+		/** set C
+		 *
+		 * @param c_neg new C constant for negatively labeled examples
+		 * @param c_pos new C constant for positively labeled examples
+		 *
+		 */
+		inline void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
 
 		inline float64_t get_C1() { return C1; }
 		inline float64_t get_C2() { return C2; }

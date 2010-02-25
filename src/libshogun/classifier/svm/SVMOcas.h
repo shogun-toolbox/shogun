@@ -64,10 +64,11 @@ class CSVMOcas : public CLinearClassifier
 
 		/** set C
 		 *
-		 * @param c1 new C1
-		 * @param c2 new C2
+		 * @param c_neg new C constant for negatively labeled examples
+		 * @param c_pos new C constant for positively labeled examples
+		 *
 		 */
-		inline void set_C(float64_t c1, float64_t c2) { C1=c1; C2=c2; }
+		inline void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
 
 		/** get C1
 		 *
@@ -190,7 +191,7 @@ class CSVMOcas : public CLinearClassifier
 		float64_t* tmp_a_buf;
 		/** labels */
 		float64_t* lab;
-		
+
 		/** sparse representation of
 		 * cutting planes */
 		float64_t** cp_value;
