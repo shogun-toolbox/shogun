@@ -293,7 +293,7 @@ public:
 	void Solve(
 		int32_t l, const QMatrix& Q, const float64_t *p_, const schar *y_,
 		float64_t *alpha_, float64_t Cp, float64_t Cn, float64_t eps,
-		SolutionInfo* si, int32_t shrinking);
+		SolutionInfo* si, int32_t shrinking, bool use_bias);
 
 protected:
 	int32_t active_size;
@@ -390,7 +390,7 @@ void Solver::reconstruct_gradient()
 void Solver::Solve(
 	int32_t p_l, const QMatrix& p_Q, const float64_t *p_p,
 	const schar *p_y, float64_t *p_alpha, float64_t p_Cp, float64_t p_Cn,
-	float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
+	float64_t p_eps, SolutionInfo* p_si, int32_t shrinking, bool use_bias)
 {
 	this->l = p_l;
 	this->Q = &p_Q;
@@ -499,89 +499,109 @@ void Solver::Solve(
 		float64_t old_alpha_i = alpha[i];
 		float64_t old_alpha_j = alpha[j];
 
-		if(y[i]!=y[j])
+		if (!use_bias)
 		{
-			float64_t quad_coef = Q_i[i]+Q_j[j]+2*Q_i[j];
-			if (quad_coef <= 0)
-				quad_coef = TAU;
-			float64_t delta = (-G[i]-G[j])/quad_coef;
-			float64_t diff = alpha[i] - alpha[j];
-			alpha[i] += delta;
-			alpha[j] += delta;
+			double pi=G[i]-Q_i[i]*alpha[i]-Q_i[j]*alpha[j];
+			double pj=G[j]-Q_i[j]*alpha[i]-Q_j[j]*alpha[j];
+			double det=Q_i[i]*Q_j[j]-Q_i[j]*Q_i[j];
+			double alpha_i=-(Q_j[j]*pi-Q_i[j]*pj)/det;
+			alpha_i=CMath::min(C_i,CMath::max(0.0,alpha_i));
+			double alpha_j=-(-Q_i[j]*pi+Q_i[i]*pj)/det;
+			alpha_j=CMath::min(C_j,CMath::max(0.0,alpha_j));
 
-			if(diff > 0)
-			{
-				if(alpha[j] < 0)
-				{
-					alpha[j] = 0;
-					alpha[i] = diff;
-				}
-			}
-			else
-			{
-				if(alpha[i] < 0)
-				{
-					alpha[i] = 0;
-					alpha[j] = -diff;
-				}
-			}
-			if(diff > C_i - C_j)
-			{
-				if(alpha[i] > C_i)
-				{
-					alpha[i] = C_i;
-					alpha[j] = C_i - diff;
-				}
-			}
-			else
-			{
-				if(alpha[j] > C_j)
-				{
-					alpha[j] = C_j;
-					alpha[i] = C_j + diff;
-				}
-			}
+			if (alpha_i==0 || alpha_i == C_i)
+				alpha_j=CMath::min(C_j,CMath::max(0.0,-(pj+Q_i[j]*alpha_i)/Q_j[j]));
+			if (alpha_j==0 || alpha_j == C_j)
+				alpha_i=CMath::min(C_i,CMath::max(0.0,-(pi+Q_i[j]*alpha_j)/Q_i[i]));
+
+			alpha[i]=alpha_i; alpha[j]=alpha_j;
 		}
 		else
 		{
-			float64_t quad_coef = Q_i[i]+Q_j[j]-2*Q_i[j];
-			if (quad_coef <= 0)
-				quad_coef = TAU;
-			float64_t delta = (G[i]-G[j])/quad_coef;
-			float64_t sum = alpha[i] + alpha[j];
-			alpha[i] -= delta;
-			alpha[j] += delta;
+			if(y[i]!=y[j])
+			{
+				float64_t quad_coef = Q_i[i]+Q_j[j]+2*Q_i[j];
+				if (quad_coef <= 0)
+					quad_coef = TAU;
+				float64_t delta = (-G[i]-G[j])/quad_coef;
+				float64_t diff = alpha[i] - alpha[j];
+				alpha[i] += delta;
+				alpha[j] += delta;
 
-			if(sum > C_i)
-			{
-				if(alpha[i] > C_i)
+				if(diff > 0)
 				{
-					alpha[i] = C_i;
-					alpha[j] = sum - C_i;
+					if(alpha[j] < 0)
+					{
+						alpha[j] = 0;
+						alpha[i] = diff;
+					}
+				}
+				else
+				{
+					if(alpha[i] < 0)
+					{
+						alpha[i] = 0;
+						alpha[j] = -diff;
+					}
+				}
+				if(diff > C_i - C_j)
+				{
+					if(alpha[i] > C_i)
+					{
+						alpha[i] = C_i;
+						alpha[j] = C_i - diff;
+					}
+				}
+				else
+				{
+					if(alpha[j] > C_j)
+					{
+						alpha[j] = C_j;
+						alpha[i] = C_j + diff;
+					}
 				}
 			}
 			else
 			{
-				if(alpha[j] < 0)
+				float64_t quad_coef = Q_i[i]+Q_j[j]-2*Q_i[j];
+				if (quad_coef <= 0)
+					quad_coef = TAU;
+				float64_t delta = (G[i]-G[j])/quad_coef;
+				float64_t sum = alpha[i] + alpha[j];
+				alpha[i] -= delta;
+				alpha[j] += delta;
+
+				if(sum > C_i)
 				{
-					alpha[j] = 0;
-					alpha[i] = sum;
+					if(alpha[i] > C_i)
+					{
+						alpha[i] = C_i;
+						alpha[j] = sum - C_i;
+					}
 				}
-			}
-			if(sum > C_j)
-			{
-				if(alpha[j] > C_j)
+				else
 				{
-					alpha[j] = C_j;
-					alpha[i] = sum - C_j;
+					if(alpha[j] < 0)
+					{
+						alpha[j] = 0;
+						alpha[i] = sum;
+					}
 				}
-			}
-			else
-			{
-				if(alpha[i] < 0)
+				if(sum > C_j)
 				{
-					alpha[i] = 0;
-					alpha[j] = sum;
+					if(alpha[j] > C_j)
+					{
+						alpha[j] = C_j;
+						alpha[i] = sum - C_j;
+					}
+				}
+				else
+				{
+					if(alpha[i] < 0)
+					{
+						alpha[i] = 0;
+						alpha[j] = sum;
+					}
 				}
 			}
 		}
@@ -939,10 +959,11 @@ public:
 	void Solve(
 		int32_t p_l, const QMatrix& p_Q, const float64_t *p_p,
 		const schar *p_y, float64_t* p_alpha, float64_t p_Cp, float64_t p_Cn,
-		float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
+		float64_t p_eps, SolutionInfo* p_si, int32_t shrinking, bool use_bias)
 	{
 		this->si = p_si;
-		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
+		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,
+				shrinking,use_bias);
 	}
 private:
 	SolutionInfo *si;
@@ -1279,12 +1300,12 @@ public:
 	void Solve(
 		int32_t p_l, const QMatrix& p_Q, const float64_t *p_p,
 		const schar *p_y, float64_t* p_alpha, float64_t p_Cp, float64_t p_Cn,
-		float64_t p_eps, SolutionInfo* p_si, int32_t shrinking)
+		float64_t p_eps, SolutionInfo* p_si, int32_t shrinking, bool use_bias)
 	{
 		this->si = p_si;
-		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
+		Solver::Solve(p_l,p_Q,p_p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking, use_bias);
 	}
-	float64_t compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases, float64_t* normwcw);
+	float64_t compute_primal(const schar* p_y, float64_t* p_alpha, float64_t* biases,float64_t* normwcw);
 
 private:
 	SolutionInfo *si;
@@ -1766,7 +1787,7 @@ static void solve_c_svc(
 
 	Solver s;
 	s.Solve(l, SVC_Q(*prob,*param,y), prob->pv, y,
-		alpha, Cp, Cn, param->eps, si, param->shrinking);
+		alpha, Cp, Cn, param->eps, si, param->shrinking, param->use_bias);
 
 	float64_t sum_alpha=0;
 	for(i=0;i<l;i++)
@@ -1802,7 +1823,7 @@ void solve_c_svc_weighted(
 
 	WeightedSolver s = WeightedSolver(prob->C);
 	s.Solve(l, SVC_Q(*prob,*param,y), minus_ones, y,
-		alpha, Cp, Cn, param->eps, si, param->shrinking);
+		alpha, Cp, Cn, param->eps, si, param->shrinking, param->use_bias);
 
 	float64_t sum_alpha=0;
 	for(i=0;i<l;i++)
@@ -1856,7 +1877,7 @@ static void solve_nu_svc(
 
 	Solver_NU s;
 	s.Solve(l, SVC_Q(*prob,*param,y), zeros, y,
-		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
+		alpha, 1.0, 1.0, param->eps, si,  param->shrinking, param->use_bias);
 	float64_t r = si->r;
 
 	SG_SINFO("C = %f\n",1/r);
@@ -1911,7 +1932,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	SVC_QMC Q(*prob,*param,y, nr_class, ((float64_t) nr_class)/CMath::sq(nu*l));
 
 	s.Solve(l, Q, zeros, y,
-		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
+		alpha, 1.0, 1.0, param->eps, si,  param->shrinking, param->use_bias);
 
 
 	int32_t* class_sv_count=new int32_t[nr_class];
@@ -1996,7 +2017,7 @@ static void solve_one_class(
 
 	Solver s;
 	s.Solve(l, ONE_CLASS_Q(*prob,*param), zeros, ones,
-		alpha, 1.0, 1.0, param->eps, si, param->shrinking);
+		alpha, 1.0, 1.0, param->eps, si, param->shrinking, param->use_bias);
 
 	delete[] zeros;
 	delete[] ones;
@@ -2025,7 +2046,7 @@ static void solve_epsilon_svr(
 
 	Solver s;
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
-		alpha2, param->C, param->C, param->eps, si, param->shrinking);
+		alpha2, param->C, param->C, param->eps, si, param->shrinking, param->use_bias);
 
 	float64_t sum_alpha = 0;
 	for(i=0;i<l;i++)
@@ -2066,7 +2087,7 @@ static void solve_nu_svr(
 
 	Solver_NU s;
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
-		alpha2, C, C, param->eps, si, param->shrinking);
+		alpha2, C, C, param->eps, si, param->shrinking, param->use_bias);
 
 	SG_SINFO("epsilon = %f\n",-si->r);
 
