@@ -292,7 +292,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		{
 			ASSERT(feature_matrix);
 
-			int64_t num=num_features*num_vectors;
+			int64_t num=num_features*int64_t(num_vectors);
 			*num_feat=num_features;
 			*num_vec=num_vectors;
 			*dst=(ST*) malloc(sizeof(ST)*num);
