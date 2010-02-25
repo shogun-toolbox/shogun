@@ -296,6 +296,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			*num_feat=num_features;
 			*num_vec=num_vectors;
 			*dst=(ST*) malloc(sizeof(ST)*num);
+			if (!*dst)
+				SG_ERROR("Allocating %ld bytes failes\n", sizeof(ST)*num);
 			memcpy(*dst, feature_matrix, num * sizeof(ST));
 		}
 
