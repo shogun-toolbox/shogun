@@ -19,7 +19,7 @@ using namespace shogun;
 CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
 : CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
 {
-	features=f;
+	set_features(f);
 	sequence_length = f->get_vector_length(0);
 	num_symbols     = (int32_t) f->get_num_symbols();
 	num_params      = sequence_length*num_symbols;

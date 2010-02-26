@@ -147,13 +147,22 @@ class CDistribution : public CSGObject
 		 *
 		 * @param f new feature vectors
 		 */
-		virtual inline void set_features(CFeatures* f) { features=f; }
+		virtual inline void set_features(CFeatures* f)
+		{
+			SG_UNREF(features);
+			SG_REF(f);
+			features=f;
+		}
 
 		/** get feature vectors
 		 *
 		 * @return feature vectors
 		 */
-		virtual inline CFeatures* get_features() { return features; }
+		virtual inline CFeatures* get_features()
+		{
+			SG_REF(features);
+			return features;
+		}
 
 		/** set pseudo count
 		 *
