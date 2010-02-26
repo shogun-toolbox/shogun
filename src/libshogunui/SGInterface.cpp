@@ -7384,7 +7384,9 @@ bool CSGInterface::cmd_help()
 				"\tsg('%shelp%s', '%sFeatures%s')\n\n"
 				"to see the list of commands for the 'Features' group.\n"
 				"\nOr use sg('%shelp%s', '%sall%s')"
-				" to see a brief listing of all commands.\n",
+				" to see a brief listing of all commands.\n\nTo disable syntax"
+				" highlighting (useful e.g. in the matlab GUI use\n\n"
+				"\tsg('syntax_highlight','OFF')\n",
 					hilight.get_command_prefix(), hilight.get_command_suffix(),
 					hilight.get_command_prefix(), hilight.get_command_suffix(),
 					hilight.get_command_prefix(), hilight.get_command_suffix(),

@@ -67,8 +67,7 @@ void CIO::message(EMessageType prio, const char* file,
 		int len=strlen(msg_intro);
 		char* s=str+len;
 
-		if (prio>=MSG_ERROR ||
-				(show_file_and_line && line>=0))
+		if (show_file_and_line && line>=0)
 		{
 			snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
 			len=strlen(str);
