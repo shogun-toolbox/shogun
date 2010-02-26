@@ -82,7 +82,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			{
 				free_feature_matrix();
 				feature_matrix=new ST(num_vectors*num_features);
-				memcpy(feature_matrix, orig.feature_matrix, sizeof(float64_t)*num_vectors*num_features);
+				memcpy(feature_matrix, orig.feature_matrix, sizeof(float64_t)*int64_t(num_vectors)*num_features);
 			}
 		}
 
@@ -162,7 +162,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			if (feature_matrix)
 			{
 				dofree=false;
-				return &feature_matrix[num*num_features];
+				return &feature_matrix[num*int64_t(num_features)];
 			} 
 			else
 			{
@@ -237,7 +237,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			if (len != num_features)
 				SG_ERROR("Vector not of length %d (has %d)\n", num_features, len);
 
-			memcpy(&feature_matrix[num*num_features], src, num_features*sizeof(ST));
+			memcpy(&feature_matrix[num*int64_t(num_features)], src, int64_t(num_features)*sizeof(ST));
 		}
 
 		/** get feature vector num
@@ -292,7 +292,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		{
 			ASSERT(feature_matrix);
 
-			int64_t num=num_features*int64_t(num_vectors);
+			int64_t num=int64_t(num_features)*num_vectors;
 			*num_feat=num_features;
 			*num_vec=num_vectors;
 			*dst=(ST*) malloc(sizeof(ST)*num);
@@ -338,7 +338,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			num_feat=num_vectors;
 			num_vec=num_features;
 
-			ST* fm=new ST[num_feat*num_vec];
+			ST* fm=new ST[int64_t(num_feat)*num_vec];
 
 			for (int32_t i=0; i<num_vectors; i++)
 			{
@@ -347,7 +347,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				ST* vec=get_feature_vector(i, vlen, vfree);
 
 				for (int32_t j=0; j<vlen; j++)
-					fm[j*num_vectors+i]=vec[j];
+					fm[j*int64_t(num_vectors)+i]=vec[j];
 
 				free_feature_vector(vec, i, vfree);
 			}
@@ -415,7 +415,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				ASSERT(num_feat==len);
 
 				for (int32_t j=0; j<num_feat; j++)
-					feature_matrix[i*num_feat+j]=(ST) dst[j];
+					feature_matrix[i*int64_t(num_feat)+j]=(ST) dst[j];
 
 				delete[] dst;
 			}
@@ -820,7 +820,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
                 ar & num_vectors;
                 ar & num_features;
 
-                feature_matrix = new ST[num_vectors*num_features];
+                feature_matrix = new ST[int64_t(num_vectors)*num_features];
                 for (int i=0; i< num_vectors*num_features; ++i){
                     ar & feature_matrix[i];
                 }
