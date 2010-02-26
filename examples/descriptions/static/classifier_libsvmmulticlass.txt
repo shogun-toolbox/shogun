@@ -1,0 +1,7 @@
+In this example a multi-class support vector machine classifier is trained on a
+toy data set and the trained classifier is then used to predict labels of test
+examples. As training algorithm LIBSVM is used with SVM regularization
+parameter C=1.2 and a Gaussian kernel of width 2.1 and 10MB of kernel cache.
+The unbiased classification rule is used. 
+
+For more details on LIBSVM solver see http://www.csie.ntu.edu.tw/~cjlin/libsvm/ .
