@@ -6,4 +6,6 @@ iterates until it either finds epsilon-precise solution or the maximal training
 time max_train_time=60 is exceeded. The unbiased linear rule is trained.
 
 Note that this solver often does not converges because the steepest descent
-subgradient algorithm is oversensitive to rounding errors.
+subgradient algorithm is oversensitive to rounding errors. Note also that this
+is an unpublished work which was predecessor of the OCAS solver (see
+classifier_svmocas).

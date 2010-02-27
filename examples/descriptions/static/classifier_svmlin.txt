@@ -1,0 +1,10 @@
+In this example a two-class linear support vector machine classifier is trained
+on a toy data set and the trained classifier is then used to predict labels of
+test examples. As training algorithm the SVMLIN solver is used with the SVM 
+regularization parameter C=1.2. The solver iterates until it either finds
+the epsilon-precise solution (epsilon=1e-5) or the maximal training time
+max_train_time=60 is exceeded. The unbiased linear rule is trained. 
+
+For more details on the SVMLIN solver see
+ V. Sindhwani, S.S. Keerthi. Newton Methods for Fast Solution of Semi-supervised
+ Linear SVMs. Large Scale Kernel Machines MIT Press (Book Chapter), 2007

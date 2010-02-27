@@ -1,0 +1,10 @@
+In this example a two-class linear support vector machine classifier is trained
+on a toy data set and the trained classifier is then used to predict labels of
+test examples. As training algorithm the Stochastic Gradient Descent (SGD)
+solver is used with the SVM regularization parameter C=1.2 and the bias term in the
+classification rule switched off. The solver iterates until the maximal
+training time (max_train_time=60 seconds) is exceeded.
+
+For more details on the SGD solver see
+ L. Bottou, O. Bousquet. The tradeoff of large scale learning. In NIPS 20. MIT
+ Press. 2008.
