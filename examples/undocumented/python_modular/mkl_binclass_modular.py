@@ -1,7 +1,12 @@
+from shogun.Features import CombinedFeatures, RealFeatures, Labels
+from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
+from shogun.Classifier import MKLClassification
+
 def combined_custom():
-    from shogun.Features import CombinedFeatures, RealFeatures, Labels
-    from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
-    from shogun.Classifier import LibSVM
+
+
+    ##################################
+    # set up and train
 
     # create some poly train/test matrix
     tfeats = RealFeatures(fm_train_real)
@@ -25,8 +30,24 @@ def combined_custom():
 
     # train svm
     labels = Labels(fm_label_twoclass)
-    svm = LibSVM(1.0, kernel, labels)
+    svm = MKLClassification()
+
+    # which norm to use for MKL
+    svm.set_mkl_norm(1) #2,3
+
+    # set cost (neg, pos)
+    svm.set_C(1, 1)
+
+    # set kernel and labels
+    svm.set_kernel(combined_kernel)
+    svm.set_labels(lab)
+
+    # train
     svm.train()
+
+
+    ##################################
+    # test
 
     # create combined test features
     feats_pred = CombinedFeatures()
@@ -42,9 +63,10 @@ def combined_custom():
     svm.set_kernel(kernel)
     svm.classify()
 
+
 if __name__=='__main__':
     from tools.load import LoadMatrix
-    lm=LoadMatrix()
+    lm = LoadMatrix()
     fm_train_real = lm.load_numbers('../data/fm_train_real.dat')
     fm_test_real = lm.load_numbers('../data/fm_test_real.dat')
     fm_label_twoclass = lm.load_labels('../data/label_train_twoclass.dat')
