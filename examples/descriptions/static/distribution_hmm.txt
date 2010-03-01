@@ -1,0 +1,6 @@
+In this example a hidden markov model with 3 states and 6 transitions is trained
+on a string data set. After calling the constructor of the HMM class specifying
+the number of states and transitions the model is trained. Via the Baum-Welch
+algorithm the optimal transition and emission probabilities are estimated. The
+best path, i.e. the path with highest probability given the model can then be
+calculated using get_best_path_state.
