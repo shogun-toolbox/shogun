@@ -3399,6 +3399,10 @@ EOF
 		fi
 	else
 		_python_static=no
+		INCLUDES_PYTHON=""
+		LINKFLAGS_PYTHON=""
+		COMPFLAGS_CPP_PYTHON=""
+		COMPFLAGS_C_PYTHON=""
 	fi
 }
 
