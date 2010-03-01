@@ -3397,6 +3397,8 @@ EOF
 			PARTS="$PARTS python"
 			_python_static=yes
 		fi
+	else
+		_python_static=no
 	fi
 }
 
