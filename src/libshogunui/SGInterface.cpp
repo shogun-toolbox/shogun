@@ -7308,9 +7308,15 @@ bool CSGInterface::cmd_syntax_highlight()
 	char* hili=get_str_from_str_or_direct(len);
 
 	if (strmatch(hili, "ON"))
+	{
 		hilight.set_ansi_syntax_hilighting();
+		io->enable_syntax_highlighting();
+	}
 	else if (strmatch(hili, "OFF"))
+	{
 		hilight.disable_syntax_hilighting();
+		io->disable_syntax_highlighting();
+	}
 	else
 		SG_ERROR("arguments to " N_SYNTAX_HIGHLIGHT " are ON|OFF - found '%s'.\n", hili);
 

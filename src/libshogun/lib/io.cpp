@@ -30,6 +30,10 @@ const EMessageType CIO::levels[NUM_LOG_LEVELS]={MSG_GCDEBUG, MSG_DEBUG, MSG_INFO
 	MSG_WARN, MSG_ERROR, MSG_CRITICAL, MSG_ALERT, MSG_EMERGENCY, MSG_MESSAGEONLY};
 
 const char* CIO::message_strings[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
+	"[NOTICE] \0", "[WARN] \0", "[ERROR] \0",
+	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
+
+const char* CIO::message_strings_highlighted[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
 	"[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0",
 	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
 
@@ -42,7 +46,7 @@ char CIO::directory_name[FBUFSIZE];
 CIO::CIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
 	last_progress(1), show_progress(false), show_file_and_line(false),
-	loglevel(MSG_WARN), refcount(0)
+	syntax_highlight(true), loglevel(MSG_WARN), refcount(0)
 {
 }
 
@@ -51,6 +55,7 @@ CIO::CIO(const CIO& orig)
 	progress_start_time(0), last_progress(1),
 	show_progress(orig.get_show_progress()),
 	show_file_and_line(orig.get_show_file_and_line()),
+	syntax_highlight(orig.get_syntax_highlight()),
 	loglevel(orig.get_loglevel()), refcount(0)
 {
 }
@@ -288,7 +293,12 @@ const char* CIO::get_msg_intro(EMessageType prio) const
 			return NULL;
 
 		if (levels[i]==prio)
-			return message_strings[i];
+		{
+			if (syntax_highlight)
+				return message_strings_highlighted[i];
+			else
+				return message_strings[i];
+		}
 	}
 
 	return NULL;

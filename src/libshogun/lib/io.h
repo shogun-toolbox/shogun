@@ -137,6 +137,15 @@ class CIO
 			return show_file_and_line;
 		}
 
+		/** get syntax highlight
+		 *
+		 * @return if syntax highlighting is enabled
+		 */
+		inline bool get_syntax_highlight() const
+		{
+			return syntax_highlight;
+		}
+
 		/** print a message
 		 *
 		 * optionally prefixed with file name and line number
@@ -276,6 +285,24 @@ class CIO
 				sg_io->disable_file_and_line();
 		}
 
+		/** enable syntax highlighting */
+		inline void enable_syntax_highlighting()
+		{
+			syntax_highlight=true;
+
+			if (sg_io!=this)
+				sg_io->enable_syntax_highlighting();
+		}
+
+		/** disable syntax highlighting */
+		inline void disable_syntax_highlighting()
+		{
+			syntax_highlight=false;
+
+			if (sg_io!=this)
+				sg_io->disable_syntax_highlighting();
+		}
+
 		/** set directory name
 		 *
 		 * @param dirname new directory name
@@ -382,11 +409,15 @@ class CIO
 		/** if each print function should append filename and linenumber of
 		 * where the print occurs */
 		bool show_file_and_line;
+		/** whether syntax highlighting is enabled */
+		bool syntax_highlight;
 
 		/** log level */
 		EMessageType loglevel;
 		/** available log levels */
 		static const EMessageType levels[NUM_LOG_LEVELS];
+		/** message strings syntax highlighted*/
+		static const char* message_strings_highlighted[NUM_LOG_LEVELS];
 		/** message strings */
 		static const char* message_strings[NUM_LOG_LEVELS];
 
