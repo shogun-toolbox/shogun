@@ -1,0 +1,2 @@
+This example demsonstrates how to encode sparse (most entries zero),
+real-valued features in shogun using SparseRealFeatures.

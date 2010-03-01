@@ -1,0 +1,7 @@
+This example demonstrates how to encode string
+features efficiently by creating a more compactly encoded
+bit-string from StringCharFeatures.
+For instance, when working with the DNA alphabet {A,T,G,C}
+using 1 char = 1 byte per symbol would be wasteful, as we
+can encode 4 symbols using 2 bits only.
+Here, this is done in junks of 64bit (ulong).

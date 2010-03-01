@@ -1,0 +1,8 @@
+In this example, we demonstrate how to obtain string features
+by using a sliding window in a memory-efficient way. Instead of copying
+the string for each position of the sliding window, we only store a reference
+with respect to the complete string. This is particularly useful, when working
+with genomic data, where storing all explicitly copied strings in memory
+quickly becomes infeasible. In addition to a sliding window (of a particular
+length) over all position, we also support defining a custom position
+list.

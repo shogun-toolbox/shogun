@@ -1,0 +1,2 @@
+This example demonstrates, how to encode features composed of 64bit Integers in Shogun
+using LongIntFeatures.
