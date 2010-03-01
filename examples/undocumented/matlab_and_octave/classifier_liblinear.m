@@ -10,7 +10,9 @@ fm_test_real=load_matrix('../data/fm_test_real.dat');
 
 % LibLinear
 disp('LibLinear');
-sg('new_classifier', 'LIBLINEAR_LR');
+% type can be one of LIBLINEAR_L2R_LR, LIBLINEAR_L2R_L2LOSS_SVC_DUAL,
+%            LIBLINEAR_L2R_L2LOSS_SVC, LIBLINEAR_L2R_L1LOSS_SVC_DUAL
+sg('new_classifier', 'LIBLINEAR_L2R_LR');
 
 sg('set_features', 'TRAIN', sparse(fm_train_real));
 sg('set_labels', 'TRAIN', label_train_twoclass);

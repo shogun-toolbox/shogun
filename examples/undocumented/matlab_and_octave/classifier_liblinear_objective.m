@@ -14,7 +14,9 @@ sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
 sg('svm_use_bias', false);
 sg('svm_epsilon', epsilon);
-sg('new_classifier', 'LIBLINEAR_L2');
+% type can be one of LIBLINEAR_L2R_LR, LIBLINEAR_L2R_L2LOSS_SVC_DUAL,
+%            LIBLINEAR_L2R_L2LOSS_SVC, LIBLINEAR_L2R_L1LOSS_SVC_DUAL
+sg('new_classifier', 'LIBLINEAR_L2R_L1LOSS_SVC_DUAL');
 tic;
 sg('train_classifier');
 timeliblinear=toc
