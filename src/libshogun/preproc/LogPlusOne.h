@@ -23,7 +23,7 @@ namespace shogun
  * real valued vector and takes the logarithm of each component of it.
  *
  * \f[
- * {\bf x}\leftarrow \log({\bf x}+{\bf 1}
+ * {\bf x}\leftarrow \log({\bf x}+{\bf 1})
  * \f]
  * It therefore does not need any initialization. It is most useful in
  * situations where the inputs are counts: When one compares differences of
