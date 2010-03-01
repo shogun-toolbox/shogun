@@ -3307,7 +3307,8 @@ test_python()
 			fi
 		else
 			echores "no"
-			if test "$_python" = yes
+			if test "$_python" = yes || test "$_python_static" = yes \
+				|| test "$_python_modular" = yes
 			then
 				die "python numpy package missing"
 			fi
@@ -3379,7 +3380,8 @@ EOF
 					SWIGFLAGS_PYTHON_MODULAR="-c++ -python"
 				else
 					echores "no"
-					if test "$_python" = yes
+					if test "$_python" = yes || test "$_python_static" = yes \
+						|| test "$_python_modular" = yes
 					then
 						die "python/numpy developer files missing"
 					fi
