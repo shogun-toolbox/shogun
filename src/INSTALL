@@ -56,7 +56,7 @@ SPECIFIC BUILD INSTRUCTIONS
 
 BUILDING ON DEBIAN GNU LINUX
 
-Python (python2.4 or python2.5) need to be installed.  To get atlas/lapack
+Python (python2.5 or python2.6) need to be installed.  To get atlas/lapack
 optimizations optionally also install the atlas3-* packages aswell as the
 lapack3-* packages.
 
@@ -73,7 +73,7 @@ octave
 ======
 
 To compile the octave interface you need to have the octave developer files 
-(debian package octave3.0-headers or octave2.9-headers).
+(debian package octave3.2-headers or octave3.0-headers).
 
 then do a
 
@@ -84,8 +84,37 @@ make install
 a sg.oct file should be created. as a test start octave in the src/ directory
 and type
 
-addpath('../examples/octave/graphical')
+addpath('../examples/documented/octave/graphical')
 svr_regression
+
+matlab
+======
+
+To compile the matlab interface you need to have matlab installed in the path
+(i.e., typing matlab in the shell should start matlab).
+
+then do a
+
+./configure --interfaces=libshogun,libshogunui,matlab
+make
+make install
+
+a sg.mexglx (or sg.mexa64 or sg.mexmac etc file should be created). As a test
+start matlab in the src/matlab directory
+and type
+
+addpath('../examples/documented/matlab/graphical')
+svr_regression
+
+For permanent use you could add the following line to your matlab/startup.m 
+
+    addpath('path_to_shogun/trunk/src/matlab');
+
+In case you want to omit the make install step you could run matlab (in gui
+mode if you want) with 
+
+	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:path_to_shogun/trunk/src/libshogunui:path_to_shogun/trunk/src/libshogun
+	matlab -desktop
 
 R
 =
@@ -118,7 +147,7 @@ make
 
 A sg.so file should be created in the src/ directory:
 To test whether it is working try
-PYTHONPATH=`pwd` python ../examples/python/graphical/svm_classification.py
+PYTHONPATH=`pwd` python ../examples/documented/python/graphical/svm_classification.py
 
 eierlegendewollmichsau (elwms) interface
 ========================================
@@ -133,8 +162,8 @@ cd elwms
 
 LD_LIBRARY_PATH=/path/to/octave/lib:/path/to/matlab/libs octave 
 
-All examples from examples/{r,python,matlab,octave}/* should work plus the ones
-in examples/elwms/ (that allows lang -> python subcommands).
+All examples from examples/documented/{r,python,matlab,octave}/* should work plus the ones
+in examples/documented/elwms/ (that allows lang -> python subcommands).
 
 object oriented python/swig interface:
 ======================================
@@ -146,7 +175,7 @@ configure+compile shogun with:
   make
   sudo make install
 
-to test if it is working try python ../examples/python-modular/graphical/svm.py
+to test if it is working try python ../examples/documented/python-modular/graphical/svm.py
 
 BUILDING ON MACOSX
 
@@ -167,15 +196,15 @@ A workaround is to uncomment this in math.h:
         double Imag;
  } __complex_t;
  
-Also make sure you don't mix python versions (i.e. python2.4 and python2.5) on build/runtime.
-You can specify the python version as a argument to configure, e.g.: --python=python2.4
+Also make sure you don't mix python versions (i.e. python2.5 and python2.6) on build/runtime.
+You can specify the python version as a argument to configure, e.g.: --python=python2.7
 
 ./configure --interface=python
 make
 
 to test if it is working try:
 
-PYTHONPATH=`pwd` python ../examples/python/graphical/svm_classification.py
+PYTHONPATH=`pwd` python ../examples/documented/python/graphical/svm_classification.py
 
 object oriented python/swig interface:
 ======================================
@@ -185,7 +214,7 @@ Follow the above instructions for python. Then use fink/darwinports to install s
 make
 sudo make install
 
-to test if it is working try python ../examples/python-modular/graphical/svm.py
+to test if it is working try python ../examples/documented/python-modular/graphical/svm.py
 
 octave:
 =======
@@ -202,7 +231,7 @@ make
 a sg.oct file should be created. as a test start octave in the src/ directory
 and type
 
-addpath('../examples/octave/graphical')
+addpath('../examples/documented/octave/graphical')
 svr_regression
 
 standalone:
@@ -227,7 +256,7 @@ make
 make install
 
 After starting the R aqua gui, choose File->Source File and select the
-../examples/r/graphical/svm_classification.R example
+../examples/documented/r/graphical/svm_classification.R example
 
 If that does not work out (send us a bug report) and also please try the following:
 
@@ -258,7 +287,7 @@ matlab:
 
 BUILDING ON WINDOWS / CYGWIN
 
-	install gcc version 3.3 (gcc-3.4 is currently broken)
+	install cygwin 1.7 or later 
 
 R:
 ==
@@ -287,9 +316,9 @@ Instead of using library(sg) in your .R scripts you now have to use
 dyn.load('<path_to_shogun>/sg.dll')
 sg <- function(...) .External("sg",...,PACKAGE="sg").
 
-After this modification, The examples in examples/r/ should all work. To get
+After this modification, The examples in examples/documented/r/ should all work. To get
 them to go start the R gui, choose File->Source R Code and select 
-../examples/r/graphical/svr_regression.R  (as this example has no other package dependencies).
+../examples/documented/r/graphical/svr_regression.R  (as this example has no other package dependencies).
 
 matlab:
 =======
@@ -326,48 +355,15 @@ octave:
 
 	cd src/octave
 	LD_LIBRARY_PATH=../libshogun:../libshogunui octave
-	addpath('../examples/octave/graphical')
+	addpath('../examples/documented/octave/graphical')
 	svr_regression
 
 
 python:
 =======
 
-  install python2.4. then get numpy 1.0 from http://sourceforge.net/project/showfiles.php?group_id=1369&package_id=175103
+  install python2.5 and numpy >1.0
   
-  extract the archive and in the numpy-1.0 directory type 
-
-	python setup.py install
-
-  this will eventually fail creating the _capi.dll library, as the libmingwex.a
-  lib is not beeing linked with. as a workaround type
-
-	gcc -shared -Wl,--enable-auto-image-base build/temp.cygwin-1.5.21-i686-2.4/numpy/numarray/_capi.o -L/usr/lib/python2.4/config -lpython2.4 -o build/lib.cygwin-1.5.21-i686-2.4/numpy/numarray/_capi.dll /usr/lib/mingw/libmingwex.a
-
-  followed by another 
-
-	python setup.py install
-
-  to test whether all worked out do
-
-	 cd
-	 python
-	 import numpy
-	 print numpy.__version__
-	 
-	 it should list 1.0
-
-  install matplotlib (optional):
-
-  to do so first get the following cygwin packages: freetype2, libpng, zlib (don't forget the devel packages)
-  then download the matplotlib src
-  http://prdownloads.sourceforge.net/matplotlib/matplotlib-0.87.7.tar.gz?download and extract the archive
-
-  add missing library links: ln -s /lib/libtk84.a /lib/libtk8.4.a and ln -s /lib/libtcl84.a /lib/libtcl8.4.a 
-  edit the setup.py file: and modify the line: rc = dict({'backend':'GTKAgg', 'numerix':'numpy'})
-  do unset DISPLAY; python setup.py install 
-
-
   now compile shogun:
 	./configure --interfaces=libshogun,libshogunui,python
 	make
@@ -377,7 +373,7 @@ python:
 
   to test if it is working, try:
 	 cd src
-	 LD_LIBRARY_PATH=./libshogun:libshogunui PYTHONPATH=./python python ../examples/python/graphical/svm_classification.py
+	 LD_LIBRARY_PATH=./libshogun:libshogunui PYTHONPATH=./python python ../examples/documented/python/graphical/svm_classification.py
 
 object oriented python/swig interface:
 ======================================
@@ -389,7 +385,7 @@ package and configure+compile shogun with:
   make
   make install
 
-to test if it is working try python ../examples/python_modular/graphical/svm.py
+to test if it is working try python ../examples/documented/python_modular/graphical/svm.py
 
 object oriented octave/swig interface:
 ======================================
@@ -401,7 +397,7 @@ package and configure+compile shogun with:
   make
   make install
 
-to test if it is working try octave ../examples/octave_modular/libsvm.m
+to test if it is working try octave ../examples/documented/octave_modular/libsvm.m
 
 object oriented r/swig interface:
 ======================================
@@ -413,7 +409,7 @@ package and configure+compile shogun with:
   make
   make install
 
-to test if it is working try octave ../examples/r_modular/all_classifier.R
+to test if it is working try octave ../examples/documented/r_modular/all_classifier.R
 
 PROBLEMS
 
@@ -421,5 +417,5 @@ In case header files or libraries are not at standard locations one needs
 to manually adjust the libray/include paths using --includes or --libs
 (see configure --help for additional options) 
 
-The current gcc/g++ version in cygwin is broken. Please downgrade to 
-gcc/g++ 3.x.x to get a working octave interface.
+The current mingw version in cygwin is out of date - so R and matlab won't work
+until mingw is updated to gcc 4.X.
