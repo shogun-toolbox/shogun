@@ -9,6 +9,7 @@ def lda ():
 
 	sg('set_features', 'TEST', fm_test_real)
 	result=sg('classify')
+	print result
 
 if __name__=='__main__': #svm_light()
 	from tools.load import LoadMatrix
@@ -16,4 +17,5 @@ if __name__=='__main__': #svm_light()
 	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
 	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
 	label_train_twoclass=lm.load_labels('../data/label_train_twoclass.dat')
+	print fm_train_real
 	lda()

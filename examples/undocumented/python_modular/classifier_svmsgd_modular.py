@@ -11,12 +11,13 @@ def svmsgd ():
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
-	C=0.9
-	epsilon=1e-5
+	C=0.9	
 	num_threads=1
+	num_iter=5
 	labels=Labels(label_train_twoclass)
 
 	svm=SVMSGD(C, feats_train, labels)
+	svm.set_epochs(num_iter)
 	#svm.io.set_loglevel(0)
 	svm.train()
 
