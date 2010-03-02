@@ -6,8 +6,9 @@ For more details see e.g.
   B. Schoelkopf et al. Estimating the support of a high-dimensional
   distribution. Neural Computation, 13, 2001, 1443-1471. 
 
-As training algorithm LIBSVM is used with SVM regularization parameter C=1.2 and a
-Gaussian kernel of width 2.1 and 10MB of kernel cache. 
+In the example, the one-class SVM is trained by the LIBSVM solver with the
+regularization parameter C=1.2 and the Gaussian kernel of width 2.1 and the
+precision parameter epsilon=1e-5 and 10MB of the kernel cache.
 
 For more details on LIBSVM solver see http://www.csie.ntu.edu.tw/~cjlin/libsvm/ .
 

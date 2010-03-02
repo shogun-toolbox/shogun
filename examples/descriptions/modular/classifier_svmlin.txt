@@ -1,0 +1,10 @@
+In this example a two-class linear support vector machine classifier (SVM) is
+trained on a toy data set and the trained classifier is used to predict labels
+of test examples. As training algorithm the SVMLIN solver is used with the SVM
+regularization parameter C=0.9 and the bias in the classification rule switched
+on and the precision parameter epsilon=1e-5. The example also shows how to
+retrieve parameters (vector w and bias b)) of the trained linear classifier.
+
+For more details on the SVMLIN solver see
+ V. Sindhwani, S.S. Keerthi. Newton Methods for Fast Solution of Semi-supervised
+ Linear SVMs. Large Scale Kernel Machines MIT Press (Book Chapter), 2007

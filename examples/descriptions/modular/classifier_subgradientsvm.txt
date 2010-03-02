@@ -1,0 +1,12 @@
+In this example a two-class linear support vector machine classifier is trained
+on a toy data set and the trained classifier is used to predict labels of test
+examples. As training algorithm the steepest descent subgradient algorithm is
+used. The SVM regularization parameter is set to C=0.9 and the bias in the
+classification rule is switched off. The solver iterates until it finds an
+epsilon-precise solution (epsilon=1e-3) or the maximal training time
+max_train_time=1 (seconds) is exceeded. The unbiased linear rule is trained.
+
+Note that this solver often does not converges because the steepest descent
+subgradient algorithm is oversensitive to rounding errors. Note also that this
+is an unpublished work which was predecessor of the OCAS solver (see
+classifier_svmocas).

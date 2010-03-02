@@ -1,0 +1,17 @@
+In this example a two-class support vector machine classifier is trained on a
+DNA splice-site detection data set and the trained classifier is used to predict
+labels on test set. As training algorithm SVM^light is used with SVM
+regularization parameter C=1 and the Weighted Degree kernel of the degree 20 and
+a precision parameter epsilon=1e-5. The LINADD trick is used to speed up
+training.
+
+For more details on the SVM^light see
+ T. Joachims. Making large-scale SVM learning practical. In Advances in Kernel
+ Methods -- Support Vector Learning, pages 169-184. MIT Press, Cambridge, MA USA, 1999.
+
+For more details on the Weighted Degree kernel and the LINADD trick see
+  Sonnenburg, s. and Rätsch, G. and Rieck, K. Large Scale Learning with String
+  Kernels. In Bottou, Leon and Chapelle, Olivier and DeCoste, Dennis and Weston,
+  Jason, editor, In Large Scale Kernel Machines, pages 73-103, MIT Press,
+  Cambridge, MA. 2007.  
+
