@@ -1,0 +1,10 @@
+In this example a two-class linear programming machine (LPM) classifier is
+trained on a randomly generated examples. As solver the LPBOOST algorithm is
+used with the regularization parameter C=100 and the bias term in the
+classification rule switched off. Note that LPBOOST calls the CPLEX solver in
+its inner loop hence the CPLEX must be installed. The trained classifier is used
+to compute outputs on the training examples and the primal SVM objective
+function is computed.
+
+For more details on the LPBOOST see
+    http://en.wikipedia.org/wiki/LPBoost

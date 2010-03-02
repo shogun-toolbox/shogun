@@ -1,0 +1,13 @@
+In this example a two-class linear programming machine (LPM) classifier is
+trained on a randomly generated examples. The linear programming problem to
+which the learning problem is transformed is solved by the CPLEX solver which
+must be installed. The LPM regularization parameter is set to C=100 and the bias
+term in the classification rule is switched on. The trained classifier is then
+used to compute outputs on the training examples and the primal SVM objective
+function is computed.
+
+For more details on the LPM see
+    Weida Zhou, Li Zhang, Licheng Jiao. Linear programming support vector
+    machines. Pattern Recognition, Volume 35, Issue 12, December 2002, 
+    pages 2927-2936. 
+
