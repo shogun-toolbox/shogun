@@ -1,8 +1,8 @@
 In this example a two-class support vector machine classifier is trained on a
-DNA splice-site detection data set and the trained classifier is then used to
+DNA splice-site detection data set and the trained classifier is used to
 predict labels on test set. As training algorithm SVM^light is used with SVM
-regularization parameter C=1 and the Weighted Degree kernel. The unbiased
-classification rule is used. 
+regularization parameter C=1 and the Weighted Degree kernel and the bias term in 
+the classification rule switched off.  
 
 For more details on the SVM^light see
  T. Joachims. Making large-scale SVM learning practical. In Advances in Kernel

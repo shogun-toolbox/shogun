@@ -1,4 +1,4 @@
-This example shows the usage of the Perceptron algorithm for training the
+This example shows how to use the Perceptron algorithm for training a
 two-class linear classifier, i.e.  y = sign( <x,w>+b). The Perceptron algorithm
 works by iteratively passing though the training examples and applying the
 update rule on those examples which are misclassified by the current
