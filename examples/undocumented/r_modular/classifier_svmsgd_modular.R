@@ -20,6 +20,7 @@ labels <- Labels(label_train_twoclass)
 
 svm <- SVMSGD(C, feats_train, labels)
 #dump <- svm$io$set_loglevel(svm$io, 0)
+dump <- svm$set_epochs(num_iter)
 dump <- svm$train(svm)
 
 dump <- svm$set_features(svm, feats_test)
