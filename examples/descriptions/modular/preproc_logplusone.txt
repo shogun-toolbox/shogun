@@ -1,0 +1,9 @@
+In this example a kernel matrix is computed for a given real-valued data set.
+The kernel used is the Chi2 kernel which operates on real-valued vectors. It
+computes the chi-squared distance between sets of histograms. It is a very
+useful distance in image recognition (used to detect objects). The preprocessor
+LogPlusOne adds one to a dense real-valued vector and takes the logarithm of
+each component of it. It is most useful in situations where the inputs are
+counts: When one compares differences of small counts any difference may matter
+a lot, while small differences in large counts don't. This is what this log
+transformation controls for.

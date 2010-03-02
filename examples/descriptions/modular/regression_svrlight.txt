@@ -1,0 +1,9 @@
+In this example a support vector regression algorithm is trained on a
+real-valued toy data set. The underlying library used for the SVR training is
+SVM^light. The SVR is trained with regularization parameter C=1 and a gaussian
+kernel with width=2.1. The the label of both the train and the test data are
+fetched via svr.classify().get_labels().
+
+For more details on the SVM^light see
+ T. Joachims. Making large-scale SVM learning practical. In Advances in Kernel
+ Methods -- Support Vector Learning, pages 169-184. MIT Press, Cambridge, MA USA, 1999.

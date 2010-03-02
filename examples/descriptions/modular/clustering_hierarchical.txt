@@ -1,0 +1,5 @@
+In this example an agglomerative hierarchical single linkage clustering method
+is used to cluster a given toy data set. Starting with each object being
+assigned to its own cluster clusters are iteratively merged. Here the clusters
+are merged that have the closest (minimum distance, here set via the Euclidean
+distance object) two elements.

@@ -1,0 +1,5 @@
+In this example a kernel matrix is computed for a given real-valued data set.
+The kernel used is the Chi2 kernel which operates on real-valued vectors. It
+computes the chi-squared distance between sets of histograms. It is a very
+useful distance in image recognition (used to detect objects). The preprocessor
+NormOne, normalizes vectors to have norm 1.

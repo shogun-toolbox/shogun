@@ -1,0 +1,10 @@
+In this example a kernel matrix is computed for a given string data set. The
+CommWordString kernel is used to compute the spectrum kernel from strings that
+have been mapped into unsigned 16bit integers. These 16bit integers correspond
+to k-mers. To be applicable in this kernel the mapped k-mers have to be sorted.
+This is done using the SortWordString preprocessor, which sorts the indivual
+strings in ascending order. The kernel function basically uses the algorithm in
+the unix "comm" command (hence the name). Note that this representation is
+especially tuned to small alphabets (like the 2-bit alphabet DNA), for which it
+enables spectrum kernels of order up to 8. For this kernel the linadd speedups
+are quite efficiently implemented using direct maps.
