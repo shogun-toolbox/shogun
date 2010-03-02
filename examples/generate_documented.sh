@@ -60,9 +60,12 @@ document_interface()
 			fi
 		done
 
-		test -d undocumented/$d/graphical && \
-			( mkdir documented/$d/graphical &&  \
-			cp undocumented/$d/graphical/* documented/$d/graphical/ )
+		for vanilla in graphical tools
+		do
+			test -d undocumented/$d/$vanilla && \
+				( mkdir documented/$d/$vanilla &&  \
+				cp undocumented/$d/$vanilla/* documented/$d/$vanilla/ )
+		done
 	done
 }
 
