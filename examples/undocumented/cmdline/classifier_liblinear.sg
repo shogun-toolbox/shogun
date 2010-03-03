@@ -1,9 +1,11 @@
 % LibLinear
 print LibLinear
 
+% type can be one of LIBLINEAR_L2R_LR, LIBLINEAR_L2R_L2LOSS_SVC_DUAL,
+%            LIBLINEAR_L2R_L2LOSS_SVC, LIBLINEAR_L2R_L1LOSS_SVC_DUAL
+new_classifier LIBLINEAR_L2R_LR
 set_features TRAIN ../data/fm_train_sparsereal.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
-new_classifier LIBLINEAR_LR
 svm_epsilon 1e-5
 svm_use_bias 0
 c 0.42

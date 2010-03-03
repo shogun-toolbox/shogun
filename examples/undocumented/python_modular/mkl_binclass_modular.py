@@ -28,22 +28,22 @@ def combined_custom():
     kernel.append_kernel(PolyKernel(10,2))
     kernel.init(feats_train, feats_train)
 
-    # train svm
+    # train mkl
     labels = Labels(fm_label_twoclass)
-    svm = MKLClassification()
+    mkl = MKLClassification()
 
     # which norm to use for MKL
-    svm.set_mkl_norm(1) #2,3
+    mkl.set_mkl_norm(1) #2,3
 
     # set cost (neg, pos)
-    svm.set_C(1, 1)
+    mkl.set_C(1, 1)
 
     # set kernel and labels
-    svm.set_kernel(combined_kernel)
-    svm.set_labels(lab)
+    mkl.set_kernel(kernel)
+    mkl.set_labels(labels)
 
     # train
-    svm.train()
+    mkl.train()
 
 
     ##################################
@@ -60,8 +60,8 @@ def combined_custom():
     kernel.init(feats_train, feats_pred)
 
     # and classify
-    svm.set_kernel(kernel)
-    svm.classify()
+    mkl.set_kernel(kernel)
+    mkl.classify()
 
 
 if __name__=='__main__':
