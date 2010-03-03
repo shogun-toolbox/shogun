@@ -1,23 +1,57 @@
 #!/usr/bin/env python 
 # -*- coding: utf-8 -*-
 
-from numpy.random import randn
 from shogun.Structure import *
 
 import numpy
 from numpy import array,Inf,float64,matrix,frompyfunc,zeros
 
-from IPython.Shell import IPShellEmbed
-ipshell = IPShellEmbed()
+#from IPython.Shell import IPShellEmbed
+#ipshell = IPShellEmbed()
 
+import gzip
+import scipy
 from scipy.io import loadmat
 
+import pickle
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
+if scipy.__version__ >= '0.7.0':
+  renametable = {
+      'scipy.io.mio5': 'scipy.io.matlab.mio5',
+      'scipy.sparse.sparse' : 'scipy.sparse',
+      }
+else:
+  renametable = {}
+
+def mapname(name):
+    if name in renametable:
+        return renametable[name]
+    return name
+
+def mapped_load_global(self):
+    module = mapname(self.readline()[:-1])
+    name = mapname(self.readline()[:-1])
+    klass = self.find_class(module, name)
+    self.append(klass)
+
+def loads(str):
+    file = StringIO(str)
+    unpickler = pickle.Unpickler(file)
+    unpickler.dispatch[pickle.GLOBAL] = mapped_load_global
+    return unpickler.load()
       
 def run_test():
 
-   data_dict = loadmat('../data/DynProg_example_py.dat')
+   data_dict = loads(gzip.GzipFile('../data/DynProg_example_py.pickle.gz').read())
+   #data_dict = loadmat('../data/DynProg_example_py.dat.mat', appendmat=False, struct_as_record=False)
 
-
+   #print data_dict
+   #print len(data_dict['penalty_array'][0][0][0][0].limits[0])
    num_plifs,num_limits = len(data_dict['penalty_array']),len(data_dict['penalty_array'][0].limits)
    pm = PlifMatrix()
    pm.create_plifs(num_plifs,num_limits)
