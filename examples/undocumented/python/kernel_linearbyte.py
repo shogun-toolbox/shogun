@@ -2,9 +2,11 @@ def linear_byte ():
 	print 'LinearByte'
 
 	from sg import sg
-	sg('set_features', 'TRAIN', fm_train_byte, 'RAWBYTE')
+	#import pdb
+	#pdb.set_trace()
+	sg('set_features', 'TRAIN', fm_train_byte)
 	sg('set_features', 'TEST', fm_test_byte, 'RAWBYTE')
-	sg('set_kernel', 'LINEAR BYTE', 10)
+	sg('set_kernel', 'LINEAR', 'BYTE', 10)
 	km=sg('get_kernel_matrix', 'TRAIN')
 	km=sg('get_kernel_matrix', 'TEST')
 
