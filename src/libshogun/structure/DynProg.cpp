@@ -820,6 +820,9 @@ void CDynProg::best_path_set_segment_loss(
 void CDynProg::best_path_set_segment_ids_mask(
 	int32_t* segment_ids, float64_t* segment_mask, int32_t m)
 {
+
+	if (m!=m_observation_matrix.get_dim2())
+		SG_ERROR("size of segment_ids or segment_mask (%i)  does not match the size of the feature matrix (%i)", m, m_observation_matrix.get_dim2());
 	int32_t max_id = 0;
 	for (int32_t i=1;i<m;i++)
 		max_id = CMath::max(max_id,segment_ids[i]);

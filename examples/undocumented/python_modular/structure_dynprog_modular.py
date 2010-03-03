@@ -138,13 +138,14 @@ def run_test():
 
    dyn.set_a_trans_matrix(a_trans)
 
-   dyn.set_content_type_array(data_dict['seg_path'].astype(numpy.float64))
-   dyn.best_path_set_segment_loss(data_dict['loss'].astype(numpy.float64))
 
    dyn.check_svm_arrays()
    features = data_dict['block'].features
 
    dyn.set_observation_matrix(features)
+
+   dyn.set_content_type_array(data_dict['seg_path'].astype(numpy.float64))
+   dyn.best_path_set_segment_loss(data_dict['loss'].astype(numpy.float64))
 
    use_orf = True
    feat_dims = [25,201,2]
