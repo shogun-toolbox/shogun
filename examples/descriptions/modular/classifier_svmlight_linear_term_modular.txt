@@ -1,0 +1,4 @@
+This example demonstrates how to train an SVMLight classifier
+using a custom linear term. This is used in the class DASVM that
+pre-computes this linear term using a previously trained SVM.
+

@@ -1,0 +1,13 @@
+In this example we demonstrate how to use SVMs in a domain adaptation
+scenario. Here, we assume that we have two problem domains, one with
+an abundance of training data (source domain) and one with only a few
+training examples (target domain). These domains are assumed to be
+different but related enough to transfer information between them.
+Thus, we first train an SVM on the source domain and then subsequently
+pass this previously trained SVM object to the DASVM, that we train
+on the target domain. The DASVM internally computes a custom linear term
+(for the underlying quadratic program of the dual formulation of the SVM)
+based on the support vectors of the source SVM and the training examples
+of the target SVM. Finally, it can be used for prediction just as any other
+SVM object.
+
