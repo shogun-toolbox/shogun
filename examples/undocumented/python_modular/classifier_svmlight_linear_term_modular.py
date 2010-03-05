@@ -51,5 +51,5 @@ svm.parallel.set_num_threads(num_threads)
 svm.train()
 
 kernel.init(feats_train, feats_test)
-svm.classify().get_labels()
+out = svm.classify().get_labels()
 

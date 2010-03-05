@@ -71,7 +71,7 @@ feats_test2 = StringCharFeatures(fm_test_dna, DNA)
 kernel2 = WeightedDegreeStringKernel(feats_train, feats_train, degree)
 labels2 = Labels(label_train_dna)
 
-# we regularize versus the previously obtained solution
+# we regularize against the previously obtained solution
 dasvm = DomainAdaptationSVM(C, kernel2, labels2, svm, 1.0)
 dasvm.train()
 
