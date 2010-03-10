@@ -44,6 +44,8 @@ def combined_custom():
 
     # train
     mkl.train()
+    #w=kernel.get_subkernel_weights()
+    #kernel.set_subkernel_weights(w)
 
 
     ##################################
