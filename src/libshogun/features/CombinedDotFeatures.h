@@ -186,7 +186,10 @@ class CCombinedDotFeatures : public CDotFeatures
 			while (it->f)
 			{
 				if (it->f->get_next_feature(index, value, it->iterator))
+				{
+					value*=get_combined_feature_weight();
 					return true;
+				}
 
 				it->f->free_feature_iterator(it->iterator);
 				it->f=get_next_feature_obj(it->current);
