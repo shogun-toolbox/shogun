@@ -10,63 +10,62 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "kernel/PolyMatchStringKernel.h"
+#include "kernel/GaussianMatchStringKernel.h"
 #include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
 using namespace shogun;
 
-CPolyMatchStringKernel::CPolyMatchStringKernel(int32_t size, int32_t d, bool i)
-: CStringKernel<char>(size), degree(d), inhomogene(i), rescaling(false)
+CGaussianMatchStringKernel::CGaussianMatchStringKernel(int32_t size, float64_t w)
+: CStringKernel<char>(size), width(w)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
-CPolyMatchStringKernel::CPolyMatchStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t d, bool i)
-: CStringKernel<char>(10), degree(d), inhomogene(i), rescaling(false)
+CGaussianMatchStringKernel::CGaussianMatchStringKernel(
+	CStringFeatures<char>* l, CStringFeatures<char>* r, float64_t w)
+: CStringKernel<char>(10), width(w)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l, r);
 }
 
-CPolyMatchStringKernel::~CPolyMatchStringKernel()
+CGaussianMatchStringKernel::~CGaussianMatchStringKernel()
 {
 	cleanup();
 }
 
-bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
+bool CGaussianMatchStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	CStringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CPolyMatchStringKernel::cleanup()
+void CGaussianMatchStringKernel::cleanup()
 {
 	CKernel::cleanup();
 }
 
-float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	int32_t i, alen, blen, sum;
+	int32_t i, alen, blen ;
 	bool free_avec, free_bvec;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
-	ASSERT(alen==blen);
-	for (i = 0, sum = inhomogene; i<alen; i++)
-	{
-		if (avec[i]==bvec[i])
-			sum++;
-	}
-	float64_t result = ((float64_t) sum);
+	float64_t result=0;
 
-	if (rescaling)
-		result/=alen;
+	ASSERT(alen==blen);
+
+	for (i = 0;  i<alen; i++) 
+		result+=(avec[i]==bvec[i]) ? 0:4;
+
+	result=exp(-result/width);
+
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
-	return CMath::pow(result , degree);
+	return result;
 }

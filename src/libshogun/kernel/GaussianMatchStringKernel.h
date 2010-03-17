@@ -8,54 +8,50 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _POLYMATCHSTRINGKERNEL_H___
-#define _POLYMATCHSTRINGKERNEL_H___
+#ifndef _GAUSSIANMATCHSTRINGKERNEL_H___
+#define _GAUSSIANMATCHSTRINGKERNEL_H___
 
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
 namespace shogun
 {
-/** @brief The class PolyMatchStringKernel computes a variant of the polynomial
+/** @brief The class GaussianMatchStringKernel computes a variant of the Gaussian
  * kernel on strings of same length.
  *
  * It is computed as
  *
  * \f[
- * k({\bf x},{\bf x'})= (\sum_{i=0}^L I(x_i=x'_i)+c)^d
+ * k({\bf x},{\bf x'})= e^{-\frac{\left(x-x'\right)^2}{w}}
  * \f]
  *
- * where I is the indicator function which evaluates to 1 if its argument is
- * true and to 0 otherwise.
  *
  * Note that additional normalisation is applied, i.e.
  * \f[
  *     k'({\bf x}, {\bf x'})=\frac{k({\bf x}, {\bf x'})}{\sqrt{k({\bf x}, {\bf x})k({\bf x'}, {\bf x'})}}
  * \f]
  */
-class CPolyMatchStringKernel: public CStringKernel<char>
+class CGaussianMatchStringKernel: public CStringKernel<char>
 {
 	public:
 		/** constructor
 		 *
 		 * @param size cache size
-		 * @param degree degree
-		 * @param inhomogene is inhomogeneous
+		 * @param width width 
 		 */
-		CPolyMatchStringKernel(int32_t size, int32_t degree, bool inhomogene);
+		CGaussianMatchStringKernel(int32_t size, float64_t width);
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param degree degree
-		 * @param inhomogene is inhomogeneous
+		 * @param width width
 		 */
-		CPolyMatchStringKernel(
+		CGaussianMatchStringKernel(
 			CStringFeatures<char>* l, CStringFeatures<char>* r,
-			int32_t degree, bool inhomogene);
+			float64_t width);
 
-		virtual ~CPolyMatchStringKernel();
+		virtual ~CGaussianMatchStringKernel();
 
 		/** initialize kernel
 		 *
@@ -74,28 +70,14 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		 */
 		virtual EKernelType get_kernel_type()
 		{
-			return K_POLYMATCH;
+			return K_GAUSSIANMATCH;
 		}
 
 		/** return the kernel's name
 		 *
-		 * @return name PolyMatchString
+		 * @return name GaussMatchString
 		 */
-		virtual const char* get_name() const { return "PolyMatchString"; }
-
-		/** enable rescaling by length of feature vector
-		 *
-		 * @param n true to enable
-		 */
-		void set_rescaling_enabled(bool n)
-		{
-			rescaling=n;
-		}
-
-		bool get_rescaling_enabled()
-		{
-			return rescaling;
-		}
+		virtual const char* get_name() const { return "GaussianMatchString"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -109,12 +91,8 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
-		/** degree */
-		int32_t degree;
-		/** if kernel is inhomogeneous */
-		bool inhomogene;
-		/** kernel normalisiation */
-		bool normalisation;
+		/** width */
+		float64_t width;
 };
 }
-#endif /* _POLYMATCHSTRINGKERNEL_H___ */
+#endif /* _GAUSSIANMATCHSTRINGKERNEL_H___ */
