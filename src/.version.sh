@@ -13,20 +13,40 @@ then
 	hour=`svn info | grep "^Last Changed Date:" | cut -f 5 -d ' ' | cut -f 1 -d ':'`
 	minute=`svn info | grep "^Last Changed Date:" | cut -f 5 -d ' ' | cut -f 2 -d ':'`
 
-	date="$year-$month-$day"
-	time="$hour:$minute"
+	src="svn"
+elif test -d ../../.git
+then
+	# Lets assume that we are building from something which tracks the
+	# master branch, which is known to carry git-svn information
+	branch_point=$(git merge-base master HEAD)
+	
+	# extract information about that point
+	# NB I bet there are better ways ... ;)
+	#	 if we went pure git way, git describe would have been sufficient
+	dateinfo=$(git show --pretty='format:%aD' $branch_point | head -1)
+
+	year=`date -d "$dateinfo" +%Y`
+	month=`date -d "$dateinfo" +%m`
+	day=`date -d "$dateinfo" +%d`
+	hour=`date -d "$dateinfo" +%H`
+	minute=`date -d "$dateinfo" +%M`
+
+	revision=$(git show --pretty='format:%b' $branch_point | head -1 | sed -e 's/.*@\([0-9]*\) \S*$/\1/g')
+	extra="git:`git show --pretty='format:%h'|head -1`"
 else
 	extra="UNKNOWN_VERSION"
 	revision=9999
-	date="9999-99-99"
-	time="99:99"
 
 	year="9999"
 	month="99"
 	day="99"
 	hour="99"
 	minute="99"
+	src="custom"
 fi
+
+date="$year-$month-$day"
+time="$hour:$minute"
 
 if test "$1" ; then
 	extra="_$1"
