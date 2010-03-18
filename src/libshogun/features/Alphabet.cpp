@@ -22,7 +22,7 @@ const uint8_t CAlphabet::B_C=1;
 const uint8_t CAlphabet::B_G=2;
 const uint8_t CAlphabet::B_T=3;
 const uint8_t CAlphabet::MAPTABLE_UNDEF=0xff;
-const char* CAlphabet::alphabet_names[14]={"DNA", "RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "DIGIT", "DIGIT2", "UNKNOWN"};
+const char* CAlphabet::alphabet_names[16]={"DNA", "RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "DIGIT", "DIGIT2", "RAWDIGIT", "RAWDIGIT2", "UNKNOWN"};
 
 /*
 CAlphabet::CAlphabet()
@@ -55,6 +55,10 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 		alpha = DIGIT2;
 	else if (len>=(int32_t) strlen("DIGIT") && !strncmp(al, "DIGIT", strlen("DIGIT")))
 		alpha = DIGIT;
+	else if (len>=(int32_t) strlen("RAWDIGIT2") && !strncmp(al, "RAWDIGIT2", strlen("RAWDIGIT2")))
+		alpha = RAWDIGIT2;
+	else if (len>=(int32_t) strlen("RAWDIGIT") && !strncmp(al, "RAWDIGIT", strlen("RAWDIGIT")))
+		alpha = RAWDIGIT;
 	else if ((len>=(int32_t) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE"))) ||
 			(len>=(int32_t) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
 		alpha = RAWBYTE;
@@ -131,6 +135,12 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 		case DIGIT:
 			num_symbols = 10;
 			break;
+		case RAWDIGIT2:
+			num_symbols = 3;
+			break;
+		case RAWDIGIT:
+			num_symbols = 10;
+			break;
 		default:
 			num_symbols = 0;
 			result=false;
@@ -148,8 +158,7 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 
 void CAlphabet::init_map_table()
 {
-	int32_t i;
-	for (i=0; i<(1<<(8*sizeof(uint8_t))); i++)
+	for (int32_t i=0; i<(1<<(8*sizeof(uint8_t))); i++)
 	{
 		maptable_to_bin[i] = MAPTABLE_UNDEF;
 		maptable_to_char[i] = MAPTABLE_UNDEF;
@@ -158,6 +167,24 @@ void CAlphabet::init_map_table()
 
 	switch (alphabet)
 	{
+		case RAWDIGIT:
+			for (uint8_t i=0; i<=9; i++)
+			{
+				valid_chars[i]=true;
+				maptable_to_bin[i]=i;
+				maptable_to_char[i]=i;
+			}
+			break;
+
+		case RAWDIGIT2:
+			for (uint8_t i=0; i<=2; i++)
+			{
+				valid_chars[i]=true;
+				maptable_to_bin[i]=i;
+				maptable_to_char[i]=i;
+			}
+			break;
+
 		case DIGIT:
 			valid_chars[(uint8_t) '0']=true;
 			valid_chars[(uint8_t) '1']=true;
@@ -233,7 +260,7 @@ void CAlphabet::init_map_table()
 		case PROTEIN:
 			{
 				int32_t skip=0 ;
-				for (i=0; i<21; i++)
+				for (int32_t i=0; i<21; i++)
 				{
 					if (i==1) skip++ ;
 					if (i==8) skip++ ;
@@ -259,13 +286,13 @@ void CAlphabet::init_map_table()
 
 		case ALPHANUM:
 			{
-				for (i=0; i<26; i++)
+				for (int32_t i=0; i<26; i++)
 				{
 					valid_chars['A'+i]=true;
 					maptable_to_bin['A'+i]=i ;
 					maptable_to_char[i]='A'+i ;
 				} ;
-				for (i=0; i<10; i++)
+				for (int32_t i=0; i<10; i++)
 				{
 					valid_chars['0'+i]=true;
 					maptable_to_bin['0'+i]=26+i ;
@@ -277,7 +304,7 @@ void CAlphabet::init_map_table()
 		case RAWBYTE:
 			{
 				//identity
-				for (i=0; i<256; i++)
+				for (int32_t i=0; i<256; i++)
 				{
 					valid_chars[i]=true;
 					maptable_to_bin[i]=i;
@@ -305,7 +332,7 @@ void CAlphabet::init_map_table()
 		case RAWDNA:
 			{
 				//identity
-				for (i=0; i<4; i++)
+				for (int32_t i=0; i<4; i++)
 				{
 					valid_chars[i]=true;
 					maptable_to_bin[i]=i;

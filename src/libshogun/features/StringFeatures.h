@@ -696,13 +696,14 @@ template <class ST> class CStringFeatures : public CFeatures
 			return false;
 		}
 
-		/** load DNA features from file
+		/** load ascii line-based string features from file
 		 *
 		 * @param fname filename to load from
-		 * @param remap_to_bin if remap_to_bin
+		 * @param remap_to_bin if translation to other alphabetremap_to_bin
 		 * @return if loading was successful
 		 */
-		bool load_dna_file(char* fname, bool remap_to_bin=true)
+		bool load_ascii_file(char* fname, bool remap_to_bin=true,
+				EAlphabet ascii_alphabet=DNA, EAlphabet binary_alphabet=RAWDNA)
 		{
 			bool result=false;
 
@@ -715,8 +716,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			num_symbols=4;
 			cleanup();
 
-			CAlphabet* alpha=new CAlphabet(DNA);
-			CAlphabet* alpha_bin=new CAlphabet(RAWDNA);
+			CAlphabet* alpha=new CAlphabet(ascii_alphabet);
+			CAlphabet* alpha_bin=new CAlphabet(binary_alphabet);
 
 			FILE* f=fopen(fname, "ro");
 

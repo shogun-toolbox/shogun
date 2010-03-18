@@ -1892,7 +1892,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 				ASSERT(fmatrix[0].string);
 				feat=new CStringFeatures<uint8_t>(DNA);
 
-				if (!((CStringFeatures<uint8_t>*) feat)->load_dna_file(fmatrix[0].string))
+				if (!((CStringFeatures<uint8_t>*) feat)->load_ascii_file(fmatrix[0].string))
 				{
 					SG_UNREF(feat);
 					SG_ERROR("Couldn't load DNA features from file.\n");
