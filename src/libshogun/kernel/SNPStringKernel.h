@@ -128,7 +128,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		bool m_inhomogene;
 
 		/** total string length / must match length of min/maj strings and
-		 * string lenght of each vector */
+		 * string length of each vector */
 		int32_t m_str_len;
 
 		/** allele A */
