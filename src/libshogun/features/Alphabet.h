@@ -53,8 +53,14 @@ enum EAlphabet
 	/// NONE - type has no alphabet
 	NONE=10,
 
+	/// DIGIT - 0-9
+	DIGIT=11,
+
+	/// DIGIT2 - 0-2
+	DIGIT2=12,
+
 	/// unknown alphabet
-	UNKNOWN=11
+	UNKNOWN=13
 };
 
 
@@ -560,7 +566,7 @@ class CAlphabet : public CSGObject
 		/** MAPTABLE UNDEF */
 		static const uint8_t MAPTABLE_UNDEF;
 		/** alphabet names */
-		static const char* alphabet_names[12];
+		static const char* alphabet_names[14];
 
 	protected:
 		/** alphabet */

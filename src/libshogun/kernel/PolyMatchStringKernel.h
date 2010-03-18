@@ -113,8 +113,8 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		int32_t degree;
 		/** if kernel is inhomogeneous */
 		bool inhomogene;
-		/** kernel normalisiation */
-		bool normalisation;
+		/** true to rescale kernel with string length */
+		bool rescaling;
 };
 }
 #endif /* _POLYMATCHSTRINGKERNEL_H___ */

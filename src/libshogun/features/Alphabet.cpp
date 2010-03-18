@@ -22,7 +22,7 @@ const uint8_t CAlphabet::B_C=1;
 const uint8_t CAlphabet::B_G=2;
 const uint8_t CAlphabet::B_T=3;
 const uint8_t CAlphabet::MAPTABLE_UNDEF=0xff;
-const char* CAlphabet::alphabet_names[12]={"DNA", "RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
+const char* CAlphabet::alphabet_names[14]={"DNA", "RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "DIGIT", "DIGIT2", "UNKNOWN"};
 
 /*
 CAlphabet::CAlphabet()
@@ -51,6 +51,10 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 		alpha = ALPHANUM;
 	else if (len>=(int32_t) strlen("CUBE") && !strncmp(al, "CUBE", strlen("CUBE")))
 		alpha = CUBE;
+	else if (len>=(int32_t) strlen("DIGIT2") && !strncmp(al, "DIGIT2", strlen("DIGIT2")))
+		alpha = DIGIT2;
+	else if (len>=(int32_t) strlen("DIGIT") && !strncmp(al, "DIGIT", strlen("DIGIT")))
+		alpha = DIGIT;
 	else if ((len>=(int32_t) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE"))) ||
 			(len>=(int32_t) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
 		alpha = RAWBYTE;
@@ -121,6 +125,12 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 		case NONE:
 			num_symbols = 0;
 			break;
+		case DIGIT2:
+			num_symbols = 3;
+			break;
+		case DIGIT:
+			num_symbols = 10;
+			break;
 		default:
 			num_symbols = 0;
 			result=false;
@@ -148,6 +158,55 @@ void CAlphabet::init_map_table()
 
 	switch (alphabet)
 	{
+		case DIGIT:
+			valid_chars[(uint8_t) '0']=true;
+			valid_chars[(uint8_t) '1']=true;
+			valid_chars[(uint8_t) '2']=true;
+			valid_chars[(uint8_t) '3']=true;
+			valid_chars[(uint8_t) '4']=true;
+			valid_chars[(uint8_t) '5']=true;
+			valid_chars[(uint8_t) '6']=true;
+			valid_chars[(uint8_t) '7']=true;
+			valid_chars[(uint8_t) '8']=true;
+			valid_chars[(uint8_t) '9']=true;	//Translation '0-9' -> 0-9
+
+			maptable_to_bin[(uint8_t) '0']=0;
+			maptable_to_bin[(uint8_t) '1']=1;
+			maptable_to_bin[(uint8_t) '2']=2;
+			maptable_to_bin[(uint8_t) '3']=3;
+			maptable_to_bin[(uint8_t) '4']=4;
+			maptable_to_bin[(uint8_t) '5']=5;
+			maptable_to_bin[(uint8_t) '6']=6;
+			maptable_to_bin[(uint8_t) '7']=7;
+			maptable_to_bin[(uint8_t) '8']=8;
+			maptable_to_bin[(uint8_t) '9']=9;	//Translation '0-9' -> 0-9
+
+			maptable_to_char[(uint8_t) 0]='0';
+			maptable_to_char[(uint8_t) 1]='1';
+			maptable_to_char[(uint8_t) 2]='2';
+			maptable_to_char[(uint8_t) 3]='3';
+			maptable_to_char[(uint8_t) 4]='4';
+			maptable_to_char[(uint8_t) 5]='5';
+			maptable_to_char[(uint8_t) 6]='6';
+			maptable_to_char[(uint8_t) 7]='7';
+			maptable_to_char[(uint8_t) 8]='8';
+			maptable_to_char[(uint8_t) 9]='9';	//Translation 0-9 -> '0-9'
+			break;
+
+		case DIGIT2:
+			valid_chars[(uint8_t) '0']=true;
+			valid_chars[(uint8_t) '1']=true;
+			valid_chars[(uint8_t) '2']=true; //Translation '0-2' -> 0-2
+
+			maptable_to_bin[(uint8_t) '0']=0;
+			maptable_to_bin[(uint8_t) '1']=1;
+			maptable_to_bin[(uint8_t) '2']=2;	//Translation '0-2' -> 0-2
+
+			maptable_to_char[(uint8_t) 0]='0';
+			maptable_to_char[(uint8_t) 1]='1';
+			maptable_to_char[(uint8_t) 2]='2'; //Translation 0-2 -> '0-2'
+			break;
+
 		case CUBE:
 			valid_chars[(uint8_t) '1']=true;
 			valid_chars[(uint8_t) '2']=true;
@@ -538,8 +597,14 @@ const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 		case NONE:
 			idx=10;
 			break;
-		default:
+		case DIGIT:
 			idx=11;
+			break;
+		case DIGIT2:
+			idx=12;
+			break;
+		default:
+			idx=13;
 			break;
 	}
 	return alphabet_names[idx];
