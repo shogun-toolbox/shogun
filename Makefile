@@ -81,7 +81,7 @@ all: doc release matlab python octave
 endif
 
 
-.PHONY: all release package-from-release update-webpage svn-ignores clean distclean
+.PHONY: all release package-from-release update-webpage svn-ignores clean distclean embed-main-version
 
 DESTDIR := ../$(RELEASENAME)
 REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/libshogun/classifier/svm/SVM_light.* $(DESTDIR)/src/libshogun/classifier/svm/Optimizer.* $(DESTDIR)/src/libshogun/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
@@ -117,9 +117,11 @@ release: src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/versions
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
-svn-tag-release: src/libshogun/lib/versionstring.h
+embed-main-version: src/libshogun/lib/versionstring.h
 	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/libshogun/lib/versionstring.h
 	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
+
+svn-tag-release: embed-main-version
 	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
 	#-cd .. && svn --force rm releases/shogun_$(MAINVERSION)
 	#-cd .. && svn commit releases -m "clean old tag"
