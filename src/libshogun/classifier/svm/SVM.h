@@ -122,6 +122,12 @@ class CSVM : public CKernelMachine
 		 */
 		inline void set_tube_epsilon(float64_t eps) { tube_epsilon=eps; }
 
+		/** get tube epsilon
+		 *
+		 * @return tube epsilon
+		 */
+		inline float64_t get_tube_epsilon() { return tube_epsilon; }
+
 		/** set qpsize
 		 *
 		 * @param qps new qpsize
