@@ -734,7 +734,6 @@ class CKernel : public CSGObject
 		 */
 		virtual float64_t compute(int32_t x, int32_t y)=0;
 
-
 		/** compute row start offset for parallel kernel matrix computation
 		 *
 		 * @param offs offset
@@ -752,7 +751,6 @@ class CKernel : public CSGObject
 
 			return i_start;
 		}
-
 
 		/** helper for computing the kernel matrix in a parallel way
 		 *

@@ -35,7 +35,7 @@ public:
 	 */
 	CMultitaskKernelMklNormalizer() : scale(1.0)
 	{
-		type = N_MULTITASK;
+		m_type = N_MULTITASK;
 	}
 
 

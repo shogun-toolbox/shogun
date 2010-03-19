@@ -16,14 +16,11 @@
 namespace shogun
 {
 
-
-enum ENormalizerType {
-
+enum ENormalizerType
+{
 	N_REGULAR = 0,
 	N_MULTITASK = 1
-
 };
-
 
 class CKernel;
 /** @brief The class Kernel Normalizer defines a function to post-process kernel values.
@@ -55,7 +52,7 @@ class CKernelNormalizer : public CSGObject
 
 		/** default constructor */
 		CKernelNormalizer() {
-			type = N_REGULAR;
+			m_type = N_REGULAR;
 		}
 
 		/** default destructor */
@@ -85,25 +82,23 @@ class CKernelNormalizer : public CSGObject
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)=0;
 
-
 		/** getter for normalizer type
 		 */
 		ENormalizerType get_normalizer_type()
 		{
-			return type;
+			return m_type;
 		}
 
 		/** setter for normalizer type
-		 *  @param type_ type of normalizer
+		 *  @param type type of normalizer
 		 */
-		void set_normalizer_type(ENormalizerType type_)
+		void set_normalizer_type(ENormalizerType type)
 		{
-			type = type_;
+			m_type = type;
 		}
 
-
 	protected:
-		ENormalizerType type;
+		ENormalizerType m_type;
 };
 }
 #endif

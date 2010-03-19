@@ -182,6 +182,9 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 bool CKernel::set_normalizer(CKernelNormalizer* n)
 {
 	SG_REF(n);
+	if (lhs && rhs)
+		n->init(this);
+
 	SG_UNREF(normalizer);
 	normalizer=n;
 
