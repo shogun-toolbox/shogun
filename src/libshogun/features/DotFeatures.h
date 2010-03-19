@@ -37,7 +37,7 @@ namespace shogun
  *
  *   \f[{\bf z'} = \alpha {\bf x} + {\bf z}\f]
  *
- * - iteration over all (potentially) non-zero features of $\x$
+ * - iteration over all (potentially) non-zero features of ${\bf x}$
  * 
  */
 class CDotFeatures : public CFeatures

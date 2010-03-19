@@ -4,8 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009-2010 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
@@ -32,10 +31,8 @@ class CSNPFeatures : public CDotFeatures
 		/** constructor
 		 *
 		 * @param str stringfeatures (of bytes)
-		 * @param order of wd kernel
-		 * @param from_order use first order weights from higher order weighting
 		 */
-		CSNPFeatures(CStringFeatures<uint8_t>* str, int32_t order, int32_t from_order);
+		CSNPFeatures(CStringFeatures<uint8_t>* str);
 
 		/** copy constructor */
 		CSNPFeatures(const CSNPFeatures & orig);

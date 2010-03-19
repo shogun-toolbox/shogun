@@ -13,8 +13,8 @@
 
 using namespace shogun;
 
-CSNPFeatures::CSNPFeatures(CStringFeatures<uint8_t>* str,
-		int32_t order, int32_t from_order) : CDotFeatures()
+CSNPFeatures::CSNPFeatures(CStringFeatures<uint8_t>* str) : CDotFeatures(),
+	m_str_min(NULL), m_str_maj(NULL)
 {
 	ASSERT(str);
 	ASSERT(str->have_same_length());
@@ -22,24 +22,32 @@ CSNPFeatures::CSNPFeatures(CStringFeatures<uint8_t>* str,
 
 	strings=str;
 	string_length=str->get_max_vector_length();
+	ASSERT((string_length & 1) == 0); // length divisible by 2
+	w_dim=3*string_length/2;
 	num_strings=str->get_num_vectors();
 	CAlphabet* alpha=str->get_alphabet();
 	ASSERT(alpha->get_alphabet()==DIGIT2);
 	SG_UNREF(alpha);
 
+	obtain_base_strings();
 	set_normalization_const();
 
 }
 
 CSNPFeatures::CSNPFeatures(const CSNPFeatures& orig)
 	: CDotFeatures(orig), strings(orig.strings),
-	normalization_const(orig.normalization_const)
+	normalization_const(orig.normalization_const),
+	m_str_min(NULL), m_str_maj(NULL)
 {
 	SG_REF(strings);
 	string_length=strings->get_max_vector_length();
+	ASSERT((string_length & 1) == 0); // length divisible by 2
+	w_dim=3*string_length;
 	num_strings=strings->get_num_vectors();
 	CAlphabet* alpha=strings->get_alphabet();
 	SG_UNREF(alpha);
+
+	obtain_base_strings();
 }
 
 CSNPFeatures::~CSNPFeatures()
@@ -47,10 +55,57 @@ CSNPFeatures::~CSNPFeatures()
 	SG_UNREF(strings);
 }
 
-float64_t CSNPFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+float64_t CSNPFeatures::dot(int32_t idx_a, int32_t idx_b)
 {
-	SG_NOTIMPLEMENTED;
-	return 0;
+	int32_t alen, blen;
+	bool free_avec, free_bvec;
+
+	uint8_t* avec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(idx_a, alen, free_avec);
+	uint8_t* bvec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(idx_b, blen, free_bvec);
+
+	ASSERT(alen==blen);
+	if (alen!=string_length)
+		SG_ERROR("alen (%d) !=string_length (%d)\n", alen, string_length);
+	ASSERT(m_str_min);
+	ASSERT(m_str_maj);
+
+	float64_t total=0;
+
+	for (int32_t i = 0; i<alen-1; i+=2)
+	{
+		int32_t sumaa=0;
+		int32_t sumbb=0;
+		int32_t sumab=0;
+
+		uint8_t a1=avec[i];
+		uint8_t a2=avec[i+1];
+		uint8_t b1=bvec[i];
+		uint8_t b2=bvec[i+1];
+
+		if ((a1!=a2 || a1=='0' || a1=='0') && (b1!=b2 || b1=='0' || b2=='0'))
+			sumab++;
+		else if (a1==a2 && b1==b2)
+		{
+			if (a1!=b1)
+				continue;
+
+			if (a1==m_str_min[i])
+				sumaa++;
+			else if (a1==m_str_maj[i])
+				sumbb++;
+			else
+			{
+				SG_ERROR("The impossible happened i=%d a1=%c "
+						"a2=%c b1=%c b2=%c min=%c maj=%c\n", i, a1,a2, b1,b2, m_str_min[i], m_str_maj[i]);
+			}
+
+		}
+		total+=sumaa+sumbb+sumab;
+	}
+
+	((CStringFeatures<uint8_t>*) strings)->free_feature_vector(avec, idx_a, free_avec);
+	((CStringFeatures<uint8_t>*) strings)->free_feature_vector(bvec, idx_b, free_bvec);
+	return total;
 }
 
 float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
@@ -62,6 +117,31 @@ float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
+	int32_t offs=0;
+
+	for (int32_t i=0; i<len; i+=2)
+	{
+		int32_t dim=0;
+
+		char a1=vec[i];
+		char a2=vec[i+1];
+
+		if (a1==a2 && a1!='0' && a2!='0')
+		{
+			if (a1==m_str_min[i])
+				dim=1;
+			else if (a1==m_str_maj[i])
+				dim=2;
+			else
+			{
+				SG_ERROR("The impossible happened i=%d a1=%c a2=%c min=%c maj=%c\n",
+						i, a1,a2, m_str_min[i], m_str_maj[i]);
+			}
+		}
+
+		sum+=vec2[offs+dim];
+		offs+=3;
+	}
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 
 	return sum/normalization_const;
@@ -75,31 +155,53 @@ void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
+	int32_t offs=0;
+
+	if (abs_val)
+		alpha=CMath::abs(alpha);
+
+	for (int32_t i=0; i<len; i+=2)
+	{
+		int32_t dim=0;
+
+		char a1=vec[i];
+		char a2=vec[i+1];
+
+		if (a1==a2 && a1!='0' && a2!='0')
+		{
+			if (a1==m_str_min[i])
+				dim=1;
+			else if (a1==m_str_maj[i])
+				dim=2;
+			else
+			{
+				SG_ERROR("The impossible happened i=%d a1=%c a2=%c min=%c maj=%c\n",
+						i, a1,a2, m_str_min[i], m_str_maj[i]);
+			}
+		}
+
+		vec2[offs+dim]+=alpha;
+		offs+=3;
+	}
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 
 void CSNPFeatures::obtain_base_strings()
 {
-	string_length=0;
-
 	for (int32_t i=0; i<num_strings; i++)
 	{
 		int32_t len;
 		bool free_vec;
 		uint8_t* vec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(i, len, free_vec);
+		ASSERT(string_length==len);
 
-		if (string_length==0)
+		if (i==0)
 		{
-			string_length=len;
 			size_t tlen=(len+1)*sizeof(uint8_t);
 			m_str_min=(uint8_t*) malloc(tlen);
 			m_str_maj=(uint8_t*) malloc(tlen);
 			memset(m_str_min, 0, tlen);
 			memset(m_str_maj, 0, tlen);
-		}
-		else
-		{
-			ASSERT(string_length==len);
 		}
 
 		for (int32_t j=0; j<len; j++)
