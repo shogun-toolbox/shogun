@@ -789,6 +789,7 @@ template <class ST> class CStringFeatures : public CFeatures
 									features[lines].string[j]=alpha->remap_to_bin(overflow[j]);
 								for (int32_t j=0; j<len; j++)
 									features[lines].string[j+overflow_len]=alpha->remap_to_bin(dummy[old_sz+j]);
+								alpha->add_string_to_histogram(&dummy[old_sz], len);
 								alpha_bin->add_string_to_histogram(features[lines].string, features[lines].length);
 							}
 							else
@@ -797,6 +798,7 @@ template <class ST> class CStringFeatures : public CFeatures
 									features[lines].string[j]=overflow[j];
 								for (int32_t j=0; j<len; j++)
 									features[lines].string[j+overflow_len]=dummy[old_sz+j];
+								alpha->add_string_to_histogram(&dummy[old_sz], len);
 								alpha->add_string_to_histogram(features[lines].string, features[lines].length);
 							}
 
@@ -814,10 +816,14 @@ template <class ST> class CStringFeatures : public CFeatures
 
 					overflow_len=sz-old_sz;
 				}
-				result=true;
-				SG_INFO("file successfully read\n");
-				SG_INFO("max_string_length=%d\n", max_string_length);
-				SG_INFO("num_strings=%d\n", num_vectors);
+
+				if (alpha->check_alphabet_size() && alpha->check_alphabet())
+				{
+					result=true;
+					SG_INFO("file successfully read\n");
+					SG_INFO("max_string_length=%d\n", max_string_length);
+					SG_INFO("num_strings=%d\n", num_vectors);
+				}
 			}
 
 			fclose(f);

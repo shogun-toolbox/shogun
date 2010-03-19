@@ -66,7 +66,13 @@ enum EAlphabet
 	RAWDIGIT2=14,
 
 	/// unknown alphabet
-	UNKNOWN=15
+	UNKNOWN=15,
+
+	/// SNP - letters A,C,G,T,0
+	SNP=16,
+
+	/// RAWSNP - letters 0,1,2,3,4
+	RAWSNP=17
 };
 
 
@@ -569,10 +575,12 @@ class CAlphabet : public CSGObject
 		static const uint8_t B_G;
 		/** B_T */
 		static const uint8_t B_T;
+		/** B_0 */
+		static const uint8_t B_0;
 		/** MAPTABLE UNDEF */
 		static const uint8_t MAPTABLE_UNDEF;
 		/** alphabet names */
-		static const char* alphabet_names[16];
+		static const char* alphabet_names[18];
 
 	protected:
 		/** alphabet */

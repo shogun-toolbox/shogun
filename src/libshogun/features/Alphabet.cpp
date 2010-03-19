@@ -21,8 +21,13 @@ const uint8_t CAlphabet::B_A=0;
 const uint8_t CAlphabet::B_C=1;
 const uint8_t CAlphabet::B_G=2;
 const uint8_t CAlphabet::B_T=3;
+const uint8_t CAlphabet::B_0=4;
 const uint8_t CAlphabet::MAPTABLE_UNDEF=0xff;
-const char* CAlphabet::alphabet_names[16]={"DNA", "RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "DIGIT", "DIGIT2", "RAWDIGIT", "RAWDIGIT2", "UNKNOWN"};
+const char* CAlphabet::alphabet_names[18]={
+	"DNA","RAWDNA", "RNA", "PROTEIN", "BINARY", "ALPHANUM",
+	"CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID",
+	"NONE", "DIGIT", "DIGIT2", "RAWDIGIT", "RAWDIGIT2", "UNKNOWN",
+	"SNP", "RAWSNP"};
 
 /*
 CAlphabet::CAlphabet()
@@ -59,6 +64,10 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 		alpha = RAWDIGIT2;
 	else if (len>=(int32_t) strlen("RAWDIGIT") && !strncmp(al, "RAWDIGIT", strlen("RAWDIGIT")))
 		alpha = RAWDIGIT;
+	else if (len>=(int32_t) strlen("SNP") && !strncmp(al, "SNP", strlen("SNP")))
+		alpha = SNP;
+	else if (len>=(int32_t) strlen("RAWSNP") && !strncmp(al, "RAWSNP", strlen("RAWSNP")))
+		alpha = RAWSNP;
 	else if ((len>=(int32_t) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE"))) ||
 			(len>=(int32_t) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
 		alpha = RAWBYTE;
@@ -140,6 +149,12 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 			break;
 		case RAWDIGIT:
 			num_symbols = 10;
+			break;
+		case SNP:
+			num_symbols = 5;
+			break;
+		case RAWSNP:
+			num_symbols = 5;
 			break;
 		default:
 			num_symbols = 0;
@@ -333,6 +348,37 @@ void CAlphabet::init_map_table()
 			{
 				//identity
 				for (int32_t i=0; i<4; i++)
+				{
+					valid_chars[i]=true;
+					maptable_to_bin[i]=i;
+					maptable_to_char[i]=i;
+				}
+			}
+			break;
+
+		case SNP:
+			valid_chars[(uint8_t) 'A']=true;
+			valid_chars[(uint8_t) 'C']=true;
+			valid_chars[(uint8_t) 'G']=true;
+			valid_chars[(uint8_t) 'T']=true;
+			valid_chars[(uint8_t) '0']=true;
+
+			maptable_to_bin[(uint8_t) 'A']=B_A;
+			maptable_to_bin[(uint8_t) 'C']=B_C;
+			maptable_to_bin[(uint8_t) 'G']=B_G;
+			maptable_to_bin[(uint8_t) 'T']=B_T;
+			maptable_to_bin[(uint8_t) '0']=B_0;
+
+			maptable_to_char[B_A]='A';
+			maptable_to_char[B_C]='C';
+			maptable_to_char[B_G]='G';
+			maptable_to_char[B_T]='T';
+			maptable_to_char[B_0]='0';
+			break;
+		case RAWSNP:
+			{
+				//identity
+				for (int32_t i=0; i<5; i++)
 				{
 					valid_chars[i]=true;
 					maptable_to_bin[i]=i;

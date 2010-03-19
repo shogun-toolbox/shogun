@@ -10,6 +10,7 @@
 
 #include "features/SNPFeatures.h"
 #include "lib/io.h"
+#include "features/Alphabet.h"
 
 using namespace shogun;
 
@@ -26,7 +27,7 @@ CSNPFeatures::CSNPFeatures(CStringFeatures<uint8_t>* str) : CDotFeatures(),
 	w_dim=3*string_length/2;
 	num_strings=str->get_num_vectors();
 	CAlphabet* alpha=str->get_alphabet();
-	ASSERT(alpha->get_alphabet()==DIGIT2);
+	ASSERT(alpha->get_alphabet()==SNP);
 	SG_UNREF(alpha);
 
 	obtain_base_strings();
