@@ -62,10 +62,10 @@ float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 
   float64_t result=CMath::dot(avec, bvec, alen);
 
-  result=CMath::pow(result, degree);
-
   if (inhomogene)
 	  result+=1;
+
+  result=CMath::pow(result, degree);
 
   ((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
