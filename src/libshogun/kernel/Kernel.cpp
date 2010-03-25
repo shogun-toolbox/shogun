@@ -666,39 +666,12 @@ KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
 }
 #endif //USE_SVMLIGHT
 
-bool CKernel::load(char* fname)
+void CKernel::load(CFile* loader)
 {
-	return false;
 }
 
-bool CKernel::save(char* fname)
+void CKernel::save(CFile* writer)
 {
-	int32_t i=0;
-	int32_t num_left=get_num_vec_lhs();
-	int32_t num_right=rhs->get_num_vectors();
-	KERNELCACHE_IDX num_total=num_left*num_right;
-
-	CFile f(fname, 'w', F_DREAL);
-
-    for (int32_t l=0; l< (int32_t) num_left && f.is_ok(); l++)
-	{
-		for (int32_t r=0; r< (int32_t) num_right && f.is_ok(); r++)
-		{
-			 if (!(i % (num_total/200+1)))
-				SG_PROGRESS(i, 0, num_total-1);
-
-			float64_t k=kernel(l,r);
-			f.save_real_data(&k, 1);
-
-			i++;
-		}
-	}
-	SG_DONE();
-
-	if (f.is_ok())
-		SG_INFO( "kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(KERNELCACHE_ELEM));
-
-    return (f.is_ok());
 }
 
 void CKernel::remove_lhs_and_rhs()

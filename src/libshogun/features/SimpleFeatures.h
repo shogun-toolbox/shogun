@@ -105,8 +105,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 *
 		 * @param fname filename to load features from
 		 */
-		CSimpleFeatures(char* fname)
-		: CDotFeatures(fname), num_vectors(0), num_features(0),
+		CSimpleFeatures(CFile* loader)
+		: CDotFeatures(loader), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL) {}
 
 		/** duplicate feature object
@@ -641,58 +641,15 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** load features from file
 		 *
-		 * @param fname filename to load from
-		 * @return if loading was successful
+		 * @param loader File object via which to load data
 		 */
-		virtual bool load(char* fname)
-		{
-			bool status=false;
-			num_vectors=1;
-			num_features=0;
-			CFile f(fname, 'r', get_feature_type());
-			int64_t numf=0;
-			free_feature_matrix();
-			feature_matrix=f.load_data<ST>(NULL, numf);
-			num_features=numf;
-
-			if (!f.is_ok())
-				SG_ERROR( "loading file \"%s\" failed", fname);
-			else
-				status=true;
-
-			return status;
-		}
+		virtual inline void load(CFile* loader);
 
 		/** save features to file
 		 *
-		 * @param fname filename to save to
-		 * @return if saving was successful
+		 * @param saver File object via which to save data
 		 */
-		virtual bool save(char* fname)
-		{
-			int32_t len;
-			bool free;
-			ST* fv;
-
-			CFile f(fname, 'w', get_feature_type());
-
-			for (int32_t i=0; i< (int32_t) num_vectors && f.is_ok(); i++)
-			{
-				if (!(i % (num_vectors/10+1)))
-					SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));
-				else if (!(i % (num_vectors/200+1)))
-					SG_PRINT( ".");
-
-				fv=get_feature_vector(i, len, free);
-				f.save_data<ST>(fv, len);
-				free_feature_vector(fv, i, free) ;
-			}
-
-			if (f.is_ok())
-				SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(float64_t));
-
-			return true;
-		}
+		virtual inline void save(CFile* saver);
 
 		/** iterator for simple features */
 		struct simple_feature_iterator
@@ -867,186 +824,46 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-/** get feature type the BOOL feature can deal with
- *
- * @return feature type BOOL
- */
-template<> inline EFeatureType CSimpleFeatures<bool>::get_feature_type()
-{
-	return F_BOOL;
+
+#define GET_FEATURE_TYPE(f_type, sg_type)	\
+template<> inline EFeatureType CSimpleFeatures<sg_type>::get_feature_type() \
+{ 																			\
+	return f_type; 															\
 }
 
-/** get feature type the CHAR feature can deal with
- *
- * @return feature type CHAR
- */
-template<> inline EFeatureType CSimpleFeatures<char>::get_feature_type()
-{
-	return F_CHAR;
+GET_FEATURE_TYPE(F_BOOL, bool)
+GET_FEATURE_TYPE(F_CHAR, char)
+GET_FEATURE_TYPE(F_BYTE, uint8_t)
+GET_FEATURE_TYPE(F_SHORT, int16_t)
+GET_FEATURE_TYPE(F_WORD, uint16_t)
+GET_FEATURE_TYPE(F_INT, int32_t)
+GET_FEATURE_TYPE(F_UINT, uint32_t)
+GET_FEATURE_TYPE(F_LONG, int64_t)
+GET_FEATURE_TYPE(F_ULONG, uint64_t)
+GET_FEATURE_TYPE(F_SHORTREAL, float32_t)
+GET_FEATURE_TYPE(F_DREAL, float64_t)
+GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
+#undef GET_FEATURE_TYPE
+
+#define GET_FEATURE_NAME(f_name, sg_type)									\
+template<> inline const char* CSimpleFeatures<sg_type>::get_name() const	\
+{ 																			\
+	return f_name; 															\
 }
 
-/** get feature type the BYTE feature can deal with
- *
- * @return feature type BYTE
- */
-template<> inline EFeatureType CSimpleFeatures<uint8_t>::get_feature_type()
-{
-	return F_BYTE;
-}
-
-/** get feature type the SHORT feature can deal with
- *
- * @return feature type SHORT
- */
-template<> inline EFeatureType CSimpleFeatures<int16_t>::get_feature_type()
-{
-	return F_SHORT;
-}
-
-/** get feature type the WORD feature can deal with
- *
- * @return feature type WORD
- */
-template<> inline EFeatureType CSimpleFeatures<uint16_t>::get_feature_type()
-{
-	return F_WORD;
-}
-
-
-/** get feature type the INT feature can deal with
- *
- * @return feature type INT
- */
-template<> inline EFeatureType CSimpleFeatures<int32_t>::get_feature_type()
-{
-	return F_INT;
-}
-
-/** get feature type the UINT feature can deal with
- *
- * @return feature type UINT
- */
-template<> inline EFeatureType CSimpleFeatures<uint32_t>::get_feature_type()
-{
-	return F_UINT;
-}
-
-/** get feature type the LONG feature can deal with
- *
- * @return feature type LONG
- */
-template<> inline EFeatureType CSimpleFeatures<int64_t>::get_feature_type()
-{
-	return F_LONG;
-}
-
-/** get feature type the ULONG feature can deal with
- *
- * @return feature type ULONG
- */
-template<> inline EFeatureType CSimpleFeatures<uint64_t>::get_feature_type()
-{
-	return F_ULONG;
-}
-
-/** get feature type the SHORTREAL feature can deal with
- *
- * @return feature type SHORTREAL
- */
-template<> inline EFeatureType CSimpleFeatures<float32_t>::get_feature_type()
-{
-	return F_SHORTREAL;
-}
-
-/** get feature type the DREAL feature can deal with
- *
- * @return feature type DREAL
- */
-template<> inline EFeatureType CSimpleFeatures<float64_t>::get_feature_type()
-{
-	return F_DREAL;
-}
-
-/** get feature type the LONGREAL feature can deal with
- *
- * @return feature type LONGREAL
- */
-template<> inline EFeatureType CSimpleFeatures<floatmax_t>::get_feature_type()
-{
-	return F_LONGREAL;
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<bool>::get_name() const
-{
-	return "BoolFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<char>::get_name() const
-{
-	return "CharFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<uint8_t>::get_name() const
-{
-	return "ByteFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<int16_t>::get_name() const
-{
-	return "ShortFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<uint16_t>::get_name() const
-{
-	return "WordFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<int32_t>::get_name() const
-{
-	return "IntFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<uint32_t>::get_name() const
-{
-	return "UIntFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<int64_t>::get_name() const
-{
-	return "LongIntFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<uint64_t>::get_name() const
-{
-	return "ULongIntFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<float32_t>::get_name() const
-{
-	return "ShortRealFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<float64_t>::get_name() const
-{
-	return "RealFeatures";
-}
-
-/** @return object name */
-template<> inline const char* CSimpleFeatures<floatmax_t>::get_name() const
-{
-	return "LongRealFeatures";
-}
+GET_FEATURE_NAME("BoolFeatures", bool)
+GET_FEATURE_NAME("CharFeatures", char)
+GET_FEATURE_NAME("ByteFeatures", uint8_t)
+GET_FEATURE_NAME("ShortFeatures", int16_t)
+GET_FEATURE_NAME("WordFeatures", uint16_t)
+GET_FEATURE_NAME("IntFeatures", int32_t)
+GET_FEATURE_NAME("UIntFeatures", uint32_t)
+GET_FEATURE_NAME("LongIntFeatures", int64_t)
+GET_FEATURE_NAME("ULongIntFeatures", uint64_t)
+GET_FEATURE_NAME("ShortRealFeatures", float32_t)
+GET_FEATURE_NAME("RealFeatures", float64_t)
+GET_FEATURE_NAME("LongRealFeatures", floatmax_t)
+#undef GET_FEATURE_NAME
 
 /** align strings and compute emperical kernel map based on alignment scores
  *
@@ -1314,6 +1131,53 @@ template<> inline float64_t CSimpleFeatures<floatmax_t>:: dense_dot(int32_t vec_
 
 	return result;
 }
+
+#define LOAD(f_load, sg_type)												\
+template<> inline void CSimpleFeatures<sg_type>::load(CFile* loader)		\
+{ 																			\
+	ASSERT(loader);															\
+	sg_type* matrix;														\
+	int32_t num_feat;														\
+	int32_t num_vec;														\
+	loader->f_load(matrix, num_feat, num_vec);								\
+	set_feature_matrix(matrix, num_feat, num_vec);							\
+}
+
+LOAD(get_bool_matrix, bool)
+LOAD(get_char_matrix, char)
+LOAD(get_byte_matrix, uint8_t)
+LOAD(get_short_matrix, int16_t)
+LOAD(get_word_matrix, uint16_t)
+LOAD(get_int_matrix, int32_t)
+LOAD(get_uint_matrix, uint32_t)
+LOAD(get_long_matrix, int64_t)
+LOAD(get_ulong_matrix, uint64_t)
+LOAD(get_shortreal_matrix, float32_t)
+LOAD(get_real_matrix, float64_t)
+LOAD(get_longreal_matrix, floatmax_t)
+#undef LOAD
+
+#define SAVE(f_write, sg_type)												\
+template<> inline void CSimpleFeatures<sg_type>::save(CFile* writer)		\
+{ 																			\
+	ASSERT(writer);															\
+	writer->f_write(feature_matrix, num_features, num_vectors);				\
+}
+
+SAVE(set_bool_matrix, bool)
+SAVE(set_char_matrix, char)
+SAVE(set_byte_matrix, uint8_t)
+SAVE(set_short_matrix, int16_t)
+SAVE(set_word_matrix, uint16_t)
+SAVE(set_int_matrix, int32_t)
+SAVE(set_uint_matrix, uint32_t)
+SAVE(set_long_matrix, int64_t)
+SAVE(set_ulong_matrix, uint64_t)
+SAVE(set_shortreal_matrix, float32_t)
+SAVE(set_real_matrix, float64_t)
+SAVE(set_longreal_matrix, floatmax_t)
+#undef SAVE
+
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 #endif // _SIMPLEFEATURES__H__

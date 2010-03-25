@@ -46,13 +46,13 @@ CLabels::CLabels(float64_t* p_labels, int32_t len)
     set_labels(p_labels, len);
 }
 
-CLabels::CLabels(char* fname)
+CLabels::CLabels(CFile* loader)
 : CSGObject()
 {
 	num_labels=0;
 	labels=NULL;
 
-	load(fname);
+	load(loader);
 }
 
 CLabels::~CLabels()
@@ -164,31 +164,12 @@ void CLabels::set_int_labels(int32_t * mylabels, int32_t len)
 		set_int_label(i, mylabels[i]) ;
 }
 
-bool CLabels::load(char* fname)
+void CLabels::load(CFile* loader)
 {
-	bool status=false;
-
-	delete[] labels;
-	num_labels=0;
-
-	CFile f(fname, 'r', F_DREAL);
-	int64_t num_lab=0;
-	labels=f.load_real_data(NULL, num_lab);
-	num_labels=num_lab;
-
-    if (!f.is_ok()) {
-      SG_ERROR( "loading file \"%s\" failed", fname);
-    }
-	else
-	{
-		SG_INFO( "%ld labels successfully read\n", num_labels);
-		status=true;
-	}
-
-	return status;
+	//FIXME
 }
 
-bool CLabels::save(char* fname)
+void CLabels::save(CFile* saver)
 {
-	return false;
+	//FIXME
 }

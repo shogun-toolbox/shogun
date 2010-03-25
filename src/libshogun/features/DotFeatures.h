@@ -59,9 +59,9 @@ class CDotFeatures : public CFeatures
 
 		/** constructor
 		 *
-		 * @param fname filename to load features from
+		 * @param loader File object via which to load data
 		 */
-		CDotFeatures(char* fname) : CFeatures(fname) {}
+		CDotFeatures(CFile* loader) : CFeatures(loader) {}
 
 		virtual ~CDotFeatures() { }
 

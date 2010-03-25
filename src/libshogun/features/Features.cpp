@@ -39,11 +39,11 @@ CFeatures::CFeatures(const CFeatures& orig)
 	memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 }
 
-CFeatures::CFeatures(char* fname)
+CFeatures::CFeatures(CFile* loader)
 : CSGObject(), cache_size(0), preproc(NULL), num_preproc(0),
 	preprocessed(false)
 {
-	load(fname);
+	load(loader);
 	SG_INFO("Feature object loaded (%p)\n",this) ;
 }
 
@@ -244,16 +244,6 @@ void CFeatures::list_feature_obj()
 		default:
          SG_ERROR( "ERROR UNKNOWN FEATURE TYPE\n");
 	}
-}
-
-bool CFeatures::load(char* fname)
-{
-	return false;
-}
-
-bool CFeatures::save(char* fname)
-{
-	return false;
 }
 
 bool CFeatures::check_feature_compatibility(CFeatures* f)

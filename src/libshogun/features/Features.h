@@ -13,12 +13,14 @@
 #define _CFEATURES__H__
 
 #include "lib/common.h"
+#include "lib/File.h"
 #include "base/SGObject.h"
 #include "preproc/PreProc.h"
 #include "features/FeatureTypes.h"
 
 namespace shogun
 {
+	class CFile;
 	class CPreProc;
 	enum EFeatureType;
 	enum EFeatureClass;
@@ -61,9 +63,9 @@ class CFeatures : public CSGObject
 
 		/** constructor
 		 *
-		 * @param fname filename to load features from
+		 * @param loader File object via which data shall be loaded
 		 */
-		CFeatures(char* fname);
+		CFeatures(CFile* loader);
 
 		/** duplicate feature object
 		 *
@@ -175,17 +177,21 @@ class CFeatures : public CSGObject
 
 		/** load features from file
 		 *
-		 * @param fname filename to load from
-		 * @return if loading was successful
+		 * @param loader File object via which data shall be loaded
 		 */
-		virtual bool load(char* fname);
+		virtual void load(CFile* loader)
+		{
+			SG_NOTIMPLEMENTED;
+		}
 
 		/** save features to file
 		 *
-		 * @param fname filename to save to
-		 * @return if saving was successful
+		 * @param writer File object via which data shall be saved
 		 */
-		virtual bool save(char* fname);
+		virtual void save(CFile* writer)
+		{
+			SG_NOTIMPLEMENTED;
+		}
 
 		/** check feature compatibility
 		 *

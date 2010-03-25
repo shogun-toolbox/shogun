@@ -12,31 +12,76 @@
 #define __FILE_H__
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
 #include "base/SGObject.h"
-#include "lib/DynamicArray.h"
-#include "lib/SimpleFile.h"
-#include "features/Features.h"
 
 namespace shogun
 {
-	class DynamicArray;
-	class SimpleFile;
-	class Features;
-	enum EFeatureType;
-
 template <class ST> struct T_STRING;
 template <class ST> struct TSparse;
 
-/** @brief A File access class.
- *
- * A file consists of a fourcc header then an alternation of a type header and
- * data or just raw data (simplefile=true). However this implementation is not
- * complete - the more complex stuff is currently not implemented.
- */
+/* Datatypes that shogun supports. */
+/*
+enum DataType
+{
+	UNDEFINED,
 
+	///simple scalar/string types
+	SCALAR_INT,
+	SCALAR_REAL,
+	SCALAR_BOOL,
+	STANDARD_STRING,
+
+	///vector type
+	VECTOR_BOOL,
+	VECTOR_BYTE,
+	VECTOR_CHAR,
+	VECTOR_INT,
+	VECTOR_REAL,
+	VECTOR_SHORTREAL,
+	VECTOR_SHORT,
+	VECTOR_WORD,
+
+	///dense matrices 
+	DENSE_INT,
+	DENSE_REAL,
+	DENSE_SHORTREAL,
+	DENSE_SHORT,
+	DENSE_WORD,
+
+	///dense nd arrays
+	NDARRAY_BYTE,
+	NDARRAY_CHAR,
+	NDARRAY_INT,
+	NDARRAY_REAL,
+	NDARRAY_SHORTREAL,
+	NDARRAY_SHORT,
+	NDARRAY_WORD,
+
+	///sparse matrices
+	SPARSE_BYTE,
+	SPARSE_CHAR,
+	SPARSE_INT,
+	SPARSE_REAL,
+	SPARSE_SHORT,
+	SPARSE_SHORTREAL,
+	SPARSE_WORD,
+
+	///strings of arbitrary type
+	STRING_BYTE,
+	STRING_CHAR,
+	STRING_INT,
+	STRING_SHORT,
+	STRING_WORD,
+
+	/// structures
+	ATTR_STRUCT
+};*/
+
+/** @brief A File access base class.
+ *
+ * A file is assumed to be a seekable raw data stream.
+ *
+ */
 class CFile : public CSGObject
 {
 public:
@@ -44,292 +89,220 @@ public:
 	 *
 	 * @param f already opened file
 	 */
-	CFile(FILE* f);
+	CFile(FILE* f, const char* name=NULL);
 
 	/** constructor
 	 *
 	 * @param fname filename to open
 	 * @param rw mode, 'r' or 'w'
-	 * @param type specifies the datatype used in the file (F_INT,...)
-	 * @param fourcc in the case fourcc is 0, type will be ignored
-	 *               and the file is treated as if it has a
-	 *               header/[typeheader,data]+ else the files header
-	 *               will be checked to contain the specified fourcc
-	 *               (e.g. 'RFEA')
+	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CFile(char* fname, char rw, EFeatureType type, char fourcc[4]=NULL);
+	CFile(char* fname, char rw='r', const char* name=NULL);
 
 	virtual ~CFile();
 
-	/** parse first header - defunct!
-	 *
-	 * @param type feature type
-	 * @return -1
-	 */
-	int32_t parse_first_header(EFeatureType &type);
+	void set_variable_name(const char* name);
+	char* get_variable_name();
 
-	/** parse next header - defunct!
-	 *
-	 * @param type feature type
-	 * @return -1
-	 */
-	int32_t parse_next_header(EFeatureType &type);
+	/** get data type of current element */
+	/*virtual DataType get_data_type()=0;*/
 
-	// set target to NULL to get it automagically allocated
-	// set num to 0 if whole file is to be read
-	/** load integer data
-	 *
-	 * @param target loaded data
-	 * @param num number of data elements
-	 * @return loaded data
-	 */
-	int32_t*   load_int_data(int32_t* target, int64_t& num);
+	/** vector access functions */
+	/*virtual void get_vector(void*& vector, int32_t& len, DataType& dtype);*/
 
-	/** load real data
-	 *
-	 * @param target loaded data
-	 * @param num number of data elements
-	 * @return loaded data
-	 */
-	float64_t*  load_real_data(float64_t* target, int64_t& num);
+	virtual void get_bool_vector(bool*& vector, int32_t& len);
+	virtual void get_byte_vector(uint8_t*& vector, int32_t& len)=0;
+	virtual void get_char_vector(char*& vector, int32_t& len)=0;
+	virtual void get_int_vector(int32_t*& vector, int32_t& len)=0;
+	virtual void get_real_vector(float64_t*& vector, int32_t& len)=0;
+	virtual void get_shortreal_vector(float32_t*& vector, int32_t& len)=0;
+	virtual void get_short_vector(int16_t*& vector, int32_t& len)=0;
+	virtual void get_word_vector(uint16_t*& vector, int32_t& len)=0;
 
-	/** load shortreal data
-	 *
-	 * @param target loaded data
-	 * @param num number of data elements
-	 * @return loaded data
-	 */
-	float32_t*  load_shortreal_data(float32_t* target, int64_t& num);
+	/** matrix access functions */
+	/*virtual void get_matrix(
+			void*& matrix, int32_t& num_feat, int32_t& num_vec, DataType& dtype);*/
 
-	/** load char data
-	 *
-	 * @param target loaded data
-	 * @param num number of data elements
-	 * @return loaded data
-	 */
-	char*  load_char_data(char* target, int64_t& num);
+	virtual void get_bool_matrix(
+			bool*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_byte_matrix(
+			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_char_matrix(
+			char*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_int_matrix(
+			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_uint_matrix(
+			uint32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_long_matrix(
+			int64_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_ulong_matrix(
+			uint64_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_shortreal_matrix(
+			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_real_matrix(
+			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_longreal_matrix(
+			floatmax_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_short_matrix(
+			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+	virtual void get_word_matrix(
+			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
-	/** load byte data
-	 *
-	 * @param target loaded data
-	 * @param num number of data elements
-	 * @return loaded data
-	 */
-	uint8_t*  load_byte_data(uint8_t* target, int64_t& num);
+	/** nd-array access functions */
+	/*virtual void get_ndarray(
+			void*& array, int32_t*& dims, int32_t& num_dims, DataType& dtype);*/
 
-	/** load word data
-	 *
-	 * @param target loaded data
-	 * @param num number of data elements
-	 * @return loaded data
-	 */
-	uint16_t*  load_word_data(uint16_t* target, int64_t& num);
+	virtual void get_byte_ndarray(
+			uint8_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+	virtual void get_char_ndarray(
+			char*& array, int32_t*& dims, int32_t& num_dims)=0;
+	virtual void get_int_ndarray(
+			int32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+	virtual void get_shortreal_ndarray(
+			float32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+	virtual void get_real_ndarray(
+			float64_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+	virtual void get_short_ndarray(
+			int16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+	virtual void get_word_ndarray(
+			uint16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
 
-	/** load short data
-	 *
-	 * @param target loaded data
-	 * @param num number of data elements
-	 * @return loaded data
-	 */
-	int16_t* load_short_data(int16_t* target, int64_t& num);
+	virtual void get_real_sparsematrix(
+			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
-	/** load data (templated)
-	 *
-	 * @param target loaded data
-	 * @param num number of data elements
-	 * @return loaded data
-	 */
-	template <class DT> DT* load_data(DT* target, int64_t& num)
-	{
-		CSimpleFile<DT> f(filename, file);
-		target=f.load(target, num);
-		status=(target!=NULL);
-		return target;
-	}
+	/*  future versions might support types other than float64_t
 
-	/** save data (templated)
-	 *
-	 * @param src data to save
-	 * @param num number of data elements
-	 * @return whether operation was successful
-	 */
-	template <class DT> bool save_data(DT* src, int64_t num)
-	{
-		CSimpleFile<DT> f(filename, file);
-		status=f.save(src, num);
-		return status;
-	}
+		virtual void get_byte_sparsematrix(TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_char_sparsematrix(TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_int_sparsematrix(TSparse<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_shortreal_sparsematrix(TSparse<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_short_sparsematrix(TSparse<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_word_sparsematrix(TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
 
-	/** save integer data
-	 *
-	 * @param src data to save
-	 * @param num number of data elements
-	 * @return whether operation was successful
-	 */
-	bool save_int_data(int32_t* src, int64_t num);
+	virtual void get_bool_string_list(
+			T_STRING<bool>*& strings, int32_t& num_str,
+			int32_t& max_string_len);
+	virtual void get_byte_string_list(
+			T_STRING<uint8_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_char_string_list(
+			T_STRING<char>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_int_string_list(
+			T_STRING<int32_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_uint_string_list(
+			T_STRING<uint32_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_short_string_list(
+			T_STRING<int16_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_word_string_list(
+			T_STRING<uint16_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_long_string_list(
+			T_STRING<int64_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_ulong_string_list(
+			T_STRING<uint64_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_shortreal_string_list(
+			T_STRING<float32_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_real_string_list(
+			T_STRING<float64_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
+	virtual void get_longreal_string_list(
+			T_STRING<floatmax_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len)=0;
 
-	/** save real data
-	 *
-	 * @param src data to save
-	 * @param num number of data elements
-	 * @return whether operation was successful
-	 */
-	bool save_real_data(float64_t* src, int64_t num);
-
-	/** save shortreal data
-	 *
-	 * @param src data to save
-	 * @param num number of data elements
-	 * @return whether operation was successful
-	 */
-	bool save_shortreal_data(float32_t* src, int64_t num);
-
-	/** save char data
-	 *
-	 * @param src data to save
-	 * @param num number of data elements
-	 * @return whether operation was successful
-	 */
-	bool save_char_data(char* src, int64_t num);
-
-	/** save byte data
-	 *
-	 * @param src data to save
-	 * @param num number of data elements
-	 * @return whether operation was successful
-	 */
-	bool save_byte_data(uint8_t* src, int64_t num);
-
-	/** save word data
-	 *
-	 * @param src data to save
-	 * @param num number of data elements
-	 * @return whether operation was successful
-	 */
-	bool save_word_data(uint16_t* src, int64_t num);
-
-	/** save short data
-	 *
-	 * @param src data to save
-	 * @param num number of data elements
-	 * @return whether operation was successful
-	 */
-	bool save_short_data(int16_t* src, int64_t num);
-
-	/** check if status is ok
-	 *
-	 * @return whether status is ok
-	 */
-	inline bool is_ok()
-	{
-		return status;
-	}
+	virtual void set_bool_vector(bool*& vector, int32_t& len);
+	virtual void set_byte_vector(const uint8_t* vector, int32_t len)=0;
+	virtual void set_char_vector(const char* vector, int32_t len)=0;
+	virtual void set_int_vector(const int32_t* vector, int32_t len)=0;
+	virtual void set_shortreal_vector(
+			const float32_t* vector, int32_t len)=0;
+	virtual void set_real_vector(const float64_t* vector, int32_t len)=0;
+	virtual void set_short_vector(const int16_t* vector, int32_t len)=0;
+	virtual void set_word_vector(const uint16_t* vector, int32_t len)=0;
 
 
-	/** read sparse real valued features in svm light format
-	 * e.g. -1 1:10.0 2:100.2 1000:1.3 
-	 * with -1 == (optional) label
-	 * and dim 1    - value  10.0
-	 *     dim 2    - value 100.2
-	 *     dim 1000 - value   1.3
-	 *
-	 * @param matrix matrix to read into
-	 * @param num_feat number of features for each vector
-	 * @param num_vec number of vectors in matrix
-	 * @return if reading was successful
-	 */
-	bool read_real_valued_sparse(
-		TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void set_bool_matrix(
+			const bool* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_byte_matrix(
+			const uint8_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_char_matrix(
+			const char* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_int_matrix(
+			const int32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_uint_matrix(
+			const uint32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_long_matrix(
+			const int64_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_ulong_matrix(
+			const uint64_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_shortreal_matrix(
+			const float32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_real_matrix(
+			const float64_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_longreal_matrix(
+			const floatmax_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_short_matrix(
+			const int16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	virtual void set_word_matrix(
+			const uint16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
 
-	/** write sparse real valued features in svm light format
-	 *
-	 * @param matrix matrix to write
-	 * @param num_feat number of features for each vector
-	 * @param num_vec number of vectros in matrix
-	 * @return if writing was successful
-	 */
-	bool write_real_valued_sparse(
-		const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_real_sparsematrix(
+			const TSparse<float64_t>* matrix, int32_t num_feat,
+			int32_t num_vec, int64_t nnz)=0;
 
-	/** read dense real valued features, simple ascii format
-	 * e.g. 1.0 1.1 0.2 
-	 *      2.3 3.5 5
-	 *
-	 *  a matrix that consists of 3 vectors with each of 2d
-	 *
-	 * @param matrix matrix to read into
-	 * @param num_feat number of features for each vector
-	 * @param num_vec number of vectors in matrix
-	 * @return if reading was successful
-	 */
-	bool read_real_valued_dense(
-		float64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
+	/*  future versions might support types other than float64_t
 
-	/** write dense real valued features, simple ascii format
-	 *
-	 * @param matrix matrix to write
-	 * @param num_feat number of features for each vector
-	 * @param num_vec number of vectros in matrix
-	 * @return if writing was successful
-	 */
-	bool write_real_valued_dense(
-		const float64_t* matrix, int32_t num_feat, int32_t num_vec);
+		virtual void set_byte_sparsematrix(const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_char_sparsematrix(const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_int_sparsematrix(const TSparse<int32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_shortreal_sparsematrix(const TSparse<float32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_short_sparsematrix(const TSparse<int16_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_word_sparsematrix(const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; */
 
-	/** read char string features, simple ascii format
-	 * e.g. foo bar
-	 *      ACGTACGTATCT
-	 *
-	 *  two strings
-	 *
-	 * @param strings strings to read into
-	 * @param num_str number of strings
-	 * @param max_string_len length of longest string
-	 * @return if reading was successful
-	 */
-	bool read_char_valued_strings(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len);
 
-	/** write char string features, simple ascii format
-	 *
-	 * @param strings strings to write
-	 * @param num_str number of strings
-	 * @return if writing was successful
-	 */
-	bool write_char_valued_strings(const T_STRING<char>* strings, int32_t num_str);
+	virtual void set_bool_string_list(
+			const T_STRING<bool>* strings, int32_t num_str);
+	virtual void set_byte_string_list(
+			const T_STRING<uint8_t>* strings, int32_t num_str)=0;
+	virtual void set_char_string_list(
+			const T_STRING<char>* strings, int32_t num_str)=0;
+	virtual void set_int_string_list(
+			const T_STRING<int32_t>* strings, int32_t num_str)=0;
+	virtual void set_uint_string_list(
+			const T_STRING<uint32_t>* strings, int32_t num_str)=0;
+	virtual void set_short_string_list(
+			const T_STRING<int16_t>* strings, int32_t num_str)=0;
+	virtual void set_word_string_list(
+			const T_STRING<uint16_t>* strings, int32_t num_str)=0;
+	virtual void set_long_string_list(
+			const T_STRING<int64_t>* strings, int32_t num_str)=0;
+	virtual void set_ulong_string_list(
+			const T_STRING<uint64_t>* strings, int32_t num_str)=0;
+	virtual void set_shortreal_string_list(
+			const T_STRING<float32_t>* strings, int32_t num_str)=0;
+	virtual void set_real_string_list(
+			const T_STRING<float64_t>* strings, int32_t num_str)=0;
+	virtual void set_longreal_string_list(
+			const T_STRING<floatmax_t>* strings, int32_t num_str)=0;
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "File"; }
 
 protected:
-	/** read header
-	 *
-	 * @return whether operation was successful
-	 */
-	bool read_header();
-	/** write header
-	 *
-	 * @return whether operation was successful
-	 */
-	bool write_header();
-
-private:
-	/** helper function to read_*valued_* */
-	template <class T> void append_item(CDynamicArray<T>* items, char* ptr_data, char* ptr_item);
-
-protected:
 	/** file object */
 	FILE* file;
-	/** status */
-	bool status;
 	/** task */
 	char task;
 	/** name of the handled file */
 	char* filename;
-	/** expected feature type */
-	EFeatureType expected_type;
-	/** number of headers */
-	int32_t num_header;
-	/** fourcc */
-	char fourcc[4];
+	/** variable name / path to variable */
+	char* variable_name;
 };
 }
 #endif

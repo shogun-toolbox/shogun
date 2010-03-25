@@ -15,15 +15,16 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Cache.h"
-#include "preproc/PreProc.h"
-#include "preproc/StringPreProc.h"
-#include "features/Features.h"
-#include "features/Alphabet.h"
 #include "lib/DynamicArray.h"
 #include "lib/File.h"
 #include "lib/MemoryMappedFile.h"
 #include "lib/Mathematics.h"
 #include "lib/Compressor.h"
+
+#include "preproc/PreProc.h"
+#include "preproc/StringPreProc.h"
+#include "features/Features.h"
+#include "features/Alphabet.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -252,8 +253,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param fname filename to load features from
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(char* fname, EAlphabet alpha=DNA)
-		: CFeatures(fname), num_vectors(0), features(NULL), single_string(NULL),
+		CStringFeatures(CFile* loader, EAlphabet alpha=DNA)
+		: CFeatures(loader), num_vectors(0), features(NULL), single_string(NULL),
 			length_of_single_string(0), max_string_length(0), order(0),
 			symbol_mask_table(NULL), preprocess_on_get(false), feature_cache(NULL)
 		{
@@ -261,7 +262,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
 			original_num_symbols=num_symbols;
-			load(fname);
+			load(loader);
 		}
 
 		virtual ~CStringFeatures()
@@ -639,62 +640,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param fname filename to load from
 		 * @return if loading was successful
 		 */
-		virtual bool load(char* fname)
-		{
-			SG_INFO( "loading...\n");
-			int64_t length=0;
-			max_string_length=0;
-
-			CFile f(fname, 'r', F_CHAR);
-			char* feature_matrix=f.load_char_data(NULL, length);
-
-			SG_DEBUG("char data now at %p of length %ld\n", 
-					feature_matrix, (int64_t) length);
-
-			num_vectors=0;
-
-			if (f.is_ok())
-			{
-				for (int64_t i=0; i<length; i++)
-				{
-					if (feature_matrix[i]=='\n')
-						num_vectors++;
-				}
-
-				SG_INFO( "file contains %ld vectors\n", num_vectors);
-				features= new T_STRING<ST>[num_vectors];
-
-				int64_t index=0;
-				for (int32_t lines=0; lines<num_vectors; lines++)
-				{
-					char* p=&feature_matrix[index];
-					int32_t columns=0;
-
-					for (columns=0; index+columns<length && p[columns]!='\n'; columns++);
-
-					if (index+columns>=length && p[columns]!='\n') {
-						SG_ERROR( "error in \"%s\":%d\n", fname, lines);
-					}
-
-					features[lines].length=columns;
-					features[lines].string=new ST[columns];
-
-					max_string_length=CMath::max(max_string_length,columns);
-
-					for (int32_t i=0; i<columns; i++)
-						features[lines].string[i]= ((ST) p[i]);
-
-					index+= features[lines].length+1;
-				}
-
-				num_symbols=4; //FIXME
-				return true;
-			}
-			else
-				SG_ERROR( "reading file failed\n");
-
-			return false;
-		}
+		virtual inline void load(CFile* loader);
 
 		/** load ascii line-based string features from file
 		 *
@@ -702,11 +648,9 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param remap_to_bin if translation to other alphabetremap_to_bin
 		 * @return if loading was successful
 		 */
-		bool load_ascii_file(char* fname, bool remap_to_bin=true,
+		void load_ascii_file(char* fname, bool remap_to_bin=true,
 				EAlphabet ascii_alphabet=DNA, EAlphabet binary_alphabet=RAWDNA)
 		{
-			bool result=false;
-
 			size_t blocksize=1024*1024;
 			size_t required_blocksize=0;
 			uint8_t* dummy=new uint8_t[blocksize];
@@ -819,7 +763,6 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				if (alpha->check_alphabet_size() && alpha->check_alphabet())
 				{
-					result=true;
 					SG_INFO("file successfully read\n");
 					SG_INFO("max_string_length=%d\n", max_string_length);
 					SG_INFO("num_strings=%d\n", num_vectors);
@@ -836,8 +779,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			else
 				alphabet = alpha;
 			SG_REF(alphabet);
-
-			return result;
 		}
 
 		/** load fasta file as string features
@@ -1216,10 +1157,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param dest filename to save to
 		 * @return if saving was successful
 		 */
-		virtual bool save(char* dest)
-		{
-			return false;
-		}
+		virtual inline void save(CFile* writer);
 
 		/** load compressed features from file
 		 *
@@ -2165,6 +2103,52 @@ template<> 	inline void CStringFeatures<float64_t>::unembed_word(float64_t word,
 template<> 	inline void CStringFeatures<floatmax_t>::unembed_word(floatmax_t word, uint8_t* seq, int32_t len)
 {
 }
+#define LOAD(f_load, sg_type)												\
+template<> inline void CStringFeatures<sg_type>::load(CFile* loader)		\
+{																			\
+	SG_INFO( "loading...\n");												\
+																			\
+	T_STRING<sg_type>* strs;												\
+	int32_t num_str;														\
+	int32_t max_len;														\
+	loader->f_load(strs, num_str, max_len);									\
+	set_features(strs, num_str, max_len);									\
+}
+
+LOAD(get_bool_string_list, bool)
+LOAD(get_char_string_list, char)
+LOAD(get_byte_string_list, uint8_t)
+LOAD(get_short_string_list, int16_t)
+LOAD(get_word_string_list, uint16_t)
+LOAD(get_int_string_list, int32_t)
+LOAD(get_uint_string_list, uint32_t)
+LOAD(get_long_string_list, int64_t)
+LOAD(get_ulong_string_list, uint64_t)
+LOAD(get_shortreal_string_list, float32_t)
+LOAD(get_real_string_list, float64_t)
+LOAD(get_longreal_string_list, floatmax_t)
+#undef LOAD
+
+#define SAVE(f_write, sg_type)												\
+template<> inline void CStringFeatures<sg_type>::save(CFile* writer)		\
+{ 																			\
+	ASSERT(writer);															\
+	writer->f_write(features, num_vectors);									\
+}
+
+SAVE(set_bool_string_list, bool)
+SAVE(set_char_string_list, char)
+SAVE(set_byte_string_list, uint8_t)
+SAVE(set_short_string_list, int16_t)
+SAVE(set_word_string_list, uint16_t)
+SAVE(set_int_string_list, int32_t)
+SAVE(set_uint_string_list, uint32_t)
+SAVE(set_long_string_list, int64_t)
+SAVE(set_ulong_string_list, uint64_t)
+SAVE(set_shortreal_string_list, float32_t)
+SAVE(set_real_string_list, float64_t)
+SAVE(set_longreal_string_list, floatmax_t)
+#undef SAVE
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 #endif // _CSTRINGFEATURES__H__

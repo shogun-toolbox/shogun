@@ -78,40 +78,12 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-bool CDistance::load(char* fname)
+void CDistance::load(CFile* loader)
 {
-	return false;
 }
 
-bool CDistance::save(char* fname)
+void CDistance::save(CFile* writer)
 {
-	int32_t i=0;
-	int32_t num_left=lhs->get_num_vectors();
-	int32_t num_right=rhs->get_num_vectors();
-	int64_t num_total=num_left*num_right;
-
-	CFile f(fname, 'w', F_DREAL);
-
-    for (int32_t l=0; l< (int32_t) num_left && f.is_ok(); l++)
-	{
-		for (int32_t r=0; r< (int32_t) num_right && f.is_ok(); r++)
-		{
-			if (!(i % (num_total/10+1)))
-				SG_PRINT( "%02d%%.", (int) (100.0*i/num_total));
-			else if (!(i % (num_total/200+1)))
-				SG_PRINT( ".");
-
-			float64_t k=distance(l,r);
-			f.save_real_data(&k, 1);
-
-			i++;
-		}
-	}
-
-	if (f.is_ok())
-		SG_INFO( "distance matrix of size %ld x %ld written \n", num_left, num_right);
-
-    return (f.is_ok());
 }
 
 void CDistance::remove_lhs_and_rhs()

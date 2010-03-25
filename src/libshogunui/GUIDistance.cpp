@@ -16,6 +16,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>
+#include <shogun/lib/AsciiFile.h>
 
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/SimpleDistance.h>
@@ -153,13 +154,19 @@ bool CGUIDistance::save_distance(char* param)
 	{
 		if ((sscanf(param, "%s", filename))==1)
 		{
-			if (!distance->save(filename))
-				SG_ERROR( "writing to file %s failed!\n", filename);
-			else
+			CAsciiFile* file=new CAsciiFile(filename);
+			try
 			{
-				SG_INFO( "successfully written distance to \"%s\" !\n", filename);
-				result=true;
+				distance->save(file);
 			}
+			catch (...)
+			{
+				SG_ERROR( "writing to file %s failed!\n", filename);
+			}
+
+			SG_INFO( "successfully written distance to \"%s\" !\n", filename);
+			result=true;
+			SG_UNREF(file);
 		}
 		else
 			SG_ERROR( "see help for params\n");

@@ -14,10 +14,14 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/File.h"
 #include "base/SGObject.h"
 
 namespace shogun
 {
+
+	class CFile;
+
 /** @brief The class Labels models labels, i.e. class assignments of objects.
  *
  * Labels here are always real-valued and thus applicable to classification
@@ -44,24 +48,22 @@ class CLabels : public CSGObject
 
 		/** constructor
 		 *
-		 * @param fname filename to load labels from
+		 * @param loader File object via which to load data
 		 */
-		CLabels(char* fname);
+		CLabels(CFile* loader);
 		virtual ~CLabels();
 
 		/** load labels from file
 		 *
-		 * @param fname filename to load from
-		 * @return if loading was successful
+		 * @param loader File object via which to load data
 		 */
-		bool load(char* fname);
+		virtual void load(CFile* loader);
 
 		/** save labels to file
 		 *
-		 * @param fname filename to save to
-		 * @return if saving was successful
+		 * @param saver File object via which to save data
 		 */
-		bool save(char* fname);
+		virtual void save(CFile* saver);
 
 		/** set label
 		 *

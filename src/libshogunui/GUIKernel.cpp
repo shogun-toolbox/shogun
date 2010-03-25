@@ -15,6 +15,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>
+#include <shogun/lib/AsciiFile.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/Chi2Kernel.h>
@@ -797,13 +798,19 @@ bool CGUIKernel::save_kernel(char* filename)
 {
 	if (kernel && initialized)
 	{
-		if (!kernel->save(filename))
-			SG_ERROR("Writing to file %s failed!\n", filename);
-		else
+		CAsciiFile* file=new CAsciiFile(filename);
+		try
 		{
-			SG_INFO("Successfully written kernel to \"%s\" !\n", filename);
-			return true;
+			kernel->save(file);
 		}
+		catch (...)
+		{
+			SG_ERROR("Writing to file %s failed!\n", filename);
+		}
+
+		SG_UNREF(file);
+		SG_INFO("Successfully written kernel to \"%s\" !\n", filename);
+		return true;
 	}
 	else
 		SG_ERROR("No kernel set / kernel not initialized!\n");

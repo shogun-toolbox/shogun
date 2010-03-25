@@ -14,6 +14,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>
+#include <shogun/lib/AsciiFile.h>
 
 using namespace shogun;
 
@@ -67,30 +68,26 @@ bool CGUIFeatures::load(
 	SG_UNREF(*f_ptr);
 	*f_ptr=NULL;
 
+	CAsciiFile* file=new CAsciiFile(filename);
 	if (strncmp(fclass, "SIMPLE", 6)==0)
 	{
 		if (strncmp(type, "REAL", 4)==0)
 		{
-			*f_ptr=new CSimpleFeatures<float64_t>(filename);
-			//SG_DEBUG( "opening file...\n");
-			//*f_ptr=new CRealFileFeatures(size, filename);
-
-			//if (comp_features)
-			//((CRealFileFeatures*) *f_ptr)->load_feature_matrix() ;
+			*f_ptr=new CSimpleFeatures<float64_t>(file);
 		}
 		else if (strncmp(type, "BYTE", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CSimpleFeatures<uint8_t>(filename);
+			*f_ptr=new CSimpleFeatures<uint8_t>(file);
 		}
 		else if (strncmp(type, "CHAR", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CSimpleFeatures<char>(filename);
+			*f_ptr=new CSimpleFeatures<char>(file);
 		}
 		else if (strncmp(type, "SHORT", 5)==0)
 		{
-			*f_ptr=new CSimpleFeatures<int16_t>(filename);
+			*f_ptr=new CSimpleFeatures<int16_t>(file);
 		}
 		else
 		{
@@ -106,29 +103,29 @@ bool CGUIFeatures::load(
 	{
 		if (strncmp(type, "REAL", 4)==0)
 		{
-			*f_ptr=new CStringFeatures<float64_t>(filename);
+			*f_ptr=new CStringFeatures<float64_t>(file);
 		}
 		else if (strncmp(type, "BYTE", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CStringFeatures<uint8_t>(filename, DNA);
+			*f_ptr=new CStringFeatures<uint8_t>(file, DNA);
 		}
 		else if (strncmp(type, "CHAR", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CStringFeatures<char>(filename, DNA);
+			*f_ptr=new CStringFeatures<char>(file, DNA);
 		}
 		else if (strncmp(type, "SHORT", 5)==0)
 		{
-			*f_ptr=new CStringFeatures<int16_t>(filename);
+			*f_ptr=new CStringFeatures<int16_t>(file);
 		}
 		else if (strncmp(type, "WORD", 4)==0)
 		{
-			*f_ptr=new CStringFeatures<uint16_t>(filename);
+			*f_ptr=new CStringFeatures<uint16_t>(file);
 		}
 		else if (strncmp(type, "ULONG", 5)==0)
 		{
-			*f_ptr=new CStringFeatures<uint64_t>(filename);
+			*f_ptr=new CStringFeatures<uint64_t>(file);
 		}
 		else
 		{
@@ -136,6 +133,7 @@ bool CGUIFeatures::load(
 			return false;
 		}
 	}
+	SG_UNREF(file);
 
 	return result;
 }
@@ -159,39 +157,43 @@ bool CGUIFeatures::save(char* filename, char* type, char* target)
 
 	if (*f_ptr)
 	{
-		if (strncmp(type, "REAL", 4)==0)
+		try
 		{
-			result= ((CSimpleFeatures<float64_t>*) (*f_ptr))->save(filename);
+			CAsciiFile* file=new CAsciiFile(filename, 'w');
+			if (strncmp(type, "REAL", 4)==0)
+			{
+				((CSimpleFeatures<float64_t>*) (*f_ptr))->save(file);
+			}
+			else if (strncmp(type, "BYTE", 4)==0)
+			{
+				((CSimpleFeatures<uint8_t>*) (*f_ptr))->save(file);
+			}
+			else if (strncmp(type, "CHAR", 4)==0)
+			{
+				((CSimpleFeatures<char>*) (*f_ptr))->save(file);
+			}
+			else if (strncmp(type, "SHORT", 5)==0)
+			{
+				((CSimpleFeatures<int16_t>*) (*f_ptr))->save(file);
+			}
+			else if (strncmp(type, "WORD", 4)==0)
+			{
+				((CSimpleFeatures<uint16_t>*) (*f_ptr))->save(file);
+			}
+			else
+			{
+				SG_ERROR("Unknown type.\n");
+				return false;
+			}
+			SG_UNREF(file);
 		}
-		else if (strncmp(type, "BYTE", 4)==0)
+		catch (...)
 		{
-			result= ((CSimpleFeatures<uint8_t>*) (*f_ptr))->save(filename);
-		}
-		else if (strncmp(type, "CHAR", 4)==0)
-		{
-			result= ((CSimpleFeatures<char>*) (*f_ptr))->save(filename);
-		}
-		else if (strncmp(type, "SHORT", 5)==0)
-		{
-			result= ((CSimpleFeatures<int16_t>*) (*f_ptr))->save(filename);
-		}
-		else if (strncmp(type, "WORD", 4)==0)
-		{
-			result= ((CSimpleFeatures<uint16_t>*) (*f_ptr))->save(filename);
-		}
-		else
-		{
-			SG_ERROR("Unknown type.\n");
-			return false;
+			SG_ERROR("Writing to file %s failed!\n", filename);
 		}
 
-		if (!result)
-			SG_ERROR("Writing to file %s failed!\n", filename);
-		else
-		{
-			SG_INFO( "Successfully written features into \"%s\" !\n", filename);
-			result=true;
-		}
+		SG_INFO( "Successfully written features into \"%s\" !\n", filename);
+		result=true;
 
 	} else
 		SG_ERROR("Set features first.\n");

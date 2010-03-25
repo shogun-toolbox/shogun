@@ -13,6 +13,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>
+#include <shogun/lib/AsciiFile.h>
 #include <shogun/features/Labels.h>
 
 #include <string.h>
@@ -44,7 +45,8 @@ bool CGUILabels::load(char* filename, char* target)
 	if (labels)
 	{
 		SG_UNREF(labels);
-		labels=new CLabels(filename);
+		CAsciiFile* file=new CAsciiFile(filename);
+		labels=new CLabels(file);
 
 		if (labels)
 		{
@@ -57,6 +59,8 @@ bool CGUILabels::load(char* filename, char* target)
 		}
 		else
 			SG_ERROR("Loading labels failed.\n");
+
+		SG_UNREF(file);
 	}
 
 	return false;

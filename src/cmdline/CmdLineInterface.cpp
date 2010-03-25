@@ -3,7 +3,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
-#include <shogun/lib/SimpleFile.h>
+#include <shogun/lib/AsciiFile.h>
 #include <shogun/ui/SGInterface.h>
 
 #ifdef HAVE_READLINE
@@ -293,21 +293,6 @@ void CCmdLineInterface::get_int_vector(int32_t*& vec, int32_t& len)
 {
 	vec=NULL;
 	len=0;
-/*
-	vec=NULL;
-	len=0;
-
-	void* rvec=CAR(get_arg_increment());
-	if( TYPEOF(rvec) != INTSXP )
-		SG_ERROR("Expected Integer Vector as argument %d\n", m_rhs_counter);
-
-	len=LENGTH(rvec);
-	vec=new int32_t[len];
-	ASSERT(vec);
-
-	for (int32_t i=0; i<len; i++)
-		vec[i]= (int32_t) INTEGER(rvec)[i];
-		*/
 }
 
 void CCmdLineInterface::get_shortreal_vector(float32_t*& vec, int32_t& len)
@@ -325,9 +310,9 @@ void CCmdLineInterface::get_real_vector(float64_t*& vec, int32_t& len)
 	if (!filename)
 		SG_ERROR("No filename given to read REAL matrix.\n");
 
-	CFile f((char*) filename, 'r', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
+	CAsciiFile f((char*) filename, 'r');
+	//if (!f.is_ok())
+	//	SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
 
 	int32_t num_feat=0;
 	int32_t num_vec=0;
@@ -399,9 +384,9 @@ void CCmdLineInterface::get_real_matrix(float64_t*& matrix, int32_t& num_feat, i
 	if (!filename)
 		SG_ERROR("No filename given to read REAL matrix.\n");
 
-	CFile f((char*) filename, 'r', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
+	CAsciiFile f((char*) filename, 'r');
+	//if (!f.is_ok())
+		//SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
 
 	if (!f.read_real_valued_dense(matrix, num_feat, num_vec))
 		SG_ERROR("Could not read REAL data from %s.\n", filename);
@@ -457,9 +442,9 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32
 	if (!filename)
 		SG_ERROR("No filename given to read SPARSE REAL matrix.\n");
 
-	CFile f((char*) filename, 'r', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read SPARSE REAL matrix.\n", filename);
+	CAsciiFile f((char*) filename, 'r');
+	//if (!f.is_ok())
+		//SG_ERROR("Could not open file %s to read SPARSE REAL matrix.\n", filename);
 
 	if (!f.read_real_valued_sparse(matrix, num_feat, num_vec))
 		SG_ERROR("Could not read SPARSE REAL data from %s.\n", filename);
@@ -479,9 +464,9 @@ void CCmdLineInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& 
 	if (!filename)
 		SG_ERROR("No filename given to read CHAR string list.\n");
 
-	CFile f((char*) filename, 'r', F_CHAR);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read CHAR string list.\n", filename);
+	CAsciiFile f((char*) filename, 'r');
+	//if (!f.is_ok())
+		//SG_ERROR("Could not open file %s to read CHAR string list.\n", filename);
 
 	if (!f.read_char_valued_strings(strings, num_str, max_string_len))
 		SG_ERROR("Could not read CHAR data from %s.\n", filename);
@@ -543,9 +528,9 @@ void CCmdLineInterface::set_int(int32_t scalar)
 void CCmdLineInterface::set_real(float64_t scalar)
 {
 	const char* filename=set_arg_increment();
-	CFile f((char*) filename, 'w', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write REAL scalar.\n", filename);
+	CAsciiFile f((char*) filename, 'w');
+	//if (!f.is_ok())
+	//	SG_ERROR("Could not open file %s to write REAL scalar.\n", filename);
 
 	if (!f.write_real_valued_dense(&scalar, 1, 1))
 		SG_ERROR("Could not write REAL scalar to %s.\n", filename);
@@ -582,9 +567,9 @@ void CCmdLineInterface::set_real_vector(const float64_t* vec, int32_t len)
 	if (!filename)
 		SG_ERROR("No filename given to write REAL vector.\n");
 
-	CFile f((char*) filename, 'w', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write REAL vector.\n", filename);
+	CAsciiFile f((char*) filename, 'w');
+	//if (!f.is_ok())
+	//	SG_ERROR("Could not open file %s to write REAL vector.\n", filename);
 
 	if (!f.write_real_valued_dense(vec, len, 1))
 		SG_ERROR("Could not write REAL data to %s.\n", filename);
@@ -640,9 +625,9 @@ void CCmdLineInterface::set_real_matrix(const float64_t* matrix, int32_t num_fea
 	if (!filename)
 		SG_ERROR("No filename given to write REAL matrix.\n");
 
-	CFile f((char*) filename, 'w', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write REAL matrix.\n", filename);
+	CAsciiFile f((char*) filename, 'w');
+	//if (!f.is_ok())
+	//	SG_ERROR("Could not open file %s to write REAL matrix.\n", filename);
 
 	if (!f.write_real_valued_dense(matrix, num_feat, num_vec))
 		SG_ERROR("Could not write REAL data to %s.\n", filename);
@@ -683,9 +668,9 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, 
 	if (!filename)
 		SG_ERROR("No filename given to write SPARSE REAL matrix.\n");
 
-	CFile f((char*) filename, 'w', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write SPARSE REAL matrix.\n", filename);
+	CAsciiFile f((char*) filename, 'w');
+	//if (!f.is_ok())
+	//	SG_ERROR("Could not open file %s to write SPARSE REAL matrix.\n", filename);
 
 	if (!f.write_real_valued_sparse(matrix, num_feat, num_vec))
 		SG_ERROR("Could not write SPARSE REAL data to %s.\n", filename);
@@ -701,9 +686,9 @@ void CCmdLineInterface::set_char_string_list(const T_STRING<char>* strings, int3
 	if (!filename)
 		SG_ERROR("No filename given to write CHAR string list.\n");
 
-	CFile f((char*) filename, 'w', F_CHAR);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write CHAR string list.\n", filename);
+	CAsciiFile f((char*) filename, 'w');
+	//if (!f.is_ok())
+	//	SG_ERROR("Could not open file %s to write CHAR string list.\n", filename);
 
 	if (!f.write_char_valued_strings(strings, num_str))
 		SG_ERROR("Could not write CHAR data to %s.\n", filename);

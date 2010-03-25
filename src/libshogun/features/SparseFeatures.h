@@ -21,6 +21,7 @@
 #include "lib/Cache.h"
 #include "lib/io.h"
 #include "lib/Cache.h"
+#include "lib/File.h"
 
 #include "features/Labels.h"
 #include "features/Features.h"
@@ -31,6 +32,7 @@
 namespace shogun
 {
 
+class CFile;
 class CLabels;
 class CFeatures;
 class CDotFeatures;
@@ -150,8 +152,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @param fname filename to load features from
 		 */
-		CSparseFeatures(char* fname)
-		: CDotFeatures(fname), num_vectors(0), num_features(0),
+		CSparseFeatures(CFile* loader)
+		: CDotFeatures(loader), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{}
 

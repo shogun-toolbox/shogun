@@ -15,12 +15,14 @@
 #include <stdio.h>
 
 #include "lib/common.h"
+#include "lib/File.h"
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 #include "features/Features.h"
 
 namespace shogun
 {
+class CFile;
 class CMath;
 class CFeatures;
 enum EFeatureType;
@@ -150,19 +152,17 @@ class CDistance : public CSGObject
 		 */
 		virtual void cleanup()=0;
 
-		/** load distance matrix from file
+		/** load the kernel matrix
 		 *
-		 * @param fname filename to load from
-		 * @return if loading was successful
+		 * @param loader File object via which to load data
 		 */
-		bool load(char* fname);
+		void load(CFile* loader);
 
-		/** save distance matrix to file
+		/** save kernel matrix
 		 *
-		 * @param fname filename to save to
-		 * @return if saving was successful
+		 * @param writer File object via which to save data
 		 */
-		bool save(char* fname);
+		void save(CFile* writer);
 
 		/** get left-hand side features used in distance matrix
 		 *

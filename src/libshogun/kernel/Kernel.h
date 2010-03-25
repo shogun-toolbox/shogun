@@ -17,6 +17,7 @@
 
 #include "lib/common.h"
 #include "lib/Signal.h"
+#include "lib/File.h"
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 #include "features/Features.h"
@@ -25,6 +26,7 @@
 
 namespace shogun
 {
+	class CFile;
 	class CFeatures;
 	class CKernelNormalizer;
 	enum EFeatureType;
@@ -346,17 +348,15 @@ class CKernel : public CSGObject
 
 		/** load the kernel matrix
 		 *
-		 * @param fname filename to load from
-		 * @return if loading was successful
+		 * @param loader File object via which to load data
 		 */
-		bool load(char* fname);
+		void load(CFile* loader);
 
 		/** save kernel matrix
 		 *
-		 * @param fname filename to save to
-		 * @return if saving was successful
+		 * @param writer File object via which to save data
 		 */
-		bool save(char* fname);
+		void save(CFile* writer);
 
 		/** get left-hand side of features used in kernel
 		 *
