@@ -25,149 +25,105 @@ char* CAsciiFile::get_variable_name()
 	return NULL;
 }
 
-void CAsciiFile::get_byte_vector(uint8_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
+#define GET_VECTOR(fname, sg_type) \
+void CAsciiFile::fname(sg_type*& vec, int32_t& len) \
+{													\
+	vec=NULL;										\
+	len=0;											\
 }
 
-void CAsciiFile::get_char_vector(char*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
+GET_VECTOR(get_byte_vector, uint8_t)
+GET_VECTOR(get_char_vector, char)
+GET_VECTOR(get_int_vector, int32_t)
+GET_VECTOR(get_shortreal_vector, float32_t)
+GET_VECTOR(get_real_vector, float64_t)
+GET_VECTOR(get_short_vector, int16_t)
+GET_VECTOR(get_word_vector, uint16_t)
+#undef GET_VECTOR
+
+#define GET_MATRIX(fname, conv, sg_type)										\
+void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+{																				\
+	struct stat stats;															\
+	if (stat(filename, &stats)!=0)												\
+		SG_ERROR("Could not get file statistics.\n");							\
+																				\
+	char* data=new char[stats.st_size+1];										\
+	memset(data, 0, sizeof(char)*(stats.st_size+1));							\
+	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
+	if (nread<=0)																\
+		SG_ERROR("Could not read data from %s.\n");								\
+																				\
+	SG_DEBUG("data read from file:\n%s\n", data);								\
+																				\
+	/* determine num_feat and num_vec, populate dynamic array */ 				\
+	int32_t nf=0;																\
+	num_feat=0;																	\
+	num_vec=0;																	\
+	char* ptr_item=NULL;														\
+	char* ptr_data=data;														\
+	CDynamicArray<char*>* items=new CDynamicArray<char*>();						\
+																				\
+	while (*ptr_data)															\
+	{																			\
+		if (*ptr_data=='\n')													\
+		{																		\
+			if (ptr_item)														\
+				nf++;															\
+																				\
+			if (num_feat!=0 && nf!=num_feat)									\
+				SG_ERROR("Number of features mismatches (%d != %d) in vector"	\
+						" %d in file %s.\n", num_feat, nf, num_vec, filename);	\
+																				\
+			append_item(items, ptr_data, ptr_item);								\
+			num_feat=nf;														\
+			num_vec++;															\
+			nf=0;																\
+			ptr_item=NULL;														\
+		}																		\
+		else if (!isblank(*ptr_data) && !ptr_item)								\
+		{																		\
+			ptr_item=ptr_data;													\
+		}																		\
+		else if (isblank(*ptr_data) && ptr_item)								\
+		{																		\
+			append_item(items, ptr_data, ptr_item);								\
+			ptr_item=NULL;														\
+			nf++;																\
+		}																		\
+																				\
+		ptr_data++;																\
+	}																			\
+																				\
+	SG_DEBUG("num feat: %d, num_vec %d\n", num_feat, num_vec);					\
+	delete[] data;																\
+																				\
+	/* now copy data into matrix */ 											\
+	matrix=new sg_type[num_vec*num_feat];										\
+	for (int32_t i=0; i<num_vec; i++)											\
+	{																			\
+		for (int32_t j=0; j<num_feat; j++)										\
+		{																		\
+			char* item=items->get_element(i*num_feat+j);						\
+			matrix[i*num_feat+j]=atof(item);									\
+			delete[] item;														\
+		}																		\
+	}																			\
+	delete items;																\
 }
 
-void CAsciiFile::get_int_vector(int32_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-/*
-	vec=NULL;
-	len=0;
-
-	void* rvec=CAR(get_arg_increment());
-	if( TYPEOF(rvec) != INTSXP )
-		SG_ERROR("Expected Integer Vector as argument %d\n", m_rhs_counter);
-
-	len=LENGTH(rvec);
-	vec=new int32_t[len];
-	ASSERT(vec);
-
-	for (int32_t i=0; i<len; i++)
-		vec[i]= (int32_t) INTEGER(rvec)[i];
-		*/
-}
-
-void CAsciiFile::get_shortreal_vector(float32_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-}
-
-void CAsciiFile::get_real_vector(float64_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-}
-
-void CAsciiFile::get_short_vector(int16_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-}
-
-void CAsciiFile::get_word_vector(uint16_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-}
-
-
-void CAsciiFile::get_byte_matrix(uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CAsciiFile::get_char_matrix(char*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CAsciiFile::get_int_matrix(int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CAsciiFile::get_uint_matrix(uint32_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CAsciiFile::get_long_matrix(int64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CAsciiFile::get_ulong_matrix(uint64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-void CAsciiFile::get_shortreal_matrix(float32_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CAsciiFile::get_real_matrix(float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	/*const char* filename=get_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to read REAL matrix.\n");
-
-	CFile f((char*) filename, 'r', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
-
-	if (!f.read_real_valued_dense(matrix, num_feat, num_vec))
-		SG_ERROR("Could not read REAL data from %s.\n", filename);
-
-	CMath::transpose_matrix(matrix, num_feat, num_vec);
-	*/
-}
-
-void CAsciiFile::get_longreal_matrix(floatmax_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CAsciiFile::get_short_matrix(int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CAsciiFile::get_word_matrix(uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
+GET_MATRIX(get_byte_matrix, atoi, uint8_t)
+GET_MATRIX(get_char_matrix, atoi, char)
+GET_MATRIX(get_int_matrix, atoi, int32_t)
+GET_MATRIX(get_uint_matrix, atoi, uint32_t)
+GET_MATRIX(get_long_matrix, atoll, int64_t)
+GET_MATRIX(get_ulong_matrix, atoll, uint64_t)
+GET_MATRIX(get_shortreal_matrix, atof, float32_t)
+GET_MATRIX(get_real_matrix, atof, float64_t)
+GET_MATRIX(get_longreal_matrix, atof, floatmax_t)
+GET_MATRIX(get_short_matrix, atoi, int16_t)
+GET_MATRIX(get_word_matrix, atoi, uint16_t)
+#undef GET_MATRIX
 
 void CAsciiFile::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
 {
@@ -515,79 +471,6 @@ template <class T> void CAsciiFile::append_item(
 
 	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
 	items->append_element(item);
-}
-
-bool CAsciiFile::read_real_valued_dense(
-	float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	struct stat stats;
-	if (stat(filename, &stats)!=0)
-		SG_ERROR("Could not get file statistics.\n");
-
-	char* data=new char[stats.st_size+1];
-	memset(data, 0, sizeof(char)*(stats.st_size+1));
-	size_t nread=fread(data, sizeof(char), stats.st_size, file);
-	if (nread<=0)
-		SG_ERROR("Could not read data from %s.\n");
-
-	SG_DEBUG("data read from file:\n%s\n", data);
-
-	// determine num_feat and num_vec, populate dynamic array
-	int32_t nf=0;
-	num_feat=0;
-	num_vec=0;
-	char* ptr_item=NULL;
-	char* ptr_data=data;
-	CDynamicArray<char*>* items=new CDynamicArray<char*>();
-
-	while (*ptr_data)
-	{
-		if (*ptr_data=='\n')
-		{
-			if (ptr_item)
-				nf++;
-
-			if (num_feat!=0 && nf!=num_feat)
-				SG_ERROR("Number of features mismatches (%d != %d) in vector %d in file %s.\n", num_feat, nf, num_vec, filename);
-
-			append_item(items, ptr_data, ptr_item);
-			num_feat=nf;
-			num_vec++;
-			nf=0;
-			ptr_item=NULL;
-		}
-		else if (!isblank(*ptr_data) && !ptr_item)
-		{
-			ptr_item=ptr_data;
-		}
-		else if (isblank(*ptr_data) && ptr_item)
-		{
-			append_item(items, ptr_data, ptr_item);
-			ptr_item=NULL;
-			nf++;
-		}
-
-		ptr_data++;
-	}
-
-	SG_DEBUG("num feat: %d, num_vec %d\n", num_feat, num_vec);
-	delete[] data;
-
-	// now copy data into matrix
-	matrix=new float64_t[num_vec*num_feat];
-	for (int32_t i=0; i<num_vec; i++)
-	{
-		for (int32_t j=0; j<num_feat; j++)
-		{
-			char* item=items->get_element(i*num_feat+j);
-			matrix[i*num_feat+j]=atof(item);
-			delete[] item;
-		}
-	}
-	delete items;
-
-	//CMath::display_matrix(matrix, num_feat, num_vec);
-	return true;
 }
 
 bool CAsciiFile::read_real_valued_sparse(

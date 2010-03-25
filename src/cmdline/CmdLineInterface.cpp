@@ -317,8 +317,14 @@ void CCmdLineInterface::get_real_vector(float64_t*& vec, int32_t& len)
 	int32_t num_feat=0;
 	int32_t num_vec=0;
 
-	if (!f.read_real_valued_dense(vec, num_feat, num_vec))
+	try
+	{
+		f.get_real_matrix(vec, num_feat, num_vec);
+	}
+	catch (...)
+	{
 		SG_ERROR("Could not read REAL data from %s.\n", filename);
+	}
 
 	if ((num_feat==1) || (num_vec==1))
 	{
@@ -385,13 +391,15 @@ void CCmdLineInterface::get_real_matrix(float64_t*& matrix, int32_t& num_feat, i
 		SG_ERROR("No filename given to read REAL matrix.\n");
 
 	CAsciiFile f((char*) filename, 'r');
-	//if (!f.is_ok())
-		//SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
 
-	if (!f.read_real_valued_dense(matrix, num_feat, num_vec))
+	try
+	{
+		f.get_real_matrix(matrix, num_feat, num_vec);
+	}
+	catch (...)
+	{
 		SG_ERROR("Could not read REAL data from %s.\n", filename);
-
-	CMath::transpose_matrix(matrix, num_feat, num_vec);
+	}
 }
 
 void CCmdLineInterface::get_short_matrix(int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)
