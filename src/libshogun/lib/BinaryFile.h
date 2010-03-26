@@ -18,7 +18,6 @@
 
 namespace shogun
 {
-
 class CBinaryFile: public CFile
 {
 public:
@@ -47,7 +46,6 @@ public:
 	/** vector access functions */
 	//virtual void get_vector(void*& vector, int32_t& len, DataType& dtype);
 
-	virtual void get_bool_vector(bool*& vector, int32_t& len);
 	virtual void get_byte_vector(uint8_t*& vector, int32_t& len);
 	virtual void get_char_vector(char*& vector, int32_t& len);
 	virtual void get_int_vector(int32_t*& vector, int32_t& len);
@@ -66,10 +64,18 @@ public:
 			char*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_int_matrix(
 			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_uint_matrix(
+			uint32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_long_matrix(
+			int64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_ulong_matrix(
+			uint64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_shortreal_matrix(
 			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_real_matrix(
 			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_longreal_matrix(
+			floatmax_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_short_matrix(
 			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_word_matrix(
@@ -115,20 +121,31 @@ public:
 	virtual void get_int_string_list(
 			T_STRING<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
+	virtual void get_uint_string_list(
+			T_STRING<uint32_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len);
 	virtual void get_short_string_list(
 			T_STRING<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_word_string_list(
 			T_STRING<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
+	virtual void get_long_string_list(
+			T_STRING<int64_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len);
 	virtual void get_ulong_string_list(
 			T_STRING<uint64_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len);
+	virtual void get_shortreal_string_list(
+			T_STRING<float32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_real_string_list(
 			T_STRING<float64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
+	virtual void get_longreal_string_list(
+			T_STRING<floatmax_t>*& strings, int32_t& num_str,
+			int32_t& max_string_len);
 
-	virtual void set_bool_vector(const bool* vector, int32_t len);
 	virtual void set_byte_vector(const uint8_t* vector, int32_t len);
 	virtual void set_char_vector(const char* vector, int32_t len);
 	virtual void set_int_vector(const int32_t* vector, int32_t len);
@@ -145,10 +162,18 @@ public:
 			const char* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_int_matrix(
 			const int32_t* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_uint_matrix(
+			const uint32_t* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_long_matrix(
+			const int64_t* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_ulong_matrix(
+			const uint64_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_shortreal_matrix(
 			const float32_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_real_matrix(
 			const float64_t* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_longreal_matrix(
+			const floatmax_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_short_matrix(
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_word_matrix(
@@ -174,17 +199,25 @@ public:
 			const T_STRING<char>* strings, int32_t num_str);
 	virtual void set_int_string_list(
 			const T_STRING<int32_t>* strings, int32_t num_str);
+	virtual void set_uint_string_list(
+			const T_STRING<uint32_t>* strings, int32_t num_str);
 	virtual void set_short_string_list(
 			const T_STRING<int16_t>* strings, int32_t num_str);
 	virtual void set_word_string_list(
 			const T_STRING<uint16_t>* strings, int32_t num_str);
+	virtual void set_long_string_list(
+			const T_STRING<int64_t>* strings, int32_t num_str);
 	virtual void set_ulong_string_list(
 			const T_STRING<uint64_t>* strings, int32_t num_str);
+	virtual void set_shortreal_string_list(
+			const T_STRING<float32_t>* strings, int32_t num_str);
 	virtual void set_real_string_list(
 			const T_STRING<float64_t>* strings, int32_t num_str);
+	virtual void set_longreal_string_list(
+			const T_STRING<floatmax_t>* strings, int32_t num_str);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "AsciiFile"; }
+	inline virtual const char* get_name() const { return "BinaryFile"; }
 
 private:
 	/** load data (templated)
@@ -196,9 +229,7 @@ private:
 	template <class DT> DT* load_data(DT* target, int64_t& num)
 	{
 		CSimpleFile<DT> f(filename, file);
-		target=f.load(target, num);
-		status=(target!=NULL);
-		return target;
+		return f.load(target, num);
 	}
 
 	/** save data (templated)
@@ -210,20 +241,8 @@ private:
 	template <class DT> bool save_data(DT* src, int64_t num)
 	{
 		CSimpleFile<DT> f(filename, file);
-		status=f.save(src, num);
-		return status;
+		return f.save(src, num);
 	}
-
-protected:
-	/** file object */
-	FILE* file;
-	/** task */
-	char task;
-	/** name of the handled file */
-	char* filename;
-	/** variable name / path to variable */
-	char* variable_name;
-
 };
 }
 #endif //__BINARY_FILE_H__

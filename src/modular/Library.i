@@ -26,6 +26,8 @@
 #include <shogun/lib/Cache.h>
 #include <shogun/lib/File.h>
 #include <shogun/lib/AsciiFile.h>
+#include <shogun/lib/BinaryFile.h>
+#include <shogun/lib/HDF5File.h>
 #include <shogun/lib/List.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/Signal.h>
@@ -47,6 +49,8 @@
 %rename(Cache) CCache;
 %rename(File) CFile;
 %rename(AsciiFile) CAsciiFile;
+%rename(BinaryFile) CBinaryFile;
+%rename(HDF5File) CHDF5File;
 %rename(ListElement) CListElement;
 %rename(List) CList;
 %rename(Math) CMath;
@@ -148,6 +152,8 @@ namespace shogun
 %include <shogun/lib/GCArray.h>
 %include <shogun/lib/File.h>
 %include <shogun/lib/AsciiFile.h>
+%include <shogun/lib/BinaryFile.h>
+%include <shogun/lib/HDF5File.h>
 %include <shogun/lib/List.h>
 %include <shogun/lib/Mathematics.h>
 %include <shogun/lib/Signal.h>
