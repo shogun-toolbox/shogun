@@ -277,144 +277,59 @@ char* CCmdLineInterface::get_string(int32_t& len)
 	return result;
 }
 
-void CCmdLineInterface::get_byte_vector(uint8_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
+#define GET_VECTOR(fname, sg_type) \
+void CCmdLineInterface::fname(sg_type*& vec, int32_t& len)	\
+{																		\
+	const char* filename=get_arg_increment();							\
+	if (!filename)														\
+		SG_ERROR("No filename given to read vector.\n");				\
+																		\
+	CAsciiFile f((char*) filename, 'r');								\
+																		\
+	try																	\
+	{																	\
+		f.fname(vec, len);												\
+	}																	\
+	catch (...)															\
+	{																	\
+		SG_ERROR("Could not read data from %s.\n", filename);			\
+	}																	\
 }
+GET_VECTOR(get_byte_vector, uint8_t)
+GET_VECTOR(get_char_vector, char)
+GET_VECTOR(get_int_vector, int32_t)
+GET_VECTOR(get_shortreal_vector, float32_t)
+GET_VECTOR(get_real_vector, float64_t)
+GET_VECTOR(get_short_vector, int16_t)
+GET_VECTOR(get_word_vector, uint16_t)
+#undef GET_VECTOR
 
-void CCmdLineInterface::get_char_vector(char*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
+#define GET_MATRIX(fname, sg_type) \
+void CCmdLineInterface::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
+{																		\
+	const char* filename=get_arg_increment();							\
+	if (!filename)														\
+		SG_ERROR("No filename given to read matrix.\n");				\
+																		\
+	CAsciiFile f((char*) filename, 'r');								\
+																		\
+	try																	\
+	{																	\
+		f.fname(matrix, num_feat, num_vec);								\
+	}																	\
+	catch (...)															\
+	{																	\
+		SG_ERROR("Could not read data from %s.\n", filename);			\
+	}																	\
 }
-
-void CCmdLineInterface::get_int_vector(int32_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-}
-
-void CCmdLineInterface::get_shortreal_vector(float32_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-}
-
-void CCmdLineInterface::get_real_vector(float64_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-
-	const char* filename=get_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to read REAL matrix.\n");
-
-	CAsciiFile f((char*) filename, 'r');
-	//if (!f.is_ok())
-	//	SG_ERROR("Could not open file %s to read REAL matrix.\n", filename);
-
-	int32_t num_feat=0;
-	int32_t num_vec=0;
-
-	try
-	{
-		f.get_real_matrix(vec, num_feat, num_vec);
-	}
-	catch (...)
-	{
-		SG_ERROR("Could not read REAL data from %s.\n", filename);
-	}
-
-	if ((num_feat==1) || (num_vec==1))
-	{
-		if (num_feat==1)
-			len=num_vec;
-		else
-			len=num_feat;
-	}
-	else
-	{
-		delete[] vec;
-		vec=NULL;
-		len=0;
-		SG_ERROR("Could not read REAL vector from file %s (shape %dx%d found but vector expected).\n", filename, num_vec, num_feat);
-	}
-
-}
-
-void CCmdLineInterface::get_short_vector(int16_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-}
-
-void CCmdLineInterface::get_word_vector(uint16_t*& vec, int32_t& len)
-{
-	vec=NULL;
-	len=0;
-}
-
-
-void CCmdLineInterface::get_byte_matrix(uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CCmdLineInterface::get_char_matrix(char*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CCmdLineInterface::get_int_matrix(int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CCmdLineInterface::get_shortreal_matrix(float32_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CCmdLineInterface::get_real_matrix(float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	const char* filename=get_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to read REAL matrix.\n");
-
-	CAsciiFile f((char*) filename, 'r');
-
-	try
-	{
-		f.get_real_matrix(matrix, num_feat, num_vec);
-	}
-	catch (...)
-	{
-		SG_ERROR("Could not read REAL data from %s.\n", filename);
-	}
-}
-
-void CCmdLineInterface::get_short_matrix(int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
-
-void CCmdLineInterface::get_word_matrix(uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	matrix=NULL;
-	num_feat=0;
-	num_vec=0;
-}
+GET_MATRIX(get_byte_matrix, uint8_t)
+GET_MATRIX(get_char_matrix, char)
+GET_MATRIX(get_int_matrix, int32_t)
+GET_MATRIX(get_shortreal_matrix, float32_t)
+GET_MATRIX(get_real_matrix, float64_t)
+GET_MATRIX(get_short_matrix, int16_t)
+GET_MATRIX(get_word_matrix, uint16_t)
+#undef GET_MATRIX
 
 void CCmdLineInterface::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
 {
@@ -451,11 +366,7 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32
 		SG_ERROR("No filename given to read SPARSE REAL matrix.\n");
 
 	CAsciiFile f((char*) filename, 'r');
-	//if (!f.is_ok())
-		//SG_ERROR("Could not open file %s to read SPARSE REAL matrix.\n", filename);
-
-	if (!f.read_real_valued_sparse(matrix, num_feat, num_vec))
-		SG_ERROR("Could not read SPARSE REAL data from %s.\n", filename);
+	f.get_real_sparsematrix(matrix, num_feat, num_vec);
 }
 
 
@@ -473,16 +384,7 @@ void CCmdLineInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& 
 		SG_ERROR("No filename given to read CHAR string list.\n");
 
 	CAsciiFile f((char*) filename, 'r');
-	//if (!f.is_ok())
-		//SG_ERROR("Could not open file %s to read CHAR string list.\n", filename);
-
-	if (!f.read_char_valued_strings(strings, num_str, max_string_len))
-		SG_ERROR("Could not read CHAR data from %s.\n", filename);
-
-/*
-	for (int32_t i=0; i<num_str; i++)
-		SG_PRINT("%s\n", strings[i].string);
-*/
+	f.get_char_string_list(strings, num_str, max_string_len);
 }
 
 void CCmdLineInterface::get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
@@ -529,146 +431,54 @@ void* CCmdLineInterface::get_return_values()
 
 /** set functions - to pass data from shogun to the target interface */
 
-void CCmdLineInterface::set_int(int32_t scalar)
-{
+#define SET_SCALAR(fname, mfname, sg_type)	\
+void CCmdLineInterface::fname(sg_type scalar)	\
+{												\
+	const char* filename=set_arg_increment();	\
+	CAsciiFile f((char*) filename, 'w');		\
+	f.mfname(&scalar, 1, 1);					\
 }
+SET_SCALAR(set_int, set_int_matrix, int32_t)
+SET_SCALAR(set_real, set_real_matrix, float64_t)
+SET_SCALAR(set_bool, set_bool_matrix, bool)
+#undef SET_SCALAR
 
-void CCmdLineInterface::set_real(float64_t scalar)
-{
-	const char* filename=set_arg_increment();
-	CAsciiFile f((char*) filename, 'w');
-	//if (!f.is_ok())
-	//	SG_ERROR("Could not open file %s to write REAL scalar.\n", filename);
-
-	if (!f.write_real_valued_dense(&scalar, 1, 1))
-		SG_ERROR("Could not write REAL scalar to %s.\n", filename);
-}
-
-void CCmdLineInterface::set_bool(bool scalar)
-{
-}
-
-
-void CCmdLineInterface::set_char_vector(const char* vec, int32_t len)
-{
-}
-
-void CCmdLineInterface::set_short_vector(const int16_t* vec, int32_t len)
-{
-}
-
-void CCmdLineInterface::set_byte_vector(const uint8_t* vec, int32_t len)
-{
-}
-
-void CCmdLineInterface::set_int_vector(const int32_t* vec, int32_t len)
-{
-}
-
-void CCmdLineInterface::set_shortreal_vector(const float32_t* vec, int32_t len)
-{
-}
-
-void CCmdLineInterface::set_real_vector(const float64_t* vec, int32_t len)
-{
-	const char* filename=set_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to write REAL vector.\n");
-
-	CAsciiFile f((char*) filename, 'w');
-	//if (!f.is_ok())
-	//	SG_ERROR("Could not open file %s to write REAL vector.\n", filename);
-
-	if (!f.write_real_valued_dense(vec, len, 1))
-		SG_ERROR("Could not write REAL data to %s.\n", filename);
-}
-
-void CCmdLineInterface::set_word_vector(const uint16_t* vec, int32_t len)
-{
-}
-
-/*
-#undef SET_VECTOR
-#define SET_VECTOR(function_name, r_type, r_cast, sg_type, if_type, error_string) \
-void CCmdLineInterface::function_name(const sg_type* vec, int32_t len)	\
+#define SET_VECTOR(fname, mfname, sg_type)	\
+void CCmdLineInterface::fname(const sg_type* vec, int32_t len)	\
 {																\
-	void* feat=NULL;												\
-	PROTECT( feat = allocVector(r_type, len) );					\
+	const char* filename=set_arg_increment();					\
+	if (!filename)												\
+		SG_ERROR("No filename given to write vector.\n");		\
 																\
-	for (int32_t i=0; i<len; i++)									\
-		r_cast(feat)[i]=(if_type) vec[i];						\
-																\
-	UNPROTECT(1);												\
-	set_arg_increment(feat);									\
+	CAsciiFile f((char*) filename, 'w');						\
+	f.mfname(vec, len, 1);										\
 }
-
-SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
-SET_VECTOR(set_int_vector, INTSXP, INTEGER, int32_t, int, "Integer")
-SET_VECTOR(set_short_vector, INTSXP, INTEGER, int16_t, int, "Short")
-SET_VECTOR(set_shortreal_vector, XP, REAL, float32_t, float, "Single Precision")
-SET_VECTOR(set_real_vector, XP, REAL, float64_t, double, "Double Precision")
-SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
+SET_VECTOR(set_byte_vector, set_byte_matrix, uint8_t)
+SET_VECTOR(set_char_vector, set_char_matrix, char)
+SET_VECTOR(set_int_vector, set_int_matrix, int32_t)
+SET_VECTOR(set_shortreal_vector, set_shortreal_matrix, float32_t)
+SET_VECTOR(set_real_vector, set_real_matrix, float64_t)
+SET_VECTOR(set_short_vector, set_short_matrix, int16_t)
+SET_VECTOR(set_word_vector, set_word_matrix, uint16_t)
 #undef SET_VECTOR
-*/
 
-
-void CCmdLineInterface::set_char_matrix(const char* matrix, int32_t num_feat, int32_t num_vec)
-{
+#define SET_MATRIX(fname, sg_type)	\
+void CCmdLineInterface::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
+{																						\
+	const char* filename=set_arg_increment();											\
+	if (!filename)																		\
+		SG_ERROR("No filename given to write matrix.\n");								\
+																						\
+	CAsciiFile f((char*) filename, 'w');												\
+	f.fname(matrix, num_feat, num_vec);										\
 }
-void CCmdLineInterface::set_byte_matrix(const uint8_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CCmdLineInterface::set_int_matrix(const int32_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CCmdLineInterface::set_short_matrix(const int16_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CCmdLineInterface::set_shortreal_matrix(const float32_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CCmdLineInterface::set_real_matrix(const float64_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-	const char* filename=set_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to write REAL matrix.\n");
-
-	CAsciiFile f((char*) filename, 'w');
-	//if (!f.is_ok())
-	//	SG_ERROR("Could not open file %s to write REAL matrix.\n", filename);
-
-	if (!f.write_real_valued_dense(matrix, num_feat, num_vec))
-		SG_ERROR("Could not write REAL data to %s.\n", filename);
-}
-void CCmdLineInterface::set_word_matrix(const uint16_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-
-/*
-#define SET_MATRIX(function_name, r_type, r_cast, sg_type, if_type, error_string) \
-void CCmdLineInterface::function_name(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
-{																			\
-	void* feat=NULL;															\
-	PROTECT( feat = allocMatrix(r_type, num_feat, num_vec) );				\
-																			\
-	for (int32_t i=0; i<num_vec; i++)											\
-	{																		\
-		for (int32_t j=0; j<num_feat; j++)										\
-			r_cast(feat)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];		\
-	}																		\
-																			\
-	UNPROTECT(1);															\
-	set_arg_increment(feat);												\
-}
-SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
-SET_MATRIX(set_int_matrix, INTSXP, INTEGER, int32_t, int, "Integer")
-SET_MATRIX(set_short_matrix, INTSXP, INTEGER, int16_t, int, "Short")
-SET_MATRIX(set_shortreal_matrix, XP, REAL, float32_t, float, "Single Precision")
-SET_MATRIX(set_real_matrix, XP, REAL, float64_t, double, "Double Precision")
-SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
-#undef SET_MATRIX
-*/
-
+SET_MATRIX(set_byte_matrix, uint8_t)
+SET_MATRIX(set_char_matrix, char)
+SET_MATRIX(set_int_matrix, int32_t)
+SET_MATRIX(set_shortreal_matrix, float32_t)
+SET_MATRIX(set_real_matrix, float64_t)
+SET_MATRIX(set_short_matrix, int16_t)
+SET_MATRIX(set_word_matrix, uint16_t)
 
 void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
@@ -677,42 +487,25 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, 
 		SG_ERROR("No filename given to write SPARSE REAL matrix.\n");
 
 	CAsciiFile f((char*) filename, 'w');
-	//if (!f.is_ok())
-	//	SG_ERROR("Could not open file %s to write SPARSE REAL matrix.\n", filename);
-
-	if (!f.write_real_valued_sparse(matrix, num_feat, num_vec))
-		SG_ERROR("Could not write SPARSE REAL data to %s.\n", filename);
+	f.set_real_sparsematrix(matrix, num_feat, num_vec, nnz);
 }
 
-void CCmdLineInterface::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)
-{
+#define SET_STRING_LIST(fname, sg_type)	\
+void CCmdLineInterface::fname(const T_STRING<sg_type>* strings, int32_t num_str)		\
+{																						\
+	const char* filename=set_arg_increment();											\
+	if (!filename)																		\
+		SG_ERROR("No filename given to write CHAR string list.\n");						\
+																						\
+	CAsciiFile f((char*) filename, 'w');												\
+	f.fname(strings, num_str);															\
 }
-
-void CCmdLineInterface::set_char_string_list(const T_STRING<char>* strings, int32_t num_str)
-{
-	const char* filename=set_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to write CHAR string list.\n");
-
-	CAsciiFile f((char*) filename, 'w');
-	//if (!f.is_ok())
-	//	SG_ERROR("Could not open file %s to write CHAR string list.\n", filename);
-
-	if (!f.write_char_valued_strings(strings, num_str))
-		SG_ERROR("Could not write CHAR data to %s.\n", filename);
-}
-
-void CCmdLineInterface::set_int_string_list(const T_STRING<int32_t>* strings, int32_t num_str)
-{
-}
-
-void CCmdLineInterface::set_short_string_list(const T_STRING<int16_t>* strings, int32_t num_str)
-{
-}
-
-void CCmdLineInterface::set_word_string_list(const T_STRING<uint16_t>* strings, int32_t num_str)
-{
-}
+SET_STRING_LIST(set_byte_string_list, uint8_t)
+SET_STRING_LIST(set_char_string_list, char)
+SET_STRING_LIST(set_int_string_list, int32_t)
+SET_STRING_LIST(set_short_string_list, int16_t)
+SET_STRING_LIST(set_word_string_list, uint16_t)
+#undef SET_STRING_LIST
 
 void CCmdLineInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
 {

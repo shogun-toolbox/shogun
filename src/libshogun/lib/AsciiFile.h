@@ -219,12 +219,6 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const { return "AsciiFile"; }
 
-	bool read_real_valued_sparse(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	bool write_real_valued_sparse(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
-	bool read_char_valued_strings( T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len);
-	bool write_char_valued_strings(const T_STRING<char>* strings, int32_t num_str);
-	bool write_real_valued_dense(const float64_t* matrix, int32_t num_feat, int32_t num_vec);
-
 private:
 	/** helper function to read_*valued_* */
 	template <class T> void append_item(CDynamicArray<T>* items, char* ptr_data, char* ptr_item);

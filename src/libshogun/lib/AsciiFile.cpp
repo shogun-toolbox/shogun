@@ -25,20 +25,40 @@ char* CAsciiFile::get_variable_name()
 	return NULL;
 }
 
-#define GET_VECTOR(fname, sg_type) \
+#define GET_VECTOR(fname, mfname, sg_type) \
 void CAsciiFile::fname(sg_type*& vec, int32_t& len) \
 {													\
 	vec=NULL;										\
 	len=0;											\
+	int32_t num_feat=0;								\
+	int32_t num_vec=0;								\
+	mfname(vec, num_feat, num_vec);					\
+	if ((num_feat==1) || (num_vec==1))				\
+	{												\
+		if (num_feat==1)							\
+			len=num_vec;							\
+		else										\
+			len=num_feat;							\
+	}												\
+	else											\
+	{												\
+		delete[] vec;								\
+		vec=NULL;									\
+		len=0;										\
+		SG_ERROR("Could not read vector from"		\
+				" file %s (shape %dx%d found but "	\
+				"vector expected).\n", filename,	\
+				num_vec, num_feat);					\
+	}												\
 }
 
-GET_VECTOR(get_byte_vector, uint8_t)
-GET_VECTOR(get_char_vector, char)
-GET_VECTOR(get_int_vector, int32_t)
-GET_VECTOR(get_shortreal_vector, float32_t)
-GET_VECTOR(get_real_vector, float64_t)
-GET_VECTOR(get_short_vector, int16_t)
-GET_VECTOR(get_word_vector, uint16_t)
+GET_VECTOR(get_byte_vector, get_byte_matrix, uint8_t)
+GET_VECTOR(get_char_vector, get_char_matrix, char)
+GET_VECTOR(get_int_vector, get_int_matrix, int32_t)
+GET_VECTOR(get_shortreal_vector, get_shortreal_matrix, float32_t)
+GET_VECTOR(get_real_vector, get_real_matrix, float64_t)
+GET_VECTOR(get_short_vector, get_short_matrix, int16_t)
+GET_VECTOR(get_word_vector, get_word_matrix, uint16_t)
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, conv, sg_type)										\
@@ -154,327 +174,6 @@ void CAsciiFile::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num
 }
 
 void CAsciiFile::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	/*const char* filename=get_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to read SPARSE REAL matrix.\n");
-
-	CFile f((char*) filename, 'r', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read SPARSE REAL matrix.\n", filename);
-
-	if (!f.read_real_valued_sparse(matrix, num_feat, num_vec))
-		SG_ERROR("Could not read SPARSE REAL data from %s.\n", filename);*/
-}
-
-
-void CAsciiFile::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-/*
-	const char* filename=get_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to read CHAR string list.\n");
-
-	CFile f((char*) filename, 'r', F_CHAR);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to read CHAR string list.\n", filename);
-
-	if (!f.read_char_valued_strings(strings, num_str, max_string_len))
-		SG_ERROR("Could not read CHAR data from %s.\n", filename);
-
-	for (int32_t i=0; i<num_str; i++)
-		SG_PRINT("%s\n", strings[i].string);
-*/
-}
-
-void CAsciiFile::get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_uint_string_list(T_STRING<uint32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_short_string_list(T_STRING<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_word_string_list(T_STRING<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_long_string_list(T_STRING<int64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_ulong_string_list(T_STRING<uint64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_shortreal_string_list(T_STRING<float32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_real_string_list(T_STRING<float64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CAsciiFile::get_longreal_string_list(T_STRING<floatmax_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-
-/** set functions - to pass data from shogun to the target interface */
-
-void CAsciiFile::set_char_vector(const char* vec, int32_t len)
-{
-}
-
-void CAsciiFile::set_short_vector(const int16_t* vec, int32_t len)
-{
-}
-
-void CAsciiFile::set_byte_vector(const uint8_t* vec, int32_t len)
-{
-}
-
-void CAsciiFile::set_int_vector(const int32_t* vec, int32_t len)
-{
-}
-
-void CAsciiFile::set_shortreal_vector(const float32_t* vec, int32_t len)
-{
-}
-
-void CAsciiFile::set_real_vector(const float64_t* vec, int32_t len)
-{
-/*	const char* filename=set_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to write REAL vector.\n");
-
-	CFile f((char*) filename, 'w', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write REAL vector.\n", filename);
-
-	if (!f.write_real_valued_dense(vec, len, 1))
-		SG_ERROR("Could not write REAL data to %s.\n", filename);*/
-}
-
-void CAsciiFile::set_word_vector(const uint16_t* vec, int32_t len)
-{
-}
-
-/*
-#undef SET_VECTOR
-#define SET_VECTOR(function_name, r_type, r_cast, sg_type, if_type, error_string) \
-void CAsciiFile::function_name(const sg_type* vec, int32_t len)	\
-{																\
-	void* feat=NULL;												\
-	PROTECT( feat = allocVector(r_type, len) );					\
-																\
-	for (int32_t i=0; i<len; i++)									\
-		r_cast(feat)[i]=(if_type) vec[i];						\
-																\
-	UNPROTECT(1);												\
-	set_arg_increment(feat);									\
-}
-
-SET_VECTOR(set_byte_vector, INTSXP, INTEGER, uint8_t, int, "Byte")
-SET_VECTOR(set_int_vector, INTSXP, INTEGER, int32_t, int, "Integer")
-SET_VECTOR(set_short_vector, INTSXP, INTEGER, int16_t, int, "Short")
-SET_VECTOR(set_shortreal_vector, XP, REAL, float32_t, float, "Single Precision")
-SET_VECTOR(set_real_vector, XP, REAL, float64_t, double, "Double Precision")
-SET_VECTOR(set_word_vector, INTSXP, INTEGER, uint16_t, int, "Word")
-#undef SET_VECTOR
-*/
-
-
-void CAsciiFile::set_char_matrix(const char* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_byte_matrix(const uint8_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_int_matrix(const int32_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_uint_matrix(const uint32_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_long_matrix(const int64_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_ulong_matrix(const uint64_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_short_matrix(const int16_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_shortreal_matrix(const float32_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_real_matrix(const float64_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-	/*const char* filename=set_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to write REAL matrix.\n");
-
-	CFile f((char*) filename, 'w', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write REAL matrix.\n", filename);
-
-	if (!f.write_real_valued_dense(matrix, num_feat, num_vec))
-		SG_ERROR("Could not write REAL data to %s.\n", filename);*/
-}
-void CAsciiFile::set_longreal_matrix(const floatmax_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-void CAsciiFile::set_word_matrix(const uint16_t* matrix, int32_t num_feat, int32_t num_vec)
-{
-}
-
-/*
-#define SET_MATRIX(function_name, r_type, r_cast, sg_type, if_type, error_string) \
-void CAsciiFile::function_name(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
-{																			\
-	void* feat=NULL;															\
-	PROTECT( feat = allocMatrix(r_type, num_feat, num_vec) );				\
-																			\
-	for (int32_t i=0; i<num_vec; i++)											\
-	{																		\
-		for (int32_t j=0; j<num_feat; j++)										\
-			r_cast(feat)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];		\
-	}																		\
-																			\
-	UNPROTECT(1);															\
-	set_arg_increment(feat);												\
-}
-SET_MATRIX(set_byte_matrix, INTSXP, INTEGER, uint8_t, int, "Byte")
-SET_MATRIX(set_int_matrix, INTSXP, INTEGER, int32_t, int, "Integer")
-SET_MATRIX(set_short_matrix, INTSXP, INTEGER, int16_t, int, "Short")
-SET_MATRIX(set_shortreal_matrix, XP, REAL, float32_t, float, "Single Precision")
-SET_MATRIX(set_real_matrix, XP, REAL, float64_t, double, "Double Precision")
-SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
-#undef SET_MATRIX
-*/
-
-
-void CAsciiFile::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
-{
-	/*const char* filename=set_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to write SPARSE REAL matrix.\n");
-
-	CFile f((char*) filename, 'w', F_DREAL);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write SPARSE REAL matrix.\n", filename);
-
-	if (!f.write_real_valued_sparse(matrix, num_feat, num_vec))
-		SG_ERROR("Could not write SPARSE REAL data to %s.\n", filename);*/
-}
-
-void CAsciiFile::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_char_string_list(const T_STRING<char>* strings, int32_t num_str)
-{
-	/*const char* filename=set_arg_increment();
-	if (!filename)
-		SG_ERROR("No filename given to write CHAR string list.\n");
-
-	CFile f((char*) filename, 'w', F_CHAR);
-	if (!f.is_ok())
-		SG_ERROR("Could not open file %s to write CHAR string list.\n", filename);
-
-	if (!f.write_char_valued_strings(strings, num_str))
-		SG_ERROR("Could not write CHAR data to %s.\n", filename);*/
-}
-
-void CAsciiFile::set_int_string_list(const T_STRING<int32_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_uint_string_list(const T_STRING<uint32_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_short_string_list(const T_STRING<int16_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_word_string_list(const T_STRING<uint16_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_long_string_list(const T_STRING<int64_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_ulong_string_list(const T_STRING<uint64_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_shortreal_string_list(const T_STRING<float32_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_real_string_list(const T_STRING<float64_t>* strings, int32_t num_str)
-{
-}
-
-void CAsciiFile::set_longreal_string_list(const T_STRING<floatmax_t>* strings, int32_t num_str)
-{
-}
-
-template <class T> void CAsciiFile::append_item(
-	CDynamicArray<T>* items, char* ptr_data, char* ptr_item)
-{
-	size_t len=(ptr_data-ptr_item)/sizeof(char);
-	char* item=new char[len+1];
-	memset(item, 0, sizeof(char)*(len+1));
-	item=strncpy(item, ptr_item, len);
-
-	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
-	items->append_element(item);
-}
-
-bool CAsciiFile::read_real_valued_sparse(
-	TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=blocksize;
@@ -634,38 +333,18 @@ bool CAsciiFile::read_real_valued_sparse(
 	}
 
 	delete[] dummy;
-	return true;
-}
-
-bool CAsciiFile::write_real_valued_sparse(
-	const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec)
-{
-	if (!(file && matrix))
-		SG_ERROR("File or matrix invalid.\n");
-
-	for (int32_t i=0; i<num_vec; i++)
-	{
-		TSparseEntry<float64_t>* vec = matrix[i].features;
-		int32_t len=matrix[i].num_feat_entries;
-
-		for (int32_t j=0; j<len; j++)
-		{
-			if (j<len-1)
-				fprintf(file, "%d:%f ", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
-			else
-				fprintf(file, "%d:%f\n", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
-		}
-	}
-
-	return true;
 }
 
 
-bool CAsciiFile::read_char_valued_strings(
-	T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
-	bool result=false;
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
 
+void CAsciiFile::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
 	char* dummy=new char[blocksize];
@@ -750,7 +429,6 @@ bool CAsciiFile::read_char_valued_strings(
 
 			overflow_len=sz-old_sz;
 		}
-		result=true;
 		SG_INFO("file successfully read\n");
 		SG_INFO("max_string_length=%d\n", max_string_len);
 		SG_INFO("num_strings=%d\n", num_str);
@@ -758,12 +436,144 @@ bool CAsciiFile::read_char_valued_strings(
 
 	delete[] dummy;
 	delete[] overflow;
-
-	return result;
 }
 
-bool CAsciiFile::write_char_valued_strings(
-	const T_STRING<char>* strings, int32_t num_str)
+void CAsciiFile::get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CAsciiFile::get_uint_string_list(T_STRING<uint32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CAsciiFile::get_short_string_list(T_STRING<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CAsciiFile::get_word_string_list(T_STRING<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CAsciiFile::get_long_string_list(T_STRING<int64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CAsciiFile::get_ulong_string_list(T_STRING<uint64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CAsciiFile::get_shortreal_string_list(T_STRING<float32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CAsciiFile::get_real_string_list(T_STRING<float64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CAsciiFile::get_longreal_string_list(T_STRING<floatmax_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+
+/** set functions - to pass data from shogun to the target interface */
+
+#define SET_VECTOR(fname, mfname, sg_type)	\
+void CAsciiFile::fname(const sg_type* vec, int32_t len)	\
+{															\
+	mfname(vec, len, 1);									\
+}
+SET_VECTOR(set_byte_vector, set_byte_matrix, uint8_t)
+SET_VECTOR(set_char_vector, set_char_matrix, char)
+SET_VECTOR(set_int_vector, set_int_matrix, int32_t)
+SET_VECTOR(set_shortreal_vector, set_shortreal_matrix, float32_t)
+SET_VECTOR(set_real_vector, set_real_matrix, float64_t)
+SET_VECTOR(set_short_vector, set_short_matrix, int16_t)
+SET_VECTOR(set_word_vector, set_word_matrix, uint16_t)
+#undef SET_VECTOR
+
+#define SET_MATRIX(fname, sg_type, type_str) \
+void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
+{																					\
+	if (!(file && matrix))															\
+		SG_ERROR("File or matrix invalid.\n");										\
+																					\
+	for (int32_t i=0; i<num_feat; i++)												\
+	{																				\
+		for (int32_t j=0; j<num_vec; j++)											\
+		{																			\
+			sg_type v=matrix[num_feat*j+i];											\
+			if (j==num_vec-1)														\
+				fprintf(file, type_str "\n", v);									\
+			else																	\
+				fprintf(file, type_str " ", v);										\
+		}																			\
+	}																				\
+}
+SET_MATRIX(set_char_matrix, char, "%c")
+SET_MATRIX(set_byte_matrix, uint8_t, "%i")
+SET_MATRIX(set_int_matrix, int32_t, "%i")
+SET_MATRIX(set_uint_matrix, uint32_t, "%i")
+SET_MATRIX(set_long_matrix, int64_t, "%lld")
+SET_MATRIX(set_ulong_matrix, uint64_t, "%lld")
+SET_MATRIX(set_short_matrix, int16_t, "%d")
+SET_MATRIX(set_word_matrix, uint16_t, "%d")
+SET_MATRIX(set_shortreal_matrix, float32_t, "%f")
+SET_MATRIX(set_real_matrix, float64_t, "%f")
+SET_MATRIX(set_longreal_matrix, floatmax_t, "%f")
+#undef SET_MATRIX
+
+void CAsciiFile::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+{
+	if (!(file && matrix))
+		SG_ERROR("File or matrix invalid.\n");
+
+	for (int32_t i=0; i<num_vec; i++)
+	{
+		TSparseEntry<float64_t>* vec = matrix[i].features;
+		int32_t len=matrix[i].num_feat_entries;
+
+		for (int32_t j=0; j<len; j++)
+		{
+			if (j<len-1)
+				fprintf(file, "%d:%f ", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
+			else
+				fprintf(file, "%d:%f\n", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
+		}
+	}
+}
+
+void CAsciiFile::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)
+{
+}
+
+void CAsciiFile::set_char_string_list(const T_STRING<char>* strings, int32_t num_str)
 {
 	if (!(file && strings))
 		SG_ERROR("File or strings invalid.\n");
@@ -774,31 +584,54 @@ bool CAsciiFile::write_char_valued_strings(
 		fwrite(strings[i].string, sizeof(char), len, file);
 		fprintf(file, "\n");
 	}
-
-	return true;
 }
 
-
-
-bool CAsciiFile::write_real_valued_dense(
-	const float64_t* matrix, int32_t num_feat, int32_t num_vec)
+void CAsciiFile::set_int_string_list(const T_STRING<int32_t>* strings, int32_t num_str)
 {
-	if (!(file && matrix))
-		SG_ERROR("File or matrix invalid.\n");
+}
 
-	for (int32_t i=0; i<num_feat; i++)
-	{
-		for (int32_t j=0; j<num_vec; j++)
-		{
-			float64_t v=matrix[num_feat*j+i];
-			if (j==num_vec-1)
-				fprintf(file, "%f\n", v);
-			else
-				fprintf(file, "%f ", v);
-		}
-	}
+void CAsciiFile::set_uint_string_list(const T_STRING<uint32_t>* strings, int32_t num_str)
+{
+}
 
-	return true;
+void CAsciiFile::set_short_string_list(const T_STRING<int16_t>* strings, int32_t num_str)
+{
+}
+
+void CAsciiFile::set_word_string_list(const T_STRING<uint16_t>* strings, int32_t num_str)
+{
+}
+
+void CAsciiFile::set_long_string_list(const T_STRING<int64_t>* strings, int32_t num_str)
+{
+}
+
+void CAsciiFile::set_ulong_string_list(const T_STRING<uint64_t>* strings, int32_t num_str)
+{
+}
+
+void CAsciiFile::set_shortreal_string_list(const T_STRING<float32_t>* strings, int32_t num_str)
+{
+}
+
+void CAsciiFile::set_real_string_list(const T_STRING<float64_t>* strings, int32_t num_str)
+{
+}
+
+void CAsciiFile::set_longreal_string_list(const T_STRING<floatmax_t>* strings, int32_t num_str)
+{
+}
+
+template <class T> void CAsciiFile::append_item(
+	CDynamicArray<T>* items, char* ptr_data, char* ptr_item)
+{
+	size_t len=(ptr_data-ptr_item)/sizeof(char);
+	char* item=new char[len+1];
+	memset(item, 0, sizeof(char)*(len+1));
+	item=strncpy(item, ptr_item, len);
+
+	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
+	items->append_element(item);
 }
 
 /*
@@ -856,28 +689,4 @@ bool load(char* fname)
 				SG_ERROR( "reading file failed\n");
 
 			return false;
-}
-
-{
-	bool status=false;
-
-	delete[] labels;
-	num_labels=0;
-
-	CFile f(fname, 'r', F_DREAL);
-	int64_t num_lab=0;
-	labels=f.load_real_data(NULL, num_lab);
-	num_labels=num_lab;
-
-    if (!f.is_ok()) {
-      SG_ERROR( "loading file \"%s\" failed", fname);
-    }
-	else
-	{
-		SG_INFO( "%ld labels successfully read\n", num_labels);
-		status=true;
-	}
-
-	return status;
-}
-*/
+} */

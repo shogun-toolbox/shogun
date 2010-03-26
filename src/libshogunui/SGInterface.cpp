@@ -6037,7 +6037,7 @@ void CSGInterface::get_bool_vector(bool*& vector, int32_t& len)
 	delete[] int_vector;
 }
 
-void CSGInterface::set_bool_vector(bool*& vector, int32_t& len)
+void CSGInterface::set_bool_vector(const bool* vector, int32_t len)
 {
 	int32_t* int_vector = new int32_t[len];
 	for (int32_t i=0;i<len;i++)
@@ -6050,6 +6050,7 @@ void CSGInterface::set_bool_vector(bool*& vector, int32_t& len)
 	set_int_vector(int_vector,len);
 	delete[] int_vector;
 }
+
 bool CSGInterface::cmd_set_plif_struct()
 {
 	// ARG 2 

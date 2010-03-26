@@ -128,7 +128,7 @@ public:
 			T_STRING<float64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 
-	virtual void set_bool_vector(bool*& vector, int32_t& len);
+	virtual void set_bool_vector(const bool* vector, int32_t len);
 	virtual void set_byte_vector(const uint8_t* vector, int32_t len);
 	virtual void set_char_vector(const char* vector, int32_t len);
 	virtual void set_int_vector(const int32_t* vector, int32_t len);

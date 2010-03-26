@@ -70,7 +70,7 @@ void CFile::get_bool_vector(bool*& vector, int32_t& len)
 	delete[] int_vector;
 }
 
-void CFile::set_bool_vector(bool*& vector, int32_t& len)
+void CFile::set_bool_vector(const bool* vector, int32_t len)
 {
 	int32_t* int_vector = new int32_t[len];
 	for (int32_t i=0;i<len;i++)

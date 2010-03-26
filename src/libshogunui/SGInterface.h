@@ -665,7 +665,7 @@ class CSGInterface : public CSGObject
 		virtual void set_real(float64_t scalar)=0;
 		virtual void set_bool(bool scalar)=0;
 
-		virtual void set_bool_vector(bool*& vector, int32_t& len);
+		virtual void set_bool_vector(const bool* vector, int32_t len);
 		virtual void set_byte_vector(const uint8_t* vector, int32_t len)=0;
 		virtual void set_char_vector(const char* vector, int32_t len)=0;
 		virtual void set_int_vector(const int32_t* vector, int32_t len)=0;
