@@ -672,6 +672,10 @@ void CKernel::load(CFile* loader)
 
 void CKernel::save(CFile* writer)
 {
+	int32_t m,n;
+	float64_t* km=get_kernel_matrix<float64_t>(m,n, NULL);
+	writer->set_real_matrix(km, m,n);
+	delete[] km;
 }
 
 void CKernel::remove_lhs_and_rhs()

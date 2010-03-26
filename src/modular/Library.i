@@ -25,6 +25,7 @@
 %{
 #include <shogun/lib/Cache.h>
 #include <shogun/lib/File.h>
+#include <shogun/lib/AsciiFile.h>
 #include <shogun/lib/List.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/Signal.h>
@@ -45,6 +46,7 @@
 /* Remove C Prefix */
 %rename(Cache) CCache;
 %rename(File) CFile;
+%rename(AsciiFile) CAsciiFile;
 %rename(ListElement) CListElement;
 %rename(List) CList;
 %rename(Math) CMath;
@@ -145,6 +147,7 @@ namespace shogun
 %include <shogun/lib/Cache.h>
 %include <shogun/lib/GCArray.h>
 %include <shogun/lib/File.h>
+%include <shogun/lib/AsciiFile.h>
 %include <shogun/lib/List.h>
 %include <shogun/lib/Mathematics.h>
 %include <shogun/lib/Signal.h>
