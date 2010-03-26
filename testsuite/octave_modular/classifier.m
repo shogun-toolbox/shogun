@@ -48,6 +48,7 @@ function y = classifier(filename)
 
 	elseif strcmp(classifier_name, 'LibSVMMultiClass')==1
 		classifier=LibSVMMultiClass(classifier_C, kernel, lab);
+		classifier.set_solver_type(L2R_LR);
 
 	elseif strcmp(classifier_name, 'LibSVMOneClass')==1
 		classifier=LibSVMOneClass(classifier_C, kernel);

@@ -44,6 +44,7 @@ classifier <- function(filename) {
 		classifier <- LDA(classifier_gamma, feats[[1]], lab)
 	} else if (regexpr('LibLinear', classifier_name)>0) {
 		classifier <- LibLinear(classifier_C, feats[[1]], lab)
+		classifier$set_solver_type(classifier, L2R_LR)
 	} else if (regexpr('LibSVMMultiClass', classifier_name)>0) {
 		classifier <- LibSVMMultiClass(classifier_C, kernel, lab)
 	} else if (regexpr('LibSVMOneClass', classifier_name)>0) {

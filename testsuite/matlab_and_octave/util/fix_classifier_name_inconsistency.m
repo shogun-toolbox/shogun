@@ -8,7 +8,7 @@ function y = fix_classifier_name_inconsistency (cname)
 			return;
 		end
 	elseif findstr('LIBLINEAR', cname)
-		y='LIBLINEAR_LR';
+		y='LIBLINEAR_L2_LR';
 		return
 	end
 
