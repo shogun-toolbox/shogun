@@ -222,18 +222,6 @@ public:
 private:
 	/** helper function to read_*valued_* */
 	template <class T> void append_item(CDynamicArray<T>* items, char* ptr_data, char* ptr_item);
-
-
-protected:
-	/** file object */
-	FILE* file;
-	/** task */
-	char task;
-	/** name of the handled file */
-	char* filename;
-	/** variable name / path to variable */
-	char* variable_name;
-
 };
 }
 #endif //__ASCII_FILE_H__
