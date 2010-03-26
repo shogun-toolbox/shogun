@@ -18,6 +18,12 @@
 
 namespace shogun
 {
+/** @brief A Binary file access class.
+ *
+ * A file consists of a fourcc header then an alternation of a type header and
+ * data or just raw data (simplefile=true). However this implementation is not
+ * complete - the more complex stuff is currently not implemented.
+ */
 class CBinaryFile: public CFile
 {
 public:
@@ -218,6 +224,33 @@ public:
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "BinaryFile"; }
+
+protected:
+    /** read header
+	 *
+     * @return datatype
+     */
+    SGDataType read_header();
+
+    /** write header
+	 *
+     * @param datatype we are writing
+     */
+    void write_header(SGDataType datatype);
+
+    /** parse first header - defunct!
+     *
+     * @param type feature type
+     * @return -1
+     */
+    int32_t parse_first_header(SGDataType &type);
+    
+    /** parse next header - defunct!
+     *
+     * @param type feature type
+     * @return -1
+     */     
+    int32_t parse_next_header(SGDataType &type);
 
 private:
 	/** load data (templated)
