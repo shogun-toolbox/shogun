@@ -2,8 +2,8 @@ library("sg")
 
 size_cache <- 10
 
-fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
-fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
+fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
+fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 
 # CHI2
 print('Chi2')

@@ -5,8 +5,8 @@ C <- 10
 epsilon <- 1e-5
 use_bias <- TRUE
 
-fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
-fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
+fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
+fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 label_train_twoclass <- as.real(as.matrix(read.table('../data/label_train_twoclass.dat')))
 
 # LibSVM

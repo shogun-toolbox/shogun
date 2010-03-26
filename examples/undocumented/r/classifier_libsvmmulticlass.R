@@ -6,8 +6,8 @@ epsilon <- 1e-5
 use_bias <- TRUE
 width <- 2.1
 
-fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
-fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
+fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
+fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 label_train_multiclass <- as.real(as.matrix(read.table('../data/label_train_multiclass.dat')))
 
 

@@ -15,7 +15,7 @@ function [matrix] = load_matrix(fname)
 		if isempty(converted)
 			matrix=[matrix, line'];
 		else
-			matrix=[matrix; converted];
+			matrix=[matrix, converted'];
 		end
 	end
 	fclose(fid);

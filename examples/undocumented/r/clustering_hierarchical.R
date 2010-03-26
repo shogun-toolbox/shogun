@@ -1,6 +1,6 @@
 library("sg")
 
-fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
+fm_train <- t(as.matrix(read.table('../data/fm_train_real.dat')))
 
 # Hierarchical
 print('Hierarchical')

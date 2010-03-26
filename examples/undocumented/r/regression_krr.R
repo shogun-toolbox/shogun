@@ -5,8 +5,8 @@ C <- 10
 tube_epsilon <- 1e-2
 width <- 2.1
 
-fm_train <- as.matrix(read.table('../data/fm_train_real.dat'))
-fm_test <- as.matrix(read.table('../data/fm_test_real.dat'))
+fm_train <- t(as.matrix(read.table('../data/fm_train_real.dat')))
+fm_test <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 label_train <- as.real(as.matrix(read.table('../data/label_train_twoclass.dat')))
 
 # KRR
