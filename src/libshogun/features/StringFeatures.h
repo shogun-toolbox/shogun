@@ -767,9 +767,9 @@ template <class ST> class CStringFeatures : public CFeatures
 					SG_INFO("max_string_length=%d\n", max_string_length);
 					SG_INFO("num_strings=%d\n", num_vectors);
 				}
+				fclose(f);
 			}
 
-			fclose(f);
 			delete[] dummy;
 
 			SG_UNREF(alphabet);

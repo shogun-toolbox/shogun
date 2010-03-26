@@ -518,7 +518,7 @@ SET_VECTOR(set_short_vector, set_short_matrix, int16_t)
 SET_VECTOR(set_word_vector, set_word_matrix, uint16_t)
 #undef SET_VECTOR
 
-#define SET_MATRIX(fname, sg_type, type_str) \
+#define SET_MATRIX(fname, sg_type, fprt_type, type_str) \
 void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
 {																					\
 	if (!(file && matrix))															\
@@ -530,23 +530,23 @@ void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)
 		{																			\
 			sg_type v=matrix[num_feat*j+i];											\
 			if (j==num_vec-1)														\
-				fprintf(file, type_str "\n", v);									\
+				fprintf(file, type_str "\n", (fprt_type) v);						\
 			else																	\
-				fprintf(file, type_str " ", v);										\
+				fprintf(file, type_str " ", (fprt_type) v);							\
 		}																			\
 	}																				\
 }
-SET_MATRIX(set_char_matrix, char, "%c")
-SET_MATRIX(set_byte_matrix, uint8_t, "%i")
-SET_MATRIX(set_int_matrix, int32_t, "%i")
-SET_MATRIX(set_uint_matrix, uint32_t, "%i")
-SET_MATRIX(set_long_matrix, int64_t, "%lld")
-SET_MATRIX(set_ulong_matrix, uint64_t, "%lld")
-SET_MATRIX(set_short_matrix, int16_t, "%d")
-SET_MATRIX(set_word_matrix, uint16_t, "%d")
-SET_MATRIX(set_shortreal_matrix, float32_t, "%f")
-SET_MATRIX(set_real_matrix, float64_t, "%f")
-SET_MATRIX(set_longreal_matrix, floatmax_t, "%f")
+SET_MATRIX(set_char_matrix, char, char, "%c")
+SET_MATRIX(set_byte_matrix, uint8_t, uint8_t, "%u")
+SET_MATRIX(set_int_matrix, int32_t, int32_t, "%i")
+SET_MATRIX(set_uint_matrix, uint32_t, uint32_t, "%u")
+SET_MATRIX(set_long_matrix, int64_t, long long int, "%lli")
+SET_MATRIX(set_ulong_matrix, uint64_t, long long unsigned int, "%llu")
+SET_MATRIX(set_short_matrix, int16_t, int16_t, "%i")
+SET_MATRIX(set_word_matrix, uint16_t, uint16_t, "%u")
+SET_MATRIX(set_shortreal_matrix, float32_t, float32_t, "%f")
+SET_MATRIX(set_real_matrix, float64_t, float64_t, "%f")
+SET_MATRIX(set_longreal_matrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_MATRIX
 
 void CAsciiFile::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
