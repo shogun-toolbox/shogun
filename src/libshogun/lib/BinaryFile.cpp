@@ -25,40 +25,29 @@ char* CBinaryFile::get_variable_name()
 	return NULL;
 }
 
-#define GET_VECTOR(fname, mfname, sg_type) \
-void CBinaryFile::fname(sg_type*& vec, int32_t& len) \
-{													\
-	vec=NULL;										\
-	len=0;											\
-	int32_t num_feat=0;								\
-	int32_t num_vec=0;								\
-	mfname(vec, num_feat, num_vec);					\
-	if ((num_feat==1) || (num_vec==1))				\
-	{												\
-		if (num_feat==1)							\
-			len=num_vec;							\
-		else										\
-			len=num_feat;							\
-	}												\
-	else											\
-	{												\
-		delete[] vec;								\
-		vec=NULL;									\
-		len=0;										\
-		SG_ERROR("Could not read vector from"		\
-				" file %s (shape %dx%d found but "	\
-				"vector expected).\n", filename,	\
-				num_vec, num_feat);					\
-	}												\
+#define GET_VECTOR(fname, sg_type, datatype)										\
+void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
+{																					\
+	if (!file)																		\
+		SG_ERROR("File invalid.\n");												\
+	SGDataType dtype=read_header();													\
+	if (dtype!=datatype)															\
+		SG_ERROR("Datatype mismatch\n");											\
+																					\
+	if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
+		SG_ERROR("Failed to read Matrix dimensions\n");								\
+	vec=new sg_type[len];															\
+	if (fread(vec, sizeof(sg_type), len, file)!=(size_t) len)						\
+		SG_ERROR("Failed to read Matrix\n");										\
 }
 
-GET_VECTOR(get_byte_vector, get_byte_matrix, uint8_t)
-GET_VECTOR(get_char_vector, get_char_matrix, char)
-GET_VECTOR(get_int_vector, get_int_matrix, int32_t)
-GET_VECTOR(get_shortreal_vector, get_shortreal_matrix, float32_t)
-GET_VECTOR(get_real_vector, get_real_matrix, float64_t)
-GET_VECTOR(get_short_vector, get_short_matrix, int16_t)
-GET_VECTOR(get_word_vector, get_word_matrix, uint16_t)
+GET_VECTOR(get_byte_vector, uint8_t, DT_DENSE_BYTE)
+GET_VECTOR(get_char_vector, char, DT_DENSE_CHAR)
+GET_VECTOR(get_int_vector, int32_t, DT_DENSE_INT)
+GET_VECTOR(get_shortreal_vector, float32_t, DT_DENSE_SHORTREAL)
+GET_VECTOR(get_real_vector, float64_t, DT_DENSE_REAL)
+GET_VECTOR(get_short_vector, int16_t, DT_DENSE_SHORT)
+GET_VECTOR(get_word_vector, uint16_t, DT_DENSE_WORD)
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
@@ -67,7 +56,6 @@ void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		
 	if (!file)																		\
 		SG_ERROR("File invalid.\n");												\
 	SGDataType dtype=read_header();													\
-	SG_PRINT("dtype=%d\n", dtype);													\
 	if (dtype!=datatype)															\
 		SG_ERROR("Datatype mismatch\n");											\
 																					\
@@ -416,7 +404,6 @@ void CBinaryFile::write_header(SGDataType datatype)
 	const char* fourcc="SG00";
 	uint16_t endian=0x1234;
 	uint16_t dtype=datatype;
-	SG_PRINT("dtype=%d\n", dtype);
 
 	if (!((fwrite(fourcc, sizeof(char), 4, file)==4) &&
 			(fwrite(&endian, sizeof(uint16_t), 1, file)==1) &&
