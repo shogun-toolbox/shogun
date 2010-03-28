@@ -61,9 +61,9 @@ class CLabels : public CSGObject
 
 		/** save labels to file
 		 *
-		 * @param saver File object via which to save data
+		 * @param writer File object via which to save data
 		 */
-		virtual void save(CFile* saver);
+		virtual void save(CFile* writer);
 
 		/** set label
 		 *

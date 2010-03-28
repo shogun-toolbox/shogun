@@ -1,6 +1,7 @@
-#include "lib/File.h"
 #include "features/SparseFeatures.h"
+#include "lib/File.h"
 #include "lib/AsciiFile.h"
+#include "lib/Mathematics.h"
 
 using namespace shogun;
 
@@ -125,11 +126,12 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 		for (int32_t j=0; j<num_feat; j++)										\
 		{																		\
 			char* item=items->get_element(i*num_feat+j);						\
-			matrix[i*num_feat+j]=atof(item);									\
+			matrix[i*num_feat+j]=conv(item);									\
 			delete[] item;														\
 		}																		\
 	}																			\
 	delete items;																\
+	CMath::transpose_matrix(matrix, num_feat, num_vec);							\
 }
 
 GET_MATRIX(get_byte_matrix, atoi, uint8_t)

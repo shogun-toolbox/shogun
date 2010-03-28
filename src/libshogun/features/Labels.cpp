@@ -166,10 +166,15 @@ void CLabels::set_int_labels(int32_t * mylabels, int32_t len)
 
 void CLabels::load(CFile* loader)
 {
-	//FIXME
+	delete[] labels;
+	num_labels=0;
+	ASSERT(loader);
+	loader->get_real_vector(labels, num_labels);
 }
 
-void CLabels::save(CFile* saver)
+void CLabels::save(CFile* writer)
 {
-	//FIXME
+	ASSERT(writer);
+	ASSERT(labels && labels>0);
+	writer->set_real_vector(labels, num_labels);
 }
