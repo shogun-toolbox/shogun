@@ -257,9 +257,12 @@ public:
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "HDF5File"; }
+protected:
+	void get_boolean_type();
 
 protected:
-	hid_t	h5file;
+	hid_t h5file;
+	hid_t boolean_type;
 };
 }
 #endif //  HDF5

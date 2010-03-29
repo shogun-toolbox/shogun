@@ -447,6 +447,16 @@ void CMath::display_vector(const int64_t* vector, int32_t n, const char* name)
 }
 
 template <>
+void CMath::display_vector(const uint64_t* vector, int32_t n, const char* name)
+{
+	ASSERT(n>=0);
+	SG_SPRINT("%s=[", name);
+	for (int32_t i=0; i<n; i++)
+		SG_SPRINT("%llu%s", vector[i], i==n-1? "" : ",");
+	SG_SPRINT("]\n");
+}
+
+template <>
 void CMath::display_vector(const float32_t* vector, int32_t n, const char* name)
 {
 	ASSERT(n>=0);

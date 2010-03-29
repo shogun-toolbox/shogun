@@ -49,6 +49,30 @@ CHDF5File::~CHDF5File()
 	H5Fclose(h5file);
 }
 
+
+
+void CHDF5File::get_boolean_type()
+{
+	boolean_type=H5T_NATIVE_UCHAR;
+	switch (sizeof(bool))
+	{
+		case 1:
+			boolean_type = H5T_NATIVE_UCHAR;
+			break;
+		case 2:
+			boolean_type = H5T_NATIVE_UINT16;
+			break;
+		case 4:
+			boolean_type = H5T_NATIVE_UINT32;
+			break;
+		case 8:
+			boolean_type = H5T_NATIVE_UINT64;
+			break;
+		default:
+			SG_ERROR("Boolean type not supported on this platform\n");
+	}
+}
+
 //dataset = H5Dopen(file, "/Data/CData");
 //status = H5Dclose(dataset);
 //
@@ -108,26 +132,32 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 			break;																	\
 	}                                                                               \
 																					\
+	int rank = H5Sget_simple_extent_ndims(dataspace); 								\
 	len=H5Sget_simple_extent_npoints(dataspace);									\
+	SG_PRINT("rank=%d, len=%d\n", rank, len);										\
+	hsize_t* dims_out=new hsize_t[rank];											\
+	int status_n = H5Sget_simple_extent_dims(dataspace, dims_out, NULL);			\
+	CMath::display_vector((uint64_t*) dims_out, rank, "dims");						\
 	vec=new sg_type[len];															\
 	herr_t status = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, 					\
 			H5S_ALL, H5P_DEFAULT, vec);												\
 																					\
+																					\
    status = H5Dclose(dataset);														\
 }
 
-	/*
-	hsize_t     adims_out[2];
-	 * array_rank_out = H5Tget_array_ndims(datatype);
-	status = H5Tget_array_dims(datatype, adims_out, NULL); 
-																					\
-	if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
-		SG_ERROR("Failed to read vector length\n");									\
-	vec=new sg_type[len];															\
-	if (fread(vec, sizeof(sg_type), len, file)!=(size_t) len)						\
-		SG_ERROR("Failed to read Matrix\n");									*/	\
-//}
 /*
+
+H5T_NATIVE_INT8
+H5T_NATIVE_UINT8
+
+H5T_NATIVE_INT16
+H5T_NATIVE_UINT16
+H5T_NATIVE_INT32
+H5T_NATIVE_UINT32
+
+H5T_NATIVE_INT64
+H5T_NATIVE_UINT64
 H5T_NATIVE_CHAR	char
 H5T_NATIVE_SCHAR	signed char
 H5T_NATIVE_UCHAR	unsigned char
