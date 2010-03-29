@@ -108,7 +108,7 @@ bool CDomainAdaptationSVM::train(CFeatures* data)
 	// pre-compute linear term
 	for (int32_t i=0; i!=num_training_points; i++)
 	{
-		lin_term[i] = - B*(get_label(i) * parent_svm_out->get_label(i)) - 1.0;
+		lin_term[i] = (- B*(get_label(i) * parent_svm_out->get_label(i)))*train_factor - 1.0;
 	}
 
 	//set linear term for QP
@@ -135,6 +135,17 @@ float64_t CDomainAdaptationSVM::get_B()
 	return B;
 }
 
+
+float64_t CDomainAdaptationSVM::get_train_factor()
+{
+	return train_factor;
+}
+
+
+void CDomainAdaptationSVM::set_train_factor(float64_t factor)
+{
+	train_factor = factor;
+}
 
 
 CLabels* CDomainAdaptationSVM::classify(CFeatures* data)

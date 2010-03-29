@@ -92,6 +92,19 @@ class CDomainAdaptationSVM : public CSVMLight
 		virtual float64_t get_B();
 
 
+		/** getter for train_factor
+		 *
+		 * @return train_factor
+		 */
+		virtual float64_t get_train_factor();
+
+
+		/** setter for train_factor
+		 *
+		 */
+		virtual void set_train_factor(float64_t factor);
+
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "DomainAdaptationSVM"; }
 
