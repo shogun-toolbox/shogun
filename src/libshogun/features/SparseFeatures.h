@@ -1033,6 +1033,18 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** load features from file
 		 *
+		 * @param loader File object to load data from
+		 */
+		void load(CFile* loader);
+
+		/** save features to file
+		 *
+		 * @param writer File object to write data to
+		 */
+		void save(CFile* loader);
+
+		/** load features from file
+		 *
 		 * @param fname filename to load from
 		 * @param do_sort_features if true features will be sorted to ensure they
 		 * 		 are in ascending order
@@ -1474,112 +1486,69 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		CCache< TSparseEntry<ST> >* feature_cache;
 };
 
-/** get feature type the BOOL feature can deal with
- *
- * @return feature type BOOL
- */
-template<> inline EFeatureType CSparseFeatures<bool>::get_feature_type()
-{
-	return F_BOOL;
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#define GET_FEATURE_TYPE(sg_type, f_type)									\
+template<> inline EFeatureType CSparseFeatures<sg_type>::get_feature_type()	\
+{																			\
+	return f_type;															\
 }
+GET_FEATURE_TYPE(bool, F_BOOL)
+GET_FEATURE_TYPE(char, F_CHAR)
+GET_FEATURE_TYPE(uint8_t, F_BYTE)
+GET_FEATURE_TYPE(int16_t, F_SHORT)
+GET_FEATURE_TYPE(uint16_t, F_WORD)
+GET_FEATURE_TYPE(int32_t, F_INT)
+GET_FEATURE_TYPE(uint32_t, F_UINT)
+GET_FEATURE_TYPE(int64_t, F_LONG)
+GET_FEATURE_TYPE(uint64_t, F_ULONG)
+GET_FEATURE_TYPE(float32_t, F_SHORTREAL)
+GET_FEATURE_TYPE(float64_t, F_DREAL)
+GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
+#undef GET_FEATURE_TYPE
 
-/** get feature type the CHAR feature can deal with
- *
- * @return feature type CHAR
- */
-template<> inline EFeatureType CSparseFeatures<char>::get_feature_type()
-{
-	return F_CHAR;
+#define LOAD(fname, sg_type)											\
+template<> inline void CSparseFeatures<sg_type>::load(CFile* loader)	\
+{																		\
+	ASSERT(loader);														\
+	TSparse<sg_type>* matrix=NULL;										\
+	int32_t num_feat=0;													\
+	int32_t num_vec=0;													\
+	loader->fname(matrix, num_feat, num_vec);			\
+	set_sparse_feature_matrix(matrix, num_feat, num_vec);				\
 }
+LOAD(get_bool_sparsematrix, bool)
+LOAD(get_char_sparsematrix, char)
+LOAD(get_byte_sparsematrix, uint8_t)
+LOAD(get_short_sparsematrix, int16_t)
+LOAD(get_word_sparsematrix, uint16_t)
+LOAD(get_int_sparsematrix, int32_t)
+LOAD(get_uint_sparsematrix, uint32_t)
+LOAD(get_long_sparsematrix, int64_t)
+LOAD(get_ulong_sparsematrix, uint64_t)
+LOAD(get_shortreal_sparsematrix, float32_t)
+LOAD(get_real_sparsematrix, float64_t)
+LOAD(get_longreal_sparsematrix, floatmax_t)
+#undef LOAD
 
-/** get feature type the BYTE feature can deal with
- *
- * @return feature type BYTE
- */
-template<> inline EFeatureType CSparseFeatures<uint8_t>::get_feature_type()
-{
-	return F_BYTE;
+#define WRITE(fname, sg_type)											\
+template<> inline void CSparseFeatures<sg_type>::save(CFile* writer)	\
+{																		\
+	ASSERT(writer);														\
+	writer->fname(sparse_feature_matrix, num_features, num_vectors);	\
 }
-
-/** get feature type the SHORT feature can deal with
- *
- * @return feature type SHORT
- */
-template<> inline EFeatureType CSparseFeatures<int16_t>::get_feature_type()
-{
-	return F_SHORT;
-}
-
-/** get feature type the WORD feature can deal with
- *
- * @return feature type WORD
- */
-template<> inline EFeatureType CSparseFeatures<uint16_t>::get_feature_type()
-{
-	return F_WORD;
-}
-
-/** get feature type the INT feature can deal with
- *
- * @return feature type INT
- */
-template<> inline EFeatureType CSparseFeatures<int32_t>::get_feature_type()
-{
-	return F_INT;
-}
-
-/** get feature type the UINT feature can deal with
- *
- * @return feature type UINT
- */
-template<> inline EFeatureType CSparseFeatures<uint32_t>::get_feature_type()
-{
-	return F_UINT;
-}
-
-/** get feature type the LONG feature can deal with
- *
- * @return feature type LONG
- */
-template<> inline EFeatureType CSparseFeatures<int64_t>::get_feature_type()
-{
-	return F_LONG;
-}
-
-/** get feature type the ULONG feature can deal with
- *
- * @return feature type ULONG
- */
-template<> inline EFeatureType CSparseFeatures<uint64_t>::get_feature_type()
-{
-	return F_ULONG;
-}
-
-/** get feature type the SHORTREAL feature can deal with
- *
- * @return feature type SHORTREAL
- */
-template<> inline EFeatureType CSparseFeatures<float32_t>::get_feature_type()
-{
-	return F_SHORTREAL;
-}
-
-/** get feature type the DREAL feature can deal with
- *
- * @return feature type DREAL
- */
-template<> inline EFeatureType CSparseFeatures<float64_t>::get_feature_type()
-{
-	return F_DREAL;
-}
-
-/** get feature type the LONGREAL feature can deal with
- *
- * @return feature type LONGREAL
- */
-template<> inline EFeatureType CSparseFeatures<floatmax_t>::get_feature_type()
-{
-	return F_LONGREAL;
-}
+WRITE(set_bool_sparsematrix, bool)
+WRITE(set_char_sparsematrix, char)
+WRITE(set_byte_sparsematrix, uint8_t)
+WRITE(set_short_sparsematrix, int16_t)
+WRITE(set_word_sparsematrix, uint16_t)
+WRITE(set_int_sparsematrix, int32_t)
+WRITE(set_uint_sparsematrix, uint32_t)
+WRITE(set_long_sparsematrix, int64_t)
+WRITE(set_ulong_sparsematrix, uint64_t)
+WRITE(set_shortreal_sparsematrix, float32_t)
+WRITE(set_real_sparsematrix, float64_t)
+WRITE(set_longreal_sparsematrix, floatmax_t)
+#undef WRITE
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 #endif /* _SPARSEFEATURES__H__ */

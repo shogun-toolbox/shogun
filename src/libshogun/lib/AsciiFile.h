@@ -100,17 +100,30 @@ public:
 	virtual void get_word_ndarray(
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
 
+	virtual void get_bool_sparsematrix(
+			TSparse<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_byte_sparsematrix(
+			TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_char_sparsematrix(
+			TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_int_sparsematrix(
+			TSparse<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_uint_sparsematrix(
+			TSparse<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_long_sparsematrix(
+			TSparse<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_ulong_sparsematrix(
+			TSparse<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_short_sparsematrix(
+			TSparse<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_word_sparsematrix(
+			TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_shortreal_sparsematrix(
+			TSparse<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_real_sparsematrix(
 			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-
-	/*  future versions might support types other than float64_t
-
-		virtual void get_byte_sparsematrix(TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_char_sparsematrix(TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_int_sparsematrix(TSparse<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_shortreal_sparsematrix(TSparse<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_short_sparsematrix(TSparse<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_word_sparsematrix(TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec); */
+	virtual void get_longreal_sparsematrix(
+			TSparse<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 	virtual void get_byte_string_list(
 			T_STRING<uint8_t>*& strings, int32_t& num_str,
@@ -179,18 +192,30 @@ public:
 	virtual void set_word_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
 
+	virtual void set_bool_sparsematrix(
+			const TSparse<bool>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_byte_sparsematrix(
+			const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_char_sparsematrix(
+			const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_int_sparsematrix(
+			const TSparse<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_uint_sparsematrix(
+			const TSparse<uint32_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_long_sparsematrix(
+			const TSparse<int64_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_ulong_sparsematrix(
+			const TSparse<uint64_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_short_sparsematrix(
+			const TSparse<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_word_sparsematrix(
+			const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec); 
+	virtual void set_shortreal_sparsematrix(
+			const TSparse<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_real_sparsematrix(
-			const TSparse<float64_t>* matrix, int32_t num_feat,
-			int32_t num_vec, int64_t nnz);
-
-	/*  future versions might support types other than float64_t
-
-		virtual void set_byte_sparsematrix(const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_char_sparsematrix(const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_int_sparsematrix(const TSparse<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_shortreal_sparsematrix(const TSparse<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_short_sparsematrix(const TSparse<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_word_sparsematrix(const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec); */
+			const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_longreal_sparsematrix(
+			const TSparse<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
 
 
 	virtual void set_byte_string_list(

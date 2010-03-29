@@ -73,7 +73,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 	memset(data, 0, sizeof(char)*(stats.st_size+1));							\
 	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
 	if (nread<=0)																\
-		SG_ERROR("Could not read data from %s.\n");								\
+		SG_ERROR("Could not read data from %s.\n", filename);					\
 																				\
 	SG_DEBUG("data read from file:\n%s\n", data);								\
 																				\
@@ -175,167 +175,182 @@ void CAsciiFile::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num
 {
 }
 
-void CAsciiFile::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	size_t blocksize=1024*1024;
-	size_t required_blocksize=blocksize;
-	uint8_t* dummy=new uint8_t[blocksize];
-
-	if (file)
-	{
-		num_vec=0;
-		num_feat=0;
-
-		SG_INFO("counting line numbers in file %s\n", filename);
-		size_t sz=blocksize;
-		size_t block_offs=0;
-		size_t old_block_offs=0;
-		fseek(file, 0, SEEK_END);
-		size_t fsize=ftell(file);
-		rewind(file);
-
-		while (sz == blocksize)
-		{
-			sz=fread(dummy, sizeof(uint8_t), blocksize, file);
-			bool contains_cr=false;
-			for (size_t i=0; i<sz; i++)
-			{
-				block_offs++;
-				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
-				{
-					num_vec++;
-					contains_cr=true;
-					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs+1);
-					old_block_offs=block_offs;
-				}
-			}
-			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");
-		}
-
-		SG_INFO("found %d feature vectors\n", num_vec);
-		delete[] dummy;
-		blocksize=required_blocksize;
-		dummy = new uint8_t[blocksize+1]; //allow setting of '\0' at EOL
-		matrix=new TSparse<float64_t>[num_vec];
-
-		rewind(file);
-		sz=blocksize;
-		int32_t lines=0;
-		while (sz == blocksize)
-		{
-			sz=fread(dummy, sizeof(uint8_t), blocksize, file);
-
-			size_t old_sz=0;
-			for (size_t i=0; i<sz; i++)
-			{
-				if (i==sz-1 && dummy[i]!='\n' && sz==blocksize)
-				{
-					size_t len=i-old_sz+1;
-					uint8_t* data=&dummy[old_sz];
-
-					for (size_t j=0; j<len; j++)
-						dummy[j]=data[j];
-
-					sz=fread(dummy+len, sizeof(uint8_t), blocksize-len, file);
-					i=0;
-					old_sz=0;
-					sz+=len;
-				}
-
-				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
-				{
-
-					size_t len=i-old_sz;
-					uint8_t* data=&dummy[old_sz];
-
-					int32_t dims=0;
-					for (size_t j=0; j<len; j++)
-					{
-						if (data[j]==':')
-							dims++;
-					}
-
-					if (dims<=0)
-					{
-						SG_ERROR("Error in line %d - number of"
-								" dimensions is %d line is %d characters"
-								" long\n line_content:'%.*s'\n", lines,
-								dims, len, len, (const char*) data);
-					}
-
-					TSparseEntry<float64_t>* feat=new TSparseEntry<float64_t>[dims];
-
-					//skip label part
-					size_t j=0;
-					for (; j<len; j++)
-					{
-						if (data[j]==':')
-						{
-							j=-1; //file without label
-							break;
-						}
-
-						if (data[j]==' ')
-						{
-							data[j]='\0';
-
-							//skip label part
-							break;
-						}
-					}
-
-					int32_t d=0;
-					j++;
-					uint8_t* start=&data[j];
-					for (; j<len; j++)
-					{
-						if (data[j]==':')
-						{
-							data[j]='\0';
-
-							feat[d].feat_index=(int32_t) atoi((const char*) start)-1;
-							num_feat=CMath::max(num_feat, feat[d].feat_index+1);
-
-							j++;
-							start=&data[j];
-							for (; j<len; j++)
-							{
-								if (data[j]==' ' || data[j]=='\n')
-								{
-									data[j]='\0';
-									feat[d].entry=(float64_t) atof((const char*) start);
-									d++;
-									break;
-								}
-							}
-
-							if (j==len)
-							{
-								data[j]='\0';
-								feat[dims-1].entry=(float64_t) atof((const char*) start);
-							}
-
-							j++;
-							start=&data[j];
-						}
-					}
-
-					matrix[lines].vec_index=lines;
-					matrix[lines].num_feat_entries=dims;
-					matrix[lines].features=feat;
-
-					old_sz=i+1;
-					lines++;
-					SG_PROGRESS(lines, 0, num_vec, 1, "LOADING:\t");
-				}
-			}
-		}
-
-		SG_INFO("file successfully read\n");
-	}
-
-	delete[] dummy;
+#define GET_SPARSEMATRIX(fname, conv, sg_type)										\
+void CAsciiFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+{	\
+	size_t blocksize=1024*1024;	\
+	size_t required_blocksize=blocksize;	\
+	uint8_t* dummy=new uint8_t[blocksize];	\
+	\
+	if (file)	\
+	{	\
+		num_vec=0;	\
+		num_feat=0;	\
+	\
+		SG_INFO("counting line numbers in file %s\n", filename);	\
+		size_t sz=blocksize;	\
+		size_t block_offs=0;	\
+		size_t old_block_offs=0;	\
+		fseek(file, 0, SEEK_END);	\
+		size_t fsize=ftell(file);	\
+		rewind(file);	\
+	\
+		while (sz == blocksize)	\
+		{	\
+			sz=fread(dummy, sizeof(uint8_t), blocksize, file);	\
+			bool contains_cr=false;	\
+			for (size_t i=0; i<sz; i++)	\
+			{	\
+				block_offs++;	\
+				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))	\
+				{	\
+					num_vec++;	\
+					contains_cr=true;	\
+					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs+1);	\
+					old_block_offs=block_offs;	\
+				}	\
+			}	\
+			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");	\
+		}	\
+	\
+		SG_INFO("found %d feature vectors\n", num_vec);	\
+		delete[] dummy;	\
+		blocksize=required_blocksize;	\
+		dummy = new uint8_t[blocksize+1]; /*allow setting of '\0' at EOL*/	\
+		matrix=new TSparse<sg_type>[num_vec];	\
+	\
+		rewind(file);	\
+		sz=blocksize;	\
+		int32_t lines=0;	\
+		while (sz == blocksize)	\
+		{	\
+			sz=fread(dummy, sizeof(uint8_t), blocksize, file);	\
+	\
+			size_t old_sz=0;	\
+			for (size_t i=0; i<sz; i++)	\
+			{	\
+				if (i==sz-1 && dummy[i]!='\n' && sz==blocksize)	\
+				{	\
+					size_t len=i-old_sz+1;	\
+					uint8_t* data=&dummy[old_sz];	\
+	\
+					for (size_t j=0; j<len; j++)	\
+						dummy[j]=data[j];	\
+	\
+					sz=fread(dummy+len, sizeof(uint8_t), blocksize-len, file);	\
+					i=0;	\
+					old_sz=0;	\
+					sz+=len;	\
+				}	\
+	\
+				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))	\
+				{	\
+	\
+					size_t len=i-old_sz;	\
+					uint8_t* data=&dummy[old_sz];	\
+	\
+					int32_t dims=0;	\
+					for (size_t j=0; j<len; j++)	\
+					{	\
+						if (data[j]==':')	\
+							dims++;	\
+					}	\
+	\
+					if (dims<=0)	\
+					{	\
+						SG_ERROR("Error in line %d - number of"	\
+								" dimensions is %d line is %d characters"	\
+								" long\n line_content:'%.*s'\n", lines,	\
+								dims, len, len, (const char*) data);	\
+					}	\
+	\
+					TSparseEntry<sg_type>* feat=new TSparseEntry<sg_type>[dims];	\
+	\
+					/* skip label part */	\
+					size_t j=0;	\
+					for (; j<len; j++)	\
+					{	\
+						if (data[j]==':')	\
+						{	\
+							j=-1; /* file without label*/	\
+							break;	\
+						}	\
+	\
+						if (data[j]==' ')	\
+						{	\
+							data[j]='\0';	\
+	\
+							/* skip label part */	\
+							break;	\
+						}	\
+					}	\
+	\
+					int32_t d=0;	\
+					j++;	\
+					uint8_t* start=&data[j];	\
+					for (; j<len; j++)	\
+					{	\
+						if (data[j]==':')	\
+						{	\
+							data[j]='\0';	\
+	\
+							feat[d].feat_index=(int32_t) atoi((const char*) start)-1;	\
+							num_feat=CMath::max(num_feat, feat[d].feat_index+1);	\
+	\
+							j++;	\
+							start=&data[j];	\
+							for (; j<len; j++)	\
+							{	\
+								if (data[j]==' ' || data[j]=='\n')	\
+								{	\
+									data[j]='\0';	\
+									feat[d].entry=(sg_type) conv((const char*) start);	\
+									d++;	\
+									break;	\
+								}	\
+							}	\
+	\
+							if (j==len)	\
+							{	\
+								data[j]='\0';	\
+								feat[dims-1].entry=(sg_type) conv((const char*) start);	\
+							}	\
+	\
+							j++;	\
+							start=&data[j];	\
+						}	\
+					}	\
+	\
+					matrix[lines].vec_index=lines;	\
+					matrix[lines].num_feat_entries=dims;	\
+					matrix[lines].features=feat;	\
+	\
+					old_sz=i+1;	\
+					lines++;	\
+					SG_PROGRESS(lines, 0, num_vec, 1, "LOADING:\t");	\
+				}	\
+			}	\
+		}	\
+	\
+		SG_INFO("file successfully read\n");	\
+	}	\
+	\
+	delete[] dummy;	\
 }
+
+GET_SPARSEMATRIX(get_bool_sparsematrix, atoi, bool)
+GET_SPARSEMATRIX(get_byte_sparsematrix, atoi, uint8_t)
+GET_SPARSEMATRIX(get_char_sparsematrix, atoi, char)
+GET_SPARSEMATRIX(get_int_sparsematrix, atoi, int32_t)
+GET_SPARSEMATRIX(get_uint_sparsematrix, atoi, uint32_t)
+GET_SPARSEMATRIX(get_long_sparsematrix, atoll, int64_t)
+GET_SPARSEMATRIX(get_ulong_sparsematrix, atoll, uint64_t)
+GET_SPARSEMATRIX(get_shortreal_sparsematrix, atof, float32_t)
+GET_SPARSEMATRIX(get_real_sparsematrix, atof, float64_t)
+GET_SPARSEMATRIX(get_longreal_sparsematrix, atof, floatmax_t)
+GET_SPARSEMATRIX(get_short_sparsematrix, atoi, int16_t)
+GET_SPARSEMATRIX(get_word_sparsematrix, atoi, uint16_t)
+#undef GET_SPARSEMATRIX
 
 
 void CAsciiFile::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
@@ -551,25 +566,45 @@ SET_MATRIX(set_real_matrix, float64_t, float64_t, "%f")
 SET_MATRIX(set_longreal_matrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_MATRIX
 
-void CAsciiFile::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
-{
-	if (!(file && matrix))
-		SG_ERROR("File or matrix invalid.\n");
-
-	for (int32_t i=0; i<num_vec; i++)
-	{
-		TSparseEntry<float64_t>* vec = matrix[i].features;
-		int32_t len=matrix[i].num_feat_entries;
-
-		for (int32_t j=0; j<len; j++)
-		{
-			if (j<len-1)
-				fprintf(file, "%d:%f ", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
-			else
-				fprintf(file, "%d:%f\n", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
-		}
-	}
+#define SET_SPARSEMATRIX(fname, sg_type, fprt_type, type_str) \
+void CAsciiFile::fname(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\
+{																							\
+	if (!(file && matrix))																	\
+		SG_ERROR("File or matrix invalid.\n");												\
+																							\
+	for (int32_t i=0; i<num_vec; i++)														\
+	{																						\
+		TSparseEntry<sg_type>* vec = matrix[i].features;									\
+		int32_t len=matrix[i].num_feat_entries;												\
+																							\
+		for (int32_t j=0; j<len; j++)														\
+		{																					\
+			if (j<len-1)																	\
+			{																				\
+				fprintf(file, "%d:" type_str " ",											\
+						(int32_t) vec[j].feat_index+1, (fprt_type) vec[j].entry);			\
+			}																				\
+			else																			\
+			{																				\
+				fprintf(file, "%d:" type_str "\n",											\
+						(int32_t) vec[j].feat_index+1, (fprt_type) vec[j].entry);			\
+			}																				\
+		}																					\
+	}																						\
 }
+SET_SPARSEMATRIX(set_bool_sparsematrix, bool, uint8_t, "%u")
+SET_SPARSEMATRIX(set_char_sparsematrix, char, char, "%c")
+SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, uint8_t, "%u")
+SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, int32_t, "%i")
+SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, uint32_t, "%u")
+SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, long long int, "%lli")
+SET_SPARSEMATRIX(set_ulong_sparsematrix, uint64_t, long long unsigned int, "%llu")
+SET_SPARSEMATRIX(set_short_sparsematrix, int16_t, int16_t, "%i")
+SET_SPARSEMATRIX(set_word_sparsematrix, uint16_t, uint16_t, "%u")
+SET_SPARSEMATRIX(set_shortreal_sparsematrix, float32_t, float32_t, "%f")
+SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, float64_t, "%f")
+SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, floatmax_t, "%Lf")
+#undef SET_SPARSEMATRIX
 
 void CAsciiFile::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)
 {
@@ -635,60 +670,3 @@ template <class T> void CAsciiFile::append_item(
 	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
 	items->append_element(item);
 }
-
-/*
-bool load(char* fname)
-{
-			int64_t length=0;
-			max_string_length=0;
-
-			CFile f(fname, 'r', F_CHAR);
-			char* feature_matrix=f.load_char_data(NULL, length);
-
-			SG_DEBUG("char data now at %p of length %ld\n", 
-					feature_matrix, (int64_t) length);
-
-			num_vectors=0;
-
-			if (f.is_ok())
-			{
-				for (int64_t i=0; i<length; i++)
-				{
-					if (feature_matrix[i]=='\n')
-						num_vectors++;
-				}
-
-				SG_INFO( "file contains %ld vectors\n", num_vectors);
-				features= new T_STRING<ST>[num_vectors];
-
-				int64_t index=0;
-				for (int32_t lines=0; lines<num_vectors; lines++)
-				{
-					char* p=&feature_matrix[index];
-					int32_t columns=0;
-
-					for (columns=0; index+columns<length && p[columns]!='\n'; columns++);
-
-					if (index+columns>=length && p[columns]!='\n') {
-						SG_ERROR( "error in \"%s\":%d\n", fname, lines);
-					}
-
-					features[lines].length=columns;
-					features[lines].string=new ST[columns];
-
-					max_string_length=CMath::max(max_string_length,columns);
-
-					for (int32_t i=0; i<columns; i++)
-						features[lines].string[i]= ((ST) p[i]);
-
-					index+= features[lines].length+1;
-				}
-
-				num_symbols=4; //FIXME
-				return true;
-			}
-			else
-				SG_ERROR( "reading file failed\n");
-
-			return false;
-} */

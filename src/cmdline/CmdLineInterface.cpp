@@ -487,7 +487,7 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, 
 		SG_ERROR("No filename given to write SPARSE REAL matrix.\n");
 
 	CAsciiFile f((char*) filename, 'w');
-	f.set_real_sparsematrix(matrix, num_feat, num_vec, nnz);
+	f.set_real_sparsematrix(matrix, num_feat, num_vec);
 }
 
 #define SET_STRING_LIST(fname, sg_type)	\

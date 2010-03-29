@@ -108,32 +108,46 @@ void CBinaryFile::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& nu
 {
 }
 
-void CBinaryFile::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	if (!(file))
-		SG_ERROR("File invalid.\n");
-
-	SGDataType dtype=read_header();
-	if (dtype!=DT_NDARRAY_REAL)
-		SG_ERROR("Datatype mismatch\n");
-
-	if (fread(&num_vec, sizeof(int32_t), 1, file)!=1)
-		SG_ERROR("Failed to read number of vectors\n");
-
-	matrix=new TSparse<float64_t>[num_vec];
-
-	for (int32_t i=0; i<num_vec; i++)
-	{
-		int32_t len=0;
-		if (fread(&len, sizeof(int32_t), 1, file)!=1)
-			SG_ERROR("Failed to read sparse vector length of vector idx=%d\n", i);
-		matrix[i].num_feat_entries=len;
-		TSparseEntry<float64_t>* vec = new TSparseEntry<float64_t>[len];
-		if (fread(vec, sizeof(TSparseEntry<float64_t>), len, file)!= (size_t) len)
-			SG_ERROR("Failed to read sparse vector %d\n", i);
-		matrix[i].features=vec;
-	}
+#define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
+void CBinaryFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+{																						\
+	if (!(file))																		\
+		SG_ERROR("File invalid.\n");													\
+																						\
+	SGDataType dtype=read_header();														\
+	if (dtype!=datatype)																\
+		SG_ERROR("Datatype mismatch\n");												\
+																						\
+	if (fread(&num_vec, sizeof(int32_t), 1, file)!=1)									\
+		SG_ERROR("Failed to read number of vectors\n");									\
+																						\
+	matrix=new TSparse<sg_type>[num_vec];												\
+																						\
+	for (int32_t i=0; i<num_vec; i++)													\
+	{																					\
+		int32_t len=0;																	\
+		if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
+			SG_ERROR("Failed to read sparse vector length of vector idx=%d\n", i);		\
+		matrix[i].num_feat_entries=len;													\
+		TSparseEntry<sg_type>* vec = new TSparseEntry<sg_type>[len];					\
+		if (fread(vec, sizeof(TSparseEntry<sg_type>), len, file)!= (size_t) len)		\
+			SG_ERROR("Failed to read sparse vector %d\n", i);							\
+		matrix[i].features=vec;															\
+	}																					\
 }
+GET_SPARSEMATRIX(get_bool_sparsematrix, bool, DT_SPARSE_BOOL)
+GET_SPARSEMATRIX(get_char_sparsematrix, char, DT_SPARSE_CHAR)
+GET_SPARSEMATRIX(get_byte_sparsematrix, uint8_t, DT_SPARSE_BYTE)
+GET_SPARSEMATRIX(get_int_sparsematrix, int32_t, DT_SPARSE_INT)
+GET_SPARSEMATRIX(get_uint_sparsematrix, uint32_t, DT_SPARSE_UINT)
+GET_SPARSEMATRIX(get_long_sparsematrix, int64_t, DT_SPARSE_LONG)
+GET_SPARSEMATRIX(get_ulong_sparsematrix, uint64_t, DT_SPARSE_ULONG)
+GET_SPARSEMATRIX(get_short_sparsematrix, int16_t, DT_SPARSE_SHORT)
+GET_SPARSEMATRIX(get_word_sparsematrix, uint16_t, DT_SPARSE_WORD)
+GET_SPARSEMATRIX(get_shortreal_sparsematrix, float32_t, DT_SPARSE_SHORTREAL)
+GET_SPARSEMATRIX(get_real_sparsematrix, float64_t, DT_SPARSE_REAL)
+GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
+#undef GET_SPARSEMATRIX
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
@@ -230,25 +244,40 @@ SET_MATRIX(set_real_matrix, float64_t, DT_DENSE_REAL)
 SET_MATRIX(set_longreal_matrix, floatmax_t, DT_DENSE_LONGREAL)
 #undef SET_MATRIX
 
-void CBinaryFile::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
-{
-	if (!(file && matrix))
-		SG_ERROR("File or matrix invalid.\n");
-
-	write_header(DT_SPARSE_REAL);
-
-	if (fwrite(&num_vec, sizeof(int32_t), 1, file)!=1)
-		SG_ERROR("Failed to write Sparse Matrix\n");
-
-	for (int32_t i=0; i<num_vec; i++)
-	{
-		TSparseEntry<float64_t>* vec = matrix[i].features;
-		int32_t len=matrix[i].num_feat_entries;
-		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||
-				(fwrite(vec, sizeof(TSparseEntry<float64_t>), len, file)!= (size_t) len))
-			SG_ERROR("Failed to write Sparse Matrix\n");
-	}
+#define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
+void CBinaryFile::fname(const TSparse<sg_type>* matrix, 	\
+		int32_t num_feat, int32_t num_vec)					\
+{															\
+	if (!(file && matrix))									\
+		SG_ERROR("File or matrix invalid.\n");				\
+															\
+	write_header(dtype);									\
+															\
+	if (fwrite(&num_vec, sizeof(int32_t), 1, file)!=1)		\
+		SG_ERROR("Failed to write Sparse Matrix\n");		\
+															\
+	for (int32_t i=0; i<num_vec; i++)						\
+	{														\
+		TSparseEntry<sg_type>* vec = matrix[i].features;	\
+		int32_t len=matrix[i].num_feat_entries;				\
+		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||	\
+				(fwrite(vec, sizeof(TSparseEntry<sg_type>), len, file)!= (size_t) len))		\
+			SG_ERROR("Failed to write Sparse Matrix\n");	\
+	}														\
 }
+SET_SPARSEMATRIX(set_bool_sparsematrix, bool, DT_SPARSE_BOOL)
+SET_SPARSEMATRIX(set_char_sparsematrix, char, DT_SPARSE_CHAR)
+SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, DT_SPARSE_BYTE)
+SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, DT_SPARSE_INT)
+SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, DT_SPARSE_UINT)
+SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, DT_SPARSE_LONG)
+SET_SPARSEMATRIX(set_ulong_sparsematrix, uint64_t, DT_SPARSE_ULONG)
+SET_SPARSEMATRIX(set_short_sparsematrix, int16_t, DT_SPARSE_SHORT)
+SET_SPARSEMATRIX(set_word_sparsematrix, uint16_t, DT_SPARSE_WORD)
+SET_SPARSEMATRIX(set_shortreal_sparsematrix, float32_t, DT_SPARSE_SHORTREAL)
+SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, DT_SPARSE_REAL)
+SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
+#undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
 void CBinaryFile::fname(const T_STRING<sg_type>* strings, int32_t num_str)	\
