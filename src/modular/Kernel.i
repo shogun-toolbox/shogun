@@ -62,6 +62,7 @@
 #include <shogun/kernel/MultitaskKernelMklNormalizer.h>    
 #include <shogun/kernel/MultitaskKernelTreeNormalizer.h>
 #include <shogun/kernel/MultitaskKernelMaskNormalizer.h>
+#include <shogun/kernel/MultitaskKernelMaskPairNormalizer.h>
 #include <shogun/kernel/MultitaskKernelPlifNormalizer.h>
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/PolyKernel.h>
@@ -137,6 +138,7 @@
 %rename(MultitaskKernelMklNormalizer) CMultitaskKernelMklNormalizer;
 %rename(MultitaskKernelTreeNormalizer) CMultitaskKernelTreeNormalizer;
 %rename(MultitaskKernelMaskNormalizer) CMultitaskKernelMaskNormalizer;
+%rename(MultitaskKernelMaskPairNormalizer) CMultitaskKernelMaskPairNormalizer;
 %rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
 %rename(OligoStringKernel) COligoStringKernel;
 %rename(PolyKernel) CPolyKernel;
@@ -214,6 +216,10 @@ shogun::CMultitaskKernelMaskNormalizer *KernelNormalizerToMultitaskKernelMaskNor
    return dynamic_cast<shogun::CMultitaskKernelMaskNormalizer*>(n);
 }
 
+shogun::CMultitaskKernelMaskPairNormalizer *KernelNormalizerToMultitaskKernelMaskPairNormalizer(shogun::CKernelNormalizer* n) {
+   return dynamic_cast<shogun::CMultitaskKernelMaskPairNormalizer*>(n);
+}
+
 shogun::CMultitaskKernelPlifNormalizer *KernelNormalizerToMultitaskKernelPlifNormalizer(shogun::CKernelNormalizer* n) {
    return dynamic_cast<shogun::CMultitaskKernelPlifNormalizer*>(n);
 }
@@ -257,6 +263,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/MultitaskKernelMklNormalizer.h>
 %include <shogun/kernel/MultitaskKernelTreeNormalizer.h>
 %include <shogun/kernel/MultitaskKernelMaskNormalizer.h>
+%include <shogun/kernel/MultitaskKernelMaskPairNormalizer.h>
 %include <shogun/kernel/MultitaskKernelPlifNormalizer.h>
 %include <shogun/kernel/OligoStringKernel.h>
 %include <shogun/kernel/PolyKernel.h>
@@ -280,6 +287,9 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 
 
 %include std_vector.i
+%include std_pair.i
 /* instantiate the required template specializations */
 %template(NodeSet) std::vector<shogun::CNode *>;
+%template(Pairii) std::pair<int32_t, int32_t>;
+%template(PairiiVec) std::vector<std::pair<int32_t, int32_t> >;
 
