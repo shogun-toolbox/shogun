@@ -61,20 +61,92 @@ CHDF5File::~CHDF5File()
 //
 
 #define GET_VECTOR(fname, sg_type, datatype)										\
-void CHDF5File::fname(sg_type*& vec, int32_t& len)								\
+void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 {																					\
 	if (!h5file)																	\
 		SG_ERROR("File invalid.\n");												\
-	/*SGDataType dtype=read_header();													\
-	if (dtype!=datatype)															\
-		SG_ERROR("Datatype mismatch\n");											\
+	hid_t dataset = H5Dopen(h5file, variable_name);                                 \
+	hid_t dtype  = H5Dget_type(dataset);                                            \
+	hid_t dataspace = H5Dget_space(dataset);										\
+																					\
+	H5T_class_t t_class=H5Tget_class(dtype);                                        \
+	H5T_sign_t sgn=H5Tget_sign(dtype);												\
+			switch (sgn)                                                            \
+			{                                                                       \
+				case H5T_SGN_NONE:                                                  \
+					printf("false");                                                \
+					break;                                                          \
+				case H5T_SGN_2:                                                     \
+					printf("true");                                                 \
+					break;                                                          \
+				default:															\
+					printf("unknown");                                              \
+					break;															\
+			}                                                                       \
+	size_t sz=H5Tget_size(dtype);													\
+			SG_PRINT("Size=%d\n", sz);                                              \
+                                                                                    \
+	switch (t_class)                                                                \
+	{                                                                               \
+		case H5T_INTEGER:                                                           \
+			SG_PRINT("int\n");                                                    	\
+			break;                                                                  \
+		case H5T_FLOAT:                                                             \
+			SG_PRINT("float\n");                                                    \
+			break;                                                                  \
+		case H5T_STRING:                                                            \
+			SG_PRINT("string\n");                                                   \
+			break;                                                                  \
+		case H5T_VLEN:                                                              \
+			SG_PRINT("vlen\n");                                                     \
+			break;                                                                  \
+		case H5T_ARRAY:                                                             \
+			SG_PRINT("array\n");                                                    \
+			break;                                                                  \
+		default:																	\
+			SG_ERROR("Datatype mismatch\n");										\
+			break;																	\
+	}                                                                               \
+																					\
+	len=H5Sget_simple_extent_npoints(dataspace);									\
+	vec=new sg_type[len];															\
+	herr_t status = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, 					\
+			H5S_ALL, H5P_DEFAULT, vec);												\
+																					\
+   status = H5Dclose(dataset);														\
+}
+
+	/*
+	hsize_t     adims_out[2];
+	 * array_rank_out = H5Tget_array_ndims(datatype);
+	status = H5Tget_array_dims(datatype, adims_out, NULL); 
 																					\
 	if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
 		SG_ERROR("Failed to read vector length\n");									\
 	vec=new sg_type[len];															\
 	if (fread(vec, sizeof(sg_type), len, file)!=(size_t) len)						\
 		SG_ERROR("Failed to read Matrix\n");									*/	\
-}
+//}
+/*
+H5T_NATIVE_CHAR	char
+H5T_NATIVE_SCHAR	signed char
+H5T_NATIVE_UCHAR	unsigned char
+H5T_NATIVE_SHORT	short
+H5T_NATIVE_USHORT	unsigned short
+H5T_NATIVE_INT	int
+H5T_NATIVE_UINT	unsigned
+H5T_NATIVE_LONG	long
+H5T_NATIVE_ULONG	unsigned long
+H5T_NATIVE_LLONG	long long
+H5T_NATIVE_ULLONG	unsigned long long
+H5T_NATIVE_FLOAT	float
+H5T_NATIVE_DOUBLE	double
+H5T_NATIVE_LDOUBLE	long double
+H5T_NATIVE_HSIZE	hsize_t
+H5T_NATIVE_HSSIZE	hssize_t
+H5T_NATIVE_HERR	herr_t
+H5T_NATIVE_HBOOL	hbool_t
+*/
 
 GET_VECTOR(get_bool_vector, bool, DT_VECTOR_BOOL)
 GET_VECTOR(get_byte_vector, uint8_t, DT_VECTOR_BYTE)

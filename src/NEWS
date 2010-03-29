@@ -1,8 +1,9 @@
-2010-03-XX Soeren Sonnenburg <sonne@debian.org>
+2010-03-31 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.9.2 (libshogun 7.0, libshogunui 4.0)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
+		- Direct reading and writing of ASCII/Binary files/HDF5 based files.
 		- Implemented multi task kernel normalizer.
 		- Implement SNP kernel.
 		- Implement time limit for libsvm/libsvr.
