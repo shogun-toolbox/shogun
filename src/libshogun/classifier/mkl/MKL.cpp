@@ -99,7 +99,7 @@ bool CMKL::init_cplex()
 				if ( status )
 				{
 					SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
-				}	
+				}
 				else
 				{
 					lp_cplex = CPXcreateprob (env, &status, "light");
@@ -136,7 +136,7 @@ bool CMKL::cleanup_cplex()
 	{
 		int32_t status = CPXcloseCPLEX (&env);
 		env=NULL;
-		
+
 		if (status)
 		{
 			char  errmsg[1024];
@@ -208,9 +208,9 @@ bool CMKL::train(CFeatures* data)
 
 	int32_t num_label=0;
 	if (labels)
-		labels->get_num_labels();
+		num_label = labels->get_num_labels();
 
-	SG_INFO("%d trainlabels\n", num_label);
+	SG_INFO("%d trainlabels (%ld)\n", num_label, labels);
 	if (mkl_epsilon<=0)
 		mkl_epsilon=1e-2 ;
 
@@ -272,7 +272,7 @@ bool CMKL::train(CFeatures* data)
 
 	mkl_iterations = 0;
 	CSignal::clear_cancel();
-	
+
 	if (interleaved_optimization)
 	{
 		if (svm->get_classifier_type() != CT_LIGHT && svm->get_classifier_type() != CT_SVRLIGHT)
@@ -946,15 +946,16 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			initial_rhs[0]=1 ;     // rhs=1 ;
 			initial_sense[0]='E' ; // equality
 
+			// sparse matrix
 			for (int32_t i=0; i<num_kernels; i++)
 			{
-				initial_rmatind[i]=i ;
-				initial_rmatval[i]=1 ;
+				initial_rmatind[i]=i ; //index of non-zero element
+				initial_rmatval[i]=1 ; //value of ...
 			}
-			initial_rmatind[num_kernels]=2*num_kernels ;
+			initial_rmatind[num_kernels]=2*num_kernels ; //number of non-zero elements
 			initial_rmatval[num_kernels]=0 ;
 
-			status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1, 
+			status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1,
 					initial_rhs, initial_sense, initial_rmatbeg,
 					initial_rmatind, initial_rmatval, NULL, NULL);
 
@@ -968,7 +969,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			initial_rmatind[0]=2*num_kernels ;
 			initial_rmatval[0]=0 ;
 
-			status = CPXaddrows (env, lp_cplex, 0, 1, 1, 
+			status = CPXaddrows (env, lp_cplex, 0, 1, 1,
 					initial_rhs, initial_sense, initial_rmatbeg,
 					initial_rmatind, initial_rmatval, NULL, NULL);
 
@@ -1015,7 +1016,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 				rmatval[1]=-1 ;
 				rmatind[2]=num_kernels+q ;
 				rmatval[2]=-1 ;
-				status = CPXaddrows (env, lp_cplex, 0, 1, 3, 
+				status = CPXaddrows (env, lp_cplex, 0, 1, 3,
 						rhs, sense, rmatbeg,
 						rmatind, rmatval, NULL, NULL);
 				if ( status )
@@ -1030,7 +1031,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 				rmatval[1]=1 ;
 				rmatind[2]=num_kernels+q ;
 				rmatval[2]=-1 ;
-				status = CPXaddrows (env, lp_cplex, 0, 1, 3, 
+				status = CPXaddrows (env, lp_cplex, 0, 1, 3,
 						rhs, sense, rmatbeg,
 						rmatind, rmatval, NULL, NULL);
 				if ( status )
@@ -1067,16 +1068,16 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 		rmatind[num_kernels]=2*num_kernels ;
 		rmatval[num_kernels]=-1 ;
 
-		int32_t status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1, 
+		int32_t status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1,
 				rhs, sense, rmatbeg,
 				rmatind, rmatval, NULL, NULL);
-		if ( status ) 
+		if ( status )
 			SG_ERROR( "Failed to add the new row.\n");
 	}
 
 	inner_iters=0;
 	int status;
-	{ 
+	{
 
 		if (mkl_norm==1) // optimize 1 norm MKL
 			status = CPXlpopt (env, lp_cplex);
@@ -1101,7 +1102,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 				set_qnorm_constraints(beta, num_kernels);
 
 				status = CPXbaropt(env, lp_cplex);
-				if ( status ) 
+				if ( status )
 					SG_ERROR( "Failed to optimize Problem.\n");
 
 				int solstat=0;
@@ -1128,7 +1129,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			delete[] beta;
 		}
 
-		if ( status ) 
+		if ( status )
 			SG_ERROR( "Failed to optimize Problem.\n");
 
 		// obtain solution
@@ -1204,7 +1205,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			{
 				//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 				status = CPXdelrows (env, lp_cplex, max_idx, max_idx) ;
-				if ( status ) 
+				if ( status )
 					SG_ERROR( "Failed to remove an old row.\n");
 			}
 
@@ -1217,7 +1218,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 		}
 		else
 		{
-			/* then something is wrong and we rather 
+			/* then something is wrong and we rather
 			stop sooner than later */
 			rho = 1 ;
 		}
@@ -1286,13 +1287,13 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 				int mat_row_index = lpx_add_rows(lp_glpk, 2);
 				mat_ind[1] = q;
 				mat_val[1] = 1;
-				mat_ind[2] = q+1; 
+				mat_ind[2] = q+1;
 				mat_val[2] = -1;
 				mat_ind[3] = num_kernels+q;
 				mat_val[3] = -1;
 				lpx_set_mat_row(lp_glpk, mat_row_index, 3, mat_ind, mat_val);
 				lpx_set_row_bnds(lp_glpk, mat_row_index, LPX_UP, 0, 0);
-				mat_val[1] = -1; 
+				mat_val[1] = -1;
 				mat_val[2] = 1;
 				lpx_set_mat_row(lp_glpk, mat_row_index+1, 3, mat_ind, mat_val);
 				lpx_set_row_bnds(lp_glpk, mat_row_index+1, LPX_UP, 0, 0);
@@ -1407,11 +1408,11 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 		kernel->set_subkernel_weights(beta, num_kernels);
 
 		for (int32_t i=0; i<nsv; i++)
-		{   
+		{
 			int32_t ii=svm->get_support_vector(i);
 
 			for (int32_t j=0; j<nsv; j++)
-			{   
+			{
 				int32_t jj=svm->get_support_vector(j);
 				sumw[n]+=0.5*svm->get_alpha(i)*svm->get_alpha(j)*kernel->kernel(ii,jj);
 			}
@@ -1487,13 +1488,14 @@ void CMKL::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 
 	//CMath::display_vector(beta, num_kernels, "beta");
 	double const_term = 1-CMath::qsq(beta, num_kernels, mkl_norm);
+
 	//SG_PRINT("const=%f\n", const_term);
 	ASSERT(CMath::fequal(const_term, 0.0));
 
 	for (int32_t i=0; i<num_kernels; i++)
 	{
 		grad_beta[i]=mkl_norm * pow(beta[i], mkl_norm-1);
-		hess_beta[i]=0.5*mkl_norm*(mkl_norm-1) * pow(beta[i], mkl_norm-2); 
+		hess_beta[i]=0.5*mkl_norm*(mkl_norm-1) * pow(beta[i], mkl_norm-2);
 		lin_term[i]=grad_beta[i] - 2*beta[i]*hess_beta[i];
 		const_term+=grad_beta[i]*beta[i] - CMath::sq(beta[i])*hess_beta[i];
 		ind[i]=i;
