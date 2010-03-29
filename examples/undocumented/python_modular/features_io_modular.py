@@ -1,9 +1,24 @@
 def io ():
 	print 'Features IO'
 	import numpy
-	from shogun.Features import RealFeatures, Labels
+	from shogun.Features import SparseRealFeatures, RealFeatures, Labels
 	from shogun.Kernel import GaussianKernel
 	from shogun.Library import AsciiFile, BinaryFile
+
+	feats=SparseRealFeatures(fm_train_real)
+	feats2=SparseRealFeatures()
+
+	f=BinaryFile("fm_train_sparsereal.bin","w")
+	feats.save(f)
+
+	f=AsciiFile("fm_train_sparsereal.ascii","w")
+	feats.save(f)
+
+	f=BinaryFile("fm_train_sparsereal.bin")
+	feats2.load(f)
+
+	f=AsciiFile("fm_train_sparsereal.ascii")
+	feats2.load(f)
 
 	feats=RealFeatures(fm_train_real)
 	feats2=RealFeatures()
