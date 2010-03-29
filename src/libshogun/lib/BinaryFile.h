@@ -43,9 +43,6 @@ public:
 
 	virtual ~CBinaryFile();
 
-	void set_variable_name(const char* name);
-	char* get_variable_name();
-
 	/** get data type of current element */
 	//virtual DataType get_data_type();
 

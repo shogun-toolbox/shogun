@@ -13,15 +13,20 @@
 #include <string.h>
 
 #include "lib/File.h"
-#include "lib/SimpleFile.h"
 
 #include "features/StringFeatures.h"
 #include "features/SparseFeatures.h"
 
 using namespace shogun;
 
-CFile::CFile(FILE* f, const char* name)
-: CSGObject()
+CFile::CFile() : CSGObject()
+{
+	file=NULL;
+	filename=NULL;
+	variable_name=NULL;
+}
+
+CFile::CFile(FILE* f, const char* name) : CSGObject()
 {
 	file=f;
 	filename=NULL;
@@ -31,8 +36,7 @@ CFile::CFile(FILE* f, const char* name)
 		set_variable_name(name);
 }
 
-CFile::CFile(char* fname, char rw, const char* name)
-: CSGObject()
+CFile::CFile(char* fname, char rw, const char* name) : CSGObject()
 {
 	variable_name=NULL;
 	task=rw;

@@ -122,6 +122,10 @@ enum SGDataType
 class CFile : public CSGObject
 {
 public:
+	/** default constructor
+	 */
+	CFile();
+
 	/** constructor
 	 *
 	 * @param f already opened file

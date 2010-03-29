@@ -17,15 +17,6 @@ CAsciiFile::~CAsciiFile()
 {
 }
 
-void CAsciiFile::set_variable_name(const char* name)
-{
-}
-
-char* CAsciiFile::get_variable_name()
-{
-	return NULL;
-}
-
 #define GET_VECTOR(fname, mfname, sg_type) \
 void CAsciiFile::fname(sg_type*& vec, int32_t& len) \
 {													\

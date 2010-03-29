@@ -46,6 +46,7 @@ EXT_OBJ_C=c.o
 _swig_version=0.0.0
 _readline=auto
 _boost_serialization=no
+_hdf5=auto
 _r=no
 if [ -e libshogun/classifier/svm/SVM_light.cpp ]; then
   _svm_light=yes
@@ -731,6 +732,7 @@ Installation directories:
 
 Optional features:
   --enable-boost-serialization  enable boost serialization support [disabled]
+  --enable-hdf5                 enable hdf5 file support [auto]
   --enable-readline             enable readline in cmdline interface [auto]
   --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
   --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [enabled]
@@ -738,6 +740,7 @@ Optional features:
   --enable-hmm-parallel         enable parallel structures in hmm training. shogun will then run as many threads as the machine has (much faster) [disabled]
 
   --disable-boost-serialization disable boost serialization support [disable]
+  --disable-hdf5                disable hdf5 file support [auto]
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
   --disable-lapack              disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-cplex               disable code using CPLEX  [auto]
@@ -896,6 +899,8 @@ for ac_option do
     ;;
   --disable-boost-serialization)		_boost_serialization=no	;;
   --enable-boost-serialization)		_boost_serialization=yes	;;
+  --disable-hdf5)		_hdf5=no	;;
+  --enable-hdf5)		_hdf5=yes	;;
   --disable-svm-light)	_svm_light=no;	_gpl=yes;;
   --enable-svm-light)	_svm_light=yes; _gpl=no;;
   --disable-readline)	_readline=no	;;
@@ -2356,6 +2361,28 @@ EOF
 					HAVE_BOOST_SERIALIZATION='#define HAVE_BOOST_SERIALIZATION 1'
 					DEFINES="$DEFINES -DHAVE_BOOST_SERIALIZATION"
 					LINKFLAGS="$LINKFLAGS -lboost_serialization"
+					echores "yes"
+				else
+					echores "no"
+				fi
+			fi
+
+			if test "$_hdf5" = yes || test "$_hdf5" = auto
+			then
+cat > $TMPC << EOF
+#include <hdf5.h>
+int main(void)
+{
+	hid_t file = H5Fcreate("foobar.h5", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	return 0;
+}
+EOF
+				echocheck "HDF5 support"
+				if cc_check -lhdf5
+				then
+					HAVE_HDF5='#define HAVE_HDF5 1'
+					DEFINES="$DEFINES -DHAVE_HDF5"
+					LINKFLAGS="$LINKFLAGS -lhdf5"
 					echores "yes"
 				else
 					echores "no"
@@ -3870,6 +3897,7 @@ write_config_h()
 cat >"$1" <<EOF
 $HAVE_READLINE
 $HAVE_BOOST_SERIALIZATION
+$HAVE_HDF5
 $HAVE_LARGEFILE
 $HAVE_DOXYGEN
 $HAVE_LAPACK
