@@ -22,6 +22,7 @@ namespace shogun
 {
 	class CFile;
 	class CPreProc;
+	class CKernel;
 	enum EFeatureType;
 	enum EFeatureClass;
 	enum EFeatureProperty;

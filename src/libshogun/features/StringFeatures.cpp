@@ -8,9 +8,11 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#ifdef HAVE_BOOST_SERIALIZATION
 
-#include "features/StringFeatures.h"
+#ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(shogun::CStringFeatures<char>);
+#include "features/StringFeatures.h"
+BOOST_CLASS_EXPORT_GUID(shogun::CStringFeatures<char>, "shogun::CStringFeatures<char>");
+//BOOST_CLASS_EXPORT(shogun::CStringFeatures<char>);
+//BOOST_CLASS_EXPORT(shogun::T_STRING<char>);
 #endif //HAVE_BOOST_SERIALIZATION

@@ -15,12 +15,13 @@
 
 #include <string.h>
 
-#ifdef HAVE_BOOST_SERIALIZATION
 
+#ifdef HAVE_BOOST_SERIALIZATION
+#include "kernel/Kernel.h"
 #include <boost/serialization/export.hpp>
 BOOST_CLASS_EXPORT(shogun::CFeatures);
-
 #endif //HAVE_BOOST_SERIALIZATION
+
 
 using namespace shogun;
 
@@ -55,7 +56,7 @@ CFeatures::~CFeatures()
 
 /// set preprocessor
 int32_t CFeatures::add_preproc(CPreProc* p)
-{ 
+{
 	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc);
 	ASSERT(p);
 
@@ -85,7 +86,7 @@ int32_t CFeatures::add_preproc(CPreProc* p)
 
 /// get current preprocessor
 CPreProc* CFeatures::get_preproc(int32_t num)
-{ 
+{
 	if (num<num_preproc)
 	{
 		SG_REF(preproc[num]);
@@ -118,8 +119,8 @@ void CFeatures::clean_preprocs()
 /// del current preprocessor
 CPreProc* CFeatures::del_preproc(int32_t num)
 {
-	CPreProc** pps=NULL; 
-	bool* preprocd=NULL; 
+	CPreProc** pps=NULL;
+	bool* preprocd=NULL;
 	CPreProc* removed_preproc=NULL;
 
 	if (num_preproc>0 && num<num_preproc)

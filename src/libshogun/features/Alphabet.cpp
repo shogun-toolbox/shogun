@@ -14,6 +14,13 @@
 #include "features/Alphabet.h"
 #include "lib/io.h"
 
+
+#ifdef HAVE_BOOST_SERIALIZATION
+#include <boost/serialization/export.hpp>
+BOOST_CLASS_EXPORT(shogun::CAlphabet);
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 using namespace shogun;
 
 //define numbers for the bases
@@ -683,39 +690,3 @@ const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 	return alphabet_names[idx];
 }
 
-#ifdef HAVE_BOOST_SERIALIZATION
-std::string CAlphabet::to_string() const
-{
-	std::ostringstream s;
-	::boost::archive::text_oarchive oa(s);
-	oa << this;
-	return s.str();
-}
-
-void CAlphabet::from_string(std::string str)
-{
-	std::istringstream is(str);
-	::boost::archive::text_iarchive ia(is);
-
-	//cast away constness
-	CAlphabet* tmp = const_cast<CAlphabet*>(this);
-
-	ia >> tmp;
-	*this = *tmp;
-}
-
-void CAlphabet::to_file(std::string filename) const
-{
-	std::ofstream os(filename.c_str(), std::ios::binary);
-	::boost::archive::binary_oarchive oa(os);
-	oa << this;
-}
-
-void CAlphabet::from_file(std::string filename)
-{
-	std::ifstream is(filename.c_str(), std::ios::binary);
-	::boost::archive::binary_iarchive ia(is);
-	CAlphabet* tmp= const_cast<CAlphabet*>(this);
-	ia >> tmp;
-}
-#endif //HAVE_BOOST_SERIALIZATION

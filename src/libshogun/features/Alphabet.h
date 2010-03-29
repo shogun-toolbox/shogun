@@ -519,11 +519,12 @@ class CAlphabet : public CSGObject
 
 
 #ifdef HAVE_BOOST_SERIALIZATION
-    private:
+	protected:
 
         friend class ::boost::serialization::access;
 
         template<class Archive>
+
             void serialize(Archive & ar, const unsigned int archive_version)
             {
 
@@ -531,37 +532,12 @@ class CAlphabet : public CSGObject
 
                 ar & ::boost::serialization::base_object<CSGObject>(*this);
 
-                ar & alphabet;
-                ar & num_symbols;
                 ar & num_bits;
 
                 SG_DEBUG("done with CAlphabet\n");
 
             }
 
-        /** Serialization Function: Convert object to a string
-         *
-         * @return string
-         */
-        virtual std::string to_string() const;
-
-        /** Serialization Function: Obtain object from string
-         *
-         * @param filename file name
-         */
-        virtual void from_string(std::string str);
-
-        /** Serialization Function: Save the object to file
-         *
-         * @param filename file name
-         */
-        virtual void to_file(std::string filename) const;
-
-        /** Serialization Function: Load the object from file
-         *
-         * @param filename file name
-         */
-        virtual void from_file(std::string filename);
 
 #endif //HAVE_BOOST_SERIALIZATION
 
@@ -629,25 +605,25 @@ template<> inline void CAlphabet::translate_from_single_order_reversed(floatmax_
 }
 
 #ifdef HAVE_BOOST_SERIALIZATION
-//http://www.koders.com/cpp/fidB8C82A2BBA651A5E4EEC668EDE70B86EA017E937.aspx
+
 namespace boost {
 namespace serialization {
    template<class Archive>
-    inline void save_construct_data(Archive & ar, const shogun::CAlphabet* t, const unsigned int archive_version)
+    inline void save_construct_data(Archive & ar, shogun::CAlphabet* t, const unsigned int archive_version)
     {
-      shogun::EAlphabet a = t->get_alphabet();
-      ar << a;
-
+      std::cout << "archiving construction data CAlphabet" << std::endl;
+      ar << t->alphabet;
+      std::cout << "done archiving construction data CAlphabet" << std::endl;
     }
 
     template<class Archive>
     inline void load_construct_data(Archive & ar, shogun::CAlphabet * t, const unsigned int archive_version)
     {
-
+      //SG_DEBUG("archiving construction data CAlphabet\n");
       shogun::EAlphabet a;
       ar >> a;
       new(t)shogun::CAlphabet(a);
-
+      //SG_DEBUG("done construction data archiving CAlphabet\n");
     }
 } // serialization
 } // namespace boost
