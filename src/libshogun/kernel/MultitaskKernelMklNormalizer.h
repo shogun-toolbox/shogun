@@ -17,8 +17,6 @@
 #include <algorithm>
 
 
-
-
 namespace shogun
 {
 
@@ -50,7 +48,14 @@ public:
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 
-		scale=k->compute(0, 0);
+		if (std::string(k->get_name()) == "WeightedDegree") {
+			SG_INFO("using first-element normalization\n");
+			scale=k->compute(0, 0);
+		} else {
+			SG_INFO("no inner normalization for non-WDK kernel\n");
+			scale=1.0;
+		}
+
 
 		k->lhs=old_lhs;
 		k->rhs=old_rhs;
@@ -61,7 +66,6 @@ public:
 		ASSERT(num_lhs>0);
 		ASSERT(num_rhs>0);
 
-		std::cout << "scale: " << scale << std::endl;
 
 		return true;
 	}
@@ -104,7 +108,7 @@ public:
 
 
 	/**
-	 *
+	 * @return number of sub-kernel weights for MKL
 	 */
 	virtual int32_t get_num_betas() = 0;
 

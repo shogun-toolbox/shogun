@@ -20,21 +20,15 @@
 
 namespace shogun
 {
-/** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function.
+/** @brief The MultitaskKernel allows learning a piece-wise linear function (PLIF) via MKL
  *
- * This effectively normalizes the vectors in feature space to norm 1 (see
- * CSqrtDiagKernelNormalizer)
- *
- * \f[
- * k'({\bf x},{\bf x'}) = ...
- * \f]
  */
 class CMultitaskKernelPlifNormalizer: public CMultitaskKernelMklNormalizer
 {
 
 public:
 
-	/** default constructor
+	/** constructor
 	 */
 	CMultitaskKernelPlifNormalizer(std::vector<float64_t> support_, std::vector<int32_t> task_vector)
 	{
@@ -92,23 +86,22 @@ public:
 	/** helper routine
 	 *
 	 * @param vec vector with containing task_id for each example
+	 * @return number of unique task ids
 	 */
 	int32_t get_num_unique_tasks(std::vector<int32_t> vec) {
 
-		//invoke copy contructor
-		//std::vector<int32_t> vec = std::vector<int32_t>(task_vector_lhs.begin(), task_vector_lhs.end());
+		//sort
+		std::sort(vec.begin(), vec.end());
 
 		//reorder tasks with unique prefix
-		std::vector<int32_t>::iterator endLocation_lhs = std::unique(
-				vec.begin(), vec.end());
+		std::vector<int32_t>::iterator endLocation = std::unique(vec.begin(), vec.end());
 
 		//count unique tasks
-		int32_t num_vec = std::distance(vec.begin(), endLocation_lhs);
+		int32_t num_vec = std::distance(vec.begin(), endLocation);
 
 		return num_vec;
 
 	}
-
 
 
 	/** default destructor */
@@ -149,14 +142,12 @@ public:
 		// determine interval
 		for (int i=1; i!=num_betas; i++)
 		{
-
-			if (support[i] >= distance)
+			if (distance <= support[i])
 			{
 				upper_bound_idx = i;
+				break;
 			}
-
 		}
-
 
 		// perform interpolation (constant for beyond upper bound)
 		if (upper_bound_idx == -1)
@@ -169,7 +160,7 @@ public:
 			int32_t lower_bound_idx = upper_bound_idx - 1;
 			float64_t interval_size = support[upper_bound_idx] - support[lower_bound_idx];
 
-			float64_t factor_lower = (distance - betas[lower_bound_idx]) / interval_size;
+			float64_t factor_lower = 1 - (distance - support[lower_bound_idx]) / interval_size;
 			float64_t factor_upper = 1 - factor_lower;
 
 			similarity = factor_lower*betas[lower_bound_idx] + factor_upper*betas[upper_bound_idx];
@@ -286,6 +277,10 @@ public:
 
 	}
 
+	/**
+	 *  @param idx index of MKL weight to set
+	 *  @param weight MKL weight to set
+	 */
 	void set_beta(int32_t idx, float64_t weight)
 	{
 
@@ -295,6 +290,9 @@ public:
 
 	}
 
+	/**
+	 *  @return number of kernel weights (support points)
+	 */
 	int32_t get_num_betas()
 	{
 

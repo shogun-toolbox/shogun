@@ -25,7 +25,7 @@ namespace shogun
  * CSqrtDiagKernelNormalizer)
  *
  * \f[
- * k'({\bf x},{\bf x'}) = ...
+ * k'({\bf x},{\bf x'}) = \gamma(task({\bf x}),task({\bf x'})) k({\bf x},{\bf x'})
  * \f]
  */
 class CMultitaskKernelNormalizer: public CKernelNormalizer
@@ -93,7 +93,13 @@ public:
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 
-		scale=k->compute(0, 0);
+		if (std::string(k->get_name()) == "WeightedDegree") {
+			SG_INFO("using first-element normalization\n");
+			scale=k->compute(0, 0);
+		} else {
+			SG_INFO("no inner normalization for non-WDK kernel\n");
+			scale=1.0;
+		}
 
 		k->lhs=old_lhs;
 		k->rhs=old_rhs;

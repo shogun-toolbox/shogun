@@ -21,11 +21,12 @@ namespace shogun
 
 /** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function.
  *
- * This effectively normalizes the vectors in feature space to norm 1 (see
- * CSqrtDiagKernelNormalizer)
+ * The user defines a set of active tasks. Subsequently, only similarities between active
+ * tasks are taken into account. Kernel entries between tasks of which at least one is
+ * not an active tasks are set to zero.
  *
  * \f[
- * k'({\bf x},{\bf x'}) = ...
+ * K_S(x,y)=\left\{\begin{array}{cl} K_B(x,y), & \mbox{if } t(x) \in S \wedge t(y) \in S\\ 0, & \mbox{else} \end{array}\right.
  * \f]
  */
 class CMultitaskKernelMaskNormalizer: public CKernelNormalizer
@@ -86,7 +87,13 @@ public:
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 
-		scale=1.0; //k->compute(0, 0);
+		if (std::string(k->get_name()) == "WeightedDegree") {
+			SG_INFO("using first-element normalization\n");
+			scale=k->compute(0, 0);
+		} else {
+			SG_INFO("no inner normalization for non-WDK kernel\n");
+			scale=1.0;
+		}
 
 		k->lhs=old_lhs;
 		k->rhs=old_rhs;
@@ -211,6 +218,9 @@ public:
 
 	}
 
+	/**
+	 * @return list of active task ids
+	 */
 	std::vector<int32_t> get_active_tasks()
 	{
 
@@ -225,18 +235,21 @@ public:
 		return active_tasks_vec;
 	}
 
-
+	/**
+	 * @return normalization constant
+	 */
 	float64_t get_normalization_constant () const
 	{
 		return normalization_constant;
 	}
 
+	/**
+	 * @param constant normalization constant
+	 */
 	float64_t set_normalization_constant(float64_t constant)
 	{
 		normalization_constant = constant;
 	}
-
-
 
 	/** @return object name */
 	inline virtual const char* get_name() const

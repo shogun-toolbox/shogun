@@ -22,14 +22,18 @@
 namespace shogun
 {
 
-
+/** @brief A CNode is an element of a CTaxonomy, which is used to describe hierarchical
+ * 	structure between tasks.
+ *
+ */
 class CNode: public CSGObject
 {
 
 public:
 
 
-
+	/** default constructor
+	 */
     CNode()
     {
         parent = NULL;
@@ -37,6 +41,9 @@ public:
         node_id = 0;
     }
 
+    /** get a list of all ancestors of this node
+     *  @return set of CNodes
+	 */
     std::set<CNode*> get_path_root()
     {
         std::set<CNode*> nodes_on_path = std::set<CNode*>();
@@ -48,6 +55,9 @@ public:
         return nodes_on_path;
     }
 
+    /** get a list of task ids at the leaves below the current node
+	 *  @return list of task ids
+	 */
     std::vector<int32_t> get_task_ids_below()
     {
 
@@ -73,51 +83,68 @@ public:
         return task_ids;
     }
 
+    /** add child to current node
+	 *  @param node child node
+	 */
     void add_child(CNode *node)
     {
         node->parent = this;
         this->children.push_back(node);
     }
 
+    /** @return object name */
     inline virtual const char *get_name() const
     {
         return "CNode";
     }
 
+    /** @return boolean indicating, whether this node is a leaf */
     bool is_leaf()
 	{
 		return children.empty();
 
 	}
 
+    /** @return node id of current node */
     int32_t getNode_id() const
     {
         return node_id;
     }
 
+    /** @param node_idx node id for current node */
     void setNode_id(int32_t node_idx)
     {
         this->node_id = node_idx;
     }
 
-
+    /** parameter of node **/
 	float64_t beta;
 
 protected:
 
+	/** parent node **/
 	CNode* parent;
+
+	/** list of child nodes **/
 	std::vector<CNode*> children;
+
+	/** identifier of node **/
 	int32_t node_id;
 
 };
 
 
+/** @brief CTaxonomy is used to describe hierarchical
+ * 	structure between tasks.
+ *
+ */
 class CTaxonomy : public CSGObject
 {
 
 public:
 
-
+	/** default constructor
+	 */
 	CTaxonomy(){
 		root = new CNode();
 		nodes.push_back(root);
@@ -126,16 +153,27 @@ public:
 		name2id["root"] = 0;
 	}
 
-
+	/**
+	 *  @param task_id task identifier
+	 *  @return node with id task_id
+	 */
 	CNode* get_node(int32_t task_id) {
 		return nodes[task_id];
 	}
 
+	/** set root weight
+	 *  @param beta weight
+	 */
 	void set_root_beta(float64_t beta)
 	{
 		nodes[0]->beta = beta;
 	}
 
+	/** inserts additional node into taxonomy
+	 *  @param parent_name name of parent
+	 *  @param child_name name of child
+	 *  @param beta weight of child
+	 */
 	CNode* add_node(std::string parent_name, std::string child_name, float64_t beta) {
 
 
@@ -164,11 +202,19 @@ public:
 
 	}
 
+	/** translates name to id
+	 *  @param name name of task
+	 *  @return id
+	 */
 	int32_t get_id(std::string name) {
-		//std::cout << "-->" << name << "<--" << std::endl;
 		return name2id[name];
 	}
 
+	/** given two nodes, compute the intersection of their ancestors
+	 *  @param node_lhs node of left hand side
+	 *  @param node_rhs node of right hand side
+	 *  @return intersection of the two sets of ancestors
+	 */
 	std::set<CNode*> intersect_root_path(CNode* node_lhs, CNode* node_rhs) {
 
 		std::set<CNode*> root_path_lhs = node_lhs->get_path_root();
@@ -202,28 +248,6 @@ public:
 		float64_t gamma = 0;
 		for (std::set<CNode*>::const_iterator p = intersection.begin(); p != intersection.end(); ++p) {
 
-			/*
-			std::vector<int32_t> task_ids = (*p)->get_task_ids_below();
-
-			std::cout << "node name:" << (*p)->getNode_id() << ", num node underneath: " << task_ids.size() << std::endl;
-
-			float64_t task_sizes = 0.0;
-
-			for (std::vector<int32_t>::const_iterator id_iter = task_ids.begin(); id_iter != task_ids.end(); ++id_iter) {
-				 std::cout << "task_id: " << *id_iter << ", size: " << task_histogram[*id_iter] << std::endl;
-				 //task_sizes += task_histogram[*id_iter];
-				 task_sizes += 0.3333;
-			}
-
-			std::cout << "cumulative size:" << task_sizes << std::endl;
-
-			std::cout << "================" << std::endl << std::endl;
-
-			float64_t fraction_ones = 1.0 / (task_sizes * task_sizes);
-
-			gamma += (*p)->beta * fraction_ones;
-			*/
-
 			gamma += (*p)->beta;
 		}
 
@@ -231,7 +255,9 @@ public:
 
 	}
 
-
+	/** keep track of how many elements each task has
+	 * @param task_vector_lhs vector of task ids for examples
+	 */
 	void update_task_histogram(std::vector<int32_t> task_vector_lhs) {
 
 		//empty map
@@ -261,14 +287,13 @@ public:
 
 	}
 
-
-
-
+	/** @return number of nodes */
 	int32_t get_num_nodes()
 	{
 		return (int32_t)(nodes.size());
 	}
 
+	/** @return number of leaves */
 	int32_t get_num_leaves()
 	{
 		int32_t num_leaves = 0;
@@ -284,12 +309,17 @@ public:
 		return num_leaves;
 	}
 
+	/** @return weight of node with identifier idx */
 	float64_t get_node_weight(int32_t idx)
 	{
 		CNode* node = get_node(idx);
 		return node->beta;
 	}
 
+	/**
+	 *  @param idx node id
+	 *  @param weight weight to set
+	 */
 	void set_node_weight(int32_t idx, float64_t weight)
 	{
 		CNode* node = get_node(idx);
@@ -302,9 +332,19 @@ public:
 		return "CTaxonomy";
 	}
 
-
+	/** @return mapping from name to id */
 	std::map<std::string, int32_t> get_name2id() {
 		return name2id;
+	}
+
+	/**
+	 *  translate name to id
+	 *  @param name node name
+	 *  @return id
+	 */
+	int32_t get_id_by_name(std::string name)
+	{
+		return name2id[name];
 	}
 
 
@@ -322,14 +362,8 @@ protected:
 
 class CMultitaskKernelMklNormalizer;
 
-/** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function.
+/** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function based on taxonomy.
  *
- * This effectively normalizes the vectors in feature space to norm 1 (see
- * CSqrtDiagKernelNormalizer)
- *
- * \f[
- * k'({\bf x},{\bf x'}) = ...
- * \f]
  */
 class CMultitaskKernelTreeNormalizer: public CMultitaskKernelMklNormalizer
 {
@@ -440,13 +474,6 @@ public:
 		return 0;
 	}
 
-	/** @return vec task vector with containing task_id for each example on left hand side */
-	/*
-	std::vector<std::string> get_task_vector_lhs() const
-	{
-		return task_vector_lhs;
-	}
-	*/
 
 	/** @param vec task vector with containing task_id for each example */
 	void set_task_vector_lhs(std::vector<std::string> vec)
@@ -464,32 +491,9 @@ public:
 
 	}
 
-	/** @return vec task vector with containing task_id for each example on right hand side */
-	/*
-	std::vector<std::string> get_task_vector_rhs() const
-	{
-		return task_vector_rhs;
-	}
-	*/
-
 	/** @param vec task vector with containing task_id for each example */
 	void set_task_vector_rhs(std::vector<std::string> vec)
 	{
-
-
-		std::cout << "map size:" << taxonomy.get_name2id().size() << std::endl;
-
-		/*
-
-	    // Iterate over the map and print out all key/value pairs.
-	    // Using a const_iterator since we are not going to change the values.
-	    for(std::map<std::string, int32_t>::const_iterator it = taxonomy.get_name2id().begin(); it != taxonomy.get_name2id().end(); ++it)
-	    {
-	        std::cout << "Who(key = first): " << it->first;
-	        std::cout << " Score(value = second): " << it->second << std::endl;
-	        std::cout.flush();
-	    }
-		*/
 
 		task_vector_rhs.clear();
 
@@ -507,6 +511,7 @@ public:
 		set_task_vector_rhs(vec);
 	}
 
+	/** @return number of parameters/weights */
 	int32_t get_num_betas()
 	{
 
@@ -514,6 +519,9 @@ public:
 
 	}
 
+	/**
+	 * @param idx id of weight
+	 * @return weight of node with given id */
 	float64_t get_beta(int32_t idx)
 	{
 
@@ -521,6 +529,9 @@ public:
 
 	}
 
+	/**
+	 * @param idx id of weight
+	 * @param weight weight of node with given id */
 	void set_beta(int32_t idx, float64_t weight)
 	{
 
@@ -529,7 +540,6 @@ public:
 		update_cache();
 
 	}
-
 
 
 	/**
