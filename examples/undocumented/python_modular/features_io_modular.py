@@ -30,6 +30,9 @@ def io ():
 	f=BinaryFile("label_train_twoclass.bin","w")
 	lab.save(f)
 
+	f=AsciiFile("label_train_twoclass.ascii")
+	lab2.load(f)
+
 	f=BinaryFile("label_train_twoclass.bin")
 	lab2.load(f)
 
