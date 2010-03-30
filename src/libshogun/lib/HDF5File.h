@@ -257,14 +257,17 @@ public:
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "HDF5File"; }
+
 protected:
 	void get_boolean_type();
+	hid_t get_compatible_type(H5T_class_t t_class, SGDataType datatype);
+	bool get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements);
 
 protected:
 	hid_t h5file;
 	hid_t boolean_type;
 };
 }
-#endif //  HDF5
+#endif //  HAVE_HDF5
 #endif //__HDF5_FILE_H__
 

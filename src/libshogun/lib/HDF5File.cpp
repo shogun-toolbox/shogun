@@ -25,6 +25,8 @@ using namespace shogun;
 
 CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 {
+	get_boolean_type();
+
 	if (name)
 		set_variable_name(name);
 
@@ -42,6 +44,9 @@ CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 		default:
 			SG_ERROR("unknown mode '%c'\n", rw);
 	};
+
+	if (h5file<0)
+		SG_ERROR("Could not open file '%s'\n", fname);
 }
 
 CHDF5File::~CHDF5File()
@@ -49,134 +54,42 @@ CHDF5File::~CHDF5File()
 	H5Fclose(h5file);
 }
 
-
-
-void CHDF5File::get_boolean_type()
-{
-	boolean_type=H5T_NATIVE_UCHAR;
-	switch (sizeof(bool))
-	{
-		case 1:
-			boolean_type = H5T_NATIVE_UCHAR;
-			break;
-		case 2:
-			boolean_type = H5T_NATIVE_UINT16;
-			break;
-		case 4:
-			boolean_type = H5T_NATIVE_UINT32;
-			break;
-		case 8:
-			boolean_type = H5T_NATIVE_UINT64;
-			break;
-		default:
-			SG_ERROR("Boolean type not supported on this platform\n");
-	}
-}
-
-//dataset = H5Dopen(file, "/Data/CData");
-//status = H5Dclose(dataset);
-//
-//H5Gcreate(file, "/Data", 0);
-//  herr_t status;
-//    status = H5Gclose(group);
-//
-//
-//grp = H5Gcreate2(file, "/Data", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-//
-
 #define GET_VECTOR(fname, sg_type, datatype)										\
 void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 {																					\
 	if (!h5file)																	\
 		SG_ERROR("File invalid.\n");												\
-	hid_t dataset = H5Dopen(h5file, variable_name);                                 \
-	hid_t dtype  = H5Dget_type(dataset);                                            \
-	hid_t dataspace = H5Dget_space(dataset);										\
 																					\
-	H5T_class_t t_class=H5Tget_class(dtype);                                        \
-	H5T_sign_t sgn=H5Tget_sign(dtype);												\
-			switch (sgn)                                                            \
-			{                                                                       \
-				case H5T_SGN_NONE:                                                  \
-					printf("false");                                                \
-					break;                                                          \
-				case H5T_SGN_2:                                                     \
-					printf("true");                                                 \
-					break;                                                          \
-				default:															\
-					printf("unknown");                                              \
-					break;															\
-			}                                                                       \
-	size_t sz=H5Tget_size(dtype);													\
-			SG_PRINT("Size=%d\n", sz);                                              \
-                                                                                    \
-	switch (t_class)                                                                \
-	{                                                                               \
-		case H5T_INTEGER:                                                           \
-			SG_PRINT("int\n");                                                    	\
-			break;                                                                  \
-		case H5T_FLOAT:                                                             \
-			SG_PRINT("float\n");                                                    \
-			break;                                                                  \
-		case H5T_STRING:                                                            \
-			SG_PRINT("string\n");                                                   \
-			break;                                                                  \
-		case H5T_VLEN:                                                              \
-			SG_PRINT("vlen\n");                                                     \
-			break;                                                                  \
-		case H5T_ARRAY:                                                             \
-			SG_PRINT("array\n");                                                    \
-			break;                                                                  \
-		default:																	\
-			SG_ERROR("Datatype mismatch\n");										\
-			break;																	\
-	}                                                                               \
-																					\
-	int rank = H5Sget_simple_extent_ndims(dataspace); 								\
-	len=H5Sget_simple_extent_npoints(dataspace);									\
-	SG_PRINT("rank=%d, len=%d\n", rank, len);										\
-	hsize_t* dims_out=new hsize_t[rank];											\
-	int status_n = H5Sget_simple_extent_dims(dataspace, dims_out, NULL);			\
-	CMath::display_vector((uint64_t*) dims_out, rank, "dims");						\
-	vec=new sg_type[len];															\
-	herr_t status = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, 					\
+	int32_t* dims;																	\
+	int32_t ndims;																	\
+	int64_t nelements;																\
+	hid_t dataset = H5Dopen(h5file, variable_name);									\
+	if (dataset<0)																	\
+		SG_ERROR("Error opening data set\n");										\
+	hid_t dtype = H5Dget_type(dataset);												\
+	H5T_class_t t_class=H5Tget_class(dtype);										\
+	hid_t h5_type=get_compatible_type(t_class, datatype);							\
+	if (h5_type==-1)																\
+	{																				\
+		H5Dclose(dataset);															\
+		SG_INFO("No compatible datatype found\n");									\
+	}																				\
+	get_dims(dataset, dims, ndims, nelements);										\
+	if (ndims!=1 || dims[0]!=nelements)												\
+		SG_ERROR("Error not a 1-dimensional vector\n");								\
+	vec=new sg_type[nelements];														\
+	len=nelements;																	\
+	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
 			H5S_ALL, H5P_DEFAULT, vec);												\
-																					\
-																					\
-   status = H5Dclose(dataset);														\
+	H5Dclose(dataset);																\
+	H5Tclose(dtype);																\
+	delete[] dims;																	\
+	if (status<0)																	\
+	{																				\
+		delete[] vec;																\
+		SG_ERROR("Error reading dataset\n");										\
+	}																				\
 }
-
-/*
-
-H5T_NATIVE_INT8
-H5T_NATIVE_UINT8
-
-H5T_NATIVE_INT16
-H5T_NATIVE_UINT16
-H5T_NATIVE_INT32
-H5T_NATIVE_UINT32
-
-H5T_NATIVE_INT64
-H5T_NATIVE_UINT64
-H5T_NATIVE_CHAR	char
-H5T_NATIVE_SCHAR	signed char
-H5T_NATIVE_UCHAR	unsigned char
-H5T_NATIVE_SHORT	short
-H5T_NATIVE_USHORT	unsigned short
-H5T_NATIVE_INT	int
-H5T_NATIVE_UINT	unsigned
-H5T_NATIVE_LONG	long
-H5T_NATIVE_ULONG	unsigned long
-H5T_NATIVE_LLONG	long long
-H5T_NATIVE_ULLONG	unsigned long long
-H5T_NATIVE_FLOAT	float
-H5T_NATIVE_DOUBLE	double
-H5T_NATIVE_LDOUBLE	long double
-H5T_NATIVE_HSIZE	hsize_t
-H5T_NATIVE_HSSIZE	hssize_t
-H5T_NATIVE_HERR	herr_t
-H5T_NATIVE_HBOOL	hbool_t
-*/
 
 GET_VECTOR(get_bool_vector, bool, DT_VECTOR_BOOL)
 GET_VECTOR(get_byte_vector, uint8_t, DT_VECTOR_BYTE)
@@ -191,6 +104,39 @@ GET_VECTOR(get_word_vector, uint16_t, DT_VECTOR_WORD)
 #define GET_MATRIX(fname, sg_type, datatype)										\
 void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 {																					\
+	if (!h5file)																	\
+		SG_ERROR("File invalid.\n");												\
+																					\
+	int32_t* dims;																	\
+	int32_t ndims;																	\
+	int64_t nelements;																\
+	hid_t dataset = H5Dopen(h5file, variable_name);									\
+	if (dataset<0)																	\
+		SG_ERROR("Error opening data set\n");										\
+	hid_t dtype = H5Dget_type(dataset);												\
+	H5T_class_t t_class=H5Tget_class(dtype);										\
+	hid_t h5_type=get_compatible_type(t_class, datatype);							\
+	if (h5_type==-1)																\
+	{																				\
+		H5Dclose(dataset);															\
+		SG_INFO("No compatible datatype found\n");									\
+	}																				\
+	get_dims(dataset, dims, ndims, nelements);										\
+	if (ndims!=2)																	\
+		SG_ERROR("Error not a 2-dimensional matrix\n");								\
+	matrix=new sg_type[nelements];													\
+	num_feat=dims[0];																\
+	num_vec=dims[1];																\
+	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
+			H5S_ALL, H5P_DEFAULT, matrix);											\
+	H5Dclose(dataset);																\
+	H5Tclose(dtype);																\
+	delete[] dims;																	\
+	if (status<0)																	\
+	{																				\
+		delete[] matrix;															\
+		SG_ERROR("Error reading dataset\n");										\
+	}																				\
 }
 
 GET_MATRIX(get_bool_matrix, bool, DT_DENSE_BOOL)
@@ -276,6 +222,17 @@ GET_STRING_LIST(get_longreal_string_list, floatmax_t, DT_STRING_LONGREAL)
 #undef GET_STRING_LIST
 
 /** set functions - to pass data from shogun to the target interface */
+
+//dataset = H5Dopen(file, "/Data/CData");
+//status = H5Dclose(dataset);
+//
+//H5Gcreate(file, "/Data", 0);
+//  herr_t status;
+//    status = H5Gclose(group);
+//
+//
+//grp = H5Gcreate2(file, "/Data", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+//
 
 #define SET_VECTOR(fname, sg_type, dtype)							\
 void CHDF5File::fname(const sg_type* vec, int32_t len)			\
@@ -363,4 +320,113 @@ SET_STRING_LIST(set_real_string_list, float64_t, DT_STRING_REAL)
 SET_STRING_LIST(set_longreal_string_list, floatmax_t, DT_STRING_LONGREAL)
 #undef SET_STRING_LIST
 
+void CHDF5File::get_boolean_type()
+{
+	boolean_type=H5T_NATIVE_UCHAR;
+	switch (sizeof(bool))
+	{
+		case 1:
+			boolean_type = H5T_NATIVE_UCHAR;
+			break;
+		case 2:
+			boolean_type = H5T_NATIVE_UINT16;
+			break;
+		case 4:
+			boolean_type = H5T_NATIVE_UINT32;
+			break;
+		case 8:
+			boolean_type = H5T_NATIVE_UINT64;
+			break;
+		default:
+			SG_ERROR("Boolean type not supported on this platform\n");
+	}
+}
+
+hid_t CHDF5File::get_compatible_type(H5T_class_t t_class, SGDataType datatype)
+{
+	switch (t_class)
+	{
+		case H5T_FLOAT:
+		case H5T_INTEGER:
+			switch (datatype)
+			{
+				case DT_VECTOR_SHORTREAL:
+				case DT_NDARRAY_SHORTREAL:
+				case DT_DENSE_SHORTREAL:
+					return H5T_NATIVE_FLOAT;
+				case DT_VECTOR_REAL:
+				case DT_NDARRAY_REAL:
+				case DT_DENSE_REAL:
+					return H5T_NATIVE_DOUBLE;
+				case DT_VECTOR_LONGREAL:
+				case DT_NDARRAY_LONGREAL:
+				case DT_DENSE_LONGREAL:
+					return H5T_NATIVE_LDOUBLE;
+				case DT_VECTOR_BOOL:
+				case DT_DENSE_BOOL:
+				case DT_NDARRAY_BOOL:
+					return boolean_type;
+				case DT_VECTOR_BYTE:
+				case DT_DENSE_BYTE:
+				case DT_NDARRAY_BYTE:
+					return H5T_NATIVE_UINT8;
+				case DT_VECTOR_CHAR:
+				case DT_DENSE_CHAR:
+				case DT_NDARRAY_CHAR:
+					return H5T_NATIVE_CHAR;
+				case DT_VECTOR_INT:
+				case DT_DENSE_INT:
+				case DT_NDARRAY_INT:
+					return H5T_NATIVE_INT32;
+				case DT_VECTOR_UINT:
+				case DT_DENSE_UINT:
+				case DT_NDARRAY_UINT:
+					return H5T_NATIVE_UINT32;
+				case DT_VECTOR_LONG:
+				case DT_DENSE_LONG:
+				case DT_NDARRAY_LONG:
+					return H5T_NATIVE_INT64;
+				case DT_VECTOR_ULONG:
+				case DT_DENSE_ULONG:
+				case DT_NDARRAY_ULONG:
+					return H5T_NATIVE_UINT64;
+				case DT_VECTOR_SHORT:
+				case DT_DENSE_SHORT:
+				case DT_NDARRAY_SHORT:
+					return H5T_NATIVE_INT16;
+				case DT_VECTOR_WORD:
+				case DT_DENSE_WORD:
+				case DT_NDARRAY_WORD:
+					return H5T_NATIVE_UINT16;
+				default:
+					return -1;
+			}
+		case H5T_STRING:
+			SG_ERROR("Strings not supported");
+			break;
+		case H5T_VLEN:
+			SG_ERROR("Variable length containers currently not supported");
+			break;
+		case H5T_ARRAY:
+			SG_ERROR("Array containers currently not supported");
+			break;
+		default:
+			SG_ERROR("Datatype mismatchn");
+			break;
+	}
+}
+
+bool CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements)
+{
+	hid_t dataspace = H5Dget_space(dataset);
+	ndims = H5Sget_simple_extent_ndims(dataspace); 
+	total_elements=H5Sget_simple_extent_npoints(dataspace);
+	hsize_t* dims_out=new hsize_t[ndims];
+	dims=new int32_t[ndims];
+	H5Sget_simple_extent_dims(dataspace, dims_out, NULL);
+	for (int32_t i=0; i<ndims; i++)
+		dims[i]=dims_out[i];
+	delete[] dims_out;
+	H5Sclose(dataspace);
+}
 #endif //  HDF5
