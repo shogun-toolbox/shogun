@@ -21,6 +21,11 @@ def gaussian ():
 	kernel.save(f)
 	del f
 
+	#clean up
+	import os
+	os.unlink("gaussian_test.ascii")
+	os.unlink("gaussian_train.ascii")
+
 if __name__=='__main__':
 	from tools.load import LoadMatrix
 	lm=LoadMatrix()

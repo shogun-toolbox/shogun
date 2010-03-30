@@ -3,7 +3,7 @@ def io ():
 	import numpy
 	from shogun.Features import SparseRealFeatures, RealFeatures, Labels
 	from shogun.Kernel import GaussianKernel
-	from shogun.Library import AsciiFile, BinaryFile
+	from shogun.Library import AsciiFile, BinaryFile, HDF5File
 
 	feats=SparseRealFeatures(fm_train_real)
 	feats2=SparseRealFeatures()
@@ -26,6 +26,9 @@ def io ():
 	f=BinaryFile("fm_train_real.bin","w")
 	feats.save(f)
 
+	f=HDF5File("fm_train_real.h5","w", "/data/doubles")
+	feats.save(f)
+
 	f=AsciiFile("fm_train_real.ascii","w")
 	feats.save(f)
 
@@ -45,11 +48,28 @@ def io ():
 	f=BinaryFile("label_train_twoclass.bin","w")
 	lab.save(f)
 
+	f=HDF5File("fm_train_real.h5","a", "/data/labels")
+	lab.save(f)
+
 	f=AsciiFile("label_train_twoclass.ascii")
 	lab2.load(f)
 
 	f=BinaryFile("label_train_twoclass.bin")
 	lab2.load(f)
+
+	f=HDF5File("fm_train_real.h5","r", "/data/doubles")
+	feats2.load(f)
+	print feats2.get_feature_matrix()
+	f=HDF5File("fm_train_real.h5","r", "/data/labels")
+	lab2.load(f)
+	print lab2.get_labels()
+
+	#clean up
+	import os
+	for f in ['fm_train_sparsereal.bin','fm_train_sparsereal.ascii',
+			'fm_train_real.bin','fm_train_real.h5','fm_train_real.ascii',
+			'label_train_twoclass.ascii','label_train_twoclass.bin']:
+		os.unlink(f)
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
