@@ -25,7 +25,7 @@ clean:
 $(TARGETS): $(foreach t, $(TARGET), $t.cpp)
 
 check-examples: $(TARGETS)
-	@for t in $(TARGETS) ; do echo $$t && $(LIBRARY_PATH)="$$$(LIBRARY_PATH):$(LIB_PATH)" ./$$t >/dev/null; done
+	@for t in $(TARGETS) ; do echo $$t && $(LIBRARY_PATH)="$(LIB_PATH):$$$(LIBRARY_PATH)" ./$$t >/dev/null; done
 
 %: %.cpp
 	$(CC) $(CXXFLAGS) $< $(LINKFLAGS) -o $@
