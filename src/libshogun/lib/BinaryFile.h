@@ -20,9 +20,9 @@ namespace shogun
 {
 /** @brief A Binary file access class.
  *
- * A file consists of a fourcc header then an alternation of a type header and
- * data or just raw data (simplefile=true). However this implementation is not
- * complete - the more complex stuff is currently not implemented.
+ * A file consists of a SG00 fourcc header then an alternation of a type header and
+ * data. The current implementation is capable of storing only a single
+ * header/data type. Multiple headers are currently not implemented.
  */
 class CBinaryFile: public CFile
 {
@@ -41,14 +41,16 @@ public:
 	 */
 	CBinaryFile(char* fname, char rw='r', const char* name=NULL);
 
+	/** default destructor */
 	virtual ~CBinaryFile();
 
-	/** get data type of current element */
-	//virtual DataType get_data_type();
-
-	/** vector access functions */
-	//virtual void get_vector(void*& vector, int32_t& len, DataType& dtype);
-
+	/** @name Vector Access Functions
+	 *
+	 * Functions to access vectors of one of the several base data types.
+	 * These functions are used when loading vectors from e.g. file
+	 * and return the vector and its length len by reference
+	 */
+	//@{
 	virtual void get_byte_vector(uint8_t*& vector, int32_t& len);
 	virtual void get_char_vector(char*& vector, int32_t& len);
 	virtual void get_int_vector(int32_t*& vector, int32_t& len);
@@ -56,11 +58,16 @@ public:
 	virtual void get_shortreal_vector(float32_t*& vector, int32_t& len);
 	virtual void get_short_vector(int16_t*& vector, int32_t& len);
 	virtual void get_word_vector(uint16_t*& vector, int32_t& len);
+	//@}
 
-	/** matrix access functions */
-	//virtual void get_matrix(
-	//		void*& matrix, int32_t& num_feat, int32_t& num_vec, DataType& dtype);
-
+	/** @name Matrix Access Functions
+	 *
+	 * Functions to access matrices of one of the several base data types.
+	 * These functions are used when loading matrices from e.g. file
+	 * and return the matrices and its dimensions num_feat and num_vec
+	 * by reference
+	 */
+	//@{
 	virtual void get_byte_matrix(
 			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_char_matrix(
@@ -83,11 +90,16 @@ public:
 			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_word_matrix(
 			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
+	//@}
 
-	/** nd-array access functions */
-	//virtual void get_ndarray(
-	//		void*& array, int32_t*& dims, int32_t& num_dims, DataType& dtype);
-
+	/** @name N-Dimensional Array Access Functions
+	 *
+	 * Functions to access n-dimensional arrays of one of the several base
+	 * data types. These functions are used when loading n-dimensional arrays
+	 * from e.g. file and return the them and its dimensions dims and num_dims
+	 * by reference
+	 */
+	//@{
 	virtual void get_byte_ndarray(
 			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_char_ndarray(
@@ -102,7 +114,16 @@ public:
 			int16_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_word_ndarray(
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
+	//@}
 
+	/** @name Sparse Matrix Access Functions
+	 *
+	 * Functions to access sparse matrices of one of the several base data types.
+	 * These functions are used when loading sparse matrices from e.g. file
+	 * and return the sparse matrices and its dimensions num_feat and num_vec
+	 * by reference
+	 */
+	//@{
 	virtual void get_bool_sparsematrix(
 			TSparse<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_byte_sparsematrix(
@@ -127,7 +148,17 @@ public:
 			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_longreal_sparsematrix(
 			TSparse<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	//@}
 
+
+	/** @name String Access Functions
+	 *
+	 * Functions to access strings of one of the several base data types.
+	 * These functions are used when loading variable length datatypes
+	 * from e.g. file and return the strings and their number
+	 * by reference
+	 */
+	//@{
 	virtual void get_byte_string_list(
 			T_STRING<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
@@ -161,17 +192,32 @@ public:
 	virtual void get_longreal_string_list(
 			T_STRING<floatmax_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
+	//@}
 
+	/** @name Vector Access Functions
+	 *
+	 * Functions to access vectors of one of the several base data types.
+	 * These functions are used when writing vectors of length len
+	 * to e.g. a file
+	 */
+	//@{
 	virtual void set_byte_vector(const uint8_t* vector, int32_t len);
 	virtual void set_char_vector(const char* vector, int32_t len);
 	virtual void set_int_vector(const int32_t* vector, int32_t len);
-	virtual void set_shortreal_vector(
-			const float32_t* vector, int32_t len);
+	virtual void set_shortreal_vector( const float32_t* vector, int32_t len);
 	virtual void set_real_vector(const float64_t* vector, int32_t len);
 	virtual void set_short_vector(const int16_t* vector, int32_t len);
 	virtual void set_word_vector(const uint16_t* vector, int32_t len);
+	//@}
 
 
+	/** @name Matrix Access Functions
+	 *
+	 * Functions to access matrices of one of the several base data types.
+	 * These functions are used when writing matrices of num_feat rows and
+	 * num_vec columns to e.g. a file
+	 */
+	//@{
 	virtual void set_byte_matrix(
 			const uint8_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_char_matrix(
@@ -194,7 +240,15 @@ public:
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_word_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
+	//@}
 
+	/** @name Sparse Matrix Access Functions
+	 *
+	 * Functions to access sparse matrices of one of the several base data types.
+	 * These functions are used when writing sparse matrices of num_feat rows and
+	 * num_vec columns to e.g. a file
+	 */
+	//@{
 	virtual void set_bool_sparsematrix(
 			const TSparse<bool>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_byte_sparsematrix(
@@ -219,7 +273,17 @@ public:
 			const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_longreal_sparsematrix(
 			const TSparse<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
+	//@}
 
+
+	/** @name String Access Functions
+	 *
+	 * Functions to access strings of one of the several base data types.
+	 * These functions are used when writing variable length datatypes
+	 * like strings to a file. Here num_str denotes the number of strings
+	 * and strings is a pointer to a string structure.
+	 */
+	//@{
 	virtual void set_byte_string_list(
 			const T_STRING<uint8_t>* strings, int32_t num_str);
 	virtual void set_char_string_list(
@@ -242,6 +306,7 @@ public:
 			const T_STRING<float64_t>* strings, int32_t num_str);
 	virtual void set_longreal_string_list(
 			const T_STRING<floatmax_t>* strings, int32_t num_str);
+	//@}
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "BinaryFile"; }
