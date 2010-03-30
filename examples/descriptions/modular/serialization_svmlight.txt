@@ -1,0 +1,2 @@
+This example shows how to use boost serialization (only available if the compile flag was enabled)
+to serialize/deserialize an SVMLight object. Note that this code is in alpha state.
