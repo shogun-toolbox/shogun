@@ -131,7 +131,8 @@ def _evaluate (indata):
 		classifier=fun(indata[prefix+'C'], machine)
 
 	if classifier.get_name() == 'LibLinear':
-		classifier.set_solver_type(L2R_LR)
+		print classifier.get_name(), "yes"
+		classifier.set_liblinear_solver_type(L2R_LR)
 
 	classifier.parallel.set_num_threads(indata[prefix+'num_threads'])
 	if ctype=='linear':
