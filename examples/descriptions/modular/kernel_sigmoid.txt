@@ -1,0 +1,1 @@
+The standard Sigmoid kernel computed on dense real valued features.

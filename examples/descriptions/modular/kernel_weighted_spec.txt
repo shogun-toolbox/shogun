@@ -1,0 +1,24 @@
+The WeightedCommWordString kernel may be used to compute the weighted
+spectrum kernel (i.e. a spectrum kernel for 1 to K-mers, where each k-mer
+length is weighted by some coefficient $\beta_k$ from strings that have
+been mapped into unsigned 16bit integers.
+
+These 16bit integers correspond to k-mers. To applicable in this kernel they
+need to be sorted (e.g. via the SortWordString pre-processor).
+
+It basically uses the algorithm in the unix "comm" command (hence the name)
+to compute:
+
+k({\bf x},({\bf x'})= \sum_{k=1}^K\beta_k\Phi_k({\bf x})\cdot \Phi_k({\bf x'})
+
+where $\Phi_k$ maps a sequence ${\bf x}$ that consists of letters in
+$\Sigma$ to a feature vector of size $|\Sigma|^k$. In this feature
+vector each entry denotes how often the k-mer appears in that ${\bf x}$.
+
+Note that this representation is especially tuned to small alphabets
+(like the 2-bit alphabet DNA), for which it enables spectrum kernels
+of order 8.
+
+For this kernel the linadd speedups are quite efficiently implemented using
+direct maps.
+
