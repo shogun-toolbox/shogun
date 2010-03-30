@@ -19,7 +19,7 @@ ifeq (.config-local,$(wildcard .config-local))
 include .config-local
 endif
 PARTDEPS = $(foreach part, $(PARTS), $(part)/Makefile )
-all:  $(PARTDEPS)
+all:  $(PARTDEPS) examples
 	@echo ============================================================
 	@echo ==== Building shogun for platform $(KERNELNAME)-$(MACHINE)
 	@echo ==== opts: $(COMPFLAGS_CPP)
@@ -33,8 +33,11 @@ all:  $(PARTDEPS)
 	@echo 
 endif
 
+examples:
+	$(MAKE) -C../examples
+	touch $@
+
 install:  $(PARTDEPS)
-	#$(MAKE) -C../examples
 	+$(foreach part, $(PARTS), $(MAKE) -C $(part) install-$(part) &&) true
 
 uninstall:
@@ -67,7 +70,7 @@ distclean: clean
 
 clean:  $(PARTDEPS)
 	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
-	@rm -f configure.log .cpuinfo ./configure-* cplex.log
+	@rm -f configure.log .cpuinfo ./configure-* cplex.log examples
 
 dist:	distclean
 	rm -f $(TAR).gz

@@ -321,7 +321,7 @@ run-testsuite-cmdline:
 check-examples-cmdline:
 	cd ../../examples/undocumented/cmdline && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		PATH="$(DESTDIR)$(BINDIR)"  ./check.sh )
+		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./check.sh )
 
 run-testsuite-octave:
 	cd ../../testsuite/octave && \
