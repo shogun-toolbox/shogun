@@ -13,3 +13,4 @@
 %
 %set_features TEST ../data/fm_test_sparsereal.dat
 %out.txt = classify
+%! rm out.txt

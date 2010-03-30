@@ -13,3 +13,5 @@ save_classifier libsvm.model
 load_classifier libsvm.model LIBSVM
 set_features TEST ../data/fm_test_real.dat
 out.txt = classify
+! rm out.txt
+! rm libsvm.model

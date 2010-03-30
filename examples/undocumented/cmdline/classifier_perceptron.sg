@@ -9,3 +9,4 @@ print Perceptron
 
 %set_features TEST fm_test_real
 %out.txt = classify
+

@@ -13,6 +13,7 @@
 
 	set_features TEST ../data/fm_test_real.dat
 	out.txt = classify
+	! rm out.txt
 %catch
 %	disp('No support for SVRLight available.')
 %end

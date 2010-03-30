@@ -14,6 +14,7 @@
 
 	set_features TEST ../data/fm_test_dna.dat DNA
 	out.txt = classify
+	! rm out.txt
 %catch
 %	print No support for SVMLight available.
 %end

@@ -29,3 +29,4 @@ train_classifier
 
 
 out.txt = classify
+! rm out.txt

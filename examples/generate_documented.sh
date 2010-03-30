@@ -3,6 +3,7 @@
 static_dirs="cmdline elwms matlab_and_octave python r"
 modular_dirs="octave_modular python_modular r_modular"
 lib_dirs=libshogun 
+rm -f missing.log
 
 document_interface()
 {
@@ -55,6 +56,7 @@ document_interface()
 						echo; \
 						cat undocumented/$d/$f ) >documented/$d/$f
 				else
+					echo "documentation for \"$f\" (file \"descriptions/${if_descr_dir}/$doc\") missing" >>missing.log
 					cat undocumented/$d/$f >documented/$d/$f
 				fi
 			fi
