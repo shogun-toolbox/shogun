@@ -3,7 +3,7 @@
 
 import sys
 
-example_dir='../examples'
+example_dir='../examples/documented'
 target_dir='pages_cn/'
 
 if len(sys.argv) > 1:
