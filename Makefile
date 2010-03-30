@@ -150,6 +150,7 @@ update-webpage:
 		km:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
 	ssh km chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.*"
 	
+	make -C examples
 	rm -rf doc/html
 	make -C doc
 	ssh km rm -f "/var/www/shogun-toolbox.org/doc/*.*"
