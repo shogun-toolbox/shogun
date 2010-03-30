@@ -250,7 +250,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** constructor
 		 *
-		 * @param fname filename to load features from
+		 * @param loader File object via which to load data
 		 * @param alpha alphabet (type) to use for string features
 		 */
 		CStringFeatures(CFile* loader, EAlphabet alpha=DNA)

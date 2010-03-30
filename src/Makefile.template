@@ -434,7 +434,7 @@ doc-r_modular:
 $(OBJFILES): ../.config .depend Makefile ../ChangeLog
 
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
-	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
+	$(LINK) $(PRELINKFLAGS) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
 		-name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	@$(POSTLINKCMD) $@
 	@$(LIBSYMLINKCMD)

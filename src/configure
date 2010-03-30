@@ -114,7 +114,7 @@ _cmdline_static=auto
 _python_static=auto
 _octave_static=auto
 _r_static=auto
-_elwms_static=auto
+_elwms_static=no
 _matlab_static=auto
 #modular interfaces
 _python_modular=auto
@@ -141,6 +141,7 @@ SONAMEOPT="-Xlinker -soname="
 SHAREDOPTS="-shared -Wl,-export-dynamic"
 DEFINES="-DSWIG_TYPE_TABLE=shogun"
 DEFINES_SWIG=
+PRELINKFLAGS=
 LINKFLAGS=
 POSTLINKFLAGS=
 
@@ -3687,6 +3688,10 @@ test_cmdline()
 	then
 		PARTS="$PARTS cmdline"
 		CMDLINE_TARGET=shogun
+		if darwin
+		then
+			PRELINKFLAGS="$PRELINKFLAGS -L../libshogun -lshogun"
+		fi
 
 		if test "$_readline" = yes || test "$_readline" = auto;
 		then
@@ -3776,6 +3781,7 @@ COMPFLAGS_C		= ${COMPFLAGS_C}
 COMPFLAGS_CPP	= ${COMPFLAGS_CPP}
 COMPFLAGS_SWIG_CPP	= ${COMPFLAGS_SWIG_CPP}
 INCLUDES		= ${INCLUDES}
+PRELINKFLAGS	= ${PRELINKFLAGS}
 LINKFLAGS 		= ${LINKFLAGS}
 POSTLINKFLAGS	= ${POSTLINKFLAGS}
 
