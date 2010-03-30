@@ -92,6 +92,7 @@
 \arg \b svr_tube_epsilon \verbatim sg('svr_tube_epsilon', tube_epsilon) \endverbatim
 \arg \b svm_nu \verbatim sg('svm_nu', nu) \endverbatim
 \arg \b mkl_parameters \verbatim sg('mkl_parameters', weight_epsilon, C_MKL [, mkl_norm ]) \endverbatim
+\arg \b elasticnet_lambda \verbatim sg('elasticnet_lambda', ent_lambda) \endverbatim
 \arg \b svm_max_train_time \verbatim sg('svm_max_train_time', max_train_time) \endverbatim
 \arg \b use_shrinking \verbatim sg('use_shrinking', enable_shrinking) \endverbatim
 \arg \b use_batch_computation \verbatim sg('use_batch_computation', enable_batch_computation) \endverbatim
@@ -154,6 +155,16 @@
 \arg \b set_plugin_estimate \verbatim sg('set_plugin_estimate', emission_probs, model_sizes) \endverbatim
 \arg \b get_plugin_estimate \verbatim [emission_probs, model_sizes]=sg('get_plugin_estimate') \endverbatim
 
+\section Signals_sec Signals
+\arg \b signals_set_model \verbatim sg('signals_set_model', arg1) \endverbatim
+\arg \b signals_set_positions \verbatim sg('signals_set_positions', positions) \endverbatim
+\arg \b signals_set_labels \verbatim sg('signals_set_labels', labels) \endverbatim
+\arg \b signals_set_split \verbatim sg('signals_set_split', split) \endverbatim
+\arg \b signals_set_train_mask \verbatim sg('signals_set_train_mask', ) \endverbatim
+\arg \b signals_add_feature \verbatim sg('signals_add_feature', feature) \endverbatim
+\arg \b signals_add_kernel \verbatim sg('signals_add_kernel', kernelparam) \endverbatim
+\arg \b signals_run \verbatim sg('signals_run', arg1) \endverbatim
+
 \section Structure_sec Structure
 \arg \b best_path \verbatim sg('best_path', from, to) \endverbatim
 \arg \b best_path_2struct \verbatim [prob, path, pos]=sg('best_path_2struct', p, q, cmd_trans, seq, pos, genestr, penalties, penalty_info, nbest, content_weights, segment_sum_weights) \endverbatim
@@ -164,6 +175,7 @@
 \arg \b get_lin_feat \verbatim [lin_feat]=sg('get_lin_feat') \endverbatim
 \arg \b set_lin_feat \verbatim sg('set_lin_feat', lin_feat) \endverbatim
 \arg \b init_dyn_prog \verbatim sg('init_dyn_prog', num_svms) \endverbatim
+\arg \b clean_up_dyn_prog \verbatim sg('clean_up_dyn_prog') \endverbatim
 \arg \b init_intron_list \verbatim sg('init_intron_list', start_positions, end_positions, quality) \endverbatim
 \arg \b precompute_tiling_features \verbatim sg('precompute_tiling_features', intensities, probe_pos, tiling_plif_ids) \endverbatim
 \arg \b long_transition_settings \verbatim sg('long_transition_settings', use_long_transitions, threshold, max_len) \endverbatim
