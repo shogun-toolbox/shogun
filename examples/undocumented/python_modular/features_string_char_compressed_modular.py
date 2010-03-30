@@ -60,6 +60,13 @@ f2.enable_on_the_fly_preprocessing()
 print "lzo strings", f2.get_features()
 print
 
+#clean up
+import os
+for f in ['foo_uncompressed.str', 'foo_lzo.str', 'foo_gzip.str',
+'foo_bzip2.str', 'foo_lzma.str', 'foo_lzo.str', 'foo_lzo.str']:
+	if os.path.exists(f):
+		os.unlink(f)
+
 ##########################################################################################
 # some perfectly compressible stuff follows
 ##########################################################################################
