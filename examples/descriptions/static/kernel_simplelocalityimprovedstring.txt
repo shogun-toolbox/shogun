@@ -1,0 +1,1 @@
+SimpleLocalityImprovedString kernel, is a ``simplified'' and better performing version of the Locality improved kernel.

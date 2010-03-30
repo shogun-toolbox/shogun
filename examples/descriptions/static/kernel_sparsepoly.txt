@@ -1,0 +1,1 @@
+Computes the standard polynomial kernel on sparse real valued features.
