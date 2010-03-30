@@ -3,7 +3,7 @@
 LC_ALL=C
 export LC_ALL
 
-mainversion=`awk '/Release/{print $5;exit}' NEWS`
+mainversion=`awk '/Release/{print $5;exit}' ../NEWS`
 extra=""
 if test -d .svn
 then

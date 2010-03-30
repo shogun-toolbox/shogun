@@ -454,6 +454,10 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 		}
 
+		/** get a transposed copy of the features
+		 *
+		 * @return transposed copy
+		 */
 		CStringFeatures<ST>* get_transposed()
 		{
 			int32_t num_feat;
@@ -637,16 +641,17 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** load features from file
 		 *
-		 * @param fname filename to load from
-		 * @return if loading was successful
+		 * @param loader File object via which to load data
 		 */
 		virtual inline void load(CFile* loader);
 
 		/** load ascii line-based string features from file
 		 *
 		 * @param fname filename to load from
-		 * @param remap_to_bin if translation to other alphabetremap_to_bin
-		 * @return if loading was successful
+		 * @param remap_to_bin if translation to other binary alphabet
+		 * should be performed
+		 * @param ascii_alphabet src alphabet
+		 * @param binary-alphabet alphabet to translate to
 		 */
 		void load_ascii_file(char* fname, bool remap_to_bin=true,
 				EAlphabet ascii_alphabet=DNA, EAlphabet binary_alphabet=RAWDNA)
@@ -1708,6 +1713,13 @@ template <class ST> class CStringFeatures : public CFeatures
 				max_string_length=CMath::max(max_string_length, features[i].length);
 		}
 
+		/** get a zero terminated copy of the string
+		 *
+		 * @param str the string to copy
+		 * @return zero terminated copy of str
+		 *
+		 * note that this function is only sensible for character strings
+		 */
 		static ST* get_zero_terminated_string_copy(T_STRING<ST> str)
 		{
 			int32_t l=str.length;

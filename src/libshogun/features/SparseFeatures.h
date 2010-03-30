@@ -562,13 +562,15 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			}
 		}
 
+		/** get a transposed copy of the features
+		 *
+		 * @return transposed copy
+		 */
 		CSparseFeatures<ST>* get_transposed()
 		{
 			int32_t num_feat;
 			int32_t num_vec;
 			TSparse<ST>* s=get_transposed(num_feat, num_vec);
-
-			
 			return new CSparseFeatures<ST>(s, num_feat, num_vec);
 		}
 
@@ -1377,6 +1379,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			/** index */
 			int32_t index;
 
+			/** print details of iterator (for debugging purposes)*/
 			void print_info()
 			{
 				SG_SPRINT("sv=%p, vidx=%d, num_feat_entries=%d, index=%d\n",

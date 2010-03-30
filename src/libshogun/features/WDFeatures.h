@@ -107,7 +107,10 @@ class CWDFeatures : public CDotFeatures
 			/** if we need to free the vector*/
 			bool vfree;
 
-			/** parameters of interal feature gen loop */
+			/** @name Internal Parameters
+			 * parameters of interal feature gen loop
+			 */
+			//@{
 			int32_t lim;
 			int32_t* val;
 			int32_t asize;
@@ -116,6 +119,7 @@ class CWDFeatures : public CDotFeatures
 			int32_t k;
 			int32_t i;
 			int32_t o;
+			//@}
 		};
 
 		/** iterate over the non-zero features
@@ -197,7 +201,7 @@ class CWDFeatures : public CDotFeatures
 
 		/** set wd weights
 		 *
-		 * @param p_weights new eights
+		 * @param weights new weights
 		 * @param d degree
 		 * @return if setting was successful
 		 */

@@ -142,11 +142,19 @@ class CSNPFeatures : public CDotFeatures
 			return C_WD;
 		}
 
+		/** get number of vectors
+		 *
+		 * @return number of vectors
+		 */
 		inline virtual int32_t get_num_vectors()
 		{
 			return num_strings;
 		}
 
+		/** get memory footprint of one feature
+		 *
+		 * @return memory footprint of one feature
+		 */
 		inline virtual int32_t get_size()
 		{
 			return sizeof(float64_t);
@@ -162,26 +170,46 @@ class CSNPFeatures : public CDotFeatures
 			return normalization_const;
 		}
 
+		/** set the minor base string
+		 *
+		 * @param str base string
+		 */
 		void set_minor_base_string(const char* str)
 		{
 			m_str_min=(uint8_t*) strdup(str);
 		}
 
+
+		/** set the major base string
+		 *
+		 * @param str base string
+		 */
 		void set_major_base_string(const char* str)
 		{
 			m_str_maj=(uint8_t*) strdup(str);
 		}
 
+
+		/** get the minor base string
+		 *
+		 * @return the minor base string
+		 */
 		char* get_minor_base_string()
 		{
 			return (char*) m_str_min;
 		}
 
+
+		/** return the major base string
+		 *
+		 * @return major base string
+		 */
 		char* get_major_base_string()
 		{
 			return (char*) m_str_maj;
 		}
 
+		/** compute the basee strings from current strings */
 		void obtain_base_strings();
 
 

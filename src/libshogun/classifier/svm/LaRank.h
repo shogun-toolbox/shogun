@@ -66,6 +66,7 @@
 
 namespace shogun
 {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	struct larank_kcache_s;
 	typedef struct larank_kcache_s larank_kcache_t;
 	struct larank_kcache_s
@@ -298,6 +299,8 @@ namespace shogun
 	};
 
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
 
 	/*
 	 ** MACHINE: the main thing, which is trained.
@@ -455,4 +458,4 @@ namespace shogun
 			int32_t step;
 	};
 }
-#endif
+#endif // LARANK_H

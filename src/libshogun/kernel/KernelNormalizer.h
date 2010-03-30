@@ -16,6 +16,7 @@
 namespace shogun
 {
 
+/** normalizer type */
 enum ENormalizerType
 {
 	N_REGULAR = 0,
@@ -50,8 +51,10 @@ class CKernelNormalizer : public CSGObject
 {
 	public:
 
-		/** default constructor */
-		CKernelNormalizer() {
+		/** default constructor
+		 */
+		CKernelNormalizer()
+		{
 			m_type = N_REGULAR;
 		}
 
@@ -98,6 +101,7 @@ class CKernelNormalizer : public CSGObject
 		}
 
 	protected:
+		/** normalizer type */
 		ENormalizerType m_type;
 };
 }

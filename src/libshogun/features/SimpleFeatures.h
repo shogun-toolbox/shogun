@@ -315,6 +315,10 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			return feature_matrix;
 		}
 
+		/** get a transposed copy of the features
+		 *
+		 * @return transposed copy
+		 */
 		CSimpleFeatures<ST>* get_transposed()
 		{
 			int32_t num_feat;
