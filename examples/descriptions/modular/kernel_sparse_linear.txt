@@ -1,0 +1,1 @@
+This example demonstrates how to use the Linear Kernel with sparse features.
