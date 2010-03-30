@@ -336,8 +336,10 @@ run-testsuite-matlab:
 	cd ../../testsuite/matlab && \
 		( ln -sf ../../src/matlab/$(TEMPLATE_TARGET) ; \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
+
 check-examples-matlab:
-	cd ../../examples/undocumented/matlab && ./check.sh
+	cd ../../examples/undocumented/matlab && \
+		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
 
 run-testsuite-python_modular:
 	cd ../../testsuite/python_modular && \
