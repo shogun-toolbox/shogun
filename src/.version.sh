@@ -3,6 +3,7 @@
 LC_ALL=C
 export LC_ALL
 
+mainversion=`awk '/Release/{print $5;exit}' NEWS`
 extra=""
 if test -d .svn
 then
@@ -51,6 +52,8 @@ time="$hour:$minute"
 if test "$1" ; then
 	extra="_$1"
 fi
+
+echo "#define MAINVERSION \"${mainversion}\""
 
 echo "#define VERSION_EXTRA \"${extra}\""
 echo "#define VERSION_REVISION ${revision}"

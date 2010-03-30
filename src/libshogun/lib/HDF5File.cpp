@@ -26,6 +26,7 @@ using namespace shogun;
 CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 {
 	get_boolean_type();
+	H5Eset_auto(NULL, NULL);
 
 	if (name)
 		set_variable_name(name);
@@ -40,6 +41,8 @@ CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 			break;
 		case 'a':
 			h5file = H5Fopen(fname, H5F_ACC_RDWR, H5P_DEFAULT);
+			if (h5file <0)
+				h5file = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 			break;
 		default:
 			SG_ERROR("unknown mode '%c'\n", rw);
@@ -68,6 +71,7 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 		SG_ERROR("Error opening data set\n");										\
 	hid_t dtype = H5Dget_type(dataset);												\
 	H5T_class_t t_class=H5Tget_class(dtype);										\
+	get_dims(dataset, dims, ndims, nelements);										\
 	hid_t h5_type=get_compatible_type(t_class, datatype);							\
 	if (h5_type==-1)																\
 	{																				\
@@ -223,58 +227,78 @@ GET_STRING_LIST(get_longreal_string_list, floatmax_t, DT_STRING_LONGREAL)
 
 /** set functions - to pass data from shogun to the target interface */
 
-//dataset = H5Dopen(file, "/Data/CData");
-//status = H5Dclose(dataset);
-//
-//H5Gcreate(file, "/Data", 0);
-//  herr_t status;
-//    status = H5Gclose(group);
-//
-//
-//grp = H5Gcreate2(file, "/Data", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-//
-
-#define SET_VECTOR(fname, sg_type, dtype)							\
-void CHDF5File::fname(const sg_type* vec, int32_t len)			\
-{																	\
-	if (!(file && vec))												\
-		SG_ERROR("File or vector invalid.\n");						\
-																	\
-	/*write_header(dtype);											\
-																	\
-	if (fwrite(&len, sizeof(int32_t), 1, file)!=1 ||				\
-			fwrite(vec, sizeof(sg_type), len, file)!=(size_t) len)	\
-		SG_ERROR("Failed to write vector\n");					*/	\
+#define SET_VECTOR(fname, sg_type, dtype, h5type)							\
+void CHDF5File::fname(const sg_type* vec, int32_t len)						\
+{																			\
+	if (h5file<0 || !vec)													\
+		SG_ERROR("File or vector invalid.\n");								\
+																			\
+	create_group_hierarchy();												\
+																			\
+	hsize_t dims=(hsize_t) len;												\
+	hid_t dataspace, dataset, status;										\
+	dataspace=H5Screate_simple(1, &dims, NULL); 							\
+	if (dataspace<0)														\
+		SG_ERROR("Could not create hdf5 dataspace\n");						\
+	dataset=H5Dcreate(h5file, variable_name, h5type, dataspace, H5P_DEFAULT); \
+	if (dataset<0)															\
+	{																		\
+		SG_ERROR("Could not create hdf5 dataset - does"						\
+				" dataset '%s' already exist?\n", variable_name);			\
+	}																		\
+	status=H5Dwrite(dataset, h5type, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec);	\
+	if (status<0)															\
+		SG_ERROR("Failed to write hdf5 dataset\n");							\
+	H5Dclose(dataset);														\
+	H5Sclose(dataspace);													\
 }
-SET_VECTOR(set_bool_vector, bool, DT_VECTOR_BOOL)
-SET_VECTOR(set_byte_vector, uint8_t, DT_VECTOR_BYTE)
-SET_VECTOR(set_char_vector, char, DT_VECTOR_CHAR)
-SET_VECTOR(set_int_vector, int32_t, DT_VECTOR_INT)
-SET_VECTOR(set_shortreal_vector, float32_t, DT_VECTOR_SHORTREAL)
-SET_VECTOR(set_real_vector, float64_t, DT_VECTOR_REAL)
-SET_VECTOR(set_short_vector, int16_t, DT_VECTOR_SHORT)
-SET_VECTOR(set_word_vector, uint16_t, DT_VECTOR_WORD)
+SET_VECTOR(set_bool_vector, bool, DT_VECTOR_BOOL, boolean_type)
+SET_VECTOR(set_byte_vector, uint8_t, DT_VECTOR_BYTE, H5T_NATIVE_UINT8)
+SET_VECTOR(set_char_vector, char, DT_VECTOR_CHAR, H5T_NATIVE_CHAR)
+SET_VECTOR(set_int_vector, int32_t, DT_VECTOR_INT, H5T_NATIVE_INT32)
+SET_VECTOR(set_shortreal_vector, float32_t, DT_VECTOR_SHORTREAL, H5T_NATIVE_FLOAT)
+SET_VECTOR(set_real_vector, float64_t, DT_VECTOR_REAL, H5T_NATIVE_DOUBLE)
+SET_VECTOR(set_short_vector, int16_t, DT_VECTOR_SHORT, H5T_NATIVE_INT16)
+SET_VECTOR(set_word_vector, uint16_t, DT_VECTOR_WORD, H5T_NATIVE_UINT16)
 #undef SET_VECTOR
 
-#define SET_MATRIX(fname, sg_type, dtype) \
+#define SET_MATRIX(fname, sg_type, dtype, h5type)								\
 void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
-{																					\
-	if (!(file && matrix))															\
-		SG_ERROR("File or matrix invalid.\n");										\
-																					\
+{																				\
+	if (h5file<0 || !matrix)													\
+		SG_ERROR("File or matrix invalid.\n");									\
+																				\
+	create_group_hierarchy();													\
+																				\
+	hsize_t dims[2]={(hsize_t) num_feat, (hsize_t) num_vec};					\
+	hid_t dataspace, dataset, status;											\
+	dataspace=H5Screate_simple(2, dims, NULL); 									\
+	if (dataspace<0)															\
+		SG_ERROR("Could not create hdf5 dataspace\n");							\
+	dataset=H5Dcreate(h5file, variable_name, h5type, dataspace, H5P_DEFAULT);	\
+	if (dataset<0)																\
+	{																			\
+		SG_ERROR("Could not create hdf5 dataset - does"							\
+				" dataset '%s' already exist?\n", variable_name);				\
+	}																			\
+	status=H5Dwrite(dataset, h5type, H5S_ALL, H5S_ALL, H5P_DEFAULT, matrix);	\
+	if (status<0)																\
+		SG_ERROR("Failed to write hdf5 dataset\n");								\
+	H5Dclose(dataset);															\
+	H5Sclose(dataspace);														\
 }
-SET_MATRIX(set_bool_matrix, bool, DT_DENSE_BOOL)
-SET_MATRIX(set_char_matrix, char, DT_DENSE_CHAR)
-SET_MATRIX(set_byte_matrix, uint8_t, DT_DENSE_BYTE)
-SET_MATRIX(set_int_matrix, int32_t, DT_DENSE_INT)
-SET_MATRIX(set_uint_matrix, uint32_t, DT_DENSE_UINT)
-SET_MATRIX(set_long_matrix, int64_t, DT_DENSE_LONG)
-SET_MATRIX(set_ulong_matrix, uint64_t, DT_DENSE_ULONG)
-SET_MATRIX(set_short_matrix, int16_t, DT_DENSE_SHORT)
-SET_MATRIX(set_word_matrix, uint16_t, DT_DENSE_WORD)
-SET_MATRIX(set_shortreal_matrix, float32_t, DT_DENSE_SHORTREAL)
-SET_MATRIX(set_real_matrix, float64_t, DT_DENSE_REAL)
-SET_MATRIX(set_longreal_matrix, floatmax_t, DT_DENSE_LONGREAL)
+SET_MATRIX(set_bool_matrix, bool, DT_DENSE_BOOL, boolean_type)
+SET_MATRIX(set_char_matrix, char, DT_DENSE_CHAR, H5T_NATIVE_CHAR)
+SET_MATRIX(set_byte_matrix, uint8_t, DT_DENSE_BYTE, H5T_NATIVE_UINT8)
+SET_MATRIX(set_int_matrix, int32_t, DT_DENSE_INT, H5T_NATIVE_INT32)
+SET_MATRIX(set_uint_matrix, uint32_t, DT_DENSE_UINT, H5T_NATIVE_UINT32)
+SET_MATRIX(set_long_matrix, int64_t, DT_DENSE_LONG, H5T_NATIVE_INT64)
+SET_MATRIX(set_ulong_matrix, uint64_t, DT_DENSE_ULONG, H5T_NATIVE_UINT64)
+SET_MATRIX(set_short_matrix, int16_t, DT_DENSE_SHORT, H5T_NATIVE_INT16)
+SET_MATRIX(set_word_matrix, uint16_t, DT_DENSE_WORD, H5T_NATIVE_UINT16)
+SET_MATRIX(set_shortreal_matrix, float32_t, DT_DENSE_SHORTREAL, H5T_NATIVE_FLOAT)
+SET_MATRIX(set_real_matrix, float64_t, DT_DENSE_REAL, H5T_NATIVE_DOUBLE)
+SET_MATRIX(set_longreal_matrix, floatmax_t, DT_DENSE_LONGREAL, H5T_NATIVE_LDOUBLE)
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
@@ -403,24 +427,28 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class, SGDataType datatype)
 			}
 		case H5T_STRING:
 			SG_ERROR("Strings not supported");
-			break;
+			return -1;
 		case H5T_VLEN:
 			SG_ERROR("Variable length containers currently not supported");
-			break;
+			return -1;
 		case H5T_ARRAY:
 			SG_ERROR("Array containers currently not supported");
-			break;
+			return -1;
 		default:
 			SG_ERROR("Datatype mismatchn");
-			break;
+			return -1;
 	}
 }
 
-bool CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements)
+void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements)
 {
 	hid_t dataspace = H5Dget_space(dataset);
+	if (dataspace<0)
+		SG_ERROR("Error obtaining hdf5 dataspace\n");
+
 	ndims = H5Sget_simple_extent_ndims(dataspace); 
 	total_elements=H5Sget_simple_extent_npoints(dataspace);
+	SG_PRINT("total_elements=%d ndims=%d\n", ndims, total_elements);
 	hsize_t* dims_out=new hsize_t[ndims];
 	dims=new int32_t[ndims];
 	H5Sget_simple_extent_dims(dataspace, dims_out, NULL);
@@ -428,5 +456,28 @@ bool CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 		dims[i]=dims_out[i];
 	delete[] dims_out;
 	H5Sclose(dataspace);
+}
+
+void CHDF5File::create_group_hierarchy()
+{
+	char* vname=strdup(variable_name);
+	int32_t vlen=strlen(vname);
+	for (int32_t i=0; i<vlen; i++)
+	{
+		if (i!=0 && vname[i]=='/')
+		{
+			vname[i]='\0';
+			hid_t g = H5Gopen(h5file, vname);
+			if (g<0)
+			{
+				g=H5Gcreate(h5file, vname, 0);   
+				if (g<0)
+					SG_ERROR("Error creating group '%s'\n", vname);
+				vname[i]='/';
+			}
+			H5Gclose(g);
+		}
+	}
+	free(vname);
 }
 #endif //  HDF5
