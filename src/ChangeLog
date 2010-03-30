@@ -1,5 +1,20 @@
 2010-03-30  Soeren Sonnenburg <sonne@debian.org>
 
+	* libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/SparsePolyFeatures.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h,
+	  libshogun/kernel/PyramidChi2.h, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.h, libshogun/lib/File.h,
+	  libshogun/lib/HDF5File.h, libshogun/lib/Hash.h: - many further
+	  documentation improvements
+	  - fix installation of libshogun examples
+	* ChangeLog: updated changelog
 	* libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
 	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
 	  libshogun/lib/File.cpp, libshogun/lib/File.h,
