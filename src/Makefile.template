@@ -317,7 +317,7 @@ check-examples-r:
 run-testsuite-cmdline:
 	cd ../../testsuite/cmdline && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		PATH="$(DESTDIR)$(BINDIR)"  ./test_all.sh )
+		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./test_all.sh )
 check-examples-cmdline:
 	cd ../../examples/undocumented/cmdline && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
