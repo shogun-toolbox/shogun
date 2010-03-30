@@ -30,6 +30,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param degree degree of the polynomial kernel
 		 * 					(only degree 2 & 3 are supported)
 		 * @param normalize normalize kernel
+		 * @param hash_bits number of bits in hashd feature space
 		 */
 		CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize, int32_t hash_bits);
 

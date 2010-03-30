@@ -651,7 +651,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param remap_to_bin if translation to other binary alphabet
 		 * should be performed
 		 * @param ascii_alphabet src alphabet
-		 * @param binary-alphabet alphabet to translate to
+		 * @param binary_alphabet alphabet to translate to
 		 */
 		void load_ascii_file(char* fname, bool remap_to_bin=true,
 				EAlphabet ascii_alphabet=DNA, EAlphabet binary_alphabet=RAWDNA)
@@ -1159,8 +1159,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** save features to file
 		 *
-		 * @param dest filename to save to
-		 * @return if saving was successful
+		 * @param writer File object via which to save data
 		 */
 		virtual inline void save(CFile* writer);
 

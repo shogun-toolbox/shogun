@@ -32,8 +32,10 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		/** constructor
 		 *
 		 * @param str stringfeatures (of bytes)
+		 * @param start_order do degrees starting with start_order up to order
 		 * @param order of wd kernel
 		 * @param from_order use first order weights from higher order weighting
+		 * @param hash_bits number of bits in hash
 		 */
 		CHashedWDFeaturesTransposed(CStringFeatures<uint8_t>* str, int32_t start_order,
 				int32_t order,  int32_t from_order, int32_t hash_bits=12);
@@ -91,8 +93,6 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * @param sub_index index for which to compute outputs
 		 * @param num length of index
 		 * @param output result for the given vector range
-		 * @param start start vector range from this idx
-		 * @param stop stop vector range at this idx
 		 * @param alphas scalars to multiply with, may be NULL
 		 * @param vec dense vector to compute dot product with
 		 * @param dim length of the dense vector

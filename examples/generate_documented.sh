@@ -9,15 +9,23 @@ document_interface()
 {
 	iftype=$1
 	
-	if [ $iftype == "static" ]
+	if [ "$iftype" == "static" ]
 	then
 		if_dirs="${static_dirs}"
 		if_descr_dir="static"
 
-	elif [ $iftype == "modular" ]
+	elif [ "$iftype" == "modular" ]
 	then
 		if_dirs="${modular_dirs}"
 		if_descr_dir="modular"
+
+	elif [ "$iftype" == "lib" ]
+	then
+		if_dirs=""
+		if_descr_dir="modular"
+		rm -rf documented/${lib_dirs}
+		mkdir documented/${lib_dirs}
+		cp undocumented/${lib_dirs}/* documented/${lib_dirs}
 	fi
 
 	for d in ${if_dirs}
@@ -73,4 +81,5 @@ document_interface()
 
 document_interface "static"
 document_interface "modular"
+document_interface "lib"
 exit 0

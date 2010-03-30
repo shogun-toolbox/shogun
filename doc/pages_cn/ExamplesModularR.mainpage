@@ -21,186 +21,186 @@ source('name_of_example.R')
 \section r_modular_classifier_examples Classifier
 
 
-\li <b>../examples/r_modular/classifier_gmnpsvm_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_gmnpsvm_modular.R</b>
 \verbinclude classifier_gmnpsvm_modular.R
 
-\li <b>../examples/r_modular/classifier_gpbtsvm_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_gpbtsvm_modular.R</b>
 \verbinclude classifier_gpbtsvm_modular.R
 
-\li <b>../examples/r_modular/classifier_knn_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_knn_modular.R</b>
 \verbinclude classifier_knn_modular.R
 
-\li <b>../examples/r_modular/classifier_lda_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_lda_modular.R</b>
 \verbinclude classifier_lda_modular.R
 
-\li <b>../examples/r_modular/classifier_liblinear_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_liblinear_modular.R</b>
 \verbinclude classifier_liblinear_modular.R
 
-\li <b>../examples/r_modular/classifier_libsvm_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_libsvm_modular.R</b>
 \verbinclude classifier_libsvm_modular.R
 
-\li <b>../examples/r_modular/classifier_libsvmmulticlass_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_libsvmmulticlass_modular.R</b>
 \verbinclude classifier_libsvmmulticlass_modular.R
 
-\li <b>../examples/r_modular/classifier_libsvmoneclass_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_libsvmoneclass_modular.R</b>
 \verbinclude classifier_libsvmoneclass_modular.R
 
-\li <b>../examples/r_modular/classifier_mpdsvm_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_mpdsvm_modular.R</b>
 \verbinclude classifier_mpdsvm_modular.R
 
-\li <b>../examples/r_modular/classifier_perceptron_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_perceptron_modular.R</b>
 \verbinclude classifier_perceptron_modular.R
 
-\li <b>../examples/r_modular/classifier_subgradientsvm_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_subgradientsvm_modular.R</b>
 \verbinclude classifier_subgradientsvm_modular.R
 
-\li <b>../examples/r_modular/classifier_svmlight_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_svmlight_modular.R</b>
 \verbinclude classifier_svmlight_modular.R
 
-\li <b>../examples/r_modular/classifier_svmlin_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_svmlin_modular.R</b>
 \verbinclude classifier_svmlin_modular.R
 
-\li <b>../examples/r_modular/classifier_svmocas_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_svmocas_modular.R</b>
 \verbinclude classifier_svmocas_modular.R
 
-\li <b>../examples/r_modular/classifier_svmsgd_modular.R</b>
+\li <b>../examples/documented/r_modular/classifier_svmsgd_modular.R</b>
 \verbinclude classifier_svmsgd_modular.R
 
 \section r_modular_distribution_examples Distribution
 
 
-\li <b>../examples/r_modular/distribution_histogram_modular.R</b>
+\li <b>../examples/documented/r_modular/distribution_histogram_modular.R</b>
 \verbinclude distribution_histogram_modular.R
 
-\li <b>../examples/r_modular/distribution_hmm_modular.R</b>
+\li <b>../examples/documented/r_modular/distribution_hmm_modular.R</b>
 \verbinclude distribution_hmm_modular.R
 
-\li <b>../examples/r_modular/distribution_linearhmm_modular.R</b>
+\li <b>../examples/documented/r_modular/distribution_linearhmm_modular.R</b>
 \verbinclude distribution_linearhmm_modular.R
 
 \section r_modular_kernel_examples Kernel
 
 
-\li <b>../examples/r_modular/kernel_auc_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_auc_modular.R</b>
 \verbinclude kernel_auc_modular.R
 
-\li <b>../examples/r_modular/kernel_chi2_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_chi2_modular.R</b>
 \verbinclude kernel_chi2_modular.R
 
-\li <b>../examples/r_modular/kernel_combined_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_combined_modular.R</b>
 \verbinclude kernel_combined_modular.R
 
-\li <b>../examples/r_modular/kernel_commulongstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_commulongstring_modular.R</b>
 \verbinclude kernel_commulongstring_modular.R
 
-\li <b>../examples/r_modular/kernel_commwordstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_commwordstring_modular.R</b>
 \verbinclude kernel_commwordstring_modular.R
 
-\li <b>../examples/r_modular/kernel_const_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_const_modular.R</b>
 \verbinclude kernel_const_modular.R
 
-\li <b>../examples/r_modular/kernel_custom_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_custom_modular.R</b>
 \verbinclude kernel_custom_modular.R
 
-\li <b>../examples/r_modular/kernel_diag_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_diag_modular.R</b>
 \verbinclude kernel_diag_modular.R
 
-\li <b>../examples/r_modular/kernel_distancetokernel_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_distancetokernel_modular.R</b>
 \verbinclude kernel_distancetokernel_modular.R
 
-\li <b>../examples/r_modular/kernel_fixeddegreestring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_fixeddegreestring_modular.R</b>
 \verbinclude kernel_fixeddegreestring_modular.R
 
-\li <b>../examples/r_modular/kernel_gaussian_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_gaussian_modular.R</b>
 \verbinclude kernel_gaussian_modular.R
 
-\li <b>../examples/r_modular/kernel_gaussianshift_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_gaussianshift_modular.R</b>
 \verbinclude kernel_gaussianshift_modular.R
 
-\li <b>../examples/r_modular/kernel_histogramword_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_histogramword_modular.R</b>
 \verbinclude kernel_histogramword_modular.R
 
-\li <b>../examples/r_modular/kernel_linear_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_linear_modular.R</b>
 \verbinclude kernel_linear_modular.R
 
-\li <b>../examples/r_modular/kernel_linearbyte_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_linearbyte_modular.R</b>
 \verbinclude kernel_linearbyte_modular.R
 
-\li <b>../examples/r_modular/kernel_linearstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_linearstring_modular.R</b>
 \verbinclude kernel_linearstring_modular.R
 
-\li <b>../examples/r_modular/kernel_linearword_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_linearword_modular.R</b>
 \verbinclude kernel_linearword_modular.R
 
-\li <b>../examples/r_modular/kernel_localalignmentstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_localalignmentstring_modular.R</b>
 \verbinclude kernel_localalignmentstring_modular.R
 
-\li <b>../examples/r_modular/kernel_localityimprovedstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_localityimprovedstring_modular.R</b>
 \verbinclude kernel_localityimprovedstring_modular.R
 
-\li <b>../examples/r_modular/kernel_oligostring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_oligostring_modular.R</b>
 \verbinclude kernel_oligostring_modular.R
 
-\li <b>../examples/r_modular/kernel_poly_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_poly_modular.R</b>
 \verbinclude kernel_poly_modular.R
 
-\li <b>../examples/r_modular/kernel_polymatchstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_polymatchstring_modular.R</b>
 \verbinclude kernel_polymatchstring_modular.R
 
-\li <b>../examples/r_modular/kernel_polymatchword_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_polymatchword_modular.R</b>
 \verbinclude kernel_polymatchword_modular.R
 
-\li <b>../examples/r_modular/kernel_sigmoid_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_sigmoid_modular.R</b>
 \verbinclude kernel_sigmoid_modular.R
 
-\li <b>../examples/r_modular/kernel_simplelocalityimprovedstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_simplelocalityimprovedstring_modular.R</b>
 \verbinclude kernel_simplelocalityimprovedstring_modular.R
 
-\li <b>../examples/r_modular/kernel_sparsegaussian_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_sparsegaussian_modular.R</b>
 \verbinclude kernel_sparsegaussian_modular.R
 
-\li <b>../examples/r_modular/kernel_sparselinear_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_sparselinear_modular.R</b>
 \verbinclude kernel_sparselinear_modular.R
 
-\li <b>../examples/r_modular/kernel_sparsepoly_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_sparsepoly_modular.R</b>
 \verbinclude kernel_sparsepoly_modular.R
 
-\li <b>../examples/r_modular/kernel_topfisher_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_topfisher_modular.R</b>
 \verbinclude kernel_topfisher_modular.R
 
-\li <b>../examples/r_modular/kernel_weightedcommwordstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_weightedcommwordstring_modular.R</b>
 \verbinclude kernel_weightedcommwordstring_modular.R
 
-\li <b>../examples/r_modular/kernel_weighteddegreepositionstring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_weighteddegreepositionstring_modular.R</b>
 \verbinclude kernel_weighteddegreepositionstring_modular.R
 
-\li <b>../examples/r_modular/kernel_weighteddegreestring_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_weighteddegreestring_modular.R</b>
 \verbinclude kernel_weighteddegreestring_modular.R
 
-\li <b>../examples/r_modular/kernel_wordmatch_modular.R</b>
+\li <b>../examples/documented/r_modular/kernel_wordmatch_modular.R</b>
 \verbinclude kernel_wordmatch_modular.R
 
 \section r_modular_mkl_examples Mkl
 
 
-\li <b>../examples/r_modular/mkl_multiclass_modular.R</b>
+\li <b>../examples/documented/r_modular/mkl_multiclass_modular.R</b>
 \verbinclude mkl_multiclass_modular.R
 
 \section r_modular_preproc_examples Preproc
 
 
-\li <b>../examples/r_modular/preproc_commulongstring_modular.R</b>
+\li <b>../examples/documented/r_modular/preproc_commulongstring_modular.R</b>
 \verbinclude preproc_commulongstring_modular.R
 
-\li <b>../examples/r_modular/preproc_commwordstring_modular.R</b>
+\li <b>../examples/documented/r_modular/preproc_commwordstring_modular.R</b>
 \verbinclude preproc_commwordstring_modular.R
 
-\li <b>../examples/r_modular/preproc_logplusone_modular.R</b>
+\li <b>../examples/documented/r_modular/preproc_logplusone_modular.R</b>
 \verbinclude preproc_logplusone_modular.R
 
-\li <b>../examples/r_modular/preproc_normone_modular.R</b>
+\li <b>../examples/documented/r_modular/preproc_normone_modular.R</b>
 \verbinclude preproc_normone_modular.R
 
-\li <b>../examples/r_modular/preproc_prunevarsubmean_modular.R</b>
+\li <b>../examples/documented/r_modular/preproc_prunevarsubmean_modular.R</b>
 \verbinclude preproc_prunevarsubmean_modular.R
 */

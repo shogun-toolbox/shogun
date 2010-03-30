@@ -32,8 +32,10 @@ class CHashedWDFeatures : public CDotFeatures
 		/** constructor
 		 *
 		 * @param str stringfeatures (of bytes)
+		 * @param start_order do degrees starting with start_order up to order
 		 * @param order of wd kernel
 		 * @param from_order use first order weights from higher order weighting
+		 * @param hash_bits number of bits in hash
 		 */
 		CHashedWDFeatures(CStringFeatures<uint8_t>* str, int32_t start_order,
 				int32_t order,  int32_t from_order, int32_t hash_bits=12);

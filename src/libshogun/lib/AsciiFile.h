@@ -33,6 +33,7 @@ public:
 	/** constructor
 	 *
 	 * @param f already opened file
+	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
 	CAsciiFile(FILE* f, const char* name=NULL);
 

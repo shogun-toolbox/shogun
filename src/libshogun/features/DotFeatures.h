@@ -33,11 +33,11 @@ namespace shogun
  *
  *   \f[r = {\bf x} \cdot {\bf z}\f]
  *
- * - multiplication with a scalar \f$\alpha\f$ and addition on to a dense vector \f${\bf z}\f$:
+ * - multiplication with a scalar \f$\alpha\f$ and addition to a dense vector \f${\bf z}\f$:
  *
- *   \f[{\bf z'} = \alpha {\bf x} + {\bf z}\f]
+ *   \f[ {\bf z'} = \alpha {\bf x} + {\bf z} \f]
  *
- * - iteration over all (potentially) non-zero features of ${\bf x}$
+ * - iteration over all (potentially) non-zero features of \f${\bf x}\f$
  * 
  */
 class CDotFeatures : public CFeatures
@@ -121,8 +121,6 @@ class CDotFeatures : public CFeatures
 		 * @param sub_index index for which to compute outputs
 		 * @param num length of index
 		 * @param output result for the given vector range
-		 * @param start start vector range from this idx
-		 * @param stop stop vector range at this idx
 		 * @param alphas scalars to multiply with, may be NULL
 		 * @param vec dense vector to compute dot product with
 		 * @param dim length of the dense vector

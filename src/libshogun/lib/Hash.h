@@ -89,7 +89,7 @@ class CHash : public CSGObject
 		/** Incremental Murmur like Hash
 		 *
 		 * @param data byte to hash
-		 * @param seed initial seed / hash on subsequent calls
+		 * @param h initial seed / hash on subsequent calls
 		 *
 		 * @return hash
 		 */

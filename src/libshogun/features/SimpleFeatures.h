@@ -99,15 +99,16 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			copy_feature_matrix(src, num_feat, num_vec);
 		}
 
-		/** constructor
+		/** constructor loading features from file
 		 *
-		 * NOT IMPLEMENTED!
-		 *
-		 * @param fname filename to load features from
+		 * @param loader File object via which to load data
 		 */
 		CSimpleFeatures(CFile* loader)
 		: CDotFeatures(loader), num_vectors(0), num_features(0),
-			feature_matrix(NULL), feature_cache(NULL) {}
+			feature_matrix(NULL), feature_cache(NULL)
+		{
+			load(loader);
+		}
 
 		/** duplicate feature object
 		 *
@@ -396,10 +397,9 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			num_vectors=num_vec;
 		}
 
-		/** obtain simpe features from other dotfeatures
+		/** obtain simple features from other dotfeatures
 		 *
-		 * @param sf simple features
-		 * @return if obtaining was successful
+		 * @param df dotfeatures to obtain features from
 		 */
 		void obtain_from_dot(CDotFeatures* df)
 		{

@@ -324,13 +324,35 @@ public:
 	inline virtual const char* get_name() const { return "HDF5File"; }
 
 protected:
+	/** determine the hdf5 type compatible to 'bool' */
 	void get_boolean_type();
+
+	/** determine the hdf5 type of class t_class that is
+	 * compatible to datatype
+	 *
+	 * @param t_class hdf5 class
+	 * @param datatype shogun file data type
+	 *
+	 * @return compatible hdf5 datatype or -1
+	 */
 	hid_t get_compatible_type(H5T_class_t t_class, SGDataType datatype);
+
+	/** get dimensionality of the data
+	 *
+	 * @param dataset hdf5 dataset
+	 * @param dims dimensions (returned by reference)
+	 * @param ndims (returned by reference)
+	 * @param total_elements (returned by reference)
+	 */
 	void get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t& total_elements);
+
+	/** create a group hierarchy in the hdf5 file h5file according to name */
 	void create_group_hierarchy();
 
 protected:
+	/** hdf5 file handle */
 	hid_t h5file;
+	/** hdf5 type closest to 'bool' */
 	hid_t boolean_type;
 };
 }

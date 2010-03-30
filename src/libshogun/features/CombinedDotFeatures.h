@@ -107,8 +107,6 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param sub_index index for which to compute outputs
 		 * @param num length of index
 		 * @param output result for the given vector range
-		 * @param start start vector range from this idx
-		 * @param stop stop vector range at this idx
 		 * @param alphas scalars to multiply with, may be NULL
 		 * @param vec dense vector to compute dot product with
 		 * @param dim length of the dense vector

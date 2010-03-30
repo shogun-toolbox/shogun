@@ -148,15 +148,18 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			}
 		}
 
-		/** constructor
+		/** constructor loading features from file
 		 *
-		 * @param fname filename to load features from
+		 * @param loader File object to load data from
 		 */
 		CSparseFeatures(CFile* loader)
 		: CDotFeatures(loader), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
-		{}
+		{
+			load(loader);
+		}
 
+		/** default destructor */
 		virtual ~CSparseFeatures()
 		{
 			free_sparse_features();
@@ -1043,7 +1046,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @param writer File object to write data to
 		 */
-		void save(CFile* loader);
+		void save(CFile* writer);
 
 		/** load features from file
 		 *
