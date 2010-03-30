@@ -118,7 +118,7 @@ _elwms_static=auto
 _matlab_static=auto
 #modular interfaces
 _python_modular=auto
-_octave_modular=auto
+_octave_modular=no
 _r_modular=no
 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
