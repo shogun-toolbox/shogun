@@ -1,5 +1,831 @@
+2010-03-30  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/File.cpp, libshogun/lib/File.h,
+	  libshogun/lib/HDF5File.cpp, libshogun/lib/HDF5File.h: more
+	  documentation
+	* .version.sh, libshogun/classifier/svm/LaRank.h,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/SNPFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/WDFeatures.h,
+	  libshogun/kernel/KernelNormalizer.h: add a gazillion of
+	  docstrings
+	* Makefile.template, configure,
+	  libshogun/features/StringFeatures.h: workaround a compile failure
+	  on osx
+	* Makefile, Makefile.template: tests run through finally
+	* Makefile.template: don't kill default paths
+	* libshogun/lib/AsciiFile.cpp, libshogun/lib/HDF5File.cpp: don't
+	  transpose ascii (really really don't) and remove debug code from
+	  hdf5
+	* NEWS, configure: shogun octave-modular works reliably until one
+	  exits octave. however octave
+	  crashes upon exit. disable octave modular by default until
+	  swig/octave fix the
+	  crasher when *unloading* modules.
+	* .version.sh, libshogun/lib/HDF5File.cpp,
+	  libshogun/lib/HDF5File.h: r/w support of hdf5 matrices/vectors
+	* Makefile.template: set LD_LIBRARY_PATH w/ matlab
+	* libshogun/lib/HDF5File.cpp, libshogun/lib/HDF5File.h: hdf5 vector
+	  and matrix read support plus proper error handling
+
+2010-03-29  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/HDF5File.cpp, libshogun/lib/HDF5File.h,
+	  libshogun/lib/Mathematics.cpp: non-standard boolean type
+	  detection, print function for ulong vectors
+	* NEWS, libshogun/lib/HDF5File.cpp: drafty hdf5 read support for
+	  vectors
+
+2010-03-29  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun, libshogun/base, libshogun/classifier/svm,
+	  libshogun/distributions/histogram, libshogun/distributions/hmm,
+	  libshogun/lib/common.h: additional boost::serialization code
+	* libshogun/kernel/Kernel.h,
+	  libshogun/kernel/MultitaskKernelMaskPairNormalizer.h,
+	  modular/Kernel.i: added MultitaskKernelMaskPairNormalizer
+	* libshogun/classifier/svm/DomainAdaptationSVM.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVM.h: added optional
+	  train factor
+	* libshogun/classifier/mkl/MKL.cpp: fixed minor bug
+	* libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/Features.cpp, libshogun/features/Features.h,
+	  libshogun/features/StringFeatures.cpp: further work on
+	  serialization code
+	* libshogun/kernel/MultitaskKernelMaskNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMklNormalizer.h,
+	  libshogun/kernel/MultitaskKernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelPlifNormalizer.h,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h: completed
+	  documentation for multitask mkl code
+
+2010-03-29  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure, libshogun/lib/AsciiFile.cpp,
+	  libshogun/lib/AsciiFile.h, libshogun/lib/BinaryFile.cpp,
+	  libshogun/lib/BinaryFile.h, libshogun/lib/File.cpp,
+	  libshogun/lib/File.h, libshogun/lib/HDF5File.cpp,
+	  libshogun/lib/HDF5File.h: start integration of hdf5 file support
+	* cmdline/CmdLineInterface.cpp,
+	  libshogun/features/SparseFeatures.h, libshogun/lib/AsciiFile.cpp,
+	  libshogun/lib/AsciiFile.h, libshogun/lib/BinaryFile.cpp,
+	  libshogun/lib/BinaryFile.h, libshogun/lib/File.h: load/write of
+	  sparse features of arbitrary type
+
+2010-03-28  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/Labels.cpp, libshogun/features/Labels.h,
+	  libshogun/lib/AsciiFile.cpp: support loading/writing of labels
+	* libshogun/lib/BinaryFile.cpp, libshogun/lib/File.h: set/get
+	  functions for vectors/strings
+
+2010-03-27  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/BinaryFile.cpp: implement binary vector GET
+	  function
+
+2010-03-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/File.h: support for basic reading/writing of binary
+	  matrices
+	* libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  modular/Library.i: template for binary i/o
+	* libshogun/kernel/Kernel.cpp, modular/Library.i: ascii file i/o
+	  seems to work now
+	* libshogun/features/StringFeatures.h, libshogun/lib/AsciiFile.cpp:
+	  fix erraneous close when file is not opened and warnings caused
+	  by wrong fprintf format strings
+	* libshogun/lib/AsciiFile.h: all features read from ascii files are
+	  transposed now (one example == one line): so change examples
+	  accordingly
+	* cmdline/CmdLineInterface.cpp, libshogun/lib/AsciiFile.cpp,
+	  libshogun/lib/AsciiFile.h, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/File.cpp, libshogun/lib/File.h,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h:
+	  consolidate i/o functions
+
+2010-03-25  Soeren Sonnenburg <sonne@debian.org>
+
+	* cmdline/CmdLineInterface.cpp, libshogun/lib/AsciiFile.cpp,
+	  libshogun/lib/AsciiFile.h: implement loading of dense matrices
+	* cmdline/CmdLineInterface.cpp, libshogun/distance/Distance.cpp,
+	  libshogun/distance/Distance.h, libshogun/features/DotFeatures.h,
+	  libshogun/features/Features.cpp, libshogun/features/Features.h,
+	  libshogun/features/Labels.cpp, libshogun/features/Labels.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/StringFeatures.h, libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/Kernel.h, libshogun/lib/AsciiFile.cpp,
+	  libshogun/lib/AsciiFile.h, libshogun/lib/BinaryFile.cpp,
+	  libshogun/lib/BinaryFile.h, libshogun/lib/File.cpp,
+	  libshogun/lib/File.h, libshogun/lib/HDF5File.h,
+	  libshogun/lib/LibSVMFile.h, libshogunui/GUIDistance.cpp,
+	  libshogunui/GUIFeatures.cpp, libshogunui/GUIKernel.cpp,
+	  libshogunui/GUILabels.cpp, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: inital (dysfunctional) commit starting
+	  to use the generalized access functions in CFile
+
+2010-03-22  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/PolyKernel.cpp: poly kernel was correct / fixes
+	  brown paper back commit
+
+2010-03-19  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVM.h: add function to retrieve tube
+	  epsilon
+	* libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMklNormalizer.h: minor whitespace
+	  cleanup & init kernel normalizer when features are already
+	  available
+	* libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/SNPFeatures.cpp,
+	  libshogun/features/StringFeatures.h: - add error handling on
+	  load_ascii_file
+	  - add SNP alphabet
+	  - require SNP alphabet in SNP features
+	* libshogun/features/DotFeatures.h,
+	  libshogun/features/SNPFeatures.cpp,
+	  libshogun/features/SNPFeatures.h: add snp feature exampel
+
+2010-03-18  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/SNPFeatures.cpp,
+	  libshogun/features/SNPFeatures.h,
+	  libshogun/kernel/SNPStringKernel.h, modular/Features.i: start
+	  implementing SNP features
+	* libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/StringFeatures.h, libshogunui/SGInterface.cpp:
+	  include RAWDIGITS etc alphabets and generalize load_dna_file to
+	  load_ascii_file in stringfreatures
+	* libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/kernel/PolyMatchStringKernel.h: add DIGIT and DIGIT2
+	  alphabet
+	* .version.sh: apply patch from Yaroslav Halchenko that adds
+	  versions when building within a git-svn tracked source
+
+2010-03-17  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/GaussianMatchStringKernel.cpp,
+	  libshogun/kernel/GaussianMatchStringKernel.h,
+	  libshogun/kernel/Kernel.h,
+	  libshogun/kernel/PolyMatchStringKernel.cpp,
+	  libshogun/kernel/PolyMatchStringKernel.h, modular/Kernel.i:
+	  integrate hagens gaussian match str kernel
+	* libshogun/features/CombinedDotFeatures.h: fix use of combined
+	  weight
+
+2010-03-11  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/PolyKernel.cpp: fix bug in poly kernel when
+	  inhomog. kernel was used
+
+2010-03-10  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LaRank.h, modular/Kernel.i: - fix a
+	  crasher in LaRank
+	  - fix set_subkernel_weights
+
+2010-03-03  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogunui/SGInterface.cpp: --
+	  included a check that the size of the segment_mask corresponds to
+	  the size of
+	  the observation matrix. To do that I had to set the observation
+	  matrix before the
+	  segment_mask in all interfaces
+
+2010-03-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* INSTALL, libshogunui/SGInterface.cpp: update docu/install
+	  instructions based on vojtechs comments
+
+2010-03-01  Soeren Sonnenburg <sonne@debian.org>
+
+	* INSTALL, configure: explain which python packages need to be
+	  installed and fix configure to fail when python is requrested but
+	  not installed
+	* libshogun/preproc/LogPlusOne.h: fix typo
+	* configure: forget about python when it is not properly installed
+	* configure: proper python2.4 detection...
+	* libshogun/lib/io.cpp, libshogun/lib/io.h,
+	  libshogunui/SGInterface.cpp: really disable all syntax
+	  highlighting, even for error messages
+	* configure: don't enable python-static when python is not
+	  available
+
+2010-02-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/io.cpp, libshogunui/SGInterface.cpp: - disable line
+	  prefixes (that were on by default)
+	  - mention how syntax highlighting can be disabled (for poor
+	  matlab gui users ;)
+	* libshogun/distributions/Distribution.h,
+	  libshogun/distributions/LinearHMM.cpp: fix reference counting for
+	  linear hmms/distributions set/get_features
+	* libshogun/features/SimpleFeatures.h: hopefully fix access of
+	  feature vectors in matrices >2GB (but still with no more than
+	  2^31 features/ 2^31 examples)
+
+2010-02-25  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/classifier/LPBoost.h, libshogun/classifier/LPM.h,
+	  libshogun/classifier/SubGradientLPM.h,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/SVM.h,
+	  libshogun/classifier/svm/SVMLin.h,
+	  libshogun/classifier/svm/SVMOcas.h,
+	  libshogun/classifier/svm/SVMSGD.h,
+	  libshogun/classifier/svm/SubGradientSVM.h,
+	  libshogun/classifier/svm/WDSVMOcas.h: renamed set_C(c1, c2) to
+	  set_C(c_neg, c_pos) to make it self-explanatory
+
+2010-02-25  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVM_libsvm.cpp: avoid bias messing
+	  around when bias is disabled and return 0 immediately
+	* libshogun/classifier/svm/SVM_libsvm.cpp: add support for
+	  disabling bias for libsvm - thanks Chih-Jen Lin for the code
+	* libshogun/features/SimpleFeatures.h: fix a bug when returned
+	  matrices are >4GB
+	* libshogun/classifier/svm/LibSVM.cpp: minor cleanup
+	* libshogun/features/SimpleFeatures.h: fix crasher in out of memory
+	  condigiton
+
+2010-02-24  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/ScatterKernelNormalizer.h, modular/Kernel.i: add
+	  scatter kernel normalizer for scattersvm
+	* libshogun/base/SGObject.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogun/classifier/svm/Tron.cpp,
+	  libshogun/classifier/svm/Tron.h: support setting of maximum
+	  number of iterations for liblinear and include time limit
+
+2010-02-23  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/MultiClassSVM.h: add function to fetch
+	  multiclass type
+	* libshogun/classifier/svm/MultiClassSVM.cpp: no longer assign
+	  labels to sub-svms
+
+2010-02-22  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/SimpleFeatures.h,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/features/WDFeatures.h, modular/Features.i: add an
+	  option to set custom weights / normalization const in wd features
+	* libshogun/classifier/svm/LibLinear.cpp: add todo snippet for
+	  liblinear multiclass
+	* libshogun/classifier/LinearClassifier.h,
+	  libshogun/classifier/svm/LibLinear.cpp, libshogun/lib/io.cpp: fix
+	  bias handling in liblinear L1_*, turn on file/error nr for error
+	  msg's
+	* NEWS, libshogun/base/SGObject.cpp, libshogun/base/SGObject.h,
+	  libshogun/base/init.cpp, libshogun/base/init.h,
+	  libshogun/classifier/svm/LibLinear.cpp: add set/get io object
+	  functions and update news
+
+2010-02-19  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/SimpleFeatures.h,
+	  libshogun/kernel/MultitaskKernelMklNormalizer.h,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h,
+	  modular/Kernel.i: - fix multitaskkernelnormalizer inclusion order
+	  - add function to simplefeatures to obtain fm directly from
+	  dotfeatures
+
+2010-02-19  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/kernel/Kernel.h: fixed multiple friend
+	* modular/Kernel.i, modular/SGBase.i: updated interfaces for MT
+	  kernels
+	* libshogun/base/SGObject.h: included some stl containers
+	* libshogun/kernel/MultitaskKernelMklNormalizer.h,
+	  libshogun/kernel/MultitaskKernelPlifNormalizer.h,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.h: further work on MT
+	  kernels
+	* libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h: added MT
+	  normalizers as friends
+	* libshogun/kernel/KernelNormalizer.h: added kernel_normalizer type
+	  enum
+
+2010-02-19  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/TransposedWDFeatures.cpp,
+	  libshogun/features/TransposedWDFeatures.h, modular/Features.i:
+	  remove transposed wd features
+	* libshogun/features/TransposedWDFeatures.cpp,
+	  libshogun/features/TransposedWDFeatures.h,
+	  libshogun/features/WDFeatures.cpp, modular/Features.i: add
+	  transposed wd features
+
+2010-02-19  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/Plif.cpp: --
+	  new example description + some additional debug code
+
+2010-02-19  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/regression/svr/LibSVR.cpp: set max train time for
+	  libsvr
+
+2010-02-18  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/kernel/MultitaskKernelMaskNormalizer.h,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h: added mask
+	  normalizer and improved tree normalizer
+
+2010-02-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFeatures.h: fix string feature transpose
+	  function
+	* libshogun/features/StringFeatures.h: fix get_transposed() in
+	  string features
+	* configure, libshogun/features/ImplicitWeightedSpecFeatures.cpp,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/features/WDFeatures.h: implement feature iterator for
+	  wd and spectrum kernel features
+	* Makefile, libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/features/CombinedDotFeatures.cpp,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/WDFeatures.h: integreate sparse feature
+	  iterator in combined dot features
+	* libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h: L1 based liblinear methods
+	  work now
+
+2010-02-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h: fix transpose functions
+	* libshogun/classifier/svm/LibLinear.cpp, modular/Features.i:
+	  modify L1 parts of liblinear to use new interface
+	* libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/ExplicitSpecFeatures.h,
+	  libshogun/features/FKFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.cpp,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/PolyFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/SparsePolyFeatures.h,
+	  libshogun/features/WDFeatures.h: add an iterator to enable
+	  traversing non-zero components of (sparse) feature vectors
+
+2010-02-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* Makefile, Makefile.template, libshogun/signals: fix makefile to
+	  install examples
+
+2010-02-09  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure: support Renesas SH architectures (thanks Nobuhiro
+	  Iwamatsu for the patch)
+	* libshogun/classifier/Classifier.h: fix a potential crasher in
+	  get_labels()
+
+2010-02-06  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/mkl/MKL.cpp, libshogun/classifier/mkl/MKL.h:
+	  apply ryotas patch for elastic net lambda setting in libshogun
+	* libshogunui/GUIClassifier.cpp, libshogunui/GUIClassifier.h,
+	  libshogunui/GUICommands.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: apply ryotas patch for setting the
+	  lambda elastic net parameter in static interface
+
+2010-02-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/SimpleFeatures.h: add transposed fkt
+	* libshogun/features/SparseFeatures.h,
+	  libshogun/features/StringFeatures.h: add functions to transpose
+	  strings/sparse features
+
+2010-02-01  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/SparsePolyFeatures.h,
+	  libshogun/features/WDFeatures.h: try to do some reasonable
+	  estimates of nnz in a number of dotfeatures
+
+2010-01-31  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/SparsePolyFeatures.cpp: compute hash
+	  incrementally
+	* libshogun/features/SparsePolyFeatures.cpp,
+	  libshogun/features/SparsePolyFeatures.h: fix sparse dot features
+	  + hashing
+	* NEWS, libshogun/features/SparsePolyFeatures.cpp: dim fix, update
+	  NEWS
+	* libshogun/features/PolyFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/SparsePolyFeatures.cpp,
+	  libshogun/features/SparsePolyFeatures.h, modular/Features.i: add
+	  sparse poly features dotfeatures
+
+2010-01-27  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogunui/SGInterface.cpp: fix a too strict error check
+
+2010-01-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/Tron.cpp: enable progress w/ liblinear
+
+2010-01-25  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/HashedWDFeaturesTransposed.cpp: bugfix in sub
+	  idx
+	* libshogun/features/DotFeatures.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp: bugfixes -
+	  sub_index needs to be NULL
+	* libshogun/classifier/svm/SVM_linear.cpp,
+	  libshogun/features/CombinedDotFeatures.cpp,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/DotFeatures.cpp,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h: introduce
+	  dense_dot_range_subset()
+
+2010-01-24  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/DotFeatures.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h: properly
+	  parallelize hashedwdfeatures
+
+2010-01-23  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/CombinedDotFeatures.cpp: fix a bug in combined
+	  dot features dense_dot_range
+	* libshogun/features/DotFeatures.cpp,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/WDFeatures.cpp: get transposed wd features to
+	  work correctly
+	* libshogun/classifier/svm/SVM_linear.cpp,
+	  libshogun/classifier/svm/Tron.cpp: use dot() instead of loop
+
+2010-01-22  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/CombinedDotFeatures.cpp: fix combined dot
+	  dense range
+	* libshogun/features/CombinedDotFeatures.cpp,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/kernel/Kernel.h: fix compile error with multitask
+	  kernel and add dense_dot_range call to combined dot features
+	* libshogun/features/HashedWDFeaturesTransposed.cpp: offset fixes
+
+2010-01-22  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/kernel/MultitaskKernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h: fixed a few
+	  issues
+
+2010-01-22  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/StringFeatures.h: wip commit
+	* libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/StringFeatures.h, modular/Features.i: add
+	  transposed wd features
+	* NEWS, libshogun/classifier/Classifier.h,
+	  libshogun/classifier/mkl/MKL.cpp, libshogun/classifier/mkl/MKL.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: - integrate Ryotas elastic net mkl and
+	  wrap liblinear in static interfaces.
+	  - update NEWS accordingly
+
+2010-01-21  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/WDFeatures.h: add get_normalization const
+	  fucntion
+	* libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/features/WDFeatures.h: in hash wd features, precompute
+	  seed taking into account previous start_degree-1 nt and allow
+	  external setting of normalization const to be able to concat
+	  wdfeatures and hashedwdfeatures
+	* libshogun/features/DotFeatures.cpp,
+	  libshogun/features/DotFeatures.h, libshogun/lib/Time.h: fix
+	  benchmarking for parallel tests
+	* libshogun/classifier/svm/SVM_linear.cpp: use dense_dot_range()
+	  which effectively parallelizes liblinear
+	* libshogun/features/HashedWDFeatures.cpp: fix crasher, forgotten
+	  to mask hash to bitsize
+
+2010-01-20  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h: use incremental hash
+	* libshogun/lib/Hash.cpp, libshogun/lib/Hash.h: add incremental
+	  murmur like hash
+	* libshogun/features/DotFeatures.h: fix crasher and beautify bench
+	  outputs
+	* libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/features/DotFeatures.h, libshogun/lib/Time.h: add
+	  functions to benchmark dotfeatures
+	* libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/SVM_linear.cpp,
+	  libshogun/classifier/svm/SVM_linear.h,
+	  libshogun/features/SparseFeatures.h: merge liblinear 1.51:
+	  currently solvers for
+	  
+	  L2R_LR
+	  L2R_L2LOSS_SVC_DUAL
+	  L2R_L2LOSS_SVC
+	  L2R_L1LOSS_SVC_DUAL
+	  
+	  work.
+	  
+	  MCSVM_CS, L1R_L2LOSS_SVC, L1R_LR require further work.
+
+2010-01-19  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/WDFeatures.cpp: fix a minor memory leak and
+	  offs and normalization for start_degree>0
+	* libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h: fix off by one counter
+	* libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h: fixes + add debug output
+
+2010-01-18  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/HashedWDFeatures.cpp: further fixes
+	* libshogun/features/HashedWDFeatures.cpp: fix argument ordering
+	  and use start
+	* libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h, libshogun/lib/Hash.h,
+	  modular/Features.i: implement hashed wd features
+	* libshogun/lib/Hash.h: fix typo - murmUr
+
+2010-01-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/structure/DynProg.h: remove segment loss functions that
+	  only appear in headers - fixes compilation
+
+2010-01-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, libshogun/lib/Trie.h: fix typo, update news
+
+2010-01-11  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/genomic_signals/TrainPredMaster.cpp,
+	  libshogun/genomic_signals/TrainPredMaster.cpp.orig,
+	  libshogunui/GUISignals.cpp, libshogunui/GUISignals.cpp.orig,
+	  libshogunui/GUISignals.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: Hack to get it to work without the
+	  missing file(s) in genomic_signals
+
+2010-01-11  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/mkl/MKL.h: fix typos
+
+2010-01-10  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Classifier.doxy, modular/Clustering.doxy,
+	  modular/Distance.doxy, modular/Distribution.doxy,
+	  modular/Evaluation.doxy, modular/Features.doxy,
+	  modular/Kernel.doxy, modular/Library.doxy, modular/PreProc.doxy,
+	  modular/Regression.doxy, modular/Structure.doxy: disable search
+	  engine for doxygen 1.6.2 (fixes build failures)
+
+2010-01-08  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/genomic_signals/KernelParam.cpp,
+	  libshogun/genomic_signals/KernelParam.h,
+	  libshogun/genomic_signals/SignalModel.cpp,
+	  libshogun/genomic_signals/SignalModel.h,
+	  libshogun/genomic_signals/TrainPredMaster.cpp,
+	  libshogun/genomic_signals/TrainPredMaster.h,
+	  libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h,
+	  libshogunui/GUISignals.cpp, libshogunui/GUISignals.h,
+	  libshogunui/SGInterface.cpp: -- cleanup
+	* libshogun/genomic_signals,
+	  libshogun/genomic_signals/KernelParam.cpp,
+	  libshogun/genomic_signals/KernelParam.h,
+	  libshogun/genomic_signals/SignalModel.cpp,
+	  libshogun/genomic_signals/SignalModel.h,
+	  libshogun/genomic_signals/TrainPredMaster.cpp,
+	  libshogun/genomic_signals/TrainPredMaster.h,
+	  libshogun/signals/KernelParam.cpp,
+	  libshogun/signals/KernelParam.h,
+	  libshogun/signals/SignalModel.cpp,
+	  libshogun/signals/SignalModel.h,
+	  libshogun/signals/TrainPredMaster.cpp,
+	  libshogun/signals/TrainPredMaster.h: -- rename to avooid
+	  confusion with Unix signals
+	* libshogunui/GUICommands.h: -- new commands for the SGInterface
+	* libshogun/signals, libshogun/signals/KernelParam.cpp,
+	  libshogun/signals/KernelParam.h,
+	  libshogun/signals/SignalModel.cpp,
+	  libshogun/signals/SignalModel.h,
+	  libshogun/signals/TrainPredMaster.cpp,
+	  libshogun/signals/TrainPredMaster.h, libshogunui/GUISignals.cpp,
+	  libshogunui/GUISignals.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: -- first new classes for the signal
+	  prediction pipeline
+	  
+	  Conflicts:
+	  
+	  trunk/src/libshogun/signals/TrainPredMaster.cpp
+	  trunk/src/libshogun/signals/TrainPredMaster.h
+	  trunk/src/libshogunui/GUISignals.cpp
+	  trunk/src/libshogunui/GUISignals.h
+	* libshogun/structure/PlifMatrix.cpp, libshogunui/GUIStructure.h,
+	  libshogunui/SGInterface.cpp: -- more work on memory leaks
+	* libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/GUICommands.h,
+	  libshogunui/GUIStructure.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: -- fixed more memory leaks
+	  looks quite good now
+	* libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/SGInterface.cpp: --
+	  fixed some more mem leaks
+
+2010-01-08  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/kernel/MultitaskKernelTreeNormalizer.h: Parameterized
+	  MTL Kernel Normalizer
+
+2010-01-07  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  (hopefully) fixed a bug in best_path/long transitions
+
+2010-01-06  Soeren Sonnenburg <sonne@debian.org>
+
+	* cmdline/CmdLineInterface.cpp: write out floating point scalars to
+	  file for cmdline interface
+	* libshogun/kernel/SNPStringKernel.cpp,
+	  libshogun/kernel/SNPStringKernel.h: fix name
+
+2010-01-05  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/lib/MemoryMappedFile.h: reactivated 32bit access
+	  operator
+	* libshogun/lib/MemoryMappedFile.h: better?
+
+2009-12-30  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LibSVMMultiClass.cpp,
+	  libshogun/classifier/svm/LibSVMOneClass.cpp: time limit also for
+	  libsvm oneclass/multiclass
+	* libshogun/classifier/svm/LibSVM.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.cpp,
+	  libshogun/classifier/svm/SVM_libsvm.h: let libsvm respect
+	  max_train_time
+	* NEWS, libshogunui/GUIKernel.cpp: fix a bug in static interfaces
+	  that could make testing fail when not directly done after
+	  training
+
+2009-12-27  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure: R compile fixes; however matlab/R won't work until
+	  cygwin gets mingw support of gcc4.x
+	* Makefile.template, configure: further compile fixes for
+	  cygwin1.7: works now cleanly for octave,python,python_modular:
+	  note upon install issue
+	  
+	  make install DESTDIR=
+	  
+	  otherwise installation will fail (cygwin has problems with double
+	  '/', i.e. '//' in paths)
+
+2009-12-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* Makefile.template, configure, octave/OctaveInterface.cpp: build
+	  fixes for win32/cygwin1.7: octave, python & cmdline work now
+
+2009-12-25  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure, libshogun/base/Version.h, libshogun/lib/Mathematics.h:
+	  compile fixes for cygwin
+	* libshogun/base/Version.h: update copyright to 2010
+
+2009-12-09  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/DynProg.cpp: -- fixed delete delete[]
+	  mismatch
+
+2009-12-04  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure, libshogun/structure/DynProg.h: fix compilation of
+	  dynprog in python modular (the structure needs to be global
+	  to be recognized by swig)
+	* libshogun/classifier/svm/LibLinear.cpp: potentially fix sign flip
+	  occurring with liblinear
+	* libshogun/classifier/svm/LibSVM.cpp: formatting changes
+
+2009-12-02  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/SegmentLoss.h: -- fixed problem with loss
+	  that turned up using the mask for alternative regions
+	* libshogun/structure/SegmentLoss.h: -- modified semgent loss such
+	  that it is similar to
+	  the old segment loss used for nGasp
+	* libshogun/structure/DynProg.cpp, libshogun/structure/DynProg.h:
+	  -- integrated different versions of dynamic program and loss
+	  implementations via ifdefs to compare the different loss types
+	  and debug the DynProg
+
+2009-11-25  Soeren Sonnenburg <sonne@debian.org>
+
+	* octave/OctaveInterface.cpp: fix compile error occuring with
+	  octave
+
+2009-11-24  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/GUIKernel.cpp: potentially fix custom kernel init
+	  problem in static interfaces
+	* octave/OctaveInterface.cpp: improve error output when getting
+	  vectors
+
+2009-11-23  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* matlab/MatlabInterface.cpp: trial to fix matlab interface for
+	  matlab R2009a
+
+2009-11-20  Soeren Sonnenburg <sonne@debian.org>
+
+	* matlab/MatlabInterface.cpp: potentially improve vector shape
+	  error message (untested)
+	* configure: fix cplex detection on amd64 machines
+
+2009-11-19  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/SNPStringKernel.cpp,
+	  libshogun/kernel/SNPStringKernel.h: make SNP kernel LIK like
+	* libshogun/distributions/HMM.cpp: fix observations...
+
+2009-11-17  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/SNPStringKernel.cpp,
+	  libshogun/kernel/SNPStringKernel.h: fixes...
+
+2009-11-17  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* libshogun/structure/SegmentLoss.cpp: -- bugfix: nucleotide loss
+	  produced negative results
+	* libshogun/structure/DynProg.cpp: -- dead code removed
+
 2009-11-16  Soeren Sonnenburg <sonne@debian.org>
 
+	* NEWS, libshogun/kernel/SNPStringKernel.cpp,
+	  libshogun/kernel/SNPStringKernel.h, modular/Kernel.i: add SNP
+	  kernel
+	* libshogun/classifier/LinearClassifier.h,
+	  libshogun/classifier/SubGradientLPM.cpp,
+	  libshogun/classifier/svm/SVMLin.cpp,
+	  libshogun/classifier/svm/SubGradientSVM.cpp,
+	  libshogunui/SGInterface.cpp: fix set_w() for linear classifiers,
+	  thanks to Александр Горбань for the report
+
+2009-11-16  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/CPLEXSVM.cpp: fixed compilation problem
+	* libshogun/kernel/MultitaskKernelNormalizer.h: minor change
+	* libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelNormalizer.h: working
+	  implementation of the MultitaskKernel by means of a
+	  KernelNormalizer
+
+2009-11-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* ChangeLog: updated changelog
 	* Makefile.template, libshogun/classifier/svm/LaRank.h,
 	  libshogun/features/StringFeatures.h: - fix type mismatch in
 	  larank
@@ -11002,7 +11828,7 @@
 	* configure, lib/Cplex.h: cplex 10 compat fixes as suggested by
 	  Gorden Jemwa
 	* Makefile: merge changes from 0.4.0
-	* ChangeLog, Makefile:
+	* ChangeLog, Makefile: release 0.4.0
 	* ChangeLog: update changelog
 	* configure: set default gcc first
 	* configure: forgotten break in pthread detection
@@ -11016,7 +11842,8 @@
 
 	* configure: remove undefined suppress from configure
 	* base/Version.cpp, base/Version.h, classifier/svm/LibSVM.cpp,
-	  classifier/svm/SVM_light.cpp:
+	  classifier/svm/SVM_light.cpp: fix the remaining python-modular
+	  interface examples
 
 2007-07-28  Soeren Sonnenburg <sonne@debian.org>
 
@@ -11972,14 +12799,18 @@
 
 	* kernel/GaussianKernel.cpp: remove debug output
 	* ChangeLog, TODO, kernel/WeightedDegreePositionCharKernel.i,
-	  kernel/WeightedDegreePositionStringKernel.i:
+	  kernel/WeightedDegreePositionStringKernel.i: * update to 0.3.2
+	  * start wds kernel python interf.
 
 2007-03-06  Soeren Sonnenburg <sonne@debian.org>
 
 	* base/Version.h, distributions/hmm/HMM.cpp, gui/Octave.cpp: merge
 	  changes back to trunk
 	* NEWS, guilib/GUIHMM.cpp, guilib/GUIOctave.cpp,
-	  structure/DynProg.i:
+	  structure/DynProg.i: release shogun 0.3.2 fixing a number of bugs
+	  in the examples
+	  and several valgrind hits in octave/hmm adding support for
+	  numpy boolean -> for msplicer v0.2
 
 2007-03-05  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
 
@@ -12252,7 +13083,7 @@
 
 2007-02-20  Soeren Sonnenburg <sonne@debian.org>
 
-	* configure:
+	* configure: 3.1 merging
 	* ChangeLog: releasing
 	* base/Parallel.h, classifier/svm/SVMLin.cpp,
 	  classifier/svm/SVMLin.h: build fix on osx
@@ -12311,7 +13142,8 @@
 
 2007-02-14  Soeren Sonnenburg <sonne@debian.org>
 
-	* README.developer:
+	* README.developer: * Release 0.3.0
+	  * update developer README
 	* ChangeLog, NEWS, lib/io.cpp, lib/io.h: this will be version
 	  0.3.0, add io set_target_to_stderr/stdout functions
 
