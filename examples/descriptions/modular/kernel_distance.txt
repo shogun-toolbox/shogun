@@ -1,2 +1,22 @@
 With the distance kernel one can use any of the following distance metrics: 
-MINKOWSKI MANHATTAN HAMMING CANBERRA CHEBYSHEW GEODESIC JENSEN CHISQUARE TANIMOTO COSINE BRAYCURTIS EUCLIDIAN
+BrayCurtisDistance()
+CanberraMetric()
+CanberraWordDistance()
+ChebyshewMetric()
+ChiSquareDistance()
+CosineDistance()
+Distance()
+EuclidianDistance()
+GeodesicMetric()
+HammingWordDistance()
+JensenMetric()
+ManhattanMetric()
+ManhattanWordDistance()
+MinkowskiMetric()
+RealDistance()
+SimpleDistance()
+SparseDistance()
+SparseEuclidianDistance()
+StringDistance()
+TanimotoDistance()
+
