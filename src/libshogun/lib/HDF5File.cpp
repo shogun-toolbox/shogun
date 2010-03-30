@@ -71,7 +71,6 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 		SG_ERROR("Error opening data set\n");										\
 	hid_t dtype = H5Dget_type(dataset);												\
 	H5T_class_t t_class=H5Tget_class(dtype);										\
-	get_dims(dataset, dims, ndims, nelements);										\
 	hid_t h5_type=get_compatible_type(t_class, datatype);							\
 	if (h5_type==-1)																\
 	{																				\
@@ -448,7 +447,6 @@ void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 
 	ndims = H5Sget_simple_extent_ndims(dataspace); 
 	total_elements=H5Sget_simple_extent_npoints(dataspace);
-	SG_PRINT("total_elements=%d ndims=%d\n", ndims, total_elements);
 	hsize_t* dims_out=new hsize_t[ndims];
 	dims=new int32_t[ndims];
 	H5Sget_simple_extent_dims(dataspace, dims_out, NULL);

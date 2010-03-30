@@ -122,7 +122,6 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 		}																		\
 	}																			\
 	delete items;																\
-	CMath::transpose_matrix(matrix, num_feat, num_vec);							\
 }
 
 GET_MATRIX(get_byte_matrix, atoi, uint8_t)
@@ -532,12 +531,12 @@ void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)
 	if (!(file && matrix))															\
 		SG_ERROR("File or matrix invalid.\n");										\
 																					\
-	for (int32_t i=0; i<num_feat; i++)												\
+	for (int32_t i=0; i<num_vec; i++)												\
 	{																				\
-		for (int32_t j=0; j<num_vec; j++)											\
+		for (int32_t j=0; j<num_feat; j++)											\
 		{																			\
-			sg_type v=matrix[num_feat*j+i];											\
-			if (j==num_vec-1)														\
+			sg_type v=matrix[num_feat*i+j];											\
+			if (j==num_feat-1)														\
 				fprintf(file, type_str "\n", (fprt_type) v);						\
 			else																	\
 				fprintf(file, type_str " ", (fprt_type) v);							\
