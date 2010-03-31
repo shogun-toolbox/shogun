@@ -1,8 +1,11 @@
 .PHONY: doc clean distclean
 EXAMPLE_FILES = $(shell find ../examples -name '*.py' -o -name '*.m' -o -name '*.R' -type f | grep -v svn)
 
-doc: examples
+doc: examples pages/Configure.generated
 	doxygen Doxyfile
+
+pages/Configure.generated:	../src/configure
+	../src/configure --help 2>&1 >$@
 
 doc_cn: examples_cn
 	doxygen Doxyfile_cn
@@ -17,3 +20,4 @@ distclean: clean
 
 clean: 
 	rm -rf html html_cn
+	rm -f pages/Configure.generated

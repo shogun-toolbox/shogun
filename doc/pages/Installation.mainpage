@@ -113,9 +113,11 @@ will autodetect and configure for the available interfaces.
 
 Call
 \verbatim./configure --help \endverbatim
-to get a list of additional options.
+to see the list of additional options detailled below.
+\verbinclude Configure.generated
 
 If this does not work for you, consult the INSTALL file for platform specific
-build instructions.
+build instructions. The INSTALL file is contained in the shogun src distribution and quoted below.
+\verbinclude INSTALL
 
 */

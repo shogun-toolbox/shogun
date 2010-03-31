@@ -639,6 +639,7 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ../src \
+                         ./pages \
                          ../examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
@@ -651,8 +652,10 @@ EXAMPLE_PATTERNS       = *.cpp \
                          *.py \
                          *.R \
                          *.m \
+						 *.generated \
                          LICENSE* \
-                         README*
+                         README* \
+						 INSTALL*
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be
 # searched for input files to be used with the \include or \dontinclude
