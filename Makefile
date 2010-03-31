@@ -150,26 +150,26 @@ update-webpage:
 		km:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
 	ssh km chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.*"
 	
-	make -C examples
+	$(MAKE) -C examples
 	rm -rf doc/html
-	make -C doc
+	$(MAKE) -C doc
 	ssh km rm -f "/var/www/shogun-toolbox.org/doc/*.*"
 	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/ -xjvf -
 	ssh km find /var/www/shogun-toolbox.org/doc/ -type f -exec chmod 644 \{\} "\;"
 	ssh km find /var/www/shogun-toolbox.org/doc/ -type d -exec chmod 755 \{\} "\;"
-	make -C doc doc_cn
+	$(MAKE) -C doc doc_cn
 	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc_cn/ -xjvf -
 	ssh km find /var/www/shogun-toolbox.org/doc_cn/ -type f -exec chmod 644 \{\} "\;"
 	ssh km find /var/www/shogun-toolbox.org/doc_cn/ -type d -exec chmod 755 \{\} "\;"
 	ssh km ./bin/shogun_doc_install.sh
 	rm -rf doc/html*
 
-	cd ../../website && make
+	cd ../../website && $(MAKE)
 
 src/libshogun/lib/versionstring.h:
 	rm -f src/ChangeLog
-	make -C src ChangeLog
-	make -C src/libshogun lib/versionstring.h
+	$(MAKE) -C src ChangeLog
+	$(MAKE) -C src/libshogun lib/versionstring.h
 
 $(DESTDIR)/src/libshogun/lib/versionstring.h: src/libshogun/lib/versionstring.h
 	rm -rf $(DESTDIR)
@@ -187,5 +187,5 @@ clean:
 	rm -rf $(DESTDIR)
 
 distclean:
-	make -C src distclean
+	$(MAKE) -C src distclean
 	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
