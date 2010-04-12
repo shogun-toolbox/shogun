@@ -19,13 +19,21 @@ CPerformanceMeasures::CPerformanceMeasures()
 : CSGObject(), m_true_labels(NULL), m_output(NULL), m_sortedROC(NULL)
 {
 	init_nolabels();
+	m_num_labels=0;
+	m_all_true=0;
+	m_all_false=0;
 }
 
 CPerformanceMeasures::CPerformanceMeasures(
 	CLabels* true_labels, CLabels* output)
 : CSGObject(), m_true_labels(NULL), m_output(NULL), m_sortedROC(NULL)
 {
-	init(true_labels, output);
+	m_num_labels=0;
+	m_all_true=0;
+	m_all_false=0;
+
+	set_true_labels(true_labels);
+	set_output(output);
 }
 
 CPerformanceMeasures::~CPerformanceMeasures()
@@ -44,22 +52,20 @@ CPerformanceMeasures::~CPerformanceMeasures()
 
 void CPerformanceMeasures::init_nolabels()
 {
-	m_all_true=0;
-	m_all_false=0;
-	m_num_labels=0;
+	delete[] m_sortedROC;
+	m_sortedROC=NULL;
+
 	m_auROC=CMath::ALMOST_NEG_INFTY;
 	m_auPRC=CMath::ALMOST_NEG_INFTY;
 	m_auDET=CMath::ALMOST_NEG_INFTY;
 }
 
-void CPerformanceMeasures::init(CLabels* true_labels, CLabels* output)
+bool CPerformanceMeasures::set_true_labels(CLabels* true_labels)
 {
 	init_nolabels();
 
 	if (!true_labels)
 		SG_ERROR("No true labels given!\n");
-	if (!output)
-		SG_ERROR("No output given!\n");
 
 	float64_t* labels=true_labels->get_labels(m_num_labels);
 	if (m_num_labels<1)
@@ -68,28 +74,10 @@ void CPerformanceMeasures::init(CLabels* true_labels, CLabels* output)
 		SG_ERROR("Need at least one example!\n");
 	}
 
-	if (m_num_labels!=output->get_num_labels())
+	if (m_output && m_num_labels!=m_output->get_num_labels())
 	{
 		delete[] labels;
 		SG_ERROR("Number of true labels and output labels differ!\n");
-	}
-
-	if (m_sortedROC)
-	{
-		delete[] m_sortedROC;
-		m_sortedROC=NULL;
-	}
-
-	if (m_true_labels)
-	{
-		SG_UNREF(m_true_labels);
-		m_true_labels=NULL;
-	}
-
-	if (m_output)
-	{
-		SG_UNREF(m_output);
-		m_output=NULL;
 	}
 
 	for (int32_t i=0; i<m_num_labels; i++)
@@ -106,10 +94,26 @@ void CPerformanceMeasures::init(CLabels* true_labels, CLabels* output)
 	}
 	delete[] labels;
 
+	SG_UNREF(m_true_labels);
 	m_true_labels=true_labels;
-	SG_REF(true_labels);
+	SG_REF(m_true_labels);
+	return true;
+}
+
+bool CPerformanceMeasures::set_output(CLabels* output)
+{
+	init_nolabels();
+
+	if (!output)
+		SG_ERROR("No output given!\n");
+
+	if (m_true_labels && m_true_labels->get_num_labels() != output->get_num_labels())
+		SG_ERROR("Number of true labels and output labels differ!\n");
+
+	SG_UNREF(m_output);
 	m_output=output;
-	SG_REF(output);
+	SG_REF(m_output);
+	return true;
 }
 
 void CPerformanceMeasures::create_sortedROC()

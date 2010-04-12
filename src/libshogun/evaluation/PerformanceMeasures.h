@@ -57,48 +57,39 @@ class CPerformanceMeasures : public CSGObject
 
 		virtual ~CPerformanceMeasures();
 
-		/** initialise performance measures
-		 *
-		 * @param true_labels true labels as seen in real world
-		 * @param output output labels/hypothesis from a classifier
-		 */
-		void init(CLabels* true_labels, CLabels* output);
-
 		/** set true labels as seen in real world
 		 *
 		 * @param true_labels true labels
 		 * @return if setting was successful
 		 */
-		inline bool set_true_labels(CLabels* true_labels)
-		{
-			m_true_labels=true_labels;
-			SG_REF(true_labels);
-			return true;
-		}
+		bool set_true_labels(CLabels* true_labels);
 
 		/** get true labels as seen in real world
 		 *
 		 * @return true labels as seen in real world
 		 */
-		inline CLabels* get_true_labels() const { return m_true_labels; }
+		inline CLabels* get_true_labels() const
+		{
+			SG_REF(m_true_labels);
+			return m_true_labels;
+		}
 
 		/** set output labels/hypothesis from a classifier
 		 *
 		 * @param output output labels
 		 * @return if setting was successful
 		 */
-		inline bool set_output(CLabels* output)
-		{
-			m_output=output;
-			SG_REF(output);
-			return true;
-		}
+		bool set_output(CLabels* output);
 
 		/** get classifier's output labels/hypothesis
 		 *
 		 * @return output labels
 		 */
-		inline CLabels* get_output() const { return m_output; }
+		inline CLabels* get_output() const
+		{
+			SG_REF(m_output);
+			return m_output;
+		}
 
 		/** get number of labels in output/true labels
 		 *
@@ -128,7 +119,8 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline float64_t get_auROC()
 		{
-			if (m_auROC==CMath::ALMOST_NEG_INFTY) {
+			if (m_auROC==CMath::ALMOST_NEG_INFTY)
+			{
 				float64_t** roc=(float64_t**) malloc(sizeof(float64_t**));
 				compute_ROC(roc);
 				free(*roc);
@@ -212,7 +204,8 @@ class CPerformanceMeasures : public CSGObject
 		 */
 		inline float64_t get_auDET()
 		{
-			if (m_auDET==CMath::ALMOST_NEG_INFTY) {
+			if (m_auDET==CMath::ALMOST_NEG_INFTY)
+			{
 				float64_t** det=(float64_t**) malloc(sizeof(float64_t**));
 				compute_DET(det);
 				free(*det);
