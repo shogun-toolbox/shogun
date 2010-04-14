@@ -1,0 +1,13 @@
+The class MatchWordStringKernel computes a variant of the polynomial
+kernel on strings of same length converted to a word alphabet.
+
+It is computed as
+
+k(x,x')= \sum_{i=0}^L I(x_i=x'_i)+c)^d
+
+where I is the indicator function which evaluates to 1 if its argument is
+true and to 0 otherwise.
+
+Note that additional normalisation is applied, i.e.
+    k'(x, x')=\frac{k(x, x')}{\sqrt{k(x, x)k( x', x')}}
+
