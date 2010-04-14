@@ -1,2 +1,0 @@
-The linear hidden markov model class offers a special case of hidden markov
-models implementation for models with linear topology.

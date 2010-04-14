@@ -1,0 +1,3 @@
+Trains an inhomogeneous Markov chain of order 3 on a DNA string data set. Due to
+the structure of the Markov chain it is very similar to a HMM with just one
+chain of connected hidden states - that is why we termed this linear HMM.

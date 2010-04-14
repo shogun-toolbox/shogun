@@ -1,0 +1,3 @@
+Trains an two inhomogeneous Markov chain of order 2 on a two DNA string data
+sets. The learned models are used to distinguish these DNA data sets from each
+other by the posterior log-odds.
