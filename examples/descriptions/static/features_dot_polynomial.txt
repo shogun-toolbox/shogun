@@ -1,0 +1,2 @@
+Demonstrates the use of polynomial dotfeatures, i.e. features for which the
+feature space of the polynomial kernel is computed on-demand / on-the-fly.

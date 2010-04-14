@@ -1,0 +1,3 @@
+Demonstrates the use of weighted spectrum  features, i.e. features for which the
+feature space of the weighted spectrum  kernel is computed on-demand / on-the-fly.
+These features can be particularly fast in linear SVM solvers.
