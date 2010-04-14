@@ -1,6 +1,6 @@
 2010-XX-XX Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.9.3 (libshogun 8, libshogunui 4.1)
+	* SHOGUN Release version 0.9.3 (libshogun 8.0, libshogunui 4.1)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- None

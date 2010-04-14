@@ -29,7 +29,7 @@ EXT_INP_SWIG=i
 EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB=so
-EXT_LIB_SWIG_PYTHON_MODULAR=so
+EXT_LIB_SWIG_PYTHON_MODULAR=
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454 -w312 -fvirtual"
@@ -2243,7 +2243,6 @@ EOF
 	elif win32
 	then
 		EXT_LIB=dll
-		EXT_LIB_SWIG_PYTHON_MODULAR=dll
 		LIBSHOGUN_SONAME=libshogun-${LIBSHOGUNSO}.dll
 		LIBSHOGUN_TARGET=libshogun-${LIBSHOGUNVER}.dll
 		LIBSHOGUN_DYNAMIC=libshogun.dll
@@ -3348,17 +3347,14 @@ test_python()
 			PRE_LIB_SWIG_PYTHON_MODULAR=_
 			EXT_IF_SWIG_PYTHON_MODULAR='.py'
 			test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
-			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
-			_pylibpath=""
-			#test -n "$_pylibpath" && _pylibpath="-I$_pylibpath"
-			if win32
-			then
-				 _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
-			fi
+			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "from distutils.sysconfig import get_python_inc; import numpy; print '-I%s -I%s' % (get_python_inc(), numpy.get_include())"`
+			_pylibpath=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print "-L%(LIBPL)s" % get_config_vars()'`
 			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`
 			INCLUDES_PYTHON="$_pyinclude $INCLUDES_PYTHON"
 			COMPFLAGS_CPP_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP_PYTHON"
 			COMPFLAGS_C_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_C_PYTHON"
+			EXT_LIB_SWIG_PYTHON_MODULAR=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print "%(SO)s" % get_config_vars()'`
+
 			if darwin
 			then
 				LINKFLAGS_PYTHON="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS_PYTHON"
