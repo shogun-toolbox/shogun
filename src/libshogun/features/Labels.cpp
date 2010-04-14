@@ -27,6 +27,8 @@ CLabels::CLabels()
 {
 	labels = NULL;
 	num_labels = 0;
+	m_confidences=NULL;
+	m_num_classes=0;
 }
 
 CLabels::CLabels(int32_t num_lab)
@@ -35,6 +37,9 @@ CLabels::CLabels(int32_t num_lab)
 	labels=new float64_t[num_lab];
 	for (int32_t i=0; i<num_lab; i++)
 		labels[i]=0;
+
+	m_num_classes=0;
+	m_confidences=NULL;
 }
 
 CLabels::CLabels(float64_t* p_labels, int32_t len)
@@ -43,7 +48,25 @@ CLabels::CLabels(float64_t* p_labels, int32_t len)
 	labels = NULL;
 	num_labels = 0;
 
-    set_labels(p_labels, len);
+	set_labels(p_labels, len);
+	
+	// We don't allocate the confidences matrix, unless it is necessary. 
+	// For problems with many classes and samples it might get really big.
+	m_num_classes=get_num_classes();
+	m_confidences=NULL; 
+}
+
+CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels, 
+				 int32_t in_num_classes)
+: CSGObject()
+{
+	labels=new float64_t[in_num_labels];
+	for (int32_t i=0; i<in_num_labels; i++)
+		labels[i]=0;
+
+	m_num_classes=in_num_classes;
+	m_confidences=in_confidences;
+	find_labels();
 }
 
 CLabels::CLabels(CFile* loader)
@@ -51,6 +74,8 @@ CLabels::CLabels(CFile* loader)
 {
 	num_labels=0;
 	labels=NULL;
+	m_num_classes=0;
+	m_confidences=NULL;
 
 	load(loader);
 }
@@ -58,8 +83,11 @@ CLabels::CLabels(CFile* loader)
 CLabels::~CLabels()
 {
 	delete[] labels;
+	delete[] m_confidences;
 	num_labels=0;
+	m_num_classes=0;
 	labels=NULL;
+	m_confidences=NULL;
 }
 
 void CLabels::set_labels(float64_t* p_labels, int32_t len)
@@ -69,6 +97,100 @@ void CLabels::set_labels(float64_t* p_labels, int32_t len)
 
 	delete[] labels;
     labels=CMath::clone_vector(p_labels, len);
+}
+
+void CLabels::set_confidences(float64_t* in_confidences, int32_t in_num_labels, 
+							  int32_t in_num_classes)
+{
+	if (num_labels && (num_labels != in_num_labels))
+	{
+		SG_ERROR("Shape of confidence matrix mismatch (number of "
+				"labels = %d does not match %d\n", num_labels, in_num_labels);
+	}
+
+	if (m_num_classes && (m_num_classes != in_num_classes))
+	{
+		SG_ERROR("Shape of confidence matrix mismatch (number of "
+				"num_classes = %d does not match %d\n", m_num_classes, in_num_classes);
+	}
+
+	delete[] m_confidences;
+
+	num_labels=in_num_labels;
+	m_num_classes=in_num_classes;
+	m_confidences=in_confidences;
+	find_labels();
+}
+
+float64_t* CLabels::get_confidences(int32_t& out_num_labels, int32_t& out_num_classes)
+{
+	out_num_labels=num_labels;
+	out_num_classes=m_num_classes;
+    
+	if (!num_labels || !m_num_classes || !m_confidences)
+		SG_ERROR("No labels / confidences set\n");
+
+	float64_t* out_conf=new float64_t[num_labels*m_num_classes];
+	memcpy(out_conf, m_confidences, num_labels*m_num_classes*sizeof(float64_t));
+	return out_conf;
+}
+
+void CLabels::get_confidences(float64_t** dst, int32_t* out_num_labels, int32_t* out_num_classes)
+{
+	ASSERT(dst && out_num_labels && out_num_classes);
+
+	if (num_labels<=0 || m_num_classes<=0 || !m_confidences)
+		SG_ERROR("No labels / confidences set\n");
+
+	*dst=NULL;
+	*out_num_labels=num_labels;
+	*out_num_classes=m_num_classes;
+
+	float64_t* out_conf= (float64_t*) malloc((size_t) sizeof(float64_t)*num_labels*m_num_classes);
+	memcpy(out_conf, m_confidences, num_labels*m_num_classes*sizeof(float64_t));
+	*dst=out_conf;
+}
+
+float64_t* CLabels::get_sample_confidences(const int32_t& in_sample_index, 
+										   int32_t& out_num_classes)
+{
+	out_num_classes=m_num_classes;
+
+	if (!(in_sample_index>=0 && in_sample_index<num_labels &&
+				m_num_classes && m_confidences))
+	{
+		SG_ERROR("No labels / confidences set\n");
+	}
+
+	float64_t* out_conf=new float64_t[m_num_classes];
+	for (int32_t n_class=0; n_class<m_num_classes; n_class++)
+	{
+		out_conf[n_class]=m_confidences[n_class+in_sample_index*m_num_classes];
+	}
+	return out_conf;
+}
+
+void CLabels::find_labels()
+{
+	ASSERT(m_confidences);
+	ASSERT(labels);
+	
+	float64_t max_conf;
+	int32_t index;
+	for (int32_t n_samp=0; n_samp<num_labels; n_samp++)
+	{
+		max_conf=m_confidences[n_samp];
+		labels[n_samp]=0;
+		for (int32_t n_class=1; n_class<m_num_classes; n_class++)
+		{
+			index=n_samp+n_class*m_num_classes;
+			if (m_confidences[index]>max_conf)
+			{
+				max_conf=m_confidences[index];
+				labels[n_samp]=n_class;				
+			}
+		}
+	}
 }
 
 bool CLabels::is_two_class_labeling()
@@ -167,9 +289,12 @@ void CLabels::set_int_labels(int32_t * mylabels, int32_t len)
 void CLabels::load(CFile* loader)
 {
 	delete[] labels;
+	delete[] m_confidences;
+	m_confidences = NULL;
 	num_labels=0;
 	ASSERT(loader);
 	loader->get_real_vector(labels, num_labels);
+	m_num_classes=get_num_classes();
 }
 
 void CLabels::save(CFile* writer)

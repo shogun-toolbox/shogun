@@ -299,6 +299,12 @@
 %apply (shogun::TSparse<float64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 %apply (shogun::TSparse<floatmax_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<long double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 
+/* label confidences */
+%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* out_num_labels, int32_t* out_num_classes)};
+%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(double** dst, int32_t* num_feat, int32_t* num_vec)};
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* in_confidences, int32_t in_num_labels, int32_t in_num_classes)};
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(double* in_confidences, int32_t in_num_labels, int32_t in_num_classes)};
+
 /* Remove C Prefix */
 %rename(Features) CFeatures;
 %rename(DotFeatures) CDotFeatures;
