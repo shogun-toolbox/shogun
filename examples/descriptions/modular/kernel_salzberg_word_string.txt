@@ -1,0 +1,7 @@
+The SalzbergWordString kernel implements the Salzberg kernel.
+
+It is described in
+
+Engineering Support Vector Machine Kernels That Recognize Translation Initiation Sites
+A. Zien, G.Raetsch, S. Mika, B. Schoelkopf, T. Lengauer, K.-R. Mueller
+
