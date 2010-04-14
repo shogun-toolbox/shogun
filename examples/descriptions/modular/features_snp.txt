@@ -1,0 +1,2 @@
+Creates features similar to the feature space of the SNP kernel. Useful when
+working with linear methods.

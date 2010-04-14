@@ -1,0 +1,3 @@
+This creates a HashedWDFeatures object, i.e. an approximation to the Weighted
+Degree kernel feature space via hashes. These features can be particularly fast
+in linear SVM solvers.

@@ -1,0 +1,9 @@
+This example shows how to read and write plain ascii files, binary files and
+hdf5 datasets.
+
+For ascii files it shows how to obtain shogun's RealFeatures
+(a simple feature matrix of doubles with 1 column == 1 example, nr_columns ==
+ number of examples) and also sparse features in SVM light format.
+
+Binary files use some custom native format and datasets can be read/written
+from/to hdf5 files with arbitrary group / path.

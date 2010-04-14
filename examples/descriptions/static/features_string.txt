@@ -1,0 +1,4 @@
+Demonstrates on some toy data how by sliding a window over a single string a
+whole string data set can be constructed in a very memory efficient manner.
+Instead of sliding the window over the string in fixed steps one can also
+extract windows by supplying a position list.
