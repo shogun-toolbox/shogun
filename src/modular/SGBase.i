@@ -25,6 +25,8 @@
 #ifdef SWIGR
  #include <Rdefines.h>
 #endif
+
+ using namespace shogun;
 %}
 
 %init %{

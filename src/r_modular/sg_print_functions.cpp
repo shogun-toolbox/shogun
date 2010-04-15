@@ -9,7 +9,10 @@ extern "C" {
 #include <R_ext/Error.h>
 }
 
+#include <libshogun/base/SGObject.h>
 #include <stdio.h>
+
+using namespace shogun;
 
 void sg_global_print_message(FILE* target, const char* str)
 {
