@@ -130,6 +130,7 @@ GDB=gdb
 MAKE=make
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops"
 COMP_NOOPTS="-g -Wall -O2"
+COMP_DEBUG="-g -Wall -O0"
 COMPFLAGS_C=-fPIC
 COMPFLAGS_CPP=-fPIC
 SEDMI='sed -i'
@@ -356,6 +357,10 @@ EOF
 	#cygwins gcc is buggy - so disable -O9 optimizations
 	if cygwin || test "$_cpudetection" = no ; then
 		COMP_OPTS=$COMP_NOOPTS;
+	fi
+
+	if test "$_debug" = yes ; then
+		COMP_OPTS=$COMP_DEBUG;
 	fi
 
 	echocheck "C Compiler flags"
@@ -2800,8 +2805,7 @@ EOF
 
 			if test "$_debug" = yes
 			then
-				_hmmdebug=yes
-				_pathdebug=yes
+				_debug=yes
 			fi
 
 			if test "$_trace_mallocs" = yes
@@ -3244,7 +3248,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 EOF
 				EXT_IF_SWIG_OCTAVE_MODULAR='stop'
 				PRE_LIB_SWIG_OCTAVE_MODULAR=
-				EXT_LIB_SWIG_OCTAVE_MODULAR=oct
+				EXT_LIB_SWIG_OCTAVE_MODULAR=.oct
 				SWIGFLAGS_OCTAVE_MODULAR="-c++ -octave"
 
 				if darwin
@@ -3349,11 +3353,11 @@ test_python()
 			test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
 			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "from distutils.sysconfig import get_python_inc; import numpy; print '-I%s -I%s' % (get_python_inc(), numpy.get_include())"`
 			_pylibpath=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print "-L%(LIBPL)s" % get_config_vars()'`
-			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`
+			EXT_LIB_SWIG_PYTHON_MODULAR=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print "%(SO)s" % get_config_vars()'`
+			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`${EXT_LIB_SWIG_PYTHON_MODULAR%.*}
 			INCLUDES_PYTHON="$_pyinclude $INCLUDES_PYTHON"
 			COMPFLAGS_CPP_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP_PYTHON"
 			COMPFLAGS_C_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_C_PYTHON"
-			EXT_LIB_SWIG_PYTHON_MODULAR=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print "%(SO)s" % get_config_vars()'`
 
 			if darwin
 			then
@@ -3364,12 +3368,7 @@ test_python()
 				POSTLINKFLAGS_PYTHON="-shared $_pylibpath -l$_pylibs $POSTLINKFLAGS_PYTHON"
 			fi
 
-			if win32
-			then
-				PYTHON_TARGET="sg.dll"
-			else
-				PYTHON_TARGET="sg.so"
-			fi
+			PYTHON_TARGET="sg$EXT_LIB_SWIG_PYTHON_MODULAR"
 
 cat > $TMPC << EOF
 #include <Python.h>
@@ -3469,7 +3468,7 @@ test_r()
 			fi
 
 			PRE_LIB_SWIG_R_MODULAR=
-			EXT_LIB_SWIG_R_MODULAR='so'
+			EXT_LIB_SWIG_R_MODULAR='.so'
 			EXT_IF_SWIG_R_MODULAR='.R'
 		else
 			echores "no"
