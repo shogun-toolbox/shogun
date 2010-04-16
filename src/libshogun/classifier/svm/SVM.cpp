@@ -32,6 +32,9 @@ CSVM::CSVM(int32_t num_sv)
 : CKernelMachine()
 {
 	set_defaults(num_sv);
+
+	parameters.add(&C1, "C1");
+	parameters.add(&C2, "C2");
 }
 
 CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
@@ -41,6 +44,9 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 	set_C(C,C);
 	set_labels(lab);
 	set_kernel(k);
+
+	parameters.add(&C1, "C1");
+	parameters.add(&C2, "C2");
 }
 
 CSVM::~CSVM()
