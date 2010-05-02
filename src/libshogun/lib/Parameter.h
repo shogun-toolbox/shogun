@@ -10,11 +10,11 @@
 #ifndef __PARAMETER_H__
 #define __PARAMETER_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DynamicArray.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/DataType.h>
+#include "base/SGObject.h"
+#include "lib/common.h"
+#include "lib/DynamicArray.h"
+#include "lib/io.h"
+#include "lib/DataType.h"
 
 namespace shogun
 {
@@ -40,8 +40,8 @@ struct TParameter
 {
 	void* parameter;
 	SGDataType datatype;
-	const char* name;
-	const char* description;
+	char* name;
+	char* description;
 	/** valid range */
 	CRange* range;
 };
@@ -57,44 +57,24 @@ public:
 	/** default destructor */
 	virtual ~CParameter()
 	{
-		delete m_parameters;
+		free_parameters();
 	}
 
-	void add(float64_t* parameter, const char* name, CRange* range=NULL, const char* description=NULL)
-	{
-		TParameter* par=new TParameter[1];
-		par->parameter=parameter;
-		par->datatype=DT_SCALAR_REAL;
+	void add(float64_t* parameter, const char* name,
+			CRange* range=NULL, const char* description=NULL);
 
-		if (name)
-			par->name=strdup(name);
-		else
-			par->name=NULL;
+	void list_parameters();
 
-		if (description)
-			par->description=strdup(description);
-		else
-			par->description=NULL;
-
-		if (range)
-			par->range=range;
-		else
-			par->range=NULL;
-
-		m_parameters->append_element(par);
-	}
-
-	void list_parameters()
-	{
-	}
-
-	int32_t get_num_parameters()
+	inline int32_t get_num_parameters()
 	{
 		return m_parameters->get_num_elements();
 	}
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "Parameter"; }
+
+protected:
+	void free_parameters();
 
 protected:
 	CDynamicArray<TParameter*>* m_parameters;

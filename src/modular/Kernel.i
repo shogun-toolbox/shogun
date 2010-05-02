@@ -90,7 +90,11 @@
 /* Typemaps */
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* m, int32_t* n)};
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(const float64_t* km, int32_t rows, int32_t cols)};
+%apply (float32_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(const float32_t* km, int32_t rows, int32_t cols)};
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(const float64_t* km, int32_t len)};
+%apply (float32_t* IN_ARRAY1, int32_t DIM1) {(const float32_t* km, int32_t len)};
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(const float64_t* km, int64_t len)};
+%apply (float32_t* IN_ARRAY1, int32_t DIM1) {(const float32_t* km, int64_t len)};
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst_w, int32_t* dst_dims)};
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* src_w, int32_t src_w_dim)};
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* w, int32_t d)};

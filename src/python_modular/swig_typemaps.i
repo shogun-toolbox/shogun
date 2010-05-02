@@ -290,6 +290,49 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN1
 
+/* One dimensional input arrays */
+%define TYPEMAP_IN1(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        (type* IN_ARRAY1, int64_t DIM1)
+{
+    $1 = (
+            ($input && PyList_Check($input) && PyList_Size($input)>0) ||
+            (is_array($input) && array_dimensions($input)==1 && array_type($input) == typecode)
+         ) ? 1 : 0;
+}
+
+%typemap(in) (type* IN_ARRAY1, int64_t DIM1)
+             (PyObject* array=NULL, int is_new_object)
+{
+    array = make_contiguous($input, &is_new_object, 1,typecode);
+    if (!array)
+        SWIG_fail;
+
+    $1 = (type*) PyArray_BYTES(array);
+    $2 = PyArray_DIM(array,0);
+}
+%typemap(freearg) (type* IN_ARRAY1, int64_t DIM1) {
+  if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_IN1 macros */
+TYPEMAP_IN1(bool,          NPY_BOOL)
+TYPEMAP_IN1(char,          NPY_STRING)
+TYPEMAP_IN1(uint8_t,       NPY_UINT8)
+TYPEMAP_IN1(int16_t,       NPY_INT16)
+TYPEMAP_IN1(uint16_t,      NPY_UINT16)
+TYPEMAP_IN1(int32_t,       NPY_INT32)
+TYPEMAP_IN1(uint32_t,      NPY_UINT32)
+TYPEMAP_IN1(int64_t,       NPY_INT64)
+TYPEMAP_IN1(uint64_t,      NPY_UINT64)
+TYPEMAP_IN1(float32_t,     NPY_FLOAT32)
+TYPEMAP_IN1(float64_t,     NPY_FLOAT64)
+TYPEMAP_IN1(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_IN1(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_IN1
+
  /* Two dimensional input arrays */
 %define TYPEMAP_IN2(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
