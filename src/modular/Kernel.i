@@ -85,6 +85,7 @@
 #include <shogun/kernel/WeightedCommWordStringKernel.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
+#include <shogun/kernel/WeightedDegreeRBFKernel.h>
 %}
 
 /* Typemaps */
@@ -163,6 +164,7 @@
 %rename(WeightedCommWordStringKernel) CWeightedCommWordStringKernel;
 %rename(WeightedDegreePositionStringKernel) CWeightedDegreePositionStringKernel;
 %rename(WeightedDegreeStringKernel) CWeightedDegreeStringKernel;
+%rename(WeightedDegreeRBFKernel) CWeightedDegreeRBFKernel;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
@@ -288,6 +290,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/WeightedCommWordStringKernel.h>
 %include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 %include <shogun/kernel/WeightedDegreeStringKernel.h>
+%include <shogun/kernel/WeightedDegreeRBFKernel.h>
 
 
 %include std_vector.i
