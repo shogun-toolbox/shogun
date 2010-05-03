@@ -64,15 +64,8 @@ void CLinearKernel::clear_normal()
 
 void CLinearKernel::add_to_normal(int32_t idx, float64_t weight) 
 {
-	int32_t vlen;
-	bool vfree;
-	float64_t* vec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx, vlen, vfree);
-
-	for (int32_t i=0; i<vlen; i++)
-		normal[i]+= weight*normalizer->normalize_lhs(vec[i], idx);
-
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(vec, idx, vfree);
-
+	((CSimpleFeatures<float64_t>*) lhs)->add_to_dense_vec(
+		normalizer->normalize_lhs(weight, idx), idx, normal, normal_length);
 	set_is_initialized(true);
 }
 
@@ -121,13 +114,7 @@ bool CLinearKernel::delete_optimization()
 float64_t CLinearKernel::compute_optimized(int32_t idx)
 {
 	ASSERT(get_is_initialized());
-
-	int32_t vlen;
-	bool vfree;
-	float64_t* vec=((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx, vlen, vfree);
-	ASSERT(vlen==normal_length);
-	float64_t result=CMath::dot(normal,vec, vlen);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(vec, idx, vfree);
-
+	float64_t result = ((CSimpleFeatures<float64_t>*) rhs)->
+		dense_dot(idx, normal, normal_length);
 	return normalizer->normalize_rhs(result, idx);
 }

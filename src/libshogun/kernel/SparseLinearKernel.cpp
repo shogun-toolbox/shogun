@@ -64,7 +64,7 @@ void CSparseLinearKernel::clear_normal()
 
 void CSparseLinearKernel::add_to_normal(int32_t idx, float64_t weight)
 {
-	((CSparseFeatures<float64_t>*) rhs)->add_to_dense_vec(
+	((CSparseFeatures<float64_t>*) lhs)->add_to_dense_vec(
 		normalizer->normalize_lhs(weight, idx), idx, normal, normal_length);
 	set_is_initialized(true);
 }
@@ -116,6 +116,6 @@ float64_t CSparseLinearKernel::compute_optimized(int32_t idx)
 {
 	ASSERT(get_is_initialized());
 	float64_t result = ((CSparseFeatures<float64_t>*) rhs)->
-		dense_dot(1.0, idx, normal, normal_length, 0.0);
+		dense_dot(idx, normal, normal_length);
 	return normalizer->normalize_rhs(result, idx);
 }
