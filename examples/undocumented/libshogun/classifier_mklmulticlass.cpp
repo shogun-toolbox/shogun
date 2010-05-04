@@ -14,6 +14,8 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/mkl/MKLMultiClass.h>
 
+// g++ -Wall -O3 classifier_mklmulticlass.cpp -I /home/theseus/private/alx/shoguntrunk/compiledtmp/include -L/home/theseus/private/alx/shoguntrunk/compiledtmp/lib -lshogun
+
 using namespace shogun;
 
 void print_message(FILE* target, const char* str)
@@ -94,8 +96,8 @@ void gendata(std::vector<float64_t> & x,std::vector<float64_t> & y,
 }
 
 
-void gentrainkernel(float64_t * & ker1 ,float64_t * & ker2 ,float64_t &
-		autosigma,float64_t & n1,float64_t & n2,
+void gentrainkernel(float64_t * & ker1 ,float64_t * & ker2, float64_t * & ker3  ,float64_t &
+		autosigma,float64_t & n1,float64_t & n2, float64_t & n3,
 		const std::vector<float64_t> & x,
 		const std::vector<float64_t> & y)
 {
@@ -110,10 +112,12 @@ void gentrainkernel(float64_t * & ker1 ,float64_t * & ker2 ,float64_t &
 		}
 	}
 
-	float64_t fm1=0, mean1=0,fm2=0, mean2=0;
+	float64_t fm1=0, mean1=0,fm2=0, mean2=0,fm3=0, mean3=0;
 
 	ker1=new float64_t[ x.size()*x.size()];
 	ker2=new float64_t[ x.size()*x.size()];
+	ker3=new float64_t[ x.size()*x.size()];
+
 
 	for(size_t l=0; l< x.size();++l)
 	{
@@ -125,19 +129,24 @@ void gentrainkernel(float64_t * & ker1 ,float64_t * & ker2 ,float64_t &
 			//ker2[l +r*x.size()]=   exp( -dist/sigma2/sigma2) ;
 			ker2[l +r*x.size()]= x[l]*x[r] + y[l]*y[r];
 
+			ker3[l +r*x.size()]= (x[l]*x[r] + y[l]*y[r]+1)*(x[l]*x[r] + y[l]*y[r]+1);
+
 			fm1+=ker1[l +r*x.size()]/(float64_t)x.size()/((float64_t)x.size());
 			fm2+=ker2[l +r*x.size()]/(float64_t)x.size()/((float64_t)x.size());
+			fm3+=ker3[l +r*x.size()]/(float64_t)x.size()/((float64_t)x.size());
 
 			if(l==r)
 			{
 				mean1+=ker1[l +r*x.size()]/(float64_t)x.size();
 				mean2+=ker2[l +r*x.size()]/(float64_t)x.size();
+				mean3+=ker3[l +r*x.size()]/(float64_t)x.size();
 			}
 		}
 	}
 
 	n1=(mean1-fm1);
 	n2=(mean2-fm2);
+	n3=(mean3-fm3);
 
 	for(size_t l=0; l< x.size();++l)
 	{
@@ -145,17 +154,19 @@ void gentrainkernel(float64_t * & ker1 ,float64_t * & ker2 ,float64_t &
 		{
 			ker1[l +r*x.size()]=ker1[l +r*x.size()]/n1;
 			ker2[l +r*x.size()]=ker2[l +r*x.size()]/n2;
+			ker3[l +r*x.size()]=ker3[l +r*x.size()]/n3;
 		}
 	}
 }
 
-void gentestkernel(float64_t * & ker1 ,float64_t * & ker2,
-		const float64_t autosigma,const float64_t n1,const float64_t n2,
+void gentestkernel(float64_t * & ker1 ,float64_t * & ker2,float64_t * & ker3,
+		const float64_t autosigma,const float64_t n1,const float64_t n2, const float64_t n3,
 		const std::vector<float64_t> & x,const std::vector<float64_t> & y,
 		const std::vector<float64_t> & tx,const std::vector<float64_t> & ty)
 {
 	ker1=new float64_t[ x.size()*tx.size()];
 	ker2=new float64_t[ x.size()*tx.size()];
+	ker3=new float64_t[ x.size()*tx.size()];
 
 	for(size_t l=0; l< x.size();++l)
 	{
@@ -165,7 +176,7 @@ void gentestkernel(float64_t * & ker1 ,float64_t * & ker2,
 
 			ker1[l +r*x.size()]=   exp( -dist/autosigma/autosigma) ;
 			ker2[l +r*x.size()]= x[l]*tx[r] + y[l]*ty[r];
-
+			ker3[l +r*x.size()]= (x[l]*tx[r] + y[l]*ty[r]+1)*(x[l]*tx[r] + y[l]*ty[r]+1);
 		}
 	}
 
@@ -175,6 +186,7 @@ void gentestkernel(float64_t * & ker1 ,float64_t * & ker2,
 		{
 			ker1[l +r*x.size()]=ker1[l +r*x.size()]/n1;
 			ker2[l +r*x.size()]=ker2[l +r*x.size()]/n2;
+			ker3[l +r*x.size()]=ker3[l +r*x.size()]/n2;
 
 		}
 	}
@@ -190,24 +202,29 @@ void tester()
 
 	float64_t* ker1=NULL;
 	float64_t* ker2=NULL;
+	float64_t* ker3=NULL;
 	float64_t autosigma=1;
 	float64_t n1=0;
 	float64_t n2=0;
+	float64_t n3=0;
 
 	int32_t numdata=0;
-	gentrainkernel( ker1 , ker2 , autosigma, n1, n2,x,y);
+	gentrainkernel( ker1 , ker2, ker3 , autosigma, n1, n2, n3,x,y);
 	numdata=x.size();
 
 	CCombinedKernel* ker=new CCombinedKernel();
 
 	CCustomKernel* kernel1=new CCustomKernel();
 	CCustomKernel* kernel2=new CCustomKernel();
+	CCustomKernel* kernel3=new CCustomKernel();
 
 	kernel1->set_full_kernel_matrix_from_full(ker1, numdata,numdata);
 	kernel2->set_full_kernel_matrix_from_full(ker2, numdata,numdata);
+	kernel3->set_full_kernel_matrix_from_full(ker3, numdata,numdata);
 
 	ker->append_kernel(kernel1);
 	ker->append_kernel(kernel2);
+	ker->append_kernel(kernel3);
 
 	//here comes the core stuff
 	float64_t regconst=1.0;
@@ -218,7 +235,7 @@ void tester()
 	// MKL parameters
 	tsvm->set_mkl_epsilon(0.01); // subkernel weight L2 norm termination criterion
 	tsvm->set_max_num_mkliters(120); // well it will be just three iterations
-
+	tsvm->set_mkl_norm(1.5); // mkl norm
 	//starting svm training
 	tsvm->train();
 
@@ -241,6 +258,7 @@ void tester()
 
 	delete[] ker1;
 	delete[] ker2;
+	delete[] ker3;
 
 	//generate test data
 	CLabels* tlab=NULL;
@@ -252,18 +270,24 @@ void tester()
 
 	float64_t* tker1=NULL;
 	float64_t* tker2=NULL;
+	float64_t* tker3=NULL;
 
-	gentestkernel(tker1,tker2, autosigma, n1,n2, x,y, tx,ty);
+	gentestkernel(tker1,tker2,tker3, autosigma, n1,n2,n3, x,y, tx,ty);
 	int32_t numdatatest=tx.size();
 
 	CCombinedKernel* tker=new CCombinedKernel();
 	SG_REF(tker);
 	CCustomKernel* tkernel1=new CCustomKernel();
 	CCustomKernel* tkernel2=new CCustomKernel();
+	CCustomKernel* tkernel3=new CCustomKernel();
+
 	tkernel1->set_full_kernel_matrix_from_full(tker1,numdata, numdatatest);
 	tkernel2->set_full_kernel_matrix_from_full(tker2,numdata, numdatatest);
+	tkernel3->set_full_kernel_matrix_from_full(tker2,numdata, numdatatest);
+
 	tker->append_kernel(tkernel1);
 	tker->append_kernel(tkernel2);
+	tker->append_kernel(tkernel3);
 
 	int32_t numweights;
 	float64_t* weights=tsvm->getsubkernelweights(numweights);
@@ -295,6 +319,7 @@ void tester()
 
 	delete[] tker1;
 	delete[] tker2;
+	delete[] tker3;
 	SG_UNREF(tsvm);
 	SG_UNREF(res);
 	SG_UNREF(tres);
