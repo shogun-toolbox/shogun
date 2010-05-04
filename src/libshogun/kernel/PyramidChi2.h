@@ -89,18 +89,30 @@ public:
 	/** return what type of kernel we are Linear,Polynomial, Gaussian,... */
 	virtual EKernelType get_kernel_type()
 	{
-		//preliminary output
 		return K_PYRAMIDCHI2;
 	}
 
 	/** return the name of a kernel */
 	virtual const char* get_name() const { return "PyramidoverChi2"; }
 
-	// /** sets standard weights */
-	//void setstandardweights();
 
-	// /** performs a weak check, does not test for correct feature length */
-	// bool sanitycheck_weak();
+	/** sets parameters, see also constructor
+	 *
+	 * @param num_cells2 - the number of pyramid cells	 
+	 * @param weights_foreach_cell2 the vector of weights for each cell with which the Chi2 distance gets weighted
+	 * @param width_computation_type2 - 0 use the following parameter as fixed 
+	 *	width, 1- use mean of inner distances
+	 *	in cases 1 and 2 the value of parameter width is still important, see parameter width2
+	 * @param width2 - in case of width_computation_type ==0 it is the 
+	 * 	width, in case of width_computation_type > 0 its value determines
+	 *	the how many random features are used for determining the width
+	 *	in case of width_computation_type > 0 set width2 <=1 to use all 
+	 *	LEFT HAND SIDE features for width estimation
+	 */
+	virtual void setparams_pychi2(int32_t num_cells2,
+		float64_t* weights_foreach_cell2, 
+		int32_t width_computation_type2,
+		float64_t width2);
 
 protected:
 	/** default constructor protected to avoid its usage */ 

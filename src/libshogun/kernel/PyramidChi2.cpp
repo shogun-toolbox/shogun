@@ -239,4 +239,34 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	return (result);
 }
 
+void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
+		float64_t* weights_foreach_cell2, 
+		int32_t width_computation_type2,
+		float64_t width2)
+{
+	num_cells=num_cells2;
+	width_computation_type=width_computation_type2; 
+	width=width2;
+	num_randfeats_forwidthcomputation=-1;
 
+	if(num_cells<=0)
+		SG_ERROR("CPyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive");
+	if(weights)
+		delete[] weights;
+	weights=new float64_t[num_cells];
+	if(weights_foreach_cell2)
+	{
+		for (int32_t i=0; i<num_cells; ++i)
+			weights[i]=weights_foreach_cell2[i];
+	}
+	else
+	{	for (int32_t i=0; i<num_cells; ++i)
+			weights[i]=1;
+	}
+
+	if (width_computation_type>0 )
+	{
+		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		width=-1;
+	}
+}

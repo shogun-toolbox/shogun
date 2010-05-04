@@ -437,6 +437,7 @@ bool CGUIClassifier::train_mkl_multiclass()
 	SG_INFO("Starting MC-MKL training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 
 	mkl->set_mkl_epsilon(svm_weight_epsilon);
+	mkl->set_mkl_norm(mkl_norm); 
 	//mkl->set_max_num_mkliters(-1);
 	mkl->set_solver_type(solver_type);
 	mkl->set_bias_enabled(svm_use_bias);

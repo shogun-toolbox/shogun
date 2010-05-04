@@ -53,6 +53,7 @@ svm <- MKLMultiClass(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$set_mkl_epsilon(svm,mkl_eps)
+dump <- svm$set_mkl_norm(1.5)
 dump <- svm$train(svm)
 
 dump <- kernel$init(kernel, feats_train, feats_test)
