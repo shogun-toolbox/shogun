@@ -18,7 +18,7 @@
 #include "kernel/CombinedKernel.h" 
 #include "classifier/svm/GMNPSVM.h"
 #include "classifier/mkl/MKLMultiClassGLPK.h"
-
+#include "classifier/mkl/MKLMultiClassGradient.h"
 
 
 namespace shogun
@@ -94,6 +94,9 @@ public:
 	 * 
 	 */
 	void set_max_num_mkliters(int32_t maxnum);
+
+	virtual void set_mkl_norm(float64_t norm);
+
 	
 protected:
 	/** Class Copy Constructor
@@ -163,10 +166,10 @@ protected:
 	*
 	*/	
 	CGMNPSVM* svm;
-	/** the lp solver wrapper
+	/** the solver wrapper
 	*	
 	*/
-	MKLMultiClassGLPK* lpw; 
+	MKLMultiClassOptimizationBase* lpw; 
 	/** stores the last two mkl iteration weights 
 	*	
 	*/
@@ -180,6 +183,10 @@ protected:
 	*	is set by void set_max_num_mkliters(int32_t maxnum);
 	*/
 	int32_t max_num_mkl_iters; 
+	/** MKL norm >=1
+	*   
+	*/
+	float64_t pnorm;
 
 	
 };

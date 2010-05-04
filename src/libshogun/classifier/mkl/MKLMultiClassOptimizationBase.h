@@ -8,37 +8,33 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef MKLMULTICLASSGLPK_H_
-#define MKLMULTICLASSGLPK_H_
+#ifndef MKLMULTICLASSOPTIMIZATIONBASE_H_
+#define MKLMULTICLASSOPTIMIZATIONBASE_H_
 
 #include <vector>
 #include "base/SGObject.h"
-#include "classifier/mkl/MKLMultiClassOptimizationBase.h"
 
-#ifdef USE_GLPK
-#include <glpk.h>
-#endif
 
 namespace shogun
 {
-/** @brief MKLMultiClassGLPK is a helper class for MKLMultiClass. 
+/** @brief MKLMultiClassOptimizationBase is a helper class for MKLMultiClass. 
  *
- *	it solves the corresponding linear problem arising in SIP formulation for
- * 	MKL using glpk
+ *	it is a virtual base class for MKLMultiClassGLPK and MKLMultiClassGradient which are instances of optimization
+ * 	
  */
-class MKLMultiClassGLPK: public MKLMultiClassOptimizationBase
+class MKLMultiClassOptimizationBase: public CSGObject
 {
 public:
 	/** Class default Constructor
 	 * 
 	 */
-	MKLMultiClassGLPK();
+	MKLMultiClassOptimizationBase();
 	/** Class default Destructor
 	 * 
 	 */
-	virtual ~MKLMultiClassGLPK();
+	virtual ~MKLMultiClassOptimizationBase();
 
-	/** initializes GLPK LP sover 
+	/** initializes solver 
 	 *
 	 * @param numkernels2 is the number of kernels
 	 * 
@@ -67,28 +63,19 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
-		return "MKLMultiClassGLPK";
+		return "MKLMultiClassOptimizationBase";
 	}
 
-protected:
-	/** Class Copy Constructor
-	 * protected to avoid its usage because member glp_prob* linearproblem;
-	 * from GLPK package is not copyable
-	 */
-	MKLMultiClassGLPK(MKLMultiClassGLPK & gl);
-	/** Class Assignment operator
-	 * protected to avoid its usage because member glp_prob* linearproblem;
-	 * from GLPK package is not copyable
-	 */
-	MKLMultiClassGLPK operator=(MKLMultiClassGLPK & gl);
+	/** sets p-norm parameter for MKL
+	*	 @param norm the MKL norm
+	*/
+	virtual void set_mkl_norm(float64_t norm);
 
 protected:
-	/** stores the number of kernels which acts as a parameter for the LP */
-	int32_t numkernels;
-#ifdef USE_GLPK
-	/** GLPK data structure */
-	glp_prob* linearproblem;
-#endif
+
+
+protected:
+
 };
 }
 

@@ -22,6 +22,7 @@ CMKLMultiClass::CMKLMultiClass()
 
 	mkl_eps=0.01;
 	max_num_mkl_iters=999;
+	pnorm=1;
 }
 
 CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
@@ -32,7 +33,7 @@ CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
 	
 	mkl_eps=0.01;
 	max_num_mkl_iters=999;
-
+	pnorm=1;
 }
 
 
@@ -118,8 +119,19 @@ void CMKLMultiClass::initlpsolver()
 		delete lpw;
 	}
 	*/
-	lpw=new MKLMultiClassGLPK;
+	
+	//lpw=new MKLMultiClassGLPK;
+	if(pnorm>1)
+	{
+		lpw=new MKLMultiClassGradient;
+		lpw->set_mkl_norm(pnorm);
+	}
+	else
+	{
+		lpw=new MKLMultiClassGLPK;
+	}
 	lpw->setup(numker);
+	
 }
 
 
@@ -309,7 +321,7 @@ bool CMKLMultiClass::train(CFeatures* data)
 	while (!final)
 	{
 
-		curweights.clear();
+		//curweights.clear();
 		lpw->computeweights(curweights);
 		weightshistory.push_back(curweights);
 
@@ -380,4 +392,11 @@ void CMKLMultiClass::set_mkl_epsilon(float64_t eps )
 void CMKLMultiClass::set_max_num_mkliters(int32_t maxnum)
 {
 	max_num_mkl_iters=maxnum;
+}
+
+void CMKLMultiClass::set_mkl_norm(float64_t norm)
+{
+	pnorm=norm;
+	if(pnorm<1 )
+		SG_ERROR("CMKLMultiClass::set_mkl_norm(float64_t norm) : parameter pnorm<1");
 }
