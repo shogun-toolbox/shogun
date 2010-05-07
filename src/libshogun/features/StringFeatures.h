@@ -365,6 +365,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			ST* vec=get_feature_vector(num, l, free_vec);
 			*len=l;
 			*dst=(ST*) malloc(*len * sizeof(ST));
+			ASSERT(*dst);
 			memcpy(*dst, vec, *len * sizeof(ST));
 			free_feature_vector(vec, num, free_vec);
 		}
@@ -662,7 +663,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			uint8_t* overflow=NULL;
 			int32_t overflow_len=0;
 
-			num_symbols=4;
 			cleanup();
 
 			CAlphabet* alpha=new CAlphabet(ascii_alphabet);
@@ -784,6 +784,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			else
 				alphabet = alpha;
 			SG_REF(alphabet);
+			num_symbols=alphabet->get_num_symbols();
 		}
 
 		/** load fasta file as string features
@@ -818,6 +819,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			cleanup();
 			SG_UNREF(alphabet);
 			alphabet=new CAlphabet(DNA);
+			num_symbols=alphabet->get_num_symbols();
 
 			T_STRING<ST>* strings=new T_STRING<ST>[num];
 			offs=0;
@@ -1130,7 +1132,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_str_len=max_string_length;
 			T_STRING<ST>* new_feat=new T_STRING<ST>[num_str];
 
-			for (int i=0; i<num_str; i++)
+			for (int32_t i=0; i<num_str; i++)
 			{
 				int32_t len;
 				bool free_vec;
@@ -1745,6 +1747,82 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_string_length=CMath::max(len, max_string_length);
 		}
 
+
+		/** compute histogram over strings
+		 */
+		virtual void get_histogram(float64_t** hist, int32_t* rows, int32_t* cols, bool normalize=true)
+		{
+			int32_t nsym=get_num_symbols();
+			int32_t slen=get_max_vector_length();
+			float64_t* h= (float64_t*) malloc(int64_t(nsym)*slen*sizeof(float64_t));
+			ASSERT(h);
+			memset(h, 0, int64_t(nsym)*slen*sizeof(float64_t));
+
+			float64_t* h_normalizer=new float64_t[slen];
+			int32_t num_str=get_num_vectors();
+			for (int32_t i=0; i<num_str; i++)
+			{
+				int32_t len;
+				bool free_vec;
+				ST* vec=get_feature_vector(i, len, free_vec);
+				for (int32_t j=0; j<len; j++)
+				{
+					h[int64_t(j)*nsym+alphabet->remap_to_bin(vec[j])]++;
+					h_normalizer[j]++;
+				}
+				free_feature_vector(vec, i, free_vec);
+			}
+
+			if (normalize)
+			{
+				for (int32_t i=0; i<slen; i++)
+				{
+					for (int32_t j=0; j<nsym; j++)
+					{
+						if (h_normalizer)
+							h[int64_t(i)*nsym+j]/=h_normalizer[i];
+					}
+				}
+			}
+
+			*hist=h;
+			*rows=nsym;
+			*cols=slen;
+		}
+
+		/** create some random strings based on normalized histogram
+		 */
+		virtual void create_random(float64_t* hist, int32_t rows, int32_t cols, int32_t num_vec)
+		{
+			ASSERT(rows == get_num_symbols());
+			cleanup();
+			float64_t* randoms=new float64_t[cols];
+			T_STRING<ST>* sf=new T_STRING<ST>[num_vec];
+
+			for (int32_t i=0; i<num_vec; i++)
+			{
+				sf[i].string=new ST[cols];
+				sf[i].length=cols;
+
+				CMath::random_vector(randoms, cols, 0.0, 1.0);
+
+				for (int32_t j=0; j<cols; j++)
+				{
+					float64_t lik=hist[int64_t(j)*rows+0];
+
+					int32_t c;
+					for (c=0; c<rows-1; c++)
+					{
+						if (randoms[j]<=lik)
+							break;
+						lik+=hist[int64_t(j)*rows+c+1];
+					}
+					sf[i].string[j]=alphabet->remap_to_char(c);
+				}
+			}
+			set_features(sf, num_vec, cols);
+			delete[] randoms;
+		}
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StringFeatures"; }

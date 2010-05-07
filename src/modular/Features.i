@@ -235,6 +235,8 @@
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(double** dst, int32_t* num_feat, int32_t* num_vec)};
 %apply (floatmax_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(long double** dst, int32_t* num_feat, int32_t* num_vec)};
 
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* hist, int32_t rows, int32_t cols)};
+%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** hist, int32_t* rows, int32_t* cols)};
 %apply (shogun::T_STRING<uint8_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::T_STRING<unsigned char>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (shogun::T_STRING<int16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::T_STRING<short int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (shogun::T_STRING<uint16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::T_STRING<unsigned short int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
