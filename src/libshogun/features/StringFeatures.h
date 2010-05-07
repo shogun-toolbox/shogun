@@ -1105,6 +1105,62 @@ template <class ST> class CStringFeatures : public CFeatures
 			return false;
 		}
 
+		/** append features
+		 *
+		 * @param p_features new features
+		 * @param p_num_vectors number of vectors
+		 * @param p_max_string_length maximum string length
+		 * @return if setting was successful
+		 */
+		bool append_features(T_STRING<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
+        {
+            if (!features)
+                return set_features(p_features, p_num_vectors, p_max_string_length);
+
+            CAlphabet* alpha=new CAlphabet(alphabet->get_alphabet());
+
+            //compute histogram for char/byte
+            for (int32_t i=0; i<p_num_vectors; i++)
+                alpha->add_string_to_histogram( p_features[i].string, p_features[i].length);
+
+            SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+            SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+
+            if (alpha->check_alphabet_size() && alpha->check_alphabet())
+            {
+                SG_UNREF(alpha);
+                for (int32_t i=0; i<p_num_vectors; i++)
+                    alphabet->add_string_to_histogram( p_features[i].string, p_features[i].length);
+
+                int32_t old_num_vectors=num_vectors;
+                num_vectors=old_num_vectors+p_num_vectors;
+                T_STRING<ST>* new_features = new T_STRING<ST>[num_vectors];
+
+                for (int32_t i=0; i<num_vectors; i++)
+                {
+                    if (i<old_num_vectors)
+                    {
+                        new_features[i].string=features[i].string;
+                        new_features[i].length=features[i].length;
+                    }
+                    else
+                    {
+                        new_features[i].string=p_features[i-old_num_vectors].string;
+                        new_features[i].length=p_features[i-old_num_vectors].length;
+                    }
+                }
+                delete[] features;
+
+                this->features=new_features;
+                this->max_string_length=CMath::max(max_string_length, p_max_string_length);
+
+                return true;
+            }
+            SG_UNREF(alpha);
+
+            return false;
+        }
+
 		/** get_features
 		 *
 		 * @param num_str number of strings (returned)
