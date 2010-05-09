@@ -3400,6 +3400,7 @@ EOF
 				if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON
 				then
 					echores "yes"
+					_python=yes
 					SWIGFLAGS_PYTHON_MODULAR="-c++ -python"
 				else
 					echores "no"
