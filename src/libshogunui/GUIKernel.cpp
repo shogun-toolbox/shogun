@@ -24,6 +24,8 @@
 #include <shogun/kernel/LinearStringKernel.h>
 #include <shogun/kernel/LinearWordKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
+#include <shogun/kernel/WeightedDegreeRBFKernel.h>
+#include <shogun/kernel/SpectrumMismatchRBFKernel.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/FixedDegreeStringKernel.h>
 #include <shogun/kernel/LocalityImprovedStringKernel.h>
@@ -370,6 +372,30 @@ float64_t* CGUIKernel::get_weights(int32_t order, int32_t max_mismatch)
 	}
 
 	return weights;
+}
+
+CKernel* CGUIKernel::create_weighteddegreerbf(int32_t size, int32_t degree, int32_t nof_properties, float64_t width)
+{
+	CKernel* kern=new CWeightedDegreeRBFKernel(size, width, degree, nof_properties);
+	if (!kern)
+		SG_ERROR("Couldn't create WeightedDegreeRBFKernel with size %d, width %f, degree %d, nof_properties %d.\n", size, width, degree, nof_properties);
+	else
+		SG_DEBUG("created WeightedDegreeRBFKernel (%p) with size %d, width %f, degree %d, nof_properties %d.\n", kern, size, width, degree, nof_properties);
+
+	return kern;
+}
+
+CKernel* CGUIKernel::create_spectrummismatchrbf(int32_t size, float64_t* AA_matrix, int32_t max_mismatch, int32_t degree, float64_t width)
+{
+
+	CKernel* kern = new CSpectrumMismatchRBFKernel(size, AA_matrix, degree, max_mismatch, width);
+	if (!kern)
+		SG_ERROR("Couldn't create SpectrumMismatchRBFKernel with size %d, width %f, degree %d, max_mismatch %d.\n", size, width, degree, max_mismatch);
+	else
+		SG_DEBUG("created SpectrumMismatchRBFKernel (%p) with size %d, width %f, degree %d, max_mismatch %d.\n", kern, size, width, degree, max_mismatch);
+
+	return kern;
+
 }
 
 

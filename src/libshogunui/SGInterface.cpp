@@ -3000,6 +3000,68 @@ CKernel* CSGInterface::create_kernel()
 
 		delete[] dtype;
 	}
+	else if (strmatch(type, "WEIGHTEDDEGREERBF"))
+	{
+		if (m_nrhs<5)
+			return NULL;
+
+		char* dtype=get_str_from_str_or_direct(len);
+		int32_t size=get_int_from_int_or_str();
+		int32_t nof_properties=get_int_from_int_or_str();
+		int32_t degree=1;
+		float64_t width=1;
+		if (m_nrhs>5)
+		{
+			degree=get_int_from_int_or_str();
+			if (m_nrhs>6)
+			{
+				width=get_real_from_real_or_str();
+			}
+
+		}
+		//if (strmatch(dtype, "REAL"))
+		
+		kernel=ui_kernel->create_weighteddegreerbf(size, degree, nof_properties, width);
+
+		delete[] dtype;
+
+	}
+	else if (strmatch(type, "SPECTRUMMISMATCHRBF"))
+	{
+		if (m_nrhs<7)
+			return NULL;
+
+		char* dtype=get_str_from_str_or_direct(len);
+		if (strmatch(dtype, "CHAR") || strmatch(dtype, "STRING"))
+		{
+			int32_t size=get_int_from_int_or_str();
+			int32_t degree=get_int_from_int_or_str();
+			int32_t max_mismatch=get_int_from_int_or_str();
+			float64_t width=get_real_from_real_or_str();
+			float64_t* AA_matrix = NULL;
+
+			//int32_t length=128*128;
+			//get_real_vector_from_real_vector_or_str(AA_matrix, length);
+			float64_t* helper_matrix=NULL;
+			int32_t N=0;
+			int32_t M=0;
+			get_real_matrix(helper_matrix, N, M);
+
+			if (N == 128 && M == 128)
+			{
+				AA_matrix=new float64_t[N*M];
+				memcpy(AA_matrix, helper_matrix, N*M*sizeof(float64_t)) ;
+				kernel=ui_kernel->create_spectrummismatchrbf(size, AA_matrix, max_mismatch, degree, width);
+			}
+			else
+			{
+				SG_ERROR("Matrix size %d %d\n", N, M);
+			}
+		}
+		delete[] dtype;
+
+	}
+
 	else if (strmatch(type, "SLIK") || strmatch(type, "LIK"))
 	{
 		if (m_nrhs<4)
