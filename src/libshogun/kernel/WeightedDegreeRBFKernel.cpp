@@ -22,21 +22,20 @@ BOOST_CLASS_EXPORT(shogun::CWeightedDegreeRBFKernel);
 using namespace shogun;
 
 CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel()
-: CSimpleKernel<float64_t>(), width(1)
+: CSimpleKernel<float64_t>(), width(1), degree(1), weights(0)
 {
-	init_wd_weights();
 }
 
 
 CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel(int32_t size, float64_t w, int32_t d, int32_t nof_prop)
-: CSimpleKernel<float64_t>(size), width(w), degree(d), nof_properties(nof_prop)
+: CSimpleKernel<float64_t>(size), width(w), degree(d), nof_properties(nof_prop), weights(0)
 {
 	init_wd_weights();
 }
 
 CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel(
 	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t w, int32_t d, int32_t nof_prop, int32_t size)
-: CSimpleKernel<float64_t>(size), width(w), degree(d), nof_properties(nof_prop)
+: CSimpleKernel<float64_t>(size), width(w), degree(d), nof_properties(nof_prop), weights(0)
 {
 	init_wd_weights();
 	init(l,r);
@@ -51,6 +50,7 @@ CWeightedDegreeRBFKernel::~CWeightedDegreeRBFKernel()
 bool CWeightedDegreeRBFKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<float64_t>::init(l, r);
+	SG_DEBUG("Initialized WeightedDegreeRBFKernel (%p).\n", this);
 	return init_normalizer();
 }
 
@@ -58,7 +58,7 @@ bool CWeightedDegreeRBFKernel::init_wd_weights()
 {
 	ASSERT(degree>0);
 
-	delete[] weights;
+	if (weights!=0)	delete[] weights;
 	weights=new float64_t[degree];
 	if (weights)
 	{
@@ -72,6 +72,7 @@ bool CWeightedDegreeRBFKernel::init_wd_weights()
 		for (i=0; i<degree; i++)
 			weights[i]/=sum;
 
+		SG_DEBUG("Initialized weights for WeightedDegreeRBFKernel (%p).\n", this);
 		return true;
 	}
 	else

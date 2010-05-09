@@ -51,7 +51,8 @@ class CWeightedDegreeRBFKernel: public CSimpleKernel<float64_t>
 		 *
 		 * @return kernel type UNKNOWN
 		 */
-		virtual EKernelType get_kernel_type() { return K_UNKNOWN; }
+		//virtual EKernelType get_kernel_type() { return K_UNKNOWN; }
+		virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREERBF; }
 		
 		/** return the kernel's name
 		 *

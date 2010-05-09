@@ -772,6 +772,9 @@ void CKernel::list_kernel()
 		case K_WEIGHTEDDEGREEPOS:
 			SG_INFO( "K_WEIGHTEDDEGREEPOS ");
 			break;
+		case K_WEIGHTEDDEGREERBF:
+			SG_INFO( "K_WEIGHTEDDEGREERBF ");
+			break;
 		case K_WEIGHTEDCOMMWORDSTRING:
 			SG_INFO( "K_WEIGHTEDCOMMWORDSTRING ");
 			break;
@@ -786,6 +789,9 @@ void CKernel::list_kernel()
 			break;
 		case K_COMMULONGSTRING:
 			SG_INFO( "K_COMMULONGSTRING ");
+			break;
+		case K_SPECTRUMMISMATCHRBF:
+			SG_INFO( "K_SPECTRUMMISMATCHRBF ");
 			break;
 		case K_COMBINED:
 			SG_INFO( "K_COMBINED ");
