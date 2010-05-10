@@ -355,9 +355,97 @@ GET_SPARSEMATRIX(get_word_sparsematrix, atoi, uint16_t)
 
 void CAsciiFile::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
+	size_t blocksize=1024*1024;
+	size_t required_blocksize=0;
+	uint8_t* dummy=new uint8_t[blocksize];
+	uint8_t* overflow=NULL;
+	int32_t overflow_len=0;
+
+	if (file)
+	{
+		num_str=0;
+		max_string_len=0;
+
+		SG_INFO("counting line numbers in file %s\n", filename);
+		size_t sz=blocksize;
+		size_t block_offs=0;
+		size_t old_block_offs=0;
+		fseek(file, 0, SEEK_END);
+		size_t fsize=ftell(file);
+		rewind(file);
+
+		while (sz == blocksize)
+		{
+			sz=fread(dummy, sizeof(uint8_t), blocksize, file);
+			bool contains_cr=false;
+			for (size_t i=0; i<sz; i++)
+			{
+				block_offs++;
+				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
+				{
+					num_str++;
+					contains_cr=true;
+					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
+					old_block_offs=block_offs;
+				}
+			}
+			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");
+		}
+
+		SG_INFO("found %d strings\n", num_str);
+		SG_DEBUG("block_size=%d\n", required_blocksize);
+		delete[] dummy;
+		blocksize=required_blocksize;
+		dummy=new uint8_t[blocksize];
+		overflow=new uint8_t[blocksize];
+		strings=new T_STRING<uint8_t>[num_str];
+
+		rewind(file);
+		sz=blocksize;
+		int32_t lines=0;
+		size_t old_sz=0;
+		while (sz == blocksize)
+		{
+			sz=fread(dummy, sizeof(uint8_t), blocksize, file);
+
+			old_sz=0;
+			for (size_t i=0; i<sz; i++)
+			{
+				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
+				{
+					int32_t len=i-old_sz;
+					max_string_len=CMath::max(max_string_len, len+overflow_len);
+
+					strings[lines].length=len+overflow_len;
+					strings[lines].string=new uint8_t[len+overflow_len];
+
+					for (int32_t j=0; j<overflow_len; j++)
+						strings[lines].string[j]=overflow[j];
+					for (int32_t j=0; j<len; j++)
+						strings[lines].string[j+overflow_len]=dummy[old_sz+j];
+
+					// clear overflow
+					overflow_len=0;
+
+					//CMath::display_vector(strings[lines].string, len);
+					old_sz=i+1;
+					lines++;
+					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
+				}
+			}
+
+			for (size_t i=old_sz; i<sz; i++)
+				overflow[i-old_sz]=dummy[i];
+
+			overflow_len=sz-old_sz;
+		}
+		SG_INFO("file successfully read\n");
+		SG_INFO("max_string_length=%d\n", max_string_len);
+		SG_INFO("num_strings=%d\n", num_str);
+	}
+
+	delete[] dummy;
+	delete[] overflow;
 }
 
 void CAsciiFile::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
@@ -608,6 +696,15 @@ SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, floatmax_t, "%Lf")
 
 void CAsciiFile::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)
 {
+	if (!(file && strings))
+		SG_ERROR("File or strings invalid.\n");
+
+	for (int32_t i=0; i<num_str; i++)
+	{
+		int32_t len = strings[i].length;
+		fwrite(strings[i].string, sizeof(uint8_t), len, file);
+		fprintf(file, "\n");
+	}
 }
 
 void CAsciiFile::set_char_string_list(const T_STRING<char>* strings, int32_t num_str)

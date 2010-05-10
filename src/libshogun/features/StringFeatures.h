@@ -1107,9 +1107,33 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** append features
 		 *
-		 * @param p_features new features
+		 * @param sf features to append
+		 * @return if setting was successful
+		 */
+		bool append_features(CStringFeatures<ST>* sf)
+		{
+			ASSERT(sf);
+			T_STRING<ST>* new_features = new T_STRING<ST>[sf->num_vectors];
+
+			for (int32_t i=0; i<sf->num_vectors; i++)
+			{
+				int32_t length=features[i].length;
+				new_features[i].string=new ST[length];
+				memcpy(new_features[i].string, sf->features[i].string, length);
+				new_features[i].length=length;
+			}
+			return append_features(new_features, sf->num_vectors,
+					sf->max_string_length);
+		}
+
+		/** append features
+		 *
+		 * @param p_features features to append
 		 * @param p_num_vectors number of vectors
 		 * @param p_max_string_length maximum string length
+		 *
+		 * note that p_features will be delete[]'d on success
+		 *
 		 * @return if setting was successful
 		 */
 		bool append_features(T_STRING<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
@@ -1150,6 +1174,7 @@ template <class ST> class CStringFeatures : public CFeatures
                     }
                 }
                 delete[] features;
+				delete[] p_features; // free now obsolete features
 
                 this->features=new_features;
                 this->max_string_length=CMath::max(max_string_length, p_max_string_length);
