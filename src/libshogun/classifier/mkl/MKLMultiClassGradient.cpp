@@ -138,8 +138,8 @@ void MKLMultiClassGradient::gengammagradient( ::std::vector<float64_t> & gammagr
 float64_t MKLMultiClassGradient::objectives(const ::std::vector<float64_t> & weights, const int32_t index)
 {
 	assert(index>=0);
-	assert(index <sumsofalphas.size());
-	assert(index <normsofsubkernels.size());
+	assert(index < (int32_t) sumsofalphas.size());
+	assert(index < (int32_t) normsofsubkernels.size());
 
 	
 	float64_t obj= -sumsofalphas[index];
