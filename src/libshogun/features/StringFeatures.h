@@ -1835,11 +1835,13 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			int32_t nsym=get_num_symbols();
 			int32_t slen=get_max_vector_length();
-			float64_t* h= (float64_t*) malloc(int64_t(nsym)*slen*sizeof(float64_t));
+			int64_t sz=int64_t(nsym)*slen*sizeof(float64_t);
+			float64_t* h= (float64_t*) malloc(sz);
 			ASSERT(h);
-			memset(h, 0, int64_t(nsym)*slen*sizeof(float64_t));
+			memset(h, 0, sz);
 
 			float64_t* h_normalizer=new float64_t[slen];
+			memset(h_normalizer, 0, slen*sizeof(float64_t));
 			int32_t num_str=get_num_vectors();
 			for (int32_t i=0; i<num_str; i++)
 			{
