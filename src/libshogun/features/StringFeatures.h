@@ -1117,7 +1117,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			for (int32_t i=0; i<sf->num_vectors; i++)
 			{
-				int32_t length=features[i].length;
+				int32_t length=sf->features[i].length;
 				new_features[i].string=new ST[length];
 				memcpy(new_features[i].string, sf->features[i].string, length);
 				new_features[i].length=length;
@@ -1862,11 +1862,12 @@ template <class ST> class CStringFeatures : public CFeatures
 				{
 					for (int32_t j=0; j<nsym; j++)
 					{
-						if (h_normalizer)
+						if (h_normalizer && h_normalizer[i])
 							h[int64_t(i)*nsym+j]/=h_normalizer[i];
 					}
 				}
 			}
+			delete[] h_normalizer;
 
 			*hist=h;
 			*rows=nsym;
@@ -1903,8 +1904,8 @@ template <class ST> class CStringFeatures : public CFeatures
 					sf[i].string[j]=alphabet->remap_to_char(c);
 				}
 			}
-			set_features(sf, num_vec, cols);
 			delete[] randoms;
+			set_features(sf, num_vec, cols);
 		}
 
 		/** @return object name */
