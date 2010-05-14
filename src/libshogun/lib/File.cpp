@@ -121,13 +121,7 @@ void CFile::set_bool_string_list(const T_STRING<bool>* strings, int32_t num_str)
 
 CFile::~CFile()
 {
-	free(variable_name);
-	free(filename);
-	if (file)
-	  fclose(file);
-	variable_name=NULL;
-	filename=NULL;
-	file=NULL;
+	close();
 }
 
 void CFile::set_variable_name(const char* name)

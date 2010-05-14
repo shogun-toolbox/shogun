@@ -54,6 +54,17 @@ public:
 	/** default destructor */
 	virtual ~CFile();
 
+	void close()
+	{
+		free(variable_name);
+		free(filename);
+		if (file)
+		  fclose(file);
+		variable_name=NULL;
+		filename=NULL;
+		file=NULL;
+	}
+
 	/** set the path to the variable to be accessed
 	 *
 	 * only supported by some file interfaces like CHDF5File
