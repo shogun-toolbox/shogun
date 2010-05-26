@@ -151,8 +151,8 @@ shogun name_of_example.sg
 \li <b>../examples/documented/cmdline/kernel_diag.sg</b>
 \verbinclude kernel_diag.sg
 
-\li <b>../examples/documented/cmdline/kernel_distancetokernel.sg</b>
-\verbinclude kernel_distancetokernel.sg
+\li <b>../examples/documented/cmdline/kernel_distance.sg</b>
+\verbinclude kernel_distance.sg
 
 \li <b>../examples/documented/cmdline/kernel_fixeddegreestring.sg</b>
 \verbinclude kernel_fixeddegreestring.sg
@@ -199,11 +199,11 @@ shogun name_of_example.sg
 \li <b>../examples/documented/cmdline/kernel_simplelocalityimprovedstring.sg</b>
 \verbinclude kernel_simplelocalityimprovedstring.sg
 
-\li <b>../examples/documented/cmdline/kernel_sparse_linear.sg</b>
-\verbinclude kernel_sparse_linear.sg
-
 \li <b>../examples/documented/cmdline/kernel_sparsegaussian.sg</b>
 \verbinclude kernel_sparsegaussian.sg
+
+\li <b>../examples/documented/cmdline/kernel_sparselinear.sg</b>
+\verbinclude kernel_sparselinear.sg
 
 \li <b>../examples/documented/cmdline/kernel_sparsepoly.sg</b>
 \verbinclude kernel_sparsepoly.sg

@@ -141,8 +141,8 @@ source('name_of_example.R')
 \li <b>../examples/documented/r/kernel_diag.R</b>
 \verbinclude kernel_diag.R
 
-\li <b>../examples/documented/r/kernel_distancetokernel.R</b>
-\verbinclude kernel_distancetokernel.R
+\li <b>../examples/documented/r/kernel_distance.R</b>
+\verbinclude kernel_distance.R
 
 \li <b>../examples/documented/r/kernel_fixeddegreestring.R</b>
 \verbinclude kernel_fixeddegreestring.R
@@ -153,8 +153,8 @@ source('name_of_example.R')
 \li <b>../examples/documented/r/kernel_gaussianshift.R</b>
 \verbinclude kernel_gaussianshift.R
 
-\li <b>../examples/documented/r/kernel_histogram.R</b>
-\verbinclude kernel_histogram.R
+\li <b>../examples/documented/r/kernel_histogramword.R</b>
+\verbinclude kernel_histogramword.R
 
 \li <b>../examples/documented/r/kernel_linear.R</b>
 \verbinclude kernel_linear.R
@@ -183,8 +183,8 @@ source('name_of_example.R')
 \li <b>../examples/documented/r/kernel_simplelocalityimprovedstring.R</b>
 \verbinclude kernel_simplelocalityimprovedstring.R
 
-\li <b>../examples/documented/r/kernel_string.R</b>
-\verbinclude kernel_string.R
+\li <b>../examples/documented/r/kernel_spectrum.R</b>
+\verbinclude kernel_spectrum.R
 
 \li <b>../examples/documented/r/kernel_weightedcommwordstring.R</b>
 \verbinclude kernel_weightedcommwordstring.R

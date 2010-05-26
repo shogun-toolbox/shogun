@@ -90,11 +90,11 @@ source('name_of_example.R')
 \li <b>../examples/documented/r_modular/kernel_combined_modular.R</b>
 \verbinclude kernel_combined_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_commulongstring_modular.R</b>
-\verbinclude kernel_commulongstring_modular.R
+\li <b>../examples/documented/r_modular/kernel_comm_ulong_string_modular.R</b>
+\verbinclude kernel_comm_ulong_string_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_commwordstring_modular.R</b>
-\verbinclude kernel_commwordstring_modular.R
+\li <b>../examples/documented/r_modular/kernel_comm_word_string_modular.R</b>
+\verbinclude kernel_comm_word_string_modular.R
 
 \li <b>../examples/documented/r_modular/kernel_const_modular.R</b>
 \verbinclude kernel_const_modular.R
@@ -105,41 +105,41 @@ source('name_of_example.R')
 \li <b>../examples/documented/r_modular/kernel_diag_modular.R</b>
 \verbinclude kernel_diag_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_distancetokernel_modular.R</b>
-\verbinclude kernel_distancetokernel_modular.R
+\li <b>../examples/documented/r_modular/kernel_distance_modular.R</b>
+\verbinclude kernel_distance_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_fixeddegreestring_modular.R</b>
-\verbinclude kernel_fixeddegreestring_modular.R
+\li <b>../examples/documented/r_modular/kernel_fixed_degree_string_modular.R</b>
+\verbinclude kernel_fixed_degree_string_modular.R
 
 \li <b>../examples/documented/r_modular/kernel_gaussian_modular.R</b>
 \verbinclude kernel_gaussian_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_gaussianshift_modular.R</b>
-\verbinclude kernel_gaussianshift_modular.R
+\li <b>../examples/documented/r_modular/kernel_gaussian_shift_modular.R</b>
+\verbinclude kernel_gaussian_shift_modular.R
 
 \li <b>../examples/documented/r_modular/kernel_histogramword_modular.R</b>
 \verbinclude kernel_histogramword_modular.R
 
+\li <b>../examples/documented/r_modular/kernel_linear_byte_modular.R</b>
+\verbinclude kernel_linear_byte_modular.R
+
 \li <b>../examples/documented/r_modular/kernel_linear_modular.R</b>
 \verbinclude kernel_linear_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_linearbyte_modular.R</b>
-\verbinclude kernel_linearbyte_modular.R
+\li <b>../examples/documented/r_modular/kernel_linear_string_modular.R</b>
+\verbinclude kernel_linear_string_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_linearstring_modular.R</b>
-\verbinclude kernel_linearstring_modular.R
+\li <b>../examples/documented/r_modular/kernel_linear_word_modular.R</b>
+\verbinclude kernel_linear_word_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_linearword_modular.R</b>
-\verbinclude kernel_linearword_modular.R
-
-\li <b>../examples/documented/r_modular/kernel_localalignmentstring_modular.R</b>
-\verbinclude kernel_localalignmentstring_modular.R
+\li <b>../examples/documented/r_modular/kernel_local_alignment_string_modular.R</b>
+\verbinclude kernel_local_alignment_string_modular.R
 
 \li <b>../examples/documented/r_modular/kernel_localityimprovedstring_modular.R</b>
 \verbinclude kernel_localityimprovedstring_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_oligostring_modular.R</b>
-\verbinclude kernel_oligostring_modular.R
+\li <b>../examples/documented/r_modular/kernel_oligo_string_modular.R</b>
+\verbinclude kernel_oligo_string_modular.R
 
 \li <b>../examples/documented/r_modular/kernel_poly_modular.R</b>
 \verbinclude kernel_poly_modular.R
@@ -153,8 +153,8 @@ source('name_of_example.R')
 \li <b>../examples/documented/r_modular/kernel_sigmoid_modular.R</b>
 \verbinclude kernel_sigmoid_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_simplelocalityimprovedstring_modular.R</b>
-\verbinclude kernel_simplelocalityimprovedstring_modular.R
+\li <b>../examples/documented/r_modular/kernel_simple_locality_improved_string_modular.R</b>
+\verbinclude kernel_simple_locality_improved_string_modular.R
 
 \li <b>../examples/documented/r_modular/kernel_sparsegaussian_modular.R</b>
 \verbinclude kernel_sparsegaussian_modular.R
@@ -165,14 +165,14 @@ source('name_of_example.R')
 \li <b>../examples/documented/r_modular/kernel_sparsepoly_modular.R</b>
 \verbinclude kernel_sparsepoly_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_topfisher_modular.R</b>
-\verbinclude kernel_topfisher_modular.R
+\li <b>../examples/documented/r_modular/kernel_top_modular.R</b>
+\verbinclude kernel_top_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_weightedcommwordstring_modular.R</b>
-\verbinclude kernel_weightedcommwordstring_modular.R
+\li <b>../examples/documented/r_modular/kernel_weighted_comm_word_string_modular.R</b>
+\verbinclude kernel_weighted_comm_word_string_modular.R
 
-\li <b>../examples/documented/r_modular/kernel_weighteddegreepositionstring_modular.R</b>
-\verbinclude kernel_weighteddegreepositionstring_modular.R
+\li <b>../examples/documented/r_modular/kernel_weighted_degree_position_string_modular.R</b>
+\verbinclude kernel_weighted_degree_position_string_modular.R
 
 \li <b>../examples/documented/r_modular/kernel_weighteddegreestring_modular.R</b>
 \verbinclude kernel_weighteddegreestring_modular.R
@@ -188,12 +188,6 @@ source('name_of_example.R')
 
 \section r_modular_preproc_examples Preproc
 
-
-\li <b>../examples/documented/r_modular/preproc_commulongstring_modular.R</b>
-\verbinclude preproc_commulongstring_modular.R
-
-\li <b>../examples/documented/r_modular/preproc_commwordstring_modular.R</b>
-\verbinclude preproc_commwordstring_modular.R
 
 \li <b>../examples/documented/r_modular/preproc_logplusone_modular.R</b>
 \verbinclude preproc_logplusone_modular.R

@@ -7,7 +7,6 @@ This page lists ready to run shogun examples for the Python Modular interface.
 \li \subpage python_modular_distance_examples 
 \li \subpage python_modular_distribution_examples 
 \li \subpage python_modular_features_examples 
-\li \subpage python_modular_hashed_examples 
 \li \subpage python_modular_kernel_examples 
 \li \subpage python_modular_mkl_examples 
 \li \subpage python_modular_preproc_examples 
@@ -156,8 +155,8 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/distribution_hmm_modular.py</b>
 \verbinclude distribution_hmm_modular.py
 
-\li <b>../examples/documented/python_modular/distribution_linear_hmm_modular.py</b>
-\verbinclude distribution_linear_hmm_modular.py
+\li <b>../examples/documented/python_modular/distribution_linearhmm_modular.py</b>
+\verbinclude distribution_linearhmm_modular.py
 
 \section python_modular_features_examples Features
 
@@ -198,6 +197,9 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/features_string_file_modular.py</b>
 \verbinclude features_string_file_modular.py
 
+\li <b>../examples/documented/python_modular/features_string_hashed_wd_modular.py</b>
+\verbinclude features_string_hashed_wd_modular.py
+
 \li <b>../examples/documented/python_modular/features_string_sliding_window_modular.py</b>
 \verbinclude features_string_sliding_window_modular.py
 
@@ -206,12 +208,6 @@ python name_of_example.py
 
 \li <b>../examples/documented/python_modular/features_string_word_modular.py</b>
 \verbinclude features_string_word_modular.py
-
-\section python_modular_hashed_examples Hashed
-
-
-\li <b>../examples/documented/python_modular/hashed_wd_features_modular.py</b>
-\verbinclude hashed_wd_features_modular.py
 
 \section python_modular_kernel_examples Kernel
 

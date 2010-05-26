@@ -136,9 +136,6 @@ python name_of_example.py
 \li <b>../examples/documented/python/kernel_diag.py</b>
 \verbinclude kernel_diag.py
 
-\li <b>../examples/documented/python/kernel_distancetokernel.py</b>
-\verbinclude kernel_distancetokernel.py
-
 \li <b>../examples/documented/python/kernel_fixeddegreestring.py</b>
 \verbinclude kernel_fixeddegreestring.py
 
@@ -151,11 +148,11 @@ python name_of_example.py
 \li <b>../examples/documented/python/kernel_linear.py</b>
 \verbinclude kernel_linear.py
 
-\li <b>../examples/documented/python/kernel_linear_string.py</b>
-\verbinclude kernel_linear_string.py
-
 \li <b>../examples/documented/python/kernel_linearbyte.py</b>
 \verbinclude kernel_linearbyte.py
+
+\li <b>../examples/documented/python/kernel_linearstring.py</b>
+\verbinclude kernel_linearstring.py
 
 \li <b>../examples/documented/python/kernel_linearword.py</b>
 \verbinclude kernel_linearword.py
