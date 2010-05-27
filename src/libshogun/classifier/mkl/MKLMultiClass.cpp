@@ -153,15 +153,58 @@ bool CMKLMultiClass::evaluatefinishcriterion(const int32_t
 
 		ASSERT (wold.size()==wnew.size());
 
-		for (size_t i=0;i< wnew.size();++i)
-		{
-			delta+=(wold[i]-wnew[i])*(wold[i]-wnew[i]);
-		}
-		delta=sqrt(delta);
 
-		if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
+		if((pnorm<=1)&&(!normweightssquared.empty()))
 		{
-			return(true);
+
+			delta=0;
+			for (size_t i=0;i< wnew.size();++i)
+			{
+				delta+=(wold[i]-wnew[i])*(wold[i]-wnew[i]);
+			}
+			delta=sqrt(delta);
+			SG_SDEBUG("L1 Norm chosen, weight delta %f \n",delta);
+
+
+			//check dual gap part for mkl
+			int32_t maxind=0;
+			float64_t maxval=normweightssquared[maxind];
+			delta=0;
+			for (size_t i=0;i< wnew.size();++i)
+			{
+				delta+=normweightssquared[i]*wnew[i];
+				if(wnew[i]>maxval)
+				{
+					maxind=i;
+					maxval=wnew[i];
+				}
+			}
+			delta-=normweightssquared[maxind];
+			delta=fabs(delta);
+			SG_SDEBUG("L1 Norm chosen, MKL part of duality gap %f \n",delta);
+			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
+			{
+				return(true);
+			}
+			
+
+
+		}
+		else
+		{
+			delta=0;
+			for (size_t i=0;i< wnew.size();++i)
+			{
+				delta+=(wold[i]-wnew[i])*(wold[i]-wnew[i]);
+			}
+			delta=sqrt(delta);
+			SG_SDEBUG("Lp Norm chosen, weight delta %f \n",delta);
+
+			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
+			{
+				return(true);
+			}
+
 		}
 	}
 
@@ -195,13 +238,13 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
 			dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
 
 
-	std::vector<float64_t> normw2(numkernels);
+	normweightssquared.resize(numkernels);
 	for (int32_t ind=0; ind < numkernels; ++ind )
 	{
-		normw2[ind]=getsquarenormofprimalcoefficients( ind );
+		normweightssquared[ind]=getsquarenormofprimalcoefficients( ind );
 	}
 
-	lpw->addconstraint(normw2,sumofsignfreealphas);
+	lpw->addconstraint(normweightssquared,sumofsignfreealphas);
 }
 
 float64_t CMKLMultiClass::getsumofsignfreealphas()

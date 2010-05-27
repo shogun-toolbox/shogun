@@ -1,4 +1,4 @@
-% GMNPSVM
+% MKL_MultiClass
 print MKL_MultiClass
 
 
@@ -22,7 +22,7 @@ add_features TRAIN ../data/fm_train_real.dat
 add_features TEST ../data/fm_test_real.dat
 
 new_classifier MKL_MULTICLASS
-mkl_parameters 0.001 1 1
+mkl_parameters 0.001 1 1.5
 svm_epsilon 1e-5
 c 1.2
 train_classifier

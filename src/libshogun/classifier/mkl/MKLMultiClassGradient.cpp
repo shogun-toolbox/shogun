@@ -356,6 +356,9 @@ void MKLMultiClassGradient::computeweights(std::vector<float64_t> & weights2)
 {
 	if(pnorm<1 )
 		SG_ERROR("MKLMultiClassGradient::computeweights(std::vector<float64_t> & weights2) : parameter pnorm<1");
+
+	SG_SDEBUG("MKLMultiClassGradient::computeweights(...): pnorm %f\n",pnorm);
+
 	int maxnumlinesrch=15;
 	float64_t maxdiff=1e-6;
 

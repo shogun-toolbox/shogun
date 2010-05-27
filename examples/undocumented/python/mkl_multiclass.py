@@ -6,7 +6,7 @@ def mkl_multiclass ():
 	C=1.2
 	epsilon=1e-5
 	mkl_eps=0.001
-	mkl_norm=1.0
+	mkl_norm=1.5
 	weight=1.0
 
 	from sg import sg

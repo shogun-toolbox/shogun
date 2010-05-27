@@ -4,7 +4,7 @@ size_cache <- 10
 C <- 1.2
 epsilon <- 1e-5
 mkl_eps <- 0.01 
-mkl_norm <- 1
+mkl_norm <- 1.5
 
 width <- 1.2
 

@@ -187,7 +187,10 @@ protected:
 	*   
 	*/
 	float64_t pnorm;
-
+	/** stores the term  \| w_l \|^2 ~~~ "alpha o Y K_l Y o alpha"
+	*   
+	*/
+	std::vector<float64_t> normweightssquared;
 	
 };
 }

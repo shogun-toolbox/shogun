@@ -6,7 +6,7 @@ use_bias=false;
 epsilon=1e-5;
 width=1.2;
 mkl_eps=0.001;
-mkl_norm=1.5; % accepts now any p>=1
+mkl_norm=2;
 
 max_train_time=600;
 
