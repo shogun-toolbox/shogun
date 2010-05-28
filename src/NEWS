@@ -1,13 +1,21 @@
-2010-XX-XX Soeren Sonnenburg <sonne@debian.org>
+2010-06-0X Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.9.3 (libshogun 8.0, libshogunui 4.1)
+	* SHOGUN Release version 0.9.3 (libshogun 8.0, libshogunui 5.0)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
-		- None
+		- Experimental lp-norm MCMKL
+		- New Kernels: SpectrumRBFKernelRBF, SpectrumMismatchRBFKernel, WeightedDegreeRBFKernel
+		- WDK kernel supports amino acids
+		- String Features now support append operations (and creation of
+		- python-dbg support
+		- Allow floats as input for custom kernel (and matrices > 4GB in size)
 	* Bugfixes:
-		- None
+		- Static linking fix.
+		- Fix sparse linear kernel's add_to_normal
 	* Cleanup and API Changes:
 		- Remove init() function in Performance Measures
+		- Adjust .so suffix for python and use python distutils to figure out
+		install paths
 
 2010-03-31 Soeren Sonnenburg <sonne@debian.org>
 
