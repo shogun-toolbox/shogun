@@ -1,5 +1,153 @@
+2010-05-28  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: update news
+
+2010-05-27  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* libshogun/classifier/mkl/MKLMultiClass.cpp,
+	  libshogun/classifier/mkl/MKLMultiClass.h,
+	  libshogun/classifier/mkl/MKLMultiClassGradient.cpp: MKL
+	  Multiclass: added debug output, for L1 norm check of duality gap
+	  now performed instead of weight
+
+2010-05-27  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/kernel/SpectrumRBFKernel.cpp: minor fix
+
+2010-05-24  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.h: Fusion of RBF and Spectrum
+	  kernel
+
+2010-05-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFeatures.h: fix minor memory leak and
+	  bug in append features
+	* libshogun/features/StringFeatures.h: fix uninited memory read in
+	  histogram normalization
+	* libshogun/lib/File.cpp, libshogun/lib/File.h: add close() to file
+	  to force close before destruction
+
+2010-05-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/mkl/MKLMultiClassGradient.cpp,
+	  libshogunui/GUIKernel.cpp: enable scatter kernel from matlab
+	  interface
+
+2010-05-10  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFeatures.h, libshogun/lib/AsciiFile.cpp:
+	  add append_features function for CStringFeatures as inputs and
+	  impl. load/save for bytes
+
+2010-05-09  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* libshogun/kernel/SpectrumMismatchRBFKernel.cpp: A
+	  src/libshogun/kernel/SpectrumMismatchRBFKernel.cpp
+	* configure, libshogun/kernel/SpectrumMismatchRBFKernel.h: missing
+	  file
+	* libshogunui/GUIKernel.cpp, libshogunui/GUIKernel.h,
+	  libshogunui/SGInterface.cpp: matlab gui for WEIGHTEDDEGREERBF and
+	  SPECTRUMMISMATCHRBF
+	* libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/WeightedDegreeRBFKernel.cpp,
+	  libshogun/kernel/WeightedDegreeRBFKernel.h: minor changes to
+	  CWeightedDegreeRBFKernel and CKernel for WeightedDegreeRBFKernel
+
+2010-05-07  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/StringFeatures.h: add function to concatenate
+	  features
+	* libshogun/features/StringFeatures.h, modular/Features.i: add
+	  functions to compute histogram/random features for it
+
+2010-05-04  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* libshogun/kernel/PyramidChi2.cpp, libshogun/kernel/PyramidChi2.h,
+	  libshogunui/GUIClassifier.cpp: GUIclassifier.cpp: mklnorm
+	  parameter now affects CMKLMultiClass
+	  updated examples for MKL Multiclass
+	  worked on PYChi2kernel
+	* libshogun/classifier/mkl/MKLMultiClass.cpp,
+	  libshogun/classifier/mkl/MKLMultiClass.h,
+	  libshogun/classifier/mkl/MKLMultiClassGLPK.h,
+	  libshogun/classifier/mkl/MKLMultiClassGradient.cpp,
+	  libshogun/classifier/mkl/MKLMultiClassGradient.h,
+	  libshogun/classifier/mkl/MKLMultiClassOptimizationBase.cpp,
+	  libshogun/classifier/mkl/MKLMultiClassOptimizationBase.h: iadded
+	  Lp norm MKL for MKL multiclass
+
+2010-05-03  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* libshogun/kernel/PyramidChi2.h: updated documentation
+
+2010-05-03  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* modular/Kernel.i: added WDK that considers additional properties
+	  of amino acids (swig)
+	* libshogun/kernel/WeightedDegreeRBFKernel.cpp,
+	  libshogun/kernel/WeightedDegreeRBFKernel.h: added WDK that
+	  considers additional properties of amino acids
+
+2010-05-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/LinearKernel.cpp,
+	  libshogun/kernel/SparseLinearKernel.cpp: fix sparse linear
+	  kernel's add_to_normal *sigh*
+
+2010-05-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/CustomKernel.cpp,
+	  libshogun/kernel/CustomKernel.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, modular/Kernel.i,
+	  python_modular/swig_typemaps.i: allow also floats etc as input
+	  for custom kernel
+
+2010-04-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVM.cpp, libshogun/classifier/svm/SVM.h,
+	  libshogun/lib/DataType.h, libshogun/lib/File.h,
+	  libshogun/lib/Parameter.h: move datatype enum into a separate
+	  file and introduce parameters with SVM C as example
+
+2010-04-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* .generate_link_dependencies.py, modular/SGBase.i,
+	  octave_modular/sg_print_functions.cpp,
+	  r_modular/sg_print_functions.cpp: update link dependency
+	  generator script to work with .so as suffix and get octave/r
+	  modular interfaces back to work
+	* Makefile.template, configure: try to get python-dbg to work...
+
+2010-04-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, configure: adjust .so suffix for python and apply yaroslavs
+	  patch to use distutils to figure out libs & co
+	* libshogun/features/Labels.cpp, libshogun/features/Labels.h,
+	  modular/Features.i: apply patch from Amir Saffari to add label
+	  confidences
+
+2010-04-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, libshogun/evaluation/PerformanceMeasures.cpp,
+	  libshogun/evaluation/PerformanceMeasures.h: fix race condition in
+	  perf measures
+	* NEWS: update for 0.9.3
+
+2010-04-05  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure: really fix static libshogunui linking problem
+	* configure: fix static linking of libshogunui
+
+2010-03-31  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/distributions/histogram, libshogun/distributions/hmm:
+	  make -> $(MAKE)
+
 2010-03-30  Soeren Sonnenburg <sonne@debian.org>
 
+	* ChangeLog: updated changelog
 	* libshogun/features/CombinedDotFeatures.h,
 	  libshogun/features/DotFeatures.h,
 	  libshogun/features/HashedWDFeatures.h,
