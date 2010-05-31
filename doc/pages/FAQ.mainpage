@@ -1,7 +1,7 @@
 /*!
 \page faq Frequently Asked Questions
 
-\li: Q: I am puzzled, shogun interfaces to so many languages but which language
+\li Q: I am puzzled, shogun interfaces to so many languages but which language
 and shogun interface should I use?
 A: That depends a lot on your taste. I personally consider the modular
 interfaces (python_modular, octave_modular) to be "best". Here best means very
@@ -9,13 +9,13 @@ flexible and easily extensible. However, in case you just want to train a single
 SVM with a single or multiple kernels all of the static interfaces are
 sufficient. And well, of course you should be using \b python http://www.python.org :-)
 
-\li: Q: Just recently - when I run any of the octave_modular examples octave
+\li Q: Just recently - when I run any of the octave_modular examples octave
 will crash on exit.
 A: These examples all run fine. The problem is there is a bug in octave that on exit crashes unregistering global variables.
 This same thing happens when you run clear all and is currently only fixed in octave-svn but still awaits to be fixed within swig.
 The report and relevant thread is here http://old.nabble.com/crashes-when-exiting-octave-and-loading-swig-wrapped-code-to25989323.html
 
-\li: Q: I've found a bug, where should I report it?
+\li Q: I've found a bug, where should I report it?
 A: Either report it in our bug tracker http://trac.tuebingen.mpg.de/shogun or
 ask on the mailinglist.
 
@@ -27,7 +27,7 @@ multiple kernel learning (MKL) the GNU Linear Programming Kit (GLPK) version at
 least 4.29 or CPLEX is required. For general p-norm MKL with p>1 it will work
 nonetheless.
 
-\li: Q: Is it multiple kernel learning when I use many kernels?
+\li Q: Is it multiple kernel learning when I use many kernels?
 A: No, a plain combination of features/kernels will remain a plain
 concatenation. Only in case you learn the kernel weights you really do MKL. In
 the static interfaces you can issue \verbatim [W]=sg('get_subkernel_weights') \endverbatim
@@ -40,7 +40,13 @@ cygwin is outdated - if you want that interface you need to compile swig
 manually.  In addition neither R and matlab interfaces do currently compile:
 cygwin does not yet include up-to-date mingw packages. As none one of us use
 windows, and things (in external dependencies) break frequently, feel free to
-submit patches to cygwin.
+submit patches to cygwin. Ohh and one hint: use
+\verbatim
+make DESTDIR= install
+\endverbatim
+to install (etc.). A plain ./configure;make;make install will fail since
+repeated slashes (e.g., '//usr/local') in cygwin are problematic but in posix
+systems simply ignored.
 
 \li Q:How does shogun do its memory management?
 A: As does python, we use reference counting internally, i.e. objects holding a
