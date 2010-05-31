@@ -1,5 +1,6 @@
 2010-05-31  Soeren Sonnenburg <sonne@debian.org>
 
+	* ChangeLog: updated changelog
 	* NEWS: update NEWS
 	* ChangeLog: updated changelog
 	* Makefile.template, configure: compile fixes for osx
