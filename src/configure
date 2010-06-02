@@ -2863,7 +2863,8 @@ test_modular()
 			if test -z "$_swig_version"; then
 				die "swig did not return version information"
 			fi
-			if [ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
+			if [ `echo $_swig_version | cut -f 1 -d '.'` -ge 2 ] || \
+				[ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
 				[ `echo $_swig_version | cut -f 3 -d '.'` -ge 29 ]
 			then
 				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
@@ -2907,13 +2908,15 @@ test_modular()
 		if test "$_octave" = yes && test "$_octave_modular" != no
 		then
 			echocheck "SWIG Octave Support"
-			if [ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
+			if [ `echo "$_swig_version" | cut -f 1 -d '.'` -ge 2 ] || \
+				[ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
 				[ `echo "$_swig_version" | cut -f 3 -d '.'` -ge 36 ]
 			then
 				if [ `echo "$_octave_version" | cut -f 1 -d '.'` -ge 3 ] || \
 					[ `echo "$_octave_version" | cut -f 2 -d '.'` -ge 2 ]
 				then
-					if [ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
+					if [ `echo "$_swig_version" | cut -f 1 -d '.'` -ge 2 ] || \
+						[ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
 						[ `echo "$_swig_version" | cut -f 3 -d '.'` -ge 40 ]
 					then
 						PARTS="$PARTS octave_modular"
@@ -2952,7 +2955,8 @@ test_modular()
 		if test "$_r" = yes && test "$_r_modular" != no
 		then
 			echocheck "SWIG R Support"
-			if [ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
+			if [ `echo $_swig_version | cut -f 1 -d '.'` -ge 2 ] || \
+				[ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
 				[ `echo $_swig_version | cut -f 3 -d '.'` -ge 37 ]
 			then
 				PARTS="$PARTS r_modular"
