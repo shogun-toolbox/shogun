@@ -14,13 +14,15 @@
 
 using namespace shogun;
 
-CScatterSVM::CScatterSVM()
-: CMultiClassSVM(ONE_VS_REST), model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0)
+CScatterSVM::CScatterSVM(SCATTER_TYPE type)
+: CMultiClassSVM(ONE_VS_REST), scatter_type(type), model(NULL),
+	norm_wc(NULL), norm_wcw(NULL), rho(0)
 {
 }
 
 CScatterSVM::CScatterSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST, C, k, lab), model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0)
+: CMultiClassSVM(ONE_VS_REST, C, k, lab), scatter_type(NO_BIAS), model(NULL),
+	norm_wc(NULL), norm_wcw(NULL), rho(0)
 {
 }
 
@@ -28,7 +30,6 @@ CScatterSVM::~CScatterSVM()
 {
 	delete[] norm_wc;
 	delete[] norm_wcw;
-	//SG_PRINT("deleting ScatterSVM\n");
 }
 
 bool CScatterSVM::train(CFeatures* data)
@@ -212,46 +213,48 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 		output=new CLabels(num_vectors);
 		SG_REF(output);
 
-		for (int32_t i=0; i<num_vectors; i++)
+		if (scatter_type == TEST_RULE2)
 		{
-			output->set_label(i, classify_example(i));
+			for (int32_t i=0; i<num_vectors; i++)
+				output->set_label(i, classify_example(i));
 		}
-/*
-		ASSERT(num_vectors==output->get_num_labels());
-		CLabels** outputs=new CLabels*[m_num_svms];
-
-		for (int32_t i=0; i<m_num_svms; i++)
+		else
 		{
-			ASSERT(m_svms[i]);
-			m_svms[i]->set_kernel(kernel);
-			m_svms[i]->set_labels(labels);
-			outputs[i]=m_svms[i]->classify();
-		}
+			ASSERT(num_vectors==output->get_num_labels());
+			CLabels** outputs=new CLabels*[m_num_svms];
 
-		for (int32_t i=0; i<num_vectors; i++)
-		{
-			int32_t winner=0;
-			float64_t max_out=outputs[0]->get_label(i)/norm_wc[0];
-
-			for (int32_t j=1; j<m_num_svms; j++)
+			for (int32_t i=0; i<m_num_svms; i++)
 			{
-				float64_t out=outputs[j]->get_label(i)/norm_wc[j];
-
-				if (out>max_out)
-				{
-					winner=j;
-					max_out=out;
-				}
+				ASSERT(m_svms[i]);
+				m_svms[i]->set_kernel(kernel);
+				m_svms[i]->set_labels(labels);
+				outputs[i]=m_svms[i]->classify();
 			}
 
-			output->set_label(i, winner);
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				int32_t winner=0;
+				float64_t max_out=outputs[0]->get_label(i)/norm_wc[0];
+
+				for (int32_t j=1; j<m_num_svms; j++)
+				{
+					float64_t out=outputs[j]->get_label(i)/norm_wc[j];
+
+					if (out>max_out)
+					{
+						winner=j;
+						max_out=out;
+					}
+				}
+
+				output->set_label(i, winner);
+			}
+
+			for (int32_t i=0; i<m_num_svms; i++)
+				SG_UNREF(outputs[i]);
+
+			delete[] outputs;
 		}
-
-		for (int32_t i=0; i<m_num_svms; i++)
-			SG_UNREF(outputs[i]);
-
-		delete[] outputs;
-		*/
 	}
 
 	return output;
@@ -259,65 +262,59 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 
 float64_t CScatterSVM::classify_example(int32_t num)
 {
-	/*
-	ASSERT(m_num_svms>0);
-	float64_t* outputs=new float64_t[m_num_svms];
-	int32_t winner=0;
-	float64_t max_out=m_svms[0]->classify_example(num)/norm_wc[0];
-
-	for (int32_t i=1; i<m_num_svms; i++)
-	{
-		outputs[i]=m_svms[i]->classify_example(num)/norm_wc[i];
-		if (outputs[i]>max_out)
-		{
-			winner=i;
-			max_out=outputs[i];
-		}
-	}
-	delete[] outputs;
-
-	return winner;
-	*/
-
 	ASSERT(m_num_svms>0);
 	float64_t* outputs=new float64_t[m_num_svms];
 	int32_t winner=0;
 
-	for (int32_t c=0; c<m_num_svms; c++)
-		outputs[c]=m_svms[c]->get_bias()-rho;
-
-	for (int32_t c=0; c<m_num_svms; c++)
+	if (scatter_type == TEST_RULE2)
 	{
-		float64_t v=0;
+		for (int32_t c=0; c<m_num_svms; c++)
+			outputs[c]=m_svms[c]->get_bias()-rho;
 
-		for (int32_t i=0; i<m_svms[c]->get_num_support_vectors(); i++)
+		for (int32_t c=0; c<m_num_svms; c++)
 		{
-			float64_t alpha=m_svms[c]->get_alpha(i);
-			int32_t svidx=m_svms[c]->get_support_vector(i);
-			v += alpha*kernel->kernel(svidx, num);
+			float64_t v=0;
+
+			for (int32_t i=0; i<m_svms[c]->get_num_support_vectors(); i++)
+			{
+				float64_t alpha=m_svms[c]->get_alpha(i);
+				int32_t svidx=m_svms[c]->get_support_vector(i);
+				v += alpha*kernel->kernel(svidx, num);
+			}
+
+			outputs[c] += v;
+			for (int32_t j=0; j<m_num_svms; j++)
+				outputs[j] -= v/m_num_svms;
 		}
 
-		outputs[c] += v;
 		for (int32_t j=0; j<m_num_svms; j++)
-			outputs[j] -= v/m_num_svms;
-	}
+			outputs[j]/=norm_wcw[j];
 
-	for (int32_t j=0; j<m_num_svms; j++)
-		outputs[j]/=norm_wcw[j];
-
-	float64_t max_out=outputs[0];
-	for (int32_t j=0; j<m_num_svms; j++)
-	{
-		if (outputs[j]>max_out)
+		float64_t max_out=outputs[0];
+		for (int32_t j=0; j<m_num_svms; j++)
 		{
-			max_out=outputs[j];
-			winner=j;
+			if (outputs[j]>max_out)
+			{
+				max_out=outputs[j];
+				winner=j;
+			}
+		}
+	}
+	else
+	{
+		float64_t max_out=m_svms[0]->classify_example(num)/norm_wc[0];
+
+		for (int32_t i=1; i<m_num_svms; i++)
+		{
+			outputs[i]=m_svms[i]->classify_example(num)/norm_wc[i];
+			if (outputs[i]>max_out)
+			{
+				winner=i;
+				max_out=outputs[i];
+			}
 		}
 	}
 
 	delete[] outputs;
-
-	//SG_PRINT("winner = %d\n", winner);
-
 	return winner;
 }

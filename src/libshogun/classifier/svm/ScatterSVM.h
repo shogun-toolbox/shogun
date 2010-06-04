@@ -20,6 +20,17 @@
 
 namespace shogun
 {
+	/** scatter svm variant */
+	enum SCATTER_TYPE
+	{
+		/// no bias
+		NO_BIAS,
+		/// training with bias using test rule 1
+		TEST_RULE1,
+		/// training with bias using test rule 2
+		TEST_RULE2
+	};
+
 /** @brief ScatterSVM - Multiclass SVM
  *
  * The ScatterSVM is an unpublished experimental
@@ -36,8 +47,9 @@ class CScatterSVM : public CMultiClassSVM
 {
 	public:
 		/** constructor */
-		CScatterSVM();
-		/** constructor
+		CScatterSVM(SCATTER_TYPE type);
+
+		/** constructor (using NO_BIAS as default scatter_type)
 		 *
 		 * @param C constant C
 		 * @param k kernel
@@ -84,6 +96,9 @@ class CScatterSVM : public CMultiClassSVM
 		void compute_norm_wc();
 
 	protected:
+		/** type of scatter SVM */
+		SCATTER_TYPE scatter_type;
+
 		/** SVM problem */
 		svm_problem problem;
 		/** SVM param */

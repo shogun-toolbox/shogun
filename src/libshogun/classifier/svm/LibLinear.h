@@ -51,7 +51,7 @@ class CLibLinear : public CLinearClassifier
 		 */
 		CLibLinear(LIBLINEAR_SOLVER_TYPE liblinear_solver_type);
 
-		/** constructor
+		/** constructor (using L2R_L1LOSS_SVC_DUAL as default)
 		 *
 		 * @param C constant C
 		 * @param traindat training features
@@ -61,6 +61,7 @@ class CLibLinear : public CLinearClassifier
 			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 
+		/** destructor */
 		virtual ~CLibLinear();
 
 		inline LIBLINEAR_SOLVER_TYPE get_liblinear_solver_type()
