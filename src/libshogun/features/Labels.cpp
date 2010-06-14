@@ -56,6 +56,13 @@ CLabels::CLabels(float64_t* p_labels, int32_t len)
 	m_confidences=NULL; 
 }
 
+void CLabels::set_to_one()
+{
+	ASSERT(labels);
+	for (int32_t i=0; i<num_labels; i++)
+		labels[i]=+1;
+}
+
 CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels, 
 				 int32_t in_num_classes)
 : CSGObject()

@@ -171,6 +171,10 @@ class CLabels : public CSGObject
 		 */
 		void set_labels(float64_t* src, int32_t len);
 
+		/** set all labels to +1
+		 */
+		void set_to_one();
+
 		/** set confidences 
 		 * @param in_confidences confidence matrix to be used to derive the labels
 		 * @param in_num_labels number of labels

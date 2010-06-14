@@ -130,23 +130,31 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		classifier= new CLibSVMMultiClass(LIBSVM_NU_SVC);
 		SG_INFO("created SVMlibsvm object for multiclass\n") ;
 	}
-	else if (strcmp(name,"SCATTERSVM_NO_BIAS")==0)
+#ifdef USE_SVMLIGHT
+	else if (strcmp(name,"SCATTERSVM_NO_BIAS_SVMLIGHT")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CScatterSVM(NO_BIAS);
-		SG_INFO("created ScatterSVM NO BIAS object\n") ;
+		classifier= new CScatterSVM(NO_BIAS_SVMLIGHT);
+		SG_INFO("created ScatterSVM NO BIAS SVMLIGHT object\n") ;
 	}
-	else if (strcmp(name,"SCATTERSVM_RULE1")==0)
+#endif //USE_SVMLIGHT
+	else if (strcmp(name,"SCATTERSVM_NO_BIAS_LIBSVM")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CScatterSVM(NO_BIAS_LIBSVM);
+		SG_INFO("created ScatterSVM NO BIAS LIBSVM object\n") ;
+	}
+	else if (strcmp(name,"SCATTERSVM_TESTRULE1")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CScatterSVM(TEST_RULE1);
-		SG_INFO("created ScatterSVM RULE1 object\n") ;
+		SG_INFO("created ScatterSVM TESTRULE1 object\n") ;
 	}
-	else if (strcmp(name,"SCATTERSVM_RULE2")==0)
+	else if (strcmp(name,"SCATTERSVM_TESTRULE2")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CScatterSVM(TEST_RULE2);
-		SG_INFO("created ScatterSVM RULE2 object\n") ;
+		SG_INFO("created ScatterSVM TESTRULE2 object\n") ;
 	}
 	else if (strcmp(name,"LIBSVM_NU")==0)
 	{
@@ -1597,12 +1605,6 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CLibSVMMultiClass(LIBSVM_NU_SVC);
 		SG_INFO("created SVMlibsvm object for multiclass\n") ;
-	}
-	else if (strcmp(name,"SCATTERSVM_NO_BIAS")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CScatterSVM(NO_BIAS);
-		SG_INFO("created ScatterSVM NO BIAS object\n") ;
 	}
 	else if (strcmp(name,"SCATTERSVM_RULE1")==0)
 	{

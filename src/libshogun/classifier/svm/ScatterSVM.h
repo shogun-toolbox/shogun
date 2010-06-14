@@ -23,8 +23,12 @@ namespace shogun
 	/** scatter svm variant */
 	enum SCATTER_TYPE
 	{
-		/// no bias
-		NO_BIAS,
+		/// no bias w/ libsvm
+		NO_BIAS_LIBSVM,
+#ifdef USE_SVMLIGHT
+		/// no bias w/ svmlight
+		NO_BIAS_SVMLIGHT,
+#endif //USE_SVMLIGHT
 		/// training with bias using test rule 1
 		TEST_RULE1,
 		/// training with bias using test rule 2
@@ -94,6 +98,11 @@ class CScatterSVM : public CMultiClassSVM
 
 	private:
 		void compute_norm_wc();
+		virtual bool train_no_bias_libsvm(int32_t num_classes);
+#ifdef USE_SVMLIGHT
+		virtual bool train_no_bias_svmlight(int32_t num_classes);
+#endif //USE_SVMLIGHT
+		virtual bool train_testrule12(int32_t num_classes);
 
 	protected:
 		/** type of scatter SVM */

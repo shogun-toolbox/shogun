@@ -8,7 +8,11 @@
  * Written (W) 2009 Marius Kloft
  * Copyright (C) 2009 TU Berlin and Max-Planck-Society
  */
+#ifdef USE_SVMLIGHT
+#include "classifier/svm/SVM_light.h"
+#endif //USE_SVMLIGHT
 
+#include "kernel/ScatterKernelNormalizer.h"
 #include "classifier/svm/ScatterSVM.h"
 #include "lib/io.h"
 
@@ -21,7 +25,7 @@ CScatterSVM::CScatterSVM(SCATTER_TYPE type)
 }
 
 CScatterSVM::CScatterSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST, C, k, lab), scatter_type(NO_BIAS), model(NULL),
+: CMultiClassSVM(ONE_VS_REST, C, k, lab), scatter_type(NO_BIAS_LIBSVM), model(NULL),
 	norm_wc(NULL), norm_wcw(NULL), rho(0)
 {
 }
@@ -34,8 +38,6 @@ CScatterSVM::~CScatterSVM()
 
 bool CScatterSVM::train(CFeatures* data)
 {
-	struct svm_node* x_space;
-
 	ASSERT(labels && labels->get_num_labels());
 	int32_t num_classes = labels->get_num_classes();
 
@@ -46,6 +48,193 @@ bool CScatterSVM::train(CFeatures* data)
 		kernel->init(data, data);
 	}
 
+	int32_t* numc=new int32_t[num_classes];
+	CMath::fill_vector(numc, num_classes, 0);
+
+	for (int32_t i=0; i<problem.l; i++)
+		numc[(int32_t) problem.y[i]]++;
+
+	int32_t Nc=0;
+	int32_t Nmin=problem.l;
+	for (int32_t i=0; i<num_classes; i++)
+	{
+		if (numc[i]>0)
+		{
+			Nc++;
+			Nmin=CMath::min(Nmin, numc[i]);
+		}
+
+	}
+
+	float64_t nu_min=((float64_t) Nc)/problem.l;
+	float64_t nu_max=((float64_t) Nc)*Nmin/problem.l;
+
+	SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max);
+
+	if (param.nu<nu_min || param.nu>nu_max)
+		SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max);
+
+
+	if (scatter_type==NO_BIAS_LIBSVM)
+	{
+		return train_no_bias_libsvm(num_classes);
+	}
+#ifdef USE_SVMLIGHT
+	else if (scatter_type==NO_BIAS_SVMLIGHT)
+	{
+		return train_no_bias_svmlight(num_classes);
+	}
+#endif //USE_SVMLIGHT
+	else if (scatter_type==TEST_RULE1 || scatter_type==TEST_RULE2) 
+	{
+		return train_testrule12(num_classes);
+	}
+	// should never trigger
+	SG_ERROR("Unknown Scatter type\n"); 
+	return false;
+}
+
+bool CScatterSVM::train_no_bias_libsvm(int32_t num_classes)
+{
+	struct svm_node* x_space;
+
+	problem.l=labels->get_num_labels();
+	SG_INFO( "%d trainlabels\n", problem.l);
+
+	problem.y=new float64_t[problem.l];
+	problem.x=new struct svm_node*[problem.l];
+	x_space=new struct svm_node[2*problem.l];
+
+	for (int32_t i=0; i<problem.l; i++)
+	{
+		problem.y[i]=+1;
+		problem.x[i]=&x_space[2*i];
+		x_space[2*i].index=i;
+		x_space[2*i+1].index=-1;
+	}
+
+	int32_t weights_label[2]={-1,+1};
+	float64_t weights[2]={1.0,get_C2()/get_C1()};
+
+	ASSERT(kernel && kernel->has_features());
+    ASSERT(kernel->get_num_vec_lhs()==problem.l);
+
+	param.svm_type=C_SVC; // Nu MC SVM
+	param.kernel_type = LINEAR;
+	param.degree = 3;
+	param.gamma = 0;	// 1/k
+	param.coef0 = 0;
+	param.nu = get_nu(); // Nu
+	CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
+	kernel->set_normalizer(new CScatterKernelNormalizer(
+				-1, num_classes-1, labels, prev_normalizer));
+	param.kernel=kernel;
+	param.cache_size = kernel->get_cache_size();
+	param.C = 0;
+	param.eps = epsilon;
+	param.p = 0.1;
+	param.shrinking = 0;
+	param.nr_weight = 2;
+	param.weight_label = weights_label;
+	param.weight = weights;
+	param.nr_class=num_classes;
+	param.use_bias = get_bias_enabled();
+
+	const char* error_msg = svm_check_parameter(&problem,&param);
+
+	if(error_msg)
+		SG_ERROR("Error: %s\n",error_msg);
+
+	model = svm_train(&problem, &param);
+	kernel->set_normalizer(prev_normalizer);
+	SG_UNREF(prev_normalizer);
+
+	if (model)
+	{
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef));
+
+		ASSERT(model->nr_class==num_classes);
+		create_multiclass_svm(num_classes);
+
+		rho=model->rho[0];
+
+		delete[] norm_wcw;
+		norm_wcw = new float64_t[m_num_svms];
+
+		for (int32_t i=0; i<num_classes; i++)
+		{
+			int32_t num_sv=model->nSV[i];
+
+			CSVM* svm=new CSVM(num_sv);
+			svm->set_bias(model->rho[i+1]);
+			norm_wcw[i]=model->normwcw[i];
+
+
+			for (int32_t j=0; j<num_sv; j++)
+			{
+				svm->set_alpha(j, model->sv_coef[i][j]);
+				svm->set_support_vector(j, model->SV[i][j].index);
+			}
+
+			set_svm(i, svm);
+		}
+
+		delete[] problem.x;
+		delete[] problem.y;
+		delete[] x_space;
+		for (int32_t i=0; i<num_classes; i++)
+		{
+			free(model->SV[i]);
+			model->SV[i]=NULL;
+		}
+		svm_destroy_model(model);
+
+		if (scatter_type==TEST_RULE2)
+			compute_norm_wc();
+
+		model=NULL;
+		return true;
+	}
+	else
+		return false;
+}
+
+#ifdef USE_SVMLIGHT
+bool CScatterSVM::train_no_bias_svmlight(int32_t num_classes)
+{
+	CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
+	kernel->set_normalizer(new CScatterKernelNormalizer(
+				-1, num_classes-1, labels, prev_normalizer));
+	param.kernel=kernel;
+	CSVMLight* light=new CSVMLight(C1, kernel, labels);
+	light->train_one_class();
+
+	delete[] norm_wcw;
+	norm_wcw = new float64_t[m_num_svms];
+
+	for (int32_t i=0; i<num_classes; i++)
+	{
+		int32_t num_sv=model->nSV[i];
+
+		CSVM* svm=new CSVM(num_sv);
+		svm->set_bias(0);
+		//norm_wcw[i]=model->normwcw[i];
+
+		for (int32_t j=0; j<num_sv; j++)
+		{
+			svm->set_alpha(j, light->get_alpha(j));
+			svm->set_support_vector(j, light->get_support_vector(j));
+		}
+
+		set_svm(i, svm);
+	}
+	return false;
+}
+#endif //USE_SVMLIGHT
+
+bool CScatterSVM::train_testrule12(int32_t num_classes)
+{
+	struct svm_node* x_space;
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
@@ -84,32 +273,6 @@ bool CScatterSVM::train(CFeatures* data)
 	param.weight = weights;
 	param.nr_class=num_classes;
 	param.use_bias = get_bias_enabled();
-
-	int32_t* numc=new int32_t[num_classes];
-	CMath::fill_vector(numc, num_classes, 0);
-
-	for (int32_t i=0; i<problem.l; i++)
-		numc[(int32_t) problem.y[i]]++;
-
-	int32_t Nc=0;
-	int32_t Nmin=problem.l;
-	for (int32_t i=0; i<num_classes; i++)
-	{
-		if (numc[i]>0)
-		{
-			Nc++;
-			Nmin=CMath::min(Nmin, numc[i]);
-		}
-
-	}
-
-	float64_t nu_min=((float64_t) Nc)/problem.l;
-	float64_t nu_max=((float64_t) Nc)*Nmin/problem.l;
-
-	SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max);
-
-	if (param.nu<nu_min || param.nu>nu_max)
-		SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max);
 
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
@@ -157,7 +320,9 @@ bool CScatterSVM::train(CFeatures* data)
 			model->SV[i]=NULL;
 		}
 		svm_destroy_model(model);
-		compute_norm_wc();
+
+		if (scatter_type==TEST_RULE2)
+			compute_norm_wc();
 
 		model=NULL;
 		return true;

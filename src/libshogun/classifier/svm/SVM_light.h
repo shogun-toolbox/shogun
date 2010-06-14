@@ -256,6 +256,8 @@ class CSVMLight : public CSVM
    */
   virtual bool train(CFeatures* data=NULL);
 
+  virtual bool train_one_class(CFeatures* data=NULL);
+
   /** get classifier type
    *
    * @return classifier type LIGHT
