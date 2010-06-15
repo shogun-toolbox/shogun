@@ -40,6 +40,7 @@ bool CScatterSVM::train(CFeatures* data)
 {
 	ASSERT(labels && labels->get_num_labels());
 	int32_t num_classes = labels->get_num_classes();
+	int32_t num_vectors = labels->get_num_labels();
 
 	if (data)
 	{
@@ -51,11 +52,11 @@ bool CScatterSVM::train(CFeatures* data)
 	int32_t* numc=new int32_t[num_classes];
 	CMath::fill_vector(numc, num_classes, 0);
 
-	for (int32_t i=0; i<problem.l; i++)
-		numc[(int32_t) problem.y[i]]++;
+	for (int32_t i=0; i<num_vectors; i++)
+		numc[(int32_t) labels->get_int_label(i)]++;
 
 	int32_t Nc=0;
-	int32_t Nmin=problem.l;
+	int32_t Nmin=num_vectors;
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		if (numc[i]>0)
@@ -66,12 +67,12 @@ bool CScatterSVM::train(CFeatures* data)
 
 	}
 
-	float64_t nu_min=((float64_t) Nc)/problem.l;
-	float64_t nu_max=((float64_t) Nc)*Nmin/problem.l;
+	float64_t nu_min=((float64_t) Nc)/num_vectors;
+	float64_t nu_max=((float64_t) Nc)*Nmin/num_vectors;
 
 	SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max);
 
-	if (param.nu<nu_min || param.nu>nu_max)
+	if (get_nu()<nu_min || get_nu()>nu_max)
 		SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max);
 
 
