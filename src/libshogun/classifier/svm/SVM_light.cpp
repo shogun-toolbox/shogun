@@ -298,7 +298,7 @@ bool CSVMLight::train_one_class(CFeatures* data)
 	opt_precision=DEF_PRECISION;
 
 	strcpy (learn_parm->predfile, "");
-	learn_parm->biased_hyperplane= get_bias_enabled() ? 1 : 0;
+	learn_parm->biased_hyperplane=0;
 	learn_parm->sharedslack=0;
 	learn_parm->remove_inconsistent=0;
 	learn_parm->skip_final_opt_check=0;
@@ -317,6 +317,9 @@ bool CSVMLight::train_one_class(CFeatures* data)
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
 
+	ASSERT(labels);
+	int32_t num_labels=labels->get_num_labels();
+	SG_INFO("num_labels=%d\n", num_labels);
     if (!kernel)
         SG_ERROR( "SVM_light can not proceed without kernel!\n");
 
@@ -324,7 +327,7 @@ bool CSVMLight::train_one_class(CFeatures* data)
 		kernel->init(data, data);
 
 	SG_UNREF(labels);
-	labels=new CLabels(data->get_num_vectors());
+	labels=new CLabels(num_labels);
 
     if (!kernel->has_features())
         SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");

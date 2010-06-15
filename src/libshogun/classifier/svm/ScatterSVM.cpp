@@ -206,7 +206,7 @@ bool CScatterSVM::train_no_bias_svmlight(int32_t num_classes)
 	CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
 	kernel->set_normalizer(new CScatterKernelNormalizer(
 				-1, num_classes-1, labels, prev_normalizer));
-	param.kernel=kernel;
+
 	CSVMLight* light=new CSVMLight(C1, kernel, labels);
 	light->train_one_class();
 
@@ -379,7 +379,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 		output=new CLabels(num_vectors);
 		SG_REF(output);
 
-		if (scatter_type == TEST_RULE2)
+		if (scatter_type == TEST_RULE1)
 		{
 			for (int32_t i=0; i<num_vectors; i++)
 				output->set_label(i, classify_example(i));
@@ -391,6 +391,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 
 			for (int32_t i=0; i<m_num_svms; i++)
 			{
+				//SG_PRINT("svm %d\n", i);
 				ASSERT(m_svms[i]);
 				m_svms[i]->set_kernel(kernel);
 				m_svms[i]->set_labels(labels);
@@ -432,7 +433,7 @@ float64_t CScatterSVM::classify_example(int32_t num)
 	float64_t* outputs=new float64_t[m_num_svms];
 	int32_t winner=0;
 
-	if (scatter_type == TEST_RULE2)
+	if (scatter_type == TEST_RULE1)
 	{
 		for (int32_t c=0; c<m_num_svms; c++)
 			outputs[c]=m_svms[c]->get_bias()-rho;
