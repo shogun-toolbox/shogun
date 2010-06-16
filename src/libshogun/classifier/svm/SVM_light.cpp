@@ -222,7 +222,9 @@ bool CSVMLight::train(CFeatures* data)
         SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");
 
 	ASSERT(labels && labels->get_num_labels());
-	ASSERT(labels->is_two_class_labeling());
+	//ASSERT(labels->is_two_class_labeling());
+	if (!labels->is_two_class_labeling())
+		SG_WARNING("not a two class labelling - you are on your own\n");
 	ASSERT(kernel->get_num_vec_lhs()==labels->get_num_labels());
 
 	// in case of LINADD enabled kernels cleanup!
