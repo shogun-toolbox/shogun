@@ -217,17 +217,18 @@ bool CScatterSVM::train_no_bias_svmlight(int32_t* numc, int32_t num_classes)
 	light->train();
 
 	delete[] norm_wcw;
-	norm_wcw = new float64_t[m_num_svms];
+	norm_wcw = new float64_t[num_classes];
 
 	int32_t* num_svc=new int32_t[num_classes];
 	int32_t* idx_svc=new int32_t[num_classes];
 	CMath::fill_vector(numc, num_classes, 0);
 	CMath::fill_vector(idx_svc, num_classes, 0);
 
+	create_multiclass_svm(num_classes);
 	int32_t num_sv=light->get_num_support_vectors();
 
 	for (int32_t i=0; i<num_sv; i++)
-		num_svc[label->get_label(light->get_support_vector(i))]++;
+		num_svc[labels->get_int_label(light->get_support_vector(i))]++;
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CSVM* svm=new CSVM(num_svc[i]);
@@ -237,9 +238,9 @@ bool CScatterSVM::train_no_bias_svmlight(int32_t* numc, int32_t num_classes)
 
 	for (int32_t i=0; i<num_sv; i++)
 	{
-		int32_t c=label->get_label(light->get_support_vector(i));
+		int32_t c=labels->get_int_label(light->get_support_vector(i));
 		CSVM* svm=get_svm(c);
-		svm->set_alpha(idx_svc[c], light->get_alpha(j));
+		svm->set_alpha(idx_svc[c], light->get_alpha(i));
 		svm->set_support_vector(idx_svc[c], light->get_support_vector(i));
 	}
 	delete[] num_svc;

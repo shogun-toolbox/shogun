@@ -39,9 +39,8 @@ using namespace shogun;
 CSVMLightOneClass::CSVMLightOneClass(float64_t C, CKernel* k)
 : CSVMLight()
 {
-	set_C1(C);
+	set_C(C,C);
 	set_kernel(k);
-	set_tube_epsilon(eps);
 }
 
 CSVMLightOneClass::CSVMLightOneClass()
@@ -49,7 +48,7 @@ CSVMLightOneClass::CSVMLightOneClass()
 {
 }
 
-bool CSVMLight::train(CFeatures* data)
+bool CSVMLightOneClass::train(CFeatures* data)
 {
 	//certain setup params
 	mkl_converged=false;
@@ -92,7 +91,7 @@ bool CSVMLight::train(CFeatures* data)
 	SG_INFO("num_vec=%d\n", num_vec);
 
 	SG_UNREF(labels);
-	labels=new CLabels(num_labels);
+	labels=new CLabels(num_vec);
 	labels->set_to_one();
 
 	// in case of LINADD enabled kernels cleanup!
