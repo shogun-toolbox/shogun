@@ -209,8 +209,9 @@ bool CScatterSVM::train_no_bias_libsvm(int32_t* numc, int32_t num_classes)
 bool CScatterSVM::train_no_bias_svmlight(int32_t* numc, int32_t num_classes)
 {
 	CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
-	kernel->set_normalizer(new CScatterKernelNormalizer(
-				 num_classes-1, -1, labels, prev_normalizer));
+	CScatterKernelNormalizer* n=new CScatterKernelNormalizer(
+				 num_classes-1, -1, labels, prev_normalizer);
+	kernel->set_normalizer(n);
 	kernel->init_normalizer();
 
 	CSVMLightOneClass* light=new CSVMLightOneClass(C1, kernel);
@@ -221,7 +222,7 @@ bool CScatterSVM::train_no_bias_svmlight(int32_t* numc, int32_t num_classes)
 
 	int32_t* num_svc=new int32_t[num_classes];
 	int32_t* idx_svc=new int32_t[num_classes];
-	CMath::fill_vector(numc, num_classes, 0);
+	CMath::fill_vector(num_svc, num_classes, 0);
 	CMath::fill_vector(idx_svc, num_classes, 0);
 
 	create_multiclass_svm(num_classes);
@@ -234,6 +235,7 @@ bool CScatterSVM::train_no_bias_svmlight(int32_t* numc, int32_t num_classes)
 		CSVM* svm=new CSVM(num_svc[i]);
 		svm->set_bias(0);
 		set_svm(i, svm);
+		SG_INFO("SVM %d has %d SVs\n", i, num_svc[i]);
 	}
 
 	for (int32_t i=0; i<num_sv; i++)
@@ -402,6 +404,25 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 			for (int32_t i=0; i<num_vectors; i++)
 				output->set_label(i, classify_example(i));
 		}
+		else if (scatter_type == NO_BIAS_SVMLIGHT)
+		{
+			CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
+			CScatterKernelNormalizer* n=new CScatterKernelNormalizer(
+					m_num_svms-1, -1, labels, prev_normalizer);
+			SG_DEBUG("m_num_svms=%d\n", m_num_svms);
+			kernel->set_normalizer(n);
+			kernel->init_normalizer();
+
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				ASSERT(m_svms[i]);
+				m_svms[i]->set_kernel(kernel);
+				output->set_label(i, classify_example(i));
+			}
+
+			kernel->set_normalizer(prev_normalizer);
+			SG_UNREF(prev_normalizer);
+		}
 		else
 		{
 			ASSERT(num_vectors==output->get_num_labels());
@@ -484,6 +505,27 @@ float64_t CScatterSVM::classify_example(int32_t num)
 				winner=j;
 			}
 		}
+	}
+	else if (scatter_type == NO_BIAS_SVMLIGHT)
+	{
+		CKernelNormalizer* n = kernel->get_normalizer();
+		ASSERT(!strcmp(n->get_name(),"ScatterKernelNormalizer"));
+		CScatterKernelNormalizer* normalizer=(CScatterKernelNormalizer*) n;
+		normalizer->set_testing_class(0);
+		float64_t max_out=m_svms[0]->classify_example(num);
+
+		for (int32_t i=1; i<m_num_svms; i++)
+		{
+			normalizer->set_testing_class(i);
+			outputs[i]=m_svms[i]->classify_example(num);
+
+			if (outputs[i]>max_out)
+			{
+				winner=i;
+				max_out=outputs[i];
+			}
+		}
+		normalizer->set_testing_class(-1);
 	}
 	else
 	{

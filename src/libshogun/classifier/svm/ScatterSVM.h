@@ -42,6 +42,8 @@ namespace shogun
  * true multiclass SVM. Details are availabe
  * in the following technical report.
  *
+ * This code is currently experimental.
+ *
  * Robert Jenssen and Marius Kloft and Alexander Zien and S\"oren Sonnenburg and
  *           Klaus-Robert M\"{u}ller,
  * A Multi-Class Support Vector Machine Based on Scatter Criteria, TR 014-2009

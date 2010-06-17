@@ -29,6 +29,7 @@ public:
 	CScatterKernelNormalizer(float64_t const_diag, float64_t const_offdiag,
 			CLabels* labels, CKernelNormalizer* normalizer=NULL)
 	{
+		m_testing_class=-1;
 		m_const_diag=const_diag;
 		m_const_offdiag=const_offdiag;
 
@@ -62,6 +63,24 @@ public:
 		return true;
 	}
 
+	/** get testing class
+	 *
+	 * @return testing class (-1 disabled, 0...class otherwise)
+	 */
+	int32_t get_testing_class()
+	{
+		return m_testing_class;
+	}
+
+	/** set testing status
+	 *
+	 * @param c set class to test for
+	 */
+	void set_testing_class(int32_t c)
+	{
+		m_testing_class=c;
+	}
+
 	/** normalize the kernel value
 	 * @param value kernel value
 	 * @param idx_lhs index of left hand side vector
@@ -71,11 +90,19 @@ public:
 			int32_t idx_rhs)
 	{
 		value=m_normalizer->normalize(value, idx_lhs, idx_rhs);
-
 		float64_t c=m_const_offdiag;
-		if (m_labels->get_label(idx_lhs) == m_labels->get_label(idx_rhs))
-			c=m_const_diag;
 
+		if (m_testing_class>=0)
+		{
+			if (m_labels->get_label(idx_lhs) == m_testing_class)
+				c=m_const_diag;
+		}
+		else
+		{
+			if (m_labels->get_label(idx_lhs) == m_labels->get_label(idx_rhs))
+				c=m_const_diag;
+
+		}
 		return value*c;
 	}
 
@@ -117,6 +144,9 @@ protected:
 
 	/** labels **/
 	CKernelNormalizer* m_normalizer;
+
+	/** upon testing which class to test for */
+	int32_t m_testing_class;
 };
 }
 #endif
