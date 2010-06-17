@@ -1,6 +1,6 @@
 /***********************************************************************/
 /*                                                                     */
-/*   SVM_light.h                                                       */
+/*   SVMLight.h                                                        */
 /*                                                                     */
 /*   Author: Thorsten Joachims                                         */
 /*   Date: 19.07.99                                                    */
@@ -255,8 +255,6 @@ class CSVMLight : public CSVM
    * @return whether training was successful
    */
   virtual bool train(CFeatures* data=NULL);
-
-  virtual bool train_one_class(CFeatures* data=NULL);
 
   /** get classifier type
    *
@@ -650,7 +648,7 @@ protected:
 	static void* reactivate_inactive_examples_linadd_helper(void* p);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "SVM_light"; }
+	inline virtual const char* get_name() const { return "SVMLight"; }
 
 	/* interface to QP-solver */
 	float64_t *optimize_qp( QP *qp,float64_t *epsilon_crit, int32_t nx,

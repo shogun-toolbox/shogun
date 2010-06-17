@@ -64,7 +64,7 @@
 
 #ifdef USE_SVMLIGHT
 %{
- #include <shogun/classifier/svm/SVM_light.h>
+ #include <shogun/classifier/svm/SVMLight.h>
 %}
 
 %rename(SVMLight) CSVMLight;
@@ -77,12 +77,12 @@
 %ignore LEARN_PARM;
 %ignore TIMING;
 
-%include <shogun/classifier/svm/SVM_light.h>
+%include <shogun/classifier/svm/SVMLight.h>
 %{
- #include <shogun/regression/svr/SVR_light.h>
+ #include <shogun/regression/svr/SVRLight.h>
 %}
 
 %rename(SVRLight) CSVRLight;
 
-%include <shogun/regression/svr/SVR_light.h>
+%include <shogun/regression/svr/SVRLight.h>
 #endif //USE_SVMLIGHT

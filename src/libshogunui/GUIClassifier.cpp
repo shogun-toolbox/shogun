@@ -34,8 +34,9 @@
 #include <shogun/classifier/LinearClassifier.h>
 
 #ifdef USE_SVMLIGHT
-#include <shogun/classifier/svm/SVM_light.h>
-#include <shogun/regression/svr/SVR_light.h>
+#include <shogun/classifier/svm/SVMLight.h>
+#include <shogun/classifier/svm/SVMLightOneClass.h>
+#include <shogun/regression/svr/SVRLight.h>
 #endif //USE_SVMLIGHT
 
 #include <shogun/classifier/mkl/MKLClassification.h>
@@ -180,6 +181,12 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_UNREF(classifier);
 		classifier= new CSVMLight();
 		SG_INFO("created SVMLight object\n") ;
+	}
+	else if (strcmp(name,"SVMLIGHT_ONECLASS")==0)
+	{
+		SG_UNREF(classifier);
+		classifier= new CSVMLightOneClass();
+		SG_INFO("created SVMLightOneClass object\n") ;
 	}
 	else if (strcmp(name,"SVRLIGHT")==0)
 	{
@@ -1142,6 +1149,7 @@ CLabels* CGUIClassifier::classify()
 	switch (classifier->get_classifier_type())
 	{
 		case CT_LIGHT:
+		case CT_LIGHTONECLASS:
 		case CT_LIBSVM:
 		case CT_SCATTERSVM:
 		case CT_MPD:
@@ -1238,6 +1246,7 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_GNPPSVM:
 		case CT_LIBSVMMULTICLASS:
 		case CT_LIGHT:
+		case CT_LIGHTONECLASS:
 		case CT_LIBSVM:
 		case CT_MPD:
 		case CT_GPBT:
@@ -1642,6 +1651,12 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CSVMLight();
 		SG_INFO("created SVMLight object\n") ;
+	}
+	else if (strcmp(name,"SVMLIGHT_ONECLASS")==0)
+	{
+		SG_UNREF(constraint_generator);
+		constraint_generator= new CSVMLightOneClass();
+		SG_INFO("created SVMLightOneClass object\n") ;
 	}
 	else if (strcmp(name,"SVRLIGHT")==0)
 	{

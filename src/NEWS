@@ -1,13 +1,13 @@
 2010-XX-XX Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.9.4 (libshogun 8.1, libshogunui 5.1)
+	* SHOGUN Release version 0.9.4 (libshogun 9.0, libshogunui 6.0)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
-		- None
+		- Create SVMLightOneClass
 	* Bugfixes:
 		- None
 	* Cleanup and API Changes:
-		- None
+		- Renamed SVM_light/SVR_light to SVMLight etc.
 
 2010-05-31 Soeren Sonnenburg <sonne@debian.org>
 

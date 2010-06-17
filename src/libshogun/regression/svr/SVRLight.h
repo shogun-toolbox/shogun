@@ -15,7 +15,7 @@
 #include "regression/Regression.h"
 
 #ifdef USE_SVMLIGHT
-#include "classifier/svm/SVM_light.h"
+#include "classifier/svm/SVMLight.h"
 #endif //USE_SVMLIGHT
 
 #ifdef USE_SVMLIGHT
@@ -190,7 +190,7 @@ class CSVRLight: public CSVMLight
 			float64_t* maxdiff);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SVR_light"; }
+		inline virtual const char* get_name() const { return "SVRLight"; }
 
 	protected:
 		/** thread helper for update linear component linadd

@@ -98,11 +98,11 @@ class CScatterSVM : public CMultiClassSVM
 
 	private:
 		void compute_norm_wc();
-		virtual bool train_no_bias_libsvm(int32_t num_classes);
+		virtual bool train_no_bias_libsvm(int32_t* numc, int32_t num_classes);
 #ifdef USE_SVMLIGHT
-		virtual bool train_no_bias_svmlight(int32_t num_classes);
+		virtual bool train_no_bias_svmlight(int32_t* numc, int32_t num_classes);
 #endif //USE_SVMLIGHT
-		virtual bool train_testrule12(int32_t num_classes);
+		virtual bool train_testrule12(int32_t* numc, int32_t num_classes);
 
 	protected:
 		/** type of scatter SVM */

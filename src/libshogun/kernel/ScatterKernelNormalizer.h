@@ -14,6 +14,8 @@
 #include "kernel/KernelNormalizer.h"
 #include "kernel/IdentityKernelNormalizer.h"
 #include "kernel/Kernel.h"
+#include "features/Labels.h"
+#include "lib/io.h"
 
 namespace shogun
 {
@@ -30,6 +32,7 @@ public:
 		m_const_diag=const_diag;
 		m_const_offdiag=const_offdiag;
 
+		ASSERT(labels)
 		SG_REF(labels);
 		m_labels=labels;
 
@@ -37,6 +40,11 @@ public:
 			normalizer=new CIdentityKernelNormalizer();
 		SG_REF(normalizer);
 		m_normalizer=normalizer;
+
+		SG_DEBUG("Constructing ScatterKernelNormalizer with const_diag=%g"
+				" const_offdiag=%g num_labels=%d and normalizer='%s'\n",
+				const_diag, const_offdiag, labels->get_num_labels(),
+				normalizer->get_name());
 	}
 
 	/** default destructor */

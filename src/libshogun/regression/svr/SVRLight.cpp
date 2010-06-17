@@ -16,7 +16,7 @@
 #include "lib/lapack.h"
 #include "lib/Signal.h"
 #include "lib/Mathematics.h"
-#include "regression/svr/SVR_light.h"
+#include "regression/svr/SVRLight.h"
 #include "classifier/KernelMachine.h"
 #include "kernel/CombinedKernel.h"
 

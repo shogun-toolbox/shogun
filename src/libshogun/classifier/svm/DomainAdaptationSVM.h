@@ -13,7 +13,7 @@
 
 
 #include "lib/common.h"
-#include "classifier/svm/SVM_light.h"
+#include "classifier/svm/SVMLight.h"
 
 #include <stdio.h>
 
