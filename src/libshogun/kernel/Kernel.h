@@ -211,6 +211,47 @@ class CKernel : public CSGObject
 		 */
 		void get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n);
 
+
+		/**
+		 * get column j
+		 *
+		 * @return the jth column of the kernel matrix
+		 */
+		virtual std::vector<float64_t> get_kernel_col(int32_t j)
+        {
+
+            std::vector<float64_t> col = std::vector<float64_t>(num_rhs);
+            
+            for (int32_t i=0; i!=num_rhs; i++)
+            {
+                col[i] = kernel(i,j);
+            }
+
+        	return col;
+
+        }
+
+
+		/**
+		 * get row i
+		 *
+		 * @return the ith row of the kernel matrix
+		 */
+		virtual std::vector<float64_t> get_kernel_row(int32_t i)
+        {
+
+            std::vector<float64_t> row = std::vector<float64_t>(num_lhs);
+            
+            for (int32_t j=0; j!=num_lhs; j++)
+            {
+                row[j] = kernel(i,j);
+            }
+
+        	return row;
+
+        }
+
+
 		/** get kernel matrix real
 		 *
 		 * @param m dimension m of matrix
