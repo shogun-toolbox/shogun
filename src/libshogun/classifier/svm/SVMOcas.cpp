@@ -81,7 +81,9 @@ bool CSVMOcas::train(CFeatures* data)
 
 	tmp_a_buf=new float64_t[w_dim];
 	cp_value=new float64_t*[bufsize];
+	memset(cp_value, sizeof(float64_t*)*bufsize, 0);
 	cp_index=new uint32_t*[bufsize];
+	memset(cp_index, sizeof(float64_t*)*bufsize, 0);
 	cp_nz_dims=new uint32_t[bufsize];
 	cp_bias=new float64_t[bufsize];
 	memset(cp_bias, 0, sizeof(float64_t)*bufsize);
