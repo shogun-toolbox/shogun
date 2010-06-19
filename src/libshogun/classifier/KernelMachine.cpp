@@ -205,16 +205,16 @@ float64_t CKernelMachine::classify_example(int32_t num)
 
 	if (kernel->has_property(KP_LINADD) && (kernel->get_is_initialized()))
 	{
-		float64_t dist = kernel->compute_optimized(num);
-		return (dist+get_bias());
+		float64_t score = kernel->compute_optimized(num);
+		return score+get_bias();
 	}
 	else
 	{
-		float64_t dist=0;
+		float64_t score=0;
 		for(int32_t i=0; i<get_num_support_vectors(); i++)
-			dist+=kernel->kernel(get_support_vector(i), num)*get_alpha(i);
+			score+=kernel->kernel(get_support_vector(i), num)*get_alpha(i);
 
-		return (dist+get_bias());
+		return score+get_bias();
 	}
 }
 
