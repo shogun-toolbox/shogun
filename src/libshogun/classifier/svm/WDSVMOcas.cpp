@@ -203,12 +203,13 @@ bool CWDSVMOcas::train(CFeatures* data)
 	if (method == SVM_OCAS)
 		Method = 1;
 	ocas_return_value_T result = svm_ocas_solver( get_C1(), num_vec, get_epsilon(),
-			TolAbs, QPBound, bufsize, Method,
+			TolAbs, QPBound, get_max_train_time(), bufsize, Method,
 			&CWDSVMOcas::compute_W,
 			&CWDSVMOcas::update_W,
 			&CWDSVMOcas::add_new_cut,
 			&CWDSVMOcas::compute_output,
 			&CWDSVMOcas::sort,
+			&CWDSVMOcas::print,
 			this);
 
 	SG_INFO("Ocas Converged after %d iterations\n"
@@ -220,7 +221,7 @@ bool CWDSVMOcas::train(CFeatures* data)
 			"w_time: %f s\n"
 			"solver_time %f s\n"
 			"ocas_time %f s\n\n", result.nIter, result.output_time, result.sort_time,
-			result.add_time, result.w_time, result.solver_time, result.ocas_time);
+			result.add_time, result.w_time, result.qp_solver_time, result.ocas_time);
 
 	for (int32_t i=bufsize-1; i>=0; i--)
 		delete[] cuts[i];
@@ -326,7 +327,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	return NULL;
 }
 
-void CWDSVMOcas::add_new_cut(
+int CWDSVMOcas::add_new_cut(
 	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 	uint32_t nSel, void* ptr)
 {
@@ -410,11 +411,14 @@ void CWDSVMOcas::add_new_cut(
 	//
 	delete[] threads;
 	delete[] params_add;
+
+	return 0;
 }
 
-void CWDSVMOcas::sort( float64_t* vals, uint32_t* idx, uint32_t size)
+int CWDSVMOcas::sort( float64_t* vals, float64_t* data, uint32_t size)
 {
-	CMath::qsort_index(vals, idx, size);
+	CMath::qsort_index(vals, data, size);
+	return 0;
 }
 
 /*----------------------------------------------------------------------
@@ -514,7 +518,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	return NULL;
 }
 
-void CWDSVMOcas::compute_output( float64_t *output, void* ptr )
+int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 {
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	int32_t nData=o->num_vec;
@@ -573,6 +577,7 @@ void CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 	delete[] params_output;
 	delete[] val;
 	delete[] out;
+	return 0;
 }
 /*----------------------------------------------------------------------
   sq_norm_W = compute_W( alpha, nSel ) does the following:

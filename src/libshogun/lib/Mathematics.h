@@ -912,6 +912,9 @@ class CMath : public CSGObject
 		template <class T>
 			static void qsort(T* output, int32_t size)
 			{
+				if (size==1)
+					return;
+
 				if (size==2)
 				{
 					if (output[0] > output [1])
@@ -1381,6 +1384,9 @@ void* CMath::parallel_qsort_index(void* p)
 	template <class T1,class T2>
 void CMath::qsort_index(T1* output, T2* index, uint32_t size)
 {
+	if (size==1)
+		return;
+
 	if (size==2)
 	{
 		if (output[0] > output [1])

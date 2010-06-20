@@ -14,6 +14,7 @@
 
 #include "lib/common.h"
 #include "classifier/LinearClassifier.h"
+#include "classifier/svm/libocas.h"
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
@@ -147,7 +148,7 @@ class CSVMOcas : public CLinearClassifier
 		 * @param nSel nSel
 		 * @param ptr ptr
 		 */
-		static void add_new_cut(
+		static int add_new_cut(
 			float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 			uint32_t nSel, void* ptr );
 
@@ -156,15 +157,21 @@ class CSVMOcas : public CLinearClassifier
 		 * @param output output
 		 * @param ptr ptr
 		 */
-		static void compute_output( float64_t *output, void* ptr );
+		static int compute_output( float64_t *output, void* ptr );
 
 		/** sort
 		 *
 		 * @param vals vals
-		 * @param idx idx
+		 * @param data data
 		 * @param size size
 		 */
-		static void sort( float64_t* vals, uint32_t* idx, uint32_t size);
+		static int sort( float64_t* vals, float64_t* data, uint32_t size);
+
+		/** print nothing */
+		static inline void print(ocas_return_value_T value)
+		{
+			  return;
+		}
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SVMOcas"; }

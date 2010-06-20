@@ -15,7 +15,6 @@
 #include "base/Parallel.h"
 #include "classifier/LinearClassifier.h"
 #include "classifier/svm/SVMOcas.h"
-#include "classifier/svm/libocas.h"
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
@@ -94,12 +93,13 @@ bool CSVMOcas::train(CFeatures* data)
 	if (method == SVM_OCAS)
 		Method = 1;
 	ocas_return_value_T result = svm_ocas_solver( get_C1(), num_vec, get_epsilon(),
-			TolAbs, QPBound, bufsize, Method, 
+			TolAbs, QPBound, get_max_train_time(), bufsize, Method, 
 			&CSVMOcas::compute_W,
 			&CSVMOcas::update_W, 
 			&CSVMOcas::add_new_cut, 
 			&CSVMOcas::compute_output,
 			&CSVMOcas::sort,
+			&CSVMOcas::print,
 			this);
 
 	SG_INFO("Ocas Converged after %d iterations\n"
@@ -111,7 +111,7 @@ bool CSVMOcas::train(CFeatures* data)
 			"w_time: %f s\n"
 			"solver_time %f s\n"
 			"ocas_time %f s\n\n", result.nIter, result.output_time, result.sort_time,
-			result.add_time, result.w_time, result.solver_time, result.ocas_time);
+			result.add_time, result.w_time, result.qp_solver_time, result.ocas_time);
 
 	delete[] tmp_a_buf;
 
@@ -175,7 +175,7 @@ float64_t CSVMOcas::update_W( float64_t t, void* ptr )
     sparse_A(:,nSel+1) = new_a;
 
   ---------------------------------------------------------------------------------*/
-void CSVMOcas::add_new_cut(
+int CSVMOcas::add_new_cut(
 	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 	uint32_t nSel, void* ptr)
 {
@@ -245,11 +245,13 @@ void CSVMOcas::add_new_cut(
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
 	//CMath::display_vector((int32_t*) c_idx[nSel], (int32_t) nz_dims, "c_idx");
 	//CMath::display_vector((float64_t*) c_val[nSel], nz_dims, "c_val");
+	return 0;
 }
 
-void CSVMOcas::sort(float64_t* vals, uint32_t* idx, uint32_t size)
+int CSVMOcas::sort(float64_t* vals, float64_t* data, uint32_t size)
 {
-	CMath::qsort_index(vals, idx, size);
+	CMath::qsort_index(vals, data, size);
+	return 0;
 }
 
 /*----------------------------------------------------------------------
@@ -257,7 +259,7 @@ void CSVMOcas::sort(float64_t* vals, uint32_t* idx, uint32_t size)
 
   output = data_X'*W;
   ----------------------------------------------------------------------*/
-void CSVMOcas::compute_output(float64_t *output, void* ptr)
+int CSVMOcas::compute_output(float64_t *output, void* ptr)
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	CDotFeatures* f=o->features;
@@ -271,6 +273,7 @@ void CSVMOcas::compute_output(float64_t *output, void* ptr)
 		output[i]+=y[i]*o->bias;
 	//CMath::display_vector(o->w, o->w_dim, "w");
 	//CMath::display_vector(output, nData, "out");
+	return 0;
 }
 
 /*----------------------------------------------------------------------
