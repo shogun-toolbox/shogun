@@ -28,6 +28,7 @@
 %include "SGBase.i"
 %{
 #include <shogun/distance/Distance.h>
+#include <shogun/distance/CustomDistance.h>
 #include <shogun/distance/KernelDistance.h>
 #include <shogun/distance/SimpleDistance.h>
 #include <shogun/distance/SparseDistance.h>
@@ -55,6 +56,7 @@
 
 /* Remove C Prefix */
 %rename(Distance) CDistance;
+%rename(CustomDistance) CCustomDistance;
 %rename(KernelDistance) CKernelDistance;
 %rename(RealDistance) CRealDistance;
 %rename(CanberraMetric) CCanberraMetric;
@@ -75,6 +77,7 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distance/Distance.h>
+%include <shogun/distance/CustomDistance.h>
 %include <shogun/distance/KernelDistance.h>
 
 /* Templates Class SimpleDistance*/
