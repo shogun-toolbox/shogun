@@ -106,8 +106,8 @@ libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
   uint32_t *inx;
   uint32_t *nk;
   uint32_t m;
-  uint32_t u=0;
-  uint32_t v=0;
+  int32_t u=0;
+  int32_t v=0;
   uint32_t k;
   uint32_t i, j;
   libqp_state_T state;
