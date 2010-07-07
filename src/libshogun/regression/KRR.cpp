@@ -65,7 +65,14 @@ bool CKRR::train(CFeatures* data)
 	// Get labels
 	int32_t numlabels=0;
 	alpha=labels->get_labels(numlabels);
-	ASSERT(alpha && numlabels==n);
+	if (!alpha)
+		SG_ERROR("No labels set\n");
+
+	if (numlabels!=n)
+	{
+		SG_ERROR("Number of labels does not match number of kernel"
+				" columns (num_labels=%d cols=%d\n", numlabels, n);
+	}
 
 	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, K, n, alpha, n);
 
