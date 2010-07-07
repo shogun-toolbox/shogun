@@ -78,8 +78,10 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 		SG_INFO("No compatible datatype found\n");									\
 	}																				\
 	get_dims(dataset, dims, ndims, nelements);										\
-	if (ndims!=1 || dims[0]!=nelements)												\
-		SG_ERROR("Error not a 1-dimensional vector\n");								\
+	if (!((ndims==2 && dims[0]==nelements && dims[1]==1) ||							\
+			(ndims==2 && dims[0]==1 && dims[1]==nelements) ||						\
+			(ndims==1 && dims[0]==nelements)))										\
+		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0]);	\
 	vec=new sg_type[nelements];														\
 	len=nelements;																	\
 	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
