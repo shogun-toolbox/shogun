@@ -80,6 +80,15 @@ $(PARTDEPS): Makefile.template
 	@+$(foreach part, $(PARTS), cat Makefile.template | sed 's/template/$(part)/g' | \
 		sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >$(part)/Makefile; )
 
+linecount:
+	@echo -n "C/C++ source code files (.cpp,.c):"
+	@cat `find ./ -type f -name '*.cpp' -o -name '*.c'`  | grep -vc '^ *$$'
+	@echo -n "C/C++ header files (.h):"
+	@cat `find ./ -type f -name '*.h'`  | grep -vc '^ *$$'
+	@echo -n "SWIG header files (.i):"
+	@cat `find ./modular -type f -name '*.i'`  | grep -vc '^ *$$'
+	@echo -n "Total:"
+	@(cat `find ./ -type f -name '*.cpp' -o -name '*.c' -o -name '*.h'`; cat `find ./modular -type f -o -name '*.i'`)  | grep -vc '^ *$$'
 
 ChangeLog:
 	@if [ -n "`which svn2cl`" ]; then \
