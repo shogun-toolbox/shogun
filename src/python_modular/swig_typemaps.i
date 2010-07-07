@@ -74,18 +74,18 @@ enum NPY_TYPES {    NPY_BOOL=0,
  */
 
 const char* typecode_string(int typecode) {
-  const char* type_names[24] = {"bool","byte","unsigned byte","short",
-			  "unsigned short","int","unsigned int","long",
-              "unsigned long","long long", "unsigned long long",
-			  "float","double","long double",
-              "complex float","complex double","complex long double",
-			  "object","string","unicode","void","ntype","notype","char"};
-  const char* user_def="user defined";
+    const char* type_names[24] = {"bool","byte","unsigned byte","short",
+        "unsigned short","int","unsigned int","long",
+        "unsigned long","long long", "unsigned long long",
+        "float","double","long double",
+        "complex float","complex double","complex long double",
+        "object","string","unicode","void","ntype","notype","char"};
+    const char* user_def="user defined";
 
-  if (typecode>24)
-      return user_def;
-  else
-      return type_names[typecode];
+    if (typecode>24)
+        return user_def;
+    else
+        return type_names[typecode];
 }
 
 /* Make sure input has correct numeric type.  Allow character and byte
@@ -705,7 +705,12 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_ARGOUT2
 
 /* Type mapping for grabbing a FILE * from Python */
-%typemap(in) FILE * {
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) ( FILE* ) {
+    $1=0;
+    if (PyFile_Check($input))
+        $1=1;
+}
+%typemap(in) FILE* {
     if (!PyFile_Check($input)) {
         PyErr_SetString(PyExc_TypeError, "Need a file!");
         return NULL;

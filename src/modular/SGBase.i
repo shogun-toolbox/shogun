@@ -73,13 +73,15 @@
 %feature("unref") CSGObject "SG_UNREF($this);"
 
 %include <shogun/lib/common.h>
+
+%include "swig_typemaps.i"
+
 %include <shogun/lib/ShogunException.h>
 %include <shogun/lib/io.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
 
-%include "swig_typemaps.i"
 
 
 %include stl.i
