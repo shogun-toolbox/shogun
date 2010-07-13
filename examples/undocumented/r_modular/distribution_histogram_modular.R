@@ -36,5 +36,5 @@ num_param <- histo$get_num_model_parameters()
 #		derivs[j,i]=histo$get_log_derivative(histo, j, i)
 #	}
 #}
-dump <- histo$get_log_likelihood(histo, as.integer(0))
+dump <- histo$get_log_likelihood(histo)
 dump <- histo$get_log_likelihood_sample()

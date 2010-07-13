@@ -30,7 +30,7 @@ dump <- feats_test$apply_preproc(feats_test)
 use_sign <- FALSE
 
 kernel <- WeightedCommWordStringKernel(feats_train, feats_train, use_sign)
-
 km_train <- kernel$get_kernel_matrix()
-dump <- kernel$init(kernel, feats_train, feats_test)
+
+kernel <- WeightedCommWordStringKernel(feats_train, feats_test, use_sign)
 km_test <- kernel$get_kernel_matrix()

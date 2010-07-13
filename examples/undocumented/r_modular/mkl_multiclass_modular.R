@@ -1,8 +1,8 @@
 library(shogun)
 
-fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
-fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
-label_train_multiclass <- as.real(read.table('../data/label_train_multiclass.dat'))
+fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
+fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
+label_train_multiclass <- as.real(as.matrix(read.table('../data/label_train_multiclass.dat')))
 
 # MKLMultiClass
 print('MKLMultiClass')
@@ -25,7 +25,7 @@ feats_test <- CombinedFeatures()
 
 subkfeats_train <- RealFeatures(fm_train_real)
 subkfeats_test <- RealFeatures(fm_test_real)
-subkernel <- LinearKernel(as.integer(10))
+subkernel <- LinearKernel()
 dump <- feats_train$append_feature_obj(feats_train, subkfeats_train)
 dump <- feats_test$append_feature_obj(feats_test, subkfeats_test)
 dump <- kernel$append_kernel(kernel, subkernel)
@@ -53,7 +53,7 @@ svm <- MKLMultiClass(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$set_mkl_epsilon(svm,mkl_eps)
-dump <- svm$set_mkl_norm(1.5)
+#dump <- svm$set_mkl_norm(1.5)
 dump <- svm$train(svm)
 
 dump <- kernel$init(kernel, feats_train, feats_test)

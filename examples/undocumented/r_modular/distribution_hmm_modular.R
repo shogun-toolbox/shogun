@@ -51,5 +51,5 @@ for (i in 0:(num_examples-1))
 	}
 }
 
-dump <- hmm$get_log_likelihood(hmm, as.integer(0))
+dump <- hmm$get_log_likelihood(hmm)
 dump <- hmm$get_log_likelihood_sample()

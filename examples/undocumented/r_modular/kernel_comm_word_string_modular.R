@@ -32,5 +32,6 @@ use_sign <- FALSE
 kernel <- CommWordStringKernel(feats_train, feats_train, use_sign)
 
 km_train <- kernel$get_kernel_matrix()
-dump <- kernel$init(kernel, feats_train, feats_test)
+
+kernel <- CommWordStringKernel(feats_train, feats_test, use_sign)
 km_test <- kernel$get_kernel_matrix()
