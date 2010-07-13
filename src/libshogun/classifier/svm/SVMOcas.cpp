@@ -117,9 +117,12 @@ bool CSVMOcas::train(CFeatures* data)
 
 	uint32_t num_cut_planes = result.nCutPlanes;
 
+	SG_DEBUG("num_cut_planes=%d\n", num_cut_planes);
 	for (uint32_t i=0; i<num_cut_planes; i++)
 	{
+		SG_DEBUG("cp_value[%d]=%p\n", i, cp_value);
 		delete[] cp_value[i];
+		SG_DEBUG("cp_index[%d]=%p\n", i, cp_index);
 		delete[] cp_index[i];
 	}
 
@@ -216,6 +219,9 @@ int CSVMOcas::add_new_cut(
 
 	/* sparsify new_a and insert it to the last column of sparse_A */
 	c_nzd[nSel] = nz_dims;
+	c_idx[nSel]=NULL;
+	c_val[nSel]=NULL;
+
 	if(nz_dims > 0)
 	{
 		c_idx[nSel]=new uint32_t[nz_dims];
