@@ -2627,6 +2627,8 @@ CKernel* CSGInterface::create_kernel()
 	{
 		if (m_nrhs<4)
 			return NULL;
+		if (m_nrhs>5)
+			return NULL;
 
 		char* dtype=get_str_from_str_or_direct(len);
 		int32_t size=get_int_from_int_or_str();
