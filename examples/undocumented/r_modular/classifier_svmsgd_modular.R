@@ -1,8 +1,8 @@
 library(shogun)
 
-fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
-fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
-label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat'))
+fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
+fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
+label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat')$V1)
 
 # sgd
 print('SVMSGD')
@@ -20,7 +20,7 @@ labels <- Labels(label_train_twoclass)
 
 svm <- SVMSGD(C, feats_train, labels)
 #dump <- svm$io$set_loglevel(svm$io, 0)
-dump <- svm$set_epochs(num_iter)
+#dump <- svm$set_epochs(num_iter)
 dump <- svm$train(svm)
 
 dump <- svm$set_features(svm, feats_test)
