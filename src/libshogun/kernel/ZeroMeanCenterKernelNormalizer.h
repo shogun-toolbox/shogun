@@ -42,50 +42,50 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** default constructor
-		 */
+		*/
 		CZeroMeanCenterKernelNormalizer(): ktrain_row_means(NULL), ktest_row_means(NULL)
-		{
-		}
+	{
+	}
 
 		/** default destructor */
 		virtual ~CZeroMeanCenterKernelNormalizer()
 		{
-        		delete[] ktrain_row_means;
-		        delete[] ktest_row_means;    
+			delete[] ktrain_row_means;
+			delete[] ktest_row_means;    
 		}
 
 		/** initialization of the normalizer 
-         	* @param k kernel */
+		 * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
 			ASSERT(k);
 			int32_t num_lhs=k->get_num_vec_lhs();
-           		int32_t num_rhs=k->get_num_vec_rhs();
+			int32_t num_rhs=k->get_num_vec_rhs();
 			ASSERT(num_lhs>0);
-            		ASSERT(num_rhs>0);
+			ASSERT(num_rhs>0);
 
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;
-            
-            		/* compute mean for each row of the train matrix*/
-            		k->lhs=old_lhs;
+
+			/* compute mean for each row of the train matrix*/
+			k->lhs=old_lhs;
 			k->rhs=old_lhs;
 
-            		bool r1=alloc_and_compute_row_means(k, ktrain_row_means, num_lhs,num_lhs);
-           
-		        /* compute mean for each row of the test matrix */
+			bool r1=alloc_and_compute_row_means(k, ktrain_row_means, num_lhs,num_lhs);
+
+			/* compute mean for each row of the test matrix */
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
 
-		        bool r2=alloc_and_compute_row_means(k, ktest_row_means, num_lhs,num_rhs);
-            
+			bool r2=alloc_and_compute_row_means(k, ktest_row_means, num_lhs,num_rhs);
+
 			/* compute train kernel matrix mean */
-	                ktrain_mean=0;
-            		for (int32_t i=0;i<num_lhs;i++)
-              		    ktrain_mean += (ktrain_row_means[i]/num_lhs);
-            
-            		k->lhs=old_lhs;
-            		k->rhs=old_rhs;
+			ktrain_mean=0;
+			for (int32_t i=0;i<num_lhs;i++)
+				ktrain_mean += (ktrain_row_means[i]/num_lhs);
+
+			k->lhs=old_lhs;
+			k->rhs=old_rhs;
 
 			return r1 && r2;
 		}
@@ -96,10 +96,10 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		inline virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
-	    	{
+				float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+		{
 			value += (-ktrain_row_means[idx_lhs] - ktest_row_means[idx_rhs] + ktrain_mean);
-        	    return value;
+			return value;
 		}
 
 		/** normalize only the left hand side vector
@@ -109,7 +109,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
 			SG_ERROR("normalize_lhs not implemented");
-		    return 0;
+			return 0;
 		}
 
 		/** normalize only the right hand side vector
@@ -119,13 +119,12 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
 			SG_ERROR("normalize_rhs not implemented");
-		    return 0;
+			return 0;
 		}
 
-
-	        /**
+		/**
 		 * alloc and compute the vector containing the row margins of all rows
-        	 * for a kernel matrix.
+		 * for a kernel matrix.
 		 */
 		bool alloc_and_compute_row_means(CKernel* k, float64_t* &v, int32_t num_lhs, int32_t num_rhs)
 		{
@@ -133,21 +132,21 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 			v=new float64_t[num_rhs];
 
 			for (int32_t i=0; i<num_rhs; i++)
-        		{
-                		v[i]=0;
-                		for (int32_t j=0; j<num_lhs; j++)
-                		    v[i] += ( k->compute(j,i)/num_lhs );
-            		}
+			{
+				v[i]=0;
+				for (int32_t j=0; j<num_lhs; j++)
+					v[i] += ( k->compute(j,i)/num_lhs );
+			}
 			return (v!=NULL);
 		}
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "ZeroMeanCenterKernelNormalizer"; }
 
-    protected:
+	protected:
 		float64_t *ktrain_row_means;
 		float64_t *ktest_row_means;
-        	float64_t ktrain_mean;
+		float64_t ktrain_mean;
 };
 }
 #endif
