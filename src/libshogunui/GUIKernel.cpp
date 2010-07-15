@@ -60,6 +60,7 @@
 #include <shogun/kernel/VarianceKernelNormalizer.h>
 #include <shogun/kernel/ScatterKernelNormalizer.h>
 #include <shogun/classifier/svm/SVM.h>
+#include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
 
 #include <string.h>
 
@@ -675,12 +676,17 @@ bool CGUIKernel::set_normalization(char* normalization, float64_t c, float64_t r
 		SG_INFO("Variance Normalization selected\n");
 		return k->set_normalizer(new CVarianceKernelNormalizer());
 	}
-	else if (strncmp(normalization,"SCATTER", 7)==0)
+   	else if (strncmp(normalization,"SCATTER", 7)==0)
 	{
 		SG_INFO("Scatter Normalization selected\n");
 		CLabels* train_labels=ui->ui_labels->get_train_labels();
 		ASSERT(train_labels);
 		return k->set_normalizer(new CScatterKernelNormalizer(c,r, train_labels));
+	}
+	else if (strncmp(normalization,"ZEROMEANCENTER", 13)==0)
+	{
+		SG_INFO("Zero Mean Center Normalization selected\n");
+		return k->set_normalizer(new CZeroMeanCenterKernelNormalizer());
 	}
 	else
 		SG_ERROR("Wrong kernel normalizer name.\n");

@@ -160,7 +160,7 @@ class CKernel : public CSGObject
 	friend class CMultitaskKernelMaskPairNormalizer;
 	friend class CTanimotoKernelNormalizer;
 	friend class CDiceKernelNormalizer;
-
+    	friend class CZeroMeanCenterKernelNormalizer;
 	public:
 
 		/** default constructor

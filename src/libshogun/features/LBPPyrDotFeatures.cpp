@@ -177,14 +177,14 @@ float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
       {
         pattern = 0;
         center = img[LIBLBP_INDEX(y,x,img_nRows)];
-        if(img[LIBLBP_INDEX(y-1,x-1,img_nRows)] < center) pattern |= 0x01;
-        if(img[LIBLBP_INDEX(y-1,x,img_nRows)] < center)   pattern |= 0x02;
-        if(img[LIBLBP_INDEX(y-1,x+1,img_nRows)] < center) pattern |= 0x04;
-        if(img[LIBLBP_INDEX(y,x-1,img_nRows)] < center)   pattern |= 0x08;
-        if(img[LIBLBP_INDEX(y,x+1,img_nRows)] < center)   pattern |= 0x10;
-        if(img[LIBLBP_INDEX(y+1,x-1,img_nRows)] < center) pattern |= 0x20;
-        if(img[LIBLBP_INDEX(y+1,x,img_nRows)] < center)   pattern |= 0x40;
-        if(img[LIBLBP_INDEX(y+1,x+1,img_nRows)] < center) pattern |= 0x80;
+        if (img[LIBLBP_INDEX(y-1,x-1,img_nRows)] < center) pattern |= 0x01;
+        if (img[LIBLBP_INDEX(y-1,x,img_nRows)] < center)   pattern |= 0x02;
+        if (img[LIBLBP_INDEX(y-1,x+1,img_nRows)] < center) pattern |= 0x04;
+        if (img[LIBLBP_INDEX(y,x-1,img_nRows)] < center)   pattern |= 0x08;
+        if (img[LIBLBP_INDEX(y,x+1,img_nRows)] < center)   pattern |= 0x10;
+        if (img[LIBLBP_INDEX(y+1,x-1,img_nRows)] < center) pattern |= 0x20;
+        if (img[LIBLBP_INDEX(y+1,x,img_nRows)] < center)   pattern |= 0x40;
+        if (img[LIBLBP_INDEX(y+1,x+1,img_nRows)] < center) pattern |= 0x80;
 
         dot_prod += vec2[offset+pattern];
         offset += 256; 
