@@ -65,8 +65,8 @@ bool CSVMOcas::train(CFeatures* data)
 	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
-	ASSERT(num_vec>0);
+	if (num_vec!=num_train_labels || num_vec<=0)
+		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, num_train_labels);
 
 	delete[] w;
 	w=new float64_t[w_dim];
