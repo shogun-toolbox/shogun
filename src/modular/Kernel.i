@@ -87,6 +87,7 @@
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
 #include <shogun/kernel/WeightedDegreeRBFKernel.h>
+#include <shogun/kernel/SpectrumMismatchRBFKernel.h>
 #include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
 %}
 
@@ -169,6 +170,7 @@
 %rename(WeightedDegreePositionStringKernel) CWeightedDegreePositionStringKernel;
 %rename(WeightedDegreeStringKernel) CWeightedDegreeStringKernel;
 %rename(WeightedDegreeRBFKernel) CWeightedDegreeRBFKernel;
+%rename(SpectrumMismatchRBFKernel) CSpectrumMismatchRBFKernel;
 %rename(ZeroMeanCenterKernelNormalizer) CZeroMeanCenterKernelNormalizer;
 
 /* Include Class Headers to make them visible from within the target language */
@@ -298,6 +300,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 %include <shogun/kernel/WeightedDegreeStringKernel.h>
 %include <shogun/kernel/WeightedDegreeRBFKernel.h>
+%include <shogun/kernel/SpectrumMismatchRBFKernel.h>
 %include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
 
 %include std_vector.i
