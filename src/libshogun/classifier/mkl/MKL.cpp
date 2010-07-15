@@ -291,13 +291,17 @@ bool CMKL::train(CFeatures* data)
 		//but if we don't actually unref() the object we might leak memory...
 		//So as a workaround we only unref when the reference count was >1
 		//before.
+#ifdef USE_REFERENCE_COUNTING
 		int32_t refs=this->ref();
+#endif
 		svm->set_callback_function(this, perform_mkl_step_helper);
 		svm->train();
 		SG_DONE();
 		svm->set_callback_function(NULL, NULL);
+#ifdef USE_REFERENCE_COUNTING
 		if (refs>1)
 			this->unref();
+#endif
 	}
 	else
 	{
