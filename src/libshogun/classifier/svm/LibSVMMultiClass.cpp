@@ -91,7 +91,11 @@ bool CLibSVMMultiClass::train(CFeatures* data)
 
 	if (model)
 	{
-		ASSERT(model->nr_class==num_classes);
+		if (model->nr_class!=num_classes)
+		{
+			SG_ERROR("LibSVM model->nr_class=%d while num_classes=%d\n",
+					model->nr_class, num_classes);
+		}
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef));
 		create_multiclass_svm(num_classes);
 
