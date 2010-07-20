@@ -9,9 +9,12 @@ def weighted_degree_string ():
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
-	#weights=arange(1,degree+1,dtype=double)[::-1]/ \
-	#	sum(arange(1,degree+1,dtype=double))
-	#kernel.set_wd_weights(weights)
+	from numpy import arange,double
+	weights=arange(1,degree+1,dtype=double)[::-1]/ \
+		sum(arange(1,degree+1,dtype=double))
+	kernel.set_wd_weights(weights)
+	#from numpy import ones,float64,int32
+	#kernel.set_position_weights(ones(len(fm_train_dna[0]), dtype=float64))
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)

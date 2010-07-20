@@ -9,7 +9,9 @@ def weighted_degree_position_string ():
 
 	kernel=WeightedDegreePositionStringKernel(feats_train, feats_train, degree)
 
-	#kernel.set_shifts(zeros(len(data['train'][0]), dtype=int))
+	#from numpy import zeros,ones,float64,int32
+	#kernel.set_shifts(zeros(len(fm_train_dna[0]), dtype=int32))
+	#kernel.set_position_weights(ones(len(fm_train_dna[0]), dtype=float64))
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
