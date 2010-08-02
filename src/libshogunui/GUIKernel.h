@@ -116,7 +116,7 @@ class CGUIKernel : public CSGObject
 	/** create a new WeightedDegreeRBF kernel */
 	CKernel* create_weighteddegreerbf(int32_t size=10, int32_t degree=1, int32_t nof_properties=1, float64_t width=1);
 	/** create a new SpectrumMismatchRBF kernel*/
-	CKernel* create_spectrummismatchrbf(int32_t size=10, float64_t* AA_matrix = NULL, int32_t max_mismatch=1, int32_t degree=1, float64_t width=1);
+	CKernel* create_spectrummismatchrbf(int32_t size=10, float64_t* AA_matrix = NULL, int32_t nr=128, int32_t nc=128, int32_t max_mismatch=1, int32_t degree=1, float64_t width=1);
 	/** create a new LocalAlignmentString kernel */
 	CKernel* create_localalignmentstring(int32_t size=10);
 	/** create a new FixedDegreeString kernel */

@@ -40,7 +40,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		 * @param 
 		 * @param degree degree
 		 */
-		CSpectrumMismatchRBFKernel(int32_t size, float64_t* AA_matrix, int32_t degree, int32_t max_mismatch, float64_t width);
+		CSpectrumMismatchRBFKernel(int32_t size, float64_t* AA_matrix_, int32_t nr_, int32_t nc_, int32_t degree, int32_t max_mismatch, float64_t width);
 
 		/** constructor
 		 *
@@ -49,7 +49,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		 * @param degree degree
 		 */
 		CSpectrumMismatchRBFKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix, int32_t degree, int32_t max_mismatch, float64_t width);
+                                   CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_, int32_t nr_, int32_t nc_, int32_t degree, int32_t max_mismatch, float64_t width);
 
 		virtual ~CSpectrumMismatchRBFKernel();
 
@@ -121,7 +121,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		inline int32_t get_degree() { return degree; }
 
 
-		bool set_AA_matrix(float64_t* AA_matrix_);
+		bool set_AA_matrix(float64_t* AA_matrix_=NULL, int32_t nr=128, int32_t nc=128);
 
 	protected:
 
@@ -160,7 +160,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		/** maximum mismatch */
 		int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
-		double* AA_matrix ; 
+		double* AA_matrix;
 		/** width of Gaussian*/
 		double width;
 
@@ -173,7 +173,5 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 };
 
 }
-
-
 
 #endif /* _SPECTRUMMISMATCHRBFKERNEL_H__ */

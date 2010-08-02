@@ -93,6 +93,7 @@
 
 /* Typemaps */
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* m, int32_t* n)};
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* AA_matrix_, int32_t nr_, int32_t nc_)};
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(const float64_t* km, int32_t rows, int32_t cols)};
 %apply (float32_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(const float32_t* km, int32_t rows, int32_t cols)};
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(const float64_t* km, int32_t len)};

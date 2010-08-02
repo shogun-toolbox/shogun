@@ -31,50 +31,30 @@
 #include <pthread.h>
 #endif
 
-
 using namespace shogun;
 
-/*
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct S_THREAD_PARAM
-{
-
-	int32_t* vec;
-	float64_t* result;
-	float64_t* weights;
-	CSpectrumMismatchRBFKernel* kernel;
-	CTrie<DNATrie>* tries;
-	float64_t factor;
-	int32_t j;
-	int32_t start;
-	int32_t end;
-	int32_t length;
-	int32_t* vec_idx;
-};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-*/
-		
-CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel (
-	int32_t size, float64_t *AA_matrix_, int32_t degree_, int32_t max_mismatch_, float64_t width_)
-: CStringKernel<char>(size), alphabet(NULL), degree(degree_), max_mismatch(max_mismatch_), width(width_)
+CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel (int32_t size,
+		float64_t* AA_matrix_, int32_t nr, int32_t nc,
+		int32_t degree_, int32_t max_mismatch_, float64_t width_) : CStringKernel<char>(size),
+	alphabet(NULL), degree(degree_), max_mismatch(max_mismatch_), width(width_)
 {
 	lhs=NULL;
 	rhs=NULL;
 
 	target_letter_0=-1 ;
 
-	AA_matrix=new float64_t[128*128];
-	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
+	AA_matrix=NULL;
+	set_AA_matrix(AA_matrix_, nr, nc);
 }
 
 CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_, int32_t degree_, int32_t max_mismatch_, float64_t width_)
+                                                       CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_, int32_t nr, int32_t nc, int32_t degree_, int32_t max_mismatch_, float64_t width_)
 : CStringKernel<char>(size), alphabet(NULL), degree(degree_), max_mismatch(max_mismatch_), width(width_)
 {
 	target_letter_0=-1 ;
 
-	AA_matrix=new float64_t[128*128];
-	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
+	AA_matrix=NULL;
+	set_AA_matrix(AA_matrix_, nr, nc);
 	init(l, r);
 }
 
@@ -421,12 +401,15 @@ bool CSpectrumMismatchRBFKernel::set_weights(
 }
 */
 
-bool CSpectrumMismatchRBFKernel::set_AA_matrix(
-	float64_t* AA_matrix_)
+bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_, int32_t nr, int32_t nc)
 {
-
 	if (AA_matrix_)
 	{
+		if (nr!=128 || nc!=128)
+			SG_ERROR("AA_matrix should be of shape 128x128\n");
+		delete[] AA_matrix;
+		AA_matrix=new float64_t[nc*nr];
+		memcpy(AA_matrix, AA_matrix_, nc*nr*sizeof(float64_t)) ;
 		SG_DEBUG("Setting AA_matrix\n") ;
 		memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 		return true ;

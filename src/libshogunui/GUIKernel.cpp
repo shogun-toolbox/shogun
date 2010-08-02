@@ -387,10 +387,10 @@ CKernel* CGUIKernel::create_weighteddegreerbf(int32_t size, int32_t degree, int3
 	return kern;
 }
 
-CKernel* CGUIKernel::create_spectrummismatchrbf(int32_t size, float64_t* AA_matrix, int32_t max_mismatch, int32_t degree, float64_t width)
+CKernel* CGUIKernel::create_spectrummismatchrbf(int32_t size, float64_t* AA_matrix, int32_t nr, int32_t nc, int32_t max_mismatch, int32_t degree, float64_t width)
 {
 
-	CKernel* kern = new CSpectrumMismatchRBFKernel(size, AA_matrix, degree, max_mismatch, width);
+  CKernel* kern = new CSpectrumMismatchRBFKernel(size, AA_matrix, nr, nc, degree, max_mismatch, width);
 	if (!kern)
 		SG_ERROR("Couldn't create SpectrumMismatchRBFKernel with size %d, width %f, degree %d, max_mismatch %d.\n", size, width, degree, max_mismatch);
 	else
