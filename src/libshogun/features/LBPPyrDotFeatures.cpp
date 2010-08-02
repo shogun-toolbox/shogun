@@ -156,67 +156,62 @@ float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 	//bool do_free;
 	//uint32_t* vec=m_feat->get_feature_vector(i, vlen, vfree);
 
-	float64_t result=0;
+	//double CLBPPyrDotFeatures::liblbp_pyr_dotprod(double *vec, uint32_t vec_nDim, uint32_t *img, uint16_t img_nRows, uint16_t img_nCols)
+	//{
+	double dot_prod = 0;
+	int32_t offset=0;
+	int32_t ww, hh, center, x, y, j;
+	uint8_t pattern;
 
-//double CLBPPyrDotFeatures::liblbp_pyr_dotprod(double *vec, uint32_t vec_nDim, uint32_t *img, uint16_t img_nRows, uint16_t img_nCols)
-//{
-  double dot_prod = 0;
-  int32_t offset=0;
-  int32_t ww, hh, center, x, y, j;
-  uint8_t pattern;
-  
-/*  ww=win_W;*/
-/*  hh=win_H;*/
-  ww=img_nCols;
-  hh=img_nRows;
-  while(1)
-  {
-    for(x=1; x < ww-1; x++)
-    {
-      for(y=1; y< hh-1; y++)
-      {
-        pattern = 0;
-        center = img[LIBLBP_INDEX(y,x,img_nRows)];
-        if (img[LIBLBP_INDEX(y-1,x-1,img_nRows)] < center) pattern |= 0x01;
-        if (img[LIBLBP_INDEX(y-1,x,img_nRows)] < center)   pattern |= 0x02;
-        if (img[LIBLBP_INDEX(y-1,x+1,img_nRows)] < center) pattern |= 0x04;
-        if (img[LIBLBP_INDEX(y,x-1,img_nRows)] < center)   pattern |= 0x08;
-        if (img[LIBLBP_INDEX(y,x+1,img_nRows)] < center)   pattern |= 0x10;
-        if (img[LIBLBP_INDEX(y+1,x-1,img_nRows)] < center) pattern |= 0x20;
-        if (img[LIBLBP_INDEX(y+1,x,img_nRows)] < center)   pattern |= 0x40;
-        if (img[LIBLBP_INDEX(y+1,x+1,img_nRows)] < center) pattern |= 0x80;
+	/*  ww=win_W;*/
+	/*  hh=win_H;*/
+	ww=img_nCols;
+	hh=img_nRows;
+	while(1)
+	{
+		for(x=1; x < ww-1; x++)
+		{
+			for(y=1; y< hh-1; y++)
+			{
+				pattern = 0;
+				center = img[LIBLBP_INDEX(y,x,img_nRows)];
+				if (img[LIBLBP_INDEX(y-1,x-1,img_nRows)] < center) pattern |= 0x01;
+				if (img[LIBLBP_INDEX(y-1,x,img_nRows)] < center)   pattern |= 0x02;
+				if (img[LIBLBP_INDEX(y-1,x+1,img_nRows)] < center) pattern |= 0x04;
+				if (img[LIBLBP_INDEX(y,x-1,img_nRows)] < center)   pattern |= 0x08;
+				if (img[LIBLBP_INDEX(y,x+1,img_nRows)] < center)   pattern |= 0x10;
+				if (img[LIBLBP_INDEX(y+1,x-1,img_nRows)] < center) pattern |= 0x20;
+				if (img[LIBLBP_INDEX(y+1,x,img_nRows)] < center)   pattern |= 0x40;
+				if (img[LIBLBP_INDEX(y+1,x+1,img_nRows)] < center) pattern |= 0x80;
 
-        dot_prod += vec2[offset+pattern];
-        offset += 256; 
+				dot_prod += vec2[offset+pattern];
+				offset += 256; 
 
 
-      }
-    }
-    if(vec_nDim <= offset) 
-      return(dot_prod);
+			}
+		}
+		if(vec_nDim <= offset) 
+			return(dot_prod);
 
 
-    if(ww % 2 == 1) ww--;
-    if(hh % 2 == 1) hh--;
+		if(ww % 2 == 1) ww--;
+		if(hh % 2 == 1) hh--;
 
-    ww = ww/2;
-    for(x=0; x < ww; x++)
-      for(j=0; j < hh; j++)
-        img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] + 
-                                          img[LIBLBP_INDEX(j,2*x+1,img_nRows)];
+		ww = ww/2;
+		for(x=0; x < ww; x++)
+			for(j=0; j < hh; j++)
+				img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] + 
+					img[LIBLBP_INDEX(j,2*x+1,img_nRows)];
 
-    hh = hh/2;
-    for(y=0; y < hh; y++)
-      for(j=0; j < ww; j++)
-        img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] + 
-                                           img[LIBLBP_INDEX(2*y+1,j,img_nRows)];    
-  }
- 
-  
-//}
+		hh = hh/2;
+		for(y=0; y < hh; y++)
+			for(j=0; j < ww; j++)
+				img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] + 
+					img[LIBLBP_INDEX(2*y+1,j,img_nRows)];    
+	}
 
 	//m_feat->free_feature_vector(vec, vlen, do_free);
-	return result;
+	return dot_prod;
 }
 
 void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
