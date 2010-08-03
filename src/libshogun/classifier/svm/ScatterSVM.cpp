@@ -70,15 +70,6 @@ bool CScatterSVM::train(CFeatures* data)
 	delete[] numc;
 	m_num_classes=m_num_classes;
 
-	float64_t nu_min=((float64_t) Nc)/num_vectors;
-	float64_t nu_max=((float64_t) Nc)*Nmin/num_vectors;
-
-	SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max);
-
-	if (get_nu()<nu_min || get_nu()>nu_max)
-		SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max);
-
-
 	bool result=false;
 
 	if (scatter_type==NO_BIAS_LIBSVM)
@@ -93,6 +84,14 @@ bool CScatterSVM::train(CFeatures* data)
 #endif //USE_SVMLIGHT
 	else if (scatter_type==TEST_RULE1 || scatter_type==TEST_RULE2) 
 	{
+		float64_t nu_min=((float64_t) Nc)/num_vectors;
+		float64_t nu_max=((float64_t) Nc)*Nmin/num_vectors;
+
+		SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max);
+
+		if (get_nu()<nu_min || get_nu()>nu_max)
+			SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max);
+
 		result=train_testrule12();
 	}
 	else
