@@ -3582,9 +3582,13 @@ EOF
 			INCLUDES="-I${SRCDIR} -I.. $INCLUDES"
 			PARTS="$PARTS libshogun"
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogun"
-			LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogun -lshogun"
 			INCLUDES_MODULAR_INTERFACES="$INCLUDES_MODULAR_INTERFACES -I../libshogun"
-			LINKFLAGS_MODULAR_INTERFACES="$LINKFLAGS_MODULAR_INTERFACES -L../libshogun -lshogun"
+
+			if test "$_static" = no
+			then
+				LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogun -lshogun"
+				LINKFLAGS_MODULAR_INTERFACES="$LINKFLAGS_MODULAR_INTERFACES -L../libshogun -lshogun"
+			fi
 			_libshogun=internal
 			LIBSHOGUN_MODE=internal
 		else
@@ -3654,7 +3658,10 @@ EOF
 			PARTS="$PARTS libshogunui"
 
 			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogunui"
-			LINKFLAGS_STATIC_INTERFACES="-L../libshogunui -lshogunui $LINKFLAGS_STATIC_INTERFACES"
+			if test "$_static" = no
+			then
+				LINKFLAGS_STATIC_INTERFACES="-L../libshogunui -lshogunui $LINKFLAGS_STATIC_INTERFACES"
+			fi
 			_libshogunui=internal
 
 		else
