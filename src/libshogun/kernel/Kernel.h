@@ -221,7 +221,7 @@ class CKernel : public CSGObject
         {
 
             std::vector<float64_t> col = std::vector<float64_t>(num_rhs);
-            
+
             for (int32_t i=0; i!=num_rhs; i++)
             {
                 col[i] = kernel(i,j);
@@ -241,7 +241,7 @@ class CKernel : public CSGObject
         {
 
             std::vector<float64_t> row = std::vector<float64_t>(num_lhs);
-            
+
             for (int32_t j=0; j!=num_lhs; j++)
             {
                 row[j] = kernel(i,j);
@@ -932,21 +932,11 @@ class CKernel : public CSGObject
 
                 ar & cache_size;
 
-#ifdef USE_SVMLIGHT
-                //TODO
-                //KERNEL_CACHE kernel_cache;
-#endif //USE_SVMLIGHT
-
-                //TODO
-                //KERNELCACHE_ELEM* kernel_matrix;
-
-                //TODO
-                //SHORTREAL * precomputed_matrix ;
-                //ar & precompute_subkernel_matrix ;
-                //ar & precompute_matrix ;
-
-                ar & rhs;
                 ar & lhs;
+                ar & rhs;
+
+                ar & num_lhs;
+                ar & num_rhs;
 
                 ar & combined_kernel_weight;
 
@@ -955,6 +945,8 @@ class CKernel : public CSGObject
                 ar & opt_type;
 
                 ar & properties;
+
+                ar & normalizer;
 
                 SG_DEBUG("done with CKernel\n");
 

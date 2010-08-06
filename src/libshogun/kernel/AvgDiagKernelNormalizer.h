@@ -105,6 +105,25 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		/** @return object name */
 		inline virtual const char* get_name() const { return "AvgDiagKernelNormalizer"; }
 
+#ifdef HAVE_BOOST_SERIALIZATION
+    private:
+
+        friend class ::boost::serialization::access;
+        template<class Archive>
+            void serialize(Archive & ar, const unsigned int archive_version)
+            {
+
+                SG_DEBUG("archiving CAvgDiagKernelNormalizer\n");
+
+                ar & ::boost::serialization::base_object<CKernelNormalizer>(*this);
+
+                ar & scale;
+
+                SG_DEBUG("done with CAvgDiagKernelNormalizer\n");
+
+            }
+#endif //HAVE_BOOST_SERIALIZATION
+
 	protected:
 		/// the constant scaling factor (avg of diagonal or user given const)
 		float64_t scale;

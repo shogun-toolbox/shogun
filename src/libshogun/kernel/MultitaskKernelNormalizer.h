@@ -41,39 +41,18 @@ public:
 
 	/** default constructor
 	 *
-	 * @param task_lhs task vector with containing task_id for each example for left hand side
-	 * @param task_rhs task vector with containing task_id for each example for right hand side
+	 * @param task_vector task vector with containing task_id for each example
 	 */
-	CMultitaskKernelNormalizer(std::vector<int32_t> task_lhs, std::vector<
-			int32_t> task_rhs) : scale(1.0)
+	CMultitaskKernelNormalizer(std::vector<int32_t> task_vector) : scale(1.0)
 	{
 
-		set_task_vector_lhs(task_lhs);
-		set_task_vector_rhs(task_rhs);
+		num_tasks = get_num_unique_tasks(task_vector);
 
-		//run sanity checks
+		// set both sides equally
+		set_task_vector(task_vector);
 
-		//invoke copy contructor
-		std::vector<int32_t> unique_tasks_lhs = std::vector<int32_t>(
-				task_vector_lhs.begin(), task_vector_lhs.end());
-		std::vector<int32_t> unique_tasks_rhs = std::vector<int32_t>(
-				task_vector_rhs.begin(), task_vector_rhs.end());
-
-		//reorder tasks with unique prefix
-		std::vector<int32_t>::iterator endLocation_lhs = std::unique(
-				unique_tasks_lhs.begin(), unique_tasks_lhs.end());
-		std::vector<int32_t>::iterator endLocation_rhs = std::unique(
-				unique_tasks_rhs.begin(), unique_tasks_rhs.end());
-
-		//count unique tasks
-		int32_t num_unique_tasks_lhs = std::distance(unique_tasks_lhs.begin(),
-				endLocation_lhs);
-		int32_t num_unique_tasks_rhs = std::distance(unique_tasks_rhs.begin(),
-				endLocation_rhs);
-
-		//initialize members (lhs has always more or equally many tasks than rhs)
-		num_tasks = num_unique_tasks_lhs;
-		dependency_matrix = std::vector<float64_t>(num_tasks * num_tasks);
+		// init similarity matrix
+		similarity_matrix = std::vector<float64_t>(num_tasks * num_tasks);
 
 	}
 
@@ -113,6 +92,26 @@ public:
 		std::cout << "scale: " << scale << std::endl;
 
 		return true;
+	}
+
+	/** helper routine
+	 *
+	 * @param vec vector with containing task_id for each example
+	 * @return number of unique task ids
+	 */
+	int32_t get_num_unique_tasks(std::vector<int32_t> vec) {
+
+		//sort
+		std::sort(vec.begin(), vec.end());
+
+		//reorder tasks with unique prefix
+		std::vector<int32_t>::iterator endLocation = std::unique(vec.begin(), vec.end());
+
+		//count unique tasks
+		int32_t num_vec = std::distance(vec.begin(), endLocation);
+
+		return num_vec;
+
 	}
 
 	/** normalize the kernel value
@@ -204,7 +203,7 @@ public:
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
 		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
 
-		return dependency_matrix[task_lhs * num_tasks + task_rhs];
+		return similarity_matrix[task_lhs * num_tasks + task_rhs];
 
 	}
 
@@ -220,7 +219,7 @@ public:
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
 		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
 
-		dependency_matrix[task_lhs * num_tasks + task_rhs] = similarity;
+		similarity_matrix[task_lhs * num_tasks + task_rhs] = similarity;
 
 	}
 
@@ -233,7 +232,7 @@ public:
 protected:
 
 	/** MxM matrix encoding similarity between tasks **/
-	std::vector<float64_t> dependency_matrix;
+	std::vector<float64_t> similarity_matrix;
 
 	/** number of tasks **/
 	int32_t num_tasks;
