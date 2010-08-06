@@ -10,8 +10,8 @@
  */
 
 #ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
 #include "features/StringFeatures.h"
+#include <boost/serialization/export.hpp>
 BOOST_CLASS_EXPORT_GUID(shogun::CStringFeatures<char>, "shogun::CStringFeatures<char>");
 //BOOST_CLASS_EXPORT(shogun::CStringFeatures<char>);
 //BOOST_CLASS_EXPORT(shogun::T_STRING<char>);
