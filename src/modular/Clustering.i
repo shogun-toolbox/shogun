@@ -8,11 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-%define DOCSTR
-"The `Clustering` module gathers all clustering methods available in the SHOGUN toolkit."
-%enddef
-
-%module(docstring=DOCSTR) Clustering
 
 /* Documentation */
 %feature("autodoc","0");

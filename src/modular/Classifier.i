@@ -8,11 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-%define DOCSTR
-"The `Classifier` module gathers all classifiers available in the SHOGUN toolkit."
-%enddef
-
-%module(docstring=DOCSTR) Classifier
 
 /* Documentation */
 %feature("autodoc","0");

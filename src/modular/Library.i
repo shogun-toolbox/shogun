@@ -7,11 +7,6 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-%define DOCSTR
-"The `Library` module gathers all miscellaneous Objects in the SHOGUN toolkit."
-%enddef
-
-%module(docstring=DOCSTR) Library
 
 /* Documentation */
 %feature("autodoc","0");

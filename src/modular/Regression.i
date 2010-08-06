@@ -7,11 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-%define REGRESSION_DOCSTR
-"The `Regression` module gathers all regression methods available in the SHOGUN toolkit."
-%enddef
 
-%module(docstring=REGRESSION_DOCSTR) Regression
 
 /* Documentation */
 %feature("autodoc","0");
@@ -62,27 +58,4 @@
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/regression/svr/MKLRegression.h>
 
-#ifdef USE_SVMLIGHT
-%{
- #include <shogun/classifier/svm/SVMLight.h>
-%}
 
-%rename(SVMLight) CSVMLight;
-
-%ignore VERSION;
-%ignore VERSION_DATE;
-%ignore MAXSHRINK;
-%ignore SHRINK_STATE;
-%ignore MODEL;
-%ignore LEARN_PARM;
-%ignore TIMING;
-
-%include <shogun/classifier/svm/SVMLight.h>
-%{
- #include <shogun/regression/svr/SVRLight.h>
-%}
-
-%rename(SVRLight) CSVRLight;
-
-%include <shogun/regression/svr/SVRLight.h>
-#endif //USE_SVMLIGHT
