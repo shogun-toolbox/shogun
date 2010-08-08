@@ -22,6 +22,9 @@
 #include "base/SGObject.h"
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
+#ifdef HAVE_BOOST_SERIALIZATION
+#include "features/StringFeatures.h"
+#endif //HAVE_BOOST_SERIALIZATION
 
 
 namespace shogun
@@ -932,8 +935,13 @@ class CKernel : public CSGObject
 
                 ar & cache_size;
 
+        		SG_DEBUG("serializing features\n");
+                //TODO register class in cpp --> find problem preventing this
+                ar.template register_type< CStringFeatures<char> >();
                 ar & lhs;
+        		SG_DEBUG("done with lhs\n");
                 ar & rhs;
+        		SG_DEBUG("done with rhs\n");
 
                 ar & num_lhs;
                 ar & num_rhs;

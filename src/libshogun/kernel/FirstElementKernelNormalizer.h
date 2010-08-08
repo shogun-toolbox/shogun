@@ -88,6 +88,26 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		/** @return object name */
 		inline virtual const char* get_name() const { return "FirstElementKernelNormalizer"; }
 
+#ifdef HAVE_BOOST_SERIALIZATION
+    private:
+
+        friend class ::boost::serialization::access;
+        template<class Archive>
+            void serialize(Archive & ar, const unsigned int archive_version)
+            {
+
+                SG_DEBUG("archiving CFirstElementKernelNormalizer\n");
+
+                ar & ::boost::serialization::base_object<CKernelNormalizer>(*this);
+
+                ar & scale;
+
+                SG_DEBUG("done with CFirstElementKernelNormalizer\n");
+
+            }
+#endif //HAVE_BOOST_SERIALIZATION
+
+
 	protected:
 		/// scale constant obtained from k(0,0)
 		float64_t scale;

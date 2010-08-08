@@ -8,10 +8,9 @@
  * Copyright (C) 2009 Max-Planck-Society
  */
 
-#include "features/SimpleFeatures.h"
 
 #ifdef HAVE_BOOST_SERIALIZATION
-
+#include "features/SimpleFeatures.h"
 #include <boost/serialization/export.hpp>
 BOOST_CLASS_EXPORT_GUID(shogun::CSimpleFeatures<int32_t>, "CSimpleFeatures_int32");
 BOOST_CLASS_EXPORT_GUID(shogun::CSimpleFeatures<int64_t>, "CSimpleFeatures_int64");

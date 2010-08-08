@@ -17,6 +17,10 @@
 #include "features/Labels.h"
 #include "classifier/Classifier.h"
 
+#ifdef HAVE_BOOST_SERIALIZATION
+#include "kernel/WeightedDegreeStringKernel.h"
+#endif //HAVE_BOOST_SERIALIZATION
+
 #include <stdio.h>
 
 namespace shogun
@@ -333,31 +337,6 @@ class CKernelMachine : public CClassifier
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 
-
-        friend class ::boost::serialization::access;
-        // When the class Archive corresponds to an output archive, the
-        // & operator is defined similar to <<.  Likewise, when the class Archive
-        // is a type of input archive the & operator is defined similar to >>.
-        template<class Archive>
-
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving CKernelMachine\n");
-                ar & ::boost::serialization::base_object<CClassifier>(*this);
-
-                ar & kernel;
-                ar & use_batch_computation;
-                ar & use_linadd;
-                ar & use_bias;
-                ar & m_bias;
-
-                SG_DEBUG("done with CKernelMachine\n");
-            }
-
-
-		/*
-
 		/// serialization needs to split up in save/load because
 		///  the serialization of pointers to natives (int* & friends)
 		///  requires a workaround
@@ -367,6 +346,11 @@ class CKernelMachine : public CClassifier
 			{
 
 				SG_DEBUG("archiving CKernelMachine\n");
+
+                ar & ::boost::serialization::base_object<CClassifier>(*this);
+
+                //TODO register class in cpp --> find problem preventing this
+                ar.template register_type<CWeightedDegreeStringKernel>();
 
 				ar & kernel;
 				ar & use_batch_computation;
@@ -391,6 +375,11 @@ class CKernelMachine : public CClassifier
 
 				SG_DEBUG("archiving CKernelMachine\n");
 
+                ar & ::boost::serialization::base_object<CClassifier>(*this);
+
+                //TODO register class in cpp --> find problem preventing this
+                ar.template register_type<CWeightedDegreeStringKernel>();
+
 				ar & kernel;
 				ar & use_batch_computation;
 				ar & use_linadd;
@@ -406,7 +395,7 @@ class CKernelMachine : public CClassifier
 					m_svs = new int32_t[num_svs];
 					for (int32_t i=0; i< num_svs; ++i){
 						ar & m_alpha[i];
-						//ar & m_svs[i];
+						ar & m_svs[i];
 					}
 
 				}
@@ -417,7 +406,6 @@ class CKernelMachine : public CClassifier
 
 		GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()
 
-		*/
 
 #endif //HAVE_BOOST_SERIALIZATION
 

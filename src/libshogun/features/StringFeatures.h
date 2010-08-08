@@ -2016,6 +2016,29 @@ template <class ST> class CStringFeatures : public CFeatures
 
         GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
 
+    public:
+
+        virtual std::string toString() const
+        {
+            std::ostringstream s;
+
+            ::boost::archive::text_oarchive oa(s);
+
+            oa << *this;
+
+            return s.str();
+        }
+
+        virtual void fromString(std::string str)
+        {
+
+            std::istringstream is(str);
+
+            ::boost::archive::text_iarchive ia(is);
+
+            ia >> *this;
+
+        }
 
 #endif //HAVE_BOOST_SERIALIZATION
 

@@ -17,7 +17,7 @@
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(shogun::CAlphabet);
+BOOST_CLASS_EXPORT_GUID(shogun::CAlphabet, "shogun::CAlphabet");
 #endif //HAVE_BOOST_SERIALIZATION
 
 

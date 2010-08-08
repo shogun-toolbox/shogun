@@ -59,6 +59,12 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 {
 	public:
 
+		/** default constructor
+		 *
+		 */
+		CWeightedDegreeStringKernel();
+
+
 		/** constructor
 		 *
 		 * @param degree degree
@@ -755,7 +761,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
                 ///degree*length weights
                 ///length must match seq_length if != 0
                 ar & mkl_stepsize ;
-                //ar & degree;
+                ar & degree;
                 ar & length;
                 ar & max_mismatch ;
 
@@ -782,7 +788,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
                 //TODO how long
                 //float64_t* block_weights;
-                //ar & type;
+                ar & type;
                 ar & which_degree;
 
                 //TODO implement
@@ -813,9 +819,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
                 ar & length;
                 ar & max_mismatch ;
 
-                //weights=new float64_t[degree*(1+max_mismatch)];
-                //for (int32_t i=0; i<degree*(1+max_mismatch); i++)
-                //    ar & weights[i];
+                weights=new float64_t[degree*(1+max_mismatch)];
+                for (int32_t i=0; i<degree*(1+max_mismatch); i++)
+                    ar & weights[i];
 
 
                 //TODO how long?
@@ -840,7 +846,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
                 //TODO how long
                 //float64_t* block_weights;
-                //ar & type;
+                ar & type;
                 ar & which_degree;
 
                 //TODO implement
@@ -934,21 +940,15 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-
-#endif //HAVE_BOOST_SERIALIZATION
-
-
-#ifdef HAVE_BOOST_SERIALIZATION
+#ifdef HAVE_BOOST_SERIALIZATION__REMOVE_ME
 
 namespace boost
 {
 	namespace serialization
 	{
 		template<class Archive>
-			//inline void save_construct_data(Archive & ar, const shogun::CWeightedDegreeStringKernel* const t, const unsigned int file_version)
-			inline void save_construct_data(Archive & ar, shogun::CWeightedDegreeStringKernel* t, const unsigned int file_version)
+			inline void save_construct_data(Archive & ar, const shogun::CWeightedDegreeStringKernel* const t, const unsigned int file_version)
+			//inline void save_construct_data(Archive & ar, shogun::CWeightedDegreeStringKernel* t, const unsigned int file_version)
 			{
 
 				std::cout << "saving WDK from non-defaultconstruct data works" << std::endl;
@@ -958,6 +958,8 @@ namespace boost
 				//ar << t->cache_size;
 
 				ar << t->type;
+
+				std::cout << "SAVING degree: " << t->degree << std::endl;
 
 				ar << t->degree;
 
@@ -1021,6 +1023,7 @@ namespace boost
 
 				::new(t)shogun::CWeightedDegreeStringKernel(lhs, rhs, degree);
 				*/
+				std::cout << "degree: " << degree << std::endl;
 
 				::new(t)shogun::CWeightedDegreeStringKernel(degree, type);
 				//t->set_max_mismatch(max_mismatch);
