@@ -7,6 +7,10 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+ 
+%define DOCSTR
+"The `Structure` module gathers all structure related learners available in the SHOGUN toolkit."
+%enddef
 
 
 /* Documentation */

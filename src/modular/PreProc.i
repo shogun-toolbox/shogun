@@ -7,6 +7,12 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+ 
+%define DOCSTR
+"The `PreProc` module gathers all preprocessors available in the SHOGUN toolkit."
+%enddef
+
+%module(docstring=DOCSTR) PreProc
 
 /* Documentation */
 %feature("autodoc","0");

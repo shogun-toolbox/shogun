@@ -7,7 +7,12 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+ 
+%define DOCSTR
+"The `Distribution` module gathers all distributions available in the SHOGUN toolkit."
+%enddef
 
+%module(docstring=DOCSTR) Distribution
 
 /* Documentation */
 %feature("autodoc","0");

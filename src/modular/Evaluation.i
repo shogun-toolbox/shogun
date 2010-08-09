@@ -7,6 +7,12 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+ 
+%define DOCSTR
+"The `Evaluation` module is a collection of classes like PerformanceMeasures for the SHOGUN toolkit."
+%enddef
+
+%module(docstring=DOCSTR) Evaluation
 
 /* Documentation */
 %feature("autodoc","0");

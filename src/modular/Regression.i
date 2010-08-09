@@ -7,7 +7,12 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+ 
+%define REGRESSION_DOCSTR
+"The `Regression` module gathers all regression methods available in the SHOGUN toolkit."
+%enddef
 
+%module(docstring=REGRESSION_DOCSTR) Regression
 
 /* Documentation */
 %feature("autodoc","0");
