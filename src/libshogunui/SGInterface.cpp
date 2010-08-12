@@ -3130,7 +3130,6 @@ CKernel* CSGInterface::create_kernel()
 			}
 		}
 
-		SG_PRINT("create POLY kernel with dtype: %s, degree:%i, m_nrhs:%i\n", dtype, degree, m_nrhs);
 		if (strmatch(dtype, "REAL"))
 		{
 			kernel=ui_kernel->create_poly(
