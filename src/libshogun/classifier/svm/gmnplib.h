@@ -99,7 +99,8 @@ tmax, tolabs, tolrel, th, &alpha, &t, &History );
 				float64_t *alpha,
 				int32_t  *ptr_t,
 				float64_t **ptr_History,
-				int32_t verb);
+				int32_t verb,
+				CIO *progress);
 
 		/** get indices2
 		 *

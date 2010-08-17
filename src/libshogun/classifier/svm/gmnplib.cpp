@@ -246,7 +246,8 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
             float64_t *alpha,
             int32_t  *ptr_t,
             float64_t **ptr_History,
-            int32_t verb)
+            int32_t verb,
+            CIO *progress)
 {
   float64_t LB;
   float64_t UB;
@@ -267,6 +268,8 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   int32_t t;
   int32_t History_size;
   int8_t exitflag;
+
+  float64_t progress_init = -1.0;
 
   /* ------------------------------------------------------------ */
   /* Initialization                                               */
@@ -400,6 +403,16 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
     else if(t >= tmax) exitflag = 0; 
 
     /* print info */
+#define CALC_PROCESS(ub, lb, tol) \
+	    (CMath::log10(ub-lb) / CMath::log10(CMath::abs(ub)*tol))
+	if(t % 400 == 0) {
+		if (progress_init < 0.0)
+			progress_init = CALC_PROCESS(UB, LB, tolrel);
+		progress->progress(
+			(CALC_PROCESS(UB, LB, tolrel) - progress_init)
+			* 1000.0 / (1.0 - progress_init),
+			0.0, 1000.0, 1);
+	}
     if(verb && (t % verb) == 0 ) {
       SG_PRINT("%d: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
         t, UB, LB, UB-LB,(UB-LB)/UB);
@@ -427,6 +440,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   }
 
   /* print info about last iteration*/
+  progress->done();
   if(verb && (t % verb) ) {
     SG_PRINT("exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);

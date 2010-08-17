@@ -84,7 +84,8 @@ bool CGMNPSVM::train(CFeatures* data)
 	CGMNPLib mnp(vector_y,kernel,num_data, num_virtual_data, num_classes, reg_const);
 
 	mnp.gmnp_imdm(vector_c, num_virtual_data, tmax,
-			tolabs, tolrel, thlb, alpha, &t, &History, verb );
+				  tolabs, tolrel, thlb, alpha, &t, &History, verb,
+				  this->get_io());
 
 	/* matrix alpha [num_classes x num_data] */
 	float64_t* all_alphas= new float64_t[num_classes*num_data];
