@@ -1,0 +1,35 @@
+# File   : $HeadURL$
+# Version: $Id$
+
+import gtk
+
+UINT16_MAX = 0xffff
+UINT_GRAY = UINT16_MAX - UINT16_MAX/4
+COLOR_BLACK = gtk.gdk.Color(0, 0, 0)
+COLOR_WHITE = gtk.gdk.Color(UINT16_MAX, UINT16_MAX, UINT16_MAX)
+COLOR_GRAY = gtk.gdk.Color(UINT_GRAY, UINT_GRAY, UINT_GRAY)
+COLOR_BLUE = gtk.gdk.Color(UINT_GRAY, UINT_GRAY, UINT16_MAX)
+
+BUTTON_LEFT = 1
+BUTTON_RIGHT = 3
+
+NEAR_ZERO_POS = 1e-8
+NEAR_ONE_NEG = 1-NEAR_ZERO_POS
+
+TRAIN_X_FNAME = "train_data_x.asc.gz"
+TRAIN_Y_FNAME = "train_data_y.asc.gz"
+
+TRAIN_WRITE_GZ = True
+TRAIN_SVM_FNAME_GZ = "ocr.svm.gz"
+
+MATIX_IMAGE_SIZE = 16
+FEATURE_DIM = MATIX_IMAGE_SIZE * MATIX_IMAGE_SIZE
+
+HISTORY_WIDTH = 5
+HISTORY_HEIGHT = 3
+
+FEATURE_RANGE_MAX = 1.0
+
+import time
+def dispatch():
+    time.sleep(0.3)
