@@ -19,31 +19,26 @@
 namespace shogun
 {
 
-class CRange
-{
-	public:
-	CRange()
-	{
-	}
-
-	~CRange()
-	{
-	}
-
-protected:
-	double lower_limit;
-	double default_value;
-	double upper_limit;
-};
-
 struct TParameter
 {
 	void* parameter;
 	SGDataType datatype;
 	char* name;
 	char* description;
-	/** valid range */
-	CRange* range;
+
+	/** valid range - minimum */
+	union
+	{
+		float32_t min_value_float32;
+		float64_t min_value_float64;
+	};
+
+	/** valid range - maximum */
+	union
+	{
+		float32_t max_value_float32;
+		float64_t max_value_float64;
+	};
 };
 
 class CParameter: public CSGObject
@@ -60,8 +55,23 @@ public:
 		free_parameters();
 	}
 
-	void add(float64_t* parameter, const char* name,
-			CRange* range=NULL, const char* description=NULL);
+	void add_float(float32_t* parameter, const char* name,
+			const char* description=NULL,
+			float64_t min_value=-CMath::INFTY, float64_t max_value=CMath::INFTY);
+
+	void add_double(float64_t* parameter, const char* name,
+			const char* description=NULL, float64_t min_value=-CMath::INFTY,
+			float64_t max_value=CMath::INFTY);
+
+	void add_float_vector(float32_t** parameter, int64_t length,
+			const char* name, const char* description=NULL,
+			float64_t min_value=-CMath::INFTY, float64_t max_value=CMath::INFTY);
+
+	void add_double_vector(float64_t** parameter, int64_t length,
+			const char* name, const char* description=NULL,
+			float64_t min_value=-CMath::INFTY, float64_t max_value=CMath::INFTY);
+
+	void add_sgobject(CSGObject* parameter, const char* name, const char* description=NULL);
 
 	void list_parameters();
 

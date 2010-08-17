@@ -11,8 +11,8 @@
 
 using namespace shogun;
 
-void CParameter::add(float64_t* parameter, const char* name,
-		CRange* range, const char* description)
+void CParameter::add_double(float64_t* parameter, const char* name,
+			const char* description, float64_t min_value, float64_t max_value)
 {
 	TParameter* par=new TParameter[1];
 	par->parameter=parameter;
@@ -28,10 +28,8 @@ void CParameter::add(float64_t* parameter, const char* name,
 	else
 		par->description=NULL;
 
-	if (range)
-		par->range=range;
-	else
-		par->range=NULL;
+	par->min_value_float64=min_value;
+	par->max_value_float64=max_value;
 
 	m_parameters->append_element(par);
 }
