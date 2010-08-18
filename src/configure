@@ -3118,7 +3118,6 @@ EOF
 				echocheck "Matlab developer support (-lmx -lmex -lmat)"
 cat > $TMPC << EOF
 #include <mex.h>
-#include <mexversion.c>
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
 
