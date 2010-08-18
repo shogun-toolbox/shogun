@@ -75,6 +75,14 @@ class CGaussianKernel: public CSimpleKernel<float64_t>
 		 */
 		inline virtual const char* get_name() const { return "GaussianKernel"; }
 
+		/** return the kernel's width
+		 *
+		 * @return kernel width
+		 */
+		inline virtual float64_t get_width(void) const {
+			return width;
+		}
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
