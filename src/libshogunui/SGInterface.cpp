@@ -11,6 +11,7 @@
 #include <shogun/lib/Signal.h>
 
 #include <shogun/classifier/svm/SVM.h>
+#include <shogun/classifier/svm/pr_loqo.h>
 #include <shogun/classifier/LinearClassifier.h>
 #include <shogun/classifier/mkl/MKL.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
@@ -64,6 +65,12 @@ CSyntaxHighLight hilight;
 CSGInterfaceMethod sg_methods[]=
 {
 	{ "Features", NULL, NULL, NULL },
+	{
+		N_PR_LOQO,
+		(&CSGInterface::cmd_pr_loqo),
+		USAGE_IO(N_PR_LOQO,
+			"'Var1', Var1, 'Var2', Var2", "results")
+	},
 	{
 		N_LOAD_FEATURES,
 		(&CSGInterface::cmd_load_features),
@@ -7673,6 +7680,67 @@ bool CSGInterface::cmd_run_r()
 {
 	SG_ERROR("Only available in the elwms interface\n");
 	return false;
+}
+
+bool CSGInterface::cmd_pr_loqo()
+{
+	if (m_nrhs!=7 || !create_return_values(2))
+		return false;
+
+	float64_t* c=NULL;
+	int32_t lenc=0;
+	get_real_vector(c, lenc);
+
+	int32_t n = lenc;
+
+	float64_t* H=NULL;
+	int32_t nH=0;
+	int32_t mH=0;
+	get_real_matrix(H, nH, mH);
+	ASSERT(nH==n && mH==n);
+
+	float64_t* A=NULL;
+	int32_t nA=0;
+	int32_t mA=0;
+	get_real_matrix(A, nA, mA);
+	ASSERT(mA==n);
+	int32_t m=nA;
+
+	float64_t* b=NULL;
+	int32_t lenb=0;
+	get_real_vector(b, lenb);
+	ASSERT(lenb==m);
+
+	float64_t* l=NULL;
+	int32_t lenl=0;
+	get_real_vector(l, lenl);
+	ASSERT(lenl==n);
+
+	float64_t* u=NULL;
+	int32_t lenu=0;
+	get_real_vector(u, lenu);
+	ASSERT(lenu==n);
+
+	float64_t* x=new float64_t[3*n];
+	CMath::fill_vector(x, 3*n, 0.0);
+
+	float64_t* y=new float64_t[m+2*n];
+	CMath::fill_vector(y, m+2*n, 0.0);
+
+	pr_loqo(n,m, c, H, A, b, l, u, x, y, 0, 5, 50, 0.05, 100, 0);
+
+	set_real_vector(x, n);
+	set_real_vector(y, m);
+
+	delete[] c;
+	delete[] H;
+	delete[] A;
+	delete[] b;
+	delete[] l;
+	delete[] u;
+	delete[] x;
+	delete[] y;
+	return true;
 }
 
 void CSGInterface::print_prompt()

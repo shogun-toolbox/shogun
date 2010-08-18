@@ -231,4 +231,5 @@
 #define N_RUN_PYTHON					"run_python"
 #define N_RUN_OCTAVE					"run_octave"
 #define N_RUN_R							"run_r"
+#define N_PR_LOQO						"pr_loqo"
 #endif
