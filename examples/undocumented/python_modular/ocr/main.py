@@ -12,13 +12,33 @@ from Ai import Ai
 
 import common as com
 
+def _draw_line(image, start, end):
+    start = np.array(start, dtype=np.int)
+    end = np.array(end, dtype=np.int)
+
+    delta = abs(end - start)
+
+    e = delta[0]/2.0
+    x, y = start
+    image[y, x] = com.FEATURE_RANGE_MAX
+    while np.any((x, y) != end):
+        if e < 0.0 or x == end[0]:
+            y += -1 if start[1] > end[1] else 1
+            e += delta[0]
+        if e >= 0.0 and x != end[0]:
+            x += -1 if start[0] > end[0] else 1
+            e -= delta[1]
+        image[y, x] = com.FEATURE_RANGE_MAX
+
 def button_go_clicked(button, main_window):
-    coords = com.MATIX_IMAGE_SIZE * main_window.figure.get_coords()
+    coords = map(lambda line: com.MATIX_IMAGE_SIZE*line,
+                 main_window.figure.get_coords())
     image = np.zeros((com.MATIX_IMAGE_SIZE, com.MATIX_IMAGE_SIZE),
                      dtype=np.float)
 
-    for xy in coords:
-        image[xy[1], xy[0]] = com.FEATURE_RANGE_MAX
+    for line in coords:
+        for i in range(line.shape[0]-1):
+            _draw_line(image, line[i], line[i+1])
 
     main_window.push_image(image,
                            str(main_window.ai.classify(image))
@@ -45,13 +65,9 @@ def button_load_clicked(button, main_window):
                                    com.TRAIN_Y_FNAME,
                                    main_window)
 
-def button_train_clicked(button, main_window):
-    if main_window.ask_long_time("training") == gtk.RESPONSE_YES:
-        main_window.ai.load_train_data_train(com.TRAIN_X_FNAME,
-                                             com.TRAIN_Y_FNAME,
-                                             main_window)
-
 class MainWindow(gtk.Window):
+    TITLE = "OCR"
+
     MIN_WIDTH = 800
     MIN_HEIGHT = 450
 
@@ -64,6 +80,7 @@ class MainWindow(gtk.Window):
     def __init__(self):
         # Main Window
         gtk.Window.__init__(self, type=gtk.WINDOW_TOPLEVEL)
+        self.set_title(self.TITLE)
         self.connect("delete-event", MainWindow.on_delete)
         self.set_size_request(self.MIN_WIDTH, self.MIN_HEIGHT)
 
@@ -226,21 +243,8 @@ class MainWindow(gtk.Window):
                                  self)
         self.hbox.add(self.button_load)
 
-        # Button train from file
-        self.button_train = gtk.Button(label="SLOW: _train from file")
-        self.button_train.set_focus_on_click(False)
-        self.button_train.connect("clicked", button_train_clicked,
-                                  self)
-        self.hbox.add(self.button_train)
-
         self.button_go.set_flags(gtk.CAN_DEFAULT)
         self.set_default(self.button_go)
-
-        # Title
-        self.set_title("OCR - C: %.2f, epsilon: %.2e, kernel-width: "
-                       "%.2f" % (self.ai.C, self.ai.EPSILON,
-                                self.ai.KERNEL_WIDTH)
-                       )
 
     def on_delete(self, event):
         gtk.Window.destroy(self)

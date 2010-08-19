@@ -106,24 +106,33 @@ class FigureWidget(QuadrWidget):
         return False
 
     def get_coords(self):
-        result = []
+        result = map(lambda line: np.array(line), self.coords)
 
-        for poly in self.coords:
-            result.extend(poly)
-        result = np.array(result)
+        result = map(lambda line: np.transpose(line), result)
 
-        if result.shape[0] == 0:
-            return result
+        minx = 2.0
+        miny = 2.0
+        for line in result:
+            minx = min(minx, min(line[0]))
+            miny = min(miny, min(line[1]))
+        for line in result:
+            line[0] -= minx
+            line[1] -= miny
 
-        result = result.transpose()
+        maxxy = 0.0
+        for line in result: maxxy = max(maxxy, line.max())
+        for line in result: line /= maxxy + com.NEAR_ZERO_POS
 
-        result[0] -= min(result[0])
-        result[1] -= min(result[1])
-        result /= result.max() + com.NEAR_ZERO_POS
-        result[0] += (1 - max(result[0]))/2
-        result[1] += (1 - max(result[1]))/2
+        maxx = 0.0
+        maxy = 0.0
+        for line in result:
+            maxx = max(maxx, max(line[0]))
+            maxy = max(maxy, max(line[1]))
+        for line in result:
+            line[0] += (1 - maxx)/2
+            line[1] += (1 - maxy)/2
 
-        result = result.transpose()
+        result = map(lambda line: np.transpose(line), result)
         return result
 
     def clear_coords(self):
