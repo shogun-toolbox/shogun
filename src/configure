@@ -2528,7 +2528,7 @@ EOF
 										DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
 										LINKFLAGS="$LINKFLAGS -llapack -lblas"
 									else
-										echores "no"
+										echores "no (missing some features: LDA, liblinear, ...)"
 									fi
 								fi
 							fi
