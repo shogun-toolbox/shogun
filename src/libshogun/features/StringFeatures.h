@@ -44,7 +44,7 @@ class CFile;
 template <class T> class CMemoryMappedFile;
 class CMath;
 template <class ST> class CStringPreProc;
-template <class T> class T_STRING;
+//template <class T> class T_STRING;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** template class T_STRING */
@@ -1986,11 +1986,15 @@ template <class ST> class CStringFeatures : public CFeatures
 
                 ar & num_vectors;
 
+				SG_DEBUG("starting with T_STRING\n");
+    
                 //T_STRING<ST>* features = new T_STRING<ST>[num_vectors];
                 features = new T_STRING<ST>[num_vectors];
                 for (int i=0; i < num_vectors; ++i) {
                     ar & features[i];
                 }
+
+				SG_DEBUG("done with T_STRING\n");
 
 
                 ar & length_of_single_string;

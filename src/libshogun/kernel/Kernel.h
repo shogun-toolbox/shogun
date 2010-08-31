@@ -940,6 +940,7 @@ class CKernel : public CSGObject
                 ar.template register_type< CStringFeatures<char> >();
                 ar & lhs;
         		SG_DEBUG("done with lhs\n");
+
                 ar & rhs;
         		SG_DEBUG("done with rhs\n");
 
