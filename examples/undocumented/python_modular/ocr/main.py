@@ -46,30 +46,15 @@ def button_go_clicked(button, main_window):
 
     main_window.set_focus(main_window.button_go)
 
-def button_tr_err_clicked(button, main_window):
-    if main_window.ask_long_time("training error") == gtk.RESPONSE_YES:
-        main_window.ai.show_train_error(main_window)
-
-def button_te_err_clicked(button, main_window):
-    if main_window.ask_long_time("test error") == gtk.RESPONSE_YES:
-        main_window.ai.show_test_error(
-            main_window,
-            0.01 * main_window.button_te_spin.get_value())
-
 def button_clear_clicked(button, main_window):
     main_window.figure.clear_coords()
     main_window.set_focus(main_window.button_go)
-
-def button_load_clicked(button, main_window):
-    main_window.ai.load_classifier(com.TRAIN_X_FNAME,
-                                   com.TRAIN_Y_FNAME,
-                                   main_window)
 
 class MainWindow(gtk.Window):
     TITLE = "OCR"
 
     MIN_WIDTH = 800
-    MIN_HEIGHT = 450
+    MIN_HEIGHT = 260
 
     MAIN_PADDING = 4
     BOX_PADDING = 4
@@ -84,16 +69,10 @@ class MainWindow(gtk.Window):
         self.connect("delete-event", MainWindow.on_delete)
         self.set_size_request(self.MIN_WIDTH, self.MIN_HEIGHT)
 
-        # Wait dialog
-        self.wait_dialog = \
-            gtk.MessageDialog(self, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO,
-                              gtk.BUTTONS_NONE, "")
-        self.wait_dialog.set_markup("Please wait ..."
-                                    "\n\n<i>*cooking coffee*</i>")
-        self.wait_dialog.set_deletable(False)
-
         # AI
         self.ai = Ai()
+        self.ai.load_classifier(com.TRAIN_X_FNAME, com.TRAIN_Y_FNAME,
+                                self)
 
         # Main Container
         self.main_align = gtk.Alignment(xalign=0.0, yalign=0.0,
@@ -104,21 +83,21 @@ class MainWindow(gtk.Window):
                                     self.MAIN_PADDING)
         self.add(self.main_align)
 
-        # Main VBox
-        self.main_vbox = gtk.VBox(homogeneous=False,
-                                  spacing=self.BOX_PADDING)
-        self.main_align.add(self.main_vbox)
-
         # Figure HBox
         self.figure_hbox = gtk.HBox(homogeneous=False,
                                     spacing=self.BOX_PADDING)
-        self.main_vbox.pack_start(self.figure_hbox, expand=True,
-                                  fill=True, padding=0)
+        self.main_align.add(self.figure_hbox)
+
+        # Main VBox
+        self.main_vbox = gtk.VBox(homogeneous=False,
+                                  spacing=self.BOX_PADDING)
+        self.figure_hbox.add(self.main_vbox)
+
 
         # Figure
-        self.figure = FigureWidget()
-        self.figure_hbox.pack_start(self.figure, expand=True,
-                                    fill=True, padding=0)
+        self.figure = FigureWidget(button_go_clicked, (None, self))
+        self.main_vbox.pack_start(self.figure, expand=True, fill=True,
+                                  padding=0)
 
         # VSeperator
         self.figure_vsep = gtk.VSeparator()
@@ -185,7 +164,6 @@ class MainWindow(gtk.Window):
         self.button_go = gtk.Button(label="_Go!")
         self.button_go.connect("clicked", button_go_clicked, self)
         self.button_go.set_focus_on_click(False)
-        self.button_go.set_sensitive(False)
         self.hbox.add(self.button_go)
 
         # Button clear
@@ -194,57 +172,6 @@ class MainWindow(gtk.Window):
         self.button_clear.connect("clicked", button_clear_clicked,
                                   self)
         self.hbox.add(self.button_clear)
-
-        # Button VSeperator 1
-        self.button_vsep1 = gtk.VSeparator()
-        self.hbox.pack_start(self.button_vsep1, expand=False, fill=True,
-                             padding=0)
-
-        # Button train error
-        self.button_tr_err = gtk.Button(label="train _error")
-        self.button_tr_err.connect("clicked", button_tr_err_clicked,
-                                   self)
-        self.button_tr_err.set_focus_on_click(False)
-        self.button_tr_err.set_sensitive(False)
-        self.hbox.add(self.button_tr_err)
-
-        # Button test error
-        self.button_te_vbox = gtk.VBox(
-            homogeneous=False, spacing=self.BOX_PADDING)
-        self.hbox.add(self.button_te_vbox)
-
-        self.button_te_err = gtk.Button(label="test e_rror")
-        self.button_te_err.connect("clicked", button_te_err_clicked,
-                                   self)
-        self.button_te_err.set_focus_on_click(False)
-        self.button_te_err.set_sensitive(False)
-        self.button_te_vbox.add(self.button_te_err)
-
-        self.button_te_spin = gtk.SpinButton(
-            gtk.Adjustment(value=8.0,
-                           lower=0.0, upper=100.0,
-                           step_incr=1.0,
-                           page_incr=0, page_size=0),
-            climb_rate=1.0, digits=2)
-        self.button_te_spin.set_tooltip_text("Noise in %")
-        self.button_te_spin.set_sensitive(False)
-        self.button_te_vbox.add(self.button_te_spin)
-
-        # Button VSeperator 2
-        self.button_vsep2 = gtk.VSeparator()
-        self.hbox.pack_start(self.button_vsep2, expand=False, fill=True,
-                             padding=0)
-
-        # Button load classifier
-        self.button_load = gtk.Button(label="_load classifier from "
-                                      "file")
-        self.button_load.set_focus_on_click(False)
-        self.button_load.connect("clicked", button_load_clicked,
-                                 self)
-        self.hbox.add(self.button_load)
-
-        self.button_go.set_flags(gtk.CAN_DEFAULT)
-        self.set_default(self.button_go)
 
     def on_delete(self, event):
         gtk.Window.destroy(self)
@@ -263,39 +190,6 @@ class MainWindow(gtk.Window):
                 self.MARKUP_PRE + prev_str + self.MARKUP_POST)
             prev_image = tmp_image
             prev_str = tmp_str
-
-    def ask_long_time(self, str):
-        msg_dialog = gtk.MessageDialog(
-            self, gtk.DIALOG_MODAL, gtk.MESSAGE_WARNING,
-            gtk.BUTTONS_YES_NO,
-            "The " + str + " will take much time and is not "
-            "interruptible! Are you sure to start the " + str + "?")
-        resp = msg_dialog.run()
-        msg_dialog.destroy()
-        return resp
-
-    def idle_show_wait(self):
-        self.wait_dialog.show_all()
-        return False
-
-    def idle_enable_go(self, error):
-        self.wait_dialog.hide()
-        if not error:
-            self.button_go.set_sensitive(True)
-            self.button_tr_err.set_sensitive(True)
-            self.button_te_err.set_sensitive(True)
-            self.button_te_spin.set_sensitive(True)
-            self.set_focus(self.button_go)
-        return False
-
-    def idle_info_dialog(self, msg):
-        msg_dialog = gtk.MessageDialog(
-            self, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_OK,
-            msg)
-        msg_dialog.connect("response",
-                           lambda dialog, arg1: dialog.destroy())
-        msg_dialog.show()
-        return False
 
 def main(argv):
     gtk.gdk.threads_init()

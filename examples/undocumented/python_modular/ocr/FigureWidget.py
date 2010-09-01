@@ -10,12 +10,15 @@ from QuadrWidget import QuadrWidget
 class FigureWidget(QuadrWidget):
     THICKNESS_FRAC = 0.03
 
-    def __init__(self):
+    def __init__(self, go_func, go_args):
         QuadrWidget.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
 
         self.drag = False
         self.coords = []
+
+        self.go_func = go_func
+        self.go_args = go_args
 
         self.connect("expose_event", FigureWidget.on_redraw)
         self.connect("button-press-event", FigureWidget.on_press)
@@ -29,6 +32,10 @@ class FigureWidget(QuadrWidget):
     def on_press(self, event):
         if event.button == com.BUTTON_RIGHT:
             self.clear_coords()
+            self.drag = False
+
+        if event.button == com.BUTTON_MIDDLE:
+            self.go_func(*self.go_args)
             self.drag = False
 
         if event.button != com.BUTTON_LEFT:

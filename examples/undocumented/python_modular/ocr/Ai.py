@@ -11,19 +11,7 @@ except ImportError:
     from shogun.Kernel import GaussianKernel
     from shogun.Classifier import GMNPSVM
 
-# Since python 3.0 we need to import _THREAD, earlier versions are
-# needing THREAD.  If THREAD is not supported by OS we are using the
-# fallback solution DUMMY_THREAD.
-try:
-    import _thread as thr
-except ImportError:
-    try:
-        import thread as thr
-    except ImportError:
-        import dummy_thread as thr
-
 import numpy as np
-import gobject as go
 import gzip as gz
 import tempfile as tmp
 import pickle as pkl
@@ -31,6 +19,8 @@ import pickle as pkl
 import common as com
 
 class Ai:
+    KERNEL_SIZE = 10
+
     def __init__(self):
         self.x = None
         self.y = None
@@ -134,25 +124,12 @@ class Ai:
         self.svm.train(x)
         self.svm.io.disable_progress()
 
-    def _load_classifier(self, x_fname, y_fname, main_window):
-        go.idle_add(main_window.idle_show_wait)
-        com.dispatch()
-        try:
-            self.load_train_data(x_fname, y_fname)
-            self.read_svm()
-        except:
-            go.idle_add(main_window.idle_enable_go, True)
-            raise
-        go.idle_add(main_window.set_title,
-                    "%s - %s" % (
-                main_window.TITLE, self.get_config_str()
-                ))
-        go.idle_add(main_window.idle_enable_go, False)
-        thr.exit()
-
     def load_classifier(self, x_fname, y_fname, main_window):
-        thr.start_new_thread(self._load_classifier,
-                             (x_fname, y_fname, main_window))
+        self.load_train_data(x_fname, y_fname)
+        self.read_svm()
+        main_window.set_title("%s - %s" % (
+                main_window.TITLE, self.get_config_str())
+                              )
 
     def classify(self, matrix):
         cl = self.svm.classify(
@@ -164,54 +141,12 @@ class Ai:
 
         return int(cl + 1.0) % 10
 
-# Error stuff begin
-# ********************************************************************
-
-    def _get_error(self, x, y):
+    def get_train_error(self):
         self.svm.io.enable_progress()
-        l = self.svm.classify(RealFeatures(x)).get_labels()
+        l = self.svm.classify(RealFeatures(self.x_test)).get_labels()
         self.svm.io.disable_progress()
 
-        return 1.0 - np.mean(l == y)
-
-    def _show_error(self, main_window, x, y, str):
-        go.idle_add(main_window.idle_show_wait)
-        com.dispatch()
-        try:
-            e = self._get_error(x, y)
-        except:
-            go.idle_add(main_window.idle_enable_go, True)
-            raise
-        go.idle_add(main_window.idle_enable_go, False)
-        go.idle_add(main_window.idle_info_dialog,
-                    "The %s error is: %.2f%%" % (str, e*100.0))
-        thr.exit()
-
-    def get_train_error(self):
-        return self._get_error(self.x_test, self.y_test)
-
-    def show_train_error(self, main_window):
-        thr.start_new_thread(self._show_error, (main_window,
-                                                self.x_test,
-                                                self.y_test,
-                                                "training"))
-
-    def _noised_x(self, noise):
-        return np.array((np.random.rand(*self.x_test.shape) < noise) \
-                            .__xor__(self.x_test > com.NEAR_ZERO_POS),
-                        dtype=np.float)
-
-    def get_test_error(self, noise):
-        return self._get_error(self._noised_x(noise), self.y_test)
-
-    def show_test_error(self, main_window, noise):
-        thr.start_new_thread(self._show_error, (main_window,
-                                                self._noised_x(noise),
-                                                self.y_test,
-                                                "test"))
-
-# Error stuff end
-# ********************************************************************
+        return 1.0 - np.mean(l == self.y_test)
 
     def get_config_str(self):
         return "C: %.2f, epsilon: %.2e, kernel-width: %.2f" \
