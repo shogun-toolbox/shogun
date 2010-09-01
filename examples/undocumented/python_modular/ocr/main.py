@@ -44,6 +44,7 @@ def button_go_clicked(button, main_window):
                            str(main_window.ai.classify(image))
                            )
 
+    main_window.figure.clear_coords()
     main_window.set_focus(main_window.button_go)
 
 def button_clear_clicked(button, main_window):
@@ -51,7 +52,7 @@ def button_clear_clicked(button, main_window):
     main_window.set_focus(main_window.button_go)
 
 class MainWindow(gtk.Window):
-    TITLE = "OCR"
+    TITLE = "OCR Demo"
 
     MIN_WIDTH = 800
     MIN_HEIGHT = 260

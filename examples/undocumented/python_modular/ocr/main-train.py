@@ -8,12 +8,12 @@ import sys
 from Ai import Ai
 import common as com
 
-EPSILON_LIST = [1e-4]
+EPSILON = 1e-3
 
 C_LIST = [2.5, 3.0, 3.5]
 KERNEL_WIDTH_LIST = [22.0, 24.0, 26.0]
 
-VALIDATION_TRAIN_FRAC = 0.666
+VALIDATION_TRAIN_FRAC = 0.80
 
 def to_str(e):
     result = "" if e['error'] > 1.0 else "error=%.4f, " % e['error']
@@ -28,28 +28,27 @@ def main(argv):
 
     best_error = {'error': 2.0, 'epsilon': -1.0, 'c': -1.0,
                   'kernel_width': -1.0}
-    for epsilon in EPSILON_LIST:
-        for kernel_width in KERNEL_WIDTH_LIST:
-            for c in C_LIST:
-                cur = {'error': 2.0, 'epsilon': epsilon, 'c': c,
-                       'kernel_width': kernel_width}
+    for kernel_width in KERNEL_WIDTH_LIST:
+        for c in C_LIST:
+            cur = {'error': 2.0, 'epsilon': EPSILON, 'c': c,
+                   'kernel_width': kernel_width}
 
-                print "Trying: %s" % to_str(cur)
+            print "Trying: %s" % to_str(cur)
 
-                ai.train(kernel_width=kernel_width, c=c,
-                         epsilon=epsilon)
-                print ""
-                cur['error'] = ai.get_train_error()
-                print ""
+            ai.train(kernel_width=kernel_width, c=c,
+                     epsilon=EPSILON)
+            print ""
+            cur['error'] = ai.get_test_error()
+            print ""
 
-                if cur['error'] < best_error['error']:
-                    best_error = cur
-                    print "New best: %s" % to_str(best_error)
-                else:
-                    print "Result: %s" % to_str(cur)
-                    print "Best: %s" % to_str(best_error)
+            if cur['error'] < best_error['error']:
+                best_error = cur
+                print "New best: %s" % to_str(best_error)
+            else:
+                print "Result: %s" % to_str(cur)
+                print "Best: %s" % to_str(best_error)
 
-                print ""
+            print ""
 
     print "Finally using parameters: %s" % to_str(best_error)
     ai.load_train_data(com.TRAIN_X_FNAME, com.TRAIN_Y_FNAME)

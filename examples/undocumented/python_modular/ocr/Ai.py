@@ -1,8 +1,8 @@
 # File   : $HeadURL$
 # Version: $Id$
 
-# For reasons of development ...
 try:
+    # different import paths were used in development...
     from Features import RealFeatures, Labels
     from Kernel import GaussianKernel
     from Classifier import GMNPSVM
@@ -100,21 +100,16 @@ class Ai:
     def enable_validation(self, train_frac):
         x = self.x
         y = self.y
-        self.x = np.empty((com.FEATURE_DIM, 0))
-        self.y = np.empty((0, ))
-        self.x_test = np.empty((com.FEATURE_DIM, 0))
-        self.y_test = np.empty((0, ))
 
-        for i in range(x.shape[1]):
-            if np.random.rand() < train_frac:
-                self.x = np.append(self.x, np.transpose([x[:, i]]),
-                                   axis=1)
-                self.y = np.append(self.y, [y[i]], axis=0)
-            else:
-                self.x_test = np.append(self.x_test,
-                                        np.transpose([x[:, i]]),
-                                        axis=1)
-                self.y_test = np.append(self.y_test, [y[i]], axis=0)
+        idx = np.arange(len(y))
+        np.random.shuffle(idx)
+        train_idx=idx[:np.floor(train_frac*len(y))]
+        test_idx=idx[np.ceil(train_frac*len(y)):]
+
+        self.x = x[:,train_idx]
+        self.y = y[train_idx]
+        self.x_test = x[:,test_idx]
+        self.y_test = y[test_idx]
 
     def train(self, kernel_width, c, epsilon):
         self._svm_new(kernel_width, c, epsilon)
@@ -127,9 +122,10 @@ class Ai:
     def load_classifier(self, x_fname, y_fname, main_window):
         self.load_train_data(x_fname, y_fname)
         self.read_svm()
+        print self.get_config_str()
         main_window.set_title("%s - %s" % (
-                main_window.TITLE, self.get_config_str())
-                              )
+                main_window.TITLE, "Press middle mouse button to classify, "
+                "right mouse button to clear") )
 
     def classify(self, matrix):
         cl = self.svm.classify(
@@ -141,7 +137,7 @@ class Ai:
 
         return int(cl + 1.0) % 10
 
-    def get_train_error(self):
+    def get_test_error(self):
         self.svm.io.enable_progress()
         l = self.svm.classify(RealFeatures(self.x_test)).get_labels()
         self.svm.io.disable_progress()
