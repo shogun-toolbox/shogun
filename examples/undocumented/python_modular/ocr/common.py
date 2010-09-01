@@ -17,11 +17,11 @@ BUTTON_RIGHT = 3
 NEAR_ZERO_POS = 1e-8
 NEAR_ONE_NEG = 1-NEAR_ZERO_POS
 
-TRAIN_X_FNAME = "train_data_x.asc.gz"
-TRAIN_Y_FNAME = "train_data_y.asc.gz"
+TRAIN_X_FNAME = "data/train_data_x.asc.gz"
+TRAIN_Y_FNAME = "data/train_data_y.asc.gz"
 
-TRAIN_PARAMS_FNAME = "ocr.svm.head"
-TRAIN_SVM_FNAME_GZ = "ocr.svm.gz"
+TRAIN_PARAMS_FNAME = "data/ocr.svm.head"
+TRAIN_SVM_FNAME_GZ = "data/ocr.svm.gz"
 
 MATIX_IMAGE_SIZE = 16
 FEATURE_DIM = MATIX_IMAGE_SIZE * MATIX_IMAGE_SIZE
