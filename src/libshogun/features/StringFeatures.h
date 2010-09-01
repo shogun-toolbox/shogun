@@ -78,6 +78,8 @@ template <class T> class T_STRING
   void load(Archive & ar, const unsigned int archive_version)
   {
 
+	std::cout << "archiving T_STRING" << std::endl;
+
 	//SG_DEBUG("archiving T_STRING\n");
 
   	ar & length;
@@ -98,6 +100,18 @@ template <class T> class T_STRING
 #endif //HAVE_BOOST_SERIALIZATION
 
     public:
+
+    std::vector<T> to_vector()
+    {
+    	std::vector<T> vec = std::vector<T>(length);
+
+    	for (int i = 0; i < length; i++) {
+    		vec[i] = string[i];
+		}
+
+    	return vec;
+    }
+
 	/** string */
 	T* string;
 	/** length of string */
@@ -1083,6 +1097,8 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
 				SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+				SG_DEBUG("num_vectors:%d\n", p_num_vectors);
+				SG_DEBUG("max_string_length:%d\n", p_max_string_length);
 
 				if (alpha->check_alphabet_size() && alpha->check_alphabet())
 				{
@@ -1951,8 +1967,13 @@ template <class ST> class CStringFeatures : public CFeatures
                 ar & alphabet;
 
                 ar & num_vectors;
+
                 for (int i=0; i < num_vectors; ++i) {
-                    ar & features[i];
+
+                	std::vector<ST> tmp_vec = std::vector<ST>(features[i].string, features[i].string+features[i].length);
+                    ar & tmp_vec;
+
+                	//ar & features[i];
                 }
 
                 ar & length_of_single_string;
@@ -1969,6 +1990,7 @@ template <class ST> class CStringFeatures : public CFeatures
                 //TODO?! how long
                 //ST* symbol_mask_table;
 
+
                 SG_DEBUG("done archiving StringFeatures\n");
 
             }
@@ -1981,20 +2003,29 @@ template <class ST> class CStringFeatures : public CFeatures
 
                 ar & ::boost::serialization::base_object<CFeatures>(*this);
 
-
                 ar & alphabet;
 
                 ar & num_vectors;
 
-				SG_DEBUG("starting with T_STRING\n");
-    
+                ar.template register_type< T_STRING<ST> >();
+
                 //T_STRING<ST>* features = new T_STRING<ST>[num_vectors];
                 features = new T_STRING<ST>[num_vectors];
                 for (int i=0; i < num_vectors; ++i) {
-                    ar & features[i];
-                }
+                	//ar & features[i];
 
-				SG_DEBUG("done with T_STRING\n");
+                	std::vector<ST> tmp_vec; // = new std::vector<ST>(num_vectors);
+                    ar & tmp_vec;
+
+                	T_STRING<ST> tmp_str;
+                    tmp_str.string = new ST[tmp_vec.size()];
+                    for(int j = 0; j < tmp_vec.size(); j++)
+                        tmp_str.string[j] = tmp_vec[j];
+
+                    tmp_str.length = tmp_vec.size();
+                    features[i] = tmp_str;
+
+                }
 
 
                 ar & length_of_single_string;

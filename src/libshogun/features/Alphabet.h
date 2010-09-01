@@ -609,21 +609,23 @@ template<> inline void CAlphabet::translate_from_single_order_reversed(floatmax_
 namespace boost {
 namespace serialization {
    template<class Archive>
-    inline void save_construct_data(Archive & ar, shogun::CAlphabet* t, const unsigned int archive_version)
+    //inline void save_construct_data(Archive & ar, const shogun::CWeightedDegreeStringKernel* const t, const unsigned int file_version)
+    inline void save_construct_data(Archive & ar, const shogun::CAlphabet* const t, const unsigned int archive_version)
     {
-      std::cout << "archiving construction data CAlphabet" << std::endl;
-      ar << t->alphabet;
-      std::cout << "done archiving construction data CAlphabet" << std::endl;
+      //std::cout << "archiving construction data CAlphabet" << std::endl;
+      shogun::EAlphabet a = t->get_alphabet();
+      ar << a;
+      //std::cout << "done archiving construction data CAlphabet" << std::endl;
     }
 
     template<class Archive>
     inline void load_construct_data(Archive & ar, shogun::CAlphabet * t, const unsigned int archive_version)
     {
-      //SG_DEBUG("archiving construction data CAlphabet\n");
+      //std::cout << "archiving construction data CAlphabet" << std::endl;
       shogun::EAlphabet a;
       ar >> a;
       new(t)shogun::CAlphabet(a);
-      //SG_DEBUG("done construction data archiving CAlphabet\n");
+      //std::cout << "done with construction data CAlphabet" << std::endl;
     }
 } // serialization
 } // namespace boost
