@@ -18,7 +18,7 @@
 
 namespace shogun
 {
-template <class ST> struct T_STRING;
+template <class ST> class T_STRING;
 template <class ST> struct TSparse;
 
 /** @brief A File access base class.
