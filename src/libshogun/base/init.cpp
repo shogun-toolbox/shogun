@@ -14,6 +14,7 @@
 #include "lib/Set.h"
 #include "base/Parallel.h"
 #include "base/Version.h"
+#include <locale.h>
 
 namespace shogun
 {
@@ -42,6 +43,8 @@ namespace shogun
 			void (*print_error)(FILE* target, const char* str),
 			void (*cancel_computations)(bool &delayed, bool &immediately))
 	{
+		setlocale(LC_ALL, "");
+
 		if (!sg_io)
 			sg_io = new shogun::CIO();
 		if (!sg_parallel)
