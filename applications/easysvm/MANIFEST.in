@@ -1,0 +1,7 @@
+include AUTHORS
+include distutils-help.txt
+include LICENSE
+include README
+recursive-include dependencies *
+recursive-include galaxy *
+recursive-include data *.csv *.fa

@@ -1,0 +1,18 @@
+# The splice site data was obtained from:
+wget ftp://ftp.tuebingen.mpg.de/fml/behr/splicing/C_elegans/acceptor_splice_site/C_elegans_acc_all_examples.fasta.bz2
+
+# The first 100000 examples was obtained by:
+bunzip2 C_elegans_acc_all_examples.fasta.bz2
+head -n 200000 C_elegans_acc_all_examples.fasta > C_elegans_acc_100000.fasta
+grep ">" C_elegans_acc_100000.fasta | wc -l
+bzip2 C_elegans_acc_100000.fasta
+
+# The last 100000 examples was obtained by:
+bunzip2 C_elegans_acc_all_examples.fasta.bz2
+tail -n 200000 C_elegans_acc_all_examples.fasta > C_elegans_acc_modsel.fasta
+grep ">" C_elegans_acc_modsel.fasta | wc -l
+bzip2 C_elegans_acc_modsel.fasta
+
+
+# Clean up
+rm C_elegans_acc_all_examples.fasta

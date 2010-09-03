@@ -1,5 +1,5 @@
-library(graph)
-library(Rgraphviz)
+#library(graph)
+#library(Rgraphviz)
 library(sg)
 
 #uncomment if make install does not work and comment the library("sg") line above
@@ -59,5 +59,5 @@ b=exp(b)
 y=c(vector(mode='numeric', length(cube[[1]])),vector(mode='numeric', length(cube[[2]]))+1, vector(mode='numeric', length(cube[[2]]))+2)
 matplot(1:length(y), y-0.01,type='l',col='red')
 matplot(1:length(path[[1]]), path[[1]],type='l',col='blue',add=T)
-g=new("graphAM",a>1e-6,edgemode = "directed")
-plot(g, "neato")
+#g=new("graphAM",a>1e-6,edgemode = "directed")
+#plot(g, "neato")

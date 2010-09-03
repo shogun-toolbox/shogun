@@ -4,14 +4,14 @@ dims <- 2;
 num <- 50;
 
 require(graphics)
-require(lattice)
+#require(lattice)
 library('sg')
 
 #uncomment if make install does not work and comment the library("sg") line above
 #dyn.load('sg.so')
 #sg <- function(...) .External("sg",...,PACKAGE="sg")
 
-newplot <- get(getOption('device'))
+#newplot <- get(getOption('device'))
 
 meshgrid <- function(a,b) {
   list(
@@ -81,7 +81,7 @@ trainlab <- c(rep(-1,num),rep(1,num))
 
 graphics.off()
 trySVM(C, 'SIGMOID', 'REAL', 50)
-newplot()
+#newplot()
 trySVM(C, 'LINEAR', 'REAL', 100)
-newplot()
+#newplot()
 trySVM(C, 'GAUSSIAN', 'REAL', 40)

@@ -8,6 +8,7 @@ This page lists ready to run shogun examples for the Static Matlab(tm) and Octav
 \li \subpage octave_distribution_examples 
 \li \subpage octave_features_examples 
 \li \subpage octave_kernel_examples 
+\li \subpage octave_misc_examples 
 \li \subpage octave_mkl_examples 
 \li \subpage octave_preproc_examples 
 \li \subpage octave_regression_examples 
@@ -294,6 +295,12 @@ before starting matlab.
 
 \li <b>../examples/documented/octave/kernel_weighteddegreestring.m</b>
 \verbinclude kernel_weighteddegreestring.m
+
+\section octave_misc_examples Misc
+
+
+\li <b>../examples/documented/octave/misc_pr_loqo.m</b>
+\verbinclude misc_pr_loqo.m
 
 \section octave_mkl_examples Mkl
 
