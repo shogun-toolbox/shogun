@@ -162,7 +162,7 @@ class MainWindow(gtk.Window):
                                 padding=0)
 
         # Button Go
-        self.button_go = gtk.Button(label="_Go!")
+        self.button_go = gtk.Button(label="_Classify")
         self.button_go.connect("clicked", button_go_clicked, self)
         self.button_go.set_focus_on_click(False)
         self.hbox.add(self.button_go)

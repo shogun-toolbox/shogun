@@ -1,0 +1,9 @@
+This example illustrates how to do ocr of handwritten digits.
+
+./predict  - Starts a GUI where one can draw digits with the mouse.
+             Pressing the classify button will detect the drawn digit
+             (so does pressing the middle mouse button). Pressing the right
+             mouse button will clear the window.
+
+./train    - Does model selection using a SVM with a Gaussian kernel and saves the
+            'best' model.
