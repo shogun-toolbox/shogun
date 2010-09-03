@@ -168,7 +168,7 @@ class MainWindow(gtk.Window):
         self.hbox.add(self.button_go)
 
         # Button clear
-        self.button_clear = gtk.Button(label="_clear")
+        self.button_clear = gtk.Button(label="Clea_r")
         self.button_clear.set_focus_on_click(False)
         self.button_clear.connect("clicked", button_clear_clicked,
                                   self)
