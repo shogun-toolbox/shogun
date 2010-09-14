@@ -17,13 +17,13 @@
 using namespace shogun;
 
 CChi2Kernel::CChi2Kernel(int32_t size, float64_t w)
-: CSimpleKernel<float64_t>(size), width(w)
+: CDotKernel(size), width(w)
 {
 }
 
 CChi2Kernel::CChi2Kernel(
 	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t w, int32_t size)
-: CSimpleKernel<float64_t>(size), width(w)
+: CDotKernel(size), width(w)
 {
 	init(l,r);
 }
@@ -35,7 +35,7 @@ CChi2Kernel::~CChi2Kernel()
 
 bool CChi2Kernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<float64_t>::init(l,r);
+	bool result=CDotKernel::init(l,r);
 	init_normalizer();
 	return result;
 }

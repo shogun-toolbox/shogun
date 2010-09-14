@@ -36,19 +36,24 @@ CSparsePolyFeatures::~CSparsePolyFeatures()
 	SG_UNREF(m_feat);
 }
 
-float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+
+	CSparsePolyFeatures* pf=(CSparsePolyFeatures*) df;
 
 	int32_t len1, len2;
 	bool do_free1, do_free2;
 	TSparseEntry<float64_t>* vec1 = m_feat->get_sparse_feature_vector(vec_idx1, len1, do_free1);
-	TSparseEntry<float64_t>* vec2 = m_feat->get_sparse_feature_vector(vec_idx2, len2, do_free2);
+	TSparseEntry<float64_t>* vec2 = pf->m_feat->get_sparse_feature_vector(vec_idx2, len2, do_free2);
 
 	float64_t result=CSparseFeatures<float64_t>::sparse_dot(1, vec1, len1, vec2, len2);
 	result=CMath::pow(result, m_degree);
 
 	m_feat->free_feature_vector(vec1, len1, do_free1);
-	m_feat->free_feature_vector(vec2, len2, do_free2);
+	pf->m_feat->free_feature_vector(vec2, len2, do_free2);
 
 	return result;
 }
@@ -155,7 +160,7 @@ void CSparsePolyFeatures::store_normalization_values()
 	m_normalization_values=new float64_t[num_vec];
 	for (int i=0; i<num_vec; i++)
 	{
-		float64_t val = CMath::sqrt(dot(i,i)); 
+		float64_t val = CMath::sqrt(dot(i, this,i)); 
 		if (val==0)
 			// trap division by zero
 			m_normalization_values[i]=1.0;

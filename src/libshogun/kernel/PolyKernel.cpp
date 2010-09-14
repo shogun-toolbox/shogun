@@ -18,14 +18,14 @@
 using namespace shogun;
 
 CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
-: CSimpleKernel<float64_t>(size), degree(d), inhomogene(i)
+: CDotKernel(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CPolyKernel::CPolyKernel(
 	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d, bool i, int32_t size)
-: CSimpleKernel<float64_t>(size), degree(d), inhomogene(i)
+: CDotKernel(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l,r);
@@ -38,7 +38,7 @@ CPolyKernel::~CPolyKernel()
 
 bool CPolyKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<float64_t>::init(l,r);
+	CDotKernel::init(l,r);
 	return init_normalizer();
 }
 

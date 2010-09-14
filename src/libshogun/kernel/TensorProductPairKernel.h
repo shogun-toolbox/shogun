@@ -12,7 +12,7 @@
 #define _TPPKKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/DotKernel.h"
 #include "features/SimpleFeatures.h"
 
 namespace shogun
@@ -34,7 +34,7 @@ namespace shogun
  *
  * It is often used in bioinformatics, e.g., to predict protein-protein interactions.
  */
-class CTensorProductPairKernel: public CSimpleKernel<int32_t>
+class CTensorProductPairKernel: public CDotKernel
 {
 	public:
 		/** constructor
@@ -73,6 +73,18 @@ class CTensorProductPairKernel: public CSimpleKernel<int32_t>
 		 * @return name TPPK
 		 */
 		virtual const char* get_name() const { return "TPPK"; }
+
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class SIMPLE
+		 */
+		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+
+		/** return feature type the kernel can deal with
+		 *
+		 * @return int32_t feature type
+		 */
+		virtual EFeatureType get_feature_type() { return F_INT; }
 
 	protected:
 		/** compute kernel function for features a and b

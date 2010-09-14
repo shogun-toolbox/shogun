@@ -56,13 +56,18 @@ CSNPFeatures::~CSNPFeatures()
 	SG_UNREF(strings);
 }
 
-float64_t CSNPFeatures::dot(int32_t idx_a, int32_t idx_b)
+float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
 {
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+	CSNPFeatures* sf=(CSNPFeatures*) df;
+
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	uint8_t* avec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(idx_a, alen, free_avec);
-	uint8_t* bvec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(idx_b, blen, free_bvec);
+	uint8_t* avec = strings->get_feature_vector(idx_a, alen, free_avec);
+	uint8_t* bvec = sf->strings->get_feature_vector(idx_b, blen, free_bvec);
 
 	ASSERT(alen==blen);
 	if (alen!=string_length)
@@ -104,8 +109,8 @@ float64_t CSNPFeatures::dot(int32_t idx_a, int32_t idx_b)
 		total+=sumaa+sumbb+sumab;
 	}
 
-	((CStringFeatures<uint8_t>*) strings)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint8_t>*) strings)->free_feature_vector(bvec, idx_b, free_bvec);
+	strings->free_feature_vector(avec, idx_a, free_avec);
+	sf->strings->free_feature_vector(bvec, idx_b, free_bvec);
 	return total;
 }
 

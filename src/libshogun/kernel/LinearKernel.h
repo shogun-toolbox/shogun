@@ -12,8 +12,8 @@
 #define _LINEARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
-#include "features/SimpleFeatures.h"
+#include "kernel/DotKernel.h"
+#include "features/DotFeatures.h"
 
 namespace shogun
 {
@@ -25,7 +25,7 @@ namespace shogun
  * k({\bf x},{\bf x'})= {\bf x}\cdot {\bf x'}
  * \f]
  */
-class CLinearKernel: public CSimpleKernel<float64_t>
+class CLinearKernel: public CDotKernel
 {
 	public:
 		/** constructor
@@ -37,7 +37,7 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CLinearKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
+		CLinearKernel(CDotFeatures* l, CDotFeatures* r);
 
 		virtual ~CLinearKernel();
 
@@ -107,7 +107,7 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		{
 			if (lhs && normal)
 			{
-				len = ((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
+				len = ((CDotFeatures*) lhs)->get_dim_feature_space();
 				return normal;
 			}
 			else
@@ -125,7 +125,7 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
 		{
 			ASSERT(lhs && normal);
-			int32_t len = ((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
+			int32_t len = ((CDotFeatures*) lhs)->get_dim_feature_space();
 			ASSERT(dst_w && dst_dims);
 			*dst_dims=len;
 			*dst_w=(float64_t*) malloc(sizeof(float64_t)*(*dst_dims));
@@ -140,21 +140,10 @@ class CLinearKernel: public CSimpleKernel<float64_t>
 		 */
 		inline void set_w(float64_t* src_w, int32_t src_w_dim)
 		{
-			ASSERT(lhs && src_w_dim==((CSimpleFeatures<float64_t>*) lhs)->get_num_features());
+			ASSERT(lhs && src_w_dim==((CDotFeatures*) lhs)->get_dim_feature_space());
 			clear_normal();
 			memcpy(normal, src_w, sizeof(float64_t) * src_w_dim);
 		}
-
-	protected:
-		/** compute kernel function for features a and b
-		 * idx_{a,b} denote the index of the feature vectors
-		 * in the corresponding feature object
-		 *
-		 * @param idx_a index a
-		 * @param idx_b index b
-		 * @return computed kernel function at indices a,b
-		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */

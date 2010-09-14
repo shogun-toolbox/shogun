@@ -13,7 +13,7 @@
 #define _AUCKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/DotKernel.h"
 #include "features/SimpleFeatures.h"
 #include "features/Labels.h"
 
@@ -30,7 +30,7 @@ namespace shogun
  * are created that ensure that all positive examples get a higher score than
  * all negative examples in training.
  */
-class CAUCKernel: public CSimpleKernel<uint16_t>
+class CAUCKernel: public CDotKernel
 {
 	public:
 		/** constructor
@@ -70,6 +70,18 @@ class CAUCKernel: public CSimpleKernel<uint16_t>
 		 * @return name AUC
 		 */
 		virtual const char* get_name() const { return "AUC" ; }
+
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class SIMPLE
+		 */
+		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+
+		/** return feature type the kernel can deal with
+		 *
+		 * @return word feature type
+		 */
+		virtual EFeatureType get_feature_type() { return F_WORD; }
 
 	protected:
 		/** compute kernel function for features a and b

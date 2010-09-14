@@ -17,13 +17,13 @@
 using namespace shogun;
 
 CTensorProductPairKernel::CTensorProductPairKernel(int32_t size, CKernel* s)
-: CSimpleKernel<int32_t>(size), subkernel(s)
+: CDotKernel(size), subkernel(s)
 {
 	SG_REF(subkernel);
 }
 
 CTensorProductPairKernel::CTensorProductPairKernel(CSimpleFeatures<int32_t>* l, CSimpleFeatures<int32_t>* r, CKernel* s)
-: CSimpleKernel<int32_t>(10), subkernel(s)
+: CDotKernel(10), subkernel(s)
 {
 	SG_REF(subkernel);
 	init(l, r);
@@ -37,7 +37,7 @@ CTensorProductPairKernel::~CTensorProductPairKernel()
 
 bool CTensorProductPairKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<int32_t>::init(l, r);
+	CDotKernel::init(l, r);
 	init_normalizer();
 	return true;
 }

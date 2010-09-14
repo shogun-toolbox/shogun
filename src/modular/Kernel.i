@@ -52,11 +52,10 @@
 #include <shogun/kernel/GaussianShortRealKernel.h>
 #include <shogun/kernel/HistogramWordStringKernel.h>
 #include <shogun/kernel/IdentityKernelNormalizer.h>
-#include <shogun/kernel/SimpleKernel.h>
-#include <shogun/kernel/LinearByteKernel.h>
+#include <shogun/kernel/DotKernel.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/kernel/LinearStringKernel.h>
-#include <shogun/kernel/LinearWordKernel.h>
+#include <shogun/kernel/SparseSpatialSampleStringKernel.h>
 #include <shogun/kernel/LocalAlignmentStringKernel.h>
 #include <shogun/kernel/LocalityImprovedStringKernel.h>
 #include <shogun/kernel/MatchWordStringKernel.h>
@@ -139,10 +138,9 @@
 %rename(GaussianShortRealKernel) CGaussianShortRealKernel;
 %rename(HistogramWordStringKernel) CHistogramWordStringKernel;
 %rename(IdentityKernelNormalizer) CIdentityKernelNormalizer;
-%rename(LinearByteKernel) CLinearByteKernel;
 %rename(LinearKernel) CLinearKernel;
 %rename(LinearStringKernel) CLinearStringKernel;
-%rename(LinearWordKernel) CLinearWordKernel;
+%rename(SparseSpatialSampleStringKernel) CSparseSpatialSampleStringKernel;
 %rename(LocalAlignmentStringKernel) CLocalAlignmentStringKernel;
 %rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 %rename(MatchWordStringKernel) CMatchWordStringKernel;
@@ -174,23 +172,12 @@
 %rename(WeightedDegreeRBFKernel) CWeightedDegreeRBFKernel;
 %rename(SpectrumMismatchRBFKernel) CSpectrumMismatchRBFKernel;
 %rename(ZeroMeanCenterKernelNormalizer) CZeroMeanCenterKernelNormalizer;
+%rename(DotKernel) CDotKernel;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
 
-/* Templated Class SimpleKernel */
-%include <shogun/kernel/SimpleKernel.h>
-namespace shogun
-{
-    %template(RealKernel) CSimpleKernel<float64_t>;
-    %template(ShortRealKernel) CSimpleKernel<float32_t>;
-    %template(WordKernel) CSimpleKernel<uint16_t>;
-    %template(CharKernel) CSimpleKernel<char>;
-    %template(ByteKernel) CSimpleKernel<uint8_t>;
-    %template(IntKernel) CSimpleKernel<int32_t>;
-    %template(ShortKernel) CSimpleKernel<int16_t>;
-    %template(UlongKernel) CSimpleKernel<uint64_t>;
-}
+%include <shogun/kernel/DotKernel.h>
 
 /* Templated Class SparseKernel */
 %include <shogun/kernel/SparseKernel.h>
@@ -269,10 +256,9 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/GaussianShortRealKernel.h>
 %include <shogun/kernel/HistogramWordStringKernel.h>
 %include <shogun/kernel/IdentityKernelNormalizer.h>
-%include <shogun/kernel/LinearByteKernel.h>
 %include <shogun/kernel/LinearKernel.h>
 %include <shogun/kernel/LinearStringKernel.h>
-%include <shogun/kernel/LinearWordKernel.h>
+%include <shogun/kernel/SparseSpatialSampleStringKernel.h>
 %include <shogun/kernel/LocalAlignmentStringKernel.h>
 %include <shogun/kernel/LocalityImprovedStringKernel.h>
 %include <shogun/kernel/MatchWordStringKernel.h>

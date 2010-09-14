@@ -141,7 +141,7 @@ CLBPPyrDotFeatures::~CLBPPyrDotFeatures()
 	SG_UNREF(m_feat);
 }
 
-float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
 	SG_NOTIMPLEMENTED;
 	return 0;

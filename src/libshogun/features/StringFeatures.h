@@ -46,6 +46,21 @@ class CMath;
 template <class ST> class CStringPreProc;
 template <class T> class T_STRING;
 
+struct SSKDoubleFeature
+{
+	int feature1;
+	int feature2;
+	int group;
+};
+
+struct SSKTripleFeature
+{
+	int feature1;
+	int feature2;
+	int feature3;
+	int group;
+};
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** template class T_STRING */
 template <class T> class T_STRING
@@ -1907,6 +1922,78 @@ template <class ST> class CStringFeatures : public CFeatures
 			delete[] randoms;
 			set_features(sf, num_vec, cols);
 		}
+
+		/*
+		CStringFeatures<SSKTripleFeature>* obtain_sssk_triple_from_cha(int d1, int d2)
+		{
+			int *s;
+			int32_t nStr=get_num_vectors();
+
+			int32_t nfeat = 0;
+			for (int32_t i = 0; i < nStr; ++i)
+				nfeat += get_vector_length[i] - d1 -d2;
+			T_STRING<SSKFeature>* F= new T_STRING<SSKFeature>[nfeat];
+			int32_t c = 0;
+			for (int32_t i = 0; i < nStr; ++i)
+			{
+			int32_t len;
+			bool free_vec;
+			ST* S=get_feature_vector(vec_num, len, free_vec);
+			free_feature_vector(vec, vec_num, free_vec);
+				int32_t n = len - d1 - d2;
+				s = S[i];
+				for (int32_t j = 0; j < n; ++j)
+				{
+					F[c].feature1 = s[j];
+					F[c].feature2 = s[j+d1];
+					F[c].feature3 = s[j+d1+d2];
+					F[c].group = i;
+					c++;
+				}
+			}
+			ASSERT(nfeat==c);
+			return F;
+		}
+
+		CStringFeatures<SSKFeature>* obtain_sssk_double_from_char(int **S, int *len, int nStr, int d1)
+		{
+			int i, j;
+			int n, nfeat;
+			int *group;
+			int *features;
+			int *s;
+			int c;
+			SSKFeatures *F;
+
+			nfeat = 0;
+			for (i = 0; i < nStr; ++i)
+				nfeat += len[i] - d1;
+			group = (int *)malloc(nfeat*sizeof(int));
+			features = (int *)malloc(nfeat*2*sizeof(int *));
+			c = 0;
+			for (i = 0; i < nStr; ++i)
+			{
+				n = len[i] - d1;
+				s = S[i];
+				for (j = 0; j < n; ++j)
+				{
+					features[c] = s[j];
+					features[c+nfeat] = s[j+d1];
+					group[c] = i;
+					c++;
+				}
+			}
+			if (nfeat!=c)
+				printf("Something is wrong...\n");
+			F = (SSKFeatures *)malloc(sizeof(SSKFeatures));
+			(*F).features = features;
+			(*F).group = group;
+			(*F).n = nfeat;
+			return F;
+		}
+	*/
+
+
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StringFeatures"; }

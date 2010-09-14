@@ -18,7 +18,7 @@
 using namespace shogun;
 
 CAUCKernel::CAUCKernel(int32_t size, CKernel* s)
-: CSimpleKernel<uint16_t>(size), subkernel(s)
+: CDotKernel(size), subkernel(s)
 {
 	SG_REF(subkernel);
 }
@@ -111,7 +111,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 
 bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<uint16_t>::init(l, r);
+	CDotKernel::init(l, r);
 	init_normalizer();
 	return true;
 }

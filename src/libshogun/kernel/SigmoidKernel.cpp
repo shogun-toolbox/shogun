@@ -19,13 +19,13 @@
 using namespace shogun;
 
 CSigmoidKernel::CSigmoidKernel(int32_t size, float64_t g, float64_t c)
-: CSimpleKernel<float64_t>(size),gamma(g), coef0(c)
+: CDotKernel(size),gamma(g), coef0(c)
 {
 }
 
 CSigmoidKernel::CSigmoidKernel(
 	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t size, float64_t g, float64_t c)
-: CSimpleKernel<float64_t>(size),gamma(g), coef0(c)
+: CDotKernel(size),gamma(g), coef0(c)
 {
 	init(l,r);
 }
@@ -37,7 +37,7 @@ CSigmoidKernel::~CSigmoidKernel()
 
 bool CSigmoidKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<float64_t>::init(l, r);
+	CDotKernel::init(l, r);
 	return init_normalizer();
 }
 

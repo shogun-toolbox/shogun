@@ -12,7 +12,7 @@
 #define PYRAMIDCHI2_H_
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/DotKernel.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
@@ -25,7 +25,7 @@ namespace shogun
  * 
  *
  */
-class CPyramidChi2 : public CSimpleKernel<float64_t>
+class CPyramidChi2 : public CDotKernel
 {
 public:
 

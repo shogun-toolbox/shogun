@@ -12,7 +12,7 @@
 #define _SIGMOIDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/DotKernel.h"
 #include "features/SimpleFeatures.h"
 
 namespace shogun
@@ -25,7 +25,7 @@ namespace shogun
  * k({\bf x},{\bf x'})=\mbox{tanh}(\gamma {\bf x}\cdot{\bf x'}+c)
  * \f]
  */
-class CSigmoidKernel: public CSimpleKernel<float64_t>
+class CSigmoidKernel: public CDotKernel
 {
 	public:
 		/** constructor
@@ -65,6 +65,18 @@ class CSigmoidKernel: public CSimpleKernel<float64_t>
 		 * @return kernel type SIGMOID
 		 */
 		virtual EKernelType get_kernel_type() { return K_SIGMOID; }
+
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class SIMPLE
+		 */
+		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+
+		/** return feature type the kernel can deal with
+		 *
+		 * @return float64_t feature type
+		 */
+		virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 		/** return the kernel's name
 		 *

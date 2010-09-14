@@ -546,7 +546,7 @@ CKernel* CGUIKernel::create_histogramword(int32_t size)
 CKernel* CGUIKernel::create_linearbyte(int32_t size, float64_t scale)
 {
 	size=0;
-	CKernel* kern=new CLinearByteKernel();
+	CKernel* kern=new CLinearKernel();
 	kern->set_normalizer(new CAvgDiagKernelNormalizer(scale));
 	SG_DEBUG("created LinearByteKernel (%p) with size %d and scale %f.\n", kern, size, scale);
 
@@ -556,7 +556,7 @@ CKernel* CGUIKernel::create_linearbyte(int32_t size, float64_t scale)
 CKernel* CGUIKernel::create_linearword(int32_t size, float64_t scale)
 {
 	size=0;
-	CKernel* kern=new CLinearWordKernel();
+	CKernel* kern=new CLinearKernel();
 	kern->set_normalizer(new CAvgDiagKernelNormalizer(scale));
 	SG_DEBUG("created LinearWordKernel (%p) with size %d and scale %f.\n", kern, size, scale);
 

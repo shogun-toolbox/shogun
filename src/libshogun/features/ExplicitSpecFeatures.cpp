@@ -39,12 +39,17 @@ CExplicitSpecFeatures::~CExplicitSpecFeatures()
 	delete_kmer_spectrum();
 }
 
-float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+	CExplicitSpecFeatures* sf = (CExplicitSpecFeatures*) df;
+
 	ASSERT(vec_idx1 < num_strings);
-	ASSERT(vec_idx2 < num_strings);
+	ASSERT(vec_idx2 < sf->num_strings);
 	float64_t* vec1=k_spectrum[vec_idx1];
-	float64_t* vec2=k_spectrum[vec_idx2];
+	float64_t* vec2=sf->k_spectrum[vec_idx2];
 
 	return CMath::dot(vec1, vec2, spec_size);
 }

@@ -37,7 +37,7 @@ void CImplicitWeightedSpecFeatures::compute_normalization_const()
 	float64_t* factors=new float64_t[num_strings];
 
 	for (int32_t i=0; i<num_strings; i++)
-		factors[i]=1.0/CMath::sqrt(dot(i,i));
+		factors[i]=1.0/CMath::sqrt(dot(i, this, i));
 
 	normalization_factors=factors;
 	//CMath::display_vector(normalization_factors, num_strings, "n");
@@ -90,17 +90,22 @@ CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
 	delete[] normalization_factors;
 }
 
-float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+	CImplicitWeightedSpecFeatures* sf = (CImplicitWeightedSpecFeatures*) df;
+
 	ASSERT(vec_idx1 < num_strings);
-	ASSERT(vec_idx2 < num_strings);
+	ASSERT(vec_idx2 < sf->get_num_vectors());
 
 	int32_t len1=-1;
 	int32_t len2=-1;
 	bool free_vec1;
 	bool free_vec2;
 	uint16_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
-	uint16_t* vec2=strings->get_feature_vector(vec_idx2, len2, free_vec2);
+	uint16_t* vec2=sf->strings->get_feature_vector(vec_idx2, len2, free_vec2);
 
 	float64_t result=0;
 	uint8_t mask=0;
@@ -140,7 +145,7 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 	}
 
 	strings->free_feature_vector(vec1, vec_idx1, free_vec1);
-	strings->free_feature_vector(vec2, vec_idx2, free_vec2);
+	sf->strings->free_feature_vector(vec2, vec_idx2, free_vec2);
 
 	if (normalization_factors)
 		return result*normalization_factors[vec_idx1]*normalization_factors[vec_idx2];

@@ -562,20 +562,26 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * appointed by their indices
 		 *
 		 * @param vec_idx1 index of first vector
+		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2)
+		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 		{
+			ASSERT(df);
+			ASSERT(df->get_feature_type() == get_feature_type());
+			ASSERT(df->get_feature_class() == get_feature_class());
+			CSimpleFeatures<ST>* sf=(CSimpleFeatures<ST>*) df;
+
 			int32_t len1, len2;
 			bool free1, free2;
 
 			ST* vec1= get_feature_vector(vec_idx1, len1, free1);
-			ST* vec2= get_feature_vector(vec_idx2, len2, free2);
+			ST* vec2= sf->get_feature_vector(vec_idx2, len2, free2);
 
 			float64_t result=CMath::dot(vec1, vec2, len1);
 
 			free_feature_vector(vec1, vec_idx1, free1);
-			free_feature_vector(vec2, vec_idx2, free2);
+			sf->free_feature_vector(vec2, vec_idx2, free2);
 
 			return result;
 		}

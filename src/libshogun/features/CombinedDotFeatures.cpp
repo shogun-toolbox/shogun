@@ -82,18 +82,33 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 	SG_DEBUG("vecs=%d, dims=%d\n", num_vectors, num_dimensions);
 }
 
-float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
 	float64_t result=0;
 
-	CListElement<CDotFeatures*> * current = NULL ;
-	CDotFeatures* f=get_first_feature_obj(current);
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+	CCombinedDotFeatures* cf = (CCombinedDotFeatures*) df;
 
-	while (f)
+	CListElement<CDotFeatures*> * current1 = NULL;
+	CDotFeatures* f1=get_first_feature_obj(current1);
+
+	CListElement<CDotFeatures*> * current2 = NULL;
+	CDotFeatures* f2=cf->get_first_feature_obj(current2);
+
+	while (f1 && f2)
 	{
-		result += f->dot(vec_idx1, vec_idx2)*CMath::sq(f->get_combined_feature_weight());
-		f=get_next_feature_obj(current);
+		result += f1->dot(vec_idx1, f2,vec_idx2) *
+			f1->get_combined_feature_weight() *
+			f2->get_combined_feature_weight();
+
+		f1=get_next_feature_obj(current1);
+		f2=cf->get_next_feature_obj(current2);
 	}
+
+	// check that both have same number of feature objects inside
+	ASSERT(f1 == NULL && f2 == NULL);
 
 	return result;
 }

@@ -22,19 +22,19 @@ BOOST_CLASS_EXPORT(shogun::CGaussianKernel);
 using namespace shogun;
 
 CGaussianKernel::CGaussianKernel()
-: CSimpleKernel<float64_t>(), width(1)
+: CDotKernel(), width(1)
 {
 }
 
 
 CGaussianKernel::CGaussianKernel(int32_t size, float64_t w)
-: CSimpleKernel<float64_t>(size), width(w)
+: CDotKernel(size), width(w)
 {
 }
 
 CGaussianKernel::CGaussianKernel(
 	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t w, int32_t size)
-: CSimpleKernel<float64_t>(size), width(w)
+: CDotKernel(size), width(w)
 {
 	init(l,r);
 }
@@ -45,7 +45,7 @@ CGaussianKernel::~CGaussianKernel()
 
 bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<float64_t>::init(l, r);
+	CDotKernel::init(l, r);
 	return init_normalizer();
 }
 

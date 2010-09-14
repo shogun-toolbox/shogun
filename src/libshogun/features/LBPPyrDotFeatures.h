@@ -97,9 +97,10 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 *  appointed by their indices
 		 *
 		 *  @param vec_idx1 index of first vector
-		 *   @param vec_idx2 index of second vector
+		 * @param df DotFeatures (of same kind) to compute dot product with
+		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2);
+		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
 
 		/**
 		 *

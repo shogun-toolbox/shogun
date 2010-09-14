@@ -17,13 +17,13 @@
 using namespace shogun;
 
 CGaussianShortRealKernel::CGaussianShortRealKernel(int32_t size, float64_t w)
-: CSimpleKernel<float32_t>(size), width(w)
+: CDotKernel(size), width(w)
 {
 }
 
 CGaussianShortRealKernel::CGaussianShortRealKernel(
 	CSimpleFeatures<float32_t>* l, CSimpleFeatures<float32_t>* r, float64_t w, int32_t size)
-: CSimpleKernel<float32_t>(size), width(w)
+: CDotKernel(size), width(w)
 {
 	init(l,r);
 }
@@ -34,7 +34,7 @@ CGaussianShortRealKernel::~CGaussianShortRealKernel()
 
 bool CGaussianShortRealKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<float32_t>::init(l, r);
+	CDotKernel::init(l, r);
 	return init_normalizer();
 }
 

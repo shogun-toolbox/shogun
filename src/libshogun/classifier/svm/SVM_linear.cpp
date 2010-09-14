@@ -428,7 +428,7 @@ void Solver_MCSVM_CS::Solve(double *w)
 		for(m=0;m<nr_class;m++)
 			alpha_index[i*nr_class+m] = m;
 
-		QD[i] = prob->x->dot(i,i);
+		QD[i] = prob->x->dot(i, prob->x,i);
 
 		active_size_i[i] = nr_class;
 		y_index[i] = prob->y[i];

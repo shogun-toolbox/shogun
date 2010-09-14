@@ -62,13 +62,18 @@ CHashedWDFeatures::~CHashedWDFeatures()
 	delete[] wd_weights;
 }
 
-float64_t CHashedWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
+float64_t CHashedWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+	CHashedWDFeatures* wdf = (CHashedWDFeatures*) df;
+
 	int32_t len1, len2;
 	bool free_vec1, free_vec2;
 
 	uint8_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
-	uint8_t* vec2=strings->get_feature_vector(vec_idx2, len2, free_vec2);
+	uint8_t* vec2=wdf->strings->get_feature_vector(vec_idx2, len2, free_vec2);
 
 	ASSERT(len1==len2);
 
@@ -85,7 +90,7 @@ float64_t CHashedWDFeatures::dot(int32_t vec_idx1, int32_t vec_idx2)
 		}
 	}
 	strings->free_feature_vector(vec1, vec_idx1, free_vec1);
-	strings->free_feature_vector(vec2, vec_idx2, free_vec2);
+	wdf->strings->free_feature_vector(vec2, vec_idx2, free_vec2);
 	return sum/CMath::sq(normalization_const);
 }
 

@@ -33,7 +33,7 @@ CPyramidChi2::CPyramidChi2(
 		float64_t* weights_foreach_cell2, 
 		int32_t width_computation_type2,
 		float64_t width2)
-: CSimpleKernel<float64_t>(size), num_cells(num_cells2),weights(NULL),
+: CDotKernel(size), num_cells(num_cells2),weights(NULL),
 width_computation_type(width_computation_type2), width(width2),
 	 num_randfeats_forwidthcomputation(-1)
 {
@@ -76,7 +76,7 @@ void CPyramidChi2::cleanup()
 
 bool CPyramidChi2::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<float64_t>::init(l, r);
+	CDotKernel::init(l, r);
 	return init_normalizer();
 }
 
@@ -86,7 +86,7 @@ CPyramidChi2::CPyramidChi2(
 		float64_t* weights_foreach_cell2, 
 		int32_t width_computation_type2,
 		float64_t width2)
-: CSimpleKernel<float64_t>(size), num_cells(num_cells2), weights(NULL),
+: CDotKernel(size), num_cells(num_cells2), weights(NULL),
 width_computation_type(width_computation_type2), width(width2),
 	  num_randfeats_forwidthcomputation(-1)
 {

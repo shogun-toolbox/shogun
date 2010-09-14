@@ -12,7 +12,7 @@
 #define _GAUSSIANKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/DotKernel.h"
 #include "features/SimpleFeatures.h"
 
 namespace shogun
@@ -28,7 +28,7 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CGaussianKernel: public CSimpleKernel<float64_t>
+class CGaussianKernel: public CDotKernel
 {
 	public:
 		/** default constructor
@@ -83,6 +83,18 @@ class CGaussianKernel: public CSimpleKernel<float64_t>
 			return width;
 		}
 
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class SIMPLE
+		 */
+		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+
+		/** return feature type the kernel can deal with
+		 *
+		 * @return float64_t feature type
+		 */
+		virtual EFeatureType get_feature_type() { return F_DREAL; }
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -104,7 +116,7 @@ class CGaussianKernel: public CSimpleKernel<float64_t>
 
                 SG_DEBUG("archiving GaussianKernel\n");
 
-                ar & ::boost::serialization::base_object<CSimpleKernel<float64_t> >(*this);
+                ar & ::boost::serialization::base_object<CDotKernel >(*this);
 
                 ar & width;
 

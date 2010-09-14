@@ -1319,19 +1319,25 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * appointed by their indices
 		 *
 		 * @param vec_idx1 index of first vector
+		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, int32_t vec_idx2)
+		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 		{
+			ASSERT(df);
+			ASSERT(df->get_feature_type() == get_feature_type());
+			ASSERT(df->get_feature_class() == get_feature_class());
+			CSparseFeatures<ST>* sf = (CSparseFeatures<ST>*) df;
+
 			bool afree, bfree;
 			int32_t alen, blen;
 			TSparseEntry<ST>* avec=get_sparse_feature_vector(vec_idx1, alen, afree);
-			TSparseEntry<ST>* bvec=get_sparse_feature_vector(vec_idx2, blen, bfree);
+			TSparseEntry<ST>* bvec=sf->get_sparse_feature_vector(vec_idx2, blen, bfree);
 
 			float64_t result=sparse_dot(1, avec, alen, bvec, blen);
 
 			free_sparse_feature_vector(avec, vec_idx1, afree);
-			free_sparse_feature_vector(bvec, vec_idx2, bfree);
+			sf->free_sparse_feature_vector(bvec, vec_idx2, bfree);
 
 			return result;
 		}

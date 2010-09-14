@@ -87,7 +87,8 @@ enum EKernelType
 	K_OLIGO = 250,
 	K_MATCHWORD = 260,
 	K_TPPK = 270,
-	K_REGULATORYMODULES = 280
+	K_REGULATORYMODULES = 280,
+	K_SPARSESPATIALSAMPLE = 290
 };
 
 enum EKernelProperty
@@ -163,7 +164,8 @@ class CKernel : public CSGObject
 	friend class CMultitaskKernelMaskPairNormalizer;
 	friend class CTanimotoKernelNormalizer;
 	friend class CDiceKernelNormalizer;
-    	friend class CZeroMeanCenterKernelNormalizer;
+	friend class CZeroMeanCenterKernelNormalizer;
+
 	public:
 
 		/** default constructor

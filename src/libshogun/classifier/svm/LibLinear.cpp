@@ -270,7 +270,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		}
 		QD[i] = diag[GETI(i)];
 
-		QD[i] += prob->x->dot(i,i);
+		QD[i] += prob->x->dot(i, prob->x,i);
 		index[i] = i;
 	}
 

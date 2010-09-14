@@ -2,13 +2,13 @@
 #define _WEIGHTEDDEGREERBFKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/DotKernel.h"
 #include "features/SimpleFeatures.h"
 
 namespace shogun
 {
 
-class CWeightedDegreeRBFKernel: public CSimpleKernel<float64_t>
+class CWeightedDegreeRBFKernel: public CDotKernel
 {
 	public:
 		/** default constructor
@@ -60,6 +60,18 @@ class CWeightedDegreeRBFKernel: public CSimpleKernel<float64_t>
 		 */
 		inline virtual const char* get_name() const { return "WeightedDegreeRBFKernel"; }
 		
+
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class SIMPLE
+		 */
+		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+
+		/** return feature type the kernel can deal with
+		 *
+		 * @return float64_t feature type
+		 */
+		virtual EFeatureType get_feature_type() { return F_DREAL; }
 	
 	
 		/** set degree
@@ -103,7 +115,7 @@ class CWeightedDegreeRBFKernel: public CSimpleKernel<float64_t>
 
                 SG_DEBUG("archiving WeightedDegreeRBFKernel\n");
 
-                ar & ::boost::serialization::base_object<CSimpleKernel<float64_t> >(*this);
+                ar & ::boost::serialization::base_object<CDotKernel >(*this);
 
                 ar & width;
 

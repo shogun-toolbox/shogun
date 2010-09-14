@@ -12,7 +12,7 @@
 #define _GAUSSIANSHORTREALKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/DotKernel.h"
 #include "features/SimpleFeatures.h"
 
 namespace shogun
@@ -28,7 +28,7 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  */
-class CGaussianShortRealKernel: public CSimpleKernel<float32_t>
+class CGaussianShortRealKernel: public CDotKernel
 {
 	public:
 		/** constructor

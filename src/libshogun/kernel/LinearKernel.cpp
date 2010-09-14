@@ -11,19 +11,19 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "features/Features.h"
-#include "features/SimpleFeatures.h"
+#include "features/DotFeatures.h"
 #include "kernel/LinearKernel.h"
 
 using namespace shogun;
 
 CLinearKernel::CLinearKernel()
-: CSimpleKernel<float64_t>(0), normal(NULL), normal_length(0)
+: CDotKernel(0), normal(NULL), normal_length(0)
 {
 	properties |= KP_LINADD;
 }
 
-CLinearKernel::CLinearKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
-: CSimpleKernel<float64_t>(0), normal(NULL), normal_length(0)
+CLinearKernel::CLinearKernel(CDotFeatures* l, CDotFeatures* r)
+: CDotKernel(0), normal(NULL), normal_length(0)
 {
 	properties |= KP_LINADD;
 	init(l,r);
@@ -36,7 +36,7 @@ CLinearKernel::~CLinearKernel()
 
 bool CLinearKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<float64_t>::init(l, r);
+	CDotKernel::init(l, r);
 
 	return init_normalizer();
 }
@@ -50,7 +50,7 @@ void CLinearKernel::cleanup()
 
 void CLinearKernel::clear_normal()
 {
-	int32_t num = ((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
+	int32_t num = ((CDotFeatures*) lhs)->get_dim_feature_space();
 	if (normal==NULL)
 	{
 		normal = new float64_t[num];
@@ -64,29 +64,9 @@ void CLinearKernel::clear_normal()
 
 void CLinearKernel::add_to_normal(int32_t idx, float64_t weight) 
 {
-	((CSimpleFeatures<float64_t>*) lhs)->add_to_dense_vec(
+	((CDotFeatures*) lhs)->add_to_dense_vec(
 		normalizer->normalize_lhs(weight, idx), idx, normal, normal_length);
 	set_is_initialized(true);
-}
-
-float64_t CLinearKernel::compute(int32_t idx_a, int32_t idx_b)
-{
-  int32_t alen, blen;
-  bool afree, bfree;
-
-  float64_t* avec=
-	((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-  float64_t* bvec=
-	((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
-
-  ASSERT(alen==blen);
-
-  float64_t result=CMath::dot(avec, bvec, alen);
-
-  ((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-
-  return result;
 }
 
 bool CLinearKernel::init_optimization(
@@ -114,7 +94,7 @@ bool CLinearKernel::delete_optimization()
 float64_t CLinearKernel::compute_optimized(int32_t idx)
 {
 	ASSERT(get_is_initialized());
-	float64_t result = ((CSimpleFeatures<float64_t>*) rhs)->
+	float64_t result = ((CDotFeatures*) rhs)->
 		dense_dot(idx, normal, normal_length);
 	return normalizer->normalize_rhs(result, idx);
 }

@@ -316,7 +316,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 				for (int32_t j=i; j<num_bound; j++)
 				{
 					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
-						(features->dot(idx_bound[i], idx_bound[j]) + bias_const);
+						(features->dot(idx_bound[i], features, idx_bound[j]) + bias_const);
 
 					Z[j*num_bound+i]=Z[i*num_bound+j];
 
