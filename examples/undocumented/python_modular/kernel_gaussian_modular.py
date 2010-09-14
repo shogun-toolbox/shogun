@@ -12,6 +12,7 @@ def gaussian ():
 
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
+	print km_test
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

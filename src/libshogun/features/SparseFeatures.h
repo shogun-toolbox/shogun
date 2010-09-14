@@ -968,7 +968,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			return sq;
 		}
 
-		/** compute (a-b)^2 (== a^2+b^2+2ab)
+		/** compute (a-b)^2 (== a^2+b^2-2ab)
 		 * usually called by kernels'/distances' compute functions
 		 * works on two feature vectors, although it is a member of a single
 		 * feature: can either be called by lhs or rhs.

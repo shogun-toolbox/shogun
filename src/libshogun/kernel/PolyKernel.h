@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 1999-2010 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
  */
 
 #ifndef _POLYKERNEL_H___
@@ -13,12 +14,13 @@
 
 #include "lib/common.h"
 #include "kernel/DotKernel.h"
-#include "features/SimpleFeatures.h"
+#include "features/DotFeatures.h"
 
 namespace shogun
 {
-/** @brief Computes the standard polynomial kernel on dense real valued
- * features.
+	class CDotFeatures;
+
+/** @brief Computes the standard polynomial kernel on CDotFeatures
  *
  * Formally, it computes
  *
@@ -42,7 +44,7 @@ class CPolyKernel: public CDotKernel
 		 * @param inhom is inhomogeneous
 		 * @param size cache size
 		 */
-		CPolyKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+		CPolyKernel(CDotFeatures* l, CDotFeatures* r,
 			int32_t d, bool inhom, int32_t size=10);
 
 		/** constructor
@@ -71,18 +73,6 @@ class CPolyKernel: public CDotKernel
 		 * @return kernel type POLY
 		 */
 		virtual EKernelType get_kernel_type() { return K_POLY; }
-
-		/** return feature class the kernel can deal with
-		 *
-		 * @return feature class SIMPLE
-		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
-
-		/** return feature type the kernel can deal with
-		 *
-		 * @return float64_t feature type
-		 */
-		virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 		/** return the kernel's name
 		 *

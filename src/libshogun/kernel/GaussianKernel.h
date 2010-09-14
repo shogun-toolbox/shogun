@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 1999-2010 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
  */
 
 #ifndef _GAUSSIANKERNEL_H___
@@ -13,12 +14,13 @@
 
 #include "lib/common.h"
 #include "kernel/DotKernel.h"
-#include "features/SimpleFeatures.h"
+#include "features/DotFeatures.h"
 
 namespace shogun
 {
+	class CDotFeatures;
 /** @brief The well known Gaussian kernel (swiss army knife for SVMs)
- * on dense real valued features.
+ * computed on CDotFeatures.
  *
  * It is computed as
  *
@@ -50,7 +52,7 @@ class CGaussianKernel: public CDotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		CGaussianKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+		CGaussianKernel(CDotFeatures* l, CDotFeatures* r,
 			float64_t width, int32_t size=10);
 
 		virtual ~CGaussianKernel();
@@ -62,6 +64,9 @@ class CGaussianKernel: public CDotKernel
 		 * @return if initializing was successful
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** clean up kernel */
+		virtual void cleanup();
 
 		/** return what type of kernel we are
 		 *
@@ -83,18 +88,6 @@ class CGaussianKernel: public CDotKernel
 			return width;
 		}
 
-		/** return feature class the kernel can deal with
-		 *
-		 * @return feature class SIMPLE
-		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
-
-		/** return feature type the kernel can deal with
-		 *
-		 * @return float64_t feature type
-		 */
-		virtual EFeatureType get_feature_type() { return F_DREAL; }
-
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -106,29 +99,22 @@ class CGaussianKernel: public CDotKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving GaussianKernel\n");
-
-                ar & ::boost::serialization::base_object<CDotKernel >(*this);
-
-                ar & width;
-
-                SG_DEBUG("done with GaussianKernel\n");
-
-            }
-#endif //HAVE_BOOST_SERIALIZATION
-
+	protected:
+		/** helper function to compute quadratic terms in
+		 * (a-b)^2 (== a^2+b^2-2ab)
+		 *
+		 * @param buf buffer to store squared terms (will be allocated)
+		 * @param df dot feature object based on which k(i,i) is computed
+		 * */
+		void precompute_squared(float64_t* &buf, CDotFeatures* df);
 
 	protected:
 		/** width */
 		float64_t width;
+		/** squared left-hand side */
+		float64_t* sq_lhs;
+		/** squared right-hand side */
+		float64_t* sq_rhs;
 };
 }
 #endif /* _GAUSSIANKERNEL_H__ */

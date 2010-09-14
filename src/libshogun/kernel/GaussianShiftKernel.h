@@ -13,6 +13,7 @@
 
 #include "lib/common.h"
 #include "kernel/GaussianKernel.h"
+#include "features/SimpleFeatures.h"
 
 namespace shogun
 {

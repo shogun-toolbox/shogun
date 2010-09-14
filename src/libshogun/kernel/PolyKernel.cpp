@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 1999-2010 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
  */
 
 #include "lib/config.h"
@@ -13,7 +14,7 @@
 #include "lib/io.h"
 #include "kernel/PolyKernel.h"
 #include "kernel/SqrtDiagKernelNormalizer.h"
-#include "features/SimpleFeatures.h"
+#include "features/DotFeatures.h"
 
 using namespace shogun;
 
@@ -24,7 +25,7 @@ CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
 }
 
 CPolyKernel::CPolyKernel(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d, bool i, int32_t size)
+	CDotFeatures* l, CDotFeatures* r, int32_t d, bool i, int32_t size)
 : CDotKernel(size), degree(d), inhomogene(i)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
@@ -49,26 +50,10 @@ void CPolyKernel::cleanup()
 
 float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  int32_t alen=0;
-  int32_t blen=0;
-  bool afree=false;
-  bool bfree=false;
+	float64_t result=CDotKernel::compute(idx_a, idx_b);
 
-  float64_t* avec=
-	((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-  float64_t* bvec=
-	((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  ASSERT(alen==blen);
+	if (inhomogene)
+		result+=1;
 
-  float64_t result=CMath::dot(avec, bvec, alen);
-
-  if (inhomogene)
-	  result+=1;
-
-  result=CMath::pow(result, degree);
-
-  ((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-
-  return result;
+	return CMath::pow(result, degree);
 }

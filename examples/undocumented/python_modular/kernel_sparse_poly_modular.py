@@ -2,7 +2,7 @@ def sparse_poly ():
 	print 'SparsePoly'
 
 	from shogun.Features import SparseRealFeatures
-	from shogun.Kernel import SparsePolyKernel
+	from shogun.Kernel import PolyKernel
 
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)
@@ -11,7 +11,7 @@ def sparse_poly ():
 	degree=3
 	inhomogene=True
 
-	kernel=SparsePolyKernel(feats_train, feats_train, size_cache, degree,
+	kernel=PolyKernel(feats_train, feats_train, size_cache, degree,
 		inhomogene)
 	km_train=kernel.get_kernel_matrix()
 

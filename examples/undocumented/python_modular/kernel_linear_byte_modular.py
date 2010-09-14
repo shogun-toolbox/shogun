@@ -3,13 +3,13 @@
 ###########################################################################
 def linear_byte():
 	print 'LinearByte'
-	from shogun.Kernel import LinearByteKernel
+	from shogun.Kernel import LinearKernel
 	from shogun.Features import ByteFeatures
 	
 	feats_train=ByteFeatures(fm_train_byte)
 	feats_test=ByteFeatures(fm_test_byte)
 
-	kernel=LinearByteKernel(feats_train, feats_train)
+	kernel=LinearKernel(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

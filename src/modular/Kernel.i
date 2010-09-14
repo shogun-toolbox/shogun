@@ -75,10 +75,7 @@
 #include <shogun/kernel/SalzbergWordStringKernel.h>
 #include <shogun/kernel/SigmoidKernel.h>
 #include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>
-#include <shogun/kernel/SparseGaussianKernel.h>
 #include <shogun/kernel/SparseKernel.h>
-#include <shogun/kernel/SparseLinearKernel.h>
-#include <shogun/kernel/SparsePolyKernel.h>
 #include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 #include <shogun/kernel/StringKernel.h>
 #include <shogun/kernel/TanimotoKernelNormalizer.h>
@@ -160,9 +157,6 @@
 %rename(SalzbergWordStringKernel) CSalzbergWordStringKernel;
 %rename(SigmoidKernel) CSigmoidKernel;
 %rename(SimpleLocalityImprovedStringKernel) CSimpleLocalityImprovedStringKernel;
-%rename(SparseGaussianKernel) CSparseGaussianKernel;
-%rename(SparseLinearKernel) CSparseLinearKernel;
-%rename(SparsePolyKernel) CSparsePolyKernel;
 %rename(SqrtDiagKernelNormalizer) CSqrtDiagKernelNormalizer;
 %rename(TanimotoKernelNormalizer) CTanimotoKernelNormalizer;
 %rename(TensorProductPairKernel) CTensorProductPairKernel;
@@ -278,9 +272,6 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/SalzbergWordStringKernel.h>
 %include <shogun/kernel/SigmoidKernel.h>
 %include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>
-%include <shogun/kernel/SparseGaussianKernel.h>
-%include <shogun/kernel/SparseLinearKernel.h>
-%include <shogun/kernel/SparsePolyKernel.h>
 %include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 %include <shogun/kernel/TanimotoKernelNormalizer.h>
 %include <shogun/kernel/TensorProductPairKernel.h>

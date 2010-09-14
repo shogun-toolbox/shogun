@@ -66,6 +66,8 @@ class CDotKernel : public CKernel
 
 			ASSERT(l->has_property(FP_DOT));
 			ASSERT(r->has_property(FP_DOT));
+			ASSERT(l->get_feature_type() == r->get_feature_type());
+			ASSERT(l->get_feature_class() == r->get_feature_class());
 
 			if ( ((CDotFeatures*) l)->get_dim_feature_space() != ((CDotFeatures*) r)->get_dim_feature_space() )
 			{
@@ -79,17 +81,17 @@ class CDotKernel : public CKernel
 		 *
 		 * dot kernel returns unknown since features can be based on anything
 		 *
-		 * @return feature class UNKNOWN
+		 * @return feature class ANY
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_UNKNOWN; }
+		inline virtual EFeatureClass get_feature_class() { return C_ANY; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * dot kernel returns unknown since features can be based on anything
 		 *
-		 * @return unknown feature type
+		 * @return ANY feature type
 		 */
-		inline virtual EFeatureType get_feature_type() { return F_UNKNOWN; }
+		inline virtual EFeatureType get_feature_type() { return F_ANY; }
 
 	protected:
 		/** compute kernel function for features a and b

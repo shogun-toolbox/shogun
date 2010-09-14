@@ -1,14 +1,14 @@
 def sparse_linear ():
 	print 'SparseLinear'
 	from shogun.Features import SparseRealFeatures
-	from shogun.Kernel import SparseLinearKernel, AvgDiagKernelNormalizer
+	from shogun.Kernel import LinearKernel, AvgDiagKernelNormalizer
 
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)
 
 	scale=1.1
 
-	kernel=SparseLinearKernel()
+	kernel=LinearKernel()
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()

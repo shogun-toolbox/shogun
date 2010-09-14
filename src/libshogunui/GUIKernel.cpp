@@ -45,9 +45,6 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/GaussianShiftKernel.h>
 #include <shogun/kernel/SigmoidKernel.h>
-#include <shogun/kernel/SparseLinearKernel.h>
-#include <shogun/kernel/SparsePolyKernel.h>
-#include <shogun/kernel/SparseGaussianKernel.h>
 #include <shogun/kernel/DiagKernel.h>
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/DistanceKernel.h>
@@ -150,7 +147,7 @@ CKernel* CGUIKernel::create_gaussianshift(
 
 CKernel* CGUIKernel::create_sparsegaussian(int32_t size, float64_t width)
 {
-	CKernel* kern=new CSparseGaussianKernel(size, width);
+	CKernel* kern=new CGaussianKernel(size, width);
 	if (!kern)
 		SG_ERROR("Couldn't create GaussianKernel with size %d, width %f.\n", size, width);
 	else
@@ -185,10 +182,10 @@ CKernel* CGUIKernel::create_sigmoid(
 CKernel* CGUIKernel::create_sparsepoly(
 	int32_t size, int32_t degree, bool inhomogene, bool normalize)
 {
-	CKernel* kern=new CSparsePolyKernel(size, degree, inhomogene);
+	CKernel* kern=new CPolyKernel(size, degree, inhomogene);
 	if (!normalize)
 		kern->set_normalizer(new CIdentityKernelNormalizer());
-	SG_DEBUG("created SparsePolyKernel with size %d, degree %d, inhomogene %d normalize %d.\n", kern, size, degree, inhomogene, normalize);
+	SG_DEBUG("created PolyKernel with size %d, degree %d, inhomogene %d normalize %d.\n", kern, size, degree, inhomogene, normalize);
 
 	return kern;
 }
@@ -589,10 +586,10 @@ CKernel* CGUIKernel::create_linear(int32_t size, float64_t scale)
 CKernel* CGUIKernel::create_sparselinear(int32_t size, float64_t scale)
 {
 	size=0;
-	CKernel* kern=new CSparseLinearKernel();
+	CKernel* kern=new CLinearKernel();
 	kern->set_normalizer(new CAvgDiagKernelNormalizer(scale));
 
-	SG_DEBUG("created SparseLinearKernel (%p) with size %d and scale %f.\n", kern, size, scale);
+	SG_DEBUG("created LinearKernel (%p) with size %d and scale %f.\n", kern, size, scale);
 
 	return kern;
 }

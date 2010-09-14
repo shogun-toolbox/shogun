@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 1999-2010 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
  */
 
 #ifndef _SIGMOIDKERNEL_H___
@@ -13,7 +14,7 @@
 
 #include "lib/common.h"
 #include "kernel/DotKernel.h"
-#include "features/SimpleFeatures.h"
+#include "features/DotFeatures.h"
 
 namespace shogun
 {
@@ -44,7 +45,7 @@ class CSigmoidKernel: public CDotKernel
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		CSigmoidKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t size,
+		CSigmoidKernel(CDotFeatures* l, CDotFeatures* r, int32_t size,
 			float64_t gamma, float64_t coef0);
 
 		virtual ~CSigmoidKernel();
@@ -66,18 +67,6 @@ class CSigmoidKernel: public CDotKernel
 		 */
 		virtual EKernelType get_kernel_type() { return K_SIGMOID; }
 
-		/** return feature class the kernel can deal with
-		 *
-		 * @return feature class SIMPLE
-		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
-
-		/** return feature type the kernel can deal with
-		 *
-		 * @return float64_t feature type
-		 */
-		virtual EFeatureType get_feature_type() { return F_DREAL; }
-
 		/** return the kernel's name
 		 *
 		 * @return name Sigmoid
@@ -93,7 +82,10 @@ class CSigmoidKernel: public CDotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		inline virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		{
+			return tanh(gamma*CDotKernel::compute(idx_a,idx_b)+coef0);
+		}
 
 	protected:
 		/** gamma */
