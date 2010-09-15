@@ -720,6 +720,7 @@ void CKernel::remove_rhs()
 #endif //USE_SVMLIGHT
 }
 
+#define ENUM_CASE(n) case n: SG_INFO(#n " "); break;
 
 void CKernel::list_kernel()
 {
@@ -730,163 +731,78 @@ void CKernel::list_kernel()
 
 	switch (get_kernel_type())
 	{
-		case K_UNKNOWN:
-			SG_INFO( "K_UNKNOWN ");
-			break;
-		case K_LINEAR:
-			SG_INFO( "K_LINEAR ");
-			break;
-		case K_SPARSELINEAR:
-			SG_INFO( "K_SPARSELINEAR ");
-			break;
-		case K_POLY:
-			SG_INFO( "K_POLY ");
-			break;
-		case K_GAUSSIAN:
-			SG_INFO( "K_GAUSSIAN ");
-			break;
-		case K_SPARSEGAUSSIAN:
-			SG_INFO( "K_SPARSEGAUSSIAN ");
-			break;
-		case K_GAUSSIANSHIFT:
-			SG_INFO( "K_GAUSSIANSHIFT ");
-			break;
-		case K_HISTOGRAM:
-			SG_INFO( "K_HISTOGRAM ");
-			break;
-		case K_SALZBERG:
-			SG_INFO( "K_SALZBERG ");
-			break;
-		case K_LOCALITYIMPROVED:
-			SG_INFO( "K_LOCALITYIMPROVED ");
-			break;
-		case K_SIMPLELOCALITYIMPROVED:
-			SG_INFO( "K_SIMPLELOCALITYIMPROVED ");
-			break;
-		case K_FIXEDDEGREE:
-			SG_INFO( "K_FIXEDDEGREE ");
-			break;
-		case K_WEIGHTEDDEGREE:
-			SG_INFO( "K_WEIGHTEDDEGREE ");
-			break;
-		case K_WEIGHTEDDEGREEPOS:
-			SG_INFO( "K_WEIGHTEDDEGREEPOS ");
-			break;
-		case K_WEIGHTEDDEGREERBF:
-			SG_INFO( "K_WEIGHTEDDEGREERBF ");
-			break;
-		case K_WEIGHTEDCOMMWORDSTRING:
-			SG_INFO( "K_WEIGHTEDCOMMWORDSTRING ");
-			break;
-		case K_POLYMATCH:
-			SG_INFO( "K_POLYMATCH ");
-			break;
-		case K_ALIGNMENT:
-			SG_INFO( "K_ALIGNMENT ");
-			break;
-		case K_COMMWORDSTRING:
-			SG_INFO( "K_COMMWORDSTRING ");
-			break;
-		case K_COMMULONGSTRING:
-			SG_INFO( "K_COMMULONGSTRING ");
-			break;
-		case K_SPECTRUMMISMATCHRBF:
-			SG_INFO( "K_SPECTRUMMISMATCHRBF ");
-			break;
-		case K_COMBINED:
-			SG_INFO( "K_COMBINED ");
-			break;
-		case K_AUC:
-			SG_INFO( "K_AUC ");
-			break;
-		case K_CUSTOM:
-			SG_INFO( "K_CUSTOM ");
-			break;
-		case K_SIGMOID:
-			SG_INFO( "K_SIGMOID ");
-			break;
-		case K_CHI2:
-			SG_INFO( "K_CHI2 ");
-			break;
-		case K_DIAG:
-			SG_INFO( "K_DIAG ");
-			break;
-		case K_CONST:
-			SG_INFO( "K_CONST ");
-			break;
-		case K_DISTANCE:
-			SG_INFO( "K_DISTANCE ");
-			break;
-		case K_LOCALALIGNMENT:
-			SG_INFO( "K_LOCALALIGNMENT ");
-			break;
-		case K_TPPK:
-			SG_INFO( "K_TPPK ");
-			break;
-		default:
-         SG_ERROR( "ERROR UNKNOWN KERNEL TYPE");
-			break;
+		ENUM_CASE(K_UNKNOWN)
+		ENUM_CASE(K_LINEAR)
+		ENUM_CASE(K_POLY)
+		ENUM_CASE(K_GAUSSIAN)
+		ENUM_CASE(K_GAUSSIANSHIFT)
+		ENUM_CASE(K_GAUSSIANMATCH)
+		ENUM_CASE(K_HISTOGRAM)
+		ENUM_CASE(K_SALZBERG)
+		ENUM_CASE(K_LOCALITYIMPROVED)
+		ENUM_CASE(K_SIMPLELOCALITYIMPROVED)
+		ENUM_CASE(K_FIXEDDEGREE)
+		ENUM_CASE(K_WEIGHTEDDEGREE)
+		ENUM_CASE(K_WEIGHTEDDEGREEPOS)
+		ENUM_CASE(K_WEIGHTEDDEGREERBF)
+		ENUM_CASE(K_WEIGHTEDCOMMWORDSTRING)
+		ENUM_CASE(K_POLYMATCH)
+		ENUM_CASE(K_ALIGNMENT)
+		ENUM_CASE(K_COMMWORDSTRING)
+		ENUM_CASE(K_COMMULONGSTRING)
+		ENUM_CASE(K_SPECTRUMMISMATCHRBF)
+		ENUM_CASE(K_COMBINED)
+		ENUM_CASE(K_AUC)
+		ENUM_CASE(K_CUSTOM)
+		ENUM_CASE(K_SIGMOID)
+		ENUM_CASE(K_CHI2)
+		ENUM_CASE(K_DIAG)
+		ENUM_CASE(K_CONST)
+		ENUM_CASE(K_DISTANCE)
+		ENUM_CASE(K_LOCALALIGNMENT)
+		ENUM_CASE(K_PYRAMIDCHI2)
+		ENUM_CASE(K_OLIGO)
+		ENUM_CASE(K_MATCHWORD)
+		ENUM_CASE(K_TPPK)
+		ENUM_CASE(K_REGULATORYMODULES)
+		ENUM_CASE(K_SPARSESPATIALSAMPLE)
 	}
 
 	switch (get_feature_class())
 	{
-		case C_UNKNOWN:
-			SG_INFO( "C_UNKNOWN ");
-			break;
-		case C_SIMPLE:
-			SG_INFO( "C_SIMPLE ");
-			break;
-		case C_SPARSE:
-			SG_INFO( "C_SPARSE ");
-			break;
-		case C_STRING:
-			SG_INFO( "C_STRING ");
-			break;
-		case C_COMBINED:
-			SG_INFO( "C_COMBINED ");
-			break;
-		case C_ANY:
-			SG_INFO( "C_ANY ");
-			break;
-		default:
-         SG_ERROR( "ERROR UNKNOWN FEATURE CLASS");
+		ENUM_CASE(C_UNKNOWN)
+		ENUM_CASE(C_SIMPLE)
+		ENUM_CASE(C_SPARSE)
+		ENUM_CASE(C_STRING)
+		ENUM_CASE(C_COMBINED)
+		ENUM_CASE(C_COMBINED_DOT)
+		ENUM_CASE(C_WD)
+		ENUM_CASE(C_SPEC)
+		ENUM_CASE(C_WEIGHTEDSPEC)
+		ENUM_CASE(C_POLY)
+		ENUM_CASE(C_ANY)
 	}
 
 	switch (get_feature_type())
 	{
-		case F_UNKNOWN:
-			SG_INFO( "F_UNKNOWN ");
-			break;
-		case F_DREAL:
-			SG_INFO( "F_REAL ");
-			break;
-		case F_SHORT:
-			SG_INFO( "F_SHORT ");
-			break;
-		case F_CHAR:
-			SG_INFO( "F_CHAR ");
-			break;
-		case F_INT:
-			SG_INFO( "F_INT ");
-			break;
-		case F_BYTE:
-			SG_INFO( "F_BYTE ");
-			break;
-		case F_WORD:
-			SG_INFO( "F_WORD ");
-			break;
-		case F_ULONG:
-			SG_INFO( "F_ULONG ");
-			break;
-		case F_ANY:
-			SG_INFO( "F_ANY ");
-			break;
-		default:
-         SG_ERROR( "ERROR UNKNOWN FEATURE TYPE");
-			break;
+		ENUM_CASE(F_UNKNOWN)
+		ENUM_CASE(F_BOOL)
+		ENUM_CASE(F_CHAR)
+		ENUM_CASE(F_BYTE)
+		ENUM_CASE(F_SHORT)
+		ENUM_CASE(F_WORD)
+		ENUM_CASE(F_INT)
+		ENUM_CASE(F_UINT)
+		ENUM_CASE(F_LONG)
+		ENUM_CASE(F_ULONG)
+		ENUM_CASE(F_SHORTREAL)
+		ENUM_CASE(F_DREAL)
+		ENUM_CASE(F_LONGREAL)
+		ENUM_CASE(F_ANY)
 	}
 	SG_INFO( "\n");
 }
+#undef ENUM_CASE
 
 bool CKernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t * weights)

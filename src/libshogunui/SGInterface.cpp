@@ -4071,15 +4071,6 @@ bool CSGInterface::cmd_get_kernel_optimization()
 			set_real_vector(weights, len);
 			return true;
 		}
-		case K_SPARSELINEAR:
-		{
-			CLinearKernel* k=(CLinearKernel*) kernel;
-			int32_t len=0;
-			const float64_t* weights=k->get_normal(len);
-
-			set_real_vector(weights, len);
-			return true;
-		}
 		default:
 			SG_ERROR("Unsupported kernel %s.\n", kernel->get_name());
 	}
