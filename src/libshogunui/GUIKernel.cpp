@@ -20,9 +20,7 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/Chi2Kernel.h>
 #include <shogun/kernel/LinearKernel.h>
-#include <shogun/kernel/LinearByteKernel.h>
 #include <shogun/kernel/LinearStringKernel.h>
-#include <shogun/kernel/LinearWordKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
 #include <shogun/kernel/WeightedDegreeRBFKernel.h>
 #include <shogun/kernel/SpectrumMismatchRBFKernel.h>

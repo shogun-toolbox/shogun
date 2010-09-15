@@ -19,7 +19,6 @@
 #include <shogun/kernel/CommWordStringKernel.h>
 #include <shogun/kernel/WeightedCommWordStringKernel.h>
 #include <shogun/kernel/LinearKernel.h>
-#include <shogun/kernel/SparseLinearKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/SalzbergWordStringKernel.h>
@@ -4074,7 +4073,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 		}
 		case K_SPARSELINEAR:
 		{
-			CSparseLinearKernel* k=(CSparseLinearKernel*) kernel;
+			CLinearKernel* k=(CLinearKernel*) kernel;
 			int32_t len=0;
 			const float64_t* weights=k->get_normal(len);
 
