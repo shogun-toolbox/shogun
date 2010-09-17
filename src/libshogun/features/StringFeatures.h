@@ -2386,17 +2386,20 @@ template<> 	inline void CStringFeatures<float64_t>::unembed_word(float64_t word,
 template<> 	inline void CStringFeatures<floatmax_t>::unembed_word(floatmax_t word, uint8_t* seq, int32_t len)
 {
 }
-#define LOAD(f_load, sg_type)												\
-template<> inline void CStringFeatures<sg_type>::load(CFile* loader)		\
-{																			\
-	SG_INFO( "loading...\n");												\
-																			\
-	T_STRING<sg_type>* strs;												\
-	int32_t num_str;														\
-	int32_t max_len;														\
-	loader->f_load(strs, num_str, max_len);									\
-	set_features(strs, num_str, max_len);									\
+#define LOAD(f_load, sg_type)											\
+template<> inline void CStringFeatures<sg_type>::load(CFile* loader)	\
+{																		\
+	ASSERT(loader);														\
+	SG_INFO( "loading... NOT IMPLEMENTED!\n");							\
 }
+/*
+																		\
+	T_STRING<sg_type>* strs;											\
+	int32_t num_str;													\
+	int32_t max_len;													\
+	loader->f_load(strs, num_str, max_len);								\
+	set_features(strs, num_str, max_len);								\
+*/
 
 LOAD(get_bool_string_list, bool)
 LOAD(get_char_string_list, char)
@@ -2412,12 +2415,15 @@ LOAD(get_real_string_list, float64_t)
 LOAD(get_longreal_string_list, floatmax_t)
 #undef LOAD
 
-#define SAVE(f_write, sg_type)												\
-template<> inline void CStringFeatures<sg_type>::save(CFile* writer)		\
-{ 																			\
-	ASSERT(writer);															\
-	writer->f_write(features, num_vectors);									\
+#define SAVE(f_write, sg_type)											\
+template<> inline void CStringFeatures<sg_type>::save(CFile* writer)	\
+{																		\
+	ASSERT(writer);														\
+	SG_INFO( "writing... NOT IMPLEMENTED!\n");							\
 }
+/*
+	writer->f_write(features, num_vectors);								\
+*/
 
 SAVE(set_bool_string_list, bool)
 SAVE(set_char_string_list, char)

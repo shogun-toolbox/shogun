@@ -13,7 +13,7 @@
 namespace shogun
 {
 enum TContainerType {
-	CT_SCALAR
+	CT_SCALAR, CT_VECTOR, CT_STRING
 };
 
 enum TPrimitveType {
@@ -25,11 +25,21 @@ enum TPrimitveType {
 struct TSGDataType
 {
 	explicit TSGDataType(TContainerType ctype, TPrimitveType ptype) {
+		m_ctype = ctype; m_ptype = ptype; m_length = 0;
+	}
+	explicit TSGDataType(TContainerType ctype, TPrimitveType ptype,
+						 uint64_t length) {
+		m_ctype = ctype; m_ptype = ptype; m_length = length;
+	}
+	explicit TSGDataType(TContainerType ctype, TPrimitveType ptype,
+						 uint64_t length_y, uint64_t length_x) {
 		m_ctype = ctype; m_ptype = ptype;
+		m_length = length_x * length_y;
 	}
 
 	TContainerType m_ctype;
 	TPrimitveType m_ptype;
+	uint64_t m_length;
 };
 }
 #endif // __DATATYPE_H__

@@ -668,14 +668,20 @@ KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
 
 void CKernel::load(CFile* loader)
 {
+	ASSERT(loader);
+	SG_INFO( "loading... NOT IMPLEMENTED!\n");
 }
 
 void CKernel::save(CFile* writer)
 {
+	ASSERT(writer);
+	SG_INFO( "writing... NOT IMPLEMENTED!\n");
+/*
 	int32_t m,n;
 	float64_t* km=get_kernel_matrix<float64_t>(m,n, NULL);
 	writer->set_real_matrix(km, m,n);
 	delete[] km;
+*/
 }
 
 void CKernel::remove_lhs_and_rhs()

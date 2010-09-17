@@ -15,6 +15,7 @@
 #include "lib/DataType.h"
 #include "lib/DynamicArray.h"
 #include "base/SGObject.h"
+#include "features/StringFeatures.h"
 
 namespace shogun
 {
@@ -113,6 +114,138 @@ public:
 	inline virtual void add_sgobject(CSGObject** param, const char* name,
 									 const char* description=NULL) {
 		TSGDataType type(CT_SCALAR, PT_SGOBJECT_PTR);
+		add_type(&type, param, name, description);
+	}
+
+	/* ************************************************************ */
+	/* Vector wrappers  */
+
+	inline virtual void add_vector_bool(
+		bool** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_BOOL, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_vector_char(
+		char** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_CHAR, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_vector_int16(
+		int16_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_INT16, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_vector_int32(
+		int32_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_INT32, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_vector_int64(
+		int64_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_INT64, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_vector_float32(
+		float32_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_FLOAT32, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_vector_float64(
+		float64_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_FLOAT64, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_vector_floatmax(
+		floatmax_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_FLOATMAX, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_vector_sgobject(
+		CSGObject** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_SGOBJECT_PTR, length);
+		add_type(&type, param, name, description);
+	}
+
+	/* ************************************************************ */
+	/* String wrappers  */
+
+	inline virtual void add_string_bool(
+		T_STRING<bool>** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_STRING, PT_BOOL, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_string_char(
+		char** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_CHAR, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_string_int16(
+		int16_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_INT16, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_string_int32(
+		int32_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_INT32, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_string_int64(
+		int64_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_INT64, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_string_float32(
+		float32_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_FLOAT32, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_string_float64(
+		float64_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_FLOAT64, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_string_floatmax(
+		floatmax_t** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_FLOATMAX, length);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_string_sgobject(
+		CSGObject** param, uint64_t length, const char* name,
+		const char* description=NULL) {
+		TSGDataType type(CT_VECTOR, PT_SGOBJECT_PTR, length);
 		add_type(&type, param, name, description);
 	}
 };

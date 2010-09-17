@@ -1142,16 +1142,19 @@ template<> inline float64_t CSimpleFeatures<floatmax_t>:: dense_dot(int32_t vec_
 	return result;
 }
 
-#define LOAD(f_load, sg_type)												\
-template<> inline void CSimpleFeatures<sg_type>::load(CFile* loader)		\
-{ 																			\
-	ASSERT(loader);															\
-	sg_type* matrix;														\
-	int32_t num_feat;														\
-	int32_t num_vec;														\
-	loader->f_load(matrix, num_feat, num_vec);								\
-	set_feature_matrix(matrix, num_feat, num_vec);							\
+#define LOAD(f_load, sg_type)											\
+template<> inline void CSimpleFeatures<sg_type>::load(CFile* loader)	\
+{																		\
+	ASSERT(loader);														\
+	SG_INFO( "loading... NOT IMPLEMENTED!\n");							\
 }
+/*
+  sg_type* matrix;														\
+  int32_t num_feat;														\
+  int32_t num_vec;														\
+  loader->f_load(matrix, num_feat, num_vec);							\
+  set_feature_matrix(matrix, num_feat, num_vec);						\
+*/
 
 LOAD(get_bool_matrix, bool)
 LOAD(get_char_matrix, char)
@@ -1167,12 +1170,15 @@ LOAD(get_real_matrix, float64_t)
 LOAD(get_longreal_matrix, floatmax_t)
 #undef LOAD
 
-#define SAVE(f_write, sg_type)												\
-template<> inline void CSimpleFeatures<sg_type>::save(CFile* writer)		\
-{ 																			\
-	ASSERT(writer);															\
-	writer->f_write(feature_matrix, num_features, num_vectors);				\
+#define SAVE(f_write, sg_type)											\
+template<> inline void CSimpleFeatures<sg_type>::save(CFile* writer)	\
+{																		\
+	ASSERT(writer);														\
+	SG_INFO( "writing... NOT IMPLEMENTED!\n");							\
 }
+/*
+  writer->f_write(feature_matrix, num_features, num_vectors);	\
+*/
 
 SAVE(set_bool_matrix, bool)
 SAVE(set_char_matrix, char)

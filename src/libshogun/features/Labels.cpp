@@ -300,13 +300,19 @@ void CLabels::load(CFile* loader)
 	m_confidences = NULL;
 	num_labels=0;
 	ASSERT(loader);
+	SG_INFO( "loading... NOT IMPLEMENTED!\n");
+/*
 	loader->get_real_vector(labels, num_labels);
 	m_num_classes=get_num_classes();
+*/
 }
 
 void CLabels::save(CFile* writer)
 {
 	ASSERT(writer);
 	ASSERT(labels && labels>0);
+	SG_INFO( "writing... NOT IMPLEMENTED!\n");
+/*
 	writer->set_real_vector(labels, num_labels);
+*/
 }
