@@ -7,56 +7,61 @@
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
+
 #include "lib/Parameter.h"
 
 using namespace shogun;
 
-void CParameter::add_double(float64_t* parameter, const char* name,
-			const char* description, float64_t min_value, float64_t max_value)
+TParameter::TParameter(const TSGDataType* datatype, void* parameter,
+					   const char* name, const char* description)
+	:m_datatype(*datatype)
 {
-	TParameter* par=new TParameter[1];
-	par->parameter=parameter;
-	par->datatype=DT_SCALAR_REAL;
+	m_parameter = parameter;
+	m_name = strdup(name);
+	m_description = strdup(description);
 
-	if (name)
-		par->name=strdup(name);
-	else
-		par->name=NULL;
-
-	if (description)
-		par->description=strdup(description);
-	else
-		par->description=NULL;
-
-	par->min_value_float64=min_value;
-	par->max_value_float64=max_value;
-
-	m_parameters->append_element(par);
+	CSGObject** p = (CSGObject**) m_parameter;
+	if(is_sgobject()) SG_REF(*p);
 }
 
-void CParameter::list_parameters()
+TParameter::~TParameter(void)
 {
-	ASSERT(m_parameters);
+	CSGObject** p = (CSGObject**) m_parameter;
+	if(is_sgobject()) SG_UNREF(*p);
 
-	for (int32_t i=0; i<get_num_parameters(); i++)
-	{
-		TParameter* par=m_parameters->get_element(i);
-		SG_PRINT("Parameter '%s'\n", par->name);
-	}
+	free(m_description); free(m_name);
 }
 
-void CParameter::free_parameters()
+bool
+TParameter::is_sgobject(void)
 {
-	ASSERT(m_parameters);
+	return m_datatype.m_ptype == PT_SGOBJECT_PTR
+		|| m_datatype.m_ctype != CT_SCALAR;
+}
 
+CParameter::CParameter(void) :m_parameters()
+{
+}
+
+CParameter::~CParameter(void)
+{
 	for (int32_t i=0; i<get_num_parameters(); i++)
-	{
-		TParameter* par=m_parameters->get_element(i);
-		free(par->name);
-		free(par->description);
-		delete[] par;
-	}
+		delete m_parameters.get_element(i);
+}
 
-	delete m_parameters;
-	m_parameters=NULL;
+void
+CParameter::add_type(const TSGDataType* type, void* param,
+					 const char* name, const char* description)
+{
+	m_parameters.append_element(
+		new TParameter(type, param, name, description)
+		);
+}
+
+void
+CParameter::list_parameters()
+{
+	for (int32_t i=0; i<get_num_parameters(); i++)
+		SG_PRINT("Parameter '%s'\n",
+				 m_parameters.get_element(i)->m_name);
 }

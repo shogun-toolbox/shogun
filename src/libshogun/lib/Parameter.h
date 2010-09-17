@@ -10,84 +10,111 @@
 #ifndef __PARAMETER_H__
 #define __PARAMETER_H__
 
-#include "base/SGObject.h"
 #include "lib/common.h"
-#include "lib/DynamicArray.h"
 #include "lib/io.h"
 #include "lib/DataType.h"
+#include "lib/DynamicArray.h"
+#include "base/SGObject.h"
 
 namespace shogun
 {
-
 struct TParameter
 {
-	void* parameter;
-	SGDataType datatype;
-	char* name;
-	char* description;
+	explicit TParameter(const TSGDataType* datatype, void* parameter,
+						const char* name, const char* description);
+	~TParameter(void);
 
-	/** valid range - minimum */
-	union
-	{
-		float32_t min_value_float32;
-		float64_t min_value_float64;
-	};
+	TSGDataType m_datatype;
+	void* m_parameter;
+	char* m_name;
+	char* m_description;
 
-	/** valid range - maximum */
-	union
-	{
-		float32_t max_value_float32;
-		float64_t max_value_float64;
-	};
+private:
+	bool is_sgobject(void);
 };
 
-class CParameter: public CSGObject
+class CParameter :CSGObject
 {
+protected:
+	CDynamicArray<TParameter*> m_parameters;
+
+	virtual void add_type(const TSGDataType* type, void* param,
+						  const char* name,
+						  const char* description=NULL);
+
 public:
-	CParameter()
-	{
-		m_parameters = new CDynamicArray<TParameter*>();
-	}
-
-	/** default destructor */
-	virtual ~CParameter()
-	{
-		free_parameters();
-	}
-
-	void add_float(float32_t* parameter, const char* name,
-			const char* description=NULL,
-			float64_t min_value=-CMath::INFTY, float64_t max_value=CMath::INFTY);
-
-	void add_double(float64_t* parameter, const char* name,
-			const char* description=NULL, float64_t min_value=-CMath::INFTY,
-			float64_t max_value=CMath::INFTY);
-
-	void add_float_vector(float32_t** parameter, int64_t length,
-			const char* name, const char* description=NULL,
-			float64_t min_value=-CMath::INFTY, float64_t max_value=CMath::INFTY);
-
-	void add_double_vector(float64_t** parameter, int64_t length,
-			const char* name, const char* description=NULL,
-			float64_t min_value=-CMath::INFTY, float64_t max_value=CMath::INFTY);
-
-	void add_sgobject(CSGObject* parameter, const char* name, const char* description=NULL);
-
-	void list_parameters();
-
-	inline int32_t get_num_parameters()
-	{
-		return m_parameters->get_num_elements();
-	}
+	explicit CParameter(void);
+	virtual ~CParameter(void);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "Parameter"; }
+	inline virtual const char* get_name(void) const
+	{
+		return "Parameter";
+	}
 
-protected:
-	void free_parameters();
+	virtual void list_parameters(void);
 
-protected:
-	CDynamicArray<TParameter*>* m_parameters;
+	inline virtual int32_t get_num_parameters(void)
+	{
+		return m_parameters.get_num_elements();
+	}
+
+	/* ************************************************************ */
+	/* Scalar wrappers  */
+
+	inline virtual void add_bool(bool* param, const char* name,
+								 const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_BOOL);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_char(char* param, const char* name,
+								 const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_CHAR);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_int16(int16_t* param, const char* name,
+								  const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_INT16);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_int32(int32_t* param, const char* name,
+								  const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_INT32);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_int64(int64_t* param, const char* name,
+								  const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_INT64);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_float32(float32_t* param, const char* name,
+									const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_FLOAT32);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_float64(float64_t* param, const char* name,
+									const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_FLOAT64);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_floatmax(floatmax_t* param, const char* name,
+									const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_FLOATMAX);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_sgobject(CSGObject** param, const char* name,
+									 const char* description=NULL) {
+		TSGDataType type(CT_SCALAR, PT_SGOBJECT_PTR);
+		add_type(&type, param, name, description);
+	}
 };
 }
 #endif //__PARAMETER_H__

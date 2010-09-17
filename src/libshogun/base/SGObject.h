@@ -57,6 +57,7 @@ namespace shogun
 class CIO;
 class CParallel;
 class CVersion;
+class CParameter;
 
 // define reference counter macros
 //
@@ -80,6 +81,9 @@ class CVersion;
  */
 class CSGObject
 {
+protected:
+	CParameter* m_parameters;
+
 public:
 	inline CSGObject() : refcount(0)
 	{
@@ -96,9 +100,7 @@ public:
     virtual ~CSGObject()
 	{
 		pthread_mutex_destroy(&ref_mutex);
-		SG_UNREF(version);
-		SG_UNREF(parallel);
-		SG_UNREF(io);
+		unset_global_objects();
 	}
 
 #ifdef USE_REFERENCE_COUNTING
@@ -216,7 +218,7 @@ public:
 	 */
 	virtual void from_file(std::string filename);
 
-  protected:
+protected:
 	friend class ::boost::serialization::access;
 
 	/** When the class Archive corresponds to an output archive, the & operator
@@ -235,11 +237,10 @@ public:
 
 #endif //HAVE_BOOST_SERIALIZATION
 
-
 private:
-	void set_global_objects();
+	void set_global_objects(void);
+	void unset_global_objects(void);
 
-private:
 	int32_t refcount;
 #ifndef WIN32
 	pthread_mutex_t ref_mutex;

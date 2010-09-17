@@ -9,114 +9,39 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "lib/File.h"
-
-#include "features/StringFeatures.h"
-#include "features/SparseFeatures.h"
 
 using namespace shogun;
 
-CFile::CFile() : CSGObject()
+CFile::CFile() :CSGObject()
 {
-	file=NULL;
-	filename=NULL;
-	variable_name=NULL;
+	file = NULL;
+	filename = NULL;
 }
 
-CFile::CFile(FILE* f, const char* name) : CSGObject()
+CFile::CFile(FILE* f, char rw) :CSGObject()
 {
-	file=f;
-	filename=NULL;
-	variable_name=NULL;
-
-	if (name)
-		set_variable_name(name);
+	file = f;
+	task = rw;
+	filename = NULL;
 }
 
-CFile::CFile(char* fname, char rw, const char* name) : CSGObject()
+CFile::CFile(char* fname, char rw) :CSGObject()
 {
-	variable_name=NULL;
-	task=rw;
-	filename=strdup(fname);
+	task = rw;
+	filename = strdup(fname);
 	char mode[2];
-	mode[0]=rw;
-	mode[1]='\0';
+	mode[0] = rw;
+	mode[1] = '\0';
 
-	if (rw=='r' || rw == 'w')
-	{
-		if (filename)
-		{
-			if (!(file=fopen((const char*) filename, (const char*) mode)))
+	if (rw == 'r' || rw == 'w') {
+		if (filename) {
+			if (!(file=fopen((const char*) filename,
+							 (const char*) mode)))
 				SG_ERROR("Error opening file '%s'\n", filename);
 		}
-	}
-	else
+	} else
 		SG_ERROR("unknown mode '%c'\n", mode[0]);
-
-	if (name)
-		set_variable_name(name);
-}
-
-void CFile::get_bool_vector(bool*& vector, int32_t& len)
-{
-	int32_t* int_vector;
-	get_int_vector(int_vector, len);
-
-	ASSERT(len>0);
-	vector= new bool[len];
-
-	for (int32_t i=0; i<len; i++)
-		vector[i]= (int_vector[i]!=0);
-
-	delete[] int_vector;
-}
-
-void CFile::set_bool_vector(const bool* vector, int32_t len)
-{
-	int32_t* int_vector = new int32_t[len];
-	for (int32_t i=0;i<len;i++)
-	{
-		if (vector[i])
-			int_vector[i]=1;
-		else
-			int_vector[i]=0;
-	}
-	set_int_vector(int_vector,len);
-	delete[] int_vector;
-}
-
-void CFile::get_bool_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
-{
-	SG_NOTIMPLEMENTED;
-}
-
-void CFile::set_bool_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
-{
-	SG_NOTIMPLEMENTED;
-}
-
-void CFile::get_bool_string_list(
-		T_STRING<bool>*& strings, int32_t& num_str,
-		int32_t& max_string_len)
-{
-	T_STRING<int32_t>* strs;
-	get_int_string_list(strs, num_str, max_string_len);
-
-	ASSERT(num_str>0 && max_string_len>0);
-	strings=new T_STRING<bool>[num_str];
-
-	SG_NOTIMPLEMENTED;
-	//FIXME
-}
-
-void CFile::set_bool_string_list(const T_STRING<bool>* strings, int32_t num_str)
-{
-	SG_NOTIMPLEMENTED;
-	//FIXME
 }
 
 CFile::~CFile()
@@ -124,13 +49,12 @@ CFile::~CFile()
 	close();
 }
 
-void CFile::set_variable_name(const char* name)
+void
+CFile::close()
 {
-	free(variable_name);
-	variable_name=strdup(name);
-}
-
-char* CFile::get_variable_name()
-{
-	return strdup(variable_name);
+	free(filename);
+	if (file)
+		fclose(file);
+	filename=NULL;
+	file=NULL;
 }

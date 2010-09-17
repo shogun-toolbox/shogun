@@ -15,7 +15,6 @@
 #include "features/Features.h"
 #include "kernel/Kernel.h"
 #include "classifier/KernelMachine.h"
-#include "lib/Parameter.h"
 
 namespace shogun
 {
@@ -321,8 +320,6 @@ class CSVM : public CKernelMachine
 		/** mkl object that svm optimizers need to pass when calling the callback
 		 * function */
 		CMKL* mkl;
-
-		CParameter parameters;
 };
 }
 #endif
