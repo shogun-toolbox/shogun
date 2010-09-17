@@ -266,6 +266,11 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 			st=L2R_L2LOSS_SVC;
 			SG_INFO("created LibLinear l2 regularized l2 loss SVM primal object\n") ;
 		}
+		else if (strcmp(name,"LIBLINEAR_L1R_L2LOSS_SVC")==0)
+		{
+			st=L1R_L2LOSS_SVC;
+			SG_INFO("created LibLinear l1 regularized l2 loss SVM primal object\n") ;
+		}
 		else if (strcmp(name,"LIBLINEAR_L2R_L1LOSS_SVC_DUAL")==0)
 		{
 			st=L2R_L1LOSS_SVC_DUAL;
