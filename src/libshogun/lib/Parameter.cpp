@@ -52,7 +52,7 @@ TParameter::new_prefix(const char* s1, const char* s2)
 void
 TParameter::print(CIO* io, const char* prefix)
 {
-	SG_PRINT("\n%s\n%35s %24s :", prefix, m_description == '\0'
+	SG_PRINT("\n%s\n%35s %24s :", prefix, *m_description == '\0'
 			 ? "(Parameter)": m_description, m_name);
 
 	switch(m_datatype.m_ctype) {
@@ -93,8 +93,10 @@ TParameter::print(CIO* io, const char* prefix)
 		break;
 	case PT_SGOBJECT_PTR:
 		SG_PRINT("SGObject*");
-		if (m_datatype.m_ctype == CT_SCALAR) {
+		if (m_datatype.m_ctype == CT_SCALAR
+			&& *(CSGObject**) m_parameter != NULL) {
 			SG_PRINT("\n");
+
 			char* p = new_prefix(prefix, m_name);
 			(*(CSGObject**) m_parameter)->params_list(p);
 			free(p);
