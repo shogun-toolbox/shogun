@@ -164,6 +164,8 @@ class CKernel : public CSGObject
 	friend class CDiceKernelNormalizer;
 	friend class CZeroMeanCenterKernelNormalizer;
 
+	void init(void);
+
 	public:
 
 		/** default constructor

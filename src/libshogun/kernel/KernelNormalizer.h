@@ -12,6 +12,7 @@
 #define _KERNELNORMALIZER_H___
 
 #include "kernel/Kernel.h"
+#include "lib/Parameter.h"
 
 namespace shogun
 {
@@ -55,6 +56,8 @@ class CKernelNormalizer : public CSGObject
 		 */
 		CKernelNormalizer()
 		{
+			m_parameters->add_int32((int32_t*) &m_type, "type",
+									"Kind of the normalizer.");
 			m_type = N_REGULAR;
 		}
 

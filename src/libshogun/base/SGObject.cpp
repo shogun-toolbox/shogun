@@ -58,7 +58,7 @@ CSGObject::set_global_objects(void)
 	parallel=sg_parallel;
 	version=sg_version;
 
-	m_parameters = new CParameter();
+	m_parameters = new CParameter(io);
 }
 
 void
@@ -69,6 +69,12 @@ CSGObject::unset_global_objects(void)
 	SG_UNREF(version);
 	SG_UNREF(parallel);
 	SG_UNREF(io);
+}
+
+void
+CSGObject::params_list(const char* prefix)
+{
+	m_parameters->list(prefix);
 }
 
 void CSGObject::set_io(CIO* new_io)

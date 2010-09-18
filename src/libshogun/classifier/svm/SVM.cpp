@@ -42,8 +42,6 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 	set_C(C,C);
 	set_labels(lab);
 	set_kernel(k);
-
-	//m_parameters->add_float64(&C1, "C1");
 }
 
 CSVM::~CSVM()
@@ -53,6 +51,9 @@ CSVM::~CSVM()
 
 void CSVM::set_defaults(int32_t num_sv)
 {
+	m_parameters->add_float64(&C1, "C1");
+	m_parameters->add_float64(&C2, "C2");
+
 	callback=NULL;
 	mkl=NULL;
 

@@ -10,6 +10,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/Parameter.h"
 #include "classifier/svm/MultiClassSVM.h"
 
 using namespace shogun;
@@ -17,17 +18,32 @@ using namespace shogun;
 CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type)
 : CSVM(0), multiclass_type(type), m_num_svms(0), m_svms(NULL)
 {
+	init();
 }
 
 CMultiClassSVM::CMultiClassSVM(
 	EMultiClassSVM type, float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab), multiclass_type(type), m_num_svms(0), m_svms(NULL)
 {
+	init();
 }
 
 CMultiClassSVM::~CMultiClassSVM()
 {
 	cleanup();
+}
+
+void
+CMultiClassSVM::init(void)
+{
+	m_parameters->add_int32((int32_t*) &multiclass_type,
+							"multiclass_type",
+							"Type of the MultiClassSVM.");
+	m_parameters->add_int32(&m_num_classes,
+							"num_classes",
+							"Number of classes.");
+	m_parameters->add_int32(&m_num_svms, "num_svms",
+							"Number of SVMs.");
 }
 
 void CMultiClassSVM::cleanup()

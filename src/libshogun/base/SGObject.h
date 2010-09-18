@@ -157,6 +157,12 @@ public:
 	 */
 	virtual const char* get_name() const=0;
 
+	/** prints registered parameters out
+	 *
+	 * 	@param prefix prefix for members
+	 */
+	void params_list(const char* prefix="");
+
 	/** set the io object
 	 *
 	 * @param io io object to use

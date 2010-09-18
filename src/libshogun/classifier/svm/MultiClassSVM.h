@@ -29,6 +29,8 @@ class CSVM;
 /** @brief class MultiClassSVM */
 class CMultiClassSVM : public CSVM
 {
+	void init(void);
+
 	public:
 		/** constructor
 		 *

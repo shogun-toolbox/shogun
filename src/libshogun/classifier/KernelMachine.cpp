@@ -12,6 +12,7 @@
 
 #include "classifier/KernelMachine.h"
 #include "lib/Signal.h"
+#include "lib/Parameter.h"
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
@@ -35,6 +36,9 @@ struct S_THREAD_PARAM
 CKernelMachine::CKernelMachine()
 : CClassifier(), kernel(NULL), use_batch_computation(true), use_linadd(true), use_bias(true)
 {
+	m_parameters->add_sgobject((CSGObject**) &kernel, "kernel",
+							   "Kernel of the KernelMachine.");
+
 	m_bias=0.0;
 	m_alpha=NULL;
 	m_svs=NULL;

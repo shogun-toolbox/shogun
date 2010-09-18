@@ -12,11 +12,11 @@
 #define __DATATYPE_H__
 namespace shogun
 {
-enum TContainerType {
+enum EContainerType {
 	CT_SCALAR, CT_VECTOR, CT_STRING
 };
 
-enum TPrimitveType {
+enum EPrimitveType {
 	PT_BOOL, PT_CHAR, PT_INT16, PT_INT32, PT_INT64, PT_FLOAT32,
 	PT_FLOAT64, PT_FLOATMAX, PT_SGOBJECT_PTR
 };
@@ -24,21 +24,21 @@ enum TPrimitveType {
 /* Datatypes that shogun supports. */
 struct TSGDataType
 {
-	explicit TSGDataType(TContainerType ctype, TPrimitveType ptype) {
+	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype) {
 		m_ctype = ctype; m_ptype = ptype; m_length = 0;
 	}
-	explicit TSGDataType(TContainerType ctype, TPrimitveType ptype,
+	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype,
 						 uint64_t length) {
 		m_ctype = ctype; m_ptype = ptype; m_length = length;
 	}
-	explicit TSGDataType(TContainerType ctype, TPrimitveType ptype,
+	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype,
 						 uint64_t length_y, uint64_t length_x) {
 		m_ctype = ctype; m_ptype = ptype;
 		m_length = length_x * length_y;
 	}
 
-	TContainerType m_ctype;
-	TPrimitveType m_ptype;
+	EContainerType m_ctype;
+	EPrimitveType m_ptype;
 	uint64_t m_length;
 };
 }

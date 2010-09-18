@@ -18,6 +18,7 @@
 #include "lib/File.h"
 #include "lib/Time.h"
 #include "lib/Signal.h"
+#include "lib/Parameter.h"
 
 #include "base/Parallel.h"
 
@@ -55,7 +56,7 @@ CKernel::CKernel()
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif //USE_SVMLIGHT
 
-	set_normalizer(new CIdentityKernelNormalizer());
+	init();
 }
 
 CKernel::CKernel(int32_t size)
@@ -74,7 +75,7 @@ CKernel::CKernel(int32_t size)
 	if (get_is_initialized())
 		SG_ERROR( "COptimizableKernel still initialized on destruction");
 
-	set_normalizer(new CIdentityKernelNormalizer());
+	init();
 }
 
 
@@ -93,7 +94,7 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 	if (get_is_initialized())
 		SG_ERROR("Kernel initialized on construction.\n");
 
-	set_normalizer(new CIdentityKernelNormalizer());
+	init();
 	init(p_lhs, p_rhs);
 }
 
@@ -106,6 +107,16 @@ CKernel::~CKernel()
 	SG_UNREF(normalizer);
 
 	SG_INFO("Kernel deleted (%p).\n", this);
+}
+
+void
+CKernel::init(void)
+{
+	m_parameters->add_int32(&cache_size, "cache_size",
+							"Size of the Kernel.");
+	m_parameters->add_sgobject((CSGObject**) &normalizer, "normalizer");
+
+	set_normalizer(new CIdentityKernelNormalizer());
 }
 
 void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)

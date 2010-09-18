@@ -39,14 +39,94 @@ TParameter::is_sgobject(void)
 		|| m_datatype.m_ctype != CT_SCALAR;
 }
 
-CParameter::CParameter(void) :m_params()
+char*
+TParameter::new_prefix(const char* s1, const char* s2)
 {
+	char tmp[256];
+
+	snprintf(tmp, 256, "%s%s/", s1, s2);
+
+	return strdup(tmp);
+}
+
+void
+TParameter::print(CIO* io, const char* prefix)
+{
+	SG_PRINT("\n%s\n%35s %24s :", prefix, m_description == '\0'
+			 ? "(Parameter)": m_description, m_name);
+
+	switch(m_datatype.m_ctype) {
+	case CT_SCALAR:
+		break;
+	case CT_VECTOR:
+		SG_PRINT("Vector<");
+		break;
+	case CT_STRING:
+		SG_PRINT("String<");
+		break;
+	}
+
+	switch(m_datatype.m_ptype) {
+	case PT_BOOL:
+		SG_PRINT("bool");
+		break;
+	case PT_CHAR:
+		SG_PRINT("char");
+		break;
+	case PT_INT16:
+		SG_PRINT("int16");
+		break;
+	case PT_INT32:
+		SG_PRINT("int32");
+		break;
+	case PT_INT64:
+		SG_PRINT("int64");
+		break;
+	case PT_FLOAT32:
+		SG_PRINT("float32");
+		break;
+	case PT_FLOAT64:
+		SG_PRINT("float64");
+		break;
+	case PT_FLOATMAX:
+		SG_PRINT("floatmax");
+		break;
+	case PT_SGOBJECT_PTR:
+		SG_PRINT("SGObject*");
+		if (m_datatype.m_ctype == CT_SCALAR) {
+			SG_PRINT("\n");
+			char* p = new_prefix(prefix, m_name);
+			(*(CSGObject**) m_parameter)->params_list(p);
+			free(p);
+		}
+		break;
+	}
+
+	switch(m_datatype.m_ctype) {
+	case CT_SCALAR:
+		break;
+	case CT_VECTOR:
+	case CT_STRING:
+		SG_PRINT(">*");
+		break;
+	}
+
+	SG_PRINT("\n");
+}
+
+CParameter::CParameter(CIO* io_) :m_params(io)
+{
+	io = io_;
+
+	SG_REF(io);
 }
 
 CParameter::~CParameter(void)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		delete m_params.get_element(i);
+
+	SG_UNREF(io);
 }
 
 void
@@ -59,9 +139,8 @@ CParameter::add_type(const TSGDataType* type, void* param,
 }
 
 void
-CParameter::list_parameters(CIO* io)
+CParameter::list(const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		SG_PRINT("Parameter '%s'\n",
-				 m_params.get_element(i)->m_name);
+		m_params.get_element(i)->print(io, prefix);
 }
