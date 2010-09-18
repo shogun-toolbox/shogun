@@ -14,7 +14,6 @@
 #include "lib/io.h"
 #include "lib/DataType.h"
 #include "lib/DynamicArray.h"
-#include "base/SGObject.h"
 #include "features/StringFeatures.h"
 
 namespace shogun
@@ -34,10 +33,13 @@ private:
 	bool is_sgobject(void);
 };
 
-class CParameter :CSGObject
+/* Must not be an SGObject to prevent a recursive call of
+ * constructors.
+ */
+class CParameter
 {
 protected:
-	CDynamicArray<TParameter*> m_parameters;
+	CDynamicArray<TParameter*> m_params;
 
 	virtual void add_type(const TSGDataType* type, void* param,
 						  const char* name,
@@ -53,11 +55,11 @@ public:
 		return "Parameter";
 	}
 
-	virtual void list_parameters(void);
+	virtual void list_parameters(CIO* io);
 
 	inline virtual int32_t get_num_parameters(void)
 	{
-		return m_parameters.get_num_elements();
+		return m_params.get_num_elements();
 	}
 
 	/* ************************************************************ */
@@ -194,58 +196,58 @@ public:
 	}
 
 	inline virtual void add_string_char(
-		char** param, uint64_t length, const char* name,
+		T_STRING<char>** param, uint64_t length, const char* name,
 		const char* description=NULL) {
-		TSGDataType type(CT_VECTOR, PT_CHAR, length);
+		TSGDataType type(CT_STRING, PT_CHAR, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_int16(
-		int16_t** param, uint64_t length, const char* name,
+		T_STRING<int16_t>** param, uint64_t length, const char* name,
 		const char* description=NULL) {
-		TSGDataType type(CT_VECTOR, PT_INT16, length);
+		TSGDataType type(CT_STRING, PT_INT16, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_int32(
-		int32_t** param, uint64_t length, const char* name,
+		T_STRING<int32_t>** param, uint64_t length, const char* name,
 		const char* description=NULL) {
-		TSGDataType type(CT_VECTOR, PT_INT32, length);
+		TSGDataType type(CT_STRING, PT_INT32, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_int64(
-		int64_t** param, uint64_t length, const char* name,
+		T_STRING<int64_t>** param, uint64_t length, const char* name,
 		const char* description=NULL) {
-		TSGDataType type(CT_VECTOR, PT_INT64, length);
+		TSGDataType type(CT_STRING, PT_INT64, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_float32(
-		float32_t** param, uint64_t length, const char* name,
+		T_STRING<float32_t>** param, uint64_t length, const char* name,
 		const char* description=NULL) {
-		TSGDataType type(CT_VECTOR, PT_FLOAT32, length);
+		TSGDataType type(CT_STRING, PT_FLOAT32, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_float64(
-		float64_t** param, uint64_t length, const char* name,
+		T_STRING<float64_t>** param, uint64_t length, const char* name,
 		const char* description=NULL) {
-		TSGDataType type(CT_VECTOR, PT_FLOAT64, length);
+		TSGDataType type(CT_STRING, PT_FLOAT64, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_floatmax(
-		floatmax_t** param, uint64_t length, const char* name,
+		T_STRING<floatmax_t>** param, uint64_t length, const char* name,
 		const char* description=NULL) {
-		TSGDataType type(CT_VECTOR, PT_FLOATMAX, length);
+		TSGDataType type(CT_STRING, PT_FLOATMAX, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_sgobject(
-		CSGObject** param, uint64_t length, const char* name,
+		T_STRING<CSGObject*>** param, uint64_t length, const char* name,
 		const char* description=NULL) {
-		TSGDataType type(CT_VECTOR, PT_SGOBJECT_PTR, length);
+		TSGDataType type(CT_STRING, PT_SGOBJECT_PTR, length);
 		add_type(&type, param, name, description);
 	}
 };

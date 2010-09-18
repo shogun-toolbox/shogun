@@ -39,29 +39,29 @@ TParameter::is_sgobject(void)
 		|| m_datatype.m_ctype != CT_SCALAR;
 }
 
-CParameter::CParameter(void) :m_parameters()
+CParameter::CParameter(void) :m_params()
 {
 }
 
 CParameter::~CParameter(void)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		delete m_parameters.get_element(i);
+		delete m_params.get_element(i);
 }
 
 void
 CParameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
-	m_parameters.append_element(
+	m_params.append_element(
 		new TParameter(type, param, name, description)
 		);
 }
 
 void
-CParameter::list_parameters()
+CParameter::list_parameters(CIO* io)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		SG_PRINT("Parameter '%s'\n",
-				 m_parameters.get_element(i)->m_name);
+				 m_params.get_element(i)->m_name);
 }

@@ -14,6 +14,7 @@
 
 #include "classifier/svm/SVM.h"
 #include "classifier/mkl/MKL.h"
+#include "lib/Parameter.h"
 
 #include <string.h>
 
@@ -41,6 +42,8 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 	set_C(C,C);
 	set_labels(lab);
 	set_kernel(k);
+
+	//m_parameters->add_float64(&C1, "C1");
 }
 
 CSVM::~CSVM()
