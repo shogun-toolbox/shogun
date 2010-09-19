@@ -21,13 +21,13 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 	m_description = strdup(description);
 
 	CSGObject** p = (CSGObject**) m_parameter;
-	if(is_sgobject()) SG_REF(*p);
+	if (is_sgobject()) SG_REF(*p);
 }
 
 TParameter::~TParameter(void)
 {
 	CSGObject** p = (CSGObject**) m_parameter;
-	if(is_sgobject()) SG_UNREF(*p);
+	if (is_sgobject()) SG_UNREF(*p);
 
 	free(m_description); free(m_name);
 }
@@ -36,7 +36,7 @@ bool
 TParameter::is_sgobject(void)
 {
 	return m_datatype.m_ptype == PT_SGOBJECT_PTR
-		|| m_datatype.m_ctype != CT_SCALAR;
+		&& m_datatype.m_ctype == CT_SCALAR;
 }
 
 char*
@@ -52,68 +52,50 @@ TParameter::new_prefix(const char* s1, const char* s2)
 void
 TParameter::print(CIO* io, const char* prefix)
 {
-	SG_PRINT("\n%s\n%35s %24s :", prefix, *m_description == '\0'
-			 ? "(Parameter)": m_description, m_name);
+	char buf[50];
+	m_datatype.to_string(buf);
 
-	switch(m_datatype.m_ctype) {
-	case CT_SCALAR:
-		break;
-	case CT_VECTOR:
-		SG_PRINT("Vector<");
-		break;
-	case CT_STRING:
-		SG_PRINT("String<");
-		break;
+	SG_PRINT("\n%s\n%35s %24s :%s\n", prefix, m_description == NULL
+			 || *m_description == '\0' ? "(Parameter)": m_description,
+			 m_name, buf);
+
+	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+		char* p = new_prefix(prefix, m_name);
+		(*(CSGObject**) m_parameter)->params_print(p);
+		free(p);
 	}
+}
 
-	switch(m_datatype.m_ptype) {
-	case PT_BOOL:
-		SG_PRINT("bool");
-		break;
-	case PT_CHAR:
-		SG_PRINT("char");
-		break;
-	case PT_INT16:
-		SG_PRINT("int16");
-		break;
-	case PT_INT32:
-		SG_PRINT("int32");
-		break;
-	case PT_INT64:
-		SG_PRINT("int64");
-		break;
-	case PT_FLOAT32:
-		SG_PRINT("float32");
-		break;
-	case PT_FLOAT64:
-		SG_PRINT("float64");
-		break;
-	case PT_FLOATMAX:
-		SG_PRINT("floatmax");
-		break;
-	case PT_SGOBJECT_PTR:
-		SG_PRINT("SGObject*");
-		if (m_datatype.m_ctype == CT_SCALAR
-			&& *(CSGObject**) m_parameter != NULL) {
-			SG_PRINT("\n");
+bool
+TParameter::save(CFile* file, const char* prefix)
+{
+	bool result;
 
-			char* p = new_prefix(prefix, m_name);
-			(*(CSGObject**) m_parameter)->params_list(p);
-			free(p);
-		}
-		break;
-	}
+	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+		char* p = new_prefix(prefix, m_name);
+		result = (*(CSGObject**) m_parameter)->save(file, p);
+		free(p);
+	} else
+		result = file->write_type(&m_datatype, m_parameter, m_name,
+								  prefix);
 
-	switch(m_datatype.m_ctype) {
-	case CT_SCALAR:
-		break;
-	case CT_VECTOR:
-	case CT_STRING:
-		SG_PRINT(">*");
-		break;
-	}
+	return result;
+}
 
-	SG_PRINT("\n");
+bool
+TParameter::load(CFile* file, const char* prefix)
+{
+	bool result;
+
+	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+		char* p = new_prefix(prefix, m_name);
+		result = (*(CSGObject**) m_parameter)->load(file, p);
+		free(p);
+	} else
+		result = file->read_type(&m_datatype, m_parameter, m_name,
+								 prefix);
+
+	return result;
 }
 
 CParameter::CParameter(CIO* io_) :m_params(io)
@@ -141,8 +123,28 @@ CParameter::add_type(const TSGDataType* type, void* param,
 }
 
 void
-CParameter::list(const char* prefix)
+CParameter::print(const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		m_params.get_element(i)->print(io, prefix);
+}
+
+bool
+CParameter::save(CFile* file, const char* prefix)
+{
+	for (int32_t i=0; i<get_num_parameters(); i++)
+		if (!m_params.get_element(i)->save(file, prefix))
+			return false;
+
+	return true;
+}
+
+bool
+CParameter::load(CFile* file, const char* prefix)
+{
+	for (int32_t i=0; i<get_num_parameters(); i++)
+		if (!m_params.get_element(i)->load(file, prefix))
+			return false;
+
+	return true;
 }

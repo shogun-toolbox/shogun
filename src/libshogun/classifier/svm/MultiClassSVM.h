@@ -128,16 +128,6 @@ class CMultiClassSVM : public CSVM
 		 */
 		float64_t classify_example_one_vs_one(int32_t num);
 
-		/** load a Multiclass SVM from file
-		 * @param svm_file the file handle
-		 */
-		bool load(FILE* svm_file);
-
-		/** write a Multiclass SVM to a file
-		 * @param svm_file the file handle
-		 */
-		bool save(FILE* svm_file);
-
 		/** get the type of multiclass'ness
 		 *
 		 * @return multiclass type 1 vs one etc

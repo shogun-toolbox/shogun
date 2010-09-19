@@ -13,17 +13,18 @@
 
 using namespace shogun;
 
-CFile::CFile() :CSGObject()
+CFile::CFile(void) :CSGObject()
 {
 	file = NULL;
-	filename = NULL;
+	task = 0;
+	filename = strdup("(file)");
 }
 
 CFile::CFile(FILE* f, char rw) :CSGObject()
 {
 	file = f;
 	task = rw;
-	filename = NULL;
+	filename = strdup("(file)");
 }
 
 CFile::CFile(char* fname, char rw) :CSGObject()
@@ -44,7 +45,7 @@ CFile::CFile(char* fname, char rw) :CSGObject()
 		SG_ERROR("unknown mode '%c'\n", mode[0]);
 }
 
-CFile::~CFile()
+CFile::~CFile(void)
 {
 	close();
 }
@@ -57,4 +58,35 @@ CFile::close()
 		fclose(file);
 	filename=NULL;
 	file=NULL;
+}
+
+bool
+CFile::is_task_warn(char rw)
+{
+	if (rw == 'w' && task != 'w') {
+		SG_WARNING("`%s' not opened for writing!\n", filename);
+		return false;
+	}
+	if (rw == 'r' && task != 'r') {
+		SG_WARNING("`%s' not opened for reading!\n", filename);
+		return false;
+	}
+
+	return true;
+}
+
+bool
+CFile::false_warn(const char* prefix, const char* name)
+{
+	if (task == 'w')
+		SG_WARNING("Could not write `%s%s' from `%s'!", prefix,
+				   name, filename);
+	if (task == 'r')
+		SG_WARNING("Could not read `%s%s' from `%s'!", prefix,
+				   name, filename);
+	if (task != 'w' && task != 'r')
+		SG_WARNING("Could not read/write `%s%s' from `%s'!",
+				   prefix, name, filename);
+
+	return false;
 }

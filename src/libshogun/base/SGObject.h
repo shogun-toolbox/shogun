@@ -58,6 +58,7 @@ class CIO;
 class CParallel;
 class CVersion;
 class CParameter;
+class CFile;
 
 // define reference counter macros
 //
@@ -161,7 +162,27 @@ public:
 	 *
 	 * 	@param prefix prefix for members
 	 */
-	void params_list(const char* prefix="");
+	virtual void params_print(const char* prefix="");
+
+	/** Save this object to file.
+	 *
+	 *  @param file where to save the object
+	 * 	@param prefix prefix for members
+	 *
+	 *  @return TRUE if done, otherwise FALSE
+	 */
+	virtual bool save(CFile* file, const char* prefix="");
+
+	/** Load this object from file.  If it will fail (returning FALSE)
+	 *  then this object will contain inconsistent data and should not
+	 *  be used!
+	 *
+	 *  @param file where to save the object
+	 * 	@param prefix prefix for members
+	 *
+	 *  @return TRUE if done, otherwise FALSE
+	 */
+	virtual bool load(CFile* file, const char* prefix="");
 
 	/** set the io object
 	 *

@@ -133,24 +133,6 @@ class CClassifier : public CSGObject
 			return CMath::INFTY;
 		}
 
-		/** load Classifier from file
-		 *
-		 * abstract base method
-		 *
-		 * @param srcfile file to load from
-		 * @return failure
-		 */
-		virtual bool load(FILE* srcfile) { ASSERT(srcfile); return false; }
-
-		/** save Classifier to file
-		 *
-		 * abstract base method
-		 *
-		 * @param dstfile file to save to
-		 * @return failure
-		 */
-		virtual bool save(FILE* dstfile) { ASSERT(dstfile); return false; }
-
 		/** set labels
 		 *
 		 * @param lab labels

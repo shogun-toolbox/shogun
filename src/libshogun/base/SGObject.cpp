@@ -72,9 +72,21 @@ CSGObject::unset_global_objects(void)
 }
 
 void
-CSGObject::params_list(const char* prefix)
+CSGObject::params_print(const char* prefix)
 {
-	m_parameters->list(prefix);
+	m_parameters->print(prefix);
+}
+
+bool
+CSGObject::save(CFile* file, const char* prefix)
+{
+	return m_parameters->save(file, prefix);
+}
+
+bool
+CSGObject::load(CFile* file, const char* prefix)
+{
+	return m_parameters->load(file, prefix);
 }
 
 void CSGObject::set_io(CIO* new_io)

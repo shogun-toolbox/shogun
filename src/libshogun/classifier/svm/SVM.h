@@ -81,17 +81,6 @@ class CSVM : public CKernelMachine
 		 */
 		virtual void set_linear_term(std::vector<float64_t> lin);
 
-
-		/** load a SVM from file
-		 * @param svm_file the file handle
-		 */
-		bool load(FILE* svm_file);
-
-		/** write a SVM to a file
-		 * @param svm_file the file handle
-		 */
-		bool save(FILE* svm_file);
-
 		/** set nu
 		 *
 		 * @param nue new nu

@@ -30,6 +30,9 @@ namespace shogun
 class CFile :public CSGObject
 {
 protected:
+	bool is_task_warn(char rw);
+	bool false_warn(const char* prefix, const char* name);
+
 	virtual void close(void);
 
 	/** file object */
@@ -41,7 +44,7 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CFile();
+	explicit CFile(void);
 
 	/** constructor
 	 *
@@ -57,15 +60,15 @@ public:
 	explicit CFile(char* fname, char rw='r');
 
 	/** default destructor */
-	virtual ~CFile();
+	virtual ~CFile(void);
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "File"; }
 
 	virtual bool write_type(const TSGDataType* type, const void* param,
-							const char* name) = 0;
+							const char* name, const char* prefix) = 0;
 	virtual bool read_type(const TSGDataType* type, void* param,
-						   const char* name) = 0;
+						   const char* name, const char* prefix) = 0;
 };
 }
 #endif // __FILE_H__

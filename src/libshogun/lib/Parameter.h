@@ -25,6 +25,8 @@ struct TParameter
 	~TParameter(void);
 
 	void print(CIO* io, const char* prefix);
+	bool save(CFile* file, const char* prefix="");
+	bool load(CFile* file, const char* prefix="");
 
 	TSGDataType m_datatype;
 	void* m_parameter;
@@ -36,7 +38,7 @@ private:
 	char* new_prefix(const char* s1, const char* s2);
 };
 
-/* Must not be an SGObject to prevent a recursive call of
+/* Must not be an CSGObject to prevent a recursive call of
  * constructors.
  */
 class CParameter
@@ -54,13 +56,9 @@ public:
 	explicit CParameter(CIO* io_);
 	virtual ~CParameter(void);
 
-	/** @return object name */
-	inline virtual const char* get_name(void) const
-	{
-		return "Parameter";
-	}
-
-	virtual void list(const char* prefix="");
+	virtual void print(const char* prefix="");
+	virtual bool save(CFile* file, const char* prefix="");
+	virtual bool load(CFile* file, const char* prefix="");
 
 	inline virtual int32_t get_num_parameters(void)
 	{
@@ -187,6 +185,73 @@ public:
 		CSGObject** param, uint64_t length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_SGOBJECT_PTR, length);
+		add_type(&type, param, name, description);
+	}
+
+	/* ************************************************************ */
+	/* Matrix wrappers  */
+
+	inline virtual void add_matrix_bool(
+		bool** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_BOOL, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_matrix_char(
+		char** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_CHAR, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_matrix_int16(
+		int16_t** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_INT16, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_matrix_int32(
+		int32_t** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_INT32, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_matrix_int64(
+		int64_t** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_INT64, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_matrix_float32(
+		float32_t** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_FLOAT32, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_matrix_float64(
+		float64_t** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_FLOAT64, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_matrix_floatmax(
+		floatmax_t** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_FLOATMAX, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_matrix_sgobject(
+		CSGObject** param, uint64_t length_y, uint64_t length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_SGOBJECT_PTR, length_y,
+						 length_x);
 		add_type(&type, param, name, description);
 	}
 
