@@ -46,4 +46,5 @@ public:
 						   const char* name, const char* prefix);
 };
 }
+
 #endif //__ASCII_FILE_H__
