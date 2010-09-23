@@ -215,6 +215,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 	kernel->init_normalizer();
 
 	CSVMLightOneClass* light=new CSVMLightOneClass(C1, kernel);
+	light->set_linadd_enabled(false);
 	light->train();
 
 	delete[] norm_wcw;
