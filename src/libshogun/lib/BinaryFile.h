@@ -317,27 +317,27 @@ protected:
 	 *
      * @return datatype
      */
-    SGDataType read_header();
+    void read_header(TSGDataType* dest);
 
     /** write header
 	 *
      * @param datatype we are writing
      */
-    void write_header(SGDataType datatype);
+    void write_header(const TSGDataType* datatype);
 
     /** parse first header - defunct!
      *
      * @param type feature type
      * @return -1
      */
-    int32_t parse_first_header(SGDataType &type);
+    int32_t parse_first_header(TSGDataType& type);
     
     /** parse next header - defunct!
      *
      * @param type feature type
      * @return -1
      */     
-    int32_t parse_next_header(SGDataType &type);
+    int32_t parse_next_header(TSGDataType& type);
 
 private:
 	/** load data (templated)

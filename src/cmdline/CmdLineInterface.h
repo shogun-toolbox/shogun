@@ -1,7 +1,7 @@
 #ifndef __CMDLINEINTERFACE__H_
 #define __CMDLINEINTERFACE__H_
 
-#include <shogun/ui/SGInterface.h>
+#include "ui/SGInterface.h"
 
 namespace shogun
 {

@@ -7,56 +7,144 @@
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
+
 #include "lib/Parameter.h"
 
 using namespace shogun;
 
-void CParameter::add_double(float64_t* parameter, const char* name,
-			const char* description, float64_t min_value, float64_t max_value)
+TParameter::TParameter(const TSGDataType* datatype, void* parameter,
+					   const char* name, const char* description)
+	:m_datatype(*datatype)
 {
-	TParameter* par=new TParameter[1];
-	par->parameter=parameter;
-	par->datatype=DT_SCALAR_REAL;
+	m_parameter = parameter;
+	m_name = strdup(name);
+	m_description = strdup(description);
 
-	if (name)
-		par->name=strdup(name);
-	else
-		par->name=NULL;
-
-	if (description)
-		par->description=strdup(description);
-	else
-		par->description=NULL;
-
-	par->min_value_float64=min_value;
-	par->max_value_float64=max_value;
-
-	m_parameters->append_element(par);
+	CSGObject** p = (CSGObject**) m_parameter;
+	if (is_sgobject()) SG_REF(*p);
 }
 
-void CParameter::list_parameters()
+TParameter::~TParameter(void)
 {
-	ASSERT(m_parameters);
+	CSGObject** p = (CSGObject**) m_parameter;
+	if (is_sgobject()) SG_UNREF(*p);
 
-	for (int32_t i=0; i<get_num_parameters(); i++)
-	{
-		TParameter* par=m_parameters->get_element(i);
-		SG_PRINT("Parameter '%s'\n", par->name);
+	free(m_description); free(m_name);
+}
+
+bool
+TParameter::is_sgobject(void)
+{
+	return m_datatype.m_ptype == PT_SGOBJECT_PTR
+		&& m_datatype.m_ctype == CT_SCALAR;
+}
+
+char*
+TParameter::new_prefix(const char* s1, const char* s2)
+{
+	char tmp[256];
+
+	snprintf(tmp, 256, "%s%s/", s1, s2);
+
+	return strdup(tmp);
+}
+
+void
+TParameter::print(CIO* io, const char* prefix)
+{
+	char buf[50];
+	m_datatype.to_string(buf);
+
+	SG_PRINT("\n%s\n%35s %24s :%s\n", prefix, m_description == NULL
+			 || *m_description == '\0' ? "(Parameter)": m_description,
+			 m_name, buf);
+
+	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+		char* p = new_prefix(prefix, m_name);
+		(*(CSGObject**) m_parameter)->serial_print(p);
+		free(p);
 	}
 }
 
-void CParameter::free_parameters()
+bool
+TParameter::save(CSerialFile* file, const char* prefix)
 {
-	ASSERT(m_parameters);
+	bool result;
 
+	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+		char* p = new_prefix(prefix, m_name);
+		result = (*(CSGObject**) m_parameter)->serial_save(file, p);
+		free(p);
+	} else
+		result = file->write_type(&m_datatype, m_parameter, m_name,
+								  prefix);
+
+	return result;
+}
+
+bool
+TParameter::load(CSerialFile* file, const char* prefix)
+{
+	bool result;
+
+	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+		char* p = new_prefix(prefix, m_name);
+		result = (*(CSGObject**) m_parameter)->serial_load(file, p);
+		free(p);
+	} else
+		result = file->read_type(&m_datatype, m_parameter, m_name,
+								 prefix);
+
+	return result;
+}
+
+CParameter::CParameter(CIO* io_) :m_params(io_)
+{
+	io = io_;
+
+	SG_REF(io);
+}
+
+CParameter::~CParameter(void)
+{
 	for (int32_t i=0; i<get_num_parameters(); i++)
-	{
-		TParameter* par=m_parameters->get_element(i);
-		free(par->name);
-		free(par->description);
-		delete[] par;
-	}
+		delete m_params.get_element(i);
 
-	delete m_parameters;
-	m_parameters=NULL;
+	SG_UNREF(io);
+}
+
+void
+CParameter::add_type(const TSGDataType* type, void* param,
+					 const char* name, const char* description)
+{
+	m_params.append_element(
+		new TParameter(type, param, name, description)
+		);
+}
+
+void
+CParameter::print(const char* prefix)
+{
+	for (int32_t i=0; i<get_num_parameters(); i++)
+		m_params.get_element(i)->print(io, prefix);
+}
+
+bool
+CParameter::save(CSerialFile* file, const char* prefix)
+{
+	for (int32_t i=0; i<get_num_parameters(); i++)
+		if (!m_params.get_element(i)->save(file, prefix))
+			return false;
+
+	return true;
+}
+
+bool
+CParameter::load(CSerialFile* file, const char* prefix)
+{
+	for (int32_t i=0; i<get_num_parameters(); i++)
+		if (!m_params.get_element(i)->load(file, prefix))
+			return false;
+
+	return true;
 }

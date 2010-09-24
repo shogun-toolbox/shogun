@@ -335,7 +335,8 @@ protected:
 	 *
 	 * @return compatible hdf5 datatype or -1
 	 */
-	hid_t get_compatible_type(H5T_class_t t_class, SGDataType datatype);
+	hid_t get_compatible_type(H5T_class_t t_class,
+							  const TSGDataType* datatype);
 
 	/** get dimensionality of the data
 	 *

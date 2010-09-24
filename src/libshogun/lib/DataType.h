@@ -12,100 +12,73 @@
 #define __DATATYPE_H__
 namespace shogun
 {
+enum EContainerType {
+	CT_SCALAR, CT_VECTOR, CT_MATRIX, CT_STRING, CT_SPARSE
+};
+
+enum EPrimitveType {
+	PT_BOOL, PT_CHAR, PT_INT16, PT_INT32, PT_INT64, PT_FLOAT32,
+	PT_FLOAT64, PT_FLOATMAX, PT_SGOBJECT_PTR
+};
+
 /* Datatypes that shogun supports. */
-enum SGDataType
+struct TSGDataType
 {
-	DT_UNDEFINED=0,
+	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype) {
+		m_ctype = ctype; m_ptype = ptype; m_length = 0;
+	}
+	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype,
+						 uint64_t length) {
+		m_ctype = ctype; m_ptype = ptype; m_length = length;
+	}
+	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype,
+						 uint64_t length_y, uint64_t length_x) {
+		m_ctype = ctype; m_ptype = ptype;
+		m_length = length_x * length_y;
+	}
 
-	///simple scalar/string types
-	DT_SCALAR_BOOL=100,
-	DT_SCALAR_BYTE,
-	DT_SCALAR_CHAR,
-	DT_SCALAR_INT,
-	DT_SCALAR_UINT,
-	DT_SCALAR_LONG,
-	DT_SCALAR_ULONG,
-	DT_SCALAR_REAL,
-	DT_SCALAR_SHORTREAL,
-	DT_SCALAR_LONGREAL,
-	DT_SCALAR_SHORT,
-	DT_SCALAR_WORD,
+	bool operator==(const TSGDataType& a) {
+		return m_ctype == a.m_ctype && m_ptype == a.m_ptype
+			&& m_length == a.m_length;
+	}
 
-	///vector type
-	DT_VECTOR_BOOL=200,
-	DT_VECTOR_BYTE,
-	DT_VECTOR_CHAR,
-	DT_VECTOR_INT,
-	DT_VECTOR_UINT,
-	DT_VECTOR_LONG,
-	DT_VECTOR_ULONG,
-	DT_VECTOR_REAL,
-	DT_VECTOR_SHORTREAL,
-	DT_VECTOR_LONGREAL,
-	DT_VECTOR_SHORT,
-	DT_VECTOR_WORD,
+	bool operator!=(const TSGDataType& a) {
+		return !(*this == a);
+	}
 
-	///dense matrices 
-	DT_DENSE_BOOL=300,
-	DT_DENSE_BYTE,
-	DT_DENSE_CHAR,
-	DT_DENSE_INT,
-	DT_DENSE_UINT,
-	DT_DENSE_LONG,
-	DT_DENSE_ULONG,
-	DT_DENSE_REAL,
-	DT_DENSE_SHORTREAL,
-	DT_DENSE_LONGREAL,
-	DT_DENSE_SHORT,
-	DT_DENSE_WORD,
+	void to_string(char* dest) const {
+		char* p = dest;
 
-	///dense nd arrays
-	DT_NDARRAY_BOOL=400,
-	DT_NDARRAY_BYTE,
-	DT_NDARRAY_CHAR,
-	DT_NDARRAY_INT,
-	DT_NDARRAY_UINT,
-	DT_NDARRAY_LONG,
-	DT_NDARRAY_ULONG,
-	DT_NDARRAY_REAL,
-	DT_NDARRAY_SHORTREAL,
-	DT_NDARRAY_LONGREAL,
-	DT_NDARRAY_SHORT,
-	DT_NDARRAY_WORD,
+		switch (m_ctype) {
+		case CT_SCALAR: strcpy(p, ""); break;
+		case CT_VECTOR: strcpy(p, "Vector<"); break;
+		case CT_MATRIX: strcpy(p, "Matrix<"); break;
+		case CT_STRING: strcpy(p, "String<"); break;
+		case CT_SPARSE: strcpy(p, "Sparse<"); break;
+		}
 
-	///sparse matrices
-	DT_SPARSE_BOOL=500,
-	DT_SPARSE_BYTE,
-	DT_SPARSE_CHAR,
-	DT_SPARSE_INT,
-	DT_SPARSE_UINT,
-	DT_SPARSE_LONG,
-	DT_SPARSE_ULONG,
-	DT_SPARSE_REAL,
-	DT_SPARSE_SHORTREAL,
-	DT_SPARSE_LONGREAL,
-	DT_SPARSE_SHORT,
-	DT_SPARSE_WORD,
+		switch (m_ptype) {
+		case PT_BOOL: strcat(p, "bool"); break;
+		case PT_CHAR: strcat(p, "char"); break;
+		case PT_INT16: strcat(p, "int16"); break;
+		case PT_INT32: strcat(p, "int32"); break;
+		case PT_INT64: strcat(p, "int64"); break;
+		case PT_FLOAT32: strcat(p, "float32"); break;
+		case PT_FLOAT64: strcat(p, "float64"); break;
+		case PT_FLOATMAX: strcat(p, "floatmax"); break;
+		case PT_SGOBJECT_PTR: strcat(p, "SGObject*"); break;
+		}
 
-	///strings of arbitrary type
-	DT_STRING_BOOL=600,
-	DT_STRING_BYTE,
-	DT_STRING_CHAR,
-	DT_STRING_INT,
-	DT_STRING_UINT,
-	DT_STRING_LONG,
-	DT_STRING_ULONG,
-	DT_STRING_REAL,
-	DT_STRING_SHORTREAL,
-	DT_STRING_LONGREAL,
-	DT_STRING_SHORT,
-	DT_STRING_WORD,
+		switch (m_ctype) {
+		case CT_SCALAR: break;
+		case CT_VECTOR: case CT_MATRIX: case CT_STRING: case CT_SPARSE:
+			strcat(p, ">*"); break;
+		}
+	} /* TO_STRING()  */
 
-	/// structures
-	DT_ATTR_STRUCT=700,
-
-	/// shogun objects
-	DT_SHOGUN_OBJECT=1000
+	EContainerType m_ctype;
+	EPrimitveType m_ptype;
+	uint64_t m_length;
 };
 }
 #endif // __DATATYPE_H__

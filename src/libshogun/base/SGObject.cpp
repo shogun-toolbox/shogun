@@ -13,6 +13,7 @@
 #include "base/Parallel.h"
 #include "base/init.h"
 #include "base/Version.h"
+#include "lib/Parameter.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -40,7 +41,8 @@ namespace shogun
 
 using namespace shogun;
 
-void CSGObject::set_global_objects()
+void
+CSGObject::set_global_objects(void)
 {
 	if (!sg_io || !sg_parallel || !sg_version)
 	{
@@ -55,6 +57,36 @@ void CSGObject::set_global_objects()
 	io=sg_io;
 	parallel=sg_parallel;
 	version=sg_version;
+
+	m_parameters = new CParameter(io);
+}
+
+void
+CSGObject::unset_global_objects(void)
+{
+	delete m_parameters;
+
+	SG_UNREF(version);
+	SG_UNREF(parallel);
+	SG_UNREF(io);
+}
+
+void
+CSGObject::serial_print(const char* prefix)
+{
+	m_parameters->print(prefix);
+}
+
+bool
+CSGObject::serial_save(CSerialFile* file, const char* prefix)
+{
+	return m_parameters->save(file, prefix);
+}
+
+bool
+CSGObject::serial_load(CSerialFile* file, const char* prefix)
+{
+	return m_parameters->load(file, prefix);
 }
 
 void CSGObject::set_io(CIO* new_io)

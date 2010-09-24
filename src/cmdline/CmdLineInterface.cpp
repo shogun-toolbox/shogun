@@ -4,7 +4,7 @@
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
 #include <shogun/lib/AsciiFile.h>
-#include <shogun/ui/SGInterface.h>
+#include "ui/SGInterface.h"
 
 #ifdef HAVE_READLINE
 #include <readline/readline.h>

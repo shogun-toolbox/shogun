@@ -71,7 +71,7 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 		SG_ERROR("Error opening data set\n");										\
 	hid_t dtype = H5Dget_type(dataset);												\
 	H5T_class_t t_class=H5Tget_class(dtype);										\
-	hid_t h5_type=get_compatible_type(t_class, datatype);							\
+	TSGDataType t datatype; hid_t h5_type=get_compatible_type(t_class, &t);         \
 	if (h5_type==-1)																\
 	{																				\
 		H5Dclose(dataset);															\
@@ -96,14 +96,14 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 	}																				\
 }
 
-GET_VECTOR(get_bool_vector, bool, DT_VECTOR_BOOL)
-GET_VECTOR(get_byte_vector, uint8_t, DT_VECTOR_BYTE)
-GET_VECTOR(get_char_vector, char, DT_VECTOR_CHAR)
-GET_VECTOR(get_int_vector, int32_t, DT_VECTOR_INT)
-GET_VECTOR(get_shortreal_vector, float32_t, DT_VECTOR_SHORTREAL)
-GET_VECTOR(get_real_vector, float64_t, DT_VECTOR_REAL)
-GET_VECTOR(get_short_vector, int16_t, DT_VECTOR_SHORT)
-GET_VECTOR(get_word_vector, uint16_t, DT_VECTOR_WORD)
+GET_VECTOR(get_bool_vector, bool, (CT_VECTOR, PT_BOOL))
+GET_VECTOR(get_byte_vector, uint8_t, (CT_VECTOR, PT_CHAR))
+GET_VECTOR(get_char_vector, char, (CT_VECTOR, PT_CHAR))
+GET_VECTOR(get_int_vector, int32_t, (CT_VECTOR, PT_INT32))
+GET_VECTOR(get_shortreal_vector, float32_t, (CT_VECTOR, PT_FLOAT32))
+GET_VECTOR(get_real_vector, float64_t, (CT_VECTOR, PT_FLOAT64))
+GET_VECTOR(get_short_vector, int16_t, (CT_VECTOR, PT_INT16))
+GET_VECTOR(get_word_vector, uint16_t, (CT_VECTOR, PT_INT16))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
@@ -120,7 +120,7 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 		SG_ERROR("Error opening data set\n");										\
 	hid_t dtype = H5Dget_type(dataset);												\
 	H5T_class_t t_class=H5Tget_class(dtype);										\
-	hid_t h5_type=get_compatible_type(t_class, datatype);							\
+	TSGDataType t datatype; hid_t h5_type=get_compatible_type(t_class, &t);	        \
 	if (h5_type==-1)																\
 	{																				\
 		H5Dclose(dataset);															\
@@ -144,18 +144,18 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 	}																				\
 }
 
-GET_MATRIX(get_bool_matrix, bool, DT_DENSE_BOOL)
-GET_MATRIX(get_char_matrix, char, DT_DENSE_CHAR)
-GET_MATRIX(get_byte_matrix, uint8_t, DT_DENSE_BYTE)
-GET_MATRIX(get_int_matrix, int32_t, DT_DENSE_INT)
-GET_MATRIX(get_uint_matrix, uint32_t, DT_DENSE_UINT)
-GET_MATRIX(get_long_matrix, int64_t, DT_DENSE_LONG)
-GET_MATRIX(get_ulong_matrix, uint64_t, DT_DENSE_ULONG)
-GET_MATRIX(get_short_matrix, int16_t, DT_DENSE_SHORT)
-GET_MATRIX(get_word_matrix, uint16_t, DT_DENSE_WORD)
-GET_MATRIX(get_shortreal_matrix, float32_t, DT_DENSE_SHORTREAL)
-GET_MATRIX(get_real_matrix, float64_t, DT_DENSE_REAL)
-GET_MATRIX(get_longreal_matrix, floatmax_t, DT_DENSE_LONGREAL)
+GET_MATRIX(get_bool_matrix, bool, (CT_MATRIX, PT_BOOL))
+GET_MATRIX(get_char_matrix, char, (CT_MATRIX, PT_CHAR))
+GET_MATRIX(get_byte_matrix, uint8_t, (CT_MATRIX, PT_CHAR))
+GET_MATRIX(get_int_matrix, int32_t, (CT_MATRIX, PT_INT32))
+GET_MATRIX(get_uint_matrix, uint32_t, (CT_MATRIX, PT_INT32))
+GET_MATRIX(get_long_matrix, int64_t, (CT_MATRIX, PT_INT64))
+GET_MATRIX(get_ulong_matrix, uint64_t, (CT_MATRIX, PT_INT64))
+GET_MATRIX(get_short_matrix, int16_t, (CT_MATRIX, PT_INT16))
+GET_MATRIX(get_word_matrix, uint16_t, (CT_MATRIX, PT_INT16))
+GET_MATRIX(get_shortreal_matrix, float32_t, (CT_MATRIX, PT_FLOAT32))
+GET_MATRIX(get_real_matrix, float64_t, (CT_MATRIX, PT_FLOAT64))
+GET_MATRIX(get_longreal_matrix, floatmax_t, (CT_MATRIX, PT_FLOATMAX))
 #undef GET_MATRIX
 
 void CHDF5File::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
@@ -367,64 +367,31 @@ void CHDF5File::get_boolean_type()
 	}
 }
 
-hid_t CHDF5File::get_compatible_type(H5T_class_t t_class, SGDataType datatype)
+hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
+									 const TSGDataType* datatype)
 {
 	switch (t_class)
 	{
 		case H5T_FLOAT:
 		case H5T_INTEGER:
-			switch (datatype)
+			switch (datatype->m_ptype)
 			{
-				case DT_VECTOR_SHORTREAL:
-				case DT_NDARRAY_SHORTREAL:
-				case DT_DENSE_SHORTREAL:
-					return H5T_NATIVE_FLOAT;
-				case DT_VECTOR_REAL:
-				case DT_NDARRAY_REAL:
-				case DT_DENSE_REAL:
-					return H5T_NATIVE_DOUBLE;
-				case DT_VECTOR_LONGREAL:
-				case DT_NDARRAY_LONGREAL:
-				case DT_DENSE_LONGREAL:
-					return H5T_NATIVE_LDOUBLE;
-				case DT_VECTOR_BOOL:
-				case DT_DENSE_BOOL:
-				case DT_NDARRAY_BOOL:
-					return boolean_type;
-				case DT_VECTOR_BYTE:
-				case DT_DENSE_BYTE:
-				case DT_NDARRAY_BYTE:
-					return H5T_NATIVE_UINT8;
-				case DT_VECTOR_CHAR:
-				case DT_DENSE_CHAR:
-				case DT_NDARRAY_CHAR:
-					return H5T_NATIVE_CHAR;
-				case DT_VECTOR_INT:
-				case DT_DENSE_INT:
-				case DT_NDARRAY_INT:
-					return H5T_NATIVE_INT32;
-				case DT_VECTOR_UINT:
-				case DT_DENSE_UINT:
-				case DT_NDARRAY_UINT:
-					return H5T_NATIVE_UINT32;
-				case DT_VECTOR_LONG:
-				case DT_DENSE_LONG:
-				case DT_NDARRAY_LONG:
-					return H5T_NATIVE_INT64;
-				case DT_VECTOR_ULONG:
-				case DT_DENSE_ULONG:
-				case DT_NDARRAY_ULONG:
-					return H5T_NATIVE_UINT64;
-				case DT_VECTOR_SHORT:
-				case DT_DENSE_SHORT:
-				case DT_NDARRAY_SHORT:
-					return H5T_NATIVE_INT16;
-				case DT_VECTOR_WORD:
-				case DT_DENSE_WORD:
-				case DT_NDARRAY_WORD:
-					return H5T_NATIVE_UINT16;
-				default:
-					return -1;
+			case PT_BOOL: return boolean_type;
+			case PT_CHAR: return H5T_NATIVE_UINT8;
+			case PT_INT16: return H5T_NATIVE_INT16;
+			/* case PT_INT16: return H5T_NATIVE_UINT16;  */
+			/* case PT_CHAR: return H5T_NATIVE_CHAR;  */
+			case PT_INT32: return H5T_NATIVE_INT32;
+			/* case PT_INT32: return H5T_NATIVE_UINT32;  */
+			case PT_INT64: return H5T_NATIVE_INT64;
+			/* case PT_INT64: return H5T_NATIVE_UINT64;  */
+			case PT_FLOAT32: return H5T_NATIVE_FLOAT;
+			case PT_FLOAT64: return H5T_NATIVE_DOUBLE;
+			case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE;
+			case PT_SGOBJECT_PTR:
+				SG_ERROR("Implementation error during writing "
+						 "HDF5File!");
+				return -1;
 			}
 		case H5T_STRING:
 			SG_ERROR("Strings not supported");

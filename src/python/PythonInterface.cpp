@@ -5,7 +5,7 @@
 
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
-#include <shogun/ui/SGInterface.h>
+#include "ui/SGInterface.h"
 #include <shogun/base/init.h>
 
 #ifdef HAVE_OCTAVE

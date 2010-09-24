@@ -31,7 +31,7 @@ void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
 {																					\
 	if (!file)																		\
 		SG_ERROR("File invalid.\n");												\
-	SGDataType dtype=read_header();													\
+	TSGDataType dtype(CT_SCALAR, PT_BOOL); read_header(&dtype);			            \
 	if (dtype!=datatype)															\
 		SG_ERROR("Datatype mismatch\n");											\
 																					\
@@ -42,13 +42,13 @@ void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
 		SG_ERROR("Failed to read Matrix\n");										\
 }
 
-GET_VECTOR(get_byte_vector, uint8_t, DT_VECTOR_BYTE)
-GET_VECTOR(get_char_vector, char, DT_VECTOR_CHAR)
-GET_VECTOR(get_int_vector, int32_t, DT_VECTOR_INT)
-GET_VECTOR(get_shortreal_vector, float32_t, DT_VECTOR_SHORTREAL)
-GET_VECTOR(get_real_vector, float64_t, DT_VECTOR_REAL)
-GET_VECTOR(get_short_vector, int16_t, DT_VECTOR_SHORT)
-GET_VECTOR(get_word_vector, uint16_t, DT_VECTOR_WORD)
+GET_VECTOR(get_byte_vector, uint8_t, TSGDataType(CT_VECTOR, PT_CHAR))
+GET_VECTOR(get_char_vector, char, TSGDataType(CT_VECTOR, PT_CHAR))
+GET_VECTOR(get_int_vector, int32_t, TSGDataType(CT_VECTOR, PT_INT32))
+GET_VECTOR(get_shortreal_vector, float32_t, TSGDataType(CT_VECTOR, PT_FLOAT32))
+GET_VECTOR(get_real_vector, float64_t, TSGDataType(CT_VECTOR, PT_FLOAT64))
+GET_VECTOR(get_short_vector, int16_t, TSGDataType(CT_VECTOR, PT_INT16))
+GET_VECTOR(get_word_vector, uint16_t, TSGDataType(CT_VECTOR, PT_INT16))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
@@ -56,7 +56,7 @@ void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		
 {																					\
 	if (!file)																		\
 		SG_ERROR("File invalid.\n");												\
-	SGDataType dtype=read_header();													\
+	TSGDataType dtype(CT_SCALAR, PT_BOOL); read_header(&dtype);			            \
 	if (dtype!=datatype)															\
 		SG_ERROR("Datatype mismatch\n");											\
 																					\
@@ -68,17 +68,17 @@ void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		
 		SG_ERROR("Failed to read Matrix\n");										\
 }
 
-GET_MATRIX(get_char_matrix, char, DT_DENSE_CHAR)
-GET_MATRIX(get_byte_matrix, uint8_t, DT_DENSE_BYTE)
-GET_MATRIX(get_int_matrix, int32_t, DT_DENSE_INT)
-GET_MATRIX(get_uint_matrix, uint32_t, DT_DENSE_UINT)
-GET_MATRIX(get_long_matrix, int64_t, DT_DENSE_LONG)
-GET_MATRIX(get_ulong_matrix, uint64_t, DT_DENSE_ULONG)
-GET_MATRIX(get_short_matrix, int16_t, DT_DENSE_SHORT)
-GET_MATRIX(get_word_matrix, uint16_t, DT_DENSE_WORD)
-GET_MATRIX(get_shortreal_matrix, float32_t, DT_DENSE_SHORTREAL)
-GET_MATRIX(get_real_matrix, float64_t, DT_DENSE_REAL)
-GET_MATRIX(get_longreal_matrix, floatmax_t, DT_DENSE_LONGREAL)
+GET_MATRIX(get_char_matrix, char, TSGDataType(CT_MATRIX, PT_CHAR))
+GET_MATRIX(get_byte_matrix, uint8_t, TSGDataType(CT_MATRIX, PT_CHAR))
+GET_MATRIX(get_int_matrix, int32_t, TSGDataType(CT_MATRIX, PT_INT32))
+GET_MATRIX(get_uint_matrix, uint32_t, TSGDataType(CT_MATRIX, PT_INT32))
+GET_MATRIX(get_long_matrix, int64_t, TSGDataType(CT_MATRIX, PT_INT64))
+GET_MATRIX(get_ulong_matrix, uint64_t, TSGDataType(CT_MATRIX, PT_INT64))
+GET_MATRIX(get_short_matrix, int16_t, TSGDataType(CT_MATRIX, PT_INT16))
+GET_MATRIX(get_word_matrix, uint16_t, TSGDataType(CT_MATRIX, PT_INT16))
+GET_MATRIX(get_shortreal_matrix, float32_t, TSGDataType(CT_MATRIX, PT_FLOAT32))
+GET_MATRIX(get_real_matrix, float64_t, TSGDataType(CT_MATRIX, PT_FLOAT64))
+GET_MATRIX(get_longreal_matrix, floatmax_t, TSGDataType(CT_MATRIX, PT_FLOATMAX))
 #undef GET_MATRIX
 
 void CBinaryFile::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
@@ -115,7 +115,7 @@ void CBinaryFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& n
 	if (!(file))																		\
 		SG_ERROR("File invalid.\n");													\
 																						\
-	SGDataType dtype=read_header();														\
+	TSGDataType dtype(CT_SCALAR, PT_BOOL); read_header(&dtype);			                \
 	if (dtype!=datatype)																\
 		SG_ERROR("Datatype mismatch\n");												\
 																						\
@@ -136,18 +136,18 @@ void CBinaryFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& n
 		matrix[i].features=vec;															\
 	}																					\
 }
-GET_SPARSEMATRIX(get_bool_sparsematrix, bool, DT_SPARSE_BOOL)
-GET_SPARSEMATRIX(get_char_sparsematrix, char, DT_SPARSE_CHAR)
-GET_SPARSEMATRIX(get_byte_sparsematrix, uint8_t, DT_SPARSE_BYTE)
-GET_SPARSEMATRIX(get_int_sparsematrix, int32_t, DT_SPARSE_INT)
-GET_SPARSEMATRIX(get_uint_sparsematrix, uint32_t, DT_SPARSE_UINT)
-GET_SPARSEMATRIX(get_long_sparsematrix, int64_t, DT_SPARSE_LONG)
-GET_SPARSEMATRIX(get_ulong_sparsematrix, uint64_t, DT_SPARSE_ULONG)
-GET_SPARSEMATRIX(get_short_sparsematrix, int16_t, DT_SPARSE_SHORT)
-GET_SPARSEMATRIX(get_word_sparsematrix, uint16_t, DT_SPARSE_WORD)
-GET_SPARSEMATRIX(get_shortreal_sparsematrix, float32_t, DT_SPARSE_SHORTREAL)
-GET_SPARSEMATRIX(get_real_sparsematrix, float64_t, DT_SPARSE_REAL)
-GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
+GET_SPARSEMATRIX(get_bool_sparsematrix, bool, TSGDataType(CT_SPARSE, PT_BOOL))
+GET_SPARSEMATRIX(get_char_sparsematrix, char, TSGDataType(CT_SPARSE, PT_CHAR))
+GET_SPARSEMATRIX(get_byte_sparsematrix, uint8_t, TSGDataType(CT_SPARSE, PT_CHAR))
+GET_SPARSEMATRIX(get_int_sparsematrix, int32_t, TSGDataType(CT_SPARSE, PT_INT32))
+GET_SPARSEMATRIX(get_uint_sparsematrix, uint32_t, TSGDataType(CT_SPARSE, PT_INT32))
+GET_SPARSEMATRIX(get_long_sparsematrix, int64_t, TSGDataType(CT_SPARSE, PT_INT64))
+GET_SPARSEMATRIX(get_ulong_sparsematrix, uint64_t, TSGDataType(CT_SPARSE, PT_INT64))
+GET_SPARSEMATRIX(get_short_sparsematrix, int16_t, TSGDataType(CT_SPARSE, PT_INT16))
+GET_SPARSEMATRIX(get_word_sparsematrix, uint16_t, TSGDataType(CT_SPARSE, PT_INT16))
+GET_SPARSEMATRIX(get_shortreal_sparsematrix, float32_t, TSGDataType(CT_SPARSE, PT_FLOAT32))
+GET_SPARSEMATRIX(get_real_sparsematrix, float64_t, TSGDataType(CT_SPARSE, PT_FLOAT64))
+GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, TSGDataType(CT_SPARSE, PT_FLOATMAX))
 #undef GET_SPARSEMATRIX
 
 
@@ -161,7 +161,7 @@ void CBinaryFile::fname(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& 
 	if (!file)																					\
 		SG_ERROR("File invalid.\n");															\
 																								\
-	SGDataType dtype=read_header();																\
+	TSGDataType dtype(CT_SCALAR, PT_BOOL); read_header(&dtype);			                        \
 	if (dtype!=datatype)																		\
 		SG_ERROR("Datatype mismatch\n");														\
 																								\
@@ -183,17 +183,17 @@ void CBinaryFile::fname(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& 
 	}																							\
 }
 
-GET_STRING_LIST(get_char_string_list, char, DT_STRING_CHAR)
-GET_STRING_LIST(get_byte_string_list, uint8_t, DT_STRING_BYTE)
-GET_STRING_LIST(get_int_string_list, int32_t, DT_STRING_INT)
-GET_STRING_LIST(get_uint_string_list, uint32_t, DT_STRING_UINT)
-GET_STRING_LIST(get_long_string_list, int64_t, DT_STRING_LONG)
-GET_STRING_LIST(get_ulong_string_list, uint64_t, DT_STRING_ULONG)
-GET_STRING_LIST(get_short_string_list, int16_t, DT_STRING_SHORT)
-GET_STRING_LIST(get_word_string_list, uint16_t, DT_STRING_WORD)
-GET_STRING_LIST(get_shortreal_string_list, float32_t, DT_STRING_SHORTREAL)
-GET_STRING_LIST(get_real_string_list, float64_t, DT_STRING_REAL)
-GET_STRING_LIST(get_longreal_string_list, floatmax_t, DT_STRING_LONGREAL)
+GET_STRING_LIST(get_char_string_list, char, TSGDataType(CT_STRING, PT_CHAR))
+GET_STRING_LIST(get_byte_string_list, uint8_t, TSGDataType(CT_STRING, PT_CHAR))
+GET_STRING_LIST(get_int_string_list, int32_t, TSGDataType(CT_STRING, PT_INT32))
+GET_STRING_LIST(get_uint_string_list, uint32_t, TSGDataType(CT_STRING, PT_INT32))
+GET_STRING_LIST(get_long_string_list, int64_t, TSGDataType(CT_STRING, PT_INT64))
+GET_STRING_LIST(get_ulong_string_list, uint64_t, TSGDataType(CT_STRING, PT_INT64))
+GET_STRING_LIST(get_short_string_list, int16_t, TSGDataType(CT_STRING, PT_INT16))
+GET_STRING_LIST(get_word_string_list, uint16_t, TSGDataType(CT_STRING, PT_INT16))
+GET_STRING_LIST(get_shortreal_string_list, float32_t, TSGDataType(CT_STRING, PT_FLOAT32))
+GET_STRING_LIST(get_real_string_list, float64_t, TSGDataType(CT_STRING, PT_FLOAT64))
+GET_STRING_LIST(get_longreal_string_list, floatmax_t, TSGDataType(CT_STRING, PT_FLOATMAX))
 #undef GET_STRING_LIST
 
 /** set functions - to pass data from shogun to the target interface */
@@ -204,19 +204,19 @@ void CBinaryFile::fname(const sg_type* vec, int32_t len)			\
 	if (!(file && vec))												\
 		SG_ERROR("File or vector invalid.\n");						\
 																	\
-	write_header(dtype);											\
+	TSGDataType t dtype; write_header(&t);						    \
 																	\
 	if (fwrite(&len, sizeof(int32_t), 1, file)!=1 ||				\
 			fwrite(vec, sizeof(sg_type), len, file)!=(size_t) len)	\
 		SG_ERROR("Failed to write vector\n");						\
 }
-SET_VECTOR(set_byte_vector, uint8_t, DT_VECTOR_BYTE)
-SET_VECTOR(set_char_vector, char, DT_VECTOR_CHAR)
-SET_VECTOR(set_int_vector, int32_t, DT_VECTOR_INT)
-SET_VECTOR(set_shortreal_vector, float32_t, DT_VECTOR_SHORTREAL)
-SET_VECTOR(set_real_vector, float64_t, DT_VECTOR_REAL)
-SET_VECTOR(set_short_vector, int16_t, DT_VECTOR_SHORT)
-SET_VECTOR(set_word_vector, uint16_t, DT_VECTOR_WORD)
+SET_VECTOR(set_byte_vector, uint8_t, (CT_VECTOR, PT_CHAR))
+SET_VECTOR(set_char_vector, char, (CT_VECTOR, PT_CHAR))
+SET_VECTOR(set_int_vector, int32_t, (CT_VECTOR, PT_INT32))
+SET_VECTOR(set_shortreal_vector, float32_t, (CT_VECTOR, PT_FLOAT32))
+SET_VECTOR(set_real_vector, float64_t, (CT_VECTOR, PT_FLOAT64))
+SET_VECTOR(set_short_vector, int16_t, (CT_VECTOR, PT_INT16))
+SET_VECTOR(set_word_vector, uint16_t, (CT_VECTOR, PT_INT16))
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type, dtype) \
@@ -225,24 +225,24 @@ void CBinaryFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec
 	if (!(file && matrix))															\
 		SG_ERROR("File or matrix invalid.\n");										\
 																					\
-	write_header(dtype);															\
+	TSGDataType t dtype; write_header(&t);						                    \
 																					\
 	if (fwrite(&num_feat, sizeof(int32_t), 1, file)!=1 ||							\
 			fwrite(&num_vec, sizeof(int32_t), 1, file)!=1 ||						\
 			fwrite(matrix, sizeof(sg_type)*num_feat, num_vec, file)!=(size_t) num_vec)	\
 		SG_ERROR("Failed to write Matrix\n");										\
 }
-SET_MATRIX(set_char_matrix, char, DT_DENSE_CHAR)
-SET_MATRIX(set_byte_matrix, uint8_t, DT_DENSE_BYTE)
-SET_MATRIX(set_int_matrix, int32_t, DT_DENSE_INT)
-SET_MATRIX(set_uint_matrix, uint32_t, DT_DENSE_UINT)
-SET_MATRIX(set_long_matrix, int64_t, DT_DENSE_LONG)
-SET_MATRIX(set_ulong_matrix, uint64_t, DT_DENSE_ULONG)
-SET_MATRIX(set_short_matrix, int16_t, DT_DENSE_SHORT)
-SET_MATRIX(set_word_matrix, uint16_t, DT_DENSE_WORD)
-SET_MATRIX(set_shortreal_matrix, float32_t, DT_DENSE_SHORTREAL)
-SET_MATRIX(set_real_matrix, float64_t, DT_DENSE_REAL)
-SET_MATRIX(set_longreal_matrix, floatmax_t, DT_DENSE_LONGREAL)
+SET_MATRIX(set_char_matrix, char, (CT_MATRIX, PT_CHAR))
+SET_MATRIX(set_byte_matrix, uint8_t, (CT_MATRIX, PT_CHAR))
+SET_MATRIX(set_int_matrix, int32_t, (CT_MATRIX, PT_INT32))
+SET_MATRIX(set_uint_matrix, uint32_t, (CT_MATRIX, PT_INT32))
+SET_MATRIX(set_long_matrix, int64_t, (CT_MATRIX, PT_INT64))
+SET_MATRIX(set_ulong_matrix, uint64_t, (CT_MATRIX, PT_INT64))
+SET_MATRIX(set_short_matrix, int16_t, (CT_MATRIX, PT_INT16))
+SET_MATRIX(set_word_matrix, uint16_t, (CT_MATRIX, PT_INT16))
+SET_MATRIX(set_shortreal_matrix, float32_t, (CT_MATRIX, PT_FLOAT32))
+SET_MATRIX(set_real_matrix, float64_t, (CT_MATRIX, PT_FLOAT64))
+SET_MATRIX(set_longreal_matrix, floatmax_t, (CT_MATRIX, PT_FLOATMAX))
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
@@ -252,7 +252,7 @@ void CBinaryFile::fname(const TSparse<sg_type>* matrix, 	\
 	if (!(file && matrix))									\
 		SG_ERROR("File or matrix invalid.\n");				\
 															\
-	write_header(dtype);									\
+	TSGDataType t dtype; write_header(&t);					\
 															\
 	if (fwrite(&num_vec, sizeof(int32_t), 1, file)!=1)		\
 		SG_ERROR("Failed to write Sparse Matrix\n");		\
@@ -266,18 +266,18 @@ void CBinaryFile::fname(const TSparse<sg_type>* matrix, 	\
 			SG_ERROR("Failed to write Sparse Matrix\n");	\
 	}														\
 }
-SET_SPARSEMATRIX(set_bool_sparsematrix, bool, DT_SPARSE_BOOL)
-SET_SPARSEMATRIX(set_char_sparsematrix, char, DT_SPARSE_CHAR)
-SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, DT_SPARSE_BYTE)
-SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, DT_SPARSE_INT)
-SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, DT_SPARSE_UINT)
-SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, DT_SPARSE_LONG)
-SET_SPARSEMATRIX(set_ulong_sparsematrix, uint64_t, DT_SPARSE_ULONG)
-SET_SPARSEMATRIX(set_short_sparsematrix, int16_t, DT_SPARSE_SHORT)
-SET_SPARSEMATRIX(set_word_sparsematrix, uint16_t, DT_SPARSE_WORD)
-SET_SPARSEMATRIX(set_shortreal_sparsematrix, float32_t, DT_SPARSE_SHORTREAL)
-SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, DT_SPARSE_REAL)
-SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
+SET_SPARSEMATRIX(set_bool_sparsematrix, bool, (CT_SPARSE, PT_BOOL))
+SET_SPARSEMATRIX(set_char_sparsematrix, char, (CT_SPARSE, PT_CHAR))
+SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, (CT_SPARSE, PT_CHAR))
+SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, (CT_SPARSE, PT_INT32))
+SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, (CT_SPARSE, PT_INT32))
+SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, (CT_SPARSE, PT_INT64))
+SET_SPARSEMATRIX(set_ulong_sparsematrix, uint64_t, (CT_SPARSE, PT_INT64))
+SET_SPARSEMATRIX(set_short_sparsematrix, int16_t, (CT_SPARSE, PT_INT16))
+SET_SPARSEMATRIX(set_word_sparsematrix, uint16_t, (CT_SPARSE, PT_INT16))
+SET_SPARSEMATRIX(set_shortreal_sparsematrix, float32_t, (CT_SPARSE, PT_FLOAT32))
+SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, (CT_SPARSE, PT_FLOAT64))
+SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, (CT_SPARSE, PT_FLOATMAX))
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
@@ -286,7 +286,7 @@ void CBinaryFile::fname(const T_STRING<sg_type>* strings, int32_t num_str)	\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n");											\
 																						\
-	write_header(dtype);																\
+	TSGDataType t dtype; write_header(&t);								                \
 	for (int32_t i=0; i<num_str; i++)													\
 	{																					\
 		int32_t len = strings[i].length;												\
@@ -295,60 +295,63 @@ void CBinaryFile::fname(const T_STRING<sg_type>* strings, int32_t num_str)	\
 			SG_ERROR("Failed to write Sparse Matrix\n");								\
 	}																					\
 }
-SET_STRING_LIST(set_char_string_list, char, DT_STRING_CHAR)
-SET_STRING_LIST(set_byte_string_list, uint8_t, DT_STRING_BYTE)
-SET_STRING_LIST(set_int_string_list, int32_t, DT_STRING_INT)
-SET_STRING_LIST(set_uint_string_list, uint32_t, DT_STRING_UINT)
-SET_STRING_LIST(set_long_string_list, int64_t, DT_STRING_LONG)
-SET_STRING_LIST(set_ulong_string_list, uint64_t, DT_STRING_ULONG)
-SET_STRING_LIST(set_short_string_list, int16_t, DT_STRING_SHORT)
-SET_STRING_LIST(set_word_string_list, uint16_t, DT_STRING_WORD)
-SET_STRING_LIST(set_shortreal_string_list, float32_t, DT_STRING_SHORTREAL)
-SET_STRING_LIST(set_real_string_list, float64_t, DT_STRING_REAL)
-SET_STRING_LIST(set_longreal_string_list, floatmax_t, DT_STRING_LONGREAL)
+SET_STRING_LIST(set_char_string_list, char, (CT_STRING, PT_CHAR))
+SET_STRING_LIST(set_byte_string_list, uint8_t, (CT_STRING, PT_CHAR))
+SET_STRING_LIST(set_int_string_list, int32_t, (CT_STRING, PT_INT32))
+SET_STRING_LIST(set_uint_string_list, uint32_t, (CT_STRING, PT_INT32))
+SET_STRING_LIST(set_long_string_list, int64_t, (CT_STRING, PT_INT64))
+SET_STRING_LIST(set_ulong_string_list, uint64_t, (CT_STRING, PT_INT64))
+SET_STRING_LIST(set_short_string_list, int16_t, (CT_STRING, PT_INT16))
+SET_STRING_LIST(set_word_string_list, uint16_t, (CT_STRING, PT_INT16))
+SET_STRING_LIST(set_shortreal_string_list, float32_t, (CT_STRING, PT_FLOAT32))
+SET_STRING_LIST(set_real_string_list, float64_t, (CT_STRING, PT_FLOAT64))
+SET_STRING_LIST(set_longreal_string_list, floatmax_t, (CT_STRING, PT_FLOATMAX))
 #undef SET_STRING_LIST
 
 
-int32_t CBinaryFile::parse_first_header(SGDataType &type)
+int32_t CBinaryFile::parse_first_header(TSGDataType& type)
 {
 	    return -1;
 }
 
-int32_t CBinaryFile::parse_next_header(SGDataType &type)
+int32_t CBinaryFile::parse_next_header(TSGDataType& type)
 {
 	    return -1;
 }
 
-
-SGDataType CBinaryFile::read_header()
+void
+CBinaryFile::read_header(TSGDataType* dest)
 {
 	ASSERT(file);
 
 	char fourcc[4];
 	uint16_t endian=0;
-	uint16_t dtype=0;
 
 	if (!((fread(&fourcc, sizeof(char), 4, file)==4) &&
 			(fread(&endian, sizeof(uint16_t), 1, file)== 1) &&
-			(fread(&dtype, sizeof(uint16_t), 1, file)== 1)))
+			(fread(&dest->m_ctype, sizeof(dest->m_ctype), 1, file)== 1)
+		  && (fread(&dest->m_ptype, sizeof(dest->m_ptype), 1, file)== 1)
+			))
 		SG_ERROR("Error reading header\n");
 
-	if (strncmp(fourcc, "SG00", 4))
-		SG_ERROR("Header mismatch, expected SG00\n");
-
-	return (SGDataType) dtype;
+	if (strncmp(fourcc, "SG01", 4))
+		SG_ERROR("Header mismatch, expected SG01\n");
 }
 
-void CBinaryFile::write_header(SGDataType datatype)
+void
+CBinaryFile::write_header(const TSGDataType* datatype)
 {
 	ASSERT(file);
 
-	const char* fourcc="SG00";
+	const char* fourcc="SG01";
 	uint16_t endian=0x1234;
-	uint16_t dtype=datatype;
 
 	if (!((fwrite(fourcc, sizeof(char), 4, file)==4) &&
-			(fwrite(&endian, sizeof(uint16_t), 1, file)==1) &&
-			(fwrite(&dtype, sizeof(uint16_t), 1, file)==1)))
+		  (fwrite(&endian, sizeof(uint16_t), 1, file)==1) &&
+		  (fwrite(&datatype->m_ctype, sizeof(datatype->m_ctype), 1,
+				  file)==1)
+		  && (fwrite(&datatype->m_ptype, sizeof(datatype->m_ptype), 1,
+					 file)==1)
+			))
 		SG_ERROR("Error writing header\n");
 }
