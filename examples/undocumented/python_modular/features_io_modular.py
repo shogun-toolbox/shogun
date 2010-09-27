@@ -48,7 +48,7 @@ def io ():
 	f=BinaryFile("label_train_twoclass.bin","w")
 	lab.save(f)
 
-	f=HDF5File("fm_train_real.h5","a", "/data/labels")
+	f=HDF5File("label_train_real.h5","w", "/data/labels")
 	lab.save(f)
 
 	f=AsciiFile("label_train_twoclass.ascii")
@@ -60,15 +60,15 @@ def io ():
 	f=HDF5File("fm_train_real.h5","r", "/data/doubles")
 	feats2.load(f)
 	print feats2.get_feature_matrix()
-	f=HDF5File("fm_train_real.h5","r", "/data/labels")
+	f=HDF5File("label_train_real.h5","r", "/data/labels")
 	lab2.load(f)
 	print lab2.get_labels()
 
-	#clean up
+	clean up
 	import os
 	for f in ['fm_train_sparsereal.bin','fm_train_sparsereal.ascii',
 			'fm_train_real.bin','fm_train_real.h5','fm_train_real.ascii',
-			'label_train_twoclass.ascii','label_train_twoclass.bin']:
+			'label_train_real.h5', 'label_train_twoclass.ascii','label_train_twoclass.bin']:
 		os.unlink(f)
 
 if __name__=='__main__':
