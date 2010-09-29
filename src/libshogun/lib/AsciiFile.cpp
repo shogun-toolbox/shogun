@@ -353,7 +353,7 @@ GET_SPARSEMATRIX(get_word_sparsematrix, atoi, uint16_t)
 #undef GET_SPARSEMATRIX
 
 
-void CAsciiFile::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_byte_string_list(CSGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
@@ -398,7 +398,7 @@ void CAsciiFile::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_
 		blocksize=required_blocksize;
 		dummy=new uint8_t[blocksize];
 		overflow=new uint8_t[blocksize];
-		strings=new T_STRING<uint8_t>[num_str];
+		strings=new CSGString<uint8_t>[num_str];
 
 		rewind(file);
 		sz=blocksize;
@@ -448,7 +448,7 @@ void CAsciiFile::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_
 	delete[] overflow;
 }
 
-void CAsciiFile::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_char_string_list(CSGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
@@ -493,7 +493,7 @@ void CAsciiFile::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str
 		blocksize=required_blocksize;
 		dummy=new char[blocksize];
 		overflow=new char[blocksize];
-		strings=new T_STRING<char>[num_str];
+		strings=new CSGString<char>[num_str];
 
 		rewind(file);
 		sz=blocksize;
@@ -543,63 +543,63 @@ void CAsciiFile::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str
 	delete[] overflow;
 }
 
-void CAsciiFile::get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_int_string_list(CSGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_uint_string_list(T_STRING<uint32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_uint_string_list(CSGString<uint32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_short_string_list(T_STRING<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_short_string_list(CSGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_word_string_list(T_STRING<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_word_string_list(CSGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_long_string_list(T_STRING<int64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_long_string_list(CSGString<int64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_ulong_string_list(T_STRING<uint64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_ulong_string_list(CSGString<uint64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_shortreal_string_list(T_STRING<float32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_shortreal_string_list(CSGString<float32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_real_string_list(T_STRING<float64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_real_string_list(CSGString<float64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_longreal_string_list(T_STRING<floatmax_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_longreal_string_list(CSGString<floatmax_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -694,7 +694,7 @@ SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, float64_t, "%f")
 SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_SPARSEMATRIX
 
-void CAsciiFile::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t num_str)
+void CAsciiFile::set_byte_string_list(const CSGString<uint8_t>* strings, int32_t num_str)
 {
 	if (!(file && strings))
 		SG_ERROR("File or strings invalid.\n");
@@ -707,7 +707,7 @@ void CAsciiFile::set_byte_string_list(const T_STRING<uint8_t>* strings, int32_t 
 	}
 }
 
-void CAsciiFile::set_char_string_list(const T_STRING<char>* strings, int32_t num_str)
+void CAsciiFile::set_char_string_list(const CSGString<char>* strings, int32_t num_str)
 {
 	if (!(file && strings))
 		SG_ERROR("File or strings invalid.\n");
@@ -720,39 +720,39 @@ void CAsciiFile::set_char_string_list(const T_STRING<char>* strings, int32_t num
 	}
 }
 
-void CAsciiFile::set_int_string_list(const T_STRING<int32_t>* strings, int32_t num_str)
+void CAsciiFile::set_int_string_list(const CSGString<int32_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_uint_string_list(const T_STRING<uint32_t>* strings, int32_t num_str)
+void CAsciiFile::set_uint_string_list(const CSGString<uint32_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_short_string_list(const T_STRING<int16_t>* strings, int32_t num_str)
+void CAsciiFile::set_short_string_list(const CSGString<int16_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_word_string_list(const T_STRING<uint16_t>* strings, int32_t num_str)
+void CAsciiFile::set_word_string_list(const CSGString<uint16_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_long_string_list(const T_STRING<int64_t>* strings, int32_t num_str)
+void CAsciiFile::set_long_string_list(const CSGString<int64_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_ulong_string_list(const T_STRING<uint64_t>* strings, int32_t num_str)
+void CAsciiFile::set_ulong_string_list(const CSGString<uint64_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_shortreal_string_list(const T_STRING<float32_t>* strings, int32_t num_str)
+void CAsciiFile::set_shortreal_string_list(const CSGString<float32_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_real_string_list(const T_STRING<float64_t>* strings, int32_t num_str)
+void CAsciiFile::set_real_string_list(const CSGString<float64_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_longreal_string_list(const T_STRING<floatmax_t>* strings, int32_t num_str)
+void CAsciiFile::set_longreal_string_list(const CSGString<floatmax_t>* strings, int32_t num_str)
 {
 }
 

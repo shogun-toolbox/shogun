@@ -207,24 +207,24 @@ GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
 #undef GET_SPARSEMATRIX
 
 
-#define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CHDF5File::fname(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+#define GECSGString_LIST(fname, sg_type, datatype)												\
+void CHDF5File::fname(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 }
 
-GET_STRING_LIST(get_bool_string_list, bool, DT_STRING_BOOL)
-GET_STRING_LIST(get_char_string_list, char, DT_STRING_CHAR)
-GET_STRING_LIST(get_byte_string_list, uint8_t, DT_STRING_BYTE)
-GET_STRING_LIST(get_int_string_list, int32_t, DT_STRING_INT)
-GET_STRING_LIST(get_uint_string_list, uint32_t, DT_STRING_UINT)
-GET_STRING_LIST(get_long_string_list, int64_t, DT_STRING_LONG)
-GET_STRING_LIST(get_ulong_string_list, uint64_t, DT_STRING_ULONG)
-GET_STRING_LIST(get_short_string_list, int16_t, DT_STRING_SHORT)
-GET_STRING_LIST(get_word_string_list, uint16_t, DT_STRING_WORD)
-GET_STRING_LIST(get_shortreal_string_list, float32_t, DT_STRING_SHORTREAL)
-GET_STRING_LIST(get_real_string_list, float64_t, DT_STRING_REAL)
-GET_STRING_LIST(get_longreal_string_list, floatmax_t, DT_STRING_LONGREAL)
-#undef GET_STRING_LIST
+GECSGString_LIST(get_bool_string_list, bool, DCSGString_BOOL)
+GECSGString_LIST(get_char_string_list, char, DCSGString_CHAR)
+GECSGString_LIST(get_byte_string_list, uint8_t, DCSGString_BYTE)
+GECSGString_LIST(get_int_string_list, int32_t, DCSGString_INT)
+GECSGString_LIST(get_uint_string_list, uint32_t, DCSGString_UINT)
+GECSGString_LIST(get_long_string_list, int64_t, DCSGString_LONG)
+GECSGString_LIST(get_ulong_string_list, uint64_t, DCSGString_ULONG)
+GECSGString_LIST(get_short_string_list, int16_t, DCSGString_SHORT)
+GECSGString_LIST(get_word_string_list, uint16_t, DCSGString_WORD)
+GECSGString_LIST(get_shortreal_string_list, float32_t, DCSGString_SHORTREAL)
+GECSGString_LIST(get_real_string_list, float64_t, DCSGString_REAL)
+GECSGString_LIST(get_longreal_string_list, floatmax_t, DCSGString_LONGREAL)
+#undef GECSGString_LIST
 
 /** set functions - to pass data from shogun to the target interface */
 
@@ -324,26 +324,26 @@ SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, DT_SPARSE_REAL)
 SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
 #undef SET_SPARSEMATRIX
 
-#define SET_STRING_LIST(fname, sg_type, dtype) \
-void CHDF5File::fname(const T_STRING<sg_type>* strings, int32_t num_str)	\
+#define SECSGString_LIST(fname, sg_type, dtype) \
+void CHDF5File::fname(const CSGString<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n");											\
 																						\
 }
-SET_STRING_LIST(set_bool_string_list, bool, DT_STRING_BOOL)
-SET_STRING_LIST(set_char_string_list, char, DT_STRING_CHAR)
-SET_STRING_LIST(set_byte_string_list, uint8_t, DT_STRING_BYTE)
-SET_STRING_LIST(set_int_string_list, int32_t, DT_STRING_INT)
-SET_STRING_LIST(set_uint_string_list, uint32_t, DT_STRING_UINT)
-SET_STRING_LIST(set_long_string_list, int64_t, DT_STRING_LONG)
-SET_STRING_LIST(set_ulong_string_list, uint64_t, DT_STRING_ULONG)
-SET_STRING_LIST(set_short_string_list, int16_t, DT_STRING_SHORT)
-SET_STRING_LIST(set_word_string_list, uint16_t, DT_STRING_WORD)
-SET_STRING_LIST(set_shortreal_string_list, float32_t, DT_STRING_SHORTREAL)
-SET_STRING_LIST(set_real_string_list, float64_t, DT_STRING_REAL)
-SET_STRING_LIST(set_longreal_string_list, floatmax_t, DT_STRING_LONGREAL)
-#undef SET_STRING_LIST
+SECSGString_LIST(set_bool_string_list, bool, DCSGString_BOOL)
+SECSGString_LIST(set_char_string_list, char, DCSGString_CHAR)
+SECSGString_LIST(set_byte_string_list, uint8_t, DCSGString_BYTE)
+SECSGString_LIST(set_int_string_list, int32_t, DCSGString_INT)
+SECSGString_LIST(set_uint_string_list, uint32_t, DCSGString_UINT)
+SECSGString_LIST(set_long_string_list, int64_t, DCSGString_LONG)
+SECSGString_LIST(set_ulong_string_list, uint64_t, DCSGString_ULONG)
+SECSGString_LIST(set_short_string_list, int16_t, DCSGString_SHORT)
+SECSGString_LIST(set_word_string_list, uint16_t, DCSGString_WORD)
+SECSGString_LIST(set_shortreal_string_list, float32_t, DCSGString_SHORTREAL)
+SECSGString_LIST(set_real_string_list, float64_t, DCSGString_REAL)
+SECSGString_LIST(set_longreal_string_list, floatmax_t, DCSGString_LONGREAL)
+#undef SECSGString_LIST
 
 void CHDF5File::get_boolean_type()
 {

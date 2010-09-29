@@ -238,7 +238,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		CStringFeatures<uint8_t>* strings;
 
 		/** pointer to transposed strings */
-		T_STRING<uint8_t>* transposed_strings;
+		CSGString<uint8_t>* transposed_strings;
 
 		/** degree */
 		int32_t degree;

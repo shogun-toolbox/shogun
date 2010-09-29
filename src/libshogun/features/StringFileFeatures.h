@@ -146,7 +146,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 		ASSERT(CStringFeatures<ST>::alphabet);
 
 		uint64_t buffer_size=granularity;
-		CStringFeatures<ST>::features=new T_STRING<ST>[buffer_size];
+		CStringFeatures<ST>::features=new CSGString<ST>[buffer_size];
 
 		uint64_t offs=0;
 		uint64_t len=0;

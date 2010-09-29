@@ -721,7 +721,7 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (shogun::T_STRING<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
+        (shogun::CSGString<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
 {
     PyObject* list=(PyObject*) $input;
 
@@ -752,13 +752,13 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
         }
     }
 }
-%typemap(in) (shogun::T_STRING<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {
+%typemap(in) (shogun::CSGString<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {
     PyObject* list=(PyObject*) $input;
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
         int32_t size=PyList_Size(list);
-        shogun::T_STRING<type>* strings=new shogun::T_STRING<type>[size];
+        shogun::CSGString<type>* strings=new shogun::CSGString<type>[size];
 
         int32_t max_len=0;
         for (int32_t i=0; i<size; i++)
@@ -857,15 +857,15 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_ARGOUT(type,typecode)
-%typemap(in, numinputs=0) (shogun::T_STRING<type>** ARGOUT_STRINGS, int32_t* NUM) {
-    $1 = (shogun::T_STRING<type>**) malloc(sizeof(shogun::T_STRING<type>*));
+%typemap(in, numinputs=0) (shogun::CSGString<type>** ARGOUCSGStringS, int32_t* NUM) {
+    $1 = (shogun::CSGString<type>**) malloc(sizeof(shogun::CSGString<type>*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
 }
-%typemap(argout) (shogun::T_STRING<type>** ARGOUT_STRINGS, int32_t* NUM) {
+%typemap(argout) (shogun::CSGString<type>** ARGOUCSGStringS, int32_t* NUM) {
     if (!$1 || !$2)
         SWIG_fail;
 
-    shogun::T_STRING<type>* str=*$1;
+    shogun::CSGString<type>* str=*$1;
     int32_t num=*$2;
     PyObject* list = PyList_New(num);
 

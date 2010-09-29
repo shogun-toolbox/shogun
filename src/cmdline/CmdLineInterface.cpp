@@ -370,14 +370,14 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32
 }
 
 
-void CCmdLineInterface::get_byte_string_list(T_STRING<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_byte_string_list(CSGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_char_string_list(CSGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -387,21 +387,21 @@ void CCmdLineInterface::get_char_string_list(T_STRING<char>*& strings, int32_t& 
 	f.get_char_string_list(strings, num_str, max_string_len);
 }
 
-void CCmdLineInterface::get_int_string_list(T_STRING<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_int_string_list(CSGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_short_string_list(T_STRING<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_short_string_list(CSGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_word_string_list(T_STRING<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_word_string_list(CSGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -490,8 +490,8 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, 
 	f.set_real_sparsematrix(matrix, num_feat, num_vec);
 }
 
-#define SET_STRING_LIST(fname, sg_type)	\
-void CCmdLineInterface::fname(const T_STRING<sg_type>* strings, int32_t num_str)		\
+#define SECSGString_LIST(fname, sg_type)	\
+void CCmdLineInterface::fname(const CSGString<sg_type>* strings, int32_t num_str)		\
 {																						\
 	const char* filename=set_arg_increment();											\
 	if (!filename)																		\
@@ -500,12 +500,12 @@ void CCmdLineInterface::fname(const T_STRING<sg_type>* strings, int32_t num_str)
 	CAsciiFile f((char*) filename, 'w');												\
 	f.fname(strings, num_str);															\
 }
-SET_STRING_LIST(set_byte_string_list, uint8_t)
-SET_STRING_LIST(set_char_string_list, char)
-SET_STRING_LIST(set_int_string_list, int32_t)
-SET_STRING_LIST(set_short_string_list, int16_t)
-SET_STRING_LIST(set_word_string_list, uint16_t)
-#undef SET_STRING_LIST
+SECSGString_LIST(set_byte_string_list, uint8_t)
+SECSGString_LIST(set_char_string_list, char)
+SECSGString_LIST(set_int_string_list, int32_t)
+SECSGString_LIST(set_short_string_list, int16_t)
+SECSGString_LIST(set_word_string_list, uint16_t)
+#undef SECSGString_LIST
 
 void CCmdLineInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
 {

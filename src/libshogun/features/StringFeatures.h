@@ -44,7 +44,7 @@ class CFile;
 template <class T> class CMemoryMappedFile;
 class CMath;
 template <class ST> class CStringPreProc;
-template <class T> class T_STRING;
+template <class T> class CSGString;
 
 struct SSKDoubleFeature
 {
@@ -62,8 +62,8 @@ struct SSKTripleFeature
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-/** template class T_STRING */
-template <class T> class T_STRING
+/** template class CSGString */
+template <class T> class CSGString
 {
 
 
@@ -77,7 +77,7 @@ template <class T> class T_STRING
   void save(Archive & ar, const unsigned int archive_version) const
   {
 
-    //SG_DEBUG("archiving T_STRING\n");
+    //SG_DEBUG("archiving CSGString\n");
 
   	ar & length;
 
@@ -85,7 +85,7 @@ template <class T> class T_STRING
       ar & string[i];
     }
 
-    //SG_DEBUG("done archiving T_STRING\n");
+    //SG_DEBUG("done archiving CSGString\n");
 
   }
 
@@ -93,7 +93,7 @@ template <class T> class T_STRING
   void load(Archive & ar, const unsigned int archive_version)
   {
 
-	//SG_DEBUG("archiving T_STRING\n");
+	//SG_DEBUG("archiving CSGString\n");
 
   	ar & length;
 
@@ -103,7 +103,7 @@ template <class T> class T_STRING
       ar & string[i];
     }
 
-    //SG_DEBUG("done archiving T_STRING\n");
+    //SG_DEBUG("done archiving CSGString\n");
 
   }
 
@@ -175,7 +175,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_max_string_length maximum string length
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(T_STRING<ST>* p_features, int32_t p_num_vectors,
+		CStringFeatures(CSGString<ST>* p_features, int32_t p_num_vectors,
 				int32_t p_max_string_length, EAlphabet alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
@@ -196,7 +196,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_max_string_length maximum string length
 		 * @param alpha an actual alphabet
 		 */
-		CStringFeatures(T_STRING<ST>* p_features, int32_t p_num_vectors,
+		CStringFeatures(CSGString<ST>* p_features, int32_t p_num_vectors,
 				int32_t p_max_string_length, CAlphabet* alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
@@ -245,7 +245,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			if (orig.features)
 			{
-				features=new T_STRING<ST>[orig.num_vectors];
+				features=new CSGString<ST>[orig.num_vectors];
 
 				for (int32_t i=0; i<num_vectors; i++)
 				{
@@ -478,7 +478,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			int32_t num_feat;
 			int32_t num_vec;
-			T_STRING<ST>* s=get_transposed(num_feat, num_vec);
+			CSGString<ST>* s=get_transposed(num_feat, num_vec);
 
 			return new CStringFeatures<ST>(s, num_vec, num_feat, alphabet);
 		}
@@ -494,7 +494,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param num_vec number of vectors in matrix
 		 * @return transposed string features
 		 */
-		T_STRING<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec)
+		CSGString<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec)
 		{
 			num_feat=num_vectors;
 			num_vec=get_max_vector_length();
@@ -503,7 +503,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_DEBUG("Allocating memory for transposed string features of size %ld\n",
 					int64_t(num_feat)*num_vec);
 
-			T_STRING<ST>* sf=new T_STRING<ST>[num_vec];
+			CSGString<ST>* sf=new CSGString<ST>[num_vec];
 
 			for (int32_t i=0; i<num_vec; i++)
 			{
@@ -726,7 +726,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				blocksize=required_blocksize;
 				dummy = new uint8_t[blocksize];
 				overflow = new uint8_t[blocksize];
-				features=new T_STRING<ST>[num_vectors];
+				features=new CSGString<ST>[num_vectors];
 
 				rewind(f);
 				sz=blocksize;
@@ -836,7 +836,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			alphabet=new CAlphabet(DNA);
 			num_symbols=alphabet->get_num_symbols();
 
-			T_STRING<ST>* strings=new T_STRING<ST>[num];
+			CSGString<ST>* strings=new CSGString<ST>[num];
 			offs=0;
 
 			for (i=0;i<num; i++)
@@ -927,12 +927,12 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_UNREF(alphabet);
 			alphabet=new CAlphabet(DNA);
 
-			T_STRING<ST>* strings;
+			CSGString<ST>* strings;
 
 			ST* str;
 			if (bitremap_in_single_string)
 			{
-				strings=new T_STRING<ST>[1];
+				strings=new CSGString<ST>[1];
 				strings[0].string=new ST[num];
 				strings[0].length=num;
 				f.get_line(len, offs);
@@ -945,7 +945,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				str=new ST[len];
 			}
 			else
-				strings=new T_STRING<ST>[num];
+				strings=new CSGString<ST>[num];
 
 			for (i=0;i<num; i++)
 			{
@@ -1029,14 +1029,14 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 			else
 			{
-				T_STRING<ST>* strings=NULL;
+				CSGString<ST>* strings=NULL;
 
 				int32_t num=0;
 				int32_t max_len=-1;
 
 				//usually n==num_vec, but it might not in race conditions
 				//(file perms modified, file erased)
-				strings=new T_STRING<ST>[n];
+				strings=new CSGString<ST>[n];
 
 				for (int32_t i=0; i<n; i++)
 				{
@@ -1086,7 +1086,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_max_string_length maximum string length
 		 * @return if setting was successful
 		 */
-		bool set_features(T_STRING<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
+		bool set_features(CSGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 		{
 			if (p_features)
 			{
@@ -1128,7 +1128,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		bool append_features(CStringFeatures<ST>* sf)
 		{
 			ASSERT(sf);
-			T_STRING<ST>* new_features = new T_STRING<ST>[sf->num_vectors];
+			CSGString<ST>* new_features = new CSGString<ST>[sf->num_vectors];
 
 			for (int32_t i=0; i<sf->num_vectors; i++)
 			{
@@ -1151,7 +1151,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return if setting was successful
 		 */
-		bool append_features(T_STRING<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
+		bool append_features(CSGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
         {
             if (!features)
                 return set_features(p_features, p_num_vectors, p_max_string_length);
@@ -1173,7 +1173,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
                 int32_t old_num_vectors=num_vectors;
                 num_vectors=old_num_vectors+p_num_vectors;
-                T_STRING<ST>* new_features = new T_STRING<ST>[num_vectors];
+                CSGString<ST>* new_features = new CSGString<ST>[num_vectors];
 
                 for (int32_t i=0; i<num_vectors; i++)
                 {
@@ -1207,7 +1207,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual T_STRING<ST>* get_features(int32_t& num_str, int32_t& max_str_len)
+		virtual CSGString<ST>* get_features(int32_t& num_str, int32_t& max_str_len)
 		{
 			num_str=num_vectors;
 			max_str_len=max_string_length;
@@ -1220,13 +1220,13 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual T_STRING<ST>* copy_features(int32_t& num_str, int32_t& max_str_len)
+		virtual CSGString<ST>* copy_features(int32_t& num_str, int32_t& max_str_len)
 		{
 			ASSERT(num_vectors>0);
 
 			num_str=num_vectors;
 			max_str_len=max_string_length;
-			T_STRING<ST>* new_feat=new T_STRING<ST>[num_str];
+			CSGString<ST>* new_feat=new CSGString<ST>[num_str];
 
 			for (int32_t i=0; i<num_str; i++)
 			{
@@ -1247,7 +1247,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param dst string features (returned)
 		 * @param num_str number of strings (returned)
 		 */
-		virtual void get_features(T_STRING<ST>** dst, int32_t* num_str)
+		virtual void get_features(CSGString<ST>** dst, int32_t* num_str)
 		{
 			int32_t num_vec;
 			int32_t max_str_len;
@@ -1302,7 +1302,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			fread(&max_string_length, sizeof(int32_t), 1, file);
 			ASSERT(max_string_length>0);
 
-			features=new T_STRING<ST>[num_vectors];
+			features=new CSGString<ST>[num_vectors];
 
 			// vectors
 			for (int32_t i=0; i<num_vectors; i++)
@@ -1474,7 +1474,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				length_of_single_string=max_string_length;
 			}
 
-			T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
+			CSGString<ST>* f=new CSGString<ST>[num_vectors];
 			int32_t offs=0;
 			for (int32_t i=0; i<num_vectors; i++)
 			{
@@ -1522,7 +1522,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				length_of_single_string=max_string_length;
 			}
 
-			T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
+			CSGString<ST>* f=new CSGString<ST>[num_vectors];
 			for (int32_t i=0; i<num_vectors; i++)
 			{
 				int32_t p=positions->get_element(i);
@@ -1591,7 +1591,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				num_vectors=sf->get_num_vectors();
 				ASSERT(num_vectors>0);
 				max_string_length=sf->get_max_vector_length()-start;
-				features=new T_STRING<ST>[num_vectors];
+				features=new CSGString<ST>[num_vectors];
 
 				SG_DEBUG( "%1.0llf symbols in StringFeatures<*> %d symbols in histogram\n", sf->get_num_symbols(),
 						alpha->get_num_symbols_in_histogram());
@@ -1817,7 +1817,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * note that this function is only sensible for character strings
 		 */
-		static ST* get_zero_terminated_string_copy(T_STRING<ST> str)
+		static ST* get_zero_terminated_string_copy(CSGString<ST> str)
 		{
 			int32_t l=str.length;
 			ST* s=new ST[l+1];
@@ -1896,7 +1896,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(rows == get_num_symbols());
 			cleanup();
 			float64_t* randoms=new float64_t[cols];
-			T_STRING<ST>* sf=new T_STRING<ST>[num_vec];
+			CSGString<ST>* sf=new CSGString<ST>[num_vec];
 
 			for (int32_t i=0; i<num_vec; i++)
 			{
@@ -1932,7 +1932,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			int32_t nfeat = 0;
 			for (int32_t i = 0; i < nStr; ++i)
 				nfeat += get_vector_length[i] - d1 -d2;
-			T_STRING<SSKFeature>* F= new T_STRING<SSKFeature>[nfeat];
+			CSGString<SSKFeature>* F= new CSGString<SSKFeature>[nfeat];
 			int32_t c = 0;
 			for (int32_t i = 0; i < nStr; ++i)
 			{
@@ -2073,8 +2073,8 @@ template <class ST> class CStringFeatures : public CFeatures
 
                 ar & num_vectors;
 
-                //T_STRING<ST>* features = new T_STRING<ST>[num_vectors];
-                features = new T_STRING<ST>[num_vectors];
+                //CSGString<ST>* features = new CSGString<ST>[num_vectors];
+                features = new CSGString<ST>[num_vectors];
                 for (int i=0; i < num_vectors; ++i) {
                     ar & features[i];
                 }
@@ -2139,7 +2139,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		int32_t num_vectors;
 
 		/// this contains the array of features.
-		T_STRING<ST>* features;
+		CSGString<ST>* features;
 
 		/// true when single string / created by sliding window
 		ST* single_string;
@@ -2391,7 +2391,7 @@ template<> inline void CStringFeatures<sg_type>::load(CFile* loader)		\
 {																			\
 	SG_INFO( "loading...\n");												\
 																			\
-	T_STRING<sg_type>* strs;												\
+	CSGString<sg_type>* strs;												\
 	int32_t num_str;														\
 	int32_t max_len;														\
 	loader->f_load(strs, num_str, max_len);									\

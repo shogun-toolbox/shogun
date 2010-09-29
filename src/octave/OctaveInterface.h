@@ -85,19 +85,19 @@ class COctaveInterface : public CSGInterface
 		virtual void get_word_sparsematrix(TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);*/
 
 		virtual void get_byte_string_list(
-			T_STRING<uint8_t>*& strings, int32_t& num_str,
+			CSGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_char_string_list(
-			T_STRING<char>*& strings, int32_t& num_str,
+			CSGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_int_string_list(
-			T_STRING<int32_t>*& strings, int32_t& num_str,
+			CSGString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_short_string_list(
-			T_STRING<int16_t>*& strings, int32_t& num_str,
+			CSGString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_word_string_list(
-			T_STRING<uint16_t>*& strings, int32_t& num_str,
+			CSGString<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 
 		virtual void get_attribute_struct(
@@ -144,15 +144,15 @@ class COctaveInterface : public CSGInterface
 		virtual void set_word_sparsematrix(const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz);*/
 
 		void set_byte_string_list(
-			const T_STRING<uint8_t>* strings, int32_t num_str);
+			const CSGString<uint8_t>* strings, int32_t num_str);
 		void set_char_string_list(
-			const T_STRING<char>* strings, int32_t num_str);
+			const CSGString<char>* strings, int32_t num_str);
 		void set_int_string_list(
-			const T_STRING<int32_t>* strings, int32_t num_str);
+			const CSGString<int32_t>* strings, int32_t num_str);
 		void set_short_string_list(
-			const T_STRING<int16_t>* strings, int32_t num_str);
+			const CSGString<int16_t>* strings, int32_t num_str);
 		void set_word_string_list(
-			const T_STRING<uint16_t>* strings, int32_t num_str);
+			const CSGString<uint16_t>* strings, int32_t num_str);
 
 		virtual void set_attribute_struct(
 			const CDynamicArray<T_ATTRIBUTE>* attrs);

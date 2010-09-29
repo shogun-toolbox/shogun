@@ -344,8 +344,8 @@ GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Wor
 #undef GET_SPARSEMATRIX
 
 
-#define GET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
-void CPythonInterface::function_name(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
+#define GECSGStringLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
+void CPythonInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
 { 																			\
 	max_string_len=0;														\
 	const PyObject* py_str= get_arg_increment();							\
@@ -360,7 +360,7 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, int32_t& num_s
 		num_str=PyList_Size((PyObject*) py_str);							\
 		ASSERT(num_str>=1);													\
 																			\
-		strings=new T_STRING<sg_type>[num_str];								\
+		strings=new CSGString<sg_type>[num_str];								\
 		ASSERT(strings);													\
 																			\
 		for (int32_t i=0; i<num_str; i++)										\
@@ -397,7 +397,7 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, int32_t& num_s
 		if_type* data=(if_type*) py_array_str->data;						\
 		num_str=py_array_str->dimensions[0]; 								\
 		int32_t len=py_array_str->dimensions[1]; 								\
-		strings=new T_STRING<sg_type>[num_str]; 							\
+		strings=new CSGString<sg_type>[num_str]; 							\
 																			\
 		for (int32_t i=0; i<num_str; i++) 										\
 		{ 																	\
@@ -423,12 +423,12 @@ void CPythonInterface::function_name(T_STRING<sg_type>*& strings, int32_t& num_s
 		SG_ERROR("Expected String as argument %d.\n", m_rhs_counter);		\
 }
 
-GET_STRINGLIST(get_byte_string_list, NPY_BYTE, uint8_t, uint8_t, 1, "Byte")
-GET_STRINGLIST(get_char_string_list, NPY_CHAR, char, char, 1, "Char")
-GET_STRINGLIST(get_int_string_list, NPY_INT, int32_t, int, 0, "Integer")
-GET_STRINGLIST(get_short_string_list, NPY_SHORT, int16_t, short, 0, "Short")
-GET_STRINGLIST(get_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
-#undef GET_STRINGLIST
+GECSGStringLIST(get_byte_string_list, NPY_BYTE, uint8_t, uint8_t, 1, "Byte")
+GECSGStringLIST(get_char_string_list, NPY_CHAR, char, char, 1, "Char")
+GECSGStringLIST(get_int_string_list, NPY_INT, int32_t, int, 0, "Integer")
+GECSGStringLIST(get_short_string_list, NPY_SHORT, int16_t, short, 0, "Short")
+GECSGStringLIST(get_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
+#undef GECSGStringLIST
 
 void CPythonInterface::get_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* &attrs)
 {
@@ -575,8 +575,8 @@ SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short
 #undef SET_SPARSEMATRIX
 
 
-#define SET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
-void CPythonInterface::function_name(const T_STRING<sg_type>* strings, int32_t num_str)	\
+#define SECSGStringLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
+void CPythonInterface::function_name(const CSGString<sg_type>* strings, int32_t num_str)	\
 {																				\
 	if (!is_char_str)															\
 		SG_ERROR("Only character strings supported.\n");						\
@@ -605,12 +605,12 @@ void CPythonInterface::function_name(const T_STRING<sg_type>* strings, int32_t n
 	set_arg_increment(py_str);													\
 }
 
-SET_STRINGLIST(set_byte_string_list, NPY_BYTE, uint8_t, uint8_t, 0, "Byte")
-SET_STRINGLIST(set_char_string_list, NPY_CHAR, char, char, 1, "Char")
-SET_STRINGLIST(set_int_string_list, NPY_INT, int32_t, int, 0, "Integer")
-SET_STRINGLIST(set_short_string_list, NPY_SHORT, int16_t, short, 0, "Short")
-SET_STRINGLIST(set_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
-#undef SET_STRINGLIST
+SECSGStringLIST(set_byte_string_list, NPY_BYTE, uint8_t, uint8_t, 0, "Byte")
+SECSGStringLIST(set_char_string_list, NPY_CHAR, char, char, 1, "Char")
+SECSGStringLIST(set_int_string_list, NPY_INT, int32_t, int, 0, "Integer")
+SECSGStringLIST(set_short_string_list, NPY_SHORT, int16_t, short, 0, "Short")
+SECSGStringLIST(set_word_string_list, NPY_USHORT, uint16_t, unsigned short, 0, "Word")
+#undef SECSGStringLIST
 
 void CPythonInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
 {

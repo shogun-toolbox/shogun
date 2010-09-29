@@ -151,8 +151,8 @@ GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, TSGDataType(CT_MATRIX, P
 #undef GET_SPARSEMATRIX
 
 
-#define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CBinaryFile::fname(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+#define GECSGString_LIST(fname, sg_type, datatype)												\
+void CBinaryFile::fname(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 	strings=NULL;																				\
 	num_str=0;																					\
@@ -168,7 +168,7 @@ void CBinaryFile::fname(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& 
 	if (fread(&num_str, sizeof(int32_t), 1, file)!=1)											\
 		SG_ERROR("Failed to read number of strings\n");											\
 																								\
-	strings=new T_STRING<sg_type>[num_str];														\
+	strings=new CSGString<sg_type>[num_str];														\
 																								\
 	for (int32_t i=0; i<num_str; i++)															\
 	{																							\
@@ -183,18 +183,18 @@ void CBinaryFile::fname(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& 
 	}																							\
 }
 
-GET_STRING_LIST(get_char_string_list, char, TSGDataType(CT_VECTOR, PT_CHAR))
-GET_STRING_LIST(get_byte_string_list, uint8_t, TSGDataType(CT_VECTOR, PT_CHAR))
-GET_STRING_LIST(get_int_string_list, int32_t, TSGDataType(CT_VECTOR, PT_INT32))
-GET_STRING_LIST(get_uint_string_list, uint32_t, TSGDataType(CT_VECTOR, PT_INT32))
-GET_STRING_LIST(get_long_string_list, int64_t, TSGDataType(CT_VECTOR, PT_INT64))
-GET_STRING_LIST(get_ulong_string_list, uint64_t, TSGDataType(CT_VECTOR, PT_INT64))
-GET_STRING_LIST(get_short_string_list, int16_t, TSGDataType(CT_VECTOR, PT_INT16))
-GET_STRING_LIST(get_word_string_list, uint16_t, TSGDataType(CT_VECTOR, PT_INT16))
-GET_STRING_LIST(get_shortreal_string_list, float32_t, TSGDataType(CT_VECTOR, PT_FLOAT32))
-GET_STRING_LIST(get_real_string_list, float64_t, TSGDataType(CT_VECTOR, PT_FLOAT64))
-GET_STRING_LIST(get_longreal_string_list, floatmax_t, TSGDataType(CT_VECTOR, PT_FLOATMAX))
-#undef GET_STRING_LIST
+GECSGString_LIST(get_char_string_list, char, TSGDataType(CT_VECTOR, PT_CHAR))
+GECSGString_LIST(get_byte_string_list, uint8_t, TSGDataType(CT_VECTOR, PT_CHAR))
+GECSGString_LIST(get_int_string_list, int32_t, TSGDataType(CT_VECTOR, PT_INT32))
+GECSGString_LIST(get_uint_string_list, uint32_t, TSGDataType(CT_VECTOR, PT_INT32))
+GECSGString_LIST(get_long_string_list, int64_t, TSGDataType(CT_VECTOR, PT_INT64))
+GECSGString_LIST(get_ulong_string_list, uint64_t, TSGDataType(CT_VECTOR, PT_INT64))
+GECSGString_LIST(get_short_string_list, int16_t, TSGDataType(CT_VECTOR, PT_INT16))
+GECSGString_LIST(get_word_string_list, uint16_t, TSGDataType(CT_VECTOR, PT_INT16))
+GECSGString_LIST(get_shortreal_string_list, float32_t, TSGDataType(CT_VECTOR, PT_FLOAT32))
+GECSGString_LIST(get_real_string_list, float64_t, TSGDataType(CT_VECTOR, PT_FLOAT64))
+GECSGString_LIST(get_longreal_string_list, floatmax_t, TSGDataType(CT_VECTOR, PT_FLOATMAX))
+#undef GECSGString_LIST
 
 /** set functions - to pass data from shogun to the target interface */
 
@@ -280,8 +280,8 @@ SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, (CT_MATRIX, PT_FLOAT64))
 SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, (CT_MATRIX, PT_FLOATMAX))
 #undef SET_SPARSEMATRIX
 
-#define SET_STRING_LIST(fname, sg_type, dtype) \
-void CBinaryFile::fname(const T_STRING<sg_type>* strings, int32_t num_str)	\
+#define SECSGString_LIST(fname, sg_type, dtype) \
+void CBinaryFile::fname(const CSGString<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n");											\
@@ -295,18 +295,18 @@ void CBinaryFile::fname(const T_STRING<sg_type>* strings, int32_t num_str)	\
 			SG_ERROR("Failed to write Sparse Matrix\n");								\
 	}																					\
 }
-SET_STRING_LIST(set_char_string_list, char, (CT_VECTOR, PT_CHAR))
-SET_STRING_LIST(set_byte_string_list, uint8_t, (CT_VECTOR, PT_CHAR))
-SET_STRING_LIST(set_int_string_list, int32_t, (CT_VECTOR, PT_INT32))
-SET_STRING_LIST(set_uint_string_list, uint32_t, (CT_VECTOR, PT_INT32))
-SET_STRING_LIST(set_long_string_list, int64_t, (CT_VECTOR, PT_INT64))
-SET_STRING_LIST(set_ulong_string_list, uint64_t, (CT_VECTOR, PT_INT64))
-SET_STRING_LIST(set_short_string_list, int16_t, (CT_VECTOR, PT_INT16))
-SET_STRING_LIST(set_word_string_list, uint16_t, (CT_VECTOR, PT_INT16))
-SET_STRING_LIST(set_shortreal_string_list, float32_t, (CT_VECTOR, PT_FLOAT32))
-SET_STRING_LIST(set_real_string_list, float64_t, (CT_VECTOR, PT_FLOAT64))
-SET_STRING_LIST(set_longreal_string_list, floatmax_t, (CT_VECTOR, PT_FLOATMAX))
-#undef SET_STRING_LIST
+SECSGString_LIST(set_char_string_list, char, (CT_VECTOR, PT_CHAR))
+SECSGString_LIST(set_byte_string_list, uint8_t, (CT_VECTOR, PT_CHAR))
+SECSGString_LIST(set_int_string_list, int32_t, (CT_VECTOR, PT_INT32))
+SECSGString_LIST(set_uint_string_list, uint32_t, (CT_VECTOR, PT_INT32))
+SECSGString_LIST(set_long_string_list, int64_t, (CT_VECTOR, PT_INT64))
+SECSGString_LIST(set_ulong_string_list, uint64_t, (CT_VECTOR, PT_INT64))
+SECSGString_LIST(set_short_string_list, int16_t, (CT_VECTOR, PT_INT16))
+SECSGString_LIST(set_word_string_list, uint16_t, (CT_VECTOR, PT_INT16))
+SECSGString_LIST(set_shortreal_string_list, float32_t, (CT_VECTOR, PT_FLOAT32))
+SECSGString_LIST(set_real_string_list, float64_t, (CT_VECTOR, PT_FLOAT64))
+SECSGString_LIST(set_longreal_string_list, floatmax_t, (CT_VECTOR, PT_FLOATMAX))
+#undef SECSGString_LIST
 
 
 int32_t CBinaryFile::parse_first_header(TSGDataType& type)

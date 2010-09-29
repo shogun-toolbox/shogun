@@ -11,7 +11,7 @@
 #ifdef HAVE_BOOST_SERIALIZATION2
 #include "features/StringFeatures.h"
 #include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT_GUID(shogun::T_STRING<char>, "T_STRING_char");
+BOOST_CLASS_EXPORT_GUID(shogun::CSGString<char>, "CSGString_char");
 BOOST_CLASS_EXPORT(shogun::CStringFeatures<char>);
 
 /*
@@ -23,5 +23,5 @@ BOOST_CLASS_EXPORT_GUID(shogun::CStringFeatures<uint8_t>, "CStringFeatures_uint8
 BOOST_CLASS_EXPORT_GUID(shogun::CStringFeatures<char>, "CStringFeatures_char");
 BOOST_CLASS_EXPORT_GUID(shogun::CStringFeatures<bool>, "CStringFeatures_bool");
 */
-//BOOST_CLASS_EXPORT(shogun::T_STRING<char>);
+//BOOST_CLASS_EXPORT(shogun::CSGString<char>);
 #endif //HAVE_BOOST_SERIALIZATION
