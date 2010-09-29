@@ -29,11 +29,11 @@ namespace shogun
  */
 class CSerialFile :public CSGObject
 {
-protected:
+	void init(FILE* file_, char task_, const char* filename_);
 	bool is_task_warn(char rw);
 	bool false_warn(const char* prefix, const char* name);
 
-	virtual void close(void);
+protected:
 
 	/** file object */
 	FILE* file;
@@ -41,6 +41,13 @@ protected:
 	char task;
 	/** name of the handled file */
 	char* filename;
+
+	virtual bool write_type_wrapped(
+		const TSGDataType* type, const void* param, const char* name,
+		const char* prefix) = 0;
+	virtual bool read_type_wrapped(
+		const TSGDataType* type, void* param, const char* name,
+		const char* prefix) = 0;
 
 public:
 	/** default constructor */
@@ -63,12 +70,15 @@ public:
 	virtual ~CSerialFile(void);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "File"; }
+	inline virtual const char* get_name() const { return "SerialFile"; }
+
+	virtual void close(void);
+	virtual bool is_opened(void);
 
 	virtual bool write_type(const TSGDataType* type, const void* param,
-							const char* name, const char* prefix) = 0;
+							const char* name, const char* prefix);
 	virtual bool read_type(const TSGDataType* type, void* param,
-						   const char* name, const char* prefix) = 0;
+						   const char* name, const char* prefix);
 };
 }
 #endif // __SERIALFILE_H__

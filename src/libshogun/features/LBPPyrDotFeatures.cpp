@@ -160,7 +160,8 @@ float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 	//{
 	double dot_prod = 0;
 	int32_t offset=0;
-	int32_t ww, hh, center, x, y, j;
+	int32_t ww, hh, x, y, j;
+	uint32_t center;
 	uint8_t pattern;
 
 	/*  ww=win_W;*/
@@ -226,7 +227,8 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 
 //void CLBPPyrDotFeatures::liblbp_pyr_addvec(int64_t *vec, uint32_t vec_nDim, uint32_t *img, uint16_t img_nRows, uint16_t img_nCols)
 //{
-  int32_t offset, ww, hh, x, y, center,j ;
+  int32_t offset, ww, hh, x, y, j;
+  uint32_t center;
   uint8_t pattern;
 
   offset=0;

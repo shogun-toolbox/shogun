@@ -378,13 +378,13 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
 			{
 			case PT_BOOL: return boolean_type;
 			case PT_CHAR: return H5T_NATIVE_UINT8;
-			case PT_INT16: return H5T_NATIVE_INT16;
-			/* case PT_INT16: return H5T_NATIVE_UINT16;  */
 			/* case PT_CHAR: return H5T_NATIVE_CHAR;  */
+			case PT_INT16: return H5T_NATIVE_INT16;
+			case PT_UINT16: return H5T_NATIVE_UINT16;
 			case PT_INT32: return H5T_NATIVE_INT32;
-			/* case PT_INT32: return H5T_NATIVE_UINT32;  */
+			case PT_UINT32: return H5T_NATIVE_UINT32;
 			case PT_INT64: return H5T_NATIVE_INT64;
-			/* case PT_INT64: return H5T_NATIVE_UINT64;  */
+			case PT_UINT64: return H5T_NATIVE_UINT64;
 			case PT_FLOAT32: return H5T_NATIVE_FLOAT;
 			case PT_FLOAT64: return H5T_NATIVE_DOUBLE;
 			case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE;

@@ -15,49 +15,60 @@ using namespace shogun;
 
 CSerialFile::CSerialFile(void) :CSGObject()
 {
-	file = NULL;
-	task = 0;
-	filename = strdup("(file)");
+	init(NULL, 0, "(file)");
 }
 
 CSerialFile::CSerialFile(FILE* f, char rw) :CSGObject()
 {
-	file = f;
-	task = rw;
-	filename = strdup("(file)");
+	init(f, rw, "(file)");
 }
 
 CSerialFile::CSerialFile(char* fname, char rw) :CSGObject()
 {
-	task = rw;
-	filename = strdup(fname);
-	char mode[2];
-	mode[0] = rw;
-	mode[1] = '\0';
+	char mode[3] = {rw, 'b', '\0'};
 
-	if (rw == 'r' || rw == 'w') {
-		if (filename) {
-			if (!(file=fopen((const char*) filename,
-							 (const char*) mode)))
-				SG_ERROR("Error opening file '%s'\n", filename);
-		}
-	} else
-		SG_ERROR("unknown mode '%c'\n", mode[0]);
+	init(NULL, rw, fname);
+
+	if (rw != 'r' && rw != 'w') {
+		SG_WARNING("Unknown mode '%c'!\n", mode[0]);
+		close(); return;
+	}
+
+	if (filename == NULL || *filename == '\0') {
+		SG_WARNING("Filename not given for opening file!\n");
+		close(); return;
+	}
+
+	file = fopen(filename, mode);
+	if (file == NULL) {
+		SG_WARNING("Error opening file '%s'\n", filename);
+		close(); return;
+	}
 }
 
 CSerialFile::~CSerialFile(void)
 {
 	close();
+	if (filename != NULL) { free(filename); filename = NULL; }
+}
+
+void
+CSerialFile::init(FILE* file_, char task_, const char* filename_)
+{
+	file = file_; task = task_; filename = strdup(filename_);
 }
 
 void
 CSerialFile::close()
 {
-	free(filename);
-	if (file)
-		fclose(file);
-	filename=NULL;
-	file=NULL;
+	if (file != NULL) { fclose(file); file = NULL; }
+	task = 0;
+}
+
+bool
+CSerialFile::is_opened(void)
+{
+	return file != NULL;
 }
 
 bool
@@ -89,4 +100,28 @@ CSerialFile::false_warn(const char* prefix, const char* name)
 				   prefix, name, filename);
 
 	return false;
+}
+
+bool
+CSerialFile::write_type(const TSGDataType* type, const void* param,
+						const char* name, const char* prefix)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_type_wrapped(type, param, name, prefix))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerialFile::read_type(const TSGDataType* type, void* param,
+					   const char* name, const char* prefix)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_type_wrapped(type, param, name, prefix))
+		return false_warn(prefix, name);
+
+	return true;
 }

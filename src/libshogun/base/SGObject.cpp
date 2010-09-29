@@ -72,21 +72,31 @@ CSGObject::unset_global_objects(void)
 }
 
 void
-CSGObject::serial_print(const char* prefix)
+CSGObject::print_serial(const char* prefix)
 {
 	m_parameters->print(prefix);
 }
 
 bool
-CSGObject::serial_save(CSerialFile* file, const char* prefix)
+CSGObject::save_serial(CSerialFile* file, const char* prefix)
 {
-	return m_parameters->save(file, prefix);
+	bool result = m_parameters->save(file, prefix);
+
+	if (prefix == NULL || *prefix == '\0')
+		file->close();
+
+	return result;
 }
 
 bool
-CSGObject::serial_load(CSerialFile* file, const char* prefix)
+CSGObject::load_serial(CSerialFile* file, const char* prefix)
 {
-	return m_parameters->load(file, prefix);
+	bool result = m_parameters->load(file, prefix);
+
+	if (prefix == NULL || *prefix == '\0')
+		file->close();
+
+	return result;
 }
 
 void CSGObject::set_io(CIO* new_io)

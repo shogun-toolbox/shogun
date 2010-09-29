@@ -34,6 +34,15 @@
 
 #include <stdint.h>
 
+/* No feature test:
+ * ISO C99: 7.8 Format conversion of integer types	<inttypes.h>
+ *
+ * If not supported make sure that your development environment is
+ * supporting ISO C99!
+ */
+#define __STDC_FORMAT_MACROS 1
+#include <inttypes.h>
+
 /**
  * Implementations tend to follow IEEE754
  * @see http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=4610935

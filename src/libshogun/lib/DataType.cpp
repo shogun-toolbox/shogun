@@ -1,0 +1,91 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2010 Soeren Sonnenburg
+ * Copyright (C) 2010 Berlin Institute of Technology
+ */
+
+#include <string.h>
+
+#include "base/SGObject.h"
+#include "lib/DataType.h"
+
+using namespace shogun;
+
+TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype)
+{
+	m_ctype = ctype; m_ptype = ptype; m_length_y = m_length_x = NULL;
+}
+
+TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype,
+						 uint64_t* length)
+{
+	m_ctype = ctype; m_ptype = ptype; m_length_y = length;
+	m_length_x = NULL;
+}
+
+TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype,
+						 uint64_t* length_y, uint64_t* length_x)
+{
+	m_ctype = ctype; m_ptype = ptype; m_length_y = length_y;
+	m_length_x = length_x;
+}
+
+void
+TSGDataType::to_string(char* dest) const
+{
+	char* p = dest;
+
+	switch (m_ctype) {
+	case CT_SCALAR: strcpy(p, ""); break;
+	case CT_VECTOR: strcpy(p, "Vector<"); break;
+	case CT_MATRIX: strcpy(p, "Matrix<"); break;
+	case CT_STRING: strcpy(p, "String<"); break;
+	case CT_SPARSE: strcpy(p, "Sparse<"); break;
+	}
+
+	switch (m_ptype) {
+	case PT_BOOL: strcat(p, "bool"); break;
+	case PT_CHAR: strcat(p, "char"); break;
+	case PT_INT16: strcat(p, "int16"); break;
+	case PT_UINT16: strcat(p, "uint16"); break;
+	case PT_INT32: strcat(p, "int32"); break;
+	case PT_UINT32: strcat(p, "uint32"); break;
+	case PT_INT64: strcat(p, "int64"); break;
+	case PT_UINT64: strcat(p, "uint64"); break;
+	case PT_FLOAT32: strcat(p, "float32"); break;
+	case PT_FLOAT64: strcat(p, "float64"); break;
+	case PT_FLOATMAX: strcat(p, "floatmax"); break;
+	case PT_SGOBJECT_PTR: strcat(p, "SGObject*"); break;
+	}
+
+	switch (m_ctype) {
+	case CT_SCALAR: break;
+	case CT_VECTOR: case CT_MATRIX: case CT_STRING: case CT_SPARSE:
+		strcat(p, ">*"); break;
+	}
+}
+
+size_t
+TSGDataType::sizeof_ptype(void) const
+{
+	switch (m_ptype) {
+	case PT_BOOL: return sizeof (bool);
+	case PT_CHAR: return sizeof (char);
+	case PT_INT16: return sizeof (int16_t);
+	case PT_UINT16: return sizeof (uint16_t);
+	case PT_INT32: return sizeof (int32_t);
+	case PT_UINT32: return sizeof (uint32_t);
+	case PT_INT64: return sizeof (int64_t);
+	case PT_UINT64: return sizeof (uint64_t);
+	case PT_FLOAT32: return sizeof (float32_t);
+	case PT_FLOAT64: return sizeof (float64_t);
+	case PT_FLOATMAX: return sizeof (floatmax_t);
+	case PT_SGOBJECT_PTR: return sizeof (CSGObject*);
+	}
+
+	return 0;
+}

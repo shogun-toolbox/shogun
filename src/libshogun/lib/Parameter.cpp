@@ -61,7 +61,7 @@ TParameter::print(CIO* io, const char* prefix)
 
 	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
-		(*(CSGObject**) m_parameter)->serial_print(p);
+		(*(CSGObject**) m_parameter)->print_serial(p);
 		free(p);
 	}
 }
@@ -73,7 +73,7 @@ TParameter::save(CSerialFile* file, const char* prefix)
 
 	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
-		result = (*(CSGObject**) m_parameter)->serial_save(file, p);
+		result = (*(CSGObject**) m_parameter)->save_serial(file, p);
 		free(p);
 	} else
 		result = file->write_type(&m_datatype, m_parameter, m_name,
@@ -89,7 +89,7 @@ TParameter::load(CSerialFile* file, const char* prefix)
 
 	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
-		result = (*(CSGObject**) m_parameter)->serial_load(file, p);
+		result = (*(CSGObject**) m_parameter)->load_serial(file, p);
 		free(p);
 	} else
 		result = file->read_type(&m_datatype, m_parameter, m_name,
@@ -117,6 +117,13 @@ void
 CParameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
+	for (int32_t i=0; i<get_num_parameters(); i++)
+		if (strcmp(m_params.get_element(i)->m_name, name) == 0) {
+			SG_ERROR("FATAL: CParameter::add_type(): "
+					 "Double parameter `%s'!", name);
+			exit(1);
+		}
+
 	m_params.append_element(
 		new TParameter(type, param, name, description)
 		);

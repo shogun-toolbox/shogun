@@ -7,7 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
- 
+
 %define DOCSTR
 "The `Library` module gathers all miscellaneous Objects in the SHOGUN toolkit."
 %enddef
@@ -29,6 +29,8 @@
 #include <shogun/lib/AsciiFile.h>
 #include <shogun/lib/BinaryFile.h>
 #include <shogun/lib/HDF5File.h>
+#include <shogun/lib/SerialFile.h>
+#include <shogun/lib/SerialAsciiFile.h>
 #include <shogun/lib/List.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/Signal.h>
@@ -52,6 +54,8 @@
 %rename(AsciiFile) CAsciiFile;
 %rename(BinaryFile) CBinaryFile;
 %rename(HDF5File) CHDF5File;
+%rename(SerialFile) CSerialFile;
+%rename(SerialAsciiFile) CSerialAsciiFile;
 %rename(ListElement) CListElement;
 %rename(List) CList;
 %rename(Math) CMath;
@@ -155,6 +159,8 @@ namespace shogun
 %include <shogun/lib/AsciiFile.h>
 %include <shogun/lib/BinaryFile.h>
 %include <shogun/lib/HDF5File.h>
+%include <shogun/lib/SerialFile.h>
+%include <shogun/lib/SerialAsciiFile.h>
 %include <shogun/lib/List.h>
 %include <shogun/lib/Mathematics.h>
 %include <shogun/lib/Signal.h>

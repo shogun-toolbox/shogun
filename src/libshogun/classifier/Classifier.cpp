@@ -9,7 +9,7 @@
  */
 
 #include "classifier/Classifier.h"
-
+#include "lib/Parameter.h"
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
@@ -22,6 +22,10 @@ using namespace shogun;
 CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL),
 	solver_type(ST_AUTO)
 {
+	m_parameters->add_float64(&max_train_time, "max_train_time",
+							  "Maximum training time.");
+	m_parameters->add_int32((int32_t*) &solver_type, "solver_type");
+	m_parameters->add_sgobject((CSGObject**) &labels, "labels");
 }
 
 CClassifier::~CClassifier()

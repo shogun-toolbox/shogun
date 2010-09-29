@@ -162,27 +162,29 @@ public:
 	 *
 	 * 	@param prefix prefix for members
 	 */
-	virtual void serial_print(const char* prefix="");
+	virtual void print_serial(const char* prefix="");
 
 	/** Save this object to file.
 	 *
-	 *  @param file where to save the object
-	 * 	@param prefix prefix for members
+	 *  @param file where to save the object; will be closed during
+	 *              returning if PREFIX is an empty string.
+	 *  @param prefix prefix for members
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool serial_save(CSerialFile* file, const char* prefix="");
+	virtual bool save_serial(CSerialFile* file, const char* prefix="");
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
 	 *  be used!
 	 *
-	 *  @param file where to save the object
-	 * 	@param prefix prefix for members
+	 *  @param file where to save the object; will be closed during
+	 *              returning if PREFIX is an empty string.
+	 *  @param prefix prefix for members
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool serial_load(CSerialFile* file, const char* prefix="");
+	virtual bool load_serial(CSerialFile* file, const char* prefix="");
 
 	/** set the io object
 	 *

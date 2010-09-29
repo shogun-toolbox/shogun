@@ -87,15 +87,33 @@ public:
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_uint16(uint16_t* param, const char* name,
+								   const char* description="") {
+		TSGDataType type(CT_SCALAR, PT_UINT16);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_int32(int32_t* param, const char* name,
 								  const char* description="") {
 		TSGDataType type(CT_SCALAR, PT_INT32);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_uint32(uint32_t* param, const char* name,
+								   const char* description="") {
+		TSGDataType type(CT_SCALAR, PT_UINT32);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_int64(int64_t* param, const char* name,
 								  const char* description="") {
 		TSGDataType type(CT_SCALAR, PT_INT64);
+		add_type(&type, param, name, description);
+	}
+
+	inline virtual void add_uint64(uint64_t* param, const char* name,
+								   const char* description="") {
+		TSGDataType type(CT_SCALAR, PT_UINT64);
 		add_type(&type, param, name, description);
 	}
 
@@ -127,63 +145,84 @@ public:
 	/* Vector wrappers  */
 
 	inline virtual void add_vector_bool(
-		bool** param, uint64_t length, const char* name,
+		bool** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_BOOL, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_vector_char(
-		char** param, uint64_t length, const char* name,
+		char** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_CHAR, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_vector_int16(
-		int16_t** param, uint64_t length, const char* name,
+		int16_t** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_INT16, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_vector_uint16(
+		uint16_t** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_VECTOR, PT_UINT16, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_vector_int32(
-		int32_t** param, uint64_t length, const char* name,
+		int32_t** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_INT32, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_vector_uint32(
+		uint32_t** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_VECTOR, PT_UINT32, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_vector_int64(
-		int64_t** param, uint64_t length, const char* name,
+		int64_t** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_INT64, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_vector_uint64(
+		uint64_t** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_VECTOR, PT_UINT64, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_vector_float32(
-		float32_t** param, uint64_t length, const char* name,
+		float32_t** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_FLOAT32, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_vector_float64(
-		float64_t** param, uint64_t length, const char* name,
+		float64_t** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_FLOAT64, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_vector_floatmax(
-		floatmax_t** param, uint64_t length, const char* name,
+		floatmax_t** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_FLOATMAX, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_vector_sgobject(
-		CSGObject** param, uint64_t length, const char* name,
+		CSGObject** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_VECTOR, PT_SGOBJECT_PTR, length);
 		add_type(&type, param, name, description);
@@ -193,63 +232,84 @@ public:
 	/* Matrix wrappers  */
 
 	inline virtual void add_matrix_bool(
-		bool** param, uint64_t length_y, uint64_t length_x,
+		bool** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_BOOL, length_y, length_x);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_matrix_char(
-		char** param, uint64_t length_y, uint64_t length_x,
+		char** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_CHAR, length_y, length_x);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_matrix_int16(
-		int16_t** param, uint64_t length_y, uint64_t length_x,
+		int16_t** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_INT16, length_y, length_x);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_matrix_uint16(
+		uint16_t** param, uint64_t* length_y, uint64_t* length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_UINT16, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_matrix_int32(
-		int32_t** param, uint64_t length_y, uint64_t length_x,
+		int32_t** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_INT32, length_y, length_x);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_matrix_uint32(
+		uint32_t** param, uint64_t* length_y, uint64_t* length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_UINT32, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_matrix_int64(
-		int64_t** param, uint64_t length_y, uint64_t length_x,
+		int64_t** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_INT64, length_y, length_x);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_matrix_uint64(
+		uint64_t** param, uint64_t* length_y, uint64_t* length_x,
+		const char* name, const char* description="") {
+		TSGDataType type(CT_MATRIX, PT_UINT64, length_y, length_x);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_matrix_float32(
-		float32_t** param, uint64_t length_y, uint64_t length_x,
+		float32_t** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_FLOAT32, length_y, length_x);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_matrix_float64(
-		float64_t** param, uint64_t length_y, uint64_t length_x,
+		float64_t** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_FLOAT64, length_y, length_x);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_matrix_floatmax(
-		floatmax_t** param, uint64_t length_y, uint64_t length_x,
+		floatmax_t** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_FLOATMAX, length_y, length_x);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_matrix_sgobject(
-		CSGObject** param, uint64_t length_y, uint64_t length_x,
+		CSGObject** param, uint64_t* length_y, uint64_t* length_x,
 		const char* name, const char* description="") {
 		TSGDataType type(CT_MATRIX, PT_SGOBJECT_PTR, length_y,
 						 length_x);
@@ -260,63 +320,84 @@ public:
 	/* String wrappers  */
 
 	inline virtual void add_string_bool(
-		T_STRING<bool>** param, uint64_t length, const char* name,
+		T_STRING<bool>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_BOOL, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_char(
-		T_STRING<char>** param, uint64_t length, const char* name,
+		T_STRING<char>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_CHAR, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_int16(
-		T_STRING<int16_t>** param, uint64_t length, const char* name,
+		T_STRING<int16_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_INT16, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_string_uint16(
+		T_STRING<uint16_t>** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_STRING, PT_UINT16, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_string_int32(
-		T_STRING<int32_t>** param, uint64_t length, const char* name,
+		T_STRING<int32_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_INT32, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_string_uint32(
+		T_STRING<uint32_t>** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_STRING, PT_UINT32, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_string_int64(
-		T_STRING<int64_t>** param, uint64_t length, const char* name,
+		T_STRING<int64_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_INT64, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_string_uint64(
+		T_STRING<uint64_t>** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_STRING, PT_UINT64, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_string_float32(
-		T_STRING<float32_t>** param, uint64_t length, const char* name,
+		T_STRING<float32_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_FLOAT32, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_float64(
-		T_STRING<float64_t>** param, uint64_t length, const char* name,
+		T_STRING<float64_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_FLOAT64, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_floatmax(
-		T_STRING<floatmax_t>** param, uint64_t length, const char* name,
+		T_STRING<floatmax_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_FLOATMAX, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_string_sgobject(
-		T_STRING<CSGObject*>** param, uint64_t length, const char* name,
+		T_STRING<CSGObject*>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_STRING, PT_SGOBJECT_PTR, length);
 		add_type(&type, param, name, description);
@@ -326,63 +407,84 @@ public:
 	/* Sparse wrappers  */
 
 	inline virtual void add_sparse_bool(
-		TSparse<bool>** param, uint64_t length, const char* name,
+		TSparse<bool>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_BOOL, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_sparse_char(
-		TSparse<char>** param, uint64_t length, const char* name,
+		TSparse<char>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_CHAR, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_sparse_int16(
-		TSparse<int16_t>** param, uint64_t length, const char* name,
+		TSparse<int16_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_INT16, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_sparse_uint16(
+		TSparse<uint16_t>** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_SPARSE, PT_UINT16, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_sparse_int32(
-		TSparse<int32_t>** param, uint64_t length, const char* name,
+		TSparse<int32_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_INT32, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_sparse_uint32(
+		TSparse<uint32_t>** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_SPARSE, PT_UINT32, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_sparse_int64(
-		TSparse<int64_t>** param, uint64_t length, const char* name,
+		TSparse<int64_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_INT64, length);
 		add_type(&type, param, name, description);
 	}
 
+	inline virtual void add_sparse_uint64(
+		TSparse<uint64_t>** param, uint64_t* length, const char* name,
+		const char* description="") {
+		TSGDataType type(CT_SPARSE, PT_UINT64, length);
+		add_type(&type, param, name, description);
+	}
+
 	inline virtual void add_sparse_float32(
-		TSparse<float32_t>** param, uint64_t length, const char* name,
+		TSparse<float32_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_FLOAT32, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_sparse_float64(
-		TSparse<float64_t>** param, uint64_t length, const char* name,
+		TSparse<float64_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_FLOAT64, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_sparse_floatmax(
-		TSparse<floatmax_t>** param, uint64_t length, const char* name,
+		TSparse<floatmax_t>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_FLOATMAX, length);
 		add_type(&type, param, name, description);
 	}
 
 	inline virtual void add_sparse_sgobject(
-		TSparse<CSGObject*>** param, uint64_t length, const char* name,
+		TSparse<CSGObject*>** param, uint64_t* length, const char* name,
 		const char* description="") {
 		TSGDataType type(CT_SPARSE, PT_SGOBJECT_PTR, length);
 		add_type(&type, param, name, description);
