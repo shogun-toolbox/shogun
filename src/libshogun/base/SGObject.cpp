@@ -57,46 +57,14 @@ CSGObject::set_global_objects(void)
 	io=sg_io;
 	parallel=sg_parallel;
 	version=sg_version;
-
-	m_parameters = new CParameter(io);
 }
 
 void
 CSGObject::unset_global_objects(void)
 {
-	delete m_parameters;
-
 	SG_UNREF(version);
 	SG_UNREF(parallel);
 	SG_UNREF(io);
-}
-
-void
-CSGObject::print_serial(const char* prefix)
-{
-	m_parameters->print(prefix);
-}
-
-bool
-CSGObject::save_serial(CSerialFile* file, const char* prefix)
-{
-	bool result = m_parameters->save(file, prefix);
-
-	if (prefix == NULL || *prefix == '\0')
-		file->close();
-
-	return result;
-}
-
-bool
-CSGObject::load_serial(CSerialFile* file, const char* prefix)
-{
-	bool result = m_parameters->load(file, prefix);
-
-	if (prefix == NULL || *prefix == '\0')
-		file->close();
-
-	return result;
 }
 
 void CSGObject::set_io(CIO* new_io)

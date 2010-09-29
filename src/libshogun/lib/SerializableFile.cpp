@@ -9,21 +9,21 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/SerialFile.h"
+#include "lib/SerializableFile.h"
 
 using namespace shogun;
 
-CSerialFile::CSerialFile(void) :CSGObject()
+CSerializableFile::CSerializableFile(void) :CSGObject()
 {
 	init(NULL, 0, "(file)");
 }
 
-CSerialFile::CSerialFile(FILE* f, char rw) :CSGObject()
+CSerializableFile::CSerializableFile(FILE* f, char rw) :CSGObject()
 {
 	init(f, rw, "(file)");
 }
 
-CSerialFile::CSerialFile(char* fname, char rw) :CSGObject()
+CSerializableFile::CSerializableFile(char* fname, char rw) :CSGObject()
 {
 	char mode[3] = {rw, 'b', '\0'};
 
@@ -46,33 +46,33 @@ CSerialFile::CSerialFile(char* fname, char rw) :CSGObject()
 	}
 }
 
-CSerialFile::~CSerialFile(void)
+CSerializableFile::~CSerializableFile(void)
 {
 	close();
 	if (filename != NULL) { free(filename); filename = NULL; }
 }
 
 void
-CSerialFile::init(FILE* file_, char task_, const char* filename_)
+CSerializableFile::init(FILE* file_, char task_, const char* filename_)
 {
 	file = file_; task = task_; filename = strdup(filename_);
 }
 
 void
-CSerialFile::close()
+CSerializableFile::close()
 {
 	if (file != NULL) { fclose(file); file = NULL; }
 	task = 0;
 }
 
 bool
-CSerialFile::is_opened(void)
+CSerializableFile::is_opened(void)
 {
 	return file != NULL;
 }
 
 bool
-CSerialFile::is_task_warn(char rw)
+CSerializableFile::is_task_warn(char rw)
 {
 	if (rw == 'w' && task != 'w') {
 		SG_WARNING("`%s' not opened for writing!\n", filename);
@@ -87,7 +87,7 @@ CSerialFile::is_task_warn(char rw)
 }
 
 bool
-CSerialFile::false_warn(const char* prefix, const char* name)
+CSerializableFile::false_warn(const char* prefix, const char* name)
 {
 	if (task == 'w')
 		SG_WARNING("Could not write `%s%s' from `%s'!", prefix,
@@ -103,7 +103,7 @@ CSerialFile::false_warn(const char* prefix, const char* name)
 }
 
 bool
-CSerialFile::write_type(const TSGDataType* type, const void* param,
+CSerializableFile::write_type(const TSGDataType* type, const void* param,
 						const char* name, const char* prefix)
 {
 	if (!is_task_warn('w')) return false;
@@ -115,7 +115,7 @@ CSerialFile::write_type(const TSGDataType* type, const void* param,
 }
 
 bool
-CSerialFile::read_type(const TSGDataType* type, void* param,
+CSerializableFile::read_type(const TSGDataType* type, void* param,
 					   const char* name, const char* prefix)
 {
 	if (!is_task_warn('r')) return false;

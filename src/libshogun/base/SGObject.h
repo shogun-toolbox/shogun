@@ -37,6 +37,7 @@
 #include <set>
 
 #include "lib/io.h"
+#include "lib/SGSerializable.h"
 #include "base/Parallel.h"
 #include "base/Version.h"
 
@@ -57,8 +58,6 @@ namespace shogun
 class CIO;
 class CParallel;
 class CVersion;
-class CParameter;
-class CSerialFile;
 
 // define reference counter macros
 //
@@ -80,11 +79,8 @@ class CSerialFile;
  * -# io - to output messages and general i/o (cf. CIO)
  * -# version - to provide version information of the shogun version used (cf. CVersion)
  */
-class CSGObject
+class CSGObject :public CSGSerializable
 {
-protected:
-	CParameter* m_parameters;
-
 public:
 	inline CSGObject() : refcount(0)
 	{
@@ -157,34 +153,6 @@ public:
 	 * @return name of object
 	 */
 	virtual const char* get_name() const=0;
-
-	/** prints registered parameters out
-	 *
-	 * 	@param prefix prefix for members
-	 */
-	virtual void print_serial(const char* prefix="");
-
-	/** Save this object to file.
-	 *
-	 *  @param file where to save the object; will be closed during
-	 *              returning if PREFIX is an empty string.
-	 *  @param prefix prefix for members
-	 *
-	 *  @return TRUE if done, otherwise FALSE
-	 */
-	virtual bool save_serial(CSerialFile* file, const char* prefix="");
-
-	/** Load this object from file.  If it will fail (returning FALSE)
-	 *  then this object will contain inconsistent data and should not
-	 *  be used!
-	 *
-	 *  @param file where to save the object; will be closed during
-	 *              returning if PREFIX is an empty string.
-	 *  @param prefix prefix for members
-	 *
-	 *  @return TRUE if done, otherwise FALSE
-	 */
-	virtual bool load_serial(CSerialFile* file, const char* prefix="");
 
 	/** set the io object
 	 *

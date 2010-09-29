@@ -10,6 +10,7 @@
  #include <shogun/base/init.h>
  #include <shogun/lib/common.h>
  #include <shogun/lib/io.h>
+ #include <shogun/lib/SGSerializable.h>
  #include <shogun/lib/ShogunException.h>
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
@@ -65,6 +66,7 @@
 %ignore FBUFSIZE;
 
 %rename(IO) CIO;
+%rename(SGSerializable) CSGSerializable;
 %rename(Version) CVersion;
 %rename(Parallel) CParallel;
 %rename(SGObject) CSGObject;
@@ -78,6 +80,7 @@
 
 %include <shogun/lib/ShogunException.h>
 %include <shogun/lib/io.h>
+%include <shogun/lib/SGSerializable.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>

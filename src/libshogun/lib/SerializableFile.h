@@ -9,8 +9,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#ifndef __SERIALFILE_H__
-#define __SERIALFILE_H__
+#ifndef __SERIALIZABLE_FILE_H__
+#define __SERIALIZABLE_FILE_H__
 
 #include <stdio.h>
 #include "base/SGObject.h"
@@ -27,7 +27,7 @@ namespace shogun
  * \sa CHDF5File
  *
  */
-class CSerialFile :public CSGObject
+class CSerializableFile :public CSGObject
 {
 	void init(FILE* file_, char task_, const char* filename_);
 	bool is_task_warn(char rw);
@@ -51,26 +51,26 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerialFile(void);
+	explicit CSerializableFile(void);
 
 	/** constructor
 	 *
 	 * @param f already opened file
 	 */
-	explicit CSerialFile(FILE* f, char rw);
+	explicit CSerializableFile(FILE* f, char rw);
 
 	/** constructor
 	 *
 	 * @param fname filename to open
 	 * @param rw mode, 'r' or 'w'
 	 */
-	explicit CSerialFile(char* fname, char rw='r');
+	explicit CSerializableFile(char* fname, char rw='r');
 
 	/** default destructor */
-	virtual ~CSerialFile(void);
+	virtual ~CSerializableFile(void);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "SerialFile"; }
+	inline virtual const char* get_name() const { return "SerializableFile"; }
 
 	virtual void close(void);
 	virtual bool is_opened(void);
@@ -81,4 +81,4 @@ public:
 						   const char* name, const char* prefix);
 };
 }
-#endif // __SERIALFILE_H__
+#endif // __SERIALIZABLE_FILE_H__

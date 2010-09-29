@@ -19,23 +19,17 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 	m_parameter = parameter;
 	m_name = strdup(name);
 	m_description = strdup(description);
-
-	CSGObject** p = (CSGObject**) m_parameter;
-	if (is_sgobject()) SG_REF(*p);
 }
 
 TParameter::~TParameter(void)
 {
-	CSGObject** p = (CSGObject**) m_parameter;
-	if (is_sgobject()) SG_UNREF(*p);
-
 	free(m_description); free(m_name);
 }
 
 bool
-TParameter::is_sgobject(void)
+TParameter::is_sgserializable(void)
 {
-	return m_datatype.m_ptype == PT_SGOBJECT_PTR
+	return m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR
 		&& m_datatype.m_ctype == CT_SCALAR;
 }
 
@@ -59,21 +53,25 @@ TParameter::print(CIO* io, const char* prefix)
 			 || *m_description == '\0' ? "(Parameter)": m_description,
 			 m_name, buf);
 
-	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+	if (is_sgserializable()
+		&& *(CSGSerializable**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
-		(*(CSGObject**) m_parameter)->print_serial(p);
+		(*(CSGSerializable**) m_parameter)->print_serializable(p);
 		free(p);
 	}
 }
 
 bool
-TParameter::save(CSerialFile* file, const char* prefix)
+TParameter::save(CSerializableFile* file, const char* prefix)
 {
 	bool result;
 
-	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+	if (is_sgserializable()
+		&& *(CSGSerializable**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
-		result = (*(CSGObject**) m_parameter)->save_serial(file, p);
+		result
+			= (*(CSGSerializable**) m_parameter)
+			->save_serializable(file, p);
 		free(p);
 	} else
 		result = file->write_type(&m_datatype, m_parameter, m_name,
@@ -83,13 +81,16 @@ TParameter::save(CSerialFile* file, const char* prefix)
 }
 
 bool
-TParameter::load(CSerialFile* file, const char* prefix)
+TParameter::load(CSerializableFile* file, const char* prefix)
 {
 	bool result;
 
-	if (is_sgobject() && *(CSGObject**) m_parameter != NULL) {
+	if (is_sgserializable()
+		&& *(CSGSerializable**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
-		result = (*(CSGObject**) m_parameter)->load_serial(file, p);
+		result
+			= (*(CSGSerializable**) m_parameter)
+			->load_serializable(file, p);
 		free(p);
 	} else
 		result = file->read_type(&m_datatype, m_parameter, m_name,
@@ -137,7 +138,7 @@ CParameter::print(const char* prefix)
 }
 
 bool
-CParameter::save(CSerialFile* file, const char* prefix)
+CParameter::save(CSerializableFile* file, const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (!m_params.get_element(i)->save(file, prefix))
@@ -147,7 +148,7 @@ CParameter::save(CSerialFile* file, const char* prefix)
 }
 
 bool
-CParameter::load(CSerialFile* file, const char* prefix)
+CParameter::load(CSerializableFile* file, const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (!m_params.get_element(i)->load(file, prefix))

@@ -8,23 +8,23 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/SerialAsciiFile.h"
+#include "lib/SerializableAsciiFile.h"
 
 using namespace shogun;
 
-CSerialAsciiFile::CSerialAsciiFile(void)
-	:CSerialFile() {}
+CSerializableAsciiFile::CSerializableAsciiFile(void)
+	:CSerializableFile() {}
 
-CSerialAsciiFile::CSerialAsciiFile(FILE* f, char rw)
-	:CSerialFile(f, rw) {}
+CSerializableAsciiFile::CSerializableAsciiFile(FILE* f, char rw)
+	:CSerializableFile(f, rw) {}
 
-CSerialAsciiFile::CSerialAsciiFile(char* fname, char rw)
-	:CSerialFile(fname, rw) {}
+CSerializableAsciiFile::CSerializableAsciiFile(char* fname, char rw)
+	:CSerializableFile(fname, rw) {}
 
-CSerialAsciiFile::~CSerialAsciiFile() {}
+CSerializableAsciiFile::~CSerializableAsciiFile() {}
 
 bool
-CSerialAsciiFile::write_scalar(EPrimitveType type, const void* param)
+CSerializableAsciiFile::write_scalar(EPrimitveType type, const void* param)
 {
 	switch (type) {
 	case PT_BOOL:
@@ -71,7 +71,7 @@ CSerialAsciiFile::write_scalar(EPrimitveType type, const void* param)
 		if (fprintf(file, "%+10.16Le", *(floatmax_t*) param) < 0)
 			return false;
 		break;
-	case PT_SGOBJECT_PTR:
+	case PT_SGSERIALIZABLE_PTR:
 		SG_ERROR("Implementation error during writing AsciiFile!");
 		return false;
 	}
@@ -80,7 +80,7 @@ CSerialAsciiFile::write_scalar(EPrimitveType type, const void* param)
 }
 
 bool
-CSerialAsciiFile::write_vector(const TSGDataType* type, const void* param,
+CSerializableAsciiFile::write_vector(const TSGDataType* type, const void* param,
 							   uint64_t length)
 {
 	length = *(void**) param == NULL? 0: length;
@@ -96,7 +96,7 @@ CSerialAsciiFile::write_vector(const TSGDataType* type, const void* param,
 }
 
 bool
-CSerialAsciiFile::write_type_wrapped(
+CSerializableAsciiFile::write_type_wrapped(
 	const TSGDataType* type, const void* param, const char* name,
 	const char* prefix)
 {
@@ -120,9 +120,6 @@ CSerialAsciiFile::write_type_wrapped(
 						  *type->m_length_y **type->m_length_x))
 			return false;
 		break;
-	case CT_STRING: case CT_SPARSE:
-		SG_NOTIMPLEMENTED;
-		break;
 	}
 
 	if (fprintf(file, "\n") < 0) return false;
@@ -131,7 +128,7 @@ CSerialAsciiFile::write_type_wrapped(
 }
 
 bool
-CSerialAsciiFile::read_type_wrapped(
+CSerializableAsciiFile::read_type_wrapped(
 	const TSGDataType* type, void* param, const char* name,
 	const char* prefix)
 {

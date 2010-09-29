@@ -43,8 +43,6 @@ TSGDataType::to_string(char* dest) const
 	case CT_SCALAR: strcpy(p, ""); break;
 	case CT_VECTOR: strcpy(p, "Vector<"); break;
 	case CT_MATRIX: strcpy(p, "Matrix<"); break;
-	case CT_STRING: strcpy(p, "String<"); break;
-	case CT_SPARSE: strcpy(p, "Sparse<"); break;
 	}
 
 	switch (m_ptype) {
@@ -59,12 +57,12 @@ TSGDataType::to_string(char* dest) const
 	case PT_FLOAT32: strcat(p, "float32"); break;
 	case PT_FLOAT64: strcat(p, "float64"); break;
 	case PT_FLOATMAX: strcat(p, "floatmax"); break;
-	case PT_SGOBJECT_PTR: strcat(p, "SGObject*"); break;
+	case PT_SGSERIALIZABLE_PTR: strcat(p, "SGSerializable*"); break;
 	}
 
 	switch (m_ctype) {
 	case CT_SCALAR: break;
-	case CT_VECTOR: case CT_MATRIX: case CT_STRING: case CT_SPARSE:
+	case CT_VECTOR: case CT_MATRIX:
 		strcat(p, ">*"); break;
 	}
 }
@@ -84,7 +82,7 @@ TSGDataType::sizeof_ptype(void) const
 	case PT_FLOAT32: return sizeof (float32_t);
 	case PT_FLOAT64: return sizeof (float64_t);
 	case PT_FLOATMAX: return sizeof (floatmax_t);
-	case PT_SGOBJECT_PTR: return sizeof (CSGObject*);
+	case PT_SGSERIALIZABLE_PTR: return sizeof (CSGSerializable*);
 	}
 
 	return 0;

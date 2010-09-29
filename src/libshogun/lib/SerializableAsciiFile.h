@@ -7,15 +7,15 @@
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
-#ifndef __SERIAL_ASCII_FILE_H__
-#define __SERIAL_ASCII_FILE_H__
+#ifndef __SERIALIZABLE_ASCII_FILE_H__
+#define __SERIALIZABLE_ASCII_FILE_H__
 
 #include "lib/common.h"
-#include "lib/SerialFile.h"
+#include "lib/SerializableFile.h"
 
 namespace shogun
 {
-class CSerialAsciiFile :public CSerialFile
+class CSerializableAsciiFile :public CSerializableFile
 {
 	bool write_scalar(EPrimitveType type, const void* param);
 	bool write_vector(const TSGDataType* type, const void* param,
@@ -31,29 +31,29 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerialAsciiFile(void);
+	explicit CSerializableAsciiFile(void);
 
 	/** constructor
 	 *
 	 * @param f already opened file
 	 */
-	explicit CSerialAsciiFile(FILE* f, char rw);
+	explicit CSerializableAsciiFile(FILE* f, char rw);
 
 	/** constructor
 	 *
 	 * @param fname filename to open
 	 * @param rw mode, 'r' or 'w'
 	 */
-	explicit CSerialAsciiFile(char* fname, char rw='r');
+	explicit CSerializableAsciiFile(char* fname, char rw='r');
 
 	/** default destructor */
-	virtual ~CSerialAsciiFile();
+	virtual ~CSerializableAsciiFile();
 
 	/** @return object name */
 	inline virtual const char* get_name() const {
-		return "SerialAsciiFile";
+		return "SerializableAsciiFile";
 	}
 };
 }
 
-#endif /* __SERIAL_ASCII_FILE_H__  */
+#endif /* __SERIALIZABLE_ASCII_FILE_H__  */

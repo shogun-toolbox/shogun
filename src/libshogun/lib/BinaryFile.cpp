@@ -136,18 +136,18 @@ void CBinaryFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& n
 		matrix[i].features=vec;															\
 	}																					\
 }
-GET_SPARSEMATRIX(get_bool_sparsematrix, bool, TSGDataType(CT_SPARSE, PT_BOOL))
-GET_SPARSEMATRIX(get_char_sparsematrix, char, TSGDataType(CT_SPARSE, PT_CHAR))
-GET_SPARSEMATRIX(get_byte_sparsematrix, uint8_t, TSGDataType(CT_SPARSE, PT_CHAR))
-GET_SPARSEMATRIX(get_int_sparsematrix, int32_t, TSGDataType(CT_SPARSE, PT_INT32))
-GET_SPARSEMATRIX(get_uint_sparsematrix, uint32_t, TSGDataType(CT_SPARSE, PT_INT32))
-GET_SPARSEMATRIX(get_long_sparsematrix, int64_t, TSGDataType(CT_SPARSE, PT_INT64))
-GET_SPARSEMATRIX(get_ulong_sparsematrix, uint64_t, TSGDataType(CT_SPARSE, PT_INT64))
-GET_SPARSEMATRIX(get_short_sparsematrix, int16_t, TSGDataType(CT_SPARSE, PT_INT16))
-GET_SPARSEMATRIX(get_word_sparsematrix, uint16_t, TSGDataType(CT_SPARSE, PT_INT16))
-GET_SPARSEMATRIX(get_shortreal_sparsematrix, float32_t, TSGDataType(CT_SPARSE, PT_FLOAT32))
-GET_SPARSEMATRIX(get_real_sparsematrix, float64_t, TSGDataType(CT_SPARSE, PT_FLOAT64))
-GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, TSGDataType(CT_SPARSE, PT_FLOATMAX))
+GET_SPARSEMATRIX(get_bool_sparsematrix, bool, TSGDataType(CT_MATRIX, PT_BOOL))
+GET_SPARSEMATRIX(get_char_sparsematrix, char, TSGDataType(CT_MATRIX, PT_CHAR))
+GET_SPARSEMATRIX(get_byte_sparsematrix, uint8_t, TSGDataType(CT_MATRIX, PT_CHAR))
+GET_SPARSEMATRIX(get_int_sparsematrix, int32_t, TSGDataType(CT_MATRIX, PT_INT32))
+GET_SPARSEMATRIX(get_uint_sparsematrix, uint32_t, TSGDataType(CT_MATRIX, PT_INT32))
+GET_SPARSEMATRIX(get_long_sparsematrix, int64_t, TSGDataType(CT_MATRIX, PT_INT64))
+GET_SPARSEMATRIX(get_ulong_sparsematrix, uint64_t, TSGDataType(CT_MATRIX, PT_INT64))
+GET_SPARSEMATRIX(get_short_sparsematrix, int16_t, TSGDataType(CT_MATRIX, PT_INT16))
+GET_SPARSEMATRIX(get_word_sparsematrix, uint16_t, TSGDataType(CT_MATRIX, PT_INT16))
+GET_SPARSEMATRIX(get_shortreal_sparsematrix, float32_t, TSGDataType(CT_MATRIX, PT_FLOAT32))
+GET_SPARSEMATRIX(get_real_sparsematrix, float64_t, TSGDataType(CT_MATRIX, PT_FLOAT64))
+GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, TSGDataType(CT_MATRIX, PT_FLOATMAX))
 #undef GET_SPARSEMATRIX
 
 
@@ -183,17 +183,17 @@ void CBinaryFile::fname(T_STRING<sg_type>*& strings, int32_t& num_str, int32_t& 
 	}																							\
 }
 
-GET_STRING_LIST(get_char_string_list, char, TSGDataType(CT_STRING, PT_CHAR))
-GET_STRING_LIST(get_byte_string_list, uint8_t, TSGDataType(CT_STRING, PT_CHAR))
-GET_STRING_LIST(get_int_string_list, int32_t, TSGDataType(CT_STRING, PT_INT32))
-GET_STRING_LIST(get_uint_string_list, uint32_t, TSGDataType(CT_STRING, PT_INT32))
-GET_STRING_LIST(get_long_string_list, int64_t, TSGDataType(CT_STRING, PT_INT64))
-GET_STRING_LIST(get_ulong_string_list, uint64_t, TSGDataType(CT_STRING, PT_INT64))
-GET_STRING_LIST(get_short_string_list, int16_t, TSGDataType(CT_STRING, PT_INT16))
-GET_STRING_LIST(get_word_string_list, uint16_t, TSGDataType(CT_STRING, PT_INT16))
-GET_STRING_LIST(get_shortreal_string_list, float32_t, TSGDataType(CT_STRING, PT_FLOAT32))
-GET_STRING_LIST(get_real_string_list, float64_t, TSGDataType(CT_STRING, PT_FLOAT64))
-GET_STRING_LIST(get_longreal_string_list, floatmax_t, TSGDataType(CT_STRING, PT_FLOATMAX))
+GET_STRING_LIST(get_char_string_list, char, TSGDataType(CT_VECTOR, PT_CHAR))
+GET_STRING_LIST(get_byte_string_list, uint8_t, TSGDataType(CT_VECTOR, PT_CHAR))
+GET_STRING_LIST(get_int_string_list, int32_t, TSGDataType(CT_VECTOR, PT_INT32))
+GET_STRING_LIST(get_uint_string_list, uint32_t, TSGDataType(CT_VECTOR, PT_INT32))
+GET_STRING_LIST(get_long_string_list, int64_t, TSGDataType(CT_VECTOR, PT_INT64))
+GET_STRING_LIST(get_ulong_string_list, uint64_t, TSGDataType(CT_VECTOR, PT_INT64))
+GET_STRING_LIST(get_short_string_list, int16_t, TSGDataType(CT_VECTOR, PT_INT16))
+GET_STRING_LIST(get_word_string_list, uint16_t, TSGDataType(CT_VECTOR, PT_INT16))
+GET_STRING_LIST(get_shortreal_string_list, float32_t, TSGDataType(CT_VECTOR, PT_FLOAT32))
+GET_STRING_LIST(get_real_string_list, float64_t, TSGDataType(CT_VECTOR, PT_FLOAT64))
+GET_STRING_LIST(get_longreal_string_list, floatmax_t, TSGDataType(CT_VECTOR, PT_FLOATMAX))
 #undef GET_STRING_LIST
 
 /** set functions - to pass data from shogun to the target interface */
@@ -266,18 +266,18 @@ void CBinaryFile::fname(const TSparse<sg_type>* matrix, 	\
 			SG_ERROR("Failed to write Sparse Matrix\n");	\
 	}														\
 }
-SET_SPARSEMATRIX(set_bool_sparsematrix, bool, (CT_SPARSE, PT_BOOL))
-SET_SPARSEMATRIX(set_char_sparsematrix, char, (CT_SPARSE, PT_CHAR))
-SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, (CT_SPARSE, PT_CHAR))
-SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, (CT_SPARSE, PT_INT32))
-SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, (CT_SPARSE, PT_INT32))
-SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, (CT_SPARSE, PT_INT64))
-SET_SPARSEMATRIX(set_ulong_sparsematrix, uint64_t, (CT_SPARSE, PT_INT64))
-SET_SPARSEMATRIX(set_short_sparsematrix, int16_t, (CT_SPARSE, PT_INT16))
-SET_SPARSEMATRIX(set_word_sparsematrix, uint16_t, (CT_SPARSE, PT_INT16))
-SET_SPARSEMATRIX(set_shortreal_sparsematrix, float32_t, (CT_SPARSE, PT_FLOAT32))
-SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, (CT_SPARSE, PT_FLOAT64))
-SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, (CT_SPARSE, PT_FLOATMAX))
+SET_SPARSEMATRIX(set_bool_sparsematrix, bool, (CT_MATRIX, PT_BOOL))
+SET_SPARSEMATRIX(set_char_sparsematrix, char, (CT_MATRIX, PT_CHAR))
+SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, (CT_MATRIX, PT_CHAR))
+SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, (CT_MATRIX, PT_INT32))
+SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, (CT_MATRIX, PT_INT32))
+SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, (CT_MATRIX, PT_INT64))
+SET_SPARSEMATRIX(set_ulong_sparsematrix, uint64_t, (CT_MATRIX, PT_INT64))
+SET_SPARSEMATRIX(set_short_sparsematrix, int16_t, (CT_MATRIX, PT_INT16))
+SET_SPARSEMATRIX(set_word_sparsematrix, uint16_t, (CT_MATRIX, PT_INT16))
+SET_SPARSEMATRIX(set_shortreal_sparsematrix, float32_t, (CT_MATRIX, PT_FLOAT32))
+SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, (CT_MATRIX, PT_FLOAT64))
+SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, (CT_MATRIX, PT_FLOATMAX))
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
@@ -295,17 +295,17 @@ void CBinaryFile::fname(const T_STRING<sg_type>* strings, int32_t num_str)	\
 			SG_ERROR("Failed to write Sparse Matrix\n");								\
 	}																					\
 }
-SET_STRING_LIST(set_char_string_list, char, (CT_STRING, PT_CHAR))
-SET_STRING_LIST(set_byte_string_list, uint8_t, (CT_STRING, PT_CHAR))
-SET_STRING_LIST(set_int_string_list, int32_t, (CT_STRING, PT_INT32))
-SET_STRING_LIST(set_uint_string_list, uint32_t, (CT_STRING, PT_INT32))
-SET_STRING_LIST(set_long_string_list, int64_t, (CT_STRING, PT_INT64))
-SET_STRING_LIST(set_ulong_string_list, uint64_t, (CT_STRING, PT_INT64))
-SET_STRING_LIST(set_short_string_list, int16_t, (CT_STRING, PT_INT16))
-SET_STRING_LIST(set_word_string_list, uint16_t, (CT_STRING, PT_INT16))
-SET_STRING_LIST(set_shortreal_string_list, float32_t, (CT_STRING, PT_FLOAT32))
-SET_STRING_LIST(set_real_string_list, float64_t, (CT_STRING, PT_FLOAT64))
-SET_STRING_LIST(set_longreal_string_list, floatmax_t, (CT_STRING, PT_FLOATMAX))
+SET_STRING_LIST(set_char_string_list, char, (CT_VECTOR, PT_CHAR))
+SET_STRING_LIST(set_byte_string_list, uint8_t, (CT_VECTOR, PT_CHAR))
+SET_STRING_LIST(set_int_string_list, int32_t, (CT_VECTOR, PT_INT32))
+SET_STRING_LIST(set_uint_string_list, uint32_t, (CT_VECTOR, PT_INT32))
+SET_STRING_LIST(set_long_string_list, int64_t, (CT_VECTOR, PT_INT64))
+SET_STRING_LIST(set_ulong_string_list, uint64_t, (CT_VECTOR, PT_INT64))
+SET_STRING_LIST(set_short_string_list, int16_t, (CT_VECTOR, PT_INT16))
+SET_STRING_LIST(set_word_string_list, uint16_t, (CT_VECTOR, PT_INT16))
+SET_STRING_LIST(set_shortreal_string_list, float32_t, (CT_VECTOR, PT_FLOAT32))
+SET_STRING_LIST(set_real_string_list, float64_t, (CT_VECTOR, PT_FLOAT64))
+SET_STRING_LIST(set_longreal_string_list, floatmax_t, (CT_VECTOR, PT_FLOATMAX))
 #undef SET_STRING_LIST
 
 

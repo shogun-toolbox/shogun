@@ -388,7 +388,7 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
 			case PT_FLOAT32: return H5T_NATIVE_FLOAT;
 			case PT_FLOAT64: return H5T_NATIVE_DOUBLE;
 			case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE;
-			case PT_SGOBJECT_PTR:
+			case PT_SGSERIALIZABLE_PTR:
 				SG_ERROR("Implementation error during writing "
 						 "HDF5File!");
 				return -1;
