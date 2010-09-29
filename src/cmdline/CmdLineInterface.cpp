@@ -490,7 +490,7 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, 
 	f.set_real_sparsematrix(matrix, num_feat, num_vec);
 }
 
-#define SECSGString_LIST(fname, sg_type)	\
+#define SET_STRING_LIST(fname, sg_type)	\
 void CCmdLineInterface::fname(const CSGString<sg_type>* strings, int32_t num_str)		\
 {																						\
 	const char* filename=set_arg_increment();											\
@@ -500,12 +500,12 @@ void CCmdLineInterface::fname(const CSGString<sg_type>* strings, int32_t num_str
 	CAsciiFile f((char*) filename, 'w');												\
 	f.fname(strings, num_str);															\
 }
-SECSGString_LIST(set_byte_string_list, uint8_t)
-SECSGString_LIST(set_char_string_list, char)
-SECSGString_LIST(set_int_string_list, int32_t)
-SECSGString_LIST(set_short_string_list, int16_t)
-SECSGString_LIST(set_word_string_list, uint16_t)
-#undef SECSGString_LIST
+SET_STRING_LIST(set_byte_string_list, uint8_t)
+SET_STRING_LIST(set_char_string_list, char)
+SET_STRING_LIST(set_int_string_list, int32_t)
+SET_STRING_LIST(set_short_string_list, int16_t)
+SET_STRING_LIST(set_word_string_list, uint16_t)
+#undef SET_STRING_LIST
 
 void CCmdLineInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
 {

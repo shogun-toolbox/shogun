@@ -369,7 +369,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_
 	ASSERT(offset=nnz);
 }
 
-#define GECSGStringLIST(function_name, oct_type_check1, oct_type_check2, \
+#define GET_STRINGLIST(function_name, oct_type_check1, oct_type_check2, \
 		oct_type, oct_converter, sg_type, if_type, error_string)		\
 void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																					\
@@ -444,12 +444,12 @@ void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 	}\
 }
 /* ignore the g++ warning here */
-GECSGStringLIST(get_byte_string_list, is_matrix_type, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
-GECSGStringLIST(get_char_string_list, is_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
-GECSGStringLIST(get_int_string_list, is_matrix_type, is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
-GECSGStringLIST(get_short_string_list, is_matrix_type, is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
-GECSGStringLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
-#undef GECSGStringLIST
+GET_STRINGLIST(get_byte_string_list, is_matrix_type, is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
+GET_STRINGLIST(get_char_string_list, is_char_matrix, is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
+GET_STRINGLIST(get_int_string_list, is_matrix_type, is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
+GET_STRINGLIST(get_short_string_list, is_matrix_type, is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
+GET_STRINGLIST(get_word_string_list, is_matrix_type, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
+#undef GET_STRINGLIST
 
 void COctaveInterface::get_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* &attrs)
 {
@@ -539,7 +539,7 @@ void COctaveInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, i
 	set_arg_increment(sm);
 }
 
-#define SECSGStringLIST(function_name, oct_type, sg_type, if_type, error_string)	\
+#define SET_STRINGLIST(function_name, oct_type, sg_type, if_type, error_string)	\
 void COctaveInterface::function_name(const CSGString<sg_type>* strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
@@ -566,12 +566,12 @@ void COctaveInterface::function_name(const CSGString<sg_type>* strings, int32_t 
 																					\
 	set_arg_increment(c);															\
 }
-SECSGStringLIST(set_byte_string_list, int8NDArray, uint8_t, uint8_t, "Byte")
-SECSGStringLIST(set_char_string_list, charNDArray, char, char, "Char")
-SECSGStringLIST(set_int_string_list, int32NDArray, int32_t, int32_t, "Integer")
-SECSGStringLIST(set_short_string_list, int16NDArray, int16_t, int16_t, "Short")
-SECSGStringLIST(set_word_string_list, uint16NDArray, uint16_t, uint16_t, "Word")
-#undef SECSGStringLIST
+SET_STRINGLIST(set_byte_string_list, int8NDArray, uint8_t, uint8_t, "Byte")
+SET_STRINGLIST(set_char_string_list, charNDArray, char, char, "Char")
+SET_STRINGLIST(set_int_string_list, int32NDArray, int32_t, int32_t, "Integer")
+SET_STRINGLIST(set_short_string_list, int16NDArray, int16_t, int16_t, "Short")
+SET_STRINGLIST(set_word_string_list, uint16NDArray, uint16_t, uint16_t, "Word")
+#undef SET_STRINGLIST
 
 void COctaveInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
 {

@@ -857,11 +857,11 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_ARGOUT(type,typecode)
-%typemap(in, numinputs=0) (shogun::CSGString<type>** ARGOUCSGStringS, int32_t* NUM) {
+%typemap(in, numinputs=0) (shogun::CSGString<type>** ARGOUT_STRINGS, int32_t* NUM) {
     $1 = (shogun::CSGString<type>**) malloc(sizeof(shogun::CSGString<type>*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
 }
-%typemap(argout) (shogun::CSGString<type>** ARGOUCSGStringS, int32_t* NUM) {
+%typemap(argout) (shogun::CSGString<type>** ARGOUT_STRINGS, int32_t* NUM) {
     if (!$1 || !$2)
         SWIG_fail;
 

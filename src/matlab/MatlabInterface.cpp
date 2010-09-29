@@ -340,7 +340,7 @@ GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Wor
 #undef GET_SPARSEMATRIX
 
 
-#define GECSGStringLIST(function_name, mx_type, sg_type, if_type, error_string)		\
+#define GET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
 void CMatlabInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) 	\
 { 																						\
 	const mxArray* mx_str=get_arg_increment();											\
@@ -413,12 +413,12 @@ void CMatlabInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 			mxGetClassName(mx_str), m_rhs_counter);										\
 }
 
-GECSGStringLIST(get_byte_string_list, "uint8", uint8_t, uint8_t, "Byte")
-GECSGStringLIST(get_char_string_list, "char", char, mxChar, "Char")
-GECSGStringLIST(get_int_string_list, "int32", int32_t, int, "Integer")
-GECSGStringLIST(get_short_string_list, "int16", int16_t, short, "Short")
-GECSGStringLIST(get_word_string_list, "uint16", uint16_t, unsigned short, "Word")
-#undef GECSGStringLIST
+GET_STRINGLIST(get_byte_string_list, "uint8", uint8_t, uint8_t, "Byte")
+GET_STRINGLIST(get_char_string_list, "char", char, mxChar, "Char")
+GET_STRINGLIST(get_int_string_list, "int32", int32_t, int, "Integer")
+GET_STRINGLIST(get_short_string_list, "int16", int16_t, short, "Short")
+GET_STRINGLIST(get_word_string_list, "uint16", uint16_t, unsigned short, "Word")
+#undef GET_STRINGLIST
 
 
 void CMatlabInterface::get_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* &attrs)
@@ -563,7 +563,7 @@ SET_SPARSEMATRIX(set_shortreal_sparsematrix, mxSINGLE_CLASS, float32_t, float, "
 SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")*/
 #undef SET_SPARSEMATRIX
 
-#define SECSGStringLIST(function_name, mx_type, sg_type, if_type, error_string)		\
+#define SET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
 void CMatlabInterface::function_name(const CSGString<sg_type>* strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
@@ -593,12 +593,12 @@ void CMatlabInterface::function_name(const CSGString<sg_type>* strings, int32_t 
 	set_arg_increment(mx_str);														\
 }
 
-SECSGStringLIST(set_byte_string_list, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
-SECSGStringLIST(set_char_string_list, mxCHAR_CLASS, char, mxChar, "Char")
-SECSGStringLIST(set_int_string_list, mxINT32_CLASS, int32_t, int, "Integer")
-SECSGStringLIST(set_short_string_list, mxINT16_CLASS, int16_t, short, "Short")
-SECSGStringLIST(set_word_string_list, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
-#undef SECSGStringLIST
+SET_STRINGLIST(set_byte_string_list, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
+SET_STRINGLIST(set_char_string_list, mxCHAR_CLASS, char, mxChar, "Char")
+SET_STRINGLIST(set_int_string_list, mxINT32_CLASS, int32_t, int, "Integer")
+SET_STRINGLIST(set_short_string_list, mxINT16_CLASS, int16_t, short, "Short")
+SET_STRINGLIST(set_word_string_list, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
+#undef SET_STRINGLIST
 
 void CMatlabInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)
 {

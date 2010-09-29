@@ -507,7 +507,7 @@ void CRInterface::set_char_string_list(const CSGString<char>* strings, int32_t n
 	{
 		int32_t len=strings[i].length;
 		if (len>0)
-			SECSGString_ELT(feat, i, mkChar(strings[i].string));
+			SET_STRING_ELT(feat, i, mkChar(strings[i].string));
 	}
 	UNPROTECT(1);
 	set_arg_increment(feat);
@@ -611,7 +611,7 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 	// Make file argument
 	SEXP file;
 	PROTECT(file = NEW_CHARACTER(1));
-	SECSGString_ELT(file, 0, COPY_TO_USER_STRING(rfile));
+	SET_STRING_ELT(file, 0, COPY_TO_USER_STRING(rfile));
 
 	// expression source(file,print.eval=p)
 	SEXP expr;

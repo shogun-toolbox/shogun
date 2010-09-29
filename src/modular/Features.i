@@ -129,18 +129,18 @@
 %apply (shogun::CSGString<float64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::CSGString<float64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (shogun::CSGString<floatmax_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::CSGString<floatmax_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 
-%apply (shogun::CSGString<bool>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<bool>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<char>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<char>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<uint8_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<uint8_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<int16_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<int16_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<uint16_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<uint16_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<int32_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<int32_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<uint32_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<uint32_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<int64_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<int64_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<uint64_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<uint64_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<float32_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<float32_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<float64_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<float64_t>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<floatmax_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<floatmax_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<bool>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<bool>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<char>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<char>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint8_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<uint8_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<int16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<int16_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<uint16_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<int32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<int32_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<uint32_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<int64_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<uint64_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<float32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<float32_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<float64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<float64_t>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<floatmax_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<floatmax_t>** dst, int32_t* num_str)};
 
 %apply (shogun::TSparse<bool>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<bool>* src, int32_t num_feat, int32_t num_vec)};
 %apply (shogun::TSparse<char>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<char>* src, int32_t num_feat, int32_t num_vec)};
@@ -255,21 +255,21 @@
 %apply (shogun::CSGString<float64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::CSGString<double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 %apply (shogun::CSGString<floatmax_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::CSGString<long double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 
-%apply (shogun::CSGString<uint8_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<unsigned char>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<int16_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<short int>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<uint16_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<unsigned short int>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<int32_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<int>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<uint32_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<unsigned int>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint8_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<unsigned char>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<int16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<short int>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<unsigned short int>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<int32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<int>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<unsigned int>** dst, int32_t* num_str)};
 #ifdef SWIGWORDSIZE64
-%apply (shogun::CSGString<int64_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<long int>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<uint64_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<unsigned long int>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<long int>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<unsigned long int>** dst, int32_t* num_str)};
 #else
-%apply (shogun::CSGString<int64_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<long long int>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<uint64_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<unsigned long long int>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<long long int>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<unsigned long long int>** dst, int32_t* num_str)};
 #endif
-%apply (shogun::CSGString<float32_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<float>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<float64_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<double>** dst, int32_t* num_str)};
-%apply (shogun::CSGString<floatmax_t>** ARGOUCSGStringS, int32_t* NUM) {(shogun::CSGString<long double>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<float32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<float>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<float64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<double>** dst, int32_t* num_str)};
+%apply (shogun::CSGString<floatmax_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::CSGString<long double>** dst, int32_t* num_str)};
 
 %apply (shogun::TSparse<uint8_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<unsigned char>* src, int32_t num_feat, int32_t num_vec)};
 %apply (shogun::TSparse<int16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<short int>* src, int32_t num_feat, int32_t num_vec)};
