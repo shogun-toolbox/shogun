@@ -148,6 +148,51 @@ class CLibLinear : public CLinearClassifier
 			max_iterations=max_iter;
 		}
 
+		/** set the linear term for qp */
+		inline void set_linear_term(std::vector<float64_t> lin)
+		{
+
+			if (!labels)
+				SG_ERROR("Please assign labels first!\n");
+
+			int32_t num_labels=labels->get_num_labels();
+
+			if (num_labels!=(int32_t) lin.size())
+			{
+				SG_ERROR("Number of labels (%d) does not match number"
+						"of entries (%d) in linear term \n", num_labels, lin.size());
+			}
+
+			linear_term = lin;
+
+		}
+
+		/** get the linear term for qp */
+		std::vector<float64_t> get_linear_term() {
+
+			return linear_term;
+
+		}
+
+
+		/** set the linear term for qp */
+		inline void init_linear_term()
+		{
+
+			if (!labels)
+				SG_ERROR("Please assign labels first!\n");
+
+			int32_t num_labels=labels->get_num_labels();
+
+			linear_term = std::vector<float64_t>(num_labels);
+
+			for (int i=0; i!=num_labels; i++)
+			{
+				linear_term[i] = -1.0;
+			}
+
+		}
+
 	private:
 		void train_one(const problem *prob, const parameter *param, double Cp, double Cn);
 		void solve_l2r_l1l2_svc(
@@ -168,6 +213,9 @@ class CLibLinear : public CLinearClassifier
 		float64_t epsilon;
 		/** maximum number of iterations */
 		int32_t max_iterations;
+
+		/** precomputed linear term */
+		std::vector<float64_t> linear_term;
 
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;

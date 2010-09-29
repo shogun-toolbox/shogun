@@ -29,6 +29,7 @@ CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
 	C1=1;
 	C2=1;
 	set_max_iterations();
+	init_linear_term();
 }
 
 CLibLinear::CLibLinear(
@@ -39,6 +40,7 @@ CLibLinear::CLibLinear(
 	set_labels(trainlab);
 	liblinear_solver_type=L2R_L1LOSS_SVC_DUAL;
 	set_max_iterations();
+	init_linear_term();
 }
 
 
@@ -108,6 +110,9 @@ bool CLibLinear::train(CFeatures* data)
 	prob.l=num_vec;
 	prob.x=features;
 	prob.y=new int[prob.l];
+
+
+	prob.linear_term=this->linear_term;
 	prob.use_bias=use_bias;
 
 	for (int32_t i=0; i<prob.l; i++)
@@ -192,14 +197,14 @@ bool CLibLinear::train(CFeatures* data)
 	return true;
 }
 
-// A coordinate descent algorithm for 
+// A coordinate descent algorithm for
 // L1-loss and L2-loss SVM dual problems
 //
 //  min_\alpha  0.5(\alpha^T (Q + D)\alpha) - e^T \alpha,
 //    s.t.      0 <= alpha_i <= upper_bound_i,
-// 
+//
 //  where Qij = yi yj xi^T xj and
-//  D is a diagonal matrix 
+//  D is a diagonal matrix
 //
 // In L1-SVM case:
 // 		upper_bound_i = Cp if y_i = 1
@@ -210,7 +215,7 @@ bool CLibLinear::train(CFeatures* data)
 // 		D_ii = 1/(2*Cp)	if y_i = 1
 // 		D_ii = 1/(2*Cn)	if y_i = -1
 //
-// Given: 
+// Given:
 // x, y, Cp, Cn
 // eps is the stopping tolerance
 //
@@ -257,12 +262,13 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	for(i=0; i<w_size; i++)
 		w[i] = 0;
+
 	for(i=0; i<l; i++)
 	{
 		alpha[i] = 0;
 		if(prob->y[i] > 0)
 		{
-			y[i] = +1; 
+			y[i] = +1;
 		}
 		else
 		{
@@ -273,6 +279,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		QD[i] += prob->x->dot(i, prob->x,i);
 		index[i] = i;
 	}
+
 
 	CTime start_time;
 	while (iter < max_iterations && !CSignal::cancel_computations())
@@ -298,7 +305,8 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			if (prob->use_bias)
 				G+=w[n];
 
-			G = G*yi-1;
+			//G = G*yi-1;
+			G = G*yi + prob->linear_term[i];
 
 			C = upper_bound[GETI(i)];
 			G += alpha[i]*diag[GETI(i)];
@@ -400,12 +408,12 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	delete [] index;
 }
 
-// A coordinate descent algorithm for 
+// A coordinate descent algorithm for
 // L1-regularized L2-loss support vector classification
 //
 //  min_w \sum |wj| + C \sum max(0, 1-yi w^T xi)^2,
 //
-// Given: 
+// Given:
 // x, y, Cp, Cn
 // eps is the stopping tolerance
 //
@@ -477,7 +485,7 @@ void CLibLinear::solve_l1r_l2_svc(
 			x->free_feature_iterator(iterator);
 		}
 	}
-	
+
 
 	CTime start_time;
 	while (iter < max_iterations && !CSignal::cancel_computations())
@@ -745,12 +753,12 @@ void CLibLinear::solve_l1r_l2_svc(
 	delete [] xj_sq;
 }
 
-// A coordinate descent algorithm for 
+// A coordinate descent algorithm for
 // L1-regularized logistic regression problems
 //
 //  min_w \sum |wj| + C \sum log(1+exp(-yi w^T xi)),
 //
-// Given: 
+// Given:
 // x, y, Cp, Cn
 // eps is the stopping tolerance
 //
@@ -761,7 +769,7 @@ void CLibLinear::solve_l1r_l2_svc(
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l1r_lr(
-	const problem *prob_col, double eps, 
+	const problem *prob_col, double eps,
 	double Cp, double Cn)
 {
 	int l = prob_col->l;
@@ -1082,7 +1090,7 @@ void CLibLinear::solve_l1r_lr(
 		SG_WARNING("\nWARNING: reaching max number of iterations\n");
 
 	// calculate objective value
-	
+
 	double v = 0;
 	int nnz = 0;
 	for(j=0; j<w_size; j++)

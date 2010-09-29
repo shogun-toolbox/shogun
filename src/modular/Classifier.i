@@ -69,6 +69,7 @@
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
  #include <shogun/classifier/svm/DomainAdaptationSVM.h>
+ #include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 #endif //USE_SVMLIGHT
 %}
 
@@ -120,6 +121,7 @@
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
+%rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
 #endif //USE_SVMLIGHT
 
 /* These functions return new Objects */
@@ -160,6 +162,7 @@
 %include <shogun/classifier/mkl/MKLClassification.h>
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/mkl/MKLMultiClass.h>
+%include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 
 #ifdef HAVE_PYTHON
 %pythoncode %{
@@ -189,4 +192,6 @@
 %include <shogun/classifier/svm/SVMLight.h>
 %include <shogun/classifier/svm/SVMLightOneClass.h>
 %include <shogun/classifier/svm/DomainAdaptationSVM.h>
+
 #endif //USE_SVMLIGHT
+
