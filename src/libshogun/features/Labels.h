@@ -29,8 +29,6 @@ namespace shogun
  */
 class CLabels : public CSGObject
 {
-	void init(void);
-
 	public:
 		/** default constructor */
 		CLabels();
@@ -80,7 +78,7 @@ class CLabels : public CSGObject
 		 * @param label value of label
 		 * @return if setting was successful
 		 */
-		inline bool set_label(uint64_t idx, float64_t label)
+		inline bool set_label(int32_t idx, float64_t label)
 		{ 
 			if (labels && idx<num_labels)
 			{
@@ -97,7 +95,7 @@ class CLabels : public CSGObject
 		 * @param label INT value of label
 		 * @return if setting was successful
 		 */
-		inline bool set_int_label(uint64_t idx, int32_t label)
+		inline bool set_int_label(int32_t idx, int32_t label)
 		{ 
 			if (labels && idx<num_labels)
 			{
@@ -113,7 +111,7 @@ class CLabels : public CSGObject
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
-		inline float64_t get_label(uint64_t idx)
+		inline float64_t get_label(int32_t idx)
 		{
 			if (labels && idx<num_labels)
 				return labels[idx];
@@ -126,7 +124,7 @@ class CLabels : public CSGObject
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
-		inline int32_t get_int_label(uint64_t idx)
+		inline int32_t get_int_label(int32_t idx)
 		{
 			if (labels && idx<num_labels)
 			{
@@ -182,8 +180,7 @@ class CLabels : public CSGObject
 		 * @param in_num_labels number of labels
 		 * @param in_num_classes number of classes
 		 */
-		void set_confidences(float64_t* in_confidences, uint64_t in_num_labels,
-							 uint64_t in_num_classes);
+		void set_confidences(float64_t* in_confidences, int32_t in_num_labels, int32_t in_num_classes);
 
 		/** get confidences 
 		 * @param out_num_labels number of labels
@@ -204,8 +201,7 @@ class CLabels : public CSGObject
 		 * @param out_num_classes number of classes will be written to it
 		 * @return pointer to the confidences vector
 		 */
-		float64_t* get_sample_confidences(const uint64_t& in_sample_index,
-										  int32_t& out_num_classes);
+		float64_t* get_sample_confidences(const int32_t& in_sample_index, int32_t& out_num_classes);
 
 		/** get INT label vector
 		 * caller has to clean up
@@ -319,12 +315,12 @@ class CLabels : public CSGObject
 
 	protected:
 		/** number of labels */
-		uint64_t num_labels;
+		int32_t num_labels;
 		/** the labels */
 		float64_t* labels;
 
 		/** number of classes */
-		uint64_t m_num_classes;
+		int16_t m_num_classes;
 
 		/** confidence matrix of size: num_classes x num_labels */
 		float64_t* m_confidences;
