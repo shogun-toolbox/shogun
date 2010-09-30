@@ -24,7 +24,7 @@ BOOST_CLASS_EXPORT(shogun::CDomainAdaptationSVMLinear);
 using namespace shogun;
 
 
-CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear() : CLibLinear(L2R_L2LOSS_SVC_DUAL)
+CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear() : CLibLinear(L2R_L1LOSS_SVC_DUAL)
 {
 	init(NULL, 0.0);
 }
@@ -61,7 +61,7 @@ void CDomainAdaptationSVMLinear::init(CLinearClassifier* pre_svm, float64_t B_pa
 	this->B=B_param;
 	this->train_factor=1.0;
 
-	set_liblinear_solver_type(L2R_L2LOSS_SVC_DUAL);
+	set_liblinear_solver_type(L2R_L1LOSS_SVC_DUAL);
 
 	// invoke sanity check
 	is_presvm_sane();
