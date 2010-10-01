@@ -15,13 +15,16 @@
 
 namespace shogun
 {
+
+typedef int32_t                    index_t;
+
 enum EContainerType {
 	CT_SCALAR, CT_VECTOR, CT_MATRIX
 };
 
 enum EPrimitveType {
-	PT_BOOL, PT_CHAR, PT_INT16, PT_UINT16, PT_INT32, PT_UINT32,
-	PT_INT64, PT_UINT64, PT_FLOAT32, PT_FLOAT64, PT_FLOATMAX,
+	PT_BOOL, PT_CHAR, PT_INT8, PT_UINT8, PT_INT16, PT_UINT16, PT_INT32,
+	PT_UINT32, PT_INT64, PT_UINT64, PT_FLOAT32, PT_FLOAT64, PT_FLOATMAX,
 	PT_SGSERIALIZABLE_PTR
 };
 
@@ -30,13 +33,13 @@ struct TSGDataType
 {
 	EContainerType m_ctype;
 	EPrimitveType m_ptype;
-	uint64_t *m_length_y, *m_length_x;
+	index_t *m_length_y, *m_length_x;
 
 	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype);
 	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype,
-						 uint64_t* length);
+						 index_t* length);
 	explicit TSGDataType(EContainerType ctype, EPrimitveType ptype,
-						 uint64_t* length_y, uint64_t* length_x);
+						 index_t* length_y, index_t* length_x);
 
 	inline bool operator==(const TSGDataType& a) {
 		return m_ctype == a.m_ctype && m_ptype == a.m_ptype

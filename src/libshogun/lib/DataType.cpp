@@ -21,14 +21,14 @@ TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype)
 }
 
 TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype,
-						 uint64_t* length)
+						 index_t* length)
 {
 	m_ctype = ctype; m_ptype = ptype; m_length_y = length;
 	m_length_x = NULL;
 }
 
 TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype,
-						 uint64_t* length_y, uint64_t* length_x)
+						 index_t* length_y, index_t* length_x)
 {
 	m_ctype = ctype; m_ptype = ptype; m_length_y = length_y;
 	m_length_x = length_x;
@@ -48,6 +48,8 @@ TSGDataType::to_string(char* dest) const
 	switch (m_ptype) {
 	case PT_BOOL: strcat(p, "bool"); break;
 	case PT_CHAR: strcat(p, "char"); break;
+	case PT_INT8: strcat(p, "int8"); break;
+	case PT_UINT8: strcat(p, "uint8"); break;
 	case PT_INT16: strcat(p, "int16"); break;
 	case PT_UINT16: strcat(p, "uint16"); break;
 	case PT_INT32: strcat(p, "int32"); break;
@@ -73,6 +75,8 @@ TSGDataType::sizeof_ptype(void) const
 	switch (m_ptype) {
 	case PT_BOOL: return sizeof (bool);
 	case PT_CHAR: return sizeof (char);
+	case PT_INT8: return sizeof (int8_t);
+	case PT_UINT8: return sizeof (uint8_t);
 	case PT_INT16: return sizeof (int16_t);
 	case PT_UINT16: return sizeof (uint16_t);
 	case PT_INT32: return sizeof (int32_t);

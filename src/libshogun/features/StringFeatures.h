@@ -20,6 +20,7 @@
 #include "lib/MemoryMappedFile.h"
 #include "lib/Mathematics.h"
 #include "lib/Compressor.h"
+#include "lib/Parameter.h"
 
 #include "preproc/PreProc.h"
 #include "preproc/StringPreProc.h"
@@ -63,10 +64,8 @@ struct SSKTripleFeature
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** template class CSGString */
-template <class T> class CSGString
+template<class T> class CSGString :public CSGSerializable
 {
-
-
 #ifdef HAVE_BOOST_SERIALIZATION
 
   private:
@@ -117,6 +116,11 @@ template <class T> class CSGString
 	T* string;
 	/** length of string */
 	int32_t length;
+
+	explicit CSGString(void) {
+		m_parameters->add(&length, "length", "Length of string.");
+		m_parameters->add_vector<T>(&string, &length, "string");
+	}
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 

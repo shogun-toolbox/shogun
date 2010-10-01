@@ -51,8 +51,8 @@ CSVM::~CSVM()
 
 void CSVM::set_defaults(int32_t num_sv)
 {
-	m_parameters->add_float64(&C1, "C1");
-	m_parameters->add_float64(&C2, "C2");
+	m_parameters->add(&C1, "C1");
+	m_parameters->add(&C2, "C2");
 
 	callback=NULL;
 	mkl=NULL;

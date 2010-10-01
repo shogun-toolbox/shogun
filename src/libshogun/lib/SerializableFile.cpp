@@ -29,13 +29,13 @@ CSerializableFile::CSerializableFile(char* fname, char rw) :CSGObject()
 
 	init(NULL, rw, fname);
 
-	if (rw != 'r' && rw != 'w') {
-		SG_WARNING("Unknown mode '%c'!\n", mode[0]);
+	if (filename == NULL || *filename == '\0') {
+		SG_WARNING("Filename not given for opening file!\n");
 		close(); return;
 	}
 
-	if (filename == NULL || *filename == '\0') {
-		SG_WARNING("Filename not given for opening file!\n");
+	if (rw != 'r' && rw != 'w') {
+		SG_WARNING("Unknown mode '%c'!\n", mode[0]);
 		close(); return;
 	}
 

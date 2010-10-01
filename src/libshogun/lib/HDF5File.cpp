@@ -97,7 +97,7 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 }
 
 GET_VECTOR(get_bool_vector, bool, (CT_VECTOR, PT_BOOL))
-GET_VECTOR(get_byte_vector, uint8_t, (CT_VECTOR, PT_CHAR))
+GET_VECTOR(get_byte_vector, uint8_t, (CT_VECTOR, PT_UINT8))
 GET_VECTOR(get_char_vector, char, (CT_VECTOR, PT_CHAR))
 GET_VECTOR(get_int_vector, int32_t, (CT_VECTOR, PT_INT32))
 GET_VECTOR(get_shortreal_vector, float32_t, (CT_VECTOR, PT_FLOAT32))
@@ -146,7 +146,7 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 
 GET_MATRIX(get_bool_matrix, bool, (CT_MATRIX, PT_BOOL))
 GET_MATRIX(get_char_matrix, char, (CT_MATRIX, PT_CHAR))
-GET_MATRIX(get_byte_matrix, uint8_t, (CT_MATRIX, PT_CHAR))
+GET_MATRIX(get_byte_matrix, uint8_t, (CT_MATRIX, PT_UINT8))
 GET_MATRIX(get_int_matrix, int32_t, (CT_MATRIX, PT_INT32))
 GET_MATRIX(get_uint_matrix, uint32_t, (CT_MATRIX, PT_INT32))
 GET_MATRIX(get_long_matrix, int64_t, (CT_MATRIX, PT_INT64))
@@ -377,8 +377,9 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
 			switch (datatype->m_ptype)
 			{
 			case PT_BOOL: return boolean_type;
-			case PT_CHAR: return H5T_NATIVE_UINT8;
-			/* case PT_CHAR: return H5T_NATIVE_CHAR;  */
+			case PT_CHAR: return H5T_NATIVE_CHAR;
+			case PT_INT8: return H5T_NATIVE_INT8;
+			case PT_UINT8: return H5T_NATIVE_UINT8;
 			case PT_INT16: return H5T_NATIVE_INT16;
 			case PT_UINT16: return H5T_NATIVE_UINT16;
 			case PT_INT32: return H5T_NATIVE_INT32;

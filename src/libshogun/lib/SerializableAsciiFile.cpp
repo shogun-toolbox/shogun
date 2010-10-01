@@ -28,47 +28,55 @@ CSerializableAsciiFile::write_scalar(EPrimitveType type, const void* param)
 {
 	switch (type) {
 	case PT_BOOL:
-		if (fprintf(file, "%s", *(bool*) param? "true": "false") < 0)
+		if (fprintf(file, "%s", *(bool*) param? "true": "false") <= 0)
 			return false;
 		break;
 	case PT_CHAR:
-		if (fprintf(file, "%"PRIu8, *(char*) param) < 0)
+		if (fprintf(file, "%"PRIu8, *(uint8_t*) param) <= 0)
+			return false;
+		break;
+	case PT_INT8:
+		if (fprintf(file, "%"PRIi8, *(int8_t*) param) <= 0)
+			return false;
+		break;
+	case PT_UINT8:
+		if (fprintf(file, "%"PRIu8, *(uint8_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT16:
-		if (fprintf(file, "%"PRIi16, *(int16_t*) param) < 0)
+		if (fprintf(file, "%"PRIi16, *(int16_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT16:
-		if (fprintf(file, "%"PRIu16, *(uint16_t*) param) < 0)
+		if (fprintf(file, "%"PRIu16, *(uint16_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT32:
-		if (fprintf(file, "%"PRIi32, *(int32_t*) param) < 0)
+		if (fprintf(file, "%"PRIi32, *(int32_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT32:
-		if (fprintf(file, "%"PRIu32, *(uint32_t*) param) < 0)
+		if (fprintf(file, "%"PRIu32, *(uint32_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT64:
-		if (fprintf(file, "%"PRIi64, *(int64_t*) param) < 0)
+		if (fprintf(file, "%"PRIi64, *(int64_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT64:
-		if (fprintf(file, "%"PRIu64, *(uint64_t*) param) < 0)
+		if (fprintf(file, "%"PRIu64, *(uint64_t*) param) <= 0)
 			return false;
 		break;
 	case PT_FLOAT32:
-		if (fprintf(file, "%+10.16e", *(float32_t*) param) < 0)
+		if (fprintf(file, "%+10.16e", *(float32_t*) param) <= 0)
 			return false;
 		break;
 	case PT_FLOAT64:
-		if (fprintf(file, "%+10.16e", *(float64_t*) param) < 0)
+		if (fprintf(file, "%+10.16e", *(float64_t*) param) <= 0)
 			return false;
 		break;
 	case PT_FLOATMAX:
-		if (fprintf(file, "%+10.16Le", *(floatmax_t*) param) < 0)
+		if (fprintf(file, "%+10.16Le", *(floatmax_t*) param) <= 0)
 			return false;
 		break;
 	case PT_SGSERIALIZABLE_PTR:
@@ -85,10 +93,10 @@ CSerializableAsciiFile::write_vector(const TSGDataType* type, const void* param,
 {
 	length = *(void**) param == NULL? 0: length;
 
-	if (fprintf(file, "%"PRIu64, length) < 0) return false;
+	if (fprintf(file, "%"PRIu64, length) <= 0) return false;
 
 	for (uint64_t i=0; i<length; i++)
-		if (fprintf(file, ":") < 0
+		if (fprintf(file, ":") <= 0
 			|| !write_scalar(type->m_ptype, (*(char**) param)
 							 + i*type->sizeof_ptype())) return false;
 
@@ -103,7 +111,7 @@ CSerializableAsciiFile::write_type_wrapped(
 	char buf[50];
 	type->to_string(buf);
 
-	if (fprintf(file, "%s:%s:%s:", prefix, name, buf) < 0)
+	if (fprintf(file, "%s:%s:%s:", prefix, name, buf) <= 0)
 		return false;
 
 	switch (type->m_ctype) {
@@ -122,7 +130,7 @@ CSerializableAsciiFile::write_type_wrapped(
 		break;
 	}
 
-	if (fprintf(file, "\n") < 0) return false;
+	if (fprintf(file, "\n") <= 0) return false;
 
 	return true;
 }
