@@ -43,7 +43,7 @@ namespace shogun
 			void (*print_error)(FILE* target, const char* str),
 			void (*cancel_computations)(bool &delayed, bool &immediately))
 	{
-		setlocale(LC_ALL, "");
+		setlocale(LC_ALL, "C");
 
 		if (!sg_io)
 			sg_io = new shogun::CIO();
