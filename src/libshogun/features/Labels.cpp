@@ -23,6 +23,9 @@ BOOST_CLASS_EXPORT(shogun::CLabels);
 
 using namespace shogun;
 
+CSGSerializable*
+CLabels::new_sgserializable(void) { return new CLabels(); }
+
 CLabels::CLabels()
 : CSGObject()
 {

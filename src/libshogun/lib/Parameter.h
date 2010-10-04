@@ -20,25 +20,32 @@ namespace shogun
 {
 struct TParameter
 {
+	typedef CSGSerializable* (*new_sgserializable_t)(void);
+
 	explicit TParameter(const TSGDataType* datatype, void* parameter,
-						const char* name, const char* description);
+						const char* name, const char* description,
+						new_sgserializable_t new_sgserializable);
 	~TParameter(void);
 
 	void print(CIO* io, const char* prefix);
-	bool save(CSerializableFile* file, const char* prefix="");
-	bool load(CSerializableFile* file, const char* prefix="");
+	bool save(CIO* io, CSerializableFile* file, const char* prefix="");
+	bool load(CIO* io, CSerializableFile* file, const char* prefix="");
 
 	TSGDataType m_datatype;
 	void* m_parameter;
 	char* m_name;
 	char* m_description;
+	new_sgserializable_t m_new_sgserializable;
 
 private:
 	char* new_prefix(const char* s1, const char* s2);
-	bool save_scalar(CSerializableFile* file, const void* param,
-					 const char* prefix);
-	bool load_scalar(CSerializableFile* file, void* param,
-					 const char* prefix);
+	void new_cont(index_t len_y, index_t len_x);
+	bool new_sgserial(CIO* io, CSGSerializable** param,
+					  const char* prefix);
+	bool save_scalar(CIO* io, CSerializableFile* file,
+					 const void* param, const char* prefix);
+	bool load_scalar(CIO* io, CSerializableFile* file,
+					 void* param, const char* prefix);
 };
 
 /* Must not be an CSGObject to prevent a recursive call of
@@ -53,7 +60,9 @@ protected:
 
 	virtual void add_type(const TSGDataType* type, void* param,
 						  const char* name,
-						  const char* description);
+						  const char* description,
+						  TParameter::new_sgserializable_t
+						  new_sgserializable);
 
 public:
 	explicit CParameter(CIO* io_);
@@ -68,15 +77,118 @@ public:
 		return m_params.get_num_elements();
 	}
 
-	template<class T> void add(
-		T* param, const char* name, const char* description="");
-	template<class T> void add_vector(
-		T** param, index_t* length, const char* name,
-		const char* description="");
-	template<class T> void add_matrix(
-		T** param, index_t* length_y, index_t* length_x,
-		const char* name, const char* description="");
+	/* ************************************************************ */
+	/* Scalar wrappers  */
 
+	void add(bool* param, const char* name,
+			 const char* description="");
+	void add(char* param, const char* name,
+			 const char* description="");
+	void add(int8_t* param, const char* name,
+			 const char* description="");
+	void add(uint8_t* param, const char* name,
+			 const char* description="");
+	void add(int16_t* param, const char* name,
+			 const char* description="");
+	void add(uint16_t* param, const char* name,
+			 const char* description="");
+	void add(int32_t* param, const char* name,
+			 const char* description="");
+	void add(uint32_t* param, const char* name,
+			 const char* description="");
+	void add(int64_t* param, const char* name,
+			 const char* description="");
+	void add(uint64_t* param, const char* name,
+			 const char* description="");
+	void add(float32_t* param, const char* name,
+			 const char* description="");
+	void add(float64_t* param, const char* name,
+			 const char* description="");
+	void add(floatmax_t* param, const char* name,
+			 const char* description="");
+	void add(CSGSerializable** param,
+			 TParameter::new_sgserializable_t new_sgserializable,
+			 const char* name, const char* description="");
+
+	/* ************************************************************ */
+	/* Vector wrappers  */
+
+	void add_vector(bool** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(char** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(int8_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(uint8_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(int16_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(uint16_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(int32_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(uint32_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(int64_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(uint64_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(float32_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(float64_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(floatmax_t** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(CSGSerializable*** param, index_t* length,
+					TParameter::new_sgserializable_t new_sgserializable,
+					const char* name, const char* description="");
+
+	/* ************************************************************ */
+	/* Matrix wrappers  */
+
+	void add_matrix(bool** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(char** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(int8_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(uint8_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(int16_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(uint16_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(int32_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(uint32_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(int64_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(uint64_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(float32_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(float64_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(floatmax_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(CSGSerializable*** param,
+					index_t* length_y, index_t* length_x,
+					TParameter::new_sgserializable_t new_sgserializable,
+					const char* name, const char* description="");
 };
 }
 #endif //__PARAMETER_H__

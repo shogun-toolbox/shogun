@@ -32,6 +32,8 @@ class CLabels : public CSGObject
 	void init(int32_t num_labels_, int32_t num_classes);
 
 	public:
+		static CSGSerializable* new_sgserializable(void);
+
 		/** default constructor */
 		CLabels();
 

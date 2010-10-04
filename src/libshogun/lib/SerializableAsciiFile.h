@@ -35,8 +35,12 @@ protected:
 										 index_t* len_read_y,
 										 index_t* len_read_x);
 
-	virtual bool write_cont_end_wrapped(const TSGDataType* type);
-	virtual bool read_cont_end_wrapped(const TSGDataType* type);
+	virtual bool write_cont_end_wrapped(const TSGDataType* type,
+										index_t len_real_y,
+										index_t len_real_x);
+	virtual bool read_cont_end_wrapped(const TSGDataType* type,
+									   index_t len_read_y,
+									   index_t len_read_x);
 
 	virtual bool write_item_begin_wrapped(const TSGDataType* type,
 										  index_t y, index_t x);
@@ -49,14 +53,14 @@ protected:
 									   index_t y, index_t x);
 
 	virtual bool write_sgserializable_begin_wrapped(
-		const TSGDataType* type);
+		const TSGDataType* type, bool is_null);
 	virtual bool read_sgserializable_begin_wrapped(
-		const TSGDataType* type);
+		const TSGDataType* type, bool* is_null);
 
 	virtual bool write_sgserializable_end_wrapped(
-		const TSGDataType* type);
+		const TSGDataType* type, bool is_null);
 	virtual bool read_sgserializable_end_wrapped(
-		const TSGDataType* type);
+		const TSGDataType* type, bool is_null);
 
 	virtual bool write_type_begin_wrapped(const TSGDataType* type,
 										  const char* name,

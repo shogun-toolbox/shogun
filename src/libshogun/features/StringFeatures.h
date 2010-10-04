@@ -119,7 +119,7 @@ template<class T> class CSGString :public CSGSerializable
 
 	explicit CSGString(void) {
 		m_parameters->add(&length, "length", "Length of string.");
-		m_parameters->add_vector<T>(&string, &length, "string");
+		m_parameters->add_vector(&string, &length, "string");
 	}
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS

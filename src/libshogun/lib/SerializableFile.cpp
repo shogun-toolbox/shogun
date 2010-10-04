@@ -156,11 +156,12 @@ CSerializableFile::read_cont_begin(
 
 bool
 CSerializableFile::write_cont_end(
-	const TSGDataType* type, const char* name, const char* prefix)
+	const TSGDataType* type, const char* name, const char* prefix,
+	index_t len_real_y, index_t len_real_x)
 {
 	if (!is_task_warn('w')) return false;
 
-	if (!write_cont_end_wrapped(type))
+	if (!write_cont_end_wrapped(type, len_real_y, len_real_x))
 		return false_warn(prefix, name);
 
 	return true;
@@ -168,11 +169,12 @@ CSerializableFile::write_cont_end(
 
 bool
 CSerializableFile::read_cont_end(
-	const TSGDataType* type, const char* name, const char* prefix)
+	const TSGDataType* type, const char* name, const char* prefix,
+	index_t len_read_y, index_t len_read_x)
 {
 	if (!is_task_warn('r')) return false;
 
-	if (!read_cont_end_wrapped(type))
+	if (!read_cont_end_wrapped(type, len_read_y, len_read_x))
 		return false_warn(prefix, name);
 
 	return true;
@@ -233,11 +235,12 @@ CSerializableFile::read_item_end(
 
 bool
 CSerializableFile::write_sgserializable_begin(
-	const TSGDataType* type, const char* name, const char* prefix)
+	const TSGDataType* type, const char* name, const char* prefix,
+	bool is_null)
 {
 	if (!is_task_warn('w')) return false;
 
-	if (!write_sgserializable_begin_wrapped(type))
+	if (!write_sgserializable_begin_wrapped(type, is_null))
 		return false_warn(prefix, name);
 
 	return true;
@@ -245,11 +248,12 @@ CSerializableFile::write_sgserializable_begin(
 
 bool
 CSerializableFile::read_sgserializable_begin(
-	const TSGDataType* type, const char* name, const char* prefix)
+	const TSGDataType* type, const char* name, const char* prefix,
+	bool* is_null)
 {
 	if (!is_task_warn('r')) return false;
 
-	if (!read_sgserializable_begin_wrapped(type))
+	if (!read_sgserializable_begin_wrapped(type, is_null))
 		return false_warn(prefix, name);
 
 	return true;
@@ -257,11 +261,12 @@ CSerializableFile::read_sgserializable_begin(
 
 bool
 CSerializableFile::write_sgserializable_end(
-	const TSGDataType* type, const char* name, const char* prefix)
+	const TSGDataType* type, const char* name, const char* prefix,
+	bool is_null)
 {
 	if (!is_task_warn('w')) return false;
 
-	if (!write_sgserializable_end_wrapped(type))
+	if (!write_sgserializable_end_wrapped(type, is_null))
 		return false_warn(prefix, name);
 
 	return true;
@@ -269,11 +274,12 @@ CSerializableFile::write_sgserializable_end(
 
 bool
 CSerializableFile::read_sgserializable_end(
-	const TSGDataType* type, const char* name, const char* prefix)
+	const TSGDataType* type, const char* name, const char* prefix,
+	bool is_null)
 {
 	if (!is_task_warn('r')) return false;
 
-	if (!read_sgserializable_end_wrapped(type))
+	if (!read_sgserializable_end_wrapped(type, is_null))
 		return false_warn(prefix, name);
 
 	return true;

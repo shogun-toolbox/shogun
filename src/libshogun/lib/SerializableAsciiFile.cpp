@@ -21,6 +21,9 @@
 
 #define STR_EMPTY_PREFIX           ":"
 
+#define CHAR_SGSERIAL_NULL         'n'
+#define STR_SGSERIAL_NULL          "ull"
+
 using namespace shogun;
 
 CSerializableAsciiFile::CSerializableAsciiFile(void)
@@ -271,7 +274,7 @@ CSerializableAsciiFile::read_cont_begin_wrapped(
 
 bool
 CSerializableAsciiFile::write_cont_end_wrapped(
-	const TSGDataType* type)
+	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
 	if (fprintf(file, "%c", CHAR_CONT_END) <= 0) return false;
 
@@ -280,7 +283,7 @@ CSerializableAsciiFile::write_cont_end_wrapped(
 
 bool
 CSerializableAsciiFile::read_cont_end_wrapped(
-	const TSGDataType* type)
+	const TSGDataType* type, index_t len_read_y, index_t len_read_x)
 {
 	if (fgetc(file) != CHAR_CONT_END) return false;
 
@@ -325,21 +328,39 @@ CSerializableAsciiFile::read_item_end_wrapped(
 
 bool
 CSerializableAsciiFile::write_sgserializable_begin_wrapped(
-	const TSGDataType* type)
+	const TSGDataType* type, bool is_null)
 {
-	if (fprintf(file, "%c%c", CHAR_SGSERIAL_BEGIN, CHAR_TYPE_END) <= 0)
-		return false;
+	if (is_null) {
+		if (fprintf(file, "%c%s", CHAR_SGSERIAL_NULL,
+					STR_SGSERIAL_NULL) <= 0)
+			return false;
+	} else {
+		if (fprintf(file, "%c%c", CHAR_SGSERIAL_BEGIN, CHAR_TYPE_END)
+			<= 0)
+			return false;
+	}
 
 	return true;
 }
 
 bool
 CSerializableAsciiFile::read_sgserializable_begin_wrapped(
-	const TSGDataType* type)
+	const TSGDataType* type, bool* is_null)
 {
-	if (fgetc(file) != CHAR_SGSERIAL_BEGIN
-		|| fgetc(file) != CHAR_TYPE_END)
+	switch (fgetc(file)) {
+	case CHAR_SGSERIAL_BEGIN:
+		if (fgetc(file) != CHAR_TYPE_END) return false;
+		*is_null = false;
+		break;
+	case CHAR_SGSERIAL_NULL:
+		char buf[10];
+		if (fscanf(file, "%10s", buf) != 1
+			|| strcmp(buf, STR_SGSERIAL_NULL) != 0) return false;
+		*is_null = true;
+		break;
+	default:
 		return false;
+	}
 
 	stack_fpos.push_back(ftell(file));
 
@@ -348,19 +369,20 @@ CSerializableAsciiFile::read_sgserializable_begin_wrapped(
 
 bool
 CSerializableAsciiFile::write_sgserializable_end_wrapped(
-	const TSGDataType* type)
+	const TSGDataType* type, bool is_null)
 {
-	if (fprintf(file, "%c", CHAR_SGSERIAL_END) <= 0) return false;
+	if (!is_null)
+		if (fprintf(file, "%c", CHAR_SGSERIAL_END) <= 0) return false;
 
 	return true;
 }
 
 bool
 CSerializableAsciiFile::read_sgserializable_end_wrapped(
-	const TSGDataType* type)
+	const TSGDataType* type, bool is_null)
 {
-	if (fgetc(file) != CHAR_SGSERIAL_END)
-		return false;
+	if (!is_null)
+		if (fgetc(file) != CHAR_SGSERIAL_END) return false;
 
 	stack_fpos.pop_back();
 

@@ -68,11 +68,9 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 						  "Number of vectors in cache.");
 		m_parameters->add(&num_features, "num_features",
 						  "Number of features in cache.");
-		m_parameters->add_matrix<ST>(&feature_matrix, &num_features,
-									 &num_vectors, "feature_matrix",
-									 "Number of features in cache.");
-		m_parameters->add((CSGSerializable**) &feature_cache,
-						  "feature_cache");
+		m_parameters->add_matrix(&feature_matrix, &num_features,
+								 &num_vectors, "feature_matrix",
+								 "Number of features in cache.");
 	}
 
 	public:

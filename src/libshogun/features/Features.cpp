@@ -69,15 +69,20 @@ CFeatures::init(void)
 					  "Feature properties.");
 	m_parameters->add(&cache_size, "cache_size",
 					  "Size of cache in MB.");
-	m_parameters->add_vector((CSGSerializable**) &preproc,
-							 &num_preproc, "preproc",
+
+	/* CPREPROC is an abstract class :((
+	m_parameters->add_vector((CSGSerializable***) &preproc,
+							 &num_preproc,
+							 CPreProc::new_sgserializable,
+							 "preproc",
 							 "List of preprocessors.");
+
 	m_parameters->add(&num_preproc, "num_preproc",
 					  "Number of preprocs in list.");
 	m_parameters->add_vector(
 		&preprocessed, &num_preproc, "preprocessed",
 		"True if feature[i] is already preprocessed.");
-
+	*/
 
 	properties = FP_NONE;
 	cache_size = 0;
