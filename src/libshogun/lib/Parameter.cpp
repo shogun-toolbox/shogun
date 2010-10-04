@@ -480,12 +480,10 @@ TParameter::new_sgserial(CIO* io, CSGSerializable** param,
 	if (*param == NULL) {
 		*param = m_new_sgserializable();
 
-		if (*param == NULL) {
+		if (*param == NULL)
 			SG_ERROR("FATAL: TParameter::new_sgserial(): "
 					 "Callback of type `new_sgserializable_t' is "
 					 "returning NULL for `%s%s'!", prefix, m_name);
-			exit(1);
-		}
 	}
 
 	return true;
@@ -668,24 +666,18 @@ CParameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description,
 					 TParameter::new_sgserializable_t new_sgserializable)
 {
-	if (name == NULL || *name == '\0') {
+	if (name == NULL || *name == '\0')
 		SG_ERROR("FATAL: CParameter::add_type(): `name' is empty!");
-		exit(1);
-	}
 
 	if (type->m_ptype == PT_SGSERIALIZABLE_PTR
-		&& new_sgserializable == NULL) {
+		&& new_sgserializable == NULL)
 		SG_ERROR("FATAL: CParameter::add_type(): "
 				 "`new_sgserializable == NULL' for `%s'!", name);
-		exit(1);
-	}
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		if (strcmp(m_params.get_element(i)->m_name, name) == 0) {
+		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
 			SG_ERROR("FATAL: CParameter::add_type(): "
 					 "Double parameter `%s'!", name);
-			exit(1);
-		}
 
 	m_params.append_element(
 		new TParameter(type, param, name, description,
