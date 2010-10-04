@@ -18,15 +18,6 @@
 
 namespace shogun
 {
-/** @brief A File access base class.
- *
- * A file is assumed to be a seekable raw data stream.
- *
- * \sa CAsciiFile
- * \sa CBinaryFile
- * \sa CHDF5File
- *
- */
 class CSerializableFile :public CSGObject
 {
 	void init(FILE* file_, char task_, const char* filename_);
@@ -34,7 +25,6 @@ class CSerializableFile :public CSGObject
 	bool false_warn(const char* prefix, const char* name);
 
 protected:
-
 	/** file object */
 	FILE* file;
 	/** task */
@@ -42,12 +32,54 @@ protected:
 	/** name of the handled file */
 	char* filename;
 
-	virtual bool write_type_wrapped(
-		const TSGDataType* type, const void* param, const char* name,
-		const char* prefix) = 0;
-	virtual bool read_type_wrapped(
-		const TSGDataType* type, void* param, const char* name,
-		const char* prefix) = 0;
+	virtual bool write_scalar_wrapped(const TSGDataType* type,
+									  const void* param) = 0;
+	virtual bool read_scalar_wrapped(const TSGDataType* type,
+									 void* param) = 0;
+
+	virtual bool write_cont_begin_wrapped(const TSGDataType* type,
+										  index_t len_real_y,
+										  index_t len_real_x) = 0;
+	virtual bool read_cont_begin_wrapped(const TSGDataType* type,
+										 index_t* len_read_y,
+										 index_t* len_read_x) = 0;
+
+	virtual bool write_cont_end_wrapped(const TSGDataType* type) = 0;
+	virtual bool read_cont_end_wrapped(const TSGDataType* type) = 0;
+
+	virtual bool write_item_begin_wrapped(const TSGDataType* type,
+										  index_t y, index_t x) = 0;
+	virtual bool read_item_begin_wrapped(const TSGDataType* type,
+										 index_t y, index_t x) = 0;
+
+	virtual bool write_item_end_wrapped(const TSGDataType* type,
+										index_t y, index_t x) = 0;
+	virtual bool read_item_end_wrapped(const TSGDataType* type,
+									   index_t y, index_t x) = 0;
+
+	virtual bool write_sgserializable_begin_wrapped(
+		const TSGDataType* type) = 0;
+	virtual bool read_sgserializable_begin_wrapped(
+		const TSGDataType* type) = 0;
+
+	virtual bool write_sgserializable_end_wrapped(
+		const TSGDataType* type) = 0;
+	virtual bool read_sgserializable_end_wrapped(
+		const TSGDataType* type) = 0;
+
+	virtual bool write_type_begin_wrapped(const TSGDataType* type,
+										  const char* name,
+										  const char* prefix) = 0;
+	virtual bool read_type_begin_wrapped(const TSGDataType* type,
+										 const char* name,
+										 const char* prefix) = 0;
+
+	virtual bool write_type_end_wrapped(const TSGDataType* type,
+										const char* name,
+										const char* prefix) = 0;
+	virtual bool read_type_end_wrapped(const TSGDataType* type,
+									   const char* name,
+									   const char* prefix) = 0;
 
 public:
 	/** default constructor */
@@ -70,15 +102,64 @@ public:
 	virtual ~CSerializableFile(void);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "SerializableFile"; }
+	inline virtual const char* get_name() const
+		{ return "SerializableFile"; }
 
 	virtual void close(void);
 	virtual bool is_opened(void);
 
-	virtual bool write_type(const TSGDataType* type, const void* param,
-							const char* name, const char* prefix);
-	virtual bool read_type(const TSGDataType* type, void* param,
-						   const char* name, const char* prefix);
+	virtual bool write_scalar(
+		const TSGDataType* type, const char* name, const char* prefix,
+		const void* param);
+	virtual bool read_scalar(
+		const TSGDataType* type, const char* name, const char* prefix,
+		void* param);
+
+	virtual bool write_cont_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t len_real_y, index_t len_real_x);
+	virtual bool read_cont_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t* len_read_y, index_t* len_read_x);
+
+	virtual bool write_cont_end(
+		const TSGDataType* type, const char* name, const char* prefix);
+	virtual bool read_cont_end(
+		const TSGDataType* type, const char* name, const char* prefix);
+
+	virtual bool write_item_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t y, index_t x);
+	virtual bool read_item_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t y, index_t x);
+
+	virtual bool write_item_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t y, index_t x);
+	virtual bool read_item_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t y, index_t x);
+
+	virtual bool write_sgserializable_begin(
+		const TSGDataType* type, const char* name, const char* prefix);
+	virtual bool read_sgserializable_begin(
+		const TSGDataType* type, const char* name, const char* prefix);
+
+	virtual bool write_sgserializable_end(
+		const TSGDataType* type, const char* name, const char* prefix);
+	virtual bool read_sgserializable_end(
+		const TSGDataType* type, const char* name, const char* prefix);
+
+	virtual bool write_type_begin(
+		const TSGDataType* type, const char* name, const char* prefix);
+	virtual bool read_type_begin(
+		const TSGDataType* type, const char* name, const char* prefix);
+
+	virtual bool write_type_end(
+		const TSGDataType* type, const char* name, const char* prefix);
+	virtual bool read_type_end(
+		const TSGDataType* type, const char* name, const char* prefix);
 };
 }
 #endif // __SERIALIZABLE_FILE_H__

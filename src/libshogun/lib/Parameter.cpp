@@ -340,7 +340,8 @@ template <> void
 CParameter::add_matrix<CSGSerializable>(
 	CSGSerializable** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
-	TSGDataType type(CT_MATRIX, PT_SGSERIALIZABLE_PTR, length_y, length_x);
+	TSGDataType type(CT_MATRIX, PT_SGSERIALIZABLE_PTR, length_y,
+					 length_x);
 	add_type(&type, param, name, description);
 }
 
@@ -363,13 +364,6 @@ TParameter::~TParameter(void)
 	free(m_description); free(m_name);
 }
 
-bool
-TParameter::is_sgserializable(void)
-{
-	return m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR
-		&& m_datatype.m_ctype == CT_SCALAR;
-}
-
 char*
 TParameter::new_prefix(const char* s1, const char* s2)
 {
@@ -390,7 +384,8 @@ TParameter::print(CIO* io, const char* prefix)
 			 || *m_description == '\0' ? "(Parameter)": m_description,
 			 m_name, buf);
 
-	if (is_sgserializable()
+	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR
+		&& m_datatype.m_ctype == CT_SCALAR
 		&& *(CSGSerializable**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
 		(*(CSGSerializable**) m_parameter)->print_serializable(p);
@@ -399,20 +394,109 @@ TParameter::print(CIO* io, const char* prefix)
 }
 
 bool
+TParameter::save_scalar(CSerializableFile* file, const void* param,
+						const char* prefix)
+{
+	bool result = true;
+
+	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
+		result &= file->write_sgserializable_begin(
+			&m_datatype, m_name, prefix);
+		if (*(CSGSerializable**) param != NULL) {
+			char* p = new_prefix(prefix, m_name);
+			result
+				&= (*(CSGSerializable**) param)
+				->save_serializable(file, p);
+			free(p);
+		}
+		result &= file->write_sgserializable_end(
+			&m_datatype, m_name, prefix);
+	} else
+		result &= file->write_scalar(&m_datatype, m_name, prefix,
+									 param);
+
+	return result;
+}
+
+bool
+TParameter::load_scalar(CSerializableFile* file, void* param,
+						const char* prefix)
+{
+	bool result = true;
+
+	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
+		result &= file->read_sgserializable_begin(
+			&m_datatype, m_name, prefix);
+		if (*(CSGSerializable**) param != NULL) {
+			char* p = new_prefix(prefix, m_name);
+			result
+				&= (*(CSGSerializable**) param)
+				->load_serializable(file, p);
+			free(p);
+		}
+		result &= file->read_sgserializable_end(
+			&m_datatype, m_name, prefix);
+	} else
+		result &= file->read_scalar(&m_datatype, m_name, prefix,
+									param);
+
+	return result;
+}
+
+bool
 TParameter::save(CSerializableFile* file, const char* prefix)
 {
-	bool result;
+	bool result = true;
+	index_t len_real_y = 0, len_real_x = 0;
 
-	if (is_sgserializable()
-		&& *(CSGSerializable**) m_parameter != NULL) {
-		char* p = new_prefix(prefix, m_name);
-		result
-			= (*(CSGSerializable**) m_parameter)
-			->save_serializable(file, p);
-		free(p);
-	} else
-		result = file->write_type(&m_datatype, m_parameter, m_name,
-								  prefix);
+	result &= file->write_type_begin(&m_datatype, m_name, prefix);
+
+	switch (m_datatype.m_ctype) {
+	case CT_SCALAR:
+		break;
+	case CT_VECTOR: case CT_MATRIX:
+		len_real_y = *(void**) m_parameter == NULL? 0:
+			*m_datatype.m_length_y;
+
+		if (m_datatype.m_ctype == CT_VECTOR)
+			len_real_x = 1;
+		else
+			len_real_x = *(void**) m_parameter == NULL? 0:
+				*m_datatype.m_length_x;
+
+		result &= file->write_cont_begin(&m_datatype, m_name, prefix,
+										 len_real_y, len_real_x);
+		break;
+	}
+
+	switch (m_datatype.m_ctype) {
+	case CT_SCALAR:
+		result &= save_scalar(file, m_parameter, prefix);
+		break;
+	case CT_VECTOR: case CT_MATRIX:
+		for (index_t x=0; x<len_real_x; x++)
+			for (index_t y=0; y<len_real_y; y++) {
+				result &= file->write_item_begin(
+					&m_datatype, m_name, prefix, y, x);
+				result &= save_scalar(
+					file, (*(char**) m_parameter)
+					+ (x*len_real_y + y)*m_datatype.sizeof_ptype(),
+					prefix);
+				result &= file->write_item_end(
+					&m_datatype, m_name, prefix, y, x);
+			}
+		break;
+	}
+
+	switch (m_datatype.m_ctype) {
+	case CT_SCALAR:
+		break;
+	case CT_VECTOR: case CT_MATRIX:
+		result &= file->write_cont_end(&m_datatype, m_name, prefix);
+		break;
+	}
+
+	result &= file->write_type_end(&m_datatype, m_name, prefix);
 
 	return result;
 }
@@ -420,18 +504,51 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 bool
 TParameter::load(CSerializableFile* file, const char* prefix)
 {
-	bool result;
+	bool result = true;
+	index_t len_real_y = 0, len_real_x = 0;
 
-	if (is_sgserializable()
-		&& *(CSGSerializable**) m_parameter != NULL) {
-		char* p = new_prefix(prefix, m_name);
-		result
-			= (*(CSGSerializable**) m_parameter)
-			->load_serializable(file, p);
-		free(p);
-	} else
-		result = file->read_type(&m_datatype, m_parameter, m_name,
-								 prefix);
+	result &= file->read_type_begin(&m_datatype, m_name, prefix);
+
+	switch (m_datatype.m_ctype) {
+	case CT_SCALAR:
+		break;
+	case CT_VECTOR: case CT_MATRIX:
+		result &= file->read_cont_begin(&m_datatype, m_name, prefix,
+										&len_real_y, &len_real_x);
+
+		if (m_datatype.m_ctype == CT_VECTOR) len_real_x = 1;
+
+		break;
+	}
+
+	switch (m_datatype.m_ctype) {
+	case CT_SCALAR:
+		result &= load_scalar(file, m_parameter, prefix);
+		break;
+	case CT_VECTOR: case CT_MATRIX:
+		for (index_t x=0; x<len_real_x; x++)
+			for (index_t y=0; y<len_real_y; y++) {
+				result &= file->read_item_begin(
+					&m_datatype, m_name, prefix, y, x);
+				result &= load_scalar(
+					file, (*(char**) m_parameter)
+					+ (x*len_real_y + y)*m_datatype.sizeof_ptype(),
+					prefix);
+				result &= file->read_item_end(
+					&m_datatype, m_name, prefix, y, x);
+			}
+		break;
+	}
+
+	switch (m_datatype.m_ctype) {
+	case CT_SCALAR:
+		break;
+	case CT_VECTOR: case CT_MATRIX:
+		result &= file->read_cont_end(&m_datatype, m_name, prefix);
+		break;
+	}
+
+	result &= file->read_type_end(&m_datatype, m_name, prefix);
 
 	return result;
 }
@@ -455,8 +572,10 @@ void
 CParameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
-	if (name == NULL || *name == '\0')
+	if (name == NULL || *name == '\0') {
 		SG_ERROR("FATAL: CParameter::add_type(): `name' is empty!");
+		exit(1);
+	}
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0) {

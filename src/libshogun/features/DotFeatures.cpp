@@ -12,6 +12,7 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "base/Parallel.h"
+#include "lib/Parameter.h"
 
 #ifndef WIN32
 #include <pthread.h>
@@ -34,6 +35,35 @@ struct DF_THREAD_PARAM
 	bool progress;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+
+
+CDotFeatures::CDotFeatures(int32_t size)
+	:CFeatures(size), combined_weight(1.0)
+{
+	init();
+	set_property(FP_DOT);
+}
+
+
+CDotFeatures::CDotFeatures(const CDotFeatures & orig)
+	:CFeatures(orig), combined_weight(orig.combined_weight)
+{
+	init();
+}
+
+
+CDotFeatures::CDotFeatures(CFile* loader)
+	:CFeatures(loader)
+{
+	init();
+}
+
+void
+CDotFeatures::init(void)
+{
+	m_parameters->add(&combined_weight, "combined_weight",
+					  "Feature weighting in combined dot features.");
+}
 
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {

@@ -65,7 +65,7 @@ TSGDataType::to_string(char* dest) const
 	switch (m_ctype) {
 	case CT_SCALAR: break;
 	case CT_VECTOR: case CT_MATRIX:
-		strcat(p, ">*"); break;
+		strcat(p, ">"); break;
 	}
 }
 

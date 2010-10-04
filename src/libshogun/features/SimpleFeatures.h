@@ -21,6 +21,7 @@
 #include "preproc/SimplePreProc.h"
 #include "features/DotFeatures.h"
 #include "features/StringFeatures.h"
+#include "lib/Parameter.h"
 
 #include <string.h>
 
@@ -62,6 +63,18 @@ class CDotFeatures;
  */
 template <class ST> class CSimpleFeatures: public CDotFeatures
 {
+	void init(void) {
+		m_parameters->add(&num_vectors, "num_vectors",
+						  "Number of vectors in cache.");
+		m_parameters->add(&num_features, "num_features",
+						  "Number of features in cache.");
+		m_parameters->add_matrix<ST>(&feature_matrix, &num_features,
+									 &num_vectors, "feature_matrix",
+									 "Number of features in cache.");
+		m_parameters->add((CSGSerializable**) &feature_cache,
+						  "feature_cache");
+	}
+
 	public:
 		/** constructor
 		 *
@@ -69,7 +82,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		CSimpleFeatures(int32_t size=0)
 		: CDotFeatures(size), num_vectors(0), num_features(0),
-			feature_matrix(NULL), feature_cache(NULL) {}
+		  feature_matrix(NULL), feature_cache(NULL) { init(); }
 
 		/** copy constructor */
 		CSimpleFeatures(const CSimpleFeatures & orig)
@@ -78,6 +91,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			feature_matrix(orig.feature_matrix),
 			feature_cache(orig.feature_cache)
 		{
+			init();
+
 			if (orig.feature_matrix)
 			{
 				free_feature_matrix();
@@ -96,6 +111,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		: CDotFeatures(0), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL)
 		{
+			init();
 			copy_feature_matrix(src, num_feat, num_vec);
 		}
 
@@ -107,6 +123,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		: CDotFeatures(loader), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL)
 		{
+			init();
 			load(loader);
 		}
 

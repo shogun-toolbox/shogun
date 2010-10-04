@@ -52,6 +52,8 @@ namespace shogun
  */
 class CFeatures : public CSGObject
 {
+	void init(void);
+
 	public:
 		/** constructor
 		 *

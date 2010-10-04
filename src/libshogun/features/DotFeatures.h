@@ -42,26 +42,24 @@ namespace shogun
  */
 class CDotFeatures : public CFeatures
 {
+	void init(void);
+
 	public:
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 */
-		CDotFeatures(int32_t size=0) : CFeatures(size), combined_weight(1.0)
-		{
-			set_property(FP_DOT);
-		}
+		CDotFeatures(int32_t size=0);
 
 		/** copy constructor */
-		CDotFeatures(const CDotFeatures & orig) :
-			CFeatures(orig), combined_weight(orig.combined_weight)  {}
+		CDotFeatures(const CDotFeatures & orig);
 
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CDotFeatures(CFile* loader) : CFeatures(loader) {}
+		CDotFeatures(CFile* loader);
 
 		virtual ~CDotFeatures() { }
 

@@ -103,24 +103,225 @@ CSerializableFile::false_warn(const char* prefix, const char* name)
 }
 
 bool
-CSerializableFile::write_type(const TSGDataType* type, const void* param,
-						const char* name, const char* prefix)
+CSerializableFile::write_scalar(
+	const TSGDataType* type, const char* name, const char* prefix,
+	const void* param)
 {
 	if (!is_task_warn('w')) return false;
 
-	if (!write_type_wrapped(type, param, name, prefix))
+	if (!write_scalar_wrapped(type, param))
 		return false_warn(prefix, name);
 
 	return true;
 }
 
 bool
-CSerializableFile::read_type(const TSGDataType* type, void* param,
-					   const char* name, const char* prefix)
+CSerializableFile::read_scalar(
+	const TSGDataType* type, const char* name, const char* prefix,
+	void* param)
 {
 	if (!is_task_warn('r')) return false;
 
-	if (!read_type_wrapped(type, param, name, prefix))
+	if (!read_scalar_wrapped(type, param))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::write_cont_begin(
+	const TSGDataType* type, const char* name, const char* prefix,
+	index_t len_real_y, index_t len_real_x)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_cont_begin_wrapped(type, len_real_y, len_real_x))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::read_cont_begin(
+	const TSGDataType* type, const char* name, const char* prefix,
+	index_t* len_read_y, index_t* len_read_x)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_cont_begin_wrapped(type, len_read_y, len_read_x))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::write_cont_end(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_cont_end_wrapped(type))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::read_cont_end(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_cont_end_wrapped(type))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::write_item_begin(
+	const TSGDataType* type, const char* name, const char* prefix,
+	index_t y, index_t x)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_item_begin_wrapped(type, y, x))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::read_item_begin(
+	const TSGDataType* type, const char* name, const char* prefix,
+	index_t y, index_t x)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_item_begin_wrapped(type, y, x))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::write_item_end(
+	const TSGDataType* type, const char* name, const char* prefix,
+	index_t y, index_t x)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_item_end_wrapped(type, y, x))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::read_item_end(
+	const TSGDataType* type, const char* name, const char* prefix,
+	index_t y, index_t x)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_item_end_wrapped(type, y, x))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+
+bool
+CSerializableFile::write_sgserializable_begin(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_sgserializable_begin_wrapped(type))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::read_sgserializable_begin(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_sgserializable_begin_wrapped(type))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::write_sgserializable_end(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_sgserializable_end_wrapped(type))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::read_sgserializable_end(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_sgserializable_end_wrapped(type))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::write_type_begin(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_type_begin_wrapped(type, name, prefix))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::read_type_begin(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_type_begin_wrapped(type, name, prefix))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::write_type_end(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('w')) return false;
+
+	if (!write_type_end_wrapped(type, name, prefix))
+		return false_warn(prefix, name);
+
+	return true;
+}
+
+bool
+CSerializableFile::read_type_end(
+	const TSGDataType* type, const char* name, const char* prefix)
+{
+	if (!is_task_warn('r')) return false;
+
+	if (!read_type_end_wrapped(type, name, prefix))
 		return false_warn(prefix, name);
 
 	return true;

@@ -34,8 +34,11 @@ struct TParameter
 	char* m_description;
 
 private:
-	bool is_sgserializable(void);
 	char* new_prefix(const char* s1, const char* s2);
+	bool save_scalar(CSerializableFile* file, const void* param,
+					 const char* prefix);
+	bool load_scalar(CSerializableFile* file, void* param,
+					 const char* prefix);
 };
 
 /* Must not be an CSGObject to prevent a recursive call of
