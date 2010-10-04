@@ -482,8 +482,8 @@ TParameter::new_sgserial(CIO* io, CSGSerializable** param,
 
 		if (*param == NULL) {
 			SG_ERROR("FATAL: TParameter::new_sgserial(): "
-					 "`CSGSerializable::new_sgserializable()' not "
-					 "implemented for `%s%s'!", prefix, m_name);
+					 "Callback of type `new_sgserializable_t' is "
+					 "returning NULL for `%s%s'!", prefix, m_name);
 			exit(1);
 		}
 	}
