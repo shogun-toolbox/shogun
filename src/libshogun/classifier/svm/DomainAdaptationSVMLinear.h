@@ -11,6 +11,7 @@
 #ifndef _DomainAdaptation_SVM_LINEAR_H___
 #define _DomainAdaptation_SVM_LINEAR_H___
 
+#ifdef HAVE_LAPACK
 
 #include "lib/common.h"
 #include "classifier/svm/LibLinear.h"
@@ -176,4 +177,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 
 };
 }
-#endif
+
+
+#endif //HAVE_LAPACK
+#endif //_DomainAdaptation_SVM_LINEAR_H___

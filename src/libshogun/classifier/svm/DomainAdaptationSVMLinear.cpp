@@ -10,6 +10,7 @@
 
 #include "lib/config.h"
 
+#ifdef HAVE_LAPACK
 
 #include "classifier/svm/DomainAdaptationSVMLinear.h"
 #include "lib/io.h"
@@ -219,4 +220,6 @@ CLabels* CDomainAdaptationSVMLinear::classify(CDotFeatures* data)
     return out_current;
 
 }
+
+#endif //HAVE_LAPACK
 
