@@ -50,6 +50,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/GaussianShiftKernel.h>
 #include <shogun/kernel/GaussianShortRealKernel.h>
+#include <shogun/kernel/HistogramIntersectionKernel.h>
 #include <shogun/kernel/HistogramWordStringKernel.h>
 #include <shogun/kernel/IdentityKernelNormalizer.h>
 #include <shogun/kernel/DotKernel.h>
@@ -133,6 +134,7 @@
 %rename(GaussianKernel) CGaussianKernel;
 %rename(GaussianShiftKernel) CGaussianShiftKernel;
 %rename(GaussianShortRealKernel) CGaussianShortRealKernel;
+%rename(HistogramIntersectionKernel) CHistogramIntersectionKernel;
 %rename(HistogramWordStringKernel) CHistogramWordStringKernel;
 %rename(IdentityKernelNormalizer) CIdentityKernelNormalizer;
 %rename(LinearKernel) CLinearKernel;
@@ -248,6 +250,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/GaussianKernel.h>
 %include <shogun/kernel/GaussianShiftKernel.h>
 %include <shogun/kernel/GaussianShortRealKernel.h>
+%include <shogun/kernel/HistogramIntersectionKernel.h>
 %include <shogun/kernel/HistogramWordStringKernel.h>
 %include <shogun/kernel/IdentityKernelNormalizer.h>
 %include <shogun/kernel/LinearKernel.h>
