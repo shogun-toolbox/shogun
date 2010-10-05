@@ -39,7 +39,7 @@ struct TParameter
 
 private:
 	char* new_prefix(const char* s1, const char* s2);
-	void new_cont(index_t len_y, index_t len_x);
+	void new_cont(index_t new_len_y, index_t new_len_x);
 	bool new_sgserial(CIO* io, CSGSerializable** param,
 					  const char* prefix);
 	bool save_scalar(CIO* io, CSerializableFile* file,

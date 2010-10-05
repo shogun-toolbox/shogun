@@ -328,7 +328,8 @@ class CLabels : public CSGObject
 
 		/** confidence matrix of size: num_classes x num_labels */
 		float64_t* m_confidences;
-
+		int32_t m_confidence_classes;
+		int32_t m_confidence_labels;
 };
 }
 #endif

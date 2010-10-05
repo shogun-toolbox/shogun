@@ -10,6 +10,9 @@
 
 #include "lib/SerializableAsciiFile.h"
 
+#define STR_HEADER                 \
+	"<<_SHOGON_SERIALIZABLE_ASCII_FILE_V_00_>>"
+
 #define CHAR_CONT_BEGIN            '('
 #define CHAR_CONT_END              ')'
 #define CHAR_ITEM_BEGIN            '{'
@@ -40,8 +43,26 @@ CSerializableAsciiFile::~CSerializableAsciiFile() {}
 void
 CSerializableAsciiFile::init(void)
 {
-	if (file == NULL)
-		return;
+	if (file == NULL) return;
+
+	switch (task) {
+	case 'w':
+		if (fprintf(file, STR_HEADER"\n") <= 0) {
+			close(); return;
+		}
+		break;
+	case 'r':
+		char buf[60];
+		if (fscanf(file, "%60s\n", buf) != 1
+			|| strcmp(STR_HEADER, buf) != 0) {
+			SG_WARNING("`%s' is not an serializable ascii file!\n",
+					   filename);
+			close(); return;
+		}
+		break;
+	default:
+		break;
+	}
 
 	stack_fpos.push_back(ftell(file));
 }

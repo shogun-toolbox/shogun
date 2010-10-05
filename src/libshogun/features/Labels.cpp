@@ -54,6 +54,8 @@ CLabels::CLabels(float64_t* p_labels, int32_t len)
 	// get really big.
 	m_num_classes=get_num_classes();
 	m_confidences=NULL;
+	m_confidence_classes = 0;
+	m_confidence_labels = 0;
 }
 
 void CLabels::set_to_one()
@@ -75,6 +77,8 @@ CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels,
 
 	m_num_classes=in_num_classes;
 	m_confidences=in_confidences;
+	m_confidence_classes = in_num_classes;
+	m_confidence_labels = in_num_labels;
 	find_labels();
 }
 
@@ -95,24 +99,24 @@ CLabels::~CLabels()
 	m_num_classes=0;
 	labels=NULL;
 	m_confidences=NULL;
+	m_confidence_classes = 0;
+	m_confidence_labels = 0;
 }
 
 void
 CLabels::init(int32_t num_labels_, int32_t num_classes)
 {
-	m_parameters->add(&num_labels, "num_labels",
-					  "Number of labels.");
 	m_parameters->add_vector(&labels, &num_labels, "labels",
 							 "The labels.");
-	m_parameters->add(&m_num_classes, "m_num_classes",
-					  "Number of classes.");
-	m_parameters->add_matrix(&m_confidences, &m_num_classes,
-							 &num_labels, "m_confidences",
+	m_parameters->add_matrix(&m_confidences, &m_confidence_classes,
+							 &m_confidence_labels, "m_confidences",
 							 "Confidence matrix.");
 
 	labels = NULL;
 	num_labels = num_labels_;
 	m_confidences=NULL;
+	m_confidence_classes = 0;
+	m_confidence_labels = 0;
 	m_num_classes=num_classes;
 }
 
@@ -145,6 +149,8 @@ void CLabels::set_confidences(float64_t* in_confidences, int32_t in_num_labels,
 	num_labels=in_num_labels;
 	m_num_classes=in_num_classes;
 	m_confidences=in_confidences;
+	m_confidence_classes = in_num_classes;
+	m_confidence_labels = in_num_labels;
 	find_labels();
 }
 
@@ -317,6 +323,8 @@ void CLabels::load(CFile* loader)
 	delete[] labels;
 	delete[] m_confidences;
 	m_confidences = NULL;
+	m_confidence_classes = 0;
+	m_confidence_labels = 0;
 	num_labels=0;
 	ASSERT(loader);
 	loader->get_real_vector(labels, num_labels);

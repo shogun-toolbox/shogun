@@ -118,7 +118,6 @@ template<class T> class CSGString :public CSGSerializable
 	int32_t length;
 
 	explicit CSGString(void) {
-		m_parameters->add(&length, "length", "Length of string.");
 		m_parameters->add_vector(&string, &length, "string");
 	}
 };

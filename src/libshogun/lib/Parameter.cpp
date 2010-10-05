@@ -397,78 +397,74 @@ TParameter::print(CIO* io, const char* prefix)
 }
 
 void
-TParameter::new_cont(index_t len_y, index_t len_x)
+TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 {
 	if (*(void**) m_parameter != NULL) {
-		switch (m_datatype.m_ptype) {
-		case PT_BOOL:
-			delete[] *(bool**) m_parameter; break;
-		case PT_CHAR:
-			delete[] *(char**) m_parameter; break;
-		case PT_INT8:
-			delete[] *(int8_t**) m_parameter; break;
-		case PT_UINT8:
-			delete[] *(uint8_t**) m_parameter; break;
-		case PT_INT16:
-			delete[] *(int16_t**) m_parameter; break;
-		case PT_UINT16:
-			delete[] *(uint16_t**) m_parameter; break;
-		case PT_INT32:
-			delete[] *(int32_t**) m_parameter; break;
-		case PT_UINT32:
-			delete[] *(uint32_t**) m_parameter; break;
-		case PT_INT64:
-			delete[] *(int64_t**) m_parameter; break;
-		case PT_UINT64:
-			delete[] *(uint64_t**) m_parameter; break;
-		case PT_FLOAT32:
-			delete[] *(float32_t**) m_parameter; break;
-		case PT_FLOAT64:
-			delete[] *(float64_t**) m_parameter; break;
-		case PT_FLOATMAX:
-			delete[] *(floatmax_t**) m_parameter; break;
-		case PT_SGSERIALIZABLE_PTR:
-			delete[] *(CSGSerializable***) m_parameter; break;
-			break;
+		index_t old_length = *m_datatype.m_length_y;
+		switch (m_datatype.m_ctype) {
+		case CT_MATRIX:
+			old_length *= *m_datatype.m_length_x; break;
+		case CT_SCALAR: case CT_VECTOR: break;
 		}
 
-		*(void**) m_parameter = NULL;
+		switch (m_datatype.m_ptype) {
+		case PT_BOOL: delete[] *(bool**) m_parameter; break;
+		case PT_CHAR: delete[] *(char**) m_parameter; break;
+		case PT_INT8: delete[] *(int8_t**) m_parameter; break;
+		case PT_UINT8: delete[] *(uint8_t**) m_parameter; break;
+		case PT_INT16: delete[] *(int16_t**) m_parameter; break;
+		case PT_UINT16: delete[] *(uint16_t**) m_parameter; break;
+		case PT_INT32: delete[] *(int32_t**) m_parameter; break;
+		case PT_UINT32: delete[] *(uint32_t**) m_parameter; break;
+		case PT_INT64: delete[] *(int64_t**) m_parameter; break;
+		case PT_UINT64: delete[] *(uint64_t**) m_parameter; break;
+		case PT_FLOAT32: delete[] *(float32_t**) m_parameter; break;
+		case PT_FLOAT64: delete[] *(float64_t**) m_parameter; break;
+		case PT_FLOATMAX: delete[] *(floatmax_t**) m_parameter; break;
+		case PT_SGSERIALIZABLE_PTR:
+			CSGSerializable** buf = *(CSGSerializable***) m_parameter;
+			for (index_t i=0; i<old_length; i++)
+				if (buf[i] != NULL) delete buf[i];
+
+			delete buf;
+			break;
+		}
 	}
 
-	index_t length = len_y*len_x;
-
-	if (length == 0) return;
+	*(void**) m_parameter = NULL;
+	index_t new_length = new_len_y*new_len_x;
+	if (new_length == 0) return;
 
 	switch (m_datatype.m_ptype) {
 	case PT_BOOL:
-		*(bool**) m_parameter = new bool[length]; break;
+		*(bool**) m_parameter = new bool[new_length]; break;
 	case PT_CHAR:
-		*(char**) m_parameter = new char[length]; break;
+		*(char**) m_parameter = new char[new_length]; break;
 	case PT_INT8:
-		*(int8_t**) m_parameter = new int8_t[length]; break;
+		*(int8_t**) m_parameter = new int8_t[new_length]; break;
 	case PT_UINT8:
-		*(uint8_t**) m_parameter = new uint8_t[length]; break;
+		*(uint8_t**) m_parameter = new uint8_t[new_length]; break;
 	case PT_INT16:
-		*(int16_t**) m_parameter = new int16_t[length]; break;
+		*(int16_t**) m_parameter = new int16_t[new_length]; break;
 	case PT_UINT16:
-		*(uint16_t**) m_parameter = new uint16_t[length]; break;
+		*(uint16_t**) m_parameter = new uint16_t[new_length]; break;
 	case PT_INT32:
-		*(int32_t**) m_parameter = new int32_t[length]; break;
+		*(int32_t**) m_parameter = new int32_t[new_length]; break;
 	case PT_UINT32:
-		*(uint32_t**) m_parameter = new uint32_t[length]; break;
+		*(uint32_t**) m_parameter = new uint32_t[new_length]; break;
 	case PT_INT64:
-		*(int64_t**) m_parameter = new int64_t[length]; break;
+		*(int64_t**) m_parameter = new int64_t[new_length]; break;
 	case PT_UINT64:
-		*(uint64_t**) m_parameter = new uint64_t[length]; break;
+		*(uint64_t**) m_parameter = new uint64_t[new_length]; break;
 	case PT_FLOAT32:
-		*(float32_t**) m_parameter = new float32_t[length]; break;
+		*(float32_t**) m_parameter = new float32_t[new_length]; break;
 	case PT_FLOAT64:
-		*(float64_t**) m_parameter = new float64_t[length]; break;
+		*(float64_t**) m_parameter = new float64_t[new_length]; break;
 	case PT_FLOATMAX:
-		*(floatmax_t**) m_parameter = new floatmax_t[length]; break;
+		*(floatmax_t**) m_parameter = new floatmax_t[new_length]; break;
 	case PT_SGSERIALIZABLE_PTR:
 		*(CSGSerializable***) m_parameter
-			= new CSGSerializable*[length]();
+			= new CSGSerializable*[new_length]();
 		break;
 	}
 }
@@ -480,10 +476,13 @@ TParameter::new_sgserial(CIO* io, CSGSerializable** param,
 	if (*param == NULL) {
 		*param = m_new_sgserializable();
 
-		if (*param == NULL)
+		if (*param == NULL) {
 			SG_ERROR("FATAL: TParameter::new_sgserial(): "
 					 "Callback of type `new_sgserializable_t' is "
 					 "returning NULL for `%s%s'!", prefix, m_name);
+
+			return false;
+		}
 	}
 
 	return true;
@@ -560,14 +559,30 @@ TParameter::save(CIO* io, CSerializableFile* file, const char* prefix)
 	case CT_VECTOR: case CT_MATRIX:
 		index_t len_real_y = 0, len_real_x = 0;
 
-		len_real_y = *(void**) m_parameter == NULL? 0:
-			*m_datatype.m_length_y;
+		len_real_y = *m_datatype.m_length_y;
+		if (*(void**) m_parameter == NULL && len_real_y != 0) {
+			SG_WARNING("Inconsistence between data structure and "
+					   "len_y during saving `%s%s'!  Continuing with "
+					   "len_y=0.\n",
+					   prefix, m_name);
+			len_real_y = 0;
+		}
 
-		if (m_datatype.m_ctype == CT_VECTOR)
-			len_real_x = 1;
-		else
-			len_real_x = *(void**) m_parameter == NULL? 0:
-				*m_datatype.m_length_x;
+		switch (m_datatype.m_ctype) {
+		case CT_VECTOR:
+			len_real_x = 1; break;
+		case CT_MATRIX:
+			len_real_x = *m_datatype.m_length_x;
+			if (*(void**) m_parameter == NULL && len_real_x != 0) {
+				SG_WARNING("Inconsistence between data structure and "
+						   "len_x during saving `%s%s'.!  Continuing with "
+						   "len_x=0.\n",
+						   prefix, m_name);
+				len_real_x = 0;
+			}
+			break;
+		case CT_SCALAR: break;
+		}
 
 		result &= file->write_cont_begin(&m_datatype, m_name, prefix,
 										 len_real_y, len_real_x);
@@ -616,11 +631,25 @@ TParameter::load(CIO* io, CSerializableFile* file, const char* prefix)
 		result &= file->read_cont_begin(&m_datatype, m_name, prefix,
 										&len_read_y, &len_read_x);
 
-		if (m_datatype.m_ctype == CT_VECTOR) len_read_x = 1;
-
 		/* ******************************************************** */
 
-		new_cont(len_read_y, len_read_x);
+		/* Do not change the order!  NEW_CONT is accessing the members
+		 * of M_DATATYPE.
+		 */
+		switch (m_datatype.m_ctype) {
+		case CT_VECTOR:
+			len_read_x = 1;
+			new_cont(len_read_y, len_read_x);
+			*m_datatype.m_length_y = len_read_y;
+			break;
+		case CT_MATRIX:
+			new_cont(len_read_y, len_read_x);
+			*m_datatype.m_length_y = len_read_y;
+			*m_datatype.m_length_x = len_read_x;
+			break;
+		case CT_SCALAR: break;
+		}
+
 		for (index_t x=0; x<len_read_x; x++)
 			for (index_t y=0; y<len_read_y; y++) {
 				result &= file->read_item_begin(
