@@ -117,6 +117,9 @@ template<class T> class CSGString :public CSGSerializable
 	/** length of string */
 	int32_t length;
 
+	virtual inline const char* get_name(void) const
+		{ return "SGString"; };
+
 	explicit CSGString(void) {
 		m_parameters->add_vector(&string, &length, "string");
 	}

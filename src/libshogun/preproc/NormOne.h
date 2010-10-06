@@ -17,6 +17,8 @@
 
 #include <stdio.h>
 
+#define CLASSLIST_TODO
+
 namespace shogun
 {
 /** @brief Preprocessor NormOne, normalizes vectors to have norm 1.
@@ -30,7 +32,7 @@ namespace shogun
  * It therefore does not need any initialization. It is most useful to get data
  * onto a ball of radius one.
  */
-class CNormOne : public CSimplePreProc<float64_t>
+CLASSLIST_TODO class CNormOne : public CSimplePreProc<float64_t>
 {
 	public:
 		/** default constructor */

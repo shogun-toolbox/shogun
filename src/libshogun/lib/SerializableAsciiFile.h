@@ -53,14 +53,14 @@ protected:
 									   index_t y, index_t x);
 
 	virtual bool write_sgserializable_begin_wrapped(
-		const TSGDataType* type, bool is_null);
+		const TSGDataType* type, const char* sgserializable_name);
 	virtual bool read_sgserializable_begin_wrapped(
-		const TSGDataType* type, bool* is_null);
+		const TSGDataType* type, char* sgserializable_name);
 
 	virtual bool write_sgserializable_end_wrapped(
-		const TSGDataType* type, bool is_null);
+		const TSGDataType* type, const char* sgserializable_name);
 	virtual bool read_sgserializable_end_wrapped(
-		const TSGDataType* type, bool is_null);
+		const TSGDataType* type, const char* sgserializable_name);
 
 	virtual bool write_type_begin_wrapped(const TSGDataType* type,
 										  const char* name,
@@ -84,7 +84,7 @@ public:
 	 *
 	 * @param f already opened file
 	 */
-	explicit CSerializableAsciiFile(FILE* f, char rw);
+	explicit CSerializableAsciiFile(FILE* fstream, char rw);
 
 	/** constructor
 	 *

@@ -20,11 +20,8 @@ namespace shogun
 {
 struct TParameter
 {
-	typedef CSGSerializable* (*new_sgserializable_t)(void);
-
 	explicit TParameter(const TSGDataType* datatype, void* parameter,
-						const char* name, const char* description,
-						new_sgserializable_t new_sgserializable);
+						const char* name, const char* description);
 	~TParameter(void);
 
 	void print(CIO* io, const char* prefix);
@@ -35,12 +32,12 @@ struct TParameter
 	void* m_parameter;
 	char* m_name;
 	char* m_description;
-	new_sgserializable_t m_new_sgserializable;
 
 private:
 	char* new_prefix(const char* s1, const char* s2);
 	void new_cont(index_t new_len_y, index_t new_len_x);
 	bool new_sgserial(CIO* io, CSGSerializable** param,
+					  const char* sgserializable_name,
 					  const char* prefix);
 	bool save_scalar(CIO* io, CSerializableFile* file,
 					 const void* param, const char* prefix);
@@ -60,9 +57,7 @@ protected:
 
 	virtual void add_type(const TSGDataType* type, void* param,
 						  const char* name,
-						  const char* description,
-						  TParameter::new_sgserializable_t
-						  new_sgserializable);
+						  const char* description);
 
 public:
 	explicit CParameter(CIO* io_);
@@ -107,7 +102,6 @@ public:
 	void add(floatmax_t* param, const char* name,
 			 const char* description="");
 	void add(CSGSerializable** param,
-			 TParameter::new_sgserializable_t new_sgserializable,
 			 const char* name, const char* description="");
 
 	/* ************************************************************ */
@@ -140,7 +134,6 @@ public:
 	void add_vector(floatmax_t** param, index_t* length,
 					const char* name, const char* description="");
 	void add_vector(CSGSerializable*** param, index_t* length,
-					TParameter::new_sgserializable_t new_sgserializable,
 					const char* name, const char* description="");
 
 	/* ************************************************************ */
@@ -187,7 +180,6 @@ public:
 					const char* name, const char* description="");
 	void add_matrix(CSGSerializable*** param,
 					index_t* length_y, index_t* length_x,
-					TParameter::new_sgserializable_t new_sgserializable,
 					const char* name, const char* description="");
 };
 }

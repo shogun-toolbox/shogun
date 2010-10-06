@@ -148,12 +148,6 @@ public:
 	}
 #endif
 
-	/** get the name of the object
-	 *
-	 * @return name of object
-	 */
-	virtual const char* get_name() const=0;
-
 	/** set the io object
 	 *
 	 * @param io io object to use

@@ -24,16 +24,15 @@
 
 #define STR_EMPTY_PREFIX           ":"
 
-#define CHAR_SGSERIAL_NULL         'n'
-#define STR_SGSERIAL_NULL          "ull"
+#define STR_SGSERIAL_NULL          "null"
 
 using namespace shogun;
 
 CSerializableAsciiFile::CSerializableAsciiFile(void)
 	:CSerializableFile() { init(); }
 
-CSerializableAsciiFile::CSerializableAsciiFile(FILE* f, char rw)
-	:CSerializableFile(f, rw) { init(); }
+CSerializableAsciiFile::CSerializableAsciiFile(FILE* fstream, char rw)
+	:CSerializableFile(fstream, rw) { init(); }
 
 CSerializableAsciiFile::CSerializableAsciiFile(char* fname, char rw)
 	:CSerializableFile(fname, rw) { init(); }
@@ -43,20 +42,20 @@ CSerializableAsciiFile::~CSerializableAsciiFile() {}
 void
 CSerializableAsciiFile::init(void)
 {
-	if (file == NULL) return;
+	if (m_fstream == NULL) return;
 
-	switch (task) {
+	switch (m_task) {
 	case 'w':
-		if (fprintf(file, STR_HEADER"\n") <= 0) {
+		if (fprintf(m_fstream, STR_HEADER"\n") <= 0) {
 			close(); return;
 		}
 		break;
 	case 'r':
 		char buf[60];
-		if (fscanf(file, "%60s\n", buf) != 1
+		if (fscanf(m_fstream, "%60s\n", buf) != 1
 			|| strcmp(STR_HEADER, buf) != 0) {
 			SG_WARNING("`%s' is not an serializable ascii file!\n",
-					   filename);
+					   m_filename);
 			close(); return;
 		}
 		break;
@@ -64,7 +63,7 @@ CSerializableAsciiFile::init(void)
 		break;
 	}
 
-	stack_fpos.push_back(ftell(file));
+	stack_fpos.push_back(ftell(m_fstream));
 }
 
 bool
@@ -72,7 +71,7 @@ CSerializableAsciiFile::ignore(void)
 {
 	for (uint32_t cont_count = 0, item_count = 0,
 			 sgserial_count = 0; ;) {
-		switch (fgetc(file)) {
+		switch (fgetc(m_fstream)) {
 		case CHAR_ITEM_BEGIN: item_count++; break;
 		case CHAR_CONT_BEGIN: cont_count++; break;
 		case CHAR_SGSERIAL_BEGIN: sgserial_count++; break;
@@ -104,55 +103,55 @@ CSerializableAsciiFile::write_scalar_wrapped(
 {
 	switch (type->m_ptype) {
 	case PT_BOOL:
-		if (fprintf(file, "%c", *(bool*) param? 't': 'f') <= 0)
+		if (fprintf(m_fstream, "%c", *(bool*) param? 't': 'f') <= 0)
 			return false;
 		break;
 	case PT_CHAR:
-		if (fprintf(file, "%"PRIu8, *(uint8_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIu8, *(uint8_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT8:
-		if (fprintf(file, "%"PRIi8, *(int8_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIi8, *(int8_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT8:
-		if (fprintf(file, "%"PRIu8, *(uint8_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIu8, *(uint8_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT16:
-		if (fprintf(file, "%"PRIi16, *(int16_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIi16, *(int16_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT16:
-		if (fprintf(file, "%"PRIu16, *(uint16_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIu16, *(uint16_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT32:
-		if (fprintf(file, "%"PRIi32, *(int32_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIi32, *(int32_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT32:
-		if (fprintf(file, "%"PRIu32, *(uint32_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIu32, *(uint32_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT64:
-		if (fprintf(file, "%"PRIi64, *(int64_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIi64, *(int64_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT64:
-		if (fprintf(file, "%"PRIu64, *(uint64_t*) param) <= 0)
+		if (fprintf(m_fstream, "%"PRIu64, *(uint64_t*) param) <= 0)
 			return false;
 		break;
 	case PT_FLOAT32:
-		if (fprintf(file, "%+10.16e", *(float32_t*) param) <= 0)
+		if (fprintf(m_fstream, "%+10.16e", *(float32_t*) param) <= 0)
 			return false;
 		break;
 	case PT_FLOAT64:
-		if (fprintf(file, "%+10.16e", *(float64_t*) param) <= 0)
+		if (fprintf(m_fstream, "%+10.16e", *(float64_t*) param) <= 0)
 			return false;
 		break;
 	case PT_FLOATMAX:
-		if (fprintf(file, "%+10.16Le", *(floatmax_t*) param) <= 0)
+		if (fprintf(m_fstream, "%+10.16Le", *(floatmax_t*) param) <= 0)
 			return false;
 		break;
 	case PT_SGSERIALIZABLE_PTR:
@@ -172,7 +171,7 @@ CSerializableAsciiFile::read_scalar_wrapped(
 	case PT_BOOL:
 		char bool_buf;
 
-		if (fscanf(file, "%c", &bool_buf) != 1) return false;
+		if (fscanf(m_fstream, "%c", &bool_buf) != 1) return false;
 
 		switch (bool_buf) {
 		case 't':
@@ -187,51 +186,51 @@ CSerializableAsciiFile::read_scalar_wrapped(
 
 		break;
 	case PT_CHAR:
-		if (fscanf(file, "%"SCNu8, (uint8_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNu8, (uint8_t*) param) != 1)
 			return false;
 		break;
 	case PT_INT8:
-		if (fscanf(file, "%"SCNi8, (int8_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNi8, (int8_t*) param) != 1)
 			return false;
 		break;
 	case PT_UINT8:
-		if (fscanf(file, "%"SCNu8, (uint8_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNu8, (uint8_t*) param) != 1)
 			return false;
 		break;
 	case PT_INT16:
-		if (fscanf(file, "%"SCNi16, (int16_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNi16, (int16_t*) param) != 1)
 			return false;
 		break;
 	case PT_UINT16:
-		if (fscanf(file, "%"SCNu16, (uint16_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNu16, (uint16_t*) param) != 1)
 			return false;
 		break;
 	case PT_INT32:
-		if (fscanf(file, "%"SCNi32, (int32_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNi32, (int32_t*) param) != 1)
 			return false;
 		break;
 	case PT_UINT32:
-		if (fscanf(file, "%"SCNu32, (uint32_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNu32, (uint32_t*) param) != 1)
 			return false;
 		break;
 	case PT_INT64:
-		if (fscanf(file, "%"SCNi64, (int64_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNi64, (int64_t*) param) != 1)
 			return false;
 		break;
 	case PT_UINT64:
-		if (fscanf(file, "%"SCNu64, (uint64_t*) param) != 1)
+		if (fscanf(m_fstream, "%"SCNu64, (uint64_t*) param) != 1)
 			return false;
 		break;
 	case PT_FLOAT32:
-		if (fscanf(file, "%e", (float32_t*) param) != 1)
+		if (fscanf(m_fstream, "%e", (float32_t*) param) != 1)
 			return false;
 		break;
 	case PT_FLOAT64:
-		if (fscanf(file, "%le", (float64_t*) param) != 1)
+		if (fscanf(m_fstream, "%le", (float64_t*) param) != 1)
 			return false;
 		break;
 	case PT_FLOATMAX:
-		if (fscanf(file, "%Le", (floatmax_t*) param) != 1)
+		if (fscanf(m_fstream, "%Le", (floatmax_t*) param) != 1)
 			return false;
 		break;
 	case PT_SGSERIALIZABLE_PTR:
@@ -253,12 +252,12 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 				 "during writing AsciiFile!");
 		return false;
 	case CT_VECTOR:
-		if (fprintf(file, "%"PRIi32" %c", len_real_y, CHAR_CONT_BEGIN)
-			<= 0)
+		if (fprintf(m_fstream, "%"PRIi32" %c", len_real_y,
+					CHAR_CONT_BEGIN) <= 0)
 			return false;
 		break;
 	case CT_MATRIX:
-		if (fprintf(file, "%"PRIi32" %"PRIi32" %c",
+		if (fprintf(m_fstream, "%"PRIi32" %"PRIi32" %c",
 					len_real_y, len_real_x, CHAR_CONT_BEGIN) <= 0)
 			return false;
 		break;
@@ -277,18 +276,18 @@ CSerializableAsciiFile::read_cont_begin_wrapped(
 				 "during writing AsciiFile!");
 		return false;
 	case CT_VECTOR:
-		if (fscanf(file, "%"SCNi32" ", len_read_y) != 1)
+		if (fscanf(m_fstream, "%"SCNi32" ", len_read_y) != 1)
 			return false;
 		*len_read_x = 1;
 		break;
 	case CT_MATRIX:
-		if (fscanf(file, "%"SCNi32" %"SCNi32" ",
+		if (fscanf(m_fstream, "%"SCNi32" %"SCNi32" ",
 				   len_read_y, len_read_x) <= 0)
 			return false;
 		break;
 	}
 
-	if (fgetc(file) != CHAR_CONT_BEGIN) return false;
+	if (fgetc(m_fstream) != CHAR_CONT_BEGIN) return false;
 
 	return true;
 }
@@ -297,7 +296,7 @@ bool
 CSerializableAsciiFile::write_cont_end_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
-	if (fprintf(file, "%c", CHAR_CONT_END) <= 0) return false;
+	if (fprintf(m_fstream, "%c", CHAR_CONT_END) <= 0) return false;
 
 	return true;
 }
@@ -306,7 +305,7 @@ bool
 CSerializableAsciiFile::read_cont_end_wrapped(
 	const TSGDataType* type, index_t len_read_y, index_t len_read_x)
 {
-	if (fgetc(file) != CHAR_CONT_END) return false;
+	if (fgetc(m_fstream) != CHAR_CONT_END) return false;
 
 	return true;
 }
@@ -315,7 +314,7 @@ bool
 CSerializableAsciiFile::write_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	if (fprintf(file, "%c", CHAR_ITEM_BEGIN) <= 0) return false;
+	if (fprintf(m_fstream, "%c", CHAR_ITEM_BEGIN) <= 0) return false;
 
 	return true;
 }
@@ -324,7 +323,7 @@ bool
 CSerializableAsciiFile::read_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	if (fgetc(file) != CHAR_ITEM_BEGIN) return false;
+	if (fgetc(m_fstream) != CHAR_ITEM_BEGIN) return false;
 
 	return true;
 }
@@ -333,7 +332,7 @@ bool
 CSerializableAsciiFile::write_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	if (fprintf(file, "%c", CHAR_ITEM_END) <= 0) return false;
+	if (fprintf(m_fstream, "%c", CHAR_ITEM_END) <= 0) return false;
 
 	return true;
 }
@@ -342,21 +341,21 @@ bool
 CSerializableAsciiFile::read_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	if (fgetc(file) != CHAR_ITEM_END) return false;
+	if (fgetc(m_fstream) != CHAR_ITEM_END) return false;
 
 	return true;
 }
 
 bool
 CSerializableAsciiFile::write_sgserializable_begin_wrapped(
-	const TSGDataType* type, bool is_null)
+	const TSGDataType* type, const char* sgserializable_name)
 {
-	if (is_null) {
-		if (fprintf(file, "%c%s", CHAR_SGSERIAL_NULL,
-					STR_SGSERIAL_NULL) <= 0)
+	if (*sgserializable_name == '\0') {
+		if (fprintf(m_fstream, "%s ", STR_SGSERIAL_NULL) <= 0)
 			return false;
 	} else {
-		if (fprintf(file, "%c%c", CHAR_SGSERIAL_BEGIN, CHAR_TYPE_END)
+		if (fprintf(m_fstream, "%s %c%c", sgserializable_name,
+					CHAR_SGSERIAL_BEGIN, CHAR_TYPE_END)
 			<= 0)
 			return false;
 	}
@@ -366,44 +365,39 @@ CSerializableAsciiFile::write_sgserializable_begin_wrapped(
 
 bool
 CSerializableAsciiFile::read_sgserializable_begin_wrapped(
-	const TSGDataType* type, bool* is_null)
+	const TSGDataType* type, char* sgserializable_name)
 {
-	switch (fgetc(file)) {
-	case CHAR_SGSERIAL_BEGIN:
-		if (fgetc(file) != CHAR_TYPE_END) return false;
-		*is_null = false;
-		break;
-	case CHAR_SGSERIAL_NULL:
-		char buf[10];
-		if (fscanf(file, "%10s", buf) != 1
-			|| strcmp(buf, STR_SGSERIAL_NULL) != 0) return false;
-		*is_null = true;
-		break;
-	default:
+	if (fscanf(m_fstream, "%256s ", sgserializable_name) != 1)
 		return false;
+
+	if (strcmp(sgserializable_name, STR_SGSERIAL_NULL) == 0) {
+		*sgserializable_name = '\0';
+	} else {
+		if (fgetc(m_fstream) != CHAR_SGSERIAL_BEGIN) return false;
+		if (fgetc(m_fstream) != CHAR_TYPE_END) return false;
 	}
 
-	stack_fpos.push_back(ftell(file));
+	stack_fpos.push_back(ftell(m_fstream));
 
 	return true;
 }
 
 bool
 CSerializableAsciiFile::write_sgserializable_end_wrapped(
-	const TSGDataType* type, bool is_null)
+	const TSGDataType* type, const char* sgserializable_name)
 {
-	if (!is_null)
-		if (fprintf(file, "%c", CHAR_SGSERIAL_END) <= 0) return false;
+	if (sgserializable_name != '\0')
+		if (fprintf(m_fstream, "%c", CHAR_SGSERIAL_END) <= 0) return false;
 
 	return true;
 }
 
 bool
 CSerializableAsciiFile::read_sgserializable_end_wrapped(
-	const TSGDataType* type, bool is_null)
+	const TSGDataType* type, const char* sgserializable_name)
 {
-	if (!is_null)
-		if (fgetc(file) != CHAR_SGSERIAL_END) return false;
+	if (sgserializable_name != '\0')
+		if (fgetc(m_fstream) != CHAR_SGSERIAL_END) return false;
 
 	stack_fpos.pop_back();
 
@@ -417,7 +411,7 @@ CSerializableAsciiFile::write_type_begin_wrapped(
 	char buf[50];
 	type->to_string(buf);
 
-	if (fprintf(file, "%s %s %s ",
+	if (fprintf(m_fstream, "%s %s %s ",
 				*prefix == '\0'? STR_EMPTY_PREFIX: prefix, name, buf
 			) <= 0)
 		return false;
@@ -429,14 +423,14 @@ bool
 CSerializableAsciiFile::read_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (fseek(file, stack_fpos.back(), SEEK_SET) != 0) return false;
+	if (fseek(m_fstream, stack_fpos.back(), SEEK_SET) != 0) return false;
 
 	char type_str[50];
 	type->to_string(type_str);
 
 	char r_prefix[256], r_name[50], r_type[50];
 	while (true) {
-		if (fscanf(file, "%256s %50s %50s ", r_prefix, r_name, r_type)
+		if (fscanf(m_fstream, "%256s %50s %50s ", r_prefix, r_name, r_type)
 			!= 3)
 			return false;
 
@@ -457,7 +451,7 @@ bool
 CSerializableAsciiFile::write_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (fprintf(file, "%c", CHAR_TYPE_END) <= 0) return false;
+	if (fprintf(m_fstream, "%c", CHAR_TYPE_END) <= 0) return false;
 
 	return true;
 }
@@ -466,7 +460,7 @@ bool
 CSerializableAsciiFile::read_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (fgetc(file) != CHAR_TYPE_END) return false;
+	if (fgetc(m_fstream) != CHAR_TYPE_END) return false;
 
 	return true;
 }

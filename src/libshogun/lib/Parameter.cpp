@@ -9,6 +9,7 @@
  */
 
 #include "lib/Parameter.h"
+#include "base/class_list.h"
 
 using namespace shogun;
 
@@ -19,100 +20,98 @@ void
 CParameter::add(bool* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_BOOL);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(char* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_CHAR);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(int8_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_INT8);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(uint8_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_UINT8);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(int16_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_INT16);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(uint16_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_UINT16);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(int32_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_INT32);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(uint32_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_UINT32);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(int64_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_INT64);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(uint64_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_UINT64);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(float32_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_FLOAT32);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(float64_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_FLOAT64);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add(floatmax_t* param, const char* name,
 				const char* description) {
 	TSGDataType type(CT_SCALAR, PT_FLOATMAX);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
-CParameter::add(
-	CSGSerializable** param,
-	TParameter::new_sgserializable_t new_sgserializable,
-	const char* name, const char* description) {
+CParameter::add(CSGSerializable** param,
+				const char* name, const char* description) {
 	TSGDataType type(CT_SCALAR, PT_SGSERIALIZABLE_PTR);
-	add_type(&type, param, name, description, new_sgserializable);
+	add_type(&type, param, name, description);
 }
 
 /* **************************************************************** */
@@ -123,7 +122,7 @@ CParameter::add_vector(
 	bool** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_BOOL, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -131,7 +130,7 @@ CParameter::add_vector(
 	char** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_CHAR, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -139,7 +138,7 @@ CParameter::add_vector(
 	int8_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_INT8, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -147,7 +146,7 @@ CParameter::add_vector(
 	uint8_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_UINT8, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -155,7 +154,7 @@ CParameter::add_vector(
 	int16_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_INT16, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -163,7 +162,7 @@ CParameter::add_vector(
 	uint16_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_UINT16, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -171,7 +170,7 @@ CParameter::add_vector(
 	int32_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_INT32, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -179,7 +178,7 @@ CParameter::add_vector(
 	uint32_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_UINT32, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -187,7 +186,7 @@ CParameter::add_vector(
 	int64_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_INT64, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -195,7 +194,7 @@ CParameter::add_vector(
 	uint64_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_UINT64, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -203,7 +202,7 @@ CParameter::add_vector(
 	float32_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_FLOAT32, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -211,7 +210,7 @@ CParameter::add_vector(
 	float64_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_FLOAT64, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -219,16 +218,14 @@ CParameter::add_vector(
 	floatmax_t** param, index_t* length, const char* name,
 	const char* description) {
 	TSGDataType type(CT_VECTOR, PT_FLOATMAX, length);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
-CParameter::add_vector(
-	CSGSerializable*** param, index_t* length,
-	TParameter::new_sgserializable_t new_sgserializable,
-	const char* name, const char* description) {
+CParameter::add_vector(CSGSerializable*** param, index_t* length,
+					   const char* name, const char* description) {
 	TSGDataType type(CT_VECTOR, PT_SGSERIALIZABLE_PTR, length);
-	add_type(&type, param, name, description, new_sgserializable);
+	add_type(&type, param, name, description);
 }
 
 /* **************************************************************** */
@@ -239,7 +236,7 @@ CParameter::add_matrix(
 	bool** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_BOOL, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -247,7 +244,7 @@ CParameter::add_matrix(
 	char** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_CHAR, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -255,7 +252,7 @@ CParameter::add_matrix(
 	int8_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_INT8, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -263,7 +260,7 @@ CParameter::add_matrix(
 	uint8_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_UINT8, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -271,7 +268,7 @@ CParameter::add_matrix(
 	int16_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_INT16, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -279,7 +276,7 @@ CParameter::add_matrix(
 	uint16_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_UINT16, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -287,7 +284,7 @@ CParameter::add_matrix(
 	int32_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_INT32, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -295,7 +292,7 @@ CParameter::add_matrix(
 	uint32_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_UINT32, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -303,7 +300,7 @@ CParameter::add_matrix(
 	int64_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_INT64, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -311,7 +308,7 @@ CParameter::add_matrix(
 	uint64_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_UINT64, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -319,7 +316,7 @@ CParameter::add_matrix(
 	float32_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_FLOAT32, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -327,7 +324,7 @@ CParameter::add_matrix(
 	float64_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_FLOAT64, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
@@ -335,31 +332,28 @@ CParameter::add_matrix(
 	floatmax_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_FLOATMAX, length_y, length_x);
-	add_type(&type, param, name, description, NULL);
+	add_type(&type, param, name, description);
 }
 
 void
 CParameter::add_matrix(
 	CSGSerializable*** param, index_t* length_y, index_t* length_x,
-	TParameter::new_sgserializable_t new_sgserializable,
 	const char* name, const char* description) {
 	TSGDataType type(CT_MATRIX, PT_SGSERIALIZABLE_PTR, length_y,
 					 length_x);
-	add_type(&type, param, name, description, new_sgserializable);
+	add_type(&type, param, name, description);
 }
 
 /* **************************************************************** */
 /* End of wrappers  */
 
 TParameter::TParameter(const TSGDataType* datatype, void* parameter,
-					   const char* name, const char* description,
-					   new_sgserializable_t new_sgserializable)
+					   const char* name, const char* description)
 	:m_datatype(*datatype)
 {
 	m_parameter = parameter;
 	m_name = strdup(name);
 	m_description = strdup(description);
-	m_new_sgserializable = new_sgserializable;
 }
 
 TParameter::~TParameter(void)
@@ -471,18 +465,20 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 
 bool
 TParameter::new_sgserial(CIO* io, CSGSerializable** param,
+						 const char* sgserializable_name,
 						 const char* prefix)
 {
+	if (*param != NULL) delete *param;
+
+	*param = new_sgserializable(sgserializable_name);
+
 	if (*param == NULL) {
-		*param = m_new_sgserializable();
+		SG_WARNING("FATAL: TParameter::new_sgserial(): "
+				   "Class `C%s' was not listed during compiling Shogun"
+				   " :( ...  Can not construct it for `%s%s'!",
+				   sgserializable_name, prefix, m_name);
 
-		if (*param == NULL) {
-			SG_ERROR("FATAL: TParameter::new_sgserial(): "
-					 "Callback of type `new_sgserializable_t' is "
-					 "returning NULL for `%s%s'!", prefix, m_name);
-
-			return false;
-		}
+		return false;
 	}
 
 	return true;
@@ -495,11 +491,12 @@ TParameter::save_scalar(CIO* io, CSerializableFile* file,
 	bool result = true;
 
 	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
-		bool sgserial_isnull = *(CSGSerializable**) param == NULL;
+		const char* sgserial_name = *(CSGSerializable**) param == NULL
+			?"" :(*(CSGSerializable**) param)->get_name();
 
 		result &= file->write_sgserializable_begin(
-			&m_datatype, m_name, prefix, sgserial_isnull);
-		if (!sgserial_isnull) {
+			&m_datatype, m_name, prefix, sgserial_name);
+		if (*sgserial_name != '\0') {
 			char* p = new_prefix(prefix, m_name);
 			result
 				&= (*(CSGSerializable**) param)
@@ -507,7 +504,7 @@ TParameter::save_scalar(CIO* io, CSerializableFile* file,
 			free(p);
 		}
 		result &= file->write_sgserializable_end(
-			&m_datatype, m_name, prefix, sgserial_isnull);
+			&m_datatype, m_name, prefix, sgserial_name);
 	} else
 		result &= file->write_scalar(&m_datatype, m_name, prefix,
 									 param);
@@ -522,12 +519,13 @@ TParameter::load_scalar(CIO* io, CSerializableFile* file,
 	bool result = true;
 
 	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
-		bool sgserial_isnull = true;
+		char sgserial_name[256] = {'\0'};
 
 		result &= file->read_sgserializable_begin(
-			&m_datatype, m_name, prefix, &sgserial_isnull);
-		if (!sgserial_isnull) {
-			if (!new_sgserial(io, (CSGSerializable**) param, prefix))
+			&m_datatype, m_name, prefix, sgserial_name);
+		if (*sgserial_name != '\0') {
+			if (!new_sgserial(io, (CSGSerializable**) param,
+							  sgserial_name, prefix))
 				return false;
 
 			char* p = new_prefix(prefix, m_name);
@@ -537,7 +535,7 @@ TParameter::load_scalar(CIO* io, CSerializableFile* file,
 			free(p);
 		}
 		result &= file->read_sgserializable_end(
-			&m_datatype, m_name, prefix, sgserial_isnull);
+			&m_datatype, m_name, prefix, sgserial_name);
 	} else
 		result &= file->read_scalar(&m_datatype, m_name, prefix,
 									param);
@@ -692,16 +690,10 @@ CParameter::~CParameter(void)
 
 void
 CParameter::add_type(const TSGDataType* type, void* param,
-					 const char* name, const char* description,
-					 TParameter::new_sgserializable_t new_sgserializable)
+					 const char* name, const char* description)
 {
 	if (name == NULL || *name == '\0')
 		SG_ERROR("FATAL: CParameter::add_type(): `name' is empty!");
-
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR
-		&& new_sgserializable == NULL)
-		SG_ERROR("FATAL: CParameter::add_type(): "
-				 "`new_sgserializable == NULL' for `%s'!", name);
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
@@ -709,8 +701,7 @@ CParameter::add_type(const TSGDataType* type, void* param,
 					 "Double parameter `%s'!", name);
 
 	m_params.append_element(
-		new TParameter(type, param, name, description,
-					   new_sgserializable)
+		new TParameter(type, param, name, description)
 		);
 }
 

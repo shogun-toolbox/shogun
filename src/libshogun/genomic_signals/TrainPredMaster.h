@@ -14,7 +14,10 @@
 #include "lib/common.h"
 #include "base/SGObject.h"
 #include "ui/GUIKernel.h"
+/*
 #include "genomic_signals/KernelFactory.h"
+*/
+class CKernelFactory;
 
 namespace shogun
 {

@@ -249,6 +249,9 @@ public:
 	float64_t set_normalization_constant(float64_t constant)
 	{
 		normalization_constant = constant;
+
+		SG_NOTIMPLEMENTED;
+		return 0.0;
 	}
 
 	/** @return object name */

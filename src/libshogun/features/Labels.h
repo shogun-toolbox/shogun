@@ -17,6 +17,8 @@
 #include "lib/File.h"
 #include "base/SGObject.h"
 
+#define CLASSLIST_TODO
+
 namespace shogun
 {
 
@@ -27,13 +29,11 @@ namespace shogun
  * Labels here are always real-valued and thus applicable to classification
  * (cf.  CClassifier) and regression (cf. CRegression) problems.
  */
-class CLabels : public CSGObject
+CLASSLIST_TODO class CLabels : public CSGObject
 {
 	void init(int32_t num_labels_, int32_t num_classes);
 
 	public:
-		static CSGSerializable* new_sgserializable(void);
-
 		/** default constructor */
 		CLabels();
 

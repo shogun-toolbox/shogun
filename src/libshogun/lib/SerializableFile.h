@@ -20,17 +20,14 @@ namespace shogun
 {
 class CSerializableFile :public CSGObject
 {
-	void init(FILE* file_, char task_, const char* filename_);
+	void init(FILE* fstream, char task, const char* filename);
 	bool is_task_warn(char rw);
 	bool false_warn(const char* prefix, const char* name);
 
 protected:
-	/** file object */
-	FILE* file;
-	/** task */
-	char task;
-	/** name of the handled file */
-	char* filename;
+	FILE* m_fstream;
+	char m_task;
+	char* m_filename;
 
 	virtual bool write_scalar_wrapped(const TSGDataType* type,
 									  const void* param) = 0;
@@ -62,14 +59,14 @@ protected:
 									   index_t y, index_t x) = 0;
 
 	virtual bool write_sgserializable_begin_wrapped(
-		const TSGDataType* type, bool is_null) = 0;
+		const TSGDataType* type, const char* sgserializable_name) = 0;
 	virtual bool read_sgserializable_begin_wrapped(
-		const TSGDataType* type, bool* is_null) = 0;
+		const TSGDataType* type, char* sgserializable_name) = 0;
 
 	virtual bool write_sgserializable_end_wrapped(
-		const TSGDataType* type, bool is_null) = 0;
+		const TSGDataType* type, const char* sgserializable_name) = 0;
 	virtual bool read_sgserializable_end_wrapped(
-		const TSGDataType* type, bool is_null) = 0;
+		const TSGDataType* type, const char* sgserializable_name) = 0;
 
 	virtual bool write_type_begin_wrapped(const TSGDataType* type,
 										  const char* name,
@@ -93,7 +90,7 @@ public:
 	 *
 	 * @param f already opened file
 	 */
-	explicit CSerializableFile(FILE* f, char rw);
+	explicit CSerializableFile(FILE* fstream, char rw);
 
 	/** constructor
 	 *
@@ -149,17 +146,17 @@ public:
 
 	virtual bool write_sgserializable_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
-		bool is_null);
+		const char* sgserializable_name);
 	virtual bool read_sgserializable_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
-		bool* is_null);
+		char* sgserializable_name);
 
 	virtual bool write_sgserializable_end(
 		const TSGDataType* type, const char* name, const char* prefix,
-		bool is_null);
+		const char* sgserializable_name);
 	virtual bool read_sgserializable_end(
 		const TSGDataType* type, const char* name, const char* prefix,
-		bool is_null);
+		const char* sgserializable_name);
 
 	virtual bool write_type_begin(
 		const TSGDataType* type, const char* name, const char* prefix);

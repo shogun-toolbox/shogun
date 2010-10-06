@@ -3,7 +3,7 @@
 
 
 #include <shogun/lib/common.h>
-#include <shogun/ui/SGInterface.h>
+#include "ui/SGInterface.h"
 
 extern "C" {
 #include <R.h>
