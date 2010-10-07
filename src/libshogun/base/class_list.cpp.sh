@@ -1,9 +1,18 @@
 #!/bin/sh
 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Written (W) 2008-2009 Soeren Sonnenburg
+# Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
+
+
 TEMPL_FILE=$1
 HEADERS=${*#$TEMPL_FILE}
 
-# Search in headers for non-template class names start with `C'.
+# Search in headers for non-template class-names starting with `C'.
 classes=\
 `sed -n 's/^CLASSLIST_TODO[^t\/\*]*class \+[C]\([A-Z][A-Za-z0-9_]\+\)[^;]*$/\1/p;' \
     $HEADERS`

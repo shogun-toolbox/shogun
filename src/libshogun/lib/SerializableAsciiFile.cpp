@@ -11,7 +11,7 @@
 #include "lib/SerializableAsciiFile.h"
 
 #define STR_HEADER                 \
-	"<<_SHOGON_SERIALIZABLE_ASCII_FILE_V_00_>>"
+	"<<_SHOGUN_SERIALIZABLE_ASCII_FILE_V_00_>>"
 
 #define CHAR_CONT_BEGIN            '('
 #define CHAR_CONT_END              ')'
@@ -386,7 +386,7 @@ bool
 CSerializableAsciiFile::write_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name)
 {
-	if (sgserializable_name != '\0')
+	if (*sgserializable_name != '\0')
 		if (fprintf(m_fstream, "%c", CHAR_SGSERIAL_END) <= 0) return false;
 
 	return true;
@@ -396,7 +396,7 @@ bool
 CSerializableAsciiFile::read_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name)
 {
-	if (sgserializable_name != '\0')
+	if (*sgserializable_name != '\0')
 		if (fgetc(m_fstream) != CHAR_SGSERIAL_END) return false;
 
 	stack_fpos.pop_back();

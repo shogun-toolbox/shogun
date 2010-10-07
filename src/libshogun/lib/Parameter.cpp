@@ -424,8 +424,8 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 			break;
 		}
 	}
-
 	*(void**) m_parameter = NULL;
+
 	index_t new_length = new_len_y*new_len_x;
 	if (new_length == 0) return;
 
@@ -468,12 +468,15 @@ TParameter::new_sgserial(CIO* io, CSGSerializable** param,
 						 const char* sgserializable_name,
 						 const char* prefix)
 {
-	if (*param != NULL) delete *param;
+	/* We only create if not exist to have a chance to save class
+	 * templates.
+	 */
+	if (*param != NULL) return true;
 
 	*param = new_sgserializable(sgserializable_name);
 
 	if (*param == NULL) {
-		SG_WARNING("FATAL: TParameter::new_sgserial(): "
+		SG_WARNING("TParameter::new_sgserial(): "
 				   "Class `C%s' was not listed during compiling Shogun"
 				   " :( ...  Can not construct it for `%s%s'!",
 				   sgserializable_name, prefix, m_name);
@@ -488,71 +491,70 @@ bool
 TParameter::save_scalar(CIO* io, CSerializableFile* file,
 						const void* param, const char* prefix)
 {
-	bool result = true;
-
 	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
 		const char* sgserial_name = *(CSGSerializable**) param == NULL
 			?"" :(*(CSGSerializable**) param)->get_name();
 
-		result &= file->write_sgserializable_begin(
-			&m_datatype, m_name, prefix, sgserial_name);
+		if (!file->write_sgserializable_begin(
+				&m_datatype, m_name, prefix, sgserial_name))
+			return false;
 		if (*sgserial_name != '\0') {
 			char* p = new_prefix(prefix, m_name);
-			result
-				&= (*(CSGSerializable**) param)
+			bool result = (*(CSGSerializable**) param)
 				->save_serializable(file, p);
 			free(p);
+			if (!result) return false;
 		}
-		result &= file->write_sgserializable_end(
-			&m_datatype, m_name, prefix, sgserial_name);
+		if (!file->write_sgserializable_end(
+				&m_datatype, m_name, prefix, sgserial_name))
+			return false;
 	} else
-		result &= file->write_scalar(&m_datatype, m_name, prefix,
-									 param);
+		if (!file->write_scalar(&m_datatype, m_name, prefix,
+								param)) return false;
 
-	return result;
+	return true;
 }
 
 bool
 TParameter::load_scalar(CIO* io, CSerializableFile* file,
 						void* param, const char* prefix)
 {
-	bool result = true;
-
 	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
 		char sgserial_name[256] = {'\0'};
 
-		result &= file->read_sgserializable_begin(
-			&m_datatype, m_name, prefix, sgserial_name);
+		if (!file->read_sgserializable_begin(
+				&m_datatype, m_name, prefix, sgserial_name))
+			return false;
 		if (*sgserial_name != '\0') {
 			if (!new_sgserial(io, (CSGSerializable**) param,
 							  sgserial_name, prefix))
 				return false;
 
 			char* p = new_prefix(prefix, m_name);
-			result
-				&= (*(CSGSerializable**) param)
+			bool result = (*(CSGSerializable**) param)
 				->load_serializable(file, p);
 			free(p);
+			if (!result) return false;
 		}
-		result &= file->read_sgserializable_end(
-			&m_datatype, m_name, prefix, sgserial_name);
+		if (!file->read_sgserializable_end(
+				&m_datatype, m_name, prefix, sgserial_name))
+			return false;
 	} else
-		result &= file->read_scalar(&m_datatype, m_name, prefix,
-									param);
+		if (!file->read_scalar(&m_datatype, m_name, prefix,
+							   param)) return false;
 
-	return result;
+	return true;
 }
 
 bool
 TParameter::save(CIO* io, CSerializableFile* file, const char* prefix)
 {
-	bool result = true;
-
-	result &= file->write_type_begin(&m_datatype, m_name, prefix);
+	if (!file->write_type_begin(&m_datatype, m_name, prefix))
+		return false;
 
 	switch (m_datatype.m_ctype) {
 	case CT_SCALAR:
-		result &= save_scalar(io, file, m_parameter, prefix);
+		if (!save_scalar(io, file, m_parameter, prefix)) return false;
 		break;
 	case CT_VECTOR: case CT_MATRIX:
 		index_t len_real_y = 0, len_real_x = 0;
@@ -582,95 +584,109 @@ TParameter::save(CIO* io, CSerializableFile* file, const char* prefix)
 		case CT_SCALAR: break;
 		}
 
-		result &= file->write_cont_begin(&m_datatype, m_name, prefix,
-										 len_real_y, len_real_x);
+		if (!file->write_cont_begin(&m_datatype, m_name, prefix,
+									len_real_y, len_real_x))
+			return false;
 
 		/* ******************************************************** */
 
 		for (index_t x=0; x<len_real_x; x++)
 			for (index_t y=0; y<len_real_y; y++) {
-				result &= file->write_item_begin(
-					&m_datatype, m_name, prefix, y, x);
-				result &= save_scalar(
-					io, file, (*(char**) m_parameter)
-					+ (x*len_real_y + y)*m_datatype.sizeof_ptype(),
-					prefix);
-				result &= file->write_item_end(
-					&m_datatype, m_name, prefix, y, x);
+				if (!file->write_item_begin(
+						&m_datatype, m_name, prefix, y, x))
+					return false;
+				if (!save_scalar(
+						io, file, (*(char**) m_parameter)
+						+ (x*len_real_y + y)*m_datatype.sizeof_ptype(),
+						prefix)) return false;
+				if (!file->write_item_end(
+						&m_datatype, m_name, prefix, y, x))
+					return false;
 			}
 
 		/* ******************************************************** */
 
-		result &= file->write_cont_end(&m_datatype, m_name, prefix,
-									   len_real_y, len_real_x);
+		if (!file->write_cont_end(&m_datatype, m_name, prefix,
+								  len_real_y, len_real_x))
+			return false;
 
 		break;
 	}
 
-	result &= file->write_type_end(&m_datatype, m_name, prefix);
+	if (!file->write_type_end(&m_datatype, m_name, prefix))
+		return false;
 
-	return result;
+	return true;
 }
 
 bool
 TParameter::load(CIO* io, CSerializableFile* file, const char* prefix)
 {
-	bool result = true;
-
-	result &= file->read_type_begin(&m_datatype, m_name, prefix);
+	if (!file->read_type_begin(&m_datatype, m_name, prefix))
+		return false;
 
 	switch (m_datatype.m_ctype) {
 	case CT_SCALAR:
-		result &= load_scalar(io, file, m_parameter, prefix);
+		if (!load_scalar(io, file, m_parameter, prefix)) return false;
 		break;
 	case CT_VECTOR: case CT_MATRIX:
 		index_t len_read_y = 0, len_read_x = 0;
 
-		result &= file->read_cont_begin(&m_datatype, m_name, prefix,
-										&len_read_y, &len_read_x);
+		if (!file->read_cont_begin(&m_datatype, m_name, prefix,
+								   &len_read_y, &len_read_x))
+			return false;
 
 		/* ******************************************************** */
 
-		/* Do not change the order!  NEW_CONT is accessing the members
-		 * of M_DATATYPE.
-		 */
 		switch (m_datatype.m_ctype) {
 		case CT_VECTOR:
 			len_read_x = 1;
 			new_cont(len_read_y, len_read_x);
-			*m_datatype.m_length_y = len_read_y;
 			break;
 		case CT_MATRIX:
 			new_cont(len_read_y, len_read_x);
-			*m_datatype.m_length_y = len_read_y;
-			*m_datatype.m_length_x = len_read_x;
 			break;
 		case CT_SCALAR: break;
 		}
 
 		for (index_t x=0; x<len_read_x; x++)
 			for (index_t y=0; y<len_read_y; y++) {
-				result &= file->read_item_begin(
-					&m_datatype, m_name, prefix, y, x);
-				result &= load_scalar(
-					io, file, (*(char**) m_parameter)
-					+ (x*len_read_y + y)*m_datatype.sizeof_ptype(),
-					prefix);
-				result &= file->read_item_end(
-					&m_datatype, m_name, prefix, y, x);
+				if (!file->read_item_begin(
+						&m_datatype, m_name, prefix, y, x))
+					return false;
+				if (!load_scalar(
+						io, file, (*(char**) m_parameter)
+						+ (x*len_read_y + y)*m_datatype.sizeof_ptype(),
+						prefix)) return false;
+				if (!file->read_item_end(
+						&m_datatype, m_name, prefix, y, x))
+					return false;
 			}
+
+		switch (m_datatype.m_ctype) {
+		case CT_VECTOR:
+			*m_datatype.m_length_y = len_read_y;
+			break;
+		case CT_MATRIX:
+			*m_datatype.m_length_y = len_read_y;
+			*m_datatype.m_length_x = len_read_x;
+			break;
+		case CT_SCALAR: break;
+		}
 
 		/* ******************************************************** */
 
-		result &= file->read_cont_end(&m_datatype, m_name, prefix,
-									  len_read_y, len_read_x);
+		if (!file->read_cont_end(&m_datatype, m_name, prefix,
+								 len_read_y, len_read_x))
+			return false;
 
 		break;
 	}
 
-	result &= file->read_type_end(&m_datatype, m_name, prefix);
+	if (!file->read_type_end(&m_datatype, m_name, prefix))
+		return false;
 
-	return result;
+	return true;
 }
 
 CParameter::CParameter(CIO* io_) :m_params(io_)

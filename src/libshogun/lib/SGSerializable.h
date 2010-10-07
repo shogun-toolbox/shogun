@@ -29,7 +29,7 @@ public:
 	virtual ~CSGSerializable(void);
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 * the CLASS NAME without the prefixed `C'.
+	 *  the CLASS NAME without the prefixed `C'.
 	 *
 	 * @return name of the SGSerializable
 	 */
