@@ -53,6 +53,9 @@ namespace shogun
 class CScatterSVM : public CMultiClassSVM
 {
 	public:
+		/** default constructor  */
+		CScatterSVM(void);
+
 		/** constructor */
 		CScatterSVM(SCATTER_TYPE type);
 

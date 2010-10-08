@@ -21,6 +21,17 @@
 
 using namespace shogun;
 
+CLibLinear::CLibLinear(void)
+: CLinearClassifier()
+{
+	liblinear_solver_type=L2R_LR;
+	use_bias=false;
+	C1=1;
+	C2=1;
+	set_max_iterations();
+	init_linear_term();
+}
+
 CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
 : CLinearClassifier()
 {

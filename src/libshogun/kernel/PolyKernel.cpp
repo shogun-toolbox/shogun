@@ -18,6 +18,12 @@
 
 using namespace shogun;
 
+CPolyKernel::CPolyKernel(void)
+: CDotKernel(0), degree(0), inhomogene(false)
+{
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+}
+
 CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
 : CDotKernel(size), degree(d), inhomogene(i)
 {

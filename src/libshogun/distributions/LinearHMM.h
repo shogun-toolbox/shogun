@@ -39,6 +39,9 @@ namespace shogun
 class CLinearHMM : public CDistribution
 {
 	public:
+		/** default constructor  */
+		CLinearHMM(void);
+
 		/** constructor
 		 *
 		 * @param f features to use

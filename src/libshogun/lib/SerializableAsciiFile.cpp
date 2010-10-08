@@ -387,7 +387,8 @@ CSerializableAsciiFile::write_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name)
 {
 	if (*sgserializable_name != '\0')
-		if (fprintf(m_fstream, "%c", CHAR_SGSERIAL_END) <= 0) return false;
+		if (fprintf(m_fstream, "%c", CHAR_SGSERIAL_END) <= 0)
+			return false;
 
 	return true;
 }
@@ -423,15 +424,16 @@ bool
 CSerializableAsciiFile::read_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (fseek(m_fstream, stack_fpos.back(), SEEK_SET) != 0) return false;
+	if (fseek(m_fstream, stack_fpos.back(), SEEK_SET) != 0)
+		return false;
 
 	char type_str[50];
 	type->to_string(type_str);
 
 	char r_prefix[256], r_name[50], r_type[50];
 	while (true) {
-		if (fscanf(m_fstream, "%256s %50s %50s ", r_prefix, r_name, r_type)
-			!= 3)
+		if (fscanf(m_fstream, "%256s %50s %50s ", r_prefix, r_name,
+				   r_type) != 3)
 			return false;
 
 		if ((strcmp(r_prefix, prefix) == 0 || (

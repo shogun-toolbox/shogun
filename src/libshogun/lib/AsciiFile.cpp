@@ -15,6 +15,10 @@
 
 using namespace shogun;
 
+CAsciiFile::CAsciiFile(void)
+{
+}
+
 CAsciiFile::CAsciiFile(FILE* f, const char* name) : CFile(f, name)
 {
 }

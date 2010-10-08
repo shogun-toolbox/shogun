@@ -138,6 +138,46 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const { return "AttributeFeatures"; }
 
+	/** duplicate feature object
+	 *
+	 * abstract base method
+	 *
+	 * @return feature object
+	 */
+	virtual CFeatures* duplicate() const=0;
+
+	/** get feature type
+	 *
+	 * abstract base method
+	 *
+	 * @return templated feature type
+	 */
+	virtual EFeatureType get_feature_type()=0;
+
+	/** get feature class
+	 *
+	 * abstract base method
+	 *
+	 * @return feature class like STRING, SIMPLE, SPARSE...
+	 */
+	virtual EFeatureClass get_feature_class()=0;
+
+	/** get number of examples/vectors
+	 *
+	 * abstract base method
+	 *
+	 * @return number of examples/vectors
+	 */
+	virtual int32_t get_num_vectors()=0 ;
+
+	/** get memory footprint of one feature
+	 *
+	 * abstract base method
+	 *
+	 * @return memory footprint of one feature
+	 */
+	virtual int32_t get_size()=0;
+
 protected:
 	/** find the index of the attribute matching attribute name
 	 *

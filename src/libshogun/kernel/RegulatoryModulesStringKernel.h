@@ -25,6 +25,9 @@ namespace shogun
 class CRegulatoryModulesStringKernel: public CStringKernel<char>
 {
 	public:
+		/** default constructor  */
+		CRegulatoryModulesStringKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

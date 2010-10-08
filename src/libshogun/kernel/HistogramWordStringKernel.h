@@ -26,6 +26,9 @@ namespace shogun
 class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
+		/** default constructor  */
+		CHistogramWordStringKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

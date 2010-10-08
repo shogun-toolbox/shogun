@@ -65,10 +65,7 @@
 %ignore NUM_LOG_LEVELS;
 %ignore FBUFSIZE;
 
-%rename(IO) CIO;
 %rename(SGSerializable) CSGSerializable;
-%rename(Version) CVersion;
-%rename(Parallel) CParallel;
 %rename(SGObject) CSGObject;
 
 %feature("ref")   CSGObject "SG_REF($this);"

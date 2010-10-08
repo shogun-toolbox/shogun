@@ -29,6 +29,8 @@ namespace shogun
 class CSpectrumRBFKernel: public CStringKernel<char>
 {
 	public:
+		/** default constructor  */
+		CSpectrumRBFKernel(void);
 
 		/** constructor
 		 *
@@ -144,7 +146,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		int32_t max_mismatch;
 
 		CArray2<float64_t> kernel_matrix ;
-		int target_letter_0 ;
+		int32_t target_letter_0 ;
 };
 
 }

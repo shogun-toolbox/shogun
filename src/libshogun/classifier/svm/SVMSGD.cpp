@@ -101,6 +101,12 @@ float64_t dloss(float64_t z)
 }
 
 
+CSVMSGD::CSVMSGD(void)
+: CLinearClassifier(), t(1), C1(1), C2(1),
+  wscale(1), bscale(1), epochs(5), skip(1000), count(1000), use_bias(true),
+  use_regularized_bias(false)
+{
+}
 
 CSVMSGD::CSVMSGD(float64_t C)
 : CLinearClassifier(), t(1), C1(C), C2(C),

@@ -12,15 +12,15 @@
 
 using namespace shogun;
 
-CParallel::CParallel() : refcount(0), num_threads(1)
+Parallel::Parallel() : refcount(0), num_threads(1)
 {
 }
 
-CParallel::CParallel(const CParallel& orig) : refcount(0)
+Parallel::Parallel(const Parallel& orig) : refcount(0)
 {
 	num_threads=orig.get_num_threads();
 }
 
-CParallel::~CParallel()
+Parallel::~Parallel()
 {
 }

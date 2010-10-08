@@ -16,6 +16,13 @@
 
 using namespace shogun;
 
+CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(void)
+: CStringKernel<char>(0), width(0.0), degree(0), shift(0), window(0),
+	motif_positions_lhs(NULL), motif_positions_rhs(NULL),
+  position_weights(NULL), weights(NULL)
+{
+}
+
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
 		int32_t size, float64_t w, int32_t d, int32_t s, int32_t wl)
 : CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl), 

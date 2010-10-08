@@ -17,6 +17,11 @@
 
 using namespace shogun;
 
+CMinkowskiMetric::CMinkowskiMetric(void)
+{
+	k = 0.0;
+}
+
 CMinkowskiMetric::CMinkowskiMetric(float64_t k_)
 : CSimpleDistance<float64_t>(), k(k_)
 {

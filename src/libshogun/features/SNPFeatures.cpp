@@ -14,6 +14,20 @@
 
 using namespace shogun;
 
+CSNPFeatures::CSNPFeatures(void)
+{
+	strings = NULL;
+
+	string_length = 0;
+	num_strings = 0;
+	w_dim = 0;
+
+	normalization_const = 0.0;
+
+	m_str_min = NULL;
+	m_str_maj = NULL;
+}
+
 CSNPFeatures::CSNPFeatures(CStringFeatures<uint8_t>* str) : CDotFeatures(),
 	m_str_min(NULL), m_str_maj(NULL)
 {

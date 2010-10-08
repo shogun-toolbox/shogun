@@ -10,7 +10,7 @@
 
 #include "lib/io.h"
 #include "classifier/svm/GNPPSVM.h"
-#include "classifier/svm/gnpplib.h"
+#include "classifier/svm/GNPPLib.h"
 
 using namespace shogun;
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW)) 

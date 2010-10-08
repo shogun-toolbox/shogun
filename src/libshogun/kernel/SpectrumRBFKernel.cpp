@@ -36,6 +36,24 @@
 
 using namespace shogun;
 
+CSpectrumRBFKernel::CSpectrumRBFKernel (void)
+  : CStringKernel<char>(0)
+{
+	alphabet = NULL;
+	degree = 0;
+	AA_matrix = NULL;
+	width = 0.0;
+	sequences = NULL;
+	string_features = NULL;
+	nof_sequences = 0;
+	max_sequence_length = 0;
+
+	initialized = false;
+
+	max_mismatch = 0;
+	target_letter_0 = 0;
+}
+
 CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int32_t degree_, float64_t width_)
   : CStringKernel<char>(size), alphabet(NULL), degree(degree_), width(width_), sequences(NULL), string_features(NULL), nof_sequences(0), max_sequence_length(0)
 {

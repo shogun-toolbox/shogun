@@ -902,7 +902,7 @@ bool CGUIClassifier::load(char* filename, char* type)
 bool CGUIClassifier::save(char* param)
 {
 	bool result=false;
-	param=CIO::skip_spaces(param);
+	param=IO::skip_spaces(param);
 
 	if (classifier)
 	{

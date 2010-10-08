@@ -33,6 +33,9 @@ namespace shogun
 class CAUCKernel: public CDotKernel
 {
 	public:
+		/** default constructor  */
+		CAUCKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

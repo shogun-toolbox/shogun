@@ -23,6 +23,12 @@
 
 using namespace shogun;
 
+CHDF5File::CHDF5File(void)
+{
+	get_boolean_type();
+	h5file = -1;
+}
+
 CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 {
 	get_boolean_type();

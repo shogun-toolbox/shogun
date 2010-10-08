@@ -15,21 +15,21 @@ using namespace shogun;
 
 namespace shogun
 {
-const int32_t CVersion::version_revision = VERSION_REVISION;
-const int32_t CVersion::version_year = VERSION_YEAR;
-const int32_t CVersion::version_month = VERSION_MONTH;
-const int32_t CVersion::version_day = VERSION_DAY;
-const int32_t CVersion::version_hour = VERSION_HOUR;
-const int32_t CVersion::version_minute = VERSION_MINUTE;
-const char CVersion::version_extra[128] = VERSION_EXTRA;
-const char CVersion::version_release[128] = VERSION_RELEASE;
+const int32_t Version::version_revision = VERSION_REVISION;
+const int32_t Version::version_year = VERSION_YEAR;
+const int32_t Version::version_month = VERSION_MONTH;
+const int32_t Version::version_day = VERSION_DAY;
+const int32_t Version::version_hour = VERSION_HOUR;
+const int32_t Version::version_minute = VERSION_MINUTE;
+const char Version::version_extra[128] = VERSION_EXTRA;
+const char Version::version_release[128] = VERSION_RELEASE;
 }
 
-CVersion::CVersion() : refcount(0)
+Version::Version() : refcount(0)
 {
 }
 
 
-CVersion::~CVersion()
+Version::~Version()
 {
 }

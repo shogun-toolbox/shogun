@@ -27,6 +27,11 @@ class CMultitaskKernelPlifNormalizer: public CMultitaskKernelMklNormalizer
 {
 
 public:
+	/** default constructor  */
+	CMultitaskKernelPlifNormalizer(void) {
+		num_tasks = 0;
+		num_betas = 0;
+	}
 
 	/** constructor
 	 */

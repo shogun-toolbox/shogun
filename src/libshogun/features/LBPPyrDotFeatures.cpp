@@ -124,6 +124,16 @@ using namespace shogun;
 //  return;
 //}
 
+CLBPPyrDotFeatures::CLBPPyrDotFeatures(void)
+	: CDotFeatures()
+{
+	m_feat = NULL;
+
+	img = NULL;
+	img_nRows = 0;
+	img_nCols = 0;
+	vec_nDim = 0;
+}
 
 CLBPPyrDotFeatures::CLBPPyrDotFeatures(CSimpleFeatures<uint32_t>* images, uint16_t num_pyramids)
 	: CDotFeatures()

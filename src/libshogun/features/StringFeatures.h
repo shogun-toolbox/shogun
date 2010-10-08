@@ -1023,11 +1023,11 @@ template <class ST> class CStringFeatures : public CFeatures
 			struct dirent **namelist;
 			int32_t n;
 
-            CIO::set_dirname(dirname);
+            IO::set_dirname(dirname);
 
 			SG_DEBUG("dirname '%s'\n", dirname);
 
-			n = scandir(dirname, &namelist, &CIO::filter, alphasort);
+			n = scandir(dirname, &namelist, &IO::filter, alphasort);
 			if (n <= 0)
 			{
 				SG_ERROR("error calling scandir - no files found\n");
@@ -1046,7 +1046,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				for (int32_t i=0; i<n; i++)
 				{
-					char* fname=CIO::concat_filename(namelist[i]->d_name);
+					char* fname=IO::concat_filename(namelist[i]->d_name);
 
 					struct stat s;
 					off_t filesize=0;

@@ -14,6 +14,10 @@
 
 using namespace shogun;
 
+CBinaryFile::CBinaryFile(void)
+{
+}
+
 CBinaryFile::CBinaryFile(FILE* f, const char* name) : CFile(f, name)
 {
 }

@@ -19,10 +19,10 @@
 #include "distance/Distance.h"
 #include "classifier/DistanceMachine.h"
 
-class CDistanceMachine;
-
 namespace shogun
 {
+class CDistanceMachine;
+
 /** @brief Class KNN, an implementation of the standard k-nearest neigbor
  * classifier.
  *

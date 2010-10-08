@@ -42,9 +42,13 @@ namespace shogun
 	};
 
 /** @brief class to implement LibLinear */
-class CLibLinear : public CLinearClassifier
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CLibLinear : public CLinearClassifier
 {
 	public:
+		/** default constructor  */
+		CLibLinear(void);
+
 		/** constructor
 		 *
 		 * @param liblinear_solver_type liblinear_solver_type

@@ -17,6 +17,12 @@
 
 using namespace shogun;
 
+CFixedDegreeStringKernel::CFixedDegreeStringKernel(void)
+: CStringKernel<char>(0), degree(0)
+{
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+}
+
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(int32_t size, int32_t d)
 : CStringKernel<char>(size), degree(d)
 {

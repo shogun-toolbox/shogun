@@ -18,6 +18,15 @@
 
 using namespace shogun;
 
+CHistogramWordStringKernel::CHistogramWordStringKernel(void)
+: CStringKernel<uint16_t>(0), estimate(NULL), mean(NULL), variance(NULL),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
+	plo_lhs(NULL), plo_rhs(NULL), num_params(0), num_params2(0),
+	num_symbols(0), sum_m2_s2(0), initialized(false)
+{
+}
+
 CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie)
 : CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),

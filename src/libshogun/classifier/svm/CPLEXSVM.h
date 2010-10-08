@@ -19,7 +19,8 @@
 namespace shogun
 {
 /** @brief CplexSVM a SVM solver implementation based on cplex (unfinished). */
-class CCPLEXSVM : public CSVM
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CCPLEXSVM : public CSVM
 {
 	public:
 		CCPLEXSVM();

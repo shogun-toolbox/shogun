@@ -16,6 +16,11 @@
 
 using namespace shogun;
 
+CGaussianShiftKernel::CGaussianShiftKernel(void)
+: CGaussianKernel(0, 0.0), max_shift(0), shift_step(0)
+{
+}
+
 CGaussianShiftKernel::CGaussianShiftKernel(
 	int32_t size, float64_t w, int32_t ms, int32_t ss)
 : CGaussianKernel(size, w), max_shift(ms), shift_step(ss)

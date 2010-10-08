@@ -75,6 +75,27 @@ class CDistanceMachine : public CClassifier
 		 */
 		void distances_rhs(float64_t* result,int32_t idx_b1,int32_t idx_b2,int32_t idx_a);  
 
+		/** Returns the name of the SGSerializable instance.  It MUST BE
+		 *  the CLASS NAME without the prefixed `C'.
+		 *
+		 * @return name of the SGSerializable
+		 */
+		virtual const char* get_name(void) const {
+			return "DistanceMachine"; }
+
+		/** classify objects using the currently set features
+		 *
+		 * @return classified labels
+		 */
+		virtual CLabels* classify()=0;
+
+		/** classify objects
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* classify(CFeatures* data)=0;
+
 	protected:
 		/** the distance */
 		CDistance* distance;

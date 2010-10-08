@@ -17,6 +17,13 @@
 using namespace shogun;
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
+	void)
+: CStringKernel<char>(0), length(0), inner_degree(0), outer_degree(0),
+	pyramid_weights(NULL)
+{
+}
+
+CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	int32_t size, int32_t l, int32_t id, int32_t od)
 : CStringKernel<char>(size), length(l), inner_degree(id), outer_degree(od),
 	pyramid_weights(NULL)

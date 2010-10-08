@@ -28,6 +28,16 @@ namespace shogun
 class CBitString : public CSGObject
 {
 	public:
+		/** default constructor  */
+		CBitString(void) {
+			alphabet = NULL;
+			string = NULL;
+			length = 0;
+			word_len = 0;
+			mask = 0;
+			single_mask = 0;
+		}
+
 		/** default constructor
 		 *
 		 * creates an empty Bitstring

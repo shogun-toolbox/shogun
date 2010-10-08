@@ -17,6 +17,11 @@
 
 using namespace shogun;
 
+CDistanceKernel::CDistanceKernel(void)
+: CKernel(0), distance(NULL), width(0.0)
+{
+}
+
 CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, CDistance* d)
 : CKernel(size), distance(d), width(w)
 {

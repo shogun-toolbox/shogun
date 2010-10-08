@@ -17,6 +17,13 @@
 
 using namespace shogun;
 
+CHammingWordDistance::CHammingWordDistance(void)
+{
+	dictionary_size = 0;
+	dictionary_weights = NULL;
+	use_sign = false;
+}
+
 CHammingWordDistance::CHammingWordDistance(bool sign)
 : CStringDistance<uint16_t>(), use_sign(sign)
 {

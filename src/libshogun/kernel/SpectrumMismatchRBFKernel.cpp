@@ -33,6 +33,19 @@
 
 using namespace shogun;
 
+CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(void)
+	:CStringKernel<char>(0)
+{
+	alphabet = NULL;
+	degree = 0;
+	max_mismatch = 0;
+	AA_matrix = NULL;
+	width = 0.0;
+
+	initialized = false;
+	target_letter_0 = 0;
+}
+
 CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel (int32_t size,
 		float64_t* AA_matrix_, int32_t nr, int32_t nc,
 		int32_t degree_, int32_t max_mismatch_, float64_t width_) : CStringKernel<char>(size),

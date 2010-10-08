@@ -36,6 +36,9 @@ namespace shogun
 class CPolyKernel: public CDotKernel
 {
 	public:
+		/** default constructor  */
+		CPolyKernel(void);
+
 		/** constructor
 		 *
 		 * @param l features of left-hand side

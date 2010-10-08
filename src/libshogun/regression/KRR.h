@@ -51,7 +51,8 @@ namespace shogun
  * solution can again be written as a linear combination of kernels (cf.
  * CKernelMachine) with bias \f$b=0\f$.
  */
-class CKRR : public CKernelMachine
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CKRR : public CKernelMachine
 {
 	public:
 		/** default constructor */

@@ -27,6 +27,9 @@ namespace shogun
 class CConstKernel: public CKernel
 {
 	public:
+		/** default constructor  */
+		CConstKernel(void);
+
 		/** constructor
 		 *
 		 * @param c constant c

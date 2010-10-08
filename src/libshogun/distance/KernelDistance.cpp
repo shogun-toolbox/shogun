@@ -17,6 +17,12 @@
 
 using namespace shogun;
 
+CKernelDistance::CKernelDistance(void)
+{
+	kernel = NULL;
+	width = 0.0;
+}
+
 CKernelDistance::CKernelDistance(float64_t w, CKernel* k)
 : CDistance(), kernel(k), width(w)
 {

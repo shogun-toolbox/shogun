@@ -16,6 +16,11 @@
 
 using namespace shogun;
 
+CDiagKernel::CDiagKernel(void)
+: CKernel(0), diag(0.0)
+{
+}
+
 CDiagKernel::CDiagKernel(int32_t size, float64_t d)
 : CKernel(size), diag(d)
 {

@@ -15,6 +15,11 @@
 
 using namespace shogun;
 
+CConstKernel::CConstKernel(void)
+: CKernel(0), const_value(0.0)
+{
+}
+
 CConstKernel::CConstKernel(float64_t c)
 : CKernel(0), const_value(c)
 {

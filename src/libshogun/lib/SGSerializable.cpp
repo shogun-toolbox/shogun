@@ -14,11 +14,11 @@
 
 using namespace shogun;
 
-extern CIO* sg_io;
+extern IO* sg_io;
 
 CSGSerializable::CSGSerializable(void)
 {
-	m_parameters = new CParameter(sg_io);
+	m_parameters = new Parameter(sg_io);
 }
 
 CSGSerializable::~CSGSerializable(void)

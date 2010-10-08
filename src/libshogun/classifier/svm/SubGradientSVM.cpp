@@ -15,7 +15,7 @@
 #include "lib/Time.h"
 #include "classifier/LinearClassifier.h"
 #include "classifier/svm/SubGradientSVM.h"
-#include "classifier/svm/qpbsvmlib.h"
+#include "classifier/svm/QPBSVMLib.h"
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 

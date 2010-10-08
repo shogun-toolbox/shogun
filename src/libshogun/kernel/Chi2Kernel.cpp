@@ -16,6 +16,11 @@
 
 using namespace shogun;
 
+CChi2Kernel::CChi2Kernel(void)
+: CDotKernel(0), width(0)
+{
+}
+
 CChi2Kernel::CChi2Kernel(int32_t size, float64_t w)
 : CDotKernel(size), width(w)
 {

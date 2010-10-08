@@ -16,6 +16,12 @@
 using namespace shogun;
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
+	void)
+  : CCommWordStringKernel(0, false), degree(0), weights(NULL)
+{
+}
+
+CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	int32_t size, bool us)
 : CCommWordStringKernel(size, us), degree(0), weights(NULL)
 {

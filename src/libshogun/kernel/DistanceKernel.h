@@ -33,6 +33,9 @@ namespace shogun
 class CDistanceKernel: public CKernel
 {
 	public:
+		/** default constructor  */
+		CDistanceKernel(void);
+
 		/** constructor
 		 *
 		 * @param cache cache size

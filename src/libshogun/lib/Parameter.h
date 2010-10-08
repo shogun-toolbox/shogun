@@ -24,9 +24,9 @@ struct TParameter
 						const char* name, const char* description);
 	~TParameter(void);
 
-	void print(CIO* io, const char* prefix);
-	bool save(CIO* io, CSerializableFile* file, const char* prefix="");
-	bool load(CIO* io, CSerializableFile* file, const char* prefix="");
+	void print(IO* io, const char* prefix);
+	bool save(IO* io, CSerializableFile* file, const char* prefix="");
+	bool load(IO* io, CSerializableFile* file, const char* prefix="");
 
 	TSGDataType m_datatype;
 	void* m_parameter;
@@ -36,21 +36,21 @@ struct TParameter
 private:
 	char* new_prefix(const char* s1, const char* s2);
 	void new_cont(index_t new_len_y, index_t new_len_x);
-	bool new_sgserial(CIO* io, CSGSerializable** param,
+	bool new_sgserial(IO* io, CSGSerializable** param,
 					  const char* sgserializable_name,
 					  const char* prefix);
-	bool save_scalar(CIO* io, CSerializableFile* file,
+	bool save_scalar(IO* io, CSerializableFile* file,
 					 const void* param, const char* prefix);
-	bool load_scalar(CIO* io, CSerializableFile* file,
+	bool load_scalar(IO* io, CSerializableFile* file,
 					 void* param, const char* prefix);
 };
 
 /* Must not be an CSGObject to prevent a recursive call of
  * constructors.
  */
-class CParameter
+class Parameter
 {
-	CIO* io;
+	IO* io;
 
 protected:
 	DynArray<TParameter*> m_params;
@@ -60,8 +60,8 @@ protected:
 						  const char* description);
 
 public:
-	explicit CParameter(CIO* io_);
-	virtual ~CParameter(void);
+	explicit Parameter(IO* io_);
+	virtual ~Parameter(void);
 
 	virtual void print(const char* prefix="");
 	virtual bool save(CSerializableFile* file, const char* prefix="");

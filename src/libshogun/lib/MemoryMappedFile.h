@@ -44,7 +44,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		 *   before closing the file.
 		 *
 		 */
-		CMemoryMappedFile(const char* fname, char flag='r', uint64_t fsize=0)
+		CMemoryMappedFile(const char* fname, char flag='r', int64_t fsize=0)
 		: CSGObject()
 		{
 			last_written_byte=0;

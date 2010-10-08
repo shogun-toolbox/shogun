@@ -31,9 +31,13 @@ template <class ST> struct TSparse;
  * in the hierarchical file format version 5.
  *
  */
-class CHDF5File : public CFile
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CHDF5File : public CFile
 {
 public:
+	/** default constructor  */
+	CHDF5File(void);
+
 	/** constructor
 	 *
 	 * @param fname filename to open

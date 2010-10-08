@@ -30,6 +30,9 @@ class CSVM;
 class CMultiClassSVM : public CSVM
 {
 	public:
+		/** default constructor  */
+		CMultiClassSVM(void);
+
 		/** constructor
 		 *
 		 * @param type type of MultiClassSVM

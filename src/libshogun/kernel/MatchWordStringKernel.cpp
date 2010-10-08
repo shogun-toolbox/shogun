@@ -17,6 +17,12 @@
 
 using namespace shogun;
 
+CMatchWordStringKernel::CMatchWordStringKernel(void)
+: CStringKernel<uint16_t>(0), degree(0)
+{
+	set_normalizer(new CAvgDiagKernelNormalizer());
+}
+
 CMatchWordStringKernel::CMatchWordStringKernel(int32_t size, int32_t d)
 : CStringKernel<uint16_t>(size), degree(d)
 {

@@ -36,13 +36,19 @@ const char* CAlphabet::alphabet_names[18]={
 	"NONE", "DIGIT", "DIGIT2", "RAWDIGIT", "RAWDIGIT2", "UNKNOWN",
 	"SNP", "RAWSNP"};
 
-/*
-CAlphabet::CAlphabet()
-: CSGObject()
-{
 
+CAlphabet::CAlphabet()
+  : CSGObject()
+{
+	alphabet = NONE;
+	num_symbols = 0;
+	num_bits = 0;
+
+	memset(valid_chars, 0, sizeof (valid_chars));
+	memset(maptable_to_bin, 0, sizeof (maptable_to_bin));
+	memset(maptable_to_char, 0, sizeof (maptable_to_char));
+	memset(histogram, 0, sizeof (histogram));
 }
-*/
 
 CAlphabet::CAlphabet(char* al, int32_t len)
 : CSGObject()

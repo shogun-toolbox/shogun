@@ -31,6 +31,9 @@ namespace shogun
 class CHistogramIntersectionKernel: public CDotKernel
 {
 	public:
+		/** default constructor  */
+		CHistogramIntersectionKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

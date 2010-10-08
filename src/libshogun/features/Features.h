@@ -76,7 +76,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const=0 ;
+		virtual CFeatures* duplicate() const=0;
 
 		virtual ~CFeatures();
 

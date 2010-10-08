@@ -12,14 +12,14 @@
 
 namespace shogun
 {
-class CParameter;
+class Parameter;
 class CSerializableFile;
-class CIO;
+class IO;
 
 class CSGSerializable
 {
 protected:
-	CParameter* m_parameters;
+	Parameter* m_parameters;
 
 public:
 	/** default constructor  */

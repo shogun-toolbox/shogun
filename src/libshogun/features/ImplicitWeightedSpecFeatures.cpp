@@ -13,6 +13,19 @@
 
 using namespace shogun;
 
+CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(void)
+	:CDotFeatures()
+{
+	strings = NULL;
+	normalization_factors = NULL;
+	num_strings = 0;
+	alphabet_size = 0;
+
+	degree = 0;
+	spec_size = 0;
+	spec_weights = 0;
+}
+
 CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
 {
 	ASSERT(str);

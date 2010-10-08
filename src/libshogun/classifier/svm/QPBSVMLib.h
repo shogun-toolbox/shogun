@@ -43,6 +43,9 @@ enum E_QPB_SOLVER
 class CQPBSVMLib: public CSGObject
 {
 	public:
+		/** default constructor  */
+		CQPBSVMLib(void);
+
 		/** constructor
 		 *
 		 * @param H symmetric matrix of size n x n

@@ -94,6 +94,21 @@ const int32_t CLocalAlignmentStringKernel::blosum[] = {
 
 int32_t CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 
+CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(void)
+  : CStringKernel<char>(0)
+{
+	scaled_blosum=new int32_t[sizeof(blosum)];
+	init_logsum();
+
+	initialized = false;
+
+	isAA = NULL;
+	aaIndex = NULL;
+
+	opening = 0;
+	extension = 0;
+}
+
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(int32_t size)
 : CStringKernel<char>(size), initialized(false)
 {

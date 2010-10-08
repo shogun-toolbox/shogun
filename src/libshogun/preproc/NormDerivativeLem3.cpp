@@ -61,7 +61,7 @@ float64_t* CNormDerivativeLem3::apply_to_feature_matrix(CFeatures* f)
 /// apply preproc on single feature vector
 /// result in feature matrix
 float64_t* CNormDerivativeLem3::apply_to_feature_vector(
-	float64_t* f, int32_t len)
+	float64_t* f, int32_t& len)
 {
 	return NULL;
 }

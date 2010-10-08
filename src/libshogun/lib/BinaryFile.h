@@ -27,6 +27,9 @@ namespace shogun
 class CBinaryFile: public CFile
 {
 public:
+	/** default constructor  */
+	CBinaryFile(void);
+
 	/** constructor
 	 *
 	 * @param f already opened file

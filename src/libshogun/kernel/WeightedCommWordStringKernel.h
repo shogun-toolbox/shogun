@@ -50,6 +50,9 @@ class CCommWordStringKernel;
 class CWeightedCommWordStringKernel: public CCommWordStringKernel
 {
 	public:
+		/** default constructor  */
+		CWeightedCommWordStringKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

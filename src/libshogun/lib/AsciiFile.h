@@ -30,6 +30,9 @@ namespace shogun
 class CAsciiFile: public CFile
 {
 public:
+	/** default constructor  */
+	CAsciiFile(void);
+
 	/** constructor
 	 *
 	 * @param f already opened file

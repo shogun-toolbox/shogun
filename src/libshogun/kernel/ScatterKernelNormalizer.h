@@ -23,6 +23,16 @@ class CScatterKernelNormalizer: public CKernelNormalizer
 {
 
 public:
+	/** default constructor  */
+	CScatterKernelNormalizer(void) {
+		m_const_diag = 0.0;
+		m_const_offdiag = 0.0;
+
+		m_labels = NULL;
+		m_normalizer = NULL;
+
+		m_testing_class = 0;
+	}
 
 	/** default constructor
 	 */

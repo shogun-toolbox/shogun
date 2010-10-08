@@ -101,6 +101,14 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 			return 0;
 		}
 
+		/** Returns the name of the SGSerializable instance.  It MUST BE
+		 *  the CLASS NAME without the prefixed `C'.
+		 *
+		 * @return name of the SGSerializable
+		 */
+		virtual const char* get_name(void) const {
+			return "DiceKernelNormalizer"; }
+
     public:
 		/**
 		 * alloc and compute the vector containing the square root of the

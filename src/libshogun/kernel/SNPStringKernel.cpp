@@ -17,6 +17,15 @@
 
 using namespace shogun;
 
+CSNPStringKernel::CSNPStringKernel(void)
+: CStringKernel<char>(0),
+  m_degree(0), m_win_len(0), m_inhomogene(false)
+{
+	m_str_min=NULL;
+	m_str_maj=NULL;
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+}
+
 CSNPStringKernel::CSNPStringKernel(int32_t size,
 		int32_t degree, int32_t win_len, bool inhomogene)
 : CStringKernel<char>(size),
