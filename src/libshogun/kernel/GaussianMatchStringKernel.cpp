@@ -20,6 +20,9 @@ using namespace shogun;
 CGaussianMatchStringKernel::CGaussianMatchStringKernel(void)
 : CStringKernel<char>(0), width(0.0)
 {
+	SG_UNSTABLE("CGaussianMatchStringKernel::"
+				"CGaussianMatchStringKernel(void)", "\n");
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 

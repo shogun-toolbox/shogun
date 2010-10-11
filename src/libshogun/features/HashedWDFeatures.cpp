@@ -15,6 +15,8 @@ using namespace shogun;
 
 CHashedWDFeatures::CHashedWDFeatures(void) :CDotFeatures()
 {
+	SG_UNSTABLE("CHashedWDFeatures::CHashedWDFeatures(void)", "\n");
+
 	strings = NULL;
 
 	degree = 0;

@@ -19,6 +19,8 @@ using namespace shogun;
 
 CKernelDistance::CKernelDistance(void)
 {
+	SG_UNSTABLE("CKernelDistance::CKernelDistance(void)", "\n");
+
 	kernel = NULL;
 	width = 0.0;
 }

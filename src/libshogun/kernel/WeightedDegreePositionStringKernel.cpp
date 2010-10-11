@@ -61,6 +61,9 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
 	alphabet(NULL)
 {
+	SG_UNSTABLE("CWeightedDegreePositionStringKernel::"
+				"CWeightedDegreePositionStringKernel(void)", "\n");
+
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());

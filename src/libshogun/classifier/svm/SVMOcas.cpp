@@ -24,6 +24,8 @@ CSVMOcas::CSVMOcas(void)
 : CLinearClassifier(), use_bias(true), bufsize(3000), C1(1), C2(1),
   epsilon(1e-3), method(SVM_OCAS)
 {
+	SG_UNSTABLE("CSVMOcas::CSVMOcas(void)", "\n");
+
 	w=NULL;
 	old_w=NULL;
 }

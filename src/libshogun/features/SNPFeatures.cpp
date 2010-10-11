@@ -16,6 +16,8 @@ using namespace shogun;
 
 CSNPFeatures::CSNPFeatures(void)
 {
+	SG_UNSTABLE("CSNPFeatures::CSNPFeatures(void)", "\n");
+
 	strings = NULL;
 
 	string_length = 0;

@@ -79,6 +79,8 @@ using namespace shogun;
 
 CGMNPLib::CGMNPLib(void)
 {
+	SG_UNSTABLE("CGMNPLib::CGMNPLib(void)", "\n");
+
 	diag_H = NULL;
 	kernel_columns = NULL;
 	cache_index = NULL;

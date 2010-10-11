@@ -24,6 +24,8 @@ using namespace shogun;
 COligoStringKernel::COligoStringKernel(void)
   : CStringKernel<char>(0), k(0), width(0.0), gauss_table(NULL)
 {
+	SG_UNSTABLE("COligoStringKernel::COligoStringKernel(void)", "\n");
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 

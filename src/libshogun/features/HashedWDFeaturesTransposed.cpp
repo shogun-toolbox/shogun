@@ -38,6 +38,10 @@ struct HASHEDWD_THREAD_PARAM
 CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(void)
 	:CDotFeatures()
 {
+	SG_UNSTABLE(
+		"CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(void)",
+		"\n");
+
 	strings = NULL;
 	transposed_strings = NULL;
 

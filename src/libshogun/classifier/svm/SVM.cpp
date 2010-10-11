@@ -53,6 +53,18 @@ void CSVM::set_defaults(int32_t num_sv)
 {
 	m_parameters->add(&C1, "C1");
 	m_parameters->add(&C2, "C2");
+	m_parameters->add(&svm_loaded, "svm_loaded",
+					  "SVM is loaded.");
+	m_parameters->add(&epsilon, "epsilon");
+	m_parameters->add(&tube_epsilon, "tube_epsilon",
+					  "Tube epsilon for support vector regression.");
+	m_parameters->add(&nu, "nu");
+	m_parameters->add(&objective, "objective");
+	m_parameters->add(&qpsize, "qpsize");
+	m_parameters->add(&use_shrinking, "use_shrinking",
+					  "Shrinking shall be used.");
+	m_parameters->add((CSGSerializable**) &mkl, "mkl",
+					  "MKL object that svm optimizers need.");
 
 	callback=NULL;
 	mkl=NULL;

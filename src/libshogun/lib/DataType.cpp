@@ -45,22 +45,7 @@ TSGDataType::to_string(char* dest) const
 	case CT_MATRIX: strcpy(p, "Matrix<"); break;
 	}
 
-	switch (m_ptype) {
-	case PT_BOOL: strcat(p, "bool"); break;
-	case PT_CHAR: strcat(p, "char"); break;
-	case PT_INT8: strcat(p, "int8"); break;
-	case PT_UINT8: strcat(p, "uint8"); break;
-	case PT_INT16: strcat(p, "int16"); break;
-	case PT_UINT16: strcat(p, "uint16"); break;
-	case PT_INT32: strcat(p, "int32"); break;
-	case PT_UINT32: strcat(p, "uint32"); break;
-	case PT_INT64: strcat(p, "int64"); break;
-	case PT_UINT64: strcat(p, "uint64"); break;
-	case PT_FLOAT32: strcat(p, "float32"); break;
-	case PT_FLOAT64: strcat(p, "float64"); break;
-	case PT_FLOATMAX: strcat(p, "floatmax"); break;
-	case PT_SGSERIALIZABLE_PTR: strcat(p, "SGSerializable*"); break;
-	}
+	ptype_to_string(p + strlen(p), m_ptype);
 
 	switch (m_ctype) {
 	case CT_SCALAR: break;
@@ -89,5 +74,71 @@ TSGDataType::sizeof_ptype(void) const
 	case PT_SGSERIALIZABLE_PTR: return sizeof (CSGSerializable*);
 	}
 
-	return 0;
+	return -1;
+}
+
+void
+TSGDataType::ptype_to_string(char* dest, EPrimitveType ptype)
+{
+	char* p = dest;
+
+	switch (ptype) {
+	case PT_BOOL: strcpy(p, "bool"); break;
+	case PT_CHAR: strcpy(p, "char"); break;
+	case PT_INT8: strcpy(p, "int8"); break;
+	case PT_UINT8: strcpy(p, "uint8"); break;
+	case PT_INT16: strcpy(p, "int16"); break;
+	case PT_UINT16: strcpy(p, "uint16"); break;
+	case PT_INT32: strcpy(p, "int32"); break;
+	case PT_UINT32: strcpy(p, "uint32"); break;
+	case PT_INT64: strcpy(p, "int64"); break;
+	case PT_UINT64: strcpy(p, "uint64"); break;
+	case PT_FLOAT32: strcpy(p, "float32"); break;
+	case PT_FLOAT64: strcpy(p, "float64"); break;
+	case PT_FLOATMAX: strcpy(p, "floatmax"); break;
+	case PT_SGSERIALIZABLE_PTR: strcpy(p, "SGSerializable*"); break;
+	}
+}
+
+bool
+TSGDataType::string_to_ptype(EPrimitveType* result, const char* str)
+{
+	if (strcmp(str, "bool") == 0) {
+		*result = PT_BOOL; return true; }
+	if (strcmp(str, "char") == 0) {
+		*result = PT_CHAR; return true; }
+	if (strcmp(str, "int8") == 0) {
+		*result = PT_INT8; return true; }
+	if (strcmp(str, "uint8") == 0) {
+		*result = PT_UINT8; return true; }
+	if (strcmp(str, "int16") == 0) {
+		*result = PT_INT16; return true; }
+	if (strcmp(str, "uint16") == 0) {
+		*result = PT_UINT16; return true; }
+	if (strcmp(str, "int32") == 0) {
+		*result = PT_INT32; return true; }
+	if (strcmp(str, "uint32") == 0) {
+		*result = PT_UINT32; return true; }
+	if (strcmp(str, "int64") == 0) {
+		*result = PT_INT64; return true; }
+	if (strcmp(str, "uint64") == 0) {
+		*result = PT_UINT64; return true; }
+	if (strcmp(str, "float32") == 0) {
+		*result = PT_FLOAT32; return true; }
+	if (strcmp(str, "float64") == 0) {
+		*result = PT_FLOAT64; return true; }
+	if (strcmp(str, "floatmax") == 0) {
+		*result = PT_FLOATMAX; return true; }
+	if (strcmp(str, "SGSerializable*") == 0) {
+		*result = PT_SGSERIALIZABLE_PTR; return true; }
+
+	/* Make sure that the compiler will warn at this position.  */
+	switch (*result) {
+	case PT_BOOL: case PT_CHAR: case PT_INT8: case PT_UINT8:
+	case PT_INT16: case PT_UINT16: case PT_INT32: case PT_UINT32:
+	case PT_INT64: case PT_UINT64: case PT_FLOAT32: case PT_FLOAT64:
+	case PT_FLOATMAX: case PT_SGSERIALIZABLE_PTR: break;
+	}
+
+	return false;
 }

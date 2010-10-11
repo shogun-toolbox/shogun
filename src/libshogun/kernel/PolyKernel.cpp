@@ -21,6 +21,8 @@ using namespace shogun;
 CPolyKernel::CPolyKernel(void)
 : CDotKernel(0), degree(0), inhomogene(false)
 {
+	SG_UNSTABLE("CPolyKernel::CPolyKernel(void)", "\n");
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 

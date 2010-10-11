@@ -21,6 +21,8 @@ CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(void)
 	motif_positions_lhs(NULL), motif_positions_rhs(NULL),
   position_weights(NULL), weights(NULL)
 {
+	SG_UNSTABLE("CRegulatoryModulesStringKernel::"
+				"CRegulatoryModulesStringKernel(void)", "\n");
 }
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(

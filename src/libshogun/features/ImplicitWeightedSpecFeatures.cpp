@@ -16,6 +16,9 @@ using namespace shogun;
 CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(void)
 	:CDotFeatures()
 {
+	SG_UNSTABLE("CImplicitWeightedSpecFeatures::"
+				"CImplicitWeightedSpecFeatures(void)", "\n");
+
 	strings = NULL;
 	normalization_factors = NULL;
 	num_strings = 0;

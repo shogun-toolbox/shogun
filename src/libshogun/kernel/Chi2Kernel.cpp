@@ -19,6 +19,7 @@ using namespace shogun;
 CChi2Kernel::CChi2Kernel(void)
 : CDotKernel(0), width(0)
 {
+	SG_UNSTABLE("CChi2Kernel::CChi2Kernel(void)", "\n");
 }
 
 CChi2Kernel::CChi2Kernel(int32_t size, float64_t w)

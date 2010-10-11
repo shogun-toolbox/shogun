@@ -21,6 +21,8 @@ CSNPStringKernel::CSNPStringKernel(void)
 : CStringKernel<char>(0),
   m_degree(0), m_win_len(0), m_inhomogene(false)
 {
+	SG_UNSTABLE("CSNPStringKernel::CSNPStringKernel(void)", "\n");
+
 	m_str_min=NULL;
 	m_str_maj=NULL;
 	set_normalizer(new CSqrtDiagKernelNormalizer());

@@ -19,6 +19,8 @@ using namespace shogun;
 
 CMinkowskiMetric::CMinkowskiMetric(void)
 {
+	SG_UNSTABLE("CMinkowskiMetric::CMinkowskiMetric(void)", "\n");
+
 	k = 0.0;
 }
 

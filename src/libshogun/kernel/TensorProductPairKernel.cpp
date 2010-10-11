@@ -19,6 +19,8 @@ using namespace shogun;
 CTensorProductPairKernel::CTensorProductPairKernel(void)
 : CDotKernel(0), subkernel(NULL)
 {
+	SG_UNSTABLE("CTensorProductPairKernel::"
+				"CTensorProductPairKernel(void)", "\n");
 }
 
 CTensorProductPairKernel::CTensorProductPairKernel(int32_t size, CKernel* s)

@@ -25,6 +25,8 @@ CSalzbergWordStringKernel::CSalzbergWordStringKernel(void)
 	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
 	neg_prior(0.5), initialized(false)
 {
+	SG_UNSTABLE("CSalzbergWordStringKernel::"
+				"CSalzbergWordStringKernel(void)", "\n");
 }
 
 CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, CPluginEstimate* pie, CLabels* labels)

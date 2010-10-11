@@ -37,9 +37,11 @@ const char* CAlphabet::alphabet_names[18]={
 	"SNP", "RAWSNP"};
 
 
-CAlphabet::CAlphabet()
+CAlphabet::CAlphabet(void)
   : CSGObject()
 {
+	SG_UNSTABLE("CAlphabet::CAlphabet(void)", "\n");
+
 	alphabet = NONE;
 	num_symbols = 0;
 	num_bits = 0;

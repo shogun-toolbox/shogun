@@ -21,6 +21,8 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 : CStringKernel<char>(0), length(0), inner_degree(0), outer_degree(0),
 	pyramid_weights(NULL)
 {
+	SG_UNSTABLE("CSimpleLocalityImprovedStringKernel::"
+				"CSimpleLocalityImprovedStringKernel(void)", "\n");
 }
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(

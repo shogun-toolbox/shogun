@@ -36,6 +36,9 @@ using namespace shogun;
 CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(void)
 	:CStringKernel<char>(0)
 {
+	SG_UNSTABLE("CSpectrumMismatchRBFKernel::"
+				"CSpectrumMismatchRBFKernel(void)", "\n");
+
 	alphabet = NULL;
 	degree = 0;
 	max_mismatch = 0;

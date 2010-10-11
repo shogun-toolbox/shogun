@@ -465,21 +465,27 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 
 bool
 TParameter::new_sgserial(IO* io, CSGSerializable** param,
+						 EPrimitveType generic,
 						 const char* sgserializable_name,
 						 const char* prefix)
 {
-	/* We only create if not exist to have a chance to save class
-	 * templates.
-	 */
-	if (*param != NULL) return true;
+	if (*param != NULL) delete *param;
 
-	*param = new_sgserializable(sgserializable_name);
+	*param = new_sgserializable(sgserializable_name, generic);
 
 	if (*param == NULL) {
+		char buf[40] = {'\0'};
+
+		if (generic != PT_NOT_GENERIC) {
+			buf[0] = '<';
+			TSGDataType::ptype_to_string(buf+1, generic);
+			strcat(buf, ">");
+		}
+
 		SG_WARNING("TParameter::new_sgserial(): "
-				   "Class `C%s' was not listed during compiling Shogun"
+				   "Class `C%s%s' was not listed during compiling Shogun"
 				   " :( ...  Can not construct it for `%s%s'!",
-				   sgserializable_name, prefix, m_name);
+				   sgserializable_name, buf, prefix, m_name);
 
 		return false;
 	}
@@ -492,11 +498,16 @@ TParameter::save_scalar(IO* io, CSerializableFile* file,
 						const void* param, const char* prefix)
 {
 	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
-		const char* sgserial_name = *(CSGSerializable**) param == NULL
-			?"" :(*(CSGSerializable**) param)->get_name();
+		const char* sgserial_name = "";
+		EPrimitveType generic = PT_NOT_GENERIC;
+
+		if (*(CSGSerializable**) param != NULL) {
+			sgserial_name = (*(CSGSerializable**) param)->get_name();
+			(*(CSGSerializable**) param)->is_generic(&generic);
+		}
 
 		if (!file->write_sgserializable_begin(
-				&m_datatype, m_name, prefix, sgserial_name))
+				&m_datatype, m_name, prefix, sgserial_name, generic))
 			return false;
 		if (*sgserial_name != '\0') {
 			char* p = new_prefix(prefix, m_name);
@@ -506,7 +517,7 @@ TParameter::save_scalar(IO* io, CSerializableFile* file,
 			if (!result) return false;
 		}
 		if (!file->write_sgserializable_end(
-				&m_datatype, m_name, prefix, sgserial_name))
+				&m_datatype, m_name, prefix, sgserial_name, generic))
 			return false;
 	} else
 		if (!file->write_scalar(&m_datatype, m_name, prefix,
@@ -521,12 +532,13 @@ TParameter::load_scalar(IO* io, CSerializableFile* file,
 {
 	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
 		char sgserial_name[256] = {'\0'};
+		EPrimitveType generic = PT_NOT_GENERIC;
 
 		if (!file->read_sgserializable_begin(
-				&m_datatype, m_name, prefix, sgserial_name))
+				&m_datatype, m_name, prefix, sgserial_name, &generic))
 			return false;
 		if (*sgserial_name != '\0') {
-			if (!new_sgserial(io, (CSGSerializable**) param,
+			if (!new_sgserial(io, (CSGSerializable**) param, generic,
 							  sgserial_name, prefix))
 				return false;
 
@@ -537,7 +549,7 @@ TParameter::load_scalar(IO* io, CSerializableFile* file,
 			if (!result) return false;
 		}
 		if (!file->read_sgserializable_end(
-				&m_datatype, m_name, prefix, sgserial_name))
+				&m_datatype, m_name, prefix, sgserial_name, generic))
 			return false;
 	} else
 		if (!file->read_scalar(&m_datatype, m_name, prefix,

@@ -19,6 +19,8 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	void)
   : CCommWordStringKernel(0, false), degree(0), weights(NULL)
 {
+	SG_UNSTABLE("CWeightedCommWordStringKernel::"
+				"CWeightedCommWordStringKernel(void)", "\n");
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(

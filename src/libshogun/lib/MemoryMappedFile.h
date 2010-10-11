@@ -31,6 +31,19 @@ namespace shogun
 template <class T> class CMemoryMappedFile : public CSGObject
 {
 	public:
+		/** default constructor  */
+		CMemoryMappedFile(void) :CSGObject()
+		{
+			SG_UNSTABLE("CMemoryMappedFile::CMemoryMappedFile(void)",
+						"\n");
+
+			fd = 0;
+			length = 0;
+			address = NULL;
+			rw = 'r';
+			last_written_byte = 0;
+		}
+
 		/** constructor
 		 *
 		 * open a memory mapped file for read or read/write mode

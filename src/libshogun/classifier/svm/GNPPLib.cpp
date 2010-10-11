@@ -32,6 +32,8 @@ using namespace shogun;
 
 CGNPPLib::CGNPPLib(void)
 {
+	SG_UNSTABLE("CGNPPLib::CGNPPLib(void)", "\n");
+
 	kernel_columns = NULL;
 	cache_index = NULL;
 	first_kernel_inx = 0;

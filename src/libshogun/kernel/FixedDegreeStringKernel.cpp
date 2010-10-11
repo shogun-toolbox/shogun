@@ -20,6 +20,9 @@ using namespace shogun;
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(void)
 : CStringKernel<char>(0), degree(0)
 {
+	SG_UNSTABLE("CFixedDegreeStringKernel::CFixedDegreeStringKernel(void)",
+				"\n");
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 

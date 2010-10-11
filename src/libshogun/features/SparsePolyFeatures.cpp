@@ -14,6 +14,9 @@ using namespace shogun;
 
 CSparsePolyFeatures::CSparsePolyFeatures(void)
 {
+	SG_UNSTABLE("CSparsePolyFeatures::CSparsePolyFeatures(void)",
+				"\n");
+
 	m_feat = NULL;
 	m_degree = 0;
 	m_normalize = false;

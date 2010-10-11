@@ -24,6 +24,8 @@ using namespace shogun;
 CLibLinear::CLibLinear(void)
 : CLinearClassifier()
 {
+	SG_UNSTABLE("CLibLinear::CLibLinear(void)", "\n");
+
 	liblinear_solver_type=L2R_LR;
 	use_bias=false;
 	C1=1;

@@ -59,14 +59,18 @@ protected:
 									   index_t y, index_t x) = 0;
 
 	virtual bool write_sgserializable_begin_wrapped(
-		const TSGDataType* type, const char* sgserializable_name) = 0;
+		const TSGDataType* type, const char* sgserializable_name,
+		EPrimitveType generic) = 0;
 	virtual bool read_sgserializable_begin_wrapped(
-		const TSGDataType* type, char* sgserializable_name) = 0;
+		const TSGDataType* type, char* sgserializable_name,
+		EPrimitveType* generic) = 0;
 
 	virtual bool write_sgserializable_end_wrapped(
-		const TSGDataType* type, const char* sgserializable_name) = 0;
+		const TSGDataType* type, const char* sgserializable_name,
+		EPrimitveType generic) = 0;
 	virtual bool read_sgserializable_end_wrapped(
-		const TSGDataType* type, const char* sgserializable_name) = 0;
+		const TSGDataType* type, const char* sgserializable_name,
+		EPrimitveType generic) = 0;
 
 	virtual bool write_type_begin_wrapped(const TSGDataType* type,
 										  const char* name,
@@ -146,17 +150,17 @@ public:
 
 	virtual bool write_sgserializable_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
-		const char* sgserializable_name);
+		const char* sgserializable_name, EPrimitveType generic);
 	virtual bool read_sgserializable_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
-		char* sgserializable_name);
+		char* sgserializable_name, EPrimitveType* generic);
 
 	virtual bool write_sgserializable_end(
 		const TSGDataType* type, const char* name, const char* prefix,
-		const char* sgserializable_name);
+		const char* sgserializable_name, EPrimitveType generic);
 	virtual bool read_sgserializable_end(
 		const TSGDataType* type, const char* name, const char* prefix,
-		const char* sgserializable_name);
+		const char* sgserializable_name, EPrimitveType generic);
 
 	virtual bool write_type_begin(
 		const TSGDataType* type, const char* name, const char* prefix);

@@ -97,6 +97,9 @@ int32_t CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(void)
   : CStringKernel<char>(0)
 {
+	SG_UNSTABLE("CLocalAlignmentStringKernel::"
+				"CLocalAlignmentStringKernel(void)", "\n");
+
 	scaled_blosum=new int32_t[sizeof(blosum)];
 	init_logsum();
 

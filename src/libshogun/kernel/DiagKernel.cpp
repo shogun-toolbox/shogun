@@ -19,6 +19,7 @@ using namespace shogun;
 CDiagKernel::CDiagKernel(void)
 : CKernel(0), diag(0.0)
 {
+	SG_UNSTABLE("CDiagKernel::CDiagKernel(void)", "\n");
 }
 
 CDiagKernel::CDiagKernel(int32_t size, float64_t d)

@@ -30,6 +30,8 @@ class CBitString : public CSGObject
 	public:
 		/** default constructor  */
 		CBitString(void) {
+			SG_UNSTABLE("CBitString::CBitString(void)", "\n");
+
 			alphabet = NULL;
 			string = NULL;
 			length = 0;

@@ -17,6 +17,8 @@ using namespace shogun;
 
 CTOPFeatures::CTOPFeatures(void)
 {
+	SG_UNSTABLE("CTOPFeatures::CTOPFeatures(void)", "\n");
+
 	pos = NULL;
 	neg = NULL;
 	neglinear = false;

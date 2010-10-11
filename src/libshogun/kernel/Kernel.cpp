@@ -24,6 +24,7 @@
 #include "kernel/Kernel.h"
 #include "kernel/IdentityKernelNormalizer.h"
 #include "features/Features.h"
+#include "lib/Parameter.h"
 
 #include "classifier/svm/SVM.h"
 
@@ -44,12 +45,39 @@ BOOST_CLASS_EXPORT(shogun::CKernel);
 
 using namespace shogun;
 
+void
+CKernel::init(void)
+{
+	m_parameters->add(&cache_size, "cache_size",
+					  "Cache size in MB.");
+	m_parameters->add((CSGSerializable**) &lhs, "lhs",
+					  "Feature vectors to occur on left hand side.");
+	m_parameters->add((CSGSerializable**) &rhs, "rhs",
+					  "Feature vectors to occur on right hand side.");
+	m_parameters->add(&num_lhs, "num_lhs",
+					  "Number of feature vectors on left hand side.");
+	m_parameters->add(&num_rhs, "num_rhs",
+					  "Number of feature vectors on right hand side.");
+	m_parameters->add(&combined_kernel_weight, "combined_kernel_weight",
+					  "Combined kernel weight.");
+	m_parameters->add(&optimization_initialized,
+					  "optimization_initialized",
+					  "Optimization is initialized.");
+	m_parameters->add((int32_t*) &opt_type, "opt_type",
+					  "Optimization type.");
+	m_parameters->add(&properties, "properties",
+					  "Kernel properties.");
+	m_parameters->add((CSGSerializable**) &normalizer, "normalizer",
+					  "Normalize the kernel.");
+}
+
 CKernel::CKernel()
 : CSGObject(), cache_size(10), kernel_matrix(NULL), lhs(NULL),
 	rhs(NULL), num_lhs(0), num_rhs(0), combined_kernel_weight(1),
 	optimization_initialized(false), opt_type(FASTBUTMEMHUNGRY),
 	properties(KP_NONE), normalizer(NULL)
 {
+	init();
 
 #ifdef USE_SVMLIGHT
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
@@ -63,6 +91,8 @@ CKernel::CKernel(int32_t size)
 	num_rhs(0), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
 {
+	init();
+
 	if (size<10)
 		size=10;
 
@@ -83,6 +113,8 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 	combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
 {
+	init();
+
 	if (size<10)
 		size=10;
 

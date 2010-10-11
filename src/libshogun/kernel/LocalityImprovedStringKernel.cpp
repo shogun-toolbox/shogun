@@ -19,6 +19,9 @@ using namespace shogun;
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(void)
 : CStringKernel<char>(0)
 {
+	SG_UNSTABLE("CLocalityImprovedStringKernel::"
+				"CLocalityImprovedStringKernel(void)", "\n");
+
 	length = 0;
 	inner_degree = 0;
 	outer_degree = 0;

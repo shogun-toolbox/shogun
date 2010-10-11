@@ -20,6 +20,9 @@ using namespace shogun;
 CMatchWordStringKernel::CMatchWordStringKernel(void)
 : CStringKernel<uint16_t>(0), degree(0)
 {
+	SG_UNSTABLE("CMatchWordStringKernel::CMatchWordStringKernel(void)",
+				"\n");
+
 	set_normalizer(new CAvgDiagKernelNormalizer());
 }
 

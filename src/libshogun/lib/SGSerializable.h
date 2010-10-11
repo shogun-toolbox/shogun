@@ -10,6 +10,8 @@
 #ifndef __SGSERIALIZABLE_H__
 #define __SGSERIALIZABLE_H__
 
+#include "lib/DataType.h"
+
 namespace shogun
 {
 class Parameter;
@@ -18,6 +20,8 @@ class IO;
 
 class CSGSerializable
 {
+	EPrimitveType m_generic;
+
 protected:
 	Parameter* m_parameters;
 
@@ -31,9 +35,27 @@ public:
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
 	 *
-	 * @return name of the SGSerializable
+	 *  @return name of the SGSerializable
 	 */
 	virtual const char* get_name(void) const = 0;
+
+	/** If the SGSerializable is a class template then TRUE will be
+	 *  returned and GENERIC is set to the type of the generic.
+	 *
+	 *  @param generic set to the type of the generic if returning
+	 *                 TRUE
+	 *
+	 *  @return TRUE if a class template.
+	 */
+	virtual bool is_generic(EPrimitveType* generic) const;
+
+	/** set generic type to T
+	 */
+	template<class T> void set_generic(void);
+
+	/** unset generic type
+	 */
+	void unset_generic(void);
 
 	/** prints registered parameters out
 	 *

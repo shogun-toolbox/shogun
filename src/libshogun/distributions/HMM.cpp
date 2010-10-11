@@ -142,6 +142,8 @@ CModel::~CModel()
 
 CHMM::CHMM(void)
 {
+	SG_UNSTABLE("CHMM::CHMM(void)", "\n");
+
 	N=0, M=0, model=NULL;
 
 	status=false;

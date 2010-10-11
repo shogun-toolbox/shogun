@@ -11,10 +11,13 @@
 #ifndef __SG_CLASS_LIST_H__
 #define __SG_CLASS_LIST_H__
 
+#include "lib/DataType.h"
+
 namespace shogun {
 	class CSGSerializable;
 
-	CSGSerializable* new_sgserializable(const char* sgserializable_name);
+	CSGSerializable* new_sgserializable(const char* sgserializable_name,
+										EPrimitveType generic);
 }
 
 #endif /* __SG_CLASS_LIST_H__  */

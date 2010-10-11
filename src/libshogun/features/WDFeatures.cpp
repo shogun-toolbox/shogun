@@ -15,6 +15,9 @@ using namespace shogun;
 
 CWDFeatures::CWDFeatures(void) :CDotFeatures()
 {
+	SG_UNSTABLE("CWDFeatures::CWDFeatures(void) :CDotFeatures()",
+				"\n");
+
 	strings = NULL;
 
 	degree = 0;

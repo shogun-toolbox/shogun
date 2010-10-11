@@ -24,9 +24,19 @@ namespace shogun
  * elements).
  *
  * */
-template <class T> class CGCArray : public CSGObject
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 {
 	public:
+		/** default constructor  */
+		CGCArray(void) : CSGObject()
+		{
+			SG_UNSTABLE("CGCArray::CGCArray(void)", "\n");
+
+			array = NULL;
+			size=0;
+		}
+
 		/** Constructor
 		  * 
 		  * @param sz length of array

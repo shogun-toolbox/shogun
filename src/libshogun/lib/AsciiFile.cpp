@@ -17,6 +17,7 @@ using namespace shogun;
 
 CAsciiFile::CAsciiFile(void)
 {
+	SG_UNSTABLE("CAsciiFile::CAsciiFile(void)", "\n");
 }
 
 CAsciiFile::CAsciiFile(FILE* f, const char* name) : CFile(f, name)
@@ -139,6 +140,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 }
 
 GET_MATRIX(get_byte_matrix, atoi, uint8_t)
+GET_MATRIX(get_int8_matrix, atoi, int8_t)
 GET_MATRIX(get_char_matrix, atoi, char)
 GET_MATRIX(get_int_matrix, atoi, int32_t)
 GET_MATRIX(get_uint_matrix, atoi, uint32_t)
@@ -344,6 +346,7 @@ void CAsciiFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& nu
 
 GET_SPARSEMATRIX(get_bool_sparsematrix, atoi, bool)
 GET_SPARSEMATRIX(get_byte_sparsematrix, atoi, uint8_t)
+GET_SPARSEMATRIX(get_int8_sparsematrix, atoi, int8_t)
 GET_SPARSEMATRIX(get_char_sparsematrix, atoi, char)
 GET_SPARSEMATRIX(get_int_sparsematrix, atoi, int32_t)
 GET_SPARSEMATRIX(get_uint_sparsematrix, atoi, uint32_t)
@@ -422,6 +425,101 @@ void CAsciiFile::get_byte_string_list(CSGString<uint8_t>*& strings, int32_t& num
 
 					strings[lines].length=len+overflow_len;
 					strings[lines].string=new uint8_t[len+overflow_len];
+
+					for (int32_t j=0; j<overflow_len; j++)
+						strings[lines].string[j]=overflow[j];
+					for (int32_t j=0; j<len; j++)
+						strings[lines].string[j+overflow_len]=dummy[old_sz+j];
+
+					// clear overflow
+					overflow_len=0;
+
+					//CMath::display_vector(strings[lines].string, len);
+					old_sz=i+1;
+					lines++;
+					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
+				}
+			}
+
+			for (size_t i=old_sz; i<sz; i++)
+				overflow[i-old_sz]=dummy[i];
+
+			overflow_len=sz-old_sz;
+		}
+		SG_INFO("file successfully read\n");
+		SG_INFO("max_string_length=%d\n", max_string_len);
+		SG_INFO("num_strings=%d\n", num_str);
+	}
+
+	delete[] dummy;
+	delete[] overflow;
+}
+
+void CAsciiFile::get_int8_string_list(CSGString<int8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	size_t blocksize=1024*1024;
+	size_t required_blocksize=0;
+	int8_t* dummy=new int8_t[blocksize];
+	int8_t* overflow=NULL;
+	int32_t overflow_len=0;
+
+	if (file)
+	{
+		num_str=0;
+		max_string_len=0;
+
+		SG_INFO("counting line numbers in file %s\n", filename);
+		size_t sz=blocksize;
+		size_t block_offs=0;
+		size_t old_block_offs=0;
+		fseek(file, 0, SEEK_END);
+		size_t fsize=ftell(file);
+		rewind(file);
+
+		while (sz == blocksize)
+		{
+			sz=fread(dummy, sizeof(int8_t), blocksize, file);
+			bool contains_cr=false;
+			for (size_t i=0; i<sz; i++)
+			{
+				block_offs++;
+				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
+				{
+					num_str++;
+					contains_cr=true;
+					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
+					old_block_offs=block_offs;
+				}
+			}
+			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");
+		}
+
+		SG_INFO("found %d strings\n", num_str);
+		SG_DEBUG("block_size=%d\n", required_blocksize);
+		delete[] dummy;
+		blocksize=required_blocksize;
+		dummy=new int8_t[blocksize];
+		overflow=new int8_t[blocksize];
+		strings=new CSGString<int8_t>[num_str];
+
+		rewind(file);
+		sz=blocksize;
+		int32_t lines=0;
+		size_t old_sz=0;
+		while (sz == blocksize)
+		{
+			sz=fread(dummy, sizeof(int8_t), blocksize, file);
+
+			old_sz=0;
+			for (size_t i=0; i<sz; i++)
+			{
+				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
+				{
+					int32_t len=i-old_sz;
+					max_string_len=CMath::max(max_string_len, len+overflow_len);
+
+					strings[lines].length=len+overflow_len;
+					strings[lines].string=new int8_t[len+overflow_len];
 
 					for (int32_t j=0; j<overflow_len; j++)
 						strings[lines].string[j]=overflow[j];
@@ -647,6 +745,7 @@ void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)
 }
 SET_MATRIX(set_char_matrix, char, char, "%c")
 SET_MATRIX(set_byte_matrix, uint8_t, uint8_t, "%u")
+SET_MATRIX(set_int8_matrix, int8_t, int8_t, "%d")
 SET_MATRIX(set_int_matrix, int32_t, int32_t, "%i")
 SET_MATRIX(set_uint_matrix, uint32_t, uint32_t, "%u")
 SET_MATRIX(set_long_matrix, int64_t, long long int, "%lli")
@@ -687,6 +786,7 @@ void CAsciiFile::fname(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t
 SET_SPARSEMATRIX(set_bool_sparsematrix, bool, uint8_t, "%u")
 SET_SPARSEMATRIX(set_char_sparsematrix, char, char, "%c")
 SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, uint8_t, "%u")
+SET_SPARSEMATRIX(set_int8_sparsematrix, int8_t, int8_t, "%d")
 SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, int32_t, "%i")
 SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, uint32_t, "%u")
 SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, long long int, "%lli")
@@ -707,6 +807,19 @@ void CAsciiFile::set_byte_string_list(const CSGString<uint8_t>* strings, int32_t
 	{
 		int32_t len = strings[i].length;
 		fwrite(strings[i].string, sizeof(uint8_t), len, file);
+		fprintf(file, "\n");
+	}
+}
+
+void CAsciiFile::set_int8_string_list(const CSGString<int8_t>* strings, int32_t num_str)
+{
+	if (!(file && strings))
+		SG_ERROR("File or strings invalid.\n");
+
+	for (int32_t i=0; i<num_str; i++)
+	{
+		int32_t len = strings[i].length;
+		fwrite(strings[i].string, sizeof(int8_t), len, file);
 		fprintf(file, "\n");
 	}
 }

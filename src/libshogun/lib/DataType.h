@@ -13,6 +13,8 @@
 
 #include "lib/common.h"
 
+#define PT_NOT_GENERIC             PT_SGSERIALIZABLE_PTR
+
 namespace shogun
 {
 
@@ -53,6 +55,10 @@ struct TSGDataType
 
 	void to_string(char* dest) const;
 	size_t sizeof_ptype(void) const;
+
+	static void ptype_to_string(char* dest, EPrimitveType ptype);
+	static bool string_to_ptype(EPrimitveType* result,
+								const char* str);
 };
 }
 #endif // __DATATYPE_H__

@@ -53,14 +53,18 @@ protected:
 									   index_t y, index_t x);
 
 	virtual bool write_sgserializable_begin_wrapped(
-		const TSGDataType* type, const char* sgserializable_name);
+		const TSGDataType* type, const char* sgserializable_name,
+		EPrimitveType generic);
 	virtual bool read_sgserializable_begin_wrapped(
-		const TSGDataType* type, char* sgserializable_name);
+		const TSGDataType* type, char* sgserializable_name,
+		EPrimitveType* generic);
 
 	virtual bool write_sgserializable_end_wrapped(
-		const TSGDataType* type, const char* sgserializable_name);
+		const TSGDataType* type, const char* sgserializable_name,
+		EPrimitveType generic);
 	virtual bool read_sgserializable_end_wrapped(
-		const TSGDataType* type, const char* sgserializable_name);
+		const TSGDataType* type, const char* sgserializable_name,
+		EPrimitveType generic);
 
 	virtual bool write_type_begin_wrapped(const TSGDataType* type,
 										  const char* name,

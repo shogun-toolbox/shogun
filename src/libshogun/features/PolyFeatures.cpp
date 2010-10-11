@@ -4,6 +4,8 @@ using namespace shogun;
 
 CPolyFeatures::CPolyFeatures(void) :CDotFeatures()
 {
+	SG_UNSTABLE("CPolyFeatures::CPolyFeatures(void)", "\n");
+
 	m_feat = NULL;
 	m_degree = 0;
 	m_normalize = false;

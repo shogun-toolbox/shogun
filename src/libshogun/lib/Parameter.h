@@ -37,6 +37,7 @@ private:
 	char* new_prefix(const char* s1, const char* s2);
 	void new_cont(index_t new_len_y, index_t new_len_x);
 	bool new_sgserial(IO* io, CSGSerializable** param,
+					  EPrimitveType generic,
 					  const char* sgserializable_name,
 					  const char* prefix);
 	bool save_scalar(IO* io, CSerializableFile* file,

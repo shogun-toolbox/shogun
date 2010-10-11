@@ -15,6 +15,9 @@ using namespace shogun;
 
 CExplicitSpecFeatures::CExplicitSpecFeatures(void) :CDotFeatures()
 {
+	SG_UNSTABLE("CExplicitSpecFeatures::CExplicitSpecFeatures(void)",
+				"\n");
+
 	use_normalization = false;
 	num_strings = 0;
 	alphabet_size = 0;

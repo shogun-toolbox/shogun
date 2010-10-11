@@ -2406,6 +2406,7 @@ template<> inline void CStringFeatures<sg_type>::load(CFile* loader)		\
 
 LOAD(get_bool_string_list, bool)
 LOAD(get_char_string_list, char)
+LOAD(get_int8_string_list, int8_t)
 LOAD(get_byte_string_list, uint8_t)
 LOAD(get_short_string_list, int16_t)
 LOAD(get_word_string_list, uint16_t)
@@ -2427,6 +2428,7 @@ template<> inline void CStringFeatures<sg_type>::save(CFile* writer)		\
 
 SAVE(set_bool_string_list, bool)
 SAVE(set_char_string_list, char)
+SAVE(set_int8_string_list, int8_t)
 SAVE(set_byte_string_list, uint8_t)
 SAVE(set_short_string_list, int16_t)
 SAVE(set_word_string_list, uint16_t)

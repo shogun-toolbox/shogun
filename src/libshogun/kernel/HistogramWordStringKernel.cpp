@@ -25,6 +25,8 @@ CHistogramWordStringKernel::CHistogramWordStringKernel(void)
 	plo_lhs(NULL), plo_rhs(NULL), num_params(0), num_params2(0),
 	num_symbols(0), sum_m2_s2(0), initialized(false)
 {
+	SG_UNSTABLE("CHistogramWordStringKernel::"
+				"CHistogramWordStringKernel(void)", "\n");
 }
 
 CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie)

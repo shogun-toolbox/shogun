@@ -36,9 +36,11 @@
 
 using namespace shogun;
 
-CSpectrumRBFKernel::CSpectrumRBFKernel (void)
+CSpectrumRBFKernel::CSpectrumRBFKernel(void)
   : CStringKernel<char>(0)
 {
+	SG_UNSTABLE("CSpectrumRBFKernel::CSpectrumRBFKernel(void)", "\n");
+
 	alphabet = NULL;
 	degree = 0;
 	AA_matrix = NULL;

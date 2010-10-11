@@ -12,6 +12,8 @@ using namespace shogun;
 
 CTrainPredMaster::CTrainPredMaster(void)
 {
+	SG_UNSTABLE("CTrainPredMaster::CTrainPredMaster(void)", "\n");
+
 	ui_kernel = NULL;
 	kernelplist = NULL;
 }

@@ -20,6 +20,9 @@ using namespace shogun;
 CPolyMatchStringKernel::CPolyMatchStringKernel(void)
 : CStringKernel<char>(0), degree(0), inhomogene(false), rescaling(false)
 {
+	SG_UNSTABLE("CPolyMatchStringKernel::CPolyMatchStringKernel(void)",
+				"\n");
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 

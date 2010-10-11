@@ -66,6 +66,8 @@ using namespace shogun;
 
 CQPBSVMLib::CQPBSVMLib(void)
 {
+	SG_UNSTABLE("CQPBSVMLib::CQPBSVMLib(void)", "\n");
+
 	m_H=0;
 	m_dim = 0;
 	m_diag_H = NULL;

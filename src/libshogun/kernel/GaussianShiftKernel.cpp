@@ -19,6 +19,8 @@ using namespace shogun;
 CGaussianShiftKernel::CGaussianShiftKernel(void)
 : CGaussianKernel(0, 0.0), max_shift(0), shift_step(0)
 {
+	SG_UNSTABLE("CGaussianShiftKernel::CGaussianShiftKernel(void)",
+				"\n");
 }
 
 CGaussianShiftKernel::CGaussianShiftKernel(

@@ -68,6 +68,10 @@ enum EMessageType
 #define SG_INFO(...) io->message(MSG_INFO, __FILE__, __LINE__, __VA_ARGS__)
 #define SG_WARNING(...) io->message(MSG_WARN, __FILE__, __LINE__, __VA_ARGS__)
 #define SG_ERROR(...) io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__)
+#define SG_UNSTABLE(func, ...) io->message(MSG_WARN, __FILE__, __LINE__, \
+__FILE__ ":" func ": Unstable method!  Please report if it seems to " \
+"work or not to the Shogun mailing list.  Thanking you in " \
+"anticipation.  " __VA_ARGS__)
 
 #define SG_PRINT(...) io->message(MSG_MESSAGEONLY, __FILE__, __LINE__, __VA_ARGS__)
 #define SG_NOTIMPLEMENTED io->not_implemented(__FILE__, __LINE__)

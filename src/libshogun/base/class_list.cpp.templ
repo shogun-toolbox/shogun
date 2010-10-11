@@ -19,24 +19,27 @@ using namespace shogun;
 
 REPLACE definitions THIS
 
-typedef CSGSerializable* (*new_sgserializable_t)(void);
+REPLACE temp_definitions THIS
+
+typedef CSGSerializable* (*new_sgserializable_t)(EPrimitveType generic);
 typedef struct {
-	const char* class_name;
-	new_sgserializable_t new_sgserializable;
+	const char* m_class_name;
+	new_sgserializable_t m_new_sgserializable;
 } class_list_entry_t;
 
 static class_list_entry_t class_list[] = {
 REPLACE structs THIS
-	{class_name: NULL, new_sgserializable: NULL}
+	{m_class_name: NULL, m_new_sgserializable: NULL}
 };
 
 CSGSerializable*
-shogun::new_sgserializable(const char* sgserializable_name)
+shogun::new_sgserializable(const char* sgserializable_name,
+						   EPrimitveType generic)
 {
-	for (class_list_entry_t* i=class_list; i->class_name != NULL;
+	for (class_list_entry_t* i=class_list; i->m_class_name != NULL;
 		 i++)
-		if (strcmp(i->class_name, sgserializable_name) == 0)
-			return i->new_sgserializable();
+		if (strcmp(i->m_class_name, sgserializable_name) == 0)
+			return i->m_new_sgserializable(generic);
 
 	return NULL;
 }

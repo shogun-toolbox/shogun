@@ -239,11 +239,12 @@ CSerializableFile::read_item_end(
 bool
 CSerializableFile::write_sgserializable_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
-	const char* sgserializable_name)
+	const char* sgserializable_name, EPrimitveType generic)
 {
 	if (!is_task_warn('w')) return false;
 
-	if (!write_sgserializable_begin_wrapped(type, sgserializable_name))
+	if (!write_sgserializable_begin_wrapped(type, sgserializable_name,
+											generic))
 		return false_warn(prefix, name);
 
 	return true;
@@ -252,11 +253,12 @@ CSerializableFile::write_sgserializable_begin(
 bool
 CSerializableFile::read_sgserializable_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
-	char* sgserializable_name)
+	char* sgserializable_name, EPrimitveType* generic)
 {
 	if (!is_task_warn('r')) return false;
 
-	if (!read_sgserializable_begin_wrapped(type, sgserializable_name))
+	if (!read_sgserializable_begin_wrapped(type, sgserializable_name,
+										   generic))
 		return false_warn(prefix, name);
 
 	return true;
@@ -265,11 +267,12 @@ CSerializableFile::read_sgserializable_begin(
 bool
 CSerializableFile::write_sgserializable_end(
 	const TSGDataType* type, const char* name, const char* prefix,
-	const char* sgserializable_name)
+	const char* sgserializable_name, EPrimitveType generic)
 {
 	if (!is_task_warn('w')) return false;
 
-	if (!write_sgserializable_end_wrapped(type, sgserializable_name))
+	if (!write_sgserializable_end_wrapped(type, sgserializable_name,
+										  generic))
 		return false_warn(prefix, name);
 
 	return true;
@@ -278,11 +281,12 @@ CSerializableFile::write_sgserializable_end(
 bool
 CSerializableFile::read_sgserializable_end(
 	const TSGDataType* type, const char* name, const char* prefix,
-	const char* sgserializable_name)
+	const char* sgserializable_name, EPrimitveType generic)
 {
 	if (!is_task_warn('r')) return false;
 
-	if (!read_sgserializable_end_wrapped(type, sgserializable_name))
+	if (!read_sgserializable_end_wrapped(type, sgserializable_name,
+										 generic))
 		return false_warn(prefix, name);
 
 	return true;

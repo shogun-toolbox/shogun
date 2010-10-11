@@ -25,6 +25,8 @@ using namespace shogun;
 
 CHDF5File::CHDF5File(void)
 {
+	SG_UNSTABLE("CHDF5File::CHDF5File(void)", "\n");
+
 	get_boolean_type();
 	h5file = -1;
 }

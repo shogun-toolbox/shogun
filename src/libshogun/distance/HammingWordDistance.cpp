@@ -19,6 +19,8 @@ using namespace shogun;
 
 CHammingWordDistance::CHammingWordDistance(void)
 {
+	SG_UNSTABLE("CHammingWordDistance::CHammingWordDistance(void)", "\n");
+
 	dictionary_size = 0;
 	dictionary_weights = NULL;
 	use_sign = false;

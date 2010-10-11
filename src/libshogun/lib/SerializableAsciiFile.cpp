@@ -348,15 +348,25 @@ CSerializableAsciiFile::read_item_end_wrapped(
 
 bool
 CSerializableAsciiFile::write_sgserializable_begin_wrapped(
-	const TSGDataType* type, const char* sgserializable_name)
+	const TSGDataType* type, const char* sgserializable_name,
+	EPrimitveType generic)
 {
 	if (*sgserializable_name == '\0') {
-		if (fprintf(m_fstream, "%s ", STR_SGSERIAL_NULL) <= 0)
+		if (fprintf(m_fstream, "%s %c", STR_SGSERIAL_NULL,
+					CHAR_SGSERIAL_BEGIN) <= 0)
 			return false;
 	} else {
-		if (fprintf(m_fstream, "%s %c%c", sgserializable_name,
-					CHAR_SGSERIAL_BEGIN, CHAR_TYPE_END)
-			<= 0)
+		if (fprintf(m_fstream, "%s ", sgserializable_name) <= 0)
+			return false;
+
+		if (generic != PT_NOT_GENERIC) {
+			char buf[40];
+			TSGDataType::ptype_to_string(buf, generic);
+			if (fprintf(m_fstream, "%s ", buf) <= 0) return false;
+		}
+
+		if (fprintf(m_fstream, "%c%c", CHAR_SGSERIAL_BEGIN,
+					CHAR_TYPE_END) <= 0)
 			return false;
 	}
 
@@ -365,16 +375,28 @@ CSerializableAsciiFile::write_sgserializable_begin_wrapped(
 
 bool
 CSerializableAsciiFile::read_sgserializable_begin_wrapped(
-	const TSGDataType* type, char* sgserializable_name)
+	const TSGDataType* type, char* sgserializable_name,
+	EPrimitveType* generic)
 {
 	if (fscanf(m_fstream, "%256s ", sgserializable_name) != 1)
 		return false;
 
 	if (strcmp(sgserializable_name, STR_SGSERIAL_NULL) == 0) {
+		if (fgetc(m_fstream) != CHAR_SGSERIAL_BEGIN) return false;
+
 		*sgserializable_name = '\0';
 	} else {
-		if (fgetc(m_fstream) != CHAR_SGSERIAL_BEGIN) return false;
-		if (fgetc(m_fstream) != CHAR_TYPE_END) return false;
+		char buf[40];
+		if (fscanf(m_fstream, "%40s ", buf) != 1) return false;
+
+		if (buf[0] != CHAR_SGSERIAL_BEGIN
+			/* || buf[1] != CHAR_TYPE_END */) {
+			if (!TSGDataType::string_to_ptype(generic, buf))
+				return false;
+
+			if (fgetc(m_fstream) != CHAR_SGSERIAL_BEGIN) return false;
+			if (fgetc(m_fstream) != CHAR_TYPE_END) return false;
+		}
 	}
 
 	stack_fpos.push_back(ftell(m_fstream));
@@ -384,21 +406,21 @@ CSerializableAsciiFile::read_sgserializable_begin_wrapped(
 
 bool
 CSerializableAsciiFile::write_sgserializable_end_wrapped(
-	const TSGDataType* type, const char* sgserializable_name)
+	const TSGDataType* type, const char* sgserializable_name,
+	EPrimitveType generic)
 {
-	if (*sgserializable_name != '\0')
-		if (fprintf(m_fstream, "%c", CHAR_SGSERIAL_END) <= 0)
-			return false;
+	if (fprintf(m_fstream, "%c", CHAR_SGSERIAL_END) <= 0)
+		return false;
 
 	return true;
 }
 
 bool
 CSerializableAsciiFile::read_sgserializable_end_wrapped(
-	const TSGDataType* type, const char* sgserializable_name)
+	const TSGDataType* type, const char* sgserializable_name,
+	EPrimitveType generic)
 {
-	if (*sgserializable_name != '\0')
-		if (fgetc(m_fstream) != CHAR_SGSERIAL_END) return false;
+	if (fgetc(m_fstream) != CHAR_SGSERIAL_END) return false;
 
 	stack_fpos.pop_back();
 

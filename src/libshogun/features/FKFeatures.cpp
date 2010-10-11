@@ -17,6 +17,8 @@ using namespace shogun;
 
 CFKFeatures::CFKFeatures(void)
 {
+	SG_UNSTABLE("CFKFeatures::CFKFeatures(void)", "\n");
+
 	pos = NULL;
 	neg = NULL;
 	pos_prob = NULL;
