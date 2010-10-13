@@ -364,18 +364,18 @@ TParameter::~TParameter(void)
 char*
 TParameter::new_prefix(const char* s1, const char* s2)
 {
-	char tmp[256];
+	char* tmp = new char[strlen(s1)+strlen(s2)+2];
 
-	snprintf(tmp, 256, "%s%s/", s1, s2);
+	sprintf(tmp, "%s%s/", s1, s2);
 
-	return strdup(tmp);
+	return tmp;
 }
 
 void
 TParameter::print(IO* io, const char* prefix)
 {
-	char buf[50];
-	m_datatype.to_string(buf);
+	string_t buf;
+	m_datatype.to_string(buf, STRING_LEN);
 
 	SG_PRINT("\n%s\n%35s %24s :%s\n", prefix, m_description == NULL
 			 || *m_description == '\0' ? "(Parameter)": m_description,
@@ -386,7 +386,7 @@ TParameter::print(IO* io, const char* prefix)
 		&& *(CSGSerializable**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
 		(*(CSGSerializable**) m_parameter)->print_serializable(p);
-		free(p);
+		delete p;
 	}
 }
 
@@ -474,11 +474,12 @@ TParameter::new_sgserial(IO* io, CSGSerializable** param,
 	*param = new_sgserializable(sgserializable_name, generic);
 
 	if (*param == NULL) {
-		char buf[40] = {'\0'};
+		string_t buf = {'\0'};
 
 		if (generic != PT_NOT_GENERIC) {
 			buf[0] = '<';
-			TSGDataType::ptype_to_string(buf+1, generic);
+			TSGDataType::ptype_to_string(buf+1, generic,
+										 STRING_LEN - 3);
 			strcat(buf, ">");
 		}
 
@@ -513,7 +514,7 @@ TParameter::save_scalar(IO* io, CSerializableFile* file,
 			char* p = new_prefix(prefix, m_name);
 			bool result = (*(CSGSerializable**) param)
 				->save_serializable(file, p);
-			free(p);
+			delete p;
 			if (!result) return false;
 		}
 		if (!file->write_sgserializable_end(
@@ -531,7 +532,7 @@ TParameter::load_scalar(IO* io, CSerializableFile* file,
 						void* param, const char* prefix)
 {
 	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
-		char sgserial_name[256] = {'\0'};
+		string_t sgserial_name = {'\0'};
 		EPrimitveType generic = PT_NOT_GENERIC;
 
 		if (!file->read_sgserializable_begin(
@@ -545,7 +546,7 @@ TParameter::load_scalar(IO* io, CSerializableFile* file,
 			char* p = new_prefix(prefix, m_name);
 			bool result = (*(CSGSerializable**) param)
 				->load_serializable(file, p);
-			free(p);
+			delete p;
 			if (!result) return false;
 		}
 		if (!file->read_sgserializable_end(

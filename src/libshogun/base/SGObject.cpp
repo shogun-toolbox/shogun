@@ -44,8 +44,6 @@ using namespace shogun;
 void
 CSGObject::set_global_objects(void)
 {
-	m_parameters->add(&refcount, "refcount", "Reference counter.");
-
 	if (!sg_io || !sg_parallel || !sg_version)
 	{
 		fprintf(stderr, "call init_shogun() before using the library, dying.\n");

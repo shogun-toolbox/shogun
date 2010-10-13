@@ -56,7 +56,7 @@ class CKernelNormalizer : public CSGObject
 		 */
 		CKernelNormalizer()
 		{
-			m_parameters->add((int32_t*) &m_type, "m_type",
+			m_parameters->add((machine_int_t*) &m_type, "m_type",
 							  "Normalizer type.");
 
 			m_type = N_REGULAR;

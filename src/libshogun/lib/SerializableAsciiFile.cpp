@@ -51,8 +51,8 @@ CSerializableAsciiFile::init(void)
 		}
 		break;
 	case 'r':
-		char buf[60];
-		if (fscanf(m_fstream, "%60s\n", buf) != 1
+		string_t buf;
+		if (fscanf(m_fstream, "%"STRING_LEN_STR"s\n", buf) != 1
 			|| strcmp(STR_HEADER, buf) != 0) {
 			SG_WARNING("`%s' is not an serializable ascii file!\n",
 					   m_filename);
@@ -282,7 +282,7 @@ CSerializableAsciiFile::read_cont_begin_wrapped(
 		break;
 	case CT_MATRIX:
 		if (fscanf(m_fstream, "%"SCNi32" %"SCNi32" ",
-				   len_read_y, len_read_x) <= 0)
+				   len_read_y, len_read_x) != 2)
 			return false;
 		break;
 	}
@@ -360,8 +360,8 @@ CSerializableAsciiFile::write_sgserializable_begin_wrapped(
 			return false;
 
 		if (generic != PT_NOT_GENERIC) {
-			char buf[40];
-			TSGDataType::ptype_to_string(buf, generic);
+			string_t buf;
+			TSGDataType::ptype_to_string(buf, generic, STRING_LEN);
 			if (fprintf(m_fstream, "%s ", buf) <= 0) return false;
 		}
 
@@ -378,19 +378,19 @@ CSerializableAsciiFile::read_sgserializable_begin_wrapped(
 	const TSGDataType* type, char* sgserializable_name,
 	EPrimitveType* generic)
 {
-	if (fscanf(m_fstream, "%256s ", sgserializable_name) != 1)
-		return false;
+	if (fscanf(m_fstream, "%"STRING_LEN_STR"s ", sgserializable_name)
+		!= 1) return false;
 
 	if (strcmp(sgserializable_name, STR_SGSERIAL_NULL) == 0) {
 		if (fgetc(m_fstream) != CHAR_SGSERIAL_BEGIN) return false;
 
 		*sgserializable_name = '\0';
 	} else {
-		char buf[40];
-		if (fscanf(m_fstream, "%40s ", buf) != 1) return false;
+		string_t buf;
+		if (fscanf(m_fstream, "%"STRING_LEN_STR"s ", buf) != 1)
+			return false;
 
-		if (buf[0] != CHAR_SGSERIAL_BEGIN
-			/* || buf[1] != CHAR_TYPE_END */) {
+		if (buf[0] != CHAR_SGSERIAL_BEGIN) {
 			if (!TSGDataType::string_to_ptype(generic, buf))
 				return false;
 
@@ -431,8 +431,8 @@ bool
 CSerializableAsciiFile::write_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	char buf[50];
-	type->to_string(buf);
+	string_t buf;
+	type->to_string(buf, STRING_LEN);
 
 	if (fprintf(m_fstream, "%s %s %s ",
 				*prefix == '\0'? STR_EMPTY_PREFIX: prefix, name, buf
@@ -449,12 +449,13 @@ CSerializableAsciiFile::read_type_begin_wrapped(
 	if (fseek(m_fstream, stack_fpos.back(), SEEK_SET) != 0)
 		return false;
 
-	char type_str[50];
-	type->to_string(type_str);
+	string_t type_str;
+	type->to_string(type_str, STRING_LEN);
 
-	char r_prefix[256], r_name[50], r_type[50];
+	string_t r_prefix, r_name, r_type;
 	while (true) {
-		if (fscanf(m_fstream, "%256s %50s %50s ", r_prefix, r_name,
+		if (fscanf(m_fstream, "%"STRING_LEN_STR"s %"STRING_LEN_STR
+				   "s %"STRING_LEN_STR"s ", r_prefix, r_name,
 				   r_type) != 3)
 			return false;
 

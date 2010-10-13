@@ -35,17 +35,18 @@ TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype,
 }
 
 void
-TSGDataType::to_string(char* dest) const
+TSGDataType::to_string(char* dest, size_t n) const
 {
 	char* p = dest;
 
 	switch (m_ctype) {
-	case CT_SCALAR: strcpy(p, ""); break;
-	case CT_VECTOR: strcpy(p, "Vector<"); break;
-	case CT_MATRIX: strcpy(p, "Matrix<"); break;
+	case CT_SCALAR: strncpy(p, "", n); break;
+	case CT_VECTOR: strncpy(p, "Vector<", n); break;
+	case CT_MATRIX: strncpy(p, "Matrix<", n); break;
 	}
 
-	ptype_to_string(p + strlen(p), m_ptype);
+	size_t np = strlen(p);
+	ptype_to_string(p + np, m_ptype, n - np - 2);
 
 	switch (m_ctype) {
 	case CT_SCALAR: break;
@@ -78,25 +79,25 @@ TSGDataType::sizeof_ptype(void) const
 }
 
 void
-TSGDataType::ptype_to_string(char* dest, EPrimitveType ptype)
+TSGDataType::ptype_to_string(char* dest, EPrimitveType ptype, size_t n)
 {
 	char* p = dest;
 
 	switch (ptype) {
-	case PT_BOOL: strcpy(p, "bool"); break;
-	case PT_CHAR: strcpy(p, "char"); break;
-	case PT_INT8: strcpy(p, "int8"); break;
-	case PT_UINT8: strcpy(p, "uint8"); break;
-	case PT_INT16: strcpy(p, "int16"); break;
-	case PT_UINT16: strcpy(p, "uint16"); break;
-	case PT_INT32: strcpy(p, "int32"); break;
-	case PT_UINT32: strcpy(p, "uint32"); break;
-	case PT_INT64: strcpy(p, "int64"); break;
-	case PT_UINT64: strcpy(p, "uint64"); break;
-	case PT_FLOAT32: strcpy(p, "float32"); break;
-	case PT_FLOAT64: strcpy(p, "float64"); break;
-	case PT_FLOATMAX: strcpy(p, "floatmax"); break;
-	case PT_SGSERIALIZABLE_PTR: strcpy(p, "SGSerializable*"); break;
+	case PT_BOOL: strncpy(p, "bool", n); break;
+	case PT_CHAR: strncpy(p, "char", n); break;
+	case PT_INT8: strncpy(p, "int8", n); break;
+	case PT_UINT8: strncpy(p, "uint8", n); break;
+	case PT_INT16: strncpy(p, "int16", n); break;
+	case PT_UINT16: strncpy(p, "uint16", n); break;
+	case PT_INT32: strncpy(p, "int32", n); break;
+	case PT_UINT32: strncpy(p, "uint32", n); break;
+	case PT_INT64: strncpy(p, "int64", n); break;
+	case PT_UINT64: strncpy(p, "uint64", n); break;
+	case PT_FLOAT32: strncpy(p, "float32", n); break;
+	case PT_FLOAT64: strncpy(p, "float64", n); break;
+	case PT_FLOATMAX: strncpy(p, "floatmax", n); break;
+	case PT_SGSERIALIZABLE_PTR: strncpy(p, "SGSerializable*", n); break;
 	}
 }
 

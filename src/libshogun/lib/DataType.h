@@ -53,10 +53,11 @@ struct TSGDataType
 		return !(*this == a);
 	}
 
-	void to_string(char* dest) const;
+	void to_string(char* dest, size_t n) const;
 	size_t sizeof_ptype(void) const;
 
-	static void ptype_to_string(char* dest, EPrimitveType ptype);
+	static void ptype_to_string(char* dest, EPrimitveType ptype,
+								size_t n);
 	static bool string_to_ptype(EPrimitveType* result,
 								const char* str);
 };

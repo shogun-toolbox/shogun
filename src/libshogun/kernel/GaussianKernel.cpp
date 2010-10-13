@@ -17,7 +17,7 @@
 using namespace shogun;
 
 CGaussianKernel::CGaussianKernel()
-: CDotKernel(), width(1)
+	: CDotKernel(), width(1), sq_lhs(NULL), sq_rhs(NULL)
 {
 	init();
 }

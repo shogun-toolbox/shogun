@@ -63,7 +63,7 @@ CKernel::init(void)
 	m_parameters->add(&optimization_initialized,
 					  "optimization_initialized",
 					  "Optimization is initialized.");
-	m_parameters->add((int32_t*) &opt_type, "opt_type",
+	m_parameters->add((machine_int_t*) &opt_type, "opt_type",
 					  "Optimization type.");
 	m_parameters->add(&properties, "properties",
 					  "Kernel properties.");
