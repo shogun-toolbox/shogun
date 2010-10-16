@@ -26,7 +26,7 @@ namespace shogun
  */
 template <class T> class DynArray
 {
-	IO* io;
+	CIO* io;
 
 	protected:
 		/** shrink/grow step size */
@@ -46,7 +46,7 @@ template <class T> class DynArray
 		 *
 		 * @param p_resize_granularity resize granularity
 		 */
-		DynArray(IO* io_, int32_t p_resize_granularity=128)
+		DynArray(CIO* io_, int32_t p_resize_granularity=128)
 		{
 			this->resize_granularity=p_resize_granularity;
 

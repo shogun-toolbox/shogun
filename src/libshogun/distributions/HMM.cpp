@@ -140,15 +140,6 @@ CModel::~CModel()
 
 }
 
-CHMM::CHMM(void)
-{
-	SG_UNSTABLE("CHMM::CHMM(void)", "\n");
-
-	N=0, M=0, model=NULL;
-
-	status=false;
-}
-
 CHMM::CHMM(CHMM* h)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {

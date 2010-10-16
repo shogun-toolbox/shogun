@@ -30,8 +30,6 @@ template <class ST> class CStringFeatures;
 class CImplicitWeightedSpecFeatures : public CDotFeatures
 {
 	public:
-		/** default constructor  */
-		CImplicitWeightedSpecFeatures(void);
 
 		/** constructor
 		 *

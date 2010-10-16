@@ -36,8 +36,7 @@ namespace shogun
  * covariance matrix is of size num_feat*num_feat. Note that vectors don't have
  * to have zero mean as it is substracted.
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CPCACut : public CSimplePreProc<float64_t>
+class CPCACut : public CSimplePreProc<float64_t>
 {
 	public:
 		/** constructor

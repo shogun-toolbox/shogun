@@ -24,9 +24,6 @@ namespace shogun
 class CSparsePolyFeatures : public CDotFeatures
 {
 	public:
-		/** default constructor  */
-		CSparsePolyFeatures(void);
-
 		/** constructor
 		 * 
 		 * @param feat real features

@@ -19,10 +19,10 @@
 #include "distance/Distance.h"
 #include "classifier/DistanceMachine.h"
 
-namespace shogun
-{
 class CDistanceMachine;
 
+namespace shogun
+{
 /** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
  *
  * It minimizes

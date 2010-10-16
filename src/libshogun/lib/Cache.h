@@ -42,19 +42,6 @@ template<class T> class CCache : public CSGObject
 	};
 
 	public:
-	 /** default constructor  */
-	CCache(void) :CSGObject()
-	{
-		SG_UNSTABLE("CCache::CCache(void)", "\n");
-
-		cache_block=NULL;
-		lookup_table=NULL;
-		cache_table=NULL;
-		cache_is_full=false;
-		nr_cache_lines=0;
-		entry_size=0;
-	}
-
 	/** constructor
 	 *
 	 * create a cache in which num_entries objects can be cached

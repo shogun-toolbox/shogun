@@ -68,9 +68,6 @@ struct T_HMM_INDIZES
 class CTOPFeatures : public CSimpleFeatures<float64_t>
 {
 	public:
-		/** default constructor  */
-		CTOPFeatures(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

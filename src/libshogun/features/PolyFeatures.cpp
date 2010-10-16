@@ -2,19 +2,6 @@
 
 using namespace shogun;
 
-CPolyFeatures::CPolyFeatures(void) :CDotFeatures()
-{
-	SG_UNSTABLE("CPolyFeatures::CPolyFeatures(void)", "\n");
-
-	m_feat = NULL;
-	m_degree = 0;
-	m_normalize = false;
-	m_input_dimensions = 0;
-	m_multi_index = NULL;
-	m_multinomial_coefficients = NULL;
-	m_normalization_values = NULL;
-}
-
 CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize)
 	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL), 
 		m_normalization_values(NULL)

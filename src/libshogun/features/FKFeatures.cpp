@@ -15,17 +15,6 @@
 
 using namespace shogun;
 
-CFKFeatures::CFKFeatures(void)
-{
-	SG_UNSTABLE("CFKFeatures::CFKFeatures(void)", "\n");
-
-	pos = NULL;
-	neg = NULL;
-	pos_prob = NULL;
-	neg_prob = NULL;
-	weight_a = 0.0;
-}
-
 CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
 : CSimpleFeatures<float64_t>(size)
 {

@@ -47,8 +47,6 @@ namespace shogun
 	class CCompressor : public CSGObject
 	{
 	public:
-		/** default constructor  */
-		CCompressor(void);
 
 		/** default constructor
 		 *

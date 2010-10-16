@@ -14,7 +14,6 @@
 #include "lib/File.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
-#include "lib/Parameter.h"
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
@@ -26,33 +25,35 @@ using namespace shogun;
 CLabels::CLabels()
 : CSGObject()
 {
-	init(0, 0);
+	labels = NULL;
+	num_labels = 0;
+	m_confidences=NULL;
+	m_num_classes=0;
 }
 
 CLabels::CLabels(int32_t num_lab)
-: CSGObject()
+: CSGObject(), num_labels(num_lab)
 {
-	init(num_lab, 0);
-
 	labels=new float64_t[num_lab];
 	for (int32_t i=0; i<num_lab; i++)
 		labels[i]=0;
+
+	m_num_classes=0;
+	m_confidences=NULL;
 }
 
 CLabels::CLabels(float64_t* p_labels, int32_t len)
 : CSGObject()
 {
-	init(0, 0);
+	labels = NULL;
+	num_labels = 0;
 
 	set_labels(p_labels, len);
-
-	// We don't allocate the confidences matrix, unless it is
-	// necessary.  For problems with many classes and samples it might
-	// get really big.
+	
+	// We don't allocate the confidences matrix, unless it is necessary. 
+	// For problems with many classes and samples it might get really big.
 	m_num_classes=get_num_classes();
-	m_confidences=NULL;
-	m_confidence_classes = 0;
-	m_confidence_labels = 0;
+	m_confidences=NULL; 
 }
 
 void CLabels::set_to_one()
@@ -62,27 +63,26 @@ void CLabels::set_to_one()
 		labels[i]=+1;
 }
 
-CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels,
+CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels, 
 				 int32_t in_num_classes)
 : CSGObject()
 {
-	init(0, 0);
-
 	labels=new float64_t[in_num_labels];
 	for (int32_t i=0; i<in_num_labels; i++)
 		labels[i]=0;
 
 	m_num_classes=in_num_classes;
 	m_confidences=in_confidences;
-	m_confidence_classes = in_num_classes;
-	m_confidence_labels = in_num_labels;
 	find_labels();
 }
 
 CLabels::CLabels(CFile* loader)
 : CSGObject()
 {
-	init(0, 0);
+	num_labels=0;
+	labels=NULL;
+	m_num_classes=0;
+	m_confidences=NULL;
 
 	load(loader);
 }
@@ -91,30 +91,10 @@ CLabels::~CLabels()
 {
 	delete[] labels;
 	delete[] m_confidences;
-
 	num_labels=0;
 	m_num_classes=0;
 	labels=NULL;
 	m_confidences=NULL;
-	m_confidence_classes = 0;
-	m_confidence_labels = 0;
-}
-
-void
-CLabels::init(int32_t num_labels_, int32_t num_classes)
-{
-	m_parameters->add_vector(&labels, &num_labels, "labels",
-							 "The labels.");
-	m_parameters->add_matrix(&m_confidences, &m_confidence_classes,
-							 &m_confidence_labels, "m_confidences",
-							 "Confidence matrix.");
-
-	labels = NULL;
-	num_labels = num_labels_;
-	m_confidences=NULL;
-	m_confidence_classes = 0;
-	m_confidence_labels = 0;
-	m_num_classes=num_classes;
 }
 
 void CLabels::set_labels(float64_t* p_labels, int32_t len)
@@ -146,8 +126,6 @@ void CLabels::set_confidences(float64_t* in_confidences, int32_t in_num_labels,
 	num_labels=in_num_labels;
 	m_num_classes=in_num_classes;
 	m_confidences=in_confidences;
-	m_confidence_classes = in_num_classes;
-	m_confidence_labels = in_num_labels;
 	find_labels();
 }
 
@@ -320,8 +298,6 @@ void CLabels::load(CFile* loader)
 	delete[] labels;
 	delete[] m_confidences;
 	m_confidences = NULL;
-	m_confidence_classes = 0;
-	m_confidence_labels = 0;
 	num_labels=0;
 	ASSERT(loader);
 	loader->get_real_vector(labels, num_labels);

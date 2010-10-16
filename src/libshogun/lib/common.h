@@ -70,10 +70,4 @@ void serialize(Archive &ar, const unsigned int file_version)       \
 
 #endif //HAVE_BOOST_SERIALIZATION
 
-#define STRING_LEN                 256
-#define STRING_LEN_STR             "256"
-typedef char                       string_t[STRING_LEN];
-
-typedef int                        machine_int_t;
-
 #endif //__COMMON_H__

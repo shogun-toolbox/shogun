@@ -50,26 +50,6 @@ template <class Trie> struct S_THREAD_PARAM
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
-	void)
-: CStringKernel<char>(0), weights(NULL), position_weights(NULL),
-	position_weights_lhs(NULL), position_weights_rhs(NULL),
-	weights_buffer(NULL), mkl_stepsize(0), degree(0), length(0),
-	max_mismatch(0), seq_length(0), shift(NULL), shift_len(0),
-	num_block_weights_external(0), block_weights_external(NULL),
-	block_weights(NULL), type(E_EXTERNAL), tries(0), poim_tries(0),
-	tree_initialized(false), use_poim_tries(false), m_poim_distrib(NULL),
-	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
-	alphabet(NULL)
-{
-	SG_UNSTABLE("CWeightedDegreePositionStringKernel::"
-				"CWeightedDegreePositionStringKernel(void)", "\n");
-
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
-}
-
-CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	int32_t size, int32_t d, int32_t mm, int32_t mkls)
 : CStringKernel<char>(size), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),

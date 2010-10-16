@@ -54,9 +54,6 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 	friend class CDiceKernelNormalizer;
 
 	public:
-		/** default constructor  */
-		CCommWordStringKernel(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

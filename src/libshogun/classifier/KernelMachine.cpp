@@ -12,7 +12,6 @@
 
 #include "classifier/KernelMachine.h"
 #include "lib/Signal.h"
-#include "lib/Parameter.h"
 
 #ifdef HAVE_BOOST_SERIALIZATION
 #include <boost/serialization/export.hpp>
@@ -36,20 +35,6 @@ struct S_THREAD_PARAM
 CKernelMachine::CKernelMachine()
 : CClassifier(), kernel(NULL), use_batch_computation(true), use_linadd(true), use_bias(true)
 {
-	m_parameters->add((CSGSerializable**) &kernel, "kernel");
-	m_parameters->add(&use_batch_computation, "use_batch_computation",
-					  "Batch computation is enabled.");
-	m_parameters->add(&use_linadd, "use_linadd",
-					  "Linadd is enabled.");
-	m_parameters->add(&use_bias, "use_bias",
-					  "Bias shall be used.");
-	m_parameters->add(&m_bias, "m_bias",
-					  "Bias term.");
-	m_parameters->add_vector(&m_alpha, &num_svs, "m_alpha",
-							 "Array of coefficients alpha.");
-	m_parameters->add_vector(&m_svs, &num_svs, "m_svs",
-							 "Number of ``support vectors''.");
-
 	m_bias=0.0;
 	m_alpha=NULL;
 	m_svs=NULL;

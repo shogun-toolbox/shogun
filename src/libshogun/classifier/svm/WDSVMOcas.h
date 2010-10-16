@@ -26,9 +26,6 @@ template <class ST> class CStringFeatures;
 class CWDSVMOcas : public CClassifier
 {
 	public:
-		/** default constructor  */
-		CWDSVMOcas(void);
-
 		/** constructor
 		 *
 		 * @param type type of SVM

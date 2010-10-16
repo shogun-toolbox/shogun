@@ -74,23 +74,6 @@ template <class ST> class CSparseKernel : public CKernel
 		 * @return templated feature type
 		 */
 		inline virtual EFeatureType get_feature_type();
-
-		/** Returns the name of the SGSerializable instance.  It MUST BE
-		 *  the CLASS NAME without the prefixed `C'.
-		 *
-		 *  @return name of the SGSerializable
-		 */
-		virtual const char* get_name(void) const {
-			return "SparseKernel"; }
-
-		/** return what type of kernel we are, e.g.
-		 * Linear,Polynomial, Gaussian,...
-		 *
-		 * abstract base method
-		 *
-		 * @return kernel type
-		 */
-		virtual EKernelType get_kernel_type()=0;
 };
 
 template<> inline EFeatureType CSparseKernel<float64_t>::get_feature_type() { return F_DREAL; }

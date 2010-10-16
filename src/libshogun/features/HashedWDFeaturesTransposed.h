@@ -28,8 +28,6 @@ template <class ST> class CStringFeatures;
 class CHashedWDFeaturesTransposed : public CDotFeatures
 {
 	public:
-		/** default constructor  */
-		CHashedWDFeaturesTransposed(void);
 
 		/** constructor
 		 *

@@ -32,9 +32,6 @@ namespace shogun
 class CChi2Kernel: public CDotKernel
 {
 	public:
-		/** default constructor  */
-		CChi2Kernel(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

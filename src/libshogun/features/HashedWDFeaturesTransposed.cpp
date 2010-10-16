@@ -35,31 +35,6 @@ struct HASHEDWD_THREAD_PARAM
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(void)
-	:CDotFeatures()
-{
-	SG_UNSTABLE(
-		"CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(void)",
-		"\n");
-
-	strings = NULL;
-	transposed_strings = NULL;
-
-	degree = 0;
-	start_degree = 0;
-	from_degree = 0;
-	string_length = 0;
-	num_strings = 0;
-	alphabet_size = 0;
-	w_dim = 0;
-	partial_w_dim = 0;
-	wd_weights = NULL;
-	mask = 0;
-	m_hash_bits = 0;
-
-	normalization_const = 0.0;
-}
-
 CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t>* str,
 		int32_t start_order, int32_t order, int32_t from_order,
 		int32_t hash_bits) : CDotFeatures()

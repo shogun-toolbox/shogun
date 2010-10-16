@@ -335,8 +335,8 @@ void tester()
 
 namespace shogun
 {
-	extern Version* sg_version;
-	extern IO* sg_io;
+	extern CVersion* sg_version;
+	extern CIO* sg_io;
 }
 
 int main()

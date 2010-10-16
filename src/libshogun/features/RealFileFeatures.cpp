@@ -17,21 +17,6 @@
 
 using namespace shogun;
 
-CRealFileFeatures::CRealFileFeatures(void)
-{
-	SG_UNSTABLE("CRealFileFeatures::CRealFileFeatures(void)", "\n");
-
-	working_file=NULL;
-	working_filename=strdup("");
-	intlen=0;
-	doublelen=0;
-	endian=0;
-	fourcc=0;
-	preprocd=0;
-	labels=NULL;
-	status=false;
-}
-
 CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
 : CSimpleFeatures<float64_t>(size)
 {

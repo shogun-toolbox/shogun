@@ -30,9 +30,6 @@ namespace shogun
 class CAsciiFile: public CFile
 {
 public:
-	/** default constructor  */
-	CAsciiFile(void);
-
 	/** constructor
 	 *
 	 * @param f already opened file
@@ -77,8 +74,6 @@ public:
 	//@{
 	virtual void get_byte_matrix(
 			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_int8_matrix(
-			int8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_char_matrix(
 			char*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_int_matrix(
@@ -137,8 +132,6 @@ public:
 			TSparse<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_byte_sparsematrix(
 			TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_int8_sparsematrix(
-			TSparse<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_char_sparsematrix(
 			TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_int_sparsematrix(
@@ -172,9 +165,6 @@ public:
 	//@{
 	virtual void get_byte_string_list(
 			CSGString<uint8_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_int8_string_list(
-			CSGString<int8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_char_string_list(
 			CSGString<char>*& strings, int32_t& num_str,
@@ -234,8 +224,6 @@ public:
 	//@{
 	virtual void set_byte_matrix(
 			const uint8_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_int8_matrix(
-			const int8_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_char_matrix(
 			const char* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_int_matrix(
@@ -269,8 +257,6 @@ public:
 			const TSparse<bool>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_byte_sparsematrix(
 			const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_int8_sparsematrix(
-			const TSparse<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_char_sparsematrix(
 			const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_int_sparsematrix(
@@ -304,8 +290,6 @@ public:
 	//@{
 	virtual void set_byte_string_list(
 			const CSGString<uint8_t>* strings, int32_t num_str);
-	virtual void set_int8_string_list(
-			const CSGString<int8_t>* strings, int32_t num_str);
 	virtual void set_char_string_list(
 			const CSGString<char>* strings, int32_t num_str);
 	virtual void set_int_string_list(

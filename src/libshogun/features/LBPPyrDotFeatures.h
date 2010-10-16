@@ -8,8 +8,8 @@
  * Copyright (C) 2010 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
  * Copyright (C) 2010 Berlin Institute of Technology
  */
-#ifndef _LBP_PYR_DOTFEATURES__H__
-#define _LBP_PYR_DOTFEATURES__H__
+#ifndef _SPARSEPOLYFEATURES__H__
+#define _SPARSEPOLYFEATURES__H__
 
 #include "lib/common.h"
 #include "features/DotFeatures.h"
@@ -25,9 +25,6 @@ namespace shogun
 class CLBPPyrDotFeatures : public CDotFeatures
 {
 	public:
-		/** default constructor  */
-		CLBPPyrDotFeatures(void);
-
 		/** constructor
 		 * 
 		 * @param images images
@@ -198,4 +195,4 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		int32_t vec_nDim;
 };
 }
-#endif /* _LBP_PYR_DOTFEATURES__H__  */
+#endif // _SPARSEPOLYFEATURES__H__

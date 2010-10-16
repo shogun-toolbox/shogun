@@ -8,9 +8,8 @@
  * Copyright (C) 2010 Max-Planck-Society
  */
 
-#include "features/StringFeatures.h"
-
 #ifdef HAVE_BOOST_SERIALIZATION2
+#include "features/StringFeatures.h"
 #include <boost/serialization/export.hpp>
 BOOST_CLASS_EXPORT_GUID(shogun::CSGString<char>, "CSGString_char");
 BOOST_CLASS_EXPORT(shogun::CStringFeatures<char>);

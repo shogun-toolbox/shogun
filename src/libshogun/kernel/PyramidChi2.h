@@ -28,8 +28,6 @@ namespace shogun
 class CPyramidChi2 : public CDotKernel
 {
 public:
-	/** default constructor protected to avoid its usage */ 
-	CPyramidChi2(void);
 
 	/** constructor
 	 *
@@ -117,6 +115,8 @@ public:
 		float64_t width2);
 
 protected:
+	/** default constructor protected to avoid its usage */ 
+	CPyramidChi2();
 	/** compute kernel function for features a and b
 	 *
 	 * @param idx_a index of feature vector a

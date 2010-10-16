@@ -18,7 +18,7 @@
 using namespace shogun;
 
 #ifdef TRACE_MEMORY_ALLOCS
-extern CSet<MemoryBlock>* sg_mallocs;
+extern CSet<CMemoryBlock>* sg_mallocs;
 #endif
 
 void* operator new(size_t size) throw (std::bad_alloc)
@@ -26,7 +26,7 @@ void* operator new(size_t size) throw (std::bad_alloc)
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size));
+		sg_mallocs->add(CMemoryBlock(p,size));
 #endif
 	if (!p)
 	{
@@ -47,7 +47,7 @@ void operator delete(void *p)
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(p));
+		sg_mallocs->remove(CMemoryBlock(p));
 #endif
 	if (p)
 		free(p);
@@ -58,7 +58,7 @@ void* operator new[](size_t size)
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size));
+		sg_mallocs->add(CMemoryBlock(p,size));
 #endif
 
 	if (!p)
@@ -80,7 +80,7 @@ void operator delete[](void *p)
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(p));
+		sg_mallocs->remove(CMemoryBlock(p));
 #endif
 	if (p)
 		free(p);

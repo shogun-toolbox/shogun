@@ -14,11 +14,6 @@
 
 using namespace shogun;
 
-CBinaryFile::CBinaryFile(void)
-{
-	SG_UNSTABLE("CBinaryFile::CBinaryFile(void)", "\n");
-}
-
 CBinaryFile::CBinaryFile(FILE* f, const char* name) : CFile(f, name)
 {
 }
@@ -47,7 +42,7 @@ void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
 		SG_ERROR("Failed to read Matrix\n");										\
 }
 
-GET_VECTOR(get_byte_vector, uint8_t, TSGDataType(CT_VECTOR, PT_UINT8))
+GET_VECTOR(get_byte_vector, uint8_t, TSGDataType(CT_VECTOR, PT_CHAR))
 GET_VECTOR(get_char_vector, char, TSGDataType(CT_VECTOR, PT_CHAR))
 GET_VECTOR(get_int_vector, int32_t, TSGDataType(CT_VECTOR, PT_INT32))
 GET_VECTOR(get_shortreal_vector, float32_t, TSGDataType(CT_VECTOR, PT_FLOAT32))
@@ -74,8 +69,7 @@ void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		
 }
 
 GET_MATRIX(get_char_matrix, char, TSGDataType(CT_MATRIX, PT_CHAR))
-GET_MATRIX(get_byte_matrix, uint8_t, TSGDataType(CT_MATRIX, PT_UINT8))
-GET_MATRIX(get_int8_matrix, int8_t, TSGDataType(CT_MATRIX, PT_INT8))
+GET_MATRIX(get_byte_matrix, uint8_t, TSGDataType(CT_MATRIX, PT_CHAR))
 GET_MATRIX(get_int_matrix, int32_t, TSGDataType(CT_MATRIX, PT_INT32))
 GET_MATRIX(get_uint_matrix, uint32_t, TSGDataType(CT_MATRIX, PT_INT32))
 GET_MATRIX(get_long_matrix, int64_t, TSGDataType(CT_MATRIX, PT_INT64))
@@ -144,8 +138,7 @@ void CBinaryFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& n
 }
 GET_SPARSEMATRIX(get_bool_sparsematrix, bool, TSGDataType(CT_MATRIX, PT_BOOL))
 GET_SPARSEMATRIX(get_char_sparsematrix, char, TSGDataType(CT_MATRIX, PT_CHAR))
-GET_SPARSEMATRIX(get_byte_sparsematrix, uint8_t, TSGDataType(CT_MATRIX, PT_UINT8))
-GET_SPARSEMATRIX(get_int8_sparsematrix, int8_t, TSGDataType(CT_MATRIX, PT_INT8))
+GET_SPARSEMATRIX(get_byte_sparsematrix, uint8_t, TSGDataType(CT_MATRIX, PT_CHAR))
 GET_SPARSEMATRIX(get_int_sparsematrix, int32_t, TSGDataType(CT_MATRIX, PT_INT32))
 GET_SPARSEMATRIX(get_uint_sparsematrix, uint32_t, TSGDataType(CT_MATRIX, PT_INT32))
 GET_SPARSEMATRIX(get_long_sparsematrix, int64_t, TSGDataType(CT_MATRIX, PT_INT64))
@@ -191,8 +184,7 @@ void CBinaryFile::fname(CSGString<sg_type>*& strings, int32_t& num_str, int32_t&
 }
 
 GET_STRING_LIST(get_char_string_list, char, TSGDataType(CT_VECTOR, PT_CHAR))
-GET_STRING_LIST(get_byte_string_list, uint8_t, TSGDataType(CT_VECTOR, PT_UINT8))
-GET_STRING_LIST(get_int8_string_list, int8_t, TSGDataType(CT_VECTOR, PT_INT8))
+GET_STRING_LIST(get_byte_string_list, uint8_t, TSGDataType(CT_VECTOR, PT_CHAR))
 GET_STRING_LIST(get_int_string_list, int32_t, TSGDataType(CT_VECTOR, PT_INT32))
 GET_STRING_LIST(get_uint_string_list, uint32_t, TSGDataType(CT_VECTOR, PT_INT32))
 GET_STRING_LIST(get_long_string_list, int64_t, TSGDataType(CT_VECTOR, PT_INT64))
@@ -218,7 +210,7 @@ void CBinaryFile::fname(const sg_type* vec, int32_t len)			\
 			fwrite(vec, sizeof(sg_type), len, file)!=(size_t) len)	\
 		SG_ERROR("Failed to write vector\n");						\
 }
-SET_VECTOR(set_byte_vector, uint8_t, (CT_VECTOR, PT_UINT8))
+SET_VECTOR(set_byte_vector, uint8_t, (CT_VECTOR, PT_CHAR))
 SET_VECTOR(set_char_vector, char, (CT_VECTOR, PT_CHAR))
 SET_VECTOR(set_int_vector, int32_t, (CT_VECTOR, PT_INT32))
 SET_VECTOR(set_shortreal_vector, float32_t, (CT_VECTOR, PT_FLOAT32))
@@ -241,8 +233,7 @@ void CBinaryFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec
 		SG_ERROR("Failed to write Matrix\n");										\
 }
 SET_MATRIX(set_char_matrix, char, (CT_MATRIX, PT_CHAR))
-SET_MATRIX(set_byte_matrix, uint8_t, (CT_MATRIX, PT_UINT8))
-SET_MATRIX(set_int8_matrix, int8_t, (CT_MATRIX, PT_INT8))
+SET_MATRIX(set_byte_matrix, uint8_t, (CT_MATRIX, PT_CHAR))
 SET_MATRIX(set_int_matrix, int32_t, (CT_MATRIX, PT_INT32))
 SET_MATRIX(set_uint_matrix, uint32_t, (CT_MATRIX, PT_INT32))
 SET_MATRIX(set_long_matrix, int64_t, (CT_MATRIX, PT_INT64))
@@ -277,8 +268,7 @@ void CBinaryFile::fname(const TSparse<sg_type>* matrix, 	\
 }
 SET_SPARSEMATRIX(set_bool_sparsematrix, bool, (CT_MATRIX, PT_BOOL))
 SET_SPARSEMATRIX(set_char_sparsematrix, char, (CT_MATRIX, PT_CHAR))
-SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, (CT_MATRIX, PT_UINT8))
-SET_SPARSEMATRIX(set_int8_sparsematrix, int8_t, (CT_MATRIX, PT_INT8))
+SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, (CT_MATRIX, PT_CHAR))
 SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, (CT_MATRIX, PT_INT32))
 SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, (CT_MATRIX, PT_INT32))
 SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, (CT_MATRIX, PT_INT64))
@@ -306,8 +296,7 @@ void CBinaryFile::fname(const CSGString<sg_type>* strings, int32_t num_str)	\
 	}																					\
 }
 SET_STRING_LIST(set_char_string_list, char, (CT_VECTOR, PT_CHAR))
-SET_STRING_LIST(set_byte_string_list, uint8_t, (CT_VECTOR, PT_UINT8))
-SET_STRING_LIST(set_int8_string_list, int8_t, (CT_VECTOR, PT_INT8))
+SET_STRING_LIST(set_byte_string_list, uint8_t, (CT_VECTOR, PT_CHAR))
 SET_STRING_LIST(set_int_string_list, int32_t, (CT_VECTOR, PT_INT32))
 SET_STRING_LIST(set_uint_string_list, uint32_t, (CT_VECTOR, PT_INT32))
 SET_STRING_LIST(set_long_string_list, int64_t, (CT_VECTOR, PT_INT64))

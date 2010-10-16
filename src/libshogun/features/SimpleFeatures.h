@@ -21,7 +21,6 @@
 #include "preproc/SimplePreProc.h"
 #include "features/DotFeatures.h"
 #include "features/StringFeatures.h"
-#include "lib/Parameter.h"
 
 #include <string.h>
 
@@ -63,13 +62,6 @@ class CDotFeatures;
  */
 template <class ST> class CSimpleFeatures: public CDotFeatures
 {
-	void init(void) {
-		set_generic<ST>();
-		m_parameters->add_matrix(&feature_matrix, &num_features,
-								 &num_vectors, "feature_matrix",
-								 "Number of features in cache.");
-	}
-
 	public:
 		/** constructor
 		 *
@@ -77,7 +69,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		CSimpleFeatures(int32_t size=0)
 		: CDotFeatures(size), num_vectors(0), num_features(0),
-		  feature_matrix(NULL), feature_cache(NULL) { init(); }
+			feature_matrix(NULL), feature_cache(NULL) {}
 
 		/** copy constructor */
 		CSimpleFeatures(const CSimpleFeatures & orig)
@@ -86,8 +78,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			feature_matrix(orig.feature_matrix),
 			feature_cache(orig.feature_cache)
 		{
-			init();
-
 			if (orig.feature_matrix)
 			{
 				free_feature_matrix();
@@ -106,7 +96,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		: CDotFeatures(0), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL)
 		{
-			init();
 			copy_feature_matrix(src, num_feat, num_vec);
 		}
 
@@ -118,7 +107,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		: CDotFeatures(loader), num_vectors(0), num_features(0),
 			feature_matrix(NULL), feature_cache(NULL)
 		{
-			init();
 			load(loader);
 		}
 
@@ -856,7 +844,6 @@ template<> inline EFeatureType CSimpleFeatures<sg_type>::get_feature_type() \
 GET_FEATURE_TYPE(F_BOOL, bool)
 GET_FEATURE_TYPE(F_CHAR, char)
 GET_FEATURE_TYPE(F_BYTE, uint8_t)
-GET_FEATURE_TYPE(F_BYTE, int8_t)
 GET_FEATURE_TYPE(F_SHORT, int16_t)
 GET_FEATURE_TYPE(F_WORD, uint16_t)
 GET_FEATURE_TYPE(F_INT, int32_t)
@@ -867,6 +854,26 @@ GET_FEATURE_TYPE(F_SHORTREAL, float32_t)
 GET_FEATURE_TYPE(F_DREAL, float64_t)
 GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 #undef GET_FEATURE_TYPE
+
+#define GET_FEATURE_NAME(f_name, sg_type)									\
+template<> inline const char* CSimpleFeatures<sg_type>::get_name() const	\
+{ 																			\
+	return f_name; 															\
+}
+
+GET_FEATURE_NAME("BoolFeatures", bool)
+GET_FEATURE_NAME("CharFeatures", char)
+GET_FEATURE_NAME("ByteFeatures", uint8_t)
+GET_FEATURE_NAME("ShortFeatures", int16_t)
+GET_FEATURE_NAME("WordFeatures", uint16_t)
+GET_FEATURE_NAME("IntFeatures", int32_t)
+GET_FEATURE_NAME("UIntFeatures", uint32_t)
+GET_FEATURE_NAME("LongIntFeatures", int64_t)
+GET_FEATURE_NAME("ULongIntFeatures", uint64_t)
+GET_FEATURE_NAME("ShortRealFeatures", float32_t)
+GET_FEATURE_NAME("RealFeatures", float64_t)
+GET_FEATURE_NAME("LongRealFeatures", floatmax_t)
+#undef GET_FEATURE_NAME
 
 /** align strings and compute emperical kernel map based on alignment scores
  *
@@ -935,25 +942,6 @@ template<> inline float64_t CSimpleFeatures<char>:: dense_dot(int32_t vec_idx1, 
 	int32_t vlen;
 	bool vfree;
 	char* vec1= get_feature_vector(vec_idx1, vlen, vfree);
-
-	ASSERT(vlen == num_features);
-	float64_t result=0;
-
-	for (int32_t i=0 ; i<num_features; i++)
-		result+=vec1[i]*vec2[i];
-
-	free_feature_vector(vec1, vec_idx1, vfree);
-
-	return result;
-}
-
-template<> inline float64_t CSimpleFeatures<int8_t>:: dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
-{
-	ASSERT(vec2_len == num_features);
-
-	int32_t vlen;
-	bool vfree;
-	int8_t* vec1= get_feature_vector(vec_idx1, vlen, vfree);
 
 	ASSERT(vlen == num_features);
 	float64_t result=0;
@@ -1167,7 +1155,6 @@ template<> inline void CSimpleFeatures<sg_type>::load(CFile* loader)		\
 
 LOAD(get_bool_matrix, bool)
 LOAD(get_char_matrix, char)
-LOAD(get_int8_matrix, int8_t)
 LOAD(get_byte_matrix, uint8_t)
 LOAD(get_short_matrix, int16_t)
 LOAD(get_word_matrix, uint16_t)
@@ -1189,7 +1176,6 @@ template<> inline void CSimpleFeatures<sg_type>::save(CFile* writer)		\
 
 SAVE(set_bool_matrix, bool)
 SAVE(set_char_matrix, char)
-SAVE(set_int8_matrix, int8_t)
 SAVE(set_byte_matrix, uint8_t)
 SAVE(set_short_matrix, int16_t)
 SAVE(set_word_matrix, uint16_t)

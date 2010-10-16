@@ -41,9 +41,6 @@ namespace shogun
 class COligoStringKernel : public CStringKernel<char>
 {
 	public:
-		/** default constructor  */
-		COligoStringKernel(void);
-
 		/** Constructor
 		 * @param cache_size cache size for kernel
 		 * @param k k-mer length

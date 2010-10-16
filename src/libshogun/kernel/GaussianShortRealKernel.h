@@ -31,9 +31,6 @@ namespace shogun
 class CGaussianShortRealKernel: public CDotKernel
 {
 	public:
-		/** default constructor  */
-		CGaussianShortRealKernel(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

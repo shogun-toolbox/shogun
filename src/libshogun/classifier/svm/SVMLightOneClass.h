@@ -25,8 +25,7 @@ namespace shogun
  *
  * \sa CSVMLight
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CSVMLightOneClass: public CSVMLight
+class CSVMLightOneClass: public CSVMLight
 {
 	public:
 		/** default constructor */

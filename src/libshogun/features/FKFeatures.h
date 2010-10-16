@@ -41,9 +41,6 @@ class CHMM;
 class CFKFeatures: public CSimpleFeatures<float64_t>
 {
 	public:
-		/** default constructor  */
-		CFKFeatures(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

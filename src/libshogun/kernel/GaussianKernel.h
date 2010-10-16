@@ -32,8 +32,6 @@ namespace shogun
  */
 class CGaussianKernel: public CDotKernel
 {
-	void init(void);
-
 	public:
 		/** default constructor
 		 *

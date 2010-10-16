@@ -48,9 +48,6 @@ class CSVM;
 class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 {
 	public:
-		/** default constructor  */
-		CWeightedDegreePositionStringKernel(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

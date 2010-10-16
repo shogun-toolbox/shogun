@@ -13,20 +13,6 @@
 
 using namespace shogun;
 
-CExplicitSpecFeatures::CExplicitSpecFeatures(void) :CDotFeatures()
-{
-	SG_UNSTABLE("CExplicitSpecFeatures::CExplicitSpecFeatures(void)",
-				"\n");
-
-	use_normalization = false;
-	num_strings = 0;
-	alphabet_size = 0;
-
-	spec_size = 0;
-	k_spectrum = NULL;
-}
-
-
 CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
 {
 	ASSERT(str);

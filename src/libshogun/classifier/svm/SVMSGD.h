@@ -33,9 +33,6 @@ namespace shogun
 class CSVMSGD : public CLinearClassifier
 {
 	public:
-		/** default constructor  */
-		CSVMSGD(void);
-
 		/** constructor
 		 *
 		 * @param C constant C

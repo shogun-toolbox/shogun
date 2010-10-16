@@ -40,9 +40,6 @@ namespace shogun
 class CMinkowskiMetric: public CSimpleDistance<float64_t>
 {
 	public:
-		/** default constructor  */
-		CMinkowskiMetric(void);
-
 		/** constructor
 		 *
 		 * @param k parameter k

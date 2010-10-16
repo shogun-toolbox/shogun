@@ -27,16 +27,6 @@ namespace shogun
 template <class T> class CSimpleFile : public CSGObject
 {
 	public:
-		/** default constructor  */
-		CSimpleFile(void) :CSGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
-		{
-			SG_UNSTABLE("CSimpleFile::CSimpleFile(void)", "\n");
-
-			file=NULL;
-			filename=strdup("");
-			status = false;
-		}
-
 		/** constructor
 		 * rw is either r for read and w for write
 		 *

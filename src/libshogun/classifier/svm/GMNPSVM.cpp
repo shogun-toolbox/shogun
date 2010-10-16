@@ -10,7 +10,7 @@
 
 #include "lib/io.h"
 #include "classifier/svm/GMNPSVM.h"
-#include "classifier/svm/GMNPLib.h"
+#include "classifier/svm/gmnplib.h"
 
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 #define MINUS_INF INT_MIN

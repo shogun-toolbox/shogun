@@ -25,9 +25,6 @@ namespace shogun
 class CPolyFeatures : public CDotFeatures
 {
 	public:
-		/** default constructor  */
-		CPolyFeatures(void);
-
 		/** constructor
 		 * 
 		 * @param feat real features

@@ -52,8 +52,6 @@ namespace shogun
  */
 class CFeatures : public CSGObject
 {
-	void init(void);
-
 	public:
 		/** constructor
 		 *
@@ -76,7 +74,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const=0;
+		virtual CFeatures* duplicate() const=0 ;
 
 		virtual ~CFeatures();
 

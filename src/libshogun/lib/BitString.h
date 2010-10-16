@@ -28,18 +28,6 @@ namespace shogun
 class CBitString : public CSGObject
 {
 	public:
-		/** default constructor  */
-		CBitString(void) {
-			SG_UNSTABLE("CBitString::CBitString(void)", "\n");
-
-			alphabet = NULL;
-			string = NULL;
-			length = 0;
-			word_len = 0;
-			mask = 0;
-			single_mask = 0;
-		}
-
 		/** default constructor
 		 *
 		 * creates an empty Bitstring
@@ -93,7 +81,7 @@ class CBitString : public CSGObject
 			uint64_t w=0;
 			int32_t nbits=alphabet->get_num_bits();
 			uint64_t j=0;
-			uint64_t nfit=8*sizeof(w)/nbits;
+			int32_t nfit=8*sizeof(w)/nbits;
 			for (uint64_t i=0; i<len; i++)
 			{
 				w= (w << nbits) | alphabet->remap_to_bin((uint8_t) str[j]);
@@ -170,7 +158,7 @@ class CBitString : public CSGObject
 					string=new uint64_t[stream_len];
 					length=len;
 
-					uint64_t idx=0;
+					int32_t idx=0;
 					int32_t k=0;
 
 					for (int32_t j=0; j<fasta_len; j++, k++)

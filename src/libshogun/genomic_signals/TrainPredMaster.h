@@ -13,24 +13,16 @@
 
 #include "lib/common.h"
 #include "base/SGObject.h"
-/*
 #include "ui/GUIKernel.h"
 #include "genomic_signals/KernelFactory.h"
-*/
 
 namespace shogun
 {
-class CGUIKernel;
-class CKernelFactory;
 
 /** @brief class TrainPredMaster */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CTrainPredMaster : public CSGObject 
+class CTrainPredMaster : public CSGObject 
 {
 	public:
-		/** constructor
-		 */
-		CTrainPredMaster(void);
 
 		/** constructor
 		 */

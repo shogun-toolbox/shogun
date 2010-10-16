@@ -36,9 +36,6 @@ namespace shogun
 class CPolyMatchStringKernel: public CStringKernel<char>
 {
 	public:
-		/** default constructor  */
-		CPolyMatchStringKernel(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

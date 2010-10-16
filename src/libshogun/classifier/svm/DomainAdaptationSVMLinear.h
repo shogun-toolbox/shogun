@@ -21,8 +21,7 @@
 namespace shogun
 {
 /** @brief class DomainAdaptiveSVMLinear */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CDomainAdaptationSVMLinear : public CLibLinear
+class CDomainAdaptationSVMLinear : public CLibLinear
 {
 
 	public:

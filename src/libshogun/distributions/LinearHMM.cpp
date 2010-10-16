@@ -16,17 +16,6 @@
 
 using namespace shogun;
 
-CLinearHMM::CLinearHMM(void)
-{
-	SG_UNSTABLE("CLinearHMM::CLinearHMM(void)", "\n");
-
-	sequence_length = 0;
-	num_symbols = 0;
-	num_params = 0;
-	transition_probs = NULL;
-	log_transition_probs = NULL;
-}
-
 CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
 : CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
 {

@@ -29,12 +29,7 @@ class CSVM;
 /** @brief class MultiClassSVM */
 class CMultiClassSVM : public CSVM
 {
-	void init(void);
-
 	public:
-		/** default constructor  */
-		CMultiClassSVM(void);
-
 		/** constructor
 		 *
 		 * @param type type of MultiClassSVM

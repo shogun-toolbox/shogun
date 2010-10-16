@@ -216,7 +216,7 @@ bool CGUIHMM::hmm_classify(char* param)
 	int32_t poslinear=0;
 	int32_t neglinear=0;
 
-	param=IO::skip_spaces(param);
+	param=CIO::skip_spaces(param);
 
 	numargs=sscanf(param, "%s %d %d", outputname, &neglinear, &poslinear);
 

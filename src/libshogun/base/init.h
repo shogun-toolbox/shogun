@@ -15,10 +15,10 @@
 
 namespace shogun
 {
-	class IO;
+	class CIO;
 	class CMath;
-	class Version;
-	class Parallel;
+	class CVersion;
+	class CParallel;
 
 /** This function must be called before libshogun is used. Usually shogun does
  * not provide any output messages (neither debugging nor error; apart from
@@ -46,37 +46,37 @@ void exit_shogun();
  *
  * @param io io object to use
  */
-void set_global_io(IO* io);
+void set_global_io(CIO* io);
 
 /** get the global io object
  *
  * @return io object
  */
-IO* get_global_io();
+CIO* get_global_io();
 
 /** set the global parallel object
  *
  * @param parallel parallel object to use
  */
-void set_global_parallel(Parallel* parallel);
+void set_global_parallel(CParallel* parallel);
 
 /** get the global parallel object
  *
  * @return parallel object
  */
-Parallel* get_global_parallel();
+CParallel* get_global_parallel();
 
 /** set the global version object
  *
  * @param version version object to use
  */
-void set_global_version(Version* version);
+void set_global_version(CVersion* version);
 
 /** get the global version object
  *
  * @return version object
  */
-Version* get_global_version();
+CVersion* get_global_version();
 
 /** set the global math object
  *

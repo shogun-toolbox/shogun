@@ -30,12 +30,12 @@ namespace shogun
  * computer and is the place where you define the number of CPUs that shall be
  * used in computations.
  */
-class Parallel
+class CParallel
 {
 public:
-	Parallel();
-	Parallel(const Parallel& orig);
-	virtual ~Parallel();
+	CParallel();
+	CParallel(const CParallel& orig);
+	virtual ~CParallel();
 
 	inline int32_t get_num_cpus() const
 	{

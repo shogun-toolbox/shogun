@@ -20,7 +20,7 @@
 
 namespace shogun
 {
-class IO;
+class CIO;
 
 /** @brief Class Version provides version information.
  *
@@ -28,11 +28,11 @@ class IO;
  * example the svn revision, time and date of compile and compilation and
  * the linkflags used.
  */
-class Version
+class CVersion
 {
 public:
-	Version();
-	virtual ~Version();
+	CVersion();
+	virtual ~CVersion();
 
 	static inline void print_version()
 	{

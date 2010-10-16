@@ -15,19 +15,6 @@
 
 using namespace shogun;
 
-CTOPFeatures::CTOPFeatures(void)
-{
-	SG_UNSTABLE("CTOPFeatures::CTOPFeatures(void)", "\n");
-
-	pos = NULL;
-	neg = NULL;
-	neglinear = false;
-	poslinear = false;
-
-	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
-	memset(&neg_relevant_indizes, 0, sizeof(neg_relevant_indizes));
-}
-
 CTOPFeatures::CTOPFeatures(
 	int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
 : CSimpleFeatures<float64_t>(size), neglinear(neglin), poslinear(poslin)

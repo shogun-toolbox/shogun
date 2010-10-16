@@ -36,9 +36,6 @@ namespace shogun
 class CSNPStringKernel: public CStringKernel<char>
 {
 	public:
-		/** default constructor  */
-		CSNPStringKernel(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

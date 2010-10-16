@@ -17,12 +17,6 @@
 
 using namespace shogun;
 
-CAUCKernel::CAUCKernel(void)
-: CDotKernel(0), subkernel(NULL)
-{
-	SG_UNSTABLE("CAUCKernel::CAUCKernel(void)", "\n");
-}
-
 CAUCKernel::CAUCKernel(int32_t size, CKernel* s)
 : CDotKernel(size), subkernel(s)
 {

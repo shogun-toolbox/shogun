@@ -45,8 +45,7 @@ namespace shogun
  * \sa CLPBoost
  * \sa CLPM
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CSubGradientLPM : public CLinearClassifier
+class CSubGradientLPM : public CLinearClassifier
 {
 	public:
 		CSubGradientLPM();

@@ -17,68 +17,17 @@ namespace shogun
 {
 class CSerializableAsciiFile :public CSerializableFile
 {
-	::std::vector<long> stack_fpos;
-
-	void init(void);
-	bool ignore(void);
+	bool write_scalar(EPrimitveType type, const void* param);
+	bool write_vector(const TSGDataType* type, const void* param,
+					  uint64_t size);
 
 protected:
-	virtual bool write_scalar_wrapped(const TSGDataType* type,
-									  const void* param);
-	virtual bool read_scalar_wrapped(const TSGDataType* type,
-									 void* param);
-
-	virtual bool write_cont_begin_wrapped(const TSGDataType* type,
-										  index_t len_real_y,
-										  index_t len_real_x);
-	virtual bool read_cont_begin_wrapped(const TSGDataType* type,
-										 index_t* len_read_y,
-										 index_t* len_read_x);
-
-	virtual bool write_cont_end_wrapped(const TSGDataType* type,
-										index_t len_real_y,
-										index_t len_real_x);
-	virtual bool read_cont_end_wrapped(const TSGDataType* type,
-									   index_t len_read_y,
-									   index_t len_read_x);
-
-	virtual bool write_item_begin_wrapped(const TSGDataType* type,
-										  index_t y, index_t x);
-	virtual bool read_item_begin_wrapped(const TSGDataType* type,
-										 index_t y, index_t x);
-
-	virtual bool write_item_end_wrapped(const TSGDataType* type,
-										index_t y, index_t x);
-	virtual bool read_item_end_wrapped(const TSGDataType* type,
-									   index_t y, index_t x);
-
-	virtual bool write_sgserializable_begin_wrapped(
-		const TSGDataType* type, const char* sgserializable_name,
-		EPrimitveType generic);
-	virtual bool read_sgserializable_begin_wrapped(
-		const TSGDataType* type, char* sgserializable_name,
-		EPrimitveType* generic);
-
-	virtual bool write_sgserializable_end_wrapped(
-		const TSGDataType* type, const char* sgserializable_name,
-		EPrimitveType generic);
-	virtual bool read_sgserializable_end_wrapped(
-		const TSGDataType* type, const char* sgserializable_name,
-		EPrimitveType generic);
-
-	virtual bool write_type_begin_wrapped(const TSGDataType* type,
-										  const char* name,
-										  const char* prefix);
-	virtual bool read_type_begin_wrapped(const TSGDataType* type,
-										 const char* name,
-										 const char* prefix);
-
-	virtual bool write_type_end_wrapped(const TSGDataType* type,
-										const char* name,
-										const char* prefix);
-	virtual bool read_type_end_wrapped(const TSGDataType* type,
-									   const char* name,
-									   const char* prefix);
+	virtual bool write_type_wrapped(
+		const TSGDataType* type, const void* param, const char* name,
+		const char* prefix);
+	virtual bool read_type_wrapped(
+		const TSGDataType* type, void* param, const char* name,
+		const char* prefix);
 
 public:
 	/** default constructor */
@@ -88,7 +37,7 @@ public:
 	 *
 	 * @param f already opened file
 	 */
-	explicit CSerializableAsciiFile(FILE* fstream, char rw);
+	explicit CSerializableAsciiFile(FILE* f, char rw);
 
 	/** constructor
 	 *

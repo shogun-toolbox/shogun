@@ -74,23 +74,6 @@ template <class ST> class CStringKernel : public CKernel
 		 */
 		virtual EFeatureType get_feature_type();
 
-		/** Returns the name of the SGSerializable instance.  It MUST BE
-		 *  the CLASS NAME without the prefixed `C'.
-		 *
-		 *  @return name of the SGSerializable
-		 */
-		virtual const char* get_name(void) const {
-			return "StringKernel"; }
-
-		/** return what type of kernel we are, e.g.
-		 * Linear,Polynomial, Gaussian,...
-		 *
-		 * abstract base method
-		 *
-		 * @return kernel type
-		 */
-		virtual EKernelType get_kernel_type()=0;
-
 #ifdef HAVE_BOOST_SERIALIZATION
     private:
 

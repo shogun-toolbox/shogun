@@ -17,36 +17,26 @@
 using namespace shogun;
 
 CGaussianKernel::CGaussianKernel()
-	: CDotKernel(), width(1), sq_lhs(NULL), sq_rhs(NULL)
+: CDotKernel(), width(1)
 {
-	init();
 }
 
 
 CGaussianKernel::CGaussianKernel(int32_t size, float64_t w)
 : CDotKernel(size), width(w), sq_lhs(NULL), sq_rhs(NULL)
 {
-	init();
 }
 
 CGaussianKernel::CGaussianKernel(
 	CDotFeatures* l, CDotFeatures* r, float64_t w, int32_t size)
 : CDotKernel(size), width(w), sq_lhs(NULL), sq_rhs(NULL)
 {
-	init();
-
 	init(l,r);
 }
 
 CGaussianKernel::~CGaussianKernel()
 {
 	cleanup();
-}
-
-void
-CGaussianKernel::init(void)
-{
-	m_parameters->add(&width, "width", "Kernel width.");
 }
 
 void CGaussianKernel::cleanup()

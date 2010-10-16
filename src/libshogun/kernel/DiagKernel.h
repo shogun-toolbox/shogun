@@ -26,9 +26,6 @@ namespace shogun
 class CDiagKernel: public CKernel
 {
 	public:
-		/** default constructor  */
-		CDiagKernel(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

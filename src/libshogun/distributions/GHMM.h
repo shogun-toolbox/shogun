@@ -63,13 +63,6 @@ class CGHMM : public CDistribution
 		 * @return logarithm of example's likelihood
 		 */
 		virtual float64_t get_log_likelihood_example(int32_t num_example);
-
-		/** Returns the name of the SGSerializable instance.  It MUST BE
-		 *  the CLASS NAME without the prefixed `C'.
-		 *
-		 * @return name of the SGSerializable
-		 */
-	virtual const char* get_name(void) const { return "GHMM"; }
 };
 }
 #endif

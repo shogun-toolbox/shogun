@@ -31,9 +31,6 @@ namespace shogun
 class CFixedDegreeStringKernel: public CStringKernel<char>
 {
 	public:
-		/** default constructor  */
-		CFixedDegreeStringKernel(void);
-
 		/** constructor
 		 *
 		 * @param size cache size

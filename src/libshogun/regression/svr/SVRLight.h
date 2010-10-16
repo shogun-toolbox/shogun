@@ -59,8 +59,7 @@ namespace shogun
  * string kernels and the linear kernel), which will result in significant
  * speedups.
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CSVRLight: public CSVMLight
+class CSVRLight: public CSVMLight
 {
 	public:
 		/** default constructor */

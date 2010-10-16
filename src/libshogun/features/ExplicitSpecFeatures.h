@@ -27,8 +27,6 @@ template <class ST> class CStringFeatures;
 class CExplicitSpecFeatures : public CDotFeatures
 {
 	public:
-		/** default constructor */
-		CExplicitSpecFeatures(void);
 
 		/** constructor
 		 *

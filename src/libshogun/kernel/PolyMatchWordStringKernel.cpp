@@ -17,15 +17,6 @@
 
 using namespace shogun;
 
-CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(void)
-: CStringKernel<uint16_t>(0),degree(0),inhomogene(false)
-{
-	SG_UNSTABLE("CPolyMatchWordStringKernel::"
-				"CPolyMatchWordStringKernel(void)", "\n");
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
-}
-
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(int32_t size, int32_t d, bool i)
 : CStringKernel<uint16_t>(size),degree(d),inhomogene(i)
 {

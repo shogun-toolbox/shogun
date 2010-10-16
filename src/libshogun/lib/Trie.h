@@ -152,13 +152,9 @@ template <class Trie> class CTrie;
  * may save a lot of memory on higher degree tries.
  *
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
+template <class Trie> class CTrie : public CSGObject
 {
 	public:
-		/** default constructor  */
-		CTrie(void);
-
 		/** constructor
 		 *
 		 * @param d degree
@@ -659,23 +655,6 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		/** nofsKmers */
 		int32_t* nofsKmers;
 };
-	template <class Trie>
-	CTrie<Trie>::CTrie(void)
-	: CSGObject(), degree(0), position_weights(NULL),
-		use_compact_terminal_nodes(true),
-		weights_in_tree(true)
-	{
-		SG_UNSTABLE("CTrie<Trie>::CTrie(void)", "\n");
-
-		TreeMemPtrMax=1024*1024/sizeof(Trie);
-		TreeMemPtr=0;
-		TreeMem=(Trie*)malloc(TreeMemPtrMax*sizeof(Trie));
-
-		length=0;
-		trees=NULL;
-
-		NUM_SYMS=4;
-	}
 
 	template <class Trie>
 	CTrie<Trie>::CTrie(int32_t d, bool p_use_compact_terminal_nodes)

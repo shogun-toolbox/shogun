@@ -28,14 +28,14 @@
 namespace shogun
 {
 	class CMath;
-	class Parallel;
-	class IO;
-	class Version;
+	class CParallel;
+	class CIO;
+	class CVersion;
 
 	extern CMath* sg_math;
-	extern Parallel* sg_parallel;
-	extern IO* sg_io;
-	extern Version* sg_version;
+	extern CParallel* sg_parallel;
+	extern CIO* sg_io;
+	extern CVersion* sg_version;
 
 }
 
@@ -67,40 +67,40 @@ CSGObject::unset_global_objects(void)
 	SG_UNREF(io);
 }
 
-void CSGObject::set_io(IO* new_io)
+void CSGObject::set_io(CIO* new_io)
 {
 	SG_UNREF(sg_io);
 	sg_io=new_io;
 	SG_REF(sg_io);
 }
 
-IO* CSGObject::get_io()
+CIO* CSGObject::get_io()
 {
 	SG_REF(sg_io);
 	return sg_io;
 }
 
-void CSGObject::set_parallel(Parallel* new_parallel)
+void CSGObject::set_parallel(CParallel* new_parallel)
 {
 	SG_UNREF(sg_parallel);
 	sg_parallel=new_parallel;
 	SG_REF(sg_parallel);
 }
 
-Parallel* CSGObject::get_parallel()
+CParallel* CSGObject::get_parallel()
 {
 	SG_REF(sg_parallel);
 	return sg_parallel;
 }
 
-void CSGObject::set_version(Version* new_version)
+void CSGObject::set_version(CVersion* new_version)
 {
 	SG_UNREF(sg_version);
 	sg_version=new_version;
 	SG_REF(sg_version);
 }
 
-Version* CSGObject::get_version()
+CVersion* CSGObject::get_version()
 {
 	SG_REF(sg_version);
 	return sg_version;

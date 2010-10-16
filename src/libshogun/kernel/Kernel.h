@@ -152,8 +152,6 @@ class CSVM;
  */
 class CKernel : public CSGObject
 {
-	void init(void);
-
 	friend class CVarianceKernelNormalizer;
 	friend class CSqrtDiagKernelNormalizer;
 	friend class CAvgDiagKernelNormalizer;

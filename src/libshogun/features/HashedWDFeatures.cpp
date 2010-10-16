@@ -13,27 +13,6 @@
 
 using namespace shogun;
 
-CHashedWDFeatures::CHashedWDFeatures(void) :CDotFeatures()
-{
-	SG_UNSTABLE("CHashedWDFeatures::CHashedWDFeatures(void)", "\n");
-
-	strings = NULL;
-
-	degree = 0;
-	start_degree = 0;
-	from_degree = 0;
-	string_length = 0;
-	num_strings = 0;
-	alphabet_size = 0;
-	w_dim = 0;
-	partial_w_dim = 0;
-	wd_weights = NULL;
-	mask = 0;
-	m_hash_bits = 0;
-
-	normalization_const = 0.0;
-}
-
 CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 		int32_t start_order, int32_t order, int32_t from_order,
 		int32_t hash_bits) : CDotFeatures()

@@ -14,12 +14,6 @@
 
 using namespace shogun;
 
-CSigmoidKernel::CSigmoidKernel(void)
-: CDotKernel(0),gamma(0.0), coef0(0.0)
-{
-	SG_UNSTABLE("CSigmoidKernel::CSigmoidKernel(void)", "\n");
-}
-
 CSigmoidKernel::CSigmoidKernel(int32_t size, float64_t g, float64_t c)
 : CDotKernel(size),gamma(g), coef0(c)
 {

@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef __IO_H__
-#define __IO_H__
+#ifndef __CIO_H__
+#define __CIO_H__
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -26,8 +26,8 @@
 
 namespace shogun
 {
-	class IO;
-	extern IO* sg_io;
+	class CIO;
+	extern CIO* sg_io;
 }
 
 
@@ -68,10 +68,6 @@ enum EMessageType
 #define SG_INFO(...) io->message(MSG_INFO, __FILE__, __LINE__, __VA_ARGS__)
 #define SG_WARNING(...) io->message(MSG_WARN, __FILE__, __LINE__, __VA_ARGS__)
 #define SG_ERROR(...) io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__)
-#define SG_UNSTABLE(func, ...) io->message(MSG_WARN, __FILE__, __LINE__, \
-__FILE__ ":" func ": Unstable method!  Please report if it seems to " \
-"work or not to the Shogun mailing list.  Thanking you in " \
-"anticipation.  " __VA_ARGS__)
 
 #define SG_PRINT(...) io->message(MSG_MESSAGEONLY, __FILE__, __LINE__, __VA_ARGS__)
 #define SG_NOTIMPLEMENTED io->not_implemented(__FILE__, __LINE__)
@@ -103,13 +99,13 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
  * this class to be in the end written to the screen. Note that messages don't
  * have to be written to stdout or stderr, but can be redirected to a file.
  */
-class IO
+class CIO
 {
 	public:
 		/** default constructor */
-		IO();
+		CIO();
 		/** copy constructor */
-		IO(const IO& orig);
+		CIO(const CIO& orig);
 
 		/** set loglevel
 		 *
@@ -434,4 +430,4 @@ class IO
 		int32_t refcount;
 };
 }
-#endif // __IO_H__
+#endif // __CIO_H__

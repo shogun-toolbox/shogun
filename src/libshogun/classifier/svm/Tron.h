@@ -53,8 +53,7 @@ public:
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** @brief class Tron */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CTron : public CSGObject
+class CTron : public CSGObject
 {
 public:
 	/** constructor
@@ -86,5 +85,5 @@ private:
 	function *fun_obj;
 };
 }
-#endif //HAVE_LAPACK
 #endif
+#endif //HAVE_LAPACK

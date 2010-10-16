@@ -45,22 +45,6 @@ struct wdocas_thread_params_add
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CWDSVMOcas::CWDSVMOcas(void)
-: CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
-	epsilon(1e-3), method(SVM_OCAS)
-{
-	SG_UNSTABLE("CWDSVMOcas::CWDSVMOcas(void)", "\n");
-
-	w=NULL;
-	old_w=NULL;
-	features=NULL;
-	degree=6;
-	from_degree=40;
-	wd_weights=NULL;
-	w_offsets=NULL;
-	normalization_const=1.0;
-}
-
 CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 : CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)

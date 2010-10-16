@@ -17,14 +17,6 @@
 
 using namespace shogun;
 
-CKernelDistance::CKernelDistance(void)
-{
-	SG_UNSTABLE("CKernelDistance::CKernelDistance(void)", "\n");
-
-	kernel = NULL;
-	width = 0.0;
-}
-
 CKernelDistance::CKernelDistance(float64_t w, CKernel* k)
 : CDistance(), kernel(k), width(w)
 {

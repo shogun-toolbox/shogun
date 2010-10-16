@@ -43,7 +43,7 @@ class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t& len);
+		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t len);
 };
 }
 #endif

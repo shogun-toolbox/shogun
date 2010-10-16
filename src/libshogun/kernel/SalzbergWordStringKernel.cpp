@@ -18,17 +18,6 @@
 
 using namespace shogun;
 
-CSalzbergWordStringKernel::CSalzbergWordStringKernel(void)
-: CStringKernel<uint16_t>(0), estimate(NULL), mean(NULL), variance(NULL),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
-	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
-	neg_prior(0.5), initialized(false)
-{
-	SG_UNSTABLE("CSalzbergWordStringKernel::"
-				"CSalzbergWordStringKernel(void)", "\n");
-}
-
 CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, CPluginEstimate* pie, CLabels* labels)
 : CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),

@@ -172,14 +172,6 @@ class CLinearClassifier : public CClassifier
 		 */
 		virtual CDotFeatures* get_features() { SG_REF(features); return features; }
 
-		/** Returns the name of the SGSerializable instance.  It MUST BE
-		 *  the CLASS NAME without the prefixed `C'.
-		 *
-		 * @return name of the SGSerializable
-		 */
-		virtual const char* get_name(void) const {
-			return "LinearClassifier"; }
-
 	protected:
 		/** dimension of w */
 		int32_t w_dim;
