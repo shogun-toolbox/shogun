@@ -56,7 +56,27 @@ template<> inline EFeatureType CStringPreProc<uint64_t>::get_feature_type()
 	return F_ULONG;
 }
 
+template<> inline EFeatureType CStringPreProc<int64_t>::get_feature_type()
+{
+	return F_LONG;
+}
+
+template<> inline EFeatureType CStringPreProc<uint32_t>::get_feature_type()
+{
+	return F_UINT;
+}
+
+template<> inline EFeatureType CStringPreProc<int32_t>::get_feature_type()
+{
+	return F_INT;
+}
+
 template<> inline EFeatureType CStringPreProc<uint16_t>::get_feature_type()
+{
+	return F_WORD;
+}
+
+template<> inline EFeatureType CStringPreProc<int16_t>::get_feature_type()
 {
 	return F_WORD;
 }
@@ -66,9 +86,35 @@ template<> inline EFeatureType CStringPreProc<uint8_t>::get_feature_type()
 	return F_BYTE;
 }
 
+template<> inline EFeatureType CStringPreProc<int8_t>::get_feature_type()
+{
+	return F_BYTE;
+}
+
 template<> inline EFeatureType CStringPreProc<char>::get_feature_type()
 {
 	return F_CHAR;
 }
+
+template<> inline EFeatureType CStringPreProc<bool>::get_feature_type()
+{
+	return F_BOOL;
+}
+
+template<> inline EFeatureType CStringPreProc<float32_t>::get_feature_type()
+{
+	return F_SHORTREAL;
+}
+
+template<> inline EFeatureType CStringPreProc<float64_t>::get_feature_type()
+{
+	return F_DREAL;
+}
+
+template<> inline EFeatureType CStringPreProc<floatmax_t>::get_feature_type()
+{
+	return F_LONGREAL;
+}
+
 }
 #endif

@@ -55,7 +55,7 @@
 #include "lib/Cplex.h"
 #include "lib/Mathematics.h"
 
-#include "classifier/svm/qpbsvmlib.h"
+#include "classifier/svm/QPBSVMLib.h"
 #include "classifier/svm/pr_loqo.h"
 
 using namespace shogun;
@@ -63,6 +63,23 @@ using namespace shogun;
 #define HISTORY_BUF 1000000
 
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
+
+CQPBSVMLib::CQPBSVMLib(void)
+{
+	SG_UNSTABLE("CQPBSVMLib::CQPBSVMLib(void)", "\n");
+
+	m_H=0;
+	m_dim = 0;
+	m_diag_H = NULL;
+
+	m_f = NULL;
+	m_UB = 0.0;
+	m_tmax = INT_MAX;
+	m_tolabs = 0;
+	m_tolrel = 1e-6;
+	m_tolKKT = 0;
+	m_solver = QPB_SOLVER_SCA;
+}
 
 CQPBSVMLib::CQPBSVMLib(
 	float64_t* H, int32_t n, float64_t* f, int32_t m, float64_t UB)

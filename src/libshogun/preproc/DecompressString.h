@@ -36,6 +36,13 @@ enum E_COMPRESSION_TYPE;
 template <class ST> class CDecompressString : public CStringPreProc<ST>
 {
 	public:
+		/** default constructor  */
+		CDecompressString(void)
+			: CStringPreProc<ST>("DecompressString", "DECS")
+		{
+			compressor=NULL;
+		}
+
 		/** constructor
 		 */
 		CDecompressString(E_COMPRESSION_TYPE ct)

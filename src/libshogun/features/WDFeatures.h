@@ -28,6 +28,8 @@ template <class ST> class CStringFeatures;
 class CWDFeatures : public CDotFeatures
 {
 	public:
+		/** defualt constructor  */
+		CWDFeatures(void);
 
 		/** constructor
 		 *

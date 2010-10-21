@@ -23,6 +23,13 @@ namespace shogun
 class CDummyFeatures : public CFeatures
 {
 	public:
+		/** default constructor  */
+		CDummyFeatures(void) {
+			SG_UNSTABLE("CDummyFeatures::CDummyFeatures(void)", "\n");
+
+			num_vectors = 0;
+		}
+
 		/** constructor
 		 *
 		 * @param num number of feature vectors

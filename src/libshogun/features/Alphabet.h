@@ -93,7 +93,7 @@ class CAlphabet : public CSGObject
 		/** default constructor
 		 *
 		 */
-		//CAlphabet();
+		CAlphabet(void);
 
 
 		/** constructor

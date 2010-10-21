@@ -33,7 +33,7 @@ template <class T> class CBinaryStream : public CSGObject
 		{
             rw=NULL;
             m_fname=NULL;
-			fd = NULL:
+			fd = NULL;
 			length = 0;
 		}
 
@@ -47,7 +47,8 @@ template <class T> class CBinaryStream : public CSGObject
 		CBinaryStream(const char* fname, const char* flag="r")
 		: CSGObject()
 		{
-			open_stream(bs.m_fname, bs.rw);
+			/* open_stream(bs.m_fname, bs.rw); */
+			SG_NOTIMPLEMENTED;
 		}
 
 
@@ -100,7 +101,7 @@ template <class T> class CBinaryStream : public CSGObject
 
             rw=NULL;
             m_fname=NULL;
-			fd = NULL:
+			fd = NULL;
 			length = 0;
 		}
 
@@ -162,10 +163,10 @@ template <class T> class CBinaryStream : public CSGObject
 				return;
 
 			if (fseek(fd, ((long) sizeof(T))*((long) index), SEEK_SET) != 0)
-				SG_ERROR(stderr, "Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname);
+				SG_ERROR("Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname);
 
 			if ( fread(buffer, sizeof(T), num, fd) != num)
-				SG_ERROR(stderr, "Error calling fread (file '%s')\n", m_fname);
+				SG_ERROR("Error calling fread (file '%s')\n", m_fname);
 		}
 
 		/** read next
@@ -192,14 +193,14 @@ template <class T> class CBinaryStream : public CSGObject
 		{
 
 			if (fseek(fd, ((long) sizeof(T))*((long) index), SEEK_SET) != 0)
-				SG_ERROR(stderr, "Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname);
+				SG_ERROR("Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname);
 
 			T ptr;
 
 			if ( fread(&ptr, sizeof(T), 1, fd) != 1)
-				SG_ERROR(stderr, "Error calling fread (file '%s')\n", m_fname);
+				SG_ERROR("Error calling fread (file '%s')\n", m_fname);
 
-			return T;
+			return ptr;
 		}
 
 		/** @return object name */

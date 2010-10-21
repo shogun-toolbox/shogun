@@ -18,12 +18,12 @@
 
 namespace shogun
 {
-	CParallel* sg_parallel=NULL;
-	CIO* sg_io=NULL;
-	CVersion* sg_version=NULL;
+	Parallel* sg_parallel=NULL;
+	IO* sg_io=NULL;
+	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 #ifdef TRACE_MEMORY_ALLOCS
-	CSet<CMemoryBlock>* sg_mallocs=NULL;
+	CSet<MemoryBlock>* sg_mallocs=NULL;
 #endif
 
 	/// function called to print normal messages
@@ -43,19 +43,19 @@ namespace shogun
 			void (*print_error)(FILE* target, const char* str),
 			void (*cancel_computations)(bool &delayed, bool &immediately))
 	{
-		setlocale(LC_ALL, "");
+		setlocale(LC_ALL, "C");
 
 		if (!sg_io)
-			sg_io = new shogun::CIO();
+			sg_io = new shogun::IO();
 		if (!sg_parallel)
-			sg_parallel=new shogun::CParallel();
+			sg_parallel=new shogun::Parallel();
 		if (!sg_version)
-			sg_version = new shogun::CVersion();
+			sg_version = new shogun::Version();
 		if (!sg_math)
 			sg_math = new shogun::CMath();
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
-			sg_mallocs = new shogun::CSet<CMemoryBlock>();
+			sg_mallocs = new shogun::CSet<MemoryBlock>();
 
 		SG_REF(sg_mallocs);
 #endif
@@ -85,40 +85,40 @@ namespace shogun
 		// will leak memory alloc statistics on exit
 	}
 
-	void set_global_io(CIO* io)
+	void set_global_io(IO* io)
 	{
 		SG_UNREF(sg_io);
 		sg_io=io;
 		SG_REF(sg_io);
 	}
 
-	CIO* get_global_io()
+	IO* get_global_io()
 	{
 		SG_REF(sg_io);
 		return sg_io;
 	}
 
-	void set_global_parallel(CParallel* parallel)
+	void set_global_parallel(Parallel* parallel)
 	{
 		SG_UNREF(sg_parallel);
 		sg_parallel=parallel;
 		SG_REF(sg_parallel);
 	}
 
-	CParallel* get_global_parallel()
+	Parallel* get_global_parallel()
 	{
 		SG_REF(sg_parallel);
 		return sg_parallel;
 	}
 
-	void set_global_version(CVersion* version)
+	void set_global_version(Version* version)
 	{
 		SG_UNREF(sg_version);
 		sg_version=version;
 		SG_REF(sg_version);
 	}
 
-	CVersion* get_global_version()
+	Version* get_global_version()
 	{
 		SG_REF(sg_version);
 		return sg_version;

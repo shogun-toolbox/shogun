@@ -37,6 +37,9 @@ namespace shogun
 class CMatchWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
+		/** default constructor  */
+		CMatchWordStringKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

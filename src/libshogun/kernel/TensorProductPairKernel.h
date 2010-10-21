@@ -37,6 +37,9 @@ namespace shogun
 class CTensorProductPairKernel: public CDotKernel
 {
 	public:
+		/** default constructor  */
+		CTensorProductPairKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

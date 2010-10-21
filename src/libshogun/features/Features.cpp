@@ -12,6 +12,7 @@
 #include "features/Features.h"
 #include "preproc/PreProc.h"
 #include "lib/io.h"
+#include "lib/Parameter.h"
 
 #include <string.h>
 
@@ -26,24 +27,31 @@ BOOST_CLASS_EXPORT(shogun::CFeatures);
 using namespace shogun;
 
 CFeatures::CFeatures(int32_t size)
-: CSGObject(), properties(FP_NONE), cache_size(size), preproc(NULL), num_preproc(0),
-	preprocessed(NULL)
+: CSGObject()
 {
+	init();
+	cache_size = size;
+
 	SG_INFO("Feature object created (%p)\n",this);
 }
 
 CFeatures::CFeatures(const CFeatures& orig)
-: CSGObject(orig), preproc(orig.preproc),
-	num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
+: CSGObject(orig)
 {
+	init();
+
+	preproc = orig.preproc;
+	num_preproc = orig.num_preproc;
+
 	preprocessed=new bool[orig.num_preproc];
 	memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 }
 
 CFeatures::CFeatures(CFile* loader)
-: CSGObject(), cache_size(0), preproc(NULL), num_preproc(0),
-	preprocessed(false)
+: CSGObject()
 {
+	init();
+
 	load(loader);
 	SG_INFO("Feature object loaded (%p)\n",this) ;
 }
@@ -52,6 +60,28 @@ CFeatures::~CFeatures()
 {
 	SG_INFO("Feature object destroyed (%p)\n", this);
 	clean_preprocs();
+}
+
+void
+CFeatures::init(void)
+{
+	m_parameters->add(&properties, "properties",
+					  "Feature properties.");
+	m_parameters->add(&cache_size, "cache_size",
+					  "Size of cache in MB.");
+
+	m_parameters->add_vector((CSGSerializable***) &preproc,
+							 &num_preproc, "preproc",
+							 "List of preprocessors.");
+	m_parameters->add_vector(&preprocessed,
+							 &num_preproc, "preprocessed",
+							 "Feature[i] is already preprocessed.");
+
+	properties = FP_NONE;
+	cache_size = 0;
+	preproc = NULL;
+	num_preproc = 0;
+	preprocessed = NULL;
 }
 
 /// set preprocessor

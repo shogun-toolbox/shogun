@@ -29,6 +29,8 @@ namespace shogun
  */
 class CLabels : public CSGObject
 {
+	void init(int32_t num_labels_, int32_t num_classes);
+
 	public:
 		/** default constructor */
 		CLabels();
@@ -320,11 +322,12 @@ class CLabels : public CSGObject
 		float64_t* labels;
 
 		/** number of classes */
-		int16_t m_num_classes;
+		int32_t m_num_classes;
 
 		/** confidence matrix of size: num_classes x num_labels */
 		float64_t* m_confidences;
-
+		int32_t m_confidence_classes;
+		int32_t m_confidence_labels;
 };
 }
 #endif

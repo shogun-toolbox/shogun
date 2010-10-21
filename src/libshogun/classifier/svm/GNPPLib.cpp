@@ -18,7 +18,7 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
-#include "classifier/svm/gnpplib.h"
+#include "classifier/svm/GNPPLib.h"
 #include "kernel/Kernel.h"
 
 using namespace shogun;
@@ -30,6 +30,19 @@ using namespace shogun;
 
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
+CGNPPLib::CGNPPLib(void)
+{
+	SG_UNSTABLE("CGNPPLib::CGNPPLib(void)", "\n");
+
+	kernel_columns = NULL;
+	cache_index = NULL;
+	first_kernel_inx = 0;
+	Cache_Size = 0;
+	m_num_data = 0;
+	m_reg_const = 0.0;
+	m_vector_y = NULL;
+	m_kernel = NULL;
+}
 
 CGNPPLib::CGNPPLib(
 	float64_t* vector_y, CKernel* kernel, int32_t num_data, float64_t reg_const)

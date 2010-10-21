@@ -37,6 +37,9 @@ namespace shogun
 class CGaussianShiftKernel: public CGaussianKernel
 {
 	public:
+		/** default constructor  */
+		CGaussianShiftKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

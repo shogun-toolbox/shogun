@@ -29,6 +29,9 @@ namespace shogun
 class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
+		/** default constructor  */
+		CSalzbergWordStringKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

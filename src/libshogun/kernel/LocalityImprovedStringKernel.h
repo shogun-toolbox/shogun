@@ -30,6 +30,9 @@ namespace shogun
 class CLocalityImprovedStringKernel: public CStringKernel<char>
 {
 	public:
+		/** default constructor  */
+		CLocalityImprovedStringKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

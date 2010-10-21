@@ -13,6 +13,23 @@
 
 using namespace shogun;
 
+CWDFeatures::CWDFeatures(void) :CDotFeatures()
+{
+	SG_UNSTABLE("CWDFeatures::CWDFeatures(void) :CDotFeatures()",
+				"\n");
+
+	strings = NULL;
+
+	degree = 0;
+	from_degree = 0;
+	string_length = 0;
+	num_strings = 0;
+	alphabet_size = 0;
+	w_dim = 0;
+	wd_weights = NULL;
+	normalization_const = 0.0;
+}
+
 CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 		int32_t order, int32_t from_order) : CDotFeatures()
 {

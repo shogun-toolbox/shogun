@@ -72,14 +72,17 @@ PRELINKFLAGS += $(PRELINKFLAGS_TEMPLATE)
 SVNEntries = $(shell find $(SRCDIR) -name entries -type f)
 HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
+CPPTMPFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_CPP_TMP)")
+SRCTMPFILES     = $(CPPTMPFILES:.$(EXT_CPP_TMP)=.$(EXT_SRC_CPP))
+SRCFILES        += $(SRCTMPFILES)
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" )) \
 			  $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" )) \
 			  $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
 else
-OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)")) \
-			  $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"))
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), \
+                     $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(SRCFILES)))
 endif
 
 SWIGIFILES   	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)")
@@ -142,6 +145,7 @@ swigdocclean:
 clean: swigclean swigdocclean
 	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o")
 	@rm -f $(shell find . -name "*.a" -o -name "*.so*" -o -name "*.dylib" -o -name "*.dll" -o -name "*~" -o -name ".#*")
+	@rm -f $(SRCTMPFILES)
 	@rm -f $(shell find . -type f -name '*.py' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 	@rm -f $(shell find . -type f -name '*.pyc' -o -name '*.R')
 	@rm -f $(shell find . -type f -name '*.RData')
@@ -459,9 +463,20 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
 	$(COMP_CPP) $(COMPFLAGS_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	@test -f $*.$(EXT_CPP_TMP) && test "$(SRCDIR)" != "." \
+	  && rm -f $< || true
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) $(DEFINES) -c $(INCLUDES) -o $@ $<
+
+%.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_SH) $(HEADERFILES)
+	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_SH)"
+	@echo "/*" > $@
+	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
+	@echo " * CORRESPONDING TEMPLAT FILE, PLEASE!" >> $@
+	@echo -e " */\n" >> $@
+	@cat  $< >> $@
+	@sh $*.$(EXT_CPP_SH) $@ $(HEADERFILES)
 
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)

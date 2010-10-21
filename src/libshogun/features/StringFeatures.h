@@ -20,6 +20,7 @@
 #include "lib/MemoryMappedFile.h"
 #include "lib/Mathematics.h"
 #include "lib/Compressor.h"
+#include "lib/Parameter.h"
 
 #include "preproc/PreProc.h"
 #include "preproc/StringPreProc.h"
@@ -63,10 +64,8 @@ struct SSKTripleFeature
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** template class CSGString */
-template <class T> class CSGString
+template<class T> class CSGString :public CSGSerializable
 {
-
-
 #ifdef HAVE_BOOST_SERIALIZATION
 
   private:
@@ -117,6 +116,13 @@ template <class T> class CSGString
 	T* string;
 	/** length of string */
 	int32_t length;
+
+	virtual inline const char* get_name(void) const
+		{ return "SGString"; };
+
+	explicit CSGString(void) {
+		m_parameters->add_vector(&string, &length, "string");
+	}
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -1017,11 +1023,11 @@ template <class ST> class CStringFeatures : public CFeatures
 			struct dirent **namelist;
 			int32_t n;
 
-            CIO::set_dirname(dirname);
+            IO::set_dirname(dirname);
 
 			SG_DEBUG("dirname '%s'\n", dirname);
 
-			n = scandir(dirname, &namelist, &CIO::filter, alphasort);
+			n = scandir(dirname, &namelist, &IO::filter, alphasort);
 			if (n <= 0)
 			{
 				SG_ERROR("error calling scandir - no files found\n");
@@ -1040,7 +1046,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				for (int32_t i=0; i<n; i++)
 				{
-					char* fname=CIO::concat_filename(namelist[i]->d_name);
+					char* fname=IO::concat_filename(namelist[i]->d_name);
 
 					struct stat s;
 					off_t filesize=0;
@@ -2400,6 +2406,7 @@ template<> inline void CStringFeatures<sg_type>::load(CFile* loader)		\
 
 LOAD(get_bool_string_list, bool)
 LOAD(get_char_string_list, char)
+LOAD(get_int8_string_list, int8_t)
 LOAD(get_byte_string_list, uint8_t)
 LOAD(get_short_string_list, int16_t)
 LOAD(get_word_string_list, uint16_t)
@@ -2421,6 +2428,7 @@ template<> inline void CStringFeatures<sg_type>::save(CFile* writer)		\
 
 SAVE(set_bool_string_list, bool)
 SAVE(set_char_string_list, char)
+SAVE(set_int8_string_list, int8_t)
 SAVE(set_byte_string_list, uint8_t)
 SAVE(set_short_string_list, int16_t)
 SAVE(set_word_string_list, uint16_t)

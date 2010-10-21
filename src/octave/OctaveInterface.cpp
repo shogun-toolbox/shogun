@@ -20,7 +20,7 @@
 #include <octave/Cell.h>
 #include <stdio.h>
 
-#include <shogun/ui/SGInterface.h>
+#include "ui/SGInterface.h"
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/io.h>
 #include <shogun/lib/config.h>

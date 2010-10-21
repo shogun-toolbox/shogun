@@ -18,7 +18,8 @@
 namespace shogun
 {
 /** @brief Class ListElement, defines how an element of the the list looks like */
-template <class T> class CListElement
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST template <class T> class CListElement
 {
 	public:
 		/** next element in list */
@@ -51,7 +52,8 @@ template <class T> class CListElement
  * For higher level objects pointers should be used. The list supports calling
  * delete() of an object that is to be removed from the list.
  */
-template <class T> class CList : public CSGObject
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 {
 	public:
 		/** constructor

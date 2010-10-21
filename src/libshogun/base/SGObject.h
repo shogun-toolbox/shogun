@@ -55,9 +55,9 @@
  */
 namespace shogun
 {
-class CIO;
-class CParallel;
-class CVersion;
+class IO;
+class Parallel;
+class Version;
 
 // define reference counter macros
 //
@@ -75,9 +75,9 @@ class CVersion;
  * objects in memory (erase unused object, avoid cleaning objects when they are
  * still in use), it provides interfaces for:
  *
- * -# parallel - to determine the number of used CPUs for a method (cf. CParallel)
- * -# io - to output messages and general i/o (cf. CIO)
- * -# version - to provide version information of the shogun version used (cf. CVersion)
+ * -# parallel - to determine the number of used CPUs for a method (cf. Parallel)
+ * -# io - to output messages and general i/o (cf. IO)
+ * -# version - to provide version information of the shogun version used (cf. Version)
  */
 class CSGObject :public CSGSerializable
 {
@@ -148,47 +148,41 @@ public:
 	}
 #endif
 
-	/** get the name of the object
-	 *
-	 * @return name of object
-	 */
-	virtual const char* get_name() const=0;
-
 	/** set the io object
 	 *
 	 * @param io io object to use
 	 */
-	void set_io(CIO* io);
+	void set_io(IO* io);
 
 	/** get the io object
 	 *
 	 * @return io object
 	 */
-	CIO* get_io();
+	IO* get_io();
 
 	/** set the parallel object
 	 *
 	 * @param parallel parallel object to use
 	 */
-	void set_parallel(CParallel* parallel);
+	void set_parallel(Parallel* parallel);
 
 	/** get the parallel object
 	 *
 	 * @return parallel object
 	 */
-	CParallel* get_parallel();
+	Parallel* get_parallel();
 
 	/** set the version object
 	 *
 	 * @param version version object to use
 	 */
-	void set_version(CVersion* version);
+	void set_version(Version* version);
 
 	/** get the version object
 	 *
 	 * @return version object
 	 */
-	CVersion* get_version();
+	Version* get_version();
 
 #ifdef HAVE_BOOST_SERIALIZATION
 	/** Serialization Function: Convert object to a string
@@ -244,9 +238,9 @@ private:
 #endif
 
 public:
-	CIO* io;
-	CParallel* parallel;
-	CVersion* version;
+	IO* io;
+	Parallel* parallel;
+	Version* version;
 };
 }
 #endif // __SGOBJECT_H__

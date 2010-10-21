@@ -60,7 +60,7 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 
 -------------------------------------------------------------------- */
 
-#include "classifier/svm/gmnplib.h"
+#include "classifier/svm/GMNPLib.h"
 #include "lib/Mathematics.h"
 
 #include <string.h>
@@ -76,6 +76,26 @@ using namespace shogun;
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
+
+CGMNPLib::CGMNPLib(void)
+{
+	SG_UNSTABLE("CGMNPLib::CGMNPLib(void)", "\n");
+
+	diag_H = NULL;
+	kernel_columns = NULL;
+	cache_index = NULL;
+	first_kernel_inx = 0;
+	Cache_Size = 0;
+	m_num_data = 0;
+	m_reg_const = 0;
+	m_vector_y = 0;
+	m_kernel = NULL;
+
+	first_virt_inx = 0;
+	memset(&virt_columns, 0, sizeof (virt_columns));
+	m_num_virt_data = 0;
+	m_num_classes = 0;
+}
 
 CGMNPLib::CGMNPLib(
 	float64_t* vector_y, CKernel* kernel, int32_t num_data,

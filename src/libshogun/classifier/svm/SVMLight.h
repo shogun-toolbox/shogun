@@ -228,7 +228,8 @@ struct SHRINK_STATE
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** @brief class SVMlight */
-class CSVMLight : public CSVM
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CSVMLight : public CSVM
 {
  public:
   /** default constructor */

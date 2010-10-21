@@ -26,29 +26,29 @@ void operator delete[](void *p);
 #ifdef TRACE_MEMORY_ALLOCS
 namespace shogun
 {
-class CMemoryBlock
+class MemoryBlock
 {
 	public:
-		CMemoryBlock(void* p)
+		MemoryBlock(void* p)
 		{
 			ptr=p;
 			size=0;
 		}
 
-		CMemoryBlock(void* p, size_t sz)
+		MemoryBlock(void* p, size_t sz)
 		{
 			ptr=p;
 			size=sz;
 		}
 
-        CMemoryBlock(const CMemoryBlock &b)
+        MemoryBlock(const MemoryBlock &b)
         {
 			ptr=b.ptr;
 			size=b.size;
         }
 
 
-		bool operator==(const CMemoryBlock &b) const
+		bool operator==(const MemoryBlock &b) const
 		{
 			return ptr==b.ptr;
 		}

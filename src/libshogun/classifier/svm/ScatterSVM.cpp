@@ -19,6 +19,13 @@
 
 using namespace shogun;
 
+CScatterSVM::CScatterSVM(void)
+: CMultiClassSVM(ONE_VS_REST), scatter_type(NO_BIAS_LIBSVM),
+  model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
+{
+	SG_UNSTABLE("CScatterSVM::CScatterSVM(void)", "\n");
+}
+
 CScatterSVM::CScatterSVM(SCATTER_TYPE type)
 : CMultiClassSVM(ONE_VS_REST), scatter_type(type), model(NULL),
 	norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)

@@ -16,6 +16,13 @@
 
 using namespace shogun;
 
+CGaussianShortRealKernel::CGaussianShortRealKernel(void)
+: CDotKernel(0), width(0.0)
+{
+	SG_UNSTABLE("CGaussianShortRealKernel::"
+				"CGaussianShortRealKernel(void)", "\n");
+}
+
 CGaussianShortRealKernel::CGaussianShortRealKernel(int32_t size, float64_t w)
 : CDotKernel(size), width(w)
 {

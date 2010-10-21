@@ -27,6 +27,8 @@ template <class ST> class CStringFeatures;
 class CSNPFeatures : public CDotFeatures
 {
 	public:
+		/** default constructor  */
+		CSNPFeatures(void);
 
 		/** constructor
 		 *

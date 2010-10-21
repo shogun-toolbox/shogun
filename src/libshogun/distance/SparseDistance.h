@@ -57,6 +57,28 @@ template <class ST> class CSparseDistance : public CDistance
 		 * @return template-specific feature type
 		 */
 		inline virtual EFeatureType get_feature_type();
+
+		/** Returns the name of the SGSerializable instance.  It MUST BE
+		 *  the CLASS NAME without the prefixed `C'.
+		 *
+		 *  @return name of the SGSerializable
+		 */
+		virtual const char* get_name(void) const {
+			return "SparseDistance"; }
+
+		/** cleanup distance
+		 *
+		 * abstract base method
+		 */
+		virtual void cleanup()=0;
+
+		/** get distance type we are
+		 *
+		 * abstrace base method
+		 *
+		 * @return distance type
+		 */
+		virtual EDistanceType get_distance_type()=0;
 };
 
 /** get feature type the DREAL distance can deal with

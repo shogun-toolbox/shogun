@@ -10,6 +10,13 @@
 
 using namespace shogun;
 
+CTrainPredMaster::CTrainPredMaster(void)
+{
+	SG_UNSTABLE("CTrainPredMaster::CTrainPredMaster(void)", "\n");
+
+	ui_kernel = NULL;
+	kernelplist = NULL;
+}
 
 CTrainPredMaster::CTrainPredMaster(CGUIKernel* p_ui_kernel)
 :CSGObject(), kernelplist(NULL)
@@ -17,10 +24,12 @@ CTrainPredMaster::CTrainPredMaster(CGUIKernel* p_ui_kernel)
 	ui_kernel = p_ui_kernel;
 	SG_REF(ui_kernel);
 }
+
 CTrainPredMaster::~CTrainPredMaster()
 {
 	SG_UNREF(ui_kernel);
 }
+
 void CTrainPredMaster::read_models_from_file(char* filename)
 {
 	FILE* pFile;

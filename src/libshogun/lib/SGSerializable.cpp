@@ -9,22 +9,91 @@
  */
 
 #include "SGSerializable.h"
-
 #include "lib/Parameter.h"
+
+namespace shogun {
+
+template<> void
+CSGSerializable::set_generic<bool>(void)
+{ m_generic = PT_BOOL; }
+
+template<> void
+CSGSerializable::set_generic<char>(void)
+{ m_generic = PT_CHAR; }
+
+template<> void
+CSGSerializable::set_generic<int8_t>(void)
+{ m_generic = PT_INT8; }
+
+template<> void
+CSGSerializable::set_generic<uint8_t>(void)
+{ m_generic = PT_UINT8; }
+
+template<> void
+CSGSerializable::set_generic<int16_t>(void)
+{ m_generic = PT_INT16; }
+
+template<> void
+CSGSerializable::set_generic<uint16_t>(void)
+{ m_generic = PT_UINT16; }
+
+template<> void
+CSGSerializable::set_generic<int32_t>(void)
+{ m_generic = PT_INT32; }
+
+template<> void
+CSGSerializable::set_generic<uint32_t>(void)
+{ m_generic = PT_UINT32; }
+
+template<> void
+CSGSerializable::set_generic<int64_t>(void)
+{ m_generic = PT_INT64; }
+
+template<> void
+CSGSerializable::set_generic<uint64_t>(void)
+{ m_generic = PT_UINT64; }
+
+template<> void
+CSGSerializable::set_generic<float32_t>(void)
+{ m_generic = PT_FLOAT32; }
+
+template<> void
+CSGSerializable::set_generic<float64_t>(void)
+{ m_generic = PT_FLOAT64; }
+
+template<> void
+CSGSerializable::set_generic<floatmax_t>(void)
+{ m_generic = PT_FLOATMAX; }
+
+} /* namespace shogun  */
+
 
 using namespace shogun;
 
-extern CIO* sg_io;
+extern IO* sg_io;
 
 CSGSerializable::CSGSerializable(void)
 {
-	m_parameters = new CParameter(sg_io);
+	m_parameters = new Parameter(sg_io);
+	m_generic = PT_NOT_GENERIC;
 }
 
 CSGSerializable::~CSGSerializable(void)
 {
 	delete m_parameters;
 }
+
+bool
+CSGSerializable::is_generic(EPrimitveType* generic) const
+{
+	*generic = m_generic;
+
+	return m_generic != PT_NOT_GENERIC;
+}
+
+void
+CSGSerializable::unset_generic(void)
+{ m_generic = PT_NOT_GENERIC; }
 
 void
 CSGSerializable::print_serializable(const char* prefix)

@@ -34,6 +34,8 @@ struct joint_list_struct
 class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 {
 	public:
+		/** default constructor  */
+		CSpectrumMismatchRBFKernel(void);
 
 		/** constructor
 		 *
@@ -160,16 +162,16 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		/** maximum mismatch */
 		int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
-		double* AA_matrix;
+		float64_t* AA_matrix;
 		/** width of Gaussian*/
-		double width;
+		float64_t width;
 
 		/** if kernel is initialized */
 		bool initialized;
 
 
 		CArray2<float64_t> kernel_matrix ;
-		int target_letter_0 ;
+		int32_t target_letter_0 ;
 };
 
 }

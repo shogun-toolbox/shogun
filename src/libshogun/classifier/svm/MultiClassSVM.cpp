@@ -14,20 +14,40 @@
 
 using namespace shogun;
 
+CMultiClassSVM::CMultiClassSVM(void)
+: CSVM(0), multiclass_type(ONE_VS_REST), m_num_svms(0), m_svms(NULL)
+{
+	SG_UNSTABLE("CMultiClassSVM::CMultiClassSVM(void)", "\n");
+	init();
+}
+
 CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type)
 : CSVM(0), multiclass_type(type), m_num_svms(0), m_svms(NULL)
 {
+	init();
 }
 
 CMultiClassSVM::CMultiClassSVM(
 	EMultiClassSVM type, float64_t C, CKernel* k, CLabels* lab)
 : CSVM(C, k, lab), multiclass_type(type), m_num_svms(0), m_svms(NULL)
 {
+	init();
 }
 
 CMultiClassSVM::~CMultiClassSVM()
 {
 	cleanup();
+}
+
+void
+CMultiClassSVM::init(void)
+{
+	m_parameters->add((machine_int_t*) &multiclass_type,
+					  "multiclass_type", "Type of MultiClassSVM.");
+	m_parameters->add(&m_num_classes, "m_num_classes",
+					  "Number of classes.");
+	m_parameters->add_vector((CSGSerializable***) &m_svms,
+							 &m_num_svms, "m_svms");
 }
 
 void CMultiClassSVM::cleanup()

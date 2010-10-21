@@ -16,6 +16,18 @@
 
 using namespace shogun;
 
+CCommWordStringKernel::CCommWordStringKernel(void)
+: CStringKernel<uint16_t>(0), dictionary_size(0), dictionary_weights(NULL),
+	use_sign(false), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
+{
+	SG_UNSTABLE("CCommWordStringKernel::CCommWordStringKernel(void)",
+				"\n");
+
+	properties |= KP_LINADD;
+	init_dictionary(1<<(sizeof(uint16_t)*8));
+	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
+}
+
 CCommWordStringKernel::CCommWordStringKernel(int32_t size, bool s)
 : CStringKernel<uint16_t>(size), dictionary_size(0), dictionary_weights(NULL),
 	use_sign(s), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)

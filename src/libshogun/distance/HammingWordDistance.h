@@ -25,6 +25,9 @@ namespace shogun
 class CHammingWordDistance: public CStringDistance<uint16_t>
 {
 	public:
+		/** default constructor  */
+		CHammingWordDistance(void);
+
 		/** constructor
 		 *
 		 * @param use_sign if sign shall be used

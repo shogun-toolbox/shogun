@@ -27,6 +27,9 @@ namespace shogun
 class CLocalAlignmentStringKernel: public CStringKernel<char>
 {
 	public:
+		/** default constructor  */
+		CLocalAlignmentStringKernel(void);
+
 		/** constructor
 		 * @param size cache size
 		 */

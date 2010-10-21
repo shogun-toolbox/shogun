@@ -25,6 +25,9 @@ namespace shogun
 class CRealFileFeatures: public CSimpleFeatures<float64_t>
 {
 	public:
+		/** default constructor */
+		CRealFileFeatures(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

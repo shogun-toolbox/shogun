@@ -34,6 +34,9 @@ namespace shogun
 class CGaussianMatchStringKernel: public CStringKernel<char>
 {
 	public:
+		/** default constructor  */
+		CGaussianMatchStringKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

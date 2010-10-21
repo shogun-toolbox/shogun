@@ -93,6 +93,22 @@ class CDotKernel : public CKernel
 		 */
 		inline virtual EFeatureType get_feature_type() { return F_ANY; }
 
+		/** Returns the name of the SGSerializable instance.  It MUST BE
+		 *  the CLASS NAME without the prefixed `C'.
+		 *
+		 * @return name of the SGSerializable
+		 */
+		virtual const char* get_name(void) const { return "DotKernel"; }
+
+		/** return what type of kernel we are, e.g.
+		 * Linear,Polynomial, Gaussian,...
+		 *
+		 * abstract base method
+		 *
+		 * @return kernel type
+		 */
+		virtual EKernelType get_kernel_type()=0 ;
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors

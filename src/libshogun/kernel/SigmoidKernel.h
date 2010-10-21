@@ -29,6 +29,9 @@ namespace shogun
 class CSigmoidKernel: public CDotKernel
 {
 	public:
+		/** default constructor  */
+		CSigmoidKernel(void);
+
 		/** constructor
 		 *
 		 * @param size cache size

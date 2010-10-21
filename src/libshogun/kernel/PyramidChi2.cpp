@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CPyramidChi2::CPyramidChi2()
+CPyramidChi2::CPyramidChi2(void)
 : weights(NULL)
 {
 	// this will produce an erro in kernel computation!

@@ -17,10 +17,10 @@
 #include "distance/Distance.h"
 #include "classifier/DistanceMachine.h"
 
-class CDistanceMachine;
-
 namespace shogun
 {
+class CDistanceMachine;
+
 /** @brief Agglomerative hierarchical single linkage clustering.
  *
  * Starting with each object being assigned to its own cluster clusters are

@@ -31,6 +31,9 @@ namespace shogun
 class CGNPPLib: public CSGObject
 {
  public:
+  /** default constructor  */
+  CGNPPLib(void);
+
   /** constructor
    *
    * @param vector_y vector y

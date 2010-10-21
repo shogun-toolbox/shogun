@@ -39,7 +39,8 @@ enum E_PROB_TYPE
  * a number of optimization problems that are used in shogun, like for Multiple
  * Kernel Learning, Linear Programming Machines and Linear Programming Boosting.
  */
-class CCplex : public CSGObject
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CCplex : public CSGObject
 {
 public:
 

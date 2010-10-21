@@ -26,31 +26,31 @@
 
 using namespace shogun;
 
-const EMessageType CIO::levels[NUM_LOG_LEVELS]={MSG_GCDEBUG, MSG_DEBUG, MSG_INFO, MSG_NOTICE,
+const EMessageType IO::levels[NUM_LOG_LEVELS]={MSG_GCDEBUG, MSG_DEBUG, MSG_INFO, MSG_NOTICE,
 	MSG_WARN, MSG_ERROR, MSG_CRITICAL, MSG_ALERT, MSG_EMERGENCY, MSG_MESSAGEONLY};
 
-const char* CIO::message_strings[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
+const char* IO::message_strings[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
 	"[NOTICE] \0", "[WARN] \0", "[ERROR] \0",
 	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
 
-const char* CIO::message_strings_highlighted[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
+const char* IO::message_strings_highlighted[NUM_LOG_LEVELS]={"[GCDEBUG] \0", "[DEBUG] \0", "[INFO] \0",
 	"[NOTICE] \0", "\033[1;34m[WARN]\033[0m \0", "\033[1;31m[ERROR]\033[0m \0",
 	"[CRITICAL] \0", "[ALERT] \0", "[EMERGENCY] \0", "\0"};
 
 /// file name buffer
-char CIO::file_buffer[FBUFSIZE];
+char IO::file_buffer[FBUFSIZE];
 
 /// directory name buffer
-char CIO::directory_name[FBUFSIZE];
+char IO::directory_name[FBUFSIZE];
 
-CIO::CIO()
+IO::IO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
 	last_progress(1), show_progress(false), show_file_and_line(false),
 	syntax_highlight(true), loglevel(MSG_WARN), refcount(0)
 {
 }
 
-CIO::CIO(const CIO& orig)
+IO::IO(const IO& orig)
 : target(orig.get_target()), last_progress_time(0),
 	progress_start_time(0), last_progress(1),
 	show_progress(orig.get_show_progress()),
@@ -60,7 +60,7 @@ CIO::CIO(const CIO& orig)
 {
 }
 
-void CIO::message(EMessageType prio, const char* file,
+void IO::message(EMessageType prio, const char* file,
 		int32_t line, const char *fmt, ... ) const
 {
 	const char* msg_intro=get_msg_intro(prio);
@@ -116,7 +116,7 @@ void CIO::message(EMessageType prio, const char* file,
 	}
 }
 
-void CIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
+void IO::buffered_message(EMessageType prio, const char *fmt, ... ) const
 {
 	const char* msg_intro=get_msg_intro(prio);
 
@@ -130,7 +130,7 @@ void CIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
 	}
 }
 
-void CIO::progress(
+void IO::progress(
 	float64_t current_val, float64_t min_val, float64_t max_val,
 	int32_t decimals, const char* prefix)
 {
@@ -181,7 +181,7 @@ void CIO::progress(
     fflush(target);
 }
 
-void CIO::absolute_progress(
+void IO::absolute_progress(
 	float64_t current_val, float64_t val, float64_t min_val, float64_t max_val,
 	int32_t decimals, const char* prefix)
 {
@@ -232,7 +232,7 @@ void CIO::absolute_progress(
     fflush(target);
 }
 
-void CIO::done()
+void IO::done()
 {
 	if (!show_progress)
 		return;
@@ -240,7 +240,7 @@ void CIO::done()
 	message(MSG_INFO, "", -1, "done.\n");
 }
 
-char* CIO::skip_spaces(char* str)
+char* IO::skip_spaces(char* str)
 {
 	int32_t i=0;
 
@@ -254,7 +254,7 @@ char* CIO::skip_spaces(char* str)
 		return str;
 }
 
-char* CIO::skip_blanks(char* str)
+char* IO::skip_blanks(char* str)
 {
 	int32_t i=0;
 
@@ -268,22 +268,22 @@ char* CIO::skip_blanks(char* str)
 		return str;
 }
 
-EMessageType CIO::get_loglevel() const
+EMessageType IO::get_loglevel() const
 {
 	return loglevel;
 }
 
-void CIO::set_loglevel(EMessageType level)
+void IO::set_loglevel(EMessageType level)
 {
 	loglevel=level;
 }
 
-void CIO::set_target(FILE* t)
+void IO::set_target(FILE* t)
 {
 	target=t;
 }
 
-const char* CIO::get_msg_intro(EMessageType prio) const
+const char* IO::get_msg_intro(EMessageType prio) const
 {
 	for (int32_t i=NUM_LOG_LEVELS-1; i>=0; i--)
 	{

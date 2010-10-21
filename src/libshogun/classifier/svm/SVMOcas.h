@@ -30,6 +30,9 @@ enum E_SVM_TYPE
 class CSVMOcas : public CLinearClassifier
 {
 	public:
+		/** default constructor  */
+		CSVMOcas(void);
+
 		/** constructor
 		 *
 		 * @param type a E_SVM_TYPE

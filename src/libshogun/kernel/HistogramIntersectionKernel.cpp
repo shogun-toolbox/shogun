@@ -16,6 +16,13 @@
 
 using namespace shogun;
 
+CHistogramIntersectionKernel::CHistogramIntersectionKernel(void)
+: CDotKernel(0)
+{
+	SG_UNSTABLE("CHistogramIntersectionKernel::"
+				"CHistogramIntersectionKernel(void)", "\n");
+}
+
 CHistogramIntersectionKernel::CHistogramIntersectionKernel(int32_t size)
 : CDotKernel(size)
 {

@@ -665,6 +665,17 @@ class CMath : public CSGObject
 			return r;
 		}
 
+		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const int8_t* v1, const int8_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
 		/// compute dot product between v1 and v2
 		static inline float64_t dot(
 			const float64_t* v1, const char* v2, int32_t n)

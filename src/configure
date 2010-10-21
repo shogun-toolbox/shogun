@@ -41,6 +41,8 @@ KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
+EXT_CPP_TMP="${EXT_SRC_CPP}.templ"
+EXT_CPP_SH="${EXT_SRC_CPP}.sh"
 
 #the defaults are
 _swig_version=0.0.0
@@ -3783,6 +3785,8 @@ EXT_OBJ_CPP 	= ${EXT_OBJ_CPP}
 EXT_OBJ_C   	= ${EXT_OBJ_C}
 EXT_SRC_CPP 	= ${EXT_SRC_CPP}
 EXT_SRC_C   	= ${EXT_SRC_C}
+EXT_CPP_TMP     = ${EXT_CPP_TMP}
+EXT_CPP_SH      = ${EXT_CPP_SH}
 EXT_DOXY        = ${EXT_DOXY}
 EXT_SWIG_DOXY  	= ${EXT_SWIG_DOXY}
 GDB				= ${GDB}

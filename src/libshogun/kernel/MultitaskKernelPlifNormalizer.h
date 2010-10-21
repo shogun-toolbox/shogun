@@ -27,6 +27,14 @@ class CMultitaskKernelPlifNormalizer: public CMultitaskKernelMklNormalizer
 {
 
 public:
+	/** default constructor  */
+	CMultitaskKernelPlifNormalizer(void) {
+		SG_UNSTABLE("CMultitaskKernelPlifNormalizer::"
+					"CMultitaskKernelPlifNormalizer(void)", "\n");
+
+		num_tasks = 0;
+		num_betas = 0;
+	}
 
 	/** constructor
 	 */
