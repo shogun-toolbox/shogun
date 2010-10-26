@@ -29,7 +29,7 @@ CCustomKernel::CCustomKernel(CKernel* k)
 		int32_t cols=k->get_num_vec_lhs();
 		SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-		kmatrix= new float32_t[int64_t(cols)*(cols+1)/2];
+		kmatrix= new float32_t[(int64_t(cols)+1)*cols/2];
 
 		upper_diagonal=true;
 		num_rows=cols;
@@ -38,7 +38,7 @@ CCustomKernel::CCustomKernel(CKernel* k)
 		for (int32_t row=0; row<num_rows; row++)
 		{
 			for (int32_t col=row; col<num_cols; col++)
-				kmatrix[int64_t(row) * num_cols - int64_t(row)*(row+1)/2 + col]=k->kernel(row,col);
+				kmatrix[int64_t(row) * num_cols - (int64_t(row)+1)*row/2 + col]=k->kernel(row,col);
 		}
 	}
 	else

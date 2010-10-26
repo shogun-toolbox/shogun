@@ -241,7 +241,7 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-			kmatrix= new float32_t[int64_t(cols)*(cols+1)/2];
+			kmatrix= new float32_t[(int64_t(cols)+1)*cols/2];
 
 			upper_diagonal=true;
 			num_rows=cols;
@@ -303,7 +303,7 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);
 
-			kmatrix= new float32_t[rows*cols];
+			kmatrix= new float32_t[int64_t(rows)*cols];
 
 			upper_diagonal=false;
 			num_rows=rows;
@@ -313,7 +313,7 @@ class CCustomKernel: public CKernel
 			{
 				for (int32_t col=0; col<num_cols; col++)
 				{
-					kmatrix[row * num_cols + col]=km[col*num_rows+row];
+					kmatrix[int64_t(row) * num_cols + col]=km[int64_t(col)*num_rows+row];
 				}
 			}
 
