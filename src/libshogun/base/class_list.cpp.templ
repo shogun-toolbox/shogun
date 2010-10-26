@@ -13,6 +13,8 @@
 
 #include <string.h>
 
+#include "kernel/Kernel.h"
+
 REPLACE includes THIS
 
 using namespace shogun;
@@ -38,7 +40,8 @@ shogun::new_sgserializable(const char* sgserializable_name,
 {
 	for (class_list_entry_t* i=class_list; i->m_class_name != NULL;
 		 i++)
-		if (strncmp(i->m_class_name, sgserializable_name, STRING_LEN) == 0)
+		if (strncmp(i->m_class_name, sgserializable_name, STRING_LEN)
+			== 0)
 			return i->m_new_sgserializable(generic);
 
 	return NULL;
