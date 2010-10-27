@@ -224,9 +224,9 @@ template <class T> class DynArray
 				array[last_element_idx]=0;
 				last_element_idx--;
 
-				if ( num_elements - last_element_idx
-					 >= resize_granularity)
-					resize_array(last_element_idx);
+				if (num_elements - last_element_idx
+					> resize_granularity)
+					resize_array(last_element_idx+1);
 
 				return true;
 			}
