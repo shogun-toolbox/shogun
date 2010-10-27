@@ -31,6 +31,7 @@
 #include <shogun/lib/HDF5File.h>
 #include <shogun/lib/SerializableFile.h>
 #include <shogun/lib/SerializableAsciiFile.h>
+#include <shogun/lib/SerializableHDF5File.h>
 #include <shogun/lib/List.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/Signal.h>
@@ -56,6 +57,7 @@
 %rename(HDF5File) CHDF5File;
 %rename(SerializableFile) CSerializableFile;
 %rename(SerializableAsciiFile) CSerializableAsciiFile;
+%rename(SerializableHDF5File) CSerializableHDF5File;
 %rename(ListElement) CListElement;
 %rename(List) CList;
 %rename(Math) CMath;
@@ -161,6 +163,7 @@ namespace shogun
 %include <shogun/lib/HDF5File.h>
 %include <shogun/lib/SerializableFile.h>
 %include <shogun/lib/SerializableAsciiFile.h>
+%include <shogun/lib/SerializableHDF5File.h>
 %include <shogun/lib/List.h>
 %include <shogun/lib/Mathematics.h>
 %include <shogun/lib/Signal.h>

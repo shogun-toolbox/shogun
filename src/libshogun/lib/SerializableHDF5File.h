@@ -7,20 +7,42 @@
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
-#ifndef __SERIALIZABLE_ASCII_FILE_H__
-#define __SERIALIZABLE_ASCII_FILE_H__
+#ifndef __SERIALIZABLE_HDF5_FILE_H__
+#define __SERIALIZABLE_HDF5_FILE_H__
+
+#include "lib/config.h"
+#ifdef HAVE_HDF5
+
+#include <hdf5.h>
 
 #include "lib/SerializableFile.h"
 #include "lib/DynamicArray.h"
 
 namespace shogun
 {
-class CSerializableAsciiFile :public CSerializableFile
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CSerializableHDF5File
+	:public CSerializableFile
 {
-	CDynamicArray<long> m_stack_fpos;
+	struct type_item_t {
+		explicit type_item_t(void);
+		~type_item_t(void);
 
-	void init(void);
-	bool ignore(void);
+		int rank;
+		hsize_t dims[2];
+		hid_t dspace, dtype, dset;
+	};
+
+	CDynamicArray<type_item_t*> m_stack_type;
+	CDynamicArray<hid_t> m_stack_h5stream;
+
+	static hid_t new_ptype2hdf5(EPrimitveType ptype);
+	void init(const char* fname);
+	bool attr_write_scalar(hid_t datatype, const char* name,
+						   const void* val);
+	bool attr_write_string(const char* name, const char* val);
+	bool group_create(const char* name);
+	bool group_close(void);
 
 protected:
 	virtual bool write_scalar_wrapped(const TSGDataType* type,
@@ -82,29 +104,26 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerializableAsciiFile(void);
-
-	/** constructor
-	 *
-	 * @param fstream already opened file
-	 */
-	explicit CSerializableAsciiFile(FILE* fstream, char rw);
+	explicit CSerializableHDF5File(void);
 
 	/** constructor
 	 *
 	 * @param fname filename to open
 	 * @param rw mode, 'r' or 'w'
 	 */
-	explicit CSerializableAsciiFile(const char* fname, char rw='r');
+	explicit CSerializableHDF5File(const char* fname, char rw='r');
 
 	/** default destructor */
-	virtual ~CSerializableAsciiFile();
+	virtual ~CSerializableHDF5File();
 
 	/** @return object name */
 	inline virtual const char* get_name() const {
-		return "SerializableAsciiFile";
+		return "SerializableHDF5File";
 	}
+
+	virtual void close(void);
+	virtual bool is_opened(void);
 };
 }
-
-#endif /* __SERIALIZABLE_ASCII_FILE_H__  */
+#endif /* HAVE_HDF5  */
+#endif /* __SERIALIZABLE_HDF5_FILE_H__  */

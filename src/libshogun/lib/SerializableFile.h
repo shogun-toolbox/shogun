@@ -20,7 +20,6 @@ namespace shogun
 {
 class CSerializableFile :public CSGObject
 {
-	void init(FILE* fstream, char task, const char* filename);
 	bool is_task_warn(char rw);
 	bool false_warn(const char* prefix, const char* name);
 
@@ -28,6 +27,11 @@ protected:
 	FILE* m_fstream;
 	char m_task;
 	char* m_filename;
+
+	virtual void init(FILE* fstream, char task, const char* filename);
+
+	/* ************************************************************ */
+	/* Begin of abstract methods  */
 
 	virtual bool write_scalar_wrapped(const TSGDataType* type,
 									  const void* param) = 0;
@@ -86,6 +90,9 @@ protected:
 									   const char* name,
 									   const char* prefix) = 0;
 
+	/* End of abstract methods  */
+	/* ************************************************************ */
+
 public:
 	/** default constructor */
 	explicit CSerializableFile(void);
@@ -101,7 +108,7 @@ public:
 	 * @param fname filename to open
 	 * @param rw mode, 'r' or 'w'
 	 */
-	explicit CSerializableFile(char* fname, char rw='r');
+	explicit CSerializableFile(const char* fname, char rw='r');
 
 	/** default destructor */
 	virtual ~CSerializableFile(void);
@@ -112,6 +119,9 @@ public:
 
 	virtual void close(void);
 	virtual bool is_opened(void);
+
+	/* ************************************************************ */
+	/* Begin of public wrappers  */
 
 	virtual bool write_scalar(
 		const TSGDataType* type, const char* name, const char* prefix,
@@ -171,6 +181,9 @@ public:
 		const TSGDataType* type, const char* name, const char* prefix);
 	virtual bool read_type_end(
 		const TSGDataType* type, const char* name, const char* prefix);
+
+	/* End of public wrappers  */
+	/* ************************************************************ */
 };
 }
 #endif // __SERIALIZABLE_FILE_H__

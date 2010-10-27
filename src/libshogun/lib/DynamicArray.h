@@ -107,6 +107,37 @@ template <class T> class CDynamicArray :public CSGObject
 		inline bool append_element(T element)
 		{ return m_array->append_element(element); }
 
+	    /** ::STD::VECTOR compatible. Append array element to the end
+		 *  of array.
+		 *
+		 * @param element element to append
+		 */
+		inline void push_back(T element)
+		{
+			if (get_num_elements() < 0) set_element(element, 0);
+			else set_element(element, get_num_elements());
+		}
+
+	    /** ::STD::VECTOR compatible. Delete array element at the end
+		 *  of array.
+		 */
+		inline void pop_back(void)
+		{
+			if (get_num_elements() <= 0) return;
+			delete_element(get_num_elements()-1);
+		}
+
+		/** ::STD::VECTOR compatible. Return array element at the end
+		 *  of array.
+		 *
+		 * @return element at the end of array
+		 */
+		inline T back(void)
+		{
+			if (get_num_elements() <= 0) return get_element(0);
+			return get_element(get_num_elements()-1);
+		}
+
 		/** find first occurence of array element and return its index
 		 * or -1 if not available
 		 *

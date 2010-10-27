@@ -34,7 +34,8 @@ CSerializableAsciiFile::CSerializableAsciiFile(void)
 CSerializableAsciiFile::CSerializableAsciiFile(FILE* fstream, char rw)
 	:CSerializableFile(fstream, rw) { init(); }
 
-CSerializableAsciiFile::CSerializableAsciiFile(char* fname, char rw)
+CSerializableAsciiFile::CSerializableAsciiFile(
+	const char* fname, char rw)
 	:CSerializableFile(fname, rw) { init(); }
 
 CSerializableAsciiFile::~CSerializableAsciiFile() {}
@@ -63,7 +64,7 @@ CSerializableAsciiFile::init(void)
 		break;
 	}
 
-	stack_fpos.push_back(ftell(m_fstream));
+	m_stack_fpos.push_back(ftell(m_fstream));
 }
 
 bool
@@ -399,7 +400,7 @@ CSerializableAsciiFile::read_sgserializable_begin_wrapped(
 		}
 	}
 
-	stack_fpos.push_back(ftell(m_fstream));
+	m_stack_fpos.push_back(ftell(m_fstream));
 
 	return true;
 }
@@ -422,7 +423,7 @@ CSerializableAsciiFile::read_sgserializable_end_wrapped(
 {
 	if (fgetc(m_fstream) != CHAR_SGSERIAL_END) return false;
 
-	stack_fpos.pop_back();
+	m_stack_fpos.pop_back();
 
 	return true;
 }
@@ -446,7 +447,7 @@ bool
 CSerializableAsciiFile::read_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (fseek(m_fstream, stack_fpos.back(), SEEK_SET) != 0)
+	if (fseek(m_fstream, m_stack_fpos.back(), SEEK_SET) != 0)
 		return false;
 
 	string_t type_str;

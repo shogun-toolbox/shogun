@@ -25,7 +25,7 @@ CSerializableFile::CSerializableFile(FILE* fstream, char rw)
 	init(fstream, rw, "(file)");
 }
 
-CSerializableFile::CSerializableFile(char* fname, char rw)
+CSerializableFile::CSerializableFile(const char* fname, char rw)
 	:CSGObject()
 {
 	char mode[3] = {rw, 'b', '\0'};
@@ -43,7 +43,7 @@ CSerializableFile::CSerializableFile(char* fname, char rw)
 	}
 
 	m_fstream = fopen(m_filename, mode);
-	if (m_fstream == NULL) {
+	if (!is_opened()) {
 		SG_WARNING("Error opening file '%s'\n", m_filename);
 		close(); return;
 	}
@@ -53,6 +53,7 @@ CSerializableFile::~CSerializableFile(void)
 {
 	close();
 	if (m_filename != NULL) { free(m_filename); m_filename = NULL; }
+	m_task = 0;
 }
 
 void
@@ -62,10 +63,9 @@ CSerializableFile::init(FILE* fstream, char task, const char* filename)
 }
 
 void
-CSerializableFile::close()
+CSerializableFile::close(void)
 {
-	if (m_fstream != NULL) { fclose(m_fstream); m_fstream = NULL; }
-	m_task = 0;
+	if (is_opened()) { fclose(m_fstream); m_fstream = NULL; }
 }
 
 bool
@@ -77,11 +77,11 @@ CSerializableFile::is_opened(void)
 bool
 CSerializableFile::is_task_warn(char rw)
 {
-	if (rw == 'w' && m_task != 'w') {
+	if (rw == 'w' && (m_task != 'w' || !is_opened())) {
 		SG_WARNING("`%s' not opened for writing!\n", m_filename);
 		return false;
 	}
-	if (rw == 'r' && m_task != 'r') {
+	if (rw == 'r' && (m_task != 'r' || !is_opened())) {
 		SG_WARNING("`%s' not opened for reading!\n", m_filename);
 		return false;
 	}
@@ -93,7 +93,7 @@ bool
 CSerializableFile::false_warn(const char* prefix, const char* name)
 {
 	if (m_task == 'w')
-		SG_WARNING("Could not write `%s%s' from `%s'!", prefix,
+		SG_WARNING("Could not write `%s%s' to `%s'!", prefix,
 				   name, m_filename);
 	if (m_task == 'r')
 		SG_WARNING("Could not read `%s%s' from `%s'!", prefix,
