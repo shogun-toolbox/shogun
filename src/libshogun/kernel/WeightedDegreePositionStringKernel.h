@@ -470,12 +470,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 */
 		bool init_block_weights_log();
 
-		/** initialize block weights external
-		 *
-		 * @return if initialization was successful
-		 */
-		bool init_block_weights_external();
-
 		/** delete position weights
 		 *
 		 * @return if deleting was successful
@@ -729,11 +723,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 
 		/** if block computation is used */
 		bool block_computation;
-
-		/** number of external block weights */
-		int32_t num_block_weights_external;
-		/** external block weights */
-		float64_t* block_weights_external;
 
 		/** (internal) block weights */
 		float64_t* block_weights;

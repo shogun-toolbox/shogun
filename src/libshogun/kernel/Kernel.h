@@ -151,8 +151,6 @@ class CSVM;
  */
 class CKernel : public CSGObject
 {
-	void init(void);
-
 	friend class CVarianceKernelNormalizer;
 	friend class CSqrtDiagKernelNormalizer;
 	friend class CAvgDiagKernelNormalizer;
@@ -855,6 +853,12 @@ class CKernel : public CSGObject
 
 			return NULL;
 		}
+
+	private:
+		/** Do basic initialisations like default settings
+		 * and registering parameters */
+		void init();
+
 
 #ifdef USE_SVMLIGHT
 		/**@ cache kernel evalutations to improve speed */

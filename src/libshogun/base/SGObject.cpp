@@ -19,12 +19,6 @@
 #include <stdio.h>
 
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-//BOOST_IS_ABSTRACT(CSGObject);
-//BOOST_SERIALIZATION_ASSUME_ABSTRACT(shogun::CSGObject);
-#endif //HAVE_BOOST_SERIALIZATION
-
 namespace shogun
 {
 	class CMath;
@@ -105,41 +99,3 @@ Version* CSGObject::get_version()
 	SG_REF(sg_version);
 	return sg_version;
 }
-
-
-#ifdef HAVE_BOOST_SERIALIZATION
-std::string CSGObject::to_string() const
-{
-	std::ostringstream s;
-	boost::archive::text_oarchive oa(s);
-	oa << this;
-	return s.str();
-}
-
-void CSGObject::from_string(std::string str)
-{
-	std::istringstream is(str);
-	boost::archive::text_iarchive ia(is);
-
-	//cast away constness
-	CSGObject* tmp = const_cast<CSGObject*>(this);
-
-	ia >> tmp;
-	*this = *tmp;
-}
-
-void CSGObject::to_file(std::string filename) const
-{
-	std::ofstream os(filename.c_str(), std::ios::binary);
-	boost::archive::binary_oarchive oa(os);
-	oa << this;
-}
-
-void CSGObject::from_file(std::string filename)
-{
-	std::ifstream is(filename.c_str(), std::ios::binary);
-	boost::archive::binary_iarchive ia(is);
-	CSGObject* tmp= const_cast<CSGObject*>(this);
-	ia >> tmp;
-}
-#endif //HAVE_BOOST_SERIALIZATION

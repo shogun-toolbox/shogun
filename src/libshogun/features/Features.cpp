@@ -16,14 +16,6 @@
 
 #include <string.h>
 
-
-#ifdef HAVE_BOOST_SERIALIZATION
-#include "kernel/Kernel.h"
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(shogun::CFeatures);
-#endif //HAVE_BOOST_SERIALIZATION
-
-
 using namespace shogun;
 
 CFeatures::CFeatures(int32_t size)

@@ -55,7 +55,6 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(0), degree(0), length(0),
 	max_mismatch(0), seq_length(0), shift(NULL), shift_len(0),
-	num_block_weights_external(0), block_weights_external(NULL),
 	block_weights(NULL), type(E_EXTERNAL), tries(0), poim_tries(0),
 	tree_initialized(false), use_poim_tries(false), m_poim_distrib(NULL),
 	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
@@ -75,7 +74,6 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
 	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
-	num_block_weights_external(0), block_weights_external(NULL),
 	block_weights(NULL), type(E_EXTERNAL), tries(d), poim_tries(d),
 	tree_initialized(false), use_poim_tries(false), m_poim_distrib(NULL),
 	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
@@ -95,7 +93,6 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
 	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
-	num_block_weights_external(0), block_weights_external(NULL),
 	block_weights(NULL), type(E_EXTERNAL), tries(d), poim_tries(d),
 	tree_initialized(false), use_poim_tries(false), m_poim_distrib(NULL),
 	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
@@ -118,7 +115,6 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(1), degree(d), length(0),
 	max_mismatch(0), seq_length(0), shift(NULL), shift_len(0),
-	num_block_weights_external(0), block_weights_external(NULL),
 	block_weights(NULL), type(E_EXTERNAL), tries(d), poim_tries(d),
 	tree_initialized(false), use_poim_tries(false), m_poim_distrib(NULL),
 	m_poim(NULL), m_poim_num_sym(0), m_poim_num_feat(0), m_poim_result_len(0),
@@ -1216,25 +1212,6 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_log()
 	return (block_weights!=NULL);
 }
 
-bool CWeightedDegreePositionStringKernel::init_block_weights_external()
-{
-	if (block_weights_external && (seq_length == num_block_weights_external) )
-	{
-		delete[] block_weights;
-		block_weights=new float64_t[seq_length];
-
-		if (block_weights)
-		{
-			for (int32_t i=0; i<seq_length; i++)
-				block_weights[i]=block_weights_external[i];
-		}
-	}
-	else {
-      SG_ERROR( "sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, block_weights_external);
-   }
-	return (block_weights!=NULL);
-}
-
 bool CWeightedDegreePositionStringKernel::init_block_weights()
 {
 	switch (type)
@@ -1255,11 +1232,8 @@ bool CWeightedDegreePositionStringKernel::init_block_weights()
 			return init_block_weights_exp();
 		case E_BLOCK_LOG:
 			return init_block_weights_log();
-		case E_BLOCK_EXTERNAL:
-			return init_block_weights_external();
-		default:
-			return false;
 	};
+	return false;
 }
 
 

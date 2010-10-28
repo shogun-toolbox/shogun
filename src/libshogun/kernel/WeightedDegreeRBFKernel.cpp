@@ -14,11 +14,6 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(shogun::CWeightedDegreeRBFKernel);
-#endif //HAVE_BOOST_SERIALIZATION
-
 using namespace shogun;
 
 CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel()

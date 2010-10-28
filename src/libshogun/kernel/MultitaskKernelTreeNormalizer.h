@@ -280,9 +280,6 @@ public:
 		for (std::map<int32_t, float64_t>::const_iterator it=task_histogram.begin(); it!=task_histogram.end(); it++)
 		{
 			task_histogram[it->first] = task_histogram[it->first] / float64_t(task_vector_lhs.size());
-
-			//std::cout << "task_histogram:" << task_histogram[it->first] << std::endl;
-
 		}
 
 	}
@@ -395,8 +392,6 @@ public:
 
 		num_nodes = taxonomy.get_num_nodes();
 
-		//std::cout << "num nodes:" << num_nodes << std::endl;
-
 		dependency_matrix = std::vector<float64_t>(num_nodes * num_nodes);
 
 		update_cache();
@@ -440,8 +435,6 @@ public:
 		//lookup tasks
 		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
 		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
-
-		//std::cout << task_idx_lhs << ", " << task_idx_rhs << std::endl;
 
 		//lookup similarity
 		float64_t task_similarity = get_node_similarity(task_idx_lhs, task_idx_rhs);

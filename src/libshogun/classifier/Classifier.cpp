@@ -11,12 +11,6 @@
 #include "classifier/Classifier.h"
 #include "lib/Parameter.h"
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT_GUID(shogun::CClassifier, "CClassifier");
-//BOOST_SERIALIZATION_ASSUME_ABSTRACT(shogun::CClassifier);
-#endif //HAVE_BOOST_SERIALIZATION
-
 using namespace shogun;
 
 CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL),

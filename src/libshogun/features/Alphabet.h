@@ -93,8 +93,7 @@ class CAlphabet : public CSGObject
 		/** default constructor
 		 *
 		 */
-		CAlphabet(void);
-
+		CAlphabet();
 
 		/** constructor
 		 *
@@ -505,6 +504,10 @@ class CAlphabet : public CSGObject
 			}
 		}
 
+	private:
+		/** Do basic initialisations like default settings
+		 * and registering parameters */
+		void init();
 
 	protected:
 		/** init map table */

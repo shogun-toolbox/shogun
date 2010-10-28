@@ -39,6 +39,9 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		CAvgDiagKernelNormalizer(float64_t c=0.0)
 		{
 			scale=c;
+
+			m_parameters->add(&scale, "scale"
+							  "Scale quotient by which kernel is scaled.");
 		}
 
 		/** default destructor */

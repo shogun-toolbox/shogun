@@ -13,6 +13,7 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Trie.h"
+#include "lib/Parameter.h"
 #include "base/Parallel.h"
 
 #include "kernel/WeightedDegreeStringKernel.h"
@@ -23,14 +24,6 @@
 #ifndef WIN32
 #include <pthread.h>
 #endif
-
-
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-//BOOST_CLASS_EXPORT(shogun::CWeightedDegreeStringKernel);
-BOOST_CLASS_EXPORT_GUID(shogun::CWeightedDegreeStringKernel, "WeightedDegreeStringKernel");
-#endif //HAVE_BOOST_SERIALIZATION
-
 
 using namespace shogun;
 
@@ -53,68 +46,46 @@ struct S_THREAD_PARAM
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel ()
-: CStringKernel<char>(10),weights(NULL),position_weights(NULL),
-	weights_buffer(NULL), mkl_stepsize(1),degree(1), length(0),
-	max_mismatch(0), seq_length(0), block_computation(true),
-	num_block_weights_external(0), block_weights_external(NULL),
-	block_weights(NULL), type(E_WD), which_degree(-1), tries(NULL),
-	tree_initialized(false), alphabet(NULL)
+: CStringKernel<char>(10)
 {
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	lhs=NULL;
-	rhs=NULL;
+	init();
 }
 
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
-	int32_t degree_, EWDKernType type_)
-: CStringKernel<char>(10),weights(NULL),position_weights(NULL),
-	weights_buffer(NULL), mkl_stepsize(1),degree(degree_), length(0),
-	max_mismatch(0), seq_length(0), block_computation(true),
-	num_block_weights_external(0), block_weights_external(NULL),
-	block_weights(NULL), type(type_), which_degree(-1), tries(NULL),
-	tree_initialized(false), alphabet(NULL)
+	int32_t d, EWDKernType t)
+: CStringKernel<char>(10)
 {
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	lhs=NULL;
-	rhs=NULL;
+	init();
+
+	degree=d;
+	type=t;
 
 	if (type!=E_EXTERNAL)
 		set_wd_weights_by_type(type);
-
-	set_normalizer(new CFirstElementKernelNormalizer());
 }
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
-	float64_t *weights_, int32_t degree_)
-: CStringKernel<char>(10), weights(NULL), position_weights(NULL),
-	weights_buffer(NULL), mkl_stepsize(1), degree(degree_), length(0),
-	max_mismatch(0), seq_length(0), block_computation(true),
-	num_block_weights_external(0), block_weights_external(NULL),
-	block_weights(NULL), type(E_EXTERNAL), which_degree(-1), tries(NULL),
-	tree_initialized(false), alphabet(NULL)
+	float64_t *w, int32_t d)
+: CStringKernel<char>(10)
 {
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	lhs=NULL;
-	rhs=NULL;
+	init();
+
+	type=E_EXTERNAL;
+	degree=d;
 
 	weights=new float64_t[degree*(1+max_mismatch)];
 	for (int32_t i=0; i<degree*(1+max_mismatch); i++)
-		weights[i]=weights_[i];
-	set_normalizer(new CFirstElementKernelNormalizer());
+		weights[i]=w[i];
 }
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t degree_)
-: CStringKernel<char>(10), weights(NULL), position_weights(NULL),
-	weights_buffer(NULL), mkl_stepsize(1), degree(degree_), length(0),
-	max_mismatch(0), seq_length(0), block_computation(true),
-	num_block_weights_external(0), block_weights_external(NULL),
-	block_weights(NULL), type(E_WD), which_degree(-1), tries(NULL),
-	tree_initialized(false), alphabet(NULL)
+	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t d)
+: CStringKernel<char>(10)
 {
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-
+	init();
+	degree=d;
+	type=E_WD;
 	set_wd_weights_by_type(type);
 	set_normalizer(new CFirstElementKernelNormalizer());
 	init(l, r);
@@ -843,25 +814,6 @@ bool CWeightedDegreeStringKernel::init_block_weights_log()
 	return (block_weights!=NULL);
 }
 
-bool CWeightedDegreeStringKernel::init_block_weights_external()
-{
-	if (block_weights_external && (seq_length == num_block_weights_external) )
-	{
-		delete[] block_weights;
-		block_weights=new float64_t[seq_length];
-
-		if (block_weights)
-		{
-			for (int32_t i=0; i<seq_length; i++)
-				block_weights[i]=block_weights_external[i];
-		}
-	}
-	else {
-      SG_ERROR( "sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, block_weights_external);
-   }
-	return (block_weights!=NULL);
-}
-
 bool CWeightedDegreeStringKernel::init_block_weights()
 {
 	switch (type)
@@ -882,11 +834,8 @@ bool CWeightedDegreeStringKernel::init_block_weights()
 			return init_block_weights_exp();
 		case E_BLOCK_LOG:
 			return init_block_weights_log();
-		case E_BLOCK_EXTERNAL:
-			return init_block_weights_external();
-		default:
-			return false;
 	};
+	return false;
 }
 
 
@@ -1032,9 +981,8 @@ void CWeightedDegreeStringKernel::compute_batch(
 
 bool CWeightedDegreeStringKernel::set_max_mismatch(int32_t max)
 {
-	if (type==E_EXTERNAL && max!=0) {
+	if (type==E_EXTERNAL && max!=0)
 		return false;
-	}
 
 	max_mismatch=max;
 
@@ -1042,4 +990,55 @@ bool CWeightedDegreeStringKernel::set_max_mismatch(int32_t max)
 		return init(lhs, rhs);
 	else
 		return true;
+}
+
+void CWeightedDegreeStringKernel::init()
+{
+	weights=NULL;
+	position_weights=NULL;
+
+	weights_buffer=NULL;
+	mkl_stepsize=1;
+	degree=1;
+	length=0;
+
+	max_mismatch=0;
+	seq_length=0;
+	block_computation=true;
+
+	block_weights=NULL;
+	type=E_WD;
+	which_degree=-1;
+	tries=NULL;
+
+	tree_initialized=false;
+	alphabet=NULL;
+
+	lhs=NULL;
+	rhs=NULL;
+
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
+
+	set_normalizer(new CFirstElementKernelNormalizer());
+
+	m_parameters->add_matrix(&weights, &degree,
+			&length, "weights",
+			"WD Kernel weights.");
+	m_parameters->add_vector(&position_weights, &seq_length,
+			"position_weights",
+			"Weights per position.");
+	m_parameters->add(&mkl_stepsize, "mkl_stepsize ",
+			"MKL step size.");
+	m_parameters->add(&degree, "degree",
+			"Order of WD kernel.");
+	m_parameters->add(&max_mismatch, "max_mismatch",
+			"Number of allowed mismatches.");
+	m_parameters->add(&block_computation, "block_computation",
+			"If block computation shall be used.");
+	m_parameters->add((machine_int_t*) &type, "type",
+			"WeightedDegree kernel type.");
+	m_parameters->add(&which_degree, "which_degree",
+			"Unqueal -1 if just a single degree is selected.");
+	m_parameters->add((CSGSerializable**) &alphabet, "alphabet",
+			"Alphabet of Features.");
 }

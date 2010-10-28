@@ -13,13 +13,7 @@
 
 #include "features/Alphabet.h"
 #include "lib/io.h"
-
-
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT_GUID(shogun::CAlphabet, "shogun::CAlphabet");
-#endif //HAVE_BOOST_SERIALIZATION
-
+#include "lib/Parameter.h"
 
 using namespace shogun;
 
@@ -37,24 +31,17 @@ const char* CAlphabet::alphabet_names[18]={
 	"SNP", "RAWSNP"};
 
 
-CAlphabet::CAlphabet(void)
+CAlphabet::CAlphabet()
   : CSGObject()
 {
-	SG_UNSTABLE("CAlphabet::CAlphabet(void)", "\n");
-
-	alphabet = NONE;
-	num_symbols = 0;
-	num_bits = 0;
-
-	memset(valid_chars, 0, sizeof (valid_chars));
-	memset(maptable_to_bin, 0, sizeof (maptable_to_bin));
-	memset(maptable_to_char, 0, sizeof (maptable_to_char));
-	memset(histogram, 0, sizeof (histogram));
+	init();
 }
 
 CAlphabet::CAlphabet(char* al, int32_t len)
 : CSGObject()
 {
+	init();
+
 	EAlphabet alpha=NONE;
 
 	if (len>=(int32_t) strlen("DNA") && !strncmp(al, "DNA", strlen("DNA")))
@@ -100,12 +87,14 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 CAlphabet::CAlphabet(EAlphabet alpha)
 : CSGObject()
 {
+	init();
 	set_alphabet(alpha);
 }
 
 CAlphabet::CAlphabet(CAlphabet* a)
 : CSGObject()
 {
+	init();
 	ASSERT(a);
 	set_alphabet(a->get_alphabet());
 	copy_histogram(a);
@@ -698,3 +687,26 @@ const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
 	return alphabet_names[idx];
 }
 
+void CAlphabet::init()
+{
+	alphabet = NONE;
+	num_symbols = 0;
+	num_bits = 0;
+
+	memset(valid_chars, 0, sizeof (valid_chars));
+	memset(maptable_to_bin, 0, sizeof (maptable_to_bin));
+	memset(maptable_to_char, 0, sizeof (maptable_to_char));
+	memset(histogram, 0, sizeof (histogram));
+
+
+	m_parameters->add((machine_int_t*) &alphabet, "alphabet",
+			"Alphabet enum");
+
+	/* We don't need to serialize the mapping tables / they can be computed
+	 * after de-serializing. Lets not serialize the histogram for now. Doesn't
+	 * really make sense.  */
+
+	/* m_parameters->add_histogram(&histogram, sizeof(histogram),
+			"histogram",
+			"Histogram."); */
+}

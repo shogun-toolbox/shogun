@@ -36,40 +36,7 @@
 #include <pthread.h>
 #endif
 
-
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(shogun::CKernel);
-#endif //HAVE_BOOST_SERIALIZATION
-
-
 using namespace shogun;
-
-void
-CKernel::init(void)
-{
-	m_parameters->add(&cache_size, "cache_size",
-					  "Cache size in MB.");
-	m_parameters->add((CSGSerializable**) &lhs, "lhs",
-					  "Feature vectors to occur on left hand side.");
-	m_parameters->add((CSGSerializable**) &rhs, "rhs",
-					  "Feature vectors to occur on right hand side.");
-	m_parameters->add(&num_lhs, "num_lhs",
-					  "Number of feature vectors on left hand side.");
-	m_parameters->add(&num_rhs, "num_rhs",
-					  "Number of feature vectors on right hand side.");
-	m_parameters->add(&combined_kernel_weight, "combined_kernel_weight",
-					  "Combined kernel weight.");
-	m_parameters->add(&optimization_initialized,
-					  "optimization_initialized",
-					  "Optimization is initialized.");
-	m_parameters->add((machine_int_t*) &opt_type, "opt_type",
-					  "Optimization type.");
-	m_parameters->add(&properties, "properties",
-					  "Kernel properties.");
-	m_parameters->add((CSGSerializable**) &normalizer, "normalizer",
-					  "Normalize the kernel.");
-}
 
 CKernel::CKernel()
 : CSGObject(), cache_size(10), kernel_matrix(NULL), lhs(NULL),
@@ -915,3 +882,27 @@ bool CKernel::init_optimization_svm(CSVM * svm)
 	return ret;
 }
 
+void CKernel::init()
+{
+	m_parameters->add(&cache_size, "cache_size",
+					  "Cache size in MB.");
+	m_parameters->add((CSGSerializable**) &lhs, "lhs",
+					  "Feature vectors to occur on left hand side.");
+	m_parameters->add((CSGSerializable**) &rhs, "rhs",
+					  "Feature vectors to occur on right hand side.");
+	m_parameters->add(&num_lhs, "num_lhs",
+					  "Number of feature vectors on left hand side.");
+	m_parameters->add(&num_rhs, "num_rhs",
+					  "Number of feature vectors on right hand side.");
+	m_parameters->add(&combined_kernel_weight, "combined_kernel_weight",
+					  "Combined kernel weight.");
+	m_parameters->add(&optimization_initialized,
+					  "optimization_initialized",
+					  "Optimization is initialized.");
+	m_parameters->add((machine_int_t*) &opt_type, "opt_type",
+					  "Optimization type.");
+	m_parameters->add(&properties, "properties",
+					  "Kernel properties.");
+	m_parameters->add((CSGSerializable**) &normalizer, "normalizer",
+					  "Normalize the kernel.");
+}

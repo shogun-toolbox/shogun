@@ -13,11 +13,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(CLibSVM);
-#endif //HAVE_BOOST_SERIALIZATION
-
 CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
 : CSVM(), model(NULL), solver_type(st)
 {

@@ -14,12 +14,6 @@
 #include "lib/Signal.h"
 #include "lib/Parameter.h"
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT_GUID(shogun::CKernelMachine, "CKernelMachine");
-//BOOST_IS_ABSTRACT(shogun::CKernelMachine);
-#endif //HAVE_BOOST_SERIALIZATION
-
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

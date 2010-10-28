@@ -18,11 +18,6 @@
 #include "kernel/MultitaskKernelMklNormalizer.h"
 #include "features/StringFeatures.h"
 
-
-
-
-
-
 namespace shogun
 {
 
@@ -37,7 +32,6 @@ enum EWDKernType
 	E_BLOCK_CUBICPOLY=5,
 	E_BLOCK_EXP=6,
 	E_BLOCK_LOG=7,
-	E_BLOCK_EXTERNAL=8
 };
 
 
@@ -537,12 +531,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		bool init_block_weights_log();
 
-		/** initialize block weights external
-		 *
-		 * @return if initialization was successful
-		 */
-		bool init_block_weights_external();
-
 		/** delete position weights
 		 *
 		 * @return if deleting was successful
@@ -733,6 +721,11 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
+	private:
+		/** Do basic initialisations like default settings
+		 * and registering parameters */
+		void init();
+
 	protected:
 		/** degree*length weights
 		 *length must match seq_length if != 0
@@ -759,11 +752,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 		/** if block computation is used */
 		bool block_computation;
-
-		/** number of external block weights */
-		int32_t num_block_weights_external;
-		/** external block weights */
-		float64_t* block_weights_external;
 
 		/** (internal) block weights */
 		float64_t* block_weights;

@@ -22,11 +22,6 @@
 #include <pthread.h>
 #endif
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-//BOOST_SERIALIZATION_ASSUME_ABSTRACT(CSVM);
-#endif //HAVE_BOOST_SERIALIZATION
-
 using namespace shogun;
 
 CSVM::CSVM(int32_t num_sv)

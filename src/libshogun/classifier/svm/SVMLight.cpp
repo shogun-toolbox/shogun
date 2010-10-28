@@ -46,12 +46,6 @@
 #include <pthread.h>
 #endif
 
-
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(shogun::CSVMLight);
-#endif //HAVE_BOOST_SERIALIZATION
-
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
