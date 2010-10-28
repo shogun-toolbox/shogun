@@ -4,10 +4,27 @@
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Create SVMLightOneClass
+		- Serialization of the most important shogun objects
+		(SVM, Kernel, Features, Preprocessors, ...) as ASCII and hdf5
+		- Add CustomDistance in analogy to custom kernel
+		- Add HistogramIntersectionKernel (thanks Koen van de Sande for the patch)
+		- Matlab 2010a support
+		- SpectrumMismatchRBFKernel modular support (thanks Rob Patro for the patch)
+		- Add ZeroMeanCenterKernelNormalizer (thanks Gorden Jemwa for the patch)
+		- Swig 2.0 support
 	* Bugfixes:
-		- None
+		- Custom Kernels can now be > 4G  (thanks Koen van de Sande for the patch)
+		- Set C locale on startup in init_shogun to prevent incompatiblies with
+		ascii floats and fprintf
+		- Compile fix when reference counting is disabled
+		- Fix set_position_weights for wd kernel (reported by Dave duVerle)
+		- Fix crasher in SVMOcas (reported by Yaroslav)
 	* Cleanup and API Changes:
 		- Renamed SVM_light/SVR_light to SVMLight etc.
+		- Remove C prefix in front of non-serializable class names
+		- Drop CSimpleKernel and introduce CDotKernel as its base class. This
+		way all dot-product based kernels can be applied on top of DotFeatures.
+		For example, now only a single implementation of the linear 
 
 2010-05-31 Soeren Sonnenburg <sonne@debian.org>
 
