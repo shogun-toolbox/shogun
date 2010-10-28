@@ -281,7 +281,7 @@ public:
 		{
 			task_histogram[it->first] = task_histogram[it->first] / float64_t(task_vector_lhs.size());
 
-			std::cout << "task_histogram:" << task_histogram[it->first] << std::endl;
+			//std::cout << "task_histogram:" << task_histogram[it->first] << std::endl;
 
 		}
 
@@ -395,7 +395,7 @@ public:
 
 		num_nodes = taxonomy.get_num_nodes();
 
-		std::cout << "num nodes:" << num_nodes << std::endl;
+		//std::cout << "num nodes:" << num_nodes << std::endl;
 
 		dependency_matrix = std::vector<float64_t>(num_nodes * num_nodes);
 

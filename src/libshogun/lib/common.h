@@ -53,23 +53,6 @@ typedef long double floatmax_t;
 
 //@}
 
-#ifdef HAVE_BOOST_SERIALIZATION
-
-#define GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()                  \
-template<class Archive>                                            \
-void serialize(Archive &ar, const unsigned int file_version)       \
-{                                                                  \
-    ::boost::serialization::split_member(ar, *this, file_version); \
-}
-/**/
-
-#define GLOBAL_BOOST_CLASS_EXPORT_KEY(T)                           \
-    BOOST_CLASS_EXPORT_KEY2(T, BOOST_PP_STRINGIZE(T))              \
-/**/
-
-
-#endif //HAVE_BOOST_SERIALIZATION
-
 #define STRING_LEN                 256
 #define STRING_LEN_STR             "256"
 typedef char                       string_t[STRING_LEN];

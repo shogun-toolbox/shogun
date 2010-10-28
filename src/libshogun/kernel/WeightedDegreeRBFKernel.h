@@ -104,27 +104,6 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 */
 		bool init_wd_weights();
 
-
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving WeightedDegreeRBFKernel\n");
-
-                ar & ::boost::serialization::base_object<CDotKernel >(*this);
-
-                ar & width;
-
-                SG_DEBUG("done with WeightedDegreeRBFKernel\n");
-
-            }
-#endif //HAVE_BOOST_SERIALIZATION
-
-
 	protected:
 		/** width */
 		float64_t width;

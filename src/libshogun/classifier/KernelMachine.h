@@ -17,10 +17,6 @@
 #include "features/Labels.h"
 #include "classifier/Classifier.h"
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include "kernel/WeightedDegreeStringKernel.h"
-#endif //HAVE_BOOST_SERIALIZATION
-
 #include <stdio.h>
 
 namespace shogun
@@ -341,81 +337,6 @@ class CKernelMachine : public CClassifier
 		 * @return nothing really
 		 */
 		static void* classify_example_helper(void* p);
-
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-		/// serialization needs to split up in save/load because
-		///  the serialization of pointers to natives (int* & friends)
-		///  requires a workaround
-		friend class ::boost::serialization::access;
-		template<class Archive>
-			void save(Archive & ar, const unsigned int archive_version) const
-			{
-
-				SG_DEBUG("archiving CKernelMachine\n");
-
-                ar & ::boost::serialization::base_object<CClassifier>(*this);
-
-                //TODO register class in cpp --> find problem preventing this
-                ar.template register_type<CWeightedDegreeStringKernel>();
-
-				ar & kernel;
-				ar & use_batch_computation;
-				ar & use_linadd;
-				ar & use_bias;
-				ar & m_bias;
-				ar & num_svs;
-
-
-				for (int32_t i=0; i < num_svs; ++i) {
-					ar & m_alpha[i];
-					ar & m_svs[i];
-				}
-
-				SG_DEBUG("done with CKernelMachine\n");
-
-			}
-
-		template<class Archive>
-			void load(Archive & ar, const unsigned int archive_version)
-			{
-
-				SG_DEBUG("archiving CKernelMachine\n");
-
-                ar & ::boost::serialization::base_object<CClassifier>(*this);
-
-                //TODO register class in cpp --> find problem preventing this
-                ar.template register_type<CWeightedDegreeStringKernel>();
-
-				ar & kernel;
-				ar & use_batch_computation;
-				ar & use_linadd;
-				ar & use_bias;
-				ar & m_bias;
-				ar & num_svs;
-
-
-				if (num_svs > 0)
-				{
-
-					m_alpha = new float64_t[num_svs];
-					m_svs = new int32_t[num_svs];
-					for (int32_t i=0; i< num_svs; ++i){
-						ar & m_alpha[i];
-						ar & m_svs[i];
-					}
-
-				}
-
-
-				SG_DEBUG("done with CKernelMachine\n");
-			}
-
-		GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER()
-
-
-#endif //HAVE_BOOST_SERIALIZATION
 
 	protected:
 		/** kernel */

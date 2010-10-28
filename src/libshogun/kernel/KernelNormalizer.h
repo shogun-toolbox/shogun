@@ -104,25 +104,6 @@ class CKernelNormalizer : public CSGObject
 			m_type = type;
 		}
 
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving CKernelNormalizer\n");
-
-                ar & ::boost::serialization::base_object<CSGObject>(*this);
-
-                ar & m_type;
-
-                SG_DEBUG("done with CKernelNormalizer\n");
-
-            }
-#endif //HAVE_BOOST_SERIALIZATION
-
 	protected:
 		/** normalizer type */
 		ENormalizerType m_type;

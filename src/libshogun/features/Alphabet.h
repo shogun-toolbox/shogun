@@ -516,32 +516,6 @@ class CAlphabet : public CSGObject
 		 */
 		void copy_histogram(CAlphabet* src);
 
-
-
-#ifdef HAVE_BOOST_SERIALIZATION
-	protected:
-
-        friend class ::boost::serialization::access;
-
-        template<class Archive>
-
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving CAlphabet\n");
-
-                ar & ::boost::serialization::base_object<CSGObject>(*this);
-
-                ar & num_bits;
-
-                SG_DEBUG("done with CAlphabet\n");
-
-            }
-
-
-#endif //HAVE_BOOST_SERIALIZATION
-
-
 	public:
 		/** B_A */
 		static const uint8_t B_A;
@@ -603,32 +577,4 @@ template<> inline void CAlphabet::translate_from_single_order_reversed(floatmax_
 #endif
 
 }
-
-#ifdef HAVE_BOOST_SERIALIZATION
-
-namespace boost {
-namespace serialization {
-   template<class Archive>
-    inline void save_construct_data(Archive & ar, shogun::CAlphabet* t, const unsigned int archive_version)
-    {
-      std::cout << "archiving construction data CAlphabet" << std::endl;
-      ar << t->alphabet;
-      std::cout << "done archiving construction data CAlphabet" << std::endl;
-    }
-
-    template<class Archive>
-    inline void load_construct_data(Archive & ar, shogun::CAlphabet * t, const unsigned int archive_version)
-    {
-      //SG_DEBUG("archiving construction data CAlphabet\n");
-      shogun::EAlphabet a;
-      ar >> a;
-      new(t)shogun::CAlphabet(a);
-      //SG_DEBUG("done construction data archiving CAlphabet\n");
-    }
-} // serialization
-} // namespace boost
-#endif //HAVE_BOOST_SERIALIZATION
-
-
-
 #endif

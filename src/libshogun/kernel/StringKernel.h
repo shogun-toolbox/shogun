@@ -90,22 +90,6 @@ template <class ST> class CStringKernel : public CKernel
 		 * @return kernel type
 		 */
 		virtual EKernelType get_kernel_type()=0;
-
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving CStringKernel\n");
-                ar & ::boost::serialization::base_object<CKernel>(*this);
-
-                SG_DEBUG("done CStringKernel\n");
-            }
-#endif //HAVE_BOOST_SERIALIZATION
-
 };
 
 template<> inline EFeatureType CStringKernel<float64_t>::get_feature_type() { return F_DREAL; }

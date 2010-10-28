@@ -753,67 +753,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SimpleFeatures"; }
 
-
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        /// serialization needs to split up in save/load because 
-        ///  the serialization of pointers to natives (int* & friends) 
-        ///  requires a workaround 
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void save(Archive & ar, const unsigned int archive_version) const
-            {
-
-                SG_DEBUG("archiving SimpleFeatures\n");
-
-                ar & ::boost::serialization::base_object<CDotFeatures>(*this);
-
-                //TODO
-                //ar & feature_cache;
-
-                ar & num_vectors;
-                ar & num_features;
-
-                for (int i=0; i < num_vectors*num_features; ++i) 
-                {
-                    ar & feature_matrix[i];
-                }
-
-                SG_DEBUG("done SimpleFeatures\n");
-
-
-            }
-
-        template<class Archive>
-            void load(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving SimpleFeatures\n");
-
-                ar & ::boost::serialization::base_object<CDotFeatures>(*this);
-
-                //TODO
-                //ar & feature_cache;
-
-                ar & num_vectors;
-                ar & num_features;
-
-                feature_matrix = new ST[int64_t(num_vectors)*num_features];
-                for (int i=0; i< num_vectors*num_features; ++i){
-                    ar & feature_matrix[i];
-                }
-
-
-                SG_DEBUG("done SimpleFeatures\n");
-
-            }
-
-        GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
-
-#endif //HAVE_BOOST_SERIALIZATION
-
-
 	protected:
 		/** compute feature vector for sample num
 		 * if target is set the vector is written to target

@@ -22,6 +22,7 @@
 #include "lib/Array2.h"
 
 #include <vector> // profile
+#include <string> // profile
 
 namespace shogun
 {

@@ -108,35 +108,6 @@ class CDomainAdaptationSVM : public CSVMLight
 		/** @return object name */
 		inline virtual const char* get_name() const { return "DomainAdaptationSVM"; }
 
-
-	private:
-
-#ifdef HAVE_BOOST_SERIALIZATION
-		friend class ::boost::serialization::access;
-		// When the class Archive corresponds to an output archive, the
-		// & operator is defined similar to <<.  Likewise, when the class Archive
-		// is a type of input archive the & operator is defined similar to >>.
-		template<class Archive>
-		void serialize(Archive & ar, const unsigned int archive_version)
-		{
-
-			SG_DEBUG("archiving CDomainAdaptationSVM\n");
-
-			// serialize base class
-			ar & ::boost::serialization::base_object<CSVMLight>(*this);
-
-			// serialize remaining fields
-			ar & presvm;
-
-			ar & B;
-
-			ar & train_factor;
-
-			SG_DEBUG("done archiving CDomainAdaptationSVM\n");
-
-		}
-#endif //HAVE_BOOST_SERIALIZATION
-
 	protected:
 
 		/** check sanity of presvm

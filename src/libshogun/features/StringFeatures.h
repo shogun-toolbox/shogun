@@ -66,63 +66,18 @@ struct SSKTripleFeature
 /** template class CSGString */
 template<class T> class CSGString :public CSGSerializable
 {
-#ifdef HAVE_BOOST_SERIALIZATION
+	public:
+	/** default constructor */
+	CSGString() { m_parameters->add_vector(&string, &length, "string"); }
 
-  private:
-
-
-  friend class ::boost::serialization::access;
-  template<class Archive>
-  void save(Archive & ar, const unsigned int archive_version) const
-  {
-
-    //SG_DEBUG("archiving CSGString\n");
-
-  	ar & length;
-
-    for (int i=0; i < length; ++i) {
-      ar & string[i];
-    }
-
-    //SG_DEBUG("done archiving CSGString\n");
-
-  }
-
-  template<class Archive>
-  void load(Archive & ar, const unsigned int archive_version)
-  {
-
-	//SG_DEBUG("archiving CSGString\n");
-
-  	ar & length;
-
-    string = new T[length];
-
-    for (int i=0; i < length; ++i) {
-      ar & string[i];
-    }
-
-    //SG_DEBUG("done archiving CSGString\n");
-
-  }
-
-  GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
-
-
-#endif //HAVE_BOOST_SERIALIZATION
+	/** @return object name */
+	virtual inline const char* get_name(void) const { return "SGString"; };
 
     public:
 	/** string */
 	T* string;
 	/** length of string */
 	int32_t length;
-
-	virtual inline const char* get_name(void) const
-		{ return "SGString"; };
-
-	explicit CSGString(void) {
-		m_parameters->add_vector(&string, &length, "string");
-	}
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -2028,113 +1983,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			memcpy(target, features[num].string, len*sizeof(ST));
 			return target;
 		}
-
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void save(Archive & ar, const unsigned int archive_version) const
-            {
-
-				SG_DEBUG("archiving StringFeatures\n");
-
-                ar & ::boost::serialization::base_object<CFeatures>(*this);
-
-                ar & alphabet;
-
-                ar & num_vectors;
-                for (int i=0; i < num_vectors; ++i) {
-                    ar & features[i];
-                }
-
-                ar & length_of_single_string;
-                for (int i=0; i < length_of_single_string; ++i) {
-                    ar & single_string[i];
-                }
-
-                ar & max_string_length;
-                ar & num_symbols;
-                ar & original_num_symbols;
-                ar & order;
-
-                /// order used in higher order mapping
-                //TODO?! how long
-                //ST* symbol_mask_table;
-
-                SG_DEBUG("done archiving StringFeatures\n");
-
-            }
-
-        template<class Archive>
-            void load(Archive & ar, const unsigned int archive_version)
-            {
-
-				SG_DEBUG("archiving StringFeatures\n");
-
-                ar & ::boost::serialization::base_object<CFeatures>(*this);
-
-
-                ar & alphabet;
-
-                ar & num_vectors;
-
-                //CSGString<ST>* features = new CSGString<ST>[num_vectors];
-                features = new CSGString<ST>[num_vectors];
-                for (int i=0; i < num_vectors; ++i) {
-                    ar & features[i];
-                }
-
-
-                ar & length_of_single_string;
-
-                //ST* single_string = new ST[length_of_single_string];
-                single_string = new ST[length_of_single_string];
-                for (int i=0; i < length_of_single_string; ++i) {
-                    ar & single_string[i];
-                }
-
-                ar & max_string_length;
-                ar & num_symbols;
-                ar & original_num_symbols;
-                ar & order;
-
-                /// order used in higher order mapping
-                //TODO?! how long -> num_of_symbols?
-                //ST* symbol_mask_table;
-
-                SG_DEBUG("done archiving StringFeatures\n");
-
-            }
-
-        GLOBAL_BOOST_SERIALIZATION_SPLIT_MEMBER();
-
-    public:
-
-        virtual std::string toString() const
-        {
-            std::ostringstream s;
-
-            ::boost::archive::text_oarchive oa(s);
-
-            oa << *this;
-
-            return s.str();
-        }
-
-        virtual void fromString(std::string str)
-        {
-
-            std::istringstream is(str);
-
-            ::boost::archive::text_iarchive ia(is);
-
-            ia >> *this;
-
-        }
-
-#endif //HAVE_BOOST_SERIALIZATION
-
 
 	protected:
 

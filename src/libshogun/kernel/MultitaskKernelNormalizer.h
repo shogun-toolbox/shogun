@@ -89,7 +89,7 @@ public:
 		ASSERT(num_lhs>0);
 		ASSERT(num_rhs>0);
 
-		std::cout << "scale: " << scale << std::endl;
+		//std::cout << "scale: " << scale << std::endl;
 
 		return true;
 	}

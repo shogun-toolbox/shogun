@@ -15,7 +15,7 @@
 #include "kernel/MultitaskKernelMklNormalizer.h"
 #include "kernel/Kernel.h"
 #include <algorithm>
-
+#include <string>
 
 namespace shogun
 {

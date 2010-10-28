@@ -212,25 +212,6 @@ class CClassifier : public CSGObject
 		 */
 		inline ESolverType get_solver_type() { return solver_type; }
 
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving CClassifier\n");
-
-                ar & ::boost::serialization::base_object<CSGObject>(*this);
-                ar & max_train_time;
-                ar & labels;
-
-                SG_DEBUG("done with CClassifier\n");
-
-            }
-#endif //HAVE_BOOST_SERIALIZATION
-
 	protected:
 		/** maximum training time */
 		float64_t max_train_time;

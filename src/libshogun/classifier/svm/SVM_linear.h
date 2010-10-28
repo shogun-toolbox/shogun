@@ -40,6 +40,7 @@
 #ifdef HAVE_LAPACK
 #include "classifier/svm/Tron.h"
 #include "features/DotFeatures.h"
+#include <vector>
 
 namespace shogun
 {

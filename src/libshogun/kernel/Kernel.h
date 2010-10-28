@@ -22,9 +22,8 @@
 #include "base/SGObject.h"
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
-#ifdef HAVE_BOOST_SERIALIZATION
-#include "features/StringFeatures.h"
-#endif //HAVE_BOOST_SERIALIZATION
+
+#include <vector>
 
 
 namespace shogun
@@ -922,50 +921,6 @@ class CKernel : public CSGObject
 		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(int32_t cacheidx);
 #endif //USE_SVMLIGHT
 		//@}
-
-
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving CKernel\n");
-
-                ar & ::boost::serialization::base_object<CSGObject>(*this);
-
-                ar & cache_size;
-
-        		SG_DEBUG("serializing features\n");
-                //TODO register class in cpp --> find problem preventing this
-                ar.template register_type< CStringFeatures<char> >();
-                ar & lhs;
-        		SG_DEBUG("done with lhs\n");
-                ar & rhs;
-        		SG_DEBUG("done with rhs\n");
-
-                ar & num_lhs;
-                ar & num_rhs;
-
-                ar & combined_kernel_weight;
-
-                ar & optimization_initialized;
-
-                ar & opt_type;
-
-                ar & properties;
-
-                ar & normalizer;
-
-                SG_DEBUG("done with CKernel\n");
-
-            }
-
-#endif //HAVE_BOOST_SERIALIZATION
-
-
 
 	protected:
 		/// cache_size in MB

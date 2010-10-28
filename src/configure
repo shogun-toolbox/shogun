@@ -47,7 +47,6 @@ EXT_CPP_SH="${EXT_SRC_CPP}.sh"
 #the defaults are
 _swig_version=0.0.0
 _readline=auto
-_boost_serialization=no
 _hdf5=auto
 _r=no
 if [ -e libshogun/classifier/svm/SVMLight.cpp ]; then
@@ -913,8 +912,6 @@ for ac_option do
   --install-path=*)
     _install=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`/install")
     ;;
-  --disable-boost-serialization)		_boost_serialization=no	;;
-  --enable-boost-serialization)		_boost_serialization=yes	;;
   --disable-hdf5)		_hdf5=no	;;
   --enable-hdf5)		_hdf5=yes	;;
   --disable-svm-light)	_svm_light=no;	_gpl=yes;;
@@ -2363,23 +2360,6 @@ EOF
 			else
 				echores "no"
 				die "no posix threading support found (libpthread)"
-			fi
-
-			if test "$_boost_serialization" = yes || test "$_boost_serialization" = auto
-			then
-cat > $TMPC << EOF
-int main(void) { return 0; }
-EOF
-				echocheck "Boost Serialization support"
-				if cc_check -lboost_serialization
-				then
-					HAVE_BOOST_SERIALIZATION='#define HAVE_BOOST_SERIALIZATION 1'
-					DEFINES="$DEFINES -DHAVE_BOOST_SERIALIZATION"
-					LINKFLAGS="$LINKFLAGS -lboost_serialization"
-					echores "yes"
-				else
-					echores "no"
-				fi
 			fi
 
 			if test "$_hdf5" = yes || test "$_hdf5" = auto
@@ -3930,7 +3910,6 @@ write_config_h()
 {
 cat >"$1" <<EOF
 $HAVE_READLINE
-$HAVE_BOOST_SERIALIZATION
 $HAVE_HDF5
 $HAVE_LARGEFILE
 $HAVE_DOXYGEN

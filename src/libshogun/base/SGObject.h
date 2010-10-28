@@ -11,31 +11,6 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#ifdef HAVE_BOOST_SERIALIZATION
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-
-#include <boost/serialization/vector.hpp>
-
-//TODO xml will not work right away, every class needs name-value-pairs (NVP)
-//will have to be defined using respective boost macros
-//#include <boost/archive/xml_oarchive.hpp>
-//#include <boost/archive/xml_iarchive.hpp>
-
-#include <sstream>
-#include <fstream>
-
-#endif //HAVE_BOOST_SERIALIZATION
-
-//some STL modules
-#include <iostream>
-#include <string>
-#include <vector>
-#include <set>
-
 #include "lib/io.h"
 #include "lib/SGSerializable.h"
 #include "base/Parallel.h"
@@ -183,50 +158,6 @@ public:
 	 * @return version object
 	 */
 	Version* get_version();
-
-#ifdef HAVE_BOOST_SERIALIZATION
-	/** Serialization Function: Convert object to a string
-	 *
-	 * @return string
-	 */
-	virtual std::string to_string() const;
-
-	/** Serialization Function: Obtain object from string
-	 *
-	 * @param filename file name
-	 */
-	virtual void from_string(std::string str);
-
-	/** Serialization Function: Save the object to file
-	 *
-	 * @param filename file name
-	 */
-	virtual void to_file(std::string filename) const;
-
-	/** Serialization Function: Load the object from file
-	 *
-	 * @param filename file name
-	 */
-	virtual void from_file(std::string filename);
-
-protected:
-	friend class ::boost::serialization::access;
-
-	/** When the class Archive corresponds to an output archive, the & operator
-	 * is defined similar to <<.  Likewise, when the class Archive is a type of
-	 * input archive the & operator is defined similar to >>.
-	 *
-	 * @param ar output archive
-	 * @param version_num version number
-	 */
-	template<class Archive>
-		void serialize(Archive & ar, const unsigned int archive_version)
-		{
-			//ar & test;
-			SG_DEBUG("SERIALIZING SGObject (done)\n");
-		}
-
-#endif //HAVE_BOOST_SERIALIZATION
 
 private:
 	void set_global_objects(void);

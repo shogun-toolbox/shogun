@@ -65,24 +65,6 @@ class CIdentityKernelNormalizer : public CKernelNormalizer
 			return value;
 		}
 
-#ifdef HAVE_BOOST_SERIALIZATION
-    private:
-
-        friend class ::boost::serialization::access;
-        template<class Archive>
-            void serialize(Archive & ar, const unsigned int archive_version)
-            {
-
-                SG_DEBUG("archiving CIdentityKernelNormalizer\n");
-
-                ar & ::boost::serialization::base_object<CKernelNormalizer>(*this);
-
-                SG_DEBUG("done with CIdentityKernelNormalizer\n");
-
-            }
-#endif //HAVE_BOOST_SERIALIZATION
-
-
 		/** @return object name */
 		inline virtual const char* get_name() const { return "IdentityKernelNormalizer"; }
 };

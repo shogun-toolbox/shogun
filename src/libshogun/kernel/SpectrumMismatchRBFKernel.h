@@ -20,6 +20,7 @@
 
 #include "lib/Array.h"
 #include "lib/Array2.h"
+#include <string>
 
 namespace shogun
 {

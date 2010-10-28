@@ -12,6 +12,7 @@
 #include "lib/File.h"
 #include "lib/AsciiFile.h"
 #include "lib/Mathematics.h"
+#include <ctype.h>
 
 using namespace shogun;
 
