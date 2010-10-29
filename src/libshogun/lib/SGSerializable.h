@@ -18,9 +18,23 @@ class Parameter;
 class CSerializableFile;
 class IO;
 
+/* define reference counter macros
+ */
+#ifdef USE_REFERENCE_COUNTING
+#  define SG_REF(x) { if (x) (x)->ref(); }
+#  define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=0; } }
+#else /* USE_REFERENCE_COUNTING  */
+#  define SG_REF(x)
+#  define SG_UNREF(x)
+#endif /* USE_REFERENCE_COUNTING  */
+
 class CSGSerializable
 {
 	EPrimitveType m_generic;
+
+#ifdef USE_REFERENCE_COUNTING
+	int32_t m_refcount;
+#endif /* USE_REFERENCE_COUNTING  */
 
 protected:
 	Parameter* m_parameters;
@@ -86,6 +100,32 @@ public:
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
 								   const char* prefix="");
+
+/* **************************************************************** */
+#ifdef USE_REFERENCE_COUNTING
+
+	/** increase reference counter
+	 *
+	 * @return reference count
+	 */
+	int32_t ref(void);
+
+	/** display reference counter
+	 *
+	 *  @return reference count
+	 */
+	int32_t ref_count(void) const;
+
+	/** decrement reference counter and deallocate object if refcount
+	 *  is zero before or after decrementing it
+	 *
+	 *  @return reference count
+	 */
+	int32_t unref(void);
+
+#endif /* USE_REFERENCE_COUNTING  */
+/* **************************************************************** */
+
 };
 }
 

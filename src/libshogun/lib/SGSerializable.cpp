@@ -76,6 +76,10 @@ CSGSerializable::CSGSerializable(void)
 {
 	m_parameters = new Parameter(sg_io);
 	m_generic = PT_NOT_GENERIC;
+
+#ifdef USE_REFERENCE_COUNTING
+	m_refcount = 0;
+#endif /* USE_REFERENCE_COUNTING  */
 }
 
 CSGSerializable::~CSGSerializable(void)
@@ -124,3 +128,25 @@ CSGSerializable::load_serializable(CSerializableFile* file,
 
 	return result;
 }
+
+/* **************************************************************** */
+#ifdef USE_REFERENCE_COUNTING
+
+int32_t
+CSGSerializable::ref(void) { return ++m_refcount; }
+
+int32_t
+CSGSerializable::ref_count(void) const { return m_refcount; }
+
+int32_t
+CSGSerializable::unref(void)
+{
+	if (--m_refcount <= 0) {
+		delete this; return 0;
+	}
+
+	return m_refcount;
+}
+
+#endif /* USE_REFERENCE_COUNTING  */
+/* **************************************************************** */

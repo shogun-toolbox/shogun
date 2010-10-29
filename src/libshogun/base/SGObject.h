@@ -34,16 +34,6 @@ class IO;
 class Parallel;
 class Version;
 
-// define reference counter macros
-//
-#ifdef USE_REFERENCE_COUNTING
-#define SG_REF(x) { if (x) (x)->ref(); }
-#define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=0; } }
-#else
-#define SG_REF(x)
-#define SG_UNREF(x)
-#endif
-
 /** @brief Class SGObject is the base class of all shogun objects.
  *
  * Apart from dealing with reference counting that is used to manage shogung
@@ -57,14 +47,14 @@ class Version;
 class CSGObject :public CSGSerializable
 {
 public:
-	inline CSGObject() : refcount(0)
+	inline CSGObject()
 	{
 		set_global_objects();
 		pthread_mutex_init(&ref_mutex, NULL);
 	}
 
-	inline CSGObject(const CSGObject& orig) : refcount(0), io(orig.io),
-		parallel(orig.parallel), version(orig.version)
+	inline CSGObject(const CSGObject& orig)
+		:io(orig.io), parallel(orig.parallel), version(orig.version)
 	{
 		set_global_objects();
 	}
@@ -75,53 +65,12 @@ public:
 		unset_global_objects();
 	}
 
-#ifdef USE_REFERENCE_COUNTING
-	/** increase reference counter
+	/** Returns the name of the SGSerializable instance.  It MUST BE
+	 *  the CLASS NAME without the prefixed `C'.
 	 *
-	 * @return reference count
+	 *  @return name of the SGSerializable
 	 */
-	inline int32_t ref()
-	{
-		pthread_mutex_lock(&ref_mutex);
-		++refcount;
-		SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", refcount, this->get_name(), this);
-		pthread_mutex_unlock(&ref_mutex);
-		return refcount;
-	}
-
-	/** display reference counter
-	 *
-	 * @return reference count
-	 */
-	inline int32_t ref_count() const
-	{
-		SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", refcount, this->get_name(), this);
-		return refcount;
-	}
-
-	/** decrement reference counter and deallocate object if refcount is zero
-	 * before or after decrementing it
-	 *
-	 * @return reference count
-	 */
-	inline int32_t unref()
-	{
-		pthread_mutex_lock(&ref_mutex);
-		if (refcount==0 || --refcount==0)
-		{
-			SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", refcount, this->get_name(), this);
-			pthread_mutex_unlock(&ref_mutex);
-			delete this;
-			return 0;
-		}
-		else
-		{
-			SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", refcount, this->get_name(), this);
-			pthread_mutex_unlock(&ref_mutex);
-			return refcount;
-		}
-	}
-#endif
+	virtual const char* get_name(void) const = 0;
 
 	/** set the io object
 	 *
@@ -163,7 +112,6 @@ private:
 	void set_global_objects(void);
 	void unset_global_objects(void);
 
-	int32_t refcount;
 #ifndef WIN32
 	pthread_mutex_t ref_mutex;
 #endif

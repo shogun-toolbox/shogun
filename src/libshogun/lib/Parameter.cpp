@@ -418,7 +418,7 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 		case PT_SGSERIALIZABLE_PTR:
 			CSGSerializable** buf = *(CSGSerializable***) m_parameter;
 			for (index_t i=0; i<old_length; i++)
-				if (buf[i] != NULL) delete buf[i];
+				if (buf[i] != NULL) SG_UNREF(buf[i]);
 
 			delete buf;
 			break;
@@ -469,7 +469,7 @@ TParameter::new_sgserial(IO* io, CSGSerializable** param,
 						 const char* sgserializable_name,
 						 const char* prefix)
 {
-	if (*param != NULL) delete *param;
+	if (*param != NULL) SG_UNREF(*param);
 
 	*param = new_sgserializable(sgserializable_name, generic);
 

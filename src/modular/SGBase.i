@@ -66,10 +66,10 @@
 %ignore FBUFSIZE;
 
 %rename(SGSerializable) CSGSerializable;
-%rename(SGObject) CSGObject;
+%feature("ref")   CSGSerializable "SG_REF($this);"
+%feature("unref") CSGSerializable "SG_UNREF($this);"
 
-%feature("ref")   CSGObject "SG_REF($this);"
-%feature("unref") CSGObject "SG_UNREF($this);"
+%rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
 
@@ -93,21 +93,49 @@ namespace std {
   %template(StringVector) vector<string>;
 }
 
-#ifdef HAVE_BOOST_SERIALIZATION
-
 #ifdef SWIGPYTHON
+
 %pythoncode %{
-   def __getstate__(self):
-      state=self.toString()
-      return state
+import tempfile, random, os, exceptions
 
-   def __setstate__(self, state):
-      self.__init__()
-      self.fromString(state)
+try: import Library as shogunLibrary
+except ImportError: import shogun.Library as shogunLibrary
 
-   SGObject.__setstate__=__setstate__
-   SGObject.__getstate__=__getstate__
+def __SGgetstate__(self):
+	fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
+		+ str(random.randint(0, 1e15))
+
+	fstream = shogunLibrary.SerializableAsciiFile(fname, "w")
+	if not self.save_serializable(fstream):
+		fstream.close(); os.remove(fname)
+		raise exceptions.IOError("Could not dump Shogun object!")
+	fstream.close()
+
+	fstream = open(fname, "r"); result = fstream.read();
+	fstream.close()
+
+	os.remove(fname)
+	return result
+
+def __SGsetstate__(self, state_str):
+	self.__init__()
+
+	fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix()	\
+		+ str(random.randint(0, 1e15))
+
+	fstream = open(fname, "w"); fstream.write(state_str);
+	fstream.close()
+
+	fstream = shogunLibrary.SerializableAsciiFile(fname, "r")
+	if not self.load_serializable(fstream):
+		fstream.close(); os.remove(fname)
+		raise exceptions.IOError("Could not load Shogun object!")
+	fstream.close()
+
+	os.remove(fname)
+
+SGSerializable.__setstate__ = __SGsetstate__
+SGSerializable.__getstate__ = __SGgetstate__
 %}
-#endif
 
-#endif //HAVE_BOOST_SERIALIZATION
+#endif /* SWIGPYTHON  */

@@ -37,11 +37,23 @@ IGNORE_IN_CLASSLIST class CSerializableHDF5File
 	CDynamicArray<hid_t> m_stack_h5stream;
 
 	static hid_t new_ptype2hdf5(EPrimitveType ptype);
+	static bool isequal_ptype2hdf5(EPrimitveType ptype, hid_t htype);
+	static bool index2string(char* dest, size_t n, EContainerType ctype,
+							 index_t y, index_t x);
+
 	void init(const char* fname);
+	bool dspace_select(EContainerType ctype, index_t y, index_t x);
+
 	bool attr_write_scalar(hid_t datatype, const char* name,
 						   const void* val);
 	bool attr_write_string(const char* name, const char* val);
+	bool attr_exists(const char* name);
+	size_t attr_get_size(const char* name);
+	bool attr_read_scalar(hid_t datatype, const char* name, void* val);
+	bool attr_read_string(const char* name, char* val, size_t n);
+
 	bool group_create(const char* name);
+	bool group_open(const char* name);
 	bool group_close(void);
 
 protected:
