@@ -491,6 +491,7 @@ TParameter::new_sgserial(IO* io, CSGSerializable** param,
 		return false;
 	}
 
+	SG_REF(*param);
 	return true;
 }
 
