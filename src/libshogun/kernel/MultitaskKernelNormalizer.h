@@ -72,7 +72,7 @@ public:
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 
-		if (std::string(k->get_name()) == "WeightedDegree") {
+		if (strcmp(k->get_name(), "WeightedDegree") == 0) {
 			SG_INFO("using first-element normalization\n");
 			scale=k->compute(0, 0);
 		} else {
