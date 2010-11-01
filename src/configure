@@ -2369,10 +2369,12 @@ cat > $TMPC << EOF
 int main(void)
 {
 	hid_t file = H5Fcreate("foobar.h5", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	hid_t group = H5Gcreate2(file, "groupname", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
 	return 0;
 }
 EOF
-				echocheck "HDF5 support"
+				echocheck "HDF5 (>= 1.8.0) support"
 				if cc_check -lhdf5
 				then
 					HAVE_HDF5='#define HAVE_HDF5 1'
