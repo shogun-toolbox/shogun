@@ -185,20 +185,6 @@ class CKMeans : public CDistanceMachine
 		}
 
 	protected:
-		/** sqdist
-		 *
-		 * @param x x
-		 * @param y y
-		 * @param z z
-		 * @param n1 n1
-		 * @param offs offset
-		 * @param n2 n2
-		 * @param m m
-		 */
-		void sqdist(
-			float64_t* x, CSimpleFeatures<float64_t>* y, float64_t *z, int32_t n1,
-			int32_t offs, int32_t n2, int32_t m);
-
 		/** clustknb
 		 *
 		 * @param use_old_mus if old mus shall be used

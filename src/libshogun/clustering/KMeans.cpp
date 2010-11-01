@@ -126,54 +126,6 @@ void *sqdist_thread_func(void * P)
 } 
 }
 
-void CKMeans::sqdist(
-	float64_t* x, CSimpleFeatures<float64_t>* y, float64_t* z, int32_t n1, int32_t offs,
-	int32_t n2, int32_t m)
-{
-	const int32_t num_threads=parallel->get_num_threads();
-	int32_t nc, n2_nc = n2/num_threads;
-	thread_data* TD = new thread_data[num_threads];
-	pthread_t* tid = new pthread_t[num_threads];
-	void *status;
-
-	/* prepare the structure */
-	TD[0].x=x ; TD[0].y=y ; TD[0].z=z ; 
-	TD[0].n1=n1 ; TD[0].n2=n2 ; TD[0].m=m;
-	TD[0].offs=offs;
-
-	if (n2>PAR_THRESH)
-	{
-		ASSERT(PAR_THRESH>1);
-
-		/* create the threads */
-		for (nc=0; nc<num_threads; nc++)
-		{
-			TD[nc]=TD[0];
-			TD[nc].js=nc*n2_nc;
-			if (nc+1==num_threads)
-				TD[nc].je=n2;
-			else
-				TD[nc].je=(nc+1)*n2_nc;
-
-			pthread_create(&tid[nc], NULL, sqdist_thread_func, (void*)&TD[nc]);
-		}
-
-		/* wait for finishing all threads */
-		for (nc=0; nc<num_threads; nc++)
-			pthread_join(tid[nc], &status);
-
-	}
-	else
-	{
-		/* simply call the ,,thread''-function */
-		TD[0].js=0 ; TD[0].je=n2;
-		sqdist_thread_func((void *)&TD[0]);
-	}
-
-	delete[] tid;
-	delete[] TD;
-}
-
 void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 {
 	ASSERT(distance && distance->get_feature_type()==F_DREAL);
@@ -195,9 +147,10 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	int32_t *ClList = (int32_t*) calloc(XSize, sizeof(int32_t));
 	float64_t *weights_set = (float64_t*) calloc(k, sizeof(float64_t));
 	float64_t *dists = (float64_t*) calloc(k*XSize, sizeof(float64_t));
-        ///replace rhs feature vectors
-        CSimpleFeatures<float64_t>* rhs_mus = new CSimpleFeatures<float64_t>(0);
-        CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
+
+	///replace rhs feature vectors
+	CSimpleFeatures<float64_t>* rhs_mus = new CSimpleFeatures<float64_t>(0);
+	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
  
 	int32_t vlen=0;
 	bool vfree=false;
@@ -260,13 +213,12 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	{
 		ASSERT(mus_start);
 
-//		sqdist(mus_start, lhs, dists, k, 0, XSize, dimensions);
-                /// set rhs to mus_start
-                rhs_mus->copy_feature_matrix(mus_start,dimensions,k);
-                float64_t* p_dists=dists;
-                
-                for(int32_t idx=0;idx<XSize;idx++,p_dists+=k)
-                    distances_rhs(p_dists,0,k,idx);
+		/// set rhs to mus_start
+		rhs_mus->copy_feature_matrix(mus_start,dimensions,k);
+		float64_t* p_dists=dists;
+
+		for(int32_t idx=0;idx<XSize;idx++,p_dists+=k)
+			distances_rhs(p_dists,0,k,idx);
 		p_dists=NULL;            
 
 		for (i=0; i<XSize; i++)
@@ -353,8 +305,8 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 					mus[i*dimensions+j] /= weights_set[i];
 		}
 #endif
-                ///update rhs
-                rhs_mus->copy_feature_matrix(mus,dimensions,k);
+		///update rhs
+		rhs_mus->copy_feature_matrix(mus,dimensions,k);
 
 		for (i=0; i<XSize; i++)
 		{
@@ -367,10 +319,8 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			weight=Weights[Pat];
 
 			/* compute the distance of this point to all centers */
-			/* dists=sqdist(mus',XData) ; */
-			///sqdist(mus, lhs, dists, k, Pat, 1, dimensions);
-                        for(int32_t idx_k=0;idx_k<k;idx_k++)
-                            dists[idx_k]=distance->distance(Pat,idx_k);
+			for(int32_t idx_k=0;idx_k<k;idx_k++)
+				dists[idx_k]=distance->distance(Pat,idx_k);
            
 			/* [mini,imini]=min(dists(:,i)) ; */
 			imini=0 ; mini=dists[0];
