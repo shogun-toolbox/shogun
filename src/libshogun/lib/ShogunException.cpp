@@ -17,21 +17,31 @@
 
 using namespace shogun;
 
+void
+ShogunException::init(const char* str)
+{
+	size_t n = strlen(str) + 1;
+
+	val = (char*) malloc(n);
+	if (val)
+		strncpy(val, str, n);
+	else {
+		fprintf(stderr, "Could not even allocate memory for exception"
+				" - dying.\n");
+		exit(1);
+	}
+}
+
 ShogunException::ShogunException(const char* str)
 {
 #ifndef WIN32
 	CSignal::unset_handler();
 #endif
-   val = (char*) malloc(sizeof(char)*4096);
-   if (val)
-       strncpy(val,str,4096);
-   else
-   {
-       fprintf(stderr, "Could not even allocate memory for exception - dying.\n");
-       exit(1);
-   }
+
+	init(str);
 }
 
-ShogunException::~ShogunException()
-{
-}
+ShogunException::ShogunException(const ShogunException& orig)
+{ init(orig.val); }
+
+ShogunException::~ShogunException() { free(val); }
