@@ -99,43 +99,63 @@ namespace std {
 import tempfile, random, os, exceptions
 
 try: import Library as shogunLibrary
-except ImportError: import shogun.Library as shogunLibrary
+except exceptions.ImportError: import shogun.Library as shogunLibrary
 
 def __SGgetstate__(self):
-	fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
-		+ str(random.randint(0, 1e15))
+    fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
+        + str(random.randint(0, 1e15))
 
-	fstream = shogunLibrary.SerializableAsciiFile(fname, "w")
-	if not self.save_serializable(fstream):
-		fstream.close(); os.remove(fname)
-		raise exceptions.IOError("Could not dump Shogun object!")
-	fstream.close()
+    try:
+        fstream = shogunLibrary.SerializableAsciiFile(fname, "w") \
+            if self.__pickle_ascii__ \
+            else shogunLibrary.SerializableHDF5File(fname, "w")
+    except exceptions.AttributeError:
+        fstream = shogunLibrary.SerializableAsciiFile(fname, "w")
+        self.__pickle_ascii__ = True
 
-	fstream = open(fname, "r"); result = fstream.read();
-	fstream.close()
+    if not self.save_serializable(fstream):
+        fstream.close(); os.remove(fname)
+        raise exceptions.IOError("Could not dump Shogun object!")
+    fstream.close()
 
-	os.remove(fname)
-	return result
+    fstream = open(fname, "r"); result = fstream.read();
+    fstream.close()
 
-def __SGsetstate__(self, state_str):
-	self.__init__()
+    os.remove(fname)
+    return (self.__pickle_ascii__, result)
 
-	fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix()	\
-		+ str(random.randint(0, 1e15))
+def __SGsetstate__(self, state_tuple):
+    self.__init__()
 
-	fstream = open(fname, "w"); fstream.write(state_str);
-	fstream.close()
+    fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
+        + str(random.randint(0, 1e15))
 
-	fstream = shogunLibrary.SerializableAsciiFile(fname, "r")
-	if not self.load_serializable(fstream):
-		fstream.close(); os.remove(fname)
-		raise exceptions.IOError("Could not load Shogun object!")
-	fstream.close()
+    fstream = open(fname, "w"); fstream.write(state_tuple[1]);
+    fstream.close()
 
-	os.remove(fname)
+    try:
+        fstream = shogunLibrary.SerializableAsciiFile(fname, "r") \
+            if state_tuple[0] \
+            else shogunLibrary.SerializableHDF5File(fname, "r")
+    except exceptions.AttributeError:
+        raise exceptions.IOError("File contains an HDF5 stream but " \
+                                 "Shogun was not compiled with HDF5" \
+                                 " support!")
+
+    if not self.load_serializable(fstream):
+        fstream.close(); os.remove(fname)
+        raise exceptions.IOError("Could not load Shogun object!")
+    fstream.close()
+
+    os.remove(fname)
+
+def __SGreduce_ex__(self, protocol):
+    self.__pickle_ascii__ = True if protocol == 0 else False
+    return super(self.__class__, self).__reduce__()
 
 SGSerializable.__setstate__ = __SGsetstate__
 SGSerializable.__getstate__ = __SGgetstate__
+SGSerializable.__reduce_ex__ = __SGreduce_ex__
 %}
 
 #endif /* SWIGPYTHON  */

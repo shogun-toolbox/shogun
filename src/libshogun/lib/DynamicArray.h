@@ -35,7 +35,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		CDynamicArray(int32_t p_resize_granularity=128)
 		: CSGObject()
-		{ m_array = new DynArray<T>(io, p_resize_granularity); }
+		{ m_array = new DynArray<T>(p_resize_granularity); }
 
 		virtual ~CDynamicArray() { delete m_array; }
 

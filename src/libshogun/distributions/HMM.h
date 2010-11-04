@@ -78,14 +78,14 @@ enum BaumWelchViterbiType
 
 
 /** @brief class Model */
-class CModel
+class Model
 {
 	public:
 		/// Constructor - initializes all variables/structures
-		CModel();
+		Model();
 
 		/// Destructor - cleans up
-		virtual ~CModel();
+		virtual ~Model();
 
 		/// sorts learn_a matrix
 		inline void sort_learn_a()
@@ -472,7 +472,7 @@ class CHMM : public CDistribution
 		 */
 
 		CHMM(
-			int32_t N, int32_t M, CModel* model, float64_t PSEUDO);
+			int32_t N, int32_t M, Model* model, float64_t PSEUDO);
 		CHMM(
 			CStringFeatures<uint16_t>* obs, int32_t N, int32_t M,
 			float64_t PSEUDO);
@@ -516,7 +516,7 @@ class CHMM : public CDistribution
 		 * @param PSEUDO Pseudo Value
 		 * @param model_file Filehandle to a hmm model file (*.mod)
 		 */
-		bool initialize(CModel* model, float64_t PSEUDO, FILE* model_file=NULL);
+		bool initialize(Model* model, float64_t PSEUDO, FILE* model_file=NULL);
 		//@}
 
 		/// allocates memory that depends on N
@@ -764,7 +764,7 @@ class CHMM : public CDistribution
 
 #ifdef FIX_POS
 		/** access function to set value in fix_pos_state vector in underlying model 
-		 * @see CModel
+		 * @see Model
 		 */
 		inline bool set_fix_pos_state(int32_t pos, T_STATES state, char value)
 		{
@@ -1201,7 +1201,7 @@ class CHMM : public CDistribution
 		CStringFeatures<uint16_t>* p_observations;
 
 		//train definition for HMM
-		CModel* model;
+		Model* model;
 
 		/// matrix  of absolute counts of transitions 
 		float64_t* transition_matrix_A;

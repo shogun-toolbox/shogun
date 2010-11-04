@@ -49,7 +49,6 @@
 %rename(Distribution) CDistribution;
 %rename(Histogram) CHistogram;
 %rename(HMM) CHMM;
-%rename(Model) CModel;
 %rename(GHMM) CGHMM;
 %rename(LinearHMM) CLinearHMM;
 

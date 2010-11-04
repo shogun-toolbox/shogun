@@ -15,8 +15,8 @@ HEADERS=${*#$TEMPL_FILE}
 # with `C'.
 classes=$(for i in $HEADERS; do
     cat $i | sed -n -e \
-'s/^[ \t^t\/\*]*class \+[C]\([A-Z][A-Za-z0-9_]\+\)[^;]*$/sREPL\1/;
-/^sREPL/h;/) *\(const\)\? *= *0 *\;/q;${g;s/^sREPL//;p}';
+'s/^[ \t^t\/\*]*class \+[C]\([A-Z][A-Za-z0-9_]\+\)[^;]*$/sXXREPL\1/;
+/^sXXREPL/h;/) *\(const\)\? *= *0 *\;/x;/^\} *\;/{g;s/^sXXREPL//p;x}';
     done;
 )
 
@@ -24,8 +24,8 @@ classes=$(for i in $HEADERS; do
 # class-names starting with `C'.
 temp_classes=$(for i in $HEADERS; do
     cat $i | sed -n -e \
-'s/^[ \t^t\/\*]*template *<[^,]\+> *class \+[C]\([A-Z][A-Za-z0-9_]\+\)[^;]*$/sREPL\1/;
-/^sREPL/h;/) *\(const\)\? *= *0 *\;/q;${g;s/^sREPL//;p}';
+'s/^[ \t^t\/\*]*template *<[^,]\+> *class \+[C]\([A-Z][A-Za-z0-9_]\+\)[^;]*$/sXXREPL\1/;
+/^sXXREPL/h;/) *\(const\)\? *= *0 *\;/x;/^\} *\;/{g;s/^sXXREPL//p;x}';
     done;
 )
 

@@ -93,13 +93,13 @@ bool
 CSerializableFile::false_warn(const char* prefix, const char* name)
 {
 	if (m_task == 'w')
-		SG_WARNING("Could not write `%s%s' to `%s'!", prefix,
+		SG_WARNING("Could not write `%s%s' to `%s'!\n", prefix,
 				   name, m_filename);
 	if (m_task == 'r')
-		SG_WARNING("Could not read `%s%s' from `%s'!", prefix,
+		SG_WARNING("Could not read `%s%s' from `%s'!\n", prefix,
 				   name, m_filename);
 	if (m_task != 'w' && m_task != 'r')
-		SG_WARNING("Could not read/write `%s%s' from `%s'!",
+		SG_WARNING("Could not read/write `%s%s' from `%s'!\n",
 				   prefix, name, m_filename);
 
 	return false;

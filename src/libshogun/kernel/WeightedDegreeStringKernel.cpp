@@ -1027,10 +1027,11 @@ void CWeightedDegreeStringKernel::init()
 	m_parameters->add_vector(&position_weights, &seq_length,
 			"position_weights",
 			"Weights per position.");
-	m_parameters->add(&mkl_stepsize, "mkl_stepsize ",
+	m_parameters->add(&mkl_stepsize, "mkl_stepsize",
 			"MKL step size.");
-	m_parameters->add(&degree, "degree",
-			"Order of WD kernel.");
+	/*
+	  m_parameters->add(&degree, "degree", "Order of WD kernel.");
+	*/
 	m_parameters->add(&max_mismatch, "max_mismatch",
 			"Number of allowed mismatches.");
 	m_parameters->add(&block_computation, "block_computation",

@@ -536,6 +536,16 @@ class CAlphabet : public CSGObject
 		static const char* alphabet_names[18];
 
 	protected:
+		/** Can (optionally) be overridden to post-initialize some
+		 *  member variables which are not PARAMETER::ADD'ed.  Make
+		 *  sure that at first the overridden method
+		 *  BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void load_serializable_post(void) throw (ShogunException);
+
 		/** alphabet */
 		EAlphabet alphabet;
 		/** number of symbols */

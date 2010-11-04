@@ -102,6 +102,13 @@ template<class T> class CSGString :public CSGSerializable
  */
 template <class ST> class CStringFeatures : public CFeatures
 {
+	void init(void) {
+		set_generic<ST>();
+
+		m_parameters->add((CSGSerializable**) &alphabet, "alphabet");
+		/* TODO  */
+	}
+
 	public:
 		/** default constructor
 		 *
@@ -111,6 +118,7 @@ template <class ST> class CStringFeatures : public CFeatures
         max_string_length(0), order(0), symbol_mask_table(NULL),
 		preprocess_on_get(false), feature_cache(NULL)
         {
+			init();
         }
 
 		/** constructor
@@ -123,6 +131,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_string_length(0), order(0), symbol_mask_table(NULL),
 			preprocess_on_get(false), feature_cache(NULL)
 		{
+			init();
+
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
@@ -143,6 +153,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_string_length(0), order(0), symbol_mask_table(NULL),
 			preprocess_on_get(false), feature_cache(NULL)
 		{
+			init();
+
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
@@ -164,6 +176,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_string_length(0), order(0), symbol_mask_table(NULL),
 			preprocess_on_get(false), feature_cache(NULL)
 		{
+			init();
+
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
@@ -181,6 +195,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_string_length(0), order(0), symbol_mask_table(NULL),
 			preprocess_on_get(false), feature_cache(NULL)
 		{
+			init();
+
 			ASSERT(alpha);
 			SG_REF(alpha);
 			alphabet=alpha;
@@ -199,6 +215,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			order(orig.order), preprocess_on_get(false),
 			feature_cache(NULL)
 		{
+			init();
+
 			ASSERT(orig.single_string == NULL); //not implemented
 
 			alphabet=orig.alphabet;
@@ -234,6 +252,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			length_of_single_string(0), max_string_length(0), order(0),
 			symbol_mask_table(NULL), preprocess_on_get(false), feature_cache(NULL)
 		{
+			init();
+
 			alphabet=new CAlphabet(alpha);
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();

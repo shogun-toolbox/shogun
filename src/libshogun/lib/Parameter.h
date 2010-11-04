@@ -51,8 +51,6 @@ private:
  */
 class Parameter
 {
-	IO* io;
-
 protected:
 	DynArray<TParameter*> m_params;
 
@@ -61,7 +59,7 @@ protected:
 						  const char* description);
 
 public:
-	explicit Parameter(IO* io_);
+	explicit Parameter(void);
 	virtual ~Parameter(void);
 
 	virtual void print(const char* prefix="");

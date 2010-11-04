@@ -11,6 +11,7 @@
 #define __SGSERIALIZABLE_H__
 
 #include "lib/DataType.h"
+#include "lib/ShogunException.h"
 
 namespace shogun
 {
@@ -31,6 +32,7 @@ class IO;
 class CSGSerializable
 {
 	EPrimitveType m_generic;
+	bool load_pre_called, load_post_called;
 
 #ifdef USE_REFERENCE_COUNTING
 	int32_t m_refcount;
@@ -38,6 +40,26 @@ class CSGSerializable
 
 protected:
 	Parameter* m_parameters;
+
+	/** Can (optionally) be overridden to pre-initialize some member
+	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
+	 *  is called.
+	 *
+	 *  @exception ShogunException Will be thrown if an error
+	 *                             occurres.
+	 */
+	virtual void load_serializable_pre(void) throw (ShogunException);
+
+	/** Can (optionally) be overridden to post-initialize some member
+	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_POST
+	 *  is called.
+	 *
+	 *  @exception ShogunException Will be thrown if an error
+	 *                             occurres.
+	 */
+	virtual void load_serializable_post(void) throw (ShogunException);
 
 public:
 	/** default constructor  */
@@ -92,8 +114,7 @@ public:
 	 *  then this object will contain inconsistent data and should not
 	 *  be used!
 	 *
-	 *  @param file where to save the object; will be closed during
-	 *              returning if PREFIX is an empty string.
+	 *  @param file where to load from
 	 *  @param prefix prefix for members
 	 *
 	 *  @return TRUE if done, otherwise FALSE

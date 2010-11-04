@@ -14,6 +14,8 @@
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 
+extern shogun::IO* sg_io;
+
 namespace shogun
 {
 /** @brief Template Dynamic array class that creates an array that can
@@ -26,8 +28,6 @@ namespace shogun
  */
 template <class T> class DynArray
 {
-	IO* io;
-
 	protected:
 		/** shrink/grow step size */
 		int32_t resize_granularity;
@@ -46,7 +46,7 @@ template <class T> class DynArray
 		 *
 		 * @param p_resize_granularity resize granularity
 		 */
-		DynArray(IO* io_, int32_t p_resize_granularity=128)
+		DynArray(int32_t p_resize_granularity=128)
 		{
 			this->resize_granularity=p_resize_granularity;
 
@@ -55,8 +55,6 @@ template <class T> class DynArray
 
 			num_elements=p_resize_granularity;
 			last_element_idx=-1;
-
-			io = io_;
 		}
 
 		virtual ~DynArray(void)
@@ -113,6 +111,8 @@ template <class T> class DynArray
 		 */
 		inline T get_element_safe(int32_t index) const
 		{
+			IO* io = sg_io;
+
 			if (index>=get_num_elements())
 			{
 				SG_ERROR("array index out of bounds (%d >= %d)\n",

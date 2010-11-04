@@ -72,13 +72,13 @@ enum E_STATE
 
 
 #ifdef FIX_POS
-const char CModel::FIX_DISALLOWED=0 ;
-const char CModel::FIX_ALLOWED=1 ;
-const char CModel::FIX_DEFAULT=-1 ;
-const float64_t CModel::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
+const char Model::FIX_DISALLOWED=0 ;
+const char Model::FIX_ALLOWED=1 ;
+const char Model::FIX_DEFAULT=-1 ;
+const float64_t Model::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
 #endif
 
-CModel::CModel()
+Model::Model()
 {
 	const_a=new int[ARRAY_SIZE];				///////static fixme 
 	const_b=new int[ARRAY_SIZE];
@@ -118,7 +118,7 @@ CModel::CModel()
 	} ;
 }
 
-CModel::~CModel()
+Model::~Model()
 {
 	delete[] const_a;
 	delete[] const_b;
@@ -161,7 +161,7 @@ CHMM::CHMM(CHMM* h)
 	set_observations(h->p_observations);
 }
 
-CHMM::CHMM(int32_t p_N, int32_t p_M, CModel* p_model, float64_t p_PSEUDO)
+CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
@@ -548,7 +548,7 @@ void CHMM::free_state_dependend_arrays()
 	end_state_distribution_q=NULL;
 }
 
-bool CHMM::initialize(CModel* m, float64_t pseudo, FILE* modelfile)
+bool CHMM::initialize(Model* m, float64_t pseudo, FILE* modelfile)
 {
 	//yes optimistic
 	bool files_ok=true;
@@ -1171,12 +1171,12 @@ float64_t CHMM::best_path(int32_t dimension)
 					}
 				}
 #ifdef FIX_POS
-				if ((!model) || (model->get_fix_pos_state(t,j,NN)!=CModel::FIX_DISALLOWED))
+				if ((!model) || (model->get_fix_pos_state(t,j,NN)!=Model::FIX_DISALLOWED))
 #endif
 					delta_new[j]=maxj + get_b(j,p_observations->get_feature(dimension,t));
 #ifdef FIX_POS
 				else
-					delta_new[j]=maxj + get_b(j,p_observations->get_feature(dimension,t)) + CModel::DISALLOWED_PENALTY;
+					delta_new[j]=maxj + get_b(j,p_observations->get_feature(dimension,t)) + Model::DISALLOWED_PENALTY;
 #endif		      
 				set_psi(t, j, argmax, dimension);
 			}
@@ -3226,7 +3226,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 {
 	if (model)
 		delete model ;
-	model=new CModel();
+	model=new Model();
 
 	int32_t received_params=0x0000000;	//a,b,p,q,N,M,O
 	char buffer[1024];

@@ -13,6 +13,8 @@
 
 using namespace shogun;
 
+extern IO* sg_io;
+
 /* **************************************************************** */
 /* Scalar wrappers  */
 
@@ -703,11 +705,9 @@ TParameter::load(IO* io, CSerializableFile* file, const char* prefix)
 	return true;
 }
 
-Parameter::Parameter(IO* io_) :m_params(io_)
+Parameter::Parameter(void)
 {
-	io = io_;
-
-	SG_REF(io);
+	SG_REF(sg_io);
 }
 
 Parameter::~Parameter(void)
@@ -715,13 +715,15 @@ Parameter::~Parameter(void)
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		delete m_params.get_element(i);
 
-	SG_UNREF(io);
+	SG_UNREF(sg_io);
 }
 
 void
 Parameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
+	IO* io = sg_io;
+
 	if (name == NULL || *name == '\0')
 		SG_ERROR("FATAL: Parameter::add_type(): `name' is empty!");
 
@@ -739,14 +741,14 @@ void
 Parameter::print(const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		m_params.get_element(i)->print(io, prefix);
+		m_params.get_element(i)->print(sg_io, prefix);
 }
 
 bool
 Parameter::save(CSerializableFile* file, const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		if (!m_params.get_element(i)->save(io, file, prefix))
+		if (!m_params.get_element(i)->save(sg_io, file, prefix))
 			return false;
 
 	return true;
@@ -756,7 +758,7 @@ bool
 Parameter::load(CSerializableFile* file, const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		if (!m_params.get_element(i)->load(io, file, prefix))
+		if (!m_params.get_element(i)->load(sg_io, file, prefix))
 			return false;
 
 	return true;

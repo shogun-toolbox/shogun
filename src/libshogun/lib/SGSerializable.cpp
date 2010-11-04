@@ -74,8 +74,10 @@ extern IO* sg_io;
 
 CSGSerializable::CSGSerializable(void)
 {
-	m_parameters = new Parameter(sg_io);
+	m_parameters = new Parameter();
 	m_generic = PT_NOT_GENERIC;
+	load_pre_called = false;
+	load_post_called = false;
 
 #ifdef USE_REFERENCE_COUNTING
 	m_refcount = 0;
@@ -121,13 +123,50 @@ bool
 CSGSerializable::load_serializable(CSerializableFile* file,
 								   const char* prefix)
 {
-	bool result = m_parameters->load(file, prefix);
+	IO* io = sg_io;
 
-	if (prefix == NULL || *prefix == '\0')
-		file->close();
+	try {
+		load_serializable_pre();
+	} catch (ShogunException e) {
+		SG_WARNING("%s%s::load_serializable_pre(): ShogunException: "
+				   "%s\n", prefix, get_name(),
+				   e.get_exception_string());
+		return false;
+	}
+	if (!load_pre_called) {
+		SG_WARNING("%s%s::load_serializable_pre(): Implementation "
+				   "error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
+				   "called!\n", prefix, get_name());
+		return false;
+	}
 
-	return result;
+	if (!m_parameters->load(file, prefix)) return false;
+
+	try {
+		load_serializable_post();
+	} catch (ShogunException e) {
+		SG_WARNING("%s%s::load_serializable_post(): ShogunException: "
+				   "%s\n", prefix, get_name(),
+				   e.get_exception_string());
+		return false;
+	}
+	if (!load_post_called) {
+		SG_WARNING("%s%s::load_serializable_post(): Implementation "
+				   "error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
+				   "called!\n", prefix, get_name());
+		return false;
+	}
+
+	return true;
 }
+
+void
+CSGSerializable::load_serializable_pre(void) throw (ShogunException)
+{ load_pre_called = true; }
+
+void
+CSGSerializable::load_serializable_post(void) throw (ShogunException)
+{ load_post_called = true; }
 
 /* **************************************************************** */
 #ifdef USE_REFERENCE_COUNTING
