@@ -14,10 +14,10 @@
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 
-extern shogun::IO* sg_io;
-
 namespace shogun
 {
+extern IO* sg_io;
+
 /** @brief Template Dynamic array class that creates an array that can
  * be used like a list or an array.
  *
