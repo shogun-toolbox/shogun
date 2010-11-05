@@ -24,7 +24,8 @@
 #include "kernel/KernelNormalizer.h"
 
 #include <vector>
-
+#include <set>
+#include <string>
 
 namespace shogun
 {

@@ -14,8 +14,6 @@
 #include "kernel/KernelNormalizer.h"
 #include "kernel/Kernel.h"
 
-#include <set>
-
 namespace shogun
 {
 
