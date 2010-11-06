@@ -171,40 +171,40 @@ public:
 	 */
 	//@{
 	virtual void get_byte_string_list(
-			CSGString<uint8_t>*& strings, int32_t& num_str,
+			CSGString<uint8_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_int8_string_list(
-			CSGString<int8_t>*& strings, int32_t& num_str,
+			CSGString<int8_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_char_string_list(
-			CSGString<char>*& strings, int32_t& num_str,
+			CSGString<char>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_int_string_list(
-			CSGString<int32_t>*& strings, int32_t& num_str,
+			CSGString<int32_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_uint_string_list(
-			CSGString<uint32_t>*& strings, int32_t& num_str,
+			CSGString<uint32_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_short_string_list(
-			CSGString<int16_t>*& strings, int32_t& num_str,
+			CSGString<int16_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_word_string_list(
-			CSGString<uint16_t>*& strings, int32_t& num_str,
+			CSGString<uint16_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_long_string_list(
-			CSGString<int64_t>*& strings, int32_t& num_str,
+			CSGString<int64_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_ulong_string_list(
-			CSGString<uint64_t>*& strings, int32_t& num_str,
+			CSGString<uint64_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_shortreal_string_list(
-			CSGString<float32_t>*& strings, int32_t& num_str,
+			CSGString<float32_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_real_string_list(
-			CSGString<float64_t>*& strings, int32_t& num_str,
+			CSGString<float64_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_longreal_string_list(
-			CSGString<floatmax_t>*& strings, int32_t& num_str,
+			CSGString<floatmax_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	//@}
 
@@ -303,29 +303,29 @@ public:
 	 */
 	//@{
 	virtual void set_byte_string_list(
-			const CSGString<uint8_t>* strings, int32_t num_str);
+			CSGString<uint8_t>** strings, int32_t num_str);
 	virtual void set_int8_string_list(
-			const CSGString<int8_t>* strings, int32_t num_str);
+			CSGString<int8_t>** strings, int32_t num_str);
 	virtual void set_char_string_list(
-			const CSGString<char>* strings, int32_t num_str);
+			CSGString<char>** strings, int32_t num_str);
 	virtual void set_int_string_list(
-			const CSGString<int32_t>* strings, int32_t num_str);
+			CSGString<int32_t>** strings, int32_t num_str);
 	virtual void set_uint_string_list(
-			const CSGString<uint32_t>* strings, int32_t num_str);
+			CSGString<uint32_t>** strings, int32_t num_str);
 	virtual void set_short_string_list(
-			const CSGString<int16_t>* strings, int32_t num_str);
+			CSGString<int16_t>** strings, int32_t num_str);
 	virtual void set_word_string_list(
-			const CSGString<uint16_t>* strings, int32_t num_str);
+			CSGString<uint16_t>** strings, int32_t num_str);
 	virtual void set_long_string_list(
-			const CSGString<int64_t>* strings, int32_t num_str);
+			CSGString<int64_t>** strings, int32_t num_str);
 	virtual void set_ulong_string_list(
-			const CSGString<uint64_t>* strings, int32_t num_str);
+			CSGString<uint64_t>** strings, int32_t num_str);
 	virtual void set_shortreal_string_list(
-			const CSGString<float32_t>* strings, int32_t num_str);
+			CSGString<float32_t>** strings, int32_t num_str);
 	virtual void set_real_string_list(
-			const CSGString<float64_t>* strings, int32_t num_str);
+			CSGString<float64_t>** strings, int32_t num_str);
 	virtual void set_longreal_string_list(
-			const CSGString<floatmax_t>* strings, int32_t num_str);
+			CSGString<floatmax_t>** strings, int32_t num_str);
 	//@}
 
 	/** @return object name */

@@ -111,8 +111,12 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 	/** cleanup string features */
 	virtual void cleanup()
 	{
+		for (int32_t i=0; i<CStringFeatures<ST>::num_vectors; i++)
+			delete CStringFeatures<ST>::features[i];
+		delete CStringFeatures<ST>::features;
+
 		CStringFeatures<ST>::num_vectors=0;
-		delete[] CStringFeatures<ST>::features;
+
 		delete[] CStringFeatures<ST>::symbol_mask_table;
 		CStringFeatures<ST>::features=NULL;
 		CStringFeatures<ST>::symbol_mask_table=NULL;
@@ -146,7 +150,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 		ASSERT(CStringFeatures<ST>::alphabet);
 
 		uint64_t buffer_size=granularity;
-		CStringFeatures<ST>::features=new CSGString<ST>[buffer_size];
+		CStringFeatures<ST>::features=new CSGString<ST>*[buffer_size];
 
 		uint64_t offs=0;
 		uint64_t len=0;
@@ -165,8 +169,12 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 					buffer_size+=granularity;
 				}
 
-				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].string=line;
-				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].length=len;
+				CStringFeatures<ST>::features[
+					CStringFeatures<ST>::num_vectors-1]
+					= new CSGString<ST>();
+
+				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1]->string=line;
+				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1]->length=len;
 				CStringFeatures<ST>::max_string_length=CMath::max(CStringFeatures<ST>::max_string_length, (int32_t) len);
 			}
 			else

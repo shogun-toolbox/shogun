@@ -345,7 +345,7 @@ GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Wor
 
 
 #define GET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
-void CPythonInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
+void CPythonInterface::function_name(CSGString<sg_type>**& strings, int32_t& num_str, int32_t& max_string_len)	\
 { 																			\
 	max_string_len=0;														\
 	const PyObject* py_str= get_arg_increment();							\
@@ -360,33 +360,37 @@ void CPythonInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 		num_str=PyList_Size((PyObject*) py_str);							\
 		ASSERT(num_str>=1);													\
 																			\
-		strings=new CSGString<sg_type>[num_str];								\
+		strings=new CSGString<sg_type>*[num_str];								\
 		ASSERT(strings);													\
 																			\
 		for (int32_t i=0; i<num_str; i++)										\
-		{																	\
-			PyObject *o = PyList_GetItem((PyObject*) py_str,i);				\
-			if (PyString_Check(o))											\
-			{																\
+		{																\
+			PyObject *o = PyList_GetItem((PyObject*) py_str,i);			\
+			if (PyString_Check(o))										\
+			{															\
+				strings[i] = new CSGString<sg_type>();					\
+																		\
 				int32_t len=PyString_Size(o);									\
 				const sg_type* str= (const sg_type*) PyString_AsString(o);	\
 																			\
-				strings[i].length=len;										\
-				strings[i].string=NULL;										\
+				strings[i]->length=len;										\
+				strings[i]->string=NULL;										\
 				max_string_len=CMath::max(max_string_len, len);				\
 																			\
 				if (len>0)													\
 				{															\
-					strings[i].string=new sg_type[len+1];					\
-					memcpy(strings[i].string, str, len);					\
-					strings[i].string[len]='\0';							\
+					strings[i]->string=new sg_type[len+1];					\
+					memcpy(strings[i]->string, str, len);					\
+					strings[i]->string[len]='\0';							\
 				}															\
 			}																\
 			else															\
 			{																\
-				for (int32_t j=0; j<i; j++)										\
-					delete[] strings[i].string;								\
-				delete[] strings;											\
+				for (int32_t j=0; j<i; j++)	{							\
+					delete[] strings[i]->string;						\
+					delete strings[i];									\
+				}														\
+				delete strings;											\
 				SG_ERROR("All elements in list must be strings, error in line %d.\n", i);\
 			}																\
 		}																	\
@@ -397,24 +401,26 @@ void CPythonInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 		if_type* data=(if_type*) py_array_str->data;						\
 		num_str=py_array_str->dimensions[0]; 								\
 		int32_t len=py_array_str->dimensions[1]; 								\
-		strings=new CSGString<sg_type>[num_str]; 							\
+		strings=new CSGString<sg_type>*[num_str]; 							\
 																			\
 		for (int32_t i=0; i<num_str; i++) 										\
 		{ 																	\
+			strings[i] = new CSGString<sg_type>();						\
+																		\
 			if (len>0) 														\
 			{ 																\
-				strings[i].length=len; /* all must have same length*/		\
-				strings[i].string=new sg_type[len+1]; /* not zero terminated */	\
+				strings[i]->length=len; /* all must have same length*/		\
+				strings[i]->string=new sg_type[len+1]; /* not zero terminated */	\
 				int32_t j; 														\
 				for (j=0; j<len; j++) 										\
-					strings[i].string[j]=data[j+i*len]; 					\
-				strings[i].string[j]='\0'; 									\
+					strings[i]->string[j]=data[j+i*len];				\
+				strings[i]->string[j]='\0';								\
 			} 																\
 			else 															\
 			{ 																\
 				SG_WARNING( "string with index %d has zero length.\n", i+1);	\
-				strings[i].length=0; 										\
-				strings[i].string=NULL; 									\
+				strings[i]->length=0; 										\
+				strings[i]->string=NULL; 									\
 			} 																\
 		} 																	\
 		max_string_len=len;													\
@@ -576,7 +582,7 @@ SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short
 
 
 #define SET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
-void CPythonInterface::function_name(const CSGString<sg_type>* strings, int32_t num_str)	\
+void CPythonInterface::function_name(CSGString<sg_type>** strings, int32_t num_str)	\
 {																				\
 	if (!is_char_str)															\
 		SG_ERROR("Only character strings supported.\n");						\
@@ -590,10 +596,10 @@ void CPythonInterface::function_name(const CSGString<sg_type>* strings, int32_t 
 																				\
 	for (int32_t i=0; i<num_str; i++)												\
 	{																			\
-		int32_t len=strings[i].length;												\
+		int32_t len=strings[i]->length;												\
 		if (len>0)																\
 		{																		\
-			PyObject* str=PyString_FromStringAndSize((const char*) strings[i].string, len); \
+			PyObject* str=PyString_FromStringAndSize((const char*) strings[i]->string, len); \
 			if (!str) 															\
 				SG_ERROR("Couldn't create " error_string 						\
 						" String %d of length %d.\n", i, len);					\

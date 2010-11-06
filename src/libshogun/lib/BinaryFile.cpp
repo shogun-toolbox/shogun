@@ -159,7 +159,7 @@ GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, TSGDataType(CT_MATRIX, P
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CBinaryFile::fname(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void CBinaryFile::fname(CSGString<sg_type>**& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 	strings=NULL;																				\
 	num_str=0;																					\
@@ -175,18 +175,20 @@ void CBinaryFile::fname(CSGString<sg_type>*& strings, int32_t& num_str, int32_t&
 	if (fread(&num_str, sizeof(int32_t), 1, file)!=1)											\
 		SG_ERROR("Failed to read number of strings\n");											\
 																								\
-	strings=new CSGString<sg_type>[num_str];														\
+	strings=new CSGString<sg_type>*[num_str];														\
 																								\
 	for (int32_t i=0; i<num_str; i++)															\
-	{																							\
+	{																	                        \
+		strings[i] = new CSGString<sg_type>();							                        \
+												                                                \
 		int32_t len=0;																			\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
 			SG_ERROR("Failed to read string length of string with idx=%d\n", i);				\
-		strings[i].length=len;																	\
+		strings[i]->length=len;																	\
 		sg_type* str = new sg_type[len];														\
 		if (fread(str, sizeof(sg_type), len, file)!= (size_t) len)								\
 			SG_ERROR("Failed to read string %d\n", i);											\
-		strings[i].string=str;																	\
+		strings[i]->string=str;																	\
 	}																							\
 }
 
@@ -291,7 +293,7 @@ SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, (CT_MATRIX, PT_FLOATMAX)
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void CBinaryFile::fname(const CSGString<sg_type>* strings, int32_t num_str)	\
+void CBinaryFile::fname(CSGString<sg_type>** strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n");											\
@@ -299,9 +301,9 @@ void CBinaryFile::fname(const CSGString<sg_type>* strings, int32_t num_str)	\
 	TSGDataType t dtype; write_header(&t);								                \
 	for (int32_t i=0; i<num_str; i++)													\
 	{																					\
-		int32_t len = strings[i].length;												\
+		int32_t len = strings[i]->length;												\
 		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||								\
-				(fwrite(strings[i].string, sizeof(sg_type), len, file)!= (size_t) len))	\
+				(fwrite(strings[i]->string, sizeof(sg_type), len, file)!= (size_t) len))	\
 			SG_ERROR("Failed to write Sparse Matrix\n");								\
 	}																					\
 }

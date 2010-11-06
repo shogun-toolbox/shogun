@@ -596,6 +596,10 @@ TParameter::save(IO* io, CSerializableFile* file, const char* prefix)
 						   prefix, m_name);
 				len_real_x = 0;
 			}
+
+			if (len_real_x *len_real_y == 0)
+				len_real_x = len_real_y = 0;
+
 			break;
 		case CT_SCALAR: break;
 		}

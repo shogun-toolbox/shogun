@@ -271,15 +271,17 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	fin.close();
 
 	nof_sequences = seqs.size();
-	sequences = new CSGString<char>[nof_sequences];
+	sequences = new CSGString<char>*[nof_sequences];
 
 	int max_len = 0;
 	for (int i=0; i < nof_sequences; ++i)
 	{
+		sequences[i] = new CSGString<char>();
+
 		int len = seqs[i].length();
-		sequences[i].string = new char[len+1];
-		sequences[i].length = len;
-		strcpy(sequences[i].string, seqs[i].c_str());
+		sequences[i]->string = new char[len+1];
+		sequences[i]->length = len;
+		strcpy(sequences[i]->string, seqs[i].c_str());
 
 		if (len > max_len) max_len = len;
 	}

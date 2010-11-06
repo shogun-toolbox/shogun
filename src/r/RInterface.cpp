@@ -301,11 +301,11 @@ void CRInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& nu
 {
 }
 
-void CRInterface::get_byte_string_list(CSGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_byte_string_list(CSGString<uint8_t>**& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_char_string_list(CSGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_char_string_list(CSGString<char>**& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	SEXP strs=get_arg_increment();
 
@@ -319,11 +319,13 @@ void CRInterface::get_char_string_list(CSGString<char>*& strings, int32_t& num_s
 		num_str = ncols(strs);
 		max_string_len = nrows(strs);
 
-		strings=new CSGString<char>[num_str];
+		strings=new CSGString<char>*[num_str];
 		ASSERT(strings);
 
 		for (int32_t i=0; i<num_str; i++)
 		{
+			strings[i] = new CSGString<char>();
+
 			char* dst=new char[max_string_len+1];
 			for (int32_t j=0; j<max_string_len; j++)
 			{
@@ -332,20 +334,22 @@ void CRInterface::get_char_string_list(CSGString<char>*& strings, int32_t& num_s
 					SG_ERROR("LENGTH(s)=%d != 1, nrows(strs)=%d ncols(strs)=%d\n", LENGTH(s), nrows(strs), ncols(strs));
 				dst[j]=CHAR(s)[0];
 			}
-			strings[i].string=dst;
-			strings[i].string[max_string_len]='\0';
-			strings[i].length=max_string_len;
+			strings[i]->string=dst;
+			strings[i]->string[max_string_len]='\0';
+			strings[i]->length=max_string_len;
 		}
 	}
 	else
 	{
 		max_string_len=0;
 		num_str=Rf_length(strs);
-		strings=new CSGString<char>[num_str];
+		strings=new CSGString<char>*[num_str];
 		ASSERT(strings);
 
 		for (int32_t i=0; i<num_str; i++)
 		{
+			strings[i] = new CSGString<char>();
+
 			SEXPREC* s= STRING_ELT(strs,i);
 			char* c= (char*) CHAR(s);
 			int32_t len=LENGTH(s);
@@ -353,30 +357,30 @@ void CRInterface::get_char_string_list(CSGString<char>*& strings, int32_t& num_s
 			if (len && c)
 			{
 				char* dst=new char[len+1];
-				strings[i].string=(char*) memcpy(dst, c, len*sizeof(char));
-				strings[i].string[len]='\0';
-				strings[i].length=len;
+				strings[i]->string=(char*) memcpy(dst, c, len*sizeof(char));
+				strings[i]->string[len]='\0';
+				strings[i]->length=len;
 				max_string_len=CMath::max(max_string_len, len);
 			}
 			else
 			{
 				SG_WARNING( "string with index %d has zero length\n", i+1);
-				strings[i].string=0;
-				strings[i].length=0;
+				strings[i]->string=0;
+				strings[i]->length=0;
 			}
 		}
 	}
 }
 
-void CRInterface::get_int_string_list(CSGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_int_string_list(CSGString<int32_t>**& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_short_string_list(CSGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_short_string_list(CSGString<int16_t>**& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_word_string_list(CSGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_word_string_list(CSGString<uint16_t>**& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
@@ -490,12 +494,12 @@ void CRInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_
 	// R does not support sparse matrices yet
 }
 
-void CRInterface::set_byte_string_list(const CSGString<uint8_t>* strings, int32_t num_str)
+void CRInterface::set_byte_string_list(CSGString<uint8_t>** strings, int32_t num_str)
 {
 }
  //this function will fail for strings containing 0, unclear how to do 'raw'
  //strings in R
-void CRInterface::set_char_string_list(const CSGString<char>* strings, int32_t num_str)
+void CRInterface::set_char_string_list(CSGString<char>** strings, int32_t num_str)
 {
 	if (!strings)
 		SG_ERROR("Given strings are invalid.\n");
@@ -505,23 +509,23 @@ void CRInterface::set_char_string_list(const CSGString<char>* strings, int32_t n
 
 	for (int32_t i=0; i<num_str; i++)
 	{
-		int32_t len=strings[i].length;
+		int32_t len=strings[i]->length;
 		if (len>0)
-			SET_STRING_ELT(feat, i, mkChar(strings[i].string));
+			SET_STRING_ELT(feat, i, mkChar(strings[i]->string));
 	}
 	UNPROTECT(1);
 	set_arg_increment(feat);
 }
 
-void CRInterface::set_int_string_list(const CSGString<int32_t>* strings, int32_t num_str)
+void CRInterface::set_int_string_list(CSGString<int32_t>** strings, int32_t num_str)
 {
 }
 
-void CRInterface::set_short_string_list(const CSGString<int16_t>* strings, int32_t num_str)
+void CRInterface::set_short_string_list(CSGString<int16_t>** strings, int32_t num_str)
 {
 }
 
-void CRInterface::set_word_string_list(const CSGString<uint16_t>* strings, int32_t num_str)
+void CRInterface::set_word_string_list(CSGString<uint16_t>** strings, int32_t num_str)
 {
 }
 

@@ -371,7 +371,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_
 
 #define GET_STRINGLIST(function_name, oct_type_check1, oct_type_check2, \
 		oct_type, oct_converter, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void COctaveInterface::function_name(CSGString<sg_type>**& strings, int32_t& num_str, int32_t& max_string_len) \
 {																					\
 	max_string_len=0;																\
 	octave_value arg=get_arg_increment();											\
@@ -380,10 +380,12 @@ void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 		Cell c = arg.cell_value();													\
 		num_str=c.nelem();															\
 		ASSERT(num_str>=1);															\
-		strings=new CSGString<sg_type>[num_str];										\
+		strings=new CSGString<sg_type>*[num_str];										\
 																					\
-		for (int32_t i=0; i<num_str; i++)												\
-		{																			\
+		for (int32_t i=0; i<num_str; i++)								\
+		{																\
+			strings[i] = new CSGString<sg_type>();						\
+																		\
 			if (!c.elem(i).oct_type_check1() || !c.elem(i).oct_type_check2()		\
 					|| !c.elem(i).rows()==1)				\
 				SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter); \
@@ -393,19 +395,19 @@ void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 			int32_t len=str.cols();														\
 			if (len>0) 																\
 			{ 																		\
-				strings[i].length=len; /* all must have same length in octave */ 	\
-				strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */ \
+				strings[i]->length=len; /* all must have same length in octave */ 	\
+				strings[i]->string=new sg_type[len+1]; /* not zero terminated in octave */ \
 				int32_t j; 																\
 				for (j=0; j<len; j++) 												\
-					strings[i].string[j]=str(0,j); 									\
-				strings[i].string[j]='\0'; 											\
+					strings[i]->string[j]=str(0,j); 									\
+				strings[i]->string[j]='\0'; 											\
 				max_string_len=CMath::max(max_string_len, len);						\
 			}																		\
 			else																	\
 			{																		\
 				SG_WARNING( "string with index %d has zero length.\n", i+1);		\
-				strings[i].length=0;												\
-				strings[i].string=NULL;												\
+				strings[i]->length=0;												\
+				strings[i]->string=NULL;												\
 			}																		\
 		} 																			\
 	} 																				\
@@ -414,24 +416,26 @@ void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 		oct_type data=arg.oct_converter();											\
 		num_str=data.cols(); 														\
 		int32_t len=data.rows(); 														\
-		strings=new CSGString<sg_type>[num_str]; 									\
+		strings=new CSGString<sg_type>*[num_str]; 									\
 																					\
 		for (int32_t i=0; i<num_str; i++) 												\
 		{ 																			\
+			strings[i] = new CSGString<sg_type>();						\
+																		\
 			if (len>0) 																\
 			{ 																		\
-				strings[i].length=len; /* all must have same length in octave */ 	\
-				strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */ \
+				strings[i]->length=len; /* all must have same length in octave */ 	\
+				strings[i]->string=new sg_type[len+1]; /* not zero terminated in octave */ \
 				int32_t j; 																\
 				for (j=0; j<len; j++) 												\
-					strings[i].string[j]=data(j,i);									\
-				strings[i].string[j]='\0'; 											\
+					strings[i]->string[j]=data(j,i);									\
+				strings[i]->string[j]='\0'; 											\
 			} 																		\
 			else 																	\
 			{ 																		\
 				SG_WARNING( "string with index %d has zero length.\n", i+1); 		\
-				strings[i].length=0; 												\
-				strings[i].string=NULL; 											\
+				strings[i]->length=0; 												\
+				strings[i]->string=NULL; 											\
 			} 																		\
 		} 																			\
 		max_string_len=len;															\
@@ -540,7 +544,7 @@ void COctaveInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, i
 }
 
 #define SET_STRINGLIST(function_name, oct_type, sg_type, if_type, error_string)	\
-void COctaveInterface::function_name(const CSGString<sg_type>* strings, int32_t num_str)	\
+void COctaveInterface::function_name(CSGString<sg_type>** strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n");									\
@@ -551,7 +555,7 @@ void COctaveInterface::function_name(const CSGString<sg_type>* strings, int32_t 
 																					\
 	for (int32_t i=0; i<num_str; i++)													\
 	{																				\
-		int32_t len=strings[i].length;													\
+		int32_t len=strings[i]->length;													\
 		if (len>0)																	\
 		{																			\
 			oct_type str(dim_vector(1,len));										\
@@ -559,7 +563,7 @@ void COctaveInterface::function_name(const CSGString<sg_type>* strings, int32_t 
 				SG_ERROR("Couldn't create " error_string " String %d of length %d.\n", i, len);	\
 																					\
 			for (int32_t j=0; j<len; j++)												\
-				str(j)= (if_type) strings[i].string[j];								\
+				str(j)= (if_type) strings[i]->string[j];								\
 			c.elem(i)=str;															\
 		}																			\
 	}																				\

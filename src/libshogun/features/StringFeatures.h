@@ -68,7 +68,10 @@ template<class T> class CSGString :public CSGSerializable
 {
 	public:
 	/** default constructor */
-	CSGString() { m_parameters->add_vector(&string, &length, "string"); }
+	CSGString() :string(NULL), length(0) {
+		set_generic<T>();
+		m_parameters->add_vector(&string, &length, "string");
+	}
 
 	/** @return object name */
 	virtual inline const char* get_name(void) const { return "SGString"; };
@@ -106,7 +109,28 @@ template <class ST> class CStringFeatures : public CFeatures
 		set_generic<ST>();
 
 		m_parameters->add((CSGSerializable**) &alphabet, "alphabet");
-		/* TODO  */
+		m_parameters->add_vector((CSGSerializable***) &features,
+								 &num_vectors, "features",
+								 "This contains the array of features.");
+		m_parameters->add_vector(&single_string,
+								 &length_of_single_string,
+								 "single_string",
+								 "Created by sliding window.");
+		m_parameters->add(&max_string_length, "max_string_length",
+						  "Length of longest string.");
+		m_parameters->add(&num_symbols, "num_symbols",
+						  "Number of used symbols.");
+		m_parameters->add(&original_num_symbols, "original_num_symbols",
+						  "Original number of used symbols.");
+		m_parameters->add(&order, "order",
+						  "Order used in higher order mapping.");
+		m_parameters->add(&preprocess_on_get, "preprocess_on_get",
+						  "Preprocess on-the-fly?");
+
+		/* TODO M_PARAMETERS->ADD?
+		 * /// order used in higher order mapping
+		 * ST* symbol_mask_table;
+		 */
 	}
 
 	public:
@@ -146,7 +170,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_max_string_length maximum string length
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(CSGString<ST>* p_features, int32_t p_num_vectors,
+		CStringFeatures(CSGString<ST>** p_features, int32_t p_num_vectors,
 				int32_t p_max_string_length, EAlphabet alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
@@ -169,7 +193,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_max_string_length maximum string length
 		 * @param alpha an actual alphabet
 		 */
-		CStringFeatures(CSGString<ST>* p_features, int32_t p_num_vectors,
+		CStringFeatures(CSGString<ST>** p_features, int32_t p_num_vectors,
 				int32_t p_max_string_length, CAlphabet* alpha)
 		: CFeatures(0), num_vectors(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
@@ -224,13 +248,15 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			if (orig.features)
 			{
-				features=new CSGString<ST>[orig.num_vectors];
+				features=new CSGString<ST>*[orig.num_vectors];
 
 				for (int32_t i=0; i<num_vectors; i++)
 				{
-					features[i].string=new ST[orig.features[i].length];
-					features[i].length=orig.features[i].length;
-					memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].length);
+					features[i] = new CSGString<ST>();
+
+					features[i]->string=new ST[orig.features[i]->length];
+					features[i]->length=orig.features[i]->length;
+					memcpy(features[i]->string, orig.features[i]->string, sizeof(ST)*orig.features[i]->length);
 				}
 			}
 
@@ -278,12 +304,15 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 			else
 			{
-				for (int32_t i=0; i<num_vectors; i++)
+				for (int32_t i=0; i<num_vectors; i++) {
 					cleanup_feature_vector(i);
+					delete features[i];
+				}
 			}
+			delete features;
 
 			num_vectors=0;
-			delete[] features;
+
 			delete[] symbol_mask_table;
 			features=NULL;
 			symbol_mask_table=NULL;
@@ -304,9 +333,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(num<num_vectors);
 			if (features)
 			{
-				delete[] features[num].string;
-				features[num].string=NULL;
-				features[num].length=0;
+				delete[] features[num]->string;
+				features[num]->string=NULL;
+				features[num]->length=0;
 			}
 		}
 
@@ -386,9 +415,9 @@ template <class ST> class CStringFeatures : public CFeatures
 
 
 			cleanup_feature_vector(num);
-			features[num].length=len;
-			features[num].string=new ST[len];
-			memcpy(features[num].string, src, len*sizeof(ST));
+			features[num]->length=len;
+			features[num]->string=new ST[len];
+			memcpy(features[num]->string, src, len*sizeof(ST));
 
 			determine_maximum_string_length();
 		}
@@ -424,8 +453,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			if (!preprocess_on_get)
 			{
 				dofree=false;
-				len=features[num].length;
-				return features[num].string;
+				len=features[num]->length;
+				return features[num]->string;
 			}
 			else
 			{
@@ -459,7 +488,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			int32_t num_feat;
 			int32_t num_vec;
-			CSGString<ST>* s=get_transposed(num_feat, num_vec);
+			CSGString<ST>** s=get_transposed(num_feat, num_vec);
 
 			return new CStringFeatures<ST>(s, num_vec, num_feat, alphabet);
 		}
@@ -475,7 +504,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param num_vec number of vectors in matrix
 		 * @return transposed string features
 		 */
-		CSGString<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec)
+		CSGString<ST>** get_transposed(int32_t &num_feat, int32_t &num_vec)
 		{
 			num_feat=num_vectors;
 			num_vec=get_max_vector_length();
@@ -484,12 +513,14 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_DEBUG("Allocating memory for transposed string features of size %ld\n",
 					int64_t(num_feat)*num_vec);
 
-			CSGString<ST>* sf=new CSGString<ST>[num_vec];
+			CSGString<ST>** sf=new CSGString<ST>*[num_vec];
 
 			for (int32_t i=0; i<num_vec; i++)
 			{
-				sf[i].string=new ST[num_feat];
-				sf[i].length=num_feat;
+				sf[i] = new CSGString<ST>();
+
+				sf[i]->string=new ST[num_feat];
+				sf[i]->length=num_feat;
 			}
 
 			for (int32_t i=0; i<num_feat; i++)
@@ -499,7 +530,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				ST* vec=get_feature_vector(i, len, free_vec);
 
 				for (int32_t j=0; j<num_vec; j++)
-					sf[j].string[i]=vec[j];
+					sf[j]->string[i]=vec[j];
 
 				free_feature_vector(vec, i, free_vec);
 			}
@@ -707,7 +738,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				blocksize=required_blocksize;
 				dummy = new uint8_t[blocksize];
 				overflow = new uint8_t[blocksize];
-				features=new CSGString<ST>[num_vectors];
+				features=new CSGString<ST>*[num_vectors];
 
 				rewind(f);
 				sz=blocksize;
@@ -725,26 +756,27 @@ template <class ST> class CStringFeatures : public CFeatures
 							//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz);
 							max_string_length=CMath::max(max_string_length, len+overflow_len);
 
-							features[lines].length=len;
-							features[lines].string=new ST[len];
+							features[lines] = new CSGString<ST>();
+							features[lines]->length=len;
+							features[lines]->string=new ST[len];
 
 							if (remap_to_bin)
 							{
 								for (int32_t j=0; j<overflow_len; j++)
-									features[lines].string[j]=alpha->remap_to_bin(overflow[j]);
+									features[lines]->string[j]=alpha->remap_to_bin(overflow[j]);
 								for (int32_t j=0; j<len; j++)
-									features[lines].string[j+overflow_len]=alpha->remap_to_bin(dummy[old_sz+j]);
+									features[lines]->string[j+overflow_len]=alpha->remap_to_bin(dummy[old_sz+j]);
 								alpha->add_string_to_histogram(&dummy[old_sz], len);
-								alpha_bin->add_string_to_histogram(features[lines].string, features[lines].length);
+								alpha_bin->add_string_to_histogram(features[lines]->string, features[lines]->length);
 							}
 							else
 							{
 								for (int32_t j=0; j<overflow_len; j++)
-									features[lines].string[j]=overflow[j];
+									features[lines]->string[j]=overflow[j];
 								for (int32_t j=0; j<len; j++)
-									features[lines].string[j+overflow_len]=dummy[old_sz+j];
+									features[lines]->string[j+overflow_len]=dummy[old_sz+j];
 								alpha->add_string_to_histogram(&dummy[old_sz], len);
-								alpha->add_string_to_histogram(features[lines].string, features[lines].length);
+								alpha->add_string_to_histogram(features[lines]->string, features[lines]->length);
 							}
 
 							// clear overflow
@@ -817,11 +849,13 @@ template <class ST> class CStringFeatures : public CFeatures
 			alphabet=new CAlphabet(DNA);
 			num_symbols=alphabet->get_num_symbols();
 
-			CSGString<ST>* strings=new CSGString<ST>[num];
+			CSGString<ST>** strings=new CSGString<ST>*[num];
 			offs=0;
 
 			for (i=0;i<num; i++)
 			{
+				strings[i] = new CSGString<ST>();
+
 				uint64_t id_len=0;
 				char* id=f.get_line(id_len, offs);
 
@@ -845,10 +879,10 @@ template <class ST> class CStringFeatures : public CFeatures
 						}
 
 						len = fasta_len-spanned_lines;
-						strings[i].string=new ST[len];
-						strings[i].length=len;
+						strings[i]->string=new ST[len];
+						strings[i]->length=len;
 
-						ST* str=strings[i].string;
+						ST* str=strings[i]->string;
 						int32_t idx=0;
 						SG_DEBUG("'%.*s', len=%d, spanned_lines=%d\n", (int32_t) id_len, id, (int32_t) len, (int32_t) spanned_lines);
 
@@ -866,7 +900,7 @@ template <class ST> class CStringFeatures : public CFeatures
 								SG_ERROR("idx=%d j=%d fasta_len=%d, spanned_lines=%d str='%.*s'\n", idx, j, fasta_len, spanned_lines, idx, str);
 							str[idx++]=c;
 						}
-						max_len=CMath::max(max_len, strings[i].length);
+						max_len=CMath::max(max_len, strings[i]->length);
 
 
 						break;
@@ -908,14 +942,15 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_UNREF(alphabet);
 			alphabet=new CAlphabet(DNA);
 
-			CSGString<ST>* strings;
+			CSGString<ST>** strings;
 
 			ST* str;
 			if (bitremap_in_single_string)
 			{
-				strings=new CSGString<ST>[1];
-				strings[0].string=new ST[num];
-				strings[0].length=num;
+				strings=new CSGString<ST>*[1];
+				strings[0] = new CSGString<ST>();
+				strings[0]->string=new ST[num];
+				strings[0]->length=num;
 				f.get_line(len, offs);
 				f.get_line(len, offs);
 				order=len;
@@ -926,10 +961,12 @@ template <class ST> class CStringFeatures : public CFeatures
 				str=new ST[len];
 			}
 			else
-				strings=new CSGString<ST>[num];
+				strings=new CSGString<ST>*[num];
 
 			for (i=0;i<num; i++)
 			{
+				strings[i] = new CSGString<ST>();
+
 				if (!f.get_line(len, offs))
 					SG_ERROR("Error reading 'read' identifier in line %d", 4*i);
 
@@ -944,13 +981,13 @@ template <class ST> class CStringFeatures : public CFeatures
 					for (int32_t j=0; j<order; j++)
 						str[j]=(ST) alphabet->remap_to_bin((uint8_t) s[j]);
 
-					strings[0].string[i]=embed_word(str, order);
+					strings[0]->string[i]=embed_word(str, order);
 				}
 				else
 				{
-					strings[i].string=new ST[len];
-					strings[i].length=len;
-					str=strings[i].string;
+					strings[i]->string=new ST[len];
+					strings[i]->length=len;
+					str=strings[i]->string;
 
 					if (ignore_invalid)
 					{
@@ -1010,17 +1047,18 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 			else
 			{
-				CSGString<ST>* strings=NULL;
+				CSGString<ST>** strings=NULL;
 
 				int32_t num=0;
 				int32_t max_len=-1;
 
 				//usually n==num_vec, but it might not in race conditions
 				//(file perms modified, file erased)
-				strings=new CSGString<ST>[n];
+				strings=new CSGString<ST>*[n];
 
 				for (int32_t i=0; i<n; i++)
 				{
+					strings[i] = new CSGString<ST>();
 					char* fname=IO::concat_filename(namelist[i]->d_name);
 
 					struct stat s;
@@ -1036,9 +1074,9 @@ template <class ST> class CStringFeatures : public CFeatures
 							ST* str=new ST[filesize];
 							SG_DEBUG("%s:%ld\n", fname, (int64_t) filesize);
 							fread(str, sizeof(ST), filesize, f);
-							strings[num].string=str;
-							strings[num].length=filesize;
-							max_len=CMath::max(max_len, strings[num].length);
+							strings[num]->string=str;
+							strings[num]->length=filesize;
+							max_len=CMath::max(max_len, strings[num]->length);
 
 							num++;
 							fclose(f);
@@ -1067,7 +1105,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_max_string_length maximum string length
 		 * @return if setting was successful
 		 */
-		bool set_features(CSGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
+		bool set_features(CSGString<ST>** p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 		{
 			if (p_features)
 			{
@@ -1075,7 +1113,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				//compute histogram for char/byte
 				for (int32_t i=0; i<p_num_vectors; i++)
-					alpha->add_string_to_histogram( p_features[i].string, p_features[i].length);
+					alpha->add_string_to_histogram( p_features[i]->string, p_features[i]->length);
 
 				SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
 				SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
@@ -1109,14 +1147,16 @@ template <class ST> class CStringFeatures : public CFeatures
 		bool append_features(CStringFeatures<ST>* sf)
 		{
 			ASSERT(sf);
-			CSGString<ST>* new_features = new CSGString<ST>[sf->num_vectors];
+			CSGString<ST>** new_features = new CSGString<ST>*[sf->num_vectors];
 
 			for (int32_t i=0; i<sf->num_vectors; i++)
 			{
-				int32_t length=sf->features[i].length;
-				new_features[i].string=new ST[length];
-				memcpy(new_features[i].string, sf->features[i].string, length);
-				new_features[i].length=length;
+				new_features[i] = new CSGString<ST>();
+
+				int32_t length=sf->features[i]->length;
+				new_features[i]->string=new ST[length];
+				memcpy(new_features[i]->string, sf->features[i]->string, length);
+				new_features[i]->length=length;
 			}
 			return append_features(new_features, sf->num_vectors,
 					sf->max_string_length);
@@ -1132,7 +1172,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return if setting was successful
 		 */
-		bool append_features(CSGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
+		bool append_features(CSGString<ST>** p_features, int32_t p_num_vectors, int32_t p_max_string_length)
         {
             if (!features)
                 return set_features(p_features, p_num_vectors, p_max_string_length);
@@ -1141,7 +1181,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
             //compute histogram for char/byte
             for (int32_t i=0; i<p_num_vectors; i++)
-                alpha->add_string_to_histogram( p_features[i].string, p_features[i].length);
+                alpha->add_string_to_histogram( p_features[i]->string, p_features[i]->length);
 
             SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
             SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
@@ -1150,27 +1190,31 @@ template <class ST> class CStringFeatures : public CFeatures
             {
                 SG_UNREF(alpha);
                 for (int32_t i=0; i<p_num_vectors; i++)
-                    alphabet->add_string_to_histogram( p_features[i].string, p_features[i].length);
+                    alphabet->add_string_to_histogram( p_features[i]->string, p_features[i]->length);
 
                 int32_t old_num_vectors=num_vectors;
                 num_vectors=old_num_vectors+p_num_vectors;
-                CSGString<ST>* new_features = new CSGString<ST>[num_vectors];
+                CSGString<ST>** new_features = new CSGString<ST>*[num_vectors];
 
                 for (int32_t i=0; i<num_vectors; i++)
                 {
+					new_features[i] = new CSGString<ST>();
+
                     if (i<old_num_vectors)
                     {
-                        new_features[i].string=features[i].string;
-                        new_features[i].length=features[i].length;
+                        new_features[i]->string=features[i]->string;
+                        new_features[i]->length=features[i]->length;
+						delete features[i];
                     }
                     else
                     {
-                        new_features[i].string=p_features[i-old_num_vectors].string;
-                        new_features[i].length=p_features[i-old_num_vectors].length;
+                        new_features[i]->string=p_features[i-old_num_vectors]->string;
+                        new_features[i]->length=p_features[i-old_num_vectors]->length;
+						delete p_features[i-old_num_vectors];
                     }
                 }
-                delete[] features;
-				delete[] p_features; // free now obsolete features
+                delete features;
+				delete p_features; // free now obsolete features
 
                 this->features=new_features;
                 this->max_string_length=CMath::max(max_string_length, p_max_string_length);
@@ -1188,7 +1232,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual CSGString<ST>* get_features(int32_t& num_str, int32_t& max_str_len)
+		virtual CSGString<ST>** get_features(int32_t& num_str, int32_t& max_str_len)
 		{
 			num_str=num_vectors;
 			max_str_len=max_string_length;
@@ -1201,22 +1245,24 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param max_str_len maximal string length (returned)
 		 * @return string features
 		 */
-		virtual CSGString<ST>* copy_features(int32_t& num_str, int32_t& max_str_len)
+		virtual CSGString<ST>** copy_features(int32_t& num_str, int32_t& max_str_len)
 		{
 			ASSERT(num_vectors>0);
 
 			num_str=num_vectors;
 			max_str_len=max_string_length;
-			CSGString<ST>* new_feat=new CSGString<ST>[num_str];
+			CSGString<ST>** new_feat=new CSGString<ST>*[num_str];
 
 			for (int32_t i=0; i<num_str; i++)
 			{
+				new_feat[i] = new CSGString<ST>();
+
 				int32_t len;
 				bool free_vec;
 				ST* vec=get_feature_vector(i, len, free_vec);
-				new_feat[i].string=new ST[len];
-				new_feat[i].length=len;
-				memcpy(new_feat[i].string, vec, ((size_t) len) * sizeof(ST));
+				new_feat[i]->string=new ST[len];
+				new_feat[i]->length=len;
+				memcpy(new_feat[i]->string, vec, ((size_t) len) * sizeof(ST));
 				free_feature_vector(vec, i, free_vec);
 			}
 
@@ -1228,7 +1274,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param dst string features (returned)
 		 * @param num_str number of strings (returned)
 		 */
-		virtual void get_features(CSGString<ST>** dst, int32_t* num_str)
+		virtual void get_features(CSGString<ST>*** dst, int32_t* num_str)
 		{
 			int32_t num_vec;
 			int32_t max_str_len;
@@ -1283,11 +1329,13 @@ template <class ST> class CStringFeatures : public CFeatures
 			fread(&max_string_length, sizeof(int32_t), 1, file);
 			ASSERT(max_string_length>0);
 
-			features=new CSGString<ST>[num_vectors];
+			features=new CSGString<ST>*[num_vectors];
 
 			// vectors
 			for (int32_t i=0; i<num_vectors; i++)
 			{
+				features[i] = new CSGString<ST>();
+
 				// vector len compressed
 				int32_t len_compressed;
 				fread(&len_compressed, sizeof(int32_t), 1, file);
@@ -1298,27 +1346,27 @@ template <class ST> class CStringFeatures : public CFeatures
 				// vector raw data
 				if (decompress)
 				{
-					features[i].string=new ST[len_uncompressed];
-					features[i].length=len_uncompressed;
+					features[i]->string=new ST[len_uncompressed];
+					features[i]->length=len_uncompressed;
 					uint8_t* compressed=new uint8_t[len_compressed];
 					fread(compressed, len_compressed, 1, file);
 					uint64_t uncompressed_size=len_uncompressed;
 					uncompressed_size*=sizeof(ST);
 					compressor->decompress(compressed, len_compressed,
-							(uint8_t*) features[i].string, uncompressed_size);
+							(uint8_t*) features[i]->string, uncompressed_size);
 					delete[] compressed;
 					ASSERT(uncompressed_size==((uint64_t) len_uncompressed)*sizeof(ST));
 				}
 				else
 				{
 					int32_t offs=CMath::ceil(2.0*sizeof(int32_t)/sizeof(ST));
-					features[i].string=new ST[len_compressed+offs];
-					features[i].length=len_compressed+offs;
-					int32_t* feat32ptr=((int32_t*) (features[i].string));
-					memset(features[i].string, 0, offs*sizeof(ST));
+					features[i]->string=new ST[len_compressed+offs];
+					features[i]->length=len_compressed+offs;
+					int32_t* feat32ptr=((int32_t*) (features[i]->string));
+					memset(features[i]->string, 0, offs*sizeof(ST));
 					feat32ptr[0]=(int32_t) len_compressed;
 					feat32ptr[1]=(int32_t) len_uncompressed;
-					uint8_t* compressed=(uint8_t*) (&features[i].string[offs]);
+					uint8_t* compressed=(uint8_t*) (&features[i]->string[offs]);
 					fread(compressed, len_compressed, 1, file);
 				}
 			}
@@ -1455,16 +1503,20 @@ template <class ST> class CStringFeatures : public CFeatures
 				length_of_single_string=max_string_length;
 			}
 
-			CSGString<ST>* f=new CSGString<ST>[num_vectors];
+			CSGString<ST>** f=new CSGString<ST>*[num_vectors];
 			int32_t offs=0;
 			for (int32_t i=0; i<num_vectors; i++)
 			{
-				f[i].string=&features[0].string[offs+skip];
-				f[i].length=window_size-skip;
+				f[i] = new CSGString<ST>();
+
+				f[i]->string=&features[0]->string[offs+skip];
+				f[i]->length=window_size-skip;
 				offs+=step_size;
+
+				delete features[num_vectors-i-1];
 			}
-			single_string=features[0].string;
-			delete[] features;
+			single_string=features[0]->string;
+			delete features;
 			features=f;
 			max_string_length=window_size-skip;
 
@@ -1498,35 +1550,39 @@ template <class ST> class CStringFeatures : public CFeatures
 				len=length_of_single_string;
 			else
 			{
-				single_string=features[0].string;
+				single_string=features[0]->string;
 				len=max_string_length;
 				length_of_single_string=max_string_length;
 			}
 
-			CSGString<ST>* f=new CSGString<ST>[num_vectors];
+			CSGString<ST>** f=new CSGString<ST>*[num_vectors];
 			for (int32_t i=0; i<num_vectors; i++)
 			{
+				f[i] = new CSGString<ST>();
+
 				int32_t p=positions->get_element(i);
 
 				if (p>=0 && p<=len-window_size)
 				{
-					f[i].string=&features[0].string[p+skip];
-					f[i].length=window_size-skip;
+					f[i]->string=&features[0]->string[p+skip];
+					f[i]->length=window_size-skip;
 				}
 				else
 				{
 					num_vectors=1;
 					max_string_length=len;
-					features[0].length=len;
+					features[0]->length=len;
 					single_string=NULL;
-					delete[] f;
+					for (int32_t j=0; j<=i; j++) delete f[j];
+					delete f;
 					SG_ERROR("window (size:%d) starting at position[%d]=%d does not fit in sequence(len:%d)\n",
 							window_size, i, p, len);
 					return -1;
 				}
 			}
 
-			delete[] features;
+			for (int32_t i=0; i<num_vectors; i++) delete features[i];
+			delete features;
 			features=f;
 			max_string_length=window_size-skip;
 
@@ -1572,22 +1628,24 @@ template <class ST> class CStringFeatures : public CFeatures
 				num_vectors=sf->get_num_vectors();
 				ASSERT(num_vectors>0);
 				max_string_length=sf->get_max_vector_length()-start;
-				features=new CSGString<ST>[num_vectors];
+				features=new CSGString<ST>*[num_vectors];
 
 				SG_DEBUG( "%1.0llf symbols in StringFeatures<*> %d symbols in histogram\n", sf->get_num_symbols(),
 						alpha->get_num_symbols_in_histogram());
 
 				for (int32_t i=0; i<num_vectors; i++)
 				{
+					features[i] = new CSGString<ST>();
+
 					int32_t len=-1;
 					bool vfree;
 					CT* c=sf->get_feature_vector(i, len, vfree);
 					ASSERT(!vfree); // won't work when preprocessors are attached
 
-					features[i].string=new ST[len];
-					features[i].length=len;
+					features[i]->string=new ST[len];
+					features[i]->length=len;
 
-					ST* str=features[i].string;
+					ST* str=features[i]->string;
 					for (int32_t j=0; j<len; j++)
 						str[j]=(ST) alpha->remap_to_bin(c[j]);
 				}
@@ -1623,9 +1681,9 @@ template <class ST> class CStringFeatures : public CFeatures
 						CAlphabet::translate_from_single_order(fv, len, start+gap, p_order+gap, max_val, gap);
 
 					/* fix the length of the string -- hacky */
-					features[line].length-=start+gap ;
-					if (features[line].length<0)
-						features[line].length=0 ;
+					features[line]->length-=start+gap ;
+					if (features[line]->length<0)
+						features[line]->length=0 ;
 				}
 
 				compute_symbol_mask_table(max_val);
@@ -1686,12 +1744,12 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			for (int32_t i=0; i<num_vectors; i++)
 			{
-				int32_t len=features[i].length;
+				int32_t len=features[i]->length;
 
 				if (len < p_order)
 					SG_ERROR("Sequence must be longer than order (%d vs. %d)\n", len, p_order);
 
-				ST* str = features[i].string;
+				ST* str = features[i]->string;
 
 				// convert first word
 				for (int32_t j=0; j<p_order; j++)
@@ -1707,7 +1765,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					idx++;
 				}
 
-				features[i].length=len-p_order+1;
+				features[i]->length=len-p_order+1;
 			}
 
 			compute_symbol_mask_table(max_val);
@@ -1788,7 +1846,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			max_string_length=0;
 
 			for (int32_t i=0; i<num_vectors; i++)
-				max_string_length=CMath::max(max_string_length, features[i].length);
+				max_string_length=CMath::max(max_string_length, features[i]->length);
 		}
 
 		/** get a zero terminated copy of the string
@@ -1798,11 +1856,11 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * note that this function is only sensible for character strings
 		 */
-		static ST* get_zero_terminated_string_copy(CSGString<ST> str)
+		static ST* get_zero_terminated_string_copy(CSGString<ST>* str)
 		{
-			int32_t l=str.length;
+			int32_t l=str->length;
 			ST* s=new ST[l+1];
-			memcpy(s, str.string, sizeof(ST)*l);
+			memcpy(s, str->string, sizeof(ST)*l);
 			s[l]='\0';
 			return s;
 		}
@@ -1818,8 +1876,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(features);
 			ASSERT(num<num_vectors);
 
-			features[num].length=len ;
-			features[num].string=string ;
+			features[num]->length=len ;
+			features[num]->string=string ;
 
 			max_string_length=CMath::max(len, max_string_length);
 		}
@@ -1877,12 +1935,14 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(rows == get_num_symbols());
 			cleanup();
 			float64_t* randoms=new float64_t[cols];
-			CSGString<ST>* sf=new CSGString<ST>[num_vec];
+			CSGString<ST>** sf=new CSGString<ST>*[num_vec];
 
 			for (int32_t i=0; i<num_vec; i++)
 			{
-				sf[i].string=new ST[cols];
-				sf[i].length=cols;
+				sf[i] = new CSGString<ST>();
+
+				sf[i]->string=new ST[cols];
+				sf[i]->length=cols;
 
 				CMath::random_vector(randoms, cols, 0.0, 1.0);
 
@@ -1897,7 +1957,7 @@ template <class ST> class CStringFeatures : public CFeatures
 							break;
 						lik+=hist[int64_t(j)*rows+c+1];
 					}
-					sf[i].string[j]=alphabet->remap_to_char(c);
+					sf[i]->string[j]=alphabet->remap_to_char(c);
 				}
 			}
 			delete[] randoms;
@@ -1995,12 +2055,12 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			ASSERT(features && num<num_vectors);
 
-			len=features[num].length;
+			len=features[num]->length;
 			if (len<=0)
 				return NULL;
 
 			ST* target=new ST[len];
-			memcpy(target, features[num].string, len*sizeof(ST));
+			memcpy(target, features[num]->string, len*sizeof(ST));
 			return target;
 		}
 
@@ -2013,7 +2073,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		int32_t num_vectors;
 
 		/// this contains the array of features.
-		CSGString<ST>* features;
+		CSGString<ST>** features;
 
 		/// true when single string / created by sliding window
 		ST* single_string;
@@ -2265,7 +2325,7 @@ template<> inline void CStringFeatures<sg_type>::load(CFile* loader)		\
 {																			\
 	SG_INFO( "loading...\n");												\
 																			\
-	CSGString<sg_type>* strs;												\
+	CSGString<sg_type>** strs;												\
 	int32_t num_str;														\
 	int32_t max_len;														\
 	loader->f_load(strs, num_str, max_len);									\

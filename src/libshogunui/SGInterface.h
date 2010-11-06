@@ -642,19 +642,19 @@ class CSGInterface : public CSGObject
 		virtual void get_word_sparsematrix(TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
 
 		virtual void get_byte_string_list(
-			CSGString<uint8_t>*& strings, int32_t& num_str,
+			CSGString<uint8_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 		virtual void get_char_string_list(
-			CSGString<char>*& strings, int32_t& num_str,
+			CSGString<char>**& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 		virtual void get_int_string_list(
-			CSGString<int32_t>*& strings, int32_t& num_str,
+			CSGString<int32_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 		virtual void get_short_string_list(
-			CSGString<int16_t>*& strings, int32_t& num_str,
+			CSGString<int16_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 		virtual void get_word_string_list(
-			CSGString<uint16_t>*& strings, int32_t& num_str,
+			CSGString<uint16_t>**& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 
 		virtual void get_attribute_struct(
@@ -708,15 +708,15 @@ class CSGInterface : public CSGObject
 
 
 		virtual void set_byte_string_list(
-			const CSGString<uint8_t>* strings, int32_t num_str)=0;
+			CSGString<uint8_t>** strings, int32_t num_str)=0;
 		virtual void set_char_string_list(
-			const CSGString<char>* strings, int32_t num_str)=0;
+			CSGString<char>** strings, int32_t num_str)=0;
 		virtual void set_int_string_list(
-			const CSGString<int32_t>* strings, int32_t num_str)=0;
+			CSGString<int32_t>** strings, int32_t num_str)=0;
 		virtual void set_short_string_list(
-			const CSGString<int16_t>* strings, int32_t num_str)=0;
+			CSGString<int16_t>** strings, int32_t num_str)=0;
 		virtual void set_word_string_list(
-			const CSGString<uint16_t>* strings, int32_t num_str)=0;
+			CSGString<uint16_t>** strings, int32_t num_str)=0;
 
 		virtual void set_attribute_struct(
 			const CDynamicArray<T_ATTRIBUTE>* attrs)=0;
