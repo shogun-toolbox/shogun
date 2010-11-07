@@ -325,30 +325,28 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 	if (src && src->get_feature_class()==C_SIMPLE)
 	{
 		int32_t num_vec=src->get_num_vectors();
-		CSGString<char>** strings=new CSGString<char>*[num_vec];
+		CSGString<char>* strings=new CSGString<char>[num_vec];
 		int32_t max_len=-1;
 
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			strings[i] = new CSGString<char>();
-
 			bool to_free=false;
 			int32_t len=0;
 			char* str=src->get_feature_vector(i, len, to_free);
-			strings[i]->length=len ;
+			strings[i].length=len ;
 			for (int32_t j=0; j<len; j++)
 				if (str[j]==0)
 				{
-					strings[i]->length=j ;
+					strings[i].length=j ;
 					break ;
 				} ;
-			strings[i]->string=new char[strings[i]->length];
+			strings[i].string=new char[strings[i].length];
 
-			for (int32_t j=0; j<strings[i]->length; j++)
-				strings[i]->string[j]=str[j];
+			for (int32_t j=0; j<strings[i].length; j++)
+				strings[i].string[j]=str[j];
 
-			if (strings[i]->length> max_len)
-				max_len=strings[i]->length;
+			if (strings[i].length> max_len)
+				max_len=strings[i].length;
 
 			src->free_feature_vector(str, i, to_free);
 		}

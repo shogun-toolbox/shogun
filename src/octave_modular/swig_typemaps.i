@@ -217,12 +217,12 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(in) (shogun::CSGString<sg_type>** IN_STRINGS, int32_t NUM, int32_t MAXLEN)
+%typemap(in) (shogun::CSGString<sg_type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
 {
     using namespace shogun;
     int32_t max_len=0;
     int32_t num_strings=0;
-    CSGString<sg_type>** strings=NULL;
+    CSGString<sg_type>* strings=NULL;
 
     octave_value arg=$input;
     if (arg.is_cell())
@@ -230,12 +230,10 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
         Cell c = arg.cell_value();
         num_strings=c.nelem();
         ASSERT(num_strings>=1);
-        strings=new CSGString<sg_type>*[num_strings];
+        strings=new CSGString<sg_type>[num_strings];
 
         for (int32_t i=0; i<num_strings; i++)
         {
-			strings[i] = new CSGString<sg_type>();
-
             if (!c.elem(i).oct_type_check() || !c.elem(i).rows()==1)
             {
                 /* SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter);*/
@@ -246,50 +244,48 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
             int32_t len=str.cols();
             if (len>0) 
             { 
-                strings[i]->length=len; /* all must have same length in octave */
-                strings[i]->string=new sg_type[len+1]; /* not zero terminated in octave */
+                strings[i].length=len; /* all must have same length in octave */
+                strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */
 
                 int32_t j; 
                 for (j=0; j<len; j++)
-                    strings[i]->string[j]=str(0,j);
-                strings[i]->string[j]='\0';
+                    strings[i].string[j]=str(0,j);
+                strings[i].string[j]='\0';
                 max_len=CMath::max(max_len, len);
             }
             else
             {
                 /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-                strings[i]->length=0;
-                strings[i]->string=NULL;
+                strings[i].length=0;
+                strings[i].string=NULL;
             }
         }
     }
     else if (arg.oct_type_check())
     {
         oct_type data=arg.oct_converter();
-        num_strings=data.cols();
+        num_strings=data.cols(); 
         int32_t len=data.rows();
-        strings=new CSGString<sg_type>*[num_strings];
+        strings=new CSGString<sg_type>[num_strings];
         ASSERT(strings);
 
         for (int32_t i=0; i<num_strings; i++)
-        {
-			strings[i] = new CSGString<sg_type>();
-
-            if (len>0)
-            {
-                strings[i]->length=len; /* all must have same length in octave */
-                strings[i]->string=new sg_type[len+1]; /* not zero terminated in octave */
+        { 
+            if (len>0) 
+            { 
+                strings[i].length=len; /* all must have same length in octave */
+                strings[i].string=new sg_type[len+1]; /* not zero terminated in octave */
 
                 int32_t j;
                 for (j=0; j<len; j++)
-                    strings[i]->string[j]=data(j,i);
-                strings[i]->string[j]='\0';
+                    strings[i].string[j]=data(j,i);
+                strings[i].string[j]='\0';
             }
             else
-            {
+            { 
                 /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-                strings[i]->length=0;
-                strings[i]->string=NULL;
+                strings[i].length=0;
+                strings[i].string=NULL;
             }
         }
         max_len=len;
@@ -316,11 +312,11 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_ARGOUT(type,typecode)
-%typemap(in, numinputs=0) (shogun::CSGString<type>*** ARGOUT_STRINGS, int32_t* NUM) {
-    $1 = (shogun::CSGString<type>***) malloc(sizeof(shogun::CSGString<type>**));
+%typemap(in, numinputs=0) (shogun::CSGString<type>** ARGOUT_STRINGS, int32_t* NUM) {
+    $1 = (shogun::CSGString<type>**) malloc(sizeof(shogun::CSGString<type>*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
 }
-%typemap(argout) (shogun::CSGString<type>*** ARGOUT_STRINGS, int32_t* NUM) {
+%typemap(argout) (shogun::CSGString<type>** ARGOUT_STRINGS, int32_t* NUM) {
     if (!$1 || !$2)
         SWIG_fail;
     free($1); free($2);

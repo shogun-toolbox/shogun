@@ -100,20 +100,20 @@ void CFile::set_bool_matrix(const bool* matrix, int32_t num_feat, int32_t num_ve
 }
 
 void CFile::get_bool_string_list(
-		CSGString<bool>**& strings, int32_t& num_str,
+		CSGString<bool>*& strings, int32_t& num_str,
 		int32_t& max_string_len)
 {
-	CSGString<int32_t>** strs;
+	CSGString<int32_t>* strs;
 	get_int_string_list(strs, num_str, max_string_len);
 
 	ASSERT(num_str>0 && max_string_len>0);
-	//strings=new CSGString<bool>*[num_str];
+	strings=new CSGString<bool>[num_str];
 
 	SG_NOTIMPLEMENTED;
 	//FIXME
 }
 
-void CFile::set_bool_string_list(CSGString<bool>** strings, int32_t num_str)
+void CFile::set_bool_string_list(const CSGString<bool>* strings, int32_t num_str)
 {
 	SG_NOTIMPLEMENTED;
 	//FIXME

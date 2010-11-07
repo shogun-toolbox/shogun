@@ -142,7 +142,7 @@ class CPlifMatrix: public CSGObject
 		 * @param num_values number of names
 		 * @param maxlen maximal string len of the names
 		 */
-		void set_plif_names(CSGString<char>** names, int32_t num_values, int32_t maxlen=0);
+		void set_plif_names(CSGString<char>* names, int32_t num_values, int32_t maxlen=0);
 
 		/** set plif transform type; for some features the plifs live in log space
 		 *  therefore the input values have to be transformed to log space before 
@@ -152,7 +152,7 @@ class CPlifMatrix: public CSGObject
 		 * @param num_values number of transform strings
 		 * @param maxlen of transform strings
 		 */
-		void set_plif_transform_type(CSGString<char>** transform_type, int32_t num_values, int32_t maxlen=0);
+		void set_plif_transform_type(CSGString<char>* transform_type, int32_t num_values, int32_t maxlen=0);
 
 		/** return plif id for idx
 		 * 
