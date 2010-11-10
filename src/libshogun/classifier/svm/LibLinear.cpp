@@ -31,7 +31,7 @@ CLibLinear::CLibLinear(void)
 	C1=1;
 	C2=1;
 	set_max_iterations();
-	init_linear_term();
+	//init_linear_term();
     init();
 }
 
