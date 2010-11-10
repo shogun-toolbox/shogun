@@ -14,6 +14,7 @@
 
 #include "classifier/svm/DomainAdaptationSVMLinear.h"
 #include "lib/io.h"
+#include "lib/Parameter.h"
 #include <iostream>
 #include <vector>
 
@@ -61,6 +62,12 @@ void CDomainAdaptationSVMLinear::init(CLinearClassifier* pre_svm, float64_t B_pa
 
 	// invoke sanity check
 	is_presvm_sane();
+
+    // serialization code
+	m_parameters->add((CSGSerializable**) &presvm, "presvm", "SVM to regularize against");
+	m_parameters->add(&B, "B",  "Regularization strenth B.");
+	m_parameters->add(&train_factor, "train_factor",  "train_factor");
+
 }
 
 
@@ -120,7 +127,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
             lin_term[i] = (- B*(get_label(i) * parent_svm_out->get_label(i)))*train_factor - 1.0;
         }
 
-    	//set linear term for QP
+    	// set linear term for QP
     	this->set_linear_term(lin_term);
 
     }

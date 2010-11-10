@@ -16,6 +16,7 @@
 
 #ifdef HAVE_LAPACK
 #include "lib/common.h"
+#include "lib/Parameter.h"
 #include "classifier/LinearClassifier.h"
 #include "classifier/svm/SVM_linear.h"
 
@@ -64,6 +65,9 @@ IGNORE_IN_CLASSLIST class CLibLinear : public CLinearClassifier
 		CLibLinear(
 			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
+
+		/** set up parameters */
+        void init(void);
 
 		/** destructor */
 		virtual ~CLibLinear();
