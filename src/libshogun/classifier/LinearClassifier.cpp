@@ -17,10 +17,9 @@ CLinearClassifier::CLinearClassifier()
 : CClassifier(), w_dim(0), w(NULL), bias(0), features(NULL)
 {
 
-	m_parameters->add(&w_dim, "w_dim", "Dimensionality of w.");
-	m_parameters->add_vector(&w, &w_dim, "w", "Parameter vector w.");
-	m_parameters->add(&bias, "bias", "Bias b.");
-	m_parameters->add((CSGSerializable**) &features, "features", "Feature object.");
+m_parameters->add_vector(&w, &w_dim, "w", "Parameter vector w.");
+m_parameters->add(&bias, "bias", "Bias b.");
+m_parameters->add((CSGSerializable**) &features, "features", "Feature object.");
 
 }
 

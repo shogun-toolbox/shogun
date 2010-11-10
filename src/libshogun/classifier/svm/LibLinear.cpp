@@ -61,12 +61,12 @@ CLibLinear::CLibLinear(
 
 void CLibLinear::init(void)
 {
-	m_parameters->add(&C1, "C1",  "Cost constant 1.");
-	m_parameters->add(&C2, "C2",  "Cost constant 2.");
-	m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
-	m_parameters->add(&max_iterations, "max_iterations",  "Max number of iterations.");
-	//m_parameters->add_vector((CSGSerializable***) &m_svms, &m_num_svms, "m_svms");
-	m_parameters->add((machine_int_t*) &liblinear_solver_type, "liblinear_solver_type", "Type of LibLinear solver.");
+    m_parameters->add(&C1, "C1",  "Cost constant 1.");
+    m_parameters->add(&C2, "C2",  "Cost constant 2.");
+    m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
+    m_parameters->add(&max_iterations, "max_iterations",  "Max number of iterations.");
+    //m_parameters->add_vector((CSGSerializable***) &m_svms, &m_num_svms, "m_svms");
+    m_parameters->add((machine_int_t*) &liblinear_solver_type, "liblinear_solver_type", "Type of LibLinear solver.");
 }
 
 CLibLinear::~CLibLinear()
