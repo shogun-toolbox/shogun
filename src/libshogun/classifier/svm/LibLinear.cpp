@@ -14,6 +14,7 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Time.h"
+#include "lib/Parameter.h"
 #include "classifier/svm/LibLinear.h"
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
@@ -43,7 +44,7 @@ CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
 	C1=1;
 	C2=1;
 	set_max_iterations();
-	init_linear_term();
+	//init_linear_term();
     init();
 }
 
