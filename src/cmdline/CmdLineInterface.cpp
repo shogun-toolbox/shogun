@@ -370,14 +370,14 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32
 }
 
 
-void CCmdLineInterface::get_byte_string_list(CSGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_byte_string_list(TString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_char_string_list(CSGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_char_string_list(TString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -387,21 +387,21 @@ void CCmdLineInterface::get_char_string_list(CSGString<char>*& strings, int32_t&
 	f.get_char_string_list(strings, num_str, max_string_len);
 }
 
-void CCmdLineInterface::get_int_string_list(CSGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_int_string_list(TString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_short_string_list(CSGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_short_string_list(TString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_word_string_list(CSGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_word_string_list(TString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -491,7 +491,7 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, 
 }
 
 #define SET_STRING_LIST(fname, sg_type)	\
-void CCmdLineInterface::fname(const CSGString<sg_type>* strings, int32_t num_str)		\
+void CCmdLineInterface::fname(const TString<sg_type>* strings, int32_t num_str)		\
 {																						\
 	const char* filename=set_arg_increment();											\
 	if (!filename)																		\

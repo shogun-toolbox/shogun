@@ -1334,7 +1334,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				CSGString<uint8_t>* strs=NULL;
+				TString<uint8_t>* strs=NULL;
 				source->get_byte_string_list(strs, num_str, max_str_len);
 				target->set_byte_string_list(strs, num_str);
 				delete[] strs;
@@ -1344,7 +1344,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				CSGString<char>* strs;
+				TString<char>* strs;
 				source->get_char_string_list(strs, num_str,max_str_len);
 				target->set_char_string_list(strs, num_str);
 				delete[] strs;
@@ -1354,7 +1354,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				CSGString<int32_t>* strs;
+				TString<int32_t>* strs;
 				source->get_int_string_list(strs, num_str,max_str_len);
 				target->set_int_string_list(strs, num_str);
 				delete[] strs;
@@ -1364,7 +1364,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				CSGString<int16_t>* strs=NULL;
+				TString<int16_t>* strs=NULL;
 				source->get_short_string_list(strs, num_str, max_str_len);
 				target->set_short_string_list(strs, num_str);
 				delete[] strs;
@@ -1374,7 +1374,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				CSGString<uint16_t>* strs=NULL;
+				TString<uint16_t>* strs=NULL;
 				source->get_word_string_list(strs, num_str, max_str_len);
 				target->set_word_string_list(strs, num_str);
 				delete[] strs;
@@ -1706,21 +1706,21 @@ bool CSGInterface::cmd_get_features()
 			{
 				case F_BYTE:
 				{
-					CSGString<uint8_t>* fmatrix=((CStringFeatures<uint8_t>*) feat)->get_features(num_str, max_str_len);
+					TString<uint8_t>* fmatrix=((CStringFeatures<uint8_t>*) feat)->get_features(num_str, max_str_len);
 					set_byte_string_list(fmatrix, num_str);
 					break;
 				}
 
 				case F_CHAR:
 				{
-					CSGString<char>* fmatrix=((CStringFeatures<char>*) feat)->get_features(num_str, max_str_len);
+					TString<char>* fmatrix=((CStringFeatures<char>*) feat)->get_features(num_str, max_str_len);
 					set_char_string_list(fmatrix, num_str);
 					break;
 				}
 
 				case F_WORD:
 				{
-					CSGString<uint16_t>* fmatrix=((CStringFeatures<uint16_t>*) feat)->get_features(num_str, max_str_len);
+					TString<uint16_t>* fmatrix=((CStringFeatures<uint16_t>*) feat)->get_features(num_str, max_str_len);
 					set_word_string_list(fmatrix, num_str);
 					break;
 				}
@@ -1884,7 +1884,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			int32_t num_str=0;
 			int32_t max_str_len=0;
-			CSGString<char>* fmatrix=NULL;
+			TString<char>* fmatrix=NULL;
 			get_char_string_list(fmatrix, num_str, max_str_len);
 
 			int32_t alphabet_len=0;
@@ -1957,7 +1957,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			int32_t num_str=0;
 			int32_t max_str_len=0;
-			CSGString<uint8_t>* fmatrix=NULL;
+			TString<uint8_t>* fmatrix=NULL;
 			get_byte_string_list(fmatrix, num_str, max_str_len);
 
 			int32_t alphabet_len=0;
@@ -6122,7 +6122,7 @@ bool CSGInterface::cmd_set_plif_struct()
 	// ARG 3
 	int32_t Nname=0;
 	int32_t Mname=0;
-	CSGString<char>* names;
+	TString<char>* names;
 	get_char_string_list(names, Nname,Mname);
 
 	// ARG 4
@@ -6140,7 +6140,7 @@ bool CSGInterface::cmd_set_plif_struct()
 	// ARG 6
 	int32_t Ntransform=0;
 	int32_t Mtransform=0;
-	CSGString<char>* all_transform;
+	TString<char>* all_transform;
 	get_char_string_list(all_transform, Ntransform, Mtransform);
 
 	// ARG 7
@@ -6227,8 +6227,8 @@ bool CSGInterface::cmd_get_plif_struct()
 	int32_t* ids = new int32_t[N];
 	float64_t* max_values = new float64_t[N];
 	float64_t* min_values = new float64_t[N];
-	CSGString<char>* names = new CSGString<char>[N];
-	CSGString<char>* all_transform = new CSGString<char>[N];
+	TString<char>* names = new TString<char>[N];
+	TString<char>* all_transform = new TString<char>[N];
 	float64_t* all_limits = new float64_t[N*M];
 	float64_t* all_penalties = new float64_t[N*M];
 	bool* all_use_cache = new bool[N];

@@ -19,6 +19,10 @@
 #define CHAR_ITEM_END              '}'
 #define CHAR_SGSERIAL_BEGIN        '['
 #define CHAR_SGSERIAL_END          ']'
+#define CHAR_STRING_BEGIN          CHAR_SGSERIAL_BEGIN
+#define CHAR_STRING_END            CHAR_SGSERIAL_END
+#define CHAR_SPARSE_BEGIN          CHAR_CONT_BEGIN
+#define CHAR_SPARSE_END            CHAR_CONT_END
 
 #define CHAR_TYPE_END              '\n'
 
@@ -312,6 +316,164 @@ CSerializableAsciiFile::read_cont_end_wrapped(
 }
 
 bool
+CSerializableAsciiFile::write_string_begin_wrapped(
+	const TSGDataType* type, index_t length)
+{
+	if (fprintf(m_fstream, "%"PRIi32" %c", length,
+				CHAR_STRING_BEGIN) <= 0) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::read_string_begin_wrapped(
+	const TSGDataType* type, index_t* length)
+{
+	if (fscanf(m_fstream, "%"PRIi32, length) != 1) return false;
+	if (fgetc(m_fstream) != ' ') return false;
+	if (fgetc(m_fstream) != CHAR_STRING_BEGIN) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::write_string_end_wrapped(
+	const TSGDataType* type, index_t length)
+{
+	if (fprintf(m_fstream, "%c", CHAR_STRING_END) <= 0) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::read_string_end_wrapped(
+	const TSGDataType* type, index_t length)
+{
+	if (fgetc(m_fstream) != CHAR_STRING_END) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::write_stringentry_begin_wrapped(
+	const TSGDataType* type, index_t y)
+{
+	if (fprintf(m_fstream, "%c", CHAR_ITEM_BEGIN) <= 0) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::read_stringentry_begin_wrapped(
+	const TSGDataType* type, index_t y)
+{
+	if (fgetc(m_fstream) != CHAR_ITEM_BEGIN) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::write_stringentry_end_wrapped(
+	const TSGDataType* type, index_t y)
+{
+	if (fprintf(m_fstream, "%c", CHAR_ITEM_END) <= 0) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::read_stringentry_end_wrapped(
+	const TSGDataType* type, index_t y)
+{
+	if (fgetc(m_fstream) != CHAR_ITEM_END) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::write_sparse_begin_wrapped(
+	const TSGDataType* type, index_t vec_index,
+	index_t length)
+{
+	if (fprintf(m_fstream, "%"PRIi32" %"PRIi32" %c", vec_index, length,
+				CHAR_SPARSE_BEGIN) <= 0) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::read_sparse_begin_wrapped(
+	const TSGDataType* type, index_t* vec_index,
+	index_t* length)
+{
+	if (fscanf(m_fstream, "%"PRIi32" %"PRIi32, vec_index, length)
+		!= 2) return false;
+	if (fgetc(m_fstream) != ' ') return false;
+	if (fgetc(m_fstream) != CHAR_SPARSE_BEGIN) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::write_sparse_end_wrapped(
+	const TSGDataType* type, index_t vec_index,
+	index_t length)
+{
+	if (fprintf(m_fstream, "%c", CHAR_SPARSE_END) <= 0) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::read_sparse_end_wrapped(
+	const TSGDataType* type, index_t* vec_index,
+	index_t length)
+{
+	if (fgetc(m_fstream) != CHAR_SPARSE_END) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::write_sparseentry_begin_wrapped(
+	const TSGDataType* type, index_t feat_index, index_t y)
+{
+	if (fprintf(m_fstream, " %"PRIi32" %c", feat_index, CHAR_ITEM_BEGIN)
+		<= 0) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::read_sparseentry_begin_wrapped(
+	const TSGDataType* type, index_t* feat_index, index_t y)
+{
+	if (fscanf(m_fstream, "%"PRIi32, feat_index) != 1) return false;
+	if (fgetc(m_fstream) != ' ') return false;
+	if (fgetc(m_fstream) != CHAR_ITEM_BEGIN) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::write_sparseentry_end_wrapped(
+	const TSGDataType* type, index_t feat_index, index_t y)
+{
+	if (fprintf(m_fstream, "%c", CHAR_ITEM_END) <= 0) return false;
+
+	return true;
+}
+
+bool
+CSerializableAsciiFile::read_sparseentry_end_wrapped(
+	const TSGDataType* type, index_t* feat_index, index_t y)
+{
+	if (fgetc(m_fstream) != CHAR_ITEM_END) return false;
+
+	return true;
+}
+
+bool
 CSerializableAsciiFile::write_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
@@ -350,7 +512,7 @@ CSerializableAsciiFile::read_item_end_wrapped(
 bool
 CSerializableAsciiFile::write_sgserializable_begin_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
-	EPrimitveType generic)
+	EPrimitiveType generic)
 {
 	if (*sgserializable_name == '\0') {
 		if (fprintf(m_fstream, "%s %c", STR_SGSERIAL_NULL,
@@ -377,7 +539,7 @@ CSerializableAsciiFile::write_sgserializable_begin_wrapped(
 bool
 CSerializableAsciiFile::read_sgserializable_begin_wrapped(
 	const TSGDataType* type, char* sgserializable_name,
-	EPrimitveType* generic)
+	EPrimitiveType* generic)
 {
 	if (fscanf(m_fstream, "%"STRING_LEN_STR"s ", sgserializable_name)
 		!= 1) return false;
@@ -408,7 +570,7 @@ CSerializableAsciiFile::read_sgserializable_begin_wrapped(
 bool
 CSerializableAsciiFile::write_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
-	EPrimitveType generic)
+	EPrimitiveType generic)
 {
 	if (fprintf(m_fstream, "%c", CHAR_SGSERIAL_END) <= 0)
 		return false;
@@ -419,7 +581,7 @@ CSerializableAsciiFile::write_sgserializable_end_wrapped(
 bool
 CSerializableAsciiFile::read_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
-	EPrimitveType generic)
+	EPrimitiveType generic)
 {
 	if (fgetc(m_fstream) != CHAR_SGSERIAL_END) return false;
 

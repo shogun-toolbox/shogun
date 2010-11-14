@@ -24,9 +24,9 @@ struct TParameter
 						const char* name, const char* description);
 	~TParameter(void);
 
-	void print(IO* io, const char* prefix);
-	bool save(IO* io, CSerializableFile* file, const char* prefix="");
-	bool load(IO* io, CSerializableFile* file, const char* prefix="");
+	void print(const char* prefix);
+	bool save(CSerializableFile* file, const char* prefix="");
+	bool load(CSerializableFile* file, const char* prefix="");
 
 	TSGDataType m_datatype;
 	void* m_parameter;
@@ -35,15 +35,19 @@ struct TParameter
 
 private:
 	char* new_prefix(const char* s1, const char* s2);
+	void delete_cont(void);
 	void new_cont(index_t new_len_y, index_t new_len_x);
-	bool new_sgserial(IO* io, CSGSerializable** param,
-					  EPrimitveType generic,
+	bool new_sgserial(CSGSerializable** param, EPrimitiveType generic,
 					  const char* sgserializable_name,
 					  const char* prefix);
-	bool save_scalar(IO* io, CSerializableFile* file,
-					 const void* param, const char* prefix);
-	bool load_scalar(IO* io, CSerializableFile* file,
-					 void* param, const char* prefix);
+	bool save_ptype(CSerializableFile* file, const void* param,
+					const char* prefix);
+	bool load_ptype(CSerializableFile* file, void* param,
+					const char* prefix);
+	bool save_stype(CSerializableFile* file, const void* param,
+					const char* prefix);
+	bool load_stype(CSerializableFile* file, void* param,
+					const char* prefix);
 };
 
 /* Must not be an CSGObject to prevent a recursive call of
@@ -100,8 +104,63 @@ public:
 			 const char* description="");
 	void add(floatmax_t* param, const char* name,
 			 const char* description="");
+
 	void add(CSGSerializable** param,
 			 const char* name, const char* description="");
+
+	void add(TString<bool>* param, const char* name,
+			 const char* description="");
+	void add(TString<char>* param, const char* name,
+			 const char* description="");
+	void add(TString<int8_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<uint8_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<int16_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<uint16_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<int32_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<uint32_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<int64_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<uint64_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<float32_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<float64_t>* param, const char* name,
+			 const char* description="");
+	void add(TString<floatmax_t>* param, const char* name,
+			 const char* description="");
+
+	void add(TSparse<bool>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<char>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<int8_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<uint8_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<int16_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<uint16_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<int32_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<uint32_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<int64_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<uint64_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<float32_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<float64_t>* param, const char* name,
+			 const char* description="");
+	void add(TSparse<floatmax_t>* param, const char* name,
+			 const char* description="");
 
 	/* ************************************************************ */
 	/* Vector wrappers  */
@@ -132,7 +191,62 @@ public:
 					const char* name, const char* description="");
 	void add_vector(floatmax_t** param, index_t* length,
 					const char* name, const char* description="");
+
 	void add_vector(CSGSerializable*** param, index_t* length,
+					const char* name, const char* description="");
+
+	void add_vector(TString<bool>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<char>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<int8_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<uint8_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<int16_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<uint16_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<int32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<uint32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<int64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<uint64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<float32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<float64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TString<floatmax_t>** param, index_t* length,
+					const char* name, const char* description="");
+
+	void add_vector(TSparse<bool>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<char>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<int8_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<uint8_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<int16_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<uint16_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<int32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<uint32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<int64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<uint64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<float32_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<float64_t>** param, index_t* length,
+					const char* name, const char* description="");
+	void add_vector(TSparse<floatmax_t>** param, index_t* length,
 					const char* name, const char* description="");
 
 	/* ************************************************************ */
@@ -177,7 +291,88 @@ public:
 	void add_matrix(floatmax_t** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
+
 	void add_matrix(CSGSerializable*** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+
+	void add_matrix(TString<bool>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<char>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<int8_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<uint8_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<int16_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<uint16_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<int32_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<uint32_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<int64_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<uint64_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<float32_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<float64_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TString<floatmax_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+
+	void add_matrix(TSparse<bool>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<char>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<int8_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<uint8_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<int16_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<uint16_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<int32_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<uint32_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<int64_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<uint64_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<float32_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<float64_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	void add_matrix(TSparse<floatmax_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 };

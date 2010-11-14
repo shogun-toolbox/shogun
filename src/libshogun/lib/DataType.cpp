@@ -15,23 +15,40 @@
 
 using namespace shogun;
 
-TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype)
+TSGDataType::TSGDataType(EContainerType ctype, EStructType stype,
+						 EPrimitiveType ptype)
 {
-	m_ctype = ctype; m_ptype = ptype; m_length_y = m_length_x = NULL;
+	m_ctype = ctype, m_stype = stype, m_ptype = ptype;
+	m_length_y = m_length_x = NULL;
 }
 
-TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype,
-						 index_t* length)
+TSGDataType::TSGDataType(EContainerType ctype, EStructType stype,
+						 EPrimitiveType ptype, index_t* length)
 {
-	m_ctype = ctype; m_ptype = ptype; m_length_y = length;
-	m_length_x = NULL;
+	m_ctype = ctype, m_stype = stype, m_ptype = ptype;
+	m_length_y = length, m_length_x = NULL;
 }
 
-TSGDataType::TSGDataType(EContainerType ctype, EPrimitveType ptype,
-						 index_t* length_y, index_t* length_x)
+TSGDataType::TSGDataType(EContainerType ctype, EStructType stype,
+						 EPrimitiveType ptype, index_t* length_y,
+						 index_t* length_x)
 {
-	m_ctype = ctype; m_ptype = ptype; m_length_y = length_y;
-	m_length_x = length_x;
+	m_ctype = ctype, m_stype = stype, m_ptype = ptype;
+	m_length_y = length_y, m_length_x = length_x;
+}
+
+bool
+TSGDataType::operator==(const TSGDataType& a)
+{
+	bool result = m_ctype == a.m_ctype && m_stype == a.m_stype
+		&& m_ptype == a.m_ptype;
+
+	result &= m_length_y != NULL && a.m_length_y != NULL
+		? *m_length_y == *a.m_length_y: m_length_y == a.m_length_y;
+	result &= m_length_x != NULL && a.m_length_x != NULL
+		? *m_length_x == *a.m_length_x: m_length_x == a.m_length_x;
+
+	return result;
 }
 
 void
@@ -46,13 +63,59 @@ TSGDataType::to_string(char* dest, size_t n) const
 	}
 
 	size_t np = strlen(p);
-	ptype_to_string(p + np, m_ptype, n - np - 2);
+	stype_to_string(p + np, m_stype, m_ptype, n - np - 2);
 
 	switch (m_ctype) {
 	case CT_SCALAR: break;
 	case CT_VECTOR: case CT_MATRIX:
 		strcat(p, ">"); break;
 	}
+}
+
+size_t
+TSGDataType::sizeof_stype(void) const
+{
+	switch (m_stype) {
+	case ST_NONE: return sizeof_ptype();
+	case ST_STRING:
+		switch (m_ptype) {
+		case PT_BOOL: return sizeof (TString<bool>);
+		case PT_CHAR: return sizeof (TString<char>);
+		case PT_INT8: return sizeof (TString<int8_t>);
+		case PT_UINT8: return sizeof (TString<uint8_t>);
+		case PT_INT16: return sizeof (TString<int16_t>);
+		case PT_UINT16: return sizeof (TString<uint16_t>);
+		case PT_INT32: return sizeof (TString<int32_t>);
+		case PT_UINT32: return sizeof (TString<uint32_t>);
+		case PT_INT64: return sizeof (TString<int64_t>);
+		case PT_UINT64: return sizeof (TString<uint64_t>);
+		case PT_FLOAT32: return sizeof (TString<float32_t>);
+		case PT_FLOAT64: return sizeof (TString<float64_t>);
+		case PT_FLOATMAX: return sizeof (TString<floatmax_t>);
+		case PT_SGSERIALIZABLE_PTR: return -1;
+		}
+		break;
+	case ST_SPARSE:
+		switch (m_ptype) {
+		case PT_BOOL: return sizeof (TSparse<bool>);
+		case PT_CHAR: return sizeof (TSparse<char>);
+		case PT_INT8: return sizeof (TSparse<int8_t>);
+		case PT_UINT8: return sizeof (TSparse<uint8_t>);
+		case PT_INT16: return sizeof (TSparse<int16_t>);
+		case PT_UINT16: return sizeof (TSparse<uint16_t>);
+		case PT_INT32: return sizeof (TSparse<int32_t>);
+		case PT_UINT32: return sizeof (TSparse<uint32_t>);
+		case PT_INT64: return sizeof (TSparse<int64_t>);
+		case PT_UINT64: return sizeof (TSparse<uint64_t>);
+		case PT_FLOAT32: return sizeof (TSparse<float32_t>);
+		case PT_FLOAT64: return sizeof (TSparse<float64_t>);
+		case PT_FLOATMAX: return sizeof (TSparse<floatmax_t>);
+		case PT_SGSERIALIZABLE_PTR: return -1;
+		}
+		break;
+	}
+
+	return -1;
 }
 
 size_t
@@ -78,8 +141,54 @@ TSGDataType::sizeof_ptype(void) const
 	return -1;
 }
 
+size_t
+TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
+{
+	switch (ptype) {
+	case PT_BOOL: return sizeof (TSparseEntry<bool>);
+	case PT_CHAR: return sizeof (TSparseEntry<char>);
+	case PT_INT8: return sizeof (TSparseEntry<int8_t>);
+	case PT_UINT8: return sizeof (TSparseEntry<uint8_t>);
+	case PT_INT16: return sizeof (TSparseEntry<int16_t>);
+	case PT_UINT16: return sizeof (TSparseEntry<uint16_t>);
+	case PT_INT32: return sizeof (TSparseEntry<int32_t>);
+	case PT_UINT32: return sizeof (TSparseEntry<uint32_t>);
+	case PT_INT64: return sizeof (TSparseEntry<int64_t>);
+	case PT_UINT64: return sizeof (TSparseEntry<uint64_t>);
+	case PT_FLOAT32: return sizeof (TSparseEntry<float32_t>);
+	case PT_FLOAT64: return sizeof (TSparseEntry<float64_t>);
+	case PT_FLOATMAX: return sizeof (TSparseEntry<floatmax_t>);
+	case PT_SGSERIALIZABLE_PTR: return -1;
+	}
+
+	return -1;
+}
+
 void
-TSGDataType::ptype_to_string(char* dest, EPrimitveType ptype, size_t n)
+TSGDataType::stype_to_string(char* dest, EStructType stype,
+							 EPrimitiveType ptype, size_t n)
+{
+	char* p = dest;
+
+	switch (stype) {
+	case ST_NONE: strncpy(p, "", n); break;
+	case ST_STRING: strncpy(p, "String<", n); break;
+	case ST_SPARSE: strncpy(p, "Sparse<", n); break;
+	}
+
+	size_t np = strlen(p);
+	ptype_to_string(p + np, ptype, n - np - 2);
+
+	switch (stype) {
+	case ST_NONE: break;
+	case ST_STRING: case ST_SPARSE:
+		strcat(p, ">"); break;
+	}
+}
+
+void
+TSGDataType::ptype_to_string(char* dest, EPrimitiveType ptype,
+							 size_t n)
 {
 	char* p = dest;
 
@@ -102,7 +211,7 @@ TSGDataType::ptype_to_string(char* dest, EPrimitveType ptype, size_t n)
 }
 
 bool
-TSGDataType::string_to_ptype(EPrimitveType* result, const char* str)
+TSGDataType::string_to_ptype(EPrimitiveType* result, const char* str)
 {
 	if (strcmp(str, "bool") == 0) {
 		*result = PT_BOOL; return true; }

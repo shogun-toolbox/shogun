@@ -371,7 +371,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_
 
 #define GET_STRINGLIST(function_name, oct_type_check1, oct_type_check2, \
 		oct_type, oct_converter, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void COctaveInterface::function_name(TString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																					\
 	max_string_len=0;																\
 	octave_value arg=get_arg_increment();											\
@@ -380,7 +380,7 @@ void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 		Cell c = arg.cell_value();													\
 		num_str=c.nelem();															\
 		ASSERT(num_str>=1);															\
-		strings=new CSGString<sg_type>[num_str];										\
+		strings=new TString<sg_type>[num_str];										\
 																					\
 		for (int32_t i=0; i<num_str; i++)												\
 		{																			\
@@ -414,7 +414,7 @@ void COctaveInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 		oct_type data=arg.oct_converter();											\
 		num_str=data.cols(); 														\
 		int32_t len=data.rows(); 														\
-		strings=new CSGString<sg_type>[num_str]; 									\
+		strings=new TString<sg_type>[num_str]; 									\
 																					\
 		for (int32_t i=0; i<num_str; i++) 												\
 		{ 																			\
@@ -540,7 +540,7 @@ void COctaveInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, i
 }
 
 #define SET_STRINGLIST(function_name, oct_type, sg_type, if_type, error_string)	\
-void COctaveInterface::function_name(const CSGString<sg_type>* strings, int32_t num_str)	\
+void COctaveInterface::function_name(const TString<sg_type>* strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n");									\

@@ -19,6 +19,8 @@ class Parameter;
 class CSerializableFile;
 class IO;
 
+extern IO* sg_io;
+
 /* define reference counter macros
  */
 #ifdef USE_REFERENCE_COUNTING
@@ -31,7 +33,7 @@ class IO;
 
 class CSGSerializable
 {
-	EPrimitveType m_generic;
+	EPrimitiveType m_generic;
 	bool load_pre_called, load_post_called;
 
 #ifdef USE_REFERENCE_COUNTING
@@ -83,7 +85,7 @@ public:
 	 *
 	 *  @return TRUE if a class template.
 	 */
-	virtual bool is_generic(EPrimitveType* generic) const;
+	virtual bool is_generic(EPrimitiveType* generic) const;
 
 	/** set generic type to T
 	 */

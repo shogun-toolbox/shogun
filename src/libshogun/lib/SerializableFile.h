@@ -33,62 +33,106 @@ protected:
 	/* ************************************************************ */
 	/* Begin of abstract methods  */
 
-	virtual bool write_scalar_wrapped(const TSGDataType* type,
-									  const void* param) = 0;
-	virtual bool read_scalar_wrapped(const TSGDataType* type,
-									 void* param) = 0;
+	virtual bool write_scalar_wrapped(
+		const TSGDataType* type, const void* param) = 0;
+	virtual bool read_scalar_wrapped(
+		const TSGDataType* type, void* param) = 0;
 
-	virtual bool write_cont_begin_wrapped(const TSGDataType* type,
-										  index_t len_real_y,
-										  index_t len_real_x) = 0;
-	virtual bool read_cont_begin_wrapped(const TSGDataType* type,
-										 index_t* len_read_y,
-										 index_t* len_read_x) = 0;
+	virtual bool write_cont_begin_wrapped(
+		const TSGDataType* type, index_t len_real_y,
+		index_t len_real_x) = 0;
+	virtual bool read_cont_begin_wrapped(
+		const TSGDataType* type, index_t* len_read_y,
+		index_t* len_read_x) = 0;
 
-	virtual bool write_cont_end_wrapped(const TSGDataType* type,
-										index_t len_real_y,
-										index_t len_real_x) = 0;
-	virtual bool read_cont_end_wrapped(const TSGDataType* type,
-									   index_t len_read_y,
-									   index_t len_read_x) = 0;
+	virtual bool write_cont_end_wrapped(
+		const TSGDataType* type, index_t len_real_y,
+		index_t len_real_x) = 0;
+	virtual bool read_cont_end_wrapped(
+		const TSGDataType* type, index_t len_read_y,
+		index_t len_read_x) = 0;
 
-	virtual bool write_item_begin_wrapped(const TSGDataType* type,
-										  index_t y, index_t x) = 0;
-	virtual bool read_item_begin_wrapped(const TSGDataType* type,
-										 index_t y, index_t x) = 0;
+	virtual bool write_string_begin_wrapped(
+		const TSGDataType* type, index_t length) = 0;
+	virtual bool read_string_begin_wrapped(
+		const TSGDataType* type, index_t* length) = 0;
 
-	virtual bool write_item_end_wrapped(const TSGDataType* type,
-										index_t y, index_t x) = 0;
-	virtual bool read_item_end_wrapped(const TSGDataType* type,
-									   index_t y, index_t x) = 0;
+	virtual bool write_string_end_wrapped(
+		const TSGDataType* type, index_t length) = 0;
+	virtual bool read_string_end_wrapped(
+		const TSGDataType* type, index_t length) = 0;
+
+	virtual bool write_stringentry_begin_wrapped(
+		const TSGDataType* type, index_t y) = 0;
+	virtual bool read_stringentry_begin_wrapped(
+		const TSGDataType* type, index_t y) = 0;
+
+	virtual bool write_stringentry_end_wrapped(
+		const TSGDataType* type, index_t y) = 0;
+	virtual bool read_stringentry_end_wrapped(
+		const TSGDataType* type, index_t y) = 0;
+
+	virtual bool write_sparse_begin_wrapped(
+		const TSGDataType* type, index_t vec_index,
+		index_t length) = 0;
+	virtual bool read_sparse_begin_wrapped(
+		const TSGDataType* type, index_t* vec_index,
+		index_t* length) = 0;
+
+	virtual bool write_sparse_end_wrapped(
+		const TSGDataType* type, index_t vec_index,
+		index_t length) = 0;
+	virtual bool read_sparse_end_wrapped(
+		const TSGDataType* type, index_t* vec_index,
+		index_t length) = 0;
+
+	virtual bool write_sparseentry_begin_wrapped(
+		const TSGDataType* type, index_t feat_index, index_t y) = 0;
+	virtual bool read_sparseentry_begin_wrapped(
+		const TSGDataType* type, index_t* feat_index, index_t y) = 0;
+
+	virtual bool write_sparseentry_end_wrapped(
+		const TSGDataType* type, index_t feat_index, index_t y) = 0;
+	virtual bool read_sparseentry_end_wrapped(
+		const TSGDataType* type, index_t* feat_index, index_t y) = 0;
+
+	virtual bool write_item_begin_wrapped(
+		const TSGDataType* type, index_t y, index_t x) = 0;
+	virtual bool read_item_begin_wrapped(
+		const TSGDataType* type, index_t y, index_t x) = 0;
+
+	virtual bool write_item_end_wrapped(
+		const TSGDataType* type, index_t y, index_t x) = 0;
+	virtual bool read_item_end_wrapped(
+		const TSGDataType* type, index_t y, index_t x) = 0;
 
 	virtual bool write_sgserializable_begin_wrapped(
 		const TSGDataType* type, const char* sgserializable_name,
-		EPrimitveType generic) = 0;
+		EPrimitiveType generic) = 0;
 	virtual bool read_sgserializable_begin_wrapped(
 		const TSGDataType* type, char* sgserializable_name,
-		EPrimitveType* generic) = 0;
+		EPrimitiveType* generic) = 0;
 
 	virtual bool write_sgserializable_end_wrapped(
 		const TSGDataType* type, const char* sgserializable_name,
-		EPrimitveType generic) = 0;
+		EPrimitiveType generic) = 0;
 	virtual bool read_sgserializable_end_wrapped(
 		const TSGDataType* type, const char* sgserializable_name,
-		EPrimitveType generic) = 0;
+		EPrimitiveType generic) = 0;
 
-	virtual bool write_type_begin_wrapped(const TSGDataType* type,
-										  const char* name,
-										  const char* prefix) = 0;
-	virtual bool read_type_begin_wrapped(const TSGDataType* type,
-										 const char* name,
-										 const char* prefix) = 0;
+	virtual bool write_type_begin_wrapped(
+		const TSGDataType* type, const char* name,
+		const char* prefix) = 0;
+	virtual bool read_type_begin_wrapped(
+		const TSGDataType* type, const char* name,
+		const char* prefix) = 0;
 
-	virtual bool write_type_end_wrapped(const TSGDataType* type,
-										const char* name,
-										const char* prefix) = 0;
-	virtual bool read_type_end_wrapped(const TSGDataType* type,
-									   const char* name,
-									   const char* prefix) = 0;
+	virtual bool write_type_end_wrapped(
+		const TSGDataType* type, const char* name,
+		const char* prefix) = 0;
+	virtual bool read_type_end_wrapped(
+		const TSGDataType* type, const char* name,
+		const char* prefix) = 0;
 
 	/* End of abstract methods  */
 	/* ************************************************************ */
@@ -144,6 +188,62 @@ public:
 		const TSGDataType* type, const char* name, const char* prefix,
 		index_t len_read_y, index_t len_read_x);
 
+	virtual bool write_string_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t length);
+	virtual bool read_string_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t* length);
+
+	virtual bool write_string_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t length);
+	virtual bool read_string_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t length);
+
+	virtual bool write_stringentry_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t y);
+	virtual bool read_stringentry_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t y);
+
+	virtual bool write_stringentry_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t y);
+	virtual bool read_stringentry_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t y);
+
+	virtual bool write_sparse_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t vec_index, index_t length);
+	virtual bool read_sparse_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t* vec_index, index_t* length);
+
+	virtual bool write_sparse_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t vec_index, index_t length);
+	virtual bool read_sparse_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t* vec_index, index_t length);
+
+	virtual bool write_sparseentry_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t feat_index, index_t y);
+	virtual bool read_sparseentry_begin(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t* feat_index, index_t y);
+
+	virtual bool write_sparseentry_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t feat_index, index_t y);
+	virtual bool read_sparseentry_end(
+		const TSGDataType* type, const char* name, const char* prefix,
+		index_t* feat_index, index_t y);
+
 	virtual bool write_item_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
 		index_t y, index_t x);
@@ -160,17 +260,17 @@ public:
 
 	virtual bool write_sgserializable_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
-		const char* sgserializable_name, EPrimitveType generic);
+		const char* sgserializable_name, EPrimitiveType generic);
 	virtual bool read_sgserializable_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
-		char* sgserializable_name, EPrimitveType* generic);
+		char* sgserializable_name, EPrimitiveType* generic);
 
 	virtual bool write_sgserializable_end(
 		const TSGDataType* type, const char* name, const char* prefix,
-		const char* sgserializable_name, EPrimitveType generic);
+		const char* sgserializable_name, EPrimitiveType generic);
 	virtual bool read_sgserializable_end(
 		const TSGDataType* type, const char* name, const char* prefix,
-		const char* sgserializable_name, EPrimitveType generic);
+		const char* sgserializable_name, EPrimitiveType generic);
 
 	virtual bool write_type_begin(
 		const TSGDataType* type, const char* name, const char* prefix);

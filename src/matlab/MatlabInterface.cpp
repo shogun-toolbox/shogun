@@ -341,7 +341,7 @@ GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Wor
 
 
 #define GET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
-void CMatlabInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) 	\
+void CMatlabInterface::function_name(TString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) 	\
 { 																						\
 	const mxArray* mx_str=get_arg_increment();											\
 	if (!mx_str)																		\
@@ -352,7 +352,7 @@ void CMatlabInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 		num_str=mxGetNumberOfElements(mx_str);											\
 		ASSERT(num_str>=1);																\
 																						\
-		strings=new CSGString<sg_type>[num_str];											\
+		strings=new TString<sg_type>[num_str];											\
 		for (int32_t i=0; i<num_str; i++)													\
 		{																				\
 			mxArray* str=mxGetCell(mx_str, i);											\
@@ -386,7 +386,7 @@ void CMatlabInterface::function_name(CSGString<sg_type>*& strings, int32_t& num_
 		if_type* data=(if_type*) mxGetData(mx_str);										\
 		num_str=mxGetN(mx_str); 														\
 		int32_t len=mxGetM(mx_str); 														\
-		strings=new CSGString<sg_type>[num_str]; 										\
+		strings=new TString<sg_type>[num_str]; 										\
 																						\
 		for (int32_t i=0; i<num_str; i++) 													\
 		{ 																				\
@@ -564,7 +564,7 @@ SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short
 #undef SET_SPARSEMATRIX
 
 #define SET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
-void CMatlabInterface::function_name(const CSGString<sg_type>* strings, int32_t num_str)	\
+void CMatlabInterface::function_name(const TString<sg_type>* strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n");									\

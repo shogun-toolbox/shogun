@@ -70,19 +70,19 @@ class CCmdLineInterface : public CSGInterface
 			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 		virtual void get_byte_string_list(
-			CSGString<uint8_t>*& strings, int32_t& num_str,
+			TString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_char_string_list(
-			CSGString<char>*& strings, int32_t& num_str,
+			TString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_int_string_list(
-			CSGString<int32_t>*& strings, int32_t& num_str,
+			TString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_short_string_list(
-			CSGString<int16_t>*& strings, int32_t& num_str,
+			TString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_word_string_list(
-			CSGString<uint16_t>*& strings, int32_t& num_str,
+			TString<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 
 		virtual void get_attribute_struct(
@@ -122,15 +122,15 @@ class CCmdLineInterface : public CSGInterface
 			int32_t num_vec, int64_t nnz);
 
 		virtual void set_byte_string_list(
-			const CSGString<uint8_t>* strings, int32_t num_str);
+			const TString<uint8_t>* strings, int32_t num_str);
 		virtual void set_char_string_list(
-			const CSGString<char>* strings, int32_t num_str);
+			const TString<char>* strings, int32_t num_str);
 		virtual void set_int_string_list(
-			const CSGString<int32_t>* strings, int32_t num_str);
+			const TString<int32_t>* strings, int32_t num_str);
 		virtual void set_short_string_list(
-			const CSGString<int16_t>* strings, int32_t num_str);
+			const TString<int16_t>* strings, int32_t num_str);
 		virtual void set_word_string_list(
-			const CSGString<uint16_t>* strings, int32_t num_str);
+			const TString<uint16_t>* strings, int32_t num_str);
 
 		virtual void set_attribute_struct(
 			const CDynamicArray<T_ATTRIBUTE>* attrs);

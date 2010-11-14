@@ -70,8 +70,6 @@ CSGSerializable::set_generic<floatmax_t>(void)
 
 using namespace shogun;
 
-extern IO* sg_io;
-
 CSGSerializable::CSGSerializable(void)
 {
 	m_parameters = new Parameter();
@@ -90,7 +88,7 @@ CSGSerializable::~CSGSerializable(void)
 }
 
 bool
-CSGSerializable::is_generic(EPrimitveType* generic) const
+CSGSerializable::is_generic(EPrimitiveType* generic) const
 {
 	*generic = m_generic;
 

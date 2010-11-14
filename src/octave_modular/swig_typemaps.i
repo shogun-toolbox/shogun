@@ -217,12 +217,12 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(in) (shogun::CSGString<sg_type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
+%typemap(in) (shogun::TString<sg_type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
 {
     using namespace shogun;
     int32_t max_len=0;
     int32_t num_strings=0;
-    CSGString<sg_type>* strings=NULL;
+    TString<sg_type>* strings=NULL;
 
     octave_value arg=$input;
     if (arg.is_cell())
@@ -230,7 +230,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
         Cell c = arg.cell_value();
         num_strings=c.nelem();
         ASSERT(num_strings>=1);
-        strings=new CSGString<sg_type>[num_strings];
+        strings=new TString<sg_type>[num_strings];
 
         for (int32_t i=0; i<num_strings; i++)
         {
@@ -266,7 +266,7 @@ TYPEMAP_ARGOUT2(uint16NDArray, uint16_t, uint16_t, "Word")
         oct_type data=arg.oct_converter();
         num_strings=data.cols(); 
         int32_t len=data.rows();
-        strings=new CSGString<sg_type>[num_strings];
+        strings=new TString<sg_type>[num_strings];
         ASSERT(strings);
 
         for (int32_t i=0; i<num_strings; i++)
@@ -312,11 +312,11 @@ TYPEMAP_STRINGFEATURES_IN(is_matrix_type() && arg.is_uint16_type, uint16NDArray,
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_ARGOUT(type,typecode)
-%typemap(in, numinputs=0) (shogun::CSGString<type>** ARGOUT_STRINGS, int32_t* NUM) {
-    $1 = (shogun::CSGString<type>**) malloc(sizeof(shogun::CSGString<type>*));
+%typemap(in, numinputs=0) (shogun::TString<type>** ARGOUT_STRINGS, int32_t* NUM) {
+    $1 = (shogun::TString<type>**) malloc(sizeof(shogun::TString<type>*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
 }
-%typemap(argout) (shogun::CSGString<type>** ARGOUT_STRINGS, int32_t* NUM) {
+%typemap(argout) (shogun::TString<type>** ARGOUT_STRINGS, int32_t* NUM) {
     if (!$1 || !$2)
         SWIG_fail;
     free($1); free($2);

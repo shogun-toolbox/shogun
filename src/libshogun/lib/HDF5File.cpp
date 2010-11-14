@@ -104,14 +104,14 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 	}																				\
 }
 
-GET_VECTOR(get_bool_vector, bool, (CT_VECTOR, PT_BOOL))
-GET_VECTOR(get_byte_vector, uint8_t, (CT_VECTOR, PT_UINT8))
-GET_VECTOR(get_char_vector, char, (CT_VECTOR, PT_CHAR))
-GET_VECTOR(get_int_vector, int32_t, (CT_VECTOR, PT_INT32))
-GET_VECTOR(get_shortreal_vector, float32_t, (CT_VECTOR, PT_FLOAT32))
-GET_VECTOR(get_real_vector, float64_t, (CT_VECTOR, PT_FLOAT64))
-GET_VECTOR(get_short_vector, int16_t, (CT_VECTOR, PT_INT16))
-GET_VECTOR(get_word_vector, uint16_t, (CT_VECTOR, PT_INT16))
+GET_VECTOR(get_bool_vector, bool, (CT_VECTOR, ST_NONE, PT_BOOL))
+GET_VECTOR(get_byte_vector, uint8_t, (CT_VECTOR, ST_NONE, PT_UINT8))
+GET_VECTOR(get_char_vector, char, (CT_VECTOR, ST_NONE, PT_CHAR))
+GET_VECTOR(get_int_vector, int32_t, (CT_VECTOR, ST_NONE, PT_INT32))
+GET_VECTOR(get_shortreal_vector, float32_t, (CT_VECTOR, ST_NONE, PT_FLOAT32))
+GET_VECTOR(get_real_vector, float64_t, (CT_VECTOR, ST_NONE, PT_FLOAT64))
+GET_VECTOR(get_short_vector, int16_t, (CT_VECTOR, ST_NONE, PT_INT16))
+GET_VECTOR(get_word_vector, uint16_t, (CT_VECTOR, ST_NONE, PT_INT16))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
@@ -152,18 +152,18 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 	}																				\
 }
 
-GET_MATRIX(get_bool_matrix, bool, (CT_MATRIX, PT_BOOL))
-GET_MATRIX(get_char_matrix, char, (CT_MATRIX, PT_CHAR))
-GET_MATRIX(get_byte_matrix, uint8_t, (CT_MATRIX, PT_UINT8))
-GET_MATRIX(get_int_matrix, int32_t, (CT_MATRIX, PT_INT32))
-GET_MATRIX(get_uint_matrix, uint32_t, (CT_MATRIX, PT_INT32))
-GET_MATRIX(get_long_matrix, int64_t, (CT_MATRIX, PT_INT64))
-GET_MATRIX(get_ulong_matrix, uint64_t, (CT_MATRIX, PT_INT64))
-GET_MATRIX(get_short_matrix, int16_t, (CT_MATRIX, PT_INT16))
-GET_MATRIX(get_word_matrix, uint16_t, (CT_MATRIX, PT_INT16))
-GET_MATRIX(get_shortreal_matrix, float32_t, (CT_MATRIX, PT_FLOAT32))
-GET_MATRIX(get_real_matrix, float64_t, (CT_MATRIX, PT_FLOAT64))
-GET_MATRIX(get_longreal_matrix, floatmax_t, (CT_MATRIX, PT_FLOATMAX))
+GET_MATRIX(get_bool_matrix, bool, (CT_MATRIX, ST_NONE, PT_BOOL))
+GET_MATRIX(get_char_matrix, char, (CT_MATRIX, ST_NONE, PT_CHAR))
+GET_MATRIX(get_byte_matrix, uint8_t, (CT_MATRIX, ST_NONE, PT_UINT8))
+GET_MATRIX(get_int_matrix, int32_t, (CT_MATRIX, ST_NONE, PT_INT32))
+GET_MATRIX(get_uint_matrix, uint32_t, (CT_MATRIX, ST_NONE, PT_INT32))
+GET_MATRIX(get_long_matrix, int64_t, (CT_MATRIX, ST_NONE, PT_INT64))
+GET_MATRIX(get_ulong_matrix, uint64_t, (CT_MATRIX, ST_NONE, PT_INT64))
+GET_MATRIX(get_short_matrix, int16_t, (CT_MATRIX, ST_NONE, PT_INT16))
+GET_MATRIX(get_word_matrix, uint16_t, (CT_MATRIX, ST_NONE, PT_INT16))
+GET_MATRIX(get_shortreal_matrix, float32_t, (CT_MATRIX, ST_NONE, PT_FLOAT32))
+GET_MATRIX(get_real_matrix, float64_t, (CT_MATRIX, ST_NONE, PT_FLOAT64))
+GET_MATRIX(get_longreal_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
 void CHDF5File::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
@@ -216,7 +216,7 @@ GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CHDF5File::fname(CSGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void CHDF5File::fname(TString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 }
 
@@ -333,7 +333,7 @@ SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void CHDF5File::fname(const CSGString<sg_type>* strings, int32_t num_str)	\
+void CHDF5File::fname(const TString<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n");											\

@@ -7,20 +7,26 @@
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
-#ifndef __SERIALIZABLE_ASCII_FILE_H__
-#define __SERIALIZABLE_ASCII_FILE_H__
+#ifndef __SERIALIZABLE_JSON_FILE_H__
+#define __SERIALIZABLE_JSON_FILE_H__
+
+#include "lib/config.h"
+#ifdef HAVE_JSON
+
+#include <json/json.h>
 
 #include "lib/SerializableFile.h"
 #include "lib/DynamicArray.h"
 
 namespace shogun
 {
-class CSerializableAsciiFile :public CSerializableFile
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CSerializableJSONFile
+	:public CSerializableFile
 {
-	CDynamicArray<long> m_stack_fpos;
+	CDynamicArray<json_object*> m_stack_stream;
 
-	void init(void);
-	bool ignore(void);
+	void init(const char* fname);
 
 protected:
 	virtual bool write_scalar_wrapped(
@@ -126,29 +132,26 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerializableAsciiFile(void);
-
-	/** constructor
-	 *
-	 * @param fstream already opened file
-	 */
-	explicit CSerializableAsciiFile(FILE* fstream, char rw);
+	explicit CSerializableJSONFile(void);
 
 	/** constructor
 	 *
 	 * @param fname filename to open
 	 * @param rw mode, 'r' or 'w'
 	 */
-	explicit CSerializableAsciiFile(const char* fname, char rw='r');
+	explicit CSerializableJSONFile(const char* fname, char rw='r');
 
 	/** default destructor */
-	virtual ~CSerializableAsciiFile();
+	virtual ~CSerializableJSONFile();
 
 	/** @return object name */
 	inline virtual const char* get_name() const {
-		return "SerializableAsciiFile";
+		return "SerializableJSONFile";
 	}
+
+	virtual void close(void);
+	virtual bool is_opened(void);
 };
 }
-
-#endif /* __SERIALIZABLE_ASCII_FILE_H__  */
+#endif /* HAVE_JSON  */
+#endif /* __SERIALIZABLE_JSON_FILE_H__  */

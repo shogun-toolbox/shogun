@@ -39,29 +39,6 @@ class CDotFeatures;
 template <class ST> class CSimpleFeatures;
 template <class ST> class CSparsePreProc;
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-/** template class TSparseEntry */
-template <class ST> struct TSparseEntry
-{
-	/** feature index */
-	int32_t feat_index;
-	/** entry */
-	ST entry;
-};
-
-/** template class TSparse */
-template <class ST> struct TSparse
-{
-	public:
-		/** vector index */
-		int32_t vec_index;
-		/** number of feature entries */
-		int32_t num_feat_entries;
-		/** features */
-		TSparseEntry<ST>* features;
-};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-
 /** @brief Template class SparseFeatures implements sparse matrices.
  *
  * Features are an array of TSparse, sorted w.r.t. vec_index (increasing) and
@@ -76,6 +53,16 @@ template <class ST> struct TSparse
  */
 template <class ST> class CSparseFeatures : public CDotFeatures
 {
+	void init(void) {
+		set_generic<ST>();
+
+		m_parameters->add_vector(&sparse_feature_matrix, &num_vectors,
+								 "sparse_feature_matrix",
+								 "Array of sparse vectors.");
+		m_parameters->add(&num_features, "num_features",
+						  "Total number of features.");
+	}
+
 	public:
 		/** constructor
 		 *
@@ -84,7 +71,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		CSparseFeatures(int32_t size=0)
 		: CDotFeatures(size), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
-		{}
+		{ init(); }
 
 		/** convenience constructor that creates sparse features from
 		 * the ones passed as argument
@@ -98,6 +85,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		: CDotFeatures(0), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
+			init();
+
 			if (!copy)
 				set_sparse_feature_matrix(src, num_feat, num_vec);
 			else
@@ -124,6 +113,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		: CDotFeatures(0), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
+			init();
+
 			set_full_feature_matrix(src, num_feat, num_vec);
 		}
 
@@ -134,6 +125,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			sparse_feature_matrix(orig.sparse_feature_matrix),
 			feature_cache(orig.feature_cache)
 		{
+			init();
+
 			if (orig.sparse_feature_matrix)
 			{
 				free_sparse_feature_matrix();
@@ -156,6 +149,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		: CDotFeatures(loader), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
+			init();
+
 			load(loader);
 		}
 

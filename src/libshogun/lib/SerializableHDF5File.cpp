@@ -18,6 +18,7 @@
 #define TYPE_INDEX                 H5T_NATIVE_INT32
 
 #define STR_IS_SGSERIALIZABLE      "is_sgserializable"
+#define STR_IS_SPARSE              "is_sparse"
 #define STR_IS_CONT                "is_container"
 #define STR_IS_NULL                "is_null"
 #define STR_INSTANCE_NAME          "instance_name"
@@ -26,13 +27,23 @@
 #define STR_LENGTH_X               "length_x"
 #define STR_LENGTH_Y               "length_y"
 
+#define STR_GROUP_PREFIX           "$"
+
+#define STR_SPARSE_VINDEX          "vec_index"
+#define STR_SPARSE_FPTR            "features_ptr"
+#define STR_SPARSEENTRY_FINDEX     "feat_index"
+#define STR_SPARSEENTRY_ENTRY      "entry"
+
 using namespace shogun;
 
-CSerializableHDF5File::type_item_t::type_item_t(void)
+CSerializableHDF5File::type_item_t::type_item_t(const char* name_)
 {
 	rank = 0;
-	dims[0] = 0, dims[1] = 0;
-	dspace = NOT_OPEN, dtype = NOT_OPEN, dset = NOT_OPEN;
+	dims[0] = dims[1] = 0;
+	dspace = dtype = dset = NOT_OPEN;
+	y = x = 0;
+	name = name_;
+	sparse_buf.feat_index = 0;
 }
 
 CSerializableHDF5File::type_item_t::~type_item_t(void)
@@ -43,26 +54,82 @@ CSerializableHDF5File::type_item_t::~type_item_t(void)
 }
 
 hid_t
-CSerializableHDF5File::new_ptype2hdf5(EPrimitveType ptype)
+CSerializableHDF5File::sizeof_sparsetype(void) {
+	return H5Tget_size(TYPE_INDEX) + H5Tget_size(H5T_STD_REF_OBJ);
+}
+hid_t
+CSerializableHDF5File::new_sparsetype(void)
+{
+	hid_t result = H5Tcreate(H5T_COMPOUND, sizeof_sparsetype());
+
+	if (H5Tinsert(result, STR_SPARSE_VINDEX, 0, TYPE_INDEX) < 0)
+		return NOT_OPEN;
+	if (H5Tinsert(result, STR_SPARSE_FPTR, H5Tget_size(TYPE_INDEX),
+				  H5T_STD_REF_OBJ) < 0)
+		return NOT_OPEN;
+
+	return result;
+}
+hobj_ref_t*
+CSerializableHDF5File::get_ref_sparstype(void* sparse_buf) {
+	return (hobj_ref_t*)
+		((char*) sparse_buf + H5Tget_size(TYPE_INDEX));
+}
+
+hid_t
+CSerializableHDF5File::new_sparseentrytype(EPrimitiveType ptype)
+{
+	hid_t result = H5Tcreate(H5T_COMPOUND,
+							 TSGDataType::sizeof_sparseentry(ptype));
+	if (result < 0) return NOT_OPEN;
+
+	if (H5Tinsert(result, STR_SPARSEENTRY_FINDEX,
+				  HOFFSET(TSparseEntry<char>, feat_index), TYPE_INDEX)
+		< 0) return NOT_OPEN;
+	if (H5Tinsert(result, STR_SPARSEENTRY_ENTRY,
+				  HOFFSET(TSparseEntry<char>, entry),
+				  ptype2hdf5(ptype)) < 0) return NOT_OPEN;
+
+	return result;
+}
+
+
+hid_t
+CSerializableHDF5File::ptype2hdf5(EPrimitiveType ptype)
 {
 	switch (ptype) {
-	case PT_BOOL: return H5Tcopy(H5T_NATIVE_HBOOL);
-	case PT_CHAR: return H5Tcopy(H5T_NATIVE_CHAR);
-	case PT_INT8: return H5Tcopy(H5T_NATIVE_INT8);
-	case PT_UINT8: return H5Tcopy(H5T_NATIVE_UINT8);
-	case PT_INT16: return H5Tcopy(H5T_NATIVE_INT16);
-	case PT_UINT16: return H5Tcopy(H5T_NATIVE_UINT16);
-	case PT_INT32: return H5Tcopy(H5T_NATIVE_INT32);
-	case PT_UINT32: return H5Tcopy(H5T_NATIVE_UINT32);
-	case PT_INT64: return H5Tcopy(H5T_NATIVE_INT64);
-	case PT_UINT64: return H5Tcopy(H5T_NATIVE_UINT64);
-	case PT_FLOAT32: return H5Tcopy(H5T_NATIVE_FLOAT);
-	case PT_FLOAT64: return H5Tcopy(H5T_NATIVE_DOUBLE);
-	case PT_FLOATMAX: return H5Tcopy(H5T_NATIVE_LDOUBLE);
-	case PT_SGSERIALIZABLE_PTR: return NOT_OPEN;
+	case PT_BOOL: return H5T_NATIVE_HBOOL; break;
+	case PT_CHAR: return H5T_NATIVE_CHAR; break;
+	case PT_INT8: return H5T_NATIVE_INT8; break;
+	case PT_UINT8: return H5T_NATIVE_UINT8; break;
+	case PT_INT16: return H5T_NATIVE_INT16; break;
+	case PT_UINT16: return H5T_NATIVE_UINT16; break;
+	case PT_INT32: return H5T_NATIVE_INT32; break;
+	case PT_UINT32: return H5T_NATIVE_UINT32; break;
+	case PT_INT64: return H5T_NATIVE_INT64; break;
+	case PT_UINT64: return H5T_NATIVE_UINT64; break;
+	case PT_FLOAT32: return H5T_NATIVE_FLOAT; break;
+	case PT_FLOAT64: return H5T_NATIVE_DOUBLE; break;
+	case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE; break;
+	case PT_SGSERIALIZABLE_PTR: return NOT_OPEN; break;
 	}
 
 	return NOT_OPEN;
+}
+
+hid_t
+CSerializableHDF5File::new_stype2hdf5(EStructType stype,
+									  EPrimitiveType ptype)
+{
+	hid_t result = ptype2hdf5(ptype);
+
+	switch (stype) {
+	case ST_NONE: result = H5Tcopy(result); break;
+	case ST_STRING: result = H5Tvlen_create(result); break;
+	case ST_SPARSE: result = new_sparsetype(); break;
+	}
+
+	return result;
 }
 
 bool
@@ -79,27 +146,28 @@ CSerializableHDF5File::index2string(
 }
 
 bool
-CSerializableHDF5File::isequal_ptype2hdf5(EPrimitveType ptype,
+CSerializableHDF5File::isequal_stype2hdf5(EStructType stype,
+										  EPrimitiveType ptype,
 										  hid_t htype)
 {
-	switch (ptype) {
-	case PT_BOOL: return H5Tequal(htype, H5T_NATIVE_HBOOL) > 0;
-	case PT_CHAR: return H5Tequal(htype, H5T_NATIVE_CHAR) > 0;
-	case PT_INT8: return H5Tequal(htype, H5T_NATIVE_INT8) > 0;
-	case PT_UINT8: return H5Tequal(htype, H5T_NATIVE_UINT8) > 0;
-	case PT_INT16: return H5Tequal(htype, H5T_NATIVE_INT16) > 0;
-	case PT_UINT16: return H5Tequal(htype, H5T_NATIVE_UINT16) > 0;
-	case PT_INT32: return H5Tequal(htype, H5T_NATIVE_INT32) > 0;
-	case PT_UINT32: return H5Tequal(htype, H5T_NATIVE_UINT32) > 0;
-	case PT_INT64: return H5Tequal(htype, H5T_NATIVE_INT64) > 0;
-	case PT_UINT64: return H5Tequal(htype, H5T_NATIVE_UINT64) > 0;
-	case PT_FLOAT32: return H5Tequal(htype, H5T_NATIVE_FLOAT) > 0;
-	case PT_FLOAT64: return H5Tequal(htype, H5T_NATIVE_DOUBLE) > 0;
-	case PT_FLOATMAX: return H5Tequal(htype, H5T_NATIVE_LDOUBLE) > 0;
-	case PT_SGSERIALIZABLE_PTR: return false;
+	hid_t pbuf = ptype2hdf5(ptype), pbuf2 = NOT_OPEN;
+
+	bool to_close = false;
+	switch (stype) {
+	case ST_NONE: break;
+	case ST_STRING:
+		to_close = true; pbuf = H5Tvlen_create(pbuf); break;
+	case ST_SPARSE:
+		to_close = true; pbuf = new_sparsetype();
+		pbuf2 = new_sparseentrytype(ptype); break;
 	}
 
-	return false;
+	bool result = (H5Tequal(htype, pbuf) > 0)
+		|| (pbuf2 >= 0 && H5Tequal(htype, pbuf2) > 0);
+
+	if (pbuf2 >= 0 && H5Tclose(pbuf2) < 0) return false;
+	if (to_close && H5Tclose(pbuf) < 0) return false;
+	return result;
 }
 
 bool
@@ -231,12 +299,16 @@ CSerializableHDF5File::attr_read_string(
 }
 
 bool
-CSerializableHDF5File::group_create(const char* name)
+CSerializableHDF5File::group_create(const char* name,
+									const char* prefix)
 {
 	hid_t ngroup;
+	string_t gname;
+
+	snprintf(gname, STRING_LEN, "%s%s", prefix, name);
 
 	m_stack_h5stream.push_back(
-		ngroup = H5Gcreate2(m_stack_h5stream.back(), name, H5P_DEFAULT,
+		ngroup = H5Gcreate2(m_stack_h5stream.back(), gname, H5P_DEFAULT,
 							H5P_DEFAULT, H5P_DEFAULT));
 	if (ngroup < 0) return false;
 
@@ -244,12 +316,16 @@ CSerializableHDF5File::group_create(const char* name)
 }
 
 bool
-CSerializableHDF5File::group_open(const char* name)
+CSerializableHDF5File::group_open(const char* name,
+								  const char* prefix)
 {
 	hid_t group;
+	string_t gname;
+
+	snprintf(gname, STRING_LEN, "%s%s", prefix, name);
 
 	m_stack_h5stream.push_back(
-		group = H5Gopen2(m_stack_h5stream.back(), name, H5P_DEFAULT));
+		group = H5Gopen2(m_stack_h5stream.back(), gname, H5P_DEFAULT));
 	if (group < 0) return false;
 
 	return true;
@@ -347,20 +423,37 @@ CSerializableHDF5File::write_scalar_wrapped(
 	}
 
 	hid_t mem_type_id;
-	if ((mem_type_id = new_ptype2hdf5(type->m_ptype)) < 0)
+	if ((mem_type_id = new_stype2hdf5(type->m_stype, type->m_ptype)
+			) < 0)
 		return false;
 
 	hid_t mem_space_id;
 	if ((mem_space_id = H5Screate_simple(0, NULL, NULL)) < 0)
 		return false;
 
-	if (type->m_ptype == PT_BOOL) {
-		hbool_t buf = (hbool_t) *(bool*) param;
-		if (H5Dwrite(m->dset, mem_type_id, mem_space_id, m->dspace,
-					 H5P_DEFAULT, &buf) < 0) return false;
-	} else
+	switch (type->m_stype) {
+	case ST_NONE:
+		hbool_t buf;
+		if (type->m_ptype == PT_BOOL) {
+			buf = (hbool_t) *(bool*) param;
+			param = &buf;
+		}
+
 		if (H5Dwrite(m->dset, mem_type_id, mem_space_id, m->dspace,
 					 H5P_DEFAULT, param) < 0) return false;
+		break;
+	case ST_STRING:
+		m->vltype.p = (void*) param;
+		if (m->vltype.len > 0
+			&& H5Dwrite(m->dset, mem_type_id, mem_space_id, m->dspace,
+						H5P_DEFAULT, &m->vltype) < 0) return false;
+		break;
+	case ST_SPARSE:
+		memcpy(&m->sparse_buf.entry, param, type->sizeof_ptype());
+		if (H5Dwrite(m->dset, m->dtype, mem_space_id, m->dspace,
+					 H5P_DEFAULT, &m->sparse_buf) < 0) return false;
+		break;
+	}
 
 	if (H5Sclose(mem_space_id) < 0) return false;
 	if (H5Tclose(mem_type_id) < 0) return false;
@@ -381,21 +474,40 @@ CSerializableHDF5File::read_scalar_wrapped(
 	}
 
 	hid_t mem_type_id;
-	if ((mem_type_id = new_ptype2hdf5(type->m_ptype)) < 0)
+	if ((mem_type_id = new_stype2hdf5(type->m_stype, type->m_ptype)) < 0)
 		return false;
 
 	hid_t mem_space_id;
 	if ((mem_space_id = H5Screate_simple(0, NULL, NULL)) < 0)
 		return false;
 
-	if (type->m_ptype == PT_BOOL) {
-		hbool_t buf;
-		if (H5Dread(m->dset, mem_type_id, mem_space_id, m->dspace,
-					H5P_DEFAULT, &buf) < 0) return false;
-		*(bool*) param = (bool) buf;
-	} else
-	if (H5Dread(m->dset, mem_type_id, mem_space_id, m->dspace,
-				H5P_DEFAULT, param) < 0) return false;
+	size_t bytes = 0;
+	switch (type->m_stype) {
+	case ST_NONE:
+		if (type->m_ptype == PT_BOOL) {
+			hbool_t buf;
+			if (H5Dread(m->dset, mem_type_id, mem_space_id, m->dspace,
+						H5P_DEFAULT, &buf) < 0) return false;
+			*(bool*) param = (bool) buf;
+		} else
+			if (H5Dread(m->dset, mem_type_id, mem_space_id, m->dspace,
+						H5P_DEFAULT, param) < 0) return false;
+		break;
+	case ST_STRING:
+		bytes = m->vltype.len;
+		if (m->vltype.len > 0
+			&& H5Dread(m->dset, mem_type_id, mem_space_id, m->dspace,
+					   H5P_DEFAULT, &m->vltype) < 0) return false;
+		memcpy(param, m->vltype.p, bytes);
+		if (H5Dvlen_reclaim (mem_type_id, mem_space_id, H5P_DEFAULT,
+							 &m->vltype) < 0) return false;
+		break;
+	case ST_SPARSE:
+		if (H5Dread(m->dset, m->dtype, mem_space_id, m->dspace,
+					H5P_DEFAULT, &m->sparse_buf) < 0) return false;
+		memcpy(param, &m->sparse_buf.entry, type->sizeof_ptype());
+		break;
+	}
 
 	if (H5Sclose(mem_space_id) < 0) return false;
 	if (H5Tclose(mem_type_id) < 0) return false;
@@ -496,9 +608,274 @@ CSerializableHDF5File::read_cont_end_wrapped(
 }
 
 bool
+CSerializableHDF5File::write_string_begin_wrapped(
+	const TSGDataType* type, index_t length)
+{
+	type_item_t* m = m_stack_type.back();
+
+	m->vltype.len = length;
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::read_string_begin_wrapped(
+	const TSGDataType* type, index_t* length)
+{
+	type_item_t* m = m_stack_type.back();
+	hsize_t buf;
+
+	if (H5Dvlen_get_buf_size(m->dset, m->dtype, m->dspace, &buf) < 0)
+		return false;
+
+	m->vltype.len = buf;
+	*length = buf/type->sizeof_ptype();
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::write_string_end_wrapped(
+	const TSGDataType* type, index_t length)
+{
+	return true;
+}
+
+bool
+CSerializableHDF5File::read_string_end_wrapped(
+	const TSGDataType* type, index_t length)
+{
+	return true;
+}
+
+bool
+CSerializableHDF5File::write_stringentry_begin_wrapped(
+	const TSGDataType* type, index_t y)
+{
+	type_item_t* m = m_stack_type.back();
+
+	if (y > 0) m->vltype.len = 0;
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::read_stringentry_begin_wrapped(
+	const TSGDataType* type, index_t y)
+{
+	type_item_t* m = m_stack_type.back();
+
+	if (y > 0) m->vltype.len = 0;
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::write_stringentry_end_wrapped(
+	const TSGDataType* type, index_t y)
+{
+	return true;
+}
+
+bool
+CSerializableHDF5File::read_stringentry_end_wrapped(
+	const TSGDataType* type, index_t y)
+{
+	return true;
+}
+
+bool
+CSerializableHDF5File::write_sparse_begin_wrapped(
+	const TSGDataType* type, index_t vec_index,
+	index_t length)
+{
+	type_item_t* m_prev = m_stack_type.back();
+	type_item_t* m = new type_item_t(m_stack_type.back()->name);
+	m_stack_type.push_back(m);
+
+	if (m_prev->y == 0) {
+		hbool_t bool_buf = true;
+		if (!group_create(m->name, STR_GROUP_PREFIX)) return false;
+
+		if (!attr_write_scalar(H5T_NATIVE_HBOOL, STR_IS_SPARSE,
+							   &bool_buf)) return false;
+	} else {
+		if (!group_open(m->name, STR_GROUP_PREFIX)) return false;
+		if (!attr_exists(STR_IS_SPARSE)) return false;
+	}
+
+	m->rank = 1; m->dims[0] = length;
+	if (m->dims[0] == 0) m->dspace = H5Screate(H5S_NULL);
+
+	if (m->dspace < 0 && (m->dspace = H5Screate_simple(
+							  m->rank, m->dims, NULL)) < 0)
+		return false;
+	if ((m->dtype = new_sparseentrytype(type->m_ptype)) < 0)
+		return false;
+
+	string_t name;
+	index2string(name, STRING_LEN, type->m_ctype, m_prev->y,
+				 m_prev->x);
+	if ((m->dset = H5Dcreate2(
+			 m_stack_h5stream.back(), name, m->dtype, m->dspace,
+			 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT)) < 0)
+		return false;
+
+	/* ************************************************************ */
+
+	char* buf = new char[sizeof_sparsetype()];
+
+	memcpy(buf, &vec_index, sizeof (index_t));
+
+	hid_t mem_type_id;
+	if ((mem_type_id = new_sparsetype()) < 0) return false;
+
+	hid_t mem_space_id;
+	if ((mem_space_id = H5Screate_simple(0, NULL, NULL)) < 0)
+		return false;
+
+	hobj_ref_t* sparse_ref = get_ref_sparstype(buf);
+	if (H5Rcreate(sparse_ref, m_stack_h5stream.back(), name,
+				  H5R_OBJECT, -1) < 0) return false;
+
+	if (H5Dwrite(m_prev->dset, mem_type_id, mem_space_id,
+				 m_prev->dspace, H5P_DEFAULT, buf) < 0)
+		return false;
+
+	if (H5Sclose(mem_space_id) < 0) return false;
+	if (H5Tclose(mem_type_id) < 0) return false;
+
+	delete buf;
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::read_sparse_begin_wrapped(
+	const TSGDataType* type, index_t* vec_index,
+	index_t* length)
+{
+	type_item_t* m_prev = m_stack_type.back();
+	type_item_t* m = new type_item_t(m_stack_type.back()->name);
+	m_stack_type.push_back(m);
+
+	if (!group_open(m->name, STR_GROUP_PREFIX)) return false;
+	if (!attr_exists(STR_IS_SPARSE)) return false;
+
+	string_t name;
+	index2string(name, STRING_LEN, type->m_ctype, m_prev->y,
+				 m_prev->x);
+	if ((m->dset = H5Dopen2(m_stack_h5stream.back(), name,
+							H5P_DEFAULT)) < 0)
+		return false;
+
+	if ((m->dtype = H5Dget_type(m->dset)) < 0) return false;
+	if (!isequal_stype2hdf5(type->m_stype, type->m_ptype, m->dtype))
+		return false;
+
+	if ((m->dspace = H5Dget_space(m->dset)) < 0) return false;
+	if (H5Sget_simple_extent_ndims(m->dspace) != 1) return false;
+
+
+	if ((m->rank = H5Sget_simple_extent_dims(m->dspace, m->dims, NULL)
+			) < 0) return false;
+
+	if (H5Sget_simple_extent_type(m->dspace) != H5S_NULL
+		&& m->rank != 1) return false;
+
+	*length = m->dims[0];
+
+	/* ************************************************************ */
+
+	char* buf = new char[sizeof_sparsetype()];
+
+	hid_t mem_type_id;
+	if ((mem_type_id = new_sparsetype()) < 0) return false;
+
+	hid_t mem_space_id;
+	if ((mem_space_id = H5Screate_simple(0, NULL, NULL)) < 0)
+		return false;
+
+	if (H5Dread(m_prev->dset, mem_type_id, mem_space_id,
+				m_prev->dspace, H5P_DEFAULT, buf) < 0) return false;
+
+	if (H5Sclose(mem_space_id) < 0) return false;
+	if (H5Tclose(mem_type_id) < 0) return false;
+
+	memcpy(vec_index, buf, sizeof (index_t));
+
+	delete buf;
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::write_sparse_end_wrapped(
+	const TSGDataType* type, index_t vec_index,
+	index_t length)
+{
+	if (!group_close()) return false;
+	delete m_stack_type.back(); m_stack_type.pop_back();
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::read_sparse_end_wrapped(
+	const TSGDataType* type, index_t* vec_index,
+	index_t length)
+{
+	if (!group_close()) return false;
+	delete m_stack_type.back(); m_stack_type.pop_back();
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::write_sparseentry_begin_wrapped(
+	const TSGDataType* type, index_t feat_index, index_t y)
+{
+	type_item_t* m = m_stack_type.back();
+	m->sparse_buf.feat_index = feat_index;
+
+	if (!dspace_select(CT_VECTOR, y, 0)) return false;
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::read_sparseentry_begin_wrapped(
+	const TSGDataType* type, index_t* feat_index, index_t y)
+{
+	if (!dspace_select(CT_VECTOR, y, 0)) return false;
+
+	return true;
+}
+
+bool
+CSerializableHDF5File::write_sparseentry_end_wrapped(
+	const TSGDataType* type, index_t feat_index, index_t y)
+{
+	return true;
+}
+
+bool
+CSerializableHDF5File::read_sparseentry_end_wrapped(
+	const TSGDataType* type, index_t* feat_index, index_t y)
+{
+	type_item_t* m = m_stack_type.back();
+	*feat_index = m->sparse_buf.feat_index;
+
+	return true;
+}
+
+bool
 CSerializableHDF5File::write_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
+	type_item_t* m = m_stack_type.back();
+	m->y = y; m->x = x;
+
 	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) {
 		if (!dspace_select(type->m_ctype, y, x)) return false;
 		return true;
@@ -507,7 +884,7 @@ CSerializableHDF5File::write_item_begin_wrapped(
 	string_t name;
 	if (!index2string(name, STRING_LEN, type->m_ctype, y, x))
 		return false;
-	if (!group_create(name)) return false;
+	if (!group_create(name, "")) return false;
 
 	return true;
 }
@@ -516,6 +893,9 @@ bool
 CSerializableHDF5File::read_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
+	type_item_t* m = m_stack_type.back();
+	m->y = y; m->x = x;
+
 	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) {
 		if (!dspace_select(type->m_ctype, y, x)) return false;
 		return true;
@@ -524,7 +904,7 @@ CSerializableHDF5File::read_item_begin_wrapped(
 	string_t name;
 	if (!index2string(name, STRING_LEN, type->m_ctype, y, x))
 		return false;
-	if (!group_open(name)) return false;
+	if (!group_open(name, "")) return false;
 
 	return true;
 }
@@ -552,7 +932,7 @@ CSerializableHDF5File::read_item_end_wrapped(
 bool
 CSerializableHDF5File::write_sgserializable_begin_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
-	EPrimitveType generic)
+	EPrimitiveType generic)
 {
 	hbool_t bool_buf = true;
 
@@ -560,7 +940,8 @@ CSerializableHDF5File::write_sgserializable_begin_wrapped(
 						   &bool_buf)) return false;
 
 	if (*sgserializable_name == '\0') {
-		if (!attr_write_scalar(H5T_NATIVE_HBOOL, STR_IS_NULL, &bool_buf))
+		if (!attr_write_scalar(H5T_NATIVE_HBOOL, STR_IS_NULL,
+							   &bool_buf))
 			return false;
 		return true;
 	}
@@ -580,7 +961,7 @@ CSerializableHDF5File::write_sgserializable_begin_wrapped(
 bool
 CSerializableHDF5File::read_sgserializable_begin_wrapped(
 	const TSGDataType* type, char* sgserializable_name,
-	EPrimitveType* generic)
+	EPrimitiveType* generic)
 {
 	if (!attr_exists(STR_IS_SGSERIALIZABLE)) return false;
 
@@ -605,7 +986,7 @@ CSerializableHDF5File::read_sgserializable_begin_wrapped(
 bool
 CSerializableHDF5File::write_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
-	EPrimitveType generic)
+	EPrimitiveType generic)
 {
 	return true;
 }
@@ -613,7 +994,7 @@ CSerializableHDF5File::write_sgserializable_end_wrapped(
 bool
 CSerializableHDF5File::read_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
-	EPrimitveType generic)
+	EPrimitiveType generic)
 {
 	return true;
 }
@@ -622,10 +1003,10 @@ bool
 CSerializableHDF5File::write_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	type_item_t* m = new type_item_t(); m_stack_type.push_back(m);
+	type_item_t* m = new type_item_t(name); m_stack_type.push_back(m);
 
 	if (type->m_ptype == PT_SGSERIALIZABLE_PTR) {
-		if (!group_create(name)) return false;
+		if (!group_create(name, "")) return false;
 		return true;
 	}
 
@@ -647,7 +1028,7 @@ CSerializableHDF5File::write_type_begin_wrapped(
 	if (m->dspace < 0 && (m->dspace = H5Screate_simple(
 							  m->rank, m->dims, NULL)) < 0)
 		return false;
-	if ((m->dtype = new_ptype2hdf5(type->m_ptype)) < 0)
+	if ((m->dtype = new_stype2hdf5(type->m_stype, type->m_ptype)) < 0)
 		return false;
 
 	if ((m->dset = H5Dcreate2(
@@ -662,10 +1043,10 @@ bool
 CSerializableHDF5File::read_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	type_item_t* m = new type_item_t(); m_stack_type.push_back(m);
+	type_item_t* m = new type_item_t(name); m_stack_type.push_back(m);
 
 	if (type->m_ptype == PT_SGSERIALIZABLE_PTR) {
-		if (!group_open(name)) return false;
+		if (!group_open(name, "")) return false;
 		return true;
 	}
 
@@ -674,7 +1055,8 @@ CSerializableHDF5File::read_type_begin_wrapped(
 		return false;
 
 	if ((m->dtype = H5Dget_type(m->dset)) < 0) return false;
-	if (!isequal_ptype2hdf5(type->m_ptype, m->dtype)) return false;
+	if (!isequal_stype2hdf5(type->m_stype, type->m_ptype, m->dtype))
+		return false;
 
 	if ((m->dspace = H5Dget_space(m->dset)) < 0) return false;
 

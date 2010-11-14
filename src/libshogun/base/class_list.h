@@ -17,7 +17,7 @@ namespace shogun {
 	class CSGSerializable;
 
 	CSGSerializable* new_sgserializable(const char* sgserializable_name,
-										EPrimitveType generic);
+										EPrimitiveType generic);
 }
 
 #endif /* __SG_CLASS_LIST_H__  */
