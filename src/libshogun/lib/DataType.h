@@ -32,6 +32,8 @@ template<class T> struct TString {
 template <class T> struct TSparseEntry {
 	/** feature index */
 	index_t feat_index;
+	/** Dummy member to fill a 64-bit word.  */
+	int32_t __dummy;
 	/** entry ...  MUST BE THE LAST MEMBER!  */
 	T entry;
 };

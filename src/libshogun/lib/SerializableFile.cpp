@@ -75,14 +75,17 @@ CSerializableFile::is_opened(void)
 }
 
 bool
-CSerializableFile::is_task_warn(char rw)
+CSerializableFile::is_task_warn(char rw, const char* name,
+								const char* prefix)
 {
 	if (rw == 'w' && (m_task != 'w' || !is_opened())) {
-		SG_WARNING("`%s' not opened for writing!\n", m_filename);
+		SG_WARNING("`%s' not opened during writing `%s%s'!\n",
+				   m_filename, prefix, name);
 		return false;
 	}
 	if (rw == 'r' && (m_task != 'r' || !is_opened())) {
-		SG_WARNING("`%s' not opened for reading!\n", m_filename);
+		SG_WARNING("`%s' not opened during reading `%s%s'!\n",
+				   m_filename, prefix, name);
 		return false;
 	}
 
@@ -110,7 +113,7 @@ CSerializableFile::write_scalar(
 	const TSGDataType* type, const char* name, const char* prefix,
 	const void* param)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_scalar_wrapped(type, param))
 		return false_warn(prefix, name);
@@ -123,7 +126,7 @@ CSerializableFile::read_scalar(
 	const TSGDataType* type, const char* name, const char* prefix,
 	void* param)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_scalar_wrapped(type, param))
 		return false_warn(prefix, name);
@@ -136,7 +139,7 @@ CSerializableFile::write_cont_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t len_real_y, index_t len_real_x)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_cont_begin_wrapped(type, len_real_y, len_real_x))
 		return false_warn(prefix, name);
@@ -149,7 +152,7 @@ CSerializableFile::read_cont_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t* len_read_y, index_t* len_read_x)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_cont_begin_wrapped(type, len_read_y, len_read_x))
 		return false_warn(prefix, name);
@@ -162,7 +165,7 @@ CSerializableFile::write_cont_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t len_real_y, index_t len_real_x)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_cont_end_wrapped(type, len_real_y, len_real_x))
 		return false_warn(prefix, name);
@@ -175,7 +178,7 @@ CSerializableFile::read_cont_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t len_read_y, index_t len_read_x)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_cont_end_wrapped(type, len_read_y, len_read_x))
 		return false_warn(prefix, name);
@@ -188,7 +191,7 @@ CSerializableFile::write_string_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t length)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_string_begin_wrapped(type, length))
 		return false_warn(prefix, name);
@@ -201,7 +204,7 @@ CSerializableFile::read_string_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t* length)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_string_begin_wrapped(type, length))
 		return false_warn(prefix, name);
@@ -214,7 +217,7 @@ CSerializableFile::write_string_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t length)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_string_end_wrapped(type, length))
 		return false_warn(prefix, name);
@@ -227,7 +230,7 @@ CSerializableFile::read_string_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t length)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_string_end_wrapped(type, length))
 		return false_warn(prefix, name);
@@ -240,7 +243,7 @@ CSerializableFile::write_stringentry_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t y)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_stringentry_begin_wrapped(type, y))
 		return false_warn(prefix, name);
@@ -253,7 +256,7 @@ CSerializableFile::read_stringentry_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t y)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_stringentry_begin_wrapped(type, y))
 		return false_warn(prefix, name);
@@ -266,7 +269,7 @@ CSerializableFile::write_stringentry_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t y)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_stringentry_end_wrapped(type, y))
 		return false_warn(prefix, name);
@@ -279,7 +282,7 @@ CSerializableFile::read_stringentry_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t y)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_stringentry_end_wrapped(type, y))
 		return false_warn(prefix, name);
@@ -292,7 +295,7 @@ CSerializableFile::write_sparse_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t vec_index, index_t length)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_sparse_begin_wrapped(type, vec_index, length))
 		return false_warn(prefix, name);
@@ -305,7 +308,7 @@ CSerializableFile::read_sparse_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t* vec_index, index_t* length)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_sparse_begin_wrapped(type, vec_index, length))
 		return false_warn(prefix, name);
@@ -318,7 +321,7 @@ CSerializableFile::write_sparse_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t vec_index, index_t length)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_sparse_end_wrapped(type, vec_index, length))
 		return false_warn(prefix, name);
@@ -331,7 +334,7 @@ CSerializableFile::read_sparse_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t* vec_index, index_t length)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_sparse_end_wrapped(type, vec_index, length))
 		return false_warn(prefix, name);
@@ -344,7 +347,7 @@ CSerializableFile::write_sparseentry_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t feat_index, index_t y)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_sparseentry_begin_wrapped(type, feat_index, y))
 		return false_warn(prefix, name);
@@ -357,7 +360,7 @@ CSerializableFile::read_sparseentry_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t* feat_index, index_t y)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_sparseentry_begin_wrapped(type, feat_index, y))
 		return false_warn(prefix, name);
@@ -370,7 +373,7 @@ CSerializableFile::write_sparseentry_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t feat_index, index_t y)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_sparseentry_end_wrapped(type, feat_index, y))
 		return false_warn(prefix, name);
@@ -383,7 +386,7 @@ CSerializableFile::read_sparseentry_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t* feat_index, index_t y)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_sparseentry_end_wrapped(type, feat_index, y))
 		return false_warn(prefix, name);
@@ -396,7 +399,7 @@ CSerializableFile::write_item_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t y, index_t x)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_item_begin_wrapped(type, y, x))
 		return false_warn(prefix, name);
@@ -409,7 +412,7 @@ CSerializableFile::read_item_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t y, index_t x)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_item_begin_wrapped(type, y, x))
 		return false_warn(prefix, name);
@@ -422,7 +425,7 @@ CSerializableFile::write_item_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t y, index_t x)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_item_end_wrapped(type, y, x))
 		return false_warn(prefix, name);
@@ -435,7 +438,7 @@ CSerializableFile::read_item_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	index_t y, index_t x)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_item_end_wrapped(type, y, x))
 		return false_warn(prefix, name);
@@ -448,7 +451,7 @@ CSerializableFile::write_sgserializable_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	const char* sgserializable_name, EPrimitiveType generic)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_sgserializable_begin_wrapped(type, sgserializable_name,
 											generic))
@@ -462,7 +465,7 @@ CSerializableFile::read_sgserializable_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
 	char* sgserializable_name, EPrimitiveType* generic)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_sgserializable_begin_wrapped(type, sgserializable_name,
 										   generic))
@@ -476,7 +479,7 @@ CSerializableFile::write_sgserializable_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	const char* sgserializable_name, EPrimitiveType generic)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_sgserializable_end_wrapped(type, sgserializable_name,
 										  generic))
@@ -490,7 +493,7 @@ CSerializableFile::read_sgserializable_end(
 	const TSGDataType* type, const char* name, const char* prefix,
 	const char* sgserializable_name, EPrimitiveType generic)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_sgserializable_end_wrapped(type, sgserializable_name,
 										 generic))
@@ -503,7 +506,7 @@ bool
 CSerializableFile::write_type_begin(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_type_begin_wrapped(type, name, prefix))
 		return false_warn(prefix, name);
@@ -515,7 +518,7 @@ bool
 CSerializableFile::read_type_begin(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_type_begin_wrapped(type, name, prefix))
 		return false_warn(prefix, name);
@@ -527,7 +530,7 @@ bool
 CSerializableFile::write_type_end(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (!is_task_warn('w')) return false;
+	if (!is_task_warn('w', name, prefix)) return false;
 
 	if (!write_type_end_wrapped(type, name, prefix))
 		return false_warn(prefix, name);
@@ -539,7 +542,7 @@ bool
 CSerializableFile::read_type_end(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (!is_task_warn('r')) return false;
+	if (!is_task_warn('r', name, prefix)) return false;
 
 	if (!read_type_end_wrapped(type, name, prefix))
 		return false_warn(prefix, name);

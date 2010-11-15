@@ -27,6 +27,13 @@ IGNORE_IN_CLASSLIST class CSerializableJSONFile
 	CDynamicArray<json_object*> m_stack_stream;
 
 	void init(const char* fname);
+	void push_object(json_object* o);
+	void pop_object(void);
+
+	static bool get_object_any(json_object** dest, json_object* src,
+							   const char* key);
+	static bool get_object(json_object** dest, json_object* src,
+						   const char* key, json_type t);
 
 protected:
 	virtual bool write_scalar_wrapped(

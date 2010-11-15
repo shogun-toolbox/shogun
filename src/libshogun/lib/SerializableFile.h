@@ -20,7 +20,7 @@ namespace shogun
 {
 class CSerializableFile :public CSGObject
 {
-	bool is_task_warn(char rw);
+	bool is_task_warn(char rw, const char* name, const char* prefix);
 	bool false_warn(const char* prefix, const char* name);
 
 protected:
