@@ -22,15 +22,15 @@ namespace shogun
 typedef int32_t                    index_t;
 
 template<class T> struct TString {
-	/** string */
+	/** string  */
 	T* string;
-	/** length of string */
+	/** length of string  */
 	index_t length;
 };
 
 /** template class TSparseEntry */
 template <class T> struct TSparseEntry {
-	/** feature index */
+	/** feature index  */
 	index_t feat_index;
 	/** Dummy member to fill a 64-bit word.  */
 	int32_t __dummy;

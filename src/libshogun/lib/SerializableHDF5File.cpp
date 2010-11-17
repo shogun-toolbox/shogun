@@ -41,9 +41,10 @@ CSerializableHDF5File::type_item_t::type_item_t(const char* name_)
 	rank = 0;
 	dims[0] = dims[1] = 0;
 	dspace = dtype = dset = NOT_OPEN;
-	y = x = 0;
+	vltype = NULL;
+	y = x = sub_y = 0;
+	sparse_ptr = NULL;
 	name = name_;
-	sparse_buf.feat_index = 0;
 }
 
 CSerializableHDF5File::type_item_t::~type_item_t(void)
@@ -51,6 +52,8 @@ CSerializableHDF5File::type_item_t::~type_item_t(void)
 	if (dset >= 0) H5Dclose(dset);
 	if (dtype >= 0) H5Tclose(dtype);
 	if (dspace >= 0) H5Sclose(dspace);
+	if (vltype != NULL) delete[] vltype;
+	/* Do not delete SPARSE_PTR  */
 }
 
 hid_t
@@ -98,7 +101,15 @@ hid_t
 CSerializableHDF5File::ptype2hdf5(EPrimitiveType ptype)
 {
 	switch (ptype) {
-	case PT_BOOL: return H5T_NATIVE_HBOOL; break;
+	case PT_BOOL:
+		switch (sizeof (bool)) {
+		case 1: return H5T_NATIVE_UINT8;
+		case 2: return H5T_NATIVE_UINT16;
+		case 4: return H5T_NATIVE_UINT32;
+		case 8: return H5T_NATIVE_UINT64;
+		default: break;
+		}
+		break;
 	case PT_CHAR: return H5T_NATIVE_CHAR; break;
 	case PT_INT8: return H5T_NATIVE_INT8; break;
 	case PT_UINT8: return H5T_NATIVE_UINT8; break;
@@ -416,46 +427,47 @@ CSerializableHDF5File::write_scalar_wrapped(
 {
 	type_item_t* m = m_stack_type.back();
 
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR) {
-		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing HDF5File!");
-		return false;
+	switch (type->m_stype) {
+	case ST_NONE:
+		if (m->y != 0 || m->x != 0) return true;
+		break;
+	case ST_STRING:
+		if (m->sub_y == 0)
+			m->vltype[m->x*m->dims[1] + m->y].p = (void*) param;
+
+		if ((m->sub_y
+			 < (index_t) m->vltype[m->x*m->dims[1] + m->y].len-1)
+			|| (type->m_ctype == CT_VECTOR && m->y
+				< (index_t) m->dims[0]-1)
+			|| (type->m_ctype == CT_MATRIX
+				&& (m->x < (index_t) m->dims[0]-1
+					|| m->y < (index_t) m->dims[1]-1)))
+			return true;
+		break;
+	case ST_SPARSE:
+		if (m->sub_y != 0) return true;
+		break;
 	}
 
 	hid_t mem_type_id;
 	if ((mem_type_id = new_stype2hdf5(type->m_stype, type->m_ptype)
-			) < 0)
-		return false;
-
-	hid_t mem_space_id;
-	if ((mem_space_id = H5Screate_simple(0, NULL, NULL)) < 0)
-		return false;
+			) < 0) return false;
 
 	switch (type->m_stype) {
 	case ST_NONE:
-		hbool_t buf;
-		if (type->m_ptype == PT_BOOL) {
-			buf = (hbool_t) *(bool*) param;
-			param = &buf;
-		}
-
-		if (H5Dwrite(m->dset, mem_type_id, mem_space_id, m->dspace,
+		if (H5Dwrite(m->dset, mem_type_id, H5S_ALL, H5S_ALL,
 					 H5P_DEFAULT, param) < 0) return false;
 		break;
 	case ST_STRING:
-		m->vltype.p = (void*) param;
-		if (m->vltype.len > 0
-			&& H5Dwrite(m->dset, mem_type_id, mem_space_id, m->dspace,
-						H5P_DEFAULT, &m->vltype) < 0) return false;
+		if (H5Dwrite(m->dset, mem_type_id, H5S_ALL, H5S_ALL,
+					 H5P_DEFAULT, m->vltype) < 0) return false;
 		break;
 	case ST_SPARSE:
-		memcpy(&m->sparse_buf.entry, param, type->sizeof_ptype());
-		if (H5Dwrite(m->dset, m->dtype, mem_space_id, m->dspace,
-					 H5P_DEFAULT, &m->sparse_buf) < 0) return false;
+		if (H5Dwrite(m->dset, m->dtype, H5S_ALL, H5S_ALL,
+					 H5P_DEFAULT, m->sparse_ptr) < 0) return false;
 		break;
 	}
 
-	if (H5Sclose(mem_space_id) < 0) return false;
 	if (H5Tclose(mem_type_id) < 0) return false;
 
 	return true;
@@ -467,49 +479,44 @@ CSerializableHDF5File::read_scalar_wrapped(
 {
 	type_item_t* m = m_stack_type.back();
 
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR) {
-		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing HDF5File!");
-		return false;
+	switch (type->m_stype) {
+	case ST_NONE:
+		if (m->y != 0 || m->x != 0) return true;
+		break;
+	case ST_STRING:
+		if (m->y == -1 || m->x == -1) break;
+
+		if (m->sub_y != 0) return true;
+
+		memcpy(param, m->vltype[m->x*m->dims[1] + m->y].p,
+			   m->vltype[m->x*m->dims[1] + m->y].len
+			   *type->sizeof_ptype());
+
+		return true;
+	case ST_SPARSE:
+		if (m->sub_y != 0) return true;
+		break;
 	}
 
 	hid_t mem_type_id;
-	if ((mem_type_id = new_stype2hdf5(type->m_stype, type->m_ptype)) < 0)
-		return false;
+	if ((mem_type_id = new_stype2hdf5(type->m_stype, type->m_ptype))
+		< 0) return false;
 
-	hid_t mem_space_id;
-	if ((mem_space_id = H5Screate_simple(0, NULL, NULL)) < 0)
-		return false;
-
-	size_t bytes = 0;
 	switch (type->m_stype) {
 	case ST_NONE:
-		if (type->m_ptype == PT_BOOL) {
-			hbool_t buf;
-			if (H5Dread(m->dset, mem_type_id, mem_space_id, m->dspace,
-						H5P_DEFAULT, &buf) < 0) return false;
-			*(bool*) param = (bool) buf;
-		} else
-			if (H5Dread(m->dset, mem_type_id, mem_space_id, m->dspace,
-						H5P_DEFAULT, param) < 0) return false;
+		if (H5Dread(m->dset, mem_type_id, H5S_ALL, H5S_ALL,
+					H5P_DEFAULT, param) < 0) return false;
 		break;
 	case ST_STRING:
-		bytes = m->vltype.len;
-		if (m->vltype.len > 0
-			&& H5Dread(m->dset, mem_type_id, mem_space_id, m->dspace,
-					   H5P_DEFAULT, &m->vltype) < 0) return false;
-		memcpy(param, m->vltype.p, bytes);
-		if (H5Dvlen_reclaim (mem_type_id, mem_space_id, H5P_DEFAULT,
-							 &m->vltype) < 0) return false;
+		if (H5Dread(m->dset, mem_type_id, H5S_ALL, H5S_ALL,
+					H5P_DEFAULT, m->vltype) < 0) return false;
 		break;
 	case ST_SPARSE:
-		if (H5Dread(m->dset, m->dtype, mem_space_id, m->dspace,
-					H5P_DEFAULT, &m->sparse_buf) < 0) return false;
-		memcpy(param, &m->sparse_buf.entry, type->sizeof_ptype());
+		if (H5Dread(m->dset, m->dtype, H5S_ALL, H5S_ALL,
+					H5P_DEFAULT, m->sparse_ptr) < 0) return false;
 		break;
 	}
 
-	if (H5Sclose(mem_space_id) < 0) return false;
 	if (H5Tclose(mem_type_id) < 0) return false;
 
 	return true;
@@ -560,8 +567,10 @@ CSerializableHDF5File::read_cont_begin_wrapped(
 			SG_ERROR("read_cont_begin_wrapped(): Implementation error"
 					 " during writing HDF5File (0)!");
 			return false;
-		case CT_MATRIX: *len_read_x = m->dims[1]; /* break;  */
 		case CT_VECTOR: *len_read_y = m->dims[0]; break;
+		case CT_MATRIX:
+			*len_read_x = m->dims[0]; *len_read_y = m->dims[1];
+			break;
 		}
 
 		return true;
@@ -613,7 +622,7 @@ CSerializableHDF5File::write_string_begin_wrapped(
 {
 	type_item_t* m = m_stack_type.back();
 
-	m->vltype.len = length;
+	m->vltype[m->x*m->dims[1] + m->y].len = length;
 
 	return true;
 }
@@ -623,13 +632,14 @@ CSerializableHDF5File::read_string_begin_wrapped(
 	const TSGDataType* type, index_t* length)
 {
 	type_item_t* m = m_stack_type.back();
-	hsize_t buf;
 
-	if (H5Dvlen_get_buf_size(m->dset, m->dtype, m->dspace, &buf) < 0)
-		return false;
+	if (m->y == 0 && m->x == 0) {
+		m->y = -1; m->x = -1;
+		read_scalar_wrapped(type, NULL);
+		m->y = 0; m->x = 0;
+	}
 
-	m->vltype.len = buf;
-	*length = buf/type->sizeof_ptype();
+	*length = m->vltype[m->x*m->dims[1] + m->y].len;
 
 	return true;
 }
@@ -654,7 +664,7 @@ CSerializableHDF5File::write_stringentry_begin_wrapped(
 {
 	type_item_t* m = m_stack_type.back();
 
-	if (y > 0) m->vltype.len = 0;
+	m->sub_y = y;
 
 	return true;
 }
@@ -665,7 +675,7 @@ CSerializableHDF5File::read_stringentry_begin_wrapped(
 {
 	type_item_t* m = m_stack_type.back();
 
-	if (y > 0) m->vltype.len = 0;
+	m->sub_y = y;
 
 	return true;
 }
@@ -690,10 +700,16 @@ CSerializableHDF5File::write_sparse_begin_wrapped(
 	index_t length)
 {
 	type_item_t* m_prev = m_stack_type.back();
+
+	if(!dspace_select(type->m_ctype, m_prev->y, m_prev->x))
+		return false;
+
 	type_item_t* m = new type_item_t(m_stack_type.back()->name);
 	m_stack_type.push_back(m);
 
-	if (m_prev->y == 0) {
+	/* ************************************************************ */
+
+	if (m_prev->y == 0 && m_prev->x == 0) {
 		hbool_t bool_buf = true;
 		if (!group_create(m->name, STR_GROUP_PREFIX)) return false;
 
@@ -725,7 +741,7 @@ CSerializableHDF5File::write_sparse_begin_wrapped(
 
 	char* buf = new char[sizeof_sparsetype()];
 
-	memcpy(buf, &vec_index, sizeof (index_t));
+	*(index_t*) buf = vec_index;
 
 	hid_t mem_type_id;
 	if ((mem_type_id = new_sparsetype()) < 0) return false;
@@ -739,8 +755,7 @@ CSerializableHDF5File::write_sparse_begin_wrapped(
 				  H5R_OBJECT, -1) < 0) return false;
 
 	if (H5Dwrite(m_prev->dset, mem_type_id, mem_space_id,
-				 m_prev->dspace, H5P_DEFAULT, buf) < 0)
-		return false;
+				 m_prev->dspace, H5P_DEFAULT, buf) < 0) return false;
 
 	if (H5Sclose(mem_space_id) < 0) return false;
 	if (H5Tclose(mem_type_id) < 0) return false;
@@ -756,8 +771,14 @@ CSerializableHDF5File::read_sparse_begin_wrapped(
 	index_t* length)
 {
 	type_item_t* m_prev = m_stack_type.back();
+
+	if(!dspace_select(type->m_ctype, m_prev->y, m_prev->x))
+		return false;
+
 	type_item_t* m = new type_item_t(m_stack_type.back()->name);
 	m_stack_type.push_back(m);
+
+	/* ************************************************************ */
 
 	if (!group_open(m->name, STR_GROUP_PREFIX)) return false;
 	if (!attr_exists(STR_IS_SPARSE)) return false;
@@ -802,7 +823,7 @@ CSerializableHDF5File::read_sparse_begin_wrapped(
 	if (H5Sclose(mem_space_id) < 0) return false;
 	if (H5Tclose(mem_type_id) < 0) return false;
 
-	memcpy(vec_index, buf, sizeof (index_t));
+	*vec_index = *(index_t*) buf;
 
 	delete buf;
 
@@ -833,39 +854,43 @@ CSerializableHDF5File::read_sparse_end_wrapped(
 
 bool
 CSerializableHDF5File::write_sparseentry_begin_wrapped(
-	const TSGDataType* type, index_t feat_index, index_t y)
+	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	index_t feat_index, index_t y)
 {
 	type_item_t* m = m_stack_type.back();
-	m->sparse_buf.feat_index = feat_index;
 
-	if (!dspace_select(CT_VECTOR, y, 0)) return false;
+	m->sparse_ptr = (TSparseEntry<char>*) first_entry;
+	m->sub_y = y;
 
 	return true;
 }
 
 bool
 CSerializableHDF5File::read_sparseentry_begin_wrapped(
-	const TSGDataType* type, index_t* feat_index, index_t y)
+	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	index_t* feat_index, index_t y)
 {
-	if (!dspace_select(CT_VECTOR, y, 0)) return false;
+	type_item_t* m = m_stack_type.back();
+
+	m->sparse_ptr = first_entry;
+	m->sub_y = y;
 
 	return true;
 }
 
 bool
 CSerializableHDF5File::write_sparseentry_end_wrapped(
-	const TSGDataType* type, index_t feat_index, index_t y)
+	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	index_t feat_index, index_t y)
 {
 	return true;
 }
 
 bool
 CSerializableHDF5File::read_sparseentry_end_wrapped(
-	const TSGDataType* type, index_t* feat_index, index_t y)
+	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	index_t* feat_index, index_t y)
 {
-	type_item_t* m = m_stack_type.back();
-	*feat_index = m->sparse_buf.feat_index;
-
 	return true;
 }
 
@@ -876,10 +901,7 @@ CSerializableHDF5File::write_item_begin_wrapped(
 	type_item_t* m = m_stack_type.back();
 	m->y = y; m->x = x;
 
-	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) {
-		if (!dspace_select(type->m_ctype, y, x)) return false;
-		return true;
-	}
+	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) return true;
 
 	string_t name;
 	if (!index2string(name, STRING_LEN, type->m_ctype, y, x))
@@ -896,10 +918,7 @@ CSerializableHDF5File::read_item_begin_wrapped(
 	type_item_t* m = m_stack_type.back();
 	m->y = y; m->x = x;
 
-	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) {
-		if (!dspace_select(type->m_ctype, y, x)) return false;
-		return true;
-	}
+	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) return true;
 
 	string_t name;
 	if (!index2string(name, STRING_LEN, type->m_ctype, y, x))
@@ -1012,16 +1031,22 @@ CSerializableHDF5File::write_type_begin_wrapped(
 
 	switch (type->m_ctype) {
 	case CT_SCALAR:
-		m->rank = 0; break;
+		m->rank = 0;
+		if (type->m_stype == ST_STRING) m->vltype = new hvl_t[1];
+		break;
 	case CT_VECTOR:
 		m->rank = 1; m->dims[0] = *type->m_length_y;
 		if (m->dims[0] == 0) m->dspace = H5Screate(H5S_NULL);
+		if (type->m_stype == ST_STRING)
+			m->vltype = new hvl_t[m->dims[0]];
 		break;
 	case CT_MATRIX:
 		m->rank = 2;
-		m->dims[0] = *type->m_length_y; m->dims[1] = *type->m_length_x;
+		m->dims[0] = *type->m_length_x; m->dims[1] = *type->m_length_y;
 		if (m->dims[0] *m->dims[1] == 0)
 			m->dspace = H5Screate(H5S_NULL);
+		if (type->m_stype == ST_STRING)
+			m->vltype = new hvl_t[m->dims[0] *m->dims[1]];
 		break;
 	}
 
@@ -1063,15 +1088,23 @@ CSerializableHDF5File::read_type_begin_wrapped(
 	if (H5Sget_simple_extent_ndims(m->dspace) > 2) return false;
 	if ((m->rank = H5Sget_simple_extent_dims(m->dspace, m->dims, NULL)
 			) < 0) return false;
+
 	switch (type->m_ctype) {
-	case CT_SCALAR: if (m->rank != 0) return false; break;
+	case CT_SCALAR:
+		if (m->rank != 0) return false;
+		if (type->m_stype == ST_STRING) m->vltype = new hvl_t[1];
+		break;
 	case CT_VECTOR:
 		if (H5Sget_simple_extent_type(m->dspace) != H5S_NULL
 			&& m->rank != 1) return false;
+		if (type->m_stype == ST_STRING)
+			m->vltype = new hvl_t[m->dims[0]];
 		break;
 	case CT_MATRIX:
 		if (H5Sget_simple_extent_type(m->dspace) != H5S_NULL
 			&& m->rank != 2) return false;
+		if (type->m_stype == ST_STRING)
+			m->vltype = new hvl_t[m->dims[0] *m->dims[1]];
 		break;
 	}
 

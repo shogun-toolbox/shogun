@@ -455,7 +455,8 @@ CSerializableJSONFile::read_sparse_end_wrapped(
 
 bool
 CSerializableJSONFile::write_sparseentry_begin_wrapped(
-	const TSGDataType* type, index_t feat_index, index_t y)
+	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	index_t feat_index, index_t y)
 {
 	json_object* buf = json_object_new_object();
 	if (is_error(json_object_array_put_idx(m_stack_stream.back(), y,
@@ -472,7 +473,8 @@ CSerializableJSONFile::write_sparseentry_begin_wrapped(
 
 bool
 CSerializableJSONFile::read_sparseentry_begin_wrapped(
-	const TSGDataType* type, index_t* feat_index, index_t y)
+	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	index_t* feat_index, index_t y)
 {
 	json_object* buf_obj
 		= json_object_array_get_idx(m_stack_stream.back(), y);
@@ -493,7 +495,8 @@ CSerializableJSONFile::read_sparseentry_begin_wrapped(
 
 bool
 CSerializableJSONFile::write_sparseentry_end_wrapped(
-	const TSGDataType* type, index_t feat_index, index_t y)
+	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	index_t feat_index, index_t y)
 {
 	json_object* o = m_stack_stream.get_element(
 		m_stack_stream.get_num_elements() - 2);
@@ -507,7 +510,8 @@ CSerializableJSONFile::write_sparseentry_end_wrapped(
 
 bool
 CSerializableJSONFile::read_sparseentry_end_wrapped(
-	const TSGDataType* type, index_t* feat_index, index_t y)
+	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	index_t* feat_index, index_t y)
 {
 	pop_object();
 	return true;

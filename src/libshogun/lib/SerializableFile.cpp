@@ -345,11 +345,13 @@ CSerializableFile::read_sparse_end(
 bool
 CSerializableFile::write_sparseentry_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
-	index_t feat_index, index_t y)
+	const TSparseEntry<char>* first_entry, index_t feat_index,
+	index_t y)
 {
 	if (!is_task_warn('w', name, prefix)) return false;
 
-	if (!write_sparseentry_begin_wrapped(type, feat_index, y))
+	if (!write_sparseentry_begin_wrapped(type, first_entry,
+										 feat_index, y))
 		return false_warn(prefix, name);
 
 	return true;
@@ -358,11 +360,12 @@ CSerializableFile::write_sparseentry_begin(
 bool
 CSerializableFile::read_sparseentry_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
-	index_t* feat_index, index_t y)
+	TSparseEntry<char>* first_entry, index_t* feat_index, index_t y)
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_sparseentry_begin_wrapped(type, feat_index, y))
+	if (!read_sparseentry_begin_wrapped(type, first_entry, feat_index,
+										y))
 		return false_warn(prefix, name);
 
 	return true;
@@ -371,11 +374,13 @@ CSerializableFile::read_sparseentry_begin(
 bool
 CSerializableFile::write_sparseentry_end(
 	const TSGDataType* type, const char* name, const char* prefix,
-	index_t feat_index, index_t y)
+	const TSparseEntry<char>* first_entry, index_t feat_index,
+	index_t y)
 {
 	if (!is_task_warn('w', name, prefix)) return false;
 
-	if (!write_sparseentry_end_wrapped(type, feat_index, y))
+	if (!write_sparseentry_end_wrapped(type, first_entry, feat_index,
+									   y))
 		return false_warn(prefix, name);
 
 	return true;
@@ -384,11 +389,13 @@ CSerializableFile::write_sparseentry_end(
 bool
 CSerializableFile::read_sparseentry_end(
 	const TSGDataType* type, const char* name, const char* prefix,
-	index_t* feat_index, index_t y)
+	TSparseEntry<char>* first_entry, index_t* feat_index,
+	index_t y)
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_sparseentry_end_wrapped(type, feat_index, y))
+	if (!read_sparseentry_end_wrapped(type, first_entry, feat_index,
+									  y))
 		return false_warn(prefix, name);
 
 	return true;

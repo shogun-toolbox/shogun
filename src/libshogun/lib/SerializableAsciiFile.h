@@ -77,14 +77,18 @@ protected:
 		index_t length);
 
 	virtual bool write_sparseentry_begin_wrapped(
-		const TSGDataType* type, index_t feat_index, index_t y);
+		const TSGDataType* type, const TSparseEntry<char>* first_entry,
+		index_t feat_index, index_t y);
 	virtual bool read_sparseentry_begin_wrapped(
-		const TSGDataType* type, index_t* feat_index, index_t y);
+		const TSGDataType* type, TSparseEntry<char>* first_entry,
+		index_t* feat_index, index_t y);
 
 	virtual bool write_sparseentry_end_wrapped(
-		const TSGDataType* type, index_t feat_index, index_t y);
+		const TSGDataType* type, const TSparseEntry<char>* first_entry,
+		index_t feat_index, index_t y);
 	virtual bool read_sparseentry_end_wrapped(
-		const TSGDataType* type, index_t* feat_index, index_t y);
+		const TSGDataType* type, TSparseEntry<char>* first_entry,
+		index_t* feat_index, index_t y);
 
 	virtual bool write_item_begin_wrapped(
 		const TSGDataType* type, index_t y, index_t x);

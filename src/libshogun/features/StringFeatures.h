@@ -119,6 +119,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		preprocess_on_get(false), feature_cache(NULL)
         {
 			init();
+			alphabet=new CAlphabet();
         }
 
 		/** constructor

@@ -1429,8 +1429,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 			len_real = 0;
 		}
 		if (!file->write_string_begin(
-				&m_datatype, m_name, prefix, len_real))
-			return false;
+				&m_datatype, m_name, prefix, len_real)) return false;
 		for (index_t i=0; i<len_real; i++) {
 			if (!file->write_stringentry_begin(
 					&m_datatype, m_name, prefix, i)) return false;
@@ -1441,8 +1440,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 					&m_datatype, m_name, prefix, i)) return false;
 		}
 		if (!file->write_string_end(
-				&m_datatype, m_name, prefix, len_real))
-			return false;
+				&m_datatype, m_name, prefix, len_real)) return false;
 		break;
 	case ST_SPARSE:
 		len_real = spr_ptr->num_feat_entries;
@@ -1455,24 +1453,22 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 		}
 		if (!file->write_sparse_begin(
 				&m_datatype, m_name, prefix, spr_ptr->vec_index,
-				len_real))
-			return false;
+				len_real)) return false;
 		for (index_t i=0; i<len_real; i++) {
 			TSparseEntry<char>* cur = (TSparseEntry<char>*)
 				((char*) spr_ptr->features + i *TSGDataType
 				 ::sizeof_sparseentry(m_datatype.m_ptype));
 			if (!file->write_sparseentry_begin(
-					&m_datatype, m_name, prefix, cur->feat_index, i))
-				return false;
+					&m_datatype, m_name, prefix, spr_ptr->features,
+					cur->feat_index, i)) return false;
 			if (!save_ptype(file, &cur->entry, prefix)) return false;
 			if (!file->write_sparseentry_end(
-					&m_datatype, m_name, prefix, cur->feat_index, i))
-				return false;
+					&m_datatype, m_name, prefix, spr_ptr->features,
+					cur->feat_index, i)) return false;
 		}
 		if (!file->write_sparse_end(
 				&m_datatype, m_name, prefix, spr_ptr->vec_index,
-				len_real))
-			return false;
+				len_real)) return false;
 		break;
 	}
 
@@ -1514,8 +1510,7 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 	case ST_SPARSE:
 		if (!file->read_sparse_begin(
 				&m_datatype, m_name, prefix, &spr_ptr->vec_index,
-				&len_real))
-			return false;
+				&len_real)) return false;
 		spr_ptr->features = len_real > 0? (TSparseEntry<char>*)
 			new char[len_real *TSGDataType::sizeof_sparseentry(
 				m_datatype.m_ptype)]: NULL;
@@ -1524,17 +1519,16 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 				((char*) spr_ptr->features + i *TSGDataType
 				 ::sizeof_sparseentry(m_datatype.m_ptype));
 			if (!file->read_sparseentry_begin(
-					&m_datatype, m_name, prefix, &cur->feat_index, i))
-				return false;
+					&m_datatype, m_name, prefix, spr_ptr->features,
+					&cur->feat_index, i)) return false;
 			if (!load_ptype(file, &cur->entry, prefix)) return false;
 			if (!file->read_sparseentry_end(
-					&m_datatype, m_name, prefix, &cur->feat_index, i))
-				return false;
+					&m_datatype, m_name, prefix, spr_ptr->features,
+					&cur->feat_index, i)) return false;
 		}
 		if (!file->read_sparse_end(
 				&m_datatype, m_name, prefix, &spr_ptr->vec_index,
-				len_real))
-			return false;
+				len_real)) return false;
 		spr_ptr->num_feat_entries = len_real;
 		break;
 	}

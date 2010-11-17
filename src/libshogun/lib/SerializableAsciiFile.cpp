@@ -436,7 +436,8 @@ CSerializableAsciiFile::read_sparse_end_wrapped(
 
 bool
 CSerializableAsciiFile::write_sparseentry_begin_wrapped(
-	const TSGDataType* type, index_t feat_index, index_t y)
+	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	index_t feat_index, index_t y)
 {
 	if (fprintf(m_fstream, " %"PRIi32" %c", feat_index, CHAR_ITEM_BEGIN)
 		<= 0) return false;
@@ -446,7 +447,8 @@ CSerializableAsciiFile::write_sparseentry_begin_wrapped(
 
 bool
 CSerializableAsciiFile::read_sparseentry_begin_wrapped(
-	const TSGDataType* type, index_t* feat_index, index_t y)
+	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	index_t* feat_index, index_t y)
 {
 	if (fscanf(m_fstream, "%"PRIi32, feat_index) != 1) return false;
 	if (fgetc(m_fstream) != ' ') return false;
@@ -457,7 +459,8 @@ CSerializableAsciiFile::read_sparseentry_begin_wrapped(
 
 bool
 CSerializableAsciiFile::write_sparseentry_end_wrapped(
-	const TSGDataType* type, index_t feat_index, index_t y)
+	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	index_t feat_index, index_t y)
 {
 	if (fprintf(m_fstream, "%c", CHAR_ITEM_END) <= 0) return false;
 
@@ -466,7 +469,8 @@ CSerializableAsciiFile::write_sparseentry_end_wrapped(
 
 bool
 CSerializableAsciiFile::read_sparseentry_end_wrapped(
-	const TSGDataType* type, index_t* feat_index, index_t y)
+	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	index_t* feat_index, index_t y)
 {
 	if (fgetc(m_fstream) != CHAR_ITEM_END) return false;
 

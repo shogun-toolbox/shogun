@@ -31,9 +31,9 @@ IGNORE_IN_CLASSLIST class CSerializableHDF5File
 		int rank;
 		hsize_t dims[2];
 		hid_t dspace, dtype, dset;
-		hvl_t vltype;
-		index_t y, x;
-		TSparseEntry<PT_LONGEST> sparse_buf;
+		hvl_t* vltype;
+		index_t y, x, sub_y;
+		TSparseEntry<char>* sparse_ptr;
 		const char* name;
 	};
 
@@ -122,14 +122,18 @@ protected:
 		index_t length);
 
 	virtual bool write_sparseentry_begin_wrapped(
-		const TSGDataType* type, index_t feat_index, index_t y);
+		const TSGDataType* type, const TSparseEntry<char>* first_entry,
+		index_t feat_index, index_t y);
 	virtual bool read_sparseentry_begin_wrapped(
-		const TSGDataType* type, index_t* feat_index, index_t y);
+		const TSGDataType* type, TSparseEntry<char>* first_entry,
+		index_t* feat_index, index_t y);
 
 	virtual bool write_sparseentry_end_wrapped(
-		const TSGDataType* type, index_t feat_index, index_t y);
+		const TSGDataType* type, const TSparseEntry<char>* first_entry,
+		index_t feat_index, index_t y);
 	virtual bool read_sparseentry_end_wrapped(
-		const TSGDataType* type, index_t* feat_index, index_t y);
+		const TSGDataType* type, TSparseEntry<char>* first_entry,
+		index_t* feat_index, index_t y);
 
 	virtual bool write_item_begin_wrapped(
 		const TSGDataType* type, index_t y, index_t x);
