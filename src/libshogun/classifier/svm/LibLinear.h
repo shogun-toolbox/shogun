@@ -14,7 +14,6 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_LAPACK
 #include "lib/common.h"
 #include "lib/Parameter.h"
 #include "classifier/LinearClassifier.h"
@@ -41,6 +40,8 @@ namespace shogun
 		/// L1 regularized logistic regression
 		L1R_LR
 	};
+
+#ifdef HAVE_LAPACK
 
 /** @brief class to implement LibLinear */
 class CLibLinear : public CLinearClassifier
@@ -227,6 +228,25 @@ class CLibLinear : public CLinearClassifier
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;
 };
-}
+
+#else /* HAVE_LAPACK  */
+
+/** @brief class to implement LibLinear */
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CLibLinear : public CLinearClassifier
+{
+public:
+	/** default constructor  */
+	CLibLinear(void) {}
+
+	/** @return object name */
+	inline virtual const char* get_name() const {
+		return "LibLinear";
+	}
+};
+
 #endif //HAVE_LAPACK
+
+} /* namespace shogun  */
+
 #endif //_LIBLINEAR_H___

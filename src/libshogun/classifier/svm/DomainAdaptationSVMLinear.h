@@ -11,8 +11,6 @@
 #ifndef _DomainAdaptation_SVM_LINEAR_H___
 #define _DomainAdaptation_SVM_LINEAR_H___
 
-#ifdef HAVE_LAPACK
-
 #include "lib/common.h"
 #include "classifier/svm/LibLinear.h"
 
@@ -20,6 +18,9 @@
 
 namespace shogun
 {
+
+#ifdef HAVE_LAPACK
+
 /** @brief class DomainAdaptiveSVMLinear */
 class CDomainAdaptationSVMLinear : public CLibLinear
 {
@@ -147,8 +148,24 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 
 
 };
-}
 
+#else /* HAVE_LAPACK  */
+
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class CDomainAdaptationSVMLinear :public CLibLinear
+{
+public:
+	/** default constructor */
+	CDomainAdaptationSVMLinear(void) {}
+
+	/** @return object name */
+	inline virtual const char* get_name() const {
+		return "DomainAdaptationSVMLinear";
+	}
+};
 
 #endif //HAVE_LAPACK
+
+} /* namespace shogun  */
+
 #endif //_DomainAdaptation_SVM_LINEAR_H___
