@@ -7,13 +7,13 @@
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
-#ifndef __SERIALIZABLE_JSON_FILE_H__
-#define __SERIALIZABLE_JSON_FILE_H__
+#ifndef __SERIALIZABLE_HDF5_FILE_H__
+#define __SERIALIZABLE_HDF5_FILE_H__
 
 #include "lib/config.h"
-#ifdef HAVE_JSON
+#ifdef HAVE_HDF5
 
-#include <json/json.h>
+#include <hdf5.h>
 
 #include "lib/SerializableFile.h"
 #include "lib/DynamicArray.h"
@@ -21,19 +21,51 @@
 namespace shogun
 {
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CSerializableJSONFile
+IGNORE_IN_CLASSLIST class CSerializableHdf5File
 	:public CSerializableFile
 {
-	CDynamicArray<json_object*> m_stack_stream;
+	struct type_item_t {
+		explicit type_item_t(const char* name_);
+		~type_item_t(void);
+
+		int rank;
+		hsize_t dims[2];
+		hid_t dspace, dtype, dset;
+		hvl_t* vltype;
+		index_t y, x, sub_y;
+		TSparseEntry<char>* sparse_ptr;
+		const char* name;
+	};
+
+	CDynamicArray<type_item_t*> m_stack_type;
+	CDynamicArray<hid_t> m_stack_h5stream;
+
+	static hid_t sizeof_sparsetype(void);
+	static hid_t new_sparsetype(void);
+	static hobj_ref_t* get_ref_sparstype(void* sparse_buf);
+	static hid_t new_sparseentrytype(EPrimitiveType ptype);
+	static hid_t ptype2hdf5(EPrimitiveType ptype);
+	static hid_t new_stype2hdf5(EStructType stype,
+								EPrimitiveType ptype);
+	static bool isequal_stype2hdf5(EStructType stype,
+								   EPrimitiveType ptype, hid_t htype);
+	static bool index2string(char* dest, size_t n, EContainerType ctype,
+							 index_t y, index_t x);
 
 	void init(const char* fname);
-	void push_object(json_object* o);
-	void pop_object(void);
+	bool dspace_select(EContainerType ctype, index_t y, index_t x);
 
-	static bool get_object_any(json_object** dest, json_object* src,
-							   const char* key);
-	static bool get_object(json_object** dest, json_object* src,
-						   const char* key, json_type t);
+	bool attr_write_scalar(hid_t datatype, const char* name,
+						   const void* val);
+	bool attr_write_string(const char* name, const char* val);
+	bool attr_exists(const char* name);
+	size_t attr_get_size(const char* name);
+	bool attr_read_scalar(hid_t datatype, const char* name, void* val);
+	bool attr_read_string(const char* name, char* val, size_t n);
+
+	bool group_create(const char* name, const char* prefix);
+	bool group_open(const char* name, const char* prefix);
+	bool group_close(void);
 
 protected:
 	virtual bool write_scalar_wrapped(
@@ -143,26 +175,26 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerializableJSONFile(void);
+	explicit CSerializableHdf5File(void);
 
 	/** constructor
 	 *
 	 * @param fname filename to open
 	 * @param rw mode, 'r' or 'w'
 	 */
-	explicit CSerializableJSONFile(const char* fname, char rw='r');
+	explicit CSerializableHdf5File(const char* fname, char rw='r');
 
 	/** default destructor */
-	virtual ~CSerializableJSONFile();
+	virtual ~CSerializableHdf5File();
 
 	/** @return object name */
 	inline virtual const char* get_name() const {
-		return "SerializableJSONFile";
+		return "SerializableHdf5File";
 	}
 
 	virtual void close(void);
 	virtual bool is_opened(void);
 };
 }
-#endif /* HAVE_JSON  */
-#endif /* __SERIALIZABLE_JSON_FILE_H__  */
+#endif /* HAVE_HDF5  */
+#endif /* __SERIALIZABLE_HDF5_FILE_H__  */

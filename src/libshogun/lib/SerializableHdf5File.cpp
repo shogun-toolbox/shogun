@@ -11,11 +11,15 @@
 #include "lib/config.h"
 #ifdef HAVE_HDF5
 
-#include "lib/SerializableHDF5File.h"
+#include "lib/SerializableHdf5File.h"
 
 #define NOT_OPEN                   ((hid_t) -1)
 
 #define TYPE_INDEX                 H5T_NATIVE_INT32
+
+#define STR_KEY_FILETYPE           "filetype"
+#define STR_FILETYPE \
+	"_SHOGUN_SERIALIZABLE_HDF5_FILE_V_00_"
 
 #define STR_IS_SGSERIALIZABLE      "is_sgserializable"
 #define STR_IS_SPARSE              "is_sparse"
@@ -36,7 +40,7 @@
 
 using namespace shogun;
 
-CSerializableHDF5File::type_item_t::type_item_t(const char* name_)
+CSerializableHdf5File::type_item_t::type_item_t(const char* name_)
 {
 	rank = 0;
 	dims[0] = dims[1] = 0;
@@ -47,7 +51,7 @@ CSerializableHDF5File::type_item_t::type_item_t(const char* name_)
 	name = name_;
 }
 
-CSerializableHDF5File::type_item_t::~type_item_t(void)
+CSerializableHdf5File::type_item_t::~type_item_t(void)
 {
 	if (dset >= 0) H5Dclose(dset);
 	if (dtype >= 0) H5Tclose(dtype);
@@ -57,11 +61,11 @@ CSerializableHDF5File::type_item_t::~type_item_t(void)
 }
 
 hid_t
-CSerializableHDF5File::sizeof_sparsetype(void) {
+CSerializableHdf5File::sizeof_sparsetype(void) {
 	return H5Tget_size(TYPE_INDEX) + H5Tget_size(H5T_STD_REF_OBJ);
 }
 hid_t
-CSerializableHDF5File::new_sparsetype(void)
+CSerializableHdf5File::new_sparsetype(void)
 {
 	hid_t result = H5Tcreate(H5T_COMPOUND, sizeof_sparsetype());
 
@@ -74,13 +78,13 @@ CSerializableHDF5File::new_sparsetype(void)
 	return result;
 }
 hobj_ref_t*
-CSerializableHDF5File::get_ref_sparstype(void* sparse_buf) {
+CSerializableHdf5File::get_ref_sparstype(void* sparse_buf) {
 	return (hobj_ref_t*)
 		((char*) sparse_buf + H5Tget_size(TYPE_INDEX));
 }
 
 hid_t
-CSerializableHDF5File::new_sparseentrytype(EPrimitiveType ptype)
+CSerializableHdf5File::new_sparseentrytype(EPrimitiveType ptype)
 {
 	hid_t result = H5Tcreate(H5T_COMPOUND,
 							 TSGDataType::sizeof_sparseentry(ptype));
@@ -98,7 +102,7 @@ CSerializableHDF5File::new_sparseentrytype(EPrimitiveType ptype)
 
 
 hid_t
-CSerializableHDF5File::ptype2hdf5(EPrimitiveType ptype)
+CSerializableHdf5File::ptype2hdf5(EPrimitiveType ptype)
 {
 	switch (ptype) {
 	case PT_BOOL:
@@ -129,7 +133,7 @@ CSerializableHDF5File::ptype2hdf5(EPrimitiveType ptype)
 }
 
 hid_t
-CSerializableHDF5File::new_stype2hdf5(EStructType stype,
+CSerializableHdf5File::new_stype2hdf5(EStructType stype,
 									  EPrimitiveType ptype)
 {
 	hid_t result = ptype2hdf5(ptype);
@@ -144,7 +148,7 @@ CSerializableHDF5File::new_stype2hdf5(EStructType stype,
 }
 
 bool
-CSerializableHDF5File::index2string(
+CSerializableHdf5File::index2string(
 	char* dest, size_t n, EContainerType ctype, index_t y, index_t x)
 {
 	switch (ctype) {
@@ -157,7 +161,7 @@ CSerializableHDF5File::index2string(
 }
 
 bool
-CSerializableHDF5File::isequal_stype2hdf5(EStructType stype,
+CSerializableHdf5File::isequal_stype2hdf5(EStructType stype,
 										  EPrimitiveType ptype,
 										  hid_t htype)
 {
@@ -182,7 +186,7 @@ CSerializableHDF5File::isequal_stype2hdf5(EStructType stype,
 }
 
 bool
-CSerializableHDF5File::dspace_select(EContainerType ctype, index_t y,
+CSerializableHdf5File::dspace_select(EContainerType ctype, index_t y,
 									 index_t x)
 {
 	type_item_t* m = m_stack_type.back();
@@ -202,7 +206,7 @@ CSerializableHDF5File::dspace_select(EContainerType ctype, index_t y,
 }
 
 bool
-CSerializableHDF5File::attr_write_scalar(
+CSerializableHdf5File::attr_write_scalar(
 	hid_t datatype, const char* name, const void* val)
 {
 	hid_t dspace;
@@ -224,7 +228,7 @@ CSerializableHDF5File::attr_write_scalar(
 }
 
 bool
-CSerializableHDF5File::attr_write_string(
+CSerializableHdf5File::attr_write_string(
 	const char* name, const char* val)
 {
 	hid_t dtype;
@@ -239,13 +243,13 @@ CSerializableHDF5File::attr_write_string(
 }
 
 bool
-CSerializableHDF5File::attr_exists(const char* name)
+CSerializableHdf5File::attr_exists(const char* name)
 {
 	return H5Aexists(m_stack_h5stream.back(), name) > 0;
 }
 
 size_t
-CSerializableHDF5File::attr_get_size(const char* name)
+CSerializableHdf5File::attr_get_size(const char* name)
 {
 	if (!attr_exists(name)) return 0;
 
@@ -265,7 +269,7 @@ CSerializableHDF5File::attr_get_size(const char* name)
 }
 
 bool
-CSerializableHDF5File::attr_read_scalar(
+CSerializableHdf5File::attr_read_scalar(
 	hid_t datatype, const char* name, void* val)
 {
 	if (!attr_exists(name)) return false;
@@ -292,7 +296,7 @@ CSerializableHDF5File::attr_read_scalar(
 }
 
 bool
-CSerializableHDF5File::attr_read_string(
+CSerializableHdf5File::attr_read_string(
 	const char* name, char* val, size_t n)
 {
 	size_t size = attr_get_size(name);
@@ -310,7 +314,7 @@ CSerializableHDF5File::attr_read_string(
 }
 
 bool
-CSerializableHDF5File::group_create(const char* name,
+CSerializableHdf5File::group_create(const char* name,
 									const char* prefix)
 {
 	hid_t ngroup;
@@ -327,7 +331,7 @@ CSerializableHDF5File::group_create(const char* name,
 }
 
 bool
-CSerializableHDF5File::group_open(const char* name,
+CSerializableHdf5File::group_open(const char* name,
 								  const char* prefix)
 {
 	hid_t group;
@@ -343,7 +347,7 @@ CSerializableHDF5File::group_open(const char* name,
 }
 
 bool
-CSerializableHDF5File::group_close(void)
+CSerializableHdf5File::group_close(void)
 {
 	if (H5Gclose(m_stack_h5stream.back()) < 0) return false;
 	m_stack_h5stream.pop_back();
@@ -351,17 +355,17 @@ CSerializableHDF5File::group_close(void)
 	return true;
 }
 
-CSerializableHDF5File::CSerializableHDF5File(void)
+CSerializableHdf5File::CSerializableHdf5File(void)
 	:CSerializableFile() { init(""); }
 
-CSerializableHDF5File::CSerializableHDF5File(const char* fname, char rw)
+CSerializableHdf5File::CSerializableHdf5File(const char* fname, char rw)
 	:CSerializableFile()
 {
 	CSerializableFile::init(NULL, rw, fname);
 	init(fname);
 }
 
-CSerializableHDF5File::~CSerializableHDF5File()
+CSerializableHdf5File::~CSerializableHdf5File()
 {
 	while (m_stack_type.get_num_elements() > 0) {
 		delete m_stack_type.back(); m_stack_type.pop_back();
@@ -371,14 +375,14 @@ CSerializableHDF5File::~CSerializableHDF5File()
 }
 
 void
-CSerializableHDF5File::init(const char* fname)
+CSerializableHdf5File::init(const char* fname)
 {
 	if (m_filename == NULL || *m_filename == '\0') {
 		SG_WARNING("Filename not given for opening file!\n");
 		close(); return;
 	}
 
-	hid_t h5stream;
+	hid_t h5stream = NOT_OPEN;
 	switch (m_task) {
 	case 'w':
 		h5stream = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT,
@@ -388,7 +392,9 @@ CSerializableHDF5File::init(const char* fname)
 		h5stream = H5Fopen(fname, H5F_ACC_RDONLY, H5P_DEFAULT);
 		break;
 	default:
-		break;
+		SG_WARNING("Could not open file `%s', unknown mode!\n",
+				   m_filename);
+		close(); return;
 	}
 
 	if (h5stream < 0) {
@@ -397,10 +403,28 @@ CSerializableHDF5File::init(const char* fname)
 	}
 
 	m_stack_h5stream.push_back(h5stream);
+	switch (m_task) {
+	case 'w':
+		if (!attr_write_string(STR_KEY_FILETYPE, STR_FILETYPE)) {
+			SG_WARNING("%s: Could not open file for writing during "
+					   "writing filetype!\n", fname);
+			close(); return;
+		}
+		break;
+	case 'r':
+		string_t buf;
+			if (!attr_read_string(STR_KEY_FILETYPE, buf, STRING_LEN)
+				|| strcmp(STR_FILETYPE, buf) != 0) {
+			SG_WARNING("%s: Not a Serializable HDF5 file!\n", fname);
+			close(); return;
+		}
+		break;
+	default: break;
+	}
 }
 
 void
-CSerializableHDF5File::close(void)
+CSerializableHdf5File::close(void)
 {
 	while (m_stack_h5stream.get_num_elements() > 1) {
 		if (m_stack_h5stream.back() >= 0)
@@ -416,13 +440,13 @@ CSerializableHDF5File::close(void)
 }
 
 bool
-CSerializableHDF5File::is_opened(void)
+CSerializableHdf5File::is_opened(void)
 {
 	return m_stack_h5stream.get_num_elements() > 0;
 }
 
 bool
-CSerializableHDF5File::write_scalar_wrapped(
+CSerializableHdf5File::write_scalar_wrapped(
 	const TSGDataType* type, const void* param)
 {
 	type_item_t* m = m_stack_type.back();
@@ -474,7 +498,7 @@ CSerializableHDF5File::write_scalar_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_scalar_wrapped(
+CSerializableHdf5File::read_scalar_wrapped(
 	const TSGDataType* type, void* param)
 {
 	type_item_t* m = m_stack_type.back();
@@ -523,7 +547,7 @@ CSerializableHDF5File::read_scalar_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_cont_begin_wrapped(
+CSerializableHdf5File::write_cont_begin_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
 	hbool_t bool_buf = true;
@@ -540,7 +564,7 @@ CSerializableHDF5File::write_cont_begin_wrapped(
 	switch (type->m_ctype) {
 	case CT_SCALAR:
 		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
-				 "during writing HDF5File!");
+				 "during writing Hdf5File!");
 		return false;
 	case CT_MATRIX:
 		if (!attr_write_scalar(TYPE_INDEX, STR_LENGTH_X, &len_real_x))
@@ -556,7 +580,7 @@ CSerializableHDF5File::write_cont_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_cont_begin_wrapped(
+CSerializableHdf5File::read_cont_begin_wrapped(
 	const TSGDataType* type, index_t* len_read_y, index_t* len_read_x)
 {
 	type_item_t* m = m_stack_type.back();
@@ -565,7 +589,7 @@ CSerializableHDF5File::read_cont_begin_wrapped(
 		switch (type->m_ctype) {
 		case CT_SCALAR:
 			SG_ERROR("read_cont_begin_wrapped(): Implementation error"
-					 " during writing HDF5File (0)!");
+					 " during writing Hdf5File (0)!");
 			return false;
 		case CT_VECTOR: *len_read_y = m->dims[0]; break;
 		case CT_MATRIX:
@@ -587,7 +611,7 @@ CSerializableHDF5File::read_cont_begin_wrapped(
 	switch (type->m_ctype) {
 	case CT_SCALAR:
 		SG_ERROR("read_cont_begin_wrapped(): Implementation error"
-				 " during writing HDF5File (1)!");
+				 " during writing Hdf5File (1)!");
 		return false;
 	case CT_MATRIX:
 		if (!attr_read_scalar(TYPE_INDEX, STR_LENGTH_X, len_read_x))
@@ -603,21 +627,21 @@ CSerializableHDF5File::read_cont_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_cont_end_wrapped(
+CSerializableHdf5File::write_cont_end_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
 	return true;
 }
 
 bool
-CSerializableHDF5File::read_cont_end_wrapped(
+CSerializableHdf5File::read_cont_end_wrapped(
 	const TSGDataType* type, index_t len_read_y, index_t len_read_x)
 {
 	return true;
 }
 
 bool
-CSerializableHDF5File::write_string_begin_wrapped(
+CSerializableHdf5File::write_string_begin_wrapped(
 	const TSGDataType* type, index_t length)
 {
 	type_item_t* m = m_stack_type.back();
@@ -628,7 +652,7 @@ CSerializableHDF5File::write_string_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_string_begin_wrapped(
+CSerializableHdf5File::read_string_begin_wrapped(
 	const TSGDataType* type, index_t* length)
 {
 	type_item_t* m = m_stack_type.back();
@@ -645,21 +669,21 @@ CSerializableHDF5File::read_string_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_string_end_wrapped(
+CSerializableHdf5File::write_string_end_wrapped(
 	const TSGDataType* type, index_t length)
 {
 	return true;
 }
 
 bool
-CSerializableHDF5File::read_string_end_wrapped(
+CSerializableHdf5File::read_string_end_wrapped(
 	const TSGDataType* type, index_t length)
 {
 	return true;
 }
 
 bool
-CSerializableHDF5File::write_stringentry_begin_wrapped(
+CSerializableHdf5File::write_stringentry_begin_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	type_item_t* m = m_stack_type.back();
@@ -670,7 +694,7 @@ CSerializableHDF5File::write_stringentry_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_stringentry_begin_wrapped(
+CSerializableHdf5File::read_stringentry_begin_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	type_item_t* m = m_stack_type.back();
@@ -681,21 +705,21 @@ CSerializableHDF5File::read_stringentry_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_stringentry_end_wrapped(
+CSerializableHdf5File::write_stringentry_end_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	return true;
 }
 
 bool
-CSerializableHDF5File::read_stringentry_end_wrapped(
+CSerializableHdf5File::read_stringentry_end_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	return true;
 }
 
 bool
-CSerializableHDF5File::write_sparse_begin_wrapped(
+CSerializableHdf5File::write_sparse_begin_wrapped(
 	const TSGDataType* type, index_t vec_index,
 	index_t length)
 {
@@ -766,7 +790,7 @@ CSerializableHDF5File::write_sparse_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_sparse_begin_wrapped(
+CSerializableHdf5File::read_sparse_begin_wrapped(
 	const TSGDataType* type, index_t* vec_index,
 	index_t* length)
 {
@@ -831,7 +855,7 @@ CSerializableHDF5File::read_sparse_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_sparse_end_wrapped(
+CSerializableHdf5File::write_sparse_end_wrapped(
 	const TSGDataType* type, index_t vec_index,
 	index_t length)
 {
@@ -842,7 +866,7 @@ CSerializableHDF5File::write_sparse_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_sparse_end_wrapped(
+CSerializableHdf5File::read_sparse_end_wrapped(
 	const TSGDataType* type, index_t* vec_index,
 	index_t length)
 {
@@ -853,7 +877,7 @@ CSerializableHDF5File::read_sparse_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_sparseentry_begin_wrapped(
+CSerializableHdf5File::write_sparseentry_begin_wrapped(
 	const TSGDataType* type, const TSparseEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
@@ -866,7 +890,7 @@ CSerializableHDF5File::write_sparseentry_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_sparseentry_begin_wrapped(
+CSerializableHdf5File::read_sparseentry_begin_wrapped(
 	const TSGDataType* type, TSparseEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
@@ -879,7 +903,7 @@ CSerializableHDF5File::read_sparseentry_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_sparseentry_end_wrapped(
+CSerializableHdf5File::write_sparseentry_end_wrapped(
 	const TSGDataType* type, const TSparseEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
@@ -887,7 +911,7 @@ CSerializableHDF5File::write_sparseentry_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_sparseentry_end_wrapped(
+CSerializableHdf5File::read_sparseentry_end_wrapped(
 	const TSGDataType* type, TSparseEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
@@ -895,7 +919,7 @@ CSerializableHDF5File::read_sparseentry_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_item_begin_wrapped(
+CSerializableHdf5File::write_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	type_item_t* m = m_stack_type.back();
@@ -912,7 +936,7 @@ CSerializableHDF5File::write_item_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_item_begin_wrapped(
+CSerializableHdf5File::read_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	type_item_t* m = m_stack_type.back();
@@ -929,7 +953,7 @@ CSerializableHDF5File::read_item_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_item_end_wrapped(
+CSerializableHdf5File::write_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	if (type->m_ptype == PT_SGSERIALIZABLE_PTR)
@@ -939,7 +963,7 @@ CSerializableHDF5File::write_item_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_item_end_wrapped(
+CSerializableHdf5File::read_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	if (type->m_ptype == PT_SGSERIALIZABLE_PTR)
@@ -949,7 +973,7 @@ CSerializableHDF5File::read_item_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_sgserializable_begin_wrapped(
+CSerializableHdf5File::write_sgserializable_begin_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
 	EPrimitiveType generic)
 {
@@ -978,7 +1002,7 @@ CSerializableHDF5File::write_sgserializable_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_sgserializable_begin_wrapped(
+CSerializableHdf5File::read_sgserializable_begin_wrapped(
 	const TSGDataType* type, char* sgserializable_name,
 	EPrimitiveType* generic)
 {
@@ -1003,7 +1027,7 @@ CSerializableHDF5File::read_sgserializable_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_sgserializable_end_wrapped(
+CSerializableHdf5File::write_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
 	EPrimitiveType generic)
 {
@@ -1011,7 +1035,7 @@ CSerializableHDF5File::write_sgserializable_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_sgserializable_end_wrapped(
+CSerializableHdf5File::read_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
 	EPrimitiveType generic)
 {
@@ -1019,7 +1043,7 @@ CSerializableHDF5File::read_sgserializable_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_type_begin_wrapped(
+CSerializableHdf5File::write_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	type_item_t* m = new type_item_t(name); m_stack_type.push_back(m);
@@ -1065,7 +1089,7 @@ CSerializableHDF5File::write_type_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_type_begin_wrapped(
+CSerializableHdf5File::read_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	type_item_t* m = new type_item_t(name); m_stack_type.push_back(m);
@@ -1112,7 +1136,7 @@ CSerializableHDF5File::read_type_begin_wrapped(
 }
 
 bool
-CSerializableHDF5File::write_type_end_wrapped(
+CSerializableHdf5File::write_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	if (type->m_ptype == PT_SGSERIALIZABLE_PTR)
@@ -1123,7 +1147,7 @@ CSerializableHDF5File::write_type_end_wrapped(
 }
 
 bool
-CSerializableHDF5File::read_type_end_wrapped(
+CSerializableHdf5File::read_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	if (type->m_ptype == PT_SGSERIALIZABLE_PTR)

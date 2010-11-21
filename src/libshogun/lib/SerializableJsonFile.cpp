@@ -11,7 +11,11 @@
 #include "lib/config.h"
 #ifdef HAVE_JSON
 
-#include "lib/SerializableJSONFile.h"
+#include "lib/SerializableJsonFile.h"
+
+#define STR_KEY_FILETYPE           "filetype"
+#define STR_FILETYPE \
+	"_SHOGUN_SERIALIZABLE_JSON_FILE_V_00_"
 
 #define STR_KEY_TYPE               "type"
 #define STR_KEY_DATA               "data"
@@ -25,31 +29,31 @@
 
 using namespace shogun;
 
-CSerializableJSONFile::CSerializableJSONFile(void)
+CSerializableJsonFile::CSerializableJsonFile(void)
 	:CSerializableFile() { init(""); }
 
-CSerializableJSONFile::CSerializableJSONFile(const char* fname, char rw)
+CSerializableJsonFile::CSerializableJsonFile(const char* fname, char rw)
 	:CSerializableFile()
 {
 	CSerializableFile::init(NULL, rw, fname);
 	init(fname);
 }
 
-CSerializableJSONFile::~CSerializableJSONFile()
+CSerializableJsonFile::~CSerializableJsonFile()
 {
 	close();
 }
 
 void
-CSerializableJSONFile::push_object(json_object* o)
+CSerializableJsonFile::push_object(json_object* o)
 { m_stack_stream.push_back(o); json_object_get(o); }
 
 void
-CSerializableJSONFile::pop_object(void)
+CSerializableJsonFile::pop_object(void)
 { json_object_put(m_stack_stream.back()); m_stack_stream.pop_back(); }
 
 bool
-CSerializableJSONFile::get_object_any(
+CSerializableJsonFile::get_object_any(
 	json_object** dest, json_object* src, const char* key)
 {
 	*dest = json_object_object_get(src, key);
@@ -58,7 +62,7 @@ CSerializableJSONFile::get_object_any(
 }
 
 bool
-CSerializableJSONFile::get_object(json_object** dest, json_object* src,
+CSerializableJsonFile::get_object(json_object** dest, json_object* src,
 								  const char* key, json_type t)
 {
 	*dest = json_object_object_get(src, key);
@@ -68,27 +72,50 @@ CSerializableJSONFile::get_object(json_object** dest, json_object* src,
 }
 
 void
-CSerializableJSONFile::init(const char* fname)
+CSerializableJsonFile::init(const char* fname)
 {
 	if (m_filename == NULL || *m_filename == '\0') {
 		SG_WARNING("Filename not given for opening file!\n");
 		close(); return;
 	}
 
-	if (m_task == 'r') {
-		json_object* buf = json_object_from_file((char*) fname);
+	json_object* buf;
+	switch (m_task) {
+	case 'r':
+		buf = json_object_from_file((char*) fname);
 		if (is_error(buf)) {
 			SG_WARNING("Could not open file `%s' for reading!\n",
 					   fname);
 			return;
 		}
 		push_object(buf);
-	} else
+
+		const char* ftype;
+		if ((buf = json_object_object_get(buf, STR_KEY_FILETYPE))
+			== NULL || is_error(buf)
+			|| (ftype = json_object_get_string(buf)) == NULL
+			|| is_error(buf) || strcmp(ftype, STR_FILETYPE) != 0)
+		{
+			SG_WARNING("%s: Not a Serializable JSON file!\n", fname);
+			close(); return;
+		}
+		break;
+	case 'w':
 		push_object(json_object_new_object());
+
+		buf = json_object_new_string(STR_FILETYPE);
+		json_object_object_add(m_stack_stream.back(),
+							   STR_KEY_FILETYPE, buf);
+		break;
+	default:
+		SG_WARNING("Could not open file `%s', unknown mode!\n",
+				   m_filename);
+		close(); return;
+	}
 }
 
 void
-CSerializableJSONFile::close(void)
+CSerializableJsonFile::close(void)
 {
 	while (m_stack_stream.get_num_elements() > 1)
 		pop_object();
@@ -107,13 +134,13 @@ CSerializableJSONFile::close(void)
 }
 
 bool
-CSerializableJSONFile::is_opened(void)
+CSerializableJsonFile::is_opened(void)
 {
 	return m_stack_stream.get_num_elements() > 0;
 }
 
 bool
-CSerializableJSONFile::write_scalar_wrapped(
+CSerializableJsonFile::write_scalar_wrapped(
 	const TSGDataType* type, const void* param)
 {
 	switch (type->m_ptype) {
@@ -161,7 +188,7 @@ CSerializableJSONFile::write_scalar_wrapped(
 		break;
 	case PT_SGSERIALIZABLE_PTR:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing JSONFile!");
+				 " writing JsonFile!");
 		return false;
 	}
 
@@ -171,7 +198,7 @@ CSerializableJSONFile::write_scalar_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_scalar_wrapped(
+CSerializableJsonFile::read_scalar_wrapped(
 	const TSGDataType* type, void* param)
 {
 	switch (type->m_ptype) {
@@ -255,7 +282,7 @@ CSerializableJSONFile::read_scalar_wrapped(
 		break;
 	case PT_SGSERIALIZABLE_PTR:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing JSONFile!");
+				 " writing JsonFile!");
 		return false;
 	}
 
@@ -263,7 +290,7 @@ CSerializableJSONFile::read_scalar_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_cont_begin_wrapped(
+CSerializableJsonFile::write_cont_begin_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
 	push_object(json_object_new_array());
@@ -276,7 +303,7 @@ CSerializableJSONFile::write_cont_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_cont_begin_wrapped(
+CSerializableJsonFile::read_cont_begin_wrapped(
 	const TSGDataType* type, index_t* len_read_y, index_t* len_read_x)
 {
 	if (!json_object_is_type(m_stack_stream.back(), json_type_array))
@@ -302,21 +329,21 @@ CSerializableJSONFile::read_cont_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_cont_end_wrapped(
+CSerializableJsonFile::write_cont_end_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
 	return true;
 }
 
 bool
-CSerializableJSONFile::read_cont_end_wrapped(
+CSerializableJsonFile::read_cont_end_wrapped(
 	const TSGDataType* type, index_t len_read_y, index_t len_read_x)
 {
 	return true;
 }
 
 bool
-CSerializableJSONFile::write_string_begin_wrapped(
+CSerializableJsonFile::write_string_begin_wrapped(
 	const TSGDataType* type, index_t length)
 {
 	push_object(json_object_new_array());
@@ -325,7 +352,7 @@ CSerializableJSONFile::write_string_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_string_begin_wrapped(
+CSerializableJsonFile::read_string_begin_wrapped(
 	const TSGDataType* type, index_t* length)
 {
 	if (!json_object_is_type(m_stack_stream.back(), json_type_array))
@@ -337,28 +364,28 @@ CSerializableJSONFile::read_string_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_string_end_wrapped(
+CSerializableJsonFile::write_string_end_wrapped(
 	const TSGDataType* type, index_t length)
 {
 	return true;
 }
 
 bool
-CSerializableJSONFile::read_string_end_wrapped(
+CSerializableJsonFile::read_string_end_wrapped(
 	const TSGDataType* type, index_t length)
 {
 	return true;
 }
 
 bool
-CSerializableJSONFile::write_stringentry_begin_wrapped(
+CSerializableJsonFile::write_stringentry_begin_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	return true;
 }
 
 bool
-CSerializableJSONFile::read_stringentry_begin_wrapped(
+CSerializableJsonFile::read_stringentry_begin_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	json_object* buf = json_object_array_get_idx(
@@ -370,7 +397,7 @@ CSerializableJSONFile::read_stringentry_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_stringentry_end_wrapped(
+CSerializableJsonFile::write_stringentry_end_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	json_object* array = m_stack_stream.get_element(
@@ -384,7 +411,7 @@ CSerializableJSONFile::write_stringentry_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_stringentry_end_wrapped(
+CSerializableJsonFile::read_stringentry_end_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	pop_object();
@@ -392,7 +419,7 @@ CSerializableJSONFile::read_stringentry_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_sparse_begin_wrapped(
+CSerializableJsonFile::write_sparse_begin_wrapped(
 	const TSGDataType* type, index_t vec_index,
 	index_t length)
 {
@@ -413,7 +440,7 @@ CSerializableJSONFile::write_sparse_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_sparse_begin_wrapped(
+CSerializableJsonFile::read_sparse_begin_wrapped(
 	const TSGDataType* type, index_t* vec_index,
 	index_t* length)
 {
@@ -436,7 +463,7 @@ CSerializableJSONFile::read_sparse_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_sparse_end_wrapped(
+CSerializableJsonFile::write_sparse_end_wrapped(
 	const TSGDataType* type, index_t vec_index,
 	index_t length)
 {
@@ -445,7 +472,7 @@ CSerializableJSONFile::write_sparse_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_sparse_end_wrapped(
+CSerializableJsonFile::read_sparse_end_wrapped(
 	const TSGDataType* type, index_t* vec_index,
 	index_t length)
 {
@@ -454,7 +481,7 @@ CSerializableJSONFile::read_sparse_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_sparseentry_begin_wrapped(
+CSerializableJsonFile::write_sparseentry_begin_wrapped(
 	const TSGDataType* type, const TSparseEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
@@ -472,7 +499,7 @@ CSerializableJSONFile::write_sparseentry_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_sparseentry_begin_wrapped(
+CSerializableJsonFile::read_sparseentry_begin_wrapped(
 	const TSGDataType* type, TSparseEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
@@ -494,7 +521,7 @@ CSerializableJSONFile::read_sparseentry_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_sparseentry_end_wrapped(
+CSerializableJsonFile::write_sparseentry_end_wrapped(
 	const TSGDataType* type, const TSparseEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
@@ -509,7 +536,7 @@ CSerializableJSONFile::write_sparseentry_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_sparseentry_end_wrapped(
+CSerializableJsonFile::read_sparseentry_end_wrapped(
 	const TSGDataType* type, TSparseEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
@@ -518,14 +545,14 @@ CSerializableJSONFile::read_sparseentry_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_item_begin_wrapped(
+CSerializableJsonFile::write_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	return true;
 }
 
 bool
-CSerializableJSONFile::read_item_begin_wrapped(
+CSerializableJsonFile::read_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	json_object* buf = m_stack_stream.back();
@@ -539,7 +566,7 @@ CSerializableJSONFile::read_item_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_item_end_wrapped(
+CSerializableJsonFile::write_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	json_object* array = m_stack_stream.get_element(
@@ -555,7 +582,7 @@ CSerializableJSONFile::write_item_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_item_end_wrapped(
+CSerializableJsonFile::read_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	pop_object();
@@ -563,7 +590,7 @@ CSerializableJSONFile::read_item_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_sgserializable_begin_wrapped(
+CSerializableJsonFile::write_sgserializable_begin_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
 	EPrimitiveType generic)
 {
@@ -598,7 +625,7 @@ CSerializableJSONFile::write_sgserializable_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_sgserializable_begin_wrapped(
+CSerializableJsonFile::read_sgserializable_begin_wrapped(
 	const TSGDataType* type, char* sgserializable_name,
 	EPrimitiveType* generic)
 {
@@ -630,7 +657,7 @@ CSerializableJSONFile::read_sgserializable_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_sgserializable_end_wrapped(
+CSerializableJsonFile::write_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
 	EPrimitiveType generic)
 {
@@ -641,7 +668,7 @@ CSerializableJSONFile::write_sgserializable_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_sgserializable_end_wrapped(
+CSerializableJsonFile::read_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
 	EPrimitiveType generic)
 {
@@ -652,7 +679,7 @@ CSerializableJSONFile::read_sgserializable_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_type_begin_wrapped(
+CSerializableJsonFile::write_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	json_object* buf = json_object_new_object();
@@ -671,7 +698,7 @@ CSerializableJSONFile::write_type_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_type_begin_wrapped(
+CSerializableJsonFile::read_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	if (!json_object_is_type(m_stack_stream.back(), json_type_object))
@@ -695,7 +722,7 @@ CSerializableJSONFile::read_type_begin_wrapped(
 }
 
 bool
-CSerializableJSONFile::write_type_end_wrapped(
+CSerializableJsonFile::write_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	json_object_object_add(
@@ -709,7 +736,7 @@ CSerializableJSONFile::write_type_end_wrapped(
 }
 
 bool
-CSerializableJSONFile::read_type_end_wrapped(
+CSerializableJsonFile::read_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	pop_object();

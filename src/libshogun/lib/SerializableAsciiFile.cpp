@@ -65,7 +65,9 @@ CSerializableAsciiFile::init(void)
 		}
 		break;
 	default:
-		break;
+		SG_WARNING("Could not open file `%s', unknown mode!\n",
+				   m_filename);
+		close(); return;
 	}
 
 	m_stack_fpos.push_back(ftell(m_fstream));
@@ -240,7 +242,7 @@ CSerializableAsciiFile::read_scalar_wrapped(
 		break;
 	case PT_SGSERIALIZABLE_PTR:
 		SG_ERROR("read_scalar_wrapped(): Implementation error during"
-				 " writing AsciiFile!");
+				 " reading AsciiFile!");
 		return false;
 	}
 

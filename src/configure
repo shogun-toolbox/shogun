@@ -49,6 +49,7 @@ _swig_version=0.0.0
 _readline=auto
 _hdf5=auto
 _json=auto
+_xml=auto
 _r=no
 if [ -e libshogun/classifier/svm/SVMLight.cpp ]; then
   _svm_light=yes
@@ -750,6 +751,7 @@ Optional features:
   --enable-boost-serialization  enable boost serialization support [disabled]
   --enable-hdf5                 enable hdf5 file support [auto]
   --enable-json                 enable json file support [auto]
+  --enable-xml                  enable xml file support [auto]
   --enable-readline             enable readline in cmdline interface [auto]
   --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
   --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [enabled]
@@ -759,6 +761,7 @@ Optional features:
   --disable-boost-serialization disable boost serialization support [disable]
   --disable-hdf5                disable hdf5 file support [auto]
   --disable-json                disable json file support [auto]
+  --disable-xml                 disable xml file support [auto]
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
   --disable-lapack              disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-cplex               disable code using CPLEX  [auto]
@@ -919,6 +922,8 @@ for ac_option do
   --enable-hdf5)		_hdf5=yes	;;
   --disable-json)		_json=no	;;
   --enable-json)		_json=yes	;;
+  --disable-xml)		_xml=no	        ;;
+  --enable-xml)		        _xml=yes	;;
   --disable-svm-light)	_svm_light=no;	_gpl=yes;;
   --enable-svm-light)	_svm_light=yes; _gpl=no;;
   --disable-readline)	_readline=no	;;
@@ -2189,6 +2194,32 @@ fi
   fi
 }
 
+get_cflags()
+{
+    def=$1; pkgs="${*#$def}"
+    if test -n "`which pkg-config`"; then
+	for i in $pkgs; do
+	    if pkg-config --exists $i; then
+		pkg-config --cflags $i; return
+	    fi
+	done
+    fi
+    echo $def
+}
+
+get_lflags()
+{
+    def=$1; pkgs="${*#$def}"
+    if test -n "`which pkg-config`"; then
+	for i in $pkgs; do
+	    if pkg-config --exists $i; then
+		pkg-config --libs $i; return
+	    fi
+	done
+    fi
+    echo $def
+}
+
 set_opts()
 {
 	if echo " $MACHINE " | grep "iPhone" >/dev/null
@@ -2369,6 +2400,8 @@ EOF
 
 			if test "$_hdf5" = yes || test "$_hdf5" = auto
 			then
+			    _cflags=`get_cflags '' libhdf5 hdf5`
+			    _lflags=`get_lflags '-lhdf5' libhdf5 hdf5`
 cat > $TMPC << EOF
 #include <hdf5.h>
 int main(void)
@@ -2380,11 +2413,12 @@ int main(void)
 }
 EOF
 				echocheck "HDF5 (>= 1.8.0) support"
-				if cc_check -lhdf5
+				if cc_check $_cflags $_lflags
 				then
 					HAVE_HDF5='#define HAVE_HDF5 1'
 					DEFINES="$DEFINES -DHAVE_HDF5"
-					LINKFLAGS="$LINKFLAGS -lhdf5"
+					INCLUDES="$INCLUDES $_cflags"
+					LINKFLAGS="$LINKFLAGS $_lflags"
 					echores "yes"
 				else
 					echores "no"
@@ -2393,8 +2427,10 @@ EOF
 
 			if test "$_json" = yes || test "$_json" = auto
 			then
+			    _cflags=`get_cflags '' libjson json json-c`
+			    _lflags=`get_lflags '-ljson' libjson json json-c`
 cat > $TMPC << EOF
-#include <json/json.h>
+#include <json.h>
 int main(void)
 {
 	json_object* x = json_object_new_object();
@@ -2404,11 +2440,44 @@ int main(void)
 }
 EOF
 				echocheck "libjson (json-c)"
-				if cc_check -ljson
+				if cc_check $_cflags $_lflags
 				then
 					HAVE_JSON='#define HAVE_JSON 1'
 					DEFINES="$DEFINES -DHAVE_JSON"
-					LINKFLAGS="$LINKFLAGS -ljson"
+					INCLUDES="$INCLUDES $_cflags"
+					LINKFLAGS="$LINKFLAGS $_lflags"
+					echores "yes"
+				else
+					echores "no"
+				fi
+			fi
+
+			if test "$_xml" = yes || test "$_xml" = auto
+			then
+			    _cflags=`get_cflags '' libxml-2.0 libxml2 xml2`
+			    _lflags=`get_lflags '-lxml2' libxml-2.0 libxml2 xml2`
+cat > $TMPC << EOF
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
+int main(void)
+{
+	LIBXML_TEST_VERSION;
+
+	xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
+	xmlFreeDoc(doc);
+	xmlCleanupParser();
+
+	return 0;
+}
+EOF
+				echocheck "libxml2"
+				if cc_check $_cflags $_lflags
+				then
+					HAVE_XML='#define HAVE_XML 1'
+					DEFINES="$DEFINES -DHAVE_XML"
+					INCLUDES="$INCLUDES $_cflags"
+					LINKFLAGS="$LINKFLAGS $_lflags"
 					echores "yes"
 				else
 					echores "no"
@@ -3943,6 +4012,7 @@ cat >"$1" <<EOF
 $HAVE_READLINE
 $HAVE_HDF5
 $HAVE_JSON
+$HAVE_XML
 $HAVE_LARGEFILE
 $HAVE_DOXYGEN
 $HAVE_LAPACK

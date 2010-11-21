@@ -1423,7 +1423,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 		len_real = str_ptr->length;
 		if (str_ptr->string == NULL && len_real != 0) {
 			SG_WARNING("Inconsistence between data structure and "
-					   "len during saving string `%s%s'.!  Continuing"
+					   "len during saving string `%s%s'!  Continuing"
 					   " with len=0.\n",
 					   prefix, m_name);
 			len_real = 0;
@@ -1446,7 +1446,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 		len_real = spr_ptr->num_feat_entries;
 		if (spr_ptr->features == NULL && len_real != 0) {
 			SG_WARNING("Inconsistence between data structure and "
-					   "len during saving sparse `%s%s'.!  Continuing"
+					   "len during saving sparse `%s%s'!  Continuing"
 					   " with len=0.\n",
 					   prefix, m_name);
 			len_real = 0;
@@ -1567,8 +1567,8 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 			len_real_x = *m_datatype.m_length_x;
 			if (*(void**) m_parameter == NULL && len_real_x != 0) {
 				SG_WARNING("Inconsistence between data structure and "
-						   "len_x during saving `%s%s'.!  Continuing with "
-						   "len_x=0.\n",
+						   "len_x during saving `%s%s'!  Continuing "
+						   "with len_x=0.\n",
 						   prefix, m_name);
 				len_real_x = 0;
 			}
