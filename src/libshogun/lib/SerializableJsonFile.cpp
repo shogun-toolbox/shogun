@@ -12,20 +12,11 @@
 #ifdef HAVE_JSON
 
 #include "lib/SerializableJsonFile.h"
+#include "lib/SerializableJsonReader00.h"
 
 #define STR_KEY_FILETYPE           "filetype"
-#define STR_FILETYPE \
+#define STR_FILETYPE_00 \
 	"_SHOGUN_SERIALIZABLE_JSON_FILE_V_00_"
-
-#define STR_KEY_TYPE               "type"
-#define STR_KEY_DATA               "data"
-#define STR_KEY_INSTANCE_NAME      "instance_name"
-#define STR_KEY_INSTANCE           "instance"
-#define STR_KEY_GENERIC_NAME       "generic_name"
-#define STR_KEY_SPARSE_VECINDEX    "vec_index"
-#define STR_KEY_SPARSE_FEATURES    "features"
-#define STR_KEY_SPARSE_FEATINDEX   "feat_index"
-#define STR_KEY_SPARSE_ENTRY       "entry"
 
 using namespace shogun;
 
@@ -42,6 +33,26 @@ CSerializableJsonFile::CSerializableJsonFile(const char* fname, char rw)
 CSerializableJsonFile::~CSerializableJsonFile()
 {
 	close();
+}
+
+CSerializableFile::TSerializableReader*
+CSerializableJsonFile::new_reader(char* dest_version, size_t n)
+{
+	const char* ftype;
+	json_object* buf;
+
+	if ((buf = json_object_object_get(
+			 m_stack_stream.back(), STR_KEY_FILETYPE)) == NULL
+		|| is_error(buf)
+		|| (ftype = json_object_get_string(buf)) == NULL)
+		return NULL;
+
+	strncpy(dest_version, ftype, n);
+
+	if (strcmp(STR_FILETYPE_00, dest_version) == 0)
+		return new SerializableJsonReader00(this);
+
+	return NULL;
 }
 
 void
@@ -89,21 +100,11 @@ CSerializableJsonFile::init(const char* fname)
 			return;
 		}
 		push_object(buf);
-
-		const char* ftype;
-		if ((buf = json_object_object_get(buf, STR_KEY_FILETYPE))
-			== NULL || is_error(buf)
-			|| (ftype = json_object_get_string(buf)) == NULL
-			|| is_error(buf) || strcmp(ftype, STR_FILETYPE) != 0)
-		{
-			SG_WARNING("%s: Not a Serializable JSON file!\n", fname);
-			close(); return;
-		}
 		break;
 	case 'w':
 		push_object(json_object_new_object());
 
-		buf = json_object_new_string(STR_FILETYPE);
+		buf = json_object_new_string(STR_FILETYPE_00);
 		json_object_object_add(m_stack_stream.back(),
 							   STR_KEY_FILETYPE, buf);
 		break;
@@ -198,98 +199,6 @@ CSerializableJsonFile::write_scalar_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_scalar_wrapped(
-	const TSGDataType* type, void* param)
-{
-	switch (type->m_ptype) {
-	case PT_BOOL:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_boolean)) return false;
-		*(bool*) param = json_object_get_boolean(
-			m_stack_stream.back());
-		break;
-	case PT_CHAR:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(char*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_INT8:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(int8_t*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_UINT8:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(uint8_t*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_INT16:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(int16_t*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_UINT16:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(uint16_t*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_INT32:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(int32_t*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_UINT32:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(uint32_t*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_INT64:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(int64_t*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_UINT64:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_int)) return false;
-		*(uint64_t*) param = json_object_get_int(
-			m_stack_stream.back());
-		break;
-	case PT_FLOAT32:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_double)) return false;
-		*(float32_t*) param = json_object_get_double(
-			m_stack_stream.back());
-		break;
-	case PT_FLOAT64:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_double)) return false;
-		*(float64_t*) param = json_object_get_double(
-			m_stack_stream.back());
-		break;
-	case PT_FLOATMAX:
-		if (!json_object_is_type(m_stack_stream.back(),
-								 json_type_double)) return false;
-		*(floatmax_t*) param = json_object_get_double(
-			m_stack_stream.back());
-		break;
-	case PT_SGSERIALIZABLE_PTR:
-		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing JsonFile!");
-		return false;
-	}
-
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_cont_begin_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
@@ -303,41 +212,8 @@ CSerializableJsonFile::write_cont_begin_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_cont_begin_wrapped(
-	const TSGDataType* type, index_t* len_read_y, index_t* len_read_x)
-{
-	if (!json_object_is_type(m_stack_stream.back(), json_type_array))
-		return false;
-
-	*len_read_y = json_object_array_length(m_stack_stream.back());
-
-	if (type->m_ctype == CT_MATRIX) {
-		*len_read_x = *len_read_y;
-		for (index_t i=0; i<*len_read_x; i++) {
-			json_object* buf = json_object_array_get_idx(
-				m_stack_stream.back(), i);
-			if (!json_object_is_type(buf, json_type_array))
-				return false;
-
-			index_t len = json_object_array_length(buf);
-			if (i == 0) *len_read_y = len;
-			else if (*len_read_y != len) return false;
-		}
-	}
-
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_cont_end_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
-{
-	return true;
-}
-
-bool
-CSerializableJsonFile::read_cont_end_wrapped(
-	const TSGDataType* type, index_t len_read_y, index_t len_read_x)
 {
 	return true;
 }
@@ -352,26 +228,7 @@ CSerializableJsonFile::write_string_begin_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_string_begin_wrapped(
-	const TSGDataType* type, index_t* length)
-{
-	if (!json_object_is_type(m_stack_stream.back(), json_type_array))
-		return false;
-
-	*length = json_object_array_length(m_stack_stream.back());
-
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_string_end_wrapped(
-	const TSGDataType* type, index_t length)
-{
-	return true;
-}
-
-bool
-CSerializableJsonFile::read_string_end_wrapped(
 	const TSGDataType* type, index_t length)
 {
 	return true;
@@ -385,18 +242,6 @@ CSerializableJsonFile::write_stringentry_begin_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_stringentry_begin_wrapped(
-	const TSGDataType* type, index_t y)
-{
-	json_object* buf = json_object_array_get_idx(
-		m_stack_stream.back(), y);
-	if (is_error(buf)) return false;
-
-	push_object(buf);
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_stringentry_end_wrapped(
 	const TSGDataType* type, index_t y)
 {
@@ -406,14 +251,6 @@ CSerializableJsonFile::write_stringentry_end_wrapped(
 	if (is_error(json_object_array_put_idx(
 					 array, y, m_stack_stream.back()))) return false;
 
-	pop_object();
-	return true;
-}
-
-bool
-CSerializableJsonFile::read_stringentry_end_wrapped(
-	const TSGDataType* type, index_t y)
-{
 	pop_object();
 	return true;
 }
@@ -440,40 +277,8 @@ CSerializableJsonFile::write_sparse_begin_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_sparse_begin_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t* length)
-{
-	if (!json_object_is_type(m_stack_stream.back(), json_type_object))
-		return false;
-
-	json_object* buf;
-	if (!get_object(&buf, m_stack_stream.back(),
-					STR_KEY_SPARSE_VECINDEX, json_type_int))
-		return false;
-	*vec_index = json_object_get_int(buf);
-
-	if (!get_object(&buf, m_stack_stream.back(),
-					STR_KEY_SPARSE_FEATURES, json_type_array))
-		return false;
-	*length = json_object_array_length(buf);
-	push_object(buf);
-
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_sparse_end_wrapped(
 	const TSGDataType* type, index_t vec_index,
-	index_t length)
-{
-	pop_object();
-	return true;
-}
-
-bool
-CSerializableJsonFile::read_sparse_end_wrapped(
-	const TSGDataType* type, index_t* vec_index,
 	index_t length)
 {
 	pop_object();
@@ -499,28 +304,6 @@ CSerializableJsonFile::write_sparseentry_begin_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_sparseentry_begin_wrapped(
-	const TSGDataType* type, TSparseEntry<char>* first_entry,
-	index_t* feat_index, index_t y)
-{
-	json_object* buf_obj
-		= json_object_array_get_idx(m_stack_stream.back(), y);
-	if (is_error(buf_obj)) return false;
-	if (!json_object_is_type(buf_obj, json_type_object)) return false;
-
-	json_object* buf;
-	if (!get_object(&buf, buf_obj, STR_KEY_SPARSE_FEATINDEX,
-					json_type_int)) return false;
-	*feat_index = json_object_get_int(buf);
-
-	if (!get_object_any(&buf, buf_obj, STR_KEY_SPARSE_ENTRY))
-		return false;
-	push_object(buf);
-
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_sparseentry_end_wrapped(
 	const TSGDataType* type, const TSparseEntry<char>* first_entry,
 	index_t feat_index, index_t y)
@@ -536,32 +319,9 @@ CSerializableJsonFile::write_sparseentry_end_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_sparseentry_end_wrapped(
-	const TSGDataType* type, TSparseEntry<char>* first_entry,
-	index_t* feat_index, index_t y)
-{
-	pop_object();
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	return true;
-}
-
-bool
-CSerializableJsonFile::read_item_begin_wrapped(
-	const TSGDataType* type, index_t y, index_t x)
-{
-	json_object* buf = m_stack_stream.back();
-
-	if (type->m_ctype == CT_MATRIX)
-		buf = json_object_array_get_idx(buf, x);
-	buf = json_object_array_get_idx(buf, y);
-
-	push_object(buf);
 	return true;
 }
 
@@ -577,14 +337,6 @@ CSerializableJsonFile::write_item_end_wrapped(
 
 	json_object_array_put_idx(array, y, m_stack_stream.back());
 
-	pop_object();
-	return true;
-}
-
-bool
-CSerializableJsonFile::read_item_end_wrapped(
-	const TSGDataType* type, index_t y, index_t x)
-{
 	pop_object();
 	return true;
 }
@@ -625,50 +377,7 @@ CSerializableJsonFile::write_sgserializable_begin_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_sgserializable_begin_wrapped(
-	const TSGDataType* type, char* sgserializable_name,
-	EPrimitiveType* generic)
-{
-	if (m_stack_stream.back() == NULL ||
-		json_object_is_type(m_stack_stream.back(), json_type_null)) {
-		*sgserializable_name = '\0'; return true;
-	}
-
-	if (!json_object_is_type(m_stack_stream.back(), json_type_object))
-		return false;
-
-	json_object* buf;
-	if (!get_object(&buf, m_stack_stream.back(), STR_KEY_INSTANCE_NAME,
-					json_type_string)) return false;
-	strncpy(sgserializable_name, json_object_get_string(buf),
-			STRING_LEN);
-
-	if (get_object(&buf, m_stack_stream.back(), STR_KEY_GENERIC_NAME,
-				   json_type_string)) {
-		if (!TSGDataType::string_to_ptype(
-				generic, json_object_get_string(buf))) return false;
-	}
-
-	if (!get_object(&buf, m_stack_stream.back(), STR_KEY_INSTANCE,
-					json_type_object)) return false;
-	push_object(buf);
-
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_sgserializable_end_wrapped(
-	const TSGDataType* type, const char* sgserializable_name,
-	EPrimitiveType generic)
-{
-	if (*sgserializable_name == '\0') return true;
-
-	pop_object();
-	return true;
-}
-
-bool
-CSerializableJsonFile::read_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
 	EPrimitiveType generic)
 {
@@ -698,30 +407,6 @@ CSerializableJsonFile::write_type_begin_wrapped(
 }
 
 bool
-CSerializableJsonFile::read_type_begin_wrapped(
-	const TSGDataType* type, const char* name, const char* prefix)
-{
-	if (!json_object_is_type(m_stack_stream.back(), json_type_object))
-		return false;
-
-	json_object* buf_type;
-	if (!get_object(&buf_type, m_stack_stream.back(), name,
-					json_type_object)) return false;
-
-	string_t str_buf; json_object* buf;
-	type->to_string(str_buf, STRING_LEN);
-	if (!get_object(&buf, buf_type, STR_KEY_TYPE, json_type_string))
-		return false;
-	if (strcmp(str_buf, json_object_get_string(buf)) != 0)
-		return false;
-
-	if (!get_object_any(&buf, buf_type, STR_KEY_DATA)) return false;
-	push_object(buf);
-
-	return true;
-}
-
-bool
 CSerializableJsonFile::write_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
@@ -731,14 +416,6 @@ CSerializableJsonFile::write_type_end_wrapped(
 		m_stack_stream.back());
 	pop_object();
 
-	pop_object();
-	return true;
-}
-
-bool
-CSerializableJsonFile::read_type_end_wrapped(
-	const TSGDataType* type, const char* name, const char* prefix)
-{
 	pop_object();
 	return true;
 }

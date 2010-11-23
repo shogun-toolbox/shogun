@@ -2400,8 +2400,8 @@ EOF
 
 			if test "$_hdf5" = yes || test "$_hdf5" = auto
 			then
-			    _cflags=`get_cflags '' libhdf5 hdf5`
-			    _lflags=`get_lflags '-lhdf5' libhdf5 hdf5`
+			    _cflags="`get_cflags '' libhdf5 hdf5`"
+			    _lflags="`get_lflags '-lhdf5' libhdf5 hdf5`"
 cat > $TMPC << EOF
 #include <hdf5.h>
 int main(void)
@@ -2427,8 +2427,8 @@ EOF
 
 			if test "$_json" = yes || test "$_json" = auto
 			then
-			    _cflags=`get_cflags '' libjson json json-c`
-			    _lflags=`get_lflags '-ljson' libjson json json-c`
+			    _cflags="`get_cflags '' libjson json json-c`"
+			    _lflags="`get_lflags '-ljson' libjson json json-c`"
 cat > $TMPC << EOF
 #include <json.h>
 int main(void)
@@ -2454,8 +2454,8 @@ EOF
 
 			if test "$_xml" = yes || test "$_xml" = auto
 			then
-			    _cflags=`get_cflags '' libxml-2.0 libxml2 xml2`
-			    _lflags=`get_lflags '-lxml2' libxml-2.0 libxml2 xml2`
+			    _cflags="`get_cflags '' libxml-2.0 libxml2 xml2`"
+			    _lflags="`get_lflags '-lxml2' libxml-2.0 libxml2 xml2`"
 cat > $TMPC << EOF
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -2464,14 +2464,23 @@ int main(void)
 {
 	LIBXML_TEST_VERSION;
 
+#if !defined(LIBXML_TREE_ENABLED) || !defined(LIBXML_OUTPUT_ENABLED)
+	this_is_not_compilable :)
+#endif
+
 	xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
+	xmlNode* node = xmlNewNode(NULL, BAD_CAST "Hello");
+	xmlDocSetRootElement(doc, node);
+
+	xmlChildElementCount(node);
+
 	xmlFreeDoc(doc);
 	xmlCleanupParser();
 
 	return 0;
 }
 EOF
-				echocheck "libxml2"
+				echocheck "libxml2 (>= 2.7.0)"
 				if cc_check $_cflags $_lflags
 				then
 					HAVE_XML='#define HAVE_XML 1'

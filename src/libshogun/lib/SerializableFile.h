@@ -20,6 +20,73 @@ namespace shogun
 {
 class CSerializableFile :public CSGObject
 {
+public:
+	struct TSerializableReader :public CSGObject {
+
+		/* ******************************************************** */
+		/* Begin of abstract write methods  */
+
+		virtual bool read_scalar_wrapped(
+			const TSGDataType* type, void* param) = 0;
+
+		virtual bool read_cont_begin_wrapped(
+			const TSGDataType* type, index_t* len_read_y,
+			index_t* len_read_x) = 0;
+		virtual bool read_cont_end_wrapped(
+			const TSGDataType* type, index_t len_read_y,
+			index_t len_read_x) = 0;
+
+		virtual bool read_string_begin_wrapped(
+			const TSGDataType* type, index_t* length) = 0;
+		virtual bool read_string_end_wrapped(
+			const TSGDataType* type, index_t length) = 0;
+
+		virtual bool read_stringentry_begin_wrapped(
+			const TSGDataType* type, index_t y) = 0;
+		virtual bool read_stringentry_end_wrapped(
+			const TSGDataType* type, index_t y) = 0;
+
+		virtual bool read_sparse_begin_wrapped(
+			const TSGDataType* type, index_t* vec_index,
+			index_t* length) = 0;
+		virtual bool read_sparse_end_wrapped(
+			const TSGDataType* type, index_t* vec_index,
+			index_t length) = 0;
+
+		virtual bool read_sparseentry_begin_wrapped(
+			const TSGDataType* type, TSparseEntry<char>* first_entry,
+			index_t* feat_index, index_t y) = 0;
+		virtual bool read_sparseentry_end_wrapped(
+			const TSGDataType* type, TSparseEntry<char>* first_entry,
+			index_t* feat_index, index_t y) = 0;
+
+		virtual bool read_item_begin_wrapped(
+			const TSGDataType* type, index_t y, index_t x) = 0;
+		virtual bool read_item_end_wrapped(
+			const TSGDataType* type, index_t y, index_t x) = 0;
+
+		virtual bool read_sgserializable_begin_wrapped(
+			const TSGDataType* type, char* sgserializable_name,
+			EPrimitiveType* generic) = 0;
+		virtual bool read_sgserializable_end_wrapped(
+			const TSGDataType* type, const char* sgserializable_name,
+			EPrimitiveType generic) = 0;
+
+		virtual bool read_type_begin_wrapped(
+			const TSGDataType* type, const char* name,
+			const char* prefix) = 0;
+		virtual bool read_type_end_wrapped(
+			const TSGDataType* type, const char* name,
+			const char* prefix) = 0;
+
+		/* End of abstract write methods  */
+		/* ******************************************************** */
+
+	}; /* struct TSerializableReader  */
+/* public:  */
+private:
+	TSerializableReader* m_reader;
+
 	bool is_task_warn(char rw, const char* name, const char* prefix);
 	bool false_warn(const char* prefix, const char* name);
 
@@ -31,114 +98,65 @@ protected:
 	virtual void init(FILE* fstream, char task, const char* filename);
 
 	/* ************************************************************ */
-	/* Begin of abstract methods  */
+	/* Begin of abstract write methods  */
+
+	virtual TSerializableReader* new_reader(
+		char* dest_version, size_t n) = 0;
 
 	virtual bool write_scalar_wrapped(
 		const TSGDataType* type, const void* param) = 0;
-	virtual bool read_scalar_wrapped(
-		const TSGDataType* type, void* param) = 0;
 
 	virtual bool write_cont_begin_wrapped(
 		const TSGDataType* type, index_t len_real_y,
 		index_t len_real_x) = 0;
-	virtual bool read_cont_begin_wrapped(
-		const TSGDataType* type, index_t* len_read_y,
-		index_t* len_read_x) = 0;
-
 	virtual bool write_cont_end_wrapped(
 		const TSGDataType* type, index_t len_real_y,
 		index_t len_real_x) = 0;
-	virtual bool read_cont_end_wrapped(
-		const TSGDataType* type, index_t len_read_y,
-		index_t len_read_x) = 0;
 
 	virtual bool write_string_begin_wrapped(
 		const TSGDataType* type, index_t length) = 0;
-	virtual bool read_string_begin_wrapped(
-		const TSGDataType* type, index_t* length) = 0;
-
 	virtual bool write_string_end_wrapped(
-		const TSGDataType* type, index_t length) = 0;
-	virtual bool read_string_end_wrapped(
 		const TSGDataType* type, index_t length) = 0;
 
 	virtual bool write_stringentry_begin_wrapped(
 		const TSGDataType* type, index_t y) = 0;
-	virtual bool read_stringentry_begin_wrapped(
-		const TSGDataType* type, index_t y) = 0;
-
 	virtual bool write_stringentry_end_wrapped(
-		const TSGDataType* type, index_t y) = 0;
-	virtual bool read_stringentry_end_wrapped(
 		const TSGDataType* type, index_t y) = 0;
 
 	virtual bool write_sparse_begin_wrapped(
 		const TSGDataType* type, index_t vec_index,
 		index_t length) = 0;
-	virtual bool read_sparse_begin_wrapped(
-		const TSGDataType* type, index_t* vec_index,
-		index_t* length) = 0;
-
 	virtual bool write_sparse_end_wrapped(
 		const TSGDataType* type, index_t vec_index,
-		index_t length) = 0;
-	virtual bool read_sparse_end_wrapped(
-		const TSGDataType* type, index_t* vec_index,
 		index_t length) = 0;
 
 	virtual bool write_sparseentry_begin_wrapped(
 		const TSGDataType* type, const TSparseEntry<char>* first_entry,
 		index_t feat_index, index_t y) = 0;
-	virtual bool read_sparseentry_begin_wrapped(
-		const TSGDataType* type, TSparseEntry<char>* first_entry,
-		index_t* feat_index, index_t y) = 0;
-
 	virtual bool write_sparseentry_end_wrapped(
 		const TSGDataType* type, const TSparseEntry<char>* first_entry,
 		index_t feat_index, index_t y) = 0;
-	virtual bool read_sparseentry_end_wrapped(
-		const TSGDataType* type, TSparseEntry<char>* first_entry,
-		index_t* feat_index, index_t y) = 0;
 
 	virtual bool write_item_begin_wrapped(
 		const TSGDataType* type, index_t y, index_t x) = 0;
-	virtual bool read_item_begin_wrapped(
-		const TSGDataType* type, index_t y, index_t x) = 0;
-
 	virtual bool write_item_end_wrapped(
-		const TSGDataType* type, index_t y, index_t x) = 0;
-	virtual bool read_item_end_wrapped(
 		const TSGDataType* type, index_t y, index_t x) = 0;
 
 	virtual bool write_sgserializable_begin_wrapped(
 		const TSGDataType* type, const char* sgserializable_name,
 		EPrimitiveType generic) = 0;
-	virtual bool read_sgserializable_begin_wrapped(
-		const TSGDataType* type, char* sgserializable_name,
-		EPrimitiveType* generic) = 0;
-
 	virtual bool write_sgserializable_end_wrapped(
-		const TSGDataType* type, const char* sgserializable_name,
-		EPrimitiveType generic) = 0;
-	virtual bool read_sgserializable_end_wrapped(
 		const TSGDataType* type, const char* sgserializable_name,
 		EPrimitiveType generic) = 0;
 
 	virtual bool write_type_begin_wrapped(
 		const TSGDataType* type, const char* name,
 		const char* prefix) = 0;
-	virtual bool read_type_begin_wrapped(
-		const TSGDataType* type, const char* name,
-		const char* prefix) = 0;
-
 	virtual bool write_type_end_wrapped(
 		const TSGDataType* type, const char* name,
 		const char* prefix) = 0;
-	virtual bool read_type_end_wrapped(
-		const TSGDataType* type, const char* name,
-		const char* prefix) = 0;
 
-	/* End of abstract methods  */
+	/* End of abstract write methods  */
 	/* ************************************************************ */
 
 public:
@@ -160,10 +178,6 @@ public:
 
 	/** default destructor */
 	virtual ~CSerializableFile(void);
-
-	/** @return object name */
-	inline virtual const char* get_name() const
-		{ return "SerializableFile"; }
 
 	virtual void close(void);
 	virtual bool is_opened(void);

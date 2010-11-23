@@ -164,6 +164,33 @@ TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 	return -1;
 }
 
+#define ENTRY_OFFSET(k, type)									\
+	((char*) &((TSparseEntry<type>*) (k))->entry - (char*) (k))
+size_t
+TSGDataType::offset_sparseentry(EPrimitiveType ptype)
+{
+	size_t result = -1; void* x = &result;
+
+	switch (ptype) {
+	case PT_BOOL: result = ENTRY_OFFSET(x, bool); break;
+	case PT_CHAR: result = ENTRY_OFFSET(x, char); break;
+	case PT_INT8: result = ENTRY_OFFSET(x, int8_t); break;
+	case PT_UINT8: result = ENTRY_OFFSET(x, uint8_t); break;
+	case PT_INT16: result = ENTRY_OFFSET(x, int16_t); break;
+	case PT_UINT16: result = ENTRY_OFFSET(x, uint16_t); break;
+	case PT_INT32: result = ENTRY_OFFSET(x, int32_t); break;
+	case PT_UINT32: result = ENTRY_OFFSET(x, uint32_t); break;
+	case PT_INT64: result = ENTRY_OFFSET(x, int64_t); break;
+	case PT_UINT64: result = ENTRY_OFFSET(x, uint64_t); break;
+	case PT_FLOAT32: result = ENTRY_OFFSET(x, float32_t); break;
+	case PT_FLOAT64: result = ENTRY_OFFSET(x, float64_t); break;
+	case PT_FLOATMAX: result = ENTRY_OFFSET(x, floatmax_t); break;
+	case PT_SGSERIALIZABLE_PTR: return -1;
+	}
+
+	return result;
+}
+
 void
 TSGDataType::stype_to_string(char* dest, EStructType stype,
 							 EPrimitiveType ptype, size_t n)

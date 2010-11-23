@@ -53,6 +53,7 @@ CSerializableFile::~CSerializableFile(void)
 {
 	close();
 	if (m_filename != NULL) { free(m_filename); m_filename = NULL; }
+	if (m_reader != NULL) { delete m_reader; m_reader = NULL; }
 	m_task = 0;
 }
 
@@ -60,6 +61,7 @@ void
 CSerializableFile::init(FILE* fstream, char task, const char* filename)
 {
 	m_fstream = fstream; m_task = task; m_filename = strdup(filename);
+	m_reader = NULL;
 }
 
 void
@@ -78,14 +80,25 @@ bool
 CSerializableFile::is_task_warn(char rw, const char* name,
 								const char* prefix)
 {
+	if (m_task == 'r' && m_reader == NULL) {
+		string_t dest_version;
+		strncpy(dest_version, "(unkown)", STRING_LEN);
+		m_reader = new_reader(dest_version, STRING_LEN);
+		if (m_reader == NULL) {
+			SG_WARNING("`%s' has file-version `%s', which is not "
+					   "supported!\n", m_filename, dest_version);
+			close(); return false;
+		}
+	}
+
 	if (rw == 'w' && (m_task != 'w' || !is_opened())) {
-		SG_WARNING("`%s' not opened during writing `%s%s'!\n",
-				   m_filename, prefix, name);
+		SG_WARNING("`%s' not opened (for writing) during writing "
+				   "`%s%s'!\n", m_filename, prefix, name);
 		return false;
 	}
 	if (rw == 'r' && (m_task != 'r' || !is_opened())) {
-		SG_WARNING("`%s' not opened during reading `%s%s'!\n",
-				   m_filename, prefix, name);
+		SG_WARNING("`%s' not opened (for reading) during reading "
+				   "`%s%s'!\n", m_filename, prefix, name);
 		return false;
 	}
 
@@ -128,7 +141,7 @@ CSerializableFile::read_scalar(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_scalar_wrapped(type, param))
+	if (!m_reader->read_scalar_wrapped(type, param))
 		return false_warn(prefix, name);
 
 	return true;
@@ -154,7 +167,8 @@ CSerializableFile::read_cont_begin(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_cont_begin_wrapped(type, len_read_y, len_read_x))
+	if (!m_reader->read_cont_begin_wrapped(type, len_read_y,
+										   len_read_x))
 		return false_warn(prefix, name);
 
 	return true;
@@ -180,7 +194,7 @@ CSerializableFile::read_cont_end(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_cont_end_wrapped(type, len_read_y, len_read_x))
+	if (!m_reader->read_cont_end_wrapped(type, len_read_y, len_read_x))
 		return false_warn(prefix, name);
 
 	return true;
@@ -206,7 +220,7 @@ CSerializableFile::read_string_begin(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_string_begin_wrapped(type, length))
+	if (!m_reader->read_string_begin_wrapped(type, length))
 		return false_warn(prefix, name);
 
 	return true;
@@ -232,7 +246,7 @@ CSerializableFile::read_string_end(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_string_end_wrapped(type, length))
+	if (!m_reader->read_string_end_wrapped(type, length))
 		return false_warn(prefix, name);
 
 	return true;
@@ -258,7 +272,7 @@ CSerializableFile::read_stringentry_begin(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_stringentry_begin_wrapped(type, y))
+	if (!m_reader->read_stringentry_begin_wrapped(type, y))
 		return false_warn(prefix, name);
 
 	return true;
@@ -284,7 +298,7 @@ CSerializableFile::read_stringentry_end(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_stringentry_end_wrapped(type, y))
+	if (!m_reader->read_stringentry_end_wrapped(type, y))
 		return false_warn(prefix, name);
 
 	return true;
@@ -310,7 +324,7 @@ CSerializableFile::read_sparse_begin(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_sparse_begin_wrapped(type, vec_index, length))
+	if (!m_reader->read_sparse_begin_wrapped(type, vec_index, length))
 		return false_warn(prefix, name);
 
 	return true;
@@ -336,7 +350,7 @@ CSerializableFile::read_sparse_end(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_sparse_end_wrapped(type, vec_index, length))
+	if (!m_reader->read_sparse_end_wrapped(type, vec_index, length))
 		return false_warn(prefix, name);
 
 	return true;
@@ -364,8 +378,8 @@ CSerializableFile::read_sparseentry_begin(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_sparseentry_begin_wrapped(type, first_entry, feat_index,
-										y))
+	if (!m_reader->read_sparseentry_begin_wrapped(type, first_entry,
+												  feat_index, y))
 		return false_warn(prefix, name);
 
 	return true;
@@ -394,8 +408,8 @@ CSerializableFile::read_sparseentry_end(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_sparseentry_end_wrapped(type, first_entry, feat_index,
-									  y))
+	if (!m_reader->read_sparseentry_end_wrapped(type, first_entry,
+												feat_index, y))
 		return false_warn(prefix, name);
 
 	return true;
@@ -421,7 +435,7 @@ CSerializableFile::read_item_begin(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_item_begin_wrapped(type, y, x))
+	if (!m_reader->read_item_begin_wrapped(type, y, x))
 		return false_warn(prefix, name);
 
 	return true;
@@ -447,7 +461,7 @@ CSerializableFile::read_item_end(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_item_end_wrapped(type, y, x))
+	if (!m_reader->read_item_end_wrapped(type, y, x))
 		return false_warn(prefix, name);
 
 	return true;
@@ -474,8 +488,8 @@ CSerializableFile::read_sgserializable_begin(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_sgserializable_begin_wrapped(type, sgserializable_name,
-										   generic))
+	if (!m_reader->read_sgserializable_begin_wrapped(
+			type, sgserializable_name, generic))
 		return false_warn(prefix, name);
 
 	return true;
@@ -502,8 +516,8 @@ CSerializableFile::read_sgserializable_end(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_sgserializable_end_wrapped(type, sgserializable_name,
-										 generic))
+	if (!m_reader->read_sgserializable_end_wrapped(
+			type, sgserializable_name, generic))
 		return false_warn(prefix, name);
 
 	return true;
@@ -527,7 +541,7 @@ CSerializableFile::read_type_begin(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_type_begin_wrapped(type, name, prefix))
+	if (!m_reader->read_type_begin_wrapped(type, name, prefix))
 		return false_warn(prefix, name);
 
 	return true;
@@ -551,7 +565,7 @@ CSerializableFile::read_type_end(
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!read_type_end_wrapped(type, name, prefix))
+	if (!m_reader->read_type_end_wrapped(type, name, prefix))
 		return false_warn(prefix, name);
 
 	return true;

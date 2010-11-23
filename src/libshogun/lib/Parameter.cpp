@@ -1461,7 +1461,9 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 			if (!file->write_sparseentry_begin(
 					&m_datatype, m_name, prefix, spr_ptr->features,
 					cur->feat_index, i)) return false;
-			if (!save_ptype(file, &cur->entry, prefix)) return false;
+			if (!save_ptype(file, (char*) cur + TSGDataType
+							::offset_sparseentry(m_datatype.m_ptype),
+							prefix)) return false;
 			if (!file->write_sparseentry_end(
 					&m_datatype, m_name, prefix, spr_ptr->features,
 					cur->feat_index, i)) return false;
@@ -1521,7 +1523,9 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 			if (!file->read_sparseentry_begin(
 					&m_datatype, m_name, prefix, spr_ptr->features,
 					&cur->feat_index, i)) return false;
-			if (!load_ptype(file, &cur->entry, prefix)) return false;
+			if (!load_ptype(file, (char*) cur + TSGDataType
+							::offset_sparseentry(m_datatype.m_ptype),
+							prefix)) return false;
 			if (!file->read_sparseentry_end(
 					&m_datatype, m_name, prefix, spr_ptr->features,
 					&cur->feat_index, i)) return false;

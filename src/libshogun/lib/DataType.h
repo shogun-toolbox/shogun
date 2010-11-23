@@ -32,8 +32,6 @@ template<class T> struct TString {
 template <class T> struct TSparseEntry {
 	/** feature index  */
 	index_t feat_index;
-	/** Dummy member to fill a 64-bit word.  */
-	int32_t __dummy;
 	/** entry ...  MUST BE THE LAST MEMBER!  */
 	T entry;
 };
@@ -88,6 +86,7 @@ struct TSGDataType
 	size_t sizeof_ptype(void) const;
 
 	static size_t sizeof_sparseentry(EPrimitiveType ptype);
+	static size_t offset_sparseentry(EPrimitiveType ptype);
 
 	static void stype_to_string(char* dest, EStructType stype,
 								EPrimitiveType ptype, size_t n);

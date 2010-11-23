@@ -19,12 +19,28 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#define STR_TRUE                   "true"
+#define STR_FALSE                  "false"
+
+#define STR_ITEM                   "i"
+#define STR_STRING                 "s"
+#define STR_SPARSE                 "r"
+
+#define STR_PROP_TYPE              "type"
+#define STR_PROP_IS_NULL           "is_null"
+#define STR_PROP_INSTANCE_NAME     "instance_name"
+#define STR_PROP_GENERIC_NAME      "generic_name"
+#define STR_PROP_VECINDEX          "vec_index"
+#define STR_PROP_FEATINDEX         "feat_index"
+
 namespace shogun
 {
 #define IGNORE_IN_CLASSLIST
 IGNORE_IN_CLASSLIST class CSerializableXmlFile
 	:public CSerializableFile
 {
+	friend class SerializableXmlReader00;
+
 	CDynamicArray<xmlNode*> m_stack_stream;
 	xmlDocPtr m_doc;
 	bool m_format;
@@ -36,108 +52,59 @@ IGNORE_IN_CLASSLIST class CSerializableXmlFile
 	void pop_node(void);
 
 protected:
+	virtual TSerializableReader* new_reader(
+		char* dest_version, size_t n);
+
 	virtual bool write_scalar_wrapped(
 		const TSGDataType* type, const void* param);
-	virtual bool read_scalar_wrapped(
-		const TSGDataType* type, void* param);
 
 	virtual bool write_cont_begin_wrapped(
 		const TSGDataType* type, index_t len_real_y,
 		index_t len_real_x);
-	virtual bool read_cont_begin_wrapped(
-		const TSGDataType* type, index_t* len_read_y,
-		index_t* len_read_x);
-
 	virtual bool write_cont_end_wrapped(
 		const TSGDataType* type, index_t len_real_y,
 		index_t len_real_x);
-	virtual bool read_cont_end_wrapped(
-		const TSGDataType* type, index_t len_read_y,
-		index_t len_read_x);
 
 	virtual bool write_string_begin_wrapped(
 		const TSGDataType* type, index_t length);
-	virtual bool read_string_begin_wrapped(
-		const TSGDataType* type, index_t* length);
-
 	virtual bool write_string_end_wrapped(
-		const TSGDataType* type, index_t length);
-	virtual bool read_string_end_wrapped(
 		const TSGDataType* type, index_t length);
 
 	virtual bool write_stringentry_begin_wrapped(
 		const TSGDataType* type, index_t y);
-	virtual bool read_stringentry_begin_wrapped(
-		const TSGDataType* type, index_t y);
-
 	virtual bool write_stringentry_end_wrapped(
-		const TSGDataType* type, index_t y);
-	virtual bool read_stringentry_end_wrapped(
 		const TSGDataType* type, index_t y);
 
 	virtual bool write_sparse_begin_wrapped(
 		const TSGDataType* type, index_t vec_index,
 		index_t length);
-	virtual bool read_sparse_begin_wrapped(
-		const TSGDataType* type, index_t* vec_index,
-		index_t* length);
-
 	virtual bool write_sparse_end_wrapped(
 		const TSGDataType* type, index_t vec_index,
-		index_t length);
-	virtual bool read_sparse_end_wrapped(
-		const TSGDataType* type, index_t* vec_index,
 		index_t length);
 
 	virtual bool write_sparseentry_begin_wrapped(
 		const TSGDataType* type, const TSparseEntry<char>* first_entry,
 		index_t feat_index, index_t y);
-	virtual bool read_sparseentry_begin_wrapped(
-		const TSGDataType* type, TSparseEntry<char>* first_entry,
-		index_t* feat_index, index_t y);
-
 	virtual bool write_sparseentry_end_wrapped(
 		const TSGDataType* type, const TSparseEntry<char>* first_entry,
 		index_t feat_index, index_t y);
-	virtual bool read_sparseentry_end_wrapped(
-		const TSGDataType* type, TSparseEntry<char>* first_entry,
-		index_t* feat_index, index_t y);
 
 	virtual bool write_item_begin_wrapped(
 		const TSGDataType* type, index_t y, index_t x);
-	virtual bool read_item_begin_wrapped(
-		const TSGDataType* type, index_t y, index_t x);
-
 	virtual bool write_item_end_wrapped(
-		const TSGDataType* type, index_t y, index_t x);
-	virtual bool read_item_end_wrapped(
 		const TSGDataType* type, index_t y, index_t x);
 
 	virtual bool write_sgserializable_begin_wrapped(
 		const TSGDataType* type, const char* sgserializable_name,
 		EPrimitiveType generic);
-	virtual bool read_sgserializable_begin_wrapped(
-		const TSGDataType* type, char* sgserializable_name,
-		EPrimitiveType* generic);
-
 	virtual bool write_sgserializable_end_wrapped(
-		const TSGDataType* type, const char* sgserializable_name,
-		EPrimitiveType generic);
-	virtual bool read_sgserializable_end_wrapped(
 		const TSGDataType* type, const char* sgserializable_name,
 		EPrimitiveType generic);
 
 	virtual bool write_type_begin_wrapped(
 		const TSGDataType* type, const char* name,
 		const char* prefix);
-	virtual bool read_type_begin_wrapped(
-		const TSGDataType* type, const char* name,
-		const char* prefix);
-
 	virtual bool write_type_end_wrapped(
-		const TSGDataType* type, const char* name,
-		const char* prefix);
-	virtual bool read_type_end_wrapped(
 		const TSGDataType* type, const char* name,
 		const char* prefix);
 

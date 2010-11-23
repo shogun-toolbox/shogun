@@ -12,23 +12,10 @@
 #ifdef HAVE_XML
 
 #include "lib/SerializableXmlFile.h"
+#include "lib/SerializableXmlReader00.h"
 
-#define STR_ROOT_NAME \
+#define STR_ROOT_NAME_00 \
 	"_SHOGUN_SERIALIZABLE_XML_FILE_V_00_"
-
-#define STR_TRUE                   "true"
-#define STR_FALSE                  "false"
-
-#define STR_ITEM                   "i"
-#define STR_STRING                 "s"
-#define STR_SPARSE                 "r"
-
-#define STR_PROP_TYPE              "type"
-#define STR_PROP_IS_NULL           "is_null"
-#define STR_PROP_INSTANCE_NAME     "instance_name"
-#define STR_PROP_GENERIC_NAME      "generic_name"
-#define STR_PROP_VECINDEX          "vec_index"
-#define STR_PROP_FEATINDEX         "feat_index"
 
 using namespace shogun;
 
@@ -46,6 +33,23 @@ CSerializableXmlFile::CSerializableXmlFile(const char* fname, char rw,
 CSerializableXmlFile::~CSerializableXmlFile()
 {
 	close();
+}
+
+CSerializableFile::TSerializableReader*
+CSerializableXmlFile::new_reader(char* dest_version, size_t n)
+{
+	xmlChar* name;
+
+	if ((name = xmlGetNodePath(m_stack_stream.back())) == NULL)
+		return NULL;
+
+	strncpy(dest_version, (const char*) (name+1), n);
+	xmlFree(name);
+
+	if (strcmp(STR_ROOT_NAME_00, dest_version) == 0)
+		return new SerializableXmlReader00(this);
+
+	return NULL;
 }
 
 bool
@@ -99,7 +103,7 @@ CSerializableXmlFile::pop_node(void)
 void
 CSerializableXmlFile::init(const char* fname, bool format)
 {
-	m_format = format;
+	m_format = format, m_doc = NULL;
 
 	LIBXML_TEST_VERSION;
 
@@ -108,7 +112,7 @@ CSerializableXmlFile::init(const char* fname, bool format)
 		close(); return;
 	}
 
-	xmlNode* tmp; xmlChar* name;
+	xmlNode* tmp;
 	switch (m_task) {
 	case 'r':
 		if ((m_doc = xmlReadFile(fname, NULL, 0)) == NULL
@@ -118,17 +122,11 @@ CSerializableXmlFile::init(const char* fname, bool format)
 			close(); return;
 		}
 		m_stack_stream.push_back(tmp);
-
-		if ((name = xmlGetNodePath(m_stack_stream.back())) == NULL
-			|| xmlStrcmp(BAD_CAST STR_ROOT_NAME, name+1) != 0) {
-			SG_WARNING("%s: Not a Serializable XML file!\n", fname);
-			close(); return;
-		}
 		break;
 	case 'w':
-		m_doc = xmlNewDoc(BAD_CAST "1.0");
-		m_stack_stream.push_back(xmlNewNode(NULL,
-											BAD_CAST STR_ROOT_NAME));
+		m_doc = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+		m_stack_stream.push_back(xmlNewNode(
+									 NULL, BAD_CAST STR_ROOT_NAME_00));
 		xmlDocSetRootElement(m_doc, m_stack_stream.back());
 		break;
 	default:
@@ -210,15 +208,15 @@ CSerializableXmlFile::write_scalar_wrapped(
 				) <= 0) return false;
 		break;
 	case PT_FLOAT32:
-		if (snprintf(buf, STRING_LEN, "%+10.16e", *(float32_t*) param
+		if (snprintf(buf, STRING_LEN, "%.16g", *(float32_t*) param
 				) <= 0) return false;
 		break;
 	case PT_FLOAT64:
-		if (snprintf(buf, STRING_LEN, "%+10.16e", *(float64_t*) param
+		if (snprintf(buf, STRING_LEN, "%.16lg", *(float64_t*) param
 				) <= 0) return false;
 		break;
 	case PT_FLOATMAX:
-		if (snprintf(buf, STRING_LEN, "%+10.16Le", *(floatmax_t*)
+		if (snprintf(buf, STRING_LEN, "%.16Lg", *(floatmax_t*)
 					 param) <= 0) return false;
 		break;
 	case PT_SGSERIALIZABLE_PTR:
@@ -232,118 +230,9 @@ CSerializableXmlFile::write_scalar_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_scalar_wrapped(
-	const TSGDataType* type, void* param)
-{
-	bool result = true;
-	xmlChar* xml_buf;
-	if ((xml_buf = xmlNodeGetContent(m_stack_stream.back())) == NULL)
-		return false;
-	const char* buf = (const char*) xml_buf;
-
-	switch (type->m_ptype) {
-	case PT_BOOL:
-		string_t bool_buf;
-
-		if (sscanf(buf, "%"STRING_LEN_STR"s", bool_buf) != 1)
-			result = false;
-
-		if (strcmp(buf, STR_TRUE) == 0) *(bool*) param = true;
-		else if (strcmp(buf, STR_FALSE) == 0) *(bool*) param = false;
-		else result = false;
-
-		break;
-	case PT_CHAR:
-		if (sscanf(buf, "%c", (char*) param) != 1)
-			result = false;
-		break;
-	case PT_INT8:
-		if (sscanf(buf, "%"SCNi8, (int8_t*) param) != 1)
-			result = false;
-		break;
-	case PT_UINT8:
-		if (sscanf(buf, "%"SCNu8, (uint8_t*) param) != 1)
-			result = false;
-		break;
-	case PT_INT16:
-		if (sscanf(buf, "%"SCNi16, (int16_t*) param) != 1)
-			result = false;
-		break;
-	case PT_UINT16:
-		if (sscanf(buf, "%"SCNu16, (uint16_t*) param) != 1)
-			result = false;
-		break;
-	case PT_INT32:
-		if (sscanf(buf, "%"SCNi32, (int32_t*) param) != 1)
-			result = false;
-		break;
-	case PT_UINT32:
-		if (sscanf(buf, "%"SCNu32, (uint32_t*) param) != 1)
-			result = false;
-		break;
-	case PT_INT64:
-		if (sscanf(buf, "%"SCNi64, (int64_t*) param) != 1)
-			result = false;
-		break;
-	case PT_UINT64:
-		if (sscanf(buf, "%"SCNu64, (uint64_t*) param) != 1)
-			result = false;
-		break;
-	case PT_FLOAT32:
-		if (sscanf(buf, "%e", (float32_t*) param) != 1)
-			result = false;
-		break;
-	case PT_FLOAT64:
-		if (sscanf(buf, "%le", (float64_t*) param) != 1)
-			result = false;
-		break;
-	case PT_FLOATMAX:
-		if (sscanf(buf, "%Le", (floatmax_t*) param) != 1)
-			result = false;
-		break;
-	case PT_SGSERIALIZABLE_PTR:
-		SG_ERROR("read_scalar_wrapped(): Implementation error during"
-				 " reading XmlFile!");
-		result = false;
-	}
-
-	xmlFree(xml_buf);
-	return result;
-}
-
-bool
 CSerializableXmlFile::write_cont_begin_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
-	return true;
-}
-
-bool
-CSerializableXmlFile::read_cont_begin_wrapped(
-	const TSGDataType* type, index_t* len_read_y, index_t* len_read_x)
-{
-	switch (type->m_ctype) {
-	case CT_SCALAR: break;
-	case CT_VECTOR:
-		*len_read_y = xmlChildElementCount(m_stack_stream.back());
-		break;
-	case CT_MATRIX:
-		*len_read_x = xmlChildElementCount(m_stack_stream.back());
-
-		for (xmlNode* cur=m_stack_stream.back()->children; cur != NULL;
-			 cur=cur->next) {
-			if (cur->type != XML_ELEMENT_NODE) continue;
-
-			if (*len_read_y == 0)
-				*len_read_y = xmlChildElementCount(cur);
-
-			if (*len_read_y != (index_t) xmlChildElementCount(cur))
-				return false;
-		}
-
-		break;
-	}
-
 	return true;
 }
 
@@ -358,18 +247,6 @@ CSerializableXmlFile::write_cont_end_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_cont_end_wrapped(
-	const TSGDataType* type, index_t len_read_y, index_t len_read_x)
-{
-	if (len_read_y > 0) pop_node();
-
-	if (type->m_ctype == CT_MATRIX && len_read_y *len_read_x > 0)
-		pop_node();
-
-	return true;
-}
-
-bool
 CSerializableXmlFile::write_string_begin_wrapped(
 	const TSGDataType* type, index_t length)
 {
@@ -377,27 +254,9 @@ CSerializableXmlFile::write_string_begin_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_string_begin_wrapped(
-	const TSGDataType* type, index_t* length)
-{
-	*length = xmlChildElementCount(m_stack_stream.back());
-
-	return true;
-}
-
-bool
 CSerializableXmlFile::write_string_end_wrapped(
 	const TSGDataType* type, index_t length)
 {
-	return true;
-}
-
-bool
-CSerializableXmlFile::read_string_end_wrapped(
-	const TSGDataType* type, index_t length)
-{
-	if (length > 0) pop_node();
-
 	return true;
 }
 
@@ -411,32 +270,11 @@ CSerializableXmlFile::write_stringentry_begin_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_stringentry_begin_wrapped(
-	const TSGDataType* type, index_t y)
-{
-	if (y == 0) {
-		if (!join_node(BAD_CAST STR_STRING)) return false;
-		return true;
-	}
-
-	if (!next_node(BAD_CAST STR_STRING)) return false;
-
-	return true;
-}
-
-bool
 CSerializableXmlFile::write_stringentry_end_wrapped(
 	const TSGDataType* type, index_t y)
 {
 	pop_node();
 
-	return true;
-}
-
-bool
-CSerializableXmlFile::read_stringentry_end_wrapped(
-	const TSGDataType* type, index_t y)
-{
 	return true;
 }
 
@@ -454,39 +292,10 @@ CSerializableXmlFile::write_sparse_begin_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_sparse_begin_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t* length)
-{
-	bool result = true;
-	xmlChar* buf;
-
-	if ((buf = xmlGetProp(m_stack_stream.back(), BAD_CAST
-						  STR_PROP_VECINDEX)) == NULL) return false;
-	if (sscanf((const char*) buf, "%"PRIi32, vec_index) != 1)
-		result = false;
-	xmlFree(buf); if (!result) return false;
-
-	*length = xmlChildElementCount(m_stack_stream.back());
-
-	return true;
-}
-
-bool
 CSerializableXmlFile::write_sparse_end_wrapped(
 	const TSGDataType* type, index_t vec_index,
 	index_t length)
 {
-	return true;
-}
-
-bool
-CSerializableXmlFile::read_sparse_end_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t length)
-{
-	if (length > 0) pop_node();
-
 	return true;
 }
 
@@ -505,43 +314,12 @@ CSerializableXmlFile::write_sparseentry_begin_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_sparseentry_begin_wrapped(
-	const TSGDataType* type, TSparseEntry<char>* first_entry,
-	index_t* feat_index, index_t y)
-{
-	bool result = true;
-	xmlChar* buf;
-
-	if (y == 0) {
-		if (!join_node(BAD_CAST STR_SPARSE)) return false;
-	} else {
-		if (!next_node(BAD_CAST STR_SPARSE)) return false;
-	}
-
-	if ((buf = xmlGetProp(m_stack_stream.back(), BAD_CAST
-						  STR_PROP_FEATINDEX)) == NULL) return false;
-	if (sscanf((const char*) buf, "%"PRIi32, feat_index) != 1)
-		result = false;
-	xmlFree(buf); if (!result) return false;
-
-	return true;
-}
-
-bool
 CSerializableXmlFile::write_sparseentry_end_wrapped(
 	const TSGDataType* type, const TSparseEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
 	pop_node();
 
-	return true;
-}
-
-bool
-CSerializableXmlFile::read_sparseentry_end_wrapped(
-	const TSGDataType* type, TSparseEntry<char>* first_entry,
-	index_t* feat_index, index_t y)
-{
 	return true;
 }
 
@@ -562,47 +340,11 @@ CSerializableXmlFile::write_item_begin_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_item_begin_wrapped(
-	const TSGDataType* type, index_t y, index_t x)
-{
-	switch (type->m_ctype) {
-	case CT_SCALAR: break;
-	case CT_VECTOR:
-		if (y == 0) {
-			if (!join_node(BAD_CAST STR_ITEM)) return false;
-			return true;
-		}
-		break;
-	case CT_MATRIX:
-		if (type->m_ctype == CT_MATRIX && y == 0) {
-			if (x != 0) { pop_node(); pop_node(); }
-
-			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%"PRIi32, x);
-			if (!join_node(BAD_CAST buf_x)) return false;
-			if (!join_node(BAD_CAST STR_ITEM)) return false;
-			return true;
-		}
-		break;
-	}
-
-	if (!next_node(BAD_CAST STR_ITEM)) return false;
-
-	return true;
-}
-
-bool
 CSerializableXmlFile::write_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	pop_node();
 
-	return true;
-}
-
-bool
-CSerializableXmlFile::read_item_end_wrapped(
-	const TSGDataType* type, index_t y, index_t x)
-{
 	return true;
 }
 
@@ -633,45 +375,7 @@ CSerializableXmlFile::write_sgserializable_begin_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_sgserializable_begin_wrapped(
-	const TSGDataType* type, char* sgserializable_name,
-	EPrimitiveType* generic)
-{
-	xmlChar* buf;
-
-	if ((buf = xmlGetProp(m_stack_stream.back(), BAD_CAST
-						  STR_PROP_IS_NULL)) != NULL) {
-		xmlFree(buf);
-		*sgserializable_name = '\0';
-		return true;
-	}
-
-	if ((buf = xmlGetProp(m_stack_stream.back(), BAD_CAST
-						  STR_PROP_INSTANCE_NAME)) == NULL)
-		return false;
-	strncpy(sgserializable_name, (const char*) buf, STRING_LEN);
-	xmlFree(buf);
-
-	if ((buf = xmlGetProp(m_stack_stream.back(), BAD_CAST
-						  STR_PROP_GENERIC_NAME)) != NULL) {
-		if (!TSGDataType::string_to_ptype(generic, (const char*) buf))
-			return false;
-		xmlFree(buf);
-	}
-
-	return true;
-}
-
-bool
 CSerializableXmlFile::write_sgserializable_end_wrapped(
-	const TSGDataType* type, const char* sgserializable_name,
-	EPrimitiveType generic)
-{
-	return true;
-}
-
-bool
-CSerializableXmlFile::read_sgserializable_end_wrapped(
 	const TSGDataType* type, const char* sgserializable_name,
 	EPrimitiveType generic)
 {
@@ -693,34 +397,7 @@ CSerializableXmlFile::write_type_begin_wrapped(
 }
 
 bool
-CSerializableXmlFile::read_type_begin_wrapped(
-	const TSGDataType* type, const char* name, const char* prefix)
-{
-	bool result = true;
-
-	if (!join_node(BAD_CAST name)) return false;
-
-	string_t buf; type->to_string(buf, STRING_LEN);
-	xmlChar* t;
-	if ((t = xmlGetProp(m_stack_stream.back(), BAD_CAST STR_PROP_TYPE)
-			) == NULL) return false;
-	if (xmlStrcmp(BAD_CAST buf, t) != 0) result = false;
-	xmlFree(t); if (!result) return false;
-
-	return true;
-}
-
-bool
 CSerializableXmlFile::write_type_end_wrapped(
-	const TSGDataType* type, const char* name, const char* prefix)
-{
-	pop_node();
-
-	return true;
-}
-
-bool
-CSerializableXmlFile::read_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	pop_node();
