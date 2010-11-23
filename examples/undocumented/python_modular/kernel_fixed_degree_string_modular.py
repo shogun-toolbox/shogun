@@ -20,7 +20,8 @@ def kernel_fixed_degree_string_modular (fm_train_dna=lm.load_dna('../data/fm_tra
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-	print km_test
+
+	return km_train, km_test, kernel
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix

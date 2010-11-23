@@ -1,16 +1,15 @@
 from tools.load import LoadMatrix
 from numpy import where
+
 lm=LoadMatrix()
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
 
-parameter_list=[[lm.load_numbers('../data/fm_train_real.dat'),lm.load_numbers('../data/fm_test_real.dat'),1.3],[lm.load_numbers('../data/fm_train_real.dat'),lm.load_numbers('../data/fm_test_real.dat'),1.4]]
+parameter_list=[[traindat,testdat, 1.3],[traindat,testdat, 1.4]]
 
-def kernel_gaussian_modular (fm_train_real=lm.load_numbers('../data/fm_train_real.dat'),fm_test_real=lm.load_numbers('../data/fm_test_real.dat'),width=1.3):
-	print 'Gaussian'
+def kernel_gaussian_modular (fm_train_real=traindat,fm_test_real=testdat, width=1.3):
 	from shogun.Features import RealFeatures
 	from shogun.Kernel import GaussianKernel
-	fm_train_real = fm_train_real
-	fm_test_real = fm_test_real
-	width = width
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
@@ -20,13 +19,9 @@ def kernel_gaussian_modular (fm_train_real=lm.load_numbers('../data/fm_train_rea
 
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-	print km_train, km_test
-#	return km_train,km_test
+	return km_train,km_test,kernel
 
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
+	print 'Gaussian'
 	kernel_gaussian_modular(*parameter_list[0])

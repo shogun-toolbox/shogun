@@ -20,6 +20,8 @@ def weighted_degree_string ():
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
 
+	return km_train, km_test, kernel
+
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
