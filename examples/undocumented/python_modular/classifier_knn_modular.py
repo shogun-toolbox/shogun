@@ -1,3 +1,7 @@
+def classifier_knn_modular():
+	print "Hello2"
+
+
 def knn ():
 	print 'KNN'
 

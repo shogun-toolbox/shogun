@@ -9,6 +9,9 @@ from numpy import array,Inf,float64,matrix,frompyfunc,zeros
 #from IPython.Shell import IPShellEmbed
 #ipshell = IPShellEmbed()
 
+def structure_dynprog_modular():
+    print "Hello Structure"
+
 import gzip
 import scipy
 from scipy.io import loadmat

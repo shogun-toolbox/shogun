@@ -4,6 +4,12 @@ from shogun.Features import RealFeatures, Labels
 from shogun.Kernel import CustomKernel
 from shogun.Classifier import LibSVM
 
+def classifier_custom_kernel_modular():
+    print "Hello World!"
+
+def classifier_custom_kernel_modular_tests():
+    print "Tests!"
+
 C=1
 dim=7
 
