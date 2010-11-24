@@ -1,11 +1,11 @@
-2010-XX-XX Soeren Sonnenburg <sonne@debian.org>
+2010-12-XX Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.10.0 (libshogun 9.0, libshogunui 6.0)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Create SVMLightOneClass
 		- Serialization of the most important shogun objects
-		(SVM, Kernel, Features, Preprocessors, ...) as ASCII and hdf5
+		(SVM, Kernel, Features, Preprocessors, ...) as ASCII, JSON, XML and HDF5
 		- Add CustomDistance in analogy to custom kernel
 		- Add HistogramIntersectionKernel (thanks Koen van de Sande for the patch)
 		- Matlab 2010a support

@@ -1,5 +1,5 @@
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/kernel/SimpleKernel.h>
+#include <shogun/kernel/DotKernel.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/io.h>
@@ -7,11 +7,11 @@
 
 using namespace shogun;
 
-class CReverseLinearKernel : public CSimpleKernel<float64_t>
+class CReverseLinearKernel : public CDotKernel
 {
 public:
     /** default constructor */
-    CReverseLinearKernel() : CSimpleKernel<float64_t>(0)
+    CReverseLinearKernel() : CDotKernel(0)
     {
     }
 
@@ -28,7 +28,7 @@ public:
      */
     virtual bool init(CFeatures* l, CFeatures* r)
     {
-        CSimpleKernel<float64_t>::init(l, r);
+        CDotKernel::init(l, r);
         return init_normalizer();
     }
 
