@@ -11,8 +11,6 @@
 #ifndef _GMNPSVM_H___
 #define _GMNPSVM_H___
 
-#include <vector>
-
 #include "lib/common.h"
 #include "classifier/svm/MultiClassSVM.h"
 #include "features/Features.h"
@@ -25,6 +23,8 @@ namespace shogun
  */
 class CGMNPSVM : public CMultiClassSVM
 {
+	void init(void);
+
 	public:
 		/** default constructor */
 		CGMNPSVM();
@@ -58,22 +58,27 @@ class CGMNPSVM : public CMultiClassSVM
 
 		/** required for CMKLMulticlass constraint computation
 		 *
-		 *  @param basealphas basealphas[k][j] is the alpha for class k and 
-		 * 	sample j which is untransformed compared to the alphas
-		 * 	stored in CSVM* members
+		 *  @param y height of basealphas
+		 *  @param x width of basealphas
+		 *
+		 *  @return basealphas basealphas[k][j] is the alpha for class
+		 * 	        k and sample j which is untransformed compared to
+		 * 	        the alphas stored in CSVM* members
 		 */
-		void getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas);
+		float64_t* get_basealphas_ptr(index_t* y, index_t* x);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GMNPSVM"; }
-		
-	protected: 
-		/** required for CMKLMulticlass 
+
+	protected:
+		/** required for CMKLMulticlass
 		 * stores the untransformed alphas of this algorithm
 		 * whereas CSVM* members stores a transformed version of it
 		 * m_basealphas[k][j] is the alpha for class k and sample j
 		 */
-		::std::vector< ::std::vector<float64_t> > m_basealphas; // is the basic untransformed alpha, needed for MKL 
+		// is the basic untransformed alpha, needed for MKL
+		float64_t* m_basealphas;
+		index_t m_basealphas_y, m_basealphas_x;
 };
 }
 #endif

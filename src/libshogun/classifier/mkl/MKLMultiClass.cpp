@@ -271,8 +271,9 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 		SG_UNREF(sm);
 	}
 
-	::std::vector< ::std::vector<float64_t> > basealphas;
-	svm->getbasealphas( basealphas);
+	index_t basealphas_y = 0, basealphas_x = 0;
+	float64_t* basealphas = svm->get_basealphas_ptr(&basealphas_y,
+													&basealphas_x);
 
 	for (size_t lb=0; lb< trainlabels2.size();++lb)
 	{
@@ -288,7 +289,7 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 				float64_t bia2=sm->get_bias();
 				SG_UNREF(sm2);
 
-				sum+= -basealphas[nc][lb]*(bia1-bia2-1);
+				sum+= -basealphas[lb*basealphas_y + nc]*(bia1-bia2-1);
 			}
 			SG_UNREF(sm);
 		}

@@ -52,7 +52,8 @@ def button_clear_clicked(button, main_window):
     main_window.set_focus(main_window.button_go)
 
 class MainWindow(gtk.Window):
-    TITLE = "OCR Demo"
+    TITLE = "OCR Demo - Press middle mouse button to classify, right" \
+        " mouse button to clear"
 
     MIN_WIDTH = 800
     MIN_HEIGHT = 260
@@ -72,8 +73,7 @@ class MainWindow(gtk.Window):
 
         # AI
         self.ai = Ai()
-        self.ai.load_classifier(com.TRAIN_X_FNAME, com.TRAIN_Y_FNAME,
-                                self)
+        self.ai.load_classifier()
 
         # Main Container
         self.main_align = gtk.Alignment(xalign=0.0, yalign=0.0,

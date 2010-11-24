@@ -48,14 +48,14 @@ bool CLibSVM::train(CFeatures* data)
 
 
 	// check length of linear term
-	if (!linear_term.empty() &&
-			labels->get_num_labels() != (int32_t)linear_term.size())
+	if (linear_term_y > 0 &&
+		labels->get_num_labels() != linear_term_y)
 	{
 		SG_ERROR("Number of training vectors does not match length of linear term\n");
 	}
 
 	// set linear term
-	if (!linear_term.empty())
+	if (linear_term_y > 0)
 	{
 		// set with linear term from base class
 		problem.pv = get_linear_term_array();

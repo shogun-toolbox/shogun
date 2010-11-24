@@ -10,6 +10,8 @@
 
 #include "lib/SerializableAsciiReader00.h"
 
+#include <locale.h>
+
 using namespace shogun;
 
 SerializableAsciiReader00::SerializableAsciiReader00(
@@ -283,6 +285,8 @@ SerializableAsciiReader00::read_type_begin_wrapped(
 	if (fseek(m_file->m_fstream, m_file->m_stack_fpos.back(), SEEK_SET
 			) != 0) return false;
 
+	setlocale(LC_ALL, "C");
+
 	string_t type_str;
 	type->to_string(type_str, STRING_LEN);
 
@@ -309,6 +313,8 @@ SerializableAsciiReader00::read_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	if (fgetc(m_file->m_fstream) != CHAR_TYPE_END) return false;
+
+	setlocale(LC_ALL, "");
 
 	return true;
 }

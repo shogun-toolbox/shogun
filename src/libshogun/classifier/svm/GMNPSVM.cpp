@@ -23,15 +23,29 @@ using namespace shogun;
 CGMNPSVM::CGMNPSVM()
 : CMultiClassSVM(ONE_VS_REST)
 {
+	init();
 }
 
 CGMNPSVM::CGMNPSVM(float64_t C, CKernel* k, CLabels* lab)
 : CMultiClassSVM(ONE_VS_REST, C, k, lab)
 {
+	init();
 }
 
 CGMNPSVM::~CGMNPSVM()
 {
+	if (m_basealphas != NULL) delete[] m_basealphas;
+}
+
+void
+CGMNPSVM::init(void)
+{
+	m_parameters->add_matrix(&m_basealphas,
+							 &m_basealphas_y, &m_basealphas_x,
+							 "m_basealphas",
+							 "Is the basic untransformed alpha.");
+
+	m_basealphas = NULL, m_basealphas_y = 0, m_basealphas_x = 0;
 }
 
 bool CGMNPSVM::train(CFeatures* data)
@@ -140,14 +154,18 @@ bool CGMNPSVM::train(CFeatures* data)
 		set_svm(i, svm);
 	}
 
-	m_basealphas.resize(num_classes, ::std::vector<float64_t>(num_data,0));
-	for(int j=0; j < num_virtual_data; j++ )
-	{
-		int inx1=0;
-		int inx2=0;
+	if (m_basealphas != NULL) delete[] m_basealphas;
+	m_basealphas_y = num_classes, m_basealphas_x = num_data;
+	m_basealphas = new float64_t[m_basealphas_y*m_basealphas_x];
+	for (index_t i=0; i<m_basealphas_y*m_basealphas_x; i++)
+		m_basealphas[i] = 0.0;
 
-		mnp.get_indices2( &inx1, &inx2, j );
-		m_basealphas[inx2-1][inx1]=alpha[j];
+	for(index_t j=0; j<num_virtual_data; j++)
+	{
+		index_t inx1=0, inx2=0;
+
+		mnp.get_indices2(&inx1, &inx2, j);
+		m_basealphas[inx1*m_basealphas_y + (inx2-1)] = alpha[j];
 	}
 
 	delete[] vector_c;
@@ -160,7 +178,11 @@ bool CGMNPSVM::train(CFeatures* data)
 	return true;
 }
 
-void CGMNPSVM::getbasealphas(::std::vector< ::std::vector<float64_t> > & basealphas)
+float64_t*
+CGMNPSVM::get_basealphas_ptr(index_t* y, index_t* x)
 {
-	basealphas=m_basealphas;
+	if (y == NULL || x == NULL) return NULL;
+
+	*y = m_basealphas_y, *x = m_basealphas_x;
+	return m_basealphas;
 }

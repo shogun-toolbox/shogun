@@ -41,6 +41,8 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CSVM::~CSVM()
 {
+	if (linear_term != NULL) delete[] linear_term;
+
 	SG_UNREF(mkl);
 }
 
@@ -60,6 +62,9 @@ void CSVM::set_defaults(int32_t num_sv)
 					  "Shrinking shall be used.");
 	m_parameters->add((CSGSerializable**) &mkl, "mkl",
 					  "MKL object that svm optimizers need.");
+	m_parameters->add_vector(&linear_term, &linear_term_y,
+							 "linear_term",
+							 "Linear term in qp.");
 
 	callback=NULL;
 	mkl=NULL;
@@ -80,6 +85,8 @@ void CSVM::set_defaults(int32_t num_sv)
 	use_shrinking=true;
 	use_batch_computation=true;
 	use_linadd=true;
+
+	linear_term = NULL; linear_term_y = 0;
 
     if (num_sv>0)
         create_new_model(num_sv);
@@ -282,39 +289,45 @@ float64_t CSVM::compute_svm_primal_objective()
 	return regularizer+loss;
 }
 
+float64_t*
+CSVM::get_linear_term_array(void)
+{
+	if (linear_term_y == 0) return NULL;
 
-float64_t* CSVM::get_linear_term_array() {
-
-	float64_t* a = new float64_t[linear_term.size()];
-	std::copy( linear_term.begin(), linear_term.end(), a);
+	float64_t* a = new float64_t[linear_term_y];
+	memcpy(a, linear_term, linear_term_y*sizeof (float64_t));
 
 	return a;
-
 }
 
-
-
-void CSVM::set_linear_term(std::vector<float64_t> lin)
+void
+CSVM::set_linear_term(const float64_t* lin, index_t y)
 {
-
 	if (!labels)
 		SG_ERROR("Please assign labels first!\n");
 
 	int32_t num_labels=labels->get_num_labels();
 
-	if (num_labels!=(int32_t) lin.size())
+	if (num_labels != y)
 	{
 		SG_ERROR("Number of labels (%d) does not match number"
-				"of entries (%d) in linear term \n", num_labels, lin.size());
+				"of entries (%d) in linear term \n", num_labels, y);
 	}
 
-	linear_term = lin;
+	if (linear_term != NULL) delete[] linear_term;
 
+	if (lin == NULL || y == 0) {
+		linear_term = NULL, linear_term_y = 0;
+	} else {
+		linear_term_y = y, linear_term = new float64_t[y];
+		memcpy(linear_term, lin, linear_term_y*sizeof (float64_t));
+	}
 }
 
+float64_t*
+CSVM::get_linear_term_ptr(index_t* y)
+{
+	if (y == NULL) return NULL;
 
-std::vector<float64_t> CSVM::get_linear_term() {
-
-	return linear_term;
-
+	*y = linear_term_y; return linear_term;
 }

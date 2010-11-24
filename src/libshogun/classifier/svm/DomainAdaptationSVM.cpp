@@ -92,7 +92,7 @@ bool CDomainAdaptationSVM::train(CFeatures* data)
 	int32_t num_training_points = get_labels()->get_num_labels();
 
 
-	std::vector<float64_t> lin_term = std::vector<float64_t>(num_training_points);
+	float64_t* lin_term = new float64_t[num_training_points];
 
 	// grab current training features
 	CFeatures* train_data = get_kernel()->get_lhs();
@@ -101,13 +101,15 @@ bool CDomainAdaptationSVM::train(CFeatures* data)
 	CLabels* parent_svm_out = presvm->classify(train_data);
 
 	// pre-compute linear term
-	for (int32_t i=0; i!=num_training_points; i++)
+	for (int32_t i=0; i<num_training_points; i++)
 	{
 		lin_term[i] = (- B*(get_label(i) * parent_svm_out->get_label(i)))*train_factor - 1.0;
 	}
 
 	//set linear term for QP
-	this->set_linear_term(lin_term);
+	this->set_linear_term(lin_term, num_training_points);
+
+	delete[] lin_term;
 
 	//train SVM
 	bool success = CSVMLight::train();

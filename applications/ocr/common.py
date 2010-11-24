@@ -20,7 +20,6 @@ NEAR_ONE_NEG = 1-NEAR_ZERO_POS
 TRAIN_X_FNAME = "data/train_data_x.asc.gz"
 TRAIN_Y_FNAME = "data/train_data_y.asc.gz"
 
-TRAIN_PARAMS_FNAME = "data/ocr.svm.head"
 TRAIN_SVM_FNAME_GZ = "data/ocr.svm.gz"
 
 MATIX_IMAGE_SIZE = 16

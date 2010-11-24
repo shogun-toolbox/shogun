@@ -14,6 +14,8 @@
 #include "lib/SerializableXmlFile.h"
 #include "lib/SerializableXmlReader00.h"
 
+#include <locale.h>
+
 #define STR_ROOT_NAME_00 \
 	"_SHOGUN_SERIALIZABLE_XML_FILE_V_00_"
 
@@ -388,6 +390,8 @@ CSerializableXmlFile::write_type_begin_wrapped(
 {
 	if (!push_node(BAD_CAST name)) return false;
 
+	setlocale(LC_ALL, "C");
+
 	string_t buf;
 	type->to_string(buf, STRING_LEN);
 	if (xmlNewProp(m_stack_stream.back(), BAD_CAST STR_PROP_TYPE,
@@ -401,6 +405,8 @@ CSerializableXmlFile::write_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	pop_node();
+
+	setlocale(LC_ALL, "");
 
 	return true;
 }
