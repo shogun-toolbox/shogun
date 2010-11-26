@@ -6,25 +6,17 @@ import numpy
 
 
 def compare(a, b):
-    if type(a)!=type(b):
-        return False
+    if type(a) != type(b): return False
 
-    if type(a) in (tuple,list):
-        if len(a)!=len(b):
-            return False
-        for obj1,obj2 in zip(a,b):
-            if type(obj1)!=type(obj2):
-                return False
-            if type(obj1) == numpy.ndarray:
-                if not numpy.all(obj1==obj2):
-                    return False
-            else:
-                if obj1!=obj2:
-                    return False
-    else:
-        return a == b
+    if type(a) == numpy.ndarray: return numpy.all(a == b)
+    elif type(a) in (tuple,list):
+        if len(a) != len(b): return False
+        for obj1, obj2 in zip(a,b):
+            if type(obj1) != type(obj2): return False
+            if not compare(obj1, obj2): return False
+        return True
 
-    return True
+    return a == b
 
 def tester():
     for t in tests:
