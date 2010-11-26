@@ -157,49 +157,27 @@ class CLibLinear : public CLinearClassifier
 		}
 
 		/** set the linear term for qp */
-		inline void set_linear_term(std::vector<float64_t> lin)
+		inline void set_linear_term(float64_t* linear_term, int32_t len)
 		{
-
 			if (!labels)
 				SG_ERROR("Please assign labels first!\n");
 
 			int32_t num_labels=labels->get_num_labels();
 
-			if (num_labels!=(int32_t) lin.size())
+			if (num_labels!=len)
 			{
 				SG_ERROR("Number of labels (%d) does not match number"
-						"of entries (%d) in linear term \n", num_labels, lin.size());
+						"of entries (%d) in linear term \n", num_labels, len);
 			}
 
-			linear_term = lin;
-
+			m_linear_term = CMath::clone_vector(linear_term, len);
 		}
 
 		/** get the linear term for qp */
-		std::vector<float64_t> get_linear_term() {
-
-			return linear_term;
-
-		}
-
+		void get_linear_term(float64_t** linear_term, int32_t* len);
 
 		/** set the linear term for qp */
-		inline void init_linear_term()
-		{
-
-			if (!labels)
-				SG_ERROR("Please assign labels first!\n");
-
-			int32_t num_labels=labels->get_num_labels();
-
-			linear_term = std::vector<float64_t>(num_labels);
-
-			for (int i=0; i!=num_labels; i++)
-			{
-				linear_term[i] = -1.0;
-			}
-
-		}
+		void init_linear_term();
 
 	private:
 		void train_one(const problem *prob, const parameter *param, double Cp, double Cn);
@@ -223,7 +201,7 @@ class CLibLinear : public CLinearClassifier
 		int32_t max_iterations;
 
 		/** precomputed linear term */
-		std::vector<float64_t> linear_term;
+		float64_t* m_linear_term;
 
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;

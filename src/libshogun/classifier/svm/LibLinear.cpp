@@ -32,7 +32,7 @@ CLibLinear::CLibLinear(void)
 	C1=1;
 	C2=1;
 	set_max_iterations();
-	//init_linear_term();
+	m_linear_term=NULL;
     init();
 }
 
@@ -44,7 +44,7 @@ CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
 	C1=1;
 	C2=1;
 	set_max_iterations();
-	//init_linear_term();
+	m_linear_term=NULL;
     init();
 }
 
@@ -72,12 +72,14 @@ void CLibLinear::init(void)
 
 CLibLinear::~CLibLinear()
 {
+	delete[] m_linear_term;
 }
 
 bool CLibLinear::train(CFeatures* data)
 {
 	CSignal::clear_cancel();
 	ASSERT(labels);
+
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -136,9 +138,6 @@ bool CLibLinear::train(CFeatures* data)
 	prob.l=num_vec;
 	prob.x=features;
 	prob.y=new int[prob.l];
-
-
-	prob.linear_term=this->linear_term;
 	prob.use_bias=use_bias;
 
 	for (int32_t i=0; i<prob.l; i++)
@@ -331,8 +330,10 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			if (prob->use_bias)
 				G+=w[n];
 
-			//G = G*yi-1;
-			G = G*yi + prob->linear_term[i];
+			if (m_linear_term)
+				G = G*yi + m_linear_term[i];
+			else
+				G = G*yi-1;
 
 			C = upper_bound[GETI(i)];
 			G += alpha[i]*diag[GETI(i)];
@@ -1144,5 +1145,30 @@ void CLibLinear::solve_l1r_lr(
 	delete [] xjpos_sum;
 }
 
+void CLibLinear::get_linear_term(float64_t** linear_term, int32_t* len)
+{
+	if (!labels)
+		SG_ERROR("Please assign labels first!\n");
+
+	int32_t num_labels=labels->get_num_labels();
+
+	if (!num_labels || !m_linear_term)
+		SG_ERROR("Please assign linear term first!\n");
+
+	*linear_term=(float64_t*) malloc(sizeof(float64_t)*num_labels);
+
+	for (int32_t i=0; i<num_labels; i++)
+		(*linear_term)[i]=m_linear_term[i];
+}
+
+void CLibLinear::init_linear_term()
+{
+	if (!labels)
+		SG_ERROR("Please assign labels first!\n");
+
+	int32_t num_labels=labels->get_num_labels();
+	m_linear_term = new float64_t[num_labels];
+	CMath::fill_vector(m_linear_term, num_labels, -1.0);
+}
 
 #endif //HAVE_LAPACK

@@ -81,6 +81,8 @@
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* alphas, int32_t d)};
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* svs, int32_t d)};
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* lterm, int32_t num)};
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* linear_term, int32_t len)};
+%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** linear_term, int32_t* len)};
 %apply (int32_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(int32_t** output, int32_t* num_vec, int32_t* k_out)};
 
 

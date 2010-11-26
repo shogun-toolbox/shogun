@@ -128,7 +128,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
         }
 
     	// set linear term for QP
-    	this->set_linear_term(lin_term);
+    	this->set_linear_term(&lin_term[0], lin_term.size());
 
     }
 

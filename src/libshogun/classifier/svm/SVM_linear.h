@@ -62,9 +62,6 @@ struct problem
 	CDotFeatures* x;
 	/** if bias shall be used */
 	bool use_bias;
-
-    /** precomputed linear term */
-	std::vector<float64_t> linear_term;
 };
 
 /** parameter */
