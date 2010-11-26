@@ -15,6 +15,7 @@
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
  #include <shogun/base/SGObject.h>
+ #include <shogun/base/DynArray.h>
 
  extern void sg_global_print_message(FILE* target, const char* str);
  extern void sg_global_print_warning(FILE* target, const char* str);
@@ -153,9 +154,34 @@ def __SGreduce_ex__(self, protocol):
     self.__pickle_ascii__ = True if protocol == 0 else False
     return super(self.__class__, self).__reduce__()
 
+def __SGstr__(self):
+    fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
+        + str(random.randint(0, 1e15))
+
+    fstream = shogunLibrary.SerializableAsciiFile(fname, "w")
+    if not self.save_serializable(fstream):
+        fstream.close(); os.remove(fname)
+        raise exceptions.IOError("Could not dump Shogun object!")
+    fstream.close()
+
+    fstream = open(fname, "r"); result = fstream.read();
+    fstream.close()
+
+    os.remove(fname)
+    return result
+
+def __SGeq__(self, other):
+    return self.__str__() == str(other)
+
+def __SGneq__(self, other):
+    return self.__str__() != str(other)
+
 SGSerializable.__setstate__ = __SGsetstate__
 SGSerializable.__getstate__ = __SGgetstate__
 SGSerializable.__reduce_ex__ = __SGreduce_ex__
+SGSerializable.__str__ = __SGstr__
+SGSerializable.__eq__ = __SGeq__
+SGSerializable.__neq__ = __SGneq__
 %}
 
 #endif /* SWIGPYTHON  */

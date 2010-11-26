@@ -42,12 +42,16 @@ void CNormOne::cleanup()
 /// initialize preprocessor from file
 bool CNormOne::load(FILE* f)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 /// save preprocessor init-data to file
 bool CNormOne::save(FILE* f)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 

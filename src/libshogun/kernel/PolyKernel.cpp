@@ -18,10 +18,18 @@
 
 using namespace shogun;
 
+void
+CPolyKernel::init(void)
+{
+	m_parameters->add(&degree, "degree");
+	m_parameters->add(&inhomogene, "inhomogene",
+					  "If kernel is inhomogeneous.");
+}
+
 CPolyKernel::CPolyKernel(void)
 : CDotKernel(0), degree(0), inhomogene(false)
 {
-	SG_UNSTABLE("CPolyKernel::CPolyKernel(void)", "\n");
+	init();
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
@@ -29,6 +37,8 @@ CPolyKernel::CPolyKernel(void)
 CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
 : CDotKernel(size), degree(d), inhomogene(i)
 {
+	init();
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
@@ -36,6 +46,8 @@ CPolyKernel::CPolyKernel(
 	CDotFeatures* l, CDotFeatures* r, int32_t d, bool i, int32_t size)
 : CDotKernel(size), degree(d), inhomogene(i)
 {
+	init();
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l,r);
 }

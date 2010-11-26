@@ -72,12 +72,16 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 		/// initialize preprocessor from file
 		bool load(FILE* f)
 		{
+			SG_SET_LOCALE_C;
+			SG_RESET_LOCALE;
 			return false;
 		}
 
 		/// save preprocessor init-data to file
 		bool save(FILE* f)
 		{
+			SG_SET_LOCALE_C;
+			SG_RESET_LOCALE;
 			return false;
 		}
 

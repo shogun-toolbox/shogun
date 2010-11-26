@@ -71,11 +71,15 @@ bool CKMeans::train(CFeatures* data)
 
 bool CKMeans::load(FILE* srcfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 bool CKMeans::save(FILE* dstfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 

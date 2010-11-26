@@ -14,17 +14,30 @@
 
 using namespace shogun;
 
+void
+CCombinedFeatures::init(void)
+{
+	m_parameters->add(&num_vec, "num_vec",
+					  "Number of vectors.");
+	m_parameters->add((CSGSerializable**) &feature_list,
+					  "feature_list", "Feature list.");
+}
+
 CCombinedFeatures::CCombinedFeatures()
 : CFeatures(0)
 {
-	feature_list=new CList<CFeatures*>(true);
+	init();
+
+	feature_list=new CList(true);
 	num_vec=0;
 }
 
 CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures & orig)
 : CFeatures(0)
 {
-	feature_list=new CList<CFeatures*>(true);
+	init();
+
+	feature_list=new CList(true);
 	//todo copy features
 	num_vec=orig.num_vec;
 }
@@ -44,7 +57,7 @@ void CCombinedFeatures::list_feature_objs()
 	SG_INFO( "BEGIN COMBINED FEATURES LIST - ");
 	this->list_feature_obj();
 
-	CListElement<CFeatures*> * current = NULL ;
+	CListElement* current = NULL ;
 	CFeatures* f=get_first_feature_obj(current);
 
 	while (f)

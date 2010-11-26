@@ -10,8 +10,6 @@
 
 #include "lib/SerializableAsciiReader00.h"
 
-#include <locale.h>
-
 using namespace shogun;
 
 SerializableAsciiReader00::SerializableAsciiReader00(
@@ -285,21 +283,18 @@ SerializableAsciiReader00::read_type_begin_wrapped(
 	if (fseek(m_file->m_fstream, m_file->m_stack_fpos.back(), SEEK_SET
 			) != 0) return false;
 
-	setlocale(LC_ALL, "C");
+	SG_SET_LOCALE_C;
 
 	string_t type_str;
 	type->to_string(type_str, STRING_LEN);
 
-	string_t r_prefix, r_name, r_type;
+	string_t r_name, r_type;
 	while (true) {
 		if (fscanf(m_file->m_fstream, "%"STRING_LEN_STR"s %"
-				   STRING_LEN_STR "s %"STRING_LEN_STR"s ", r_prefix,
-				   r_name, r_type) != 3) return false;
+				   STRING_LEN_STR "s ", r_name, r_type) != 2)
+			return false;
 
-		if ((strcmp(r_prefix, prefix) == 0 || (
-				 *prefix == '\0'
-				 && strcmp(r_prefix, STR_EMPTY_PREFIX) == 0))
-			&& strcmp(r_name, name) == 0
+		if (strcmp(r_name, name) == 0
 			&& strcmp(r_type, type_str) == 0) return true;
 
 		if (!m_file->ignore()) return false;
@@ -314,7 +309,7 @@ SerializableAsciiReader00::read_type_end_wrapped(
 {
 	if (fgetc(m_file->m_fstream) != CHAR_TYPE_END) return false;
 
-	setlocale(LC_ALL, "");
+	SG_RESET_LOCALE;
 
 	return true;
 }

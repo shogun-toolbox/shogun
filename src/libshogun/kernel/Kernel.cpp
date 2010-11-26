@@ -667,14 +667,18 @@ KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
 
 void CKernel::load(CFile* loader)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 }
 
 void CKernel::save(CFile* writer)
 {
 	int32_t m,n;
 	float64_t* km=get_kernel_matrix<float64_t>(m,n, NULL);
+	SG_SET_LOCALE_C;
 	writer->set_real_matrix(km, m,n);
 	delete[] km;
+	SG_RESET_LOCALE;
 }
 
 void CKernel::remove_lhs_and_rhs()

@@ -10,11 +10,11 @@
 #ifndef __ASCII_FILE_H__
 #define __ASCII_FILE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/DynamicArray.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/File.h>
-#include <shogun/lib/io.h>
+#include <lib/config.h>
+#include <base/DynArray.h>
+#include <lib/common.h>
+#include <lib/File.h>
+#include <lib/io.h>
 
 namespace shogun
 {
@@ -338,7 +338,7 @@ private:
 	 * @param ptr_data
 	 * @param ptr_item
 	 */
-	template <class T> void append_item(CDynamicArray<T>* items, char* ptr_data, char* ptr_item);
+	template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
 };
 }
 #endif //__ASCII_FILE_H__

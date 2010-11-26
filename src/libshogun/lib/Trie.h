@@ -15,7 +15,7 @@
 #include <string.h>
 #include "lib/common.h"
 #include "lib/io.h"
-#include "lib/DynamicArray.h"
+#include "base/DynArray.h"
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
@@ -397,7 +397,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		 */
 		void fill_backtracking_table_recursion(
 			Trie* tree, int32_t depth, uint64_t seq, float64_t value,
-			CDynamicArray<ConsensusEntry>* table, float64_t* weights);
+			DynArray<ConsensusEntry>* table, float64_t* weights);
 
 		/** fill backtracking table
 		 *
@@ -408,8 +408,8 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		 * @param weights weights
 		 */
 		void fill_backtracking_table(
-			int32_t pos, CDynamicArray<ConsensusEntry>* prev,
-			CDynamicArray<ConsensusEntry>* cur, bool cumulative,
+			int32_t pos, DynArray<ConsensusEntry>* prev,
+			DynArray<ConsensusEntry>* cur, bool cumulative,
 			float64_t* weights);
 
 		/** POIMs extract W
@@ -2014,7 +2014,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 	template <class Trie>
 void CTrie<Trie>::fill_backtracking_table_recursion(
 	Trie* tree, int32_t depth, uint64_t seq, float64_t value,
-	CDynamicArray<ConsensusEntry>* table, float64_t* weights)
+	DynArray<ConsensusEntry>* table, float64_t* weights)
 {
 	float64_t w=1.0;
 
@@ -2087,8 +2087,8 @@ float64_t CTrie<Trie>::get_cumulative_score(
 
 	template <class Trie>
 void CTrie<Trie>::fill_backtracking_table(
-	int32_t pos, CDynamicArray<ConsensusEntry>* prev,
-	CDynamicArray<ConsensusEntry>* cur, bool cumulative, float64_t* weights)
+	int32_t pos, DynArray<ConsensusEntry>* prev,
+	DynArray<ConsensusEntry>* cur, bool cumulative, float64_t* weights)
 {
 	ASSERT(pos>=0 && pos<length);
 	ASSERT(!use_compact_terminal_nodes);

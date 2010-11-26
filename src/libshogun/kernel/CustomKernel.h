@@ -28,6 +28,8 @@ namespace shogun
  */
 class CCustomKernel: public CKernel
 {
+	void init(void);
+
 	public:
 		/** default constructor */
 		CCustomKernel();
@@ -112,7 +114,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * @return name Custom
 		 */
-		virtual const char* get_name() const { return "Custom"; }
+		virtual const char* get_name() const { return "CustomKernel"; }
 
 		/** set kernel matrix (only elements from upper triangle)
 		 * from elements of upper triangle (concat'd), including the

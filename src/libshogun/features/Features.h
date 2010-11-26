@@ -184,7 +184,9 @@ class CFeatures : public CSGObject
 		 */
 		virtual void load(CFile* loader)
 		{
+			SG_SET_LOCALE_C;
 			SG_NOTIMPLEMENTED;
+			SG_RESET_LOCALE;
 		}
 
 		/** save features to file
@@ -193,7 +195,9 @@ class CFeatures : public CSGObject
 		 */
 		virtual void save(CFile* writer)
 		{
+			SG_SET_LOCALE_C;
 			SG_NOTIMPLEMENTED;
+			SG_RESET_LOCALE;
 		}
 
 		/** check feature compatibility

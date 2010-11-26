@@ -152,10 +152,14 @@ bool CHierarchical::train(CFeatures* data)
 
 bool CHierarchical::load(FILE* srcfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 bool CHierarchical::save(FILE* dstfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }

@@ -2266,11 +2266,13 @@ template<> inline void CStringFeatures<sg_type>::load(CFile* loader)		\
 {																			\
 	SG_INFO( "loading...\n");												\
 																			\
+	SG_SET_LOCALE_C;													\
 	TString<sg_type>* strs;												\
 	int32_t num_str;														\
 	int32_t max_len;														\
 	loader->f_load(strs, num_str, max_len);									\
 	set_features(strs, num_str, max_len);									\
+	SG_RESET_LOCALE;													\
 }
 
 LOAD(get_bool_string_list, bool)
@@ -2291,8 +2293,10 @@ LOAD(get_longreal_string_list, floatmax_t)
 #define SAVE(f_write, sg_type)												\
 template<> inline void CStringFeatures<sg_type>::save(CFile* writer)		\
 { 																			\
+	SG_SET_LOCALE_C;													\
 	ASSERT(writer);															\
 	writer->f_write(features, num_vectors);									\
+	SG_RESET_LOCALE;													\
 }
 
 SAVE(set_bool_string_list, bool)

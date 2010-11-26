@@ -13,8 +13,6 @@
 
 #include "lib/SerializableXmlReader00.h"
 
-#include <locale.h>
-
 using namespace shogun;
 
 SerializableXmlReader00::SerializableXmlReader00(
@@ -327,7 +325,7 @@ SerializableXmlReader00::read_type_begin_wrapped(
 {
 	bool result = true;
 
-	setlocale(LC_ALL, "C");
+	SG_SET_LOCALE_C;
 
 	if (!m_file->join_node(BAD_CAST name)) return false;
 
@@ -347,7 +345,7 @@ SerializableXmlReader00::read_type_end_wrapped(
 {
 	m_file->pop_node();
 
-	setlocale(LC_ALL, "");
+	SG_RESET_LOCALE;
 
 	return true;
 }

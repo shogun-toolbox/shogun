@@ -16,7 +16,7 @@
 #include <hdf5.h>
 
 #include "lib/SerializableFile.h"
-#include "lib/DynamicArray.h"
+#include "base/DynArray.h"
 
 #define TYPE_INDEX                 H5T_NATIVE_INT32
 
@@ -58,8 +58,8 @@ IGNORE_IN_CLASSLIST class CSerializableHdf5File
 		const char* name;
 	};
 
-	CDynamicArray<type_item_t*> m_stack_type;
-	CDynamicArray<hid_t> m_stack_h5stream;
+	DynArray<type_item_t*> m_stack_type;
+	DynArray<hid_t> m_stack_h5stream;
 
 	static hid_t sizeof_sparsetype(void);
 	static hid_t new_sparsetype(void);

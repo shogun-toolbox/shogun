@@ -234,10 +234,14 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 
 bool CKNN::load(FILE* srcfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 bool CKNN::save(FILE* dstfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }

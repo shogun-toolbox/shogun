@@ -17,11 +17,17 @@
 
 using namespace shogun;
 
+void
+CFixedDegreeStringKernel::init(void)
+{
+	m_parameters->add(&degree, "degree",
+					  "The degree.");
+}
+
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(void)
 : CStringKernel<char>(0), degree(0)
 {
-	SG_UNSTABLE("CFixedDegreeStringKernel::CFixedDegreeStringKernel(void)",
-				"\n");
+	init();
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
@@ -29,6 +35,8 @@ CFixedDegreeStringKernel::CFixedDegreeStringKernel(void)
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(int32_t size, int32_t d)
 : CStringKernel<char>(size), degree(d)
 {
+	init();
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
@@ -36,6 +44,8 @@ CFixedDegreeStringKernel::CFixedDegreeStringKernel(
 	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t d)
 : CStringKernel<char>(10), degree(d)
 {
+	init();
+
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l, r);
 }

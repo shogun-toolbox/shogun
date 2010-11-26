@@ -1583,10 +1583,10 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 
 	//backtracking and scoring table
 	int32_t num_tables=CMath::max(1,num_feat-degree+1);
-	CDynamicArray<ConsensusEntry>** table=new CDynamicArray<ConsensusEntry>*[num_tables];
+	DynArray<ConsensusEntry>** table=new DynArray<ConsensusEntry>*[num_tables];
 
 	for (int32_t i=0; i<num_tables; i++)
-		table[i]=new CDynamicArray<ConsensusEntry>(num_suppvec/10);
+		table[i]=new DynArray<ConsensusEntry>(num_suppvec/10);
 
 	//compute consensus via dynamic programming
 	for (int32_t i=0; i<num_tables; i++)

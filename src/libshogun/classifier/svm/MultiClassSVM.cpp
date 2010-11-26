@@ -314,6 +314,8 @@ bool CMultiClassSVM::load(FILE* modelfl)
 	int32_t line_number=1;
 	int32_t svm_idx=-1;
 
+	SG_SET_LOCALE_C;
+
 	if (fscanf(modelfl,"%15s\n", char_buffer)==EOF)
 		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 	else
@@ -456,11 +458,15 @@ bool CMultiClassSVM::load(FILE* modelfl)
 	}
 
 	svm_loaded=result;
+
+	SG_RESET_LOCALE;
 	return result;
 }
 
 bool CMultiClassSVM::save(FILE* modelfl)
 {
+	SG_SET_LOCALE_C;
+
 	if (!kernel)
 		SG_ERROR("Kernel not defined!\n");
 
@@ -493,6 +499,7 @@ bool CMultiClassSVM::save(FILE* modelfl)
 		fprintf(modelfl, "];\n");
 	}
 
+	SG_RESET_LOCALE;
 	SG_DONE();
 	return true ;
 }

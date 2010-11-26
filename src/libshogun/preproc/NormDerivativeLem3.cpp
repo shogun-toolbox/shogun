@@ -41,12 +41,16 @@ void CNormDerivativeLem3::cleanup()
 /// initialize preprocessor from file
 bool CNormDerivativeLem3::load(FILE* f)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 /// save preprocessor init-data to file
 bool CNormDerivativeLem3::save(FILE* f)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 

@@ -13,7 +13,7 @@
 #include <string.h>
 
 #include "features/Features.h"
-#include "lib/DynamicArray.h"
+#include "base/DynArray.h"
 
 namespace shogun
 {
@@ -199,7 +199,7 @@ protected:
 
 protected:
 	///list of attributes (sorted)
-	CDynamicArray<T_ATTRIBUTE> features;
+	DynArray<T_ATTRIBUTE> features;
 };
 }
 #endif

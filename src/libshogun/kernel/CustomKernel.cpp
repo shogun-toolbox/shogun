@@ -16,14 +16,25 @@
 
 using namespace shogun;
 
+void
+CCustomKernel::init(void)
+{
+	m_parameters->add_matrix(&kmatrix, &num_rows, &num_cols, "kmatrix",
+							 "Kernel matrix.");
+	m_parameters->add(&upper_diagonal, "upper_diagonal");
+}
+
 CCustomKernel::CCustomKernel()
 : CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
 {
+	init();
 }
 
 CCustomKernel::CCustomKernel(CKernel* k)
 : CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
 {
+	init();
+
 	if (k->lhs_equals_rhs())
 	{
 		int32_t cols=k->get_num_vec_lhs();
@@ -65,12 +76,16 @@ CCustomKernel::CCustomKernel(CKernel* k)
 CCustomKernel::CCustomKernel(const float64_t* km, int32_t rows, int32_t cols)
 : CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
 {
+	init();
+
 	set_full_kernel_matrix_from_full(km, rows, cols);
 }
 
 CCustomKernel::CCustomKernel(const float32_t* km, int32_t rows, int32_t cols)
 : CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
 {
+	init();
+
 	set_full_kernel_matrix_from_full(km, rows, cols);
 }
 

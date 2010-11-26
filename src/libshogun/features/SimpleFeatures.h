@@ -1096,12 +1096,14 @@ template<> inline float64_t CSimpleFeatures<floatmax_t>:: dense_dot(int32_t vec_
 #define LOAD(f_load, sg_type)												\
 template<> inline void CSimpleFeatures<sg_type>::load(CFile* loader)		\
 { 																			\
+	SG_SET_LOCALE_C;													\
 	ASSERT(loader);															\
 	sg_type* matrix;														\
 	int32_t num_feat;														\
 	int32_t num_vec;														\
 	loader->f_load(matrix, num_feat, num_vec);								\
 	set_feature_matrix(matrix, num_feat, num_vec);							\
+	SG_RESET_LOCALE;													\
 }
 
 LOAD(get_bool_matrix, bool)
@@ -1122,8 +1124,10 @@ LOAD(get_longreal_matrix, floatmax_t)
 #define SAVE(f_write, sg_type)												\
 template<> inline void CSimpleFeatures<sg_type>::save(CFile* writer)		\
 { 																			\
+	SG_SET_LOCALE_C;													\
 	ASSERT(writer);															\
 	writer->f_write(feature_matrix, num_features, num_vectors);				\
+	SG_RESET_LOCALE;													\
 }
 
 SAVE(set_bool_matrix, bool)

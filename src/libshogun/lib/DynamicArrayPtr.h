@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _DYNAMIC_ARRAY_H_
-#define _DYNAMIC_ARRAY_H_
+#ifndef _DYNAMIC_ARRAY_PTR_H_
+#define _DYNAMIC_ARRAY_PTR_H_
 
 #include "base/SGObject.h"
 #include "base/DynArray.h"
@@ -25,20 +25,18 @@ namespace shogun
  * etc. and for hi-level objects only stores pointers, which are not
  * automagically SG_REF'd/deleted.
  */
-template <class T> class CDynamicArray :public CSGObject
+class CDynamicArrayPtr :public CSGObject
 {
-	DynArray<T> m_array;
+	DynArray<CSGSerializable*> m_array;
 
 	public:
 		/** constructor
 		 *
 		 * @param p_resize_granularity resize granularity
 		 */
-		CDynamicArray(int32_t p_resize_granularity=128)
+		CDynamicArrayPtr(int32_t p_resize_granularity=128)
 		: CSGObject()
 		{
-			set_generic<T>();
-
 			m_parameters->add_vector(&m_array.array,
 									 &m_array.num_elements, "array",
 									 "Memory for dynamic array.");
@@ -50,7 +48,7 @@ template <class T> class CDynamicArray :public CSGObject
 							  "shrink/grow step size.");
 		}
 
-		virtual ~CDynamicArray() {}
+		virtual ~CDynamicArrayPtr() {}
 
 		/** set the resize granularity
 		 *
@@ -81,7 +79,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T get_element(int32_t index) const
+		inline CSGSerializable* get_element(int32_t index) const
 		{ return m_array.get_element(index); }
 
 		/** get array element at index
@@ -91,7 +89,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T get_element_safe(int32_t index) const
+		inline CSGSerializable* get_element_safe(int32_t index) const
 		{ return m_array.get_element_safe(index); }
 
 		/** set array element at index
@@ -100,7 +98,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool set_element(T element, int32_t index)
+		inline bool set_element(CSGSerializable* element, int32_t index)
 		{ return m_array.set_element(element, index); }
 
 		/** insert array element at index
@@ -109,7 +107,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(T element, int32_t index)
+		inline bool insert_element(CSGSerializable* element, int32_t index)
 		{ return m_array.insert_element(element, index); }
 
 		/** append array element to the end of array
@@ -117,7 +115,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param element element to append
 		 * @return if setting was successful
 		 */
-		inline bool append_element(T element)
+		inline bool append_element(CSGSerializable* element)
 		{ return m_array.append_element(element); }
 
 	    /** ::STD::VECTOR compatible. Append array element to the end
@@ -125,7 +123,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 *
 		 * @param element element to append
 		 */
-		inline void push_back(T element)
+		inline void push_back(CSGSerializable* element)
 		{ m_array.push_back(element); }
 
 	    /** ::STD::VECTOR compatible. Delete array element at the end
@@ -139,7 +137,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 *
 		 * @return element at the end of array
 		 */
-		inline T back(void)
+		inline CSGSerializable* back(void)
 		{ return m_array.back(); }
 
 		/** find first occurence of array element and return its index
@@ -148,7 +146,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param element element to search for
 		 * @return index of element or -1
 		 */
-		inline int32_t find_element(T element)
+		inline int32_t find_element(CSGSerializable* element)
 		{ return m_array.find_element(element); }
 
 		/** delete array element at idx
@@ -175,7 +173,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 *
 		 * @return the array
 		 */
-		inline T* get_array(void)
+		inline CSGSerializable** get_array(void)
 		{ return m_array.get_array(); }
 
 		/** set the array pointer and free previously allocated memory
@@ -184,8 +182,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_num_elements last element index + 1
 		 * @param array_size number of elements in array
 		 */
-		inline void set_array(T* p_array, int32_t p_num_elements,
-							  int32_t array_size)
+		inline void set_array(
+			CSGSerializable** p_array, int32_t p_num_elements,
+			int32_t array_size)
 		{ m_array.set_array(p_array, p_num_elements, array_size); }
 
 		/** clear the array (with zeros) */
@@ -201,7 +200,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param index index
 		 * @return element at index
 		 */
-		inline T operator[](int32_t index) const
+		inline CSGSerializable* operator[](int32_t index) const
 		{ return m_array[index]; }
 
 		/** operator overload for array assignment
@@ -209,7 +208,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param orig original array
 		 * @return new array
 		 */
-		inline CDynamicArray<T>& operator=(CDynamicArray<T>& orig)
+		inline CDynamicArrayPtr& operator=(CDynamicArrayPtr& orig)
 		{
 			m_array = orig.m_array;
 			return *this;
@@ -217,7 +216,7 @@ template <class T> class CDynamicArray :public CSGObject
 
 		/** @return object name */
 		inline virtual const char* get_name() const
-		{ return "DynamicArray"; }
+		{ return "DynamicArrayPtr"; }
 };
 }
-#endif /* _DYNAMIC_ARRAY_H_  */
+#endif /* _DYNAMIC_ARRAY_PTR_H_  */

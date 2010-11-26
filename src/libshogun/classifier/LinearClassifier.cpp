@@ -31,11 +31,15 @@ CLinearClassifier::~CLinearClassifier()
 
 bool CLinearClassifier::load(FILE* srcfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 bool CLinearClassifier::save(FILE* dstfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 

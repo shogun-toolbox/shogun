@@ -42,12 +42,16 @@ void CSortUlongString::cleanup()
 /// initialize preprocessor from file
 bool CSortUlongString::load(FILE* f)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 /// save preprocessor init-data to file
 bool CSortUlongString::save(FILE* f)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 

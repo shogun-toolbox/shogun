@@ -82,11 +82,15 @@ bool CKRR::train(CFeatures* data)
 
 bool CKRR::load(FILE* srcfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 bool CKRR::save(FILE* dstfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 

@@ -1517,12 +1517,14 @@ GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
 #define LOAD(fname, sg_type)											\
 template<> inline void CSparseFeatures<sg_type>::load(CFile* loader)	\
 {																		\
+	SG_SET_LOCALE_C;													\
 	ASSERT(loader);														\
 	TSparse<sg_type>* matrix=NULL;										\
 	int32_t num_feat=0;													\
 	int32_t num_vec=0;													\
-	loader->fname(matrix, num_feat, num_vec);			\
+	loader->fname(matrix, num_feat, num_vec);							\
 	set_sparse_feature_matrix(matrix, num_feat, num_vec);				\
+	SG_RESET_LOCALE;													\
 }
 LOAD(get_bool_sparsematrix, bool)
 LOAD(get_char_sparsematrix, char)
@@ -1542,8 +1544,10 @@ LOAD(get_longreal_sparsematrix, floatmax_t)
 #define WRITE(fname, sg_type)											\
 template<> inline void CSparseFeatures<sg_type>::save(CFile* writer)	\
 {																		\
+	SG_SET_LOCALE_C;													\
 	ASSERT(writer);														\
 	writer->fname(sparse_feature_matrix, num_features, num_vectors);	\
+	SG_RESET_LOCALE;													\
 }
 WRITE(set_bool_sparsematrix, bool)
 WRITE(set_char_sparsematrix, char)

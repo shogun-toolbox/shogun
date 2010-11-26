@@ -17,6 +17,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <locale.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -60,6 +61,9 @@ enum EMessageType
 #else //DARWIN
 #define CONST_DIRENT_T const struct dirent
 #endif //DARWIN
+
+#define SG_SET_LOCALE_C setlocale(LC_ALL, "C")
+#define SG_RESET_LOCALE setlocale(LC_ALL, "")
 
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject

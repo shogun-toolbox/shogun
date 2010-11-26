@@ -11,8 +11,6 @@
 #include "lib/SerializableAsciiFile.h"
 #include "lib/SerializableAsciiReader00.h"
 
-#include <locale.h>
-
 #define STR_HEADER_00                 \
 	"<<_SHOGUN_SERIALIZABLE_ASCII_FILE_V_00_>>"
 
@@ -338,12 +336,9 @@ CSerializableAsciiFile::write_type_begin_wrapped(
 	string_t buf;
 	type->to_string(buf, STRING_LEN);
 
-	setlocale(LC_ALL, "C");
+	SG_SET_LOCALE_C;
 
-	if (fprintf(m_fstream, "%s %s %s ",
-				*prefix == '\0'? STR_EMPTY_PREFIX: prefix, name, buf
-			) <= 0)
-		return false;
+	if (fprintf(m_fstream, "%s %s ", name, buf) <= 0) return false;
 
 	return true;
 }
@@ -354,7 +349,7 @@ CSerializableAsciiFile::write_type_end_wrapped(
 {
 	if (fprintf(m_fstream, "%c", CHAR_TYPE_END) <= 0) return false;
 
-	setlocale(LC_ALL, "");
+	SG_RESET_LOCALE;
 
 	return true;
 }

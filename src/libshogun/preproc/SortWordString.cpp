@@ -41,12 +41,16 @@ void CSortWordString::cleanup()
 /// initialize preprocessor from file
 bool CSortWordString::load(FILE* f)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 /// save preprocessor init-data to file
 bool CSortWordString::save(FILE* f)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 

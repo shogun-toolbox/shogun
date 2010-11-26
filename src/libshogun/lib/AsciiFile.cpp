@@ -90,7 +90,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 	num_vec=0;																	\
 	char* ptr_item=NULL;														\
 	char* ptr_data=data;														\
-	CDynamicArray<char*>* items=new CDynamicArray<char*>();						\
+	DynArray<char*>* items=new DynArray<char*>();						\
 																				\
 	while (*ptr_data)															\
 	{																			\
@@ -875,7 +875,7 @@ void CAsciiFile::set_longreal_string_list(const TString<floatmax_t>* strings, in
 }
 
 template <class T> void CAsciiFile::append_item(
-	CDynamicArray<T>* items, char* ptr_data, char* ptr_item)
+	DynArray<T>* items, char* ptr_data, char* ptr_item)
 {
 	size_t len=(ptr_data-ptr_item)/sizeof(char);
 	char* item=new char[len+1];

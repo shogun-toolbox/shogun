@@ -13,7 +13,7 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
-#include "lib/DynamicArray.h"
+#include "base/DynArray.h"
 #include "structure/PlifBase.h"
 
 namespace shogun
@@ -124,7 +124,7 @@ class CPlifArray: public CPlifBase
 
 	protected:
 		/** plif array */
-		CDynamicArray<CPlifBase*> m_array;
+		DynArray<CPlifBase*> m_array;
 		/** maximum value */
 		float64_t max_value;
 		/** minimum value */

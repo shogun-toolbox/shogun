@@ -28,7 +28,7 @@ extern IO* sg_io;
  */
 template <class T> class DynArray
 {
-	protected:
+	public:
 		/** shrink/grow step size */
 		int32_t resize_granularity;
 
@@ -41,7 +41,6 @@ template <class T> class DynArray
 		/** the element in the array that has largest index */
 		int32_t last_element_idx;
 
-	public:
 		/** constructor
 		 *
 		 * @param p_resize_granularity resize granularity
@@ -183,6 +182,37 @@ template <class T> class DynArray
 		inline bool append_element(T element)
 		{
 			return set_element(element, last_element_idx+1);
+		}
+
+		/** ::STD::VECTOR compatible. Append array element to the end
+		 *  of array.
+		 *
+		 * @param element element to append
+		 */
+		inline void push_back(T element)
+		{
+			if (get_num_elements() < 0) set_element(element, 0);
+			else set_element(element, get_num_elements());
+		}
+
+	    /** ::STD::VECTOR compatible. Delete array element at the end
+		 *  of array.
+		 */
+		inline void pop_back(void)
+		{
+			if (get_num_elements() <= 0) return;
+			delete_element(get_num_elements()-1);
+		}
+
+		/** ::STD::VECTOR compatible. Return array element at the end
+		 *  of array.
+		 *
+		 * @return element at the end of array
+		 */
+		inline T back(void)
+		{
+			if (get_num_elements() <= 0) return get_element(0);
+			return get_element(get_num_elements()-1);
 		}
 
 		/** find first occurence of array element and return its index

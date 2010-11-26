@@ -16,21 +16,29 @@
 
 using namespace shogun;
 
+void
+CChi2Kernel::init(void)
+{
+	m_parameters->add(&width, "width");
+}
+
 CChi2Kernel::CChi2Kernel(void)
 : CDotKernel(0), width(0)
 {
-	SG_UNSTABLE("CChi2Kernel::CChi2Kernel(void)", "\n");
+	init();
 }
 
 CChi2Kernel::CChi2Kernel(int32_t size, float64_t w)
 : CDotKernel(size), width(w)
 {
+	init();
 }
 
 CChi2Kernel::CChi2Kernel(
 	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t w, int32_t size)
 : CDotKernel(size), width(w)
 {
+	init();
 	init(l,r);
 }
 

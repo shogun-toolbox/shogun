@@ -18,8 +18,8 @@
 namespace shogun
 {
 class CFeatures;
-template <class T> class CList;
-template <class T> class CListElement;
+class CList;
+class CListElement;
 
 /** @brief The class CombinedFeatures is used to combine a number of of feature objects
  * into a single CombinedFeatures object.
@@ -30,6 +30,8 @@ template <class T> class CListElement;
  */
 class CCombinedFeatures : public CFeatures
 {
+	void init(void);
+
 	public:
 		/** default constructor */
 		CCombinedFeatures();
@@ -78,7 +80,8 @@ class CCombinedFeatures : public CFeatures
 		 */
 		virtual int32_t get_size()
 		{
-			CFeatures* f=feature_list->get_current_element();
+			CFeatures* f=(CFeatures*) feature_list
+				->get_current_element();
 			if (f)
 			{
 				int32_t s=f->get_size();
@@ -105,7 +108,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline CFeatures* get_first_feature_obj()
 		{
-			return feature_list->get_first_element();
+			return (CFeatures*) feature_list->get_first_element();
 		}
 
 		/** get first feature object
@@ -113,9 +116,9 @@ class CCombinedFeatures : public CFeatures
 		 * @param current list of features
 		 * @return first feature object
 		 */
-		inline CFeatures* get_first_feature_obj(CListElement<CFeatures*>*&current)
+		inline CFeatures* get_first_feature_obj(CListElement*& current)
 		{
-			return feature_list->get_first_element(current);
+			return (CFeatures*) feature_list->get_first_element(current);
 		}
 
 		/** get next feature object
@@ -124,7 +127,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline CFeatures* get_next_feature_obj()
 		{
-			return feature_list->get_next_element();
+			return (CFeatures*) feature_list->get_next_element();
 		}
 
 		/** get next feature object
@@ -132,9 +135,9 @@ class CCombinedFeatures : public CFeatures
 		 * @param current list of features
 		 * @return next feature object
 		 */
-		inline CFeatures* get_next_feature_obj(CListElement<CFeatures*>*&current)
+		inline CFeatures* get_next_feature_obj(CListElement*& current)
 		{
-			return feature_list->get_next_element(current);
+			return (CFeatures*) feature_list->get_next_element(current);
 		}
 
 		/** get last feature object
@@ -143,7 +146,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline CFeatures* get_last_feature_obj()
 		{
-			return feature_list->get_last_element();
+			return (CFeatures*) feature_list->get_last_element();
 		}
 
 		/** insert feature object
@@ -186,7 +189,7 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline bool delete_feature_obj()
 		{
-			CFeatures* f=feature_list->delete_element();
+			CFeatures* f=(CFeatures*)feature_list->delete_element();
 			if (f)
 			{
 				SG_UNREF(f);
@@ -210,7 +213,7 @@ class CCombinedFeatures : public CFeatures
 
 	protected:
 		/** feature list */
-		CList<CFeatures*>* feature_list;
+		CList* feature_list;
 
 		/** number of vectors
 		 * must match between sub features

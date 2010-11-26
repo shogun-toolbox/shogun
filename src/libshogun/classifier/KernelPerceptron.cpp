@@ -41,11 +41,15 @@ bool CKernelPerceptron::train(CFeatures* data)
 
 bool CKernelPerceptron::load(FILE* srcfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 
 bool CKernelPerceptron::save(FILE* dstfile)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 	return false;
 }
 

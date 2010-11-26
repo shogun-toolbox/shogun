@@ -16,7 +16,7 @@
 #include <json.h>
 
 #include "lib/SerializableFile.h"
-#include "lib/DynamicArray.h"
+#include "base/DynArray.h"
 
 #define STR_KEY_TYPE               "type"
 #define STR_KEY_DATA               "data"
@@ -36,7 +36,7 @@ IGNORE_IN_CLASSLIST class CSerializableJsonFile
 {
 	friend class SerializableJsonReader00;
 
-	CDynamicArray<json_object*> m_stack_stream;
+	DynArray<json_object*> m_stack_stream;
 
 	void init(const char* fname);
 	void push_object(json_object* o);

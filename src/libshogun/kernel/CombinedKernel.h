@@ -23,8 +23,8 @@ namespace shogun
 {
 class CFeatures;
 class CCombinedFeatures;
-template <class T> class CList;
-template <class T> class CListElement;
+class CList;
+class CListElement;
 /**
  * @brief The Combined kernel is used to combine a number of kernels into a
  * single CombinedKernel object by linear combination.
@@ -45,6 +45,8 @@ template <class T> class CListElement;
  */
 class CCombinedKernel : public CKernel
 {
+	void init(void);
+
 	public:
 		/** constructor
 		 *
@@ -109,7 +111,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_first_kernel()
 		{
-			return kernel_list->get_first_element();
+			return (CKernel*) kernel_list->get_first_element();
 		}
 
 		/** get first kernel
@@ -117,9 +119,9 @@ class CCombinedKernel : public CKernel
 		 * @param current
 		 * @return first kernel
 		 */
-		inline CKernel* get_first_kernel(CListElement<CKernel*>*&current)
+		inline CKernel* get_first_kernel(CListElement*& current)
 		{
-			return kernel_list->get_first_element(current);
+			return (CKernel*) kernel_list->get_first_element(current);
 		}
 
 		/** get kernel
@@ -144,7 +146,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_last_kernel()
 		{
-			return kernel_list->get_last_element();
+			return (CKernel*) kernel_list->get_last_element();
 		}
 
 		/** get next kernel
@@ -153,7 +155,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_next_kernel()
 		{
-			return kernel_list->get_next_element();
+			return (CKernel*) kernel_list->get_next_element();
 		}
 
 		/** get next kernel multi-thread safe
@@ -161,9 +163,9 @@ class CCombinedKernel : public CKernel
 		 * @param current
 		 * @return next kernel
 		 */
-		inline CKernel* get_next_kernel(CListElement<CKernel*> *&current)
+		inline CKernel* get_next_kernel(CListElement*& current)
 		{
-			return kernel_list->get_next_element(current);
+			return (CKernel*) kernel_list->get_next_element(current);
 		}
 
 		/** insert kernel
@@ -205,7 +207,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline bool delete_kernel()
 		{
-			CKernel* k=kernel_list->delete_element();
+			CKernel* k=(CKernel*) kernel_list->delete_element();
 			SG_UNREF(k);
 
 			if (!k)
@@ -235,7 +237,7 @@ class CCombinedKernel : public CKernel
 			if (append_subkernel_weights)
 			{
 				int32_t num_subkernels = 0 ;
-				CListElement<CKernel*> *current = NULL ;
+				CListElement* current = NULL ;
 				CKernel * k = get_first_kernel(current) ;
 
 				while(k)
@@ -432,7 +434,7 @@ class CCombinedKernel : public CKernel
 
 	protected:
 		/** list of kernels */
-		CList<CKernel*>* kernel_list;
+		CList* kernel_list;
 		/** support vector count */
 		int32_t   sv_count;
 		/** support vector index */

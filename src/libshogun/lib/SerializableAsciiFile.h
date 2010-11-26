@@ -11,7 +11,7 @@
 #define __SERIALIZABLE_ASCII_FILE_H__
 
 #include "lib/SerializableFile.h"
-#include "lib/DynamicArray.h"
+#include "base/DynArray.h"
 
 #define CHAR_CONT_BEGIN            '('
 #define CHAR_CONT_END              ')'
@@ -26,8 +26,6 @@
 
 #define CHAR_TYPE_END              '\n'
 
-#define STR_EMPTY_PREFIX           ":"
-
 #define STR_SGSERIAL_NULL          "null"
 
 namespace shogun
@@ -36,7 +34,7 @@ class CSerializableAsciiFile :public CSerializableFile
 {
 	friend class SerializableAsciiReader00;
 
-	CDynamicArray<long> m_stack_fpos;
+	DynArray<long> m_stack_fpos;
 
 	void init(void);
 	bool ignore(void);

@@ -42,13 +42,31 @@ struct S_THREAD_PARAM
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
+void
+CCombinedKernel::init(void)
+{
+	m_parameters->add((CSGSerializable**) &kernel_list, "kernel_list",
+					  "List of kernels.");
+	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
+							 "Support vector index.");
+	m_parameters->add_vector(&sv_weight, &sv_count, "sv_weight",
+							 "Support vector weights.");
+	m_parameters->add(&append_subkernel_weights,
+					  "append_subkernel_weights",
+					  "If subkernel weights are appended.");
+	m_parameters->add(&initialized, "initialized",
+					  "Whether kernel is ready to be used.");
+}
+
 CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 : CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
 	subkernel_weights_buffer(NULL), append_subkernel_weights(asw),
 	initialized(false)
 {
+	init();
+
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	kernel_list=new CList<CKernel*>(true);
+	kernel_list=new CList(true);
 	SG_REF(kernel_list);
 
 	SG_INFO("Combined kernel created (%p)\n", this) ;
@@ -81,11 +99,11 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 
 	bool result=true;
 
-	CListElement<CFeatures*>* lfc = NULL;
-	CListElement<CFeatures*>* rfc = NULL;
+	CListElement* lfc = NULL;
+	CListElement* rfc = NULL;
 	lf=((CCombinedFeatures*) l)->get_first_feature_obj(lfc);
 	rf=((CCombinedFeatures*) r)->get_first_feature_obj(rfc);
-	CListElement<CKernel*>* current = NULL;
+	CListElement* current = NULL;
 	k=get_first_kernel(current);
 
 	while ( result && k )
@@ -151,7 +169,7 @@ void CCombinedKernel::remove_lhs()
 {
 	delete_optimization();
 
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel* k=get_first_kernel(current);
 
 	while (k)
@@ -169,7 +187,7 @@ void CCombinedKernel::remove_lhs()
 
 void CCombinedKernel::remove_rhs()
 {
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel* k=get_first_kernel(current);
 
 	while (k)
@@ -188,7 +206,7 @@ void CCombinedKernel::remove_lhs_and_rhs()
 {
 	delete_optimization();
 
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel* k=get_first_kernel(current);
 
 	while (k)
@@ -207,7 +225,7 @@ void CCombinedKernel::remove_lhs_and_rhs()
 
 void CCombinedKernel::cleanup()
 {
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel* k=get_first_kernel(current);
 
 	while (k)
@@ -232,7 +250,7 @@ void CCombinedKernel::list_kernels()
 	SG_INFO( "BEGIN COMBINED KERNEL LIST - ");
 	this->list_kernel();
 
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	k=get_first_kernel(current);
 	while (k)
 	{
@@ -246,7 +264,7 @@ void CCombinedKernel::list_kernels()
 float64_t CCombinedKernel::compute(int32_t x, int32_t y)
 {
 	float64_t result=0;
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel* k=get_first_kernel(current);
 	while (k)
 	{
@@ -266,7 +284,7 @@ bool CCombinedKernel::init_optimization(
 
 	delete_optimization();
 
-	CListElement<CKernel*> *current=NULL;
+	CListElement* current=NULL;
 	CKernel *k=get_first_kernel(current);
 	bool have_non_optimizable=false;
 
@@ -312,7 +330,7 @@ bool CCombinedKernel::init_optimization(
 
 bool CCombinedKernel::delete_optimization() 
 { 
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel* k = get_first_kernel(current);
 
 	while(k)
@@ -349,7 +367,7 @@ void CCombinedKernel::compute_batch(
 	//make sure we start cleanly
 	delete_optimization();
 
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel * k = get_first_kernel(current) ;
 
 	while(k)
@@ -544,7 +562,7 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 	
 	float64_t result=0;
 
-	CListElement<CKernel*> *current=NULL;
+	CListElement* current=NULL;
 	CKernel *k=get_first_kernel(current);
 	while (k)
 	{
@@ -581,7 +599,7 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 
 void CCombinedKernel::add_to_normal(int32_t idx, float64_t weight)
 { 
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel* k = get_first_kernel(current);
 
 	while(k)
@@ -595,7 +613,7 @@ void CCombinedKernel::add_to_normal(int32_t idx, float64_t weight)
 
 void CCombinedKernel::clear_normal() 
 { 
-	CListElement<CKernel*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CKernel* k = get_first_kernel(current);
 
 	while(k)
@@ -613,7 +631,7 @@ void CCombinedKernel::compute_by_subkernel(
 	if (append_subkernel_weights)
 	{
 		int32_t i=0 ;
-		CListElement<CKernel*> * current = NULL ;	
+		CListElement* current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
@@ -632,7 +650,7 @@ void CCombinedKernel::compute_by_subkernel(
 	else
 	{
 		int32_t i=0 ;
-		CListElement<CKernel*> * current = NULL ;	
+		CListElement* current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
@@ -655,7 +673,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 	if (append_subkernel_weights)
 	{
 		int32_t i=0 ;
-		CListElement<CKernel*> * current = NULL ;	
+		CListElement* current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
@@ -673,7 +691,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 	else
 	{
 		int32_t i=0 ;
-		CListElement<CKernel*> * current = NULL ;	
+		CListElement* current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
@@ -705,7 +723,7 @@ void CCombinedKernel::set_subkernel_weights(
 	if (append_subkernel_weights)
 	{
 		int32_t i=0 ;
-		CListElement<CKernel*> * current = NULL ;	
+		CListElement* current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
@@ -720,7 +738,7 @@ void CCombinedKernel::set_subkernel_weights(
 	else
 	{
 		int32_t i=0 ;
-		CListElement<CKernel*> * current = NULL ;	
+		CListElement* current = NULL ;	
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
@@ -755,7 +773,7 @@ bool CCombinedKernel::precompute_subkernels()
 	if (!k)
 		return false;
 
-	CList<CKernel*>* new_kernel_list = new CList<CKernel*>(true);
+	CList* new_kernel_list = new CList(true);
 
 	while(k)
 	{

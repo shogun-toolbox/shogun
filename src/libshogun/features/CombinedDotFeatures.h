@@ -21,8 +21,8 @@
 namespace shogun
 {
 class CFeatures;
-template <class T> class CList;
-template <class T> class CListElement;
+class CList;
+class CListElement;
 /** @brief Features that allow stacking of a number of DotFeatures.
  *
  * They transparently provide all the operations of DotFeatures, i.e.
@@ -44,6 +44,8 @@ template <class T> class CListElement;
  */
 class CCombinedDotFeatures : public CDotFeatures
 {
+	void init(void);
+
 	public:
 		/** constructor */
 		CCombinedDotFeatures();
@@ -165,7 +167,7 @@ class CCombinedDotFeatures : public CDotFeatures
 			/** pointer to current feature object */
 			CDotFeatures* f;
 			/** pointer to list object */
-			CListElement<CDotFeatures*>* current;
+			CListElement* current;
 			/** pointer to combined feature iterator */
 			void* iterator;
 			/* the index of the vector over whose components to iterate over */
@@ -256,7 +258,8 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline CDotFeatures* get_first_feature_obj()
 		{
-			CDotFeatures* f=feature_list->get_first_element();
+			CDotFeatures* f=(CDotFeatures*)feature_list
+				->get_first_element();
 			SG_REF(f);
 			return f;
 		}
@@ -266,9 +269,10 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param current list of features
 		 * @return first feature object
 		 */
-		inline CDotFeatures* get_first_feature_obj(CListElement<CDotFeatures*>*&current)
+		inline CDotFeatures* get_first_feature_obj(CListElement*& current)
 		{
-			CDotFeatures* f=feature_list->get_first_element(current);
+			CDotFeatures* f=(CDotFeatures*)feature_list
+				->get_first_element(current);
 			SG_REF(f);
 			return f;
 		}
@@ -279,7 +283,8 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline CDotFeatures* get_next_feature_obj()
 		{
-			CDotFeatures* f=feature_list->get_next_element();
+			CDotFeatures* f=(CDotFeatures*)feature_list
+				->get_next_element();
 			SG_REF(f);
 			return f;
 		}
@@ -289,9 +294,10 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param current list of features
 		 * @return next feature object
 		 */
-		inline CDotFeatures* get_next_feature_obj(CListElement<CDotFeatures*>*&current)
+		inline CDotFeatures* get_next_feature_obj(CListElement*& current)
 		{
-			CDotFeatures* f=feature_list->get_next_element(current);
+			CDotFeatures* f=(CDotFeatures*)feature_list
+				->get_next_element(current);
 			SG_REF(f);
 			return f;
 		}
@@ -302,7 +308,8 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline CDotFeatures* get_last_feature_obj()
 		{
-			CDotFeatures* f=feature_list->get_last_element();
+			CDotFeatures* f=(CDotFeatures*)feature_list
+				->get_last_element();
 			SG_REF(f);
 			return f;
 		}
@@ -341,7 +348,8 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline bool delete_feature_obj()
 		{
-			CDotFeatures* f=feature_list->delete_element();
+			CDotFeatures* f=(CDotFeatures*)feature_list
+				->delete_element();
 			if (f)
 			{
 				SG_UNREF(f);
@@ -385,7 +393,7 @@ class CCombinedDotFeatures : public CDotFeatures
 
 	protected:
 		/** feature list */
-		CList<CDotFeatures*>* feature_list;
+		CList* feature_list;
 
 		/// total number of vectors
 		int32_t num_vectors;

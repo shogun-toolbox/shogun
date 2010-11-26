@@ -17,15 +17,23 @@
 
 using namespace shogun;
 
+void
+CAUCKernel::init(void)
+{
+	m_parameters->add((CSGSerializable**) &subkernel, "subkernel",
+					  "The subkernel.");
+}
+
 CAUCKernel::CAUCKernel(void)
 : CDotKernel(0), subkernel(NULL)
 {
-	SG_UNSTABLE("CAUCKernel::CAUCKernel(void)", "\n");
+	init();
 }
 
 CAUCKernel::CAUCKernel(int32_t size, CKernel* s)
 : CDotKernel(size), subkernel(s)
 {
+	init();
 	SG_REF(subkernel);
 }
 

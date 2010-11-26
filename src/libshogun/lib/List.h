@@ -14,37 +14,57 @@
 
 #include "lib/common.h"
 #include "base/SGObject.h"
+#include "lib/Parameter.h"
 
 namespace shogun
 {
 /** @brief Class ListElement, defines how an element of the the list looks like */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST template <class T> class CListElement
+class CListElement :public CSGSerializable
 {
+	void init(void) {
+		m_parameters->add(&data, "data", "Data of this element.");
+		m_parameters->add((CSGSerializable**) &next, "next",
+						  "Next element in list.");
+	}
+
 	public:
 		/** next element in list */
 		CListElement* next;
 		/** previous element in list */
 		CListElement* prev;
 		/** data of this element */
-		T data;
+		CSGSerializable* data;
 
 	public:
+		/** default constructor
+		 */
+		CListElement(void) {
+			init();
+			data = NULL, prev = NULL, next = NULL;
+		}
+
 		/** constructor
 		 *
 		 * @param p_data data of this element
 		 * @param p_prev previous element
 		 * @param p_next next element
 		 */
-		CListElement(T p_data, CListElement* p_prev = NULL, CListElement* p_next = NULL)
+		CListElement(CSGSerializable* p_data, CListElement* p_prev = NULL, CListElement* p_next = NULL)
 		{
+			init();
+
 			this->data = p_data;
 			this->next = p_next;
 			this->prev = p_prev;
-		};
+		}
 
 		/// destructor
 		virtual ~CListElement() { data = NULL; }
+
+		/** @return object name */
+		inline virtual const char* get_name(void) const {
+			return "ListElement";
+		}
 };
 
 /** @brief Class List implements a doubly connected list for low-level-objects.
@@ -52,8 +72,7 @@ IGNORE_IN_CLASSLIST template <class T> class CListElement
  * For higher level objects pointers should be used. The list supports calling
  * delete() of an object that is to be removed from the list.
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
+class CList : public CSGObject
 {
 	public:
 		/** constructor
@@ -62,6 +81,13 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 */
 		CList(bool p_delete_data=false) : CSGObject()
 		{
+			m_parameters->add(&delete_data, "delete_data",
+							  "Delete data on destruction?");
+			m_parameters->add(&num_elements, "num_elements",
+							  "Number of elements.");
+			m_parameters->add((CSGSerializable**) &first, "first",
+							  "First element in list.");
+
 			first  = NULL;
 			current = NULL;
 			last   = NULL;
@@ -70,13 +96,26 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 			this->delete_data=p_delete_data;
 		}
 
+		virtual void load_serializable_post(void)
+			throw (ShogunException) {
+			CSGObject::load_serializable_post();
+
+			current = first;
+			CListElement* prev = NULL;
+			for (CListElement* cur=first; cur!=NULL; cur=cur->next) {
+				cur->prev = prev;
+				prev = cur;
+			}
+			last = prev;
+		}
+
 		virtual ~CList()
 		{
 			SG_DEBUG("Destroying List %p\n", this);
 
 			while (get_num_elements())
 			{
-				T d=delete_element();
+				CSGSerializable* d=delete_element();
 
 				if (delete_data)
 				{
@@ -96,7 +135,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 *
 		 * @return first element in list or NULL if list is empty
 		 */
-		inline T get_first_element()
+		inline CSGSerializable* get_first_element()
 		{
 			if (first != NULL)
 			{
@@ -113,7 +152,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 *
 		 * @return last element in list or NULL if list is empty
 		 */
-		inline T get_last_element()
+		inline CSGSerializable* get_last_element()
 		{
 			if (last != NULL)
 			{
@@ -130,7 +169,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 *
 		 * @return next element in list or NULL if list is empty
 		 */
-		inline T get_next_element()
+		inline CSGSerializable* get_next_element()
 		{
 			if ((current != NULL) && (current->next != NULL))
 			{
@@ -147,7 +186,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 *
 		 * @return previous element in list or NULL if list is empty
 		 */
-		inline T get_previous_element()
+		inline CSGSerializable* get_previous_element()
 		{
 			if ((current != NULL) && (current->prev != NULL))
 			{
@@ -164,7 +203,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 *
 		 * @return current element in list or NULL if not available
 		 */
-		inline T get_current_element()
+		inline CSGSerializable* get_current_element()
 		{
 			if (current != NULL)
 			{
@@ -185,7 +224,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return first element in list or NULL if list is empty
 		 */
-		inline T get_first_element(CListElement<T> *&p_current)
+		inline CSGSerializable* get_first_element(CListElement*& p_current)
 		{
 			if (first != NULL)
 			{
@@ -203,7 +242,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return last element in list or NULL if list is empty
 		 */
-		inline T get_last_element(CListElement<T> *&p_current)
+		inline CSGSerializable* get_last_element(CListElement*& p_current)
 		{
 			if (last != NULL)
 			{
@@ -221,7 +260,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return next element in list or NULL if list is empty
 		 */
-		inline T get_next_element(CListElement<T> *& p_current)
+		inline CSGSerializable* get_next_element(CListElement*& p_current)
 		{
 			if ((p_current != NULL) && (p_current->next != NULL))
 			{
@@ -239,7 +278,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return previous element in list or NULL if list is empty
 		 */
-		inline T get_previous_element(CListElement<T> *& p_current)
+		inline CSGSerializable* get_previous_element(CListElement*& p_current)
 		{
 			if ((p_current != NULL) && (p_current->prev != NULL))
 			{
@@ -257,7 +296,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return current element in list or NULL if not available
 		 */
-		inline T get_current_element(CListElement<T> *& p_current)
+		inline CSGSerializable* get_current_element(CListElement*& p_current)
 		{
 			if (p_current != NULL)
 			{
@@ -275,11 +314,11 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 * @param data data element to append
 		 * @return if appending was successful
 		 */
-		inline bool append_element(T data)
+		inline bool append_element(CSGSerializable* data)
 		{
 			if (current != NULL)    // none available, case is shattered in insert_element()
 			{
-				T e=get_next_element();
+				CSGSerializable* e=get_next_element();
 				if (e)
 				{
 					if (delete_data)
@@ -290,9 +329,9 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 				else
 				{
 					// case with no successor but nonempty
-					CListElement<T>* element;
+					CListElement* element;
 
-					if ((element = new CListElement<T>(data, current)) != NULL)
+					if ((element = new CListElement(data, current)) != NULL)
 					{
 						current->next = element;
 						current       = element;
@@ -318,9 +357,9 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 * @param data data element to append
 		 * @return if appending was successful
 		 */
-		inline bool append_element_at_listend(T data)
+		inline bool append_element_at_listend(CSGSerializable* data)
 		{
-			T p = get_last_element();
+			CSGSerializable* p = get_last_element();
 			if (delete_data)
 				SG_UNREF(p);
 
@@ -332,16 +371,16 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 * @param data data element to insert
 		 * @return if inserting was successful
 		 */
-		inline bool insert_element(T data)
+		inline bool insert_element(CSGSerializable* data)
 		{
-			CListElement<T>* element;
+			CListElement* element;
 
 			if (delete_data)
 				SG_REF(data);
 
 			if (current == NULL)
 			{
-				if ((element = new CListElement<T> (data)) != NULL)
+				if ((element = new CListElement(data)) != NULL)
 				{
 					current = element;
 					first  = element;
@@ -356,7 +395,7 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 			}
 			else
 			{
-				if ((element = new CListElement<T>(data, current->prev, current)) != NULL)
+				if ((element = new CListElement(data, current->prev, current)) != NULL)
 				{
 					if (current->prev != NULL)
 						current->prev->next = element;
@@ -381,16 +420,16 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		 *
 		 * @return the elements data - if available - is returned else NULL
 		 */
-		inline T delete_element(void)
+		inline CSGSerializable* delete_element(void)
 		{
-			T data = get_current_element();
+			CSGSerializable* data = get_current_element();
 
 			if (data)
 			{
 				if (delete_data)
 					SG_UNREF(data);
 
-				CListElement<T> *element = current;
+				CListElement *element = current;
 
 				if (element->prev)
 					element->prev->next = element->next;
@@ -420,17 +459,17 @@ IGNORE_IN_CLASSLIST template <class T> class CList : public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "List"; }
+		inline virtual const char* get_name(void) const { return "List"; }
 
 	private:
 		/** if data is to be deleted on object destruction */
 		bool delete_data;
 		/** first element in list */
-		CListElement<T>* first;
+		CListElement* first;
 		/** current element in list */
-		CListElement<T>* current;
+		CListElement* current;
 		/** last element in list */
-		CListElement<T>* last;
+		CListElement* last;
 		/** number of elements */
 		int32_t num_elements;
 };

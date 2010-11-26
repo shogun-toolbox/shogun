@@ -35,6 +35,8 @@ namespace shogun
  */
 class CPolyKernel: public CDotKernel
 {
+	void init(void);
+
 	public:
 		/** default constructor  */
 		CPolyKernel(void);
@@ -81,7 +83,7 @@ class CPolyKernel: public CDotKernel
 		 *
 		 * @return name Poly
 		 */
-		virtual const char* get_name() const { return "Poly"; };
+		virtual const char* get_name() const { return "PolyKernel"; };
 
 	protected:
 		/** compute kernel function for features a and b

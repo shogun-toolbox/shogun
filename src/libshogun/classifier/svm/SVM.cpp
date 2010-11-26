@@ -100,6 +100,8 @@ bool CSVM::load(FILE* modelfl)
 	float64_t double_buffer;
 	int32_t line_number=1;
 
+	SG_SET_LOCALE_C;
+
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
 		result=false;
@@ -202,11 +204,14 @@ bool CSVM::load(FILE* modelfl)
 	}
 
 	svm_loaded=result;
+	SG_RESET_LOCALE;
 	return result;
 }
 
 bool CSVM::save(FILE* modelfl)
 {
+	SG_SET_LOCALE_C;
+
 	if (!kernel)
 		SG_ERROR("Kernel not defined!\n");
 
@@ -225,6 +230,7 @@ bool CSVM::save(FILE* modelfl)
 	fprintf(modelfl, "];\n");
 
 	SG_DONE();
+	SG_RESET_LOCALE;
 	return true ;
 }
 

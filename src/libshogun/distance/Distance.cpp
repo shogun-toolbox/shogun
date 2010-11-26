@@ -80,10 +80,14 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 
 void CDistance::load(CFile* loader)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 }
 
 void CDistance::save(CFile* writer)
 {
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
 }
 
 void CDistance::remove_lhs_and_rhs()

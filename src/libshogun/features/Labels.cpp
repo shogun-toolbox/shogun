@@ -312,6 +312,7 @@ void CLabels::set_int_labels(int32_t * mylabels, int32_t len)
 
 void CLabels::load(CFile* loader)
 {
+	SG_SET_LOCALE_C;
 	delete[] labels;
 	delete[] m_confidences;
 	m_confidences = NULL;
@@ -321,11 +322,14 @@ void CLabels::load(CFile* loader)
 	ASSERT(loader);
 	loader->get_real_vector(labels, num_labels);
 	m_num_classes=get_num_classes();
+	SG_RESET_LOCALE;
 }
 
 void CLabels::save(CFile* writer)
 {
+	SG_SET_LOCALE_C;
 	ASSERT(writer);
 	ASSERT(labels && labels>0);
 	writer->set_real_vector(labels, num_labels);
+	SG_RESET_LOCALE;
 }

@@ -15,9 +15,22 @@
 
 using namespace shogun;
 
+void
+CCombinedDotFeatures::init(void)
+{
+	m_parameters->add(&num_dimensions, "num_dimensions",
+					  "Total number of dimensions.");
+	m_parameters->add(&num_vectors, "num_vectors",
+					  "Total number of vectors.");
+	m_parameters->add((CSGSerializable**) &feature_list,
+					  "feature_list", "Feature list.");
+}
+
 CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
-	feature_list=new CList<CDotFeatures*>(true);
+	init();
+
+	feature_list=new CList(true);
 	update_dim_feature_space_and_num_vec();
 }
 
@@ -25,6 +38,9 @@ CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures & orig)
 : CDotFeatures(orig), num_vectors(orig.num_vectors),
 	num_dimensions(orig.num_dimensions)
 {
+	init();
+
+	feature_list=new CList(true);
 }
 
 CFeatures* CCombinedDotFeatures::duplicate() const
@@ -42,7 +58,7 @@ void CCombinedDotFeatures::list_feature_objs()
 	SG_INFO( "BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions);
 	this->list_feature_obj();
 
-	CListElement<CDotFeatures*> * current = NULL ;
+	CListElement* current = NULL ;
 	CDotFeatures* f=get_first_feature_obj(current);
 
 	while (f)
@@ -57,7 +73,7 @@ void CCombinedDotFeatures::list_feature_objs()
 
 void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 {
-	CListElement<CDotFeatures*> * current = NULL ;
+	CListElement* current = NULL ;
 	CDotFeatures* f=get_first_feature_obj(current);
 
 	int32_t dim=0;
@@ -91,10 +107,10 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t 
 	ASSERT(df->get_feature_class() == get_feature_class());
 	CCombinedDotFeatures* cf = (CCombinedDotFeatures*) df;
 
-	CListElement<CDotFeatures*> * current1 = NULL;
+	CListElement* current1 = NULL;
 	CDotFeatures* f1=get_first_feature_obj(current1);
 
-	CListElement<CDotFeatures*> * current2 = NULL;
+	CListElement* current2 = NULL;
 	CDotFeatures* f2=cf->get_first_feature_obj(current2);
 
 	while (f1 && f2)
@@ -117,7 +133,7 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 {
 	float64_t result=0;
 
-	CListElement<CDotFeatures*> * current = NULL ;
+	CListElement* current = NULL ;
 	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 
@@ -138,7 +154,7 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 		return;
 	ASSERT(dim==num_dimensions);
 
-	CListElement<CDotFeatures*> * current = NULL;
+	CListElement* current = NULL;
 	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 	bool first=true;
@@ -171,7 +187,7 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 		return;
 	ASSERT(dim==num_dimensions);
 
-	CListElement<CDotFeatures*> * current = NULL;
+	CListElement* current = NULL;
 	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 	bool first=true;
@@ -199,7 +215,7 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 
 void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	CListElement<CDotFeatures*> * current = NULL ;
+	CListElement* current = NULL ;
 	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 
@@ -215,7 +231,7 @@ void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 
 int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
 {
-	CListElement<CDotFeatures*> * current = NULL ;
+	CListElement* current = NULL ;
 	CDotFeatures* f=get_first_feature_obj(current);
 	int32_t result=0;
 
@@ -236,7 +252,7 @@ void CCombinedDotFeatures::get_subfeature_weights(float64_t** weights, int32_t* 
 	*weights=new float64_t[*num_weights];
 	float64_t* w = *weights;
 
-	CListElement<CDotFeatures*> * current = NULL;	
+	CListElement* current = NULL;
 	CDotFeatures* f = get_first_feature_obj(current);
 
 	while (f)
@@ -250,7 +266,7 @@ void CCombinedDotFeatures::set_subfeature_weights(
 	float64_t* weights, int32_t num_weights)
 {
 	int32_t i=0 ;
-	CListElement<CDotFeatures*> * current = NULL ;	
+	CListElement* current = NULL ;	
 	CDotFeatures* f = get_first_feature_obj(current);
 
 	ASSERT(num_weights==get_num_feature_obj());

@@ -14,7 +14,7 @@
 #ifdef HAVE_XML
 
 #include "lib/SerializableFile.h"
-#include "lib/DynamicArray.h"
+#include "base/DynArray.h"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -41,7 +41,7 @@ IGNORE_IN_CLASSLIST class CSerializableXmlFile
 {
 	friend class SerializableXmlReader00;
 
-	CDynamicArray<xmlNode*> m_stack_stream;
+	DynArray<xmlNode*> m_stack_stream;
 	xmlDocPtr m_doc;
 	bool m_format;
 

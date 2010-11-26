@@ -31,6 +31,8 @@ namespace shogun
  * */
 class CChi2Kernel: public CDotKernel
 {
+	void init(void);
+
 	public:
 		/** default constructor  */
 		CChi2Kernel(void);

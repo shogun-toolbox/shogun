@@ -13,6 +13,7 @@
 
 #include "lib/common.h"
 #include "features/Features.h"
+#include "lib/Parameter.h"
 
 namespace shogun
 {
@@ -22,10 +23,15 @@ namespace shogun
  * This is used in the CCustomKernel.*/
 class CDummyFeatures : public CFeatures
 {
+	void init(void) {
+		m_parameters->add(&num_vectors, "num_vectors",
+						  "Number of feature vectors.");
+	}
+
 	public:
 		/** default constructor  */
 		CDummyFeatures(void) {
-			SG_UNSTABLE("CDummyFeatures::CDummyFeatures(void)", "\n");
+			init();
 
 			num_vectors = 0;
 		}
@@ -36,12 +42,14 @@ class CDummyFeatures : public CFeatures
 		 */
 		CDummyFeatures(int32_t num) : CFeatures(0), num_vectors(num)
 		{
+			init();
 		}
 
 		/** copy constructor */
 		CDummyFeatures(const CDummyFeatures &orig) : CFeatures(0),
 			num_vectors(orig.num_vectors)
 		{
+			init();
 		}
 
 		/** destructor */
