@@ -54,7 +54,7 @@ class CGUIPreProc : public CSGObject
 		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
 		bool preproc_all_features(CFeatures* f, bool force);
 
-		CList<CPreProc*>* preprocs;
+		CList* preprocs;
 		CSGInterface* ui;
 };
 }

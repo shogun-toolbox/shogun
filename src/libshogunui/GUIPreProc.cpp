@@ -39,7 +39,7 @@ using namespace shogun;
 CGUIPreProc::CGUIPreProc(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {
-	preprocs=new CList<CPreProc*>(true);
+	preprocs=new CList(true);
 }
 
 CGUIPreProc::~CGUIPreProc()
@@ -112,7 +112,7 @@ bool CGUIPreProc::add_preproc(CPreProc* preproc)
 bool CGUIPreProc::clean_preproc()
 {
 	SG_UNREF(preprocs);
-	preprocs=new CList<CPreProc*>(true);
+	preprocs=new CList(true);
 	return (preprocs!=NULL);
 }
 
@@ -120,7 +120,7 @@ bool CGUIPreProc::del_preproc()
 {
 	SG_INFO("Deleting preproc %i/(%i).\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
 
-	CPreProc* preproc=preprocs->delete_element();
+	CSGSerializable* preproc=preprocs->delete_element();
 	SG_UNREF(preproc);
 
 	return (preproc!=NULL);
@@ -245,7 +245,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 		}
 		else
 		{
-			CPreProc* preproc = preprocs->get_first_element();
+			CPreProc* preproc = (CPreProc*) preprocs->get_first_element();
 
 			if (preproc)
 			{
@@ -256,7 +256,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 				SG_UNREF(preproc);
 			}
 
-			while ( (preproc = preprocs->get_next_element()) !=NULL )
+			while ( (preproc = (CPreProc*) preprocs->get_next_element()) !=NULL )
 			{
 				preproc->init(trainfeat);
 				trainfeat->add_preproc(preproc);
