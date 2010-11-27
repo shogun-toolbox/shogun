@@ -53,8 +53,8 @@ CCmdLineInterface::CCmdLineInterface()
 
 CCmdLineInterface::~CCmdLineInterface()
 {
-	SG_UNREF(m_lhs);
-	SG_UNREF(m_rhs);
+	delete m_lhs;
+	delete m_rhs;
 }
 
 void CCmdLineInterface::reset(const char* line)
@@ -69,9 +69,9 @@ void CCmdLineInterface::reset(const char* line)
 	const char delim_lhs[]="=, \t\n";
 	const char delim_rhs[]=" \t\n";
 
-	SG_UNREF(m_lhs);
+	delete m_lhs;
 	m_lhs=NULL;
-	SG_UNREF(m_rhs);
+	delete m_rhs;
 	m_rhs=NULL;
 
 	/* split lhs from rhs
@@ -87,7 +87,7 @@ void CCmdLineInterface::reset(const char* line)
 		element=strtok((char*) line, delim_lhs);
 		if (element)
 		{
-			m_lhs=new CDynamicArray<char*>();
+			m_lhs=new DynArray<char*>();
 			m_lhs->append_element(element);
 			m_nlhs++;
 			while ((element=strtok(NULL, delim_lhs)))
@@ -105,7 +105,7 @@ void CCmdLineInterface::reset(const char* line)
 
 	if (element)
 	{
-		m_rhs=new CDynamicArray<char*>();
+		m_rhs=new DynArray<char*>();
 		m_rhs->append_element(element);
 		m_nrhs++;
 		while ((element=strtok(NULL, delim_rhs)))

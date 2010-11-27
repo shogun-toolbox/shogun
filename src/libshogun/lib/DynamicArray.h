@@ -37,7 +37,6 @@ template <class T> class CDynamicArray :public CSGObject
 		CDynamicArray(int32_t p_resize_granularity=128)
 		: CSGObject()
 		{
-			/*
 			set_generic<T>();
 
 			m_parameters->add_vector(&m_array.array,
@@ -49,7 +48,6 @@ template <class T> class CDynamicArray :public CSGObject
 			m_parameters->add(&m_array.resize_granularity,
 							  "resize_granularity",
 							  "shrink/grow step size.");
-							  */
 		}
 
 		virtual ~CDynamicArray() {}

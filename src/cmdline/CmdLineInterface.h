@@ -1,6 +1,8 @@
 #ifndef __CMDLINEINTERFACE__H_
 #define __CMDLINEINTERFACE__H_
 
+#include <shogun/base/DynArray.h>
+
 #include "ui/SGInterface.h"
 
 namespace shogun
@@ -172,8 +174,8 @@ class CCmdLineInterface : public CSGInterface
 		inline virtual const char* get_name() const { return "CmdLineInterface"; }
 
 	private:
-		CDynamicArray<char*>* m_lhs;
-		CDynamicArray<char*>* m_rhs;
+		DynArray<char*>* m_lhs;
+		DynArray<char*>* m_rhs;
 };
 }
 #endif // __CMDLINEINTERFACE__H_
