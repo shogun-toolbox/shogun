@@ -260,7 +260,6 @@ class CCombinedDotFeatures : public CDotFeatures
 		{
 			CDotFeatures* f=(CDotFeatures*)feature_list
 				->get_first_element();
-			SG_REF(f);
 			return f;
 		}
 
@@ -271,10 +270,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline CDotFeatures* get_first_feature_obj(CListElement*& current)
 		{
-			CDotFeatures* f=(CDotFeatures*)feature_list
-				->get_first_element(current);
-			SG_REF(f);
-			return f;
+			return (CDotFeatures*) feature_list->get_first_element(current);
 		}
 
 		/** get next feature object
@@ -283,10 +279,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline CDotFeatures* get_next_feature_obj()
 		{
-			CDotFeatures* f=(CDotFeatures*)feature_list
-				->get_next_element();
-			SG_REF(f);
-			return f;
+			return (CDotFeatures*) feature_list->get_next_element();
 		}
 
 		/** get next feature object
@@ -296,10 +289,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline CDotFeatures* get_next_feature_obj(CListElement*& current)
 		{
-			CDotFeatures* f=(CDotFeatures*)feature_list
-				->get_next_element(current);
-			SG_REF(f);
-			return f;
+			return (CDotFeatures*) feature_list->get_next_element(current);
 		}
 
 		/** get last feature object
@@ -308,10 +298,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline CDotFeatures* get_last_feature_obj()
 		{
-			CDotFeatures* f=(CDotFeatures*)feature_list
-				->get_last_element();
-			SG_REF(f);
-			return f;
+			return (CDotFeatures*) feature_list->get_last_element();
 		}
 
 		/** insert feature object
@@ -322,7 +309,6 @@ class CCombinedDotFeatures : public CDotFeatures
 		inline bool insert_feature_obj(CDotFeatures* obj)
 		{
 			ASSERT(obj);
-			SG_REF(obj);
 			bool result=feature_list->insert_element(obj);
 			update_dim_feature_space_and_num_vec();
 			return result;
@@ -336,7 +322,6 @@ class CCombinedDotFeatures : public CDotFeatures
 		inline bool append_feature_obj(CDotFeatures* obj)
 		{
 			ASSERT(obj);
-			SG_REF(obj);
 			bool result=feature_list->append_element(obj);
 			update_dim_feature_space_and_num_vec();
 			return result;
@@ -348,8 +333,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline bool delete_feature_obj()
 		{
-			CDotFeatures* f=(CDotFeatures*)feature_list
-				->delete_element();
+			CDotFeatures* f=(CDotFeatures*) feature_list->delete_element();
 			if (f)
 			{
 				SG_UNREF(f);
