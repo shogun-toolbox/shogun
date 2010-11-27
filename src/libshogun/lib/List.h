@@ -113,16 +113,7 @@ class CList : public CSGObject
 		{
 			SG_DEBUG("Destroying List %p\n", this);
 
-			while (get_num_elements())
-			{
-				CSGSerializable* d=delete_element();
-
-				if (delete_data)
-				{
-					SG_DEBUG("Destroying List Element %p\n", d);
-					SG_UNREF(d);
-				}
-			}
+			while (get_num_elements()) delete_element();
 		}
 
 		/** get number of elements in list
@@ -140,8 +131,6 @@ class CList : public CSGObject
 			if (first != NULL)
 			{
 				current = first;
-				if (delete_data)
-					SG_REF(current->data);
 				return current->data;
 			}
 			else 
@@ -157,8 +146,6 @@ class CList : public CSGObject
 			if (last != NULL)
 			{
 				current = last;
-				if (delete_data)
-					SG_REF(current->data);
 				return current->data;
 			}
 			else 
@@ -174,8 +161,6 @@ class CList : public CSGObject
 			if ((current != NULL) && (current->next != NULL))
 			{
 				current = current->next;
-				if (delete_data)
-					SG_REF(current->data);
 				return current->data;
 			}
 			else
@@ -191,8 +176,6 @@ class CList : public CSGObject
 			if ((current != NULL) && (current->prev != NULL))
 			{
 				current = current->prev;
-				if (delete_data)
-					SG_REF(current->data);
 				return current->data;
 			}
 			else
@@ -206,11 +189,7 @@ class CList : public CSGObject
 		inline CSGSerializable* get_current_element()
 		{
 			if (current != NULL)
-			{
-				if (delete_data)
-					SG_REF(current->data);
 				return current->data;
-			}
 			else 
 				return NULL;
 		}
@@ -229,8 +208,6 @@ class CList : public CSGObject
 			if (first != NULL)
 			{
 				p_current = first;
-				if (delete_data)
-					SG_REF(p_current->data);
 				return p_current->data;
 			}
 			else
@@ -247,8 +224,6 @@ class CList : public CSGObject
 			if (last != NULL)
 			{
 				p_current = last;
-				if (delete_data)
-					SG_REF(p_current->data);
 				return p_current->data;
 			}
 			else
@@ -265,8 +240,6 @@ class CList : public CSGObject
 			if ((p_current != NULL) && (p_current->next != NULL))
 			{
 				p_current = p_current->next;
-				if (delete_data)
-					SG_REF(p_current->data);
 				return p_current->data;
 			}
 			else
@@ -283,8 +256,6 @@ class CList : public CSGObject
 			if ((p_current != NULL) && (p_current->prev != NULL))
 			{
 				p_current = p_current->prev;
-				if (delete_data)
-					SG_REF(p_current->data);
 				return p_current->data;
 			}
 			else
@@ -299,12 +270,8 @@ class CList : public CSGObject
 		inline CSGSerializable* get_current_element(CListElement*& p_current)
 		{
 			if (p_current != NULL)
-			{
-				if (delete_data)
-					SG_REF(p_current->data);
 				return p_current->data;
-			}
-			else 
+			else
 				return NULL;
 		}
 		//@}

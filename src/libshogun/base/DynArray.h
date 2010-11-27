@@ -195,7 +195,7 @@ template <class T> class DynArray
 			else set_element(element, get_num_elements());
 		}
 
-	    /** ::STD::VECTOR compatible. Delete array element at the end
+		/** ::STD::VECTOR compatible. Delete array element at the end
 		 *  of array.
 		 */
 		inline void pop_back(void)
