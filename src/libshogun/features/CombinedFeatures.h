@@ -85,6 +85,7 @@ class CCombinedFeatures : public CFeatures
 			if (f)
 			{
 				int32_t s=f->get_size();
+				SG_UNREF(f)
 				return s;
 			}
 			else 
@@ -190,7 +191,10 @@ class CCombinedFeatures : public CFeatures
 		{
 			CFeatures* f=(CFeatures*)feature_list->delete_element();
 			if (f)
+			{
+				SG_UNREF(f);
 				return true;
+			}
 			else
 				return false;
 		}

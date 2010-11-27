@@ -63,6 +63,7 @@ void CCombinedFeatures::list_feature_objs()
 	while (f)
 	{
 		f->list_feature_obj();
+		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
 
@@ -80,17 +81,23 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 
 		if (f1 && f2 && f1->check_feature_compatibility(f2))
 		{
+			SG_UNREF(f1);
+			SG_UNREF(f2);
 			while( ( (f1=this->get_next_feature_obj()) != NULL )  && 
 				   ( (f2=comb_feat->get_next_feature_obj()) != NULL) )
 			{
 				if (!f1->check_feature_compatibility(f2))
 				{
+					SG_UNREF(f1);
+					SG_UNREF(f2);
 					SG_INFO( "not compatible, combfeat\n");
 					comb_feat->list_feature_objs();
 					SG_INFO( "vs this\n");
 					this->list_feature_objs();
 					return false;
 				}
+				SG_UNREF(f1);
+				SG_UNREF(f2);
 			}
 
 			SG_DEBUG( "features are compatible\n");

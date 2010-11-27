@@ -133,8 +133,10 @@ class CCombinedKernel : public CKernel
 		{
 			CKernel * k = get_first_kernel();
 			for (int32_t i=0; i<idx; i++)
+			{
+				SG_UNREF(k);
 				k = get_next_kernel();
-
+			}
 			return k;
 		}
 
@@ -206,6 +208,7 @@ class CCombinedKernel : public CKernel
 		inline bool delete_kernel()
 		{
 			CKernel* k=(CKernel*) kernel_list->delete_element();
+			SG_UNREF(k);
 
 			if (!k)
 			{
@@ -240,6 +243,7 @@ class CCombinedKernel : public CKernel
 				while(k)
 				{
 					num_subkernels += k->get_num_subkernels() ;
+					SG_UNREF(k);
 					k = get_next_kernel(current) ;
 				}
 				return num_subkernels ;

@@ -112,10 +112,17 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		if (k->get_kernel_type() != K_CUSTOM)
 		{
 			if (!lf || !rf)
+			{
+				SG_UNREF(lf);
+				SG_UNREF(rf);
+				SG_UNREF(k);
 				SG_ERROR( "CombinedKernel: Number of features/kernels does not match - bailing out\n");
+			}
 
 			SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
 			result=k->init(lf,rf);
+			SG_UNREF(lf);
+			SG_UNREF(rf);
 
 			lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
 			rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
@@ -131,7 +138,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 				SG_ERROR("Number of rhs-feature vectors (%d) not match with number of cols (%d) of custom kernel\n", num_rhs, k->get_num_vec_rhs());
 		}
 
-		k=get_next_kernel(current);
+		SG_UNREF(k);
+		k=get_next_kernel(current) ;
 	}
 
 	if (!result)
@@ -145,7 +153,12 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	}
 
 	if ((lf!=NULL) || (rf!=NULL) || (k!=NULL))
+	{
+		SG_UNREF(lf);
+		SG_UNREF(rf);
+		SG_UNREF(k);
 		SG_ERROR( "CombinedKernel: Number of features/kernels does not match - bailing out\n");
+	}
 	
 	init_normalizer();
 	initialized=true;
@@ -164,6 +177,7 @@ void CCombinedKernel::remove_lhs()
 		if (k->get_kernel_type() != K_CUSTOM)
 			k->remove_lhs();
 
+		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 	CKernel::remove_lhs();
@@ -180,6 +194,7 @@ void CCombinedKernel::remove_rhs()
 	{	
 		if (k->get_kernel_type() != K_CUSTOM)
 			k->remove_rhs();
+		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 	CKernel::remove_rhs();
@@ -198,6 +213,7 @@ void CCombinedKernel::remove_lhs_and_rhs()
 	{	
 		if (k->get_kernel_type() != K_CUSTOM)
 			k->remove_lhs_and_rhs();
+		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 
@@ -215,6 +231,7 @@ void CCombinedKernel::cleanup()
 	while (k)
 	{	
 		k->cleanup();
+		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 
@@ -238,6 +255,7 @@ void CCombinedKernel::list_kernels()
 	while (k)
 	{
 		k->list_kernel();
+		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 	SG_INFO( "END COMBINED KERNEL LIST - ");
@@ -252,6 +270,7 @@ float64_t CCombinedKernel::compute(int32_t x, int32_t y)
 	{
 		if (k->get_combined_kernel_weight()!=0)
 			result += k->get_combined_kernel_weight() * k->kernel(x,y);
+		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 
@@ -287,6 +306,7 @@ bool CCombinedKernel::init_optimization(
 			SG_WARNING("init_optimization of kernel 0x%X failed\n", k);
 		}
 		
+		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 	
@@ -318,6 +338,7 @@ bool CCombinedKernel::delete_optimization()
 		if (k->has_property(KP_LINADD))
 			k->delete_optimization();
 
+		SG_UNREF(k);
 		k = get_next_kernel(current);
 	}
 
@@ -359,6 +380,7 @@ void CCombinedKernel::compute_batch(
 		else
 			emulate_compute_batch(k, num_vec, vec_idx, result, num_suppvec, IDX, weights);
 
+		SG_UNREF(k);
 		k = get_next_kernel(current);
 	}
 
@@ -568,6 +590,7 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 			}
 		}
 
+		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
 
@@ -582,6 +605,7 @@ void CCombinedKernel::add_to_normal(int32_t idx, float64_t weight)
 	while(k)
 	{
 		k->add_to_normal(idx, weight);
+		SG_UNREF(k);
 		k = get_next_kernel(current);
 	}
 	set_is_initialized(true) ;
@@ -595,6 +619,7 @@ void CCombinedKernel::clear_normal()
 	while(k)
 	{
 		k->clear_normal() ;
+		SG_UNREF(k);
 		k = get_next_kernel(current);
 	}
 	set_is_initialized(true) ;
@@ -617,6 +642,7 @@ void CCombinedKernel::compute_by_subkernel(
 			else
 				subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
 
+			SG_UNREF(k);
 			k = get_next_kernel(current);
 			i += num ;
 		}
@@ -631,6 +657,7 @@ void CCombinedKernel::compute_by_subkernel(
 			if (k->get_combined_kernel_weight()!=0)
 				subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
 
+			SG_UNREF(k);
 			k = get_next_kernel(current);
 			i++ ;
 		}
@@ -656,6 +683,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 			for (int32_t j=0; j<num; j++)
 				subkernel_weights_buffer[i+j]=w[j] ;
 
+			SG_UNREF(k);
 			k = get_next_kernel(current);
 			i += num ;
 		}
@@ -669,6 +697,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		{
 			subkernel_weights_buffer[i] = k->get_combined_kernel_weight();
 
+			SG_UNREF(k);
 			k = get_next_kernel(current);
 			i++ ;
 		}
@@ -701,6 +730,7 @@ void CCombinedKernel::set_subkernel_weights(
 			int32_t num = k->get_num_subkernels() ;
 			k->set_subkernel_weights(&weights[i],num);
 
+			SG_UNREF(k);
 			k = get_next_kernel(current);
 			i += num ;
 		}
@@ -714,6 +744,7 @@ void CCombinedKernel::set_subkernel_weights(
 		{
 			k->set_combined_kernel_weight(weights[i]);
 
+			SG_UNREF(k);
 			k = get_next_kernel(current);
 			i++ ;
 		}
@@ -728,6 +759,7 @@ void CCombinedKernel::set_optimization_type(EOptimizationType t)
 	{
 		k->set_optimization_type(t);
 
+		SG_UNREF(k);
 		k = get_next_kernel();
 	}
 
@@ -747,6 +779,7 @@ bool CCombinedKernel::precompute_subkernels()
 	{
 		new_kernel_list->append_element(new CCustomKernel(k));
 
+		SG_UNREF(k);
 		k = get_next_kernel();
 	}
 
