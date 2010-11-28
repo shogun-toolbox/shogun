@@ -258,9 +258,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		inline CDotFeatures* get_first_feature_obj()
 		{
-			CDotFeatures* f=(CDotFeatures*)feature_list
-				->get_first_element();
-			return f;
+			return (CDotFeatures*) feature_list->get_first_element();
 		}
 
 		/** get first feature object
