@@ -324,6 +324,32 @@ public:
 			const TString<floatmax_t>* strings, int32_t num_str);
 	//@}
 
+	virtual void get_int8_matrix(int8_t*&, int32_t&, int32_t&)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	virtual void get_int8_sparsematrix(shogun::TSparse<signed char>*&, int32_t&, int32_t&)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	virtual void get_int8_string_list(shogun::TString<signed char>*&, int32_t&, int32_t&)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	virtual void set_int8_matrix(const int8_t*, int32_t, int32_t)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	virtual void set_int8_sparsematrix(const shogun::TSparse<signed char>*, int32_t, int32_t)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	virtual void set_int8_string_list(const shogun::TString<signed char>*, int32_t)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+
+
 	/** @return object name */
 	inline virtual const char* get_name() const { return "HDF5File"; }
 
