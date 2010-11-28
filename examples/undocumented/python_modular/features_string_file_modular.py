@@ -13,7 +13,7 @@ print "len(str[0])", f.get_vector_length(0)
 print "str[0]", f.get_feature_vector(0)
 
 #or load features from file (one string per line)
-f.load('features_string_char_modular.py')
+f.load_ascii_file('features_string_char_modular.py')
 print f.get_features()
 
 #or load fasta file

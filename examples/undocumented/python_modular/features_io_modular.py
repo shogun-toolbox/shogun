@@ -64,7 +64,7 @@ def io ():
 	lab2.load(f)
 	print lab2.get_labels()
 
-	clean up
+	#clean up
 	import os
 	for f in ['fm_train_sparsereal.bin','fm_train_sparsereal.ascii',
 			'fm_train_real.bin','fm_train_real.h5','fm_train_real.ascii',
