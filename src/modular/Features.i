@@ -33,6 +33,7 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
+#include <shogun/lib/DataType.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/StringFileFeatures.h>
@@ -332,6 +333,7 @@
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/lib/DataType.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
 

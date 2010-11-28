@@ -22,6 +22,7 @@
 #include "lib/io.h"
 #include "lib/Cache.h"
 #include "lib/File.h"
+#include "lib/DataType.h"
 
 #include "features/Labels.h"
 #include "features/Features.h"
@@ -653,7 +654,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			num_vectors=num_vec;
 		}
 
-		/** gets a copy of a full  feature matrix
+		/** gets a copy of a full feature matrix
 		 * num_feat,num_vectors are returned by reference
 		 *
 		 * @param num_feat number of features in matrix
