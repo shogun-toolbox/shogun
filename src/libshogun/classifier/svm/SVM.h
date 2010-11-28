@@ -69,17 +69,20 @@ class CSVM : public CKernelMachine
 		/**
 		 * get linear term
 		 *
-		 * @return lin the linear term
+		 * @param len lenght of the linear term vector (returned)
+		 *
+		 * @return the linear term
 		 */
-		virtual float64_t* get_linear_term_ptr(index_t* y);
+		virtual float64_t* get_linear_term_ptr(index_t* len);
 
 
 		/**
 		 * set linear term of the QP
 		 *
-		 * @param lin the linear term
+		 * @param linear_term the linear term
+		 * @param len lenght of the linear term vector
 		 */
-		virtual void set_linear_term(const float64_t* lin, index_t y);
+		virtual void set_linear_term(float64_t* linear_term, index_t len);
 
 
 		/** load a SVM from file
@@ -232,10 +235,11 @@ class CSVM : public CKernelMachine
 		 *
 		 * @return linear term copied to a dynamic array
 		 */
-		virtual float64_t* get_linear_term_array(void);
+		virtual float64_t* get_linear_term_array();
 
 		/** linear term in qp */
-		index_t linear_term_y; float64_t* linear_term;
+		float64_t* m_linear_term;
+		index_t m_linear_term_len;
 
 		/** if SVM is loaded */
 		bool svm_loaded;

@@ -41,8 +41,7 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CSVM::~CSVM()
 {
-	if (linear_term != NULL) delete[] linear_term;
-
+	delete[] m_linear_term;
 	SG_UNREF(mkl);
 }
 
@@ -62,7 +61,7 @@ void CSVM::set_defaults(int32_t num_sv)
 					  "Shrinking shall be used.");
 	m_parameters->add((CSGSerializable**) &mkl, "mkl",
 					  "MKL object that svm optimizers need.");
-	m_parameters->add_vector(&linear_term, &linear_term_y,
+	m_parameters->add_vector(&m_linear_term, &m_linear_term_len,
 							 "linear_term",
 							 "Linear term in qp.");
 
@@ -86,7 +85,8 @@ void CSVM::set_defaults(int32_t num_sv)
 	use_batch_computation=true;
 	use_linadd=true;
 
-	linear_term = NULL; linear_term_y = 0;
+	m_linear_term = NULL;
+	m_linear_term_len = 0;
 
     if (num_sv>0)
         create_new_model(num_sv);
@@ -295,45 +295,44 @@ float64_t CSVM::compute_svm_primal_objective()
 	return regularizer+loss;
 }
 
-float64_t*
-CSVM::get_linear_term_array(void)
+float64_t* CSVM::get_linear_term_array()
 {
-	if (linear_term_y == 0) return NULL;
+	if (m_linear_term_len == 0)
+		return NULL;
 
-	float64_t* a = new float64_t[linear_term_y];
-	memcpy(a, linear_term, linear_term_y*sizeof (float64_t));
+	float64_t* a = new float64_t[m_linear_term_len];
+	memcpy(a, m_linear_term, m_linear_term_len*sizeof (float64_t));
 
 	return a;
 }
 
-void
-CSVM::set_linear_term(const float64_t* lin, index_t y)
+void CSVM::set_linear_term(float64_t* linear_term, index_t len)
 {
+	ASSERT(linear_term);
+
 	if (!labels)
 		SG_ERROR("Please assign labels first!\n");
 
 	int32_t num_labels=labels->get_num_labels();
 
-	if (num_labels != y)
+	if (num_labels != len)
 	{
 		SG_ERROR("Number of labels (%d) does not match number"
-				"of entries (%d) in linear term \n", num_labels, y);
+				"of entries (%d) in linear term \n", num_labels, len);
 	}
 
-	if (linear_term != NULL) delete[] linear_term;
+	delete[] m_linear_term;
 
-	if (lin == NULL || y == 0) {
-		linear_term = NULL, linear_term_y = 0;
-	} else {
-		linear_term_y = y, linear_term = new float64_t[y];
-		memcpy(linear_term, lin, linear_term_y*sizeof (float64_t));
-	}
+	m_linear_term_len = len;
+	m_linear_term = new float64_t[len];
+	memcpy(m_linear_term, linear_term, len*sizeof (float64_t));
 }
 
-float64_t*
-CSVM::get_linear_term_ptr(index_t* y)
+float64_t* CSVM::get_linear_term_ptr(index_t* y)
 {
-	if (y == NULL) return NULL;
+	if (y == NULL)
+		return NULL;
 
-	*y = linear_term_y; return linear_term;
+	*y = m_linear_term_len;
+	return m_linear_term;
 }

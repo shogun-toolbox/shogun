@@ -225,7 +225,7 @@ void CSVRLight::svr_learn()
 	xi_fullset = new float64_t[totdoc];
 	lin = new float64_t[totdoc];
 	learn_parm->svm_cost = new float64_t[totdoc];
-	if (linear_term_y > 0)
+	if (m_linear_term_len > 0)
 		learn_parm->eps=get_linear_term_array();
 	else
 	{
