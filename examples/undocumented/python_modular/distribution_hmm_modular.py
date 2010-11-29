@@ -1,16 +1,12 @@
-def hmm ():
-	print 'HMM'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+data=lm.load_cubes('../data/fm_train_cube.dat')
 
+parameter_list=[[data, 1, 64, 1e-5, 2, 0, False, 5], [data, 3, 6, 1e-1, 1, 0, False, 2]]
+
+def distribution_hmm_modular(fm_cube, N, M, pseudo, order, gap, reverse, num_examples):
 	from shogun.Features import StringWordFeatures, StringCharFeatures, CUBE
 	from shogun.Distribution import HMM, BW_NORMAL
-
-	N=3
-	M=6
-	pseudo=1e-1
-	order=1
-	gap=0
-	reverse=False
-	num_examples=2
 
 	charfeat=StringCharFeatures(CUBE)
 	charfeat.set_features(fm_cube)
@@ -34,15 +30,15 @@ def hmm ():
 		for j in xrange(N):
 			best_path_state+=hmm.get_best_path_state(i, j)
 
-	hmm.get_log_likelihood()
-	hmm.get_log_likelihood_sample()
+	lik_example = hmm.get_log_likelihood()
+	lik_sample = hmm.get_log_likelihood_sample()
+
+	return lik_example, lik_sample, hmm
 
 ###########################################################################
 # call functions
 ###########################################################################
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_cube=lm.load_cubes('../data/fm_train_cube.dat')
-	hmm()
+	print 'HMM'
+	hmm(*parameter_list[0])

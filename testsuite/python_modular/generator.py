@@ -11,9 +11,14 @@ blacklist = ("structure_dynprog_modular.py",
 def get_fname(mod_name, i):
     return os.path.join(test_dir, mod_name + str(i) + '.txt')
 
-def setup_tests():
+def setup_tests(tests=[]):
     os.chdir(example_dir)
-    tests =  os.listdir(".")
+
+    if not len(tests):
+        tests =  os.listdir(".")
+    else:
+        tests = [ os.path.basename(t) for t in tests ]
+
     sys.path.insert(0, '.')
     return tests
 
@@ -23,8 +28,7 @@ def check_for_function(fname):
             return True
     return False
 
-def generator():
-    tests = setup_tests()
+def generator(tests):
     for t in tests:
         if t.endswith(".py") and not t.startswith('.') and t not in blacklist:
             mod_name = t[:-3]
@@ -45,10 +49,16 @@ def generator():
                     a =  getattr(mod, mod_name)(*par)
                     pickle.dump(a,f)
                 print " OK"
-            except:
+            except Exception, e:
                 fname = get_fname(mod_name, i)
                 print " ERROR generating '%s' using '%s'" % (fname,t)
+                print e
                 continue
 
 if __name__=='__main__':
-    generator()
+    from optparse import OptionParser
+    op=OptionParser()
+    op.set_usage("[<file1> <file2> ...]")
+    (opts, args)=op.parse_args()
+    tests = setup_tests(args)
+    generator(tests)
