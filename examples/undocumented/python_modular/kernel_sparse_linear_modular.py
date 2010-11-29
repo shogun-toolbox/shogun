@@ -1,12 +1,17 @@
-def sparse_linear ():
-	print 'SparseLinear'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+
+parameter_list = [[traindat,testdat,1.1],[traindat,testdat,1.2]]
+
+def kernel_sparse_linear_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.1):
 	from shogun.Features import SparseRealFeatures
 	from shogun.Kernel import LinearKernel, AvgDiagKernelNormalizer
 
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)
-
-	scale=1.1
 
 	kernel=LinearKernel()
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
@@ -15,10 +20,8 @@ def sparse_linear ():
 
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	sparse_linear()
+	print 'SparseLinear'
+	kernel_sparse_linear_modular(*parameter_list[0])

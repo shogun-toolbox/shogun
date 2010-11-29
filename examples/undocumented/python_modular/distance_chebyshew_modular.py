@@ -1,5 +1,12 @@
-def chebyshew_metric ():
-	print 'ChebyshewMetric'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+
+parameter_list = [[traindat,testdat],[traindat,testdat]]
+
+def distance_chebyshew_modular (fm_train_real=traindat,fm_test_real=testdat):
 
 	from shogun.Features import RealFeatures
 	from shogun.Distance import ChebyshewMetric
@@ -13,9 +20,8 @@ def chebyshew_metric ():
 	distance.init(feats_train, feats_test)
 	dm_test=distance.get_distance_matrix()
 
+	return distance,dm_train,dm_test
+
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	chebyshew_metric()
+	print 'ChebyshewMetric'
+	distance_chebyshew_modular(*parameter_list[0])

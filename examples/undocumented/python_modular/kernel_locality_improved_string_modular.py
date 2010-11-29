@@ -1,33 +1,26 @@
 from tools.load import LoadMatrix
 lm=LoadMatrix()
-parameter_list=[[lm.load_dna('../data/fm_train_dna.dat'),lm.load_dna('../data/fm_test_dna.dat'),5,5,7],[lm.load_dna('../data/fm_train_dna.dat'),lm.load_dna('../data/fm_test_dna.dat'),5,5,7]]
 
-def kernel_locality_improved_string_modular(fm_train_dna=lm.load_dna('../data/fm_train_dna.dat'),fm_test_dna=lm.load_dna('../data/fm_test_dna.dat'),length=5,inner_degree=5,outer_degree=7):
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+parameter_list=[[traindat,testdat,5,5,7],[traindat,testdat,5,5,7]]
 
-	print 'LocalityImprovedString'
+def kernel_locality_improved_string_modular(fm_train_dna=traindat,fm_test_dna=testdat,length=5,inner_degree=5,outer_degree=7):
+
 	from shogun.Features import StringCharFeatures, DNA
 	from shogun.Kernel import LocalityImprovedStringKernel
-	fm_train_dna=fm_train_dna
-	fm_test_dna = fm_test_dna
-
+	
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
-	length=5
-	inner_degree=5
-	outer_degree=7
 
 	kernel=LocalityImprovedStringKernel(
 		feats_train, feats_train, length, inner_degree, outer_degree)
 
 	km_train=kernel.get_kernel_matrix()
-	print km_train
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-	print km_test
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
+	print 'LocalityImprovedString'
 	kernel_locality_improved_string_modular(*parameter_list[0])

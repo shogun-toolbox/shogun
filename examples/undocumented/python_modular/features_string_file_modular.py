@@ -1,4 +1,5 @@
 from shogun.Features import StringCharFeatures, RAWBYTE
+from shogun.Library import AsciiFile
 
 # load features from directory
 f=StringCharFeatures(RAWBYTE)
@@ -13,7 +14,8 @@ print "len(str[0])", f.get_vector_length(0)
 print "str[0]", f.get_feature_vector(0)
 
 #or load features from file (one string per line)
-f.load_ascii_file('features_string_char_modular.py')
+fil=AsciiFile("features_string_char_modular.py")
+f.load(fil)
 print f.get_features()
 
 #or load fasta file

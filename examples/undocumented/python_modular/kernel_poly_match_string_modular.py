@@ -1,23 +1,23 @@
-def poly_match_string ():
-	print 'PolyMatchString'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+
+parameter_list = [[traindat,testdat,3,False],[traindat,testdat,4,False]]
+def kernel_poly_match_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,degree=3,inhomogene=False):
 	from shogun.Kernel import PolyMatchStringKernel
 	from shogun.Features import StringCharFeatures, DNA
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_train_dna, DNA)
-	degree=3
-	inhomogene=False
 
 	kernel=PolyMatchStringKernel(feats_train, feats_train, degree, inhomogene)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	poly_match_string()
+	print 'PolyMatchString'
+	kernel_poly_match_string_modular(*parameter_list[0])

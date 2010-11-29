@@ -1,6 +1,13 @@
-def svm_light ():
-	print 'SVMLight'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+label_traindat = lm.load_labels('../data/label_train_dna.dat')
+
+parameter_list = [[traindat,testdat,label_traindat,1.1,1e-5,1],[traindat,testdat,label_traindat,1.2,1e-5,1]]
+
+def classifier_svmlight_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,C=1.2,epsilon=1e-5,num_threads=1):
 	from shogun.Features import StringCharFeatures, Labels, DNA
 	from shogun.Kernel import WeightedDegreeStringKernel
 	try:
@@ -17,9 +24,6 @@ def svm_light ():
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
-	C=1.2
-	epsilon=1e-5
-	num_threads=1
 	labels=Labels(label_train_dna)
 
 	svm=SVMLight(C, kernel, labels)
@@ -29,11 +33,7 @@ def svm_light ():
 
 	kernel.init(feats_train, feats_test)
 	svm.classify().get_labels()
-
+	return kernel
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	label_train_dna=lm.load_labels('../data/label_train_dna.dat')
-	svm_light()
+	print 'SVMLight'
+	classifier_svmlight_modular(*parameter_list[0])

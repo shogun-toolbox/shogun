@@ -1,13 +1,15 @@
-def plugin_estimate_salzberg ():
-	print 'PluginEstimate w/ SalzbergWord'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+label_traindat = lm.load_labels('../data/label_train_dna.dat')
 
+parameter_list = [[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,label_traindat,3,0,False]]
+def kernel_salzberg_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,
+order=3,gap=0,reverse=False):
 	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA, Labels
 	from shogun.Kernel import SalzbergWordStringKernel
 	from shogun.Classifier import PluginEstimate
-
-	order=3
-	gap=0
-	reverse=False
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
@@ -30,12 +32,9 @@ def plugin_estimate_salzberg ():
 	pie.set_features(feats_test)
 	pie.classify().get_labels()
 	km_test=kernel.get_kernel_matrix()
-
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	label_train_dna=lm.load_labels('../data/label_train_dna.dat')
-	plugin_estimate_salzberg()
+	print 'PluginEstimate w/ SalzbergWord'
+	kernel_salzberg_word_string_modular(*parameter_list[0])
+

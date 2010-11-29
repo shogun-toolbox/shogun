@@ -1,5 +1,14 @@
-def combined():
-	print 'Combined'
+from tools.load import LoadMatrix
+from numpy import double
+lm=LoadMatrix()
+
+traindat = double(lm.load_numbers('../data/fm_train_real.dat'))
+testdat = double(lm.load_numbers('../data/fm_test_real.dat'))
+traindna = lm.load_dna('../data/fm_train_dna.dat')
+testdna = lm.load_dna('../data/fm_test_dna.dat')
+ 
+parameter_list = [[traindat,testdat,traindna,testdna],[traindat,testdat,traindna,testdna]]
+def kernel_combined_modular(fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=traindna,fm_test_dna=testdna ):
 	from shogun.Kernel import CombinedKernel, GaussianKernel, FixedDegreeStringKernel, LocalAlignmentStringKernel
 	from shogun.Features import RealFeatures, StringCharFeatures, CombinedFeatures, DNA
 
@@ -33,15 +42,10 @@ def combined():
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	from numpy import double
-	lm=LoadMatrix()
-	fm_train_real=double(lm.load_numbers('../data/fm_train_real.dat'))
-	fm_test_real=double(lm.load_numbers('../data/fm_test_real.dat'))
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	combined()
+	print 'Combined'
+	kernel_combined_modular(*parameter_list[0])
 
 

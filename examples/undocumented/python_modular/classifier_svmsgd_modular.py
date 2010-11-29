@@ -1,5 +1,13 @@
-def svmsgd ():
-	print 'SVMSGD'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+
+parameter_list = [[traindat,testdat,label_traindat,0.9,1,6],[traindat,testdat,label_traindat,0.8,1,5]]
+
+def classifier_svmsgd_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,C=0.9,num_threads=1,num_iter=5):
 
 	from shogun.Features import RealFeatures, SparseRealFeatures, Labels
 	from shogun.Classifier import SVMSGD
@@ -11,9 +19,6 @@ def svmsgd ():
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
-	C=0.9	
-	num_threads=1
-	num_iter=5
 	labels=Labels(label_train_twoclass)
 
 	svm=SVMSGD(C, feats_train, labels)
@@ -23,13 +28,11 @@ def svmsgd ():
 
 	svm.set_features(feats_test)
 	svm.classify().get_labels()
+	predictions = svm.classify()
+	return predictions, svm, predictions.get_labels()
 
 
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	label_train_twoclass=lm.load_labels('../data/label_train_twoclass.dat')
-	svmsgd()
+	print 'SVMSGD'
+	classifier_svmsgd_modular(*parameter_list[0])

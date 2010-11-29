@@ -1,9 +1,21 @@
 ###########################################################################
 # svm light based support vector regression
 ###########################################################################
+from numpy import array
+from numpy.random import seed, rand
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
-def svr_light ():
-	print 'SVRLight'
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+
+parameter_list = [[traindat,testdat,label_traindat,1.2,1,1e-5,1e-2,3],[traindat,testdat,label_traindat,1.2,1,1e-5,1e-2,3]]
+
+def regression_svrlight_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat, \
+				    width=1.2,C=1,epsilon=1e-5,tube_epsilon=1e-2,num_threads=3):
+
+
 	from shogun.Features import Labels, RealFeatures
 	from shogun.Kernel import GaussianKernel
 	try:
@@ -14,13 +26,9 @@ def svr_light ():
 
 	feats_train=RealFeatures(fm_train)
 	feats_test=RealFeatures(fm_test)
-	width=2.1
+
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
-	C=1
-	epsilon=1e-5
-	tube_epsilon=1e-2
-	num_threads=3
 	labels=Labels(label_train)
 
 	svr=SVRLight(C, epsilon, kernel, labels)
@@ -29,14 +37,10 @@ def svr_light ():
 	svr.train()
 
 	kernel.init(feats_train, feats_test)
-	svr.classify().get_labels()
+	out = svr.classify().get_labels()
+	
+	return out, kernel 
 
 if __name__=='__main__':
-	from numpy import array
-	from numpy.random import seed, rand
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test=lm.load_numbers('../data/fm_test_real.dat')
-	label_train=lm.load_labels('../data/label_train_twoclass.dat')
-	svr_light()
+	print 'SVRLight'
+	regression_svrlight_modular(*parameter_list[0])

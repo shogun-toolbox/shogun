@@ -1,6 +1,12 @@
-def prune_var_sub_mean ():
-	print 'PruneVarSubMean'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+
+parameter_list = [[traindat,testdat,1.5,10],[traindat,testdat,1.5,10]]
+
+def preproc_prunevarsubmean_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
 	from shogun.Kernel import Chi2Kernel
 	from shogun.Features import RealFeatures
 	from shogun.PreProc import PruneVarSubMean
@@ -15,19 +21,14 @@ def prune_var_sub_mean ():
 	feats_test.add_preproc(preproc)
 	feats_test.apply_preproc()
 
-	width=1.4
-	size_cache=10
-	
 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
 
-if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	prune_var_sub_mean()
+	return km_train,km_test,kernel
 
+if __name__=='__main__':
+	print 'PruneVarSubMean'
+	preproc_prunevarsubmean_modular(*parameter_list[0])

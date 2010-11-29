@@ -1,7 +1,15 @@
-def norm_squared_distance ():
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+
+parameter_list = [[traindat,testdat],[traindat,testdat]]
+
+def distance_normsquared_modular (fm_train_real=traindat,fm_test_real=testdat):
+
 	from shogun.Features import RealFeatures
 	from shogun.Distance import EuclidianDistance
-	print 'EuclidianDistance - NormSquared'
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
@@ -13,9 +21,9 @@ def norm_squared_distance ():
 	distance.init(feats_train, feats_test)
 	dm_test=distance.get_distance_matrix()
 
+	return distance,dm_train,dm_test
+
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	norm_squared_distance()
+
+	print 'EuclidianDistance - NormSquared'
+	distance_normsquared_modular(*parameter_list[0])

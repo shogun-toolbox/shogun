@@ -1,19 +1,29 @@
 ###########################################################################
 # kernel ridge regression
 ###########################################################################
+from numpy import array
+from numpy.random import seed, rand
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
-def krr ():
-	print 'KRR'
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+
+
+parameter_list = [[traindat,testdat,label_traindat,0.8,1e-6],[traindat,testdat,label_traindat,0.9,1e-7]]
+
+def regression_krr_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,width=0.8,tau=1e-6):
+
 	from shogun.Features import Labels, RealFeatures
 	from shogun.Kernel import GaussianKernel
 	from shogun.Regression import KRR
 
 	feats_train=RealFeatures(fm_train)
 	feats_test=RealFeatures(fm_test)
-	width=0.8
+
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
-	tau=1e-6
 	labels=Labels(label_train)
 
 	krr=KRR(tau, kernel, labels)
@@ -21,7 +31,7 @@ def krr ():
 
 	kernel.init(feats_train, feats_test)
 	out = krr.classify().get_labels()
-	return out
+	return out,kernel,krr
 
 # equivialent shorter version
 def krr_short ():
@@ -34,15 +44,9 @@ def krr_short ():
 	krr=KRR(tau, GaussianKernel(0, width), Labels(label_train))
 	krr.train(RealFeatures(fm_train))
 	out = krr.classify(RealFeatures(fm_test)).get_labels()
-	return out
+
+	return krr,out
 
 if __name__=='__main__':
-	from numpy import array
-	from numpy.random import seed, rand
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test=lm.load_numbers('../data/fm_test_real.dat')
-	label_train=lm.load_labels('../data/label_train_twoclass.dat')
-	out1=krr()
-	out2=krr_short()
+	print 'KRR'
+	regression_krr_modular(*parameter_list[0])

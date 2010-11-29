@@ -1,5 +1,13 @@
-def larank ():
-	print 'LaRank'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
+
+parameter_list = [[traindat,testdat,label_traindat,0.9,1,6],[traindat,testdat,label_traindat,0.8,1,5]]
+
+def classifier_larank_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,C=0.9,num_threads=1,num_iter=5):
 
 	from shogun.Features import RealFeatures, Labels
 	from shogun.Kernel import GaussianKernel
@@ -21,11 +29,11 @@ def larank ():
 	svm.set_epsilon(epsilon)
 	svm.train()
 	out=svm.classify(feats_train).get_labels()
+	predictions = svm.classify()
+	return predictions, svm, predictions.get_labels()
+
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	label_train_multiclass=lm.load_labels('../data/label_train_multiclass.dat')
-	larank()
+	print 'LaRank'
+	classifier_larank_modular(*parameter_list[0])
+

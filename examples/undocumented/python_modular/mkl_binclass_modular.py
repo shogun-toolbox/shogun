@@ -1,9 +1,19 @@
 from shogun.Features import CombinedFeatures, RealFeatures, Labels
 from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
 from shogun.Classifier import MKLClassification
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
-def combined_custom():
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 
+parameter_list = [[traindat,testdat,label_traindat],[traindat,testdat,label_traindat]]
+#    fm_train_real.shape
+#    fm_test_real.shape
+#    combined_custom()
+
+def mkl_binclass_modular (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass = label_traindat):
 
     ##################################
     # set up and train
@@ -64,15 +74,7 @@ def combined_custom():
     # and classify
     mkl.set_kernel(kernel)
     mkl.classify()
-
+    return mkl.classify(),kernel
 
 if __name__=='__main__':
-    from tools.load import LoadMatrix
-    lm = LoadMatrix()
-    fm_train_real = lm.load_numbers('../data/fm_train_real.dat')
-    fm_test_real = lm.load_numbers('../data/fm_test_real.dat')
-    fm_label_twoclass = lm.load_labels('../data/label_train_twoclass.dat')
-    fm_train_real.shape
-    fm_test_real.shape
-    combined_custom()
-
+    mkl_binclass_modular (*parameter_list[0])

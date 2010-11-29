@@ -5,17 +5,16 @@ from tools.load import LoadMatrix
 from numpy import double
 lm=LoadMatrix()
 
-parameter_list = [[double(lm.load_numbers('../data/fm_train_real.dat')),lm.load_labels('../data/label_train_twoclass.dat'),1.7], [double(lm.load_numbers('../data/fm_train_real.dat')),lm.load_labels('../data/label_train_twoclass.dat'),1.8]]
+traindat = double(lm.load_numbers('../data/fm_train_real.dat'))
+testdat = lm.load_labels('../data/label_train_twoclass.dat')
+parameter_list = [[traindat,testdat,1.7], [traindat,testdat,1.6]]
 
 
-def kernel_auc_modular(fm_train_real=double(lm.load_numbers('../data/fm_train_real.dat')),label_train_real=lm.load_labels('../data/label_train_twoclass.dat'),width=1.7):
-	print 'AUC'
+def kernel_auc_modular(fm_train_real=traindat,label_train_real=testdat,width=1.7):
+
 
 	from shogun.Kernel import GaussianKernel, AUCKernel
 	from shogun.Features import RealFeatures, Labels
-	width            = width
-	fm_train_real    = fm_train_real
-	label_train_real = label_train_real
 
 	feats_train=RealFeatures(fm_train_real)
 
@@ -24,12 +23,8 @@ def kernel_auc_modular(fm_train_real=double(lm.load_numbers('../data/fm_train_re
 	kernel=AUCKernel(0, subkernel)
 	kernel.setup_auc_maximization( Labels(label_train_real) )
 	km_train=kernel.get_kernel_matrix()
-	print km_train
+	return km_train, kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	from numpy import double
-	lm=LoadMatrix()
-	fm_train_real=double(lm.load_numbers('../data/fm_train_real.dat'))
-	label_train_real=lm.load_labels('../data/label_train_twoclass.dat')
+	print 'AUC'
 	kernel_auc_modular(*parameter_list[0])

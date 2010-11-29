@@ -1,19 +1,16 @@
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
-parameter_list=[[lm.load_dna('../data/fm_train_dna.dat'),lm.load_dna('../data/fm_test_dna.dat'),3],[lm.load_dna('../data/fm_train_dna.dat'),lm.load_dna('../data/fm_test_dna.dat'),4]]
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+parameter_list=[[traindat, testdat,3],[traindat,testdat,4]]
 
-def kernel_fixed_degree_string_modular (fm_train_dna=lm.load_dna('../data/fm_train_dna.dat'),fm_test_dna=lm.load_dna('../data/fm_test_dna.dat'),degree=3):
-	print 'FixedDegreeString'
+def kernel_fixed_degree_string_modular (fm_train_dna=traindat, fm_test_dna=testdat,degree=3):
 	from shogun.Features import StringCharFeatures, DNA
 	from shogun.Kernel import FixedDegreeStringKernel
-	
-	fm_train_dna = fm_train_dna
-	fm_test_dna = fm_test_dna
-	degree = degree
+
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
-
 
 	kernel=FixedDegreeStringKernel(feats_train, feats_train, degree)
 
@@ -21,11 +18,7 @@ def kernel_fixed_degree_string_modular (fm_train_dna=lm.load_dna('../data/fm_tra
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
 
-	return km_train, km_test, kernel
-
+	return km_train,km_test,kernel
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
+	print 'FixedDegreeString'
 	kernel_fixed_degree_string_modular(*parameter_list[0])

@@ -1,13 +1,16 @@
-def poly_match_word_string ():
-	print 'PolyMatchWordString'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+
+parameter_list = [[traindat,testdat,2,True,3,0,False],[traindat,testdat,2,True,3,0,False]]
+
+def kernel_poly_match_word_string_modular(fm_train_dna=traindat,fm_test_dna=testdat,
+degree=2,inhomogene=True,order=3,gap=0,reverse=False):
 	from shogun.Kernel import PolyMatchWordStringKernel
 	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
 
-	degree=2
-	inhomogene=True
-	order=3
-	gap=0
-	reverse=False
+
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(DNA)
@@ -22,11 +25,8 @@ def poly_match_word_string ():
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	poly_match_word_string()
+	print 'PolyMatchWordString'
+	kernel_poly_match_word_string_modular(*parameter_list[0])

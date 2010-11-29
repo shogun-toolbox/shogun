@@ -1,10 +1,12 @@
-def classifier_knn_modular():
-	print "Hello2"
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
 
+parameter_list = [[traindat,testdat,label_traindat,3],[traindat,testdat,label_traindat,3]]
 
-def knn ():
-	print 'KNN'
-
+def classifier_knn_modular(fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat, k=3 ):
 	from shogun.Features import RealFeatures, Labels
 	from shogun.Classifier import KNN
 	from shogun.Distance import EuclidianDistance
@@ -13,17 +15,14 @@ def knn ():
 	feats_test=RealFeatures(fm_test_real)
 	distance=EuclidianDistance(feats_train, feats_train)
 
-	k=3
+
 	labels=Labels(label_train_multiclass)
 
 	knn=KNN(k, distance, labels)
-	knn.train()
+	knn_train = knn.train()
 	output=knn.classify(feats_test).get_labels()
+	return knn,knn_train,output
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	label_train_multiclass=lm.load_labels('../data/label_train_multiclass.dat')
-	knn()
+	print 'KNN'
+	classifier_knn_modular(*parameter_list[0])

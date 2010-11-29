@@ -2,6 +2,7 @@ from numpy.random import seed
 seed(42)
 
 parameter_list=[[7],[8]]
+
 def kernel_custom_modular (dim=7):
 	print 'Custom'
 	from numpy.random import rand
@@ -9,7 +10,6 @@ def kernel_custom_modular (dim=7):
 	from shogun.Features import RealFeatures
 	from shogun.Kernel import CustomKernel
 
-	dim=dim
 	data=rand(dim, dim)
 	feats=RealFeatures(data)
 	symdata=data+data.T
@@ -27,7 +27,7 @@ def kernel_custom_modular (dim=7):
 
 	kernel.set_full_kernel_matrix_from_full(data)
 	km_fullfull=kernel.get_kernel_matrix()
-	print km_fullfull
+
 	# now once with float32's
 	data=array(data,dtype=float32)
 
@@ -39,9 +39,8 @@ def kernel_custom_modular (dim=7):
 
 	kernel.set_full_kernel_matrix_from_full(data)
 	km_fullfull=kernel.get_kernel_matrix()
-	print km_fullfull
+	return km_fullfull,kernel
+
 if __name__=='__main__':
-	from numpy.random import seed
-	seed(42)
 	kernel_custom_modular(*parameter_list[0])
 

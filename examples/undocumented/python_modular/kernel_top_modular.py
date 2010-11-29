@@ -1,16 +1,26 @@
-def top():
-	print "TOP Kernel"
+from tools.load import LoadMatrix
+from numpy import where
+lm=LoadMatrix()
+
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+label_traindat = lm.load_labels('../data/label_train_dna.dat')
+
+fm_hmm_pos=[traindat[i] for i in where([label_traindat==1])[1] ]
+fm_hmm_neg=[traindat[i] for i in where([label_traindat==-1])[1] ]
+
+parameter_list = [[traindat,testdat,label_traindat,1e-1,1,0,False,[1, False, True]], \
+[traindat,testdat,label_traindat,1e-1,1,0,False,[1, False, True] ]] 	
+
+def kernel_top_modular(fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,pseudo=1e-1,
+	order=1,gap=0,reverse=False,kargs=[1, False, True]):
 	from shogun.Features import StringCharFeatures, StringWordFeatures, TOPFeatures, DNA
 	from shogun.Kernel import PolyKernel
 	from shogun.Distribution import HMM, BW_NORMAL
 
 	N=1 # toy HMM with 1 state 
 	M=4 # 4 observations -> DNA
-	pseudo=1e-1
-	order=1
-	gap=0
-	reverse=False
-	kargs=[1, False, True]
+
 
 	# train HMM for positive class
 	charfeat=StringCharFeatures(fm_hmm_pos, DNA)
@@ -51,15 +61,8 @@ def top():
 	feats_test=TOPFeatures(10, pos_clone, neg_clone, False, False)
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	from numpy import where
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	label_train_dna=lm.load_labels('../data/label_train_dna.dat')
-
-	fm_hmm_pos=[ fm_train_dna[i] for i in where([label_train_dna==1])[1] ]
-	fm_hmm_neg=[ fm_train_dna[i] for i in where([label_train_dna==-1])[1] ]
-	top()
+	print "TOP Kernel"
+	kernel_top_modular(*parameter_list[0])

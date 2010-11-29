@@ -1,14 +1,19 @@
-def lda ():
-	print 'LDA'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+
+parameter_list = [[traindat,testdat,label_traindat,3,1],[traindat,testdat,label_traindat,4,1]]
+
+def classifier_lda_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,gamma=3,num_threads=1):
 	from shogun.Features import RealFeatures, Labels
 	from shogun.Classifier import LDA
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 
-	gamma=3
-	num_threads=1
 	labels=Labels(label_train_twoclass)
 
 	lda=LDA(gamma, feats_train, labels)
@@ -18,11 +23,8 @@ def lda ():
 	lda.get_w()
 	lda.set_features(feats_test)
 	lda.classify().get_labels()
+	return lda,lda.classify().get_labels()
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	label_train_twoclass=lm.load_labels('../data/label_train_twoclass.dat')
-	lda()
+	print 'LDA'
+	classifier_lda_modular(*parameter_list[0])

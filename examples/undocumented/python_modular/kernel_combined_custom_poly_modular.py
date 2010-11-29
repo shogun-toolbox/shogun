@@ -1,16 +1,17 @@
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
-parameter_list= [[lm.load_numbers('../data/fm_train_real.dat'),lm.load_numbers('../data/fm_test_real.dat'),lm.load_labels('../data/label_train_twoclass.dat')],[lm.load_numbers('../data/fm_train_real.dat'),lm.load_numbers('../data/fm_test_real.dat'),lm.load_labels('../data/label_train_twoclass.dat')]]
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_traindat]]
 
 
-def kernel_combined_custom_poly_modular(fm_train_real = lm.load_numbers('../data/fm_train_real.dat'),fm_test_real = lm.load_numbers('../data/fm_test_real.dat'),fm_label_twoclass=lm.load_labels('../data/label_train_twoclass.dat')):
+def kernel_combined_custom_poly_modular(fm_train_real = traindat,fm_test_real = testdat,fm_label_twoclass=label_traindat):
     from shogun.Features import CombinedFeatures, RealFeatures, Labels
     from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
     from shogun.Classifier import LibSVM
-    fm_train_real       = fm_train_real
-    fm_test_real        = fm_test_real
-    fm_label_twoclass   =  fm_label_twoclass
+   
     kernel = CombinedKernel()
     feats_train = CombinedFeatures()
     
@@ -49,12 +50,7 @@ def kernel_combined_custom_poly_modular(fm_train_real = lm.load_numbers('../data
     svm.set_kernel(kernel)
     svm.classify()
     km_train=kernel.get_kernel_matrix()
-    print km_train
+    return km_train,kernel
 
 if __name__=='__main__':
-    from tools.load import LoadMatrix
-    lm=LoadMatrix()
-    fm_train_real = lm.load_numbers('../data/fm_train_real.dat')
-    fm_test_real = lm.load_numbers('../data/fm_test_real.dat')
-    fm_label_twoclass = lm.load_labels('../data/label_train_twoclass.dat')
     kernel_combined_custom_poly_modular(*parameter_list[0])

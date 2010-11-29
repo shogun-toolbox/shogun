@@ -1,6 +1,13 @@
-def svmlin ():
-	print 'SVMLin'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+
+parameter_list = [[traindat,testdat,label_traindat,0.9,1e-5,1],[traindat,testdat,label_traindat,0.8,1e-5,1]]
+
+def classifier_svmlin_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,C=0.9,epsilon=1e-5,num_threads=1):
 	from shogun.Features import RealFeatures, SparseRealFeatures, Labels
 	from shogun.Classifier import SVMLin
 
@@ -11,9 +18,6 @@ def svmlin ():
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
-	C=0.9
-	epsilon=1e-5
-	num_threads=1
 	labels=Labels(label_train_twoclass)
 
 	svm=SVMLin(C, feats_train, labels)
@@ -26,13 +30,10 @@ def svmlin ():
 	svm.get_bias()
 	svm.get_w()
 	svm.classify().get_labels()
-
+	predictions = svm.classify()
+	return predictions, svm, predictions.get_labels()
 
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	label_train_twoclass=lm.load_labels('../data/label_train_twoclass.dat')
-	svmlin()
+	print 'SVMLin'
+	classifier_svmlin_modular(*parameter_list[0])

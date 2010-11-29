@@ -1,9 +1,9 @@
 import pickle
 import os
 import filecmp
-from generator import tests, test_dir, get_fname
 import numpy
 
+from generator import tests, test_dir, get_fname, blacklist
 
 def compare(a, b):
     if type(a) != type(b): return False
@@ -20,7 +20,7 @@ def compare(a, b):
 
 def tester():
     for t in tests:
-        if t.endswith(".py"):
+        if t.endswith(".py") and not t.startswith('.') and t not in blacklist:
             mod_name = t[:-3]
             mod = __import__(mod_name)
             for i in xrange(len(mod.parameter_list)):

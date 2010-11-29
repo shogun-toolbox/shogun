@@ -1,21 +1,16 @@
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
-parameter_list = [[lm.load_dna('../data/fm_train_dna.dat'),lm.load_dna('../data/fm_test_dna.dat'),4,0,False, False],[lm.load_dna('../data/fm_train_dna.dat'),lm.load_dna('../data/fm_test_dna.dat'),4,0,False,False]]
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+parameter_list = [[traindat,testdat,4,0,False, False],[traindat,testdat,4,0,False,False]]
 
-def kernel_comm_word_string_modular (fm_train_dna=lm.load_dna('../data/fm_train_dna.dat'), fm_test_dna=lm.load_dna('../data/fm_test_dna.dat'), order=3, gap=0, reverse = False, use_sign = False):
-	print 'CommWordString'
+def kernel_comm_word_string_modular (fm_train_dna=traindat, fm_test_dna=testdat, order=3, gap=0, reverse = False, use_sign = False):
+	
 	from shogun.Kernel import CommWordStringKernel
 	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
 	from shogun.PreProc import SortWordString
-	fm_train_dna     = fm_train_dna
-	fm_test_dna      = fm_test_dna
-	order            = order
-	gap              = gap
-	reverse          = reverse
-	use_sign         = use_sign
-
-
+	
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
@@ -32,18 +27,13 @@ def kernel_comm_word_string_modular (fm_train_dna=lm.load_dna('../data/fm_train_
 	feats_test.add_preproc(preproc)
 	feats_test.apply_preproc()
 
-
-
 	kernel=CommWordStringKernel(feats_train, feats_train, use_sign)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-	print km_test
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
+	print 'CommWordString'
 	kernel_comm_word_string_modular(*parameter_list[0])

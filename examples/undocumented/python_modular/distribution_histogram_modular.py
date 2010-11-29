@@ -1,12 +1,13 @@
-def histogram ():
-	print 'Histogram'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
+traindna = lm.load_dna('../data/fm_train_dna.dat')
+
+parameter_list = [[traindna,3,0,False],[traindna,4,0,False]]
+
+def distribution_histogram_modular (fm_dna=traindna,order=3,gap=0,reverse=False):
 	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
 	from shogun.Distribution import Histogram
-
-	order=3
-	gap=0
-	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_dna)
@@ -24,15 +25,14 @@ def histogram ():
 	#	for j in xrange(num_param):
 	#		histo.get_log_derivative(j, i)
 
-	histo.get_log_likelihood()
-	histo.get_log_likelihood_sample()
-
+	out_likelihood = histo.get_log_likelihood()
+	out_sample = histo.get_log_likelihood_sample()
+	return histo,out_sample,out_likelihood
 ###########################################################################
 # call functions
 ###########################################################################
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_dna=lm.load_dna('../data/fm_train_dna.dat')
-	histogram()
+	print 'Histogram'
+	distribution_histogram_modular(*parameter_list[0])
+

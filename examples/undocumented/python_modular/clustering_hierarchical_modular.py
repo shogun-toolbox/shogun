@@ -1,24 +1,28 @@
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
-def hierarchical ():
-	print 'Hierarchical'
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+
+parameter_list = [[traindat,3],[traindat,4]]
+
+def clustering_hierarchical_modular (fm_train=traindat,merges=3):
 
 	from shogun.Distance import EuclidianDistance
 	from shogun.Features import RealFeatures
 	from shogun.Clustering import Hierarchical
 
-	merges=3
+
 	feats_train=RealFeatures(fm_train)
 	distance=EuclidianDistance(feats_train, feats_train)
 
 	hierarchical=Hierarchical(merges, distance)
 	hierarchical.train()
 
-	hierarchical.get_merge_distances()
-	hierarchical.get_cluster_pairs()
+	out_distance = hierarchical.get_merge_distances()
+	out_cluster = hierarchical.get_cluster_pairs()
+
+	return hierarchical,out_distance,out_cluster 
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train=lm.load_numbers('../data/fm_train_real.dat')
-
-	hierarchical()
+	print 'Hierarchical'
+	clustering_hierarchical_modular(*parameter_list[0])

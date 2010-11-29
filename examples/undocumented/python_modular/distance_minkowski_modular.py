@@ -1,12 +1,18 @@
-def minkowski_metric ():
-	print 'MinkowskiMetric'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+
+parameter_list = [[traindat,testdat,3],[traindat,testdat,4]]
+
+def distance_minkowski_modular (fm_train_real=traindat,fm_test_real=testdat,k=3):
 
 	from shogun.Features import RealFeatures
 	from shogun.Distance import MinkowskiMetric
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
-	k=3
 
 	distance=MinkowskiMetric(feats_train, feats_train, k)
 
@@ -14,10 +20,9 @@ def minkowski_metric ():
 	distance.init(feats_train, feats_test)
 	dm_test=distance.get_distance_matrix()
 
+	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	minkowski_metric()
+	print 'MinkowskiMetric'
+	distance_minkowski_modular(*parameter_list[0])
+

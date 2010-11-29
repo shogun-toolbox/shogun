@@ -1,12 +1,17 @@
-def hamming_word_distance ():
-	print 'HammingWordDistance'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindna = lm.load_dna('../data/fm_train_dna.dat')
+testdna = lm.load_dna('../data/fm_test_dna.dat')
+testdat = lm.load_labels('../data/fm_test_real.dat')
+
+parameter_list = [[traindna,testdna,testdat,4,0,False,False],[traindna,testdna,testdat,3,0,False,False]]
+
+def distance_hammingword_modular (fm_train_dna=traindna,fm_test_dna=testdna,fm_test_real=testdat,order=3,gap=0,reverse=False,use_sign=False):
 
 	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA
 	from shogun.PreProc import SortWordString
 	from shogun.Distance import HammingWordDistance
-	order=3
-	gap=0
-	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)
@@ -24,18 +29,13 @@ def hamming_word_distance ():
 	feats_test.add_preproc(preproc)
 	feats_test.apply_preproc()
 
-	use_sign=False
-
 	distance=HammingWordDistance(feats_train, feats_train, use_sign)
 
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)
 	dm_test=distance.get_distance_matrix()
+	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	hamming_word_distance()
+	print 'HammingWordDistance'
+	distance_hammingword_modular(*parameter_list[0])

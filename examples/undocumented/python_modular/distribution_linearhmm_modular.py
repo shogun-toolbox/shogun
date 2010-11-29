@@ -1,12 +1,14 @@
-def linear_hmm ():
-	print 'LinearHMM'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindna = lm.load_dna('../data/fm_train_dna.dat')
+
+parameter_list = [[traindna,3,0,False],[traindna,4,0,False]]
+
+def distribution_linearhmm_modular (fm_dna=traindna,order=3,gap=0,reverse=False):
 
 	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
 	from shogun.Distribution import LinearHMM
-
-	order=3
-	gap=0
-	reverse=False
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_dna)
@@ -24,15 +26,14 @@ def linear_hmm ():
 		for j in xrange(num_param):
 			hmm.get_log_derivative(j, i)
 
-	hmm.get_log_likelihood()
-	hmm.get_log_likelihood_sample()
+	out_likelihood = hmm.get_log_likelihood()
+	out_sample = hmm.get_log_likelihood_sample()
 
+	return hmm,out_likelihood ,out_sample
 ###########################################################################
 # call functions
 ###########################################################################
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_dna=lm.load_dna('../data/fm_train_dna.dat')
-	linear_hmm()
+	distribution_linearhmm_modular(*parameter_list[0])
+	print 'LinearHMM'

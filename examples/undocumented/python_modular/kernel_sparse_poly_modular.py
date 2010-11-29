@@ -1,5 +1,12 @@
-def sparse_poly ():
-	print 'SparsePoly'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+
+parameter_list = [[traindat,testdat,10,3,True],[traindat,testdat,10,4,True]]
+
+def kernel_sparse_poly_modular (fm_train_real=traindat,fm_test_real=testdat,
+		 size_cache=10,degree=3,inhomogene=True ):
 
 	from shogun.Features import SparseRealFeatures
 	from shogun.Kernel import PolyKernel
@@ -7,9 +14,7 @@ def sparse_poly ():
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)
 
-	size_cache=10
-	degree=3
-	inhomogene=True
+
 
 	kernel=PolyKernel(feats_train, feats_train, size_cache, degree,
 		inhomogene)
@@ -17,10 +22,8 @@ def sparse_poly ():
 
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
+	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	sparse_poly()
+	print 'SparsePoly'
+	kernel_sparse_poly_modular(*parameter_list[0])

@@ -2,27 +2,24 @@ from tools.load import LoadMatrix
 from numpy import where
 lm=LoadMatrix()
 
-parameter_list = [[lm.load_dna('../data/fm_train_dna.dat'),lm.load_dna('../data/fm_test_dna.dat'),lm.load_labels('../data/label_train_dna.dat'),1,4,1e-1,1,0,False,[1,False,True]],[lm.load_dna('../data/fm_train_dna.dat'),lm.load_dna('../data/fm_test_dna.dat'),lm.load_labels('../data/label_train_dna.dat'),1,4,1e-1,1,0,False,[1,False,True]]]
+traindat = lm.load_dna('../data/fm_train_dna.dat')
+testdat = lm.load_dna('../data/fm_test_dna.dat')
+label_traindat = lm.load_labels('../data/label_train_dna.dat')
+parameter_list = [[traindat,testdat,label_traindat,1,4,1e-1,1,0,False,[1,False,True]],[traindat,testdat,label_traindat,1,4,1e-1,1,0,False,[1,False,True]]]
 
-def kernel_fisher_modular(fm_train_dna=lm.load_dna('../data/fm_train_dna.dat'),fm_test_dna=lm.load_dna('../data/fm_test_dna.dat'),label_train_dna=lm.load_labels('../data/label_train_dna.dat'), N=1,M=4,pseudo=1e-1,order=1,gap=0,reverse=False,kargs=[1,False,True]):
-	print "Fisher Kernel"
+fm_hmm_pos=[ traindat[i] for i in where([label_traindat==1])[1] ]
+fm_hmm_neg=[ traindat[i] for i in where([label_traindat==-1])[1] ]
+
+def kernel_fisher_modular(fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat, N=1,M=4,pseudo=1e-1,order=1,gap=0,reverse=False,kargs=[1,False,True]):
 	from shogun.Features import StringCharFeatures, StringWordFeatures, FKFeatures, DNA
 	from shogun.Kernel import PolyKernel
 	from shogun.Distribution import HMM, BW_NORMAL
 	
-	fm_train_dna = fm_train_dna
-	fm_test_dna = fm_test_dna
-	label_train_dna = label_train_dna
-	fm_hmm_pos=[ fm_train_dna[i] for i in where([label_train_dna==1])[1] ]
-	fm_hmm_neg=[ fm_train_dna[i] for i in where([label_train_dna==-1])[1] ]
 
 	N=N # toy HMM with 1 state 
 	M=M # 4 observations -> DNA
 	pseudo=pseudo
 	order=order
-	gap=gap
-	reverse=reverse
-	kargs=kargs
 
 	# train HMM for positive class
 	charfeat=StringCharFeatures(fm_hmm_pos, DNA)
@@ -55,7 +52,7 @@ def kernel_fisher_modular(fm_train_dna=lm.load_dna('../data/fm_train_dna.dat'),f
 	feats_train.set_opt_a(-1) #estimate prior
 	kernel=PolyKernel(feats_train, feats_train, *kargs)
 	km_train=kernel.get_kernel_matrix()
-	print km_train
+
 	# get kernel on testing data
 	pos_clone=HMM(pos)
 	neg_clone=HMM(neg)
@@ -65,15 +62,7 @@ def kernel_fisher_modular(fm_train_dna=lm.load_dna('../data/fm_train_dna.dat'),f
 	feats_test.set_a(feats_train.get_a()) #use prior from training data
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-	print km_test
+	return km_train,km_test,kernel
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	from numpy import where
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	label_train_dna=lm.load_labels('../data/label_train_dna.dat')
-
-	fm_hmm_pos=[ fm_train_dna[i] for i in where([label_train_dna==1])[1] ]
-	fm_hmm_neg=[ fm_train_dna[i] for i in where([label_train_dna==-1])[1] ]
+	print "Fisher Kernel"
 	kernel_fisher_modular(*parameter_list[0])
