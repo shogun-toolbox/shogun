@@ -14,7 +14,7 @@
 
 #include "classifier/svm/DomainAdaptationSVMLinear.h"
 #include "lib/io.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 #include <iostream>
 #include <vector>
 

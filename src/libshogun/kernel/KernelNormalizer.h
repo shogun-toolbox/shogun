@@ -12,7 +12,7 @@
 #define _KERNELNORMALIZER_H___
 
 #include "kernel/Kernel.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 namespace shogun
 {

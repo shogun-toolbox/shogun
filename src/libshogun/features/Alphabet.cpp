@@ -13,7 +13,7 @@
 
 #include "features/Alphabet.h"
 #include "lib/io.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 using namespace shogun;
 

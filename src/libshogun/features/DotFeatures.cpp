@@ -12,7 +12,7 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "base/Parallel.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 #ifndef WIN32
 #include <pthread.h>

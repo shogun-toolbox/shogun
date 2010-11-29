@@ -90,6 +90,8 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 			SG_ERROR("Number of vectors (%d) mismatches in above feature obj (%d)\n", vec, f->get_num_vectors());
 		}
 
+		SG_UNREF(f);
+
 		f=get_next_feature_obj(current);
 	}
 
@@ -119,6 +121,8 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t 
 			f1->get_combined_feature_weight() *
 			f2->get_combined_feature_weight();
 
+		SG_UNREF(f1);
+		SG_UNREF(f2);
 		f1=get_next_feature_obj(current1);
 		f2=cf->get_next_feature_obj(current2);
 	}
@@ -142,6 +146,8 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 		int32_t dim = f->get_dim_feature_space();
 		result += f->dense_dot(vec_idx1, vec2+offs, dim)*f->get_combined_feature_weight();
 		offs += dim;
+
+		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
 
@@ -176,6 +182,8 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 				output[i]+=tmp[i];
 		}
 		offs += f_dim;
+
+		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
 	delete[] tmp;
@@ -208,6 +216,8 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 				output[i]+=tmp[i];
 		}
 		offs += f_dim;
+
+		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
 	delete[] tmp;
@@ -224,6 +234,8 @@ void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 		int32_t dim = f->get_dim_feature_space();
 		f->add_to_dense_vec(alpha*f->get_combined_feature_weight(), vec_idx1, vec2+offs, dim, abs_val);
 		offs += dim;
+
+		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
 }
@@ -238,6 +250,8 @@ int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
 	while (f)
 	{
 		result+=f->get_nnz_features_for_vector(num);
+
+		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
 
@@ -258,6 +272,8 @@ void CCombinedDotFeatures::get_subfeature_weights(float64_t** weights, int32_t* 
 	while (f)
 	{
 		*w++=f->get_combined_feature_weight();
+
+		SG_UNREF(f);
 		f = get_next_feature_obj(current);
 	}
 }
@@ -274,6 +290,8 @@ void CCombinedDotFeatures::set_subfeature_weights(
 	while(f)
 	{
 		f->set_combined_feature_weight(weights[i]);
+
+		SG_UNREF(f);
 		f = get_next_feature_obj(current);
 		i++;
 	}

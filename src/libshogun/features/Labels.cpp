@@ -14,7 +14,7 @@
 #include "lib/File.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 using namespace shogun;
 

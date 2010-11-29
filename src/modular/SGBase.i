@@ -74,6 +74,7 @@
 
 %include "swig_typemaps.i"
 
+%include <shogun/base/init.h>
 %include <shogun/lib/ShogunException.h>
 %include <shogun/lib/io.h>
 %include <shogun/base/SGObject.h>

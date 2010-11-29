@@ -12,7 +12,7 @@
 #include "features/Features.h"
 #include "preproc/PreProc.h"
 #include "lib/io.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 #include <string.h>
 
@@ -23,8 +23,6 @@ CFeatures::CFeatures(int32_t size)
 {
 	init();
 	cache_size = size;
-
-	SG_INFO("Feature object created (%p)\n",this);
 }
 
 CFeatures::CFeatures(const CFeatures& orig)
@@ -50,7 +48,6 @@ CFeatures::CFeatures(CFile* loader)
 
 CFeatures::~CFeatures()
 {
-	SG_INFO("Feature object destroyed (%p)\n", this);
 	clean_preprocs();
 }
 

@@ -12,7 +12,7 @@
 
 #include "classifier/KernelMachine.h"
 #include "lib/Signal.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 using namespace shogun;
 

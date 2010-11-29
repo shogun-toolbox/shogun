@@ -21,7 +21,7 @@
 #include "preproc/SimplePreProc.h"
 #include "features/DotFeatures.h"
 #include "features/StringFeatures.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 #include <string.h>
 

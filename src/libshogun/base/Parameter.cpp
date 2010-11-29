@@ -8,7 +8,7 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 #include "base/class_list.h"
 
 using namespace shogun;

@@ -13,7 +13,7 @@
 #include "base/Parallel.h"
 #include "base/init.h"
 #include "base/Version.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -105,6 +105,8 @@ CSGObject::CSGObject()
 	init();
 	set_global_objects();
 	pthread_mutex_init(&m_ref_mutex, NULL);
+
+	SG_GCDEBUG("SGObject created (%p)\n", this);
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
@@ -116,6 +118,8 @@ CSGObject::CSGObject(const CSGObject& orig)
 
 CSGObject::~CSGObject()
 {
+	SG_GCDEBUG("SGObject destroyed (%p)\n", this);
+
 	pthread_mutex_destroy(&m_ref_mutex);
 	unset_global_objects();
 	delete m_parameters;

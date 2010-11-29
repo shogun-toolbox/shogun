@@ -24,7 +24,7 @@
 #include "kernel/Kernel.h"
 #include "kernel/IdentityKernelNormalizer.h"
 #include "features/Features.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 #include "classifier/svm/SVM.h"
 

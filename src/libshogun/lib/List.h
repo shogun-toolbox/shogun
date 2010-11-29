@@ -14,58 +14,61 @@
 
 #include "lib/common.h"
 #include "base/SGObject.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 namespace shogun
 {
 /** @brief Class ListElement, defines how an element of the the list looks like */
 class CListElement :public CSGObject
-{
-	void init(void) {
-		m_parameters->add(&data, "data", "Data of this element.");
-		m_parameters->add((CSGObject**) &next, "next",
-						  "Next element in list.");
-	}
+	{
+		public:
+			/** default constructor */
+			CListElement()
+				: next(NULL), prev(NULL), data(NULL)
+			{
+				init();
+			}
 
-	public:
-		/** next element in list */
-		CListElement* next;
-		/** previous element in list */
-		CListElement* prev;
-		/** data of this element */
-		CSGObject* data;
+			/** constructor
+			 *
+			 * @param p_data data of this element
+			 * @param p_prev previous element
+			 * @param p_next next element
+			 */
+			CListElement(CSGObject* p_data,
+					CListElement* p_prev = NULL,
+					CListElement* p_next = NULL)
+			{
+				init();
 
-	public:
-		/** default constructor
-		 */
-		CListElement(void) {
-			init();
-			data = NULL, prev = NULL, next = NULL;
-		}
+				this->data = p_data;
+				this->next = p_next;
+				this->prev = p_prev;
+			}
 
-		/** constructor
-		 *
-		 * @param p_data data of this element
-		 * @param p_prev previous element
-		 * @param p_next next element
-		 */
-		CListElement(CSGObject* p_data, CListElement* p_prev = NULL, CListElement* p_next = NULL)
-		{
-			init();
+			/// destructor
+			virtual ~CListElement() { data = NULL; }
 
-			this->data = p_data;
-			this->next = p_next;
-			this->prev = p_prev;
-		}
+			/** @return object name */
+			inline virtual const char* get_name(void) const { return "ListElement"; }
 
-		/// destructor
-		virtual ~CListElement() { data = NULL; }
+		private:
+			void init()
+			{
+				m_parameters->add(&data, "data", "Data of this element.");
+				m_parameters->add((CSGObject**) &next, "next",
+						"Next element in list.");
+			}
 
-		/** @return object name */
-		inline virtual const char* get_name(void) const {
-			return "ListElement";
-		}
-};
+		public:
+			/** next element in list */
+			CListElement* next;
+			/** previous element in list */
+			CListElement* prev;
+			/** data of this element */
+			CSGObject* data;
+
+	};
 
 /** @brief Class List implements a doubly connected list for low-level-objects.
  *

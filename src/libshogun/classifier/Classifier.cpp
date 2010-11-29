@@ -9,7 +9,7 @@
  */
 
 #include "classifier/Classifier.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 using namespace shogun;
 

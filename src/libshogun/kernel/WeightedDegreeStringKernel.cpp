@@ -13,7 +13,7 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Trie.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 #include "base/Parallel.h"
 
 #include "kernel/WeightedDegreeStringKernel.h"

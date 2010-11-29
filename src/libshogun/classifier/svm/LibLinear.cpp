@@ -14,7 +14,7 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Time.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 #include "classifier/svm/LibLinear.h"
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"

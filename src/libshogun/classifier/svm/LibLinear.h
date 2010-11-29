@@ -15,7 +15,7 @@
 #include "lib/config.h"
 
 #include "lib/common.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 #include "classifier/LinearClassifier.h"
 #include "classifier/svm/SVM_linear.h"
 

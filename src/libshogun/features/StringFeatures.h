@@ -20,7 +20,7 @@
 #include "lib/MemoryMappedFile.h"
 #include "lib/Mathematics.h"
 #include "lib/Compressor.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 #include "preproc/PreProc.h"
 #include "preproc/StringPreProc.h"

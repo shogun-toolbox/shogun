@@ -11,7 +11,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "base/Parallel.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 #include "classifier/svm/SVM.h"
 #include "classifier/mkl/MKL.h"

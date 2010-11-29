@@ -13,7 +13,7 @@
 
 #include "base/SGObject.h"
 #include "base/DynArray.h"
-#include "lib/Parameter.h"
+#include "base/Parameter.h"
 
 namespace shogun
 {
