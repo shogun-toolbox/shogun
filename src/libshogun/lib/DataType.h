@@ -13,7 +13,7 @@
 
 #include "lib/common.h"
 
-#define PT_NOT_GENERIC             PT_SGSERIALIZABLE_PTR
+#define PT_NOT_GENERIC             PT_SGOBJECT
 #define PT_LONGEST                 floatmax_t
 
 namespace shogun
@@ -57,7 +57,7 @@ enum EStructType {
 enum EPrimitiveType {
 	PT_BOOL, PT_CHAR, PT_INT8, PT_UINT8, PT_INT16, PT_UINT16, PT_INT32,
 	PT_UINT32, PT_INT64, PT_UINT64, PT_FLOAT32, PT_FLOAT64, PT_FLOATMAX,
-	PT_SGSERIALIZABLE_PTR
+	PT_SGOBJECT
 };
 
 /* Datatypes that shogun supports. */

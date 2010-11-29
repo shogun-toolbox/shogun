@@ -18,6 +18,8 @@
 
 namespace shogun
 {
+	class CSGObject;
+
 class CSerializableFile :public CSGObject
 {
 public:

@@ -30,7 +30,7 @@ struct S_THREAD_PARAM
 CKernelMachine::CKernelMachine()
 : CClassifier(), kernel(NULL), use_batch_computation(true), use_linadd(true), use_bias(true)
 {
-	m_parameters->add((CSGSerializable**) &kernel, "kernel");
+	m_parameters->add((CSGObject**) &kernel, "kernel");
 	m_parameters->add(&use_batch_computation, "use_batch_computation",
 					  "Batch computation is enabled.");
 	m_parameters->add(&use_linadd, "use_linadd",

@@ -14,9 +14,9 @@
 #include "lib/DataType.h"
 
 namespace shogun {
-	class CSGSerializable;
+	class CSGObject;
 
-	CSGSerializable* new_sgserializable(const char* sgserializable_name,
+	CSGObject* new_sgserializable(const char* sgserializable_name,
 										EPrimitiveType generic);
 }
 

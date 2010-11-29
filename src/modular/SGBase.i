@@ -10,7 +10,6 @@
  #include <shogun/base/init.h>
  #include <shogun/lib/common.h>
  #include <shogun/lib/io.h>
- #include <shogun/lib/SGSerializable.h>
  #include <shogun/lib/ShogunException.h>
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
@@ -66,9 +65,8 @@
 %ignore NUM_LOG_LEVELS;
 %ignore FBUFSIZE;
 
-%rename(SGSerializable) CSGSerializable;
-%feature("ref")   CSGSerializable "SG_REF($this);"
-%feature("unref") CSGSerializable "SG_UNREF($this);"
+%feature("ref")   CSGObject "SG_REF($this);"
+%feature("unref") CSGObject "SG_UNREF($this);"
 
 %rename(SGObject) CSGObject;
 
@@ -78,7 +76,6 @@
 
 %include <shogun/lib/ShogunException.h>
 %include <shogun/lib/io.h>
-%include <shogun/lib/SGSerializable.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
@@ -176,12 +173,12 @@ def __SGeq__(self, other):
 def __SGneq__(self, other):
     return self.__str__() != str(other)
 
-SGSerializable.__setstate__ = __SGsetstate__
-SGSerializable.__getstate__ = __SGgetstate__
-SGSerializable.__reduce_ex__ = __SGreduce_ex__
-SGSerializable.__str__ = __SGstr__
-SGSerializable.__eq__ = __SGeq__
-SGSerializable.__neq__ = __SGneq__
+SGObject.__setstate__ = __SGsetstate__
+SGObject.__getstate__ = __SGgetstate__
+SGObject.__reduce_ex__ = __SGreduce_ex__
+SGObject.__str__ = __SGstr__
+SGObject.__eq__ = __SGeq__
+SGObject.__neq__ = __SGneq__
 %}
 
 #endif /* SWIGPYTHON  */

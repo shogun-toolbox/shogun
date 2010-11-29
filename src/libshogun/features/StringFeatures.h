@@ -85,7 +85,7 @@ template <class ST> class CStringFeatures : public CFeatures
 	void init(void) {
 		set_generic<ST>();
 
-		m_parameters->add((CSGSerializable**) &alphabet, "alphabet");
+		m_parameters->add((CSGObject**) &alphabet, "alphabet");
 		m_parameters->add_vector(&features, &num_vectors, "features",
 								 "This contains the array of features.");
 		m_parameters->add_vector(&single_string,

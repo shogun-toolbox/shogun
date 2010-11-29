@@ -890,9 +890,9 @@ void CKernel::init()
 {
 	m_parameters->add(&cache_size, "cache_size",
 					  "Cache size in MB.");
-	m_parameters->add((CSGSerializable**) &lhs, "lhs",
+	m_parameters->add((CSGObject**) &lhs, "lhs",
 					  "Feature vectors to occur on left hand side.");
-	m_parameters->add((CSGSerializable**) &rhs, "rhs",
+	m_parameters->add((CSGObject**) &rhs, "rhs",
 					  "Feature vectors to occur on right hand side.");
 	m_parameters->add(&num_lhs, "num_lhs",
 					  "Number of feature vectors on left hand side.");
@@ -907,6 +907,6 @@ void CKernel::init()
 					  "Optimization type.");
 	m_parameters->add(&properties, "properties",
 					  "Kernel properties.");
-	m_parameters->add((CSGSerializable**) &normalizer, "normalizer",
+	m_parameters->add((CSGObject**) &normalizer, "normalizer",
 					  "Normalize the kernel.");
 }

@@ -45,7 +45,7 @@ struct S_THREAD_PARAM
 void
 CCombinedKernel::init(void)
 {
-	m_parameters->add((CSGSerializable**) &kernel_list, "kernel_list",
+	m_parameters->add((CSGObject**) &kernel_list, "kernel_list",
 					  "List of kernels.");
 	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
 							 "Support vector index.");

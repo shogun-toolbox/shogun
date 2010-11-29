@@ -19,7 +19,7 @@ CLinearClassifier::CLinearClassifier()
 
 	m_parameters->add_vector(&w, &w_dim, "w", "Parameter vector w.");
 	m_parameters->add(&bias, "bias", "Bias b.");
-	m_parameters->add((CSGSerializable**) &features, "features", "Feature object.");
+	m_parameters->add((CSGObject**) &features, "features", "Feature object.");
 
 }
 

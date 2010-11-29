@@ -91,7 +91,7 @@ SerializableXmlReader00::read_scalar_wrapped(
 		if (sscanf(buf, "%Lg", (floatmax_t*) param) != 1)
 			result = false;
 		break;
-	case PT_SGSERIALIZABLE_PTR:
+	case PT_SGOBJECT:
 		SG_ERROR("read_scalar_wrapped(): Implementation error during"
 				 " reading XmlFile!");
 		result = false;

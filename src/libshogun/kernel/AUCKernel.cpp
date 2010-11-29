@@ -20,7 +20,7 @@ using namespace shogun;
 void
 CAUCKernel::init(void)
 {
-	m_parameters->add((CSGSerializable**) &subkernel, "subkernel",
+	m_parameters->add((CSGObject**) &subkernel, "subkernel",
 					  "The subkernel.");
 }
 

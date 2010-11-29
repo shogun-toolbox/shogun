@@ -59,7 +59,7 @@ void CSVM::set_defaults(int32_t num_sv)
 	m_parameters->add(&qpsize, "qpsize");
 	m_parameters->add(&use_shrinking, "use_shrinking",
 					  "Shrinking shall be used.");
-	m_parameters->add((CSGSerializable**) &mkl, "mkl",
+	m_parameters->add((CSGObject**) &mkl, "mkl",
 					  "MKL object that svm optimizers need.");
 	m_parameters->add_vector(&m_linear_term, &m_linear_term_len,
 							 "linear_term",

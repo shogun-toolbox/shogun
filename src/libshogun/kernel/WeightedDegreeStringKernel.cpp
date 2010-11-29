@@ -1040,6 +1040,6 @@ void CWeightedDegreeStringKernel::init()
 			"WeightedDegree kernel type.");
 	m_parameters->add(&which_degree, "which_degree",
 			"Unqueal -1 if just a single degree is selected.");
-	m_parameters->add((CSGSerializable**) &alphabet, "alphabet",
+	m_parameters->add((CSGObject**) &alphabet, "alphabet",
 			"Alphabet of Features.");
 }

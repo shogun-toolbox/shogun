@@ -92,7 +92,7 @@ TSGDataType::sizeof_stype(void) const
 		case PT_FLOAT32: return sizeof (TString<float32_t>);
 		case PT_FLOAT64: return sizeof (TString<float64_t>);
 		case PT_FLOATMAX: return sizeof (TString<floatmax_t>);
-		case PT_SGSERIALIZABLE_PTR: return -1;
+		case PT_SGOBJECT: return -1;
 		}
 		break;
 	case ST_SPARSE:
@@ -110,7 +110,7 @@ TSGDataType::sizeof_stype(void) const
 		case PT_FLOAT32: return sizeof (TSparse<float32_t>);
 		case PT_FLOAT64: return sizeof (TSparse<float64_t>);
 		case PT_FLOATMAX: return sizeof (TSparse<floatmax_t>);
-		case PT_SGSERIALIZABLE_PTR: return -1;
+		case PT_SGOBJECT: return -1;
 		}
 		break;
 	}
@@ -135,7 +135,7 @@ TSGDataType::sizeof_ptype(void) const
 	case PT_FLOAT32: return sizeof (float32_t);
 	case PT_FLOAT64: return sizeof (float64_t);
 	case PT_FLOATMAX: return sizeof (floatmax_t);
-	case PT_SGSERIALIZABLE_PTR: return sizeof (CSGSerializable*);
+	case PT_SGOBJECT: return sizeof (CSGObject*);
 	}
 
 	return -1;
@@ -158,7 +158,7 @@ TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 	case PT_FLOAT32: return sizeof (TSparseEntry<float32_t>);
 	case PT_FLOAT64: return sizeof (TSparseEntry<float64_t>);
 	case PT_FLOATMAX: return sizeof (TSparseEntry<floatmax_t>);
-	case PT_SGSERIALIZABLE_PTR: return -1;
+	case PT_SGOBJECT: return -1;
 	}
 
 	return -1;
@@ -185,7 +185,7 @@ TSGDataType::offset_sparseentry(EPrimitiveType ptype)
 	case PT_FLOAT32: result = ENTRY_OFFSET(x, float32_t); break;
 	case PT_FLOAT64: result = ENTRY_OFFSET(x, float64_t); break;
 	case PT_FLOATMAX: result = ENTRY_OFFSET(x, floatmax_t); break;
-	case PT_SGSERIALIZABLE_PTR: return -1;
+	case PT_SGOBJECT: return -1;
 	}
 
 	return result;
@@ -233,7 +233,7 @@ TSGDataType::ptype_to_string(char* dest, EPrimitiveType ptype,
 	case PT_FLOAT32: strncpy(p, "float32", n); break;
 	case PT_FLOAT64: strncpy(p, "float64", n); break;
 	case PT_FLOATMAX: strncpy(p, "floatmax", n); break;
-	case PT_SGSERIALIZABLE_PTR: strncpy(p, "SGSerializable*", n); break;
+	case PT_SGOBJECT: strncpy(p, "SGSerializable*", n); break;
 	}
 }
 
@@ -267,14 +267,14 @@ TSGDataType::string_to_ptype(EPrimitiveType* result, const char* str)
 	if (strcmp(str, "floatmax") == 0) {
 		*result = PT_FLOATMAX; return true; }
 	if (strcmp(str, "SGSerializable*") == 0) {
-		*result = PT_SGSERIALIZABLE_PTR; return true; }
+		*result = PT_SGOBJECT; return true; }
 
 	/* Make sure that the compiler will warn at this position.  */
 	switch (*result) {
 	case PT_BOOL: case PT_CHAR: case PT_INT8: case PT_UINT8:
 	case PT_INT16: case PT_UINT16: case PT_INT32: case PT_UINT32:
 	case PT_INT64: case PT_UINT64: case PT_FLOAT32: case PT_FLOAT64:
-	case PT_FLOATMAX: case PT_SGSERIALIZABLE_PTR: break;
+	case PT_FLOATMAX: case PT_SGOBJECT: break;
 	}
 
 	return false;

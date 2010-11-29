@@ -107,7 +107,7 @@ CSerializableHdf5File::ptype2hdf5(EPrimitiveType ptype)
 	case PT_FLOAT32: return H5T_NATIVE_FLOAT; break;
 	case PT_FLOAT64: return H5T_NATIVE_DOUBLE; break;
 	case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE; break;
-	case PT_SGSERIALIZABLE_PTR: return NOT_OPEN; break;
+	case PT_SGOBJECT: return NOT_OPEN; break;
 	}
 
 	return NOT_OPEN;
@@ -489,7 +489,7 @@ CSerializableHdf5File::write_cont_begin_wrapped(
 {
 	hbool_t bool_buf = true;
 
-	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) return true;
+	if (type->m_ptype != PT_SGOBJECT) return true;
 
 	if (!attr_write_scalar(H5T_NATIVE_HBOOL, STR_IS_CONT, &bool_buf))
 		return false;
@@ -669,7 +669,7 @@ CSerializableHdf5File::write_item_begin_wrapped(
 	type_item_t* m = m_stack_type.back();
 	m->y = y; m->x = x;
 
-	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) return true;
+	if (type->m_ptype != PT_SGOBJECT) return true;
 
 	string_t name;
 	if (!index2string(name, STRING_LEN, type->m_ctype, y, x))
@@ -683,7 +683,7 @@ bool
 CSerializableHdf5File::write_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR)
+	if (type->m_ptype == PT_SGOBJECT)
 		if (!group_close()) return false;
 
 	return true;
@@ -732,7 +732,7 @@ CSerializableHdf5File::write_type_begin_wrapped(
 {
 	type_item_t* m = new type_item_t(name); m_stack_type.push_back(m);
 
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR) {
+	if (type->m_ptype == PT_SGOBJECT) {
 		if (!group_create(name, "")) return false;
 		return true;
 	}
@@ -776,7 +776,7 @@ bool
 CSerializableHdf5File::write_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR)
+	if (type->m_ptype == PT_SGOBJECT)
 		if (!group_close()) return false;
 
 	delete m_stack_type.back(); m_stack_type.pop_back();

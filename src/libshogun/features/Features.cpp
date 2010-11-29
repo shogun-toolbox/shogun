@@ -62,7 +62,7 @@ CFeatures::init(void)
 	m_parameters->add(&cache_size, "cache_size",
 					  "Size of cache in MB.");
 
-	m_parameters->add_vector((CSGSerializable***) &preproc,
+	m_parameters->add_vector((CSGObject***) &preproc,
 							 &num_preproc, "preproc",
 							 "List of preprocessors.");
 	m_parameters->add_vector(&preprocessed,

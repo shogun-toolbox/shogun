@@ -120,7 +120,7 @@ bool CGUIPreProc::del_preproc()
 {
 	SG_INFO("Deleting preproc %i/(%i).\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
 
-	CSGSerializable* preproc=preprocs->delete_element();
+	CSGObject* preproc=preprocs->delete_element();
 	SG_UNREF(preproc);
 
 	return (preproc!=NULL);

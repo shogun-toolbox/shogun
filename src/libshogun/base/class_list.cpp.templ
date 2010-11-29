@@ -23,9 +23,9 @@ REPLACE definitions THIS
 
 REPLACE temp_definitions THIS
 
-typedef CSGSerializable* (*new_sgserializable_t)(EPrimitiveType
-												 generic);
-typedef struct {
+typedef CSGObject* (*new_sgserializable_t)(EPrimitiveType generic);
+typedef struct
+{
 	const char* m_class_name;
 	new_sgserializable_t m_new_sgserializable;
 } class_list_entry_t;
@@ -35,15 +35,15 @@ REPLACE structs THIS
 	{m_class_name: NULL, m_new_sgserializable: NULL}
 };
 
-CSGSerializable*
-shogun::new_sgserializable(const char* sgserializable_name,
+CSGObject* shogun::new_sgserializable(const char* sgserializable_name,
 						   EPrimitiveType generic)
 {
 	for (class_list_entry_t* i=class_list; i->m_class_name != NULL;
 		 i++)
-		if (strncmp(i->m_class_name, sgserializable_name, STRING_LEN)
-			== 0)
+	{
+		if (strncmp(i->m_class_name, sgserializable_name, STRING_LEN) == 0)
 			return i->m_new_sgserializable(generic);
+	}
 
 	return NULL;
 }

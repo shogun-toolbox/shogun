@@ -40,7 +40,7 @@ sed -i'' -e 's@REPLACE \+includes \+THIS@'"$includes"'@' $TEMPL_FILE
 
 definitions=\
 `echo $classes | sed -e 's/[ \t\n]*\([^ \t\n]\+\)/static \
-CSGSerializable* __new_C\1(EPrimitiveType g) \{ return g == \
+CSGObject* __new_C\1(EPrimitiveType g) \{ return g == \
 PT_NOT_GENERIC? new C\1(): NULL; \}\\\\n/g' \
     | sed -n -e '1h;1!H;${g;s/\n//g;p}'`
 sed -i'' -e 's@REPLACE \+definitions \+THIS@'"$definitions"'@' \
@@ -48,7 +48,7 @@ sed -i'' -e 's@REPLACE \+definitions \+THIS@'"$definitions"'@' \
 
 temp_definitions=\
 `echo $temp_classes | sed -e 's/[ \t\n]*\([^ \t\n]\+\)/static \
-CSGSerializable* __new_C\1(EPrimitiveType g) \{ \
+CSGObject* __new_C\1(EPrimitiveType g) \{ \
 switch (g) \{ \
 case PT_BOOL: return new C\1<bool>(); \
 case PT_CHAR: return new C\1<char>(); \
@@ -63,7 +63,7 @@ case PT_UINT64: return new C\1<uint64_t>(); \
 case PT_FLOAT32: return new C\1<float32_t>(); \
 case PT_FLOAT64: return new C\1<float64_t>(); \
 case PT_FLOATMAX: return new C\1<floatmax_t>(); \
-case PT_SGSERIALIZABLE_PTR: return NULL; \
+case PT_SGOBJECT: return NULL; \
 \} return NULL; \}\\\\n/g' \
     | sed -n -e '1h;1!H;${g;s/\n//g;p}'`
 sed -i'' -e 's@REPLACE \+temp_definitions \+THIS@'"$temp_definitions"'@' \

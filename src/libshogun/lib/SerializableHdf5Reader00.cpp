@@ -77,7 +77,7 @@ SerializableHdf5Reader00::read_cont_begin_wrapped(
 	CSerializableHdf5File::type_item_t* m
 		= m_file->m_stack_type.back();
 
-	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) {
+	if (type->m_ptype != PT_SGOBJECT) {
 		switch (type->m_ctype) {
 		case CT_SCALAR:
 			SG_ERROR("read_cont_begin_wrapped(): Implementation error"
@@ -282,7 +282,7 @@ SerializableHdf5Reader00::read_item_begin_wrapped(
 		= m_file->m_stack_type.back();
 	m->y = y; m->x = x;
 
-	if (type->m_ptype != PT_SGSERIALIZABLE_PTR) return true;
+	if (type->m_ptype != PT_SGOBJECT) return true;
 
 	string_t name;
 	if (!CSerializableHdf5File::index2string(
@@ -296,7 +296,7 @@ bool
 SerializableHdf5Reader00::read_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR)
+	if (type->m_ptype == PT_SGOBJECT)
 		if (!m_file->group_close()) return false;
 
 	return true;
@@ -344,7 +344,7 @@ SerializableHdf5Reader00::read_type_begin_wrapped(
 		::type_item_t(name);
 	m_file->m_stack_type.push_back(m);
 
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR) {
+	if (type->m_ptype == PT_SGOBJECT) {
 		if (!m_file->group_open(name, "")) return false;
 		return true;
 	}
@@ -389,7 +389,7 @@ bool
 SerializableHdf5Reader00::read_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
-	if (type->m_ptype == PT_SGSERIALIZABLE_PTR)
+	if (type->m_ptype == PT_SGOBJECT)
 		if (!m_file->group_close()) return false;
 
 	delete m_file->m_stack_type.back();

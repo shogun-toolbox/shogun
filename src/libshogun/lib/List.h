@@ -19,11 +19,11 @@
 namespace shogun
 {
 /** @brief Class ListElement, defines how an element of the the list looks like */
-class CListElement :public CSGSerializable
+class CListElement :public CSGObject
 {
 	void init(void) {
 		m_parameters->add(&data, "data", "Data of this element.");
-		m_parameters->add((CSGSerializable**) &next, "next",
+		m_parameters->add((CSGObject**) &next, "next",
 						  "Next element in list.");
 	}
 
@@ -33,7 +33,7 @@ class CListElement :public CSGSerializable
 		/** previous element in list */
 		CListElement* prev;
 		/** data of this element */
-		CSGSerializable* data;
+		CSGObject* data;
 
 	public:
 		/** default constructor
@@ -49,7 +49,7 @@ class CListElement :public CSGSerializable
 		 * @param p_prev previous element
 		 * @param p_next next element
 		 */
-		CListElement(CSGSerializable* p_data, CListElement* p_prev = NULL, CListElement* p_next = NULL)
+		CListElement(CSGObject* p_data, CListElement* p_prev = NULL, CListElement* p_next = NULL)
 		{
 			init();
 
@@ -85,7 +85,7 @@ class CList : public CSGObject
 							  "Delete data on destruction?");
 			m_parameters->add(&num_elements, "num_elements",
 							  "Number of elements.");
-			m_parameters->add((CSGSerializable**) &first, "first",
+			m_parameters->add((CSGObject**) &first, "first",
 							  "First element in list.");
 
 			first  = NULL;
@@ -115,7 +115,7 @@ class CList : public CSGObject
 
 			while (get_num_elements())
 			{
-				CSGSerializable* d=delete_element();
+				CSGObject* d=delete_element();
 
 				if (delete_data)
 				{
@@ -135,7 +135,7 @@ class CList : public CSGObject
 		 *
 		 * @return first element in list or NULL if list is empty
 		 */
-		inline CSGSerializable* get_first_element()
+		inline CSGObject* get_first_element()
 		{
 			if (first != NULL)
 			{
@@ -152,7 +152,7 @@ class CList : public CSGObject
 		 *
 		 * @return last element in list or NULL if list is empty
 		 */
-		inline CSGSerializable* get_last_element()
+		inline CSGObject* get_last_element()
 		{
 			if (last != NULL)
 			{
@@ -169,7 +169,7 @@ class CList : public CSGObject
 		 *
 		 * @return next element in list or NULL if list is empty
 		 */
-		inline CSGSerializable* get_next_element()
+		inline CSGObject* get_next_element()
 		{
 			if ((current != NULL) && (current->next != NULL))
 			{
@@ -186,7 +186,7 @@ class CList : public CSGObject
 		 *
 		 * @return previous element in list or NULL if list is empty
 		 */
-		inline CSGSerializable* get_previous_element()
+		inline CSGObject* get_previous_element()
 		{
 			if ((current != NULL) && (current->prev != NULL))
 			{
@@ -203,7 +203,7 @@ class CList : public CSGObject
 		 *
 		 * @return current element in list or NULL if not available
 		 */
-		inline CSGSerializable* get_current_element()
+		inline CSGObject* get_current_element()
 		{
 			if (current != NULL)
 			{
@@ -224,7 +224,7 @@ class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return first element in list or NULL if list is empty
 		 */
-		inline CSGSerializable* get_first_element(CListElement*& p_current)
+		inline CSGObject* get_first_element(CListElement*& p_current)
 		{
 			if (first != NULL)
 			{
@@ -242,7 +242,7 @@ class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return last element in list or NULL if list is empty
 		 */
-		inline CSGSerializable* get_last_element(CListElement*& p_current)
+		inline CSGObject* get_last_element(CListElement*& p_current)
 		{
 			if (last != NULL)
 			{
@@ -260,7 +260,7 @@ class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return next element in list or NULL if list is empty
 		 */
-		inline CSGSerializable* get_next_element(CListElement*& p_current)
+		inline CSGObject* get_next_element(CListElement*& p_current)
 		{
 			if ((p_current != NULL) && (p_current->next != NULL))
 			{
@@ -278,7 +278,7 @@ class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return previous element in list or NULL if list is empty
 		 */
-		inline CSGSerializable* get_previous_element(CListElement*& p_current)
+		inline CSGObject* get_previous_element(CListElement*& p_current)
 		{
 			if ((p_current != NULL) && (p_current->prev != NULL))
 			{
@@ -296,7 +296,7 @@ class CList : public CSGObject
 		 * @param p_current current list element
 		 * @return current element in list or NULL if not available
 		 */
-		inline CSGSerializable* get_current_element(CListElement*& p_current)
+		inline CSGObject* get_current_element(CListElement*& p_current)
 		{
 			if (p_current != NULL)
 			{
@@ -314,11 +314,11 @@ class CList : public CSGObject
 		 * @param data data element to append
 		 * @return if appending was successful
 		 */
-		inline bool append_element(CSGSerializable* data)
+		inline bool append_element(CSGObject* data)
 		{
 			if (current != NULL)    // none available, case is shattered in insert_element()
 			{
-				CSGSerializable* e=get_next_element();
+				CSGObject* e=get_next_element();
 				if (e)
 				{
 					if (delete_data)
@@ -357,9 +357,9 @@ class CList : public CSGObject
 		 * @param data data element to append
 		 * @return if appending was successful
 		 */
-		inline bool append_element_at_listend(CSGSerializable* data)
+		inline bool append_element_at_listend(CSGObject* data)
 		{
-			CSGSerializable* p = get_last_element();
+			CSGObject* p = get_last_element();
 			if (delete_data)
 				SG_UNREF(p);
 
@@ -371,7 +371,7 @@ class CList : public CSGObject
 		 * @param data data element to insert
 		 * @return if inserting was successful
 		 */
-		inline bool insert_element(CSGSerializable* data)
+		inline bool insert_element(CSGObject* data)
 		{
 			CListElement* element;
 
@@ -420,9 +420,9 @@ class CList : public CSGObject
 		 *
 		 * @return the elements data - if available - is returned else NULL
 		 */
-		inline CSGSerializable* delete_element(void)
+		inline CSGObject* delete_element(void)
 		{
-			CSGSerializable* data = get_current_element();
+			CSGObject* data = get_current_element();
 
 			if (data)
 			{

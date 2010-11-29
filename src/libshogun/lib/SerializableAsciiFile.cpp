@@ -152,7 +152,7 @@ CSerializableAsciiFile::write_scalar_wrapped(
 		if (fprintf(m_fstream, "%.16Lg", *(floatmax_t*) param) <= 0)
 			return false;
 		break;
-	case PT_SGSERIALIZABLE_PTR:
+	case PT_SGOBJECT:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
 				 " writing AsciiFile!");
 		return false;

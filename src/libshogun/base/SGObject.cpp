@@ -31,12 +31,97 @@ namespace shogun
 	extern IO* sg_io;
 	extern Version* sg_version;
 
-}
+	template<> void CSGObject::set_generic<bool>()
+	{
+		m_generic = PT_BOOL;
+	}
+
+	template<> void CSGObject::set_generic<char>()
+	{
+		m_generic = PT_CHAR;
+	}
+
+	template<> void CSGObject::set_generic<int8_t>()
+	{
+		m_generic = PT_INT8;
+	}
+
+	template<> void CSGObject::set_generic<uint8_t>()
+	{
+		m_generic = PT_UINT8;
+	}
+
+	template<> void CSGObject::set_generic<int16_t>()
+	{
+		m_generic = PT_INT16;
+	}
+
+	template<> void CSGObject::set_generic<uint16_t>()
+	{
+		m_generic = PT_UINT16;
+	}
+
+	template<> void CSGObject::set_generic<int32_t>()
+	{
+		m_generic = PT_INT32;
+	}
+
+	template<> void CSGObject::set_generic<uint32_t>()
+	{
+		m_generic = PT_UINT32;
+	}
+
+	template<> void CSGObject::set_generic<int64_t>()
+	{
+		m_generic = PT_INT64;
+	}
+
+	template<> void CSGObject::set_generic<uint64_t>()
+	{
+		m_generic = PT_UINT64;
+	}
+
+	template<> void CSGObject::set_generic<float32_t>()
+	{
+		m_generic = PT_FLOAT32;
+	}
+
+	template<> void CSGObject::set_generic<float64_t>()
+	{
+		m_generic = PT_FLOAT64;
+	}
+
+	template<> void CSGObject::set_generic<floatmax_t>()
+	{
+		m_generic = PT_FLOATMAX;
+	}
+
+} /* namespace shogun  */
 
 using namespace shogun;
 
-void
-CSGObject::set_global_objects(void)
+CSGObject::CSGObject()
+{
+	init();
+	set_global_objects();
+	pthread_mutex_init(&m_ref_mutex, NULL);
+}
+
+CSGObject::CSGObject(const CSGObject& orig)
+:io(orig.io), parallel(orig.parallel), version(orig.version)
+{
+	init();
+	set_global_objects();
+}
+
+CSGObject::~CSGObject()
+{
+	pthread_mutex_destroy(&m_ref_mutex);
+	unset_global_objects();
+	delete m_parameters;
+}
+
+void CSGObject::set_global_objects(void)
 {
 	if (!sg_io || !sg_parallel || !sg_version)
 	{
@@ -53,8 +138,7 @@ CSGObject::set_global_objects(void)
 	version=sg_version;
 }
 
-void
-CSGObject::unset_global_objects(void)
+void CSGObject::unset_global_objects(void)
 {
 	SG_UNREF(version);
 	SG_UNREF(parallel);
@@ -98,4 +182,102 @@ Version* CSGObject::get_version()
 {
 	SG_REF(sg_version);
 	return sg_version;
+}
+
+bool CSGObject::is_generic(EPrimitiveType* generic) const
+{
+	*generic = m_generic;
+
+	return m_generic != PT_NOT_GENERIC;
+}
+
+void CSGObject::unset_generic(void)
+{
+	m_generic = PT_NOT_GENERIC;
+}
+
+void CSGObject::print_serializable(const char* prefix)
+{
+	m_parameters->print(prefix);
+}
+
+bool CSGObject::save_serializable(CSerializableFile* file,
+								   const char* prefix)
+{
+	bool result = m_parameters->save(file, prefix);
+
+	if (prefix == NULL || *prefix == '\0')
+		file->close();
+
+	return result;
+}
+
+bool CSGObject::load_serializable(CSerializableFile* file,
+								   const char* prefix)
+{
+	try
+	{
+		load_serializable_pre();
+	}
+	catch (ShogunException e)
+	{
+		SG_SWARNING("%s%s::load_serializable_pre(): ShogunException: "
+				   "%s\n", prefix, get_name(),
+				   e.get_exception_string());
+		return false;
+	}
+	if (!m_load_pre_called)
+	{
+		SG_SWARNING("%s%s::load_serializable_pre(): Implementation "
+				   "error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
+				   "called!\n", prefix, get_name());
+		return false;
+	}
+
+	if (!m_parameters->load(file, prefix))
+		return false;
+
+	try
+	{
+		load_serializable_post();
+	}
+	catch (ShogunException e)
+	{
+		SG_SWARNING("%s%s::load_serializable_post(): ShogunException: "
+				   "%s\n", prefix, get_name(),
+				   e.get_exception_string());
+		return false;
+	}
+
+	if (!m_load_post_called)
+	{
+		SG_SWARNING("%s%s::load_serializable_post(): Implementation "
+				   "error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
+				   "called!\n", prefix, get_name());
+		return false;
+	}
+
+	return true;
+}
+
+void CSGObject::load_serializable_pre() throw (ShogunException)
+{
+	m_load_pre_called = true;
+}
+
+void CSGObject::load_serializable_post() throw (ShogunException)
+{
+	m_load_post_called = true;
+}
+
+void CSGObject::init()
+{
+	m_refcount = 0;
+	io = NULL;
+	parallel = NULL;
+	version = NULL;
+	m_parameters = new Parameter();
+	m_generic = PT_NOT_GENERIC;
+	m_load_pre_called = false;
+	m_load_post_called = false;
 }

@@ -110,9 +110,9 @@ Parameter::add(floatmax_t* param, const char* name,
 }
 
 void
-Parameter::add(CSGSerializable** param,
+Parameter::add(CSGObject** param,
 			   const char* name, const char* description) {
-	TSGDataType type(CT_SCALAR, ST_NONE, PT_SGSERIALIZABLE_PTR);
+	TSGDataType type(CT_SCALAR, ST_NONE, PT_SGOBJECT);
 	add_type(&type, param, name, description);
 }
 
@@ -406,9 +406,9 @@ Parameter::add_vector(
 }
 
 void
-Parameter::add_vector(CSGSerializable*** param, index_t* length,
+Parameter::add_vector(CSGObject*** param, index_t* length,
 					   const char* name, const char* description) {
-	TSGDataType type(CT_VECTOR, ST_NONE, PT_SGSERIALIZABLE_PTR,
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_SGOBJECT,
 					 length);
 	add_type(&type, param, name, description);
 }
@@ -717,9 +717,9 @@ Parameter::add_matrix(
 
 void
 Parameter::add_matrix(
-	CSGSerializable*** param, index_t* length_y, index_t* length_x,
+	CSGObject*** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
-	TSGDataType type(CT_MATRIX, ST_NONE, PT_SGSERIALIZABLE_PTR,
+	TSGDataType type(CT_MATRIX, ST_NONE, PT_SGOBJECT,
 					 length_y, length_x);
 	add_type(&type, param, name, description);
 }
@@ -988,20 +988,19 @@ TParameter::new_prefix(const char* s1, const char* s2)
 void
 TParameter::print(const char* prefix)
 {
-	IO* io = sg_io;
 	string_t buf;
 	m_datatype.to_string(buf, STRING_LEN);
 
-	SG_PRINT("\n%s\n%35s %24s :%s\n", prefix, m_description == NULL
+	SG_SPRINT("\n%s\n%35s %24s :%s\n", prefix, m_description == NULL
 			 || *m_description == '\0' ? "(Parameter)": m_description,
 			 m_name, buf);
 
-	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR
+	if (m_datatype.m_ptype == PT_SGOBJECT
 		&& m_datatype.m_stype == ST_NONE
 		&& m_datatype.m_ctype == CT_SCALAR
-		&& *(CSGSerializable**) m_parameter != NULL) {
+		&& *(CSGObject**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
-		(*(CSGSerializable**) m_parameter)->print_serializable(p);
+		(*(CSGObject**) m_parameter)->print_serializable(p);
 		delete p;
 	}
 }
@@ -1046,9 +1045,9 @@ TParameter::delete_cont(void)
 				delete[] *(float64_t**) m_parameter; break;
 			case PT_FLOATMAX:
 				delete[] *(floatmax_t**) m_parameter; break;
-			case PT_SGSERIALIZABLE_PTR:
-				CSGSerializable** buf =
-					*(CSGSerializable***) m_parameter;
+			case PT_SGOBJECT:
+				CSGObject** buf =
+					*(CSGObject***) m_parameter;
 				for (index_t i=0; i<old_length; i++)
 					if (buf[i] != NULL) SG_UNREF(buf[i]);
 				delete buf;
@@ -1089,9 +1088,8 @@ TParameter::delete_cont(void)
 				delete[] *(TString<float64_t>**) m_parameter; break;
 			case PT_FLOATMAX:
 				delete[] *(TString<floatmax_t>**) m_parameter; break;
-			case PT_SGSERIALIZABLE_PTR:
-				IO* io = sg_io;
-				SG_ERROR("TParameter::delete_cont(): Implementation "
+			case PT_SGOBJECT:
+				SG_SERROR("TParameter::delete_cont(): Implementation "
 						 "error: Could not delete "
 						 "String<SGSerializable*>");
 				break;
@@ -1131,9 +1129,8 @@ TParameter::delete_cont(void)
 				delete[] *(TSparse<float64_t>**) m_parameter; break;
 			case PT_FLOATMAX:
 				delete[] *(TSparse<floatmax_t>**) m_parameter; break;
-			case PT_SGSERIALIZABLE_PTR:
-				IO* io = sg_io;
-				SG_ERROR("TParameter::delete_cont(): Implementation "
+			case PT_SGOBJECT:
+				SG_SERROR("TParameter::delete_cont(): Implementation "
 						 "error: Could not delete "
 						 "Sparse<SGSerializable*>");
 				break;
@@ -1195,9 +1192,9 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 		case PT_FLOATMAX:
 			*(floatmax_t**) m_parameter
 				= new floatmax_t[new_length]; break;
-		case PT_SGSERIALIZABLE_PTR:
-			*(CSGSerializable***) m_parameter
-				= new CSGSerializable*[new_length]();
+		case PT_SGOBJECT:
+			*(CSGObject***) m_parameter
+				= new CSGObject*[new_length]();
 			break;
 		}
 		break;
@@ -1242,9 +1239,8 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 		case PT_FLOATMAX:
 			*(TString<floatmax_t>**) m_parameter
 				= new TString<floatmax_t>[new_length]; break;
-		case PT_SGSERIALIZABLE_PTR:
-			IO* io = sg_io;
-			SG_ERROR("TParameter::new_cont(): Implementation "
+		case PT_SGOBJECT:
+			SG_SERROR("TParameter::new_cont(): Implementation "
 					 "error: Could not allocate "
 					 "String<SGSerializable*>");
 			break;
@@ -1293,9 +1289,8 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 		case PT_FLOATMAX:
 			*(TSparse<floatmax_t>**) m_parameter
 				= new TSparse<floatmax_t>[new_length]; break;
-		case PT_SGSERIALIZABLE_PTR:
-			IO* io = sg_io;
-			SG_ERROR("TParameter::new_cont(): Implementation "
+		case PT_SGOBJECT:
+			SG_SERROR("TParameter::new_cont(): Implementation "
 					 "error: Could not allocate "
 					 "Sparse<SGSerializable*>");
 			break;
@@ -1307,14 +1302,13 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 }
 
 bool
-TParameter::new_sgserial(CSGSerializable** param,
+TParameter::new_sgserial(CSGObject** param,
 						 EPrimitiveType generic,
 						 const char* sgserializable_name,
 						 const char* prefix)
 {
-	IO* io = sg_io;
-
-	if (*param != NULL) SG_UNREF(*param);
+	if (*param != NULL)
+		SG_UNREF(*param);
 
 	*param = new_sgserializable(sgserializable_name, generic);
 
@@ -1328,7 +1322,7 @@ TParameter::new_sgserial(CSGSerializable** param,
 			strcat(buf, ">");
 		}
 
-		SG_WARNING("TParameter::new_sgserial(): "
+		SG_SWARNING("TParameter::new_sgserial(): "
 				   "Class `C%s%s' was not listed during compiling Shogun"
 				   " :( ...  Can not construct it for `%s%s'!",
 				   sgserializable_name, buf, prefix, m_name);
@@ -1344,13 +1338,13 @@ bool
 TParameter::save_ptype(CSerializableFile* file, const void* param,
 					   const char* prefix)
 {
-	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
+	if (m_datatype.m_ptype == PT_SGOBJECT) {
 		const char* sgserial_name = "";
 		EPrimitiveType generic = PT_NOT_GENERIC;
 
-		if (*(CSGSerializable**) param != NULL) {
-			sgserial_name = (*(CSGSerializable**) param)->get_name();
-			(*(CSGSerializable**) param)->is_generic(&generic);
+		if (*(CSGObject**) param != NULL) {
+			sgserial_name = (*(CSGObject**) param)->get_name();
+			(*(CSGObject**) param)->is_generic(&generic);
 		}
 
 		if (!file->write_sgserializable_begin(
@@ -1358,7 +1352,7 @@ TParameter::save_ptype(CSerializableFile* file, const void* param,
 			return false;
 		if (*sgserial_name != '\0') {
 			char* p = new_prefix(prefix, m_name);
-			bool result = (*(CSGSerializable**) param)
+			bool result = (*(CSGObject**) param)
 				->save_serializable(file, p);
 			delete p;
 			if (!result) return false;
@@ -1377,7 +1371,7 @@ bool
 TParameter::load_ptype(CSerializableFile* file, void* param,
 					   const char* prefix)
 {
-	if (m_datatype.m_ptype == PT_SGSERIALIZABLE_PTR) {
+	if (m_datatype.m_ptype == PT_SGOBJECT) {
 		string_t sgserial_name = {'\0'};
 		EPrimitiveType generic = PT_NOT_GENERIC;
 
@@ -1385,12 +1379,12 @@ TParameter::load_ptype(CSerializableFile* file, void* param,
 				&m_datatype, m_name, prefix, sgserial_name, &generic))
 			return false;
 		if (*sgserial_name != '\0') {
-			if (!new_sgserial((CSGSerializable**) param, generic,
+			if (!new_sgserial((CSGObject**) param, generic,
 							  sgserial_name, prefix))
 				return false;
 
 			char* p = new_prefix(prefix, m_name);
-			bool result = (*(CSGSerializable**) param)
+			bool result = (*(CSGObject**) param)
 				->load_serializable(file, p);
 			delete p;
 			if (!result) return false;
@@ -1409,8 +1403,6 @@ bool
 TParameter::save_stype(CSerializableFile* file, const void* param,
 					   const char* prefix)
 {
-	IO* io = sg_io;
-
 	TString<char>* str_ptr = (TString<char>*) param;
 	TSparse<char>* spr_ptr = (TSparse<char>*) param;
 	index_t len_real;
@@ -1422,7 +1414,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 	case ST_STRING:
 		len_real = str_ptr->length;
 		if (str_ptr->string == NULL && len_real != 0) {
-			SG_WARNING("Inconsistence between data structure and "
+			SG_SWARNING("Inconsistence between data structure and "
 					   "len during saving string `%s%s'!  Continuing"
 					   " with len=0.\n",
 					   prefix, m_name);
@@ -1445,7 +1437,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 	case ST_SPARSE:
 		len_real = spr_ptr->num_feat_entries;
 		if (spr_ptr->features == NULL && len_real != 0) {
-			SG_WARNING("Inconsistence between data structure and "
+			SG_SWARNING("Inconsistence between data structure and "
 					   "len during saving sparse `%s%s'!  Continuing"
 					   " with len=0.\n",
 					   prefix, m_name);
@@ -1543,8 +1535,6 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 bool
 TParameter::save(CSerializableFile* file, const char* prefix)
 {
-	IO* io = sg_io;
-
 	if (!file->write_type_begin(&m_datatype, m_name, prefix))
 		return false;
 
@@ -1557,7 +1547,7 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 
 		len_real_y = *m_datatype.m_length_y;
 		if (*(void**) m_parameter == NULL && len_real_y != 0) {
-			SG_WARNING("Inconsistence between data structure and "
+			SG_SWARNING("Inconsistence between data structure and "
 					   "len_y during saving `%s%s'!  Continuing with "
 					   "len_y=0.\n",
 					   prefix, m_name);
@@ -1570,7 +1560,7 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 		case CT_MATRIX:
 			len_real_x = *m_datatype.m_length_x;
 			if (*(void**) m_parameter == NULL && len_real_x != 0) {
-				SG_WARNING("Inconsistence between data structure and "
+				SG_SWARNING("Inconsistence between data structure and "
 						   "len_x during saving `%s%s'!  Continuing "
 						   "with len_x=0.\n",
 						   prefix, m_name);
@@ -1706,14 +1696,12 @@ void
 Parameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
-	IO* io = sg_io;
-
 	if (name == NULL || *name == '\0')
-		SG_ERROR("FATAL: Parameter::add_type(): `name' is empty!");
+		SG_SERROR("FATAL: Parameter::add_type(): `name' is empty!");
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
-			SG_ERROR("FATAL: Parameter::add_type(): "
+			SG_SERROR("FATAL: Parameter::add_type(): "
 					 "Double parameter `%s'!", name);
 
 	m_params.append_element(

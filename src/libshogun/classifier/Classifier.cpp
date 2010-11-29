@@ -19,7 +19,7 @@ CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL),
 	m_parameters->add(&max_train_time, "max_train_time",
 					  "Maximum training time.");
 	m_parameters->add((machine_int_t*) &solver_type, "solver_type");
-	m_parameters->add((CSGSerializable**) &labels, "labels");
+	m_parameters->add((CSGObject**) &labels, "labels");
 }
 
 CClassifier::~CClassifier()

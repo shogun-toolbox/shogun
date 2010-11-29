@@ -27,7 +27,7 @@ namespace shogun
  */
 class CDynamicArrayPtr :public CSGObject
 {
-	DynArray<CSGSerializable*> m_array;
+	DynArray<CSGObject*> m_array;
 
 	public:
 		/** constructor
@@ -79,7 +79,7 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline CSGSerializable* get_element(int32_t index) const
+		inline CSGObject* get_element(int32_t index) const
 		{ return m_array.get_element(index); }
 
 		/** get array element at index
@@ -89,7 +89,7 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline CSGSerializable* get_element_safe(int32_t index) const
+		inline CSGObject* get_element_safe(int32_t index) const
 		{ return m_array.get_element_safe(index); }
 
 		/** set array element at index
@@ -98,7 +98,7 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool set_element(CSGSerializable* element, int32_t index)
+		inline bool set_element(CSGObject* element, int32_t index)
 		{ return m_array.set_element(element, index); }
 
 		/** insert array element at index
@@ -107,7 +107,7 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(CSGSerializable* element, int32_t index)
+		inline bool insert_element(CSGObject* element, int32_t index)
 		{ return m_array.insert_element(element, index); }
 
 		/** append array element to the end of array
@@ -115,7 +115,7 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param element element to append
 		 * @return if setting was successful
 		 */
-		inline bool append_element(CSGSerializable* element)
+		inline bool append_element(CSGObject* element)
 		{ return m_array.append_element(element); }
 
 	    /** ::STD::VECTOR compatible. Append array element to the end
@@ -123,7 +123,7 @@ class CDynamicArrayPtr :public CSGObject
 		 *
 		 * @param element element to append
 		 */
-		inline void push_back(CSGSerializable* element)
+		inline void push_back(CSGObject* element)
 		{ m_array.push_back(element); }
 
 	    /** ::STD::VECTOR compatible. Delete array element at the end
@@ -137,7 +137,7 @@ class CDynamicArrayPtr :public CSGObject
 		 *
 		 * @return element at the end of array
 		 */
-		inline CSGSerializable* back(void)
+		inline CSGObject* back(void)
 		{ return m_array.back(); }
 
 		/** find first occurence of array element and return its index
@@ -146,7 +146,7 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param element element to search for
 		 * @return index of element or -1
 		 */
-		inline int32_t find_element(CSGSerializable* element)
+		inline int32_t find_element(CSGObject* element)
 		{ return m_array.find_element(element); }
 
 		/** delete array element at idx
@@ -173,7 +173,7 @@ class CDynamicArrayPtr :public CSGObject
 		 *
 		 * @return the array
 		 */
-		inline CSGSerializable** get_array(void)
+		inline CSGObject** get_array(void)
 		{ return m_array.get_array(); }
 
 		/** set the array pointer and free previously allocated memory
@@ -183,7 +183,7 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param array_size number of elements in array
 		 */
 		inline void set_array(
-			CSGSerializable** p_array, int32_t p_num_elements,
+			CSGObject** p_array, int32_t p_num_elements,
 			int32_t array_size)
 		{ m_array.set_array(p_array, p_num_elements, array_size); }
 
@@ -200,7 +200,7 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param index index
 		 * @return element at index
 		 */
-		inline CSGSerializable* operator[](int32_t index) const
+		inline CSGObject* operator[](int32_t index) const
 		{ return m_array[index]; }
 
 		/** operator overload for array assignment

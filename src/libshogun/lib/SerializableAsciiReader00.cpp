@@ -83,7 +83,7 @@ SerializableAsciiReader00::read_scalar_wrapped(
 		if (fscanf(m_file->m_fstream, "%Lg", (floatmax_t*) param)
 			!= 1) return false;
 		break;
-	case PT_SGSERIALIZABLE_PTR:
+	case PT_SGOBJECT:
 		SG_ERROR("read_scalar_wrapped(): Implementation error during"
 				 " reading AsciiFile!");
 		return false;

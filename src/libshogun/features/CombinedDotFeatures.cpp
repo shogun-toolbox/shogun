@@ -22,7 +22,7 @@ CCombinedDotFeatures::init(void)
 					  "Total number of dimensions.");
 	m_parameters->add(&num_vectors, "num_vectors",
 					  "Total number of vectors.");
-	m_parameters->add((CSGSerializable**) &feature_list,
+	m_parameters->add((CSGObject**) &feature_list,
 					  "feature_list", "Feature list.");
 }
 

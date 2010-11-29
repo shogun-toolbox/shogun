@@ -46,7 +46,7 @@ CMultiClassSVM::init(void)
 					  "multiclass_type", "Type of MultiClassSVM.");
 	m_parameters->add(&m_num_classes, "m_num_classes",
 					  "Number of classes.");
-	m_parameters->add_vector((CSGSerializable***) &m_svms,
+	m_parameters->add_vector((CSGObject***) &m_svms,
 							 &m_num_svms, "m_svms");
 }
 

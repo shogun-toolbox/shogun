@@ -19,7 +19,7 @@ CCombinedFeatures::init(void)
 {
 	m_parameters->add(&num_vec, "num_vec",
 					  "Number of vectors.");
-	m_parameters->add((CSGSerializable**) &feature_list,
+	m_parameters->add((CSGObject**) &feature_list,
 					  "feature_list", "Feature list.");
 }
 

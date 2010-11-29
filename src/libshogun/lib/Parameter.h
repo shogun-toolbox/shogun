@@ -37,7 +37,7 @@ private:
 	char* new_prefix(const char* s1, const char* s2);
 	void delete_cont(void);
 	void new_cont(index_t new_len_y, index_t new_len_x);
-	bool new_sgserial(CSGSerializable** param, EPrimitiveType generic,
+	bool new_sgserial(CSGObject** param, EPrimitiveType generic,
 					  const char* sgserializable_name,
 					  const char* prefix);
 	bool save_ptype(CSerializableFile* file, const void* param,
@@ -105,7 +105,7 @@ public:
 	void add(floatmax_t* param, const char* name,
 			 const char* description="");
 
-	void add(CSGSerializable** param,
+	void add(CSGObject** param,
 			 const char* name, const char* description="");
 
 	void add(TString<bool>* param, const char* name,
@@ -192,7 +192,7 @@ public:
 	void add_vector(floatmax_t** param, index_t* length,
 					const char* name, const char* description="");
 
-	void add_vector(CSGSerializable*** param, index_t* length,
+	void add_vector(CSGObject*** param, index_t* length,
 					const char* name, const char* description="");
 
 	void add_vector(TString<bool>** param, index_t* length,
@@ -292,7 +292,7 @@ public:
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 
-	void add_matrix(CSGSerializable*** param,
+	void add_matrix(CSGObject*** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 

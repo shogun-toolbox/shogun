@@ -10,7 +10,7 @@ import sys
 import types
 import random
 import bz2
-import cPickle
+import cPickle as pickle
 import inspect
 
 
@@ -32,7 +32,7 @@ def save(filename, myobj):
         sys.stderr.write(details)
         return
 
-    cPickle.dump(myobj, f, protocol=2)
+    pickle.dump(myobj, f, protocol=2)
     f.close()
 
 
@@ -52,7 +52,7 @@ def load(filename):
         sys.stderr.write(details)
         return
 
-    myobj = cPickle.load(f)
+    myobj = pickle.load(f)
     f.close()
     return myobj
 
@@ -82,16 +82,16 @@ svm.io.set_loglevel(MSG_DEBUG)
 ##################################################
 
 print "labels:"
-print labels.to_string()
+print pickle.dumps(labels)
 
 print "features"
-print feats_train.to_string()
+print pickle.dumps(feats_train)
 
 print "kernel"
-print kernel.to_string()
+print pickle.dumps(kernel)
 
 print "svm"
-print svm.to_string()
+print pickle.dumps(svm)
 
 print "#################################"
 
