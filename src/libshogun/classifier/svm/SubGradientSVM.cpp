@@ -638,6 +638,7 @@ bool CSubGradientSVM::train(CFeatures* data)
 		if (get_max_train_time()>0 && time.cur_time_diff()>get_max_train_time())
 			break;
 	}
+	SG_DONE();
 
 	SG_INFO("converged after %d iterations\n", num_iterations);
 
