@@ -1,5 +1,15 @@
-def do_batch_linadd ():
-	print 'SVMlight batch'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+train_dna=lm.load_dna('../data/fm_train_dna.dat')
+test_dna=lm.load_dna('../data/fm_test_dna.dat')
+label=lm.load_labels('../data/label_train_dna.dat')
+
+parameter_list=[[train_dna, test_dna, label, 20, 0.9, 1e-3, 1],
+		[train_dna, test_dna, label, 20, 2.3, 1e-5, 4]]
+
+def classifier_svmlight_batch_linadd_modular(fm_train_dna, fm_test_dna,
+		label_train_dna, degree, C, epsilon, num_threads):
 
 	from shogun.Features import StringCharFeatures, Labels, DNA
 	from shogun.Kernel import WeightedDegreeStringKernel
@@ -17,9 +27,6 @@ def do_batch_linadd ():
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
-	C=1
-	epsilon=1e-5
-	num_threads=2
 	labels=Labels(label_train_dna)
 
 	svm=SVMLight(C, kernel, labels)
@@ -36,12 +43,10 @@ def do_batch_linadd ():
 	svm.classify().get_labels()
 
 	svm.set_batch_computation_enabled(True)
-	svm.classify().get_labels()
+	labels = svm.classify().get_labels()
+	return labels, svm
+
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	label_train_dna=lm.load_labels('../data/label_train_dna.dat')
-	do_batch_linadd()
+	print 'SVMlight batch'
+	classifier_svmlight_batch_linadd_modular(*parameter_list[0])

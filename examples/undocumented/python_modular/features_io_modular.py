@@ -1,5 +1,11 @@
-def io ():
-	print 'Features IO'
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+data=lm.load_numbers('../data/fm_train_real.dat')
+label=lm.load_numbers('../data/label_train_twoclass.dat')
+
+parameter_list=[[data,label]]
+
+def features_io_modular(fm_train_real, label_train_twoclass):
 	import numpy
 	from shogun.Features import SparseRealFeatures, RealFeatures, Labels
 	from shogun.Kernel import GaussianKernel
@@ -34,11 +40,11 @@ def io ():
 
 	f=BinaryFile("fm_train_real.bin")
 	feats2.load(f)
-	print "diff binary", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten()))
+	#print "diff binary", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten()))
 
 	f=AsciiFile("fm_train_real.ascii")
 	feats2.load(f)
-	print "diff ascii", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten()))
+	#print "diff ascii", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten()))
 
 	lab=Labels(numpy.array([1.0,2.0,3.0]))
 	lab2=Labels()
@@ -59,10 +65,10 @@ def io ():
 
 	f=HDF5File("fm_train_real.h5","r", "/data/doubles")
 	feats2.load(f)
-	print feats2.get_feature_matrix()
+	#print feats2.get_feature_matrix()
 	f=HDF5File("label_train_real.h5","r", "/data/labels")
 	lab2.load(f)
-	print lab2.get_labels()
+	#print lab2.get_labels()
 
 	#clean up
 	import os
@@ -70,10 +76,8 @@ def io ():
 			'fm_train_real.bin','fm_train_real.h5','fm_train_real.ascii',
 			'label_train_real.h5', 'label_train_twoclass.ascii','label_train_twoclass.bin']:
 		os.unlink(f)
+	return feats, feats2, lab, lab2
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	label_train_twoclass=lm.load_numbers('../data/label_train_twoclass.dat')
-	io()
+	print 'Features IO'
+	features_io_modular(*parameter_list[0])

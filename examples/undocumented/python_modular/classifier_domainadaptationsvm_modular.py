@@ -4,8 +4,7 @@ from shogun.Features import StringCharFeatures, Labels, DNA
 from shogun.Kernel import WeightedDegreeStringKernel
 from shogun.Classifier import SVMLight, DomainAdaptationSVM
 
-degree=3
-fm_train_dna = ['CGCACGTACGTAGCTCGAT',
+traindna = ['CGCACGTACGTAGCTCGAT',
 		      'CGACGTAGTCGTAGTCGTA',
 		      'CGACGGGGGGGGGGTCGTA',
 		      'CGACCTAGTCGTAGTCGTA',
@@ -15,8 +14,8 @@ fm_train_dna = ['CGCACGTACGTAGCTCGAT',
 		      'CGACGTAGTCGTAGCCCCA',
 		      'CAAAAAAAAAAAAAAAATA',
 		      'CGACGGGGGGGGGGGCGTA']
-label_train_dna = numpy.array(5*[-1.0] + 5*[1.0])
-fm_test_dna = ['AGCACGTACGTAGCTCGAT',
+label_traindna = numpy.array(5*[-1.0] + 5*[1.0])
+testdna = ['AGCACGTACGTAGCTCGAT',
 		      'AGACGTAGTCGTAGTCGTA',
 		      'CAACGGGGGGGGGGTCGTA',
 		      'CGACCTAGTCGTAGTCGTA',
@@ -26,10 +25,10 @@ fm_test_dna = ['AGCACGTACGTAGCTCGAT',
 		      'CGACGTAGTCCCAGCCCCA',
 		      'CAAAAAAAAAAAACCAATA',
 		      'CGACGGCCGGGGGGGCGTA']
-label_test_dna = numpy.array(5*[-1.0] + 5*[1.0])
+label_testdna = numpy.array(5*[-1.0] + 5*[1.0])
 
 
-fm_train_dna2 = ['AGACAGTCAGTCGATAGCT',
+traindna2 = ['AGACAGTCAGTCGATAGCT',
 		      'AGCAGTCGTAGTCGTAGTC',
 		      'AGCAGGGGGGGGGGTAGTC',
 		      'AGCAATCGTAGTCGTAGTC',
@@ -39,8 +38,8 @@ fm_train_dna2 = ['AGACAGTCAGTCGATAGCT',
 		      'AGCAGTCGTAGTCGAAAAC',
 		      'ACCCCCCCCCCCCCCCCTC',
 		      'AGCAGGGGGGGGGGGAGTC']
-label_train_dna2 = numpy.array(5*[-1.0] + 5*[1.0])
-fm_test_dna2 = ['CGACAGTCAGTCGATAGCT',
+label_traindna2 = numpy.array(5*[-1.0] + 5*[1.0])
+testdna2 = ['CGACAGTCAGTCGATAGCT',
 		      'CGCAGTCGTAGTCGTAGTC',
 		      'ACCAGGGGGGGGGGTAGTC',
 		      'AGCAATCGTAGTCGTAGTC',
@@ -50,32 +49,44 @@ fm_test_dna2 = ['CGACAGTCAGTCGATAGCT',
 		      'AGCAGTCGTAAACGAAAAC',
 		      'ACCCCCCCCCCCCAACCTC',
 		      'AGCAGGAAGGGGGGGAGTC']
-label_test_dna2 = numpy.array(5*[-1.0] + 5*[1.0])
+label_testdna2 = numpy.array(5*[-1.0] + 5*[1.0])
+
+parameter_list = [[traindna,testdna,label_traindna,label_testdna,traindna2,label_traindna2, \
+                       testdna2,label_testdna2,1,3],[traindna,testdna,label_traindna,label_testdna,traindna2,label_traindna2, \
+                       testdna2,label_testdna2,2,5]] 
+
+def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=testdna, \
+                                                label_train_dna=label_traindna, \
+                                               label_test_dna=label_testdna,fm_train_dna2=traindna2,fm_test_dna2=testdna2, \
+                                               label_train_dna2=label_traindna2,label_test_dna2=label_testdna2,C=1,degree=3):
 
 
-C = 1.0
 
-feats_train = StringCharFeatures(fm_train_dna, DNA)
-feats_test = StringCharFeatures(fm_test_dna, DNA)
-kernel = WeightedDegreeStringKernel(feats_train, feats_train, degree)
-labels = Labels(label_train_dna)
-svm = SVMLight(C, kernel, labels)
-svm.train()
-
+    
+    feats_train = StringCharFeatures(fm_train_dna, DNA)
+    feats_test = StringCharFeatures(fm_test_dna, DNA)
+    kernel = WeightedDegreeStringKernel(feats_train, feats_train, degree)
+    labels = Labels(label_train_dna)
+    svm = SVMLight(C, kernel, labels)
+    svm.train()
+    
 #####################################
-
-print "obtaining DA SVM from previously trained SVM"
-
-feats_train2 = StringCharFeatures(fm_train_dna, DNA)
-feats_test2 = StringCharFeatures(fm_test_dna, DNA)
-kernel2 = WeightedDegreeStringKernel(feats_train, feats_train, degree)
-labels2 = Labels(label_train_dna)
-
+    
+#print "obtaining DA SVM from previously trained SVM"
+    
+    feats_train2 = StringCharFeatures(fm_train_dna, DNA)
+    feats_test2 = StringCharFeatures(fm_test_dna, DNA)
+    kernel2 = WeightedDegreeStringKernel(feats_train, feats_train, degree)
+    labels2 = Labels(label_train_dna)
+    
 # we regularize against the previously obtained solution
-dasvm = DomainAdaptationSVM(C, kernel2, labels2, svm, 1.0)
-dasvm.train()
+    dasvm = DomainAdaptationSVM(C, kernel2, labels2, svm, 1.0)
+    dasvm.train()
+    
+    out = dasvm.classify(feats_test2).get_labels()
+    
+    return out,kernel,kernel2
 
-out = dasvm.classify(feats_test2).get_labels()
-
-print out
-
+if __name__=='__main__':
+    print 'SVMLight'
+    classifier_domainadaptationsvm_modular(*parameter_list[0])

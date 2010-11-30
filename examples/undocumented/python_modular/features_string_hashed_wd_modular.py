@@ -1,22 +1,30 @@
-from numpy import *
-from shogun.Features import *
-from shogun.Library import MSG_DEBUG
+from shogun.Features import LongIntFeatures
+from numpy import array, int64, all
 
-order=3
-start_order=1
-from_order=order
-hash_bits=2
+# create dense matrix A
+matrix=array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=int64)
 
-x=[array([0,1,2,3,0,1,2,3,3,2,2,1,1],dtype=uint8)]
-print len(x[0])
+parameter_list = [[matrix,3,1,2],[matrix,3,1,2]]
 
-f=StringByteFeatures(RAWDNA)
-f.io.set_loglevel(MSG_DEBUG)
-f.set_features(x)
+# ... of type LongInt
+def features_string_hashed_wd_modular(A=matrix,order=3,start_order=1,hash_bits=2):
+    a=LongIntFeatures(A)
+    
+    from numpy import *
+    from shogun.Features import *
+    from shogun.Library import MSG_DEBUG
 
-y=HashedWDFeatures(f,start_order,order,from_order,hash_bits)
-print y.get_dim_feature_space()
-fm=y.get_feature_matrix()
-print fm.shape
-print fm
+    x=[array([0,1,2,3,0,1,2,3,3,2,2,1,1],dtype=uint8)]
+    from_order=order
+    f=StringByteFeatures(RAWDNA)
+    #f.io.set_loglevel(MSG_DEBUG)
+    f.set_features(x)
 
+    y=HashedWDFeatures(f,start_order,order,from_order,hash_bits)
+    fm=y.get_feature_matrix()
+
+    return fm
+
+if __name__=='__main__':
+    print 'string_hashed_wd'
+    features_string_hashed_wd_modular(*parameter_list[0])
