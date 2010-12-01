@@ -18,24 +18,18 @@
 
 using namespace shogun;
 
-CSalzbergWordStringKernel::CSalzbergWordStringKernel(void)
-: CStringKernel<uint16_t>(0), estimate(NULL), mean(NULL), variance(NULL),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
-	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
-	neg_prior(0.5), initialized(false)
+CSalzbergWordStringKernel::CSalzbergWordStringKernel()
+: CStringKernel<uint16_t>(0)
 {
-	SG_UNSTABLE("CSalzbergWordStringKernel::"
-				"CSalzbergWordStringKernel(void)", "\n");
+	init();
 }
 
 CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, CPluginEstimate* pie, CLabels* labels)
-: CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
-	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
-	neg_prior(0.5), initialized(false)
+: CStringKernel<uint16_t>(size)
 {
+	init();
+	estimate=pie;
+
 	if (labels)
 		set_prior_probs_from_labels(labels);
 }
@@ -43,12 +37,11 @@ CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, CPluginEstima
 CSalzbergWordStringKernel::CSalzbergWordStringKernel(
 	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
 	CPluginEstimate* pie, CLabels* labels)
-: CStringKernel<uint16_t>(10),estimate(pie), mean(NULL), variance(NULL),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
-	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
-	neg_prior(0.5), initialized(false)
+: CStringKernel<uint16_t>(10),estimate(pie)
 {
+	init();
+	estimate=pie;
+
 	if (labels)
 		set_prior_probs_from_labels(labels);
 
@@ -376,4 +369,25 @@ void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 	set_prior_probs(
 		(float64_t)num_pos/(num_pos+num_neg),
 		(float64_t)num_neg/(num_pos+num_neg));
+}
+
+void CSalzbergWordStringKernel::init()
+{
+	estimate=NULL;
+	mean=NULL;
+	variance=NULL;
+
+	sqrtdiag_lhs=NULL;
+	sqrtdiag_rhs=NULL;
+
+	ld_mean_lhs=NULL;
+	ld_mean_rhs=NULL;
+
+	num_params=0;
+	num_symbols=0;
+	sum_m2_s2=0;
+	pos_prior=0.5;
+
+	neg_prior=0.5;
+	initialized=false;
 }

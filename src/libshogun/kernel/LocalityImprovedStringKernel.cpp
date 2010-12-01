@@ -16,15 +16,10 @@
 
 using namespace shogun;
 
-CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(void)
+CLocalityImprovedStringKernel::CLocalityImprovedStringKernel()
 : CStringKernel<char>(0)
 {
-	SG_UNSTABLE("CLocalityImprovedStringKernel::"
-				"CLocalityImprovedStringKernel(void)", "\n");
-
-	length = 0;
-	inner_degree = 0;
-	outer_degree = 0;
+	init();
 }
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
@@ -89,4 +84,15 @@ float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return pow(outer_sum, outer_degree + 1);
+}
+
+void CLocalityImprovedStringKernel::init()
+{
+	length = 0;
+	inner_degree = 0;
+	outer_degree = 0;
+
+	m_parameters->add(&length, "length", "Window Length.");
+	m_parameters->add(&inner_degree, "inner_degree", "Inner degree.");
+	m_parameters->add(&outer_degree, "outer_degree", "Outer degree.");
 }

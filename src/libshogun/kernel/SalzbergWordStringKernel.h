@@ -30,7 +30,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** default constructor  */
-		CSalzbergWordStringKernel(void);
+		CSalzbergWordStringKernel();
 
 		/** constructor
 		 *
@@ -117,6 +117,8 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		{
 			return position*num_symbols+symbol;
 		}
+	private:
+		void init();
 
 	protected:
 		/** the plugin estimate */

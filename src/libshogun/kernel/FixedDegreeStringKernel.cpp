@@ -20,24 +20,20 @@ using namespace shogun;
 void
 CFixedDegreeStringKernel::init(void)
 {
-	m_parameters->add(&degree, "degree",
-					  "The degree.");
+	m_parameters->add(&degree, "degree", "The degree.");
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(void)
 : CStringKernel<char>(0), degree(0)
 {
 	init();
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(int32_t size, int32_t d)
 : CStringKernel<char>(size), degree(d)
 {
 	init();
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(
@@ -45,8 +41,6 @@ CFixedDegreeStringKernel::CFixedDegreeStringKernel(
 : CStringKernel<char>(10), degree(d)
 {
 	init();
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l, r);
 }
 

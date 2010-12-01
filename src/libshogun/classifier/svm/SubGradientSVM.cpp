@@ -293,7 +293,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 	if (num_bound > 0)
 	{
 
-			CTime t2;
+		CTime t2;
 		CMath::add(v, 1.0, w, -1.0, sum_CXy_active, num_feat);
 
 		if (num_bound>=qpsize_max && num_it_noimprovement!=10) // if qp gets to large, lets just choose a random beta
@@ -329,7 +329,9 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 			//CMath::display_matrix(Z, num_bound, num_bound, "Z");
 			//CMath::display_vector(Zv, num_bound, "Zv");
 			t2.stop();
+#ifdef DEBUG_SUBGRADIENTSVM
 			t2.time_diff_sec(true);
+#endif
 
 			CTime t;
 			CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
@@ -344,7 +346,11 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 			solver.solve_qp(beta, num_bound);
 
 			t.stop();
+#ifdef DEBUG_SUBGRADIENTSVM
 			tim+=t.time_diff_sec(true);
+#else
+			tim+=t.time_diff_sec(false);
+#endif
 
 			//CMath::display_vector(beta, num_bound, "beta gs");
 			//solver.set_solver(QPB_SOLVER_CPLEX);

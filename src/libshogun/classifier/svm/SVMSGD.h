@@ -34,7 +34,7 @@ class CSVMSGD : public CLinearClassifier
 {
 	public:
 		/** default constructor  */
-		CSVMSGD(void);
+		CSVMSGD();
 
 		/** constructor
 		 *
@@ -132,6 +132,9 @@ class CSVMSGD : public CLinearClassifier
 	protected:
 		/** calibrate */
 		void calibrate();
+
+	private:
+		void init();
 
 	private:
 		float64_t t;

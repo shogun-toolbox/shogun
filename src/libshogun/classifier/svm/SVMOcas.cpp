@@ -12,6 +12,7 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 #include "lib/Time.h"
+#include "base/Parameter.h"
 #include "base/Parallel.h"
 #include "classifier/LinearClassifier.h"
 #include "classifier/svm/SVMOcas.h"
@@ -21,31 +22,26 @@
 using namespace shogun;
 
 CSVMOcas::CSVMOcas(void)
-: CLinearClassifier(), use_bias(true), bufsize(3000), C1(1), C2(1),
-  epsilon(1e-3), method(SVM_OCAS)
+: CLinearClassifier()
 {
-	SG_UNSTABLE("CSVMOcas::CSVMOcas(void)", "\n");
-
-	w=NULL;
-	old_w=NULL;
+	init();
 }
 
 CSVMOcas::CSVMOcas(E_SVM_TYPE type)
-: CLinearClassifier(), use_bias(true), bufsize(3000), C1(1), C2(1),
-	epsilon(1e-3), method(type)
+: CLinearClassifier()
 {
-	w=NULL;
-	old_w=NULL;
+	init();
+	method=type;
 }
 
 CSVMOcas::CSVMOcas(
 	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier(), use_bias(true), bufsize(3000), C1(C), C2(C),
-	epsilon(1e-3)
+: CLinearClassifier()
 {
-	w=NULL;
-	old_w=NULL;
-	method=SVM_OCAS;
+	init();
+	C1=C;
+	C2=C;
+
 	set_features(traindat);
 	set_labels(trainlab);
 }
@@ -337,4 +333,26 @@ void CSVMOcas::compute_W(
 	
 	o->bias = bias;
 	o->old_bias = old_bias;
+}
+
+void CSVMOcas::init()
+{
+	use_bias=true;
+	bufsize=3000;
+	C1=1;
+	C2=1;
+
+	epsilon=1e-3;
+	method=SVM_OCAS;
+	w=NULL;
+	old_w=NULL;
+
+    m_parameters->add(&C1, "C1",  "Cost constant 1.");
+    m_parameters->add(&C2, "C2",  "Cost constant 2.");
+    m_parameters->add((machine_int_t*) &use_bias, "use_bias",
+			"Indicates if bias is used.");
+    m_parameters->add(&epsilon, "epsilon", "Convergence precision.");
+    m_parameters->add(&bufsize, "bufsize", "Maximum number of cutting planes.");
+    m_parameters->add((machine_int_t*) &method, "method",
+			"SVMOcas solver type.");
 }

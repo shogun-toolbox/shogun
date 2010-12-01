@@ -719,7 +719,5 @@ void
 CAlphabet::load_serializable_post(void) throw (ShogunException)
 {
 	CSGObject::load_serializable_post();
-
-	SG_PRINT("CAlphabet::load_serializable_post(): TODO: Histogram "
-			 "initialization.\n");
+	init_map_table();
 }

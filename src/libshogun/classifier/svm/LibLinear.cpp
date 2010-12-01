@@ -25,48 +25,46 @@ using namespace shogun;
 CLibLinear::CLibLinear(void)
 : CLinearClassifier()
 {
-	SG_UNSTABLE("CLibLinear::CLibLinear(void)", "\n");
-
-	liblinear_solver_type=L2R_LR;
-	use_bias=false;
-	C1=1;
-	C2=1;
-	set_max_iterations();
-	m_linear_term=NULL;
     init();
 }
 
 CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
 : CLinearClassifier()
 {
-	liblinear_solver_type=l;
-	use_bias=false;
-	C1=1;
-	C2=1;
-	set_max_iterations();
-	m_linear_term=NULL;
     init();
 }
 
 CLibLinear::CLibLinear(
 	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier(), C1(C), C2(C), use_bias(true), epsilon(1e-5)
+: CLinearClassifier()
 {
+    init();
+	C1=C;
+	C2=C;
+	use_bias=true;
+	epsilon=1e-5;
+
 	set_features(traindat);
 	set_labels(trainlab);
-	liblinear_solver_type=L2R_L1LOSS_SVC_DUAL;
-	set_max_iterations();
 	init_linear_term();
-    init();
 }
 
-void CLibLinear::init(void)
+void CLibLinear::init()
 {
-    m_parameters->add(&C1, "C1",  "Cost constant 1.");
-    m_parameters->add(&C2, "C2",  "Cost constant 2.");
+	liblinear_solver_type=L2R_L1LOSS_SVC_DUAL;
+	use_bias=false;
+	C1=1;
+	C2=1;
+	set_max_iterations();
+	m_linear_term=NULL;
+	m_linear_term_len=0;
+
+    m_parameters->add(&C1, "C1",  "C Cost constant 1.");
+    m_parameters->add(&C2, "C2",  "C Cost constant 2.");
     m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
+    m_parameters->add(&epsilon, "epsilon",  "Convergence precision.");
     m_parameters->add(&max_iterations, "max_iterations",  "Max number of iterations.");
-    //m_parameters->add_vector((CSGSerializable***) &m_svms, &m_num_svms, "m_svms");
+    m_parameters->add_vector(&m_linear_term, &m_linear_term_len, "Linear Term");
     m_parameters->add((machine_int_t*) &liblinear_solver_type, "liblinear_solver_type", "Type of LibLinear solver.");
 }
 
@@ -1147,17 +1145,12 @@ void CLibLinear::solve_l1r_lr(
 
 void CLibLinear::get_linear_term(float64_t** linear_term, int32_t* len)
 {
-	if (!labels)
-		SG_ERROR("Please assign labels first!\n");
-
-	int32_t num_labels=labels->get_num_labels();
-
-	if (!num_labels || !m_linear_term)
+	if (!m_linear_term_len || !m_linear_term)
 		SG_ERROR("Please assign linear term first!\n");
 
-	*linear_term=(float64_t*) malloc(sizeof(float64_t)*num_labels);
+	*linear_term=(float64_t*) malloc(sizeof(float64_t)*m_linear_term_len);
 
-	for (int32_t i=0; i<num_labels; i++)
+	for (int32_t i=0; i<m_linear_term_len; i++)
 		(*linear_term)[i]=m_linear_term[i];
 }
 
@@ -1166,9 +1159,11 @@ void CLibLinear::init_linear_term()
 	if (!labels)
 		SG_ERROR("Please assign labels first!\n");
 
-	int32_t num_labels=labels->get_num_labels();
-	m_linear_term = new float64_t[num_labels];
-	CMath::fill_vector(m_linear_term, num_labels, -1.0);
+	delete[] m_linear_term;
+
+	m_linear_term_len=labels->get_num_labels();
+	m_linear_term = new float64_t[m_linear_term_len];
+	CMath::fill_vector(m_linear_term, m_linear_term_len, -1.0);
 }
 
 #endif //HAVE_LAPACK

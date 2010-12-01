@@ -178,6 +178,8 @@ class CSVMOcas : public CLinearClassifier
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SVMOcas"; }
+	private:
+		void init();
 
 	protected:
 		/** if bias is used */

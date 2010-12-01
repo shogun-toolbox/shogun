@@ -21,6 +21,7 @@
 */
 
 #include "classifier/svm/SVMSGD.h"
+#include "base/Parameter.h"
 #include "lib/Signal.h"
 
 using namespace shogun;
@@ -101,27 +102,28 @@ float64_t dloss(float64_t z)
 }
 
 
-CSVMSGD::CSVMSGD(void)
-: CLinearClassifier(), t(1), C1(1), C2(1),
-  wscale(1), bscale(1), epochs(5), skip(1000), count(1000), use_bias(true),
-  use_regularized_bias(false)
+CSVMSGD::CSVMSGD()
+: CLinearClassifier()
 {
-	SG_UNSTABLE("CSVMSGD::CSVMSGD(void)", "\n");
+	init();
 }
 
 CSVMSGD::CSVMSGD(float64_t C)
-: CLinearClassifier(), t(1), C1(C), C2(C),
-	wscale(1), bscale(1), epochs(5), skip(1000), count(1000), use_bias(true),
-	use_regularized_bias(false)
+: CLinearClassifier()
 {
+	init();
+
+	C1=C;
+	C2=C;
 }
 
 CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier(), t(1), C1(C), C2(C), wscale(1), bscale(1),
-	epochs(5), skip(1000), count(1000), use_bias(true),
-	use_regularized_bias(false)
+: CLinearClassifier()
 {
-	w=NULL;
+	init();
+	C1=C;
+	C2=C;
+
 	set_features(traindat);
 	set_labels(trainlab);
 }
@@ -259,3 +261,28 @@ void CSVMSGD::calibrate()
 	delete[] c;
 }
 
+void CSVMSGD::init()
+{
+	w=NULL;
+	t=1;
+	C1=1;
+	C2=1;
+	wscale=1;
+	bscale=1;
+	epochs=5;
+	skip=1000;
+	count=1000;
+	use_bias=true;
+
+	use_regularized_bias=false;
+
+    m_parameters->add(&C1, "C1",  "Cost constant 1.");
+    m_parameters->add(&C2, "C2",  "Cost constant 2.");
+    m_parameters->add(&wscale, "wscale",  "W scale");
+    m_parameters->add(&bscale, "bscale",  "b scale");
+    m_parameters->add(&epochs, "epochs",  "epochs");
+    m_parameters->add(&skip, "skip",  "skip");
+    m_parameters->add(&count, "count",  "count");
+    m_parameters->add((machine_int_t*) &use_bias, "use_bias",  "Indicates if bias is used.");
+    m_parameters->add((machine_int_t*) &use_regularized_bias, "use_regularized_bias",  "Indicates if bias is regularized.");
+}

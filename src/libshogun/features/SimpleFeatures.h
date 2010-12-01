@@ -133,7 +133,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		virtual ~CSimpleFeatures()
 		{
-			SG_DEBUG("deleting simplefeatures (0x%p)\n", this);
 			free_features();
 		}
 
@@ -179,8 +178,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			} 
 			else
 			{
-				SG_DEBUG( "compute feature!!!\n") ;
-
 				ST* feat=NULL;
 				dofree=false;
 
@@ -222,7 +219,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 					delete[] tmp_feat_after;
 
 					len=tmp_len ;
-					SG_DEBUG( "len: %d len2: %d\n", len, num_features);
 				}
 				return feat ;
 			}

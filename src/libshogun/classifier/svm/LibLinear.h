@@ -66,9 +66,6 @@ class CLibLinear : public CLinearClassifier
 			float64_t C, CDotFeatures* traindat,
 			CLabels* trainlab);
 
-		/** set up parameters */
-        void init(void);
-
 		/** destructor */
 		virtual ~CLibLinear();
 
@@ -171,6 +168,7 @@ class CLibLinear : public CLinearClassifier
 			}
 
 			m_linear_term = CMath::clone_vector(linear_term, len);
+			m_linear_term_len = len;
 		}
 
 		/** get the linear term for qp */
@@ -180,6 +178,9 @@ class CLibLinear : public CLinearClassifier
 		void init_linear_term();
 
 	private:
+		/** set up parameters */
+        void init();
+
 		void train_one(const problem *prob, const parameter *param, double Cp, double Cn);
 		void solve_l2r_l1l2_svc(
 			const problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st);
@@ -202,6 +203,8 @@ class CLibLinear : public CLinearClassifier
 
 		/** precomputed linear term */
 		float64_t* m_linear_term;
+		/** length of linear term */
+		int32_t m_linear_term_len;
 
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;

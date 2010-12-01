@@ -31,7 +31,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CLocalityImprovedStringKernel(void);
+		CLocalityImprovedStringKernel();
 
 		/** constructor
 		 *
@@ -87,6 +87,9 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @return computed kernel function at indices a,b
 		 */
 		float64_t compute(int32_t idx_a, int32_t idx_b);
+
+	private:
+		void init();
 
 	protected:
 		/** length */
