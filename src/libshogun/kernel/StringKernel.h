@@ -28,7 +28,7 @@ template <class ST> class CStringKernel : public CKernel
 		 *
 		 * @param cachesize cache size
 		 */
-		CStringKernel(int32_t cachesize) : CKernel(cachesize) {}
+		CStringKernel(int32_t cachesize=0) : CKernel(cachesize) {}
 
 		/** constructor
 		 *

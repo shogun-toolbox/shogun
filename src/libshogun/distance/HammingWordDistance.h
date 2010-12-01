@@ -26,7 +26,7 @@ class CHammingWordDistance: public CStringDistance<uint16_t>
 {
 	public:
 		/** default constructor  */
-		CHammingWordDistance(void);
+		CHammingWordDistance();
 
 		/** constructor
 		 *
@@ -66,28 +66,16 @@ class CHammingWordDistance: public CStringDistance<uint16_t>
 		 */
 		virtual const char* get_name() const { return "HammingWord"; }
 
-		/** get dictionary weights
-		 *
-		 * @param dsize size of the dictionary
-		 * @param dweights dictionary weights are stored in here
-		 */
-		void get_dictionary(int32_t& dsize, float64_t*& dweights)
-		{
-			dsize=dictionary_size;
-			dweights = dictionary_weights;
-		}
-
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
+	private:
+		void init();
+
 	protected:
-		/** size of the dictionary */
-		int32_t dictionary_size;
-		/** dictionary weights */
-		float64_t* dictionary_weights;
 		/** if sign shall be used */
 		bool use_sign;
 };

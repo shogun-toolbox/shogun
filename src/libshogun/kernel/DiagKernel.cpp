@@ -9,30 +9,46 @@
  */
 
 #include "lib/config.h"
-
 #include "lib/common.h"
-#include "kernel/DiagKernel.h"
 #include "lib/io.h"
+
+#include "base/Parameter.h"
+#include "kernel/DiagKernel.h"
 
 using namespace shogun;
 
-CDiagKernel::CDiagKernel(void)
-: CKernel(0), diag(0.0)
+CDiagKernel::CDiagKernel()
+: CKernel()
 {
-	SG_UNSTABLE("CDiagKernel::CDiagKernel(void)", "\n");
 }
 
 CDiagKernel::CDiagKernel(int32_t size, float64_t d)
-: CKernel(size), diag(d)
+: CKernel(size)
 {
+	init();
+	diag=d;
 }
 
 CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, float64_t d)
-: CKernel(10), diag(d)
+: CKernel(10)
 {
+	init();
+	diag=d;
 	init(l, r);
 }
 
 CDiagKernel::~CDiagKernel()
 {
+}
+
+bool CDiagKernel::init(CFeatures* l, CFeatures* r)
+{
+	CKernel::init(l, r);
+	return init_normalizer();
+}
+
+void CDiagKernel::init()
+{
+	diag=1.0;
+	m_parameters->add(&diag, "diag", "Value on kernel diagonal.");
 }

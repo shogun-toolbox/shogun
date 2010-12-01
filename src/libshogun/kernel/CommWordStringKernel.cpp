@@ -9,44 +9,36 @@
  */
 
 #include "lib/common.h"
+#include "lib/io.h"
+
+#include "base/Parameter.h"
+
 #include "kernel/CommWordStringKernel.h"
 #include "kernel/SqrtDiagKernelNormalizer.h"
 #include "features/StringFeatures.h"
-#include "lib/io.h"
 
 using namespace shogun;
 
-CCommWordStringKernel::CCommWordStringKernel(void)
-: CStringKernel<uint16_t>(0), dictionary_size(0), dictionary_weights(NULL),
-	use_sign(false), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
+CCommWordStringKernel::CCommWordStringKernel()
+: CStringKernel<uint16_t>()
 {
-	SG_UNSTABLE("CCommWordStringKernel::CCommWordStringKernel(void)",
-				"\n");
-
-	properties |= KP_LINADD;
-	init_dictionary(1<<(sizeof(uint16_t)*8));
-	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
+	init();
 }
 
 CCommWordStringKernel::CCommWordStringKernel(int32_t size, bool s)
-: CStringKernel<uint16_t>(size), dictionary_size(0), dictionary_weights(NULL),
-	use_sign(s), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
+: CStringKernel<uint16_t>(size)
 {
-	properties |= KP_LINADD;
-	init_dictionary(1<<(sizeof(uint16_t)*8));
-	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
+	init();
+	use_sign=s;
 }
 
 CCommWordStringKernel::CCommWordStringKernel(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool s,
-	int32_t size)
-: CStringKernel<uint16_t>(size), dictionary_size(0), dictionary_weights(NULL),
-	use_sign(s), use_dict_diagonal_optimization(false), dict_diagonal_optimization(NULL)
+	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
+	bool s, int32_t size) : CStringKernel<uint16_t>(size)
 {
-	properties |= KP_LINADD;
+	init();
+	use_sign=s;
 
-	init_dictionary(1<<(sizeof(uint16_t)*8));
-	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
 	init(l,r);
 }
 
@@ -606,4 +598,25 @@ char* CCommWordStringKernel::compute_consensus(
 	delete[] score;
 	SG_UNREF(alpha);
 	return result;
+}
+
+void CCommWordStringKernel::init()
+{
+	dictionary_size=0;
+	dictionary_weights=NULL;
+
+	use_sign=false;
+	use_dict_diagonal_optimization=false;
+	dict_diagonal_optimization=NULL;
+
+	properties |= KP_LINADD;
+	init_dictionary(1<<(sizeof(uint16_t)*8));
+	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
+
+	m_parameters->add_vector(&dictionary_weights, &dictionary_size, "dictionary_weights",
+			"Dictionary for applying kernel.");
+	m_parameters->add((machine_int_t*) &use_sign, "use_sign",
+			"If signum(counts) is used instead of counts.");
+	m_parameters->add((machine_int_t*) &use_dict_diagonal_optimization, "use_dict_diagonal_optimization",
+			"If K(x,x) is computed potentially more efficiently.");
 }

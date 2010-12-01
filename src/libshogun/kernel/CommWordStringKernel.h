@@ -55,7 +55,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 
 	public:
 		/** default constructor  */
-		CCommWordStringKernel(void);
+		CCommWordStringKernel();
 
 		/** constructor
 		 *
@@ -233,6 +233,9 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @return unnormalized diagonal value
 		 */
 		virtual float64_t compute_diag(int32_t idx_a);
+
+	private:
+		void init();
 
 	protected:
 		/** size of dictionary (number of possible strings) */

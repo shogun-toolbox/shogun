@@ -40,7 +40,7 @@ class CLinearHMM : public CDistribution
 {
 	public:
 		/** default constructor  */
-		CLinearHMM(void);
+		CLinearHMM();
 
 		/** constructor
 		 *
@@ -54,6 +54,7 @@ class CLinearHMM : public CDistribution
 		 * @param p_num_symbols number of symbols in features
 		 */
 		CLinearHMM(int32_t p_num_features, int32_t p_num_symbols);
+
 		virtual ~CLinearHMM();
 
 		/** estimate LinearHMM distribution
@@ -212,6 +213,12 @@ class CLinearHMM : public CDistribution
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LinearHMM"; }
+
+	protected:
+		virtual void load_serializable_post() throw (ShogunException);
+
+	private:
+		void init();
 
 	protected:
 		/** examples' sequence length */

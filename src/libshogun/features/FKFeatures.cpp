@@ -12,25 +12,19 @@
 #include "features/FKFeatures.h"
 #include "features/StringFeatures.h"
 #include "lib/io.h"
+#include "base/Parameter.h"
 
 using namespace shogun;
 
-CFKFeatures::CFKFeatures(void)
+CFKFeatures::CFKFeatures() : CSimpleFeatures<float64_t>()
 {
-	SG_UNSTABLE("CFKFeatures::CFKFeatures(void)", "\n");
-
-	pos = NULL;
-	neg = NULL;
-	pos_prob = NULL;
-	neg_prob = NULL;
-	weight_a = 0.0;
+	init();
 }
 
 CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
 : CSimpleFeatures<float64_t>(size)
 {
-	pos_prob=NULL;
-	neg_prob=NULL;
+	init();
 	weight_a=-1;
 	set_models(p,n);
 }
@@ -252,4 +246,17 @@ float64_t* CFKFeatures::set_feature_matrix()
 	num_features=get_num_features();
 
 	return feature_matrix;
+}
+
+void CFKFeatures::init()
+{
+	pos = NULL;
+	neg = NULL;
+	pos_prob = NULL;
+	neg_prob = NULL;
+	weight_a = 0.0;
+
+	m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
+	m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
+	m_parameters->add(&weight_a, "weight_a", "Class prior.");
 }

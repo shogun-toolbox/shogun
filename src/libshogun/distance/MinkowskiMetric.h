@@ -41,7 +41,7 @@ class CMinkowskiMetric: public CSimpleDistance<float64_t>
 {
 	public:
 		/** default constructor  */
-		CMinkowskiMetric(void);
+		CMinkowskiMetric();
 
 		/** constructor
 		 *
@@ -85,6 +85,9 @@ class CMinkowskiMetric: public CSimpleDistance<float64_t>
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+
+	private:
+		void init();
 
 	protected:
 		/** parameter k */

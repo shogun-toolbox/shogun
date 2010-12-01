@@ -10,39 +10,38 @@
  */
 
 #include "lib/common.h"
+#include "lib/io.h"
+
+#include "base/Parameter.h"
+
 #include "distance/HammingWordDistance.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
-#include "lib/io.h"
 
 using namespace shogun;
 
-CHammingWordDistance::CHammingWordDistance(void)
+CHammingWordDistance::CHammingWordDistance()
 {
-	SG_UNSTABLE("CHammingWordDistance::CHammingWordDistance(void)", "\n");
-
-	dictionary_size = 0;
-	dictionary_weights = NULL;
-	use_sign = false;
+	init();
 }
 
 CHammingWordDistance::CHammingWordDistance(bool sign)
-: CStringDistance<uint16_t>(), use_sign(sign)
+: CStringDistance<uint16_t>()
 {
+	init();
+	use_sign=sign;
+
 	SG_DEBUG( "CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0);
-	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new float64_t[dictionary_size];
-	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
 CHammingWordDistance::CHammingWordDistance(
 	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool sign)
-: CStringDistance<uint16_t>(), use_sign(sign)
+: CStringDistance<uint16_t>()
 {
+	init();
+	use_sign=sign;
+
 	SG_DEBUG( "CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0);
-	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new float64_t[dictionary_size];
-	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 
 	init(l, r);
 }
@@ -50,8 +49,6 @@ CHammingWordDistance::CHammingWordDistance(
 CHammingWordDistance::~CHammingWordDistance()
 {
 	cleanup();
-
-	delete[] dictionary_weights;
 }
   
 bool CHammingWordDistance::init(CFeatures* l, CFeatures* r)
@@ -172,4 +169,11 @@ float64_t CHammingWordDistance::compute(int32_t idx_a, int32_t idx_b)
 		free_feature_vector(bvec, idx_b, free_bvec);
 
 	return result;
+}
+
+void CHammingWordDistance::init()
+{
+	use_sign = false;
+	m_parameters->add((machine_int_t*) &use_sign, "use_sign",
+			"If signum(counts) is used instead of counts.");
 }

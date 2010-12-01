@@ -28,7 +28,7 @@ class CConstKernel: public CKernel
 {
 	public:
 		/** default constructor  */
-		CConstKernel(void);
+		CConstKernel();
 
 		/** constructor
 		 *
@@ -95,6 +95,9 @@ class CConstKernel: public CKernel
 		{
 			return const_value;
 		}
+
+	private:
+		void init();
 
 	protected:
 		/** const value */

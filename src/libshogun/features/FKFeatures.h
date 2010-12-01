@@ -42,7 +42,7 @@ class CFKFeatures: public CSimpleFeatures<float64_t>
 {
 	public:
 		/** default constructor  */
-		CFKFeatures(void);
+		CFKFeatures();
 
 		/** constructor
 		 *
@@ -129,6 +129,9 @@ class CFKFeatures: public CSimpleFeatures<float64_t>
 		 * @param dimension dimension
 		 */
 		float64_t deriv_a(float64_t a, int32_t dimension=-1) ;
+
+	private:
+		void init();
 
 	protected:
 		/** positive HMM */

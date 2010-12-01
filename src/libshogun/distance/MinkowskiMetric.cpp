@@ -11,28 +11,33 @@
 #include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
+
+#include "base/Parameter.h"
+
 #include "distance/MinkowskiMetric.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
 using namespace shogun;
 
-CMinkowskiMetric::CMinkowskiMetric(void)
+CMinkowskiMetric::CMinkowskiMetric() : CSimpleDistance<float64_t>()
 {
-	SG_UNSTABLE("CMinkowskiMetric::CMinkowskiMetric(void)", "\n");
-
-	k = 0.0;
+	init();
 }
 
 CMinkowskiMetric::CMinkowskiMetric(float64_t k_)
-: CSimpleDistance<float64_t>(), k(k_)
+: CSimpleDistance<float64_t>()
 {
+	init();
+	k=k_;
 }
 
 CMinkowskiMetric::CMinkowskiMetric(
 	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t k_)
-: CSimpleDistance<float64_t>(), k(k_)
+: CSimpleDistance<float64_t>()
 {
+	init();
+	k=k_;
 	init(l, r);
 }
 
@@ -43,9 +48,7 @@ CMinkowskiMetric::~CMinkowskiMetric()
 
 bool CMinkowskiMetric::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<float64_t>::init(l,r);
-
-	return result;
+	return CSimpleDistance<float64_t>::init(l,r);
 }
 
 void CMinkowskiMetric::cleanup()
@@ -81,4 +84,10 @@ float64_t CMinkowskiMetric::compute(int32_t idx_a, int32_t idx_b)
 	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return pow(result,1/k);
+}
+
+void CMinkowskiMetric::init()
+{
+	k = 2.0;
+	m_parameters->add(&k, "k", "L_k norm.");
 }

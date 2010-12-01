@@ -10,6 +10,7 @@
  */
 
 #include "lib/common.h"
+#include "base/Parameter.h"
 #include "kernel/GaussianKernel.h"
 #include "features/DotFeatures.h"
 #include "lib/io.h"
@@ -17,23 +18,25 @@
 using namespace shogun;
 
 CGaussianKernel::CGaussianKernel()
-	: CDotKernel(), width(1), sq_lhs(NULL), sq_rhs(NULL)
+	: CDotKernel()
 {
 	init();
 }
 
 
 CGaussianKernel::CGaussianKernel(int32_t size, float64_t w)
-: CDotKernel(size), width(w), sq_lhs(NULL), sq_rhs(NULL)
+: CDotKernel(size)
 {
 	init();
+	width=w;
 }
 
 CGaussianKernel::CGaussianKernel(
 	CDotFeatures* l, CDotFeatures* r, float64_t w, int32_t size)
-: CDotKernel(size), width(w), sq_lhs(NULL), sq_rhs(NULL)
+: CDotKernel(size)
 {
 	init();
+	width=w;
 
 	init(l,r);
 }
@@ -41,12 +44,6 @@ CGaussianKernel::CGaussianKernel(
 CGaussianKernel::~CGaussianKernel()
 {
 	cleanup();
-}
-
-void
-CGaussianKernel::init(void)
-{
-	m_parameters->add(&width, "width", "Kernel width.");
 }
 
 void CGaussianKernel::cleanup()
@@ -93,3 +90,12 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
 	return exp(-result/width);
 }
+
+void CGaussianKernel::init()
+{
+	width=1;
+	sq_lhs=NULL;
+	sq_rhs=NULL;
+	m_parameters->add(&width, "width", "Kernel width.");
+}
+

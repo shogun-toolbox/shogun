@@ -9,27 +9,26 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "distributions/LinearHMM.h"
 #include "lib/common.h"
-#include "features/StringFeatures.h"
 #include "lib/io.h"
+
+#include "base/Parameter.h"
+
+#include "distributions/LinearHMM.h"
+#include "features/StringFeatures.h"
 
 using namespace shogun;
 
-CLinearHMM::CLinearHMM(void)
+CLinearHMM::CLinearHMM() : CDistribution()
 {
-	SG_UNSTABLE("CLinearHMM::CLinearHMM(void)", "\n");
-
-	sequence_length = 0;
-	num_symbols = 0;
-	num_params = 0;
-	transition_probs = NULL;
-	log_transition_probs = NULL;
+	init();
 }
 
 CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
-: CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
+: CDistribution()
 {
+	init();
+
 	set_features(f);
 	sequence_length = f->get_vector_length(0);
 	num_symbols     = (int32_t) f->get_num_symbols();
@@ -37,8 +36,10 @@ CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
 }
 
 CLinearHMM::CLinearHMM(int32_t p_num_features, int32_t p_num_symbols)
-: CDistribution(), transition_probs(NULL), log_transition_probs(NULL)
+: CDistribution()
 {
+	init();
+
 	sequence_length = p_num_features;
 	num_symbols     = p_num_symbols;
 	num_params      = sequence_length*num_symbols;
@@ -298,6 +299,21 @@ bool CLinearHMM::set_log_transition_probs(const float64_t* src, int32_t num)
 	return true;
 }
 
+void CLinearHMM::load_serializable_post() throw (ShogunException)
+{
+	num_params = sequence_length*num_symbols;
+}
 
+void CLinearHMM::init()
+{
+	sequence_length = 0;
+	num_symbols = 0;
+	num_params = 0;
+	transition_probs = NULL;
+	log_transition_probs = NULL;
 
-
+	m_parameters->add_matrix(&transition_probs, &num_symbols, &sequence_length,
+			"transition_probs", "Transition probabilities.");
+	m_parameters->add_matrix(&log_transition_probs, &num_symbols, &sequence_length,
+			"log_transition_probs", "Transition probabilities (logspace).");
+}

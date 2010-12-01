@@ -27,7 +27,7 @@ class CDiagKernel: public CKernel
 {
 	public:
 		/** default constructor  */
-		CDiagKernel(void);
+		CDiagKernel();
 
 		/** constructor
 		 *
@@ -45,6 +45,14 @@ class CDiagKernel: public CKernel
 		CDiagKernel(CFeatures* l, CFeatures* r, float64_t diag=1.0);
 
 		virtual ~CDiagKernel();
+
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
 		/** return feature type the kernel can deal with
 		 *
@@ -92,6 +100,8 @@ class CDiagKernel: public CKernel
 			else
 				return 0;
 		}
+	private:
+		void init();
 
 	protected:
 		/** diagonal */

@@ -32,8 +32,6 @@ namespace shogun
  */
 class CGaussianKernel: public CDotKernel
 {
-	void init(void);
-
 	public:
 		/** default constructor
 		 *
@@ -101,7 +99,6 @@ class CGaussianKernel: public CDotKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-	protected:
 		/** helper function to compute quadratic terms in
 		 * (a-b)^2 (== a^2+b^2-2ab)
 		 *
@@ -109,6 +106,9 @@ class CGaussianKernel: public CDotKernel
 		 * @param df dot feature object based on which k(i,i) is computed
 		 * */
 		void precompute_squared(float64_t* &buf, CDotFeatures* df);
+
+	private:
+		void init();
 
 	protected:
 		/** width */

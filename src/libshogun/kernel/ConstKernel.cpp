@@ -9,26 +9,33 @@
  */
 
 #include "lib/common.h"
+#include "lib/io.h"
+
+#include "base/Parameter.h"
+
 #include "kernel/ConstKernel.h"
 #include "features/Features.h"
-#include "lib/io.h"
 
 using namespace shogun;
 
 CConstKernel::CConstKernel(void)
-: CKernel(0), const_value(0.0)
+: CKernel()
 {
-	SG_UNSTABLE("CConstKernel::CConstKernel(void)", "\n");
+	init();
 }
 
 CConstKernel::CConstKernel(float64_t c)
-: CKernel(0), const_value(c)
+: CKernel()
 {
+	init();
+	const_value=c;
 }
 
 CConstKernel::CConstKernel(CFeatures* l, CFeatures* r, float64_t c)
-: CKernel(0), const_value(c)
+: CKernel()
 {
+	init();
+	const_value=c;
 	init(l, r);
 }
 
@@ -40,4 +47,10 @@ bool CConstKernel::init(CFeatures* l, CFeatures* r)
 {
 	CKernel::init(l, r);
 	return init_normalizer();
+}
+
+void CConstKernel::init()
+{
+	const_value=1.0;
+	m_parameters->add(&const_value, "const_value", "Value for kernel elements.");
 }
