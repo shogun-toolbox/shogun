@@ -22,24 +22,28 @@ def tester(tests):
 	for t in tests:
 		try:
 			mod, mod_name = get_test_mod(t)
-		except:
+		except TypeError:
+			continue
+		except Exception, e:
+			print e
 			continue
 		fname = ""
 
 		try:
-			for i in xrange(len(mod.parameter_list)):
+			n=len(mod.parameter_list)
+			for i in xrange(n):
 				fname = get_fname(mod_name, i)
 				a = run_test(mod, mod_name, i)
 				b = pickle.load(file(fname))
 
+				setting_str = "%s setting %d/%d" % (t,i+1,n)
 				if compare(a,b):
-					print t, "setting", i, "OK"
+					print "%-60s OK" % setting_str
 				else:
-					print t, "setting", i, "ERROR"
+					print "%-60s ERROR" % setting_str
 
 		except Exception, e:
-			print " ERROR generating '%s' using '%s'" % (fname,t)
-			print e
+			print " ERROR: %s " % e
 			continue
 
 if __name__=='__main__':

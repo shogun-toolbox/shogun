@@ -4,7 +4,10 @@ import pickle
 
 example_dir = '../../examples/undocumented/python_modular'
 test_dir = '../../../testsuite/tests'
-blacklist = ("__init__.py", "classifier_libsvm_minimal_modular.py")
+blacklist = ("__init__.py", "classifier_libsvm_minimal_modular.py",
+		"kernel_combined_modular.py",
+		"kernel_distance_modular.py",
+		"distribution_hmm_modular.py")
 
 def get_fname(mod_name, i):
 	return os.path.join(test_dir, mod_name + str(i) + '.txt')
@@ -14,6 +17,7 @@ def setup_tests(tests=[]):
 
 	if not len(tests):
 		tests =  os.listdir(".")
+		tests.sort()
 	else:
 		tests = [ os.path.basename(t) for t in tests ]
 
@@ -29,11 +33,9 @@ def check_for_function(fname):
 def get_test_mod(t):
 	if t.endswith(".py") and not t.startswith('.') and t not in blacklist:
 		mod_name = t[:-3]
-		print mod_name,
 
 		if not check_for_function(t):
-			print " ERROR (no function)"
-			return
+			raise Exception("ERROR (no function)")
 
 		return __import__(mod_name), mod_name
 
@@ -47,18 +49,23 @@ def generator(tests):
 	for t in tests:
 		try:
 			mod, mod_name = get_test_mod(t)
-		except:
+		except TypeError:
+			continue
+		except Exception, e:
+			print "%-60s" % mod_name,
+			print e
 			continue
 		fname = ""
 
+		print "%-60s" % mod_name,
 		try:
 			for i in xrange(len(mod.parameter_list)):
 				fname = get_fname(mod_name, i)
 				a = run_test(mod, mod_name, i)
 				pickle.dump(a,file(fname, "w"))
-			print " OK"
+			print "OK"
 		except Exception, e:
-			print " ERROR generating '%s' using '%s'" % (fname,t)
+			print "ERROR generating '%s' using '%s'" % (fname,t)
 			print e
 			continue
 
