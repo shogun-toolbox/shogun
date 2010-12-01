@@ -30,9 +30,17 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		CDiceKernelNormalizer(bool use_opt_diag=false) : diag_lhs(NULL),
-			diag_rhs(NULL), use_optimized_diagonal_computation(use_opt_diag)
+		CDiceKernelNormalizer(bool use_opt_diag=false) : CKernelNormalizer(),
+			diag_lhs(NULL), num_diag_lhs(0), diag_rhs(NULL), num_diag_rhs(0),
+			use_optimized_diagonal_computation(use_opt_diag) 
 		{
+			m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs"
+							  "K(x,x) for left hand side examples.");
+			m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs"
+							  "K(x,x) for right hand side examples.");
+			m_parameters->add((machine_int_t*) &use_optimized_diagonal_computation,
+					"use_optimized_diagonal_computation",
+					"flat if optimized diagonal computation is used");
 		}
 
 		/** default destructor */
@@ -47,21 +55,21 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		virtual bool init(CKernel* k)
 		{
 			ASSERT(k);
-			int32_t num_lhs=k->get_num_vec_lhs();
-			int32_t num_rhs=k->get_num_vec_rhs();
-			ASSERT(num_lhs>0);
-			ASSERT(num_rhs>0);
+			num_diag_lhs=k->get_num_vec_lhs();
+			num_diag_rhs=k->get_num_vec_rhs();
+			ASSERT(num_diag_lhs>0);
+			ASSERT(num_diag_rhs>0);
 
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
-			bool r1=alloc_and_compute_diag(k, diag_lhs, num_lhs);
+			bool r1=alloc_and_compute_diag(k, diag_lhs, num_diag_lhs);
 
 			k->lhs=old_rhs;
 			k->rhs=old_rhs;
-			bool r2=alloc_and_compute_diag(k, diag_rhs, num_rhs);
+			bool r2=alloc_and_compute_diag(k, diag_rhs, num_diag_rhs);
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
@@ -141,8 +149,12 @@ class CDiceKernelNormalizer : public CKernelNormalizer
     protected:
 		/** diagonal left-hand side */
 		float64_t* diag_lhs;
+		int32_t num_diag_lhs;
+
 		/** diagonal right-hand side */
 		float64_t* diag_rhs;
+		int32_t num_diag_rhs;
+
 		/** flat if optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };

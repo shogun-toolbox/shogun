@@ -30,7 +30,7 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 	public:
 		/** constructor
 		 */
-		CFirstElementKernelNormalizer() : scale(1.0)
+		CFirstElementKernelNormalizer() : CKernelNormalizer(), scale(1.0)
 		{
 			m_parameters->add(&scale, "scale",
 							  "Scale quotient by which kernel is "

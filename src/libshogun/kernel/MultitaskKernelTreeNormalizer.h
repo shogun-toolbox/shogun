@@ -145,7 +145,8 @@ public:
 
 	/** default constructor
 	 */
-	CTaxonomy(){
+	CTaxonomy() : CSGObject()
+	{
 		root = new CNode();
 		nodes.push_back(root);
 
@@ -371,7 +372,7 @@ public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelTreeNormalizer()
+	CMultitaskKernelTreeNormalizer() : CMultitaskKernelMklNormalizer()
 	{
 	}
 
@@ -383,7 +384,7 @@ public:
 	 */
 	CMultitaskKernelTreeNormalizer(std::vector<std::string> task_lhs,
 								   std::vector<std::string> task_rhs,
-								   CTaxonomy tax)
+								   CTaxonomy tax) : CMultitaskKernelMklNormalizer()
 	{
 
 		taxonomy = tax;

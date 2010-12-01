@@ -221,9 +221,7 @@ public:
 	CLibLinear(void) {}
 
 	/** @return object name */
-	inline virtual const char* get_name() const {
-		return "LibLinear";
-	}
+	inline virtual const char* get_name() const { return "LibLinear"; }
 };
 
 #endif //HAVE_LAPACK

@@ -29,7 +29,8 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 	public:
 		/** default constructor
 		 */
-		CVarianceKernelNormalizer() : meandiff(1.0), sqrt_meandiff(1.0)
+		CVarianceKernelNormalizer()
+			: CKernelNormalizer(), meandiff(1.0), sqrt_meandiff(1.0)
 		{
 		}
 

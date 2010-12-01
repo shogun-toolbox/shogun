@@ -24,24 +24,19 @@ class CScatterKernelNormalizer: public CKernelNormalizer
 
 public:
 	/** default constructor  */
-	CScatterKernelNormalizer(void) {
-		SG_UNSTABLE("CScatterKernelNormalizer::"
-					"CScatterKernelNormalizer(void)", "\n");
-
-		m_const_diag = 0.0;
-		m_const_offdiag = 0.0;
-
-		m_labels = NULL;
-		m_normalizer = NULL;
-
-		m_testing_class = 0;
+	CScatterKernelNormalizer() : CKernelNormalizer()
+	{
+		init();
 	}
 
 	/** default constructor
 	 */
 	CScatterKernelNormalizer(float64_t const_diag, float64_t const_offdiag,
-			CLabels* labels, CKernelNormalizer* normalizer=NULL)
+			CLabels* labels,CKernelNormalizer* normalizer=NULL)
+		: CKernelNormalizer()
 	{
+		init();
+
 		m_testing_class=-1;
 		m_const_diag=const_diag;
 		m_const_offdiag=const_offdiag;
@@ -143,6 +138,29 @@ public:
 	inline virtual const char* get_name() const
 	{
 		return "ScatterKernelNormalizer";
+	}
+
+private:
+	void init()
+	{
+		m_const_diag = 1.0;
+		m_const_offdiag = 1.0;
+
+		m_labels = NULL;
+		m_normalizer = NULL;
+
+		m_testing_class = -1;
+
+		
+		m_parameters->add(&m_testing_class, "m_testing_class"
+				"Testing Class.");
+		m_parameters->add(&m_const_diag, "m_const_diag"
+				"Factor to multiply to diagonal elements.");
+		m_parameters->add(&m_const_offdiag, "m_const_offdiag"
+				"Factor to multiply to off-diagonal elements.");
+
+		m_parameters->add((CSGObject**) &m_labels, "m_labels", "Labels");
+		m_parameters->add((CSGObject**) &m_normalizer, "m_normalizer", "Kernel normalizer.");
 	}
 
 protected:

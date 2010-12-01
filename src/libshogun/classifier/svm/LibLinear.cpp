@@ -64,7 +64,7 @@ void CLibLinear::init()
     m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
     m_parameters->add(&epsilon, "epsilon",  "Convergence precision.");
     m_parameters->add(&max_iterations, "max_iterations",  "Max number of iterations.");
-    m_parameters->add_vector(&m_linear_term, &m_linear_term_len, "Linear Term");
+    m_parameters->add_vector(&m_linear_term, &m_linear_term_len, "linear_term", "Linear Term");
     m_parameters->add((machine_int_t*) &liblinear_solver_type, "liblinear_solver_type", "Type of LibLinear solver.");
 }
 

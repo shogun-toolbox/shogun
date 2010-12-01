@@ -28,9 +28,10 @@ class CMultitaskKernelPlifNormalizer: public CMultitaskKernelMklNormalizer
 
 public:
 	/** default constructor  */
-	CMultitaskKernelPlifNormalizer(void) {
+	CMultitaskKernelPlifNormalizer() : CMultitaskKernelMklNormalizer()
+	{
 		SG_UNSTABLE("CMultitaskKernelPlifNormalizer::"
-					"CMultitaskKernelPlifNormalizer(void)", "\n");
+					"CMultitaskKernelPlifNormalizer()", "\n");
 
 		num_tasks = 0;
 		num_betas = 0;
@@ -39,6 +40,7 @@ public:
 	/** constructor
 	 */
 	CMultitaskKernelPlifNormalizer(std::vector<float64_t> support_, std::vector<int32_t> task_vector)
+		: CMultitaskKernelMklNormalizer()
 	{
 
 		num_betas = static_cast<int>(support_.size());

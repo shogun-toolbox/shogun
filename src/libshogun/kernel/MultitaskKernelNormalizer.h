@@ -35,7 +35,7 @@ public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelNormalizer() : scale(1.0)
+	CMultitaskKernelNormalizer() : CKernelNormalizer(), scale(1.0)
 	{
 	}
 
@@ -43,7 +43,8 @@ public:
 	 *
 	 * @param task_vector task vector with containing task_id for each example
 	 */
-	CMultitaskKernelNormalizer(std::vector<int32_t> task_vector) : scale(1.0)
+	CMultitaskKernelNormalizer(std::vector<int32_t> task_vector)
+		: CKernelNormalizer(), scale(1.0)
 	{
 
 		num_tasks = get_num_unique_tasks(task_vector);

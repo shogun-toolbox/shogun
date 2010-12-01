@@ -130,8 +130,6 @@ CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 
 CSVMSGD::~CSVMSGD()
 {
-	delete[] w;
-	w=NULL;
 }
 
 bool CSVMSGD::train(CFeatures* data)
@@ -263,7 +261,6 @@ void CSVMSGD::calibrate()
 
 void CSVMSGD::init()
 {
-	w=NULL;
 	t=1;
 	C1=1;
 	C2=1;

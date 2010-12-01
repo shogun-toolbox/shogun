@@ -31,13 +31,12 @@ namespace shogun
 class CMultitaskKernelMaskNormalizer: public CKernelNormalizer
 {
 
-
-
 public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelMaskNormalizer() : scale(1.0), normalization_constant(1.0)
+	CMultitaskKernelMaskNormalizer() : CKernelNormalizer(),
+		scale(1.0), normalization_constant(1.0)
 	{
 	}
 
@@ -48,7 +47,8 @@ public:
 	 */
 	CMultitaskKernelMaskNormalizer(std::vector<int32_t> task_lhs,
 								   std::vector<int32_t> task_rhs,
-								   std::vector<int32_t> active_tasks_vec) : scale(1.0), normalization_constant(1.0)
+								   std::vector<int32_t> active_tasks_vec)
+		: CKernelNormalizer(), scale(1.0), normalization_constant(1.0)
 	{
 
 

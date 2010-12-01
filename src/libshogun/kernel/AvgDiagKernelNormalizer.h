@@ -36,7 +36,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param c scale parameter, if <= 0 scaling will be computed from the
 		 * avg of the kernel diagonal elements
 		 */
-		CAvgDiagKernelNormalizer(float64_t c=0.0)
+		CAvgDiagKernelNormalizer(float64_t c=0.0) : CKernelNormalizer()
 		{
 			scale=c;
 

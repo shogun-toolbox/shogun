@@ -30,8 +30,9 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		CTanimotoKernelNormalizer(bool use_opt_diag=false) : diag_lhs(NULL),
-			diag_rhs(NULL), use_optimized_diagonal_computation(use_opt_diag)
+		CTanimotoKernelNormalizer(bool use_opt_diag=false)
+			: CKernelNormalizer(), diag_lhs(NULL), diag_rhs(NULL),
+			use_optimized_diagonal_computation(use_opt_diag)
 		{
 		}
 

@@ -54,7 +54,12 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 * - r=0.1 and c=1 will add 0.1 to the diagonal
 		 */
 		CRidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
+			: CKernelNormalizer()
 		{
+			m_parameters->add(&scale, "scale",
+							  "Scale quotient by which kernel is scaled.");
+			m_parameters->add(&ridge, "ridge", "Ridge added to diagonal.");
+
 			scale=c;
 			ridge=r;
 		}

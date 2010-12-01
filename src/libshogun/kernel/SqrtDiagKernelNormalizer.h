@@ -33,9 +33,17 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		CSqrtDiagKernelNormalizer(bool use_opt_diag=false): sqrtdiag_lhs(NULL),
-			sqrtdiag_rhs(NULL), use_optimized_diagonal_computation(use_opt_diag)
+		CSqrtDiagKernelNormalizer(bool use_opt_diag=false): CKernelNormalizer(),
+			sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+			use_optimized_diagonal_computation(use_opt_diag)
 		{
+			m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs"
+							  "sqrt(K(x,x)) for left hand side examples.");
+			m_parameters->add_vector(&sqrtdiag_rhs, &num_sqrtdiag_rhs, "sqrtdiag_rhs"
+							  "sqrt(K(x,x)) for right hand side examples.");
+			m_parameters->add((machine_int_t*) &use_optimized_diagonal_computation,
+					"use_optimized_diagonal_computation",
+					"flat if optimized diagonal computation is used");
 		}
 
 		/** default destructor */
@@ -50,21 +58,21 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		virtual bool init(CKernel* k)
 		{
 			ASSERT(k);
-			int32_t num_lhs=k->get_num_vec_lhs();
-			int32_t num_rhs=k->get_num_vec_rhs();
-			ASSERT(num_lhs>0);
-			ASSERT(num_rhs>0);
+			num_sqrtdiag_lhs=k->get_num_vec_lhs();
+			num_sqrtdiag_rhs=k->get_num_vec_rhs();
+			ASSERT(num_sqrtdiag_lhs>0);
+			ASSERT(num_sqrtdiag_rhs>0);
 
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
-			bool r1=alloc_and_compute_diag(k, sqrtdiag_lhs, num_lhs);
+			bool r1=alloc_and_compute_diag(k, sqrtdiag_lhs, num_sqrtdiag_lhs);
 
 			k->lhs=old_rhs;
 			k->rhs=old_rhs;
-			bool r2=alloc_and_compute_diag(k, sqrtdiag_rhs, num_rhs);
+			bool r2=alloc_and_compute_diag(k, sqrtdiag_rhs, num_sqrtdiag_rhs);
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
@@ -137,8 +145,12 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
     protected:
 		/** sqrt diagonal left-hand side */
 		float64_t* sqrtdiag_lhs;
+		int32_t num_sqrtdiag_lhs;
+
 		/** sqrt diagonal right-hand side */
 		float64_t* sqrtdiag_rhs;
+		int32_t num_sqrtdiag_rhs;
+
 		/** f optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };

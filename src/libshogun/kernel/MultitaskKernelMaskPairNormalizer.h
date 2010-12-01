@@ -26,13 +26,12 @@ namespace shogun
 class CMultitaskKernelMaskPairNormalizer: public CKernelNormalizer
 {
 
-
-
 public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelMaskPairNormalizer() : scale(1.0), normalization_constant(1.0)
+	CMultitaskKernelMaskPairNormalizer() :
+		CKernelNormalizer(), scale(1.0), normalization_constant(1.0)
 	{
 	}
 

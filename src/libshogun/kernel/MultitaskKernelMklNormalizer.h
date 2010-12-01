@@ -31,7 +31,7 @@ public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelMklNormalizer() : scale(1.0)
+	CMultitaskKernelMklNormalizer() : CKernelNormalizer(), scale(1.0)
 	{
 		m_type = N_MULTITASK;
 	}

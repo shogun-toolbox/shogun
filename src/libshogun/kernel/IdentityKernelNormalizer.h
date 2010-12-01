@@ -20,7 +20,7 @@ class CIdentityKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** default constructor */
-		CIdentityKernelNormalizer()
+		CIdentityKernelNormalizer() : CKernelNormalizer()
 		{
 		}
 

@@ -43,9 +43,10 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 	public:
 		/** default constructor
 		*/
-		CZeroMeanCenterKernelNormalizer(): ktrain_row_means(NULL), ktest_row_means(NULL)
-	{
-	}
+		CZeroMeanCenterKernelNormalizer()
+			: CKernelNormalizer(), ktrain_row_means(NULL), ktest_row_means(NULL)
+		{
+		}
 
 		/** default destructor */
 		virtual ~CZeroMeanCenterKernelNormalizer()
