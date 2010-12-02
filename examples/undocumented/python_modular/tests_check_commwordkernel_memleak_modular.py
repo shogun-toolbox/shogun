@@ -71,7 +71,7 @@ def tests_check_commwordkernel_memleak_modular(num, order, gap, reverse):
 		spec = CommWordStringKernel(10, False)
 		spec.set_normalizer(IdentityKernelNormalizer())
 		spec.init(trainudat, trainudat)
-		K=mat(spec.get_kernel_matrix())
+		K=spec.get_kernel_matrix()
 
 	del POS
 	del NEG
