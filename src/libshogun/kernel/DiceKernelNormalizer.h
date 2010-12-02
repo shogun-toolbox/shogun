@@ -34,9 +34,9 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 			diag_lhs(NULL), num_diag_lhs(0), diag_rhs(NULL), num_diag_rhs(0),
 			use_optimized_diagonal_computation(use_opt_diag) 
 		{
-			m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs"
+			m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
 							  "K(x,x) for left hand side examples.");
-			m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs"
+			m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
 							  "K(x,x) for right hand side examples.");
 			m_parameters->add(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",

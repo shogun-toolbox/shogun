@@ -98,4 +98,3 @@ void CGaussianKernel::init()
 	sq_rhs=NULL;
 	m_parameters->add(&width, "width", "Kernel width.");
 }
-

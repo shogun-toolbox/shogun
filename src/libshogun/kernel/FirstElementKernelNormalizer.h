@@ -33,8 +33,7 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		CFirstElementKernelNormalizer() : CKernelNormalizer(), scale(1.0)
 		{
 			m_parameters->add(&scale, "scale",
-							  "Scale quotient by which kernel is "
-							  "scaled.");
+							  "Scale quotient by which kernel is scaled.");
 		}
 
 		/** default destructor */

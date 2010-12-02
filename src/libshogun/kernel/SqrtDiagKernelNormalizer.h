@@ -37,9 +37,9 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 			use_optimized_diagonal_computation(use_opt_diag)
 		{
-			m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs"
+			m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs",
 							  "sqrt(K(x,x)) for left hand side examples.");
-			m_parameters->add_vector(&sqrtdiag_rhs, &num_sqrtdiag_rhs, "sqrtdiag_rhs"
+			m_parameters->add_vector(&sqrtdiag_rhs, &num_sqrtdiag_rhs, "sqrtdiag_rhs",
 							  "sqrt(K(x,x)) for right hand side examples.");
 			m_parameters->add(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",

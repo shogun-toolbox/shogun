@@ -15,32 +15,30 @@
 
 using namespace shogun;
 
-CTOPFeatures::CTOPFeatures(void)
+CTOPFeatures::CTOPFeatures()
 {
-	SG_UNSTABLE("CTOPFeatures::CTOPFeatures(void)", "\n");
-
-	pos = NULL;
-	neg = NULL;
-	neglinear = false;
-	poslinear = false;
-
-	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
-	memset(&neg_relevant_indizes, 0, sizeof(neg_relevant_indizes));
+	init();
 }
 
 CTOPFeatures::CTOPFeatures(
 	int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
-: CSimpleFeatures<float64_t>(size), neglinear(neglin), poslinear(poslin)
+: CSimpleFeatures<float64_t>(size)
 {
-	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
-	memset(&neg_relevant_indizes, 0, sizeof(neg_relevant_indizes));
+	init();
+	neglinear=neglin;
+	poslinear=poslin;
+
 	set_models(p,n);
 }
 
 CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig)
-: CSimpleFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), neglinear(orig.neglinear),
-	poslinear(orig.poslinear)
+: CSimpleFeatures<float64_t>(orig)
 {
+	init();
+	pos=orig.pos;
+	neg=orig.neg;
+	neglinear=orig.neglinear;
+	poslinear=orig.poslinear;
 }
 
 CTOPFeatures::~CTOPFeatures()
@@ -361,4 +359,20 @@ int32_t CTOPFeatures::compute_num_features()
 		//num+= (neglinear) ? (neg->get_N()*neg->get_M()) : (neg->get_N()*(1+neg->get_N()+1+neg->get_M()));
 	}
 	return num;
+}
+
+void CTOPFeatures::init()
+{
+	pos = NULL;
+	neg = NULL;
+	neglinear = false;
+	poslinear = false;
+
+	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
+	memset(&neg_relevant_indizes, 0, sizeof(neg_relevant_indizes));
+
+	m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
+	m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
+	m_parameters->add(&neglinear, "neglinear", "If negative HMM is a LinearHMM");
+	m_parameters->add(&poslinear, "poslinear", "If positive HMM is a LinearHMM");
 }

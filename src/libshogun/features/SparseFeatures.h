@@ -743,7 +743,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			if (num_feat_entries)
 			{
-				int32_t num_total_entries=0;
+				int64_t num_total_entries=0;
 
 				// count nr of non sparse features
 				for (int32_t i=0; i< num_vec; i++)
@@ -803,7 +803,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 					}
 
 					SG_INFO( "sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
-							num_total_entries, num_feat*num_vec, (100.0*num_total_entries)/(num_feat*num_vec));
+							num_total_entries, int64_t(num_feat)*num_vec, (100.0*num_total_entries)/(int64_t(num_feat)*num_vec));
 				}
 				else
 				{

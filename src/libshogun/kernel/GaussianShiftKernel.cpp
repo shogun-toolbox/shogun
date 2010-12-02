@@ -17,16 +17,16 @@
 using namespace shogun;
 
 CGaussianShiftKernel::CGaussianShiftKernel(void)
-: CGaussianKernel(0, 0.0), max_shift(0), shift_step(0)
+: CGaussianKernel(), max_shift(0), shift_step(0)
 {
-	SG_UNSTABLE("CGaussianShiftKernel::CGaussianShiftKernel(void)",
-				"\n");
+	init();
 }
 
 CGaussianShiftKernel::CGaussianShiftKernel(
 	int32_t size, float64_t w, int32_t ms, int32_t ss)
 : CGaussianKernel(size, w), max_shift(ms), shift_step(ss)
 {
+	init();
 }
 
 CGaussianShiftKernel::CGaussianShiftKernel(
@@ -34,7 +34,8 @@ CGaussianShiftKernel::CGaussianShiftKernel(
 	int32_t size)
 : CGaussianKernel(l, r, w, size), max_shift(ms), shift_step(ss)
 {
-	init(l,r);
+	init();
+	CGaussianKernel::init(l,r);
 }
 
 CGaussianShiftKernel::~CGaussianShiftKernel()
@@ -76,3 +77,10 @@ float64_t CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	return result;
 }
+
+void CGaussianShiftKernel::init()
+{
+	m_parameters->add(&max_shift, "max_shift", "Maximum shift.");
+	m_parameters->add(&shift_step, "shift_step", "Shift stepsize.");
+}
+

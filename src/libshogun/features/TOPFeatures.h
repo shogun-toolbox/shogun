@@ -69,7 +69,7 @@ class CTOPFeatures : public CSimpleFeatures<float64_t>
 {
 	public:
 		/** default constructor  */
-		CTOPFeatures(void);
+		CTOPFeatures();
 
 		/** constructor
 		 *
@@ -134,6 +134,9 @@ class CTOPFeatures : public CSimpleFeatures<float64_t>
 		 * @param len len
 		 */
 		void compute_feature_vector(float64_t* addr, int32_t num, int32_t& len);
+
+	private:
+		void init();
 
 	protected:
 		/** positive HMM */

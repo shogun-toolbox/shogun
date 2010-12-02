@@ -44,8 +44,13 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		/** default constructor
 		*/
 		CZeroMeanCenterKernelNormalizer()
-			: CKernelNormalizer(), ktrain_row_means(NULL), ktest_row_means(NULL)
+			: CKernelNormalizer(), ktrain_row_means(NULL), num_ktrain(0),
+			ktest_row_means(NULL),	num_ktest(0)
 		{
+			m_parameters->add_vector(&ktrain_row_means, &num_ktrain,
+					"num_ktrain", "Train row means.");
+			m_parameters->add_vector(&ktest_row_means, &num_ktest,
+					"num_ktest","Test row means.");
 		}
 
 		/** default destructor */
@@ -145,8 +150,12 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		inline virtual const char* get_name() const { return "ZeroMeanCenterKernelNormalizer"; }
 
 	protected:
-		float64_t *ktrain_row_means;
-		float64_t *ktest_row_means;
+		float64_t* ktrain_row_means;
+		int32_t num_ktrain;
+
+		float64_t* ktest_row_means;
+		int32_t num_ktest;
+
 		float64_t ktrain_mean;
 };
 }

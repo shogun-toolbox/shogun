@@ -408,11 +408,14 @@ class CList : public CSGObject
 		 * the new current element is the successor of the former
 		 * current element
 		 *
-		 * @return the elements data - if available - is returned else NULL
+		 * @return the elements data - if available - otherwise NULL
 		 */
 		inline CSGObject* delete_element(void)
 		{
 			CSGObject* data = get_current_element();
+
+			if (num_elements>0)
+				num_elements--;
 
 			if (data)
 			{
@@ -439,8 +442,6 @@ class CList : public CSGObject
 					last  = element->prev;
 
 				delete element;
-
-				num_elements--;
 
 				return data;
 			} 

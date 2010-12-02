@@ -40,7 +40,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		{
 			scale=c;
 
-			m_parameters->add(&scale, "scale"
+			m_parameters->add(&scale, "scale",
 							  "Scale quotient by which kernel is scaled.");
 		}
 

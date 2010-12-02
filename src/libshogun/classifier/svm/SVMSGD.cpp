@@ -280,6 +280,6 @@ void CSVMSGD::init()
     m_parameters->add(&epochs, "epochs",  "epochs");
     m_parameters->add(&skip, "skip",  "skip");
     m_parameters->add(&count, "count",  "count");
-    m_parameters->add((machine_int_t*) &use_bias, "use_bias",  "Indicates if bias is used.");
-    m_parameters->add((machine_int_t*) &use_regularized_bias, "use_regularized_bias",  "Indicates if bias is regularized.");
+    m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
+    m_parameters->add(&use_regularized_bias, "use_regularized_bias",  "Indicates if bias is regularized.");
 }
