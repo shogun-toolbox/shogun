@@ -45,8 +45,6 @@ class CListElement;
  */
 class CCombinedKernel : public CKernel
 {
-	void init(void);
-
 	public:
 		/** constructor
 		 *
@@ -431,6 +429,9 @@ class CCombinedKernel : public CKernel
 			else
 				initialized=false;
 		}
+
+	private:
+		void init();
 
 	protected:
 		/** list of kernels */

@@ -42,36 +42,15 @@ struct S_THREAD_PARAM
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-void
-CCombinedKernel::init(void)
-{
-	m_parameters->add((CSGObject**) &kernel_list, "kernel_list",
-					  "List of kernels.");
-	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
-							 "Support vector index.");
-	m_parameters->add_vector(&sv_weight, &sv_count, "sv_weight",
-							 "Support vector weights.");
-	m_parameters->add(&append_subkernel_weights,
-					  "append_subkernel_weights",
-					  "If subkernel weights are appended.");
-	m_parameters->add(&initialized, "initialized",
-					  "Whether kernel is ready to be used.");
-}
-
 CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
-: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
-	subkernel_weights_buffer(NULL), append_subkernel_weights(asw),
-	initialized(false)
+: CKernel(size), append_subkernel_weights(asw)
 {
 	init();
 
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	kernel_list=new CList(true);
-	SG_REF(kernel_list);
-
-	SG_INFO("Combined kernel created (%p)\n", this) ;
 	if (append_subkernel_weights)
 		SG_INFO( "(subkernel weights are appended)\n") ;
+
+	SG_INFO("Combined kernel created (%p)\n", this) ;
 }
 
 CCombinedKernel::~CCombinedKernel()
@@ -789,3 +768,30 @@ bool CCombinedKernel::precompute_subkernels()
 
 	return true;
 }
+
+void CCombinedKernel::init()
+{
+	sv_count=0;
+	sv_idx=NULL;
+	sv_weight=NULL;
+	subkernel_weights_buffer=NULL;
+	initialized=false;
+
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
+	kernel_list=new CList(true);
+	SG_REF(kernel_list);
+
+
+	m_parameters->add((CSGObject**) &kernel_list, "kernel_list",
+					  "List of kernels.");
+	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
+							 "Support vector index.");
+	m_parameters->add_vector(&sv_weight, &sv_count, "sv_weight",
+							 "Support vector weights.");
+	m_parameters->add(&append_subkernel_weights,
+					  "append_subkernel_weights",
+					  "If subkernel weights are appended.");
+	m_parameters->add(&initialized, "initialized",
+					  "Whether kernel is ready to be used.");
+}
+

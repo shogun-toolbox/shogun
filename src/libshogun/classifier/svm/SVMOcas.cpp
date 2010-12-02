@@ -21,7 +21,7 @@
 
 using namespace shogun;
 
-CSVMOcas::CSVMOcas(void)
+CSVMOcas::CSVMOcas()
 : CLinearClassifier()
 {
 	init();
@@ -346,10 +346,16 @@ void CSVMOcas::init()
 	method=SVM_OCAS;
 	w=NULL;
 	old_w=NULL;
+	tmp_a_buf=NULL;
+	lab=NULL;
+	cp_value=NULL;
+	cp_index=NULL;
+	cp_nz_dims=NULL;
+	cp_bias=NULL;
 
     m_parameters->add(&C1, "C1",  "Cost constant 1.");
     m_parameters->add(&C2, "C2",  "Cost constant 2.");
-    m_parameters->add((machine_int_t*) &use_bias, "use_bias",
+    m_parameters->add(&use_bias, "use_bias",
 			"Indicates if bias is used.");
     m_parameters->add(&epsilon, "epsilon", "Convergence precision.");
     m_parameters->add(&bufsize, "bufsize", "Maximum number of cutting planes.");

@@ -301,6 +301,8 @@ bool CLinearHMM::set_log_transition_probs(const float64_t* src, int32_t num)
 
 void CLinearHMM::load_serializable_post() throw (ShogunException)
 {
+	CSGObject::load_serializable_post();
+
 	num_params = sequence_length*num_symbols;
 }
 

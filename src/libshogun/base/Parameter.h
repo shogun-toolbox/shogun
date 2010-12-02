@@ -22,7 +22,7 @@ struct TParameter
 {
 	explicit TParameter(const TSGDataType* datatype, void* parameter,
 						const char* name, const char* description);
-	~TParameter(void);
+	~TParameter();
 
 	void print(const char* prefix);
 	bool save(CSerializableFile* file, const char* prefix="");
@@ -55,13 +55,6 @@ private:
  */
 class Parameter
 {
-protected:
-	DynArray<TParameter*> m_params;
-
-	virtual void add_type(const TSGDataType* type, void* param,
-						  const char* name,
-						  const char* description);
-
 public:
 	explicit Parameter(void);
 	virtual ~Parameter(void);
@@ -375,6 +368,14 @@ public:
 	void add_matrix(TSparse<floatmax_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
+
+protected:
+	DynArray<TParameter*> m_params;
+
+	virtual void add_type(const TSGDataType* type, void* param,
+						  const char* name,
+						  const char* description);
+
 };
 }
 #endif //__PARAMETER_H__

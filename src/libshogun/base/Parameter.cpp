@@ -1535,6 +1535,12 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 bool
 TParameter::save(CSerializableFile* file, const char* prefix)
 {
+	const int32_t buflen=100;
+	char* buf=new char[buflen];
+	m_datatype.to_string(buf, buflen);
+	SG_SDEBUG("Saving parameter '%s' of type '%s'\n", m_name, buf);
+	delete[] buf;
+
 	if (!file->write_type_begin(&m_datatype, m_name, prefix))
 		return false;
 
@@ -1612,6 +1618,12 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 bool
 TParameter::load(CSerializableFile* file, const char* prefix)
 {
+	const int32_t buflen=100;
+	char* buf=new char[buflen];
+	m_datatype.to_string(buf, buflen);
+	SG_SDEBUG("Loading parameter '%s' of type '%s'\n", m_name, buf);
+	delete[] buf;
+
 	if (!file->read_type_begin(&m_datatype, m_name, prefix))
 		return false;
 
@@ -1720,8 +1732,10 @@ bool
 Parameter::save(CSerializableFile* file, const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
+	{
 		if (!m_params.get_element(i)->save(file, prefix))
 			return false;
+	}
 
 	return true;
 }

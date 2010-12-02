@@ -99,19 +99,6 @@ class CList : public CSGObject
 			this->delete_data=p_delete_data;
 		}
 
-		virtual void load_serializable_post(void)
-			throw (ShogunException) {
-			CSGObject::load_serializable_post();
-
-			current = first;
-			CListElement* prev = NULL;
-			for (CListElement* cur=first; cur!=NULL; cur=cur->next) {
-				cur->prev = prev;
-				prev = cur;
-			}
-			last = prev;
-		}
-
 		virtual ~CList()
 		{
 			SG_DEBUG("Destroying List %p\n", this);
@@ -459,6 +446,20 @@ class CList : public CSGObject
 			} 
 
 			return NULL;
+		}
+
+		virtual void load_serializable_post() throw (ShogunException)
+		{
+			CSGObject::load_serializable_post();
+
+			current = first;
+			CListElement* prev = NULL;
+			for (CListElement* cur=first; cur!=NULL; cur=cur->next)
+			{
+				cur->prev = prev;
+				prev = cur;
+			}
+			last = prev;
 		}
 
 		/** @return object name */

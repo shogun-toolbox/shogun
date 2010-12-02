@@ -202,12 +202,14 @@ void CSGObject::unset_generic(void)
 
 void CSGObject::print_serializable(const char* prefix)
 {
+	SG_PRINT("\n%s\n================================================================================\n", get_name());
 	m_parameters->print(prefix);
 }
 
 bool CSGObject::save_serializable(CSerializableFile* file,
 								   const char* prefix)
 {
+	SG_DEBUG("Saving CSGObject '%s'\n", get_name());
 	bool result = m_parameters->save(file, prefix);
 
 	if (prefix == NULL || *prefix == '\0')
@@ -219,6 +221,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 bool CSGObject::load_serializable(CSerializableFile* file,
 								   const char* prefix)
 {
+	SG_DEBUG("Loading CSGObject '%s'\n", get_name());
 	try
 	{
 		load_serializable_pre();
