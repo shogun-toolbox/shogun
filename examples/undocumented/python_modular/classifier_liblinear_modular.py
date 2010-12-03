@@ -12,6 +12,8 @@ def classifier_liblinear_modular(fm_train_real, fm_test_real,
 
 	from shogun.Features import RealFeatures, SparseRealFeatures, Labels
 	from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC_DUAL
+	from shogun.Library import Math_init_random
+	Math_init_random(17)
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
