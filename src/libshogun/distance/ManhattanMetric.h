@@ -68,7 +68,7 @@ class CManhattanMetric: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Manhattan-Metric
 		 */
-		virtual const char* get_name() const { return "Manhattan-Metric"; }
+		virtual const char* get_name() const { return "ManhattanMetric"; }
 
 	protected:
 		/// compute distance for features a and b

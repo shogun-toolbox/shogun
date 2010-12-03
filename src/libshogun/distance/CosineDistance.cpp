@@ -35,9 +35,7 @@ CCosineDistance::~CCosineDistance()
 
 bool CCosineDistance::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<float64_t>::init(l,r);
-
-	return result;
+	return CSimpleDistance<float64_t>::init(l,r);
 }
 
 void CCosineDistance::cleanup()

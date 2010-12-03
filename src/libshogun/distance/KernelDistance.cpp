@@ -17,27 +17,33 @@
 
 using namespace shogun;
 
-CKernelDistance::CKernelDistance(void)
+CKernelDistance::CKernelDistance() : CDistance()
 {
-	SG_UNSTABLE("CKernelDistance::CKernelDistance(void)", "\n");
-
-	kernel = NULL;
-	width = 0.0;
+	init();
 }
 
 CKernelDistance::CKernelDistance(float64_t w, CKernel* k)
-: CDistance(), kernel(k), width(w)
+: CDistance()
 {
+	init();
+
+	kernel=k;
+	width=w;
 	ASSERT(kernel);
 	SG_REF(kernel);
 }
 
 CKernelDistance::CKernelDistance(
 	CFeatures *l, CFeatures *r, float64_t w , CKernel* k)
-: CDistance(), kernel(k), width(w)
+: CDistance()
 {
+	init();
+
+	kernel=k;
+	width=w;
 	ASSERT(kernel);
 	SG_REF(kernel);
+
 	init(l, r);
 }
 
@@ -62,3 +68,12 @@ float64_t CKernelDistance::compute(int32_t idx_a, int32_t idx_b)
 	return exp(-result/width);
 }
 
+void CKernelDistance::init()
+{
+	kernel = NULL;
+	width = 0.0;
+
+	m_parameters->add(&width, "width", "Width of RBF Kernel");
+	m_parameters->add((CSGObject**) &kernel, "kernel",
+					  "Kernel.");
+}

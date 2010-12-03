@@ -16,14 +16,15 @@
 
 using namespace shogun;
 
-CCustomDistance::CCustomDistance()
-: CDistance(), dmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
+CCustomDistance::CCustomDistance() : CDistance()
 {
+	init();
 }
 
-CCustomDistance::CCustomDistance(CDistance* d)
-: CDistance(), dmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
+CCustomDistance::CCustomDistance(CDistance* d) : CDistance() 
 {
+	init();
+
 	if (d->lhs_equals_rhs())
 	{
 		int32_t cols=d->get_num_vec_lhs();
@@ -59,18 +60,19 @@ CCustomDistance::CCustomDistance(CDistance* d)
 	}
 
 	dummy_init(num_rows, num_cols);
-
 }
 
 CCustomDistance::CCustomDistance(const float64_t* dm, int32_t rows, int32_t cols)
-: CDistance(), dmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
+: CDistance() 
 {
+	init();
 	set_full_distance_matrix_from_full(dm, rows, cols);
 }
 
 CCustomDistance::CCustomDistance(const float32_t* dm, int32_t rows, int32_t cols)
-: CDistance(), dmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
+: CDistance()
 {
+	init();
 	set_full_distance_matrix_from_full(dm, rows, cols);
 }
 
@@ -103,6 +105,17 @@ void CCustomDistance::cleanup_custom()
 	upper_diagonal=false;
 	num_cols=0;
 	num_rows=0;
+}
+
+void CCustomDistance::init()
+{
+	dmatrix=NULL;
+	num_rows=0;
+	num_cols=0;
+	upper_diagonal=false;
+
+	m_parameters->add_matrix(&dmatrix, &num_rows, &num_cols, "dmatrix", "Distance Matrix");
+	m_parameters->add(&upper_diagonal, "upper_diagonal", "Upper diagonal");
 }
 
 void CCustomDistance::cleanup()

@@ -17,8 +17,7 @@
 
 using namespace shogun;
 
-CJensenMetric::CJensenMetric()
-: CSimpleDistance<float64_t>()
+CJensenMetric::CJensenMetric() : CSimpleDistance<float64_t>()
 {
 }
 
@@ -35,9 +34,7 @@ CJensenMetric::~CJensenMetric()
 
 bool CJensenMetric::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<float64_t>::init(l,r);
-
-	return result;
+	return CSimpleDistance<float64_t>::init(l,r);
 }
 
 void CJensenMetric::cleanup()

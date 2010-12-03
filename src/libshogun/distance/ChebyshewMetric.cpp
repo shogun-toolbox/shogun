@@ -17,8 +17,7 @@
 
 using namespace shogun;
 
-CChebyshewMetric::CChebyshewMetric()
-: CSimpleDistance<float64_t>()
+CChebyshewMetric::CChebyshewMetric() : CSimpleDistance<float64_t>()
 {
 }
 
@@ -35,9 +34,7 @@ CChebyshewMetric::~CChebyshewMetric()
 
 bool CChebyshewMetric::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<float64_t>::init(l,r);
-
-	return result;
+	return CSimpleDistance<float64_t>::init(l,r);
 }
 
 void CChebyshewMetric::cleanup()

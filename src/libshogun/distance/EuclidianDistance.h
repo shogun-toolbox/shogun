@@ -81,7 +81,7 @@ class CEuclidianDistance: public CRealDistance
 		 *
 		 * @return name Euclidian
 		 */
-		virtual const char* get_name() const { return "Euclidian"; }
+		virtual const char* get_name() const { return "EuclidianDistance"; }
 
 		/** disable application of sqrt on matrix computation
 		 * the matrix can then also be named norm squared
@@ -102,11 +102,11 @@ class CEuclidianDistance: public CRealDistance
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
-		/*    compute_kernel*/
+
+	private:
+		void init();
 
 	protected:
-		/** applied scaling factor */
-		float64_t scale;
 		/** if application of sqrt on matrix computation is disabled */
 		bool disable_sqrt;
 };

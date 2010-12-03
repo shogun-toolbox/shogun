@@ -208,7 +208,7 @@ class CPluginEstimate: public CClassifier
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "RealFeatures"; }
+		inline virtual const char* get_name() const { return "PluginEstimate"; }
 
 	protected:
 		/** pseudo count for positive class */

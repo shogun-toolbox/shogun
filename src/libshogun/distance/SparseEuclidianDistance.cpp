@@ -17,14 +17,16 @@
 using namespace shogun;
 
 CSparseEuclidianDistance::CSparseEuclidianDistance()
-: CSparseDistance<float64_t>(), sq_lhs(NULL), sq_rhs(NULL)
+: CSparseDistance<float64_t>()
 {
+	init();
 }
 
 CSparseEuclidianDistance::CSparseEuclidianDistance(
 	CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r)
-: CSparseDistance<float64_t>(), sq_lhs(NULL), sq_rhs(NULL)
+: CSparseDistance<float64_t>()
 {
+	init();
 	init(l, r);
 }
 
@@ -70,4 +72,10 @@ float64_t CSparseEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 		(CSparseFeatures<float64_t>*) rhs, sq_rhs, idx_b);
 
 	return CMath::sqrt(result);
+}
+
+void CSparseEuclidianDistance::init()
+{
+	sq_lhs=NULL;
+	sq_rhs=NULL;
 }

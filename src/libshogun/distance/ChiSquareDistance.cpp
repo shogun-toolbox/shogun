@@ -17,8 +17,7 @@
 
 using namespace shogun;
 
-CChiSquareDistance::CChiSquareDistance()
-: CSimpleDistance<float64_t>()
+CChiSquareDistance::CChiSquareDistance() : CSimpleDistance<float64_t>()
 {
 }
 

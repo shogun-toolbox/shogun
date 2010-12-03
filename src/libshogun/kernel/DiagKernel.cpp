@@ -20,6 +20,7 @@ using namespace shogun;
 CDiagKernel::CDiagKernel()
 : CKernel()
 {
+	init();
 }
 
 CDiagKernel::CDiagKernel(int32_t size, float64_t d)
@@ -30,7 +31,7 @@ CDiagKernel::CDiagKernel(int32_t size, float64_t d)
 }
 
 CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, float64_t d)
-: CKernel(10)
+: CKernel()
 {
 	init();
 	diag=d;

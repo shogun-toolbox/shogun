@@ -55,30 +55,13 @@ class CManhattanWordDistance: public CStringDistance<uint16_t>
 		 *
 		 * @return name ManhattanWord
 		 */
-		virtual const char* get_name() const { return "ManhattanWord"; }
-
-		/** get dictionary weights
-		 *
-		 * @param dsize size of the dictionary
-		 * @param dweights dictionary weights are stored in here
-		 */
-		void get_dictionary(int32_t& dsize, float64_t*& dweights)
-		{
-			dsize=dictionary_size;
-			dweights = dictionary_weights;
-		}
+		virtual const char* get_name() const { return "ManhattanWordDistance"; }
 
 	protected:
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
 		float64_t compute(int32_t idx_a, int32_t idx_b);
-
-	protected:
-		/** size of the dictionary */
-		int32_t dictionary_size;
-		/** dictionary weights */
-		float64_t* dictionary_weights;
 };
 } // namespace shogun
 #endif /* _MANHATTANWORDDISTANCE_H___ */

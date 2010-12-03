@@ -72,7 +72,7 @@ class COligoStringKernel : public CStringKernel<char>
 		 *
 		 * @return name Oligo
 		 */
-		virtual const char* get_name() const { return "Oligo"; }
+		virtual const char* get_name() const { return "OligoStringKernel"; }
 
 
 		virtual float64_t compute(int32_t x, int32_t y);

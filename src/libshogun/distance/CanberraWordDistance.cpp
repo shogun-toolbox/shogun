@@ -21,9 +21,6 @@ CCanberraWordDistance::CCanberraWordDistance()
 : CStringDistance<uint16_t>()
 {
 	SG_DEBUG("CCanberraWordDistance created");
-	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new float64_t[dictionary_size];
-	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
 CCanberraWordDistance::CCanberraWordDistance(
@@ -31,9 +28,6 @@ CCanberraWordDistance::CCanberraWordDistance(
 : CStringDistance<uint16_t>()
 {
 	SG_DEBUG("CCanberraWordDistance created");
-	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new float64_t[dictionary_size];
-	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 
 	init(l, r);
 }
@@ -41,8 +35,6 @@ CCanberraWordDistance::CCanberraWordDistance(
 CCanberraWordDistance::~CCanberraWordDistance()
 {
 	cleanup();
-
-	delete[] dictionary_weights;
 }
 
 bool CCanberraWordDistance::init(CFeatures* l, CFeatures* r)

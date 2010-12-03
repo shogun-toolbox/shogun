@@ -179,10 +179,10 @@ class CDistance : public CSGObject
     
 		/** replace right-hand side features used in distance matrix
 		 *
-                 * make sure to check that your distance can deal with the
-                 * supplied features (!)
-                 *
-                 * @param rhs features of right-hand side
+		 * make sure to check that your distance can deal with the
+		 * supplied features (!)
+		 *
+		 * @param rhs features of right-hand side
 		 * @return replaced right-hand side features
 		 */
 		CFeatures* replace_rhs(CFeatures* rhs);
@@ -293,6 +293,9 @@ class CDistance : public CSGObject
 
 		/// matrix precomputation
 		void do_precompute_matrix();
+
+	private:
+		void init();
 
 	protected:
 		/** FIXME: precompute matrix should be dropped, handling

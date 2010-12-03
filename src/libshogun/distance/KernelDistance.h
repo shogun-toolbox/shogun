@@ -85,7 +85,7 @@ class CKernelDistance: public CDistance
 		 *
 		 * @return name Distance
 		 */
-		inline virtual const char* get_name() const { return kernel->get_name(); }
+		inline virtual const char* get_name() const { return "KernelDistance"; }
 
 		/** clean up kernel
 		 *
@@ -102,6 +102,9 @@ class CKernelDistance: public CDistance
 		 * @return computed kernel function at indices a,b
 		 */
 		float64_t compute(int32_t idx_a, int32_t idx_b);
+
+	private:
+		void init();
 
 	private:
 		/** kernel */

@@ -112,7 +112,7 @@ class CCustomDistance: public CDistance
 		 *
 		 * @return name Custom
 		 */
-		virtual const char* get_name() const { return "Custom"; }
+		virtual const char* get_name() const { return "CustomDistance"; }
 
 		/** set distance matrix (only elements from upper triangle)
 		 * from elements of upper triangle (concat'd), including the
@@ -380,6 +380,8 @@ class CCustomDistance: public CDistance
 		}
 
 	private:
+		void init();
+
 		/** only cleanup stuff specific to Custom distance */
 		void cleanup_custom();
 

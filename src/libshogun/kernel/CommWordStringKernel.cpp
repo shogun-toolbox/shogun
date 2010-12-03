@@ -615,8 +615,8 @@ void CCommWordStringKernel::init()
 
 	m_parameters->add_vector(&dictionary_weights, &dictionary_size, "dictionary_weights",
 			"Dictionary for applying kernel.");
-	m_parameters->add((machine_int_t*) &use_sign, "use_sign",
+	m_parameters->add(&use_sign, "use_sign",
 			"If signum(counts) is used instead of counts.");
-	m_parameters->add((machine_int_t*) &use_dict_diagonal_optimization, "use_dict_diagonal_optimization",
+	m_parameters->add(&use_dict_diagonal_optimization, "use_dict_diagonal_optimization",
 			"If K(x,x) is computed potentially more efficiently.");
 }

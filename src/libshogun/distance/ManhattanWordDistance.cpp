@@ -21,9 +21,6 @@ CManhattanWordDistance::CManhattanWordDistance()
 : CStringDistance<uint16_t>()
 {
 	SG_DEBUG("CManhattanWordDistance created");
-	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new float64_t[dictionary_size];
-	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
 CManhattanWordDistance::CManhattanWordDistance(
@@ -31,9 +28,6 @@ CManhattanWordDistance::CManhattanWordDistance(
 : CStringDistance<uint16_t>()
 {
 	SG_DEBUG("CManhattanWordDistance created");
-	dictionary_size= 1<<(sizeof(uint16_t)*8);
-	dictionary_weights = new float64_t[dictionary_size];
-	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 
 	init(l, r);
 }
@@ -41,8 +35,6 @@ CManhattanWordDistance::CManhattanWordDistance(
 CManhattanWordDistance::~CManhattanWordDistance() 
 {
 	cleanup();
-
-	delete[] dictionary_weights;
 }
 
 bool CManhattanWordDistance::init(CFeatures* l, CFeatures* r)

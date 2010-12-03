@@ -65,7 +65,7 @@ class CChiSquareDistance: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Chi-square distance 
 		 */
-		virtual const char* get_name() const { return "Chi-Square-Distance"; }
+		virtual const char* get_name() const { return "ChiSquareDistance"; }
 
 	protected:
 		/// compute distance for features a and b

@@ -64,7 +64,7 @@ class CHammingWordDistance: public CStringDistance<uint16_t>
 		 *
 		 * @return name HammingWord
 		 */
-		virtual const char* get_name() const { return "HammingWord"; }
+		virtual const char* get_name() const { return "HammingWordDistance"; }
 
 	protected:
 		/// compute kernel function for features a and b

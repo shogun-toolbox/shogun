@@ -16,16 +16,15 @@
 
 using namespace shogun;
 
-CEuclidianDistance::CEuclidianDistance()
-: CRealDistance()
+CEuclidianDistance::CEuclidianDistance() : CRealDistance()
 {
-	disable_sqrt=false;
+	init();
 }
 
 CEuclidianDistance::CEuclidianDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
 : CRealDistance()
 {
-	disable_sqrt=false;
+	init();
 	init(l, r);
 }
 
@@ -63,9 +62,15 @@ float64_t CEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-	if (disable_sqrt) {
+	if (disable_sqrt)
 		return result;
-	} else {
-		return CMath::sqrt(result);
-	}
+
+	return CMath::sqrt(result);
+}
+
+void CEuclidianDistance::init()
+{
+	disable_sqrt=false;
+
+	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
 }

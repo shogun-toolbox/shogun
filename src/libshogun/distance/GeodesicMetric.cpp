@@ -17,8 +17,7 @@
 
 using namespace shogun;
 
-CGeodesicMetric::CGeodesicMetric()
-: CSimpleDistance<float64_t>()
+CGeodesicMetric::CGeodesicMetric() : CSimpleDistance<float64_t>()
 {
 }
 

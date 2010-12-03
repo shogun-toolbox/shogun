@@ -10,12 +10,12 @@
  */
 
 #include "lib/config.h"
-
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/File.h"
 #include "lib/Time.h"
 #include "base/Parallel.h"
+#include "base/Parameter.h"
 
 #include "distance/Distance.h"
 #include "features/Features.h"
@@ -29,17 +29,15 @@
 
 using namespace shogun;
 
-CDistance::CDistance()
-: CSGObject(), precomputed_matrix(NULL), precompute_matrix(false),
-	lhs(NULL), rhs(NULL)
+CDistance::CDistance() : CSGObject()
 {
+	init();
 }
 
 		
-CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs)
-: CSGObject(), precomputed_matrix(NULL), precompute_matrix(false),
-	lhs(NULL), rhs(NULL)
+CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs) : CSGObject()
 {
+	init();
 	init(p_lhs, p_rhs);
 }
 
@@ -66,8 +64,7 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 
     //increase reference counts
     SG_REF(l);
-    if (l!=r)
-        SG_REF(r);
+	SG_REF(r);
 
 	lhs=l;
 	rhs=r;
@@ -92,8 +89,7 @@ void CDistance::save(CFile* writer)
 
 void CDistance::remove_lhs_and_rhs()
 {
-	if (rhs!=lhs)
-		SG_UNREF(rhs);
+	SG_UNREF(rhs);
 	rhs = NULL;
 
 	SG_UNREF(lhs);
@@ -130,6 +126,7 @@ CFeatures* CDistance::replace_rhs(CFeatures* r)
      delete[] precomputed_matrix ;
      precomputed_matrix=NULL ;
 
+	 // return old features including reference count
      return tmp;
 }
 
@@ -360,4 +357,17 @@ float64_t* CDistance::get_distance_matrix_real(
       SG_ERROR( "no features assigned to distance\n");
 
 	return result;
+}
+
+void CDistance::init()
+{
+	precomputed_matrix = NULL;
+	precompute_matrix = false;
+	lhs = NULL;
+	rhs = NULL;
+
+	m_parameters->add((CSGObject**) &lhs, "lhs",
+					  "Feature vectors to occur on left hand side.");
+	m_parameters->add((CSGObject**) &rhs, "rhs",
+					  "Feature vectors to occur on right hand side.");
 }

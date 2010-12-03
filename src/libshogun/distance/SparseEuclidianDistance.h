@@ -61,7 +61,7 @@ class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 		 *
 		 * @return name SparseEuclidian
 		 */
-		virtual const char* get_name() const { return "SparseEuclidian"; }
+		virtual const char* get_name() const { return "SparseEuclidianDistance"; }
 
 	protected:
 		/// compute kernel function for features a and b
@@ -70,10 +70,10 @@ class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 		/*    compute_kernel*/
 
-	protected:
-		/** applied scaling factor */
-		float64_t scale;
+	private:
+		void init();
 
+	protected:
 		/** squared left-hand side */
 		float64_t* sq_lhs;
 		/** squared right-hand side */

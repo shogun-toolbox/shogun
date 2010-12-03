@@ -67,7 +67,7 @@ class CTanimotoDistance: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Tanimoto coefficient/distance
 		 */
-		virtual const char* get_name() const { return "Tanimoto coefficient/distance"; }
+		virtual const char* get_name() const { return "TanimotoDistance"; }
 
 	protected:
 		/// compute distance for features a and b

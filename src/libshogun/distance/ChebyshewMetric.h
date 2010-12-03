@@ -63,7 +63,7 @@ class CChebyshewMetric: public CSimpleDistance<float64_t>
 		 *
 		 * @return name Chebyshew-Metric
 		 */
-		virtual const char* get_name() const { return "Chebyshew-Metric"; }
+		virtual const char* get_name() const { return "ChebyshewMetric"; }
 
 	protected:
 		/// compute distance for features a and b
