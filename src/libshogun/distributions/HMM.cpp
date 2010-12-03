@@ -5262,11 +5262,13 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 {
 	ASSERT(obs);
-	p_observations=obs;
 	SG_REF(obs);
+	p_observations=obs;
+
 	/* from Distribution, necessary for calls to base class methods, like
 	 * get_log_likelihood_sample():
 	 */
+	SG_REF(obs);
 	features=obs;
 
 	SG_DEBUG("num symbols alphabet: %ld\n", obs->get_alphabet()->get_num_symbols());

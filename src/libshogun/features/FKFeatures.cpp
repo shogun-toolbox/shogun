@@ -257,7 +257,7 @@ void CFKFeatures::init()
 	weight_a = 0.0;
 
 	unset_generic();
-	//TODO HMM
+	//TODO serialize HMMs
 	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
 	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
 	m_parameters->add(&weight_a, "weight_a", "Class prior.");
