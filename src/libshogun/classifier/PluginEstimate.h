@@ -172,10 +172,14 @@ class CPluginEstimate: public CClassifier
 		{
 			int32_t num_params;
 
-			delete pos_model;
+			SG_UNREF(pos_model);
 			pos_model=new CLinearHMM(seq_length, num_symbols);
-			delete neg_model;
+			SG_REF(pos_model);
+
+
+			SG_UNREF(neg_model);
 			neg_model=new CLinearHMM(seq_length, num_symbols);
+			SG_REF(neg_model);
 
 			num_params=pos_model->get_num_model_parameters();
 			ASSERT(seq_length*num_symbols==num_params);

@@ -142,10 +142,9 @@ Model::~Model()
 
 CHMM::CHMM(void)
 {
-	SG_UNSTABLE("CHMM::CHMM(void)", "\n");
-
-	N=0, M=0, model=NULL;
-
+	N=0;
+	M=0;
+	model=NULL;
 	status=false;
 }
 
@@ -3222,7 +3221,7 @@ bool CHMM::load_model(FILE* file)
 	const_p[]=[ [<int32_t>, <DOUBLE>], ... , [<int32_t>,<DOUBLE>], [-1,-1] ];
 	const_q[]=[ [<int32_t>, <DOUBLE>], ... , [<int32_t>,<DOUBLE>], [-1,-1] ];
 	*/
-bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
+bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 {
 	if (model)
 		delete model ;
@@ -3882,7 +3881,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 	{
 		model->sort_learn_a() ;
 		model->sort_learn_b() ;
-		if (init)
+		if (initialize)
 		{
 			init_model_defined(); ;
 			convert_to_log();

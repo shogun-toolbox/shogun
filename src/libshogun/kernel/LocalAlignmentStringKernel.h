@@ -27,21 +27,21 @@ namespace shogun
 class CLocalAlignmentStringKernel: public CStringKernel<char>
 {
 	public:
-		/** default constructor  */
-		CLocalAlignmentStringKernel(void);
-
 		/** constructor
 		 * @param size cache size
 		 */
-		CLocalAlignmentStringKernel(int32_t size);
+		CLocalAlignmentStringKernel(int32_t size=0);
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
+		 * @param opening gap opening penalty
+		 * @param extension gap extension penalty
 		 */
 		CLocalAlignmentStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r);
+			CStringFeatures<char>* l, CStringFeatures<char>* r,
+			float64_t opening=12, float64_t extension=2);
 
 		virtual ~CLocalAlignmentStringKernel();
 
@@ -71,6 +71,18 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 */
 		virtual const char* get_name() const { return "LocalAlignment"; }
 
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+
+
 	private:
 		/** initialize logarithmic sum */
 		void init_logsum();
@@ -91,9 +103,6 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 */
 		float32_t LogSum2(float32_t p1, float32_t p2);
 
-		/** initialize */
-		void initialize();
-
 		/** LAkernel compute
 		 *
 		 * @param aaX aaX
@@ -105,16 +114,11 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		float64_t LAkernelcompute(
 			int32_t* aaX, int32_t* aaY, int32_t nX, int32_t nY);
 
-	protected:
-		/** compute kernel function for features a and b
-		 * idx_{a,b} denote the index of the feature vectors
-		 * in the corresponding feature object
-		 *
-		 * @param idx_a index a
-		 * @param idx_b index b
-		 * @return computed kernel function at indices a,b
-		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		/** Initialize all static variables. This function should be called once
+		 * before computing the first pair HMM score */
+		void init_static_variables();
+
+		void init();
 
 	protected:
 		/** if kernel is initialized */
@@ -126,9 +130,9 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		int32_t *aaIndex;
 
 		/** gap penalty opening */
-		int32_t opening;
+		int32_t m_opening;
 		/** gap penalty extension */
-		int32_t extension;
+		int32_t m_extension;
 
 		/** static logsum lookup */
 		static int32_t logsum_lookup[LOGSUM_TBL];

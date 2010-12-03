@@ -371,8 +371,10 @@ void CTOPFeatures::init()
 	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
 	memset(&neg_relevant_indizes, 0, sizeof(neg_relevant_indizes));
 
-	m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
-	m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
+	unset_generic();
+	//TODO serialize HMMs
+	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
+	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
 	m_parameters->add(&neglinear, "neglinear", "If negative HMM is a LinearHMM");
 	m_parameters->add(&poslinear, "poslinear", "If positive HMM is a LinearHMM");
 }

@@ -17,25 +17,24 @@
 
 using namespace shogun;
 
-CMatchWordStringKernel::CMatchWordStringKernel(void)
-: CStringKernel<uint16_t>(0), degree(0)
+CMatchWordStringKernel::CMatchWordStringKernel() : CStringKernel<uint16_t>()
 {
-	SG_UNSTABLE("CMatchWordStringKernel::CMatchWordStringKernel(void)",
-				"\n");
-
-	set_normalizer(new CAvgDiagKernelNormalizer());
+	init();
 }
 
 CMatchWordStringKernel::CMatchWordStringKernel(int32_t size, int32_t d)
-: CStringKernel<uint16_t>(size), degree(d)
+: CStringKernel<uint16_t>(size)
 {
-	set_normalizer(new CAvgDiagKernelNormalizer());
+	init();
+	degree=d;
 }
 
-CMatchWordStringKernel::CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t d)
-: CStringKernel<uint16_t>(10), degree(d)
+CMatchWordStringKernel::CMatchWordStringKernel(
+		CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t d)
+: CStringKernel<uint16_t>()
 {
-	set_normalizer(new CAvgDiagKernelNormalizer());
+	init();
+	degree=d;
 	init(l, r);
 }
 
@@ -68,4 +67,11 @@ float64_t CMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 
 	return CMath::pow(sum, degree);
+}
+
+void CMatchWordStringKernel::init()
+{
+	degree=0;
+	set_normalizer(new CAvgDiagKernelNormalizer());
+	m_parameters->add(&degree, "degree", "Degree of poly kernel");
 }

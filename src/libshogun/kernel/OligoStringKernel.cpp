@@ -22,17 +22,18 @@
 using namespace shogun;
 
 COligoStringKernel::COligoStringKernel(void)
-  : CStringKernel<char>(0), k(0), width(0.0), gauss_table(NULL)
+  : CStringKernel<char>()
 {
-	SG_UNSTABLE("COligoStringKernel::COligoStringKernel(void)", "\n");
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	init();
 }
 
 COligoStringKernel::COligoStringKernel(int32_t cache_sz, int32_t kmer_len, float64_t w)
-: CStringKernel<char>(cache_sz), k(kmer_len), width(w), gauss_table(NULL)
+: CStringKernel<char>(cache_sz)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	init();
+
+	k=kmer_len;
+	width=w;
 }
 
 COligoStringKernel::~COligoStringKernel()
@@ -44,6 +45,7 @@ void COligoStringKernel::cleanup()
 {
 	delete[] gauss_table;
 	gauss_table=NULL;
+	gauss_table_len=0;
 
 	CKernel::cleanup();
 }
@@ -144,6 +146,8 @@ void COligoStringKernel::getExpFunctionCache(uint32_t sequence_length)
 	gauss_table[0] = 1;
 	for (uint32_t i = 1; i < sequence_length - 1; i++)
 		gauss_table[i] = exp((-1 / (CMath::sq(width))) * CMath::sq(i));
+
+	gauss_table_len=sequence_length;
 }
 
 float64_t COligoStringKernel::kernelOligoFast(
@@ -242,4 +246,18 @@ float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_a);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_b);
 	return result;
+}
+
+void COligoStringKernel::init()
+{
+	k=0;
+	width=0.0;
+	gauss_table=NULL;
+	gauss_table_len=0;
+
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+
+	m_parameters->add(&k, "k", "K-mer length.");
+	m_parameters->add(&width, "width", "Width of Gaussian.");
+	m_parameters->add_vector(&gauss_table, &gauss_table_len, "gauss_table", "Gauss Cache Table.");
 }

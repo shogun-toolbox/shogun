@@ -110,6 +110,9 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		 */
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
+	private:
+		void init();
+
 	protected:
 		/** length */
 		int32_t length;
@@ -117,8 +120,11 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		int32_t inner_degree;
 		/** outer degree */
 		int32_t outer_degree;
+
 		/** pyramid weights */
 		float64_t *pyramid_weights;
+		/** number of pyramid weights */
+		int32_t num_pyramid_weights;
 };
 }
 #endif /* _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___ */

@@ -51,7 +51,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 {
 	public:
 		/** default constructor  */
-		CWeightedCommWordStringKernel(void);
+		CWeightedCommWordStringKernel();
 
 		/** constructor
 		 *
@@ -160,6 +160,10 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		virtual float64_t compute_helper(
 			int32_t idx_a, int32_t idx_b, bool do_sort);
 
+	private:
+		void init();
+
+	protected:
 		/** degree */
 		int32_t degree;
 

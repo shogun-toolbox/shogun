@@ -16,28 +16,34 @@
 
 using namespace shogun;
 
-CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
-	void)
-: CStringKernel<char>(0), length(0), inner_degree(0), outer_degree(0),
-	pyramid_weights(NULL)
+CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel()
+: CStringKernel<char>()
 {
-	SG_UNSTABLE("CSimpleLocalityImprovedStringKernel::"
-				"CSimpleLocalityImprovedStringKernel(void)", "\n");
+	init();
 }
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	int32_t size, int32_t l, int32_t id, int32_t od)
-: CStringKernel<char>(size), length(l), inner_degree(id), outer_degree(od),
-	pyramid_weights(NULL)
+: CStringKernel<char>(size)
 {
+	init();
+
+	length=l;
+	inner_degree=id;
+	outer_degree=od;
 }
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	CStringFeatures<char>* l, CStringFeatures<char>* r,
 	int32_t len, int32_t id, int32_t od)
-: CStringKernel<char>(10), length(len), inner_degree(id), outer_degree(od),
-	pyramid_weights(NULL)
+: CStringKernel<char>()
 {
+	init();
+
+	length=len;
+	inner_degree=id;
+	outer_degree=od;
+
 	init(l, r);
 }
 
@@ -55,6 +61,7 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	int32_t num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
 	delete[] pyramid_weights;
 	pyramid_weights = new float64_t[num_features];
+	num_pyramid_weights=num_features;
 
 	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
 		num_features, length);
@@ -100,6 +107,7 @@ void CSimpleLocalityImprovedStringKernel::cleanup()
 {
 	delete[] pyramid_weights;
 	pyramid_weights = NULL;
+	num_pyramid_weights = 0;
 
 	CKernel::cleanup();
 }
@@ -206,9 +214,25 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 	float64_t dpt;
 
 	dpt = dot_pyr(avec, bvec, alen, length, inner_degree, outer_degree, pyramid_weights);
-	dpt = dpt / pow((float64_t)alen, (float64_t)outer_degree);
+	dpt = dpt / pow((float64_t) alen, (float64_t) outer_degree);
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return (float64_t) dpt;
+}
+
+void CSimpleLocalityImprovedStringKernel::init()
+{
+	length = 0;
+	inner_degree = 0;
+	outer_degree = 0;
+	pyramid_weights=NULL;
+	num_pyramid_weights=0;
+
+	m_parameters->add(&length, "length", "Window Length.");
+	m_parameters->add(&inner_degree, "inner_degree", "Inner degree.");
+	m_parameters->add(&outer_degree, "outer_degree", "Outer degree.");
+
+	m_parameters->add_vector(&pyramid_weights, &num_pyramid_weights,
+			"pyramid_weights", "Pyramid weights.");
 }

@@ -19,38 +19,34 @@
 using namespace shogun;
 
 CHistogramWordStringKernel::CHistogramWordStringKernel(void)
-: CStringKernel<uint16_t>(0), estimate(NULL), mean(NULL), variance(NULL),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
-	plo_lhs(NULL), plo_rhs(NULL), num_params(0), num_params2(0),
-	num_symbols(0), sum_m2_s2(0), initialized(false)
+: CStringKernel<uint16_t>()
 {
-	SG_UNSTABLE("CHistogramWordStringKernel::"
-				"CHistogramWordStringKernel(void)", "\n");
+	init();
 }
 
 CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie)
-: CStringKernel<uint16_t>(size), estimate(pie), mean(NULL), variance(NULL),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
-	plo_lhs(NULL), plo_rhs(NULL), num_params(0), num_params2(0),
-	num_symbols(0), sum_m2_s2(0), initialized(false)
+: CStringKernel<uint16_t>(size)
 {
+	init();
+	SG_REF(pie);
+	estimate=pie;
+
 }
 
 CHistogramWordStringKernel::CHistogramWordStringKernel(
 	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, CPluginEstimate* pie)
-: CStringKernel<uint16_t>(10), estimate(pie), mean(NULL), variance(NULL),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
-	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
-	plo_lhs(NULL), plo_rhs(NULL), num_params(0), num_params2(0),
-	num_symbols(0), sum_m2_s2(0), initialized(false)
+: CStringKernel<uint16_t>()
 {
+	init();
+	SG_REF(pie);
+	estimate=pie;
 	init(l, r);
 }
 
 CHistogramWordStringKernel::~CHistogramWordStringKernel()
 {
+	SG_UNREF(estimate);
+
 	delete[] variance;
 	delete[] mean;
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
@@ -386,7 +382,7 @@ float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	if (initialized)
 		result /=  (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) ;
 
-#ifdef BLABLA
+#ifdef DEBUG_HWSK_COMPUTATION
 	float64_t result2 = compute_slow(idx_a, idx_b) ;
 	if (fabs(result - result2)>1e-10)
 		SG_ERROR("new=%e  old = %e  diff = %e\n", result, result2, result - result2);
@@ -396,8 +392,41 @@ float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-#ifdef BLABLA
+void CHistogramWordStringKernel::init()
+{
+	estimate=NULL;
+	mean=NULL;
+	variance=NULL;
 
+	sqrtdiag_lhs=NULL;
+	sqrtdiag_rhs=NULL;
+
+	ld_mean_lhs=NULL;
+	ld_mean_rhs=NULL;
+
+	plo_lhs=NULL;
+	plo_rhs=NULL;
+	num_params=0;
+	num_params2=0;
+
+	num_symbols=0;
+	sum_m2_s2=0;
+	initialized=false;
+
+	m_parameters->add(&initialized, "initialized", "if kernel is initalized");
+	m_parameters->add_vector(&plo_lhs, &num_lhs, "plo_lhs");
+	m_parameters->add_vector(&plo_rhs, &num_rhs, "plo_rhs");
+	m_parameters->add_vector(&ld_mean_lhs, &num_lhs, "ld_mean_lhs");
+	m_parameters->add_vector(&ld_mean_rhs, &num_rhs, "ld_mean_rhs");
+	m_parameters->add_vector(&sqrtdiag_lhs, &num_lhs, "sqrtdiag_lhs");
+	m_parameters->add_vector(&sqrtdiag_rhs, &num_rhs, "sqrtdiag_rhs");
+	m_parameters->add_vector(&mean, &num_params2, "mean");
+	m_parameters->add_vector(&variance, &num_params2, "variance");
+
+	m_parameters->add((CSGObject**) &estimate, "estimate", "Plugin Estimate.");
+}
+
+#ifdef DEBUG_HWSK_COMPUTATION
 float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;

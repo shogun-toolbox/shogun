@@ -195,7 +195,7 @@ bool CSGObject::is_generic(EPrimitiveType* generic) const
 	return m_generic != PT_NOT_GENERIC;
 }
 
-void CSGObject::unset_generic(void)
+void CSGObject::unset_generic()
 {
 	m_generic = PT_NOT_GENERIC;
 }
@@ -209,11 +209,12 @@ void CSGObject::print_serializable(const char* prefix)
 bool CSGObject::save_serializable(CSerializableFile* file,
 								   const char* prefix)
 {
-	SG_DEBUG("Saving CSGObject '%s'\n", get_name());
+	SG_DEBUG("START SAVING CSGObject '%s'\n", get_name());
 	bool result = m_parameters->save(file, prefix);
 
 	if (prefix == NULL || *prefix == '\0')
 		file->close();
+	SG_DEBUG("DONE SAVING CSGObject '%s'\n", get_name());
 
 	return result;
 }

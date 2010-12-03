@@ -63,13 +63,6 @@ class CDotFeatures;
  */
 template <class ST> class CSimpleFeatures: public CDotFeatures
 {
-	void init(void) {
-		set_generic<ST>();
-		m_parameters->add_matrix(&feature_matrix, &num_features,
-								 &num_vectors, "feature_matrix",
-								 "Number of features in cache.");
-	}
-
 	public:
 		/** constructor
 		 *
@@ -766,7 +759,16 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			len=0;
 			return NULL;
 		}
+	private:
+		void init()
+		{
+			set_generic<ST>();
+			m_parameters->add_matrix(&feature_matrix, &num_features,
+					&num_vectors, "feature_matrix",
+					"Number of features in cache.");
+		}
 
+	protected:
 		/// number of vectors in cache
 		int32_t num_vectors;
 

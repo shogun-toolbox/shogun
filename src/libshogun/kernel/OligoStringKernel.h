@@ -151,13 +151,17 @@ class COligoStringKernel : public CStringKernel<char>
 			return (a.second < b.second);
 		}
 
+		void init();
+
 	protected:
-		/** member variable k */
+		/** k-mer length */
 		int32_t k;
 		/** width of kernel */
 		float64_t width;
 		/** cache for exp (see getExpFunctionCache above) */
 		float64_t* gauss_table;
+		/** length of gauss table */
+		int32_t gauss_table_len;
 };
 }
 #endif // _OLIGOSTRINGKERNEL_H_

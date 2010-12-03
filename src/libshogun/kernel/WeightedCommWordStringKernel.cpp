@@ -15,29 +15,27 @@
 
 using namespace shogun;
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
-	void)
-  : CCommWordStringKernel(0, false), degree(0), weights(NULL)
+CWeightedCommWordStringKernel::CWeightedCommWordStringKernel()
+  : CCommWordStringKernel(0, false)
 {
-	SG_UNSTABLE("CWeightedCommWordStringKernel::"
-				"CWeightedCommWordStringKernel(void)", "\n");
+	init();
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	int32_t size, bool us)
-: CCommWordStringKernel(size, us), degree(0), weights(NULL)
+: CCommWordStringKernel(size, us)
 {
-	init_dictionary(1<<(sizeof(uint16_t)*9));
 	ASSERT(us==false);
+	init();
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool us,
 	int32_t size)
-: CCommWordStringKernel(size, us), degree(0), weights(NULL)
+: CCommWordStringKernel(size, us)
 {
-	init_dictionary(1<<(sizeof(uint16_t)*9));
 	ASSERT(us==false);
+	init();
 
 	init(l,r);
 }
@@ -307,4 +305,15 @@ float64_t* CWeightedCommWordStringKernel::compute_scoring(
 	delete[] dic;
 
 	return result;
+}
+
+void CWeightedCommWordStringKernel::init()
+{
+	degree=0;
+	weights=NULL;
+
+	init_dictionary(1<<(sizeof(uint16_t)*9));
+
+	m_parameters->add_vector(&weights, &degree, "weights",
+			"weights for each of the subkernels of degree 1...d");
 }

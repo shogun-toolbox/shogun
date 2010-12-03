@@ -30,7 +30,7 @@ class CSigmoidKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */
-		CSigmoidKernel(void);
+		CSigmoidKernel();
 
 		/** constructor
 		 *
@@ -89,6 +89,9 @@ class CSigmoidKernel: public CDotKernel
 		{
 			return tanh(gamma*CDotKernel::compute(idx_a,idx_b)+coef0);
 		}
+
+	private:
+		void init();
 
 	protected:
 		/** gamma */

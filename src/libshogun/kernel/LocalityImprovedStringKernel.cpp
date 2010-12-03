@@ -24,16 +24,28 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel()
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	int32_t size, int32_t l, int32_t id, int32_t od)
-: CStringKernel<char>(size), length(l), inner_degree(id), outer_degree(od)
+: CStringKernel<char>(size)
 {
+	init();
+
+	length=l;
+	inner_degree=id;
+	outer_degree=od;
+
 	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", l, id, od);
 }
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t len,
 	int32_t id, int32_t od)
-: CStringKernel<char>(10), length(len), inner_degree(id), outer_degree(od)
+: CStringKernel<char>(10)
 {
+	init();
+
+	length=len;
+	inner_degree=id;
+	outer_degree=od;
+
 	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od);
 
 	init(l, r);

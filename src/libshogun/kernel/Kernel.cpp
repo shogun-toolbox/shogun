@@ -38,25 +38,12 @@
 
 using namespace shogun;
 
-CKernel::CKernel()
-: CSGObject(), cache_size(10), kernel_matrix(NULL), lhs(NULL),
-	rhs(NULL), num_lhs(0), num_rhs(0), combined_kernel_weight(1),
-	optimization_initialized(false), opt_type(FASTBUTMEMHUNGRY),
-	properties(KP_NONE), normalizer(NULL)
+CKernel::CKernel() : CSGObject()
 {
 	init();
-
-#ifdef USE_SVMLIGHT
-	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
-#endif //USE_SVMLIGHT
-
-	set_normalizer(new CIdentityKernelNormalizer());
 }
 
-CKernel::CKernel(int32_t size)
-: CSGObject(), kernel_matrix(NULL), lhs(NULL), rhs(NULL), num_lhs(0),
-	num_rhs(0), combined_kernel_weight(1), optimization_initialized(false),
-	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
+CKernel::CKernel(int32_t size) : CSGObject()
 {
 	init();
 
@@ -64,21 +51,10 @@ CKernel::CKernel(int32_t size)
 		size=10;
 
 	cache_size=size;
-#ifdef USE_SVMLIGHT
-	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
-#endif //USE_SVMLIGHT
-
-	if (get_is_initialized())
-		SG_ERROR( "COptimizableKernel still initialized on destruction");
-
-	set_normalizer(new CIdentityKernelNormalizer());
 }
 
 
-CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject(),
-	kernel_matrix(NULL), lhs(NULL), rhs(NULL), num_lhs(0), num_rhs(0),
-	combined_kernel_weight(1), optimization_initialized(false),
-	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE), normalizer(NULL)
+CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 {
 	init();
 
@@ -86,11 +62,6 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 		size=10;
 
 	cache_size=size;
-#ifdef USE_SVMLIGHT
-	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
-#endif //USE_SVMLIGHT
-	if (get_is_initialized())
-		SG_ERROR("Kernel initialized on construction.\n");
 
 	set_normalizer(new CIdentityKernelNormalizer());
 	init(p_lhs, p_rhs);
@@ -888,6 +859,24 @@ bool CKernel::init_optimization_svm(CSVM * svm)
 
 void CKernel::init()
 {
+	cache_size=10;
+	kernel_matrix=NULL;
+	lhs=NULL;
+	rhs=NULL;
+	num_lhs=0;
+	num_rhs=0;
+	combined_kernel_weight=1;
+	optimization_initialized=false;
+	opt_type=FASTBUTMEMHUNGRY;
+	properties=KP_NONE;
+	normalizer=NULL;
+
+#ifdef USE_SVMLIGHT
+	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
+#endif //USE_SVMLIGHT
+
+	set_normalizer(new CIdentityKernelNormalizer());
+
 	m_parameters->add(&cache_size, "cache_size",
 					  "Cache size in MB.");
 	m_parameters->add((CSGObject**) &lhs, "lhs",

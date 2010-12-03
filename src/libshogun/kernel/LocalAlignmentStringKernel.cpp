@@ -6,7 +6,7 @@
  * Copyright 2003 Jean-Philippe Vert
  * Copyright 2005 Jean-Philippe Vert, Hiroto Saigo
  *
- * Shogun specific adjustments Written (W) 2007-2008 Soeren Sonnenburg
+ * Shogun specific adjustments Written (W) 2007-2008,2010 Soeren Sonnenburg
  * 
  * Reference:
  * H. Saigo, J.-P. Vert, T. Akutsu and N. Ueda, "Protein homology
@@ -39,9 +39,6 @@ const char* CLocalAlignmentStringKernel::aaList= "ARNDCQEGHILKMFPSTWYV";    /* T
 /*****************/
 /* SW parameters */
 /*****************/
-
-#define OPENING 12                              /* Gap opening penalty */
-#define EXTENSION 2                             /* Gap extension penalty */
 
 /* mutation matrix */
 const int32_t CLocalAlignmentStringKernel::blosum[] = {
@@ -94,39 +91,22 @@ const int32_t CLocalAlignmentStringKernel::blosum[] = {
 
 int32_t CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 
-CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(void)
-  : CStringKernel<char>(0)
-{
-	SG_UNSTABLE("CLocalAlignmentStringKernel::"
-				"CLocalAlignmentStringKernel(void)", "\n");
-
-	scaled_blosum=new int32_t[sizeof(blosum)];
-	init_logsum();
-
-	initialized = false;
-
-	isAA = NULL;
-	aaIndex = NULL;
-
-	opening = 0;
-	extension = 0;
-}
-
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(int32_t size)
-: CStringKernel<char>(size), initialized(false)
+: CStringKernel<char>(size)
 {
-	scaled_blosum=new int32_t[sizeof(blosum)];
-	init_logsum();
-	initialize();
+	init();
+	init_static_variables();
 }
 
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r)
-: CStringKernel<char>(10), initialized(false)
+	CStringFeatures<char>* l, CStringFeatures<char>* r,
+	float64_t opening, float64_t extension)
+: CStringKernel<char>()
 {
-	scaled_blosum=new int32_t[sizeof(blosum)];
-	init_logsum();
-	initialize();
+	init();
+	m_opening=opening;
+	m_extension=extension;
+	init_static_variables();
 	init(l, r);
 }
 
@@ -193,7 +173,7 @@ float32_t CLocalAlignmentStringKernel::LogSum2(float32_t p1, float32_t p2)
 }
 
 
-void CLocalAlignmentStringKernel::initialize(void)
+void CLocalAlignmentStringKernel::init_static_variables()
      /* Initialize all static variables. This function should be called once before computing the first pair HMM score */
 {
   register int32_t i;
@@ -216,8 +196,8 @@ void CLocalAlignmentStringKernel::initialize(void)
 
 
   /* Scale of gap penalties */
-  opening = (int32_t) floor(OPENING * SCALING*INTSCALE);
-  extension = (int32_t) floor(EXTENSION * SCALING*INTSCALE);
+  m_opening = (int32_t) floor(m_opening * SCALING*INTSCALE);
+  m_extension = (int32_t) floor(m_extension * SCALING*INTSCALE);
 }
 
 
@@ -308,7 +288,7 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
       frompos = old*cl + j;            /* index of the state (i-1,j) */
       
       /* State RX */
-      logX[curpos] = LOGP( - opening + logM[frompos] , - extension + logX[frompos] );
+      logX[curpos] = LOGP( - m_opening + logM[frompos] , - m_extension + logX[frompos] );
       /*      printf("%.5f\n",logX[curpos]);*/
       /*      printf("%.5f\n",logX_B[curpos]);*/
       /* State RX2 */
@@ -320,8 +300,8 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
       frompos = cur*cl + j-1;          /* index of the state (i,j-1) */
 
       /* State RY */
-      aux = LOGP( - opening + logM[frompos] , - extension + logY[frompos] );
-      logY[curpos] = LOGP( aux , - opening + logX[frompos] );
+      aux = LOGP( - m_opening + logM[frompos] , - m_extension + logY[frompos] );
+      logY[curpos] = LOGP( aux , - m_opening + logX[frompos] );
 
       /* State RY2 */
       aux = LOGP( logM[frompos] , logY2[frompos] );
@@ -381,10 +361,6 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
   int32_t lx=0,ly=0;       /* lengths of x and y */
   int32_t i,j;
 
-  /* If necessary, initialize static variables */
-  if (isAA == NULL)
-    initialize();
-
   bool free_x, free_y;
   char* x=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_x, lx, free_x);
   char* y=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_y, ly, free_y);
@@ -425,4 +401,21 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
   ((CStringFeatures<char>*) rhs)->free_feature_vector(y, idx_y, free_y);
 
   return result;
+}
+
+void CLocalAlignmentStringKernel::init()
+{
+	initialized = false;
+	isAA = NULL;
+	aaIndex = NULL;
+
+	m_opening = 10;
+	m_extension = 2;
+
+	scaled_blosum=new int32_t[sizeof(blosum)];
+	init_logsum();
+
+	m_parameters->add(&initialized, "initialized", "if kernel is initalized");
+	m_parameters->add(&m_opening, "opening", "opening gap opening penalty");
+	m_parameters->add(&m_extension, "extension", "extension gap extension penalty");
 }

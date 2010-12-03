@@ -18,25 +18,29 @@
 using namespace shogun;
 
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(void)
-: CStringKernel<uint16_t>(0),degree(0),inhomogene(false)
+: CStringKernel<uint16_t>()
 {
-	SG_UNSTABLE("CPolyMatchWordStringKernel::"
-				"CPolyMatchWordStringKernel(void)", "\n");
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	init();
 }
 
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(int32_t size, int32_t d, bool i)
-: CStringKernel<uint16_t>(size),degree(d),inhomogene(i)
+: CStringKernel<uint16_t>(size)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	init();
+
+	degree=d;
+	inhomogene=i;
 }
 
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(
 	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t d, bool i)
-: CStringKernel<uint16_t>(10),degree(d),inhomogene(i)
+: CStringKernel<uint16_t>()
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	init();
+
+	degree=d;
+	inhomogene=i;
+
 	init(l, r);
 }
 
@@ -82,4 +86,14 @@ float64_t CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
+}
+
+void CPolyMatchWordStringKernel::init()
+{
+	degree=0;
+	inhomogene=false;
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+
+	m_parameters->add(&degree, "degree", "Degree of poly-kernel.");
+	m_parameters->add(&inhomogene, "inhomogene", "True for inhomogene poly-kernel.");
 }

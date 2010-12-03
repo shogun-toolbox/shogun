@@ -139,11 +139,13 @@ public:
 
 	/** set generic type to T
 	 */
-	template<class T> void set_generic(void);
+	template<class T> void set_generic();
 
 	/** unset generic type
+	 *
+	 * this has to be called in classes specializing a template class
 	 */
-	void unset_generic(void);
+	void unset_generic();
 
 	/** prints registered parameters out
 	 *

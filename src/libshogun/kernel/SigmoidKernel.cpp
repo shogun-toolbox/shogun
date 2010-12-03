@@ -14,21 +14,29 @@
 
 using namespace shogun;
 
-CSigmoidKernel::CSigmoidKernel(void)
-: CDotKernel(0),gamma(0.0), coef0(0.0)
+CSigmoidKernel::CSigmoidKernel() : CDotKernel()
 {
-	SG_UNSTABLE("CSigmoidKernel::CSigmoidKernel(void)", "\n");
+	init();
 }
 
 CSigmoidKernel::CSigmoidKernel(int32_t size, float64_t g, float64_t c)
-: CDotKernel(size),gamma(g), coef0(c)
+: CDotKernel(size)
 {
+	init();
+
+	gamma=g;
+	coef0=c;
 }
 
 CSigmoidKernel::CSigmoidKernel(
 	CDotFeatures* l, CDotFeatures* r, int32_t size, float64_t g, float64_t c)
-: CDotKernel(size),gamma(g), coef0(c)
+: CDotKernel(size)
 {
+	init();
+
+	gamma=g;
+	coef0=c;
+
 	init(l,r);
 }
 
@@ -45,4 +53,13 @@ bool CSigmoidKernel::init(CFeatures* l, CFeatures* r)
 {
 	CDotKernel::init(l, r);
 	return init_normalizer();
+}
+
+void CSigmoidKernel::init()
+{
+	gamma=0.0;
+	coef0=0.0;
+
+	m_parameters->add(&gamma, "gamma", "Gamma.");
+	m_parameters->add(&coef0, "coef0", "Coefficient 0.");
 }

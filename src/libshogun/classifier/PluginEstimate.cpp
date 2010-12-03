@@ -21,12 +21,24 @@ CPluginEstimate::CPluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
 : CClassifier(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10),
 	pos_model(NULL), neg_model(NULL), features(NULL)
 {
+	m_parameters->add(&m_pos_pseudo,
+			"pos_pseudo","pseudo count for positive class");
+	m_parameters->add(&m_neg_pseudo,
+			"neg_pseudo", "pseudo count for negative class");
+
+	m_parameters->add((CSGObject**) &pos_model,
+			"pos_model", "LinearHMM modelling positive class.");
+	m_parameters->add((CSGObject**) &neg_model,
+			"neg_model", "LinearHMM modelling negative class.");
+
+	m_parameters->add((CSGObject**) &features,
+			"features", "String Features.");
 }
 
 CPluginEstimate::~CPluginEstimate()
 {
-	delete pos_model;
-	delete neg_model;
+	SG_UNREF(pos_model);
+	SG_UNREF(neg_model);
 
 	SG_UNREF(features);
 }
@@ -46,11 +58,14 @@ bool CPluginEstimate::train(CFeatures* data)
 	}
 	ASSERT(features);
 
-	delete pos_model;
-	delete neg_model;
+	SG_UNREF(pos_model);
+	SG_UNREF(neg_model);
 
 	pos_model=new CLinearHMM(features);
 	neg_model=new CLinearHMM(features);
+
+	SG_REF(pos_model);
+	SG_REF(neg_model);
 
 	int32_t* pos_indizes=new int32_t[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
 	int32_t* neg_indizes=new int32_t[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];

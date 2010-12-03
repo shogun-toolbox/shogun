@@ -18,25 +18,29 @@
 using namespace shogun;
 
 CPolyMatchStringKernel::CPolyMatchStringKernel(void)
-: CStringKernel<char>(0), degree(0), inhomogene(false), rescaling(false)
+: CStringKernel<char>()
 {
-	SG_UNSTABLE("CPolyMatchStringKernel::CPolyMatchStringKernel(void)",
-				"\n");
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	init();
 }
 
 CPolyMatchStringKernel::CPolyMatchStringKernel(int32_t size, int32_t d, bool i)
-: CStringKernel<char>(size), degree(d), inhomogene(i), rescaling(false)
+: CStringKernel<char>(size)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	init();
+
+	degree=d;
+	inhomogene=i;
 }
 
 CPolyMatchStringKernel::CPolyMatchStringKernel(
 	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t d, bool i)
-: CStringKernel<char>(10), degree(d), inhomogene(i), rescaling(false)
+: CStringKernel<char>(10)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	init();
+
+	degree=d;
+	inhomogene=i;
+
 	init(l, r);
 }
 
@@ -78,4 +82,16 @@ float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return CMath::pow(result , degree);
+}
+
+void CPolyMatchStringKernel::init()
+{
+	degree=0;
+	inhomogene=false;
+	rescaling=false;
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+
+	m_parameters->add(&degree, "degree", "Degree of poly-kernel.");
+	m_parameters->add(&inhomogene, "inhomogene", "True for inhomogene poly-kernel.");
+	m_parameters->add(&rescaling, "rescaling", "True to rescale kernel with string length.");
 }

@@ -1180,6 +1180,7 @@ class CHMM : public CDistribution
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "HMM"; }
+
 	protected:
 		/**@name model specific variables.
 		 * these are p,q,a,b,N,M etc 

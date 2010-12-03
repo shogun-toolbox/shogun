@@ -82,33 +82,6 @@ struct SSKTripleFeature
  */
 template <class ST> class CStringFeatures : public CFeatures
 {
-	void init(void) {
-		set_generic<ST>();
-
-		m_parameters->add((CSGObject**) &alphabet, "alphabet");
-		m_parameters->add_vector(&features, &num_vectors, "features",
-								 "This contains the array of features.");
-		m_parameters->add_vector(&single_string,
-								 &length_of_single_string,
-								 "single_string",
-								 "Created by sliding window.");
-		m_parameters->add(&max_string_length, "max_string_length",
-						  "Length of longest string.");
-		m_parameters->add(&num_symbols, "num_symbols",
-						  "Number of used symbols.");
-		m_parameters->add(&original_num_symbols, "original_num_symbols",
-						  "Original number of used symbols.");
-		m_parameters->add(&order, "order",
-						  "Order used in higher order mapping.");
-		m_parameters->add(&preprocess_on_get, "preprocess_on_get",
-						  "Preprocess on-the-fly?");
-
-		/* TODO M_PARAMETERS->ADD?
-		 * /// order used in higher order mapping
-		 * ST* symbol_mask_table;
-		 */
-	}
-
 	public:
 		/** default constructor
 		 *
@@ -2004,6 +1977,36 @@ template <class ST> class CStringFeatures : public CFeatures
 			memcpy(target, features[num].string, len*sizeof(ST));
 			return target;
 		}
+
+	private:
+		void init(void)
+		{
+			set_generic<ST>();
+
+			m_parameters->add((CSGObject**) &alphabet, "alphabet");
+			m_parameters->add_vector(&features, &num_vectors, "features",
+					"This contains the array of features.");
+			m_parameters->add_vector(&single_string,
+					&length_of_single_string,
+					"single_string",
+					"Created by sliding window.");
+			m_parameters->add(&max_string_length, "max_string_length",
+					"Length of longest string.");
+			m_parameters->add(&num_symbols, "num_symbols",
+					"Number of used symbols.");
+			m_parameters->add(&original_num_symbols, "original_num_symbols",
+					"Original number of used symbols.");
+			m_parameters->add(&order, "order",
+					"Order used in higher order mapping.");
+			m_parameters->add(&preprocess_on_get, "preprocess_on_get",
+					"Preprocess on-the-fly?");
+
+			/* TODO M_PARAMETERS->ADD?
+			 * /// order used in higher order mapping
+			 * ST* symbol_mask_table;
+			 */
+		}
+
 
 	protected:
 

@@ -27,7 +27,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 {
 	public:
 		/** default constructor  */
-		CHistogramWordStringKernel(void);
+		CHistogramWordStringKernel();
 
 		/** constructor
 		 *
@@ -92,6 +92,9 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		{
 			return position*num_symbols+symbol+1;
 		}
+
+	private:
+		void init();
 
 	protected:
 		/** plugin estimate */

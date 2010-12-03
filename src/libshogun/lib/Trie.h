@@ -157,7 +157,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 {
 	public:
 		/** default constructor  */
-		CTrie(void);
+		CTrie();
 
 		/** constructor
 		 *
@@ -660,16 +660,15 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		int32_t* nofsKmers;
 };
 	template <class Trie>
-	CTrie<Trie>::CTrie(void)
+	CTrie<Trie>::CTrie()
 	: CSGObject(), degree(0), position_weights(NULL),
-		use_compact_terminal_nodes(true),
+		use_compact_terminal_nodes(false),
 		weights_in_tree(true)
 	{
-		SG_UNSTABLE("CTrie<Trie>::CTrie(void)", "\n");
 
-		TreeMemPtrMax=1024*1024/sizeof(Trie);
+		TreeMemPtrMax=0;
 		TreeMemPtr=0;
-		TreeMem=(Trie*)malloc(TreeMemPtrMax*sizeof(Trie));
+		TreeMem=NULL;
 
 		length=0;
 		trees=NULL;

@@ -687,6 +687,21 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
+		/** Can (optionally) be overridden to post-initialize some
+		 *  member variables which are not PARAMETER::ADD'ed.  Make
+		 *  sure that at first the overridden method
+		 *  BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void load_serializable_post(void) throw (ShogunException);
+
+	private:
+		/** Do basic initialisations like default settings
+		 * and registering parameters */
+		void init();
+
 	protected:
 		/** weights */
 		float64_t* weights;
