@@ -69,24 +69,18 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param size cache size
 		 */
 		CSimpleFeatures(int32_t size=0)
-		: CDotFeatures(size), num_vectors(0), num_features(0),
-		  feature_matrix(NULL), feature_cache(NULL) { init(); }
+			: CDotFeatures(size)
+		{
+			init();
+		}
 
 		/** copy constructor */
 		CSimpleFeatures(const CSimpleFeatures & orig)
-		: CDotFeatures(orig), num_vectors(orig.num_vectors),
-			num_features(orig.num_features),
-			feature_matrix(orig.feature_matrix),
-			feature_cache(orig.feature_cache)
+		: CDotFeatures(orig)
 		{
-			init();
-
-			if (orig.feature_matrix)
-			{
-				free_feature_matrix();
-				feature_matrix=new ST(num_vectors*num_features);
-				memcpy(feature_matrix, orig.feature_matrix, sizeof(float64_t)*int64_t(num_vectors)*num_features);
-			}
+			copy_feature_matrix(orig.feature_matrix,
+					orig.num_features, orig.num_vectors);
+			initialize_cache();
 		}
 
 		/** constructor
@@ -96,8 +90,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param num_vec number of vectors in matrix
 		 */
 		CSimpleFeatures(ST* src, int32_t num_feat, int32_t num_vec)
-		: CDotFeatures(0), num_vectors(0), num_features(0),
-			feature_matrix(NULL), feature_cache(NULL)
+		: CDotFeatures()
 		{
 			init();
 			copy_feature_matrix(src, num_feat, num_vec);
@@ -108,8 +101,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param loader File object via which to load data
 		 */
 		CSimpleFeatures(CFile* loader)
-		: CDotFeatures(loader), num_vectors(0), num_features(0),
-			feature_matrix(NULL), feature_cache(NULL)
+		: CDotFeatures(loader)
 		{
 			init();
 			load(loader);
@@ -136,6 +128,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		{
             delete[] feature_matrix;
             feature_matrix = NULL;
+			feature_matrix_num_features=num_features;
+			feature_matrix_num_vectors=num_vectors;
             num_vectors=0;
             num_features=0;
 		}
@@ -146,8 +140,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		void free_features()
 		{
 			free_feature_matrix();
-            delete feature_cache;
-            feature_cache = NULL;
+			SG_UNREF(feature_cache);
 		}
 
 		/** get feature vector
@@ -375,8 +368,12 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		{
 			free_feature_matrix();
 			feature_matrix=fm;
+			feature_matrix_num_features=num_feat;
+			feature_matrix_num_vectors=num_vec;
+
 			num_features=num_feat;
 			num_vectors=num_vec;
+			initialize_cache();
 		}
 
 		/** copy feature matrix
@@ -392,10 +389,14 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		{
 			free_feature_matrix();
 			feature_matrix=new ST[((int64_t) num_feat)*num_vec];
+			feature_matrix_num_features=num_feat;
+			feature_matrix_num_vectors=num_vec;
+
 			memcpy(feature_matrix, src, (sizeof(ST)*((int64_t) num_feat)*num_vec));
 
 			num_features=num_feat;
 			num_vectors=num_vec;
+			initialize_cache();
 		}
 
 		/** obtain simple features from other dotfeatures
@@ -411,6 +412,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 			free_feature_matrix();
 			feature_matrix=new ST[((int64_t) num_feat)*num_vec];
+			feature_matrix_num_features=num_feat;
+			feature_matrix_num_vectors=num_vec;
 
 			for (int32_t i=0; i<num_vec; i++)
 			{
@@ -495,12 +498,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		inline void set_num_features(int32_t num)
 		{ 
 			num_features= num;
-
-			if (num_features && num_vectors)
-			{
-				delete feature_cache;
-				feature_cache= new CCache<ST>(get_cache_size(), num_features, num_vectors);
-			}
+			initialize_cache();
 		}
 
 		/** set number of vectors
@@ -510,10 +508,17 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		inline void set_num_vectors(int32_t num)
 		{
 			num_vectors= num;
+			initialize_cache();
+		}
+
+		/* Initialize cache */
+		inline void initialize_cache()
+		{
 			if (num_features && num_vectors)
 			{
-				delete feature_cache;
+				SG_UNREF(feature_cache);
 				feature_cache= new CCache<ST>(get_cache_size(), num_features, num_vectors);
+				SG_REF(feature_cache);
 			}
 		}
 
@@ -759,13 +764,27 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			len=0;
 			return NULL;
 		}
+
 	private:
 		void init()
 		{
+			num_vectors=0;
+			num_features=0;
+
+			feature_matrix=NULL;
+			feature_matrix_num_vectors=0;
+			feature_matrix_num_features=0;
+
+			feature_cache=NULL;
+
 			set_generic<ST>();
-			m_parameters->add_matrix(&feature_matrix, &num_features,
-					&num_vectors, "feature_matrix",
-					"Number of features in cache.");
+			m_parameters->add(&num_vectors,
+						"num_vectors", "Number of vectors.");
+			m_parameters->add(&num_features,
+						"num_features", "Number of features.");
+			m_parameters->add_matrix(&feature_matrix,
+					&feature_matrix_num_features, &feature_matrix_num_vectors,
+					"feature_matrix", "Matrix of feature vectors / 1 vector per column.");
 		}
 
 	protected:
@@ -775,8 +794,13 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		/// number of features in cache
 		int32_t num_features;
 
-		/** feature matrix */
+		/** Feature matrix and its associated number of
+		 * vectors and features. Note that num_vectors / num_features
+		 * above have the same sizes if feature_matrix != NULL
+		 * */
 		ST* feature_matrix;
+		int32_t feature_matrix_num_vectors;
+		int32_t feature_matrix_num_features;
 
 		/** feature cache */
 		CCache<ST>* feature_cache;

@@ -41,4 +41,4 @@ def distribution_hmm_modular(fm_cube, N, M, pseudo, order, gap, reverse, num_exa
 
 if __name__=='__main__':
 	print 'HMM'
-	hmm(*parameter_list[0])
+	distribution_hmm_modular(*parameter_list[0])

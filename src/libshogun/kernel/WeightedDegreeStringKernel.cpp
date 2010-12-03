@@ -75,6 +75,9 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	degree=d;
 
 	weights=new float64_t[degree*(1+max_mismatch)];
+	weights_degree=degree;
+	weights_length=(1+max_mismatch);
+
 	for (int32_t i=0; i<degree*(1+max_mismatch); i++)
 		weights[i]=w[i];
 }
@@ -97,6 +100,8 @@ CWeightedDegreeStringKernel::~CWeightedDegreeStringKernel()
 
 	delete[] weights;
 	weights=NULL;
+	weights_degree=0;
+	weights_length=0;
 
 	delete[] block_weights;
 	block_weights=NULL;
@@ -571,6 +576,9 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 
 	delete[] weights;
 	weights=new float64_t[degree];
+	weights_degree=degree;
+	weights_length=1;
+
 	if (weights)
 	{
 		int32_t i;
@@ -628,6 +636,8 @@ bool CWeightedDegreeStringKernel::set_weights(
 	int32_t num_weights=degree*(length+max_mismatch);
 	delete[] weights;
 	weights=new float64_t[num_weights];
+	weights_degree=degree;
+	weights_length=length+max_mismatch;
 
 	if (weights)
 	{
@@ -657,6 +667,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 
 	delete[] position_weights;
 	position_weights=new float64_t[len];
+	position_weights_len=len;
 	ASSERT(tries);
 	tries->set_position_weights(position_weights);
 
@@ -995,7 +1006,11 @@ bool CWeightedDegreeStringKernel::set_max_mismatch(int32_t max)
 void CWeightedDegreeStringKernel::init()
 {
 	weights=NULL;
+	weights_degree=NULL;
+	weights_length=NULL;
+
 	position_weights=NULL;
+	position_weights_len=0;
 
 	weights_buffer=NULL;
 	mkl_stepsize=1;
@@ -1021,10 +1036,9 @@ void CWeightedDegreeStringKernel::init()
 
 	set_normalizer(new CFirstElementKernelNormalizer());
 
-	m_parameters->add_matrix(&weights, &degree,
-			&length, "weights",
-			"WD Kernel weights.");
-	m_parameters->add_vector(&position_weights, &seq_length,
+	m_parameters->add_matrix(&weights, &weights_degree, &weights_length,
+			"weights", "WD Kernel weights.");
+	m_parameters->add_vector(&position_weights, &position_weights_len,
 			"position_weights",
 			"Weights per position.");
 	m_parameters->add(&mkl_stepsize, "mkl_stepsize", "MKL step size.");

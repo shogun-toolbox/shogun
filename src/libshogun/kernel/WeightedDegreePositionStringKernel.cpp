@@ -88,6 +88,9 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	poim_tries=CTrie<POIMTrie>(d);
 
 	weights=new float64_t[d*(1+max_mismatch)];
+	weights_degree=degree;
+	weights_length=(1+max_mismatch);
+
 	for (int32_t i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
@@ -122,7 +125,9 @@ CWeightedDegreePositionStringKernel::~CWeightedDegreePositionStringKernel()
 	shift=NULL;
 
 	delete[] weights;
-	weights=NULL ;
+	weights=NULL;
+	weights_degree=0;
+	weights_length=0;
 
 	delete[] block_weights;
 	block_weights=NULL;
@@ -860,6 +865,9 @@ bool CWeightedDegreePositionStringKernel::set_wd_weights()
 
 	delete[] weights;
 	weights=new float64_t[degree];
+	weights_degree=degree;
+	weights_length=1;
+
 	if (weights)
 	{
 		int32_t i;
@@ -904,6 +912,8 @@ bool CWeightedDegreePositionStringKernel::set_weights(
 
 	delete[] weights;
 	weights=new float64_t[d*len];
+	weights_degree=d;
+	weights_length=len;
 
 	if (weights)
 	{
@@ -928,6 +938,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights(
 	}
 	delete[] position_weights;
 	position_weights=new float64_t[len];
+	position_weights_len=len;
 	tries.set_position_weights(position_weights);
 
 	if (position_weights)
@@ -957,31 +968,15 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(float64_t* pw
 		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, len);
 		return false;
 	}
-	if (0)
-	{
-		
-	if (!lhs)
-	{
-		SG_ERROR("lhs=NULL\n");
-		return false ;
-	}
-	if (lhs->get_num_vectors()!=num)
-	{
-		SG_ERROR("lhs->get_num_vectors()=%i, num=%i\n", lhs->get_num_vectors(), num);
-		return false;
-	}
-	}
 	
 	delete[] position_weights_lhs;
 	position_weights_lhs=new float64_t[len*num];
-	if (position_weights_lhs)
-	{
-		for (int32_t i=0; i<len*num; i++)
-			position_weights_lhs[i]=pws[i];
-		return true;
-	}
-	else
-		return false;
+	position_weights_lhs_len=len*num;
+
+	for (int32_t i=0; i<len*num; i++)
+		position_weights_lhs[i]=pws[i];
+
+	return true;
 }
 
 bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
@@ -1002,39 +997,15 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
 		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, len);
 		return false;
 	}
-	if (0)
-	{
-		
-	if (!rhs)
-	{
-		if (!lhs)
-		{
-			SG_ERROR("rhs=NULL and lhs=NULL\n");
-			return false;
-		}
-		if (lhs->get_num_vectors()!=num)
-		{
-			SG_ERROR("lhs->get_num_vectors()=%i, num=%i\n", lhs->get_num_vectors(), num);
-			return false;
-		}
-	} else
-		if (rhs->get_num_vectors()!=num)
-		{
-			SG_ERROR("rhs->get_num_vectors()=%i, num=%i\n", rhs->get_num_vectors(), num);
-			return false;
-		}
-	}
 	
 	delete[] position_weights_rhs;
 	position_weights_rhs=new float64_t[len*num];
-	if (position_weights_rhs)
-	{
-		for (int32_t i=0; i<len*num; i++)
-			position_weights_rhs[i]=pws[i];
-		return true;
-	}
-	else
-		return false;
+	position_weights_rhs_len=len*num;
+
+	for (int32_t i=0; i<len*num; i++)
+		position_weights_rhs[i]=pws[i];
+
+	return true;
 }
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
@@ -1923,16 +1894,21 @@ void CWeightedDegreePositionStringKernel::load_serializable_post(void) throw (Sh
 
 	tries=CTrie<DNATrie>(degree);
 	poim_tries=CTrie<POIMTrie>(degree);
-	init_block_weights();
+
+	if (weights)
+		init_block_weights();
 }
 
 void CWeightedDegreePositionStringKernel::init()
 {
 	weights=NULL;
 	position_weights=NULL;
+	position_weights_len=0;
 
 	position_weights_lhs=NULL;
+	position_weights_lhs_len=0;
 	position_weights_rhs=NULL;
+	position_weights_rhs_len=0;
 
 	weights_buffer=NULL;
 	mkl_stepsize=1;
@@ -1964,13 +1940,15 @@ void CWeightedDegreePositionStringKernel::init()
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 
-	m_parameters->add_matrix(&weights, &degree,
-			&length, "weights",
-			"WD Kernel weights.");
-	m_parameters->add_vector(&position_weights_lhs, &seq_length,
+	m_parameters->add_matrix(&weights, &weights_degree, &weights_length,
+			"weights", "WD Kernel weights.");
+	m_parameters->add_vector(&position_weights, &position_weights_len,
+			"position_weights",
+			"Weights per position.");
+	m_parameters->add_vector(&position_weights_lhs, &position_weights_lhs_len,
 			"position_weights_lhs",
 			"Weights per position left hand side.");
-	m_parameters->add_vector(&position_weights_rhs, &seq_length,
+	m_parameters->add_vector(&position_weights_rhs, &position_weights_rhs_len,
 			"position_weights_rhs",
 			"Weights per position right hand side.");
 	m_parameters->add_vector(&shift, &shift_len,

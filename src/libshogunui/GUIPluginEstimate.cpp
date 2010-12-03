@@ -33,6 +33,7 @@ bool CGUIPluginEstimate::new_estimator(float64_t pos, float64_t neg)
 {
 	SG_UNREF(estimator);
 	estimator=new CPluginEstimate(pos, neg);
+	SG_REF(estimator);
 
 	if (!estimator)
 		SG_ERROR("Could not create new plugin estimator, pos_pseudo %f, neg_pseudo %f\n", pos_pseudo, neg_pseudo);

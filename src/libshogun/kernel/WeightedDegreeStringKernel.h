@@ -733,8 +733,16 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *length must match seq_length if != 0
 		 */
 		float64_t* weights;
+		/** degree */
+		int32_t weights_degree;
+		/** length */
+		int32_t weights_length;
+
+
 		/** position weights */
 		float64_t* position_weights;
+		/** position weights */
+		int32_t position_weights_len;
 		/** weights buffer */
 		float64_t* weights_buffer;
 		/** MKL step size */

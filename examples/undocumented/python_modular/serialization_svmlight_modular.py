@@ -115,4 +115,4 @@ def serialization_svmlight_modular(num, dist, width, C):
 
 if __name__=='__main__':
 	print 'Serialization SVMLight'
-	features_string_word_modular(*parameter_list[0])
+	serialization_svmlight_modular(*parameter_list[0])

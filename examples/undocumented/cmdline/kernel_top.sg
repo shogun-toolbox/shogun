@@ -1,4 +1,5 @@
 % Plugin Estimate
+loglevel DEBUG
 print PluginEstimate w/ HistogramWord
 
 set_features TRAIN ../data/fm_train_dna.dat DNA
@@ -13,7 +14,7 @@ train_estimator
 
 set_kernel HISTOGRAM WORD 10
 km_train.txt = get_kernel_matrix TRAIN
-
-% not supported yet;
-%	lab.txt = plugin_estimate_classify
-km_text.txt = get_kernel_matrix TEST
+%
+%% not supported yet;
+%%	lab.txt = plugin_estimate_classify
+%km_text.txt = get_kernel_matrix TEST

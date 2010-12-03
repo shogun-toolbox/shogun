@@ -29,22 +29,28 @@ def tester(tests):
 			continue
 		fname = ""
 
-		try:
-			n=len(mod.parameter_list)
-			for i in xrange(n):
-				fname = get_fname(mod_name, i)
+		n=len(mod.parameter_list)
+		for i in xrange(n):
+			fname = get_fname(mod_name, i)
+			setting_str = "%s setting %d/%d" % (t,i+1,n)
+			try:
 				a = run_test(mod, mod_name, i)
 				b = pickle.load(file(fname))
 
-				setting_str = "%s setting %d/%d" % (t,i+1,n)
-				if compare(a,b):
-					print "%-60s OK" % setting_str
-				else:
-					print "%-60s ERROR" % setting_str
+				try:
+					if compare(a,b):
+						print "%-60s OK" % setting_str
+					else:
+						print "%-60s ERROR" % setting_str
+					import pdb
+					pdb.set_trace()
+				except:
+					import pdb
+					pdb.set_trace()
+			except Exception, e:
+				print "%-60s EXCEPTION %s" % (setting_str,e)
+				pass
 
-		except Exception, e:
-			print " ERROR: %s " % e
-			continue
 
 if __name__=='__main__':
 	from optparse import OptionParser

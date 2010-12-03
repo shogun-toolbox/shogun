@@ -58,6 +58,7 @@ def generator(tests):
 		fname = ""
 
 		print "%-60s" % mod_name,
+		#print "%+60s" % "...",
 		try:
 			for i in xrange(len(mod.parameter_list)):
 				fname = get_fname(mod_name, i)

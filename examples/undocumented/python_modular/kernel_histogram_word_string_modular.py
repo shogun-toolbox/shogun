@@ -10,11 +10,11 @@ def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=test
 
 	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA, Labels
 	from shogun.Kernel import HistogramWordStringKernel
-	from shogun.Classifier import PluginEstimate
-
+	from shogun.Classifier import PluginEstimate#, MSG_DEBUG
 
 	reverse = reverse
 	charfeat=StringCharFeatures(DNA)
+	#charfeat.io.set_loglevel(MSG_DEBUG)
 	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)

@@ -222,7 +222,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 bool CSGObject::load_serializable(CSerializableFile* file,
 								   const char* prefix)
 {
-	SG_DEBUG("Loading CSGObject '%s'\n", get_name());
+	SG_DEBUG("START LOADING CSGObject '%s'\n", get_name());
 	try
 	{
 		load_serializable_pre();
@@ -264,6 +264,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 				   "called!\n", prefix, get_name());
 		return false;
 	}
+	SG_DEBUG("DONE LOADING CSGObject '%s'\n", get_name());
 
 	return true;
 }

@@ -705,12 +705,24 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 	protected:
 		/** weights */
 		float64_t* weights;
+		/** degree */
+		int32_t weights_degree;
+		/** length */
+		int32_t weights_length;
+
 		/** position weights */
 		float64_t* position_weights;
+		/** position weights len */
+		int32_t position_weights_len;
+
 		/** position weights left-hand side */
 		float64_t* position_weights_lhs;
+		/** position weights len */
+		int32_t position_weights_lhs_len;
 		/** position weights right-hand side */
 		float64_t* position_weights_rhs;
+		/** position weights len */
+		int32_t position_weights_rhs_len;
 		/** position mask */
 		bool* position_mask;
 

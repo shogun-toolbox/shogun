@@ -12,7 +12,7 @@ def classifier_svmlight_batch_linadd_modular(fm_train_dna, fm_test_dna,
 		label_train_dna, degree, C, epsilon, num_threads):
 
 	from shogun.Features import StringCharFeatures, Labels, DNA
-	from shogun.Kernel import WeightedDegreeStringKernel
+	from shogun.Kernel import WeightedDegreeStringKernel, MSG_DEBUG
 	try:
 		from shogun.Classifier import SVMLight
 	except ImportError:
@@ -20,6 +20,7 @@ def classifier_svmlight_batch_linadd_modular(fm_train_dna, fm_test_dna,
 		return
 
 	feats_train=StringCharFeatures(DNA)
+	#feats_train.io.set_loglevel(MSG_DEBUG)
 	feats_train.set_features(fm_train_dna)
 	feats_test=StringCharFeatures(DNA)
 	feats_test.set_features(fm_test_dna)

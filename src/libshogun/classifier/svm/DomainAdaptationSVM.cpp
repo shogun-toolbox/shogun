@@ -25,7 +25,8 @@ CDomainAdaptationSVM::CDomainAdaptationSVM() : CSVMLight()
 
 CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab, CSVM* pre_svm, float64_t B_param) : CSVMLight(C, k, lab)
 {
-  init(pre_svm, B_param);
+	init();
+	init(pre_svm, B_param);
 }
 
 CDomainAdaptationSVM::~CDomainAdaptationSVM()
@@ -53,7 +54,6 @@ void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 
 bool CDomainAdaptationSVM::is_presvm_sane()
 {
-
 	if (!presvm) {
 		SG_ERROR("presvm is null");
 	}
@@ -75,7 +75,6 @@ bool CDomainAdaptationSVM::is_presvm_sane()
 	}
 
 	return true;
-
 }
 
 
@@ -123,6 +122,7 @@ bool CDomainAdaptationSVM::train(CFeatures* data)
 
 CSVM* CDomainAdaptationSVM::get_presvm()
 {
+	SG_REF(presvm);
 	return presvm;
 }
 
@@ -167,6 +167,19 @@ CLabels* CDomainAdaptationSVM::classify(CFeatures* data)
 
     return out_current;
 
+}
+
+void CDomainAdaptationSVM::init()
+{
+	presvm=NULL;
+	B=0;
+	train_factor=1.0;
+
+	m_parameters->add((CSGObject**) &presvm, "presvm",
+					  "SVM to regularize against.");
+	m_parameters->add(&B, "B", "regularization parameter B.");
+	m_parameters->add(&train_factor,
+			"train_factor", "flag to switch off regularization in training.");
 }
 
 #endif //USE_SVMLIGHT
