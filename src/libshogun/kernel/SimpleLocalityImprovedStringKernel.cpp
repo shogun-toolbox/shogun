@@ -58,15 +58,19 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 
 	if (!result)
 		return false;
-	int32_t num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
+	const int32_t num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
+	const int32_t PYRAL = 2 * length - 1; // total window length
+	const int32_t pyra_len  = num_features-PYRAL+1;
+	const int32_t pyra_len2 = (int32_t) pyra_len/2;
+
 	delete[] pyramid_weights;
-	pyramid_weights = new float64_t[num_features];
-	num_pyramid_weights=num_features;
+
+	pyramid_weights = new float64_t[pyra_len];
+	num_pyramid_weights=pyra_len;
 
 	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
 		num_features, length);
 
-	const int32_t PYRAL = 2 * length - 1; // total window length
 	float64_t PYRAL_pot;
 	int32_t DEGREE1_1  = (inner_degree & 0x1)==0;
 	int32_t DEGREE1_1n = (inner_degree & ~0x1)!=0;
@@ -90,8 +94,6 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	}
 	}
 
-	int32_t pyra_len  = num_features-PYRAL+1;
-	int32_t pyra_len2 = (int32_t) pyra_len/2;
 	{
 	int32_t j;
 	for (j = 0; j < pyra_len; j++)
@@ -223,9 +225,9 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 
 void CSimpleLocalityImprovedStringKernel::init()
 {
-	length = 0;
-	inner_degree = 0;
-	outer_degree = 0;
+	length = 3;
+	inner_degree = 3;
+	outer_degree = 1;
 	pyramid_weights=NULL;
 	num_pyramid_weights=0;
 

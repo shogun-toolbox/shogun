@@ -31,7 +31,7 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CSimpleLocalityImprovedStringKernel(void);
+		CSimpleLocalityImprovedStringKernel();
 
 		/** constructor
 		 *
