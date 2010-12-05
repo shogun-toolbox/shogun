@@ -32,7 +32,7 @@ template<class T> struct TString {
 template <class T> struct TSparseEntry {
 	/** feature index  */
 	index_t feat_index;
-	/** entry ...  MUST BE THE LAST MEMBER!  */
+	/** entry ... */
 	T entry;
 };
 

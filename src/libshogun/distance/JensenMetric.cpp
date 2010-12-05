@@ -59,10 +59,13 @@ float64_t CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
 		for (int32_t i=0; i<alen; i++)
 		{
 			absTmp=0.5*(avec[i]+bvec[i]);
-			if(avec[i]>0)
-				result+=avec[i]*log(avec[i]/absTmp);
-			if(bvec[i]>0)
-				result+=bvec[i]*log(bvec[i]/absTmp);
+			if (absTmp>0)
+			{
+				if(avec[i]>0)
+					result+=avec[i]*log(avec[i]/absTmp);
+				if(bvec[i]>0)
+					result+=bvec[i]*log(bvec[i]/absTmp);
+			}
 		}
 
 	}

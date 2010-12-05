@@ -903,26 +903,27 @@ bool CWeightedDegreePositionStringKernel::set_wd_weights()
 bool CWeightedDegreePositionStringKernel::set_weights(
 	float64_t* ws, int32_t d, int32_t len)
 {
-	SG_DEBUG("degree = %i  d=%i\n", degree, d);
+	if (d!=degree || len<0)
+		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree);
+
 	degree=d;
 	length=len;
 
 	if (len <= 0)
 		len=1;
 
-	delete[] weights;
-	weights=new float64_t[d*len];
-	weights_degree=d;
-	weights_length=len;
+	weights_degree=degree;
+	weights_length=len+max_mismatch;
 
-	if (weights)
-	{
-		for (int32_t i=0; i<degree*len; i++)
-			weights[i]=ws[i];
-		return true;
-	}
-	else
-		return false;
+	SG_DEBUG("Creating weights of size %dx%d\n", weights_degree, weights_length);
+	int32_t num_weights=weights_degree*weights_length;
+	delete[] weights;
+	weights=new float64_t[num_weights];
+
+	for (int32_t i=0; i<degree*len; i++)
+		weights[i]=ws[i];
+
+	return true;
 }
 
 bool CWeightedDegreePositionStringKernel::set_position_weights(
@@ -1921,6 +1922,7 @@ void CWeightedDegreePositionStringKernel::init()
 	shift_len=0;
 
 	block_weights=NULL;
+	block_computation=true;
 	type=E_EXTERNAL;
 	tries=CTrie<DNATrie>(1);
 	poim_tries=CTrie<POIMTrie>(1);

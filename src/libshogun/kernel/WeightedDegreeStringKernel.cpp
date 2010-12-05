@@ -46,7 +46,7 @@ struct S_THREAD_PARAM
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel ()
-: CStringKernel<char>(10)
+: CStringKernel<char>()
 {
 	init();
 }
@@ -54,7 +54,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel ()
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	int32_t d, EWDKernType t)
-: CStringKernel<char>(10)
+: CStringKernel<char>()
 {
 	init();
 
@@ -628,27 +628,25 @@ bool CWeightedDegreeStringKernel::set_weights(
 	if (d!=degree || len<0)
 		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree);
 
+	degree=d;
 	length=len;
 
-	if (length==0)
-		length=1;
+	if (len <= 0)
+		len=1;
 
-	int32_t num_weights=degree*(length+max_mismatch);
+	weights_degree=degree;
+	weights_length=len+max_mismatch;
+
+
+	SG_DEBUG("Creating weights of size %dx%d\n", weights_degree, weights_length);
+	int32_t num_weights=weights_degree*weights_length;
 	delete[] weights;
 	weights=new float64_t[num_weights];
-	weights_degree=degree;
-	weights_length=length+max_mismatch;
 
-	if (weights)
-	{
-		for (int32_t i=0; i<num_weights; i++) {
-			if (ws[i]) // len(ws) might be != num_weights?
-				weights[i]=ws[i];
-		}
-		return true;
-	}
-	else
-		return false;
+	for (int32_t i=0; i<degree*len; i++)
+		weights[i]=ws[i];
+
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::set_position_weights(
@@ -686,19 +684,16 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
 	delete[] block_weights;
 	block_weights=new float64_t[CMath::max(seq_length,degree)];
 
-	if (block_weights)
-	{
-		int32_t k;
-		float64_t d=degree; // use float to evade rounding errors below
+	int32_t k;
+	float64_t d=degree; // use float to evade rounding errors below
 
-		for (k=0; k<degree; k++)
-			block_weights[k]=
-				(-CMath::pow(k, 3)+(3*d-3)*CMath::pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
-		for (k=degree; k<seq_length; k++)
-			block_weights[k]=(-d+3*k+4)/3;
-	}
+	for (k=0; k<degree; k++)
+		block_weights[k]=
+			(-CMath::pow(k, 3)+(3*d-3)*CMath::pow(k, 2)+(9*d-2)*k+6*d)/(3*d*(d+1));
+	for (k=degree; k<seq_length; k++)
+		block_weights[k]=(-d+3*k+4)/3;
 
-	return (block_weights!=NULL);
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::init_block_weights_from_wd_external()
@@ -707,26 +702,22 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd_external()
 	delete[] block_weights;
 	block_weights=new float64_t[CMath::max(seq_length,degree)];
 
-	if (block_weights)
+	int32_t i=0;
+	block_weights[0]=weights[0];
+	for (i=1; i<CMath::max(seq_length,degree); i++)
+		block_weights[i]=0;
+
+	for (i=1; i<CMath::max(seq_length,degree); i++)
 	{
-		int32_t i=0;
-		block_weights[0]=weights[0];
-		for (i=1; i<CMath::max(seq_length,degree); i++)
-			block_weights[i]=0;
+		block_weights[i]=block_weights[i-1];
 
-		for (i=1; i<CMath::max(seq_length,degree); i++)
-		{
-			block_weights[i]=block_weights[i-1];
+		float64_t contrib=0;
+		for (int32_t j=0; j<CMath::min(degree,i+1); j++)
+			contrib+=weights[j];
 
-			float64_t contrib=0;
-			for (int32_t j=0; j<CMath::min(degree,i+1); j++)
-				contrib+=weights[j];
-
-			block_weights[i]+=contrib;
-		}
+		block_weights[i]+=contrib;
 	}
-
-	return (block_weights!=NULL);
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::init_block_weights_const()
@@ -734,13 +725,9 @@ bool CWeightedDegreeStringKernel::init_block_weights_const()
 	delete[] block_weights;
 	block_weights=new float64_t[seq_length];
 
-	if (block_weights)
-	{
-		for (int32_t i=1; i<seq_length+1 ; i++)
-			block_weights[i-1]=1.0/seq_length;
-	}
-
-	return (block_weights!=NULL);
+	for (int32_t i=1; i<seq_length+1 ; i++)
+		block_weights[i-1]=1.0/seq_length;
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::init_block_weights_linear()
@@ -748,13 +735,10 @@ bool CWeightedDegreeStringKernel::init_block_weights_linear()
 	delete[] block_weights;
 	block_weights=new float64_t[seq_length];
 
-	if (block_weights)
-	{
-		for (int32_t i=1; i<seq_length+1 ; i++)
-			block_weights[i-1]=degree*i;
-	}
+	for (int32_t i=1; i<seq_length+1 ; i++)
+		block_weights[i-1]=degree*i;
 
-	return (block_weights!=NULL);
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
@@ -762,16 +746,13 @@ bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
 	delete[] block_weights;
 	block_weights=new float64_t[seq_length];
 
-	if (block_weights)
-	{
-		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=((float64_t) i)*i;
+	for (int32_t i=1; i<degree+1 ; i++)
+		block_weights[i-1]=((float64_t) i)*i;
 
-		for (int32_t i=degree+1; i<seq_length+1 ; i++)
-			block_weights[i-1]=i;
-	}
+	for (int32_t i=degree+1; i<seq_length+1 ; i++)
+		block_weights[i-1]=i;
 
-	return (block_weights!=NULL);
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
@@ -779,16 +760,12 @@ bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
 	delete[] block_weights;
 	block_weights=new float64_t[seq_length];
 
-	if (block_weights)
-	{
-		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=((float64_t) i)*i*i;
+	for (int32_t i=1; i<degree+1 ; i++)
+		block_weights[i-1]=((float64_t) i)*i*i;
 
-		for (int32_t i=degree+1; i<seq_length+1 ; i++)
-			block_weights[i-1]=i;
-	}
-
-	return (block_weights!=NULL);
+	for (int32_t i=degree+1; i<seq_length+1 ; i++)
+		block_weights[i-1]=i;
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::init_block_weights_exp()
@@ -796,16 +773,13 @@ bool CWeightedDegreeStringKernel::init_block_weights_exp()
 	delete[] block_weights;
 	block_weights=new float64_t[seq_length];
 
-	if (block_weights)
-	{
-		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=exp(((float64_t) i/10.0));
+	for (int32_t i=1; i<degree+1 ; i++)
+		block_weights[i-1]=exp(((float64_t) i/10.0));
 
-		for (int32_t i=degree+1; i<seq_length+1 ; i++)
-			block_weights[i-1]=i;
-	}
+	for (int32_t i=degree+1; i<seq_length+1 ; i++)
+		block_weights[i-1]=i;
 
-	return (block_weights!=NULL);
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::init_block_weights_log()
@@ -813,16 +787,13 @@ bool CWeightedDegreeStringKernel::init_block_weights_log()
 	delete[] block_weights;
 	block_weights=new float64_t[seq_length];
 
-	if (block_weights)
-	{
-		for (int32_t i=1; i<degree+1 ; i++)
-			block_weights[i-1]=CMath::pow(CMath::log((float64_t) i),2);
+	for (int32_t i=1; i<degree+1 ; i++)
+		block_weights[i-1]=CMath::pow(CMath::log((float64_t) i),2);
 
-		for (int32_t i=degree+1; i<seq_length+1 ; i++)
-			block_weights[i-1]=i-degree+1+CMath::pow(CMath::log(degree+1.0),2);
-	}
+	for (int32_t i=degree+1; i<seq_length+1 ; i++)
+		block_weights[i-1]=i-degree+1+CMath::pow(CMath::log(degree+1.0),2);
 
-	return (block_weights!=NULL);
+	return true;
 }
 
 bool CWeightedDegreeStringKernel::init_block_weights()
@@ -1006,8 +977,8 @@ bool CWeightedDegreeStringKernel::set_max_mismatch(int32_t max)
 void CWeightedDegreeStringKernel::init()
 {
 	weights=NULL;
-	weights_degree=NULL;
-	weights_length=NULL;
+	weights_degree=0;
+	weights_length=0;
 
 	position_weights=NULL;
 	position_weights_len=0;
@@ -1019,9 +990,9 @@ void CWeightedDegreeStringKernel::init()
 
 	max_mismatch=0;
 	seq_length=0;
-	block_computation=true;
 
 	block_weights=NULL;
+	block_computation=true;
 	type=E_WD;
 	which_degree=-1;
 	tries=NULL;
