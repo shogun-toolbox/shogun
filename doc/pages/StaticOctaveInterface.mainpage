@@ -2,6 +2,7 @@
 
 
 \section Features_sec Features
+\arg \b pr_loqo \verbatim [results]=sg('pr_loqo', 'Var1', Var1, 'Var2', Var2) \endverbatim
 \arg \b load_features \verbatim sg('load_features', filename, feature_class, type, target[, size[, comp_features]]) \endverbatim
 \arg \b save_features \verbatim sg('save_features', filename, type, target) \endverbatim
 \arg \b clean_features \verbatim sg('clean_features', 'TRAIN|TEST') \endverbatim

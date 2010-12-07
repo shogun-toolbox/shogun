@@ -365,6 +365,9 @@ python name_of_example.py
 \section python_modular_serialization_examples Serialization
 
 
+\li <b>../examples/documented/python_modular/serialization_complex_example.py</b>
+\verbinclude serialization_complex_example.py
+
 \li <b>../examples/documented/python_modular/serialization_svmlight_modular.py</b>
 \verbinclude serialization_svmlight_modular.py
 
