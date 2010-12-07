@@ -153,10 +153,13 @@ package-from-release:
 
 update-webpage: 
 	md5sum $(DESTDIR).tar.bz2 >$(DESTDIR).md5sum
+	md5sum $(DATADESTDIR).tar.bz2 >$(DATADESTDIR).md5sum
 	gpg --sign $(DESTDIR).tar.bz2
 
 	ssh km mkdir -m 0755 -p /var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources
-	scp $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
+	rsync --progress $(DATADESTDIR).tar.bz2 $(DATADESTDIR).md5sum \
+		km:/var/www/shogun-toolbox.org/archives/shogun/data/
+	rsync --progress $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
 		km:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
 	ssh km chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.*"
 	
