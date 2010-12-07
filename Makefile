@@ -202,3 +202,4 @@ clean:
 distclean:
 	$(MAKE) -C src distclean
 	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
+	rm -rf $(DATADESTDIR) $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
