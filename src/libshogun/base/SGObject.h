@@ -234,6 +234,26 @@ protected:
 	 */
 	virtual void load_serializable_post() throw (ShogunException);
 
+	/** Can (optionally) be overridden to pre-initialize some member
+	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+	 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_PRE
+	 *  is called.
+	 *
+	 *  @exception ShogunException Will be thrown if an error
+	 *                             occurres.
+	 */
+	virtual void save_serializable_pre() throw (ShogunException);
+
+	/** Can (optionally) be overridden to post-initialize some member
+	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+	 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_POST
+	 *  is called.
+	 *
+	 *  @exception ShogunException Will be thrown if an error
+	 *                             occurres.
+	 */
+	virtual void save_serializable_post() throw (ShogunException);
+
 private:
 	void set_global_objects();
 	void unset_global_objects();
@@ -251,6 +271,8 @@ private:
 	EPrimitiveType m_generic;
 	bool m_load_pre_called;
 	bool m_load_post_called;
+	bool m_save_pre_called;
+	bool m_save_post_called;
 
 	int32_t m_refcount;
 

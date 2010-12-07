@@ -449,9 +449,9 @@ class CKernel : public CSGObject
 		 *
 		 * @return true if features are the same
 		 */
-		inline bool lhs_equals_rhs()
+		inline bool get_lhs_equals_rhs()
 		{
-			return lhs==rhs;
+			return lhs_equals_rhs;
 		}
 
 		/** remove lhs and rhs from kernel */
@@ -855,6 +855,36 @@ class CKernel : public CSGObject
 			return NULL;
 		}
 
+		/** Can (optionally) be overridden to post-initialize some member
+		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+		 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_POST
+		 *  is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void load_serializable_post() throw (ShogunException);
+
+		/** Can (optionally) be overridden to pre-initialize some member
+		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+		 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_PRE
+		 *  is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void save_serializable_pre() throw (ShogunException);
+
+		/** Can (optionally) be overridden to post-initialize some member
+		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+		 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_POST
+		 *  is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void save_serializable_post() throw (ShogunException);
+
 	private:
 		/** Do basic initialisations like default settings
 		 * and registering parameters */
@@ -944,6 +974,9 @@ class CKernel : public CSGObject
 		CFeatures* lhs;
 		/// feature vectors to occur on right hand side
 		CFeatures* rhs;
+
+		/// lhs
+		bool lhs_equals_rhs;
 
 		/// number of feature vectors on left hand side
 		int32_t num_lhs;

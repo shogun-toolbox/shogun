@@ -35,7 +35,7 @@ CCustomKernel::CCustomKernel(CKernel* k)
 {
 	init();
 
-	if (k->lhs_equals_rhs())
+	if (k->get_lhs_equals_rhs())
 	{
 		int32_t cols=k->get_num_vec_lhs();
 		SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);

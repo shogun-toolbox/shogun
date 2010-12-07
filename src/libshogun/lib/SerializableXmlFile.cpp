@@ -20,14 +20,14 @@
 using namespace shogun;
 
 CSerializableXmlFile::CSerializableXmlFile(void)
-	:CSerializableFile() { init("", false); }
+	:CSerializableFile() { init(false); }
 
 CSerializableXmlFile::CSerializableXmlFile(const char* fname, char rw,
 										   bool format)
 	:CSerializableFile()
 {
 	CSerializableFile::init(NULL, rw, fname);
-	init(fname, format);
+	init(format);
 }
 
 CSerializableXmlFile::~CSerializableXmlFile()
@@ -101,7 +101,7 @@ CSerializableXmlFile::pop_node(void)
 }
 
 void
-CSerializableXmlFile::init(const char* fname, bool format)
+CSerializableXmlFile::init(bool format)
 {
 	m_format = format, m_doc = NULL;
 
@@ -112,13 +112,15 @@ CSerializableXmlFile::init(const char* fname, bool format)
 		close(); return;
 	}
 
+	SG_DEBUG("Opening '%s'\n", m_filename);
+
 	xmlNode* tmp;
 	switch (m_task) {
 	case 'r':
-		if ((m_doc = xmlReadFile(fname, NULL, 0)) == NULL
-			|| (tmp = xmlDocGetRootElement(m_doc)) == NULL) {
-			SG_WARNING("Could not open file `%s' for reading!\n",
-					   fname);
+		if ((m_doc = xmlReadFile(m_filename, NULL, XML_PARSE_HUGE | XML_PARSE_NONET)) == NULL
+			|| (tmp = xmlDocGetRootElement(m_doc)) == NULL)
+		{
+			SG_WARNING("Could not open file `%s' for reading!\n", m_filename);
 			close(); return;
 		}
 		m_stack_stream.push_back(tmp);

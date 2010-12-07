@@ -45,7 +45,7 @@ IGNORE_IN_CLASSLIST class CSerializableXmlFile
 	xmlDocPtr m_doc;
 	bool m_format;
 
-	void init(const char* fname, bool format);
+	void init(bool format);
 	bool push_node(const xmlChar* name);
 	bool join_node(const xmlChar* name);
 	bool next_node(const xmlChar* name);

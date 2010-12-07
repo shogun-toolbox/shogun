@@ -58,7 +58,7 @@ void CGaussianKernel::cleanup()
 	CKernel::cleanup();
 }
 
-void CGaussianKernel::precompute_squared(float64_t* &buf, CDotFeatures* df)
+void CGaussianKernel::precompute_squared_helper(float64_t* &buf, CDotFeatures* df)
 {
 	ASSERT(df);
 	int32_t num_vec=df->get_num_vectors();
@@ -74,14 +74,7 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 	cleanup();
 
 	CDotKernel::init(l, r);
-
-	precompute_squared(sq_lhs, (CDotFeatures*) lhs);
-
-	if (lhs==rhs)
-		sq_rhs=sq_lhs;
-	else
-		precompute_squared(sq_rhs, (CDotFeatures*) rhs);
-
+	precompute_squared();
 	return init_normalizer();
 }
 
@@ -89,6 +82,25 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
 	return exp(-result/width);
+}
+
+void CGaussianKernel::load_serializable_post(void) throw (ShogunException)
+{
+	CKernel::load_serializable_post();
+	precompute_squared();
+}
+
+void CGaussianKernel::precompute_squared()
+{
+	if (!lhs || !rhs)
+		return;
+
+	precompute_squared_helper(sq_lhs, (CDotFeatures*) lhs);
+
+	if (lhs==rhs)
+		sq_rhs=sq_lhs;
+	else
+		precompute_squared_helper(sq_rhs, (CDotFeatures*) rhs);
 }
 
 void CGaussianKernel::init()

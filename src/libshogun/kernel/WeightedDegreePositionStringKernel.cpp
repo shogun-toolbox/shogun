@@ -457,6 +457,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch(
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
 	delete[] max_shift_vec;
+
 	return result ;
 }
 
@@ -528,7 +529,6 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_position
 	char* avec, float64_t* pos_weights_lhs, int32_t alen, char* bvec,
 	float64_t* pos_weights_rhs, int32_t blen)
 {
-
 	float64_t* max_shift_vec = new float64_t[max_shift];
 	float64_t sum0=0 ;
 	for (int32_t i=0; i<max_shift; i++)
@@ -849,8 +849,7 @@ bool CWeightedDegreePositionStringKernel::set_shifts(
 		for (int32_t i=0; i<shift_len; i++)
 		{
 			shift[i] = shift_[i] ;
-			if (shift[i]>max_shift)
-				max_shift = shift[i] ;
+			max_shift = CMath::max(shift[i], max_shift);
 		}
 
 		ASSERT(max_shift>=0 && max_shift<=shift_len);
@@ -1891,7 +1890,7 @@ void CWeightedDegreePositionStringKernel::cleanup_POIM2()
 
 void CWeightedDegreePositionStringKernel::load_serializable_post(void) throw (ShogunException)
 {
-	CSGObject::load_serializable_post();
+	CKernel::load_serializable_post();
 
 	tries=CTrie<DNATrie>(degree);
 	poim_tries=CTrie<POIMTrie>(degree);
@@ -1916,6 +1915,7 @@ void CWeightedDegreePositionStringKernel::init()
 	degree=1;
 	length=0;
 
+	max_shift=0;
 	max_mismatch=0;
 	seq_length=0;
 	shift=NULL;
@@ -1924,6 +1924,7 @@ void CWeightedDegreePositionStringKernel::init()
 	block_weights=NULL;
 	block_computation=true;
 	type=E_EXTERNAL;
+	which_degree=-1;
 	tries=CTrie<DNATrie>(1);
 	poim_tries=CTrie<POIMTrie>(1);
 

@@ -134,7 +134,9 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 
     //increase reference counts
     SG_REF(l);
-    if (l!=r)
+    if (l==r)
+		lhs_equals_rhs=true;
+	else // l!=r
         SG_REF(r);
 
 	lhs=l;
@@ -662,6 +664,7 @@ void CKernel::remove_lhs_and_rhs()
 	SG_UNREF(lhs);
 	lhs = NULL;
 	num_lhs=0;
+	lhs_equals_rhs=false;
 
 #ifdef USE_SVMLIGHT
 	cache_reset();
@@ -675,7 +678,7 @@ void CKernel::remove_lhs()
 	SG_UNREF(lhs);
 	lhs = NULL;
 	num_lhs=NULL;
-
+	lhs_equals_rhs=false;
 #ifdef USE_SVMLIGHT
 	cache_reset();
 #endif //USE_SVMLIGHT
@@ -688,6 +691,7 @@ void CKernel::remove_rhs()
 		SG_UNREF(rhs);
 	rhs = NULL;
 	num_rhs=NULL;
+	lhs_equals_rhs=false;
 
 #ifdef USE_SVMLIGHT
 	cache_reset();
@@ -857,6 +861,29 @@ bool CKernel::init_optimization_svm(CSVM * svm)
 	return ret;
 }
 
+void CKernel::load_serializable_post() throw (ShogunException)
+{
+	CSGObject::load_serializable_post();
+	if (lhs_equals_rhs)
+		rhs=lhs;
+}
+
+void CKernel::save_serializable_pre() throw (ShogunException)
+{
+	CSGObject::save_serializable_pre();
+
+	if (lhs_equals_rhs)
+		rhs=NULL;
+}
+
+void CKernel::save_serializable_post() throw (ShogunException)
+{
+	CSGObject::save_serializable_post();
+
+	if (lhs_equals_rhs)
+		rhs=lhs;
+}
+
 void CKernel::init()
 {
 	cache_size=10;
@@ -883,6 +910,8 @@ void CKernel::init()
 					  "Feature vectors to occur on left hand side.");
 	m_parameters->add((CSGObject**) &rhs, "rhs",
 					  "Feature vectors to occur on right hand side.");
+	m_parameters->add(&lhs_equals_rhs, "lhs_equals_rhs",
+					  "If features on lhs are the same as on rhs.");
 	m_parameters->add(&num_lhs, "num_lhs",
 					  "Number of feature vectors on left hand side.");
 	m_parameters->add(&num_rhs, "num_rhs",

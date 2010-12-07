@@ -99,15 +99,33 @@ class CGaussianKernel: public CDotKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
+		/** Can (optionally) be overridden to post-initialize some
+		 *  member variables which are not PARAMETER::ADD'ed.  Make
+		 *  sure that at first the overridden method
+		 *  BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void load_serializable_post(void) throw (ShogunException);
+
+	private:
 		/** helper function to compute quadratic terms in
 		 * (a-b)^2 (== a^2+b^2-2ab)
 		 *
 		 * @param buf buffer to store squared terms (will be allocated)
 		 * @param df dot feature object based on which k(i,i) is computed
 		 * */
-		void precompute_squared(float64_t* &buf, CDotFeatures* df);
+		void precompute_squared();
 
-	private:
+		/** helper function to compute quadratic terms in
+		 * (a-b)^2 (== a^2+b^2-2ab)
+		 *
+		 * @param buf buffer to store squared terms (will be allocated)
+		 * @param df dot feature object based on which k(i,i) is computed
+		 * */
+		void precompute_squared_helper(float64_t* &buf, CDotFeatures* df);
+
 		void init();
 
 	protected:

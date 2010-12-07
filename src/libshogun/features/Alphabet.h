@@ -546,6 +546,7 @@ class CAlphabet : public CSGObject
 		 */
 		virtual void load_serializable_post(void) throw (ShogunException);
 
+	protected:
 		/** alphabet */
 		EAlphabet alphabet;
 		/** number of symbols */

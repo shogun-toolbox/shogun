@@ -1,11 +1,11 @@
-2010-12-XX Soeren Sonnenburg <sonne@debian.org>
+2010-12-07 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.10.0 (libshogun 9.0, libshogunui 6.0)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
-		- Create SVMLightOneClass
-		- Serialization of the most important shogun objects
+		- Serialization of objects deriving from CSGObject, i.e. all shogun objects
 		(SVM, Kernel, Features, Preprocessors, ...) as ASCII, JSON, XML and HDF5
+		- Create SVMLightOneClass
 		- Add CustomDistance in analogy to custom kernel
 		- Add HistogramIntersectionKernel (thanks Koen van de Sande for the patch)
 		- Matlab 2010a support
@@ -18,13 +18,14 @@
 		ascii floats and fprintf
 		- Compile fix when reference counting is disabled
 		- Fix set_position_weights for wd kernel (reported by Dave duVerle)
+		- Fix set_wd_weights for wd kernel.
 		- Fix crasher in SVMOcas (reported by Yaroslav)
 	* Cleanup and API Changes:
 		- Renamed SVM_light/SVR_light to SVMLight etc.
 		- Remove C prefix in front of non-serializable class names
 		- Drop CSimpleKernel and introduce CDotKernel as its base class. This
-		way all dot-product based kernels can be applied on top of DotFeatures.
-		For example, now only a single implementation of the linear 
+		way all dot-product based kernels can be applied on top of DotFeatures
+		and only a single implementation for such kernels is needed.
 
 2010-05-31 Soeren Sonnenburg <sonne@debian.org>
 

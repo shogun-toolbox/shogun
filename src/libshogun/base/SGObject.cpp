@@ -210,13 +210,54 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 								   const char* prefix)
 {
 	SG_DEBUG("START SAVING CSGObject '%s'\n", get_name());
-	bool result = m_parameters->save(file, prefix);
+	try
+	{
+		save_serializable_pre();
+	}
+	catch (ShogunException e)
+	{
+		SG_SWARNING("%s%s::save_serializable_pre(): ShogunException: "
+				   "%s\n", prefix, get_name(),
+				   e.get_exception_string());
+		return false;
+	}
+	if (!m_save_pre_called)
+	{
+		SG_SWARNING("%s%s::save_serializable_pre(): Implementation "
+				   "error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
+				   "called!\n", prefix, get_name());
+		return false;
+	}
+
+	if (!m_parameters->save(file, prefix))
+		return false;
+
+	try
+	{
+		save_serializable_post();
+	}
+	catch (ShogunException e)
+	{
+		SG_SWARNING("%s%s::save_serializable_post(): ShogunException: "
+				   "%s\n", prefix, get_name(),
+				   e.get_exception_string());
+		return false;
+	}
+
+	if (!m_save_post_called)
+	{
+		SG_SWARNING("%s%s::save_serializable_post(): Implementation "
+				   "error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
+				   "called!\n", prefix, get_name());
+		return false;
+	}
 
 	if (prefix == NULL || *prefix == '\0')
 		file->close();
+
 	SG_DEBUG("DONE SAVING CSGObject '%s'\n", get_name());
 
-	return result;
+	return true;;
 }
 
 bool CSGObject::load_serializable(CSerializableFile* file,
@@ -277,6 +318,16 @@ void CSGObject::load_serializable_pre() throw (ShogunException)
 void CSGObject::load_serializable_post() throw (ShogunException)
 {
 	m_load_post_called = true;
+}
+
+void CSGObject::save_serializable_pre() throw (ShogunException)
+{
+	m_save_pre_called = true;
+}
+
+void CSGObject::save_serializable_post() throw (ShogunException)
+{
+	m_save_post_called = true;
 }
 
 void CSGObject::init()
