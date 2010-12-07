@@ -161,7 +161,7 @@ update-webpage:
 		km:/var/www/shogun-toolbox.org/archives/shogun/data/
 	rsync --progress $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.gpg $(DESTDIR).md5sum \
 		km:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
-	ssh km chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.*"
+	ssh km chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.* /var/www/shogun-toolbox.org/archives/shogun/data/*"
 	
 	$(MAKE) -C examples
 	rm -rf doc/html
