@@ -6,7 +6,7 @@ def serialization_svmlight_modular(num, dist, width, C):
 	from shogun.Kernel import WeightedDegreeStringKernel, GaussianKernel
 	from shogun.Classifier import SVMLight
 	from numpy import concatenate, ones
-	from numpy.random import randn
+	from numpy.random import randn, seed
 
 	import sys
 	import types
@@ -60,6 +60,7 @@ def serialization_svmlight_modular(num, dist, width, C):
 
 	##################################################
 
+	seed(17)
 	traindata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1)
 	testdata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1);
 
@@ -101,17 +102,17 @@ def serialization_svmlight_modular(num, dist, width, C):
 	#print "#################################"
 
 	#print "unserializing SVM"
-	#svm2 = load(fn)
+	svm2 = load(fn)
 
 
 	#print "#################################"
 	#print "comparing training"
 
-	#svm2.train()
+	svm2.train()
 
 	#print "objective before serialization:", svm.get_objective()
 	#print "objective after serialization:", svm2.get_objective()
-	return svm
+	return svm, svm.get_objective(), svm2, svm2.get_objective()
 
 if __name__=='__main__':
 	print 'Serialization SVMLight'

@@ -4,7 +4,7 @@ lm=LoadMatrix()
 traindat = lm.load_numbers('../data/fm_train_real.dat')
 testdat = lm.load_numbers('../data/fm_test_real.dat')
 
-parameter_list = [[traindat,testdat,1.4,10],[traindat,testdat,1.5,10]]
+parameter_list = [[traindat+10,testdat+10,1.4,10],[traindat+10,testdat+10,1.5,10]]
 
 def preproc_logplusone_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
 

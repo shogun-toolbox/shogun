@@ -42,8 +42,8 @@ def tester(tests):
 						print "%-60s OK" % setting_str
 					else:
 						print "%-60s ERROR" % setting_str
-					import pdb
-					pdb.set_trace()
+						#import pdb
+						#pdb.set_trace()
 				except:
 					import pdb
 					pdb.set_trace()
