@@ -44,6 +44,9 @@ COMPRESS := bzip2
 MAINVERSION := $(shell awk '/Release/{print $$5;exit}' src/NEWS)
 VERSIONBASE := $(shell echo $(MAINVERSION) | cut -f 1-2 -d '.')
 EXTRAVERSION := 
+DATAMAINVERSION := $(shell awk '/Release/{print $$11;exit}' src/NEWS | tr -d '(,)' )
+DATAEXTRAVERSION :=
+DATARELEASENAME := shogun-data-$(DATAMAINVERSION)$(DATAEXTRAVERSION)
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 SVNVERSION := $(shell svn info 2>/dev/null | grep Revision: | cut -d ' ' -f 2)
 LOGFILE := 'prepare-release.log'
@@ -83,6 +86,7 @@ endif
 
 .PHONY: all release package-from-release update-webpage svn-ignores clean distclean embed-main-version
 
+DATADESTDIR := ../$(DATARELEASENAME)
 DESTDIR := ../$(RELEASENAME)
 REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/libshogun/classifier/svm/SVM_light.* $(DESTDIR)/src/libshogun/classifier/svm/Optimizer.* $(DESTDIR)/src/libshogun/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
 rm -f $(DESTDIR)/testsuite/data/classifier/SVMLight* $(DESTDIR)/testsuite/data/regression/SVRLight*	; \
@@ -117,9 +121,11 @@ release: src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/versions
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
-#release-data:
-#
-#release-applications:
+data-release:
+	svn export ../data $(DATADESTDIR)
+	tar -c -f $(DATADESTDIR).tar -C .. $(DATARELEASENAME)
+	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
+	$(COMPRESS) -9 $(DATADESTDIR).tar
 
 embed-main-version: src/libshogun/lib/versionstring.h
 	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/libshogun/lib/versionstring.h

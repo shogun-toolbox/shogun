@@ -1,6 +1,6 @@
 2010-12-07 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.10.0 (libshogun 9.0, libshogunui 6.0)
+	* SHOGUN Release version 0.10.0 (libshogun 9.0, libshogunui 6.0, data 0.1)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Serialization of objects deriving from CSGObject, i.e. all shogun objects

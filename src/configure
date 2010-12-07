@@ -7,10 +7,17 @@
 # due to the different focus of shogun.
 #
 VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | cut -f 1 -d ' ' | head -n 1`
-LIBSHOGUNSO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1 | cut -f 1 -d '.'`
-LIBSHOGUNUISO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1 | cut -f 1 -d '.'`
-LIBSHOGUNVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',' | head -n 1`
-LIBSHOGUNUIVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ')' | head -n 1`
+LIBSHOGUNSO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',)' | head -n 1 | cut -f 1 -d '.'`
+LIBSHOGUNUISO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ',)' | head -n 1 | cut -f 1 -d '.'`
+LIBSHOGUNVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',)' | head -n 1`
+LIBSHOGUNUIVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ',)' | head -n 1`
+DATAVER=`grep "SHOGUN Release version" NEWS 2>&1 | head -n 1 | cut -d ',' -f 3 | cut -d ' ' -f 3 | tr -d ')'`
+
+echo $VERSION
+echo $LIBSHOGUNSO
+echo $LIBSHOGUNUISO
+echo $LIBSHOGUNVER
+echo $DATAVER
 
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
 
