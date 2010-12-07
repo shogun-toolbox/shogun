@@ -352,6 +352,9 @@ run-testsuite-python_modular:
 	cd ../../testsuite/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
+	cd ../../testsuite/python_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
+		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
 check-examples-python_modular:
 	cd ../../examples/undocumented/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \

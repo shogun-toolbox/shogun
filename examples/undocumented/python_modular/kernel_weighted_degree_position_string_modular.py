@@ -10,7 +10,7 @@ def kernel_weighted_degree_position_string_modular(fm_train_dna=traindat,fm_test
 	from shogun.Kernel import WeightedDegreePositionStringKernel, MSG_DEBUG
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
-	feats_train.io.set_loglevel(MSG_DEBUG)
+	#feats_train.io.set_loglevel(MSG_DEBUG)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
 
 	kernel=WeightedDegreePositionStringKernel(feats_train, feats_train, degree)

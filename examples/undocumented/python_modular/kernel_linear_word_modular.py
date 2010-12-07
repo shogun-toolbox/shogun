@@ -22,7 +22,7 @@ def kernel_linear_word_modular (fm_train_word=traindat,fm_test_word=testdat,scal
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-	return km_train,km_test,kernel
+	return kernel
 
 if __name__=='__main__':
 	print 'LinearWord'

@@ -117,6 +117,10 @@ release: src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/versions
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
+#release-data:
+#
+#release-applications:
+
 embed-main-version: src/libshogun/lib/versionstring.h
 	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/libshogun/lib/versionstring.h
 	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile

@@ -23,7 +23,7 @@ def kernel_auc_modular(fm_train_real=traindat,label_train_real=testdat,width=1.7
 	kernel=AUCKernel(0, subkernel)
 	kernel.setup_auc_maximization( Labels(label_train_real) )
 	km_train=kernel.get_kernel_matrix()
-	return km_train, kernel
+	return kernel
 
 if __name__=='__main__':
 	print 'AUC'
