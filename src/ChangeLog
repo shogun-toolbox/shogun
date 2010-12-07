@@ -1,5 +1,2362 @@
+2010-12-07  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, configure: add data in make release script
+	* Makefile.template: create symlinks to the data directory
+	* NEWS, libshogun/base/SGObject.cpp, libshogun/base/SGObject.h,
+	  libshogun/features/Alphabet.h, libshogun/kernel/CustomKernel.cpp,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianKernel.h, libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/Kernel.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/lib/SerializableXmlFile.cpp,
+	  libshogun/lib/SerializableXmlFile.h: many further serialization
+	  fixes
+
+2010-12-05  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/distance/JensenMetric.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/lib/DataType.h: - fix wd kernel weight setting and
+	  serialization
+	  - check for x<0 in log(x) in jensenmetric
+
+2010-12-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.h: fix
+	  serialization for LIK
+	* libshogun/classifier/PluginEstimate.h,
+	  libshogun/distance/BrayCurtisDistance.h,
+	  libshogun/distance/CanberraMetric.h,
+	  libshogun/distance/CanberraWordDistance.cpp,
+	  libshogun/distance/CanberraWordDistance.h,
+	  libshogun/distance/ChebyshewMetric.cpp,
+	  libshogun/distance/ChebyshewMetric.h,
+	  libshogun/distance/ChiSquareDistance.cpp,
+	  libshogun/distance/ChiSquareDistance.h,
+	  libshogun/distance/CosineDistance.cpp,
+	  libshogun/distance/CosineDistance.h,
+	  libshogun/distance/CustomDistance.cpp,
+	  libshogun/distance/CustomDistance.h,
+	  libshogun/distance/Distance.cpp, libshogun/distance/Distance.h,
+	  libshogun/distance/EuclidianDistance.cpp,
+	  libshogun/distance/EuclidianDistance.h,
+	  libshogun/distance/GeodesicMetric.cpp,
+	  libshogun/distance/GeodesicMetric.h,
+	  libshogun/distance/HammingWordDistance.cpp,
+	  libshogun/distance/HammingWordDistance.h,
+	  libshogun/distance/JensenMetric.cpp,
+	  libshogun/distance/JensenMetric.h,
+	  libshogun/distance/KernelDistance.cpp,
+	  libshogun/distance/KernelDistance.h,
+	  libshogun/distance/ManhattanMetric.h,
+	  libshogun/distance/ManhattanWordDistance.cpp,
+	  libshogun/distance/ManhattanWordDistance.h,
+	  libshogun/distance/SparseEuclidianDistance.cpp,
+	  libshogun/distance/SparseEuclidianDistance.h,
+	  libshogun/distance/TanimotoDistance.h,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/DiagKernel.cpp, libshogun/kernel/DiagKernel.h,
+	  libshogun/kernel/OligoStringKernel.h,
+	  libshogun/kernel/SqrtDiagKernelNormalizer.h: fix serialization
+	  for most of the distances and some kernels / kernelnormalizers
+	* libshogun/base/SGObject.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVM.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVM.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.h,
+	  libshogunui/GUIPluginEstimate.cpp: get most of the tests back to
+	  work
+	* libshogun/distributions/HMM.cpp,
+	  libshogun/features/FKFeatures.cpp: disable HMM/TOP/FK feature
+	  serializaton for now
+	* libshogun/base/SGObject.cpp, libshogun/base/SGObject.h,
+	  libshogun/classifier/PluginEstimate.cpp,
+	  libshogun/classifier/PluginEstimate.h,
+	  libshogun/distributions/HMM.cpp, libshogun/distributions/HMM.h,
+	  libshogun/features/FKFeatures.cpp,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/TOPFeatures.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.h,
+	  libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/LocalAlignmentStringKernel.cpp,
+	  libshogun/kernel/LocalAlignmentStringKernel.h,
+	  libshogun/kernel/LocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.h,
+	  libshogun/kernel/OligoStringKernel.cpp,
+	  libshogun/kernel/OligoStringKernel.h,
+	  libshogun/kernel/PolyMatchStringKernel.cpp,
+	  libshogun/kernel/PolyMatchStringKernel.h,
+	  libshogun/kernel/PolyMatchWordStringKernel.cpp,
+	  libshogun/kernel/PolyMatchWordStringKernel.h,
+	  libshogun/kernel/SigmoidKernel.cpp,
+	  libshogun/kernel/SigmoidKernel.h,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.h,
+	  libshogun/kernel/WeightedCommWordStringKernel.cpp,
+	  libshogun/kernel/WeightedCommWordStringKernel.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.h,
+	  libshogun/lib/Trie.h: various further serialization fixes
+
+2010-12-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVMSGD.cpp,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/TOPFeatures.cpp,
+	  libshogun/features/TOPFeatures.h,
+	  libshogun/kernel/AvgDiagKernelNormalizer.h,
+	  libshogun/kernel/DiceKernelNormalizer.h,
+	  libshogun/kernel/FirstElementKernelNormalizer.h,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianShiftKernel.cpp,
+	  libshogun/kernel/GaussianShiftKernel.h,
+	  libshogun/kernel/SqrtDiagKernelNormalizer.h,
+	  libshogun/kernel/VarianceKernelNormalizer.h,
+	  libshogun/kernel/ZeroMeanCenterKernelNormalizer.h,
+	  libshogun/lib/List.h: further serialization fixes
+	* libshogun/base/Parameter.cpp, libshogun/base/Parameter.h,
+	  libshogun/base/SGObject.cpp,
+	  libshogun/classifier/svm/SVMOcas.cpp,
+	  libshogun/distributions/LinearHMM.cpp,
+	  libshogun/features/Alphabet.cpp,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h,
+	  libshogun/kernel/DiceKernelNormalizer.h,
+	  libshogun/kernel/SqrtDiagKernelNormalizer.h,
+	  libshogun/lib/List.h: further serialization fixes
+
+2010-12-01  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/SVMSGD.cpp,
+	  libshogun/kernel/AvgDiagKernelNormalizer.h,
+	  libshogun/kernel/DiceKernelNormalizer.h,
+	  libshogun/kernel/FirstElementKernelNormalizer.h,
+	  libshogun/kernel/IdentityKernelNormalizer.h,
+	  libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMaskNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMaskPairNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMklNormalizer.h,
+	  libshogun/kernel/MultitaskKernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelPlifNormalizer.h,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h,
+	  libshogun/kernel/RidgeKernelNormalizer.h,
+	  libshogun/kernel/ScatterKernelNormalizer.h,
+	  libshogun/kernel/SqrtDiagKernelNormalizer.h,
+	  libshogun/kernel/TanimotoKernelNormalizer.h,
+	  libshogun/kernel/VarianceKernelNormalizer.h,
+	  libshogun/kernel/ZeroMeanCenterKernelNormalizer.h: Always call
+	  base class constructor also in kernel normalizers.
+	* libshogun/distance/HammingWordDistance.cpp,
+	  libshogun/distance/HammingWordDistance.h,
+	  libshogun/distance/MinkowskiMetric.cpp,
+	  libshogun/distance/MinkowskiMetric.h,
+	  libshogun/distributions/LinearHMM.cpp,
+	  libshogun/distributions/LinearHMM.h,
+	  libshogun/features/FKFeatures.cpp,
+	  libshogun/features/FKFeatures.h,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/ConstKernel.cpp, libshogun/kernel/ConstKernel.h,
+	  libshogun/kernel/DiagKernel.cpp, libshogun/kernel/DiagKernel.h,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianKernel.h,
+	  libshogun/kernel/StringKernel.h: further fixes
+	* libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/SVMOcas.cpp,
+	  libshogun/classifier/svm/SVMOcas.h,
+	  libshogun/classifier/svm/SVMSGD.cpp,
+	  libshogun/classifier/svm/SVMSGD.h,
+	  libshogun/classifier/svm/SubGradientSVM.cpp,
+	  libshogun/features/Alphabet.cpp,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/kernel/FixedDegreeStringKernel.cpp,
+	  libshogun/kernel/LocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/LocalityImprovedStringKernel.h,
+	  libshogun/kernel/SalzbergWordStringKernel.cpp,
+	  libshogun/kernel/SalzbergWordStringKernel.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/lib/List.h: fix / implement serialization for various
+	  classes
+
+2010-11-30  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SubGradientSVM.cpp: fix a few more
+	  examples
+
+2010-11-29  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/base/Parameter.cpp: - move tester / generator to
+	  trunk/testsuite/python_modular/
+	  - merge marinas example changes
+	  - fix path in d.l.'s ocr detector
+	* libshogun/base/Parameter.cpp, libshogun/base/Parameter.h,
+	  libshogun/base/SGObject.cpp, libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/KernelMachine.cpp,
+	  libshogun/classifier/LinearClassifier.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/features/Alphabet.cpp,
+	  libshogun/features/CombinedDotFeatures.cpp,
+	  libshogun/features/DotFeatures.cpp,
+	  libshogun/features/DummyFeatures.h,
+	  libshogun/features/Features.cpp, libshogun/features/Labels.cpp,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/StringFeatures.h, libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/lib/DynamicArray.h, libshogun/lib/DynamicArrayPtr.h,
+	  libshogun/lib/List.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, modular/SGBase.i: move parameter into
+	  /base and really fix memory leak in combined dot features
+	* libshogun/base/SGObject.cpp, libshogun/base/SGObject.h,
+	  libshogun/base/class_list.cpp.sh,
+	  libshogun/base/class_list.cpp.templ, libshogun/base/class_list.h,
+	  libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/KernelMachine.cpp,
+	  libshogun/classifier/LinearClassifier.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/features/CombinedDotFeatures.cpp,
+	  libshogun/features/CombinedFeatures.cpp,
+	  libshogun/features/Features.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/kernel/AUCKernel.cpp,
+	  libshogun/kernel/CombinedKernel.cpp, libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/lib/DataType.cpp, libshogun/lib/DataType.h,
+	  libshogun/lib/DynamicArrayPtr.h, libshogun/lib/HDF5File.cpp,
+	  libshogun/lib/List.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SGSerializable.cpp,
+	  libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiReader00.cpp,
+	  libshogun/lib/SerializableFile.h,
+	  libshogun/lib/SerializableHdf5File.cpp,
+	  libshogun/lib/SerializableHdf5Reader00.cpp,
+	  libshogun/lib/SerializableJsonFile.cpp,
+	  libshogun/lib/SerializableJsonReader00.cpp,
+	  libshogun/lib/SerializableXmlFile.cpp,
+	  libshogun/lib/SerializableXmlReader00.cpp,
+	  libshogunui/GUIPreProc.cpp, modular/SGBase.i: merge
+	  SGSerializable into SGObject and make ref/unref thread-safe again
+
+2010-11-28  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/CombinedDotFeatures.h: simplify code
+	* libshogun/features/SparseFeatures.h, modular/Features.i: fix
+	  sparse features under python modular
+	* modular/Structure.i: get structure modul back to work
+	* libshogun/lib/HDF5File.h: fix hdf5file
+	* libshogun/classifier/svm/LibSVM.cpp,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/classifier/svm/SVM.h,
+	  libshogun/classifier/svm/SVMLight.cpp,
+	  libshogun/regression/svr/SVRLight.cpp, modular/Classifier.i: fix
+	  linear term
+
+2010-11-27  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/features/CombinedDotFeatures.h: potentially fix memory
+	  leak in analogy to combinedfeatures
+	* libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/CombinedFeatures.cpp,
+	  libshogun/features/CombinedFeatures.h,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h, libshogun/lib/List.h: revert
+	  commit r5138, causing reference counting related crashes:
+	  
+	  e.g. this function
+	  
+	  CSGSerializable* get_first_element()
+	  {
+	  return obj;
+	  }
+	  
+	  is racy, since it forgets to ref() obj.
+	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
+	  libshogun/lib/DynamicArray.h: fix compilation with dynarray
+
+2010-11-27  xdlehmann
+
+	* libshogun/base/DynArray.h,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/CombinedFeatures.cpp,
+	  libshogun/features/CombinedFeatures.h,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h, libshogun/lib/List.h: *
+	  src/libshogun/*
+	  
+	  - Closes <1290809148.4590.29.camel@no.ml.tu-berlin.de> ...
+	  
+	  !!! FUCK OFF Soeren !!!
+
+2010-11-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/SVM_linear.h, modular/Classifier.i:
+	  remove linear term std vector and fix crasher when linear term is
+	  not set
+	* libshogun/lib/DynamicArray.h, libshogunui/GUIPreProc.cpp,
+	  libshogunui/GUIPreProc.h: compile fix for trunk
+
+2010-11-26  xdlehmann
+
+	* libshogun/base/DynArray.h, libshogun/classifier/KNN.cpp,
+	  libshogun/classifier/KernelPerceptron.cpp,
+	  libshogun/classifier/LinearClassifier.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/clustering/Hierarchical.cpp,
+	  libshogun/clustering/KMeans.cpp, libshogun/distance/Distance.cpp,
+	  libshogun/features/AttributeFeatures.h,
+	  libshogun/features/CombinedDotFeatures.cpp,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/CombinedFeatures.cpp,
+	  libshogun/features/CombinedFeatures.h,
+	  libshogun/features/DummyFeatures.h,
+	  libshogun/features/Features.h, libshogun/features/Labels.cpp,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/kernel/AUCKernel.cpp, libshogun/kernel/AUCKernel.h,
+	  libshogun/kernel/Chi2Kernel.cpp, libshogun/kernel/Chi2Kernel.h,
+	  libshogun/kernel/CombinedKernel.cpp,
+	  libshogun/kernel/CombinedKernel.h,
+	  libshogun/kernel/CustomKernel.cpp,
+	  libshogun/kernel/CustomKernel.h,
+	  libshogun/kernel/FixedDegreeStringKernel.cpp,
+	  libshogun/kernel/FixedDegreeStringKernel.h,
+	  libshogun/kernel/Kernel.cpp, libshogun/kernel/PolyKernel.cpp,
+	  libshogun/kernel/PolyKernel.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/DynamicArray.h, libshogun/lib/DynamicArrayPtr.h,
+	  libshogun/lib/List.h, libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableAsciiReader00.cpp,
+	  libshogun/lib/SerializableHdf5File.h,
+	  libshogun/lib/SerializableJsonFile.h,
+	  libshogun/lib/SerializableXmlFile.cpp,
+	  libshogun/lib/SerializableXmlFile.h,
+	  libshogun/lib/SerializableXmlReader00.cpp, libshogun/lib/Trie.h,
+	  libshogun/lib/io.h, libshogun/preproc/DecompressString.h,
+	  libshogun/preproc/LogPlusOne.cpp,
+	  libshogun/preproc/NormDerivativeLem3.cpp,
+	  libshogun/preproc/NormOne.cpp,
+	  libshogun/preproc/SortUlongString.cpp,
+	  libshogun/preproc/SortWordString.cpp,
+	  libshogun/regression/KRR.cpp, libshogun/structure/PlifArray.h,
+	  modular/Library.i, modular/SGBase.i: * src/*
+	  
+	  - Backup ...
+	  
+	  * applications/ocr/data/ocr.svm.gz
+	  
+	  - Adapting new format.
+
+2010-11-24  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: fix example and update news
+
+2010-11-24  xdlehmann
+
+	* libshogun/base/init.cpp,
+	  libshogun/classifier/mkl/MKLMultiClass.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVM.cpp,
+	  libshogun/classifier/svm/GMNPSVM.cpp,
+	  libshogun/classifier/svm/GMNPSVM.h,
+	  libshogun/classifier/svm/LibSVM.cpp,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/classifier/svm/SVM.h,
+	  libshogun/classifier/svm/SVMLight.cpp,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiReader00.cpp,
+	  libshogun/lib/SerializableXmlFile.cpp,
+	  libshogun/lib/SerializableXmlReader00.cpp,
+	  libshogun/regression/svr/SVRLight.cpp: * applications/ocr/*
+	  
+	  - Adapting example to serialization, using PICKLE.
+	  
+	  * src/libshogun/*
+	  
+	  - Replacing some STD::VECTOR's with T*
+
+2010-11-23  xdlehmann
+
+	* configure, libshogun/lib/DataType.cpp, libshogun/lib/DataType.h,
+	  libshogun/lib/Parameter.cpp,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableAsciiReader00.cpp,
+	  libshogun/lib/SerializableAsciiReader00.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h,
+	  libshogun/lib/SerializableHdf5File.cpp,
+	  libshogun/lib/SerializableHdf5File.h,
+	  libshogun/lib/SerializableHdf5Reader00.cpp,
+	  libshogun/lib/SerializableHdf5Reader00.h,
+	  libshogun/lib/SerializableJsonFile.cpp,
+	  libshogun/lib/SerializableJsonFile.h,
+	  libshogun/lib/SerializableJsonReader00.cpp,
+	  libshogun/lib/SerializableJsonReader00.h,
+	  libshogun/lib/SerializableXmlFile.cpp,
+	  libshogun/lib/SerializableXmlFile.h,
+	  libshogun/lib/SerializableXmlReader00.cpp,
+	  libshogun/lib/SerializableXmlReader00.h: *
+	  src/libshogun/lib/Serializable*{File,Reader00}.{h,cpp}
+	  
+	  - Versioning support for all file formats at serialization level.
+	  
+	  * src/configure
+	  
+	  - libxml2 version >= 2.7.0 is required.
+	  
+	  * src/libshogun/lib/Serializable{Ascii,Xml}*
+	  
+	  - Using [sf]PRINTF's `%g' for floating point IO.
+	  
+	  * src/libshogun/lib/DataType.h
+	  
+	  - T_SPARSE_ENTRY::__DUMMY removed. Not tested on 64-bit machines.
+	  I need to check-in my current implementation first. If there is
+	  no commit at the next few hours then it works ;) ...
+
+2010-11-21  xdlehmann
+
+	* configure, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableHDF5File.cpp,
+	  libshogun/lib/SerializableHDF5File.h,
+	  libshogun/lib/SerializableHdf5File.cpp,
+	  libshogun/lib/SerializableHdf5File.h,
+	  libshogun/lib/SerializableJSONFile.cpp,
+	  libshogun/lib/SerializableJSONFile.h,
+	  libshogun/lib/SerializableJsonFile.cpp,
+	  libshogun/lib/SerializableJsonFile.h,
+	  libshogun/lib/SerializableXmlFile.cpp,
+	  libshogun/lib/SerializableXmlFile.h, modular/Library.i: *
+	  src/libshogun/lib/SerializableXmlFile.{h,cpp}
+	  
+	  - Added.
+	  
+	  * src/libshogun/lib/SerializableJSONFile.{h,cpp}
+	  
+	  - Renamed to `SerializableJsonFile'.
+	  
+	  * src/libshogun/lib/SerializableHDF5File.{h,cpp}
+	  
+	  - Renamed to `SerializableHdf5File'.
+
+2010-11-18  xdlehmann
+
+	* libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
+	  libshogun/classifier/svm/LibLinear.h: *
+	  src/libshogun/classifier/svm/{DomainAdaptationSVM,LibLinear}.h
+	  
+	  - Closes:
+	  
+	  <AANLkTi=eoR4sNhvP1orSbc_HWm7vKk1voPt4GKckYy0b@mail.gmail.com>
+	  
+	  Compiling error if `./configure --disable-lapack'.
+
+2010-11-17  xdlehmann
+
+	* libshogun/features/StringFeatures.h, libshogun/lib/DataType.h,
+	  libshogun/lib/Parameter.cpp,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h,
+	  libshogun/lib/SerializableHDF5File.cpp,
+	  libshogun/lib/SerializableHDF5File.h,
+	  libshogun/lib/SerializableJSONFile.cpp,
+	  libshogun/lib/SerializableJSONFile.h: * src/libshogun/lib/*
+	  
+	  - Improving SERIALIZBALE_HDF5_FILE for faster access to
+	  persistent
+	  storage.
+
+2010-11-15  xdlehmann
+
+	* libshogun/lib/DataType.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h,
+	  libshogun/lib/SerializableJSONFile.cpp,
+	  libshogun/lib/SerializableJSONFile.h: *
+	  src/libshogun/lib/SerializableJSONFile.{h,cpp}
+	  
+	  - Works.
+	  
+	  * src/libshogun/lib/DataType.h
+	  
+	  - 64 bit compatible.
+
+2010-11-14  xdlehmann
+
+	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
+	  configure, libshogun/base/class_list.cpp.sh,
+	  libshogun/base/class_list.cpp.templ, libshogun/base/class_list.h,
+	  libshogun/features/Alphabet.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/StringFileFeatures.h,
+	  libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.h,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/DataType.cpp, libshogun/lib/DataType.h,
+	  libshogun/lib/File.cpp, libshogun/lib/File.h,
+	  libshogun/lib/HDF5File.cpp, libshogun/lib/HDF5File.h,
+	  libshogun/lib/LibSVMFile.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SGSerializable.cpp,
+	  libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h,
+	  libshogun/lib/SerializableHDF5File.cpp,
+	  libshogun/lib/SerializableHDF5File.h,
+	  libshogun/lib/SerializableJSONFile.cpp,
+	  libshogun/lib/SerializableJSONFile.h,
+	  libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/GUIFeatures.cpp,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  modular/Features.i, modular/Library.i, modular/Structure.i,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  octave_modular/swig_typemaps.i, python/PythonInterface.cpp,
+	  python/PythonInterface.h, python_modular/swig_typemaps.i,
+	  r/RInterface.cpp, r/RInterface.h, r_modular/swig_typemaps.i: *
+	  src/*
+	  
+	  - Sparse r/w, String r/w implemented.
+	  
+	  - JSON feature test implemented.
+	  
+	  BORING?! O.O -- Hearing KB's - fr08 =) ... YEEEAH, GREAT
+
+2010-11-12  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h: removed exclusion flags
+
+2010-11-11  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/classifier/LinearClassifier.cpp: fixed indentation
+
+2010-11-10  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/LibLinear.cpp: fixed issue with default
+	  constructor
+	* libshogun/classifier/LinearClassifier.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp: small fix
+	* libshogun/classifier/LinearClassifier.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h: added serialization code to
+	  a few linear classifiers (still incomplete)
+
+2010-11-07  xdlehmann
+
+	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
+	  libshogun/features/Alphabet.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/StringFileFeatures.h,
+	  libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.h,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/File.cpp, libshogun/lib/File.h,
+	  libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/GUIFeatures.cpp,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  modular/Features.i, modular/Structure.i,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  octave_modular/swig_typemaps.i, python/PythonInterface.cpp,
+	  python/PythonInterface.h, python_modular/swig_typemaps.i,
+	  r/RInterface.cpp, r/RInterface.h, r_modular/swig_typemaps.i: *
+	  src/*
+	  
+	  - reverted to revision 5113 ... too many pointers :((
+
+2010-11-06  xdlehmann
+
+	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
+	  libshogun/features/Alphabet.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/StringFileFeatures.h,
+	  libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.h,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/File.cpp, libshogun/lib/File.h,
+	  libshogun/lib/Parameter.cpp, libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/GUIFeatures.cpp,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  modular/Features.i, modular/Structure.i,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  octave_modular/swig_typemaps.i, python/PythonInterface.cpp,
+	  python/PythonInterface.h, python_modular/swig_typemaps.i,
+	  r/RInterface.cpp, r/RInterface.h, r_modular/swig_typemaps.i: *
+	  src/*
+	  
+	  - String(Features) are storable :)
+	  
+	  - Matlab (R) binding not tested; no license.
+
+2010-11-05  xdlehmann
+
+	* libshogun/kernel/Kernel.h,
+	  libshogun/kernel/MultitaskKernelMaskNormalizer.h: *
+	  src/libshogun/kernel/MultitaskKernelMaskNormalizer.h,
+	  src/libshogun/kernel/Kernel.h
+	  
+	  - Missing include added. Thanks to xjc =)
+
+2010-11-04  xdlehmann
+
+	* libshogun/base/DynArray.h: * src/libshogun/base/DynArray.h
+	  
+	  - Fixes compiling issue.
+	* libshogun/base/DynArray.h, libshogun/base/class_list.cpp.sh,
+	  libshogun/distributions/HMM.cpp, libshogun/distributions/HMM.h,
+	  libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/kernel/FirstElementKernelNormalizer.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.h,
+	  libshogun/lib/DynamicArray.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SGSerializable.cpp,
+	  libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableFile.cpp, modular/Distribution.i,
+	  modular/SGBase.i: * src/modular/SGBase.i
+	  
+	  - All Python Pickle protocols are supported now. The protocols
+	  are
+	  using:
+	  
+	  + 0: SERIALIZABLE_ASCII_FILE
+	  
+	  + otherwise: SERIALIZABLE_HDF5_FILE
+	  
+	  + fallback: SERIALIZABLE_ASCII_FILE
+	  
+	  * src/libshogun/*
+	  
+	  - SG_SERIALIZABLE::LOAD_SERIALIZABLE_{PRE,POST} added. An example
+	  implementation you can find in CALPHABET::LOAD_SERIALIZABLE_POST.
+
+2010-11-03  xdlehmann
+
+	* libshogun/lib/ShogunException.cpp,
+	  libshogun/lib/ShogunException.h:
+	  src/libshogun/lib/ShogunException.{h,cpp}
+	  
+	  - SHOGUN_EXCEPTION leaks during tracing the stack.
+
+2010-11-01  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS: update news
+	* libshogun/clustering/KMeans.cpp, libshogun/clustering/KMeans.h:
+	  remove cruft from kmeans
+
+2010-11-01  xdlehmann
+
+	* libshogun/kernel/MultitaskKernelNormalizer.h: *
+	  src/libshogun/kernel/MultitaskKernelNormalizer.h
+	  
+	  - Missing #INCLUDE, using C workaround.
+	* configure: * src/configure
+	  
+	  - HDF5 version 1.8.0 or greater is required.
+
+2010-10-29  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/MultitaskKernelMaskNormalizer.h: compile fix
+
+2010-10-29  xdlehmann
+
+	* libshogun/lib/Parameter.cpp: * src/libshogun/lib/Parameter.cpp
+	  
+	  - Forgotten to REF fresh instantiated SG_SERIALIZABLE's during
+	  loading =)
+	* libshogun/base/SGObject.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/SGSerializable.cpp, libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableHDF5File.cpp,
+	  libshogun/lib/SerializableHDF5File.h, modular/SGBase.i: * src/*
+	  
+	  - Reading of SERIALIZABLE_HDF5_FILE seems to be work.
+	  
+	  - Reloading seems to be work (SG_UNREF during loading a
+	  SG_SERIALIZABLE instead of DELETE)
+	  
+	  - Un-/Pickling of Shogun objects (in Python) seems to be work.
+	  
+	  Current working example; check if output is empty:
+	  
+	  * (h5diff -c blaah* && diff pickle*) | grep -v '^Not comparable'
+	  
+	  
+	  *** snip ***
+	  
+	  #
+	  ********************************************************************
+	  
+	  from numpy import *; from numpy.random import randn
+	  from shogun.Features import *; from shogun.Classifier import *;
+	  from shogun.Kernel import *; from shogun.Library import *;
+	  from shogun.PreProc import *
+	  
+	  import pickle as pkl
+	  
+	  num = 5; dist = 1; dim = 10
+	  
+	  data = concatenate((randn(dim, num), randn(dim, num) + dist,
+	  randn(dim, num) + 2*dist,
+	  randn(dim, num) + 3*dist), axis=1)
+	  lab = concatenate((zeros(num), ones(num), 2*ones(num),
+	  3*ones(num)))
+	  
+	  feats = RealFeatures(data)
+	  kernel = GaussianKernel(feats, feats, 2.1)
+	  
+	  labels = Labels(lab)
+	  
+	  print "*** Begin\n"
+	  
+	  svm = GMNPSVM(1, kernel, labels)
+	  
+	  feats.add_preproc(NormOne())
+	  feats.add_preproc(LogPlusOne())
+	  feats.add_preproc(NormDerivativeLem3())
+	  feats.set_preprocessed(1)
+	  svm.train(feats)
+	  
+	  #svm.print_serializable()
+	  
+	  fstream = SerializableHDF5File("blaah.h5", "w")
+	  if svm.save_serializable(fstream): print "OK writing\n"
+	  else: print "ERROR writing\n"
+	  
+	  f = open("pickle.pkl", 'w'); pkl.dump(svm, f); f.close()
+	  
+	  svm = GMNPSVM()
+	  fstream = SerializableHDF5File("blaah.h5", "r")
+	  if svm.load_serializable(fstream): print "OK reading\n"
+	  else: print "ERROR reading\n"
+	  
+	  fstream = SerializableHDF5File("blaah2.h5", "w")
+	  svm.save_serializable(fstream)
+	  
+	  f = open("pickle.pkl", 'r'); svm = pkl.load(f); f.close()
+	  f = open("pickle2.pkl", 'w'); pkl.dump(svm, f); f.close()
+	  
+	  print "*** End\n"
+	  
+	  #
+	  ********************************************************************
+	  
+	  *** snap ***
+
+2010-10-28  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/base/SGObject.cpp, libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/KernelMachine.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVM.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp,
+	  libshogun/classifier/svm/LibSVM.cpp,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/SVMLight.cpp,
+	  libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/Features.cpp, libshogun/features/Labels.cpp,
+	  libshogun/features/SimpleFeatures.cpp,
+	  libshogun/features/StringFeatures.cpp,
+	  libshogun/kernel/AvgDiagKernelNormalizer.cpp,
+	  libshogun/kernel/AvgDiagKernelNormalizer.h,
+	  libshogun/kernel/FirstElementKernelNormalizer.cpp,
+	  libshogun/kernel/FirstElementKernelNormalizer.h,
+	  libshogun/kernel/IdentityKernelNormalizer.cpp,
+	  libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/KernelNormalizer.cpp,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.h,
+	  libshogun/kernel/WeightedDegreeRBFKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.h: add code to
+	  serialize WD kernel / alphabet and a few kernel normalizers
+	* configure, libshogun/base/SGObject.h,
+	  libshogun/classifier/Classifier.h,
+	  libshogun/classifier/KernelMachine.h,
+	  libshogun/classifier/svm/DomainAdaptationSVM.h,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
+	  libshogun/classifier/svm/SVM.h,
+	  libshogun/classifier/svm/SVMLight.h,
+	  libshogun/classifier/svm/SVM_linear.h,
+	  libshogun/features/Alphabet.h, libshogun/features/DotFeatures.h,
+	  libshogun/features/Features.h, libshogun/features/Labels.h,
+	  libshogun/features/RealFileFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/kernel/AvgDiagKernelNormalizer.h,
+	  libshogun/kernel/FirstElementKernelNormalizer.h,
+	  libshogun/kernel/IdentityKernelNormalizer.h,
+	  libshogun/kernel/Kernel.h, libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMklNormalizer.h,
+	  libshogun/kernel/MultitaskKernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelTreeNormalizer.h,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.h,
+	  libshogun/kernel/SpectrumRBFKernel.h,
+	  libshogun/kernel/StringKernel.h,
+	  libshogun/kernel/WeightedDegreeRBFKernel.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.h,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/common.h: remove boost
+	  serialisation support
+	* NEWS: keep track of changes in news
+
+2010-10-27  xdlehmann
+
+	* libshogun/lib/DynamicArray.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h,
+	  libshogun/lib/SerializableHDF5File.cpp,
+	  libshogun/lib/SerializableHDF5File.h, modular/Library.i: *
+	  src/libshogun/lib/*
+	  
+	  - Writing of SERIALIZABLE_HDF5_FILE seems to be work. The code
+	  snippet attached to this log produces the HDF5 structure (HDFView
+	  screenshot):
+	  
+	  * http://www.user.tu-berlin.de/ldirk/etc/hdfview-gmnpsvm.png
+	  
+	  It looks nice if you can visualize your data structures =) ...
+	  
+	  * src/modular/Library.i
+	  
+	  - Class SERIALIZABLE_HDF5_FILE added.
+	  
+	  
+	  *** snip ***
+	  
+	  #
+	  ********************************************************************
+	  
+	  from numpy import *; from numpy.random import randn
+	  from shogun.Features import *; from shogun.Classifier import *;
+	  from shogun.Kernel import *; from shogun.Library import *;
+	  from shogun.PreProc import *
+	  
+	  num=5; dist=1; dim=10
+	  
+	  data=concatenate((randn(dim, num), randn(dim, num) + dist,
+	  randn(dim, num) + 2*dist,
+	  randn(dim, num) + 3*dist), axis=1)
+	  lab=concatenate((zeros(num), ones(num), 2*ones(num),
+	  3*ones(num)))
+	  
+	  feats=RealFeatures(data)
+	  kernel=GaussianKernel(feats, feats, 2.1)
+	  
+	  labels=Labels(lab)
+	  
+	  svm = GMNPSVM(1, kernel, labels)
+	  
+	  feats.add_preproc(NormOne())
+	  feats.add_preproc(LogPlusOne())
+	  feats.add_preproc(NormDerivativeLem3())
+	  feats.set_preprocessed(1)
+	  svm.train(feats)
+	  
+	  #svm.print_serializable()
+	  
+	  fstream = SerializableHDF5File("blaah.h5", "w")
+	  #fstream = SerializableAsciiFile("blaah.asc", "w")
+	  if svm.save_serializable(fstream): print "OK writing\n"
+	  else: print "ERROR writing\n"
+	  
+	  #
+	  ********************************************************************
+	  
+	  *** snap ***
+	* libshogun/base/DynArray.h: * src/libshogun/base/DynArray.h:
+	  
+	  - Fixes a reallocation issue. Previous implementation is only
+	  working because of a good GNU REALLOC implementation. In the case
+	  of DynArray::delete_element() the last element was not longer
+	  allocated! Use mtrace or corresponding tools to check this case.
+
+2010-10-26  xdlehmann
+
+	* libshogun/base/class_list.cpp.templ: *
+	  src/libshogun/base/class_list.cpp.templ:
+	  
+	  - Closes <4CC5E0D6.5010403@gmail.com>; Thanks to Koen :)
+
+2010-10-26  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/CustomKernel.cpp,
+	  libshogun/kernel/CustomKernel.h: remaining fixes to allow for
+	  huge custom kernels
+
+2010-10-21  xdlehmann
+
+	* Makefile.template, cmdline/CmdLineInterface.cpp, configure,
+	  libshogun/base/DynArray.h, libshogun/base/Parallel.cpp,
+	  libshogun/base/Parallel.h, libshogun/base/SGObject.cpp,
+	  libshogun/base/SGObject.h, libshogun/base/Version.cpp,
+	  libshogun/base/Version.h, libshogun/base/class_list.cpp.sh,
+	  libshogun/base/class_list.cpp.templ, libshogun/base/class_list.h,
+	  libshogun/base/init.cpp, libshogun/base/init.h,
+	  libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/DistanceMachine.h,
+	  libshogun/classifier/KNN.h,
+	  libshogun/classifier/KernelMachine.cpp,
+	  libshogun/classifier/KernelMachine.h, libshogun/classifier/LDA.h,
+	  libshogun/classifier/LPBoost.h, libshogun/classifier/LPM.h,
+	  libshogun/classifier/LinearClassifier.h,
+	  libshogun/classifier/SubGradientLPM.h,
+	  libshogun/classifier/svm/CPLEXSVM.h,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
+	  libshogun/classifier/svm/GMNPLib.cpp,
+	  libshogun/classifier/svm/GMNPLib.h,
+	  libshogun/classifier/svm/GMNPSVM.cpp,
+	  libshogun/classifier/svm/GNPPLib.cpp,
+	  libshogun/classifier/svm/GNPPLib.h,
+	  libshogun/classifier/svm/GNPPSVM.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.h,
+	  libshogun/classifier/svm/QPBSVMLib.cpp,
+	  libshogun/classifier/svm/QPBSVMLib.h,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/SVMLight.h,
+	  libshogun/classifier/svm/SVMLightOneClass.h,
+	  libshogun/classifier/svm/SVMOcas.cpp,
+	  libshogun/classifier/svm/SVMOcas.h,
+	  libshogun/classifier/svm/SVMSGD.cpp,
+	  libshogun/classifier/svm/SVMSGD.h,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/ScatterSVM.h,
+	  libshogun/classifier/svm/SubGradientSVM.cpp,
+	  libshogun/classifier/svm/Tron.h,
+	  libshogun/classifier/svm/WDSVMOcas.cpp,
+	  libshogun/classifier/svm/WDSVMOcas.h,
+	  libshogun/classifier/svm/gmnplib.cpp,
+	  libshogun/classifier/svm/gmnplib.h,
+	  libshogun/classifier/svm/gnpplib.cpp,
+	  libshogun/classifier/svm/gnpplib.h,
+	  libshogun/classifier/svm/qpbsvmlib.cpp,
+	  libshogun/classifier/svm/qpbsvmlib.h,
+	  libshogun/clustering/Hierarchical.h,
+	  libshogun/clustering/KMeans.h,
+	  libshogun/distance/HammingWordDistance.cpp,
+	  libshogun/distance/HammingWordDistance.h,
+	  libshogun/distance/KernelDistance.cpp,
+	  libshogun/distance/KernelDistance.h,
+	  libshogun/distance/MinkowskiMetric.cpp,
+	  libshogun/distance/MinkowskiMetric.h,
+	  libshogun/distance/RealDistance.h,
+	  libshogun/distance/SimpleDistance.h,
+	  libshogun/distance/SparseDistance.h,
+	  libshogun/distance/StringDistance.h,
+	  libshogun/distributions/GHMM.h, libshogun/distributions/HMM.cpp,
+	  libshogun/distributions/HMM.h,
+	  libshogun/distributions/LinearHMM.cpp,
+	  libshogun/distributions/LinearHMM.h,
+	  libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/AttributeFeatures.h,
+	  libshogun/features/DotFeatures.cpp,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/DummyFeatures.h,
+	  libshogun/features/ExplicitSpecFeatures.cpp,
+	  libshogun/features/ExplicitSpecFeatures.h,
+	  libshogun/features/FKFeatures.cpp,
+	  libshogun/features/FKFeatures.h, libshogun/features/Features.cpp,
+	  libshogun/features/Features.h,
+	  libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.cpp,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/LBPPyrDotFeatures.cpp,
+	  libshogun/features/LBPPyrDotFeatures.h,
+	  libshogun/features/Labels.cpp, libshogun/features/Labels.h,
+	  libshogun/features/PolyFeatures.cpp,
+	  libshogun/features/PolyFeatures.h,
+	  libshogun/features/RealFileFeatures.cpp,
+	  libshogun/features/RealFileFeatures.h,
+	  libshogun/features/SNPFeatures.cpp,
+	  libshogun/features/SNPFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/SparsePolyFeatures.cpp,
+	  libshogun/features/SparsePolyFeatures.h,
+	  libshogun/features/StringFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/TOPFeatures.cpp,
+	  libshogun/features/TOPFeatures.h,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/features/WDFeatures.h,
+	  libshogun/genomic_signals/TrainPredMaster.cpp.orig,
+	  libshogun/genomic_signals/TrainPredMaster.h,
+	  libshogun/kernel/AUCKernel.cpp, libshogun/kernel/AUCKernel.h,
+	  libshogun/kernel/Chi2Kernel.cpp, libshogun/kernel/Chi2Kernel.h,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/ConstKernel.cpp, libshogun/kernel/ConstKernel.h,
+	  libshogun/kernel/DiagKernel.cpp, libshogun/kernel/DiagKernel.h,
+	  libshogun/kernel/DiceKernelNormalizer.h,
+	  libshogun/kernel/DistanceKernel.cpp,
+	  libshogun/kernel/DistanceKernel.h, libshogun/kernel/DotKernel.h,
+	  libshogun/kernel/FixedDegreeStringKernel.cpp,
+	  libshogun/kernel/FixedDegreeStringKernel.h,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianKernel.h,
+	  libshogun/kernel/GaussianMatchStringKernel.cpp,
+	  libshogun/kernel/GaussianMatchStringKernel.h,
+	  libshogun/kernel/GaussianShiftKernel.cpp,
+	  libshogun/kernel/GaussianShiftKernel.h,
+	  libshogun/kernel/GaussianShortRealKernel.cpp,
+	  libshogun/kernel/GaussianShortRealKernel.h,
+	  libshogun/kernel/HistogramIntersectionKernel.cpp,
+	  libshogun/kernel/HistogramIntersectionKernel.h,
+	  libshogun/kernel/HistogramWordStringKernel.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.h,
+	  libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/LocalAlignmentStringKernel.cpp,
+	  libshogun/kernel/LocalAlignmentStringKernel.h,
+	  libshogun/kernel/LocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/LocalityImprovedStringKernel.h,
+	  libshogun/kernel/MatchWordStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.h,
+	  libshogun/kernel/MultitaskKernelMaskNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMaskPairNormalizer.h,
+	  libshogun/kernel/MultitaskKernelPlifNormalizer.h,
+	  libshogun/kernel/OligoStringKernel.cpp,
+	  libshogun/kernel/OligoStringKernel.h,
+	  libshogun/kernel/PolyKernel.cpp, libshogun/kernel/PolyKernel.h,
+	  libshogun/kernel/PolyMatchStringKernel.cpp,
+	  libshogun/kernel/PolyMatchStringKernel.h,
+	  libshogun/kernel/PolyMatchWordStringKernel.cpp,
+	  libshogun/kernel/PolyMatchWordStringKernel.h,
+	  libshogun/kernel/PyramidChi2.cpp, libshogun/kernel/PyramidChi2.h,
+	  libshogun/kernel/RegulatoryModulesStringKernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.h,
+	  libshogun/kernel/SNPStringKernel.cpp,
+	  libshogun/kernel/SNPStringKernel.h,
+	  libshogun/kernel/SalzbergWordStringKernel.cpp,
+	  libshogun/kernel/SalzbergWordStringKernel.h,
+	  libshogun/kernel/ScatterKernelNormalizer.h,
+	  libshogun/kernel/SigmoidKernel.cpp,
+	  libshogun/kernel/SigmoidKernel.h,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.h,
+	  libshogun/kernel/SparseKernel.h,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.cpp,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.h,
+	  libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.h,
+	  libshogun/kernel/StringKernel.h,
+	  libshogun/kernel/TanimotoKernelNormalizer.h,
+	  libshogun/kernel/TensorProductPairKernel.cpp,
+	  libshogun/kernel/TensorProductPairKernel.h,
+	  libshogun/kernel/WeightedCommWordStringKernel.cpp,
+	  libshogun/kernel/WeightedCommWordStringKernel.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.h,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/BinaryStream.h, libshogun/lib/BitString.h,
+	  libshogun/lib/Cache.h, libshogun/lib/Compressor.cpp,
+	  libshogun/lib/Compressor.h, libshogun/lib/Cplex.h,
+	  libshogun/lib/DataType.cpp, libshogun/lib/DataType.h,
+	  libshogun/lib/File.h, libshogun/lib/GCArray.h,
+	  libshogun/lib/HDF5File.cpp, libshogun/lib/HDF5File.h,
+	  libshogun/lib/List.h, libshogun/lib/Mathematics.h,
+	  libshogun/lib/MemoryMappedFile.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SGSerializable.cpp,
+	  libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h, libshogun/lib/SimpleFile.h,
+	  libshogun/lib/Trie.h, libshogun/lib/common.h,
+	  libshogun/lib/io.cpp, libshogun/lib/io.h,
+	  libshogun/lib/memory.cpp, libshogun/lib/memory.h,
+	  libshogun/preproc/DecompressString.h,
+	  libshogun/preproc/NormDerivativeLem3.cpp,
+	  libshogun/preproc/NormDerivativeLem3.h,
+	  libshogun/preproc/PCACut.h, libshogun/preproc/StringPreProc.h,
+	  libshogun/regression/KRR.h, libshogun/regression/svr/SVRLight.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIHMM.cpp,
+	  libshogunui/SGInterface.cpp, modular/SGBase.i,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  r/RInterface.cpp, r/RInterface.h: * trunk/*
+	  
+	  - Recovering revision 5093.
+
+2010-10-16  xdlehmann
+
+	* Makefile.template, cmdline/CmdLineInterface.cpp, configure,
+	  libshogun/base/DynArray.h, libshogun/base/Parallel.cpp,
+	  libshogun/base/Parallel.h, libshogun/base/SGObject.cpp,
+	  libshogun/base/SGObject.h, libshogun/base/Version.cpp,
+	  libshogun/base/Version.h, libshogun/base/class_list.cpp.sh,
+	  libshogun/base/class_list.cpp.templ, libshogun/base/class_list.h,
+	  libshogun/base/init.cpp, libshogun/base/init.h,
+	  libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/DistanceMachine.h,
+	  libshogun/classifier/KNN.h,
+	  libshogun/classifier/KernelMachine.cpp,
+	  libshogun/classifier/KernelMachine.h, libshogun/classifier/LDA.h,
+	  libshogun/classifier/LPBoost.h, libshogun/classifier/LPM.h,
+	  libshogun/classifier/LinearClassifier.h,
+	  libshogun/classifier/SubGradientLPM.h,
+	  libshogun/classifier/svm/CPLEXSVM.h,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
+	  libshogun/classifier/svm/GMNPLib.cpp,
+	  libshogun/classifier/svm/GMNPLib.h,
+	  libshogun/classifier/svm/GMNPSVM.cpp,
+	  libshogun/classifier/svm/GNPPLib.cpp,
+	  libshogun/classifier/svm/GNPPLib.h,
+	  libshogun/classifier/svm/GNPPSVM.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.h,
+	  libshogun/classifier/svm/QPBSVMLib.cpp,
+	  libshogun/classifier/svm/QPBSVMLib.h,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/SVMLight.h,
+	  libshogun/classifier/svm/SVMLightOneClass.h,
+	  libshogun/classifier/svm/SVMOcas.cpp,
+	  libshogun/classifier/svm/SVMOcas.h,
+	  libshogun/classifier/svm/SVMSGD.cpp,
+	  libshogun/classifier/svm/SVMSGD.h,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/ScatterSVM.h,
+	  libshogun/classifier/svm/SubGradientSVM.cpp,
+	  libshogun/classifier/svm/Tron.h,
+	  libshogun/classifier/svm/WDSVMOcas.cpp,
+	  libshogun/classifier/svm/WDSVMOcas.h,
+	  libshogun/classifier/svm/gmnplib.cpp,
+	  libshogun/classifier/svm/gmnplib.h,
+	  libshogun/classifier/svm/gnpplib.cpp,
+	  libshogun/classifier/svm/gnpplib.h,
+	  libshogun/classifier/svm/qpbsvmlib.cpp,
+	  libshogun/classifier/svm/qpbsvmlib.h,
+	  libshogun/clustering/Hierarchical.h,
+	  libshogun/clustering/KMeans.h,
+	  libshogun/distance/HammingWordDistance.cpp,
+	  libshogun/distance/HammingWordDistance.h,
+	  libshogun/distance/KernelDistance.cpp,
+	  libshogun/distance/KernelDistance.h,
+	  libshogun/distance/MinkowskiMetric.cpp,
+	  libshogun/distance/MinkowskiMetric.h,
+	  libshogun/distance/RealDistance.h,
+	  libshogun/distance/SimpleDistance.h,
+	  libshogun/distance/SparseDistance.h,
+	  libshogun/distance/StringDistance.h,
+	  libshogun/distributions/GHMM.h, libshogun/distributions/HMM.cpp,
+	  libshogun/distributions/HMM.h,
+	  libshogun/distributions/LinearHMM.cpp,
+	  libshogun/distributions/LinearHMM.h,
+	  libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/AttributeFeatures.h,
+	  libshogun/features/DotFeatures.cpp,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/DummyFeatures.h,
+	  libshogun/features/ExplicitSpecFeatures.cpp,
+	  libshogun/features/ExplicitSpecFeatures.h,
+	  libshogun/features/FKFeatures.cpp,
+	  libshogun/features/FKFeatures.h, libshogun/features/Features.cpp,
+	  libshogun/features/Features.h,
+	  libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.cpp,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/LBPPyrDotFeatures.cpp,
+	  libshogun/features/LBPPyrDotFeatures.h,
+	  libshogun/features/Labels.cpp, libshogun/features/Labels.h,
+	  libshogun/features/PolyFeatures.cpp,
+	  libshogun/features/PolyFeatures.h,
+	  libshogun/features/RealFileFeatures.cpp,
+	  libshogun/features/RealFileFeatures.h,
+	  libshogun/features/SNPFeatures.cpp,
+	  libshogun/features/SNPFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/SparsePolyFeatures.cpp,
+	  libshogun/features/SparsePolyFeatures.h,
+	  libshogun/features/StringFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/TOPFeatures.cpp,
+	  libshogun/features/TOPFeatures.h,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/features/WDFeatures.h,
+	  libshogun/genomic_signals/TrainPredMaster.cpp.orig,
+	  libshogun/genomic_signals/TrainPredMaster.h,
+	  libshogun/kernel/AUCKernel.cpp, libshogun/kernel/AUCKernel.h,
+	  libshogun/kernel/Chi2Kernel.cpp, libshogun/kernel/Chi2Kernel.h,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/ConstKernel.cpp, libshogun/kernel/ConstKernel.h,
+	  libshogun/kernel/DiagKernel.cpp, libshogun/kernel/DiagKernel.h,
+	  libshogun/kernel/DiceKernelNormalizer.h,
+	  libshogun/kernel/DistanceKernel.cpp,
+	  libshogun/kernel/DistanceKernel.h, libshogun/kernel/DotKernel.h,
+	  libshogun/kernel/FixedDegreeStringKernel.cpp,
+	  libshogun/kernel/FixedDegreeStringKernel.h,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianKernel.h,
+	  libshogun/kernel/GaussianMatchStringKernel.cpp,
+	  libshogun/kernel/GaussianMatchStringKernel.h,
+	  libshogun/kernel/GaussianShiftKernel.cpp,
+	  libshogun/kernel/GaussianShiftKernel.h,
+	  libshogun/kernel/GaussianShortRealKernel.cpp,
+	  libshogun/kernel/GaussianShortRealKernel.h,
+	  libshogun/kernel/HistogramIntersectionKernel.cpp,
+	  libshogun/kernel/HistogramIntersectionKernel.h,
+	  libshogun/kernel/HistogramWordStringKernel.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.h,
+	  libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/LocalAlignmentStringKernel.cpp,
+	  libshogun/kernel/LocalAlignmentStringKernel.h,
+	  libshogun/kernel/LocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/LocalityImprovedStringKernel.h,
+	  libshogun/kernel/MatchWordStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.h,
+	  libshogun/kernel/MultitaskKernelMaskNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMaskPairNormalizer.h,
+	  libshogun/kernel/MultitaskKernelPlifNormalizer.h,
+	  libshogun/kernel/OligoStringKernel.cpp,
+	  libshogun/kernel/OligoStringKernel.h,
+	  libshogun/kernel/PolyKernel.cpp, libshogun/kernel/PolyKernel.h,
+	  libshogun/kernel/PolyMatchStringKernel.cpp,
+	  libshogun/kernel/PolyMatchStringKernel.h,
+	  libshogun/kernel/PolyMatchWordStringKernel.cpp,
+	  libshogun/kernel/PolyMatchWordStringKernel.h,
+	  libshogun/kernel/PyramidChi2.cpp, libshogun/kernel/PyramidChi2.h,
+	  libshogun/kernel/RegulatoryModulesStringKernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.h,
+	  libshogun/kernel/SNPStringKernel.cpp,
+	  libshogun/kernel/SNPStringKernel.h,
+	  libshogun/kernel/SalzbergWordStringKernel.cpp,
+	  libshogun/kernel/SalzbergWordStringKernel.h,
+	  libshogun/kernel/ScatterKernelNormalizer.h,
+	  libshogun/kernel/SigmoidKernel.cpp,
+	  libshogun/kernel/SigmoidKernel.h,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.h,
+	  libshogun/kernel/SparseKernel.h,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.cpp,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.h,
+	  libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.h,
+	  libshogun/kernel/StringKernel.h,
+	  libshogun/kernel/TanimotoKernelNormalizer.h,
+	  libshogun/kernel/TensorProductPairKernel.cpp,
+	  libshogun/kernel/TensorProductPairKernel.h,
+	  libshogun/kernel/WeightedCommWordStringKernel.cpp,
+	  libshogun/kernel/WeightedCommWordStringKernel.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.h,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/BinaryStream.h, libshogun/lib/BitString.h,
+	  libshogun/lib/Cache.h, libshogun/lib/Compressor.cpp,
+	  libshogun/lib/Compressor.h, libshogun/lib/Cplex.h,
+	  libshogun/lib/DataType.cpp, libshogun/lib/DataType.h,
+	  libshogun/lib/File.h, libshogun/lib/GCArray.h,
+	  libshogun/lib/HDF5File.cpp, libshogun/lib/HDF5File.h,
+	  libshogun/lib/List.h, libshogun/lib/Mathematics.h,
+	  libshogun/lib/MemoryMappedFile.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SGSerializable.cpp,
+	  libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h, libshogun/lib/SimpleFile.h,
+	  libshogun/lib/Trie.h, libshogun/lib/common.h,
+	  libshogun/lib/io.cpp, libshogun/lib/io.h,
+	  libshogun/lib/memory.cpp, libshogun/lib/memory.h,
+	  libshogun/preproc/DecompressString.h,
+	  libshogun/preproc/NormDerivativeLem3.cpp,
+	  libshogun/preproc/NormDerivativeLem3.h,
+	  libshogun/preproc/PCACut.h, libshogun/preproc/StringPreProc.h,
+	  libshogun/regression/KRR.h, libshogun/regression/svr/SVRLight.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIHMM.cpp,
+	  libshogunui/SGInterface.cpp, modular/SGBase.i,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  r/RInterface.cpp, r/RInterface.h: * trunk/*
+	  
+	  - reverting revisions: 5080, 5081, 5082, 5083, 5084, 5085, 5086,
+	  5089, 5090, 5091, 5092, 5093
+	  
+	  
+	  Note: In the following text we mean differences `between revision
+	  x-1:x' if we are speaking from `revision difference x'.
+	  
+	  Since I have loss my state as employee of the `Technical
+	  University
+	  Berlin - Machine Learning/Intelligent Data Analysis' backdated to
+	  September 30, 2010 the following revision differences (of October
+	  2010) has COPYRIGHT by `(C) 2010 - Dirk J. Lehmann' and were
+	  NEVER be
+	  published under the terms of the `GNU General Public License':
+	  
+	  * <https://svn.tuebingen.mpg.de/shogun> revisions: 5080, 5081,
+	  5082,
+	  5083, 5084, 5085, 5086, 5089, 5090, 5091, 5092, 5093
+	  
+	  These revision differences are NOT ALLOWED to (re-)distribute,
+	  neither
+	  in source nor in any kind of binary code! To make sure that you
+	  are
+	  going legal, please update your source tree either to revision
+	  5079
+	  (or previous) or to revision 5094 (or later).
+	  
+	  Thanks for reading,
+	  Dirk Lehmann.
+	  
+	  PS: Need a job! If you are interested than send an email to
+	  <mailto:jobless.dirk@gmx.de> because I don't know how long my
+	  ldirk@mail.tu-... account will be available.
+
+2010-10-13  xdlehmann
+
+	* libshogun/base/SGObject.cpp, libshogun/base/class_list.cpp.sh,
+	  libshogun/base/class_list.cpp.templ,
+	  libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/kernel/GaussianKernel.cpp, libshogun/kernel/Kernel.cpp,
+	  libshogun/kernel/KernelNormalizer.h, libshogun/lib/DataType.cpp,
+	  libshogun/lib/DataType.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/SerializableAsciiFile.cpp, libshogun/lib/common.h:
+	  * src/libshogun/*
+	  
+	  - New common type STRING_T added.
+	  
+	  - New common type MACHINE_INT_T added.
+	  
+	  - @Soeren: Corrupt memory free'ing fixed in GaussianKernel.
+	  
+	  - Some minor fixes which could be misuse the stack.
+
+2010-10-11  xdlehmann
+
+	* libshogun/base/SGObject.cpp, libshogun/base/class_list.cpp.sh,
+	  libshogun/base/class_list.cpp.templ, libshogun/base/class_list.h,
+	  libshogun/classifier/KernelMachine.cpp,
+	  libshogun/classifier/svm/GMNPLib.cpp,
+	  libshogun/classifier/svm/GNPPLib.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.h,
+	  libshogun/classifier/svm/QPBSVMLib.cpp,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/SVMOcas.cpp,
+	  libshogun/classifier/svm/SVMSGD.cpp,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/WDSVMOcas.cpp,
+	  libshogun/distance/HammingWordDistance.cpp,
+	  libshogun/distance/KernelDistance.cpp,
+	  libshogun/distance/MinkowskiMetric.cpp,
+	  libshogun/distance/SimpleDistance.h,
+	  libshogun/distance/SparseDistance.h,
+	  libshogun/distance/StringDistance.h,
+	  libshogun/distributions/HMM.cpp,
+	  libshogun/distributions/LinearHMM.cpp,
+	  libshogun/features/Alphabet.cpp,
+	  libshogun/features/DummyFeatures.h,
+	  libshogun/features/ExplicitSpecFeatures.cpp,
+	  libshogun/features/FKFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/ImplicitWeightedSpecFeatures.cpp,
+	  libshogun/features/LBPPyrDotFeatures.cpp,
+	  libshogun/features/PolyFeatures.cpp,
+	  libshogun/features/RealFileFeatures.cpp,
+	  libshogun/features/SNPFeatures.cpp,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/SparsePolyFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/TOPFeatures.cpp,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/genomic_signals/TrainPredMaster.cpp.orig,
+	  libshogun/kernel/AUCKernel.cpp, libshogun/kernel/Chi2Kernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/ConstKernel.cpp,
+	  libshogun/kernel/DiagKernel.cpp,
+	  libshogun/kernel/DistanceKernel.cpp,
+	  libshogun/kernel/FixedDegreeStringKernel.cpp,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianKernel.h,
+	  libshogun/kernel/GaussianMatchStringKernel.cpp,
+	  libshogun/kernel/GaussianShiftKernel.cpp,
+	  libshogun/kernel/GaussianShortRealKernel.cpp,
+	  libshogun/kernel/HistogramIntersectionKernel.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.cpp,
+	  libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/LocalAlignmentStringKernel.cpp,
+	  libshogun/kernel/LocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.cpp,
+	  libshogun/kernel/MultitaskKernelPlifNormalizer.h,
+	  libshogun/kernel/OligoStringKernel.cpp,
+	  libshogun/kernel/PolyKernel.cpp,
+	  libshogun/kernel/PolyMatchStringKernel.cpp,
+	  libshogun/kernel/PolyMatchWordStringKernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.cpp,
+	  libshogun/kernel/SNPStringKernel.cpp,
+	  libshogun/kernel/SalzbergWordStringKernel.cpp,
+	  libshogun/kernel/ScatterKernelNormalizer.h,
+	  libshogun/kernel/SigmoidKernel.cpp,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/SparseKernel.h,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/StringKernel.h,
+	  libshogun/kernel/TensorProductPairKernel.cpp,
+	  libshogun/kernel/WeightedCommWordStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/BitString.h, libshogun/lib/Cache.h,
+	  libshogun/lib/Compressor.cpp, libshogun/lib/DataType.cpp,
+	  libshogun/lib/DataType.h, libshogun/lib/File.h,
+	  libshogun/lib/GCArray.h, libshogun/lib/HDF5File.cpp,
+	  libshogun/lib/List.h, libshogun/lib/Mathematics.h,
+	  libshogun/lib/MemoryMappedFile.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SGSerializable.cpp,
+	  libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h, libshogun/lib/SimpleFile.h,
+	  libshogun/lib/Trie.h, libshogun/lib/io.h,
+	  libshogun/preproc/DecompressString.h,
+	  libshogun/preproc/StringPreProc.h: * src/libshogun/*
+	  
+	  - Saving and loading of GMNPSVM seems to be work. Test it for
+	  your
+	  own (consider the files `blaah{,2}.asc' after execution):
+	  
+	  *** snip ***
+	  
+	  from numpy import *; from numpy.random import randn
+	  from shogun.Features import *; from shogun.Classifier import *;
+	  from shogun.Kernel import *; from shogun.Library import *;
+	  from shogun.PreProc import *
+	  
+	  num=5; dist=1;
+	  
+	  data=concatenate((randn(2,num), randn(2,num) + dist,
+	  randn(2,num) + 2*dist,
+	  randn(2,num) + 3*dist), axis=1)
+	  lab=concatenate((zeros(num), ones(num), 2*ones(num),
+	  3*ones(num)))
+	  
+	  feats=RealFeatures(data)
+	  kernel=GaussianKernel(feats, feats, 2.1)
+	  
+	  labels=Labels(lab)
+	  
+	  print "*** Begin\n"
+	  
+	  svm = GMNPSVM(1, kernel, labels)
+	  svm.train(feats)
+	  
+	  svm.print_serializable()
+	  
+	  fstream = SerializableAsciiFile("blaah.asc", "w")
+	  if svm.save_serializable(fstream): print "OK writing\n"
+	  else: print "ERROR writing\n"
+	  
+	  svm = GMNPSVM()
+	  #feats = RealFeatures()
+	  fstream = SerializableAsciiFile("blaah.asc", "r")
+	  if svm.load_serializable(fstream): print "OK reading\n"
+	  else: print "ERROR reading\n"
+	  
+	  fstream = SerializableAsciiFile("blaah2.asc", "w")
+	  svm.save_serializable(fstream)
+	  
+	  print "*** End\n"
+	  
+	  *** snap ***
+
+2010-10-08  xdlehmann
+
+	* cmdline/CmdLineInterface.cpp, libshogun/base/DynArray.h,
+	  libshogun/base/Parallel.cpp, libshogun/base/Parallel.h,
+	  libshogun/base/SGObject.cpp, libshogun/base/SGObject.h,
+	  libshogun/base/Version.cpp, libshogun/base/Version.h,
+	  libshogun/base/class_list.cpp.sh, libshogun/base/init.cpp,
+	  libshogun/base/init.h, libshogun/classifier/DistanceMachine.h,
+	  libshogun/classifier/KNN.h, libshogun/classifier/KernelMachine.h,
+	  libshogun/classifier/LDA.h, libshogun/classifier/LPBoost.h,
+	  libshogun/classifier/LPM.h,
+	  libshogun/classifier/LinearClassifier.h,
+	  libshogun/classifier/SubGradientLPM.h,
+	  libshogun/classifier/svm/CPLEXSVM.h,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
+	  libshogun/classifier/svm/GMNPLib.cpp,
+	  libshogun/classifier/svm/GMNPLib.h,
+	  libshogun/classifier/svm/GMNPSVM.cpp,
+	  libshogun/classifier/svm/GNPPLib.cpp,
+	  libshogun/classifier/svm/GNPPLib.h,
+	  libshogun/classifier/svm/GNPPSVM.cpp,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/MultiClassSVM.cpp,
+	  libshogun/classifier/svm/MultiClassSVM.h,
+	  libshogun/classifier/svm/QPBSVMLib.cpp,
+	  libshogun/classifier/svm/QPBSVMLib.h,
+	  libshogun/classifier/svm/SVMLight.h,
+	  libshogun/classifier/svm/SVMLightOneClass.h,
+	  libshogun/classifier/svm/SVMOcas.cpp,
+	  libshogun/classifier/svm/SVMOcas.h,
+	  libshogun/classifier/svm/SVMSGD.cpp,
+	  libshogun/classifier/svm/SVMSGD.h,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/ScatterSVM.h,
+	  libshogun/classifier/svm/SubGradientSVM.cpp,
+	  libshogun/classifier/svm/Tron.h,
+	  libshogun/classifier/svm/WDSVMOcas.cpp,
+	  libshogun/classifier/svm/WDSVMOcas.h,
+	  libshogun/classifier/svm/gmnplib.cpp,
+	  libshogun/classifier/svm/gmnplib.h,
+	  libshogun/classifier/svm/gnpplib.cpp,
+	  libshogun/classifier/svm/gnpplib.h,
+	  libshogun/classifier/svm/qpbsvmlib.cpp,
+	  libshogun/classifier/svm/qpbsvmlib.h,
+	  libshogun/clustering/Hierarchical.h,
+	  libshogun/clustering/KMeans.h,
+	  libshogun/distance/HammingWordDistance.cpp,
+	  libshogun/distance/HammingWordDistance.h,
+	  libshogun/distance/KernelDistance.cpp,
+	  libshogun/distance/KernelDistance.h,
+	  libshogun/distance/MinkowskiMetric.cpp,
+	  libshogun/distance/MinkowskiMetric.h,
+	  libshogun/distance/RealDistance.h,
+	  libshogun/distributions/GHMM.h, libshogun/distributions/HMM.cpp,
+	  libshogun/distributions/HMM.h,
+	  libshogun/distributions/LinearHMM.cpp,
+	  libshogun/distributions/LinearHMM.h,
+	  libshogun/features/Alphabet.cpp, libshogun/features/Alphabet.h,
+	  libshogun/features/AttributeFeatures.h,
+	  libshogun/features/DummyFeatures.h,
+	  libshogun/features/ExplicitSpecFeatures.cpp,
+	  libshogun/features/ExplicitSpecFeatures.h,
+	  libshogun/features/FKFeatures.cpp,
+	  libshogun/features/FKFeatures.h, libshogun/features/Features.h,
+	  libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.cpp,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/LBPPyrDotFeatures.cpp,
+	  libshogun/features/LBPPyrDotFeatures.h,
+	  libshogun/features/Labels.h, libshogun/features/PolyFeatures.cpp,
+	  libshogun/features/PolyFeatures.h,
+	  libshogun/features/RealFileFeatures.cpp,
+	  libshogun/features/RealFileFeatures.h,
+	  libshogun/features/SNPFeatures.cpp,
+	  libshogun/features/SNPFeatures.h,
+	  libshogun/features/SparsePolyFeatures.cpp,
+	  libshogun/features/SparsePolyFeatures.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/TOPFeatures.cpp,
+	  libshogun/features/TOPFeatures.h,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/features/WDFeatures.h,
+	  libshogun/genomic_signals/TrainPredMaster.cpp.orig,
+	  libshogun/genomic_signals/TrainPredMaster.h,
+	  libshogun/kernel/AUCKernel.cpp, libshogun/kernel/AUCKernel.h,
+	  libshogun/kernel/Chi2Kernel.cpp, libshogun/kernel/Chi2Kernel.h,
+	  libshogun/kernel/CommWordStringKernel.cpp,
+	  libshogun/kernel/CommWordStringKernel.h,
+	  libshogun/kernel/ConstKernel.cpp, libshogun/kernel/ConstKernel.h,
+	  libshogun/kernel/DiagKernel.cpp, libshogun/kernel/DiagKernel.h,
+	  libshogun/kernel/DiceKernelNormalizer.h,
+	  libshogun/kernel/DistanceKernel.cpp,
+	  libshogun/kernel/DistanceKernel.h, libshogun/kernel/DotKernel.h,
+	  libshogun/kernel/FixedDegreeStringKernel.cpp,
+	  libshogun/kernel/FixedDegreeStringKernel.h,
+	  libshogun/kernel/GaussianMatchStringKernel.cpp,
+	  libshogun/kernel/GaussianMatchStringKernel.h,
+	  libshogun/kernel/GaussianShiftKernel.cpp,
+	  libshogun/kernel/GaussianShiftKernel.h,
+	  libshogun/kernel/GaussianShortRealKernel.cpp,
+	  libshogun/kernel/GaussianShortRealKernel.h,
+	  libshogun/kernel/HistogramIntersectionKernel.cpp,
+	  libshogun/kernel/HistogramIntersectionKernel.h,
+	  libshogun/kernel/HistogramWordStringKernel.cpp,
+	  libshogun/kernel/HistogramWordStringKernel.h,
+	  libshogun/kernel/LocalAlignmentStringKernel.cpp,
+	  libshogun/kernel/LocalAlignmentStringKernel.h,
+	  libshogun/kernel/LocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/LocalityImprovedStringKernel.h,
+	  libshogun/kernel/MatchWordStringKernel.cpp,
+	  libshogun/kernel/MatchWordStringKernel.h,
+	  libshogun/kernel/MultitaskKernelPlifNormalizer.h,
+	  libshogun/kernel/OligoStringKernel.cpp,
+	  libshogun/kernel/OligoStringKernel.h,
+	  libshogun/kernel/PolyKernel.cpp, libshogun/kernel/PolyKernel.h,
+	  libshogun/kernel/PolyMatchStringKernel.cpp,
+	  libshogun/kernel/PolyMatchStringKernel.h,
+	  libshogun/kernel/PolyMatchWordStringKernel.cpp,
+	  libshogun/kernel/PolyMatchWordStringKernel.h,
+	  libshogun/kernel/PyramidChi2.cpp, libshogun/kernel/PyramidChi2.h,
+	  libshogun/kernel/RegulatoryModulesStringKernel.cpp,
+	  libshogun/kernel/RegulatoryModulesStringKernel.h,
+	  libshogun/kernel/SNPStringKernel.cpp,
+	  libshogun/kernel/SNPStringKernel.h,
+	  libshogun/kernel/SalzbergWordStringKernel.cpp,
+	  libshogun/kernel/SalzbergWordStringKernel.h,
+	  libshogun/kernel/ScatterKernelNormalizer.h,
+	  libshogun/kernel/SigmoidKernel.cpp,
+	  libshogun/kernel/SigmoidKernel.h,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  libshogun/kernel/SimpleLocalityImprovedStringKernel.h,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.cpp,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.h,
+	  libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.h,
+	  libshogun/kernel/TanimotoKernelNormalizer.h,
+	  libshogun/kernel/TensorProductPairKernel.cpp,
+	  libshogun/kernel/TensorProductPairKernel.h,
+	  libshogun/kernel/WeightedCommWordStringKernel.cpp,
+	  libshogun/kernel/WeightedCommWordStringKernel.h,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreePositionStringKernel.h,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/BitString.h, libshogun/lib/Compressor.cpp,
+	  libshogun/lib/Compressor.h, libshogun/lib/Cplex.h,
+	  libshogun/lib/HDF5File.cpp, libshogun/lib/HDF5File.h,
+	  libshogun/lib/MemoryMappedFile.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SGSerializable.cpp,
+	  libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableAsciiFile.cpp, libshogun/lib/io.cpp,
+	  libshogun/lib/io.h, libshogun/lib/memory.cpp,
+	  libshogun/lib/memory.h, libshogun/preproc/NormDerivativeLem3.cpp,
+	  libshogun/preproc/NormDerivativeLem3.h,
+	  libshogun/preproc/NormOne.h, libshogun/preproc/PCACut.h,
+	  libshogun/regression/KRR.h, libshogun/regression/svr/SVRLight.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/GUIHMM.cpp,
+	  libshogunui/SGInterface.cpp, modular/SGBase.i: * src/*
+	  
+	  - Removing `C' prefix from class-names which are not inheriting
+	  from
+	  CSG_SERIALIZBABLE.
+	  
+	  - Moving files which are implementing classes of the scheme
+	  `class
+	  C??? :public CSGSerializable' to `???.{h,cpp}'.
+	  
+	  - Adding default constructors for classes which are inheriting
+	  from
+	  CSG_SERIALIZBABLE (highly development state; parts where
+	  generated
+	  by scripts!!!).
+	  
+	  - Marking classes which are depending on system configuration as
+	  IGNORE_IN_CLASSLIST.
+	  
+	  * Ready for implementing HDF5 and much bug reports ;P ... Let's
+	  go...
+
+2010-10-07  xdlehmann
+
+	* libshogun/base/class_list.cpp.sh, libshogun/base/class_list.h,
+	  libshogun/lib/Parameter.cpp, libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableAsciiFile.cpp: * src/libshogun/lib/*
+	  
+	  - Some minor fixes to prevent segmentation faults during reading
+	  corrupt file formats.
+	  
+	  * src/libshogun/base/class_list.*
+	  
+	  - License stuff added.
+
+2010-10-06  xdlehmann
+
+	* Makefile.template, configure, libshogun/base,
+	  libshogun/base/SGObject.h, libshogun/base/class_list.cpp.sh,
+	  libshogun/base/class_list.cpp.templ, libshogun/base/class_list.h,
+	  libshogun/classifier/Classifier.cpp,
+	  libshogun/features/Features.cpp, libshogun/features/Labels.cpp,
+	  libshogun/features/Labels.h, libshogun/features/StringFeatures.h,
+	  libshogun/genomic_signals/TrainPredMaster.h,
+	  libshogun/kernel/MultitaskKernelMaskNormalizer.h,
+	  libshogun/kernel/MultitaskKernelMaskPairNormalizer.h,
+	  libshogun/lib/BinaryStream.h, libshogun/lib/BitString.h,
+	  libshogun/lib/Parameter.cpp, libshogun/lib/Parameter.h,
+	  libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h, libshogun/preproc/NormOne.h,
+	  r/RInterface.cpp, r/RInterface.h: ATTENTION: Reconfiguring of
+	  your source tree is required after this
+	  update!
+	  
+	  The mechanism for serialization should now be powerful enough to
+	  adapt
+	  the remaining code and implement other kinds of
+	  SERIALIZABLE_ASCII_FILE's. So it's the best time for any kinds of
+	  reports to this topic, in example to the mailing list. A simple
+	  Python snippet to feel what's going on [after execution take a
+	  look to
+	  the file `blaah.asc' and `blaah2.asc'... A `diff' of these should
+	  be
+	  hopefully an empty string ;) ]:
+	  
+	  *** snip ***
+	  
+	  from numpy import *; from numpy.random import randn
+	  from Features import *; from Classifier import *
+	  from Kernel import *; from Library import *
+	  from PreProc import *
+	  
+	  num=1000; dist=1;
+	  
+	  data=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1)
+	  lab=concatenate((-ones(num), ones(num)));
+	  
+	  feats=RealFeatures(data);
+	  kernel=GaussianKernel(feats, feats, 2.1);
+	  
+	  labels=Labels(lab);
+	  
+	  print "*** Begin\n"
+	  
+	  svm = GMNPSVM(1, kernel, labels)
+	  feats.add_preproc(NormOne())
+	  feats.add_preproc(NormOne())
+	  feats.add_preproc(NormOne())
+	  
+	  feats.print_serializable()
+	  
+	  fstream = SerializableAsciiFile("blaah.asc", "w")
+	  if feats.save_serializable(fstream): print "OK writing\n"
+	  else: print "ERROR writing\n"
+	  
+	  #svm = GMNPSVM()
+	  feats = RealFeatures()
+	  fstream = SerializableAsciiFile("blaah.asc", "r")
+	  if feats.load_serializable(fstream): print "OK reading\n"
+	  else: print "ERROR reading\n"
+	  
+	  fstream = SerializableAsciiFile("blaah2.asc", "w")
+	  feats.save_serializable(fstream)
+	  
+	  print "*** End\n"
+	  
+	  *** snap ***
+
+2010-10-05  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.h: added
+	  missing #ifdef HAVE_LAPACK to allow compiling shogun in absence
+	  of Lapack
+
+2010-10-05  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/HistogramIntersectionKernel.cpp,
+	  libshogun/kernel/HistogramIntersectionKernel.h,
+	  libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  modular/Kernel.i: add HistogramIntersectionKernel written by Koen
+	  van de Sande
+
+2010-10-05  xdlehmann
+
+	* libshogun/features/Labels.cpp, libshogun/features/Labels.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/StringFeatures.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h,
+	  libshogun/lib/SerializableAsciiFile.cpp: * src/libshogun/*
+	  
+	  - Backup before greater structure changes.
+
+2010-10-04  xdlehmann
+
+	* libshogun/lib/Parameter.cpp: * src/libshogun/lib/Parameter.cpp
+	  
+	  - EXIT()'s removed.
+	* libshogun/lib/Parameter.cpp: * src/libshogun/lib/Parameter.cpp
+	  
+	  - Right error message after structure change.
+	* libshogun/classifier/Classifier.cpp,
+	  libshogun/features/Features.cpp, libshogun/features/Labels.cpp,
+	  libshogun/features/Labels.h, libshogun/features/SimpleFeatures.h,
+	  libshogun/features/StringFeatures.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h: * src/libshogun/*
+	  
+	  - Loading and saving to CSGSERIAL_ASCII_FILE seems to be work for
+	  non-abstract classes.
+	  
+	  - Templates for CPARAMETER::ADD*() removed, we are using
+	  overloading
+	  instead.
+	* libshogun/features/DotFeatures.cpp,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/Features.cpp, libshogun/features/Features.h,
+	  libshogun/features/SimpleFeatures.h, libshogun/lib/DataType.cpp,
+	  libshogun/lib/Parameter.cpp, libshogun/lib/Parameter.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h: * src/libshogun/*
+	  
+	  - !Reloading! into/from SERIALIZABLE_ASCII_FILE seems to be work.
+	* libshogun/base/init.cpp: * src/libshogun/base/init.cpp
+	  
+	  - locale fix of revision 5034 completed ;P ...
+
+2010-10-01  xdlehmann
+
+	* libshogun/classifier/Classifier.cpp,
+	  libshogun/classifier/svm/SVM.cpp, libshogun/features/Labels.cpp,
+	  libshogun/features/Labels.h,
+	  libshogun/features/StringFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/DataType.cpp,
+	  libshogun/lib/DataType.h, libshogun/lib/HDF5File.cpp,
+	  libshogun/lib/Parameter.cpp, libshogun/lib/Parameter.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableFile.cpp, octave/OctaveInterface.cpp,
+	  octave/OctaveInterface.h: * src/*
+	  
+	  - We are using templates to add Parameters to support generic
+	  classes... In the future we can use overloading instead. Sorry
+	  for defiance :((
+	  
+	  - Backup and Weekend =) ...
+
+2010-09-30  xdlehmann
+
+	* libshogun/features/Labels.cpp, libshogun/features/Labels.h: *
+	  src/libshogun/features/Labels.{h,cpp}
+	  
+	  - Reverting to revision 5067.
+
+2010-09-30  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp: commented
+	  out code for hot start
+	* libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp: adapted
+	  solver type
+
+2010-09-29  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun, libshogun/classifier/Classifier.h,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.cpp,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
+	  libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/SVM_linear.h, modular/Classifier.i:
+	  added regtrick for liblinear
+
+2010-09-29  xdlehmann
+
+	* cmdline/CmdLineInterface.cpp, libshogun/lib/BinaryFile.cpp,
+	  libshogun/lib/HDF5File.cpp, matlab/MatlabInterface.cpp,
+	  modular/Features.i, octave/OctaveInterface.cpp,
+	  octave_modular/swig_typemaps.i, python/PythonInterface.cpp,
+	  python_modular/swig_typemaps.i, r/RInterface.cpp: * src/*
+	  
+	  - Reverting wrong changes of revision 5074.
+	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/StringFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/StringFileFeatures.h,
+	  libshogun/kernel/SpectrumRBFKernel.cpp,
+	  libshogun/kernel/SpectrumRBFKernel.h,
+	  libshogun/lib/AsciiFile.cpp, libshogun/lib/AsciiFile.h,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/BinaryFile.h,
+	  libshogun/lib/File.cpp, libshogun/lib/File.h,
+	  libshogun/lib/HDF5File.cpp, libshogun/lib/HDF5File.h,
+	  libshogun/lib/LibSVMFile.h, libshogun/structure/PlifMatrix.cpp,
+	  libshogun/structure/PlifMatrix.h, libshogunui/GUIFeatures.cpp,
+	  libshogunui/SGInterface.cpp, libshogunui/SGInterface.h,
+	  matlab/MatlabInterface.cpp, matlab/MatlabInterface.h,
+	  modular/Features.i, modular/Structure.i,
+	  octave/OctaveInterface.cpp, octave/OctaveInterface.h,
+	  octave_modular/swig_typemaps.i, python/PythonInterface.cpp,
+	  python/PythonInterface.h, python_modular/swig_typemaps.i,
+	  r/RInterface.cpp, r/RInterface.h, r_modular/swig_typemaps.i: *
+	  src/*
+	  
+	  - Renaming of `T_STRING' to `CSGString' done.
+	* libshogun/base/SGObject.cpp, libshogun/base/SGObject.h,
+	  libshogun/classifier/Classifier.cpp,
+	  libshogun/lib/BinaryFile.cpp, libshogun/lib/DataType.cpp,
+	  libshogun/lib/DataType.h, libshogun/lib/HDF5File.cpp,
+	  libshogun/lib/Parameter.cpp, libshogun/lib/Parameter.h,
+	  libshogun/lib/SGSerializable.cpp, libshogun/lib/SGSerializable.h,
+	  libshogun/lib/SerialAsciiFile.cpp,
+	  libshogun/lib/SerialAsciiFile.h, libshogun/lib/SerialFile.cpp,
+	  libshogun/lib/SerialFile.h,
+	  libshogun/lib/SerializableAsciiFile.cpp,
+	  libshogun/lib/SerializableAsciiFile.h,
+	  libshogun/lib/SerializableFile.cpp,
+	  libshogun/lib/SerializableFile.h, modular/Library.i,
+	  modular/SGBase.i: * src/*
+	  
+	  - Backup before renaming `T_STRING' to `CSGString'.
+	* libshogun/base/SGObject.cpp, libshogun/base/SGObject.h,
+	  libshogun/classifier/Classifier.cpp,
+	  libshogun/features/LBPPyrDotFeatures.cpp,
+	  libshogun/features/Labels.cpp, libshogun/features/Labels.h,
+	  libshogun/lib/DataType.cpp, libshogun/lib/DataType.h,
+	  libshogun/lib/HDF5File.cpp, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SerialAsciiFile.cpp,
+	  libshogun/lib/SerialAsciiFile.h, libshogun/lib/SerialFile.cpp,
+	  libshogun/lib/SerialFile.h, libshogun/lib/common.h,
+	  modular/Library.i:
+
+2010-09-24  xdlehmann
+
+	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
+	  libshogun/base/DynArray.h, libshogun/base/SGObject.cpp,
+	  libshogun/base/SGObject.h, libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/SVM.h, libshogun/lib/BinaryFile.cpp,
+	  libshogun/lib/BinaryFile.h, libshogun/lib/DataType.h,
+	  libshogun/lib/DynamicArray.h, libshogun/lib/HDF5File.cpp,
+	  libshogun/lib/HDF5File.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h, libshogun/lib/SerialFile.cpp,
+	  libshogun/lib/SerialFile.h, python/PythonInterface.cpp,
+	  python/PythonInterface.h:
+
+2010-09-23  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/ScatterSVM.cpp: ensure that svmlight is
+	  run without linadd for scatter svm
+
+2010-09-17  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/GUIClassifier.cpp: enable L1 regularized liblinear
+
+2010-09-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h,
+	  libshogunui/SGInterface.cpp: simplify kernel print cases and
+	  remove default case
+
+2010-09-15  xdlehmann
+
+	* libshogunui/GUIKernel.cpp, libshogunui/SGInterface.cpp: *
+	  src/libshogunui/*
+	  
+	  - Fixes compile probelems since revision 5054
+
+2010-09-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Regression.i: get svrlight to work again
+	* libshogun/features/SparseFeatures.h,
+	  libshogun/kernel/DotKernel.h,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianKernel.h,
+	  libshogun/kernel/GaussianShiftKernel.h,
+	  libshogun/kernel/LinearKernel.cpp,
+	  libshogun/kernel/LinearKernel.h, libshogun/kernel/PolyKernel.cpp,
+	  libshogun/kernel/PolyKernel.h,
+	  libshogun/kernel/SigmoidKernel.cpp,
+	  libshogun/kernel/SigmoidKernel.h,
+	  libshogun/kernel/SparseGaussianKernel.cpp,
+	  libshogun/kernel/SparseGaussianKernel.h,
+	  libshogun/kernel/SparseLinearKernel.cpp,
+	  libshogun/kernel/SparseLinearKernel.h,
+	  libshogun/kernel/SparsePolyKernel.cpp,
+	  libshogun/kernel/SparsePolyKernel.h, libshogunui/GUIKernel.cpp,
+	  modular/Kernel.i: convert gaussian/poly/linear kernel to
+	  dotfeatures and get rid of features type/class specific obsolete
+	  sparse*{gaussian,poly,linear}kernels (that are now handled nicely
+	  in the gaussian/poly/linear) ones.
+	* libshogun/classifier/svm/LibLinear.cpp,
+	  libshogun/classifier/svm/SVM_linear.cpp,
+	  libshogun/classifier/svm/SubGradientSVM.cpp,
+	  libshogun/features/CombinedDotFeatures.cpp,
+	  libshogun/features/CombinedDotFeatures.h,
+	  libshogun/features/DotFeatures.h,
+	  libshogun/features/ExplicitSpecFeatures.cpp,
+	  libshogun/features/ExplicitSpecFeatures.h,
+	  libshogun/features/HashedWDFeatures.cpp,
+	  libshogun/features/HashedWDFeatures.h,
+	  libshogun/features/HashedWDFeaturesTransposed.cpp,
+	  libshogun/features/HashedWDFeaturesTransposed.h,
+	  libshogun/features/ImplicitWeightedSpecFeatures.cpp,
+	  libshogun/features/ImplicitWeightedSpecFeatures.h,
+	  libshogun/features/LBPPyrDotFeatures.cpp,
+	  libshogun/features/LBPPyrDotFeatures.h,
+	  libshogun/features/PolyFeatures.cpp,
+	  libshogun/features/PolyFeatures.h,
+	  libshogun/features/SNPFeatures.cpp,
+	  libshogun/features/SNPFeatures.h,
+	  libshogun/features/SimpleFeatures.h,
+	  libshogun/features/SparseFeatures.h,
+	  libshogun/features/SparsePolyFeatures.cpp,
+	  libshogun/features/SparsePolyFeatures.h,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/features/WDFeatures.cpp,
+	  libshogun/features/WDFeatures.h, libshogun/kernel/AUCKernel.cpp,
+	  libshogun/kernel/AUCKernel.h, libshogun/kernel/Chi2Kernel.cpp,
+	  libshogun/kernel/Chi2Kernel.h, libshogun/kernel/DotKernel.h,
+	  libshogun/kernel/GaussianKernel.cpp,
+	  libshogun/kernel/GaussianKernel.h,
+	  libshogun/kernel/GaussianShortRealKernel.cpp,
+	  libshogun/kernel/GaussianShortRealKernel.h,
+	  libshogun/kernel/Kernel.h, libshogun/kernel/LinearByteKernel.cpp,
+	  libshogun/kernel/LinearByteKernel.h,
+	  libshogun/kernel/LinearKernel.cpp,
+	  libshogun/kernel/LinearKernel.h,
+	  libshogun/kernel/LinearWordKernel.cpp,
+	  libshogun/kernel/LinearWordKernel.h,
+	  libshogun/kernel/PolyKernel.cpp, libshogun/kernel/PolyKernel.h,
+	  libshogun/kernel/PyramidChi2.cpp, libshogun/kernel/PyramidChi2.h,
+	  libshogun/kernel/SigmoidKernel.cpp,
+	  libshogun/kernel/SigmoidKernel.h,
+	  libshogun/kernel/SimpleKernel.cpp,
+	  libshogun/kernel/SimpleKernel.h,
+	  libshogun/kernel/SparseSpatialSampleStringKernel.cpp,
+	  libshogun/kernel/SparseSpatialSampleStringKernel.h,
+	  libshogun/kernel/TensorProductPairKernel.cpp,
+	  libshogun/kernel/TensorProductPairKernel.h,
+	  libshogun/kernel/WeightedDegreeRBFKernel.cpp,
+	  libshogun/kernel/WeightedDegreeRBFKernel.h,
+	  libshogunui/GUIKernel.cpp, modular/Kernel.i: - drop CSimpleKernel
+	  and introduce CDotKernel as its base class: This way all
+	  dot-product based kernels can be applied on top of DotFeatures.
+	  For example, now only a single implementation of the linear and
+	  polynomial kernel is required to support all kinds of feature
+	  types (dense/sparse/... byte/float/...). This required an API
+	  change in CDotFeatures' dot() function.
+	  - add initial code for sparse spatial sample string kernel (not
+	  yet working)
+
+2010-09-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/File.h: struct->class typo fix
+	* libshogun/base/init.cpp: set C locale on startup in init_shogun
+	  to prevent incompatiblies with fprintf and floating point
+	  separators
+
+2010-08-30  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure: warn that LDA/liblinear and other features may be
+	  missing when lapack is not available
+
+2010-08-18  xdlehmann
+
+	* libshogun/kernel/GaussianKernel.h: *
+	  src/libshogun/kernel/GaussianKernel.h:
+	  
+	  - public get_width() added.
+
+2010-08-18  ngoernitz
+
+	* configure: configure changed for matlab 2010a
+
+2010-08-18  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/GUICommands.h, libshogunui/SGInterface.cpp,
+	  libshogunui/SGInterface.h: wrap pr_loqo
+
+2010-08-17  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/GMNPSVM.cpp,
+	  libshogun/classifier/svm/SVM.cpp,
+	  libshogun/classifier/svm/gmnplib.cpp,
+	  libshogun/classifier/svm/gmnplib.h, libshogun/lib/Parameter.cpp,
+	  libshogun/lib/Parameter.h: - use SG_ABS_PROGRESS to do gmnp
+	  progress and different calculation routine
+	  - some more parameter ideas for serialization/model selection
+
+2010-08-17  xdlehmann
+
+	* libshogun/classifier/svm/GMNPSVM.cpp,
+	  libshogun/classifier/svm/gmnplib.cpp,
+	  libshogun/classifier/svm/gmnplib.h: *
+	  src/libshogun/classifier/svm/gmnp*
+	  
+	  - Progress output added.
+
+2010-08-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogunui/SGInterface.cpp: remove some debug msg occurring in
+	  static interfaces with poly kernel
+
+2010-08-09  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* modular/Classifier.i, modular/Clustering.i, modular/Distance.i,
+	  modular/Distribution.i, modular/Evaluation.i, modular/Features.i,
+	  modular/Kernel.i, modular/Library.i, modular/PreProc.i,
+	  modular/Regression.i, modular/Shogun.i, modular/Structure.i:
+	  moved API changes to separate branch for now
+
+2010-08-08  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/classifier/KernelMachine.h,
+	  libshogun/features/Alphabet.cpp,
+	  libshogun/features/SimpleFeatures.cpp,
+	  libshogun/features/StringFeatures.cpp,
+	  libshogun/features/StringFeatures.h,
+	  libshogun/kernel/FirstElementKernelNormalizer.cpp,
+	  libshogun/kernel/FirstElementKernelNormalizer.h,
+	  libshogun/kernel/Kernel.h,
+	  libshogun/kernel/WeightedDegreeStringKernel.cpp,
+	  libshogun/kernel/WeightedDegreeStringKernel.h: more work towards
+	  getting serialization working for WDK
+
+2010-08-06  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* modular/Classifier.i, modular/Clustering.i, modular/Distance.i,
+	  modular/Distribution.i, modular/Evaluation.i, modular/Features.i,
+	  modular/Kernel.i, modular/Library.i, modular/PreProc.i,
+	  modular/Regression.i, modular/Shogun.i, modular/Structure.i:
+	  packed everything into one large shared object (_Shogun.so) to
+	  get serialization to work from the modular interfaces.
+	* libshogun/kernel/AvgDiagKernelNormalizer.cpp,
+	  libshogun/kernel/IdentityKernelNormalizer.cpp,
+	  libshogun/kernel/IdentityKernelNormalizer.h,
+	  libshogun/kernel/KernelNormalizer.cpp: added serialization
+	  support for a few kernel normalizers
+	* libshogun/kernel/AvgDiagKernelNormalizer.h,
+	  libshogun/kernel/Kernel.h, libshogun/kernel/KernelNormalizer.h,
+	  libshogun/kernel/MultitaskKernelNormalizer.h: added serialization
+	  support for a few kernel normalizers
+	* libshogun/features/StringFeatures.cpp: fixed compile warning
+
+2010-08-04  Soeren Sonnenburg <sonne@debian.org>
+
+	* configure, octave/OctaveInterface.cpp: get --enable-static to
+	  work correctly again (requires libshogun/ui in in src dir) and
+	  statically links in libshogun/libshogunui
+
+2010-08-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/ScatterSVM.cpp: check nu only for
+	  certain scatter types
+
+2010-08-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/SpectrumMismatchRBFKernel.cpp,
+	  libshogun/kernel/SpectrumMismatchRBFKernel.h,
+	  libshogunui/GUIKernel.cpp, libshogunui/GUIKernel.h,
+	  modular/Kernel.i: -modular support for spectrummismatchrbfkernel
+	  - based on a patch from Rob Patro
+	* libshogun/features/LBPPyrDotFeatures.cpp: wip commit on lbppyr
+	  features`
+
+2010-07-19  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/ZeroMeanCenterKernelNormalizer.h: update
+	  copyright
+
+2010-07-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/ZeroMeanCenterKernelNormalizer.h: whitespace
+	  cleanups
+	* modular/Kernel.i: add support for SpectrumMismatchRBFKernel for
+	  modular interfaces
+	* libshogun/features/LBPPyrDotFeatures.cpp,
+	  libshogun/kernel/Kernel.h,
+	  libshogun/kernel/ZeroMeanCenterKernelNormalizer.h,
+	  libshogunui/GUIKernel.cpp, libshogunui/SGInterface.cpp,
+	  modular/Kernel.i, modular/SGBase.i: integrate patch from Gorden
+	  Jemwa adding ZeroMeanCenterKernelNormalizer
+	* libshogun/classifier/mkl/MKL.cpp: compile fix when reference
+	  counting is disabled
+	* libshogun/classifier/svm/SVMOcas.cpp: improve error msg
+	* libshogun/classifier/svm/LibSVMMultiClass.cpp: give a bit more
+	  useful error msg
+
+2010-07-13  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVMOcas.cpp: potentially fix a corner
+	  case when the cutting plane is the null vector
+	* libshogunui/SGInterface.cpp: add a check to linear kernel to
+	  print an error when more than 5 parameters are passed
+
+2010-07-07  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/lib/HDF5File.cpp: be more tolerant when data is
+	  'transposed', i.e. accept column and row vectors as vectors
+	* libshogun/regression/KRR.cpp: improve error message
+	* modular/SGBase.i, python_modular/swig_typemaps.i: include
+	  swig_typemaps before including io to get FILE* wrapped (fro
+	  python file's)
+	* Makefile: fix linecount target
+
+2010-06-22  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/libqp_splx.cpp,
+	  libshogun/features/LBPPyrDotFeatures.cpp,
+	  libshogun/features/LBPPyrDotFeatures.h, modular/Features.i: fix a
+	  number of signed / unsigned mismatches and start to integrate lbp
+	  pyr features
+
+2010-06-20  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVMOcas.cpp,
+	  libshogun/classifier/svm/SVMOcas.h,
+	  libshogun/classifier/svm/WDSVMOcas.cpp,
+	  libshogun/classifier/svm/WDSVMOcas.h,
+	  libshogun/classifier/svm/libocas.cpp,
+	  libshogun/classifier/svm/libocas.h,
+	  libshogun/classifier/svm/libqp.h,
+	  libshogun/classifier/svm/libqp_splx.cpp,
+	  libshogun/classifier/svm/qpssvmlib.cpp,
+	  libshogun/classifier/svm/qpssvmlib.h,
+	  libshogun/lib/Mathematics.h: merge in libocas version 0.93
+	* libshogun/distance/CustomDistance.cpp,
+	  libshogun/distance/CustomDistance.h,
+	  libshogun/distance/Distance.h, modular/Distance.i: copy custom
+	  distance from custom kernel
+
+2010-06-19  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/KernelMachine.cpp,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/ScatterSVM.h: hopefully fix testing in
+	  scatter svm
+
+2010-06-18  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVMOcas.cpp: potentially fix crasher in
+	  svmocas (reported by yaroslav)
+
+2010-06-18  Christian Widmer <cwidmer@tuebingen.mpg.de>
+
+	* libshogun/kernel/Kernel.h: added method to get kernel col/row
+	* libshogun/distance/KernelDistance.cpp,
+	  libshogun/distance/KernelDistance.h, modular/Distance.i: added
+	  kernel-based distance
+
+2010-06-18  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Kernel.i: integrate variance kernel normalizer into swig
+
+2010-06-17  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/ScatterSVM.h,
+	  libshogun/kernel/ScatterKernelNormalizer.h: a couple of fixes
+	  related to testing
+	* configure, libshogun/classifier/mkl/MKLClassification.cpp,
+	  libshogun/classifier/svm/SVMLightOneClass.cpp,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/regression/svr/MKLRegression.cpp: several SVMlight
+	  related compile fixes
+	* libshogun/classifier/svm/ScatterSVM.h: include config to get
+	  USE_LIGHT macro
+	* NEWS, libshogun/classifier/Classifier.h,
+	  libshogun/classifier/svm/DomainAdaptationSVM.h,
+	  libshogun/classifier/svm/SVMLight.cpp,
+	  libshogun/classifier/svm/SVMLight.h,
+	  libshogun/classifier/svm/SVMLightOneClass.cpp,
+	  libshogun/classifier/svm/SVMLightOneClass.h,
+	  libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/SVM_light.h,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/ScatterSVM.h,
+	  libshogun/kernel/ScatterKernelNormalizer.h,
+	  libshogun/regression/svr/SVRLight.cpp,
+	  libshogun/regression/svr/SVRLight.h,
+	  libshogun/regression/svr/SVR_light.cpp,
+	  libshogun/regression/svr/SVR_light.h,
+	  libshogunui/GUIClassifier.cpp, libshogunui/SGInterface.cpp,
+	  modular/Classifier.i, modular/Regression.i: rename SVM_light to
+	  SVMLight for consistency and introduce SVMLightOneClass (C
+	  optimization only) and let scatter svm use it
+
+2010-06-16  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVM_light.cpp: temporarily disable
+	  two-class labeling
+
+2010-06-15  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/ScatterSVM.cpp: testrule1/2 should work
+	  now
+	* libshogun/classifier/svm/ScatterSVM.cpp: fix a few crashers but
+	  still crashing...
+
+2010-06-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/SVM_light.cpp,
+	  libshogun/classifier/svm/SVM_light.h,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/ScatterSVM.h,
+	  libshogun/features/Labels.cpp, libshogun/features/Labels.h,
+	  libshogunui/GUIClassifier.cpp: untested (but compiling) code for
+	  all the new different scatter svm type
+
+2010-06-09  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/WeightedDegreeStringKernel.h: fix
+	  set_position_weights for wd kernel (as reported by Dave duVerle)
+
+2010-06-04  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/LibLinear.h,
+	  libshogun/classifier/svm/ScatterSVM.cpp,
+	  libshogun/classifier/svm/ScatterSVM.h,
+	  libshogunui/GUIClassifier.cpp: add some minor documentation to
+	  liblinear and introduce 3 types to scatter svm
+
+2010-06-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, configure: swig 2.0beta support
+
 2010-05-31  Soeren Sonnenburg <sonne@debian.org>
 
+	* ChangeLog: updated changelog
 	* ChangeLog: updated changelog
 	* NEWS: update NEWS
 	* ChangeLog: updated changelog
