@@ -712,6 +712,11 @@ bool CGUIClassifier::train_krr()
 	if (trainlabels->get_num_labels() != num_vec)
 		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec);
 
+
+	// Set training labels and kernel
+	krr->set_labels(trainlabels);
+	krr->set_kernel(kernel);
+
 	bool result=krr->train();
 	return result;
 #else
