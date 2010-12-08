@@ -13,12 +13,6 @@ LIBSHOGUNVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f
 LIBSHOGUNUIVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ',)' | head -n 1`
 DATAVER=`grep "SHOGUN Release version" NEWS 2>&1 | head -n 1 | cut -d ',' -f 3 | cut -d ' ' -f 3 | tr -d ')'`
 
-echo $VERSION
-echo $LIBSHOGUNSO
-echo $LIBSHOGUNUISO
-echo $LIBSHOGUNVER
-echo $DATAVER
-
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
 
 # some hopefully reasonable defaults
@@ -2292,7 +2286,7 @@ EOF
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -D_ALL_SOURCE -D_REENTRANT"
 	elif sunos
 	then
-		LINKFLAGS="$LINKFLAGS -lsocket  -lnsl"
+		POSTLINKFLAGS="$POSTLINKFLAGS -lsocket  -lnsl"
 		SONAMEOPT="-h "
 		SHAREDOPTS="-G"
 	elif win32
@@ -2317,7 +2311,7 @@ EOF
 			echocheck "Math support (-lm)"
 			if cc_check -lm
 			then
-				LINKFLAGS="$LINKFLAGS -lm"
+				POSTLINKFLAGS="$POSTLINKFLAGS -lm"
 				echores "yes"
 			else
 				echores "no"
@@ -2391,7 +2385,7 @@ EOF
 				then
 					COMPFLAGS_C="$COMPFLAGS_C $pthr"
 					COMPFLAGS_CPP="$COMPFLAGS_CPP $pthr"
-					LINKFLAGS="$LINKFLAGS $pthr"
+					POSTLINKFLAGS="$POSTLINKFLAGS $pthr"
 					_pthread=yes
 					break
 				fi
@@ -2425,7 +2419,7 @@ EOF
 					HAVE_HDF5='#define HAVE_HDF5 1'
 					DEFINES="$DEFINES -DHAVE_HDF5"
 					INCLUDES="$INCLUDES $_cflags"
-					LINKFLAGS="$LINKFLAGS $_lflags"
+					POSTLINKFLAGS="$POSTLINKFLAGS $_lflags"
 					echores "yes"
 				else
 					echores "no"
@@ -2452,7 +2446,7 @@ EOF
 					HAVE_JSON='#define HAVE_JSON 1'
 					DEFINES="$DEFINES -DHAVE_JSON"
 					INCLUDES="$INCLUDES $_cflags"
-					LINKFLAGS="$LINKFLAGS $_lflags"
+					POSTLINKFLAGS="$POSTLINKFLAGS $_lflags"
 					echores "yes"
 				else
 					echores "no"
@@ -2493,7 +2487,7 @@ EOF
 					HAVE_XML='#define HAVE_XML 1'
 					DEFINES="$DEFINES -DHAVE_XML"
 					INCLUDES="$INCLUDES $_cflags"
-					LINKFLAGS="$LINKFLAGS $_lflags"
+					POSTLINKFLAGS="$POSTLINKFLAGS $_lflags"
 					echores "yes"
 				else
 					echores "no"
@@ -2525,7 +2519,7 @@ EOF
 					HAVE_ACML='#define HAVE_ACML 1'
 					HAVE_LAPACK='#define HAVE_LAPACK 1'
 					DEFINES="$DEFINES -DHAVE_ACML -DHAVE_LAPACK"
-					LINKFLAGS="$LINKFLAGS -lacml -lcblas -lgfortran"
+					POSTLINKFLAGS="$POSTLINKFLAGS -lacml -lcblas -lgfortran"
 				else
 					echores "no"
 
@@ -2552,7 +2546,7 @@ EOF
 						HAVE_MKL='#define HAVE_MKL 1'
 						HAVE_LAPACK='#define HAVE_LAPACK 1'
 						DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
-						LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack"
+						POSTLINKFLAGS="$POSTLINKFLAGS -lmkl -lguide -lmkl_lapack"
 					else
 						if cc_check -lmkl -lguide -lmkl_lapack64
 						then
@@ -2560,7 +2554,7 @@ EOF
 							HAVE_MKL='#define HAVE_MKL 1'
 							HAVE_LAPACK='#define HAVE_LAPACK 1'
 							DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
-							LINKFLAGS="$LINKFLAGS -lmkl -lguide -lmkl_lapack64"
+							POSTLINKFLAGS="$POSTLINKFLAGS -lmkl -lguide -lmkl_lapack64"
 						else
 							echores "no"
 
@@ -2584,7 +2578,7 @@ EOF
 								HAVE_ATLAS='#define HAVE_ATLAS 1'
 								HAVE_LAPACK='#define HAVE_LAPACK 1'
 								DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-								LINKFLAGS="$LINKFLAGS -llapack -lcblas -llapack_atlas"
+								POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lcblas -llapack_atlas"
 							else
 								if cc_check -llapack -lcblas -latlas
 								then
@@ -2592,7 +2586,7 @@ EOF
 									HAVE_ATLAS='#define HAVE_ATLAS 1'
 									HAVE_LAPACK='#define HAVE_LAPACK 1'
 									DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
-									LINKFLAGS="$LINKFLAGS -llapack -lcblas -latlas"
+									POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lcblas -latlas"
 								else
 									echores "no"
 								fi
@@ -2617,14 +2611,14 @@ EOF
 									echores "yes"
 									HAVE_LAPACK='#define HAVE_LAPACK 1'
 									DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
-									LINKFLAGS="$LINKFLAGS -llapack -lcblas"
+									POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lcblas"
 								else
 									if cc_check -llapack -lblas
 									then
 										echores "yes"
 										HAVE_LAPACK='#define HAVE_LAPACK 1'
 										DEFINES="$DEFINES -DHAVE_LAPACK -DHAVE_LAPACK"
-										LINKFLAGS="$LINKFLAGS -llapack -lblas"
+										POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lblas"
 									else
 										echores "no (missing some features: LDA, liblinear, ...)"
 									fi
@@ -2703,7 +2697,7 @@ EOF
 								USE_CPLEX='#define USE_CPLEX 1'
 								DEFINES="$DEFINES -DUSE_CPLEX"
 								INCLUDES="$CPLEXINCLUDES $INCLUDES"
-								LINKFLAGS="$LINKFLAGS $CPLEXLINKFLAGS"
+								POSTLINKFLAGS="$POSTLINKFLAGS $CPLEXLINKFLAGS"
 								POSTLINKFLAGS="$POSTLINKFLAGS $CPLEXLINKFLAGS"
 							else
 								echores "no"
@@ -2739,7 +2733,7 @@ EOF
 				then
 					echores "yes"
 					USE_GLPK='#define USE_GLPK 1'
-					LINKFLAGS="$LINKFLAGS $GLPKLINKFLAGS"
+					POSTLINKFLAGS="$POSTLINKFLAGS $GLPKLINKFLAGS"
 					DEFINES="$DEFINES -DUSE_GLPK"
 				else
 					echores "no"
@@ -2764,7 +2758,7 @@ EOF
 				then
 					echores "yes"
 					USE_LZO='#define USE_LZO 1'
-					LINKFLAGS="$LINKFLAGS $LZOLINKFLAGS"
+					POSTLINKFLAGS="$POSTLINKFLAGS $LZOLINKFLAGS"
 					DEFINES="$DEFINES -DUSE_LZO"
 				else
 					echores "no"
@@ -2787,7 +2781,7 @@ EOF
 				then
 					echores "yes"
 					USE_GZIP='#define USE_GZIP 1'
-					LINKFLAGS="$LINKFLAGS $GZIPLINKFLAGS"
+					POSTLINKFLAGS="$POSTLINKFLAGS $GZIPLINKFLAGS"
 					DEFINES="$DEFINES -DUSE_GZIP"
 				else
 					echores "no"
@@ -2810,7 +2804,7 @@ EOF
 				then
 					echores "yes"
 					USE_BZIP2='#define USE_BZIP2 1'
-					LINKFLAGS="$LINKFLAGS $BZIP2LINKFLAGS"
+					POSTLINKFLAGS="$POSTLINKFLAGS $BZIP2LINKFLAGS"
 					DEFINES="$DEFINES -DUSE_BZIP2"
 				else
 					echores "no"
@@ -2832,7 +2826,7 @@ EOF
 				then
 					echores "yes"
 					USE_LZMA='#define USE_LZMA 1'
-					LINKFLAGS="$LINKFLAGS $LZMALINKFLAGS"
+					POSTLINKFLAGS="$POSTLINKFLAGS $LZMALINKFLAGS"
 					DEFINES="$DEFINES -DUSE_LZMA"
 				else
 					echores "no"
@@ -2857,7 +2851,7 @@ EOF
 				then
 					echores "yes"
 					USE_LPSOLVE='#define USE_LPSOLVE 1'
-					LINKFLAGS="$LINKFLAGS $LPSOLVELINKFLAGS"
+					POSTLINKFLAGS="$POSTLINKFLAGS $LPSOLVELINKFLAGS"
 					POSTLINKFLAGS="$POSTLINKFLAGS $LPSOLVELINKFLAGS"
 					DEFINES="$DEFINES -DUSE_LPSOLVE -DYY_NEVER_INTERACTIVE -DPARSER_LP -DINVERSE_ACTIVE=INVERSE_LUSOL -DRoleIsExternalInvEngine"
 				else
@@ -3263,6 +3257,7 @@ test_elwms()
 			DEFINES_ELWMS="-DHAVE_ELWMS -DR_HOME_ENV=\\\"${R_HOME}\\\" -DLIBPYTHON=\\\"libpython${PYVER}.${EXT_LIB}\\\" $DEFINES_PYTHON $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
 			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PYTHON $INCLUDES_OCTAVE $INCLUDES_MATLAB "
 			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON `echo $LINKFLAGS_R | sed 's/-dynamiclib//g'` `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
+			POSTLINKFLAGS_ELWMS="$POSTLINKFLAGS_OCTAVE"
 
 			ELWMS_TARGET="elwms.${EXT_LIB}"
 		fi
@@ -3370,7 +3365,8 @@ EOF
 						LINKFLAGS_OCTAVE="-G -L $OCTLIBDIR -loctinterp -loctave -lcruft $LINKFLAGS_OCTAVE"
 					else
 						OCTLIBDIR=`octave-config -p OCTLIBDIR`
-						LINKFLAGS_OCTAVE="-shared -L $OCTLIBDIR -loctinterp -loctave -lcruft $LINKFLAGS_OCTAVE"
+						LINKFLAGS_OCTAVE="-shared $LINKFLAGS_OCTAVE"
+						POSTLINKFLAGS_OCTAVE="-L $OCTLIBDIR -loctinterp -loctave -lcruft $POSTLINKFLAGS_OCTAVE"
 					fi
 				fi
 				OCTAVE_TARGET="sg.oct"
@@ -3379,7 +3375,7 @@ EOF
 				COMPFLAGS_C_OCTAVE="$COMPFLAGS_C -fPIC"
 
 				echocheck "Octave Developer Files"
-				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check_so $COMPFLAGS_CPP_OCTAVE $INCLUDES_OCTAVE $LINKFLAGS_OCTAVE
+				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check_so $COMPFLAGS_CPP_OCTAVE $INCLUDES_OCTAVE $LINKFLAGS_OCTAVE $POSTLINKFLAGS_OCTAVE
 				then
 					echores "yes"
 					_octave=yes

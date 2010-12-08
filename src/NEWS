@@ -1,3 +1,17 @@
+2010-12-xx Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 0.10.1 (libshogun 9.0, libshogunui 6.0, data 0.1)
+	* This release contains several enhancements, cleanups and bugfixes:
+	* Features:
+	   - None
+	* Bugfixes:
+	   - Fix build failure with ld --as-needed (thanks Matthias Klose for the
+			   patch).
+	   - Fix initialization error in KRR static interfaces (thanks Maxwell
+			   Collins for the patch).
+	* Cleanup and API Changes:
+	   - None
+
 2010-12-07 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.10.0 (libshogun 9.0, libshogunui 6.0, data 0.1)
