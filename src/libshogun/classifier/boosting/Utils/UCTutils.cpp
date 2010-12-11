@@ -38,7 +38,7 @@
 #include <sstream>
 #include <fstream>
 
-namespace MultiBoost {
+namespace shogun {
 
 // ----------------------------------------------------------------
 

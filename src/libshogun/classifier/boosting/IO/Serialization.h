@@ -57,7 +57,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 
 	// forward declaration to avoid an include
@@ -513,7 +513,7 @@ namespace MultiBoost {
 	// -----------------------------------------------------------------------
 
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __SERIALIZATION_H
 

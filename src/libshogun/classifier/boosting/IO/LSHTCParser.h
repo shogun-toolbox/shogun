@@ -51,7 +51,7 @@
 
 using namespace std;
 
-namespace MultiBoost {
+namespace shogun {
 
 	class LSHTCParser : public GenericParser
 	{
@@ -167,6 +167,6 @@ namespace MultiBoost {
 	// -----------------------------------------------------------------------------
 
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __ARFF_PARSER_H

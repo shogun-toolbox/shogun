@@ -37,7 +37,7 @@
 #include "UCBK.h"
 #include <limits>
 
-namespace MultiBoost {
+namespace shogun {
 //----------------------------------------------------------------
 //----------------------------------------------------------------
 
@@ -114,5 +114,5 @@ void UCBK::updateithValue( int i )
 //----------------------------------------------------------------
 
 
-} // end namespace MultiBoost
+} // end namespace shogun
 

@@ -55,7 +55,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 /**
 * An abstract class for a generic bandit algorithms.
@@ -246,6 +246,6 @@ protected:
 	virtual void updateithValue( int armNum ) = 0;		
 };
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif

@@ -44,7 +44,7 @@
 
 using namespace std;
 
-namespace MultiBoost {
+namespace shogun {
 
 /**
 * Parse simple text data.
@@ -96,6 +96,6 @@ private:
    int      _numAttributes;
 };
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __TXT_PARSER_H

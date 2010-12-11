@@ -50,7 +50,7 @@
 
 using namespace std;
 
-namespace MultiBoost {
+namespace shogun {
 
 class ArffParser : public GenericParser
 {
@@ -172,6 +172,6 @@ inline string ArffParser::readName(ifstream& in)
 // -----------------------------------------------------------------------------
 
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __ARFF_PARSER_H

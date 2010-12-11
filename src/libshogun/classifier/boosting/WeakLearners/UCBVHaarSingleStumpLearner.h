@@ -54,7 +54,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 	struct FeatureDataUCBV {
 		int T;
 		vector< float > X;
@@ -222,6 +222,6 @@ namespace MultiBoost {
 		static int _numOfCalling; //number of the single stump learner have been called
 	};
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __HAAR_SINGLE_STUMP_LEARNER_H

@@ -44,7 +44,7 @@
 
 //To be checked with sparse with BreastCancer
 
-namespace MultiBoost {
+namespace shogun {
 
 // ------------------------------------------------------------------------------
 
@@ -116,4 +116,4 @@ float ConstantAlgorithm::findConstant(InputData* pData,
 
 // ------------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

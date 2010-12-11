@@ -49,7 +49,7 @@
 #include "classifier/boosting/IO/OutputInfo.h"
 #include "classifier/boosting/IO/Serialization.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
@@ -476,5 +476,5 @@ void ADTreeLearner::recursivePrintDotNode(ostream& dotFile, ADTreeWeakLearner* n
 
 // -------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 #endif

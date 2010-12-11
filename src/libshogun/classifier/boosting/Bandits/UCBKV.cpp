@@ -36,7 +36,7 @@
 #include "UCBKV.h"
 #include <limits>
 
-namespace MultiBoost {
+namespace shogun {
 //----------------------------------------------------------------
 //----------------------------------------------------------------
 
@@ -148,4 +148,4 @@ void UCBKV::receiveReward( int armNum, double reward )
 //----------------------------------------------------------------
 
 
-} // end namespace MultiBoost
+} // end namespace shogun

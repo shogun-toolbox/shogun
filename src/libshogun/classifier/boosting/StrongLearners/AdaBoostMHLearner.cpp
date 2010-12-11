@@ -50,7 +50,7 @@
 
 #include "classifier/boosting/Classifiers/AdaBoostMHClassifier.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 	// -----------------------------------------------------------------------------------
 
@@ -881,4 +881,4 @@ namespace MultiBoost {
 
 	// -------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

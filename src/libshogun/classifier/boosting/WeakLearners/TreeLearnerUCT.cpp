@@ -43,7 +43,7 @@
 #include <limits>
 #include <queue>
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(Product, TreeLearnerUCT)
 	REGISTER_LEARNER(TreeLearnerUCT)
@@ -663,4 +663,4 @@ void TreeLearnerUCT::subCopyState(BaseLearner *pBaseLearner)
 
 // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

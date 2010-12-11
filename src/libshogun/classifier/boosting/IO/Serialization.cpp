@@ -40,7 +40,7 @@
 
 #include <cctype> // for isspace
 
-namespace MultiBoost {
+namespace shogun {
 
 // -----------------------------------------------------------------------
 
@@ -443,4 +443,4 @@ bool UnSerialization::seekAndParseParamTag(nor_utils::StreamTokenizer& st, const
 
 // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

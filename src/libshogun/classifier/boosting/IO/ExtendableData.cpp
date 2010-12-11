@@ -41,7 +41,7 @@
 #include <algorithm> // for sort
 
 // ------------------------------------------------------------------------
-namespace MultiBoost {
+namespace shogun {
 
 void ExtendableData::load(const string& fileName, eInputType inputType, int verboseLevel)
 {
@@ -148,4 +148,4 @@ void ExtendableData::addWeakLearner(HierarchicalStumpLearner* pWeakLearner)
 
 // ------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

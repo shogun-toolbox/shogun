@@ -50,7 +50,7 @@
 #include "classifier/boosting/StrongLearners/ABMHLearnerYahoo.h"
 #include "classifier/boosting/Classifiers/ABMHClassifierYahoo.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 	// -------------------------------------------------------------------------
 
@@ -72,4 +72,4 @@ namespace MultiBoost {
 
 	// -------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

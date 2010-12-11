@@ -43,7 +43,7 @@
 #include <limits> // for numeric_limits<>
 #include <sstream> // for _id
 
-namespace MultiBoost {
+namespace shogun {
 
 //REGISTER_LEARNER_NAME(SingleStump, SingleRegressionStumpLearner)
 REGISTER_LEARNER(SingleRegressionStumpLearner)
@@ -269,4 +269,4 @@ void SingleRegressionStumpLearner::subCopyState(BaseLearner *pBaseLearner)
 
 // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

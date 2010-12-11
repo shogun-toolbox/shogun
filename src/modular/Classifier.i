@@ -71,6 +71,9 @@
  #include <shogun/classifier/svm/DomainAdaptationSVM.h>
  #include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 #endif //USE_SVMLIGHT
+ #include <shogun/classifier/boosting/Utils/Args.h>
+ #include <shogun/classifier/boosting/StrongLearners/GenericStrongLearner.h>
+ #include <shogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.h>
 %}
 
 /* Typemaps */
@@ -128,8 +131,8 @@
 #endif //USE_SVMLIGHT
 
 /* These functions return new Objects */
-%newobject classify;
-%newobject classify(CFeatures* data);
+%newobject CClassifier::classify;
+%newobject CClassifier::classify(CFeatures* data);
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/classifier/Classifier.h>
@@ -197,4 +200,7 @@
 %include <shogun/classifier/svm/DomainAdaptationSVM.h>
 
 #endif //USE_SVMLIGHT
+%include <shogun/classifier/boosting/Utils/Args.h>
+%include <shogun/classifier/boosting/StrongLearners/GenericStrongLearner.h>
+%include <shogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.h>
 

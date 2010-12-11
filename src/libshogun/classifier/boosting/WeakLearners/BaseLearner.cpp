@@ -48,7 +48,7 @@
 #include "classifier/boosting/IO/InputData.h"
 #include "classifier/boosting/IO/Serialization.h" // for the helper function "standardTag"
 
-namespace MultiBoost {
+namespace shogun {
 
 	// -----------------------------------------------------------------------------
 
@@ -281,4 +281,4 @@ namespace MultiBoost {
 	// -----------------------------------------------------------------------
 
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

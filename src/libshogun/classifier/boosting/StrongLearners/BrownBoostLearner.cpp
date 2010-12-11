@@ -15,7 +15,7 @@
 
 #include "classifier/boosting/Classifiers/BrownBoostClassifier.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 	// -----------------------------------------------------------------------------------
 
@@ -588,4 +588,4 @@ namespace MultiBoost {
 
 	// -------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

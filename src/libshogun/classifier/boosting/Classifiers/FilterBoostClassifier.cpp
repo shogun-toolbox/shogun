@@ -48,7 +48,7 @@
 #include <cmath> // for setw
 #include <functional>
 
-namespace MultiBoost {
+namespace shogun {
 
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
@@ -1072,5 +1072,5 @@ namespace MultiBoost {
 
 	// -------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 

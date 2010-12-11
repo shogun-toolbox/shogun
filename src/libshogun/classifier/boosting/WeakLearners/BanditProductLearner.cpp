@@ -44,7 +44,7 @@
 #include <math.h>
 #include <limits>
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(Product, BanditProductLearner)
 	REGISTER_LEARNER(BanditProductLearner)
@@ -289,4 +289,4 @@ namespace MultiBoost {
 
 	// -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

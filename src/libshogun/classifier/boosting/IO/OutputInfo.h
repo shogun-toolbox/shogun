@@ -49,7 +49,7 @@
 
 using namespace std;
 
-namespace MultiBoost {
+namespace shogun {
 
 // forward declaration to avoid an include
 class BaseLearner;
@@ -256,6 +256,6 @@ protected:
 
 };
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __OUTPUT_INFO_H

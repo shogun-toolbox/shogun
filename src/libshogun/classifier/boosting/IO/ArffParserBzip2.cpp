@@ -39,7 +39,7 @@
 #include "classifier/boosting/IO/ArffParserBzip2.h"
 #include "classifier/boosting/Utils/Utils.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 	// ------------------------------------------------------------------------
 
@@ -505,4 +505,4 @@ namespace MultiBoost {
 
 	// ------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

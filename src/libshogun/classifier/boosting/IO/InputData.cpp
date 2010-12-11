@@ -52,7 +52,7 @@
 //#include <cmath>  //for fabs
 
 //
-namespace MultiBoost {
+namespace shogun {
 
 	// ------------------------------------------------------------------------
 	int		InputData::loadIndexSet( set< int > ind ) {
@@ -115,4 +115,4 @@ namespace MultiBoost {
 		_nExamplesPerClass = this->_pData->getExamplesPerClass();
 	}
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

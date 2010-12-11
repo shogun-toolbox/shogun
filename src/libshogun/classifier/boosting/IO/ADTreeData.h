@@ -44,7 +44,7 @@
 
 using namespace std;
 
-namespace MultiBoost {
+namespace shogun {
 
 class BaseLearner;
 class ADTreePredictionNode;
@@ -83,6 +83,6 @@ protected:
 
 };
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __ADTREE_DATA_H

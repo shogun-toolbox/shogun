@@ -44,7 +44,7 @@
 #include <sstream> // for _id
 #include <math.h> //for log
 
-namespace MultiBoost {
+namespace shogun {
 
 //REGISTER_LEARNER_NAME(SingleStump, UCB1SingleStumpLearner)
 REGISTER_LEARNER(UCB1SingleStumpLearner)
@@ -276,4 +276,4 @@ void UCB1SingleStumpLearner::subCopyState(BaseLearner *pBaseLearner)
 
 // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

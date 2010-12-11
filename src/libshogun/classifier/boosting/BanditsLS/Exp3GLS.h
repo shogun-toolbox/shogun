@@ -50,7 +50,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 /*
 The implementation is based on this article:
@@ -221,5 +221,5 @@ void Exp3GLS<BaseType,KeyType>::receiveReward( KeyType key, BaseType reward )
 //----------------------------------------------------------------
 //----------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 #endif

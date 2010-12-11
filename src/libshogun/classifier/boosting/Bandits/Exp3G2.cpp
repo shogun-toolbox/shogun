@@ -39,7 +39,7 @@
 #include <set>
 #include <math.h>
 
-namespace MultiBoost {
+namespace shogun {
 //----------------------------------------------------------------
 //----------------------------------------------------------------
 
@@ -117,4 +117,4 @@ void Exp3G2::receiveReward( vector<double> reward )
 }
 
 
-} // end namespace MultiBoost
+} // end namespace shogun

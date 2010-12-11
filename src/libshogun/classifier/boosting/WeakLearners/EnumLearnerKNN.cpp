@@ -38,7 +38,7 @@
 
 #include "classifier/boosting/IO/Serialization.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(SingleStump, EnumLearnerKNN)
 	REGISTER_LEARNER(EnumLearnerKNN)
@@ -507,4 +507,4 @@ namespace MultiBoost {
 		pEnumLearnerKNN->_uOffset = _uOffset;
 	}
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

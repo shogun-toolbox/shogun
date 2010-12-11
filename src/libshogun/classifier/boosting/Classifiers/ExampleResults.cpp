@@ -39,7 +39,7 @@
 #include <functional> // for greater
 #include <algorithm> // for sort
 
-namespace MultiBoost {
+namespace shogun {
 
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
@@ -89,4 +89,4 @@ void ExampleResults::getRankedList( vector< pair<int, float> >& rankedList ) con
 
 // -------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

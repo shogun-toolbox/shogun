@@ -42,7 +42,7 @@
 #include <cmath> // for sqrt
 
 // ------------------------------------------------------------------------
-namespace MultiBoost {
+namespace shogun {
 
 short HaarData::_width = 0;
 short HaarData::_height = 0;
@@ -307,4 +307,4 @@ bool HaarData::checkInput(const string& line, int numColumns)
 }
 
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

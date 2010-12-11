@@ -38,7 +38,7 @@
 #include <limits>
 #include <set>
 
-namespace MultiBoost {
+namespace shogun {
 //----------------------------------------------------------------
 //----------------------------------------------------------------
 
@@ -110,6 +110,6 @@ void UCBKRandomized::updateithValue( int i )
 //----------------------------------------------------------------
 
 
-} // end namespace MultiBoost
+} // end namespace shogun
 
 

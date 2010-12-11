@@ -45,7 +45,7 @@
 #include <math.h> //for log
 #include <queue>
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(SingleStump, UCBKSingleStumpLearner)
 	REGISTER_LEARNER(UCBKSingleStumpLearner)
@@ -483,4 +483,4 @@ namespace MultiBoost {
 
 	// -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

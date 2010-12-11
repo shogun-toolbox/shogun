@@ -42,7 +42,7 @@
 
 #include <limits> // for numeric_limits<>
 
-namespace MultiBoost {
+namespace shogun {
 
 REGISTER_LEARNER(MultiStumpLearner)
 
@@ -161,4 +161,4 @@ void MultiStumpLearner::subCopyState(BaseLearner *pBaseLearner)
 
 // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

@@ -42,7 +42,7 @@
 #include <math.h>
 #include <limits>
 
-namespace MultiBoost {
+namespace shogun {
 
 //REGISTER_LEARNER_NAME(Parasite, ParasiteLearner)
 REGISTER_LEARNER(ParasiteLearner)
@@ -300,4 +300,4 @@ void ParasiteLearner::subCopyState(BaseLearner *pBaseLearner)
 
 // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

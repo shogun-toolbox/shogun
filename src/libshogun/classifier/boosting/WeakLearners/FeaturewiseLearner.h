@@ -54,7 +54,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 /**
 * A generic featurewise learner. It represents all weak learners that search all or
@@ -169,6 +169,6 @@ protected:
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __FEATUREWISE_LEARNER_H

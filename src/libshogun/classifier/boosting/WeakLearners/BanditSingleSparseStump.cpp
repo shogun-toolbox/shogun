@@ -46,7 +46,7 @@
 #include <limits> // for numeric_limits<>
 #include <sstream> // for _id
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(SingleStump, BanditSingleSparseStump)
 	REGISTER_LEARNER(BanditSingleSparseStump)
@@ -289,4 +289,4 @@ namespace MultiBoost {
 
 	// -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

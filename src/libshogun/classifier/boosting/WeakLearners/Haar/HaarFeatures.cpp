@@ -39,7 +39,7 @@
 
 #include <algorithm>
 
-namespace MultiBoost {
+namespace shogun {
 
 // ------------------------------------------------------------------------------
 
@@ -400,4 +400,4 @@ float HaarFeature_4SQ::getValue(const vector<float>& intImage, const nor_utils::
 
 // ------------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

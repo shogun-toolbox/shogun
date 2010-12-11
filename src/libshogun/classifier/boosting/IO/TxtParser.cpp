@@ -40,7 +40,7 @@
 #include "classifier/boosting/IO/TxtParser.h"
 #include "classifier/boosting/Utils/Utils.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 // ------------------------------------------------------------------------
 

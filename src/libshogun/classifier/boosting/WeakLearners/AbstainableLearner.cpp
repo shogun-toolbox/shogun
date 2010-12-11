@@ -44,7 +44,7 @@
 #include "classifier/boosting/IO/Serialization.h"
 #include "classifier/boosting/IO/SortedData.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 // ------------------------------------------------------------------------------
 
@@ -406,4 +406,4 @@ float AbstainableLearner::doClasswiseAbstention(vector<sRates>& mu,
 
 }
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

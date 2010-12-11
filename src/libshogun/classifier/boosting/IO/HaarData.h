@@ -55,7 +55,7 @@
 
 using namespace std;
 
-namespace MultiBoost {
+namespace shogun {
 
 // A couple of useful typedefs
 typedef vector< pair<int, int> >::iterator       vpIntIterator; //!< Iterator on pair 

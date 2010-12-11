@@ -57,7 +57,7 @@
 //extern "C" void solveEquationSystem( double* X, double* b, int* N );
 
 //
-namespace MultiBoost {
+namespace shogun {
 
 
 
@@ -541,6 +541,6 @@ namespace MultiBoost {
 #endif // MB_DEBUG
 
 
-} //end namespace MultiBoost
+} //end namespace shogun
 
 

@@ -44,7 +44,7 @@
 #include <ctime> // for time
 #include <math.h>
 
-namespace MultiBoost {
+namespace shogun {
 
 	REGISTER_LEARNER_NAME(UCBVHaarSingleStump, UCBVHaarSingleStumpLearner)
 

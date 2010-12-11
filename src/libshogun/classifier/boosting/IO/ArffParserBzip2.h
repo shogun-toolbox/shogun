@@ -50,7 +50,7 @@
 #include "classifier/boosting/Bzip2/Bzip2Wrapper.h"
 using namespace std;
 
-namespace MultiBoost {
+namespace shogun {
 
 class ArffParserBzip2 : public GenericParser
 {
@@ -172,6 +172,6 @@ inline string ArffParserBzip2::readName(Bzip2WrapperReader& in)
 // -----------------------------------------------------------------------------
 
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __ARFF_PARSER_H

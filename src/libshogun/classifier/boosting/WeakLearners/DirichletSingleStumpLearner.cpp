@@ -45,7 +45,7 @@
 #include <ctime> // for initilazitaion of random number generator
 #include <iostream>
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(SingleStump, DirichletSingleStumpLearner)
 	REGISTER_LEARNER(DirichletSingleStumpLearner)
@@ -238,4 +238,4 @@ namespace MultiBoost {
 
 	// -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

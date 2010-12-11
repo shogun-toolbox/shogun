@@ -52,7 +52,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 class InputData;
 class GenericStrongLearner;
@@ -549,7 +549,7 @@ private:
 
 // ------------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 
 /**

@@ -49,7 +49,7 @@
 
 using namespace std;
 
-namespace MultiBoost {
+namespace shogun {
 
 enum Scoring 
 {
@@ -139,6 +139,6 @@ private:
    Scoring			_scoring;
 };
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __ADABOOST_MH_CLASSIFIER_H

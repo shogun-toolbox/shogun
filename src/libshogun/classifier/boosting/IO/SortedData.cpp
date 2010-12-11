@@ -42,7 +42,7 @@
 #include <limits>
 
 // ------------------------------------------------------------------------
-namespace MultiBoost {
+namespace shogun {
 
 void SortedData::load(const string& fileName, eInputType inputType, int verboseLevel)
 {
@@ -186,4 +186,4 @@ pair<vpIterator,vpIterator> SortedData::getFileteredBeginEnd(int colIdx) {
 
 // ------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

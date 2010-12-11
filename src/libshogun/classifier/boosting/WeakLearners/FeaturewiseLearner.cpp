@@ -44,7 +44,7 @@
 #include "classifier/boosting/IO/Serialization.h"
 #include "classifier/boosting/IO/SortedData.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 // ------------------------------------------------------------------------------
 
@@ -129,4 +129,4 @@ float FeaturewiseLearner::phi(InputData* pData, int idx, int classIdx) const
 
 // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

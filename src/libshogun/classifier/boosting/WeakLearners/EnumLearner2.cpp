@@ -39,7 +39,7 @@
 #include "classifier/boosting/Kmeans/KMlocal.h"			// k-means algorithms
 #include "classifier/boosting/IO/Serialization.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(SingleStump, EnumLearner2)
 	REGISTER_LEARNER(EnumLearner2)
@@ -508,4 +508,4 @@ namespace MultiBoost {
 		pEnumLearner2->_u = _u;
 	}
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

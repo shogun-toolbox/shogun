@@ -43,7 +43,7 @@
 #include <limits>
 #include <queue>
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(Product, BanditTreeLearner)
 	REGISTER_LEARNER(BanditTreeLearner)
@@ -555,4 +555,4 @@ namespace MultiBoost {
 
 
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

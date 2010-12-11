@@ -58,7 +58,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 /**
 * \file AbstainableLearner.h It represents all weak learners that explicitly
@@ -319,6 +319,6 @@ protected:
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __ABSTAINABLE_LEARNER_H

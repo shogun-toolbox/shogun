@@ -46,7 +46,7 @@
 #include <vector>
 
 
-namespace MultiBoost {
+namespace shogun {
 
 //REGISTER_LEARNER_NAME(SingleStump, DirichletSingleStumpLearner)
 REGISTER_LEARNER(DirichletSingleStumpLearner)
@@ -239,5 +239,5 @@ void DirichletSingleStumpLearner::subCopyState(BaseLearner *pBaseLearner)
 
 // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 #endif

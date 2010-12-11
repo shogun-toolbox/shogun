@@ -49,6 +49,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdlib.h> //for exit function when we are using gcc
+#include "base/SGObject.h"
 
 using namespace std;
 
@@ -103,7 +104,7 @@ enum ArgsOutType
 * printGroup().
 * \date 10/11/2005
 */
-class Args
+class Args : public shogun::CSGObject
 {
 public:
 

@@ -48,7 +48,7 @@
 #include <functional>
 #include <algorithm>
 
-namespace MultiBoost {
+namespace shogun {
 
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
@@ -611,4 +611,4 @@ namespace MultiBoost {
 	}
 	// -------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

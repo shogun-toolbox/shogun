@@ -44,7 +44,7 @@
 
 #include <limits> // for numeric_limits<>
 
-namespace MultiBoost {
+namespace shogun {
 
 
 //REGISTER_LEARNER_NAME(SingleStump, HierarchicalStumpLearner)
@@ -303,4 +303,4 @@ float HierarchicalStumpLearner::phi(InputData* pData,int pointIdx) const
 
    // -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

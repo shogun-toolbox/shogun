@@ -54,7 +54,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 /**
 * An abstract class for a generic meta-learner.
@@ -64,6 +64,9 @@ namespace MultiBoost {
 class GenericStrongLearner : public shogun::CSGObject
 {
 public:
+
+   GenericStrongLearner() : CSGObject() {}
+   virtual ~GenericStrongLearner(){}
 
    /**
    * Performs the learning process.
@@ -101,15 +104,8 @@ public:
    virtual void doLikelihoods(const nor_utils::Args& args) = 0;
 
    virtual void doROC(const nor_utils::Args& args) = 0;
-
-   virtual ~GenericStrongLearner(){}
-
-   virtual const char* get_name()
-   {
-	   return "GenericStrongLearner";
-   }
 };
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __GENERIC_MODEL_H

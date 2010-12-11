@@ -46,7 +46,7 @@
 #include <iomanip> // for setw
 #include <cmath> // for setw
 
-namespace MultiBoost {
+namespace shogun {
 
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
@@ -941,4 +941,4 @@ namespace MultiBoost {
 
 	// -------------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

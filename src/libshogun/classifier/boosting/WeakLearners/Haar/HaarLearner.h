@@ -58,7 +58,7 @@ namespace nor_utils {
    class Args;
 }
 
-namespace MultiBoost {
+namespace shogun {
 
 // forward declarations to save some includes
 class HaarFeature;
@@ -197,6 +197,6 @@ protected:
 
 };
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __HAAR_LEARNER_H

@@ -49,8 +49,9 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
+class GenericStrongLearner;
 class OutputInfo;
 class BaseLearner;
 class InputData;
@@ -83,6 +84,7 @@ public:
    * \date 10/11/2005
    */
    virtual void run(const nor_utils::Args& args);
+
   
    /**
    * Performs the classification using the AdaBoostMHClassifier.
@@ -178,6 +180,9 @@ public:
    */
    void printOutWeights( InputData* pData );
 
+   virtual const char* get_name() const { return "AdaBoostMHLearner"; }
+
+
 protected:
 
    /**
@@ -204,8 +209,6 @@ protected:
    */
    void resumeProcess(Serialization& ss, InputData* pTrainingData, InputData* pTestData, 
 		      OutputInfo* pOutInfo);
-
-   virtual const char* get_name() const { return "AdaBoostMHLearner"; }
 
    vector<BaseLearner*>  _foundHypotheses; //!< The list of the hypotheses found.
 
@@ -255,6 +258,6 @@ private:
 
 };
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __ADABOOST_MH_LEARNER_H

@@ -56,7 +56,7 @@
 #include "classifier/boosting/Bandits/Exp3G2.h"
 #include "classifier/boosting/Bandits/Exp3P.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 	//REGISTER_LEARNER_NAME(SingleStump, BanditSingleStumpLearner)
 	REGISTER_LEARNER(BanditSingleStumpLearner)
@@ -545,6 +545,6 @@ namespace MultiBoost {
 
 	// -----------------------------------------------------------------------
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 

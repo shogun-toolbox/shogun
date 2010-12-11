@@ -43,7 +43,7 @@
 #include <limits> // for numeric_limits
 #include <ctime> // for time
 
-namespace MultiBoost {
+namespace shogun {
 
 REGISTER_LEARNER_NAME(HaarSingleStump, HaarSingleStumpLearner)
 

@@ -39,7 +39,7 @@
 #include "classifier/boosting/IO/SVMLightParser.h"
 #include "classifier/boosting/Utils/Utils.h"
 
-namespace MultiBoost {
+namespace shogun {
 
 	// ------------------------------------------------------------------------
 
@@ -374,4 +374,4 @@ namespace MultiBoost {
 			labels[ labelIdx ].weight = _weightOfClasses[ labelIdx ];		
 	}
 
-} // end of namespace MultiBoost
+} // end of namespace shogun

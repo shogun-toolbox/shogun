@@ -40,7 +40,7 @@
 #include <set>
 #include <math.h>
 
-namespace MultiBoost {
+namespace shogun {
 //----------------------------------------------------------------
 //----------------------------------------------------------------
 /*
@@ -53,4 +53,4 @@ template class Exp3GLS<double,int>;
 
 
 
-} // end namespace MultiBoost
+} // end namespace shogun

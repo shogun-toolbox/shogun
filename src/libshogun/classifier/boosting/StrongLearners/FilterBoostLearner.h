@@ -49,7 +49,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 	class OutputInfo;
 	class BaseLearner;
@@ -248,7 +248,7 @@ namespace MultiBoost {
 		int _Cn;
 	};
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif // __ADABOOST_MH_LEARNER_H
 

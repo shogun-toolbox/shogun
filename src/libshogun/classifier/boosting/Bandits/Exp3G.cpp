@@ -38,7 +38,7 @@
 #include <set>
 #include <math.h>
 
-namespace MultiBoost {
+namespace shogun {
 //----------------------------------------------------------------
 //----------------------------------------------------------------
 
@@ -208,5 +208,5 @@ void Exp3G::receiveReward( int armNum, double reward )
 }
 
 
-} // end namespace MultiBoost
+} // end namespace shogun
 

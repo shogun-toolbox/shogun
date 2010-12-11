@@ -52,7 +52,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MultiBoost {
+namespace shogun {
 
 /*
 The implementation is based on this article:
@@ -271,6 +271,6 @@ BaseType Exp3LS<BaseType,KeyType>::getPValue( KeyType key )
 //----------------------------------------------------------------
 
 
-} // end of namespace MultiBoost
+} // end of namespace shogun
 
 #endif

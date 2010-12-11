@@ -40,7 +40,7 @@
 #include <set>
 #include <math.h>
 
-namespace MultiBoost {
+namespace shogun {
 //----------------------------------------------------------------
 //----------------------------------------------------------------
 /*
@@ -61,4 +61,4 @@ Exp3LS<BaseType,KeyType>::Exp3LS(void) :  _Xsum(0.0), _expsum(1.0)
 
 
 
-} // end namespace MultiBoost
+} // end namespace shogun
