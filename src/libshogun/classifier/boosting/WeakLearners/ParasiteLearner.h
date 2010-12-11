@@ -41,7 +41,7 @@
 #ifndef __PARASITE_LEARNER_H
 #define __PARASITE_LEARNER_H
 
-#include "BaseLearner.h"
+#include "classifier/boosting/WeakLearners/BaseLearner.h"
 #include "classifier/boosting/Utils/Args.h"
 #include "classifier/boosting/IO/InputData.h"
 

@@ -21,8 +21,8 @@
 #ifndef KM_DATA_H
 #define KM_DATA_H
 
-#include "KMeans.h"			// kmeans includes
-#include "KCtree.h"			// kc-tree includes
+#include "classifier/boosting/Kmeans/KMeans.h"			// kmeans includes
+#include "classifier/boosting/Kmeans/KCtree.h"			// kc-tree includes
 
 //----------------------------------------------------------------------
 //  KMdata - data point set

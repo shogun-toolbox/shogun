@@ -40,7 +40,7 @@
 #include <list> 
 #include <functional>
 #include <math.h> //for pow
-#include "GenericBanditAlgorithm.h"
+#include "classifier/boosting/Bandits/GenericBanditAlgorithm.h"
 #include "classifier/boosting/Utils/Utils.h"
 
 using namespace std;

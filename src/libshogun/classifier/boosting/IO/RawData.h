@@ -49,7 +49,7 @@
 #include "classifier/boosting/Defaults.h" // for MB_DEBUG
 
 //#include "GenericParser.h"
-#include "NameMap.h"
+#include "classifier/boosting/IO/NameMap.h"
 #include "classifier/boosting/Others/Example.h"
 
 //#include "Parser.h"

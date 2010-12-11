@@ -36,7 +36,7 @@
 #ifndef __BANDIT_PRODUCT_LEARNER_H
 #define __BANDIT_PRODUCT_LEARNER_H
 
-#include "BaseLearner.h"
+#include "classifier/boosting/WeakLearners/BaseLearner.h"
 #include "classifier/boosting/Utils/Args.h"
 #include "classifier/boosting/IO/InputData.h"
 #include "classifier/boosting/BanditsLS/GenericBanditAlgorithmLS.h"

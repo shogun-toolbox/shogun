@@ -40,7 +40,7 @@
 #ifndef __INDICATOR_LEARNER_H
 #define __INDICATOR_LEARNER_H
 
-#include "FeaturewiseLearner.h"
+#include "classifier/boosting/WeakLearners/FeaturewiseLearner.h"
 #include "classifier/boosting/Utils/Args.h"
 
 #include <vector>

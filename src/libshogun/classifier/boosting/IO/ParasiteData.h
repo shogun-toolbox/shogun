@@ -40,8 +40,8 @@
 #ifndef __PARASITE_DATA_H
 #define __PARASITE_DATA_H
 
-#include "InputData.h"
-#include "WeakLearners/BaseLearner.h"
+#include "classifier/boosting/Bandits/InputData.h"
+#include "classifier/boosting/Bandits/WeakLearners/BaseLearner.h"
 
 #include <vector>
 

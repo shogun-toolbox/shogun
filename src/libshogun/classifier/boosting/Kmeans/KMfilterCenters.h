@@ -21,7 +21,7 @@
 #ifndef KM_FILTER_CENTERS_H
 #define KM_FILTER_CENTERS_H
 
-#include "KMcenters.h"			// provides KMcenters
+#include "classifier/boosting/Kmeans/KMcenters.h"			// provides KMcenters
 
 //----------------------------------------------------------------------
 //  KMfilterCenters

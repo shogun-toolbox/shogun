@@ -50,9 +50,9 @@
 #include "classifier/boosting/Defaults.h" // for MB_DEBUG
 
 //#include "GenericParser.h"
-#include "NameMap.h"
+#include "classifier/boosting/IO/NameMap.h"
 #include "classifier/boosting/Others/Example.h"
-#include "RawData.h"
+#include "classifier/boosting/IO/RawData.h"
 
 //#include "Parser.h"
 #include <cassert>

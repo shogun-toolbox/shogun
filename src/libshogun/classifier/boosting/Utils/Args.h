@@ -328,6 +328,9 @@ group1:
       return val;
    }
 
+	/** @return object name */
+	inline virtual const char* get_name() const { return "Args"; }
+
 private:
 
    /**

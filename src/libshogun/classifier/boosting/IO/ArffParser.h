@@ -44,9 +44,9 @@
 
 #include <fstream>
 #include <sstream>
-#include "GenericParser.h"
-#include "NameMap.h"
-#include "InputData.h"
+#include "classifier/boosting/IO/GenericParser.h"
+#include "classifier/boosting/IO/NameMap.h"
+#include "classifier/boosting/IO/InputData.h"
 
 using namespace std;
 

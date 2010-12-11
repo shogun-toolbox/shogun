@@ -25,11 +25,11 @@
 //  basic includes
 //----------------------------------------------------------------------
 #include <cmath>				// math includes (exp, log)
-#include "KMeans.h"				// kmeans includes
-#include "KMdata.h"				// data points
-#include "KMfilterCenters.h"			// centers
-#include "KMterm.h"				// termination conditions
-#include "KMrand.h"				// random number generation
+#include "classifier/boosting/Kmeans/KMeans.h"				// kmeans includes
+#include "classifier/boosting/Kmeans/KMdata.h"				// data points
+#include "classifier/boosting/Kmeans/KMfilterCenters.h"			// centers
+#include "classifier/boosting/Kmeans/KMterm.h"				// termination conditions
+#include "classifier/boosting/Kmeans/KMrand.h"				// random number generation
 
 class KMlocal;
 typedef KMlocal* KMlocalPtr;			// generic algorithm pointer

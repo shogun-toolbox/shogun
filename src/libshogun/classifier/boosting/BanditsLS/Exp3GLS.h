@@ -41,8 +41,8 @@
 #include <set>
 #include <functional>
 #include <math.h> //for pow
-#include "GenericBanditAlgorithmLS.h"
-#include "Exp3LS.h"
+#include "classifier/boosting/BanditsLS/GenericBanditAlgorithmLS.h"
+#include "classifier/boosting/BanditsLS/Exp3LS.h"
 #include "classifier/boosting/Utils/Utils.h"
 
 

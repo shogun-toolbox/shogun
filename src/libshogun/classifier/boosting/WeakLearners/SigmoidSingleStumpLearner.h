@@ -42,10 +42,10 @@
 #define __DIRICHLET_SINGLE_STUMP_LEARNER_H
 
 //#include "WeakLearners/ClasswiseLearner.h"
-#include "WeakLearners/FeaturewiseLearner.h"
-#include "Utils/Args.h"
-#include "IO/InputData.h"
-#include "IO/SortedData.h"
+#include "classifier/boosting/Bandits/WeakLearners/FeaturewiseLearner.h"
+#include "classifier/boosting/Bandits/Utils/Args.h"
+#include "classifier/boosting/Bandits/IO/InputData.h"
+#include "classifier/boosting/Bandits/IO/SortedData.h"
 
 #include <vector>
 #include <fstream>

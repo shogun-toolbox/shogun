@@ -40,7 +40,7 @@
 #ifndef __SELECTOR_H
 #define __SELECTOR_H
 
-#include "FeaturewiseLearner.h"
+#include "classifier/boosting/WeakLearners/FeaturewiseLearner.h"
 #include "classifier/boosting/Utils/Args.h"
 
 #include <vector>

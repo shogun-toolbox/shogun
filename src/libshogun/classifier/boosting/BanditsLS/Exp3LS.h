@@ -43,7 +43,7 @@
 //#include <pair>
 #include <vector>
 #include <math.h> //for pow
-#include "GenericBanditAlgorithmLS.h"
+#include "classifier/boosting/BanditsLS/GenericBanditAlgorithmLS.h"
 #include "classifier/boosting/Utils/Utils.h"
 #include <cstdlib>
 #include <iostream>

@@ -21,8 +21,8 @@
 #ifndef KC_TREE_H
 #define KC_TREE_H
 
-#include "KMeans.h"				// all k-means includes
-#include "KCutil.h"				// kc-tree utilities
+#include "classifier/boosting/Kmeans/KMeans.h"				// all k-means includes
+#include "classifier/boosting/Kmeans/KCutil.h"				// kc-tree utilities
 
 class KMfilterCenters;				// see KMfilterCenters.h
 

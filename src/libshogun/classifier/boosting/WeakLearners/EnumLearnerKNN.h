@@ -40,7 +40,7 @@
 #ifndef __ENUM_LEARNER_KNN_H
 #define __ENUM_LEARNER_KNN_H
 
-#include "FeaturewiseLearner.h"
+#include "classifier/boosting/WeakLearners/FeaturewiseLearner.h"
 #include "classifier/boosting/Utils/Args.h"
 
 #include <vector>

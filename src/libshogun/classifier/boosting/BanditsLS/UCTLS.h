@@ -40,7 +40,7 @@
 #ifndef __UCT_H
 #define __UCT_H
 
-#include "GenericBanditAlgorithmLS.h"
+#include "classifier/boosting/BanditsLS/GenericBanditAlgorithmLS.h"
 #include "classifier/boosting/Utils/UCTutils.h"
 
 using namespace std;

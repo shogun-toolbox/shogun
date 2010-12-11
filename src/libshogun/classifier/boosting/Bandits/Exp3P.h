@@ -40,9 +40,9 @@
 #include <list> 
 #include <functional>
 #include <math.h> //for pow
-#include "GenericBanditAlgorithm.h"
+#include "classifier/boosting/Bandits/GenericBanditAlgorithm.h"
 #include "classifier/boosting/Utils/Utils.h"
-#include "Exp3G.h"
+#include "classifier/boosting/Bandits/Exp3G.h"
 using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -21,8 +21,8 @@
 #ifndef KM_CENTERS_H
 #define KM_CENTERS_H
 
-#include "KMeans.h"			// kmeans includes
-#include "KMdata.h"			// provides KMdata
+#include "classifier/boosting/Kmeans/KMeans.h"			// kmeans includes
+#include "classifier/boosting/Kmeans/KMdata.h"			// provides KMdata
 
 //----------------------------------------------------------------------
 //  KMcenters - set of centers

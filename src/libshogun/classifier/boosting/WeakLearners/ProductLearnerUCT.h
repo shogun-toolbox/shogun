@@ -41,7 +41,7 @@
 #ifndef __PRODUCT_LEARNER_UCT_H
 #define __PRODUCT_LEARNER_UCT_H
 
-#include "BaseLearner.h"
+#include "classifier/boosting/WeakLearners/BaseLearner.h"
 #include "classifier/boosting/Utils/Args.h"
 #include "classifier/boosting/IO/InputData.h"
 

@@ -40,9 +40,9 @@
 #include <list> 
 #include <functional>
 #include <math.h> //for log
-#include "GenericBanditAlgorithm.h"
+#include "classifier/boosting/Bandits/GenericBanditAlgorithm.h"
 #include "classifier/boosting/Utils/Utils.h"
-#include "UCBK.h"
+#include "classifier/boosting/Bandits/UCBK.h"
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 

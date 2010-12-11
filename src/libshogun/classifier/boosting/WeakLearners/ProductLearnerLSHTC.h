@@ -41,7 +41,7 @@
 #ifndef __PRODUCT_LEARNER_LSHTC_H
 #define __PRODUCT_LEARNER_LSHTC_H
 
-#include "BaseLearner.h"
+#include "classifier/boosting/WeakLearners/BaseLearner.h"
 #include "classifier/boosting/Utils/Args.h"
 #include "classifier/boosting/IO/InputData.h"
 
