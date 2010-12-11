@@ -162,6 +162,7 @@ namespace MultiBoost {
 		void printOutputInfo(OutputInfo* pOutInfo, int t, InputData* pTrainingData, 
 			InputData* pTestData, BaseLearner* pWeakHypothesis);
 
+		virtual const char* get_name() const { return "FilterBoostLearner"; }
 	protected:
 
 		/**

@@ -205,6 +205,8 @@ protected:
    void resumeProcess(Serialization& ss, InputData* pTrainingData, InputData* pTestData, 
 		      OutputInfo* pOutInfo);
 
+   virtual const char* get_name() const { return "AdaBoostMHLearner"; }
+
    vector<BaseLearner*>  _foundHypotheses; //!< The list of the hypotheses found.
 
    string  _baseLearnerName; //!< The name of the basic learner used by AdaBoost. 

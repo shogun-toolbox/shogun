@@ -46,6 +46,7 @@ $Revision: 1.7 $
 #ifndef __GENERIC_STRONG_LEARNER_H
 #define __GENERIC_STRONG_LEARNER_H
 
+#include "base/SGObject.h"
 #include "classifier/boosting/Utils/Args.h"
 
 using namespace std;
@@ -60,7 +61,7 @@ namespace MultiBoost {
 * \see AdaBoostMHLearner
 * \date 20/3/2006
 */
-class GenericStrongLearner : public CSGObject
+class GenericStrongLearner : public shogun::CSGObject
 {
 public:
 
@@ -102,6 +103,11 @@ public:
    virtual void doROC(const nor_utils::Args& args) = 0;
 
    virtual ~GenericStrongLearner(){}
+
+   virtual const char* get_name()
+   {
+	   return "GenericStrongLearner";
+   }
 };
 
 } // end of namespace MultiBoost
