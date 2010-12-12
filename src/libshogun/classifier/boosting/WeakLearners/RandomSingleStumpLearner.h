@@ -184,6 +184,8 @@ public:
 	   }
 	}
 
+   virtual const char* get_name() const { return "RandomSingleStumpLearner"; }
+
 protected:
 
    /**

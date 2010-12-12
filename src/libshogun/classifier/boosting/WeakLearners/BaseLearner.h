@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/SGObject.h"
 #include "classifier/boosting/Utils/Args.h"
 #include "classifier/boosting/Utils/StreamTokenizer.h"
 
@@ -54,81 +55,78 @@ using namespace std;
 
 namespace shogun {
 
+class BaseLearner;
 class InputData;
 class GenericStrongLearner;
+
+   //////////////////////////////////////////////////////////////////////////
+/**
+* Holds the information about the registered learners. Works pretty
+* much like a class factory.
+* \see REGISTER_LEARNER
+* \see RegisteredLearners()
+* \see subCreate()
+* \date 21/11/2005
+*/
+class LearnersRegs : public CSGObject
+{
+public:
+
+  /**
+  * Register a weak learner.
+  * \param learnerName The name of the learner
+  * \param pLearnerToRegister The allocated learner to register.
+  * \warning To be used only with macro REGISTER_LEARNER()!
+  * \date 21/11/2005
+  */
+  void addLearner(const string& learnerName, BaseLearner* pLearnerToRegister);
+
+  /**
+  * Check if a given learner has been registered.
+  * \param learnerName The name of the learner.
+  * \date 21/11/2005
+  */
+  bool hasLearner(const string& learnerName)
+  { return ( _learners.find(learnerName) != _learners.end() ); }
+
+  /**
+  * Return the allocated learner object.
+  * \param learnerName The name of the learner.
+  * \date 21/11/2005
+  */
+  BaseLearner* getLearner(const string& learnerName)
+  { return _learners[learnerName]; }
+
+  /**
+  * Return the list of the learners currently registered.
+  * \param learnersList The list of the learners that will be filled.
+  * \date 21/11/2005
+  */
+  void getList(vector<string>& learnersList)
+  {
+     learnersList.clear();
+     learnersList.reserve(_learners.size());
+     map<string, BaseLearner*>::const_iterator it;
+     for (it = _learners.begin(); it != _learners.end(); ++it)
+        learnersList.push_back( it->first );
+  }
+
+  virtual const char* get_name() const { return "LearnersRegs"; }
+
+private:
+  map<string, BaseLearner*> _learners; //!< The map of the registered learners.
+};
+
+
+// ------------------------------------------------------------------------------
 
 /**
 * Generic base learner. 
 * All the weak learners used by AdaBoost should inherit from this one.
 * \todo Add a getAlpha for non-binary (ternary) base-classifiers, using line-search.
 */
-class BaseLearner
+class BaseLearner : public CSGObject
 {
-private:
-
-   //////////////////////////////////////////////////////////////////////////
-
-   /**
-   * Holds the information about the registered learners. Works pretty
-   * much like a class factory.
-   * \see REGISTER_LEARNER
-   * \see RegisteredLearners()
-   * \see subCreate()
-   * \date 21/11/2005
-   */
-   class LearnersRegs
-   {
-   public:
-
-      /**
-      * Register a weak learner.
-      * \param learnerName The name of the learner
-      * \param pLearnerToRegister The allocated learner to register.
-      * \warning To be used only with macro REGISTER_LEARNER()!
-      * \date 21/11/2005
-      */
-      void addLearner(const string& learnerName, BaseLearner* pLearnerToRegister)
-      { 
-         _learners[learnerName] = pLearnerToRegister; 
-         pLearnerToRegister->setName(learnerName);
-      }
-
-      /**
-      * Check if a given learner has been registered.
-      * \param learnerName The name of the learner.
-      * \date 21/11/2005
-      */
-      bool hasLearner(const string& learnerName)
-      { return ( _learners.find(learnerName) != _learners.end() ); }
-
-      /**
-      * Return the allocated learner object.
-      * \param learnerName The name of the learner.
-      * \date 21/11/2005
-      */
-      BaseLearner* getLearner(const string& learnerName)
-      { return _learners[learnerName]; }
-
-      /**
-      * Return the list of the learners currently registered.
-      * \param learnersList The list of the learners that will be filled.
-      * \date 21/11/2005
-      */
-      void getList(vector<string>& learnersList)
-      {
-         learnersList.clear();
-         learnersList.reserve(_learners.size());
-         map<string, BaseLearner*>::const_iterator it;
-         for (it = _learners.begin(); it != _learners.end(); ++it)
-            learnersList.push_back( it->first );
-      }
-
-   private:
-      map<string, BaseLearner*> _learners; //!< The map of the registered learners.
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-
 public:
 
    /**
@@ -547,10 +545,15 @@ private:
 
 };
 
-// ------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////
+
 
 } // end of namespace shogun
 
+
+// MBFIXME these static variables below won't work in libshogun: people using
+// the library must call init_shogun before creating objects derived from
+// CSGObject
 
 /**
 * The macro that \b must be declared by all the Derived classes that can be used
@@ -559,8 +562,8 @@ private:
 */
 #define REGISTER_LEARNER(X) \
 struct Register_##X \
-        { Register_##X() { BaseLearner::RegisteredLearners().addLearner(#X, new X()); } }; \
-        static Register_##X r_##X;
+        { Register_##X() { BaseLearner::RegisteredLearners().addLearner(#X, new X()); } }; //\
+        //static Register_##X r_##X;
 
 /**
 * Similarly to REGISTER_LEARNER this macro register the derived class, but in
@@ -569,8 +572,8 @@ struct Register_##X \
 */
 #define REGISTER_LEARNER_NAME(NAME, X) \
 struct Register_##X \
-        { Register_##X() { BaseLearner::RegisteredLearners().addLearner(#NAME, new X()); } }; \
-        static Register_##X r_##X;
+        { Register_##X() { BaseLearner::RegisteredLearners().addLearner(#NAME, new X()); } }; //\
+        //static Register_##X r_##X;
 
 
 #endif // __BASE_LEARNER_H

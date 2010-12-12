@@ -107,6 +107,7 @@ public:
    */
    virtual void getStateData( vector<float>& data, const string& /*reason = ""*/, InputData* pData = 0 );
 
+   virtual const char* get_name() const { return "ConstantLearner"; }
 protected:
 
    /**

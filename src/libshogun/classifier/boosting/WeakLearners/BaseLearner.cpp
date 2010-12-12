@@ -278,6 +278,12 @@ namespace shogun {
 
 		return edge;
 	}
+
+  void LearnersRegs::addLearner(const string& learnerName, BaseLearner* pLearnerToRegister)
+  { 
+     _learners[learnerName] = pLearnerToRegister; 
+     pLearnerToRegister->setName(learnerName);
+  }
 	// -----------------------------------------------------------------------
 
 

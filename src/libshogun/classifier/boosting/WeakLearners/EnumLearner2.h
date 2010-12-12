@@ -135,6 +135,7 @@ public:
    */
 
    virtual void generateSimilarityMatrix( void );
+   virtual const char* get_name() const { return "EnumLearner2"; }
 protected:
 
    static vector< int > _clusters;

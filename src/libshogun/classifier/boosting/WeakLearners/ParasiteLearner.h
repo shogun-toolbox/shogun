@@ -179,6 +179,8 @@ public:
    */
    const vector<BaseLearner*>& getBaseLearners() const { return _baseLearners; }
 
+   virtual const char* get_name() const { return "ParasiteLearner"; }
+
 protected:
 
    static int _numBaseLearners; //!< the user specified number of base learners

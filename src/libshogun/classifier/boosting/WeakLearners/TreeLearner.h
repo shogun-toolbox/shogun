@@ -214,6 +214,8 @@ public:
 	   return ( ( _idxPairs[i][0] == -1 ) && ( _idxPairs[i][1] == -1 ) );
    }
 
+   virtual const char* get_name() const { return "TreeLearner"; }
+
 protected:
    void calculateChildrenAndEnergies( NodePoint& bLearner );
 

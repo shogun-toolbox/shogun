@@ -191,6 +191,8 @@ public:
 	   return ( ( _idxPairs[i][0] == -1 ) && ( _idxPairs[i][1] == -1 ) );
    }
 
+   virtual const char* get_name() const { return "TreeLearner2"; }
+
 protected:
    vector<floatBaseLearner> calculateChildrenAndEnergies( floatBaseLearner& bLearner );
 

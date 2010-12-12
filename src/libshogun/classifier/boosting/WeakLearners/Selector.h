@@ -127,6 +127,8 @@ public:
    */
    virtual float phi(float val, int classIdx) const;
 
+   virtual const char* get_name() const { return "Selector"; }
+
 protected:
 
    vector<float> _u;

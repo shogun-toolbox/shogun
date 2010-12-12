@@ -181,6 +181,7 @@ public:
 	   _pTrainingData = pTrainingData;
 	}
 	*/
+   virtual const char* get_name() const { return "UCB1SingleStumpLearner"; }
 
 protected:
 

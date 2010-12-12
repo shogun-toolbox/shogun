@@ -170,6 +170,10 @@ public:
    */
    virtual float phi(InputData* pData, int pointIdx) const;
 
+
+   virtual const char* get_name() const { return "SingleStumpLearner"; }
+
+
 protected:
 
    /**

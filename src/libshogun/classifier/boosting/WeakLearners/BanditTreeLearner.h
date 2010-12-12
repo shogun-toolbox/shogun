@@ -178,6 +178,8 @@ namespace shogun {
 			return ( ( _idxPairs[i][0] == -1 ) && ( _idxPairs[i][1] == -1 ) );
 		}
 
+        virtual const char* get_name() const { return "BanditTreeLearner"; }
+
 	protected:
 		//extend a point in the tree
 		void calculateChildrenAndEnergies( NodePoint& bLearner );

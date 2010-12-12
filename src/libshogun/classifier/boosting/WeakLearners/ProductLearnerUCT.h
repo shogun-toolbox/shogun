@@ -181,6 +181,8 @@ namespace shogun {
 		}
 		//virtual double getEdge();
 
+        virtual const char* get_name() const { return "ProductLearnerUCT"; }
+
 	protected:
 
 		vector<BaseLearner*> _baseLearners; //!< the learners of the product

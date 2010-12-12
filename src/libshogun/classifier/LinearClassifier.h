@@ -177,8 +177,7 @@ class CLinearClassifier : public CClassifier
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name(void) const {
-			return "LinearClassifier"; }
+		virtual const char* get_name() const { return "LinearClassifier"; }
 
 	protected:
 		/** dimension of w */

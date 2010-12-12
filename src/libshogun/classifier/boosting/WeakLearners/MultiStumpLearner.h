@@ -132,6 +132,8 @@ public:
    */
    virtual void subCopyState(BaseLearner *pBaseLearner);
 
+   virtual const char* get_name() const { return "MultiStumpLearner"; }
+
 protected:
 
    /**

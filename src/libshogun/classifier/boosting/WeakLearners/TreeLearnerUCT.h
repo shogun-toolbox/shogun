@@ -221,6 +221,7 @@ namespace shogun {
 		}
 
 		//virtual double getEdge();
+        virtual const char* get_name() const { return "TreeLearnerUCT"; }
 
 	protected:
 		void calculateChildrenAndEnergies( NodePoint& bLearner, int depthIndex );

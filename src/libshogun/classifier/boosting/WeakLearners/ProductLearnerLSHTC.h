@@ -166,6 +166,8 @@ public:
    */
    virtual void subCopyState(BaseLearner *pBaseLearner);
 
+   virtual const char* get_name() const { return "ProductLearnerLSHTC"; }
+
 protected:
 
    vector<BaseLearner*> _baseLearners; //!< the learners of the product

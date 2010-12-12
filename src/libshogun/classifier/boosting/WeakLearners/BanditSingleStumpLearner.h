@@ -230,6 +230,7 @@ public:
    //getter and setter of the bandit algorithm
    virtual GenericBanditAlgorithm* getBanditAlgoObject() { return _banditAlgo; }
    virtual void setBanditAlgoObject( GenericBanditAlgorithm* banditAlgo ) { _banditAlgo = banditAlgo; }
+   virtual const char* get_name() const { return "BanditSingleStumpLearner"; }
 
 protected:
    /*
