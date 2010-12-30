@@ -179,6 +179,9 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 			randomcoeff_multiplicative[i][k] =  x1*CMath::sqrt(-2*CMath::log(s)/s )/kernelwidth;
 		}
 	}
+
+	SG_INFO("finished: initializing randomcoefficients \n") ;
+
 	return true;
 }
 
