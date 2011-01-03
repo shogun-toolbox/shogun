@@ -36,6 +36,7 @@
 #include <shogun/preproc/SortUlongString.h>
 #include <shogun/preproc/SortWordString.h>
 #include <shogun/preproc/SparsePreProc.h>
+#include <shogun/preproc/RandomFourierGaussPreproc.h>
 %}
 
 /* Remove C Prefix */
@@ -48,6 +49,7 @@
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
 %rename(SparsePreProc) CSparsePreProc;
+%rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/preproc/PreProc.h>
@@ -92,3 +94,4 @@ namespace shogun
 %include <shogun/preproc/SortUlongString.h>
 %include <shogun/preproc/SortWordString.h>
 %include <shogun/preproc/SparsePreProc.h>
+%include <shogun/preproc/RandomFourierGaussPreproc.h>
