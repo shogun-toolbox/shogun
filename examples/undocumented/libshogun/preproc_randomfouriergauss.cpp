@@ -58,13 +58,13 @@ int main()
 {
 
 	time_t a,b;
-	int32_t dims=60;
+	int32_t dims=6000;
 	float64_t dist=0.5;
 
 	int32_t randomfourier_featurespace_dim=500; // the typical application of the below preprocessor are cases with high input dimensionalities of some thousands
 
-	int32_t numtr=300;
-	int32_t numte=300;
+	int32_t numtr=3000;
+	int32_t numte=3000;
 
 	const int32_t feature_cache=0;
 	const int32_t kernel_cache=0;
@@ -86,6 +86,8 @@ int main()
 	a=time(NULL);
 	std::cout << "generating train data"<<std::endl;
 	gen_rand_data(feattr,labtr,numtr,dims,dist);
+	float64_t* feattr2=new float64_t[numtr*dims];
+	std::copy(feattr,feattr+numtr*dims,feattr2);
 	std::cout << "finished"<<std::endl;
 	b=time(NULL);
 	std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
@@ -96,6 +98,10 @@ int main()
 	a=time(NULL);
 	std::cout << "generating test data"<<std::endl;
 	gen_rand_data(featte,labte,numte,dims,dist);
+	float64_t* featte2=new float64_t[numtr*dims];
+	std::copy(featte,featte+numtr*dims,featte2);
+	float64_t* featte3=new float64_t[numtr*dims];
+	std::copy(featte,featte+numtr*dims,featte3);
 	std::cout << "finished"<<std::endl;
 	b=time(NULL);
 	std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
@@ -112,8 +118,6 @@ int main()
 	CSimpleFeatures<float64_t>* featurestr1 = new CSimpleFeatures<float64_t>(feature_cache);
 	SG_REF(featurestr1);
 
-	float64_t* feattr2=new float64_t[numtr*dims];
-	std::copy(feattr,feattr+numtr*dims,feattr2);
 
 	featurestr1->set_feature_matrix(feattr, dims, numtr);
 	std::cout << "finished"<<std::endl;
@@ -147,8 +151,7 @@ int main()
 	CSimpleFeatures<float64_t>* featureste1 = new CSimpleFeatures<float64_t>(feature_cache);
 	SG_REF(featureste1);
 
-	float64_t* featte2=new float64_t[numtr*dims];
-	std::copy(featte,featte+numtr*dims,featte2);
+
 	featureste1->set_feature_matrix(featte, dims, numte);
 	std::cout << "finished"<<std::endl;
 	//b=time(NULL);
@@ -229,6 +232,10 @@ int main()
 	b=time(NULL);
 	std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
 
+
+	// save random coefficients and state data of preprocessor for use with a new preprocessor object (see lines following "// now the same with a new preprocessor to show the usage of set_randomcoefficients"
+	// Alternative: use built-in serialization to load and save state data from/to a file!!!
+ 
 	float64_t *randomcoeff_additive2, * randomcoeff_multiplicative2;
 	int32_t dim_feature_space2,dim_input_space2;
 	float64_t kernelwidth2;
@@ -271,6 +278,11 @@ int main()
 	// ************************************************************
 	// use preprocessor
 	// **************************************************************
+	CRandomFourierGaussPreproc *rfgauss2=new CRandomFourierGaussPreproc;
+	SG_REF(rfgauss2);
+
+	rfgauss2->get_io()->set_loglevel(MSG_DEBUG);
+
 	// add preprocessor
 	featureste2->add_preproc(rfgauss);
 	// apply preprocessor
@@ -282,13 +294,6 @@ int main()
 	b=time(NULL);
 	std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
 
-	float64_t *randomcoeff_additive3, * randomcoeff_multiplicative3;
-	int32_t dim_feature_space3,dim_input_space3;
-	float64_t kernelwidth3;
-
-	rfgauss->get_randomcoefficients(&randomcoeff_additive3,
-				&randomcoeff_multiplicative3,
-				&dim_feature_space3, &dim_input_space3, &kernelwidth3);
 	//std::cout << "computing linear test kernel over preprocessed features"<<std::endl;
 
 	CLinearKernel* kernelte2 = new CLinearKernel();
@@ -383,9 +388,113 @@ std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
 std::cout << "effective kernel width for gaussian kernel and RFgauss "<< avgdist1 << " " <<avgdist2/(1.0-numnegratio) << std::endl<< " numnegratio (negative entries in RFgauss approx kernel)"<< numnegratio<<std::endl;
 
 
-	delete[] randomcoeff_additive3;
+
+
+
+ // **********************************************
+// now the same with a new preprocessor to show the usage of set_randomcoefficients
+// ********************************************8
+
+	CSimpleFeatures<float64_t>* featureste3 = new CSimpleFeatures<float64_t>(feature_cache);
+	SG_REF(featureste3);
+	featureste3->set_feature_matrix(featte3, dims, numte);
+	std::cout << "finished"<<std::endl;
+	//b=time(NULL);
+	//std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
+
+
+	// ************************************************************
+	// use preprocessor
+	// **************************************************************
+	rfgauss2->set_randomcoefficients(
+		randomcoeff_additive2,
+		randomcoeff_multiplicative2,
+		dim_feature_space2, dim_input_space2, kernelwidth2);
+
+	// add preprocessor
+	featureste3->add_preproc(rfgauss2);
+	// apply preprocessor
+	a=time(NULL);
+	std::cout << "applying same preprocessor to test feature"<<std::endl;
+
+	featureste3->apply_preproc();
+	std::cout << "finished"<<std::endl;
+	b=time(NULL);
+	std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
+
+	//std::cout << "computing linear test kernel over preprocessed features"<<std::endl;
+
+	CLinearKernel* kernelte3 = new CLinearKernel();
+	SG_REF(kernelte3);
+	kernelte2->init(featurestr2, featureste3);
+	//std::cout << "finished"<<std::endl;
+	//b=time(NULL);
+	//std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
+
+	svm2->set_kernel(kernelte3);
+	a=time(NULL);
+	std::cout << "scoring linear test kernel over preprocessed features"<<std::endl;
+
+	std::vector<float64_t> scoreste3(numte);
+
+	float64_t err3=0;
+	for(int32_t i=0; i< numte ;++i)
+	{
+		scoreste3[i]=svm2->classify_example(i);
+		if(scoreste3[i]*labte[i]<0)
+		{
+			err3+=1.0/numte;
+		}
+	}
+	std::cout << "finished"<<std::endl;
+	b=time(NULL);
+	std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
+
+	std::cout << "pausing 12 seconds"<<std::endl;
+	sleep(12);
+	// ************************************************************
+	// compare results
+	// **************************************************************
+	num_labeldiffs=0;
+	avg_scorediff=0;
+	for(int32_t i=0; i< numte ;++i)
+	{
+		if( (int32_t)CMath::sign(scoreste1[i]) != (int32_t)CMath::sign(scoreste3[i]))
+		{
+			++num_labeldiffs;
+		}
+		avg_scorediff+=CMath::abs(scoreste1[i]-scoreste3[i])/numte;
+		std::cout<< "at sample i"<< i <<" label 1= " << CMath::sign(scoreste1[i]) <<" label 2= " << CMath::sign(scoreste3[i])<< " scorediff " << scoreste1[i] << " - " <<scoreste3[i] <<" = " << CMath::abs(scoreste1[i]-scoreste3[i])<<std::endl;
+	}
+
+std::cout<< "number of different labels between gaussian kernel and rfgauss "<< num_labeldiffs<< " out of "<< numte << " labels "<<std::endl;
+std::cout<< "average test sample SVM output score difference between gaussian kernel and rfgauss "<< avg_scorediff<<std::endl;
+std::cout<< "classification errors gaussian kernel and rfgauss  "<< err1 << " " <<err3<<std::endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	delete[] randomcoeff_additive2;
-	delete[] randomcoeff_multiplicative3;
 	delete[] randomcoeff_multiplicative2;
 
 	delete[] labtr;
@@ -398,13 +507,16 @@ std::cout << "effective kernel width for gaussian kernel and RFgauss "<< avgdist
 	SG_UNREF(kerneltr2);
 	SG_UNREF(kernelte1);
 	SG_UNREF(kernelte2);
+	SG_UNREF(kernelte3);
 	SG_UNREF(featurestr1);
 	SG_UNREF(featurestr2);
 	SG_UNREF(featureste1);
 	SG_UNREF(featureste2);
+	SG_UNREF(featureste3);
 	SG_UNREF(svm1);
 	SG_UNREF(svm2);
 	SG_UNREF(rfgauss);
+	SG_UNREF(rfgauss2);
 	exit_shogun();
 	return 0;
 }
