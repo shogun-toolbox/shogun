@@ -18,23 +18,43 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 
 	dim_input_space = feats.dim_input_space;
 	cur_dim_input_space = feats.cur_dim_input_space;
+
 	dim_feature_space = feats.dim_feature_space;
-	randomcoeff_additive = feats.randomcoeff_additive;
+	cur_dim_feature_space=feats.cur_dim_feature_space;
+
 	kernelwidth=feats.kernelwidth;
+	cur_kernelwidth=feats.cur_kernelwidth;
 	
-	
-	randomcoeff_multiplicative.resize(feats.randomcoeff_multiplicative.size());
-	for(size_t i=0;i<randomcoeff_multiplicative.size() ;++i)
+	if(cur_dim_feature_space>0)
 	{
-		if(feats.randomcoeff_multiplicative[i]!=NULL)
+		if(feats.randomcoeff_additive==NULL)
 		{
-			randomcoeff_multiplicative[i]=new float64_t[cur_dim_input_space];
-			std::copy(feats.randomcoeff_multiplicative[i],feats.randomcoeff_multiplicative[i]+cur_dim_input_space,randomcoeff_multiplicative[i]);
+			throw ShogunException(
+							"void CRandomFourierGaussPreproc::copy(...): feats.randomcoeff_additive==NULL && cur_dim_feature_space>0 \n");
 		}
-		else
+
+		randomcoeff_additive = new float64_t[cur_dim_feature_space];
+		std::copy(feats.randomcoeff_additive,feats.randomcoeff_additive+cur_dim_feature_space,randomcoeff_additive);
+	}
+	else
+	{
+		randomcoeff_additive = NULL;
+	}
+	
+	if((cur_dim_feature_space>0)&&(cur_dim_input_space>0))
+	{
+		if(feats.randomcoeff_multiplicative==NULL)
 		{
-			randomcoeff_multiplicative[i]=NULL;
+			throw ShogunException(
+							"void CRandomFourierGaussPreproc::copy(...): feats.randomcoeff_multiplicative==NULL && cur_dim_feature_space>0 &&(cur_dim_input_space>0)  \n");
 		}
+
+		randomcoeff_multiplicative=new float64_t[cur_dim_feature_space*cur_dim_input_space];
+		std::copy(feats.randomcoeff_multiplicative,feats.randomcoeff_multiplicative+cur_dim_feature_space*cur_dim_input_space,randomcoeff_multiplicative);
+	}
+	else
+	{
+		randomcoeff_multiplicative = NULL;
 	}
 
 }
@@ -44,13 +64,54 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 	dim_feature_space = 1000;
 	dim_input_space = 0;
 	cur_dim_input_space = 0;
+	cur_dim_feature_space=0;
+
+	randomcoeff_multiplicative=NULL;
+	randomcoeff_additive=NULL;
+
 	kernelwidth=1;
+	cur_kernelwidth=kernelwidth;
+
+	//m_parameter is inherited from CSGObject,
+	//serialization initialization
+	if(m_parameters)
+	{
+		m_parameters->add(&dim_input_space,"dim_input_space");
+		m_parameters->add(&cur_dim_input_space,"cur_dim_input_space");
+		m_parameters->add(&dim_feature_space,"dim_feature_space");
+		m_parameters->add(&kernelwidth,"kernelwidth");
+		m_parameters->add(&cur_kernelwidth,"cur_kernelwidth");
+
+
+		m_parameters->add(&cur_dim_feature_space,"cur_dim_feature_space");
+		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+	}
 
 }
 
 CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		const CRandomFourierGaussPreproc & feats) :
 	CSimplePreProc<float64_t> ("RandomFourierGaussPreproc", "RFGA") {
+
+	randomcoeff_multiplicative=NULL;
+	randomcoeff_additive=NULL;
+
+	//m_parameter is inherited from CSGObject,
+	//serialization initialization
+	if(m_parameters)
+	{
+		m_parameters->add(&dim_input_space,"dim_input_space");
+		m_parameters->add(&cur_dim_input_space,"cur_dim_input_space");
+		m_parameters->add(&dim_feature_space,"dim_feature_space");
+		m_parameters->add(&kernelwidth,"kernelwidth");
+		m_parameters->add(&cur_kernelwidth,"cur_kernelwidth");
+
+		m_parameters->add(&cur_dim_feature_space,"cur_dim_feature_space");
+		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+	}
+
 	copy(feats);
 }
 
@@ -61,10 +122,10 @@ CRandomFourierGaussPreproc & CRandomFourierGaussPreproc::operator=(
 }
 
 CRandomFourierGaussPreproc::~CRandomFourierGaussPreproc() {
-	for(size_t i=0;i<randomcoeff_multiplicative.size() ;++i)
-	{
-		delete[] randomcoeff_multiplicative[i];
-	}
+
+	delete[] randomcoeff_multiplicative;
+	delete[] randomcoeff_additive;
+
 }
 
 EFeatureClass CRandomFourierGaussPreproc::get_feature_class() {
@@ -117,11 +178,10 @@ void CRandomFourierGaussPreproc::set_dim_input_space(const int32_t dim) {
 
 bool CRandomFourierGaussPreproc::test_rfinited() const {
 
-	if ((dim_feature_space == (int32_t) randomcoeff_additive.size())
-			&& (dim_feature_space
-					== (int32_t) randomcoeff_multiplicative.size())
+	if ((dim_feature_space ==  cur_dim_feature_space)
 			&& (dim_input_space > 0) && (dim_feature_space > 0)) {
-		if (dim_input_space == cur_dim_input_space) {
+		if ((dim_input_space == cur_dim_input_space)&&(CMath::abs(kernelwidth-cur_kernelwidth)<1e-5)) {
+
 			// already inited
 			return true;
 		} else {
@@ -151,20 +211,25 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 
 	float64_t pi = 3.14159265;
 	
-	for(size_t i=0;i<randomcoeff_multiplicative.size() ;++i)
-	{
-		delete[] randomcoeff_multiplicative[i];
-	}
-	randomcoeff_multiplicative.clear();
 
-	randomcoeff_additive.resize(dim_feature_space);
-	randomcoeff_multiplicative.resize(dim_feature_space);
-	for (size_t i = 0; i < randomcoeff_additive.size(); ++i) {
+	delete[] randomcoeff_multiplicative;
+	randomcoeff_multiplicative=NULL;
+	delete[] randomcoeff_additive;
+	randomcoeff_additive=NULL;
+
+
+	cur_dim_feature_space=dim_feature_space;
+	randomcoeff_additive=new float64_t[cur_dim_feature_space];
+	cur_dim_input_space = dim_input_space;
+	randomcoeff_multiplicative=new float64_t[cur_dim_feature_space*cur_dim_input_space];
+
+	cur_kernelwidth=kernelwidth;
+
+	for (int32_t  i = 0; i < cur_dim_feature_space; ++i) {
 		randomcoeff_additive[i] = CMath::random((float64_t) 0.0, 2 * pi);
 	}
-	for (size_t i = 0; i < randomcoeff_multiplicative.size(); ++i) {
-		cur_dim_input_space = dim_input_space;
-		randomcoeff_multiplicative[i] = new float64_t[cur_dim_input_space];
+
+	for (int32_t  i = 0; i < cur_dim_feature_space; ++i) {
 		for (int32_t k = 0; k < cur_dim_input_space; ++k) {
 			float64_t x1,x2;
 			float64_t s = 2;
@@ -176,7 +241,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 			}
 
 			// =  x1/CMath::sqrt(val)* CMath::sqrt(-2*CMath::log(val));
-			randomcoeff_multiplicative[i][k] =  x1*CMath::sqrt(-2*CMath::log(s)/s )/kernelwidth;
+			randomcoeff_multiplicative[i*cur_dim_input_space+k] =  x1*CMath::sqrt(-2*CMath::log(s)/s )/kernelwidth;
 		}
 	}
 
@@ -188,7 +253,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 void CRandomFourierGaussPreproc::get_randomcoefficients(
 		float64_t ** randomcoeff_additive2,
 		float64_t ** randomcoeff_multiplicative2, int32_t *dim_feature_space2,
-		int32_t *dim_input_space2) const {
+		int32_t *dim_input_space2, float64_t* kernelwidth2) const {
 
 	ASSERT(randomcoeff_additive2);
 	ASSERT(randomcoeff_multiplicative2);
@@ -196,54 +261,53 @@ void CRandomFourierGaussPreproc::get_randomcoefficients(
 	if (!test_rfinited()) {
 		*dim_feature_space2 = 0;
 		*dim_input_space2 = 0;
+		*kernelwidth2=1;
 		*randomcoeff_additive2 = NULL;
 		*randomcoeff_multiplicative2 = NULL;
 		return;
 	}
 
-	*dim_feature_space2 = randomcoeff_additive.size();
-	*dim_input_space2 = dim_input_space;
+	*dim_feature_space2 = cur_dim_feature_space;
+	*dim_input_space2 = cur_dim_input_space;
+	*kernelwidth2=cur_kernelwidth;
 
-	*randomcoeff_additive2 = new float64_t[randomcoeff_additive.size()];
-	*randomcoeff_multiplicative2 = new float64_t[randomcoeff_additive.size()
-			* dim_input_space];
+	*randomcoeff_additive2 = new float64_t[cur_dim_feature_space];
+	*randomcoeff_multiplicative2 = new float64_t[cur_dim_feature_space*cur_dim_input_space];
 
-	std::copy(randomcoeff_additive.begin(), randomcoeff_additive.end(),
+	std::copy(randomcoeff_additive, randomcoeff_additive+cur_dim_feature_space,
 			*randomcoeff_additive2);
-	for (size_t i = 0; i < randomcoeff_additive.size(); ++i) {
-		std::copy(randomcoeff_multiplicative[i], randomcoeff_multiplicative[i]
-				+ cur_dim_input_space, (*randomcoeff_multiplicative2) + i
-				* dim_input_space);
+	std::copy(randomcoeff_multiplicative, randomcoeff_multiplicative+cur_dim_feature_space*cur_dim_input_space,
+			*randomcoeff_multiplicative2);
 
-	}
 
 }
 
 void CRandomFourierGaussPreproc::set_randomcoefficients(
 		float64_t *randomcoeff_additive2,
 		float64_t * randomcoeff_multiplicative2,
-		const int32_t dim_feature_space2, const int32_t dim_input_space2) {
+		const int32_t dim_feature_space2, const int32_t dim_input_space2, const float64_t kernelwidth2) {
 	dim_feature_space = dim_feature_space2;
 	dim_input_space = dim_input_space2;
+	kernelwidth=kernelwidth2;
 	
-	for(size_t i=0;i<randomcoeff_multiplicative.size() ;++i)
+	delete[] randomcoeff_multiplicative;
+	randomcoeff_multiplicative=NULL;
+	delete[] randomcoeff_additive;
+	randomcoeff_additive=NULL;
+
+	cur_dim_feature_space=dim_feature_space;
+	cur_dim_input_space = dim_input_space;
+	cur_kernelwidth=kernelwidth;
+
+	if( (dim_feature_space>0) && (dim_input_space>0) )
 	{
-		delete[] randomcoeff_multiplicative[i];
-	}
-	randomcoeff_multiplicative.clear();
+	randomcoeff_additive=new float64_t[cur_dim_feature_space];
+	randomcoeff_multiplicative=new float64_t[cur_dim_feature_space*cur_dim_input_space];
 
-	randomcoeff_additive.resize(dim_feature_space);
-	randomcoeff_multiplicative.resize(dim_feature_space);
-	for (size_t i = 0; i < randomcoeff_multiplicative.size(); ++i) {
-		std::copy(randomcoeff_additive2, randomcoeff_additive2
-				+ dim_feature_space, randomcoeff_additive.begin());
-
-		cur_dim_input_space = dim_input_space;
-		randomcoeff_multiplicative[i] = new float64_t[cur_dim_input_space];
-		std::copy(randomcoeff_multiplicative2 + i * dim_input_space,
-				randomcoeff_multiplicative2 + (i + 1) * dim_input_space,
-				randomcoeff_multiplicative[i]);
-
+	std::copy(randomcoeff_additive2, randomcoeff_additive2
+			+ dim_feature_space, randomcoeff_additive);
+	std::copy(randomcoeff_multiplicative2, randomcoeff_multiplicative2
+			+ cur_dim_feature_space*cur_dim_input_space, randomcoeff_multiplicative);
 	}
 
 }
@@ -287,19 +351,21 @@ float64_t * CRandomFourierGaussPreproc::apply_to_feature_vector(float64_t *f,
 				"float64_t * CRandomFourierGaussPreproc::apply_to_feature_vector(...): test_rfinited()==false: you need to call before CRandomFourierGaussPreproc::init (CFeatures *f) OR 	1. set_dim_feature_space(const int32 dim), 2. set_dim_input_space(const int32 dim), 3. init_randomcoefficients() or set_randomcoefficients(...) \n");
 	}
 
-	float64_t val = CMath::sqrt(2.0 / dim_feature_space);
-	len = dim_feature_space;
-	float64_t *res = new float64_t[dim_feature_space];
+	float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
+	len = cur_dim_feature_space;
+	float64_t *res = new float64_t[cur_dim_feature_space];
 
-	for (int32_t od = 0; od < dim_feature_space; ++od) {
+	for (int32_t od = 0; od < cur_dim_feature_space; ++od) {
 		res[od] = val * cos(randomcoeff_additive[od] + CMath::dot(f,
-				randomcoeff_multiplicative[od], dim_input_space));
+				randomcoeff_multiplicative+od*cur_dim_input_space, cur_dim_input_space));
 	}
 
 	return res;
 }
 
 float64_t * CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeatures *f) {
+
+
 	init(f);
 
 	// version for case dim_feature_space < dim_input space with direct transformation on feature matrix ?? 
@@ -309,29 +375,36 @@ float64_t * CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeatures *f) {
 	float64_t* m = ((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(
 			num_features, num_vectors);
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features);
+
+	if(num_features!=cur_dim_input_space)
+	{
+		throw ShogunException(
+						"float64_t * CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeatures *f): num_features!=cur_dim_input_space is not allowed\n");
+	}
+
 	if (m) {
-		float64_t* res = new float64_t[num_vectors * dim_feature_space];
+		float64_t* res = new float64_t[num_vectors * cur_dim_feature_space];
 		if (res == NULL) {
 			throw ShogunException(
 					"CRandomFourierGaussPreproc::apply_to_feature_matrix(...): memory allocation failed \n");
 		}
-		float64_t val = CMath::sqrt(2.0 / dim_feature_space);
+		float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
 
 		for (int32_t vec = 0; vec < num_vectors; vec++) {
-			for (int32_t od = 0; od < dim_feature_space; ++od) {
-				res[od + vec * dim_feature_space] = val * cos(
+			for (int32_t od = 0; od < cur_dim_feature_space; ++od) {
+				res[od + vec * cur_dim_feature_space] = val * cos(
 						randomcoeff_additive[od]
 								+ CMath::dot(m+vec * num_features,
-										randomcoeff_multiplicative[od],
-										dim_input_space));
+										randomcoeff_multiplicative+od*cur_dim_input_space,
+										cur_dim_input_space));
 			}
 		}
 		((CSimpleFeatures<float64_t>*) f)->set_feature_matrix(res,
-				dim_feature_space, num_vectors);
+				cur_dim_feature_space, num_vectors);
 		
 		m = ((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(
 				num_features, num_vectors);
-		ASSERT(num_features==dim_feature_space);
+		ASSERT(num_features==cur_dim_feature_space);
 
 		return res;
 	} else {

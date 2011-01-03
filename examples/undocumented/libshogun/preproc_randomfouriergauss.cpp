@@ -58,13 +58,13 @@ int main()
 {
 
 	time_t a,b;
-	int32_t dims=6000;
+	int32_t dims=60;
 	float64_t dist=0.5;
 
 	int32_t randomfourier_featurespace_dim=500; // the typical application of the below preprocessor are cases with high input dimensionalities of some thousands
 
-	int32_t numtr=3000;
-	int32_t numte=3000;
+	int32_t numtr=300;
+	int32_t numte=300;
 
 	const int32_t feature_cache=0;
 	const int32_t kernel_cache=0;
@@ -231,10 +231,11 @@ int main()
 
 	float64_t *randomcoeff_additive2, * randomcoeff_multiplicative2;
 	int32_t dim_feature_space2,dim_input_space2;
+	float64_t kernelwidth2;
 
 	rfgauss->get_randomcoefficients(&randomcoeff_additive2,
 				&randomcoeff_multiplicative2,
-				&dim_feature_space2, &dim_input_space2);
+				&dim_feature_space2, &dim_input_space2, &kernelwidth2);
 
 	// create linear kernel
 	//std::cout << "computing linear train kernel over preprocessed features"<<std::endl;
@@ -283,10 +284,11 @@ int main()
 
 	float64_t *randomcoeff_additive3, * randomcoeff_multiplicative3;
 	int32_t dim_feature_space3,dim_input_space3;
+	float64_t kernelwidth3;
 
 	rfgauss->get_randomcoefficients(&randomcoeff_additive3,
 				&randomcoeff_multiplicative3,
-				&dim_feature_space3, &dim_input_space3);
+				&dim_feature_space3, &dim_input_space3, &kernelwidth3);
 	//std::cout << "computing linear test kernel over preprocessed features"<<std::endl;
 
 	CLinearKernel* kernelte2 = new CLinearKernel();

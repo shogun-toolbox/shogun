@@ -38,15 +38,13 @@ class CRandomFourierGaussPreproc: public CSimplePreProc<float64_t> {
 	 * this case is important for example if you compute separately features on training and testing data in two feature objects
 	 *
 	 * in this case you have to set
-	 * 1a) set_dim_input_space(const int32_t dim);
-	 * 1b) void set_dim_feature_space(const int32_t dim);
-	 * 1c) void set_randomcoefficients(...)
+	 * 1a) void set_randomcoefficients(...)
 	 *
 	 * (2) if you compute random fourier features from scratch
 	 * in this case you have to set
 	 * 2a) set_kernelwidth(...)
-	 * 2b) set_dim_input_space(const int32_t dim);
-	 * 2c) void set_dim_feature_space(const int32_t dim);
+	 * 2b) void set_dim_feature_space(const int32_t dim);
+	 * 2c) set_dim_input_space(const int32_t dim);
 	 * 2d) init_randomcoefficients() or apply_to_feature_matrix(...)
 	 */
 
@@ -61,7 +59,7 @@ public:
 			const CRandomFourierGaussPreproc & pr);
 
 	/** default destructor
-	 * takes care for ::std::vector<float64_t*> randomcoeff_multiplicative;
+	 * takes care for float64_t* randomcoeff_additive,float64_t* randomcoeff_multiplicative;
 	 */
 	~CRandomFourierGaussPreproc();
 
@@ -69,7 +67,6 @@ public:
 	 * @param CFeatures *f - the features to be processed, must be of type CSimpleFeatures<float64_t>
 	 * @return  float64_t * the processed feature matrix from the CSimpleFeatures<float64_t> class
 	 * in case (2) (see description above) this routine requires only steps 2a) and 2b), the rest is determined automatically
-	 * in case (1) (see description above) this routine requires only step 1b) and 1c)
 	 */
 	virtual float64_t * apply_to_feature_matrix(CFeatures *f); // ref count fo the feature matrix???
 
@@ -115,22 +112,22 @@ public:
 
 	/**  getter for the random coefficients
 	 * necessary for creating random fourier features compatible to the current ones
-	 * returns values of internal members 	::std::vector<float64_t> randomcoeff_additive;
-	 * and ::std::vector<float64_t*> randomcoeff_multiplicative;
+	 * returns values of internal members randomcoeff_additive
+	 * and randomcoeff_multiplicative
 	 */
 	void get_randomcoefficients(float64_t ** randomcoeff_additive2,
 			float64_t ** randomcoeff_multiplicative2,
-			int32_t *dim_feature_space2, int32_t *dim_input_space2) const;
+			int32_t *dim_feature_space2, int32_t *dim_input_space2, float64_t* kernelwidth2 ) const;
 
 	/**  setter for the random coefficients
 	 * necessary for creating random fourier features compatible to the previous ones
-	 * sets values of internal members 	::std::vector<float64_t> randomcoeff_additive;
-	 * and ::std::vector<float64_t*> randomcoeff_multiplicative;
+	 * sets values of internal members 	randomcoeff_additive
+	 * and randomcoeff_multiplicative
 	 * simply use as input what you got from get_random_coefficients(...)
 	 */
 	void set_randomcoefficients(float64_t *randomcoeff_additive2,
 			float64_t * randomcoeff_multiplicative2,
-			const int32_t dim_feature_space2, const int32_t dim_input_space2);
+			const int32_t dim_feature_space2, const int32_t dim_input_space2, const float64_t kernelwidth2);
 
 	/** a setter
 	 * @param sets the value of protected member dim_input_space
@@ -146,14 +143,14 @@ public:
 	void set_dim_feature_space(const int32_t dim);
 
 	/** computes new random coefficients IF test_rfinited() evaluates to false
-	 * test_rfinited() evaluates to TRUE if void set_randomcoefficients(...) hase been called and the values set by set_dim_input_space(...) and set_dim_feature_space(...) are consistent to the call of void set_randomcoefficients(...)
+	 * test_rfinited() evaluates to TRUE if void set_randomcoefficients(...) hase been called and the values set by set_dim_input_space(...) , set_dim_feature_space(...) and set_kernelwidth(...) are consistent to the call of void set_randomcoefficients(...)
 	 *
 	 * throws shogun exception if dim_feature_space <= 0 or dim_input_space <= 0
 	 *
 	 * @return returns true if test_rfinited() evaluates to false and new coefficients are computed
 	 * returns false if test_rfinited() evaluates to true and old random coefficients are kept which were set by a previous call to void set_randomcoefficients(...)
 	 *
-	 * this function is useful if you want to use apply_to_feature_vector but cannot call init(CFeatures *f)
+	 * this function is useful if you want to use apply_to_feature_vector but cannot call before it init(CFeatures *f)
 	 *
 	 */
 	bool init_randomcoefficients();
@@ -183,11 +180,16 @@ protected:
 
 
 	/** dimension of input features
-	 * width of gaussian kernel in the form of exp(-x^2 / (2.0 kernelwidth^2) ) NOTE the 2.0!
+	 * width of gaussian kernel in the form of exp(-x^2 / (2.0 kernelwidth^2) ) NOTE the 2.0 and the power ^2 !
 	 */
 	float64_t kernelwidth;
 
 	/** dimension of input features
+	 * width of gaussian kernel in the form of exp(-x^2 / (2.0 kernelwidth^2) ) NOTE the 2.0 and the power ^2 !
+	 */
+	float64_t cur_kernelwidth;
+
+	/** desired dimension of input features as set by void set_dim_input_space(const int32_t dim)
 	 *
 	 */
 	int32_t dim_input_space;
@@ -197,10 +199,16 @@ protected:
 	 */
 	int32_t cur_dim_input_space;
 
-	/** dimension of output features
+
+	/** desired dimension of output features  as set by void set_dim_feature_space(const int32_t dim)
 	 *
 	 */
 	int32_t dim_feature_space;
+
+	/** actual dimension of output features as set by bool init_randomcoefficients() or void set_randomcoefficients
+	 *
+	 */
+	int32_t cur_dim_feature_space;
 
 	/**
 	 * tests whether rf features have already been initialized
@@ -209,15 +217,15 @@ protected:
 
 	/**
 	 * random coefficient
-	 * length = dim_feature_space
+	 * length = cur_dim_feature_space
 	 */
-	::std::vector<float64_t> randomcoeff_additive;
+	float64_t* randomcoeff_additive;
 
 	/**
 	 * random coefficient
-	 * length of ::std::vector = dim_feature_space, length of float64_t* = cur_dim_input_space
+	 * length = cur_dim_feature_space* cur_dim_input_space
 	 */
-	::std::vector<float64_t*> randomcoeff_multiplicative;
+	float64_t* randomcoeff_multiplicative;
 };
 }
 #endif
