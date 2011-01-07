@@ -38,9 +38,9 @@ public:
 	{
 		SG_SPRINT("libshogun (%s/%s%d)\n\n", MACHINE, VERSION_RELEASE, version_revision);
 		SG_SPRINT("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n");
-		SG_SPRINT("Copyright (C) 1999-2010 Max Planck Society\n");
-		SG_SPRINT("Copyright (C) 2009-2010 Berlin Institute of Technology\n");
-		SG_SPRINT("Written   (W) 1999-2010 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n");
+		SG_SPRINT("Copyright (C) 1999-2011 Max Planck Society\n");
+		SG_SPRINT("Copyright (C) 2009-2011 Berlin Institute of Technology\n");
+		SG_SPRINT("Written   (W) 1999-2011 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n");
 #ifndef USE_SVMLIGHT
 		SG_SPRINT("This is free software; see the source for copying conditions.  There is NO\n");
 		SG_SPRINT("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
