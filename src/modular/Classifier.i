@@ -95,6 +95,7 @@
 
 
 /* Remove C Prefix */
+%rename(Labels) CLabels;
 %rename(Classifier) CClassifier;
 %rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;
@@ -139,6 +140,7 @@
 %newobject CClassifier::classify(CFeatures* data);
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/features/Labels.h>
 %include <shogun/classifier/Classifier.h>
 %include <shogun/classifier/KernelMachine.h>
 %include <shogun/classifier/DistanceMachine.h>
