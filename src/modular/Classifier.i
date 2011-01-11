@@ -136,8 +136,8 @@
 #endif //USE_SVMLIGHT
 
 /* These functions return new Objects */
-%newobject CClassifier::classify;
-%newobject CClassifier::classify(CFeatures* data);
+%newobject classify();
+%newobject classify(CFeatures* data);
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/Labels.h>
