@@ -272,9 +272,9 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 
 		delete[] params;
 		delete[] threads;
-		delete[] index;
 	}
 #endif
+	delete[] index;
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
