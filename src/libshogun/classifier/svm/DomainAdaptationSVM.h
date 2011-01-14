@@ -8,6 +8,8 @@
  * Copyright (C) 2007-2009 Max-Planck-Society
  */
 
+#ifdef USE_SVMLIGHT
+
 #ifndef _DomainAdaptation_SVM_H___
 #define _DomainAdaptation_SVM_H___
 
@@ -59,7 +61,7 @@ class CDomainAdaptationSVM : public CSVMLight
 
 		/** get classifier type
 		 *
-		 * @return classifier type LIGHT
+		 * @return classifier type
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_DASVM; }
 
@@ -120,3 +122,5 @@ class CDomainAdaptationSVM : public CSVMLight
 };
 }
 #endif
+
+#endif //USE_SVMLIGHT
