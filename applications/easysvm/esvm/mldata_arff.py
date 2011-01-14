@@ -38,7 +38,6 @@ from numpy import array, concatenate
 import csv
 from esvm.mldata import DatasetFileBase
 
-
 class DatasetFileARFF(DatasetFileBase):
     """Attribute-Relation File Format file, uses module arff.
 

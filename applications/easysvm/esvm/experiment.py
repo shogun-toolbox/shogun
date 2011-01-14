@@ -32,11 +32,11 @@ from shogun.Kernel import GaussianKernel, WeightedDegreePositionStringKernel
 from shogun.Kernel import WeightedDegreeStringKernel
 from shogun.Kernel import LinearKernel, PolyKernel, LocalAlignmentStringKernel
 from shogun.Kernel import LocalityImprovedStringKernel
-from shogun.Kernel import CommWordStringKernel, WeightedCommWordStringKernel
+from shogun.Kernel import CommWordStringKernel, WeightedCommWordStringKernel, CommUlongStringKernel
 from shogun.Kernel import CombinedKernel
 from shogun.Kernel import SLOWBUTMEMEFFICIENT
 from shogun.Kernel import AvgDiagKernelNormalizer
-from shogun.Features import RealFeatures, Labels, StringCharFeatures, DNA, StringWordFeatures
+from shogun.Features import RealFeatures, Labels, StringCharFeatures, DNA, StringWordFeatures, StringUlongFeatures, PROTEIN
 from shogun.Features import CombinedFeatures
 from shogun.Classifier import LibSVM,GPBTSVM
 
@@ -49,18 +49,82 @@ except:
     LinAddSVM = GPBTSVM
     LinearSVM = LibSVM
     
-from shogun.PreProc import SortWordString
+from shogun.PreProc import SortWordString, SortUlongString
 
 from utils import calcprc, calcroc, accuracy
 from utils import getPartitionedSet, getCurrentSplit
 import plots
-
+import re
 from poim import reshape_normalize_contribs, compute_weight_mass
 
 ################################################################################
+def non_atcg_convert(seq, nuc_con):
+    """ Converts Non ATCG characters from DNA sequence """
+    
+    if nuc_con == '':sys.stderr.write("usage: Provide a choice for non ACGT nucleotide conversion [T|A|C|G|R|Y|N] at last\n");sys.exit(-1)
+    if re.match(r'[^ATCGRYN]', nuc_con):sys.stderr.write("usage: Conversion nucleotide choice -"+ nuc_con +"- failed. pick one from [T|A|C|G|R|Y|N]\n");sys.exit(-1)
+    
+    nuc_con = nuc_con.upper()
+    mod_seq = []
+    for i in range(len(seq)):
+        if re.search(r'[^ACTG]', seq[i], re.IGNORECASE):
+            if nuc_con == 'A' or nuc_con == 'T' or nuc_con == 'C' or nuc_con == 'G':
+                seq[i] = re.sub(r'[^ATCG|actg]', nuc_con, seq[i])
+                seq[i] = seq[i].upper()
+                mod_seq.append(seq[i])
+                continue
+            if nuc_con == 'N':(nucleotide, line) = ('ATCG', '')
+            if nuc_con == 'R':(nucleotide, line) = ('AG', '')
+            if nuc_con == 'Y':(nucleotide, line) = ('TC', '')
+                
+            for single_nuc in seq[i]:
+                if re.match(r'[^ACGT]', single_nuc, re.IGNORECASE):
+                    line += random.choice(nucleotide)
+                else:
+                    line += single_nuc.upper()
+            mod_seq.append(line)       
+        else:
+            seq[i] = seq[i].upper()
+            mod_seq.append(seq[i])
+    return mod_seq
+
+def non_aminoacid_converter(seq, amino_con):
+    """ Converts Non amino acid characters from protein sequence """  
+
+    if amino_con == '':sys.stderr.write("usage: Provide a choice for replacing non amino acid characters\n");sys.exit(-1)
+    flag = 0
+    if len(amino_con)>1:
+        if amino_con != 'random':flag = 1
+    else:        
+        if re.match(r'[^GPAVLIMCFYWHKRQNEDST]', amino_con, re.IGNORECASE):flag = 1
+    if flag == 1:sys.stderr.write("usage: Replace aminoacid chioce -"+ amino_con +"- failed. Pick a valid aminoacid single letter code/random\n");sys.exit(-1)
+
+    amino_con = amino_con.upper()
+    opt_seq = []
+    for i in range(len(seq)):
+        if re.search(r'[^GPAVLIMCFYWHKRQNEDST]', seq[i], re.IGNORECASE):
+            if amino_con == 'RANDOM':
+                aminoacid = 'GPAVLIMCFYWHKRQNEDST'
+                line = ''
+                for single_amino in seq[i]:
+                    if re.match(r'[^GPAVLIMCFYWHKRQNEDST]', single_amino, re.IGNORECASE):
+                        r_amino = random.choice(aminoacid)
+                        line += r_amino
+                    else:
+                        single_amino = single_amino.upper()
+                        line += single_amino
+                opt_seq.append(line)         
+            else:
+                seq[i] = re.sub(r'[^GPAVLIMCFYWHKRQNEDST|gpavlimcfywhkrqnedst]', amino_con, seq[i])
+                seq[i] = seq[i].upper()
+                opt_seq.append(seq[i])
+        else:
+            seq[i] = seq[i].upper()
+            opt_seq.append(seq[i])
+    return opt_seq 
 # helper functions
 
-def create_features(kname, examples, kparam, train_mode, preproc):
+def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nuc_con):
     """Converts numpy arrays or sequences into shogun features"""
 
     if kname == 'gauss' or kname == 'linear' or kname == 'poly':
@@ -68,23 +132,39 @@ def create_features(kname, examples, kparam, train_mode, preproc):
         feats = RealFeatures(examples)
         
     elif kname == 'wd' or kname == 'localalign' or kname == 'localimprove':
-        feats = StringCharFeatures(examples, DNA)
+        if seq_source == 'dna': 
+            examples = non_atcg_convert(examples, nuc_con)
+            feats = StringCharFeatures(examples, DNA)
+        elif seq_source == 'protein':
+            examples = non_aminoacid_converter(examples, nuc_con) 
+            feats = StringCharFeatures(examples, PROTEIN)
+        else:
+            sys.stderr.write("Sequence source -"+seq_source+"- is invalid. select [dna|protein]\n")
+            sys.exit(-1)
 
     elif kname == 'spec' or kname == 'cumspec':
-        feats = StringCharFeatures(examples, DNA)
-
-        wf = StringWordFeatures( feats.get_alphabet() )
+        if seq_source == 'dna':
+            examples = non_atcg_convert(examples, nuc_con)
+            feats = StringCharFeatures(examples, DNA) 
+        elif seq_source == 'protein':    
+            examples = non_aminoacid_converter(examples, nuc_con)
+            feats = StringCharFeatures(examples, PROTEIN)
+        else:
+            sys.stderr.write("Sequence source -"+seq_source+"- is invalid. select [dna|protein]\n")
+            sys.exit(-1)
+       
+        wf = StringUlongFeatures( feats.get_alphabet() )
         wf.obtain_from_char(feats, kparam['degree']-1, kparam['degree'], 0, kname=='cumspec')
         del feats
 
         if train_mode:
-            preproc = SortWordString()
+            preproc = SortUlongString()
             preproc.init(wf)
         wf.add_preproc(preproc)
         ret = wf.apply_preproc()
         #assert(ret)
 
-        feats = wf 
+        feats = wf
     elif kname == 'spec2' or kname == 'cumspec2':
         # spectrum kernel on two sequences
         feats = {}
@@ -143,7 +223,7 @@ def create_kernel(kname,kparam,feats_train):
         kernel.set_shifts(kparam['shift']*numpy.ones(kparam['seqlength'],dtype=numpy.int32))
         #kernel=WeightedDegreeStringKernel(feats_train, feats_train, kparam['degree'])
     elif kname == 'spec':
-        kernel = CommWordStringKernel(feats_train, feats_train)
+        kernel = CommUlongStringKernel(feats_train, feats_train)
     elif kname == 'cumspec':
         kernel = WeightedCommWordStringKernel(feats_train, feats_train)
         kernel.set_weights(numpy.ones(kparam['degree']))
@@ -218,10 +298,10 @@ def model2str(kparam,C,kp,shownames=True):
 
 
 
-def train(trainex,trainlab,C,kname,kparam):
+def train(trainex,trainlab,C,kname,kparam,seq_source,nuc_con):
     """Trains a SVM with the given kernel"""
 
-    (feats_train, preproc) = create_features(kname,trainex, kparam, True, None)
+    (feats_train, preproc) = create_features(kname,trainex, kparam, True, None, seq_source, nuc_con)
     
     if kname == 'wd':
         kparam['seqlength'] = len(trainex[0])
@@ -257,11 +337,11 @@ def train(trainex,trainlab,C,kname,kparam):
 
     return (svm, kernel, feats_train, preproc)
 
-def train_and_test(trainex,trainlab,testex,C,kname,kparam):
+def train_and_test(trainex,trainlab,testex,C,kname,kparam, seq_source, nuc_con):
     """Trains a SVM with the given kernel, and predict on the test examples"""
 
-    (svm, kernel, feats_train, preproc) = train(trainex,trainlab,C,kname,kparam)
-    (feats_test, preproc) = create_features(kname, testex, kparam, False, preproc)
+    (svm, kernel, feats_train, preproc) = train(trainex,trainlab,C,kname,kparam,seq_source,nuc_con)
+    (feats_test, preproc) = create_features(kname, testex, kparam, False, preproc, seq_source, nuc_con)
     if kname == 'spec2' or kname == 'cumspec2':
         for feats in feats_train.values():
             feats.io.disable_progress()
@@ -278,7 +358,7 @@ def train_and_test(trainex,trainlab,testex,C,kname,kparam):
     
     return output
 
-def crossvalidation(cv, kname, kparam, C, all_examples, all_labels):
+def crossvalidation(cv, kname, kparam, C, all_examples, all_labels, seq_source, nuc_con):
     """Perform cross validation using an SVM
 
     cv -- the number of folds
@@ -287,7 +367,6 @@ def crossvalidation(cv, kname, kparam, C, all_examples, all_labels):
 
     """
     print 'Using %i-fold crossvalidation' % cv
-    
     partitions = getPartitionedSet(len(all_labels), cv)
     error = []
     sum_accuracy = 0.0
@@ -298,7 +377,7 @@ def crossvalidation(cv, kname, kparam, C, all_examples, all_labels):
     for repetition in xrange(cv):
         XT, LT, XTE, LTE = getCurrentSplit(repetition, partitions, all_labels, all_examples)
         numpos = len(where(array(LTE)>0)[0])
-        svmout = train_and_test(XT, LT, XTE, C, kname, kparam)
+        svmout = train_and_test(XT, LT, XTE, C, kname, kparam, seq_source, nuc_con)
         
         for i in xrange(len(svmout)):
             all_outputs[partitions[repetition][i]] = svmout[i]
@@ -399,29 +478,46 @@ def svm_cv(argv):
     """A top level script to parse input parameters and run cross validation"""
 
     assert(argv[1]=='cv')
-    if len(argv)<5:
-        sys.stderr.write("usage: %s cv repeat C kernelname [kernelparameters] [arff|fasta] inputfiles  outputfile\n" % argv[0])
-        sys.exit(-1)
+    if len(argv)<5:sys.stderr.write("usage: %s cv repeat C kernelname [kernelparameters] [arff|fasta] inputfiles outputfile [dna|protein] non(nucleotide|amino)converter \n" % argv[0]);sys.exit(-1)
 
     # parse input parameters
     cv = int(argv[2])
     C = float(argv[3])
     (kernelname,kparam,argv_rest) = parse.parse_kernel_param(argv[4:],False)
     (examples,labels,argv_rest) = parse.parse_input_file_train(kernelname, argv_rest)
-    if len(argv_rest)<1:
-        sys.stderr.write("Output file missing\n")
-        sys.exit(-1)
-    if len(argv_rest)>1:
-        sys.stderr.write("Too many arguments\n")
-        sys.exit(-1)
+    
+    (seq_source, nuc_con) = ('', '')
+    if kernelname == 'spec' or kernelname == 'wd':
+        if len(argv_rest)<1:sys.stderr.write("outputfile [dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
+        if len(argv_rest)<2:sys.stderr.write("[dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
+        if len(argv_rest)<3:
+            if argv_rest[-1] == 'dna':
+                sys.stderr.write("non-nucleotide converter like [A|T|C|G|R|Y|N] is missing. Cannot continue.\n")
+                sys.exit(-1)
+            elif argv_rest[-1] == 'protein':    
+                sys.stderr.write("non-amino acid converter like [G|P|A|V|L|I|M|C|F|Y|W|H|K|R|Q|N|E|D|S|T|random] is missing. Cannot continue.\n")
+                sys.exit(-1)
+            else:
+                sys.stderr.write("Here expect FASTA sequence type as [dna|protein] instead of -"+ argv_rest[-1] +"- Cannot continue.\n")
+                sys.exit(-1)
+        if len(argv_rest)>3:sys.stderr.write("Too many arguments\n");sys.exit(-1)
+        seq_source = argv_rest[1]
+        nuc_con = argv_rest[2]
+
+    if kernelname == 'linear' or kernelname == 'gauss' or kernelname == 'poly':
+        if len(argv_rest)<1:sys.stderr.write("outputfile misssing\n");sys.exit(-1)
+        if len(argv_rest)>1:sys.stderr.write("Too many arguments\n");sys.exit(-1)
     outfilename = argv_rest[0]
 
     utils.check_params(kparam, C, len(examples[0]))
 
     # run cross-validation
-    (all_outputs, all_split) = crossvalidation(cv, kernelname, kparam, C, examples, labels)
-
-    f = open(outfilename, 'w+')
+    (all_outputs, all_split) = crossvalidation(cv, kernelname, kparam, C, examples, labels, seq_source, nuc_con)
+    try:
+        f = open(outfilename, 'w+')
+    except:
+        sys.stderr.write('Fails to open the outputfile at ' + outfilename + ' Cannot continue.\n')
+        sys.exit(-1)
     res_str = '#example\toutput\tsplit\n'
     f.write(res_str)
     for ix in xrange(len(all_outputs)):
@@ -429,26 +525,40 @@ def svm_cv(argv):
         f.write(res_str)
     f.close()
 
-
 def svm_modelsel(argv):
     """A top level script to parse input parameters and run model selection"""
 
     assert(argv[1]=='modelsel')
-    if len(argv)<5:
-        sys.stderr.write("usage: %s modelsel repeat Cs kernelname [kernelparameters] [arff|fasta] inputfiles  outputfile\n" % argv[0])
-        sys.exit(-1)
+    if len(argv)<5:sys.stderr.write("usage: %s modelsel repeat Cs kernelname [kernelparameters] [arff|fasta] inputfiles  outputfile [dna|protein] non(nucleotide|amino)converter\n" % argv[0]);sys.exit(-1)
 
     # parse input parameters
     cv = int(argv[2])
     Cs = parse.parse_float_list(argv[3])
     (kernelname,kparam,argv_rest) = parse.parse_kernel_param(argv[4:], True)
     (examples,labels,argv_rest) = parse.parse_input_file_train(kernelname, argv_rest)
-    if len(argv_rest)<1:
-        sys.stderr.write("Output file missing\n")
-        sys.exit(-1)
-    if len(argv_rest)>1:
-        sys.stderr.write("Too many arguments\n")
-        sys.exit(-1)
+
+    (seq_source, nuc_con) = ('', '')
+    if kernelname == 'spec' or kernelname == 'wd':
+        if len(argv_rest)<1:sys.stderr.write("outputfile [dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
+        if len(argv_rest)<2:sys.stderr.write("[dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
+        if len(argv_rest)<3:
+            if argv_rest[-1] == 'dna':
+                sys.stderr.write("non-nucleotide converter like [A|T|C|G|R|Y|N] is missing. Cannot continue.\n")
+                sys.exit(-1)
+            elif argv_rest[-1] == 'protein':
+                sys.stderr.write("non-amino acid converter like [G|P|A|V|L|I|M|C|F|Y|W|H|K|R|Q|N|E|D|S|T|random] is missing. Cannot continue.\n")
+                sys.exit(-1)
+            else:
+                sys.stderr.write("Here expect FASTA sequence type as [dna|protein] instead of -"+ argv_rest[-1] +"- Cannot continue.\n")
+                sys.exit(-1)
+        if len(argv_rest)>3:sys.stderr.write("Too many arguments\n");sys.exit(-1)
+        seq_source = argv_rest[1]
+        nuc_con = argv_rest[2]
+    
+    if kernelname == 'linear' or kernelname == 'gauss' or kernelname== 'poly':
+        if len(argv_rest)<1:sys.stderr.write("outputfile missing\n");sys.exit(-1)
+        if len(argv_rest)>1:sys.stderr.write("Too many arguments\n");sys.exit(-1)
+
     outfilename = argv_rest[0]
 
     # run cross-validation
@@ -462,7 +572,7 @@ def svm_modelsel(argv):
         for C in Cs:
             utils.check_params(kparam, C, len(examples[0]))
 
-            (all_outputs, all_split) = crossvalidation(cv, kernelname, kparam, C, examples, labels)
+            (all_outputs, all_split) = crossvalidation(cv, kernelname, kparam, C, examples, labels, seq_source, nuc_con)
             (res_str, mean_roc, mean_prc, mean_acc) = evaluate(all_outputs, all_split, labels)
             mean_rocs.append(mean_roc) 
             mean_prcs.append(mean_prc) 
@@ -475,7 +585,7 @@ def svm_modelsel(argv):
                 kparam[kparam["modelsel_name"]] = kp 
                 utils.check_params(kparam, C, len(examples[0]))
 
-                (all_outputs, all_split) = crossvalidation(cv, kernelname, kparam, C, examples, labels)
+                (all_outputs, all_split) = crossvalidation(cv, kernelname, kparam, C, examples, labels, seq_source, nuc_con)
                 (res_str, mean_roc, mean_prc, mean_acc) = evaluate(all_outputs, all_split, labels)
                 mean_rocs.append(mean_roc) 
                 mean_prcs.append(mean_prc) 
@@ -486,8 +596,11 @@ def svm_modelsel(argv):
     max_roc=numpy.max(numpy.array(mean_rocs)) 
     max_prc=numpy.max(numpy.array(mean_prcs)) 
     max_acc=numpy.max(numpy.array(mean_accs)) 
-
-    f = open(outfilename, 'w+')
+    try:
+        f = open(outfilename, 'w+')
+    except:
+        sys.stderr.write('Fails to open the outputfile at ' + outfilename + ' Cannot continue.\n')
+        sys.exit(-1)
     if kparam["modelsel_name"]==None or len(kparam["modelsel_params"])==1:
         detail_str = "\tC\tROC\tPRC\tAccuracy (at threshold 0)\n"
     else:
@@ -526,63 +639,73 @@ def svm_modelsel(argv):
 
     f.write('\nDetailed results:\n')
     f.write(detail_str)
-
     f.close()
-
 
 def svm_pred(argv):
     """A top level script to parse input parameters and train and predict"""
 
     assert(argv[1]=='pred')
-    if len(argv)<6:
-        sys.stderr.write("usage: %s pred C kernelname kernelparameters [arff|fasta] inputfiles  outputfile" % argv[0])
-        sys.exit(-1)
+    if len(argv)<6:sys.stderr.write("usage: %s pred C kernelname kernelparameters [arff|fasta] inputfiles  outputfile [dna|protein] non(nucleotide|amino)converter\n" % argv[0]);sys.exit(-1)
 
     # parse input parameters
     C = float(argv[2])
     (kernelname,kparam,argv_rest) = parse.parse_kernel_param(argv[3:],False)
     (trainex, trainlab, testex, argv_rest) = parse.parse_input_file_train_test(kernelname, argv_rest)
-    if len(argv_rest)<1:
-        sys.stderr.write("Output file missing\n")
-        sys.exit(-1)
-    if len(argv_rest)>1:
-        sys.stderr.write("Too many arguments\n")
-        sys.exit(-1)
-    outfilename = argv_rest[0]
 
+    (seq_source, nuc_con) = ('', '')
+    if kernelname == 'spec' or kernelname == 'wd':
+        if len(argv_rest)<1:sys.stderr.write("outputfile [dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
+        if len(argv_rest)<2:sys.stderr.write("[dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
+        if len(argv_rest)<3:
+            if argv_rest[-1] == 'dna':
+                sys.stderr.write("non-nucleotide converter like [A|T|C|G|R|Y|N] is missing. Cannot continue.\n")
+                sys.exit(-1)
+            elif argv_rest[-1] == 'protein':
+                sys.stderr.write("non-amino acid converter like [G|P|A|V|L|I|M|C|F|Y|W|H|K|R|Q|N|E|D|S|T|random] is missing. Cannot continue.\n")
+                sys.exit(-1)
+            else:
+                sys.stderr.write("Here expect FASTA sequence type as [dna|protein] instead of -"+ argv_rest[-1] +"- Cannot continue.\n")
+                sys.exit(-1)
+        if len(argv_rest)>3:sys.stderr.write("Too many arguments\n");sys.exit(-1)
+        seq_source = argv_rest[1]
+        nuc_con = argv_rest[2]
+    
+    if kernelname == 'linear' or kernelname== 'poly' or kernelname == 'gauss':
+        if len(argv_rest)<1:sys.stderr.write("outputfile missing\n");sys.exit(-1)
+        if len(argv_rest)>1:sys.stderr.write("Too many arguments\n");sys.exit(-1)
+    
+    outfilename = argv_rest[0]
+    
     utils.check_params(kparam, C, len(trainex[0]))
 
     # run training and testing
-    svmout = train_and_test(trainex, trainlab, testex, C, kernelname, kparam)
+    svmout = train_and_test(trainex, trainlab, testex, C, kernelname, kparam, seq_source, nuc_con)
 
     # write output file
-    f = open(outfilename,'w')
+    try:
+        f = open(outfilename,'w')
+    except:
+        sys.stderr.write('Fails to open the outputfile at ' + outfilename + ' Cannot continue.\n')
+        sys.exit(-1)
+        
     res_str = '#example\toutput\n'
     f.write(res_str)
     for ix in xrange(len(svmout)):
         res_str = str(ix)+'\t'+str(svmout[ix])+'\n'
         f.write(res_str)
-    
     f.close()
-
 
 def svm_eval(argv):
     """A top level script to parse input parameters and evaluate"""
 
     assert(argv[1]=='eval')
-    if len(argv)<6:
-        sys.stderr.write("usage: %s eval predictionfile [arff|fasta] inputfiles outputfile [roc|prc figure.png]" % argv[0])
-        sys.exit(-1)
+    if len(argv)<6:sys.stderr.write("usage: %s eval predictionfile [arff|fasta] inputfiles outputfile [roc|prc figure.png]\n" % argv[0]);sys.exit(-1)
 
     # parse input parameters
     (predictions, splitassignments) = parse.parse_prediction_file(argv[2])
     (trainex, trainlab, argv_rest) = parse.parse_input_file_train(None, argv[3:])
-    if len(argv_rest)<1:
-        sys.stderr.write("Output file missing\n")
-        sys.exit(-1)
-    if len(argv_rest)>3:
-        sys.stderr.write("Too many arguments\n")
-        sys.exit(-1)
+    if len(argv_rest)<1:sys.stderr.write("Output file missing\n");sys.exit(-1)
+    if len(argv_rest)>3:sys.stderr.write("Too many arguments\n");sys.exit(-1)
     outfilename = argv_rest[0]
     roc_fname = None
     prc_fname = None
@@ -600,7 +723,12 @@ def svm_eval(argv):
     (res_str,mean_roc,mean_prc,mean_acc) = evaluate(predictions, splitassignments, trainlab, roc_fname, prc_fname)
 
     # write output file
-    f = open(outfilename,'w')
+    try:
+        f = open(outfilename,'w')
+    except:
+        sys.stderr.write('Fails to open the outputfile at ' + outfilename + ' Cannot continue.\n')
+        sys.exit(-1)
+        
     f.write(res_str)
     f.close()
 
@@ -609,27 +737,35 @@ def svm_poim(argv):
     """A top level script to parse input parameters and plot poims"""
 
     assert(argv[1]=='poim')
-    if len(argv)<7:
-        sys.stderr.write("usage: %s poim C poimdegree wd [kernelparameters] [arff|fasta] inputfiles  poim.png\n" % argv[0])
-        sys.exit(-1)
+    if len(argv)<7:sys.stderr.write("usage: %s poim C poimdegree wd [kernelparameters] [arff|fasta] inputfiles  poim.png [dna|protein] non(nucleotide|amino)converter\n" % argv[0]);sys.exit(-1)
 
     # parse input parameters
     C = float(argv[2])
     poimdegree = int(argv[3])
     (kernelname,kparam,argv_rest) = parse.parse_kernel_param(argv[4:], False)
     (examples,labels,argv_rest) = parse.parse_input_file_train(kernelname, argv_rest)
-    if len(argv_rest)<1:
-        sys.stderr.write("Output file missing\n")
-        sys.exit(-1)
-    if len(argv_rest)>1:
-        sys.stderr.write("Too many arguments\n")
-        sys.exit(-1)
+    
+    if len(argv_rest)<1:sys.stderr.write("poim.png [dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
+    if len(argv_rest)<2:sys.stderr.write("[dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
+    if len(argv_rest)<3:
+        if argv_rest[-1] == 'dna':
+            sys.stderr.write("non-nucleotide converter like [A|T|C|G|R|Y|N] is missing. Cannot continue.\n")
+            sys.exit(-1)
+        elif argv_rest[-1] == 'protein':
+            sys.stderr.write("non-amino acid converter like [G|P|A|V|L|I|M|C|F|Y|W|H|K|R|Q|N|E|D|S|T|random] is missing. Cannot continue.\n")
+            sys.exit(-1)
+        else:
+            sys.stderr.write("Here expect FASTA sequence type as [dna|protein] instead of -"+ argv_rest[-1] +"- Cannot continue.\n")
+            sys.exit(-1)
+    if len(argv_rest)>3:sys.stderr.write("Too many arguments\n");sys.exit(-1)
     poimfilename = argv_rest[0]
+    seq_source = argv_rest[1]
+    nuc_con = argv_rest[2]
 
     utils.check_params(kparam, C, len(examples[0]))
 
     # train svm and compute POIMs
-    (svm, kernel, feats_train, preproc) = train(examples,labels,C,kernelname,kparam)
+    (svm, kernel, feats_train, preproc) = train(examples,labels,C,kernelname,kparam,seq_source,nuc_con)
     (poim, max_poim, diff_poim, poim_totalmass) = compute_poims(svm, kernel, poimdegree, len(examples[0]))
 
     # plot poims

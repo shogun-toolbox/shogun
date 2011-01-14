@@ -39,6 +39,7 @@
 import sys
 from numpy import array, concatenate
 import csv
+import re
 
 try:
     import arff
@@ -264,9 +265,31 @@ def detect_extension(filename):
         print 'WARNING: %s is an unknown file extension, defaulting to csv' % detect_ext
         detect_ext = 'csv'
 
+    if detect_ext == 'csv':
+        fasta_flag = 0
+        arff_flag = 0
+        run_c = 0
+        f = open(filename,'r')
+        for line in f:
+           line = line.strip()
+           if re.match(r'^>',line):
+               fasta_flag = 1
+               break
+           if re.match(r'^@',line):
+               arff_flag = 1
+               break
+           if run_c == 5:
+               break
+        f.close()
+        if fasta_flag == 1:
+           detect_ext = 'fasta'
+        elif arff_flag == 1:
+           detect_ext = 'arff'
+        else:
+           detect_ext = 'csv'
+           
     return detect_ext
                                         
-
 
 def convert(infile,outfile,extype):
     """Copy data from infile to outfile, possibly converting the file format."""
