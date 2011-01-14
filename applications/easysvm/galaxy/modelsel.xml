@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<tool id="modelsel" name="SVM Model Selection">
+<tool id="easymodelsel" name="SVM Model Selection">
 <description>Find the best combination of SVM hyper-parameters</description>
-  <command interpreter="python2.5">easysvm.py 
+  <command interpreter="python">easysvm.py 
         modelsel $crossval 
         $C 
 	#if $kernel.kname == "1"
@@ -21,6 +21,13 @@
 	    arff $datatype.dataset 
         #end if
 	$outfile
+        #if $kernel.kname=="4" or $kernel.kname=="5"
+            #if $kernel.seq.stype=="dna"
+                dna $kernel.seq.con
+            #elif $kernel.seq.stype=="protein"
+                protein $kernel.seq.con
+            #end if
+        #end if 
   </command>
   <inputs>
       	  <conditional name="datatype">
@@ -95,6 +102,50 @@
 	  values  to be considered for model selection.">
 	  <label>The degree of the Spectrum Kernel</label>
         </param>
+        
+        <conditional name="seq">
+               <param name="stype" type="select" label="Input sequence type" help="Mention about the input data file sequence type DNA/Protein.">
+                     <option value="dna">DNA</option>
+                     <option value="protein">Protein</option>
+               </param>
+               <when value="dna">
+		     <param name="con" type="select" label="Non Nucleotide converter" help="If any Non Nucleotide character present in input sequence, replace with anyone of the following">
+                           <option value="A">Adenine[A]</option>
+                           <option value="T">Thymine[T]</option>
+                           <option value="C">Cytosine[C]</option>
+                           <option value="G">Guanine[G]</option>
+                           <option value="R">Purine[A|G]</option>
+                           <option value="Y">Pyrimidine[T|C]</option>
+                           <option value="N">Nucleotide[A|T|C|G]</option>
+                     </param>
+               </when>
+               <when value="protein">
+                    <param name="con" type="select" label="Non Amino acid converter" help="If any Non Amino acid character present in input sequence, replace with anyone of the following">
+                           <option value="G">Glycine</option>
+                           <option value="P">Proline</option>
+                           <option value="A">Alanine</option>
+                           <option value="V">Valine</option>
+                           <option value="L">Leucine</option>
+                           <option value="I">Isoleucine</option>
+                           <option value="M">Methionine</option>
+                           <option value="C">Cysteine</option>
+                           <option value="F">Phenylalanine</option>
+                           <option value="Y">Tyrosine</option>
+                           <option value="W">Tryptophan</option>
+                           <option value="H">Histidine</option>
+                           <option value="K">Lysine</option>
+                           <option value="R">Arginine</option>
+                           <option value="Q">Glutamine</option>
+                           <option value="N">Asparagine</option>
+                           <option value="E">Glutamic Acid</option>
+                           <option value="D">Aspartic Acid</option>
+                           <option value="S">Serine</option>
+                           <option value="T">Threonine</option>
+                           <option value="random">Random</option>
+                    </param>
+               </when>
+        </conditional>
+
       </when>
       <when value="5">
         <param name="degree" type="text" size="10" value="5,10,15" 
@@ -109,6 +160,50 @@
 	  of values to be considered for model selection.">
           <label>The shift parameter of the WD Kernel to allow positional variations</label>
         </param>
+        
+        <conditional name="seq">
+               <param name="stype" type="select" label="Input sequence type" help="Mention about the input data file sequence type DNA/Protein.">
+                     <option value="dna">DNA</option>
+                     <option value="protein">Protein</option>
+               </param>
+               <when value="dna">
+		     <param name="con" type="select" label="Non Nucleotide converter" help="If any Non Nucleotide character present in input sequence, replace with anyone of the following">
+                           <option value="A">Adenine[A]</option>
+                           <option value="T">Thymine[T]</option>
+                           <option value="C">Cytosine[C]</option>
+                           <option value="G">Guanine[G]</option>
+                           <option value="R">Purine[A|G]</option>
+                           <option value="Y">Pyrimidine[T|C]</option>
+                           <option value="N">Nucleotide[A|T|C|G]</option>
+                     </param>
+               </when>
+               <when value="protein">
+                    <param name="con" type="select" label="Non Amino acid converter" help="If any Non Amino acid character present in input sequence, replace with anyone of the following">
+                           <option value="G">Glycine</option>
+                           <option value="P">Proline</option>
+                           <option value="A">Alanine</option>
+                           <option value="V">Valine</option>
+                           <option value="L">Leucine</option>
+                           <option value="I">Isoleucine</option>
+                           <option value="M">Methionine</option>
+                           <option value="C">Cysteine</option>
+                           <option value="F">Phenylalanine</option>
+                           <option value="Y">Tyrosine</option>
+                           <option value="W">Tryptophan</option>
+                           <option value="H">Histidine</option>
+                           <option value="K">Lysine</option>
+                           <option value="R">Arginine</option>
+                           <option value="Q">Glutamine</option>
+                           <option value="N">Asparagine</option>
+                           <option value="E">Glutamic Acid</option>
+                           <option value="D">Aspartic Acid</option>
+                           <option value="S">Serine</option>
+                           <option value="T">Threonine</option>
+                           <option value="random">Random</option>
+                    </param>
+               </when>
+        </conditional>
+
       </when>
     </conditional>
   </inputs>
