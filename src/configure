@@ -727,77 +727,92 @@ Usage: $0 [OPTIONS]...
 
 Configuration:
   --interfaces=INTERFACE1,INTERFACE2,...
-                                configure shogun for interface
-                                cmdline, python_modular, python, r, r_modular
-                                octave, octave_modular, matlab or libshogun
-  -h, -help, --help             display this help and exit
+                                 configure shogun for interface
+                                 cmdline, python_modular, python, r, r_modular
+                                 octave, octave_modular, matlab or libshogun
+  -h, -help, --help              display this help and exit
 
 Installation directories:
-  --destdir=DIR                 use this as the root dir to install shogun to [/]
-  --prefix=DIR                  use this prefix for installing shogun [/usr/local]
-  --bindir=DIR                  use this prefix for installing shogun binary
-                                [PREFIX/bin]
-  --datadir=DIR                 use this prefix for installing machine independent
-                                data files (fonts, skins) [PREFIX/share/shogun]
-  --mandir=DIR                  use this prefix for installing manpages [PREFIX/man]
-  --confdir=DIR                 use this prefix for installing configuration files
-                                [same as datadir]
-  --libdir=DIR                  use this prefix for object code libraries [PREFIX/lib]
-  --incdir=DIR                  use this prefix for include files [PREFIX/include]
-  --pydir=DIR                   use this prefix for python files [PREFIX/auto-detected]
-  --octdir=DIR                  use this prefix for octave files [PREFIX/auto-detected]
-  --rdir=DIR                    use this prefix for r files [PREFIX/auto-detected]
+  --destdir=DIR                  use this as the root dir to install shogun to [/]
+  --prefix=DIR                   use this prefix for installing shogun [/usr/local]
+  --bindir=DIR                   use this prefix for installing shogun binary
+                                 [PREFIX/bin]
+  --datadir=DIR                  use this prefix for installing machine independent
+                                 data files (fonts, skins) [PREFIX/share/shogun]
+  --mandir=DIR                   use this prefix for installing manpages [PREFIX/man]
+  --confdir=DIR                  use this prefix for installing configuration files
+                                 [same as datadir]
+  --libdir=DIR                   use this prefix for object code libraries [PREFIX/lib]
+  --incdir=DIR                   use this prefix for include files [PREFIX/include]
+  --pydir=DIR                    use this prefix for python files [PREFIX/auto-detected]
+  --octdir=DIR                   use this prefix for octave files [PREFIX/auto-detected]
+  --rdir=DIR                     use this prefix for r files [PREFIX/auto-detected]
 
 Optional features:
-  --enable-boost-serialization  enable boost serialization support [disabled]
-  --enable-hdf5                 enable hdf5 file support [auto]
-  --enable-json                 enable json file support [auto]
-  --enable-xml                  enable xml file support [auto]
-  --enable-readline             enable readline in cmdline interface [auto]
-  --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
-  --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [enabled]
-  --enable-logsum-array         enable log sum array supposed to be a bit more accurate [disabled]
-  --enable-hmm-parallel         enable parallel structures in hmm training. shogun will then run as many threads as the machine has (much faster) [disabled]
+  --enable-hdf5                  enable hdf5 file support [auto]
+  --enable-json                  enable json file support [auto]
+  --enable-xml                   enable xml file support [auto]
+  --enable-readline              enable readline in cmdline interface [auto]
+  --enable-largefile             enable large file support (64bit file acces routines) [enabled]
+  --enable-lapack                enable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
+  --enable-cplex                 enable code using CPLEX  [auto]
+  --enable-lpsolve               enable code using lpsolve  [auto]
+  --enable-glpk                  enable code using GLPK [auto]
+  --enable-lzo                   enable code using LZO compression [auto]
+  --enable-gzip                  enable code using GZIP compression [auto]
+  --enable-bzip2                 enable code using BZIP2 compression [auto]
+  --enable-lzma                  enable code using LZMA compression [auto]
+  --enable-bigstates             enable big (16bit) state [enabled]
+  --enable-hmmcache              enable HMM cache [enabled]
+  --enable-svm-light             enable building of SVM-light and thus result in pure GPLv3 code [enabled]
+  --enable-logcache              enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
+  --enable-shortrealkernelcache  enable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [enabled]
+  --enable-logsum-array          enable log sum array supposed to be a bit more accurate [disabled]
+  --enable-hmm-parallel          enable parallel structures in hmm training. shogun will then run as many threads as the machine has (much faster) [disabled]
 
-  --disable-boost-serialization disable boost serialization support [disable]
-  --disable-hdf5                disable hdf5 file support [auto]
-  --disable-json                disable json file support [auto]
-  --disable-xml                 disable xml file support [auto]
-  --disable-largefile           disable large file support (64bit file acces routines) [enabled]
-  --disable-lapack              disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
-  --disable-cplex               disable code using CPLEX  [auto]
-  --disable-lpsolve             disable code using lpsolve  [auto]
-  --disable-glpk                disable code using GLPK [auto]
-  --disable-lzo                 disable code using LZO compression [auto]
-  --disable-gzip                disable code using GZIP compression [auto]
-  --disable-bzip2               disable code using BZIP2 compression [auto]
-  --disable-lzma                disable code using LZMA compression [auto]
-  --disable-bigstates           disable big (16bit) state [enabled]
-  --disable-hmmcache            disable HMM cache [enabled]
-  --disable-svm-light           disable building of SVM-light and thus result in pure GPLv3 code [enabled]
+  --disable-hdf5                 disable hdf5 file support [auto]
+  --disable-json                 disable json file support [auto]
+  --disable-xml                  disable xml file support [auto]
+  --disable-readline             disable readline in cmdline interface [auto]
+  --disable-largefile            disable large file support (64bit file acces routines) [enabled]
+  --disable-lapack               disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
+  --disable-cplex                disable code using CPLEX  [auto]
+  --disable-lpsolve              disable code using lpsolve  [auto]
+  --disable-glpk                 disable code using GLPK [auto]
+  --disable-lzo                  disable code using LZO compression [auto]
+  --disable-gzip                 disable code using GZIP compression [auto]
+  --disable-bzip2                disable code using BZIP2 compression [auto]
+  --disable-lzma                 disable code using LZMA compression [auto]
+  --disable-bigstates            disable big (16bit) state [enabled]
+  --disable-hmmcache             disable HMM cache [enabled]
+  --disable-svm-light            disable building of SVM-light and thus result in pure GPLv3 code [enabled]
+  --disable-logcache             disable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
+  --disable-shortrealkernelcache disable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [enabled]
+  --disable-logsum-array         disable log sum array supposed to be a bit more accurate [disabled]
+  --disable-hmm-parallel         disable parallel structures in hmm training. shogun will then run as many threads as the machine has (much faster) [disabled]
 
 Miscellaneous options:
-  --disable-doxygen             disable documentation generation via doxygen for python_modular interface [enabled]
-  --disable-cpudetection        disable cpu flags detection and corresponding optimization options [enabled]
-  --enable-debug                enable debugging [disabled]
-  --enable-trace-mallocs        enable memory allocation tracing [disabled]
-  --disable-reference-counting  disables reference counting causing severe memory leakage [enabled]
-  --enable-path-debug           enable viterbi path debugging [disabled]
-  --enable-profile              compile profiling information into shogun [disable]
-  --enable-static               build a statically linked binary (to the extend possible);
-                                set further linking options with --enable-static="-lm -lglpk"
-  --python=python               use this python executable [python]
-  --cc=COMPILER                 use this C compiler to build shogun [autodetected]
-  --cxx=COMPILER                use this C++ compiler to build shogun [autodetected]
-  --cflags=OPTIONS              use these C compiler options
-  --cxxflags=OPTIONS            use these C++ compiler options
-  --ldflags=OPTIONS             use these additional linker options
-  --target=PLATFORM             target platform (i386-linux, arm-linux, etc)
-  --install-path=PATH           the path to a custom install program (useful if
-                                your OS uses a GNU-incompatible install utility by
-                                default and you want to point to the GNU version)
-  --includes=DIR                include DIR when searching for includes
-  --libs=DIR                    include DIR when searching for libraries on linking
+  --disable-doxygen              disable documentation generation via doxygen for python_modular interface [enabled]
+  --disable-cpudetection         disable cpu flags detection and corresponding optimization options [enabled]
+  --enable-debug                 enable debugging [disabled]
+  --enable-trace-mallocs         enable memory allocation tracing [disabled]
+  --disable-reference-counting   disables reference counting causing severe memory leakage [enabled]
+  --enable-path-debug            enable viterbi path debugging [disabled]
+  --enable-profile               compile profiling information into shogun [disable]
+  --enable-static                build a statically linked binary (to the extend possible);
+                                 set further linking options with --enable-static="-lm -lglpk"
+  --python=python                use this python executable [python]
+  --cc=COMPILER                  use this C compiler to build shogun [autodetected]
+  --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
+  --cflags=OPTIONS               use these C compiler options
+  --cxxflags=OPTIONS             use these C++ compiler options
+  --ldflags=OPTIONS              use these additional linker options
+  --target=PLATFORM              target platform (i386-linux, arm-linux, etc)
+  --install-path=PATH            the path to a custom install program (useful if
+                                 your OS uses a GNU-incompatible install utility by
+                                 default and you want to point to the GNU version)
+  --includes=DIR                 include DIR when searching for includes
+  --libs=DIR                     include DIR when searching for libraries on linking
 EOF
     exit 0
   fi
