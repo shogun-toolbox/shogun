@@ -69,8 +69,8 @@
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
  #include <shogun/classifier/svm/DomainAdaptationSVM.h>
- #include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 #endif //USE_SVMLIGHT
+ #include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
  #include <shogun/classifier/boosting/Utils/Args.h>
  #include <shogun/classifier/boosting/WeakLearners/BaseLearner.h>
  #include <shogun/classifier/boosting/WeakLearners/AbstainableLearner.h>
