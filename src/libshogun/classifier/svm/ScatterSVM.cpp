@@ -393,6 +393,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 			for (int32_t i=0; i<num_vectors; i++)
 				output->set_label(i, classify_example(i));
 		}
+#ifdef USE_SVMLIGHT
 		else if (scatter_type == NO_BIAS_SVMLIGHT)
 		{
 			float64_t* outputs=new float64_t[num_vectors*m_num_classes];
@@ -433,6 +434,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 
 			delete[] outputs;
 		}
+#endif //USE_SVMLIGHT
 		else
 		{
 			ASSERT(m_num_svms>0);
@@ -517,10 +519,12 @@ float64_t CScatterSVM::classify_example(int32_t num)
 			}
 		}
 	}
+#ifdef USE_SVMLIGHT
 	else if (scatter_type == NO_BIAS_SVMLIGHT)
 	{
 		SG_ERROR("Use classify...\n");
 	}
+#endif //USE_SVMLIGHT
 	else
 	{
 		float64_t max_out=m_svms[0]->classify_example(num)/norm_wc[0];
