@@ -333,8 +333,8 @@ class CKernel : public CSGObject
 					if (pthread_create(&threads[t], NULL,
 							CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]) != 0)
 					{
+						SG_WARNING("Thread creation failed (thread %d of %d)\n", t, num_threads);
 						num_threads=t;
-						SG_WARNING("thread creation failed\n");
 						break;
 					}
 				}
@@ -354,7 +354,7 @@ class CKernel : public CSGObject
 				for (t=0; t<num_threads; t++)
 				{
 					if (pthread_join(threads[t], NULL) != 0)
-						SG_WARNING( "pthread_join failed\n");
+						SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
 				}
 
 				delete[] params;

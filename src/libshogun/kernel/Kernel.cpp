@@ -448,9 +448,9 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 
 				if (pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]) != 0)
 				{
+					SG_WARNING("Thread creation failed (thread %d of %d)\n", t, num_threads);
 					num_threads=t;
 					end=t*step;
-					SG_WARNING("thread creation failed\n");
 					break;
 				}
 			}
@@ -476,7 +476,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		for (int32_t t=0; t<num_threads; t++)
 		{
 			if (pthread_join(threads[t], NULL) != 0)
-				SG_WARNING( "pthread_join failed\n");
+				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
 		}
 
 		delete[] needs_computation;
