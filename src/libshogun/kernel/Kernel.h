@@ -316,7 +316,8 @@ class CKernel : public CSGObject
 
 				int32_t t;
 
-				for (t=0; t<num_threads-1; t++)
+				num_threads--;
+				for (t=0; t<num_threads; t++)
 				{
 					params[t].kernel = this;
 					params[t].result = result;
@@ -328,8 +329,14 @@ class CKernel : public CSGObject
 					params[t].m=m;
 					params[t].symmetric=symmetric;
 					params[t].verbose=false;
-					pthread_create(&threads[t], NULL,
-							CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]);
+
+					if (pthread_create(&threads[t], NULL,
+							CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]) != 0)
+					{
+						num_threads=t;
+						SG_WARNING("thread creation failed\n");
+						break;
+					}
 				}
 
 				params[t].kernel = this;
@@ -344,8 +351,11 @@ class CKernel : public CSGObject
 				params[t].verbose=true;
 				get_kernel_matrix_helper<T>(&params[t]);
 
-				for (t=0; t<num_threads-1; t++)
-					pthread_join(threads[t], NULL);
+				for (t=0; t<num_threads; t++)
+				{
+					if (pthread_join(threads[t], NULL) != 0)
+						SG_WARNING( "pthread_join failed\n");
+				}
 
 				delete[] params;
 				delete[] threads;
