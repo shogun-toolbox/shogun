@@ -446,9 +446,13 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 				params[t].num_vectors = get_num_vec_lhs();
 				end=params[t].end;
 
-				if (pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]) != 0)
+				int code=pthread_create(&threads[t], NULL,
+						CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]);
+
+				if (!code)
 				{
-					SG_WARNING("Thread creation failed (thread %d of %d)\n", t, num_threads);
+					SG_WARNING("Thread creation failed (thread %d of %d) "
+							"with error:'%s'\n",t, num_threads, strerror(code));
 					num_threads=t;
 					end=t*step;
 					break;

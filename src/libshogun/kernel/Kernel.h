@@ -330,10 +330,13 @@ class CKernel : public CSGObject
 					params[t].symmetric=symmetric;
 					params[t].verbose=false;
 
-					if (pthread_create(&threads[t], NULL,
-							CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]) != 0)
+					int code=pthread_create(&threads[t], NULL,
+							CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]);
+
+					if (code != 0)
 					{
-						SG_WARNING("Thread creation failed (thread %d of %d)\n", t, num_threads);
+						SG_WARNING("Thread creation failed (thread %d of %d) "
+								"with error:'%s'\n",t, num_threads, strerror(code));
 						num_threads=t;
 						break;
 					}
