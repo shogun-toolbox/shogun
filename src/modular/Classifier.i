@@ -97,6 +97,7 @@
 /* Remove C Prefix */
 %rename(Labels) CLabels;
 %rename(Classifier) CClassifier;
+%rename(KernelMachine) CKernelMachine;
 %rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;
 %rename(GPBTSVM) CGPBTSVM;
