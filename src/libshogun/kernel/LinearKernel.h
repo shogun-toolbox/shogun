@@ -15,9 +15,11 @@
 #include "lib/common.h"
 #include "kernel/DotKernel.h"
 #include "features/DotFeatures.h"
+#include "classifier/KernelMachine.h"
 
 namespace shogun
 {
+	class CKernelMachine;
 	class CDotFeatures;
 
 /** @brief Computes the standard linear kernel on CDotFeatures.
@@ -77,6 +79,8 @@ class CLinearKernel: public CDotKernel
 		 */
 		virtual bool init_optimization(
 			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas);
+
+		virtual bool init_optimization(CKernelMachine* km);
 
 		/** delete optimization
 		 *

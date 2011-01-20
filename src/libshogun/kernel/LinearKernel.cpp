@@ -82,6 +82,19 @@ bool CLinearKernel::init_optimization(
 	return true;
 }
 
+bool CLinearKernel::init_optimization(CKernelMachine* km)
+{
+	clear_normal();
+
+	int32_t num_suppvec=km->get_num_support_vectors();
+
+	for (int32_t i=0; i<num_suppvec; i++)
+		add_to_normal(km->get_support_vector(i), km->get_alpha(i));
+
+	set_is_initialized(true);
+	return true;
+}
+
 bool CLinearKernel::delete_optimization()
 {
 	delete[] normal;
