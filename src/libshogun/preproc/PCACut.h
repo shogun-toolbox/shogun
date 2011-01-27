@@ -5,8 +5,9 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2008,2011 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2011 Berlin Institute of Technology
  */
 
 #ifndef _CPCACUT__H__
@@ -36,8 +37,7 @@ namespace shogun
  * covariance matrix is of size num_feat*num_feat. Note that vectors don't have
  * to have zero mean as it is substracted.
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CPCACut : public CSimplePreProc<float64_t>
+class CPCACut : public CSimplePreProc<float64_t>
 {
 	public:
 		/** constructor
@@ -45,7 +45,7 @@ IGNORE_IN_CLASSLIST class CPCACut : public CSimplePreProc<float64_t>
 		 * @param do_whitening do whitening
 		 * @param thresh threshold
 		 */
-		CPCACut(int32_t do_whitening=0, float64_t thresh=1e-6);
+		CPCACut(bool do_whitening=false, float64_t thresh=1e-6);
 		virtual ~CPCACut();
 
 		/// initialize preprocessor from features
@@ -62,8 +62,37 @@ IGNORE_IN_CLASSLIST class CPCACut : public CSimplePreProc<float64_t>
 		/// result in feature matrix
 		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
 
+		/** get transformation matrix, i.e. eigenvectors (potentially scaled if
+		 * do_whitening is true
+		 *
+		 * @param dst destination to store matrix in
+		 * @param num_feat number of features (rows of matrix)
+		 * @param num_new_dim number of dimensions after cutoff threshold
+		 *
+		 */
+		void get_transformation_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim);
+
+		/** get eigenvalues of PCA
+		 *
+		 * @param dst destination to store matrix in
+		 * @param num_new_dim number of dimensions after cutoff threshold
+		 *
+		 */
+		void get_eigenvalues(float64_t** dst, int32_t* num_new_dim);
+
+		/** get mean vector of original data
+		 *
+		 * @param dst destination to store matrix in
+		 * @param num_feat number of features
+		 *
+		 */
+		void get_mean(float64_t** dst, int32_t* num_feat);
+
 		/** @return object name */
 		inline virtual const char* get_name() { return "PCACut"; }
+
+	protected:
+		void init();
 
 	protected:
 		/** T */
@@ -72,14 +101,22 @@ IGNORE_IN_CLASSLIST class CPCACut : public CSimplePreProc<float64_t>
 		int32_t num_dim;
 		/** num old dim */
 		int32_t num_old_dim;
+
 		/** mean */
 		float64_t *mean ;
+		/** length of mean vector */
+		int32_t length_mean;
+
+		/** eigenvalues */
+		float64_t* eigenvalues;
+		/** number of eigenvalues */
+		int32_t num_eigenvalues;
 
 		/// true when already initialized
 		bool initialized;
 
 		/** do whitening */
-		int32_t do_whitening;
+		bool do_whitening;
 		/** thresh */
 		float64_t thresh;
 };

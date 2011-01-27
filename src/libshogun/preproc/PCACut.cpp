@@ -5,8 +5,9 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 1999-2008 Soeren Sonnenburg
+ * Written (W) 1999-2008,2011 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2011 Berlin Institute of Technology
  */
 
 #include "lib/config.h"
@@ -27,16 +28,19 @@
 
 using namespace shogun;
 
-CPCACut::CPCACut(int32_t do_whitening_, float64_t thresh_)
+CPCACut::CPCACut(bool do_whitening_, float64_t thresh_)
 : CSimplePreProc<float64_t>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
-	initialized(false), do_whitening(do_whitening_), thresh(thresh_)
+	length_mean(NULL), eigenvalues(NULL), num_eigenvalues(0),initialized(false),
+	do_whitening(do_whitening_), thresh(thresh_)
 {
+	init();
 }
 
 CPCACut::~CPCACut()
 {
 	delete[] T;
 	delete[] mean;
+	delete[] eigenvalues;
 }
 
 /// initialize preprocessor from features
@@ -52,7 +56,8 @@ bool CPCACut::init(CFeatures* f)
 		int32_t num_features=((CSimpleFeatures<float64_t>*)f)->get_num_features() ;
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		delete[] mean ;
-		mean=new float64_t[num_features+1] ;
+		mean=new float64_t[num_features];
+		length_mean=num_features;
 
 		int32_t i,j;
 
@@ -85,6 +90,7 @@ bool CPCACut::init(CFeatures* f)
 		for (j=0; j<num_features*num_features; j++)
 			cov[j]=0.0 ;
 
+		float64_t* sub_mean= new float64_t[num_features];
 		for (i=0; i<num_vectors; i++)
 		{
 			if (!(i % (num_vectors/10+1)))
@@ -94,54 +100,37 @@ bool CPCACut::init(CFeatures* f)
 			bool free;
 
 			float64_t* vec=((CSimpleFeatures<float64_t>*) f)->get_feature_vector(i, len, free) ;
+            for (int32_t jj=0; jj<num_features; jj++)
+                sub_mean[jj]=vec[jj]-mean[jj];
 
-			for (int32_t jj=0; jj<num_features; jj++)
-				vec[jj]-=mean[jj] ;
+            /// A = 1.0*xy^T+A blas
+            int nf = (int) num_features; /* calling external lib */
+            cblas_dger(CblasColMajor, nf, nf, 1.0, sub_mean, 1, sub_mean,
+                    1, (double*) cov, nf);
 
-			/// A = 1.0*xy^T+A blas
-			int nf = (int) num_features; /* calling external lib */
-			double* vec_double = (double*) vec; /* calling external lib */
-			cblas_dger(CblasColMajor, nf, nf, 1.0, vec_double, 1, vec_double,
-				1, (double*) cov, nf);
+            ((CSimpleFeatures<float64_t>*) f)->free_feature_vector(vec, i, free) ;
+		}
+        delete[] sub_mean;
 
-			//for (int32_t k=0; k<num_features; k++)
-			//	for (int32_t l=0; l<num_features; l++)
-			//          cov[k*num_features+l]+=feature[l]*feature[k] ;
+		SG_DONE();
 
-			((CSimpleFeatures<float64_t>*) f)->free_feature_vector(vec, i, free) ;
+		for (i=0; i<num_features; i++)
+		{
+			for (j=0; j<num_features; j++)
+				cov[i*num_features+j]/=(num_vectors-1);
 		}
 
-		SG_DONE();
-
-		for (i=0; i<num_features; i++)
-			for (j=0; j<num_features; j++)
-				cov[i*num_features+j]/=num_vectors ;
-
-		SG_DONE();
 
 		SG_INFO("Computing Eigenvalues ... ") ;
-		char V='V';
-		char U='U';
-		int32_t info;
-		int32_t ord= num_features;
-		int32_t lda= num_features;
-		float64_t* eigenvalues=new float64_t[num_features] ;
-
-		for (i=0; i<num_features; i++)
-			eigenvalues[i]=0;
-
-		// lapack sym matrix eigenvalues+vectors
-		wrap_dsyev(V, U, (int) ord, (double*) cov, (int) lda,
-			(double*) eigenvalues, (int*) &info);
-
+		eigenvalues=CMath::compute_eigenvectors(cov, num_features, num_features);
+        num_eigenvalues=num_features;
 
 		num_dim=0;
 		for (i=0; i<num_features; i++)
 		{
-			//	  SG_DEBUG( "EV[%i]=%e\n", i, values[i]) ;
 			if (eigenvalues[i]>thresh)
-				num_dim++ ;
-		} ;
+				num_dim++;
+		}
 
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
 
@@ -149,35 +138,38 @@ bool CPCACut::init(CFeatures* f)
 		T=new float64_t[num_dim*num_features];
 		num_old_dim=num_features;
 
-		if (do_whitening)
+		int32_t offs=0 ;
+		for (i=0; i<num_features; i++)
 		{
-			int32_t offs=0 ;
-			for (i=0; i<num_features; i++)
+			if (eigenvalues[i]>thresh)
 			{
-				if (eigenvalues[i]>thresh)
-				{
-					for (int32_t jj=0; jj<num_features; jj++)
-						T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]) ;
-					offs++ ;
-				} ;
+				for (int32_t jj=0; jj<num_features; jj++)
+					if (do_whitening)
+						T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]);
+					else
+						T[offs+jj*num_dim]=cov[num_features*i+jj];
+				offs++;
 			}
-		} ;
+		}
 
-		delete[] eigenvalues;
 		delete[] cov;
 		initialized=true;
-		SG_INFO("Done\n") ;
-		return true ;
+		return true;
 	}
-	return 
-		false;
+
+	return false;
 }
 
 /// initialize preprocessor from features
 void CPCACut::cleanup()
 {
-	delete[] T ;
-	T=NULL ;
+	delete[] T;
+	T=NULL;
+	num_dim=0;
+	num_old_dim=0;
+
+	delete[] mean;
+	length_mean=0;
 }
 
 /// apply preproc on feature matrix
@@ -189,7 +181,7 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 	int32_t num_features=0;
 
 	float64_t* m=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
-	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features);
 
 	if (m)
 	{
@@ -202,15 +194,14 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 			int32_t i;
 
 			for (i=0; i<num_features; i++)
-				sub_mean[i]=m[num_features*vec+i]-mean[i] ;
+				sub_mean[i]=m[num_features*vec+i]-mean[i];
 
-			int nd = (int) num_dim; /* calling external lib */
-			cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) num_features,
-				1.0, T, nd, (double*) sub_mean, 1, 0, (double*) res, 1);
+			cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, (int) num_features,
+				1.0, T, num_dim, (double*) sub_mean, 1, 0, (double*) res, 1);
 
 			float64_t* m_transformed=&m[num_dim*vec];
 			for (i=0; i<num_dim; i++)
-				m_transformed[i]=m[i];
+				m_transformed[i]=res[i];
 		}
 		delete[] res;
 		delete[] sub_mean;
@@ -223,8 +214,7 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 	return m;
 }
 
-/// apply preproc on single feature vector
-/// result in feature matrix
+/// apply preproc to single feature vector
 float64_t* CPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
 	float64_t *ret=new float64_t[num_dim];
@@ -236,9 +226,59 @@ float64_t* CPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 	cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) len, 1.0, (double*) T,
 		nd, (double*) sub_mean, 1, 0, (double*) ret, 1);
 
-	delete[] sub_mean ;
-	len=num_dim ;
-	//	  SG_DEBUG( "num_dim: %d\n", num_dim);
+	delete[] sub_mean;
+	len=num_dim;
 	return ret;
+}
+
+void CPCACut::get_transformation_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim)
+{
+	ASSERT(T);
+
+	int64_t num=int64_t(num_dim)*num_old_dim;
+	*num_feat=num_old_dim;
+	*num_new_dim=num_dim;
+	*dst=(float64_t*) malloc(sizeof(float64_t)*num);
+	if (!*dst)
+		SG_ERROR("Allocating %ld bytes failes\n", sizeof(float64_t)*num);
+	memcpy(*dst, T, num * sizeof(float64_t));
+}
+
+void CPCACut::get_eigenvalues(float64_t** dst, int32_t* new_num_dim)
+{
+	ASSERT(eigenvalues);
+
+	*new_num_dim=num_eigenvalues;
+	*dst=(float64_t*) malloc(sizeof(float64_t)*num_eigenvalues);
+	if (!*dst)
+		SG_ERROR("Allocating %ld bytes failes\n", sizeof(float64_t)*num_eigenvalues);
+	memcpy(*dst, eigenvalues, num_eigenvalues * sizeof(float64_t));
+}
+
+void CPCACut::get_mean(float64_t** dst, int32_t* num_feat)
+{
+	ASSERT(mean);
+
+	*num_feat=length_mean;
+	*dst=(float64_t*) malloc(sizeof(float64_t)*length_mean);
+	if (!*dst)
+		SG_ERROR("Allocating %ld bytes failes\n", sizeof(float64_t)*length_mean);
+	memcpy(*dst, mean, length_mean * sizeof(float64_t));
+}
+
+void CPCACut::init()
+{
+	m_parameters->add_matrix(&T, &num_dim, &num_old_dim,
+					"T", "Transformation matrix (Eigenvectors of covarience matrix).");
+	m_parameters->add_vector(&mean, &length_mean,
+					"mean", "Mean Vector.");
+	m_parameters->add_vector(&eigenvalues, &num_eigenvalues,
+					"eigenvalues", "Vector with Eigenvalues.");
+	m_parameters->add(&initialized,
+			"initalized", "True when initialized.");
+	m_parameters->add(&do_whitening,
+			"do_whitening", "Whether data shall be whitened.");
+	m_parameters->add(&thresh,
+			"thresh", "Cutoff threshold.");
 }
 #endif
