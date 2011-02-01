@@ -373,7 +373,7 @@ EOF
 
 	if test "$_debug" = yes ; then
 		COMP_OPTS=$COMP_DEBUG;
-		_cpudetection = no
+		_cpudetection=no
 	fi
 
 	echocheck "C Compiler flags"
@@ -3128,7 +3128,7 @@ test_matlab()
 			echocheck "Matlab"
 			if matlab -nojvm -nodisplay -r 'version;quit' >/dev/null 2>&1
 			then
-				 echores "`matlab -nojvm -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
+				 echores "`matlab -nojvm -nodisplay -r \"fprintf(2,'ver:%s\n',version),quit\" 2>&1 | grep '^>> ver:' | cut -f '2-' -d ':'`"
 				 MATLAB_DIR=`echo "unix('env');quit" | matlab -nojvm -nodisplay | grep '^MATLAB=' | cut -c 8-`
 				 MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
 				 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
