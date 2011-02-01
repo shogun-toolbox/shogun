@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-CSparsePolyFeatures::CSparsePolyFeatures(void)
+CSparsePolyFeatures::CSparsePolyFeatures()
 {
 	SG_UNSTABLE("CSparsePolyFeatures::CSparsePolyFeatures(void)",
 				"\n");

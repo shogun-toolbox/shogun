@@ -25,7 +25,7 @@ class CSparsePolyFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */
-		CSparsePolyFeatures(void);
+		CSparsePolyFeatures();
 
 		/** constructor
 		 * 
