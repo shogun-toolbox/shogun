@@ -373,6 +373,7 @@ EOF
 
 	if test "$_debug" = yes ; then
 		COMP_OPTS=$COMP_DEBUG;
+		_cpudetection = no
 	fi
 
 	echocheck "C Compiler flags"
