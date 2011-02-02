@@ -56,6 +56,7 @@ public:
 class CTron : public CSGObject
 {
 public:
+	CTron() { }
 	/** constructor
 	 *
 	 * @param fun_obj object of class function
@@ -74,7 +75,7 @@ public:
 	void tron(float64_t *w, float64_t max_train_time);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "LibLinear"; }
+	inline virtual const char* get_name() const { return "Tron"; }
 
 private:
 	int32_t trcg(float64_t delta, double* g, double* s, double* r);

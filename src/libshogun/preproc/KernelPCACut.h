@@ -78,6 +78,14 @@ class CKernelPCACut : public CSimplePreProc<float64_t>
 		 */
 		void get_transformation_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim);
 
+		/** get bias of KPCA
+		 *
+		 * @param dst destination to store matrix in
+		 * @param num_new_dim number of dimensions after cutoff threshold
+		 *
+		 */
+		void get_bias(float64_t** dst, int32_t* num_new_dim);
+
 		/** get eigenvalues of KPCA
 		 *
 		 * @param dst destination to store matrix in
@@ -93,15 +101,18 @@ class CKernelPCACut : public CSimplePreProc<float64_t>
 	protected:
 		/** T */
 		double* T ;
-		/** num dim */
-		int32_t num_dim;
-		/** num old dim */
-		int32_t num_old_dim;
+		int32_t rows_T;
+		int32_t cols_T;
+
+
+		float64_t* bias;
+		int32_t bias_len;
 
 		/** eigenvalues */
 		float64_t* eigenvalues;
 		/** number of eigenvalues */
 		int32_t num_eigenvalues;
+
 
 		/// true when already initialized
 		bool initialized;

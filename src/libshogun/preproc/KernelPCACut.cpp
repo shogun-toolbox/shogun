@@ -27,13 +27,13 @@
 using namespace shogun;
 
 CKernelPCACut::CKernelPCACut()
-: CSimplePreProc<float64_t>("KernelPCACut", "KPCA"), T(NULL), num_dim(0),
+: CSimplePreProc<float64_t>("KernelPCACut", "KPCA"), T(NULL), rows_T(0),
 	initialized(false), thresh(1e-6), kernel(NULL)
 {
 }
 
 CKernelPCACut::CKernelPCACut(CKernel* k, float64_t thresh_)
-: CSimplePreProc<float64_t>("KernelPCACut", "KPCA"), T(NULL), num_dim(0),
+: CSimplePreProc<float64_t>("KernelPCACut", "KPCA"), T(NULL), rows_T(0),
 	initialized(false), thresh(thresh_)
 {
 	SG_REF(k);
@@ -60,23 +60,23 @@ bool CKernelPCACut::init(CFeatures* f)
 		float64_t* km = kernel->get_kernel_matrix(m, n, (float64_t*) NULL);
 		ASSERT(n==m);
 
-		//int64_t num_data= int64_t(n)*m;
-		//% Centering kernel matrix (non-linearly mapped data).
-		//J = ones(num_data,num_data)/num_data;
-		//Kc = K - J*K - K*J + J*K*J;
-		CMath::center_matrix(km, n, m);
-		CMath::display_matrix(km,n,m, "kmc");
+		float64_t* bias_tmp=CMath::get_column_sum(km, n,n);
+		CMath::scale_vector(-1.0/n, bias_tmp, n);
+		float64_t s=CMath::sum(bias_tmp, n)/n;
+		CMath::add_scalar(-s, bias_tmp, n);
 
-		//% eigen decomposition of the kernel marix
-		//[U,D] = eig(Kc);
-		//Lambda=real(diag(D));
-		//% normalization of eigenvectors to be orthonormal 
-		//	for k = 1:num_data,
-		//		if Lambda(k) ~= 0,
-		//			U(:,k)=U(:,k)/sqrt(Lambda(k));
-		//end
-		//	end
+		CMath::center_matrix(km, n, m);
+
 		eigenvalues=CMath::compute_eigenvectors(km, n, n);
+		num_eigenvalues=n;
+
+
+		for (int32_t i=0; i<n; i++)
+		{	
+			//normalize and trap divide by zero and negative eigenvalues
+			for (int32_t j=0; j<n; j++)
+				km[i*n+j]/=CMath::sqrt(CMath::max(1e-16,eigenvalues[i]));
+		}
 
 		//% Sort the eigenvalues and the eigenvectors in descending order.
 		//[Lambda,ordered]=sort(-Lambda);
@@ -86,16 +86,26 @@ bool CKernelPCACut::init(CFeatures* f)
 		//CMath::range_fill_vector(index, n);
 		//CMath::qsort_backward_index(eigenvalues, index, n);
 		T=km;
+		rows_T=n;
+		cols_T=n;
 
+		bias=new float64_t[cols_T];
+		CMath::fill_vector(bias, cols_T, 0.0);
+		bias_len=cols_T;
 
-		//% use first new_dim principal components
-		//A=U(:,1:options.new_dim);
+		CMath::dgemv(1.0, T, rows_T, cols_T, CblasTrans, bias_tmp, 0.0, bias);
 
-		//% compute Alpha and compute bias (implicite centering)
-		//	% of kernel projection
-		//	model.Alpha = (eye(num_data,num_data)-J)*A;
-		//Jt=ones(num_data,1)/num_data;
-		//model.b = A'*(J'*K*Jt-K*Jt);
+		float64_t* rowsum=CMath::get_row_sum(T, rows_T, cols_T);
+		CMath::scale_vector(1.0/n, rowsum, cols_T);
+
+		for (int32_t i=0; i<cols_T; i++)
+		{	
+			for (int32_t j=0; j<rows_T; j++)
+				T[j+rows_T*i]-=rowsum[i];
+		}
+		delete[] rowsum;
+		delete[] bias_tmp;
+
 		initialized=true;
 		SG_INFO("Done\n") ;
 		return true ;
@@ -175,7 +185,23 @@ float64_t* CKernelPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 	len=num_dim ;
 	//	  SG_DEBUG( "num_dim: %d\n", num_dim);
 	return ret;
+	for( i = 0; i < num_data; i++ ) {
+
+		for( k = 0; k < new_dim; k++) {
+			Y[k+i*new_dim] = b[k];
+		}
+
+		for( j = 0; j < nsv; j++ ) {
+			k_ij = kernel(i,j);
+
+			for( k = 0; k < new_dim; k++) {
+				if(Alpha[j+k*nsv] != 0 )
+					Y[k+i*new_dim] += k_ij*Alpha[j+k*nsv];  
+			}
+		}
+	}
 	*/
+
 	return NULL;
 }
 
@@ -183,13 +209,24 @@ void CKernelPCACut::get_transformation_matrix(float64_t** dst, int32_t* num_feat
 {
 	ASSERT(T);
 
-	int64_t num=int64_t(num_dim)*num_old_dim;
-	*num_feat=num_old_dim;
-	*num_new_dim=num_dim;
+	int64_t num=int64_t(rows_T)*cols_T;
+	*num_feat=cols_T;
+	*num_new_dim=rows_T;
 	*dst=(float64_t*) malloc(sizeof(float64_t)*num);
 	if (!*dst)
 		SG_ERROR("Allocating %ld bytes failes\n", sizeof(float64_t)*num);
 	memcpy(*dst, T, num * sizeof(float64_t));
+}
+
+void CKernelPCACut::get_bias(float64_t** dst, int32_t* new_num_dim)
+{
+	ASSERT(bias);
+
+	*new_num_dim=bias_len;
+	*dst=(float64_t*) malloc(sizeof(float64_t)*bias_len);
+	if (!*dst)
+		SG_ERROR("Allocating %ld bytes failes\n", sizeof(float64_t)*bias_len);
+	memcpy(*dst, bias, bias_len * sizeof(float64_t));
 }
 
 void CKernelPCACut::get_eigenvalues(float64_t** dst, int32_t* new_num_dim)

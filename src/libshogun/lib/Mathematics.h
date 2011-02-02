@@ -1086,26 +1086,44 @@ class CMath : public CSGObject
 #endif
 		}
 
+		/* Sums up all rows of a matrix and returns the resulting rowvector */
+		template <class T>
+			static T* get_row_sum(T* matrix, int32_t m, int32_t n)
+			{
+				T* rowsums=new float64_t[n];
+				fill_vector(rowsums, n, 0.0);
+
+				for (int32_t i=0; i<n; i++)
+				{
+					for (int32_t j=0; j<m; j++)
+						rowsums[i]+=matrix[j+int64_t(i)*m];
+				}
+				return rowsums;
+			}
+
+		/* Sums up all columns of a matrix and returns the resulting columnvector */
+		template <class T>
+			static T* get_column_sum(T* matrix, int32_t m, int32_t n)
+			{
+				T* colsums=new float64_t[m];
+				fill_vector(colsums, m, 0.0);
+
+				for (int32_t i=0; i<n; i++)
+				{
+					for (int32_t j=0; j<m; j++)
+						colsums[j]+=matrix[j+int64_t(i)*m];
+				}
+				return colsums;
+			}
+
 		/* Centers  matrix (e.g. kernel matrix in feature space INPLACE */
 		template <class T>
 			static void center_matrix(T* matrix, int32_t m, int32_t n)
 			{
 				float64_t num_data=n;
 
-				T* rowsums=new float64_t[n];
-				T* colsums=new float64_t[m];
-
-				fill_vector(colsums, m, 0.0);
-				fill_vector(rowsums, n, 0.0);
-
-				for (int32_t i=0; i<n; i++)
-				{
-					for (int32_t j=0; j<m; j++)
-					{
-						colsums[j]+=matrix[j+int64_t(i)*m];
-						rowsums[i]+=matrix[j+int64_t(i)*m];
-					}
-				}
+				T* colsums=get_column_sum(matrix, m,n);
+				T* rowsums=get_column_sum(matrix, m,n);
 
 				for (int32_t i=0; i<m; i++)
 					colsums[i]/=num_data;
