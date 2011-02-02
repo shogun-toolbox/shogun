@@ -32,9 +32,11 @@
 *
 */
 
-//#include "blaswrap.h"
-//#include "f2c.h"
+#include "lib/config.h"
+#include "lib/io.h"
 
+namespace shogun
+{
 #define DIM 1024
 #define WSIZE DIM * DIM
 
@@ -48,6 +50,7 @@ static integer          ipiv[WSIZE];
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // extern for lapack routines
+#ifdef HAVE_LAPACK
 extern "C" /* Subroutine */ int dgetri_(integer *n, doublereal *a, integer *lda, integer 
 	*ipiv, doublereal *work, integer *lwork, integer *info);
 extern "C" /* Subroutine */ int sgemm_(char *transa, char *transb, integer *m, integer *
@@ -56,6 +59,7 @@ extern "C" /* Subroutine */ int sgemm_(char *transa, char *transb, integer *m, i
 extern "C" /* Subroutine */ int dgetrf_(integer *m, integer *n, doublereal *a, integer *
 	lda, integer *ipiv, integer *info);
 extern "C" void solveEquationSystem( double* X, double* b, int* N );
+#endif
 
 int matrixInverse( integer *n, doublereal *a );
 void solveEquationSystem( double* X, double* b, int* N );
@@ -81,10 +85,16 @@ void solveEquationSystem( double* X, double* b, int* N ) {
 
 
 int matrixInverse( integer *n, doublereal *a ) {
+#ifdef HAVE_LAPACK
     integer info;
     static integer lwork = WSIZE;
     
 	dgetrf_( n, n, a, n, ipiv, &info);
     dgetri_( n, a, n, ipiv, work, &lwork, &info);    
     return info;
+#else
+	SG_SERROR("matrixInverse not availabe - enable Lapack at compile time!\n");
+	return 0;
+#endif
+}
 }
