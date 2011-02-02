@@ -45,8 +45,7 @@ namespace shogun
  *
  * \sa CLPM
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CLPBoost : public CLinearClassifier
+class CLPBoost : public CLinearClassifier
 {
 	public:
 		CLPBoost();

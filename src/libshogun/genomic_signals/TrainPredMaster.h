@@ -24,8 +24,7 @@ class CGUIKernel;
 class CKernelFactory;
 
 /** @brief class TrainPredMaster */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CTrainPredMaster : public CSGObject 
+class CTrainPredMaster : public CSGObject 
 {
 	public:
 		/** constructor

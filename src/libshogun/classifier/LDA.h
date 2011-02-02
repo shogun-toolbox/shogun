@@ -49,8 +49,7 @@ namespace shogun
  * \sa CLinearClassifier
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CLDA : public CLinearClassifier
+class CLDA : public CLinearClassifier
 {
 	public:
 		/** constructor

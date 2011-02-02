@@ -148,22 +148,6 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 
 
 };
-
-#else /* HAVE_LAPACK  */
-
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CDomainAdaptationSVMLinear :public CLibLinear
-{
-public:
-	/** default constructor */
-	CDomainAdaptationSVMLinear(void) {}
-
-	/** @return object name */
-	inline virtual const char* get_name() const {
-		return "DomainAdaptationSVMLinear";
-	}
-};
-
 #endif //HAVE_LAPACK
 
 } /* namespace shogun  */
