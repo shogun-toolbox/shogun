@@ -996,7 +996,7 @@ class CMath : public CSGObject
 			static void qsort_index(T1* output, T2* index, uint32_t size);
 
 		/** performs a quicksort on an array output of length size
-		 * it is sorted in ascending order
+		 * it is sorted in descending order
 		 * (for type T1) and returns the index (type T2)
 		 * matlab alike [sorted,index]=sort(output) 
 		 */
@@ -1052,6 +1052,71 @@ class CMath : public CSGObject
 					if (i==0 || output[i]!=output[i-1])
 						output[j++]=output[i];
 				return j ;
+			}
+
+		/** compute eigenvalues and eigenvectors of symmetric matrix
+		 *
+		 * @param matrix is overwritten and contains n orthonormal eigenvectors
+		 * @return eigenvalues (array of length n, to be deleted[])
+		 * */
+		static double* compute_eigenvectors(double* matrix, int n, int m)
+		{
+			ASSERT(n == m);
+
+			char V='V';
+			char U='U';
+			int info;
+			int ord=n;
+			int lda=n;
+			double* eigenvalues=new float64_t[n+1];
+			fill_vector(eigenvalues, n+1, 0.0);
+
+			// lapack sym matrix eigenvalues+vectors
+			wrap_dsyev(V, U,  ord, matrix, lda,
+					eigenvalues, &info);
+
+			if (info!=0)
+				SG_SERROR("DSYEV failed with code %d\n", info);
+
+			return eigenvalues;
+		}
+
+		/* Centers  matrix (e.g. kernel matrix in feature space INPLACE */
+		template <class T>
+			static void center_matrix(T* matrix, int32_t m, int32_t n)
+			{
+				float64_t num_data=n;
+
+				T* rowsums=new float64_t[n];
+				T* colsums=new float64_t[m];
+
+				fill_vector(colsums, m, 0.0);
+				fill_vector(rowsums, n, 0.0);
+
+				for (int32_t i=0; i<n; i++)
+				{
+					for (int32_t j=0; j<m; j++)
+					{
+						colsums[j]+=matrix[j+int64_t(i)*m];
+						rowsums[i]+=matrix[j+int64_t(i)*m];
+					}
+				}
+
+				for (int32_t i=0; i<m; i++)
+					colsums[i]/=num_data;
+				for (int32_t j=0; j<n; j++)
+					rowsums[j]/=num_data;
+
+				T s=sum(rowsums, n)/num_data;
+
+				for (int32_t i=0; i<n; i++)
+				{
+					for (int32_t j=0; j<m; j++)
+						matrix[int64_t(i)*m+j]+=s-colsums[i]-rowsums[j];
+				}
+
+				delete[] rowsums;
+				delete[] colsums;
 			}
 
 		/* finds an element in a sorted array via binary search
