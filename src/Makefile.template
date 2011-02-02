@@ -481,6 +481,15 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@cat  $< >> $@
 	@sh $*.$(EXT_CPP_SH) $@ $(HEADERFILES)
 
+%.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_PY) $(HEADERFILES)
+	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PY)"
+	@echo "/*" > $@
+	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
+	@echo " * CORRESPONDING TEMPLAT FILE, PLEASE!" >> $@
+	@echo -e " */\n" >> $@
+	@cat  $< >> $@
+	@$(PYTHON) $*.$(EXT_CPP_PY) $@ $(HEADERFILES)
+
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)

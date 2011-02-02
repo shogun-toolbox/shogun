@@ -44,6 +44,7 @@ EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
 EXT_CPP_TMP="${EXT_SRC_CPP}.templ"
 EXT_CPP_SH="${EXT_SRC_CPP}.sh"
+EXT_CPP_PY="${EXT_SRC_CPP}.py"
 
 #the defaults are
 _swig_version=0.0.0
@@ -3895,6 +3896,7 @@ EXT_SRC_CPP 	= ${EXT_SRC_CPP}
 EXT_SRC_C   	= ${EXT_SRC_C}
 EXT_CPP_TMP     = ${EXT_CPP_TMP}
 EXT_CPP_SH      = ${EXT_CPP_SH}
+EXT_CPP_PY      = ${EXT_CPP_PY}
 EXT_DOXY        = ${EXT_DOXY}
 EXT_SWIG_DOXY  	= ${EXT_SWIG_DOXY}
 GDB				= ${GDB}

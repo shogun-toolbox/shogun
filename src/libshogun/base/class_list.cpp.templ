@@ -21,7 +21,7 @@ using namespace shogun;
 
 REPLACE definitions THIS
 
-REPLACE temp_definitions THIS
+REPLACE template_definitions THIS
 
 typedef CSGObject* (*new_sgserializable_t)(EPrimitiveType generic);
 typedef struct
@@ -31,7 +31,7 @@ typedef struct
 } class_list_entry_t;
 
 static class_list_entry_t class_list[] = {
-REPLACE structs THIS
+REPLACE struct THIS
 	{m_class_name: NULL, m_new_sgserializable: NULL}
 };
 
