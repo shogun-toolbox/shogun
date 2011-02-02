@@ -11,6 +11,8 @@
 class_str='class'
 types=["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
 		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX"] 
+config_tests=["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK", "USE_CPLEX",
+	"USE_SVMLIGHT", "USE_GLPK", "USE_LZO", "USE_GZIP", "USE_BZIP2", "USE_LZMA"]
 
 def check_class(line):
 	if not (line.find('public')==-1 and
@@ -22,7 +24,24 @@ def check_abstract_class(line):
 	line=line.replace(' ','').replace('\t','').strip()
 	return line.endswith('=0;')
 
-def extract_class_name(lines, line_nr, line=None):
+def check_is_in_blacklist(c, lines, line_nr, blacklist):
+	ifdef_cnt=0
+	for i in xrange(line_nr,0,-1):
+		line=lines[i]
+		if line.find('#endif')!=-1:
+			ifdef_cnt-=1
+		if line.find('#ifdef')!=-1:
+			ifdef_cnt+=1
+
+			for b in blacklist.keys():
+				if line.find(b)!=-1 and ifdef_cnt>0:
+					return True
+		if line.find('#ifndef')!=-1:
+			ifdef_cnt+=1
+
+	return False
+
+def extract_class_name(lines, line_nr, line, blacklist):
 	try:
 		if not line:
 			line=lines[line_nr]
@@ -36,7 +55,6 @@ def extract_class_name(lines, line_nr, line=None):
 	except:
 		return
 
-
 	c=c.strip(':').strip()
 
 	if not c.startswith('C'):
@@ -47,6 +65,9 @@ def extract_class_name(lines, line_nr, line=None):
 		return
 	if not (len(c)>2 and c[1].isupper()):
 		return
+	if check_is_in_blacklist(c[1:], lines, line_nr, blacklist):
+		return
+
 	return c[1:]
 
 def get_includes(classes):
@@ -130,7 +151,7 @@ def test_candidate(c, lines, line_nr):
 	return True, stop
 
 
-def extract_classes(HEADERS, template):
+def extract_classes(HEADERS, template, blacklist):
 	"""
 	Search in headers for non-template/non-abstract class-names starting
 	with `C'.
@@ -157,10 +178,10 @@ def extract_classes(HEADERS, template):
 					line=line[cp+1:]
 					cp=line.find(class_str)
 					if cp!=-1:
-						c=extract_class_name(lines, line_nr, line)
+						c=extract_class_name(lines, line_nr, line, blacklist)
 			else:
 				if line.find(class_str)!=-1:
-					c=extract_class_name(lines, line_nr)
+					c=extract_class_name(lines, line_nr, None, blacklist)
 			if c:
 				ok, line_nr=test_candidate(c, lines, line_nr)
 				if ok:
@@ -186,13 +207,34 @@ def write_templated_file(fname, substitutes):
 		else:
 			f.write(line)
 
+
+def read_config():
+	config=dict()
+	for line in file('lib/config.h').readlines():
+		if line=='\n':
+			continue
+		l=[l.strip() for l in line.split()]
+		config[l[1]]=1
+
+	return config
+
+def get_blacklist():
+	config=read_config()
+	blacklist=dict()
+	for cfg in config_tests:
+		if not config.has_key(cfg):
+			blacklist[cfg]=1
+	return blacklist
+		
 if __name__=='__main__':
 	import sys
 	TEMPL_FILE=sys.argv[1]
 	HEADERS=sys.argv[2:]
 
-	classes = extract_classes(HEADERS, False)
-	template_classes = extract_classes(HEADERS, True)
+	blacklist = get_blacklist()
+
+	classes = extract_classes(HEADERS, False, blacklist)
+	template_classes = extract_classes(HEADERS, True, blacklist)
 	includes = get_includes(classes+template_classes)
 	definitions = get_definitions(classes)
 	template_definitions = get_template_definitions(template_classes)
