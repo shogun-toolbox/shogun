@@ -31,6 +31,8 @@
 #include <shogun/preproc/NormDerivativeLem3.h>
 #include <shogun/preproc/NormOne.h>
 #include <shogun/preproc/PCACut.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/preproc/KernelPCACut.h>
 #include <shogun/preproc/PruneVarSubMean.h>
 #include <shogun/preproc/DecompressString.h>
 #include <shogun/preproc/SortUlongString.h>
@@ -39,12 +41,18 @@
 #include <shogun/preproc/RandomFourierGaussPreproc.h>
 %}
 
+%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim)};
+%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num_feat)};
+%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num_new_dim)};
+
 /* Remove C Prefix */
 %rename(PreProc) CPreProc;
 %rename(LogPlusOne) CLogPlusOne;
 %rename(NormDerivativeLem3) CNormDerivativeLem3;
 %rename(NormOne) CNormOne;
 %rename(PCACut) CPCACut;
+%rename(Kernel) CKernel;
+%rename(KernelPCACut) CKernelPCACut;
 %rename(PruneVarSubMean) CPruneVarSubMean;
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
@@ -90,6 +98,8 @@ namespace shogun
 %include <shogun/preproc/NormDerivativeLem3.h>
 %include <shogun/preproc/NormOne.h>
 %include <shogun/preproc/PCACut.h>
+%include <shogun/kernel/Kernel.h>
+%include <shogun/preproc/KernelPCACut.h>
 %include <shogun/preproc/PruneVarSubMean.h>
 %include <shogun/preproc/SortUlongString.h>
 %include <shogun/preproc/SortWordString.h>
