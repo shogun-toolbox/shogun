@@ -1061,6 +1061,7 @@ class CMath : public CSGObject
 		 * */
 		static double* compute_eigenvectors(double* matrix, int n, int m)
 		{
+#ifdef HAVE_LAPACK
 			ASSERT(n == m);
 
 			char V='V';
@@ -1079,6 +1080,10 @@ class CMath : public CSGObject
 				SG_SERROR("DSYEV failed with code %d\n", info);
 
 			return eigenvalues;
+#else
+			SG_SERROR("Function not available - Lapack/Atlas not enabled at compile time!\n");
+			return NULL;
+#endif
 		}
 
 		/* Centers  matrix (e.g. kernel matrix in feature space INPLACE */
