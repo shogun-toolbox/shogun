@@ -210,20 +210,6 @@ class CLibLinear : public CLinearClassifier
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;
 };
 
-#else /* HAVE_LAPACK  */
-
-/** @brief class to implement LibLinear */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class CLibLinear : public CLinearClassifier
-{
-public:
-	/** default constructor  */
-	CLibLinear(void) {}
-
-	/** @return object name */
-	inline virtual const char* get_name() const { return "LibLinear"; }
-};
-
 #endif //HAVE_LAPACK
 
 } /* namespace shogun  */
