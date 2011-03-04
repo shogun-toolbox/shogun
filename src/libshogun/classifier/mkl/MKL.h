@@ -22,6 +22,7 @@ extern "C" {
 #endif
 
 #include "lib/common.h"
+#include "lib/Time.h"
 #include "features/Features.h"
 #include "kernel/Kernel.h"
 #include "classifier/svm/SVM.h"
@@ -453,6 +454,9 @@ class CMKL : public CSVM
 		float64_t w_gap;
 		/** objective after mkl iterations */
 		float64_t rho;
+
+		/** measures training time for use with get_max_train_time() */
+		CTime training_time_clock;
 
 #ifdef USE_CPLEX
 		/** env */

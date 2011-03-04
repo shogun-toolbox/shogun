@@ -273,6 +273,8 @@ bool CMKL::train(CFeatures* data)
 	mkl_iterations = 0;
 	CSignal::clear_cancel();
 
+	training_time_clock.start();
+
 	if (interleaved_optimization)
 	{
 		if (svm->get_classifier_type() != CT_LIGHT && svm->get_classifier_type() != CT_SVRLIGHT)
@@ -307,12 +309,21 @@ bool CMKL::train(CFeatures* data)
 	{
 		float64_t* sumw = new float64_t[num_kernels];
 
+		
+
 		while (true)
 		{
 			svm->train();
 
 			float64_t suma=compute_sum_alpha();
 			compute_sum_beta(sumw);
+
+			if((training_time_clock.cur_time_diff()>get_max_train_time ())&&(get_max_train_time ()>0))
+			{
+				SG_SWARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ());
+				break;
+			}
+
 
 			mkl_iterations++;
 			if (perform_mkl_step(sumw, suma) || CSignal::cancel_computations())
@@ -366,6 +377,12 @@ void CMKL::set_elasticnet_lambda(float64_t lambda)
 bool CMKL::perform_mkl_step(
 		const float64_t* sumw, float64_t suma)
 {
+	if((training_time_clock.cur_time_diff()>get_max_train_time ())&&(get_max_train_time ()>0))
+	{
+		SG_SWARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ());
+		return true;
+	}
+
 	int32_t num_kernels = kernel->get_num_subkernels();
 	int32_t nweights=0;
 	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
