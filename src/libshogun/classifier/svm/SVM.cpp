@@ -275,18 +275,37 @@ float64_t CSVM::compute_svm_primal_objective()
 	float64_t regularizer=0;
 	float64_t loss=0;
 
+
+	
 	if (labels && kernel)
 	{
-		for (int32_t i=0; i<n; i++)
+		if(C2>0)
 		{
-			int32_t ii=get_support_vector(i);
-			for (int32_t j=0; j<n; j++)
+			for (int32_t i=0; i<n; i++)
 			{
-				int32_t jj=get_support_vector(j);
-				regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
-			}
+				int32_t ii=get_support_vector(i);
+				for (int32_t j=0; j<n; j++)
+				{
+					int32_t jj=get_support_vector(j);
+					regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
+				}
 
-			loss-=C1*CMath::max(0.0, 1.0-get_label(ii)*classify_example(ii));
+				loss-=(C1*(-get_label(ii)+1)/2.0 + C2*(get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-get_label(ii)*classify_example(ii));
+			}
+		}
+		else
+		{
+			for (int32_t i=0; i<n; i++)
+			{
+				int32_t ii=get_support_vector(i);
+				for (int32_t j=0; j<n; j++)
+				{
+					int32_t jj=get_support_vector(j);
+					regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
+				}
+
+				loss-=C1*CMath::max(0.0, 1.0-get_label(ii)*classify_example(ii));
+			}
 		}
 	}
 	else
