@@ -57,7 +57,7 @@ class CLibSVR : public CSVM
 		/** constructor
 		 *
 		 * @param C constant C
-		 * @param epsilon epsilon
+		 * @param epsilon tube epsilon
 		 * @param k kernel
 		 * @param lab labels
 		 */
