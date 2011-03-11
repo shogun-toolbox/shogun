@@ -277,7 +277,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		}
 
 		/**
-		 * Extracts the feature vectors mentioned in idx inplace. 
+		 * Extracts the feature vectors mentioned in idx and replaces them in
+		 * feature matrix in place. 
 		 *
 		 * It does not resize the allocated memory block.
 		 *
@@ -286,9 +287,11 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 *
 		 * Note: assumes idx is sorted
 		 */
-		void feature_matrix_subset(int32_t* idx, int32_t idx_len)
+		void vector_subset(int32_t* idx, int32_t idx_len)
 		{
 			ASSERT(feature_matrix);
+			ASSERT(idx_len<=num_vectors);
+
 			int32_t num_vec=num_vectors;
 			num_vectors=idx_len;
 
@@ -298,6 +301,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			{
 				int32_t ii=idx[i];
 				ASSERT(old_ii<ii);
+				if (ii<0 || ii>=num_vec)
+					SG_ERROR("Index out of range: should be 0<%d<%d\n", ii, num_vec);
 
 				if (i==ii)
 					continue;
@@ -306,6 +311,43 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 						&feature_matrix[int64_t(num_features)*ii],
 						num_features*sizeof(ST));
 				old_ii=ii;
+			}
+		}
+
+		/**
+		 * Extracts the features mentioned in idx and replaces them in
+		 * feature matrix in place. 
+		 *
+		 * It does not resize the allocated memory block.
+		 *
+		 * @param idx index with features that shall remain in the feature matrix
+		 * @param idx_len length of the index
+		 *
+		 * Note: assumes idx is sorted
+		 */
+		void feature_subset(int32_t* idx, int32_t idx_len)
+		{
+			ASSERT(feature_matrix);
+			ASSERT(idx_len<=num_features);
+			int32_t num_feat=num_features;
+			num_features=idx_len;
+
+			int32_t old_jj=-1;
+			for (int32_t i=0; i<num_vectors; i++)
+			{
+				ST* src=&feature_matrix[int64_t(num_feat)*i];
+				ST* dst=&feature_matrix[int64_t(num_features)*i];
+
+				for (int32_t j=0; j<idx_len; j++)
+				{
+					int32_t jj=idx[j];
+					ASSERT(old_jj<jj);
+					if (jj<0 || jj>=num_feat)
+						SG_ERROR("Index out of range: should be 0<%d<%d\n", jj, num_feat);
+
+					dst[j]=src[jj];
+					old_jj=jj;
+				}
 			}
 		}
 
