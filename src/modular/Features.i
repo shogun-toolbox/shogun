@@ -70,6 +70,7 @@
 %apply (uint8_t* IN_ARRAY1, int32_t DIM1) {(uint8_t* src, int32_t len)};
 %apply (int16_t* IN_ARRAY1, int32_t DIM1) {(int16_t* src, int32_t len)};
 %apply (uint16_t* IN_ARRAY1, int32_t DIM1) {(uint16_t* src, int32_t len)};
+%apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* idx, int32_t idx_len)};
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* src, int32_t len)};
 %apply (uint32_t* IN_ARRAY1, int32_t DIM1) {(uint32_t* src, int32_t len)};
 %apply (int64_t* IN_ARRAY1, int32_t DIM1) {(int64_t* src, int32_t len)};

@@ -1,5 +1,651 @@
+2011-02-02  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/svm/Tron.h, libshogun/lib/Mathematics.h,
+	  libshogun/preproc/KernelPCACut.cpp,
+	  libshogun/preproc/KernelPCACut.h: get kpca to work; add default
+	  constructor to tron
+	* Makefile.template,
+	  libshogun/classifier/boosting/Utils/MathUtils.cpp,
+	  libshogun/genomic_signals: finally compiles w/o lapack
+	* libshogun/classifier/svm/LibLinear.h,
+	  libshogun/lib/SerializableXmlFile.h: remove IGNORE_CLASSLIST for
+	  these too
+	* libshogun/classifier/LDA.h, libshogun/classifier/LPBoost.h,
+	  libshogun/classifier/LPM.h,
+	  libshogun/classifier/SubGradientLPM.h,
+	  libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
+	  libshogun/classifier/svm/SVMLight.h,
+	  libshogun/classifier/svm/SVMLightOneClass.h,
+	  libshogun/classifier/svm/Tron.h,
+	  libshogun/genomic_signals/TrainPredMaster.h,
+	  libshogun/lib/Cplex.h, libshogun/regression/KRR.h,
+	  libshogun/regression/svr/SVRLight.h: remove IGNORE_CLASS_LIST for
+	  those
+	* libshogun/base/class_list.cpp.py: let class list detect functions
+	  that require certain defines / blacklist others
+	* libshogun/lib/Mathematics.h: ifdef HAVE_LAPACK in eigenvalue
+	  function
+	* libshogun/preproc/KernelPCACut.cpp,
+	  libshogun/preproc/KernelPCACut.h, modular/PreProc.i: start
+	  implementing kernel pca cut as preproc
+	* Makefile.template, configure, libshogun/base/class_list.cpp.py,
+	  libshogun/base/class_list.cpp.sh,
+	  libshogun/base/class_list.cpp.templ: drop shell script to
+	  generate class list and replace it with a (slightly more correct)
+	  python variant not using regexp magic
+	* libshogun/lib/Mathematics.h: move compute eigenvectors /
+	  centering of kernel matrix to lib/Mathematics.
+
+2011-02-01  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Classifier.i: do apply for get/set_labels also in
+	  classifier
+	* configure: really disable gcc opt flags
+	* libshogun/features/SparsePolyFeatures.cpp,
+	  libshogun/features/SparsePolyFeatures.h: remove the void(tm)
+	* configure: in debug mode disable optimization
+
+2011-01-27  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/preproc/PCACut.cpp, libshogun/preproc/PCACut.h: PCACut
+	  preproc now enables access to eigenvalues/eigenvectors of
+	  covariance matrix
+
+2011-01-20  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Classifier.i: rename CKernelMachine to KernelMachine
+	* libshogun/kernel/LinearKernel.cpp,
+	  libshogun/kernel/LinearKernel.h: impl. init_optimization based on
+	  kernel machine
+	* libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h: improve
+	  error messages when thread creation fails
+
+2011-01-17  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/kernel/Kernel.cpp, libshogun/kernel/Kernel.h: name the
+	  failing thread
+	* libshogun/kernel/Kernel.h: error handling with multiple threads
+	  and parallel get_kernel_matrix
+
+2011-01-14  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Classifier.i: fix another svmlight build failure with
+	  linear da svm
+	* libshogun/classifier/svm/DomainAdaptationSVM.h: fix another
+	  compile failure without svmlight
+	* configure: improve configure help
+	* libshogun/classifier/svm/ScatterSVM.cpp: fix compilation when
+	  SVMLIGHT is not available
+
+2011-01-11  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Classifier.i: fix a memory leak occurring on classify()
+	* libshogun/features/HashedWDFeaturesTransposed.cpp: fix a minor
+	  memory leak
+
+2011-01-09  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/Classifier.i: inlcude labels in classifier (since e.g.
+	  one class svm's return such objects. thanks Nedim Srndic for the
+	  report.
+
+2011-01-07  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, libshogun/base/Version.h: update copyright to 2011
+
+2011-01-03  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* libshogun/preproc/RandomFourierGaussPreproc.cpp,
+	  libshogun/preproc/RandomFourierGaussPreproc.h: made class
+	  RandomFourierGaussPreproc serializable
+
+2011-01-03  Soeren Sonnenburg <sonne@debian.org>
+
+	* modular/PreProc.i: integrate Alex's RandomFourierGaussPreproc in
+	  the modular interfaces
+
+2010-12-30  Alexander Binder <alexander.binder@first.fraunhofer.de>
+
+	* libshogun/preproc/RandomFourierGaussPreproc.cpp: added example
+	  for libshogun
+	* libshogun/preproc/PreProc.h,
+	  libshogun/preproc/RandomFourierGaussPreproc.cpp,
+	  libshogun/preproc/RandomFourierGaussPreproc.h: implemented Random
+	  Fourier Gauss Preprocessor
+
+2010-12-12  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/LinearClassifier.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditProductLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditTreeLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BaseLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BaseLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ConstantLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/DirichletSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner2.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner3.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner4.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerKNN.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerSA.h,
+	  libshogun/classifier/boosting/WeakLearners/IndicatorLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/MultiStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ParasiteLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerUCT.h,
+	  libshogun/classifier/boosting/WeakLearners/RandomSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/Selector.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleRegressionStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStump.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner2.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner3.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearnerUCT.h,
+	  libshogun/classifier/boosting/WeakLearners/UCB1SingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearnerLSHTC.h,
+	  modular/Classifier.i: make some weak learners visible from the
+	  python side
+
+2010-12-11  Soeren Sonnenburg <sonne@debian.org>
+
+	* libshogun/classifier/boosting/Bandits/Exp3.h,
+	  libshogun/classifier/boosting/Bandits/Exp3G.h,
+	  libshogun/classifier/boosting/Bandits/Exp3G2.h,
+	  libshogun/classifier/boosting/Bandits/Exp3P.h,
+	  libshogun/classifier/boosting/Bandits/Random.h,
+	  libshogun/classifier/boosting/Bandits/UCBK.h,
+	  libshogun/classifier/boosting/Bandits/UCBKRandomized.h,
+	  libshogun/classifier/boosting/Bandits/UCBKV.h,
+	  libshogun/classifier/boosting/BanditsLS/Exp3GLS.h,
+	  libshogun/classifier/boosting/BanditsLS/Exp3LS.h,
+	  libshogun/classifier/boosting/BanditsLS/UCTLS.h,
+	  libshogun/classifier/boosting/IO/ArffParser.h,
+	  libshogun/classifier/boosting/IO/ArffParserBzip2.h,
+	  libshogun/classifier/boosting/IO/GenericParser.h,
+	  libshogun/classifier/boosting/IO/InputData.h,
+	  libshogun/classifier/boosting/IO/LSHTCParser.h,
+	  libshogun/classifier/boosting/IO/ParasiteData.h,
+	  libshogun/classifier/boosting/IO/RawData.h,
+	  libshogun/classifier/boosting/IO/SVMLightParser.h,
+	  libshogun/classifier/boosting/Kmeans/KCtree.h,
+	  libshogun/classifier/boosting/Kmeans/KCutil.h,
+	  libshogun/classifier/boosting/Kmeans/KMcenters.h,
+	  libshogun/classifier/boosting/Kmeans/KMdata.h,
+	  libshogun/classifier/boosting/Kmeans/KMeans.h,
+	  libshogun/classifier/boosting/Kmeans/KMfilterCenters.h,
+	  libshogun/classifier/boosting/Kmeans/KMlocal.h,
+	  libshogun/classifier/boosting/Kmeans/KMrand.h,
+	  libshogun/classifier/boosting/Kmeans/KMterm.h,
+	  libshogun/classifier/boosting/Utils/Args.h,
+	  libshogun/classifier/boosting/Utils/ClassHierarchy.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditProductLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner2.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner3.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner4.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerKNN.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerSA.h,
+	  libshogun/classifier/boosting/WeakLearners/IndicatorLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ParasiteLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerUCT.h,
+	  libshogun/classifier/boosting/WeakLearners/Selector.h,
+	  libshogun/classifier/boosting/WeakLearners/SigmoidSingleStumpLearner.h:
+	  make all includpaths relative to libshogun/
+	* libshogun/classifier/boosting/Algorithms/ConstantAlgorithm.cpp,
+	  libshogun/classifier/boosting/Algorithms/ConstantAlgorithm.h,
+	  libshogun/classifier/boosting/Algorithms/ConstantAlgorithmLSHTC.cpp,
+	  libshogun/classifier/boosting/Algorithms/ConstantAlgorithmLSHTC.h,
+	  libshogun/classifier/boosting/Algorithms/RegressionStumpAlgorithm.h,
+	  libshogun/classifier/boosting/Algorithms/SparseStumpAlgorithm.h,
+	  libshogun/classifier/boosting/Algorithms/StumpAlgorithm.h,
+	  libshogun/classifier/boosting/Algorithms/StumpAlgorithmLSHTC.h,
+	  libshogun/classifier/boosting/Bandits/Exp3.cpp,
+	  libshogun/classifier/boosting/Bandits/Exp3.h,
+	  libshogun/classifier/boosting/Bandits/Exp3G.cpp,
+	  libshogun/classifier/boosting/Bandits/Exp3G.h,
+	  libshogun/classifier/boosting/Bandits/Exp3G2.cpp,
+	  libshogun/classifier/boosting/Bandits/Exp3G2.h,
+	  libshogun/classifier/boosting/Bandits/Exp3P.cpp,
+	  libshogun/classifier/boosting/Bandits/Exp3P.h,
+	  libshogun/classifier/boosting/Bandits/GenericBanditAlgorithm.h,
+	  libshogun/classifier/boosting/Bandits/Random.cpp,
+	  libshogun/classifier/boosting/Bandits/Random.h,
+	  libshogun/classifier/boosting/Bandits/UCBK.cpp,
+	  libshogun/classifier/boosting/Bandits/UCBK.h,
+	  libshogun/classifier/boosting/Bandits/UCBKRandomized.cpp,
+	  libshogun/classifier/boosting/Bandits/UCBKRandomized.h,
+	  libshogun/classifier/boosting/Bandits/UCBKV.cpp,
+	  libshogun/classifier/boosting/Bandits/UCBKV.h,
+	  libshogun/classifier/boosting/BanditsLS/Exp3GLS.cpp,
+	  libshogun/classifier/boosting/BanditsLS/Exp3GLS.h,
+	  libshogun/classifier/boosting/BanditsLS/Exp3LS.cpp,
+	  libshogun/classifier/boosting/BanditsLS/Exp3LS.h,
+	  libshogun/classifier/boosting/BanditsLS/GenericBanditAlgorithmLS.h,
+	  libshogun/classifier/boosting/BanditsLS/UCTLS.cpp,
+	  libshogun/classifier/boosting/BanditsLS/UCTLS.h,
+	  libshogun/classifier/boosting/Classifiers/ABMHClassifierYahoo.cpp,
+	  libshogun/classifier/boosting/Classifiers/ABMHClassifierYahoo.h,
+	  libshogun/classifier/boosting/Classifiers/AdaBoostMHClassifier.cpp,
+	  libshogun/classifier/boosting/Classifiers/AdaBoostMHClassifier.h,
+	  libshogun/classifier/boosting/Classifiers/BrownBoostClassifier.cpp,
+	  libshogun/classifier/boosting/Classifiers/BrownBoostClassifier.h,
+	  libshogun/classifier/boosting/Classifiers/ExampleResults.cpp,
+	  libshogun/classifier/boosting/Classifiers/ExampleResults.h,
+	  libshogun/classifier/boosting/Classifiers/FilterBoostClassifier.cpp,
+	  libshogun/classifier/boosting/Classifiers/FilterBoostClassifier.h,
+	  libshogun/classifier/boosting/Classifiers/LogitBoostClassifier.cpp,
+	  libshogun/classifier/boosting/Classifiers/LogitBoostClassifier.h,
+	  libshogun/classifier/boosting/IO/ADTreeData.cpp,
+	  libshogun/classifier/boosting/IO/ADTreeData.h,
+	  libshogun/classifier/boosting/IO/ArffParser.cpp,
+	  libshogun/classifier/boosting/IO/ArffParser.h,
+	  libshogun/classifier/boosting/IO/ArffParserBzip2.cpp,
+	  libshogun/classifier/boosting/IO/ArffParserBzip2.h,
+	  libshogun/classifier/boosting/IO/EncodeData.cpp,
+	  libshogun/classifier/boosting/IO/EncodeData.h,
+	  libshogun/classifier/boosting/IO/ExtendableData.cpp,
+	  libshogun/classifier/boosting/IO/ExtendableData.h,
+	  libshogun/classifier/boosting/IO/GenericParser.h,
+	  libshogun/classifier/boosting/IO/HaarData.cpp,
+	  libshogun/classifier/boosting/IO/HaarData.h,
+	  libshogun/classifier/boosting/IO/InputData.cpp,
+	  libshogun/classifier/boosting/IO/InputData.h,
+	  libshogun/classifier/boosting/IO/LSHTCParser.cpp,
+	  libshogun/classifier/boosting/IO/LSHTCParser.h,
+	  libshogun/classifier/boosting/IO/NameMap.cpp,
+	  libshogun/classifier/boosting/IO/NameMap.h,
+	  libshogun/classifier/boosting/IO/OutputInfo.cpp,
+	  libshogun/classifier/boosting/IO/OutputInfo.h,
+	  libshogun/classifier/boosting/IO/ParasiteData.h,
+	  libshogun/classifier/boosting/IO/RawData.cpp,
+	  libshogun/classifier/boosting/IO/RawData.h,
+	  libshogun/classifier/boosting/IO/SVMLightParser.cpp,
+	  libshogun/classifier/boosting/IO/SVMLightParser.h,
+	  libshogun/classifier/boosting/IO/Serialization.cpp,
+	  libshogun/classifier/boosting/IO/Serialization.h,
+	  libshogun/classifier/boosting/IO/SortedData.cpp,
+	  libshogun/classifier/boosting/IO/SortedData.h,
+	  libshogun/classifier/boosting/IO/TxtParser.cpp,
+	  libshogun/classifier/boosting/IO/TxtParser.h,
+	  libshogun/classifier/boosting/Others/Example.h,
+	  libshogun/classifier/boosting/Others/Rates.h,
+	  libshogun/classifier/boosting/StrongLearners/ABMHLearnerYahoo.cpp,
+	  libshogun/classifier/boosting/StrongLearners/ABMHLearnerYahoo.h,
+	  libshogun/classifier/boosting/StrongLearners/ADTreeLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/ADTreeLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/BrownBoostLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/BrownBoostLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/FilterBoostLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/FilterBoostLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/GenericStrongLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/LogitBoostLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/LogitBoostLearner.h,
+	  libshogun/classifier/boosting/Utils/Args.h,
+	  libshogun/classifier/boosting/Utils/ClassHierarchy.cpp,
+	  libshogun/classifier/boosting/Utils/ClassHierarchy.h,
+	  libshogun/classifier/boosting/Utils/UCTutils.cpp,
+	  libshogun/classifier/boosting/Utils/UCTutils.h,
+	  libshogun/classifier/boosting/WeakLearners/AbstainableLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/AbstainableLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditProductLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditProductLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleSparseStump.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleSparseStump.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditTreeLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditTreeLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BaseLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BaseLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ConstantLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ConstantLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/DirichletSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/DirichletSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner2.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner2.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner3.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner3.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner4.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner4.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerKNN.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerKNN.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerSA.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerSA.h,
+	  libshogun/classifier/boosting/WeakLearners/FeaturewiseLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/FeaturewiseLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/Haar/HaarFeatures.cpp,
+	  libshogun/classifier/boosting/WeakLearners/Haar/HaarFeatures.h,
+	  libshogun/classifier/boosting/WeakLearners/Haar/HaarLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/Haar/HaarLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/HaarMultiStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/HaarMultiStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/HaarSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/HaarSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/HierarchicalStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/HierarchicalStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/IndicatorLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/IndicatorLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/MultiStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/MultiStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ParasiteLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ParasiteLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerLSHTC.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerUCT.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerUCT.h,
+	  libshogun/classifier/boosting/WeakLearners/RandomSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/RandomSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/Selector.cpp,
+	  libshogun/classifier/boosting/WeakLearners/Selector.h,
+	  libshogun/classifier/boosting/WeakLearners/SigmoidSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SigmoidSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleRegressionStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleRegressionStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStump.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStump.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearnerLSHTC.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner2.cpp,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner2.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner3.cpp,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner3.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearnerUCT.cpp,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearnerUCT.h,
+	  libshogun/classifier/boosting/WeakLearners/UCB1SingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/UCB1SingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearnerLSHTC.cpp,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/UCBVHaarSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/UCBVHaarSingleStumpLearner.h,
+	  modular/Classifier.i: - change namespace Multiboost into
+	  namespace shogun
+	  - limit newobject classify to classifiers
+	  - make AdaBoostMHClassifier known from modular interfaces
+	* libshogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/FilterBoostLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/GenericStrongLearner.h:
+	  derive a few strong learners from SGObject
+	* NEWS, libshogun/classifier/boosting,
+	  libshogun/classifier/boosting/Algorithms,
+	  libshogun/classifier/boosting/Algorithms/ConstantAlgorithm.cpp,
+	  libshogun/classifier/boosting/Algorithms/ConstantAlgorithm.h,
+	  libshogun/classifier/boosting/Algorithms/ConstantAlgorithmLSHTC.cpp,
+	  libshogun/classifier/boosting/Algorithms/ConstantAlgorithmLSHTC.h,
+	  libshogun/classifier/boosting/Algorithms/RegressionStumpAlgorithm.h,
+	  libshogun/classifier/boosting/Algorithms/SparseStumpAlgorithm.h,
+	  libshogun/classifier/boosting/Algorithms/StumpAlgorithm.h,
+	  libshogun/classifier/boosting/Algorithms/StumpAlgorithmLSHTC.h,
+	  libshogun/classifier/boosting/Bandits,
+	  libshogun/classifier/boosting/Bandits/Exp3.cpp,
+	  libshogun/classifier/boosting/Bandits/Exp3.h,
+	  libshogun/classifier/boosting/Bandits/Exp3G.cpp,
+	  libshogun/classifier/boosting/Bandits/Exp3G.h,
+	  libshogun/classifier/boosting/Bandits/Exp3G2.cpp,
+	  libshogun/classifier/boosting/Bandits/Exp3G2.h,
+	  libshogun/classifier/boosting/Bandits/Exp3P.cpp,
+	  libshogun/classifier/boosting/Bandits/Exp3P.h,
+	  libshogun/classifier/boosting/Bandits/GenericBanditAlgorithm.cpp,
+	  libshogun/classifier/boosting/Bandits/GenericBanditAlgorithm.h,
+	  libshogun/classifier/boosting/Bandits/Random.cpp,
+	  libshogun/classifier/boosting/Bandits/Random.h,
+	  libshogun/classifier/boosting/Bandits/UCBK.cpp,
+	  libshogun/classifier/boosting/Bandits/UCBK.h,
+	  libshogun/classifier/boosting/Bandits/UCBKRandomized.cpp,
+	  libshogun/classifier/boosting/Bandits/UCBKRandomized.h,
+	  libshogun/classifier/boosting/Bandits/UCBKV.cpp,
+	  libshogun/classifier/boosting/Bandits/UCBKV.h,
+	  libshogun/classifier/boosting/BanditsLS,
+	  libshogun/classifier/boosting/BanditsLS/Exp3GLS.cpp,
+	  libshogun/classifier/boosting/BanditsLS/Exp3GLS.h,
+	  libshogun/classifier/boosting/BanditsLS/Exp3LS.cpp,
+	  libshogun/classifier/boosting/BanditsLS/Exp3LS.h,
+	  libshogun/classifier/boosting/BanditsLS/GenericBanditAlgorithmLS.cpp,
+	  libshogun/classifier/boosting/BanditsLS/GenericBanditAlgorithmLS.h,
+	  libshogun/classifier/boosting/BanditsLS/UCTLS.cpp,
+	  libshogun/classifier/boosting/BanditsLS/UCTLS.h,
+	  libshogun/classifier/boosting/Bzip2,
+	  libshogun/classifier/boosting/Bzip2/Bzip2Wrapper.cpp,
+	  libshogun/classifier/boosting/Bzip2/Bzip2Wrapper.h,
+	  libshogun/classifier/boosting/Bzip2/blocksort.c,
+	  libshogun/classifier/boosting/Bzip2/bzip2.c,
+	  libshogun/classifier/boosting/Bzip2/bzip2recover.c,
+	  libshogun/classifier/boosting/Bzip2/bzlib.c,
+	  libshogun/classifier/boosting/Bzip2/bzlib.h,
+	  libshogun/classifier/boosting/Bzip2/bzlib_private.h,
+	  libshogun/classifier/boosting/Bzip2/compress.c,
+	  libshogun/classifier/boosting/Bzip2/crctable.c,
+	  libshogun/classifier/boosting/Bzip2/decompress.c,
+	  libshogun/classifier/boosting/Bzip2/dlltest.c,
+	  libshogun/classifier/boosting/Bzip2/huffman.c,
+	  libshogun/classifier/boosting/Bzip2/mk251.c,
+	  libshogun/classifier/boosting/Bzip2/randtable.c,
+	  libshogun/classifier/boosting/Bzip2/spewG.c,
+	  libshogun/classifier/boosting/Bzip2/unzcrash.c,
+	  libshogun/classifier/boosting/Classifiers,
+	  libshogun/classifier/boosting/Classifiers/ABMHClassifierYahoo.cpp,
+	  libshogun/classifier/boosting/Classifiers/ABMHClassifierYahoo.h,
+	  libshogun/classifier/boosting/Classifiers/AdaBoostMHClassifier.cpp,
+	  libshogun/classifier/boosting/Classifiers/AdaBoostMHClassifier.h,
+	  libshogun/classifier/boosting/Classifiers/BrownBoostClassifier.cpp,
+	  libshogun/classifier/boosting/Classifiers/BrownBoostClassifier.h,
+	  libshogun/classifier/boosting/Classifiers/ExampleResults.cpp,
+	  libshogun/classifier/boosting/Classifiers/ExampleResults.h,
+	  libshogun/classifier/boosting/Classifiers/FilterBoostClassifier.cpp,
+	  libshogun/classifier/boosting/Classifiers/FilterBoostClassifier.h,
+	  libshogun/classifier/boosting/Classifiers/LogitBoostClassifier.cpp,
+	  libshogun/classifier/boosting/Classifiers/LogitBoostClassifier.h,
+	  libshogun/classifier/boosting/Defaults.h,
+	  libshogun/classifier/boosting/IO,
+	  libshogun/classifier/boosting/IO/ADTreeData.cpp,
+	  libshogun/classifier/boosting/IO/ADTreeData.h,
+	  libshogun/classifier/boosting/IO/ArffParser.cpp,
+	  libshogun/classifier/boosting/IO/ArffParser.h,
+	  libshogun/classifier/boosting/IO/ArffParserBzip2.cpp,
+	  libshogun/classifier/boosting/IO/ArffParserBzip2.h,
+	  libshogun/classifier/boosting/IO/EncodeData.cpp,
+	  libshogun/classifier/boosting/IO/EncodeData.h,
+	  libshogun/classifier/boosting/IO/ExtendableData.cpp,
+	  libshogun/classifier/boosting/IO/ExtendableData.h,
+	  libshogun/classifier/boosting/IO/GenericParser.h,
+	  libshogun/classifier/boosting/IO/HaarData.cpp,
+	  libshogun/classifier/boosting/IO/HaarData.h,
+	  libshogun/classifier/boosting/IO/InputData.cpp,
+	  libshogun/classifier/boosting/IO/InputData.h,
+	  libshogun/classifier/boosting/IO/LSHTCParser.cpp,
+	  libshogun/classifier/boosting/IO/LSHTCParser.h,
+	  libshogun/classifier/boosting/IO/NameMap.cpp,
+	  libshogun/classifier/boosting/IO/NameMap.h,
+	  libshogun/classifier/boosting/IO/OutputInfo.cpp,
+	  libshogun/classifier/boosting/IO/OutputInfo.h,
+	  libshogun/classifier/boosting/IO/ParasiteData.h,
+	  libshogun/classifier/boosting/IO/RawData.cpp,
+	  libshogun/classifier/boosting/IO/RawData.h,
+	  libshogun/classifier/boosting/IO/SVMLightParser.cpp,
+	  libshogun/classifier/boosting/IO/SVMLightParser.h,
+	  libshogun/classifier/boosting/IO/Serialization.cpp,
+	  libshogun/classifier/boosting/IO/Serialization.h,
+	  libshogun/classifier/boosting/IO/SortedData.cpp,
+	  libshogun/classifier/boosting/IO/SortedData.h,
+	  libshogun/classifier/boosting/IO/TxtParser.cpp,
+	  libshogun/classifier/boosting/IO/TxtParser.h,
+	  libshogun/classifier/boosting/Kmeans,
+	  libshogun/classifier/boosting/Kmeans/KCtree.cpp,
+	  libshogun/classifier/boosting/Kmeans/KCtree.h,
+	  libshogun/classifier/boosting/Kmeans/KCutil.cpp,
+	  libshogun/classifier/boosting/Kmeans/KCutil.h,
+	  libshogun/classifier/boosting/Kmeans/KM_ANN.cpp,
+	  libshogun/classifier/boosting/Kmeans/KM_ANN.h,
+	  libshogun/classifier/boosting/Kmeans/KMcenters.cpp,
+	  libshogun/classifier/boosting/Kmeans/KMcenters.h,
+	  libshogun/classifier/boosting/Kmeans/KMdata.cpp,
+	  libshogun/classifier/boosting/Kmeans/KMdata.h,
+	  libshogun/classifier/boosting/Kmeans/KMeans.cpp,
+	  libshogun/classifier/boosting/Kmeans/KMeans.h,
+	  libshogun/classifier/boosting/Kmeans/KMfilterCenters.cpp,
+	  libshogun/classifier/boosting/Kmeans/KMfilterCenters.h,
+	  libshogun/classifier/boosting/Kmeans/KMlocal.cpp,
+	  libshogun/classifier/boosting/Kmeans/KMlocal.h,
+	  libshogun/classifier/boosting/Kmeans/KMrand.cpp,
+	  libshogun/classifier/boosting/Kmeans/KMrand.h,
+	  libshogun/classifier/boosting/Kmeans/KMterm.cpp,
+	  libshogun/classifier/boosting/Kmeans/KMterm.h,
+	  libshogun/classifier/boosting/Kmeans/files,
+	  libshogun/classifier/boosting/Others,
+	  libshogun/classifier/boosting/Others/Example.h,
+	  libshogun/classifier/boosting/Others/Rates.h,
+	  libshogun/classifier/boosting/StrongLearners,
+	  libshogun/classifier/boosting/StrongLearners/ABMHLearnerYahoo.cpp,
+	  libshogun/classifier/boosting/StrongLearners/ABMHLearnerYahoo.h,
+	  libshogun/classifier/boosting/StrongLearners/ADTreeLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/ADTreeLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/BrownBoostLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/BrownBoostLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/FilterBoostLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/FilterBoostLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/GenericStrongLearner.h,
+	  libshogun/classifier/boosting/StrongLearners/LogitBoostLearner.cpp,
+	  libshogun/classifier/boosting/StrongLearners/LogitBoostLearner.h,
+	  libshogun/classifier/boosting/Utils,
+	  libshogun/classifier/boosting/Utils/Args.cpp,
+	  libshogun/classifier/boosting/Utils/Args.h,
+	  libshogun/classifier/boosting/Utils/ClassHierarchy.cpp,
+	  libshogun/classifier/boosting/Utils/ClassHierarchy.h,
+	  libshogun/classifier/boosting/Utils/MathUtils.cpp,
+	  libshogun/classifier/boosting/Utils/MathematicalTools.h,
+	  libshogun/classifier/boosting/Utils/StreamTokenizer.h,
+	  libshogun/classifier/boosting/Utils/UCTutils.cpp,
+	  libshogun/classifier/boosting/Utils/UCTutils.h,
+	  libshogun/classifier/boosting/Utils/Utils.cpp,
+	  libshogun/classifier/boosting/Utils/Utils.h,
+	  libshogun/classifier/boosting/WeakLearners,
+	  libshogun/classifier/boosting/WeakLearners/AbstainableLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/AbstainableLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditProductLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditProductLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleSparseStump.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleSparseStump.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BanditTreeLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BanditTreeLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/BaseLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/BaseLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ConstantLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ConstantLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/DirichletSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/DirichletSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner2.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner2.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner3.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner3.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner4.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearner4.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerKNN.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerKNN.h,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerSA.cpp,
+	  libshogun/classifier/boosting/WeakLearners/EnumLearnerSA.h,
+	  libshogun/classifier/boosting/WeakLearners/FeaturewiseLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/FeaturewiseLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/Haar,
+	  libshogun/classifier/boosting/WeakLearners/Haar/HaarFeatures.cpp,
+	  libshogun/classifier/boosting/WeakLearners/Haar/HaarFeatures.h,
+	  libshogun/classifier/boosting/WeakLearners/Haar/HaarLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/Haar/HaarLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/HaarMultiStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/HaarMultiStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/HaarSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/HaarSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/HierarchicalStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/HierarchicalStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/IndicatorLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/IndicatorLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/MultiStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/MultiStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ParasiteLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ParasiteLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerLSHTC.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerUCT.cpp,
+	  libshogun/classifier/boosting/WeakLearners/ProductLearnerUCT.h,
+	  libshogun/classifier/boosting/WeakLearners/RandomSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/RandomSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/Selector.cpp,
+	  libshogun/classifier/boosting/WeakLearners/Selector.h,
+	  libshogun/classifier/boosting/WeakLearners/SigmoidSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SigmoidSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleRegressionStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleRegressionStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStump.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStump.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleSparseStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearnerLSHTC.cpp,
+	  libshogun/classifier/boosting/WeakLearners/SingleStumpLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner2.cpp,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner2.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner3.cpp,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearner3.h,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearnerUCT.cpp,
+	  libshogun/classifier/boosting/WeakLearners/TreeLearnerUCT.h,
+	  libshogun/classifier/boosting/WeakLearners/UCB1SingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/UCB1SingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearner.h,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearnerLSHTC.cpp,
+	  libshogun/classifier/boosting/WeakLearners/UCBKSingleStumpLearnerLSHTC.h,
+	  libshogun/classifier/boosting/WeakLearners/UCBVHaarSingleStumpLearner.cpp,
+	  libshogun/classifier/boosting/WeakLearners/UCBVHaarSingleStumpLearner.h:
+	  experimental merge of multiboost
+	* libshogun/base/class_list.cpp.sh: use /bin/bash instead of
+	  /bin/sh
+
+2010-12-08  Soeren Sonnenburg <sonne@debian.org>
+
+	* NEWS, configure: Fix build failure with ld --as-needed (thanks
+	  Matthias Klose for the patch)
+	* libshogunui/GUIClassifier.cpp: Fix initialization error in KRR
+	  static interfaces.
+	  Thanks Maxwell Collins for the patch.
+
 2010-12-07  Soeren Sonnenburg <sonne@debian.org>
 
+	* ChangeLog: updated changelog
 	* NEWS, configure: add data in make release script
 	* Makefile.template: create symlinks to the data directory
 	* NEWS, libshogun/base/SGObject.cpp, libshogun/base/SGObject.h,
@@ -289,7 +935,7 @@
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogun/lib/DynamicArray.h: fix compilation with dynarray
 
-2010-11-27  xdlehmann
+2010-11-27  D.   Lehmann <.......................>
 
 	* libshogun/base/DynArray.h,
 	  libshogun/features/CombinedDotFeatures.h,
@@ -314,7 +960,7 @@
 	* libshogun/lib/DynamicArray.h, libshogunui/GUIPreProc.cpp,
 	  libshogunui/GUIPreProc.h: compile fix for trunk
 
-2010-11-26  xdlehmann
+2010-11-26  D.   Lehmann <.......................>
 
 	* libshogun/base/DynArray.h, libshogun/classifier/KNN.cpp,
 	  libshogun/classifier/KernelPerceptron.cpp,
@@ -373,7 +1019,7 @@
 
 	* NEWS: fix example and update news
 
-2010-11-24  xdlehmann
+2010-11-24  D.   Lehmann <.......................>
 
 	* libshogun/base/init.cpp,
 	  libshogun/classifier/mkl/MKLMultiClass.cpp,
@@ -395,7 +1041,7 @@
 	  
 	  - Replacing some STD::VECTOR's with T*
 
-2010-11-23  xdlehmann
+2010-11-23  D.   Lehmann <.......................>
 
 	* configure, libshogun/lib/DataType.cpp, libshogun/lib/DataType.h,
 	  libshogun/lib/Parameter.cpp,
@@ -435,7 +1081,7 @@
 	  I need to check-in my current implementation first. If there is
 	  no commit at the next few hours then it works ;) ...
 
-2010-11-21  xdlehmann
+2010-11-21  D.   Lehmann <.......................>
 
 	* configure, libshogun/lib/Parameter.cpp,
 	  libshogun/lib/SerializableAsciiFile.cpp,
@@ -461,7 +1107,7 @@
 	  
 	  - Renamed to `SerializableHdf5File'.
 
-2010-11-18  xdlehmann
+2010-11-18  D.   Lehmann <.......................>
 
 	* libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
 	  libshogun/classifier/svm/LibLinear.h: *
@@ -473,7 +1119,7 @@
 	  
 	  Compiling error if `./configure --disable-lapack'.
 
-2010-11-17  xdlehmann
+2010-11-17  D.   Lehmann <.......................>
 
 	* libshogun/features/StringFeatures.h, libshogun/lib/DataType.h,
 	  libshogun/lib/Parameter.cpp,
@@ -490,7 +1136,7 @@
 	  persistent
 	  storage.
 
-2010-11-15  xdlehmann
+2010-11-15  D.   Lehmann <.......................>
 
 	* libshogun/lib/DataType.h, libshogun/lib/Parameter.cpp,
 	  libshogun/lib/SerializableFile.cpp,
@@ -505,7 +1151,7 @@
 	  
 	  - 64 bit compatible.
 
-2010-11-14  xdlehmann
+2010-11-14  D.   Lehmann <.......................>
 
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  configure, libshogun/base/class_list.cpp.sh,
@@ -573,7 +1219,7 @@
 	  libshogun/classifier/svm/LibLinear.h: added serialization code to
 	  a few linear classifiers (still incomplete)
 
-2010-11-07  xdlehmann
+2010-11-07  D.   Lehmann <.......................>
 
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogun/features/Alphabet.cpp,
@@ -599,7 +1245,7 @@
 	  
 	  - reverted to revision 5113 ... too many pointers :((
 
-2010-11-06  xdlehmann
+2010-11-06  D.   Lehmann <.......................>
 
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogun/features/Alphabet.cpp,
@@ -627,7 +1273,7 @@
 	  
 	  - Matlab (R) binding not tested; no license.
 
-2010-11-05  xdlehmann
+2010-11-05  D.   Lehmann <.......................>
 
 	* libshogun/kernel/Kernel.h,
 	  libshogun/kernel/MultitaskKernelMaskNormalizer.h: *
@@ -636,7 +1282,7 @@
 	  
 	  - Missing include added. Thanks to xjc =)
 
-2010-11-04  xdlehmann
+2010-11-04  D.   Lehmann <.......................>
 
 	* libshogun/base/DynArray.h: * src/libshogun/base/DynArray.h
 	  
@@ -669,7 +1315,7 @@
 	  - SG_SERIALIZABLE::LOAD_SERIALIZABLE_{PRE,POST} added. An example
 	  implementation you can find in CALPHABET::LOAD_SERIALIZABLE_POST.
 
-2010-11-03  xdlehmann
+2010-11-03  D.   Lehmann <.......................>
 
 	* libshogun/lib/ShogunException.cpp,
 	  libshogun/lib/ShogunException.h:
@@ -683,7 +1329,7 @@
 	* libshogun/clustering/KMeans.cpp, libshogun/clustering/KMeans.h:
 	  remove cruft from kmeans
 
-2010-11-01  xdlehmann
+2010-11-01  D.   Lehmann <.......................>
 
 	* libshogun/kernel/MultitaskKernelNormalizer.h: *
 	  src/libshogun/kernel/MultitaskKernelNormalizer.h
@@ -697,7 +1343,7 @@
 
 	* libshogun/kernel/MultitaskKernelMaskNormalizer.h: compile fix
 
-2010-10-29  xdlehmann
+2010-10-29  D.   Lehmann <.......................>
 
 	* libshogun/lib/Parameter.cpp: * src/libshogun/lib/Parameter.cpp
 	  
@@ -837,7 +1483,7 @@
 	  serialisation support
 	* NEWS: keep track of changes in news
 
-2010-10-27  xdlehmann
+2010-10-27  D.   Lehmann <.......................>
 
 	* libshogun/lib/DynamicArray.h,
 	  libshogun/lib/SerializableAsciiFile.cpp,
@@ -910,7 +1556,7 @@
 	  of DynArray::delete_element() the last element was not longer
 	  allocated! Use mtrace or corresponding tools to check this case.
 
-2010-10-26  xdlehmann
+2010-10-26  D.   Lehmann <.......................>
 
 	* libshogun/base/class_list.cpp.templ: *
 	  src/libshogun/base/class_list.cpp.templ:
@@ -923,7 +1569,7 @@
 	  libshogun/kernel/CustomKernel.h: remaining fixes to allow for
 	  huge custom kernels
 
-2010-10-21  xdlehmann
+2010-10-21  D.   Lehmann <.......................>
 
 	* Makefile.template, cmdline/CmdLineInterface.cpp, configure,
 	  libshogun/base/DynArray.h, libshogun/base/Parallel.cpp,
@@ -1123,7 +1769,7 @@
 	  
 	  - Recovering revision 5093.
 
-2010-10-16  xdlehmann
+2010-10-16  D.   Lehmann <.......................>
 
 	* Makefile.template, cmdline/CmdLineInterface.cpp, configure,
 	  libshogun/base/DynArray.h, libshogun/base/Parallel.cpp,
@@ -1355,7 +2001,7 @@
 	  <mailto:jobless.dirk@gmx.de> because I don't know how long my
 	  ldirk@mail.tu-... account will be available.
 
-2010-10-13  xdlehmann
+2010-10-13  D.   Lehmann <.......................>
 
 	* libshogun/base/SGObject.cpp, libshogun/base/class_list.cpp.sh,
 	  libshogun/base/class_list.cpp.templ,
@@ -1375,7 +2021,7 @@
 	  
 	  - Some minor fixes which could be misuse the stack.
 
-2010-10-11  xdlehmann
+2010-10-11  D.   Lehmann <.......................>
 
 	* libshogun/base/SGObject.cpp, libshogun/base/class_list.cpp.sh,
 	  libshogun/base/class_list.cpp.templ, libshogun/base/class_list.h,
@@ -1519,7 +2165,7 @@
 	  
 	  *** snap ***
 
-2010-10-08  xdlehmann
+2010-10-08  D.   Lehmann <.......................>
 
 	* cmdline/CmdLineInterface.cpp, libshogun/base/DynArray.h,
 	  libshogun/base/Parallel.cpp, libshogun/base/Parallel.h,
@@ -1702,7 +2348,7 @@
 	  * Ready for implementing HDF5 and much bug reports ;P ... Let's
 	  go...
 
-2010-10-07  xdlehmann
+2010-10-07  D.   Lehmann <.......................>
 
 	* libshogun/base/class_list.cpp.sh, libshogun/base/class_list.h,
 	  libshogun/lib/Parameter.cpp, libshogun/lib/SGSerializable.h,
@@ -1715,7 +2361,7 @@
 	  
 	  - License stuff added.
 
-2010-10-06  xdlehmann
+2010-10-06  D.   Lehmann <.......................>
 
 	* Makefile.template, configure, libshogun/base,
 	  libshogun/base/SGObject.h, libshogun/base/class_list.cpp.sh,
@@ -1806,7 +2452,7 @@
 	  modular/Kernel.i: add HistogramIntersectionKernel written by Koen
 	  van de Sande
 
-2010-10-05  xdlehmann
+2010-10-05  D.   Lehmann <.......................>
 
 	* libshogun/features/Labels.cpp, libshogun/features/Labels.h,
 	  libshogun/features/SimpleFeatures.h,
@@ -1816,7 +2462,7 @@
 	  
 	  - Backup before greater structure changes.
 
-2010-10-04  xdlehmann
+2010-10-04  D.   Lehmann <.......................>
 
 	* libshogun/lib/Parameter.cpp: * src/libshogun/lib/Parameter.cpp
 	  
@@ -1855,7 +2501,7 @@
 	  
 	  - locale fix of revision 5034 completed ;P ...
 
-2010-10-01  xdlehmann
+2010-10-01  D.   Lehmann <.......................>
 
 	* libshogun/classifier/Classifier.cpp,
 	  libshogun/classifier/svm/SVM.cpp, libshogun/features/Labels.cpp,
@@ -1875,7 +2521,7 @@
 	  
 	  - Backup and Weekend =) ...
 
-2010-09-30  xdlehmann
+2010-09-30  D.   Lehmann <.......................>
 
 	* libshogun/features/Labels.cpp, libshogun/features/Labels.h: *
 	  src/libshogun/features/Labels.{h,cpp}
@@ -1899,7 +2545,7 @@
 	  libshogun/classifier/svm/SVM_linear.h, modular/Classifier.i:
 	  added regtrick for liblinear
 
-2010-09-29  xdlehmann
+2010-09-29  D.   Lehmann <.......................>
 
 	* cmdline/CmdLineInterface.cpp, libshogun/lib/BinaryFile.cpp,
 	  libshogun/lib/HDF5File.cpp, matlab/MatlabInterface.cpp,
@@ -1959,7 +2605,7 @@
 	  libshogun/lib/SerialFile.h, libshogun/lib/common.h,
 	  modular/Library.i:
 
-2010-09-24  xdlehmann
+2010-09-24  D.   Lehmann <.......................>
 
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogun/base/DynArray.h, libshogun/base/SGObject.cpp,
@@ -1987,7 +2633,7 @@
 	  libshogunui/SGInterface.cpp: simplify kernel print cases and
 	  remove default case
 
-2010-09-15  xdlehmann
+2010-09-15  D.   Lehmann <.......................>
 
 	* libshogunui/GUIKernel.cpp, libshogunui/SGInterface.cpp: *
 	  src/libshogunui/*
@@ -2090,7 +2736,7 @@
 	* configure: warn that LDA/liblinear and other features may be
 	  missing when lapack is not available
 
-2010-08-18  xdlehmann
+2010-08-18  D.   Lehmann <.......................>
 
 	* libshogun/kernel/GaussianKernel.h: *
 	  src/libshogun/kernel/GaussianKernel.h:
@@ -2116,7 +2762,7 @@
 	  progress and different calculation routine
 	  - some more parameter ideas for serialization/model selection
 
-2010-08-17  xdlehmann
+2010-08-17  D.   Lehmann <.......................>
 
 	* libshogun/classifier/svm/GMNPSVM.cpp,
 	  libshogun/classifier/svm/gmnplib.cpp,

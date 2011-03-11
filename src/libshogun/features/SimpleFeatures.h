@@ -276,6 +276,36 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				delete[] feat_vec ;
 		}
 
+		/**
+		 * Extracts the feature vectors mentioned in idx inplace. 
+		 *
+		 * It does not resize the allocated memory block.
+		 *
+		 * Note: assumes idx is sorted
+		 */
+		void feature_matrix_subset(int32_t* idx, int32_t idx_len)
+		{
+			ASSERT(feature_matrix);
+			int32_t num_vec=num_vectors;
+			num_vectors=idx_len;
+
+			int32_t old_ii=-1;
+
+			for (int32_t i=0; i<idx_len; i++)
+			{
+				int32_t ii=idx[i];
+				ASSERT(old_ii<ii);
+
+				if (i==ii)
+					continue;
+
+				memcpy(&feature_matrix[int64_t(num_features)*i],
+						&feature_matrix[int64_t(num_features)*ii],
+						num_features*sizeof(ST));
+				old_ii=ii;
+			}
+		}
+
 		/** get a copy of the feature matrix
 		 * num_feat,num_vectors are returned by reference
 		 *
