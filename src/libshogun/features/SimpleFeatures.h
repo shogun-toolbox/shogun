@@ -281,6 +281,9 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 *
 		 * It does not resize the allocated memory block.
 		 *
+		 * @param idx index with examples that shall remain in the feature matrix
+		 * @param idx_len length of the index
+		 *
 		 * Note: assumes idx is sorted
 		 */
 		void feature_matrix_subset(int32_t* idx, int32_t idx_len)
