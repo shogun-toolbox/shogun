@@ -332,12 +332,12 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			int32_t num_feat=num_features;
 			num_features=idx_len;
 
-			int32_t old_jj=-1;
 			for (int32_t i=0; i<num_vectors; i++)
 			{
 				ST* src=&feature_matrix[int64_t(num_feat)*i];
 				ST* dst=&feature_matrix[int64_t(num_features)*i];
 
+				int32_t old_jj=-1;
 				for (int32_t j=0; j<idx_len; j++)
 				{
 					int32_t jj=idx[j];
