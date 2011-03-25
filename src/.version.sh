@@ -3,6 +3,7 @@
 LC_ALL=C
 export LC_ALL
 
+prefix=""
 mainversion=`awk '/Release/{print $5;exit}' ../NEWS`
 extra=""
 if test -d .svn
@@ -15,6 +16,7 @@ then
 	minute=`svn info | grep "^Last Changed Date:" | cut -f 5 -d ' ' | cut -f 2 -d ':'`
 
 	src="svn"
+	prefix="svn_r"
 elif test -d ../../.git
 then
 	# Lets assume that we are building from something which tracks the
@@ -32,8 +34,10 @@ then
 	hour=`date -d "$dateinfo" +%H`
 	minute=`date -d "$dateinfo" +%M`
 
-	revision=$(git show --pretty='format:%b' $branch_point | head -1 | sed -e 's/.*@\([0-9]*\) \S*$/\1/g')
-	extra="git:`git show --pretty='format:%h'|head -1`"
+	revision="`git show --pretty='format:%h'|head -1`"
+	revision_prefix="0x"
+	prefix="git_"
+	#revision=$(git show --pretty='format:%b' $branch_point | head -1 | sed -e 's/.*@\([0-9]*\) \S*$/\1/g')
 else
 	extra="UNKNOWN_VERSION"
 	revision=9999
@@ -56,8 +60,8 @@ fi
 echo "#define MAINVERSION \"${mainversion}\""
 
 echo "#define VERSION_EXTRA \"${extra}\""
-echo "#define VERSION_REVISION ${revision}"
-echo "#define VERSION_RELEASE \"svn_r${revision}_${date}_${time}_${extra}\""
+echo "#define VERSION_REVISION ${revision_prefix}${revision}"
+echo "#define VERSION_RELEASE \"${prefix}${revision}_${date}_${time}_${extra}\""
 echo "#define VERSION_YEAR `echo ${year} | sed 's/^[0]//g'`"
 echo "#define VERSION_MONTH `echo ${month} | sed 's/^[0]//g'`"
 echo "#define VERSION_DAY `echo ${day} | sed 's/^[0]//g'`"
