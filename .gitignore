@@ -1,0 +1,271 @@
+
+# /
+/*doxygen_xml
+/*_wrap.h
+/*_wrap.cxx
+/*.so
+/*_doxygen.i
+/.depend
+/.config
+/*.pyc
+/TAGS
+/tags
+
+# /doc/
+/doc/html
+/doc/doxygen
+/doc/manual
+
+# /doc/pages/
+/doc/pages/*doxygen_xml
+/doc/pages/*_wrap.h
+/doc/pages/*_wrap.cxx
+/doc/pages/*.so
+/doc/pages/*_doxygen.i
+/doc/pages/.depend
+/doc/pages/.config
+/doc/pages/*.pyc
+/doc/pages/TAGS
+/doc/pages/tags
+
+# /examples/
+/examples/*.pyc
+
+# /examples/undocumented/libshogun/
+/examples/undocumented/libshogun/*doxygen_xml
+/examples/undocumented/libshogun/*_wrap.h
+/examples/undocumented/libshogun/*_wrap.cxx
+/examples/undocumented/libshogun/*.so
+/examples/undocumented/libshogun/*_doxygen.i
+/examples/undocumented/libshogun/.depend
+/examples/undocumented/libshogun/.config
+/examples/undocumented/libshogun/*.pyc
+/examples/undocumented/libshogun/TAGS
+/examples/undocumented/libshogun/tags
+
+# /examples/undocumented/matlab_and_octave/tools/
+/examples/undocumented/matlab_and_octave/tools/*doxygen_xml
+/examples/undocumented/matlab_and_octave/tools/*_wrap.h
+/examples/undocumented/matlab_and_octave/tools/*_wrap.cxx
+/examples/undocumented/matlab_and_octave/tools/*.so
+/examples/undocumented/matlab_and_octave/tools/*_doxygen.i
+/examples/undocumented/matlab_and_octave/tools/.depend
+/examples/undocumented/matlab_and_octave/tools/.config
+/examples/undocumented/matlab_and_octave/tools/*.pyc
+/examples/undocumented/matlab_and_octave/tools/TAGS
+/examples/undocumented/matlab_and_octave/tools/tags
+
+# /examples/undocumented/python/tools/
+/examples/undocumented/python/tools/*.pyc
+
+# /examples/undocumented/python_modular/graphical/
+/examples/undocumented/python_modular/graphical/*doxygen_xml
+/examples/undocumented/python_modular/graphical/*_wrap.h
+/examples/undocumented/python_modular/graphical/*_wrap.cxx
+/examples/undocumented/python_modular/graphical/*.so
+/examples/undocumented/python_modular/graphical/*_doxygen.i
+/examples/undocumented/python_modular/graphical/.depend
+/examples/undocumented/python_modular/graphical/.config
+/examples/undocumented/python_modular/graphical/*.pyc
+/examples/undocumented/python_modular/graphical/TAGS
+/examples/undocumented/python_modular/graphical/tags
+
+# /examples/undocumented/python_modular/tools/
+/examples/undocumented/python_modular/tools/*.pyc
+
+# /src/
+/src/*.pyc
+/src/*.py
+/src/*.cxx
+/src/*.i
+/src/*.so
+/src/doxygen_xml
+/src/.depend
+/src/.config
+/src/configure.log
+/src/config.h
+/src/versionstring.h
+/src/config-local
+
+# /src/libshogun/
+/src/libshogun/libshogun.a
+/src/libshogun/libshogun.so
+/src/libshogun/libshogun.so.4
+/src/libshogun/libshogun.so.4.1
+/src/libshogun/libshogun.so.5
+/src/libshogun/libshogun.so.5.0
+/src/libshogun/libshogun.so.6
+/src/libshogun/libshogun.so.6.0
+/src/libshogun/libshogun.so.7
+/src/libshogun/libshogun.so.7.0
+/src/libshogun/Makefile
+/src/libshogun/.depend
+/src/libshogun/libshogun.so.9
+/src/libshogun/libshogun.so.9.0
+
+# /src/libshogun/base/
+/src/libshogun/base/*doxygen_xml
+/src/libshogun/base/*_wrap.h
+/src/libshogun/base/*_wrap.cxx
+/src/libshogun/base/*.so
+/src/libshogun/base/*_doxygen.i
+/src/libshogun/base/.depend
+/src/libshogun/base/.config
+/src/libshogun/base/*.pyc
+/src/libshogun/base/TAGS
+/src/libshogun/base/tags
+/src/libshogun/base/ModelSelection.h
+/src/libshogun/base/class_list.cpp
+
+# /src/libshogun/classifier/
+/src/libshogun/classifier/*.pyc
+/src/libshogun/classifier/*.py
+/src/libshogun/classifier/*.cxx
+/src/libshogun/classifier/*.i
+/src/libshogun/classifier/*.so
+/src/libshogun/classifier/doxygen_xml
+
+# /src/libshogun/classifier/svm/
+/src/libshogun/classifier/svm/*doxygen_xml
+/src/libshogun/classifier/svm/*_wrap.h
+/src/libshogun/classifier/svm/*_wrap.cxx
+/src/libshogun/classifier/svm/*.so
+/src/libshogun/classifier/svm/*_doxygen.i
+/src/libshogun/classifier/svm/.depend
+/src/libshogun/classifier/svm/.config
+/src/libshogun/classifier/svm/*.pyc
+/src/libshogun/classifier/svm/TAGS
+/src/libshogun/classifier/svm/tags
+/src/libshogun/classifier/svm/LinTermSVM.h
+
+# /src/libshogun/clustering/
+/src/libshogun/clustering/*.pyc
+/src/libshogun/clustering/*.py
+/src/libshogun/clustering/*.cxx
+/src/libshogun/clustering/*.i
+/src/libshogun/clustering/*.so
+/src/libshogun/clustering/doxygen_xml
+/src/libshogun/clustering/.depend
+/src/libshogun/clustering/.config
+
+# /src/libshogun/distance/
+/src/libshogun/distance/*.pyc
+/src/libshogun/distance/*.py
+/src/libshogun/distance/*.cxx
+/src/libshogun/distance/*.i
+/src/libshogun/distance/*.so
+/src/libshogun/distance/doxygen_xml
+
+# /src/libshogun/distributions/
+/src/libshogun/distributions/*.pyc
+/src/libshogun/distributions/*.py
+/src/libshogun/distributions/*.cxx
+/src/libshogun/distributions/*.i
+/src/libshogun/distributions/*.so
+/src/libshogun/distributions/doxygen_xml
+
+# /src/libshogun/evaluation/
+/src/libshogun/evaluation/*.pyc
+/src/libshogun/evaluation/*.py
+/src/libshogun/evaluation/*.cxx
+/src/libshogun/evaluation/*.i
+/src/libshogun/evaluation/*.so
+/src/libshogun/evaluation/doxygen_xml
+
+# /src/libshogun/features/
+/src/libshogun/features/*.pyc
+/src/libshogun/features/*.py
+/src/libshogun/features/*.cxx
+/src/libshogun/features/*.i
+/src/libshogun/features/*.so
+/src/libshogun/features/doxygen_xml
+
+# /src/libshogun/kernel/
+/src/libshogun/kernel/*.pyc
+/src/libshogun/kernel/*.py
+/src/libshogun/kernel/*.cxx
+/src/libshogun/kernel/*.i
+/src/libshogun/kernel/*.so
+/src/libshogun/kernel/doxygen_xml
+
+# /src/libshogun/lib/
+/src/libshogun/lib/*.pyc
+/src/libshogun/lib/*.py
+/src/libshogun/lib/*.cxx
+/src/libshogun/lib/*.i
+/src/libshogun/lib/*.so
+/src/libshogun/lib/doxygen_xml
+/src/libshogun/lib/.depend
+/src/libshogun/lib/.config
+/src/libshogun/lib/configure.log
+/src/libshogun/lib/config.h
+/src/libshogun/lib/versionstring.h
+
+# /src/libshogun/preproc/
+/src/libshogun/preproc/*.pyc
+/src/libshogun/preproc/*.py
+/src/libshogun/preproc/*.cxx
+/src/libshogun/preproc/*.i
+/src/libshogun/preproc/*.so
+/src/libshogun/preproc/doxygen_xml
+/src/libshogun/preproc/.depend
+/src/libshogun/preproc/.config
+/src/libshogun/preproc/configure.log
+
+# /src/libshogun/regression/
+/src/libshogun/regression/*.pyc
+/src/libshogun/regression/*.py
+/src/libshogun/regression/*.cxx
+/src/libshogun/regression/*.i
+/src/libshogun/regression/*.so
+/src/libshogun/regression/doxygen_xml
+
+# /src/libshogun/regression/svr/
+/src/libshogun/regression/svr/*doxygen_xml
+/src/libshogun/regression/svr/*_wrap.h
+/src/libshogun/regression/svr/*_wrap.cxx
+/src/libshogun/regression/svr/*.so
+/src/libshogun/regression/svr/*_doxygen.i
+/src/libshogun/regression/svr/.depend
+/src/libshogun/regression/svr/.config
+/src/libshogun/regression/svr/*.pyc
+/src/libshogun/regression/svr/TAGS
+/src/libshogun/regression/svr/tags
+
+# /src/libshogun/structure/
+/src/libshogun/structure/*.pyc
+/src/libshogun/structure/*.py
+/src/libshogun/structure/*.cxx
+/src/libshogun/structure/*.i
+/src/libshogun/structure/*.so
+/src/libshogun/structure/doxygen_xml
+
+# /testsuite/
+/testsuite/*doxygen_xml
+/testsuite/*_wrap.h
+/testsuite/*_wrap.cxx
+/testsuite/*.so
+/testsuite/*_doxygen.i
+/testsuite/.depend
+/testsuite/.config
+/testsuite/*.pyc
+/testsuite/TAGS
+/testsuite/tags
+
+# /testsuite/generator/
+/testsuite/generator/*doxygen_xml
+/testsuite/generator/*_wrap.h
+/testsuite/generator/*_wrap.cxx
+/testsuite/generator/*.so
+/testsuite/generator/*_doxygen.i
+/testsuite/generator/.depend
+/testsuite/generator/.config
+/testsuite/generator/*.pyc
+/testsuite/generator/TAGS
+/testsuite/generator/tags
+
+# /testsuite/python/
+/testsuite/python/*.pyc
+
+# /testsuite/python_modular/
+/testsuite/python_modular/*.pyc
