@@ -159,7 +159,7 @@ naturally by the CSVM base class.
 In case you would want to integrate this into shoguns
 modular interfaces, all you have to do is to put this class in a header file
 and to include the header file in the corresponding .i file (in this case
-src/modular/Kernel.i). It is easies to search for a similarly wrapped object
+src/modular/Kernel.i). It is easiest to search for a similarly wrapped object
 and just fill in the same three lines: in the %{ %} block (that is ignored by
 swig - the program we use to generate the modular python/octave interface
 wrappers)

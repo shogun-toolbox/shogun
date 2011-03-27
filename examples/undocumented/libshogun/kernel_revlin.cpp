@@ -122,7 +122,7 @@ int main(int argc, char** argv)
     CSimpleFeatures<float64_t>* features= new CSimpleFeatures<float64_t>();
     features->set_feature_matrix(matrix, 2, 3);
 
-    // create gaussian kernel with cache 10MB, width 0.5
+    // create reverse linear kernel
     CReverseLinearKernel* kernel = new CReverseLinearKernel();
     kernel->init(features,features);
 
