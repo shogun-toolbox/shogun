@@ -1,19 +1,20 @@
-def gaussian ():
-	print 'Gaussian'
+from tools.load import LoadMatrix
+from sg import sg
+lm=LoadMatrix()
 
-	width=1.9
-	size_cache=10
+traindat=lm.load_numbers('../data/fm_train_real.dat')
+testdat=lm.load_numbers('../data/fm_test_real.dat')
+parameter_list=[[traindat,testdat,1.4,10],[traindat,testdat,1.9,11]]
 
-	from sg import sg
+def kernel_gaussian (fm_train_real=traindat,fm_test_real=testdat,
+		 width=1.4,size_cache=10):
 	sg('set_features', 'TRAIN', fm_train_real)
 	sg('set_features', 'TEST', fm_test_real)
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 	km=sg('get_kernel_matrix', 'TRAIN')
 	km=sg('get_kernel_matrix', 'TEST')
+	return km
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	gaussian()
+	print 'Gaussian'
+	kernel_gaussian(*parameter_list[0])

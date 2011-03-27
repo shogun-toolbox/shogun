@@ -1,10 +1,14 @@
-def log_plus_one ():
-	print 'LogPlusOne'
+from tools.load import LoadMatrix
+from sg import sg
+lm=LoadMatrix()
 
-	width=1.4
-	size_cache=10
+traindat=lm.load_numbers('../data/fm_train_real.dat')
+testdat=lm.load_numbers('../data/fm_test_real.dat')
+parameter_list=[[traindat,testdat,1.4,10],[traindat,testdat,1.5,11]]
 
-	from sg import sg
+def preproc_logplusone (fm_train_real=traindat,fm_test_real=testdat,
+		 width=1.4,size_cache=10):
+
 	sg('add_preproc', 'LOGPLUSONE')
 	sg('set_kernel', 'CHI2', 'REAL', size_cache, width)
 
@@ -15,10 +19,8 @@ def log_plus_one ():
 	sg('set_features', 'TEST', fm_test_real)
 	sg('attach_preproc', 'TEST')
 	km=sg('get_kernel_matrix', 'TEST')
+	return km
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	log_plus_one()
+	print 'LogPlusOne'
+	preproc_logplusone(*parameter_list[0])

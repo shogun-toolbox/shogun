@@ -1,13 +1,17 @@
-def svr_light ():
-	print 'SVRLight'
+from tools.load import LoadMatrix
+from sg import sg
+lm=LoadMatrix()
 
-	size_cache=10
-	width=2.1
-	C=1.2
-	epsilon=1e-5
-	tube_epsilon=1e-2
+traindat=lm.load_numbers('../data/fm_train_real.dat')
+testdat=lm.load_numbers('../data/fm_test_real.dat')
+trainlabel=lm.load_labels('../data/label_train_twoclass.dat')
+parameter_list=[[traindat,testdat,trainlabel,10,2.1,1.2,1e-5,1e-2],
+		[traindat,testdat,trainlabel,11,2.3,1.3,1e-6,1e-3]]
 
-	from sg import sg
+def regression_svrlight (fm_train=traindat,fm_test=testdat,
+		label_train=trainlabel,size_cache=10,width=2.1,
+		C=1.2,epsilon=1e-5,tube_epsilon=1e-2):
+
 	sg('set_features', 'TRAIN', fm_train)
 	sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 
@@ -24,11 +28,8 @@ def svr_light ():
 
 	sg('set_features', 'TEST', fm_test)
 	result=sg('classify')
+	return result
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test=lm.load_numbers('../data/fm_test_real.dat')
-	label_train=lm.load_labels('../data/label_train_twoclass.dat')
-	svr_light()
+	print 'SVRLight'
+	regression_svrlight(*parameter_list[0])

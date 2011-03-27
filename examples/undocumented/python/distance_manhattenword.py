@@ -1,11 +1,13 @@
-def manhattan_word_distance ():
-	print 'ManhattanWordDistance'
+from tools.load import LoadMatrix
+from sg import sg
+lm=LoadMatrix()
 
-	order=3
-	gap=0
-	reverse='n' # bit silly to not use boolean, set 'r' to yield true
+traindna=lm.load_dna('../data/fm_train_dna.dat')
+testdna=lm.load_dna('../data/fm_test_dna.dat')
+parameter_list=[[traindna,testdna,3,0,'n'],[traindna,testdna,4,0,'n']]
 
-	from sg import sg
+def distance_manhattenword (fm_train_dna=traindna,fm_test_dna=testdna,order=3,
+			    gap=0,reverse='n'):
 	sg('set_distance', 'MANHATTAN', 'WORD')
 	sg('add_preproc', 'SORTWORDSTRING')
 
@@ -18,10 +20,8 @@ def manhattan_word_distance ():
 	sg('convert', 'TEST', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TEST')
 	dm=sg('get_distance_matrix', 'TEST')
+	return dm
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_dna=lm.load_dna('../data/fm_train_dna.dat')
-	fm_test_dna=lm.load_dna('../data/fm_test_dna.dat')
-	manhattan_word_distance()
+	print 'ManhattanWordDistance'
+	distance_manhattenword(*parameter_list[0])

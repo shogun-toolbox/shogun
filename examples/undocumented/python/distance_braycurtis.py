@@ -1,17 +1,19 @@
-def bray_curtis_distance ():
-	print 'BrayCurtisDistance'
-	from sg import sg
-	sg('set_distance', 'BRAYCURTIS', 'REAL')
+from tools.load import LoadMatrix
+from sg import sg
+lm=LoadMatrix()
 
+traindat=lm.load_numbers('../data/fm_train_real.dat')
+testdat=lm.load_numbers('../data/fm_test_real.dat')
+parameter_list=[[traindat,testdat],[traindat,testdat]]
+
+def distance_braycurtis (fm_train_real=traindat,fm_test_real=testdat):
+	sg('set_distance', 'BRAYCURTIS', 'REAL')
 	sg('set_features', 'TRAIN', fm_train_real)
 	dm=sg('get_distance_matrix', 'TRAIN')
-
 	sg('set_features', 'TEST', fm_test_real)
 	dm=sg('get_distance_matrix', 'TEST')
+	return dm
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	bray_curtis_distance()
+	print 'BrayCurtisDistance'
+	distance_braycurtis(*parameter_list[0])

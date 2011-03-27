@@ -1,7 +1,16 @@
-def lda ():
-	print 'LDA'
+from tools.load import LoadMatrix
+from sg import sg
+lm=LoadMatrix()
 
-	from sg import sg
+traindat=lm.load_numbers('../data/fm_train_real.dat')
+testdat=lm.load_numbers('../data/fm_test_real.dat')
+train_label=lm.load_labels('../data/label_train_twoclass.dat')
+parameter_list=[[traindat,testdat, train_label],
+		[traindat,testdat,train_label]]
+
+def classifier_lda (fm_train_real=traindat,fm_test_real=testdat,
+			label_train_twoclass=train_label):
+
 	sg('set_features', 'TRAIN', fm_train_real)
 	sg('set_labels', 'TRAIN', label_train_twoclass)
 	sg('new_classifier', 'LDA')
@@ -9,13 +18,8 @@ def lda ():
 
 	sg('set_features', 'TEST', fm_test_real)
 	result=sg('classify')
-	print result
+	return result
 
-if __name__=='__main__': #svm_light()
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train_real=lm.load_numbers('../data/fm_train_real.dat')
-	fm_test_real=lm.load_numbers('../data/fm_test_real.dat')
-	label_train_twoclass=lm.load_labels('../data/label_train_twoclass.dat')
-	print fm_train_real
-	lda()
+if __name__=='__main__': 
+	print 'LDA'
+	classifier_lda(*parameter_list[0])

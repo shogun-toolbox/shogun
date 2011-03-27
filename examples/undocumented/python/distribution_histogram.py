@@ -1,10 +1,12 @@
-def histogram ():
-	print 'Histogram'
+from tools.load import LoadMatrix
+from sg import sg
+lm=LoadMatrix()
+traindna=lm.load_dna('../data/fm_train_dna.dat')
+cubedna=lm.load_cubes('../data/fm_train_cube.dat')
+parameter_list=[[traindna,cubedna,3,0,'n'],[traindna,cubedna,4,0,'n']]
 
-	order=3
-	gap=0
-	reverse='n' # bit silly to not use boolean, set 'r' to yield true
-	from sg import sg
+def distribution_histogram(fm_train=traindna,fm_cube=cubedna,order=3,
+			    gap=0,reverse='n'):
 
 #	sg('new_distribution', 'HISTOGRAM')
 	sg('add_preproc', 'SORTWORDSTRING')
@@ -12,7 +14,6 @@ def histogram ():
 	sg('set_features', 'TRAIN', fm_train, 'DNA')
 	sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order, order-1, gap, reverse)
 	sg('attach_preproc', 'TRAIN')
-
 #	sg('train_distribution')
 #	histo=sg('get_histogram')
 
@@ -23,11 +24,8 @@ def histogram ():
 #			sg('get_log_derivative %d %d' % (j, i))
 
 #	sg('get_log_likelihood')
-#	sg('get_log_likelihood_sample')
+	return sg('get_log_likelihood_sample')
 
 if __name__=='__main__':
-	from tools.load import LoadMatrix
-	lm=LoadMatrix()
-	fm_train=lm.load_dna('../data/fm_train_dna.dat')
-	fm_cube=lm.load_cubes('../data/fm_train_cube.dat')
-	histogram()
+	print 'Histogram'
+	distribution_histogram(*parameter_list[0])
