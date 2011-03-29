@@ -38,6 +38,8 @@ configure.log
 /src/python_modular/Makefile
 /src/r/Makefile
 /src/r_modular/Makefile
+/src/libshogunui/shogun
+/src/ui
 
 # /examples/
 /examples/documented
