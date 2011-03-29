@@ -25,7 +25,9 @@
 #endif
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "Distribution_doxygen.i"
+#endif
 #endif
 
 /* Include Module Definitions */
@@ -46,7 +48,7 @@
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(const float64_t* src, int32_t num)};
 
 /* Remove C Prefix */
-%rename(Distribution) CDistribution;
+%rename(BaseDistribution) CDistribution;
 %rename(Histogram) CHistogram;
 %rename(HMM) CHMM;
 %rename(GHMM) CGHMM;

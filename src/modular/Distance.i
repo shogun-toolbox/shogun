@@ -18,7 +18,9 @@
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "Distance_doxygen.i"
+#endif
 #endif
 
 #ifdef HAVE_PYTHON
@@ -56,7 +58,7 @@
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* m, int32_t* n)};
 
 /* Remove C Prefix */
-%rename(Distance) CDistance;
+%rename(BaseDistance) CDistance;
 %rename(CustomDistance) CCustomDistance;
 %rename(KernelDistance) CKernelDistance;
 %rename(RealDistance) CRealDistance;

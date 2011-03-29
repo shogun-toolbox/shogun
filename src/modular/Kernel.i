@@ -18,7 +18,9 @@
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "Kernel_doxygen.i"
+#endif
 #endif
 
 #ifdef HAVE_PYTHON
@@ -113,7 +115,7 @@
 %ignore CWeightedDegreePositionStringKernel::set_position_weights(float64_t*);
 
 /* Remove C Prefix */
-%rename(Kernel) CKernel;
+%rename(BaseKernel) CKernel;
 %rename(KernelNormalizer) CKernelNormalizer;
 %rename(PyramidChi2) CPyramidChi2;
 %rename(AUCKernel) CAUCKernel;

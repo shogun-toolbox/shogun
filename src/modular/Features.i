@@ -18,7 +18,9 @@
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "Features_doxygen.i"
+#endif
 #endif
 
 #ifdef HAVE_PYTHON
@@ -312,7 +314,7 @@
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(double* in_confidences, int32_t in_num_labels, int32_t in_num_classes)};
 
 /* Remove C Prefix */
-%rename(Features) CFeatures;
+%rename(BaseFeatures) CFeatures;
 %rename(DotFeatures) CDotFeatures;
 %rename(DummyFeatures) CDummyFeatures;
 %rename(AttributeFeatures) CAttributeFeatures;

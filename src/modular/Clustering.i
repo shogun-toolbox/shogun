@@ -18,7 +18,9 @@
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "Clustering_doxygen.i"
+#endif
 #endif
 
 #ifdef HAVE_PYTHON

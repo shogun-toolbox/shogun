@@ -18,7 +18,9 @@
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "Classifier_doxygen.i"
+#endif
 #endif
 
 #ifdef HAVE_PYTHON
@@ -100,7 +102,7 @@
 
 /* Remove C Prefix */
 %rename(Labels) CLabels;
-%rename(Classifier) CClassifier;
+%rename(BaseClassifier) CClassifier;
 %rename(KernelMachine) CKernelMachine;
 %rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;

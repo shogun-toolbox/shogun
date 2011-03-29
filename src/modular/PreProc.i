@@ -18,7 +18,9 @@
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "PreProc_doxygen.i"
+#endif
 #endif
 
 /* Include Module Definitions */
@@ -46,7 +48,7 @@
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num_new_dim)};
 
 /* Remove C Prefix */
-%rename(PreProc) CPreProc;
+%rename(BasePreProc) CPreProc;
 %rename(LogPlusOne) CLogPlusOne;
 %rename(NormDerivativeLem3) CNormDerivativeLem3;
 %rename(NormOne) CNormOne;

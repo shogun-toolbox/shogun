@@ -31,16 +31,18 @@
 %}
 
 %init %{
+#ifndef SWIGJAVA
 #ifndef DISABLE_CANCEL_CALLBACK
-    shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
-            &sg_global_print_error, &sg_global_cancel_computations);
+        shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
+                &sg_global_print_error, &sg_global_cancel_computations);
 #else
-    shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
-            &sg_global_print_error);
+        shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
+                &sg_global_print_error);
 #endif
 
 #ifdef SWIGPYTHON
-    import_array();
+        import_array();
+#endif
 #endif
 %}
 
@@ -53,12 +55,16 @@
     catch (std::bad_alloc)
     {
         SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
+#ifndef SWIGJAVA
         SWIG_fail;
+#endif
     }
     catch (shogun::ShogunException e)
     {
         SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
+#ifndef SWIGJAVA
         SWIG_fail;
+#endif
     }
 }
 

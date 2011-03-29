@@ -18,7 +18,9 @@
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "Regression_doxygen.i"
+#endif
 #endif
 
 /* Include Module Definitions */
@@ -46,7 +48,7 @@
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* svs, int32_t d)};
 
 /* Remove C Prefix */
-%rename(Regression) CRegression;
+%rename(BaseRegression) CRegression;
 %rename(Classifier) CClassifier;
 %rename(KernelMachine) CKernelMachine;
 %rename(KRR) CKRR;

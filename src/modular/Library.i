@@ -18,7 +18,9 @@
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
 %include "Library_doxygen.i"
+#endif
 #endif
 
 /* Include Module Definitions */
