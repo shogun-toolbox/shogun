@@ -114,6 +114,9 @@ _libshogunui=auto
 _python=auto
 _octave=auto
 _r=auto
+_java=no
+_ruby=no
+_lua=no
 #static interfaces
 _cmdline_static=auto
 _python_static=auto
@@ -125,6 +128,9 @@ _matlab_static=auto
 _python_modular=auto
 _octave_modular=no
 _r_modular=no
+_java_modular=no
+_ruby_modular=no
+_lua_modular=no
 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
@@ -198,6 +204,27 @@ PRELINKFLAGS_MATLAB=
 LINKFLAGS_MATLAB=
 POSTLINKFLAGS_MATLAB=
 
+LUA_TARGET=
+DEFINES_LUA=
+INCLUDES_LUA=
+PRELINKFLAGS_LUA=
+LINKFLAGS_LUA=
+POSTLINKFLAGS_LUA=
+
+JAVA_TARGET=
+DEFINES_JAVA=
+INCLUDES_JAVA=
+PRELINKFLAGS_JAVA=
+LINKFLAGS_JAVA=
+POSTLINKFLAGS_JAVA=
+
+RUBY_TARGET=
+DEFINES_RUBY=
+INCLUDES_RUBY=
+PRELINKFLAGS_RUBY=
+LINKFLAGS_RUBY=
+POSTLINKFLAGS_RUBY=
+
 OCTAVE_TARGET=
 DEFINES_OCTAVE=
 INCLUDES_OCTAVE=
@@ -223,6 +250,9 @@ POSTLINKFLAGS_PYTHON=
 TMPLOG="configure.log"
 TMPMAK="./configure-$RANDOM-$$-makefile"
 TMPC="./configure-$RANDOM-$$.c"
+TMPJAVA="./PrintProperty.java"
+TMPJAVAO="./PrintProperty.class"
+TMPRUBY="./configure-$RANDOM-$$.rb"
 TMPCPP="./configure-$RANDOM-$$.cpp"
 TMPO="./configure-$RANDOM-$$.o"
 TMPSO="./configure-$RANDOM-$$.so"
@@ -459,6 +489,90 @@ check_python()
 		echores "python not detected (required)"
 	fi
 }
+
+test_java()
+{
+	echocheck "Java"
+	if java -version >/dev/null 2>&1
+	then
+		JAVAVER=`java -version 2>&1 | head -n 1 | cut -f 3 -d ' ' | tr -d '"'`
+		echores "${JAVAVER}"
+
+cat > $TMPJAVA << EOF
+public class PrintProperty {
+	public static void main(String[] args) {
+		for (String arg: args) {
+			System.out.println(System.getProperty(arg));
+		}
+	}
+}
+EOF
+		echocheck "Java native interface files (jni.h)"
+		if javac $TMPJAVA >/dev/null 2>&1 
+		then
+			EXT_IF_SWIG_JAVA_MODULAR='stop'
+			PRE_LIB_SWIG_JAVA_MODULAR=
+			EXT_LIB_SWIG_JAVA_MODULAR=.so
+			SWIGFLAGS_JAVA_MODULAR="-c++ -java"
+			INCLUDES_JAVA="$(dirname $(java PrintProperty java.home))/include"
+			LINKFLAGS_JAVA="--shared"
+			echores "yes"
+
+			_java=yes
+		else
+			echores "javac not detected"
+		fi
+	else
+		echores "not detected"
+	fi
+}
+
+test_ruby()
+{
+	echocheck "Ruby"
+	if ruby -v >/dev/null 2>&1
+	then
+
+		RUBYVER=`ruby -v 2>&1 | head -n 1 | cut -f 2 -d ' '`
+		echores "${RUBYVER}"
+
+cat >$TMPRUBY << EOF
+require('mkmf')
+puts CONFIG['prefix']+'/'+CONFIG['libdir'].sub('\$(exec_prefix)','')+'/ruby/'+CONFIG['MAJOR']+'.'+CONFIG['MINOR']+'/'+CONFIG['arch']
+EOF
+
+		INCLUDES_RUBY=-I`ruby $TMPRUBY`
+		LINKFLAGS_RUBY="-lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` -fPIC -shared"
+		EXT_IF_SWIG_RUBY_MODULAR='stop'
+		PRE_LIB_SWIG_RUBY_MODULAR=
+		EXT_LIB_SWIG_RUBY_MODULAR=.so
+		SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
+		_ruby=yes
+	else
+		echores "not detected"
+	fi
+}
+
+test_lua()
+{
+	echocheck "Lua"
+	if lua -v >/dev/null 2>&1
+	then
+		LUAVER=`lua -v 2>&1 | head -n 1 | cut -f 2 -d ' ' | cut -f 1 -d '('`
+		EXT_IF_SWIG_LUA_MODULAR='stop'
+		PRE_LIB_SWIG_LUA_MODULAR=
+		EXT_LIB_SWIG_LUA_MODULAR=.so
+		SWIGFLAGS_LUA_MODULAR="-c++ -lua"
+		LINKFLAGS_LUA="`lua-config --libs` --shared"
+		INCLUDES_LUA=`lua-config --include`
+
+		echores "${LUAVER}"
+		_lua=yes
+	else
+		echores "not detected"
+	fi
+}
+
 
 check_makedepend()
 {
@@ -731,7 +845,8 @@ Configuration:
   --interfaces=INTERFACE1,INTERFACE2,...
                                  configure shogun for interface
                                  cmdline, python_modular, python, r, r_modular
-                                 octave, octave_modular, matlab or libshogun
+                                 octave, octave_modular, matlab or libshogun,
+								 java_modular, lua_modular, ruby_modular
   -h, -help, --help              display this help and exit
 
 Installation directories:
@@ -845,6 +960,9 @@ for ac_option do
 	_python_modular=no
 	_octave_modular=no
 	_r_modular=no
+	_ruby_modular=no
+	_lua_modular=no
+	_java_modular=no
 
 	_interfaces=`echo $ac_option | cut -d '=' -f 2`
     for intf in `echo $_interfaces | cut -d '=' -f 2 | tr ',' ' '`
@@ -882,6 +1000,15 @@ for ac_option do
 		;;
 	  r_modular)
 	  	_r_modular=yes
+		;;
+	  ruby_modular)
+	  	_ruby_modular=yes
+		;;
+	  lua_modular)
+	  	_lua_modular=yes
+		;;
+	  java_modular)
+	  	_java_modular=yes
 		;;
 	  *)
 		die "Unknown interface: $intf"
@@ -3072,12 +3199,31 @@ test_modular()
 				R_MODULAR_TARGET=r_modular
 				echores "yes"
 			else
-				if test "$_octave_modular" = yes ; then
+				if test "$_r_modular" = yes ; then
 					die "swig too old version 1.3.37 or later required"
 				else
 					echores "too old version 1.3.37 or later required"
 				fi
 			fi
+		fi
+
+		if test "$_java" = yes && test "$_java_modular" != no
+		then
+			PARTS="$PARTS java_modular"
+			JAVA_MODULAR_TARGET=java_modular
+			INCLUDES_JAVA="-I/usr/lib/jvm/java-6-openjdk/include"
+		fi
+
+		if test "$_ruby" = yes && test "$_ruby_modular" != no
+		then
+			PARTS="$PARTS ruby_modular"
+			RUBY_MODULAR_TARGET=ruby_modular
+		fi
+
+		if test "$_lua" = yes && test "$_lua_modular" != no
+		then
+			PARTS="$PARTS lua_modular"
+			LUA_MODULAR_TARGET=lua_modular
 		fi
 	else
 		if test "$_octave_modular" == yes || \
@@ -3869,6 +4015,9 @@ OCTAVE_TARGET	= ${OCTAVE_TARGET}
 MATLAB_TARGET	= ${MATLAB_TARGET}
 ELWMS_TARGET	= ${ELWMS_TARGET}
 R_MODULAR_TARGET		= ${R_MODULAR_TARGET}
+JAVA_MODULAR_TARGET		= ${JAVA_MODULAR_TARGET}
+RUBY_MODULAR_TARGET		= ${RUBY_MODULAR_TARGET}
+LUA_MODULAR_TARGET		= ${LUA_MODULAR_TARGET}
 PYTHON_MODULAR_TARGET	= ${PYTHON_MODULAR_TARGET}
 OCTAVE_MODULAR_TARGET	= ${OCTAVE_MODULAR_TARGET}
 MAKE 			= ${MAKE}
@@ -3943,6 +4092,24 @@ PRELINKFLAGS_MATLAB	= ${PRELINKFLAGS_MATLAB}
 LINKFLAGS_MATLAB 		= ${LINKFLAGS_MATLAB}
 POSTLINKFLAGS_MATLAB	= ${POSTLINKFLAGS_MATLAB}
 
+DEFINES_JAVA		= ${DEFINES_JAVA}
+INCLUDES_JAVA		= ${INCLUDES_JAVA}
+PRELINKFLAGS_JAVA	= ${PRELINKFLAGS_JAVA}
+LINKFLAGS_JAVA 		= ${LINKFLAGS_JAVA}
+POSTLINKFLAGS_JAVA	= ${POSTLINKFLAGS_JAVA}
+
+DEFINES_RUBY		= ${DEFINES_RUBY}
+INCLUDES_RUBY		= ${INCLUDES_RUBY}
+PRELINKFLAGS_RUBY	= ${PRELINKFLAGS_RUBY}
+LINKFLAGS_RUBY 		= ${LINKFLAGS_RUBY}
+POSTLINKFLAGS_RUBY	= ${POSTLINKFLAGS_RUBY}
+
+DEFINES_LUA			= ${DEFINES_LUA}
+INCLUDES_LUA		= ${INCLUDES_LUA}
+PRELINKFLAGS_LUA	= ${PRELINKFLAGS_LUA}
+LINKFLAGS_LUA 		= ${LINKFLAGS_LUA}
+POSTLINKFLAGS_LUA	= ${POSTLINKFLAGS_LUA}
+
 OCTAVE_APIVERSION		= ${OCTAVE_APIVERSION}
 DEFINES_OCTAVE			= ${DEFINES_OCTAVE}
 INCLUDES_OCTAVE			= ${INCLUDES_OCTAVE}
@@ -3996,6 +4163,36 @@ PRELINKFLAGS_PYTHON_MODULAR= ${PRELINKFLAGS_PYTHON}
 LINKFLAGS_PYTHON_MODULAR 	= ${LINKFLAGS_PYTHON}
 POSTLINKFLAGS_PYTHON_MODULAR= ${POSTLINKFLAGS_PYTHON}
 SWIGFLAGS_PYTHON_MODULAR = ${SWIGFLAGS_PYTHON_MODULAR}
+
+PRE_LIB_SWIG_JAVA_MODULAR	= ${PRE_LIB_SWIG_JAVA_MODULAR}
+EXT_LIB_SWIG_JAVA_MODULAR	= ${EXT_LIB_SWIG_JAVA_MODULAR}
+EXT_IF_SWIG_JAVA_MODULAR		= ${EXT_IF_SWIG_JAVA_MODULAR}
+DEFINES_JAVA_MODULAR		= ${DEFINES_JAVA}
+INCLUDES_JAVA_MODULAR		= ${INCLUDES_JAVA}
+PRELINKFLAGS_JAVA_MODULAR= ${PRELINKFLAGS_JAVA}
+LINKFLAGS_JAVA_MODULAR 	= ${LINKFLAGS_JAVA}
+POSTLINKFLAGS_JAVA_MODULAR= ${POSTLINKFLAGS_JAVA}
+SWIGFLAGS_JAVA_MODULAR = ${SWIGFLAGS_JAVA_MODULAR}
+
+PRE_LIB_SWIG_RUBY_MODULAR	= ${PRE_LIB_SWIG_RUBY_MODULAR}
+EXT_LIB_SWIG_RUBY_MODULAR	= ${EXT_LIB_SWIG_RUBY_MODULAR}
+EXT_IF_SWIG_RUBY_MODULAR		= ${EXT_IF_SWIG_RUBY_MODULAR}
+DEFINES_RUBY_MODULAR		= ${DEFINES_RUBY}
+INCLUDES_RUBY_MODULAR		= ${INCLUDES_RUBY}
+PRELINKFLAGS_RUBY_MODULAR= ${PRELINKFLAGS_RUBY}
+LINKFLAGS_RUBY_MODULAR 	= ${LINKFLAGS_RUBY}
+POSTLINKFLAGS_RUBY_MODULAR= ${POSTLINKFLAGS_RUBY}
+SWIGFLAGS_RUBY_MODULAR = ${SWIGFLAGS_RUBY_MODULAR}
+
+PRE_LIB_SWIG_LUA_MODULAR	= ${PRE_LIB_SWIG_LUA_MODULAR}
+EXT_LIB_SWIG_LUA_MODULAR	= ${EXT_LIB_SWIG_LUA_MODULAR}
+EXT_IF_SWIG_LUA_MODULAR		= ${EXT_IF_SWIG_LUA_MODULAR}
+DEFINES_LUA_MODULAR		= ${DEFINES_LUA}
+INCLUDES_LUA_MODULAR		= ${INCLUDES_LUA}
+PRELINKFLAGS_LUA_MODULAR= ${PRELINKFLAGS_LUA}
+LINKFLAGS_LUA_MODULAR 	= ${LINKFLAGS_LUA}
+POSTLINKFLAGS_LUA_MODULAR= ${POSTLINKFLAGS_LUA}
+SWIGFLAGS_LUA_MODULAR = ${SWIGFLAGS_LUA_MODULAR}
 
 LINK			= ${LINK}
 POSTLINKCMD		= ${POSTLINKCMD}
@@ -4109,7 +4306,8 @@ EOF
 
 clean_up()
 {
-	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS" "$TMPSO"
+	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS"\
+		"$TMPSS" "$TMPSO" "$TMPJAVA" "$TMPJAVAO" "$TMPRUBY"
 }
 
 test_static_linking()
@@ -4162,6 +4360,9 @@ test_octave
 test_r
 test_matlab
 test_elwms
+test_java
+test_ruby
+test_lua
 test_modular
 test_static_linking
 svmlight_warn_license
