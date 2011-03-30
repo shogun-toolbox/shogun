@@ -29,6 +29,10 @@
 #include <lzma.h>
 #endif
 
+#ifdef USE_SNAPPY
+#include <snappy.h>
+#endif
+
 using namespace shogun;
 
 CCompressor::CCompressor(void)
@@ -184,6 +188,16 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				break;
 			}
 #endif
+#ifdef USE_SNAPPY
+		case SNAPPY:
+			{
+				compressed=new uint8_t[snappy::MaxCompressedLength((size_t) uncompressed_size)];
+				size_t output_length;
+				snappy::RawCompress((char*) uncompressed, size_t(uncompressed_size), (char*) compressed, &output_length);
+				compressed_size=(uint64_t) output_length;
+				break;
+			}
+#endif
 		default:
 			SG_ERROR("Unknown compression type\n");
 	}
@@ -280,6 +294,24 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 				if (lzma_code(&strm, LZMA_RUN) != LZMA_STREAM_END)
 					SG_ERROR("Error decompressing lzma data\n");
 				lzma_end(&strm);
+				break;
+			}
+#endif
+#ifdef USE_SNAPPY
+		case SNAPPY:
+			{
+				size_t uncompressed_length;
+				if (!snappy::GetUncompressedLength( (char*) compressed,
+						(size_t) compressed_size, &uncompressed_length))
+					SG_ERROR("Error obtaining uncompressed length\n");
+
+				ASSERT(uncompressed_length<=uncompressed_size);
+				uncompressed_size=uncompressed_length;
+				if (!snappy::RawUncompress((char*) compressed,
+							(size_t) compressed_size,
+							(char*) uncompressed))
+					SG_ERROR("Error uncompressing snappy data\n");
+
 				break;
 			}
 #endif

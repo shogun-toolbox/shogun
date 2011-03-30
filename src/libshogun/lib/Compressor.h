@@ -28,7 +28,8 @@ namespace shogun
 		LZO,
 		GZIP,
 		BZIP2,
-		LZMA
+		LZMA,
+		SNAPPY
 	};
 
 

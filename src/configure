@@ -64,6 +64,7 @@ _cplex=auto
 _lpsolve=no
 _glpk=auto
 _lzo=auto
+_snappy=auto
 _gzip=auto
 _bzip2=auto
 _lzma=auto
@@ -876,6 +877,7 @@ Optional features:
   --enable-lpsolve               enable code using lpsolve  [auto]
   --enable-glpk                  enable code using GLPK [auto]
   --enable-lzo                   enable code using LZO compression [auto]
+  --enable-snappy                enable code using SNAPPY compression [auto]
   --enable-gzip                  enable code using GZIP compression [auto]
   --enable-bzip2                 enable code using BZIP2 compression [auto]
   --enable-lzma                  enable code using LZMA compression [auto]
@@ -897,6 +899,7 @@ Optional features:
   --disable-lpsolve              disable code using lpsolve  [auto]
   --disable-glpk                 disable code using GLPK [auto]
   --disable-lzo                  disable code using LZO compression [auto]
+  --disable-snappy               disable code using SNAPPY compression [auto]
   --disable-gzip                 disable code using GZIP compression [auto]
   --disable-bzip2                disable code using BZIP2 compression [auto]
   --disable-lzma                 disable code using LZMA compression [auto]
@@ -1095,6 +1098,8 @@ for ac_option do
   --enable-glpk)		_glpk=yes;;
   --disable-lzo)		_lzo=no;;
   --enable-lzo)			_lzo=yes;;
+  --disable-snappy)		_snappy=no;;
+  --enable-snappy)		_snappy=yes;;
   --disable-gzip)		_gzip=no;;
   --enable-gzip)		_gzip=yes;;
   --disable-bzip2)		_bzip2=no;;
@@ -2904,6 +2909,33 @@ EOF
 					USE_LZO='#define USE_LZO 1'
 					POSTLINKFLAGS="$POSTLINKFLAGS $LZOLINKFLAGS"
 					DEFINES="$DEFINES -DUSE_LZO"
+				else
+					echores "no"
+				fi
+			fi
+
+			if test "$_snappy" = yes || test "$_snappy" = auto
+			then
+cat >$TMPCPP<<EOF
+#include <snappy.h>
+int main(int argc, char** argv)
+{
+  size_t input_length = (size_t) argc;
+  char* output = new char[snappy::MaxCompressedLength(input_length)];
+  size_t output_length;
+  RawCompress(input, input_length, output, &output_length);
+  delete [] output;
+  return int(output_length);
+}
+EOF
+				echocheck "snappy"
+				SNAPPYLINKFLAGS="-lsnappy"
+				if cxx_check $SNAPPYLINKFLAGS
+				then
+					echores "yes"
+					USE_SNAPPY='#define USE_SNAPPY 1'
+					POSTLINKFLAGS="$POSTLINKFLAGS $SNAPPYLINKFLAGS"
+					DEFINES="$DEFINES -DUSE_SNAPPY"
 				else
 					echores "no"
 				fi
