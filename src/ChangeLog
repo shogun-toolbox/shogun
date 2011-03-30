@@ -935,7 +935,7 @@
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogun/lib/DynamicArray.h: fix compilation with dynarray
 
-2010-11-27  D. Lehmann <........................>
+2010-11-27  D. Lehmann <>
 
 	* libshogun/base/DynArray.h,
 	  libshogun/features/CombinedDotFeatures.h,
@@ -960,7 +960,7 @@
 	* libshogun/lib/DynamicArray.h, libshogunui/GUIPreProc.cpp,
 	  libshogunui/GUIPreProc.h: compile fix for trunk
 
-2010-11-26  D. Lehmann <........................>
+2010-11-26  D. Lehmann <>
 
 	* libshogun/base/DynArray.h, libshogun/classifier/KNN.cpp,
 	  libshogun/classifier/KernelPerceptron.cpp,
@@ -1019,7 +1019,7 @@
 
 	* NEWS: fix example and update news
 
-2010-11-24  D. Lehmann <........................>
+2010-11-24  D. Lehmann <>
 
 	* libshogun/base/init.cpp,
 	  libshogun/classifier/mkl/MKLMultiClass.cpp,
@@ -1041,7 +1041,7 @@
 	  
 	  - Replacing some STD::VECTOR's with T*
 
-2010-11-23  D. Lehmann <........................>
+2010-11-23  D. Lehmann <>
 
 	* configure, libshogun/lib/DataType.cpp, libshogun/lib/DataType.h,
 	  libshogun/lib/Parameter.cpp,
@@ -1081,7 +1081,7 @@
 	  I need to check-in my current implementation first. If there is
 	  no commit at the next few hours then it works ;) ...
 
-2010-11-21  D. Lehmann <........................>
+2010-11-21  D. Lehmann <>
 
 	* configure, libshogun/lib/Parameter.cpp,
 	  libshogun/lib/SerializableAsciiFile.cpp,
@@ -1107,7 +1107,7 @@
 	  
 	  - Renamed to `SerializableHdf5File'.
 
-2010-11-18  D. Lehmann <........................>
+2010-11-18  D. Lehmann <>
 
 	* libshogun/classifier/svm/DomainAdaptationSVMLinear.h,
 	  libshogun/classifier/svm/LibLinear.h: *
@@ -1119,7 +1119,7 @@
 	  
 	  Compiling error if `./configure --disable-lapack'.
 
-2010-11-17  D. Lehmann <........................>
+2010-11-17  D. Lehmann <>
 
 	* libshogun/features/StringFeatures.h, libshogun/lib/DataType.h,
 	  libshogun/lib/Parameter.cpp,
@@ -1136,7 +1136,7 @@
 	  persistent
 	  storage.
 
-2010-11-15  D. Lehmann <........................>
+2010-11-15  D. Lehmann <>
 
 	* libshogun/lib/DataType.h, libshogun/lib/Parameter.cpp,
 	  libshogun/lib/SerializableFile.cpp,
@@ -1151,7 +1151,7 @@
 	  
 	  - 64 bit compatible.
 
-2010-11-14  D. Lehmann <........................>
+2010-11-14  D. Lehmann <>
 
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  configure, libshogun/base/class_list.cpp.sh,
@@ -1219,7 +1219,7 @@
 	  libshogun/classifier/svm/LibLinear.h: added serialization code to
 	  a few linear classifiers (still incomplete)
 
-2010-11-07  D. Lehmann <........................>
+2010-11-07  D. Lehmann <>
 
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogun/features/Alphabet.cpp,
@@ -1245,7 +1245,7 @@
 	  
 	  - reverted to revision 5113 ... too many pointers :((
 
-2010-11-06  D. Lehmann <........................>
+2010-11-06  D. Lehmann <>
 
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogun/features/Alphabet.cpp,
@@ -1273,7 +1273,7 @@
 	  
 	  - Matlab (R) binding not tested; no license.
 
-2010-11-05  D. Lehmann <........................>
+2010-11-05  D. Lehmann <>
 
 	* libshogun/kernel/Kernel.h,
 	  libshogun/kernel/MultitaskKernelMaskNormalizer.h: *
@@ -1282,7 +1282,7 @@
 	  
 	  - Missing include added. Thanks to xjc =)
 
-2010-11-04  D. Lehmann <........................>
+2010-11-04  D. Lehmann <>
 
 	* libshogun/base/DynArray.h: * src/libshogun/base/DynArray.h
 	  
@@ -1315,7 +1315,7 @@
 	  - SG_SERIALIZABLE::LOAD_SERIALIZABLE_{PRE,POST} added. An example
 	  implementation you can find in CALPHABET::LOAD_SERIALIZABLE_POST.
 
-2010-11-03  D. Lehmann <........................>
+2010-11-03  D. Lehmann <>
 
 	* libshogun/lib/ShogunException.cpp,
 	  libshogun/lib/ShogunException.h:
@@ -1329,7 +1329,7 @@
 	* libshogun/clustering/KMeans.cpp, libshogun/clustering/KMeans.h:
 	  remove cruft from kmeans
 
-2010-11-01  D. Lehmann <........................>
+2010-11-01  D. Lehmann <>
 
 	* libshogun/kernel/MultitaskKernelNormalizer.h: *
 	  src/libshogun/kernel/MultitaskKernelNormalizer.h
@@ -1343,7 +1343,7 @@
 
 	* libshogun/kernel/MultitaskKernelMaskNormalizer.h: compile fix
 
-2010-10-29  D. Lehmann <........................>
+2010-10-29  D. Lehmann <>
 
 	* libshogun/lib/Parameter.cpp: * src/libshogun/lib/Parameter.cpp
 	  
@@ -1483,7 +1483,7 @@
 	  serialisation support
 	* NEWS: keep track of changes in news
 
-2010-10-27  D. Lehmann <........................>
+2010-10-27  D. Lehmann <>
 
 	* libshogun/lib/DynamicArray.h,
 	  libshogun/lib/SerializableAsciiFile.cpp,
@@ -1556,7 +1556,7 @@
 	  of DynArray::delete_element() the last element was not longer
 	  allocated! Use mtrace or corresponding tools to check this case.
 
-2010-10-26  D. Lehmann <........................>
+2010-10-26  D. Lehmann <>
 
 	* libshogun/base/class_list.cpp.templ: *
 	  src/libshogun/base/class_list.cpp.templ:
@@ -1569,7 +1569,7 @@
 	  libshogun/kernel/CustomKernel.h: remaining fixes to allow for
 	  huge custom kernels
 
-2010-10-21  D. Lehmann <........................>
+2010-10-21  D. Lehmann <>
 
 	* Makefile.template, cmdline/CmdLineInterface.cpp, configure,
 	  libshogun/base/DynArray.h, libshogun/base/Parallel.cpp,
@@ -1769,7 +1769,7 @@
 	  
 	  - Recovering revision 5093.
 
-2010-10-16  D. Lehmann <........................>
+2010-10-16  D. Lehmann <>
 
 	* Makefile.template, cmdline/CmdLineInterface.cpp, configure,
 	  libshogun/base/DynArray.h, libshogun/base/Parallel.cpp,
@@ -2001,7 +2001,7 @@
 	  <mailto:jobless.dirk@gmx.de> because I don't know how long my
 	  ldirk@mail.tu-... account will be available.
 
-2010-10-13  D. Lehmann <........................>
+2010-10-13  D. Lehmann <>
 
 	* libshogun/base/SGObject.cpp, libshogun/base/class_list.cpp.sh,
 	  libshogun/base/class_list.cpp.templ,
@@ -2021,7 +2021,7 @@
 	  
 	  - Some minor fixes which could be misuse the stack.
 
-2010-10-11  D. Lehmann <........................>
+2010-10-11  D. Lehmann <>
 
 	* libshogun/base/SGObject.cpp, libshogun/base/class_list.cpp.sh,
 	  libshogun/base/class_list.cpp.templ, libshogun/base/class_list.h,
@@ -2165,7 +2165,7 @@
 	  
 	  *** snap ***
 
-2010-10-08  D. Lehmann <........................>
+2010-10-08  D. Lehmann <>
 
 	* cmdline/CmdLineInterface.cpp, libshogun/base/DynArray.h,
 	  libshogun/base/Parallel.cpp, libshogun/base/Parallel.h,
@@ -2348,7 +2348,7 @@
 	  * Ready for implementing HDF5 and much bug reports ;P ... Let's
 	  go...
 
-2010-10-07  D. Lehmann <........................>
+2010-10-07  D. Lehmann <>
 
 	* libshogun/base/class_list.cpp.sh, libshogun/base/class_list.h,
 	  libshogun/lib/Parameter.cpp, libshogun/lib/SGSerializable.h,
@@ -2361,7 +2361,7 @@
 	  
 	  - License stuff added.
 
-2010-10-06  D. Lehmann <........................>
+2010-10-06  D. Lehmann <>
 
 	* Makefile.template, configure, libshogun/base,
 	  libshogun/base/SGObject.h, libshogun/base/class_list.cpp.sh,
@@ -2452,7 +2452,7 @@
 	  modular/Kernel.i: add HistogramIntersectionKernel written by Koen
 	  van de Sande
 
-2010-10-05  D. Lehmann <........................>
+2010-10-05  D. Lehmann <>
 
 	* libshogun/features/Labels.cpp, libshogun/features/Labels.h,
 	  libshogun/features/SimpleFeatures.h,
@@ -2462,7 +2462,7 @@
 	  
 	  - Backup before greater structure changes.
 
-2010-10-04  D. Lehmann <........................>
+2010-10-04  D. Lehmann <>
 
 	* libshogun/lib/Parameter.cpp: * src/libshogun/lib/Parameter.cpp
 	  
@@ -2501,7 +2501,7 @@
 	  
 	  - locale fix of revision 5034 completed ;P ...
 
-2010-10-01  D. Lehmann <........................>
+2010-10-01  D. Lehmann <>
 
 	* libshogun/classifier/Classifier.cpp,
 	  libshogun/classifier/svm/SVM.cpp, libshogun/features/Labels.cpp,
@@ -2521,7 +2521,7 @@
 	  
 	  - Backup and Weekend =) ...
 
-2010-09-30  D. Lehmann <........................>
+2010-09-30  D. Lehmann <>
 
 	* libshogun/features/Labels.cpp, libshogun/features/Labels.h: *
 	  src/libshogun/features/Labels.{h,cpp}
@@ -2545,7 +2545,7 @@
 	  libshogun/classifier/svm/SVM_linear.h, modular/Classifier.i:
 	  added regtrick for liblinear
 
-2010-09-29  D. Lehmann <........................>
+2010-09-29  D. Lehmann <>
 
 	* cmdline/CmdLineInterface.cpp, libshogun/lib/BinaryFile.cpp,
 	  libshogun/lib/HDF5File.cpp, matlab/MatlabInterface.cpp,
@@ -2605,7 +2605,7 @@
 	  libshogun/lib/SerialFile.h, libshogun/lib/common.h,
 	  modular/Library.i:
 
-2010-09-24  D. Lehmann <........................>
+2010-09-24  D. Lehmann <>
 
 	* cmdline/CmdLineInterface.cpp, cmdline/CmdLineInterface.h,
 	  libshogun/base/DynArray.h, libshogun/base/SGObject.cpp,
@@ -2633,7 +2633,7 @@
 	  libshogunui/SGInterface.cpp: simplify kernel print cases and
 	  remove default case
 
-2010-09-15  D. Lehmann <........................>
+2010-09-15  D. Lehmann <>
 
 	* libshogunui/GUIKernel.cpp, libshogunui/SGInterface.cpp: *
 	  src/libshogunui/*
@@ -2736,7 +2736,7 @@
 	* configure: warn that LDA/liblinear and other features may be
 	  missing when lapack is not available
 
-2010-08-18  D. Lehmann <........................>
+2010-08-18  D. Lehmann <>
 
 	* libshogun/kernel/GaussianKernel.h: *
 	  src/libshogun/kernel/GaussianKernel.h:
@@ -2762,7 +2762,7 @@
 	  progress and different calculation routine
 	  - some more parameter ideas for serialization/model selection
 
-2010-08-17  D. Lehmann <........................>
+2010-08-17  D. Lehmann <>
 
 	* libshogun/classifier/svm/GMNPSVM.cpp,
 	  libshogun/classifier/svm/gmnplib.cpp,
