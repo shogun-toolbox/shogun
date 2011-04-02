@@ -26,13 +26,13 @@ then
 	# extract information about that point
 	# NB I bet there are better ways ... ;)
 	#	 if we went pure git way, git describe would have been sufficient
-	dateinfo=$(git show --pretty='format:%aD' $branch_point | head -1)
+	dateinfo=$(git show --pretty='format:%ai' $branch_point | head -1)
 
-	year=`date -d "$dateinfo" +%Y`
-	month=`date -d "$dateinfo" +%m`
-	day=`date -d "$dateinfo" +%d`
-	hour=`date -d "$dateinfo" +%H`
-	minute=`date -d "$dateinfo" +%M`
+	year=$(echo $dateinfo | cut -f 1 -d '-')
+	month=$(echo $dateinfo | cut -f 2 -d '-')
+	day=$(echo $dateinfo | cut -f 3 -d '-' | cut -f 1 -d ' ')
+	hour=$(echo $dateinfo | cut -f 2 -d ' ' | cut -f 1 -d ':')
+	minute=$(echo $dateinfo | cut -f 2 -d ' ' | cut -f 2 -d ':')
 
 	revision="`git show --pretty='format:%h'|head -1`"
 	revision_prefix="0x"
