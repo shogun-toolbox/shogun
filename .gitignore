@@ -15,6 +15,8 @@ tags
 configure.log
 *.swp
 *.swo
+*.mex*
+*.oct
 
 # /doc/
 /doc/html
@@ -40,6 +42,31 @@ configure.log
 /src/r_modular/Makefile
 /src/libshogunui/shogun
 /src/ui
+/src/examples
+
+# modular interfaces
+/src/java_modular/*.java
+/src/java_modular/*.doxy
+/src/lua_modular/*.doxy
+/src/octave_modular/*.doxy
+/src/python_modular/*.doxy
+/src/python_modular/*.py
+/src/r_modular/*.doxy
+/src/r_modular/*.R
+/src/r_modular/*.RData
+/src/*_modular/Evaluation.i
+/src/*_modular/Regression.i
+/src/*_modular/Library.i
+/src/*_modular/Distribution.i
+/src/*_modular/Structure.i
+/src/*_modular/Classifier.i
+/src/*_modular/Features.i
+/src/*_modular/Kernel.i
+/src/*_modular/PreProc.i
+/src/*_modular/Distance.i
+/src/*_modular/Clustering.i
+/src/*_modular/SGBase.i
+/src/*_modular/Makefile
 
 # /examples/
 /examples/documented
