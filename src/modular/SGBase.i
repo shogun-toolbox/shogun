@@ -70,6 +70,12 @@
 
 %ignore NUM_LOG_LEVELS;
 %ignore FBUFSIZE;
+%ignore init_shogun;
+%ignore exit_shogun;
+%ignore sg_print_message;
+%ignore sg_print_warning;
+%ignore sg_print_error;
+%ignore sg_cancel_computations;
 
 %feature("ref")   CSGObject "SG_REF($this);"
 %feature("unref") CSGObject "SG_UNREF($this);"
