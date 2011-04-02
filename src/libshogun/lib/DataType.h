@@ -92,7 +92,7 @@ struct TSGDataType
 								EPrimitiveType ptype, size_t n);
 	static void ptype_to_string(char* dest, EPrimitiveType ptype,
 								size_t n);
-	static bool string_to_ptype(EPrimitiveType* result,
+	static bool string_to_ptype(EPrimitiveType* ptype,
 								const char* str);
 };
 }

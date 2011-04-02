@@ -238,39 +238,39 @@ TSGDataType::ptype_to_string(char* dest, EPrimitiveType ptype,
 }
 
 bool
-TSGDataType::string_to_ptype(EPrimitiveType* result, const char* str)
+TSGDataType::string_to_ptype(EPrimitiveType* ptype, const char* str)
 {
 	if (strcmp(str, "bool") == 0) {
-		*result = PT_BOOL; return true; }
+		*ptype = PT_BOOL; return true; }
 	if (strcmp(str, "char") == 0) {
-		*result = PT_CHAR; return true; }
+		*ptype = PT_CHAR; return true; }
 	if (strcmp(str, "int8") == 0) {
-		*result = PT_INT8; return true; }
+		*ptype = PT_INT8; return true; }
 	if (strcmp(str, "uint8") == 0) {
-		*result = PT_UINT8; return true; }
+		*ptype = PT_UINT8; return true; }
 	if (strcmp(str, "int16") == 0) {
-		*result = PT_INT16; return true; }
+		*ptype = PT_INT16; return true; }
 	if (strcmp(str, "uint16") == 0) {
-		*result = PT_UINT16; return true; }
+		*ptype = PT_UINT16; return true; }
 	if (strcmp(str, "int32") == 0) {
-		*result = PT_INT32; return true; }
+		*ptype = PT_INT32; return true; }
 	if (strcmp(str, "uint32") == 0) {
-		*result = PT_UINT32; return true; }
+		*ptype = PT_UINT32; return true; }
 	if (strcmp(str, "int64") == 0) {
-		*result = PT_INT64; return true; }
+		*ptype = PT_INT64; return true; }
 	if (strcmp(str, "uint64") == 0) {
-		*result = PT_UINT64; return true; }
+		*ptype = PT_UINT64; return true; }
 	if (strcmp(str, "float32") == 0) {
-		*result = PT_FLOAT32; return true; }
+		*ptype = PT_FLOAT32; return true; }
 	if (strcmp(str, "float64") == 0) {
-		*result = PT_FLOAT64; return true; }
+		*ptype = PT_FLOAT64; return true; }
 	if (strcmp(str, "floatmax") == 0) {
-		*result = PT_FLOATMAX; return true; }
+		*ptype = PT_FLOATMAX; return true; }
 	if (strcmp(str, "SGSerializable*") == 0) {
-		*result = PT_SGOBJECT; return true; }
+		*ptype = PT_SGOBJECT; return true; }
 
 	/* Make sure that the compiler will warn at this position.  */
-	switch (*result) {
+	switch (*ptype) {
 	case PT_BOOL: case PT_CHAR: case PT_INT8: case PT_UINT8:
 	case PT_INT16: case PT_UINT16: case PT_INT32: case PT_UINT32:
 	case PT_INT64: case PT_UINT64: case PT_FLOAT32: case PT_FLOAT64:
