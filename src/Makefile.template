@@ -283,6 +283,16 @@ install-octave_modular: $(TEMPLATE_TARGET)
 	for i in $(SWIGLIBFILES) ; do echo $$i | sed -e 's=.*/==' -e 's/\.oct/;/' \
 		>>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
 
+install-java_modular: $(TEMPLATE_TARGET)
+	#TODO
+
+install-ruby_modular: $(TEMPLATE_TARGET)
+	#TODO
+
+install-lua_modular: $(TEMPLATE_TARGET)
+	#TODO
+
+
 run-testsuite: run-testsuite-template
 check-examples: check-examples-template
 
@@ -443,11 +453,15 @@ doc-r_modular:
 
 $(OBJFILES): ../.config .depend Makefile ../ChangeLog
 
+ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
+$(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
+else
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
 	$(LINK) $(PRELINKFLAGS) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
 		-name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	@$(POSTLINKCMD) $@
 	@$(LIBSYMLINKCMD)
+endif
 
 $(TEMPLATE_STATIC): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
