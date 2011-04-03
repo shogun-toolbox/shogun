@@ -81,6 +81,18 @@ class CKNN : public CDistanceMachine
 		 */
 		virtual CLabels* classify(CFeatures* data);
 
+		/** classify examples with nearest neighbor (k=1)
+		 * @param data examples to be classified
+		 * @return classified labels
+		 */
+
+		virtual CLabels* classify_NN(CFeatures* data);
+
+		/** classify all examples with nearest neighbor (k=1)
+		 * @return classified labels
+		 */
+		virtual CLabels* classify_NN();
+
 		/// get output for example "vec_idx"
 		virtual float64_t classify_example(int32_t vec_idx)
 		{
