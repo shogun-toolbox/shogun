@@ -82,13 +82,13 @@ $(PARTDEPS): Makefile.template
 
 linecount:
 	@echo -n "C/C++ source code files (.cpp,.c):"
-	@cat `find ./ -follow -type f -name '*.cpp' -o -name '*.c'`  | grep -vc '^ *$$'
+	@cat `find ./ -type f -name '*.cpp' -o -name '*.c'`  | grep -vc '^ *$$'
 	@echo -n "C/C++ header files (.h):"
-	@cat `find ./ -follow -type f -name '*.h'`  | grep -vc '^ *$$'
+	@cat `find ./ -type f -name '*.h'`  | grep -vc '^ *$$'
 	@echo -n "SWIG header files (.i):"
-	@cat `find ./modular -follow -type f -name '*.i'`  | grep -vc '^ *$$'
+	@cat `find ./modular -type f -name '*.i'`  | grep -vc '^ *$$'
 	@echo -n "Total:"
-	@(cat `find ./ -follow -type f -name '*.cpp' -o -name '*.c' -o -name '*.h'`; cat `find ./modular -follow -type f -o -name '*.i'`)  | grep -vc '^ *$$'
+	@(cat `find ./ -type f -name '*.cpp' -o -name '*.c' -o -name '*.h'`; cat `find ./modular -type f -o -name '*.i'`)  | grep -vc '^ *$$'
 
 ChangeLog:
 	@if [ -n "`which svn2cl`" ]; then \
