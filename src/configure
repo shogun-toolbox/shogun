@@ -560,12 +560,24 @@ test_lua()
 	if lua -v >/dev/null 2>&1
 	then
 		LUAVER=`lua -v 2>&1 | head -n 1 | cut -f 2 -d ' ' | cut -f 1 -d '('`
+		LV=`echo $LUAVER | cut -f 1-2 -d '.'`
+		LVS=`echo $LUAVER | cut -f 1-2 -d '.' | tr -d '.'`
+		LUACONFIG=lua-config$LVS
 		EXT_IF_SWIG_LUA_MODULAR='stop'
 		PRE_LIB_SWIG_LUA_MODULAR=
 		EXT_LIB_SWIG_LUA_MODULAR=.so
 		SWIGFLAGS_LUA_MODULAR="-c++ -lua"
-		LINKFLAGS_LUA="`lua-config --libs` --shared"
-		INCLUDES_LUA=`lua-config --include`
+
+		if $LUACONFIG --include >/dev/null 2>&1
+		then
+			LINKFLAGS_LUA="`$LUACONFIG --libs` --shared"
+			INCLUDES_LUA="`$LUACONFIG --include`"
+		else
+			LINKFLAGS_LUA="-llualib${LV} -llua${LV} --shared"
+			INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
+			LINKFLAGS_LUA="-llua${LV} --shared"
+			INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
+		fi
 
 		echores "${LUAVER}"
 		_lua=yes
