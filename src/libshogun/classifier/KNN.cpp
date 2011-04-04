@@ -146,6 +146,10 @@ CLabels* CKNN::classify()
 
 CLabels* CKNN::classify(CFeatures* data)
 {
+	// redirecting to fast (without sorting) classify if k==1
+	if (this->k == 1)
+		return classify_NN(data);
+
 	if (!distance)
 		SG_ERROR("No distance assigned!\n");
 
