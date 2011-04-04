@@ -69,34 +69,34 @@ POSTLINKFLAGS += $(POSTLINKFLAGS_TEMPLATE)
 PRELINKFLAGS += $(PRELINKFLAGS_TEMPLATE)
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
-SVNEntries = $(shell find $(SRCDIR) -name entries -type f)
-HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
-SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
-CPPTMPFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_CPP_TMP)")
+SVNEntries = $(shell find $(SRCDIR) -follow -name entries -type f)
+HEADERFILES	= $(shell find $(SRCDIR) -follow -name "*.$(EXT_SRC_HEADER)" )
+SRCFILES 	= $(shell find $(SRCDIR) -follow -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
+CPPTMPFILES	= $(shell find $(SRCDIR) -follow -name "*.$(EXT_CPP_TMP)")
 SRCTMPFILES     = $(CPPTMPFILES:.$(EXT_CPP_TMP)=.$(EXT_SRC_CPP))
 SRCFILES        += $(SRCTMPFILES)
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
-OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" )) \
-			  $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" )) \
-			  $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -follow -name "*.$(EXT_SRC_CPP)" )) \
+			  $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -follow -name "*.$(EXT_SRC_C)" )) \
+			  $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR) -follow -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
 else
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), \
                      $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(SRCFILES)))
 endif
 
-SWIGIFILES   	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)")
+SWIGIFILES   	= $(shell find $(SRCDIR) -follow -name "*.$(EXT_INP_SWIG)")
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), \
-				  $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+				  $(shell find $(SRCDIR) -follow -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
 SWIGDOCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SWIG_DOXY), \
-				  $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
-SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
+				  $(shell find $(SRCDIR) -follow -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+SWIGLIBFILES 	= $(shell find $(SRCDIR) -follow -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
 				  sed 's=/\([^/]*\)\.$(EXT_INP_SWIG)=/$(PRE_LIB_SWIG_TEMPLATE)\1$(EXT_LIB_SWIG_TEMPLATE)=' | sort)
-SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
+SWIGPYFILES 	= $(shell find $(SRCDIR) -follow -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
 				  sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
-SWIGRFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
+SWIGRFILES 	= $(shell find $(SRCDIR) -follow -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
 			  sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1R=')
-SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
+SWIGRDATAFILES 	= $(shell find $(SRCDIR) -follow -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
 				  sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1RData=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
@@ -137,26 +137,26 @@ distclean: clean
 		@rm -f tags .depend
 
 swigclean:
-	@rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
+	@rm -f $(shell find . -follow -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
 swigdocclean:
-	@rm -rf $(shell find -name doxygen_xml -o -name "*_doxygen.i" 2>/dev/null) 
+	@rm -rf $(shell find . -follow -name doxygen_xml -o -name "*_doxygen.i" 2>/dev/null) 
 
 clean: swigclean swigdocclean
-	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o")
-	@rm -f $(shell find . -name "*.a" -o -name "*.so*" -o -name "*.dylib" -o -name "*.dll" -o -name "*~" -o -name ".#*")
+	@rm -f $(shell find . -follow -name "*.cpp.o" -o -name "*.c.o")
+	@rm -f $(shell find . -follow -name "*.a" -o -name "*.so*" -o -name "*.dylib" -o -name "*.dll" -o -name "*~" -o -name ".#*")
 	@rm -f $(SRCTMPFILES)
-	@rm -f $(shell find . -type f -name '*.py' ! -name '__*.py' ! -name '*.*.py' | grep -v svn)
-	@rm -f $(shell find . -type f -name '*.pyc' -o -name '*.R')
-	@rm -f $(shell find . -type f -name '*.RData')
-	@rm -f $(shell find . -type f -name '*.oct')
-	@rm -f $(shell find . -type l -name '*.i')
-	@rm -f $(shell for i in `find . -type l -name '*.doxy'` ; do rm -rf `basename $$i .doxy` ; done)
-	@rm -f $(shell find . -type l -name '*.doxy')
-	@rm -f $(shell find . -type f -name '*doxygen.i')
-	@rm -f $(shell find . -type f -name '*wrap.cxx*')
-	@rm -f $(shell find . -type f -name '*.swp')
-	@rm -f $(shell find . -type f -name 'octave-core')
+	@rm -f $(shell find . -follow -type f -name '*.py' ! -name '__*.py' ! -name '*.*.py' | grep -v svn)
+	@rm -f $(shell find . -follow -type f -name '*.pyc' -o -name '*.R')
+	@rm -f $(shell find . -follow -type f -name '*.RData')
+	@rm -f $(shell find . -follow -type f -name '*.oct')
+	@rm -f $(shell find . -follow -type l -name '*.i')
+	@rm -f $(shell for i in `find . -follow -type l -name '*.doxy'` ; do rm -rf `basename $$i .doxy` ; done)
+	@rm -f $(shell find . -follow -type l -name '*.doxy')
+	@rm -f $(shell find . -follow -type f -name '*doxygen.i')
+	@rm -f $(shell find . -follow -type f -name '*wrap.cxx*')
+	@rm -f $(shell find . -follow -type f -name '*.swp')
+	@rm -f $(shell find . -follow -type f -name 'octave-core')
 	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
 	@rm -f elwms.mex* elwms.so elwms.dylib elwms.dll elwms.oct
 	@rm -f $(TEMPLATE_TARGET)
@@ -173,7 +173,7 @@ install-libshogunui: $(TEMPLATE_TARGET)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
 	install -m755 $(TEMPLATE_STATIC) $(DESTDIR)$(LIBDIR)
 	install -m644 *.h "$(DESTDIR)$(INCDIR)/shogun/ui"
-	find "$(DESTDIR)$(INCDIR)/shogun/ui" -name '*.h' -exec $(SEDMI) \
+	find "$(DESTDIR)$(INCDIR)/shogun/ui" -follow -name '*.h' -exec $(SEDMI) \
 		's/#include "\([^"]*\)"/#include <shogun\/ui\/\1>/' {} \;
 	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.$(EXT_LIB) $(DESTDIR)$(LIBDIR)/$(TEMPLATE_SONAME)
 	cd $(DESTDIR)$(LIBDIR) && ( ln -s $(TEMPLATE_TARGET) libshogunui.$(EXT_LIB); \
@@ -186,13 +186,13 @@ install-libshogun: $(TEMPLATE_TARGET)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
 	install -m755 $(TEMPLATE_STATIC) $(DESTDIR)$(LIBDIR)
 
-	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o \
+	find ./ -follow -mindepth 1 -type d ! \( -path '*.svn*' -o \
 		-name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
 		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
-	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o \
+	find ./ -follow -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o \
 		-name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \) \
 		-exec sh -c "install -m644 {}/*.h $(DESTDIR)$(INCDIR)/shogun/{}" \;
-	find "$(DESTDIR)$(INCDIR)/shogun/" -name '*.h' \
+	find "$(DESTDIR)$(INCDIR)/shogun/" -follow -name '*.h' \
 		-exec $(SEDMI) 's/#include "\([^"]*\)"/#include <shogun\/\1>/' {} \;
 	rm -f $(DESTDIR)$(LIBDIR)/libshogun.$(EXT_LIB) $(DESTDIR)$(LIBDIR)/$(TEMPLATE_SONAME)
 	cd $(DESTDIR)$(LIBDIR) && ( ln -s $(TEMPLATE_TARGET) libshogun.$(EXT_LIB); \
@@ -457,14 +457,14 @@ ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
 else
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
-	$(LINK) $(PRELINKFLAGS) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
+	$(LINK) $(PRELINKFLAGS) $(shell find $(SRCDIR) -follow -name "*.$(EXT_OBJ_CPP)" -o \
 		-name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	@$(POSTLINKCMD) $@
 	@$(LIBSYMLINKCMD)
 endif
 
 $(TEMPLATE_STATIC): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
-	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
+	-ar rcs $@ $(shell find $(SRCDIR) -follow -name "*.$(EXT_OBJ_CPP)" -o \
 		-name "*.$(EXT_OBJ_C)" 2>/dev/null)
 
 %.R: %${EXT_LIB_SWIG_TEMPLATE}
@@ -527,15 +527,15 @@ ifneq ($(MAKECMDGOALS),clean)
 .depend:	../.config $(DEPDEPS)
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
+		$(shell find $(SRCDIR) -follow -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
 		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
+		$(shell find $(SRCDIR) -follow -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
 		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
 else #gcc -MM
-	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
+	find $(SRCDIR) -follow -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
-	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find ../shogun/ -name "*.h"  ) | \
+	( find . -follow -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find ../shogun/ -follow -name "*.h"  ) | \
 	 		sed 's#/[/]*#/#g' | \
 			$(PYTHON) ../.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
 			"$(EXT_LIB_SWIG_TEMPLATE)" $(LIBSHOGUN_MODE) >>.depend
