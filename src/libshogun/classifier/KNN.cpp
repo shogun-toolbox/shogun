@@ -147,18 +147,7 @@ CLabels* CKNN::classify()
 
 CLabels* CKNN::classify(CFeatures* data)
 {
-	if (!distance)
-		SG_ERROR("No distance assigned!\n");
-
-	CFeatures* lhs=distance->get_lhs();
-	if (!lhs || !lhs->get_num_vectors())
-	{
-		SG_UNREF(lhs);
-		SG_ERROR("No vectors on left hand side\n");
-	}
-	distance->init(lhs, data);
-	SG_UNREF(lhs);
-
+	init_distance(data);
 	// redirecting to fast (without sorting) classify if k==1
 	if (this->k == 1)
 		return classify_NN();
@@ -280,6 +269,20 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 	*dst=output;
 	*k_out=k;
 	*num_vec=num_lab;
+}
+
+void CKNN::init_distance(CFeatures* data)
+{
+	if (!distance)
+		SG_ERROR("No distance assigned!\n");
+	CFeatures* lhs=distance->get_lhs();
+	if (!lhs || !lhs->get_num_vectors())
+	{
+		SG_UNREF(lhs);
+		SG_ERROR("No vectors on left hand side\n");
+	}
+	distance->init(lhs, data);
+	SG_UNREF(lhs);
 }
 
 bool CKNN::load(FILE* srcfile)
