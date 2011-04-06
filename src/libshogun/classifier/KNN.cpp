@@ -107,6 +107,7 @@ CLabels* CKNN::classify()
 		// lhs idx 1..n and rhs idx i
 		distances_lhs(dists,0,num_train_labels-1,i);
 		int32_t j;
+
 		for (j=0; j<num_train_labels; j++)
 			train_lab[j]=train_labels[j];
 
@@ -146,71 +147,66 @@ CLabels* CKNN::classify()
 
 CLabels* CKNN::classify(CFeatures* data)
 {
+	if (!distance)
+		SG_ERROR("No distance assigned!\n");
+
+	CFeatures* lhs=distance->get_lhs();
+	if (!lhs || !lhs->get_num_vectors())
+	{
+		SG_UNREF(lhs);
+		SG_ERROR("No vectors on left hand side\n");
+	}
+	distance->init(lhs, data);
+	SG_UNREF(lhs);
+
 	// redirecting to fast (without sorting) classify if k==1
 	if (this->k == 1)
-		return classify_NN(data);
-
-	if (!distance)
-		SG_ERROR("No distance assigned!\n");
-
-	CFeatures* lhs=distance->get_lhs();
-	if (!lhs || !lhs->get_num_vectors())
-	{
-		SG_UNREF(lhs);
-		SG_ERROR("No vectors on left hand side\n");
-	}
-	distance->init(lhs, data);
-	SG_UNREF(lhs);
+		return classify_NN();
 
 	return classify();
-}
-
-CLabels* CKNN::classify_NN(CFeatures* data)
-{
-	if (!distance)
-		SG_ERROR("No distance assigned!\n");
-	CFeatures* lhs=distance->get_lhs();
-	if (!lhs || !lhs->get_num_vectors())
-	{
-		SG_UNREF(lhs);
-		SG_ERROR("No vectors on left hand side\n");
-	}
-	distance->init(lhs, data);
-	SG_UNREF(lhs);
-	return classify_NN();
 }
 
 CLabels* CKNN::classify_NN()
 {
 	ASSERT(distance);
 	ASSERT(num_classes>0);
+
 	int32_t num_lab = distance->get_num_vec_rhs();
 	ASSERT(num_lab && k<= num_lab);
 	CLabels* output = new CLabels(num_lab);
 	float64_t* distances = new float64_t[num_train_labels];
+
 	ASSERT(distances);
 	SG_INFO("%d test examples\n", num_lab);
 	CSignal::clear_cancel();
+
 	// for each test example
 	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 	{
 		SG_PROGRESS(i,0,num_lab);
+
 		// get distances from i-th test example to 0..num_train_labels-1 train examples
 		distances_lhs(distances,0,num_train_labels-1,i);
 		int32_t j;
+
 		// assuming 0th train examples as nearest to i-th test example
 		int32_t out_idx = 0;
 		float64_t min_dist = distances[0];
+
 		// searching for nearest neighbor by comparing distances
 		for (j=0; j<num_train_labels; j++)
+		{
 			if (distances[j]<min_dist)
 			{
 				min_dist = distances[j];
 				out_idx = j;
 			}
+		}
+
 		// label i-th test example with label of nearest neighbor with out_idx index
 		output->set_label(i,train_labels[out_idx]+min_label);
 	}
+
 	delete [] distances;
 	return output;
 }
