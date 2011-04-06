@@ -1090,8 +1090,8 @@ class CMath : public CSGObject
 		template <class T>
 			static T* get_row_sum(T* matrix, int32_t m, int32_t n)
 			{
-				T* rowsums=new float64_t[n];
-				fill_vector(rowsums, n, 0.0);
+				T* rowsums=new T[n];
+				fill_vector(rowsums, n, (T) 0);
 
 				for (int32_t i=0; i<n; i++)
 				{
@@ -1105,8 +1105,8 @@ class CMath : public CSGObject
 		template <class T>
 			static T* get_column_sum(T* matrix, int32_t m, int32_t n)
 			{
-				T* colsums=new float64_t[m];
-				fill_vector(colsums, m, 0.0);
+				T* colsums=new T[m];
+				fill_vector(colsums, m, (T) 0);
 
 				for (int32_t i=0; i<n; i++)
 				{
@@ -1123,7 +1123,7 @@ class CMath : public CSGObject
 				float64_t num_data=n;
 
 				T* colsums=get_column_sum(matrix, m,n);
-				T* rowsums=get_column_sum(matrix, m,n);
+				T* rowsums=get_row_sum(matrix, m,n);
 
 				for (int32_t i=0; i<m; i++)
 					colsums[i]/=num_data;
