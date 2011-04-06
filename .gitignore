@@ -43,6 +43,9 @@ configure.log
 /src/ui
 /src/examples
 
+# static interfaces
+/src/cmdline/shogun
+
 # modular interfaces
 /src/*_modular/*.doxy
 /src/*_modular/Evaluation.i
