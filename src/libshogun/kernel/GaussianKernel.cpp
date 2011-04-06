@@ -28,7 +28,7 @@ CGaussianKernel::CGaussianKernel(int32_t size, float64_t w)
 : CDotKernel(size)
 {
 	init();
-	width=w;
+	set_width(w);
 }
 
 CGaussianKernel::CGaussianKernel(
@@ -36,7 +36,7 @@ CGaussianKernel::CGaussianKernel(
 : CDotKernel(size)
 {
 	init();
-	width=w;
+	set_width(w);
 
 	init(l,r);
 }
@@ -105,7 +105,7 @@ void CGaussianKernel::precompute_squared()
 
 void CGaussianKernel::init()
 {
-	width=1;
+	set_width(1.0);
 	sq_lhs=NULL;
 	sq_rhs=NULL;
 	m_parameters->add(&width, "width", "Kernel width.");
