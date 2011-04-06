@@ -445,10 +445,11 @@ void CHDF5File::create_group_hierarchy()
 		if (i!=0 && vname[i]=='/')
 		{
 			vname[i]='\0';
-			hid_t g = H5Gopen(h5file, vname);
+			hid_t g = H5Gopen2(h5file, vname, H5P_DEFAULT);
 			if (g<0)
 			{
-				g=H5Gcreate(h5file, vname, 0);   
+				g=H5Gcreate2(h5file, vname, H5P_DEFAULT, H5P_DEFAULT,
+						H5P_DEFAULT);   
 				if (g<0)
 					SG_ERROR("Error creating group '%s'\n", vname);
 				vname[i]='/';
