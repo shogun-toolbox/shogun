@@ -34,7 +34,7 @@ CHDF5File::CHDF5File(void)
 CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 {
 	get_boolean_type();
-	H5Eset_auto(NULL, NULL);
+	H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
 
 	if (name)
 		set_variable_name(name);
@@ -74,7 +74,7 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 	int32_t* dims;																	\
 	int32_t ndims;																	\
 	int64_t nelements;																\
-	hid_t dataset = H5Dopen(h5file, variable_name);									\
+	hid_t dataset = H5Dopen2(h5file, variable_name, H5P_DEFAULT);					\
 	if (dataset<0)																	\
 		SG_ERROR("Error opening data set\n");										\
 	hid_t dtype = H5Dget_type(dataset);												\
@@ -123,7 +123,7 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 	int32_t* dims;																	\
 	int32_t ndims;																	\
 	int64_t nelements;																\
-	hid_t dataset = H5Dopen(h5file, variable_name);									\
+	hid_t dataset = H5Dopen2(h5file, variable_name, H5P_DEFAULT);					\
 	if (dataset<0)																	\
 		SG_ERROR("Error opening data set\n");										\
 	hid_t dtype = H5Dget_type(dataset);												\
@@ -249,7 +249,8 @@ void CHDF5File::fname(const sg_type* vec, int32_t len)						\
 	dataspace=H5Screate_simple(1, &dims, NULL); 							\
 	if (dataspace<0)														\
 		SG_ERROR("Could not create hdf5 dataspace\n");						\
-	dataset=H5Dcreate(h5file, variable_name, h5type, dataspace, H5P_DEFAULT); \
+	dataset=H5Dcreate2(h5file, variable_name, h5type, dataspace, H5P_DEFAULT,\
+			H5P_DEFAULT, H5P_DEFAULT);										\
 	if (dataset<0)															\
 	{																		\
 		SG_ERROR("Could not create hdf5 dataset - does"						\
@@ -284,7 +285,8 @@ void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	
 	dataspace=H5Screate_simple(2, dims, NULL); 									\
 	if (dataspace<0)															\
 		SG_ERROR("Could not create hdf5 dataspace\n");							\
-	dataset=H5Dcreate(h5file, variable_name, h5type, dataspace, H5P_DEFAULT);	\
+	dataset=H5Dcreate2(h5file, variable_name, h5type, dataspace, H5P_DEFAULT,	\
+			H5P_DEFAULT, H5P_DEFAULT);											\
 	if (dataset<0)																\
 	{																			\
 		SG_ERROR("Could not create hdf5 dataset - does"							\
