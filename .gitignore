@@ -1,5 +1,4 @@
 *.o
-*.pyc
 *doxygen_xml
 *_wrap.h
 *_wrap.cxx
