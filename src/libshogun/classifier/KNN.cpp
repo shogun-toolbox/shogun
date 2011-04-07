@@ -148,6 +148,7 @@ CLabels* CKNN::classify()
 CLabels* CKNN::classify(CFeatures* data)
 {
 	init_distance(data);
+
 	// redirecting to fast (without sorting) classify if k==1
 	if (this->k == 1)
 		return classify_NN();

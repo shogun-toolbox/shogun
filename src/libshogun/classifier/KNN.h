@@ -137,6 +137,7 @@ class CKNN : public CDistanceMachine
 		 * @return classified labels
 		 */
 		virtual CLabels* classify_NN();
+
 		/** init distances to test examples
 		 * @param test examples
 		 */
