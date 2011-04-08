@@ -73,13 +73,6 @@
  #include <shogun/classifier/svm/DomainAdaptationSVM.h>
 #endif //USE_SVMLIGHT
  #include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
- #include <shogun/classifier/boosting/Utils/Args.h>
- #include <shogun/classifier/boosting/WeakLearners/BaseLearner.h>
- #include <shogun/classifier/boosting/WeakLearners/AbstainableLearner.h>
- #include <shogun/classifier/boosting/WeakLearners/FeaturewiseLearner.h>
- #include <shogun/classifier/boosting/WeakLearners/SingleStumpLearner.h>
- #include <shogun/classifier/boosting/StrongLearners/GenericStrongLearner.h>
- #include <shogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.h>
 %}
 
 /* Typemaps */
@@ -213,11 +206,3 @@
 %include <shogun/classifier/svm/DomainAdaptationSVM.h>
 
 #endif //USE_SVMLIGHT
-%include <shogun/classifier/boosting/Utils/Args.h>
-%include <shogun/classifier/boosting/WeakLearners/BaseLearner.h>
-%include <shogun/classifier/boosting/WeakLearners/AbstainableLearner.h>
-%include <shogun/classifier/boosting/WeakLearners/FeaturewiseLearner.h>
-%include <shogun/classifier/boosting/WeakLearners/SingleStumpLearner.h>
-%include <shogun/classifier/boosting/StrongLearners/GenericStrongLearner.h>
-%include <shogun/classifier/boosting/StrongLearners/AdaBoostMHLearner.h>
-
