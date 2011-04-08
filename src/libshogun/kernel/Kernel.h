@@ -89,6 +89,7 @@ enum EKernelType
 	K_SPARSESPATIALSAMPLE = 290,
 	K_HISTOGRAMINTERSECTION = 300,
 	K_WAVELET = 310,
+	K_WAVE = 320,
 };
 
 enum EKernelProperty
