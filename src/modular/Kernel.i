@@ -37,6 +37,7 @@
 #include <shogun/kernel/AUCKernel.h>
 #include <shogun/kernel/AvgDiagKernelNormalizer.h>
 #include <shogun/kernel/RidgeKernelNormalizer.h>
+#include <shogun/kernel/CauchyKernel.h>
 #include <shogun/kernel/Chi2Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CommUlongStringKernel.h>
@@ -50,8 +51,6 @@
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/FixedDegreeStringKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/WaveletKernel.h>
-#include <shogun/kernel/WaveKernel.h>
 #include <shogun/kernel/GaussianShiftKernel.h>
 #include <shogun/kernel/GaussianShortRealKernel.h>
 #include <shogun/kernel/HistogramIntersectionKernel.h>
@@ -85,6 +84,8 @@
 #include <shogun/kernel/StringKernel.h>
 #include <shogun/kernel/TanimotoKernelNormalizer.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
+#include <shogun/kernel/WaveletKernel.h>
+#include <shogun/kernel/WaveKernel.h>
 #include <shogun/kernel/WeightedCommWordStringKernel.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
@@ -131,6 +132,7 @@
 %rename(CustomKernel) CCustomKernel;
 %rename(DiagKernel) CDiagKernel;
 %rename(WaveKernel) CWaveKernel;
+%rename(CauchyKernel) CCauchyKernel;
 %rename(DiceKernelNormalizer) CDiceKernelNormalizer;
 %rename(ScatterKernelNormalizer) CScatterKernelNormalizer;
 %rename(VarianceKernelNormalizer) CVarianceKernelNormalizer;
@@ -241,6 +243,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/AUCKernel.h> 
 %include <shogun/kernel/AvgDiagKernelNormalizer.h>
 %include <shogun/kernel/RidgeKernelNormalizer.h>
+%include <shogun/kernel/CauchyKernel.h>
 %include <shogun/kernel/Chi2Kernel.h>
 %include <shogun/kernel/CombinedKernel.h>
 %include <shogun/kernel/CommUlongStringKernel.h>
@@ -254,8 +257,6 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/DistanceKernel.h>
 %include <shogun/kernel/FixedDegreeStringKernel.h>
 %include <shogun/kernel/GaussianKernel.h>
-%include <shogun/kernel/WaveKernel.h>
-%include <shogun/kernel/WaveletKernel.h>
 %include <shogun/kernel/GaussianShiftKernel.h>
 %include <shogun/kernel/GaussianShortRealKernel.h>
 %include <shogun/kernel/HistogramIntersectionKernel.h>
@@ -286,6 +287,8 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 %include <shogun/kernel/TanimotoKernelNormalizer.h>
 %include <shogun/kernel/TensorProductPairKernel.h>
+%include <shogun/kernel/WaveKernel.h>
+%include <shogun/kernel/WaveletKernel.h>
 %include <shogun/kernel/WeightedCommWordStringKernel.h>
 %include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 %include <shogun/kernel/WeightedDegreeStringKernel.h>
