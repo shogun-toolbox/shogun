@@ -50,6 +50,7 @@
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/FixedDegreeStringKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/WaveletKernel.h>
 #include <shogun/kernel/GaussianShiftKernel.h>
 #include <shogun/kernel/GaussianShortRealKernel.h>
 #include <shogun/kernel/HistogramIntersectionKernel.h>
@@ -134,6 +135,7 @@
 %rename(DistanceKernel) CDistanceKernel;
 %rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
 %rename(GaussianKernel) CGaussianKernel;
+%rename(WaveletKernel) CWaveletKernel;
 %rename(GaussianShiftKernel) CGaussianShiftKernel;
 %rename(GaussianShortRealKernel) CGaussianShortRealKernel;
 %rename(HistogramIntersectionKernel) CHistogramIntersectionKernel;
@@ -250,6 +252,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/DistanceKernel.h>
 %include <shogun/kernel/FixedDegreeStringKernel.h>
 %include <shogun/kernel/GaussianKernel.h>
+%include <shogun/kernel/WaveletKernel.h>
 %include <shogun/kernel/GaussianShiftKernel.h>
 %include <shogun/kernel/GaussianShortRealKernel.h>
 %include <shogun/kernel/HistogramIntersectionKernel.h>
