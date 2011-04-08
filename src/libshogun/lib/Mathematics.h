@@ -1135,7 +1135,7 @@ class CMath : public CSGObject
 				for (int32_t i=0; i<n; i++)
 				{
 					for (int32_t j=0; j<m; j++)
-						matrix[int64_t(i)*m+j]+=s-colsums[i]-rowsums[j];
+						matrix[int64_t(i)*m+j]+=s-colsums[j]-rowsums[i];
 				}
 
 				delete[] rowsums;
