@@ -5,7 +5,6 @@
 #include "kernel/DotKernel.h"
 #include "features/DotFeatures.h"
 
-
 namespace shogun
 {
 /*
@@ -19,8 +18,6 @@ namespace shogun
  * */
 class CWaveletKernel: public CDotKernel
 {
-	void init(void);
-
 	public:
 		/** default constructor  */
 		CWaveletKernel();
@@ -53,17 +50,13 @@ class CWaveletKernel: public CDotKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
 		
-
 		virtual void cleanup();
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type wavelet
 		 */
-		
 		virtual EKernelType get_kernel_type() { return K_WAVELET; }
-
-		
 		
 		/** return the kernel's name
 		 *
@@ -84,7 +77,15 @@ class CWaveletKernel: public CDotKernel
 
 	protected:
 		/** h(x) is a mother wavelet function */
-		float64_t MotherWavelet(float64_t h);
+		inline float64_t MotherWavelet(float64_t h)
+		{
+			return cos(1.75*h)*exp(-h*h/2);
+		}
+
+	private:
+		void init();
+
+	protected:
 		/** dilation coefficient */
 		float64_t Wdilation;
 		/** translation coefficient */
