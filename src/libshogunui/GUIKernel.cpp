@@ -56,6 +56,7 @@
 #include <shogun/kernel/ScatterKernelNormalizer.h>
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
+#include <shogun/kernel/WaveletKernel.h>
 
 #include <string.h>
 
@@ -176,7 +177,17 @@ CKernel* CGUIKernel::create_sigmoid(
 
 	return kern;
 }
-
+CKernel* CGUIKernel::create_wavelet(
+	int32_t size, float64_t Wdilation, float64_t Wtranslation)
+{
+	CKernel* kern=new CWaveletKernel(size, Wdilation, Wtranslation);
+	if (!kern)
+		SG_ERROR("Couldn't create WaveletKernel with size %d, Wdilation %f, Wtranslation %f.\n", size, Wdilation, Wtranslation);
+	else
+		SG_DEBUG("created WaveletKernel (%p) with size %d, Wdilation %f, Wtranslation %f.\n", kern, size, Wdilation, Wtranslation);
+	
+	return kern;
+}
 CKernel* CGUIKernel::create_sparsepoly(
 	int32_t size, int32_t degree, bool inhomogene, bool normalize)
 {

@@ -93,6 +93,9 @@ class CGUIKernel : public CSGObject
 	CKernel* create_poly(
 		int32_t size=10, int32_t degree=2, bool inhomogene=false,
 		bool normalize=true);
+	/** create new Wavelet kernel */
+	CKernel* create_wavelet(
+		int32_t size=10, float64_t Wdilation=5.0, float64_t Wtranslation=2.0);
 	/** create a new (Simple)LocalityImprovedString kernel */
 	CKernel* create_localityimprovedstring(
 		int32_t size=10, int32_t length=3, int32_t inner_degree=3,
