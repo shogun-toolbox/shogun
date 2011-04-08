@@ -10,8 +10,8 @@
 
 #include "lib/config.h"
 
-#ifndef WAVEKERNEL_H_
-#define WAVEKERNEL_H_
+#ifndef CAUCHYKERNEL_H_
+#define CAUCHYKERNEL_H_
 
 #include "lib/common.h"
 #include "kernel/Kernel.h"
@@ -27,31 +27,31 @@ class CDistance;
  * Formally described as
  *
  * \f[
- * 		K(x,x') = \frac{\theta}{\| x-x' \|} \sin \frac{\| x-x' \|}{\theta}
+ * 		K(x,x') = \frac{1}{1+\frac{\| x-x' \|^2}{\sigma}}
  * \f]
  *
  */
 
-class CWaveKernel: public CKernel
+class CCauchyKernel: public CKernel
 {
 public:
 	/** default constructor */
-	CWaveKernel();
+	CCauchyKernel();
 
 	/** constructor
 	 * @param cache size of cache
-	 * @param theta kernel parameter theta
+	 * @param sigma kernel parameter sigma
 	 * @param dist distance to be used
 	 */
-	CWaveKernel(int32_t cache, float64_t theta, CDistance* dist);
+	CCauchyKernel(int32_t cache, float64_t sigma, CDistance* dist);
 
 	/** constructor
 	 * @param l features left-side
 	 * @param r features right-side
-	 * @param theta kernel parameter theta
+	 * @param sigma kernel parameter sigma
 	 * @param dist distance to be used
 	 */
-	CWaveKernel(CFeatures *l, CFeatures *r, float64_t theta, CDistance* dist);
+	CCauchyKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
@@ -63,7 +63,7 @@ public:
 	/**
 	 * @return kernel type
 	 */
-	inline virtual EKernelType get_kernel_type() { return K_WAVE; }
+	inline virtual EKernelType get_kernel_type() { return K_CAUCHY; }
 
 	/**
 	 * @return type of features
@@ -78,16 +78,16 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "Wave"; }
+	inline virtual const char* get_name() const { return "Cauchy"; }
 
-	virtual ~CWaveKernel();
+	virtual ~CCauchyKernel();
 protected:
 
 	/// distance to be used
 	CDistance* distance;
 
-	/// theta parameter of kernel
-	float64_t theta;
+	/// sigma parameter of kernel
+	float64_t sigma;
 
 	/**
 	 * compute kernel for specific feature vectors
@@ -100,4 +100,4 @@ protected:
 };
 }
 
-#endif /* WAVEKERNEL_H_ */
+#endif /* CAUCHYKERNEL_H_ */
