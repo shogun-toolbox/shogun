@@ -24,9 +24,9 @@ namespace shogun
  *
  * It is defined as
  * \f[
- * k({\bf x},({\bf x'})= \sum_{i=0}^{l} min(x_i,x'_i)
+ * k({\bf x},({\bf x'})= \sum_{i=0}^{l} min(x_i^\beta,x'_i^\beta)
  * \f]
- *
+ * with beta=1 by default
  * */
 class CHistogramIntersectionKernel: public CDotKernel
 {
@@ -73,7 +73,21 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 */
 		virtual const char* get_name() const { return "HistogramIntersection"; }
 
+		/** getter for beta parameter
+		 * @return beta value
+		 */
+		inline float64_t get_beta()	{ return this->beta; }
+
+		/** setter for beta parameter
+		 *  @param beta value
+		 */
+		inline void set_beta(float64_t value) { this->beta = value;	}
+
 	protected:
+
+		/// beta parameter
+		float64_t beta;
+
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
 		 * in the corresponding feature object
