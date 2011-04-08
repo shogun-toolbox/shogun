@@ -51,6 +51,7 @@
 #include <shogun/kernel/FixedDegreeStringKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/WaveletKernel.h>
+#include <shogun/kernel/WaveKernel.h>
 #include <shogun/kernel/GaussianShiftKernel.h>
 #include <shogun/kernel/GaussianShortRealKernel.h>
 #include <shogun/kernel/HistogramIntersectionKernel.h>
@@ -129,6 +130,7 @@
 %rename(ConstKernel) CConstKernel;
 %rename(CustomKernel) CCustomKernel;
 %rename(DiagKernel) CDiagKernel;
+%rename(WaveKernel) CWaveKernel;
 %rename(DiceKernelNormalizer) CDiceKernelNormalizer;
 %rename(ScatterKernelNormalizer) CScatterKernelNormalizer;
 %rename(VarianceKernelNormalizer) CVarianceKernelNormalizer;
@@ -252,6 +254,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/DistanceKernel.h>
 %include <shogun/kernel/FixedDegreeStringKernel.h>
 %include <shogun/kernel/GaussianKernel.h>
+%include <shogun/kernel/WaveKernel.h>
 %include <shogun/kernel/WaveletKernel.h>
 %include <shogun/kernel/GaussianShiftKernel.h>
 %include <shogun/kernel/GaussianShortRealKernel.h>
