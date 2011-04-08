@@ -22,6 +22,7 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/SalzbergWordStringKernel.h>
+#include <shogun/kernel/WaveletKernel.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/PolyFeatures.h>
 #include <shogun/preproc/SortWordString.h>
@@ -2629,6 +2630,32 @@ CKernel* CSGInterface::create_kernel()
 
 		kernel=ui_kernel->create_distance(size, width);
 	}
+	else if (strmatch(type, "WAVELET"))
+	{
+		 
+                if (m_nrhs<4)
+                        return NULL;
+
+                char* dtype=get_str_from_str_or_direct(len);
+                if (strmatch(dtype, "REAL"))
+                {
+                        int32_t size=get_int_from_int_or_str();
+                        float64_t Wdilation=5.0;
+                        float64_t Wtranslation=2.0;
+
+                        if (m_nrhs>4)
+                        {
+                                Wdilation=get_real_from_real_or_str();
+
+                                if (m_nrhs>5)
+                                        Wtranslation=get_real_from_real_or_str();
+                        }
+
+                        kernel=ui_kernel->create_sigmoid(size, Wdilation, Wtranslation);
+                }
+
+                delete[] dtype;
+        }
 	else if (strmatch(type, "LINEAR"))
 	{
 		if (m_nrhs<4)
