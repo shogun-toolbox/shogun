@@ -18,13 +18,13 @@
 using namespace shogun;
 
 CKNN::CKNN()
-: CDistanceMachine(), k(3), num_classes(0),
-  num_train_labels(0), train_labels(NULL), q(1.0)
+: CDistanceMachine(), m_k(3), num_classes(0),
+  num_train_labels(0), train_labels(NULL), m_q(1.0)
 {
 }
 
 CKNN::CKNN(int32_t k_, CDistance* d, CLabels* trainlab)
-: CDistanceMachine(), k(k_), num_classes(0), train_labels(NULL), q(1.0)
+: CDistanceMachine(), m_k(k_), num_classes(0), train_labels(NULL), m_q(1.0)
 {
 	ASSERT(d);
 	ASSERT(trainlab);
@@ -83,7 +83,7 @@ CLabels* CKNN::classify()
 	ASSERT(distance->get_num_vec_rhs());
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(k<=num_lab);
+	ASSERT(m_k<=num_lab);
 
 	CLabels* output=new CLabels(num_lab);
 
@@ -120,8 +120,8 @@ CLabels* CKNN::classify()
 		for (j=0; j<num_classes; j++)
 			classes[j]=0.0;
 
-		float64_t multiplier = q;
-		for (j=0; j<k; j++)
+		float64_t multiplier = m_q;
+		for (j=0; j<m_k; j++)
 		{
 			classes[train_lab[j]]+= multiplier;
 			multiplier*= multiplier;
@@ -154,7 +154,7 @@ CLabels* CKNN::classify(CFeatures* data)
 	init_distance(data);
 
 	// redirecting to fast (without sorting) classify if k==1
-	if (this->k == 1)
+	if (m_k == 1)
 		return classify_NN();
 
 	return classify();
@@ -166,7 +166,8 @@ CLabels* CKNN::classify_NN()
 	ASSERT(num_classes>0);
 
 	int32_t num_lab = distance->get_num_vec_rhs();
-	ASSERT(num_lab && k<= num_lab);
+	ASSERT(num_lab);
+
 	CLabels* output = new CLabels(num_lab);
 	float64_t* distances = new float64_t[num_train_labels];
 
@@ -216,9 +217,9 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 	ASSERT(distance->get_num_vec_rhs());
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(k<=num_lab);
+	ASSERT(m_k<=num_lab);
 
-	int32_t* output=(int32_t*) malloc(sizeof(int32_t)*k*num_lab);
+	int32_t* output=(int32_t*) malloc(sizeof(int32_t)*m_k*num_lab);
 
 	//distances to train data and working buffer of train_labels
 	float64_t* dists=new float64_t[num_train_labels];
@@ -247,7 +248,7 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 		for (int32_t j=0; j<num_classes; j++)
 			classes[j]=0;
 
-		for (int32_t j=0; j<k; j++)
+		for (int32_t j=0; j<m_k; j++)
 		{
 			classes[train_lab[j]]++;
 
@@ -272,7 +273,7 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 	delete[] classes;
 
 	*dst=output;
-	*k_out=k;
+	*k_out=m_k;
 	*num_vec=num_lab;
 }
 

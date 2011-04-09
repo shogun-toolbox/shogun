@@ -126,21 +126,21 @@ class CKNN : public CDistanceMachine
 
 		/** set k
 		 *
-		 * @param p_k new k
+		 * @param k k to be set
 		 */
-		inline void set_k(int32_t p_k)
+		inline void set_k(int32_t k)
 		{
-			ASSERT(p_k>0);
-			this->k=p_k;
+			ASSERT(k>0);
+			m_k=k;
 		}
 
 		/** get k
 		 *
-		 * @return k
+		 * @return value of k
 		 */
 		inline int32_t get_k()
 		{
-			return k;
+			return m_k;
 		}
 
 		/** set q
@@ -149,13 +149,13 @@ class CKNN : public CDistanceMachine
 		inline void set_q(float64_t q)
 		{
 			ASSERT(q<=1.0 && q>0.0);
-			this->q = q;
+			m_q = q;
 		}
 
 		/** get q
 		 * @return q parameter
 		 */
-		inline float64_t get_q() { return this->q; }
+		inline float64_t get_q() { return m_q; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KNN"; }
@@ -173,10 +173,10 @@ class CKNN : public CDistanceMachine
 
 	protected:
 		/// the k parameter in KNN
-		int32_t k;
+		int32_t m_k;
 
 		/// parameter q of rank weighting
-		float64_t q;
+		float64_t m_q;
 
 		///	number of classes (i.e. number of values labels can take)
 		int32_t num_classes;
