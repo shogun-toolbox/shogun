@@ -56,6 +56,7 @@ bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
 {
 	CDotKernel::init(l, r);
 	distance->init(l, r);
+	m_parameters->add((CSGObject**) &distance, "distance", "Distance used.");
 	return init_normalizer();
 }
 
