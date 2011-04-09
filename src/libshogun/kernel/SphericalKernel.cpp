@@ -6,7 +6,7 @@
  *
  * Based on GaussianKernel, Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 2011 Shashwat Lal Das
- * Copyright (C) 2007-2011 Berlin Institute of Technology and Max-Planck-Society
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include "SphericalKernel.h"
