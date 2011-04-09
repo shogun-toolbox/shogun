@@ -91,32 +91,75 @@ void CFile::set_bool_vector(const bool* vector, int32_t len)
 
 void CFile::get_bool_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
-	SG_NOTIMPLEMENTED;
+	uint8_t * byte_matrix;
+	get_byte_matrix(byte_matrix,num_feat,num_vec);
+
+	ASSERT(num_feat > 0 && num_vec > 0)
+	matrix = new bool[num_feat*num_vec];
+
+	for(int32_t i = 0;i < num_vec;i++)
+	{
+		for(int32_t j = 0;j < num_feat;j++)
+			matrix[i*num_feat+j] = byte_matrix[i*num_feat+j] != 0 ? 1 : 0;
+	}
+
+	delete[] byte_matrix;
 }
 
 void CFile::set_bool_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
 {
-	SG_NOTIMPLEMENTED;
+	uint8_t * byte_matrix = new uint8_t[num_feat*num_vec];
+	for(int32_t i = 0;i < num_vec;i++)
+	{
+		for(int32_t j = 0;j < num_feat;j++)
+			byte_matrix[i*num_feat+j] = matrix[i*num_feat+j] != 0 ? 1 : 0;
+	}
+
+	set_byte_matrix(byte_matrix,num_feat,num_vec);
+
+	delete[] byte_matrix;
 }
 
 void CFile::get_bool_string_list(
 		TString<bool>*& strings, int32_t& num_str,
 		int32_t& max_string_len)
 {
-	TString<int32_t>* strs;
-	get_int_string_list(strs, num_str, max_string_len);
+	TString<int8_t>* strs;
+	get_int8_string_list(strs, num_str, max_string_len);
 
 	ASSERT(num_str>0 && max_string_len>0);
 	strings=new TString<bool>[num_str];
 
-	SG_NOTIMPLEMENTED;
-	//FIXME
+	for(int32_t i = 0;i < num_str;i++)
+	{
+		strings[i].length = strs[i].length;
+                strings[i].string = new bool[strs[i].length];
+		for(int32_t j = 0;j < strs[i].length;j++)
+		strings[i].string[j] = strs[i].string[j] != 0 ? 1 : 0;
+	}
+
+	for(int32_t i = 0;i < num_str;i++)
+		delete[] strs[i].string;
+	delete[] strs;
 }
 
 void CFile::set_bool_string_list(const TString<bool>* strings, int32_t num_str)
 {
-	SG_NOTIMPLEMENTED;
-	//FIXME
+	TString<int8_t> * strs = new TString<int8_t>[num_str];
+
+	for(int32_t i = 0;i < num_str;i++)
+	{
+		strs[i].length = strings[i].length;
+		strs[i].string = new int8_t[strings[i].length];
+		for(int32_t j = 0;j < strings[i].length;j++)
+		strs[i].string[j] = strings[i].string[j] != 0 ? 1 : 0;
+	}
+
+	set_int8_string_list(strs,num_str);
+
+	for(int32_t i = 0;i < num_str;i++)
+		delete[] strs[i].string;
+	delete[] strs;
 }
 
 CFile::~CFile()
