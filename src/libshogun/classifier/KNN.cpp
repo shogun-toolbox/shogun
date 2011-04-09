@@ -23,8 +23,8 @@ CKNN::CKNN()
 {
 }
 
-CKNN::CKNN(int32_t k_, CDistance* d, CLabels* trainlab)
-: CDistanceMachine(), m_k(k_), num_classes(0), train_labels(NULL), m_q(1.0)
+CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
+: CDistanceMachine(), m_k(k), num_classes(0), train_labels(NULL), m_q(1.0)
 {
 	ASSERT(d);
 	ASSERT(trainlab);
