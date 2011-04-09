@@ -52,6 +52,7 @@ bool CCauchyKernel::init(CFeatures* l, CFeatures* r)
 void CCauchyKernel::init()
 {
 	m_parameters->add(&sigma, "sigma", "Sigma kernel parameter.");
+	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 }
 
 float64_t CCauchyKernel::compute(int32_t idx_a, int32_t idx_b)
