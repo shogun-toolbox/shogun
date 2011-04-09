@@ -22,7 +22,7 @@ namespace shogun
 
 class CDistance;
 
-/** @brief Wave kernel
+/** @brief Cauchy kernel
  *
  * Formally described as
  *
