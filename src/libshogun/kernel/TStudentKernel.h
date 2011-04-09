@@ -22,7 +22,7 @@ namespace shogun
 
 class CDistance;
 
-/** @brief Generalized T-Stduent kernel
+/** @brief Generalized T-Student kernel
  *
  * Formally described as
  *
