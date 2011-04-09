@@ -2,7 +2,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # Written (W) 2008 Soeren Sonnenburg
 # Written (W) 2011 Christian Widmer
 # Copyright (C) 2008-2011 Fraunhofer Institute FIRST and Max-Planck-Society
@@ -83,7 +83,7 @@ class Sensor(object):
         elif kname == 'wdshift':
                 k = WeightedDegreePositionStringKernel(0, kernel['order'])
                 k.set_normalizer(IdentityKernelNormalizer())
-                k.set_shifts(kernel['shift'] * 
+                k.set_shifts(kernel['shift'] *
                         numpy.ones(f.get_max_vector_length(), dtype=numpy.int32))
                 k.set_position_weights(1.0 / f.get_max_vector_length() *
                         numpy.ones(f.get_max_vector_length(), dtype=numpy.float64))
@@ -139,7 +139,7 @@ class SignalSensor(object):
 
         while l:
             # skip comment or empty line
-            if not (l.startswith('%') or l.startswith('\n')): 
+            if not (l.startswith('%') or l.startswith('\n')):
                 if bias is None: bias = parse_float(l, 'b')
                 if alphas is None: alphas = parse_vector(l, file, 'alphas')
                 if num_kernels is None: num_kernels = parse_int(l, 'num_kernels')
@@ -167,44 +167,44 @@ class SignalSensor(object):
             l = file.readline()
 
         sys.stderr.write('error loading model file\n')
-    
-    
+
+
     def predict(self, seq, chunk_size = int(10e6)):
         """
         predicts on whole contig, splits up sequence in chunks of size chunk_size
         """
-        
+
         seq_len = len(seq)
         num_chunks = int(numpy.ceil(float(seq_len) / float(chunk_size)))
         assert(num_chunks > 0)
-        
+
     	sys.stderr.write("number of chunks for contig: %i\n" % (num_chunks))
-        
+
         start = 0
         stop = min(chunk_size, seq_len)
 		
         out = []
-        
-        # iterate over chunks        
+
+        # iterate over chunks
         for chunk_idx in range(num_chunks):
-            
+
             sys.stderr.write("processing chunk #%i\n" % (chunk_idx))
 
-            assert (start < stop)        
+            assert (start < stop)
             chunk = seq[start:stop]
-        
+
             assert(len(self.sensors) > 0)
             tf = CombinedFeatures()
             for i in xrange(len(self.sensors)):
                 f = self.sensors[i].get_test_features(chunk, self.window)
                 tf.append_feature_obj(f)
-                
+
             sys.stderr.write("initialising kernel...")
             self.kernel.init(self.svs, tf)
             sys.stderr.write("..done\n")
-    
+
             lab_out = self.svm.classify()
-            
+
             # work around problem with get_labels()
             tmp_out = [lab_out.get_label(idx) for idx in range(0, lab_out.get_num_labels())]
             assert(len(tmp_out) > 0)
@@ -219,10 +219,10 @@ class SignalSensor(object):
 
         l = (-self.window[0]) * [-42]
         r = self.window[1] * [-42]
-        
+
         # concatenate
-        ret = l + out + r 
-        
+        ret = l + out + r
+
         assert(len(ret) == len(seq))
-        
+
         return ret

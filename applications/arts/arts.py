@@ -4,7 +4,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Written (W) 2008-2009 Soeren Sonnenburg
 # Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
 
@@ -24,13 +24,13 @@ def print_version():
 
 def parse_options():
     parser = optparse.OptionParser(usage="usage: %prog [options] seq.fa")
-    
+
     parser.add_option("-o", "--outfile", type="str", default='stdout',
                               help="File to write the results to")
     parser.add_option("-v", "--version", default=False,
                               help="Show some more information")
     parser.add_option("--organism", type="str", default='Worm',
-                              help="""use model for organism when predicting 
+                              help="""use model for organism when predicting
                               (one of Cress, Fish, Fly, Human, Worm)""")
 
     (options, args) = parser.parse_args()
