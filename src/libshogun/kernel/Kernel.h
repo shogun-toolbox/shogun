@@ -90,8 +90,7 @@ enum EKernelType
 	K_HISTOGRAMINTERSECTION = 300,
 	K_WAVELET = 310,
 	K_WAVE = 320,
-	K_CAUCHY = 330,
-	K_EXPONENTIAL = 340
+	K_CAUCHY = 330
 };
 
 enum EKernelProperty
