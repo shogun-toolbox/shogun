@@ -60,5 +60,3 @@ float64_t CTStudentKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t dist = distance->distance(idx_a, idx_b);
 	return 1.0/(1.0+CMath::pow(dist, this->degree));
 }
-
-
