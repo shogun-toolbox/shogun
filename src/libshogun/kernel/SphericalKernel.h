@@ -6,7 +6,7 @@
  *
  * Based on GaussianKernel, Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 2011 Shashwat Lal Das
- * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2007-2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include "lib/config.h"
@@ -87,6 +87,24 @@ class CSphericalKernel: public CKernel
 	 * @return name of kernel
 	 */
 	inline virtual const char* get_name() const { return "Spherical"; }
+
+	/** set the kernel's sigma
+	 *
+	 * @param kernel sigma
+	 */
+	inline virtual void set_sigma(float64_t s)
+	{
+	  	sigma=s;
+	}
+
+	/** return the kernel's sigma
+	 *
+	 * @return kernel sigma
+	 */
+	inline virtual float64_t get_sigma() const
+	{
+		return sigma;
+	}
 
 	virtual ~CSphericalKernel();
 protected:

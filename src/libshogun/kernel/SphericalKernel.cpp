@@ -6,7 +6,7 @@
  *
  * Based on GaussianKernel, Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 2011 Shashwat Lal Das
- * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2007-2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include "SphericalKernel.h"
@@ -14,27 +14,28 @@
 
 using namespace shogun;
 
-CSphericalKernel::CSphericalKernel(void): CKernel(0), distance(NULL), sigma(1.0)
+CSphericalKernel::CSphericalKernel(void): CKernel(0), distance(NULL)
 {
-	SG_UNSTABLE("CSphericalKernel::CSphericalKernel(void)", "\n");
+	init();
+	set_sigma(1.0);
 }
 
-CSphericalKernel::CSphericalKernel(int32_t size, float64_t sigma, CDistance* dist)
+CSphericalKernel::CSphericalKernel(int32_t size, float64_t sig, CDistance* dist)
 : CKernel(size), distance(dist)
 {
 	ASSERT(distance);
 	init();
-	set_sigma(sigma);
+	set_sigma(sig);
 	SG_REF(distance);
 }
 
 CSphericalKernel::CSphericalKernel(
-	CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist)
+	CFeatures *l, CFeatures *r, float64_t sig, CDistance* dist)
 : CKernel(10), distance(dist)
 {
   	ASSERT(distance);
 	init();
-	set_sigma(sigma);
+	set_sigma(sig);
 	SG_REF(distance);
 	init(l, r);
 }
