@@ -749,6 +749,10 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_REGULATORYMODULES)
 		ENUM_CASE(K_SPARSESPATIALSAMPLE)
 		ENUM_CASE(K_HISTOGRAMINTERSECTION)
+                ENUM_CASE(K_WAVELET)
+                ENUM_CASE(K_WAVE)
+                ENUM_CASE(K_CAUCHY)
+                ENUM_CASE(K_TSTUDENT)
 	}
 
 	switch (get_feature_class())

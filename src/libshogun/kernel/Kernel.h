@@ -91,6 +91,7 @@ enum EKernelType
 	K_WAVELET = 310,
 	K_WAVE = 320,
 	K_CAUCHY = 330,
+        K_TSTUDENT = 340
 };
 
 enum EKernelProperty

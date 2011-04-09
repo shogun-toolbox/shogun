@@ -84,6 +84,7 @@
 #include <shogun/kernel/StringKernel.h>
 #include <shogun/kernel/TanimotoKernelNormalizer.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
+#include <shogun/kernel/TStudentKernel.h>  
 #include <shogun/kernel/WaveletKernel.h>
 #include <shogun/kernel/WaveKernel.h>
 #include <shogun/kernel/WeightedCommWordStringKernel.h>
@@ -170,6 +171,7 @@
 %rename(SqrtDiagKernelNormalizer) CSqrtDiagKernelNormalizer;
 %rename(TanimotoKernelNormalizer) CTanimotoKernelNormalizer;
 %rename(TensorProductPairKernel) CTensorProductPairKernel;
+%rename(TStudentKernel) CTStudentKernel;
 %rename(WeightedCommWordStringKernel) CWeightedCommWordStringKernel;
 %rename(WeightedDegreePositionStringKernel) CWeightedDegreePositionStringKernel;
 %rename(WeightedDegreeStringKernel) CWeightedDegreeStringKernel;
@@ -287,6 +289,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 %include <shogun/kernel/TanimotoKernelNormalizer.h>
 %include <shogun/kernel/TensorProductPairKernel.h>
+%include <shogun/kernel/TStudentKernel.h>
 %include <shogun/kernel/WaveKernel.h>
 %include <shogun/kernel/WaveletKernel.h>
 %include <shogun/kernel/WeightedCommWordStringKernel.h>
