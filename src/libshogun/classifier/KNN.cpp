@@ -18,13 +18,13 @@
 using namespace shogun;
 
 CKNN::CKNN()
-: CDistanceMachine(), m_k(3), num_classes(0),
-  num_train_labels(0), train_labels(NULL), m_q(1.0)
+: CDistanceMachine(), m_k(3), m_q(1.0), num_classes(0),
+  num_train_labels(0), train_labels(NULL)
 {
 }
 
 CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
-: CDistanceMachine(), m_k(k), num_classes(0), train_labels(NULL), m_q(1.0)
+: CDistanceMachine(), m_k(k), m_q(1.0), num_classes(0), train_labels(NULL)
 {
 	ASSERT(d);
 	ASSERT(trainlab);
