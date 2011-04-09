@@ -52,6 +52,7 @@ bool CWaveKernel::init(CFeatures* l, CFeatures* r)
 void CWaveKernel::init()
 {
 	m_parameters->add(&theta, "theta", "Theta kernel parameter.");
+	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 }
 
 float64_t CWaveKernel::compute(int32_t idx_a, int32_t idx_b)
