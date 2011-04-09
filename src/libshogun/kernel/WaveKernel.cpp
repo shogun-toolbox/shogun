@@ -47,6 +47,11 @@ bool CWaveKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
+void CWaveKernel::init()
+{
+	m_parameters->add(&theta, "theta", "Theta kernel parameter.");
+}
+
 float64_t CWaveKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t dist = distance->distance(idx_a, idx_b);
