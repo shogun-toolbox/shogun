@@ -18,6 +18,7 @@
 #include "lib/common.h"
 #include "kernel/DotKernel.h"
 #include "features/DotFeatures.h"
+#include "distance/Distance.h"
 
 namespace shogun
 {
@@ -112,32 +113,14 @@ class CExponentialKernel: public CDotKernel
 		 */
 		virtual void load_serializable_post(void) throw (ShogunException);
 
-	private:  //probably dont need this... will check
-		/** helper function to compute quadratic terms in
-		 * (a-b)^2 (== a^2+b^2-2ab)
-		 *
-		 * @param buf buffer to store squared terms (will be allocated)
-		 * @param df dot feature object based on which k(i,i) is computed
-		 * */
-		void precompute_squared();
-
-		/** helper function to compute quadratic terms in
-		 * (a-b)^2 (== a^2+b^2-2ab)
-		 *
-		 * @param buf buffer to store squared terms (will be allocated)
-		 * @param df dot feature object based on which k(i,i) is computed
-		 * */
-		void precompute_squared_helper(float64_t* &buf, CDotFeatures* df);
-
+	private:
 		void init();
 
 	protected:
+		/** distance **/
+		CDistance* distance;
 		/** width */
 		float64_t width;
-		/** squared left-hand side */
-		float64_t* sq_lhs;
-		/** squared right-hand side */
-		float64_t* sq_rhs;
 };
 }
 #endif /* _EXPONENTIALKERNEL_H__ */

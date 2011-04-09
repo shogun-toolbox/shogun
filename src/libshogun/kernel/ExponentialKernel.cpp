@@ -6,10 +6,9 @@
  *
  * Gaussian Kernel used as template, attribution:
  * Written (W) 1999-2010 Soeren Sonnenburg
+ * Exponential Kernel
+ * Written (W) 2011 Justin Patera
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Berlin Institute of Technology
- * 
- * Slightly edited by Justin Patera 2011
  */
 
 #include "lib/common.h"
@@ -40,7 +39,6 @@ CExponentialKernel::CExponentialKernel(
 {
 	init();
 	width=w;
-
 	init(l,r);
 }
 
@@ -51,65 +49,30 @@ CExponentialKernel::~CExponentialKernel()
 
 void CExponentialKernel::cleanup()
 {
-	if (sq_lhs != sq_rhs)
-		delete[] sq_rhs;
-	sq_rhs = NULL;
-
-	delete[] sq_lhs;
-	sq_lhs = NULL;
-
 	CKernel::cleanup();
-}
-//probably wont need this...
-void CExponentialKernel::precompute_squared_helper(float64_t* &buf, CDotFeatures* df)
-{
-	ASSERT(df);
-	int32_t num_vec=df->get_num_vectors();
-	buf=new float64_t[num_vec];
-
-	for (int32_t i=0; i<num_vec; i++)
-		buf[i]=df->dot(i,df, i);
 }
 
 bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
 {
-	///free sq_{r,l}hs first
-	cleanup();
-
 	CDotKernel::init(l, r);
-	precompute_squared();
+	distance->init(l, r);
 	return init_normalizer();
 }
 
 float64_t CExponentialKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
-	return exp(-result/width);
+	float64_t dist=distance->distance(idx_a, idx_b);
+	return exp(-dist/width);
 }
 
 void CExponentialKernel::load_serializable_post(void) throw (ShogunException)
 {
 	CKernel::load_serializable_post();
-	precompute_squared();
 }
-//probably wont need this either
-void CExponentialKernel::precompute_squared()
-{
-	if (!lhs || !rhs)
-		return;
 
-	precompute_squared_helper(sq_lhs, (CDotFeatures*) lhs);
-
-	if (lhs==rhs)
-		sq_rhs=sq_lhs;
-	else
-		precompute_squared_helper(sq_rhs, (CDotFeatures*) rhs);
-}
 
 void CExponentialKernel::init()
 {
 	width=1;
-	sq_lhs=NULL;
-	sq_rhs=NULL;
 	m_parameters->add(&width, "width", "Kernel width.");
 }
