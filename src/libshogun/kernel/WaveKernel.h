@@ -78,7 +78,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "Wave"; }
+	inline virtual const char* get_name() const { return "WaveKernel"; }
 
 	virtual ~CWaveKernel();
 protected:

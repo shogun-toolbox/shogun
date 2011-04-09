@@ -314,7 +314,7 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
-		return "MultitaskKernelNormalizer";
+		return "MultitaskKernelPlifNormalizer";
 	}
 
 protected:

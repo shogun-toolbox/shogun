@@ -66,7 +66,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 *
 		 * @return name Linear
 		 */
-		virtual const char* get_name() const { return "Linear"; }
+		virtual const char* get_name() const { return "LinearStringKernel"; }
 
 		/** optimizable kernel, i.e. precompute normal vector and as phi(x) = x
 		 * do scalar product in input space

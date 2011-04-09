@@ -75,13 +75,13 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 *
 		 * @return kernel type 
 		 */
-		virtual EKernelType get_kernel_type() { return K_SPECTRUMMISMATCHRBF; }
+		virtual EKernelType get_kernel_type() { return K_SPECTRUMRBF; }
 
 		/** return the kernel's name
 		 *
 		 * @return name 
 		 */
-		virtual const char* get_name() const { return "SpectrumMismatchRBF"; }
+		virtual const char* get_name() const { return "SpectrumRBFKernel"; }
 
 		/** set degree
 		 *

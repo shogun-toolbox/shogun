@@ -75,7 +75,7 @@ class CTensorProductPairKernel: public CDotKernel
 		 *
 		 * @return name TPPK
 		 */
-		virtual const char* get_name() const { return "TPPK"; }
+		virtual const char* get_name() const { return "TensorProductPairKernel"; }
 
 		/** return feature class the kernel can deal with
 		 *

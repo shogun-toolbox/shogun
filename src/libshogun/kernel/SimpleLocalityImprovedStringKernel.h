@@ -79,9 +79,12 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 
 		/** return the kernel's name
 		 *
-		 * @return name SimpleLocalityImproved
+		 * @return name SimpleLocalityImprovedStringKernel
 		 */
-		virtual const char* get_name() const { return "SimpleLocalityImproved"; }
+		virtual const char* get_name() const
+		{
+			return "SimpleLocalityImprovedStringKernel";
+		}
 
 	private:
 		/** dot pyr

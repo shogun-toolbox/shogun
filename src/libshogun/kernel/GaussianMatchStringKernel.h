@@ -78,9 +78,9 @@ class CGaussianMatchStringKernel: public CStringKernel<char>
 
 		/** return the kernel's name
 		 *
-		 * @return name GaussMatchString
+		 * @return name GaussMatchStringKernel
 		 */
-		virtual const char* get_name() const { return "GaussianMatchString"; }
+		virtual const char* get_name() const { return "GaussianMatchStringKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

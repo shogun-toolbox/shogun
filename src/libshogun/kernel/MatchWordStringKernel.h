@@ -75,7 +75,7 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		 *
 		 * @return name MatchWordString
 		 */
-		virtual const char* get_name() const { return "MatchWordString"; }
+		virtual const char* get_name() const { return "MatchWordStringKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

@@ -74,7 +74,7 @@ class CSigmoidKernel: public CDotKernel
 		 *
 		 * @return name Sigmoid
 		 */
-		virtual const char* get_name() const { return "Sigmoid"; }
+		virtual const char* get_name() const { return "SigmoidKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

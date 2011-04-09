@@ -110,9 +110,9 @@ template <class T> class CArray2: public CArray<T>
 		 *
 		 * @param p_name new name
 		 */
-		inline void set_name(const char * p_name)
+		inline void set_array_name(const char * p_name)
 		{
-			CArray<T>::set_name(p_name);
+			CArray<T>::set_array_name(p_name);
 		}
 
 		/** set the array pointer and free previously allocated memory

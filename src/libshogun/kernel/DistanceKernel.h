@@ -85,7 +85,7 @@ class CDistanceKernel: public CKernel
 		 *
 		 * @return name Distance
 		 */
-		inline virtual const char* get_name() const { return distance->get_name(); }
+		inline virtual const char* get_name() const { return "DistanceKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

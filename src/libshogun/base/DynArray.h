@@ -360,8 +360,7 @@ template <class T> class DynArray
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const
-		{ return "DynamicArray"; }
+		inline virtual const char* get_name() const { return "DynArray"; }
 };
 }
 #endif /* _DYNARRAY_H_  */

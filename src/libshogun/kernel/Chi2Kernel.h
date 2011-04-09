@@ -86,7 +86,7 @@ class CChi2Kernel: public CDotKernel
 		 *
 		 * @return name Chi2
 		 */
-		virtual const char* get_name() const { return "Chi2"; }
+		virtual const char* get_name() const { return "Chi2Kernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

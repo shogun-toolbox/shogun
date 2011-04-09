@@ -81,7 +81,7 @@ class CLibSVR : public CSVM
 		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVR; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LIBSVR"; }
+		inline virtual const char* get_name() const { return "LibSVR"; }
 	protected:
 		/** SVM problem */
 		svm_problem problem;

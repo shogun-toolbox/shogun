@@ -109,7 +109,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 *
 		 * @return name WeightedDegreePos
 		 */
-		virtual const char* get_name() const { return "WeightedDegreePos"; }
+		virtual const char* get_name() const { return "WeightedDegreePositionStringKernel"; }
 
 		/** initialize optimization
 		 *

@@ -82,7 +82,7 @@ class CConstKernel: public CKernel
 		 *
 		 * @return name Const
 		 */
-		virtual const char* get_name() const { return "Const"; }
+		virtual const char* get_name() const { return "ConstKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

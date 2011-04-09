@@ -84,7 +84,7 @@ class CPolyMatchStringKernel: public CStringKernel<char>
 		 *
 		 * @return name PolyMatchString
 		 */
-		virtual const char* get_name() const { return "PolyMatchString"; }
+		virtual const char* get_name() const { return "PolyMatchStringKernel"; }
 
 		/** enable rescaling by length of feature vector
 		 *

@@ -69,7 +69,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 *
 		 * @return name Histogram
 		 */
-		virtual const char* get_name() const { return "Histogram" ; }
+		virtual const char* get_name() const { return "HistogramWordStringKernel" ; }
 
 	protected:
 		/** compute kernel function for features a and b

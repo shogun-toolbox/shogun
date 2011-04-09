@@ -74,7 +74,7 @@ class CAUCKernel: public CDotKernel
 		 *
 		 * @return name AUC
 		 */
-		virtual const char* get_name() const { return "AUC" ; }
+		virtual const char* get_name() const { return "AUCKernel" ; }
 
 		/** return feature class the kernel can deal with
 		 *

@@ -95,7 +95,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		 *
 		 * @return name 
 		 */
-		virtual const char* get_name() const { return "SpectrumMismatchRBF"; }
+		virtual const char* get_name() const { return "SpectrumMismatchRBFKernel"; }
 
 		/** set maximum mismatch
 		 *

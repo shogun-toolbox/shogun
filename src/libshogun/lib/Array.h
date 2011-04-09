@@ -132,13 +132,19 @@ template <class T> class CArray : public CSGObject
 		 *
 		 * @return name
 		 */
-		inline virtual const char* get_name() const { return name; }
+		inline virtual const char* get_name() const { return "Array"; }
+
+		/** get array name
+		 *
+		 * @return name
+		 */
+		inline virtual const char* get_array_name() const { return name; }
 
 		/** set name
 		 *
 		 * @param p_name new name
 		 */
-		inline void set_name(const char* p_name)
+		inline void set_array_name(const char* p_name)
 		{
 			name = p_name;
 		}

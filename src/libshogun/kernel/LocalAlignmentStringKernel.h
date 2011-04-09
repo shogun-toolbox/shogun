@@ -69,7 +69,10 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 *
 		 * @return name LocalAlignment
 		 */
-		virtual const char* get_name() const { return "LocalAlignment"; }
+		virtual const char* get_name() const
+		{
+			return "LocalAlignmentStringKernel";
+		}
 
 	protected:
 		/** compute kernel function for features a and b

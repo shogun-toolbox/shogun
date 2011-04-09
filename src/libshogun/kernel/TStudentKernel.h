@@ -80,7 +80,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "Generalized T-Student"; }
+	inline virtual const char* get_name() const { return "TStudentKernel"; }
 
 	/** getter for degree parameter
 	 *  @return kernel parameter degree

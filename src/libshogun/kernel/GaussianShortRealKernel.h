@@ -71,7 +71,7 @@ class CGaussianShortRealKernel: public CDotKernel
 		 *
 		 * @return name GaussianShortReal
 		 */
-		virtual const char* get_name() const { return "GaussianShortReal"; }
+		virtual const char* get_name() const { return "GaussianShortRealKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

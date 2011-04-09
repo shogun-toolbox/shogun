@@ -67,7 +67,7 @@ class CLinearKernel: public CDotKernel
 		 *
 		 * @return name Lineaer
 		 */
-		virtual const char* get_name() const { return "Linear"; }
+		virtual const char* get_name() const { return "LinearKernel"; }
 
 		/** optimizable kernel, i.e. precompute normal vector and as
 		 * phi(x) = x do scalar product in input space

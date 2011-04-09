@@ -62,7 +62,7 @@ class CWaveletKernel: public CDotKernel
 		 *
 		 * @return name Wavelet 
 		 */
-		virtual const char* get_name() const { return "Wavelet"; }
+		virtual const char* get_name() const { return "WaveletKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b

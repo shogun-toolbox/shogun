@@ -69,9 +69,9 @@ class CHistogramIntersectionKernel: public CDotKernel
 
 		/** return the kernel's name
 		 *
-		 * @return name HistogramIntersection
+		 * @return name HistogramIntersectionKernel
 		 */
-		virtual const char* get_name() const { return "HistogramIntersection"; }
+		virtual const char* get_name() const { return "HistogramIntersectionKernel"; }
 
 		/** getter for beta parameter
 		 * @return beta value
