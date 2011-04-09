@@ -46,6 +46,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/DiagKernel.h>
 #include <shogun/kernel/DiceKernelNormalizer.h>
+#include <shogun/kernel/ExponentialKernel.h>
 #include <shogun/kernel/ScatterKernelNormalizer.h>
 #include <shogun/kernel/VarianceKernelNormalizer.h>
 #include <shogun/kernel/DistanceKernel.h>
@@ -132,6 +133,7 @@
 %rename(ConstKernel) CConstKernel;
 %rename(CustomKernel) CCustomKernel;
 %rename(DiagKernel) CDiagKernel;
+%rename(ExponentialKernel) CExponentialKernel;
 %rename(WaveKernel) CWaveKernel;
 %rename(CauchyKernel) CCauchyKernel;
 %rename(DiceKernelNormalizer) CDiceKernelNormalizer;
@@ -257,6 +259,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/ScatterKernelNormalizer.h>
 %include <shogun/kernel/VarianceKernelNormalizer.h>
 %include <shogun/kernel/DistanceKernel.h>
+%include <shogun/kernel/ExponentialKernel.h>
 %include <shogun/kernel/FixedDegreeStringKernel.h>
 %include <shogun/kernel/GaussianKernel.h>
 %include <shogun/kernel/GaussianShiftKernel.h>
