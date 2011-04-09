@@ -47,6 +47,11 @@ bool CCauchyKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
+void CCauchyKernel::init()
+{
+	m_parameters->add(&sigma, "sigma", "Sigma kernel parameter.");
+}
+
 float64_t CCauchyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t dist = distance->distance(idx_a, idx_b);
