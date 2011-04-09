@@ -134,7 +134,6 @@
 %rename(ConstKernel) CConstKernel;
 %rename(CustomKernel) CCustomKernel;
 %rename(DiagKernel) CDiagKernel;
-%rename(SphericalKernel) CSphericalKernel;
 %rename(ExponentialKernel) CExponentialKernel;
 %rename(WaveKernel) CWaveKernel;
 %rename(CauchyKernel) CCauchyKernel;
@@ -171,6 +170,7 @@
 %rename(PolyMatchWordStringKernel) CPolyMatchWordStringKernel;
 %rename(SalzbergWordStringKernel) CSalzbergWordStringKernel;
 %rename(SigmoidKernel) CSigmoidKernel;
+%rename(SphericalKernel) CSphericalKernel;
 %rename(SimpleLocalityImprovedStringKernel) CSimpleLocalityImprovedStringKernel;
 %rename(SqrtDiagKernelNormalizer) CSqrtDiagKernelNormalizer;
 %rename(TanimotoKernelNormalizer) CTanimotoKernelNormalizer;
