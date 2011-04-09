@@ -4,11 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- *
  * Written (W) 2006 Christian Gehl
  * Written (W) 2006-2009 Soeren Sonnenburg
  * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include "classifier/KNN.h"
@@ -20,13 +19,12 @@ using namespace shogun;
 
 CKNN::CKNN()
 : CDistanceMachine(), k(3), num_classes(0),
-  num_train_labels(0), train_labels(NULL), q(1.0), weighted(false)
+  num_train_labels(0), train_labels(NULL), q(1.0)
 {
 }
 
 CKNN::CKNN(int32_t k_, CDistance* d, CLabels* trainlab)
-: CDistanceMachine(), k(k_), num_classes(0), train_labels(NULL),
-  q(1.0), weighted(false)
+: CDistanceMachine(), k(k_), num_classes(0), train_labels(NULL), q(1.0)
 {
 	ASSERT(d);
 	ASSERT(trainlab);
@@ -93,109 +91,58 @@ CLabels* CKNN::classify()
 	float64_t* dists=new float64_t[num_train_labels];
 	int32_t* train_lab=new int32_t[num_train_labels];
 
-
 	ASSERT(dists);
 	ASSERT(train_lab);
 
-
 	SG_INFO( "%d test examples\n", num_lab);
 	CSignal::clear_cancel();
-	if (weighted)
+
+	///histogram of classes and returned output
+	float64_t* classes=new float64_t[num_classes];
+	ASSERT(classes);
+
+	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 	{
-		///histogram of classes and returned output
-		float64_t* classes=new float64_t[num_classes];
-		ASSERT(classes);
+		SG_PROGRESS(i, 0, num_lab);
 
-		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+		// lhs idx 1..n and rhs idx i
+		distances_lhs(dists,0,num_train_labels-1,i);
+		int32_t j;
+
+		for (j=0; j<num_train_labels; j++)
+			train_lab[j]=train_labels[j];
+
+		//sort the distance vector for test example j to all train examples
+		//classes[1..k] then holds the classes for minimum distance
+		CMath::qsort_index(dists, train_lab, num_train_labels);
+
+		//compute histogram of class outputs of the first k nearest neighbours
+		for (j=0; j<num_classes; j++)
+			classes[j]=0.0;
+
+		float64_t multiplier = q;
+		for (j=0; j<k; j++)
 		{
-			SG_PROGRESS(i, 0, num_lab);
-
-			// lhs idx 1..n and rhs idx i
-			distances_lhs(dists,0,num_train_labels-1,i);
-			int32_t j;
-
-			for (j=0; j<num_train_labels; j++)
-				train_lab[j]=train_labels[j];
-
-			//sort the distance vector for test example j to all train examples
-			//classes[1..k] then holds the classes for minimum distance
-			CMath::qsort_index(dists, train_lab, num_train_labels);
-
-			//compute histogram of class outputs of the first k nearest neighbours
-			for (j=0; j<num_classes; j++)
-				classes[j]=0;
-
-			float64_t multiplier = q;
-			for (j=0; j<k; j++)
-			{
-				classes[train_lab[j]]+= multiplier;
-				multiplier*= multiplier;
-			}
-
-			//choose the class that got 'outputted' most often
-			int32_t out_idx=0;
-			int32_t out_max=0;
-
-			for (j=0; j<num_classes; j++)
-			{
-				if (out_max< classes[j])
-				{
-					out_idx= j;
-					out_max= classes[j];
-				}
-			}
-
-			output->set_label(i, out_idx+min_label);
+			classes[train_lab[j]]+= multiplier;
+			multiplier*= multiplier;
 		}
-		delete[] classes;
-	}
-	else
-	{
-		///histogram of classes and returned output
-		int64_t* classes=new int64_t[num_classes];
-		ASSERT(classes);
 
-		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+		//choose the class that got 'outputted' most often
+		int32_t out_idx=0;
+		int32_t out_max=0;
+
+		for (j=0; j<num_classes; j++)
 		{
-
-			SG_PROGRESS(i, 0, num_lab);
-
-			// lhs idx 1..n and rhs idx i
-			distances_lhs(dists,0,num_train_labels-1,i);
-			int32_t j;
-
-			for (j=0; j<num_train_labels; j++)
-				train_lab[j]=train_labels[j];
-
-			//sort the distance vector for test example j to all train examples
-			//classes[1..k] then holds the classes for minimum distance
-			CMath::qsort_index(dists, train_lab, num_train_labels);
-
-			//compute histogram of class outputs of the first k nearest neighbours
-			for (j=0; j<num_classes; j++)
-				classes[j]=0;
-
-			for (j=0; j<k; j++)
-				classes[train_lab[j]]++;
-
-			//choose the class that got 'outputted' most often
-			int32_t out_idx=0;
-			int32_t out_max=0;
-
-			for (j=0; j<num_classes; j++)
+			if (out_max< classes[j])
 			{
-				if (out_max< classes[j])
-				{
-					out_idx= j;
-					out_max= classes[j];
-				}
+				out_idx= j;
+				out_max= classes[j];
 			}
-
-			output->set_label(i, out_idx+min_label);
 		}
-		delete[] classes;
+		output->set_label(i, out_idx+min_label);
 	}
 
+	delete[] classes;
 	delete[] dists;
 	delete[] train_lab;
 

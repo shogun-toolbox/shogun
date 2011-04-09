@@ -6,7 +6,8 @@
  *
  * Written (W) 2006 Christian Gehl
  * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2011 Sergey Lisitsyn
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef _KNN_H__
@@ -156,16 +157,6 @@ class CKNN : public CDistanceMachine
 		 */
 		inline float64_t get_q() { return this->q; }
 
-		/** set weigted
-		 * @param true if must be weighted, false otherwise
-		 */
-		inline void set_weighted(bool weighted) { this->weighted = weighted; }
-
-		/** get weighted
-		 * @return true if set weigted, false otherwise
-		 */
-		inline bool get_weighted() { return this->weighted; }
-
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KNN"; }
 
@@ -183,9 +174,6 @@ class CKNN : public CDistanceMachine
 	protected:
 		/// the k parameter in KNN
 		int32_t k;
-
-		/// bool parameter to make classify weighted or not
-		bool weighted;
 
 		/// parameter q of rank weighting
 		float64_t q;
