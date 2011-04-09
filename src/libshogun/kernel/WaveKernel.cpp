@@ -15,12 +15,13 @@ using namespace shogun;
 
 CWaveKernel::CWaveKernel(): CKernel(0), distance(NULL), theta(1.0)
 {
-	SG_UNSTABLE("CWaveKernel::CWaveKernel()", "\n");
+	init();
 }
 
 CWaveKernel::CWaveKernel(int32_t cache, float64_t theta, CDistance* dist)
 : CKernel(cache), distance(dist), theta(theta)
 {
+	init();
 	ASSERT(distance);
 	SG_REF(distance);
 }
@@ -28,6 +29,7 @@ CWaveKernel::CWaveKernel(int32_t cache, float64_t theta, CDistance* dist)
 CWaveKernel::CWaveKernel(CFeatures *l, CFeatures *r, float64_t theta, CDistance* dist)
 : CKernel(10), distance(dist), theta(theta)
 {
+	init();
 	ASSERT(distance);
 	SG_REF(distance);
 	init(l, r);
