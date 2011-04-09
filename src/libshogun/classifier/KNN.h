@@ -6,7 +6,8 @@
  *
  * Written (W) 2006 Christian Gehl
  * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2011 Sergey Lisitsyn
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef _KNN_H__
@@ -27,14 +28,27 @@ class CDistanceMachine;
  * classifier.
  *
  * An example is classified to belong to the class of which the majority of the
- * k closest examples belong to.
+ * k closest examples belong to. Formally, kNN is described as
+ *
+ * \f[
+ * 		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l]
+ * \f]
+ *
+ * This class provides a capability to do weighted classfication using:
+ *
+ * \f[
+ * 		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l] q^{i},
+ * \f]
+ *
+ * where \f$|q|<1\f$.
  *
  * To avoid ties, k should be an odd number. To define how close examples are
  * k-NN requires a CDistance object to work with (e.g., CEuclideanDistance ).
  *
  * Note that k-NN has zero training time but classification times increase
  * dramatically with the number of examples. Also note that k-NN is capable of
- * multi-class-classification.
+ * multi-class-classification. And finally, in case of k=1 classification will
+ * take less time with an special optimization provided.
  */
 class CKNN : public CDistanceMachine
 {
@@ -112,22 +126,36 @@ class CKNN : public CDistanceMachine
 
 		/** set k
 		 *
-		 * @param p_k new k
+		 * @param k k to be set
 		 */
-		inline void set_k(int32_t p_k)
+		inline void set_k(int32_t k)
 		{
-			ASSERT(p_k>0);
-			this->k=p_k;
+			ASSERT(k>0);
+			m_k=k;
 		}
 
 		/** get k
 		 *
-		 * @return k
+		 * @return value of k
 		 */
 		inline int32_t get_k()
 		{
-			return k;
+			return m_k;
 		}
+
+		/** set q
+		 * @param q value
+		 */
+		inline void set_q(float64_t q)
+		{
+			ASSERT(q<=1.0 && q>0.0);
+			m_q = q;
+		}
+
+		/** get q
+		 * @return q parameter
+		 */
+		inline float64_t get_q() { return m_q; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KNN"; }
@@ -145,7 +173,10 @@ class CKNN : public CDistanceMachine
 
 	protected:
 		/// the k parameter in KNN
-		int32_t k;
+		int32_t m_k;
+
+		/// parameter q of rank weighting
+		float64_t m_q;
 
 		///	number of classes (i.e. number of values labels can take)
 		int32_t num_classes;

@@ -15,12 +15,13 @@ using namespace shogun;
 
 CCauchyKernel::CCauchyKernel(): CKernel(0), distance(NULL), sigma(1.0)
 {
-	SG_UNSTABLE("CCauchyKernel::CCauchyKernel()", "\n");
+	init();
 }
 
 CCauchyKernel::CCauchyKernel(int32_t cache, float64_t sigma, CDistance* dist)
 : CKernel(cache), distance(dist), sigma(sigma)
 {
+	init();
 	ASSERT(distance);
 	SG_REF(distance);
 }
@@ -28,6 +29,7 @@ CCauchyKernel::CCauchyKernel(int32_t cache, float64_t sigma, CDistance* dist)
 CCauchyKernel::CCauchyKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist)
 : CKernel(10), distance(dist), sigma(sigma)
 {
+	init();
 	ASSERT(distance);
 	SG_REF(distance);
 	init(l, r);
@@ -45,6 +47,12 @@ bool CCauchyKernel::init(CFeatures* l, CFeatures* r)
 	CKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();
+}
+
+void CCauchyKernel::init()
+{
+	m_parameters->add(&sigma, "sigma", "Sigma kernel parameter.");
+	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 }
 
 float64_t CCauchyKernel::compute(int32_t idx_a, int32_t idx_b)

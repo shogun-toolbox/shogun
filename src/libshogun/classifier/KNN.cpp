@@ -4,10 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- *
  * Written (W) 2006 Christian Gehl
  * Written (W) 2006-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2011 Sergey Lisitsyn
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include "classifier/KNN.h"
@@ -18,12 +18,13 @@
 using namespace shogun;
 
 CKNN::CKNN()
-: CDistanceMachine(), k(3), num_classes(0), num_train_labels(0), train_labels(NULL)
+: CDistanceMachine(), m_k(3), m_q(1.0), num_classes(0),
+  num_train_labels(0), train_labels(NULL)
 {
 }
 
-CKNN::CKNN(int32_t k_, CDistance* d, CLabels* trainlab)
-: CDistanceMachine(), k(k_), num_classes(0), train_labels(NULL)
+CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
+: CDistanceMachine(), m_k(k), m_q(1.0), num_classes(0), train_labels(NULL)
 {
 	ASSERT(d);
 	ASSERT(trainlab);
@@ -82,7 +83,7 @@ CLabels* CKNN::classify()
 	ASSERT(distance->get_num_vec_rhs());
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(k<=num_lab);
+	ASSERT(m_k<=num_lab);
 
 	CLabels* output=new CLabels(num_lab);
 
@@ -90,15 +91,15 @@ CLabels* CKNN::classify()
 	float64_t* dists=new float64_t[num_train_labels];
 	int32_t* train_lab=new int32_t[num_train_labels];
 
-	///histogram of classes and returned output
-	int32_t* classes=new int32_t[num_classes];
-
 	ASSERT(dists);
 	ASSERT(train_lab);
-	ASSERT(classes);
 
 	SG_INFO( "%d test examples\n", num_lab);
 	CSignal::clear_cancel();
+
+	///histogram of classes and returned output
+	float64_t* classes=new float64_t[num_classes];
+	ASSERT(classes);
 
 	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 	{
@@ -117,10 +118,14 @@ CLabels* CKNN::classify()
 
 		//compute histogram of class outputs of the first k nearest neighbours
 		for (j=0; j<num_classes; j++)
-			classes[j]=0;
+			classes[j]=0.0;
 
-		for (j=0; j<k; j++)
-			classes[train_lab[j]]++;
+		float64_t multiplier = m_q;
+		for (j=0; j<m_k; j++)
+		{
+			classes[train_lab[j]]+= multiplier;
+			multiplier*= multiplier;
+		}
 
 		//choose the class that got 'outputted' most often
 		int32_t out_idx=0;
@@ -134,13 +139,12 @@ CLabels* CKNN::classify()
 				out_max= classes[j];
 			}
 		}
-
 		output->set_label(i, out_idx+min_label);
 	}
 
+	delete[] classes;
 	delete[] dists;
 	delete[] train_lab;
-	delete[] classes;
 
 	return output;
 }
@@ -150,7 +154,7 @@ CLabels* CKNN::classify(CFeatures* data)
 	init_distance(data);
 
 	// redirecting to fast (without sorting) classify if k==1
-	if (this->k == 1)
+	if (m_k == 1)
 		return classify_NN();
 
 	return classify();
@@ -162,7 +166,8 @@ CLabels* CKNN::classify_NN()
 	ASSERT(num_classes>0);
 
 	int32_t num_lab = distance->get_num_vec_rhs();
-	ASSERT(num_lab && k<= num_lab);
+	ASSERT(num_lab);
+
 	CLabels* output = new CLabels(num_lab);
 	float64_t* distances = new float64_t[num_train_labels];
 
@@ -212,9 +217,9 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 	ASSERT(distance->get_num_vec_rhs());
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(k<=num_lab);
+	ASSERT(m_k<=num_lab);
 
-	int32_t* output=(int32_t*) malloc(sizeof(int32_t)*k*num_lab);
+	int32_t* output=(int32_t*) malloc(sizeof(int32_t)*m_k*num_lab);
 
 	//distances to train data and working buffer of train_labels
 	float64_t* dists=new float64_t[num_train_labels];
@@ -243,7 +248,7 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 		for (int32_t j=0; j<num_classes; j++)
 			classes[j]=0;
 
-		for (int32_t j=0; j<k; j++)
+		for (int32_t j=0; j<m_k; j++)
 		{
 			classes[train_lab[j]]++;
 
@@ -268,7 +273,7 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 	delete[] classes;
 
 	*dst=output;
-	*k_out=k;
+	*k_out=m_k;
 	*num_vec=num_lab;
 }
 
