@@ -27,14 +27,27 @@ class CDistanceMachine;
  * classifier.
  *
  * An example is classified to belong to the class of which the majority of the
- * k closest examples belong to.
+ * k closest examples belong to. Formally, kNN is described as
+ *
+ * \f[
+ * 		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l]
+ * \f]
+ *
+ * This class provides a capability to do weighted classfication using:
+ *
+ * \f[
+ * 		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l] q^{i},
+ * \f]
+ *
+ * where \f$|q|<1\f$.
  *
  * To avoid ties, k should be an odd number. To define how close examples are
  * k-NN requires a CDistance object to work with (e.g., CEuclideanDistance ).
  *
  * Note that k-NN has zero training time but classification times increase
  * dramatically with the number of examples. Also note that k-NN is capable of
- * multi-class-classification.
+ * multi-class-classification. And finally, in case of k=1 classification will
+ * take less time with an special optimization provided.
  */
 class CKNN : public CDistanceMachine
 {
@@ -129,6 +142,30 @@ class CKNN : public CDistanceMachine
 			return k;
 		}
 
+		/** set q
+		 * @param q value
+		 */
+		inline void set_q(float64_t q)
+		{
+			ASSERT(q<=1.0 && q>0.0);
+			this->q = q;
+		}
+
+		/** get q
+		 * @return q parameter
+		 */
+		inline float64_t get_q() { return this->q; }
+
+		/** set weigted
+		 * @param true if must be weighted, false otherwise
+		 */
+		inline void set_weighted(bool weighted) { this->weighted = weighted; }
+
+		/** get weighted
+		 * @return true if set weigted, false otherwise
+		 */
+		inline bool get_weighted() { return this->weighted; }
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KNN"; }
 
@@ -146,6 +183,12 @@ class CKNN : public CDistanceMachine
 	protected:
 		/// the k parameter in KNN
 		int32_t k;
+
+		/// bool parameter to make classify weighted or not
+		bool weighted;
+
+		/// parameter q of rank weighting
+		float64_t q;
 
 		///	number of classes (i.e. number of values labels can take)
 		int32_t num_classes;
