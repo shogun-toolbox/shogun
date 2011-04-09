@@ -34,11 +34,9 @@ class CDistance;
 
 class CTStudentKernel: public CKernel
 {
-        void init(void);
-  
 public:
 	/** default constructor */
-	CTStudentKernel(void);
+	CTStudentKernel();
 
 	/** constructor
 	 * @param cache size of cache
@@ -54,6 +52,8 @@ public:
 	 * @param dist distance to be used
 	 */
 	CTStudentKernel(CFeatures *l, CFeatures *r, float64_t d, CDistance* dist);
+
+	virtual ~CTStudentKernel();
 
 	/** initialize kernel with features
 	 * @param l features left-side
@@ -82,17 +82,19 @@ public:
 	 */
 	inline virtual const char* get_name() const { return "Generalized T-Student"; }
 
-	virtual ~CTStudentKernel();
+	/** getter for degree parameter
+	 *  @return kernel parameter degree
+	 */
+	inline float64_t get_degree() { return this->degree; }
 
-        /** getter for degree parameter
-         *  @return kernel parameter degree
-         */
-        inline float64_t get_degree() { return this->degree; }
+	/** setter for degree parameter
+	 *  @param value kernel parameter degree
+	 */
+	inline void set_degree(float64_t value) { this->degree = value; }
 
-        /** setter for degree parameter
-         *  @param value kernel parameter degree
-         */
-        inline void set_degree(float64_t value) { this->degree = value; }
+private:
+	void init(void);
+
 protected:
 
 	/// distance to be used
