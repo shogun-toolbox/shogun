@@ -31,6 +31,8 @@ CExponentialKernel::CExponentialKernel(int32_t size, float64_t w)
 {
 	init();
 	width=w;
+	ASSERT(distance);
+	SG_REF(distance);
 }
 
 CExponentialKernel::CExponentialKernel(
@@ -39,12 +41,15 @@ CExponentialKernel::CExponentialKernel(
 {
 	init();
 	width=w;
+	ASSERT(distance);
+	SG_REF(distance);
 	init(l,r);
 }
 
 CExponentialKernel::~CExponentialKernel()
 {
 	cleanup();
+	SG_UNREF(distance);
 }
 
 void CExponentialKernel::cleanup()
@@ -56,7 +61,6 @@ bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
 {
 	CDotKernel::init(l, r);
 	distance->init(l, r);
-	m_parameters->add((CSGObject**) &distance, "distance", "Distance used.");
 	return init_normalizer();
 }
 
@@ -76,4 +80,5 @@ void CExponentialKernel::init()
 {
 	width=1;
 	m_parameters->add(&width, "width", "Kernel width.");
+	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 }
