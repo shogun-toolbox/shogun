@@ -97,8 +97,10 @@ enum EKernelType
 	K_MULTIQUADRIC = 360,
 	K_EXPONENTIAL = 370,
 	K_SPHERICAL = 380,
-	K_POWER = 390,
-	K_LOG = 400
+	K_SPLINE = 390,
+	K_ANOVA = 400,
+	K_POWER = 410,
+	K_LOG = 420
 };
 
 enum EKernelProperty
