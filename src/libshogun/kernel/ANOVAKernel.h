@@ -40,6 +40,8 @@ class CANOVAKernel: public CDotKernel
 	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len, int32_t d);
 	float64_t compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len, int32_t d);
 public:
+	float64_t compute_rec1(int32_t idx_a, int32_t idx_b);
+	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
 	/** default constructor */
 	CANOVAKernel(void);
 
@@ -99,6 +101,14 @@ protected:
 	
 	/// degree parameter of kernel
 	int32_t cardinality;
+	
+	/// array for compute_recursive1
+	float64_t** DP;
+	
+	/// arrays for compute_recursive2
+	float64_t* KD;
+	float64_t* KS;
+	float64_t* vec_pow;
 
 	/**
 	 * compute kernel for specific feature vectors
