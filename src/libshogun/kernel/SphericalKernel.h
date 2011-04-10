@@ -86,7 +86,7 @@ class CSphericalKernel: public CKernel
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "SphericalKernel"; }
+	inline virtual const char* get_name() const { return "Spherical"; }
 
 	/** set the kernel's sigma
 	 *
