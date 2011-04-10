@@ -96,7 +96,8 @@ enum EKernelType
 	K_RATIONAL_QUADRATIC = 350,
 	K_MULTIQUADRIC = 360,
 	K_EXPONENTIAL = 370,
-	K_ANOVA
+	K_SPHERICAL = 380,
+	K_ANOVA = 390
 };
 
 enum EKernelProperty
