@@ -24,7 +24,7 @@ namespace shogun
  *
  * It is defined as
  * \f[
- * k({\bf x},({\bf x'})= \sum_{i=0}^{l} min(x_i^\beta,x'_i^\beta)
+ * k({\bf x},{\bf x'})= \sum_{i=0}^{l} min(x_i^{\beta},{x'}_i^{\beta})
  * \f]
  * with beta=1 by default
  * */
