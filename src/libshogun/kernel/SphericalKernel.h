@@ -28,9 +28,9 @@ class CDistance;
  * Formally described as
  *
  * \f[
- *     k(x, y) = 1 - \frac{3}{2} \frac{| x-y |}{\sigma} + \frac{1}{2}
- *     \left( \frac{ | x-y |}{\sigma} \right)^3
- *     \mbox{if}~ | x-y | < \sigma \mbox{, zero otherwise}
+ *     k(x, y) = 1 - \frac{3}{2} \frac{|x-y|}{\sigma} 
+ *     + \frac{1}{2} \left( \frac{|x-y|}{\sigma} \right)^3
+ *     \mbox{if}~ |x-y| \leq \sigma \mbox{, zero otherwise}
  * \f]
  *
  */
@@ -86,11 +86,11 @@ class CSphericalKernel: public CKernel
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "Spherical"; }
+	inline virtual const char* get_name() const { return "SphericalKernel"; }
 
 	/** set the kernel's sigma
 	 *
-	 * @param s kernel sigma
+	 * @param kernel sigma
 	 */
 	inline virtual void set_sigma(float64_t s)
 	{
