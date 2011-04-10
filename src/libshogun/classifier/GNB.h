@@ -12,6 +12,7 @@
 #define GNB_H_
 
 #include "Classifier.h"
+#include "features/DotFeatures.h"
 
 namespace shogun {
 
@@ -103,7 +104,7 @@ protected:
 	CDotFeatures* m_features;
 
 	/// min label
-	int32_t min_label
+	int32_t min_label;
 
 	/// number of train labels
 	int32_t num_train_labels;
@@ -115,20 +116,28 @@ protected:
 	int32_t m_dim;
 
 	/// means for normal distributions of features
-	float64_t** m_means;
+	float64_t* m_means;
 
 	/// std deviations for normal distributions of features
-	float64_t** m_std_devs;
+	float64_t* m_std_devs;
 
-	/// apriori probabilities of labels
+	/// a priori probabilities of labels
+	float64_t* m_label_prob;
 
 private:
+
+	///
+	float64_t inline normal_exp(float64_t x, int32_t l_idx, int32_t f_idx)
+	{
+		return 0.0;
+		//return CMath::exp(-CMath::pow((x-m_means[l_idx][f_idx])/m_std_devs[l_idx][f_idx],2)/2);
+	}
 
 	/// label rates
 	float64_t* m_rates;
 
 	/// current feature vector
-	float64_T* m_feat_vec;
+	float64_t* m_feat_vec;
 };
 
 }
