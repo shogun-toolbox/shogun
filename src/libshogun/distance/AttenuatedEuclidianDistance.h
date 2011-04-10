@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2009 Soeren Sonnenburg
- * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2011 Miguel Angel Bautista
+ * Copyright (C) 2011 Berlin Institute of Technology and Max Planck Society
  */
 
 #ifndef _ATTENUATEDEUCLIDIANDISTANCE_H__
