@@ -28,9 +28,9 @@ class CDistance;
  * Formally described as
  *
  * \f[
- *     k(x, y) = 1 - \frac{3}{2} \frac{\lVert x-y \rVert}{\sigma} + \frac{1}{2}
- *     \left( \frac{ \lVert x-y \rVert}{\sigma} \right)^3
- *     \mbox{if}~ \lVert x-y \rVert &lt; \sigma \mbox{, zero otherwise}
+ *     k(x, y) = 1 - \frac{3}{2} \frac{|x-y|}{\sigma} 
+ *     + \frac{1}{2} \left( \frac{|x-y|}{\sigma} \right)^3
+ *     \mbox{if}~ |x-y| \leq \sigma \mbox{, zero otherwise}
  * \f]
  *
  */

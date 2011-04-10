@@ -27,7 +27,10 @@ namespace shogun
  * The formula is:
  *
  * \f[
- * k({\bf x},{\bf x'})= 1 + {\bf x} \cdot {\bf x'} +{\bf x} \cdot {\bf x'} \cdot \text{min}(\bf x, \bf x') - \frac{\bf x + \bf x'}{2} \cdot \text{min}(\bf x, \bf x')^2 + \frac{ \text{min}(\bf x, \bf x')^3}{3}
+ * k({\bf x},{\bf x'})= 1 + {\bf x} \cdot {\bf x'} +
+ * {\bf x} \cdot {\bf x'} \cdot \mbox{min}(\bf x, \bf x') -
+ * \frac{\bf x + \bf x'}{2} \cdot \mbox{min}(\bf x, \bf x')^2 +
+ * \frac{ \mbox{min}(\bf x, \bf x')^3}{3}
  * \f]
  */
 class CSplineKernel: public CDotKernel
