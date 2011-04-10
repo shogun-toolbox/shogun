@@ -15,28 +15,77 @@
 
 namespace shogun {
 
-/** @brief
+/** @brief Class GNB, a Gaussian Naive Bayes classifier
+ *
+ *	Formally, chooses class c with maximum \f$ P(c)P(x|c) \f$
+ *	probability. Naive bayes assumes \f$ P(x|c) \f$ as product
+ *  \f$ \prod_i P(x_i|c) \f$ and gaussian naive bayes make assume of
+ *  \f$P(x_i|c) \sim \mathcal{N} (\mu_c, \sigma_c)\f$, where \f$ \mathcal{N} \f$ is
+ *  normal distribution and \f$ \mu_c, \sigma_c \f$ are estimates of i-th
+ *  feature mean and standard deviation.
  *
  */
 
 class CGNB : public CClassifier
 {
 public:
-
+	/** default constructor
+	 *
+	 */
 	CGNB();
+
+	/** constructor
+	 * 	@param train_examples train examples
+	 *	@param train_labels labels corresponding to train_examples
+	 */
 	CGNB(CFeatures* train_examples, CLabels* train_labels);
+
+	/** destructor
+	 *
+	 */
 	virtual ~CGNB();
 
+	/** train classifier
+	 * 	@param data train examples
+	 * 	@return true if successful
+	 */
 	virtual bool train(CFeatures* data = NULL);
+
+	/** classify all examples
+	 *  @return labels
+	 */
 	virtual CLabels* classify();
+
+	/** classify specified examples
+	 * 	@param data examples to be classified
+	 * 	@return labels corresponding to data
+	 */
 	virtual CLabels* classify(CFeatures* data);
+
+	/** classifiy specified example
+	 * 	@param idx example index
+	 * 	@return label
+	 */
 	virtual float64_t classify_example(int32_t idx);
 
-	virtual bool load(FILE* srcfile);
-	virtual bool save(FILE* dstfile);
-
+	/**
+	 * 	@return classifier name
+	 */
 	virtual inline const char* get_name() const { return "Gaussian Naive Bayes"; };
+
+	/**
+	 * 	@return classifier type
+	 */
 	virtual inline EClassifierType get_classifier_type() { return CT_GNB; };
+
+protected:
+
+	/// number of train labels
+	int32_t num_train_labels;
+
+	/// number of different classes (labels)
+	int32_t num_classes;
+
 };
 
 }

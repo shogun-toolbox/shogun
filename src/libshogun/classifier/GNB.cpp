@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CGNB::CGNB() : CClassifier()
+CGNB::CGNB() : CClassifier(), num_train_labels(0), num_classes(0)
 {
 
 };
@@ -25,45 +25,36 @@ CGNB::CGNB() : CClassifier()
 CGNB::CGNB(CFeatures* train_examples, CLabels* train_labels) : CClassifier()
 {
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
+	num_train_labels = train_labels->get_num_labels();
+	set_labels(train_labels);
 };
 
 CGNB::~CGNB()
 {
-
+	delete labels;
 };
 
 bool CGNB::train(CFeatures* data)
 {
+	ASSERT(data->get_num_vectors() == num_train_labels);
 	SG_NOTIMPLEMENTED;
-	return;
+	return NULL;
 }
 
 CLabels* CGNB::classify()
 {
 	SG_NOTIMPLEMENTED;
-	return;
+	return NULL;
 };
 
 CLabels* CGNB::classify(CFeatures* data)
 {
 	SG_NOTIMPLEMENTED;
-	return;
+	return NULL;
 };
 
 float64_t CGNB::classify_example(int32_t idx)
 {
 	SG_NOTIMPLEMENTED;
-	return;
-};
-
-bool CGNB::save(FILE* dstfile)
-{
-	SG_NOTIMPLEMENTED;
-	return;
-};
-
-bool CGNB::load(FILE* srcfile)
-{
-	SG_NOTIMPLEMENTED;
-	return;
+	return 0.0;
 };
