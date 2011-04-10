@@ -90,7 +90,7 @@ class CSphericalKernel: public CKernel
 
 	/** set the kernel's sigma
 	 *
-	 * @param kernel sigma
+	 * @param s kernel sigma
 	 */
 	inline virtual void set_sigma(float64_t s)
 	{
