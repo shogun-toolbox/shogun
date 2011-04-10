@@ -265,6 +265,13 @@ class CPolyFeatures : public CDotFeatures
 		float64_t* m_multinomial_coefficients; 
 		/**store norm of each training example */
 		float32_t* m_normalization_values; 
+	private:
+		index_t multi_index_length;
+		index_t multinomial_coefficients_length;
+		index_t normalization_values_length;
+
+		/** Register all parameters */
+		void register_parameters();
 
 };
 }
