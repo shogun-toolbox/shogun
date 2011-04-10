@@ -758,6 +758,7 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_RATIONAL_QUADRATIC)
 		ENUM_CASE(K_POWER)
 		ENUM_CASE(K_SPHERICAL)
+		ENUM_CASE(K_LOG)
 	}
 
 	switch (get_feature_class())
