@@ -45,6 +45,25 @@ public:
 	 */
 	virtual ~CGNB();
 
+	/** set features for classify
+	 *
+	 */
+	virtual inline void set_features(CDotFeatures* feat)
+	{
+		 SG_UNREF(m_features);
+		 SG_REF(feat);
+		 m_features=feat;
+	}
+
+	/** get features for classify
+	 *
+	 */
+	virtual inline CDotFeatures* get_features()
+	{
+		SG_REF(m_features);
+		return m_features;
+	}
+
 	/** train classifier
 	 * 	@param data train examples
 	 * 	@return true if successful
@@ -80,12 +99,36 @@ public:
 
 protected:
 
+	/// features
+	CDotFeatures* m_features;
+
+	/// min label
+	int32_t min_label
+
 	/// number of train labels
 	int32_t num_train_labels;
 
 	/// number of different classes (labels)
 	int32_t num_classes;
 
+	/// dimensionality
+	int32_t m_dim;
+
+	/// means for normal distributions of features
+	float64_t** m_means;
+
+	/// std deviations for normal distributions of features
+	float64_t** m_std_devs;
+
+	/// apriori probabilities of labels
+
+private:
+
+	/// label rates
+	float64_t* m_rates;
+
+	/// current feature vector
+	float64_T* m_feat_vec;
 };
 
 }
