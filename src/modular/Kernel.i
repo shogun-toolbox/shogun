@@ -82,6 +82,7 @@
 #include <shogun/kernel/SigmoidKernel.h>
 #include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>
 #include <shogun/kernel/SparseKernel.h>
+#include <shogun/kernel/SphericalKernel.h>
 #include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 #include <shogun/kernel/StringKernel.h>
 #include <shogun/kernel/TanimotoKernelNormalizer.h>
@@ -171,6 +172,7 @@
 %rename(PolyMatchWordStringKernel) CPolyMatchWordStringKernel;
 %rename(SalzbergWordStringKernel) CSalzbergWordStringKernel;
 %rename(SigmoidKernel) CSigmoidKernel;
+%rename(SphericalKernel) CSphericalKernel;
 %rename(SimpleLocalityImprovedStringKernel) CSimpleLocalityImprovedStringKernel;
 %rename(SqrtDiagKernelNormalizer) CSqrtDiagKernelNormalizer;
 %rename(TanimotoKernelNormalizer) CTanimotoKernelNormalizer;
@@ -292,6 +294,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/SalzbergWordStringKernel.h>
 %include <shogun/kernel/SigmoidKernel.h>
 %include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>
+%include <shogun/kernel/SphericalKernel.h>
 %include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 %include <shogun/kernel/TanimotoKernelNormalizer.h>
 %include <shogun/kernel/TensorProductPairKernel.h>

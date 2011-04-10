@@ -96,7 +96,8 @@ enum EKernelType
 	K_RATIONAL_QUADRATIC = 350,
 	K_MULTIQUADRIC = 360,
 	K_EXPONENTIAL = 370,
-	K_POWER = 380
+	K_SPHERICAL = 380,
+	K_POWER = 390
 };
 
 enum EKernelProperty
