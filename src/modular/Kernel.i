@@ -81,6 +81,7 @@
 #include <shogun/kernel/SigmoidKernel.h>
 #include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>
 #include <shogun/kernel/SparseKernel.h>
+#include <shogun/kernel/SplineKernel.h>
 #include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 #include <shogun/kernel/StringKernel.h>
 #include <shogun/kernel/TanimotoKernelNormalizer.h>
@@ -133,10 +134,10 @@
 %rename(ConstKernel) CConstKernel;
 %rename(CustomKernel) CCustomKernel;
 %rename(DiagKernel) CDiagKernel;
-%rename(ExponentialKernel) CExponentialKernel;
 %rename(WaveKernel) CWaveKernel;
 %rename(CauchyKernel) CCauchyKernel;
 %rename(DiceKernelNormalizer) CDiceKernelNormalizer;
+%rename(ExponentialKernel) CExponentialKernel;
 %rename(ScatterKernelNormalizer) CScatterKernelNormalizer;
 %rename(VarianceKernelNormalizer) CVarianceKernelNormalizer;
 %rename(DistanceKernel) CDistanceKernel;
@@ -151,6 +152,7 @@
 %rename(LinearKernel) CLinearKernel;
 %rename(LinearStringKernel) CLinearStringKernel;
 %rename(SparseSpatialSampleStringKernel) CSparseSpatialSampleStringKernel;
+%rename(SplineKernel) CSplineKernel;
 %rename(LocalAlignmentStringKernel) CLocalAlignmentStringKernel;
 %rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 %rename(MatchWordStringKernel) CMatchWordStringKernel;
@@ -289,6 +291,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/SalzbergWordStringKernel.h>
 %include <shogun/kernel/SigmoidKernel.h>
 %include <shogun/kernel/SimpleLocalityImprovedStringKernel.h>
+%include <shogun/kernel/SplineKernel.h>
 %include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 %include <shogun/kernel/TanimotoKernelNormalizer.h>
 %include <shogun/kernel/TensorProductPairKernel.h>
