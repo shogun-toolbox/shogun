@@ -52,6 +52,7 @@
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/FixedDegreeStringKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/GaussianCompactKernel.h>
 #include <shogun/kernel/GaussianShiftKernel.h>
 #include <shogun/kernel/GaussianShortRealKernel.h>
 #include <shogun/kernel/HistogramIntersectionKernel.h>
