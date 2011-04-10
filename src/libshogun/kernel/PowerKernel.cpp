@@ -15,12 +15,13 @@ using namespace shogun;
 
 CPowerKernel::CPowerKernel(): CKernel(0), distance(NULL), degree(1.8)
 {
-	SG_UNSTABLE("CPowerKernel::CPowerKernel()", "\n");
+	init();
 }
 
 CPowerKernel::CPowerKernel(int32_t cache, float64_t degree, CDistance* dist)
 : CKernel(cache), distance(dist), degree(degree)
 {
+	init();
 	ASSERT(distance);
 	SG_REF(distance);
 }
@@ -28,6 +29,7 @@ CPowerKernel::CPowerKernel(int32_t cache, float64_t degree, CDistance* dist)
 CPowerKernel::CPowerKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistance* dist)
 : CKernel(10), distance(dist), degree(degree)
 {
+	init();
 	ASSERT(distance);
 	SG_REF(distance);
 	init(l, r);
@@ -45,6 +47,12 @@ bool CPowerKernel::init(CFeatures* l, CFeatures* r)
 	CKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();
+}
+
+void CPowerKernel::init()
+{
+	m_parameters->add(&degree, "degree", "Degree kernel parameter.");
+	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 }
 
 float64_t CPowerKernel::compute(int32_t idx_a, int32_t idx_b)
