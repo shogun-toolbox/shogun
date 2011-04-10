@@ -34,6 +34,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/KernelNormalizer.h>
 #include <shogun/kernel/PyramidChi2.h>
+#include <shogun/kernel/ANOVAKernel.h>	
 #include <shogun/kernel/AUCKernel.h>
 #include <shogun/kernel/AvgDiagKernelNormalizer.h>
 #include <shogun/kernel/RidgeKernelNormalizer.h>
@@ -85,7 +86,7 @@
 #include <shogun/kernel/StringKernel.h>
 #include <shogun/kernel/TanimotoKernelNormalizer.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
-#include <shogun/kernel/TStudentKernel.h>  
+#include <shogun/kernel/TStudentKernel.h>
 #include <shogun/kernel/WaveletKernel.h>
 #include <shogun/kernel/WaveKernel.h>
 #include <shogun/kernel/WeightedCommWordStringKernel.h>
@@ -123,6 +124,7 @@
 %rename(BaseKernel) CKernel;
 %rename(KernelNormalizer) CKernelNormalizer;
 %rename(PyramidChi2) CPyramidChi2;
+%rename(ANOVAKernel) CANOVAKernel;
 %rename(AUCKernel) CAUCKernel;
 %rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
 %rename(RidgeKernelNormalizer) CRidgeKernelNormalizer;
@@ -244,6 +246,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 
 %include <shogun/kernel/KernelNormalizer.h>
 %include <shogun/kernel/PyramidChi2.h>
+%include <shogun/kernel/ANOVAKernel.h>
 %include <shogun/kernel/AUCKernel.h> 
 %include <shogun/kernel/AvgDiagKernelNormalizer.h>
 %include <shogun/kernel/RidgeKernelNormalizer.h>
