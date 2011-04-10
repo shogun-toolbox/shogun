@@ -470,6 +470,51 @@ class CMath : public CSGObject
 			return ret;
 		}
 
+		/// Returns a Gaussian or Normal random number.
+		/// By default the mean = 0 and variance = 1
+		/// Using the polar form of the Box-Muller transform.
+		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
+		static inline float32_t normal_random(float32_t mean=0.0, float32_t variance=1.0)
+		{
+			// sets up variables
+			float32_t rand_u = random(-1.0, 1.0);
+			float32_t rand_v = random(-1.0, 1.0);
+			float32_t rand_s = rand_u*rand_u + rand_v*rand_v;
+			float32_t ret = 0.0;
+
+			// makes sure rand_s is in the range (0,1]
+			while ((rand_s == 0) || (rand_s >= 1))
+			{
+			  rand_u = random(-1.0, 1.0);
+			  rand_v = random(-1.0, 1.0);
+			  rand_s = rand_u*rand_u + rand_v*rand_v;
+			}
+
+			// the meat & potatos, and then the mean & variance shifting...
+			ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
+			ret = variance*ret + mean;
+			return ret;
+		}
+
+		static inline float64_t normal_random(float64_t mean=0.0, float64_t variance=1.0)
+		{
+		  float64_t rand_u = random(-1.0, 1.0);
+		  float64_t rand_v = random(-1.0, 1.0);
+		  float64_t rand_s = rand_u*rand_u + rand_v*rand_v;
+		  float64_t ret = 0.0;
+
+		  while ((rand_s == 0) || (rand_s >= 1))
+		  {
+		    rand_u = random(-1.0, 1.0);
+		    rand_v = random(-1.0, 1.0);
+		    rand_s = rand_u*rand_u + rand_v*rand_v;
+		  }
+
+		  ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
+		  ret = variance*ret + mean;
+		  return ret;
+		}
+
 		template <class T>
 			static T* clone_vector(const T* vec, int32_t len)
 			{
