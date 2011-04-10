@@ -55,7 +55,7 @@ public:
 	 * @param d kernel parameter cardinality
 	 */
 	CANOVAKernel(
-		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d);
+		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d, int32_t cache);
 
 	/** initialize kernel with features
 	 * @param l features left-side

@@ -31,8 +31,8 @@ CANOVAKernel::CANOVAKernel(int32_t cache, int32_t d)
 }
 
 CANOVAKernel::CANOVAKernel(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d)
-  : CDotKernel(10), cardinality(d)
+	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d, int32_t cache)
+  : CDotKernel(cache), cardinality(d)
 {
 	init();
 	init(l, r);
