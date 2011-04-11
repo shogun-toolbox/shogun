@@ -761,6 +761,8 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_LOG)
 		ENUM_CASE(K_SPLINE)
 		ENUM_CASE(K_ANOVA)
+		ENUM_CASE(K_CIRCULAR)
+		ENUM_CASE(K_INVERSEMULTIQUADRIC)
 	}
 
 	switch (get_feature_class())
