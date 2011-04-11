@@ -170,7 +170,7 @@ void CSparsePolyFeatures::store_normalization_values()
 {
 	delete[] m_normalization_values;
 
-	int32_t m_normalization_values_len = this->get_num_vectors();
+	m_normalization_values_len = this->get_num_vectors();
 
 	m_normalization_values=new float64_t[m_normalization_values_len];
 	for (int i=0; i<m_normalization_values_len; i++)
