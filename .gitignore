@@ -63,6 +63,7 @@ configure.log
 /src/*_modular/Makefile
 
 # particular modular ones
+/src/csharp_modular/*.cs
 /src/java_modular/*.java
 /src/python_modular/*.py
 /src/r_modular/*.R
