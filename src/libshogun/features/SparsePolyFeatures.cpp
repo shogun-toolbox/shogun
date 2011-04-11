@@ -170,10 +170,10 @@ void CSparsePolyFeatures::store_normalization_values()
 {
 	delete[] m_normalization_values;
 
-	int32_t num_vec = this->get_num_vectors();
+	m_normalization_values_len = this->get_num_vectors();
 
-	m_normalization_values=new float64_t[num_vec];
-	for (int i=0; i<num_vec; i++)
+	m_normalization_values=new float64_t[m_normalization_values_len];
+	for (int i=0; i<m_normalization_values_len; i++)
 	{
 		float64_t val = CMath::sqrt(dot(i, this,i)); 
 		if (val==0)
@@ -188,4 +188,21 @@ void CSparsePolyFeatures::store_normalization_values()
 CFeatures* CSparsePolyFeatures::duplicate() const
 {
 	return new CSparsePolyFeatures(*this);
+}
+
+void CSparsePolyFeatures::init()
+{
+	m_parameters->add((CSGObject**) &m_feat, "features",
+			"Features in original space.");
+	m_parameters->add(&m_degree, "degree", "Degree of the polynomial kernel.");
+	m_parameters->add(&m_normalize, "normalize", "Normalize");
+	m_parameters->add(&m_input_dimensions, "input_dimensions",
+			"Dimensions of the input space.");
+	m_parameters->add(&m_output_dimensions, "output_dimensions",
+			"Dimensions of the feature space of the polynomial kernel.");
+	m_normalization_values_len = get_num_vectors();
+	m_parameters->add_vector(&m_normalization_values, &m_normalization_values_len,
+			"m_normalization_values", "Norm of each training example");
+	m_parameters->add(&mask, "mask", "Mask.");
+	m_parameters->add(&m_hash_bits, "m_hash_bits", "Number of bits in hash");
 }

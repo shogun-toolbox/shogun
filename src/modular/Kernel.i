@@ -100,7 +100,9 @@
 #include <shogun/kernel/WeightedDegreeRBFKernel.h>
 #include <shogun/kernel/SpectrumMismatchRBFKernel.h>
 #include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
+#include <shogun/kernel/RationalQuadraticKernel.h>
 #include <shogun/kernel/CircularKernel.h>
+
 %}
 
 /* Typemaps */
@@ -193,6 +195,7 @@
 %rename(SpectrumMismatchRBFKernel) CSpectrumMismatchRBFKernel;
 %rename(ZeroMeanCenterKernelNormalizer) CZeroMeanCenterKernelNormalizer;
 %rename(DotKernel) CDotKernel;
+%rename(RationalQuadraticKernel) CRationalQuadraticKernel;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
@@ -318,6 +321,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/WeightedDegreeRBFKernel.h>
 %include <shogun/kernel/SpectrumMismatchRBFKernel.h>
 %include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
+%include <shogun/kernel/RationalQuadraticKernel.h>
 
 %include std_vector.i
 %include std_pair.i
