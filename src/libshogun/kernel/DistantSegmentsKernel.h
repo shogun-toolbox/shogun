@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Heiko Strathmann
- * DS-Kernel implementation Written (W) 2008 Sébastien Boisvert
+ * DS-Kernel implementation Written (W) 2008 Sébastien Boisvert under GPLv3
  * Copyright (C) 1999-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 

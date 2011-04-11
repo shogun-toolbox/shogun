@@ -5,11 +5,11 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Heiko Strathmann
- * DS-Kernel implementation Written (W) 2008 Sébastien Boisvert
+ * DS-Kernel implementation Written (W) 2008 Sébastien Boisvert under GPLv3
  * Copyright (C) 1999-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "DistantSegmentsKernel.h"
+#include "kernel/DistantSegmentsKernel.h"
 #include <string>
 
 using namespace std;
@@ -17,8 +17,6 @@ using namespace shogun;
 
 CDistantSegmentsKernel::CDistantSegmentsKernel()
 {
-	SG_UNSTABLE("CDistantSegmentsKernel::CDistantSegmentsKernel(void)", "\n");
-
 	init();
 }
 
@@ -43,7 +41,7 @@ CDistantSegmentsKernel::CDistantSegmentsKernel(CStringFeatures<char>* l,
 
 bool CDistantSegmentsKernel::init(CFeatures* l, CFeatures* r)
 {
-	CKernel::init(l,r);
+	CKernel::init(l, r);
 	return init_normalizer();
 }
 
@@ -84,14 +82,13 @@ int32_t CDistantSegmentsKernel::bin(int32_t j, int32_t i)
 	if (i==3&&j>=3)
 	{
 		return j*(j-1)*(j-2)/6;
-	} else if (i==2&&j>=2)
+	}
+	else if (i==2&&j>=2)
 	{
 		return j*(j-1)/2;
 	}
 	return 0;
 }
-
-#include <iostream>
 
 int32_t CDistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
 		int32_t tLength, int32_t delta_m, int32_t theta_m)
