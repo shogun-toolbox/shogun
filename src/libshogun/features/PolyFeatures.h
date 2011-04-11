@@ -29,7 +29,7 @@ class CPolyFeatures : public CDotFeatures
 		CPolyFeatures(void);
 
 		/** constructor
-		 * 
+		 *
 		 * @param feat real features
 		 * @param degree degree of the polynomial kernel
 		 * @param normalize normalize kernel
@@ -39,19 +39,19 @@ class CPolyFeatures : public CDotFeatures
 		virtual ~CPolyFeatures();
 
 		/** copy constructor
-		 * 
+		 *
 		 * not implemented!
 		 *
 		 * @param orig original PolyFeature
-		 */ 
-		CPolyFeatures(const CPolyFeatures & orig){ 
+		 */
+		CPolyFeatures(const CPolyFeatures & orig){
 			SG_PRINT("CPolyFeatures:\n");
 			SG_NOTIMPLEMENTED;};
 
 		/** get dimensions of feature space
 		 *
 		 * @return dimensions of feature space
-		 */ 
+		 */
 		inline virtual int32_t get_dim_feature_space()
 		{
 			return m_output_dimensions;
@@ -128,8 +128,8 @@ class CPolyFeatures : public CDotFeatures
 		 */
 		inline virtual const char* get_name() const { return "PolyFeatures"; }
 
-		/** compute dot product of vector with index arg1 
-		 *  with an given second vector 
+		/** compute dot product of vector with index arg1
+		 *  with an given second vector
 		 *
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 second vector
@@ -138,7 +138,7 @@ class CPolyFeatures : public CDotFeatures
 		float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
 
 		/** compute alpha*x+vec2
-		 * 
+		 *
 		 * @param alpha alpha
 		 * @param vec_idx1 index of first vector x
 		 * @param vec2 vec2
@@ -205,7 +205,7 @@ class CPolyFeatures : public CDotFeatures
 			SG_NOTIMPLEMENTED;
 		}
 
-	protected: 
+	protected:
 
 		/** store the norm of each training example */
 		void store_normalization_values();
@@ -213,27 +213,27 @@ class CPolyFeatures : public CDotFeatures
 		/** caller function for the recursive function enumerate_multi_index */
 		void store_multi_index();
 
-		/** recursive function enumerating all multi-indices that sum 
+		/** recursive function enumerating all multi-indices that sum
 		 *  up to the degree of the polynomial kernel */
 		void enumerate_multi_index(const int32_t feat_idx, uint16_t** index, uint16_t* exponents, const int32_t degree);
-		/** function calculating the multinomial coefficients for all 
+		/** function calculating the multinomial coefficients for all
 		 *  multi indices */
 		void store_multinomial_coefficients();
 
-		/** simple recursive implementation of binomial coefficient 
-		 *  which is very efficient if k is small, otherwise it calls 
+		/** simple recursive implementation of binomial coefficient
+		 *  which is very efficient if k is small, otherwise it calls
 		 *  a more sophisticated implementation */
 		int32_t bico2(int32_t n, int32_t k);
 
-		/** efficient implementation for the binomial coefficient function 
+		/** efficient implementation for the binomial coefficient function
 		 *  for larger values of k*/
 		int32_t  bico(int32_t n, int32_t k);
 
 		/** recursion to calculate the dimensions of the feature space:
-		 *  A(N, D)= sum_d=0^D A(N-1, d) 
+		 *  A(N, D)= sum_d=0^D A(N-1, d)
 		 *  A(1, D)==1
 		 *  A(N, 0)==1
-		 *  where N is the dimensionality of the input space 
+		 *  where N is the dimensionality of the input space
 		 *  and D is the degree */
 		int32_t calc_feature_space_dimensions(int32_t N, int32_t D);
 
@@ -258,13 +258,20 @@ class CPolyFeatures : public CDotFeatures
 		int32_t m_input_dimensions;
 		/** dimensions of the feature space of the polynomial kernel */
 		int32_t m_output_dimensions;
-		/** flattened matrix of all multi indices that 
+		/** flattened matrix of all multi indices that
 		 *  sum do the degree of the polynomial kernel */
 		uint16_t* m_multi_index;
 		/** multinomial coefficients for all multi-indices */
-		float64_t* m_multinomial_coefficients; 
+		float64_t* m_multinomial_coefficients;
 		/**store norm of each training example */
-		float32_t* m_normalization_values; 
+		float32_t* m_normalization_values;
+	private:
+		index_t multi_index_length;
+		index_t multinomial_coefficients_length;
+		index_t normalization_values_length;
+
+		/** Register all parameters */
+		void register_parameters();
 
 };
 }

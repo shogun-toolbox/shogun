@@ -1,3 +1,13 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011 Siddharth Kherada
+ * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #include "lib/common.h"
 #include "kernel/WaveletKernel.h"
 #include "features/SimpleFeatures.h"
