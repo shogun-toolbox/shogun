@@ -154,6 +154,7 @@ bool CGNB::train(CFeatures* data)
 
 CLabels* CGNB::classify()
 {
+	// init number of vectors
 	int32_t n = m_features->get_num_vectors();
 
 	// init result labels
@@ -164,25 +165,37 @@ CLabels* CGNB::classify()
 	{
 		result->set_label(i,classify_example(i));
 	}
+
 	return result;
 };
 
 CLabels* CGNB::classify(CFeatures* data)
 {
+	// check data correctness
 	if (!data)
 		SG_ERROR("No features specified\n");
 	if (!data->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n");
+
+	// set features to classify
 	set_features((CDotFeatures*)data);
+
+	// classify using features
 	return classify();
 };
 
 float64_t CGNB::classify_example(int32_t idx)
 {
+	// get [idx] feature vector
 	m_features->get_feature_vector(&m_feat_vec,&m_dim,idx);
+
+	// init loop variables
 	int i,k;
+
+	// rate all labels
 	for(i=0; i<m_num_classes; i++)
 	{
+		// set rate to 0.0 if a priori probability is 0.0 and continue
 		if (m_label_prob[i]==0.0)
 		{
 			m_rates[i] = 0.0;
