@@ -175,7 +175,7 @@ class CGaussianKernel: public CDotKernel
 		/** squared right-hand side */
 		float64_t* sq_rhs;
 		/** whether compact output enabled */
-		bool compact;
+		bool m_compact;
 };
 }
 #endif /* _GAUSSIANKERNEL_H__ */
