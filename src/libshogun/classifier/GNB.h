@@ -20,7 +20,7 @@ namespace shogun {
  *
  *	Formally, chooses class c with maximum \f$ P(c)P(x|c) \f$
  *	probability. Naive bayes assumes \f$ P(x|c) \f$ as product
- *  \f$ \prod_i P(x_i|c) \f$ and gaussian naive bayes make assume of
+ *  \f$ \prod_i P(x_i|c) \f$ and gaussian naive bayes assume
  *  \f$P(x_i|c) \sim \mathcal{N} (\mu_{i,c}, {\sigma}^2_{i,c})\f$, where \f$ \mathcal{N} \f$ is
  *  normal distribution and \f$ \mu_{i,c}, {\sigma}^2_{i,c} \f$ are estimates of i-th
  *  feature mean and variance among class \f$ c \f$.
