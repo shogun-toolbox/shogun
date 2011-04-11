@@ -63,7 +63,8 @@ enum EClassifierType
 	CT_SCATTERSVM = 330,
 	CT_DASVM = 340,
 	CT_LARANK = 350,
-	CT_DASVMLINEAR = 360
+	CT_DASVMLINEAR = 360,
+	CT_GNB = 370,
 };
 
 enum ESolverType
