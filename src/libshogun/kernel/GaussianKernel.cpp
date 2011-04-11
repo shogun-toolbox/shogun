@@ -14,6 +14,7 @@
 #include "base/Parameter.h"
 #include "kernel/GaussianKernel.h"
 #include "features/DotFeatures.h"
+#include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
 using namespace shogun;
@@ -78,12 +79,12 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void set_compact_enabled(bool comp)
+void CGaussianKernel::set_compact_enabled(bool comp)
 {
 	compact=comp;
 }
 
-void get_compact_enabled()
+bool CGaussianKernel::get_compact_enabled()
 {
 	return compact;
 }

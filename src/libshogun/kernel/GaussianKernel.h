@@ -14,6 +14,7 @@
 #define _GAUSSIANKERNEL_H___
 
 #include "lib/common.h"
+#include "kernel/Kernel.h"
 #include "kernel/DotKernel.h"
 #include "features/DotFeatures.h"
 
@@ -139,9 +140,9 @@ class CGaussianKernel: public CDotKernel
 
 		void init();
 
-		inline void set_compact_enabled(bool comp);
+		void set_compact_enabled(bool comp);
 
-		inline bool get_compact_enabled();
+		bool get_compact_enabled();
 
 	protected:
 		/** width */

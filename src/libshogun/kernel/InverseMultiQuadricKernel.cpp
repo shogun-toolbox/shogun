@@ -46,10 +46,16 @@ bool CInverseMultiQuadricKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
+void CInverseMultiQuadricKernel::load_serializable_post(void) throw (ShogunException)
+{
+	CKernel::load_serializable_post();
+}
+
 void CInverseMultiQuadricKernel::init(){
 	ASSERT(distance);
 	ASSERT(coef!=0);
 	m_parameters->add(&coef, "coef", "Kernel Coefficient.");
+	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 }
 
 float64_t CInverseMultiQuadricKernel::compute(int32_t idx_a, int32_t idx_b)

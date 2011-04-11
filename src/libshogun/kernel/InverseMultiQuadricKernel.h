@@ -107,6 +107,16 @@ protected:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
+	/** Can (optionally) be overridden to post-initialize some
+	 *  member variables which are not PARAMETER::ADD'ed.  Make
+	 *  sure that at first the overridden method
+	 *  BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
+	 *
+	 *  @exception ShogunException Will be thrown if an error
+	 *                             occurres.
+	 */
+	virtual void load_serializable_post(void) throw (ShogunException);
+
 private:
 
 	void init();
