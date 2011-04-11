@@ -100,6 +100,24 @@ class CGaussianKernel: public CDotKernel
 			return width;
 		}
 
+		/** set the compact option
+		 *
+		 * @param value of the compact option
+		 */
+		inline void set_compact_enabled(bool compact)
+		{
+			this->compact = compact;
+		}
+
+		/** return value of the compact option
+		 *
+		 * @return whether the compact option is enabled
+		 */
+		inline bool get_compact_enabled()
+		{
+			return compact;
+		}
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -139,10 +157,6 @@ class CGaussianKernel: public CDotKernel
 		void precompute_squared_helper(float64_t* &buf, CDotFeatures* df);
 
 		void init();
-
-		void set_compact_enabled(bool comp);
-
-		bool get_compact_enabled();
 
 	protected:
 		/** width */

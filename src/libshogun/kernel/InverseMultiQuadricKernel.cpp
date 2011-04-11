@@ -6,6 +6,7 @@
  *
  * Written (W) 2011 Abhinav Maurya
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2011 Indian Institute of Technology Bombay
  */
 
 #include "InverseMultiQuadricKernel.h"

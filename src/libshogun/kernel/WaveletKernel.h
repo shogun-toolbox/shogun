@@ -1,3 +1,13 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011 Siddharth Kherada
+ * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #ifndef _WAVELETKERNEL_H___
 #define _WAVELETKERNEL_H___
 
@@ -14,7 +24,7 @@ namespace shogun
  * k({\bf x},({\bf x'})= \prod_{i=0}^{l}h(\frac{(x-c)}{a})\cdot h(\frac{(x'-c)}{a})
  * \f]
  * Where h(x) is the mother wavelet function
- * h({\bf x}=cos(1.75*x)\cdot exp(\frac{(-x^2){2}) 	
+ * h({\bf x}=cos(1.75*x)\cdot exp(\frac{(-x^2){2})
  * */
 class CWaveletKernel: public CDotKernel
 {
@@ -49,18 +59,17 @@ class CWaveletKernel: public CDotKernel
 		 * @return if initializing was successful
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
-		
-		virtual void cleanup();
+	        virtual void cleanup();
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type wavelet
 		 */
 		virtual EKernelType get_kernel_type() { return K_WAVELET; }
-		
+
 		/** return the kernel's name
 		 *
-		 * @return name Wavelet 
+		 * @return name Wavelet
 		 */
 		virtual const char* get_name() const { return "WaveletKernel"; }
 

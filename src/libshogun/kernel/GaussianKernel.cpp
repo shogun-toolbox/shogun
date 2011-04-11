@@ -38,7 +38,6 @@ CGaussianKernel::CGaussianKernel(
 {
 	init();
 	set_width(w);
-
 	init(l,r);
 }
 
@@ -79,27 +78,18 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void CGaussianKernel::set_compact_enabled(bool comp)
-{
-	compact=comp;
-}
-
-bool CGaussianKernel::get_compact_enabled()
-{
-	return compact;
-}
-
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	if(!compact) {
+	if(compact==false)
+	{
 		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
 		return exp(-result/width);
-	} else {
-		int32_t alen, blen, power;
-		alen=((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
-		blen=((CSimpleFeatures<float64_t>*) rhs)->get_num_features();
-		ASSERT(alen==blen);
-		power=alen%2==0?(alen+1):alen;
+	}
+	else
+	{
+		int32_t len_features, power;
+		len_features=((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
+		power=alen%2==0?(len_features+1):len_features;
 
 		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
 		float64_t result_multiplier=1-(sqrt(result/width))/3;
@@ -133,7 +123,9 @@ void CGaussianKernel::precompute_squared()
 void CGaussianKernel::init()
 {
 	set_width(1.0);
+	set_compact_enabled(false);
 	sq_lhs=NULL;
 	sq_rhs=NULL;
 	m_parameters->add(&width, "width", "Kernel width.");
+	m_parameters->add(&compact, "compact", "Compact Enabled Option.");
 }

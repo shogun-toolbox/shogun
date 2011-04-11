@@ -24,9 +24,9 @@ namespace shogun
  *
  * It is defined as
  * \f[
- * k({\bf x},({\bf x'})= \sum_{i=0}^{l} min(x_i^\beta,x'_i^\beta)
+ * k({\bf x},({\bf x'})= \sum_{i=0}^{l} \mbox{min}(x^{\beta}_i, x'^{\beta}_i)
  * \f]
- * with beta=1 by default
+ * with \beta=1 by default
  * */
 class CHistogramIntersectionKernel: public CDotKernel
 {

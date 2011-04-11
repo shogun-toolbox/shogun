@@ -4,15 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Abhinav Maurya
+ * Written (W) 2011 Jakub Jirku
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2011 Indian Institute of Technology Bombay
  */
 
 #include "lib/config.h"
 
-#ifndef INVERSEMULTIQUADRIC_H_
-#define INVERSEMULTIQUADRIC_H_
+#ifndef LOGKERNEL_H_
+#define LOGKERNEL_H_
 
 #include "lib/common.h"
 #include "kernel/Kernel.h"
@@ -22,33 +21,37 @@ namespace shogun
 {
 
 class CDistance;
-/**
-* InverseMultiQuadricKernel;
-*f[
-*             K(x,x') = 1/(\sqrt{\| x - x' \|^2 +c^2})
-*\f]
-*/
 
-class CInverseMultiQuadricKernel: public CKernel
+/** @brief Log kernel
+ *
+ * Formally described as
+ *
+ * \f[
+ * 		K(x,x') = - log (\| x-x' \|^degree + 1)
+ * \f]
+ *
+ */
+
+class CLogKernel: public CKernel
 {
 public:
 	/** default constructor */
-	CInverseMultiQuadricKernel();
+	CLogKernel();
 
 	/** constructor
 	 * @param cache size of cache
-	 * @param coef kernel parameter coef
+	 * @param degree kernel parameter degree
 	 * @param dist distance to be used
 	 */
-	CInverseMultiQuadricKernel(int32_t cache, float64_t coef, CDistance* dist);
+	CLogKernel(int32_t cache, float64_t degree, CDistance* dist);
 
 	/** constructor
 	 * @param l features left-side
 	 * @param r features right-side
-	 * @param coef kernel parameter coef
+	 * @param degree kernel parameter degree
 	 * @param dist distance to be used
 	 */
-	CInverseMultiQuadricKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist);
+	CLogKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistance* dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
@@ -60,7 +63,7 @@ public:
 	/**
 	 * @return kernel type
 	 */
-	inline virtual EKernelType get_kernel_type() { return K_INVERSEMULTIQUADRIC; }
+	inline virtual EKernelType get_kernel_type() { return K_POWER; }
 
 	/**
 	 * @return type of features
@@ -75,29 +78,16 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "InverseMultiQuadric"; }
+	inline virtual const char* get_name() const { return "Log"; }
 
-	/** getter for coef parameter
-	 *  @return kernel parameter coefficient
-	 */
-	inline float64_t get_coef() { return this->coef; }
-
-	/** setter for coef parameter
-	 *  @param value kernel parameter coefficient
-	 */
-	inline void set_coef(float64_t value) { this->coef = value; }
-
-	virtual ~CInverseMultiQuadricKernel();
-
+	virtual ~CLogKernel();
 protected:
 
-	/** distance to be used
-	 */
+	/// distance to be used
 	CDistance* distance;
 
-	/** theta parameter of kernel - coefficient
-	 */
-	float64_t coef;
+	/// degree parameter of kernel
+	float64_t degree;
 
 	/**
 	 * compute kernel for specific feature vectors
@@ -107,22 +97,10 @@ protected:
 	 * @return kernel value
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
-
-	/** Can (optionally) be overridden to post-initialize some
-	 *  member variables which are not PARAMETER::ADD'ed.  Make
-	 *  sure that at first the overridden method
-	 *  BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
-	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
-	 */
-	virtual void load_serializable_post(void) throw (ShogunException);
-
 private:
 
 	void init();
 };
-
 }
 
-#endif /* INVERSEMULTIQUADRIC_H_ */
+#endif /* LOGKERNEL_H_ */

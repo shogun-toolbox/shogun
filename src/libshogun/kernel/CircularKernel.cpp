@@ -6,6 +6,7 @@
  *
  * Written (W) 2011 Abhinav Maurya
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Copyright (C) 2011 Indian Institute of Technology Bombay
  */
 
 #include "CircularKernel.h"
@@ -60,7 +61,7 @@ void CCircularKernel::load_serializable_post(void) throw (ShogunException)
 
 void CCircularKernel::init()
 {
- 	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
+	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 	m_parameters->add(&sigma, "sigma", "Sigma kernel parameter.");
 }
 
