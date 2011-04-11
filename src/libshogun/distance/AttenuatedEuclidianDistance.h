@@ -23,7 +23,7 @@ namespace shogun
  * ternary ECOC designs. This adaptation computes the Euclidean distance
  * between two vectors ignoring those positions of either of the vectors
  * valued as 0. Note that this might make sense only in the Decoding
- *  step of the ECOC framework, since the 0 value denotes that a certain class is
+ *  step of the ECOC framework, since the 0 value denotes that a certain category is
  *  ignored.
  * 
  * This distance was proposed by
