@@ -20,7 +20,7 @@ using namespace shogun;
 CGNB::CGNB() :
 CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
-m_std_devs(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
+m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {
 
 };
@@ -28,7 +28,7 @@ m_std_devs(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 CGNB::CGNB(CFeatures* train_examples, CLabels* train_labels) :
 CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
-m_std_devs(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
+m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
 	set_labels(train_labels);
@@ -41,7 +41,7 @@ CGNB::~CGNB()
 	delete[] m_means;
 	delete[] m_rates;
 	delete[] m_feat_vec;
-	delete[] m_std_devs;
+	delete[] m_variances;
 	delete[] m_label_prob;
 };
 
@@ -77,7 +77,7 @@ bool CGNB::train(CFeatures* data)
 
 	// allocate memory for distributions' parameters and a priori probability
 	m_means = new float64_t[m_num_classes*m_dim];
-	m_std_devs = new float64_t[m_num_classes*m_dim];
+	m_variances = new float64_t[m_num_classes*m_dim];
 	m_label_prob = new float64_t[m_num_classes];
 
 	// allocate memory for label rates
@@ -88,16 +88,16 @@ bool CGNB::train(CFeatures* data)
 
 	// assure that memory is allocated
 	ASSERT(m_means);
-	ASSERT(m_std_devs);
+	ASSERT(m_variances);
 	ASSERT(m_rates);
 	ASSERT(m_feat_vec);
 	ASSERT(m_label_prob);
 
-	// make arrays initialized before filled by zeros
+	// make arrays filled by zeros before using
 	for(i=0;i<m_num_classes*m_dim;i++)
 	{
 		m_means[i] = 0.0;
-		m_std_devs[i] = 0.0;
+		m_variances[i] = 0.0;
 	}
 	for(i=0;i<m_num_classes;i++)
 	{
@@ -130,7 +130,7 @@ bool CGNB::train(CFeatures* data)
 	{
 		m_features->get_feature_vector(&m_feat_vec, &m_dim, i);
 		for (j=0; j<m_dim; j++)
-			m_std_devs[m_dim*m_labels[i]+j]+=CMath::pow(m_feat_vec[j]-m_means[m_dim*m_labels[i]+j],2);
+			m_variances[m_dim*m_labels[i]+j]+=CMath::pow(m_feat_vec[j]-m_means[m_dim*m_labels[i]+j],2);
 	}
 
 	// get standard deviations of features of labels
@@ -139,7 +139,7 @@ bool CGNB::train(CFeatures* data)
 		for (j=0; j<m_dim; j++)
 		{
 			// unbiased estimation
-			m_std_devs[m_dim*i+j] /= m_label_prob[i] > 1 ? m_label_prob[i]-1 : 1;
+			m_variances[m_dim*i+j] /= m_label_prob[i] > 1 ? m_label_prob[i]-1 : 1;
 		}
 	}
 
@@ -205,7 +205,7 @@ float64_t CGNB::classify_example(int32_t idx)
 
 		// product all conditional gaussian probabilities
 		for(k=0; k<m_dim; k++)
-			m_rates[i]*= normal_exp(m_feat_vec[k],i,k)/m_std_devs[i*m_dim+k];
+			m_rates[i]*= normal_exp(m_feat_vec[k],i,k)/CMath::sqrt(m_variances[i*m_dim+k]);
 	}
 
 	// find label with maximum rate

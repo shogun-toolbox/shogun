@@ -21,9 +21,9 @@ namespace shogun {
  *	Formally, chooses class c with maximum \f$ P(c)P(x|c) \f$
  *	probability. Naive bayes assumes \f$ P(x|c) \f$ as product
  *  \f$ \prod_i P(x_i|c) \f$ and gaussian naive bayes make assume of
- *  \f$P(x_i|c) \sim \mathcal{N} (\mu_c, \sigma_c)\f$, where \f$ \mathcal{N} \f$ is
- *  normal distribution and \f$ \mu_c, \sigma_c \f$ are estimates of i-th
- *  feature mean and standard deviation.
+ *  \f$P(x_i|c) \sim \mathcal{N} (\mu_{i,c}, {\sigma}^2_{i,c})\f$, where \f$ \mathcal{N} \f$ is
+ *  normal distribution and \f$ \mu_{i,c}, {\sigma}^2_{i,c} \f$ are estimates of i-th
+ *  feature mean and variance among class \f$ c \f$.
  *
  *  Note that classifier requires ~ (dimensionality)*(number of classes)
  *  memory.
@@ -124,15 +124,15 @@ protected:
 	/// means for normal distributions of features
 	float64_t* m_means;
 
-	/// std deviations for normal distributions of features
-	float64_t* m_std_devs;
+	/// variances for normal distributions of features
+	float64_t* m_variances;
 
 	/// a priori probabilities of labels
 	float64_t* m_label_prob;
 
 private:
 
-	/** computes gaussian exponent by x, indexes, m_means and m_std_devs
+	/** computes gaussian exponent by x, indexes, m_means and m_variances
 	 * @param x feature value
 	 * @param l_idx index of label
 	 * @param f_idx index of feature
@@ -140,7 +140,7 @@ private:
 	 */
 	float64_t inline normal_exp(float64_t x, int32_t l_idx, int32_t f_idx)
 	{
-		return CMath::exp(-CMath::pow((x-m_means[m_dim*l_idx+f_idx])/m_std_devs[m_dim*l_idx+f_idx],2)/2);
+		return CMath::exp(-CMath::pow((x-m_means[m_dim*l_idx+f_idx]),2)/(2*m_variances[m_dim*l_idx+f_idx]));
 	}
 
 	/// label rates
