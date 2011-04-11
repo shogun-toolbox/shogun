@@ -2,21 +2,21 @@
 
 using namespace shogun;
 
-CPolyFeatures::CPolyFeatures(void) :CDotFeatures()
+CPolyFeatures::CPolyFeatures() :CDotFeatures()
 {
-	SG_UNSTABLE("CPolyFeatures::CPolyFeatures(void)", "\n");
+	m_feat=NULL;
+	m_degree=0;
+	m_normalize=false;
+	m_input_dimensions=0;
+	m_multi_index=NULL;
+	m_multinomial_coefficients=NULL;
+	m_normalization_values=NULL;
 
-	m_feat = NULL;
-	m_degree = 0;
-	m_normalize = false;
-	m_input_dimensions = 0;
-	m_multi_index = NULL;
-	m_multinomial_coefficients = NULL;
-	m_normalization_values = NULL;
+	register_parameters();
 }
 
 CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize)
-	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL), 
+	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL),
 		m_normalization_values(NULL)
 {
 	ASSERT(feat);
@@ -32,6 +32,8 @@ CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, b
 	store_multinomial_coefficients();
 	if (m_normalize)
 		store_normalization_values();
+
+	register_parameters();
 }
 
 CPolyFeatures::~CPolyFeatures()
@@ -130,7 +132,7 @@ void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_
 			cnt++;
 		}
 		if (abs_val)
-			output=CMath::abs(output); 
+			output=CMath::abs(output);
 
 		vec2[j]+=alpha*output;
 	}
@@ -145,11 +147,11 @@ void CPolyFeatures::store_normalization_values()
 	m_normalization_values=new float32_t[num_vec];
 	for (int i=0; i<num_vec; i++)
 	{
-		float64_t tmp = CMath::sqrt(dot(i, this,i)); 
+		float64_t tmp = CMath::sqrt(dot(i, this,i));
 		if (tmp==0)
 			// trap division by zero
 			m_normalization_values[i]=1;
-		else 
+		else
 			m_normalization_values[i]=tmp;
 	}
 		
@@ -195,7 +197,7 @@ void CPolyFeatures::enumerate_multi_index(const int32_t feat_idx, uint16_t** ind
 		exponents[feat_idx] =  k;
 		enumerate_multi_index(feat_idx+1, index,  exponents, degree-k);	
 	}
-	return; 
+	return;
 
 }
 
@@ -230,10 +232,10 @@ void CPolyFeatures::store_multinomial_coefficients()
 int32_t CPolyFeatures::bico2(int32_t n, int32_t k)
 {
 		
-	/* for this problem k is usually small (<=degree), 
-	 * thus it is efficient to 
+	/* for this problem k is usually small (<=degree),
+	 * thus it is efficient to
 	 * to use recursion and prune end recursions*/	
-	if (n<k) 
+	if (n<k)
 		return 0;
 	if (k>n/2)
 		k = n-k;
@@ -275,7 +277,7 @@ int32_t CPolyFeatures::multinomialcoef(int32_t* exps, int32_t len)
 		n += exps[i];
 		ret *= bico2(n, exps[i]);
 	}
-	return ret; 
+	return ret;
 }
 
 /* gammln as implemented in the
@@ -314,4 +316,34 @@ int32_t CPolyFeatures::bico(int32_t n, int32_t k)
 CFeatures* CPolyFeatures::duplicate() const
 {
 	return new CPolyFeatures(*this);
+}
+
+void CPolyFeatures::register_parameters()
+{
+	m_parameters->add((CSGObject**) &m_feat, "features",
+				"Features in original space.");
+	m_parameters->add(&m_degree, "degree", "Degree of the polynomial kernel.");
+	m_parameters->add(&m_normalize, "normalize", "Normalize?");
+	m_parameters->add(&m_input_dimensions, "input_dimensions",
+			"Dimensions of the input space.");
+	m_parameters->add(&m_output_dimensions, "output_dimensions",
+			"Dimensions of the feature space of the polynomial kernel.");
+
+	multi_index_length=m_output_dimensions*m_degree;
+	m_parameters->add_vector(
+			&m_multi_index,
+			&multi_index_length,
+			"multi_index",
+			"Flattened matrix of all multi indices that sum do the"
+			" degree of the polynomial kernel.");
+
+	multinomial_coefficients_length=m_output_dimensions;
+	m_parameters->add_vector(&m_multinomial_coefficients,
+			&multinomial_coefficients_length, "multinomial_coefficients",
+			"Multinomial coefficients for all multi-indices.");
+
+	normalization_values_length=get_num_vectors();
+	m_parameters->add_vector(&m_normalization_values,
+			&normalization_values_length, "normalization_values",
+			"Norm of each training example.");
 }
