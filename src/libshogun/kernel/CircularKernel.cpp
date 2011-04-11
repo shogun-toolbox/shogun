@@ -33,7 +33,7 @@ CCircularKernel::CCircularKernel(
 	CFeatures *l, CFeatures *r, float64_t sig, CDistance* dist)
 : CKernel(10), distance(dist)
 {
-  	ASSERT(distance);
+	ASSERT(distance);
 	init();
 	set_sigma(sig);
 	SG_REF(distance);

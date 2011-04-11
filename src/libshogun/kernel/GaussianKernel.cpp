@@ -89,7 +89,7 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 	{
 		int32_t len_features, power;
 		len_features=((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
-		power=alen%2==0?(len_features+1):len_features;
+		power=len_features%2==0?(len_features+1):len_features;
 
 		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
 		float64_t result_multiplier=1-(sqrt(result/width))/3;
