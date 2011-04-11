@@ -115,7 +115,7 @@ class CGaussianKernel: public CDotKernel
 		 */
 		inline void set_compact_enabled(bool compact)
 		{
-			this->compact = compact;
+			m_compact = compact;
 		}
 
 		/** return value of the compact option
@@ -124,7 +124,7 @@ class CGaussianKernel: public CDotKernel
 		 */
 		inline bool get_compact_enabled()
 		{
-			return compact;
+			return m_compact;
 		}
 
 	protected:

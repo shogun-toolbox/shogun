@@ -80,25 +80,25 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	if(compact==false)
+	if (!m_compact)
 	{
 		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
 		return exp(-result/width);
 	}
-	else
-	{
-		int32_t len_features, power;
-		len_features=((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
-		power=len_features%2==0?(len_features+1):len_features;
 
-		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
-		float64_t result_multiplier=1-(sqrt(result/width))/3;
-		if(result_multiplier<=0)
-			result_multiplier=0;
-		else
-			result_multiplier=pow(result_multiplier, power);
-		return result_multiplier*exp(-result/width);
-	}
+	int32_t len_features, power;
+	len_features=((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
+	power=(len_features%2==0) ? (len_features+1):len_features;
+
+	float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
+	float64_t result_multiplier=1-(sqrt(result/width))/3;
+
+	if(result_multiplier<=0)
+		result_multiplier=0;
+	else
+		result_multiplier=pow(result_multiplier, power);
+
+	return result_multiplier*exp(-result/width);
 }
 
 void CGaussianKernel::load_serializable_post(void) throw (ShogunException)
@@ -127,5 +127,5 @@ void CGaussianKernel::init()
 	sq_lhs=NULL;
 	sq_rhs=NULL;
 	m_parameters->add(&width, "width", "Kernel width.");
-	m_parameters->add(&compact, "compact", "Compact Enabled Option.");
+	m_parameters->add(&m_compact, "compact", "Compact Enabled Option.");
 }
