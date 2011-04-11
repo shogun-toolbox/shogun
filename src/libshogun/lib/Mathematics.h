@@ -496,7 +496,7 @@ class CMath : public CSGObject
 			return ret;
 		}
 
-		static inline float64_t normal_random(float64_t mean=0.0, float64_t variance=1.0)
+		/*static inline float64_t normal_random(float64_t mean=0.0, float64_t variance=1.0)
 		{
 		  float64_t rand_u = random(-1.0, 1.0);
 		  float64_t rand_v = random(-1.0, 1.0);
@@ -513,7 +513,7 @@ class CMath : public CSGObject
 		  ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
 		  ret = variance*ret + mean;
 		  return ret;
-		}
+		}*/
 
 		template <class T>
 			static T* clone_vector(const T* vec, int32_t len)
