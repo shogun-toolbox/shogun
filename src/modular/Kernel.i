@@ -58,6 +58,7 @@
 #include <shogun/kernel/HistogramIntersectionKernel.h>
 #include <shogun/kernel/HistogramWordStringKernel.h>
 #include <shogun/kernel/IdentityKernelNormalizer.h>
+#include <shogun/kernel/InverseMultiQuadricKernel.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/kernel/LinearStringKernel.h>
@@ -99,6 +100,7 @@
 #include <shogun/kernel/WeightedDegreeRBFKernel.h>
 #include <shogun/kernel/SpectrumMismatchRBFKernel.h>
 #include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
+#include <shogun/kernel/CircularKernel.h>
 %}
 
 /* Typemaps */
