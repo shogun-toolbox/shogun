@@ -47,8 +47,13 @@ CGNB::~CGNB()
 
 bool CGNB::train(CFeatures* data)
 {
-	// init features with data if necessary
-	if (data) set_features((CDotFeatures*) data);
+	// init features with data if necessary and assure type is correct
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+				SG_ERROR("Specified features are not of type CDotFeatures\n");
+		set_features((CDotFeatures*) data);
+	}
 
 	// get int labels to m_labels and check length equality
 	ASSERT(labels);
