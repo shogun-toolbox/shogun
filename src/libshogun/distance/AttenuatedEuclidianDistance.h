@@ -22,7 +22,7 @@ namespace shogun
  * The adaptation of the familiar Euclidean Distance, to be used in
  * ternary ECOC designs. This adaptation computes the Euclidean distance
  * between two vectors ignoring those positions of either of the vectors
- * valued as 0.
+ * valued as 0. Note that this might make sense only in the ECOC framework.
  * 
  * This distance was proposed by
  * S. Escalera, O. Pujol, P.Radeva in On the decoding process in ternary error-correcting output codes, 
