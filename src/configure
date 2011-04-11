@@ -116,6 +116,7 @@ _python=auto
 _octave=auto
 _r=auto
 _java=no
+_csharp=no
 _ruby=no
 _lua=no
 #static interfaces
@@ -130,6 +131,7 @@ _python_modular=auto
 _octave_modular=no
 _r_modular=no
 _java_modular=no
+_csharp_modular=no
 _ruby_modular=no
 _lua_modular=no
 
@@ -218,6 +220,13 @@ INCLUDES_JAVA=
 PRELINKFLAGS_JAVA=
 LINKFLAGS_JAVA=
 POSTLINKFLAGS_JAVA=
+
+CSHARP_TARGET=
+DEFINES_CSHARP=
+INCLUDES_CSHARP=
+PRELINKFLAGS_CSHARP=
+LINKFLAGS_CSHARP=
+POSTLINKFLAGS_CSHARP=
 
 RUBY_TARGET=
 DEFINES_RUBY=
@@ -523,6 +532,27 @@ EOF
 		else
 			echores "javac not detected"
 		fi
+	else
+		echores "not detected"
+	fi
+}
+
+test_csharp()
+{
+	echocheck "Mono C#"
+	if gmcs --version >/dev/null 2>&1
+	then
+		MONOVER=`gmcs --version 2>&1 | head -n 1 | cut -f 5 -d ' '`
+		echores "${MONOVER}"
+
+		EXT_IF_SWIG_CSHARP_MODULAR='stop'
+		PRE_LIB_SWIG_CSHARP_MODULAR=
+		EXT_LIB_SWIG_CSHARP_MODULAR=.so
+		SWIGFLAGS_CSHARP_MODULAR="-c++ -csharp"
+		INCLUDES_CSHARP=
+		LINKFLAGS_CSHARP="--shared"
+
+		_csharp=yes
 	else
 		echores "not detected"
 	fi
@@ -864,7 +894,8 @@ Configuration:
                                  configure shogun for interface
                                  cmdline, python_modular, python, r, r_modular
                                  octave, octave_modular, matlab or libshogun,
-								 java_modular, lua_modular, ruby_modular
+								 java_modular, csharp_modular,
+								 lua_modular, ruby_modular
   -h, -help, --help              display this help and exit
 
 Installation directories:
@@ -983,6 +1014,7 @@ for ac_option do
 	_ruby_modular=no
 	_lua_modular=no
 	_java_modular=no
+	_csharp_modular=no
 
 	_interfaces=`echo $ac_option | cut -d '=' -f 2`
     for intf in `echo $_interfaces | cut -d '=' -f 2 | tr ',' ' '`
@@ -1029,6 +1061,9 @@ for ac_option do
 		;;
 	  java_modular)
 	  	_java_modular=yes
+		;;
+	  csharp_modular)
+	  	_csharp_modular=yes
 		;;
 	  *)
 		die "Unknown interface: $intf"
@@ -3263,6 +3298,13 @@ test_modular()
 			INCLUDES_JAVA="-I/usr/lib/jvm/java-6-openjdk/include"
 		fi
 
+		if test "$_csharp" = yes && test "$_csharp_modular" != no
+		then
+			PARTS="$PARTS csharp_modular"
+			CSHARP_MODULAR_TARGET=csharp_modular
+			INCLUDES_CSHARP=
+		fi
+
 		if test "$_ruby" = yes && test "$_ruby_modular" != no
 		then
 			PARTS="$PARTS ruby_modular"
@@ -4065,6 +4107,7 @@ MATLAB_TARGET	= ${MATLAB_TARGET}
 ELWMS_TARGET	= ${ELWMS_TARGET}
 R_MODULAR_TARGET		= ${R_MODULAR_TARGET}
 JAVA_MODULAR_TARGET		= ${JAVA_MODULAR_TARGET}
+CSHARP_MODULAR_TARGET		= ${CSHARP_MODULAR_TARGET}
 RUBY_MODULAR_TARGET		= ${RUBY_MODULAR_TARGET}
 LUA_MODULAR_TARGET		= ${LUA_MODULAR_TARGET}
 PYTHON_MODULAR_TARGET	= ${PYTHON_MODULAR_TARGET}
@@ -4147,6 +4190,12 @@ PRELINKFLAGS_JAVA	= ${PRELINKFLAGS_JAVA}
 LINKFLAGS_JAVA 		= ${LINKFLAGS_JAVA}
 POSTLINKFLAGS_JAVA	= ${POSTLINKFLAGS_JAVA}
 
+DEFINES_CSHARP		= ${DEFINES_CSHARP}
+INCLUDES_CSHARP		= ${INCLUDES_CSHARP}
+PRELINKFLAGS_CSHARP	= ${PRELINKFLAGS_CSHARP}
+LINKFLAGS_CSHARP 	= ${LINKFLAGS_CSHARP}
+POSTLINKFLAGS_CSHARP= ${POSTLINKFLAGS_CSHARP}
+
 DEFINES_RUBY		= ${DEFINES_RUBY}
 INCLUDES_RUBY		= ${INCLUDES_RUBY}
 PRELINKFLAGS_RUBY	= ${PRELINKFLAGS_RUBY}
@@ -4222,6 +4271,16 @@ PRELINKFLAGS_JAVA_MODULAR= ${PRELINKFLAGS_JAVA}
 LINKFLAGS_JAVA_MODULAR 	= ${LINKFLAGS_JAVA}
 POSTLINKFLAGS_JAVA_MODULAR= ${POSTLINKFLAGS_JAVA}
 SWIGFLAGS_JAVA_MODULAR = ${SWIGFLAGS_JAVA_MODULAR}
+
+PRE_LIB_SWIG_CSHARP_MODULAR	= ${PRE_LIB_SWIG_CSHARP_MODULAR}
+EXT_LIB_SWIG_CSHARP_MODULAR	= ${EXT_LIB_SWIG_CSHARP_MODULAR}
+EXT_IF_SWIG_CSHARP_MODULAR	= ${EXT_IF_SWIG_CSHARP_MODULAR}
+DEFINES_CSHARP_MODULAR		= ${DEFINES_CSHARP}
+INCLUDES_CSHARP_MODULAR		= ${INCLUDES_CSHARP}
+PRELINKFLAGS_CSHARP_MODULAR	= ${PRELINKFLAGS_CSHARP}
+LINKFLAGS_CSHARP_MODULAR 	= ${LINKFLAGS_CSHARP}
+POSTLINKFLAGS_CSHARP_MODULAR= ${POSTLINKFLAGS_CSHARP}
+SWIGFLAGS_CSHARP_MODULAR	= ${SWIGFLAGS_CSHARP_MODULAR}
 
 PRE_LIB_SWIG_RUBY_MODULAR	= ${PRE_LIB_SWIG_RUBY_MODULAR}
 EXT_LIB_SWIG_RUBY_MODULAR	= ${EXT_LIB_SWIG_RUBY_MODULAR}
@@ -4410,6 +4469,7 @@ test_r
 test_matlab
 test_elwms
 test_java
+test_csharp
 test_ruby
 test_lua
 test_modular
