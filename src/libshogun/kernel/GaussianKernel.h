@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2010 Soeren Sonnenburg
+ * Written (W) 2011 Abhinav Maurya
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -138,6 +139,10 @@ class CGaussianKernel: public CDotKernel
 
 		void init();
 
+		inline void set_compact_enabled(bool comp);
+
+		inline bool get_compact_enabled();
+
 	protected:
 		/** width */
 		float64_t width;
@@ -145,6 +150,8 @@ class CGaussianKernel: public CDotKernel
 		float64_t* sq_lhs;
 		/** squared right-hand side */
 		float64_t* sq_rhs;
+		/** whether compact output enabled */
+		bool compact;
 };
 }
 #endif /* _GAUSSIANKERNEL_H__ */

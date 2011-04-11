@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2010 Soeren Sonnenburg
+ * Written (W) 2011 Abhinav Maurya
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -22,7 +23,6 @@ CGaussianKernel::CGaussianKernel()
 {
 	init();
 }
-
 
 CGaussianKernel::CGaussianKernel(int32_t size, float64_t w)
 : CDotKernel(size)
@@ -78,10 +78,36 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
+void set_compact_enabled(bool comp)
+{
+	compact=comp;
+}
+
+void get_compact_enabled()
+{
+	return compact;
+}
+
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
-	return exp(-result/width);
+	if(!compact) {
+		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
+		return exp(-result/width);
+	} else {
+		int32_t alen, blen, power;
+		alen=((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
+		blen=((CSimpleFeatures<float64_t>*) rhs)->get_num_features();
+		ASSERT(alen==blen);
+		power=alen%2==0?(alen+1):alen;
+
+		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
+		float64_t result_multiplier=1-(sqrt(result/width))/3;
+		if(result_multiplier<=0)
+			result_multiplier=0;
+		else
+			result_multiplier=pow(result_multiplier, power);
+		return result_multiplier*exp(-result/width);
+	}
 }
 
 void CGaussianKernel::load_serializable_post(void) throw (ShogunException)
