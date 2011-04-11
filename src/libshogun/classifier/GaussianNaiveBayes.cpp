@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "GNB.h"
+#include "GaussianNaiveBayes.h"
 #include "Classifier.h"
 #include "features/Features.h"
 #include "features/Labels.h"
@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CGNB::CGNB() :
+CGaussianNaiveBayes::CGaussianNaiveBayes() :
 CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
@@ -25,7 +25,7 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 
 };
 
-CGNB::CGNB(CFeatures* train_examples, CLabels* train_labels) :
+CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels) :
 CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
@@ -35,7 +35,7 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 	set_features((CDotFeatures*)train_examples);
 };
 
-CGNB::~CGNB()
+CGaussianNaiveBayes::~CGaussianNaiveBayes()
 {
 	SG_UNREF(m_features);
 	delete[] m_means;
@@ -45,7 +45,7 @@ CGNB::~CGNB()
 	delete[] m_label_prob;
 };
 
-bool CGNB::train(CFeatures* data)
+bool CGaussianNaiveBayes::train(CFeatures* data)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
@@ -158,7 +158,7 @@ bool CGNB::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CGNB::classify()
+CLabels* CGaussianNaiveBayes::classify()
 {
 	// init number of vectors
 	int32_t n = m_features->get_num_vectors();
@@ -175,7 +175,7 @@ CLabels* CGNB::classify()
 	return result;
 };
 
-CLabels* CGNB::classify(CFeatures* data)
+CLabels* CGaussianNaiveBayes::classify(CFeatures* data)
 {
 	// check data correctness
 	if (!data)
@@ -190,7 +190,7 @@ CLabels* CGNB::classify(CFeatures* data)
 	return classify();
 };
 
-float64_t CGNB::classify_example(int32_t idx)
+float64_t CGaussianNaiveBayes::classify_example(int32_t idx)
 {
 	// get [idx] feature vector
 	m_features->get_feature_vector(&m_feat_vec,&m_dim,idx);
