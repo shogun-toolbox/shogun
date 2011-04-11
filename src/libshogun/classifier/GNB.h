@@ -25,6 +25,9 @@ namespace shogun {
  *  normal distribution and \f$ \mu_c, \sigma_c \f$ are estimates of i-th
  *  feature mean and standard deviation.
  *
+ *  Note that classifier requires ~ (dimensionality)*(number of classes)
+ *  memory.
+ *
  */
 
 class CGNB : public CClassifier
@@ -100,13 +103,13 @@ public:
 
 protected:
 
-	/// features
+	/// features for training or classifying
 	CDotFeatures* m_features;
 
-	/// min label
+	/// minimal label
 	int32_t m_min_label;
 
-	///
+	/// actual int labels
 	int32_t* m_labels;
 
 	/// number of train labels
@@ -129,7 +132,12 @@ protected:
 
 private:
 
-	///
+	/** computes gaussian exponent by x, indexes, m_means and m_std_devs
+	 * @param x feature value
+	 * @param l_idx index of label
+	 * @param f_idx index of feature
+	 * @return exponent value
+	 */
 	float64_t inline normal_exp(float64_t x, int32_t l_idx, int32_t f_idx)
 	{
 		return CMath::exp(-CMath::pow((x-m_means[m_dim*l_idx+f_idx])/m_std_devs[m_dim*l_idx+f_idx],2)/2);

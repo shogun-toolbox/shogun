@@ -18,15 +18,17 @@
 using namespace shogun;
 
 CGNB::CGNB() :
-CClassifier(), m_num_classes(0), m_means(NULL), m_std_devs(NULL), m_label_prob(NULL),
-m_labels(NULL),  m_features(NULL), m_rates(NULL), m_feat_vec(NULL)
+CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
+m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
+m_std_devs(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {
 
 };
 
 CGNB::CGNB(CFeatures* train_examples, CLabels* train_labels) :
-CClassifier(), m_num_classes(0), m_means(NULL), m_std_devs(NULL), m_label_prob(NULL),
-m_rates(NULL), m_feat_vec(NULL), m_labels(NULL), m_features(NULL)
+CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
+m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
+m_std_devs(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
 	set_labels(train_labels);
@@ -45,41 +47,67 @@ CGNB::~CGNB()
 
 bool CGNB::train(CFeatures* data)
 {
+	// init features with data if necessary
 	if (data) set_features((CDotFeatures*) data);
 
+	// get int labels to m_labels
 	ASSERT(labels);
 	m_labels = labels->get_int_labels(m_num_train_labels);
-	ASSERT(m_features);
 
+	// init min_label, max_label and loop variables
 	int32_t min_label = m_labels[0];
 	int32_t max_label = m_labels[0];
 	int i,j;
 
+	// find minimal and maximal label
 	for (i=1; i<m_num_train_labels; i++)
 	{
 		min_label = CMath::min(min_label, m_labels[i]);
 		max_label = CMath::max(max_label, m_labels[i]);
 	}
 
+	// subtract minimal label from all labels
 	for (i=1; i<m_num_train_labels; i++)
 		m_labels[i]-= min_label;
 
+	// get number of classes, minimal label and dimensionality
 	m_num_classes = max_label-min_label+1;
 	m_min_label = min_label;
-
 	m_dim = m_features->get_dim_feature_space();
 
-	SG_PRINT("num classes: %d\n", m_num_classes);
-	SG_PRINT("dim %d\n",m_dim);
+	// allocate memory for distributions' parameters and a priori probability
 	m_means = new float64_t[m_num_classes*m_dim];
 	m_std_devs = new float64_t[m_num_classes*m_dim];
-	m_rates = new float64_t[m_num_classes];
-	m_feat_vec = new float64_t[m_dim];
 	m_label_prob = new float64_t[m_num_classes];
+
+	// allocate memory for label rates
+	m_rates = new float64_t[m_num_classes];
+
+	// allocate memory for storing feature vector
+	m_feat_vec = new float64_t[m_dim];
+
+	// assure that memory is allocated
 	ASSERT(m_means);
 	ASSERT(m_std_devs);
 	ASSERT(m_rates);
+	ASSERT(m_feat_vec);
+	ASSERT(m_label_prob);
 
+	// make arrays initialized before filled by zeros
+	for(i=0;i<m_num_classes*m_dim;i++)
+	{
+		m_means[i] = 0.0;
+		m_std_devs[i] = 0.0;
+	}
+	for(i=0;i<m_num_classes;i++)
+	{
+		m_label_prob[i] = 0.0;
+		m_rates[i] = 0.0;
+	}
+	for(i=0;i<m_dim;i++)
+		m_feat_vec[i] = 0.0;
+
+	// get sum of features among labels
 	for (i=0; i<m_num_train_labels; i++)
 	{
 		m_features->get_feature_vector(&m_feat_vec, &m_dim, i);
@@ -87,30 +115,48 @@ bool CGNB::train(CFeatures* data)
 			m_means[m_dim*m_labels[i]+j]+=m_feat_vec[j];
 		m_label_prob[m_labels[i]]+=1.0;
 	}
+
+	// get means of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
+		// to be removed
 		SG_PRINT("m_label_prob[%d]=%f\n", i,m_label_prob[i]);
+
 		for (j=0; j<m_dim; j++)
 		{
 			m_means[m_dim*i+j] /= m_label_prob[i];
+
+			// to be removed
 			SG_PRINT("%d-th label mean of %d-th feature: %f\n", i,j, m_means[i*m_dim+j]);
 		}
 	}
+
+	// compute squared residuals with means available
 	for (i=0; i<m_num_train_labels; i++)
 	{
 		m_features->get_feature_vector(&m_feat_vec, &m_dim, i);
 		for (j=0; j<m_dim; j++)
 			m_std_devs[m_dim*m_labels[i]+j]+=CMath::pow(m_feat_vec[j]-m_means[m_dim*m_labels[i]+j],2);
 	}
+
+	// get standard deviations of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
 		for (j=0; j<m_dim; j++)
 		{
+			// unbiased estimation
 			m_std_devs[m_dim*i+j] /= m_label_prob[i] > 1 ? m_label_prob[i]-1 : 1;
+
+			// to be removed
 			SG_PRINT("%d-th label sigma of %d-th feature: %f\n", i,j, m_std_devs[i*m_dim+j]);
 		}
 	}
 
+	// get a priori probabilities of labels
+	for (i=0; i<m_num_classes; i++)
+	{
+		m_label_prob[i]/= m_num_classes;
+	}
 
 	return true;
 }
