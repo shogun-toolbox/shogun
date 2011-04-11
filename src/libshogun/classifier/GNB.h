@@ -104,15 +104,18 @@ protected:
 	CDotFeatures* m_features;
 
 	/// min label
-	int32_t min_label;
+	int32_t m_min_label;
+
+	///
+	int32_t* m_labels;
 
 	/// number of train labels
-	int32_t num_train_labels;
+	int32_t m_num_train_labels;
 
 	/// number of different classes (labels)
-	int32_t num_classes;
+	int32_t m_num_classes;
 
-	/// dimensionality
+	/// dimensionality of feature space
 	int32_t m_dim;
 
 	/// means for normal distributions of features
@@ -129,8 +132,7 @@ private:
 	///
 	float64_t inline normal_exp(float64_t x, int32_t l_idx, int32_t f_idx)
 	{
-		return 0.0;
-		//return CMath::exp(-CMath::pow((x-m_means[l_idx][f_idx])/m_std_devs[l_idx][f_idx],2)/2);
+		return CMath::exp(-CMath::pow((x-m_means[m_dim*l_idx+f_idx])/m_std_devs[m_dim*l_idx+f_idx],2)/2);
 	}
 
 	/// label rates
