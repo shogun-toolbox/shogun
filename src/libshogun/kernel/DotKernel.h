@@ -120,7 +120,7 @@ class CDotKernel : public CKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
-				return ((CDotFeatures*) lhs)->dot(idx_a, ((CDotFeatures*) rhs), idx_b);
+			return ((CDotFeatures*) lhs)->dot(idx_a, ((CDotFeatures*) rhs), idx_b);
 		}
 };
 }
