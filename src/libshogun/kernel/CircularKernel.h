@@ -24,6 +24,15 @@ namespace shogun
 class CDistance;
 
 /** @brief Circular kernel
+ *
+ * Formally described as
+ *
+ * \f[
+ *     k(x, y) = \frac{2}{\pi}*\arccos(\frac{-||{\bf x}-{\bf x'}||}{\sigma}) - \frac{2}{\pi}*(\frac{||{\bf x}-{\bf x'}||}{\sigma})*\sqrt{1-(\frac{||{\bf x}-{\bf x'}||}{\sigma})^2}
+ *
+ *     \mbox{if}~ ||x-y|| \leq \sigma \mbox{, zero otherwise}
+ * \f]
+ *
  */
 
 class CCircularKernel: public CKernel
