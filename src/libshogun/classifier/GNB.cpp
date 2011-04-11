@@ -119,15 +119,9 @@ bool CGNB::train(CFeatures* data)
 	// get means of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
-		// to be removed
-		SG_PRINT("m_label_prob[%d]=%f\n", i,m_label_prob[i]);
-
 		for (j=0; j<m_dim; j++)
 		{
 			m_means[m_dim*i+j] /= m_label_prob[i];
-
-			// to be removed
-			SG_PRINT("%d-th label mean of %d-th feature: %f\n", i,j, m_means[i*m_dim+j]);
 		}
 	}
 
@@ -146,9 +140,6 @@ bool CGNB::train(CFeatures* data)
 		{
 			// unbiased estimation
 			m_std_devs[m_dim*i+j] /= m_label_prob[i] > 1 ? m_label_prob[i]-1 : 1;
-
-			// to be removed
-			SG_PRINT("%d-th label sigma of %d-th feature: %f\n", i,j, m_std_devs[i*m_dim+j]);
 		}
 	}
 
