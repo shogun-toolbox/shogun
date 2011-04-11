@@ -231,6 +231,11 @@ class CSparsePolyFeatures : public CDotFeatures
 		uint32_t mask;
 		/** number of bits in hash */
 		int32_t m_hash_bits;
+	private:
+		/**length of norm for each traning example*/
+		int32_t m_normalization_values_len;
+		/**Initialize parameters for serialization*/
+		void init();
 };
 }
 #endif // _SPARSEPOLYFEATURES__H__
