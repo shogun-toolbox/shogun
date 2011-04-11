@@ -37,7 +37,7 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 
 CGNB::~CGNB()
 {
-	//SG_UNREF(labels);
+	SG_UNREF(m_features);
 	delete[] m_means;
 	delete[] m_rates;
 	delete[] m_feat_vec;
@@ -50,9 +50,10 @@ bool CGNB::train(CFeatures* data)
 	// init features with data if necessary
 	if (data) set_features((CDotFeatures*) data);
 
-	// get int labels to m_labels
+	// get int labels to m_labels and check length equality
 	ASSERT(labels);
 	m_labels = labels->get_int_labels(m_num_train_labels);
+	ASSERT(m_features->get_num_vectors()==m_num_train_labels);
 
 	// init min_label, max_label and loop variables
 	int32_t min_label = m_labels[0];

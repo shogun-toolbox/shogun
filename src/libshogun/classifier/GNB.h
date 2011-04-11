@@ -56,7 +56,7 @@ public:
 	{
 		 SG_UNREF(m_features);
 		 SG_REF(feat);
-		 m_features=feat;
+		 m_features = feat;
 	}
 
 	/** get features for classify
