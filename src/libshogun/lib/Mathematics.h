@@ -516,14 +516,14 @@ class CMath : public CSGObject
 		/// Float: Mean = 0 and Variance = 1
 		static inline float32_t randn_float()
 		{
-			normal_random(float32_t mean=0.0, float32_t variance=1.0);
+			return normal_random(0.0, 1.0);
 		}
 
 		/// Convenience method for generating Standard Normal random numbers
 		/// Double: Mean = 0 and Variance = 1
 		static inline float64_t randn_double()
 		{
-			normal_random(float64_t mean=0.0, float64_t variance=1.0);
+			return normal_random(0.0, 1.0);
 		}
 
 		template <class T>
