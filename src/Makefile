@@ -70,6 +70,7 @@ distclean: clean
 
 clean:  $(PARTDEPS)
 	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
+	@rm -rf configure-*.dSYM
 	@rm -f configure.log .cpuinfo .cpuinfo.c ./configure-* cplex.log examples
 
 dist:	distclean
