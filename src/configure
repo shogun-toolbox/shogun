@@ -4416,6 +4416,12 @@ clean_up()
 		"$TMPSS" "$TMPSO" "$TMPJAVA" "$TMPJAVAO" "$TMPRUBY"
 }
 
+# Mac OS gcc tends to make external debug files when testing compiler
+darwin_clean_up()
+{
+	rm -rf configure-*.dSYM
+}
+
 test_static_linking()
 {
 
@@ -4479,4 +4485,8 @@ then
 	write_config_h "$SRCDIR/libshogun/lib/config.h"
 fi
 clean_up
+if darwin
+then
+	darwin_clean_up
+fi	
 type_buildinfo
