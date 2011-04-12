@@ -173,7 +173,7 @@ class CMath : public CSGObject
 					return value;
 			}
 
-		///return the maximum of two integers
+		///return the absolute value of a number
 		template <class T>
 			static inline T abs(T a)
 			{
@@ -472,7 +472,6 @@ class CMath : public CSGObject
 		}
 
 		/// Returns a Gaussian or Normal random number.
-		/// By default the mean = 0 and variance = 1
 		/// Using the polar form of the Box-Muller transform.
 		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
 		static inline float32_t normal_random(float32_t mean, float32_t variance)
@@ -511,6 +510,20 @@ class CMath : public CSGObject
 			ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
 			ret = variance*ret + mean;
 			return ret;
+		}
+
+		/// Convenience method for generating Standard Normal random numbers
+		/// Float: Mean = 0 and Variance = 1
+		static inline float32_t randn_float()
+		{
+			normal_random(float32_t mean=0.0, float32_t variance=1.0);
+		}
+
+		/// Convenience method for generating Standard Normal random numbers
+		/// Double: Mean = 0 and Variance = 1
+		static inline float64_t randn_double()
+		{
+			normal_random(float64_t mean=0.0, float64_t variance=1.0);
 		}
 
 		template <class T>
