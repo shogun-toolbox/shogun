@@ -88,7 +88,7 @@ _swig=auto
 _lapack=auto
 _bigstates=yes
 _hmmcache=yes
-_debug=no
+_debug=yes
 _trace_mallocs=no
 _reference_counting=yes
 _hmmdebug=no
@@ -134,6 +134,7 @@ _java_modular=no
 _csharp_modular=no
 _ruby_modular=no
 _lua_modular=no
+_optimization=yes
 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
@@ -142,9 +143,8 @@ test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
-COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops"
-COMP_NOOPTS="-g -Wall -O2"
-COMP_DEBUG="-g -Wall -O0"
+COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops"
+COMP_NOOPTS="-Wall -O2"
 COMPFLAGS_C=-fPIC
 COMPFLAGS_CPP=-fPIC
 SEDMI='sed -i'
@@ -413,8 +413,11 @@ EOF
 	fi
 
 	if test "$_debug" = yes ; then
-		COMP_OPTS=$COMP_DEBUG;
-		_cpudetection=no
+		COMP_OPTS="-g $COMP_OPTS";
+	fi
+	
+	if test "$_optimization" = no; then
+		COMP_OPTS="$COMP_NOOPTS";
 	fi
 
 	echocheck "C Compiler flags"
@@ -961,8 +964,9 @@ Optional features:
 
 Miscellaneous options:
   --disable-doxygen              disable documentation generation via doxygen for python_modular interface [enabled]
+  --disable-optimization         disable compiler optimizations [enabled]
   --disable-cpudetection         disable cpu flags detection and corresponding optimization options [enabled]
-  --enable-debug                 enable debugging [disabled]
+  --enable-debug                 enable debugging [enabled]
   --enable-trace-mallocs         enable memory allocation tracing [disabled]
   --disable-reference-counting   disables reference counting causing severe memory leakage [enabled]
   --enable-path-debug            enable viterbi path debugging [disabled]
@@ -1178,6 +1182,8 @@ for ac_option do
   --enable-profile) 	_profile=yes ;;
   --disable-cpudetection) 	_cpudetection=no ;;
   --enable-cpudetection) 	_cpudetection=yes ;;
+  --disable-optimization)	_optimization=no ;;
+  --enable-optimization)	_optimization=yes ;;
   --destdir=*)
     _destdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
@@ -4418,6 +4424,12 @@ clean_up()
 		"$TMPSS" "$TMPSO" "$TMPJAVA" "$TMPJAVAO" "$TMPRUBY"
 }
 
+# Mac OS gcc tends to make external debug files when testing compiler
+darwin_clean_up()
+{
+	rm -rf configure-*.dSYM
+}
+
 test_static_linking()
 {
 
@@ -4481,4 +4493,8 @@ then
 	write_config_h "$SRCDIR/libshogun/lib/config.h"
 fi
 clean_up
+if darwin
+then
+	darwin_clean_up
+fi	
 type_buildinfo

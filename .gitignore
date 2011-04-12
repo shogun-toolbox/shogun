@@ -8,6 +8,8 @@
 *_doxygen.i
 .depend
 .config
+.cpuinfo
+.cpuinfo.c
 *.pyc
 TAGS
 tags

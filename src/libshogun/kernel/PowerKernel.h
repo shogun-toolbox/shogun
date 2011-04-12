@@ -78,7 +78,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "Power"; }
+	inline virtual const char* get_name() const { return "PowerKernel"; }
 
 	virtual ~CPowerKernel();
 protected:
