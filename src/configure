@@ -134,6 +134,7 @@ _java_modular=no
 _csharp_modular=no
 _ruby_modular=no
 _lua_modular=no
+_optimization=yes
 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
@@ -413,6 +414,10 @@ EOF
 
 	if test "$_debug" = yes ; then
 		COMP_OPTS="-g $COMP_OPTS";
+	fi
+	
+	if test "$_optimization" = no; then
+		COMP_OPTS="$COMP_NOOPTS";
 	fi
 
 	echocheck "C Compiler flags"
@@ -959,6 +964,7 @@ Optional features:
 
 Miscellaneous options:
   --disable-doxygen              disable documentation generation via doxygen for python_modular interface [enabled]
+  --disable-optimization         disable compiler optimizations [enabled]
   --disable-cpudetection         disable cpu flags detection and corresponding optimization options [enabled]
   --enable-debug                 enable debugging [enabled]
   --enable-trace-mallocs         enable memory allocation tracing [disabled]
@@ -1176,6 +1182,8 @@ for ac_option do
   --enable-profile) 	_profile=yes ;;
   --disable-cpudetection) 	_cpudetection=no ;;
   --enable-cpudetection) 	_cpudetection=yes ;;
+  --disable-optimization)	_optimization=no ;;
+  --enable-optimization)	_optimization=yes ;;
   --destdir=*)
     _destdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
