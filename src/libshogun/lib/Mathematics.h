@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2011 Justin Patera
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2007 Konrad Rieck
@@ -476,19 +477,17 @@ class CMath : public CSGObject
 		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
 		static inline float32_t normal_random(float32_t mean=0.0, float32_t variance=1.0)
 		{
-			// sets up variables
-			float32_t rand_u = random(-1.0, 1.0);
-			float32_t rand_v = random(-1.0, 1.0);
-			float32_t rand_s = rand_u*rand_u + rand_v*rand_v;
-			float32_t ret = 0.0;
-
-			// makes sure rand_s is in the range (0,1]
-			while ((rand_s == 0) || (rand_s >= 1))
+			// sets up variables & makes sure rand_s.range == (0,1]
+			float32_t ret;
+			float32_t rand_u;
+			float32_t rand_v;
+			float32_t rand_s;
+			do
 			{
-			  rand_u = random(-1.0, 1.0);
-			  rand_v = random(-1.0, 1.0);
-			  rand_s = rand_u*rand_u + rand_v*rand_v;
-			}
+				rand_u = random(-1.0, 1.0);
+				rand_v = random(-1.0, 1.0);
+				rand_s = rand_u*rand_u + rand_v*rand_v;
+			} while ((rand_s == 0) || (rand_s >= 1));
 
 			// the meat & potatos, and then the mean & variance shifting...
 			ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
@@ -496,24 +495,23 @@ class CMath : public CSGObject
 			return ret;
 		}
 
-		/*static inline float64_t normal_random(float64_t mean=0.0, float64_t variance=1.0)
+		static inline float64_t normal_random(float64_t mean, float64_t variance)
 		{
-		  float64_t rand_u = random(-1.0, 1.0);
-		  float64_t rand_v = random(-1.0, 1.0);
-		  float64_t rand_s = rand_u*rand_u + rand_v*rand_v;
-		  float64_t ret = 0.0;
+			float64_t ret;
+			float64_t rand_u;
+			float64_t rand_v;
+			float64_t rand_s;
+			do
+			{
+				rand_u = random(-1.0, 1.0);
+				rand_v = random(-1.0, 1.0);
+				rand_s = rand_u*rand_u + rand_v*rand_v;
+			} while ((rand_s == 0) || (rand_s >= 1));
 
-		  while ((rand_s == 0) || (rand_s >= 1))
-		  {
-		    rand_u = random(-1.0, 1.0);
-		    rand_v = random(-1.0, 1.0);
-		    rand_s = rand_u*rand_u + rand_v*rand_v;
-		  }
-
-		  ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
-		  ret = variance*ret + mean;
-		  return ret;
-		}*/
+			ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
+			ret = variance*ret + mean;
+			return ret;
+		}
 
 		template <class T>
 			static T* clone_vector(const T* vec, int32_t len)
