@@ -475,7 +475,7 @@ class CMath : public CSGObject
 		/// By default the mean = 0 and variance = 1
 		/// Using the polar form of the Box-Muller transform.
 		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
-		static inline float32_t normal_random(float32_t mean=0.0, float32_t variance=1.0)
+		static inline float32_t normal_random(float32_t mean, float32_t variance)
 		{
 			// sets up variables & makes sure rand_s.range == (0,1]
 			float32_t ret;
