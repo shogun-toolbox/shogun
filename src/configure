@@ -88,7 +88,7 @@ _swig=auto
 _lapack=auto
 _bigstates=yes
 _hmmcache=yes
-_debug=no
+_debug=yes
 _trace_mallocs=no
 _reference_counting=yes
 _hmmdebug=no
@@ -144,7 +144,6 @@ GDB=gdb
 MAKE=make
 COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops"
 COMP_NOOPTS="-Wall -O2"
-COMP_DEBUG="-g -Wall -O0"
 COMPFLAGS_C=-fPIC
 COMPFLAGS_CPP=-fPIC
 SEDMI='sed -i'
@@ -413,8 +412,7 @@ EOF
 	fi
 
 	if test "$_debug" = yes ; then
-		COMP_OPTS=$COMP_DEBUG;
-		_cpudetection=no
+		COMP_OPTS="-g $COMP_OPTS";
 	fi
 
 	echocheck "C Compiler flags"
@@ -962,7 +960,7 @@ Optional features:
 Miscellaneous options:
   --disable-doxygen              disable documentation generation via doxygen for python_modular interface [enabled]
   --disable-cpudetection         disable cpu flags detection and corresponding optimization options [enabled]
-  --enable-debug                 enable debugging [disabled]
+  --enable-debug                 enable debugging [enabled]
   --enable-trace-mallocs         enable memory allocation tracing [disabled]
   --disable-reference-counting   disables reference counting causing severe memory leakage [enabled]
   --enable-path-debug            enable viterbi path debugging [disabled]
