@@ -70,7 +70,7 @@ distclean: clean
 
 clean:  $(PARTDEPS)
 	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
-	@rm -f configure.log .cpuinfo ./configure-* cplex.log examples
+	@rm -f configure.log .cpuinfo .cpuinfo.c ./configure-* cplex.log examples
 
 dist:	distclean
 	rm -f $(TAR).gz
