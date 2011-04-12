@@ -11,7 +11,7 @@
 #ifndef GAUSSIANNAIVEBAYES_H_
 #define GAUSSIANNAIVEBAYES_H_
 
-#include "Classifier.h"
+#include "classifier/Classifier.h"
 #include "features/DotFeatures.h"
 
 namespace shogun {
