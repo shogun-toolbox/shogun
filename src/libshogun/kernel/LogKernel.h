@@ -78,7 +78,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "Log"; }
+	inline virtual const char* get_name() const { return "LogKernel"; }
 
 	virtual ~CLogKernel();
 protected:
