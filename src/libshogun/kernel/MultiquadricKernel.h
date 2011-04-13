@@ -21,11 +21,11 @@ namespace shogun
 {
 
 class CDistance;
-/**
-* MultiquadricKernel;
-*f[
+/** @brief MultiquadricKernel
+* 
+* \f[
 *             K(x,x') = \sqrt{\| x - x' \|^2 +c^2}
-*\f]
+* \f]
 */
 class CMultiquadricKernel: public CKernel
 {
