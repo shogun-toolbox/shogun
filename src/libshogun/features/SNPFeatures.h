@@ -219,6 +219,10 @@ class CSNPFeatures : public CDotFeatures
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SNPFeatures"; }
 
+		/** compute histogram over strings
+		 */
+		virtual void get_histogram(float64_t** hist, int32_t* rows, int32_t* cols, bool normalize);
+
 	protected:
 		/** stringfeatures the wdfeatures are based on*/
 		CStringFeatures<uint8_t>* strings;
