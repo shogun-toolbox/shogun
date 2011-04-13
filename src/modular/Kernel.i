@@ -43,9 +43,11 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CommUlongStringKernel.h>
 #include <shogun/kernel/CommWordStringKernel.h>
+#include <shogun/kernel/CircularKernel.h>
 #include <shogun/kernel/ConstKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/DiagKernel.h>
+#include <shogun/kernel/DistantSegmentsKernel.h>
 #include <shogun/kernel/DiceKernelNormalizer.h>
 #include <shogun/kernel/ExponentialKernel.h>
 #include <shogun/kernel/ScatterKernelNormalizer.h>
@@ -137,6 +139,7 @@
 %rename(AUCKernel) CAUCKernel;
 %rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
 %rename(RidgeKernelNormalizer) CRidgeKernelNormalizer;
+%rename(CircularKernel) CCircularKernel;
 %rename(Chi2Kernel) CChi2Kernel;
 %rename(CombinedKernel) CCombinedKernel;
 %rename(CommUlongStringKernel) CCommUlongStringKernel;
@@ -144,6 +147,7 @@
 %rename(ConstKernel) CConstKernel;
 %rename(CustomKernel) CCustomKernel;
 %rename(DiagKernel) CDiagKernel;
+%rename(DistantSegmentsKernel) CDistantSegmentsKernel;
 %rename(WaveKernel) CWaveKernel;
 %rename(CauchyKernel) CCauchyKernel;
 %rename(DiceKernelNormalizer) CDiceKernelNormalizer;
@@ -159,6 +163,7 @@
 %rename(HistogramIntersectionKernel) CHistogramIntersectionKernel;
 %rename(HistogramWordStringKernel) CHistogramWordStringKernel;
 %rename(IdentityKernelNormalizer) CIdentityKernelNormalizer;
+%rename(InverseMultiQuadricKernel) CInverseMultiQuadricKernel;
 %rename(LinearKernel) CLinearKernel;
 %rename(LinearStringKernel) CLinearStringKernel;
 %rename(SparseSpatialSampleStringKernel) CSparseSpatialSampleStringKernel;
@@ -266,6 +271,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/AvgDiagKernelNormalizer.h>
 %include <shogun/kernel/RidgeKernelNormalizer.h>
 %include <shogun/kernel/CauchyKernel.h>
+%include <shogun/kernel/CircularKernel.h>
 %include <shogun/kernel/Chi2Kernel.h>
 %include <shogun/kernel/CombinedKernel.h>
 %include <shogun/kernel/CommUlongStringKernel.h>
@@ -277,6 +283,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/ScatterKernelNormalizer.h>
 %include <shogun/kernel/VarianceKernelNormalizer.h>
 %include <shogun/kernel/DistanceKernel.h>
+%include <shogun/kernel/DistantSegmentsKernel.h>
 %include <shogun/kernel/ExponentialKernel.h>
 %include <shogun/kernel/FixedDegreeStringKernel.h>
 %include <shogun/kernel/GaussianKernel.h>
@@ -285,6 +292,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/HistogramIntersectionKernel.h>
 %include <shogun/kernel/HistogramWordStringKernel.h>
 %include <shogun/kernel/IdentityKernelNormalizer.h>
+%include <shogun/kernel/InverseMultiQuadricKernel.h>
 %include <shogun/kernel/LinearKernel.h>
 %include <shogun/kernel/LinearStringKernel.h>
 %include <shogun/kernel/SparseSpatialSampleStringKernel.h>
