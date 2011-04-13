@@ -52,9 +52,8 @@ void CInverseMultiQuadricKernel::load_serializable_post(void) throw (ShogunExcep
 	CKernel::load_serializable_post();
 }
 
-void CInverseMultiQuadricKernel::init(){
-	ASSERT(distance);
-	ASSERT(coef!=0);
+void CInverseMultiQuadricKernel::init()
+{
 	m_parameters->add(&coef, "coef", "Kernel Coefficient.");
 	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 }
