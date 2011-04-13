@@ -7,6 +7,14 @@
 #ifndef __GMM_H__
 #define __GMM_H__
 
+#ifndef PI
+#define PI   3.14159265358979     // just in case PI is not defined
+#endif
+#define DPI  6.28318530717959     // 2*PI
+#define LogZero (-1.0E10)					// log(0). Any log value < logzero is set to logzero
+#define MinExpArg (-700.0)   			// lowest exp() arg  = log(MinLogArg)
+#define MinLogArg 9.8597E-305  		// lowest log() arg  = exp(MinExpArg)
+
 #include <stdio.h>
 
 #include "lib/Mathematics.h"
@@ -21,6 +29,7 @@ namespace shogun
 {
 class GMMModel
 {
+	public:
 	// Constructor. Initializes all variables and structures.
 	GMMModel();
 	/// Destructor - cleans up
@@ -53,6 +62,9 @@ class GMMModel
 	// readin existing GMM
 	GMMReadIn();
 	
+	//GMM mixture constants calculation
+	GMMMixConst();
+	
 	protected:
 		
 	struct GMM_basic_config // basic configuration
@@ -66,6 +78,8 @@ class GMMModel
 	
 	struct GMM_Model // basic configuration
 	{
+		float64_t* fMixConst;		// buffer for GMM mixture consts
+														// for each mixture, const=-0.5*(nVecSize*log(2*Pi)+det(Cov))
 		float64_t* pWeights;			// buffer for GMM weights
 		float64_t* pMeans;			  // buffer for GMM means
 		// three different ways for storing GMM covariances
