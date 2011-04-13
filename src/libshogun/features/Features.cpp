@@ -48,6 +48,9 @@ CFeatures::CFeatures(CFile* loader)
 
 CFeatures::~CFeatures()
 {
+	if (subset_inds)
+		delete subset_inds;
+
 	clean_preprocs();
 }
 
@@ -66,11 +69,16 @@ CFeatures::init(void)
 							 &num_preproc, "preprocessed",
 							 "Feature[i] is already preprocessed.");
 
+	m_parameters->add_vector(&subset_inds, &num_subset_inds, "subset_inds", "Subset indices.");
+
+
 	properties = FP_NONE;
 	cache_size = 0;
 	preproc = NULL;
 	num_preproc = 0;
 	preprocessed = NULL;
+	subset_inds = NULL;
+	num_subset_inds = 0;
 }
 
 /// set preprocessor
@@ -274,4 +282,13 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 		result= ( (this->get_feature_class() == f->get_feature_class()) &&
 				(this->get_feature_type() == f->get_feature_type()));
 	return result;
+}
+
+void CFeatures::set_feature_subset(int32_t* inds, int32_t num_inds)
+{
+	if (subset_inds)
+		delete subset_inds;
+
+	subset_inds=inds;
+	num_subset_inds=num_inds;
 }

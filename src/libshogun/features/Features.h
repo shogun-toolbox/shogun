@@ -49,6 +49,9 @@ namespace shogun
  *   (dense matrices), CSparseFeatures (sparse matrices), CStringFeatures (a
  *   set of strings) from which all the specific features like CSimpleFeatures<float64_t>
  *   (dense real valued feature matrices) are derived.
+ *
+ *   It is possible to set/get/reset subset matrices.
+ *   These may be used by subclasses for access to subsets of features.
  */
 class CFeatures : public CSGObject
 {
@@ -155,7 +158,9 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of examples/vectors
 		 */
-		virtual int32_t get_num_vectors()=0 ;
+		virtual int32_t get_num_vectors()=0;
+
+		//virtual int32_t get_num_vectors_all()=0;
 
 		/** in case there is a feature matrix allow for reshaping
 		 *
@@ -232,6 +237,22 @@ class CFeatures : public CSGObject
 			properties &= (properties | p) ^ p;
 		}
 
+		/** @return subset indices matrix */
+		inline virtual int32_t* get_feature_subset() { return subset_inds; }
+
+		/** @return number of subset indices */
+		inline virtual int32_t get_feature_subset_length() { return num_subset_inds; }
+
+		/** sets the subset indices matrix which is afterwards used for feature access
+		 *
+		 * @param inds index matrix
+		 * @param num_inds number of subset indices
+		 */
+		virtual void set_feature_subset(int32_t* inds, int32_t num_inds);
+
+		/** resets the current subset indices matrix */
+		inline void reset_feature_subset() { subset_inds=NULL; num_subset_inds=0; }
+
 	private:
 		/** feature properties */
 		uint64_t  properties;
@@ -247,6 +268,10 @@ class CFeatures : public CSGObject
 
 		/// i'th entry is true if features were already preprocessed with preproc i
 		bool* preprocessed;
+
+	protected:
+		int32_t* subset_inds;
+		int32_t num_subset_inds;
 };
 }
 #endif
