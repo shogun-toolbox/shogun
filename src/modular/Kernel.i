@@ -7,7 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
- 
+
 %define DOCSTR
 "The `Kernel` module gathers all kernels available in the SHOGUN toolkit."
 %enddef
@@ -34,7 +34,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/KernelNormalizer.h>
 #include <shogun/kernel/PyramidChi2.h>
-#include <shogun/kernel/ANOVAKernel.h>	
+#include <shogun/kernel/ANOVAKernel.h>
 #include <shogun/kernel/AUCKernel.h>
 #include <shogun/kernel/AvgDiagKernelNormalizer.h>
 #include <shogun/kernel/RidgeKernelNormalizer.h>
@@ -67,11 +67,12 @@
 #include <shogun/kernel/LocalityImprovedStringKernel.h>
 #include <shogun/kernel/MatchWordStringKernel.h>
 #include <shogun/kernel/MultitaskKernelNormalizer.h>
-#include <shogun/kernel/MultitaskKernelMklNormalizer.h>    
+#include <shogun/kernel/MultitaskKernelMklNormalizer.h>
 #include <shogun/kernel/MultitaskKernelTreeNormalizer.h>
 #include <shogun/kernel/MultitaskKernelMaskNormalizer.h>
 #include <shogun/kernel/MultitaskKernelMaskPairNormalizer.h>
 #include <shogun/kernel/MultitaskKernelPlifNormalizer.h>
+#include <shogun/kernel/MultiquadricKernel.h>
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/PolyMatchStringKernel.h>
@@ -196,6 +197,7 @@
 %rename(ZeroMeanCenterKernelNormalizer) CZeroMeanCenterKernelNormalizer;
 %rename(DotKernel) CDotKernel;
 %rename(RationalQuadraticKernel) CRationalQuadraticKernel;
+%rename(MultiquadricKernel) CMultiquadricKernel;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
@@ -260,7 +262,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/KernelNormalizer.h>
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/ANOVAKernel.h>
-%include <shogun/kernel/AUCKernel.h> 
+%include <shogun/kernel/AUCKernel.h>
 %include <shogun/kernel/AvgDiagKernelNormalizer.h>
 %include <shogun/kernel/RidgeKernelNormalizer.h>
 %include <shogun/kernel/CauchyKernel.h>
@@ -321,6 +323,7 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/WeightedDegreeRBFKernel.h>
 %include <shogun/kernel/SpectrumMismatchRBFKernel.h>
 %include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
+%include <shogun/kernel/MultiquadricKernel.h>
 %include <shogun/kernel/RationalQuadraticKernel.h>
 
 %include std_vector.i
