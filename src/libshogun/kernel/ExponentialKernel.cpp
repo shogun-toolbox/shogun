@@ -20,20 +20,18 @@
 using namespace shogun;
 
 CExponentialKernel::CExponentialKernel()
-	: CDotKernel(), width(1), m_distance(NULL)
+	: CDotKernel(), m_distance(NULL), m_width(1)
 {
 	init();
 }
 
 CExponentialKernel::CExponentialKernel(
-	CDotFeatures* l, CDotFeatures* r, float64_t w, CDistance* distance, int32_t size)
-: CDotKernel(size)
+	CDotFeatures* l, CDotFeatures* r, float64_t width, CDistance* distance, int32_t size)
+: CDotKernel(size), m_distance(distance), m_width(width)
 {
 	init();
-	width=w;
 	ASSERT(distance);
 	SG_REF(distance);
-	m_distance = distance;
 	init(l,r);
 }
 
@@ -50,6 +48,7 @@ void CExponentialKernel::cleanup()
 
 bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
 {
+	ASSERT(m_distance);
 	CDotKernel::init(l, r);
 	m_distance->init(l, r);
 	return init_normalizer();
@@ -57,8 +56,9 @@ bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CExponentialKernel::compute(int32_t idx_a, int32_t idx_b)
 {
+	ASSERT(m_distance);
 	float64_t dist=m_distance->distance(idx_a, idx_b);
-	return exp(-dist/width);
+	return exp(-dist/m_width);
 }
 
 void CExponentialKernel::load_serializable_post(void) throw (ShogunException)
@@ -69,6 +69,6 @@ void CExponentialKernel::load_serializable_post(void) throw (ShogunException)
 
 void CExponentialKernel::init()
 {
-	m_parameters->add(&width, "width", "Kernel width.");
+	m_parameters->add(&m_width, "width", "Kernel width.");
 	m_parameters->add((CSGObject**) &m_distance, "distance", "Distance to be used.");
 }
