@@ -86,14 +86,8 @@ public:
 	inline void set_coef(float64_t value) { this->coef = value; }
 
 	virtual ~CMultiquadricKernel();
+
 protected:
-
-	/// distance to be used
-	CDistance* distance;
-
-	/// theta parameter of kernel - coefficient
-	float64_t coef;
-
 	/**
 	 * compute kernel for specific feature vectors
 	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
@@ -105,6 +99,15 @@ protected:
 
 private:
 	void init();
+
+protected:
+
+	/// distance to be used
+	CDistance* distance;
+
+	/// theta parameter of kernel - coefficient
+	float64_t coef;
+
 };
 }
 

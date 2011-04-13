@@ -31,8 +31,8 @@ CRationalQuadraticKernel::CRationalQuadraticKernel(CFeatures *l, CFeatures *r, f
 {
 	ASSERT(distance);
 	SG_REF(distance);
-	init(l, r);
 	init();
+	init(l, r);
 }
 
 CRationalQuadraticKernel::~CRationalQuadraticKernel()

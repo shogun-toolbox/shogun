@@ -13,51 +13,54 @@
 
 using namespace shogun;
 
-CWaveKernel::CWaveKernel(): CKernel(0), distance(NULL), theta(1.0)
+CWaveKernel::CWaveKernel(): CKernel(0), m_distance(NULL), m_theta(1.0)
 {
 	init();
 }
 
 CWaveKernel::CWaveKernel(int32_t cache, float64_t theta, CDistance* dist)
-: CKernel(cache), distance(dist), theta(theta)
+: CKernel(cache), m_distance(dist), m_theta(theta)
 {
 	init();
-	ASSERT(distance);
-	SG_REF(distance);
+	ASSERT(m_distance);
+	SG_REF(m_distance);
 }
 
 CWaveKernel::CWaveKernel(CFeatures *l, CFeatures *r, float64_t theta, CDistance* dist)
-: CKernel(10), distance(dist), theta(theta)
+: CKernel(10), m_distance(dist), m_theta(theta)
 {
 	init();
-	ASSERT(distance);
-	SG_REF(distance);
+	ASSERT(m_distance);
+	SG_REF(m_distance);
 	init(l, r);
 }
 
 CWaveKernel::~CWaveKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	SG_UNREF(m_distance);
 }
 
 bool CWaveKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(m_distance);
 	CKernel::init(l,r);
-	distance->init(l,r);
+	m_distance->init(l,r);
 	return init_normalizer();
 }
 
 void CWaveKernel::init()
 {
-	m_parameters->add(&theta, "theta", "Theta kernel parameter.");
-	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
+	m_parameters->add(&m_theta, "theta", "Theta kernel parameter.");
+	m_parameters->add((CSGObject**) &m_distance, "distance", "Distance to be used.");
 }
 
 float64_t CWaveKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	float64_t dist = distance->distance(idx_a, idx_b);
-	if (dist==0.0) return 1.0;
-	return (theta/dist)*sin(dist/theta);
+	float64_t dist = m_distance->distance(idx_a, idx_b);
+
+	if (dist==0.0)
+		return 1.0;
+
+	return (m_theta/dist)*sin(dist/m_theta);
 }

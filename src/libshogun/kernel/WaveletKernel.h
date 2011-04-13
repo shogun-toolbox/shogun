@@ -35,8 +35,8 @@ class CWaveletKernel: public CDotKernel
 		/** constructor
 		 *
 		 * @param size cache size
-		 * @param Wdilation
-		 * @param Wtranslation
+		 * @param Wdilation is Dilation coefficient
+		 * @param Wtranslation is Translation coefficient
 		 */
 		CWaveletKernel(int32_t size, float64_t Wdilation, float64_t Wtranslation);
 
@@ -59,7 +59,8 @@ class CWaveletKernel: public CDotKernel
 		 * @return if initializing was successful
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
-	        virtual void cleanup();
+
+		virtual void cleanup();
 
 		/** return what type of kernel we are
 		 *

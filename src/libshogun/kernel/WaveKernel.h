@@ -68,12 +68,12 @@ public:
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	inline virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	inline virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
@@ -81,14 +81,8 @@ public:
 	inline virtual const char* get_name() const { return "WaveKernel"; }
 
 	virtual ~CWaveKernel();
+
 protected:
-
-	/// distance to be used
-	CDistance* distance;
-
-	/// theta parameter of kernel
-	float64_t theta;
-
 	/**
 	 * compute kernel for specific feature vectors
 	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
@@ -97,9 +91,17 @@ protected:
 	 * @return kernel value
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
-private:
 
+private:
 	void init();
+
+protected:
+
+	/// distance to be used
+	CDistance* m_distance;
+
+	/// theta parameter of kernel
+	float64_t m_theta;
 };
 }
 

@@ -20,7 +20,7 @@
 using namespace shogun;
 
 CExponentialKernel::CExponentialKernel()
-	: CDotKernel()
+	: CDotKernel(), width(1)
 {
 	init();
 }
@@ -78,7 +78,6 @@ void CExponentialKernel::load_serializable_post(void) throw (ShogunException)
 
 void CExponentialKernel::init()
 {
-	width=1;
 	m_parameters->add(&width, "width", "Kernel width.");
 	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
 }

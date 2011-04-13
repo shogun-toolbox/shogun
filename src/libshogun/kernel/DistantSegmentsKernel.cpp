@@ -12,31 +12,26 @@
 #include "kernel/DistantSegmentsKernel.h"
 #include <string>
 
-using namespace std;
 using namespace shogun;
 
-CDistantSegmentsKernel::CDistantSegmentsKernel()
+CDistantSegmentsKernel::CDistantSegmentsKernel() : CStringKernel<char>(),
+	m_delta(0), m_theta(0)
 {
 	init();
 }
 
 CDistantSegmentsKernel::CDistantSegmentsKernel(int32_t size, int32_t delta,
-		int32_t theta)
+		int32_t theta) : CStringKernel<char>(), m_delta(delta), m_theta(theta)
 {
 	init();
-
-	m_delta=delta;
-	m_theta=theta;
 }
 
 CDistantSegmentsKernel::CDistantSegmentsKernel(CStringFeatures<char>* l,
-		CStringFeatures<char>* r, int32_t size, int32_t delta, int32_t theta)
+		CStringFeatures<char>* r, int32_t size, int32_t delta, int32_t theta) :
+	CStringKernel<char>(), m_delta(delta), m_theta(theta)
 {
-	CStringKernel<char>::init(l, r);
 	init();
-
-	m_delta=delta;
-	m_theta=theta;
+	CStringKernel<char>::init(l, r);
 }
 
 bool CDistantSegmentsKernel::init(CFeatures* l, CFeatures* r)
@@ -47,9 +42,6 @@ bool CDistantSegmentsKernel::init(CFeatures* l, CFeatures* r)
 
 void CDistantSegmentsKernel::init()
 {
-	m_delta=0;
-	m_theta=0;
-
 	m_parameters->add(&m_delta, "m_delta", "Delta parameter of the DS-Kernel");
 	m_parameters->add(&m_theta, "theta", "Theta parameter of the DS-Kernel");
 }
@@ -79,11 +71,11 @@ int32_t CDistantSegmentsKernel::bin(int32_t j, int32_t i)
 {
 	if (i>j)
 		return 0;
-	if (i==3&&j>=3)
+	if (i==3 && j>=3)
 	{
 		return j*(j-1)*(j-2)/6;
 	}
-	else if (i==2&&j>=2)
+	else if (i==2 && j>=2)
 	{
 		return j*(j-1)/2;
 	}
@@ -102,7 +94,7 @@ int32_t CDistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
 		{
 			if (s[j_s-1+1]==t[j_t-1+1])
 			{
-				int32_t n=min(min(sLength-j_s, tLength-j_t), delta_m);
+				int32_t n=CMath::min(CMath::min(sLength-j_s, tLength-j_t), delta_m);
 				int32_t k=-1;
 				int32_t i=1;
 				while (i<=n)
@@ -125,7 +117,7 @@ int32_t CDistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
 				{
 					c1+=bin(l_[r], 2)-bin(l_[r]-theta_m, 2);
 				}
-				c+=min(theta_m, i_[1]-i_[0])*c1;
+				c+=CMath::min(theta_m, i_[1]-i_[0])*c1;
 			}
 		}
 	}
