@@ -79,7 +79,7 @@ class GMMModel
 	struct GMM_Model // basic configuration
 	{
 		float64_t* fMixConst;		// buffer for GMM mixture consts
-														// for each mixture, const=-0.5*(nVecSize*log(2*Pi)+det(Cov))
+														// for each mixture, const=-0.5*(nVecSize*log(2*Pi)+log(det(Cov)))
 		float64_t* pWeights;			// buffer for GMM weights
 		float64_t* pMeans;			  // buffer for GMM means
 		// three different ways for storing GMM covariances
