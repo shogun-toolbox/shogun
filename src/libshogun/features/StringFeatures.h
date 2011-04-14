@@ -1060,7 +1060,8 @@ template <class ST> class CStringFeatures : public CFeatures
 						{
 							ST* str=new ST[filesize];
 							SG_DEBUG("%s:%ld\n", fname, (int64_t) filesize);
-							fread(str, sizeof(ST), filesize, f);
+							if (fread(str, sizeof(ST), filesize, f)!=(size_t) filesize)
+								SG_ERROR("failed to read file\n");
 							strings[num].string=str;
 							strings[num].length=filesize;
 							max_len=CMath::max(max_len, strings[num].length);
