@@ -40,6 +40,7 @@ void CGaussian::init(float64_t* mean, float64_t* cov, int32_t dim)
 
 CGaussian::~CGaussian()
 {	
+	SG_UNREF(m_data);
 	delete[] m_cov_inverse;
 	delete[] m_cov;
 	delete[] m_mean;
@@ -54,6 +55,22 @@ bool CGaussian::train(CFeatures* data)
 				SG_ERROR("Specified features are not of type CDotFeatures\n");		
 		set_data((CDotFeatures*) data);
 	}
+
+	float64_t* data_matrix;
+	int32_t num_of_features;
+	int32_t num_of_vectors;
+
+	m_data->get_feature_matrix(&data_matrix, &num_of_features, &num_of_vectors);
+
+	float64_t* mean;
+	float64_t* cov;
+	int32_t dim = num_of_features;
+
+	CMath::mean(data_matrix, num_of_features, num_of_vectors, &mean);
+	CMath::cov(data_matrix, num_of_features, num_of_vectors, mean, &cov);
+
+	init(mean, cov, dim);
+	
 	return true;
 }
 
