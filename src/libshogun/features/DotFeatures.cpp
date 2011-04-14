@@ -383,8 +383,7 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 	delete[] w;
 }
 
-void CDotFeatures::get_mean_cov(float64_t** mean, int32_t* mean_length,
-									float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
+void CDotFeatures::get_mean(float64_t** mean, int32_t* mean_length)
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
@@ -392,26 +391,38 @@ void CDotFeatures::get_mean_cov(float64_t** mean, int32_t* mean_length,
 	ASSERT(dim>0);
 
 	*mean_length = dim;
-	*cov_rows = dim;
-	*cov_cols = dim;
-
 	*mean = new float64_t[dim];
-	*cov = new float64_t[dim*dim];
-
     memset(*mean, 0, sizeof(float64_t)*dim);
-    memset(*cov, 0, sizeof(float64_t)*dim*dim);
 
 	for (int i = 0; i < num; i++)
 		add_to_dense_vec(1, i, *mean, dim);
 	for (int j = 0; j < dim; j++)
 		(*mean)[j] /= num;
+}									
+
+void CDotFeatures::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
+{
+	int32_t num=get_num_vectors();
+	int32_t dim=get_dim_feature_space();
+	ASSERT(num>0);
+	ASSERT(dim>0);
+
+	*cov_rows = dim;
+	*cov_cols = dim;
+
+	*cov = new float64_t[dim*dim];
+    memset(*cov, 0, sizeof(float64_t)*dim*dim);
+
+	float64_t* mean;
+	int32_t mean_length;
+	get_mean(&mean, &mean_length);
 
 	float64_t* feature_vector;
 	int32_t length;
 	for (int i = 0; i < num; i++)
 	{
 		get_feature_vector(&feature_vector, &length, i);
-		CMath::add<float64_t>(feature_vector, 1, feature_vector, -1, *mean, length);
+		CMath::add<float64_t>(feature_vector, 1, feature_vector, -1, mean, length);
 		for (int m = 0; m < length; m++)
 		{
 			for (int n = 0; n <= m ; n++)
@@ -435,4 +446,5 @@ void CDotFeatures::get_mean_cov(float64_t** mean, int32_t* mean_length,
 			(*cov)[m*dim+n] = (*cov)[n*dim+m];
 		}
 	}
+	delete[] mean;
 }

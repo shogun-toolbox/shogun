@@ -146,9 +146,11 @@ class CGaussian : public CDistribution
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Gaussian"; }
+
 	private:
 		/** Initialize parameters for serialization */
 		void register_params();
+
 	protected:
 		/** constant part */
 		float64_t m_constant;

@@ -76,7 +76,8 @@ bool CGaussian::train(CFeatures* data)
 	delete[] m_mean;
 	delete[] m_cov;
 
-	dotdata->get_mean_cov(&m_mean, &m_mean_length, &m_cov, &m_cov_rows, &m_cov_cols);
+	dotdata->get_mean(&m_mean, &m_mean_length);
+	dotdata->get_cov(&m_cov, &m_cov_rows, &m_cov_cols);
 
 	init();
 

@@ -206,16 +206,19 @@ class CDotFeatures : public CFeatures
 		 */
 		virtual void free_feature_iterator(void* iterator)=0;
 
-		/** get mean and covariance
+		/** get mean
 		 *
 		 * @param mean returned
 		 * @param mean length returned
+		 */
+		virtual void get_mean(float64_t** mean, int32_t* mean_length);
+
+		/** get covariance
 		 * @param covariance returned
 		 * @param covariance rows returned
 		 * @param covariance cols returned
 		 */
-		virtual void get_mean_cov(float64_t** mean, int32_t* mean_length,
-									float64_t** cov, int32_t* cov_rows, int32_t* cov_cols);
+		virtual void get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols);
 
 	protected:
 		/** display progress output
