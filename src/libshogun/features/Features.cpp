@@ -284,7 +284,7 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 	return result;
 }
 
-void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
+void CFeatures::set_feature_subset(int32_t subset_len, int32_t* subset_idx)
 {
 	if (m_subset_idx)
 		delete[] m_subset_idx;
@@ -293,7 +293,7 @@ void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
 	m_subset_len=subset_len;
 }
 
-void CFeatures::set_feature_subset(int32_t subset_len, int32_t* subset_idx)
+void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
 {
 	ASSERT(subset_idx);
 
