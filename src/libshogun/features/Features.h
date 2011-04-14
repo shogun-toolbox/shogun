@@ -251,7 +251,8 @@ class CFeatures : public CSGObject
 		 * @param m_subset_idx subset indices matrix (returned)
 		 * @param m_subset_len number ofsubset indices (returned)
 		 */
-		void get_feature_subset(int32_t** subset_idx, int32_t* subset_len){
+		void get_feature_subset(int32_t** subset_idx, int32_t* subset_len)
+		{
 			*subset_idx=m_subset_idx;
 			*subset_len=m_subset_len;
 		}
