@@ -1302,29 +1302,29 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			// header shogun v0
 			char id[4];
-			fread(&id[0], sizeof(char), 1, file);
+			ASSERT(fread(&id[0], sizeof(char), 1, file)==sizeof(char));
 			ASSERT(id[0]=='S');
-			fread(&id[1], sizeof(char), 1, file);
+			ASSERT(fread(&id[1], sizeof(char), 1, file)==sizeof(char));
 			ASSERT(id[1]=='G');
-			fread(&id[2], sizeof(char), 1, file);
+			ASSERT(fread(&id[2], sizeof(char), 1, file)==sizeof(char));
 			ASSERT(id[2]=='V');
-			fread(&id[3], sizeof(char), 1, file);
+			ASSERT(fread(&id[3], sizeof(char), 1, file)==sizeof(char));
 			ASSERT(id[3]=='0');
 
 			//compression type
 			uint8_t c;
-			fread(&c, sizeof(uint8_t), 1, file);
+			ASSERT(fread(&c, sizeof(uint8_t), 1, file)==sizeof(uint8_t));
 			CCompressor* compressor= new CCompressor((E_COMPRESSION_TYPE) c);
 			//alphabet
 			uint8_t a;
 			delete alphabet;
-			fread(&a, sizeof(uint8_t), 1, file);
+			ASSERT(fread(&a, sizeof(uint8_t), 1, file)==sizeof(uint8_t));
 			alphabet=new CAlphabet((EAlphabet) a);
 			// number of vectors
-			fread(&num_vectors, sizeof(int32_t), 1, file);
+			ASSERT(fread(&num_vectors, sizeof(int32_t), 1, file)==sizeof(int32_t));
 			ASSERT(num_vectors>0);
 			// maximum string length
-			fread(&max_string_length, sizeof(int32_t), 1, file);
+			ASSERT(fread(&max_string_length, sizeof(int32_t), 1, file)==sizeof(int32_t));
 			ASSERT(max_string_length>0);
 
 			features=new TString<ST>[num_vectors];
@@ -1334,10 +1334,10 @@ template <class ST> class CStringFeatures : public CFeatures
 			{
 				// vector len compressed
 				int32_t len_compressed;
-				fread(&len_compressed, sizeof(int32_t), 1, file);
+				ASSERT(fread(&len_compressed, sizeof(int32_t), 1, file)==sizeof(int32_t));
 				// vector len uncompressed
 				int32_t len_uncompressed;
-				fread(&len_uncompressed, sizeof(int32_t), 1, file);
+				ASSERT(fread(&len_uncompressed, sizeof(int32_t), 1, file)==sizeof(int32_t));
 
 				// vector raw data
 				if (decompress)
@@ -1345,7 +1345,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					features[i].string=new ST[len_uncompressed];
 					features[i].length=len_uncompressed;
 					uint8_t* compressed=new uint8_t[len_compressed];
-					fread(compressed, len_compressed, 1, file);
+					ASSERT(fread(compressed, len_compressed, 1, file)==len_compressed);
 					uint64_t uncompressed_size=len_uncompressed;
 					uncompressed_size*=sizeof(ST);
 					compressor->decompress(compressed, len_compressed,
@@ -1363,7 +1363,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					feat32ptr[0]=(int32_t) len_compressed;
 					feat32ptr[1]=(int32_t) len_uncompressed;
 					uint8_t* compressed=(uint8_t*) (&features[i].string[offs]);
-					fread(compressed, len_compressed, 1, file);
+					ASSERT(fread(compressed, len_compressed, 1, file)==len_compressed);
 				}
 			}
 
