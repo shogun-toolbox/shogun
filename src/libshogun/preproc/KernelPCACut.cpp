@@ -27,13 +27,13 @@
 using namespace shogun;
 
 CKernelPCACut::CKernelPCACut()
-: CSimplePreProc<float64_t>("KernelPCACut", P_KPCA), T(NULL), rows_T(0),
+: CSimplePreProc<float64_t>("KernelPCACut", P_KPCACUT), T(NULL), rows_T(0),
 	initialized(false), thresh(1e-6), kernel(NULL)
 {
 }
 
 CKernelPCACut::CKernelPCACut(CKernel* k, float64_t thresh_)
-: CSimplePreProc<float64_t>("KernelPCACut", P_KPCA), T(NULL), rows_T(0),
+: CSimplePreProc<float64_t>("KernelPCACut", P_KPCACUT), T(NULL), rows_T(0),
 	initialized(false), thresh(thresh_)
 {
 	SG_REF(k);
