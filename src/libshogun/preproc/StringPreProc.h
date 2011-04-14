@@ -35,7 +35,7 @@ template <class ST> class CStringPreProc : public CPreProc
 		 * @param name string preprocessor's name
 		 * @param id string preprocessor's id
 		 */
-		CStringPreProc(const char *name, const char* id) : CPreProc(name, id) {}
+		CStringPreProc(const char *name, EPreProcType type) : CPreProc(name, type) {}
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
