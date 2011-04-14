@@ -14,13 +14,11 @@
 
 using namespace shogun;
 
-CPreProc::CPreProc(const char* name, EPreProcType type)
-: CSGObject(), preproc_name(name), preproc_type(type)
+CPreProc::CPreProc()
+: CSGObject()
 {
-	SG_INFO("Creating PreProc \"%s\".\n", preproc_name);
 }
 
 CPreProc::~CPreProc()
 {
-	SG_INFO("Deleting PreProc \"%s\".\n", preproc_name);
 }

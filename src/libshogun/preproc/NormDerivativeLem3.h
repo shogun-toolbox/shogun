@@ -25,6 +25,8 @@ class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
 	public:
 		/** default constructor */
 		CNormDerivativeLem3();
+
+		/** destructor */
 		virtual ~CNormDerivativeLem3();
 
 		/// initialize preprocessor from features
@@ -44,6 +46,12 @@ class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
 		/// apply preproc on single feature vector
 		/// result in feature matrix
 		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t& len);
+
+		/** @return object name */
+		virtual inline const char* get_name() { return "NormDerivativeLem3"; }
+
+		/// return a type of preprocessor
+		virtual inline EPreProcType get_type() const { return P_NORMDERIVATIVELEM3; }
 };
 }
 #endif

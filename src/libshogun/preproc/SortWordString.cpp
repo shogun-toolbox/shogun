@@ -16,7 +16,7 @@
 using namespace shogun;
 
 CSortWordString::CSortWordString()
-: CStringPreProc<uint16_t>("SortWordString", P_SORTWORDSTRING)
+: CStringPreProc<uint16_t>()
 {
 }
 

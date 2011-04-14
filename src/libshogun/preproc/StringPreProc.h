@@ -35,7 +35,7 @@ template <class ST> class CStringPreProc : public CPreProc
 		 * @param name string preprocessor's name
 		 * @param id string preprocessor's id
 		 */
-		CStringPreProc(const char *name, EPreProcType type) : CPreProc(name, type) {}
+		CStringPreProc() : CPreProc() {}
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
@@ -49,6 +49,13 @@ template <class ST> class CStringPreProc : public CPreProc
 		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
 		/// return feature type
 		inline virtual EFeatureType get_feature_type();
+
+		/// return the name of the preprocessor
+		virtual inline const char* get_name() const { return "UNKNOWN"; }
+
+		/// return a type of preprocessor
+		virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
+
 };
 
 template<> inline EFeatureType CStringPreProc<uint64_t>::get_feature_type()

@@ -17,7 +17,7 @@
 using namespace shogun;
 
 CSortUlongString::CSortUlongString()
-: CStringPreProc<uint64_t>("SortUlongString", P_SORTULONGSTRING)
+: CStringPreProc<uint64_t>()
 {
 }
 

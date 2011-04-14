@@ -30,6 +30,8 @@ class CSortUlongString : public CStringPreProc<uint64_t>
 public:
 	/** default constructor */
 	CSortUlongString();
+
+	/** destructor */
 	virtual ~CSortUlongString();
 
 	/// initialize preprocessor from features
@@ -51,7 +53,10 @@ public:
 	virtual uint64_t* apply_to_string(uint64_t* f, int32_t &len);
 
 	/** @return object name */
-	inline virtual const char* get_name() { return "SortUlongString"; }
+	virtual inline const char* get_name() { return "SortUlongString"; }
+
+	/// return a type of preprocessor
+	virtual inline EPreProcType get_type() const { return P_SORTULONGSTRING; }
 };
 }
 #endif

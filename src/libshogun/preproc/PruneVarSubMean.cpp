@@ -19,7 +19,7 @@
 using namespace shogun;
 
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
-: CSimplePreProc<float64_t>("PruneVarSubMean",P_PRUNEVARSUBMEAN), idx(NULL), mean(NULL),
+: CSimplePreProc<float64_t>(), idx(NULL), mean(NULL),
 	std(NULL), num_idx(0), divide_by_std(divide), initialized(false)
 {
 }

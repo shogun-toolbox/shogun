@@ -42,7 +42,7 @@ enum EPreProcType
 	P_DECOMPRESSULONGSTRING=110,
 	P_RANDOMFOURIERGAUSS=120,
 	P_PCACUT=130,
-	P_KPCACUT=140,
+	P_KERNELPCACUT=140,
 	P_NORMDERIVATIVELEM3=150
 };
 
@@ -70,7 +70,7 @@ public:
 	 * @param name preprocessor's name
 	 * @param id preprocessor's id
 	 */
-	CPreProc(const char* name, EPreProcType type);
+	CPreProc();
 
 	/** destructor
 	 *
@@ -93,17 +93,11 @@ public:
 	virtual EFeatureClass get_feature_class()=0;
 
 	/// return the name of the preprocessor
-	virtual const char* get_name() const { return preproc_name; }
+	virtual inline const char* get_name() const { return "UNKNOWN"; }
 	
 	/// return a type of preprocessor
-	EPreProcType get_type() const { return preproc_type; }
+	virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
 
- protected:
- 	/** preprocessor name */
-	const char* preproc_name;
-
-	/** preprocessor id */
-	EPreProcType preproc_type;
 };
 }
 #endif

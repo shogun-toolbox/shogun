@@ -38,7 +38,7 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 	public:
 		/** default constructor  */
 		CDecompressString(void)
-			: CStringPreProc<ST>("DecompressString", P_DECOMPRESSSTRING)
+			: CStringPreProc<ST>()
 		{
 			compressor=NULL;
 		}
@@ -46,7 +46,7 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 		/** constructor
 		 */
 		CDecompressString(E_COMPRESSION_TYPE ct)
-			: CStringPreProc<ST>("DecompressString", P_DECOMPRESSSTRING)
+			: CStringPreProc<ST>()
 		{
 			compressor=new CCompressor(ct);
 		}
@@ -129,6 +129,12 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 			ASSERT(uncompressed_size==((uint64_t) len)*sizeof(ST));
 			return vec;
 		}
+
+		/** @return object name */
+		virtual inline const char* get_name() { return "DecompressString"; }
+
+		/// return a type of preprocessor TODO: template specification of get_type
+		virtual inline EPreProcType get_type() const { return P_DECOMPRESSSTRING; }
 
 	protected:
 		/** compressor used to decompress strings */
