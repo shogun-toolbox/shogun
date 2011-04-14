@@ -366,7 +366,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** set string for selected example num, does not work if subset is set
 		 *
-		 * @param src destination where vector will be stored
+		 * @param src destination where vector will be copied from
 		 * @param len number of features in vector
 		 * @param num index of the string
 		 */
