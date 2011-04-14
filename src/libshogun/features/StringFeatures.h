@@ -1117,7 +1117,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			return false;
 		}
 
-		/** append features
+		/** append features, removes subset beforehand.
+		 * If the given string features have a subset, only this will be copied
 		 *
 		 * @param sf features to append
 		 * @return if setting was successful
@@ -1125,16 +1126,20 @@ template <class ST> class CStringFeatures : public CFeatures
 		bool append_features(CStringFeatures<ST>* sf)
 		{
 			ASSERT(sf);
-			TString<ST>* new_features=new TString<ST>[sf->num_vectors];
 
-			for (int32_t i=0; i<sf->num_vectors; i++)
+			remove_feature_subset();
+
+			TString<ST>* new_features=new TString<ST>[sf->get_num_vectors()];
+
+			for (int32_t i=0; i<sf->get_num_vectors(); i++)
 			{
-				int32_t length=sf->features[i].length;
+				int32_t real_i = sf->subset_idx_conversion(i);
+				int32_t length=sf->features[real_i].length;
 				new_features[i].string=new ST[length];
-				memcpy(new_features[i].string, sf->features[i].string, length);
+				memcpy(new_features[i].string, sf->features[real_i].string, length);
 				new_features[i].length=length;
 			}
-			return append_features(new_features, sf->num_vectors,
+			return append_features(new_features, sf->get_num_vectors(),
 					sf->max_string_length);
 		}
 
@@ -1608,7 +1613,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				this->order=p_order;
 				cleanup();
 
-				num_vectors=sf->num_vectors;
+				num_vectors=sf->get_num_vectors();
 				ASSERT(num_vectors>0);
 				max_string_length=sf->get_max_vector_length()-start;
 				features=new TString<ST>[num_vectors];
