@@ -43,7 +43,8 @@ class CGaussian : public CDistribution
 
 		/** get model parameter (logarithmic)
 		 *
-		 * @return model parameter (logarithmic)
+		 * @return model parameter (logarithmic) if num_param < m_dim returns
+		 * an element from the mean, else return an element from the covariance
 		 */
 		virtual float64_t get_log_model_parameter(int32_t num_param);
 
@@ -64,6 +65,13 @@ class CGaussian : public CDistribution
 		 * @return log likelihood for example
 		 */
 		virtual float64_t get_log_likelihood_example(int32_t num_example);
+
+		/** compute PDF
+		 *
+		 * @param point
+		 * @return computed PDF
+		 */
+		virtual float64_t compute_PDF(float64_t* point, int32_t point_len);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Gaussian"; }

@@ -47,6 +47,7 @@ CGaussian::~CGaussian()
 
 bool CGaussian::train(CFeatures* data)
 {
+	
 	return true;
 }
 
@@ -57,7 +58,10 @@ int32_t CGaussian::get_num_model_parameters()
 
 float64_t CGaussian::get_log_model_parameter(int32_t num_param)
 {
-	return 0;
+	if (num_param<m_dim)
+		return CMath::log(m_mean[num_param]);
+	else
+		return CMath::log(m_cov[num_param-m_dim]);
 }
 
 float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
@@ -67,5 +71,23 @@ float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 
 float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 {
-	return 0;
+	float64_t* point;
+	int32_t point_len;
+	features->get_feature_vector(&point, &point_len, num_example);
+	return CMath::log(compute_PDF(point, point_len));
+}
+
+float64_t CGaussian::compute_PDF(float64_t* point, int32_t point_len)
+{
+	ASSERT(point_len == m_dim);
+	float64_t* difference = new float64_t[m_dim];
+	memcpy(difference, point, sizeof(float64_t)*m_dim);
+	float64_t* result = new float64_t[m_dim];
+
+	for (int i = 0; i < m_dim; i++)
+		difference[i] -= m_mean[i];
+
+	cblas_dsymv(CblasRowMajor, CblasLower, m_dim, -1.0/2.0, m_cov_inverse, m_dim,
+				difference, 1, 0, result, 1);
+	return m_constant * exp(cblas_ddot(m_dim, difference, 1, result, 1));
 }
