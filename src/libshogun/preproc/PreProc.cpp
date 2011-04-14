@@ -14,8 +14,8 @@
 
 using namespace shogun;
 
-CPreProc::CPreProc(const char* name, const char* id)
-: CSGObject(), preproc_name(name), preproc_id(id)
+CPreProc::CPreProc(const char* name, EPreProcType type)
+: CSGObject(), preproc_name(name), preproc_type(type)
 {
 	SG_INFO("Creating PreProc \"%s\".\n", preproc_name);
 }
