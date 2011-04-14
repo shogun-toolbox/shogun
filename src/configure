@@ -144,7 +144,8 @@ CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
 COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops"
-COMP_NOOPTS="-Wall -O2"
+COMP_DEFAULT_OPTS="-Wall -O2"
+COMP_NO_OPTS="-Wall -O0"
 COMPFLAGS_C=-fPIC
 COMPFLAGS_CPP=-fPIC
 SEDMI='sed -i'
@@ -407,17 +408,18 @@ EOF
 		die "no C compiler detected - cannot do anything"
 	fi
 
+	if test "$_optimization" = no; then
+		_cpudetection=no
+		COMP_DEFAULT_OPTS="$COMP_NO_OPTS";
+	fi
+
 	#cygwins gcc is buggy - so disable -O9 optimizations
 	if cygwin || test "$_cpudetection" = no ; then
-		COMP_OPTS=$COMP_NOOPTS;
+		COMP_OPTS=$COMP_DEFAULT_OPTS;
 	fi
 
 	if test "$_debug" = yes ; then
 		COMP_OPTS="-g $COMP_OPTS";
-	fi
-	
-	if test "$_optimization" = no; then
-		COMP_OPTS="$COMP_NOOPTS";
 	fi
 
 	echocheck "C Compiler flags"
