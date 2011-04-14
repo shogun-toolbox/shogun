@@ -289,13 +289,13 @@ CFeatures* CSNPFeatures::duplicate() const
 void CSNPFeatures::get_histogram(float64_t** hist, int32_t* rows, int32_t* cols, bool normalize=true)
 {
 	int32_t nsym=3;
-	int64_t sz=int64_t(nsym)*string_length*sizeof(float64_t);
+	int64_t sz=int64_t(nsym)*string_length/2*sizeof(float64_t);
 	float64_t* h= (float64_t*) malloc(sz);
 	ASSERT(h);
 	memset(h, 0, sz);
 
-	float64_t* h_normalizer=new float64_t[string_length];
-	memset(h_normalizer, 0, string_length*sizeof(float64_t));
+	float64_t* h_normalizer=new float64_t[string_length/2];
+	memset(h_normalizer, 0, string_length/2*sizeof(float64_t));
 	int32_t num_str=get_num_vectors();
 	for (int32_t i=0; i<num_str; i++)
 	{
@@ -323,8 +323,8 @@ void CSNPFeatures::get_histogram(float64_t** hist, int32_t* rows, int32_t* cols,
 				}
 			}
 
-			h[int64_t(j)*nsym+dim]++;
-			h_normalizer[j]++;
+			h[int64_t(j/2)*nsym+dim]++;
+			h_normalizer[j/2]++;
 		}
 
 		strings->free_feature_vector(vec, i, free_vec);
@@ -332,7 +332,7 @@ void CSNPFeatures::get_histogram(float64_t** hist, int32_t* rows, int32_t* cols,
 
 	if (normalize)
 	{
-		for (int32_t i=0; i<string_length; i++)
+		for (int32_t i=0; i<string_length/2; i++)
 		{
 			for (int32_t j=0; j<nsym; j++)
 			{
@@ -345,5 +345,5 @@ void CSNPFeatures::get_histogram(float64_t** hist, int32_t* rows, int32_t* cols,
 
 	*hist=h;
 	*rows=nsym;
-	*cols=string_length;
+	*cols=string_length/2;
 }
