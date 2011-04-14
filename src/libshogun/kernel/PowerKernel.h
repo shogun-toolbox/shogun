@@ -82,6 +82,9 @@ public:
 
 	virtual ~CPowerKernel();
 
+private:
+	void init();
+
 protected:
   
   /// distance to be used
@@ -99,8 +102,6 @@ protected:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-private:
-	void init();
 };
 }
 
