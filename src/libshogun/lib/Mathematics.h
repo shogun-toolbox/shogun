@@ -476,7 +476,7 @@ class CMath : public CSGObject
 		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
 		static inline float32_t normal_random(float32_t mean, float32_t std_dev)
 		{
-			// sets up variables & makes sure rand_s.range == (0,1]
+			// sets up variables & makes sure rand_s.range == (0,1)
 			float32_t ret;
 			float32_t rand_u;
 			float32_t rand_v;
