@@ -47,7 +47,13 @@ CGaussian::~CGaussian()
 
 bool CGaussian::train(CFeatures* data)
 {
-	
+	// init features with data if necessary and assure type is correct
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+				SG_ERROR("Specified features are not of type CDotFeatures\n");		
+		set_data((CDotFeatures*) data);
+	}
 	return true;
 }
 
@@ -73,7 +79,7 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 {
 	float64_t* point;
 	int32_t point_len;
-	features->get_feature_vector(&point, &point_len, num_example);
+	m_data->get_feature_vector(&point, &point_len, num_example);
 	return CMath::log(compute_PDF(point, point_len));
 }
 

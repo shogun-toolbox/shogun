@@ -2,11 +2,13 @@
 #define _GAUSSIAN_H__
 
 #include "distributions/Distribution.h"
+#include "features/DotFeatures.h"
 #include "lib/lapack.h"
 #include "lib/Mathematics.h"
 
 namespace shogun
 {
+class CDotFeatures;
 /** @brief gaussian distribution interface.
  *
  * A takes as input a mean vector and covariance matrix.
@@ -73,6 +75,27 @@ class CGaussian : public CDistribution
 		 */
 		virtual float64_t compute_PDF(float64_t* point, int32_t point_len);
 
+		/** set data vectors
+		 *
+		 * @param f new data vectors
+		 */
+		virtual inline void set_data(CDotFeatures* f)
+		{
+			SG_UNREF(m_data);
+			SG_REF(f);
+			m_data=f;
+		}
+
+		/** get data vectors
+		 *
+		 * @return data vectors
+		 */
+		virtual inline CDotFeatures* get_data()
+		{
+			SG_REF(m_data);
+			return m_data;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Gaussian"; }
 	protected:
@@ -86,6 +109,8 @@ class CGaussian : public CDistribution
 		float64_t* m_mean;
 		/** dimensionality */
 		int32_t m_dim;
+		/** data features */
+		CDotFeatures* m_data;
 };
 }
 #endif
