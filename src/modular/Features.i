@@ -75,7 +75,7 @@
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* idx, int32_t idx_len)};
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* src, int32_t len)};
 %apply (uint32_t* IN_ARRAY1, int32_t DIM1) {(uint32_t* src, int32_t len)};
-%apply (int32_t DIM1, int32_t* IN_ARRAY1) {int32_t subset_len, int32_t* subset_idx};
+%apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* subset_idx, int32_t subset_len)};
 %apply (int64_t* IN_ARRAY1, int32_t DIM1) {(int64_t* src, int32_t len)};
 %apply (uint64_t* IN_ARRAY1, int32_t DIM1) {(uint64_t* src, int32_t len)};
 %apply (float32_t* IN_ARRAY1, int32_t DIM1) {(float32_t* src, int32_t len)};
