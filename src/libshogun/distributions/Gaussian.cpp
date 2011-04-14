@@ -1,4 +1,5 @@
 #include "distributions/Gaussian.h"
+#include "lib/Mathematics.h"
 
 using namespace shogun;
 
