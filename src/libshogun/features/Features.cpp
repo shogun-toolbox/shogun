@@ -284,13 +284,29 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 	return result;
 }
 
-void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
+void CFeatures::set_feature_subset(int32_t subset_len, int32_t* subset_idx)
 {
 	if (m_subset_idx)
 		delete[] m_subset_idx;
 
 	m_subset_idx=subset_idx;
 	m_subset_len=subset_len;
+}
+
+void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
+{
+	ASSERT(subset_idx);
+
+	delete[] m_subset_idx;
+	m_subset_idx = NULL;
+
+	int64_t length=sizeof(int32_t)*subset_len;
+
+	m_subset_idx=(int32_t*)malloc(length);
+	if (!m_subset_idx)
+		SG_ERROR("Allocating %ld bytes failes\n", length);
+
+	memcpy(m_subset_idx, subset_idx, length);
 }
 
 void CFeatures::remove_feature_subset()

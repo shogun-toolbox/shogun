@@ -366,7 +366,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** set string for selected example num, does not work if subset is set
 		 *
-		 * @param src destination where vector will be stored
+		 * @param src destination where vector will be copied from
 		 * @param len number of features in vector
 		 * @param num index of the string
 		 */
@@ -2061,7 +2061,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param subset_idx index matrix
 		 * @param subset_len number of subset indices
 		 */
-		void set_feature_subset(int32_t* subset_idx, int32_t subset_len)
+		virtual void set_feature_subset(int32_t* subset_idx, int32_t subset_len)
 		{
 			CFeatures::set_feature_subset(subset_idx, subset_len);
 			num_vectors = subset_len;
@@ -2111,7 +2111,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @ return array index of a subset index
 		 */
-		inline int32_t subset_idx_conversion(int32_t idx) { return m_subset_idx ? m_subset_idx[idx] : idx; }
+		virtual inline int32_t subset_idx_conversion(int32_t idx) { return m_subset_idx ? m_subset_idx[idx] : idx; }
 
 	private:
 		void init(void)

@@ -265,6 +265,15 @@ class CFeatures : public CSGObject
 		}
 
 		/** sets the subset indices matrix which is afterwards used for feature access
+		 * (no copy, matrix is used directly)
+		 *
+		 * @param m_subset_idx index matrix
+		 * @param m_subset_len number of subset indices
+		 */
+		virtual void set_feature_subset(int32_t subset_len, int32_t* subset_idx);
+
+		/** sets the subset indices matrix which is afterwards used for feature access
+		 * (a copy of the matrix is stored)
 		 *
 		 * @param m_subset_idx index matrix
 		 * @param m_subset_len number of subset indices
@@ -280,7 +289,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @ return array index of the provided subset index
 		 */
-		inline int32_t subset_idx_conversion(int32_t idx) { return idx; }
+		virtual inline int32_t subset_idx_conversion(int32_t idx) { return idx; }
 
 	private:
 		/** feature properties */
