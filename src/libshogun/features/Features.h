@@ -248,13 +248,20 @@ class CFeatures : public CSGObject
 
 		/** getter for the subset indices
 		 *
-		 * @param m_subset_idx subset indices matrix (returned)
-		 * @param m_subset_len number ofsubset indices (returned)
+		 * @param m_subset_idx (copy of) subset indices matrix (returned)
+		 * @param m_subset_len (copy of) number ofsubset indices (returned)
 		 */
-		void get_feature_subset(int32_t** subset_idx, int32_t* subset_len)
+		void get_feature_subset(int32_t** subset_idx, int32_t* subset_len);
+
+		/** getter for the subset indices
+		 *
+		 * @param m_subset_len reference to number of subset indices (returned)
+		 * @return subset indices array
+		 */
+		int32_t* get_feature_subset(int32_t& subset_len)
 		{
-			*subset_idx=m_subset_idx;
-			*subset_len=m_subset_len;
+			subset_len=m_subset_len;
+			return m_subset_idx;
 		}
 
 		/** sets the subset indices matrix which is afterwards used for feature access
@@ -268,11 +275,12 @@ class CFeatures : public CSGObject
 		/** returns the corresponding real index (in array) of a subset index
 		 * (if there is a subset)
 		 *
-		 * abstract base method
+		 * should/has to be be overwritten when subset support is
+		 * implemented in a subclass. for now, it just returns identity
 		 *
-		 * @ return array index of a subset index
+		 * @ return array index of the provided subset index
 		 */
-		//virtual inline int32_t subset_idx_conversion(int32_t idx)=0;
+		inline int32_t subset_idx_conversion(int32_t idx) { return idx; }
 
 	private:
 		/** feature properties */
@@ -291,7 +299,13 @@ class CFeatures : public CSGObject
 		bool* preprocessed;
 
 	protected:
+		/** (possibly) contains a matrix of indices that form a subset of the stored
+		 * features. If set, all vector access methods work on the specified subset.
+		 * If it is NULL, it is ignored.
+		 */
 		int32_t* m_subset_idx;
+
+		/** length of the subset */
 		int32_t m_subset_len;
 };
 }

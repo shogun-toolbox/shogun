@@ -302,3 +302,15 @@ void CFeatures::remove_feature_subset()
 		m_subset_len=0;
 	}
 }
+
+void CFeatures::get_feature_subset(int32_t** subset_idx, int32_t* subset_len)
+{
+	ASSERT(m_subset_idx);
+	int64_t length = sizeof(int32_t)*m_subset_len;
+
+	*subset_len=m_subset_len;
+	*subset_idx=(int32_t*)malloc(length);
+	if (!*subset_idx)
+		SG_ERROR("Allocating %ld bytes failes\n", length);
+	memcpy(*subset_idx, m_subset_idx, length);
+}
