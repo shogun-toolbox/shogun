@@ -38,7 +38,7 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 	public:
 		/** default constructor  */
 		CDecompressString(void)
-			: CStringPreProc<ST>("DecompressString", "DECS")
+			: CStringPreProc<ST>("DecompressString", P_DECOMPRESSSTRING)
 		{
 			compressor=NULL;
 		}
@@ -46,7 +46,7 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 		/** constructor
 		 */
 		CDecompressString(E_COMPRESSION_TYPE ct)
-			: CStringPreProc<ST>("DecompressString", "DECS")
+			: CStringPreProc<ST>("DecompressString", P_DECOMPRESSSTRING)
 		{
 			compressor=new CCompressor(ct);
 		}

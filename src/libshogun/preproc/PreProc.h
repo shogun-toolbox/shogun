@@ -19,9 +19,12 @@
 
 namespace shogun
 {
-	class CFeatures;
-	enum EFeatureType;
-	enum EFeatureClass;
+
+class CFeatures;
+
+enum EFeatureType;
+
+enum EFeatureClass;
 
 enum EPreProcType
 {
@@ -32,11 +35,15 @@ enum EPreProcType
 	P_SORTULONGSTRING=40,
 	P_SORTWORD=50,
 	P_PRUNEVARSUBMEAN=60,
-	P_DECOMPRESSCHARSTRING=70,
-	P_DECOMPRESSBYTESTRING=80,
-	P_DECOMPRESSWORDSTRING=90,
-	P_DECOMPRESSULONGSTRING=100,
-	P_RANDOMFOURIERGAUSS=110
+	P_DECOMPRESSSTRING=70,
+	P_DECOMPRESSCHARSTRING=80,
+	P_DECOMPRESSBYTESTRING=90,
+	P_DECOMPRESSWORDSTRING=100,
+	P_DECOMPRESSULONGSTRING=110,
+	P_RANDOMFOURIERGAUSS=120,
+	P_PCACUT=130,
+	P_KPCACUT=140,
+	P_NORMDERIVATIVELEM3=150
 };
 
 class CFeatures;
@@ -63,7 +70,11 @@ public:
 	 * @param name preprocessor's name
 	 * @param id preprocessor's id
 	 */
-	CPreProc(const char* name, const char* id);
+	CPreProc(const char* name, EPreProcType type);
+
+	/** destructor
+	 *
+	 */
 	virtual ~CPreProc();
 
 	/// initialize preprocessor from features
@@ -84,14 +95,15 @@ public:
 	/// return the name of the preprocessor
 	virtual const char* get_name() const { return preproc_name; }
 	
-	/// return a FOUR letter id of the preprocessor
-	const char * get_id() const { return preproc_id; }
+	/// return a type of preprocessor
+	EPreProcType get_type() const { return preproc_type; }
 
  protected:
  	/** preprocessor name */
 	const char* preproc_name;
+
 	/** preprocessor id */
-	const char* preproc_id;
+	EPreProcType preproc_type;
 };
 }
 #endif
