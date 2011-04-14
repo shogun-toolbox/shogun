@@ -1,5 +1,16 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011 Alesis Novik
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ */
+
 #include "distributions/Gaussian.h"
 #include "lib/Mathematics.h"
+#include "base/Parameter.h"
 
 using namespace shogun;
 
@@ -11,11 +22,13 @@ CGaussian::CGaussian() : CDistribution()
 	cov[0] = 1;
 	int32_t dim = 1;
 	init(mean, cov, dim);
+	init();
 }
 
 CGaussian::CGaussian(float64_t* mean, float64_t* cov, int32_t dim) : CDistribution()
 {
 	init(mean, cov, dim);
+	init();
 }
 
 void CGaussian::init(float64_t* mean, float64_t* cov, int32_t dim)
@@ -57,18 +70,11 @@ bool CGaussian::train(CFeatures* data)
 		set_data((CDotFeatures*) data);
 	}
 
-	float64_t* data_matrix;
-	int32_t num_of_features;
-	int32_t num_of_vectors;
-
-	m_data->get_feature_matrix(&data_matrix, &num_of_features, &num_of_vectors);
-
 	float64_t* mean;
 	float64_t* cov;
-	int32_t dim = num_of_features;
+	int32_t dim;
 
-	CMath::mean(data_matrix, num_of_features, num_of_vectors, &mean);
-	CMath::cov(data_matrix, num_of_features, num_of_vectors, mean, &cov);
+	m_data->get_mean_cov(&mean, &cov, &dim);
 
 	init(mean, cov, dim);
 	
@@ -114,4 +120,13 @@ float64_t CGaussian::compute_PDF(float64_t* point, int32_t point_len)
 	cblas_dsymv(CblasRowMajor, CblasLower, m_dim, -1.0/2.0, m_cov_inverse, m_dim,
 				difference, 1, 0, result, 1);
 	return m_constant * exp(cblas_ddot(m_dim, difference, 1, result, 1));
+}
+
+void CGaussian::init()
+{
+	m_parameters->add_matrix(&m_cov, &m_dim, &m_dim, "m_cov", "Covariance.");
+	m_parameters->add_matrix(&m_cov_inverse, &m_dim, &m_dim, "m_cov_inverse", "Covariance inverse.");
+	m_parameters->add_vector(&m_mean, &m_dim, "m_mean", "Mean.");
+	m_parameters->add(&m_dim, "m_dim", "Dimensionality.");
+	m_parameters->add(&m_constant, "m_constant", "Constant part.");
 }

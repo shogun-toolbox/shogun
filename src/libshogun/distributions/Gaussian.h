@@ -1,8 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011 Alesis Novik
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ */
+
 #ifndef _GAUSSIAN_H__
 #define _GAUSSIAN_H__
 
 #include "distributions/Distribution.h"
 #include "features/DotFeatures.h"
+#include "lib/common.h"
 #include "lib/lapack.h"
 #include "lib/Mathematics.h"
 
@@ -96,8 +107,69 @@ class CGaussian : public CDistribution
 			return m_data;
 		}
 
+		/** get mean
+		 *
+		 * @param copy of the mean
+		 */
+		virtual inline void get_mean(float64_t** mean)
+		{
+			*mean = new float64_t[m_dim];
+			memcpy(*mean, m_mean, sizeof(float64_t)*m_dim);
+		}
+
+		/** set mean
+		 *
+		 * @param new mean
+		 */
+		virtual inline void set_mean(float64_t* mean)
+		{
+			memcpy(m_mean, mean, sizeof(float64_t)*m_dim);
+		}
+
+		/** get cov
+		 *
+		 * @param copy of the cov
+		 */
+		virtual inline void get_cov(float64_t** cov)
+		{
+			*cov = new float64_t[m_dim*m_dim];
+			memcpy(*cov, m_cov, sizeof(float64_t)*m_dim*m_dim);
+		}
+
+		/** set cov
+		 *
+		 * @param new cov
+		 */
+		virtual inline void set_cov(float64_t* cov)
+		{			
+			memcpy(m_cov, cov, sizeof(float64_t)*m_dim*m_dim);
+			memcpy(m_cov_inverse, cov, sizeof(float64_t)*m_dim*m_dim);
+			int32_t result = clapack_dpotrf(CblasRowMajor, CblasLower, m_dim, m_cov_inverse, m_dim);
+			m_constant = 1;
+
+			for (int i = 0; i < m_dim; i++)
+				m_constant *= m_cov_inverse[i*m_dim+i];
+
+			m_constant = 1/m_constant;
+			m_constant *= pow(2*M_PI, (float64_t) -m_dim/2);
+
+			result = clapack_dpotri(CblasRowMajor, CblasLower, m_dim, m_cov_inverse, m_dim);
+		}
+
+		/** get dim
+		 *
+		 * @return dimension
+		 */
+		virtual inline int32_t get_dim()
+		{
+			return m_dim;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Gaussian"; }
+	private:
+		/** Initialize parameters for serialization */
+		void init();
 	protected:
 		/** constant part */
 		float64_t m_constant;
