@@ -477,7 +477,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param len number of position weights
 		 * @return if setting was successful
 		 */
-		bool set_position_weights(float64_t* pws, int32_t len=0);
+		bool set_position_weights(float64_t* pws, int32_t len);
 
 		/** initialize block weights
 		 *

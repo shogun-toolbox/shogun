@@ -85,20 +85,13 @@ public:
 	 */
 	inline virtual const float64_t get_coef() const { return coef; }
 
-        /** setter for degree parameter
-         *  @param value coefficient parameter of kernel
-         */
-        inline void set_coef(float64_t value) { this->coef = value; }
+	/** setter for degree parameter
+	 *  @param value coefficient parameter of kernel
+	 */
+	inline void set_coef(float64_t value) { this->coef = value; }
 
 	virtual ~CRationalQuadraticKernel();
 protected:
-
-	/// distance to be used
-	CDistance* distance;
-
-	/// coefficient parameter of kernel
-	float64_t coef;
-
 	/**
 	 * compute kernel for specific feature vectors
 	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
@@ -111,6 +104,13 @@ protected:
 private:
 	/**Initialize parameters for serialization*/
 	void init();
+
+protected:
+	/// distance to be used
+	CDistance* distance;
+
+	/// coefficient parameter of kernel
+	float64_t coef;
 };
 }
 

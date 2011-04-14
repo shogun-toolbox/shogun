@@ -22,13 +22,13 @@ void CTStudentKernel::init()
 
 CTStudentKernel::CTStudentKernel(): CKernel(0), distance(NULL), degree(1.0)
 {
-        init();
+	init();
 }
 
 CTStudentKernel::CTStudentKernel(int32_t cache, float64_t d, CDistance* dist)
 : CKernel(cache), distance(dist), degree(d)
 {
-        init();
+	init();
 	ASSERT(distance);
 	SG_REF(distance);
 }
@@ -36,7 +36,7 @@ CTStudentKernel::CTStudentKernel(int32_t cache, float64_t d, CDistance* dist)
 CTStudentKernel::CTStudentKernel(CFeatures *l, CFeatures *r, float64_t d, CDistance* dist)
 : CKernel(10), distance(dist), degree(d)
 {
-        init();
+	init();
 	ASSERT(distance);
 	SG_REF(distance);
 	init(l, r);

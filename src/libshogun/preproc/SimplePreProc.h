@@ -36,7 +36,7 @@ template <class ST> class CSimplePreProc : public CPreProc
 		 * @param name simple preprocessor's name
 		 * @param id simple preprocessor's id
 		 */
-		CSimplePreProc(const char *name, const char* id) : CPreProc(name,id) {}
+		CSimplePreProc(const char *name, EPreProcType type) : CPreProc(name,type) {}
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix

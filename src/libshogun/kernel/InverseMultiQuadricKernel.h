@@ -75,7 +75,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "InverseMultiQuadric"; }
+	inline virtual const char* get_name() const { return "InverseMultiQuadricKernel"; }
 
 	/** getter for coef parameter
 	 *  @return kernel parameter coefficient

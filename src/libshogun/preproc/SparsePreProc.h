@@ -38,7 +38,7 @@ public:
 	 * @param name sparse preprocessor's name
 	 * @param id sparse preprocessor's id
 	 */
-	CSparsePreProc(const char *name, const char* id) : CPreProc(name,id)
+	CSparsePreProc(const char *name, EPreProcType type) : CPreProc(name,type)
 	{
 	}
 

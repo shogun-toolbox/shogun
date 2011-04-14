@@ -44,20 +44,13 @@ class CExponentialKernel: public CDotKernel
 
 		/** constructor
 		 *
-		 * @param size cache size
-		 * @param width width
-		 */
-		CExponentialKernel(int32_t size, float64_t width);
-
-		/** constructor
-		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param width width
 		 * @param size cache size
 		 */
 		CExponentialKernel(CDotFeatures* l, CDotFeatures* r,
-			float64_t width, int32_t size=10);
+			float64_t width, CDistance* distance, int32_t size);
 
 		virtual ~CExponentialKernel();
 
@@ -88,8 +81,9 @@ class CExponentialKernel: public CDotKernel
 		 *
 		 * @return kernel width
 		 */
-		inline virtual float64_t get_width(void) const {
-			return width;
+		inline virtual float64_t get_width(void) const
+		{
+			return m_width;
 		}
 
 	protected:
@@ -118,9 +112,9 @@ class CExponentialKernel: public CDotKernel
 
 	protected:
 		/** distance **/
-		CDistance* distance;
+		CDistance* m_distance;
 		/** width */
-		float64_t width;
+		float64_t m_width;
 };
 }
 #endif /* _EXPONENTIALKERNEL_H__ */

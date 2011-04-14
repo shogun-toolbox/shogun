@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CSNPFeatures::CSNPFeatures(void)
+CSNPFeatures::CSNPFeatures()
 {
 	SG_UNSTABLE("CSNPFeatures::CSNPFeatures(void)", "\n");
 
@@ -284,4 +284,66 @@ void CSNPFeatures::free_feature_iterator(void* iterator)
 CFeatures* CSNPFeatures::duplicate() const
 {
 	return new CSNPFeatures(*this);
+}
+
+void CSNPFeatures::get_histogram(float64_t** hist, int32_t* rows, int32_t* cols, bool normalize=true)
+{
+	int32_t nsym=3;
+	int64_t sz=int64_t(nsym)*string_length/2*sizeof(float64_t);
+	float64_t* h= (float64_t*) malloc(sz);
+	ASSERT(h);
+	memset(h, 0, sz);
+
+	float64_t* h_normalizer=new float64_t[string_length/2];
+	memset(h_normalizer, 0, string_length/2*sizeof(float64_t));
+	int32_t num_str=get_num_vectors();
+	for (int32_t i=0; i<num_str; i++)
+	{
+		int32_t len;
+		bool free_vec;
+		uint8_t* vec = strings->get_feature_vector(i, len, free_vec);
+
+		for (int32_t j=0; j<len; j+=2)
+		{
+			int32_t dim=0;
+
+			char a1=vec[j];
+			char a2=vec[j+1];
+
+			if (a1==a2 && a1!='0' && a2!='0')
+			{
+				if (a1==m_str_min[j])
+					dim=1;
+				else if (a1==m_str_maj[j])
+					dim=2;
+				else
+				{
+					SG_ERROR("The impossible happened j=%d a1=%c a2=%c min=%c maj=%c\n",
+							j, a1,a2, m_str_min[j], m_str_maj[j]);
+				}
+			}
+
+			h[int64_t(j/2)*nsym+dim]++;
+			h_normalizer[j/2]++;
+		}
+
+		strings->free_feature_vector(vec, i, free_vec);
+	}
+
+	if (normalize)
+	{
+		for (int32_t i=0; i<string_length/2; i++)
+		{
+			for (int32_t j=0; j<nsym; j++)
+			{
+				if (h_normalizer && h_normalizer[i])
+					h[int64_t(i)*nsym+j]/=h_normalizer[i];
+			}
+		}
+	}
+	delete[] h_normalizer;
+
+	*hist=h;
+	*rows=nsym;
+	*cols=string_length/2;
 }

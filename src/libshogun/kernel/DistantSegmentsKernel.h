@@ -14,8 +14,6 @@
 
 #include "kernel/StringKernel.h"
 
-class string;
-
 namespace shogun
 {
 
@@ -98,14 +96,6 @@ private:
 	/** initializes kernel parameters and registers them */
 	void init();
 
-protected:
-	/** delta parameter of DS-kernel */
-	int32_t m_delta;
-
-	/** theta parameter of DS-kernel */
-	int32_t m_theta;
-
-private:
 	/**
 	 * helper function taken from
 	 * http://www.retrovirology.com/content/5/1/110/
@@ -127,6 +117,14 @@ private:
 	 */
 	int32_t compute(char* s, int32_t sLength, char* b, int32_t bLength,
 			int32_t delta_m, int32_t theta_m);
+
+protected:
+	/** delta parameter of DS-kernel */
+	int32_t m_delta;
+
+	/** theta parameter of DS-kernel */
+	int32_t m_theta;
+
 
 };
 
