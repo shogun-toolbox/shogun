@@ -22,11 +22,11 @@ namespace shogun
 {
 
 class CDistance;
-/**
-* InverseMultiQuadricKernel;
-*f[
+/** @brief InverseMultiQuadricKernel
+* 
+* \f[
 *             K(x,x') = 1/(\sqrt{\| x - x' \|^2 +c^2})
-*\f]
+* \f]
 */
 
 class CInverseMultiQuadricKernel: public CKernel
