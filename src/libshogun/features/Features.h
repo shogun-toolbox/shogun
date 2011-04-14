@@ -152,14 +152,20 @@ class CFeatures : public CSGObject
 		 */
 		inline int32_t get_cache_size() { return cache_size; };
 
-		/** get number of examples/vectors
+		/** get number of examples/vectors, possibly corresponding to the current subset
 		 *
 		 * abstract base method
 		 *
-		 * @return number of examples/vectors
+		 * @return number of examples/vectors (possibly of subset, if implemented)
 		 */
 		virtual int32_t get_num_vectors()=0;
 
+		/** get number of ALL examples/vectors (no subset here)
+		 *
+		 * abstract base method
+		 *
+		 * @ return number of examples/vectors (ALL, nosubset)
+		 */
 		//virtual int32_t get_num_vectors_all()=0;
 
 		/** in case there is a feature matrix allow for reshaping
@@ -237,21 +243,35 @@ class CFeatures : public CSGObject
 			properties &= (properties | p) ^ p;
 		}
 
-		/** @return subset indices matrix */
-		inline virtual int32_t* get_feature_subset() { return subset_inds; }
+		/** removes (and deletes) the current subset indices matrix */
+		virtual void remove_feature_subset();
 
-		/** @return number of subset indices */
-		inline virtual int32_t get_feature_subset_length() { return num_subset_inds; }
+		/** getter for the subset indices
+		 *
+		 * @param m_subset_idx subset indices matrix (returned)
+		 * @param m_subset_len number ofsubset indices (returned)
+		 */
+		void get_feature_subset(int32_t** subset_idx, int32_t* subset_len){
+			*subset_idx=m_subset_idx;
+			*subset_len=m_subset_len;
+		}
 
 		/** sets the subset indices matrix which is afterwards used for feature access
 		 *
-		 * @param inds index matrix
-		 * @param num_inds number of subset indices
+		 * @param m_subset_idx index matrix
+		 * @param m_subset_len number of subset indices
 		 */
-		virtual void set_feature_subset(int32_t* inds, int32_t num_inds);
+		virtual void set_feature_subset(int32_t* subset_idx, int32_t subset_len);
 
-		/** resets the current subset indices matrix */
-		inline void reset_feature_subset() { subset_inds=NULL; num_subset_inds=0; }
+	protected:
+		/** returns the corresponding real index (in array) of a subset index
+		 * (if there is a subset)
+		 *
+		 * abstract base method
+		 *
+		 * @ return array index of a subset index
+		 */
+		//virtual inline int32_t subset_idx_conversion(int32_t idx)=0;
 
 	private:
 		/** feature properties */
@@ -270,8 +290,8 @@ class CFeatures : public CSGObject
 		bool* preprocessed;
 
 	protected:
-		int32_t* subset_inds;
-		int32_t num_subset_inds;
+		int32_t* m_subset_idx;
+		int32_t m_subset_len;
 };
 }
 #endif
