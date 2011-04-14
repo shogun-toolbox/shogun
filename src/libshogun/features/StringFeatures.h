@@ -1302,29 +1302,37 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			// header shogun v0
 			char id[4];
-			ASSERT(fread(&id[0], sizeof(char), 1, file)==sizeof(char));
+			if(fread(&id[0], sizeof(char), 1, file)!=sizeof(char))
+				SG_ERROR("failed to read header");
 			ASSERT(id[0]=='S');
-			ASSERT(fread(&id[1], sizeof(char), 1, file)==sizeof(char));
+			if(fread(&id[1], sizeof(char), 1, file)!=sizeof(char))
+				SG_ERROR("failed to read header");
 			ASSERT(id[1]=='G');
-			ASSERT(fread(&id[2], sizeof(char), 1, file)==sizeof(char));
+			if(fread(&id[2], sizeof(char), 1, file)!=sizeof(char))
+				SG_ERROR("failed to read header");
 			ASSERT(id[2]=='V');
-			ASSERT(fread(&id[3], sizeof(char), 1, file)==sizeof(char));
+			if(fread(&id[3], sizeof(char), 1, file)!=sizeof(char))
+				SG_ERROR("failed to read header");
 			ASSERT(id[3]=='0');
 
 			//compression type
 			uint8_t c;
-			ASSERT(fread(&c, sizeof(uint8_t), 1, file)==sizeof(uint8_t));
+			if(fread(&c, sizeof(uint8_t), 1, file)!=sizeof(uint8_t))
+				SG_ERROR("failed to read compression type");
 			CCompressor* compressor= new CCompressor((E_COMPRESSION_TYPE) c);
 			//alphabet
 			uint8_t a;
 			delete alphabet;
-			ASSERT(fread(&a, sizeof(uint8_t), 1, file)==sizeof(uint8_t));
+			if(fread(&a, sizeof(uint8_t), 1, file)!=sizeof(uint8_t))
+				SG_ERROR("failed to read compression alphabet");
 			alphabet=new CAlphabet((EAlphabet) a);
 			// number of vectors
-			ASSERT(fread(&num_vectors, sizeof(int32_t), 1, file)==sizeof(int32_t));
+			if(fread(&num_vectors, sizeof(int32_t), 1, file)!=sizeof(int32_t))
+				SG_ERROR("failed to read compression number of vectors");
 			ASSERT(num_vectors>0);
 			// maximum string length
-			ASSERT(fread(&max_string_length, sizeof(int32_t), 1, file)==sizeof(int32_t));
+			if(fread(&max_string_length, sizeof(int32_t), 1, file)!=sizeof(int32_t))
+				SG_ERROR("failed to read maximum string length");
 			ASSERT(max_string_length>0);
 
 			features=new TString<ST>[num_vectors];
@@ -1334,10 +1342,12 @@ template <class ST> class CStringFeatures : public CFeatures
 			{
 				// vector len compressed
 				int32_t len_compressed;
-				ASSERT(fread(&len_compressed, sizeof(int32_t), 1, file)==sizeof(int32_t));
+				if(fread(&len_compressed, sizeof(int32_t), 1, file)!=sizeof(int32_t))
+					SG_ERROR("failed to read vector length compressed");
 				// vector len uncompressed
 				int32_t len_uncompressed;
-				ASSERT(fread(&len_uncompressed, sizeof(int32_t), 1, file)==sizeof(int32_t));
+				if(fread(&len_uncompressed, sizeof(int32_t), 1, file)!=sizeof(int32_t))
+					SG_ERROR("failed to read vector length uncompressed");
 
 				// vector raw data
 				if (decompress)
@@ -1345,7 +1355,8 @@ template <class ST> class CStringFeatures : public CFeatures
 					features[i].string=new ST[len_uncompressed];
 					features[i].length=len_uncompressed;
 					uint8_t* compressed=new uint8_t[len_compressed];
-					ASSERT(fread(compressed, len_compressed, 1, file)==len_compressed);
+					if(fread(compressed, len_compressed, 1, file)!=len_compressed)
+						SG_ERROR("failed to read compressed data");
 					uint64_t uncompressed_size=len_uncompressed;
 					uncompressed_size*=sizeof(ST);
 					compressor->decompress(compressed, len_compressed,
@@ -1363,7 +1374,8 @@ template <class ST> class CStringFeatures : public CFeatures
 					feat32ptr[0]=(int32_t) len_compressed;
 					feat32ptr[1]=(int32_t) len_uncompressed;
 					uint8_t* compressed=(uint8_t*) (&features[i].string[offs]);
-					ASSERT(fread(compressed, len_compressed, 1, file)==len_compressed);
+					if(fread(compressed, len_compressed, 1, file)!=len_compressed)
+						SG_ERROR("failed to read uncompressed data");
 				}
 			}
 
