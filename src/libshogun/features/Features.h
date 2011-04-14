@@ -280,7 +280,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @ return array index of the provided subset index
 		 */
-		inline int32_t subset_idx_conversion(int32_t idx) { return idx; }
+		virtual inline int32_t subset_idx_conversion(int32_t idx) { return idx; }
 
 	private:
 		/** feature properties */
