@@ -14,47 +14,49 @@
 
 using namespace shogun;
 
-CGaussian::CGaussian() : CDistribution()
+CGaussian::CGaussian() : CDistribution(), m_cov(NULL), m_mean(NULL)
 {
-	float64_t* mean = new float64_t[1];
-	float64_t* cov = new float64_t[1];
-	mean[0] = 0;
-	cov[0] = 1;
-	int32_t dim = 1;
-	init(mean, cov, dim);
-	init();
 }
 
-CGaussian::CGaussian(float64_t* mean, float64_t* cov, int32_t dim) : CDistribution()
+CGaussian::CGaussian(float64_t* mean, int32_t mean_length,
+					float64_t* cov, int32_t cov_rows, int32_t cov_cols) : CDistribution()
 {
-	init(mean, cov, dim);
+	ASSERT(mean_length == cov_rows);
+	ASSERT(cov_rows == cov_cols);
+	m_mean = new float64_t[mean_length];
+	memcpy(m_mean, mean, sizeof(float64_t)*mean_length);
+	m_cov = new float64_t[cov_rows*cov_cols];
+	memcpy(m_cov, cov, sizeof(float64_t)*cov_rows*cov_cols);
+	m_mean_length = mean_length;
+	m_cov_rows = cov_rows;
+	m_cov_cols = cov_cols;
 	init();
+	register_params();
 }
 
-void CGaussian::init(float64_t* mean, float64_t* cov, int32_t dim)
+void CGaussian::init()
 {
-	m_mean = new float64_t[dim];
-	memcpy(m_mean, mean, sizeof(float64_t)*dim);
-	m_cov = new float64_t[dim*dim];
-	memcpy(m_cov, cov, sizeof(float64_t)*dim*dim);
-	m_cov_inverse = new float64_t[dim*dim];
-	memcpy(m_cov_inverse, cov, sizeof(float64_t)*dim*dim);
-	int32_t result = clapack_dpotrf(CblasRowMajor, CblasLower, dim, m_cov_inverse, dim);
+	delete[] m_cov_inverse;
+
+	m_cov_inverse_rows = m_cov_cols;
+	m_cov_inverse_cols = m_cov_rows;
+
+	m_cov_inverse = new float64_t[m_cov_rows*m_cov_cols];
+	memcpy(m_cov_inverse, m_cov, sizeof(float64_t)*m_cov_rows*m_cov_cols);
+	int32_t result = clapack_dpotrf(CblasRowMajor, CblasLower, m_cov_rows, m_cov_inverse, m_cov_rows);
 	m_constant = 1;
 
-	for (int i = 0; i < dim; i++)
-		m_constant *= m_cov_inverse[i*dim+i];
+	for (int i = 0; i < m_cov_rows; i++)
+		m_constant *= m_cov_inverse[i*m_cov_rows+i];
 
 	m_constant = 1/m_constant;
-	m_constant *= pow(2*M_PI, (float64_t) -dim/2);
+	m_constant *= pow(2*M_PI, (float64_t) -m_cov_rows/2);
 
-	result = clapack_dpotri(CblasRowMajor, CblasLower, dim, m_cov_inverse, dim);
-	m_dim = dim;
+	result = clapack_dpotri(CblasRowMajor, CblasLower, m_cov_rows, m_cov_inverse, m_cov_rows);
 }
 
 CGaussian::~CGaussian()
-{	
-	SG_UNREF(m_data);
+{
 	delete[] m_cov_inverse;
 	delete[] m_cov;
 	delete[] m_mean;
@@ -67,31 +69,31 @@ bool CGaussian::train(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 				SG_ERROR("Specified features are not of type CDotFeatures\n");		
-		set_data((CDotFeatures*) data);
+		set_features(data);
 	}
+	CDotFeatures* dotdata = (CDotFeatures *) data;
 
-	float64_t* mean;
-	float64_t* cov;
-	int32_t dim;
+	delete[] m_mean;
+	delete[] m_cov;
 
-	m_data->get_mean_cov(&mean, &cov, &dim);
+	dotdata->get_mean_cov(&m_mean, &m_mean_length, &m_cov, &m_cov_rows, &m_cov_cols);
 
-	init(mean, cov, dim);
-	
+	init();
+
 	return true;
 }
 
 int32_t CGaussian::get_num_model_parameters()
 {
-	return m_dim*(m_dim+1);
+	return m_cov_rows*m_cov_cols+m_mean_length;
 }
 
 float64_t CGaussian::get_log_model_parameter(int32_t num_param)
 {
-	if (num_param<m_dim)
+	if (num_param<m_mean_length)
 		return CMath::log(m_mean[num_param]);
 	else
-		return CMath::log(m_cov[num_param-m_dim]);
+		return CMath::log(m_cov[num_param-m_mean_length]);
 }
 
 float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
@@ -99,34 +101,43 @@ float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 	return 0;
 }
 
-float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
+float64_t CGaussian::get_likelihood_example(int32_t num_example)
 {
+	ASSERT(features->has_property(FP_DOT));
 	float64_t* point;
 	int32_t point_len;
-	m_data->get_feature_vector(&point, &point_len, num_example);
-	return CMath::log(compute_PDF(point, point_len));
+	((CDotFeatures *)features)->get_feature_vector(&point, &point_len, num_example);
+	float64_t answer = compute_PDF(point, point_len);
+	delete[] point;
+	return answer;
 }
 
 float64_t CGaussian::compute_PDF(float64_t* point, int32_t point_len)
 {
-	ASSERT(point_len == m_dim);
-	float64_t* difference = new float64_t[m_dim];
-	memcpy(difference, point, sizeof(float64_t)*m_dim);
-	float64_t* result = new float64_t[m_dim];
+	ASSERT(m_mean && m_cov);
+	ASSERT(point_len == m_mean_length);
+	float64_t* difference = new float64_t[m_mean_length];
+	memcpy(difference, point, sizeof(float64_t)*m_mean_length);
+	float64_t* result = new float64_t[m_mean_length];
 
-	for (int i = 0; i < m_dim; i++)
+	for (int i = 0; i < m_mean_length; i++)
 		difference[i] -= m_mean[i];
 
-	cblas_dsymv(CblasRowMajor, CblasLower, m_dim, -1.0/2.0, m_cov_inverse, m_dim,
+	cblas_dsymv(CblasRowMajor, CblasLower, m_mean_length, -1.0/2.0, m_cov_inverse, m_mean_length,
 				difference, 1, 0, result, 1);
-	return m_constant * exp(cblas_ddot(m_dim, difference, 1, result, 1));
+
+	float64_t answer = m_constant * exp(cblas_ddot(m_mean_length, difference, 1, result, 1));
+
+	delete[] difference;
+	delete[] result;
+
+	return answer;
 }
 
-void CGaussian::init()
+void CGaussian::register_params()
 {
-	m_parameters->add_matrix(&m_cov, &m_dim, &m_dim, "m_cov", "Covariance.");
-	m_parameters->add_matrix(&m_cov_inverse, &m_dim, &m_dim, "m_cov_inverse", "Covariance inverse.");
-	m_parameters->add_vector(&m_mean, &m_dim, "m_mean", "Mean.");
-	m_parameters->add(&m_dim, "m_dim", "Dimensionality.");
+	m_parameters->add_matrix(&m_cov, &m_cov_rows, &m_cov_cols, "m_cov", "Covariance.");
+	m_parameters->add_matrix(&m_cov_inverse, &m_cov_inverse_rows, &m_cov_inverse_cols, "m_cov_inverse", "Covariance inverse.");
+	m_parameters->add_vector(&m_mean, &m_mean_length, "m_mean", "Mean.");
 	m_parameters->add(&m_constant, "m_constant", "Constant part.");
 }

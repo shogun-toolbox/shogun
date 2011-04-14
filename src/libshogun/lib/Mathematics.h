@@ -823,36 +823,6 @@ class CMath : public CSGObject
 			return mean/len;
 		}
 
-		static void mean(float64_t* vecs, int32_t len, int32_t size, float64_t** mean)
-		{
-			*mean = new float64_t[len];
-			for (int j = 0; j < len; j++)
-				(*mean)[j] = 0;
-			for (int i = 0; i < size; i++)
-				for (int j = 0; j < len; j++)
-					(*mean)[j] += vecs[i*len+j];
-			for (int j = 0; j < len; j++)
-				(*mean)[j] /= size;
-		}
-
-		static void cov(float64_t* vecs, int32_t len, int32_t size, float64_t* mean, float64_t** cov)
-		{
-			*cov = new float64_t[len*len];
-			for (int m = 0; m < len; m++)
-				for (int n = 0; n <= m; n++)
-					(*cov)[m*len+n] = 0;
-			for (int i = 0; i < size; i++)
-				for (int m = 0; m < len; m++)
-					for (int n = 0; n <= m ; n++)
-						(*cov)[m*len+n] += (vecs[i*len+m]-mean[m])*(vecs[i*len+n]-mean[n]);
-			for (int m = 0; m < len; m++)
-				for (int n = 0; n <= m ; n++)
-					(*cov)[m*len+n] /= size;
-			for (int m = 0; m < len-1; m++)
-				for (int n = m+1; n < len; n++)
-					(*cov)[m*len+n] = (*cov)[n*len+m];
-		}
-
 		static inline float64_t trace(
 			float64_t* mat, int32_t cols, int32_t rows)
 		{

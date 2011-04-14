@@ -34,11 +34,12 @@ class CGaussian : public CDistribution
 		 *
 		 * @param mean and covariance
 		 */
-		CGaussian(float64_t* mean, float64_t* cov, int32_t dim);
+		CGaussian(float64_t* mean, int32_t mean_length,
+					float64_t* cov, int32_t cov_rows, int32_t cov_cols);
 		virtual ~CGaussian();
 
 		/** Set the distribution mean and covariance */
-		void init(float64_t* mean, float64_t* cov, int32_t dim);
+		void init();
 
 		/** learn distribution
 		 *
@@ -77,7 +78,19 @@ class CGaussian : public CDistribution
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(int32_t num_example)
+		{
+			return CMath::log(get_likelihood_example(num_example));
+		}
+
+		/** compute likelihood for example
+		 *
+		 * abstract base method
+		 *
+		 * @param num_example which example
+		 * @return likelihood for example
+		 */
+		virtual float64_t get_likelihood_example(int32_t num_example);
 
 		/** compute PDF
 		 *
@@ -86,103 +99,75 @@ class CGaussian : public CDistribution
 		 */
 		virtual float64_t compute_PDF(float64_t* point, int32_t point_len);
 
-		/** set data vectors
-		 *
-		 * @param f new data vectors
-		 */
-		virtual inline void set_data(CDotFeatures* f)
-		{
-			SG_UNREF(m_data);
-			SG_REF(f);
-			m_data=f;
-		}
-
-		/** get data vectors
-		 *
-		 * @return data vectors
-		 */
-		virtual inline CDotFeatures* get_data()
-		{
-			SG_REF(m_data);
-			return m_data;
-		}
-
 		/** get mean
 		 *
 		 * @param copy of the mean
 		 */
-		virtual inline void get_mean(float64_t** mean)
+		virtual inline void get_mean(float64_t** mean, int32_t* mean_length)
 		{
-			*mean = new float64_t[m_dim];
-			memcpy(*mean, m_mean, sizeof(float64_t)*m_dim);
+			*mean = new float64_t[m_mean_length];
+			memcpy(*mean, m_mean, sizeof(float64_t)*m_mean_length);
+			*mean_length = m_mean_length;
 		}
 
 		/** set mean
 		 *
 		 * @param new mean
 		 */
-		virtual inline void set_mean(float64_t* mean)
+		virtual inline void set_mean(float64_t* mean, int32_t mean_length)
 		{
-			memcpy(m_mean, mean, sizeof(float64_t)*m_dim);
+			ASSERT(mean_length == m_mean_length);
+			memcpy(m_mean, mean, sizeof(float64_t)*m_mean_length);
 		}
 
 		/** get cov
 		 *
 		 * @param copy of the cov
 		 */
-		virtual inline void get_cov(float64_t** cov)
+		virtual inline void get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
 		{
-			*cov = new float64_t[m_dim*m_dim];
-			memcpy(*cov, m_cov, sizeof(float64_t)*m_dim*m_dim);
+			*cov = new float64_t[m_cov_rows*m_cov_cols];
+			memcpy(*cov, m_cov, sizeof(float64_t)*m_cov_rows*m_cov_cols);
+			*cov_rows = m_cov_rows;
+			*cov_cols = m_cov_cols;
 		}
 
 		/** set cov
 		 *
 		 * @param new cov
 		 */
-		virtual inline void set_cov(float64_t* cov)
-		{			
-			memcpy(m_cov, cov, sizeof(float64_t)*m_dim*m_dim);
-			memcpy(m_cov_inverse, cov, sizeof(float64_t)*m_dim*m_dim);
-			int32_t result = clapack_dpotrf(CblasRowMajor, CblasLower, m_dim, m_cov_inverse, m_dim);
-			m_constant = 1;
-
-			for (int i = 0; i < m_dim; i++)
-				m_constant *= m_cov_inverse[i*m_dim+i];
-
-			m_constant = 1/m_constant;
-			m_constant *= pow(2*M_PI, (float64_t) -m_dim/2);
-
-			result = clapack_dpotri(CblasRowMajor, CblasLower, m_dim, m_cov_inverse, m_dim);
-		}
-
-		/** get dim
-		 *
-		 * @return dimension
-		 */
-		virtual inline int32_t get_dim()
+		virtual inline void set_cov(float64_t* cov, int32_t cov_rows, int32_t cov_cols)
 		{
-			return m_dim;
+			ASSERT(cov_rows = cov_cols);
+			ASSERT(cov_rows = m_cov_rows);
+			memcpy(m_cov, cov, sizeof(float64_t)*m_cov_rows*m_cov_cols);
+			init();
 		}
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Gaussian"; }
 	private:
 		/** Initialize parameters for serialization */
-		void init();
+		void register_params();
 	protected:
 		/** constant part */
 		float64_t m_constant;
 		/** covariance */
 		float64_t* m_cov;
+		/** covariance row num */
+		int32_t m_cov_rows;
+		/** covariance col num */
+		int32_t m_cov_cols;
 		/** covariance inverse */
 		float64_t* m_cov_inverse;
+		/** covariance inverse row num */
+		int32_t m_cov_inverse_rows;
+		/** covariance inverse col num */
+		int32_t m_cov_inverse_cols;
 		/** mean */
 		float64_t* m_mean;
-		/** dimensionality */
-		int32_t m_dim;
-		/** data features */
-		CDotFeatures* m_data;
+		/** mean length */
+		int32_t m_mean_length;
 };
 }
 #endif

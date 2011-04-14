@@ -209,10 +209,13 @@ class CDotFeatures : public CFeatures
 		/** get mean and covariance
 		 *
 		 * @param mean returned
+		 * @param mean length returned
 		 * @param covariance returned
-		 * @param dimentionality returned
+		 * @param covariance rows returned
+		 * @param covariance cols returned
 		 */
-		virtual void get_mean_cov(float64_t** mean, float64_t** cov, int32_t* dimen);
+		virtual void get_mean_cov(float64_t** mean, int32_t* mean_length,
+									float64_t** cov, int32_t* cov_rows, int32_t* cov_cols);
 
 	protected:
 		/** display progress output
