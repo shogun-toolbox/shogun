@@ -297,11 +297,8 @@ void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
 {
 	ASSERT(subset_idx);
 
-	if (m_subset_idx)
-	{
-		delete[] m_subset_idx;
-		m_subset_idx = NULL;
-	}
+	delete[] m_subset_idx;
+	m_subset_idx = NULL;
 
 	int64_t length=sizeof(int32_t)*subset_len;
 
