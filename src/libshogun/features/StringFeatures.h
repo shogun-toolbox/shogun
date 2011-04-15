@@ -521,7 +521,11 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		void free_feature_vector(ST* feat_vec, int32_t num, bool dofree)
 		{
-			ASSERT(num<num_vectors);
+			if (num>=num_vectors)
+			{
+				SG_ERROR("Trying to access string[%d] but num_str=%d "
+						"num_str_total=%d\n", num, num_vectors, num_vectors_total); 
+			}
 
 			int32_t real_num = subset_idx_conversion(num);
 
@@ -688,6 +692,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				num_vectors=0;
 				num_vectors_total=0;
 				max_string_length=0;
+				max_string_length_total=0;
 
 				SG_INFO("counting line numbers in file %s\n", fname);
 				size_t block_offs=0;
@@ -802,6 +807,9 @@ template <class ST> class CStringFeatures : public CFeatures
 				alphabet=alpha;
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
+
+			num_vectors_total=num_vectors;
+			max_string_length_total=max_string_length;
 		}
 
 		/** load fasta file as string features
@@ -812,6 +820,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool load_fasta_file(const char* fname, bool ignore_invalid=false)
 		{
+			remove_feature_subset();
+
 			int32_t i=0;
 			uint64_t len=0;
 			uint64_t offs=0;
@@ -898,7 +908,6 @@ template <class ST> class CStringFeatures : public CFeatures
 					s=f.get_line(len, offs);
 				}
 			}
-
 			return set_features(strings, num, max_len);
 		}
 
@@ -1020,6 +1029,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool load_from_directory(char* dirname)
 		{
+			remove_feature_subset();
+
 			struct dirent **namelist;
 			int32_t n;
 
@@ -1382,6 +1393,9 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			delete compressor;
 			fclose(file);
+
+			num_vectors_total=num_vectors;
+			max_string_length_total=max_string_length;
 			return false;
 		}
 
@@ -1596,6 +1610,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			features=f;
 			max_string_length=window_size-skip;
 
+			max_string_length_total=max_string_length;
+			num_vectors_total=num_vectors;
+
 			return num_vectors;
 		}
 
@@ -1612,9 +1629,6 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		inline bool obtain_from_char(CStringFeatures<char>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 		{
-			if (m_subset_idx)
-				SG_NOTIMPLEMENTED;
-
 			return obtain_from_char_features(sf, start, p_order, gap, rev);
 		}
 
@@ -1701,6 +1715,9 @@ template <class ST> class CStringFeatures : public CFeatures
 				}
 
 				compute_symbol_mask_table(max_val);
+
+				num_vectors_total=num_vectors;
+				max_string_length_total=max_string_length;
 
 				return true;
 			}
@@ -1869,10 +1886,12 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			/* subset */
 			if (m_subset_idx)
+			{
 				for (int32_t i=0; i<num_vectors; i++)
 				{
 					max_string_length=CMath::max(max_string_length, features[m_subset_idx[i]].length);
 				}
+			}
 			else
 				max_string_length=max_string_length_total;
 		}
@@ -1968,9 +1987,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(rows == get_num_symbols());
 			cleanup();
 			float64_t* randoms=new float64_t[cols];
-			TString<ST>* sf=new TString<ST>[num_vectors];
+			TString<ST>* sf=new TString<ST>[num_vec];
 
-			for (int32_t i=0; i<num_vectors; i++)
+			for (int32_t i=0; i<num_vec; i++)
 			{
 				sf[i].string=new ST[cols];
 				sf[i].length=cols;
@@ -2127,7 +2146,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		virtual inline int32_t subset_idx_conversion(int32_t idx) { return m_subset_idx ? m_subset_idx[idx] : idx; }
 
 	private:
-		void init(void)
+		void init()
 		{
 			set_generic<ST>();
 
