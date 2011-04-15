@@ -131,7 +131,7 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 		}
 
 		/** @return object name */
-		virtual inline const char* get_name() { return "DecompressString"; }
+		virtual inline const char* get_name() const { return "DecompressString"; }
 
 		/// return a type of preprocessor TODO: template specification of get_type
 		virtual inline EPreProcType get_type() const { return P_DECOMPRESSSTRING; }

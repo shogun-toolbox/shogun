@@ -53,7 +53,7 @@ public:
 	virtual uint64_t* apply_to_string(uint64_t* f, int32_t &len);
 
 	/** @return object name */
-	virtual inline const char* get_name() { return "SortUlongString"; }
+	virtual inline const char* get_name() const { return "SortUlongString"; }
 
 	/// return a type of preprocessor
 	virtual inline EPreProcType get_type() const { return P_SORTULONGSTRING; }

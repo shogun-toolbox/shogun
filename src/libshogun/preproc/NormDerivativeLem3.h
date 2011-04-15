@@ -48,7 +48,7 @@ class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
 		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t& len);
 
 		/** @return object name */
-		virtual inline const char* get_name() { return "NormDerivativeLem3"; }
+		virtual inline const char* get_name() const { return "NormDerivativeLem3"; }
 
 		/// return a type of preprocessor
 		virtual inline EPreProcType get_type() const { return P_NORMDERIVATIVELEM3; }

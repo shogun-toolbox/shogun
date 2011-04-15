@@ -92,12 +92,8 @@ public:
 	*/
 	virtual EFeatureClass get_feature_class()=0;
 
-	/// return the name of the preprocessor
-	virtual inline const char* get_name() const { return "UNKNOWN"; }
-	
 	/// return a type of preprocessor
-	virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
-
+	virtual inline EPreProcType get_type() const=0;
 };
 }
 #endif

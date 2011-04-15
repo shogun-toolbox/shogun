@@ -53,9 +53,6 @@ template <class ST> class CSimplePreProc : public CPreProc
 		/// return feature type
 		virtual inline EFeatureType get_feature_type();
 
-		/// return the name of the preprocessor
-		virtual inline const char* get_name() const { return "UNKNOWN"; }
-
 		/// return a type of preprocessor
 		virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
 

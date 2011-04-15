@@ -96,7 +96,7 @@ class CKernelPCACut : public CSimplePreProc<float64_t>
 
 
 		/** @return object name */
-		virtual inline const char* get_name() { return "KernelPCACut"; }
+		virtual inline const char* get_name() const { return "KernelPCACut"; }
 
 		/// return a type of preprocessor
 		virtual inline EPreProcType get_type() const { return P_KERNELPCACUT; }

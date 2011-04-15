@@ -89,7 +89,7 @@ class CPCACut : public CSimplePreProc<float64_t>
 		void get_mean(float64_t** dst, int32_t* num_feat);
 
 		/** @return object name */
-		virtual inline const char* get_name() { return "PCACut"; }
+		virtual inline const char* get_name() const { return "PCACut"; }
 
 		/// return a type of preprocessor
 		virtual inline EPreProcType get_type() const { return P_PCACUT; }
