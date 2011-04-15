@@ -129,5 +129,5 @@ void CGaussianKernel::init()
 	m_parameters->add(&width, "width", "Kernel width.");
 	m_parameters->add(&m_compact, "compact", "Compact Enabled Option.");
 
-	m_parameters->add(&width, "width", "Kernel width.");
+	m_cross_val_parameters->add(&width, "width", "Kernel width.");
 }
