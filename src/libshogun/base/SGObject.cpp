@@ -343,3 +343,16 @@ void CSGObject::init()
 	m_load_pre_called = false;
 	m_load_post_called = false;
 }
+
+TParameter* CSGObject::get_cross_val_parameter(int32_t idx)
+{
+	if (idx>=m_cross_val_parameters->get_num_parameters())
+		SG_ERROR("Index out of bounds (number of parameters %d, you "
+				"requested %d)\n", m_cross_val_parameters->get_num_parameters(), idx);
+
+	return m_cross_val_parameters->get_parameter(idx);
+}
+int32_t CSGObject::get_num_cross_val_parameters()
+{
+	return m_cross_val_parameters->get_num_parameters();
+}
