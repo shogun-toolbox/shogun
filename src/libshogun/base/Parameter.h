@@ -68,6 +68,8 @@ public:
 		return m_params.get_num_elements();
 	}
 
+	inline TParameter* get_parameter(int32_t idx) { return m_params.get_element(idx); }
+
 	/* ************************************************************ */
 	/* Scalar wrappers  */
 
