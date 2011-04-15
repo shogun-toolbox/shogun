@@ -123,6 +123,7 @@ CSGObject::~CSGObject()
 	pthread_mutex_destroy(&m_ref_mutex);
 	unset_global_objects();
 	delete m_parameters;
+	delete m_cross_val_parameters;
 }
 
 void CSGObject::set_global_objects(void)
@@ -337,6 +338,7 @@ void CSGObject::init()
 	parallel = NULL;
 	version = NULL;
 	m_parameters = new Parameter();
+	m_cross_val_parameters = new Parameter();
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;

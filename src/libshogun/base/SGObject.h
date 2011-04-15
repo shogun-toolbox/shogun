@@ -267,6 +267,8 @@ public:
 protected:
 	Parameter* m_parameters;
 
+	Parameter* m_cross_val_parameters;
+
 private:
 	EPrimitiveType m_generic;
 	bool m_load_pre_called;
