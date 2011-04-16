@@ -38,9 +38,7 @@ public:
 	 * @param name sparse preprocessor's name
 	 * @param id sparse preprocessor's id
 	 */
-	CSparsePreProc(const char *name, const char* id) : CPreProc(name,id)
-	{
-	}
+	CSparsePreProc() : CPreProc() {}
 
 	/// apply preproc on feature matrix
 	/// result in feature matrix
@@ -51,8 +49,14 @@ public:
 	/// result in feature matrix
 	virtual TSparse<ST>* apply_to_sparse_feature_vector(TSparse<ST>* f, int32_t &len)=0;
 
-  /// return that we are simple minded features (just fixed size matrices)
-  inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+	/// return that we are simple minded features (just fixed size matrices)
+	inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+
+	/// return the name of the preprocessor
+	virtual inline const char* get_name() const { return "UNKNOWN"; }
+
+	/// return a type of preprocessor
+	virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
   
 };
 }

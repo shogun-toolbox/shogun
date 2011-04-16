@@ -17,7 +17,7 @@
 using namespace shogun;
 
 CNormOne::CNormOne()
-: CSimplePreProc<float64_t>("NormOne", "NRM1")
+: CSimplePreProc<float64_t>()
 {
 }
 

@@ -2,7 +2,7 @@ parameter_list = [['features_string_char_compressed_modular.py']]
 
 def features_string_char_compressed_modular(fname):
 	from shogun.Features import StringCharFeatures, StringFileCharFeatures, RAWBYTE
-	from shogun.Library import UNCOMPRESSED,LZO,GZIP,BZIP2,LZMA, MSG_DEBUG
+	from shogun.Library import UNCOMPRESSED,SNAPPY,LZO,GZIP,BZIP2,LZMA, MSG_DEBUG
 	from shogun.PreProc import DecompressCharString
 
 	f=StringFileCharFeatures(fname, RAWBYTE)
@@ -17,6 +17,13 @@ def features_string_char_compressed_modular(fname):
 	#print
 
 	# load compressed data and uncompress on load
+
+	#snappy - not stable yet?!
+	#f.save_compressed("foo_snappy.str", SNAPPY, 9)
+	#f2=StringCharFeatures(RAWBYTE);
+	#f2.load_compressed("foo_snappy.str", True)
+	#print "snappy strings", f2.get_features()
+	#print
 
 	#lzo
 	f.save_compressed("foo_lzo.str", LZO, 9)
@@ -65,7 +72,7 @@ def features_string_char_compressed_modular(fname):
 
 	#clean up
 	import os
-	for f in ['foo_uncompressed.str', 'foo_lzo.str', 'foo_gzip.str',
+	for f in ['foo_uncompressed.str', 'foo_snappy.str', 'foo_lzo.str', 'foo_gzip.str',
 	'foo_bzip2.str', 'foo_lzma.str', 'foo_lzo.str', 'foo_lzo.str']:
 		if os.path.exists(f):
 			os.unlink(f)

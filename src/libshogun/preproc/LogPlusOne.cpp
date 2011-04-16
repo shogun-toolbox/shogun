@@ -17,7 +17,7 @@
 using namespace shogun;
 
 CLogPlusOne::CLogPlusOne()
-: CSimplePreProc<float64_t>("LogPlusOne", "LG+1")
+: CSimplePreProc<float64_t>()
 {
 }
 

@@ -4,6 +4,7 @@
 *_wrap.cxx
 *.so
 *.so.*
+*.dylib
 *.a
 *_doxygen.i
 .depend

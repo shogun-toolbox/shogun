@@ -475,9 +475,9 @@ class CMath : public CSGObject
 		/// Returns a Gaussian or Normal random number.
 		/// Using the polar form of the Box-Muller transform.
 		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
-		static inline float32_t normal_random(float32_t mean, float32_t variance)
+		static inline float32_t normal_random(float32_t mean, float32_t std_dev)
 		{
-			// sets up variables & makes sure rand_s.range == (0,1]
+			// sets up variables & makes sure rand_s.range == (0,1)
 			float32_t ret;
 			float32_t rand_u;
 			float32_t rand_v;
@@ -489,13 +489,16 @@ class CMath : public CSGObject
 				rand_s = rand_u*rand_u + rand_v*rand_v;
 			} while ((rand_s == 0) || (rand_s >= 1));
 
-			// the meat & potatos, and then the mean & variance shifting...
+			// the meat & potatos, and then the mean & standard deviation shifting...
 			ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
-			ret = variance*ret + mean;
+			ret = std_dev*ret + mean;
 			return ret;
 		}
 
-		static inline float64_t normal_random(float64_t mean, float64_t variance)
+		/// Returns a Gaussian or Normal random number.
+		/// Using the polar form of the Box-Muller transform.
+		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
+		static inline float64_t normal_random(float64_t mean, float64_t std_dev)
 		{
 			float64_t ret;
 			float64_t rand_u;
@@ -509,19 +512,19 @@ class CMath : public CSGObject
 			} while ((rand_s == 0) || (rand_s >= 1));
 
 			ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
-			ret = variance*ret + mean;
+			ret = std_dev*ret + mean;
 			return ret;
 		}
 
 		/// Convenience method for generating Standard Normal random numbers
-		/// Float: Mean = 0 and Variance = 1
+		/// Float: Mean = 0 and Standard Deviation = 1
 		static inline float32_t randn_float()
 		{
 			return normal_random(0.0, 1.0);
 		}
 
 		/// Convenience method for generating Standard Normal random numbers
-		/// Double: Mean = 0 and Variance = 1
+		/// Double: Mean = 0 and Standard Deviation = 1
 		static inline float64_t randn_double()
 		{
 			return normal_random(0.0, 1.0);

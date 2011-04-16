@@ -93,7 +93,7 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
 	float64_t result_multiplier=1-(sqrt(result/width))/3;
 
-	if(result_multiplier<=0)
+	if (result_multiplier<=0)
 		result_multiplier=0;
 	else
 		result_multiplier=pow(result_multiplier, power);

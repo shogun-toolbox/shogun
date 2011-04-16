@@ -29,7 +29,7 @@
 using namespace shogun;
 
 CPCACut::CPCACut(bool do_whitening_, float64_t thresh_)
-: CSimplePreProc<float64_t>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
+: CSimplePreProc<float64_t>(), T(NULL), num_dim(0), mean(NULL),
 	length_mean(NULL), eigenvalues(NULL), num_eigenvalues(0),initialized(false),
 	do_whitening(do_whitening_), thresh(thresh_), percentage(1), num_of_eig(0)
 {

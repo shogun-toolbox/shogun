@@ -190,5 +190,10 @@ class CGaussian : public CDistribution
 		int32_t m_mean_length;
 };
 }
+<<<<<<< HEAD
 #endif
 #endif
+=======
+#endif //HAVE_LAPACK
+#endif //_GAUSSIAN_H__
+>>>>>>> upstream/master
