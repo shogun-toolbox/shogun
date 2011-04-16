@@ -7,6 +7,9 @@
  * Written (W) 2011 Alesis Novik
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
+#include "lib/config.h"
+
+#ifdef HAVE_LAPACK
 
 #include "distributions/Gaussian.h"
 #include "lib/Mathematics.h"
@@ -145,3 +148,4 @@ void CGaussian::register_params()
 	m_parameters->add_vector(&m_mean, &m_mean_length, "m_mean", "Mean.");
 	m_parameters->add(&m_constant, "m_constant", "Constant part.");
 }
+#endif

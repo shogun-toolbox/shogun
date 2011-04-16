@@ -25,11 +25,13 @@ using namespace shogun;
 #define DGESVD dgesvd
 #define DPOSV dposv
 #define DPOTRF dpotrf
+#define DPOTRF dpotri
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
 #define DPOSV dposv_
 #define DPOTRF dpotrf_
+#define DPOTRF dpotri_
 #endif
 
 #ifndef HAVE_ATLAS
@@ -56,6 +58,30 @@ int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 	return info;
 }
 #undef DPOTRF
+
+int clapack_dpotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
+		const int N, double *A, const int LDA)
+{
+	char uplo = 'U';
+	int info = 0;
+	if (Order==CblasRowMajor)
+	{//A is symmetric, we switch Uplo to get result for CblasRowMajor
+		if (Uplo==CblasUpper)
+			uplo='L';
+	}
+	else
+		if (Uplo==CblasLower)
+			uplo='L';
+#ifdef HAVE_ACML
+	DPOTRI(uplo, N, A, LDA, &info);
+#else
+	int n=N;
+	int lda=LDA;
+	DPOTRI(&uplo, &n, A, &lda, &info);
+#endif
+	return info;
+}
+#undef DPOTRI
 
 /* DPOSV computes the solution to a real system of linear equations
  * A * X = B,

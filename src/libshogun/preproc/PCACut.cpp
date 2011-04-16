@@ -31,7 +31,15 @@ using namespace shogun;
 CPCACut::CPCACut(bool do_whitening_, float64_t thresh_)
 : CSimplePreProc<float64_t>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
 	length_mean(NULL), eigenvalues(NULL), num_eigenvalues(0),initialized(false),
-	do_whitening(do_whitening_), thresh(thresh_)
+	do_whitening(do_whitening_), thresh(thresh_), percentage(1), num_of_eig(0)
+{
+	init();
+}
+
+CPCACut::CPCACut(bool do_whitening_, float64_t percentage_, int32_t num_of_eig_)
+: CSimplePreProc<float64_t>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
+	length_mean(NULL), eigenvalues(NULL), num_eigenvalues(0),initialized(false),
+	do_whitening(do_whitening_), thresh(0), percentage(percentage_), num_of_eig(num_of_eig_)
 {
 	init();
 }
@@ -125,12 +133,25 @@ bool CPCACut::init(CFeatures* f)
 		eigenvalues=CMath::compute_eigenvectors(cov, num_features, num_features);
         num_eigenvalues=num_features;
 
-		num_dim=0;
+		float64_t eig_sum = 0;
 		for (i=0; i<num_features; i++)
+			eig_sum += eigenvalues[i];
+
+		float64_t com_sum = 0;
+		num_dim=0;
+		for (i=num_features-1; i>-1; i--)
 		{
 			if (eigenvalues[i]>thresh)
 				num_dim++;
+			else
+				break;
+			com_sum += eigenvalues[i];
+			if (com_sum/eig_sum>=percentage)
+				break;
 		}
+
+		if (num_dim>num_of_eig && num_of_eig != 0)
+			num_dim = num_of_eig;
 
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
 
@@ -139,17 +160,14 @@ bool CPCACut::init(CFeatures* f)
 		num_old_dim=num_features;
 
 		int32_t offs=0 ;
-		for (i=0; i<num_features; i++)
+		for (i=num_features-1; i<num_features-num_dim-1; i++)
 		{
-			if (eigenvalues[i]>thresh)
-			{
-				for (int32_t jj=0; jj<num_features; jj++)
-					if (do_whitening)
-						T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]);
-					else
-						T[offs+jj*num_dim]=cov[num_features*i+jj];
-				offs++;
-			}
+			for (int32_t jj=0; jj<num_features; jj++)
+				if (do_whitening)
+					T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]);
+				else
+					T[offs+jj*num_dim]=cov[num_features*i+jj];
+			offs++;
 		}
 
 		delete[] cov;
@@ -280,5 +298,9 @@ void CPCACut::init()
 			"do_whitening", "Whether data shall be whitened.");
 	m_parameters->add(&thresh,
 			"thresh", "Cutoff threshold.");
+	m_parameters->add(&percentage,
+			"percentage", "Min percentage of variance explained.");
+	m_parameters->add(&num_of_eig,
+			"num_of_eig", "Number of eigenvalues used.");
 }
 #endif

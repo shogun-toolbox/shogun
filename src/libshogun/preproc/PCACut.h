@@ -46,6 +46,14 @@ class CPCACut : public CSimplePreProc<float64_t>
 		 * @param thresh threshold
 		 */
 		CPCACut(bool do_whitening=false, float64_t thresh=1e-6);
+
+		/** constructor
+		 *
+		 * @param do_whitening do whitening
+		 * @param percentage min percentage of variance explained
+		 * @param num_of_eig number of eigenvalues used, 0 for unlimited
+		 */
+		CPCACut(bool do_whitening, float64_t percentage, int32_t num_of_eig);
 		virtual ~CPCACut();
 
 		/// initialize preprocessor from features
@@ -119,6 +127,10 @@ class CPCACut : public CSimplePreProc<float64_t>
 		bool do_whitening;
 		/** thresh */
 		float64_t thresh;
+		/** variance explained */
+		float64_t percentage;
+		/** number of values, if 0 - no limit */
+		float64_t num_of_eig;
 };
 }
 #endif

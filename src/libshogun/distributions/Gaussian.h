@@ -11,6 +11,10 @@
 #ifndef _GAUSSIAN_H__
 #define _GAUSSIAN_H__
 
+#include "lib/config.h"
+
+#ifdef HAVE_LAPACK
+
 #include "distributions/Distribution.h"
 #include "features/DotFeatures.h"
 #include "lib/common.h"
@@ -172,4 +176,5 @@ class CGaussian : public CDistribution
 		int32_t m_mean_length;
 };
 }
+#endif
 #endif
