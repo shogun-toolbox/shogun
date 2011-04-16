@@ -2826,7 +2826,6 @@ EOF
 									POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lcblas"
 								else
 									echores "no"
-								fi
 				
 
 cat > $TMPC << EOF
@@ -2866,7 +2865,7 @@ EOF
 					fi
 				fi
 			fi
-
+	  fi
 			if test "$_cplex" = yes || test "$_cplex" = auto
 			then
 cat > $TMPC << EOF
