@@ -32,7 +32,7 @@ class CDistance;
  */
 
 
-class CBesselKernel:public CKernel
+class CBesselKernel: public CKernel
 {
   
    public:
@@ -52,6 +52,14 @@ class CBesselKernel:public CKernel
 	 * @param r features of right-side
 	 * @return true if successful
 	 */
+
+  CBesselKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist);
+  /** initialize kernel with features
+	 * @param l features left-side
+	 * @param r features right-side
+	 * @return true if successful
+	 */
+ 
    virtual bool init(CFeatures* l, CFeatures* r);
    
 

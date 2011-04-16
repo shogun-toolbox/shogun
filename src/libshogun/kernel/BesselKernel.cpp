@@ -4,7 +4,7 @@
 
 using namespace shogun;
 
-CBesselKernel::CBesselKernel(void): CBesselKernel(0), distance(NULL)
+CBesselKernel::CBesselKernel():CKernel(0),distance(NULL)
 {
 	init();
 	set_sigma(1.0);
@@ -33,11 +33,6 @@ CBesselKernel::~CBesselKernel()
 	SG_UNREF(distance);
 }
 
-CBesselKernel::~CBesselKernel()
-{
-	cleanup();
-	SG_UNREF(distance);
-}
 
 bool CBesselKernel::init(CFeatures* l, CFeatures* r)
 {
@@ -46,6 +41,12 @@ bool CBesselKernel::init(CFeatures* l, CFeatures* r)
 	distance->init(l,r);
 	return init_normalizer();
 }
+
+void CBesselKernel::load_serializable_post(void) throw (ShogunException)
+{
+	CKernel::load_serializable_post();
+}
+
 
 void CBesselKernel::init()
 {
@@ -57,6 +58,6 @@ void CBesselKernel::init()
 float64_t CBesselKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t dist = distance->distance(idx_a, idx_b);
-	return -j1(sigma*(dist*dist))
+	return -j1(sigma*(dist*dist));
 }
 
