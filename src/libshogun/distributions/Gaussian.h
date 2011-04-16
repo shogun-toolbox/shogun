@@ -24,10 +24,11 @@
 namespace shogun
 {
 class CDotFeatures;
-/** @brief gaussian distribution interface.
+/** @brief Gaussian distribution interface.
  *
- * A takes as input a mean vector and covariance matrix.
+ * Takes as input a mean vector and covariance matrix.
  * Also possible to train from data.
+ * Likelihood is computed using the Gaussian PDF
  */
 class CGaussian : public CDistribution
 {
@@ -36,13 +37,17 @@ class CGaussian : public CDistribution
 		CGaussian();
 		/** constructor
 		 *
-		 * @param mean and covariance
+		 * @param mean mean of the Gaussian
+         * @param mean_length
+		 * @param cov covariance of the Gaussian
+		 * @param cov_rows
+		 * @param cov_cols
 		 */
 		CGaussian(float64_t* mean, int32_t mean_length,
 					float64_t* cov, int32_t cov_rows, int32_t cov_cols);
 		virtual ~CGaussian();
 
-		/** Set the distribution mean and covariance */
+		/** Compute the inverse covariance and constant part */
 		void init();
 
 		/** learn distribution
@@ -98,14 +103,18 @@ class CGaussian : public CDistribution
 
 		/** compute PDF
 		 *
+		 * computes \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
+		 *
 		 * @param point
+		 * @param point_len
 		 * @return computed PDF
 		 */
 		virtual float64_t compute_PDF(float64_t* point, int32_t point_len);
 
 		/** get mean
 		 *
-		 * @param copy of the mean
+		 * @param mean copy of the mean
+		 * @param mean_length
 		 */
 		virtual inline void get_mean(float64_t** mean, int32_t* mean_length)
 		{
@@ -116,7 +125,8 @@ class CGaussian : public CDistribution
 
 		/** set mean
 		 *
-		 * @param new mean
+		 * @param mean new mean
+		 * @param mean_length has to match current mean length
 		 */
 		virtual inline void set_mean(float64_t* mean, int32_t mean_length)
 		{
@@ -126,7 +136,9 @@ class CGaussian : public CDistribution
 
 		/** get cov
 		 *
-		 * @param copy of the cov
+		 * @param cov copy of the cov
+		 * @param cov_rows
+		 * @param cov_cols
 		 */
 		virtual inline void get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
 		{
@@ -138,7 +150,9 @@ class CGaussian : public CDistribution
 
 		/** set cov
 		 *
-		 * @param new cov
+		 * @param cov new cov
+		 * @param cov_rows has to match current cov rows
+		 * @param cov_cols has to be equal to cov_rows
 		 */
 		virtual inline void set_cov(float64_t* cov, int32_t cov_rows, int32_t cov_cols)
 		{
