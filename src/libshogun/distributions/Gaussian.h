@@ -28,7 +28,7 @@ class CDotFeatures;
  *
  * Takes as input a mean vector and covariance matrix.
  * Also possible to train from data.
- * Likelihood is computed using the Gaussian PDF
+ * Likelihood is computed using the Gaussian PDF \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
  */
 class CGaussian : public CDistribution
 {
