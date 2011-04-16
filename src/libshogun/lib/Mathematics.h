@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Justin Patera
+ * Written (W) 2011 Alesis Novik
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2007 Konrad Rieck
