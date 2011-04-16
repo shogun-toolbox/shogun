@@ -14,7 +14,10 @@
 
 using namespace shogun;
 
-CGaussian::CGaussian() : CDistribution(), m_cov(NULL), m_mean(NULL)
+CGaussian::CGaussian() : CDistribution(), m_constant(0),
+m_cov(NULL), m_cov_rows(0), m_cov_cols(0), m_cov_inverse(NULL),
+m_cov_inverse_rows(0), m_cov_inverse_cols(0), m_mean(NULL),
+m_mean_length(0)
 {
 }
 
