@@ -38,7 +38,7 @@ class CGaussian : public CDistribution
 		/** constructor
 		 *
 		 * @param mean mean of the Gaussian
-         * @param mean_length
+		 * @param mean_length
 		 * @param cov covariance of the Gaussian
 		 * @param cov_rows
 		 * @param cov_cols

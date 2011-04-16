@@ -46,8 +46,10 @@ int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 			uplo='L';
 	}
 	else
+	{
 		if (Uplo==CblasLower)
 			uplo='L';
+	}
 #ifdef HAVE_ACML
 	DPOTRF(uplo, N, A, LDA, &info);
 #else
@@ -70,8 +72,10 @@ int clapack_dpotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 			uplo='L';
 	}
 	else
+	{
 		if (Uplo==CblasLower)
 			uplo='L';
+	}
 #ifdef HAVE_ACML
 	DPOTRI(uplo, N, A, LDA, &info);
 #else
@@ -100,8 +104,10 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 			uplo='L';
 	}
 	else
+	{
 		if (Uplo==CblasLower)
 			uplo='L';
+	}
 #ifdef HAVE_ACML
 	DPOSV(uplo,N,NRHS,A,lda,B,ldb,&info);
 #else
