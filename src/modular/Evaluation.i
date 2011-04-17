@@ -38,6 +38,7 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
+ #include <shogun/features/Labels.h>
  #include <shogun/evaluation/PerformanceMeasures.h>
  #include <shogun/evaluation/Evaluation.h>
  #include <shogun/evaluation/Accuracy.h>
@@ -55,6 +56,7 @@
 
 /* Remove C Prefix */
 %rename(PerformanceMeasures) CPerformanceMeasures;
+%rename(Evaluation) CEvaluation;
 %rename(Accuracy) CAccuracy;
 %rename(MeanSquaredError) CMeanSquaredError;
 
@@ -63,3 +65,4 @@
 %include <shogun/evaluation/Evaluation.h>
 %include <shogun/evaluation/Accuracy.h>
 %include <shogun/evaluation/MeanSquaredError.h>
+
