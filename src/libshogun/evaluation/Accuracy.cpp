@@ -20,10 +20,8 @@ float64_t CAccuracy::evaluate(CLabels* predicted, CLabels* ground_truth)
 	float64_t accuracy = 0.0;
 	for (int32_t i=0; i<length; i++)
 	{
-		if (predicted->get_int_label(i) == ground_truth->get_int_label(i))
-		{
+		if (CMath::sign(predicted->get_int_label(i))==CMath::sign(ground_truth->get_int_label(i)))
 			accuracy += 1.0;
-		}
 	}
 	accuracy /= length;
 	return accuracy;

@@ -26,7 +26,7 @@ namespace shogun
  * 		\frac{\sum_{i=1}^{|L|} [L_i=R_i]}{|L|}
  * \f]
  *
- * Note this class is capable of evaluating both multi-class and 2-class
+ * Note this class is capable of evaluating only 2-class
  * labels.
  *
  */
