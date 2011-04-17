@@ -43,6 +43,7 @@
  #include <shogun/evaluation/Evaluation.h>
  #include <shogun/evaluation/Accuracy.h>
  #include <shogun/evaluation/MulticlassAccuracy.h>
+ #include <shogun/evaluation/BalancedError.h>
  #include <shogun/evaluation/MeanSquaredError.h>
 %}
 
@@ -60,6 +61,7 @@
 %rename(Evaluation) CEvaluation;
 %rename(Accuracy) CAccuracy;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
+%rename(BalancedError) CBalancedError;
 %rename(MeanSquaredError) CMeanSquaredError;
 
 /* Include Class Headers to make them visible from within the target language */
@@ -67,5 +69,6 @@
 %include <shogun/evaluation/Evaluation.h>
 %include <shogun/evaluation/Accuracy.h>
 %include <shogun/evaluation/MulticlassAccuracy.h>
+%include <shogun/evaluation/BalancedError.h>
 %include <shogun/evaluation/MeanSquaredError.h>
 
