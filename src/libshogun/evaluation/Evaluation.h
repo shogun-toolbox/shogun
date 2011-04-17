@@ -28,10 +28,10 @@ class CEvaluation: public CSGObject
 {
 public:
 	/** constructor */
-	CEvaluation(): CSGObject() {};
+	CEvaluation();
 
 	/** destructor */
-	virtual ~CEvaluation() {};
+	virtual ~CEvaluation();
 
 	/** evaluate labels
 	 * @param labels labels for evaluating
