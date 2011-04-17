@@ -38,8 +38,8 @@ public:
 	virtual ~CMulticlassAccuracy() {};
 
 	/** evaluate accuracy
-	 * @param labels labels for evaluating
-	 * @param labels_valid labels assumed to be correct
+	 * @param predicted labels for evaluating
+	 * @param ground_truth labels assumed to be correct
 	 * @return accuracy
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
