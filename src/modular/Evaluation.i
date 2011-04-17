@@ -39,6 +39,9 @@
 %include "SGBase.i"
 %{
  #include <shogun/evaluation/PerformanceMeasures.h>
+ #include <shogun/evaluation/Evaluation.h>
+ #include <shogun/evaluation/Accuracy.h>
+ #include <shogun/evaluation/MeanSquaredError.h>
 %}
 
 /* Typemaps */
@@ -48,8 +51,18 @@
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(double_t** result, int32_t* num)};
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(double_t** result, int32_t* num, int32_t* dim)};
 
+/* for CLabels */
+%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* src, int32_t len)};
+%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* len)};
+
+
 /* Remove C Prefix */
 %rename(PerformanceMeasures) CPerformanceMeasures;
+%rename(Accuracy) CAccuracy;
+%rename(MeanSquaredError) CMeanSquaredError;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/PerformanceMeasures.h>
+%include <shogun/evaluation/Evaluation.h>
+%include <shogun/evaluation/Accuracy.h>
+%include <shogun/evaluation/MeanSquaredError.h>
