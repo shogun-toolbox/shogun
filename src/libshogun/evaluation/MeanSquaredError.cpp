@@ -14,13 +14,13 @@
 
 using namespace shogun;
 
-float64_t CMeanSquaredError::evaluate(CLabels* labels, CLabels* labels_valid)
+float64_t CMeanSquaredError::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(labels->get_num_labels() == labels_valid->get_num_labels());
-	int32_t length = labels->get_num_labels();
+	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
+	int32_t length = predicted->get_num_labels();
 	float64_t mse = 0.0;
 	for (int32_t i=0; i<length; i++)
-		mse += CMath::sq(labels->get_label(i) - labels_valid->get_label(i));
+		mse += CMath::sq(predicted->get_label(i) - ground_truth->get_label(i));
 	mse /= length;
 	return mse;
 }

@@ -28,20 +28,17 @@ class CEvaluation: public CSGObject
 {
 public:
 	/** constructor */
-	CEvaluation();
+	CEvaluation() : CSGObject() {};
 
 	/** destructor */
-	virtual ~CEvaluation();
+	virtual ~CEvaluation() {};
 
 	/** evaluate labels
-	 * @param labels labels for evaluating
-	 * @param labels_valid labels assumed to be correct
+	 * @param predicted labels for evaluating
+	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* labels, CLabels* labels_valid) = 0;
-
-	/** get name */
-	virtual const char* get_name() const = 0;
+	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
 };
 
 }

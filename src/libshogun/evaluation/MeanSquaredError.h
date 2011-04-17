@@ -37,11 +37,11 @@ public:
 	virtual ~CMeanSquaredError() {};
 
 	/** evaluate mean squared error
-	 * @param labels labels for evaluating
-	 * @param labels_valid labels assumed to be correct
+	 * @param predicted labels for evaluating
+	 * @param ground_truth labels assumed to be correct
 	 * @return mean squared error
 	 */
-	virtual float64_t evaluate(CLabels* labels, CLabels* labels_valid);
+	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
 	/** get name */
 	virtual inline const char* get_name() const { return "MeanSquaredError"; }

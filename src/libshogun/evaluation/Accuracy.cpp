@@ -13,14 +13,14 @@
 
 using namespace shogun;
 
-float64_t CAccuracy::evaluate(CLabels* labels, CLabels* labels_valid)
+float64_t CAccuracy::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(labels->get_num_labels() == labels_valid->get_num_labels());
-	int32_t length = labels->get_num_labels();
+	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
+	int32_t length = predicted->get_num_labels();
 	float64_t accuracy = 0.0;
 	for (int32_t i=0; i<length; i++)
 	{
-		if (labels->get_int_label(i) == labels_valid->get_int_label(i))
+		if (predicted->get_int_label(i) == ground_truth->get_int_label(i))
 		{
 			accuracy += 1.0;
 		}

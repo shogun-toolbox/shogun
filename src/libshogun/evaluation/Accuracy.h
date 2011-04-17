@@ -44,7 +44,7 @@ public:
 	 * @param labels_valid labels assumed to be correct
 	 * @return accuracy
 	 */
-	virtual float64_t evaluate(CLabels* labels, CLabels* labels_valid);
+	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
 	/** get name */
 	virtual inline const char* get_name() const { return "Accuracy"; }
