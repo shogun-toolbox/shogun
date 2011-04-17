@@ -23,7 +23,7 @@ namespace shogun
  * Formally, for labels \f$L,R, |L|=|R|\f$ accuracy is estimated as
  *
  * \f[
- * 		\frac{\sum_{i=1}^{|L|} [\sign L_i=\sign R_i]}{|L|}
+ * 		\frac{\sum_{i=1}^{|L|} [\mathrm{sign} L_i=\mathrm{sign} R_i]}{|L|}
  * \f]
  *
  * Note this class is capable of evaluating only 2-class
