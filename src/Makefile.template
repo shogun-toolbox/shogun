@@ -292,6 +292,8 @@ install-ruby_modular: $(TEMPLATE_TARGET)
 install-lua_modular: $(TEMPLATE_TARGET)
 	#TODO
 
+install-csharp_modular: $(TEMPLATE_TARGET)
+	#TODO
 
 run-testsuite: run-testsuite-template
 check-examples: check-examples-template
@@ -449,6 +451,18 @@ doc-python_modular:
 	true
 
 doc-r_modular:
+	true
+
+doc-java_modular:
+	true
+
+doc-ruby_modular:
+	true
+
+doc-lua_modular:
+	true
+
+doc-csharp_modular:
 	true
 
 $(OBJFILES): ../.config .depend Makefile ../ChangeLog

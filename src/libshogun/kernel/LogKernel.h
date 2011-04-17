@@ -27,7 +27,7 @@ class CDistance;
  * Formally described as
  *
  * \f[
- * 		K(x,x') = - log (\| x-x' \|^degree + 1)
+ * 		K(x,x') = - log (\| x-x' \|^{degree} + 1)
  * \f]
  *
  */
@@ -78,7 +78,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "Log"; }
+	inline virtual const char* get_name() const { return "LogKernel"; }
 
 	virtual ~CLogKernel();
 protected:

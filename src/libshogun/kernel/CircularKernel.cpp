@@ -24,9 +24,10 @@ CCircularKernel::CCircularKernel(int32_t size, float64_t sig, CDistance* dist)
 : CKernel(size), distance(dist)
 {
 	ASSERT(distance);
-	init();
-	set_sigma(sig);
 	SG_REF(distance);
+
+	set_sigma(sig);
+	init();
 }
 
 CCircularKernel::CCircularKernel(
@@ -34,9 +35,9 @@ CCircularKernel::CCircularKernel(
 : CKernel(10), distance(dist)
 {
 	ASSERT(distance);
-	init();
-	set_sigma(sig);
 	SG_REF(distance);
+	set_sigma(sig);
+	init();
 	init(l, r);
 }
 

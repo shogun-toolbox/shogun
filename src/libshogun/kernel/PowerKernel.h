@@ -27,7 +27,7 @@ class CDistance;
  * Formally described as
  *
  * \f[
- * 		K(x,x') = - \| x-x' \|^degree
+ * 		K(x,x') = - \| x-x' \|^{degree}
  * \f]
  *
  */
@@ -78,17 +78,21 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "Power"; }
+	inline virtual const char* get_name() const { return "PowerKernel"; }
 
 	virtual ~CPowerKernel();
-protected:
 
-	/// distance to be used
+private:
+	void init();
+
+protected:
+  
+  /// distance to be used
 	CDistance* distance;
 
 	/// degree parameter of kernel
 	float64_t degree;
-
+	
 	/**
 	 * compute kernel for specific feature vectors
 	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
@@ -97,9 +101,7 @@ protected:
 	 * @return kernel value
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
-private:
 
-	void init();
 };
 }
 

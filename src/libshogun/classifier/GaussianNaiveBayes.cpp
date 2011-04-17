@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "GNB.h"
+#include "GaussianNaiveBayes.h"
 #include "Classifier.h"
 #include "features/Features.h"
 #include "features/Labels.h"
@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CGNB::CGNB() :
+CGaussianNaiveBayes::CGaussianNaiveBayes() :
 CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
@@ -25,17 +25,19 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 
 };
 
-CGNB::CGNB(CFeatures* train_examples, CLabels* train_labels) :
+CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels) :
 CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
 	set_labels(train_labels);
+	if (!train_examples->has_property(FP_DOT))
+		SG_ERROR("Specified features are not of type CDotFeatures\n");
 	set_features((CDotFeatures*)train_examples);
 };
 
-CGNB::~CGNB()
+CGaussianNaiveBayes::~CGaussianNaiveBayes()
 {
 	SG_UNREF(m_features);
 	delete[] m_means;
@@ -43,9 +45,10 @@ CGNB::~CGNB()
 	delete[] m_feat_vec;
 	delete[] m_variances;
 	delete[] m_label_prob;
+	delete[] m_labels;
 };
 
-bool CGNB::train(CFeatures* data)
+bool CGaussianNaiveBayes::train(CFeatures* data)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
@@ -54,7 +57,6 @@ bool CGNB::train(CFeatures* data)
 				SG_ERROR("Specified features are not of type CDotFeatures\n");
 		set_features((CDotFeatures*) data);
 	}
-
 	// get int labels to m_labels and check length equality
 	ASSERT(labels);
 	m_labels = labels->get_int_labels(m_num_train_labels);
@@ -73,7 +75,7 @@ bool CGNB::train(CFeatures* data)
 	}
 
 	// subtract minimal label from all labels
-	for (i=1; i<m_num_train_labels; i++)
+	for (i=0; i<m_num_train_labels; i++)
 		m_labels[i]-= min_label;
 
 	// get number of classes, minimal label and dimensionality
@@ -100,18 +102,16 @@ bool CGNB::train(CFeatures* data)
 	ASSERT(m_label_prob);
 
 	// make arrays filled by zeros before using
-	for(i=0;i<m_num_classes*m_dim;i++)
+	for (i=0;i<m_num_classes*m_dim;i++)
 	{
 		m_means[i] = 0.0;
 		m_variances[i] = 0.0;
 	}
-	for(i=0;i<m_num_classes;i++)
+	for (i=0;i<m_num_classes;i++)
 	{
 		m_label_prob[i] = 0.0;
 		m_rates[i] = 0.0;
 	}
-	for(i=0;i<m_dim;i++)
-		m_feat_vec[i] = 0.0;
 
 	// get sum of features among labels
 	for (i=0; i<m_num_train_labels; i++)
@@ -119,6 +119,7 @@ bool CGNB::train(CFeatures* data)
 		m_features->get_feature_vector(&m_feat_vec, &m_dim, i);
 		for (j=0; j<m_dim; j++)
 			m_means[m_dim*m_labels[i]+j]+=m_feat_vec[j];
+
 		m_label_prob[m_labels[i]]+=1.0;
 	}
 
@@ -126,9 +127,7 @@ bool CGNB::train(CFeatures* data)
 	for (i=0; i<m_num_classes; i++)
 	{
 		for (j=0; j<m_dim; j++)
-		{
 			m_means[m_dim*i+j] /= m_label_prob[i];
-		}
 	}
 
 	// compute squared residuals with means available
@@ -139,14 +138,11 @@ bool CGNB::train(CFeatures* data)
 			m_variances[m_dim*m_labels[i]+j]+=CMath::pow(m_feat_vec[j]-m_means[m_dim*m_labels[i]+j],2);
 	}
 
-	// get standard deviations of features of labels
+	// get variance of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
 		for (j=0; j<m_dim; j++)
-		{
-			// unbiased estimation
 			m_variances[m_dim*i+j] /= m_label_prob[i] > 1 ? m_label_prob[i]-1 : 1;
-		}
 	}
 
 	// get a priori probabilities of labels
@@ -158,7 +154,7 @@ bool CGNB::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CGNB::classify()
+CLabels* CGaussianNaiveBayes::classify()
 {
 	// init number of vectors
 	int32_t n = m_features->get_num_vectors();
@@ -167,15 +163,13 @@ CLabels* CGNB::classify()
 	CLabels* result = new CLabels(n);
 
 	// classify each example of data
-	for(int i=0; i<n; i++)
-	{
+	for (int i=0; i<n; i++)
 		result->set_label(i,classify_example(i));
-	}
 
 	return result;
 };
 
-CLabels* CGNB::classify(CFeatures* data)
+CLabels* CGaussianNaiveBayes::classify(CFeatures* data)
 {
 	// check data correctness
 	if (!data)
@@ -190,7 +184,7 @@ CLabels* CGNB::classify(CFeatures* data)
 	return classify();
 };
 
-float64_t CGNB::classify_example(int32_t idx)
+float64_t CGaussianNaiveBayes::classify_example(int32_t idx)
 {
 	// get [idx] feature vector
 	m_features->get_feature_vector(&m_feat_vec,&m_dim,idx);
@@ -199,7 +193,7 @@ float64_t CGNB::classify_example(int32_t idx)
 	int i,k;
 
 	// rate all labels
-	for(i=0; i<m_num_classes; i++)
+	for (i=0; i<m_num_classes; i++)
 	{
 		// set rate to 0.0 if a priori probability is 0.0 and continue
 		if (m_label_prob[i]==0.0)
@@ -207,19 +201,22 @@ float64_t CGNB::classify_example(int32_t idx)
 			m_rates[i] = 0.0;
 			continue;
 		}
-		else m_rates[i] = m_label_prob[i];
+		else
+			m_rates[i] = m_label_prob[i];
 
 		// product all conditional gaussian probabilities
-		for(k=0; k<m_dim; k++)
+		for (k=0; k<m_dim; k++)
 			m_rates[i]*= normal_exp(m_feat_vec[k],i,k)/CMath::sqrt(m_variances[i*m_dim+k]);
 	}
 
 	// find label with maximum rate
 	int32_t max_label_idx = 0;
 
-	for(i=0; i<m_num_classes; i++)
+	for (i=0; i<m_num_classes; i++)
+	{
 		if (m_rates[i]>m_rates[max_label_idx])
 			max_label_idx = i;
+	}
 
 	return max_label_idx+m_min_label;
 };

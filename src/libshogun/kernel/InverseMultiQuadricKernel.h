@@ -22,11 +22,11 @@ namespace shogun
 {
 
 class CDistance;
-/**
-* InverseMultiQuadricKernel;
-*f[
+/** @brief InverseMultiQuadricKernel
+* 
+* \f[
 *             K(x,x') = 1/(\sqrt{\| x - x' \|^2 +c^2})
-*\f]
+* \f]
 */
 
 class CInverseMultiQuadricKernel: public CKernel
@@ -75,7 +75,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "InverseMultiQuadric"; }
+	inline virtual const char* get_name() const { return "InverseMultiQuadricKernel"; }
 
 	/** getter for coef parameter
 	 *  @return kernel parameter coefficient

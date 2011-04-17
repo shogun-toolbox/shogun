@@ -68,12 +68,12 @@ public:
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	inline virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	inline virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
@@ -83,22 +83,15 @@ public:
 	/**
 	 * @return coef - coefficient parameter of kernel
 	 */
-	inline virtual const float64_t get_coef() const { return coef; }
+	inline virtual const float64_t get_coef() const { return m_coef; }
 
-        /** setter for degree parameter
-         *  @param value coefficient parameter of kernel
-         */
-        inline void set_coef(float64_t value) { this->coef = value; }
+	/** setter for degree parameter
+	 *  @param value coefficient parameter of kernel
+	 */
+	inline void set_coef(float64_t coef) { m_coef=coef; }
 
 	virtual ~CRationalQuadraticKernel();
 protected:
-
-	/// distance to be used
-	CDistance* distance;
-
-	/// coefficient parameter of kernel
-	float64_t coef;
-
 	/**
 	 * compute kernel for specific feature vectors
 	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
@@ -111,6 +104,13 @@ protected:
 private:
 	/**Initialize parameters for serialization*/
 	void init();
+
+protected:
+	/// distance to be used
+	CDistance* m_distance;
+
+	/// coefficient parameter of kernel
+	float64_t m_coef;
 };
 }
 

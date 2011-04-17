@@ -16,7 +16,7 @@
 using namespace shogun;
 
 CNormDerivativeLem3::CNormDerivativeLem3()
-: CSimplePreProc<float64_t>("NormDerivativeLem3", "NDL3")
+: CSimplePreProc<float64_t>()
 {
 }
 

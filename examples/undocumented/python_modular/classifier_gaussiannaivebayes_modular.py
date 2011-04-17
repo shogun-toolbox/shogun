@@ -8,17 +8,17 @@ parameter_list = [[traindat,testdat,label_traindat],[traindat,testdat,label_trai
 
 def classifier_gnb_modular(fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat):
 	from shogun.Features import RealFeatures, Labels
-	from shogun.Classifier import GNB
+	from shogun.Classifier import GaussianNaiveBayes
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 	labels=Labels(label_train_multiclass)
 
-	gnb=GNB(feats_train, labels)
+	gnb=GaussianNaiveBayes(feats_train, labels)
 	gnb_train = gnb.train()
 	output=gnb.classify(feats_test).get_labels()
 	return gnb,gnb_train,output
 
 if __name__=='__main__':
-	print 'GNB'
+	print 'GaussianNaiveBayes'
 	classifier_gnb_modular(*parameter_list[0])

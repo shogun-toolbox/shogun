@@ -8,15 +8,15 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef GNB_H_
-#define GNB_H_
+#ifndef GAUSSIANNAIVEBAYES_H_
+#define GAUSSIANNAIVEBAYES_H_
 
-#include "Classifier.h"
+#include "classifier/Classifier.h"
 #include "features/DotFeatures.h"
 
 namespace shogun {
 
-/** @brief Class GNB, a Gaussian Naive Bayes classifier
+/** @brief Class GaussianNaiveBayes, a Gaussian Naive Bayes classifier
  *
  *	Formally, chooses class c with maximum \f$ P(c)P(x|c) \f$
  *	probability. Naive bayes assumes \f$ P(x|c) \f$ as product
@@ -30,24 +30,24 @@ namespace shogun {
  *
  */
 
-class CGNB : public CClassifier
+class CGaussianNaiveBayes : public CClassifier
 {
 public:
 	/** default constructor
 	 *
 	 */
-	CGNB();
+	CGaussianNaiveBayes();
 
 	/** constructor
 	 * 	@param train_examples train examples
 	 *	@param train_labels labels corresponding to train_examples
 	 */
-	CGNB(CFeatures* train_examples, CLabels* train_labels);
+	CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels);
 
 	/** destructor
 	 *
 	 */
-	virtual ~CGNB();
+	virtual ~CGaussianNaiveBayes();
 
 	/** set features for classify
 	 *
@@ -99,7 +99,7 @@ public:
 	/**
 	 * 	@return classifier type
 	 */
-	virtual inline EClassifierType get_classifier_type() { return CT_GNB; };
+	virtual inline EClassifierType get_classifier_type() { return CT_GAUSSIANNAIVEBAYES; };
 
 protected:
 
@@ -140,7 +140,7 @@ private:
 	 */
 	float64_t inline normal_exp(float64_t x, int32_t l_idx, int32_t f_idx)
 	{
-		return CMath::exp(-CMath::pow((x-m_means[m_dim*l_idx+f_idx]),2)/(2*m_variances[m_dim*l_idx+f_idx]));
+		return CMath::exp(-CMath::sq(x-m_means[m_dim*l_idx+f_idx])/(2*m_variances[m_dim*l_idx+f_idx]));
 	}
 
 	/// label rates
@@ -152,4 +152,4 @@ private:
 
 }
 
-#endif /* GNB_H_ */
+#endif /* GAUSSIANNAIVEBAYES_H_ */

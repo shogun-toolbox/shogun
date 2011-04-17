@@ -52,12 +52,13 @@
  #include <shogun/classifier/LPM.h>
  #include <shogun/classifier/svm/MPDSVM.h>
  #include <shogun/classifier/svm/MultiClassSVM.h>
- #include <shogun/classifier/Perceptron.h> 
+ #include <shogun/classifier/Perceptron.h>
+ #include <shogun/classifier/AveragedPerceptron.h>
  #include <shogun/classifier/SubGradientLPM.h>
  #include <shogun/classifier/svm/SubGradientSVM.h>
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/SVMLin.h>
- #include <shogun/classifier/GNB.h>
+ #include <shogun/classifier/GaussianNaiveBayes.h>
  #include <shogun/classifier/KernelMachine.h>
  #include <shogun/classifier/svm/SVMOcas.h>
  #include <shogun/classifier/svm/SVMSGD.h>
@@ -100,7 +101,7 @@
 %rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;
 %rename(GPBTSVM) CGPBTSVM;
-%rename(GNB) CGNB;
+%rename(GaussianNaiveBayes) CGaussianNaiveBayes;
 %rename(KernelPerceptron) CKernelPerceptron;
 %rename(KNN) CKNN;
 %rename(LDA) CLDA;
@@ -116,6 +117,7 @@
 %rename(MPDSVM) CMPDSVM;
 %rename(MultiClassSVM) CMultiClassSVM;
 %rename(Perceptron) CPerceptron;
+%rename(AveragedPerceptron) CAveragedPerceptron;
 %rename(SubGradientLPM) CSubGradientLPM;
 %rename(SubGradientSVM) CSubGradientSVM;
 #ifndef HAVE_PYTHON
@@ -148,7 +150,7 @@
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/MultiClassSVM.h>
 %include <shogun/classifier/LinearClassifier.h> 
-%include <shogun/classifier/GNB.h>
+%include <shogun/classifier/GaussianNaiveBayes.h>
 %include <shogun/classifier/svm/GMNPSVM.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
 %include <shogun/classifier/svm/GPBTSVM.h>
@@ -164,7 +166,8 @@
 %include <shogun/classifier/LPBoost.h> 
 %include <shogun/classifier/LPM.h>
 %include <shogun/classifier/svm/MPDSVM.h>
-%include <shogun/classifier/Perceptron.h> 
+%include <shogun/classifier/Perceptron.h>
+%include <shogun/classifier/AveragedPerceptron.h>
 %include <shogun/classifier/SubGradientLPM.h>
 %include <shogun/classifier/svm/SubGradientSVM.h>
 %include <shogun/classifier/svm/SVMLin.h>

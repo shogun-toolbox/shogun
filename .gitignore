@@ -4,10 +4,13 @@
 *_wrap.cxx
 *.so
 *.so.*
+*.dylib
 *.a
 *_doxygen.i
 .depend
 .config
+.cpuinfo
+.cpuinfo.c
 *.pyc
 TAGS
 tags

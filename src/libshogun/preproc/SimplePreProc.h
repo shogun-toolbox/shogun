@@ -36,7 +36,7 @@ template <class ST> class CSimplePreProc : public CPreProc
 		 * @param name simple preprocessor's name
 		 * @param id simple preprocessor's id
 		 */
-		CSimplePreProc(const char *name, const char* id) : CPreProc(name,id) {}
+		CSimplePreProc() : CPreProc() {}
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
@@ -49,9 +49,13 @@ template <class ST> class CSimplePreProc : public CPreProc
 		virtual ST* apply_to_feature_vector(ST* f, int32_t &len)=0;
 
 		/// return that we are simple features (just fixed size matrices)
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		virtual inline EFeatureClass get_feature_class() { return C_SIMPLE; }
 		/// return feature type
-		inline virtual EFeatureType get_feature_type();
+		virtual inline EFeatureType get_feature_type();
+
+		/// return a type of preprocessor
+		virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
+
 };
 
 template<> inline EFeatureType CSimplePreProc<float64_t>::get_feature_type()

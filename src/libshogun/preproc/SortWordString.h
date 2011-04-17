@@ -31,6 +31,8 @@ class CSortWordString : public CStringPreProc<uint16_t>
 public:
 	/** default constructor */
 	CSortWordString();
+
+	/** destructor */
 	virtual ~CSortWordString();
 
 	/// initialize preprocessor from features
@@ -53,7 +55,11 @@ public:
 	virtual uint16_t* apply_to_string(uint16_t* f, int32_t &len);
 
 	/** @return object name */
-	inline virtual const char* get_name() { return "SortWordString"; }
+	virtual inline const char* get_name() const { return "SortWordString"; }
+
+	/// return a type of preprocessor
+	virtual inline EPreProcType get_type() const { return P_SORTWORDSTRING; }
+
 };
 }
 #endif
