@@ -25,6 +25,13 @@
 
 namespace shogun
 {
+enum ECutoffType
+{
+	THRESHOLD,
+	VARIANCE_EXPLAINED,
+	FIXED_NUMBER
+};
+
 /** @brief Preprocessor PCACut performs principial component analysis on the input
  * vectors and keeps only the n eigenvectors with eigenvalues above a certain
  * threshold.
@@ -43,9 +50,10 @@ class CPCACut : public CSimplePreProc<float64_t>
 		/** constructor
 		 *
 		 * @param do_whitening do whitening
+		 * @param type of cutoff
 		 * @param thresh threshold
 		 */
-		CPCACut(bool do_whitening=false, float64_t thresh=1e-6);
+		CPCACut(bool do_whitening=false, ECutoffType cutoff_type=THRESHOLD, float64_t thresh=1e-6);
 		virtual ~CPCACut();
 
 		/// initialize preprocessor from features
@@ -120,6 +128,8 @@ class CPCACut : public CSimplePreProc<float64_t>
 
 		/** do whitening */
 		bool do_whitening;
+		/** Cutoff type */
+		ECutoffType cutoff_type;
 		/** thresh */
 		float64_t thresh;
 };
