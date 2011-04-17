@@ -28,18 +28,10 @@
 
 using namespace shogun;
 
-CPCACut::CPCACut(bool do_whitening_, float64_t thresh_)
+CPCACut::CPCACut(bool do_whitening_, ECutoffType cutoff_type_, float64_t thresh_)
 : CSimplePreProc<float64_t>(), T(NULL), num_dim(0), mean(NULL),
 	length_mean(NULL), eigenvalues(NULL), num_eigenvalues(0),initialized(false),
-	do_whitening(do_whitening_), thresh(thresh_), percentage(1), num_of_eig(0)
-{
-	init();
-}
-
-CPCACut::CPCACut(bool do_whitening_, float64_t percentage_, int32_t num_of_eig_)
-: CSimplePreProc<float64_t>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
-	length_mean(NULL), eigenvalues(NULL), num_eigenvalues(0),initialized(false),
-	do_whitening(do_whitening_), thresh(0), percentage(percentage_), num_of_eig(num_of_eig_)
+	do_whitening(do_whitening_), cutoff_type(cutoff_type_), thresh(thresh_)
 {
 	init();
 }
@@ -133,25 +125,37 @@ bool CPCACut::init(CFeatures* f)
 		eigenvalues=CMath::compute_eigenvectors(cov, num_features, num_features);
         num_eigenvalues=num_features;
 
-		float64_t eig_sum = 0;
-		for (i=0; i<num_features; i++)
-			eig_sum += eigenvalues[i];
-
-		float64_t com_sum = 0;
 		num_dim=0;
-		for (i=num_features-1; i>-1; i--)
+		if (cutoff_type == FIXED_NUMBER)
 		{
-			if (eigenvalues[i]>thresh)
-				num_dim++;
-			else
-				break;
-			com_sum += eigenvalues[i];
-			if (com_sum/eig_sum>=percentage)
-				break;
+			ASSERT(thresh <= num_features);
+			num_dim = thresh;
 		}
-
-		if (num_dim>num_of_eig && num_of_eig != 0)
-			num_dim = num_of_eig;
+		else if (cutoff_type == VARIANCE_EXPLAINED)
+		{
+			float64_t eig_sum = 0;
+			for (i=0; i<num_features; i++)
+				eig_sum += eigenvalues[i];
+			
+			float64_t com_sum = 0;		
+			for (i=num_features-1; i>-1; i--)
+			{
+				num_dim++;
+				com_sum += eigenvalues[i];
+				if (com_sum/eig_sum>=thresh)
+					break;
+			}
+		}
+		else
+		{
+			for (i=num_features-1; i>-1; i--)
+			{
+				if (eigenvalues[i]>thresh)
+					num_dim++;
+				else
+					break;
+			}
+		}
 
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
 
@@ -296,11 +300,9 @@ void CPCACut::init()
 			"initalized", "True when initialized.");
 	m_parameters->add(&do_whitening,
 			"do_whitening", "Whether data shall be whitened.");
+	m_parameters->add((machine_int_t*) &cutoff_type, "cutoff_type",
+			"Cutoff type.");
 	m_parameters->add(&thresh,
 			"thresh", "Cutoff threshold.");
-	m_parameters->add(&percentage,
-			"percentage", "Min percentage of variance explained.");
-	m_parameters->add(&num_of_eig,
-			"num_of_eig", "Number of eigenvalues used.");
 }
 #endif
