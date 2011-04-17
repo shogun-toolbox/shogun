@@ -62,7 +62,7 @@ CPreProc* CGUIPreProc::create_prunevarsubmean(bool divide_by_std)
 CPreProc* CGUIPreProc::create_pcacut(bool do_whitening, float64_t threshold)
 {
 #ifdef HAVE_LAPACK
-	CPreProc* preproc=new CPCACut(do_whitening, threshold);
+	CPreProc* preproc=new CPCACut(do_whitening, THRESHOLD, threshold);
 
 	if (preproc)
 		SG_INFO("PCACUT created (%p), do_whitening %i threshold %e", preproc, do_whitening, threshold);
