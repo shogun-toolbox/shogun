@@ -69,10 +69,10 @@ public:
 	
 protected:
 	/** Training sample feature dimension */
-	int32_t	m_nVecSize;
+	int32_t	m_vec_size;
 
 	/** number of training samples */
-	int32_t m_nTrainingSample;
+	int32_t m_TrainingSample_num;
 
 	/** window width
 	 *  Since we use Gaussian kernel function as the window function, the window width is used as the kernel width.

@@ -15,8 +15,8 @@ using namespace shogun;
 ParzenWindow::ParzenWindow()
 	: CDistribution()
 {
-	m_nVecSize = 0;
-	m_nTrainingSample = 0;
+	m_vec_size = 0;
+	m_TrainingSample_num = 0;
 	m_fWidth = 0.0;
 	m_ppTrainingData = NULL;
 	m_fGaussianConst = 0.0;
@@ -25,7 +25,7 @@ ParzenWindow::ParzenWindow()
 /** Since we don't store any samples in this class, so the Destructor just reset the pointer */
 ParzenWindow::~ParzenWindow()
 {
-	if(m_nVecSize * m_nTrainingSample > 0)
+	if(m_vec_size * m_TrainingSample_num > 0)
 	{
 		m_ppTrainingData = NULL;
 	}
@@ -40,13 +40,14 @@ bool ParzenWindow::init(int32_t nFeaDim, int32_t nTrainPoints, float64_t fWindow
 	if(nFeaDim <= 0 || nTrainPoints <= 0 || fWindowWidth  <= 0 || ppTrainingPoints == NULL)
 	{
 		return false;
-	}else
+	}
+	else
 	{
-		m_nVecSize = nFeaDim;
-		m_nTrainingSample = nTrainPoints;
+		m_vec_size = nFeaDim;
+		m_TrainingSample_num = nTrainPoints;
 		m_fWidth = fWindowWidth;
 		m_ppTrainingData = ppTrainingPoints;
-		m_fGaussianConst = pow(sqrt(DPI)*m_fWidth, m_nVecSize);
+		m_fGaussianConst = pow(sqrt(DPI)*m_fWidth, m_vec_size);
 		m_fGaussianConst = 1/m_fGaussianConst;
 		return true;
 	}
@@ -57,7 +58,7 @@ float64_t ParzenWindow::GaussianProb(const float64_t* Vector1, const float64_t* 
 {
 	int32_t i = 0;
 	float64_t dis = 0;
-	for(i = 0; i <m_nVecSize; i++)
+	for(i = 0; i <m_vec_size; i++)
 	{
 		dis += (Vector1[i]-Vector2[i]) * (Vector1[i]-Vector2[i]);
 	}
@@ -65,18 +66,19 @@ float64_t ParzenWindow::GaussianProb(const float64_t* Vector1, const float64_t* 
 	if(dis < MinExpArg)
 	{
 		dis = 0;
-	}else
+	}
+	else
 	{
 		dis = exp(dis);
 	}
-	dis = dis/m_fGaussianConst;
+	dis = dis*m_fGaussianConst;
 	return dis;
 }
 
 /** Calculate all the densities of all the testing samples based on the training samples */
 void ParzenWindow::CalculateDensity(float64_t* const pDensity, const float64_t** ppTestingPoints, int32_t nTestingPoints, int32_t nFeaDim_Test)
 {
-	if(nFeaDim_Test != m_nVecSize)
+	if(nFeaDim_Test != m_vec_size)
 	{
 		SG_ERROR("Feature Dimensions for Training samples and Testing samples should be the same\n");
 	}
@@ -105,6 +107,6 @@ void ParzenWindow::CalculateDensity(float64_t* const pDensity, const float64_t**
 		{
 			pDensity[i] += GaussianProb(ppTestingPoints[i], m_ppTrainingData[j]);
 		}
-		pDensity[i] = pDensity[i]/m_nTrainingSample;
+		pDensity[i] = pDensity[i]/m_TrainingSample_num;
 	}
 }
