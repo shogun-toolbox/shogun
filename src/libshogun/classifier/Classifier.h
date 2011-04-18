@@ -65,6 +65,7 @@ enum EClassifierType
 	CT_LARANK = 350,
 	CT_DASVMLINEAR = 360,
 	CT_GAUSSIANNAIVEBAYES = 370,
+	CT_SGDQN = 380,
 };
 
 enum ESolverType
