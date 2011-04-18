@@ -43,6 +43,7 @@ void CGMM::cleanup()
 {
 	for (int i = 0; i < m_n; i++)
 		SG_UNREF(m_components[i]);
+
 	delete[] m_components;
 	delete[] m_coefficients;
 }
@@ -52,6 +53,7 @@ bool CGMM::train(CFeatures* data)
 	ASSERT(m_n != 0);
 	if (m_components)
 		cleanup();
+
 	/** init features with data if necessary and assure type is correct */
 	if (data)
 	{
@@ -59,6 +61,7 @@ bool CGMM::train(CFeatures* data)
 				SG_ERROR("Specified features are not of type CDotFeatures\n");		
 		set_features(data);
 	}
+
 	CDotFeatures* dotdata = (CDotFeatures *) data;
 	int32_t num_vectors = dotdata->get_num_vectors();
 	int32_t num_dim = dotdata->get_dim_feature_space();
@@ -114,8 +117,10 @@ bool CGMM::train(CFeatures* data)
 		for (int i=0; i<num_vectors; i++)
 		{
 			float64_t sum = 0;
+
 			for (int j=0; j<m_n; j++)
 				sum += m_coefficients[j]*pdfs[i*m_n+j];
+
 			for (int j=0; j<m_n; j++)
 			{
 				T[i*m_n+j] = (m_coefficients[j]*pdfs[i*m_n+j])/sum;
@@ -190,17 +195,11 @@ float64_t CGMM::get_log_model_parameter(int32_t num_param)
 	ASSERT(num_param<3);
 
 	if (num_param==0)
-	{
 		return CMath::log(m_n);
-	}
 	else if (num_param==1)
-	{
 		return CMath::log(m_max_iter);
-	}
 	else
-	{
 		return CMath::log(m_minimal_change);
-	}
 }
 
 float64_t CGMM::get_log_derivative(int32_t num_param, int32_t num_example)
