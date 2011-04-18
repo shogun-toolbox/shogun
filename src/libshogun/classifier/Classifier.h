@@ -65,11 +65,9 @@ enum EClassifierType
 	CT_LARANK = 350,
 	CT_DASVMLINEAR = 360,
 	CT_GAUSSIANNAIVEBAYES = 370,
-<<<<<<< HEAD:src/libshogun/classifier/Classifier.h
 	CT_AVERAGEDPERCEPTRON = 380,
-=======
 	CT_SGDQN = 390,
->>>>>>> sgd:src/libshogun/classifier/Classifier.h
+
 };
 
 enum ESolverType
