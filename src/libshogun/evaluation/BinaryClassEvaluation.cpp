@@ -8,13 +8,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "TwoClassEvaluation.h"
+#include "BinaryClassEvaluation.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 
 using namespace shogun;
 
-void CTwoClassEvaluation::get_scores(CLabels* predicted, CLabels* ground_truth)
+void CBinaryClassEvaluation::get_scores(CLabels* predicted, CLabels* ground_truth)
 {
 	m_TP = 0.0;
 	m_FP = 0.0;
