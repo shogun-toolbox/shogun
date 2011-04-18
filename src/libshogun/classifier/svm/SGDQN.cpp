@@ -1,17 +1,17 @@
 /*
    SVM with Quasi-Newton stochastic gradient
    Copyright (C) 2007- Leon Bottou
-   
+
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
@@ -163,7 +163,7 @@ void CSGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c
 
 bool CSGDQN::train(CFeatures* data)
 {
-	
+
 	ASSERT(labels);
 
 	if (data)
@@ -178,7 +178,7 @@ bool CSGDQN::train(CFeatures* data)
 
 	int32_t num_train_labels=labels->get_num_labels();
 	w_dim=features->get_dim_feature_space();
-	int32_t num_vec=features->get_num_vectors();	
+	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
@@ -189,7 +189,7 @@ bool CSGDQN::train(CFeatures* data)
 
 	float64_t lambda= 1.0/(C1*num_vec);
 
-	// Shift t in order to have a 
+	// Shift t in order to have a
 	// reasonable initial learning rate.
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
@@ -198,16 +198,16 @@ bool CSGDQN::train(CFeatures* data)
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
-	
-	
+
+
 	float64_t* Bc=new float64_t[w_dim];
 	CMath::fill_vector(Bc, w_dim, 1/lambda);
 
 	float64_t* result=new float64_t[w_dim];
 	float64_t* B=new float64_t[w_dim];
 	float64_t* w_1=new float64_t[w_dim];
-	
-	//Calibrate 
+
+	//Calibrate
         calibrate();
 
         SG_INFO("Training on %d vectors\n", num_vec);
@@ -220,16 +220,16 @@ bool CSGDQN::train(CFeatures* data)
                 for (int32_t i=0; i<num_vec; i++)
                 {
 			float64_t* dst;
-                 	int32_t alen;
-        	        features->get_feature_vector(&dst,&alen,i);
+			int32_t alen;
+			features->get_feature_vector(&dst,&alen,i);
 			ASSERT(w_dim==alen);
 			float64_t eta = 1.0/t;
-                        float64_t y = labels->get_label(i);
-                        float64_t z = y * features->dense_dot(i, w, w_dim);
+			float64_t y = labels->get_label(i);
+			float64_t z = y * features->dense_dot(i, w, w_dim);
 			if(updateB==true)
 			{
 #if LOSS < LOGLOSS
-         	 		if (z < 1)
+				if (z < 1)
 #endif
 				{
 					w_1=w;
@@ -245,7 +245,7 @@ bool CSGDQN::train(CFeatures* data)
 							combine_and_clip(Bc,B,w_dim,(t-skip)/(t+skip),2*skip/(t+skip),1/(100*lambda),100/lambda);
 						else
 							combine_and_clip(Bc,B,w_dim,t/(t+skip),skip/(t+skip),1/(100*lambda),100/lambda);
-					}	
+					}
 				}
 				updateB=false;
 			}
@@ -273,13 +273,13 @@ bool CSGDQN::train(CFeatures* data)
 	delete[] w_1;
 	delete[] B;
 
-	return true;	
+	return true;
 }
 
 
 
 void CSGDQN::calibrate()
-{ 
+{
 	ASSERT(features);
 	int32_t num_vec=features->get_num_vectors();
 	int32_t c_dim=features->get_dim_feature_space();

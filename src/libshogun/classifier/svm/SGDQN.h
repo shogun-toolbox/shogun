@@ -56,7 +56,7 @@ class CSGDQN : public CLinearClassifier
 
 		/** get classifier type
 		 *
-		 * @return classifier type SVMSGDQN 
+		 * @return classifier type SVMSGDQN
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_SGDQN; }
 
@@ -106,8 +106,8 @@ class CSGDQN : public CLinearClassifier
 
 		/**computing diagonal scaling matrix B as ratio*/
 		void compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss);
-		
-		/** combine and clip scaling matrix B */ 
+
+		/** combine and clip scaling matrix B */
 		void combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1,float64_t c2,float64_t v1,float64_t v2);
 
 		/** @return object name */
