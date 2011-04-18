@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef BALANCEDERROR_H_
-#define BALANCEDERROR_H_
+#ifndef BINARYCLASSEVALUATION_H_
+#define BINARYCLASSEVALUATION_H_
 
 #include "Evaluation.h"
 #include "features/Labels.h"
@@ -17,31 +17,28 @@
 namespace shogun
 {
 
-/** @brief The class BalancedError
- * used to compute balanced error of two-class classification
- *
- * Note this class is capable of evaluating only 2-class
- * labels.
+/** @brief The class TwoClassEvaluation
+ * a base class used to evaluate 2-class classification
+ * with TP, FP, TN, FN rates.
  *
  */
-class CBalancedError: public CEvaluation
+class CBinaryClassEvaluation: public CEvaluation
 {
+
 public:
+
 	/** constructor */
-	CBalancedError() : CEvaluation() {};
+	CBinaryClassEvaluation() : CEvaluation() {};
 
 	/** destructor */
-	virtual ~CBalancedError() {};
+	virtual ~CBinaryClassEvaluation() {};
 
-	/** evaluate accuracy
+	/** evaluate labels
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
-	 * @return balanced error
+	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
-
-	/** get name */
-	virtual inline const char* get_name() const { return "Balanced error"; }
+	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
 
 protected:
 
@@ -64,4 +61,4 @@ protected:
 }
 
 
-#endif /* BALANCEDERROR_H_ */
+#endif /* BINARYCLASSEVALUATION_H_ */

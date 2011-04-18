@@ -8,13 +8,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "BalancedError.h"
+#include "TwoClassEvaluation.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 
 using namespace shogun;
 
-void CBalancedError::get_scores(CLabels* predicted, CLabels* ground_truth)
+void CTwoClassEvaluation::get_scores(CLabels* predicted, CLabels* ground_truth)
 {
 	m_TP = 0.0;
 	m_FP = 0.0;
@@ -37,11 +37,4 @@ void CBalancedError::get_scores(CLabels* predicted, CLabels* ground_truth)
 				m_TN += 1.0;
 		}
 	}
-}
-
-float64_t CBalancedError::evaluate(CLabels* predicted, CLabels* ground_truth)
-{
-	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
-	get_scores(predicted,ground_truth);
-	return 0.5*(m_FN/(m_FN+m_TP) + m_FP/(m_FP+m_TN));
 }

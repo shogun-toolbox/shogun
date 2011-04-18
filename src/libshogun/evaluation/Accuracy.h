@@ -11,7 +11,7 @@
 #ifndef ACCURACY_H_
 #define ACCURACY_H_
 
-#include "Evaluation.h"
+#include "BinaryClassEvaluation.h"
 #include "features/Labels.h"
 
 namespace shogun
@@ -20,21 +20,23 @@ namespace shogun
 /** @brief The class Accuracy
  * used to compute accuracy of classification.
  *
- * Formally, for labels \f$L,R, |L|=|R|\f$ accuracy is estimated as
- *
+ * Formally, it is computed as
  * \f[
- * 		\frac{\sum_{i=1}^{|L|} [\mathrm{sign} L_i=\mathrm{sign} R_i]}{|L|}
+ * 		\frac{\mathsf{TP}+\mathsf{TN}}{\mathsf{N}},
  * \f]
+ *
+ * where TP is true positive rate, TN is true negative rate and
+ * N is total number of labels.
  *
  * Note this class is capable of evaluating only 2-class
  * labels.
  *
  */
-class CAccuracy: public CEvaluation
+class CAccuracy: public CBinaryClassEvaluation
 {
 public:
 	/** constructor */
-	CAccuracy() : CEvaluation() {};
+	CAccuracy() : CBinaryClassEvaluation() {};
 
 	/** destructor */
 	virtual ~CAccuracy() {};
@@ -44,10 +46,15 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return accuracy
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual inline float64_t evaluate(CLabels* predicted, CLabels* ground_truth)
+	{
+		ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
+		get_scores(predicted, ground_truth);
+		return (m_TP+m_TN)/(predicted->get_num_labels());
+	}
 
 	/** get name */
-	virtual inline const char* get_name() const { return "Accuracy"; }
+	virtual inline const char* get_name() const { return "2-class accuracy"; }
 };
 
 }
