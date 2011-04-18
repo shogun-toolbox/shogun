@@ -41,11 +41,13 @@ using namespace shogun;
 CKernel::CKernel() : CSGObject()
 {
 	init();
+	register_param();
 }
 
 CKernel::CKernel(int32_t size) : CSGObject()
 {
 	init();
+	register_param();
 
 	if (size<10)
 		size=10;
@@ -57,6 +59,7 @@ CKernel::CKernel(int32_t size) : CSGObject()
 CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 {
 	init();
+	register_param();
 
 	if (size<10)
 		size=10;
@@ -904,26 +907,7 @@ void CKernel::save_serializable_post() throw (ShogunException)
 		rhs=lhs;
 }
 
-void CKernel::init()
-{
-	cache_size=10;
-	kernel_matrix=NULL;
-	lhs=NULL;
-	rhs=NULL;
-	num_lhs=0;
-	num_rhs=0;
-	combined_kernel_weight=1;
-	optimization_initialized=false;
-	opt_type=FASTBUTMEMHUNGRY;
-	properties=KP_NONE;
-	normalizer=NULL;
-
-#ifdef USE_SVMLIGHT
-	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
-#endif //USE_SVMLIGHT
-
-	set_normalizer(new CIdentityKernelNormalizer());
-
+void CKernel::register_param()   {
 	m_parameters->add(&cache_size, "cache_size",
 					  "Cache size in MB.");
 	m_parameters->add((CSGObject**) &lhs, "lhs",
@@ -947,4 +931,26 @@ void CKernel::init()
 					  "Kernel properties.");
 	m_parameters->add((CSGObject**) &normalizer, "normalizer",
 					  "Normalize the kernel.");
+}
+
+
+void CKernel::init()
+{
+	cache_size=10;
+	kernel_matrix=NULL;
+	lhs=NULL;
+	rhs=NULL;
+	num_lhs=0;
+	num_rhs=0;
+	combined_kernel_weight=1;
+	optimization_initialized=false;
+	opt_type=FASTBUTMEMHUNGRY;
+	properties=KP_NONE;
+	normalizer=NULL;
+
+#ifdef USE_SVMLIGHT
+	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
+#endif //USE_SVMLIGHT
+
+	set_normalizer(new CIdentityKernelNormalizer());
 }
