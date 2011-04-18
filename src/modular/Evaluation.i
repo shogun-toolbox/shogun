@@ -41,9 +41,9 @@
  #include <shogun/features/Labels.h>
  #include <shogun/evaluation/PerformanceMeasures.h>
  #include <shogun/evaluation/Evaluation.h>
- #include <shogun/evaluation/Accuracy.h>
+ #include <shogun/evaluation/BinaryClassEvaluation.h>
+ #include <shogun/evaluation/ContingencyTableEvaluation.h>
  #include <shogun/evaluation/MulticlassAccuracy.h>
- #include <shogun/evaluation/BalancedError.h>
  #include <shogun/evaluation/MeanSquaredError.h>
 %}
 
@@ -58,17 +58,16 @@
 
 /* Remove C Prefix */
 %rename(PerformanceMeasures) CPerformanceMeasures;
-%rename(Evaluation) CEvaluation;
-%rename(Accuracy) CAccuracy;
+%rename(BaseEvaluation) CEvaluation;
+%rename(BinaryClassEvaluation) CBinaryClassEvaluation;
+%rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
-%rename(BalancedError) CBalancedError;
 %rename(MeanSquaredError) CMeanSquaredError;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/PerformanceMeasures.h>
 %include <shogun/evaluation/Evaluation.h>
-%include <shogun/evaluation/Accuracy.h>
+%include <shogun/evaluation/BinaryClassEvaluation.h>
+%include <shogun/evaluation/ContingencyTableEvaluation.h>
 %include <shogun/evaluation/MulticlassAccuracy.h>
-%include <shogun/evaluation/BalancedError.h>
 %include <shogun/evaluation/MeanSquaredError.h>
-
