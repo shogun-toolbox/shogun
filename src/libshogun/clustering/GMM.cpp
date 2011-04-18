@@ -23,6 +23,7 @@ using namespace shogun;
 CGMM::CGMM() : CDistribution(), m_components(NULL), m_n(0),
 				m_coefficients(NULL), m_coef_size(0), m_max_iter(0), m_minimal_change(0)
 {
+	register_params();
 }
 
 CGMM::CGMM(int32_t n_, int32_t max_iter_, float64_t min_change_) : CDistribution(), m_components(NULL), m_n(n_),
@@ -95,6 +96,7 @@ bool CGMM::train(CFeatures* data)
 	{
 		e_log_likelihood_old = e_log_likelihood_new;
 		e_log_likelihood_new = 0;
+
 		/** Precomputing likelihoods */
 		float64_t* point;
 		int32_t point_len;
@@ -102,11 +104,10 @@ bool CGMM::train(CFeatures* data)
 		{
 			dotdata->get_feature_vector(&point, &point_len, i);
 			for (int j=0; j<m_n; j++)
-			{
 				pdfs[i*m_n+j] = m_components[j]->compute_PDF(point, point_len);
-			}
 			delete[] point;
 		}
+
 		for (int i=0; i<num_vectors; i++)
 		{
 			float64_t sum = 0;
@@ -120,6 +121,7 @@ bool CGMM::train(CFeatures* data)
 		}
 		/** Not sure if getting the abs value is a good idea */
 		e_log_likelihood_change = CMath::abs(e_log_likelihood_new - e_log_likelihood_old);
+
 		/** Updates */
 		float64_t T_sum;
 		float64_t* mean_sum;
@@ -170,22 +172,36 @@ bool CGMM::train(CFeatures* data)
 
 int32_t CGMM::get_num_model_parameters()
 {
-	return 1;
+	return 3;
 }
 
 float64_t CGMM::get_log_model_parameter(int32_t num_param)
 {
-	ASSERT(num_param==1);
-	return CMath::log(m_n);
+	ASSERT(num_param<3);
+
+	if (num_param==0)
+	{
+		return CMath::log(m_n);
+	}
+	else if (num_param==1)
+	{
+		return CMath::log(m_max_iter);
+	}
+	else
+	{
+		return CMath::log(m_minimal_change);
+	}
 }
 
 float64_t CGMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
+	SG_NOTIMPLEMENTED;
 	return 0;
 }
 
 float64_t CGMM::get_log_likelihood_example(int32_t num_example)
 {
+	SG_NOTIMPLEMENTED;
 	return 1;
 }
 
