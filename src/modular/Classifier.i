@@ -62,6 +62,7 @@
  #include <shogun/classifier/KernelMachine.h>
  #include <shogun/classifier/svm/SVMOcas.h>
  #include <shogun/classifier/svm/SVMSGD.h>
+ #include <shogun/classifier/svm/SGDQN.h>
  #include <shogun/classifier/svm/WDSVMOcas.h>
  #include <shogun/classifier/PluginEstimate.h> 
  #include <shogun/classifier/mkl/MKL.h>
@@ -126,6 +127,7 @@
 %rename(SVMLin) CSVMLin;
 %rename(SVMOcas) CSVMOcas;
 %rename(SVMSGD) CSVMSGD;
+%rename(SGDQN) CSGDQN;
 %rename(WDSVMOcas) CWDSVMOcas;
 %rename(PluginEstimate) CPluginEstimate;
 %rename(MKL) CMKL;
@@ -173,6 +175,7 @@
 %include <shogun/classifier/svm/SVMLin.h>
 %include <shogun/classifier/svm/SVMOcas.h>
 %include <shogun/classifier/svm/SVMSGD.h>
+%include <shogun/classifier/svm/SGDQN.h>
 %include <shogun/classifier/svm/WDSVMOcas.h>
 %include <shogun/classifier/PluginEstimate.h> 
 %include <shogun/classifier/mkl/MKL.h>
