@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Zi Yuan
+ * Written (W) 2011 Ziyuan Lin
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
