@@ -43,8 +43,7 @@ CGaussian::CGaussian(float64_t* mean, int32_t mean_length,
 
 void CGaussian::init()
 {
-	if (m_cov_inverse)
-		delete[] m_cov_inverse;
+	delete[] m_cov_inverse;
 
 	m_cov_inverse_rows = m_cov_cols;
 	m_cov_inverse_cols = m_cov_rows;
