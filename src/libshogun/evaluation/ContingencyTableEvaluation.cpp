@@ -1,0 +1,66 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011 Sergey Lisitsyn
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ */
+
+#include "ContingencyTableEvaluation.h"
+
+using namespace shogun;
+
+float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+{
+	compute_scores(predicted,ground_truth);
+	switch (m_type)
+	{
+		case ACCURACY:
+			return get_accuracy();
+		case ERROR_RATE:
+			return get_error_rate();
+		case BAL:
+			return get_BAL();
+		case WRACC:
+			return get_WRACC();
+		case F1:
+			return get_F1();
+		case CROSS_CORRELATION:
+			return get_cross_correlation();
+		case RECALL:
+			return get_recall();
+		case SPECIFITY:
+			return get_specifity();
+	}
+	SG_NOTIMPLEMENTED;
+}
+
+void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* ground_truth)
+{
+	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
+	m_TP = 0.0;
+	m_FP = 0.0;
+	m_TN = 0.0;
+	m_FN = 0.0;
+	m_N = predicted->get_num_labels();
+	for(int i=0; i<predicted->get_num_labels(); i++)
+	{
+		if (CMath::sign(ground_truth->get_label(i))==1)
+		{
+			if (CMath::sign(predicted->get_label(i))==1)
+				m_TP += 1.0;
+			else
+				m_FN += 1.0;
+		}
+		else
+		{
+			if (CMath::sign(predicted->get_label(i))==1)
+				m_FP += 1.0;
+			else
+				m_TN += 1.0;
+		}
+	}
+	m_computed = true;
+}
