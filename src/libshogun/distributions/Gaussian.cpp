@@ -25,7 +25,8 @@ m_mean_length(0)
 }
 
 CGaussian::CGaussian(float64_t* mean, int32_t mean_length,
-					float64_t* cov, int32_t cov_rows, int32_t cov_cols) : CDistribution()
+					float64_t* cov, int32_t cov_rows, int32_t cov_cols) : CDistribution(),
+					m_cov_inverse(NULL)
 {
 	ASSERT(mean_length == cov_rows);
 	ASSERT(cov_rows == cov_cols);
