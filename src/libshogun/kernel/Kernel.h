@@ -104,6 +104,7 @@ enum EKernelType
 	K_CIRCULAR = 430,
 	K_INVERSEMULTIQUADRIC = 440,
 	K_DISTANTSEGMENTS = 450,
+	K_BESSEL = 460,
 };
 
 enum EKernelProperty
