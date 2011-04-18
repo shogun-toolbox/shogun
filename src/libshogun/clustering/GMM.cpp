@@ -78,6 +78,7 @@ bool CGMM::train(CFeatures* data)
 
 	m_coefficients = new float64_t[m_coef_size];
 	m_components = new CGaussian*[m_n];
+
 	for (int i=0; i<m_n; i++)
 	{
 		m_coefficients[i] = 1.0/m_coef_size;
@@ -92,6 +93,7 @@ bool CGMM::train(CFeatures* data)
 	float64_t e_log_likelihood_change = m_minimal_change + 1;
 	float64_t e_log_likelihood_old = 0;
 	float64_t e_log_likelihood_new = -FLT_MAX;
+
 	while (iter<m_max_iter && e_log_likelihood_change>m_minimal_change)
 	{
 		e_log_likelihood_old = e_log_likelihood_new;
@@ -100,6 +102,7 @@ bool CGMM::train(CFeatures* data)
 		/** Precomputing likelihoods */
 		float64_t* point;
 		int32_t point_len;
+
 		for (int i=0; i<num_vectors; i++)
 		{
 			dotdata->get_feature_vector(&point, &point_len, i);
@@ -119,6 +122,7 @@ bool CGMM::train(CFeatures* data)
 				e_log_likelihood_new += T[i*m_n+j]*CMath::log(m_coefficients[j]*pdfs[i*m_n+j]);
 			}
 		}
+
 		/** Not sure if getting the abs value is a good idea */
 		e_log_likelihood_change = CMath::abs(e_log_likelihood_new - e_log_likelihood_old);
 
@@ -126,11 +130,13 @@ bool CGMM::train(CFeatures* data)
 		float64_t T_sum;
 		float64_t* mean_sum;
 		float64_t* cov_sum;
+
 		for (int i=0; i<m_n; i++)
 		{
 			T_sum = 0;
 			mean_sum = new float64_t[num_dim];
 			memset(mean_sum, 0, num_dim*sizeof(float64_t));
+
 			for (int j=0; j<num_vectors; j++)
 			{
 				T_sum += T[j*m_n+i];
@@ -138,7 +144,9 @@ bool CGMM::train(CFeatures* data)
 				CMath::add<float64_t>(mean_sum, T[j*m_n+i], point, 1, mean_sum, point_len);
 				delete[] point;
 			}
+
 			m_coefficients[i] = T_sum/num_vectors;
+
 			for (int j=0; j<num_dim; j++)
 				mean_sum[j] /= T_sum;
 			
@@ -146,6 +154,7 @@ bool CGMM::train(CFeatures* data)
 
 			cov_sum = new float64_t[num_dim*num_dim];
 			memset(cov_sum, 0, num_dim*num_dim*sizeof(float64_t));
+
 			for (int j=0; j<num_vectors; j++)
 			{
 				dotdata->get_feature_vector(&point, &point_len, j);	
@@ -154,6 +163,7 @@ bool CGMM::train(CFeatures* data)
                     1, (double*) cov_sum, num_dim);
 				delete[] point;
 			}
+
 			for (int j=0; j<num_dim*num_dim; j++)
 				cov_sum[j] /= T_sum;
 
