@@ -19,7 +19,6 @@ namespace shogun
 
 /** @brief The class TwoClassEvaluation
  * a base class used to evaluate 2-class classification
- * with TP, FP, TN, FN rates.
  *
  */
 class CBinaryClassEvaluation: public CEvaluation
@@ -39,23 +38,6 @@ public:
 	 * @return evaluation result
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
-
-protected:
-
-	/** get scores for TP, FP, TN, FN */
-	void get_scores(CLabels* predicted, CLabels* ground_truth);
-
-	// count of true positive labels
-	float64_t m_TP;
-
-	// count of false positive labels
-	float64_t m_FP;
-
-	// count of true negative labels
-	float64_t m_TN;
-
-	// count of false negative labels
-	float64_t m_FN;
 };
 
 }
