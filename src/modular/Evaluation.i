@@ -38,7 +38,13 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
+ #include <shogun/features/Labels.h>
  #include <shogun/evaluation/PerformanceMeasures.h>
+ #include <shogun/evaluation/Evaluation.h>
+ #include <shogun/evaluation/BinaryClassEvaluation.h>
+ #include <shogun/evaluation/ContingencyTableEvaluation.h>
+ #include <shogun/evaluation/MulticlassAccuracy.h>
+ #include <shogun/evaluation/MeanSquaredError.h>
 %}
 
 /* Typemaps */
@@ -48,8 +54,23 @@
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(double_t** result, int32_t* num)};
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(double_t** result, int32_t* num, int32_t* dim)};
 
+
+
 /* Remove C Prefix */
 %rename(PerformanceMeasures) CPerformanceMeasures;
+%rename(Evaluation) CEvaluation;
+%rename(BinaryClassEvaluation) CBinaryClassEvaluation;
+%rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
+%rename(MulticlassAccuracy) CMulticlassAccuracy;
+%rename(MeanSquaredError) CMeanSquaredError;
+%rename(Accuracy) CAccuracy;
+%rename(ErrorRate) CErrorRate;
+%rename(BAL) CBAL;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/PerformanceMeasures.h>
+%include <shogun/evaluation/Evaluation.h>
+%include <shogun/evaluation/BinaryClassEvaluation.h>
+%include <shogun/evaluation/ContingencyTableEvaluation.h>
+%include <shogun/evaluation/MulticlassAccuracy.h>
+%include <shogun/evaluation/MeanSquaredError.h>
