@@ -14,26 +14,34 @@
 
 using namespace shogun;
 
-float64_t CBalancedError::evaluate(CLabels* predicted, CLabels* ground_truth)
+void CBalancedError::get_scores(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
-	int32_t length = predicted->get_num_labels();
-	float64_t pos_err = 0.0;
-	int32_t pos_count = 0.0;
-	float64_t neg_err = 0.0;
-	for (int i=0; i<length; i++)
+	m_TP = 0.0;
+	m_FP = 0.0;
+	m_TN = 0.0;
+	m_FN = 0.0;
+	for(int i=0; i<predicted->get_num_labels(); i++)
 	{
-		if (CMath::sign(ground_truth->get_label(i)) == 1)
+		if (CMath::sign(ground_truth->get_label(i))==1)
 		{
-			pos_err += predicted->get_label(i);
-			pos_count++;
+			if (CMath::sign(predicted->get_label(i))==1)
+				m_TP += 1.0;
+			else
+				m_FN += 1.0;
 		}
 		else
 		{
-			neg_err += predicted->get_label(i);
+			if (CMath::sign(predicted->get_label(i))==1)
+				m_FP += 1.0;
+			else
+				m_TN += 1.0;
 		}
 	}
-	pos_err /= pos_count;
-	neg_err /= (length-pos_count);
-	return 0.5*(pos_err+neg_err);
+}
+
+float64_t CBalancedError::evaluate(CLabels* predicted, CLabels* ground_truth)
+{
+	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
+	get_scores(predicted,ground_truth);
+	return 0.5*(m_FN/(m_FN+m_TP) + m_FP/(m_FP+m_TN));
 }

@@ -42,6 +42,23 @@ public:
 
 	/** get name */
 	virtual inline const char* get_name() const { return "Balanced error"; }
+
+protected:
+
+	/** get scores for TP, FP, TN, FN */
+	void get_scores(CLabels* predicted, CLabels* ground_truth);
+
+	// count of true positive labels
+	float64_t m_TP;
+
+	// count of false positive labels
+	float64_t m_FP;
+
+	// count of true negative labels
+	float64_t m_TN;
+
+	// count of false negative labels
+	float64_t m_FN;
 };
 
 }
