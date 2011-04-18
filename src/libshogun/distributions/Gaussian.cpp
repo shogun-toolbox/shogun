@@ -55,6 +55,7 @@ void CGaussian::init()
 
 	for (int i = 0; i < m_cov_rows; i++)
 		m_constant *= m_cov_inverse[i*m_cov_rows+i];
+
 	m_constant = 1/m_constant;
 	m_constant *= pow(2*M_PI, (float64_t) -m_cov_rows/2);
 
