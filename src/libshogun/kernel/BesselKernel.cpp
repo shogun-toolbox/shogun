@@ -1,15 +1,17 @@
 /*
- * BesselKernel.cpp
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Apr 17, 2011
- *      Author: ziyuan
+ * Written (W) 2011 Zi Yuan
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include "BesselKernel.h"
 #include "lib/Mathematics.h"
-#include <boost/math/special_functions/bessel.hpp>
+#include <math.h>
 
-using namespace boost::math;
 using namespace shogun;
 
 CBesselKernel::CBesselKernel():CDistanceKernel(),order(0.0),degree(0)
@@ -17,16 +19,18 @@ CBesselKernel::CBesselKernel():CDistanceKernel(),order(0.0),degree(0)
 	init();
 }
 
-CBesselKernel::CBesselKernel(int32_t size, float64_t v, float64_t w, int32_t n,
-		CDistance* dist):CDistanceKernel(size,w,dist), order(v), degree(n)
+CBesselKernel::CBesselKernel(int32_t size, float64_t v, float64_t w,
+		int32_t n, CDistance* dist) :
+	CDistanceKernel(size,w,dist), order(v), degree(n)
 {
 	ASSERT(distance);
 	SG_REF(distance);
 	init();
 }
 
-CBesselKernel::CBesselKernel(CFeatures* l, CFeatures* r, int32_t size, float64_t v, float64_t w, int32_t n,
-		CDistance* dist):CDistanceKernel(size,w,dist), order(v), degree(n)
+CBesselKernel::CBesselKernel(CFeatures* l, CFeatures* r, float64_t v,
+		float64_t w, int32_t n, CDistance* dist, int32_t size) :
+	CDistanceKernel(size,w,dist), order(v), degree(n)
 {
 	init();
 	ASSERT(distance);
@@ -63,5 +67,5 @@ void CBesselKernel::init()
 float64_t CBesselKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t dist = distance->distance(idx_a, idx_b);
-	return cyl_bessel_j(order,dist/width)/pow(dist,-degree*order);
+	return jn(order,dist/width)/CMath::pow(dist,-degree*order);
 }

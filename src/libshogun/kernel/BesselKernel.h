@@ -1,8 +1,11 @@
 /*
- * BesselKernel.h
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Apr 17, 2011
- *      Author: ziyuan
+ * Written (W) 2011 Zi Yuan
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef BESSELKERNEL_H_
@@ -19,11 +22,11 @@ class CDistance;
  *
  * It is defined as
  * \f[
- * k(x, y) = \frac{J_{v}( \| x-y \|/\sigma)}{ \| x-y \| ^ {-nv} }
+ * k(x, y) = \frac{J_{v}( \| x-y \|/\tau)}{ \| x-y \| ^ {-nv} }
  * \f]
  * Where:
  * 		J_{v} is the Bessel funcion with order v,
- * 		\sigma is the kernel width, and
+ * 		\tau is the kernel width, and
  * 		n is the kernel degree.
  * */
 class CBesselKernel: public CDistanceKernel
@@ -39,8 +42,8 @@ class CBesselKernel: public CDistanceKernel
 		 * @param width the kernel width
 		 * @param degree the kernel degree
 		 */
-		CBesselKernel(int32_t size, float64_t order ,
-				float64_t width , int32_t degree,
+		CBesselKernel(int32_t size, float64_t order,
+				float64_t width, int32_t degree,
 				CDistance* dist);
 
 		/** constructor
@@ -52,9 +55,9 @@ class CBesselKernel: public CDistanceKernel
 		 * @param width the kernel width
 		 * @param degree the degree
 		 */
-		CBesselKernel(CFeatures* l, CFeatures* r, int32_t size,
+		CBesselKernel(CFeatures* l, CFeatures* r,
 				float64_t order, float64_t width, int32_t degree,
-				CDistance* dist);
+				CDistance* dist, int32_t size=10);
 
 		/**
 		 * clean up kernel
@@ -125,11 +128,11 @@ class CBesselKernel: public CDistanceKernel
 
 		/** set the kernel's width
 		 *
-		 * @param kernel width
+		 * @param tau kernel width
 		 */
-		inline virtual void set_width(float64_t sigma)
+		inline virtual void set_width(float64_t tau)
 		{
-			width = sigma;
+			width = tau;
 		}
 
 		/** return the kernel's width
@@ -159,6 +162,9 @@ class CBesselKernel: public CDistanceKernel
 			return degree;
 		}
 
+	protected:
+		float64_t compute(int32_t idx_a, int32_t idx_b);
+
 	private:
 		void init();
 
@@ -167,8 +173,6 @@ class CBesselKernel: public CDistanceKernel
 		float64_t order;
 		/** kernel degree */
 		int32_t degree;
-
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 
 }
