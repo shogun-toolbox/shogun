@@ -13,7 +13,8 @@
 
 #include "features/Labels.h"
 
-namespace shogun {
+namespace shogun
+{
 
 /** @brief The class Evaluation
  * a main class for other classes

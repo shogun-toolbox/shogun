@@ -19,7 +19,8 @@
 namespace shogun
 {
 
-enum EContingencyTableMeasureType {
+enum EContingencyTableMeasureType
+{
 	ACCURACY = 0,
 	ERROR_RATE = 10,
 	BAL = 20,
@@ -66,7 +67,7 @@ public:
 	virtual ~CContingencyTableEvaluation() {};
 
 	/** evaluate labels
-	 * @param predicted labels for evaluating
+	 * @param predicted labels
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
@@ -164,6 +165,48 @@ protected:
 
 	// count of false negative labels
 	float64_t m_FN;
+};
+
+/** @brief class Accuracy
+ * used to measure accuracy of 2-class classifier
+ */
+class CAccuracy: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CAccuracy() : CContingencyTableEvaluation(ACCURACY) {};
+	/* virtual destructor */
+	virtual ~CAccuracy() {};
+	/* name */
+	virtual inline const char* get_name() const { return "Accuracy"; };
+};
+
+/** @brief class ErrorRate
+ * used to measure error rate of 2-class classifier
+ */
+class CErrorRate: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CErrorRate() : CContingencyTableEvaluation(ERROR_RATE) {};
+	/* virtual destructor */
+	virtual ~CErrorRate() {};
+	/* name */
+	virtual inline const char* get_name() const { return "ErrorRate"; };
+};
+
+/** @brief class BAL
+ * used to measure balanced error of 2-class classifier
+ */
+class CBAL: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CBAL() : CContingencyTableEvaluation(BAL) {};
+	/* virtual destructor */
+	virtual ~CBAL() {};
+	/* name */
+	virtual inline const char* get_name() const { return "BAL"; };
 };
 
 }

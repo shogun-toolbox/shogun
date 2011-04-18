@@ -39,15 +39,17 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 
 void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* ground_truth)
 {
+	ASSERT(ground_truth->is_two_class_labeling());
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
 	m_TP = 0.0;
 	m_FP = 0.0;
 	m_TN = 0.0;
 	m_FN = 0.0;
 	m_N = predicted->get_num_labels();
-	for(int i=0; i<predicted->get_num_labels(); i++)
+
+	for (int i=0; i<predicted->get_num_labels(); i++)
 	{
-		if (CMath::sign(ground_truth->get_label(i))==1)
+		if (ground_truth->get_label(i)==1)
 		{
 			if (CMath::sign(predicted->get_label(i))==1)
 				m_TP += 1.0;

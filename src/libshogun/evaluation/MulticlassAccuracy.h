@@ -45,7 +45,7 @@ public:
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
 	/** get name */
-	virtual inline const char* get_name() const { return "Multiclass accuracy"; }
+	virtual inline const char* get_name() const { return "MulticlassAccuracy"; }
 };
 
 }
