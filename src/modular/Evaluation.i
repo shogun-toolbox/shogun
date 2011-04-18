@@ -58,11 +58,14 @@
 
 /* Remove C Prefix */
 %rename(PerformanceMeasures) CPerformanceMeasures;
-%rename(BaseEvaluation) CEvaluation;
+%rename(Evaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
 %rename(MeanSquaredError) CMeanSquaredError;
+%rename(Accuracy) CAccuracy;
+%rename(ErrorRate) CErrorRate;
+%rename(BAL) CBAL;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/PerformanceMeasures.h>
