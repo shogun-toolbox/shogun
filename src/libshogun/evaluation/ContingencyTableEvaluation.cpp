@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "ContingencyTableEvaluation.h"
+#include "evaluation/ContingencyTableEvaluation.h"
 
 using namespace shogun;
 
@@ -34,7 +34,9 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 		case SPECIFITY:
 			return get_specifity();
 	}
+
 	SG_NOTIMPLEMENTED;
+	return 42;
 }
 
 void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* ground_truth)

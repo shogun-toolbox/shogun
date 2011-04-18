@@ -11,7 +11,7 @@
 #ifndef CONTINGENCYTABLEEVALUATION_H_
 #define CONTINGENCYTABLEEVALUATION_H_
 
-#include "BinaryClassEvaluation.h"
+#include "evaluation/BinaryClassEvaluation.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 #include "lib/io.h"

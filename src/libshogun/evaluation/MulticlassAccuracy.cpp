@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "MulticlassAccuracy.h"
+#include "evaluation/MulticlassAccuracy.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 

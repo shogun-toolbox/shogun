@@ -11,7 +11,7 @@
 #ifndef MEANSQUAREDERROR_H_
 #define MEANSQUAREDERROR_H_
 
-#include "Evaluation.h"
+#include "evaluation/Evaluation.h"
 #include "features/Labels.h"
 
 namespace shogun

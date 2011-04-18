@@ -12,6 +12,7 @@
 #define EVALUATION_H_
 
 #include "features/Labels.h"
+#include "base/SGObject.h"
 
 namespace shogun
 {

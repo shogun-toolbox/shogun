@@ -11,7 +11,7 @@
 #ifndef MULTICLASSACCURACY_H_
 #define MULTICLASSACCURACY_H_
 
-#include "Evaluation.h"
+#include "evaluation/Evaluation.h"
 #include "features/Labels.h"
 
 namespace shogun
