@@ -54,6 +54,8 @@ public:
 	CANOVAKernel(
 		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d, int32_t cache);
 
+	virtual ~CANOVAKernel();
+
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
@@ -81,8 +83,6 @@ public:
 	 */
 	inline virtual const char* get_name() const { return "ANOVAKernel"; }
 
-	virtual ~CANOVAKernel();
-
 	/** getter for degree parameter
 	 *  @return kernel parameter cardinality
 	 */
@@ -92,6 +92,9 @@ public:
 	 *  @param value kernel parameter cardinality
 	 */
 	inline void set_cardinality(int32_t value) { this->cardinality = value; }
+
+	float64_t compute_rec1(int32_t idx_a, int32_t idx_b);
+	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
 protected:
 
 	/**
@@ -104,19 +107,35 @@ protected:
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	void init();
+	void allocate_arrays();
 
-	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len, int32_t d);
-	float64_t compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len, int32_t d);
-public:
-	float64_t compute_rec1(int32_t idx_a, int32_t idx_b);
-	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
-	
+	/** clean up kernel */
+	virtual void cleanup();
+
+	void register_params();
+
+	/** Can (optionally) be overridden to post-initialize some member
+	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_POST
+	 *  is called.
+	 *
+	 *  @exception ShogunException Will be thrown if an error
+	 *                             occurres.
+	 */
+	virtual void load_serializable_post() throw (ShogunException);
+
+private:
+	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len);
+	float64_t compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len);
+
 protected:
 	/// degree parameter of kernel
 	int32_t cardinality;
 	
 	/// array for compute_recursive1
-	float64_t** DP;
+	float64_t* DP;
+	/// length of DP
+	int32_t DP_len;
 	
 	/// arrays for compute_recursive2
 	float64_t* KD;
