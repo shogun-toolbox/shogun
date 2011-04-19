@@ -36,14 +36,9 @@ class CDistance;
 
 class CANOVAKernel: public CDotKernel
 {
-	void init(void);
-	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len, int32_t d);
-	float64_t compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len, int32_t d);
 public:
-	float64_t compute_rec1(int32_t idx_a, int32_t idx_b);
-	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
 	/** default constructor */
-	CANOVAKernel(void);
+	CANOVAKernel();
 
 	/** constructor
 	 * @param cache size of cache
@@ -98,7 +93,25 @@ public:
 	 */
 	inline void set_cardinality(int32_t value) { this->cardinality = value; }
 protected:
+
+	/**
+	 * compute kernel for specific feature vectors
+	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
+	 * @param idx_a left-side index
+	 * @param idx_b right-side index
+	 * @return kernel value
+	 */
+	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+
+	void init();
+
+	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len, int32_t d);
+	float64_t compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len, int32_t d);
+public:
+	float64_t compute_rec1(int32_t idx_a, int32_t idx_b);
+	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
 	
+protected:
 	/// degree parameter of kernel
 	int32_t cardinality;
 	
@@ -109,15 +122,6 @@ protected:
 	float64_t* KD;
 	float64_t* KS;
 	float64_t* vec_pow;
-
-	/**
-	 * compute kernel for specific feature vectors
-	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
-	 * @param idx_a left-side index
-	 * @param idx_b right-side index
-	 * @return kernel value
-	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 };
 }
 
