@@ -24,7 +24,7 @@ def distribution_histogram(fm_train=traindna,fm_cube=cubedna,order=3,
 #			sg('get_log_derivative %d %d' % (j, i))
 
 #	sg('get_log_likelihood')
-	return sg('get_log_likelihood_sample')
+#	return sg('get_log_likelihood_sample')
 
 if __name__=='__main__':
 	print 'Histogram'
