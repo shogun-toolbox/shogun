@@ -10,11 +10,11 @@
 #ifndef __ASCII_FILE_H__
 #define __ASCII_FILE_H__
 
-#include <lib/config.h>
-#include <base/DynArray.h>
-#include <lib/common.h>
-#include <lib/File.h>
-#include <lib/io.h>
+#include <shogun/lib/config.h>
+#include <shogun/base/DynArray.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/File.h>
+#include <shogun/lib/io.h>
 
 namespace shogun
 {
