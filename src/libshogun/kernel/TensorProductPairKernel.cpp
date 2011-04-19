@@ -52,33 +52,32 @@ bool CTensorProductPairKernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CTensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  int32_t alen, blen;
-  bool afree, bfree;
+	int32_t alen, blen;
+	bool afree, bfree;
 
-  int32_t* avec=((CSimpleFeatures<int32_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-  int32_t* bvec=((CSimpleFeatures<int32_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	int32_t* avec=((CSimpleFeatures<int32_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+	int32_t* bvec=((CSimpleFeatures<int32_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  ASSERT(alen==2);
-  ASSERT(blen==2);
+	ASSERT(alen==2);
+	ASSERT(blen==2);
 
-  CKernel* k=subkernel;
-  ASSERT(k && k->has_features());
+	CKernel* k=subkernel;
+	ASSERT(k && k->has_features());
 
-  int32_t a=avec[0];
-  int32_t b=avec[1];
-  int32_t c=bvec[0];
-  int32_t d=bvec[1];
+	int32_t a=avec[0];
+	int32_t b=avec[1];
+	int32_t c=bvec[0];
+	int32_t d=bvec[1];
 
-  float64_t result = k->kernel(a,c)*k->kernel(b,d) + k->kernel(a,d)*k->kernel(b,c);
+	float64_t result = k->kernel(a,c)*k->kernel(b,d) + k->kernel(a,d)*k->kernel(b,c);
 
-  ((CSimpleFeatures<int32_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSimpleFeatures<int32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CSimpleFeatures<int32_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CSimpleFeatures<int32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return result;
+	return result;
 }
 
 void CTensorProductPairKernel::register_params()
 {
-    //the parameter needed is a subkernel, which is non-trivial in its type
-	//such complex types should be supported in base/Parameter.h for serialization
+	m_parameters->add((CSGObject**)&subkernel, "subkernel", "the subkernel");
 }
