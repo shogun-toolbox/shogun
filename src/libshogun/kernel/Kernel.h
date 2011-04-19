@@ -917,7 +917,7 @@ class CKernel : public CSGObject
 		 *	This can be the first stage of a *general* framework for 
 		 *	cross-validation or other parameter-based operations 
 		 */
-		virtual void register_param();
+		virtual void register_params();
 
 	private:
 		/** Do basic initialisations like default settings

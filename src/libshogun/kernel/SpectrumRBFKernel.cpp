@@ -39,7 +39,6 @@ using namespace shogun;
 CSpectrumRBFKernel::CSpectrumRBFKernel(void)
   : CStringKernel<char>(0)
 {
-	SG_UNSTABLE("CSpectrumRBFKernel::CSpectrumRBFKernel(void)", "\n");
     init();
 	register_param();
 }
@@ -58,11 +57,11 @@ CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int
 	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	read_profiles_and_sequences();
-	register_param();
 
 	//string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, PROTEIN);
 	string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, IUPAC_AMINO_ACID);
 	init(string_features, string_features);
+	register_param();
 }
 
 CSpectrumRBFKernel::CSpectrumRBFKernel(
@@ -73,9 +72,9 @@ CSpectrumRBFKernel::CSpectrumRBFKernel(
 
 	AA_matrix=new float64_t[128*128];
 	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
-	register_param();
 
 	init(l, r);
+	register_param();
 }
 
 CSpectrumRBFKernel::~CSpectrumRBFKernel()
@@ -389,7 +388,8 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 	return false;
 }
 
-void CSpectrumRBFKernel::register_param() {
+void CSpectrumRBFKernel::register_param() 
+{
 	m_parameters->add(&degree, "degree", "degree of the kernel");
 	m_parameters->add(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix");
 	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix", "128*128 scalar product matrix");
@@ -397,10 +397,15 @@ void CSpectrumRBFKernel::register_param() {
 	m_parameters->add(&nof_sequences, "nof_sequences","length of the sequence");
 	m_parameters->add_vector(&sequences, &nof_sequences, "the sequences as a part of profile");
 	m_parameters->add(&max_sequence_length,"max_sequence_length","max length of the sequence");
-	//Note: new types in base/Parameters.h may be needed to incorporate types like std::vector<std::string>
 }
 
-void CSpectrumRBFKernel::init() {
+void CSpectrumRBFKernel::register_alphabet()
+{
+	m_parameters->add((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel");
+}
+
+void CSpectrumRBFKernel::init() 
+{
 	alphabet = NULL;
 	degree = 0;
 	AA_matrix = NULL;

@@ -19,14 +19,14 @@ using namespace shogun;
 CTensorProductPairKernel::CTensorProductPairKernel(void)
 : CDotKernel(0), subkernel(NULL)
 {
-	SG_UNSTABLE("CTensorProductPairKernel::"
-				"CTensorProductPairKernel(void)", "\n");
+	register_params();
 }
 
 CTensorProductPairKernel::CTensorProductPairKernel(int32_t size, CKernel* s)
 : CDotKernel(size), subkernel(s)
 {
 	SG_REF(subkernel);
+	register_params();
 }
 
 CTensorProductPairKernel::CTensorProductPairKernel(CSimpleFeatures<int32_t>* l, CSimpleFeatures<int32_t>* r, CKernel* s)
@@ -34,6 +34,7 @@ CTensorProductPairKernel::CTensorProductPairKernel(CSimpleFeatures<int32_t>* l, 
 {
 	SG_REF(subkernel);
 	init(l, r);
+	register_params();
 }
 
 CTensorProductPairKernel::~CTensorProductPairKernel()
@@ -74,4 +75,10 @@ float64_t CTensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
   ((CSimpleFeatures<int32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
+}
+
+void CTensorProductPairKernel::register_params()
+{
+    //the parameter needed is a subkernel, which is non-trivial in its type
+	//such complex types should be supported in base/Parameter.h for serialization
 }

@@ -20,14 +20,14 @@ using namespace shogun;
 CDistanceKernel::CDistanceKernel(void)
 : CKernel(0), distance(NULL), width(0.0)
 {
-	SG_UNSTABLE("CDistanceKernel::CDistanceKernel(void)", "\n");
+	register_params();
 }
 
 CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, CDistance* d)
 : CKernel(size), distance(d)
 {
   	ASSERT(distance);
-	init();
+	register_params();
 	set_width(w);
 	SG_REF(distance);
 }
@@ -36,7 +36,7 @@ CDistanceKernel::CDistanceKernel(
 	CFeatures *l, CFeatures *r, float64_t w , CDistance* d)
 : CKernel(10), distance(d)
 {
-	init();
+	register_params();
 	set_width(w);
 	ASSERT(distance);
 	SG_REF(distance);
@@ -65,7 +65,7 @@ float64_t CDistanceKernel::compute(int32_t idx_a, int32_t idx_b)
 	return exp(-result/width);
 }
 
-void CDistanceKernel::init()
+void CDistanceKernel::register_params()
 {
 	m_parameters->add(&width, "width", "Kernel width.");
 	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");

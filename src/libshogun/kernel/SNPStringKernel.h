@@ -109,6 +109,9 @@ class CSNPStringKernel: public CStringKernel<char>
 		 * @return name PolyMatchString
 		 */
 		virtual const char* get_name() const { return "SNPStringKernel"; }
+		/* register the parameters
+		 */
+		virtual void register_params();
 
 	protected:
 		/** compute kernel function for features a and b
@@ -138,6 +141,9 @@ class CSNPStringKernel: public CStringKernel<char>
 		char* m_str_min;
 		/** allele B */
 		char* m_str_maj;
+	
+	private:
+		void init();
 };
 }
 #endif /* _SNPSTRINGKERNEL_H___ */

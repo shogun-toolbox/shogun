@@ -120,6 +120,8 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		virtual void remove_lhs();
 	    /* register the parameters */
 	    virtual void register_param();
+		/* register the alphabet */
+		void register_alphabet();
 
 
 	protected:
@@ -152,8 +154,8 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 
 		CArray2<float64_t> kernel_matrix ;
 		int32_t target_letter_0 ;
-     private:
-	    void init();
+	private:
+		void init();
 };
 
 }

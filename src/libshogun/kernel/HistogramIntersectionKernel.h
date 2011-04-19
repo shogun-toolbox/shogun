@@ -60,6 +60,9 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 * @return if initializing was successful
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+		/* register the parameters
+		 */
+		virtual void register_params();
 
 		/** return what type of kernel we are
 		 *

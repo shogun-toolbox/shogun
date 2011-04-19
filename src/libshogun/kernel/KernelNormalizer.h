@@ -88,6 +88,10 @@ class CKernelNormalizer : public CSGObject
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)=0;
+	
+		/** register the parameters
+		 */
+		virtual void register_params()=0;
 
 		/** getter for normalizer type
 		 */

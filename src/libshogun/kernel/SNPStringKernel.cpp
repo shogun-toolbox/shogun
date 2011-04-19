@@ -21,11 +21,9 @@ CSNPStringKernel::CSNPStringKernel(void)
 : CStringKernel<char>(0),
   m_degree(0), m_win_len(0), m_inhomogene(false)
 {
-	SG_UNSTABLE("CSNPStringKernel::CSNPStringKernel(void)", "\n");
-
-	m_str_min=NULL;
-	m_str_maj=NULL;
+	init();
 	set_normalizer(new CSqrtDiagKernelNormalizer());
+	register_params();
 }
 
 CSNPStringKernel::CSNPStringKernel(int32_t size,
@@ -33,9 +31,9 @@ CSNPStringKernel::CSNPStringKernel(int32_t size,
 : CStringKernel<char>(size),
 	m_degree(degree), m_win_len(2*win_len), m_inhomogene(inhomogene)
 {
-	m_str_min=NULL;
-	m_str_maj=NULL;
+	init();
 	set_normalizer(new CSqrtDiagKernelNormalizer());
+	register_params();
 }
 
 CSNPStringKernel::CSNPStringKernel(
@@ -44,12 +42,12 @@ CSNPStringKernel::CSNPStringKernel(
 : CStringKernel<char>(10), m_degree(degree), m_win_len(2*win_len),
 	m_inhomogene(inhomogene)
 {
-	m_str_min=NULL;
-	m_str_maj=NULL;
+	init();
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	if (l==r)
 		obtain_base_strings();
 	init(l, r);
+	register_params();
 }
 
 CSNPStringKernel::~CSNPStringKernel()
@@ -181,4 +179,19 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return total;
+}
+
+void CSNPStringKernel::register_params()
+{
+	m_parameters->add(&m_degree, "m_degree", "the order of the kernel");
+	m_parameters->add(&m_win_len, "m_win_len", "the window length");
+	m_parameters->add(&m_inhomogene, "m_inhomogene", "the mark of whether it's an inhomogeneous poly kernel");
+	m_parameters->add_vector(&m_str_min, &m_str_len, "m_str_min", "allele A");
+	m_parameters->add_vector(&m_str_maj, &m_str_len, "m_str_maj", "allele B");
+}
+
+void CSNPStringKernel::init()
+{
+	m_str_min=NULL;
+	m_str_maj=NULL;
 }
