@@ -144,8 +144,8 @@ void COligoStringKernel::getExpFunctionCache(uint32_t sequence_length)
 	gauss_table=new float64_t[sequence_length];
 
 	gauss_table[0] = 1;
-	for (uint32_t i = 1; i < sequence_length - 1; i++)
-		gauss_table[i] = exp((-1 / (CMath::sq(width))) * CMath::sq(i));
+	for (uint32_t i = 1; i < sequence_length; i++)
+		gauss_table[i] = exp((-1.0 / (CMath::sq(width))) * CMath::sq((float64_t) i));
 
 	gauss_table_len=sequence_length;
 }
@@ -162,7 +162,7 @@ float64_t COligoStringKernel::kernelOligoFast(
 	uint32_t x_size = x.size();
 	uint32_t y_size = y.size();
 
-	while ((uint32_t) i1 < x_size && (uint32_t) i2 < y_size)
+	while ((uint32_t) i1 + 1 < x_size && (uint32_t) i2 + 1 < y_size)
 	{
 		if (x[i1].second == y[i2].second)
 		{
@@ -197,10 +197,8 @@ float64_t COligoStringKernel::kernelOligoFast(
 					}
 					else if (y[i2].second == y[i2 + 1].second)
 					{
-						while(y[i2++].second == y[i2].second)
-						{
-							;
-						}
+						while (y[i2].second == y[i2+1].second)
+							i2++;
 						++i1;
 						c1 = 0;
 					}
