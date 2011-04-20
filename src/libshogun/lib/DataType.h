@@ -47,7 +47,7 @@ template <class T> struct TSparse {
 };
 
 enum EContainerType {
-	CT_SCALAR, CT_VECTOR, CT_MATRIX
+	CT_SCALAR, CT_VECTOR, CT_MATRIX, CT_NDARRAY
 };
 
 enum EStructType {

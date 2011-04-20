@@ -10,11 +10,12 @@
 #ifndef __BINARY_FILE_H__
 #define __BINARY_FILE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/SimpleFile.h>
+#include "lib/config.h"
+#include "lib/common.h"
+#include "base/SGObject.h"
+#include "lib/io.h"
+#include "lib/SimpleFile.h"
+#include "lib/File.h"
 
 namespace shogun
 {
@@ -255,6 +256,29 @@ public:
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
 	//@}
 
+	/** @name N-Dimensional Array Access Functions
+	 *
+	 * Functions to access n-dimensional arrays of one of the several base data types.
+	 * These functions are used when writing array of num_dims dimensions to e.g. a file.
+	 * Dims contain sizes of every dimensions.
+	 */
+	//@{
+	virtual void set_byte_ndarray(
+			uint8_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_char_ndarray(
+			char* array, int32_t* dims, int32_t num_dims);
+	virtual void set_int_ndarray(
+			int32_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_shortreal_ndarray(
+			float32_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_real_ndarray(
+			float64_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_short_ndarray(
+			int16_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_word_ndarray(
+			uint16_t* array, int32_t* dims, int32_t num_dims);
+	//@}
+	
 	/** @name Sparse Matrix Access Functions
 	 *
 	 * Functions to access sparse matrices of one of the several base data types.
