@@ -90,24 +90,29 @@ GET_MATRIX(get_longreal_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, PT_F
 #define GET_NDARRAY(fname,sg_type,datatype)									\
 void CBinaryFile::fname(sg_type *& array, int32_t *& dims,int32_t & num_dims)\
 {																			\
-	int32_t total = 1;														\
+	size_t total = 1;														\
 																			\
-	if(!file)											\
+	if (!file)																\
 		SG_ERROR("File invalid.\n");										\
+																			\
 	TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL);							\
 	read_header(&dtype);													\
-	if(dtype!=datatype)														\
+																			\
+	if (dtype!=datatype)													\
 		SG_ERROR("Datatype mismatch\n");									\
 																			\
-	if(fread(&num_dims,sizeof(int32_t),1,file) != 1)						\
+	if (fread(&num_dims,sizeof(int32_t),1,file) != 1)						\
 		SG_ERROR("Failed to read number of dimensions");					\
+																			\
 	dims = new int32_t[num_dims];											\
-	if(fread(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)				\
+	if (fread(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)		\
 		SG_ERROR("Failed to read sizes of dimensions!");					\
-	for(int32_t i = 0;i < num_dims;i++)										\
+																			\
+	for (int32_t i = 0;i < num_dims;i++)									\
 		total *= dims[i];													\
+																			\
 	array = new sg_type[total];												\
-	if(fread(array,sizeof(sg_type),total,file) != (size_t)total)					\
+	if (fread(array,sizeof(sg_type),total,file) != (size_t)total)			\
 		SG_ERROR("Failed to read array data!");								\
 }
 
@@ -262,22 +267,27 @@ SET_MATRIX(set_longreal_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #define SET_NDARRAY(fname,sg_type,datatype)									\
 void CBinaryFile::fname(sg_type * array, int32_t * dims,int32_t num_dims)	\
 {																			\
-	int32_t total = 1;														\
+	size_t total = 1;														\
 																			\
-	if(!file)																\
+	if (!file)																\
 		SG_ERROR("File invalid.\n");										\
-	if(!array)																\
+																			\
+	if (!array)																\
 		SG_ERROR("Invalid array!\n");										\
+																			\
 	TSGDataType t datatype;													\
 	write_header(&t);														\
 																			\
-	if(fwrite(&num_dims,sizeof(int32_t),1,file) != 1)						\
+	if (fwrite(&num_dims,sizeof(int32_t),1,file) != 1)						\
 		SG_ERROR("Failed to write number of dimensions!\n");				\
-	if(fwrite(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)				\
+																			\
+	if (fwrite(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)		\
 		SG_ERROR("Failed to write sizes of dimensions!\n");					\
-	for(int32_t i = 0;i < num_dims;i++)										\
+																			\
+	for (int32_t i = 0;i < num_dims;i++)										\
 		total *= dims[i];													\
-	if(fwrite(array,sizeof(sg_type),total,file) != (size_t)total)					\
+																			\
+	if (fwrite(array,sizeof(sg_type),total,file) != (size_t)total)			\
 		SG_ERROR("Failed to write array data!\n");							\
 }
 
