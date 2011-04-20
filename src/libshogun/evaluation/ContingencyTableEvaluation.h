@@ -29,14 +29,14 @@ enum EContingencyTableMeasureType
 	CROSS_CORRELATION = 50,
 	RECALL = 60,
 	PRECISION = 70,
-	SPECIFITY = 80
+	SPECIFICITY = 80
 };
 
 /** @brief The class ContingencyTableEvaluation
  * a base class used to evaluate 2-class classification
  * with TP, FP, TN, FN rates.
  *
- * This class have implementations of measures listed below:
+ * This class has implementations of the measures listed below:
  *
  * Accuracy (ACCURACY): \f$ \frac{TP+TN}{N} \f$
  *
@@ -48,14 +48,14 @@ enum EContingencyTableMeasureType
  *
  * F1 score (F!): \f$ \frac{2\cdot FP}{2\cdot TP + FP + FN} \f$
  *
- * Cross correlation (CROSS_CORRELATION):
+ * Cross correlation coefficient (CROSS_CORRELATION):
  * \f$ \frac{TP\cdot TN - FP \cdot FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}} \f$
  *
  * Recall (RECALL): \f$ \frac{TP}{TP+FN} \f$
  *
  * Precision (PRECISION): \f$ \frac{TP}{TP+FP} \f$
  *
- * Specifity (SPECIFITY): \f$ \frac{TN}{TN+FP} \f$
+ * Specificity (SPECIFICITY): \f$ \frac{TN}{TN+FP} \f$
  *
  */
 class CContingencyTableEvaluation: public CBinaryClassEvaluation
@@ -84,13 +84,17 @@ public:
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
 	/** get name */
-	virtual inline const char* get_name() const { return "ContingencyTableEvaluation"; }
+	virtual inline const char* get_name() const
+	{
+		return "ContingencyTableEvaluation";
+	}
 
 	/* accuracy */
 	inline float64_t get_accuracy() const
 	{
 		if (!m_computed)
 			SG_ERROR("Uninitialized");
+
 		return (m_TP+m_TN)/m_N;
 	};
 
@@ -99,6 +103,7 @@ public:
 	{
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
+
 		return (m_FP + m_FN)/m_N;
 	};
 
@@ -107,6 +112,7 @@ public:
 	{
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
+
 		return 0.5*(m_FN/(m_FN + m_TP) + m_FP/(m_FP + m_TN));
 	};
 
@@ -115,6 +121,7 @@ public:
 	{
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
+
 		return m_TP/(m_FN + m_TP) - m_FP/(m_FP + m_TN);
 	};
 
@@ -123,6 +130,7 @@ public:
 	{
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
+
 		return (2*m_TP)/(2*m_TP + m_FP + m_FN);
 	};
 
@@ -131,6 +139,7 @@ public:
 	{
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
+
 		return (m_TP*m_TN-m_FP*m_FN)/CMath::sqrt((m_TP+m_FP)*(m_TP+m_FN)*(m_TN+m_FP)*(m_TN+m_FN));
 	};
 
@@ -139,6 +148,7 @@ public:
 	{
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
+
 		return m_TP/(m_TP+m_FN);
 	};
 
@@ -147,14 +157,16 @@ public:
 	{
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
+
 		return m_TP/(m_TP+m_FP);
 	};
 
 	/* specifity */
-	inline float64_t get_specifity() const
+	inline float64_t get_specificity() const
 	{
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
+
 		return m_TN/(m_TN+m_FP);
 	};
 

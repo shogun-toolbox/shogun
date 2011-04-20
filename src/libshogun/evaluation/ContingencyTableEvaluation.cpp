@@ -33,8 +33,8 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 			return get_recall();
 		case PRECISION:
 			return get_precision();
-		case SPECIFITY:
-			return get_specifity();
+		case SPECIFICITY:
+			return get_specificity();
 	}
 
 	SG_NOTIMPLEMENTED;
