@@ -3,7 +3,7 @@
 
 /*
    SVM with Quasi-Newton stochastic gradient
-   Copyright (C) 2007- Leon Bottou
+   Copyright (C) 2009- Antoine Bordes
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -101,8 +101,6 @@ class CSGDQN : public CLinearClassifier
 		 * @return the number of training epochs
 		 */
 		inline int32_t get_epochs() { return epochs; }
-
-		void matrixmul(float64_t* vec1,float64_t* vec2,float64_t* res,int32_t dim);
 
 		/**computing diagonal scaling matrix B as ratio*/
 		void compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss);

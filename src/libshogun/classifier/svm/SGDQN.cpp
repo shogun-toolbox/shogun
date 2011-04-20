@@ -1,6 +1,6 @@
 /*
    SVM with Quasi-Newton stochastic gradient
-   Copyright (C) 2007- Leon Bottou
+   Copyright (C) 2009- Antoine Bordes
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -15,91 +15,18 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
-   $Id: svmsgd.cpp,v 1.13 2007/10/02 20:40:06 cvs Exp $
 
-  Shogun adjustments (w) 2011 Siddharth Kherada
+   Shogun adjustments (w) 2011 Siddharth Kherada
 */
 
 #include "classifier/svm/SGDQN.h"
 #include "base/Parameter.h"
 #include "lib/Signal.h"
 #include "lib/Mathematics.h"
+#include "lib/Loss.h"
 
 
 using namespace shogun;
-
-// Available losses
-#define HINGELOSS 1
-#define SMOOTHHINGELOSS 2
-#define SQUAREDHINGELOSS 3
-#define LOGLOSS 10
-#define LOGLOSSMARGIN 11
-
-// Select loss
-#define LOSS HINGELOSS
-
-inline
-float64_t loss(float64_t z)
-{
-#if LOSS == LOGLOSS
-	if (z >= 0)
-		return log(1+exp(-z));
-	else
-		return -z + log(1+exp(z));
-#elif LOSS == LOGLOSSMARGIN
-	if (z >= 1)
-		return log(1+exp(1-z));
-	else
-		return 1-z + log(1+exp(z-1));
-#elif LOSS == SMOOTHHINGELOSS
-	if (z < 0)
-		return 0.5 - z;
-	if (z < 1)
-		return 0.5 * (1-z) * (1-z);
-	return 0;
-#elif LOSS == SQUAREDHINGELOSS
-	if (z < 1)
-		return 0.5 * (1 - z) * (1 - z);
-	return 0;
-#elif LOSS == HINGELOSS
-	if (z < 1)
-		return 1 - z;
-	return 0;
-#else
-# error "Undefined loss"
-#endif
-}
-
-inline
-float64_t dloss(float64_t z)
-{
-#if LOSS == LOGLOSS
-	if (z < 0)
-		return 1 / (exp(z) + 1);
-	float64_t ez = exp(-z);
-	return ez / (ez + 1);
-#elif LOSS == LOGLOSSMARGIN
-	if (z < 1)
-		return 1 / (exp(z-1) + 1);
-	float64_t ez = exp(1-z);
-	return ez / (ez + 1);
-#elif LOSS == SMOOTHHINGELOSS
-	if (z < 0)
-		return 1;
-	if (z < 1)
-		return 1-z;
-	return 0;
-#elif LOSS == SQUAREDHINGELOSS
-	if (z < 1)
-		return (1 - z);
-	return 0;
-#else
-	if (z < 1)
-		return 1;
-	return 0;
-#endif
-}
-
 
 CSGDQN::CSGDQN()
 : CLinearClassifier()
@@ -131,34 +58,28 @@ CSGDQN::~CSGDQN()
 {
 }
 
-void CSGDQN::matrixmul(float64_t* vec1,float64_t* vec2,float64_t* res,int32_t dim)
-{
-	for (int32_t i=0; i < dim;i++)
-		res[i]=vec1[i]*vec2[i];
-}
-
 void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss)
 {
 	for (int32_t i=0; i < dim;i++)
-        {
+	{
 		float64_t diffw=W_1[i]-W[i];
-                if(diffw)
+		if(diffw)
 			B[i]+=diffw/ (lambda*diffw+ loss*dst[i]);
-                else
-                        B[i]+=1/lambda;
-        }
+		else
+			B[i]+=1/lambda;
+	}
 }
 
 void CSGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1,float64_t c2,float64_t v1,float64_t v2)
 {
 	for (int32_t i=0; i < dim;i++)
-        {
+	{
 		if(B[i])
-                {
+		{
 			Bc[i] = Bc[i] * c1 + B[i] * c2;
-                        Bc[i]= CMath::min(CMath::max(Bc[i],v1),v2);
-                }
-        }
+			Bc[i]= CMath::min(CMath::max(Bc[i],v1),v2);
+		}
+	}
 }
 
 bool CSGDQN::train(CFeatures* data)
@@ -194,7 +115,7 @@ bool CSGDQN::train(CFeatures* data)
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,dloss(-typw));
+	float64_t eta0 = typw / CMath::max(1.0,CLoss::dloss(-typw));
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
@@ -208,17 +129,17 @@ bool CSGDQN::train(CFeatures* data)
 	float64_t* w_1=new float64_t[w_dim];
 
 	//Calibrate
-        calibrate();
+	calibrate();
 
-        SG_INFO("Training on %d vectors\n", num_vec);
-        CSignal::clear_cancel();
+	SG_INFO("Training on %d vectors\n", num_vec);
+	CSignal::clear_cancel();
 
 	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
-        {
-                count = skip;
+	{
+		count = skip;
 		bool updateB=false;
-                for (int32_t i=0; i<num_vec; i++)
-                {
+		for (int32_t i=0; i<num_vec; i++)
+		{
 			float64_t* dst;
 			int32_t alen;
 			features->get_feature_vector(&dst,&alen,i);
@@ -233,11 +154,11 @@ bool CSGDQN::train(CFeatures* data)
 #endif
 				{
 					w_1=w;
-					float64_t loss_1=dloss(z);
-					matrixmul(Bc,dst,result,w_dim);
-        				CMath::add(w,eta*loss_1*y,result,1.0,w,w_dim);
+					float64_t loss_1=CLoss::dloss(z);
+					CMath::vector_multiply(result,Bc,dst,w_dim);
+					CMath::add(w,eta*loss_1*y,result,1.0,w,w_dim);
 					float64_t z2 = y * features->dense_dot(i, w, w_dim);
-        				float64_t diffloss = dloss(z2) - loss_1;
+					float64_t diffloss = CLoss::dloss(z2) - loss_1;
 					if(diffloss)
 					{
 						compute_ratio(w,w_1,B,dst,w_dim,lambda,y*diffloss);
@@ -253,17 +174,17 @@ bool CSGDQN::train(CFeatures* data)
 			{
 				if(--count<=0)
 				{
-					matrixmul(Bc,w,result,w_dim);
-                                        CMath::add(w,-skip*lambda*eta,result,1.0,w,w_dim);
+					CMath::vector_multiply(result,Bc,w,w_dim);
+					CMath::add(w,-skip*lambda*eta,result,1.0,w,w_dim);
 					count = skip;
 					updateB=true;
 				}
 #if LOSS < LOGLOSS
-          			if (z < 1)
+				if (z < 1)
 #endif
 				{
-					matrixmul(Bc,dst,result,w_dim);
-                                        CMath::add(w,eta*dloss(z)*y,result,1.0,w,w_dim);
+					CMath::vector_multiply(result,Bc,dst,w_dim);
+					CMath::add(w,eta*CLoss::dloss(z)*y,result,1.0,w,w_dim);
 				}
 			}
 			t++;
@@ -293,9 +214,8 @@ void CSGDQN::calibrate()
 	float64_t r = 0;
 
 	for (int32_t j=0; j<num_vec ; j++, n++)
-	{
 		r += features->get_nnz_features_for_vector(j);
-	}
+
 
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
@@ -310,9 +230,9 @@ void CSGDQN::init()
 	skip=1000;
 	count=1000;
 
-    	m_parameters->add(&C1, "C1",  "Cost constant 1.");
-    	m_parameters->add(&C2, "C2",  "Cost constant 2.");
-    	m_parameters->add(&epochs, "epochs",  "epochs");
-    	m_parameters->add(&skip, "skip",  "skip");
-    	m_parameters->add(&count, "count",  "count");
+	m_parameters->add(&C1, "C1",  "Cost constant 1.");
+	m_parameters->add(&C2, "C2",  "Cost constant 2.");
+	m_parameters->add(&epochs, "epochs",  "epochs");
+	m_parameters->add(&skip, "skip",  "skip");
+	m_parameters->add(&count, "count",  "count");
 }
