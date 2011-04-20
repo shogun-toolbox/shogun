@@ -91,7 +91,7 @@ class CKernelNormalizer : public CSGObject
 	
 		/** register the parameters
 		 */
-		virtual void register_params()=0;
+		virtual void register_params() {}
 
 		/** getter for normalizer type
 		 */
