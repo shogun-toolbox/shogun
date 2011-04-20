@@ -28,14 +28,15 @@ enum EContingencyTableMeasureType
 	F1 = 40,
 	CROSS_CORRELATION = 50,
 	RECALL = 60,
-	SPECIFITY = 70
+	PRECISION = 70,
+	SPECIFITY = 80
 };
 
 /** @brief The class ContingencyTableEvaluation
  * a base class used to evaluate 2-class classification
  * with TP, FP, TN, FN rates.
  *
- * This class have implementations of:
+ * This class have implementations of measures listed below:
  *
  * Accuracy (ACCURACY): \f$ \frac{TP+TN}{N} \f$
  *
@@ -45,7 +46,16 @@ enum EContingencyTableMeasureType
  *
  * Weighted relative accuracy (WRACC): \f$ \frac{TP}{TP+FN} - \frac{FP}{FP+TN} \f$
  *
- * F1 score (F!): \f$ \f$
+ * F1 score (F!): \f$ \frac{2\cdot FP}{2\cdot TP + FP + FN} \f$
+ *
+ * Cross correlation (CROSS_CORRELATION):
+ * \f$ \frac{TP\cdot TN - FP \cdot FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}} \f$
+ *
+ * Recall (RECALL): \f$ \frac{TP}{TP+FN} \f$
+ *
+ * Precision (PRECISION): \f$ \frac{TP}{TP+FP} \f$
+ *
+ * Specifity (SPECIFITY): \f$ \frac{TN}{TN+FP} \f$
  *
  */
 class CContingencyTableEvaluation: public CBinaryClassEvaluation
@@ -130,6 +140,14 @@ public:
 		if (!m_computed)
 				SG_ERROR("Uninitialized");
 		return m_TP/(m_TP+m_FN);
+	};
+
+	/* precision */
+	inline float64_t get_precision() const
+	{
+		if (!m_computed)
+				SG_ERROR("Uninitialized");
+		return m_TP/(m_TP+m_FP);
 	};
 
 	/* specifity */

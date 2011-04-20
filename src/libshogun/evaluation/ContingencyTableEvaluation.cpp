@@ -31,6 +31,8 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 			return get_cross_correlation();
 		case RECALL:
 			return get_recall();
+		case PRECISION:
+			return get_precision();
 		case SPECIFITY:
 			return get_specifity();
 	}
