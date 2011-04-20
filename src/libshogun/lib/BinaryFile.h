@@ -10,12 +10,12 @@
 #ifndef __BINARY_FILE_H__
 #define __BINARY_FILE_H__
 
-#include "lib/config.h"
-#include "lib/common.h"
-#include "base/SGObject.h"
-#include "lib/io.h"
-#include "lib/SimpleFile.h"
-#include "lib/File.h"
+#include <lib/config.h>
+#include <lib/common.h>
+#include <base/SGObject.h>
+#include <lib/io.h>
+#include <lib/SimpleFile.h>
+#include <lib/File.h>
 
 namespace shogun
 {
