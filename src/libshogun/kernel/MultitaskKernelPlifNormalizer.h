@@ -30,9 +30,6 @@ public:
 	/** default constructor  */
 	CMultitaskKernelPlifNormalizer() : CMultitaskKernelMklNormalizer()
 	{
-		SG_UNSTABLE("CMultitaskKernelPlifNormalizer::"
-					"CMultitaskKernelPlifNormalizer()", "\n");
-
 		num_tasks = 0;
 		num_tasksqr = 0;
 		num_betas = 0;
