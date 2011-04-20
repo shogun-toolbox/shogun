@@ -60,6 +60,7 @@ TSGDataType::to_string(char* dest, size_t n) const
 	case CT_SCALAR: strncpy(p, "", n); break;
 	case CT_VECTOR: strncpy(p, "Vector<", n); break;
 	case CT_MATRIX: strncpy(p, "Matrix<", n); break;
+	case CT_NDARRAY: strncpy(p, "N-Dimensional Array<", n); break;
 	}
 
 	size_t np = strlen(p);
@@ -67,7 +68,7 @@ TSGDataType::to_string(char* dest, size_t n) const
 
 	switch (m_ctype) {
 	case CT_SCALAR: break;
-	case CT_VECTOR: case CT_MATRIX:
+	case CT_VECTOR: case CT_MATRIX: case CT_NDARRAY:
 		strcat(p, ">"); break;
 	}
 }
