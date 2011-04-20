@@ -102,12 +102,12 @@ void CBinaryFile::fname(sg_type *& array, int32_t *& dims,int32_t & num_dims)\
 	if(fread(&num_dims,sizeof(int32_t),1,file) != 1)						\
 		SG_ERROR("Failed to read number of dimensions");					\
 	dims = new int32_t[num_dims];											\
-	if(fread(dims,sizeof(int32_t),num_dims,file) != num_dims)				\
+	if(fread(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)				\
 		SG_ERROR("Failed to read sizes of dimensions!");					\
 	for(int32_t i = 0;i < num_dims;i++)										\
 		total *= dims[i];													\
 	array = new sg_type[total];												\
-	if(fread(array,sizeof(sg_type),total,file) != total)					\
+	if(fread(array,sizeof(sg_type),total,file) != (size_t)total)					\
 		SG_ERROR("Failed to read array data!");								\
 }
 
@@ -273,11 +273,11 @@ void CBinaryFile::fname(sg_type * array, int32_t * dims,int32_t num_dims)	\
 																			\
 	if(fwrite(&num_dims,sizeof(int32_t),1,file) != 1)						\
 		SG_ERROR("Failed to write number of dimensions!\n");				\
-	if(fwrite(dims,sizeof(int32_t),num_dims,file) != num_dims)				\
+	if(fwrite(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)				\
 		SG_ERROR("Failed to write sizes of dimensions!\n");					\
 	for(int32_t i = 0;i < num_dims;i++)										\
 		total *= dims[i];													\
-	if(fwrite(array,sizeof(sg_type),total,file) != total)					\
+	if(fwrite(array,sizeof(sg_type),total,file) != (size_t)total)					\
 		SG_ERROR("Failed to write array data!\n");							\
 }
 
