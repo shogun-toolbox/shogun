@@ -56,8 +56,8 @@ void CGaussian::init()
 	for (int i = 0; i < m_cov_rows; i++)
 		m_constant *= m_cov_inverse[i*m_cov_rows+i];
 
-	m_constant = 1/m_constant;
-	m_constant *= pow(2*M_PI, (float64_t) -m_cov_rows/2);
+	m_constant = -CMath::log(m_constant);
+	m_constant -= (m_cov_rows/2.0)*CMath::log(2*M_PI);
 
 	result = clapack_dpotri(CblasRowMajor, CblasLower, m_cov_rows, m_cov_inverse, m_cov_rows);
 }
@@ -106,21 +106,22 @@ float64_t CGaussian::get_log_model_parameter(int32_t num_param)
 
 float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 {
+	SG_NOTIMPLEMENTED;
 	return 0;
 }
 
-float64_t CGaussian::get_likelihood_example(int32_t num_example)
+float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 {
 	ASSERT(features->has_property(FP_DOT));
 	float64_t* point;
 	int32_t point_len;
 	((CDotFeatures *)features)->get_feature_vector(&point, &point_len, num_example);
-	float64_t answer = compute_PDF(point, point_len);
+	float64_t answer = compute_log_PDF(point, point_len);
 	delete[] point;
 	return answer;
 }
 
-float64_t CGaussian::compute_PDF(float64_t* point, int32_t point_len)
+float64_t CGaussian::compute_log_PDF(float64_t* point, int32_t point_len)
 {
 	ASSERT(m_mean && m_cov);
 	ASSERT(point_len == m_mean_length);
@@ -134,7 +135,7 @@ float64_t CGaussian::compute_PDF(float64_t* point, int32_t point_len)
 	cblas_dsymv(CblasRowMajor, CblasLower, m_mean_length, -1.0/2.0, m_cov_inverse, m_mean_length,
 				difference, 1, 0, result, 1);
 
-	float64_t answer = m_constant * exp(cblas_ddot(m_mean_length, difference, 1, result, 1));
+	float64_t answer = m_constant+cblas_ddot(m_mean_length, difference, 1, result, 1);
 
 	delete[] difference;
 	delete[] result;
