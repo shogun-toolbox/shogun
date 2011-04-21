@@ -25,13 +25,13 @@ using namespace shogun;
 #define DGESVD dgesvd
 #define DPOSV dposv
 #define DPOTRF dpotrf
-#define DPOTRF dpotri
+#define DPOTRI dpotri
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
 #define DPOSV dposv_
 #define DPOTRF dpotrf_
-#define DPOTRF dpotri_
+#define DPOTRI dpotri_
 #endif
 
 #ifndef HAVE_ATLAS
