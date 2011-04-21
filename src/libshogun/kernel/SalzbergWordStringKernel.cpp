@@ -239,7 +239,7 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 			}
 
 			ld_mean_rhs[i]=result;
-			l->free_feature_vector(avec, i, free_avec);
+			r->free_feature_vector(avec, i, free_avec);
 		}
 	}
 

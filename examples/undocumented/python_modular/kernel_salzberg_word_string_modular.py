@@ -25,7 +25,7 @@ order=3,gap=0,reverse=False):
 	pie.set_features(feats_train)
 	pie.train()
 
-	kernel=SalzbergWordStringKernel(feats_train, feats_test, pie, labels)
+	kernel=SalzbergWordStringKernel(feats_train, feats_train, pie, labels)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

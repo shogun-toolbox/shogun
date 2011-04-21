@@ -87,33 +87,43 @@ GET_MATRIX(get_real_matrix, float64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOAT6
 GET_MATRIX(get_longreal_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
-void CBinaryFile::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
-{
+#define GET_NDARRAY(fname,sg_type,datatype)									\
+void CBinaryFile::fname(sg_type *& array, int32_t *& dims,int32_t & num_dims)\
+{																			\
+	size_t total = 1;														\
+																			\
+	if (!file)																\
+		SG_ERROR("File invalid.\n");										\
+																			\
+	TSGDataType dtype(CT_SCALAR, ST_NONE, PT_BOOL);							\
+	read_header(&dtype);													\
+																			\
+	if (dtype!=datatype)													\
+		SG_ERROR("Datatype mismatch\n");									\
+																			\
+	if (fread(&num_dims,sizeof(int32_t),1,file) != 1)						\
+		SG_ERROR("Failed to read number of dimensions");					\
+																			\
+	dims = new int32_t[num_dims];											\
+	if (fread(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)		\
+		SG_ERROR("Failed to read sizes of dimensions!");					\
+																			\
+	for (int32_t i = 0;i < num_dims;i++)									\
+		total *= dims[i];													\
+																			\
+	array = new sg_type[total];												\
+	if (fread(array,sizeof(sg_type),total,file) != (size_t)total)			\
+		SG_ERROR("Failed to read array data!");								\
 }
 
-void CBinaryFile::get_char_ndarray(char*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CBinaryFile::get_int_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CBinaryFile::get_shortreal_ndarray(float32_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CBinaryFile::get_real_ndarray(float64_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CBinaryFile::get_short_ndarray(int16_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CBinaryFile::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
+GET_NDARRAY(get_byte_ndarray,uint8_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_UINT8));
+GET_NDARRAY(get_char_ndarray,char,TSGDataType(CT_NDARRAY, ST_NONE, PT_CHAR));
+GET_NDARRAY(get_int_ndarray,int32_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_INT32));
+GET_NDARRAY(get_short_ndarray,int16_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_INT16));
+GET_NDARRAY(get_word_ndarray,uint16_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_UINT16));
+GET_NDARRAY(get_shortreal_ndarray,float32_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_FLOAT32));
+GET_NDARRAY(get_real_ndarray,float64_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_FLOAT64));
+#undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
 void CBinaryFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
@@ -253,6 +263,42 @@ SET_MATRIX(set_shortreal_matrix, float32_t, (CT_MATRIX, ST_NONE, PT_FLOAT32))
 SET_MATRIX(set_real_matrix, float64_t, (CT_MATRIX, ST_NONE, PT_FLOAT64))
 SET_MATRIX(set_longreal_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef SET_MATRIX
+
+#define SET_NDARRAY(fname,sg_type,datatype)									\
+void CBinaryFile::fname(sg_type * array, int32_t * dims,int32_t num_dims)	\
+{																			\
+	size_t total = 1;														\
+																			\
+	if (!file)																\
+		SG_ERROR("File invalid.\n");										\
+																			\
+	if (!array)																\
+		SG_ERROR("Invalid array!\n");										\
+																			\
+	TSGDataType t datatype;													\
+	write_header(&t);														\
+																			\
+	if (fwrite(&num_dims,sizeof(int32_t),1,file) != 1)						\
+		SG_ERROR("Failed to write number of dimensions!\n");				\
+																			\
+	if (fwrite(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)		\
+		SG_ERROR("Failed to write sizes of dimensions!\n");					\
+																			\
+	for (int32_t i = 0;i < num_dims;i++)										\
+		total *= dims[i];													\
+																			\
+	if (fwrite(array,sizeof(sg_type),total,file) != (size_t)total)			\
+		SG_ERROR("Failed to write array data!\n");							\
+}
+
+SET_NDARRAY(set_byte_ndarray,uint8_t,(CT_NDARRAY, ST_NONE, PT_UINT8));
+SET_NDARRAY(set_char_ndarray,char,(CT_NDARRAY, ST_NONE, PT_CHAR));
+SET_NDARRAY(set_int_ndarray,int32_t,(CT_NDARRAY, ST_NONE, PT_INT32));
+SET_NDARRAY(set_short_ndarray,int16_t,(CT_NDARRAY, ST_NONE, PT_INT16));
+SET_NDARRAY(set_word_ndarray,uint16_t,(CT_NDARRAY, ST_NONE, PT_UINT16));
+SET_NDARRAY(set_shortreal_ndarray,float32_t,(CT_NDARRAY, ST_NONE, PT_FLOAT32));
+SET_NDARRAY(set_real_ndarray,float64_t,(CT_NDARRAY, ST_NONE, PT_FLOAT64));
+#undef SET_NDARRAY
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
 void CBinaryFile::fname(const TSparse<sg_type>* matrix, 	\
