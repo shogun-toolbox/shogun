@@ -63,9 +63,15 @@
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
 %rename(MeanSquaredError) CMeanSquaredError;
-%rename(Accuracy) CAccuracy;
-%rename(ErrorRate) CErrorRate;
-%rename(BAL) CBAL;
+%rename(AccuracyMeasure) CAccuracyMeasure;
+%rename(ErrorRateMeasure) CErrorRateMeasure;
+%rename(BALMeasure) CBALMeasure;
+%rename(WRACCMeasure) CWRACCMeasure;
+%rename(F1Measure) CF1Measure;
+%rename(CrossCorrelationMeasure) CCrossCorrelationMeasure;
+%rename(RecallMeasure) CRecallMeasure;
+%rename(PrecisionMeasure) CPrecisionMeasure;
+%rename(SpecificityMeasure) CSpecificityMeasure;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/PerformanceMeasures.h>
