@@ -152,8 +152,9 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		bool initialized;
 		
 
-		CArray2<float64_t> kernel_matrix ;
-		int32_t target_letter_0 ;
+		CArray2<float64_t> kernel_matrix;
+		int32_t target_letter_0;
+	
 	private:
 		void init();
 };

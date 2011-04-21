@@ -27,20 +27,20 @@ CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, CDistance* d)
 : CKernel(size), distance(d)
 {
   	ASSERT(distance);
-	register_params();
 	set_width(w);
 	SG_REF(distance);
+	register_params();
 }
 
 CDistanceKernel::CDistanceKernel(
 	CFeatures *l, CFeatures *r, float64_t w , CDistance* d)
 : CKernel(10), distance(d)
 {
-	register_params();
 	set_width(w);
 	ASSERT(distance);
 	SG_REF(distance);
 	init(l, r);
+	register_params();
 }
 
 CDistanceKernel::~CDistanceKernel()

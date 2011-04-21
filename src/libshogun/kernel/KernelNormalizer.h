@@ -56,9 +56,7 @@ class CKernelNormalizer : public CSGObject
 		 */
 		CKernelNormalizer() : CSGObject()
 		{
-			m_parameters->add((machine_int_t*) &m_type, "m_type",
-							  "Normalizer type.");
-
+			register_params();
 			m_type = N_REGULAR;
 		}
 
@@ -91,7 +89,10 @@ class CKernelNormalizer : public CSGObject
 	
 		/** register the parameters
 		 */
-		virtual void register_params() {}
+		virtual void register_params() 
+		{
+			m_parameters->add((machine_int_t*) &m_type, "m_type","Normalizer type.");
+		}
 
 		/** getter for normalizer type
 		 */
