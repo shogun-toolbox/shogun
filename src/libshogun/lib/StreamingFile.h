@@ -331,6 +331,12 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const { return "StreamingFile"; }
 
+	/** 
+	 * Seek to zero.
+	 * HACK to make parser work properly!
+	 */
+	inline virtual void seek_to_zero() const { fseek(file, 0, SEEK_SET); }
+
 private:
 	/** helper function to read vectors / matrices
 	 *
