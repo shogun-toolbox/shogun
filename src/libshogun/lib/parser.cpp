@@ -11,7 +11,7 @@ using namespace shogun;
 
 input_parser::input_parser()
 {
-	init(NULL);
+	init(NULL, true);
 }
 
 input_parser::~input_parser()
@@ -20,11 +20,15 @@ input_parser::~input_parser()
 	free(examples_buff);
 }
 
-void input_parser::init(CStreamingFile* input_file)
+void input_parser::init(CStreamingFile* input_file, bool is_labelled = true)
 {
 	input_source = input_file;
 	buffer_size = PARSER_DEFAULT_BUFFSIZE;
-	example_type = LABELLED;
+
+	if (is_labelled == true)
+	  example_type = LABELLED;
+	else
+	  example_type = UNLABELLED;
 	
 	examples_buff = NULL;
 	parsing_done = false;
@@ -184,7 +188,7 @@ void input_parser::copy_example_into_buffer(void* example)
 			((char *)examples_buff + buffer_write_index*example_memsize);
 
 		((LabelledExample *) current_example_loc)->feature_vector = (float64_t *)
-			((char *) current_example_loc + example_memsize);
+		  ((char *) current_example_loc + sizeof(LabelledExample));
 
 		((LabelledExample *) current_example_loc)->dimensions = ((LabelledExample *) example)->dimensions;
 
@@ -203,7 +207,7 @@ void input_parser::copy_example_into_buffer(void* example)
 			((char *)examples_buff + buffer_write_index*example_memsize);
 
 		((UnlabelledExample *) current_example_loc)->feature_vector = (float64_t *)
-			((char *) current_example_loc + example_memsize);
+		  ((char *) current_example_loc + sizeof(UnlabelledExample));
 
 		((UnlabelledExample *) current_example_loc)->dimensions = ((UnlabelledExample *) example)->dimensions;
 
@@ -243,6 +247,8 @@ void* input_parser::main_parse_loop(void* params)
 				example_memsize = sizeof(LabelledExample) + sizeof(float64_t)*number_of_features;
 				current_example = (LabelledExample*) malloc(example_memsize);
 				examples_buff = (LabelledExample*) malloc(example_memsize*buffer_size);
+				current_feature_vector = (float64_t*) ((char *) current_example + sizeof(LabelledExample));
+			
 			}
 
 			else
@@ -250,6 +256,8 @@ void* input_parser::main_parse_loop(void* params)
 				example_memsize = sizeof(UnlabelledExample) + sizeof(float64_t)*number_of_features;
 				current_example = (UnlabelledExample*) malloc(example_memsize);
 				examples_buff = (UnlabelledExample*) malloc(example_memsize*buffer_size);
+				current_feature_vector = (float64_t*) ((char *) current_example + sizeof(UnlabelledExample));
+
 			}
 			
 			// make it point to the list of floats in current_example
@@ -257,10 +265,9 @@ void* input_parser::main_parse_loop(void* params)
 
 		}
 
-		// Get the example
-
 		if (example_type == LABELLED)
 		{
+		  
 			get_vector_and_label(current_feature_vector,
 					     current_number_of_features,
 					     current_label);
@@ -340,15 +347,8 @@ void* input_parser::get_next_example()
 	{
 		pthread_mutex_lock(&example_in_use_mutex[buffer_read_index]);
 
-		if (example_type == LABELLED)
-		{
-			example = (LabelledExample *)((char *) examples_buff + example_memsize * buffer_read_index);
-		}
-		else if (example_type == UNLABELLED)
-		{
-			example = (UnlabelledExample *)((char *) examples_buff + example_memsize * buffer_read_index);
-		}
-
+		example = ((char *) examples_buff + example_memsize * buffer_read_index);
+		
 		pthread_mutex_unlock(&example_in_use_mutex[buffer_read_index]);
 		number_of_vectors_read++;
 		return example;

@@ -121,8 +121,9 @@ public:
 	 * example_type is LABELLED by default.
 	 * 
 	 * @param input_file CStreamingFile object
+	 * @param is_labelled Whether example is labelled or not (bool), optional
 	 */
-	void init(CStreamingFile* input_file);
+	void init(CStreamingFile* input_file, bool is_labelled);
 
 	/** 
 	 * Test if parser is running.
