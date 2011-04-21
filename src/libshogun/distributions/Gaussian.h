@@ -87,29 +87,26 @@ class CGaussian : public CDistribution
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example)
-		{
-			return CMath::log(get_likelihood_example(num_example));
-		}
-
-		/** compute likelihood for example
-		 *
-		 * abstract base method
-		 *
-		 * @param num_example which example
-		 * @return likelihood for example
-		 */
-		virtual float64_t get_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(int32_t num_example);
 
 		/** compute PDF
-		 *
-		 * computes \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
 		 *
 		 * @param point
 		 * @param point_len
 		 * @return computed PDF
 		 */
-		virtual float64_t compute_PDF(float64_t* point, int32_t point_len);
+		virtual inline float64_t compute_PDF(float64_t* point, int32_t point_len)
+		{
+			return CMath::exp(compute_log_PDF(point, point_len));
+		}
+
+		/** compute log PDF
+		 *
+		 * @param point
+		 * @param point_len
+		 * @return computed log PDF
+		 */
+		virtual float64_t compute_log_PDF(float64_t* point, int32_t point_len);
 
 		/** get mean
 		 *

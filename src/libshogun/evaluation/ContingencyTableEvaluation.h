@@ -46,7 +46,7 @@ enum EContingencyTableMeasureType
  *
  * Weighted relative accuracy (WRACC): \f$ \frac{TP}{TP+FN} - \frac{FP}{FP+TN} \f$
  *
- * F1 score (F!): \f$ \frac{2\cdot FP}{2\cdot TP + FP + FN} \f$
+ * F1 score (F1): \f$ \frac{2\cdot FP}{2\cdot TP + FP + FN} \f$
  *
  * Cross correlation coefficient (CROSS_CORRELATION):
  * \f$ \frac{TP\cdot TN - FP \cdot FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}} \f$
@@ -56,6 +56,11 @@ enum EContingencyTableMeasureType
  * Precision (PRECISION): \f$ \frac{TP}{TP+FP} \f$
  *
  * Specificity (SPECIFICITY): \f$ \frac{TN}{TN+FP} \f$
+ *
+ * Note that objects of this class should be used only if
+ * computing of many different measures is required. In other case,
+ * using helper classes (CAccuracyMeasure, ...) could be more
+ * convenient.
  *
  */
 class CContingencyTableEvaluation: public CBinaryClassEvaluation
@@ -89,7 +94,9 @@ public:
 		return "ContingencyTableEvaluation";
 	}
 
-	/* accuracy */
+	/** accuracy
+	 * @return computed accuracy
+	 */
 	inline float64_t get_accuracy() const
 	{
 		if (!m_computed)
@@ -98,7 +105,9 @@ public:
 		return (m_TP+m_TN)/m_N;
 	};
 
-	/* error rate */
+	/** error rate
+	 * @return computed error rate
+	 */
 	inline float64_t get_error_rate() const
 	{
 		if (!m_computed)
@@ -107,7 +116,9 @@ public:
 		return (m_FP + m_FN)/m_N;
 	};
 
-	/* BAL */
+	/** Balanced error (BAL)
+	 * @return computed BAL
+	 */
 	inline float64_t get_BAL() const
 	{
 		if (!m_computed)
@@ -116,7 +127,9 @@ public:
 		return 0.5*(m_FN/(m_FN + m_TP) + m_FP/(m_FP + m_TN));
 	};
 
-	/* WRACC */
+	/** WRACC
+	 * @return computed WRACC
+	 */
 	inline float64_t get_WRACC() const
 	{
 		if (!m_computed)
@@ -125,7 +138,9 @@ public:
 		return m_TP/(m_FN + m_TP) - m_FP/(m_FP + m_TN);
 	};
 
-	/* F1 */
+	/** F1
+	 * @return computed F1 score
+	 */
 	inline float64_t get_F1() const
 	{
 		if (!m_computed)
@@ -134,7 +149,9 @@ public:
 		return (2*m_TP)/(2*m_TP + m_FP + m_FN);
 	};
 
-	/* cross correlation */
+	/** cross correlation
+	 * @return computed cross correlation coefficient
+	 */
 	inline float64_t get_cross_correlation() const
 	{
 		if (!m_computed)
@@ -143,7 +160,9 @@ public:
 		return (m_TP*m_TN-m_FP*m_FN)/CMath::sqrt((m_TP+m_FP)*(m_TP+m_FN)*(m_TN+m_FP)*(m_TN+m_FN));
 	};
 
-	/* recall */
+	/** recall
+	 * @return computed recall
+	 */
 	inline float64_t get_recall() const
 	{
 		if (!m_computed)
@@ -152,7 +171,9 @@ public:
 		return m_TP/(m_TP+m_FN);
 	};
 
-	/* precision */
+	/** precision
+	 * @return computed precision
+	 */
 	inline float64_t get_precision() const
 	{
 		if (!m_computed)
@@ -161,7 +182,9 @@ public:
 		return m_TP/(m_TP+m_FP);
 	};
 
-	/* specifity */
+	/** specificity
+	 * @return computed specificity
+	 */
 	inline float64_t get_specificity() const
 	{
 		if (!m_computed)
@@ -175,68 +198,152 @@ protected:
 	/** get scores for TP, FP, TN, FN */
 	void compute_scores(CLabels* predicted, CLabels* ground_truth);
 
-	// type of measure
+	/** type of measure to evaluate */
 	EContingencyTableMeasureType m_type;
 
-	// indicator of scores being computed already
+	/** indicator of contingencies being computed */
 	bool m_computed;
 
-	// number of labels
+	/** total number of labels */
 	int32_t m_N;
 
-	// count of true positive labels
+	/** number of true positive examples */
 	float64_t m_TP;
 
-	// count of false positive labels
+	/** number of false positive examples */
 	float64_t m_FP;
 
-	// count of true negative labels
+	/** number of true negative examples */
 	float64_t m_TN;
 
-	// count of false negative labels
+	/** number of false negative examples */
 	float64_t m_FN;
 };
 
-/** @brief class Accuracy
+/** @brief class AccuracyMeasure
  * used to measure accuracy of 2-class classifier
  */
-class CAccuracy: public CContingencyTableEvaluation
+class CAccuracyMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CAccuracy() : CContingencyTableEvaluation(ACCURACY) {};
+	CAccuracyMeasure() : CContingencyTableEvaluation(ACCURACY) {};
 	/* virtual destructor */
-	virtual ~CAccuracy() {};
+	virtual ~CAccuracyMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "Accuracy"; };
+	virtual inline const char* get_name() const { return "AccuracyMeasure"; };
 };
 
-/** @brief class ErrorRate
+/** @brief class ErrorRateMeasure
  * used to measure error rate of 2-class classifier
  */
-class CErrorRate: public CContingencyTableEvaluation
+class CErrorRateMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CErrorRate() : CContingencyTableEvaluation(ERROR_RATE) {};
+	CErrorRateMeasure() : CContingencyTableEvaluation(ERROR_RATE) {};
 	/* virtual destructor */
-	virtual ~CErrorRate() {};
+	virtual ~CErrorRateMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "ErrorRate"; };
+	virtual inline const char* get_name() const { return "ErrorRateMeasure"; };
 };
 
-/** @brief class BAL
+/** @brief class BALMeasure
  * used to measure balanced error of 2-class classifier
  */
-class CBAL: public CContingencyTableEvaluation
+class CBALMeasure: public CContingencyTableEvaluation
 {
 public:
 	/* constructor */
-	CBAL() : CContingencyTableEvaluation(BAL) {};
+	CBALMeasure() : CContingencyTableEvaluation(BAL) {};
 	/* virtual destructor */
-	virtual ~CBAL() {};
+	virtual ~CBALMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "BAL"; };
+	virtual inline const char* get_name() const { return "BALMeasure"; };
+};
+
+/** @brief class WRACCMeasure
+ * used to measure weighted relative accuracy of 2-class classifier
+ */
+class CWRACCMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CWRACCMeasure() : CContingencyTableEvaluation(WRACC) {};
+	/* virtual destructor */
+	virtual ~CWRACCMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "WRACCMeasure"; };
+};
+
+/** @brief class F1Measure
+ * used to measure F1 score of 2-class classifier
+ */
+class CF1Measure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CF1Measure() : CContingencyTableEvaluation(F1) {};
+	/* virtual destructor */
+	virtual ~CF1Measure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "F1Measure"; };
+};
+
+/** @brief class CrossCorrelationMeasure
+ * used to measure cross correlation coefficient of 2-class classifier
+ */
+class CCrossCorrelationMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CCrossCorrelationMeasure() : CContingencyTableEvaluation(CROSS_CORRELATION) {};
+	/* virtual destructor */
+	virtual ~CCrossCorrelationMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "CrossCorrelationMeasure"; };
+};
+
+/** @brief class RecallMeasure
+ * used to measure recall of 2-class classifier
+ */
+class CRecallMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CRecallMeasure() : CContingencyTableEvaluation(RECALL) {};
+	/* virtual destructor */
+	virtual ~CRecallMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "RecallMeasure"; };
+};
+
+/** @brief class PrecisionMeasure
+ * used to measure precision of 2-class classifier
+ */
+class CPrecisionMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CPrecisionMeasure() : CContingencyTableEvaluation(PRECISION) {};
+	/* virtual destructor */
+	virtual ~CPrecisionMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "PrecisionMeasure"; };
+};
+
+/** @brief class SpecificityMeasure
+ * used to measure specificity of 2-class classifier
+ */
+class CSpecificityMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CSpecificityMeasure() : CContingencyTableEvaluation(SPECIFICITY) {};
+	/* virtual destructor */
+	virtual ~CSpecificityMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "SpecificityMeasure"; };
 };
 
 }
