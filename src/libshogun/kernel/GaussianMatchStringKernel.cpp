@@ -20,16 +20,15 @@ using namespace shogun;
 CGaussianMatchStringKernel::CGaussianMatchStringKernel(void)
 : CStringKernel<char>(0), width(0.0)
 {
-	SG_UNSTABLE("CGaussianMatchStringKernel::"
-				"CGaussianMatchStringKernel(void)", "\n");
-
 	set_normalizer(new CSqrtDiagKernelNormalizer());
+	register_params();
 }
 
 CGaussianMatchStringKernel::CGaussianMatchStringKernel(int32_t size, float64_t w)
 : CStringKernel<char>(size), width(w)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
+	register_params();
 }
 
 CGaussianMatchStringKernel::CGaussianMatchStringKernel(
@@ -38,6 +37,7 @@ CGaussianMatchStringKernel::CGaussianMatchStringKernel(
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l, r);
+	register_params();
 }
 
 CGaussianMatchStringKernel::~CGaussianMatchStringKernel()
@@ -77,4 +77,9 @@ float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
+}
+
+void CGaussianMatchStringKernel::register_params()
+{
+	m_parameters->add(&width, "width", "kernel width");
 }

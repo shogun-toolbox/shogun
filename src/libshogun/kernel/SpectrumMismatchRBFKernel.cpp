@@ -36,17 +36,8 @@ using namespace shogun;
 CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(void)
 	:CStringKernel<char>(0)
 {
-	SG_UNSTABLE("CSpectrumMismatchRBFKernel::"
-				"CSpectrumMismatchRBFKernel(void)", "\n");
-
-	alphabet = NULL;
-	degree = 0;
-	max_mismatch = 0;
-	AA_matrix = NULL;
-	width = 0.0;
-
-	initialized = false;
-	target_letter_0 = 0;
+	init();
+	register_params();
 }
 
 CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel (int32_t size,
@@ -61,6 +52,7 @@ CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel (int32_t size,
 
 	AA_matrix=NULL;
 	set_AA_matrix(AA_matrix_, nr, nc);
+	register_params();
 }
 
 CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(
@@ -72,6 +64,7 @@ CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(
 	AA_matrix=NULL;
 	set_AA_matrix(AA_matrix_, nr, nc);
 	init(l, r);
+	register_params();
 }
 
 CSpectrumMismatchRBFKernel::~CSpectrumMismatchRBFKernel()
@@ -335,6 +328,7 @@ void CSpectrumMismatchRBFKernel::compute_all()
 
 	assert(lhs->get_num_vectors()==rhs->get_num_vectors()) ;
 	kernel_matrix.resize_array(lhs->get_num_vectors(), lhs->get_num_vectors()) ;
+	kernel_matrix_length = lhs->get_num_vectors()*rhs->get_num_vectors();
 	for (int i=0; i<lhs->get_num_vectors(); i++)
 		for (int j=0; j<lhs->get_num_vectors(); j++)
 			kernel_matrix.set_element(0, i, j) ;
@@ -443,3 +437,32 @@ bool CSpectrumMismatchRBFKernel::set_max_mismatch(int32_t max)
 	else
 		return true;
 }
+
+void CSpectrumMismatchRBFKernel::register_params() 
+{
+	m_parameters->add(&degree, "degree", "degree of the kernel");
+	m_parameters->add(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix");
+	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix", "128*128 scalar product matrix");
+	m_parameters->add(&width,"width","width of Gaussian");
+	m_parameters->add(&target_letter_0, "target_letter_0","target letter 0");
+	m_parameters->add(&initialized, "initialized", "the mark of initialization status");
+	m_parameters->add_vector((TString<float64_t>**)&kernel_matrix, &kernel_matrix_length, "kernel_matrix", "the kernel matrix with its length defined by the number of vectors of the string features");
+}
+
+void CSpectrumMismatchRBFKernel::register_alphabet()
+{
+	m_parameters->add((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel");
+}
+
+void CSpectrumMismatchRBFKernel::init()
+{
+	alphabet = NULL;
+	degree = 0;
+	max_mismatch = 0;
+	AA_matrix = NULL;
+	width = 0.0;
+	
+	initialized = false;
+	target_letter_0 = 0;
+}
+

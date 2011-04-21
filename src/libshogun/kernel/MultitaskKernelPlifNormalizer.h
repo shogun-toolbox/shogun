@@ -30,10 +30,8 @@ public:
 	/** default constructor  */
 	CMultitaskKernelPlifNormalizer() : CMultitaskKernelMklNormalizer()
 	{
-		SG_UNSTABLE("CMultitaskKernelPlifNormalizer::"
-					"CMultitaskKernelPlifNormalizer()", "\n");
-
 		num_tasks = 0;
+		num_tasksqr = 0;
 		num_betas = 0;
 	}
 
@@ -55,15 +53,16 @@ public:
 		}
 
 		num_tasks = get_num_unique_tasks(task_vector);
+		num_tasksqr = num_tasks * num_tasks;
 
 		// set both sides equally
 		set_task_vector(task_vector);
 
 		// init distance matrix
-		distance_matrix = std::vector<float64_t>(num_tasks * num_tasks);
+		distance_matrix = std::vector<float64_t>(num_tasksqr);
 
 		// init similarity matrix
-		similarity_matrix = std::vector<float64_t>(num_tasks * num_tasks);
+		similarity_matrix = std::vector<float64_t>(num_tasksqr);
 
 	}
 
@@ -318,9 +317,22 @@ public:
 	}
 
 protected:
+	/** register the parameters 
+	 */
+	virtual void register_params()
+	{
+		m_parameters->add(&num_tasks, "num_tasks", "the number of tasks");
+		m_parameters->add(&num_betas, "num_betas", "the number of weights");
+		m_parameters->add_vector((TString<float64_t>**)&distance_matrix, &num_tasksqr, "distance_matrix", "distance between tasks");
+		m_parameters->add_vector((TString<float64_t>**)&similarity_matrix, &num_tasksqr, "similarity_matrix", "similarity between tasks");
+		m_parameters->add_vector((TString<float64_t>**)&betas, &num_betas, "num_betas", "weights");
+		m_parameters->add_vector((TString<float64_t>**)&support, &num_betas, "support", "support points");
+	}
 
 	/** number of tasks **/
 	int32_t num_tasks;
+	/** square of num_tasks -- for registration purpose**/
+	int32_t num_tasksqr;
 
 	/** task vector indicating to which task each example on the left hand side belongs **/
 	std::vector<int32_t> task_vector_lhs;
@@ -337,7 +349,7 @@ protected:
 	/** number of weights **/
 	int32_t num_betas;
 
-	/** number of weights **/
+	/** weights **/
 	std::vector<float64_t> betas;
 
 	/** support points **/
