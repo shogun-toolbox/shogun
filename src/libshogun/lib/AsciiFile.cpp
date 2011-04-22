@@ -35,28 +35,28 @@ CAsciiFile::~CAsciiFile()
 
 #define GET_VECTOR(fname, mfname, sg_type) \
 void CAsciiFile::fname(sg_type*& vec, int32_t& len) \
-{													\
-	vec=NULL;										\
-	len=0;											\
+{										\
+	vec=NULL;								\
+	len=0;									\
         int32_t num_dim;                                                        \
         int32_t * dims;                                                         \
-	mfname(vec,dims,num_dim);					\
-	if (num_dim ==1)				\
-	{												\
-		len = dims[0];                                                                  \
+	mfname(vec,dims,num_dim);						\
+	if (num_dim ==1)							\
+	{									\
+		len = dims[0];                                                  \
                 delete[] dims;                                                  \
-	}												\
-	else											\
-	{												\
-		delete[] vec;								\
-                delete[] dims;                                                          \
-                vec=NULL;									\
-		len=0;										\
-		SG_ERROR("Could not read vector from"		\
+	}									\
+	else									\
+	{									\
+		delete[] vec;							\
+                delete[] dims;                                  		\
+                vec=NULL;							\
+		len=0;								\
+		SG_ERROR("Could not read vector from"				\
 				" file %s - %d-dimensional array found but "	\
-				"vector expected).\n", filename,	\
+				"vector expected).\n", filename,		\
 				num_dim);					\
-	}												\
+	}									\
 }
 
 GET_VECTOR(get_byte_vector, get_byte_ndarray, uint8_t)
@@ -70,31 +70,31 @@ GET_VECTOR(get_word_vector, get_word_ndarray, uint16_t)
 
 #define GET_MATRIX(fname, mfname, sg_type) \
 void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
-{													\
-	matrix=NULL;										\
-	int32_t * dims;                                                                     \
-        int32_t num_dim=0;								\
-        num_feat = 0;                                                               \
+{										\
+	matrix=NULL;								\
+	int32_t * dims;                                                         \
+        int32_t num_dim=0;							\
+        num_feat = 0;                                                           \
         num_vec = 0;                                                            \
-                                                                                                \
-	mfname(matrix, dims, num_dim);					\
-	if (num_dim==2)                                                             \
-	{												\
-		num_feat = dims[1];                                                     \
-                num_vec = dims[0];                                                      \
-                delete[] dims;                                                              \
-	}												\
-	else											\
-	{												\
-		delete[] matrix;								\
-                delete[] dims;                                                                  \
-		matrix=NULL;											\
-		SG_ERROR("Could not read matrix from"		\
+                                                                                \
+	mfname(matrix, dims, num_dim);						\
+	if (num_dim==2)                                                         \
+	{									\
+		num_feat = dims[1];                                             \
+                num_vec = dims[0];                                              \
+                delete[] dims;                                                 	\
+	}									\
+	else									\
+	{									\
+		delete[] matrix;						\
+                delete[] dims;                                                  \
+		matrix=NULL;							\
+		SG_ERROR("Could not read matrix from"				\
 				" file %s (%d-dimensional array found but "	\
-				"matrix expected).\n", filename,	\
-				num_dim);                         \
-                                                            \
-	}												\
+				"matrix expected).\n", filename,		\
+				num_dim);                         		\
+                                                            			\
+	}									\
 }
 
 GET_MATRIX(get_byte_matrix, get_byte_ndarray, uint8_t)
@@ -111,107 +111,108 @@ GET_MATRIX(get_short_matrix, get_short_ndarray, int16_t)
 GET_MATRIX(get_word_matrix, get_word_ndarray, uint16_t)
 #undef GET_MATRIX
 
-#define GET_NDARRAY(fname, conv, sg_type)										\
-void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)	\
-{																				\
-	struct stat stats;															\
-	if (stat(filename, &stats)!=0)												\
-		SG_ERROR("Could not get file statistics.\n");							\
-																				\
-	char* data=new char[stats.st_size+1];										\
-	memset(data, 0, sizeof(char)*(stats.st_size+1));							\
+#define GET_NDARRAY(fname, conv, sg_type)							\
+void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
+{												\
+	struct stat stats;									\
+	if (stat(filename, &stats)!=0)								\
+		SG_ERROR("Could not get file statistics.\n");					\
+												\
+	char* data=new char[stats.st_size+1];							\
+	memset(data, 0, sizeof(char)*(stats.st_size+1));					\
 	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
-	if (nread<=0)																\
-		SG_ERROR("Could not read data from %s.\n", filename);					\
-																				\
-	SG_DEBUG("data read from file:\n%s\n", data);								\
-																				\
-	/* determine size of array */ 				\
-	int32_t length=0;																\
-	int32_t counter=0;                                                              \
-	size_t total=0;                                     \
-        num_dims = -1;                          \
-	char* ptr_item=NULL;														\
-	char* ptr_data=data;														\
+	if (nread<=0)										\
+		SG_ERROR("Could not read data from %s.\n", filename);				\
+												\
+	SG_DEBUG("data read from file:\n%s\n", data);						\
+												\
+	/* determine size of array */ 								\
+	int32_t length=0;									\
+	int32_t counter=0;                                                              	\
+	size_t total=0;                                     					\
+        num_dims = -1;                          						\
+	char* ptr_item=NULL;									\
+	char* ptr_data=data;									\
 	DynArray<char*>* items=new DynArray<char*>();						\
-                                                                                                                                \
-        /* read line with sizes of array*/                          \
-        while(*ptr_data != '\n')                                            \
-        {                                                                                           \
-            if(isblank(*ptr_data) && ptr_item)                          \
-            {                                                                                   \
-                append_item(items, ptr_data, ptr_item);     \
-                num_dims++;                                                             \
-                ptr_item = NULL;                                                        \
-            }                                                                                           \
-            else if(!isblank(*ptr_data) && !ptr_item)               \
-                ptr_item = ptr_data;                                                        \
                                                                                                 \
-            ptr_data++;                                                                     \
-        }                                                                                               \
-        ptr_item = NULL;                                                                            \
-        ptr_data++;                                                                                     \
-        /* read array data*/                                                                            \
-        while (*ptr_data)															\
-	{																			\
-		if (*ptr_data=='\n')													\
-		{																		\
-			if (ptr_item)														\
-				counter++;															\
-																				\
-			if (length!=0 && counter!=length)									\
-				SG_ERROR("Invalid number of data (%d != %d) in line"	\
-						" %d in file %s.\n", length, counter, total, filename);	\
-																				\
-			append_item(items, ptr_data, ptr_item);								\
-			length=counter;														\
-			total++;															\
-			counter=0;																\
-			ptr_item=NULL;														\
-		}																		\
-		else if (!isblank(*ptr_data) && !ptr_item)								\
-		{																		\
-			ptr_item=ptr_data;													\
-		}																		\
-		else if (isblank(*ptr_data) && ptr_item)								\
-		{																		\
-			append_item(items, ptr_data, ptr_item);								\
-			ptr_item=NULL;														\
-			counter++;																\
-		}																		\
-																				\
-		ptr_data++;																\
-	}																			\
-																				\
-	SG_DEBUG("num of data in line: %d, num of lines %d\n", counter, total);	\
-	delete[] data;																\
-																				\
-	/* determining sizes of dimensions*/                                                \
-        char * item;                                                                                                \
-        item=items->get_element(0);                                                                     \
-        if(atoi(item) != num_dims)                                                                      \
-            SG_ERROR("Invalid number of dimensions!\n");                            \
-        delete[] item;                                                                                                  \
+        /* read line with sizes of array*/                          				\
+        while(*ptr_data != '\n')                                            			\
+        {                                                                                       \
+            if(isblank(*ptr_data) && ptr_item)                          			\
+            {                                                                                   \
+                append_item(items, ptr_data, ptr_item);     					\
+                num_dims++;                                                             	\
+                ptr_item = NULL;                                                        	\
+            }                                                                                   \
+            else if(!isblank(*ptr_data) && !ptr_item)               				\
+                ptr_item = ptr_data;                                                        	\
+                                                                                                \
+            ptr_data++;                                                                     	\
+        }                                                                                       \
+        ptr_item = NULL;                                                                        \
+        ptr_data++;                                                                             \
+        											\
+	/* read array data*/                                                                    \
+        while(*ptr_data)									\
+	{											\
+		if (*ptr_data=='\n')								\
+		{										\
+			if (ptr_item)								\
+				counter++;							\
+												\
+			if (length!=0 && counter!=length)					\
+				SG_ERROR("Invalid number of data (%d != %d) in line"		\
+				" %d in file %s.\n", length, counter, total, filename);		\
+												\
+			append_item(items, ptr_data, ptr_item);					\
+			length=counter;								\
+			total++;								\
+			counter=0;								\
+			ptr_item=NULL;								\
+		}										\
+		else if (!isblank(*ptr_data) && !ptr_item)					\
+		{										\
+			ptr_item=ptr_data;							\
+		}										\
+		else if (isblank(*ptr_data) && ptr_item)					\
+		{										\
+			append_item(items, ptr_data, ptr_item);					\
+			ptr_item=NULL;								\
+			counter++;								\
+		}										\
+												\
+		ptr_data++;									\
+	}											\
+												\
+	SG_DEBUG("num of data in line: %d, num of lines %d\n", counter, total);			\
+	delete[] data;										\
+												\
+	/* determining sizes of dimensions*/                                                	\
+        char * item;                                                                            \
+        item=items->get_element(0);                                                             \
+        if(atoi(item) != num_dims)                                                              \
+            SG_ERROR("Invalid number of dimensions!\n");                            		\
+        delete[] item;                                                                          \
         dims = new int32_t[num_dims];                                                           \
-        for(int32_t i =0;i < num_dims;i++)                                              \
-        {                                                                                                       \
-            item = items->get_element(i+1);                                 \
-            dims[i] = atoi(item);                                                           \
+        for(int32_t i =0;i < num_dims;i++)                                              	\
+        {                                                                                       \
+            item = items->get_element(i+1);                                 			\
+            dims[i] = atoi(item);                                                           	\
             delete[] item;                                                                      \
-        }                                                                                                      \
-        if (dims[num_dims-1] != length)                                                 \
-            SG_ERROR("Invalid number of lines in file!\n");                 \
-                                                                                    \
-        /* converting array data */\
-        total *= length;\
-	array=new sg_type[total];        \
-	for (size_t i=0; i<total; i++)											\
-	{																			\
-			item=items->get_element(i+(num_dims+1));						\
-			array[i]=conv(item);									\
-			delete[] item;																		\
-	}																			\
-	delete items;																\
+        }                                                                                       \
+        if (dims[num_dims-1] != length)                                                 	\
+            SG_ERROR("Invalid number of lines in file!\n");                 			\
+                                                                                    		\
+        /* converting array data */								\
+        total *= length;									\
+	array=new sg_type[total];        							\
+	for (size_t i=0; i<total; i++)								\
+	{											\
+			item=items->get_element(i+(num_dims+1));				\
+			array[i]=conv(item);							\
+			delete[] item;								\
+	}											\
+	delete items;										\
 }
 
 GET_NDARRAY(get_byte_ndarray, atoi, uint8_t)
@@ -760,8 +761,8 @@ void CAsciiFile::get_longreal_string_list(TString<floatmax_t>*& strings, int32_t
 
 #define SET_VECTOR(fname, mfname, sg_type)	\
 void CAsciiFile::fname(const sg_type* vec, int32_t len)	\
-{															\
-	mfname(vec, &len, 1);									\
+{							\
+	mfname(vec, &len, 1);				\
 }
 SET_VECTOR(set_byte_vector, set_byte_ndarray, uint8_t)
 SET_VECTOR(set_char_vector, set_char_ndarray, char)
@@ -773,12 +774,12 @@ SET_VECTOR(set_word_vector, set_word_ndarray, uint16_t)
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, mfname, sg_type) \
-void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
+void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)\
 {																					\
-        int32_t tab[2];             \
-        tab[0] = num_vec;         \
-        tab[1] = num_feat;                   \
-        mfname(matrix,tab,2);                   \
+        int32_t tab[2];             	\
+        tab[0] = num_vec;         	\
+        tab[1] = num_feat;              \
+        mfname(matrix,tab,2);           \
 }
 SET_MATRIX(set_char_matrix, set_char_ndarray, char)
 SET_MATRIX(set_byte_matrix,set_byte_ndarray, uint8_t)
@@ -796,28 +797,28 @@ SET_MATRIX(set_longreal_matrix, set_longreal_ndarray, floatmax_t)
 
 #define SET_NDARRAY(fname, sg_type, fprt_type, type_str) \
 void CAsciiFile::fname(const sg_type* array, int32_t * dims, int32_t num_dims)	\
-{																					\
-	if (!(file && array))															\
-		SG_ERROR("File or data invalid.\n");										\
-																					\
-        size_t total = 1;   \
-        for(int i = 0;i < num_dims;i++)        \
-            total *= dims[i];                                   \
-        int32_t block_size = dims[num_dims-1];                                                                              \
-                                                                \
-        fprintf(file,"%d ",num_dims);  \
-        for(int i = 0;i < num_dims;i++) \
-            fprintf(file,"%d ",dims[i]);    \
-        fprintf(file,"\n"); \
-                                                                                           \
-        for (size_t i=0; i < total; i++)												\
-	{																				\
-			sg_type v= array[i];											\
-			if ( ((i+1) % block_size) == 0)														\
-				fprintf(file, type_str "\n", (fprt_type) v);						\
-			else																	\
-				fprintf(file, type_str " ", (fprt_type) v);							\
-	}																				\
+{										\
+	if (!(file && array))							\
+		SG_ERROR("File or data invalid.\n");				\
+										\
+        size_t total = 1;   							\
+        for(int i = 0;i < num_dims;i++)        					\
+            total *= dims[i];                                   		\
+        int32_t block_size = dims[num_dims-1];                                  \
+                                                                		\
+        fprintf(file,"%d ",num_dims); 						\
+        for(int i = 0;i < num_dims;i++) 					\
+            fprintf(file,"%d ",dims[i]);    					\
+        fprintf(file,"\n"); 							\
+                                                                                \
+        for (size_t i=0; i < total; i++)					\
+	{									\
+		sg_type v= array[i];						\
+		if ( ((i+1) % block_size) == 0)					\
+			fprintf(file, type_str "\n", (fprt_type) v);		\
+		else								\
+			fprintf(file, type_str " ", (fprt_type) v);		\
+	}									\
 }
 
 SET_NDARRAY(set_char_ndarray, char, char, "%c")
