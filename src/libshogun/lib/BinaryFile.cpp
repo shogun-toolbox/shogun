@@ -260,7 +260,7 @@ SET_MATRIX(set_longreal_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef SET_MATRIX
 
 #define SET_NDARRAY(fname,sg_type,datatype)									\
-void CBinaryFile::fname(sg_type * array, int32_t * dims,int32_t num_dims)	\
+void CBinaryFile::fname(const sg_type * array, int32_t * dims,int32_t num_dims)	\
 {																			\
 	int32_t total = 1;														\
 																			\
