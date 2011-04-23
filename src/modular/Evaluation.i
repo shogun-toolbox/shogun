@@ -45,6 +45,7 @@
  #include <shogun/evaluation/ContingencyTableEvaluation.h>
  #include <shogun/evaluation/MulticlassAccuracy.h>
  #include <shogun/evaluation/MeanSquaredError.h>
+ #include <shogun/evaluation/ROCEvaluation.h>
 %}
 
 /* Typemaps */
@@ -63,6 +64,7 @@
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
 %rename(MeanSquaredError) CMeanSquaredError;
+%rename(ROCEvaluation) CROCEvaluation;
 %rename(AccuracyMeasure) CAccuracyMeasure;
 %rename(ErrorRateMeasure) CErrorRateMeasure;
 %rename(BALMeasure) CBALMeasure;
@@ -80,3 +82,4 @@
 %include <shogun/evaluation/ContingencyTableEvaluation.h>
 %include <shogun/evaluation/MulticlassAccuracy.h>
 %include <shogun/evaluation/MeanSquaredError.h>
+%include <shogun/evaluation/ROCEvaluation.h>
