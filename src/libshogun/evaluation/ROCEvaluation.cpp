@@ -65,10 +65,13 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 	// get total numbers of positive and negative labels
 	for(i=0; i<length; i++)
-		if (ground_truth->get_label(i)==1)
+		if (CMath::sign(ground_truth->get_label(i)) == 1)
 			pos_count++;
 		else
 			neg_count++;
+
+	// assure both number of positive and negative examples is >0
+	ASSERT(pos_count>0 && neg_count>0);
 
 	int32_t j = 0;
 	float64_t label;
@@ -80,15 +83,15 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 		if (label != threshold)
 		{
 			threshold = label;
-			m_ROC_graph[j] = neg_count!=0 ? fp/neg_count : 0.0;
-			m_ROC_graph[j+diff_count+1] = pos_count!=0 ? tp/pos_count : 0.0;
+			m_ROC_graph[j] = fp/neg_count;
+			m_ROC_graph[j+diff_count+1] = tp/pos_count;
 			j++;
 
 			m_auROC += (fp-fp_prev)*(tp+tp_prev)/2;
 			fp_prev = fp;
 			tp_prev = tp;
 		}
-		if (ground_truth->get_label(idxs[i]) == 1)
+		if (ground_truth->get_label(idxs[i]) > 0)
 			tp+=1.0;
 		else
 			fp+=1.0;
