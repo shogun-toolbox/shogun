@@ -40,35 +40,42 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	int32_t pos_count=0;
 	int32_t neg_count=0;
 
+	// initialize number of labels and labels
 	int32_t length = predicted->get_num_labels();
 	float64_t* labels = predicted->get_labels(length);
-	m_auROC = 0.0;
-
-	// number of different predicted labels
-	int32_t diff_count=1;
 
 	// get sorted indexes
 	int32_t* idxs = new int32_t[length];
 	for(i=0; i<length; i++)
 		idxs[i] = i;
+
 	CMath::qsort_backward_index(labels,idxs,length);
+
+	// number of different predicted labels
+	int32_t diff_count=1;
 
 	// get number of different labels
 	for (i=0; i<length-1; i++)
+	{
 		if (labels[i] != labels[i+1])
 			diff_count++;
+	}
+
 	delete [] labels;
 
-	// initialize graph
+	// initialize graph and auROC
 	delete[] m_ROC_graph;
 	m_ROC_graph = new float64_t[diff_count*2+2];
+	m_auROC = 0.0;
 
 	// get total numbers of positive and negative labels
 	for(i=0; i<length; i++)
+	{
 		if (ground_truth->get_label(i) > 0)
 			pos_count++;
 		else
 			neg_count++;
+	}
 
 	// assure both number of positive and negative examples is >0
 	ASSERT(pos_count>0 && neg_count>0);
@@ -80,6 +87,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	for(i=0; i<length; i++)
 	{
 		label = predicted->get_label(idxs[i]);
+
 		if (label != threshold)
 		{
 			threshold = label;
@@ -91,6 +99,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 			fp_prev = fp;
 			tp_prev = tp;
 		}
+
 		if (ground_truth->get_label(idxs[i]) > 0)
 			tp+=1.0;
 		else
@@ -103,7 +112,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 	// add last trapezoid to auROC and normalize auROC
 	m_auROC += (fp-fp_prev)*(tp_prev+tp)/2;
-	m_auROC /= pos_count*neg_count;
+	m_auROC /= float64_t(pos_count)*neg_count;
 
 	// set ROC length and computed
 	m_ROC_length = diff_count+1;
@@ -118,9 +127,14 @@ void CROCEvaluation::get_ROC(float64_t** result, int32_t* num, int32_t* dim)
 		SG_ERROR("Uninitialized");
 
 	ASSERT(m_ROC_graph);
-	*result = m_ROC_graph;
 	*num = m_ROC_length;
 	*dim = 2;
+
+	*result = (float64_t*)malloc(sizeof(float64_t)*m_ROC_length*2);
+	if (!*result)
+		SG_ERROR("Allocating memory for ROC graph failed");
+
+	memcpy(*result, m_ROC_graph, m_ROC_length*2*sizeof(float64_t));
 }
 
 float64_t CROCEvaluation::get_auROC()

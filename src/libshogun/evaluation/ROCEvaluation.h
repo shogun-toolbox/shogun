@@ -21,6 +21,10 @@ namespace shogun
  * graph of binary classifier. This class also has an capability
  * of calculating auROC (area under ROC).
  *
+ * Implementation is based on the efficient ROC algorithm described in
+ *
+ * Fawcett, Tom (2004) ROC Graphs:
+ * Notes and Practical Considerations for Researchers; Machine Learning, 2004
  */
 class CROCEvaluation: public CBinaryClassEvaluation
 {
