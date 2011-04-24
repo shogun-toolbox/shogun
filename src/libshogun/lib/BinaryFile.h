@@ -264,19 +264,19 @@ public:
 	 */
 	//@{
 	virtual void set_byte_ndarray(
-			uint8_t* array, int32_t* dims, int32_t num_dims);
+			const uint8_t* array, int32_t* dims, int32_t num_dims);
 	virtual void set_char_ndarray(
-			char* array, int32_t* dims, int32_t num_dims);
+			const char* array, int32_t* dims, int32_t num_dims);
 	virtual void set_int_ndarray(
-			int32_t* array, int32_t* dims, int32_t num_dims);
+			const int32_t* array, int32_t* dims, int32_t num_dims);
 	virtual void set_shortreal_ndarray(
-			float32_t* array, int32_t* dims, int32_t num_dims);
+			const float32_t* array, int32_t* dims, int32_t num_dims);
 	virtual void set_real_ndarray(
-			float64_t* array, int32_t* dims, int32_t num_dims);
+			const float64_t* array, int32_t* dims, int32_t num_dims);
 	virtual void set_short_ndarray(
-			int16_t* array, int32_t* dims, int32_t num_dims);
+			const int16_t* array, int32_t* dims, int32_t num_dims);
 	virtual void set_word_ndarray(
-			uint16_t* array, int32_t* dims, int32_t num_dims);
+			const uint16_t* array, int32_t* dims, int32_t num_dims);
 	//@}
 	
 	/** @name Sparse Matrix Access Functions
