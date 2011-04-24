@@ -35,80 +35,123 @@ CAsciiFile::~CAsciiFile()
 
 #define GET_VECTOR(fname, mfname, sg_type) \
 void CAsciiFile::fname(sg_type*& vec, int32_t& len) \
-{										\
-	vec=NULL;								\
-	len=0;									\
-        int32_t num_dim;                                                        \
-        int32_t * dims;                                                         \
-	mfname(vec,dims,num_dim);						\
-	if (num_dim ==1)							\
-	{									\
-		len = dims[0];                                                  \
-                delete[] dims;                                                  \
-	}									\
-	else									\
-	{									\
-		delete[] vec;							\
-                delete[] dims;                                  		\
-                vec=NULL;							\
-		len=0;								\
-		SG_ERROR("Could not read vector from"				\
-				" file %s - %d-dimensional array found but "	\
-				"vector expected).\n", filename,		\
-				num_dim);					\
-	}									\
+{													\
+	vec=NULL;										\
+	len=0;											\
+	int32_t num_feat=0;								\
+	int32_t num_vec=0;								\
+	mfname(vec, num_feat, num_vec);					\
+	if ((num_feat==1) || (num_vec==1))				\
+	{												\
+		if (num_feat==1)							\
+			len=num_vec;							\
+		else										\
+			len=num_feat;							\
+	}												\
+	else											\
+	{												\
+		delete[] vec;								\
+		vec=NULL;									\
+		len=0;										\
+		SG_ERROR("Could not read vector from"		\
+				" file %s (shape %dx%d found but "	\
+				"vector expected).\n", filename,	\
+				num_vec, num_feat);					\
+	}												\
 }
 
-GET_VECTOR(get_byte_vector, get_byte_ndarray, uint8_t)
-GET_VECTOR(get_char_vector, get_char_ndarray, char)
-GET_VECTOR(get_int_vector, get_int_ndarray, int32_t)
-GET_VECTOR(get_shortreal_vector, get_shortreal_ndarray, float32_t)
-GET_VECTOR(get_real_vector, get_real_ndarray, float64_t)
-GET_VECTOR(get_short_vector, get_short_ndarray, int16_t)
-GET_VECTOR(get_word_vector, get_word_ndarray, uint16_t)
+GET_VECTOR(get_byte_vector, get_byte_matrix, uint8_t)
+GET_VECTOR(get_char_vector, get_char_matrix, char)
+GET_VECTOR(get_int_vector, get_int_matrix, int32_t)
+GET_VECTOR(get_shortreal_vector, get_shortreal_matrix, float32_t)
+GET_VECTOR(get_real_vector, get_real_matrix, float64_t)
+GET_VECTOR(get_short_vector, get_short_matrix, int16_t)
+GET_VECTOR(get_word_vector, get_word_matrix, uint16_t)
 #undef GET_VECTOR
 
-#define GET_MATRIX(fname, mfname, sg_type) \
-void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
-{										\
-	matrix=NULL;								\
-	int32_t * dims;                                                         \
-        int32_t num_dim=0;							\
-        num_feat = 0;                                                           \
-        num_vec = 0;                                                            \
-                                                                                \
-	mfname(matrix, dims, num_dim);						\
-	if (num_dim==2)                                                         \
-	{									\
-		num_feat = dims[1];                                             \
-                num_vec = dims[0];                                              \
-                delete[] dims;                                                 	\
-	}									\
-	else									\
-	{									\
-		delete[] matrix;						\
-                delete[] dims;                                                  \
-		matrix=NULL;							\
-		SG_ERROR("Could not read matrix from"				\
-				" file %s (%d-dimensional array found but "	\
-				"matrix expected).\n", filename,		\
-				num_dim);                         		\
-                                                            			\
-	}									\
+#define GET_MATRIX(fname, conv, sg_type)										\
+void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+{																				\
+	struct stat stats;															\
+	if (stat(filename, &stats)!=0)												\
+		SG_ERROR("Could not get file statistics.\n");							\
+																				\
+	char* data=new char[stats.st_size+1];										\
+	memset(data, 0, sizeof(char)*(stats.st_size+1));							\
+	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
+	if (nread<=0)																\
+		SG_ERROR("Could not read data from %s.\n", filename);					\
+																				\
+	SG_DEBUG("data read from file:\n%s\n", data);								\
+																				\
+	/* determine num_feat and num_vec, populate dynamic array */ 				\
+	int32_t nf=0;																\
+	num_feat=0;																	\
+	num_vec=0;																	\
+	char* ptr_item=NULL;														\
+	char* ptr_data=data;														\
+	DynArray<char*>* items=new DynArray<char*>();						\
+																				\
+	while (*ptr_data)															\
+	{																			\
+		if (*ptr_data=='\n')													\
+		{																		\
+			if (ptr_item)														\
+				nf++;															\
+																				\
+			if (num_feat!=0 && nf!=num_feat)									\
+				SG_ERROR("Number of features mismatches (%d != %d) in vector"	\
+						" %d in file %s.\n", num_feat, nf, num_vec, filename);	\
+																				\
+			append_item(items, ptr_data, ptr_item);								\
+			num_feat=nf;														\
+			num_vec++;															\
+			nf=0;																\
+			ptr_item=NULL;														\
+		}																		\
+		else if (!isblank(*ptr_data) && !ptr_item)								\
+		{																		\
+			ptr_item=ptr_data;													\
+		}																		\
+		else if (isblank(*ptr_data) && ptr_item)								\
+		{																		\
+			append_item(items, ptr_data, ptr_item);								\
+			ptr_item=NULL;														\
+			nf++;																\
+		}																		\
+																				\
+		ptr_data++;																\
+	}																			\
+																				\
+	SG_DEBUG("num feat: %d, num_vec %d\n", num_feat, num_vec);					\
+	delete[] data;																\
+																				\
+	/* now copy data into matrix */ 											\
+	matrix=new sg_type[num_vec*num_feat];										\
+	for (int32_t i=0; i<num_vec; i++)											\
+	{																			\
+		for (int32_t j=0; j<num_feat; j++)										\
+		{																		\
+			char* item=items->get_element(i*num_feat+j);						\
+			matrix[i*num_feat+j]=conv(item);									\
+			delete[] item;														\
+		}																		\
+	}																			\
+	delete items;																\
 }
 
-GET_MATRIX(get_byte_matrix, get_byte_ndarray, uint8_t)
-GET_MATRIX(get_int8_matrix, get_int8_ndarray, int8_t)
-GET_MATRIX(get_char_matrix, get_char_ndarray, char)
-GET_MATRIX(get_int_matrix, get_int_ndarray, int32_t)
-GET_MATRIX(get_uint_matrix, get_uint_ndarray, uint32_t)
-GET_MATRIX(get_long_matrix, get_long_ndarray, int64_t)
-GET_MATRIX(get_ulong_matrix, get_ulong_ndarray, uint64_t)
-GET_MATRIX(get_shortreal_matrix, get_shortreal_ndarray, float32_t)
-GET_MATRIX(get_real_matrix, get_real_ndarray, float64_t)
-GET_MATRIX(get_longreal_matrix, get_longreal_ndarray, floatmax_t)
-GET_MATRIX(get_short_matrix, get_short_ndarray, int16_t)
-GET_MATRIX(get_word_matrix, get_word_ndarray, uint16_t)
+GET_MATRIX(get_byte_matrix, atoi, uint8_t)
+GET_MATRIX(get_int8_matrix, atoi, int8_t)
+GET_MATRIX(get_char_matrix, atoi, char)
+GET_MATRIX(get_int_matrix, atoi, int32_t)
+GET_MATRIX(get_uint_matrix, atoi, uint32_t)
+GET_MATRIX(get_long_matrix, atoll, int64_t)
+GET_MATRIX(get_ulong_matrix, atoll, uint64_t)
+GET_MATRIX(get_shortreal_matrix, atof, float32_t)
+GET_MATRIX(get_real_matrix, atof, float64_t)
+GET_MATRIX(get_longreal_matrix, atof, floatmax_t)
+GET_MATRIX(get_short_matrix, atoi, int16_t)
+GET_MATRIX(get_word_matrix, atoi, uint16_t)
 #undef GET_MATRIX
 
 #define GET_NDARRAY(fname, conv, sg_type)							\
@@ -761,38 +804,48 @@ void CAsciiFile::get_longreal_string_list(TString<floatmax_t>*& strings, int32_t
 
 #define SET_VECTOR(fname, mfname, sg_type)	\
 void CAsciiFile::fname(const sg_type* vec, int32_t len)	\
-{							\
-	mfname(vec, &len, 1);				\
+{															\
+	mfname(vec, len, 1);									\
 }
-SET_VECTOR(set_byte_vector, set_byte_ndarray, uint8_t)
-SET_VECTOR(set_char_vector, set_char_ndarray, char)
-SET_VECTOR(set_int_vector, set_int_ndarray, int32_t)
-SET_VECTOR(set_shortreal_vector, set_shortreal_ndarray, float32_t)
-SET_VECTOR(set_real_vector, set_real_ndarray, float64_t)
-SET_VECTOR(set_short_vector, set_short_ndarray, int16_t)
-SET_VECTOR(set_word_vector, set_word_ndarray, uint16_t)
+SET_VECTOR(set_byte_vector, set_byte_matrix, uint8_t)
+SET_VECTOR(set_char_vector, set_char_matrix, char)
+SET_VECTOR(set_int_vector, set_int_matrix, int32_t)
+SET_VECTOR(set_shortreal_vector, set_shortreal_matrix, float32_t)
+SET_VECTOR(set_real_vector, set_real_matrix, float64_t)
+SET_VECTOR(set_short_vector, set_short_matrix, int16_t)
+SET_VECTOR(set_word_vector, set_word_matrix, uint16_t)
 #undef SET_VECTOR
 
-#define SET_MATRIX(fname, mfname, sg_type) \
-void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)\
+#define SET_MATRIX(fname, sg_type, fprt_type, type_str) \
+void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
 {																					\
-        int32_t tab[2];             	\
-        tab[0] = num_vec;         	\
-        tab[1] = num_feat;              \
-        mfname(matrix,tab,2);           \
+	if (!(file && matrix))															\
+		SG_ERROR("File or matrix invalid.\n");										\
+																					\
+	for (int32_t i=0; i<num_vec; i++)												\
+	{																				\
+		for (int32_t j=0; j<num_feat; j++)											\
+		{																			\
+			sg_type v=matrix[num_feat*i+j];											\
+			if (j==num_feat-1)														\
+				fprintf(file, type_str "\n", (fprt_type) v);						\
+			else																	\
+				fprintf(file, type_str " ", (fprt_type) v);							\
+		}																			\
+	}																				\
 }
-SET_MATRIX(set_char_matrix, set_char_ndarray, char)
-SET_MATRIX(set_byte_matrix,set_byte_ndarray, uint8_t)
-SET_MATRIX(set_int8_matrix,set_int8_ndarray, int8_t)
-SET_MATRIX(set_int_matrix, set_int_ndarray, int32_t)
-SET_MATRIX(set_uint_matrix, set_uint_ndarray, uint32_t)
-SET_MATRIX(set_long_matrix, set_long_ndarray, int64_t)
-SET_MATRIX(set_ulong_matrix, set_ulong_ndarray, uint64_t)
-SET_MATRIX(set_short_matrix, set_short_ndarray, int16_t)
-SET_MATRIX(set_word_matrix, set_word_ndarray, uint16_t)
-SET_MATRIX(set_shortreal_matrix, set_shortreal_ndarray, float32_t)
-SET_MATRIX(set_real_matrix, set_real_ndarray, float64_t)
-SET_MATRIX(set_longreal_matrix, set_longreal_ndarray, floatmax_t)
+SET_MATRIX(set_char_matrix, char, char, "%c")
+SET_MATRIX(set_byte_matrix, uint8_t, uint8_t, "%u")
+SET_MATRIX(set_int8_matrix, int8_t, int8_t, "%d")
+SET_MATRIX(set_int_matrix, int32_t, int32_t, "%i")
+SET_MATRIX(set_uint_matrix, uint32_t, uint32_t, "%u")
+SET_MATRIX(set_long_matrix, int64_t, long long int, "%lli")
+SET_MATRIX(set_ulong_matrix, uint64_t, long long unsigned int, "%llu")
+SET_MATRIX(set_short_matrix, int16_t, int16_t, "%i")
+SET_MATRIX(set_word_matrix, uint16_t, uint16_t, "%u")
+SET_MATRIX(set_shortreal_matrix, float32_t, float32_t, "%f")
+SET_MATRIX(set_real_matrix, float64_t, float64_t, "%f")
+SET_MATRIX(set_longreal_matrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_MATRIX
 
 #define SET_NDARRAY(fname, sg_type, fprt_type, type_str) \
