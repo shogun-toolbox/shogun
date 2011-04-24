@@ -121,4 +121,5 @@ class CDomainAdaptationSVM : public CSVMLight
 		float64_t train_factor;
 };
 }
-#endif
+#endif //_DomainAdaptation_SVM_H___
+#endif //USE_SVMLIGHT
