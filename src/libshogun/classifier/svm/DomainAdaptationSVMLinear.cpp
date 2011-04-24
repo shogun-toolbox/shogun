@@ -116,7 +116,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
 
     if (presvm)
     {
-    	ASSERT(presvm->bias == 0.0);
+    	ASSERT(presvm->get_bias() == 0.0);
 
         // bias of parent SVM was set to zero in constructor, already contains B
         CLabels* parent_svm_out = presvm->classify(tmp_data);
