@@ -65,7 +65,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 	// get total numbers of positive and negative labels
 	for(i=0; i<length; i++)
-		if (CMath::sign(ground_truth->get_label(i)) == 1)
+		if (ground_truth->get_label(i) > 0)
 			pos_count++;
 		else
 			neg_count++;
