@@ -67,7 +67,7 @@ protected:
 	/** area under ROC graph */
 	float64_t m_auROC;
 
-	/** number of labels */
+	/** number of points in ROC graph */
 	int32_t m_ROC_length;
 
 	/** indicator of ROC and auROC being computed already */
