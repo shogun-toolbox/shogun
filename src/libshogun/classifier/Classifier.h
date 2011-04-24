@@ -66,6 +66,8 @@ enum EClassifierType
 	CT_DASVMLINEAR = 360,
 	CT_GAUSSIANNAIVEBAYES = 370,
 	CT_AVERAGEDPERCEPTRON = 380,
+	CT_SGDQN = 390,
+
 };
 
 enum ESolverType
