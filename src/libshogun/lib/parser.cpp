@@ -423,8 +423,10 @@ void input_parser::set_buffer_size(int32_t size)
 
 void input_parser::finalize_example()
 {
+  	pthread_mutex_lock(&example_in_use_mutex[buffer_read_index]);
 	is_example_used[buffer_read_index] = USED;
 	pthread_cond_signal(&example_in_use_condition[buffer_read_index]);
+	pthread_mutex_unlock(&example_in_use_mutex[buffer_read_index]);
 	buffer_increment_read_index();
 }
 

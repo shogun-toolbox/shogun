@@ -164,6 +164,12 @@ namespace shogun
 		 */
 		
 		virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length);
+
+		/** 
+		 * Frees the current feature vector, makes the buffer space available
+		 * for storing new objects.
+		 */
+		virtual void free_feature_vector();
 		
 
 	protected:

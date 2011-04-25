@@ -40,66 +40,7 @@ namespace shogun
 
 	class input_parser
 	{
-	private:
-		/**
-		 * Entry point for the parse thread.
-		 *
-		 * @param params this object
-		 *
-		 * @return NULL
-		 */
-		static void* parse_loop_entry_point(void* params);
-
-	protected:
-
-		CStreamingFile* input_source; /**< Input source,
-									   * CStreamingFile object */
-
-		pthread_t parse_thread;	/**< Parse thread */
-
-		void* examples_buff;	/**< Buffer for examples, behaves
-								 * like a ring.
-								 * Examples are stored and retrieved
-								 * from this buffer.*/
-
-		int32_t buffer_write_index; /**< Where next example will be
-									 * written into the buffer. */
-
-		int32_t buffer_read_index; /**< Where next example will be
-									* read from the buffer */
-
-		example_used_t* is_example_used; /**< Indicates state of examples
-										  * in buffer - used, not
-										  * used, or empty. */
-
-		pthread_cond_t* example_in_use_condition;
-		pthread_mutex_t* example_in_use_mutex;
-
-		int32_t example_memsize; /**< Size of example object */
-		int32_t buffer_size;	/**< Number of examples to store in buffer */
-
-		int32_t number_of_features;
-
-		int32_t number_of_vectors_parsed;
-		int32_t number_of_vectors_read;
-
-		float64_t* current_feature_vector; /**< Points to feature
-											* vector of last read example */
-
-		float64_t current_label; /**< Label of last read example */
-
-		int32_t current_number_of_features; /**< Features in last
-											 * read example */
-
-		void* current_example;	/**< Points to current example in buffer */
-
-
 	public:
-
-		bool parsing_done;	/**< true if all input is parsed */
-		bool reading_done;	/**< true if all examples are fetched */
-
-		example_type_t example_type; /**< LABELLED or UNLABELLED */
 
 		/**
 		 * Constructor
@@ -152,8 +93,8 @@ namespace shogun
 		 * @return 1 on success, 0 on failure.
 		 */
 		int32_t get_vector_and_label(float64_t* &feature_vector,
-									 int32_t &length,
-									 float64_t &label);
+					     int32_t &length,
+					     float64_t &label);
 
 		/**
 		 * Gets feature vector and length by reference.
@@ -242,8 +183,8 @@ namespace shogun
 		 * @return 1 if an example could be fetched, 0 otherwise
 		 */
 		int32_t get_next_example_labelled(float64_t* &feature_vector,
-										  int32_t &length,
-										  float64_t &label);
+						  int32_t &length,
+						  float64_t &label);
 
 		/**
 		 * Gets the next example, assuming it to be unlabelled.
@@ -257,7 +198,7 @@ namespace shogun
 		 * @return 1 if an example could be fetched, 0 otherwise
 		 */
 		int32_t get_next_example_unlabelled(float64_t* &feature_vector,
-											int32_t &length);
+						    int32_t &length);
 
 		/**
 		 * Finalize the current example, indicating that the buffer
@@ -273,6 +214,69 @@ namespace shogun
 		 *
 		 */
 		void end_parser();
+
+	private:
+		/**
+		 * Entry point for the parse thread.
+		 *
+		 * @param params this object
+		 *
+		 * @return NULL
+		 */
+		static void* parse_loop_entry_point(void* params);
+
+
+	public:
+		bool parsing_done;	/**< true if all input is parsed */
+		bool reading_done;	/**< true if all examples are fetched */
+
+		example_type_t example_type; /**< LABELLED or UNLABELLED */
+
+	protected:
+
+		CStreamingFile* input_source; /**< Input source,
+					       * CStreamingFile object */
+
+		pthread_t parse_thread;/**< Parse thread */
+
+		void* examples_buff;	/**< Buffer for examples, behaves
+					 * like a ring.
+					 * Examples are stored and retrieved
+					 * from this buffer.*/
+
+		int32_t buffer_write_index; /**< Where next example will be
+					     * written into the buffer. */
+
+		int32_t buffer_read_index; /**< Where next example will be
+					    * read from the buffer */
+
+		example_used_t* is_example_used; /**< Indicates state of examples
+						  * in buffer - used, not
+						  * used, or empty. */
+
+		pthread_cond_t* example_in_use_condition;
+		pthread_mutex_t* example_in_use_mutex;
+
+		int32_t example_memsize; /**< Size of example object */
+		int32_t buffer_size;	/**< Number of examples to store in buffer */
+
+		int32_t number_of_features;
+
+		int32_t number_of_vectors_parsed;
+		int32_t number_of_vectors_read;
+
+		float64_t* current_feature_vector; /**< Points to feature
+						    * vector of last read example */
+
+		float64_t current_label; /**< Label of last read example */
+
+		int32_t current_number_of_features; /**< Features in last
+						     * read example */
+
+		void* current_example;	/**< Points to current example in buffer */
+
+
+
 	};
 }
 #endif // __INPUT_PARSER_H__

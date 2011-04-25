@@ -38,7 +38,7 @@ CStreamingFile::~CStreamingFile()
 void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
 {								\
 	size_t buffer_size=1024;									\
-	char* buffer=(char*) malloc(buffer_size);					\
+	char* buffer=new char[buffer_size];					\
 	ssize_t bytes_read;											\
 																\
 	bytes_read=getline(&buffer, &buffer_size, file);			\
@@ -92,7 +92,7 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
 	}															\
 																\
 	SG_DEBUG("num_feat %d\n", num_feat);						\
-	delete[] buffer;											\
+	delete buffer;											\
 																\
 	/* now copy data into vector */								\
 	vector=new sg_type[num_feat];								\

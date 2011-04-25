@@ -58,17 +58,8 @@ int32_t CStreamingFeatures::get_next_feature_vector(float64_t* &feature_vector, 
 	// Now set current_{feature_vector, label, length} for the object
 	current_length = length;
 	current_label = label;
-
-	// in case current_feature_vector isn't initialized
-	if (current_feature_vector == NULL)
-		current_feature_vector = new float64_t[length];
-
-	memcpy(current_feature_vector, feature_vector, length*sizeof(float64_t));
-
-	feature_vector = current_feature_vector; // effectively, this address is constant
-
-	parser.finalize_example();
-
+	current_feature_vector = feature_vector;
+	
 	return ret_value;
 }
 
@@ -84,16 +75,12 @@ int32_t CStreamingFeatures::get_next_feature_vector(float64_t* &feature_vector, 
 
 	// Now set current_{feature_vector, length} for the object
 	current_length = length;
-
-	// in case current_feature_vector isn't initialized
-	if (current_feature_vector == NULL)
-		current_feature_vector = new float64_t[length];
-
-	memcpy(current_feature_vector, feature_vector, length*sizeof(float64_t));
-
-	feature_vector = current_feature_vector; // effectively, this address is constant
-
-	parser.finalize_example();
+	current_feature_vector = feature_vector;
 
 	return ret_value;
+}
+
+void CStreamingFeatures::free_feature_vector()
+{
+	parser.finalize_example();
 }
