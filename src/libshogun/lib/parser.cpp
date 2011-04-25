@@ -56,7 +56,7 @@ void CInputParser::init(CStreamingFile* input_file, bool is_labelled = true)
 	buffer_write_index = 0;
 	buffer_read_index = -1;
 
-	is_example_used = new example_used_t[buffer_size];
+	is_example_used = new E_IS_EXAMPLE_USED[buffer_size];
 	example_in_use_condition = new pthread_cond_t[buffer_size];
 	example_in_use_mutex = new pthread_mutex_t[buffer_size];
 

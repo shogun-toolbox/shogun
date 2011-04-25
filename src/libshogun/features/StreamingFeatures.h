@@ -172,9 +172,9 @@ namespace shogun
 		virtual void free_feature_vector();
 		
 
-3A	protected:
+	protected:
 		
-		input_parser parser;	/**< Parser object, to parse input data */
+		CInputParser parser;	/**< Parser object, to parse input data */
 
 		CStreamingFile* working_file;
 
