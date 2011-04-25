@@ -1,5 +1,15 @@
-#ifndef __INPUT_PARSER_H__
-#define __INPUT_PARSER_H__
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011 Shashwat Lal Das
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ */
+
+#ifndef __INPUTPARSER_H__
+#define __INPUTPARSER_H__
 
 #include "lib/io.h"
 #include "lib/StreamingFile.h"
@@ -25,20 +35,20 @@ namespace shogun
 		float64_t label;
 	};
 
-	enum example_used_t
+	enum E_IS_EXAMPLE_USED
 	{
-		EMPTY = 1,
-		NOT_USED = 2,
-		USED = 3
+		E_EMPTY = 1,
+		E_NOT_USED = 2,
+		E_USED = 3
 	};
 
-	enum example_type_t
+	enum E_EXAMPLE_TYPE
 	{
-		LABELLED = 1,
-		UNLABELLED = 2
+		E_LABELLED = 1,
+		E_UNLABELLED = 2
 	};
 
-	class input_parser
+	class CInputParser
 	{
 	public:
 
@@ -46,13 +56,13 @@ namespace shogun
 		 * Constructor
 		 *
 		 */
-		input_parser();
+		CInputParser();
 
 		/**
 		 * Destructor
 		 *
 		 */
-		~input_parser();
+		~CInputParser();
 
 		/**
 		 * Initializer
@@ -93,8 +103,8 @@ namespace shogun
 		 * @return 1 on success, 0 on failure.
 		 */
 		int32_t get_vector_and_label(float64_t* &feature_vector,
-					     int32_t &length,
-					     float64_t &label);
+									 int32_t &length,
+									 float64_t &label);
 
 		/**
 		 * Gets feature vector and length by reference.
@@ -183,8 +193,8 @@ namespace shogun
 		 * @return 1 if an example could be fetched, 0 otherwise
 		 */
 		int32_t get_next_example_labelled(float64_t* &feature_vector,
-						  int32_t &length,
-						  float64_t &label);
+										  int32_t &length,
+										  float64_t &label);
 
 		/**
 		 * Gets the next example, assuming it to be unlabelled.
@@ -198,7 +208,7 @@ namespace shogun
 		 * @return 1 if an example could be fetched, 0 otherwise
 		 */
 		int32_t get_next_example_unlabelled(float64_t* &feature_vector,
-						    int32_t &length);
+											int32_t &length);
 
 		/**
 		 * Finalize the current example, indicating that the buffer
@@ -230,29 +240,29 @@ namespace shogun
 		bool parsing_done;	/**< true if all input is parsed */
 		bool reading_done;	/**< true if all examples are fetched */
 
-		example_type_t example_type; /**< LABELLED or UNLABELLED */
+		E_EXAMPLE_TYPE example_type; /**< LABELLED or UNLABELLED */
 
 	protected:
 
 		CStreamingFile* input_source; /**< Input source,
-					       * CStreamingFile object */
+									   * CStreamingFile object */
 
 		pthread_t parse_thread;/**< Parse thread */
 
 		void* examples_buff;	/**< Buffer for examples, behaves
-					 * like a ring.
-					 * Examples are stored and retrieved
-					 * from this buffer.*/
+								 * like a ring.
+								 * Examples are stored and retrieved
+								 * from this buffer.*/
 
 		int32_t buffer_write_index; /**< Where next example will be
-					     * written into the buffer. */
+									 * written into the buffer. */
 
 		int32_t buffer_read_index; /**< Where next example will be
-					    * read from the buffer */
+									* read from the buffer */
 
-		example_used_t* is_example_used; /**< Indicates state of examples
-						  * in buffer - used, not
-						  * used, or empty. */
+		E_IS_EXAMPLE_USED* is_example_used; /**< Indicates state of examples
+											 * in buffer - used, not
+											 * used, or empty. */
 
 		pthread_cond_t* example_in_use_condition;
 		pthread_mutex_t* example_in_use_mutex;
@@ -266,17 +276,17 @@ namespace shogun
 		int32_t number_of_vectors_read;
 
 		float64_t* current_feature_vector; /**< Points to feature
-						    * vector of last read example */
-
+											* vector of last read example */
+		
 		float64_t current_label; /**< Label of last read example */
-
+		
 		int32_t current_number_of_features; /**< Features in last
-						     * read example */
-
+											 * read example */
+		
 		void* current_example;	/**< Points to current example in buffer */
 
 
 
 	};
 }
-#endif // __INPUT_PARSER_H__
+#endif // __INPUTPARSER_H__

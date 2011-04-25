@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2010 Soeren Sonnenburg
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Written (W) 2011 Shashwat Lal Das
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include "features/SparseFeatures.h"
@@ -36,9 +36,9 @@ CStreamingFile::~CStreamingFile()
 
 #define GET_VECTOR(fname, conv, sg_type)						\
 void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
-{								\
+{																\
 	size_t buffer_size=1024;									\
-	char* buffer=new char[buffer_size];					\
+	char* buffer=new char[buffer_size];							\
 	ssize_t bytes_read;											\
 																\
 	bytes_read=getline(&buffer, &buffer_size, file);			\
@@ -92,7 +92,7 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
 	}															\
 																\
 	SG_DEBUG("num_feat %d\n", num_feat);						\
-	delete buffer;											\
+	delete buffer;												\
 																\
 	/* now copy data into vector */								\
 	vector=new sg_type[num_feat];								\

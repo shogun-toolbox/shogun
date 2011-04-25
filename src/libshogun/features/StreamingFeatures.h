@@ -24,7 +24,7 @@ namespace shogun
  * Currently, this class implements 'simple' streaming features.
  * i.e., With feature vectors which are floats.
  * Also, assumes file input.
-*/
+ */
 	
 	class CStreamingFeatures: public CFeatures
 	{
@@ -91,6 +91,7 @@ namespace shogun
 		 * @return C_STREAMING_SIMPLE
 		 */
 		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+
 		/** 
 		 * Gets number of vectors.
 		 * Not useful for StreamingFeatures.
@@ -98,6 +99,7 @@ namespace shogun
 		 * @return -1
 		 */
 		virtual inline int32_t	get_num_vectors() { return -1; }
+
 		/** 
 		 * Gets size of the object in the memory.
 		 * 
@@ -149,7 +151,6 @@ namespace shogun
 		 * 
 		 * @return 1 if successful, 0 if no examples left
 		 */
-
 		virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length, float64_t &label);
 
 		/** 
@@ -162,7 +163,6 @@ namespace shogun
 		 * 
 		 * @return 1 if successful, 0 if no examples left
 		 */
-		
 		virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length);
 
 		/** 
@@ -172,7 +172,7 @@ namespace shogun
 		virtual void free_feature_vector();
 		
 
-	protected:
+3A	protected:
 		
 		input_parser parser;	/**< Parser object, to parse input data */
 
@@ -181,9 +181,9 @@ namespace shogun
 		float64_t* current_feature_vector; /**< Feature vector last fetched */
 		float64_t current_label;	/**< Label of last fetched example */
 		int32_t current_length;	/**< Features in last fetched
-					 * example */
+								 * example */
 		bool has_labels; /**< Whether the examples are
-				  * labelled or not */
+						  * labelled or not */
 
 	};
 }

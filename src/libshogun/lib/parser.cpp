@@ -1,3 +1,13 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011 Shashwat Lal Das
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ */
+
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/parser.h"
@@ -9,26 +19,29 @@
 
 using namespace shogun;
 
-input_parser::input_parser()
+CInputParser::CInputParser()
 {
 	init(NULL, true);
 }
 
-input_parser::~input_parser()
+CInputParser::~CInputParser()
 {
 	end_parser();
 	free(examples_buff);
+	free(is_example_used);
+	free(example_in_use_condition);
+	free(example_in_use_mutex);
 }
 
-void input_parser::init(CStreamingFile* input_file, bool is_labelled = true)
+void CInputParser::init(CStreamingFile* input_file, bool is_labelled = true)
 {
 	input_source = input_file;
 	buffer_size = PARSER_DEFAULT_BUFFSIZE;
 
 	if (is_labelled == true)
-		example_type = LABELLED;
+		example_type = E_LABELLED;
 	else
-		example_type = UNLABELLED;
+		example_type = E_UNLABELLED;
 
 	examples_buff = NULL;
 	parsing_done = false;
@@ -48,44 +61,39 @@ void input_parser::init(CStreamingFile* input_file, bool is_labelled = true)
 	example_in_use_mutex = new pthread_mutex_t[buffer_size];
 
 	for (int i=0; i<buffer_size; i++)
-		{
-			is_example_used[i] = EMPTY;
-			pthread_cond_init(&example_in_use_condition[i], NULL);
-			pthread_mutex_init(&example_in_use_mutex[i], NULL);
-		}
+	{
+		is_example_used[i] = E_EMPTY;
+		pthread_cond_init(&example_in_use_condition[i], NULL);
+		pthread_mutex_init(&example_in_use_mutex[i], NULL);
+	}
 
 
 }
 
-void input_parser::start_parser()
+void CInputParser::start_parser()
 {
 	pthread_create(&parse_thread, NULL, parse_loop_entry_point, this);
 }
 
-void* input_parser::parse_loop_entry_point(void* params)
+void* CInputParser::parse_loop_entry_point(void* params)
 {
-	((input_parser *) params)->main_parse_loop(params);
+	((CInputParser *) params)->main_parse_loop(params);
 
 	return NULL;
 }
 
-bool input_parser::is_running()
+bool CInputParser::is_running()
 {
-	if (parsing_done)
-		{
-			if (reading_done)
-				return false;
-			else
-				return true;
-		}
-	else
-		{
+    if (parsing_done)
+		if (reading_done)
 			return false;
-		}
-
+		else
+			return true;
+    else
+		return false;
 }
 
-int32_t input_parser::get_number_of_features()
+int32_t CInputParser::get_number_of_features()
 {
 	// Get the number of features in the line
 	// Assumes it is used only at the first line of input
@@ -94,15 +102,15 @@ int32_t input_parser::get_number_of_features()
 	int32_t ret, length;
 	float64_t* feature_vector, label;
 
-	if (example_type == LABELLED)
-		{
-			ret = get_vector_and_label(feature_vector, length, label);
-		}
+	if (example_type == E_LABELLED)
+	{
+		ret = get_vector_and_label(feature_vector, length, label);
+	}
 
 	else
-		{
-			ret = get_vector_only(feature_vector, length);
-		}
+	{
+		ret = get_vector_only(feature_vector, length);
+	}
 
 	if (!ret)
 		return -1;	// No examples could be read
@@ -112,7 +120,7 @@ int32_t input_parser::get_number_of_features()
 	return length;
 }
 
-int32_t input_parser::get_vector_and_label(float64_t* &feature_vector,
+int32_t CInputParser::get_vector_and_label(float64_t* &feature_vector,
 										   int32_t &length,
 										   float64_t &label)
 {
@@ -121,10 +129,10 @@ int32_t input_parser::get_vector_and_label(float64_t* &feature_vector,
 	   a dynamic call depending on the type of feature. */
 
 	if (length < 2)
-		{
-			parsing_done=true;
-			return 0;	// Problem reading the example
-		}
+	{
+		parsing_done=true;
+		return 0;	// Problem reading the example
+	}
 
 	label=feature_vector[0];
 	feature_vector++;
@@ -133,7 +141,7 @@ int32_t input_parser::get_vector_and_label(float64_t* &feature_vector,
 	return 1;
 }
 
-int32_t input_parser::get_vector_only(float64_t* &feature_vector,
+int32_t CInputParser::get_vector_only(float64_t* &feature_vector,
 									  int32_t &length)
 {
 	input_source->get_real_vector(feature_vector, length);
@@ -141,25 +149,25 @@ int32_t input_parser::get_vector_only(float64_t* &feature_vector,
 	   a dynamic call depending on the type of feature. */
 
 	if (length < 1)
-		{
-			parsing_done=true;
-			return 0;	// Problem reading the example
-		}
+	{
+		parsing_done=true;
+		return 0;	// Problem reading the example
+	}
 
 	return 1;
 }
 
-void input_parser::buffer_increment_write_index()
+void CInputParser::buffer_increment_write_index()
 {
 	buffer_write_index = (buffer_write_index + 1) % buffer_size;
 }
 
-void input_parser::buffer_increment_read_index()
+void CInputParser::buffer_increment_read_index()
 {
 	buffer_read_index = (buffer_read_index + 1) % buffer_size;
 }
 
-void input_parser::copy_example_into_buffer(void* example)
+void CInputParser::copy_example_into_buffer(void* example)
 {
 	/* First we should check if the example can be overwritten or
 	   not. In case the same buffer space is being used wait on a
@@ -172,196 +180,196 @@ void input_parser::copy_example_into_buffer(void* example)
 
 	void* current_example_loc;
 
-	if (is_example_used[buffer_write_index] == NOT_USED)
+	if (is_example_used[buffer_write_index] == E_NOT_USED)
 		pthread_mutex_lock(&example_in_use_mutex[buffer_write_index]);
 
-	while (is_example_used[buffer_write_index] == NOT_USED)
-		{
-			pthread_cond_wait(&example_in_use_condition[buffer_write_index], &example_in_use_mutex[buffer_write_index]);
-		}
+	while (is_example_used[buffer_write_index] == E_NOT_USED)
+	{
+		pthread_cond_wait(&example_in_use_condition[buffer_write_index], &example_in_use_mutex[buffer_write_index]);
+	}
 
 	// Find where to store the example in the buffer
 
-	if (example_type == LABELLED)
+	if (example_type == E_LABELLED)
+	{
+		current_example_loc = (LabelledExample *)
+			((char *)examples_buff + buffer_write_index*example_memsize);
+
+		((LabelledExample *) current_example_loc)->feature_vector = (float64_t *)
+			((char *) current_example_loc + sizeof(LabelledExample));
+
+		((LabelledExample *) current_example_loc)->dimensions = ((LabelledExample *) example)->dimensions;
+
+		((LabelledExample *) current_example_loc)->label = ((LabelledExample *) example)->label;
+
+		for (int i=0; i<((LabelledExample *) current_example_loc)->dimensions; i++)
 		{
-			current_example_loc = (LabelledExample *)
-				((char *)examples_buff + buffer_write_index*example_memsize);
-
-			((LabelledExample *) current_example_loc)->feature_vector = (float64_t *)
-				((char *) current_example_loc + sizeof(LabelledExample));
-
-			((LabelledExample *) current_example_loc)->dimensions = ((LabelledExample *) example)->dimensions;
-
-			((LabelledExample *) current_example_loc)->label = ((LabelledExample *) example)->label;
-
-			for (int i=0; i<((LabelledExample *) current_example_loc)->dimensions; i++)
-				{
-					((LabelledExample *) current_example_loc)->feature_vector[i] = ((LabelledExample *) example)->feature_vector[i];
-				}
-
+			((LabelledExample *) current_example_loc)->feature_vector[i] = ((LabelledExample *) example)->feature_vector[i];
 		}
+
+	}
 
 	else
+	{
+		current_example_loc = (UnlabelledExample *)
+			((char *)examples_buff + buffer_write_index*example_memsize);
+
+		((UnlabelledExample *) current_example_loc)->feature_vector = (float64_t *)
+			((char *) current_example_loc + sizeof(UnlabelledExample));
+
+		((UnlabelledExample *) current_example_loc)->dimensions = ((UnlabelledExample *) example)->dimensions;
+
+		for (int i=0; i<((UnlabelledExample *) current_example_loc)->dimensions; i++)
 		{
-			current_example_loc = (UnlabelledExample *)
-				((char *)examples_buff + buffer_write_index*example_memsize);
-
-			((UnlabelledExample *) current_example_loc)->feature_vector = (float64_t *)
-				((char *) current_example_loc + sizeof(UnlabelledExample));
-
-			((UnlabelledExample *) current_example_loc)->dimensions = ((UnlabelledExample *) example)->dimensions;
-
-			for (int i=0; i<((UnlabelledExample *) current_example_loc)->dimensions; i++)
-				{
-					((UnlabelledExample *) current_example_loc)->feature_vector[i] = ((UnlabelledExample *) example)->feature_vector[i];
-				}
-
-
+			((UnlabelledExample *) current_example_loc)->feature_vector[i] = ((UnlabelledExample *) example)->feature_vector[i];
 		}
 
-	is_example_used[buffer_write_index] = NOT_USED; // set the example to unused
+
+	}
+
+	is_example_used[buffer_write_index] = E_NOT_USED; // set the example to unused
 	pthread_mutex_unlock(&example_in_use_mutex[buffer_write_index]);
 }
 
 
-void* input_parser::main_parse_loop(void* params)
+void* CInputParser::main_parse_loop(void* params)
 {
 	// Read the examples into current_* objects
 	// Instead of allocating mem for new objects each time
 
-	input_parser* this_obj = (input_parser *) params;
+	CInputParser* this_obj = (CInputParser *) params;
 	this->input_source = this_obj->input_source;
 
 	while (!parsing_done)
+	{
+		// Get number of features from the first example parsed
+		if (number_of_vectors_parsed == 0)
 		{
-			// Get number of features from the first example parsed
-			if (number_of_vectors_parsed == 0)
-				{
-					// Get number of features, allocate mem
-					current_number_of_features = get_number_of_features();
-					number_of_features = current_number_of_features;
+			// Get number of features, allocate mem
+			current_number_of_features = get_number_of_features();
+			number_of_features = current_number_of_features;
 
-					// Now allocate mem for buffer
-					if (example_type == LABELLED)
-						{
-							example_memsize = sizeof(LabelledExample) + sizeof(float64_t)*number_of_features;
-							current_example = (LabelledExample*) malloc(example_memsize);
-							examples_buff = (LabelledExample*) malloc(example_memsize*buffer_size);
-							current_feature_vector = (float64_t*) ((char *) current_example + sizeof(LabelledExample));
+			// Now allocate mem for buffer
+			if (example_type == E_LABELLED)
+			{
+				example_memsize = sizeof(LabelledExample) + sizeof(float64_t)*number_of_features;
+				current_example = (LabelledExample*) malloc(example_memsize);
+				examples_buff = (LabelledExample*) malloc(example_memsize*buffer_size);
+				current_feature_vector = (float64_t*) ((char *) current_example + sizeof(LabelledExample));
 
-						}
-
-					else
-						{
-							example_memsize = sizeof(UnlabelledExample) + sizeof(float64_t)*number_of_features;
-							current_example = (UnlabelledExample*) malloc(example_memsize);
-							examples_buff = (UnlabelledExample*) malloc(example_memsize*buffer_size);
-							current_feature_vector = (float64_t*) ((char *) current_example + sizeof(UnlabelledExample));
-
-						}
-
-					// make it point to the list of floats in current_example
-					current_feature_vector = (float64_t*) ((char *) current_example + example_memsize);
-
-				}
-
-			if (example_type == LABELLED)
-				{
-
-					get_vector_and_label(current_feature_vector,
-										 current_number_of_features,
-										 current_label);
-				}
-
-			else if (example_type == UNLABELLED)
-				{
-					get_vector_only(current_feature_vector,
-									current_number_of_features);
-				}
-
-			if (current_number_of_features < 0)
-				{
-					parsing_done = true;
-					return NULL;
-				}
-
-
-
-			if (example_type == LABELLED)
-				{
-					((LabelledExample*) current_example)->label = current_label;
-					((LabelledExample*) current_example)->feature_vector = current_feature_vector;
-					((LabelledExample*) current_example)->dimensions = current_number_of_features;
-				}
+			}
 
 			else
-				{
-					((UnlabelledExample*) current_example)->feature_vector = current_feature_vector;
-					((UnlabelledExample*) current_example)->dimensions = current_number_of_features;
-				}
+			{
+				example_memsize = sizeof(UnlabelledExample) + sizeof(float64_t)*number_of_features;
+				current_example = (UnlabelledExample*) malloc(example_memsize);
+				examples_buff = (UnlabelledExample*) malloc(example_memsize*buffer_size);
+				current_feature_vector = (float64_t*) ((char *) current_example + sizeof(UnlabelledExample));
 
+			}
 
-			// Now copy the example into the buffer
-			copy_example_into_buffer(current_example);
-
-			buffer_increment_write_index();
-			number_of_vectors_parsed++;
+			// make it point to the list of floats in current_example
+			current_feature_vector = (float64_t*) ((char *) current_example + example_memsize);
 
 		}
+
+		if (example_type == E_LABELLED)
+		{
+
+			get_vector_and_label(current_feature_vector,
+								 current_number_of_features,
+								 current_label);
+		}
+
+		else if (example_type == E_UNLABELLED)
+		{
+			get_vector_only(current_feature_vector,
+							current_number_of_features);
+		}
+
+		if (current_number_of_features < 0)
+		{
+			parsing_done = true;
+			return NULL;
+		}
+
+
+
+		if (example_type == E_LABELLED)
+		{
+			((LabelledExample*) current_example)->label = current_label;
+			((LabelledExample*) current_example)->feature_vector = current_feature_vector;
+			((LabelledExample*) current_example)->dimensions = current_number_of_features;
+		}
+
+		else
+		{
+			((UnlabelledExample*) current_example)->feature_vector = current_feature_vector;
+			((UnlabelledExample*) current_example)->dimensions = current_number_of_features;
+		}
+
+
+		// Now copy the example into the buffer
+		copy_example_into_buffer(current_example);
+
+		buffer_increment_write_index();
+		number_of_vectors_parsed++;
+
+	}
 
 	return NULL;
 
 }
 
-void* input_parser::get_next_example()
+void* CInputParser::get_next_example()
 {
 	// Return the next unused example from the buffer
 
 	void *example;
 
 	if (buffer_read_index < 0)
-		{
-			if (number_of_vectors_parsed > 0)
-				buffer_increment_read_index();
-			else
-				return NULL;
-		}
+	{
+		if (number_of_vectors_parsed > 0)
+			buffer_increment_read_index();
+		else
+			return NULL;
+	}
 
 
 	if (parsing_done)
+	{
+		if (number_of_vectors_read == number_of_vectors_parsed)
 		{
-			if (number_of_vectors_read == number_of_vectors_parsed)
-				{
-					reading_done = true;
-				}
+			reading_done = true;
 		}
+	}
 
 
 	if (number_of_vectors_read == number_of_vectors_parsed)
-		{
-			return NULL;
-		}
+	{
+		return NULL;
+	}
 
 
-	if (is_example_used[buffer_read_index] == NOT_USED)
-		{
-			pthread_mutex_lock(&example_in_use_mutex[buffer_read_index]);
+	if (is_example_used[buffer_read_index] == E_NOT_USED)
+	{
+		pthread_mutex_lock(&example_in_use_mutex[buffer_read_index]);
 
-			example = ((char *) examples_buff + example_memsize * buffer_read_index);
+		example = ((char *) examples_buff + example_memsize * buffer_read_index);
 
-			pthread_mutex_unlock(&example_in_use_mutex[buffer_read_index]);
-			number_of_vectors_read++;
-			return example;
-		}
+		pthread_mutex_unlock(&example_in_use_mutex[buffer_read_index]);
+		number_of_vectors_read++;
+		return example;
+	}
 
 	else
-		{
-			return NULL;
-		}
+	{
+		return NULL;
+	}
 
 }
 
-int32_t input_parser::get_next_example_labelled(float64_t* &feature_vector, int32_t &length, float64_t &label)
+int32_t CInputParser::get_next_example_labelled(float64_t* &feature_vector, int32_t &length, float64_t &label)
 {
 	/* if reading is done, no more examples can be fetched. return 0
 	   else, if example can be read, get the example and return 1.
@@ -371,17 +379,17 @@ int32_t input_parser::get_next_example_labelled(float64_t* &feature_vector, int3
 	LabelledExample *example;
 
 	while (1)
-		{
-			if (reading_done)
-				return 0;
+	{
+		if (reading_done)
+			return 0;
 
-			example = (LabelledExample *) get_next_example();
+		example = (LabelledExample *) get_next_example();
 
-			if (example == NULL)
-				continue;
-			else
-				break;
-		}
+		if (example == NULL)
+			continue;
+		else
+			break;
+	}
 
 
 	feature_vector = example->feature_vector;
@@ -391,22 +399,22 @@ int32_t input_parser::get_next_example_labelled(float64_t* &feature_vector, int3
 	return 1;
 }
 
-int32_t input_parser::get_next_example_unlabelled(float64_t* &feature_vector, int32_t &length)
+int32_t CInputParser::get_next_example_unlabelled(float64_t* &feature_vector, int32_t &length)
 {
 	UnlabelledExample *example;
 
 	while (1)
-		{
-			if (reading_done)
-				return 0;
+	{
+		if (reading_done)
+			return 0;
 
-			example = (UnlabelledExample *) get_next_example();
+		example = (UnlabelledExample *) get_next_example();
 
-			if (example == NULL)
-				continue;
-			else
-				break;
-		}
+		if (example == NULL)
+			continue;
+		else
+			break;
+	}
 
 
 	feature_vector = example->feature_vector;
@@ -416,21 +424,21 @@ int32_t input_parser::get_next_example_unlabelled(float64_t* &feature_vector, in
 }
 
 
-void input_parser::set_buffer_size(int32_t size)
+void CInputParser::set_buffer_size(int32_t size)
 {
 	buffer_size = size;
 }
 
-void input_parser::finalize_example()
+void CInputParser::finalize_example()
 {
   	pthread_mutex_lock(&example_in_use_mutex[buffer_read_index]);
-	is_example_used[buffer_read_index] = USED;
+	is_example_used[buffer_read_index] = E_USED;
 	pthread_cond_signal(&example_in_use_condition[buffer_read_index]);
 	pthread_mutex_unlock(&example_in_use_mutex[buffer_read_index]);
 	buffer_increment_read_index();
 }
 
-void input_parser::end_parser()
+void CInputParser::end_parser()
 {
 	pthread_join(parse_thread, NULL);
 }
