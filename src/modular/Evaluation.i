@@ -59,7 +59,7 @@
 
 /* Remove C Prefix */
 %rename(PerformanceMeasures) CPerformanceMeasures;
-%rename(Evaluation) CEvaluation;
+%rename(BaseEvaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
