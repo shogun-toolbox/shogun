@@ -507,6 +507,16 @@ check_python()
 
 test_java()
 {
+	if test "$_libshogun" = no
+	then
+		if test "$_java_modular" = yes
+		then
+			die "libshogun is required for java_modular"
+		else
+			_java_modular=no
+		fi
+	fi
+
 	echocheck "Java"
 	if java -version >/dev/null 2>&1
 	then
@@ -529,7 +539,11 @@ EOF
 			PRE_LIB_SWIG_JAVA_MODULAR=
 			EXT_LIB_SWIG_JAVA_MODULAR=.so
 			SWIGFLAGS_JAVA_MODULAR="-c++ -java"
-			INCLUDES_JAVA="$(dirname $(java PrintProperty java.home))/include"
+			INCLUDES_JAVA="-I$(dirname $(java PrintProperty java.home))/include"
+			INCLUDES_JAVA="$INCLUDES_JAVA $INCLUDES_JAVA/`uname -s | tr 'A-Z' 'a-z'`"
+
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -fno-strict-aliasing"
+			COMPFLAGS_C="$COMPFLAGS_C -fno-strict-aliasing"
 			LINKFLAGS_JAVA="--shared"
 			echores "yes"
 
@@ -3331,14 +3345,12 @@ test_modular()
 		then
 			PARTS="$PARTS java_modular"
 			JAVA_MODULAR_TARGET=java_modular
-			INCLUDES_JAVA="-I/usr/lib/jvm/java-6-openjdk/include"
 		fi
 
 		if test "$_csharp" = yes && test "$_csharp_modular" != no
 		then
 			PARTS="$PARTS csharp_modular"
 			CSHARP_MODULAR_TARGET=csharp_modular
-			INCLUDES_CSHARP=
 		fi
 
 		if test "$_ruby" = yes && test "$_ruby_modular" != no
