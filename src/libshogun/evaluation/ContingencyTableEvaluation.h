@@ -221,7 +221,13 @@ protected:
 };
 
 /** @brief class AccuracyMeasure
- * used to measure accuracy of 2-class classifier
+ * used to measure accuracy of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CAccuracyMeasure: public CContingencyTableEvaluation
 {
@@ -235,7 +241,13 @@ public:
 };
 
 /** @brief class ErrorRateMeasure
- * used to measure error rate of 2-class classifier
+ * used to measure error rate of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CErrorRateMeasure: public CContingencyTableEvaluation
 {
@@ -249,7 +261,13 @@ public:
 };
 
 /** @brief class BALMeasure
- * used to measure balanced error of 2-class classifier
+ * used to measure balanced error of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CBALMeasure: public CContingencyTableEvaluation
 {
@@ -263,7 +281,13 @@ public:
 };
 
 /** @brief class WRACCMeasure
- * used to measure weighted relative accuracy of 2-class classifier
+ * used to measure weighted relative accuracy of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CWRACCMeasure: public CContingencyTableEvaluation
 {
@@ -277,7 +301,13 @@ public:
 };
 
 /** @brief class F1Measure
- * used to measure F1 score of 2-class classifier
+ * used to measure F1 score of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CF1Measure: public CContingencyTableEvaluation
 {
@@ -291,7 +321,13 @@ public:
 };
 
 /** @brief class CrossCorrelationMeasure
- * used to measure cross correlation coefficient of 2-class classifier
+ * used to measure cross correlation coefficient of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CCrossCorrelationMeasure: public CContingencyTableEvaluation
 {
@@ -305,7 +341,13 @@ public:
 };
 
 /** @brief class RecallMeasure
- * used to measure recall of 2-class classifier
+ * used to measure recall of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CRecallMeasure: public CContingencyTableEvaluation
 {
@@ -319,7 +361,13 @@ public:
 };
 
 /** @brief class PrecisionMeasure
- * used to measure precision of 2-class classifier
+ * used to measure precision of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CPrecisionMeasure: public CContingencyTableEvaluation
 {
@@ -333,7 +381,13 @@ public:
 };
 
 /** @brief class SpecificityMeasure
- * used to measure specificity of 2-class classifier
+ * used to measure specificity of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
  */
 class CSpecificityMeasure: public CContingencyTableEvaluation
 {
