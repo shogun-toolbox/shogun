@@ -217,13 +217,13 @@ public:
 	 *
 	 * @return number of cross-validation parameters
 	 */
-	inline int32_t get_num_cross_val_parameters();
+	int32_t get_num_cross_val_parameters();
 
 	/** gets a pointer to a certain cross-validation parameter,
 	 * does bound checking
 	 *
 	 * @param idx index of desired cross-validation parameter
-	 * @return pointer to cross-validation parameter with spcified index
+	 * @return pointer to cross-validation parameter with specified index
 	 */
 	TParameter* get_cross_val_parameter(int32_t idx);
 
