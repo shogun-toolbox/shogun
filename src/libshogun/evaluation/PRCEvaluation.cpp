@@ -35,28 +35,26 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	int32_t length = predicted->get_num_labels();
 	float64_t* labels = predicted->get_labels(length);
 
-	// get sorted indexes
+	// get indexes for sort
 	int32_t* idxs = new int32_t[length];
 	for(i=0; i<length; i++)
-	{
-		labels[i]*=(-1.0);
 		idxs[i] = i;
-	}
 
 	// sort indexes by labels ascending
-	CMath::qsort_index(labels,idxs,length);
+	CMath::qsort_backward_index(labels,idxs,length);
 
-	delete [] labels;
-
-	// initialize graph and auPRC
+	// clean and initialize graph and auPRC
+	delete[] labels;
 	delete[] m_PRC_graph;
-	m_PRC_graph = new float64_t[length*2+2];
+	m_PRC_graph = new float64_t[length*2];
 	m_auPRC = 0.0;
 
 	// get total numbers of positive and negative labels
-	for(i=0; i<length; i++)
+	for (i=0; i<length; i++)
+	{
 		if (ground_truth->get_label(i) > 0)
 			pos_count++;
+	}
 
 	// assure number of positive examples is >0
 	ASSERT(pos_count>0);
