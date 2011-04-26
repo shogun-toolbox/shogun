@@ -35,6 +35,8 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
+#include <shogun/lib/Compressor.h>
+#include <shogun/features/FeatureTypes.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
@@ -338,6 +340,8 @@
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/lib/Compressor.h>
+%include <shogun/features/FeatureTypes.h>
 %include <shogun/lib/DataType.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
