@@ -28,10 +28,10 @@
 
 using namespace shogun;
 
-CPCACut::CPCACut(bool do_whitening_, float64_t thresh_)
+CPCACut::CPCACut(bool do_whitening_, ECutoffType cutoff_type_, float64_t thresh_)
 : CSimplePreProc<float64_t>(), T(NULL), num_dim(0), mean(NULL),
 	length_mean(NULL), eigenvalues(NULL), num_eigenvalues(0),initialized(false),
-	do_whitening(do_whitening_), thresh(thresh_)
+	do_whitening(do_whitening_), cutoff_type(cutoff_type_), thresh(thresh_)
 {
 	init();
 }
@@ -126,10 +126,35 @@ bool CPCACut::init(CFeatures* f)
         num_eigenvalues=num_features;
 
 		num_dim=0;
-		for (i=0; i<num_features; i++)
+		if (cutoff_type == FIXED_NUMBER)
 		{
-			if (eigenvalues[i]>thresh)
+			ASSERT(thresh <= num_features);
+			num_dim = thresh;
+		}
+		else if (cutoff_type == VARIANCE_EXPLAINED)
+		{
+			float64_t eig_sum = 0;
+			for (i=0; i<num_features; i++)
+				eig_sum += eigenvalues[i];
+			
+			float64_t com_sum = 0;		
+			for (i=num_features-1; i>-1; i--)
+			{
 				num_dim++;
+				com_sum += eigenvalues[i];
+				if (com_sum/eig_sum>=thresh)
+					break;
+			}
+		}
+		else
+		{
+			for (i=num_features-1; i>-1; i--)
+			{
+				if (eigenvalues[i]>thresh)
+					num_dim++;
+				else
+					break;
+			}
 		}
 
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
@@ -139,17 +164,14 @@ bool CPCACut::init(CFeatures* f)
 		num_old_dim=num_features;
 
 		int32_t offs=0 ;
-		for (i=0; i<num_features; i++)
+		for (i=num_features-1; i<num_features-num_dim-1; i++)
 		{
-			if (eigenvalues[i]>thresh)
-			{
-				for (int32_t jj=0; jj<num_features; jj++)
-					if (do_whitening)
-						T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]);
-					else
-						T[offs+jj*num_dim]=cov[num_features*i+jj];
-				offs++;
-			}
+			for (int32_t jj=0; jj<num_features; jj++)
+				if (do_whitening)
+					T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]);
+				else
+					T[offs+jj*num_dim]=cov[num_features*i+jj];
+			offs++;
 		}
 
 		delete[] cov;
@@ -278,6 +300,8 @@ void CPCACut::init()
 			"initalized", "True when initialized.");
 	m_parameters->add(&do_whitening,
 			"do_whitening", "Whether data shall be whitened.");
+	m_parameters->add((machine_int_t*) &cutoff_type, "cutoff_type",
+			"Cutoff type.");
 	m_parameters->add(&thresh,
 			"thresh", "Cutoff threshold.");
 }

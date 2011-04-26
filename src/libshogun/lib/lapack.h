@@ -24,6 +24,9 @@ extern "C" {
 #ifdef HAVE_MKL
 #include <mkl_cblas.h>
 #include <mkl_lapack.h>
+#elif defined(HAVE_MVEC)
+#include </System/Library/Frameworks/vecLib.framework/Headers/cblas.h>
+#include </System/Library/Frameworks/vecLib.framework/Headers/clapack.h>
 #else
 #include <cblas.h>
 #endif
@@ -52,14 +55,15 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda,
 		int *info);
 }
 
-// only MKL and ACML provide a header file for the lapack routines
-#if !defined(HAVE_ACML) && !defined(HAVE_MKL)
+// only MKL, ACML and Mac OS vector library provide a header file for the lapack routines
+#if !defined(HAVE_ACML) && !defined(HAVE_MKL) && !defined(HAVE_MVEC)
 int dsyev_(char*, char*, int*, double*, int*, double*, double*, int*, int*);
 int dgesvd_(char* jobu, char* jobvt, int* m, int* n, double* a, int* lda,
 		double* s, double* u, int* ldu, double* vt, int* ldvt, double* work,
 		int* lwork, int* info);
 int dposv_(const char *uplo, const int *n, const int *nrhs, double *a, const int *lda, double *b, const int *ldb, int *info);
 int dpotrf_(const char *uplo, int *n, double *a, int * lda, int *info);
+int dpotri_(const char *uplo, int *n, double *a, int * lda, int *info);
 #endif
 }
 

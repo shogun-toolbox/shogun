@@ -64,7 +64,10 @@ class CDistanceKernel: public CKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
 
-		void init();
+		/** register the parameters (serialization support)
+		 * 
+		*/
+		virtual void register_params();
 
 		/** return what type of kernel we are
 		 *
@@ -119,7 +122,6 @@ class CDistanceKernel: public CKernel
 		 */
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
-	private:
 		/** distance */
 		CDistance* distance;
 		/** width */

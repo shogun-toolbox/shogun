@@ -118,6 +118,10 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
+	    /* register the parameters */
+	    virtual void register_param();
+		/* register the alphabet */
+		void register_alphabet();
 
 
 	protected:
@@ -126,8 +130,11 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** degree */
 		int32_t degree;
 		/** maximum mismatch */
+	    int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
 		float64_t* AA_matrix ; 
+	    /*length of the AA_matrix -- for registration*/
+	    int32_t AA_matrix_length;
 		/** width of Gaussian*/
 		float64_t width;
 
@@ -143,11 +150,13 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 
 		/** if kernel is initialized */
 		bool initialized;
+		
 
-		int32_t max_mismatch;
-
-		CArray2<float64_t> kernel_matrix ;
-		int32_t target_letter_0 ;
+		CArray2<float64_t> kernel_matrix;
+		int32_t target_letter_0;
+	
+	private:
+		void init();
 };
 
 }

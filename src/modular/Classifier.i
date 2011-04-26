@@ -52,7 +52,8 @@
  #include <shogun/classifier/LPM.h>
  #include <shogun/classifier/svm/MPDSVM.h>
  #include <shogun/classifier/svm/MultiClassSVM.h>
- #include <shogun/classifier/Perceptron.h> 
+ #include <shogun/classifier/Perceptron.h>
+ #include <shogun/classifier/AveragedPerceptron.h>
  #include <shogun/classifier/SubGradientLPM.h>
  #include <shogun/classifier/svm/SubGradientSVM.h>
  #include <shogun/classifier/svm/SVM.h>
@@ -61,6 +62,7 @@
  #include <shogun/classifier/KernelMachine.h>
  #include <shogun/classifier/svm/SVMOcas.h>
  #include <shogun/classifier/svm/SVMSGD.h>
+ #include <shogun/classifier/svm/SGDQN.h>
  #include <shogun/classifier/svm/WDSVMOcas.h>
  #include <shogun/classifier/PluginEstimate.h> 
  #include <shogun/classifier/mkl/MKL.h>
@@ -116,6 +118,7 @@
 %rename(MPDSVM) CMPDSVM;
 %rename(MultiClassSVM) CMultiClassSVM;
 %rename(Perceptron) CPerceptron;
+%rename(AveragedPerceptron) CAveragedPerceptron;
 %rename(SubGradientLPM) CSubGradientLPM;
 %rename(SubGradientSVM) CSubGradientSVM;
 #ifndef HAVE_PYTHON
@@ -124,6 +127,7 @@
 %rename(SVMLin) CSVMLin;
 %rename(SVMOcas) CSVMOcas;
 %rename(SVMSGD) CSVMSGD;
+%rename(SGDQN) CSGDQN;
 %rename(WDSVMOcas) CWDSVMOcas;
 %rename(PluginEstimate) CPluginEstimate;
 %rename(MKL) CMKL;
@@ -164,12 +168,14 @@
 %include <shogun/classifier/LPBoost.h> 
 %include <shogun/classifier/LPM.h>
 %include <shogun/classifier/svm/MPDSVM.h>
-%include <shogun/classifier/Perceptron.h> 
+%include <shogun/classifier/Perceptron.h>
+%include <shogun/classifier/AveragedPerceptron.h>
 %include <shogun/classifier/SubGradientLPM.h>
 %include <shogun/classifier/svm/SubGradientSVM.h>
 %include <shogun/classifier/svm/SVMLin.h>
 %include <shogun/classifier/svm/SVMOcas.h>
 %include <shogun/classifier/svm/SVMSGD.h>
+%include <shogun/classifier/svm/SGDQN.h>
 %include <shogun/classifier/svm/WDSVMOcas.h>
 %include <shogun/classifier/PluginEstimate.h> 
 %include <shogun/classifier/mkl/MKL.h>

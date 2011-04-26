@@ -5,7 +5,7 @@ traindat = lm.load_numbers('../data/fm_train_real.dat')
 testdat = lm.load_numbers('../data/fm_test_real.dat')
 label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
 
-parameter_list = [[traindat,testdat,label_traindat,0.9,1,6],[traindat,testdat,label_traindat,0.8,1,5]]
+parameter_list = [[traindat,testdat,label_traindat,0.9,1,2000],[traindat,testdat,label_traindat,3,1,5000]]
 
 def classifier_larank_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,C=0.9,num_threads=1,num_iter=5):
 
@@ -20,13 +20,12 @@ def classifier_larank_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
-	C=1
 	epsilon=1e-5
 	labels=Labels(label_train_multiclass)
 
 	svm=LaRank(C, kernel, labels)
 	#svm.set_tau(1e-3)
-	#svm.set_batch_mode(False)
+	svm.set_batch_mode(False)
 	#svm.io.enable_progress()
 	svm.set_epsilon(epsilon)
 	svm.train()

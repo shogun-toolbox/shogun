@@ -1,11 +1,11 @@
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2010 Christian Widmer
- * Copyright (C) 2007-2010 Max-Planck-Society
+ * Written (W) 2007-2011 Christian Widmer
+ * Copyright (C) 2007-2011 Max-Planck-Society
  */
 
 #include "lib/config.h"
@@ -54,9 +54,9 @@ void CDomainAdaptationSVMLinear::init(CLinearClassifier* pre_svm, float64_t B_pa
 		pre_svm->set_bias(0.0);
 	}
 
-	this->presvm=pre_svm;
-	this->B=B_param;
-	this->train_factor=1.0;
+	this->presvm = pre_svm;
+	this->B = B_param;
+	this->train_factor = 1.0;
 
 	set_liblinear_solver_type(L2R_L1LOSS_SVC_DUAL);
 
@@ -116,6 +116,8 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
 
     if (presvm)
     {
+    	ASSERT(presvm->get_bias() == 0.0);
+
         // bias of parent SVM was set to zero in constructor, already contains B
         CLabels* parent_svm_out = presvm->classify(tmp_data);
 
@@ -124,7 +126,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
         // pre-compute linear term
         for (int32_t i=0; i!=num_training_points; i++)
         {
-            lin_term[i] = (- B*(get_label(i) * parent_svm_out->get_label(i)))*train_factor - 1.0;
+            lin_term[i] = train_factor * B * get_label(i) * parent_svm_out->get_label(i) - 1.0;
         }
 
     	// set linear term for QP
@@ -133,6 +135,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
     }
 
 	/*
+	// warm-start liblinear
 	//TODO test this code, measure speed-ups
     //presvm w stored in presvm
     float64_t* tmp_w;

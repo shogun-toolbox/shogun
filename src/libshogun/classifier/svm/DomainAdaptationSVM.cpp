@@ -1,11 +1,11 @@
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2009 Christian Widmer
- * Copyright (C) 2007-2009 Max-Planck-Society
+ * Written (W) 2007-2011 Christian Widmer
+ * Copyright (C) 2007-2011 Max-Planck-Society
  */
 
 #include "lib/config.h"
@@ -102,7 +102,7 @@ bool CDomainAdaptationSVM::train(CFeatures* data)
 	// pre-compute linear term
 	for (int32_t i=0; i<num_training_points; i++)
 	{
-		lin_term[i] = (- B*(get_label(i) * parent_svm_out->get_label(i)))*train_factor - 1.0;
+		lin_term[i] = train_factor * B * get_label(i) * parent_svm_out->get_label(i) - 1.0;
 	}
 
 	//set linear term for QP
@@ -171,9 +171,9 @@ CLabels* CDomainAdaptationSVM::classify(CFeatures* data)
 
 void CDomainAdaptationSVM::init()
 {
-	presvm=NULL;
-	B=0;
-	train_factor=1.0;
+	presvm = NULL;
+	B = 0;
+	train_factor = 1.0;
 
 	m_parameters->add((CSGObject**) &presvm, "presvm",
 					  "SVM to regularize against.");

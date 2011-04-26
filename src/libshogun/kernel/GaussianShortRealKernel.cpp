@@ -19,13 +19,13 @@ using namespace shogun;
 CGaussianShortRealKernel::CGaussianShortRealKernel(void)
 : CDotKernel(0), width(0.0)
 {
-	SG_UNSTABLE("CGaussianShortRealKernel::"
-				"CGaussianShortRealKernel(void)", "\n");
+	register_params();
 }
 
 CGaussianShortRealKernel::CGaussianShortRealKernel(int32_t size, float64_t w)
 : CDotKernel(size), width(w)
 {
+	register_params();
 }
 
 CGaussianShortRealKernel::CGaussianShortRealKernel(
@@ -33,6 +33,7 @@ CGaussianShortRealKernel::CGaussianShortRealKernel(
 : CDotKernel(size), width(w)
 {
 	init(l,r);
+	register_params();
 }
 
 CGaussianShortRealKernel::~CGaussianShortRealKernel()
@@ -64,4 +65,9 @@ float64_t CGaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CSimpleFeatures<float32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
+}
+
+void CGaussianShortRealKernel::register_params()
+{
+	m_parameters->add(&width, "width", "kernel width");
 }
