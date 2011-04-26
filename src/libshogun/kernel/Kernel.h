@@ -19,6 +19,7 @@
 #include "lib/Signal.h"
 #include "lib/File.h"
 #include "lib/Mathematics.h"
+#include "features/FeatureTypes.h"
 #include "base/SGObject.h"
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
