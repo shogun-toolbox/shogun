@@ -68,12 +68,12 @@ public:
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	inline virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	inline virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
@@ -83,12 +83,6 @@ public:
 	virtual ~CCauchyKernel();
 
 protected:
-
-	/// distance to be used
-	CDistance* distance;
-
-	/// sigma parameter of kernel
-	float64_t sigma;
 
 	/**
 	 * compute kernel for specific feature vectors
@@ -102,6 +96,15 @@ protected:
 private:
 
 	void init();
+
+protected:
+
+	/// distance to be used
+	CDistance* m_distance;
+
+	/// sigma parameter of kernel
+	float64_t m_sigma;
+
 };
 
 }
