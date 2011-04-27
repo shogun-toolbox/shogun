@@ -87,7 +87,7 @@ def run_single_experiment(results, num_fold_cv, kernelname, kparam, C, examples,
 
     param_name=kparam['name']
     print 'Running C =', C, kernelname.title(), 'Kernel with', param_name, '=', kparam[param_name]
-    (all_outputs, all_split) = crossvalidation(num_fold_cv, kernelname, kparam, C, examples, labels)
+    (all_outputs, all_split) = crossvalidation(num_fold_cv, kernelname, kparam, C, examples, labels, 'dna', 'A')
     results.append( (C, (kernelname, kparam), calcroc(all_outputs,labels)) )
 
 def splice_example(Cs, gcfilename,seqfilename,seq2filename, plot=False):
