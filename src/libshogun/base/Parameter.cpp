@@ -1627,62 +1627,68 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	if (!file->read_type_begin(&m_datatype, m_name, prefix))
 		return false;
 
-	switch (m_datatype.m_ctype) {
-	case CT_SCALAR:
-		if (!load_stype(file, m_parameter, prefix)) return false;
-		break;
-	case CT_VECTOR: case CT_MATRIX:
-		index_t len_read_y = 0, len_read_x = 0;
-
-		if (!file->read_cont_begin(&m_datatype, m_name, prefix,
-								   &len_read_y, &len_read_x))
-			return false;
-
-		/* ******************************************************** */
-
-		switch (m_datatype.m_ctype) {
-		case CT_VECTOR:
-			len_read_x = 1;
-			new_cont(len_read_y, len_read_x);
+	switch (m_datatype.m_ctype)
+	{
+		case CT_SCALAR:
+			if (!load_stype(file, m_parameter, prefix))
+				return false;
 			break;
-		case CT_MATRIX:
-			new_cont(len_read_y, len_read_x);
-			break;
-		case CT_SCALAR: break;
-		}
 
-		for (index_t x=0; x<len_read_x; x++)
-			for (index_t y=0; y<len_read_y; y++) {
-				if (!file->read_item_begin(
-						&m_datatype, m_name, prefix, y, x))
-					return false;
-				if (!load_stype(
-						file, (*(char**) m_parameter)
-						+ (x*len_read_y + y)*m_datatype.sizeof_stype(),
-						prefix)) return false;
-				if (!file->read_item_end(
-						&m_datatype, m_name, prefix, y, x))
-					return false;
+		case CT_VECTOR: case CT_MATRIX:
+			index_t len_read_y = 0, len_read_x = 0;
+
+			if (!file->read_cont_begin(&m_datatype, m_name, prefix,
+						&len_read_y, &len_read_x))
+				return false;
+
+			switch (m_datatype.m_ctype)
+			{
+				case CT_VECTOR:
+					len_read_x = 1;
+					new_cont(len_read_y, len_read_x);
+					break;
+				case CT_MATRIX:
+					new_cont(len_read_y, len_read_x);
+					break;
+				case CT_SCALAR:
+					break;
 			}
 
-		switch (m_datatype.m_ctype) {
-		case CT_VECTOR:
-			*m_datatype.m_length_y = len_read_y;
+			for (index_t x=0; x<len_read_x; x++)
+			{
+				for (index_t y=0; y<len_read_y; y++)
+				{
+					if (!file->read_item_begin(
+								&m_datatype, m_name, prefix, y, x))
+						return false;
+					if (!load_stype(
+								file, (*(char**) m_parameter)
+								+ (x*len_read_y + y)*m_datatype.sizeof_stype(),
+								prefix)) return false;
+					if (!file->read_item_end(
+								&m_datatype, m_name, prefix, y, x))
+						return false;
+				}
+			}
+
+			switch (m_datatype.m_ctype)
+			{
+				case CT_VECTOR:
+					*m_datatype.m_length_y = len_read_y;
+					break;
+				case CT_MATRIX:
+					*m_datatype.m_length_y = len_read_y;
+					*m_datatype.m_length_x = len_read_x;
+					break;
+				case CT_SCALAR:
+					break;
+			}
+
+			if (!file->read_cont_end(&m_datatype, m_name, prefix,
+						len_read_y, len_read_x))
+				return false;
+
 			break;
-		case CT_MATRIX:
-			*m_datatype.m_length_y = len_read_y;
-			*m_datatype.m_length_x = len_read_x;
-			break;
-		case CT_SCALAR: break;
-		}
-
-		/* ******************************************************** */
-
-		if (!file->read_cont_end(&m_datatype, m_name, prefix,
-								 len_read_y, len_read_x))
-			return false;
-
-		break;
 	}
 
 	if (!file->read_type_end(&m_datatype, m_name, prefix))
