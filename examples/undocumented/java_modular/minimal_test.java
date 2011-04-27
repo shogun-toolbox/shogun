@@ -1,4 +1,4 @@
-public class runme {
+public class minimal_test {
     static {
         System.loadLibrary("Kernel");
     }
