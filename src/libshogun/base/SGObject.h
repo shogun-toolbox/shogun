@@ -180,37 +180,37 @@ public:
 	 *
 	 * @param io io object to use
 	 */
-	void set_io(IO* io);
+	void set_global_io(IO* io);
 
 	/** get the io object
 	 *
 	 * @return io object
 	 */
-	IO* get_io();
+	IO* get_global_io();
 
 	/** set the parallel object
 	 *
 	 * @param parallel parallel object to use
 	 */
-	void set_parallel(Parallel* parallel);
+	void set_global_parallel(Parallel* parallel);
 
 	/** get the parallel object
 	 *
 	 * @return parallel object
 	 */
-	Parallel* get_parallel();
+	Parallel* get_global_parallel();
 
 	/** set the version object
 	 *
 	 * @param version version object to use
 	 */
-	void set_version(Version* version);
+	void set_global_version(Version* version);
 
 	/** get the version object
 	 *
 	 * @return version object
 	 */
-	Version* get_version();
+	Version* get_global_version();
 
 protected:
 
@@ -259,7 +259,7 @@ private:
 	void unset_global_objects();
 	void init();
 
-protected:
+public:
 	IO* io;
 	Parallel* parallel;
 	Version* version;
