@@ -228,7 +228,7 @@ bool CMKL::train(CFeatures* data)
 	float64_t* beta =  CMath::clone_vector(beta_const, num_weights);
 	ASSERT(num_weights==num_kernels);
 
-	if (get_solver_type()==ST_BLOCKNORM &&
+	if (get_solver_type()==ST_BLOCK_NORM &&
 			mkl_block_norm>=1 &&
 			mkl_block_norm<=2)
 	{
@@ -420,13 +420,13 @@ bool CMKL::perform_mkl_step(
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
 
 	if( (w_gap >= mkl_epsilon) ||
-	    (get_solver_type()==ST_AUTO || get_solver_type()==ST_NEWTON || get_solver_type()==ST_DIRECT ) || get_solver_type()==ST_ELASTICNET || get_solver_type()==ST_BLOCKNORM)
+	    (get_solver_type()==ST_AUTO || get_solver_type()==ST_NEWTON || get_solver_type()==ST_DIRECT ) || get_solver_type()==ST_ELASTICNET || get_solver_type()==ST_BLOCK_NORM)
 	{
 		if (get_solver_type()==ST_AUTO || get_solver_type()==ST_DIRECT)
 		{
 			rho=compute_optimal_betas_directly(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 		}
-		else if (get_solver_type()==ST_BLOCKNORM)
+		else if (get_solver_type()==ST_BLOCK_NORM)
 		{
 			rho=compute_optimal_betas_block_norm(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
 		}

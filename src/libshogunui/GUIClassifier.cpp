@@ -1585,10 +1585,10 @@ bool CGUIClassifier::set_solver(char* solver)
 		SG_INFO("Using DIRECT solver\n");
 		s=ST_DIRECT;
 	}
-	else if (strncmp(solver,"BLOCKNORM", 9)==0)
+	else if (strncmp(solver,"BLOCK_NORM", 9)==0)
 	{
-		SG_INFO("Using BLOCKNORM solver\n");
-		s=ST_BLOCKNORM;
+		SG_INFO("Using BLOCK_NORM solver\n");
+		s=ST_BLOCK_NORM;
 	}
 	else if (strncmp(solver,"ELASTICNET", 10)==0)
 	{

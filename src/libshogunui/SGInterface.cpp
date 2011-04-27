@@ -542,7 +542,7 @@ CSGInterfaceMethod sg_methods[]=
 	  USAGE_I(N_ENT_LAMBDA, "ent_lambda")
 	},
 	{
-	  N_MKL_BLOCKNORM,
+	  N_MKL_BLOCK_NORM,
 	  (&CSGInterface::cmd_set_mkl_block_norm),
 	  USAGE_I(N_MKL_BLOCK_NORM, "mkl_block_norm")
 	},
@@ -5155,6 +5155,15 @@ bool CSGInterface::cmd_set_elasticnet_lambda()
 	float64_t lambda=get_real_from_real_or_str();
 	return ui_classifier->set_elasticnet_lambda(lambda);
 }
+
+bool CSGInterface::cmd_set_mkl_block_norm()
+{
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+	float64_t bnorm=get_real_from_real_or_str();
+	return ui_classifier->set_mkl_block_norm(bnorm);
+}
+
 
 bool CSGInterface::cmd_set_max_train_time()
 {
