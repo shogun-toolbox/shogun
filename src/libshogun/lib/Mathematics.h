@@ -1301,6 +1301,12 @@ class CMath : public CSGObject
 			return CMath::seed;
 		}
 
+		/// returns range of logtable
+		inline static uint32_t get_log_range()
+		{
+			return CMath::LOGRANGE;
+		}
+
 		/// checks whether a float is finite
 		inline static int is_finite(double f)
 		{
