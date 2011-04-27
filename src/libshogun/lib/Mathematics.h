@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2011 Siddharth Kherada
  * Written (W) 2011 Justin Patera
  * Written (W) 2011 Alesis Novik
  * Written (W) 1999-2009 Soeren Sonnenburg
@@ -608,6 +609,7 @@ class CMath : public CSGObject
 				r+=v1[i]*v2[i];
 			return r;
 		}
+		
 
 		/// compute dot product between v1 and v2 (blas optimized)
 		static inline float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n)
@@ -622,7 +624,7 @@ class CMath : public CSGObject
 #endif
 			return r;
 		}
-
+		
 		/// compute dot product between v1 and v2 (blas optimized)
 		static inline float32_t dot(
 			const float32_t* v1, const float32_t* v2, int32_t n)
@@ -746,6 +748,16 @@ class CMath : public CSGObject
 
 			return r;
 		}
+
+		/// compute vector multiplication
+		template <class T>
+			static inline void vector_multiply(
+				T* target, const T* v1, const T* v2,int32_t len)
+			{
+				for (int32_t i=0; i<len; i++)
+					target[i]=v1[i]*v2[i];
+			}
+
 
 		/// target=alpha*vec1 + beta*vec2
 		template <class T>
@@ -1264,7 +1276,7 @@ class CMath : public CSGObject
 		/** calculates ROC into (fp,tp)
 		 * from output and label of length size 
 		 * returns index with smallest error=fp+fn
-		 */
+		*/
 		static int32_t calcroc(
 			float64_t* fp, float64_t* tp, float64_t* output, int32_t* label,
 			int32_t& size, int32_t& possize, int32_t& negsize,

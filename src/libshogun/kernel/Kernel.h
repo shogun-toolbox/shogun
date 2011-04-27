@@ -19,6 +19,7 @@
 #include "lib/Signal.h"
 #include "lib/File.h"
 #include "lib/Mathematics.h"
+#include "features/FeatureTypes.h"
 #include "base/SGObject.h"
 #include "features/Features.h"
 #include "kernel/KernelNormalizer.h"
@@ -914,6 +915,11 @@ class CKernel : public CSGObject
 		 *                             occurres.
 		 */
 		virtual void save_serializable_post() throw (ShogunException);
+		/** Separate the function of parameter registration
+		 *	This can be the first stage of a *general* framework for 
+		 *	cross-validation or other parameter-based operations 
+		 */
+		virtual void register_params();
 
 	private:
 		/** Do basic initialisations like default settings

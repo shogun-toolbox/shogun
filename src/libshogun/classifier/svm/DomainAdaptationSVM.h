@@ -1,11 +1,11 @@
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007-2009 Christian Widmer
- * Copyright (C) 2007-2009 Max-Planck-Society
+ * Written (W) 2007-2011 Christian Widmer
+ * Copyright (C) 2007-2011 Max-Planck-Society
  */
 
 #ifdef USE_SVMLIGHT
@@ -21,7 +21,7 @@
 
 namespace shogun
 {
-/** @brief class DomainAdaptiveSVM */
+/** @brief class DomainAdaptationSVM */
 class CDomainAdaptationSVM : public CSVMLight
 {
 	public:
@@ -121,6 +121,5 @@ class CDomainAdaptationSVM : public CSVMLight
 		float64_t train_factor;
 };
 }
-#endif
-
+#endif //_DomainAdaptation_SVM_H___
 #endif //USE_SVMLIGHT

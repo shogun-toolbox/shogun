@@ -153,6 +153,12 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
+		/* register the parameters
+		 */
+		virtual void register_params();
+		/* register the alphabet
+		 */
+		void register_alphabet();
 
 
 	protected:
@@ -164,6 +170,8 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
 		float64_t* AA_matrix;
+		/*length of the AA_matrix -- for registration*/
+		int32_t AA_matrix_length;
 		/** width of Gaussian*/
 		float64_t width;
 
@@ -172,7 +180,12 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 
 
 		CArray2<float64_t> kernel_matrix ;
+		/*kernel matrix length*/
+		int32_t kernel_matrix_length;
 		int32_t target_letter_0 ;
+	
+	private:
+		void init();
 };
 
 }

@@ -21,8 +21,7 @@ CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(void)
 	motif_positions_lhs(NULL), motif_positions_rhs(NULL),
   position_weights(NULL), weights(NULL)
 {
-	SG_UNSTABLE("CRegulatoryModulesStringKernel::"
-				"CRegulatoryModulesStringKernel(void)", "\n");
+	register_params();
 }
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
@@ -30,6 +29,7 @@ CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
 : CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl), 
 	motif_positions_lhs(NULL), motif_positions_rhs(NULL), position_weights(NULL), weights(NULL)
 {
+	register_params();
 }
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr, 
@@ -40,6 +40,7 @@ CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<c
 {
 	set_motif_positions(lpos, rpos);
 	init(lstr,rstr);
+	register_params();
 }
 
 CRegulatoryModulesStringKernel::~CRegulatoryModulesStringKernel()
@@ -86,7 +87,6 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(motif_positions_lhs);
 	ASSERT(motif_positions_rhs);
 
-	int32_t alen, blen;
 	bool free_avec, free_bvec;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
@@ -212,4 +212,16 @@ void CRegulatoryModulesStringKernel::set_wd_weights()
 	
 	for (i=0; i<degree; i++)
 		weights[i]/=sum;
+}
+
+void CRegulatoryModulesStringKernel::register_params()
+{
+	m_parameters->add(&width, "width", "the width of Gaussian kernel part");
+	m_parameters->add(&degree, "degree", "the degree of weighted degree kernel part");
+	m_parameters->add(&shift, "shift", "the shift of weighted degree with shifts kernel part");
+	m_parameters->add(&window, "window", "the size of window around motifs");
+	m_parameters->add_vector((CSGObject***)&motif_positions_lhs, &alen, "motif_positions_lhs", "the matrix of motif positions from sequences left-hand side");
+	m_parameters->add_vector((CSGObject***)&motif_positions_rhs, &blen, "motif_positions_rhs", "the matrix of motif positions from sequences right-hand side");
+	m_parameters->add_vector(&position_weights, &degree, "position_weights", "scaling weights in window");
+	m_parameters->add_vector(&weights, &degree, "weights", "weights of WD kernel");
 }

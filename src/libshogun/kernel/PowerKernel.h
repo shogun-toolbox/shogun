@@ -82,17 +82,7 @@ public:
 
 	virtual ~CPowerKernel();
 
-private:
-	void init();
-
 protected:
-  
-  /// distance to be used
-	CDistance* distance;
-
-	/// degree parameter of kernel
-	float64_t degree;
-	
 	/**
 	 * compute kernel for specific feature vectors
 	 * corresponding to [idx_a] of left-side and [idx_b] of right-side
@@ -102,6 +92,16 @@ protected:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
+private:
+	void init();
+
+protected:
+  
+  /// distance to be used
+	CDistance* distance;
+
+	/// degree parameter of kernel
+	float64_t m_degree;
 };
 }
 

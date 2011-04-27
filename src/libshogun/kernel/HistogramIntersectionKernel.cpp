@@ -19,13 +19,13 @@ using namespace shogun;
 CHistogramIntersectionKernel::CHistogramIntersectionKernel(void)
 : CDotKernel(0), beta(1.0)
 {
-	SG_UNSTABLE("CHistogramIntersectionKernel::"
-				"CHistogramIntersectionKernel(void)", "\n");
+	register_params();
 }
 
 CHistogramIntersectionKernel::CHistogramIntersectionKernel(int32_t size)
 : CDotKernel(size), beta(1.0)
 {
+	register_params();
 }
 
 CHistogramIntersectionKernel::CHistogramIntersectionKernel(
@@ -33,6 +33,7 @@ CHistogramIntersectionKernel::CHistogramIntersectionKernel(
 : CDotKernel(size), beta(1.0)
 {
 	init(l,r);
+	register_params();
 }
 
 CHistogramIntersectionKernel::~CHistogramIntersectionKernel()
@@ -77,4 +78,9 @@ float64_t CHistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
 	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
+}
+
+void CHistogramIntersectionKernel::register_params()
+{
+	m_parameters->add(&beta, "beta", "the beta parameter of the kernel");	
 }

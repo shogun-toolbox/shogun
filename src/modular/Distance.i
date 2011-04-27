@@ -30,6 +30,7 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
+#include <shogun/features/FeatureTypes.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/distance/KernelDistance.h>
@@ -114,6 +115,7 @@ namespace shogun
     %template(StringUlongDistance) CStringDistance<uint64_t>;
 }
 
+%include <shogun/features/FeatureTypes.h>
 %include <shogun/distance/RealDistance.h>
 %include <shogun/distance/CanberraMetric.h>
 %include <shogun/distance/ChebyshewMetric.h>

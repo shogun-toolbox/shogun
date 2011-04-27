@@ -45,6 +45,8 @@
  #include <shogun/evaluation/ContingencyTableEvaluation.h>
  #include <shogun/evaluation/MulticlassAccuracy.h>
  #include <shogun/evaluation/MeanSquaredError.h>
+ #include <shogun/evaluation/ROCEvaluation.h>
+ #include <shogun/evaluation/PRCEvaluation.h>
 %}
 
 /* Typemaps */
@@ -58,11 +60,13 @@
 
 /* Remove C Prefix */
 %rename(PerformanceMeasures) CPerformanceMeasures;
-%rename(Evaluation) CEvaluation;
+%rename(BaseEvaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
 %rename(MeanSquaredError) CMeanSquaredError;
+%rename(ROCEvaluation) CROCEvaluation;
+%rename(PRCEvaluation) CPRCEvaluation;
 %rename(AccuracyMeasure) CAccuracyMeasure;
 %rename(ErrorRateMeasure) CErrorRateMeasure;
 %rename(BALMeasure) CBALMeasure;
@@ -80,3 +84,5 @@
 %include <shogun/evaluation/ContingencyTableEvaluation.h>
 %include <shogun/evaluation/MulticlassAccuracy.h>
 %include <shogun/evaluation/MeanSquaredError.h>
+%include <shogun/evaluation/ROCEvaluation.h>
+%include <shogun/evaluation/PRCEvaluation.h>

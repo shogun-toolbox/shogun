@@ -154,33 +154,123 @@ GET_MATRIX(get_short_matrix, atoi, int16_t)
 GET_MATRIX(get_word_matrix, atoi, uint16_t)
 #undef GET_MATRIX
 
-void CAsciiFile::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
-{
+#define GET_NDARRAY(fname, conv, sg_type)							\
+void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
+{												\
+	struct stat stats;									\
+	if (stat(filename, &stats)!=0)								\
+		SG_ERROR("Could not get file statistics.\n");					\
+												\
+	char* data=new char[stats.st_size+1];							\
+	memset(data, 0, sizeof(char)*(stats.st_size+1));					\
+	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
+	if (nread<=0)										\
+		SG_ERROR("Could not read data from %s.\n", filename);				\
+												\
+	SG_DEBUG("data read from file:\n%s\n", data);						\
+												\
+	/* determine size of array */ 								\
+	int32_t length=0;									\
+	int32_t counter=0;                                                              	\
+	size_t total=0;                                     					\
+        num_dims = -1;                          						\
+	char* ptr_item=NULL;									\
+	char* ptr_data=data;									\
+	DynArray<char*>* items=new DynArray<char*>();						\
+                                                                                                \
+        /* read line with sizes of array*/                          				\
+        while(*ptr_data != '\n')                                            			\
+        {                                                                                       \
+            if(isblank(*ptr_data) && ptr_item)                          			\
+            {                                                                                   \
+                append_item(items, ptr_data, ptr_item);     					\
+                num_dims++;                                                             	\
+                ptr_item = NULL;                                                        	\
+            }                                                                                   \
+            else if(!isblank(*ptr_data) && !ptr_item)               				\
+                ptr_item = ptr_data;                                                        	\
+                                                                                                \
+            ptr_data++;                                                                     	\
+        }                                                                                       \
+        ptr_item = NULL;                                                                        \
+        ptr_data++;                                                                             \
+        											\
+	/* read array data*/                                                                    \
+        while(*ptr_data)									\
+	{											\
+		if (*ptr_data=='\n')								\
+		{										\
+			if (ptr_item)								\
+				counter++;							\
+												\
+			if (length!=0 && counter!=length)					\
+				SG_ERROR("Invalid number of data (%d != %d) in line"		\
+				" %d in file %s.\n", length, counter, total, filename);		\
+												\
+			append_item(items, ptr_data, ptr_item);					\
+			length=counter;								\
+			total++;								\
+			counter=0;								\
+			ptr_item=NULL;								\
+		}										\
+		else if (!isblank(*ptr_data) && !ptr_item)					\
+		{										\
+			ptr_item=ptr_data;							\
+		}										\
+		else if (isblank(*ptr_data) && ptr_item)					\
+		{										\
+			append_item(items, ptr_data, ptr_item);					\
+			ptr_item=NULL;								\
+			counter++;								\
+		}										\
+												\
+		ptr_data++;									\
+	}											\
+												\
+	SG_DEBUG("num of data in line: %d, num of lines %d\n", counter, total);			\
+	delete[] data;										\
+												\
+	/* determining sizes of dimensions*/                                                	\
+        char * item;                                                                            \
+        item=items->get_element(0);                                                             \
+        if(atoi(item) != num_dims)                                                              \
+            SG_ERROR("Invalid number of dimensions!\n");                            		\
+        delete[] item;                                                                          \
+        dims = new int32_t[num_dims];                                                           \
+        for(int32_t i =0;i < num_dims;i++)                                              	\
+        {                                                                                       \
+            item = items->get_element(i+1);                                 			\
+            dims[i] = atoi(item);                                                           	\
+            delete[] item;                                                                      \
+        }                                                                                       \
+        if (dims[num_dims-1] != length)                                                 	\
+            SG_ERROR("Invalid number of lines in file!\n");                 			\
+                                                                                    		\
+        /* converting array data */								\
+        total *= length;									\
+	array=new sg_type[total];        							\
+	for (size_t i=0; i<total; i++)								\
+	{											\
+			item=items->get_element(i+(num_dims+1));				\
+			array[i]=conv(item);							\
+			delete[] item;								\
+	}											\
+	delete items;										\
 }
 
-void CAsciiFile::get_char_ndarray(char*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CAsciiFile::get_int_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CAsciiFile::get_shortreal_ndarray(float32_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CAsciiFile::get_real_ndarray(float64_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CAsciiFile::get_short_ndarray(int16_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CAsciiFile::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
+GET_NDARRAY(get_byte_ndarray, atoi, uint8_t)
+GET_NDARRAY(get_int8_ndarray, atoi, int8_t)
+GET_NDARRAY(get_char_ndarray, atoi, char)
+GET_NDARRAY(get_int_ndarray, atoi, int32_t)
+GET_NDARRAY(get_uint_ndarray, atoi, uint32_t)
+GET_NDARRAY(get_long_ndarray, atoll, int64_t)
+GET_NDARRAY(get_ulong_ndarray, atoll, uint64_t)
+GET_NDARRAY(get_shortreal_ndarray, atof, float32_t)
+GET_NDARRAY(get_real_ndarray, atof, float64_t)
+GET_NDARRAY(get_longreal_ndarray, atof, floatmax_t)
+GET_NDARRAY(get_short_ndarray, atoi, int16_t)
+GET_NDARRAY(get_word_ndarray, atoi, uint16_t)
+#undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(fname, conv, sg_type)										\
 void CAsciiFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
@@ -757,6 +847,46 @@ SET_MATRIX(set_shortreal_matrix, float32_t, float32_t, "%f")
 SET_MATRIX(set_real_matrix, float64_t, float64_t, "%f")
 SET_MATRIX(set_longreal_matrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_MATRIX
+
+#define SET_NDARRAY(fname, sg_type, fprt_type, type_str) \
+void CAsciiFile::fname(const sg_type* array, int32_t * dims, int32_t num_dims)	\
+{										\
+	if (!(file && array))							\
+		SG_ERROR("File or data invalid.\n");				\
+										\
+        size_t total = 1;   							\
+        for(int i = 0;i < num_dims;i++)        					\
+            total *= dims[i];                                   		\
+        int32_t block_size = dims[num_dims-1];                                  \
+                                                                		\
+        fprintf(file,"%d ",num_dims); 						\
+        for(int i = 0;i < num_dims;i++) 					\
+            fprintf(file,"%d ",dims[i]);    					\
+        fprintf(file,"\n"); 							\
+                                                                                \
+        for (size_t i=0; i < total; i++)					\
+	{									\
+		sg_type v= array[i];						\
+		if ( ((i+1) % block_size) == 0)					\
+			fprintf(file, type_str "\n", (fprt_type) v);		\
+		else								\
+			fprintf(file, type_str " ", (fprt_type) v);		\
+	}									\
+}
+
+SET_NDARRAY(set_char_ndarray, char, char, "%c")
+SET_NDARRAY(set_byte_ndarray, uint8_t, uint8_t, "%u")
+SET_NDARRAY(set_int8_ndarray, int8_t, int8_t, "%d")
+SET_NDARRAY(set_int_ndarray, int32_t, int32_t, "%i")
+SET_NDARRAY(set_uint_ndarray, uint32_t, uint32_t, "%u")
+SET_NDARRAY(set_long_ndarray, int64_t, long long int, "%lli")
+SET_NDARRAY(set_ulong_ndarray, uint64_t, long long unsigned int, "%llu")
+SET_NDARRAY(set_short_ndarray, int16_t, int16_t, "%i")
+SET_NDARRAY(set_word_ndarray, uint16_t, uint16_t, "%u")
+SET_NDARRAY(set_shortreal_ndarray, float32_t, float32_t, "%f")
+SET_NDARRAY(set_real_ndarray, float64_t, float64_t, "%f")
+SET_NDARRAY(set_longreal_ndarray, floatmax_t, floatmax_t, "%Lf")
+#undef SET_NDARRAY
 
 #define SET_SPARSEMATRIX(fname, sg_type, fprt_type, type_str) \
 void CAsciiFile::fname(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\

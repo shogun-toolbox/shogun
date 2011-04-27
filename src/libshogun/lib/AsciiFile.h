@@ -110,15 +110,25 @@ public:
 	 */
 	//@{
 	virtual void get_byte_ndarray(
-			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
+                        uint8_t*& array, int32_t*& dims, int32_t& num_dims);
+	virtual void get_int8_ndarray(
+			int8_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_char_ndarray(
 			char*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_int_ndarray(
 			int32_t*& array, int32_t*& dims, int32_t& num_dims);
+	virtual void get_uint_ndarray(
+			uint32_t*& array, int32_t*& dims, int32_t& num_dims);
+	virtual void get_long_ndarray(
+			int64_t*& array, int32_t*& dims, int32_t& num_dims);
+	virtual void get_ulong_ndarray(
+			uint64_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_shortreal_ndarray(
 			float32_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_real_ndarray(
-			float64_t*& array, int32_t*& dims, int32_t& num_dims);
+                        float64_t*& array, int32_t*& dims, int32_t& num_dims);
+	virtual void get_longreal_ndarray(
+                        floatmax_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_short_ndarray(
 			int16_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_word_ndarray(
@@ -256,6 +266,39 @@ public:
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_word_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
+	//@}
+
+        /** @name N-Dimensional Array Access Functions
+	 *
+	 * Functions to access n-dimensional arrays of one of the several base data types.
+	 * These functions are used when writing array of num_dims dimensions to e.g. a file.
+	 * Dims contain sizes of every dimensions.
+	 */
+	//@{
+        virtual void set_byte_ndarray(
+                        const uint8_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_int8_ndarray(
+			const int8_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_char_ndarray(
+			const char* array, int32_t* dims, int32_t num_dims);
+	virtual void set_int_ndarray(
+			const int32_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_uint_ndarray(
+			const uint32_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_long_ndarray(
+			const int64_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_ulong_ndarray(
+			const uint64_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_shortreal_ndarray(
+			const float32_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_real_ndarray(
+                       const  float64_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_longreal_ndarray(
+                        const floatmax_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_short_ndarray(
+			const int16_t* array, int32_t* dims, int32_t num_dims);
+	virtual void set_word_ndarray(
+			const uint16_t* array, int32_t* dims, int32_t num_dims);
 	//@}
 
 	/** @name Sparse Matrix Access Functions

@@ -39,21 +39,8 @@ using namespace shogun;
 CSpectrumRBFKernel::CSpectrumRBFKernel(void)
   : CStringKernel<char>(0)
 {
-	SG_UNSTABLE("CSpectrumRBFKernel::CSpectrumRBFKernel(void)", "\n");
-
-	alphabet = NULL;
-	degree = 0;
-	AA_matrix = NULL;
-	width = 0.0;
-	sequences = NULL;
-	string_features = NULL;
-	nof_sequences = 0;
-	max_sequence_length = 0;
-
-	initialized = false;
-
-	max_mismatch = 0;
-	target_letter_0 = 0;
+    init();
+	register_param();
 }
 
 CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int32_t degree_, float64_t width_)
@@ -74,6 +61,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int
 	//string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, PROTEIN);
 	string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, IUPAC_AMINO_ACID);
 	init(string_features, string_features);
+	register_param();
 }
 
 CSpectrumRBFKernel::CSpectrumRBFKernel(
@@ -86,6 +74,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel(
 	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	init(l, r);
+	register_param();
 }
 
 CSpectrumRBFKernel::~CSpectrumRBFKernel()
@@ -397,4 +386,38 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 	}
 
 	return false;
+}
+
+void CSpectrumRBFKernel::register_param() 
+{
+	m_parameters->add(&degree, "degree", "degree of the kernel");
+	m_parameters->add(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix");
+	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix", "128*128 scalar product matrix");
+	m_parameters->add(&width,"width","width of Gaussian");
+	m_parameters->add(&nof_sequences, "nof_sequences","length of the sequence");
+	m_parameters->add_vector(&sequences, &nof_sequences, "the sequences as a part of profile");
+	m_parameters->add(&max_sequence_length,"max_sequence_length","max length of the sequence");
+}
+
+void CSpectrumRBFKernel::register_alphabet()
+{
+	m_parameters->add((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel");
+}
+
+void CSpectrumRBFKernel::init() 
+{
+	alphabet = NULL;
+	degree = 0;
+	AA_matrix = NULL;
+	AA_matrix_length = 128*128;
+	width = 0.0;
+	sequences = NULL;
+	string_features = NULL;
+	nof_sequences = 0;
+	max_sequence_length = 0;
+	
+	initialized = false;
+	
+	max_mismatch = 0;
+	target_letter_0 = 0;	
 }

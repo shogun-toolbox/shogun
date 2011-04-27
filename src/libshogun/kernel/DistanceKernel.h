@@ -64,7 +64,10 @@ class CDistanceKernel: public CKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
 
-		void init();
+		/** register the parameters (serialization support)
+		 * 
+		*/
+		virtual void register_params();
 
 		/** return what type of kernel we are
 		 *

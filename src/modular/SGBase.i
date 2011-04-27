@@ -76,8 +76,8 @@
 
 %ignore NUM_LOG_LEVELS;
 %ignore FBUFSIZE;
-%ignore init_shogun;
-%ignore exit_shogun;
+/* %ignore init_shogun;
+%ignore exit_shogun; */
 %ignore sg_print_message;
 %ignore sg_print_warning;
 %ignore sg_print_error;
