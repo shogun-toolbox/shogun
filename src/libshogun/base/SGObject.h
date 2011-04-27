@@ -259,12 +259,10 @@ private:
 	void unset_global_objects();
 	void init();
 
-public:
+protected:
 	IO* io;
 	Parallel* parallel;
 	Version* version;
-
-protected:
 	Parameter* m_parameters;
 
 private:

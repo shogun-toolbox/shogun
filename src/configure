@@ -536,7 +536,7 @@ EOF
 		if javac $TMPJAVA >/dev/null 2>&1 
 		then
 			EXT_IF_SWIG_JAVA_MODULAR='stop'
-			PRE_LIB_SWIG_JAVA_MODULAR=
+			PRE_LIB_SWIG_JAVA_MODULAR='lib'
 			EXT_LIB_SWIG_JAVA_MODULAR=.so
 			SWIGFLAGS_JAVA_MODULAR="-c++ -java"
 			INCLUDES_JAVA="-I$(dirname $(java PrintProperty java.home))/include"
@@ -565,7 +565,7 @@ test_csharp()
 		echores "${MONOVER}"
 
 		EXT_IF_SWIG_CSHARP_MODULAR='stop'
-		PRE_LIB_SWIG_CSHARP_MODULAR=
+		PRE_LIB_SWIG_CSHARP_MODULAR='lib'
 		EXT_LIB_SWIG_CSHARP_MODULAR=.so
 		SWIGFLAGS_CSHARP_MODULAR="-c++ -csharp"
 		INCLUDES_CSHARP=
