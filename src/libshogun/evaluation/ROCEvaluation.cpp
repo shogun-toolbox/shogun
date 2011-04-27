@@ -124,7 +124,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 void CROCEvaluation::get_ROC(float64_t** result, int32_t* num, int32_t* dim)
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized");
+		SG_ERROR("Uninitialized, please call evaluate first");
 
 	ASSERT(m_ROC_graph);
 	*num = m_ROC_length;
@@ -140,7 +140,7 @@ void CROCEvaluation::get_ROC(float64_t** result, int32_t* num, int32_t* dim)
 float64_t CROCEvaluation::get_auROC()
 {
 	if (!m_computed)
-			SG_ERROR("Uninitialized");
+			SG_ERROR("Uninitialized, please call evaluate first");
 
 	return m_auROC;
 }
