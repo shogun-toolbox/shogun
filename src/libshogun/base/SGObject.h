@@ -36,6 +36,7 @@ class Parallel;
 class Version;
 class Parameter;
 class CSerializableFile;
+struct TParameter;
 
 // define reference counter macros
 //
@@ -212,6 +213,20 @@ public:
 	 */
 	Version* get_version();
 
+	/** get the number of cross-validation parameters
+	 *
+	 * @return number of cross-validation parameters
+	 */
+	inline int32_t get_num_cross_val_parameters();
+
+	/** gets a pointer to a certain cross-validation parameter,
+	 * does bound checking
+	 *
+	 * @param idx index of desired cross-validation parameter
+	 * @return pointer to cross-validation parameter with spcified index
+	 */
+	TParameter* get_cross_val_parameter(int32_t idx);
+
 protected:
 
 	/** Can (optionally) be overridden to pre-initialize some member
@@ -266,6 +281,8 @@ public:
 
 protected:
 	Parameter* m_parameters;
+
+	Parameter* m_cross_val_parameters;
 
 private:
 	EPrimitiveType m_generic;
