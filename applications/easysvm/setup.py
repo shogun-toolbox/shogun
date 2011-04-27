@@ -56,7 +56,7 @@ except:
     
 
 setup (name = 'easysvm',
-       version = '0.3',
+       version = '0.3.3',
        description = 'easysvm - A front end to the shogun toolbox',
        author = ['Cheng Soon Ong', 'Gunnar Raetsch' ],
        author_email = ['chengsoon.ong@tuebingen.mpg.de','gunnar.raetsch@tuebingen.mpg.de'],
