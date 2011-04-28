@@ -27,13 +27,17 @@ The following table depicts the status of each interface available in shogun:
 |                  | and provides the run_python command to run code in python |
 |                  | using the in octave,r,matlab available variables, etc)    |
 +------------------+-----------------------------------------------------------+
-|python-modular    | mature (no known problems)                                |
-|octave-modular    | beta (although all of the features work stably, octave    |
+|python_modular    | mature (no known problems)                                |
+|octave_modular    | beta (although all of the features work stably, octave    |
 |                  | will crash when exiting (a known bug in octave)           |
-|r-modular         | pre-alpha quality (swig does not properly handle reference|
+|r_modular         | pre-alpha quality (swig does not properly handle reference|
 |                  | counting and thus only for the brave:                     |
 |                  | --disable-reference-counting to get it to work, but beware|
 |                  | that it will leak memory; disabled by default.)           |
+|java_modular      | pre-alpha work in progress quality - proof-of-concept only|
+|ruby_modular      | pre-alpha work in progress quality - proof-of-concept only|
+|lua_modular       | pre-alpha work in progress quality - proof-of-concept only|
+|csharp_modular    | pre-alpha work in progress quality - proof-of-concept only|
 +==================+===========================================================+
 
 Visit src/README and http://www.shogun-toolbox.org/doc for further information.
