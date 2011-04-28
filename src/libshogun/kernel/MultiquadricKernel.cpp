@@ -13,24 +13,24 @@
 
 using namespace shogun;
 
-CMultiquadricKernel::CMultiquadricKernel(): CKernel(0), distance(NULL), coef(0.0001)
+CMultiquadricKernel::CMultiquadricKernel(): CKernel(0), m_distance(NULL), m_coef(0.0001)
 {
 	init();	
 }
 
 CMultiquadricKernel::CMultiquadricKernel(int32_t cache, float64_t coef, CDistance* dist)
-: CKernel(cache), distance(dist), coef(coef)
+: CKernel(cache), m_distance(dist), m_coef(coef)
 {
-	ASSERT(distance);
-	SG_REF(distance);
+	ASSERT(m_distance);
+	SG_REF(m_distance);
 	init();
 }
 
 CMultiquadricKernel::CMultiquadricKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist)
-: CKernel(10), distance(dist), coef(coef)
+: CKernel(10), m_distance(dist), m_coef(coef)
 {
-	ASSERT(distance);
-	SG_REF(distance);
+	ASSERT(m_distance);
+	SG_REF(m_distance);
 	init(l, r);
 	init();
 }
@@ -38,25 +38,25 @@ CMultiquadricKernel::CMultiquadricKernel(CFeatures *l, CFeatures *r, float64_t c
 CMultiquadricKernel::~CMultiquadricKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	SG_UNREF(m_distance);
 }
 
 bool CMultiquadricKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(m_distance);
 	CKernel::init(l,r);
-	distance->init(l,r);
+	m_distance->init(l,r);
 	return init_normalizer();
 }
 
 float64_t CMultiquadricKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	float64_t dist = distance->distance(idx_a, idx_b);
-	return sqrt(dist*dist + coef*coef);
+	float64_t dist = m_distance->distance(idx_a, idx_b);
+	return sqrt(CMath::sq(dist) + CMath::sq(m_coef));
 }
 
 void CMultiquadricKernel::init()
 {
-	m_parameters->add(&coef, "coef", "Kernel coefficient.");
-	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
+	m_parameters->add(&m_coef, "coef", "Kernel coefficient.");
+	m_parameters->add((CSGObject**) &m_distance, "distance", "Distance to be used.");
 }

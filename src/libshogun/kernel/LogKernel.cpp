@@ -13,52 +13,52 @@
 
 using namespace shogun;
 
-CLogKernel::CLogKernel(): CKernel(0), distance(NULL), degree(1.8)
+CLogKernel::CLogKernel(): CKernel(0), m_distance(NULL), m_degree(1.8)
 {
 	init();
 }
 
 CLogKernel::CLogKernel(int32_t cache, float64_t degree, CDistance* dist)
-: CKernel(cache), distance(dist), degree(degree)
+: CKernel(cache), m_distance(dist), m_degree(degree)
 {
 	init();
-	ASSERT(distance);
-	SG_REF(distance);
+	ASSERT(m_distance);
+	SG_REF(m_distance);
 }
 
 CLogKernel::CLogKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistance* dist)
-: CKernel(10), distance(dist), degree(degree)
+: CKernel(10), m_distance(dist), m_degree(degree)
 {
 	init();
-	ASSERT(distance);
-	SG_REF(distance);
+	ASSERT(m_distance);
+	SG_REF(m_distance);
 	init(l, r);
 }
 
 CLogKernel::~CLogKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	SG_UNREF(m_distance);
 }
 
 bool CLogKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(m_distance);
 	CKernel::init(l,r);
-	distance->init(l,r);
+	m_distance->init(l,r);
 	return init_normalizer();
 }
 
 void CLogKernel::init()
 {
-	m_parameters->add(&degree, "degree", "Degree kernel parameter.");
-	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
+	m_parameters->add(&m_degree, "degree", "Degree kernel parameter.");
+	m_parameters->add((CSGObject**) &m_distance, "distance", "Distance to be used.");
 }
 
 float64_t CLogKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	float64_t dist = distance->distance(idx_a, idx_b);	
-	float64_t temp = pow(dist, degree);
+	float64_t dist = m_distance->distance(idx_a, idx_b);	
+	float64_t temp = pow(dist, m_degree);
 	temp = log(temp + 1);
 	return -temp;
 }

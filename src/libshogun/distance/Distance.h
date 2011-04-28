@@ -18,6 +18,7 @@
 #include "lib/File.h"
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
+#include "features/FeatureTypes.h"
 #include "features/Features.h"
 
 namespace shogun

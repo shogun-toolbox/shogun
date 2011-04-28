@@ -77,8 +77,8 @@ bool CAveragedPerceptron::train(CFeatures* data)
 
 			// Add current w to tmp_w, and current bias to tmp_bias
 			// To calculate the sum of each iteration's w, bias
-			for (int32_t i=0; i<num_feat; i++)
-				tmp_w[i]+=w[i];
+			for (int32_t j=0; j<num_feat; j++)
+				tmp_w[j]+=w[j];
 			tmp_bias+=bias;
 		}
 		iter++;

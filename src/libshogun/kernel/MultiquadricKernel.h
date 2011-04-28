@@ -63,12 +63,12 @@ public:
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	inline virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	inline virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
@@ -78,12 +78,12 @@ public:
 	/** getter for coef parameter
 	 *  @return kernel parameter coefficient
 	 */
-	inline float64_t get_coef() { return this->coef; }
+	inline float64_t get_coef() { return m_coef; }
 
 	/** setter for coef parameter
 	 *  @param value kernel parameter coefficient
 	 */
-	inline void set_coef(float64_t value) { this->coef = value; }
+	inline void set_coef(float64_t value) { m_coef = value; }
 
 	virtual ~CMultiquadricKernel();
 
@@ -103,10 +103,10 @@ private:
 protected:
 
 	/// distance to be used
-	CDistance* distance;
+	CDistance* m_distance;
 
 	/// theta parameter of kernel - coefficient
-	float64_t coef;
+	float64_t m_coef;
 
 };
 }

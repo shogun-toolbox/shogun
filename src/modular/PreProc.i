@@ -26,6 +26,8 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
+#include <shogun/lib/Compressor.h>
+#include <shogun/features/FeatureTypes.h>
 #include <shogun/preproc/PreProc.h>
 #include <shogun/preproc/SimplePreProc.h>
 #include <shogun/preproc/StringPreProc.h>
@@ -62,6 +64,8 @@
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/lib/Compressor.h>
+%include <shogun/features/FeatureTypes.h>
 %include <shogun/preproc/PreProc.h>
 
 /* Templates Class SimplePreProc*/

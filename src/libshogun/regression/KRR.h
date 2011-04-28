@@ -95,16 +95,6 @@ class CKRR : public CKernelMachine
 		 */
 		virtual float64_t classify_example(int32_t num);
 
-		/** classify objects
-		 *
-		 * @param data (test)data to be classified
-		 * @return classified labels
-		 */
-		virtual CLabels* classify(CFeatures* data)
-		{
-			return CKernelMachine::classify(data);
-		}
-
 		/** load regression from file
 		 *
 		 * @param srcfile file to load from

@@ -542,6 +542,11 @@ CSGInterfaceMethod sg_methods[]=
 	  USAGE_I(N_ENT_LAMBDA, "ent_lambda")
 	},
 	{
+	  N_MKL_BLOCK_NORM,
+	  (&CSGInterface::cmd_set_mkl_block_norm),
+	  USAGE_I(N_MKL_BLOCK_NORM, "mkl_block_norm")
+	},
+	{
 		N_SVM_MAX_TRAIN_TIME,
 		(&CSGInterface::cmd_set_max_train_time),
 		USAGE_I(N_SVM_MAX_TRAIN_TIME, "max_train_time")
@@ -1202,13 +1207,13 @@ CSGInterface::CSGInterface(bool print_copyright)
 	{
 		version->print_version();
 		SG_PRINT("( seeding random number generator with %u (seed size %d))\n",
-				CMath::rand_state, RNG_SEED_SIZE);
+				CMath::get_seed(), RNG_SEED_SIZE);
 #ifdef USE_LOGCACHE
 		SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",
 				CMath::LOGRANGE,CMath::LOGACCURACY,sizeof(float64_t),
 				CMath::LOGRANGE*CMath::LOGACCURACY*sizeof(float64_t)/(1024.0*1024.0));
 #else
-		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::LOGRANGE);
+		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::get_log_range());
 #endif 
 	}
 
@@ -5150,6 +5155,15 @@ bool CSGInterface::cmd_set_elasticnet_lambda()
 	float64_t lambda=get_real_from_real_or_str();
 	return ui_classifier->set_elasticnet_lambda(lambda);
 }
+
+bool CSGInterface::cmd_set_mkl_block_norm()
+{
+	if (m_nrhs!=2 || !create_return_values(0))
+		return false;
+	float64_t bnorm=get_real_from_real_or_str();
+	return ui_classifier->set_mkl_block_norm(bnorm);
+}
+
 
 bool CSGInterface::cmd_set_max_train_time()
 {
