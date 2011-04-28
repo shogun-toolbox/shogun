@@ -7,7 +7,9 @@
  /* required for python */
  #define SWIG_FILE_WITH_INIT
 
+#ifndef SWIGR
  #include <shogun/base/init.h>
+#endif
  #include <shogun/lib/common.h>
  #include <shogun/lib/io.h>
  #include <shogun/lib/ShogunException.h>
@@ -92,7 +94,9 @@
 
 %include "swig_typemaps.i"
 
+#ifndef SWIGR
 %include <shogun/base/init.h>
+#endif
 %include <shogun/lib/ShogunException.h>
 %include <shogun/lib/io.h>
 %include <shogun/base/SGObject.h>
