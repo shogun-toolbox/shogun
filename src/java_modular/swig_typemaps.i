@@ -33,7 +33,7 @@
  */
 
 /* One dimensional input arrays */
-%define TYPEMAP_IN1(SGTYPE, JTYPE, JAVATYPE, JNITYPE, JFUNCNAME, JNIDESC)
+%define TYPEMAP_IN1(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
 
 %typemap(jni) (SGTYPE* IN_ARRAY1, int32_t DIM1)		%{JNITYPE##Array%}
 %typemap(jtype) (SGTYPE* IN_ARRAY1, int32_t DIM1)		%{JTYPE[]%}
@@ -88,18 +88,18 @@
 %enddef
 
 
-//TYPEMAP_IN1(bool, boolean, Boolean, jboolean, Bool, "[Z")       /* bool[ANY] */
-TYPEMAP_IN1(char, byte, Byte, jbyte, Schar, "[B")     /* signed char[ANY] */
-TYPEMAP_IN1(uint8_t, short, Short, jshort, Uchar, "[S") /* unsigned char[ANY] */
-TYPEMAP_IN1(int16_t, short, Short, jshort, Short, "[S")         /* short[ANY] */
-TYPEMAP_IN1(uint16_t, int, Int, jint, Ushort, "[I")   /* unsigned short[ANY] */
-TYPEMAP_IN1(int32_t, int, Int, jint, Int, "[I")                 /* int[ANY] */
-TYPEMAP_IN1(uint32_t, long, Long, jlong, Uint, "[J")     /* unsigned int[ANY] */
-TYPEMAP_IN1(int64_t, int, Int, jint, Long, "[I")               /* long[ANY] */
-TYPEMAP_IN1(uint64_t, long, Long, jlong, Ulong, "[J")   /* unsigned long[ANY] */
-//TYPEMAP_IN1(long long, long, Long, jlong, Longlong, "[J")    /* long long[ANY] */
-TYPEMAP_IN1(float32_t, float, Float, jfloat, Float, "[F")         /* float[ANY] */
-TYPEMAP_IN1(float64_t, double, Double, jdouble, Double, "[D")     /* double[ANY] */
+TYPEMAP_IN1(bool, boolean, Boolean, jboolean)
+TYPEMAP_IN1(char, byte, Byte, jbyte)
+TYPEMAP_IN1(uint8_t, short, Short, jshort)
+TYPEMAP_IN1(int16_t, short, Short, jshort)
+TYPEMAP_IN1(uint16_t, int, Int, jint)
+TYPEMAP_IN1(int32_t, int, Int, jint)
+TYPEMAP_IN1(uint32_t, long, Long, jlong)
+TYPEMAP_IN1(int64_t, int, Int, jint)
+TYPEMAP_IN1(uint64_t, long, Long, jlong)
+TYPEMAP_IN1(long long, long, Long, jlong)
+TYPEMAP_IN1(float32_t, float, Float, jfloat)
+TYPEMAP_IN1(float64_t, double, Double, jdouble)
 
 #undef TYPEMAP_IN1
 
@@ -128,13 +128,13 @@ TYPEMAP_IN1(float64_t, double, Double, jdouble, Double, "[D")     /* double[ANY]
  */
 
  /* One dimensional input/output arrays */
-%define TYPEMAP_ARRAYOUT1(SGTYPE, JTYPE, JAVATYPE, JNITYPE, JFUNCNAME, JNIDESC)
+%define TYPEMAP_ARRAYOUT1(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
 
 %typemap(jni) (SGTYPE** ARGOUT1, int32_t* DIM1)		%{JNITYPE##Array%}
 %typemap(jtype) (SGTYPE** ARGOUT1, int32_t* DIM1)		%{JTYPE[]%}
 %typemap(jstype) (SGTYPE** ARGOUT1, int32_t* DIM1)	%{JTYPE[]%}
 
-%typemap(in, numinputs=0) (SGTYPE** ARGOUT1, int32_t* DIM1) {
+%typemap(in) (SGTYPE** ARGOUT1, int32_t* DIM1) {
     $1 = (SGTYPE**) malloc(sizeof(SGTYPE*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
 }
@@ -143,36 +143,30 @@ TYPEMAP_IN1(float64_t, double, Double, jdouble, Double, "[D")     /* double[ANY]
 	SGTYPE* vec = *$1;
 	JNITYPE *arr;
 	int i;
-	JNITYPE##Array jresult = JCALL1(New##JAVATYPE##Array, jenv, *$2);
-	if (!jresult)
-		return;
-	arr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jresult, 0);
+	arr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, $input, 0);
 	if (!arr)
 		return;
 	for (i=0; i < *$2; i++)
 		arr[i] = (JNITYPE)vec[i];
-	JCALL3(Release##JAVATYPE##ArrayElements, jenv, jresult, arr, 0);
+	JCALL3(Release##JAVATYPE##ArrayElements, jenv, $input, arr, 0);
 }
 
 %typemap(javain) (SGTYPE** ARGOUT1, int32_t* DIM1) "$javainput"
-%typemap(javaout) (SGTYPE** ARGOUT1, int32_t* DIM1) {
-    return $jnicall;
-  }
 
 %enddef
 
 
-//TYPEMAP_ARRAYOUT1(bool, boolean, Boolean, jboolean, Bool, "[Z")       /* bool[ANY] */
-TYPEMAP_ARRAYOUT1(char, byte, Byte, jbyte, Schar, "[B")     /* signed char[ANY] */
-TYPEMAP_ARRAYOUT1(uint8_t, short, Short, jshort, Uchar, "[S") /* unsigned char[ANY] */
-TYPEMAP_ARRAYOUT1(int16_t, short, Short, jshort, Short, "[S")         /* short[ANY] */
-TYPEMAP_ARRAYOUT1(uint16_t, int, Int, jint, Ushort, "[I")   /* unsigned short[ANY] */
-TYPEMAP_ARRAYOUT1(int32_t, int, Int, jint, Int, "[I")                 /* int[ANY] */
-TYPEMAP_ARRAYOUT1(uint32_t, long, Long, jlong, Uint, "[J")     /* unsigned int[ANY] */
-TYPEMAP_ARRAYOUT1(int64_t, int, Int, jint, Long, "[I")               /* long[ANY] */
-TYPEMAP_ARRAYOUT1(uint64_t, long, Long, jlong, Ulong, "[J")   /* unsigned long[ANY] */
-//TYPEMAP_ARRAYOUT1(long long, long, Long, jlong, Longlong, "[J")    /* long long[ANY] */
-TYPEMAP_ARRAYOUT1(float32_t, float, Float, jfloat, Float, "[F")         /* float[ANY] */
-TYPEMAP_ARRAYOUT1(float64_t, double, Double, jdouble, Double, "[D")     /* double[ANY] */
+TYPEMAP_ARRAYOUT1(bool, boolean, Boolean, jboolean)
+TYPEMAP_ARRAYOUT1(char, byte, Byte, jbyte)
+TYPEMAP_ARRAYOUT1(uint8_t, short, Short, jshort)
+TYPEMAP_ARRAYOUT1(int16_t, short, Short, jshort)
+TYPEMAP_ARRAYOUT1(uint16_t, int, Int, jint)
+TYPEMAP_ARRAYOUT1(int32_t, int, Int, jint)
+TYPEMAP_ARRAYOUT1(uint32_t, long, Long, jlong)
+TYPEMAP_ARRAYOUT1(int64_t, int, Int, jint)
+TYPEMAP_ARRAYOUT1(uint64_t, long, Long, jlong)
+TYPEMAP_ARRAYOUT1(long long, long, Long, jlong)
+TYPEMAP_ARRAYOUT1(float32_t, float, Float, jfloat)
+TYPEMAP_ARRAYOUT1(float64_t, double, Double, jdouble)
 
 #undef TYPEMAP_ARRAYOUT1
