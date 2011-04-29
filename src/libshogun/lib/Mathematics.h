@@ -366,8 +366,7 @@ class CMath : public CSGObject
 
 		static float64_t area_under_curve(float64_t* x, int32_t x_len, float64_t* y, int32_t y_len)
 		{
-			ASSERT(length);
-			ASSERT(x_len == y_len);
+			ASSERT(x_len>0 && y_len>0 && x_len==y_len);
 
 			float64_t area = 0;
 
