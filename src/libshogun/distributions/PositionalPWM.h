@@ -11,8 +11,6 @@
 #ifndef _POSITIONAL_PWM_H__
 #define _POSITIONAL_PWM_H__
 
-#include "lib/config.h"
-
 #include "distributions/Distribution.h"
 #include "features/DotFeatures.h"
 #include "lib/common.h"
@@ -69,6 +67,24 @@ class CPositionalPWM : public CDistribution
 
 		float64_t get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos);
 
+		/** get sigma
+		 *
+		 * @param sigma
+		 */
+		virtual inline float64_t get_sigma()
+		{
+			return m_sigma;
+		}
+
+		/** set sigma
+		 *
+		 * @param sigma new sigma
+		 */
+		virtual inline void set_sigma(float64_t sigma)
+		{
+			m_sigma=sigma;
+		}
+
 		/** get mean
 		 *
 		 * @param mean
@@ -81,7 +97,6 @@ class CPositionalPWM : public CDistribution
 		/** set mean
 		 *
 		 * @param mean new mean
-		 * @param mean_length has to match current mean length
 		 */
 		virtual inline void set_mean(float64_t mean)
 		{
@@ -102,9 +117,23 @@ class CPositionalPWM : public CDistribution
 			*pwm_cols = m_pwm_cols;
 		}
 
+		/** get w
+		 *
+		 * @param w copy of the w
+		 * @param w_rows
+		 * @param w_cols
+		 */
+		virtual inline void get_w(float64_t** w, int32_t* w_rows, int32_t* w_cols)
+		{
+			*w = new float64_t[m_w_rows*m_w_cols];
+			memcpy(*w, m_w, sizeof(float64_t)*m_w_rows*m_w_cols);
+			*w_rows = m_w_rows;
+			*w_cols = m_w_cols;
+		}
+
 		/** set pwm
 		 *
-		 * @param pwm new pwm
+		 * @param pwm new pwm (values should be in logspace)
 		 * @param pwm_rows has to match current pwm rows
 		 * @param pwm_cols has to be equal to pwm_rows
 		 */
@@ -113,6 +142,7 @@ class CPositionalPWM : public CDistribution
 			m_pwm_rows=pwm_rows;
 			m_pwm_cols=pwm_cols;
 			delete[] m_pwm;
+            m_pwm=new float64_t[m_pwm_rows*m_pwm_cols];
 			memcpy(m_pwm, pwm, sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
 		}
 

@@ -47,6 +47,10 @@
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* src, int32_t num)};
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num)};
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(const float64_t* src, int32_t num)};
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* pwm, int32_t pwm_rows, int32_t pwm_cols)};
+%apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* w, int32_t w_rows, int32_t w_cols)}; 
+%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** pwm, int32_t* pwm_rows, int32_t* pwm_cols)};
+%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** w, int32_t* w_rows, int32_t* w_cols)};
 
 /* Remove C Prefix */
 %rename(BaseDistribution) CDistribution;
