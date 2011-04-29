@@ -7,7 +7,9 @@
  /* required for python */
  #define SWIG_FILE_WITH_INIT
 
+#if defined(SWIGJAVA) || defined(SWIGCSHARP)
  #include <shogun/base/init.h>
+#endif
  #include <shogun/lib/common.h>
  #include <shogun/lib/io.h>
  #include <shogun/lib/ShogunException.h>
@@ -31,8 +33,7 @@
 %}
 
 %init %{
-#ifndef SWIGJAVA
-#ifndef SWIGCSHARP
+#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
 #ifndef DISABLE_CANCEL_CALLBACK
         shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
                 &sg_global_print_error, &sg_global_cancel_computations);
@@ -40,11 +41,10 @@
         shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
                 &sg_global_print_error);
 #endif
+#endif
 
 #ifdef SWIGPYTHON
         import_array();
-#endif
-#endif
 #endif
 %}
 
@@ -57,19 +57,15 @@
     catch (std::bad_alloc)
     {
         SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
-#ifndef SWIGJAVA
-#ifndef SWIGCSHARP
+#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
         SWIG_fail;
-#endif
 #endif
     }
     catch (shogun::ShogunException e)
     {
         SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
-#ifndef SWIGJAVA
-#ifndef SWIGCSHARP
+#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
         SWIG_fail;
-#endif
 #endif
     }
 }
@@ -92,7 +88,9 @@
 
 %include "swig_typemaps.i"
 
+#ifndef SWIGR
 %include <shogun/base/init.h>
+#endif
 %include <shogun/lib/ShogunException.h>
 %include <shogun/lib/io.h>
 %include <shogun/base/SGObject.h>

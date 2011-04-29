@@ -1316,6 +1316,12 @@ class CMath : public CSGObject
 			return CMath::seed;
 		}
 
+		/// returns range of logtable
+		inline static uint32_t get_log_range()
+		{
+			return CMath::LOGRANGE;
+		}
+
 		/// checks whether a float is finite
 		inline static int is_finite(double f)
 		{
@@ -1444,6 +1450,7 @@ class CMath : public CSGObject
 				/// almost neg (log) infinity
 				static const float64_t ALMOST_NEG_INFTY;
 
+	protected:
 				/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0
 				static int32_t LOGRANGE;
 
@@ -1456,7 +1463,6 @@ class CMath : public CSGObject
 				/// number of steps per integer
 				static int32_t LOGACCURACY;
 				//@}
-	protected:
 				///table with log-values
 				static float64_t* logtable;	
 #endif

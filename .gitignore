@@ -68,6 +68,7 @@ configure.log
 # particular modular ones
 /src/csharp_modular/*.cs
 /src/java_modular/*.java
+/src/java_modular/*.class
 /src/python_modular/*.py
 /src/r_modular/*.R
 /src/r_modular/*.RData

@@ -125,7 +125,7 @@ CSGObject::~CSGObject()
 	delete m_parameters;
 }
 
-void CSGObject::set_global_objects(void)
+void CSGObject::set_global_objects()
 {
 	if (!sg_io || !sg_parallel || !sg_version)
 	{
@@ -142,47 +142,47 @@ void CSGObject::set_global_objects(void)
 	version=sg_version;
 }
 
-void CSGObject::unset_global_objects(void)
+void CSGObject::unset_global_objects()
 {
 	SG_UNREF(version);
 	SG_UNREF(parallel);
 	SG_UNREF(io);
 }
 
-void CSGObject::set_io(IO* new_io)
+void CSGObject::set_global_io(IO* new_io)
 {
 	SG_UNREF(sg_io);
 	sg_io=new_io;
 	SG_REF(sg_io);
 }
 
-IO* CSGObject::get_io()
+IO* CSGObject::get_global_io()
 {
 	SG_REF(sg_io);
 	return sg_io;
 }
 
-void CSGObject::set_parallel(Parallel* new_parallel)
+void CSGObject::set_global_parallel(Parallel* new_parallel)
 {
 	SG_UNREF(sg_parallel);
 	sg_parallel=new_parallel;
 	SG_REF(sg_parallel);
 }
 
-Parallel* CSGObject::get_parallel()
+Parallel* CSGObject::get_global_parallel()
 {
 	SG_REF(sg_parallel);
 	return sg_parallel;
 }
 
-void CSGObject::set_version(Version* new_version)
+void CSGObject::set_global_version(Version* new_version)
 {
 	SG_UNREF(sg_version);
 	sg_version=new_version;
 	SG_REF(sg_version);
 }
 
-Version* CSGObject::get_version()
+Version* CSGObject::get_global_version()
 {
 	SG_REF(sg_version);
 	return sg_version;

@@ -82,6 +82,7 @@ class CGUIClassifier : public CSGObject
 		bool set_svr_tube_epsilon(float64_t tube_epsilon);
 		bool set_svm_mkl_parameters(
 			float64_t weight_epsilon, float64_t C_mkl, float64_t mkl_norm);
+		bool set_mkl_block_norm(float64_t mkl_bnorm);
 		bool set_elasticnet_lambda(float64_t lambda);
 		bool set_svm_precompute_enabled(int32_t precompute);
 
@@ -128,6 +129,7 @@ class CGUIClassifier : public CSGObject
 		int32_t svm_bufsize;
 		int32_t svm_max_qpsize;
 		float64_t mkl_norm;
+		float64_t mkl_block_norm;
 		float64_t ent_lambda;
 		float64_t svm_weight_epsilon;
 		float64_t svm_epsilon;

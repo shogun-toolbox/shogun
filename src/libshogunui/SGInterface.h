@@ -279,6 +279,8 @@ class CSGInterface : public CSGObject
 		bool cmd_set_svm_mkl_parameters();
 		/** set ElasticnetMKL parameter lambda */
 		bool cmd_set_elasticnet_lambda();
+		/** set block norm parameter for block norm mkl */
+		bool cmd_set_mkl_block_norm();
 		/** set max train time */
 		bool cmd_set_max_train_time();
 		/** set SVM MKL enabled */

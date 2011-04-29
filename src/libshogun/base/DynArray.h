@@ -18,6 +18,8 @@ namespace shogun
 {
 extern IO* sg_io;
 
+template <class T> class CDynamicArray;
+
 /** @brief Template Dynamic array class that creates an array that can
  * be used like a list or an array.
  *
@@ -28,19 +30,11 @@ extern IO* sg_io;
  */
 template <class T> class DynArray
 {
+	friend class CDynamicArray<T>;
+	friend class CDynamicArrayPtr;
+	friend class CCommUlongStringKernel;
+
 	public:
-		/** shrink/grow step size */
-		int32_t resize_granularity;
-
-		/** memory for dynamic array */
-		T* array;
-
-		/** the number of potentially used elements in array */
-		int32_t num_elements;
-
-		/** the element in the array that has largest index */
-		int32_t last_element_idx;
-
 		/** constructor
 		 *
 		 * @param p_resize_granularity resize granularity
@@ -361,6 +355,19 @@ template <class T> class DynArray
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "DynArray"; }
+
+	protected:
+		/** shrink/grow step size */
+		int32_t resize_granularity;
+
+		/** memory for dynamic array */
+		T* array;
+
+		/** the number of potentially used elements in array */
+		int32_t num_elements;
+
+		/** the element in the array that has largest index */
+		int32_t last_element_idx;
 };
 }
 #endif /* _DYNARRAY_H_  */

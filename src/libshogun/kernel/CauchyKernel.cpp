@@ -13,50 +13,50 @@
 
 using namespace shogun;
 
-CCauchyKernel::CCauchyKernel(): CKernel(0), distance(NULL), sigma(1.0)
+CCauchyKernel::CCauchyKernel(): CKernel(0), m_distance(NULL), m_sigma(1.0)
 {
 	init();
 }
 
 CCauchyKernel::CCauchyKernel(int32_t cache, float64_t sigma, CDistance* dist)
-: CKernel(cache), distance(dist), sigma(sigma)
+: CKernel(cache), m_distance(dist), m_sigma(sigma)
 {
 	init();
-	ASSERT(distance);
-	SG_REF(distance);
+	ASSERT(m_distance);
+	SG_REF(m_distance);
 }
 
 CCauchyKernel::CCauchyKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist)
-: CKernel(10), distance(dist), sigma(sigma)
+: CKernel(10), m_distance(dist), m_sigma(sigma)
 {
 	init();
-	ASSERT(distance);
-	SG_REF(distance);
+	ASSERT(m_distance);
+	SG_REF(m_distance);
 	init(l, r);
 }
 
 CCauchyKernel::~CCauchyKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	SG_UNREF(m_distance);
 }
 
 bool CCauchyKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(m_distance);
 	CKernel::init(l,r);
-	distance->init(l,r);
+	m_distance->init(l,r);
 	return init_normalizer();
 }
 
 void CCauchyKernel::init()
 {
-	m_parameters->add(&sigma, "sigma", "Sigma kernel parameter.");
-	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
+	m_parameters->add(&m_sigma, "sigma", "Sigma kernel parameter.");
+	m_parameters->add((CSGObject**) &m_distance, "distance", "Distance to be used.");
 }
 
 float64_t CCauchyKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	float64_t dist = distance->distance(idx_a, idx_b);
-	return 1.0/(1.0+dist*dist/sigma);
+	float64_t dist = m_distance->distance(idx_a, idx_b);
+	return 1.0/(1.0+dist*dist/m_sigma);
 }

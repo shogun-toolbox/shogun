@@ -164,6 +164,12 @@ class CMKL : public CSVM
 		 */
 		void set_elasticnet_lambda(float64_t lambda);
 
+		/** set block norm q (used in block norm mkl)
+		 *
+		 * @param q mixed norm (1<=q<=inf)
+		 */
+		void set_mkl_block_norm(float64_t q);
+
 		/** set state of optimization (interleaved or wrapper)
 		 *
 		 * @param enable if true interleaved optimization is used; wrapper
@@ -369,6 +375,21 @@ class CMKL : public CSVM
 		 *
 		 * @return new objective value
 		 */
+		float64_t compute_optimal_betas_block_norm(
+				float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
+				const float64_t* sumw, const float64_t suma, const float64_t mkl_objective);
+
+		/** given the alphas, compute the corresponding optimal betas
+		 *
+		 * @param beta new betas (kernel weights)
+		 * @param old_beta old betas (previous kernel weights)
+		 * @param num_kernels number of kernels
+		 * @param sumw 1/2*alpha'*K_j*alpha for each kernel j
+		 * @param suma (sum over alphas)
+		 * @param mkl_objective the current mkl objective
+		 *
+		 * @return new objective value
+		 */
 		float64_t compute_optimal_betas_newton(float64_t* beta, const float64_t* old_beta,
 				int32_t num_kernels, const float64_t* sumw, float64_t suma, float64_t mkl_objective);
 
@@ -437,6 +458,10 @@ class CMKL : public CSVM
 		    lambda=1: Linfinity-MKL
 		 */
 		float64_t ent_lambda;
+
+		/** Sparsity trade-off parameter used in block norm MKL
+		 * should be 1 <= mkl_block_norm <= inf */
+		float64_t mkl_block_norm;
 
 		/** sub-kernel weights on the L1-term of ElasticnetMKL */
 		float64_t* beta_local;

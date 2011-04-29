@@ -27,8 +27,6 @@ namespace shogun
  */
 template <class T> class CDynamicArray :public CSGObject
 {
-	DynArray<T> m_array;
-
 	public:
 		/** constructor
 		 *
@@ -58,21 +56,27 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return what has been set (minimum is 128)
 		 */
 		inline int32_t set_granularity(int32_t g)
-		{ return m_array.set_granularity(g); }
+		{
+			return m_array.set_granularity(g);
+		}
 
 		/** get array size (including granularity buffer)
 		 *
 		 * @return total array size (including granularity buffer)
 		 */
-		inline int32_t get_array_size(void)
-		{ return m_array.get_array_size(); }
+		inline int32_t get_array_size()
+		{
+			return m_array.get_array_size();
+		}
 
 		/** get number of elements
 		 *
 		 * @return number of elements
 		 */
-		inline int32_t get_num_elements(void) const
-		{ return m_array.get_num_elements(); }
+		inline int32_t get_num_elements() const
+		{
+			return m_array.get_num_elements();
+		}
 
 		/** get array element at index
 		 *
@@ -82,7 +86,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return array element at index
 		 */
 		inline T get_element(int32_t index) const
-		{ return m_array.get_element(index); }
+		{
+			return m_array.get_element(index);
+		}
 
 		/** get array element at index
 		 *
@@ -92,7 +98,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return array element at index
 		 */
 		inline T get_element_safe(int32_t index) const
-		{ return m_array.get_element_safe(index); }
+		{
+			return m_array.get_element_safe(index);
+		}
 
 		/** set array element at index
 		 *
@@ -101,7 +109,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return if setting was successful
 		 */
 		inline bool set_element(T element, int32_t index)
-		{ return m_array.set_element(element, index); }
+		{
+			return m_array.set_element(element, index);
+		}
 
 		/** insert array element at index
 		 *
@@ -110,7 +120,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return if setting was successful
 		 */
 		inline bool insert_element(T element, int32_t index)
-		{ return m_array.insert_element(element, index); }
+		{
+			return m_array.insert_element(element, index);
+		}
 
 		/** append array element to the end of array
 		 *
@@ -118,7 +130,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return if setting was successful
 		 */
 		inline bool append_element(T element)
-		{ return m_array.append_element(element); }
+		{
+			return m_array.append_element(element);
+		}
 
 	    /** ::STD::VECTOR compatible. Append array element to the end
 		 *  of array.
@@ -131,16 +145,20 @@ template <class T> class CDynamicArray :public CSGObject
 	    /** ::STD::VECTOR compatible. Delete array element at the end
 		 *  of array.
 		 */
-		inline void pop_back(void)
-		{ m_array.pop_back(); }
+		inline void pop_back()
+		{
+			m_array.pop_back();
+		}
 
 		/** ::STD::VECTOR compatible. Return array element at the end
 		 *  of array.
 		 *
 		 * @return element at the end of array
 		 */
-		inline T back(void)
-		{ return m_array.back(); }
+		inline T back()
+		{
+			return m_array.back();
+		}
 
 		/** find first occurence of array element and return its index
 		 * or -1 if not available
@@ -149,7 +167,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return index of element or -1
 		 */
 		inline int32_t find_element(T element)
-		{ return m_array.find_element(element); }
+		{
+			return m_array.find_element(element);
+		}
 
 		/** delete array element at idx
 		 * (does not call delete[] or the like)
@@ -158,7 +178,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return if deleting was successful
 		 */
 		inline bool delete_element(int32_t idx)
-		{ return m_array.delete_element(idx); }
+		{
+			return m_array.delete_element(idx);
+		}
 
 		/** resize the array
 		 *
@@ -166,7 +188,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return if resizing was successful
 		 */
 		inline bool resize_array(int32_t n)
-		{ return m_array.resize_array(n); }
+		{
+			return m_array.resize_array(n);
+		}
 
 		/** get the array
 		 * call get_array just before messing with it DO NOT call any
@@ -175,8 +199,10 @@ template <class T> class CDynamicArray :public CSGObject
 		 *
 		 * @return the array
 		 */
-		inline T* get_array(void)
-		{ return m_array.get_array(); }
+		inline T* get_array()
+		{
+			return m_array.get_array();
+		}
 
 		/** set the array pointer and free previously allocated memory
 		 *
@@ -186,11 +212,15 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		inline void set_array(T* p_array, int32_t p_num_elements,
 							  int32_t array_size)
-		{ m_array.set_array(p_array, p_num_elements, array_size); }
+		{
+			m_array.set_array(p_array, p_num_elements, array_size);
+		}
 
 		/** clear the array (with zeros) */
-		inline void clear_array(void)
-		{ m_array.clear_array(); }
+		inline void clear_array()
+		{
+			m_array.clear_array();
+		}
 
 		/** operator overload for array read only access
 		 * use set_element() for write access (will also make the array
@@ -202,7 +232,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @return element at index
 		 */
 		inline T operator[](int32_t index) const
-		{ return m_array[index]; }
+		{
+			return m_array[index];
+		}
 
 		/** operator overload for array assignment
 		 *
@@ -217,7 +249,12 @@ template <class T> class CDynamicArray :public CSGObject
 
 		/** @return object name */
 		inline virtual const char* get_name() const
-		{ return "DynamicArray"; }
+		{
+			return "DynamicArray";
+		}
+
+	protected:
+		DynArray<T> m_array;
 };
 }
 #endif /* _DYNAMIC_ARRAY_H_  */

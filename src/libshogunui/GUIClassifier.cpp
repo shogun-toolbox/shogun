@@ -84,6 +84,7 @@ CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
 	svm_max_qpsize=1000;
 	mkl_norm=1;
 	ent_lambda=0;
+	mkl_block_norm=4;
 	svm_C1=1;
 	svm_C2=1;
 	C_mkl=0;
@@ -534,6 +535,7 @@ bool CGUIClassifier::train_mkl()
 	mkl->set_mkl_epsilon(svm_weight_epsilon);
 	mkl->set_mkl_norm(mkl_norm); 
 	mkl->set_elasticnet_lambda(ent_lambda);
+	mkl->set_mkl_block_norm(mkl_block_norm);
 	mkl->set_C_mkl(C_mkl);
 	mkl->set_interleaved_optimization_enabled(mkl_use_interleaved);
 
@@ -1027,12 +1029,22 @@ bool CGUIClassifier::set_svm_mkl_parameters(
 
 bool CGUIClassifier::set_elasticnet_lambda(float64_t lambda)
 {
-  if (lambda<0 || lambda>1) {
+  if (lambda<0 || lambda>1)
     SG_ERROR("0 <= ent_lambda <= 1\n");
-  }
+
   ent_lambda = lambda;
   return true;
 }
+
+bool CGUIClassifier::set_mkl_block_norm(float64_t mkl_bnorm)
+{
+  if (mkl_bnorm<1)
+    SG_ERROR("1 <= mkl_block_norm <= inf\n");
+
+  mkl_block_norm=mkl_bnorm;
+  return true;
+}
+
 
 bool CGUIClassifier::set_svm_C(float64_t C1, float64_t C2)
 {
@@ -1572,6 +1584,11 @@ bool CGUIClassifier::set_solver(char* solver)
 	{
 		SG_INFO("Using DIRECT solver\n");
 		s=ST_DIRECT;
+	}
+	else if (strncmp(solver,"BLOCK_NORM", 9)==0)
+	{
+		SG_INFO("Using BLOCK_NORM solver\n");
+		s=ST_BLOCK_NORM;
 	}
 	else if (strncmp(solver,"ELASTICNET", 10)==0)
 	{

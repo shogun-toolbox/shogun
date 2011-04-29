@@ -13,15 +13,16 @@
 
 #include "lib/common.h"
 
-#define PT_NOT_GENERIC             PT_SGOBJECT
-#define PT_LONGEST                 floatmax_t
+#define PT_NOT_GENERIC	PT_SGOBJECT
+#define PT_LONGEST		floatmax_t
 
 namespace shogun
 {
 
-typedef int32_t                    index_t;
+typedef int32_t index_t;
 
-template<class T> struct TString {
+template<class T> struct TString
+{
 	/** string  */
 	T* string;
 	/** length of string  */
@@ -29,7 +30,8 @@ template<class T> struct TString {
 };
 
 /** template class TSparseEntry */
-template <class T> struct TSparseEntry {
+template <class T> struct TSparseEntry
+{
 	/** feature index  */
 	index_t feat_index;
 	/** entry ... */
@@ -37,7 +39,8 @@ template <class T> struct TSparseEntry {
 };
 
 /** template class TSparse */
-template <class T> struct TSparse {
+template <class T> struct TSparse
+{
 	/** vector index */
 	index_t vec_index;
 	/** number of feature entries */
@@ -46,17 +49,36 @@ template <class T> struct TSparse {
 	TSparseEntry<T>* features;
 };
 
-enum EContainerType {
-	CT_SCALAR, CT_VECTOR, CT_MATRIX, CT_NDARRAY
+enum EContainerType
+{
+	CT_SCALAR,
+	CT_VECTOR,
+	CT_MATRIX,
+	CT_NDARRAY
 };
 
-enum EStructType {
-	ST_NONE, ST_STRING, ST_SPARSE
+enum EStructType
+{
+	ST_NONE,
+	ST_STRING,
+	ST_SPARSE
 };
 
-enum EPrimitiveType {
-	PT_BOOL, PT_CHAR, PT_INT8, PT_UINT8, PT_INT16, PT_UINT16, PT_INT32,
-	PT_UINT32, PT_INT64, PT_UINT64, PT_FLOAT32, PT_FLOAT64, PT_FLOATMAX,
+enum EPrimitiveType
+{
+	PT_BOOL,
+	PT_CHAR,
+	PT_INT8,
+	PT_UINT8,
+	PT_INT16,
+	PT_UINT16,
+	PT_INT32,
+	PT_UINT32,
+	PT_INT64,
+	PT_UINT64,
+	PT_FLOAT32,
+	PT_FLOAT64,
+	PT_FLOATMAX,
 	PT_SGOBJECT
 };
 

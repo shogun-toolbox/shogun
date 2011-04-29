@@ -218,7 +218,8 @@ bool CMKL::train(CFeatures* data)
 	SG_INFO("C_mkl = %1.1e\n", C_mkl) ;
 	SG_INFO("mkl_norm = %1.3e\n", mkl_norm);
 	SG_INFO("solver = %d\n", get_solver_type());
-	SG_INFO("ent_lambda = %f\n",ent_lambda);
+	SG_INFO("ent_lambda = %f\n", ent_lambda);
+	SG_INFO("mkl_block_norm = %f\n", mkl_block_norm);
 
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels();
@@ -226,6 +227,15 @@ bool CMKL::train(CFeatures* data)
 	const float64_t* beta_const   = kernel->get_subkernel_weights(num_weights);
 	float64_t* beta =  CMath::clone_vector(beta_const, num_weights);
 	ASSERT(num_weights==num_kernels);
+
+	if (get_solver_type()==ST_BLOCK_NORM &&
+			mkl_block_norm>=1 &&
+			mkl_block_norm<=2)
+	{
+		mkl_norm=mkl_block_norm/(2-mkl_block_norm);
+		SG_WARNING("Switching to ST_DIRECT method with mkl_norm=%g\n", mkl_norm);
+		set_solver_type(ST_DIRECT);
+	}
 
 	if (get_solver_type()==ST_ELASTICNET)
 	{
@@ -374,6 +384,14 @@ void CMKL::set_elasticnet_lambda(float64_t lambda)
   ent_lambda=lambda;
 }
 
+void CMKL::set_mkl_block_norm(float64_t q)
+{
+  if (q<1)
+    SG_ERROR("1<=q<=inf\n");
+  
+  mkl_block_norm=q;
+}
+
 bool CMKL::perform_mkl_step(
 		const float64_t* sumw, float64_t suma)
 {
@@ -402,10 +420,16 @@ bool CMKL::perform_mkl_step(
 	w_gap = CMath::abs(1-rho/mkl_objective) ;
 
 	if( (w_gap >= mkl_epsilon) ||
-	    (get_solver_type()==ST_AUTO || get_solver_type()==ST_NEWTON || get_solver_type()==ST_DIRECT ) || get_solver_type()==ST_ELASTICNET)
+	    (get_solver_type()==ST_AUTO || get_solver_type()==ST_NEWTON || get_solver_type()==ST_DIRECT ) || get_solver_type()==ST_ELASTICNET || get_solver_type()==ST_BLOCK_NORM)
 	{
 		if (get_solver_type()==ST_AUTO || get_solver_type()==ST_DIRECT)
+		{
 			rho=compute_optimal_betas_directly(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
+		}
+		else if (get_solver_type()==ST_BLOCK_NORM)
+		{
+			rho=compute_optimal_betas_block_norm(beta, old_beta, num_kernels, sumw, suma, mkl_objective);
+		}
 		else if (get_solver_type()==ST_ELASTICNET)
 		{
 			// -- Direct update of subkernel weights for ElasticnetMKL
@@ -629,6 +653,43 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 	return -mkl_obj;
 }
 
+float64_t CMKL::compute_optimal_betas_block_norm(
+  float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
+  const float64_t* sumw, const float64_t suma,
+  const float64_t mkl_objective )
+{
+	float64_t obj;
+	float64_t Z=0;
+	int32_t p;
+	int32_t nofKernelsGood;
+
+	// --- optimal beta
+	nofKernelsGood = num_kernels;
+	for( p=0; p<num_kernels; ++p )
+	{
+		ASSERT(sumw[p]>=0);
+
+		beta[p] = CMath::pow( sumw[p], -(2.0-mkl_block_norm)/(2.0-2.0*mkl_block_norm));
+		Z+= CMath::pow( sumw[p], -(mkl_block_norm)/(2.0-2.0*mkl_block_norm));
+
+		ASSERT( beta[p] >= 0 );
+	}
+
+	ASSERT(Z>=0);
+
+	Z=1.0/CMath::pow(Z, (2.0-mkl_block_norm)/mkl_block_norm);
+
+	for( p=0; p<num_kernels; ++p )
+		beta[p] *= Z;
+
+	// --- objective
+	obj = -suma;
+	for( p=0; p<num_kernels; ++p )
+		obj += sumw[p] * beta[p];
+
+	return obj;
+}
+
 
 float64_t CMKL::compute_optimal_betas_directly(
   float64_t* beta, const float64_t* old_beta, const int32_t num_kernels,
@@ -673,7 +734,7 @@ float64_t CMKL::compute_optimal_betas_directly(
 	// --- regularize & renormalize
 	preR = 0.0;
 	for( p=0; p<num_kernels; ++p )
-		preR += CMath::pow( old_beta[p] - beta[p], 2.0 );
+		preR += CMath::sq( old_beta[p] - beta[p]);
 
 	const float64_t R = CMath::sqrt( preR / mkl_norm ) * epsRegul;
 	if( !( R >= 0 ) )
