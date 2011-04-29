@@ -364,6 +364,21 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
+		static float64_t area_under_curve(float64_t* x, int32_t x_len, float64_t* y, int32_t y_len)
+		{
+			ASSERT(length);
+			ASSERT(x_len == y_len);
+
+			float64_t area = 0;
+
+			for (int i=1; i<x_len; i++)
+			{
+				area += 0.5*(x[i]-x[i-1])*(y[i]+y[i-1]);
+			}
+
+			return area;
+		}
+
 		template <class T>
 		static void transpose_matrix(
 			T*& matrix, int32_t& num_feat, int32_t& num_vec)
