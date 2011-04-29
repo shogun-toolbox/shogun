@@ -38,6 +38,7 @@
 #include <shogun/distributions/HMM.h>
 #include <shogun/distributions/GHMM.h>
 #include <shogun/distributions/LinearHMM.h>
+#include <shogun/distributions/PositionalPWM.h>
 %}
 
 /* Typemaps */
@@ -53,6 +54,7 @@
 %rename(HMM) CHMM;
 %rename(GHMM) CGHMM;
 %rename(LinearHMM) CLinearHMM;
+%rename(PositionalPWM) CPositionalPWM;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>
@@ -60,3 +62,4 @@
 %include <shogun/distributions/HMM.h>
 %include <shogun/distributions/GHMM.h>
 %include <shogun/distributions/LinearHMM.h>
+%include <shogun/distributions/PositionalPWM.h>
