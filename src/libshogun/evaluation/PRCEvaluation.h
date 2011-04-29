@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-/* @brief The class PRCEvalution
+/** @brief The class PRCEvalution
  * used to evaluate PRC (Precision Recall Curve)
  * graph of binary classifier. This class also has an capability
  * of calculating auPRC (area under PRC).
