@@ -19,6 +19,8 @@
 namespace shogun
 {
 
+class CLabels;
+
 enum EContingencyTableMeasureType
 {
 	ACCURACY = 0,

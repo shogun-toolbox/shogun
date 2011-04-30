@@ -17,6 +17,8 @@
 namespace shogun
 {
 
+class CLabels;
+
 /** @brief The class TwoClassEvaluation
  * a base class used to evaluate 2-class classification
  *
