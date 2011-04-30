@@ -64,6 +64,7 @@
 %rename(SpecificityMeasure) CSpecificityMeasure;
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/features/Labels.h>
 %include <shogun/evaluation/Evaluation.h>
 %include <shogun/evaluation/BinaryClassEvaluation.h>
 %include <shogun/evaluation/ContingencyTableEvaluation.h>
