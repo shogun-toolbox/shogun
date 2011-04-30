@@ -101,14 +101,11 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	// add (1,1) to ROC curve
 	m_ROC_graph[diff_count] = 1.0;
 	m_ROC_graph[2*diff_count+1] = 1.0;
-	/*
-	// add last trapezoid to auROC and normalize auROC
-	m_auROC += (fp-fp_prev)*(tp_prev+tp)/2;
-	m_auROC /= float64_t(pos_count)*neg_count;
-	*/
-	// set ROC length and computed
+
+	// set ROC length
 	m_ROC_length = diff_count+1;
 
+	// calc auROC using area under curve
 	m_auROC = CMath::area_under_curve(m_ROC_graph,m_ROC_length,m_ROC_graph+m_ROC_length,m_ROC_length);
 
 	m_computed = true;
