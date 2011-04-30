@@ -27,10 +27,14 @@ CInputParser::CInputParser()
 CInputParser::~CInputParser()
 {
 	end_parser();
-	free(examples_buff);
-	free(is_example_used);
-	free(example_in_use_condition);
-	free(example_in_use_mutex);
+	if (example_type == E_LABELLED)
+		delete[] (LabelledExample*) examples_buff;
+	else
+		delete[] (UnlabelledExample*) examples_buff;
+	delete[] feature_vectors_buff;
+	delete[] is_example_used;
+	delete[] example_in_use_condition;
+	delete[] example_in_use_mutex;
 }
 
 void CInputParser::init(CStreamingFile* input_file, bool is_labelled = true)
@@ -192,39 +196,34 @@ void CInputParser::copy_example_into_buffer(void* example)
 
 	if (example_type == E_LABELLED)
 	{
-		current_example_loc = (LabelledExample *)
-			((char *)examples_buff + buffer_write_index*example_memsize);
-
-		((LabelledExample *) current_example_loc)->feature_vector = (float64_t *)
-			((char *) current_example_loc + sizeof(LabelledExample));
+		current_example_loc = ((char *)examples_buff + buffer_write_index*example_memsize);
 
 		((LabelledExample *) current_example_loc)->dimensions = ((LabelledExample *) example)->dimensions;
 
 		((LabelledExample *) current_example_loc)->label = ((LabelledExample *) example)->label;
 
-		for (int i=0; i<((LabelledExample *) current_example_loc)->dimensions; i++)
+		for (int i=0;i<((LabelledExample *) current_example_loc)->dimensions; i++)
 		{
-			((LabelledExample *) current_example_loc)->feature_vector[i] = ((LabelledExample *) example)->feature_vector[i];
+			feature_vectors_buff[buffer_write_index*number_of_features + i] = ((LabelledExample* ) example)->feature_vector[i];
 		}
 
+		((LabelledExample *) current_example_loc)->feature_vector = &feature_vectors_buff[buffer_write_index];
+		
 	}
 
 	else
 	{
-		current_example_loc = (UnlabelledExample *)
-			((char *)examples_buff + buffer_write_index*example_memsize);
-
-		((UnlabelledExample *) current_example_loc)->feature_vector = (float64_t *)
-			((char *) current_example_loc + sizeof(UnlabelledExample));
+		current_example_loc = ((char *)examples_buff + buffer_write_index*example_memsize);
 
 		((UnlabelledExample *) current_example_loc)->dimensions = ((UnlabelledExample *) example)->dimensions;
 
 		for (int i=0; i<((UnlabelledExample *) current_example_loc)->dimensions; i++)
 		{
-			((UnlabelledExample *) current_example_loc)->feature_vector[i] = ((UnlabelledExample *) example)->feature_vector[i];
+			feature_vectors_buff[buffer_write_index*number_of_features + i] = ((UnlabelledExample *) example)->feature_vector[i];
 		}
-
-
+		
+		((UnlabelledExample *) current_example_loc)->feature_vector = &feature_vectors_buff[buffer_write_index];
+		
 	}
 
 	is_example_used[buffer_write_index] = E_NOT_USED; // set the example to unused
@@ -252,25 +251,23 @@ void* CInputParser::main_parse_loop(void* params)
 			// Now allocate mem for buffer
 			if (example_type == E_LABELLED)
 			{
-				example_memsize = sizeof(LabelledExample) + sizeof(float64_t)*number_of_features;
-				current_example = (LabelledExample*) malloc(example_memsize);
-				examples_buff = (LabelledExample*) malloc(example_memsize*buffer_size);
-				current_feature_vector = (float64_t*) ((char *) current_example + sizeof(LabelledExample));
-
+				example_memsize = sizeof(LabelledExample);
+				current_example = new LabelledExample;
+				examples_buff = new LabelledExample[buffer_size];
+				feature_vectors_buff = new float64_t[buffer_size*number_of_features];
 			}
 
 			else
 			{
-				example_memsize = sizeof(UnlabelledExample) + sizeof(float64_t)*number_of_features;
-				current_example = (UnlabelledExample*) malloc(example_memsize);
-				examples_buff = (UnlabelledExample*) malloc(example_memsize*buffer_size);
-				current_feature_vector = (float64_t*) ((char *) current_example + sizeof(UnlabelledExample));
-
+				example_memsize = sizeof(UnlabelledExample);
+				current_example = new UnlabelledExample;
+				examples_buff = new UnlabelledExample[buffer_size];
+				feature_vectors_buff = new float64_t[buffer_size*number_of_features];
 			}
 
 			// make it point to the list of floats in current_example
-			current_feature_vector = (float64_t*) ((char *) current_example + example_memsize);
-
+			// current_feature_vector=feature_vectors_buff;
+			
 		}
 
 		if (example_type == E_LABELLED)

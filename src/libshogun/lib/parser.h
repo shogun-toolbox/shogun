@@ -253,7 +253,10 @@ namespace shogun
 								 * like a ring.
 								 * Examples are stored and retrieved
 								 * from this buffer.*/
-
+		
+		float64_t* feature_vectors_buff; /**< Buffer for feature vectors */
+		
+		
 		int32_t buffer_write_index; /**< Where next example will be
 									 * written into the buffer. */
 
