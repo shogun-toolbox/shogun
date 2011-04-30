@@ -1287,14 +1287,7 @@ class CMath : public CSGObject
 		static float64_t Align(
 			char * seq1, char* seq2, int32_t l1, int32_t l2, float64_t gapCost);
 
-		/** calculates ROC into (fp,tp)
-		 * from output and label of length size 
-		 * returns index with smallest error=fp+fn
-		*/
-		static int32_t calcroc(
-			float64_t* fp, float64_t* tp, float64_t* output, int32_t* label,
-			int32_t& size, int32_t& possize, int32_t& negsize,
-			float64_t& tresh, FILE* rocfile);
+
 		//@}
 
 		/// returns the mutual information of p which is given in logspace
