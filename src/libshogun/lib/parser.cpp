@@ -207,7 +207,7 @@ void CInputParser::copy_example_into_buffer(void* example)
 			feature_vectors_buff[buffer_write_index*number_of_features + i] = ((LabelledExample* ) example)->feature_vector[i];
 		}
 
-		((LabelledExample *) current_example_loc)->feature_vector = &feature_vectors_buff[buffer_write_index];
+		((LabelledExample *) current_example_loc)->feature_vector = &feature_vectors_buff[buffer_write_index*number_of_features];
 		
 	}
 
@@ -222,7 +222,7 @@ void CInputParser::copy_example_into_buffer(void* example)
 			feature_vectors_buff[buffer_write_index*number_of_features + i] = ((UnlabelledExample *) example)->feature_vector[i];
 		}
 		
-		((UnlabelledExample *) current_example_loc)->feature_vector = &feature_vectors_buff[buffer_write_index];
+		((UnlabelledExample *) current_example_loc)->feature_vector = &feature_vectors_buff[buffer_write_index*number_of_features];
 		
 	}
 
