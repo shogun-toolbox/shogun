@@ -17,6 +17,8 @@
 namespace shogun
 {
 
+class CLabels;
+
 /** @brief The class MulticlassAccuracy
  * used to compute accuracy of multiclass classification.
  *

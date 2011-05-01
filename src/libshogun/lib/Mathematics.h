@@ -364,6 +364,18 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
+		static float64_t area_under_curve(float64_t* x, int32_t x_len, float64_t* y, int32_t y_len)
+		{
+			ASSERT(x_len>0 && y_len>0 && x_len==y_len);
+
+			float64_t area = 0;
+
+			for (int i=1; i<x_len; i++)
+				area += 0.5*(x[i]-x[i-1])*(y[i]+y[i-1]);
+
+			return area;
+		}
+
 		template <class T>
 		static void transpose_matrix(
 			T*& matrix, int32_t& num_feat, int32_t& num_vec)
@@ -1273,14 +1285,7 @@ class CMath : public CSGObject
 		static float64_t Align(
 			char * seq1, char* seq2, int32_t l1, int32_t l2, float64_t gapCost);
 
-		/** calculates ROC into (fp,tp)
-		 * from output and label of length size 
-		 * returns index with smallest error=fp+fn
-		*/
-		static int32_t calcroc(
-			float64_t* fp, float64_t* tp, float64_t* output, int32_t* label,
-			int32_t& size, int32_t& possize, int32_t& negsize,
-			float64_t& tresh, FILE* rocfile);
+
 		//@}
 
 		/// returns the mutual information of p which is given in logspace

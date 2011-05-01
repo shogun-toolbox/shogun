@@ -28,12 +28,8 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	float64_t threshold = CMath::ALMOST_NEG_INFTY;
 	// false positive rate
 	float64_t fp = 0.0;
-	// false positive rate on previous step
-	float64_t fp_prev = 0.0;
 	// true positive rate
 	float64_t tp=0.0;
-	// true positive rate on previous step
-	float64_t tp_prev = 0.0;
 
 	int32_t i;
 	// total number of positive labels in predicted
@@ -94,10 +90,6 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 			m_ROC_graph[j] = fp/neg_count;
 			m_ROC_graph[j+diff_count+1] = tp/pos_count;
 			j++;
-
-			m_auROC += (fp-fp_prev)*(tp+tp_prev)/2;
-			fp_prev = fp;
-			tp_prev = tp;
 		}
 
 		if (ground_truth->get_label(idxs[i]) > 0)
@@ -110,12 +102,12 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	m_ROC_graph[diff_count] = 1.0;
 	m_ROC_graph[2*diff_count+1] = 1.0;
 
-	// add last trapezoid to auROC and normalize auROC
-	m_auROC += (fp-fp_prev)*(tp_prev+tp)/2;
-	m_auROC /= float64_t(pos_count)*neg_count;
-
-	// set ROC length and computed
+	// set ROC length
 	m_ROC_length = diff_count+1;
+
+	// calc auROC using area under curve
+	m_auROC = CMath::area_under_curve(m_ROC_graph,m_ROC_length,m_ROC_graph+m_ROC_length,m_ROC_length);
+
 	m_computed = true;
 
 	return m_auROC;

@@ -16,6 +16,8 @@
 namespace shogun
 {
 
+class CLabels;
+
 /** @brief The class ROCEvalution
  * used to evaluate ROC (Receiver Operator Characteristic)
  * graph of binary classifier. This class also has an capability

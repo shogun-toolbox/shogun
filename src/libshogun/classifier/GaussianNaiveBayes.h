@@ -16,6 +16,10 @@
 
 namespace shogun {
 
+class CLabels;
+class CDotFeatures;
+class CFeatures;
+
 /** @brief Class GaussianNaiveBayes, a Gaussian Naive Bayes classifier
  *
  *	Formally, chooses class c with maximum \f$ P(c)P(x|c) \f$
@@ -29,9 +33,9 @@ namespace shogun {
  *  memory.
  *
  */
-
 class CGaussianNaiveBayes : public CClassifier
 {
+
 public:
 	/** default constructor
 	 *
