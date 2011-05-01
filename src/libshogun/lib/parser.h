@@ -155,7 +155,7 @@ namespace shogun
 		void* main_parse_loop(void* params);
 
 		/**
-		 * Copy example into the buffer.
+		 * Copy labelled example into the buffer.
 		 *
 		 * Buffer space:
 		 * -Example n-
@@ -170,7 +170,15 @@ namespace shogun
 		 *
 		 * @param example Example to be copied.
 		 */
-		void copy_example_into_buffer(void* example);
+		void copy_labelled_example_into_buffer(LabelledExample* example);
+
+		/** 
+		 * Copy unlabelled example into the buffer.
+		 *
+		 * 
+		 * @param example Example to be copied.
+		 */
+		void copy_unlabelled_example_into_buffer(UnlabelledExample* example);
 
 		/**
 		 * Gets the next unused example from the buffer.
@@ -249,11 +257,15 @@ namespace shogun
 
 		pthread_t parse_thread;/**< Parse thread */
 
-		void* examples_buff;	/**< Buffer for examples, behaves
-								 * like a ring.
-								 * Examples are stored and retrieved
-								 * from this buffer.*/
+		LabelledExample* examples_buff_l;	/**< Buffer for examples, behaves
+											 * like a ring.
+											 * Examples are stored and retrieved
+											 * from this buffer.*/
 		
+		UnlabelledExample* examples_buff_u;	/**< Buffer for examples,
+											 * used if they are
+											 * unlabelled. */
+				
 		float64_t* feature_vectors_buff; /**< Buffer for feature vectors */
 		
 		
@@ -286,9 +298,10 @@ namespace shogun
 		int32_t current_number_of_features; /**< Features in last
 											 * read example */
 		
-		void* current_example;	/**< Points to current example in buffer */
-
-
+		LabelledExample* current_example_l;	/**< Points to current example in buffer */
+		
+		UnlabelledExample* current_example_u; /**< In case examples are unlabelled */
+		
 
 	};
 }
