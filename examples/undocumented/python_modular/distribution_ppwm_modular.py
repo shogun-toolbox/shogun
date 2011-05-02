@@ -17,15 +17,21 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 	feats.obtain_from_char(charfeat, order-1, order, 0, False)
 
 	ppwm=PositionalPWM()
-	ppwm.set_sigma(1.0)
+	ppwm.set_sigma(5.0)
+	ppwm.set_mean(10.0)
 	pwm=array([[0.0, 0.5, 0.1, 1.0],
                [0.0, 0.5, 0.5, 0.0],
                [1.0, 0.0, 0.4, 0.0],
                [0.0, 0.0, 0.0, 0.0]]);
-	ppwm.set_pwm(pwm)
+	ppwm.set_pwm(log(pwm))
 	print ppwm.get_pwm()
 	ppwm.compute_w(20)
-	print ppwm.get_w()
+	w= ppwm.get_w()
+	#print w
+	#from pylab import *
+	#pcolor(exp(w))
+	#show()
+
 	#ppwm=PositionalPWM(feats)
 	#ppwm.train()
 

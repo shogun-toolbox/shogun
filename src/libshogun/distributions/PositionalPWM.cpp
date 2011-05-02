@@ -92,11 +92,11 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 	for (int32_t i=0; i<m_w_rows; i++)
 	{
 		for (int32_t j=0; j<m_w_cols; j++)
-			m_w[j*m_pwm_rows+i]=get_log_likelihood_window(window, m_pwm_cols, j);
+			m_w[j*m_w_rows+i]=get_log_likelihood_window(window, m_pwm_cols, j);
 
 		window[last_idx]++;
 		int32_t window_ptr=last_idx;
-		while (window[window_ptr]==m_pwm_rows)
+		while (window[window_ptr]==m_pwm_rows && window_ptr>0)
 		{
 			window[window_ptr]=0;
 			window_ptr--;
@@ -105,6 +105,15 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 
 	}
 
+/*	CMath::fill_vector(m_w, m_w_rows*m_w_cols, 0.0);
+	for (int32_t j=0; j<4; j++)
+	{
+		for (int32_t i=10; i<15; i++)
+		{
+			m_w[i*m_w_rows+j]=10;
+		}
+	}
+*/
 }
 
 void CPositionalPWM::register_params()
