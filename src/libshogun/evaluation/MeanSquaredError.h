@@ -17,6 +17,8 @@
 namespace shogun
 {
 
+class CLabels;
+
 /** @brief the class MeanSquaredError
  * used to compute error of regression model.
  *

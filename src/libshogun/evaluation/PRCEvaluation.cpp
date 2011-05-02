@@ -72,16 +72,8 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 		m_PRC_graph[length+i] = tp/pos_count;
 	}
 
-	// half width and height of trapezoid
-	float64_t half_width, height;
-
-	// calc auRPC using trapezoid
-	for (i=1; i<length; i++)
-	{
-		half_width = 0.5*(m_PRC_graph[i]+m_PRC_graph[i-1]);
-		height = (m_PRC_graph[length+i]-m_PRC_graph[length+i-1]);
-		m_auPRC += half_width*height;
-	}
+	// calc auRPC using area under curve
+	m_auPRC = CMath::area_under_curve(m_PRC_graph+length,length,m_PRC_graph,length);
 
 	// set PRC length and computed indicator
 	m_PRC_length = length;

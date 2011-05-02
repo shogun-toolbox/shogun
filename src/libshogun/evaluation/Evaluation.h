@@ -17,6 +17,8 @@
 namespace shogun
 {
 
+class CLabels;
+
 /** @brief The class Evaluation
  * a main class for other classes
  * used to evaluate labels, e.g. accuracy of classification or
