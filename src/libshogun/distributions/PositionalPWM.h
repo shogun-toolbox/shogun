@@ -103,6 +103,21 @@ class CPositionalPWM : public CDistribution
 			m_mean=mean;
 		}
 
+		/** set pwm
+		 *
+		 * @param pwm new pwm (values should *NOT* be in logspace)
+		 * @param pwm_rows has to match current pwm rows
+		 * @param pwm_cols has to be equal to pwm_rows
+		 */
+		virtual inline void set_pwm(float64_t* pwm, int32_t pwm_rows, int32_t pwm_cols)
+		{
+			m_pwm_rows=pwm_rows;
+			m_pwm_cols=pwm_cols;
+			delete[] m_pwm;
+            m_pwm=new float64_t[m_pwm_rows*m_pwm_cols];
+			memcpy(m_pwm, pwm, sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
+		}
+
 		/** get pwm
 		 *
 		 * @param pwm copy of the pwm
@@ -131,20 +146,7 @@ class CPositionalPWM : public CDistribution
 			*w_cols = m_w_cols;
 		}
 
-		/** set pwm
-		 *
-		 * @param pwm new pwm (values should be in logspace)
-		 * @param pwm_rows has to match current pwm rows
-		 * @param pwm_cols has to be equal to pwm_rows
-		 */
-		virtual inline void set_pwm(float64_t* pwm, int32_t pwm_rows, int32_t pwm_cols)
-		{
-			m_pwm_rows=pwm_rows;
-			m_pwm_cols=pwm_cols;
-			delete[] m_pwm;
-            m_pwm=new float64_t[m_pwm_rows*m_pwm_cols];
-			memcpy(m_pwm, pwm, sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
-		}
+		void compute_scoring(float64_t** poim, int32_t* poim_len, int32_t max_degree);
 
 		void compute_w(int32_t num_pos);
 

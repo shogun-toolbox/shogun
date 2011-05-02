@@ -22,8 +22,8 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
                [0.0, 0.5, 0.5, 0.0],
                [1.0, 0.0, 0.4, 0.0],
                [0.0, 0.0, 0.0, 0.0]]);
-	ppwm.set_pwm(log(pwm))
-	print exp(ppwm.get_pwm())
+	ppwm.set_pwm(pwm)
+	print ppwm.get_pwm()
 	ppwm.compute_w(20)
 	print ppwm.get_w()
 	#ppwm=PositionalPWM(feats)

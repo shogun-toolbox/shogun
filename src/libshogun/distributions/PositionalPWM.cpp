@@ -69,7 +69,7 @@ float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len
 {
 	ASSERT(m_pwm_cols == len);
 	float64_t score = CMath::log(1/(m_sigma*CMath::sqrt(2*M_PI))) -
-			CMath::sq(pos-m_mean)/2*CMath::sq(m_sigma);
+			CMath::sq(pos-m_mean)/(2*CMath::sq(m_sigma));
 
 	for (int32_t i=0; i<m_pwm_cols; i++)
 		score+=m_pwm[m_pwm_rows*i+window[i]];
@@ -88,17 +88,18 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 	uint8_t* window=new uint8_t[m_pwm_cols];
 	CMath::fill_vector(window, m_pwm_cols, (uint8_t) 0);
 
-	int32_t window_ptr=m_pwm_cols-1;
+	const int32_t last_idx=m_pwm_cols-1;
 	for (int32_t i=0; i<m_w_rows; i++)
 	{
-		for (int32_t j=0; j<m_pwm_cols; j++)
+		for (int32_t j=0; j<m_w_cols; j++)
 			m_w[j*m_pwm_rows+i]=get_log_likelihood_window(window, m_pwm_cols, j);
 
-		window[window_ptr]++;
-		if (window[window_ptr]==m_pwm_rows)
+		window[last_idx]++;
+		int32_t window_ptr=last_idx;
+		while (window[window_ptr]==m_pwm_rows)
 		{
-			CMath::fill_vector(&window[window_ptr], m_pwm_cols-window_ptr, (uint8_t) 0);
-			window_ptr++;
+			window[window_ptr]=0;
+			window_ptr--;
 			window[window_ptr]++;
 		}
 
@@ -112,4 +113,29 @@ void CPositionalPWM::register_params()
 	m_parameters->add_matrix(&m_pwm, &m_pwm_rows, &m_pwm_cols, "pwm", "Positional Weight Matrix.");
 	m_parameters->add(&m_sigma, "sigma", "Standard Deviation.");
 	m_parameters->add(&m_mean, "mean", "Mean.");
+}
+
+void CPositionalPWM::compute_scoring(float64_t** poim, int32_t* poim_len, int32_t max_degree)
+{
+	/*
+	int32_t num_wors=4; // assume DNA
+	int32_t len=num_feat*num_sym;
+	float64_t* p=new float64_t[len];
+
+	int32_t num_sym=0;
+	
+	for (int32_t i=0; i<order; i++)
+		num_sym+=CMath::pow((int32_t) num_words,i+1);
+
+	if (!m_w)
+		compute_w();
+
+	for (int32_t i=0; i<num_sym; i++)
+	{
+	}
+
+
+	*p=p;
+	*poim_len=len;
+	*/
 }
