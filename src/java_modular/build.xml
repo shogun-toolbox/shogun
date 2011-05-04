@@ -5,9 +5,8 @@
   <!-- set global properties for this build -->
   <property name="src" location="."/>
   <property name="dist"  location="dist"/>
-  <property name="test"  location="../../examples/undocumented/java_modular"/>
-  <property name="java.library.path"  location="../libshogun:."/>
-  <property name="classpath"  location="../../examples/undocumented/java_modular:./dist/shogun.jar"/>
+  <property name="test"  location="shogun/examples"/>
+  <property name="classpath"  location="dist/shogun.jar:."/>
 
   <target name="compile"
         description="compile the source " >
@@ -33,7 +32,7 @@
   
   <target name="run" depends="test"
         description="run the examples" >
-    <java classpath="${classpath}" classname="${test}/vector_test"/>
+    <java classpath="${classpath}" classname="shogun.examples.VectorTest"/>
   </target>
   
   <target name="clean"

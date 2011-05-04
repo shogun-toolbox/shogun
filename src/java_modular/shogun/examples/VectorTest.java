@@ -1,3 +1,6 @@
+package shogun.examples;
+import shogun.*;
+
 public class VectorTest {
 	static {
 		System.loadLibrary("Features");
