@@ -10,6 +10,7 @@
 
 #include "base/Parameter.h"
 #include "base/class_list.h"
+#include "base/SGObject.h"
 
 using namespace shogun;
 
@@ -1754,4 +1755,104 @@ Parameter::load(CSerializableFile* file, const char* prefix)
 			return false;
 
 	return true;
+}
+
+void Parameter::set_from_parameters(Parameter* params)
+{
+	/* iterate over parameters in the given list */
+	for (index_t i=0; i<params->get_num_parameters(); ++i)
+	{
+		TParameter* current=params->get_parameter(i);
+		TSGDataType current_type=current->m_datatype;
+
+		/* search for own parameter with same name and check types if found */
+		TParameter* own=NULL;
+		for (index_t j=0; j<m_params.get_num_elements(); ++j)
+		{
+			own=m_params.get_element(j);
+			if (!strcmp(own->m_name, current->m_name))
+			{
+				if (own->m_datatype==current_type)
+				{
+					own=m_params.get_element(j);
+					break;
+				}
+				else
+				{
+					SG_SERROR("given parameter name %s has a different type"
+							" than existing one\n", current->m_name);
+				}
+			}
+		}
+
+		if (!own)
+			SG_SERROR("parameter with name %s does not exist\n",
+					current->m_name);
+
+		/* check if parameter contained CSGobjects (update reference counts) */
+		if (own->m_datatype.m_ptype==PT_SGOBJECT)
+		{
+			/* PT_SGOBJECT only occurs for ST_NONE */
+			if (own->m_datatype.m_stype==ST_NONE)
+			{
+				if (own->m_datatype.m_ctype==CT_SCALAR)
+				{
+					CSGObject** toUnref=(CSGObject**) own->m_parameter;
+					CSGObject** toRef=(CSGObject**) current->m_parameter;
+
+					SG_UNREF((*toUnref));
+					SG_REF((*toRef));
+				}
+				else
+				{
+					/* unref all SGObjects and reference the new ones */
+					CSGObject*** toUnref=(CSGObject***) own->m_parameter;
+					CSGObject*** toRef=(CSGObject***) current->m_parameter;
+
+					for (index_t j=0; j<own->m_datatype.get_num_elements(); ++j)
+					{
+						SG_UNREF(((*toUnref)[j]));
+						SG_REF(((*toRef)[j]));
+					}
+				}
+			}
+			else
+				SG_SERROR("primitive type PT_SGOBJECT occurred with structure "
+						"type other than ST_NONE");
+		}
+
+		/* construct pointers to the to be copied parameter data */
+		void* dest;
+		void* source;
+		if (own->m_datatype.m_ctype==CT_SCALAR)
+		{
+			/* for scalar values, just copy content the pointer points to */
+			dest=own->m_parameter;
+			source=current->m_parameter;
+		}
+		else
+		{
+			/* for matrices and vectors, sadly m_parameter has to be
+			 * de-referenced once, because a pointer to the array address is
+			 * saved, but the array address itself has to be copied.
+			 * consequently, for dereferencing, a type distinction is needed */
+			switch (own->m_datatype.m_ptype)
+			{
+			case PT_FLOAT64:
+				dest=*((float64_t**) own->m_parameter);
+				source=*((float64_t**) current->m_parameter);
+				break;
+			case PT_SGOBJECT:
+				dest=*((CSGObject**) own->m_parameter);
+				source=*((CSGObject**) current->m_parameter);
+				break;
+			default:
+				SG_SNOTIMPLEMENTED;
+				break;
+			}
+		}
+
+		/* copy parameter data, size in memory is equal because of same type */
+		memcpy(dest, source, own->m_datatype.get_size());
+	}
 }

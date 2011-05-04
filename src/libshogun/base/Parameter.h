@@ -70,6 +70,14 @@ public:
 
 	inline TParameter* get_parameter(int32_t idx) { return m_params.get_element(idx); }
 
+	/** Takes another Parameter instance and sets all parameters of this
+	 * instance (with equal name) to the values of the provided one.
+	 * Currently only works for float64_t and CSGObject types.
+	 *
+	 * @param params another Parameter instance
+	 */
+	void set_from_parameters(Parameter* params);
+
 	/* ************************************************************ */
 	/* Scalar wrappers  */
 
