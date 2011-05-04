@@ -70,6 +70,8 @@ public:
 
 	/** Takes another Parameter instance and sets all parameters of this
 	 * instance (with equal name) to the values of the provided one.
+	 * (Note that if CSGObjects are replaced, the old ones are SG_UNREFed
+	 * and the new ones are SG_REFed)
 	 * Currently only works for any float64_t and CSGObject type.
 	 *
 	 * @param params another Parameter instance
