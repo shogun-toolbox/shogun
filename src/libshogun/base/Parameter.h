@@ -63,11 +63,19 @@ public:
 	virtual bool save(CSerializableFile* file, const char* prefix="");
 	virtual bool load(CSerializableFile* file, const char* prefix="");
 
+	/**
+	 * @return number of contained parameters
+	 */
 	inline virtual int32_t get_num_parameters(void)
 	{
 		return m_params.get_num_elements();
 	}
 
+	/** Getter for TParameter elements (Does not to bound checking)
+	 *
+	 * @param idx desired index
+	 * @return pointer to the TParameter with the specified index
+	 */
 	inline TParameter* get_parameter(int32_t idx) { return m_params.get_element(idx); }
 
 	/** Takes another Parameter instance and sets all parameters of this
