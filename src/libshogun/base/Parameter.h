@@ -68,6 +68,14 @@ public:
 		return m_params.get_num_elements();
 	}
 
+	/** Takes another Parameter instance and sets all parameters of this
+	 * instance (with equal name) to the values of the provided one.
+	 * Currently only works for any float64_t and CSGObject type.
+	 *
+	 * @param params another Parameter instance
+	 */
+	void set_from_parameters(Parameter* params);
+
 	/* ************************************************************ */
 	/* Scalar wrappers  */
 
@@ -375,6 +383,16 @@ protected:
 	virtual void add_type(const TSGDataType* type, void* param,
 						  const char* name,
 						  const char* description);
+
+	/** Getter for TParameter elements (Does not to bound checking)
+	 *
+	 * @param idx desired index
+	 * @return pointer to the TParameter with the specified index
+	 */
+	inline TParameter* get_parameter(int32_t idx)
+	{
+		return m_params.get_element(idx);
+	}
 
 };
 }
