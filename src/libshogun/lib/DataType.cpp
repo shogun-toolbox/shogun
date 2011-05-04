@@ -280,3 +280,53 @@ TSGDataType::string_to_ptype(EPrimitiveType* ptype, const char* str)
 
 	return false;
 }
+
+size_t TSGDataType::get_size()
+{
+	size_t size;
+
+	switch (m_stype)
+	{
+	case ST_NONE:
+		size=get_num_elements()*sizeof_ptype();
+		break;
+	case ST_STRING:
+		if (m_ptype==PT_SGOBJECT)
+			return -1;
+
+		size=get_num_elements()*sizeof_stype();
+		break;
+	case ST_SPARSE:
+		if (m_ptype==PT_SGOBJECT)
+			return -1;
+
+		size=get_num_elements()*sizeof_sparseentry(m_ptype);
+		break;
+	}
+
+	return size;
+}
+
+index_t TSGDataType::get_num_elements()
+{
+	index_t num_elements;
+
+	switch (m_ctype)
+	{
+	case CT_SCALAR:
+		num_elements=1;
+		break;
+	case CT_VECTOR:
+		/* length_y contains the length for vectors */
+		num_elements=*m_length_y;
+		break;
+	case CT_MATRIX:
+		num_elements=(*m_length_y)*(*m_length_x);
+		break;
+	case CT_NDARRAY:
+		SG_SNOTIMPLEMENTED;
+		break;
+	}
+
+	return num_elements;
+}
