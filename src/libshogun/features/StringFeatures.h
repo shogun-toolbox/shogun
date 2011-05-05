@@ -2136,15 +2136,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			return target;
 		}
 
-		/** returns the corresponding real index (in array) of a subset index
-		 * (if there is a subset)
-		 *
-		 * overwritten from base class
-		 *
-		 * @ return array index of a subset index
-		 */
-		virtual inline int32_t subset_idx_conversion(int32_t idx) { return m_subset_idx ? m_subset_idx[idx] : idx; }
-
 	private:
 		void init()
 		{
