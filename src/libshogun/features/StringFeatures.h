@@ -296,7 +296,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			if (features)
 			{
-				int32_t real_num = subset_idx_conversion(num);
+				index_t real_num = subset_idx_conversion(num);
 				delete[] features[real_num].string;
 				features[real_num].string=NULL;
 				features[real_num].length=0;
@@ -420,7 +420,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(num<num_vectors);
 
 
-			int32_t real_num = subset_idx_conversion(num);
+			index_t real_num = subset_idx_conversion(num);
 
 			if (!preprocess_on_get)
 			{
@@ -527,7 +527,7 @@ template <class ST> class CStringFeatures : public CFeatures
 						"num_str_total=%d\n", num, num_vectors, num_vectors_total); 
 			}
 
-			int32_t real_num = subset_idx_conversion(num);
+			index_t real_num = subset_idx_conversion(num);
 
 			if (feature_cache)
 				feature_cache->unlock_entry(real_num);
@@ -1923,7 +1923,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(features);
 			ASSERT(num<num_vectors);
 
-			int32_t real_num = subset_idx_conversion(num);
+			index_t real_num = subset_idx_conversion(num);
 
 
 			features[real_num].length=len ;
@@ -2125,7 +2125,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			ASSERT(features && num<num_vectors);
 
-			int32_t real_num = subset_idx_conversion(num);
+			index_t real_num = subset_idx_conversion(num);
 
 			len=features[real_num].length;
 			if (len<=0)
