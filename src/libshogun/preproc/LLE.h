@@ -21,36 +21,36 @@ namespace shogun
 class CFeatures;
 
 /** @brief the class LLE
- *
+ *	That thing isn't working yet, huh
  */
 class CLLE: public CSimplePreProc<float64_t>
 {
 public:
 
 	/* constructor */
-	CLLE(): CSimplePreProc<float64_t> () {};
+	CLLE();
 
 	/* destructor */
-	virtual ~CLLE() {};
+	virtual ~CLLE();
 
 	/** init
 	 * @param data feature vectors for preproc
 	 */
-	virtual bool init(CFeatures* data)
-	{
-		return false;
-	};
+	virtual bool init(CFeatures* data);
 
 	/** cleanup
 	 *
 	 */
-	virtual void cleanup()
-	{
+	virtual void cleanup();
 
-	};
-
+	/** apply preproc to feature matrix
+	 *
+	 */
 	virtual float64_t* apply_to_feature_matrix(CFeatures* f);
 
+	/** apply preproc to feature vector
+	 *
+	 */
 	virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
 
 	/** get name */
@@ -59,6 +59,10 @@ public:
 	/** get type */
 	virtual inline EPreProcType get_type() const { return P_UNKNOWN; };
 
+protected:
+
+	/* number of neighbors */
+	int32_t k;
 };
 
 }
