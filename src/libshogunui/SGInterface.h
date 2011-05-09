@@ -255,8 +255,6 @@ class CSGInterface : public CSGObject
 		bool cmd_compute_absolute_mkl_duality_gap();
 		/** train classifier/SVM */
 		bool cmd_train_classifier();
-		/** test SVM */
-		bool cmd_test_svm();
 		/** do AUC maximization */
 		bool cmd_do_auc_maximization();
 		/** set perceptron parameters */
@@ -315,16 +313,12 @@ class CSGInterface : public CSGObject
 		bool cmd_save_hmm();
 		/** HMM classify */
 		bool cmd_hmm_classify();
-		/** HMM test */
-		bool cmd_hmm_test();
 		/** HMM classify for a single example */
 		bool cmd_hmm_classify_example();
 		/** LinearHMM classify for 1-class examples */
 		bool cmd_one_class_linear_hmm_classify();
 		/** HMM classify for 1-class examples */
 		bool cmd_one_class_hmm_classify();
-		/** One Class HMM test */
-		bool cmd_one_class_hmm_test();
 		/** HMM classify for a single 1-class example */
 		bool cmd_one_class_hmm_classify_example();
 		/** output HMM */
@@ -385,8 +379,6 @@ class CSGInterface : public CSGObject
 		bool cmd_new_plugin_estimator();
 		/** train plugin estimator */
 		bool cmd_train_estimator();
-		/** test plugin estimator */
-		bool cmd_test_estimator();
 		/** plugin estimate classify one example */
 		bool cmd_plugin_estimate_classify_example();
 		/** plugin estimate classify */

@@ -68,65 +68,6 @@ bool CGUIPluginEstimate::train()
 	return result;
 }
 
-bool CGUIPluginEstimate::test(char* filename_out, char* filename_roc)
-{
-	FILE* file_out=stdout;
-	FILE* file_roc=NULL;
-
-	if (!estimator)
-		SG_ERROR("No estimator available.\n");
-
-	if (!estimator->check_models())
-		SG_ERROR("No models assigned.\n");
-
-	CLabels* testlabels=ui->ui_labels->get_test_labels();
-	if (!testlabels)
-		SG_ERROR("No test labels available.\n");
-
-	CFeatures* testfeatures=ui->ui_features->get_test_features();
-	if (!testfeatures || testfeatures->get_feature_class()!=C_SIMPLE ||
-		testfeatures->get_feature_type()!=F_WORD)
-		SG_ERROR("No test features of type WORD available.\n");
-
-	if (filename_out)
-	{
-		file_out=fopen(filename_out, "w");
-
-		if (!file_out)
-			SG_ERROR("Could not open file %s.\n", filename_out);
-
-		if (filename_roc)
-		{
-			file_roc=fopen(filename_roc, "w");
-			if (!file_roc)
-				SG_ERROR("Could not open ROC file %s\n", filename_roc);
-		}
-	}
-
-	SG_INFO("Starting estimator testing.\n");
-	estimator->set_features((CStringFeatures<uint16_t>*) testfeatures);
-	int32_t len=0;
-	float64_t* output=estimator->classify()->get_labels(len);
-
-	int32_t total=testfeatures->get_num_vectors();
-	int32_t* label=testlabels->get_int_labels(len);
-
-	SG_DEBUG("out !!! %ld %ld.\n", total, len);
-	ASSERT(label);
-	ASSERT(len==total);
-
-	ui->ui_math->evaluate_results(output, label, total, file_out, file_roc);
-
-	if (file_roc)
-		fclose(file_roc);
-	if (file_out && file_out!=stdout)
-		fclose(file_out);
-
-	delete[] output;
-	delete[] label;
-	return true;
-}
-
 bool CGUIPluginEstimate::load(char* param)
 {
   bool result=false;

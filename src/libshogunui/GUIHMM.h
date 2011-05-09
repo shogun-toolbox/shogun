@@ -46,14 +46,6 @@ class CGUIHMM : public CSGObject
 		bool viterbi_train();
 		bool linear_train(char align='l');
 		bool linear_train_from_file(char* param);
-		/** test HMM ONE_CLASS */
-		bool one_class_test(
-				char* filename_out, char* filename_roc, bool is_linear);
-		/** test HMM */
-		bool hmm_test(
-				char* filename_out, char* filename_roc,
-				bool is_pos_linear, bool is_neg_linear);
-		bool hmm_classify(char* param);
 		/** append HMM/model for CmdlineInterface */
 		bool append_model(char* filename, int32_t base1=-1, int32_t base2=-1);
 		/** add states to HMM */

@@ -30,8 +30,6 @@ class CGUIClassifier : public CSGObject
 		bool new_classifier(char* name, int32_t d=6, int32_t from_d=40);
 		/** set maximum train time */
 		bool set_max_train_time(float64_t max);
-		/** test classifier */
-		bool test(char* filename_out=NULL, char* filename_roc=NULL);
 		/** load classifier from file */
 		bool load(char* filename, char* type);
 		bool save(char* param);

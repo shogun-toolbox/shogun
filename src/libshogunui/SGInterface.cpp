@@ -492,11 +492,6 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_I(N_SVM_TRAIN, "[classifier-specific parameters]")
 	},
 	{
-		N_SVM_TEST,
-		(&CSGInterface::cmd_test_svm),
-		USAGE(N_SVM_TEST)
-	},
-	{
 		N_SVMQPSIZE,
 		(&CSGInterface::cmd_set_svm_qpsize),
 		USAGE_I(N_SVMQPSIZE, "size")
@@ -668,19 +663,9 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE_O(N_HMM_CLASSIFY, "result")
 	},
 	{
-		N_HMM_TEST,
-		(&CSGInterface::cmd_hmm_test),
-		USAGE_I(N_HMM_TEST, "output name[" USAGE_COMMA "ROC filename[" USAGE_COMMA "neglinear[" USAGE_COMMA "poslinear]]]")
-	},
-	{
 		N_ONE_CLASS_LINEAR_HMM_CLASSIFY,
 		(&CSGInterface::cmd_one_class_linear_hmm_classify),
 		USAGE_O(N_ONE_CLASS_LINEAR_HMM_CLASSIFY, "result")
-	},
-	{
-		N_ONE_CLASS_HMM_TEST,
-		(&CSGInterface::cmd_one_class_hmm_test),
-		USAGE_I(N_ONE_CLASS_HMM_TEST, "output name[" USAGE_COMMA "ROC filename[" USAGE_COMMA "linear]]")
 	},
 	{
 		N_ONE_CLASS_HMM_CLASSIFY,
@@ -811,11 +796,6 @@ CSGInterfaceMethod sg_methods[]=
 		N_TRAIN_ESTIMATOR,
 		(&CSGInterface::cmd_train_estimator),
 		USAGE(N_TRAIN_ESTIMATOR)
-	},
-	{
-		N_TEST_ESTIMATOR,
-		(&CSGInterface::cmd_test_estimator),
-		USAGE(N_TEST_ESTIMATOR)
 	},
 	{
 		N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE,
@@ -5022,22 +5002,6 @@ bool CSGInterface::cmd_train_classifier()
 	return false;
 }
 
-bool CSGInterface::cmd_test_svm()
-{
-	if (m_nrhs<1 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* filename_out=get_str_from_str_or_direct(len);
-	char* filename_roc=get_str_from_str_or_direct(len);
-
-	bool success=ui_classifier->test(filename_out, filename_roc);
-
-	delete[] filename_out;
-	delete[] filename_roc;
-	return success;
-}
-
 bool CSGInterface::cmd_do_auc_maximization()
 {
 	if (m_nrhs!=2 || !create_return_values(0))
@@ -5343,22 +5307,6 @@ bool CSGInterface::cmd_train_estimator()
 	return ui_pluginestimate->train();
 }
 
-bool CSGInterface::cmd_test_estimator()
-{
-	if (m_nrhs<1 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* filename_out=get_str_from_str_or_direct(len);
-	char* filename_roc=get_str_from_str_or_direct(len);
-
-	bool success=ui_pluginestimate->test(filename_out, filename_roc);
-
-	delete[] filename_out;
-	delete[] filename_roc;
-	return success;
-}
-
 bool CSGInterface::cmd_plugin_estimate_classify_example()
 {
 	if (m_nrhs!=2 || !create_return_values(1))
@@ -5538,43 +5486,6 @@ bool CSGInterface::cmd_entropy()
 bool CSGInterface::cmd_hmm_classify()
 {
 	return do_hmm_classify(false, false);
-}
-
-bool CSGInterface::cmd_hmm_test()
-{
-	if (m_nrhs<1 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* filename_out=get_str_from_str_or_direct(len);
-	char* filename_roc=get_str_from_str_or_direct(len);
-	bool pos_is_linear=get_bool_from_bool_or_str();
-	bool neg_is_linear=get_bool_from_bool_or_str();
-
-	bool success=ui_hmm->hmm_test(
-		filename_out, filename_roc, pos_is_linear, neg_is_linear);
-
-	delete[] filename_out;
-	delete[] filename_roc;
-	return success;
-}
-
-bool CSGInterface::cmd_one_class_hmm_test()
-{
-	if (m_nrhs<1 || !create_return_values(0))
-		return false;
-
-	int32_t len=0;
-	char* filename_out=get_str_from_str_or_direct(len);
-	char* filename_roc=get_str_from_str_or_direct(len);
-	bool is_linear=get_bool_from_bool_or_str();
-
-	bool success=ui_hmm->one_class_test(
-		filename_out, filename_roc, is_linear);
-
-	delete[] filename_out;
-	delete[] filename_roc;
-	return success;
 }
 
 bool CSGInterface::cmd_one_class_hmm_classify()

@@ -34,7 +34,6 @@ class CGUIPluginEstimate : public CSGObject
 		bool train();
 		bool marginalized_train(char* param);
 		/** test estimator */
-		bool test(char* filename_out, char* filename_roc);
 		bool load(char* param);
 		bool save(char* param);
 
