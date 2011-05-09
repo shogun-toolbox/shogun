@@ -284,7 +284,7 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 	return result;
 }
 
-void CFeatures::set_feature_subset(index_t subset_len, index_t* subset_idx)
+void CFeatures::set_feature_subset(int32_t subset_len, int32_t* subset_idx)
 {
 	if (m_subset_idx)
 		delete[] m_subset_idx;
@@ -293,14 +293,14 @@ void CFeatures::set_feature_subset(index_t subset_len, index_t* subset_idx)
 	m_subset_len=subset_len;
 }
 
-void CFeatures::set_feature_subset(index_t* subset_idx, index_t subset_len)
+void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
 {
 	ASSERT(subset_idx);
 
 	delete[] m_subset_idx;
 	m_subset_idx = NULL;
 
-	size_t length=sizeof(index_t)*subset_len;
+	int64_t length=sizeof(int32_t)*subset_len;
 
 	m_subset_idx=(int32_t*) SG_MALLOC(length);
 	if (!m_subset_idx)
@@ -319,10 +319,10 @@ void CFeatures::remove_feature_subset()
 	}
 }
 
-void CFeatures::get_feature_subset(index_t** subset_idx, index_t* subset_len)
+void CFeatures::get_feature_subset(int32_t** subset_idx, int32_t* subset_len)
 {
 	ASSERT(m_subset_idx);
-	size_t length = sizeof(index_t)*m_subset_len;
+	int64_t length = sizeof(int32_t)*m_subset_len;
 
 	*subset_len=m_subset_len;
 	*subset_idx=(int32_t*) SG_MALLOC(length);

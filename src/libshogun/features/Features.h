@@ -251,14 +251,14 @@ class CFeatures : public CSGObject
 		 * @param m_subset_idx (copy of) subset indices matrix (returned)
 		 * @param m_subset_len (copy of) number ofsubset indices (returned)
 		 */
-		void get_feature_subset(index_t** subset_idx, index_t* subset_len);
+		void get_feature_subset(int32_t** subset_idx, int32_t* subset_len);
 
 		/** getter for the subset indices
 		 *
 		 * @param m_subset_len reference to number of subset indices (returned)
 		 * @return subset indices array
 		 */
-		int32_t* get_feature_subset(index_t& subset_len)
+		int32_t* get_feature_subset(int32_t& subset_len)
 		{
 			subset_len=m_subset_len;
 			return m_subset_idx;
@@ -270,7 +270,7 @@ class CFeatures : public CSGObject
 		 * @param m_subset_idx index matrix
 		 * @param m_subset_len number of subset indices
 		 */
-		virtual void set_feature_subset(index_t subset_len, index_t* subset_idx);
+		virtual void set_feature_subset(int32_t subset_len, int32_t* subset_idx);
 
 		/** sets the subset indices matrix which is afterwards used for feature access
 		 * (a copy of the matrix is stored)
@@ -278,7 +278,7 @@ class CFeatures : public CSGObject
 		 * @param m_subset_idx index matrix
 		 * @param m_subset_len number of subset indices
 		 */
-		virtual void set_feature_subset(index_t* subset_idx, index_t subset_len);
+		virtual void set_feature_subset(int32_t* subset_idx, int32_t subset_len);
 
 	protected:
 		/** returns the corresponding real index (in array) of a subset index
@@ -286,7 +286,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @ return array index of the provided subset index
 		 */
-		inline index_t subset_idx_conversion(int32_t idx) { return m_subset_idx ? m_subset_idx[idx] : idx; }
+		inline int32_t subset_idx_conversion(int32_t idx) { return m_subset_idx ? m_subset_idx[idx] : idx; }
 
 	private:
 		/** feature properties */
@@ -309,10 +309,10 @@ class CFeatures : public CSGObject
 		 * features. If set, all vector access methods work on the specified subset.
 		 * If it is NULL, it is ignored.
 		 */
-		index_t* m_subset_idx;
+		int32_t* m_subset_idx;
 
 		/** length of the subset */
-		index_t m_subset_len;
+		int32_t m_subset_len;
 };
 }
 #endif
