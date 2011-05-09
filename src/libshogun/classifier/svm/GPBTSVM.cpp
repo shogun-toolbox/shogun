@@ -27,7 +27,7 @@ CGPBTSVM::CGPBTSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CGPBTSVM::~CGPBTSVM()
 {
-	free(model);
+	SG_FREE(model);
 }
 
 bool CGPBTSVM::train(CFeatures* data)

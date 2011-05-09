@@ -94,8 +94,8 @@ template <class T> class CBinaryStream : public CSGObject
 		/** close a file stream */
 		void close_stream()
 		{
-			free(rw);
-            free(m_fname);
+			SG_FREE(rw);
+            SG_FREE(m_fname);
 			if (fd)
 				fclose(fd);
 

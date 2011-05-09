@@ -972,7 +972,8 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 
 TParameter::~TParameter(void)
 {
-	free(m_description); free(m_name);
+	SG_FREE(m_description);
+	SG_FREE(m_name);
 }
 
 char*

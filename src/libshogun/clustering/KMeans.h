@@ -150,7 +150,7 @@ class CKMeans : public CDistanceMachine
 		inline void get_radiuses(float64_t** radii, int32_t* num)
 		{
 			size_t sz=sizeof(*R)*k;
-			*radii=(float64_t*) malloc(sz);
+			*radii=(float64_t*) SG_MALLOC(sz);
 			ASSERT(*radii);
 
 			memcpy(*radii, R, sz);
@@ -167,7 +167,7 @@ class CKMeans : public CDistanceMachine
 			float64_t** centers, int32_t* dim, int32_t* num)
 		{
 			size_t sz=sizeof(*mus)*dimensions*k;
-			*centers=(float64_t*) malloc(sz);
+			*centers=(float64_t*) SG_MALLOC(sz);
 			ASSERT(*centers);
 
 			memcpy(*centers, mus, sz);

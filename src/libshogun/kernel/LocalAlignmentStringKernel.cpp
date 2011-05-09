@@ -127,9 +127,9 @@ void CLocalAlignmentStringKernel::cleanup()
 	delete[] scaled_blosum;
 	scaled_blosum=NULL;
 
-	free(isAA);
+	SG_FREE(isAA);
 	isAA=NULL;
-	free(aaIndex);
+	SG_FREE(aaIndex);
 	aaIndex=NULL;
 
 	CKernel::cleanup();
@@ -394,8 +394,8 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
   float64_t result=LAkernelcompute(aax,aay,lx,ly);
 
   /* Release memory */
-  free(aax);
-  free(aay);
+  SG_FREE(aax);
+  SG_FREE(aay);
 
   ((CStringFeatures<char>*) lhs)->free_feature_vector(x, idx_x, free_x);
   ((CStringFeatures<char>*) rhs)->free_feature_vector(y, idx_y, free_y);

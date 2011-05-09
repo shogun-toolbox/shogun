@@ -118,7 +118,7 @@ public:
 		if (idx>=0)
 		{
 			T_ATTRIBUTE a= features[idx];
-			free(a.attr_name);
+			SG_FREE(a.attr_name);
 			SG_UNREF(a.attr_obj);
 			return true;
 		}

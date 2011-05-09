@@ -27,10 +27,10 @@ CInputParser::CInputParser()
 CInputParser::~CInputParser()
 {
 	end_parser();
-	free(examples_buff);
-	free(is_example_used);
-	free(example_in_use_condition);
-	free(example_in_use_mutex);
+	SG_FREE(examples_buff);
+	SG_FREE(is_example_used);
+	SG_FREE(example_in_use_condition);
+	SG_FREE(example_in_use_mutex);
 }
 
 void CInputParser::init(CStreamingFile* input_file, bool is_labelled = true)
@@ -253,8 +253,8 @@ void* CInputParser::main_parse_loop(void* params)
 			if (example_type == E_LABELLED)
 			{
 				example_memsize = sizeof(LabelledExample) + sizeof(float64_t)*number_of_features;
-				current_example = (LabelledExample*) malloc(example_memsize);
-				examples_buff = (LabelledExample*) malloc(example_memsize*buffer_size);
+				current_example = (LabelledExample*) SG_MALLOC(example_memsize);
+				examples_buff = (LabelledExample*) SG_MALLOC(example_memsize*buffer_size);
 				current_feature_vector = (float64_t*) ((char *) current_example + sizeof(LabelledExample));
 
 			}
@@ -262,8 +262,8 @@ void* CInputParser::main_parse_loop(void* params)
 			else
 			{
 				example_memsize = sizeof(UnlabelledExample) + sizeof(float64_t)*number_of_features;
-				current_example = (UnlabelledExample*) malloc(example_memsize);
-				examples_buff = (UnlabelledExample*) malloc(example_memsize*buffer_size);
+				current_example = (UnlabelledExample*) SG_MALLOC(example_memsize);
+				examples_buff = (UnlabelledExample*) SG_MALLOC(example_memsize*buffer_size);
 				current_feature_vector = (float64_t*) ((char *) current_example + sizeof(UnlabelledExample));
 
 			}

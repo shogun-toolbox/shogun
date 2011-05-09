@@ -91,10 +91,7 @@ void CPRCEvaluation::get_PRC(float64_t** result, int32_t* num, int32_t* dim)
 	*num = m_PRC_length;
 	*dim = 2;
 
-	*result = (float64_t*)malloc(sizeof(float64_t)*m_PRC_length*2);
-	if (!*result)
-		SG_ERROR("Allocating memory for PRC graph failed");
-
+	*result = (float64_t*) SG_MALLOC(sizeof(float64_t)*m_PRC_length*2);
 	memcpy(*result, m_PRC_graph, m_PRC_length*2*sizeof(float64_t));
 }
 

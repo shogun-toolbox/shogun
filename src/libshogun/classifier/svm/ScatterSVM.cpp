@@ -197,7 +197,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 		delete[] x_space;
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
-			free(model->SV[i]);
+			SG_FREE(model->SV[i]);
 			model->SV[i]=NULL;
 		}
 		svm_destroy_model(model);
@@ -326,7 +326,7 @@ bool CScatterSVM::train_testrule12()
 		delete[] x_space;
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
-			free(model->SV[i]);
+			SG_FREE(model->SV[i]);
 			model->SV[i]=NULL;
 		}
 		svm_destroy_model(model);

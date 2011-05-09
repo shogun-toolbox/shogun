@@ -162,7 +162,7 @@ void CHistogram::get_histogram(float64_t** dst, int32_t* num)
 {
 	*num=get_num_model_parameters();
 	size_t sz=sizeof(*hist)*(*num);
-	*dst=(float64_t*) malloc(sz);
+	*dst=(float64_t*) SG_MALLOC(sz);
 	ASSERT(dst);
 
 	memcpy(*dst, hist, sz);

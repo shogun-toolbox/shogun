@@ -60,29 +60,10 @@ using namespace shogun;
 
 namespace shogun
 {
-	static void * xmalloc (int32_t n)
-	{
-		void *p = malloc (n);
-		if (!p)
-			SG_SERROR ("Function malloc() has returned zero\n");
-		return p;
-	}
-
-	static void * xrealloc (void *ptr, int32_t n)
-	{
-		if (!ptr)
-			ptr = malloc (n);
-		else
-			ptr = realloc (ptr, n);
-		if (!ptr)
-			SG_SERROR ("Function realloc has returned zero\n");
-		return ptr;
-	}
-
 	static larank_kcache_t* larank_kcache_create (CKernel* kernelfunc)
 	{
 		larank_kcache_t *self;
-		self = (larank_kcache_t *) xmalloc (sizeof (larank_kcache_t));
+		self = (larank_kcache_t *) SG_MALLOC (sizeof (larank_kcache_t));
 		memset (self, 0, sizeof (larank_kcache_t));
 		self->l = 0;
 		self->maxrowlen = 0;
@@ -91,8 +72,8 @@ namespace shogun
 		self->nextbuddy = self;
 		self->cursize = sizeof (larank_kcache_t);
 		self->maxsize = 256 * 1024 * 1024;
-		self->qprev = (int32_t *) xmalloc (sizeof (int32_t));
-		self->qnext = (int32_t *) xmalloc (sizeof (int32_t));
+		self->qprev = (int32_t *) SG_MALLOC (sizeof (int32_t));
+		self->qnext = (int32_t *) SG_MALLOC (sizeof (int32_t));
 		self->rnext = self->qnext + 1;
 		self->rprev = self->qprev + 1;
 		self->rprev[-1] = -1;
@@ -109,7 +90,7 @@ namespace shogun
 			float32_t *odata = self->rdata[k];
 			if (nlen > 0)
 			{
-				ndata = (float32_t *) xmalloc (nlen * sizeof (float32_t));
+				ndata = (float32_t *) SG_MALLOC (nlen * sizeof (float32_t));
 				memcpy (ndata, odata, nlen * sizeof (float32_t));
 			}
 			else
@@ -119,7 +100,7 @@ namespace shogun
 				self->rprev[self->rnext[k]] = self->rprev[k];
 				self->rnext[k] = self->rprev[k] = k;
 			}
-			free (odata);
+			SG_FREE (odata);
 			self->rdata[k] = ndata;
 			self->rsize[k] = nlen;
 			self->cursize += (int64_t) (nlen - olen) * sizeof (float32_t);
@@ -159,25 +140,25 @@ namespace shogun
 			nb->prevbuddy = pb;
 			/* delete */
 			if (self->i2r)
-				free (self->i2r);
+				SG_FREE (self->i2r);
 			if (self->r2i)
-				free (self->r2i);
+				SG_FREE (self->r2i);
 			if (self->rdata)
 				for (i = 0; i < self->l; i++)
 					if (self->rdata[i])
-						free (self->rdata[i]);
+						SG_FREE (self->rdata[i]);
 			if (self->rdata)
-				free (self->rdata);
+				SG_FREE (self->rdata);
 			if (self->rsize)
-				free (self->rsize);
+				SG_FREE (self->rsize);
 			if (self->rdiag)
-				free (self->rdiag);
+				SG_FREE (self->rdiag);
 			if (self->qnext)
-				free (self->qnext);
+				SG_FREE (self->qnext);
 			if (self->qprev)
-				free (self->qprev);
+				SG_FREE (self->qprev);
 			memset (self, 0, sizeof (larank_kcache_t));
-			free (self);
+			SG_FREE (self);
 		}
 	}
 
@@ -190,13 +171,13 @@ namespace shogun
 			int32_t nl = CMath::max (256, ol);
 			while (nl < n)
 				nl = nl + nl;
-			self->i2r = (int32_t *) xrealloc (self->i2r, nl * sizeof (int32_t));
-			self->r2i = (int32_t *) xrealloc (self->r2i, nl * sizeof (int32_t));
-			self->rsize = (int32_t *) xrealloc (self->rsize, nl * sizeof (int32_t));
-			self->qnext = (int32_t *) xrealloc (self->qnext, (1 + nl) * sizeof (int32_t));
-			self->qprev = (int32_t *) xrealloc (self->qprev, (1 + nl) * sizeof (int32_t));
-			self->rdiag = (float32_t *) xrealloc (self->rdiag, nl * sizeof (float32_t));
-			self->rdata = (float32_t **) xrealloc (self->rdata, nl * sizeof (float32_t *));
+			self->i2r = (int32_t *) SG_REALLOC (self->i2r, nl * sizeof (int32_t));
+			self->r2i = (int32_t *) SG_REALLOC (self->r2i, nl * sizeof (int32_t));
+			self->rsize = (int32_t *) SG_REALLOC (self->rsize, nl * sizeof (int32_t));
+			self->qnext = (int32_t *) SG_REALLOC (self->qnext, (1 + nl) * sizeof (int32_t));
+			self->qprev = (int32_t *) SG_REALLOC (self->qprev, (1 + nl) * sizeof (int32_t));
+			self->rdiag = (float32_t *) SG_REALLOC (self->rdiag, nl * sizeof (float32_t));
+			self->rdata = (float32_t **) SG_REALLOC (self->rdata, nl * sizeof (float32_t *));
 			self->rnext = self->qnext + 1;
 			self->rprev = self->qprev + 1;
 			for (i = ol; i < nl; i++)
@@ -223,12 +204,12 @@ namespace shogun
 		int32_t olen = self->rsize[k];
 		if (nlen > olen)
 		{
-			float32_t *ndata = (float32_t *) xmalloc (nlen * sizeof (float32_t));
+			float32_t *ndata = (float32_t *) SG_MALLOC (nlen * sizeof (float32_t));
 			if (olen > 0)
 			{
 				float32_t *odata = self->rdata[k];
 				memcpy (ndata, odata, olen * sizeof (float32_t));
-				free (odata);
+				SG_FREE (odata);
 			}
 			self->rdata[k] = ndata;
 			self->rsize[k] = nlen;

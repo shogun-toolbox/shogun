@@ -56,8 +56,8 @@ public:
 
 	void close()
 	{
-		free(variable_name);
-		free(filename);
+		SG_FREE(variable_name);
+		SG_FREE(filename);
 		if (file)
 		  fclose(file);
 		variable_name=NULL;

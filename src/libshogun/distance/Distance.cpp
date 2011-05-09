@@ -173,7 +173,7 @@ void CDistance::get_distance_matrix(float64_t** dst, int32_t* m, int32_t* n)
 		int32_t num_done=0;
 		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
 
-		result=(float64_t*) malloc(total_num*sizeof(float64_t));
+		result=(float64_t*) SG_MALLOC(total_num*sizeof(float64_t));
 		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )

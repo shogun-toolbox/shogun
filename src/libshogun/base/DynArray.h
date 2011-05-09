@@ -51,7 +51,7 @@ template <class T> class DynArray
 		}
 
 		virtual ~DynArray(void)
-		{ free(array); }
+		{ SG_FREE(array); }
 
 		/** set the resize granularity
 		 *
@@ -268,7 +268,7 @@ template <class T> class DynArray
 			int32_t new_num_elements= ((n/resize_granularity)+1)
 				*resize_granularity;
 
-			T* p= (T*) realloc(array, sizeof(T)*new_num_elements);
+			T* p= (T*) SG_REALLOC(array, sizeof(T)*new_num_elements);
 			if (p)
 			{
 				array=p;
@@ -311,7 +311,7 @@ template <class T> class DynArray
 		inline void set_array(T* p_array, int32_t p_num_elements,
 							  int32_t array_size)
 		{
-			free(this->array);
+			SG_FREE(this->array);
 			this->array=p_array;
 			this->num_elements=array_size;
 			this->last_element_idx=p_num_elements-1;

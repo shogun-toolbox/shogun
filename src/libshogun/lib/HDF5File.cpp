@@ -457,6 +457,6 @@ void CHDF5File::create_group_hierarchy()
 			H5Gclose(g);
 		}
 	}
-	free(vname);
+	SG_FREE(vname);
 }
 #endif //  HDF5
