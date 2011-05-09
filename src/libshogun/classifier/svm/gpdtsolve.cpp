@@ -171,16 +171,16 @@ sCache::sCache(sKernel* sk, int32_t Mbyte, int32_t _ell) : KER(sk), ell(_ell)
   maxmw = Mbyte*1024*(1024/4) / maxmw;
 
   /* arrays allocation */
-  mw     = (cache_entry  *)malloc(maxmw * sizeof(cache_entry));
-  pindmw = (cache_entry **)malloc(ell * sizeof(cache_entry *));
-  onerow = (cachetype    *)malloc(ell * sizeof(cachetype    ));
+  mw     = (cache_entry  *)SG_MALLOC(maxmw * sizeof(cache_entry));
+  pindmw = (cache_entry **)SG_MALLOC(ell * sizeof(cache_entry *));
+  onerow = (cachetype    *)SG_MALLOC(ell * sizeof(cachetype    ));
 
   /* arrays initialization */
   for (i = 0; i < maxmw; i++)
   {
       mw[i].prev           = (i == 0 ? &mw[maxmw-1] : &mw[i-1]);
       mw[i].next           = (i == maxmw-1 ? &mw[0] : &mw[i+1]);
-      mw[i].data           = (cachetype *)malloc(ell*sizeof(cachetype));
+      mw[i].data           = (cachetype *)SG_MALLOC(ell*sizeof(cachetype));
       mw[i].row            = -1;    // unused row
       mw[i].last_access_it = -1;
   }
@@ -199,10 +199,11 @@ sCache::~sCache()
   int32_t i;
 
   for (i = maxmw-1; i >= 0; i--)
-      if (mw[i].data) free(mw[i].data);
-  if (onerow) free(onerow);
-  if (pindmw) free(pindmw);
-  if (mw)     free(mw);
+      SG_FREE(mw[i].data);
+
+  SG_FREE(onerow);
+  SG_FREE(pindmw);
+  SG_FREE(mw);
 }
 
 
@@ -304,7 +305,7 @@ int32_t sCache::DivideMP(int32_t *out, int32_t *in, int32_t n)
   int32_t *remained, nremained, k;
   int32_t i;
 
-  remained = (int32_t *) malloc(n*sizeof(int32_t));
+  remained = (int32_t *) SG_MALLOC(n*sizeof(int32_t));
 
   nremained = 0;
   k = 0;
@@ -318,7 +319,7 @@ int32_t sCache::DivideMP(int32_t *out, int32_t *in, int32_t n)
   for (i = 0; i < nremained; i++)
       out[k++] = remained[i];
 
-  free(remained);
+  SG_FREE(remained);
   return n;
 }
 
@@ -735,14 +736,14 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
       SG_INFO(", size = %d\n",sl);
   }
 
-  sv_loc   = (int32_t *) malloc(s*sizeof(int32_t));
-  bsv_loc  = (int32_t *)malloc(s*sizeof(int32_t));
-  sp_alpha = (float64_t *)malloc(sl*sizeof(float64_t));
-  sp_h     = (float64_t *)malloc(sl*sizeof(float64_t));
-  sp_y     = (int32_t *)malloc(sl*sizeof(int32_t));
+  sv_loc   = (int32_t *) SG_MALLOC(s*sizeof(int32_t));
+  bsv_loc  = (int32_t *)SG_MALLOC(s*sizeof(int32_t));
+  sp_alpha = (float64_t *)SG_MALLOC(sl*sizeof(float64_t));
+  sp_h     = (float64_t *)SG_MALLOC(sl*sizeof(float64_t));
+  sp_y     = (int32_t *)SG_MALLOC(sl*sizeof(int32_t));
 
   if (sl < 500)
-      sp_D = (float32_t *)malloc(sl*sl * sizeof(float32_t));
+      sp_D = (float32_t *)SG_MALLOC(sl*sl * sizeof(float32_t));
 
   for (i = 0; i < sl; i++)
        sp_h[i] = -1.0;
@@ -851,12 +852,12 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
 
 
   /* dealloc temporary arrays */
-  if (sl < 500) free(sp_D);
-  free(sp_y    );
-  free(sp_h    );
-  free(sv_loc  );
-  free(bsv_loc );
-  free(sp_alpha);
+  if (sl < 500) SG_FREE(sp_D);
+  SG_FREE(sp_y    );
+  SG_FREE(sp_h    );
+  SG_FREE(sv_loc  );
+  SG_FREE(bsv_loc );
+  SG_FREE(sp_alpha);
 
   if (verbosity > 0)
   {
@@ -932,12 +933,12 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
 
   /* arrays allocation */
   SG_DEBUG("ell:%d, chunk_size:%d, nb:%d dim:%d\n", ell, chunk_size,nb, dim);
-  ing       = (int32_t *) malloc(ell*sizeof(int32_t));
-  inaux     = (int32_t *) malloc(ell*sizeof(int32_t));
-  index_in  = (int32_t *) malloc(chunk_size*sizeof(int32_t));
-  index_out = (int32_t *) malloc(ell*sizeof(int32_t));
-  indnzout  = (int32_t *) malloc(nb*sizeof(int32_t));
-  alpha     = (float64_t *)malloc(ell*sizeof(float64_t    ));
+  ing       = (int32_t *) SG_MALLOC(ell*sizeof(int32_t));
+  inaux     = (int32_t *) SG_MALLOC(ell*sizeof(int32_t));
+  index_in  = (int32_t *) SG_MALLOC(chunk_size*sizeof(int32_t));
+  index_out = (int32_t *) SG_MALLOC(ell*sizeof(int32_t));
+  indnzout  = (int32_t *) SG_MALLOC(nb*sizeof(int32_t));
+  alpha     = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
 
   memset(alpha, 0, ell*sizeof(float64_t));
   memset(ing,   0, ell*sizeof(int32_t));
@@ -969,18 +970,18 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   }
 
   /* arrays allocation */
-  bmem     = (int32_t *)malloc(ell*sizeof(int32_t));
-  bmemrid  = (int32_t *)malloc(chunk_size*sizeof(int32_t));
-  pbmr     = (int32_t *)malloc(chunk_size*sizeof(int32_t));
-  cec      = (int32_t *)malloc(ell*sizeof(int32_t));
-  indnzin  = (int32_t *)malloc(chunk_size*sizeof(int32_t));
-  inold    = (int32_t *)malloc(chunk_size*sizeof(int32_t));
-  incom    = (int32_t *)malloc(chunk_size*sizeof(int32_t));
-  vau      = (float64_t *)malloc(ell*sizeof(float64_t    ));
-  grad     = (float64_t *)malloc(ell*sizeof(float64_t    ));
-  weight   = (float64_t *)malloc(dim*sizeof(float64_t    ));
-  st       = (float64_t *)malloc(ell*sizeof(float64_t    ));
-  stloc    = (float64_t *)malloc(ell*sizeof(float64_t    ));
+  bmem     = (int32_t *)SG_MALLOC(ell*sizeof(int32_t));
+  bmemrid  = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
+  pbmr     = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
+  cec      = (int32_t *)SG_MALLOC(ell*sizeof(int32_t));
+  indnzin  = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
+  inold    = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
+  incom    = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
+  vau      = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
+  grad     = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
+  weight   = (float64_t *)SG_MALLOC(dim*sizeof(float64_t    ));
+  st       = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
+  stloc    = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
 
   for (i = 0; i < ell; i++)
   {
@@ -989,11 +990,11 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       st[i]   = 0;
   }
 
-  sp_y     = (int32_t *)malloc(chunk_size*sizeof(int32_t));
-  sp_D     = (float32_t  *)malloc(chunk_size*chunk_size * sizeof(float32_t));
-  sp_alpha = (float64_t *)malloc(chunk_size*sizeof(float64_t            ));
-  sp_h     = (float64_t *)malloc(chunk_size*sizeof(float64_t            ));
-  sp_hloc  = (float64_t *)malloc(chunk_size*sizeof(float64_t            ));
+  sp_y     = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
+  sp_D     = (float32_t  *)SG_MALLOC(chunk_size*chunk_size * sizeof(float32_t));
+  sp_alpha = (float64_t *)SG_MALLOC(chunk_size*sizeof(float64_t            ));
+  sp_h     = (float64_t *)SG_MALLOC(chunk_size*sizeof(float64_t            ));
+  sp_hloc  = (float64_t *)SG_MALLOC(chunk_size*sizeof(float64_t            ));
 
   for (i = 0; i < chunk_size; i++)
       cec[index_in[i]] = cec[index_in[i]]+1;
@@ -1352,29 +1353,29 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   }
 
 
-  free(bmem);
-  free(bmemrid);
-  free(pbmr);
-  free(cec);
-  free(ing);
-  free(inaux);
-  free(indnzin);
-  free(index_in);
-  free(inold);
-  free(incom);
-  free(indnzout);
-  free(index_out);
-  free(vau);
-  free(alpha);
-  free(weight);
-  free(grad);
-  free(stloc);
-  free(st);
-  free(sp_h);
-  free(sp_hloc);
-  free(sp_y);
-  free(sp_D);
-  free(sp_alpha);
+  SG_FREE(bmem);
+  SG_FREE(bmemrid);
+  SG_FREE(pbmr);
+  SG_FREE(cec);
+  SG_FREE(ing);
+  SG_FREE(inaux);
+  SG_FREE(indnzin);
+  SG_FREE(index_in);
+  SG_FREE(inold);
+  SG_FREE(incom);
+  SG_FREE(indnzout);
+  SG_FREE(index_out);
+  SG_FREE(vau);
+  SG_FREE(alpha);
+  SG_FREE(weight);
+  SG_FREE(grad);
+  SG_FREE(stloc);
+  SG_FREE(st);
+  SG_FREE(sp_h);
+  SG_FREE(sp_hloc);
+  SG_FREE(sp_y);
+  SG_FREE(sp_D);
+  SG_FREE(sp_alpha);
   delete Cache;
 
   aux = KER->KernelEvaluations;

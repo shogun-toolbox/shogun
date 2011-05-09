@@ -124,8 +124,7 @@ template <class T> class CArray : public CSGObject
 		{
 			//SG_DEBUG( "destroying CArray array '%s' of size %i\n", name? name : "unnamed", array_size);
 			PRINT_ARRAY_STATISTICS;
-			if (free_array)
-				free(array);
+			SG_FREE(array);
 		}
 
 		/** get name
@@ -256,7 +255,7 @@ template <class T> class CArray : public CSGObject
 			INCREMENT_ARRAY_STATISTICS_VALUE(resize_array);
 			ARRAY_ASSERT(free_array);
 
-			T* p= (T*) realloc(array, sizeof(T)*n);
+			T* p= (T*) SG_REALLOC(array, sizeof(T)*n);
 			if (!p)
 				return false;
 			array=p;
@@ -289,11 +288,10 @@ template <class T> class CArray : public CSGObject
 				bool copy_array=false)
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(set_array);
-			if (this->free_array)
-				free(this->array);
+			SG_FREE(this->array);
 			if (copy_array)
 			{
-				this->array=(T*)malloc(p_array_size*sizeof(T));
+				this->array=(T*)SG_MALLOC(p_array_size*sizeof(T));
 				memcpy(this->array, p_array, p_array_size*sizeof(T));
 			}
 			else
@@ -310,8 +308,8 @@ template <class T> class CArray : public CSGObject
 		inline void set_array(const T* p_array, int32_t p_array_size)
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(set_array);
-			free(this->array);
-			this->array=(T*)malloc(p_array_size*sizeof(T));
+			SG_FREE(this->array);
+			this->array=(T*)SG_MALLOC(p_array_size*sizeof(T));
 			memcpy(this->array, p_array, p_array_size*sizeof(T));
 			this->array_size=p_array_size;
 			this->free_array=true;

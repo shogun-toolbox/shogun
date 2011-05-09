@@ -358,8 +358,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			bool free_vec;
 			ST* vec=get_feature_vector(num, l, free_vec);
 			*len=l;
-			*dst=(ST*) malloc(*len * sizeof(ST));
-			ASSERT(*dst);
+			*dst=(ST*) SG_MALLOC(*len * sizeof(ST));
 			memcpy(*dst, vec, *len * sizeof(ST));
 			free_feature_vector(vec, num, free_vec);
 		}
@@ -1084,9 +1083,9 @@ template <class ST> class CStringFeatures : public CFeatures
 					else
 						SG_ERROR("empty or non readable file \'%s\'\n", fname);
 
-					free(namelist[i]);
+					SG_FREE(namelist[i]);
 				}
-				free(namelist);
+				SG_FREE(namelist);
 
 				if (num>0 && strings)
 				{
@@ -1942,8 +1941,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			int32_t nsym=get_num_symbols();
 			int32_t slen=get_max_vector_length();
 			int64_t sz=int64_t(nsym)*slen*sizeof(float64_t);
-			float64_t* h= (float64_t*) malloc(sz);
-			ASSERT(h);
+			float64_t* h= (float64_t*) SG_MALLOC(sz);
 			memset(h, 0, sz);
 
 			float64_t* h_normalizer=new float64_t[slen];
@@ -2059,8 +2057,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			nfeat=0;
 			for (i=0; i < nStr; ++i)
 				nfeat += len[i] - d1;
-			group=(int *)malloc(nfeat*sizeof(int));
-			features=(int *)malloc(nfeat*2*sizeof(int *));
+			group=(int *)SG_MALLOC(nfeat*sizeof(int));
+			features=(int *)SG_MALLOC(nfeat*2*sizeof(int *));
 			c=0;
 			for (i=0; i < nStr; ++i)
 			{
@@ -2076,7 +2074,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 			if (nfeat!=c)
 				printf("Something is wrong...\n");
-			F=(SSKFeatures *)malloc(sizeof(SSKFeatures));
+			F=(SSKFeatures *)SG_MALLOC(sizeof(SSKFeatures));
 			(*F).features=features;
 			(*F).group=group;
 			(*F).n=nfeat;

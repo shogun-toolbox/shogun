@@ -49,11 +49,11 @@ CSerializableFile::CSerializableFile(const char* fname, char rw)
 	}
 }
 
-CSerializableFile::~CSerializableFile(void)
+CSerializableFile::~CSerializableFile()
 {
 	close();
-	if (m_filename != NULL) { free(m_filename); m_filename = NULL; }
-	if (m_reader != NULL) { delete m_reader; m_reader = NULL; }
+	SG_FREE(m_filename);
+	delete m_reader;
 	m_task = 0;
 }
 

@@ -26,7 +26,7 @@ CLibSVMOneClass::CLibSVMOneClass(float64_t C, CKernel* k)
 
 CLibSVMOneClass::~CLibSVMOneClass()
 {
-	free(model);
+	SG_FREE(model);
 }
 
 bool CLibSVMOneClass::train(CFeatures* data)

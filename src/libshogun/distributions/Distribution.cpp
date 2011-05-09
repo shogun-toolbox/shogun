@@ -40,7 +40,7 @@ void CDistribution::get_log_likelihood(float64_t **dst, int32_t *num)
 
 	*num=features->get_num_vectors();
 	size_t sz=sizeof(float64_t)*(*num);
-	*dst=(float64_t*) malloc(sz);
+	*dst=(float64_t*) SG_MALLOC(sz);
 	ASSERT(dst);
 
 	for (int32_t i=0; i<(*num); i++)

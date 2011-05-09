@@ -59,8 +59,8 @@ SSKFeatures *CSparseSpatialSampleStringKernel::extractTriple(int **S, int *len, 
 	nfeat = 0;
 	for (i = 0; i < nStr; ++i)
 		nfeat += len[i] - d1 -d2;
-	group = (int *)malloc(nfeat*sizeof(int));
-	features = (int *)malloc(nfeat*3*sizeof(int *));
+	group = (int *) SG_MALLOC(nfeat*sizeof(int));
+	features = (int *) SG_MALLOC(nfeat*3*sizeof(int *));
 	c = 0;
 	for (i = 0; i < nStr; ++i)
 	{
@@ -76,7 +76,7 @@ SSKFeatures *CSparseSpatialSampleStringKernel::extractTriple(int **S, int *len, 
 		}
 	}
 	ASSERT(nfeat==c);
-	F = (SSKFeatures *)malloc(sizeof(SSKFeatures));
+	F = (SSKFeatures *) SG_MALLOC(sizeof(SSKFeatures));
 	(*F).features = features;
 	(*F).group = group;
 	(*F).n = nfeat;
@@ -97,8 +97,8 @@ SSKFeatures *CSparseSpatialSampleStringKernel::extractDouble(int **S, int *len, 
 	nfeat = 0;
 	for (i = 0; i < nStr; ++i)
 		nfeat += len[i] - d1;
-	group = (int *)malloc(nfeat*sizeof(int));
-	features = (int *)malloc(nfeat*2*sizeof(int *));
+	group = (int *) SG_MALLOC(nfeat*sizeof(int));
+	features = (int *) SG_MALLOC(nfeat*2*sizeof(int *));
 	c = 0;
 	for (i = 0; i < nStr; ++i)
 	{
@@ -114,7 +114,7 @@ SSKFeatures *CSparseSpatialSampleStringKernel::extractDouble(int **S, int *len, 
 	}
 	if (nfeat!=c)
 		printf("Something is wrong...\n");
-	F = (SSKFeatures *)malloc(sizeof(SSKFeatures));
+	F = (SSKFeatures *) SG_MALLOC(sizeof(SSKFeatures));
 	(*F).features = features;
 	(*F).group = group;
 	(*F).n = nfeat;
@@ -161,26 +161,26 @@ void CSparseSpatialSampleStringKernel::compute_double(int32_t idx_a, int32_t idx
 		}
 		sortIdx = cntsrtna((*features).features,2,(*features).n,na);
 		if (isVerbose)  printf("done.\n");
-		features_srt = (int *)malloc(nfeat*2*sizeof(int *));
-		group_srt = (int *)malloc(nfeat*sizeof(int));
+		features_srt = (int *) SG_MALLOC(nfeat*2*sizeof(int *));
+		group_srt = (int *) SG_MALLOC(nfeat*sizeof(int));
 		for (i = 0; i < nfeat; ++i)
 		{
 			features_srt[i]=(*features).features[sortIdx[i]];
 			features_srt[i+nfeat]=(*features).features[sortIdx[i]+nfeat];
 			group_srt[i] = (*features).group[sortIdx[i]];
 		}
-		free(sortIdx);
-		free((*features).features);
-		free((*features).group);
-		free(features);
+		SG_FREE(sortIdx);
+		SG_FREE((*features).features);
+		SG_FREE((*features).group);
+		SG_FREE(features);
 		if (isVerbose)
 		{
 			printf("Counting...");
 			fflush( stdout );
 		}
 		countAndUpdate(K,features_srt,group_srt,2,nfeat,nStr);
-		free(features_srt);
-		free(group_srt);
+		SG_FREE(features_srt);
+		SG_FREE(group_srt);
 		if (isVerbose)
 		{
 			printf("done.");
@@ -236,8 +236,8 @@ void CSparseSpatialSampleStringKernel::compute_triple(int32_t idx_a, int32_t idx
 			{
 				printf("done.\n");
 			}
-			features_srt = (int *)malloc(nfeat*3*sizeof(int *));
-			group_srt = (int *)malloc(nfeat*sizeof(int));
+			features_srt = (int *) SG_MALLOC(nfeat*3*sizeof(int *));
+			group_srt = (int *) SG_MALLOC(nfeat*sizeof(int));
 			for (i = 0; i < nfeat; ++i)
 			{
 				features_srt[i]=(*features).features[sortIdx[i]];
@@ -245,18 +245,18 @@ void CSparseSpatialSampleStringKernel::compute_triple(int32_t idx_a, int32_t idx
 				features_srt[i+2*nfeat]=(*features).features[sortIdx[i]+2*nfeat];
 				group_srt[i] = (*features).group[sortIdx[i]];
 			}
-			free(sortIdx);
-			free((*features).features);
-			free((*features).group);
-			free(features);
+			SG_FREE(sortIdx);
+			SG_FREE((*features).features);
+			SG_FREE((*features).group);
+			SG_FREE(features);
 			if (isVerbose)
 			{
 				printf("Counting...");
 				fflush( stdout );
 			}
 			countAndUpdate(K,features_srt,group_srt,3,nfeat,nStr);
-			free(features_srt);
-			free(group_srt);
+			SG_FREE(features_srt);
+			SG_FREE(group_srt);
 			if (isVerbose)
 			{
 				printf("done.\n");
@@ -274,9 +274,9 @@ void CSparseSpatialSampleStringKernel::countAndUpdate(int *outK, int *sx, int *g
 	long int startInd, endInd, j1;
 	int *curfeat, *ucnts, *updind;
 
-	curfeat = (int *)malloc(k*sizeof(int));
-	ucnts= (int *)malloc(nStr*sizeof(int));
-	updind = (int *)malloc(nStr*sizeof(int));
+	curfeat = (int *) SG_MALLOC(k*sizeof(int));
+	ucnts= (int *) SG_MALLOC(nStr*sizeof(int));
+	updind = (int *) SG_MALLOC(nStr*sizeof(int));
 	i = 0;
 	ucnt = 0;
 	while (i<r)
@@ -329,9 +329,9 @@ void CSparseSpatialSampleStringKernel::countAndUpdate(int *outK, int *sx, int *g
 					outK[ g[j]+nStr*g[j1] ]++;
 		}
 	}
-	free(updind);
-	free(ucnts);
-	free(curfeat);
+	SG_FREE(updind);
+	SG_FREE(ucnts);
+	SG_FREE(curfeat);
 }
 
 int *CSparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
@@ -339,11 +339,11 @@ int *CSparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
 	int *sxc, *bc, *sxl, *cc, *regroup;
 	int i, j;
 
-	sxc = (int *)malloc(na*sizeof(int));
-	bc  = (int *)malloc(na*sizeof(int));
-	sxl = (int *)malloc(r*sizeof(int));
-	cc  = (int *)malloc(r*sizeof(int));
-	regroup = (int *)malloc(r*sizeof(int));
+	sxc = (int *) SG_MALLOC(na*sizeof(int));
+	bc  = (int *) SG_MALLOC(na*sizeof(int));
+	sxl = (int *) SG_MALLOC(r*sizeof(int));
+	cc  = (int *) SG_MALLOC(r*sizeof(int));
+	regroup = (int *) SG_MALLOC(r*sizeof(int));
 
 	for (i = 0; i < r; ++i)
 		regroup[i]=i;
@@ -364,7 +364,7 @@ int *CSparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
 		for (i = 0; i < r; ++i)
 			regroup[i] = sxl[i];
 	}
-	free(sxl); free(bc); free(sxc); free(cc);
+	SG_FREE(sxl); SG_FREE(bc); SG_FREE(sxc); SG_FREE(cc);
 
 	return regroup;
 }

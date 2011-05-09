@@ -126,7 +126,7 @@ class CPositionalPWM : public CDistribution
 		 */
 		virtual inline void get_pwm(float64_t** pwm, int32_t* pwm_rows, int32_t* pwm_cols)
 		{
-			*pwm = (float64_t*) malloc(sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
+			*pwm = (float64_t*) SG_MALLOC(sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
 			memcpy(*pwm, m_pwm, sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
 			*pwm_rows = m_pwm_rows;
 			*pwm_cols = m_pwm_cols;
@@ -140,7 +140,7 @@ class CPositionalPWM : public CDistribution
 		 */
 		virtual inline void get_w(float64_t** w, int32_t* w_rows, int32_t* w_cols)
 		{
-			*w = (float64_t*) malloc(sizeof(float64_t)*m_w_rows*m_w_cols);
+			*w = (float64_t*) SG_MALLOC(sizeof(float64_t)*m_w_rows*m_w_cols);
 			memcpy(*w, m_w, sizeof(float64_t)*m_w_rows*m_w_cols);
 			*w_rows = m_w_rows;
 			*w_cols = m_w_cols;

@@ -138,15 +138,15 @@ int32_t gvpm(
   float64_t  *g, *y, *tempv, *d, *Ad, *t;
 
   /*** array allocations ***/
-  ipt   = (int32_t *) malloc(n * sizeof(int32_t));
-  ipt2  = (int32_t *) malloc(n * sizeof(int32_t));
-  uv    = (int32_t *) malloc(n * sizeof(int32_t));
-  g     = (float64_t *)malloc(n * sizeof(float64_t));
-  y     = (float64_t *)malloc(n * sizeof(float64_t));
-  d     = (float64_t *)malloc(n * sizeof(float64_t));
-  Ad    = (float64_t *)malloc(n * sizeof(float64_t));
-  t     = (float64_t *)malloc(n * sizeof(float64_t));
-  tempv = (float64_t *)malloc(n * sizeof(float64_t));
+  ipt   = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
+  ipt2  = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
+  uv    = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
+  g     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  y     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  d     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  Ad    = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  t     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  tempv = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
 
 #endif
 
@@ -424,15 +424,15 @@ Clean:
 
   /*** allocation-dependant freeing ***/
 #ifndef VARIABLES_ON_STACK
-  free(t);
-  free(uv);
-  free(ipt2);
-  free(ipt);
-  free(g);
-  free(y);
-  free(tempv);
-  free(d);
-  free(Ad);
+  SG_FREE(t);
+  SG_FREE(uv);
+  SG_FREE(ipt2);
+  SG_FREE(ipt);
+  SG_FREE(g);
+  SG_FREE(y);
+  SG_FREE(tempv);
+  SG_FREE(d);
+  SG_FREE(Ad);
 #endif
 
   if (ls != NULL)   *ls   = lscount;
@@ -471,19 +471,19 @@ int32_t FletcherAlg2A(
   float64_t *g, *y, *tempv, *d, *Ad, *t, *xplus, *tplus, *sk, *yk;
 
   /*** arrays allocation ***/
-  ipt   = (int32_t *)malloc(n * sizeof(int32_t));
-  ipt2  = (int32_t *)malloc(n * sizeof(int32_t));
-  uv    = (int32_t *)malloc(n * sizeof(int32_t));
-  g     = (float64_t *)malloc(n * sizeof(float64_t));
-  y     = (float64_t *)malloc(n * sizeof(float64_t));
-  tempv = (float64_t *)malloc(n * sizeof(float64_t));
-  d     = (float64_t *)malloc(n * sizeof(float64_t));
-  Ad    = (float64_t *)malloc(n * sizeof(float64_t));
-  t     = (float64_t *)malloc(n * sizeof(float64_t));
-  xplus = (float64_t *)malloc(n * sizeof(float64_t));
-  tplus = (float64_t *)malloc(n * sizeof(float64_t));
-  sk    = (float64_t *)malloc(n * sizeof(float64_t));
-  yk    = (float64_t *)malloc(n * sizeof(float64_t));
+  ipt   = (int32_t *)SG_MALLOC(n * sizeof(int32_t));
+  ipt2  = (int32_t *)SG_MALLOC(n * sizeof(int32_t));
+  uv    = (int32_t *)SG_MALLOC(n * sizeof(int32_t));
+  g     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  y     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  tempv = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  d     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  Ad    = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  t     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  xplus = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  tplus = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  sk    = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  yk    = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
 
 #endif
 
@@ -761,19 +761,19 @@ int32_t FletcherAlg2A(
 Clean:
 
 #ifndef VARIABLES_ON_STACK
-  free(sk);
-  free(yk);
-  free(tplus);
-  free(xplus);
-  free(t);
-  free(uv);
-  free(ipt2);
-  free(ipt);
-  free(g);
-  free(y);
-  free(tempv);
-  free(d);
-  free(Ad);
+  SG_FREE(sk);
+  SG_FREE(yk);
+  SG_FREE(tplus);
+  SG_FREE(xplus);
+  SG_FREE(t);
+  SG_FREE(uv);
+  SG_FREE(ipt2);
+  SG_FREE(ipt);
+  SG_FREE(g);
+  SG_FREE(y);
+  SG_FREE(tempv);
+  SG_FREE(d);
+  SG_FREE(Ad);
 #endif
 
   if (ls != NULL)   *ls   = lscount;
@@ -1068,16 +1068,16 @@ int32_t Pardalos(
   float64_t *xint, *xint2, *a, *b, *at, *bt, *newdia, *newdt;
 
   /*** arrays allocation ***/
-  uv     = (int32_t *) malloc(n * sizeof(int32_t));
-  uvt    = (int32_t *) malloc(n * sizeof(int32_t));
-  a      = (float64_t *)malloc(n * sizeof(float64_t        ));
-  b      = (float64_t *)malloc(n * sizeof(float64_t        ));
-  at     = (float64_t *)malloc(n * sizeof(float64_t        ));
-  bt     = (float64_t *)malloc(n * sizeof(float64_t        ));
-  newdia = (float64_t *)malloc(n * sizeof(float64_t        ));
-  newdt  = (float64_t *)malloc(n * sizeof(float64_t        ));
-  xint   = (float64_t *)malloc((2*n + 2) * sizeof(float64_t));
-  xint2  = (float64_t *)malloc((2*n + 2) * sizeof(float64_t));
+  uv     = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
+  uvt    = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
+  a      = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
+  b      = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
+  at     = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
+  bt     = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
+  newdia = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
+  newdt  = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
+  xint   = (float64_t *)SG_MALLOC((2*n + 2) * sizeof(float64_t));
+  xint2  = (float64_t *)SG_MALLOC((2*n + 2) * sizeof(float64_t));
 
 #endif
 
@@ -1200,16 +1200,16 @@ int32_t Pardalos(
       x[i] = (2.0*x[i]*iy[i]-qk[i]);
 
 #ifndef VARIABLES_ON_STACK
-  free(newdt);
-  free(newdia);
-  free(a);
-  free(b);
-  free(uvt);
-  free(uv);
-  free(bt);
-  free(at);
-  free(xint2);
-  free(xint);
+  SG_FREE(newdt);
+  SG_FREE(newdia);
+  SG_FREE(a);
+  SG_FREE(b);
+  SG_FREE(uvt);
+  SG_FREE(uv);
+  SG_FREE(bt);
+  SG_FREE(at);
+  SG_FREE(xint2);
+  SG_FREE(xint);
 #endif
 
   return(iter);

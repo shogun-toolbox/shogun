@@ -418,8 +418,8 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
         distance->replace_rhs(rhs_cache);
         delete rhs_mus;        
 
-	free(ClList);
-	free(weights_set);
-	free(dists);
+	SG_FREE(ClList);
+	SG_FREE(weights_set);
+	SG_FREE(dists);
 	SG_UNREF(lhs);
 } 

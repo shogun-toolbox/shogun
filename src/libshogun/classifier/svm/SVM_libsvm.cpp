@@ -64,7 +64,7 @@ template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
 }
 #define INF HUGE_VAL
 #define TAU 1e-12
-#define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+#define Malloc(type,n) (type *)SG_MALLOC((n)*sizeof(type))
 
 class QMatrix;
 class SVC_QMC;
@@ -115,8 +115,8 @@ Cache::Cache(int32_t l_, int64_t size_):l(l_),size(size_)
 Cache::~Cache()
 {
 	for(head_t *h = lru_head.next; h != &lru_head; h=h->next)
-		free(h->data);
-	free(head);
+		SG_FREE(h->data);
+	SG_FREE(head);
 }
 
 void Cache::lru_delete(head_t *h)
@@ -148,14 +148,14 @@ int32_t Cache::get_data(const int32_t index, Qfloat **data, int32_t len)
 		{
 			head_t *old = lru_head.next;
 			lru_delete(old);
-			free(old->data);
+			SG_FREE(old->data);
 			size += old->len;
 			old->data = 0;
 			old->len = 0;
 		}
 
 		// allocate new space
-		h->data = (Qfloat *)realloc(h->data,sizeof(Qfloat)*len);
+		h->data = (Qfloat *)SG_REALLOC(h->data,sizeof(Qfloat)*len);
 		size -= more;
 		CMath::swap(h->len,len);
 	}
@@ -187,7 +187,7 @@ void Cache::swap_index(int32_t i, int32_t j)
 			{
 				// give up
 				lru_delete(h);
-				free(h->data);
+				SG_FREE(h->data);
 				size += h->len;
 				h->data = 0;
 				h->len = 0;
@@ -1991,7 +1991,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	delete[] y;
 	delete[] zeros;
-	free(alpha);
+	SG_FREE(alpha);
 }
 
 static void solve_one_class(
@@ -2204,8 +2204,8 @@ void svm_group_classes(
 			if(nr_class == max_nr_class)
 			{
 				max_nr_class *= 2;
-				label=(int32_t *) realloc(label,max_nr_class*sizeof(int32_t));
-				count=(int32_t *) realloc(count,max_nr_class*sizeof(int32_t));
+				label=(int32_t *) SG_REALLOC(label,max_nr_class*sizeof(int32_t));
+				count=(int32_t *) SG_REALLOC(count,max_nr_class*sizeof(int32_t));
 			}
 			label[nr_class] = this_label;
 			count[nr_class] = 1;
@@ -2230,7 +2230,7 @@ void svm_group_classes(
 	*label_ret = label;
 	*start_ret = start;
 	*count_ret = count;
-	free(data_label);
+	SG_FREE(data_label);
 }
 
 //
@@ -2274,7 +2274,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				++j;
 			}
 
-		free(f.alpha);
+		SG_FREE(f.alpha);
 	}
 	else if(param->svm_type == NU_MULTICLASS_SVC)
 	{
@@ -2380,10 +2380,10 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				for(k=0;k<cj;k++)
 					if(!nonzero[sj+k] && fabs(f[p].alpha[ci+k]) > 0)
 						nonzero[sj+k] = true;
-				free(sub_prob.x);
-				free(sub_prob.y);
-				free(sub_prob.C);
-				free(sub_prob.pv);
+				SG_FREE(sub_prob.x);
+				SG_FREE(sub_prob.y);
+				SG_FREE(sub_prob.C);
+				SG_FREE(sub_prob.pv);
 				++p;
 			}
 
@@ -2458,20 +2458,20 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				++p;
 			}
 
-		free(label);
-		free(count);
-		free(perm);
-		free(start);
-		free(x);
-		free(C);
-		free(pv);
-		free(weighted_C);
-		free(nonzero);
+		SG_FREE(label);
+		SG_FREE(count);
+		SG_FREE(perm);
+		SG_FREE(start);
+		SG_FREE(x);
+		SG_FREE(C);
+		SG_FREE(pv);
+		SG_FREE(weighted_C);
+		SG_FREE(nonzero);
 		for(i=0;i<nr_class*(nr_class-1)/2;i++)
-			free(f[i].alpha);
-		free(f);
-		free(nz_count);
-		free(nz_start);
+			SG_FREE(f[i].alpha);
+		SG_FREE(f);
+		SG_FREE(nz_count);
+		SG_FREE(nz_start);
 	}
 	return model;
 }
@@ -2479,21 +2479,21 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 void svm_destroy_model(svm_model* model)
 {
 	if(model->free_sv && model->l > 0)
-		free((void *)(model->SV[0]));
+		SG_FREE((void *)(model->SV[0]));
 	for(int32_t i=0;i<model->nr_class-1;i++)
-		free(model->sv_coef[i]);
-	free(model->SV);
-	free(model->sv_coef);
-	free(model->rho);
-	free(model->label);
-	free(model->nSV);
-	free(model);
+		SG_FREE(model->sv_coef[i]);
+	SG_FREE(model->SV);
+	SG_FREE(model->sv_coef);
+	SG_FREE(model->rho);
+	SG_FREE(model->label);
+	SG_FREE(model->nSV);
+	SG_FREE(model);
 }
 
 void svm_destroy_param(svm_parameter* param)
 {
-	free(param->weight_label);
-	free(param->weight);
+	SG_FREE(param->weight_label);
+	SG_FREE(param->weight);
 }
 
 const char *svm_check_parameter(
@@ -2578,9 +2578,9 @@ const char *svm_check_parameter(
 				if(nr_class == max_nr_class)
 				{
 					max_nr_class *= 2;
-					label=(int32_t *) realloc(label,
+					label=(int32_t *) SG_REALLOC(label,
 						max_nr_class*sizeof(int32_t));
-					count=(int32_t *) realloc(count,
+					count=(int32_t *) SG_REALLOC(count,
 						max_nr_class*sizeof(int32_t));
 				}
 				label[nr_class] = this_label;
@@ -2597,14 +2597,14 @@ const char *svm_check_parameter(
 				int32_t n2 = count[j];
 				if(param->nu*(n1+n2)/2 > CMath::min(n1,n2))
 				{
-					free(label);
-					free(count);
+					SG_FREE(label);
+					SG_FREE(count);
 					return "specified nu is infeasible";
 				}
 			}
 		}
-		free(label);
-		free(count);
+		SG_FREE(label);
+		SG_FREE(count);
 	}
 
 	return NULL;

@@ -170,7 +170,7 @@ void CLabels::get_confidences(float64_t** dst, int32_t* out_num_labels, int32_t*
 	*out_num_labels=num_labels;
 	*out_num_classes=m_num_classes;
 
-	float64_t* out_conf= (float64_t*) malloc((size_t) sizeof(float64_t)*num_labels*m_num_classes);
+	float64_t* out_conf= (float64_t*) SG_MALLOC((size_t) sizeof(float64_t)*num_labels*m_num_classes);
 	memcpy(out_conf, m_confidences, num_labels*m_num_classes*sizeof(float64_t));
 	*dst=out_conf;
 }
@@ -278,7 +278,7 @@ void CLabels::get_labels(float64_t** p_labels, int32_t* len)
 
 	if (num_labels>0)
 	{
-		*p_labels=(float64_t*) malloc(sizeof(float64_t)*num_labels);
+		*p_labels=(float64_t*) SG_MALLOC(sizeof(float64_t)*num_labels);
 
 		for (int32_t i=0; i<num_labels; i++)
 			(*p_labels)[i]=get_label(i);

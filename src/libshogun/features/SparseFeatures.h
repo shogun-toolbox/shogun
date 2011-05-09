@@ -278,7 +278,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			if (sv)
 			{
 				*len=num_features;
-				*dst= (ST*) malloc(sizeof(ST)*num_features);
+				*dst= (ST*) SG_MALLOC(sizeof(ST)*num_features);
 				memset(*dst, 0, sizeof(ST)*num_features);
 
 				for (int32_t i=0; i<num_feat; i++)
@@ -702,7 +702,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			*num_feat=num_features;
 			*num_vec=num_vectors;
 
-			*dst= (ST*) malloc(sizeof(ST)*num_features*num_vectors);
+			*dst= (ST*) SG_MALLOC(sizeof(ST)*num_features*num_vectors);
 
 			if (*dst)
 			{

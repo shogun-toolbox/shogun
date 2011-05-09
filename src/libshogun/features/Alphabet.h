@@ -205,7 +205,7 @@ class CAlphabet : public CSGObject
 		{
 			int32_t hist_size=(1 << (sizeof(uint8_t)*8));
 			ASSERT(h && len);
-			*h=(int64_t*) malloc(sizeof(int64_t)*hist_size);
+			*h=(int64_t*) SG_MALLOC(sizeof(int64_t)*hist_size);
 			ASSERT(*h);
 			*len=hist_size;
 			ASSERT(*len);

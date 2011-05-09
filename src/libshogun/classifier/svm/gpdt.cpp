@@ -122,7 +122,7 @@ void QPproblem::Subproblem(QPproblem &p, int32_t len, int32_t *perm)
   ell = len;
 
   KER->SetSubproblem(p.KER, len, perm);
-  y = (int32_t *)malloc(len * sizeof(int32_t));
+  y = (int32_t *)SG_MALLOC(len * sizeof(int32_t));
   for (k = 0; k < ell; k++)
       y[k] = p.y[perm[k]];
 }
@@ -233,8 +233,8 @@ void sKernel::SetData(
 
   dim  = _dim;
   ell  = _ell;
-  nor  = (float64_t *)malloc(ell*sizeof(float64_t));
-  vaux = (float32_t  *)malloc(dim*sizeof(float32_t ));
+  nor  = (float64_t *)SG_MALLOC(ell*sizeof(float64_t));
+  vaux = (float32_t  *)SG_MALLOC(dim*sizeof(float32_t ));
   memset(vaux, 0, dim*sizeof(float32_t));
 
   IsSubproblem = 0;
@@ -265,13 +265,13 @@ void sKernel::SetSubproblem(sKernel* ker, int32_t len, int32_t *perm)
   int32_t k;
 
   /* arrays allocations */
-  nor  = (float64_t *) malloc(len*sizeof(float64_t));
-  vaux = (float32_t  *) malloc(ker->dim*sizeof(float32_t));
+  nor  = (float64_t *) SG_MALLOC(len*sizeof(float64_t));
+  vaux = (float32_t  *) SG_MALLOC(ker->dim*sizeof(float32_t));
   memset(vaux, 0, ker->dim*sizeof(float32_t));
 
-  lx = (int32_t *) malloc(len * sizeof(int32_t));
-  ix = (int32_t **) malloc(len * sizeof(int32_t *));
-  x  = (float32_t **) malloc(len * sizeof(float32_t *));
+  lx = (int32_t *) SG_MALLOC(len * sizeof(int32_t));
+  ix = (int32_t **) SG_MALLOC(len * sizeof(int32_t *));
+  x  = (float32_t **) SG_MALLOC(len * sizeof(float32_t *));
   IsSubproblem = 1;
 
   for (k = 0; k < len; k++)
@@ -295,23 +295,23 @@ sKernel::~sKernel()
 {
   int32_t i;
 
-  if (nor  != NULL) free(nor);
-  if (vaux != NULL) free(vaux);
+  SG_FREE(nor);
+  SG_FREE(vaux);
 
-  if (lx != NULL) free(lx);
+  SG_FREE(lx);
   if (ix != NULL)
   {
       if (!IsSubproblem)
           for (i = 0; i < ell; i++)
-              free(ix[i]);
-      free(ix);
+              SG_FREE(ix[i]);
+      SG_FREE(ix);
   }
   if (x != NULL)
   {
       if (!IsSubproblem)
           for (i = 0; i < ell; i++)
-              free(x[i]);
-      free(x);
+              SG_FREE(x[i]);
+      SG_FREE(x);
   }
 }
 

@@ -169,7 +169,7 @@ CFile::~CFile()
 
 void CFile::set_variable_name(const char* name)
 {
-	free(variable_name);
+	SG_FREE(variable_name);
 	variable_name=strdup(name);
 }
 
