@@ -18,14 +18,15 @@
 
 using namespace shogun;
 
-CLLE::CLLE() : CSimplePreProc<float64_t>(), k(3)
+CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(5)
 {
-
+	// temporary hack. which one will make sense?
+	m_distance = new CEuclidianDistance();
 }
 
 CLLE::~CLLE()
 {
-
+	delete m_distance;
 }
 
 bool CLLE::init(CFeatures* data)
@@ -33,119 +34,169 @@ bool CLLE::init(CFeatures* data)
 	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
 
 	int32_t dim = pdata->get_num_features();
-	SG_PRINT("DIM = %d\n", dim);
 	int32_t N = pdata->get_num_vectors();
-	ASSERT(k<N);
+	ASSERT(m_k<N);
+
+	// output
+	SG_PRINT("DIM = %d\n", dim);
 	SG_PRINT("N = %d\n", N);
-	int32_t i,j;
 
-	// oh it is so dirty
-	CDistance* dist = new CEuclidianDistance();
-	dist->init(pdata,pdata);
-	ASSERT(dist);
+	// loop variables
+	int32_t i,j,k;
 
-	// get distances
-	float64_t* distances = new float64_t[N*N];
+	// compute distance matrix
+	ASSERT(m_distance);
+	m_distance->init(data,data);
+	float64_t* distance_matrix = new float64_t[N*N];
+	float64_t d;
 	for (i=0; i<N; i++)
-	{
-		for (j=0; j<N; j++)
+		for (j=0; j<=i; j++)
 		{
-			distances[i*N+j] = dist->distance(i,j);
+			d = m_distance->distance(i,j);
+			distance_matrix[i*N+j] = d;
+			distance_matrix[j*N+i] = d;
 		}
-	}
 
 	// output matrix
 	for (i=0; i<N; i++)
 	{
 		for (j=0; j<N; j++)
 		{
-			SG_PRINT("%5.3f ",distances[i*N+j]);
+			SG_PRINT("%5.3f ",distance_matrix[i*N+j]);
 		}
 		SG_PRINT("\n");
 	}
 
-	int32_t* neighborhood = new int32_t[N*k];
-	float64_t* dists = new float64_t[N];
-	int32_t* neighs = new int32_t[N];
+	int32_t* neighborhood_matrix = new int32_t[N*m_k];
+	float64_t* local_distances = new float64_t[N];
+	int32_t* local_neighbors = new int32_t[N];
 
-	// find neighbors
+	// construct neighborhood matrix (contains idxs of neighbors for
+	// i-th object in i-th row)
 	for (i=0; i<N; i++)
 	{
 		for (j=0; j<N; j++)
 		{
-			neighs[j] = j;
-			dists[j] = distances[i*N+j];
+			local_neighbors[j] = j;
+			local_distances[j] = distance_matrix[i*N+j];
 		}
 
-		CMath::qsort_index(dists,neighs,N);
+		CMath::qsort_index(local_distances,local_neighbors,N);
 
-		for (j=0; j<k; j++)
-			neighborhood[i*k+j] = neighs[j+1];
+		for (j=0; j<m_k; j++)
+			neighborhood_matrix[i*m_k+j] = local_neighbors[j+1];
 	}
 
-	// print
+	// output matrix
 	for (i=0; i<N; i++)
 	{
 		SG_PRINT("%dth \n",i);
-		for (j=0; j<k; j++)
-			SG_PRINT("%d ", neighborhood[i*k+j]);
+		for (j=0; j<m_k; j++)
+			SG_PRINT("%d ", neighborhood_matrix[i*m_k+j]);
 		SG_PRINT("\n");
 	}
 
-	float64_t* z = new float64_t[N*k];
-	float64_t* z_transposed = new float64_t[N*k];
+	float64_t* z_matrix = new float64_t[N*m_k];
 	float64_t* covariance_matrix = new float64_t[N*N];
 	float64_t* feature_vector = new float64_t[dim];
+
 	for (i=0; i<N; i++)
 	{
-		for (j=0; j<k; j++)
+		// compute local feature matrix containing neighbors of i-th vector
+		for (j=0; j<m_k; j++)
 		{
-			pdata->get_feature_vector(&feature_vector, &dim, neighborhood[i*k+j]);
-			for (int d=0; d<dim; d++)
+			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[i*m_k+j]);
+			for (k=0; k<dim; k++)
 			{
-				z[d*k+j] = feature_vector[d];
+				z_matrix[k*m_k+j] = feature_vector[k];
 			}
 		}
 
+		// get i-th feature vector
 		pdata->get_feature_vector(&feature_vector, &dim, i);
 
-		for (j=0; j<k; j++)
-			for (int d=0; d<dim; d++)
+		// center features by subtracting
+		for (j=0; j<m_k; j++)
+			for (k=0; k<dim; k++)
 			{
-				z[d*k+j] -= feature_vector[d];
+				z_matrix[k*m_k+j] -= feature_vector[k];
 			}
 
+		// output Z matrix
 		SG_PRINT("%dth Z matrix\n", i);
 		for (j=0; j<dim; j++)
 		{
-			for (int d=0; d<k; d++)
+			for (k=0; k<m_k; k++)
 			{
-				SG_PRINT("[%d] %5.3f ", j*k+d, z[j*k+d]);
+				SG_PRINT("[%d] %5.3f ", j*m_k+k, z_matrix[j*m_k+k]);
 			}
 			SG_PRINT("\n");
 		}
 
-		cblas_dgemm(CblasColMajor,CblasNoTrans, CblasTrans,k,k,k,1.0,z,k,z,k,0.0,covariance_matrix,k);
+		cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
+					m_k,m_k,dim,1.0,
+					z_matrix,m_k,
+					z_matrix,m_k,
+					0.0,
+					covariance_matrix,m_k);
 
-		SG_PRINT("%dth covariane matrix\n", i);
-		for (j=0; j<k; j++)
+		SG_PRINT("%dth covariance matrix\n", i);
+		for (j=0; j<m_k; j++)
 		{
-			for (int d=0; d<k; d++)
+			for (k=0; k<m_k; k++)
 			{
-				SG_PRINT("[%d] %5.3f ", j*k+d, covariance_matrix[j*k+d]);
+				SG_PRINT("[%d] %5.3f ", j*m_k+k, covariance_matrix[j*m_k+k]);
 			}
 			SG_PRINT("\n");
 		}
+
+		float64_t* id_vector = new float64_t[m_k];
+		int32_t* ipiv = new int32_t[m_k];
+
+		for (j=0; j<m_k; j++)
+		{
+			id_vector[j] = 1.0;
+		}
+
+		// regularize
+		for (j=0; j<m_k; j++)
+		{
+			covariance_matrix[j*m_k+j] += 0.5;
+		}
+
+		clapack_dgesv(CblasRowMajor,m_k,1,covariance_matrix,m_k,ipiv,id_vector,m_k);
+
+		SG_PRINT("%dth covariance matrix\n", i);
+		for (j=0; j<m_k; j++)
+		{
+			for (k=0; k<m_k; k++)
+			{
+				SG_PRINT("[%d] %5.3f ", j*m_k+k, covariance_matrix[j*m_k+k]);
+			}
+			SG_PRINT("\n");
+		}
+
+
+		SG_PRINT("weights\n");
+
+		for (j=0; j<m_k; j++)
+		{
+			SG_PRINT("[%d] %5.3f ", j, id_vector[j]);
+		}
+		SG_PRINT("\n");
+
+		// TODO eigenproblem
 	}
 
-	// TODO calc weights, eigenproblem
+	delete[] neighborhood_matrix;
+	delete[] distance_matrix;
+	delete[] local_distances;
+	delete[] local_neighbors;
+	delete[] feature_vector;
+	delete[] covariance_matrix;
+	delete[] z_matrix;
 
-	delete[] dists;
-	delete[] neighs;
-	delete[] distances;
-	delete[] neighborhood;
-	delete dist;
-
+	SG_PRINT("cleared\n");
 	return true;
 }
 

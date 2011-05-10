@@ -14,11 +14,14 @@
 
 #include "preproc/SimplePreProc.h"
 #include "features/Features.h"
+#include "distance/Distance.h"
 
 namespace shogun
 {
 
 class CFeatures;
+
+class CDistance;
 
 /** @brief the class LLE
  *	That thing isn't working yet, huh
@@ -62,7 +65,11 @@ public:
 protected:
 
 	/* number of neighbors */
-	int32_t k;
+	int32_t m_k;
+
+	/* distance instance */
+	CDistance* m_distance;
+
 };
 
 }
