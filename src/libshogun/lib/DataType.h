@@ -21,6 +21,24 @@ namespace shogun
 
 typedef int32_t index_t;
 
+template<class T> struct TVector
+{
+	/** vector  */
+	T* vector;
+	/** length of vector  */
+	index_t length;
+};
+
+template<class T> struct TMatrix
+{
+	/** matrix  */
+	T* matrix;
+	/** number of rows of matrix  */
+	index_t num_rows;
+	/** number of columns of matrix  */
+	index_t num_cols;
+};
+
 template<class T> struct TString
 {
 	/** string  */
