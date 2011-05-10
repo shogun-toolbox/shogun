@@ -324,5 +324,5 @@ void CFeatures::get_feature_subset(int32_t** subset_idx, int32_t* subset_len)
 
 	*subset_len=m_subset_len;
 	*subset_idx=(int32_t*) SG_MALLOC(length);
-s	memcpy(*subset_idx, m_subset_idx, length);
+	memcpy(*subset_idx, m_subset_idx, length);
 }
