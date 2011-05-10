@@ -1,13 +1,14 @@
-#include <shogun/features/SimpleFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/DistantSegmentsKernel.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
 #include <shogun/lib/io.h>
-#include <stdio.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/kernel/DistantSegmentsKernel.h>
+#include <shogun/kernel/GaussianKernel.h>
 
-using namespace std;
 using namespace shogun;
+
+int32_t max=3;
+const float64_t initial_value=1;
+const float64_t another_value=2;
 
 void print_message(FILE* target, const char* str)
 {
@@ -17,23 +18,21 @@ void print_message(FILE* target, const char* str)
 bool test_float_scalar()
 {
 	bool result=true;
-	float64_t initialValue=1;
-	float64_t anotherValue=2;
 
-	Parameter* params=new Parameter();
-	float64_t param1=initialValue;
-	params->add(&param1, "param", "");
+	Parameter* original_parameter_list=new Parameter();
+	float64_t original_parameter=initial_value;
+	original_parameter_list->add(&original_parameter, "param", "");
 
-	float64_t param2=anotherValue;
-	Parameter* params2=new Parameter();
-	params2->add(&param2, "param", "");
+	float64_t new_parameter=another_value;
+	Parameter* new_parameter_list=new Parameter();
+	new_parameter_list->add(&new_parameter, "param", "");
 
-	params->set_from_parameters(params2);
+	original_parameter_list->set_from_parameters(new_parameter_list);
 
-	result&=param1==anotherValue;
+	result&=original_parameter==another_value;
 
-	delete params;
-	delete params2;
+	delete original_parameter_list;
+	delete new_parameter_list;
 
 	return result;
 }
@@ -41,33 +40,30 @@ bool test_float_scalar()
 bool test_float_vector()
 {
 	bool result=true;
-	float64_t initialValue=1;
-	float64_t anotherValue=2;
 
-	index_t max=3;
-	Parameter* params=new Parameter();
-	float64_t* param1=(float64_t*) malloc(sizeof(float64_t)*max);
-	for (index_t i=0; i<max; ++i)
-		param1[i]=initialValue;
+	Parameter* original_parameter_list=new Parameter();
+	float64_t* original_parameter=new float64_t[max];
+	CMath::fill_vector(original_parameter, max, initial_value);
 
-	params->add_vector(&param1, &max, "param", "");
+	original_parameter_list->add_vector(&original_parameter, &max, "param", "");
 
-	float64_t* param2=(float64_t*) malloc(sizeof(float64_t)*max);
-	for (index_t i=0; i<max; ++i)
-		param2[i]=anotherValue;
+	float64_t* new_parameter=new float64_t[max];
+	CMath::fill_vector(new_parameter, max, another_value);
 
-	Parameter* params2=new Parameter();
-	params2->add_vector(&param2, &max, "param", "");
+	Parameter* new_parameter_list=new Parameter();
+	new_parameter_list->add_vector(&new_parameter, &max, "param", "");
 
-	params->set_from_parameters(params2);
+	original_parameter_list->set_from_parameters(new_parameter_list);
 
-	for (index_t i=0; i<max; ++i)
-		result&=param1[i]==anotherValue;
+	for (int32_t i=0; i<max; ++i)
+	{
+		result&=original_parameter[i]==another_value;
+	}
 
-	free(param1);
-	free(param2);
-	delete params;
-	delete params2;
+	delete original_parameter;
+	delete new_parameter;
+	delete original_parameter_list;
+	delete new_parameter_list;
 
 	return result;
 }
@@ -75,36 +71,30 @@ bool test_float_vector()
 bool test_float_matrix()
 {
 	bool result=true;
-	float64_t initialValue=1;
-	float64_t anotherValue=2;
 
-	index_t max=3;
-	Parameter* params=new Parameter();
-	float64_t* param1=new float64_t[max*max];
-	for (index_t i=0; i<max; ++i)
-		for (index_t j=0; j<max; ++j)
-			param1[max*j+i]=initialValue;
+	Parameter* original_parameter_list=new Parameter();
+	float64_t* original_parameter=new float64_t[max*max];
+	CMath::fill_vector(original_parameter, max*max, initial_value);
 
-	params->add_matrix(&param1, &max, &max, "param", "");
+	original_parameter_list->add_matrix(&original_parameter, &max, &max, "param", "");
 
-	float64_t* param2=new float64_t[max*max];
-	for (index_t i=0; i<max; ++i)
-		for (index_t j=0; j<max; ++j)
-			param2[max*j+i]=anotherValue;
+	float64_t* new_parameter=new float64_t[max*max];
+	CMath::fill_vector(new_parameter, max*max, another_value);
 
-	Parameter* params2=new Parameter();
-	params2->add_matrix(&param2, &max, &max, "param", "");
+	Parameter* new_parameter_list=new Parameter();
+	new_parameter_list->add_matrix(&new_parameter, &max, &max, "param", "");
 
-	params->set_from_parameters(params2);
+	original_parameter_list->set_from_parameters(new_parameter_list);
 
-	for (index_t i=0; i<max; ++i)
-		for (index_t j=0; j<max; ++j)
-			result&=param1[max*j+i]==anotherValue;
+	for (int32_t i=0; i<max*max; ++i)
+	{
+		result&=original_parameter[i]==another_value;
+	}
 
-	delete param1;
-	delete param2;
-	delete params;
-	delete params2;
+	delete original_parameter;
+	delete new_parameter;
+	delete original_parameter_list;
+	delete new_parameter_list;
 
 	return result;
 }
@@ -113,21 +103,24 @@ bool test_sgobject_scalar()
 {
 	bool result=true;
 
-	Parameter* params=new Parameter();
-	CSGObject* kernel=new CGaussianKernel(10, 10);
-	SG_REF(kernel);
-	params->add(&kernel, "kernel", "");
+	Parameter* original_parameter_list=new Parameter();
+	CSGObject* original_parameter=new CGaussianKernel(10, 10);
+	SG_REF(original_parameter);
+	original_parameter_list->add(&original_parameter, "kernel", "");
 
-	CSGObject* kernel2=new CDistantSegmentsKernel(10, 10, 10);
-	Parameter* params2=new Parameter();
-	params2->add(&kernel2, "kernel", "");
+	CSGObject* new_parameter=new CDistantSegmentsKernel(10, 10, 10);
+	Parameter* new_parameter_list=new Parameter();
+	new_parameter_list->add(&new_parameter, "kernel", "");
 
-	params->set_from_parameters(params2);
+	/* note: old_parameter is SG_UNREF'ed, new one SG_REF'ed */
+	original_parameter_list->set_from_parameters(new_parameter_list);
 
-	result&=kernel==kernel2;
+	result&=original_parameter==new_parameter;
 
-	delete params;
-	delete params2;
+	/* old original kernel was deleted by shogun's SG_UNREF */
+	SG_UNREF(new_parameter);
+	delete original_parameter_list;
+	delete new_parameter_list;
 
 	return result;
 }
@@ -136,33 +129,43 @@ bool test_sgobject_vector()
 {
 	bool result=true;
 
-	index_t max=3;
-	Parameter* params=new Parameter();
-	CSGObject** param1=new CSGObject*[max];
-	for (index_t i=0; i<max; ++i)
+	Parameter* original_parameter_list=new Parameter();
+	CSGObject** original_parameter=new CSGObject*[max];
+	for (int32_t i=0; i<max; ++i)
 	{
-		param1[i]=new CDistantSegmentsKernel(1, 1, 1);
-		SG_REF(param1[i]);
+		original_parameter[i]=new CDistantSegmentsKernel(1, 1, 1);
+		SG_REF(original_parameter[i]);
 	}
 
-	params->add_vector(&param1, &max, "param", "");
+	original_parameter_list->add_vector(&original_parameter, &max, "param", "");
 
-	CSGObject** param2=new CSGObject*[max];
-	for (index_t i=0; i<max; ++i)
-		param2[i]=new CDistantSegmentsKernel(2, 2, 2);
+	CSGObject** new_parameter=new CSGObject*[max];
+	for (int32_t i=0; i<max; ++i)
+	{
+		new_parameter[i]=new CDistantSegmentsKernel(2, 2, 2);
+	}
 
-	Parameter* params2=new Parameter();
-	params2->add_vector(&param2, &max, "param", "");
+	Parameter* new_parameter_list=new Parameter();
+	new_parameter_list->add_vector(&new_parameter, &max, "param", "");
 
-	params->set_from_parameters(params2);
+	/* note: old_parameters are SG_UNREF'ed, new ones SG_REF'ed */
+	original_parameter_list->set_from_parameters(new_parameter_list);
 
-	for (index_t i=0; i<max; ++i)
-		result&=param1[i]==param2[i];
+	for (int32_t i=0; i<max; ++i)
+	{
+		result&=original_parameter[i]==new_parameter[i];
+	}
 
-	delete param1;
-	delete param2;
-	delete params;
-	delete params2;
+	/* old original kernels were deleted by shogun's SG_UNREF */
+	delete original_parameter;
+	
+	for (int32_t i=0; i<max; ++i)
+	{
+		SG_UNREF(new_parameter[i]);
+	}
+	delete new_parameter;
+	delete original_parameter_list;
+	delete new_parameter_list;
 
 	return result;
 }
@@ -171,36 +174,52 @@ bool test_sgobject_matrix()
 {
 	bool result=true;
 
-	index_t max=3;
-	Parameter* params=new Parameter();
-	CSGObject** param1=new CSGObject*[max*max];
-	for (index_t i=0; i<max; ++i)
-		for (index_t j=0; j<max; ++j)
+	Parameter* original_parameter_list=new Parameter();
+	CSGObject** original_parameter=new CSGObject*[max*max];
+	for (int32_t i=0; i<max; ++i)
+	{
+		for (int32_t j=0; j<max; ++j)
 		{
-			param1[j*max+i]=new CDistantSegmentsKernel(1, 1, 1);
-			SG_REF(param1[j*max+i]);
+			original_parameter[j*max+i]=new CDistantSegmentsKernel(1, 1, 1);
+			SG_REF(original_parameter[j*max+i]);
 		}
+	}
 
-	params->add_matrix(&param1, &max, &max, "param", "");
+	original_parameter_list->add_matrix(&original_parameter, &max, &max, "param", "");
 
-	CSGObject** param2=new CSGObject*[max*max];
-	for (index_t i=0; i<max; ++i)
-		for (index_t j=0; j<max; ++j)
-			param2[j*max+i]=new CDistantSegmentsKernel(1, 1, 1);
+	CSGObject** new_parameter=new CSGObject*[max*max];
+	for (int32_t i=0; i<max; ++i)
+	{
+		for (int32_t j=0; j<max; ++j)
+		{
+			new_parameter[j*max+i]=new CDistantSegmentsKernel(1, 1, 1);
+		}
+	}
 
-	Parameter* params2=new Parameter();
-	params2->add_matrix(&param2, &max, &max, "param", "");
+	Parameter* new_parameter_list=new Parameter();
+	new_parameter_list->add_matrix(&new_parameter, &max, &max, "param", "");
 
-	params->set_from_parameters(params2);
+	/* note: old_parameters are SG_UNREF'ed, new ones SG_REF'ed */
+	original_parameter_list->set_from_parameters(new_parameter_list);
 
-	for (index_t i=0; i<max; ++i)
-		for (index_t j=0; j<max; ++j)
-			result&=param1[j*max+i]==param2[j*max+i];
+	for (int32_t i=0; i<max; ++i)
+	{
+		for (int32_t j=0; j<max; ++j)
+		{
+			result&=original_parameter[j*max+i]==new_parameter[j*max+i];
+		}
+	}
 
-	delete param1;
-	delete param2;
-	delete params;
-	delete params2;
+	/* old original kernels were deleted by shogun's SG_UNREF */
+	delete original_parameter;
+	
+	for (int32_t i=0; i<max*max; ++i)
+	{
+		SG_UNREF(new_parameter[i]);
+	}
+	delete new_parameter;
+	delete original_parameter_list;
+	delete new_parameter_list;
 
 	return result;
 }
@@ -220,9 +239,9 @@ int main(int argc, char **argv)
 	result&=test_float_vector();
 
 	if (result)
-		SG_SPRINT("SUCCESS!");
+		SG_SPRINT("SUCCESS!\n");
 	else
-		SG_SPRINT("FAILURE!");
+		SG_SPRINT("FAILURE!\n");
 
 	return 0;
 }
