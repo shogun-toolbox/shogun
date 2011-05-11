@@ -56,9 +56,7 @@ bool test_float_vector()
 	original_parameter_list->set_from_parameters(new_parameter_list);
 
 	for (int32_t i=0; i<max; ++i)
-	{
 		result&=original_parameter[i]==another_value;
-	}
 
 	delete original_parameter;
 	delete new_parameter;
@@ -87,9 +85,7 @@ bool test_float_matrix()
 	original_parameter_list->set_from_parameters(new_parameter_list);
 
 	for (int32_t i=0; i<max*max; ++i)
-	{
 		result&=original_parameter[i]==another_value;
-	}
 
 	delete original_parameter;
 	delete new_parameter;
@@ -141,9 +137,7 @@ bool test_sgobject_vector()
 
 	CSGObject** new_parameter=new CSGObject*[max];
 	for (int32_t i=0; i<max; ++i)
-	{
 		new_parameter[i]=new CDistantSegmentsKernel(2, 2, 2);
-	}
 
 	Parameter* new_parameter_list=new Parameter();
 	new_parameter_list->add_vector(&new_parameter, &max, "param", "");
@@ -152,17 +146,14 @@ bool test_sgobject_vector()
 	original_parameter_list->set_from_parameters(new_parameter_list);
 
 	for (int32_t i=0; i<max; ++i)
-	{
 		result&=original_parameter[i]==new_parameter[i];
-	}
 
 	/* old original kernels were deleted by shogun's SG_UNREF */
 	delete original_parameter;
 	
 	for (int32_t i=0; i<max; ++i)
-	{
 		SG_UNREF(new_parameter[i]);
-	}
+
 	delete new_parameter;
 	delete original_parameter_list;
 	delete new_parameter_list;
@@ -191,9 +182,7 @@ bool test_sgobject_matrix()
 	for (int32_t i=0; i<max; ++i)
 	{
 		for (int32_t j=0; j<max; ++j)
-		{
 			new_parameter[j*max+i]=new CDistantSegmentsKernel(1, 1, 1);
-		}
 	}
 
 	Parameter* new_parameter_list=new Parameter();
@@ -205,18 +194,15 @@ bool test_sgobject_matrix()
 	for (int32_t i=0; i<max; ++i)
 	{
 		for (int32_t j=0; j<max; ++j)
-		{
 			result&=original_parameter[j*max+i]==new_parameter[j*max+i];
-		}
 	}
 
 	/* old original kernels were deleted by shogun's SG_UNREF */
 	delete original_parameter;
 	
 	for (int32_t i=0; i<max*max; ++i)
-	{
 		SG_UNREF(new_parameter[i]);
-	}
+
 	delete new_parameter;
 	delete original_parameter_list;
 	delete new_parameter_list;

@@ -1797,22 +1797,22 @@ void Parameter::set_from_parameters(Parameter* params)
 			{
 				if (own->m_datatype.m_ctype==CT_SCALAR)
 				{
-					CSGObject** toUnref=(CSGObject**) own->m_parameter;
-					CSGObject** toRef=(CSGObject**) current->m_parameter;
+					CSGObject** to_unref=(CSGObject**) own->m_parameter;
+					CSGObject** to_ref=(CSGObject**) current->m_parameter;
 
-					SG_UNREF((*toUnref));
-					SG_REF((*toRef));
+					SG_UNREF((*to_unref));
+					SG_REF((*to_ref));
 				}
 				else
 				{
 					/* unref all SGObjects and reference the new ones */
-					CSGObject*** toUnref=(CSGObject***) own->m_parameter;
-					CSGObject*** toRef=(CSGObject***) current->m_parameter;
+					CSGObject*** to_unref=(CSGObject***) own->m_parameter;
+					CSGObject*** to_ref=(CSGObject***) current->m_parameter;
 
 					for (index_t j=0; j<own->m_datatype.get_num_elements(); ++j)
 					{
-						SG_UNREF(((*toUnref)[j]));
-						SG_REF(((*toRef)[j]));
+						SG_UNREF(((*to_unref)[j]));
+						SG_REF(((*to_ref)[j]));
 					}
 				}
 			}
