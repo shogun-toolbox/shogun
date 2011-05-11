@@ -4,14 +4,16 @@
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="."/>
-  <property name="dist"  location="dist"/>
-  <property name="test"  location="shogun/examples"/>
-  <property name="classpath"  location="dist/shogun.jar:."/>
+  <property name="classes" location="classes"/>
+  <property name="dist" location="dist"/>
+  <property name="test" location="shogun/examples"/>
+  <property name="classpath" location="dist/shogun.jar"/>
 
   <target name="compile"
         description="compile the source " >
-	 <!-- Compile the java code -->
-    <javac srcdir="${src}"/>
+<!-- Compile the java code -->
+<mkdir dir="${classes}"/>
+<javac srcdir="${src}" destdir="${classes}"/>
   </target>
 
   <target name="dist" depends="compile"
@@ -20,14 +22,14 @@
     <mkdir dir="${dist}"/>
 
     <!-- Put everything into shogun.jar file -->
-    <jar jarfile="${dist}/shogun.jar" basedir="${src}/shogun"/>
+    <jar jarfile="${dist}/shogun.jar" basedir="${classes}/"/>
   </target>
-	
+
   <target name="test" depends="dist"
         description="test the examples" >
 
     <!-- test examples -->
-    <javac srcdir="${test}"/>
+    <javac srcdir="${test}" classpath="${classpath}" destdir="${classes}"/>
   </target>
   
   <target name="run" depends="test"
@@ -39,10 +41,6 @@
         description="clean up" >
     <!-- Delete ${dist} directory trees -->
     <delete dir="${dist}"/>
-
-    <!-- Delete the files in the shogun directory -->
-    <delete> 
-       <fileset dir="./shogun" includes="**/*.class"/>
-    </delete>
+    <delete dir="${classes}"/>
   </target>
 </project>

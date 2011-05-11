@@ -1,3 +1,6 @@
+package shogun.examples;
+import shogun.*;
+
 public class minimal_test {
     static {
         System.loadLibrary("Kernel");
@@ -10,3 +13,5 @@ public class minimal_test {
         KernelJNI.exit_shogun();
     }
 }
+
+
