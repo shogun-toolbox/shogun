@@ -229,5 +229,7 @@ int main(int argc, char **argv)
 	else
 		SG_SPRINT("FAILURE!\n");
 
+	exit_shogun();
+
 	return 0;
 }
