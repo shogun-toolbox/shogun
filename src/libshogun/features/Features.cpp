@@ -303,8 +303,6 @@ void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
 	int64_t length=sizeof(int32_t)*subset_len;
 
 	m_subset_idx=(int32_t*) SG_MALLOC(length);
-	if (!m_subset_idx)
-		SG_ERROR("Allocating %ld bytes failes\n", length);
 
 	memcpy(m_subset_idx, subset_idx, length);
 }
@@ -326,7 +324,5 @@ void CFeatures::get_feature_subset(int32_t** subset_idx, int32_t* subset_len)
 
 	*subset_len=m_subset_len;
 	*subset_idx=(int32_t*) SG_MALLOC(length);
-	if (!*subset_idx)
-		SG_ERROR("Allocating %ld bytes failes\n", length);
 	memcpy(*subset_idx, m_subset_idx, length);
 }

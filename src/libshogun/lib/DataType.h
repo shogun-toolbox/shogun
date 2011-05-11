@@ -134,6 +134,16 @@ struct TSGDataType
 								size_t n);
 	static bool string_to_ptype(EPrimitiveType* ptype,
 								const char* str);
+
+	/**
+	 * @return size of type in bytes
+	 */
+	size_t get_size();
+
+	/**
+	 * @return number of (matrix, vector, scalar) elements of type
+	 */
+	index_t get_num_elements();
 };
 }
 #endif /* __DATATYPE_H__  */
