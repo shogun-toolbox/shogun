@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(5)
+CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(10)
 {
 	// temporary hack. which one will make sense?
 	m_distance = new CEuclidianDistance();
@@ -56,7 +56,7 @@ bool CLLE::init(CFeatures* data)
 			distance_matrix[i*N+j] = d;
 			distance_matrix[j*N+i] = d;
 		}
-
+/*
 	// output matrix
 	for (i=0; i<N; i++)
 	{
@@ -66,10 +66,16 @@ bool CLLE::init(CFeatures* data)
 		}
 		SG_PRINT("\n");
 	}
-
+*/
 	int32_t* neighborhood_matrix = new int32_t[N*m_k];
 	float64_t* local_distances = new float64_t[N];
 	int32_t* local_neighbors = new int32_t[N];
+	float64_t* W = new float64_t[N*N];
+	float64_t* M = new float64_t[N*N];
+
+	for (i=0; i<N; i++)
+		for (j=0; j<N; j++)
+			W[i*N+j] = 0.0;
 
 	// construct neighborhood matrix (contains idxs of neighbors for
 	// i-th object in i-th row)
@@ -121,7 +127,7 @@ bool CLLE::init(CFeatures* data)
 			{
 				z_matrix[k*m_k+j] -= feature_vector[k];
 			}
-
+/*
 		// output Z matrix
 		SG_PRINT("%dth Z matrix\n", i);
 		for (j=0; j<dim; j++)
@@ -132,14 +138,14 @@ bool CLLE::init(CFeatures* data)
 			}
 			SG_PRINT("\n");
 		}
-
+*/
 		cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
 					m_k,m_k,dim,1.0,
 					z_matrix,m_k,
 					z_matrix,m_k,
 					0.0,
 					covariance_matrix,m_k);
-
+/*
 		SG_PRINT("%dth covariance matrix\n", i);
 		for (j=0; j<m_k; j++)
 		{
@@ -149,7 +155,7 @@ bool CLLE::init(CFeatures* data)
 			}
 			SG_PRINT("\n");
 		}
-
+*/
 		float64_t* id_vector = new float64_t[m_k];
 		int32_t* ipiv = new int32_t[m_k];
 
@@ -158,26 +164,45 @@ bool CLLE::init(CFeatures* data)
 			id_vector[j] = 1.0;
 		}
 
+		// compute tr(C)
+		float64_t trace = 0.0;
+		for (j=0; j<m_k; j++)
+		{
+			trace += covariance_matrix[j*m_k+j];
+		}
+
 		// regularize
 		for (j=0; j<m_k; j++)
 		{
-			covariance_matrix[j*m_k+j] += 0.5;
+			covariance_matrix[j*m_k+j] += 1e-3*trace;
 		}
 
-		clapack_dgesv(CblasRowMajor,m_k,1,covariance_matrix,m_k,ipiv,id_vector,m_k);
+		clapack_dgesv(CblasRowMajor,
+						m_k,1,
+						covariance_matrix,m_k,
+						ipiv,
+						id_vector,m_k);
+		float64_t normalizer=0.0;
 
-		SG_PRINT("%dth covariance matrix\n", i);
 		for (j=0; j<m_k; j++)
 		{
-			for (k=0; k<m_k; k++)
-			{
-				SG_PRINT("[%d] %5.3f ", j*m_k+k, covariance_matrix[j*m_k+k]);
-			}
-			SG_PRINT("\n");
+			normalizer += CMath::abs(id_vector[j]);
+		}
+		for (j=0; j<m_k; j++)
+		{
+			id_vector[j]/=normalizer;
 		}
 
+		/*
+		SG_PRINT("weights for \n");
 
-		SG_PRINT("weights\n");
+		pdata->get_feature_vector(&feature_vector, &dim, i);
+
+		for (j=0; j<dim; j++)
+		{
+			SG_PRINT("[%d] %5.3f", j, feature_vector[j]);
+		}
+		SG_PRINT("\nis \n");
 
 		for (j=0; j<m_k; j++)
 		{
@@ -185,9 +210,69 @@ bool CLLE::init(CFeatures* data)
 		}
 		SG_PRINT("\n");
 
-		// TODO eigenproblem
+		float64_t* result = new float64_t[dim];
+
+		for (j=0; j<dim; j++)
+			result[j] = 0.0;
+
+		for (j=0; j<m_k; j++)
+		{
+			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[i*m_k+j]);
+			float64_t weight = id_vector[j];
+			for (k=0; k<dim; k++)
+			{
+				result[k] += weight*feature_vector[k];
+			}
+		}
+
+		SG_PRINT("resulting\n");
+		for (j=0; j<dim; j++)
+		{
+			SG_PRINT("[%d] %5.3f", j, result[j]);
+		}
+		SG_PRINT("\n");
+		*/
+
+		for (j=0; j<m_k; j++)
+		{
+			W[i*N+neighborhood_matrix[i*m_k+j]]=id_vector[j];
+		}
+
 	}
 
+	// W=I-W
+	for (i=0; i<N; i++)
+	{
+		for (j=0; j<N; j++)
+		{
+			W[i*N+j] = i==j ? -W[i*N+j] : 1.0-W[i*N+j];
+		}
+	}
+
+	// compute W'*W
+	cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
+						N,N,N,1.0,
+						W,N,
+						W,N,
+						0.0,
+						M,N);
+
+	// compute eigenvectors
+	float64_t* eigs = new float64_t[N*N];
+	int32_t status = 0;
+	wrap_dsyev('V','U',N,M,N,eigs,&status);
+
+	for (i=0; i<N; i++)
+	{
+		for (j=0; j<N; j++)
+		{
+			SG_PRINT("%5.3f ",M[i*N+j]);
+		}
+		SG_PRINT("\n");
+	}
+
+	// clean
+	delete[] W;
 	delete[] neighborhood_matrix;
 	delete[] distance_matrix;
 	delete[] local_distances;
@@ -197,6 +282,7 @@ bool CLLE::init(CFeatures* data)
 	delete[] z_matrix;
 
 	SG_PRINT("cleared\n");
+
 	return true;
 }
 
