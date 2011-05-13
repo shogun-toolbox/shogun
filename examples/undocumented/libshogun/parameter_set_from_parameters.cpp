@@ -1,3 +1,14 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011 Heiko Strathmann
+ * DS-Kernel implementation Written (W) 2008 Sébastien Boisvert under GPLv3
+ * Copyright (C) 1999-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #include <shogun/lib/io.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/base/Parameter.h>
