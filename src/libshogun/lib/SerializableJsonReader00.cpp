@@ -196,7 +196,7 @@ SerializableJsonReader00::read_sparse_end_wrapped(
 
 bool
 SerializableJsonReader00::read_sparseentry_begin_wrapped(
-	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	const TSGDataType* type, SGSparseMatrixEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
 	json_object* m = m_file->m_stack_stream.back();
@@ -220,7 +220,7 @@ SerializableJsonReader00::read_sparseentry_begin_wrapped(
 
 bool
 SerializableJsonReader00::read_sparseentry_end_wrapped(
-	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	const TSGDataType* type, SGSparseMatrixEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
 	m_file->pop_object();

@@ -54,7 +54,7 @@ IGNORE_IN_CLASSLIST class CSerializableHdf5File
 		hid_t dspace, dtype, dset;
 		hvl_t* vltype;
 		index_t y, x, sub_y;
-		TSparseEntry<char>* sparse_ptr;
+		SGSparseMatrixEntry<char>* sparse_ptr;
 		const char* name;
 	};
 
@@ -120,10 +120,10 @@ protected:
 		index_t length);
 
 	virtual bool write_sparseentry_begin_wrapped(
-		const TSGDataType* type, const TSparseEntry<char>* first_entry,
+		const TSGDataType* type, const SGSparseMatrixEntry<char>* first_entry,
 		index_t feat_index, index_t y);
 	virtual bool write_sparseentry_end_wrapped(
-		const TSGDataType* type, const TSparseEntry<char>* first_entry,
+		const TSGDataType* type, const SGSparseMatrixEntry<char>* first_entry,
 		index_t feat_index, index_t y);
 
 	virtual bool write_item_begin_wrapped(

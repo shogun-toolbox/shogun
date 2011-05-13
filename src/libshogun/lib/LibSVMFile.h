@@ -30,7 +30,7 @@ namespace shogun
 	 * @return if reading was successful
 	 */
 	bool read_real_valued_sparse(
-		TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+		SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 	/** write sparse real valued features in svm light format
 	 *
@@ -40,7 +40,7 @@ namespace shogun
 	 * @return if writing was successful
 	 */
 	bool write_real_valued_sparse(
-		const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
+		const SGSparseMatrix<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 
 	/** read dense real valued features, simple ascii format
 	 * e.g. 1.0 1.1 0.2 
@@ -77,14 +77,14 @@ namespace shogun
 	 * @param max_string_len length of longest string
 	 * @return if reading was successful
 	 */
-	bool read_char_valued_strings(TString<char>*& strings, int32_t& num_str, int32_t& max_string_len);
+	bool read_char_valued_strings(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len);
 	/** write char string features, simple ascii format
 	 *
 	 * @param strings strings to write
 	 * @param num_str number of strings
 	 * @return if writing was successful
 	 */
-	bool write_char_valued_strings(const TString<char>* strings, int32_t num_str);
+	bool write_char_valued_strings(const SGString<char>* strings, int32_t num_str);
 
 }
 #endif //__LIBSVM_FILE_H__

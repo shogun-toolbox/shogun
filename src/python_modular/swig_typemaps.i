@@ -721,7 +721,7 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (shogun::TString<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
+        (shogun::SGString<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
 {
     PyObject* list=(PyObject*) $input;
 
@@ -752,13 +752,13 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
         }
     }
 }
-%typemap(in) (shogun::TString<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {
+%typemap(in) (shogun::SGString<type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {
     PyObject* list=(PyObject*) $input;
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
         int32_t size=PyList_Size(list);
-        shogun::TString<type>* strings=new shogun::TString<type>[size];
+        shogun::SGString<type>* strings=new shogun::SGString<type>[size];
 
         int32_t max_len=0;
         for (int32_t i=0; i<size; i++)
@@ -857,15 +857,15 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_ARGOUT(type,typecode)
-%typemap(in, numinputs=0) (shogun::TString<type>** ARGOUT_STRINGS, int32_t* NUM) {
-    $1 = (shogun::TString<type>**) malloc(sizeof(shogun::TString<type>*));
+%typemap(in, numinputs=0) (shogun::SGString<type>** ARGOUT_STRINGS, int32_t* NUM) {
+    $1 = (shogun::SGString<type>**) malloc(sizeof(shogun::SGString<type>*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
 }
-%typemap(argout) (shogun::TString<type>** ARGOUT_STRINGS, int32_t* NUM) {
+%typemap(argout) (shogun::SGString<type>** ARGOUT_STRINGS, int32_t* NUM) {
     if (!$1 || !$2)
         SWIG_fail;
 
-    shogun::TString<type>* str=*$1;
+    shogun::SGString<type>* str=*$1;
     int32_t num=*$2;
     PyObject* list = PyList_New(num);
 
@@ -929,7 +929,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
 /* input typemap for Sparse Features */
 %define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (shogun::TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
+        (shogun::SGSparseMatrix<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
 {
     $1 = ( PyObject_HasAttrString($input, "indptr") &&
             PyObject_HasAttrString($input, "indices") &&
@@ -938,7 +938,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
          ) ? 1 : 0;
 }
 
-%typemap(in) (shogun::TSparse<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
+%typemap(in) (shogun::SGSparseMatrix<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
 {
     PyObject* o=(PyObject*) $input;
 
@@ -1027,7 +1027,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
         if (len_indices!=len_data)
             SWIG_fail;
 
-        shogun::TSparse<type>* sfm = new shogun::TSparse<type>[num_vec];
+        shogun::SGSparseMatrix<type>* sfm = new shogun::SGSparseMatrix<type>[num_vec];
 
         for (int32_t i=0; i<num_vec; i++)
         {
@@ -1042,7 +1042,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
             
             if (num>0)
             {
-                shogun::TSparseEntry<type>* features=new shogun::TSparseEntry<type>[num];
+                shogun::SGSparseMatrixEntry<type>* features=new shogun::SGSparseMatrixEntry<type>[num];
 
                 for (int32_t j=0; j<num; j++)
                 {
@@ -1098,17 +1098,17 @@ TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for sparse features returns (data, row, ptr) */
 %define TYPEMAP_SPARSEFEATURES_ARGOUT(type,typecode)
-%typemap(in, numinputs=0) (shogun::TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
-    $1 = (shogun::TSparse<type>**) malloc(sizeof(shogun::TSparse<type>*));
+%typemap(in, numinputs=0) (shogun::SGSparseMatrix<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+    $1 = (shogun::SGSparseMatrix<type>**) malloc(sizeof(shogun::SGSparseMatrix<type>*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
     $3 = (int32_t*) malloc(sizeof(int32_t));
     $4 = (int64_t*) malloc(sizeof(int64_t));
 }
-%typemap(argout) (shogun::TSparse<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+%typemap(argout) (shogun::SGSparseMatrix<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
     if (!$1 || !$2 || !$3 || !$4)
         SWIG_fail;
 
-    shogun::TSparse<type>* sfm=*$1;
+    shogun::SGSparseMatrix<type>* sfm=*$1;
     int32_t num_feat=*$2;
     int32_t num_vec=*$3;
     int64_t nnz=*$4;

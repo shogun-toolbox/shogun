@@ -108,8 +108,8 @@
 %apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* use_svm, int32_t num_values)}
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* limits, int32_t num_plifs, int32_t num_limits)}
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* penalties, int32_t num_plifs, int32_t num_limits)}
-%apply (TString<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(TString<char>* names, int32_t num_values, int32_t maxlen)}
-%apply (TString<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(TString<char>* transform_type, int32_t num_values, int32_t maxlen)}
+%apply (SGString<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(SGString<char>* names, int32_t num_values, int32_t maxlen)}
+%apply (SGString<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(SGString<char>* transform_type, int32_t num_values, int32_t maxlen)}
 
 /* Remove C Prefix */
 %rename(PlifBase) CPlifBase;

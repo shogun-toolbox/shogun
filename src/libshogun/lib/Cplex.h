@@ -59,7 +59,7 @@ public:
 
 	bool setup_lpboost(float64_t C, int32_t num_cols);
 	bool add_lpboost_constraint(
-		float64_t factor, TSparseEntry<float64_t>* h, int32_t len,
+		float64_t factor, SGSparseMatrixEntry<float64_t>* h, int32_t len,
 		int32_t ulen, CLabels* label);
 
 	// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1

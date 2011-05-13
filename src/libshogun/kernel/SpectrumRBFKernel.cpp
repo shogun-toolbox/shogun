@@ -260,7 +260,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	fin.close();
 
 	nof_sequences = seqs.size();
-	sequences = new TString<char>[nof_sequences];
+	sequences = new SGString<char>[nof_sequences];
 
 	int max_len = 0;
 	for (int i=0; i < nof_sequences; ++i)

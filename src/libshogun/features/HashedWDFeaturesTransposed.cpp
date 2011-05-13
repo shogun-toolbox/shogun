@@ -382,7 +382,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	int32_t string_length=hf->string_length;
 	int32_t degree=hf->degree;
 	float64_t* wd_weights=hf->wd_weights;
-	TString<uint8_t>* transposed_strings=hf->transposed_strings;
+	SGString<uint8_t>* transposed_strings=hf->transposed_strings;
 	uint32_t mask=hf->mask;
 	int32_t partial_w_dim=hf->partial_w_dim;
 	float64_t normalization_const=hf->normalization_const;

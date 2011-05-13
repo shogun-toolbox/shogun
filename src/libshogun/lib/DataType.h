@@ -21,7 +21,7 @@ namespace shogun
 
 typedef int32_t index_t;
 
-template<class T> struct TVector
+template<class T> struct SGVector
 {
 	/** vector  */
 	T* vector;
@@ -29,7 +29,7 @@ template<class T> struct TVector
 	index_t length;
 };
 
-template<class T> struct TMatrix
+template<class T> struct SGMatrix
 {
 	/** matrix  */
 	T* matrix;
@@ -39,7 +39,7 @@ template<class T> struct TMatrix
 	index_t num_cols;
 };
 
-template<class T> struct TString
+template<class T> struct SGString
 {
 	/** string  */
 	T* string;
@@ -47,8 +47,8 @@ template<class T> struct TString
 	index_t length;
 };
 
-/** template class TSparseEntry */
-template <class T> struct TSparseEntry
+/** template class SGSparseMatrixEntry */
+template <class T> struct SGSparseMatrixEntry
 {
 	/** feature index  */
 	index_t feat_index;
@@ -56,15 +56,15 @@ template <class T> struct TSparseEntry
 	T entry;
 };
 
-/** template class TSparse */
-template <class T> struct TSparse
+/** template class SGSparseMatrix */
+template <class T> struct SGSparseMatrix
 {
 	/** vector index */
 	index_t vec_index;
 	/** number of feature entries */
 	index_t num_feat_entries;
 	/** features */
-	TSparseEntry<T>* features;
+	SGSparseMatrixEntry<T>* features;
 };
 
 enum EContainerType

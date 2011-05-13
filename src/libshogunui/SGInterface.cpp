@@ -1320,7 +1320,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				TString<uint8_t>* strs=NULL;
+				SGString<uint8_t>* strs=NULL;
 				source->get_byte_string_list(strs, num_str, max_str_len);
 				target->set_byte_string_list(strs, num_str);
 				delete[] strs;
@@ -1330,7 +1330,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				TString<char>* strs;
+				SGString<char>* strs;
 				source->get_char_string_list(strs, num_str,max_str_len);
 				target->set_char_string_list(strs, num_str);
 				delete[] strs;
@@ -1340,7 +1340,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				TString<int32_t>* strs;
+				SGString<int32_t>* strs;
 				source->get_int_string_list(strs, num_str,max_str_len);
 				target->set_int_string_list(strs, num_str);
 				delete[] strs;
@@ -1350,7 +1350,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				TString<int16_t>* strs=NULL;
+				SGString<int16_t>* strs=NULL;
 				source->get_short_string_list(strs, num_str, max_str_len);
 				target->set_short_string_list(strs, num_str);
 				delete[] strs;
@@ -1360,7 +1360,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_str=0;
 				int32_t max_str_len=0;
-				TString<uint16_t>* strs=NULL;
+				SGString<uint16_t>* strs=NULL;
 				source->get_word_string_list(strs, num_str, max_str_len);
 				target->set_word_string_list(strs, num_str);
 				delete[] strs;
@@ -1498,7 +1498,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_feat=0;
 				int32_t num_vec=0;
-				TSparse<float64_t>* fmatrix=NULL;
+				SGSparseMatrix<float64_t>* fmatrix=NULL;
 				source->get_real_sparsematrix(fmatrix, num_feat, num_vec);
 				int64_t nnz=0;
 				for (int32_t i=0; i<num_vec; i++)
@@ -1671,7 +1671,7 @@ bool CSGInterface::cmd_get_features()
 						get_num_nonzero_entries();
 					int32_t num_feat=0;
 					int32_t num_vec=0;
-					TSparse<float64_t>* fmatrix=((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
+					SGSparseMatrix<float64_t>* fmatrix=((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
 					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
 
 					set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
@@ -1692,21 +1692,21 @@ bool CSGInterface::cmd_get_features()
 			{
 				case F_BYTE:
 				{
-					TString<uint8_t>* fmatrix=((CStringFeatures<uint8_t>*) feat)->get_features(num_str, max_str_len);
+					SGString<uint8_t>* fmatrix=((CStringFeatures<uint8_t>*) feat)->get_features(num_str, max_str_len);
 					set_byte_string_list(fmatrix, num_str);
 					break;
 				}
 
 				case F_CHAR:
 				{
-					TString<char>* fmatrix=((CStringFeatures<char>*) feat)->get_features(num_str, max_str_len);
+					SGString<char>* fmatrix=((CStringFeatures<char>*) feat)->get_features(num_str, max_str_len);
 					set_char_string_list(fmatrix, num_str);
 					break;
 				}
 
 				case F_WORD:
 				{
-					TString<uint16_t>* fmatrix=((CStringFeatures<uint16_t>*) feat)->get_features(num_str, max_str_len);
+					SGString<uint16_t>* fmatrix=((CStringFeatures<uint16_t>*) feat)->get_features(num_str, max_str_len);
 					set_word_string_list(fmatrix, num_str);
 					break;
 				}
@@ -1795,7 +1795,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 	{
 		case SPARSE_REAL:
 		{
-			TSparse<float64_t>* fmatrix=NULL;
+			SGSparseMatrix<float64_t>* fmatrix=NULL;
 			get_real_sparsematrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSparseFeatures<float64_t>();
@@ -1870,7 +1870,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			int32_t num_str=0;
 			int32_t max_str_len=0;
-			TString<char>* fmatrix=NULL;
+			SGString<char>* fmatrix=NULL;
 			get_char_string_list(fmatrix, num_str, max_str_len);
 
 			int32_t alphabet_len=0;
@@ -1943,7 +1943,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			int32_t num_str=0;
 			int32_t max_str_len=0;
-			TString<uint8_t>* fmatrix=NULL;
+			SGString<uint8_t>* fmatrix=NULL;
 			get_byte_string_list(fmatrix, num_str, max_str_len);
 
 			int32_t alphabet_len=0;
@@ -6074,7 +6074,7 @@ bool CSGInterface::cmd_set_plif_struct()
 	// ARG 3
 	int32_t Nname=0;
 	int32_t Mname=0;
-	TString<char>* names;
+	SGString<char>* names;
 	get_char_string_list(names, Nname,Mname);
 
 	// ARG 4
@@ -6092,7 +6092,7 @@ bool CSGInterface::cmd_set_plif_struct()
 	// ARG 6
 	int32_t Ntransform=0;
 	int32_t Mtransform=0;
-	TString<char>* all_transform;
+	SGString<char>* all_transform;
 	get_char_string_list(all_transform, Ntransform, Mtransform);
 
 	// ARG 7
@@ -6179,8 +6179,8 @@ bool CSGInterface::cmd_get_plif_struct()
 	int32_t* ids = new int32_t[N];
 	float64_t* max_values = new float64_t[N];
 	float64_t* min_values = new float64_t[N];
-	TString<char>* names = new TString<char>[N];
-	TString<char>* all_transform = new TString<char>[N];
+	SGString<char>* names = new SGString<char>[N];
+	SGString<char>* all_transform = new SGString<char>[N];
 	float64_t* all_limits = new float64_t[N*M];
 	float64_t* all_penalties = new float64_t[N*M];
 	bool* all_use_cache = new bool[N];
@@ -6510,11 +6510,11 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	//ARG 1
 	// feature matrix (#states x #feature_positions x max_num_signals)
 	int32_t dim11, dim12 ;
-	TSparse<float64_t> *features1=NULL ;
+	SGSparseMatrix<float64_t> *features1=NULL ;
 	get_real_sparsematrix(features1, dim11, dim12);
 	
 	int32_t dim21, dim22 ;
-	TSparse<float64_t> *features2=NULL ;
+	SGSparseMatrix<float64_t> *features2=NULL ;
 	get_real_sparsematrix(features2, dim21, dim22);
 
 	ASSERT(dim11==dim21) ;

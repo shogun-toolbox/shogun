@@ -76,7 +76,7 @@ class CGUIStructure : public CSGObject
 			return true;
 		}
 
-		inline bool set_feature_matrix_sparse(TSparse<float64_t> *f1, TSparse<float64_t> *f2, int32_t* dims)
+		inline bool set_feature_matrix_sparse(SGSparseMatrix<float64_t> *f1, SGSparseMatrix<float64_t> *f2, int32_t* dims)
 		{
 			delete[] m_feature_matrix_sparse1 ;
 			delete[] m_feature_matrix_sparse2 ;

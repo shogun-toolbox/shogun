@@ -359,7 +359,7 @@ void CCmdLineInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32
 {
 }
 
-void CCmdLineInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CCmdLineInterface::get_real_sparsematrix(SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -370,14 +370,14 @@ void CCmdLineInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32
 }
 
 
-void CCmdLineInterface::get_byte_string_list(TString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_byte_string_list(SGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_char_string_list(TString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_char_string_list(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -387,21 +387,21 @@ void CCmdLineInterface::get_char_string_list(TString<char>*& strings, int32_t& n
 	f.get_char_string_list(strings, num_str, max_string_len);
 }
 
-void CCmdLineInterface::get_int_string_list(TString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_int_string_list(SGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_short_string_list(TString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_short_string_list(SGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_word_string_list(TString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_word_string_list(SGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -480,7 +480,7 @@ SET_MATRIX(set_real_matrix, float64_t)
 SET_MATRIX(set_short_matrix, int16_t)
 SET_MATRIX(set_word_matrix, uint16_t)
 
-void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void CCmdLineInterface::set_real_sparsematrix(const SGSparseMatrix<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)
@@ -491,7 +491,7 @@ void CCmdLineInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, 
 }
 
 #define SET_STRING_LIST(fname, sg_type)	\
-void CCmdLineInterface::fname(const TString<sg_type>* strings, int32_t num_str)		\
+void CCmdLineInterface::fname(const SGString<sg_type>* strings, int32_t num_str)		\
 {																						\
 	const char* filename=set_arg_increment();											\
 	if (!filename)																		\

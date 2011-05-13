@@ -73,7 +73,7 @@ CSerializableHdf5File::new_sparseentrytype(EPrimitiveType ptype)
 	if (result < 0) return NOT_OPEN;
 
 	if (H5Tinsert(result, STR_SPARSEENTRY_FINDEX,
-				  HOFFSET(TSparseEntry<char>, feat_index), TYPE_INDEX)
+				  HOFFSET(SGSparseMatrixEntry<char>, feat_index), TYPE_INDEX)
 		< 0) return NOT_OPEN;
 	if (H5Tinsert(result, STR_SPARSEENTRY_ENTRY, TSGDataType
 				  ::offset_sparseentry(ptype),
@@ -643,12 +643,12 @@ CSerializableHdf5File::write_sparse_end_wrapped(
 
 bool
 CSerializableHdf5File::write_sparseentry_begin_wrapped(
-	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	const TSGDataType* type, const SGSparseMatrixEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
 	type_item_t* m = m_stack_type.back();
 
-	m->sparse_ptr = (TSparseEntry<char>*) first_entry;
+	m->sparse_ptr = (SGSparseMatrixEntry<char>*) first_entry;
 	m->sub_y = y;
 
 	return true;
@@ -656,7 +656,7 @@ CSerializableHdf5File::write_sparseentry_begin_wrapped(
 
 bool
 CSerializableHdf5File::write_sparseentry_end_wrapped(
-	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	const TSGDataType* type, const SGSparseMatrixEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
 	return true;

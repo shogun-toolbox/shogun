@@ -287,7 +287,7 @@ GET_NDARRAY(get_word_ndarray, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(function_name, mx_type, sg_type, if_type, error_string)		\
-void CMatlabInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
+void CMatlabInterface::function_name(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
 {																						\
 	const mxArray* mx_mat=get_arg_increment(); 											\
 	if (!mx_mat || !mxIsSparse(mx_mat)) 												\
@@ -299,7 +299,7 @@ void CMatlabInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_fea
  																						\
 	num_vec=mxGetN(mx_mat); 															\
 	num_feat=mxGetM(mx_mat); 															\
-	matrix=new TSparse<sg_type>[num_vec]; 												\
+	matrix=new SGSparseMatrix<sg_type>[num_vec]; 												\
 	if_type* data=(if_type*) mxGetData(mx_mat); 										\
  																						\
 	int64_t nzmax=mxGetNzmax(mx_mat); 														\
@@ -314,7 +314,7 @@ void CMatlabInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_fea
  																						\
 		if (len>0) 																		\
 		{ 																				\
-			matrix[i].features=new TSparseEntry<sg_type>[len]; 							\
+			matrix[i].features=new SGSparseMatrixEntry<sg_type>[len]; 							\
  																						\
 			for (int32_t j=0; j<len; j++) 													\
 			{ 																			\
@@ -341,7 +341,7 @@ GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Wor
 
 
 #define GET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
-void CMatlabInterface::function_name(TString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) 	\
+void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) 	\
 { 																						\
 	const mxArray* mx_str=get_arg_increment();											\
 	if (!mx_str)																		\
@@ -352,7 +352,7 @@ void CMatlabInterface::function_name(TString<sg_type>*& strings, int32_t& num_st
 		num_str=mxGetNumberOfElements(mx_str);											\
 		ASSERT(num_str>=1);																\
 																						\
-		strings=new TString<sg_type>[num_str];											\
+		strings=new SGString<sg_type>[num_str];											\
 		for (int32_t i=0; i<num_str; i++)													\
 		{																				\
 			mxArray* str=mxGetCell(mx_str, i);											\
@@ -386,7 +386,7 @@ void CMatlabInterface::function_name(TString<sg_type>*& strings, int32_t& num_st
 		if_type* data=(if_type*) mxGetData(mx_str);										\
 		num_str=mxGetN(mx_str); 														\
 		int32_t len=mxGetM(mx_str); 														\
-		strings=new TString<sg_type>[num_str]; 										\
+		strings=new SGString<sg_type>[num_str]; 										\
 																						\
 		for (int32_t i=0; i<num_str; i++) 													\
 		{ 																				\
@@ -522,7 +522,7 @@ SET_MATRIX(set_word_matrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(function_name, mx_type, sg_type, if_type, error_string)	\
-void CMatlabInterface::function_name(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz) \
+void CMatlabInterface::function_name(const SGSparseMatrix<sg_type>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz) \
 {																			\
 	if (!matrix)															\
 		SG_ERROR("Given matrix is invalid.\n");								\
@@ -564,7 +564,7 @@ SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short
 #undef SET_SPARSEMATRIX
 
 #define SET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
-void CMatlabInterface::function_name(const TString<sg_type>* strings, int32_t num_str)	\
+void CMatlabInterface::function_name(const SGString<sg_type>* strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n");									\

@@ -115,7 +115,7 @@ class CLPBoost : public CLinearClassifier
 
 		int32_t num_sfeat;
 		int32_t num_svec;
-		TSparse<float64_t>* sfeat;
+		SGSparseMatrix<float64_t>* sfeat;
 
 };
 }

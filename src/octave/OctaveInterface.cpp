@@ -332,7 +332,7 @@ GET_NDARRAY(get_real_ndarray, is_double_type, NDArray, array_value, float64_t, f
 GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_NDARRAY
 
-void COctaveInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void COctaveInterface::get_real_sparsematrix(SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const octave_value mat_feat=get_arg_increment();
 	if (!mat_feat.is_sparse_type() || !(mat_feat.is_double_type()))
@@ -343,7 +343,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_
 	num_feat=sm.rows();
 	int64_t nnz=sm.nelem();
 
-	matrix=new TSparse<float64_t>[num_vec];
+	matrix=new SGSparseMatrix<float64_t>[num_vec];
 
 	int64_t offset=0;
 	for (int32_t i=0; i<num_vec; i++)
@@ -354,7 +354,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_
 
 		if (len>0)
 		{
-			matrix[i].features=new TSparseEntry<float64_t>[len];
+			matrix[i].features=new SGSparseMatrixEntry<float64_t>[len];
 
 			for (int32_t j=0; j<len; j++)
 			{
@@ -371,7 +371,7 @@ void COctaveInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_
 
 #define GET_STRINGLIST(function_name, oct_type_check1, oct_type_check2, \
 		oct_type, oct_converter, sg_type, if_type, error_string)		\
-void COctaveInterface::function_name(TString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																					\
 	max_string_len=0;																\
 	octave_value arg=get_arg_increment();											\
@@ -380,7 +380,7 @@ void COctaveInterface::function_name(TString<sg_type>*& strings, int32_t& num_st
 		Cell c = arg.cell_value();													\
 		num_str=c.nelem();															\
 		ASSERT(num_str>=1);															\
-		strings=new TString<sg_type>[num_str];										\
+		strings=new SGString<sg_type>[num_str];										\
 																					\
 		for (int32_t i=0; i<num_str; i++)												\
 		{																			\
@@ -414,7 +414,7 @@ void COctaveInterface::function_name(TString<sg_type>*& strings, int32_t& num_st
 		oct_type data=arg.oct_converter();											\
 		num_str=data.cols(); 														\
 		int32_t len=data.rows(); 														\
-		strings=new TString<sg_type>[num_str]; 									\
+		strings=new SGString<sg_type>[num_str]; 									\
 																					\
 		for (int32_t i=0; i<num_str; i++) 												\
 		{ 																			\
@@ -518,7 +518,7 @@ SET_MATRIX(set_real_matrix, Matrix, float64_t, float64_t, "Double Precision")
 SET_MATRIX(set_word_matrix, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_MATRIX
 
-void COctaveInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void COctaveInterface::set_real_sparsematrix(const SGSparseMatrix<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	SparseMatrix sm((octave_idx_type) num_feat, (octave_idx_type) num_vec, (octave_idx_type) nnz);
 
@@ -540,7 +540,7 @@ void COctaveInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, i
 }
 
 #define SET_STRINGLIST(function_name, oct_type, sg_type, if_type, error_string)	\
-void COctaveInterface::function_name(const TString<sg_type>* strings, int32_t num_str)	\
+void COctaveInterface::function_name(const SGString<sg_type>* strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n");									\

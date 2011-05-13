@@ -446,7 +446,7 @@ void CSpectrumMismatchRBFKernel::register_params()
 	m_parameters->add(&width,"width","width of Gaussian");
 	m_parameters->add(&target_letter_0, "target_letter_0","target letter 0");
 	m_parameters->add(&initialized, "initialized", "the mark of initialization status");
-	m_parameters->add_vector((TString<float64_t>**)&kernel_matrix, &kernel_matrix_length, "kernel_matrix", "the kernel matrix with its length defined by the number of vectors of the string features");
+	m_parameters->add_vector((SGString<float64_t>**)&kernel_matrix, &kernel_matrix_length, "kernel_matrix", "the kernel matrix with its length defined by the number of vectors of the string features");
 }
 
 void CSpectrumMismatchRBFKernel::register_alphabet()
