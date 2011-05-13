@@ -235,9 +235,6 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	if (!m_parameters->save(file, prefix))
 		return false;
 
-	if (!m_model_selection_parameters->save(file, prefix))
-			return false;
-
 	try
 	{
 		save_serializable_post();
@@ -291,9 +288,6 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 
 	if (!m_parameters->load(file, prefix))
 		return false;
-
-	if (!m_model_selection_parameters->load(file, prefix))
-			return false;
 
 	try
 	{
