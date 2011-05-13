@@ -15,7 +15,8 @@ CC=c++
 TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  classifier_mklmulticlass kernel_gaussian kernel_revlin \
 		  library_dyn_int library_gc_array library_indirect_object \
-		  library_hash parameter_set_from_parameters
+		  library_hash parameter_set_from_parameters \
+		  parameter_iterate_float64
 
 all: $(TARGETS)
 

@@ -126,6 +126,6 @@ void CGaussianKernel::init()
 	set_compact_enabled(false);
 	sq_lhs=NULL;
 	sq_rhs=NULL;
-	m_parameters->add(&width, "width", "Kernel width.");
-	m_parameters->add(&m_compact, "compact", "Compact Enabled Option.");
+	SG_ADD(&width, "width", "Kernel width.", MS_AVAILABLE);
+	SG_ADD(&m_compact, "compact", "Compact Enabled Option.", MS_AVAILABLE);
 }
