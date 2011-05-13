@@ -25,6 +25,7 @@
 extern "C" {
 #include <Python.h>
 #include <numpy/arrayobject.h>
+#include <shogun/lib/DataType.h>
 }
 
 /* Functions to extract array attributes.
@@ -135,10 +136,10 @@ PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode)
  * return NULL
  */
 PyObject* make_contiguous(PyObject* ary, int* is_new_object,
-                               int dims, int typecode)
+                               int dims, int typecode, bool force_copy=false)
 {
     PyObject* array;
-    if (PyArray_ISFARRAY(ary))
+    if (PyArray_ISFARRAY(ary) && !force_copy)
     {
         array = ary;
         *is_new_object = 0;
@@ -332,6 +333,89 @@ TYPEMAP_IN1(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN1
+
+%typemap(in) shogun::SGDoubleVector
+{
+    int is_new_object;
+    PyObject* array = make_contiguous($input, &is_new_object, 1,NPY_FLOAT64, true);
+    if (!array)
+        SWIG_fail;
+
+    $1 = SGDoubleVector((float64_t*) PyArray_BYTES(array), PyArray_DIM(array,0));
+}
+
+
+/* One dimensional input arrays */
+%define TYPEMAP_IN_SGVECTOR(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
+{
+    $1 = (
+            ($input && PyList_Check($input) && PyList_Size($input)>0) ||
+            (is_array($input) && array_dimensions($input)==1 && array_type($input) == typecode)
+         ) ? 1 : 0;
+}
+
+%typemap(in) shogun::SGVector<type>
+{
+    int is_new_object;
+    PyObject* array = make_contiguous($input, &is_new_object, 1,typecode, true);
+    if (!array)
+        SWIG_fail;
+
+    $1 = shogun::SGVector<type>((type*) PyArray_BYTES(array), PyArray_DIM(array,0));
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_IN_SGVECTOR macros */
+TYPEMAP_IN_SGVECTOR(bool,          NPY_BOOL)
+TYPEMAP_IN_SGVECTOR(char,          NPY_STRING)
+TYPEMAP_IN_SGVECTOR(uint8_t,       NPY_UINT8)
+TYPEMAP_IN_SGVECTOR(int16_t,       NPY_INT16)
+TYPEMAP_IN_SGVECTOR(uint16_t,      NPY_UINT16)
+TYPEMAP_IN_SGVECTOR(int32_t,       NPY_INT32)
+TYPEMAP_IN_SGVECTOR(uint32_t,      NPY_UINT32)
+TYPEMAP_IN_SGVECTOR(int64_t,       NPY_INT64)
+TYPEMAP_IN_SGVECTOR(uint64_t,      NPY_UINT64)
+TYPEMAP_IN_SGVECTOR(float32_t,     NPY_FLOAT32)
+TYPEMAP_IN_SGVECTOR(float64_t,     NPY_FLOAT64)
+TYPEMAP_IN_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_IN_SGVECTOR(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_IN_SGVECTOR
+
+/* One dimensional input arrays */
+%define TYPEMAP_OUT_SGVECTOR(type,typecode)
+%typemap(out) shogun::SGVector<type>
+{
+    npy_intp dims= (npy_intp) $1.length;
+    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+    if (descr)
+    {
+        $result = PyArray_NewFromDescr(&PyArray_Type,
+                descr, 1, &dims, NULL, (void*) $1.vector, NPY_FARRAY | NPY_WRITEABLE, NULL);
+        /*((PyArrayObject*) $result)->flags |= NPY_OWNDATA;*/
+    }
+    else
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_OUT_SGVECTOR macros */
+TYPEMAP_OUT_SGVECTOR(bool,          NPY_BOOL)
+TYPEMAP_OUT_SGVECTOR(char,          NPY_STRING)
+TYPEMAP_OUT_SGVECTOR(uint8_t,       NPY_UINT8)
+TYPEMAP_OUT_SGVECTOR(int16_t,       NPY_INT16)
+TYPEMAP_OUT_SGVECTOR(uint16_t,      NPY_UINT16)
+TYPEMAP_OUT_SGVECTOR(int32_t,       NPY_INT32)
+TYPEMAP_OUT_SGVECTOR(uint32_t,      NPY_UINT32)
+TYPEMAP_OUT_SGVECTOR(int64_t,       NPY_INT64)
+TYPEMAP_OUT_SGVECTOR(uint64_t,      NPY_UINT64)
+TYPEMAP_OUT_SGVECTOR(float32_t,     NPY_FLOAT32)
+TYPEMAP_OUT_SGVECTOR(float64_t,     NPY_FLOAT64)
+TYPEMAP_OUT_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_OUT_SGVECTOR
 
  /* Two dimensional input arrays */
 %define TYPEMAP_IN2(type,typecode)

@@ -23,6 +23,16 @@ typedef int32_t index_t;
 
 template<class T> struct SGVector
 {
+	/** default constructor */
+	SGVector() : vector(NULL), length(0) { }
+
+	/** constructor for setting params */
+	SGVector(T* v, index_t len) : vector(v), length(len) { }
+
+	/** copy constructor */
+	SGVector(const SGVector &orig)
+	: vector(orig.vector), length(orig.length) { }
+
 	/** vector  */
 	T* vector;
 	/** length of vector  */
