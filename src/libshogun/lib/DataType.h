@@ -41,12 +41,44 @@ template<class T> struct SGVector
 
 template<class T> struct SGMatrix
 {
+	/** default constructor */
+	SGMatrix() : matrix(NULL), num_rows(0), num_cols(0) { }
+
+	/** constructor for setting params */
+	SGMatrix(T* m, index_t nrows, index_t ncols)
+		: matrix(m), num_rows(nrows), num_cols(ncols) { }
+
+	/** copy constructor */
+	SGMatrix(const SGMatrix &orig)
+	: matrix(orig.matrix), num_rows(orig.num_rows), num_cols(orig.num_cols) { }
+
 	/** matrix  */
 	T* matrix;
 	/** number of rows of matrix  */
 	index_t num_rows;
 	/** number of columns of matrix  */
 	index_t num_cols;
+};
+
+template<class T> struct SGNDArray
+{
+	/** default constructor */
+	SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
+
+	/** constructor for setting params */
+	SGNDArray(T* a, index_t* d, index_t nd)
+		: array(a), dims(d), num_dims(nd) { }
+
+	/** copy constructor */
+	SGNDArray(const SGNDArray &orig)
+	: array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
+
+	/** array  */
+	T* array;
+	/** dimension sizes */
+	index_t* dims;
+	/** number of dimensions  */
+	index_t num_dims;
 };
 
 template<class T> struct SGString

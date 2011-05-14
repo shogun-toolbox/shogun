@@ -334,17 +334,6 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN1
 
-%typemap(in) shogun::SGDoubleVector
-{
-    int is_new_object;
-    PyObject* array = make_contiguous($input, &is_new_object, 1,NPY_FLOAT64, true);
-    if (!array)
-        SWIG_fail;
-
-    $1 = SGDoubleVector((float64_t*) PyArray_BYTES(array), PyArray_DIM(array,0));
-}
-
-
 /* One dimensional input arrays */
 %define TYPEMAP_IN_SGVECTOR(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
@@ -416,6 +405,78 @@ TYPEMAP_OUT_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_OUT_SGVECTOR
+
+/* Two dimensional input arrays */
+%define TYPEMAP_IN_SGMATRIX(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<type>
+{
+    $1 = (is_array($input) && array_dimensions($input)==2 &&
+            array_type($input) == typecode) ? 1 : 0;
+}
+
+%typemap(in) shogun::SGMatrix<type>
+{
+    int is_new_object;
+    PyObject* array = make_contiguous($input, &is_new_object, 2,typecode, true);
+    if (!array)
+        SWIG_fail;
+
+    $1 = shogun::SGMatrix<type>((type*) PyArray_BYTES(array),
+            PyArray_DIM(array,0), PyArray_DIM(array,1));
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_IN_SGMATRIX macros */
+TYPEMAP_IN_SGMATRIX(bool,          NPY_BOOL)
+TYPEMAP_IN_SGMATRIX(char,          NPY_STRING)
+TYPEMAP_IN_SGMATRIX(uint8_t,       NPY_UINT8)
+TYPEMAP_IN_SGMATRIX(int16_t,       NPY_INT16)
+TYPEMAP_IN_SGMATRIX(uint16_t,      NPY_UINT16)
+TYPEMAP_IN_SGMATRIX(int32_t,       NPY_INT32)
+TYPEMAP_IN_SGMATRIX(uint32_t,      NPY_UINT32)
+TYPEMAP_IN_SGMATRIX(int64_t,       NPY_INT64)
+TYPEMAP_IN_SGMATRIX(uint64_t,      NPY_UINT64)
+TYPEMAP_IN_SGMATRIX(float32_t,     NPY_FLOAT32)
+TYPEMAP_IN_SGMATRIX(float64_t,     NPY_FLOAT64)
+TYPEMAP_IN_SGMATRIX(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_IN_SGMATRIX(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_IN_SGMATRIX
+
+/* One dimensional input arrays */
+%define TYPEMAP_OUT_SGMATRIX(type,typecode)
+%typemap(out) shogun::SGMatrix<type>
+{
+    npy_intp dims[2]= {(npy_intp) $1.num_rows, (npy_intp) $1.num_cols };
+    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+    if (descr)
+    {
+        $result = PyArray_NewFromDescr(&PyArray_Type,
+                descr, 2, dims, NULL, (void*) $1.matrix, NPY_FARRAY | NPY_WRITEABLE, NULL);
+        /*((PyArrayObject*) $result)->flags |= NPY_OWNDATA;*/
+    }
+    else
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_OUT_SGMATRIX macros */
+TYPEMAP_OUT_SGMATRIX(bool,          NPY_BOOL)
+TYPEMAP_OUT_SGMATRIX(char,          NPY_STRING)
+TYPEMAP_OUT_SGMATRIX(uint8_t,       NPY_UINT8)
+TYPEMAP_OUT_SGMATRIX(int16_t,       NPY_INT16)
+TYPEMAP_OUT_SGMATRIX(uint16_t,      NPY_UINT16)
+TYPEMAP_OUT_SGMATRIX(int32_t,       NPY_INT32)
+TYPEMAP_OUT_SGMATRIX(uint32_t,      NPY_UINT32)
+TYPEMAP_OUT_SGMATRIX(int64_t,       NPY_INT64)
+TYPEMAP_OUT_SGMATRIX(uint64_t,      NPY_UINT64)
+TYPEMAP_OUT_SGMATRIX(float32_t,     NPY_FLOAT32)
+TYPEMAP_OUT_SGMATRIX(float64_t,     NPY_FLOAT64)
+TYPEMAP_OUT_SGMATRIX(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_OUT_SGMATRIX
+
 
  /* Two dimensional input arrays */
 %define TYPEMAP_IN2(type,typecode)
