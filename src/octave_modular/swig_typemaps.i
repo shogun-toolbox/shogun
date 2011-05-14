@@ -336,7 +336,7 @@ TYPEMAP_STRINGFEATURES_ARGOUT(float64_t,     Matrix)
 
 /* input typemap for Sparse Features */
 %define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
-%typemap(in) (shogun::SGSparseMatrix<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
+%typemap(in) (shogun::SGSparseVector<type>* IN_SPARSE, int32_t DIM1, int32_t DIM2)
 {
 }
 %enddef
@@ -345,15 +345,15 @@ TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
 
 /* output typemap for sparse features returns (data, row, ptr) */
 %define TYPEMAP_SPARSEFEATURES_ARGOUT(type,typecode)
-%typemap(in, numinputs=0) (shogun::SGSparseMatrix<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+%typemap(in, numinputs=0) (shogun::SGSparseVector<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
     using namespace shogun;
 
-    $1 = (SGSparseMatrix<type>**) malloc(sizeof(SGSparseMatrix<type>*));
+    $1 = (SGSparseVector<type>**) malloc(sizeof(SGSparseVector<type>*));
     $2 = (int32_t*) malloc(sizeof(int32_t));
     $3 = (int32_t*) malloc(sizeof(int32_t));
     $4 = (int64_t*) malloc(sizeof(int64_t));
 }
-%typemap(argout) (shogun::SGSparseMatrix<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
+%typemap(argout) (shogun::SGSparseVector<type>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {
     if (!$1 || !$2 || !$3 || !$4)
         SWIG_fail;
     free($1); free($2); free($3); free($4);

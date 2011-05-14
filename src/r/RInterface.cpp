@@ -297,7 +297,7 @@ void CRInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& nu
 {
 }
 
-void CRInterface::get_real_sparsematrix(SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CRInterface::get_real_sparsematrix(SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
@@ -485,7 +485,7 @@ SET_MATRIX(set_real_matrix, REALSXP, REAL, float64_t, double, "Double Precision"
 SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_MATRIX
 
-void CRInterface::set_real_sparsematrix(const SGSparseMatrix<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void CRInterface::set_real_sparsematrix(const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	// R does not support sparse matrices yet
 }

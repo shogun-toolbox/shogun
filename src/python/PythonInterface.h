@@ -63,7 +63,7 @@ class CPythonInterface : public CSGInterface
 			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 		virtual void get_real_sparsematrix(
-			SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 		virtual void get_byte_string_list(
 			SGString<uint8_t>*& strings, int32_t& num_str,
@@ -129,7 +129,7 @@ class CPythonInterface : public CSGInterface
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
 
 		virtual void set_real_sparsematrix(
-			const SGSparseMatrix<float64_t>* matrix, int32_t num_feat,
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat,
 			int32_t num_vec, int64_t nnz);
 
 		virtual void set_byte_string_list(

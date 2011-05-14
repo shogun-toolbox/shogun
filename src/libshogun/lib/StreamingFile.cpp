@@ -163,7 +163,7 @@ void CStreamingFile::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t&
 }
 
 #define GET_SPARSEMATRIX(fname, conv, sg_type)										\
-void CStreamingFile::fname(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CStreamingFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {	\
 }
 
@@ -294,7 +294,7 @@ SET_MATRIX(set_longreal_matrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(fname, sg_type, fprt_type, type_str) \
-void CStreamingFile::fname(const SGSparseMatrix<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\
+void CStreamingFile::fname(const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\
 {																		\
 }
 

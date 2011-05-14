@@ -359,7 +359,7 @@ void CCmdLineInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32
 {
 }
 
-void CCmdLineInterface::get_real_sparsematrix(SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CCmdLineInterface::get_real_sparsematrix(SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
@@ -480,7 +480,7 @@ SET_MATRIX(set_real_matrix, float64_t)
 SET_MATRIX(set_short_matrix, int16_t)
 SET_MATRIX(set_word_matrix, uint16_t)
 
-void CCmdLineInterface::set_real_sparsematrix(const SGSparseMatrix<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void CCmdLineInterface::set_real_sparsematrix(const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)

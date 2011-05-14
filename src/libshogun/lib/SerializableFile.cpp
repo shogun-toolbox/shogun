@@ -359,7 +359,7 @@ CSerializableFile::read_sparse_end(
 bool
 CSerializableFile::write_sparseentry_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
-	const SGSparseMatrixEntry<char>* first_entry, index_t feat_index,
+	const SGSparseVectorEntry<char>* first_entry, index_t feat_index,
 	index_t y)
 {
 	if (!is_task_warn('w', name, prefix)) return false;
@@ -374,7 +374,7 @@ CSerializableFile::write_sparseentry_begin(
 bool
 CSerializableFile::read_sparseentry_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
-	SGSparseMatrixEntry<char>* first_entry, index_t* feat_index, index_t y)
+	SGSparseVectorEntry<char>* first_entry, index_t* feat_index, index_t y)
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
@@ -388,7 +388,7 @@ CSerializableFile::read_sparseentry_begin(
 bool
 CSerializableFile::write_sparseentry_end(
 	const TSGDataType* type, const char* name, const char* prefix,
-	const SGSparseMatrixEntry<char>* first_entry, index_t feat_index,
+	const SGSparseVectorEntry<char>* first_entry, index_t feat_index,
 	index_t y)
 {
 	if (!is_task_warn('w', name, prefix)) return false;
@@ -403,7 +403,7 @@ CSerializableFile::write_sparseentry_end(
 bool
 CSerializableFile::read_sparseentry_end(
 	const TSGDataType* type, const char* name, const char* prefix,
-	SGSparseMatrixEntry<char>* first_entry, index_t* feat_index,
+	SGSparseVectorEntry<char>* first_entry, index_t* feat_index,
 	index_t y)
 {
 	if (!is_task_warn('r', name, prefix)) return false;

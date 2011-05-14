@@ -61,8 +61,8 @@ float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t v
 
 	int32_t len1, len2;
 	bool do_free1, do_free2;
-	SGSparseMatrixEntry<float64_t>* vec1 = m_feat->get_sparse_feature_vector(vec_idx1, len1, do_free1);
-	SGSparseMatrixEntry<float64_t>* vec2 = pf->m_feat->get_sparse_feature_vector(vec_idx2, len2, do_free2);
+	SGSparseVectorEntry<float64_t>* vec1 = m_feat->get_sparse_feature_vector(vec_idx1, len1, do_free1);
+	SGSparseVectorEntry<float64_t>* vec2 = pf->m_feat->get_sparse_feature_vector(vec_idx2, len2, do_free2);
 
 	float64_t result=CSparseFeatures<float64_t>::sparse_dot(1, vec1, len1, vec2, len2);
 	result=CMath::pow(result, m_degree);
@@ -80,7 +80,7 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 
 	int32_t vlen;
 	bool do_free;
-	SGSparseMatrixEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
+	SGSparseVectorEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
 
 	float64_t result=0;
 
@@ -127,7 +127,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 
 	int32_t vlen;
 	bool do_free;
-	SGSparseMatrixEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
+	SGSparseVectorEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
 
 	float64_t norm_val=1.0;
 	if (m_normalize)

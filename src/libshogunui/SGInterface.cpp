@@ -1498,7 +1498,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t num_feat=0;
 				int32_t num_vec=0;
-				SGSparseMatrix<float64_t>* fmatrix=NULL;
+				SGSparseVector<float64_t>* fmatrix=NULL;
 				source->get_real_sparsematrix(fmatrix, num_feat, num_vec);
 				int64_t nnz=0;
 				for (int32_t i=0; i<num_vec; i++)
@@ -1671,7 +1671,7 @@ bool CSGInterface::cmd_get_features()
 						get_num_nonzero_entries();
 					int32_t num_feat=0;
 					int32_t num_vec=0;
-					SGSparseMatrix<float64_t>* fmatrix=((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
+					SGSparseVector<float64_t>* fmatrix=((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
 					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
 
 					set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
@@ -1795,7 +1795,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 	{
 		case SPARSE_REAL:
 		{
-			SGSparseMatrix<float64_t>* fmatrix=NULL;
+			SGSparseVector<float64_t>* fmatrix=NULL;
 			get_real_sparsematrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSparseFeatures<float64_t>();
@@ -6510,11 +6510,11 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	//ARG 1
 	// feature matrix (#states x #feature_positions x max_num_signals)
 	int32_t dim11, dim12 ;
-	SGSparseMatrix<float64_t> *features1=NULL ;
+	SGSparseVector<float64_t> *features1=NULL ;
 	get_real_sparsematrix(features1, dim11, dim12);
 	
 	int32_t dim21, dim22 ;
-	SGSparseMatrix<float64_t> *features2=NULL ;
+	SGSparseVector<float64_t> *features2=NULL ;
 	get_real_sparsematrix(features2, dim21, dim22);
 
 	ASSERT(dim11==dim21) ;

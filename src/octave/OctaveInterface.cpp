@@ -332,7 +332,7 @@ GET_NDARRAY(get_real_ndarray, is_double_type, NDArray, array_value, float64_t, f
 GET_NDARRAY(get_word_ndarray, is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef GET_NDARRAY
 
-void COctaveInterface::get_real_sparsematrix(SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void COctaveInterface::get_real_sparsematrix(SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const octave_value mat_feat=get_arg_increment();
 	if (!mat_feat.is_sparse_type() || !(mat_feat.is_double_type()))
@@ -343,7 +343,7 @@ void COctaveInterface::get_real_sparsematrix(SGSparseMatrix<float64_t>*& matrix,
 	num_feat=sm.rows();
 	int64_t nnz=sm.nelem();
 
-	matrix=new SGSparseMatrix<float64_t>[num_vec];
+	matrix=new SGSparseVector<float64_t>[num_vec];
 
 	int64_t offset=0;
 	for (int32_t i=0; i<num_vec; i++)
@@ -354,7 +354,7 @@ void COctaveInterface::get_real_sparsematrix(SGSparseMatrix<float64_t>*& matrix,
 
 		if (len>0)
 		{
-			matrix[i].features=new SGSparseMatrixEntry<float64_t>[len];
+			matrix[i].features=new SGSparseVectorEntry<float64_t>[len];
 
 			for (int32_t j=0; j<len; j++)
 			{
@@ -518,7 +518,7 @@ SET_MATRIX(set_real_matrix, Matrix, float64_t, float64_t, "Double Precision")
 SET_MATRIX(set_word_matrix, uint16NDArray, uint16_t, uint16_t, "Word")
 #undef SET_MATRIX
 
-void COctaveInterface::set_real_sparsematrix(const SGSparseMatrix<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void COctaveInterface::set_real_sparsematrix(const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	SparseMatrix sm((octave_idx_type) num_feat, (octave_idx_type) num_vec, (octave_idx_type) nnz);
 

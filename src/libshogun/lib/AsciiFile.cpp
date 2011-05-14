@@ -273,7 +273,7 @@ GET_NDARRAY(get_word_ndarray, atoi, uint16_t)
 #undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(fname, conv, sg_type)										\
-void CAsciiFile::fname(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {	\
 	size_t blocksize=1024*1024;	\
 	size_t required_blocksize=blocksize;	\
@@ -314,7 +314,7 @@ void CAsciiFile::fname(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int3
 		delete[] dummy;	\
 		blocksize=required_blocksize;	\
 		dummy = new uint8_t[blocksize+1]; /*allow setting of '\0' at EOL*/	\
-		matrix=new SGSparseMatrix<sg_type>[num_vec];	\
+		matrix=new SGSparseVector<sg_type>[num_vec];	\
 	\
 		rewind(file);	\
 		sz=blocksize;	\
@@ -361,7 +361,7 @@ void CAsciiFile::fname(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int3
 								dims, len, len, (const char*) data);	\
 					}	\
 	\
-					SGSparseMatrixEntry<sg_type>* feat=new SGSparseMatrixEntry<sg_type>[dims];	\
+					SGSparseVectorEntry<sg_type>* feat=new SGSparseVectorEntry<sg_type>[dims];	\
 	\
 					/* skip label part */	\
 					size_t j=0;	\
@@ -889,14 +889,14 @@ SET_NDARRAY(set_longreal_ndarray, floatmax_t, floatmax_t, "%Lf")
 #undef SET_NDARRAY
 
 #define SET_SPARSEMATRIX(fname, sg_type, fprt_type, type_str) \
-void CAsciiFile::fname(const SGSparseMatrix<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\
+void CAsciiFile::fname(const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\
 {																							\
 	if (!(file && matrix))																	\
 		SG_ERROR("File or matrix invalid.\n");												\
 																							\
 	for (int32_t i=0; i<num_vec; i++)														\
 	{																						\
-		SGSparseMatrixEntry<sg_type>* vec = matrix[i].features;									\
+		SGSparseVectorEntry<sg_type>* vec = matrix[i].features;									\
 		int32_t len=matrix[i].num_feat_entries;												\
 																							\
 		for (int32_t j=0; j<len; j++)														\

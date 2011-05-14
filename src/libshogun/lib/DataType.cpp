@@ -98,19 +98,19 @@ TSGDataType::sizeof_stype(void) const
 		break;
 	case ST_SPARSE:
 		switch (m_ptype) {
-		case PT_BOOL: return sizeof (SGSparseMatrix<bool>);
-		case PT_CHAR: return sizeof (SGSparseMatrix<char>);
-		case PT_INT8: return sizeof (SGSparseMatrix<int8_t>);
-		case PT_UINT8: return sizeof (SGSparseMatrix<uint8_t>);
-		case PT_INT16: return sizeof (SGSparseMatrix<int16_t>);
-		case PT_UINT16: return sizeof (SGSparseMatrix<uint16_t>);
-		case PT_INT32: return sizeof (SGSparseMatrix<int32_t>);
-		case PT_UINT32: return sizeof (SGSparseMatrix<uint32_t>);
-		case PT_INT64: return sizeof (SGSparseMatrix<int64_t>);
-		case PT_UINT64: return sizeof (SGSparseMatrix<uint64_t>);
-		case PT_FLOAT32: return sizeof (SGSparseMatrix<float32_t>);
-		case PT_FLOAT64: return sizeof (SGSparseMatrix<float64_t>);
-		case PT_FLOATMAX: return sizeof (SGSparseMatrix<floatmax_t>);
+		case PT_BOOL: return sizeof (SGSparseVector<bool>);
+		case PT_CHAR: return sizeof (SGSparseVector<char>);
+		case PT_INT8: return sizeof (SGSparseVector<int8_t>);
+		case PT_UINT8: return sizeof (SGSparseVector<uint8_t>);
+		case PT_INT16: return sizeof (SGSparseVector<int16_t>);
+		case PT_UINT16: return sizeof (SGSparseVector<uint16_t>);
+		case PT_INT32: return sizeof (SGSparseVector<int32_t>);
+		case PT_UINT32: return sizeof (SGSparseVector<uint32_t>);
+		case PT_INT64: return sizeof (SGSparseVector<int64_t>);
+		case PT_UINT64: return sizeof (SGSparseVector<uint64_t>);
+		case PT_FLOAT32: return sizeof (SGSparseVector<float32_t>);
+		case PT_FLOAT64: return sizeof (SGSparseVector<float64_t>);
+		case PT_FLOATMAX: return sizeof (SGSparseVector<floatmax_t>);
 		case PT_SGOBJECT: return -1;
 		}
 		break;
@@ -146,19 +146,19 @@ size_t
 TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 {
 	switch (ptype) {
-	case PT_BOOL: return sizeof (SGSparseMatrixEntry<bool>);
-	case PT_CHAR: return sizeof (SGSparseMatrixEntry<char>);
-	case PT_INT8: return sizeof (SGSparseMatrixEntry<int8_t>);
-	case PT_UINT8: return sizeof (SGSparseMatrixEntry<uint8_t>);
-	case PT_INT16: return sizeof (SGSparseMatrixEntry<int16_t>);
-	case PT_UINT16: return sizeof (SGSparseMatrixEntry<uint16_t>);
-	case PT_INT32: return sizeof (SGSparseMatrixEntry<int32_t>);
-	case PT_UINT32: return sizeof (SGSparseMatrixEntry<uint32_t>);
-	case PT_INT64: return sizeof (SGSparseMatrixEntry<int64_t>);
-	case PT_UINT64: return sizeof (SGSparseMatrixEntry<uint64_t>);
-	case PT_FLOAT32: return sizeof (SGSparseMatrixEntry<float32_t>);
-	case PT_FLOAT64: return sizeof (SGSparseMatrixEntry<float64_t>);
-	case PT_FLOATMAX: return sizeof (SGSparseMatrixEntry<floatmax_t>);
+	case PT_BOOL: return sizeof (SGSparseVectorEntry<bool>);
+	case PT_CHAR: return sizeof (SGSparseVectorEntry<char>);
+	case PT_INT8: return sizeof (SGSparseVectorEntry<int8_t>);
+	case PT_UINT8: return sizeof (SGSparseVectorEntry<uint8_t>);
+	case PT_INT16: return sizeof (SGSparseVectorEntry<int16_t>);
+	case PT_UINT16: return sizeof (SGSparseVectorEntry<uint16_t>);
+	case PT_INT32: return sizeof (SGSparseVectorEntry<int32_t>);
+	case PT_UINT32: return sizeof (SGSparseVectorEntry<uint32_t>);
+	case PT_INT64: return sizeof (SGSparseVectorEntry<int64_t>);
+	case PT_UINT64: return sizeof (SGSparseVectorEntry<uint64_t>);
+	case PT_FLOAT32: return sizeof (SGSparseVectorEntry<float32_t>);
+	case PT_FLOAT64: return sizeof (SGSparseVectorEntry<float64_t>);
+	case PT_FLOATMAX: return sizeof (SGSparseVectorEntry<floatmax_t>);
 	case PT_SGOBJECT: return -1;
 	}
 
@@ -166,7 +166,7 @@ TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 }
 
 #define ENTRY_OFFSET(k, type)									\
-	((char*) &((SGSparseMatrixEntry<type>*) (k))->entry - (char*) (k))
+	((char*) &((SGSparseVectorEntry<type>*) (k))->entry - (char*) (k))
 size_t
 TSGDataType::offset_sparseentry(EPrimitiveType ptype)
 {

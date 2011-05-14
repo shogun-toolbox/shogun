@@ -89,8 +89,21 @@ template<class T> struct SGString
 	index_t length;
 };
 
-/** template class SGSparseMatrixEntry */
-template <class T> struct SGSparseMatrixEntry
+/** template class SGStringList */
+template <class T> struct SGStringList
+{
+	/* number of strings */
+	int32_t num_strings;
+
+	/** length of longest string */
+	int32_t max_string_length;
+
+	/// this contains the array of features.
+	SGString<T>* strings;
+};
+
+/** template class SGSparseVectorEntry */
+template <class T> struct SGSparseVectorEntry
 {
 	/** feature index  */
 	index_t feat_index;
@@ -98,15 +111,28 @@ template <class T> struct SGSparseMatrixEntry
 	T entry;
 };
 
-/** template class SGSparseMatrix */
-template <class T> struct SGSparseMatrix
+/** template class SGSparseVector */
+template <class T> struct SGSparseVector
 {
 	/** vector index */
 	index_t vec_index;
 	/** number of feature entries */
 	index_t num_feat_entries;
 	/** features */
-	SGSparseMatrixEntry<T>* features;
+	SGSparseVectorEntry<T>* features;
+};
+
+/** template class SGSparseMatrix */
+template <class T> struct SGSparseMatrix
+{
+	/// total number of vectors
+	int32_t num_vectors;
+
+	/// total number of features
+	int32_t num_features;
+
+	/// array of sparse vectors of size num_vectors
+	SGSparseVector<T>* sparse_matrix;
 };
 
 enum EContainerType
@@ -159,7 +185,8 @@ struct TSGDataType
 						 index_t* length_x);
 
 	bool operator==(const TSGDataType& a);
-	inline bool operator!=(const TSGDataType& a) {
+	inline bool operator!=(const TSGDataType& a)
+	{
 		return !(*this == a);
 	}
 

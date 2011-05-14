@@ -19,7 +19,7 @@
 
 namespace shogun
 {
-template <class ST> class SGSparseMatrix;
+template <class ST> class SGSparseVector;
 template <class ST> class CSparseFeatures;
 
 /** @brief Template class SparsePreProc, base class for preprocessors (cf. CPreProc)
@@ -43,11 +43,11 @@ public:
 	/// apply preproc on feature matrix
 	/// result in feature matrix
 	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-	virtual SGSparseMatrix<ST>* apply_to_sparse_feature_matrix(CSparseFeatures<ST>* f)=0;
+	virtual SGSparseVector<ST>* apply_to_sparse_feature_matrix(CSparseFeatures<ST>* f)=0;
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual SGSparseMatrix<ST>* apply_to_sparse_feature_vector(SGSparseMatrix<ST>* f, int32_t &len)=0;
+	virtual SGSparseVector<ST>* apply_to_sparse_feature_vector(SGSparseVector<ST>* f, int32_t &len)=0;
 
 	/// return that we are simple minded features (just fixed size matrices)
 	inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }

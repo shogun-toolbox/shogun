@@ -30,7 +30,7 @@ namespace shogun
 	 * @return if reading was successful
 	 */
 	bool read_real_valued_sparse(
-		SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+		SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 	/** write sparse real valued features in svm light format
 	 *
@@ -40,7 +40,7 @@ namespace shogun
 	 * @return if writing was successful
 	 */
 	bool write_real_valued_sparse(
-		const SGSparseMatrix<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
+		const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 
 	/** read dense real valued features, simple ascii format
 	 * e.g. 1.0 1.1 0.2 

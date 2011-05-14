@@ -126,7 +126,7 @@ GET_NDARRAY(get_real_ndarray,float64_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_FLOAT
 #undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CBinaryFile::fname(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		SG_ERROR("File invalid.\n");													\
@@ -138,7 +138,7 @@ void CBinaryFile::fname(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int
 	if (fread(&num_vec, sizeof(int32_t), 1, file)!=1)									\
 		SG_ERROR("Failed to read number of vectors\n");									\
 																						\
-	matrix=new SGSparseMatrix<sg_type>[num_vec];												\
+	matrix=new SGSparseVector<sg_type>[num_vec];												\
 																						\
 	for (int32_t i=0; i<num_vec; i++)													\
 	{																					\
@@ -146,8 +146,8 @@ void CBinaryFile::fname(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
 			SG_ERROR("Failed to read sparse vector length of vector idx=%d\n", i);		\
 		matrix[i].num_feat_entries=len;													\
-		SGSparseMatrixEntry<sg_type>* vec = new SGSparseMatrixEntry<sg_type>[len];					\
-		if (fread(vec, sizeof(SGSparseMatrixEntry<sg_type>), len, file)!= (size_t) len)		\
+		SGSparseVectorEntry<sg_type>* vec = new SGSparseVectorEntry<sg_type>[len];					\
+		if (fread(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len)		\
 			SG_ERROR("Failed to read sparse vector %d\n", i);							\
 		matrix[i].features=vec;															\
 	}																					\
@@ -301,7 +301,7 @@ SET_NDARRAY(set_real_ndarray,float64_t,(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 #undef SET_NDARRAY
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
-void CBinaryFile::fname(const SGSparseMatrix<sg_type>* matrix, 	\
+void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix, 	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\
@@ -314,10 +314,10 @@ void CBinaryFile::fname(const SGSparseMatrix<sg_type>* matrix, 	\
 															\
 	for (int32_t i=0; i<num_vec; i++)						\
 	{														\
-		SGSparseMatrixEntry<sg_type>* vec = matrix[i].features;	\
+		SGSparseVectorEntry<sg_type>* vec = matrix[i].features;	\
 		int32_t len=matrix[i].num_feat_entries;				\
 		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||	\
-				(fwrite(vec, sizeof(SGSparseMatrixEntry<sg_type>), len, file)!= (size_t) len))		\
+				(fwrite(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len))		\
 			SG_ERROR("Failed to write Sparse Matrix\n");	\
 	}														\
 }

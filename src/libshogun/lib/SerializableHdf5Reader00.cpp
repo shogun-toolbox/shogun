@@ -254,7 +254,7 @@ SerializableHdf5Reader00::read_sparse_end_wrapped(
 
 bool
 SerializableHdf5Reader00::read_sparseentry_begin_wrapped(
-	const TSGDataType* type, SGSparseMatrixEntry<char>* first_entry,
+	const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
 	CSerializableHdf5File::type_item_t* m
@@ -268,7 +268,7 @@ SerializableHdf5Reader00::read_sparseentry_begin_wrapped(
 
 bool
 SerializableHdf5Reader00::read_sparseentry_end_wrapped(
-	const TSGDataType* type, SGSparseMatrixEntry<char>* first_entry,
+	const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
 	return true;

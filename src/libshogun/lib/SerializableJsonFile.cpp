@@ -287,7 +287,7 @@ CSerializableJsonFile::write_sparse_end_wrapped(
 
 bool
 CSerializableJsonFile::write_sparseentry_begin_wrapped(
-	const TSGDataType* type, const SGSparseMatrixEntry<char>* first_entry,
+	const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
 	json_object* buf = json_object_new_object();
@@ -305,7 +305,7 @@ CSerializableJsonFile::write_sparseentry_begin_wrapped(
 
 bool
 CSerializableJsonFile::write_sparseentry_end_wrapped(
-	const TSGDataType* type, const SGSparseMatrixEntry<char>* first_entry,
+	const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
 	json_object* o = m_stack_stream.get_element(

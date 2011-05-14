@@ -287,7 +287,7 @@ GET_NDARRAY(get_word_ndarray, NPY_USHORT, uint16_t, unsigned short, "Word")
 
 
 #define GET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string) \
-void CPythonInterface::function_name(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
+void CPythonInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
 {																			\
 	/* no sparse available yet */ \
 	return; \
@@ -303,7 +303,7 @@ void CPythonInterface::function_name(SGSparseMatrix<sg_type>*& matrix, int32_t& 
  																			\
 	num_vec=py_mat->dimensions[0]; 											\
 	num_feat=py_mat->nd; 													\
-	matrix=new SGSparseMatrix<sg_type>[num_vec]; 									\
+	matrix=new SGSparseVector<sg_type>[num_vec]; 									\
 	if_type* data=(if_type*) py_mat->data; 									\
  																			\
 	int64_t nzmax=mxGetNzmax(mx_mat); 											\
@@ -318,7 +318,7 @@ void CPythonInterface::function_name(SGSparseMatrix<sg_type>*& matrix, int32_t& 
  																			\
 		if (len>0) 															\
 		{ 																	\
-			matrix[i].features=new SGSparseMatrixEntry<sg_type>[len]; 				\
+			matrix[i].features=new SGSparseVectorEntry<sg_type>[len]; 				\
 			for (int32_t j=0; j<len; j++) 										\
 			{ 																\
 				matrix[i].features[j].entry=data[offset]; 					\
@@ -529,7 +529,7 @@ SET_MATRIX(set_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(const SGSparseMatrix<sg_type>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)	\
+void CPythonInterface::function_name(const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)	\
 {																			\
 	/* no sparse available yet */ \
 	return; \

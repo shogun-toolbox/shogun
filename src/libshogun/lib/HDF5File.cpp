@@ -195,7 +195,7 @@ void CHDF5File::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_
 }
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CHDF5File::fname(SGSparseMatrix<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		SG_ERROR("File invalid.\n");													\
@@ -313,7 +313,7 @@ SET_MATRIX(set_longreal_matrix, floatmax_t, DT_DENSE_LONGREAL, H5T_NATIVE_LDOUBL
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
-void CHDF5File::fname(const SGSparseMatrix<sg_type>* matrix, 	\
+void CHDF5File::fname(const SGSparseVector<sg_type>* matrix, 	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\

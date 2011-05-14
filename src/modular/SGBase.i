@@ -101,18 +101,18 @@
 
 namespace shogun
 {
-    %template(BoolSparseMatrix) SGSparseMatrix<bool>;
-    %template(CharSparseMatrix) SGSparseMatrix<char>;
-    %template(ByteSparseMatrix) SGSparseMatrix<uint8_t>;
-    %template(WordSparseMatrix) SGSparseMatrix<uint16_t>;
-    %template(ShortSparseMatrix) SGSparseMatrix<int16_t>;
-    %template(IntSparseMatrix)  SGSparseMatrix<int32_t>;
-    %template(UIntSparseMatrix)  SGSparseMatrix<uint32_t>;
-    %template(LongIntSparseMatrix)  SGSparseMatrix<int64_t>;
-    %template(ULongIntSparseMatrix)  SGSparseMatrix<uint64_t>;
-    %template(ShortRealSparseMatrix) SGSparseMatrix<float32_t>;
-    %template(RealSparseMatrix) SGSparseMatrix<float64_t>;
-    %template(LongRealSparseMatrix) SGSparseMatrix<floatmax_t>;
+    %template(BoolSparseMatrix) SGSparseVector<bool>;
+    %template(CharSparseMatrix) SGSparseVector<char>;
+    %template(ByteSparseMatrix) SGSparseVector<uint8_t>;
+    %template(WordSparseMatrix) SGSparseVector<uint16_t>;
+    %template(ShortSparseMatrix) SGSparseVector<int16_t>;
+    %template(IntSparseMatrix)  SGSparseVector<int32_t>;
+    %template(UIntSparseMatrix)  SGSparseVector<uint32_t>;
+    %template(LongIntSparseMatrix)  SGSparseVector<int64_t>;
+    %template(ULongIntSparseMatrix)  SGSparseVector<uint64_t>;
+    %template(ShortRealSparseMatrix) SGSparseVector<float32_t>;
+    %template(RealSparseMatrix) SGSparseVector<float64_t>;
+    %template(LongRealSparseMatrix) SGSparseVector<floatmax_t>;
 
     %template(BoolString) SGString<bool>;
     %template(CharString) SGString<char>;

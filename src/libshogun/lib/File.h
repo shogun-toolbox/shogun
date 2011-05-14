@@ -19,7 +19,7 @@
 namespace shogun
 {
 template <class ST> class SGString;
-template <class ST> struct SGSparseMatrix;
+template <class ST> struct SGSparseVector;
 
 /** @brief A File access base class.
  *
@@ -181,31 +181,31 @@ public:
 	 */
 	//@{
 	virtual void get_bool_sparsematrix(
-			SGSparseMatrix<bool>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_byte_sparsematrix(
-			SGSparseMatrix<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_int8_sparsematrix(
-		SGSparseMatrix<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_char_sparsematrix(
-			SGSparseMatrix<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_int_sparsematrix(
-			SGSparseMatrix<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_uint_sparsematrix(
-			SGSparseMatrix<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_long_sparsematrix(
-			SGSparseMatrix<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_ulong_sparsematrix(
-			SGSparseMatrix<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_short_sparsematrix(
-			SGSparseMatrix<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_word_sparsematrix(
-			SGSparseMatrix<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_shortreal_sparsematrix(
-			SGSparseMatrix<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_real_sparsematrix(
-			SGSparseMatrix<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	virtual void get_longreal_sparsematrix(
-			SGSparseMatrix<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 	//@}
 
 
@@ -322,31 +322,31 @@ public:
 	 */
 	//@{
 	virtual void set_bool_sparsematrix(
-			const SGSparseMatrix<bool>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_byte_sparsematrix(
-			const SGSparseMatrix<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_int8_sparsematrix(
-			const SGSparseMatrix<int8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_char_sparsematrix(
-			const SGSparseMatrix<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_int_sparsematrix(
-			const SGSparseMatrix<int32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_uint_sparsematrix(
-			const SGSparseMatrix<uint32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_long_sparsematrix(
-			const SGSparseMatrix<int64_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_ulong_sparsematrix(
-			const SGSparseMatrix<uint64_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_short_sparsematrix(
-			const SGSparseMatrix<int16_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_word_sparsematrix(
-			const SGSparseMatrix<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; 
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; 
 	virtual void set_shortreal_sparsematrix(
-			const SGSparseMatrix<float32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_real_sparsematrix(
-			const SGSparseMatrix<float64_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_longreal_sparsematrix(
-			const SGSparseMatrix<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 	//@}
 
 

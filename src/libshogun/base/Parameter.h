@@ -138,31 +138,31 @@ public:
 	void add(SGString<floatmax_t>* param, const char* name,
 			 const char* description="");
 
-	void add(SGSparseMatrix<bool>* param, const char* name,
+	void add(SGSparseVector<bool>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<char>* param, const char* name,
+	void add(SGSparseVector<char>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<int8_t>* param, const char* name,
+	void add(SGSparseVector<int8_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<uint8_t>* param, const char* name,
+	void add(SGSparseVector<uint8_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<int16_t>* param, const char* name,
+	void add(SGSparseVector<int16_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<uint16_t>* param, const char* name,
+	void add(SGSparseVector<uint16_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<int32_t>* param, const char* name,
+	void add(SGSparseVector<int32_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<uint32_t>* param, const char* name,
+	void add(SGSparseVector<uint32_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<int64_t>* param, const char* name,
+	void add(SGSparseVector<int64_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<uint64_t>* param, const char* name,
+	void add(SGSparseVector<uint64_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<float32_t>* param, const char* name,
+	void add(SGSparseVector<float32_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<float64_t>* param, const char* name,
+	void add(SGSparseVector<float64_t>* param, const char* name,
 			 const char* description="");
-	void add(SGSparseMatrix<floatmax_t>* param, const char* name,
+	void add(SGSparseVector<floatmax_t>* param, const char* name,
 			 const char* description="");
 
 	/* ************************************************************ */
@@ -225,31 +225,31 @@ public:
 	void add_vector(SGString<floatmax_t>** param, index_t* length,
 					const char* name, const char* description="");
 
-	void add_vector(SGSparseMatrix<bool>** param, index_t* length,
+	void add_vector(SGSparseVector<bool>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<char>** param, index_t* length,
+	void add_vector(SGSparseVector<char>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<int8_t>** param, index_t* length,
+	void add_vector(SGSparseVector<int8_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<uint8_t>** param, index_t* length,
+	void add_vector(SGSparseVector<uint8_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<int16_t>** param, index_t* length,
+	void add_vector(SGSparseVector<int16_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<uint16_t>** param, index_t* length,
+	void add_vector(SGSparseVector<uint16_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<int32_t>** param, index_t* length,
+	void add_vector(SGSparseVector<int32_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<uint32_t>** param, index_t* length,
+	void add_vector(SGSparseVector<uint32_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<int64_t>** param, index_t* length,
+	void add_vector(SGSparseVector<int64_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<uint64_t>** param, index_t* length,
+	void add_vector(SGSparseVector<uint64_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<float32_t>** param, index_t* length,
+	void add_vector(SGSparseVector<float32_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<float64_t>** param, index_t* length,
+	void add_vector(SGSparseVector<float64_t>** param, index_t* length,
 					const char* name, const char* description="");
-	void add_vector(SGSparseMatrix<floatmax_t>** param, index_t* length,
+	void add_vector(SGSparseVector<floatmax_t>** param, index_t* length,
 					const char* name, const char* description="");
 
 	/* ************************************************************ */
@@ -339,43 +339,43 @@ public:
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 
-	void add_matrix(SGSparseMatrix<bool>** param,
+	void add_matrix(SGSparseVector<bool>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<char>** param,
+	void add_matrix(SGSparseVector<char>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<int8_t>** param,
+	void add_matrix(SGSparseVector<int8_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<uint8_t>** param,
+	void add_matrix(SGSparseVector<uint8_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<int16_t>** param,
+	void add_matrix(SGSparseVector<int16_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<uint16_t>** param,
+	void add_matrix(SGSparseVector<uint16_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<int32_t>** param,
+	void add_matrix(SGSparseVector<int32_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<uint32_t>** param,
+	void add_matrix(SGSparseVector<uint32_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<int64_t>** param,
+	void add_matrix(SGSparseVector<int64_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<uint64_t>** param,
+	void add_matrix(SGSparseVector<uint64_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<float32_t>** param,
+	void add_matrix(SGSparseVector<float32_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<float64_t>** param,
+	void add_matrix(SGSparseVector<float64_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
-	void add_matrix(SGSparseMatrix<floatmax_t>** param,
+	void add_matrix(SGSparseVector<floatmax_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 
