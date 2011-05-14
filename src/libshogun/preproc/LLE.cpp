@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(10)
+CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(2)
 {
 	// temporary hack. which one will make sense?
 	m_distance = new CEuclidianDistance();
@@ -33,13 +33,10 @@ bool CLLE::init(CFeatures* data)
 {
 	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
 
+	ASSERT(pdata);
 	int32_t dim = pdata->get_num_features();
 	int32_t N = pdata->get_num_vectors();
 	ASSERT(m_k<N);
-
-	// output
-	SG_PRINT("DIM = %d\n", dim);
-	SG_PRINT("N = %d\n", N);
 
 	// loop variables
 	int32_t i,j,k;
@@ -48,34 +45,19 @@ bool CLLE::init(CFeatures* data)
 	ASSERT(m_distance);
 	m_distance->init(data,data);
 	float64_t* distance_matrix = new float64_t[N*N];
-	float64_t d;
+	float64_t pairwise_distance;
 	for (i=0; i<N; i++)
 		for (j=0; j<=i; j++)
 		{
-			d = m_distance->distance(i,j);
-			distance_matrix[i*N+j] = d;
-			distance_matrix[j*N+i] = d;
+			pairwise_distance = m_distance->distance(i,j);
+			distance_matrix[i*N+j] = pairwise_distance;
+			distance_matrix[j*N+i] = pairwise_distance;
 		}
-/*
-	// output matrix
-	for (i=0; i<N; i++)
-	{
-		for (j=0; j<N; j++)
-		{
-			SG_PRINT("%5.3f ",distance_matrix[i*N+j]);
-		}
-		SG_PRINT("\n");
-	}
-*/
+
+	// init matrices to be used
 	int32_t* neighborhood_matrix = new int32_t[N*m_k];
 	float64_t* local_distances = new float64_t[N];
 	int32_t* local_neighbors = new int32_t[N];
-	float64_t* W = new float64_t[N*N];
-	float64_t* M = new float64_t[N*N];
-
-	for (i=0; i<N; i++)
-		for (j=0; j<N; j++)
-			W[i*N+j] = 0.0;
 
 	// construct neighborhood matrix (contains idxs of neighbors for
 	// i-th object in i-th row)
@@ -93,18 +75,20 @@ bool CLLE::init(CFeatures* data)
 			neighborhood_matrix[i*m_k+j] = local_neighbors[j+1];
 	}
 
-	// output matrix
+	delete[] distance_matrix;
+	delete[] local_neighbors;
+	delete[] local_distances;
+
+	float64_t* W_matrix = new float64_t[N*N];
 	for (i=0; i<N; i++)
-	{
-		SG_PRINT("%dth \n",i);
-		for (j=0; j<m_k; j++)
-			SG_PRINT("%d ", neighborhood_matrix[i*m_k+j]);
-		SG_PRINT("\n");
-	}
+		for (j=0; j<N; j++)
+			W_matrix[i*N+j]=0.0;
 
 	float64_t* z_matrix = new float64_t[N*m_k];
 	float64_t* covariance_matrix = new float64_t[N*N];
 	float64_t* feature_vector = new float64_t[dim];
+	float64_t* id_vector = new float64_t[m_k];
+	int32_t* ipiv = new int32_t[m_k];
 
 	for (i=0; i<N; i++)
 	{
@@ -127,161 +111,95 @@ bool CLLE::init(CFeatures* data)
 			{
 				z_matrix[k*m_k+j] -= feature_vector[k];
 			}
-/*
-		// output Z matrix
-		SG_PRINT("%dth Z matrix\n", i);
-		for (j=0; j<dim; j++)
-		{
-			for (k=0; k<m_k; k++)
-			{
-				SG_PRINT("[%d] %5.3f ", j*m_k+k, z_matrix[j*m_k+k]);
-			}
-			SG_PRINT("\n");
-		}
-*/
+
 		cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
-					m_k,m_k,dim,1.0,
-					z_matrix,m_k,
-					z_matrix,m_k,
-					0.0,
-					covariance_matrix,m_k);
-/*
-		SG_PRINT("%dth covariance matrix\n", i);
-		for (j=0; j<m_k; j++)
-		{
-			for (k=0; k<m_k; k++)
-			{
-				SG_PRINT("[%d] %5.3f ", j*m_k+k, covariance_matrix[j*m_k+k]);
-			}
-			SG_PRINT("\n");
-		}
-*/
-		float64_t* id_vector = new float64_t[m_k];
-		int32_t* ipiv = new int32_t[m_k];
+		            m_k,m_k,dim,1.0,
+		            z_matrix,m_k,
+		            z_matrix,m_k,
+		            0.0,
+		            covariance_matrix,m_k);
 
 		for (j=0; j<m_k; j++)
 		{
 			id_vector[j] = 1.0;
 		}
 
-		// compute tr(C)
-		float64_t trace = 0.0;
-		for (j=0; j<m_k; j++)
-		{
-			trace += covariance_matrix[j*m_k+j];
-		}
-
 		// regularize
-		for (j=0; j<m_k; j++)
+		if (m_k>dim)
 		{
-			covariance_matrix[j*m_k+j] += 1e-3*trace;
-		}
-
-		clapack_dgesv(CblasRowMajor,
-						m_k,1,
-						covariance_matrix,m_k,
-						ipiv,
-						id_vector,m_k);
-		float64_t normalizer=0.0;
-
-		for (j=0; j<m_k; j++)
-		{
-			normalizer += CMath::abs(id_vector[j]);
-		}
-		for (j=0; j<m_k; j++)
-		{
-			id_vector[j]/=normalizer;
-		}
-
-		/*
-		SG_PRINT("weights for \n");
-
-		pdata->get_feature_vector(&feature_vector, &dim, i);
-
-		for (j=0; j<dim; j++)
-		{
-			SG_PRINT("[%d] %5.3f", j, feature_vector[j]);
-		}
-		SG_PRINT("\nis \n");
-
-		for (j=0; j<m_k; j++)
-		{
-			SG_PRINT("[%d] %5.3f ", j, id_vector[j]);
-		}
-		SG_PRINT("\n");
-
-		float64_t* result = new float64_t[dim];
-
-		for (j=0; j<dim; j++)
-			result[j] = 0.0;
-
-		for (j=0; j<m_k; j++)
-		{
-			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[i*m_k+j]);
-			float64_t weight = id_vector[j];
-			for (k=0; k<dim; k++)
+			// compute tr(C)
+			float64_t trace = 0.0;
+			for (j=0; j<m_k; j++)
 			{
-				result[k] += weight*feature_vector[k];
+				trace += covariance_matrix[j*m_k+j];
+			}
+
+			for (j=0; j<m_k; j++)
+			{
+				covariance_matrix[j*m_k+j] += 1e-3*trace;
 			}
 		}
 
-		SG_PRINT("resulting\n");
-		for (j=0; j<dim; j++)
-		{
-			SG_PRINT("[%d] %5.3f", j, result[j]);
-		}
-		SG_PRINT("\n");
-		*/
+		clapack_dgesv(CblasRowMajor,
+		              m_k,1,
+		              covariance_matrix,m_k,
+		              ipiv,//memset(W_matrix,0,N*N);
+		              id_vector,m_k);
+
+		// normalize
+		float64_t normalizer=0.0;
+		for (j=0; j<m_k; j++)
+			normalizer += CMath::abs(id_vector[j]);
 
 		for (j=0; j<m_k; j++)
-		{
-			W[i*N+neighborhood_matrix[i*m_k+j]]=id_vector[j];
-		}
+			id_vector[j]/=normalizer;
+
+		// fill W matrix
+		for (j=0; j<m_k; j++)
+			W_matrix[i*N+neighborhood_matrix[i*m_k+j]]=id_vector[j];
 
 	}
+
+	delete[] ipiv;
+	delete[] id_vector;
+	delete[] neighborhood_matrix;
+	delete[] feature_vector;
+	delete[] z_matrix;
+	delete[] covariance_matrix;
 
 	// W=I-W
 	for (i=0; i<N; i++)
-	{
 		for (j=0; j<N; j++)
-		{
-			W[i*N+j] = i==j ? -W[i*N+j] : 1.0-W[i*N+j];
-		}
-	}
+			W_matrix[i*N+j] = i==j ? -W_matrix[i*N+j] : 1.0-W_matrix[i*N+j];
 
 	// compute W'*W
+	float64_t* M_matrix = new float64_t[N*N];
 	cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
-						N,N,N,1.0,
-						W,N,
-						W,N,
-						0.0,
-						M,N);
+	            N,N,N,1.0,
+	            W_matrix,N,
+	            W_matrix,N,
+	            0.0,
+	            M_matrix,N);
+
+	delete[] W_matrix;
 
 	// compute eigenvectors
-	float64_t* eigs = new float64_t[N*N];
+	float64_t* eigs = new float64_t[N];
 	int32_t status = 0;
-	wrap_dsyev('V','U',N,M,N,eigs,&status);
+	wrap_dsyev('V','U',N,M_matrix,N,eigs,&status);
 
 	for (i=0; i<N; i++)
 	{
+		SG_PRINT("%f :", eigs[i]);
+
 		for (j=0; j<N; j++)
 		{
-			SG_PRINT("%5.3f ",M[i*N+j]);
+			SG_PRINT("%5.3f ",M_matrix[i*N+j]);
 		}
 		SG_PRINT("\n");
 	}
 
-	// clean
-	delete[] W;
-	delete[] neighborhood_matrix;
-	delete[] distance_matrix;
-	delete[] local_distances;
-	delete[] local_neighbors;
-	delete[] feature_vector;
-	delete[] covariance_matrix;
-	delete[] z_matrix;
-
-	SG_PRINT("cleared\n");
+	delete[] M_matrix;
 
 	return true;
 }
