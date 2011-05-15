@@ -112,6 +112,20 @@ CLabels::init(int32_t num_labels_, int32_t num_classes)
 	m_num_classes=num_classes;
 }
 
+SGVector<float64_t> CLabels::get_labels()
+		{
+			return SGVector<float64_t>(labels, num_labels);
+		}
+
+		/** set labels
+		 *
+		 * @param v labels
+		 */
+		void CLabels::set_labels(SGVector<float64_t> v)
+		{
+			labels=v.vector;
+			num_labels=v.length;
+		}
 void CLabels::set_labels(float64_t* p_labels, int32_t len)
 {
 	ASSERT(len>0);

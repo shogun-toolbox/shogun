@@ -8,13 +8,17 @@ public class VectorTest {
 
 	public static void main(String argv[]) {
 		Features.init_shogun();
-		double[] vec = {1,2,3,4}; 
-		Labels x = new Labels(vec);
-		double[] y = new double[4];
-		x.get_labels(y);
+		Labels x = new Labels();
+		
+		doubleArray array = new doubleArray(4);		
 		for (int i = 0; i < 4; i++) {
-			System.out.println(y[i]);
+    		array.setitem(i, i);
 		}
+
+		sgDoubleVector label = new sgDoubleVector(array.cast(), 4);
+		x.set_labels(label);
+		sgDoubleVector z = x.get_labels();
+		
 		Features.exit_shogun();
 	}
 }
