@@ -11,13 +11,10 @@
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/io.h>
-#include <shogun/lib/List.h>
-#include <stdio.h>
 
 using namespace shogun;
 
