@@ -7,6 +7,11 @@
  * Written (W) 2011 Baozeng Ding
   *  
  */
+%{
+#include <shogun/lib/DataType.h>
+%}
+%include "carrays.i"
+%array_class(double, doubleArray);
 
 /* TYPEMAP_IN macros
  *
@@ -33,7 +38,7 @@
  */
 
 /* One dimensional input arrays */
-%define TYPEMAP_IN1(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
+/*%define TYPEMAP_IN1(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
 
 %typemap(jni) (SGTYPE* IN_ARRAY1, int32_t DIM1)		%{JNITYPE##Array%}
 %typemap(jtype) (SGTYPE* IN_ARRAY1, int32_t DIM1)		%{JTYPE[]%}
@@ -101,7 +106,63 @@ TYPEMAP_IN1(long long, long, Long, jlong)
 TYPEMAP_IN1(float32_t, float, Float, jfloat)
 TYPEMAP_IN1(float64_t, double, Double, jdouble)
 
-#undef TYPEMAP_IN1
+#undef TYPEMAP_IN1*/
+%include "shogun/lib/DataType.h"
+
+%define TYPEMAP_SGVECTOR(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
+
+%typemap(jni) shogun::SGVector<SGTYPE>		%{jobject%}
+%typemap(jtype) shogun::SGVector<SGTYPE>		%{sg##JAVATYPE##Vector%}
+%typemap(jstype) shogun::SGVector<SGTYPE> 	%{sg##JAVATYPE##Vector%}
+
+%typemap(in) shogun::SGVector<SGTYPE> {
+	if (!$input) {
+		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+		return $null;	
+	}
+	
+	jclass cls = JCALL1(GetObjectClass, jenv, $input);	
+	jfieldID fid = JCALL3(GetFieldID, jenv, cls, "swigCPtr", "J");
+	jlong cPtr =  JCALL2(GetLongField, jenv, $input, fid);
+	shogun::SGVector<SGTYPE> *p = NULL;
+	*(shogun::SGVector<SGTYPE> **)&p = *(shogun::SGVector<SGTYPE> **)&cPtr;
+	$1 = shogun::SGVector<SGTYPE>(p->vector, p->length);
+}
+
+%typemap(out) shogun::SGVector<SGTYPE> {
+	
+	jclass cls = JCALL1(FindClass, jenv, "sgDoubleVector"); //fix me? "sg##JAVATYPE##Vector"
+	jmethodID mid = JCALL3(GetMethodID, jenv, cls, "init", "(JZ)V");
+	jlong cptr = 0;
+	*(shogun::SGVector<SGTYPE> **)&cptr = &$1;
+	
+	$result = JCALL4(NewObject, jenv, cls, mid, cptr, false);
+}
+
+%typemap(javain) shogun::SGVector<SGTYPE> "$javainput"
+%typemap(javaout) shogun::SGVector<SGTYPE> {
+	return $jnicall;
+}
+
+%template(sg##JAVATYPE##Vector) shogun::SGVector<SGTYPE>;
+%enddef
+
+TYPEMAP_SGVECTOR(bool, boolean, Boolean, jboolean)
+TYPEMAP_SGVECTOR(char, byte, Byte, jbyte)
+TYPEMAP_SGVECTOR(uint8_t, short, Short, jshort)
+TYPEMAP_SGVECTOR(int16_t, short, Short, jshort)
+TYPEMAP_SGVECTOR(uint16_t, int, Int, jint)
+TYPEMAP_SGVECTOR(int32_t, int, Int, jint)
+TYPEMAP_SGVECTOR(uint32_t, long, Long, jlong)
+TYPEMAP_SGVECTOR(int64_t, int, Int, jint)
+TYPEMAP_SGVECTOR(uint64_t, long, Long, jlong)
+TYPEMAP_SGVECTOR(long long, long, Long, jlong)
+TYPEMAP_SGVECTOR(float32_t, float, Float, jfloat)
+TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble)
+
+
+
+#undef TYPEMAP_SGVECTOR
 
 /* TYPEMAP_ARGOUT macros
  *
@@ -128,7 +189,7 @@ TYPEMAP_IN1(float64_t, double, Double, jdouble)
  */
 
  /* One dimensional input/output arrays */
-%define TYPEMAP_ARRAYOUT1(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
+/*%define TYPEMAP_ARRAYOUT1(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
 
 %typemap(jni) (SGTYPE** ARGOUT1, int32_t* DIM1)		%{JNITYPE##Array%}
 %typemap(jtype) (SGTYPE** ARGOUT1, int32_t* DIM1)		%{JTYPE[]%}
@@ -141,14 +202,19 @@ TYPEMAP_IN1(float64_t, double, Double, jdouble)
 
 %typemap(argout) (SGTYPE** ARGOUT1, int32_t* DIM1) {
 	SGTYPE* vec = *$1;
-	JNITYPE *arr;
+	JNITYPE arr[*$2];
 	int i;
-	arr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, $input, 0);
-	if (!arr)
-		return;
-	for (i=0; i < *$2; i++)
+	//$input = JCALL1(New##JAVATYPE##Array, jenv, *$2);
+	
+	//arr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, $input, 0);
+	//if (!arr)
+		//return;
+	for (i = 0; i < *$2; i++)
 		arr[i] = (JNITYPE)vec[i];
-	JCALL3(Release##JAVATYPE##ArrayElements, jenv, $input, arr, 0);
+	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, $input, 0, *$2, arr);
+	
+	//JCALL3(Release##JAVATYPE##ArrayElements, jenv, $input, arr, 0);
+	
 }
 
 %typemap(javain) (SGTYPE** ARGOUT1, int32_t* DIM1) "$javainput"
@@ -169,4 +235,4 @@ TYPEMAP_ARRAYOUT1(long long, long, Long, jlong)
 TYPEMAP_ARRAYOUT1(float32_t, float, Float, jfloat)
 TYPEMAP_ARRAYOUT1(float64_t, double, Double, jdouble)
 
-#undef TYPEMAP_ARRAYOUT1
+#undef TYPEMAP_ARRAYOUT1*/
