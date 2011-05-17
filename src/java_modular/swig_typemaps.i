@@ -162,6 +162,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_SGMATRIX macros */
+/*
 //TYPEMAP_SGMATRIX(bool, boolean, Boolean, jboolean, "[Z")
 //TYPEMAP_SGMATRIX(char, byte, Byte, jbyte, "[B")
 TYPEMAP_SGMATRIX(uint8_t, short, Short, jshort, "[S")
@@ -174,5 +175,5 @@ TYPEMAP_SGMATRIX(uint64_t, long, Long, jlong, "[J")
 //TYPEMAP_SGMATRIX(long long, long, Long, jlong, "[J")
 TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "[F")
 TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "[D")
-
+*/
 #undef TYPEMAP_SGMATRIX
