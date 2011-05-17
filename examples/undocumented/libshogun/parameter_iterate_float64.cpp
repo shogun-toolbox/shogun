@@ -15,7 +15,6 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/io.h>
-#include <stdio.h>
 
 using namespace shogun;
 
