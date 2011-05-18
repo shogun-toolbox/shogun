@@ -7,7 +7,11 @@
   <property name="classes" location="classes"/>
   <property name="dist" location="dist"/>
   <property name="test" location="../../examples/undocumented/java_modular/"/>
-  <property name="classpath" location="dist/shogun.jar"/>
+  <path id="project.classpath">
+    <pathelement location="dist/shogun.jar"/>  
+    <pathelement location="../../../jblas/jblas-1.2.1.jar"/>
+    <pathelement location="classes"/> 
+  </path>
 
   <target name="compile"
         description="compile the source " >
@@ -29,12 +33,16 @@
         description="test the examples" >
 
     <!-- test examples -->
-    <javac srcdir="${test}" classpath="${classpath}" destdir="${classes}"/>
+    <javac srcdir="${test}" destdir="${classes}">
+		<classpath refid="project.classpath"/> 
+    </javac>
   </target>
   
   <target name="run" depends="test"
         description="run the examples" >
-    <java classpath="${classpath}" classname="VectorTest"/>
+    <java classname="VectorTest">
+       <classpath refid="project.classpath"/> 
+    </java>
   </target>
   
   <target name="clean"
