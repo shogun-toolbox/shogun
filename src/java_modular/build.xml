@@ -8,8 +8,7 @@
   <property name="dist" location="dist"/>
   <property name="test" location="../../examples/undocumented/java_modular/"/>
   <path id="project.classpath">
-    <pathelement location="dist/shogun.jar"/>  
-    <pathelement location="../../../jblas/jblas-1.2.1.jar"/>
+    <pathelement location="dist/shogun.jar"/>
     <pathelement location="classes"/> 
   </path>
 
