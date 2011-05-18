@@ -1,4 +1,3 @@
-package shogun.examples;
 import shogun.*;
 
 public class minimal_test {
