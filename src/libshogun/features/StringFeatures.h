@@ -1096,6 +1096,11 @@ template <class ST> class CStringFeatures : public CFeatures
 			return false;
 		}
 
+        void set_features(SGStringList<ST> feats)
+        {
+            set_features(feats.strings, feats.num_strings, feats.max_string_length);
+        }
+
 		/** set features. removes subset beforehand
 		 *
 		 * @param p_features new features
@@ -1229,6 +1234,14 @@ template <class ST> class CStringFeatures : public CFeatures
             SG_UNREF(alpha);
 
             return false;
+        }
+
+        SGStringList<ST> get_features()
+        {
+            SGStringList<ST> sl;
+
+            sl.strings=get_features(sl.num_strings, sl.max_string_length);
+            return sl;
         }
 
 		/** get_features, this does only work when NO subset is defined
