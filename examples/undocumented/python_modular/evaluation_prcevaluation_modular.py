@@ -3,6 +3,7 @@ from numpy import random
 lm=LoadMatrix()
 
 ground_truth = lm.load_labels('../data/label_train_twoclass.dat')
+numpy.random.seed(17)
 predicted = random.randn(len(ground_truth))
 
 parameter_list = [[ground_truth,predicted]]

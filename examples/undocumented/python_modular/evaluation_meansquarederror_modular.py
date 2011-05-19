@@ -4,6 +4,7 @@ lm=LoadMatrix()
 
 N = 100
 
+numpy.random.seed(17)
 ground_truth = random.randn(N)
 predicted = random.randn(N)
 
