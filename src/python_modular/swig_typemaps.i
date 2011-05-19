@@ -349,6 +349,208 @@ TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_OUT_SGMATRIX
 
+/* input typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES_IN(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<type>
+{
+    PyObject* list=(PyObject*) $input;
+
+    $1=0;
+    if (list && PyList_Check(list) && PyList_Size(list)>0)
+    {
+        $1=1;
+        int32_t size=PyList_Size(list);
+        for (int32_t i=0; i<size; i++)
+        {
+            PyObject *o = PyList_GetItem(list,i);
+            if (typecode == NPY_STRING)
+            {
+                if (!PyString_Check(o))
+                {
+                    $1=0;
+                    break;
+                }
+            }
+            else
+            {
+                if (!is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
+                {
+                    $1=0;
+                    break;
+                }
+            }
+        }
+    }
+}
+%typemap(in) shogun::SGStringList<type>
+{
+    PyObject* list=(PyObject*) $input;
+    /* Check if is a list */
+    if (!list || PyList_Check(list) || PyList_Size(list)==0)
+    {
+        int32_t size=PyList_Size(list);
+        shogun::SGString<type>* strings=new shogun::SGString<type>[size];
+
+        int32_t max_len=0;
+        for (int32_t i=0; i<size; i++)
+        {
+            PyObject *o = PyList_GetItem(list,i);
+            if (typecode == NPY_STRING)
+            {
+                if (PyString_Check(o))
+                {
+                    int32_t len=PyString_Size(o);
+                    max_len=shogun::CMath::max(len,max_len);
+                    const char* str=PyString_AsString(o);
+
+                    strings[i].length=len;
+                    strings[i].string=NULL;
+
+                    if (len>0)
+                    {
+                        strings[i].string=new type[len];
+                        memcpy(strings[i].string, str, len);
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
+
+                    for (int32_t j=0; j<i; j++)
+                        delete[] strings[i].string;
+                    delete[] strings;
+                    SWIG_fail;
+                }
+            }
+            else
+            {
+                if (is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
+                {
+                    int is_new_object=0;
+                    PyObject* array = make_contiguous(o, &is_new_object, 1, typecode);
+                    if (!array)
+                        SWIG_fail;
+
+                    type* str=(type*) PyArray_BYTES(array);
+                    int32_t len = PyArray_DIM(array,0);
+                    max_len=shogun::CMath::max(len,max_len);
+
+                    strings[i].length=len;
+                    strings[i].string=NULL;
+
+                    if (len>0)
+                    {
+                        strings[i].string=new type[len];
+                        memcpy(strings[i].string, str, len*sizeof(type));
+                    }
+
+                    if (is_new_object)
+                        Py_DECREF(array);
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
+
+                    for (int32_t j=0; j<i; j++)
+                        delete[] strings[i].string;
+                    delete[] strings;
+                    SWIG_fail;
+                }
+            }
+        }
+        SGStringList<type> sl;
+        sl.strings=strings;
+        sl.num_strings=size;
+        sl.max_string_length=max_len;
+        $1=sl;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError,"not a/empty list");
+        return NULL;
+    }
+}
+%enddef
+
+TYPEMAP_STRINGFEATURES_IN(bool,          NPY_BOOL)
+TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING)
+TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8)
+TYPEMAP_STRINGFEATURES_IN(int16_t,       NPY_INT16)
+TYPEMAP_STRINGFEATURES_IN(uint16_t,      NPY_UINT16)
+TYPEMAP_STRINGFEATURES_IN(int32_t,       NPY_INT32)
+TYPEMAP_STRINGFEATURES_IN(uint32_t,      NPY_UINT32)
+TYPEMAP_STRINGFEATURES_IN(int64_t,       NPY_INT64)
+TYPEMAP_STRINGFEATURES_IN(uint64_t,      NPY_UINT64)
+TYPEMAP_STRINGFEATURES_IN(float32_t,     NPY_FLOAT32)
+TYPEMAP_STRINGFEATURES_IN(float64_t,     NPY_FLOAT64)
+TYPEMAP_STRINGFEATURES_IN(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_STRINGFEATURES_IN
+
+/* output typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
+%typemap(out) shogun::SGString<type>
+{
+    shogun::SGString<type>* str=$1.strings;
+    int32_t num=$1.num_strings;
+    PyObject* list = PyList_New(num);
+
+    if (list && str)
+    {
+        for (int32_t i=0; i<num; i++)
+        {
+            PyObject* s=NULL;
+
+            if (typecode == NPY_STRING)
+            {
+                /* This path is only taking if str[i].string is a char*. However this cast is
+                   required to build through for non char types. */
+                s=PyString_FromStringAndSize((char*) str[i].string, str[i].length);
+            }
+            else
+            {
+                PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+                type* data = (type*) malloc(str[i].length*sizeof(type));
+                if (descr && data)
+                {
+                    memcpy(data, str[i].string, str[i].length*sizeof(type));
+                    npy_intp dims = str[i].length;
+
+                    s = PyArray_NewFromDescr(&PyArray_Type,
+                            descr, 1, &dims, NULL, (void*) data, NPY_FARRAY | NPY_WRITEABLE, NULL);
+                    ((PyArrayObject*) s)->flags |= NPY_OWNDATA;
+                }
+                else
+                    SWIG_fail;
+            }
+
+            PyList_SetItem(list, i, s);
+            delete[] str[i].string;
+        }
+        delete[] str;
+        $result = list;
+    }
+    else
+        SWIG_fail;
+}
+%enddef
+
+TYPEMAP_STRINGFEATURES_OUT(bool,          NPY_BOOL)
+TYPEMAP_STRINGFEATURES_OUT(char,          NPY_STRING)
+TYPEMAP_STRINGFEATURES_OUT(uint8_t,       NPY_UINT8)
+TYPEMAP_STRINGFEATURES_OUT(int16_t,       NPY_INT16)
+TYPEMAP_STRINGFEATURES_OUT(uint16_t,      NPY_UINT16)
+TYPEMAP_STRINGFEATURES_OUT(int32_t,       NPY_INT32)
+TYPEMAP_STRINGFEATURES_OUT(uint32_t,      NPY_UINT32)
+TYPEMAP_STRINGFEATURES_OUT(int64_t,       NPY_INT64)
+TYPEMAP_STRINGFEATURES_OUT(uint64_t,      NPY_UINT64)
+TYPEMAP_STRINGFEATURES_OUT(float32_t,     NPY_FLOAT32)
+TYPEMAP_STRINGFEATURES_OUT(float64_t,     NPY_FLOAT64)
+TYPEMAP_STRINGFEATURES_OUT(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_STRINGFEATURES_OUT(PyObject,      NPY_OBJECT)
+#undef TYPEMAP_STRINGFEATURES_ARGOUT
+
 
 
 
