@@ -7,11 +7,13 @@
  * Written (W) 2011 Baozeng Ding
   *  
  */
-%{
-#include <lib/DataType.h>
-%}
-//%include "lib/DataType.h"
 
+%pragma(java) jniclassimports=%{
+import org.jblas.*;
+%}
+%typemap(javaimports) SWIGTYPE%{
+import org.jblas.*;
+%}
 /* One dimensional input/output arrays */
 
 %define TYPEMAP_SGVECTOR(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
@@ -73,7 +75,7 @@
 /* Define concrete examples of the TYPEMAP_SGVECTOR macros */
 TYPEMAP_SGVECTOR(bool, boolean, Boolean, jboolean)
 TYPEMAP_SGVECTOR(char, byte, Byte, jbyte)
-TYPEMAP_SGVECTOR(uint8_t, short, Short, jshort)
+TYPEMAP_SGVECTOR(uint8_t, byte, Byte, jbyte)
 TYPEMAP_SGVECTOR(int16_t, short, Short, jshort)
 TYPEMAP_SGVECTOR(uint16_t, int, Int, jint)
 TYPEMAP_SGVECTOR(int32_t, int, Int, jint)
@@ -87,46 +89,56 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble)
 #undef TYPEMAP_SGVECTOR
 
 /* Two dimensional input/output arrays */
-%define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, JNIDESC)
+%define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
-%typemap(jni) shogun::SGMatrix<SGTYPE>		%{jobjectArray%}
-%typemap(jtype) shogun::SGMatrix<SGTYPE>		%{JTYPE[][]%}
-%typemap(jstype) shogun::SGMatrix<SGTYPE> 	%{JTYPE[][]%}
+%typemap(jni) shogun::SGMatrix<SGTYPE>		%{jobject%}
+%typemap(jtype) shogun::SGMatrix<SGTYPE>		%{##JAVATYPE##Matrix%}
+%typemap(jstype) shogun::SGMatrix<SGTYPE> 	%{##JAVATYPE##Matrix%}
 
 %typemap(in) shogun::SGMatrix<SGTYPE>
 {
-	int32_t i,j;
-	int32_t rows, cols;
+	jclass cls;
+	jmethodID mid;
 	SGTYPE *array;
 	##JNITYPE##Array jarr;
-	JNITYPE *element;
+	JNITYPE *carr;
+	int32_t i,len, rows, cols;
+	
 	if (!$input) {
 		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
 		return $null;	
 	}
 	
-	rows = JCALL1(GetArrayLength, jenv, $input);
-	cols = 0;
-	for (i = 0; i < rows; i++) {
-		jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, $input, i);
-		if (!jarr) {
-			SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-			return $null;
-		}
-		if (cols == 0) {
-			cols = JCALL1(GetArrayLength, jenv, jarr);
-			array = new SGTYPE[rows * cols];
-			if (!array) {
-    			SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    			return $null;
-			}
-		}
-		element = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
-		for (j = 0; j < cols; j++) {
-			array[i * cols + j] = element[j];
-		}
-	}
+	cls = JCALL1(GetObjectClass, jenv, $input);
+	if (!cls)
+		return $null;	
 
+	mid = JCALL3(GetMethodID, jenv, cls, "toArray", TOARRAY);
+	if (!mid)
+		return $null;
+	
+	jarr = (##JNITYPE##Array)JCALL2(CallObjectMethod, jenv, $input, mid);
+	carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
+	len = JCALL1(GetArrayLength, jenv, jarr);
+	array = new SGTYPE[len];
+	for (i = 0; i < len; i++) {
+		array[i] = (SGTYPE)carr[i];
+	}
+	
+	JCALL3(Release##JAVATYPE##ArrayElements, jenv, jarr, carr, 0);	
+
+	mid = JCALL3(GetMethodID, jenv, cls, "getRows", "()I");
+	if (!mid) 
+		return $null;
+	
+	rows = (int32_t)JCALL2(CallIntMethod, jenv, $input, mid);
+	
+	mid = JCALL3(GetMethodID, jenv, cls, "getColumns", "()I");
+	if (!mid)
+		return $null;
+	
+	cols = (int32_t)JCALL2(CallIntMethod, jenv, $input, mid);
+	
     $1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
 }
 
@@ -134,45 +146,45 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble)
 {
 	int32_t rows = $1.num_rows;
 	int32_t cols = $1.num_cols;
-	int32_t i, j;
+	int32_t len = rows * cols;
+	JNITYPE arr[len];
+	jobject res;
+	int32_t i;
 	
-	jclass cls = JCALL1(FindClass, jenv, JNIDESC);
-	$result = JCALL3(NewObjectArray, jenv, rows, cls, NULL);	
-	if (!$result) {
-		return NULL;
-	}
+	jclass cls;
+	jmethodID mid;
+		
+	cls = JCALL1(FindClass, jenv, CLASSDESC);
+	if (!cls)
+		return $null;
+	
+	mid = JCALL3(GetMethodID, jenv, cls, "<init>", CONSTRUCTOR);
+	if (!mid)
+		return $null;	
 
-	for (i = 0; i < rows; i++) {
-		JNITYPE arr[cols];
-		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, cols);
-		if (!jarr) {
-			return NULL;		
-		}
-		
-		for (j = 0; j < cols; j++) {
-			arr[j] = (JNITYPE)$1.matrix[i * cols + j];
-		}
-		
-		JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, cols, arr);
-		JCALL3(SetObjectArrayElement, jenv, $result, i, jarr);
-		JCALL1(DeleteLocalRef, jenv, jarr);
-		 
+	##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, len);
+	if (!jarr)
+		return $null;
+
+	for (i = 0; i < len; i++) {
+		arr[i] = (JNITYPE)$1.matrix[i];
 	}
+	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, len, arr);
+	
+	res = JCALL5(NewObject, jenv, cls, mid, rows, cols, jarr);
+	$result = (jobject)res;
 }
+
+%typemap(javain) shogun::SGMatrix<SGTYPE> "$javainput"
+%typemap(javaout) shogun::SGMatrix<SGTYPE> {
+	return $jnicall;
+}
+
 %enddef
 
-/* Define concrete examples of the TYPEMAP_SGMATRIX macros */
-//TYPEMAP_SGMATRIX(bool, boolean, Boolean, jboolean, "[Z")
-//TYPEMAP_SGMATRIX(char, byte, Byte, jbyte, "[B")
-TYPEMAP_SGMATRIX(uint8_t, short, Short, jshort, "[S")
-TYPEMAP_SGMATRIX(int16_t, short, Short, jshort, "[S")
-TYPEMAP_SGMATRIX(uint16_t, int, Int, jint, "[I")
-TYPEMAP_SGMATRIX(int32_t, int, Int, jint, "[I")
-TYPEMAP_SGMATRIX(uint32_t, long, Long, jlong, "[J")
-TYPEMAP_SGMATRIX(int64_t, int, Int, jint, "[I")
-TYPEMAP_SGMATRIX(uint64_t, long, Long, jlong, "[J")
-//TYPEMAP_SGMATRIX(long long, long, Long, jlong, "[J")
-TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "[F")
-TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "[D")
+/*Define concrete examples of the TYPEMAP_SGMATRIX macros */
+TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix","(II[F)V")
+TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
 #undef TYPEMAP_SGMATRIX
+
