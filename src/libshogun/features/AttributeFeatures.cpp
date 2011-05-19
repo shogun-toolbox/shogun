@@ -22,5 +22,5 @@ CAttributeFeatures::~CAttributeFeatures()
 {
 	int32_t n=features.get_num_elements();
 	for (int32_t i=0; i<n; i++)
-		SG_UNREF(features[i].attr_obj);
+		SG_UNREF_NO_NULL(features[i].attr_obj);
 }

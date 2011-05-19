@@ -1,4 +1,3 @@
-package shogun.examples;
 import shogun.*;
 
 public class VectorTest {
@@ -8,12 +7,13 @@ public class VectorTest {
 
 	public static void main(String argv[]) {
 		Features.init_shogun();
-		double[] vec = {1,2,3,4}; 
-		Labels x = new Labels(vec);
-		double[] y = new double[4];
-		x.get_labels(y);
-		for (int i = 0; i < 4; i++) {
-			System.out.println(y[i]);
+		Labels x = new Labels();
+
+		double y[] = {1, 2, 3, 4};
+		x.set_labels(y);
+		double z[] = x.get_labels();
+		for (int i = 0; i < 4; i ++) {
+			System.out.println(z[i]);	
 		}
 		Features.exit_shogun();
 	}

@@ -6,14 +6,17 @@
   <property name="src" location="."/>
   <property name="classes" location="classes"/>
   <property name="dist" location="dist"/>
-  <property name="test" location="shogun/examples"/>
-  <property name="classpath" location="dist/shogun.jar"/>
+  <property name="test" location="../../examples/undocumented/java_modular/"/>
+  <path id="project.classpath">
+    <pathelement location="dist/shogun.jar"/>
+    <pathelement location="classes"/> 
+  </path>
 
   <target name="compile"
         description="compile the source " >
-<!-- Compile the java code -->
-<mkdir dir="${classes}"/>
-<javac srcdir="${src}" destdir="${classes}"/>
+  <!-- Compile the java code -->
+    <mkdir dir="${classes}"/>
+    <javac srcdir="${src}" destdir="${classes}"/>
   </target>
 
   <target name="dist" depends="compile"
@@ -29,12 +32,16 @@
         description="test the examples" >
 
     <!-- test examples -->
-    <javac srcdir="${test}" classpath="${classpath}" destdir="${classes}"/>
+    <javac srcdir="${test}" destdir="${classes}">
+		<classpath refid="project.classpath"/> 
+    </javac>
   </target>
   
   <target name="run" depends="test"
         description="run the examples" >
-    <java classpath="${classpath}" classname="shogun.examples.VectorTest"/>
+    <java classname="VectorTest">
+       <classpath refid="project.classpath"/> 
+    </java>
   </target>
   
   <target name="clean"

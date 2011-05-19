@@ -252,6 +252,92 @@ public:
 	void add_vector(SGSparseVector<floatmax_t>** param, index_t* length,
 					const char* name, const char* description="");
 
+
+
+	void add(SGVector<bool>* param, const char* name,
+					const char* description="");
+	void add(SGVector<char>* param, const char* name,
+					const char* description="");
+	void add(SGVector<int8_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<uint8_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<int16_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<uint16_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<int32_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<uint32_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<int64_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<uint64_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<float32_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<float64_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<floatmax_t>* param, const char* name,
+					const char* description="");
+
+	void add(SGVector<CSGObject*>* param, const char* name,
+					const char* description="");
+
+	void add(SGVector<SGString<bool> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<char> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<int8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<uint8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<int16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<uint16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<int32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<uint32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<int64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<uint64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<float32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<float64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<floatmax_t> >* param, const char* name,
+					const char* description="");
+
+	void add(SGVector<SGSparseVector<bool> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<char> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<int8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<uint8_t> >* param,const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<int16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<uint16_t> >* param,
+					const char* name, const char* description="");
+	void add(SGVector<SGSparseVector<int32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<uint32_t> >* param,const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<int64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<uint64_t> >* param,
+					const char* name, const char* description="");
+	void add(SGVector<SGSparseVector<float32_t> >* param,
+					const char* name, const char* description="");
+	void add(SGVector<SGSparseVector<float64_t> >* param,
+					const char* name, const char* description="");
+	void add(SGVector<SGSparseVector<floatmax_t> >* param,
+					const char* name, const char* description="");
+
 	/* ************************************************************ */
 	/* Matrix wrappers  */
 
@@ -377,6 +463,92 @@ public:
 					const char* name, const char* description="");
 	void add_matrix(SGSparseVector<floatmax_t>** param,
 					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+
+
+
+	void add(SGMatrix<bool>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<char>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<int8_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<uint8_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<int16_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<uint16_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<int32_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<uint32_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<int64_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<uint64_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<float32_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<float64_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<floatmax_t>* param, const char* name,
+					const char* description="");
+
+	void add(SGMatrix<CSGObject*>* param, const char* name,
+					const char* description="");
+
+	void add(SGMatrix<SGString<bool> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<char> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<int8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<uint8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<int16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<uint16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<int32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<uint32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<int64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<uint64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<float32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<float64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<floatmax_t> >* param, const char* name,
+					const char* description="");
+
+	void add(SGMatrix<SGSparseVector<bool> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<char> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<int8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<uint8_t> >* param,const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<int16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<uint16_t> >* param,
+					const char* name, const char* description="");
+	void add(SGMatrix<SGSparseVector<int32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<uint32_t> >* param,const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<int64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<uint64_t> >* param,
+					const char* name, const char* description="");
+	void add(SGMatrix<SGSparseVector<float32_t> >* param,
+					const char* name, const char* description="");
+	void add(SGMatrix<SGSparseVector<float64_t> >* param,
+					const char* name, const char* description="");
+	void add(SGMatrix<SGSparseVector<floatmax_t> >* param,
 					const char* name, const char* description="");
 
 protected:

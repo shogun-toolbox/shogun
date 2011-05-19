@@ -42,6 +42,7 @@ class CSerializableFile;
 #ifdef USE_REFERENCE_COUNTING
 #define SG_REF(x) { if (x) (x)->ref(); }
 #define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=NULL; } }
+#define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
 #else
 #define SG_REF(x)
 #define SG_UNREF(x)
