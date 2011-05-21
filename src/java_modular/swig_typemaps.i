@@ -188,3 +188,116 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 
 #undef TYPEMAP_SGMATRIX
 
+/* input/output typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES(SGTYPE, JTYPE, JAVATYPE, JNITYPE, JNIDESC, CLASSDESC)
+
+%typemap(jni) shogun::SGStringList<SGTYPE>	%{jobjectArray%}
+%typemap(jtype) shogun::SGStringList<SGTYPE>		%{JNIDESC%}
+%typemap(jstype) shogun::SGStringList<SGTYPE> 	%{JNIDESC%}
+
+%typemap(in) shogun::SGStringList<SGTYPE> {
+	int32_t size = 0;
+	int32_t i;
+	int32_t len, max_len = 0;
+
+	if (!$input) {
+		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+		return $null;	
+	}
+
+	size = JCALL1(GetArrayLength, jenv, $input);
+	shogun::SGString<SGTYPE>* strings=new shogun::SGString<SGTYPE>[size];
+
+	for (i = 0; i < size; i++) {
+		
+		
+		
+		
+		if (JNIDESC == "String[]") {
+			jstring jstr = (jstring)JCALL2(GetObjectArrayElement, jenv, $input, i);
+			
+			len = JCALL1(GetStringUTFLength, jenv, jstr);
+			max_len = shogun::CMath::max(len, max_len);
+			const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
+
+			strings[i].length = len;
+			strings[i].string = NULL;
+			
+			if (len > 0) {			
+				strings[i].string = new SGTYPE(len);
+				memcpy(strings[i].string, str, len);
+						
+			}
+			JCALL2(ReleaseStringUTFChars, jenv, jstr, str);
+		}
+		else {
+			##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, $input, i);
+			len = JCALL1(GetArrayLength, jenv, jarr);
+			max_len = shogun::CMath::max(len, max_len);
+
+			strings[i].length=len;
+          strings[i].string=NULL;
+			
+			if (len >0) {
+				strings[i].string = new SGTYPE(len);
+				memcpy(strings[i].string, jarr, len * sizeof(SGTYPE));
+			}
+			
+		}	
+	}
+	
+	SGStringList<SGTYPE> sl;
+	sl.strings=strings;
+	sl.num_strings=size;
+	sl.max_string_length=max_len;
+	$1 = sl;
+}
+
+%typemap(out) shogun::SGStringList<SGTYPE> {
+	shogun::SGString<SGTYPE>* str = $1.strings;
+	int32_t i, num = $1.num_strings;
+	jclass cls;
+	jobjectArray res;
+	
+	cls = JCALL1(FindClass, jenv, CLASSDESC);
+	res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
+
+	for (i = 0; i < num; i++) {
+		if (JNIDESC == "String[]") {
+			jstring jstr = (jstring)JCALL1(NewStringUTF, jenv, (char *)str[i].string);
+			JCALL3(SetObjectArrayElement, jenv, res, i, jstr);
+			JCALL1(DeleteLocalRef, jenv, jstr);
+		}
+		else {
+			##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].length);
+			JCALL3(SetObjectArrayElement, jenv, res, i, jarr);
+			JCALL1(DeleteLocalRef, jenv, jarr);	
+		}
+		 delete[] str[i].string;
+	}
+	delete[] str;
+	 $result = res;
+	
+}
+
+%typemap(javain) shogun::SGStringList<SGTYPE> "$javainput"
+%typemap(javaout) shogun::SGStringList<SGTYPE> {
+	return $jnicall;
+}
+
+%enddef
+
+TYPEMAP_STRINGFEATURES(bool, boolean, Boolean, jboolean, "Boolen[][]", "[[Z")
+TYPEMAP_STRINGFEATURES(char, byte, Byte, jbyte, "String[]", "java/lang/String")
+TYPEMAP_STRINGFEATURES(uint8_t, byte, Byte, jbyte, "Byte[][]", "[[S")
+TYPEMAP_STRINGFEATURES(int16_t, short, Short, jshort, "Short[][]", "[[S")
+TYPEMAP_STRINGFEATURES(uint16_t, int, Int, jint, "Int[][]", "[[I")
+TYPEMAP_STRINGFEATURES(int32_t, int, Int, jint, "Int[][]", "[[I")
+TYPEMAP_STRINGFEATURES(uint32_t, long, Long, jlong, "Long[][]", "[[J")
+TYPEMAP_STRINGFEATURES(int64_t, int, Int, jint, "Int[][]", "[[I")
+TYPEMAP_STRINGFEATURES(uint64_t, long, Long, jlong, "Long[][]", "[[J")
+TYPEMAP_STRINGFEATURES(long long, long, Long, jlong, "Long[][]", "[[J")
+TYPEMAP_STRINGFEATURES(float32_t, float, Float, jfloat, "Float[][]", "[[F")
+TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
+
+#undef TYPEMAP_STRINGFEATURES
