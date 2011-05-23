@@ -518,6 +518,13 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			return sparse_feature_matrix;
 		}
 
+        SGSparseMatrix<ST> get_sparse_feature_matrix()
+        {
+            SGSparseMatrix<ST> sm;
+            sm.sparse_matrix=get_sparse_feature_matrix(sm.num_features, sm.num_vectors);
+            return sm;
+        }
+
 		/** get the pointer to the sparse feature matrix (swig compatible)
 		 * num_feat,num_vectors are returned by reference
 		 *
@@ -643,6 +650,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			num_features=num_feat;
 			num_vectors=num_vec;
 		}
+
+        void set_sparse_feature_matrix(SGSparseMatrix<ST> sm)
+        {
+            set_sparse_feature_matrix(sm.sparse_matrix, sm.num_features, sm.num_vectors);
+        }
 
 		/** gets a copy of a full feature matrix
 		 * num_feat,num_vectors are returned by reference
