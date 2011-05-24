@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef MDS_H_
-#define MDS_H_
+#ifndef CLASSICMDS_H_
+#define CLASSICMDS_H_
 //#ifdef HAVE_LAPACK
 
 #include "preproc/SimplePreProc.h"
@@ -26,15 +26,15 @@ class CDistance;
 /** @brief the class MDS
  *	That thing isn't working yet, huh
  */
-class CMDS: public CSimplePreProc<float64_t>
+class CClassicMDS: public CSimplePreProc<float64_t>
 {
 public:
 
 	/* constructor */
-	CMDS();
+	CClassicMDS();
 
 	/* destructor */
-	virtual ~CMDS();
+	virtual ~CClassicMDS();
 
 	/** init
 	 * @param data feature vectors for preproc
@@ -72,4 +72,4 @@ protected:
 }
 
 //#endif /* HAVE_LAPACK */
-#endif /* MDS_H_ */
+#endif /* CLASSICMDS_H_ */
