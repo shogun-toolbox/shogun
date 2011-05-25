@@ -129,3 +129,101 @@ TYPEMAP_SGMATRIX(float32_t, NUM2DBL, rb_float_new)
 TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 
 #undef TYPEMAP_SGMATRIX
+
+/* input/output typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES(SGTYPE, R2SG, SG2R, TYPECODE)
+
+%typemap(in) shogun::SGStringList<SGTYPE> {
+	int32_t size = 0;
+	int32_t i, j;
+	int32_t len, max_len = 0;
+
+	if (TYPE($input) != T_ARRAY) {
+		rb_raise(rb_eArgError, "Expected Arrays");
+	}
+	
+	size = RARRAY($input)->len;
+	shogun::SGString<SGTYPE>* strings=new shogun::SGString<SGTYPE>[size];
+
+	for (i = 0; i < size; i++) {
+		VALUE arr = rb_ary_entry($input, i);
+		if (TYPE(arr) == T_STRING) {
+			len = 0;				
+			const char *str = rb_str2cstr(arr, (long *)&len);
+			max_len = shogun::CMath::max(len, max_len);
+
+			strings[i].length = len;
+			strings[i].string = NULL;
+			
+			if (len > 0) {			
+				strings[i].string = new SGTYPE[len];
+				memcpy(strings[i].string, str, len);
+			}
+		}
+		else {
+			if (TYPE(arr) == T_ARRAY) {
+				len = RARRAY(arr)->len;
+				max_len = shogun::CMath::max(len, max_len);
+				
+				strings[i].length=len;
+          		strings[i].string=NULL;
+				if (len > 0) {
+					strings[i].string = new SGTYPE[len];
+					for (j = 0; j < len; j++) {
+						strings[i].string[j] = R2SG(RARRAY(arr)->ptr[j]);
+					}				
+				}
+			}
+			else {
+				rb_raise(rb_eArgError, "Expected Arrays");
+			}
+		}
+	}
+	
+	SGStringList<SGTYPE> sl;
+	sl.strings = strings;
+	sl.num_strings = size;
+	sl.max_string_length = max_len;
+	$1 = sl;
+}
+
+%typemap(out) shogun::SGStringList<SGTYPE> {
+	shogun::SGString<SGTYPE>* str = $1.strings;
+	int32_t i, j, num = $1.num_strings;
+	VALUE arr;
+	
+	arr = rb_ary_new2(num);
+
+	for (i = 0; i < num; i++) {
+		if (TYPECODE == "String[]") {
+			VALUE vec = rb_str_new2((char *)str[i].string);
+			rb_ary_push(arr, vec);
+		}
+		else {
+			SGTYPE* data = new SGTYPE[str[i].length];
+			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
+			
+			VALUE vec = rb_ary_new2(str[i].length);
+			for (j = 0; j < str[i].length; j++) {
+				rb_ary_push(vec, SG2R(data[j]));
+			}
+			rb_ary_push(arr, vec);
+		}
+		delete[] str[i].string;
+	}
+	delete[] str;
+}
+
+%enddef
+
+TYPEMAP_STRINGFEATURES(char, NUM2CHR, CHR2FIX, "String[]")
+TYPEMAP_STRINGFEATURES(uint16_t, NUM2INT, INT2NUM, "uint16_t[][]")
+TYPEMAP_STRINGFEATURES(int32_t, NUM2INT, INT2NUM, "int32_t[][]")
+TYPEMAP_STRINGFEATURES(uint32_t, NUM2UINT, UINT2NUM, "uint32_t[][]")
+TYPEMAP_STRINGFEATURES(int64_t, NUM2LONG,  LONG2NUM, "int64_t[][]")
+TYPEMAP_STRINGFEATURES(uint64_t, NUM2ULONG, ULONG2NUM, "uint64_t[][]")
+TYPEMAP_STRINGFEATURES(long long, NUM2LL, LL2NUM, "long long[][]")
+TYPEMAP_STRINGFEATURES(float32_t, NUM2DBL, rb_float_new, "float32_t[][]")
+TYPEMAP_STRINGFEATURES(float64_t, NUM2DBL, rb_float_new, "float64_t[][]")
+
+#undef TYPEMAP_STRINGFEATURES
