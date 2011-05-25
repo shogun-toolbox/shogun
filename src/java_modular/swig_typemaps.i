@@ -220,7 +220,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 			strings[i].string = NULL;
 			
 			if (len > 0) {			
-				strings[i].string = new SGTYPE(len);
+				strings[i].string = new SGTYPE[len];
 				memcpy(strings[i].string, str, len);
 						
 			}
@@ -235,7 +235,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
           strings[i].string=NULL;
 			
 			if (len >0) {
-				strings[i].string = new SGTYPE(len);
+				strings[i].string = new SGTYPE[len];
 				memcpy(strings[i].string, jarr, len * sizeof(SGTYPE));
 			}
 			
@@ -265,7 +265,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 			JCALL1(DeleteLocalRef, jenv, jstr);
 		}
 		else {
-			SGTYPE* data = new SGTYPE(str[i].length);
+			SGTYPE* data = new SGTYPE[str[i].length];
 			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
 
 			##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].length);
