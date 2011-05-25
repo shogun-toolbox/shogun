@@ -241,7 +241,7 @@ TYPEMAP_SGMATRIX(float64_t)
 			strings[i].string = NULL;
 			
 			if (len > 0) {			
-				strings[i].string = new SGTYPE(len);
+				strings[i].string = new SGTYPE[len];
 				memcpy(strings[i].string, str, len);
 			}
 		}
@@ -260,7 +260,7 @@ TYPEMAP_SGMATRIX(float64_t)
           strings[i].string=NULL;
 			
 			if (len > 0) {
-				strings[i].string = new SGTYPE(len);
+				strings[i].string = new SGTYPE[len];
 				memcpy(strings[i].string, arr, len * sizeof(SGTYPE));
 			}
 			
@@ -287,7 +287,7 @@ TYPEMAP_SGMATRIX(float64_t)
 			lua_rawseti(L, -2, i + 1);
 		}
 		else {
-			SGTYPE* data = new SGTYPE(str[i].length);
+			SGTYPE* data = new SGTYPE[str[i].length];
 			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
 			
 			lua_newtable(L);
