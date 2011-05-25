@@ -213,3 +213,104 @@ TYPEMAP_SGMATRIX(float32_t)
 TYPEMAP_SGMATRIX(float64_t)
 
 #undef TYPEMAP_SGMATRIX
+
+/* input/output typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES(SGTYPE, TYPECODE)
+
+%typemap(in) shogun::SGStringList<SGTYPE> {
+	int32_t size = 0;
+	int32_t i;
+	int32_t len, max_len = 0;
+
+	if (!lua_istable(L, $input)) {
+		lua_pushstring(L,"expected a table");
+		return 0;
+	}
+	
+	size = SWIG_table_size(L, $input);
+	shogun::SGString<SGTYPE>* strings=new shogun::SGString<SGTYPE>[size];
+
+	for (i = 0; i < size; i++) {
+		lua_rawgeti(L, $input, i + 1);
+		if (lua_isstring(L, -1)) {
+			len = 0;				
+			const char *str = lua_tolstring(L, -1, (size_t *)&len);
+			max_len = shogun::CMath::max(len, max_len);
+
+			strings[i].length = len;
+			strings[i].string = NULL;
+			
+			if (len > 0) {			
+				strings[i].string = new SGTYPE(len);
+				memcpy(strings[i].string, str, len);
+			}
+		}
+		else {
+			if (!lua_istable(L, -1)) {
+				lua_pop(L, 1);
+				lua_pushstring(L, "matrix table expected");
+				lua_error(L);	
+				return 0;
+			}
+			SGTYPE *arr = (SGTYPE *)lua_topointer(L, -1);
+			len = SWIG_table_size(L, -1);
+			max_len = shogun::CMath::max(len, max_len);
+
+			strings[i].length=len;
+          strings[i].string=NULL;
+			
+			if (len > 0) {
+				strings[i].string = new SGTYPE(len);
+				memcpy(strings[i].string, arr, len * sizeof(SGTYPE));
+			}
+			
+		}
+		lua_pop(L,1);
+	}
+	
+	SGStringList<SGTYPE> sl;
+	sl.strings = strings;
+	sl.num_strings = size;
+	sl.max_string_length = max_len;
+	$1 = sl;
+}
+
+%typemap(out) shogun::SGStringList<SGTYPE> {
+	shogun::SGString<SGTYPE>* str = $1.strings;
+	int32_t i, j, num = $1.num_strings;
+	
+	lua_newtable(L);
+
+	for (i = 0; i < num; i++) {
+		if (TYPECODE == "String[]") {
+			lua_pushstring(L, (char *)str[i].string);
+			lua_rawseti(L, -2, i + 1);
+		}
+		else {
+			SGTYPE* data = new SGTYPE(str[i].length);
+			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
+			
+			lua_newtable(L);
+			for (j = 0; j < str[i].length; j++) {
+				lua_pushnumber(L, (lua_Number)data[j]);
+				lua_rawseti(L, -2, j + 1);
+			}
+			lua_rawseti(L, -2, i + 1);
+		}
+		delete[] str[i].string;
+	}
+	delete[] str;
+	SWIG_arg++;
+}
+
+%enddef
+
+TYPEMAP_STRINGFEATURES(char, "String[]")
+TYPEMAP_STRINGFEATURES(uint8_t, "uint8[][]")
+TYPEMAP_STRINGFEATURES(int16_t, "int16[][]")
+TYPEMAP_STRINGFEATURES(uint16_t, "uint[][]")
+TYPEMAP_STRINGFEATURES(int32_t, "int32[][]")
+TYPEMAP_STRINGFEATURES(float32_t, "float[][]")
+TYPEMAP_STRINGFEATURES(float64_t, "double[][]")
+
+#undef TYPEMAP_STRINGFEATURES
