@@ -34,22 +34,52 @@ bool CClassicMDS::init(CFeatures* data)
 
 	int32_t i,j;
 
-	float64_t* D_matrix = new float64_t[N*N];
-	float64_t* Ds_matrix = new float64_t[N*N];
+	float64_t* D_matrix;
 	distance->get_distance_matrix(&D_matrix,&N,&N);
 
-	cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans,N,N,N,1.0,D_matrix,N,D_matrix,N,0.0,Ds_matrix,N);
+	float64_t* Ds_matrix = new float64_t[N*N];
+
+	CMath::display_matrix(D_matrix,N,N,"D matrix");
+
+	// Ds = D^2, DSYMM?
+	cblas_dgemm(CblasRowMajor,
+				CblasNoTrans,CblasNoTrans,
+				N,N,N,
+				1.0,
+				D_matrix,N,
+				D_matrix,N,
+				0.0,
+				Ds_matrix,N);
+
+	CMath::display_matrix(Ds_matrix,N,N,"D^2 matrix");
 
 	float64_t* I_matrix = new float64_t[N*N];
 	for (i=0;i<N;i++)
 		for (j=0;j<N;j++)
-			I_matrix = (i==j) ? 1.0 - 1.0/n : 0.0;
+			I_matrix[i*N+j] = (i==j) ? 1.0 - 1.0/N : -1.0/N;
+
+	CMath::display_matrix(I_matrix,N,N,"I Matrix");
 
 	cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans,N,N,N,1.0,I_matrix,N,Ds_matrix,N,0.0,D_matrix,N);
 	cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans,N,N,N,-0.5,D_matrix,N,I_matrix,N,0.0,Ds_matrix,N);
 
-	//wrap_dsyev()
+	CMath::display_matrix(Ds_matrix,N,N,"B matrix");
 
+	float64_t* eigs = new float64_t[N+1];
+	int32_t info;
+
+	wrap_dsyev('V','U',N,Ds_matrix,N,eigs,&info);
+
+	CMath::display_matrix(Ds_matrix,N,N,"eigenvectors");
+	CMath::display_vector(eigs,N,"eigenvalues");
+
+	SG_PRINT("CLEANiNG");
+	delete distance;
+	delete[] eigs;
+	delete[] D_matrix;
+	delete[] Ds_matrix;
+	delete[] I_matrix;
+	SG_PRINT("CLEANED");
 	return true;
 }
 
