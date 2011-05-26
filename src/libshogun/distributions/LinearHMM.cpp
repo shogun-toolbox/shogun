@@ -243,7 +243,7 @@ void CLinearHMM::get_transition_probs(float64_t** dst, int32_t* num)
 {
 	*num=num_params;
 	size_t sz=sizeof(*transition_probs)*(*num);
-	*dst=(float64_t*) malloc(sz);
+	*dst=(float64_t*) SG_MALLOC(sz);
 	ASSERT(dst);
 
 	memcpy(*dst, transition_probs, sz);
@@ -273,7 +273,7 @@ void CLinearHMM::get_log_transition_probs(float64_t** dst, int32_t* num)
 {
 	*num=num_params;
 	size_t sz=sizeof(*log_transition_probs)*(*num);
-	*dst=(float64_t*) malloc(sz);
+	*dst=(float64_t*) SG_MALLOC(sz);
 	ASSERT(dst);
 
 	memcpy(*dst, log_transition_probs, sz);

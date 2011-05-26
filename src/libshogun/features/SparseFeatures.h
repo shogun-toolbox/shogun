@@ -42,7 +42,7 @@ template <class ST> class CSparsePreProc;
 
 /** @brief Template class SparseFeatures implements sparse matrices.
  *
- * Features are an array of TSparse, sorted w.r.t. vec_index (increasing) and
+ * Features are an array of SGSparseVector, sorted w.r.t. vec_index (increasing) and
  * withing same vec_index w.r.t. feat_index (increasing);
  *
  * Sparse feature vectors can be accessed via get_sparse_feature_vector() and
@@ -54,16 +54,6 @@ template <class ST> class CSparsePreProc;
  */
 template <class ST> class CSparseFeatures : public CDotFeatures
 {
-	void init(void) {
-		set_generic<ST>();
-
-		m_parameters->add_vector(&sparse_feature_matrix, &num_vectors,
-								 "sparse_feature_matrix",
-								 "Array of sparse vectors.");
-		m_parameters->add(&num_features, "num_features",
-						  "Total number of features.");
-	}
-
 	public:
 		/** constructor
 		 *
@@ -82,7 +72,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num_vec number of vectors
 		 * @param copy true to copy feature matrix
 		 */
-		CSparseFeatures(TSparse<ST>* src, int32_t num_feat, int32_t num_vec, bool copy=false)
+		CSparseFeatures(SGSparseVector<ST>* src, int32_t num_feat, int32_t num_vec, bool copy=false)
 		: CDotFeatures(0), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
@@ -92,12 +82,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				set_sparse_feature_matrix(src, num_feat, num_vec);
 			else
 			{
-				sparse_feature_matrix = new TSparse<ST>[num_vec];
-				memcpy(sparse_feature_matrix, src, sizeof(TSparse<ST>)*num_vec);
+				sparse_feature_matrix = new SGSparseVector<ST>[num_vec];
+				memcpy(sparse_feature_matrix, src, sizeof(SGSparseVector<ST>)*num_vec);
 				for (int32_t i=0; i< num_vec; i++)
 				{
-					sparse_feature_matrix[i].features = new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
-					memcpy(sparse_feature_matrix[i].features, src[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
+					sparse_feature_matrix[i].features = new SGSparseVectorEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
+					memcpy(sparse_feature_matrix[i].features, src[i].features, sizeof(SGSparseVectorEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
 
 				}
 			}
@@ -131,12 +121,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			if (orig.sparse_feature_matrix)
 			{
 				free_sparse_feature_matrix();
-				sparse_feature_matrix=new TSparse<ST>[num_vectors];
-				memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors);
+				sparse_feature_matrix=new SGSparseVector<ST>[num_vectors];
+				memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(SGSparseVector<ST>)*num_vectors);
 				for (int32_t i=0; i< num_vectors; i++)
 				{
-					sparse_feature_matrix[i].features=new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
-					memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
+					sparse_feature_matrix[i].features=new SGSparseVectorEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
+					memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(SGSparseVectorEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
 
 				}
 			}
@@ -206,7 +196,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			bool vfree;
 			int32_t num_feat;
 			int32_t i;
-			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
+			SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
 			ST ret = 0 ;
 			
 			if (sv)
@@ -236,7 +226,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			int32_t num_feat;
 			int32_t i;
 			len=0;
-			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
+			SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
 			ST* fv=NULL;
 
 			if (sv)
@@ -273,12 +263,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			bool vfree;
 			int32_t num_feat=0;
 			*len=0;
-			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
+			SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
 
 			if (sv)
 			{
 				*len=num_features;
-				*dst= (ST*) malloc(sizeof(ST)*num_features);
+				*dst= (ST*) SG_MALLOC(sizeof(ST)*num_features);
 				memset(*dst, 0, sizeof(ST)*num_features);
 
 				for (int32_t i=0; i<num_feat; i++)
@@ -298,7 +288,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		{
 			bool vfree;
 			int32_t len;
-			TSparseEntry<ST>* sv = get_sparse_feature_vector(num, len, vfree);
+			SGSparseVectorEntry<ST>* sv = get_sparse_feature_vector(num, len, vfree);
 			free_sparse_feature_vector(sv, num, vfree);
 			return len;
 		}
@@ -313,7 +303,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *              free_sparse_feature_vector
 		 * @return sparse feature vector
 		 */
-		TSparseEntry<ST>* get_sparse_feature_vector(int32_t num, int32_t& len, bool& vfree)
+		SGSparseVectorEntry<ST>* get_sparse_feature_vector(int32_t num, int32_t& len, bool& vfree)
 		{
 			ASSERT(num<num_vectors);
 
@@ -325,7 +315,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			} 
 			else
 			{
-				TSparseEntry<ST>* feat=NULL;
+				SGSparseVectorEntry<ST>* feat=NULL;
 				vfree=false;
 
 				if (feature_cache)
@@ -349,8 +339,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				if (get_num_preproc())
 				{
 					int32_t tmp_len=len;
-					TSparseEntry<ST>* tmp_feat_before = feat;
-					TSparseEntry<ST>* tmp_feat_after = NULL;
+					SGSparseVectorEntry<ST>* tmp_feat_before = feat;
+					SGSparseVectorEntry<ST>* tmp_feat_after = NULL;
 
 					for (int32_t i=0; i<get_num_preproc(); i++)
 					{
@@ -361,7 +351,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 						tmp_feat_before=tmp_feat_after;
 					}
 
-					memcpy(feat, tmp_feat_after, sizeof(TSparseEntry<ST>)*tmp_len);
+					memcpy(feat, tmp_feat_after, sizeof(SGSparseVectorEntry<ST>)*tmp_len);
 					delete[] tmp_feat_after;
 					len=tmp_len ;
 					SG_DEBUG( "len: %d len2: %d\n", len, num_features);
@@ -381,7 +371,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param blen bvec's length
 		 * @return dot product between the two sparse feature vectors
 		 */
-		static ST sparse_dot(ST alpha, TSparseEntry<ST>* avec, int32_t alen, TSparseEntry<ST>* bvec, int32_t blen)
+		static ST sparse_dot(ST alpha, SGSparseVectorEntry<ST>* avec, int32_t alen, SGSparseVectorEntry<ST>* bvec, int32_t blen)
 		{
 			ST result=0;
 
@@ -447,7 +437,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			bool vfree;
 			int32_t num_feat;
-			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
+			SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
 
 			if (sv)
 			{
@@ -479,7 +469,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			bool vfree;
 			int32_t num_feat;
-			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
+			SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
 
 			if (sv)
 			{
@@ -504,7 +494,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num index of this vector in the cache
 		 * @param free if vector should be really deleted
 		 */
-		void free_sparse_feature_vector(TSparseEntry<ST>* feat_vec, int32_t num, bool free)
+		void free_sparse_feature_vector(SGSparseVectorEntry<ST>* feat_vec, int32_t num, bool free)
 		{
 			if (feature_cache)
 				feature_cache->unlock_entry(num);
@@ -520,13 +510,20 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num_vec number of vectors in matrix
 		 * @return feature matrix
 		 */
-		TSparse<ST>* get_sparse_feature_matrix(int32_t &num_feat, int32_t &num_vec)
+		SGSparseVector<ST>* get_sparse_feature_matrix(int32_t &num_feat, int32_t &num_vec)
 		{
 			num_feat=num_features;
 			num_vec=num_vectors;
 
 			return sparse_feature_matrix;
 		}
+
+        SGSparseMatrix<ST> get_sparse_feature_matrix()
+        {
+            SGSparseMatrix<ST> sm;
+            sm.sparse_matrix=get_sparse_feature_matrix(sm.num_features, sm.num_vectors);
+            return sm;
+        }
 
 		/** get the pointer to the sparse feature matrix (swig compatible)
 		 * num_feat,num_vectors are returned by reference
@@ -536,7 +533,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num_vec number of vectors in matrix
 		 * @param nnz number of nonzero elements
 		 */
-        void get_sparse_feature_matrix(TSparse<ST>** dst, int32_t* num_feat,
+        void get_sparse_feature_matrix(SGSparseVector<ST>** dst, int32_t* num_feat,
                 int32_t* num_vec, int64_t* nnz)
 		{
             *nnz=get_num_nonzero_entries();
@@ -545,12 +542,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			*dst=sparse_feature_matrix;
 		}
 
-		/** clean TSparse
+		/** clean SGSparseVector
 		 *
 		 * @param sfm sparse feature matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-		void clean_tsparse(TSparse<ST>* sfm, int32_t num_vec)
+		void clean_tsparse(SGSparseVector<ST>* sfm, int32_t num_vec)
 		{
 			if (sfm)
 			{
@@ -569,7 +566,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		{
 			int32_t num_feat;
 			int32_t num_vec;
-			TSparse<ST>* s=get_transposed(num_feat, num_vec);
+			SGSparseVector<ST>* s=get_transposed(num_feat, num_vec);
 			return new CSparseFeatures<ST>(s, num_feat, num_vec);
 		}
 
@@ -582,7 +579,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num_vec number of vectors in matrix
 		 * @return transposed sparse feature matrix
 		 */
-		TSparse<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec)
+		SGSparseVector<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec)
 		{
 			num_feat=num_vectors;
 			num_vec=num_features;
@@ -595,7 +592,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			{
 				int32_t vlen;
 				bool vfree;
-				TSparseEntry<ST>* sv=get_sparse_feature_vector(v, vlen, vfree);
+				SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(v, vlen, vfree);
 
 				for (int32_t i=0; i<vlen; i++)
 					hist[sv[i].feat_index]++;
@@ -604,10 +601,10 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			}
 
 			// allocate room for future feature vectors
-			TSparse<ST>* sfm=new TSparse<ST>[num_vec];
+			SGSparseVector<ST>* sfm=new SGSparseVector<ST>[num_vec];
 			for (int32_t v=0; v<num_vec; v++)
 			{
-				sfm[v].features= new TSparseEntry<ST>[hist[v]];
+				sfm[v].features= new SGSparseVectorEntry<ST>[hist[v]];
 				sfm[v].num_feat_entries=hist[v];
 				sfm[v].vec_index=v;
 			}
@@ -618,7 +615,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			{
 				int32_t vlen;
 				bool vfree;
-				TSparseEntry<ST>* sv=get_sparse_feature_vector(v, vlen, vfree);
+				SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(v, vlen, vfree);
 
 				for (int32_t i=0; i<vlen; i++)
 				{
@@ -645,7 +642,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-		virtual void set_sparse_feature_matrix(TSparse<ST>* src, int32_t num_feat, int32_t num_vec)
+		virtual void set_sparse_feature_matrix(SGSparseVector<ST>* src, int32_t num_feat, int32_t num_vec)
 		{
 			free_sparse_feature_matrix();
 
@@ -653,6 +650,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			num_features=num_feat;
 			num_vectors=num_vec;
 		}
+
+        void set_sparse_feature_matrix(SGSparseMatrix<ST> sm)
+        {
+            set_sparse_feature_matrix(sm.sparse_matrix, sm.num_features, sm.num_vectors);
+        }
 
 		/** gets a copy of a full feature matrix
 		 * num_feat,num_vectors are returned by reference
@@ -702,7 +704,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			*num_feat=num_features;
 			*num_vec=num_vectors;
 
-			*dst= (ST*) malloc(sizeof(ST)*num_features*num_vectors);
+			*dst= (ST*) SG_MALLOC(sizeof(ST)*num_features*num_vectors);
 
 			if (*dst)
 			{
@@ -758,7 +760,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 				if (num_vec>0)
 				{
-					sparse_feature_matrix=new TSparse<ST>[num_vec];
+					sparse_feature_matrix=new SGSparseVector<ST>[num_vec];
 
 					if (sparse_feature_matrix)
 					{
@@ -770,7 +772,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 							if (num_feat_entries[i]>0)
 							{
-								sparse_feature_matrix[i].features= new TSparseEntry<ST>[num_feat_entries[i]];
+								sparse_feature_matrix[i].features= new SGSparseVectorEntry<ST>[num_feat_entries[i]];
 
 								if (!sparse_feature_matrix[i].features)
 								{
@@ -916,7 +918,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num index of vector in cache
 		 * @param free if vector really should be deleted
 		 */
-		void free_feature_vector(TSparseEntry<ST>* feat_vec, int32_t num, bool free)
+		void free_feature_vector(SGSparseVectorEntry<ST>* feat_vec, int32_t num, bool free)
 		{
 			if (feature_cache)
 				feature_cache->unlock_entry(num);
@@ -953,7 +955,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			for (int32_t i=0; i<this->get_num_vectors(); i++)
 			{
 				sq[i]=0;
-				TSparseEntry<float64_t>* vec = ((CSparseFeatures<float64_t>*) this)->get_sparse_feature_vector(i, len, do_free);
+				SGSparseVectorEntry<float64_t>* vec = ((CSparseFeatures<float64_t>*) this)->get_sparse_feature_vector(i, len, do_free);
 
 				for (int32_t j=0; j<len; j++)
 					sq[i] += vec[j].entry * vec[j].entry;
@@ -984,8 +986,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			ASSERT(lhs);
 			ASSERT(rhs);
 
-			TSparseEntry<float64_t>* avec=lhs->get_sparse_feature_vector(idx_a, alen, afree);
-			TSparseEntry<float64_t>* bvec=rhs->get_sparse_feature_vector(idx_b, blen, bfree);
+			SGSparseVectorEntry<float64_t>* avec=lhs->get_sparse_feature_vector(idx_a, alen, afree);
+			SGSparseVectorEntry<float64_t>* bvec=rhs->get_sparse_feature_vector(idx_b, blen, bfree);
 			ASSERT(avec);
 			ASSERT(bvec);
 
@@ -1098,7 +1100,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				dummy = new uint8_t[blocksize+1]; //allow setting of '\0' at EOL
 
 				lab=new CLabels(num_vectors);
-				sparse_feature_matrix=new TSparse<ST>[num_vectors];
+				sparse_feature_matrix=new SGSparseVector<ST>[num_vectors];
 
 				rewind(f);
 				sz=blocksize;
@@ -1145,7 +1147,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 										dims, len, len, (const char*) data);
 							}
 
-							TSparseEntry<ST>* feat=new TSparseEntry<ST>[dims];
+							SGSparseVectorEntry<ST>* feat=new SGSparseVectorEntry<ST>[dims];
 							int32_t j=0;
 							for (; j<len; j++)
 							{
@@ -1232,7 +1234,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				if (!len)
 					continue;
 
-				TSparseEntry<ST>* sf_orig=sparse_feature_matrix[i].features;
+				SGSparseVectorEntry<ST>* sf_orig=sparse_feature_matrix[i].features;
 				int32_t* feat_idx=new int32_t[len];
 				int32_t* orig_idx=new int32_t[len];
 
@@ -1244,7 +1246,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 				CMath::qsort_index(feat_idx, orig_idx, len);
 
-				TSparseEntry<ST>* sf_new= new TSparseEntry<ST>[len];
+				SGSparseVectorEntry<ST>* sf_new= new SGSparseVectorEntry<ST>[len];
 				for (int j=0; j<len; j++)
 					sf_new[j]=sf_orig[orig_idx[j]];
 
@@ -1281,7 +1283,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				{
 					fprintf(f, "%d ", (int32_t) label->get_int_label(i));
 
-					TSparseEntry<ST>* vec = sparse_feature_matrix[i].features;
+					SGSparseVectorEntry<ST>* vec = sparse_feature_matrix[i].features;
 					int32_t num_feat = sparse_feature_matrix[i].num_feat_entries;
 
 					for (int32_t j=0; j<num_feat; j++)
@@ -1327,8 +1329,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			bool afree, bfree;
 			int32_t alen, blen;
-			TSparseEntry<ST>* avec=get_sparse_feature_vector(vec_idx1, alen, afree);
-			TSparseEntry<ST>* bvec=sf->get_sparse_feature_vector(vec_idx2, blen, bfree);
+			SGSparseVectorEntry<ST>* avec=get_sparse_feature_vector(vec_idx1, alen, afree);
+			SGSparseVectorEntry<ST>* bvec=sf->get_sparse_feature_vector(vec_idx2, blen, bfree);
 
 			float64_t result=sparse_dot(1, avec, alen, bvec, blen);
 
@@ -1356,7 +1358,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			bool vfree;
 			int32_t vlen;
-			TSparseEntry<ST>* sv=get_sparse_feature_vector(vec_idx1, vlen, vfree);
+			SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(vec_idx1, vlen, vfree);
 
 			if (sv)
 			{
@@ -1373,7 +1375,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		struct sparse_feature_iterator
 		{
 			/** pointer to feature vector */
-			TSparseEntry<ST>* sv;
+			SGSparseVectorEntry<ST>* sv;
 			/** index of vector */
 			int32_t vidx;
 			/** num */
@@ -1473,11 +1475,24 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param len len
 		 * @param target target
 		 */
-		virtual TSparseEntry<ST>* compute_sparse_feature_vector(int32_t num, int32_t& len, TSparseEntry<ST>* target=NULL)
+		virtual SGSparseVectorEntry<ST>* compute_sparse_feature_vector(int32_t num, int32_t& len, SGSparseVectorEntry<ST>* target=NULL)
 		{
 			len=0;
 			return NULL;
 		}
+
+	private:
+		void init(void)
+		{
+			set_generic<ST>();
+
+			m_parameters->add_vector(&sparse_feature_matrix, &num_vectors,
+					"sparse_feature_matrix",
+					"Array of sparse vectors.");
+			m_parameters->add(&num_features, "num_features",
+					"Total number of features.");
+		}
+
 
 	protected:
 
@@ -1488,10 +1503,10 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		int32_t num_features;
 
 		/// array of sparse vectors of size num_vectors
-		TSparse<ST>* sparse_feature_matrix;
+		SGSparseVector<ST>* sparse_feature_matrix;
 
 		/** feature cache */
-		CCache< TSparseEntry<ST> >* feature_cache;
+		CCache< SGSparseVectorEntry<ST> >* feature_cache;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -1520,7 +1535,7 @@ template<> inline void CSparseFeatures<sg_type>::load(CFile* loader)	\
 {																		\
 	SG_SET_LOCALE_C;													\
 	ASSERT(loader);														\
-	TSparse<sg_type>* matrix=NULL;										\
+	SGSparseVector<sg_type>* matrix=NULL;										\
 	int32_t num_feat=0;													\
 	int32_t num_vec=0;													\
 	loader->fname(matrix, num_feat, num_vec);							\

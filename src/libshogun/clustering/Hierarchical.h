@@ -127,7 +127,7 @@ class CHierarchical : public CDistanceMachine
 		inline void get_merge_distances(float64_t** dist, int32_t* num)
 		{
 			size_t sz=sizeof(*merge_distance)*merges;
-			*dist=(float64_t*) malloc(sz);
+			*dist=(float64_t*) SG_MALLOC(sz);
 			ASSERT(*dist);
 
 			memcpy(*dist, merge_distance, sz);
@@ -158,7 +158,7 @@ class CHierarchical : public CDistanceMachine
 		{
 			*rows=2;
 			size_t sz=sizeof(*pairs)*(*rows)*merges;
-			*tuples=(int32_t*) malloc(sz);
+			*tuples=(int32_t*) SG_MALLOC(sz);
 			ASSERT(*tuples);
 
 			memcpy(*tuples, pairs, sz);

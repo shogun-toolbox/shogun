@@ -609,19 +609,15 @@ void Solver_MCSVM_CS::Solve(double *w)
 
 void destroy_model(struct model *model_)
 {
-	if(model_->w != NULL)
-		free(model_->w);
-	if(model_->label != NULL)
-		free(model_->label);
-	free(model_);
+	SG_FREE(model_->w);
+	SG_FREE(model_->label);
+	SG_FREE(model_);
 }
 
 void destroy_param(parameter* param)
 {
-	if(param->weight_label != NULL)
-		free(param->weight_label);
-	if(param->weight != NULL)
-		free(param->weight);
+	SG_FREE(param->weight_label);
+	SG_FREE(param->weight);
 }
 #endif //HAVE_LAPACK
 #endif // DOXYGEN_SHOULD_SKIP_THIS

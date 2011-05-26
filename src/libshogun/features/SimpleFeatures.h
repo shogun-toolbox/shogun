@@ -22,6 +22,7 @@
 #include "features/DotFeatures.h"
 #include "features/StringFeatures.h"
 #include "base/Parameter.h"
+#include "lib/DataType.h"
 
 #include <string.h>
 
@@ -30,6 +31,7 @@ namespace shogun
 template <class ST> class CStringFeatures;
 template <class ST> class CSimpleFeatures;
 template <class ST> class CSimplePreProc;
+template <class ST> struct SGMatrix;
 class CDotFeatures;
 
 /** @brief The class SimpleFeatures implements dense feature matrices.
@@ -255,7 +257,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			ST* vec= get_feature_vector(num, vlen, free_vec);
 
 			*len=vlen;
-			*dst=(ST*) malloc(vlen*sizeof(ST));
+			*dst=(ST*) SG_MALLOC(vlen*sizeof(ST));
 			memcpy(*dst, vec, vlen*sizeof(ST));
 
 			free_feature_vector(vec, num, free_vec);
@@ -365,10 +367,22 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			int64_t num=int64_t(num_features)*num_vectors;
 			*num_feat=num_features;
 			*num_vec=num_vectors;
-			*dst=(ST*) malloc(sizeof(ST)*num);
+			*dst=(ST*) SG_MALLOC(sizeof(ST)*num);
 			if (!*dst)
 				SG_ERROR("Allocating %ld bytes failes\n", sizeof(ST)*num);
 			memcpy(*dst, feature_matrix, num * sizeof(ST));
+		}
+
+		SGMatrix<ST> get_feature_matrix()
+		{
+			return SGMatrix<ST>(feature_matrix, num_features, num_vectors);
+		}
+
+		void set_feature_matrix(SGMatrix<ST> matrix)
+		{
+			feature_matrix=matrix.matrix;
+			num_features=matrix.num_rows;
+			num_vectors=matrix.num_cols;
 		}
 
 		/** get the pointer to the feature matrix

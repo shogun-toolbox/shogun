@@ -163,7 +163,7 @@ void CStreamingFile::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t&
 }
 
 #define GET_SPARSEMATRIX(fname, conv, sg_type)										\
-void CStreamingFile::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CStreamingFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {	\
 }
 
@@ -183,75 +183,75 @@ GET_SPARSEMATRIX(get_word_sparsematrix, atoi, uint16_t)
 #undef GET_SPARSEMATRIX
 
 
-void CStreamingFile::get_byte_string_list(TString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_byte_string_list(SGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CStreamingFile::get_int8_string_list(TString<int8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CStreamingFile::get_char_string_list(TString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_char_string_list(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CStreamingFile::get_int_string_list(TString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
-{
-	strings=NULL;
-	num_str=0;
-	max_string_len=0;
-}
-
-void CStreamingFile::get_uint_string_list(TString<uint32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_int_string_list(SGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CStreamingFile::get_short_string_list(TString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_uint_string_list(SGString<uint32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CStreamingFile::get_word_string_list(TString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_short_string_list(SGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CStreamingFile::get_long_string_list(TString<int64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_word_string_list(SGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CStreamingFile::get_ulong_string_list(TString<uint64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_long_string_list(SGString<int64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CStreamingFile::get_shortreal_string_list(TString<float32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_ulong_string_list(SGString<uint64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CStreamingFile::get_real_string_list(TString<float64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_shortreal_string_list(SGString<float32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CStreamingFile::get_longreal_string_list(TString<floatmax_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CStreamingFile::get_real_string_list(SGString<float64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+{
+	strings=NULL;
+	num_str=0;
+	max_string_len=0;
+}
+
+void CStreamingFile::get_longreal_string_list(SGString<floatmax_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -294,7 +294,7 @@ SET_MATRIX(set_longreal_matrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(fname, sg_type, fprt_type, type_str) \
-void CStreamingFile::fname(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\
+void CStreamingFile::fname(const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\
 {																		\
 }
 
@@ -313,51 +313,51 @@ SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, float64_t, "%f")
 SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_SPARSEMATRIX
 
-void CStreamingFile::set_byte_string_list(const TString<uint8_t>* strings, int32_t num_str)
+void CStreamingFile::set_byte_string_list(const SGString<uint8_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_int8_string_list(const TString<int8_t>* strings, int32_t num_str)
+void CStreamingFile::set_int8_string_list(const SGString<int8_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_char_string_list(const TString<char>* strings, int32_t num_str)
+void CStreamingFile::set_char_string_list(const SGString<char>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_int_string_list(const TString<int32_t>* strings, int32_t num_str)
+void CStreamingFile::set_int_string_list(const SGString<int32_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_uint_string_list(const TString<uint32_t>* strings, int32_t num_str)
+void CStreamingFile::set_uint_string_list(const SGString<uint32_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_short_string_list(const TString<int16_t>* strings, int32_t num_str)
+void CStreamingFile::set_short_string_list(const SGString<int16_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_word_string_list(const TString<uint16_t>* strings, int32_t num_str)
+void CStreamingFile::set_word_string_list(const SGString<uint16_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_long_string_list(const TString<int64_t>* strings, int32_t num_str)
+void CStreamingFile::set_long_string_list(const SGString<int64_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_ulong_string_list(const TString<uint64_t>* strings, int32_t num_str)
+void CStreamingFile::set_ulong_string_list(const SGString<uint64_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_shortreal_string_list(const TString<float32_t>* strings, int32_t num_str)
+void CStreamingFile::set_shortreal_string_list(const SGString<float32_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_real_string_list(const TString<float64_t>* strings, int32_t num_str)
+void CStreamingFile::set_real_string_list(const SGString<float64_t>* strings, int32_t num_str)
 {
 }
 
-void CStreamingFile::set_longreal_string_list(const TString<floatmax_t>* strings, int32_t num_str)
+void CStreamingFile::set_longreal_string_list(const SGString<floatmax_t>* strings, int32_t num_str)
 {
 }
 

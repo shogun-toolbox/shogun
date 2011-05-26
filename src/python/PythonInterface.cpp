@@ -287,7 +287,7 @@ GET_NDARRAY(get_word_ndarray, NPY_USHORT, uint16_t, unsigned short, "Word")
 
 
 #define GET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string) \
-void CPythonInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
+void CPythonInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
 {																			\
 	/* no sparse available yet */ \
 	return; \
@@ -303,7 +303,7 @@ void CPythonInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_fea
  																			\
 	num_vec=py_mat->dimensions[0]; 											\
 	num_feat=py_mat->nd; 													\
-	matrix=new TSparse<sg_type>[num_vec]; 									\
+	matrix=new SGSparseVector<sg_type>[num_vec]; 									\
 	if_type* data=(if_type*) py_mat->data; 									\
  																			\
 	int64_t nzmax=mxGetNzmax(mx_mat); 											\
@@ -318,7 +318,7 @@ void CPythonInterface::function_name(TSparse<sg_type>*& matrix, int32_t& num_fea
  																			\
 		if (len>0) 															\
 		{ 																	\
-			matrix[i].features=new TSparseEntry<sg_type>[len]; 				\
+			matrix[i].features=new SGSparseVectorEntry<sg_type>[len]; 				\
 			for (int32_t j=0; j<len; j++) 										\
 			{ 																\
 				matrix[i].features[j].entry=data[offset]; 					\
@@ -345,7 +345,7 @@ GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Wor
 
 
 #define GET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
-void CPythonInterface::function_name(TString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
+void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
 { 																			\
 	max_string_len=0;														\
 	const PyObject* py_str= get_arg_increment();							\
@@ -360,7 +360,7 @@ void CPythonInterface::function_name(TString<sg_type>*& strings, int32_t& num_st
 		num_str=PyList_Size((PyObject*) py_str);							\
 		ASSERT(num_str>=1);													\
 																			\
-		strings=new TString<sg_type>[num_str];								\
+		strings=new SGString<sg_type>[num_str];								\
 		ASSERT(strings);													\
 																			\
 		for (int32_t i=0; i<num_str; i++)										\
@@ -397,7 +397,7 @@ void CPythonInterface::function_name(TString<sg_type>*& strings, int32_t& num_st
 		if_type* data=(if_type*) py_array_str->data;						\
 		num_str=py_array_str->dimensions[0]; 								\
 		int32_t len=py_array_str->dimensions[1]; 								\
-		strings=new TString<sg_type>[num_str]; 							\
+		strings=new SGString<sg_type>[num_str]; 							\
 																			\
 		for (int32_t i=0; i<num_str; i++) 										\
 		{ 																	\
@@ -529,7 +529,7 @@ SET_MATRIX(set_word_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(function_name, py_type, sg_type, if_type, error_string)	\
-void CPythonInterface::function_name(const TSparse<sg_type>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)	\
+void CPythonInterface::function_name(const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)	\
 {																			\
 	/* no sparse available yet */ \
 	return; \
@@ -576,7 +576,7 @@ SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short
 
 
 #define SET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
-void CPythonInterface::function_name(const TString<sg_type>* strings, int32_t num_str)	\
+void CPythonInterface::function_name(const SGString<sg_type>* strings, int32_t num_str)	\
 {																				\
 	if (!is_char_str)															\
 		SG_ERROR("Only character strings supported.\n");						\

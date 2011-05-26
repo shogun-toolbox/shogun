@@ -219,7 +219,7 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=num_lab);
 
-	int32_t* output=(int32_t*) malloc(sizeof(int32_t)*m_k*num_lab);
+	int32_t* output=(int32_t*) SG_MALLOC(sizeof(int32_t)*m_k*num_lab);
 
 	//distances to train data and working buffer of train_labels
 	float64_t* dists=new float64_t[num_train_labels];

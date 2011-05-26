@@ -98,7 +98,7 @@ void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
 		SG_DEBUG( "allocating memory for a kernel matrix"
 				" of size %dx%d\n", num_vec1, num_vec2);
 
-		result=(float64_t*) malloc(sizeof(float64_t)*total_num);
+		result=(float64_t*) SG_MALLOC(sizeof(float64_t)*total_num);
 		ASSERT(result);
 		get_kernel_matrix<float64_t>(num_vec1,num_vec2, result);
 	}
@@ -768,6 +768,7 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_INVERSEMULTIQUADRIC)
 		ENUM_CASE(K_SPECTRUMMISMATCHRBF)
 		ENUM_CASE(K_DISTANTSEGMENTS)
+		ENUM_CASE(K_BESSEL)
 	}
 
 	switch (get_feature_class())

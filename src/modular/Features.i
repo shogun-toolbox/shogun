@@ -37,7 +37,6 @@
 %{
 #include <shogun/lib/Compressor.h>
 #include <shogun/features/FeatureTypes.h>
-#include <shogun/lib/DataType.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/StringFileFeatures.h>
@@ -124,57 +123,57 @@
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* num_feat, int32_t* num_vec)};
 %apply (floatmax_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(floatmax_t** dst, int32_t* num_feat, int32_t* num_vec)};
 
-%apply (shogun::TString<bool>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<bool>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<char>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<uint8_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<uint8_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<int16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<int16_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<uint16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<uint16_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<int32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<int32_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<uint32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<uint32_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<int64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<int64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<uint64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<uint64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<float32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<float32_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<float64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<float64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<floatmax_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<floatmax_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<bool>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<bool>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<char>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<char>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint8_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<uint8_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<int16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<int16_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<uint16_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<int32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<int32_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<uint32_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<int64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<int64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<uint64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<float32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<float32_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<float64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<float64_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<floatmax_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<floatmax_t>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 
-%apply (shogun::TString<bool>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<bool>** dst, int32_t* num_str)};
-%apply (shogun::TString<char>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<char>** dst, int32_t* num_str)};
-%apply (shogun::TString<uint8_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<uint8_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<int16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<int16_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<uint16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<uint16_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<int32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<int32_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<uint32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<uint32_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<int64_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<uint64_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<float32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<float32_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<float64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<float64_t>** dst, int32_t* num_str)};
-%apply (shogun::TString<floatmax_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<floatmax_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<bool>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<bool>** dst, int32_t* num_str)};
+%apply (shogun::SGString<char>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<char>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint8_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<uint8_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<int16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<int16_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<uint16_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<int32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<int32_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<uint32_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<int64_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<uint64_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<float32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<float32_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<float64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<float64_t>** dst, int32_t* num_str)};
+%apply (shogun::SGString<floatmax_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<floatmax_t>** dst, int32_t* num_str)};
 
-%apply (shogun::TSparse<bool>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<bool>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<char>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<char>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<uint8_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<uint8_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<int16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<int16_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<uint16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<uint16_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<int32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<int32_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<uint32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<uint32_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<int64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<int64_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<uint64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<uint64_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<float32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<float32_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<float64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<float64_t>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<floatmax_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<floatmax_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<bool>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<bool>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<char>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<char>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint8_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<uint8_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<int16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<int16_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<uint16_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<int32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<int32_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<uint32_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<int64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<int64_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<uint64_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<float32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<float32_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<float64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<float64_t>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<floatmax_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<floatmax_t>* src, int32_t num_feat, int32_t num_vec)};
 
-%apply (shogun::TSparse<bool>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<bool>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<char>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<char>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<uint8_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<uint8_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<int16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<int16_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<uint16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<uint16_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<int32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<int32_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<uint32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<uint32_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<int64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<int64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<uint64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<uint64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<float32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<float32_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<float64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<float64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<floatmax_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<floatmax_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<bool>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<bool>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<char>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<char>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint8_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<uint8_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<int16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<int16_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<uint16_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<int32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<int32_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<uint32_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<int64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<int64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<uint64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<float32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<float32_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<float64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<float64_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<floatmax_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<floatmax_t>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* weights, int32_t d)};
 
@@ -247,69 +246,69 @@
 
 %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {(float64_t* hist, int32_t rows, int32_t cols)};
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** hist, int32_t* rows, int32_t* cols)};
-%apply (shogun::TString<uint8_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<unsigned char>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<int16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<short int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<uint16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<unsigned short int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<int32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<uint32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<unsigned int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint8_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<unsigned char>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<int16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<short int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint16_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<unsigned short int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<int32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<unsigned int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 #ifdef SWIGWORDSIZE64
-%apply (shogun::TString<int64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<long int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<uint64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<unsigned long int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<int64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<long int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<unsigned long int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 #else
-%apply (shogun::TString<int64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<long long int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<uint64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<unsigned long long int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<int64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<long long int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<uint64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<unsigned long long int>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 #endif
-%apply (shogun::TString<float32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<float>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<float64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
-%apply (shogun::TString<floatmax_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::TString<long double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<float32_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<float>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<float64_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
+%apply (shogun::SGString<floatmax_t>* IN_STRINGS, int32_t NUM, int32_t MAXLEN) {(shogun::SGString<long double>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)};
 
-%apply (shogun::TString<uint8_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<unsigned char>** dst, int32_t* num_str)};
-%apply (shogun::TString<int16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<short int>** dst, int32_t* num_str)};
-%apply (shogun::TString<uint16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<unsigned short int>** dst, int32_t* num_str)};
-%apply (shogun::TString<int32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<int>** dst, int32_t* num_str)};
-%apply (shogun::TString<uint32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<unsigned int>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint8_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<unsigned char>** dst, int32_t* num_str)};
+%apply (shogun::SGString<int16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<short int>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint16_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<unsigned short int>** dst, int32_t* num_str)};
+%apply (shogun::SGString<int32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<int>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<unsigned int>** dst, int32_t* num_str)};
 #ifdef SWIGWORDSIZE64
-%apply (shogun::TString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<long int>** dst, int32_t* num_str)};
-%apply (shogun::TString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<unsigned long int>** dst, int32_t* num_str)};
+%apply (shogun::SGString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<long int>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<unsigned long int>** dst, int32_t* num_str)};
 #else
-%apply (shogun::TString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<long long int>** dst, int32_t* num_str)};
-%apply (shogun::TString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<unsigned long long int>** dst, int32_t* num_str)};
+%apply (shogun::SGString<int64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<long long int>** dst, int32_t* num_str)};
+%apply (shogun::SGString<uint64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<unsigned long long int>** dst, int32_t* num_str)};
 #endif
-%apply (shogun::TString<float32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<float>** dst, int32_t* num_str)};
-%apply (shogun::TString<float64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<double>** dst, int32_t* num_str)};
-%apply (shogun::TString<floatmax_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::TString<long double>** dst, int32_t* num_str)};
+%apply (shogun::SGString<float32_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<float>** dst, int32_t* num_str)};
+%apply (shogun::SGString<float64_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<double>** dst, int32_t* num_str)};
+%apply (shogun::SGString<floatmax_t>** ARGOUT_STRINGS, int32_t* NUM) {(shogun::SGString<long double>** dst, int32_t* num_str)};
 
-%apply (shogun::TSparse<uint8_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<unsigned char>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<int16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<short int>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<uint16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<unsigned short int>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<int32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<int>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<uint32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<unsigned int>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint8_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<unsigned char>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<int16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<short int>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint16_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<unsigned short int>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<int32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<int>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<unsigned int>* src, int32_t num_feat, int32_t num_vec)};
 #ifdef SWIGWORDSIZE64
-%apply (shogun::TSparse<int64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<long int>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<uint64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<unsigned long int>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<int64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<long int>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<unsigned long int>* src, int32_t num_feat, int32_t num_vec)};
 #else
-%apply (shogun::TSparse<int64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<long long int>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<uint64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<unsigned long long int>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<int64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<long long int>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<uint64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<unsigned long long int>* src, int32_t num_feat, int32_t num_vec)};
 #endif
-%apply (shogun::TSparse<float32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<float>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<float64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<double>* src, int32_t num_feat, int32_t num_vec)};
-%apply (shogun::TSparse<floatmax_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::TSparse<long double>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<float32_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<float>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<float64_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<double>* src, int32_t num_feat, int32_t num_vec)};
+%apply (shogun::SGSparseVector<floatmax_t>* IN_SPARSE, int32_t DIM1, int32_t DIM2) {(shogun::SGSparseVector<long double>* src, int32_t num_feat, int32_t num_vec)};
 
-%apply (shogun::TSparse<uint8_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<unsigned char>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<int16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<short int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<uint16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<unsigned short int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<int32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<uint32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<unsigned int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint8_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<unsigned char>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<int16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<short int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint16_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<unsigned short int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<int32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<unsigned int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 #ifdef SWIGWORDSIZE64
-%apply (shogun::TSparse<int64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<long int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<uint64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<unsigned long int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<int64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<long int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<unsigned long int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 #else
-%apply (shogun::TSparse<int64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<long long int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<uint64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<unsigned long long int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<int64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<long long int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<uint64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<unsigned long long int>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 #endif
-%apply (shogun::TSparse<float32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<float>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<float64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
-%apply (shogun::TSparse<floatmax_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::TSparse<long double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<float32_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<float>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<float64_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
+%apply (shogun::SGSparseVector<floatmax_t>** ARGOUT_SPARSE, int32_t* DIM1, int32_t* DIM2, int64_t* NNZ) {(shogun::SGSparseVector<long double>** dst, int32_t* num_feat, int32_t* num_vec, int64_t* nnz)};
 
 /* label confidences */
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* out_num_labels, int32_t* out_num_classes)};
@@ -342,7 +341,6 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
 %include <shogun/features/FeatureTypes.h>
-%include <shogun/lib/DataType.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
 

@@ -361,32 +361,32 @@ int32_t pr_loqo(
   int32_t i,j;
 
   /* memory allocation */
-  workspace = (float64_t*) malloc((n*(m+2)+2*m)*sizeof(float64_t));
-  diag_h_x  = (float64_t*) malloc(n*sizeof(float64_t));
-  h_y       = (float64_t*) malloc(m*m*sizeof(float64_t));
-  c_x       = (float64_t*) malloc(n*sizeof(float64_t));
-  c_y       = (float64_t*) malloc(m*sizeof(float64_t));
-  h_dot_x   = (float64_t*) malloc(n*sizeof(float64_t));
+  workspace = (float64_t*) SG_MALLOC((n*(m+2)+2*m)*sizeof(float64_t));
+  diag_h_x  = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  h_y       = (float64_t*) SG_MALLOC(m*m*sizeof(float64_t));
+  c_x       = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  c_y       = (float64_t*) SG_MALLOC(m*sizeof(float64_t));
+  h_dot_x   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
 
-  rho       = (float64_t*) malloc(m*sizeof(float64_t));
-  nu        = (float64_t*) malloc(n*sizeof(float64_t));
-  tau       = (float64_t*) malloc(n*sizeof(float64_t));
-  sigma     = (float64_t*) malloc(n*sizeof(float64_t));
+  rho       = (float64_t*) SG_MALLOC(m*sizeof(float64_t));
+  nu        = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  tau       = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  sigma     = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
 
-  gamma_z   = (float64_t*) malloc(n*sizeof(float64_t));
-  gamma_s   = (float64_t*) malloc(n*sizeof(float64_t));
+  gamma_z   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  gamma_s   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
 
-  hat_nu    = (float64_t*) malloc(n*sizeof(float64_t));
-  hat_tau   = (float64_t*) malloc(n*sizeof(float64_t));
+  hat_nu    = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  hat_tau   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
 
-  delta_x   = (float64_t*) malloc(n*sizeof(float64_t));
-  delta_y   = (float64_t*) malloc(m*sizeof(float64_t));
-  delta_s   = (float64_t*) malloc(n*sizeof(float64_t));
-  delta_z   = (float64_t*) malloc(n*sizeof(float64_t));
-  delta_g   = (float64_t*) malloc(n*sizeof(float64_t));
-  delta_t   = (float64_t*) malloc(n*sizeof(float64_t));
+  delta_x   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  delta_y   = (float64_t*) SG_MALLOC(m*sizeof(float64_t));
+  delta_s   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  delta_z   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  delta_g   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  delta_t   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
 
-  d         = (float64_t*) malloc(n*sizeof(float64_t));
+  d         = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
 
   /* pointers into the external variables */
   x = primal;			/* n */
@@ -653,31 +653,31 @@ exit_optimizer:
   }
   
   /* free memory */
-  free(workspace);
-  free(diag_h_x);
-  free(h_y);
-  free(c_x);
-  free(c_y);
-  free(h_dot_x);
+  SG_FREE(workspace);
+  SG_FREE(diag_h_x);
+  SG_FREE(h_y);
+  SG_FREE(c_x);
+  SG_FREE(c_y);
+  SG_FREE(h_dot_x);
   
-  free(rho);
-  free(nu);
-  free(tau);
-  free(sigma);
-  free(gamma_z);
-  free(gamma_s);
+  SG_FREE(rho);
+  SG_FREE(nu);
+  SG_FREE(tau);
+  SG_FREE(sigma);
+  SG_FREE(gamma_z);
+  SG_FREE(gamma_s);
   
-  free(hat_nu);
-  free(hat_tau);
+  SG_FREE(hat_nu);
+  SG_FREE(hat_tau);
     
-  free(delta_x);
-  free(delta_y);
-  free(delta_s);
-  free(delta_z);
-  free(delta_g);
-  free(delta_t);
+  SG_FREE(delta_x);
+  SG_FREE(delta_y);
+  SG_FREE(delta_s);
+  SG_FREE(delta_z);
+  SG_FREE(delta_g);
+  SG_FREE(delta_t);
     
-  free(d);
+  SG_FREE(d);
 
   /* and return to sender */
   return status;

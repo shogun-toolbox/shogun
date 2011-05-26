@@ -212,9 +212,7 @@ void CKernelPCACut::get_transformation_matrix(float64_t** dst, int32_t* num_feat
 	int64_t num=int64_t(rows_T)*cols_T;
 	*num_feat=cols_T;
 	*num_new_dim=rows_T;
-	*dst=(float64_t*) malloc(sizeof(float64_t)*num);
-	if (!*dst)
-		SG_ERROR("Allocating %ld bytes failes\n", sizeof(float64_t)*num);
+	*dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*num);
 	memcpy(*dst, T, num * sizeof(float64_t));
 }
 
@@ -223,9 +221,7 @@ void CKernelPCACut::get_bias(float64_t** dst, int32_t* new_num_dim)
 	ASSERT(bias);
 
 	*new_num_dim=bias_len;
-	*dst=(float64_t*) malloc(sizeof(float64_t)*bias_len);
-	if (!*dst)
-		SG_ERROR("Allocating %ld bytes failes\n", sizeof(float64_t)*bias_len);
+	*dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*bias_len);
 	memcpy(*dst, bias, bias_len * sizeof(float64_t));
 }
 
@@ -234,9 +230,7 @@ void CKernelPCACut::get_eigenvalues(float64_t** dst, int32_t* new_num_dim)
 	ASSERT(eigenvalues);
 
 	*new_num_dim=num_eigenvalues;
-	*dst=(float64_t*) malloc(sizeof(float64_t)*num_eigenvalues);
-	if (!*dst)
-		SG_ERROR("Allocating %ld bytes failes\n", sizeof(float64_t)*num_eigenvalues);
+	*dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*num_eigenvalues);
 	memcpy(*dst, eigenvalues, num_eigenvalues * sizeof(float64_t));
 }
 #endif

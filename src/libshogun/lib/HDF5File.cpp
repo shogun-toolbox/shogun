@@ -195,7 +195,7 @@ void CHDF5File::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_
 }
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CHDF5File::fname(TSparse<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		SG_ERROR("File invalid.\n");													\
@@ -216,7 +216,7 @@ GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CHDF5File::fname(TString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void CHDF5File::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
 {																								\
 }
 
@@ -313,7 +313,7 @@ SET_MATRIX(set_longreal_matrix, floatmax_t, DT_DENSE_LONGREAL, H5T_NATIVE_LDOUBL
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
-void CHDF5File::fname(const TSparse<sg_type>* matrix, 	\
+void CHDF5File::fname(const SGSparseVector<sg_type>* matrix, 	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\
@@ -335,7 +335,7 @@ SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, DT_SPARSE_LONGREAL)
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void CHDF5File::fname(const TString<sg_type>* strings, int32_t num_str)	\
+void CHDF5File::fname(const SGString<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n");											\
@@ -457,6 +457,6 @@ void CHDF5File::create_group_hierarchy()
 			H5Gclose(g);
 		}
 	}
-	free(vname);
+	SG_FREE(vname);
 }
 #endif //  HDF5

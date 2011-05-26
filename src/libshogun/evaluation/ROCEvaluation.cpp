@@ -122,10 +122,7 @@ void CROCEvaluation::get_ROC(float64_t** result, int32_t* num, int32_t* dim)
 	*num = m_ROC_length;
 	*dim = 2;
 
-	*result = (float64_t*)malloc(sizeof(float64_t)*m_ROC_length*2);
-	if (!*result)
-		SG_ERROR("Allocating memory for ROC graph failed");
-
+	*result = (float64_t*) SG_MALLOC(sizeof(float64_t)*m_ROC_length*2);
 	memcpy(*result, m_ROC_graph, m_ROC_length*2*sizeof(float64_t));
 }
 

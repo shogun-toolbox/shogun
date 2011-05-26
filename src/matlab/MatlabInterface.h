@@ -79,31 +79,31 @@ class CMatlabInterface : public CSGInterface
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
 
 		virtual void get_real_sparsematrix(
-			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 		/*  future versions might support types other than float64_t
 
-		virtual void get_byte_sparsematrix(TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_char_sparsematrix(TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_int_sparsematrix(TSparse<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_shortreal_sparsematrix(TSparse<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_short_sparsematrix(TSparse<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_word_sparsematrix(TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);*/
+		virtual void get_byte_sparsematrix(SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+		virtual void get_char_sparsematrix(SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
+		virtual void get_int_sparsematrix(SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+		virtual void get_shortreal_sparsematrix(SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+		virtual void get_short_sparsematrix(SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+		virtual void get_word_sparsematrix(SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);*/
 
 		virtual void get_byte_string_list(
-			TString<uint8_t>*& strings, int32_t& num_str,
+			SGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_char_string_list(
-			TString<char>*& strings, int32_t& num_str,
+			SGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_int_string_list(
-			TString<int32_t>*& strings, int32_t& num_str,
+			SGString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_short_string_list(
-			TString<int16_t>*& strings, int32_t& num_str,
+			SGString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_word_string_list(
-			TString<uint16_t>*& strings, int32_t& num_str,
+			SGString<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 
 		virtual void get_attribute_struct(
@@ -138,28 +138,28 @@ class CMatlabInterface : public CSGInterface
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
 
 		virtual void set_real_sparsematrix(
-			const TSparse<float64_t>* matrix, int32_t num_feat,
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat,
 			int32_t num_vec, int64_t nnz);
 
 		/*  future versions might support types other than float64_t
 		
-		virtual void set_byte_sparsematrix(const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_char_sparsematrix(const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_int_sparsematrix(const TSparse<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_shortreal_sparsematrix(const TSparse<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_short_sparsematrix(const TSparse<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_word_sparsematrix(const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);*/
+		virtual void set_byte_sparsematrix(const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
+		virtual void set_char_sparsematrix(const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec);
+		virtual void set_int_sparsematrix(const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
+		virtual void set_shortreal_sparsematrix(const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
+		virtual void set_short_sparsematrix(const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
+		virtual void set_word_sparsematrix(const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);*/
 
 		virtual void set_byte_string_list(
-			const TString<uint8_t>* strings, int32_t num_str);
+			const SGString<uint8_t>* strings, int32_t num_str);
 		virtual void set_char_string_list(
-			const TString<char>* strings, int32_t num_str);
+			const SGString<char>* strings, int32_t num_str);
 		virtual void set_int_string_list(
-			const TString<int32_t>* strings, int32_t num_str);
+			const SGString<int32_t>* strings, int32_t num_str);
 		virtual void set_short_string_list(
-			const TString<int16_t>* strings, int32_t num_str);
+			const SGString<int16_t>* strings, int32_t num_str);
 		virtual void set_word_string_list(
-			const TString<uint16_t>* strings, int32_t num_str);
+			const SGString<uint16_t>* strings, int32_t num_str);
 
 		virtual void set_attribute_struct(
 			const CDynamicArray<T_ATTRIBUTE>* attrs);

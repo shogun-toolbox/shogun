@@ -166,6 +166,25 @@ class CLabels : public CSGObject
 		 */
 		void get_labels(float64_t** dst, int32_t* len);
 
+		/** get labels
+		 *
+		 * @return labels
+		 */
+		SGVector<float64_t> get_labels()
+		{
+			return SGVector<float64_t>(labels, num_labels);
+		}
+
+		/** set labels
+		 *
+		 * @param v labels
+		 */
+		void set_labels(SGVector<float64_t> v)
+		{
+			labels=v.vector;
+			num_labels=v.length;
+		}
+
 		/** set labels
 		 *
 		 * @param src labels to set

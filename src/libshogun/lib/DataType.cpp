@@ -80,37 +80,37 @@ TSGDataType::sizeof_stype(void) const
 	case ST_NONE: return sizeof_ptype();
 	case ST_STRING:
 		switch (m_ptype) {
-		case PT_BOOL: return sizeof (TString<bool>);
-		case PT_CHAR: return sizeof (TString<char>);
-		case PT_INT8: return sizeof (TString<int8_t>);
-		case PT_UINT8: return sizeof (TString<uint8_t>);
-		case PT_INT16: return sizeof (TString<int16_t>);
-		case PT_UINT16: return sizeof (TString<uint16_t>);
-		case PT_INT32: return sizeof (TString<int32_t>);
-		case PT_UINT32: return sizeof (TString<uint32_t>);
-		case PT_INT64: return sizeof (TString<int64_t>);
-		case PT_UINT64: return sizeof (TString<uint64_t>);
-		case PT_FLOAT32: return sizeof (TString<float32_t>);
-		case PT_FLOAT64: return sizeof (TString<float64_t>);
-		case PT_FLOATMAX: return sizeof (TString<floatmax_t>);
+		case PT_BOOL: return sizeof (SGString<bool>);
+		case PT_CHAR: return sizeof (SGString<char>);
+		case PT_INT8: return sizeof (SGString<int8_t>);
+		case PT_UINT8: return sizeof (SGString<uint8_t>);
+		case PT_INT16: return sizeof (SGString<int16_t>);
+		case PT_UINT16: return sizeof (SGString<uint16_t>);
+		case PT_INT32: return sizeof (SGString<int32_t>);
+		case PT_UINT32: return sizeof (SGString<uint32_t>);
+		case PT_INT64: return sizeof (SGString<int64_t>);
+		case PT_UINT64: return sizeof (SGString<uint64_t>);
+		case PT_FLOAT32: return sizeof (SGString<float32_t>);
+		case PT_FLOAT64: return sizeof (SGString<float64_t>);
+		case PT_FLOATMAX: return sizeof (SGString<floatmax_t>);
 		case PT_SGOBJECT: return -1;
 		}
 		break;
 	case ST_SPARSE:
 		switch (m_ptype) {
-		case PT_BOOL: return sizeof (TSparse<bool>);
-		case PT_CHAR: return sizeof (TSparse<char>);
-		case PT_INT8: return sizeof (TSparse<int8_t>);
-		case PT_UINT8: return sizeof (TSparse<uint8_t>);
-		case PT_INT16: return sizeof (TSparse<int16_t>);
-		case PT_UINT16: return sizeof (TSparse<uint16_t>);
-		case PT_INT32: return sizeof (TSparse<int32_t>);
-		case PT_UINT32: return sizeof (TSparse<uint32_t>);
-		case PT_INT64: return sizeof (TSparse<int64_t>);
-		case PT_UINT64: return sizeof (TSparse<uint64_t>);
-		case PT_FLOAT32: return sizeof (TSparse<float32_t>);
-		case PT_FLOAT64: return sizeof (TSparse<float64_t>);
-		case PT_FLOATMAX: return sizeof (TSparse<floatmax_t>);
+		case PT_BOOL: return sizeof (SGSparseVector<bool>);
+		case PT_CHAR: return sizeof (SGSparseVector<char>);
+		case PT_INT8: return sizeof (SGSparseVector<int8_t>);
+		case PT_UINT8: return sizeof (SGSparseVector<uint8_t>);
+		case PT_INT16: return sizeof (SGSparseVector<int16_t>);
+		case PT_UINT16: return sizeof (SGSparseVector<uint16_t>);
+		case PT_INT32: return sizeof (SGSparseVector<int32_t>);
+		case PT_UINT32: return sizeof (SGSparseVector<uint32_t>);
+		case PT_INT64: return sizeof (SGSparseVector<int64_t>);
+		case PT_UINT64: return sizeof (SGSparseVector<uint64_t>);
+		case PT_FLOAT32: return sizeof (SGSparseVector<float32_t>);
+		case PT_FLOAT64: return sizeof (SGSparseVector<float64_t>);
+		case PT_FLOATMAX: return sizeof (SGSparseVector<floatmax_t>);
 		case PT_SGOBJECT: return -1;
 		}
 		break;
@@ -146,19 +146,19 @@ size_t
 TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 {
 	switch (ptype) {
-	case PT_BOOL: return sizeof (TSparseEntry<bool>);
-	case PT_CHAR: return sizeof (TSparseEntry<char>);
-	case PT_INT8: return sizeof (TSparseEntry<int8_t>);
-	case PT_UINT8: return sizeof (TSparseEntry<uint8_t>);
-	case PT_INT16: return sizeof (TSparseEntry<int16_t>);
-	case PT_UINT16: return sizeof (TSparseEntry<uint16_t>);
-	case PT_INT32: return sizeof (TSparseEntry<int32_t>);
-	case PT_UINT32: return sizeof (TSparseEntry<uint32_t>);
-	case PT_INT64: return sizeof (TSparseEntry<int64_t>);
-	case PT_UINT64: return sizeof (TSparseEntry<uint64_t>);
-	case PT_FLOAT32: return sizeof (TSparseEntry<float32_t>);
-	case PT_FLOAT64: return sizeof (TSparseEntry<float64_t>);
-	case PT_FLOATMAX: return sizeof (TSparseEntry<floatmax_t>);
+	case PT_BOOL: return sizeof (SGSparseVectorEntry<bool>);
+	case PT_CHAR: return sizeof (SGSparseVectorEntry<char>);
+	case PT_INT8: return sizeof (SGSparseVectorEntry<int8_t>);
+	case PT_UINT8: return sizeof (SGSparseVectorEntry<uint8_t>);
+	case PT_INT16: return sizeof (SGSparseVectorEntry<int16_t>);
+	case PT_UINT16: return sizeof (SGSparseVectorEntry<uint16_t>);
+	case PT_INT32: return sizeof (SGSparseVectorEntry<int32_t>);
+	case PT_UINT32: return sizeof (SGSparseVectorEntry<uint32_t>);
+	case PT_INT64: return sizeof (SGSparseVectorEntry<int64_t>);
+	case PT_UINT64: return sizeof (SGSparseVectorEntry<uint64_t>);
+	case PT_FLOAT32: return sizeof (SGSparseVectorEntry<float32_t>);
+	case PT_FLOAT64: return sizeof (SGSparseVectorEntry<float64_t>);
+	case PT_FLOATMAX: return sizeof (SGSparseVectorEntry<floatmax_t>);
 	case PT_SGOBJECT: return -1;
 	}
 
@@ -166,7 +166,7 @@ TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 }
 
 #define ENTRY_OFFSET(k, type)									\
-	((char*) &((TSparseEntry<type>*) (k))->entry - (char*) (k))
+	((char*) &((SGSparseVectorEntry<type>*) (k))->entry - (char*) (k))
 size_t
 TSGDataType::offset_sparseentry(EPrimitiveType ptype)
 {
@@ -279,4 +279,54 @@ TSGDataType::string_to_ptype(EPrimitiveType* ptype, const char* str)
 	}
 
 	return false;
+}
+
+size_t TSGDataType::get_size()
+{
+	size_t size;
+
+	switch (m_stype)
+	{
+	case ST_NONE:
+		size=get_num_elements()*sizeof_ptype();
+		break;
+	case ST_STRING:
+		if (m_ptype==PT_SGOBJECT)
+			return -1;
+
+		size=get_num_elements()*sizeof_stype();
+		break;
+	case ST_SPARSE:
+		if (m_ptype==PT_SGOBJECT)
+			return -1;
+
+		size=get_num_elements()*sizeof_sparseentry(m_ptype);
+		break;
+	}
+
+	return size;
+}
+
+index_t TSGDataType::get_num_elements()
+{
+	index_t num_elements;
+
+	switch (m_ctype)
+	{
+	case CT_SCALAR:
+		num_elements=1;
+		break;
+	case CT_VECTOR:
+		/* length_y contains the length for vectors */
+		num_elements=*m_length_y;
+		break;
+	case CT_MATRIX:
+		num_elements=(*m_length_y)*(*m_length_x);
+		break;
+	case CT_NDARRAY:
+		SG_SNOTIMPLEMENTED;
+		break;
+	}
+
+	return num_elements;
 }

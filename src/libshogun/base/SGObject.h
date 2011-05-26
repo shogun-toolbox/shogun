@@ -42,10 +42,42 @@ class CSerializableFile;
 #ifdef USE_REFERENCE_COUNTING
 #define SG_REF(x) { if (x) (x)->ref(); }
 #define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=NULL; } }
+#define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
 #else
 #define SG_REF(x)
 #define SG_UNREF(x)
 #endif
+
+/*******************************************************************************
+ * Macros for registering parameters/model selection parameters
+ ******************************************************************************/
+#define SG_ADD(param, name, description, ms_available) {\
+		m_parameters->add(param, name, description);\
+		if (ms_available)\
+			m_model_selection_parameters->add(param, name, description);\
+}
+
+#define SG_ADD_VECTOR(param, length, name, description, ms_available) {\
+		m_parameters->add_vector(param, length, name, description);\
+		if (ms_available)\
+			m_model_selection_parameters->add_vector(param, length, name,\
+					description);\
+}
+
+#define SG_ADD_MATRIX(param, length_y, length_x, name, description,\
+							ms_available) {\
+		m_parameters->add_matrix(param, length_y, length_x, name, description);\
+		if (ms_available)\
+			m_model_selection_parameters->add_matrix(param, length_y, length_x,\
+					name, description);\
+}
+/*******************************************************************************
+ * End of macros for registering parameters/model selection parameters
+ ******************************************************************************/
+
+enum EModelSelectionAvailability {
+	MS_NOT_AVAILABLE=0, MS_AVAILABLE
+};
 
 /** @brief Class SGObject is the base class of all shogun objects.
  *
@@ -264,6 +296,7 @@ public:
 	Parallel* parallel;
 	Version* version;
 	Parameter* m_parameters;
+	Parameter* m_model_selection_parameters;
 
 private:
 	EPrimitiveType m_generic;

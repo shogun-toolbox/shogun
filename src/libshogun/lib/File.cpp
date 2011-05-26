@@ -121,14 +121,14 @@ void CFile::set_bool_matrix(const bool* matrix, int32_t num_feat, int32_t num_ve
 }
 
 void CFile::get_bool_string_list(
-		TString<bool>*& strings, int32_t& num_str,
+		SGString<bool>*& strings, int32_t& num_str,
 		int32_t& max_string_len)
 {
-	TString<int8_t>* strs;
+	SGString<int8_t>* strs;
 	get_int8_string_list(strs, num_str, max_string_len);
 
 	ASSERT(num_str>0 && max_string_len>0);
-	strings=new TString<bool>[num_str];
+	strings=new SGString<bool>[num_str];
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
@@ -143,9 +143,9 @@ void CFile::get_bool_string_list(
 	delete[] strs;
 }
 
-void CFile::set_bool_string_list(const TString<bool>* strings, int32_t num_str)
+void CFile::set_bool_string_list(const SGString<bool>* strings, int32_t num_str)
 {
-	TString<int8_t> * strs = new TString<int8_t>[num_str];
+	SGString<int8_t> * strs = new SGString<int8_t>[num_str];
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
@@ -169,7 +169,7 @@ CFile::~CFile()
 
 void CFile::set_variable_name(const char* name)
 {
-	free(variable_name);
+	SG_FREE(variable_name);
 	variable_name=strdup(name);
 }
 

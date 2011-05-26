@@ -220,8 +220,8 @@ void CSNPFeatures::obtain_base_strings()
 		if (i==0)
 		{
 			size_t tlen=(len+1)*sizeof(uint8_t);
-			m_str_min=(uint8_t*) malloc(tlen);
-			m_str_maj=(uint8_t*) malloc(tlen);
+			m_str_min=(uint8_t*) SG_MALLOC(tlen);
+			m_str_maj=(uint8_t*) SG_MALLOC(tlen);
 			memset(m_str_min, 0, tlen);
 			memset(m_str_maj, 0, tlen);
 		}
@@ -290,7 +290,7 @@ void CSNPFeatures::get_histogram(float64_t** hist, int32_t* rows, int32_t* cols,
 {
 	int32_t nsym=3;
 	int64_t sz=int64_t(nsym)*string_length/2*sizeof(float64_t);
-	float64_t* h= (float64_t*) malloc(sz);
+	float64_t* h= (float64_t*) SG_MALLOC(sz);
 	ASSERT(h);
 	memset(h, 0, sz);
 

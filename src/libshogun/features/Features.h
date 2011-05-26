@@ -284,12 +284,9 @@ class CFeatures : public CSGObject
 		/** returns the corresponding real index (in array) of a subset index
 		 * (if there is a subset)
 		 *
-		 * should/has to be be overwritten when subset support is
-		 * implemented in a subclass. for now, it just returns identity
-		 *
 		 * @ return array index of the provided subset index
 		 */
-		virtual inline int32_t subset_idx_conversion(int32_t idx) { return idx; }
+		inline int32_t subset_idx_conversion(int32_t idx) { return m_subset_idx ? m_subset_idx[idx] : idx; }
 
 	private:
 		/** feature properties */

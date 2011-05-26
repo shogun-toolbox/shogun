@@ -143,7 +143,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		//double background[20]; // profile
 		std::vector< std::vector<float64_t> > profiles; //profile
 		std::vector<std::string> sequence_labels; // profile
-		TString<char>* sequences; // profile
+		SGString<char>* sequences; // profile
 		CStringFeatures<char>* string_features; 
 		int32_t nof_sequences;
 		int32_t max_sequence_length;

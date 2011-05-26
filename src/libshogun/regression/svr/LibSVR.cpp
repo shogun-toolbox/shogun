@@ -32,7 +32,7 @@ CLibSVR::CLibSVR(float64_t C, float64_t eps, CKernel* k, CLabels* lab)
 
 CLibSVR::~CLibSVR()
 {
-	free(model);
+	SG_FREE(model);
 }
 
 bool CLibSVR::train(CFeatures* data)
@@ -47,7 +47,7 @@ bool CLibSVR::train(CFeatures* data)
 		kernel->init(data, data);
 	}
 
-	free(model);
+	SG_FREE(model);
 
 	struct svm_node* x_space;
 

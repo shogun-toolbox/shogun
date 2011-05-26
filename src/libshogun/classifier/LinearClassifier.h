@@ -92,7 +92,7 @@ class CLinearClassifier : public CClassifier
 			ASSERT(dst_w && dst_dims);
 			ASSERT(w && w_dim>0);
 			*dst_dims=w_dim;
-			*dst_w=(float64_t*) malloc(sizeof(float64_t)*(*dst_dims));
+			*dst_w=(float64_t*) SG_MALLOC(sizeof(float64_t)*(*dst_dims));
 			ASSERT(*dst_w);
 			memcpy(*dst_w, w, sizeof(float64_t) * (*dst_dims));
 		}

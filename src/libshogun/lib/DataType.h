@@ -21,7 +21,67 @@ namespace shogun
 
 typedef int32_t index_t;
 
-template<class T> struct TString
+template<class T> struct SGVector
+{
+	/** default constructor */
+	SGVector() : vector(NULL), length(0) { }
+
+	/** constructor for setting params */
+	SGVector(T* v, index_t len) : vector(v), length(len) { }
+
+	/** copy constructor */
+	SGVector(const SGVector &orig)
+	: vector(orig.vector), length(orig.length) { }
+
+	/** vector  */
+	T* vector;
+	/** length of vector  */
+	index_t length;
+};
+
+template<class T> struct SGMatrix
+{
+	/** default constructor */
+	SGMatrix() : matrix(NULL), num_rows(0), num_cols(0) { }
+
+	/** constructor for setting params */
+	SGMatrix(T* m, index_t nrows, index_t ncols)
+		: matrix(m), num_rows(nrows), num_cols(ncols) { }
+
+	/** copy constructor */
+	SGMatrix(const SGMatrix &orig)
+	: matrix(orig.matrix), num_rows(orig.num_rows), num_cols(orig.num_cols) { }
+
+	/** matrix  */
+	T* matrix;
+	/** number of rows of matrix  */
+	index_t num_rows;
+	/** number of columns of matrix  */
+	index_t num_cols;
+};
+
+template<class T> struct SGNDArray
+{
+	/** default constructor */
+	SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
+
+	/** constructor for setting params */
+	SGNDArray(T* a, index_t* d, index_t nd)
+		: array(a), dims(d), num_dims(nd) { }
+
+	/** copy constructor */
+	SGNDArray(const SGNDArray &orig)
+	: array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
+
+	/** array  */
+	T* array;
+	/** dimension sizes */
+	index_t* dims;
+	/** number of dimensions  */
+	index_t num_dims;
+};
+
+template<class T> struct SGString
 {
 	/** string  */
 	T* string;
@@ -29,8 +89,21 @@ template<class T> struct TString
 	index_t length;
 };
 
-/** template class TSparseEntry */
-template <class T> struct TSparseEntry
+/** template class SGStringList */
+template <class T> struct SGStringList
+{
+	/* number of strings */
+	int32_t num_strings;
+
+	/** length of longest string */
+	int32_t max_string_length;
+
+	/// this contains the array of features.
+	SGString<T>* strings;
+};
+
+/** template class SGSparseVectorEntry */
+template <class T> struct SGSparseVectorEntry
 {
 	/** feature index  */
 	index_t feat_index;
@@ -38,15 +111,28 @@ template <class T> struct TSparseEntry
 	T entry;
 };
 
-/** template class TSparse */
-template <class T> struct TSparse
+/** template class SGSparseVector */
+template <class T> struct SGSparseVector
 {
 	/** vector index */
 	index_t vec_index;
 	/** number of feature entries */
 	index_t num_feat_entries;
 	/** features */
-	TSparseEntry<T>* features;
+	SGSparseVectorEntry<T>* features;
+};
+
+/** template class SGSparseMatrix */
+template <class T> struct SGSparseMatrix
+{
+	/// total number of vectors
+	int32_t num_vectors;
+
+	/// total number of features
+	int32_t num_features;
+
+	/// array of sparse vectors of size num_vectors
+	SGSparseVector<T>* sparse_matrix;
 };
 
 enum EContainerType
@@ -99,7 +185,8 @@ struct TSGDataType
 						 index_t* length_x);
 
 	bool operator==(const TSGDataType& a);
-	inline bool operator!=(const TSGDataType& a) {
+	inline bool operator!=(const TSGDataType& a)
+	{
 		return !(*this == a);
 	}
 
@@ -116,6 +203,16 @@ struct TSGDataType
 								size_t n);
 	static bool string_to_ptype(EPrimitiveType* ptype,
 								const char* str);
+
+	/**
+	 * @return size of type in bytes
+	 */
+	size_t get_size();
+
+	/**
+	 * @return number of (matrix, vector, scalar) elements of type
+	 */
+	index_t get_num_elements();
 };
 }
 #endif /* __DATATYPE_H__  */

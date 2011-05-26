@@ -194,11 +194,11 @@ TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint16_t, int, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(r_type, sg_type, if_type, error_string)
-%typemap(in) (shogun::TString<sg_type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
+%typemap(in) (shogun::SGString<sg_type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
 {
     int32_t max_len=0;
     int32_t num_strings=0;
-    shogun::TString<sg_type>* strs=NULL;
+    shogun::SGString<sg_type>* strs=NULL;
 
     if ($input == R_NilValue || TYPEOF($input) != STRSXP)
     {
@@ -208,7 +208,7 @@ TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint16_t, int, "Word")
 
     num_strings=Rf_length($input);
     ASSERT(num_strings>=1);
-    strs=new shogun::TString<sg_type>[num_strings];
+    strs=new shogun::SGString<sg_type>[num_strings];
 
     for (int32_t i=0; i<num_strings; i++)
     {

@@ -146,7 +146,7 @@ bool CLPBoost::train(CFeatures* data)
 			max_dim-=num_svec;
 		}
 
-		TSparseEntry<float64_t>* h=sfeat[max_dim].features;
+		SGSparseVectorEntry<float64_t>* h=sfeat[max_dim].features;
 		int32_t len=sfeat[max_dim].num_feat_entries;
 		solver.add_lpboost_constraint(factor, h, len, num_vec, labels);
 		solver.optimize(u);

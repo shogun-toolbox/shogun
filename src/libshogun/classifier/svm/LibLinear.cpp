@@ -1148,7 +1148,7 @@ void CLibLinear::get_linear_term(float64_t** linear_term, int32_t* len)
 	if (!m_linear_term_len || !m_linear_term)
 		SG_ERROR("Please assign linear term first!\n");
 
-	*linear_term=(float64_t*) malloc(sizeof(float64_t)*m_linear_term_len);
+	*linear_term=(float64_t*) SG_MALLOC(sizeof(float64_t)*m_linear_term_len);
 
 	for (int32_t i=0; i<m_linear_term_len; i++)
 		(*linear_term)[i]=m_linear_term[i];

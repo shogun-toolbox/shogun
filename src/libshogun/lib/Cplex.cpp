@@ -150,7 +150,7 @@ bool CCplex::setup_subgradientlpm_QP(
 			int32_t vlen=0;
 			bool vfree=false;
 			//SG_PRINT("idx=%d\n", idx);
-			TSparseEntry<float64_t>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
+			SGSparseVectorEntry<float64_t>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
 			//SG_PRINT("vlen=%d\n", vlen);
 
 			cmatbeg[i]=offs;
@@ -290,7 +290,7 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 }
 
 bool CCplex::add_lpboost_constraint(
-	float64_t factor, TSparseEntry<float64_t>* h, int32_t len, int32_t ulen,
+	float64_t factor, SGSparseVectorEntry<float64_t>* h, int32_t len, int32_t ulen,
 	CLabels* label)
 {
 	int amatbeg[1]; /* for calling external lib */
@@ -398,7 +398,7 @@ bool CCplex::setup_lpm(
 	//w+ and w- part of A
 	int32_t num_sfeat=0;
 	int32_t num_svec=0;
-	TSparse<float64_t>* sfeat= x->get_transposed(num_sfeat, num_svec);
+	SGSparseVector<float64_t>* sfeat= x->get_transposed(num_sfeat, num_svec);
 	ASSERT(sfeat);
 
 	for (int32_t i=0; i<num_svec; i++)

@@ -53,7 +53,7 @@ template <class T> class CSimpleFile : public CSGObject
 
 		virtual ~CSimpleFile()
 		{
-			free(filename);
+			SG_FREE(filename);
 			free_line_buffer();
 		}
 

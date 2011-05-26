@@ -27,4 +27,4 @@ sg('train_classifier');
 sg('set_features', 'TEST', fm_test_real);
 result=sg('classify');
 
-c=sg('get_classifier',0)
+[b,alphas]=sg('get_classifier',0)

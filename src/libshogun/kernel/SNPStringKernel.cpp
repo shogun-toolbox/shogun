@@ -64,8 +64,8 @@ bool CSNPStringKernel::init(CFeatures* l, CFeatures* r)
 void CSNPStringKernel::cleanup()
 {
 	CKernel::cleanup();
-	free(m_str_min);
-	free(m_str_maj);
+	SG_FREE(m_str_min);
+	SG_FREE(m_str_maj);
 }
 
 void CSNPStringKernel::obtain_base_strings()
@@ -85,8 +85,8 @@ void CSNPStringKernel::obtain_base_strings()
 		{
 			m_str_len=len;
 			size_t tlen=(len+1)*sizeof(char);
-			m_str_min=(char*) malloc(tlen);
-			m_str_maj=(char*) malloc(tlen);
+			m_str_min=(char*) SG_MALLOC(tlen);
+			m_str_maj=(char*) SG_MALLOC(tlen);
 			memset(m_str_min, 0, tlen);
 			memset(m_str_maj, 0, tlen);
 		}

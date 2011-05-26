@@ -255,8 +255,6 @@ class CSGInterface : public CSGObject
 		bool cmd_compute_absolute_mkl_duality_gap();
 		/** train classifier/SVM */
 		bool cmd_train_classifier();
-		/** test SVM */
-		bool cmd_test_svm();
 		/** do AUC maximization */
 		bool cmd_do_auc_maximization();
 		/** set perceptron parameters */
@@ -315,16 +313,12 @@ class CSGInterface : public CSGObject
 		bool cmd_save_hmm();
 		/** HMM classify */
 		bool cmd_hmm_classify();
-		/** HMM test */
-		bool cmd_hmm_test();
 		/** HMM classify for a single example */
 		bool cmd_hmm_classify_example();
 		/** LinearHMM classify for 1-class examples */
 		bool cmd_one_class_linear_hmm_classify();
 		/** HMM classify for 1-class examples */
 		bool cmd_one_class_hmm_classify();
-		/** One Class HMM test */
-		bool cmd_one_class_hmm_test();
 		/** HMM classify for a single 1-class example */
 		bool cmd_one_class_hmm_classify_example();
 		/** output HMM */
@@ -385,8 +379,6 @@ class CSGInterface : public CSGObject
 		bool cmd_new_plugin_estimator();
 		/** train plugin estimator */
 		bool cmd_train_estimator();
-		/** test plugin estimator */
-		bool cmd_test_estimator();
 		/** plugin estimate classify one example */
 		bool cmd_plugin_estimate_classify_example();
 		/** plugin estimate classify */
@@ -632,31 +624,31 @@ class CSGInterface : public CSGObject
 
 
 		virtual void get_real_sparsematrix(
-			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
 		/*  future versions might support types other than float64_t
 		
-		virtual void get_byte_sparsematrix(TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_char_sparsematrix(TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_int_sparsematrix(TSparse<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_shortreal_sparsematrix(TSparse<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_short_sparsematrix(TSparse<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_word_sparsematrix(TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
+		virtual void get_byte_sparsematrix(SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_char_sparsematrix(SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_int_sparsematrix(SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_shortreal_sparsematrix(SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_short_sparsematrix(SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_word_sparsematrix(SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
 
 		virtual void get_byte_string_list(
-			TString<uint8_t>*& strings, int32_t& num_str,
+			SGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 		virtual void get_char_string_list(
-			TString<char>*& strings, int32_t& num_str,
+			SGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 		virtual void get_int_string_list(
-			TString<int32_t>*& strings, int32_t& num_str,
+			SGString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 		virtual void get_short_string_list(
-			TString<int16_t>*& strings, int32_t& num_str,
+			SGString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 		virtual void get_word_string_list(
-			TString<uint16_t>*& strings, int32_t& num_str,
+			SGString<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 
 		virtual void get_attribute_struct(
@@ -696,29 +688,29 @@ class CSGInterface : public CSGObject
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
 
 		virtual void set_real_sparsematrix(
-			const TSparse<float64_t>* matrix, int32_t num_feat,
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat,
 			int32_t num_vec, int64_t nnz)=0;
 
 		/*  future versions might support types other than float64_t
 		
-		virtual void set_byte_sparsematrix(const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_char_sparsematrix(const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_int_sparsematrix(const TSparse<int32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_shortreal_sparsematrix(const TSparse<float32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_short_sparsematrix(const TSparse<int16_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_word_sparsematrix(const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; */
+		virtual void set_byte_sparsematrix(const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_char_sparsematrix(const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_int_sparsematrix(const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_shortreal_sparsematrix(const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_short_sparsematrix(const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_word_sparsematrix(const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; */
 
 
 		virtual void set_byte_string_list(
-			const TString<uint8_t>* strings, int32_t num_str)=0;
+			const SGString<uint8_t>* strings, int32_t num_str)=0;
 		virtual void set_char_string_list(
-			const TString<char>* strings, int32_t num_str)=0;
+			const SGString<char>* strings, int32_t num_str)=0;
 		virtual void set_int_string_list(
-			const TString<int32_t>* strings, int32_t num_str)=0;
+			const SGString<int32_t>* strings, int32_t num_str)=0;
 		virtual void set_short_string_list(
-			const TString<int16_t>* strings, int32_t num_str)=0;
+			const SGString<int16_t>* strings, int32_t num_str)=0;
 		virtual void set_word_string_list(
-			const TString<uint16_t>* strings, int32_t num_str)=0;
+			const SGString<uint16_t>* strings, int32_t num_str)=0;
 
 		virtual void set_attribute_struct(
 			const CDynamicArray<T_ATTRIBUTE>* attrs)=0;

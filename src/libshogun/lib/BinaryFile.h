@@ -132,31 +132,31 @@ public:
 	 */
 	//@{
 	virtual void get_bool_sparsematrix(
-			TSparse<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_byte_sparsematrix(
-			TSparse<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_int8_sparsematrix(
-			TSparse<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_char_sparsematrix(
-			TSparse<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_int_sparsematrix(
-			TSparse<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_uint_sparsematrix(
-			TSparse<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_long_sparsematrix(
-			TSparse<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_ulong_sparsematrix(
-			TSparse<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_short_sparsematrix(
-			TSparse<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_word_sparsematrix(
-			TSparse<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_shortreal_sparsematrix(
-			TSparse<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_real_sparsematrix(
-			TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_longreal_sparsematrix(
-			TSparse<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	//@}
 
 
@@ -169,40 +169,40 @@ public:
 	 */
 	//@{
 	virtual void get_byte_string_list(
-			TString<uint8_t>*& strings, int32_t& num_str,
+			SGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_int8_string_list(
-			TString<int8_t>*& strings, int32_t& num_str,
+			SGString<int8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_char_string_list(
-			TString<char>*& strings, int32_t& num_str,
+			SGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_int_string_list(
-			TString<int32_t>*& strings, int32_t& num_str,
+			SGString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_uint_string_list(
-			TString<uint32_t>*& strings, int32_t& num_str,
+			SGString<uint32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_short_string_list(
-			TString<int16_t>*& strings, int32_t& num_str,
+			SGString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_word_string_list(
-			TString<uint16_t>*& strings, int32_t& num_str,
+			SGString<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_long_string_list(
-			TString<int64_t>*& strings, int32_t& num_str,
+			SGString<int64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_ulong_string_list(
-			TString<uint64_t>*& strings, int32_t& num_str,
+			SGString<uint64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_shortreal_string_list(
-			TString<float32_t>*& strings, int32_t& num_str,
+			SGString<float32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_real_string_list(
-			TString<float64_t>*& strings, int32_t& num_str,
+			SGString<float64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_longreal_string_list(
-			TString<floatmax_t>*& strings, int32_t& num_str,
+			SGString<floatmax_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	//@}
 
@@ -287,31 +287,31 @@ public:
 	 */
 	//@{
 	virtual void set_bool_sparsematrix(
-			const TSparse<bool>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_byte_sparsematrix(
-			const TSparse<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_int8_sparsematrix(
-			const TSparse<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_char_sparsematrix(
-			const TSparse<char>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_int_sparsematrix(
-			const TSparse<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_uint_sparsematrix(
-			const TSparse<uint32_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_long_sparsematrix(
-			const TSparse<int64_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_ulong_sparsematrix(
-			const TSparse<uint64_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_short_sparsematrix(
-			const TSparse<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_word_sparsematrix(
-			const TSparse<uint16_t>* matrix, int32_t num_feat, int32_t num_vec); 
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec); 
 	virtual void set_shortreal_sparsematrix(
-			const TSparse<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_real_sparsematrix(
-			const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_longreal_sparsematrix(
-			const TSparse<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
+			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
 	//@}
 
 
@@ -324,29 +324,29 @@ public:
 	 */
 	//@{
 	virtual void set_byte_string_list(
-			const TString<uint8_t>* strings, int32_t num_str);
+			const SGString<uint8_t>* strings, int32_t num_str);
 	virtual void set_int8_string_list(
-			const TString<int8_t>* strings, int32_t num_str);
+			const SGString<int8_t>* strings, int32_t num_str);
 	virtual void set_char_string_list(
-			const TString<char>* strings, int32_t num_str);
+			const SGString<char>* strings, int32_t num_str);
 	virtual void set_int_string_list(
-			const TString<int32_t>* strings, int32_t num_str);
+			const SGString<int32_t>* strings, int32_t num_str);
 	virtual void set_uint_string_list(
-			const TString<uint32_t>* strings, int32_t num_str);
+			const SGString<uint32_t>* strings, int32_t num_str);
 	virtual void set_short_string_list(
-			const TString<int16_t>* strings, int32_t num_str);
+			const SGString<int16_t>* strings, int32_t num_str);
 	virtual void set_word_string_list(
-			const TString<uint16_t>* strings, int32_t num_str);
+			const SGString<uint16_t>* strings, int32_t num_str);
 	virtual void set_long_string_list(
-			const TString<int64_t>* strings, int32_t num_str);
+			const SGString<int64_t>* strings, int32_t num_str);
 	virtual void set_ulong_string_list(
-			const TString<uint64_t>* strings, int32_t num_str);
+			const SGString<uint64_t>* strings, int32_t num_str);
 	virtual void set_shortreal_string_list(
-			const TString<float32_t>* strings, int32_t num_str);
+			const SGString<float32_t>* strings, int32_t num_str);
 	virtual void set_real_string_list(
-			const TString<float64_t>* strings, int32_t num_str);
+			const SGString<float64_t>* strings, int32_t num_str);
 	virtual void set_longreal_string_list(
-			const TString<floatmax_t>* strings, int32_t num_str);
+			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
 
 	/** @return object name */

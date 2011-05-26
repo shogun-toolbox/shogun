@@ -123,6 +123,7 @@ CSGObject::~CSGObject()
 	pthread_mutex_destroy(&m_ref_mutex);
 	unset_global_objects();
 	delete m_parameters;
+	delete m_model_selection_parameters;
 }
 
 void CSGObject::set_global_objects()
@@ -204,6 +205,8 @@ void CSGObject::print_serializable(const char* prefix)
 {
 	SG_PRINT("\n%s\n================================================================================\n", get_name());
 	m_parameters->print(prefix);
+	SG_PRINT("\nParameters available for model selection:\n");
+	m_model_selection_parameters->print(prefix);
 }
 
 bool CSGObject::save_serializable(CSerializableFile* file,
@@ -337,6 +340,7 @@ void CSGObject::init()
 	parallel = NULL;
 	version = NULL;
 	m_parameters = new Parameter();
+	m_model_selection_parameters = new Parameter();
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;

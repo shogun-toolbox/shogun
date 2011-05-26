@@ -13,6 +13,7 @@
  #include <shogun/lib/common.h>
  #include <shogun/lib/io.h>
  #include <shogun/lib/ShogunException.h>
+ #include <shogun/lib/DataType.h>
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
  #include <shogun/base/SGObject.h>
@@ -96,16 +97,71 @@
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
+%include <shogun/lib/DataType.h>
 
+namespace shogun
+{
+    %template(BoolSparseMatrix) SGSparseVector<bool>;
+    %template(CharSparseMatrix) SGSparseVector<char>;
+    %template(ByteSparseMatrix) SGSparseVector<uint8_t>;
+    %template(WordSparseMatrix) SGSparseVector<uint16_t>;
+    %template(ShortSparseMatrix) SGSparseVector<int16_t>;
+    %template(IntSparseMatrix)  SGSparseVector<int32_t>;
+    %template(UIntSparseMatrix)  SGSparseVector<uint32_t>;
+    %template(LongIntSparseMatrix)  SGSparseVector<int64_t>;
+    %template(ULongIntSparseMatrix)  SGSparseVector<uint64_t>;
+    %template(ShortRealSparseMatrix) SGSparseVector<float32_t>;
+    %template(RealSparseMatrix) SGSparseVector<float64_t>;
+    %template(LongRealSparseMatrix) SGSparseVector<floatmax_t>;
+
+    %template(BoolString) SGString<bool>;
+    %template(CharString) SGString<char>;
+    %template(ByteString) SGString<uint8_t>;
+    %template(WordString) SGString<uint16_t>;
+    %template(ShortString) SGString<int16_t>;
+    %template(IntString)  SGString<int32_t>;
+    %template(UIntString)  SGString<uint32_t>;
+    %template(LongIntString)  SGString<int64_t>;
+    %template(ULongIntString)  SGString<uint64_t>;
+    %template(ShortRealString) SGString<float32_t>;
+    %template(RealString) SGString<float64_t>;
+    %template(LongRealString) SGString<floatmax_t>;
+
+    %template(BoolVector) SGVector<bool>;
+    %template(CharVector) SGVector<char>;
+    %template(ByteVector) SGVector<uint8_t>;
+    %template(WordVector) SGVector<uint16_t>;
+    %template(ShortVector) SGVector<int16_t>;
+    %template(IntVector)  SGVector<int32_t>;
+    %template(UIntVector)  SGVector<uint32_t>;
+    %template(LongIntVector)  SGVector<int64_t>;
+    %template(ULongIntVector)  SGVector<uint64_t>;
+    %template(ShortRealVector) SGVector<float32_t>;
+    %template(RealVector) SGVector<float64_t>;
+    %template(LongRealVector) SGVector<floatmax_t>;
+
+    %template(BoolMatrix) SGMatrix<bool>;
+    %template(CharMatrix) SGMatrix<char>;
+    %template(ByteMatrix) SGMatrix<uint8_t>;
+    %template(WordMatrix) SGMatrix<uint16_t>;
+    %template(ShortMatrix) SGMatrix<int16_t>;
+    %template(IntMatrix)  SGMatrix<int32_t>;
+    %template(UIntMatrix)  SGMatrix<uint32_t>;
+    %template(LongIntMatrix)  SGMatrix<int64_t>;
+    %template(ULongIntMatrix)  SGMatrix<uint64_t>;
+    %template(ShortRealMatrix) SGMatrix<float32_t>;
+    %template(RealMatrix) SGMatrix<float64_t>;
+    %template(LongRealMatrix) SGMatrix<floatmax_t>;
+}
 
 
 
 %include stl.i
 /* instantiate the required template specializations */
 namespace std {
-  %template(IntVector)    vector<int32_t>;
-  %template(DoubleVector) vector<float64_t>;
-  %template(StringVector) vector<string>;
+  %template(IntStdVector)    vector<int32_t>;
+  %template(DoubleStdVector) vector<float64_t>;
+  %template(StringStdVector) vector<string>;
 }
 
 #ifdef SWIGPYTHON

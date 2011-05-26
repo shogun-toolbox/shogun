@@ -217,7 +217,7 @@ SerializableXmlReader00::read_sparse_end_wrapped(
 
 bool
 SerializableXmlReader00::read_sparseentry_begin_wrapped(
-	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
 	bool result = true;
@@ -240,7 +240,7 @@ SerializableXmlReader00::read_sparseentry_begin_wrapped(
 
 bool
 SerializableXmlReader00::read_sparseentry_end_wrapped(
-	const TSGDataType* type, TSparseEntry<char>* first_entry,
+	const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,
 	index_t* feat_index, index_t y)
 {
 	return true;

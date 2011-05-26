@@ -8,8 +8,6 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <stdio.h>
-
 #include "lib/ShogunException.h"
 #include "lib/memory.h"
 #include "lib/common.h"
@@ -49,8 +47,7 @@ void operator delete(void *p)
 	if (sg_mallocs)
 		sg_mallocs->remove(MemoryBlock(p));
 #endif
-	if (p)
-		free(p);
+	free(p);
 }
 
 void* operator new[](size_t size)
@@ -82,8 +79,50 @@ void operator delete[](void *p)
 	if (sg_mallocs)
 		sg_mallocs->remove(MemoryBlock(p));
 #endif
-	if (p)
-		free(p);
+	free(p);
+}
+
+void* SG_MALLOC(size_t size)
+{
+	void* p=malloc(size);
+
+	if (!p)
+	{
+		const size_t buf_len=128;
+		char buf[buf_len];
+		size_t written=snprintf(buf, buf_len,
+			"Out of memory error, tried to allocate %lld bytes using malloc.\n", (long long int) size);
+		if (written<buf_len)
+			throw ShogunException(buf);
+		else
+			throw ShogunException("Out of memory error using malloc.\n");
+	}
+
+	return p;
+}
+
+void  SG_FREE(void* ptr)
+{
+	free(ptr);
+}
+
+void* SG_REALLOC(void* ptr, size_t size)
+{
+	void* p=realloc(ptr, size);
+
+	if (!p && (size || !ptr))
+	{
+		const size_t buf_len=128;
+		char buf[buf_len];
+		size_t written=snprintf(buf, buf_len,
+			"Out of memory error, tried to allocate %lld bytes using realloc.\n", (long long int) size);
+		if (written<buf_len)
+			throw ShogunException(buf);
+		else
+			throw ShogunException("Out of memory error using realloc.\n");
+	}
+
+	return p;
 }
 
 #ifdef TRACE_MEMORY_ALLOCS

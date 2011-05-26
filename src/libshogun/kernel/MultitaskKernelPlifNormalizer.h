@@ -323,10 +323,10 @@ protected:
 	{
 		m_parameters->add(&num_tasks, "num_tasks", "the number of tasks");
 		m_parameters->add(&num_betas, "num_betas", "the number of weights");
-		m_parameters->add_vector((TString<float64_t>**)&distance_matrix, &num_tasksqr, "distance_matrix", "distance between tasks");
-		m_parameters->add_vector((TString<float64_t>**)&similarity_matrix, &num_tasksqr, "similarity_matrix", "similarity between tasks");
-		m_parameters->add_vector((TString<float64_t>**)&betas, &num_betas, "num_betas", "weights");
-		m_parameters->add_vector((TString<float64_t>**)&support, &num_betas, "support", "support points");
+		m_parameters->add_vector((SGString<float64_t>**)&distance_matrix, &num_tasksqr, "distance_matrix", "distance between tasks");
+		m_parameters->add_vector((SGString<float64_t>**)&similarity_matrix, &num_tasksqr, "similarity_matrix", "similarity between tasks");
+		m_parameters->add_vector((SGString<float64_t>**)&betas, &num_betas, "num_betas", "weights");
+		m_parameters->add_vector((SGString<float64_t>**)&support, &num_betas, "support", "support points");
 	}
 
 	/** number of tasks **/

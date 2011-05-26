@@ -55,10 +55,10 @@ public:
 		index_t length);
 
 	virtual bool read_sparseentry_begin_wrapped(
-		const TSGDataType* type, TSparseEntry<char>* first_entry,
+		const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,
 		index_t* feat_index, index_t y);
 	virtual bool read_sparseentry_end_wrapped(
-		const TSGDataType* type, TSparseEntry<char>* first_entry,
+		const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,
 		index_t* feat_index, index_t y);
 
 	virtual bool read_item_begin_wrapped(

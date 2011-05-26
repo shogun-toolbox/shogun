@@ -297,15 +297,15 @@ void CRInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& nu
 {
 }
 
-void CRInterface::get_real_sparsematrix(TSparse<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CRInterface::get_real_sparsematrix(SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 }
 
-void CRInterface::get_byte_string_list(TString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_byte_string_list(SGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_char_string_list(TString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_char_string_list(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	SEXP strs=get_arg_increment();
 
@@ -319,7 +319,7 @@ void CRInterface::get_char_string_list(TString<char>*& strings, int32_t& num_str
 		num_str = ncols(strs);
 		max_string_len = nrows(strs);
 
-		strings=new TString<char>[num_str];
+		strings=new SGString<char>[num_str];
 		ASSERT(strings);
 
 		for (int32_t i=0; i<num_str; i++)
@@ -341,7 +341,7 @@ void CRInterface::get_char_string_list(TString<char>*& strings, int32_t& num_str
 	{
 		max_string_len=0;
 		num_str=Rf_length(strs);
-		strings=new TString<char>[num_str];
+		strings=new SGString<char>[num_str];
 		ASSERT(strings);
 
 		for (int32_t i=0; i<num_str; i++)
@@ -368,15 +368,15 @@ void CRInterface::get_char_string_list(TString<char>*& strings, int32_t& num_str
 	}
 }
 
-void CRInterface::get_int_string_list(TString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_int_string_list(SGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_short_string_list(TString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_short_string_list(SGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
-void CRInterface::get_word_string_list(TString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CRInterface::get_word_string_list(SGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 }
 
@@ -485,17 +485,17 @@ SET_MATRIX(set_real_matrix, REALSXP, REAL, float64_t, double, "Double Precision"
 SET_MATRIX(set_word_matrix, INTSXP, INTEGER, uint16_t, int, "Word")
 #undef SET_MATRIX
 
-void CRInterface::set_real_sparsematrix(const TSparse<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void CRInterface::set_real_sparsematrix(const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	// R does not support sparse matrices yet
 }
 
-void CRInterface::set_byte_string_list(const TString<uint8_t>* strings, int32_t num_str)
+void CRInterface::set_byte_string_list(const SGString<uint8_t>* strings, int32_t num_str)
 {
 }
  //this function will fail for strings containing 0, unclear how to do 'raw'
  //strings in R
-void CRInterface::set_char_string_list(const TString<char>* strings, int32_t num_str)
+void CRInterface::set_char_string_list(const SGString<char>* strings, int32_t num_str)
 {
 	if (!strings)
 		SG_ERROR("Given strings are invalid.\n");
@@ -513,15 +513,15 @@ void CRInterface::set_char_string_list(const TString<char>* strings, int32_t num
 	set_arg_increment(feat);
 }
 
-void CRInterface::set_int_string_list(const TString<int32_t>* strings, int32_t num_str)
+void CRInterface::set_int_string_list(const SGString<int32_t>* strings, int32_t num_str)
 {
 }
 
-void CRInterface::set_short_string_list(const TString<int16_t>* strings, int32_t num_str)
+void CRInterface::set_short_string_list(const SGString<int16_t>* strings, int32_t num_str)
 {
 }
 
-void CRInterface::set_word_string_list(const TString<uint16_t>* strings, int32_t num_str)
+void CRInterface::set_word_string_list(const SGString<uint16_t>* strings, int32_t num_str)
 {
 }
 

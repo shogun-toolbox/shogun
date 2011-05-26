@@ -254,7 +254,7 @@ CSerializableAsciiFile::write_sparse_end_wrapped(
 
 bool
 CSerializableAsciiFile::write_sparseentry_begin_wrapped(
-	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
 	if (fprintf(m_fstream, " %"PRIi32" %c", feat_index, CHAR_ITEM_BEGIN)
@@ -265,7 +265,7 @@ CSerializableAsciiFile::write_sparseentry_begin_wrapped(
 
 bool
 CSerializableAsciiFile::write_sparseentry_end_wrapped(
-	const TSGDataType* type, const TSparseEntry<char>* first_entry,
+	const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
 	if (fprintf(m_fstream, "%c", CHAR_ITEM_END) <= 0) return false;
