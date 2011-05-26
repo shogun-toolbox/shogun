@@ -18,23 +18,6 @@
 
 namespace shogun
 {
-	/// Unlabelled example class
-	class UnlabelledExample
-	{
-	public:
-		float64_t* feature_vector;
-		int32_t dimensions;
-	};
-
-	/// Labelled example class
-	class LabelledExample
-	{
-	public:
-		float64_t* feature_vector;
-		int32_t dimensions;
-		float64_t label;
-	};
-
 	enum E_IS_EXAMPLE_USED
 	{
 		E_EMPTY = 1,
@@ -126,25 +109,6 @@ namespace shogun
 		void start_parser();
 
 		/**
-		 * Set buffer size in units of number of examples.
-		 *
-		 * @param size Size of buffer
-		 */
-		void set_buffer_size(int32_t size);
-
-		/**
-		 * Increment buffer write index.
-		 *
-		 */
-		void buffer_increment_write_index();
-
-		/**
-		 * Increment buffer read index.
-		 *
-		 */
-		void buffer_increment_read_index();
-
-		/**
 		 * Main parsing loop. Reads examples from source and stores
 		 * them in the buffer.
 		 *
@@ -154,24 +118,22 @@ namespace shogun
 		 */
 		void* main_parse_loop(void* params);
 
-		/**
+		
+		/** 
 		 * Copy example into the buffer.
-		 *
-		 * Buffer space:
-		 * -Example n-
-		 * float64_t* feature_vector
-		 * int32_t length
-		 * float64_t label (if LabelledExample)
-		 * list of float64_ts (Feature vector)
-		 * -Example n+1-
-		 * ..
-		 *
-		 * Currently, constant dimensionality is assumed!
-		 *
-		 * @param example Example to be copied.
+		 * 
+		 * @param ex Example to be copied.
 		 */
-		void copy_example_into_buffer(void* example);
+		void copy_example_into_buffer(example* ex);
 
+		/** 
+		 * Retrieves the next example from the buffer.
+		 * 
+		 * 
+		 * @return The example pointer.
+		 */
+		example* retrieve_example();
+		
 		/**
 		 * Gets the next unused example from the buffer.
 		 *
@@ -181,9 +143,9 @@ namespace shogun
 		void* get_next_example();
 
 		/**
-		 * Gets the next example, assuming it to be labelled.
+		 * Gets the next example.
 		 *
-		 * Waits till get_next_example returns a valid example, or
+		 * Waits till retrieve_example returns a valid example, or
 		 * returns if reading is done already.
 		 *
 		 * @param feature_vector Feature vector pointer
@@ -192,23 +154,9 @@ namespace shogun
 		 *
 		 * @return 1 if an example could be fetched, 0 otherwise
 		 */
-		int32_t get_next_example_labelled(float64_t* &feature_vector,
+		int32_t get_next_example(float64_t* &feature_vector,
 										  int32_t &length,
 										  float64_t &label);
-
-		/**
-		 * Gets the next example, assuming it to be unlabelled.
-		 *
-		 * Waits till get_next_example returns a valid example, or
-		 * returns if reading is done already.
-		 *
-		 * @param feature_vector Feature vector pointer
-		 * @param length Length of feature vector
-		 *
-		 * @return 1 if an example could be fetched, 0 otherwise
-		 */
-		int32_t get_next_example_unlabelled(float64_t* &feature_vector,
-											int32_t &length);
 
 		/**
 		 * Finalize the current example, indicating that the buffer
@@ -249,27 +197,7 @@ namespace shogun
 
 		pthread_t parse_thread;/**< Parse thread */
 
-		void* examples_buff;	/**< Buffer for examples, behaves
-								 * like a ring.
-								 * Examples are stored and retrieved
-								 * from this buffer.*/
-
-		int32_t buffer_write_index; /**< Where next example will be
-									 * written into the buffer. */
-
-		int32_t buffer_read_index; /**< Where next example will be
-									* read from the buffer */
-
-		E_IS_EXAMPLE_USED* is_example_used; /**< Indicates state of examples
-											 * in buffer - used, not
-											 * used, or empty. */
-
-		pthread_cond_t* example_in_use_condition;
-		pthread_mutex_t* example_in_use_mutex;
-
-		int32_t example_memsize; /**< Size of example object */
-		int32_t buffer_size;	/**< Number of examples to store in buffer */
-
+		
 		int32_t number_of_features;
 
 		int32_t number_of_vectors_parsed;
@@ -282,11 +210,8 @@ namespace shogun
 		
 		int32_t current_number_of_features; /**< Features in last
 											 * read example */
+
 		
-		void* current_example;	/**< Points to current example in buffer */
-
-
-
 	};
 }
 #endif // __INPUTPARSER_H__
