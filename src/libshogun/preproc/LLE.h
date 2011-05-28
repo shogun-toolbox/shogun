@@ -56,6 +56,23 @@ public:
 	 */
 	virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
 
+	/** setter for target dimension
+	 * @param dim target dimension
+	 */
+	void inline set_target_dim(int32_t dim)
+	{
+		ASSERT(dim>0);
+		m_target_dim = dim;
+	}
+
+	/** getter for target dimension
+	 * @return target dimension
+	 */
+	int32_t inline get_target_dim()
+	{
+		return m_target_dim;
+	}
+
 	/** get name */
 	virtual inline const char* get_name() const { return "LLE"; };
 
@@ -64,8 +81,14 @@ public:
 
 protected:
 
+	/* target dimension */
+	int32_t m_target_dim;
+
 	/* number of neighbors */
 	int32_t m_k;
+
+	/* new feature matrix */
+	float64_t* m_new_feature_matrix;
 
 	/* distance instance */
 	CDistance* m_distance;

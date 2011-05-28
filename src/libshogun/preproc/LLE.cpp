@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(2)
+CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(100), m_target_dim(2), m_new_feature_matrix(NULL)
 {
 	// temporary hack. which one will make sense?
 	m_distance = new CEuclidianDistance();
@@ -27,13 +27,14 @@ CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(2)
 CLLE::~CLLE()
 {
 	delete m_distance;
+	delete[] m_new_feature_matrix;
 }
 
 bool CLLE::init(CFeatures* data)
 {
 	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
-
 	ASSERT(pdata);
+
 	int32_t dim = pdata->get_num_features();
 	int32_t N = pdata->get_num_vectors();
 	ASSERT(m_k<N);
@@ -45,14 +46,7 @@ bool CLLE::init(CFeatures* data)
 	ASSERT(m_distance);
 	m_distance->init(data,data);
 	float64_t* distance_matrix = new float64_t[N*N];
-	float64_t pairwise_distance;
-	for (i=0; i<N; i++)
-		for (j=0; j<=i; j++)
-		{
-			pairwise_distance = m_distance->distance(i,j);
-			distance_matrix[i*N+j] = pairwise_distance;
-			distance_matrix[j*N+i] = pairwise_distance;
-		}
+	m_distance->get_distance_matrix(&distance_matrix,&N,&N);
 
 	// init matrices to be used
 	int32_t* neighborhood_matrix = new int32_t[N*m_k];
@@ -60,7 +54,7 @@ bool CLLE::init(CFeatures* data)
 	int32_t* local_neighbors = new int32_t[N];
 
 	// construct neighborhood matrix (contains idxs of neighbors for
-	// i-th object in i-th row)
+	// i-th object in i-th column)
 	for (i=0; i<N; i++)
 	{
 		for (j=0; j<N; j++)
@@ -72,7 +66,7 @@ bool CLLE::init(CFeatures* data)
 		CMath::qsort_index(local_distances,local_neighbors,N);
 
 		for (j=0; j<m_k; j++)
-			neighborhood_matrix[i*m_k+j] = local_neighbors[j+1];
+			neighborhood_matrix[j*N+i] = local_neighbors[j+1];
 	}
 
 	delete[] distance_matrix;
@@ -80,6 +74,7 @@ bool CLLE::init(CFeatures* data)
 	delete[] local_distances;
 
 	float64_t* W_matrix = new float64_t[N*N];
+	//replace with zerofill
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			W_matrix[i*N+j]=0.0;
@@ -92,10 +87,10 @@ bool CLLE::init(CFeatures* data)
 
 	for (i=0; i<N; i++)
 	{
-		// compute local feature matrix containing neighbors of i-th vector
+		// compute local feature matrix containing neighbors of i-th vector (column ~ vector)
 		for (j=0; j<m_k; j++)
 		{
-			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[i*m_k+j]);
+			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[j*N+i]);
 			for (k=0; k<dim; k++)
 			{
 				z_matrix[k*m_k+j] = feature_vector[k];
@@ -112,12 +107,17 @@ bool CLLE::init(CFeatures* data)
 				z_matrix[k*m_k+j] -= feature_vector[k];
 			}
 
-		cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
-		            m_k,m_k,dim,1.0,
+		//CMath::display_vector(z_matrix,m_k*dim,"Z transformed");
+
+		cblas_dgemm(CblasRowMajor,CblasTrans,CblasNoTrans,
+		            m_k,m_k,dim,
+		            1.0,
 		            z_matrix,m_k,
 		            z_matrix,m_k,
 		            0.0,
 		            covariance_matrix,m_k);
+
+		//CMath::display_matrix(covariance_matrix,m_k,m_k,"C");
 
 		for (j=0; j<m_k; j++)
 		{
@@ -143,7 +143,7 @@ bool CLLE::init(CFeatures* data)
 		clapack_dgesv(CblasRowMajor,
 		              m_k,1,
 		              covariance_matrix,m_k,
-		              ipiv,//memset(W_matrix,0,N*N);
+		              ipiv,
 		              id_vector,m_k);
 
 		// normalize
@@ -156,9 +156,11 @@ bool CLLE::init(CFeatures* data)
 
 		// fill W matrix
 		for (j=0; j<m_k; j++)
-			W_matrix[i*N+neighborhood_matrix[i*m_k+j]]=id_vector[j];
+			W_matrix[i*N+neighborhood_matrix[j*N+i]]=id_vector[j];
 
 	}
+
+	//CMath::display_matrix(W_matrix,N,N,"W");
 
 	delete[] ipiv;
 	delete[] id_vector;
@@ -168,53 +170,66 @@ bool CLLE::init(CFeatures* data)
 	delete[] covariance_matrix;
 
 	// W=I-W
+	for (i=0; i<N*N; i++)
+		W_matrix[i] = -W_matrix[i];
 	for (i=0; i<N; i++)
-		for (j=0; j<N; j++)
-			W_matrix[i*N+j] = i==j ? -W_matrix[i*N+j] : 1.0-W_matrix[i*N+j];
+		W_matrix[i*N+i] = 1.0-W_matrix[i*N+i];
+
+	//CMath::display_matrix(W_matrix,N,N,"W-I");
 
 	// compute W'*W
-	float64_t* M_matrix = new float64_t[N*N];
+	m_new_feature_matrix = new float64_t[N*N];
 	cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
 	            N,N,N,1.0,
 	            W_matrix,N,
 	            W_matrix,N,
 	            0.0,
-	            M_matrix,N);
+	            m_new_feature_matrix,N);
 
 	delete[] W_matrix;
+
+	//CMath::display_matrix(m_new_feature_matrix,N,N,"before eigenproblem");
 
 	// compute eigenvectors
 	float64_t* eigs = new float64_t[N];
 	int32_t status = 0;
-	wrap_dsyev('V','U',N,M_matrix,N,eigs,&status);
+	wrap_dsyev('V','U',
+				N,m_new_feature_matrix,
+				N,eigs,
+				&status);
 
-	for (i=0; i<N; i++)
-	{
-		SG_PRINT("%f :", eigs[i]);
+	ASSERT(status==0);
 
-		for (j=0; j<N; j++)
-		{
-			SG_PRINT("%5.3f ",M_matrix[i*N+j]);
-		}
-		SG_PRINT("\n");
-	}
+//	CMath::display_vector(eigs,N,"eigenvalues");
 
-	delete[] M_matrix;
+//	CMath::display_vector(m_new_feature_matrix,N*N,"new features");
 
 	return true;
 }
 
 void CLLE::cleanup()
 {
-
+	delete[] m_new_feature_matrix;
 }
 
 float64_t* CLLE::apply_to_feature_matrix(CFeatures* f)
 {
-	return 0;
+	float64_t* feature_matrix;
+	int32_t num,dim;
+	((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(&feature_matrix,&dim,&num);
+	//CMath::display_matrix(feature_matrix,dim,num,"Given features");
+
+	init(f);
+	float64_t* replace_feature_matrix = new float64_t[num*m_target_dim];
+	for (int i=0; i<num*m_target_dim; i++)
+		replace_feature_matrix[i] = m_new_feature_matrix[i+num];
+
+	((CSimpleFeatures<float64_t>*) f)->set_feature_matrix(replace_feature_matrix,m_target_dim,num);
+	return replace_feature_matrix;
 }
 
 float64_t* CLLE::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
+	SG_ERROR("Not implemented");
 	return 0;
 }
