@@ -14,21 +14,21 @@
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 #include "lib/common.h"
-#include "preproc/PreProc.h"
+#include "preprocessor/Preprocessor.h"
 
 namespace shogun
 {
 template <class ST> class CSimpleFeatures;
 
-/** @brief Template class SimplePreProc, base class for preprocessors (cf.
- * CPreProc) that apply to CSimpleFeatures (i.e. rectangular dense matrices)
+/** @brief Template class SimplePreprocessor, base class for preprocessors (cf.
+ * CPreprocessor) that apply to CSimpleFeatures (i.e. rectangular dense matrices)
  *
  * Two new functions apply_to_feature_vector() and apply_to_feature_matrix()
  * are defined in this interface that need to be implemented in each particular
  * preprocessor operating on CSimpleFeatures. For examples see e.g. CLogPlusOne
  * or CPCACut.
  */
-template <class ST> class CSimplePreProc : public CPreProc
+template <class ST> class CSimplePreprocessor : public CPreprocessor
 {
 	public:
 		/** constructor
@@ -36,7 +36,7 @@ template <class ST> class CSimplePreProc : public CPreProc
 		 * @param name simple preprocessor's name
 		 * @param id simple preprocessor's id
 		 */
-		CSimplePreProc() : CPreProc() {}
+		CSimplePreprocessor() : CPreprocessor() {}
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
@@ -54,36 +54,36 @@ template <class ST> class CSimplePreProc : public CPreProc
 		virtual inline EFeatureType get_feature_type();
 
 		/// return a type of preprocessor
-		virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
+		virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; }
 
 };
 
-template<> inline EFeatureType CSimplePreProc<float64_t>::get_feature_type()
+template<> inline EFeatureType CSimplePreprocessor<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }
 
-template<> inline EFeatureType CSimplePreProc<int16_t>::get_feature_type()
+template<> inline EFeatureType CSimplePreprocessor<int16_t>::get_feature_type()
 {
 	return F_SHORT;
 }
 
-template<> inline EFeatureType CSimplePreProc<uint16_t>::get_feature_type()
+template<> inline EFeatureType CSimplePreprocessor<uint16_t>::get_feature_type()
 {
 	return F_WORD;
 }
 
-template<> inline EFeatureType CSimplePreProc<char>::get_feature_type()
+template<> inline EFeatureType CSimplePreprocessor<char>::get_feature_type()
 {
 	return F_CHAR;
 }
 
-template<> inline EFeatureType CSimplePreProc<uint8_t>::get_feature_type()
+template<> inline EFeatureType CSimplePreprocessor<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }
 
-template<> inline EFeatureType CSimplePreProc<uint64_t>::get_feature_type()
+template<> inline EFeatureType CSimplePreprocessor<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }

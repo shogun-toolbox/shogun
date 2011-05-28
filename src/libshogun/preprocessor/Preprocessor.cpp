@@ -9,16 +9,16 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "preproc/PreProc.h"
+#include "preprocessor/Preprocessor.h"
 #include "lib/io.h"
 
 using namespace shogun;
 
-CPreProc::CPreProc()
+CPreprocessor::CPreprocessor()
 : CSGObject()
 {
 }
 
-CPreProc::~CPreProc()
+CPreprocessor::~CPreprocessor()
 {
 }

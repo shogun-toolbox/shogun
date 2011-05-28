@@ -13,7 +13,7 @@
 
 #include "features/SparseFeatures.h"
 #include "lib/common.h"
-#include "preproc/PreProc.h"
+#include "preprocessor/Preprocessor.h"
 
 #include <stdio.h>
 
@@ -22,7 +22,7 @@ namespace shogun
 template <class ST> class SGSparseVector;
 template <class ST> class CSparseFeatures;
 
-/** @brief Template class SparsePreProc, base class for preprocessors (cf. CPreProc)
+/** @brief Template class SparsePreprocessor, base class for preprocessors (cf. CPreprocessor)
  * that apply to CSparseFeatures
  *
  * Two new functions apply_to_sparse_feature_vector() and
@@ -30,7 +30,7 @@ template <class ST> class CSparseFeatures;
  * be implemented in each particular preprocessor operating on CSparseFeatures.
  *
  * */
-template <class ST> class CSparsePreProc : public CPreProc
+template <class ST> class CSparsePreprocessor : public CPreprocessor
 {
 public:
 	/** constructor
@@ -38,7 +38,7 @@ public:
 	 * @param name sparse preprocessor's name
 	 * @param id sparse preprocessor's id
 	 */
-	CSparsePreProc() : CPreProc() {}
+	CSparsePreprocessor() : CPreprocessor() {}
 
 	/// apply preproc on feature matrix
 	/// result in feature matrix
@@ -56,7 +56,7 @@ public:
 	virtual inline const char* get_name() const { return "UNKNOWN"; }
 
 	/// return a type of preprocessor
-	virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
+	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; }
   
 };
 }

@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _CNORM_ONE__H__
-#define _CNORM_ONE__H__
+#ifndef _CLOGPLUSONE__H__
+#define _CLOGPLUSONE__H__
 
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "lib/common.h"
 
@@ -19,28 +19,29 @@
 
 namespace shogun
 {
-/** @brief Preprocessor NormOne, normalizes vectors to have norm 1.
- *
- * Formally, it computes
+/** @brief Preprocessor LogPlusOne does what the name says, it adds one to a dense
+ * real valued vector and takes the logarithm of each component of it.
  *
  * \f[
- * {\bf x} \leftarrow \frac{{\bf x}}{||{\bf x}||}
+ * {\bf x}\leftarrow \log({\bf x}+{\bf 1})
  * \f]
- *
- * It therefore does not need any initialization. It is most useful to get data
- * onto a ball of radius one.
+ * It therefore does not need any initialization. It is most useful in
+ * situations where the inputs are counts: When one compares differences of
+ * small counts any difference may matter a lot, while small differences in
+ * large counts don't. This is what this log transformation controls for.
  */
-class CNormOne : public CSimplePreProc<float64_t>
+class CLogPlusOne : public CSimplePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */
-		CNormOne();
+		CLogPlusOne();
 
 		/** destructor */
-		virtual ~CNormOne();
+		virtual ~CLogPlusOne();
 
 		/// initialize preprocessor from features
 		virtual bool init(CFeatures* f);
+
 		/// cleanup
 		virtual void cleanup();
 		/// initialize preprocessor from file
@@ -58,10 +59,10 @@ class CNormOne : public CSimplePreProc<float64_t>
 		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
 
 		/** @return object name */
-		virtual inline const char* get_name() const { return "NormOne"; }
+		virtual inline const char* get_name() const { return "LogPlusOne"; }
 
 		/// return a type of preprocessor
-		virtual inline EPreProcType get_type() const { return P_NORMONE; }
+		virtual inline EPreprocessorType get_type() const { return P_LOGPLUSONE; }
 };
 }
 #endif

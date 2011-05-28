@@ -8,15 +8,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "preproc/NormDerivativeLem3.h"
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/NormDerivativeLem3.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 
 using namespace shogun;
 
 CNormDerivativeLem3::CNormDerivativeLem3()
-: CSimplePreProc<float64_t>()
+: CSimplePreprocessor<float64_t>()
 {
 }
 

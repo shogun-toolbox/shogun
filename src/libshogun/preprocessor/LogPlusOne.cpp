@@ -8,25 +8,26 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "preproc/NormOne.h"
-#include "preproc/SimplePreProc.h"
-#include "lib/Mathematics.h"
+#include "preprocessor/LogPlusOne.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
+#include "lib/Mathematics.h"
 
 using namespace shogun;
 
-CNormOne::CNormOne()
-: CSimplePreProc<float64_t>()
+CLogPlusOne::CLogPlusOne()
+: CSimplePreprocessor<float64_t>()
 {
 }
 
-CNormOne::~CNormOne()
+
+CLogPlusOne::~CLogPlusOne()
 {
 }
 
 /// initialize preprocessor from features
-bool CNormOne::init(CFeatures* f)
+bool CLogPlusOne::init(CFeatures* f)
 {
 	ASSERT(f->get_feature_class()==C_SIMPLE);
 	ASSERT(f->get_feature_type()==F_DREAL);
@@ -35,12 +36,12 @@ bool CNormOne::init(CFeatures* f)
 }
 
 /// clean up allocated memory
-void CNormOne::cleanup()
+void CLogPlusOne::cleanup()
 {
 }
 
 /// initialize preprocessor from file
-bool CNormOne::load(FILE* f)
+bool CLogPlusOne::load(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -48,7 +49,7 @@ bool CNormOne::load(FILE* f)
 }
 
 /// save preprocessor init-data to file
-bool CNormOne::save(FILE* f)
+bool CLogPlusOne::save(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -58,30 +59,32 @@ bool CNormOne::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-float64_t* CNormOne::apply_to_feature_matrix(CFeatures* f)
+float64_t* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
 {
+	int32_t i,j;
 	int32_t num_vec;
 	int32_t num_feat;
 	float64_t* matrix=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_feat, num_vec);
 
-	for (int32_t i=0; i<num_vec; i++)
+	for (i=0; i<num_vec; i++)
 	{
 		float64_t* vec=&matrix[i*num_feat];
-		float64_t norm=CMath::sqrt(CMath::dot(vec, vec, num_feat));
-		CMath::scale_vector(1.0/norm, vec, num_feat);
+
+		for (j=0; j<num_feat; j++)
+			vec[j]=log(vec[j]+1);
 	}
 	return matrix;
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-float64_t* CNormOne::apply_to_feature_vector(float64_t* f, int32_t& len)
+float64_t* CLogPlusOne::apply_to_feature_vector(float64_t* f, int32_t& len)
 {
 	float64_t* vec=new float64_t[len];
-	float64_t norm=CMath::sqrt(CMath::dot(f, f, len));
+	int32_t i=0;
 
-	for (int32_t i=0; i<len; i++)
-		vec[i]=f[i]/norm;
+	for (i=0; i<len; i++)
+		vec[i]=log(f[i]+1);
 
 	return vec;
 }

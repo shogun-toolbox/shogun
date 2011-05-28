@@ -18,8 +18,8 @@
 #include "lib/lapack.h"
 
 #include "lib/common.h"
-#include "preproc/KernelPCACut.h"
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/KernelPCACut.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
@@ -27,13 +27,13 @@
 using namespace shogun;
 
 CKernelPCACut::CKernelPCACut()
-: CSimplePreProc<float64_t>(), T(NULL), rows_T(0),
+: CSimplePreprocessor<float64_t>(), T(NULL), rows_T(0),
 	initialized(false), thresh(1e-6), kernel(NULL)
 {
 }
 
 CKernelPCACut::CKernelPCACut(CKernel* k, float64_t thresh_)
-: CSimplePreProc<float64_t>(), T(NULL), rows_T(0),
+: CSimplePreprocessor<float64_t>(), T(NULL), rows_T(0),
 	initialized(false), thresh(thresh_)
 {
 	SG_REF(k);

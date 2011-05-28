@@ -9,19 +9,19 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "GUIPreProc.h"
+#include "GUIPreprocessor.h"
 #include "SGInterface.h"
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>
 #include <shogun/lib/config.h>
-#include <shogun/preproc/LogPlusOne.h>
-#include <shogun/preproc/NormOne.h>
-#include <shogun/preproc/PruneVarSubMean.h>
-#include <shogun/preproc/PCACut.h>
-#include <shogun/preproc/DecompressString.h>
-#include <shogun/preproc/SortWordString.h>
-#include <shogun/preproc/SortUlongString.h>
+#include <shogun/preprocessor/LogPlusOne.h>
+#include <shogun/preprocessor/NormOne.h>
+#include <shogun/preprocessor/PruneVarSubMean.h>
+#include <shogun/preprocessor/PCACut.h>
+#include <shogun/preprocessor/DecompressString.h>
+#include <shogun/preprocessor/SortWordString.h>
+#include <shogun/preprocessor/SortUlongString.h>
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/FKFeatures.h>
@@ -36,20 +36,20 @@
 
 using namespace shogun;
 
-CGUIPreProc::CGUIPreProc(CSGInterface* ui_)
+CGUIPreprocessor::CGUIPreprocessor(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
 {
 	preprocs=new CList(true);
 }
 
-CGUIPreProc::~CGUIPreProc()
+CGUIPreprocessor::~CGUIPreprocessor()
 {
 	SG_UNREF(preprocs);
 }
 
-CPreProc* CGUIPreProc::create_prunevarsubmean(bool divide_by_std)
+CPreprocessor* CGUIPreprocessor::create_prunevarsubmean(bool divide_by_std)
 {
-	CPreProc* preproc=new CPruneVarSubMean(divide_by_std);
+	CPreprocessor* preproc=new CPruneVarSubMean(divide_by_std);
 
 	if (preproc)
 		SG_INFO("PRUNEVARSUBMEAN created (%p), divide_by_std %d", preproc, divide_by_std);
@@ -59,10 +59,10 @@ CPreProc* CGUIPreProc::create_prunevarsubmean(bool divide_by_std)
 	return preproc;
 }
 
-CPreProc* CGUIPreProc::create_pcacut(bool do_whitening, float64_t threshold)
+CPreprocessor* CGUIPreprocessor::create_pcacut(bool do_whitening, float64_t threshold)
 {
 #ifdef HAVE_LAPACK
-	CPreProc* preproc=new CPCACut(do_whitening, THRESHOLD, threshold);
+	CPreprocessor* preproc=new CPCACut(do_whitening, THRESHOLD, threshold);
 
 	if (preproc)
 		SG_INFO("PCACUT created (%p), do_whitening %i threshold %e", preproc, do_whitening, threshold);
@@ -76,9 +76,9 @@ CPreProc* CGUIPreProc::create_pcacut(bool do_whitening, float64_t threshold)
 #endif //HAVE_LAPACK
 }
 
-CPreProc* CGUIPreProc::create_generic(EPreProcType type)
+CPreprocessor* CGUIPreprocessor::create_generic(EPreprocessorType type)
 {
-	CPreProc* preproc=NULL;
+	CPreprocessor* preproc=NULL;
 
 	switch (type)
 	{
@@ -93,7 +93,7 @@ CPreProc* CGUIPreProc::create_generic(EPreProcType type)
 		case P_DECOMPRESSCHARSTRING:
 			preproc=new CDecompressString<char>(LZO); break;
 		default:
-			SG_ERROR("Unknown PreProc type %d\n", type);
+			SG_ERROR("Unknown Preprocessor type %d\n", type);
 	}
 
 	if (preproc)
@@ -104,19 +104,19 @@ CPreProc* CGUIPreProc::create_generic(EPreProcType type)
 	return preproc;
 }
 
-bool CGUIPreProc::add_preproc(CPreProc* preproc)
+bool CGUIPreprocessor::add_preproc(CPreprocessor* preproc)
 {
 	return preprocs->append_element_at_listend(preproc);
 }
 
-bool CGUIPreProc::clean_preproc()
+bool CGUIPreprocessor::clean_preproc()
 {
 	SG_UNREF(preprocs);
 	preprocs=new CList(true);
 	return (preprocs!=NULL);
 }
 
-bool CGUIPreProc::del_preproc()
+bool CGUIPreprocessor::del_preproc()
 {
 	SG_INFO("Deleting preproc %i/(%i).\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
 
@@ -126,7 +126,7 @@ bool CGUIPreProc::del_preproc()
 	return (preproc!=NULL);
 }
 
-bool CGUIPreProc::attach_preproc(char* target, bool do_force)
+bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 {
 	bool result=false;
 
@@ -214,7 +214,7 @@ bool CGUIPreProc::attach_preproc(char* target, bool do_force)
 	return result;
 }
 
-bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force)
+bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force)
 {
 	if (trainfeat)
 	{
@@ -234,7 +234,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 			{
 				for (int32_t i=0; i<trainfeat->get_num_preproc();  i++)
 				{
-					CPreProc* preproc = trainfeat->get_preproc(i);
+					CPreprocessor* preproc = trainfeat->get_preproc(i);
 					preproc->init(trainfeat);
 					testfeat->add_preproc(preproc);
 					SG_UNREF(preproc);
@@ -245,7 +245,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 		}
 		else
 		{
-			CPreProc* preproc = (CPreProc*) preprocs->get_first_element();
+			CPreprocessor* preproc = (CPreprocessor*) preprocs->get_first_element();
 
 			if (preproc)
 			{
@@ -256,7 +256,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 				SG_UNREF(preproc);
 			}
 
-			while ( (preproc = (CPreProc*) preprocs->get_next_element()) !=NULL )
+			while ( (preproc = (CPreprocessor*) preprocs->get_next_element()) !=NULL )
 			{
 				preproc->init(trainfeat);
 				trainfeat->add_preproc(preproc);
@@ -274,7 +274,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 	return false;
 }
 
-bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
+bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 {
 	switch (f->get_feature_class())
 	{

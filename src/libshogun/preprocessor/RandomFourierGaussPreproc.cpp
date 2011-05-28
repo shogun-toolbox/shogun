@@ -60,7 +60,7 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 }
 
 CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
-	CSimplePreProc<float64_t> () {
+	CSimplePreprocessor<float64_t> () {
 	dim_feature_space = 1000;
 	dim_input_space = 0;
 	cur_dim_input_space = 0;
@@ -92,7 +92,7 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 
 CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		const CRandomFourierGaussPreproc & feats) :
-	CSimplePreProc<float64_t> () {
+	CSimplePreprocessor<float64_t> () {
 
 	randomcoeff_multiplicative=NULL;
 	randomcoeff_additive=NULL;

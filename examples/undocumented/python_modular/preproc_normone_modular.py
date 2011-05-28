@@ -10,7 +10,7 @@ def preproc_normone_modular (fm_train_real=traindat,fm_test_real=testdat,width=1
 
 	from shogun.Kernel import Chi2Kernel
 	from shogun.Features import RealFeatures
-	from shogun.PreProc import NormOne
+	from shogun.Preprocessor import NormOne
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

@@ -12,7 +12,7 @@
 #define _CSORTULONGSTRING__H__
 
 #include "features/StringFeatures.h"
-#include "preproc/StringPreProc.h"
+#include "preprocessor/StringPreprocessor.h"
 #include "lib/common.h"
 
 #include <stdio.h>
@@ -25,7 +25,7 @@ namespace shogun
  * a binary higher order representation first (cf. obtain_from_*() functions in
  * CStringFeatures)
  */
-class CSortUlongString : public CStringPreProc<uint64_t>
+class CSortUlongString : public CStringPreprocessor<uint64_t>
 {
 public:
 	/** default constructor */
@@ -56,7 +56,7 @@ public:
 	virtual inline const char* get_name() const { return "SortUlongString"; }
 
 	/// return a type of preprocessor
-	virtual inline EPreProcType get_type() const { return P_SORTULONGSTRING; }
+	virtual inline EPreprocessorType get_type() const { return P_SORTULONGSTRING; }
 };
 }
 #endif

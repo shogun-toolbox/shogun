@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "preproc/PruneVarSubMean.h"
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/PruneVarSubMean.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
@@ -19,7 +19,7 @@
 using namespace shogun;
 
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
-: CSimplePreProc<float64_t>(), idx(NULL), mean(NULL),
+: CSimplePreprocessor<float64_t>(), idx(NULL), mean(NULL),
 	std(NULL), num_idx(0), divide_by_std(divide), initialized(false)
 {
 }

@@ -17,10 +17,10 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/SimplePreprocessor.h"
 
 namespace shogun {
-class CRandomFourierGaussPreproc: public CSimplePreProc<float64_t> {
+class CRandomFourierGaussPreproc: public CSimplePreprocessor<float64_t> {
 	/** @brief Preprocessor CRandomFourierGaussPreproc
 	 * implements Random Fourier Features for the Gauss kernel a la Ali Rahimi and Ben Recht Nips2007
 	 * after preprocessing the features using them in a linear kernel approximates a gaussian kernel
@@ -175,7 +175,7 @@ public:
 	virtual inline const char* get_name() const { return "RandomFourierGaussPreproc"; }
 
 	/// return a type of preprocessor
-	virtual inline EPreProcType get_type() const { return P_RANDOMFOURIERGAUSS; }
+	virtual inline EPreprocessorType get_type() const { return P_RANDOMFOURIERGAUSS; }
 
 protected:
 

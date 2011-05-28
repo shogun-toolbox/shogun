@@ -15,27 +15,27 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/List.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/preproc/PreProc.h>
+#include <shogun/preprocessor/Preprocessor.h>
 
 namespace shogun
 {
 class CSGInterface;
 
-class CGUIPreProc : public CSGObject
+class CGUIPreprocessor : public CSGObject
 {
 	public:
-		CGUIPreProc(CSGInterface* interface);
-		~CGUIPreProc();
+		CGUIPreprocessor(CSGInterface* interface);
+		~CGUIPreprocessor();
 
-		/** create generic PreProc */
-		CPreProc* create_generic(EPreProcType type);
+		/** create generic Preprocessor */
+		CPreprocessor* create_generic(EPreprocessorType type);
 		/** create preproc PruneVarSubMean */
-		CPreProc* create_prunevarsubmean(bool divide_by_std=false);
+		CPreprocessor* create_prunevarsubmean(bool divide_by_std=false);
 		/** create preproc PCACUT */
-		CPreProc* create_pcacut(bool do_whitening, float64_t threshold);
+		CPreprocessor* create_pcacut(bool do_whitening, float64_t threshold);
 
 		/** add new preproc to list */
-		bool add_preproc(CPreProc* preproc);
+		bool add_preproc(CPreprocessor* preproc);
 		/** delete last preproc in list */
 		bool del_preproc();
 		/** clean all preprocs from list */
@@ -48,7 +48,7 @@ class CGUIPreProc : public CSGObject
 		bool attach_preproc(char* target, bool do_force=false);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUIPreProc"; }
+		inline virtual const char* get_name() const { return "GUIPreprocessor"; }
 
 	protected:
 		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);

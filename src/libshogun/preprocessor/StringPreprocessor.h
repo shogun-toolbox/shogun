@@ -14,20 +14,20 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 #include "lib/common.h"
-#include "preproc/PreProc.h"
+#include "preprocessor/Preprocessor.h"
 
 namespace shogun
 {
 template <class ST> class CStringFeatures;
 
-/** @brief Template class StringPreProc, base class for preprocessors (cf.
- * CPreProc) that apply to CStringFeatures (i.e. strings of variable length).
+/** @brief Template class StringPreprocessor, base class for preprocessors (cf.
+ * CPreprocessor) that apply to CStringFeatures (i.e. strings of variable length).
  *
  * Two new functions apply_to_string() and apply_to_string_features()
  * are defined in this interface that need to be implemented in each particular
  * preprocessor operating on CStringFeatures.
  */
-template <class ST> class CStringPreProc : public CPreProc
+template <class ST> class CStringPreprocessor : public CPreprocessor
 {
 	public:
 		/** constructor
@@ -35,7 +35,7 @@ template <class ST> class CStringPreProc : public CPreProc
 		 * @param name string preprocessor's name
 		 * @param id string preprocessor's id
 		 */
-		CStringPreProc() : CPreProc() {}
+		CStringPreprocessor() : CPreprocessor() {}
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
@@ -54,71 +54,71 @@ template <class ST> class CStringPreProc : public CPreProc
 		virtual inline const char* get_name() const { return "UNKNOWN"; }
 
 		/// return a type of preprocessor
-		virtual inline EPreProcType get_type() const { return P_UNKNOWN; }
+		virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; }
 
 };
 
-template<> inline EFeatureType CStringPreProc<uint64_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<uint64_t>::get_feature_type()
 {
 	return F_ULONG;
 }
 
-template<> inline EFeatureType CStringPreProc<int64_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<int64_t>::get_feature_type()
 {
 	return F_LONG;
 }
 
-template<> inline EFeatureType CStringPreProc<uint32_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<uint32_t>::get_feature_type()
 {
 	return F_UINT;
 }
 
-template<> inline EFeatureType CStringPreProc<int32_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<int32_t>::get_feature_type()
 {
 	return F_INT;
 }
 
-template<> inline EFeatureType CStringPreProc<uint16_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<uint16_t>::get_feature_type()
 {
 	return F_WORD;
 }
 
-template<> inline EFeatureType CStringPreProc<int16_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<int16_t>::get_feature_type()
 {
 	return F_WORD;
 }
 
-template<> inline EFeatureType CStringPreProc<uint8_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<uint8_t>::get_feature_type()
 {
 	return F_BYTE;
 }
 
-template<> inline EFeatureType CStringPreProc<int8_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<int8_t>::get_feature_type()
 {
 	return F_BYTE;
 }
 
-template<> inline EFeatureType CStringPreProc<char>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<char>::get_feature_type()
 {
 	return F_CHAR;
 }
 
-template<> inline EFeatureType CStringPreProc<bool>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<bool>::get_feature_type()
 {
 	return F_BOOL;
 }
 
-template<> inline EFeatureType CStringPreProc<float32_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<float32_t>::get_feature_type()
 {
 	return F_SHORTREAL;
 }
 
-template<> inline EFeatureType CStringPreProc<float64_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<float64_t>::get_feature_type()
 {
 	return F_DREAL;
 }
 
-template<> inline EFeatureType CStringPreProc<floatmax_t>::get_feature_type()
+template<> inline EFeatureType CStringPreprocessor<floatmax_t>::get_feature_type()
 {
 	return F_LONGREAL;
 }

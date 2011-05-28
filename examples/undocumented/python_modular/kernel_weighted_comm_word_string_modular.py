@@ -8,7 +8,7 @@ parameter_list = [[traindat,testdat],[traindat,testdat]]
 def kernel_weighted_comm_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,order=3,gap=0,reverse=True ):
 	from shogun.Kernel import WeightedCommWordStringKernel
 	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
-	from shogun.PreProc import SortWordString
+	from shogun.Preprocessor import SortWordString
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())

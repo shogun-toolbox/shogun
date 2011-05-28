@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _CPREPROC__H__
-#define _CPREPROC__H__
+#ifndef _CPREPROCESSOR__H__
+#define _CPREPROCESSOR__H__
 
 #include "lib/common.h"
 #include "base/SGObject.h"
@@ -26,7 +26,7 @@ enum EFeatureType;
 
 enum EFeatureClass;
 
-enum EPreProcType
+enum EPreprocessorType
 {
 	P_UNKNOWN=0,
 	P_NORMONE=10,
@@ -48,7 +48,7 @@ enum EPreProcType
 
 class CFeatures;
 
-/** @brief Class PreProc defines a preprocessor interface.
+/** @brief Class Preprocessor defines a preprocessor interface.
  *
  * Preprocessors are transformation functions that don't change the domain of
  * the input features.  These functions can be applied in-place if the input
@@ -60,9 +60,9 @@ class CFeatures;
  * As preprocessors might need a certain initialization they may expect that
  * the init() function is called before anything else. The actual preprocessing
  * is feature type dependent and thus coordinated in the sub-classes, cf. e.g.
- * CSimplePreProc .
+ * CSimplePreprocessor .
  */
-class CPreProc : public CSGObject
+class CPreprocessor : public CSGObject
 {
 public:
 	/** constructor
@@ -70,12 +70,12 @@ public:
 	 * @param name preprocessor's name
 	 * @param id preprocessor's id
 	 */
-	CPreProc();
+	CPreprocessor();
 
 	/** destructor
 	 *
 	 */
-	virtual ~CPreProc();
+	virtual ~CPreprocessor();
 
 	/// initialize preprocessor from features
 	virtual bool init(CFeatures* f)=0;
@@ -84,7 +84,7 @@ public:
 	virtual void cleanup()=0;
 	
 	/** return feature type with which objects derived 
-	from CPreProc can deal */
+	from CPreprocessor can deal */
 	virtual EFeatureType get_feature_type()=0;
 
 	/** return feature class
@@ -93,7 +93,7 @@ public:
 	virtual EFeatureClass get_feature_class()=0;
 
 	/// return a type of preprocessor
-	virtual inline EPreProcType get_type() const=0;
+	virtual inline EPreprocessorType get_type() const=0;
 };
 }
-#endif
+#endif // _CPREPROCESSOR__H__

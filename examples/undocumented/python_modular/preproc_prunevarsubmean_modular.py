@@ -9,7 +9,7 @@ parameter_list = [[traindat,testdat,1.5,10],[traindat,testdat,1.5,10]]
 def preproc_prunevarsubmean_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
 	from shogun.Kernel import Chi2Kernel
 	from shogun.Features import RealFeatures
-	from shogun.PreProc import PruneVarSubMean
+	from shogun.Preprocessor import PruneVarSubMean
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

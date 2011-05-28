@@ -10,7 +10,7 @@ def preproc_logplusone_modular (fm_train_real=traindat,fm_test_real=testdat,widt
 
 	from shogun.Kernel import Chi2Kernel
 	from shogun.Features import RealFeatures
-	from shogun.PreProc import LogPlusOne
+	from shogun.Preprocessor import LogPlusOne
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

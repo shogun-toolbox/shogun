@@ -12,7 +12,7 @@
 #define _CSORTWORDSTRING__H__
 
 #include "features/StringFeatures.h"
-#include "preproc/StringPreProc.h"
+#include "preprocessor/StringPreprocessor.h"
 #include "lib/common.h"
 
 #include <stdio.h>
@@ -26,7 +26,7 @@ namespace shogun
  * a binary higher order representation first (cf. obtain_from_*() functions in
  * CStringFeatures)
  */
-class CSortWordString : public CStringPreProc<uint16_t>
+class CSortWordString : public CStringPreprocessor<uint16_t>
 {
 public:
 	/** default constructor */
@@ -58,7 +58,7 @@ public:
 	virtual inline const char* get_name() const { return "SortWordString"; }
 
 	/// return a type of preprocessor
-	virtual inline EPreProcType get_type() const { return P_SORTWORDSTRING; }
+	virtual inline EPreprocessorType get_type() const { return P_SORTWORDSTRING; }
 
 };
 }

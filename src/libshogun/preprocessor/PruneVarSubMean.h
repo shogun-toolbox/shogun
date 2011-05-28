@@ -12,7 +12,7 @@
 #ifndef _CPRUNE_VAR_SUB_MEAN__H__
 #define _CPRUNE_VAR_SUB_MEAN__H__
 
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
 #include "lib/common.h"
@@ -27,7 +27,7 @@ namespace shogun
  * It will optionally normalize standard deviation of
  * features to 1 (by dividing by standard deviation of the feature)
  */
-class CPruneVarSubMean : public CSimplePreProc<float64_t>
+class CPruneVarSubMean : public CSimplePreprocessor<float64_t>
 {
 	public:
 		/** constructor
@@ -58,7 +58,7 @@ class CPruneVarSubMean : public CSimplePreProc<float64_t>
 		virtual inline const char* get_name() const { return "PruneVarSubMean"; }
 
 		/// return a type of preprocessor
-		virtual inline EPreProcType get_type() const { return P_PRUNEVARSUBMEAN; }
+		virtual inline EPreprocessorType get_type() const { return P_PRUNEVARSUBMEAN; }
 
 	protected:
 		/** idx */

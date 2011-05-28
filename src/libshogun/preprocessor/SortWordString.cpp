@@ -5,42 +5,41 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "preproc/SortUlongString.h"
+#include "preprocessor/SortWordString.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 #include "lib/Mathematics.h"
 
 using namespace shogun;
 
-CSortUlongString::CSortUlongString()
-: CStringPreProc<uint64_t>()
+CSortWordString::CSortWordString()
+: CStringPreprocessor<uint16_t>()
 {
 }
 
-CSortUlongString::~CSortUlongString()
+CSortWordString::~CSortWordString()
 {
 }
 
 /// initialize preprocessor from features
-bool CSortUlongString::init(CFeatures* f)
+bool CSortWordString::init(CFeatures* f)
 {
 	ASSERT(f->get_feature_class()==C_STRING);
-	ASSERT(f->get_feature_type()==F_ULONG);
+	ASSERT(f->get_feature_type()==F_WORD);
 
 	return true;
 }
 
 /// clean up allocated memory
-void CSortUlongString::cleanup()
+void CSortWordString::cleanup()
 {
 }
 
 /// initialize preprocessor from file
-bool CSortUlongString::load(FILE* f)
+bool CSortWordString::load(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -48,7 +47,7 @@ bool CSortUlongString::load(FILE* f)
 }
 
 /// save preprocessor init-data to file
-bool CSortUlongString::save(FILE* f)
+bool CSortWordString::save(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -58,31 +57,29 @@ bool CSortUlongString::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-bool CSortUlongString::apply_to_string_features(CFeatures* f)
+bool CSortWordString::apply_to_string_features(CFeatures* f)
 {
 	int32_t i;
-	int32_t num_vec=((CStringFeatures<uint64_t>*)f)->get_num_vectors();
-
+	int32_t num_vec=((CStringFeatures<uint16_t>*)f)->get_num_vectors() ;
+	
 	for (i=0; i<num_vec; i++)
 	{
-		int32_t len=0;
+		int32_t len = 0 ;
 		bool free_vec;
-		uint64_t* vec=((CStringFeatures<uint64_t>*)f)->
-			get_feature_vector(i, len, free_vec);
+		uint16_t* vec = ((CStringFeatures<uint16_t>*)f)->get_feature_vector(i, len, free_vec);
 		ASSERT(!free_vec); // won't work with non-in-memory string features
-
-		SG_DEBUG( "sorting string of length %i\n", len);
-
+		
 		//CMath::qsort(vec, len);
 		CMath::radix_sort(vec, len);
+
 	}
-	return true;
+	return true ;
 }
 
 /// apply preproc on single feature vector
-uint64_t* CSortUlongString::apply_to_string(uint64_t* f, int32_t& len)
+uint16_t* CSortWordString::apply_to_string(uint16_t* f, int32_t& len)
 {
-	uint64_t* vec=new uint64_t[len];
+	uint16_t* vec=new uint16_t[len];
 	int32_t i=0;
 
 	for (i=0; i<len; i++)

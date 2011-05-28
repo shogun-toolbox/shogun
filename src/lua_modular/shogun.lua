@@ -8,7 +8,7 @@ require("Library");
 require("Structure");
 require("Distance");
 require("Features");
-require("PreProc");
+require("Preprocessor");
 DistanceMachine = Classifier.DistanceMachine
 KernelMachine = Classifier.KernelMachine
 KernelPerceptron = Classifier.KernelPerceptron
@@ -122,18 +122,18 @@ StringFeatures = Features.StringFeatures
 StringFileFeatures = Features.StringFileFeatures
 TOPFeatures = Features.TOPFeatures
 WDFeatures = Features.WDFeatures
-KernelPCACut = PreProc.KernelPCACut
-LogPlusOne = PreProc.LogPlusOne
-NormDerivativeLem3 = PreProc.NormDerivativeLem3
-NormOne = PreProc.NormOne
-PCACut = PreProc.PCACut
-PruneVarSubMean = PreProc.PruneVarSubMean
-PruneVarSubMean = PreProc.PruneVarSubMean
-RandomFourierGauss = PreProc.PreprocRandomFourierGaussPreproc
-RandomFourierGauss = PreProc.PreprocRandomFourierGaussPreproc
-SimplePreProc = PreProc.SimplePreProc
-SortUlongString = PreProc.SortUlongString
-SortWordString = PreProc.SortWordString
-SortWordString = PreProc.SortWordString
-SparsePreProc = PreProc.SparsePreProc
-StringPreProc = PreProc.StringPreProc
+KernelPCACut = Preprocessor.KernelPCACut
+LogPlusOne = Preprocessor.LogPlusOne
+NormDerivativeLem3 = Preprocessor.NormDerivativeLem3
+NormOne = Preprocessor.NormOne
+PCACut = Preprocessor.PCACut
+PruneVarSubMean = Preprocessor.PruneVarSubMean
+PruneVarSubMean = Preprocessor.PruneVarSubMean
+RandomFourierGauss = Preprocessor.PreprocRandomFourierGaussPreproc
+RandomFourierGauss = Preprocessor.PreprocRandomFourierGaussPreproc
+SimplePreprocessor = Preprocessor.SimplePreprocessor
+SortUlongString = Preprocessor.SortUlongString
+SortWordString = Preprocessor.SortWordString
+SortWordString = Preprocessor.SortWordString
+SparsePreprocessor = Preprocessor.SparsePreprocessor
+StringPreprocessor = Preprocessor.StringPreprocessor

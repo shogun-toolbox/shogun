@@ -15,7 +15,7 @@
 #include "features/StringFeatures.h"
 #include "lib/common.h"
 #include "lib/Compressor.h"
-#include "preproc/StringPreProc.h"
+#include "preprocessor/StringPreprocessor.h"
 
 namespace shogun
 {
@@ -33,12 +33,12 @@ enum E_COMPRESSION_TYPE;
  * Then avoiding expensive disk i/o strings are on-the-fly decompressed.
  *
  */
-template <class ST> class CDecompressString : public CStringPreProc<ST>
+template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 {
 	public:
 		/** default constructor  */
 		CDecompressString(void)
-			: CStringPreProc<ST>()
+			: CStringPreprocessor<ST>()
 		{
 			compressor=NULL;
 		}
@@ -46,7 +46,7 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 		/** constructor
 		 */
 		CDecompressString(E_COMPRESSION_TYPE ct)
-			: CStringPreProc<ST>()
+			: CStringPreprocessor<ST>()
 		{
 			compressor=new CCompressor(ct);
 		}
@@ -134,7 +134,7 @@ template <class ST> class CDecompressString : public CStringPreProc<ST>
 		virtual inline const char* get_name() const { return "DecompressString"; }
 
 		/// return a type of preprocessor TODO: template specification of get_type
-		virtual inline EPreProcType get_type() const { return P_DECOMPRESSSTRING; }
+		virtual inline EPreprocessorType get_type() const { return P_DECOMPRESSSTRING; }
 
 	protected:
 		/** compressor used to decompress strings */

@@ -10,7 +10,7 @@
  */
 
 #include "features/Features.h"
-#include "preproc/PreProc.h"
+#include "preprocessor/Preprocessor.h"
 #include "lib/io.h"
 #include "base/Parameter.h"
 
@@ -82,13 +82,13 @@ CFeatures::init(void)
 }
 
 /// set preprocessor
-int32_t CFeatures::add_preproc(CPreProc* p)
+int32_t CFeatures::add_preproc(CPreprocessor* p)
 {
 	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc);
 	ASSERT(p);
 
 	bool* preprocd=new bool[num_preproc+1];
-	CPreProc** pps=new CPreProc*[num_preproc+1];
+	CPreprocessor** pps=new CPreprocessor*[num_preproc+1];
 	for (int32_t i=0; i<num_preproc; i++)
 	{
 		pps[i]=preproc[i];
@@ -112,7 +112,7 @@ int32_t CFeatures::add_preproc(CPreProc* p)
 }
 
 /// get current preprocessor
-CPreProc* CFeatures::get_preproc(int32_t num)
+CPreprocessor* CFeatures::get_preproc(int32_t num)
 {
 	if (num<num_preproc)
 	{
@@ -144,11 +144,11 @@ void CFeatures::clean_preprocs()
 }
 
 /// del current preprocessor
-CPreProc* CFeatures::del_preproc(int32_t num)
+CPreprocessor* CFeatures::del_preproc(int32_t num)
 {
-	CPreProc** pps=NULL;
+	CPreprocessor** pps=NULL;
 	bool* preprocd=NULL;
-	CPreProc* removed_preproc=NULL;
+	CPreprocessor* removed_preproc=NULL;
 
 	if (num_preproc>0 && num<num_preproc)
 	{
@@ -156,7 +156,7 @@ CPreProc* CFeatures::del_preproc(int32_t num)
 
 		if (num_preproc>1)
 		{
-			pps= new CPreProc*[num_preproc-1];
+			pps= new CPreprocessor*[num_preproc-1];
 			preprocd= new bool[num_preproc-1];
 
 			if (pps && preprocd)

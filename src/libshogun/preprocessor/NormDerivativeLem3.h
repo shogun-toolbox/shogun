@@ -11,7 +11,7 @@
 #ifndef _CNORM_DERIVATIVE_LEM3__H__
 #define _CNORM_DERIVATIVE_LEM3__H__
 
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "lib/common.h"
 
@@ -20,7 +20,7 @@ namespace shogun
 {
 /** @brief Preprocessor NormDerivativeLem3, performs the normalization used in Lemma3
  * in Jaakola Hausslers Fischer Kernel paper <b>currently not implemented</b>*/
-class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
+class CNormDerivativeLem3 : public CSimplePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */
@@ -51,7 +51,7 @@ class CNormDerivativeLem3 : public CSimplePreProc<float64_t>
 		virtual inline const char* get_name() const { return "NormDerivativeLem3"; }
 
 		/// return a type of preprocessor
-		virtual inline EPreProcType get_type() const { return P_NORMDERIVATIVELEM3; }
+		virtual inline EPreprocessorType get_type() const { return P_NORMDERIVATIVELEM3; }
 };
 }
 #endif
