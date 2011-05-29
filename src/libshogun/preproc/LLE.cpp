@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CLLE::CLLE() : CSimplePreProc<float64_t>(), m_k(100), m_target_dim(2), m_new_feature_matrix(NULL)
+CLLE::CLLE() : CSimplePreProc<float64_t>(), m_target_dim(1), m_k(1), m_new_feature_matrix(NULL)
 {
 	// temporary hack. which one will make sense?
 	m_distance = new CEuclidianDistance();
@@ -202,7 +202,7 @@ bool CLLE::init(CFeatures* data)
 
 //	CMath::display_vector(eigs,N,"eigenvalues");
 
-//	CMath::display_vector(m_new_feature_matrix,N*N,"new features");
+    //CMath::display_vector(m_new_feature_matrix,N*N,"new features");
 
 	return true;
 }
@@ -218,13 +218,22 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* f)
 	int32_t num,dim;
 	((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(&feature_matrix,&dim,&num);
 	//CMath::display_matrix(feature_matrix,dim,num,"Given features");
-
 	init(f);
 	float64_t* replace_feature_matrix = new float64_t[num*m_target_dim];
-	for (int i=0; i<num*m_target_dim; i++)
-		replace_feature_matrix[i] = m_new_feature_matrix[i+num];
-
+	for (int i=0; i<m_target_dim; i++)
+		for (int j=0; j<num; j++)
+			replace_feature_matrix[j*m_target_dim+i] = m_new_feature_matrix[i*(num+1)+j];
+	/*
+	for (int i=0; i<m_target_dim; i++)
+	{
+		for (int j=0; j<num; j++)
+			SG_PRINT("%.3f ",replace_feature_matrix[i*num+j]);
+		SG_PRINT("\n");
+	}
+	*/
 	((CSimpleFeatures<float64_t>*) f)->set_feature_matrix(replace_feature_matrix,m_target_dim,num);
+	//((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(&feature_matrix,&dim,&num);
+	//CMath::display_matrix(feature_matrix,dim,num,"features");
 	return replace_feature_matrix;
 }
 

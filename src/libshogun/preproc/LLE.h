@@ -73,6 +73,22 @@ public:
 		return m_target_dim;
 	}
 
+	/** setter for K parameter
+	 * @param k k
+	 */
+	void inline set_k(int32_t k)
+	{
+		m_k = k;
+	}
+
+	/** getter for K parameter
+	 * @return k value
+	 */
+	int32_t inline get_k()
+	{
+		return m_k;
+	}
+
 	/** get name */
 	virtual inline const char* get_name() const { return "LLE"; };
 
