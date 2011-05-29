@@ -8,33 +8,20 @@
   *  
  */
 
-%{
-/* counting the size of arrays */
-int SWIG_table_size(lua_State* L, int index) {
-	int n=0;
-	lua_pushnil(L);
-	while (lua_next(L, index) != 0) {
-		++n;
-		lua_pop(L, 1);
-	}
-	return n;
-}
-%}
-
 /* One dimensional input arrays */
 %define TYPEMAP_SGVECTOR(SGTYPE)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE> {
 	if(!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "vector");		
 		$1 = 0;
 	}
 	else {
 		$1 = 1;
 		int numitems = 0;
-		numitems = SWIG_table_size(L, $input);
-		if(numitems < 1) {
-			lua_pushstring(L, "table appears to be empty");
-			lua_error(L);
+		numitems = lua_objlen(L, $input);
+		if(numitems == 0) {
+			luaL_argerror(L, $input, "empty vector");
 			$1 = 0;
 		}
 	}
@@ -45,13 +32,13 @@ int SWIG_table_size(lua_State* L, int index) {
 	int32_t i, len;
 
 	if (!lua_istable(L, $input)) {
-		lua_pushstring(L,"expected a table");
+		luaL_typerror(L, $input, "vector");
 		return 0;
 	}
 	
-	len = SWIG_table_size(L, $input);
-	if (len < 1){
-		lua_pushstring(L,"table appears to be empty");
+	len = lua_objlen(L, $input);
+	if (len == 0){
+		luaL_argerror(L, $input, "empty vector");
 		return 0;
 	}
 	
@@ -63,9 +50,8 @@ int SWIG_table_size(lua_State* L, int index) {
 		}
 		else {
 			lua_pop(L, 1);
-			lua_pushstring(L, "table must contain numbers");
+			luaL_argerror(L, $input, "vector must contain numbers");
 			delete [] array;
-			lua_error(L);
 			return 0;
 		}
 		lua_pop(L,1);
@@ -104,31 +90,30 @@ TYPEMAP_SGVECTOR(float64_t)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<SGTYPE>
 {
    if(!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "matrix");				
 		$1 = 0;
 	}
 	else {
 		$1 = 1;
-		int rows = SWIG_table_size(L, $input);
-		if(rows < 1) {
-			lua_pushstring(L, "table appears to be empty");
-			lua_error(L);
+		int rows = lua_objlen(L, $input);
+		if(rows == 0) {
+			luaL_argerror(L, $input, "empty matrix");
 			$1 = 0;
 		}
 		else {
 			lua_rawgeti(L, $input, 1);
 			if (!lua_istable(L, -1)) {
-				lua_pushstring(L, "matrix table expected");
-				lua_error(L);			
+				luaL_argerror(L, $input, "matrix row is not a table");
 				$1 = 0;			
 			}
 			else {
-				int cols = SWIG_table_size(L, -1);
-				if (cols < 1) {
-					lua_pushstring(L, "table appears to be empty");
-					lua_error(L);
+				int cols = lua_objlen(L, -1);
+				if (cols == 0) {
+					luaL_argerror(L, $input, "matrix row appears to be empty");
 					$1 = 0;
 				}			
 			}
+			lua_pop(L, 1);
 					
 		}
 	}
@@ -139,42 +124,37 @@ TYPEMAP_SGVECTOR(float64_t)
 	int32_t i, j, rows, cols;
 
 	if (!lua_istable(L, $input)) {
-		lua_pushstring(L,"expected a table");
-		return 0;
+		return luaL_typerror(L, $input, "matrix");
 	}
-	
-	rows = SWIG_table_size(L, $input);
-	if (rows < 1){
-		lua_pushstring(L,"table appears to be empty");
-		return 0;
-	}
-	cols = 0;
 
+	rows = lua_objlen(L, $input);
+	lua_rawgeti(L, $input, 1);
+	cols = lua_objlen(L, -1);
+	if (cols == 0) {
+		return luaL_argerror(L, $input, "matrix row appears to be empty");	
+	}
+	lua_pop(L, 1);
+
+	array = new SGTYPE[rows * cols];
 	for (i = 0; i < rows; i++) {
 		lua_rawgeti(L, $input, i + 1);
 		if (!lua_istable(L, -1)) {
-			lua_pop(L, 1);
-			lua_pushstring(L, "matrix table expected");
-			lua_error(L);
-			return 0;
+			delete [] array;
+			return luaL_argerror(L, $input, "matrix row is not a table");
 		}
-		if (cols ==0) {
-			cols = SWIG_table_size(L, -1);
-			array = new SGTYPE[rows * cols];
-		}
+		
+		if (lua_objlen(L, -1) != cols)
+			return luaL_argerror(L, $input, "matrix rows have inconsistent sizes");
+
 		for (j = 0; j < cols; j++) {
-			lua_rawgeti(L, -1, i + 1);
-			if (lua_isnumber(L, -1)) {
-				array[i * cols + j] = (SGTYPE)lua_tonumber(L, -1);
-				lua_pop(L, 1);
-			}
-			else {
-				lua_pop(L, 1);
-				lua_pushstring(L, "table must contain numbers");
+			lua_rawgeti(L, -1, j + 1);
+			if (!lua_isnumber(L, -1)) {
 				delete [] array;
-				lua_error(L);
-				return 0;
+				return luaL_argerror(L, 1, "matrix must contain numbers");
 			}
+			
+			array[i * cols + j] = (SGTYPE)lua_tonumber(L, -1);
+			lua_pop(L, 1);
 		}
 		lua_pop(L, 1);
 	}
@@ -223,11 +203,10 @@ TYPEMAP_SGMATRIX(float64_t)
 	int32_t len, max_len = 0;
 
 	if (!lua_istable(L, $input)) {
-		lua_pushstring(L,"expected a table");
-		return 0;
+		return luaL_typerror(L, $input, "stringList");
 	}
 	
-	size = SWIG_table_size(L, $input);
+	size = lua_objlen(L, $input);
 	shogun::SGString<SGTYPE>* strings=new shogun::SGString<SGTYPE>[size];
 
 	for (i = 0; i < size; i++) {
@@ -247,13 +226,10 @@ TYPEMAP_SGMATRIX(float64_t)
 		}
 		else {
 			if (!lua_istable(L, -1)) {
-				lua_pop(L, 1);
-				lua_pushstring(L, "matrix table expected");
-				lua_error(L);	
-				return 0;
+				return luaL_argerror(L, $input, "expected matrix ");
 			}
 			SGTYPE *arr = (SGTYPE *)lua_topointer(L, -1);
-			len = SWIG_table_size(L, -1);
+			len = lua_objlen(L, -1);
 			max_len = shogun::CMath::max(len, max_len);
 
 			strings[i].length=len;
