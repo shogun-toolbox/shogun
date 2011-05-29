@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _CLASSIFIER_H__
-#define _CLASSIFIER_H__
+#ifndef _MACHINE_H__
+#define _MACHINE_H__
 
 #include "lib/common.h"
 #include "base/SGObject.h"
@@ -92,12 +92,12 @@ enum ESolverType
  * whole set of examples) and the load and save routines.
  *
  */
-class CClassifier : public CSGObject
+class CMachine : public CSGObject
 {
 	public:
 		/** constructor */
-		CClassifier();
-		virtual ~CClassifier();
+		CMachine();
+		virtual ~CMachine();
 
 		/** train classifier
 		 *
@@ -139,7 +139,7 @@ class CClassifier : public CSGObject
 			return CMath::INFTY;
 		}
 
-		/** load Classifier from file
+		/** load Machine from file
 		 *
 		 * abstract base method
 		 *
@@ -148,7 +148,7 @@ class CClassifier : public CSGObject
 		 */
 		virtual bool load(FILE* srcfile) { ASSERT(srcfile); return false; }
 
-		/** save Classifier to file
+		/** save Machine to file
 		 *
 		 * abstract base method
 		 *
@@ -228,4 +228,4 @@ class CClassifier : public CSGObject
 		ESolverType solver_type;
 };
 }
-#endif // _CLASSIFIER_H__
+#endif // _MACHINE_H__

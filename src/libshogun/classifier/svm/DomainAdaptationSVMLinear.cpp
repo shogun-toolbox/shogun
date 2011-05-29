@@ -27,7 +27,7 @@ CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear() : CLibLinear(L2R_L1LOSS
 }
 
 
-CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear(float64_t C, CDotFeatures* f, CLabels* lab, CLinearClassifier* pre_svm, float64_t B_param) : CLibLinear(C, f, lab)
+CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear(float64_t C, CDotFeatures* f, CLabels* lab, CLinearMachine* pre_svm, float64_t B_param) : CLibLinear(C, f, lab)
 {
 	init(pre_svm, B_param);
 
@@ -42,7 +42,7 @@ CDomainAdaptationSVMLinear::~CDomainAdaptationSVMLinear()
 }
 
 
-void CDomainAdaptationSVMLinear::init(CLinearClassifier* pre_svm, float64_t B_param)
+void CDomainAdaptationSVMLinear::init(CLinearMachine* pre_svm, float64_t B_param)
 {
 
 	if (pre_svm)
@@ -172,7 +172,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
 }
 
 
-CLinearClassifier* CDomainAdaptationSVMLinear::get_presvm()
+CLinearMachine* CDomainAdaptationSVMLinear::get_presvm()
 {
 	return presvm;
 }

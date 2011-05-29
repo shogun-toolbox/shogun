@@ -33,7 +33,7 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
-#include <shogun/classifier/DistanceMachine.h>
+#include <shogun/machine/DistanceMachine.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/clustering/Hierarchical.h>
 %}
@@ -50,7 +50,7 @@
 %rename(KMeans) CKMeans;
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/classifier/Classifier.h> 
-%include <shogun/classifier/DistanceMachine.h>
+%include <shogun/machine/Machine.h> 
+%include <shogun/machine/DistanceMachine.h>
 %include <shogun/clustering/KMeans.h>
 %include <shogun/clustering/Hierarchical.h>

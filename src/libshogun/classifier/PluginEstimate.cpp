@@ -18,7 +18,7 @@
 using namespace shogun;
 
 CPluginEstimate::CPluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
-: CClassifier(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10),
+: CMachine(), m_pos_pseudo(1e-10), m_neg_pseudo(1e-10),
 	pos_model(NULL), neg_model(NULL), features(NULL)
 {
 	m_parameters->add(&m_pos_pseudo,

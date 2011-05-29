@@ -13,7 +13,7 @@
 #define _SVMOCAS_H___
 
 #include "lib/common.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "classifier/svm/libocas.h"
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
@@ -27,7 +27,7 @@ enum E_SVM_TYPE
 };
 
 /** @brief class SVMOcas */
-class CSVMOcas : public CLinearClassifier
+class CSVMOcas : public CLinearMachine
 {
 	public:
 		/** default constructor  */

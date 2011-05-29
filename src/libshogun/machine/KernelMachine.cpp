@@ -8,9 +8,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-
-
-#include "classifier/KernelMachine.h"
+#include "machine/KernelMachine.h"
 #include "lib/Signal.h"
 #include "base/Parameter.h"
 
@@ -28,7 +26,7 @@ struct S_THREAD_PARAM
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CKernelMachine::CKernelMachine()
-: CClassifier(), kernel(NULL), use_batch_computation(true), use_linadd(true), use_bias(true)
+: CMachine(), kernel(NULL), use_batch_computation(true), use_linadd(true), use_bias(true)
 {
 	m_parameters->add((CSGObject**) &kernel, "kernel");
 	m_parameters->add(&use_batch_computation, "use_batch_computation",

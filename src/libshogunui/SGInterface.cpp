@@ -12,7 +12,7 @@
 
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/classifier/svm/pr_loqo.h>
-#include <shogun/classifier/LinearClassifier.h>
+#include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/mkl/MKL.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
@@ -4782,7 +4782,7 @@ bool CSGInterface::cmd_set_linear_classifier()
 	if (!len)
 		SG_ERROR("No proper weight vector given.\n");
 
-	CLinearClassifier* c=(CLinearClassifier*) ui_classifier->get_classifier();
+	CLinearMachine* c=(CLinearMachine*) ui_classifier->get_classifier();
 	if (!c)
 		SG_ERROR("No Linear Classifier object available.\n");
 
@@ -4907,7 +4907,7 @@ bool CSGInterface::cmd_train_classifier()
 	if (m_nrhs<1 || !create_return_values(0))
 		return false;
 
-	CClassifier* classifier=ui_classifier->get_classifier();
+	CMachine* classifier=ui_classifier->get_classifier();
 	if (!classifier)
 		SG_ERROR("No classifier available.\n");
 

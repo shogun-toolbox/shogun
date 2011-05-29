@@ -8,13 +8,13 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "base/Parameter.h"
 
 using namespace shogun;
 
-CLinearClassifier::CLinearClassifier()
-: CClassifier(), w_dim(0), w(NULL), bias(0), features(NULL)
+CLinearMachine::CLinearMachine()
+: CMachine(), w_dim(0), w(NULL), bias(0), features(NULL)
 {
 
 	m_parameters->add_vector(&w, &w_dim, "w", "Parameter vector w.");
@@ -23,27 +23,27 @@ CLinearClassifier::CLinearClassifier()
 
 }
 
-CLinearClassifier::~CLinearClassifier()
+CLinearMachine::~CLinearMachine()
 {
 	delete[] w;
 	SG_UNREF(features);
 }
 
-bool CLinearClassifier::load(FILE* srcfile)
+bool CLinearMachine::load(FILE* srcfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-bool CLinearClassifier::save(FILE* dstfile)
+bool CLinearMachine::save(FILE* dstfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-CLabels* CLinearClassifier::classify()
+CLabels* CLinearMachine::classify()
 {
 	if (features)
 	{
@@ -65,7 +65,7 @@ CLabels* CLinearClassifier::classify()
 	return NULL;
 }
 
-CLabels* CLinearClassifier::classify(CFeatures* data)
+CLabels* CLinearMachine::classify(CFeatures* data)
 {
 	if (!data)
 		SG_ERROR("No features specified\n");

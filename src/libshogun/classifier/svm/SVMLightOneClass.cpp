@@ -17,7 +17,7 @@
 #include "lib/Signal.h"
 #include "lib/Mathematics.h"
 #include "classifier/svm/SVMLightOneClass.h"
-#include "classifier/KernelMachine.h"
+#include "machine/KernelMachine.h"
 #include "kernel/CombinedKernel.h"
 
 #include <unistd.h>

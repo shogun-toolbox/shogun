@@ -27,8 +27,8 @@
 %include "SGBase.i"
 %{
  #include <shogun/regression/Regression.h>
- #include <shogun/classifier/Classifier.h>
- #include <shogun/classifier/KernelMachine.h>
+ #include <shogun/machine/Machine.h>
+ #include <shogun/machine/KernelMachine.h>
  #include <shogun/regression/KRR.h>
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/LibSVM.h>
@@ -64,8 +64,8 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>
-%include <shogun/classifier/Classifier.h>
-%include <shogun/classifier/KernelMachine.h>
+%include <shogun/machine/Machine.h>
+%include <shogun/machine/KernelMachine.h>
 %include <shogun/regression/KRR.h>
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/LibSVM.h>

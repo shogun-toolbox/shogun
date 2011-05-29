@@ -14,12 +14,12 @@
 using namespace shogun;
 
 CAveragedPerceptron::CAveragedPerceptron()
-: CLinearClassifier(), learn_rate(0.1), max_iter(1000)
+: CLinearMachine(), learn_rate(0.1), max_iter(1000)
 {
 }
 
 CAveragedPerceptron::CAveragedPerceptron(CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier(), learn_rate(.1), max_iter(1000)
+: CLinearMachine(), learn_rate(.1), max_iter(1000)
 {
 	set_features(traindat);
 	set_labels(trainlab);

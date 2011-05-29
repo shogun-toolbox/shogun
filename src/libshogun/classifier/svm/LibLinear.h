@@ -16,7 +16,7 @@
 
 #include "lib/common.h"
 #include "base/Parameter.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "classifier/svm/SVM_linear.h"
 
 namespace shogun
@@ -44,7 +44,7 @@ namespace shogun
 #ifdef HAVE_LAPACK
 
 /** @brief class to implement LibLinear */
-class CLibLinear : public CLinearClassifier
+class CLibLinear : public CLinearMachine
 {
 	public:
 		/** default constructor  */

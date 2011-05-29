@@ -12,20 +12,20 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 #include "classifier/svm/ssl.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 using namespace shogun;
 
 CSVMLin::CSVMLin()
-: CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
+: CLinearMachine(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
 {
 }
 
 CSVMLin::CSVMLin(
 	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
+: CLinearMachine(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
 	set_features(traindat);
 	set_labels(trainlab);

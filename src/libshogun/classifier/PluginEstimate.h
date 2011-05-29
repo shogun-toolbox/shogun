@@ -11,7 +11,7 @@
 #ifndef _PLUGINESTIMATE_H___
 #define _PLUGINESTIMATE_H___
 
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
 #include "distributions/LinearHMM.h"
@@ -31,7 +31,7 @@ namespace shogun
  * \sa CLinearHMM
  * \sa CDistribution
  * */
-class CPluginEstimate: public CClassifier
+class CPluginEstimate: public CMachine
 {
 	public:
 		/** default constructor

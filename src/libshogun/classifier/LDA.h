@@ -17,7 +17,7 @@
 #include "lib/common.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 
 namespace shogun
 {
@@ -46,10 +46,10 @@ namespace shogun
  * \f$\gamma\f$ (especially useful in the low sample case) should be tuned in
  * cross-validation.
  *
- * \sa CLinearClassifier
+ * \sa CLinearMachine
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis
  */
-class CLDA : public CLinearClassifier
+class CLDA : public CLinearMachine
 {
 	public:
 		/** constructor
@@ -114,7 +114,7 @@ class CLDA : public CLinearClassifier
 				feat->get_feature_type() != F_DREAL)
 				SG_ERROR("LDA requires SIMPLE REAL valued features\n");
 
-			CLinearClassifier::set_features(feat);
+			CLinearMachine::set_features(feat);
 		}
 
 		/** @return object name */

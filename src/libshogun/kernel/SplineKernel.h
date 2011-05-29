@@ -15,7 +15,7 @@
 #include "lib/common.h"
 #include "kernel/DotKernel.h"
 #include "features/DotFeatures.h"
-#include "classifier/KernelMachine.h"
+#include "machine/KernelMachine.h"
 
 namespace shogun
 {

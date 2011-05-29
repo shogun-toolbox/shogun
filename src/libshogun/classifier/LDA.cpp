@@ -11,8 +11,8 @@
 #include "lib/common.h"
 
 #ifdef HAVE_LAPACK
-#include "classifier/Classifier.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/Machine.h"
+#include "machine/LinearMachine.h"
 #include "classifier/LDA.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
@@ -21,12 +21,12 @@
 using namespace shogun;
 
 CLDA::CLDA(float64_t gamma)
-: CLinearClassifier(), m_gamma(gamma)
+: CLinearMachine(), m_gamma(gamma)
 {
 }
 
 CLDA::CLDA(float64_t gamma, CSimpleFeatures<float64_t>* traindat, CLabels* trainlab)
-: CLinearClassifier(), m_gamma(gamma)
+: CLinearMachine(), m_gamma(gamma)
 {
 	set_features(traindat);
 	set_labels(trainlab);

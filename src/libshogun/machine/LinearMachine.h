@@ -14,7 +14,7 @@
 #include "lib/common.h"
 #include "features/Labels.h"
 #include "features/DotFeatures.h"
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 
 #include <stdio.h>
 
@@ -23,8 +23,8 @@ namespace shogun
 	class CDotFeatures;
 	class CLabels;
 
-/** @brief Class LinearClassifier is a generic interface for all kinds of linear
- * classifiers.
+/** @brief Class LinearMachine is a generic interface for all kinds of linear
+ * machines like classifiers.
  *
  * A linear classifier computes 
  *
@@ -57,12 +57,12 @@ namespace shogun
  * 	\sa CDotFeatures
  *
  * */
-class CLinearClassifier : public CClassifier
+class CLinearMachine : public CMachine
 {
 	public:
 		/** default constructor */
-		CLinearClassifier();
-		virtual ~CLinearClassifier();
+		CLinearMachine();
+		virtual ~CLinearMachine();
 
 		/// get output for example "vec_idx"
 		virtual inline float64_t classify_example(int32_t vec_idx)
@@ -177,7 +177,7 @@ class CLinearClassifier : public CClassifier
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "LinearClassifier"; }
+		virtual const char* get_name() const { return "LinearMachine"; }
 
 	protected:
 		/** dimension of w */

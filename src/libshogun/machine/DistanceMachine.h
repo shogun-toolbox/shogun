@@ -15,7 +15,7 @@
 #include "lib/common.h"
 #include "distance/Distance.h"
 #include "features/Labels.h"
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 
 #include <stdio.h>
 
@@ -23,13 +23,13 @@ namespace shogun
 {
 	class CLabels;
 	class CDistance;
-	class CClassifier;
+	class CMachine;
 
 /** @brief A generic DistanceMachine interface.
  *
  * A distance machine is based on a a-priori choosen distance.
  */
-class CDistanceMachine : public CClassifier
+class CDistanceMachine : public CMachine
 {
 	public:
 		/** default constructor */

@@ -8,12 +8,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 #include "base/Parameter.h"
 
 using namespace shogun;
 
-CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL),
+CMachine::CMachine() : CSGObject(), max_train_time(0), labels(NULL),
 	solver_type(ST_AUTO)
 {
 	m_parameters->add(&max_train_time, "max_train_time",
@@ -22,7 +22,7 @@ CClassifier::CClassifier() : CSGObject(), max_train_time(0), labels(NULL),
 	m_parameters->add((CSGObject**) &labels, "labels");
 }
 
-CClassifier::~CClassifier()
+CMachine::~CMachine()
 {
     SG_UNREF(labels);
 }

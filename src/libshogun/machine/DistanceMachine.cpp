@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST
  */
 
-#include "classifier/DistanceMachine.h"
+#include "machine/DistanceMachine.h"
 
 using namespace shogun;
 
@@ -25,7 +25,7 @@ struct D_THREAD_PARAM
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CDistanceMachine::CDistanceMachine()
-: CClassifier(), distance(NULL)
+: CMachine(), distance(NULL)
 {
 }
 

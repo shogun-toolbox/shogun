@@ -15,13 +15,13 @@
 #include "lib/io.h"
 #include "kernel/Kernel.h"
 #include "features/Labels.h"
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 
 #include <stdio.h>
 
 namespace shogun
 {
-class CClassifier;
+class CMachine;
 class CLabels;
 class CKernel;
 
@@ -40,7 +40,7 @@ class CKernel;
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
  * in a training procedure.
  */
-class CKernelMachine : public CClassifier
+class CKernelMachine : public CMachine
 {
 	public:
 		/** default constructor */
