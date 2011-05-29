@@ -16,5 +16,6 @@
 #include <shogun/preprocessor/SparsePreprocessor.h>
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 #include <shogun/preprocessor/ClassicMDS.h>
+#include <shogun/preprocessor/LocallyLinearEmbedding.h>
 %}
 

@@ -48,6 +48,7 @@
 %rename(SparsePreprocessor) CSparsePreprocessor;
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 %rename(ClassicMDS) CClassicMDS;
+%rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
@@ -97,3 +98,4 @@ namespace shogun
 %include <shogun/preprocessor/SparsePreprocessor.h>
 %include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 %include <shogun/preprocessor/ClassicMDS.h>
+%include <shogun/preprocessor/LocallyLinearEmbedding.h>
