@@ -122,6 +122,7 @@ StringFeatures = Features.StringFeatures
 StringFileFeatures = Features.StringFileFeatures
 TOPFeatures = Features.TOPFeatures
 WDFeatures = Features.WDFeatures
+RealFeatures = Features.RealFeatures
 KernelPCACut = Preprocessor.KernelPCACut
 LogPlusOne = Preprocessor.LogPlusOne
 NormDerivativeLem3 = Preprocessor.NormDerivativeLem3
