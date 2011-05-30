@@ -37,9 +37,6 @@ class CModelSelectionParameters;
  *
  * Again: Leafs of the tree may only be Parameter nodes.
  *
- * To prevent access to these trees, all methods are set to private.
- * Instances of these trees should be generated with
- * CModelSelectionParameters::get_combinations(...).
  */
 class CParameterCombination: public CSGObject
 {
@@ -49,7 +46,13 @@ public:
 	/** constructor for a root node */
 	CParameterCombination();
 
-protected:
+	/** Prints a representation of the current node
+	 *
+	 * @param prefix number of '\t' signs that will be prefixed for every output.
+	 * At each recursion level, one is added.
+	 */
+	void print(int prefix_num=0);
+
 	/** constructor for a name node */
 	CParameterCombination(char* name);
 
@@ -81,13 +84,6 @@ protected:
 	 * @param destroy_data if true, all data destroyed
 	 */
 	void destroy(bool recursive, bool destroy_data);
-
-	/** Prints a representation of the current node
-	 *
-	 * @param prefix number of '\t' signs that will be prefixed for every output.
-	 * At each recursion level, one is added.
-	 */
-	void print(int prefix_num=0);
 
 	/** Fills a DynArray<Parameter*> with pointers to newly created Parameter
 	 * instances, which contain all combinations of the provided Parameters. Old
@@ -135,7 +131,7 @@ protected:
 	bool has_children() { return m_child_nodes->get_num_elements()>0; }
 
 private:
-	char* m_name;
+	char* m_node_name;
 	Parameter* m_param;
 	DynArray<CParameterCombination*>* m_child_nodes;
 };
