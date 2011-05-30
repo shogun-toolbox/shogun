@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "preproc/LLE.h"
+#include "preprocessor/LLE.h"
 #include "lib/lapack.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CLLE::CLLE() : CSimplePreProc<float64_t>(), m_target_dim(1), m_k(1), m_new_feature_matrix(NULL)
+CLLE::CLLE() : CSimplePreprocessor<float64_t>(), m_target_dim(1), m_k(1), m_new_feature_matrix(NULL)
 {
 	// temporary hack. which one will make sense?
 	m_distance = new CEuclidianDistance();
@@ -31,6 +31,16 @@ CLLE::~CLLE()
 }
 
 bool CLLE::init(CFeatures* data)
+{
+	return true;
+}
+
+void CLLE::cleanup()
+{
+	delete[] m_new_feature_matrix;
+}
+
+float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 {
 	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
 	ASSERT(pdata);
@@ -204,25 +214,13 @@ bool CLLE::init(CFeatures* data)
 
     //CMath::display_vector(m_new_feature_matrix,N*N,"new features");
 
-	return true;
-}
-
-void CLLE::cleanup()
-{
-	delete[] m_new_feature_matrix;
-}
-
-float64_t* CLLE::apply_to_feature_matrix(CFeatures* f)
-{
-	float64_t* feature_matrix;
-	int32_t num,dim;
-	((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(&feature_matrix,&dim,&num);
+	//((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(&feature_matrix,&dim,&num);
 	//CMath::display_matrix(feature_matrix,dim,num,"Given features");
-	init(f);
-	float64_t* replace_feature_matrix = new float64_t[num*m_target_dim];
-	for (int i=0; i<m_target_dim; i++)
-		for (int j=0; j<num; j++)
-			replace_feature_matrix[j*m_target_dim+i] = m_new_feature_matrix[i*(num+1)+j];
+	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
+	for (i=0; i<m_target_dim; i++)
+		for (j=0; j<N; j++)
+			replace_feature_matrix[j*m_target_dim+i] = m_new_feature_matrix[(i+1)*(N)+j];
+	//CMath::display_vector(replace_feature_matrix,m_target_dim*N);
 	/*
 	for (int i=0; i<m_target_dim; i++)
 	{
@@ -231,7 +229,7 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* f)
 		SG_PRINT("\n");
 	}
 	*/
-	((CSimpleFeatures<float64_t>*) f)->set_feature_matrix(replace_feature_matrix,m_target_dim,num);
+	pdata->set_feature_matrix(replace_feature_matrix,m_target_dim,N);
 	//((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(&feature_matrix,&dim,&num);
 	//CMath::display_matrix(feature_matrix,dim,num,"features");
 	return replace_feature_matrix;

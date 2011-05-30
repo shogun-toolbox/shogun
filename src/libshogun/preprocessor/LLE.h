@@ -12,7 +12,7 @@
 #define LLE_H_
 //#ifdef HAVE_LAPACK
 
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
 
@@ -26,7 +26,7 @@ class CDistance;
 /** @brief the class LLE
  *	That thing isn't working yet, huh
  */
-class CLLE: public CSimplePreProc<float64_t>
+class CLLE: public CSimplePreprocessor<float64_t>
 {
 public:
 
@@ -49,7 +49,7 @@ public:
 	/** apply preproc to feature matrix
 	 *
 	 */
-	virtual float64_t* apply_to_feature_matrix(CFeatures* f);
+	virtual float64_t* apply_to_feature_matrix(CFeatures* data);
 
 	/** apply preproc to feature vector
 	 *
@@ -93,7 +93,7 @@ public:
 	virtual inline const char* get_name() const { return "LLE"; };
 
 	/** get type */
-	virtual inline EPreProcType get_type() const { return P_UNKNOWN; };
+	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; };
 
 protected:
 
