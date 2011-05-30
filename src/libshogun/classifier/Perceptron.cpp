@@ -65,7 +65,7 @@ bool CPerceptron::train(CFeatures* data)
 		converged=true;
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			output[i]=classify_example(i);
+			output[i]=apply(i);
 
 			if (CMath::sign<float64_t>(output[i]) != train_labels[i])
 			{

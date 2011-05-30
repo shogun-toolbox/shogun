@@ -19,8 +19,8 @@ def classifier_custom_kernel_modular(C=1,dim=7):
 	labels=Labels(lab)
 	svm=LibSVM(C, kernel, labels)
 	svm.train()
-	predictions =svm.classify() 
-	out=svm.classify().get_labels()
+	predictions =svm.apply() 
+	out=svm.apply().get_labels()
 	return svm,out
 
 if __name__=='__main__':

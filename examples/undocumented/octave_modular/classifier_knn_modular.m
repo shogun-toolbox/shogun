@@ -20,4 +20,4 @@ knn=KNN(k, distance, labels);
 knn.parallel.set_num_threads(num_threads);
 knn.train();
 
-output=knn.classify(feats_test).get_labels();
+output=knn.apply(feats_test).get_labels();

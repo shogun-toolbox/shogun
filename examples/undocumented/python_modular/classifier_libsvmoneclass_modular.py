@@ -21,9 +21,9 @@ def classifier_libsvmoneclass_modular (fm_train_real=traindat,fm_test_real=testd
 	svm.train()
 
 	kernel.init(feats_train, feats_test)
-	svm.classify().get_labels()
+	svm.apply().get_labels()
 
-	predictions = svm.classify()
+	predictions = svm.apply()
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':

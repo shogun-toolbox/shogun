@@ -37,7 +37,7 @@ def regression_svrlight_modular(fm_train=traindat,fm_test=testdat,label_train=la
 	svr.train()
 
 	kernel.init(feats_train, feats_test)
-	out = svr.classify().get_labels()
+	out = svr.apply().get_labels()
 	
 	return out, kernel 
 

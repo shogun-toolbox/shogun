@@ -76,7 +76,7 @@ bool CKNN::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CKNN::classify()
+CLabels* CKNN::apply()
 {
 	ASSERT(num_classes>0);
 	ASSERT(distance);
@@ -149,7 +149,7 @@ CLabels* CKNN::classify()
 	return output;
 }
 
-CLabels* CKNN::classify(CFeatures* data)
+CLabels* CKNN::apply(CFeatures* data)
 {
 	init_distance(data);
 
@@ -157,7 +157,7 @@ CLabels* CKNN::classify(CFeatures* data)
 	if (m_k == 1)
 		return classify_NN();
 
-	return classify();
+	return apply();
 }
 
 CLabels* CKNN::classify_NN()

@@ -391,7 +391,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 		{
 			ASSERT(m_num_svms>0);
 			for (int32_t i=0; i<num_vectors; i++)
-				output->set_label(i, classify_example(i));
+				output->set_label(i, apply(i));
 		}
 #ifdef USE_SVMLIGHT
 		else if (scatter_type == NO_BIAS_SVMLIGHT)
@@ -447,7 +447,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 				ASSERT(m_svms[i]);
 				m_svms[i]->set_kernel(kernel);
 				m_svms[i]->set_labels(labels);
-				outputs[i]=m_svms[i]->classify();
+				outputs[i]=m_svms[i]->apply();
 			}
 
 			for (int32_t i=0; i<num_vectors; i++)
@@ -479,7 +479,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 	return output;
 }
 
-float64_t CScatterSVM::classify_example(int32_t num)
+float64_t CScatterSVM::apply(int32_t num)
 {
 	ASSERT(m_num_svms>0);
 	float64_t* outputs=new float64_t[m_num_svms];
@@ -527,11 +527,11 @@ float64_t CScatterSVM::classify_example(int32_t num)
 #endif //USE_SVMLIGHT
 	else
 	{
-		float64_t max_out=m_svms[0]->classify_example(num)/norm_wc[0];
+		float64_t max_out=m_svms[0]->apply(num)/norm_wc[0];
 
 		for (int32_t i=1; i<m_num_svms; i++)
 		{
-			outputs[i]=m_svms[i]->classify_example(num)/norm_wc[i];
+			outputs[i]=m_svms[i]->apply(num)/norm_wc[i];
 			if (outputs[i]>max_out)
 			{
 				winner=i;

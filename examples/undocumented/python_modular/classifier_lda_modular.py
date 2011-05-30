@@ -22,8 +22,8 @@ def classifier_lda_modular (fm_train_real=traindat,fm_test_real=testdat,label_tr
 	lda.get_bias()
 	lda.get_w()
 	lda.set_features(feats_test)
-	lda.classify().get_labels()
-	return lda,lda.classify().get_labels()
+	lda.apply().get_labels()
+	return lda,lda.apply().get_labels()
 
 if __name__=='__main__':
 	print 'LDA'

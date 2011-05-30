@@ -78,7 +78,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CDotFeatures* data);
+		virtual CLabels* apply(CDotFeatures* data);
 
 
 		/** returns SVM that is used as prior information

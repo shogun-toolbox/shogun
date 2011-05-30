@@ -28,5 +28,5 @@ dump <- svm$set_max_train_time(svm, max_train_time)
 dump <- svm$train(svm)
 
 dump <- svm$set_features(svm, feats_test)
-lab <- svm$classify(svm)
+lab <- svm$apply(svm)
 out <- lab$get_labels(lab)

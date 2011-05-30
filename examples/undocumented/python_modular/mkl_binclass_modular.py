@@ -73,8 +73,8 @@ def mkl_binclass_modular (fm_train_real=traindat,fm_test_real=testdat,fm_label_t
 
     # and classify
     mkl.set_kernel(kernel)
-    mkl.classify()
-    return mkl.classify(),kernel
+    mkl.apply()
+    return mkl.apply(),kernel
 
 if __name__=='__main__':
     mkl_binclass_modular (*parameter_list[0])

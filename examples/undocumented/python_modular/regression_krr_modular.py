@@ -30,7 +30,7 @@ def regression_krr_modular (fm_train=traindat,fm_test=testdat,label_train=label_
 	krr.train(feats_train)
 
 	kernel.init(feats_train, feats_test)
-	out = krr.classify().get_labels()
+	out = krr.apply().get_labels()
 	return out,kernel,krr
 
 # equivialent shorter version
@@ -43,7 +43,7 @@ def krr_short ():
 	width=0.8; tau=1e-6
 	krr=KRR(tau, GaussianKernel(0, width), Labels(label_train))
 	krr.train(RealFeatures(fm_train))
-	out = krr.classify(RealFeatures(fm_test)).get_labels()
+	out = krr.apply(RealFeatures(fm_test)).get_labels()
 
 	return krr,out
 

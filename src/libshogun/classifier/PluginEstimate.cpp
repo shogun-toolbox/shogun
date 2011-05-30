@@ -93,19 +93,19 @@ bool CPluginEstimate::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CPluginEstimate::classify()
+CLabels* CPluginEstimate::apply()
 {
 	ASSERT(features);
 	CLabels* result=new CLabels(features->get_num_vectors());
 	ASSERT(result->get_num_labels()==features->get_num_vectors());
 
 	for (int32_t vec=0; vec<features->get_num_vectors(); vec++)
-		result->set_label(vec, classify_example(vec));
+		result->set_label(vec, apply(vec));
 
 	return result;
 }
 
-CLabels* CPluginEstimate::classify(CFeatures* data)
+CLabels* CPluginEstimate::apply(CFeatures* data)
 {
 	if (!data)
 		SG_ERROR("No features specified\n");
@@ -117,10 +117,10 @@ CLabels* CPluginEstimate::classify(CFeatures* data)
 	}
 
 	set_features((CStringFeatures<uint16_t>*) data);
-	return classify();
+	return apply();
 }
 
-float64_t CPluginEstimate::classify_example(int32_t vec_idx)
+float64_t CPluginEstimate::apply(int32_t vec_idx)
 {
 	ASSERT(features);
 

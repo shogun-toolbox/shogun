@@ -41,10 +41,10 @@ def classifier_svmlight_batch_linadd_modular(fm_train_dna, fm_test_dna,
 	#	(svm.get_objective(), svm.get_num_support_vectors())
 	svm.set_batch_computation_enabled(False)
 	svm.set_linadd_enabled(False)
-	svm.classify().get_labels()
+	svm.apply().get_labels()
 
 	svm.set_batch_computation_enabled(True)
-	labels = svm.classify().get_labels()
+	labels = svm.apply().get_labels()
 	return labels, svm
 
 

@@ -81,14 +81,14 @@ enum ESolverType
 	ST_BLOCK_NORM=6
 };
 
-/** @brief A generic classifier interface.
+/** @brief A generic learning machine interface.
  *
- * A classifier takes as input CLabels. Later subclasses may specialize the
- * classifier to require labels and a kernel or labels and (real-valued)
- * features.
+ * A machine takes as input CFeatures and (optionally) CLabels.
+ * Later subclasses may specialize the machine to e.g. require labels
+ * and a kernel or labels and (real-valued) features.
  *
- * A classifier needs to override the train() function for training,
- * the function classify_example() (optionally classify() to predict on the
+ * A machine needs to override the train() function for training,
+ * the functions apply(idx) (optionally apply() to predict on the
  * whole set of examples) and the load and save routines.
  *
  */
@@ -113,27 +113,27 @@ class CMachine : public CSGObject
 			return false;
 		}
 
-		/** classify objects using the currently set features
+		/** apply machine to the currently set features
 		 *
-		 * @return classified labels
+		 * @return output 'labels'
 		 */
-		virtual CLabels* classify()=0;
+		virtual CLabels* apply()=0;
 
-		/** classify objects
+		/** apply machine to data
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data)=0;
+		virtual CLabels* apply(CFeatures* data)=0;
 
-		/** classify one example
+		/** apply machine to one example
 		 *
 		 * abstract base method
 		 *
-		 * @param num which example to classify
+		 * @param num which example to apply machine to
 		 * @return infinite float value
 		 */
-		virtual float64_t classify_example(int32_t num)
+		virtual float64_t apply(int32_t num)
 		{
 			SG_NOTIMPLEMENTED;
 			return CMath::INFTY;

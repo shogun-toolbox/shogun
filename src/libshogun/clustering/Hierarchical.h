@@ -169,7 +169,7 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @return classified labels
 		 */
-		virtual CLabels* classify()
+		virtual CLabels* apply()
 		{
 			SG_NOTIMPLEMENTED;
 			return NULL;
@@ -180,7 +180,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data)
+		virtual CLabels* apply(CFeatures* data)
 		{
 			SG_NOTIMPLEMENTED;
 			return NULL;

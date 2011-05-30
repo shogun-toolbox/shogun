@@ -21,5 +21,5 @@ svm=LibSVM(C, kernel, labels);
 svm.parallel.set_num_threads(8);
 svm.train();
 kernel.init(feats_train, feats_test);
-out=svm.classify().get_labels();
+out=svm.apply().get_labels();
 testerr=mean(sign(out)~=testlab)

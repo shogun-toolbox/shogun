@@ -26,7 +26,7 @@ if exist('SVRLight')
 	svr.train();
 
 	kernel.init(feats_train, feats_test);
-	svr.classify().get_labels();
+	svr.apply().get_labels();
 else
 	disp('No support for SVRLight available.')
 end

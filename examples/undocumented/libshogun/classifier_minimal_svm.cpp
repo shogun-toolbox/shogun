@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 	// classify on training examples
 	for (int32_t i=0; i<3; i++)
-		SG_SPRINT("output[%d]=%f\n", i, svm->classify_example(i));
+		SG_SPRINT("output[%d]=%f\n", i, svm->apply(i));
 
 	// free up memory
 	SG_UNREF(svm);

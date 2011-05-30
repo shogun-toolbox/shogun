@@ -154,7 +154,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CGaussianNaiveBayes::classify()
+CLabels* CGaussianNaiveBayes::apply()
 {
 	// init number of vectors
 	int32_t n = m_features->get_num_vectors();
@@ -164,12 +164,12 @@ CLabels* CGaussianNaiveBayes::classify()
 
 	// classify each example of data
 	for (int i=0; i<n; i++)
-		result->set_label(i,classify_example(i));
+		result->set_label(i,apply(i));
 
 	return result;
 };
 
-CLabels* CGaussianNaiveBayes::classify(CFeatures* data)
+CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 {
 	// check data correctness
 	if (!data)
@@ -181,10 +181,10 @@ CLabels* CGaussianNaiveBayes::classify(CFeatures* data)
 	set_features((CDotFeatures*)data);
 
 	// classify using features
-	return classify();
+	return apply();
 };
 
-float64_t CGaussianNaiveBayes::classify_example(int32_t idx)
+float64_t CGaussianNaiveBayes::apply(int32_t idx)
 {
 	// get [idx] feature vector
 	m_features->get_feature_vector(&m_feat_vec,&m_dim,idx);
