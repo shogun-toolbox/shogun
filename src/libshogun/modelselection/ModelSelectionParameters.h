@@ -127,7 +127,7 @@ protected:
 	}
 
 private:
-	char* m_name;
+	char* m_node_name;
 	SGVector<float64_t>* m_values;
 	CSGObject* m_sgobject;
 	DynArray<CModelSelectionParameters*> m_child_nodes;

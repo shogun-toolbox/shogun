@@ -17,13 +17,13 @@ using namespace shogun;
 
 CModelSelectionParameters::CModelSelectionParameters()
 {
-	m_name=NULL;
+	m_node_name=NULL;
 	m_values=new SGVector<float64_t> (NULL, 0);
 	m_sgobject=NULL;
 }
 
 CModelSelectionParameters::CModelSelectionParameters(char* name) :
-	m_name(name)
+	m_node_name(name)
 {
 	m_values=new SGVector<float64_t> (NULL, 0);
 	m_sgobject=NULL;
@@ -33,7 +33,7 @@ CModelSelectionParameters::CModelSelectionParameters(CSGObject* sgobject) :
 	m_sgobject(sgobject)
 {
 	SG_REF(sgobject);
-	m_name=NULL;
+	m_node_name=NULL;
 	m_values=new SGVector<float64_t> (NULL, 0);
 }
 
@@ -62,6 +62,26 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 	if (m_values->vector)
 		SG_ERROR("not possible to append child: there already is a range\n");
 
+	/* do a basic check if the add is possible (does this node's CSGObject
+	 * contain a parameter with the name of the child?) to prevent problems
+	 * when trying to set parameters that do not exist */
+	if (m_sgobject)
+	{
+		if (child->m_node_name)
+		{
+			if (!m_sgobject->m_parameters->contains_parameter(child->m_node_name))
+			{
+				SG_ERROR("Not possible to add child, node with CSGObject \"%s\""
+						" does not contain a parameter called \"%s\"\n",
+						m_sgobject->get_name(), child->m_node_name);
+			}
+		}
+		else if (!child->m_node_name&&!child->m_sgobject)
+		{
+			SG_ERROR("Not possible to add child which has no name or "
+					"to a node with a CSGObject.\n");
+		}
+	}
 	m_child_nodes.append_element(child);
 }
 
@@ -121,7 +141,7 @@ void CModelSelectionParameters::get_combinations(
 		{
 			/* create tree with only one parameter element */
 			Parameter* p=new Parameter();
-			p->add(&m_values->vector[i], m_name);
+			p->add(&m_values->vector[i], m_node_name);
 
 			result.append_element(new CParameterCombination(p));
 		}
@@ -132,7 +152,7 @@ void CModelSelectionParameters::get_combinations(
 	 * build all permutations of the result trees of children with values and
 	 * combine them iteratively children which are something different
 	 */
-	else if (m_sgobject||(!m_name&&!m_sgobject&&!m_values->vector))
+	else if (m_sgobject||(!m_node_name&&!m_sgobject&&!m_values->vector))
 	{
 		/* only consider combinations if this CSGObject has children */
 		if (m_child_nodes.get_num_elements())
@@ -307,7 +327,7 @@ void CModelSelectionParameters::get_combinations(
 	 * machine, like "kernel". basically all combinations of all childs have to
 	 * be appended to the result and a new root is to be added to all trees
 	 */
-	else if (m_name&&!m_values->vector)
+	else if (m_node_name&&!m_values->vector)
 	{
 		if (!m_child_nodes.get_num_elements())
 		{
@@ -326,7 +346,7 @@ void CModelSelectionParameters::get_combinations(
 			{
 				/* append new root node with the name */
 				CParameterCombination* new_root=new CParameterCombination(
-						m_name);
+						m_node_name);
 				new_root->append_child(child_combinations[j]);
 				child_combinations.set_element(new_root, j);
 
@@ -350,7 +370,7 @@ void CModelSelectionParameters::print(int prefix_num)
 	{
 		/* this node might also be a parameter */
 		SG_PRINT("%s%s with\n",
-				prefix, m_sgobject ? m_sgobject->get_name() : m_name);
+				prefix, m_sgobject ? m_sgobject->get_name() : m_node_name);
 
 		/* now recursively print successors */
 
@@ -367,7 +387,7 @@ void CModelSelectionParameters::print(int prefix_num)
 		}
 		else
 		{
-			SG_PRINT("%s%s with values: ", prefix, m_name);
+			SG_PRINT("%s%s with values: ", prefix, m_node_name);
 			CMath::display_vector(m_values->vector, m_values->length);
 		}
 	}
