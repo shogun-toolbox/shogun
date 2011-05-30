@@ -162,21 +162,21 @@ class CWDSVMOcas : public CMachine
 		 *
 		 * @return resulting labels
 		 */
-		CLabels* classify();
+		CLabels* apply();
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data);
 
 		/** classify one example
 		 *
 		 * @param num number of example to classify
 		 * @return classified result
 		 */
-		inline virtual float64_t classify_example(int32_t num)
+		inline virtual float64_t apply(int32_t num)
 		{
 			ASSERT(features);
 			if (!wd_weights)

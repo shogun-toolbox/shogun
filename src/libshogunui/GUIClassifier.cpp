@@ -1187,7 +1187,7 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 	km->set_batch_computation_enabled(svm_use_batch_computation);
 
 	SG_INFO("Starting kernel machine testing.\n");
-	return classifier->classify();
+	return classifier->apply();
 }
 
 bool CGUIClassifier::get_trained_classifier(
@@ -1397,7 +1397,7 @@ CLabels* CGUIClassifier::classify_distancemachine()
 	((CDistanceMachine*) classifier)->set_distance(
 		ui->ui_distance->get_distance());
 	SG_INFO("starting distance machine testing\n") ;
-	return classifier->classify();
+	return classifier->apply();
 }
 
 
@@ -1423,7 +1423,7 @@ CLabels* CGUIClassifier::classify_linear()
 
 	((CLinearMachine*) classifier)->set_features((CDotFeatures*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
-	return classifier->classify();
+	return classifier->apply();
 }
 
 CLabels* CGUIClassifier::classify_byte_linear()
@@ -1449,7 +1449,7 @@ CLabels* CGUIClassifier::classify_byte_linear()
 
 	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
-	return classifier->classify();
+	return classifier->apply();
 }
 
 bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
@@ -1488,7 +1488,7 @@ bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
 	((CKernelMachine*) classifier)->set_kernel(
 		ui->ui_kernel->get_kernel());
 
-	result=classifier->classify_example(idx);
+	result=classifier->apply(idx);
 	return true ;
 }
 

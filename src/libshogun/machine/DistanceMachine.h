@@ -80,38 +80,37 @@ class CDistanceMachine : public CMachine
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name(void) const {
-			return "DistanceMachine"; }
+		virtual const char* get_name(void) const { return "DistanceMachine"; }
 
-		/** classify objects using the currently set features
+		/** apply distance machine to objects using the currently set features
 		 *
 		 * @return classified labels
 		 */
-		virtual CLabels* classify()=0;
+		virtual CLabels* apply()=0;
 
-		/** classify objects
+		/** apply distance machine data 
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data)=0;
+		virtual CLabels* apply(CFeatures* data)=0;
 
 	protected:
 		/** the distance */
 		CDistance* distance;
                 
-                /** 
-                 * pthread function for compute distance values
-                 *
-                 * @param p thread parameter 
-                 */
+		/** 
+		 * pthread function for compute distance values
+		 *
+		 * @param p thread parameter 
+		 */
 		static void* run_distance_thread_lhs(void* p);
                 
-                /** 
-                 * pthread function for compute distance values
-                 *
-                 * @param p thread parameter 
-                 */
+		/** 
+		 * pthread function for compute distance values
+		 *
+		 * @param p thread parameter 
+		 */
 		static void* run_distance_thread_rhs(void* p);
                 
 };

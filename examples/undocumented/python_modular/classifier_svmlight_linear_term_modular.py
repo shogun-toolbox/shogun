@@ -50,7 +50,7 @@ def classifier_svmlight_linear_term_modular(fm_train_dna=traindna,fm_test_dna=te
     svm.train()
     
     kernel.init(feats_train, feats_test)
-    out = svm.classify().get_labels()
+    out = svm.apply().get_labels()
     return out,kernel
 
 if __name__=='__main__':

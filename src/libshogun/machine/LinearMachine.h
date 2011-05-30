@@ -65,7 +65,7 @@ class CLinearMachine : public CMachine
 		virtual ~CLinearMachine();
 
 		/// get output for example "vec_idx"
-		virtual inline float64_t classify_example(int32_t vec_idx)
+		virtual inline float64_t apply(int32_t vec_idx)
 		{
 			return features->dense_dot(vec_idx, w, w_dim) + bias;
 		}
@@ -153,18 +153,18 @@ class CLinearMachine : public CMachine
 			features=feat;
 		}
 
-		/** classify all examples
+		/** apply linear machine to all examples
 		 *
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify();
+		virtual CLabels* apply();
 
-		/** classify objects
+		/** apply linear machine to data
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data);
 
 		/** get features
 		 *

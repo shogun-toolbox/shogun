@@ -20,7 +20,7 @@ def classifier_knn_modular(fm_train_real=traindat,fm_test_real=testdat,label_tra
 
 	knn=KNN(k, distance, labels)
 	knn_train = knn.train()
-	output=knn.classify(feats_test).get_labels()
+	output=knn.apply(feats_test).get_labels()
 	return knn,knn_train,output
 
 if __name__=='__main__':

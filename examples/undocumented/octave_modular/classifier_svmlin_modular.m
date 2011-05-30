@@ -29,4 +29,4 @@ svm.train();
 svm.set_features(feats_test);
 svm.get_bias();
 svm.get_w();
-svm.classify().get_labels();
+svm.apply().get_labels();

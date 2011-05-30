@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 		svm->train();
 		for (int32_t i=0; i<n; ++i)
 			SG_SPRINT("output[%d]=%f\treal[%d]=%f\n", i,
-					svm->classify_example(i), i, labels->get_label(i));
+					svm->apply(i), i, labels->get_label(i));
 
 		delete param;
 	}

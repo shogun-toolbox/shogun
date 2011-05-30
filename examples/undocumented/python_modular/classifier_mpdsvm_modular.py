@@ -25,8 +25,8 @@ def classifier_mpdsvm_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	svm.train()
 
 	kernel.init(feats_train, feats_test)
-	svm.classify().get_labels()
-	predictions = svm.classify()
+	svm.apply().get_labels()
+	predictions = svm.apply()
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':

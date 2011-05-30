@@ -5313,7 +5313,7 @@ bool CSGInterface::cmd_plugin_estimate_classify_example()
 		return false;
 
 	int32_t idx=get_int();
-	float64_t result=ui_pluginestimate->classify_example(idx);
+	float64_t result=ui_pluginestimate->apply(idx);
 
 	set_real_vector(&result, 1);
 	return true;
@@ -5330,7 +5330,7 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 
 	int32_t num_vec=feat->get_num_vectors();
 	float64_t* result=new float64_t[num_vec];
-	CLabels* labels=ui_pluginestimate->classify();
+	CLabels* labels=ui_pluginestimate->apply();
 	for (int32_t i=0; i<num_vec; i++)
 		result[i]=labels->get_label(i);
 	SG_UNREF(labels);

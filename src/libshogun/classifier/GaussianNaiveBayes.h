@@ -81,19 +81,19 @@ public:
 	/** classify all examples
 	 *  @return labels
 	 */
-	virtual CLabels* classify();
+	virtual CLabels* apply();
 
 	/** classify specified examples
 	 * 	@param data examples to be classified
 	 * 	@return labels corresponding to data
 	 */
-	virtual CLabels* classify(CFeatures* data);
+	virtual CLabels* apply(CFeatures* data);
 
 	/** classifiy specified example
 	 * 	@param idx example index
 	 * 	@return label
 	 */
-	virtual float64_t classify_example(int32_t idx);
+	virtual float64_t apply(int32_t idx);
 
 	/**
 	 * 	@return classifier name

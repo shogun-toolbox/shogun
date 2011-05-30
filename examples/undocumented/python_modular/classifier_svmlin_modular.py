@@ -29,8 +29,8 @@ def classifier_svmlin_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	svm.set_features(feats_test)
 	svm.get_bias()
 	svm.get_w()
-	svm.classify().get_labels()
-	predictions = svm.classify()
+	svm.apply().get_labels()
+	predictions = svm.apply()
 	return predictions, svm, predictions.get_labels()
 
 

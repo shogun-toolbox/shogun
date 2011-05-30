@@ -55,14 +55,14 @@ class CPluginEstimate: public CMachine
 		 *
 		 * @return classified labels
 		 */
-		CLabels* classify();
+		CLabels* apply();
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data);
 
 		/** set features
 		 *
@@ -82,7 +82,7 @@ class CPluginEstimate: public CMachine
 		virtual CStringFeatures<uint16_t>* get_features() { SG_REF(features); return features; }
 
 		/// classify the test feature vector indexed by vec_idx
-		float64_t classify_example(int32_t vec_idx);
+		float64_t apply(int32_t vec_idx);
 
 		/** obsolete posterior log odds
 		 *

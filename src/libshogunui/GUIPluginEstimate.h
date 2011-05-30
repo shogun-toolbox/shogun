@@ -39,8 +39,8 @@ class CGUIPluginEstimate : public CSGObject
 
 		inline CPluginEstimate* get_estimator() { return estimator; }
 
-		CLabels* classify();
-		float64_t classify_example(int32_t idx);
+		CLabels* apply();
+		float64_t apply(int32_t idx);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GUIPluginEstimate"; }

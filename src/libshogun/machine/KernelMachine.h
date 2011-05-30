@@ -311,32 +311,32 @@ class CKernelMachine : public CMachine
 		 */
 		bool init_kernel_optimization();
 
-		/** classify kernel machine
+		/** apply kernel machine to all objects
 		 *
 		 * @return result labels
 		 */
-		virtual CLabels* classify();
+		virtual CLabels* apply();
 
-		/** classify objects
+		/** apply kernel machine to data
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data);
 
-		/** classify one example
+		/** apply kernel machine to one example
 		 *
-		 * @param num which example to classify
+		 * @param num which example to apply to
 		 * @return classified value
 		 */
-		virtual float64_t classify_example(int32_t num);
+		virtual float64_t apply(int32_t num);
 
-		/** classify example helper, used in threads
+		/** apply example helper, used in threads
 		 *
 		 * @param p params of the thread
 		 * @return nothing really
 		 */
-		static void* classify_example_helper(void* p);
+		static void* apply_helper(void* p);
 
 	protected:
 		/** kernel */

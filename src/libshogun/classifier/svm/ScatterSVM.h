@@ -91,7 +91,7 @@ class CScatterSVM : public CMultiClassSVM
 		 * @param num number of example to classify
 		 * @return resulting classification
 		 */
-		virtual float64_t classify_example(int32_t num);
+		virtual float64_t apply(int32_t num);
 
 		/** classify one vs rest
 		 *

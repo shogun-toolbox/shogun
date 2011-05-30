@@ -27,5 +27,5 @@ svm.set_bias_enabled(false);
 svm.train();
 
 svm.set_features(feats_test);
-svm.classify().get_labels();
+svm.apply().get_labels();
 

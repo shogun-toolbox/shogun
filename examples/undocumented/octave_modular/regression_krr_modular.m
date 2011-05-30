@@ -23,4 +23,4 @@ krr.parallel.set_num_threads(num_threads);
 krr.train();
 
 kernel.init(feats_train, feats_test);
-out=krr.classify().get_labels();
+out=krr.apply().get_labels();

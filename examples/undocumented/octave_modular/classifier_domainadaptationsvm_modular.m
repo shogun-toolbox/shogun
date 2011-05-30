@@ -45,7 +45,7 @@ fm_test_dna2=tmp(:,50:92);
 	dasvm = DomainAdaptationSVM(C, kernel2, labels2, svm, 1.0);
 	dasvm.train();
 
-	out = dasvm.classify(feats_test2).get_labels();
+	out = dasvm.apply(feats_test2).get_labels();
 %else
 	%disp('No support for SVMLight available.')
 %end

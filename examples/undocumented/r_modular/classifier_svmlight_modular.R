@@ -28,7 +28,7 @@ dosvmlight <- function()
 	dump <- svm$train(svm)
 
 	dump <- kernel$init(kernel, feats_train, feats_test)
-	lab <- svm$classify(svm)
+	lab <- svm$apply(svm)
 	out <- lab$get_labels(lab)
 }
 try(dosvmlight())

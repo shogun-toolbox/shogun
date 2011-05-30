@@ -87,7 +87,7 @@ bool CKernelMachine::init_kernel_optimization()
 	return false;
 }
 
-CLabels* CKernelMachine::classify()
+CLabels* CKernelMachine::apply()
 {
 	CLabels* lab=NULL;
 
@@ -155,7 +155,7 @@ CLabels* CKernelMachine::classify()
 				params.start=0;
 				params.end=num_vectors;
 				params.verbose=true;
-				classify_example_helper((void*) &params);
+				apply_helper((void*) &params);
 			}
 #ifndef WIN32
 			else
@@ -174,7 +174,7 @@ CLabels* CKernelMachine::classify()
 					params[t].end = (t+1)*step;
 					params[t].verbose = false;
 					pthread_create(&threads[t], NULL,
-							CKernelMachine::classify_example_helper, (void*)&params[t]);
+							CKernelMachine::apply_helper, (void*)&params[t]);
 				}
 
 				params[t].kernel_machine = this;
@@ -182,7 +182,7 @@ CLabels* CKernelMachine::classify()
 				params[t].start = t*step;
 				params[t].end = num_vectors;
 				params[t].verbose = true;
-				classify_example_helper((void*) &params[t]);
+				apply_helper((void*) &params[t]);
 
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
@@ -206,7 +206,7 @@ CLabels* CKernelMachine::classify()
 	return lab;
 }
 
-float64_t CKernelMachine::classify_example(int32_t num)
+float64_t CKernelMachine::apply(int32_t num)
 {
 	ASSERT(kernel);
 
@@ -226,7 +226,7 @@ float64_t CKernelMachine::classify_example(int32_t num)
 }
 
 
-CLabels* CKernelMachine::classify(CFeatures* data)
+CLabels* CKernelMachine::apply(CFeatures* data)
 {
 	if (!kernel)
 		SG_ERROR("No kernel assigned!\n");
@@ -240,10 +240,10 @@ CLabels* CKernelMachine::classify(CFeatures* data)
 	kernel->init(lhs, data);
 	SG_UNREF(lhs);
 
-	return classify();
+	return apply();
 }
 
-void* CKernelMachine::classify_example_helper(void* p)
+void* CKernelMachine::apply_helper(void* p)
 {
 	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
 	CLabels* result=params->result;
@@ -264,7 +264,7 @@ void* CKernelMachine::classify_example_helper(void* p)
 				SG_SPROGRESS(v, 0.0, num_vectors-1);
 		}
 
-		result->set_label(vec, kernel_machine->classify_example(vec));
+		result->set_label(vec, kernel_machine->apply(vec));
 	}
 
 	return NULL;

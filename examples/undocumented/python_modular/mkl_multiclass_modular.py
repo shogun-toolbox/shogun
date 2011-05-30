@@ -55,7 +55,7 @@ def mkl_multiclass_modular(fm_train_real, fm_test_real, label_train_multiclass,
 
 	kernel.init(feats_train, feats_test)
 
-	out =  mkl.classify().get_labels()
+	out =  mkl.apply().get_labels()
 	return out
 
 if __name__ == '__main__':

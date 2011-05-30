@@ -96,7 +96,7 @@ CWDSVMOcas::~CWDSVMOcas()
 {
 }
 
-CLabels* CWDSVMOcas::classify()
+CLabels* CWDSVMOcas::apply()
 {
 	set_wd_weights();
 	set_normalization_const();
@@ -110,7 +110,7 @@ CLabels* CWDSVMOcas::classify()
 		SG_REF(output);
 
 		for (int32_t i=0; i<num; i++)
-			output->set_label(i, classify_example(i));
+			output->set_label(i, apply(i));
 
 		return output;
 	}
@@ -118,7 +118,7 @@ CLabels* CWDSVMOcas::classify()
 	return NULL;
 }
 
-CLabels* CWDSVMOcas::classify(CFeatures* data)
+CLabels* CWDSVMOcas::apply(CFeatures* data)
 {
 	if (!data)
 		SG_ERROR("No features specified\n");
@@ -130,7 +130,7 @@ CLabels* CWDSVMOcas::classify(CFeatures* data)
 	}
 
 	set_features((CStringFeatures<uint8_t>*) data);
-	return classify();
+	return apply();
 }
 
 int32_t CWDSVMOcas::set_wd_weights()
