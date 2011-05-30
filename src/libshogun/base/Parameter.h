@@ -78,6 +78,19 @@ public:
 	 */
 	void set_from_parameters(Parameter* params);
 
+	/** Adds all parameters from another instance to this one
+	 *
+	 * @param params another Parameter instance
+	 *
+	 */
+	void add_parameters(Parameter* params);
+
+	/** Checks if a parameter with the spcified name is included
+	 *
+	 * @return true if parameter with name is included
+	 */
+	bool contains_parameter(const char* name);
+
 	/* ************************************************************ */
 	/* Scalar wrappers  */
 
