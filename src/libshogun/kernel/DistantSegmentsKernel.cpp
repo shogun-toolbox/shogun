@@ -6,7 +6,7 @@
  *
  * Written (W) 2011 Heiko Strathmann
  * DS-Kernel implementation Written (W) 2008 Sébastien Boisvert under GPLv3
- * Copyright (C) 1999-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include "kernel/DistantSegmentsKernel.h"
@@ -42,7 +42,7 @@ bool CDistantSegmentsKernel::init(CFeatures* l, CFeatures* r)
 
 void CDistantSegmentsKernel::init()
 {
-	m_parameters->add(&m_delta, "m_delta", "Delta parameter of the DS-Kernel");
+	m_parameters->add(&m_delta, "delta", "Delta parameter of the DS-Kernel");
 	m_parameters->add(&m_theta, "theta", "Theta parameter of the DS-Kernel");
 }
 

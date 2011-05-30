@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Heiko Strathmann
- * Copyright (C) 1999-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include <shogun/features/Labels.h>

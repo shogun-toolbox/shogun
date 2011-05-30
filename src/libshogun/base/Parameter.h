@@ -78,6 +78,29 @@ public:
 	 */
 	void set_from_parameters(Parameter* params);
 
+	/** Adds all parameters from another instance to this one
+	 *
+	 * @param params another Parameter instance
+	 *
+	 */
+	void add_parameters(Parameter* params);
+
+	/** Checks if a parameter with the spcified name is included
+	 *
+	 * @return true if parameter with name is included
+	 */
+	bool contains_parameter(const char* name);
+
+	/** Getter for TParameter elements (Does not to bound checking)
+	 *
+	 * @param idx desired index
+	 * @return pointer to the TParameter with the specified index
+	 */
+	inline TParameter* get_parameter(int32_t idx)
+	{
+		return m_params.get_element(idx);
+	}
+
 	/* ************************************************************ */
 	/* Scalar wrappers  */
 
@@ -557,17 +580,6 @@ protected:
 	virtual void add_type(const TSGDataType* type, void* param,
 						  const char* name,
 						  const char* description);
-
-	/** Getter for TParameter elements (Does not to bound checking)
-	 *
-	 * @param idx desired index
-	 * @return pointer to the TParameter with the specified index
-	 */
-	inline TParameter* get_parameter(int32_t idx)
-	{
-		return m_params.get_element(idx);
-	}
-
 };
 }
 #endif //__PARAMETER_H__

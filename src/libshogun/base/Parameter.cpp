@@ -2461,3 +2461,24 @@ void Parameter::set_from_parameters(Parameter* params)
 		memcpy(dest, source, own->m_datatype.get_size());
 	}
 }
+
+void Parameter::add_parameters(Parameter* params)
+{
+	for (index_t i=0; i<params->get_num_parameters(); ++i)
+	{
+		TParameter* current=params->get_parameter(i);
+		add_type(&(current->m_datatype), current->m_parameter, current->m_name,
+				current->m_description);
+	}
+}
+
+bool Parameter::contains_parameter(const char* name)
+{
+	for (index_t i=0; i<m_params.get_num_elements(); ++i)
+	{
+		if (!strcmp(name, m_params[i]->m_name))
+			return true;
+	}
+
+	return false;
+}
