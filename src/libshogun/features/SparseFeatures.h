@@ -28,7 +28,7 @@
 #include "features/Features.h"
 #include "features/DotFeatures.h"
 #include "features/SimpleFeatures.h"
-#include "preproc/SparsePreProc.h"
+#include "preprocessor/SparsePreprocessor.h"
 
 namespace shogun
 {
@@ -38,7 +38,7 @@ class CLabels;
 class CFeatures;
 class CDotFeatures;
 template <class ST> class CSimpleFeatures;
-template <class ST> class CSparsePreProc;
+template <class ST> class CSparsePreprocessor;
 
 /** @brief Template class SparseFeatures implements sparse matrices.
  *
@@ -344,7 +344,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 					for (int32_t i=0; i<get_num_preproc(); i++)
 					{
-						//tmp_feat_after=((CSparsePreProc<ST>*) get_preproc(i))->apply_to_feature_vector(tmp_feat_before, tmp_len);
+						//tmp_feat_after=((CSparsePreprocessor<ST>*) get_preproc(i))->apply_to_feature_vector(tmp_feat_before, tmp_len);
 
 						if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
 							delete[] tmp_feat_before;
@@ -834,7 +834,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 					{
 						set_preprocessed(i);
 						SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
-						if (((CSparsePreProc<ST>*) get_preproc(i))->apply_to_sparse_feature_matrix(this) == NULL)
+						if (((CSparsePreprocessor<ST>*) get_preproc(i))->apply_to_sparse_feature_matrix(this) == NULL)
 							return false;
 					}
 					return true;

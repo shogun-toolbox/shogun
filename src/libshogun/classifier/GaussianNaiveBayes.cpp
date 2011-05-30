@@ -9,7 +9,7 @@
  */
 
 #include "GaussianNaiveBayes.h"
-#include "Classifier.h"
+#include "machine/Machine.h"
 #include "features/Features.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
@@ -18,7 +18,7 @@
 using namespace shogun;
 
 CGaussianNaiveBayes::CGaussianNaiveBayes() :
-CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
+CMachine(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {
@@ -26,7 +26,7 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 };
 
 CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels) :
-CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
+CMachine(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {

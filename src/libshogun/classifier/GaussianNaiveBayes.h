@@ -11,7 +11,7 @@
 #ifndef GAUSSIANNAIVEBAYES_H_
 #define GAUSSIANNAIVEBAYES_H_
 
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 #include "features/DotFeatures.h"
 
 namespace shogun {
@@ -33,7 +33,7 @@ class CFeatures;
  *  memory.
  *
  */
-class CGaussianNaiveBayes : public CClassifier
+class CGaussianNaiveBayes : public CMachine
 {
 
 public:

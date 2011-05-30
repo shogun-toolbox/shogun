@@ -579,33 +579,37 @@ test_csharp()
 
 test_ruby()
 {
-	echocheck "Ruby"
-	if ruby -v >/dev/null 2>&1
-	then
-		RUBYVER=`ruby -v 2>&1 | head -n 1 | cut -f 2 -d ' '`
-		echores "${RUBYVER}"
+        echocheck "Ruby"
+        if ruby -v >/dev/null 2>&1
+        then
+                RUBYVER=`ruby -v 2>&1 | head -n 1 | cut -f 2 -d ' '`
+                echores "${RUBYVER}"
 
 cat >$TMPRUBY << EOF
 require('mkmf')
-puts CONFIG['prefix']+'/'+CONFIG['libdir'].sub('\$(exec_prefix)','')+'/ruby/'+CONFIG['MAJOR']+'.'+CONFIG['MINOR']+'/'+CONFIG['arch']
+if RUBY_VERSION[0,3] == '1.8'
+  puts "-I#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
+else
+  puts "-I#{Config::expand(CONFIG['rubyhdrdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
+end
 EOF
-		echocheck "Ruby Developer Files"
-		if ruby $TMPRUBY >/dev/null 2>&1 
-			then
-			echores "yes"
-			INCLUDES_RUBY=-I`ruby $TMPRUBY`
-			LINKFLAGS_RUBY="-lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` -fPIC -shared"
-			EXT_IF_SWIG_RUBY_MODULAR='stop'
-			PRE_LIB_SWIG_RUBY_MODULAR=
-			EXT_LIB_SWIG_RUBY_MODULAR=.so
-			SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
-			_ruby=yes
-		else
-			echores "no"
-		fi
-	else
-		echores "not detected"
-	fi
+                echocheck "Ruby Developer Files"
+                if ruby $TMPRUBY >/dev/null 2>&1 
+                        then
+                        echores "yes"
+                        INCLUDES_RUBY=`ruby $TMPRUBY`
+                        LINKFLAGS_RUBY="-lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` -fPIC -shared"
+                        EXT_IF_SWIG_RUBY_MODULAR='stop'
+                        PRE_LIB_SWIG_RUBY_MODULAR=
+                        EXT_LIB_SWIG_RUBY_MODULAR=.so
+                        SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
+                        _ruby=yes
+                else
+                        echores "no"
+                fi
+        else
+                echores "not detected"
+        fi
 }
 
 test_lua()

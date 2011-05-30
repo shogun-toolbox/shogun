@@ -12,7 +12,7 @@ def distance_hammingword_modular (fm_train_dna=traindna,fm_test_dna=testdna,
 		fm_test_real=testdat,order=3,gap=0,reverse=False,use_sign=False):
 
 	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA
-	from shogun.PreProc import SortWordString
+	from shogun.Preprocessor import SortWordString
 	from shogun.Distance import HammingWordDistance
 
 	charfeat=StringCharFeatures(DNA)

@@ -12,7 +12,7 @@
 
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/classifier/svm/pr_loqo.h>
-#include <shogun/classifier/LinearClassifier.h>
+#include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/mkl/MKL.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
@@ -25,7 +25,7 @@
 #include <shogun/kernel/WaveletKernel.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/PolyFeatures.h>
-#include <shogun/preproc/SortWordString.h>
+#include <shogun/preprocessor/SortWordString.h>
 
 #include <shogun/structure/Plif.h>
 #include <shogun/structure/PlifArray.h>
@@ -1178,7 +1178,7 @@ CSGInterface::CSGInterface(bool print_copyright)
 	ui_labels(new CGUILabels(this)),
 	ui_math(new CGUIMath(this)),
 	ui_pluginestimate(new CGUIPluginEstimate(this)),
-	ui_preproc(new CGUIPreProc(this)),
+	ui_preproc(new CGUIPreprocessor(this)),
 	ui_time(new CGUITime(this)),
   ui_structure(new CGUIStructure(this))/*,
 /	ui_signals(new CGUISignals(this))*/
@@ -4782,7 +4782,7 @@ bool CSGInterface::cmd_set_linear_classifier()
 	if (!len)
 		SG_ERROR("No proper weight vector given.\n");
 
-	CLinearClassifier* c=(CLinearClassifier*) ui_classifier->get_classifier();
+	CLinearMachine* c=(CLinearMachine*) ui_classifier->get_classifier();
 	if (!c)
 		SG_ERROR("No Linear Classifier object available.\n");
 
@@ -4907,7 +4907,7 @@ bool CSGInterface::cmd_train_classifier()
 	if (m_nrhs<1 || !create_return_values(0))
 		return false;
 
-	CClassifier* classifier=ui_classifier->get_classifier();
+	CMachine* classifier=ui_classifier->get_classifier();
 	if (!classifier)
 		SG_ERROR("No classifier available.\n");
 
@@ -5210,7 +5210,7 @@ bool CSGInterface::cmd_add_preproc()
 
 	int32_t len=0;
 	char* type=get_str_from_str_or_direct(len);
-	CPreProc* preproc=NULL;
+	CPreprocessor* preproc=NULL;
 
 	if (strmatch(type, "NORMONE"))
 		preproc=ui_preproc->create_generic(P_NORMONE);
@@ -7226,7 +7226,7 @@ bool CSGInterface::cmd_clear()
 	SG_UNREF(ui_pluginestimate);
 	ui_pluginestimate=new CGUIPluginEstimate(this);
 	SG_UNREF(ui_preproc);
-	ui_preproc=new CGUIPreProc(this);
+	ui_preproc=new CGUIPreprocessor(this);
 	SG_UNREF(ui_time);
 	ui_time=new CGUITime(this);
 

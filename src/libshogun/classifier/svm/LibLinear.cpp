@@ -23,20 +23,20 @@
 using namespace shogun;
 
 CLibLinear::CLibLinear(void)
-: CLinearClassifier()
+: CLinearMachine()
 {
     init();
 }
 
 CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
-: CLinearClassifier()
+: CLinearMachine()
 {
     init();
 }
 
 CLibLinear::CLibLinear(
 	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier()
+: CLinearMachine()
 {
     init();
 	C1=C;

@@ -10,7 +10,7 @@ def preproc_sortwordstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,or
 
 	from shogun.Kernel import CommWordStringKernel
 	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA
-	from shogun.PreProc import SortWordString
+	from shogun.Preprocessor import SortWordString
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())

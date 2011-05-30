@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "lib/common.h"
 #include "features/Features.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 
 namespace shogun
 {

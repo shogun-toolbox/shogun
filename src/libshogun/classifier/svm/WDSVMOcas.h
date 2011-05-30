@@ -13,7 +13,7 @@
 #define _WDSVMOCAS_H___
 
 #include "lib/common.h"
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 #include "classifier/svm/SVMOcas.h"
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
@@ -23,7 +23,7 @@ namespace shogun
 template <class ST> class CStringFeatures;
 
 /** @brief class WDSVMOcas */
-class CWDSVMOcas : public CClassifier
+class CWDSVMOcas : public CMachine
 {
 	public:
 		/** default constructor  */
