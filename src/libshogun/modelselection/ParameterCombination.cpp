@@ -263,8 +263,10 @@ CParameterCombination* CParameterCombination::copy_tree()
 
 	/* recursively copy all children */
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+	{
 		copy->m_child_nodes->append_element(
 				m_child_nodes->get_element(i)->copy_tree());
+	}
 
 	return copy;
 }
