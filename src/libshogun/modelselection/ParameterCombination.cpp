@@ -275,3 +275,52 @@ CParameterCombination* CParameterCombination::copy_tree()
 	return copy;
 }
 
+void CParameterCombination::apply_to_parameter(Parameter* parameter)
+{
+	/* case root node or name node */
+	if ((!m_node_name && !m_param) || (m_node_name && !m_param))
+	{
+		/* iterate over all children and recursively set parameters from
+		 * their values to the current parameter input (its just handed one
+		 * recursion level downwards) */
+		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+			m_child_nodes->get_element(i)->apply_to_parameter(parameter);
+	}
+	/* case parameter node */
+	else if (!m_node_name && m_param)
+	{
+		/* does this node has sub parameters? */
+		if (has_children())
+		{
+			/* if a parameter node has children, it has to have ONE CSGObject as
+			 * parameter */
+			if (m_param->get_num_parameters()>1 ||
+					m_param->get_parameter(0)->m_datatype.m_ptype!=PT_SGOBJECT)
+			{
+				SG_ERROR("invalid CParameterCombination node type, has children"
+						" and more than one parameter or is not a "
+						"CSGObject.\n");
+			}
+
+			/* cast is now safe */
+			CSGObject* current_sgobject=
+					*((CSGObject**)(m_param->get_parameter(0)->m_parameter));
+
+			/* set parameters */
+			current_sgobject->m_parameters->set_from_parameters(m_param);
+
+			/* iterate over all children and recursively set parameters from
+			 * their values */
+			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+			{
+				m_child_nodes->get_element(i)->apply_to_parameter(
+						current_sgobject->m_parameters);
+			}
+		}
+		else
+			parameter->set_from_parameters(m_param);
+	}
+	else
+		SG_ERROR("ParameterCombination node has illegal type.\n");
+
+}

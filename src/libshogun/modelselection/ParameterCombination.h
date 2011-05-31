@@ -132,6 +132,8 @@ public:
 	 */
 	bool has_children() { return m_child_nodes->get_num_elements()>0; }
 
+	void apply_to_parameter(Parameter* parameter);
+
 private:
 	const char* m_node_name;
 	Parameter* m_param;
