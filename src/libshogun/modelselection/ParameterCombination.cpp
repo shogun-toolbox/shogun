@@ -70,7 +70,11 @@ void CParameterCombination::print(int prefix_num)
 		{
 			/* distinction between sgobject and values */
 			if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
-				SG_PRINT("CSGObject:%s ", m_param->get_parameter(i)->m_name);
+			{
+				TParameter* param=m_param->get_parameter(i);
+				SG_PRINT("\"%s\":%s ", param->m_name,
+						(*((CSGObject**)param->m_parameter))->get_name());
+			}
 			else
 				SG_PRINT("\"%s\"=%f ", m_param->get_parameter(i)->m_name,
 						*((float64_t*)m_param->get_parameter(i)->m_parameter));
@@ -270,3 +274,4 @@ CParameterCombination* CParameterCombination::copy_tree()
 
 	return copy;
 }
+
