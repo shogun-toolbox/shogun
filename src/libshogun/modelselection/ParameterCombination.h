@@ -18,6 +18,7 @@ namespace shogun
 {
 
 class CModelSelectionParameters;
+class CMachine;
 
 /**
  * @brief class that holds ONE combination of parameters for a learning machine.
@@ -40,8 +41,6 @@ class CModelSelectionParameters;
  */
 class CParameterCombination: public CSGObject
 {
-	friend class CModelSelectionParameters;
-
 public:
 	/** constructor for a root node */
 	CParameterCombination();
