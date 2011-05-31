@@ -28,10 +28,13 @@ class CMachine;
  * has one node and sub-parameters are stored in sub-nodes. Using a tree of this
  * class, parameters of models may easily be set.
  * There are these types of nodes:
+ *
  * -root node: no name and no Parameter instance, every tree has such a node as
  * root. Has children.
+ *
  * -name node: a node with only a name. This is used to bundle parameters that
  * are directly of from the learning machine, like "kernel". Has children.
+ *
  * -Parameter node: a node with no name and an instance of Parameter, filled
  * with one or more values. There may be different elements in these Parameter
  * instances. Parameter nodes may have children with sub-parameters.
