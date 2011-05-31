@@ -116,7 +116,120 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 ////////////////////////////////// Vector Typemaps - End /////////////////////////////////////////////
 
 
+/////////////////////////////////  SGMATRIX Typemaps - Begin ////////////////////////////////////////
 
+/* Two dimensional input/output arrays */
+//%define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
+%define TYPEMAP_SGMATRIX(SGTYPE, CTYPE, CSHARPTYPE)
+
+%typemap(ctype) shogun::SGMatrix<SGTYPE> %{CSHARPTYPE**%}  //  CTYPE
+%typemap(imtype) shogun::SGMatrix<SGTYPE> %{CSHARPTYPE[][]%}
+%typemap(cstype) shogun::SGMatrix<SGTYPE> %{CSHARPTYPE[][]%}
+
+%typemap(in) shogun::SGMatrix<SGTYPE>
+{
+
+
+    int32_t i,j;
+    int32_t rows, cols;
+    SGTYPE *array;   
+    //##JNITYPE##Array jarr;
+    //JNITYPE *carr;
+    //JNITYPE *element;
+
+    if (!$input || !$input[0]) {
+        SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
+        return $null;
+    }
+   
+   
+    rows = (sizeof($input) / sizeof($input[0])); //  Array First Dimmension Length
+    cols = (sizeof($input[0]) / sizeof($input[0][0])); // Array Second Dimension Length
+   
+    for (i = 1; i < rows; i++){
+   
+        if (!$input[i]){
+            SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
+            return $null;
+        }
+   
+        if (sizeof($input[0]) != sizeof($input[i])){
+            SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "inconsistent array collum length");
+            return $null;
+        }       
+    }
+   
+    array = new SGTYPE[rows * cols];
+   
+    if (!array) {
+        SWIG_CSharpSetPendingException(SWIG_CSharpOutOfMemoryException, "array memory allocation failed");
+        return $null;
+    }
+   
+   
+       
+    for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                    array[(i * rows) + j] = (SGTYPE)$input[i][j];
+            }
+    }   
+
+    $1 = shogun::SGMatrix<SGTYPE>(array, rows, cols);
+}
+
+%typemap(out) shogun::SGMatrix<SGTYPE>
+{
+
+    int32_t i, j;
+    int32_t rows = $1.num_rows;
+    int32_t cols = $1.num_cols;
+    int32_t len = rows * cols;
+    CSHARPTYPE array[rows][cols];
+   
+    if ((rows < 1) || (cols < 1)){
+        SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
+        return $null;
+    }
+   
+    if (!array) {
+        SWIG_CSharpSetPendingException(SWIG_CSharpOutOfMemoryException, "array memory allocation failed");
+        return $null;
+    }
+
+
+
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++){
+            array[i][j] = (CSHARPTYPE)($1.matrix[(i * rows) + j]);
+	}
+    }
+   
+    $result = (CSHARPTYPE **)array;
+
+//  Translation Point
+
+}
+
+%enddef
+
+/*Define concrete examples of the TYPEMAP_SGMATRIX macros */
+
+TYPEMAP_SGMATRIX(bool, bool, unsigned int)
+TYPEMAP_SGMATRIX(char, byte, char)
+TYPEMAP_SGMATRIX(uint8_t, byte, unsigned char)
+TYPEMAP_SGMATRIX(int16_t, short, short)
+TYPEMAP_SGMATRIX(uint16_t, ushort, unsigned short)
+TYPEMAP_SGMATRIX(int32_t, int, int)
+TYPEMAP_SGMATRIX(uint32_t, uint, unsigned int)
+TYPEMAP_SGMATRIX(int64_t, int, long)
+TYPEMAP_SGMATRIX(uint64_t, uint, unsigned long)
+TYPEMAP_SGMATRIX(long long, long, long long)
+TYPEMAP_SGMATRIX(float32_t, float, float)
+TYPEMAP_SGMATRIX(float64_t, double, double)
+
+#undef TYPEMAP_SGMATRIX
+
+/////////////////////////////////  SGMATRIX Typemaps - End //////////////////////////////////////////
  
  
  /* One dimensional input arrays */
@@ -324,4 +437,3 @@ TYPEMAP_ARRAYOUT1(float32_t, float, float)
 TYPEMAP_ARRAYOUT1(float64_t, double, double)
 
 #undef TYPEMAP_ARRAYOUT1
-
