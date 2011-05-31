@@ -35,7 +35,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CPowerKernel* power_kernel=new CPowerKernel();
 	CModelSelectionParameters* param_power_kernel=
-			new CModelSelectionParameters(power_kernel);
+			new CModelSelectionParameters("kernel", power_kernel);
 
 	kernel->append_child(param_power_kernel);
 
@@ -46,7 +46,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CMinkowskiMetric* m_metric=new CMinkowskiMetric(10);
 	CModelSelectionParameters* param_power_kernel_metric1=
-			new CModelSelectionParameters(m_metric);
+			new CModelSelectionParameters("distance", m_metric);
 
 	param_power_kernel->append_child(param_power_kernel_metric1);
 
@@ -57,7 +57,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
 	CModelSelectionParameters* param_gaussian_kernel=
-			new CModelSelectionParameters(gaussian_kernel);
+			new CModelSelectionParameters("kernel", gaussian_kernel);
 
 	kernel->append_child(param_gaussian_kernel);
 
@@ -67,7 +67,7 @@ CModelSelectionParameters* create_param_tree()
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
-	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters(
+	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters("kernel",
 			ds_kernel);
 
 	kernel->append_child(param_ds_kernel);
@@ -107,6 +107,8 @@ int main(int argc, char **argv)
 
 	/* delete example tree */
 	tree->destroy();
+
+	SG_SPRINT("END\n");
 
 	exit_shogun();
 
