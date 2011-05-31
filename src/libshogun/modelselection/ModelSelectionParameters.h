@@ -27,7 +27,7 @@ enum ERangeType
  * @brief Class to select parameters and their ranges for model selection. The
  * structure is organized as a tree with different kinds of nodes, depending on
  * the values of its member variables of name and CSGObject.
- * -root node: no name and no CSGObject, may have childs
+ * -root node: no name and no CSGObject, may have children
  * -placeholder node: only has a name and children, used to bundle parameters
  * that belong to the learning machine directly, like "kernel" or "C"
  * -CSGObject node: no name, but a CSGObject, has children which are the
@@ -78,8 +78,8 @@ public:
 	 * ERangeType (s. above) of the range, which is used to fill an array with
 	 * concrete values. For some range types, a base is required
 	 *
-	 * Calling this function transforms a placeholder node (without childs) into
-	 * a value node.
+	 * Calling this function transforms a placeholder node (without children)
+	 * into a value node.
 	 *
 	 * @param min minimum of desired range. Requires min<max
 	 * @param max maximum of desired range. Requires min<max
@@ -121,7 +121,7 @@ protected:
 	 *
 	 * @return true if it has children
 	 */
-	bool has_childs()
+	bool has_children()
 	{
 		return m_child_nodes.get_num_elements()>0;
 	}
