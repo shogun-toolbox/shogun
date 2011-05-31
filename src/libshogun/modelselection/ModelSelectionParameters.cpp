@@ -76,7 +76,7 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 						m_sgobject->get_name(), child->m_node_name);
 			}
 		}
-		else if (!child->m_node_name&&!child->m_sgobject)
+		else if (!child->m_node_name && !child->m_sgobject)
 		{
 			SG_ERROR("Not possible to add child which has no name or "
 					"to a node with a CSGObject.\n");
@@ -152,7 +152,7 @@ void CModelSelectionParameters::get_combinations(
 	 * build all permutations of the result trees of children with values and
 	 * combine them iteratively children which are something different
 	 */
-	else if (m_sgobject||(!m_node_name&&!m_sgobject&&!m_values->vector))
+	else if (m_sgobject||(!m_node_name && !m_sgobject && !m_values->vector))
 	{
 		/* only consider combinations if this CSGObject has children */
 		if (m_child_nodes.get_num_elements())
@@ -327,7 +327,7 @@ void CModelSelectionParameters::get_combinations(
 	 * machine, like "kernel". basically all combinations of all children have to
 	 * be appended to the result and a new root is to be added to all trees
 	 */
-	else if (m_node_name&&!m_values->vector)
+	else if (m_node_name && !m_values->vector)
 	{
 		if (!m_child_nodes.get_num_elements())
 		{
