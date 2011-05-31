@@ -27,11 +27,15 @@ enum ERangeType
  * @brief Class to select parameters and their ranges for model selection. The
  * structure is organized as a tree with different kinds of nodes, depending on
  * the values of its member variables of name and CSGObject.
+ *
  * -root node: no name and no CSGObject, may have children
+ *
  * -placeholder node: only has a name and children, used to bundle parameters
  * that belong to the learning machine directly, like "kernel" or "C"
- * -CSGObject node: no name, but a CSGObject, has children which are the
+ *
+ * -CSGObject node: has name and a CSGObject, has children which are the
  * parameters of the CSGObject
+ *
  * -value node: a node with a (parameter) name and an array of values for that
  * parameter. These ranges may be set using set_range(). This nod is always a
  * leaf
@@ -52,13 +56,14 @@ public:
 	 *
 	 * @param name name of the parameter the values will belong to
 	 */
-	CModelSelectionParameters(const char* name);
+	CModelSelectionParameters(const char* node_name);
 
 	/** constructor for a CSGObject node
 	 *
 	 * @param sgobject the CSGObject for this node. Is SG_REF'ed
+	 * @name name of the parameter of the CSGObject
 	 */
-	CModelSelectionParameters(CSGObject* sgobject);
+	CModelSelectionParameters(const char* node_name, CSGObject* sgobject);
 
 	/** destructor. If set, deletes data array and SG_UNREF's the CSGObject */
 	~CModelSelectionParameters();
@@ -127,9 +132,9 @@ protected:
 	}
 
 private:
+	CSGObject* m_sgobject;
 	const char* m_node_name;
 	SGVector<float64_t>* m_values;
-	CSGObject* m_sgobject;
 	DynArray<CModelSelectionParameters*> m_child_nodes;
 };
 
