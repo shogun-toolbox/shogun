@@ -54,7 +54,7 @@ public:
 	void print(int prefix_num=0);
 
 	/** constructor for a name node */
-	CParameterCombination(char* name);
+	CParameterCombination(const char* name);
 
 	/** constructor for a Parameter node */
 	CParameterCombination(Parameter* param);
@@ -131,7 +131,7 @@ public:
 	bool has_children() { return m_child_nodes->get_num_elements()>0; }
 
 private:
-	char* m_node_name;
+	const char* m_node_name;
 	Parameter* m_param;
 	DynArray<CParameterCombination*>* m_child_nodes;
 };

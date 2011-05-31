@@ -20,7 +20,7 @@ CParameterCombination::CParameterCombination()
 	m_child_nodes=new DynArray<CParameterCombination*> ();
 }
 
-CParameterCombination::CParameterCombination(char* name) :
+CParameterCombination::CParameterCombination(const char* name) :
 	m_node_name(name)
 {
 	m_param=NULL;

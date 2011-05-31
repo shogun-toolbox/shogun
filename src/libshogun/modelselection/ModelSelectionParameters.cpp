@@ -22,7 +22,7 @@ CModelSelectionParameters::CModelSelectionParameters()
 	m_sgobject=NULL;
 }
 
-CModelSelectionParameters::CModelSelectionParameters(char* name) :
+CModelSelectionParameters::CModelSelectionParameters(const char* name) :
 	m_node_name(name)
 {
 	m_values=new SGVector<float64_t> (NULL, 0);

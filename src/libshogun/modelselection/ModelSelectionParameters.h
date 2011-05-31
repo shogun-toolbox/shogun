@@ -52,7 +52,7 @@ public:
 	 *
 	 * @param name name of the parameter the values will belong to
 	 */
-	CModelSelectionParameters(char* name);
+	CModelSelectionParameters(const char* name);
 
 	/** constructor for a CSGObject node
 	 *
@@ -127,7 +127,7 @@ protected:
 	}
 
 private:
-	char* m_node_name;
+	const char* m_node_name;
 	SGVector<float64_t>* m_values;
 	CSGObject* m_sgobject;
 	DynArray<CModelSelectionParameters*> m_child_nodes;
