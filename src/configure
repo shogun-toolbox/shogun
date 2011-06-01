@@ -652,8 +652,12 @@ EOF
                         then
                         echores "yes"
                         INCLUDES_RUBY=`ruby $TMPRUBY`
-                        LINKFLAGS_RUBY="-lruby -fPIC -shared"
-                        #LINKFLAGS_RUBY="-lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` -fPIC -shared"
+                        if ld -lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` >/dev/null 2>&1
+                          then
+                          LINKFLAGS_RUBY="-lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` -fPIC -shared"
+                          else
+                          LINKFLAGS_RUBY="-lruby -fPIC -shared"
+                        fi
                         EXT_IF_SWIG_RUBY_MODULAR='stop'
                         PRE_LIB_SWIG_RUBY_MODULAR=
                         EXT_LIB_SWIG_RUBY_MODULAR=.so
