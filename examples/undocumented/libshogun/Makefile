@@ -17,7 +17,8 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  library_dyn_int library_gc_array library_indirect_object \
 		  library_hash parameter_set_from_parameters \
 		  parameter_iterate_float64 parameter_iterate_sgobject \
-		  modelselection_parameter_tree
+		  modelselection_parameter_tree \
+		  modelselection_apply_parameter_tree
 
 all: $(TARGETS)
 
