@@ -34,7 +34,7 @@ enum ERangeType
  * that belong to the learning machine directly, like "kernel" or "C"
  *
  * -CSGObject node: has name and a CSGObject, has children which are the
- * parameters of the CSGObject
+ * parameters of the CSGObject. CSGObjects are SG_REF'ed/SG_UNREF'ed
  *
  * -value node: a node with a (parameter) name and an array of values for that
  * parameter. These ranges may be set using set_range(). This nod is always a
@@ -42,8 +42,13 @@ enum ERangeType
  *
  * After a (legal!) tree is constructed with the append_child method, all
  * possible combinations that are implied by this tree may be extracted with the
- * get_combinatiosn method. It generates a set of trees (different kind than
+ * get_combinations method. It generates a set of trees (different kind than
  * this one) that contain the instanciated parameter combinations.
+ *
+ * Note again that CSGObjects are SG_REF'ed/SG_UNREF'ed. The method
+ * get_combinations() does not do any more. So the produced trees of parameter
+ * combinations have to be processes BEFORE this tree is deleted, or there will
+ * be an error if the CSGObjects are not referenced elsewhere
  *
  */
 class CModelSelectionParameters: public CSGObject
