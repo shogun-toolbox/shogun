@@ -18,6 +18,7 @@ namespace shogun
 {
 
 class CModelSelectionParameters;
+class CMachine;
 
 /**
  * @brief class that holds ONE combination of parameters for a learning machine.
@@ -27,10 +28,13 @@ class CModelSelectionParameters;
  * has one node and sub-parameters are stored in sub-nodes. Using a tree of this
  * class, parameters of models may easily be set.
  * There are these types of nodes:
+ *
  * -root node: no name and no Parameter instance, every tree has such a node as
- * root. Has childs.
+ * root. Has children.
+ *
  * -name node: a node with only a name. This is used to bundle parameters that
- * are directly of from the learning machine, like "kernel". Has childs.
+ * are directly of from the learning machine, like "kernel". Has children.
+ *
  * -Parameter node: a node with no name and an instance of Parameter, filled
  * with one or more values. There may be different elements in these Parameter
  * instances. Parameter nodes may have children with sub-parameters.
@@ -40,8 +44,6 @@ class CModelSelectionParameters;
  */
 class CParameterCombination: public CSGObject
 {
-	friend class CModelSelectionParameters;
-
 public:
 	/** constructor for a root node */
 	CParameterCombination();
@@ -54,7 +56,7 @@ public:
 	void print(int prefix_num=0);
 
 	/** constructor for a name node */
-	CParameterCombination(char* name);
+	CParameterCombination(const char* name);
 
 	/** constructor for a Parameter node */
 	CParameterCombination(Parameter* param);
@@ -130,8 +132,10 @@ public:
 	 */
 	bool has_children() { return m_child_nodes->get_num_elements()>0; }
 
+	void apply_to_parameter(Parameter* parameter);
+
 private:
-	char* m_node_name;
+	const char* m_node_name;
 	Parameter* m_param;
 	DynArray<CParameterCombination*>* m_child_nodes;
 };

@@ -27,19 +27,28 @@ enum ERangeType
  * @brief Class to select parameters and their ranges for model selection. The
  * structure is organized as a tree with different kinds of nodes, depending on
  * the values of its member variables of name and CSGObject.
- * -root node: no name and no CSGObject, may have childs
+ *
+ * -root node: no name and no CSGObject, may have children
+ *
  * -placeholder node: only has a name and children, used to bundle parameters
  * that belong to the learning machine directly, like "kernel" or "C"
- * -CSGObject node: no name, but a CSGObject, has children which are the
- * parameters of the CSGObject
+ *
+ * -CSGObject node: has name and a CSGObject, has children which are the
+ * parameters of the CSGObject. CSGObjects are SG_REF'ed/SG_UNREF'ed
+ *
  * -value node: a node with a (parameter) name and an array of values for that
  * parameter. These ranges may be set using set_range(). This nod is always a
  * leaf
  *
  * After a (legal!) tree is constructed with the append_child method, all
  * possible combinations that are implied by this tree may be extracted with the
- * get_combinatiosn method. It generates a set of trees (different kind than
+ * get_combinations method. It generates a set of trees (different kind than
  * this one) that contain the instanciated parameter combinations.
+ *
+ * Note again that CSGObjects are SG_REF'ed/SG_UNREF'ed. The method
+ * get_combinations() does not do any more. So the produced trees of parameter
+ * combinations have to be processes BEFORE this tree is deleted, or there will
+ * be an error if the CSGObjects are not referenced elsewhere
  *
  */
 class CModelSelectionParameters: public CSGObject
@@ -52,13 +61,14 @@ public:
 	 *
 	 * @param name name of the parameter the values will belong to
 	 */
-	CModelSelectionParameters(char* name);
+	CModelSelectionParameters(const char* node_name);
 
 	/** constructor for a CSGObject node
 	 *
 	 * @param sgobject the CSGObject for this node. Is SG_REF'ed
+	 * @name name of the parameter of the CSGObject
 	 */
-	CModelSelectionParameters(CSGObject* sgobject);
+	CModelSelectionParameters(const char* node_name, CSGObject* sgobject);
 
 	/** destructor. If set, deletes data array and SG_UNREF's the CSGObject */
 	~CModelSelectionParameters();
@@ -78,8 +88,8 @@ public:
 	 * ERangeType (s. above) of the range, which is used to fill an array with
 	 * concrete values. For some range types, a base is required
 	 *
-	 * Calling this function transforms a placeholder node (without childs) into
-	 * a value node.
+	 * Calling this function transforms a placeholder node (without children)
+	 * into a value node.
 	 *
 	 * @param min minimum of desired range. Requires min<max
 	 * @param max maximum of desired range. Requires min<max
@@ -121,15 +131,15 @@ protected:
 	 *
 	 * @return true if it has children
 	 */
-	bool has_childs()
+	bool has_children()
 	{
 		return m_child_nodes.get_num_elements()>0;
 	}
 
 private:
-	char* m_node_name;
-	SGVector<float64_t>* m_values;
 	CSGObject* m_sgobject;
+	const char* m_node_name;
+	SGVector<float64_t>* m_values;
 	DynArray<CModelSelectionParameters*> m_child_nodes;
 };
 

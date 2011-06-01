@@ -22,18 +22,18 @@ CModelSelectionParameters::CModelSelectionParameters()
 	m_sgobject=NULL;
 }
 
-CModelSelectionParameters::CModelSelectionParameters(char* name) :
-	m_node_name(name)
+CModelSelectionParameters::CModelSelectionParameters(const char* node_name) :
+	m_node_name(node_name)
 {
 	m_values=new SGVector<float64_t> (NULL, 0);
 	m_sgobject=NULL;
 }
 
-CModelSelectionParameters::CModelSelectionParameters(CSGObject* sgobject) :
-	m_sgobject(sgobject)
+CModelSelectionParameters::CModelSelectionParameters(const char* node_name,
+		CSGObject* sgobject) :
+	m_sgobject(sgobject), m_node_name(node_name)
 {
 	SG_REF(sgobject);
-	m_node_name=NULL;
 	m_values=new SGVector<float64_t> (NULL, 0);
 }
 
@@ -76,10 +76,9 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 						m_sgobject->get_name(), child->m_node_name);
 			}
 		}
-		else if (!child->m_node_name&&!child->m_sgobject)
+		else
 		{
-			SG_ERROR("Not possible to add child which has no name or "
-					"to a node with a CSGObject.\n");
+			SG_ERROR("Not possible to add child which has no name.\n");
 		}
 	}
 	m_child_nodes.append_element(child);
@@ -88,7 +87,7 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 		ERangeType type, float64_t step, float64_t type_base)
 {
-	if (m_sgobject || has_childs())
+	if (m_sgobject || has_children())
 	{
 		SG_ERROR("unable to set range for an CSGObject model selection "
 				"parameter\n");
@@ -132,7 +131,7 @@ void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 void CModelSelectionParameters::get_combinations(
 		DynArray<CParameterCombination*>& result)
 {
-	/* leaf case: node with values and no childs.
+	/* leaf case: node with values and no children.
 	 * build trees of Parameter instances which each contain one value
 	 */
 	if (m_values->vector)
@@ -148,40 +147,41 @@ void CModelSelectionParameters::get_combinations(
 	}
 	/* two cases here, similar
 	 * -case CSGObject:
-	 * -case root node (no name, no values, but childs
+	 * -case root node (no name, no values, but children
 	 * build all permutations of the result trees of children with values and
 	 * combine them iteratively children which are something different
 	 */
-	else if (m_sgobject||(!m_node_name&&!m_sgobject&&!m_values->vector))
+	else if ((m_sgobject && m_node_name) ||
+			(!m_node_name && !m_sgobject && !m_values->vector))
 	{
 		/* only consider combinations if this CSGObject has children */
 		if (m_child_nodes.get_num_elements())
 		{
 			/* split leaf and no-leaf child combinations */
-			DynArray<CModelSelectionParameters*> leaf_childs;
-			DynArray<CModelSelectionParameters*> non_leaf_childs;
+			DynArray<CModelSelectionParameters*> leaf_children;
+			DynArray<CModelSelectionParameters*> non_leaf_children;
 
 			for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
 			{
 				CModelSelectionParameters* current=m_child_nodes[i];
 
-				/* split childs with values (leafs) and childs with other */
+				/* split children with values (leafs) and children with other */
 				if (current->m_values->vector)
-					leaf_childs.append_element(current);
+					leaf_children.append_element(current);
 				else
-					non_leaf_childs.append_element(current);
+					non_leaf_children.append_element(current);
 			}
 
-			/* extract all tree sets of all leaf childs */
+			/* extract all tree sets of all leaf children */
 			DynArray<DynArray<CParameterCombination*>*> leaf_sets;
-			for (index_t i=0; i<leaf_childs.get_num_elements(); ++i)
+			for (index_t i=0; i<leaf_children.get_num_elements(); ++i)
 			{
 				/* temporary DynArray instance */
 				leaf_sets.append_element(
 						new DynArray<CParameterCombination*> ());
 
 				/* recursively get all combinations and put into above array */
-				leaf_childs[i]->get_combinations(*leaf_sets[i]);
+				leaf_children[i]->get_combinations(*leaf_sets[i]);
 			}
 
 			/* build product of all these tree sets */
@@ -192,7 +192,7 @@ void CModelSelectionParameters::get_combinations(
 			if (m_sgobject)
 			{
 				Parameter* p=new Parameter();
-				p->add(&m_sgobject, m_sgobject->get_name());
+				p->add(&m_sgobject, m_node_name);
 				new_root=new CParameterCombination(p);
 			}
 			else
@@ -203,7 +203,7 @@ void CModelSelectionParameters::get_combinations(
 					new_root, leaf_combinations);
 
 			/* if there are no non-leaf sets, just use the above result */
-			if (!non_leaf_childs.get_num_elements())
+			if (!non_leaf_children.get_num_elements())
 				result=leaf_combinations;
 			/* in the other case, the non-leafs have also to be treated, but
 			 * combined iteratively */
@@ -212,7 +212,7 @@ void CModelSelectionParameters::get_combinations(
 				/* extract all tree sets of non-leaf nodes */
 				DynArray<DynArray<CParameterCombination*>*>
 						non_leaf_combinations;
-				for (index_t i=0; i<non_leaf_childs.get_num_elements(); ++i)
+				for (index_t i=0; i<non_leaf_children.get_num_elements(); ++i)
 				{
 					/* temporary DynArray instance */
 					non_leaf_combinations.append_element(
@@ -220,7 +220,7 @@ void CModelSelectionParameters::get_combinations(
 
 					/* recursively get all combinations and put into above
 					 * array */
-					non_leaf_childs[i]->get_combinations(
+					non_leaf_children[i]->get_combinations(
 							*non_leaf_combinations[i]);
 				}
 
@@ -312,7 +312,7 @@ void CModelSelectionParameters::get_combinations(
 					}
 
 					/* the arrays of the non-leaf sets have to be deleted in
-					 * both cases: if there were leaf childs or not */
+					 * both cases: if there were leaf children or not */
 					for (index_t i=0; i
 							<non_leaf_combinations.get_num_elements(); ++i)
 						delete non_leaf_combinations[i];
@@ -324,14 +324,14 @@ void CModelSelectionParameters::get_combinations(
 	/* case name placeholder node: a node which contains a (parameter) name and
 	 * one (or more) CSGObject nodes which are to be substituted into the
 	 * parameter with the above name. The parameter name is one of the learning
-	 * machine, like "kernel". basically all combinations of all childs have to
+	 * machine, like "kernel". basically all combinations of all children have to
 	 * be appended to the result and a new root is to be added to all trees
 	 */
-	else if (m_node_name&&!m_values->vector)
+	else if (m_node_name && !m_sgobject && !m_values->vector)
 	{
 		if (!m_child_nodes.get_num_elements())
 		{
-			SG_ERROR("ModelSelectionParameter node with name but no childs or "
+			SG_ERROR("ModelSelectionParameter node with name but no children or "
 					"values.\n");
 		}
 
@@ -355,6 +355,8 @@ void CModelSelectionParameters::get_combinations(
 			}
 		}
 	}
+	else
+		SG_ERROR("Illegal CModelSelectionParameters node type.\n");
 }
 
 void CModelSelectionParameters::print(int prefix_num)
@@ -366,24 +368,24 @@ void CModelSelectionParameters::print(int prefix_num)
 
 	prefix[prefix_num]='\0';
 
-	if (has_childs())
+	if (has_children())
 	{
 		/* this node might also be a parameter */
-		SG_PRINT("%s%s with\n",
-				prefix, m_sgobject ? m_sgobject->get_name() : m_node_name);
+		SG_PRINT("%s%s with\n", prefix, m_node_name);
 
 		/* now recursively print successors */
 
 		/* cast safe because only CModelSelectionParameters are added to list */
 		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
 			m_child_nodes[i]->print(prefix_num+1);
-	} else
+	}
+	else
 	{
 		/* has to be a node with name and a numeric range or a single sg_object
 		 * without children*/
 		if (m_sgobject)
 		{
-			SG_PRINT("%s%s\n", prefix, m_sgobject->get_name());
+			SG_PRINT("%s%s\n", prefix, m_node_name);
 		}
 		else
 		{
