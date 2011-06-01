@@ -2393,11 +2393,13 @@ void Parameter::set_from_parameters(Parameter* params)
 		}
 
 		if (!own)
+		{
 			SG_SERROR("parameter with name %s does not exist\n",
 					current->m_name);
+		}
 
 		/* check if parameter contained CSGobjects (update reference counts) */
-		if (own->m_datatype.m_ptype==PT_SGOBJECT)
+		if (current_type.m_ptype==PT_SGOBJECT)
 		{
 			/* PT_SGOBJECT only occurs for ST_NONE */
 			if (own->m_datatype.m_stype==ST_NONE)
@@ -2407,7 +2409,7 @@ void Parameter::set_from_parameters(Parameter* params)
 					CSGObject** to_unref=(CSGObject**) own->m_parameter;
 					CSGObject** to_ref=(CSGObject**) current->m_parameter;
 
-					if (*to_ref!=*to_unref)
+					if ((*to_ref)!=(*to_unref))
 					{
 						SG_REF((*to_ref));
 						SG_UNREF((*to_unref));
@@ -2438,11 +2440,23 @@ void Parameter::set_from_parameters(Parameter* params)
 		/* construct pointers to the to be copied parameter data */
 		void* dest;
 		void* source;
-		if (own->m_datatype.m_ctype==CT_SCALAR)
+		if (current_type.m_ctype==CT_SCALAR)
 		{
 			/* for scalar values, just copy content the pointer points to */
 			dest=own->m_parameter;
 			source=current->m_parameter;
+
+			/* in case of CSGObject, pointers are not equal if CSGObjects are
+			 * equal, so check. For other values, the pointers are equal and
+			 * the not-copying is handled below before the memcpy call */
+			if (own->m_datatype.m_ptype==PT_SGOBJECT)
+			{
+				if (*((CSGObject**)dest) == *((CSGObject**)source))
+				{
+					dest=NULL;
+					source=NULL;
+				}
+			}
 		}
 		else
 		{
