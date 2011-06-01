@@ -2407,8 +2407,8 @@ void Parameter::set_from_parameters(Parameter* params)
 					CSGObject** to_unref=(CSGObject**) own->m_parameter;
 					CSGObject** to_ref=(CSGObject**) current->m_parameter;
 
-					SG_UNREF((*to_unref));
 					SG_REF((*to_ref));
+					SG_UNREF((*to_unref));
 				}
 				else
 				{
@@ -2418,8 +2418,8 @@ void Parameter::set_from_parameters(Parameter* params)
 
 					for (index_t j=0; j<own->m_datatype.get_num_elements(); ++j)
 					{
-						SG_UNREF(((*to_unref)[j]));
 						SG_REF(((*to_ref)[j]));
+						SG_UNREF(((*to_unref)[j]));
 					}
 				}
 			}
