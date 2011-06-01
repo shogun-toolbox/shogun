@@ -148,8 +148,10 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	for (i = 0; i < size; i++) {
 		VALUE arr = rb_ary_entry($input, i);
 		if (TYPE(arr) == T_STRING) {
-			len = 0;				
-			const char *str = rb_str2cstr(arr, (long *)&len);
+			len = 0;
+                        // testing
+			//const char *str = rb_str2cstr(arr, (long *)&len);
+                        const char *str = StringValuePtr(arr);
 			max_len = shogun::CMath::max(len, max_len);
 
 			strings[i].length = len;
