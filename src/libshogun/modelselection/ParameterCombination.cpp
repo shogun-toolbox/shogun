@@ -72,12 +72,15 @@ void CParameterCombination::print(int prefix_num)
 			if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
 			{
 				TParameter* param=m_param->get_parameter(i);
-				SG_PRINT("\"%s\":%s ", param->m_name,
-						(*((CSGObject**)param->m_parameter))->get_name());
+				CSGObject* current_sgobject=*((CSGObject**) param->m_parameter);
+				SG_PRINT("\"%s\":%s at %p ", param->m_name,
+						current_sgobject->get_name(), current_sgobject);
 			}
 			else
+			{
 				SG_PRINT("\"%s\"=%f ", m_param->get_parameter(i)->m_name,
 						*((float64_t*)m_param->get_parameter(i)->m_parameter));
+			}
 		}
 
 	}
@@ -307,7 +310,7 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter)
 					*((CSGObject**)(m_param->get_parameter(0)->m_parameter));
 
 			/* set parameters */
-			current_sgobject->m_parameters->set_from_parameters(m_param);
+			parameter->set_from_parameters(m_param);
 
 			/* iterate over all children and recursively set parameters from
 			 * their values */
