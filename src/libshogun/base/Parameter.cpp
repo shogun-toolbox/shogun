@@ -2396,77 +2396,72 @@ void Parameter::set_from_parameters(Parameter* params)
 			SG_SERROR("parameter with name %s does not exist\n",
 					current->m_name);
 
-		if (own->m_parameter!=current->m_parameter)
+		/* check if parameter contained CSGobjects (update reference counts) */
+		if (own->m_datatype.m_ptype==PT_SGOBJECT)
 		{
-			/* check if parameter contained CSGobjects (update reference
-			 * counts) */
-			if (own->m_datatype.m_ptype==PT_SGOBJECT)
+			/* PT_SGOBJECT only occurs for ST_NONE */
+			if (own->m_datatype.m_stype==ST_NONE)
 			{
-				/* PT_SGOBJECT only occurs for ST_NONE */
-				if (own->m_datatype.m_stype==ST_NONE)
+				if (own->m_datatype.m_ctype==CT_SCALAR)
 				{
-					if (own->m_datatype.m_ctype==CT_SCALAR)
-					{
-						CSGObject** to_unref=(CSGObject**) own->m_parameter;
-						CSGObject** to_ref=(CSGObject**) current->m_parameter;
+					CSGObject** to_unref=(CSGObject**) own->m_parameter;
+					CSGObject** to_ref=(CSGObject**) current->m_parameter;
 
-						SG_REF((*to_ref));
-						SG_UNREF((*to_unref));
-					}
-					else
-					{
-						/* unref all SGObjects and reference the new ones */
-						CSGObject*** to_unref=(CSGObject***) own->m_parameter;
-						CSGObject*** to_ref=(CSGObject***) current->m_parameter;
-
-						for (index_t j=0; j<own->m_datatype.get_num_elements();
-								++j)
-						{
-							SG_REF(((*to_ref)[j]));
-							SG_UNREF(((*to_unref)[j]));
-						}
-					}
+					SG_REF((*to_ref));
+					SG_UNREF((*to_unref));
 				}
 				else
-					SG_SERROR("primitive type PT_SGOBJECT occurred with "
-							"structure type other than ST_NONE");
-			}
-
-			/* construct pointers to the to be copied parameter data */
-			void* dest;
-			void* source;
-			if (own->m_datatype.m_ctype==CT_SCALAR)
-			{
-				/* for scalar values, just copy content the pointer points to */
-				dest=own->m_parameter;
-				source=current->m_parameter;
-			}
-			else
-			{
-				/* for matrices and vectors, sadly m_parameter has to be
-				 * de-referenced once, because a pointer to the array address is
-				 * saved, but the array address itself has to be copied.
-				 * consequently, for dereferencing, a type distinction is
-				 * needed */
-				switch (own->m_datatype.m_ptype)
 				{
-				case PT_FLOAT64:
-					dest=*((float64_t**) own->m_parameter);
-					source=*((float64_t**) current->m_parameter);
-					break;
-				case PT_SGOBJECT:
-					dest=*((CSGObject**) own->m_parameter);
-					source=*((CSGObject**) current->m_parameter);
-					break;
-				default:
-					SG_SNOTIMPLEMENTED;
-					break;
+					/* unref all SGObjects and reference the new ones */
+					CSGObject*** to_unref=(CSGObject***) own->m_parameter;
+					CSGObject*** to_ref=(CSGObject***) current->m_parameter;
+
+					for (index_t j=0; j<own->m_datatype.get_num_elements(); ++j)
+					{
+						SG_REF(((*to_ref)[j]));
+						SG_UNREF(((*to_unref)[j]));
+					}
 				}
 			}
-
-			/* copy parameter data, size in memory is equal because of same type */
-			memcpy(dest, source, own->m_datatype.get_size());
+			else
+				SG_SERROR("primitive type PT_SGOBJECT occurred with structure "
+						"type other than ST_NONE");
 		}
+
+		/* construct pointers to the to be copied parameter data */
+		void* dest;
+		void* source;
+		if (own->m_datatype.m_ctype==CT_SCALAR)
+		{
+			/* for scalar values, just copy content the pointer points to */
+			dest=own->m_parameter;
+			source=current->m_parameter;
+		}
+		else
+		{
+			/* for matrices and vectors, sadly m_parameter has to be
+			 * de-referenced once, because a pointer to the array address is
+			 * saved, but the array address itself has to be copied.
+			 * consequently, for dereferencing, a type distinction is needed */
+			switch (own->m_datatype.m_ptype)
+			{
+			case PT_FLOAT64:
+				dest=*((float64_t**) own->m_parameter);
+				source=*((float64_t**) current->m_parameter);
+				break;
+			case PT_SGOBJECT:
+				dest=*((CSGObject**) own->m_parameter);
+				source=*((CSGObject**) current->m_parameter);
+				break;
+			default:
+				SG_SNOTIMPLEMENTED;
+				break;
+			}
+		}
+
+		/* copy parameter data, size in memory is equal because of same type */
+		if (dest!=source)
+			memcpy(dest, source, own->m_datatype.get_size());
 	}
 }
 
