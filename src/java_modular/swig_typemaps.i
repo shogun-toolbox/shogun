@@ -7,13 +7,14 @@
  * Written (W) 2011 Baozeng Ding
   *  
  */
-
+#ifdef HAVE_JBLAS
 %pragma(java) jniclassimports=%{
 import org.jblas.*;
 %}
 %typemap(javaimports) SWIGTYPE%{
 import org.jblas.*;
 %}
+#endif
 /* One dimensional input/output arrays */
 
 %define TYPEMAP_SGVECTOR(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
@@ -88,6 +89,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble)
 
 #undef TYPEMAP_SGVECTOR
 
+#ifdef HAVE_JBLAS
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
@@ -187,13 +189,14 @@ TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix
 TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
 #undef TYPEMAP_SGMATRIX
+#endif
 
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, JTYPE, JAVATYPE, JNITYPE, JNIDESC, CLASSDESC)
 
 %typemap(jni) shogun::SGStringList<SGTYPE>	%{jobjectArray%}
-%typemap(jtype) shogun::SGStringList<SGTYPE>		%{JNIDESC%}
-%typemap(jstype) shogun::SGStringList<SGTYPE> 	%{JNIDESC%}
+%typemap(jtype) shogun::SGStringList<SGTYPE>		%{JTYPE[][]%}
+%typemap(jstype) shogun::SGStringList<SGTYPE> 	%{JTYPE[][]%}
 
 %typemap(in) shogun::SGStringList<SGTYPE> {
 	int32_t size = 0;
