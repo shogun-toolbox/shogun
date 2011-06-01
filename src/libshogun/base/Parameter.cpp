@@ -2388,6 +2388,8 @@ void Parameter::set_from_parameters(Parameter* params)
 							" than existing one\n", current->m_name);
 				}
 			}
+			else
+				own=NULL;
 		}
 
 		if (!own)
