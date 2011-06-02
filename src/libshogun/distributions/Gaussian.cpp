@@ -46,6 +46,7 @@ CGaussian::CGaussian(float64_t* mean, int32_t mean_length,
 	ASSERT(cov_rows == cov_cols);
 	m_mean=new float64_t[mean_length];
 	memcpy(m_mean, mean, sizeof(float64_t)*mean_length);
+	m_mean_length=mean_length;
 
 	if (cov_rows==1)
 		m_cov_type=SPHERICAL;
@@ -146,34 +147,34 @@ float64_t CGaussian::compute_log_PDF(float64_t* point, int32_t point_len)
 {
 	ASSERT(m_mean && m_d);
 	ASSERT(point_len == m_mean_length);
-	float64_t* difference = new float64_t[m_mean_length];
+	float64_t* difference=new float64_t[m_mean_length];
 	memcpy(difference, point, sizeof(float64_t)*m_mean_length);
 
 	for (int i = 0; i < m_mean_length; i++)
 		difference[i] -= m_mean[i];
 
-	float answer=m_constant;
+	float64_t answer=m_constant;
 
-	switch (m_cov_type)
+	if (m_cov_type==FULL)
 	{
-		case FULL:
-			cblas_dgemv(CblasRowMajor, CblasTrans, m_d_length, m_d_length,
-						1, m_u, m_d_length, difference, 1, 0, difference, 1);
+		float64_t* temp_holder=new float64_t[m_d_length];
+		cblas_dgemv(CblasRowMajor, CblasNoTrans, m_d_length, m_d_length,
+					1, m_u, m_d_length, difference, 1, 0, temp_holder, 1);
 
-			for (int i=0; i<m_mean_length; i++)
-				answer+=difference[i]*difference[i]/m_d[i];
+		for (int i=0; i<m_d_length; i++)
+			answer+=temp_holder[i]*temp_holder[i]/m_d[i];
 
-			break;
-		case DIAG:
-			for (int i=0; i<m_mean_length; i++)
-				answer+=difference[i]*difference[i]/m_d[i];
-
-			break;
-		case SPHERICAL:
-			for (int i=0; i<m_mean_length; i++)
-				answer+=difference[i]*difference[i]/(*m_d);
-
-			break;
+		delete[] temp_holder;
+	}
+	else if (m_cov_type==DIAG)
+	{
+		for (int i=0; i<m_mean_length; i++)
+			answer+=difference[i]*difference[i]/m_d[i];
+	}
+	else
+	{
+		for (int i=0; i<m_mean_length; i++)
+			answer+=difference[i]*difference[i]/(*m_d);
 	}
 
 	delete[] difference;
@@ -191,27 +192,31 @@ void CGaussian::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
 		if (!m_u)
 			SG_ERROR("Unitary matrix not set\n");
 
-		float64_t diag_holder[m_d_length*m_d_length];
+		float64_t* temp_holder=new float64_t[m_d_length*m_d_length];
+		float64_t* diag_holder=new float64_t[m_d_length*m_d_length];
 		memset(diag_holder, 0, sizeof(float64_t)*m_d_length*m_d_length);
 		for(int i=0; i<m_d_length; i++)
 			diag_holder[i*m_d_length+i]=m_d[i];
 
-		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+		cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans,
 					m_d_length, m_d_length, m_d_length, 1, m_u, m_d_length,
-					diag_holder, m_d_length, 0, *cov, m_d_length);
-		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans,
-					m_d_length, m_d_length, m_d_length, 1, *cov, m_d_length,
+					diag_holder, m_d_length, 0, temp_holder, m_d_length);
+		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+					m_d_length, m_d_length, m_d_length, 1, temp_holder, m_d_length,
 					m_u, m_d_length, 0, *cov, m_d_length);
+
+		delete[] diag_holder;
+		delete[] temp_holder;
 	}
 	else if (m_cov_type==DIAG)
 	{
 		for (int i=0; i<m_d_length; i++)
-			*cov[i*m_d_length+i]=m_d[i];
+			(*cov)[i*m_d_length+i]=m_d[i];
 	}
 	else
 	{
 		for (int i=0; i<m_mean_length; i++)
-			*cov[i*m_mean_length+i]=*m_d;
+			(*cov)[i*m_mean_length+i]=*m_d;
 	}
 
 	*cov_rows = m_mean_length;
