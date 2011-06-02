@@ -103,9 +103,6 @@ protected:
 	/* number of neighbors */
 	int32_t m_k;
 
-	/* new feature matrix */
-	float64_t* m_new_feature_matrix;
-
 	/* distance instance */
 	CDistance* m_distance;
 

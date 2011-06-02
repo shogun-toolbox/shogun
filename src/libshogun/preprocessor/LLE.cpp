@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CLLE::CLLE() : CSimplePreprocessor<float64_t>(), m_target_dim(1), m_k(1), m_new_feature_matrix(NULL)
+CLLE::CLLE() : CSimplePreprocessor<float64_t>(), m_target_dim(1), m_k(1)
 {
 	// temporary hack. which one will make sense?
 	m_distance = new CEuclidianDistance();
@@ -27,7 +27,6 @@ CLLE::CLLE() : CSimplePreprocessor<float64_t>(), m_target_dim(1), m_k(1), m_new_
 CLLE::~CLLE()
 {
 	delete m_distance;
-	delete[] m_new_feature_matrix;
 }
 
 bool CLLE::init(CFeatures* data)
@@ -37,14 +36,15 @@ bool CLLE::init(CFeatures* data)
 
 void CLLE::cleanup()
 {
-	delete[] m_new_feature_matrix;
 }
 
 float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 {
+	// shorthand for simplefeatures data
 	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
 	ASSERT(pdata);
 
+	// get dimensionality and number of vectors of data
 	int32_t dim = pdata->get_num_features();
 	int32_t N = pdata->get_num_vectors();
 	ASSERT(m_k<N);
@@ -170,8 +170,6 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 
 	}
 
-	//CMath::display_matrix(W_matrix,N,N,"W");
-
 	delete[] ipiv;
 	delete[] id_vector;
 	delete[] neighborhood_matrix;
@@ -185,10 +183,8 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 	for (i=0; i<N; i++)
 		W_matrix[i*N+i] = 1.0-W_matrix[i*N+i];
 
-	//CMath::display_matrix(W_matrix,N,N,"W-I");
-
 	// compute W'*W
-	m_new_feature_matrix = new float64_t[N*N];
+	float64_t* m_new_feature_matrix = new float64_t[N*N];
 	cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
 	            N,N,N,1.0,
 	            W_matrix,N,
@@ -198,8 +194,6 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 
 	delete[] W_matrix;
 
-	//CMath::display_matrix(m_new_feature_matrix,N,N,"before eigenproblem");
-
 	// compute eigenvectors
 	float64_t* eigs = new float64_t[N];
 	int32_t status = 0;
@@ -207,31 +201,17 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 				N,m_new_feature_matrix,
 				N,eigs,
 				&status);
-
 	ASSERT(status==0);
 
-//	CMath::display_vector(eigs,N,"eigenvalues");
-
-    //CMath::display_vector(m_new_feature_matrix,N*N,"new features");
-
-	//((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(&feature_matrix,&dim,&num);
-	//CMath::display_matrix(feature_matrix,dim,num,"Given features");
 	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
 	for (i=0; i<m_target_dim; i++)
 		for (j=0; j<N; j++)
 			replace_feature_matrix[j*m_target_dim+i] = m_new_feature_matrix[(i+1)*(N)+j];
-	//CMath::display_vector(replace_feature_matrix,m_target_dim*N);
-	/*
-	for (int i=0; i<m_target_dim; i++)
-	{
-		for (int j=0; j<num; j++)
-			SG_PRINT("%.3f ",replace_feature_matrix[i*num+j]);
-		SG_PRINT("\n");
-	}
-	*/
+
 	pdata->set_feature_matrix(replace_feature_matrix,m_target_dim,N);
-	//((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(&feature_matrix,&dim,&num);
-	//CMath::display_matrix(feature_matrix,dim,num,"features");
+
+	delete[] m_new_feature_matrix;
+
 	return replace_feature_matrix;
 }
 
