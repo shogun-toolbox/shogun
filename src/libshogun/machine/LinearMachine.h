@@ -64,12 +64,6 @@ class CLinearMachine : public CMachine
 		CLinearMachine();
 		virtual ~CLinearMachine();
 
-		/// get output for example "vec_idx"
-		virtual inline float64_t apply(int32_t vec_idx)
-		{
-			return features->dense_dot(vec_idx, w, w_dim) + bias;
-		}
-
 		/** get w
 		 *
 		 * @param dst_w store w in this argument
@@ -165,6 +159,12 @@ class CLinearMachine : public CMachine
 		 * @return classified labels
 		 */
 		virtual CLabels* apply(CFeatures* data);
+
+		/// get output for example "vec_idx"
+		virtual float64_t apply(int32_t vec_idx)
+		{
+			return features->dense_dot(vec_idx, w, w_dim) + bias;
+		}
 
 		/** get features
 		 *
