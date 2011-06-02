@@ -10,9 +10,9 @@
 
 #ifndef CLASSICMDS_H_
 #define CLASSICMDS_H_
-//#ifdef HAVE_LAPACK
+#ifdef HAVE_LAPACK
 
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
 
@@ -26,7 +26,7 @@ class CDistance;
 /** @brief the class MDS
  *	That thing isn't working yet, huh
  */
-class CClassicMDS: public CSimplePreProc<float64_t>
+class CClassicMDS: public CSimplePreprocessor<float64_t>
 {
 public:
 
@@ -60,7 +60,7 @@ public:
 	virtual inline const char* get_name() const { return "MDS"; };
 
 	/** get type */
-	virtual inline EPreProcType get_type() const { return P_UNKNOWN; };
+	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; };
 
 protected:
 
@@ -71,5 +71,5 @@ protected:
 
 }
 
-//#endif /* HAVE_LAPACK */
+#endif /* HAVE_LAPACK */
 #endif /* CLASSICMDS_H_ */

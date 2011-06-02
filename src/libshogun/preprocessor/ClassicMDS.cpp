@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "preproc/ClassicMDS.h"
+#include "preprocessor/ClassicMDS.h"
 #include "lib/lapack.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CClassicMDS::CClassicMDS() : CSimplePreProc<float64_t>()
+CClassicMDS::CClassicMDS() : CSimplePreprocessor<float64_t>()
 {
 }
 
@@ -27,6 +27,15 @@ CClassicMDS::~CClassicMDS()
 }
 
 bool CClassicMDS::init(CFeatures* data)
+{
+	return true;
+}
+
+void CClassicMDS::cleanup()
+{
+}
+
+float64_t* CClassicMDS::apply_to_feature_matrix(CFeatures* data)
 {
 	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
 	CDistance* distance = new CEuclidianDistance(pdata,pdata);
@@ -80,20 +89,11 @@ bool CClassicMDS::init(CFeatures* data)
 	delete[] Ds_matrix;
 	delete[] I_matrix;
 	SG_PRINT("CLEANED");
-	return true;
-}
-
-void CClassicMDS::cleanup()
-{
-
-}
-
-float64_t* CClassicMDS::apply_to_feature_matrix(CFeatures* f)
-{
 	return 0;
 }
 
 float64_t* CClassicMDS::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
+	SG_ERROR("Not implemented");
 	return 0;
 }
