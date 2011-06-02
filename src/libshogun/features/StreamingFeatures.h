@@ -46,8 +46,9 @@ namespace shogun
 		 * Constructor, taking a StreamingFile as arg.
 		 * @param file StreamingFile from which to load features
 		 * @param is_labelled Whether features are labelled or not, optional
+		 * @param size Buffer size in MB, used while parsing
 		 */
-		CStreamingFeatures(CStreamingFile* file, bool is_labelled);
+		CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size);
 		
 		/** 
 		 * Copy constructor

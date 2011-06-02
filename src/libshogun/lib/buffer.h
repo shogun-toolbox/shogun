@@ -8,13 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <stdio.h>
+#include "lib/common.h"
 #include <pthread.h>
-#include <stdlib.h>
-
-typedef float float64_t;
-typedef int int32_t;
-
 
 #ifndef __PARSEBUFFER_H__
 #define __PARSEBUFFER_H__

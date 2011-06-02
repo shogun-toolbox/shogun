@@ -21,7 +21,7 @@ using namespace shogun;
 
 CInputParser::CInputParser()
 {
-	init(NULL, true);
+	init(NULL, true, PARSER_DEFAULT_BUFFSIZE);
 }
 
 CInputParser::~CInputParser()
@@ -49,7 +49,7 @@ void CInputParser::init(CStreamingFile* input_file, bool is_labelled = true, int
 	number_of_vectors_parsed = 0;
 	number_of_vectors_read = 0;
 
-	current_number_of_features = -1;
+	current_len = -1;
 	current_label = -1;
 	current_feature_vector = NULL;
 }
@@ -193,9 +193,9 @@ int32_t CInputParser::get_next_example(float64_t* &fv, int32_t &length, float64_
 		if (reading_done)
 			return 0;
 
-		example = retrieve_example();
+		ex = retrieve_example();
 
-		if (example == NULL)
+		if (ex == NULL)
 			continue;
 		else
 			break;
@@ -206,6 +206,13 @@ int32_t CInputParser::get_next_example(float64_t* &fv, int32_t &length, float64_
 	label = ex->label;
 
 	return 1;
+}
+
+int32_t CInputParser::get_next_example(float64_t* &fv, int32_t &length)
+{
+	float64_t label_dummy;
+	
+	return get_next_example(fv, length, label_dummy);
 }
 
 void CInputParser::finalize_example()

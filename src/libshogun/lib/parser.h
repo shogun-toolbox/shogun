@@ -14,6 +14,7 @@
 #include "lib/io.h"
 #include "lib/StreamingFile.h"
 #include "lib/common.h"
+#include "lib/buffer.h"
 #include <pthread.h>
 
 namespace shogun
@@ -56,8 +57,9 @@ namespace shogun
 		 *
 		 * @param input_file CStreamingFile object
 		 * @param is_labelled Whether example is labelled or not (bool), optional
+		 * @param size Size of the buffer in MB
 		 */
-		void init(CStreamingFile* input_file, bool is_labelled);
+		void init(CStreamingFile* input_file, bool is_labelled, int32_t size);
 
 		/**
 		 * Test if parser is running.
@@ -135,15 +137,7 @@ namespace shogun
 		example* retrieve_example();
 		
 		/**
-		 * Gets the next unused example from the buffer.
-		 *
-		 * @return NULL if no unused example is available, else return
-		 * a pointer to the example in the buffer.
-		 */
-		void* get_next_example();
-
-		/**
-		 * Gets the next example.
+		 * Gets the next example, assuming it to be labelled.
 		 *
 		 * Waits till retrieve_example returns a valid example, or
 		 * returns if reading is done already.
@@ -157,6 +151,18 @@ namespace shogun
 		int32_t get_next_example(float64_t* &feature_vector,
 										  int32_t &length,
 										  float64_t &label);
+
+		/** 
+		 * Gets the next example, assuming it to be unlabelled.
+		 * 
+		 * @param feature_vector 
+		 * @param length 
+		 * 
+		 * @return 1 if an example could be fetched, 0 otherwise
+		 */
+		int32_t get_next_example(float64_t* &feature_vector,
+								 int32_t &length);
+		
 
 		/**
 		 * Finalize the current example, indicating that the buffer
@@ -197,19 +203,21 @@ namespace shogun
 
 		pthread_t parse_thread;/**< Parse thread */
 
+		ParseBuffer* examples_buff;
 		
 		int32_t number_of_features;
-
 		int32_t number_of_vectors_parsed;
 		int32_t number_of_vectors_read;
 
+		example* current_example;
+		
 		float64_t* current_feature_vector; /**< Points to feature
 											* vector of last read example */
 		
 		float64_t current_label; /**< Label of last read example */
 		
-		int32_t current_number_of_features; /**< Features in last
-											 * read example */
+		int32_t current_len; /**< Features in last
+							  * read example */
 
 		
 	};

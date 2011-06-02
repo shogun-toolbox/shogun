@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "lib/buffer.h"
 
 ParseBuffer::ParseBuffer(int32_t size)
 {
@@ -36,12 +36,12 @@ ParseBuffer::~ParseBuffer()
 	}
 }
 
-inline void ParseBuffer::inc_read_index()
+void ParseBuffer::inc_read_index()
 {
 	ex_read_index=(ex_read_index + 1) % buffer_size;
 }
 
-inline void ParseBuffer::inc_write_index(int32_t len)
+void ParseBuffer::inc_write_index(int32_t len)
 {
 	ex_write_index=(ex_write_index + 1) % buffer_size;
 	fv_write_index=fv_write_index + len;
@@ -83,7 +83,7 @@ example* ParseBuffer::get_example()
 		return NULL;
 }
 
-inline example* ParseBuffer::fetch_example()
+example* ParseBuffer::fetch_example()
 {
 	example *ex;
 
@@ -101,7 +101,7 @@ inline example* ParseBuffer::fetch_example()
 	return ex;
 }
 	
-inline int32_t ParseBuffer::copy_example(example *ex)
+int32_t ParseBuffer::copy_example(example *ex)
 {
 	// Check this mutex call.. It should probably be locked regardless of ex in use
 
@@ -124,7 +124,7 @@ inline int32_t ParseBuffer::copy_example(example *ex)
 	return ret;
 }
 
-inline void ParseBuffer::finalize_example()
+void ParseBuffer::finalize_example()
 {
 	pthread_mutex_lock(&ex_in_use_mutex[ex_read_index]);
 	ex_used[ex_read_index] = E_USED;

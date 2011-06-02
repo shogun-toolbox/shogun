@@ -30,12 +30,12 @@ CStreamingFeatures::CStreamingFeatures()
 	init();
 }
 
-CStreamingFeatures::CStreamingFeatures(CStreamingFile* file, bool is_labelled = true)
+CStreamingFeatures::CStreamingFeatures(CStreamingFile* file, bool is_labelled = true, int32_t size = 10)
 {
 	init();
 	has_labels = is_labelled;
 	working_file = file;
-	parser.init(file, is_labelled);
+	parser.init(file, is_labelled, size);
 }
 
 CStreamingFeatures::~CStreamingFeatures()
@@ -59,7 +59,7 @@ int32_t CStreamingFeatures::get_next_feature_vector(float64_t* &feature_vector, 
 {
 	int32_t ret_value;
 
-	ret_value = parser.get_next_example_labelled(feature_vector, length, label);
+	ret_value = parser.get_next_example(feature_vector, length, label);
 
 	// If all examples have been fetched, return 0.
 	if (ret_value == 0)
@@ -77,7 +77,7 @@ int32_t CStreamingFeatures::get_next_feature_vector(float64_t* &feature_vector, 
 {
 	int32_t ret_value;
 
-	ret_value = parser.get_next_example_unlabelled(feature_vector, length);
+	ret_value = parser.get_next_example(feature_vector, length);
 
 	// If all examples have been fetched, return 0.
 	if (ret_value == 0)
