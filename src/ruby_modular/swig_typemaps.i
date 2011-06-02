@@ -3,30 +3,30 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
-  *
+ *
  * Written (W) 2011 Baozeng Ding
-  *  
+ *  
  */
 
 /* One dimensional input/output arrays */
 %define TYPEMAP_SGVECTOR(SGTYPE, R2SG, SG2R)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE> {
-	$1 = ($input && TYPE($input) == T_ARRAY && RARRAY($input)->len > 0) ? 1 : 0;
+	$1 = ($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) ? 1 : 0;
 }
 
 %typemap(in) shogun::SGVector<SGTYPE> {
 	int32_t i, len;
 	SGTYPE *array;
 	VALUE *ptr;
-	
+
 	if (!rb_obj_is_kind_of($input,rb_cArray))
 		rb_raise(rb_eArgError, "Expected Array");
 
-	len = RARRAY($input)->len;
+	len = RARRAY_LEN($input);
 	array = new SGTYPE[len];
 	
-	ptr = RARRAY($input)->ptr;
+	ptr = RARRAY_PTR($input);
 	for (i = 0; i < len; i++, ptr++) {
 		array[i] = R2SG(*ptr);
 	}
@@ -35,9 +35,9 @@
 }
 
 %typemap(out) shogun::SGVector<SGTYPE> {
-	int32_t i;	
+	int32_t i;
 	VALUE arr = rb_ary_new2($1.length);
-		
+
 	for (i = 0; i < $1.length; i++)
 		rb_ary_push(arr, SG2R($1.vector[i]));
 
@@ -64,18 +64,18 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<SGTYPE>
 {
-    $1 = ($input && TYPE($input) == T_ARRAY && RARRAY($input)->len > 0 && TYPE(rb_ary_entry($input, 0)) == T_ARRAY) ? 1 : 0;
+	$1 = ($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0 && TYPE(rb_ary_entry($input, 0)) == T_ARRAY) ? 1 : 0;
 }
 
 %typemap(in) shogun::SGMatrix<SGTYPE> {
 	int32_t i, j, rows, cols;
 	SGTYPE *array;
 	VALUE vec;
-	
+
 	if (!rb_obj_is_kind_of($input,rb_cArray))
 		rb_raise(rb_eArgError, "Expected Arrays");
 
-	rows = RARRAY($input)->len;
+        rows = RARRAY_LEN($input);
 	cols = 0;
 
 	for (i = 0; i < rows; i++) {
@@ -84,7 +84,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 			rb_raise(rb_eArgError, "Expected Arrays");
 		}
 		if (cols == 0) {
-			cols = RARRAY(vec)->len;
+			cols = RARRAY_LEN(vec);
 			array = new SGTYPE[rows * cols];
 		}
 		for (j = 0; j < cols; j++) {
@@ -100,7 +100,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 	int32_t cols = $1.num_cols;
 	int32_t len = rows * cols;
 	VALUE arr;
-	int32_t i, j;	
+	int32_t i, j;
 	
 	arr = rb_ary_new2(rows);
 		
@@ -142,36 +142,36 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 		rb_raise(rb_eArgError, "Expected Arrays");
 	}
 	
-	size = RARRAY($input)->len;
+	size = RARRAY_LEN($input);
 	shogun::SGString<SGTYPE>* strings=new shogun::SGString<SGTYPE>[size];
 
 	for (i = 0; i < size; i++) {
 		VALUE arr = rb_ary_entry($input, i);
 		if (TYPE(arr) == T_STRING) {
-			len = 0;				
-			const char *str = rb_str2cstr(arr, (long *)&len);
+			len = RSTRING_LEN(arr);
+			const char *str = StringValuePtr(arr);
 			max_len = shogun::CMath::max(len, max_len);
 
 			strings[i].length = len;
 			strings[i].string = NULL;
 			
-			if (len > 0) {			
+			if (len > 0) {
 				strings[i].string = new SGTYPE[len];
 				memcpy(strings[i].string, str, len);
 			}
 		}
 		else {
 			if (TYPE(arr) == T_ARRAY) {
-				len = RARRAY(arr)->len;
+				len = RARRAY_LEN(arr);
 				max_len = shogun::CMath::max(len, max_len);
-				
+
 				strings[i].length=len;
-          		strings[i].string=NULL;
+			strings[i].string=NULL;
 				if (len > 0) {
 					strings[i].string = new SGTYPE[len];
 					for (j = 0; j < len; j++) {
-						strings[i].string[j] = R2SG(RARRAY(arr)->ptr[j]);
-					}				
+						strings[i].string[j] = R2SG(RARRAY_PTR(arr)[j]);
+					}
 				}
 			}
 			else {
@@ -191,7 +191,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	shogun::SGString<SGTYPE>* str = $1.strings;
 	int32_t i, j, num = $1.num_strings;
 	VALUE arr;
-	
+
 	arr = rb_ary_new2(num);
 
 	for (i = 0; i < num; i++) {
