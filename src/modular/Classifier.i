@@ -97,7 +97,7 @@
 
 /* Remove C Prefix */
 %rename(Labels) CLabels;
-%rename(BaseClassifier) CClassifier;
+%rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
 %rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;
@@ -112,7 +112,7 @@
 %rename(LaRank) CLaRank;
 %rename(LibSVMMultiClass) CLibSVMMultiClass;
 %rename(LibSVMOneClass) CLibSVMOneClass;
-%rename(LinearClassifier) CLinearClassifier;
+%rename(LinearMachine) CLinearMachine;
 %rename(LPBoost) CLPBoost;
 %rename(LPM) CLPM;
 %rename(MPDSVM) CMPDSVM;
