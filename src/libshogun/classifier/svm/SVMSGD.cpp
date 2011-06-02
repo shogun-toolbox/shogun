@@ -103,13 +103,13 @@ float64_t dloss(float64_t z)
 
 
 CSVMSGD::CSVMSGD()
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 }
 
 CSVMSGD::CSVMSGD(float64_t C)
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 
@@ -118,7 +118,7 @@ CSVMSGD::CSVMSGD(float64_t C)
 }
 
 CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 	C1=C;

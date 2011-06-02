@@ -242,7 +242,7 @@ void tester()
 	SG_SPRINT("finished svm training\n");
 
 	//starting svm testing on training data
-	CLabels* res=tsvm->classify();
+	CLabels* res=tsvm->apply();
 	ASSERT(res);
 
 	float64_t err=0;
@@ -303,8 +303,8 @@ void tester()
 	tker->set_subkernel_weights(weights, numweights);
 	tsvm->set_kernel(tker);
 
-	//compute classif error, check mem
-	CLabels* tres=tsvm->classify();
+	//compute classification error, check mem
+	CLabels* tres=tsvm->apply();
 
 	float64_t terr=0;
 	for(int32_t i=0; i<numdatatest;++i)

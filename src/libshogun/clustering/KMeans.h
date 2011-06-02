@@ -17,7 +17,7 @@
 #include "lib/io.h"
 #include "features/SimpleFeatures.h"
 #include "distance/Distance.h"
-#include "classifier/DistanceMachine.h"
+#include "machine/DistanceMachine.h"
 
 namespace shogun
 {
@@ -196,7 +196,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return classified labels
 		 */
-		virtual CLabels* classify()
+		virtual CLabels* apply()
 		{
 			SG_NOTIMPLEMENTED;
 			return NULL;
@@ -207,7 +207,7 @@ class CKMeans : public CDistanceMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data)
+		virtual CLabels* apply(CFeatures* data)
 		{
 			SG_NOTIMPLEMENTED;
 			return NULL;

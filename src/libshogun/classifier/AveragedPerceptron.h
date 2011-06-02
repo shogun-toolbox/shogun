@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include "lib/common.h"
 #include "features/DotFeatures.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 
 namespace shogun
 {
@@ -25,9 +25,9 @@ namespace shogun
  * algorithm is not guaranteed to converge) and a fixed lerning rate,
  * the result is a linear classifier.
  *
- * \sa CLinearClassifier
+ * \sa CLinearMachine
  */
-class CAveragedPerceptron : public CLinearClassifier
+class CAveragedPerceptron : public CLinearMachine
 {
 	public:
 		/** default constructor */

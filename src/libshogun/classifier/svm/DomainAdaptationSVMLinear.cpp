@@ -27,7 +27,7 @@ CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear() : CLibLinear(L2R_L1LOSS
 }
 
 
-CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear(float64_t C, CDotFeatures* f, CLabels* lab, CLinearClassifier* pre_svm, float64_t B_param) : CLibLinear(C, f, lab)
+CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear(float64_t C, CDotFeatures* f, CLabels* lab, CLinearMachine* pre_svm, float64_t B_param) : CLibLinear(C, f, lab)
 {
 	init(pre_svm, B_param);
 
@@ -42,7 +42,7 @@ CDomainAdaptationSVMLinear::~CDomainAdaptationSVMLinear()
 }
 
 
-void CDomainAdaptationSVMLinear::init(CLinearClassifier* pre_svm, float64_t B_param)
+void CDomainAdaptationSVMLinear::init(CLinearMachine* pre_svm, float64_t B_param)
 {
 
 	if (pre_svm)
@@ -119,7 +119,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
     	ASSERT(presvm->get_bias() == 0.0);
 
         // bias of parent SVM was set to zero in constructor, already contains B
-        CLabels* parent_svm_out = presvm->classify(tmp_data);
+        CLabels* parent_svm_out = presvm->apply(tmp_data);
 
         SG_DEBUG("pre-computing linear term from presvm\n");
 
@@ -172,7 +172,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
 }
 
 
-CLinearClassifier* CDomainAdaptationSVMLinear::get_presvm()
+CLinearMachine* CDomainAdaptationSVMLinear::get_presvm()
 {
 	return presvm;
 }
@@ -196,20 +196,20 @@ void CDomainAdaptationSVMLinear::set_train_factor(float64_t factor)
 }
 
 
-CLabels* CDomainAdaptationSVMLinear::classify(CDotFeatures* data)
+CLabels* CDomainAdaptationSVMLinear::apply(CDotFeatures* data)
 {
 
     ASSERT(presvm->get_bias()==0.0);
 
     int32_t num_examples = data->get_num_vectors();
 
-    CLabels* out_current = CLibLinear::classify(data);
+    CLabels* out_current = CLibLinear::apply(data);
 
     if (presvm)
     {
 
         // recursive call if used on DomainAdaptationSVM object
-        CLabels* out_presvm = presvm->classify(data);
+        CLabels* out_presvm = presvm->apply(data);
 
 
         // combine outputs

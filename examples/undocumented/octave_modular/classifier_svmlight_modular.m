@@ -30,7 +30,7 @@ if exist('SVMLight')
 	svm.train();
 
 	kernel.init(feats_train, feats_test);
-	svm.classify().get_labels();
+	svm.apply().get_labels();
 else
 	disp('No support for SVMLight available.')
 end

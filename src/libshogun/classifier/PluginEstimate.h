@@ -11,7 +11,7 @@
 #ifndef _PLUGINESTIMATE_H___
 #define _PLUGINESTIMATE_H___
 
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
 #include "distributions/LinearHMM.h"
@@ -31,7 +31,7 @@ namespace shogun
  * \sa CLinearHMM
  * \sa CDistribution
  * */
-class CPluginEstimate: public CClassifier
+class CPluginEstimate: public CMachine
 {
 	public:
 		/** default constructor
@@ -55,14 +55,14 @@ class CPluginEstimate: public CClassifier
 		 *
 		 * @return classified labels
 		 */
-		CLabels* classify();
+		CLabels* apply();
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data);
 
 		/** set features
 		 *
@@ -82,7 +82,7 @@ class CPluginEstimate: public CClassifier
 		virtual CStringFeatures<uint16_t>* get_features() { SG_REF(features); return features; }
 
 		/// classify the test feature vector indexed by vec_idx
-		float64_t classify_example(int32_t vec_idx);
+		float64_t apply(int32_t vec_idx);
 
 		/** obsolete posterior log odds
 		 *

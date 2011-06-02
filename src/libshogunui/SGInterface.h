@@ -19,7 +19,7 @@
 #include "GUILabels.h"
 #include "GUIMath.h"
 #include "GUIPluginEstimate.h"
-#include "GUIPreProc.h"
+#include "GUIPreprocessor.h"
 #include "GUITime.h"
 #include "GUIStructure.h"
 #include "GUISignals.h"
@@ -737,7 +737,7 @@ class CSGInterface : public CSGObject
 		CGUILabels* ui_labels;
 		CGUIMath* ui_math;
 		CGUIPluginEstimate* ui_pluginestimate;
-		CGUIPreProc* ui_preproc;
+		CGUIPreprocessor* ui_preproc;
 		CGUITime* ui_time;
 		CGUIStructure* ui_structure;
 		//CGUISignals* ui_signals;

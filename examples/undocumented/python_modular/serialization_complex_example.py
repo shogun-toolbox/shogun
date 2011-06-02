@@ -17,7 +17,7 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 	from shogun.Kernel import GaussianKernel
 	from shogun.Library import SerializableHdf5File,SerializableAsciiFile, \
 			SerializableJsonFile,SerializableXmlFile,MSG_DEBUG
-	from shogun.PreProc import NormOne, LogPlusOne
+	from shogun.Preprocessor import NormOne, LogPlusOne
 
 	seed(17)
 

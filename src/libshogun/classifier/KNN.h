@@ -18,7 +18,7 @@
 #include "lib/io.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
-#include "classifier/DistanceMachine.h"
+#include "machine/DistanceMachine.h"
 
 namespace shogun
 {
@@ -86,17 +86,17 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify();
+		virtual CLabels* apply();
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data);
 
 		/// get output for example "vec_idx"
-		virtual float64_t classify_example(int32_t vec_idx)
+		virtual float64_t apply(int32_t vec_idx)
 		{
 			SG_ERROR( "for performance reasons use classify() instead of classify_example\n");
 			return 0;

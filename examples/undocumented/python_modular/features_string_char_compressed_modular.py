@@ -3,7 +3,7 @@ parameter_list = [['features_string_char_compressed_modular.py']]
 def features_string_char_compressed_modular(fname):
 	from shogun.Features import StringCharFeatures, StringFileCharFeatures, RAWBYTE
 	from shogun.Library import UNCOMPRESSED,SNAPPY,LZO,GZIP,BZIP2,LZMA, MSG_DEBUG
-	from shogun.PreProc import DecompressCharString
+	from shogun.Preprocessor import DecompressCharString
 
 	f=StringFileCharFeatures(fname, RAWBYTE)
 

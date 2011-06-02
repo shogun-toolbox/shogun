@@ -32,7 +32,7 @@ def classifier_svmlight_modular (fm_train_dna=traindat,fm_test_dna=testdat,label
 	svm.train()
 
 	kernel.init(feats_train, feats_test)
-	svm.classify().get_labels()
+	svm.apply().get_labels()
 	return kernel
 if __name__=='__main__':
 	print 'SVMLight'

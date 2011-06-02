@@ -261,8 +261,8 @@ POSTLINKFLAGS_PYTHON=
 TMPLOG="configure.log"
 TMPMAK="./configure-$RANDOM-$$-makefile"
 TMPC="./configure-$RANDOM-$$.c"
-TMPJAVA="./PrintProperty.java"
-TMPJAVAO="./PrintProperty.class"
+TMPJAVA="./configure.java"
+TMPJAVAO="./configure.class"
 TMPRUBY="./configure-$RANDOM-$$.rb"
 TMPCPP="./configure-$RANDOM-$$.cpp"
 TMPO="./configure-$RANDOM-$$.o"
@@ -524,7 +524,7 @@ test_java()
 		echores "${JAVAVER}"
 
 cat > $TMPJAVA << EOF
-public class PrintProperty {
+public class configure {
 	public static void main(String[] args) {
 		for (String arg: args) {
 			System.out.println(System.getProperty(arg));
@@ -535,11 +535,12 @@ EOF
 		echocheck "Java native interface files (jni.h)"
 		if javac $TMPJAVA >/dev/null 2>&1 
 		then
+			mkdir java_modular/shogun
 			EXT_IF_SWIG_JAVA_MODULAR='stop'
 			PRE_LIB_SWIG_JAVA_MODULAR='lib'
 			EXT_LIB_SWIG_JAVA_MODULAR=.so
 			SWIGFLAGS_JAVA_MODULAR="-c++ -java -package shogun -outdir shogun"
-			INCLUDES_JAVA="-I$(dirname $(java PrintProperty java.home))/include"
+			INCLUDES_JAVA="-I$(dirname $(java configure java.home))/include"
 			INCLUDES_JAVA="$INCLUDES_JAVA $INCLUDES_JAVA/`uname -s | tr 'A-Z' 'a-z'`"
 
 			COMPFLAGS_CPP="$COMPFLAGS_CPP -fno-strict-aliasing"
@@ -553,6 +554,60 @@ EOF
 		fi
 	else
 		echores "not detected"
+	fi
+}
+
+test_jblas()
+{
+	echocheck "Jblas"
+cat > $TMPJAVA << EOF
+import org.jblas.DoubleMatrix;
+
+public class configure {
+    public static void main(String[] args) {
+        DoubleMatrix a = DoubleMatrix.rand(3,3);
+        DoubleMatrix b = DoubleMatrix.rand(3,3);
+
+        DoubleMatrix c = a.add(b);
+    }
+}
+EOF
+
+	if javac $TMPJAVA >/dev/null 2>&1 || javac -cp /usr/share/java/jblas.jar $TMPJAVA >/dev/null 2>&1
+	then
+		echores "yes"
+		HAVE_JBLAS='#define HAVE_JBLAS 1'
+		DEFINES="$DEFINES -DHAVE_JBLAS"
+	else
+		echores "no"
+	fi
+}
+
+test_ujmp()
+{
+	echocheck "UJMP"
+cat > $TMPJAVA << EOF
+import org.ujmp.core.Matrix;
+import org.ujmp.core.matrix.DenseMatrix;
+
+public class configure {
+    public static void main(String[] args) {
+        Matrix a = DenseMatrix.factory.rand(3, 3);
+        Matrix b = DenseMatrix.factory.rand(3, 3);
+
+        Matrix c = a.plus(b);
+        System.out.println(c);
+    }
+}
+EOF
+
+	if javac $TMPJAVA >/dev/null 2>&1 || javac -cp /usr/share/java/ujmp.jar $TMPJAVA >/dev/null 2>&1
+	then
+		echores "yes"
+		HAVE_UJMP='#define HAVE_UJMP 1'
+		DEFINES="$DEFINES -DHAVE_UJMP"
+	else
+		echores "no"
 	fi
 }
 
@@ -598,7 +653,7 @@ EOF
                         then
                         echores "yes"
                         INCLUDES_RUBY=`ruby $TMPRUBY`
-                        LINKFLAGS_RUBY="-lruby -fPIC -shared"
+                        LINKFLAGS_RUBY="-lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` -fPIC -shared"
                         EXT_IF_SWIG_RUBY_MODULAR='stop'
                         PRE_LIB_SWIG_RUBY_MODULAR=
                         EXT_LIB_SWIG_RUBY_MODULAR=.so
@@ -4410,6 +4465,8 @@ $HAVE_MVEC
 $HAVE_POWL
 $HAVE_SQRTL
 $HAVE_LOG2
+$HAVE_JBLAS
+$HAVE_UJMP
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE
 $USE_LOGSUMARRAY
@@ -4528,6 +4585,8 @@ test_r
 test_matlab
 test_elwms
 test_java
+test_jblas
+test_ujmp
 test_csharp
 test_ruby
 test_lua

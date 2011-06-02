@@ -29,5 +29,5 @@ svm.set_max_train_time(max_train_time);
 svm.train();
 
 svm.set_features(feats_test);
-svm.classify().get_labels();
+svm.apply().get_labels();
 

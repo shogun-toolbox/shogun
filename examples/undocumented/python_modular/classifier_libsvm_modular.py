@@ -23,10 +23,10 @@ def classifier_libsvm_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	svm.train()
 
 	kernel.init(feats_train, feats_test)
-	labels = svm.classify().get_labels()
+	labels = svm.apply().get_labels()
 	supportvectors = sv_idx=svm.get_support_vectors()
 	alphas=svm.get_alphas()
-	predictions = svm.classify()
+	predictions = svm.apply()
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':

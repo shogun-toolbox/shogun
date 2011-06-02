@@ -10,7 +10,7 @@ def preproc_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,o
 
 	from shogun.Kernel import CommUlongStringKernel
 	from shogun.Features import StringCharFeatures, StringUlongFeatures, DNA
-	from shogun.PreProc import SortUlongString
+	from shogun.Preprocessor import SortUlongString
 
 
 	charfeat=StringCharFeatures(DNA)

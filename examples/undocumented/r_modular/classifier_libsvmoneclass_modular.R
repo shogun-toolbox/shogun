@@ -21,6 +21,6 @@ dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$train(svm)
 
 dump <- kernel$init(kernel, feats_train, feats_test)
-lab <- svm$classify(svm)
+lab <- svm$apply(svm)
 out <- lab$get_labels(lab)
 

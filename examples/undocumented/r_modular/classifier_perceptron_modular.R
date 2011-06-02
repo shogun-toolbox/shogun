@@ -21,5 +21,5 @@ dump <- perceptron$set_max_iter(perceptron, max_iter)
 dump <- perceptron$train(perceptron)
 
 dump <- perceptron$set_features(perceptron, feats_test)
-lab <- perceptron$classify(perceptron)
+lab <- perceptron$apply(perceptron)
 out <- lab$get_labels(lab)

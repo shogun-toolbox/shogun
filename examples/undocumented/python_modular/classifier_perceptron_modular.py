@@ -23,7 +23,7 @@ def classifier_perceptron_modular (fm_train_real=traindat,fm_test_real=testdat,l
 	perceptron.train()
 
 	perceptron.set_features(feats_test)
-	out_labels = perceptron.classify().get_labels()
+	out_labels = perceptron.apply().get_labels()
 	return perceptron, out_labels
 
 if __name__=='__main__':

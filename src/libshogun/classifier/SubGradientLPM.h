@@ -19,7 +19,7 @@
 
 #include "lib/Cplex.h"
 
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "features/Features.h"
 #include "features/Labels.h"
 

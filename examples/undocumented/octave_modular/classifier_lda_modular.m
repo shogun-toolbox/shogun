@@ -22,4 +22,4 @@ lda.train();
 lda.get_bias();
 lda.get_w();
 lda.set_features(feats_test);
-lda.classify().get_labels();
+lda.apply().get_labels();

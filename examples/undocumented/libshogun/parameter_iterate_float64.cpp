@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Heiko Strathmann
- * Copyright (C) 1999-2011 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include <shogun/features/Labels.h>
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 		svm->train();
 		for (int32_t i=0; i<n; ++i)
 			SG_SPRINT("output[%d]=%f\treal[%d]=%f\n", i,
-					svm->classify_example(i), i, labels->get_label(i));
+					svm->apply(i), i, labels->get_label(i));
 
 		delete param;
 	}

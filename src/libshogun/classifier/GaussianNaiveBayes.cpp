@@ -9,7 +9,7 @@
  */
 
 #include "GaussianNaiveBayes.h"
-#include "Classifier.h"
+#include "machine/Machine.h"
 #include "features/Features.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
@@ -18,7 +18,7 @@
 using namespace shogun;
 
 CGaussianNaiveBayes::CGaussianNaiveBayes() :
-CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
+CMachine(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {
@@ -26,7 +26,7 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 };
 
 CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels) :
-CClassifier(), m_features(NULL), m_min_label(0), m_labels(NULL),
+CMachine(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 {
@@ -154,7 +154,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CGaussianNaiveBayes::classify()
+CLabels* CGaussianNaiveBayes::apply()
 {
 	// init number of vectors
 	int32_t n = m_features->get_num_vectors();
@@ -164,12 +164,12 @@ CLabels* CGaussianNaiveBayes::classify()
 
 	// classify each example of data
 	for (int i=0; i<n; i++)
-		result->set_label(i,classify_example(i));
+		result->set_label(i,apply(i));
 
 	return result;
 };
 
-CLabels* CGaussianNaiveBayes::classify(CFeatures* data)
+CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 {
 	// check data correctness
 	if (!data)
@@ -181,10 +181,10 @@ CLabels* CGaussianNaiveBayes::classify(CFeatures* data)
 	set_features((CDotFeatures*)data);
 
 	// classify using features
-	return classify();
+	return apply();
 };
 
-float64_t CGaussianNaiveBayes::classify_example(int32_t idx)
+float64_t CGaussianNaiveBayes::apply(int32_t idx)
 {
 	// get [idx] feature vector
 	m_features->get_feature_vector(&m_feat_vec,&m_dim,idx);

@@ -80,7 +80,7 @@ bool CGUIPluginEstimate::save(char* param)
   return result;
 }
 
-CLabels* CGUIPluginEstimate::classify()
+CLabels* CGUIPluginEstimate::apply()
 {
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
@@ -98,10 +98,10 @@ CLabels* CGUIPluginEstimate::classify()
 
 	estimator->set_features((CStringFeatures<uint16_t>*) testfeatures);
 
-	return estimator->classify();
+	return estimator->apply();
 }
 
-float64_t CGUIPluginEstimate::classify_example(int32_t idx)
+float64_t CGUIPluginEstimate::apply(int32_t idx)
 {
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
 
@@ -119,5 +119,5 @@ float64_t CGUIPluginEstimate::classify_example(int32_t idx)
 
 	estimator->set_features((CStringFeatures<uint16_t>*) testfeatures);
 
-	return estimator->classify_example(idx);
+	return estimator->apply(idx);
 }

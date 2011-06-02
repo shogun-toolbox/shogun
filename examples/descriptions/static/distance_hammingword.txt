@@ -39,7 +39,7 @@ and target 'TEST'. The 'TRAIN' distance matrix ceased to exist.
 
 For more details see
 doc/classshogun_1_1CSortWordString.html,
-doc/classshogun_1_1CPreProc.html,
+doc/classshogun_1_1CPreprocessor.html,
 doc/classshogun_1_1CStringFeatures.html (method obtain_from_char_features) and
 doc/classshogun_1_1CHammingWordDistance.html.
 

@@ -96,7 +96,7 @@ bool CMultiClassSVM::set_svm(int32_t num, CSVM* svm)
 	return false;
 }
 
-CLabels* CMultiClassSVM::classify()
+CLabels* CMultiClassSVM::apply()
 {
 	if (multiclass_type==ONE_VS_REST)
 		return classify_one_vs_rest();
@@ -135,7 +135,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 			SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_num_svms, i, m_svms[i]);
 			ASSERT(m_svms[i]);
 			m_svms[i]->set_kernel(kernel);
-			outputs[i]=m_svms[i]->classify();
+			outputs[i]=m_svms[i]->apply();
 		}
 
 		int32_t* votes=new int32_t[m_num_classes];
@@ -205,7 +205,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 		{
 			ASSERT(m_svms[i]);
 			m_svms[i]->set_kernel(kernel);
-			outputs[i]=m_svms[i]->classify();
+			outputs[i]=m_svms[i]->apply();
 		}
 
 		for (int32_t i=0; i<num_vectors; i++)
@@ -236,7 +236,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 	return result;
 }
 
-float64_t CMultiClassSVM::classify_example(int32_t num)
+float64_t CMultiClassSVM::apply(int32_t num)
 {
 	if (multiclass_type==ONE_VS_REST)
 		return classify_example_one_vs_rest(num);
@@ -253,11 +253,11 @@ float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 	ASSERT(m_num_svms>0);
 	float64_t* outputs=new float64_t[m_num_svms];
 	int32_t winner=0;
-	float64_t max_out=m_svms[0]->classify_example(num);
+	float64_t max_out=m_svms[0]->apply(num);
 
 	for (int32_t i=1; i<m_num_svms; i++)
 	{
-		outputs[i]=m_svms[i]->classify_example(num);
+		outputs[i]=m_svms[i]->apply(num);
 		if (outputs[i]>max_out)
 		{
 			winner=i;
@@ -281,7 +281,7 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 	{
 		for (int32_t j=i+1; j<m_num_classes; j++)
 		{
-			if (m_svms[s++]->classify_example(num)>0)
+			if (m_svms[s++]->apply(num)>0)
 				votes[i]++;
 			else
 				votes[j]++;

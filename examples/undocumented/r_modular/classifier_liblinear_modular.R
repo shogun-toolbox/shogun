@@ -26,5 +26,5 @@ dump <- svm$set_bias_enabled(svm, TRUE)
 dump <- svm$train(svm)
 
 dump <- svm$set_features(svm, feats_test)
-lab <- svm$classify(svm)
+lab <- svm$apply(svm)
 out <- lab$get_labels(lab)

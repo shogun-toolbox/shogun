@@ -33,6 +33,6 @@ km_train=kernel.get_kernel_matrix();
 
 kernel.init(feats_train, feats_test);
 pie.set_features(feats_test);
-pie.classify().get_labels();
+pie.apply().get_labels();
 km_test=kernel.get_kernel_matrix();
 

@@ -29,13 +29,13 @@
 using namespace shogun;
 
 CSGDQN::CSGDQN()
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 }
 
 CSGDQN::CSGDQN(float64_t C)
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 
@@ -44,7 +44,7 @@ CSGDQN::CSGDQN(float64_t C)
 }
 
 CSGDQN::CSGDQN(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 	C1=C;

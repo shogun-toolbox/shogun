@@ -27,7 +27,7 @@ def classifier_subgradientsvm_modular(fm_train_real, fm_test_real,
 	svm.train()
 
 	svm.set_features(feats_test)
-	labels=svm.classify().get_labels()
+	labels=svm.apply().get_labels()
 
 	return labels, svm
 

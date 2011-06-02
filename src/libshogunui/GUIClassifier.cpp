@@ -31,7 +31,7 @@
 #include <shogun/classifier/Perceptron.h>
 #include <shogun/classifier/KernelPerceptron.h>
 
-#include <shogun/classifier/LinearClassifier.h>
+#include <shogun/machine/LinearMachine.h>
 
 #ifdef USE_SVMLIGHT
 #include <shogun/classifier/svm/SVMLight.h>
@@ -779,9 +779,9 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 			SG_ERROR("LPM and LPBOOST require trainfeatures of class SPARSE type REAL.\n");
 	}
 
-	((CLinearClassifier*) classifier)->set_labels(trainlabels);
-	((CLinearClassifier*) classifier)->set_features((CSimpleFeatures<float64_t>*) trainfeatures);
-	result=((CLinearClassifier*) classifier)->train();
+	((CLinearMachine*) classifier)->set_labels(trainlabels);
+	((CLinearMachine*) classifier)->set_features((CSimpleFeatures<float64_t>*) trainfeatures);
+	result=((CLinearMachine*) classifier)->train();
 
 	return result;
 }
@@ -1187,7 +1187,7 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 	km->set_batch_computation_enabled(svm_use_batch_computation);
 
 	SG_INFO("Starting kernel machine testing.\n");
-	return classifier->classify();
+	return classifier->apply();
 }
 
 bool CGUIClassifier::get_trained_classifier(
@@ -1344,7 +1344,7 @@ bool CGUIClassifier::get_linear(
 	float64_t* &weights, int32_t& rows, int32_t& cols, float64_t*& bias,
 	int32_t& brows, int32_t& bcols)
 {
-	CLinearClassifier* linear=(CLinearClassifier*) classifier;
+	CLinearMachine* linear=(CLinearMachine*) classifier;
 
 	if (!linear)
 		return false;
@@ -1397,7 +1397,7 @@ CLabels* CGUIClassifier::classify_distancemachine()
 	((CDistanceMachine*) classifier)->set_distance(
 		ui->ui_distance->get_distance());
 	SG_INFO("starting distance machine testing\n") ;
-	return classifier->classify();
+	return classifier->apply();
 }
 
 
@@ -1421,9 +1421,9 @@ CLabels* CGUIClassifier::classify_linear()
 		return false ;
 	}
 
-	((CLinearClassifier*) classifier)->set_features((CDotFeatures*) testfeatures);
+	((CLinearMachine*) classifier)->set_features((CDotFeatures*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
-	return classifier->classify();
+	return classifier->apply();
 }
 
 CLabels* CGUIClassifier::classify_byte_linear()
@@ -1449,7 +1449,7 @@ CLabels* CGUIClassifier::classify_byte_linear()
 
 	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) testfeatures);
 	SG_INFO("starting linear classifier testing\n") ;
-	return classifier->classify();
+	return classifier->apply();
 }
 
 bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
@@ -1488,7 +1488,7 @@ bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
 	((CKernelMachine*) classifier)->set_kernel(
 		ui->ui_kernel->get_kernel());
 
-	result=classifier->classify_example(idx);
+	result=classifier->apply(idx);
 	return true ;
 }
 

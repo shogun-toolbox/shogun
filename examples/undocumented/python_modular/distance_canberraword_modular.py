@@ -9,7 +9,7 @@ parameter_list = [[traindna,testdna,3,0,False],[traindna,testdna,3,0,False]]
 
 def distance_canberraword_modular (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False):
 	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA
-	from shogun.PreProc import SortWordString
+	from shogun.Preprocessor import SortWordString
 	from shogun.Distance import CanberraWordDistance
 	
 	charfeat=StringCharFeatures(DNA)

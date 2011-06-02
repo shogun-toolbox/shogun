@@ -39,7 +39,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 */
-		CDomainAdaptationSVMLinear(float64_t C, CDotFeatures* f, CLabels* lab, CLinearClassifier* presvm, float64_t B);
+		CDomainAdaptationSVMLinear(float64_t C, CDotFeatures* f, CLabels* lab, CLinearMachine* presvm, float64_t B);
 
 
 		/** destructor */
@@ -51,7 +51,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 * */
-		void init(CLinearClassifier* presvm, float64_t B);
+		void init(CLinearMachine* presvm, float64_t B);
 
 
 
@@ -78,14 +78,14 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CDotFeatures* data);
+		virtual CLabels* apply(CDotFeatures* data);
 
 
 		/** returns SVM that is used as prior information
 		 *
 		 * @return presvm
 		 */
-		virtual CLinearClassifier* get_presvm();
+		virtual CLinearMachine* get_presvm();
 
 
 		/** getter for regularization parameter B
@@ -136,7 +136,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 
 
 		/** SVM to regularize against */
-		CLinearClassifier* presvm;
+		CLinearMachine* presvm;
 
 
 		/** regularization parameter B */

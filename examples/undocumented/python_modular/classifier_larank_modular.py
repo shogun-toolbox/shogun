@@ -29,8 +29,8 @@ def classifier_larank_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	#svm.io.enable_progress()
 	svm.set_epsilon(epsilon)
 	svm.train()
-	out=svm.classify(feats_train).get_labels()
-	predictions = svm.classify()
+	out=svm.apply(feats_train).get_labels()
+	predictions = svm.apply()
 	return predictions, svm, predictions.get_labels()
 
 

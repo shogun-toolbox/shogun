@@ -33,12 +33,12 @@
 %include "SGBase.i"
 %{
  #include <shogun/features/Labels.h>
- #include <shogun/classifier/Classifier.h>
+ #include <shogun/machine/Machine.h>
  #include <shogun/classifier/svm/GMNPSVM.h>
  #include <shogun/classifier/svm/GNPPSVM.h>
  #include <shogun/classifier/svm/GPBTSVM.h>
  #include <shogun/classifier/KernelPerceptron.h> 
- #include <shogun/classifier/DistanceMachine.h>
+ #include <shogun/machine/DistanceMachine.h>
  #include <shogun/classifier/KNN.h>
  #include <shogun/classifier/LDA.h>
  #include <shogun/classifier/svm/LibLinear.h>
@@ -47,7 +47,7 @@
  #include <shogun/classifier/svm/LaRank.h>
  #include <shogun/classifier/svm/LibSVMMultiClass.h>
  #include <shogun/classifier/svm/LibSVMOneClass.h>
- #include <shogun/classifier/LinearClassifier.h> 
+ #include <shogun/machine/LinearMachine.h> 
  #include <shogun/classifier/LPBoost.h> 
  #include <shogun/classifier/LPM.h>
  #include <shogun/classifier/svm/MPDSVM.h>
@@ -59,7 +59,7 @@
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/SVMLin.h>
  #include <shogun/classifier/GaussianNaiveBayes.h>
- #include <shogun/classifier/KernelMachine.h>
+ #include <shogun/machine/KernelMachine.h>
  #include <shogun/classifier/svm/SVMOcas.h>
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/SGDQN.h>
@@ -146,12 +146,12 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/Labels.h>
-%include <shogun/classifier/Classifier.h>
-%include <shogun/classifier/KernelMachine.h>
-%include <shogun/classifier/DistanceMachine.h>
+%include <shogun/machine/Machine.h>
+%include <shogun/machine/KernelMachine.h>
+%include <shogun/machine/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/MultiClassSVM.h>
-%include <shogun/classifier/LinearClassifier.h> 
+%include <shogun/machine/LinearMachine.h> 
 %include <shogun/classifier/GaussianNaiveBayes.h>
 %include <shogun/classifier/svm/GMNPSVM.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
