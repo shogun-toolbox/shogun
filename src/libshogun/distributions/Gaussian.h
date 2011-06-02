@@ -24,11 +24,20 @@
 namespace shogun
 {
 class CDotFeatures;
+
+enum ECovType
+{
+	FULL,
+	DIAG,
+	SPHERICAL
+};
+
 /** @brief Gaussian distribution interface.
  *
  * Takes as input a mean vector and covariance matrix.
  * Also possible to train from data.
  * Likelihood is computed using the Gaussian PDF \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
+ * The actuall computations depend on the type of covariance used.
  */
 class CGaussian : public CDistribution
 {
@@ -44,12 +53,19 @@ class CGaussian : public CDistribution
 		 * @param cov covariance of the Gaussian
 		 * @param cov_rows
 		 * @param cov_cols
+		 * @param cov_type covariance type
 		 */
+<<<<<<< HEAD
 		CGaussian(SGVector<float64_t> mean_vector, SGMatrix<float64_t> cov_matrix);
 
+=======
+		CGaussian(float64_t* mean, int32_t mean_length,
+					float64_t* cov, int32_t cov_rows, int32_t cov_cols,
+					ECovType cov_type=FULL);
+>>>>>>> Rewritten Gaussian class to work with different covariance types in log domain.
 		virtual ~CGaussian();
 
-		/** Compute the inverse covariance and constant part */
+		/** Compute the constant part */
 		void init();
 
 		/** learn distribution
@@ -132,20 +148,50 @@ class CGaussian : public CDistribution
 		/** get cov
 		 *
 		 */
+<<<<<<< HEAD
 		virtual SGMatrix<float64_t> get_cov()
 		{
 			return SGMatrix<float64_t>(m_cov,m_cov_rows,m_cov_cols);
 		}
+=======
+		virtual void get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols);
+>>>>>>> Rewritten Gaussian class to work with different covariance types in log domain.
 
 		/** set cov
 		 *
 		 */
 		virtual inline void set_cov(SGMatrix<float64_t> cov_matrix)
 		{
+<<<<<<< HEAD
 			ASSERT(cov_matrix.num_rows = cov_matrix.num_cols);
 			ASSERT(cov_matrix.num_rows = m_cov_rows);
 			memcpy(m_cov, cov_matrix.matrix, sizeof(float64_t)*m_cov_rows*m_cov_cols);
+=======
+			ASSERT(cov_rows = cov_cols);
+			ASSERT(cov_rows = m_mean_length);
+			decompose_cov(cov, cov_rows);
+>>>>>>> Rewritten Gaussian class to work with different covariance types in log domain.
 			init();
+		}
+
+		/** get cov type
+		 *
+		 * @return covariance type
+		 */
+		inline ECovType get_cov_type()
+		{
+			return m_cov_type;
+		}
+
+		/** set cov type
+		 *
+		 * Will only take effect after covariance is changed
+		 *
+		 * @param cov_type new covariance type
+		 */
+		inline void set_cov_type(ECovType cov_type)
+		{
+			m_cov_type = cov_type;
 		}
 
 		/** @return object name */
@@ -155,25 +201,28 @@ class CGaussian : public CDistribution
 		/** Initialize parameters for serialization */
 		void register_params();
 
+		/** decompose covariance matrix according to type */
+		void decompose_cov(float64_t* cov, int32_t cov_size);
+
 	protected:
 		/** constant part */
 		float64_t m_constant;
-		/** covariance */
-		float64_t* m_cov;
-		/** covariance row num */
-		int32_t m_cov_rows;
-		/** covariance col num */
-		int32_t m_cov_cols;
-		/** covariance inverse */
-		float64_t* m_cov_inverse;
-		/** covariance inverse row num */
-		int32_t m_cov_inverse_rows;
-		/** covariance inverse col num */
-		int32_t m_cov_inverse_cols;
+		/** diagonal */
+		float64_t* m_d;
+		/** diagonal length */
+		int32_t m_d_length;
+		/** unitary matrix */
+		float64_t* m_u;
+		/** unitary matrix row num */
+		int32_t  m_u_rows;
+		/** unitary matrix col num */
+		int32_t m_u_cols;
 		/** mean */
 		float64_t* m_mean;
 		/** mean length */
 		int32_t m_mean_length;
+		/** covariance type */
+		ECovType m_cov_type;
 };
 }
 #endif //HAVE_LAPACK

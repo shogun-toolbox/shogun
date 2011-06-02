@@ -18,12 +18,13 @@
 using namespace shogun;
 
 CGaussian::CGaussian() : CDistribution(), m_constant(0),
-m_cov(NULL), m_cov_rows(0), m_cov_cols(0), m_cov_inverse(NULL),
-m_cov_inverse_rows(0), m_cov_inverse_cols(0), m_mean(NULL),
-m_mean_length(0)
+m_d(NULL), m_d_length(0), m_u(NULL), m_u_rows(0), m_u_cols(0),
+m_mean(NULL), m_mean_length(0), m_cov_type(FULL)
 {
+	register_params();
 }
 
+<<<<<<< HEAD
 CGaussian::CGaussian(SGVector<float64_t> mean_vector, SGMatrix<float64_t> cov_matrix) : CDistribution(),
 					m_cov_inverse(NULL)
 {
@@ -34,35 +35,47 @@ CGaussian::CGaussian(SGVector<float64_t> mean_vector, SGMatrix<float64_t> cov_ma
 	m_mean_length = mean_vector.vlen;
 	m_cov_rows = cov_matrix.num_rows;
 	m_cov_cols = cov_matrix.num_cols;
+=======
+CGaussian::CGaussian(float64_t* mean, int32_t mean_length,
+					float64_t* cov, int32_t cov_rows, int32_t cov_cols,
+					ECovType cov_type) : CDistribution(),
+					m_d(NULL), m_d_length(0), m_u(NULL), m_u_rows(0), m_u_cols(0),
+					m_cov_type(cov_type)
+{
+	ASSERT(mean_length == cov_rows);
+	ASSERT(cov_rows == cov_cols);
+	m_mean=new float64_t[mean_length];
+	memcpy(m_mean, mean, sizeof(float64_t)*mean_length);
+
+	if (cov_rows==1)
+		m_cov_type=SPHERICAL;
+
+	decompose_cov(cov, cov_rows);
+>>>>>>> Rewritten Gaussian class to work with different covariance types in log domain.
 	init();
 	register_params();
 }
 
 void CGaussian::init()
 {
-	delete[] m_cov_inverse;
-
-	m_cov_inverse_rows = m_cov_cols;
-	m_cov_inverse_cols = m_cov_rows;
-
-	m_cov_inverse = new float64_t[m_cov_rows*m_cov_cols];
-	memcpy(m_cov_inverse, m_cov, sizeof(float64_t)*m_cov_rows*m_cov_cols);
-	int32_t result = clapack_dpotrf(CblasRowMajor, CblasLower, m_cov_rows, m_cov_inverse, m_cov_rows);
-	m_constant = 1;
-
-	for (int i = 0; i < m_cov_rows; i++)
-		m_constant *= m_cov_inverse[i*m_cov_rows+i];
-
-	m_constant = -CMath::log(m_constant);
-	m_constant -= (m_cov_rows/2.0)*CMath::log(2*M_PI);
-
-	result = clapack_dpotri(CblasRowMajor, CblasLower, m_cov_rows, m_cov_inverse, m_cov_rows);
+	m_constant=CMath::log(2*M_PI)*m_mean_length;
+	switch (m_cov_type)
+	{
+		case FULL:
+		case DIAG:
+			for (int i=0; i<m_d_length; i++)
+				m_constant+=CMath::log(m_d[i]);
+			break;
+		case SPHERICAL:
+			m_constant+=m_mean_length*CMath::log(*m_d);
+			break;
+	}
 }
 
 CGaussian::~CGaussian()
 {
-	delete[] m_cov_inverse;
-	delete[] m_cov;
+	delete[] m_d;
+	delete[] m_u;
 	delete[] m_mean;
 }
 
@@ -78,10 +91,16 @@ bool CGaussian::train(CFeatures* data)
 	CDotFeatures* dotdata = (CDotFeatures *) data;
 
 	delete[] m_mean;
-	delete[] m_cov;
+
+	float64_t* cov;
+	int32_t cov_rows;
+	int32_t cov_cols;
 
 	dotdata->get_mean(&m_mean, &m_mean_length);
-	dotdata->get_cov(&m_cov, &m_cov_rows, &m_cov_cols);
+	dotdata->get_cov(&cov, &cov_rows, &cov_cols);
+
+	decompose_cov(cov, cov_rows);
+	delete[] cov;
 
 	init();
 
@@ -90,15 +109,22 @@ bool CGaussian::train(CFeatures* data)
 
 int32_t CGaussian::get_num_model_parameters()
 {
-	return m_cov_rows*m_cov_cols+m_mean_length;
+	switch (m_cov_type)
+	{
+		case FULL:
+			return m_u_rows*m_u_cols+m_d_length+m_mean_length;
+		case DIAG:
+			return m_d_length+m_mean_length;
+		case SPHERICAL:
+			return 1+m_mean_length;
+	}
+	return 0;
 }
 
 float64_t CGaussian::get_log_model_parameter(int32_t num_param)
 {
-	if (num_param<m_mean_length)
-		return CMath::log(m_mean[num_param]);
-	else
-		return CMath::log(m_cov[num_param-m_mean_length]);
+	SG_NOTIMPLEMENTED;
+	return 0;
 }
 
 float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
@@ -118,31 +144,118 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 
 float64_t CGaussian::compute_log_PDF(float64_t* point, int32_t point_len)
 {
-	ASSERT(m_mean && m_cov);
+	ASSERT(m_mean && m_d);
 	ASSERT(point_len == m_mean_length);
 	float64_t* difference = new float64_t[m_mean_length];
 	memcpy(difference, point, sizeof(float64_t)*m_mean_length);
-	float64_t* result = new float64_t[m_mean_length];
 
 	for (int i = 0; i < m_mean_length; i++)
 		difference[i] -= m_mean[i];
 
-	cblas_dsymv(CblasRowMajor, CblasLower, m_mean_length, -1.0/2.0, m_cov_inverse, m_mean_length,
-				difference, 1, 0, result, 1);
+	float answer=m_constant;
 
-	float64_t answer = m_constant+cblas_ddot(m_mean_length, difference, 1, result, 1);
+	switch (m_cov_type)
+	{
+		case FULL:
+			cblas_dgemv(CblasRowMajor, CblasTrans, m_d_length, m_d_length,
+						1, m_u, m_d_length, difference, 1, 0, difference, 1);
+
+			for (int i=0; i<m_mean_length; i++)
+				answer+=difference[i]*difference[i]/m_d[i];
+
+			break;
+		case DIAG:
+			for (int i=0; i<m_mean_length; i++)
+				answer+=difference[i]*difference[i]/m_d[i];
+
+			break;
+		case SPHERICAL:
+			for (int i=0; i<m_mean_length; i++)
+				answer+=difference[i]*difference[i]/(*m_d);
+
+			break;
+	}
 
 	delete[] difference;
-	delete[] result;
 
-	return answer;
+	return -0.5*answer;
+}
+
+void CGaussian::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
+{
+	*cov = new float64_t[m_mean_length*m_mean_length];
+	memset(*cov, 0, sizeof(float64_t)*m_mean_length*m_mean_length);
+
+	if (m_cov_type==FULL)
+	{
+		if (!m_u)
+			SG_ERROR("Unitary matrix not set\n");
+
+		float64_t diag_holder[m_d_length*m_d_length];
+		memset(diag_holder, 0, sizeof(float64_t)*m_d_length*m_d_length);
+		for(int i=0; i<m_d_length; i++)
+			diag_holder[i*m_d_length+i]=m_d[i];
+
+		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+					m_d_length, m_d_length, m_d_length, 1, m_u, m_d_length,
+					diag_holder, m_d_length, 0, *cov, m_d_length);
+		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans,
+					m_d_length, m_d_length, m_d_length, 1, *cov, m_d_length,
+					m_u, m_d_length, 0, *cov, m_d_length);
+	}
+	else if (m_cov_type==DIAG)
+	{
+		for (int i=0; i<m_d_length; i++)
+			*cov[i*m_d_length+i]=m_d[i];
+	}
+	else
+	{
+		for (int i=0; i<m_mean_length; i++)
+			*cov[i*m_mean_length+i]=*m_d;
+	}
+
+	*cov_rows = m_mean_length;
+	*cov_cols = m_mean_length;
 }
 
 void CGaussian::register_params()
 {
-	m_parameters->add_matrix(&m_cov, &m_cov_rows, &m_cov_cols, "m_cov", "Covariance.");
-	m_parameters->add_matrix(&m_cov_inverse, &m_cov_inverse_rows, &m_cov_inverse_cols, "m_cov_inverse", "Covariance inverse.");
+	m_parameters->add_matrix(&m_u, &m_u_rows, &m_u_cols, "m_u", "Unitary matrix.");
+	m_parameters->add_vector(&m_d, &m_d_length, "m_d", "Diagonal.");
 	m_parameters->add_vector(&m_mean, &m_mean_length, "m_mean", "Mean.");
 	m_parameters->add(&m_constant, "m_constant", "Constant part.");
+	m_parameters->add((machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.");
+}
+
+void CGaussian::decompose_cov(float64_t* cov, int32_t cov_size)
+{
+	delete[] m_d;
+	switch (m_cov_type)
+	{
+		case FULL:
+			delete[] m_u;
+			m_u=new float64_t[cov_size*cov_size];
+			memcpy(m_u, cov, sizeof(float64_t)*cov_size*cov_size);
+
+			m_d=CMath::compute_eigenvectors(m_u, cov_size, cov_size);
+			m_d_length=cov_size;
+			m_u_rows=cov_size;
+			m_u_cols=cov_size;
+			break;
+		case DIAG:
+			m_d=new float64_t[cov_size];
+
+			for (int i=0; i<cov_size; i++)
+				m_d[i]=cov[i*cov_size+i];
+			
+			m_d_length=cov_size;
+			break;
+		case SPHERICAL:
+			m_d=new float64_t;
+
+			*m_d=cov[0];
+			m_d_length=1;
+			break;
+	}
 }
 #endif
