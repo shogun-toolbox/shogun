@@ -18,7 +18,7 @@
 #include "lib/io.h"
 #include "lib/Cache.h"
 #include "lib/File.h"
-#include "preproc/SimplePreProc.h"
+#include "preprocessor/SimplePreprocessor.h"
 #include "features/DotFeatures.h"
 #include "features/StringFeatures.h"
 #include "base/Parameter.h"
@@ -30,7 +30,7 @@ namespace shogun
 {
 template <class ST> class CStringFeatures;
 template <class ST> class CSimpleFeatures;
-template <class ST> class CSimplePreProc;
+template <class ST> class CSimplePreprocessor;
 template <class ST> struct SGMatrix;
 class CDotFeatures;
 
@@ -194,7 +194,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 					for (int32_t i=0; i<get_num_preproc(); i++)
 					{
-						CSimplePreProc<ST>* p = (CSimplePreProc<ST>*) get_preproc(i);
+						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preproc(i);
 						tmp_feat_after=p->apply_to_feature_vector(tmp_feat_before, tmp_len);
 						SG_UNREF(p);
 
@@ -537,7 +537,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 					if ( (!is_preprocessed(i) || force_preprocessing) )
 					{
 						set_preprocessed(i);
-						CSimplePreProc<ST>* p = (CSimplePreProc<ST>*) get_preproc(i);
+						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preproc(i);
 						SG_INFO( "preprocessing using preproc %s\n", p->get_name());
 						if (p->apply_to_feature_matrix(this) == NULL)
 						{

@@ -23,8 +23,8 @@ def classifier_libsvmmulticlass_modular (fm_train_real=traindat,fm_test_real=tes
 	svm.train()
 
 	kernel.init(feats_train, feats_test)
-	out = svm.classify().get_labels()
-	predictions = svm.classify()
+	out = svm.apply().get_labels()
+	predictions = svm.apply()
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':

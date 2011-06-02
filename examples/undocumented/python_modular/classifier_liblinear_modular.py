@@ -26,8 +26,8 @@ def classifier_liblinear_modular(fm_train_real, fm_test_real,
 	svm.train()
 
 	svm.set_features(feats_test)
-	svm.classify().get_labels()
-	predictions = svm.classify()
+	svm.apply().get_labels()
+	predictions = svm.apply()
 	return predictions, svm, predictions.get_labels()
 
 

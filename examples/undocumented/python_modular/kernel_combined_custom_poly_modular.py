@@ -48,7 +48,7 @@ def kernel_combined_custom_poly_modular(fm_train_real = traindat,fm_test_real = 
     kernel.init(feats_train, feats_pred)
 
     svm.set_kernel(kernel)
-    svm.classify()
+    svm.apply()
     km_train=kernel.get_kernel_matrix()
     return km_train,kernel
 

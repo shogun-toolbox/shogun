@@ -30,7 +30,7 @@ order=3,gap=0,reverse=False):
 
 	kernel.init(feats_train, feats_test)
 	pie.set_features(feats_test)
-	pie.classify().get_labels()
+	pie.apply().get_labels()
 	km_test=kernel.get_kernel_matrix()
 	return km_train,km_test,kernel
 

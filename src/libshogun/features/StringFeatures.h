@@ -22,8 +22,8 @@
 #include "lib/Compressor.h"
 #include "base/Parameter.h"
 
-#include "preproc/PreProc.h"
-#include "preproc/StringPreProc.h"
+#include "preprocessor/Preprocessor.h"
+#include "preprocessor/StringPreprocessor.h"
 #include "features/Features.h"
 #include "features/Alphabet.h"
 
@@ -44,7 +44,7 @@ template <class T> class CDynamicArray;
 class CFile;
 template <class T> class CMemoryMappedFile;
 class CMath;
-template <class ST> class CStringPreProc;
+template <class ST> class CStringPreprocessor;
 template <class T> class SGString;
 
 struct SSKDoubleFeature
@@ -439,7 +439,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 					for (int32_t i=0; i<get_num_preproc(); i++)
 					{
-						CStringPreProc<ST>* p=(CStringPreProc<ST>*) get_preproc(i);
+						CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preproc(i);
 						feat=p->apply_to_string(tmp_feat_before, len);
 						SG_UNREF(p);
 						delete[] tmp_feat_before;
@@ -1096,6 +1096,11 @@ template <class ST> class CStringFeatures : public CFeatures
 			return false;
 		}
 
+        void set_features(SGStringList<ST> feats)
+        {
+            set_features(feats.strings, feats.num_strings, feats.max_string_length);
+        }
+
 		/** set features. removes subset beforehand
 		 *
 		 * @param p_features new features
@@ -1229,6 +1234,14 @@ template <class ST> class CStringFeatures : public CFeatures
             SG_UNREF(alpha);
 
             return false;
+        }
+
+        SGStringList<ST> get_features()
+        {
+            SGStringList<ST> sl;
+
+            sl.strings=get_features(sl.num_strings, sl.max_string_length);
+            return sl;
         }
 
 		/** get_features, this does only work when NO subset is defined
@@ -1486,7 +1499,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				if ( (!is_preprocessed(i) || force_preprocessing) )
 				{
 					set_preprocessed(i);
-					CStringPreProc<ST>* p=(CStringPreProc<ST>*) get_preproc(i);
+					CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preproc(i);
 					SG_INFO( "preprocessing using preproc %s\n", p->get_name());
 
 					if (!p->apply_to_string_features(this))

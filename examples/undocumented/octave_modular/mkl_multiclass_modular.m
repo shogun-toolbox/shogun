@@ -53,5 +53,5 @@ mkl.set_mkl_norm(1.5);
 mkl.train();
 
 kernel.init(feats_train, feats_test);
-result=mkl.classify().get_labels();
+result=mkl.apply().get_labels();
 result

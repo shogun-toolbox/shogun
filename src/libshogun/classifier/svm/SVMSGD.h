@@ -23,14 +23,14 @@
 */
 
 #include "lib/common.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 namespace shogun
 {
 /** @brief class SVMSGD */
-class CSVMSGD : public CLinearClassifier
+class CSVMSGD : public CLinearMachine
 {
 	public:
 		/** default constructor  */

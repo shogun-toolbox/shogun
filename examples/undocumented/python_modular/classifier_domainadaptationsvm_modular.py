@@ -84,7 +84,7 @@ def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=tes
 	dasvm = DomainAdaptationSVM(C, kernel2, labels2, svm, 1.0)
 	dasvm.train()
 
-	out = dasvm.classify(feats_test2).get_labels()
+	out = dasvm.apply(feats_test2).get_labels()
 
 	return out #,dasvm TODO
 

@@ -14,7 +14,7 @@
 #include "lib/DynamicArray.h"
 #include "lib/Time.h"
 #include "base/Parallel.h"
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 #include "classifier/svm/libocas.h"
 #include "classifier/svm/WDSVMOcas.h"
 #include "features/StringFeatures.h"
@@ -46,7 +46,7 @@ struct wdocas_thread_params_add
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CWDSVMOcas::CWDSVMOcas(void)
-: CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
+: CMachine(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(SVM_OCAS)
 {
 	SG_UNSTABLE("CWDSVMOcas::CWDSVMOcas(void)", "\n");
@@ -62,7 +62,7 @@ CWDSVMOcas::CWDSVMOcas(void)
 }
 
 CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
-: CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
+: CMachine(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
 	w=NULL;
@@ -78,7 +78,7 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 CWDSVMOcas::CWDSVMOcas(
 	float64_t C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat,
 	CLabels* trainlab)
-: CClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
+: CMachine(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
 	degree(d), from_degree(from_d)
 {
 	w=NULL;
@@ -96,7 +96,7 @@ CWDSVMOcas::~CWDSVMOcas()
 {
 }
 
-CLabels* CWDSVMOcas::classify()
+CLabels* CWDSVMOcas::apply()
 {
 	set_wd_weights();
 	set_normalization_const();
@@ -110,7 +110,7 @@ CLabels* CWDSVMOcas::classify()
 		SG_REF(output);
 
 		for (int32_t i=0; i<num; i++)
-			output->set_label(i, classify_example(i));
+			output->set_label(i, apply(i));
 
 		return output;
 	}
@@ -118,7 +118,7 @@ CLabels* CWDSVMOcas::classify()
 	return NULL;
 }
 
-CLabels* CWDSVMOcas::classify(CFeatures* data)
+CLabels* CWDSVMOcas::apply(CFeatures* data)
 {
 	if (!data)
 		SG_ERROR("No features specified\n");
@@ -130,7 +130,7 @@ CLabels* CWDSVMOcas::classify(CFeatures* data)
 	}
 
 	set_features((CStringFeatures<uint8_t>*) data);
-	return classify();
+	return apply();
 }
 
 int32_t CWDSVMOcas::set_wd_weights()

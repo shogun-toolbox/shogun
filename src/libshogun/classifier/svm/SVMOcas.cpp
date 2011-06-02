@@ -14,7 +14,7 @@
 #include "lib/Time.h"
 #include "base/Parameter.h"
 #include "base/Parallel.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "classifier/svm/SVMOcas.h"
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
@@ -22,13 +22,13 @@
 using namespace shogun;
 
 CSVMOcas::CSVMOcas()
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 }
 
 CSVMOcas::CSVMOcas(E_SVM_TYPE type)
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 	method=type;
@@ -36,7 +36,7 @@ CSVMOcas::CSVMOcas(E_SVM_TYPE type)
 
 CSVMOcas::CSVMOcas(
 	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier()
+: CLinearMachine()
 {
 	init();
 	C1=C;

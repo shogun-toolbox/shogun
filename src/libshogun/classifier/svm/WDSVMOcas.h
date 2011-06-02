@@ -13,7 +13,7 @@
 #define _WDSVMOCAS_H___
 
 #include "lib/common.h"
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 #include "classifier/svm/SVMOcas.h"
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
@@ -23,7 +23,7 @@ namespace shogun
 template <class ST> class CStringFeatures;
 
 /** @brief class WDSVMOcas */
-class CWDSVMOcas : public CClassifier
+class CWDSVMOcas : public CMachine
 {
 	public:
 		/** default constructor  */
@@ -162,21 +162,21 @@ class CWDSVMOcas : public CClassifier
 		 *
 		 * @return resulting labels
 		 */
-		CLabels* classify();
+		CLabels* apply();
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* classify(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data);
 
 		/** classify one example
 		 *
 		 * @param num number of example to classify
 		 * @return classified result
 		 */
-		inline virtual float64_t classify_example(int32_t num)
+		inline virtual float64_t apply(int32_t num)
 		{
 			ASSERT(features);
 			if (!wd_weights)

@@ -20,7 +20,7 @@
 
 #include "features/Features.h"
 #include "features/SparseFeatures.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 
 namespace shogun
 {

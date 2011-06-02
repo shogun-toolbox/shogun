@@ -13,14 +13,14 @@
 #define _SUBGRADIENTSVM_H___
 
 #include "lib/common.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "features/DotFeatures.h"
 #include "features/Labels.h"
 
 namespace shogun
 {
 /** @brief class SubGradientSVM */
-class CSubGradientSVM : public CLinearClassifier
+class CSubGradientSVM : public CLinearMachine
 {
 	public:
 		/** default constructor */

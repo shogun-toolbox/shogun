@@ -9,7 +9,7 @@ def kernel_comm_ulong_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,
 
 	from shogun.Kernel import CommUlongStringKernel
 	from shogun.Features import StringUlongFeatures, StringCharFeatures, DNA
-	from shogun.PreProc import SortUlongString
+	from shogun.Preprocessor import SortUlongString
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)

@@ -15,13 +15,13 @@
 #include "lib/common.h"
 #include "lib/File.h"
 #include "base/SGObject.h"
-#include "preproc/PreProc.h"
+#include "preprocessor/Preprocessor.h"
 #include "features/FeatureTypes.h"
 
 namespace shogun
 {
 	class CFile;
-	class CPreProc;
+	class CPreprocessor;
 	class CKernel;
 	enum EFeatureType;
 	enum EFeatureClass;
@@ -104,20 +104,20 @@ class CFeatures : public CSGObject
 		 * @param p preprocessor to set
 		 * @return something inty
 		 */
-		virtual int32_t add_preproc(CPreProc* p);
+		virtual int32_t add_preproc(CPreprocessor* p);
 
 		/** delete preprocessor from list
 		 * caller has to clean up returned preproc
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		virtual CPreProc* del_preproc(int32_t num);
+		virtual CPreprocessor* del_preproc(int32_t num);
 
 		/** get specified preprocessor
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		CPreProc* get_preproc(int32_t num);
+		CPreprocessor* get_preproc(int32_t num);
 
 		/** set applied flag for preprocessor
 		 *
@@ -296,7 +296,7 @@ class CFeatures : public CSGObject
 		int32_t cache_size;
 
 		/// list of preprocessors
-		CPreProc** preproc;
+		CPreprocessor** preproc;
 
 		/// number of preprocs in list
 		int32_t num_preproc;

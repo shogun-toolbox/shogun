@@ -23,5 +23,5 @@ perceptron.parallel.set_num_threads(num_threads);
 perceptron.train();
 
 perceptron.set_features(feats_test);
-perceptron.classify().get_labels();
+perceptron.apply().get_labels();
 

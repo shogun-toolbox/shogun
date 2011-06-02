@@ -26,4 +26,4 @@ svm.set_epochs(num_iter)
 svm.train();
 
 svm.set_features(feats_test);
-svm.classify().get_labels();
+svm.apply().get_labels();

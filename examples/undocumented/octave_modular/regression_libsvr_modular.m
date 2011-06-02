@@ -25,5 +25,5 @@ svr.parallel.set_num_threads(num_threads);
 svr.train();
 
 kernel.init(feats_train, feats_test);
-out=svr.classify().get_labels();
+out=svr.apply().get_labels();
 

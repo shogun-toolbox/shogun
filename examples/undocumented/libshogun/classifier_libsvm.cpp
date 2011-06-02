@@ -89,7 +89,7 @@ int main()
 	printf("num_sv:%d b:%f\n", svm->get_num_support_vectors(), svm->get_bias());
 
 	// classify + display output
-	CLabels* out_labels=svm->classify();
+	CLabels* out_labels=svm->apply();
 
 	for (int32_t i=0; i<NUM; i++)
 		printf("out[%d]=%f\n", i, out_labels->get_label(i));

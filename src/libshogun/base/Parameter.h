@@ -78,6 +78,29 @@ public:
 	 */
 	void set_from_parameters(Parameter* params);
 
+	/** Adds all parameters from another instance to this one
+	 *
+	 * @param params another Parameter instance
+	 *
+	 */
+	void add_parameters(Parameter* params);
+
+	/** Checks if a parameter with the spcified name is included
+	 *
+	 * @return true if parameter with name is included
+	 */
+	bool contains_parameter(const char* name);
+
+	/** Getter for TParameter elements (Does not to bound checking)
+	 *
+	 * @param idx desired index
+	 * @return pointer to the TParameter with the specified index
+	 */
+	inline TParameter* get_parameter(int32_t idx)
+	{
+		return m_params.get_element(idx);
+	}
+
 	/* ************************************************************ */
 	/* Scalar wrappers  */
 
@@ -252,6 +275,92 @@ public:
 	void add_vector(SGSparseVector<floatmax_t>** param, index_t* length,
 					const char* name, const char* description="");
 
+
+
+	void add(SGVector<bool>* param, const char* name,
+					const char* description="");
+	void add(SGVector<char>* param, const char* name,
+					const char* description="");
+	void add(SGVector<int8_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<uint8_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<int16_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<uint16_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<int32_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<uint32_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<int64_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<uint64_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<float32_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<float64_t>* param, const char* name,
+					const char* description="");
+	void add(SGVector<floatmax_t>* param, const char* name,
+					const char* description="");
+
+	void add(SGVector<CSGObject*>* param, const char* name,
+					const char* description="");
+
+	void add(SGVector<SGString<bool> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<char> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<int8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<uint8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<int16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<uint16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<int32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<uint32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<int64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<uint64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<float32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<float64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGString<floatmax_t> >* param, const char* name,
+					const char* description="");
+
+	void add(SGVector<SGSparseVector<bool> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<char> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<int8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<uint8_t> >* param,const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<int16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<uint16_t> >* param,
+					const char* name, const char* description="");
+	void add(SGVector<SGSparseVector<int32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<uint32_t> >* param,const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<int64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGVector<SGSparseVector<uint64_t> >* param,
+					const char* name, const char* description="");
+	void add(SGVector<SGSparseVector<float32_t> >* param,
+					const char* name, const char* description="");
+	void add(SGVector<SGSparseVector<float64_t> >* param,
+					const char* name, const char* description="");
+	void add(SGVector<SGSparseVector<floatmax_t> >* param,
+					const char* name, const char* description="");
+
 	/* ************************************************************ */
 	/* Matrix wrappers  */
 
@@ -379,23 +488,98 @@ public:
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 
+
+
+	void add(SGMatrix<bool>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<char>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<int8_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<uint8_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<int16_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<uint16_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<int32_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<uint32_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<int64_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<uint64_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<float32_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<float64_t>* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<floatmax_t>* param, const char* name,
+					const char* description="");
+
+	void add(SGMatrix<CSGObject*>* param, const char* name,
+					const char* description="");
+
+	void add(SGMatrix<SGString<bool> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<char> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<int8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<uint8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<int16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<uint16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<int32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<uint32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<int64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<uint64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<float32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<float64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGString<floatmax_t> >* param, const char* name,
+					const char* description="");
+
+	void add(SGMatrix<SGSparseVector<bool> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<char> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<int8_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<uint8_t> >* param,const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<int16_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<uint16_t> >* param,
+					const char* name, const char* description="");
+	void add(SGMatrix<SGSparseVector<int32_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<uint32_t> >* param,const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<int64_t> >* param, const char* name,
+					const char* description="");
+	void add(SGMatrix<SGSparseVector<uint64_t> >* param,
+					const char* name, const char* description="");
+	void add(SGMatrix<SGSparseVector<float32_t> >* param,
+					const char* name, const char* description="");
+	void add(SGMatrix<SGSparseVector<float64_t> >* param,
+					const char* name, const char* description="");
+	void add(SGMatrix<SGSparseVector<floatmax_t> >* param,
+					const char* name, const char* description="");
+
 protected:
 	DynArray<TParameter*> m_params;
 
 	virtual void add_type(const TSGDataType* type, void* param,
 						  const char* name,
 						  const char* description);
-
-	/** Getter for TParameter elements (Does not to bound checking)
-	 *
-	 * @param idx desired index
-	 * @return pointer to the TParameter with the specified index
-	 */
-	inline TParameter* get_parameter(int32_t idx)
-	{
-		return m_params.get_element(idx);
-	}
-
 };
 }
 #endif //__PARAMETER_H__

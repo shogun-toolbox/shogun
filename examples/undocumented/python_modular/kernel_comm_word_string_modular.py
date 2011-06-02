@@ -9,7 +9,7 @@ def kernel_comm_word_string_modular (fm_train_dna=traindat, fm_test_dna=testdat,
 	
 	from shogun.Kernel import CommWordStringKernel
 	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
-	from shogun.PreProc import SortWordString
+	from shogun.Preprocessor import SortWordString
 	
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)

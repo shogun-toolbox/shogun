@@ -30,8 +30,8 @@ def regression_libsvr_modular (fm_train=traindat,fm_test=testdat,label_train=lab
 	svr.train()
 
 	kernel.init(feats_train, feats_test)
-	out1=svr.classify().get_labels()
-	out2=svr.classify(feats_test).get_labels()
+	out1=svr.apply().get_labels()
+	out2=svr.apply(feats_test).get_labels()
 
 	return out1,out2,kernel
 

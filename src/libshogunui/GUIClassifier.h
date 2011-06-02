@@ -13,7 +13,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/classifier/Classifier.h>
+#include <shogun/machine/Machine.h>
 #include <shogun/classifier/svm/SVM.h>
 
 namespace shogun
@@ -39,7 +39,7 @@ class CGUIClassifier : public CSGObject
 		CLabels* classify_linear();
 		CLabels* classify_byte_linear();
 		bool classify_example(int32_t idx, float64_t& result);
-		inline CClassifier* get_classifier() { return classifier; }
+		inline CMachine* get_classifier() { return classifier; }
 
 		bool get_trained_classifier(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
@@ -117,7 +117,7 @@ class CGUIClassifier : public CSGObject
 
 	protected:
 		CSGInterface* ui;
-		CClassifier* classifier;
+		CMachine* classifier;
 		float64_t max_train_time;
 
 		float64_t perceptron_learnrate;

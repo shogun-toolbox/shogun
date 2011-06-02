@@ -12,7 +12,7 @@
 #define _SVMLIGHTONECLASS_H___
 
 #include "lib/config.h"
-#include "classifier/Classifier.h"
+#include "machine/Machine.h"
 
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVMLight.h"

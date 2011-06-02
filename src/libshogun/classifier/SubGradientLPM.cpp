@@ -16,7 +16,7 @@
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
 #include "lib/Time.h"
-#include "classifier/LinearClassifier.h"
+#include "machine/LinearMachine.h"
 #include "classifier/SubGradientLPM.h"
 #include "classifier/svm/qpbsvmlib.h"
 #include "features/DotFeatures.h"

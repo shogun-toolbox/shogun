@@ -14,12 +14,12 @@
 using namespace shogun;
 
 CAveragedPerceptron::CAveragedPerceptron()
-: CLinearClassifier(), learn_rate(0.1), max_iter(1000)
+: CLinearMachine(), learn_rate(0.1), max_iter(1000)
 {
 }
 
 CAveragedPerceptron::CAveragedPerceptron(CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier(), learn_rate(.1), max_iter(1000)
+: CLinearMachine(), learn_rate(.1), max_iter(1000)
 {
 	set_features(traindat);
 	set_labels(trainlab);
@@ -66,7 +66,7 @@ bool CAveragedPerceptron::train(CFeatures* data)
 		converged=true;
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			output[i]=classify_example(i);
+			output[i]=apply(i);
 
 			if (CMath::sign<float64_t>(output[i]) != train_labels[i])
 			{

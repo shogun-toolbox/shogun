@@ -17,7 +17,7 @@
 
 #ifdef HAVE_LAPACK
 
-#include "classifier/KernelMachine.h"
+#include "machine/KernelMachine.h"
 
 namespace shogun
 {
