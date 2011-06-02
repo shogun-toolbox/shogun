@@ -662,6 +662,7 @@ EOF
                         PRE_LIB_SWIG_RUBY_MODULAR=
                         EXT_LIB_SWIG_RUBY_MODULAR=.so
                         SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
+                        LD_LIBRARY_PATH="/usr/local/lib/"
                         _ruby=yes
                 else
                         echores "no"
