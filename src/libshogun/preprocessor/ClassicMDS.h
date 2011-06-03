@@ -23,8 +23,13 @@ class CFeatures;
 
 class CDistance;
 
-/** @brief the class MDS
- *	That thing isn't working yet, huh
+/** @brief the class ClassicMDS used to perform classic eigenvector
+ * 	multidimensional scaling.
+ *
+ * 	Description is given at p.261 (Section 12.1) of
+ * 	Borg, I., & Groenen, P. J. F. (2005).
+ * 	Modern multidimensional scaling: Theory and applications. Springer.
+ *
  */
 class CClassicMDS: public CSimplePreprocessor<float64_t>
 {
@@ -57,16 +62,32 @@ public:
 	virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
 
 	/** get name */
-	virtual inline const char* get_name() const { return "MDS"; };
+	virtual inline const char* get_name() const { return "CLASSICMDS"; };
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; };
+	virtual inline EPreprocessorType get_type() const { return P_CLASSICMDS; };
+
+	/** setter for target dimension
+	 * @param dim target dimension
+	 */
+	void inline set_target_dim(int32_t dim)
+	{
+		ASSERT(dim>0);
+		m_target_dim = dim;
+	}
+
+	/** getter for target dimension
+	 * @return target dimension
+	 */
+	int32_t inline get_target_dim()
+	{
+		return m_target_dim;
+	}
 
 protected:
 
-	/* distance instance */
-	CDistance* m_distance;
-
+	/* target dim */
+	int32_t m_target_dim;
 };
 
 }
