@@ -43,6 +43,7 @@
 #include <shogun/preprocessor/SortWordString.h>
 #include <shogun/preprocessor/SparsePreprocessor.h>
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
+#include <shogun/preprocessor/ClassicMDS.h>
 %}
 
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim)};
@@ -62,6 +63,7 @@
 %rename(SortWordString) CSortWordString;
 %rename(SparsePreprocessor) CSparsePreprocessor;
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
+%rename(ClassicMDS) CClassicMDS;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
@@ -111,3 +113,4 @@ namespace shogun
 %include <shogun/preprocessor/SortWordString.h>
 %include <shogun/preprocessor/SparsePreprocessor.h>
 %include <shogun/preprocessor/RandomFourierGaussPreproc.h>
+%include <shogun/preprocessor/ClassicMDS.h>
