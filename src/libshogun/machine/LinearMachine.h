@@ -21,6 +21,7 @@
 namespace shogun
 {
 	class CDotFeatures;
+	class CMachine;
 	class CLabels;
 
 /** @brief Class LinearMachine is a generic interface for all kinds of linear

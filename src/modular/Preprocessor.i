@@ -35,7 +35,7 @@
 #include <shogun/preprocessor/NormDerivativeLem3.h>
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/PCACut.h>
-#include <shogun/kernel/Kernel.h>
+/*#include <shogun/kernel/Kernel.h>*/
 #include <shogun/preprocessor/KernelPCACut.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/DecompressString.h>
@@ -56,7 +56,7 @@
 %rename(NormDerivativeLem3) CNormDerivativeLem3;
 %rename(NormOne) CNormOne;
 %rename(PCACut) CPCACut;
-%rename(Kernel) CKernel;
+/*%rename(Kernel) CKernel;*/
 %rename(KernelPCACut) CKernelPCACut;
 %rename(PruneVarSubMean) CPruneVarSubMean;
 %rename(SortUlongString) CSortUlongString;
@@ -106,7 +106,7 @@ namespace shogun
 %include <shogun/preprocessor/NormDerivativeLem3.h>
 %include <shogun/preprocessor/NormOne.h>
 %include <shogun/preprocessor/PCACut.h>
-%include <shogun/kernel/Kernel.h>
+/*%include <shogun/kernel/Kernel.h>*/
 %include <shogun/preprocessor/KernelPCACut.h>
 %include <shogun/preprocessor/PruneVarSubMean.h>
 %include <shogun/preprocessor/SortUlongString.h>
