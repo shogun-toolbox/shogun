@@ -46,8 +46,9 @@ namespace shogun
 		 * Constructor, taking a StreamingFile as arg.
 		 * @param file StreamingFile from which to load features
 		 * @param is_labelled Whether features are labelled or not, optional
+		 * @param size Buffer size in MB, used while parsing
 		 */
-		CStreamingFeatures(CStreamingFile* file, bool is_labelled);
+		CStreamingFeatures(CStreamingFile* file, bool is_labelled=true, int32_t size=10);
 		
 		/** 
 		 * Copy constructor
@@ -141,36 +142,36 @@ namespace shogun
 		}
 
 		/** 
-		 * Fetches the next feature vector, setting values by reference.
-		 * Waits for the parser to return an example if necessary.
-		 * Assumes labelled examples.
-		 * 
-		 * @param feature_vector Pointer to fv, passed by ref
-		 * @param length Length of the fv, passed by ref
-		 * @param label Label of example, passed by ref
-		 * 
-		 * @return 1 if successful, 0 if no examples left
-		 */
-		virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length, float64_t &label);
-
-		/** 
-		 * Fetches the next feature vector, setting values by reference.
-		 * Waits for the parser to return an example if necessary.
-		 * Assumes unlabelled examples.
-		 * 
-		 * @param feature_vector Pointer to fv, passed by ref
-		 * @param length Length of the fv, passed by ref
-		 * 
-		 * @return 1 if successful, 0 if no examples left
-		 */
-		virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length);
-
-		/** 
-		 * Frees the current feature vector, makes the buffer space available
+		 * Frees the current example, makes the buffer space available
 		 * for storing new objects.
 		 */
-		virtual void free_feature_vector();
-		
+		virtual void release_example();
+
+		/** 
+		 * Gets the next available example object from the parser.
+		 * Stores the vector, length and label in the StreamingFeatures object.
+		 *
+		 * The example must be accessed using get_vector() and
+		 * get_label(), after a call to fetch_example().
+		 * 
+		 * @return 1 if successful, 0 if no examples are left.
+		 */
+		virtual int32_t fetch_example();
+
+		/** 
+		 * Returns the feature vector of the example obtained through fetch_example().
+		 * 
+		 * @return Vector of type SGVector<float64_t>.
+		 */
+		virtual SGVector<float64_t> get_vector();
+
+		/** 
+		 * Returns the label of the example obtained through fetch_example().
+		 * Will raise an SG_ERROR() if examples are specified to be unlabelled.
+		 * 
+		 * @return Label of type float64_t.
+		 */
+		virtual float64_t get_label();
 
 	protected:
 		
