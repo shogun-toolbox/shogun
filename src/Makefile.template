@@ -160,6 +160,7 @@ clean: swigclean swigdocclean
 	@rm -f sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* cplex.log
 	@rm -f elwms.mex* elwms.so elwms.dylib elwms.dll elwms.oct
 	@rm -f $(TEMPLATE_TARGET)
+	@rm -rf org classes shogun.jar
 
 install: install-template
 

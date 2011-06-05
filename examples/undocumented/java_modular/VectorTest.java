@@ -1,4 +1,4 @@
-import shogun.*;
+import org.shogun.*;
 
 public class VectorTest {
 	static {

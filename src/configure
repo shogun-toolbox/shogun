@@ -538,7 +538,8 @@ EOF
 			EXT_IF_SWIG_JAVA_MODULAR='stop'
 			PRE_LIB_SWIG_JAVA_MODULAR='lib'
 			EXT_LIB_SWIG_JAVA_MODULAR=.so
-			SWIGFLAGS_JAVA_MODULAR="-c++ -java -package shogun -outdir shogun"
+			mkdir -p java_modular/org/shogun >/dev/null 2>&1
+			SWIGFLAGS_JAVA_MODULAR="-c++ -java -package org.shogun -outdir org/shogun"
 			INCLUDES_JAVA="-I$(dirname $(java configure java.home))/include"
 			INCLUDES_JAVA="$INCLUDES_JAVA $INCLUDES_JAVA/`uname -s | tr 'A-Z' 'a-z'`"
 

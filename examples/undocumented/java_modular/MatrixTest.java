@@ -1,4 +1,4 @@
-import shogun.*;
+import org.shogun.*;
 import org.jblas.*;
 public class MatrixTest {
 	static {
