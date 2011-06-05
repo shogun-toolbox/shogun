@@ -535,7 +535,6 @@ EOF
 		echocheck "Java native interface files (jni.h)"
 		if javac $TMPJAVA >/dev/null 2>&1 
 		then
-			mkdir java_modular/shogun
 			EXT_IF_SWIG_JAVA_MODULAR='stop'
 			PRE_LIB_SWIG_JAVA_MODULAR='lib'
 			EXT_LIB_SWIG_JAVA_MODULAR=.so
