@@ -19,13 +19,6 @@
 
 namespace shogun
 {
-	enum E_IS_EXAMPLE_USED
-	{
-		E_EMPTY = 1,
-		E_NOT_USED = 2,
-		E_USED = 3
-	};
-
 	enum E_EXAMPLE_TYPE
 	{
 		E_LABELLED = 1,
@@ -87,6 +80,7 @@ namespace shogun
 		 *
 		 * @return 1 on success, 0 on failure.
 		 */
+		
 		int32_t get_vector_and_label(float64_t* &feature_vector,
 									 int32_t &length,
 									 float64_t &label);
@@ -211,6 +205,7 @@ namespace shogun
 
 		example* current_example;
 		
+		SGVector<float64_t> current_fv;
 		float64_t* current_feature_vector; /**< Points to feature
 											* vector of last read example */
 		

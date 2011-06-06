@@ -42,7 +42,7 @@ void CInputParser::init(CStreamingFile* input_file, bool is_labelled = true, int
 		example_type = E_UNLABELLED;
 
 	examples_buff = new ParseBuffer(size);
-	current_example = NULL;
+	current_example = new example();
 	
 	parsing_done = false;
 	reading_done = false;
@@ -144,14 +144,14 @@ void* CInputParser::main_parse_loop(void* params)
 		}
 
 		current_example->label = current_label;
-		current_example->feature_vector = current_feature_vector;
-		current_example->len = current_len;
+		current_example->fv.vector = current_feature_vector;
+		current_example->fv.length = current_len;
 
 		examples_buff->copy_example(current_example);
 		
 		number_of_vectors_parsed++;
 	}
-
+	printf("parsing done.\n");
 	return NULL;
 }
 
@@ -175,7 +175,7 @@ example* CInputParser::retrieve_example()
 	
 	ex = examples_buff->fetch_example();
 	number_of_vectors_read++;
-	
+	printf("Number of vectors read=%d.\n", number_of_vectors_read);
 	return ex;
 }
 
@@ -194,15 +194,18 @@ int32_t CInputParser::get_next_example(float64_t* &fv, int32_t &length, float64_
 			return 0;
 
 		ex = retrieve_example();
-
+		
 		if (ex == NULL)
+		  {
+		    printf("ex is NULL!! continuing while loop..\n");
 			continue;
+		  }
 		else
 			break;
 	}
 	
-	fv = ex->feature_vector;
-	length = ex->len;
+	fv = ex->fv.vector;
+	length = ex->fv.length;
 	label = ex->label;
 
 	return 1;

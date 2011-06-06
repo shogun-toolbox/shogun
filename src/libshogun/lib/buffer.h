@@ -9,11 +9,14 @@
  */
 
 #include "lib/common.h"
+#include "lib/DataType.h"
 #include <pthread.h>
 
 #ifndef __PARSEBUFFER_H__
 #define __PARSEBUFFER_H__
 
+namespace shogun
+{
 
 enum E_IS_EXAMPLE_USED
 {
@@ -26,8 +29,7 @@ class example
 {
 public:
 	float64_t label;
-	int32_t len;
-	float64_t* feature_vector;
+	SGVector<float64_t> fv;
 };
 
 class ParseBuffer
@@ -118,5 +120,5 @@ protected:
 	int32_t fv_write_index;		/**< write position for next feature vector */
 	
 };
-
+}
 #endif // __PARSEBUFFER_H__

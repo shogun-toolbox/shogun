@@ -48,7 +48,7 @@ namespace shogun
 		 * @param is_labelled Whether features are labelled or not, optional
 		 * @param size Buffer size in MB, used while parsing
 		 */
-		CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size);
+		CStreamingFeatures(CStreamingFile* file, bool is_labelled=true, int32_t size=10);
 		
 		/** 
 		 * Copy constructor
@@ -152,7 +152,7 @@ namespace shogun
 		 * 
 		 * @return 1 if successful, 0 if no examples left
 		 */
-		virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length, float64_t &label);
+		//virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length, float64_t &label);
 
 		/** 
 		 * Fetches the next feature vector, setting values by reference.
@@ -164,14 +164,19 @@ namespace shogun
 		 * 
 		 * @return 1 if successful, 0 if no examples left
 		 */
-		virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length);
+		//		virtual int32_t get_next_feature_vector(float64_t* &feature_vector, int32_t &length);
 
 		/** 
-		 * Frees the current feature vector, makes the buffer space available
+		 * Frees the current example, makes the buffer space available
 		 * for storing new objects.
 		 */
-		virtual void free_feature_vector();
-		
+		virtual void release_example();
+
+		virtual int32_t fetch_example();
+
+		virtual SGVector<float64_t> get_vector();
+
+		virtual float64_t get_label();
 
 	protected:
 		
