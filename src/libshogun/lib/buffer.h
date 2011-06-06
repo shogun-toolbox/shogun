@@ -68,7 +68,6 @@ public:
 	/** 
 	 * Returns the next example from the buffer if unused, or NULL.
 	 * 
-	 * 
 	 * @return unused example object at next 'read' position or NULL.
 	 */
 	example* fetch_example();

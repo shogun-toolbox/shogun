@@ -148,10 +148,9 @@ void* CInputParser::main_parse_loop(void* params)
 		current_example->fv.length = current_len;
 
 		examples_buff->copy_example(current_example);
-		
 		number_of_vectors_parsed++;
 	}
-	printf("parsing done.\n");
+
 	return NULL;
 }
 
@@ -175,7 +174,7 @@ example* CInputParser::retrieve_example()
 	
 	ex = examples_buff->fetch_example();
 	number_of_vectors_read++;
-	printf("Number of vectors read=%d.\n", number_of_vectors_read);
+
 	return ex;
 }
 
@@ -196,10 +195,7 @@ int32_t CInputParser::get_next_example(float64_t* &fv, int32_t &length, float64_
 		ex = retrieve_example();
 		
 		if (ex == NULL)
-		  {
-		    printf("ex is NULL!! continuing while loop..\n");
 			continue;
-		  }
 		else
 			break;
 	}

@@ -57,65 +57,31 @@ void CStreamingFeatures::end_parser()
 
 int32_t CStreamingFeatures::fetch_example()
 {
-  int32_t ret_value;
+	int32_t ret_value;
 
-  ret_value = parser.get_next_example(current_feature_vector, current_length, current_label);
+	ret_value = parser.next_example(current_feature_vector, current_length, current_label);
 
-  if (ret_value == 0)
-    return 0;
+	if (ret_value == 0)
+		return 0;
 
-  return ret_value;
+	return ret_value;
 }
 
 SGVector<float64_t> CStreamingFeatures::get_vector()
 {
-  SGVector<float64_t> vec;
-  vec.vector=current_feature_vector;
-  vec.length=current_length;
+	SGVector<float64_t> vec;
+	vec.vector=current_feature_vector;
+	vec.length=current_length;
 
-  return vec;
+	return vec;
 }
 
 float64_t CStreamingFeatures::get_label()
 {
-  return current_label;
-}
-
-/*int32_t CStreamingFeatures::get_next_feature_vector(float64_t* &feature_vector, int32_t &length, float64_t &label)
-{
-	int32_t ret_value;
-
-	ret_value = parser.get_next_example(feature_vector, length, label);
-
-	// If all examples have been fetched, return 0.
-	if (ret_value == 0)
-		return 0;
-
-	// Now set current_{feature_vector, label, length} for the object
-	current_length = length;
-	current_label = label;
-	current_feature_vector = feature_vector;
+	ASSERT(has_labels);
 	
-	printf("Setting values: length = %d, label = %f, fv = %f", length, label, feature_vector[0]);
-	return ret_value;
+	return current_label;
 }
-
-int32_t CStreamingFeatures::get_next_feature_vector(float64_t* &feature_vector, int32_t &length)
-{
-	int32_t ret_value;
-
-	ret_value = parser.get_next_example(feature_vector, length);
-
-	// If all examples have been fetched, return 0.
-	if (ret_value == 0)
-		return 0;
-
-	// Now set current_{feature_vector, length} for the object
-	current_length = length;
-	current_feature_vector = feature_vector;
-
-	return ret_value;
-	}*/
 
 void CStreamingFeatures::release_example()
 {

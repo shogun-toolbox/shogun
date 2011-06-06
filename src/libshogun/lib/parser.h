@@ -205,7 +205,7 @@ namespace shogun
 
 		example* current_example;
 		
-		SGVector<float64_t> current_fv;
+		SGVector<float64_t> current_fv;	/**< Yet to be used in the code! */
 		float64_t* current_feature_vector; /**< Points to feature
 											* vector of last read example */
 		
