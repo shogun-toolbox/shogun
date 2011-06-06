@@ -59,7 +59,7 @@ int32_t CStreamingFeatures::fetch_example()
 {
 	int32_t ret_value;
 
-	ret_value = parser.next_example(current_feature_vector, current_length, current_label);
+	ret_value = parser.get_next_example(current_feature_vector, current_length, current_label);
 
 	if (ret_value == 0)
 		return 0;
