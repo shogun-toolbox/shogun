@@ -49,7 +49,7 @@
 
 /* Remove C Prefix */
 %rename(BaseRegression) CRegression;
-%rename(Classifier) CClassifier;
+%rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
 %rename(KRR) CKRR;
 %rename(SVM) CSVM;

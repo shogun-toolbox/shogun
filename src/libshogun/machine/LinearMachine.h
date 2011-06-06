@@ -21,6 +21,7 @@
 namespace shogun
 {
 	class CDotFeatures;
+	class CMachine;
 	class CLabels;
 
 /** @brief Class LinearMachine is a generic interface for all kinds of linear
@@ -63,12 +64,6 @@ class CLinearMachine : public CMachine
 		/** default constructor */
 		CLinearMachine();
 		virtual ~CLinearMachine();
-
-		/// get output for example "vec_idx"
-		virtual inline float64_t apply(int32_t vec_idx)
-		{
-			return features->dense_dot(vec_idx, w, w_dim) + bias;
-		}
 
 		/** get w
 		 *
@@ -165,6 +160,12 @@ class CLinearMachine : public CMachine
 		 * @return classified labels
 		 */
 		virtual CLabels* apply(CFeatures* data);
+
+		/// get output for example "vec_idx"
+		virtual float64_t apply(int32_t vec_idx)
+		{
+			return features->dense_dot(vec_idx, w, w_dim) + bias;
+		}
 
 		/** get features
 		 *

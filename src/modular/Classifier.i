@@ -32,7 +32,7 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %{
- #include <shogun/features/Labels.h>
+ /*#include <shogun/features/Labels.h>*/
  #include <shogun/machine/Machine.h>
  #include <shogun/classifier/svm/GMNPSVM.h>
  #include <shogun/classifier/svm/GNPPSVM.h>
@@ -96,8 +96,8 @@
 
 
 /* Remove C Prefix */
-%rename(Labels) CLabels;
-%rename(BaseClassifier) CClassifier;
+/*%rename(Labels) CLabels;*/
+%rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
 %rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;
@@ -112,7 +112,7 @@
 %rename(LaRank) CLaRank;
 %rename(LibSVMMultiClass) CLibSVMMultiClass;
 %rename(LibSVMOneClass) CLibSVMOneClass;
-%rename(LinearClassifier) CLinearClassifier;
+%rename(LinearMachine) CLinearMachine;
 %rename(LPBoost) CLPBoost;
 %rename(LPM) CLPM;
 %rename(MPDSVM) CMPDSVM;
@@ -145,7 +145,7 @@
 %newobject classify(CFeatures* data);
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/features/Labels.h>
+/*%include <shogun/features/Labels.h>*/
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/KernelMachine.h>
 %include <shogun/machine/DistanceMachine.h>

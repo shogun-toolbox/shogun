@@ -15,8 +15,6 @@
 
 #ifdef HAVE_LAPACK
 
-#include <stdio.h>
-
 #include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "kernel/Kernel.h"
@@ -24,6 +22,9 @@
 
 namespace shogun
 {
+	class CFeatures;
+	class CKernel;
+
 /** @brief Preprocessor PCACut performs principial component analysis on the input
  * vectors and keeps only the n eigenvectors with eigenvalues above a certain
  * threshold.
