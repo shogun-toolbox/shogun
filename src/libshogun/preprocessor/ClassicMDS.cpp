@@ -16,6 +16,7 @@
 #include "distance/EuclidianDistance.h"
 #include "lib/Signal.h"
 
+#ifdef HAVE_LAPACK
 using namespace shogun;
 
 CClassicMDS::CClassicMDS() : CSimplePreprocessor<float64_t>(), m_target_dim(1)
@@ -98,3 +99,4 @@ float64_t* CClassicMDS::apply_to_feature_vector(float64_t* f, int32_t &len)
 	SG_ERROR("Not implemented");
 	return 0;
 }
+#endif /* HAVE_LAPACK */
