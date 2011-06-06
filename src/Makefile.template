@@ -470,6 +470,9 @@ $(OBJFILES): ../.config .depend Makefile ../ChangeLog
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
+ifeq (java_modular,$(TEMPLATE_TARGET))
+	CLASSPATH=$(CLASSPATH) ant dist
+endif
 else
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
 	$(LINK) $(PRELINKFLAGS) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \

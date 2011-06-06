@@ -45,6 +45,7 @@ EXT_OBJ_C=c.o
 EXT_CPP_TMP="${EXT_SRC_CPP}.templ"
 EXT_CPP_SH="${EXT_SRC_CPP}.sh"
 EXT_CPP_PY="${EXT_SRC_CPP}.py"
+CLASSPATH="$CLASSPATH"
 
 #the defaults are
 _swig_version=0.0.0
@@ -573,13 +574,22 @@ public class configure {
 }
 EOF
 
-	if javac $TMPJAVA >/dev/null 2>&1 || javac -cp /usr/share/java/jblas.jar $TMPJAVA >/dev/null 2>&1
+	if javac $TMPJAVA >/dev/null 2>&1
 	then
 		echores "yes"
 		HAVE_JBLAS='#define HAVE_JBLAS 1'
 		DEFINES="$DEFINES -DHAVE_JBLAS"
 	else
-		echores "no"
+		
+		if javac -cp /usr/share/java/jblas.jar $TMPJAVA >/dev/null 2>&1
+		then
+			echores "yes"
+			HAVE_JBLAS='#define HAVE_JBLAS 1'
+			DEFINES="$DEFINES -DHAVE_JBLAS"
+			CLASSPATH="$CLASSPATH:/usr/share/java/jblas.jar"
+		else
+			echores "no"
+		fi
 	fi
 }
 
@@ -601,13 +611,21 @@ public class configure {
 }
 EOF
 
-	if javac $TMPJAVA >/dev/null 2>&1 || javac -cp /usr/share/java/ujmp.jar $TMPJAVA >/dev/null 2>&1
+	if javac $TMPJAVA >/dev/null 2>&1
 	then
 		echores "yes"
 		HAVE_UJMP='#define HAVE_UJMP 1'
 		DEFINES="$DEFINES -DHAVE_UJMP"
 	else
-		echores "no"
+		if javac -cp /usr/share/java/ujmp.jar $TMPJAVA >/dev/null 2>&1
+		then
+			echores "yes"
+			HAVE_UJMP='#define HAVE_UJMP 1'
+			DEFINES="$DEFINES -DHAVE_UJMP"
+			CLASSPATH="$CLASSPATH:/usr/share/java/ujmp.jar"
+		else
+			echores "no"
+		fi
 	fi
 }
 
@@ -4414,6 +4432,7 @@ LINKFLAGS_LUA_MODULAR 	= ${LINKFLAGS_LUA}
 POSTLINKFLAGS_LUA_MODULAR= ${POSTLINKFLAGS_LUA}
 SWIGFLAGS_LUA_MODULAR = ${SWIGFLAGS_LUA_MODULAR}
 
+CLASSPATH		= ${CLASSPATH}
 LINK			= ${LINK}
 POSTLINKCMD		= ${POSTLINKCMD}
 PREFIX			= ${_prefix}
