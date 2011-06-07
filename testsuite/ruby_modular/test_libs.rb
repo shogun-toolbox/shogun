@@ -2,8 +2,10 @@
 
 # some tests to see if the shogun libraries are loading properly
 
-require 'test/unit'
-require './metaid' # i know, i should use require_relative, but this may be run my 1.8.x-ers
+# instead of...
+#require 'test/unit'
+# use...
+require './test_mod'
 
 class TestLibs < Test::Unit::TestCase
 
@@ -12,7 +14,7 @@ class TestLibs < Test::Unit::TestCase
   end
   
   # loads each module iterativly, to see if it loads
-  def test_load
+  must "load modules" do
     # randomize the order of the libs & print them so we don't get weird X depends on Y loading errors
     puts "Shuffling the order of the libraries to be loaded: " + @libs.shuffle!.to_s
     @libs.each do |lib|
@@ -20,6 +22,7 @@ class TestLibs < Test::Unit::TestCase
     end
   end
 
+  # helper method of awsumness!!
   def load_lib lib
     failures = 0
     begin
