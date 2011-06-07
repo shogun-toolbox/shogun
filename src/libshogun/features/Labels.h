@@ -46,6 +46,16 @@ class CLabels : public CSGObject
 		 * @param src labels to set
 		 * @param len number of labels
 		 */
+		CLabels(SGVector<float64_t> src)
+		{ 
+			CLabels(src.vector, src.length);
+		}
+
+		/** constructor
+		 *
+		 * @param src labels to set
+		 * @param len number of labels
+		 */
 		CLabels(float64_t* src, int32_t len);
 
 		/** constructor 
