@@ -324,6 +324,13 @@ template <class T> class DynArray
 				memset(array, 0, (last_element_idx+1)*sizeof(T));
 		}
 
+		/** randomizes the array */
+		void shuffle()
+		{
+			for (index_t i=0; i<=last_element_idx; ++i)
+				CMath::swap(array[i], array[CMath::random(i, last_element_idx)]);
+		}
+
 		/** operator overload for array read only access
 		 * use set_element() for write access (will also make the array
 		 * dynamically grow)
