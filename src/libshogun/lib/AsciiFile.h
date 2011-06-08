@@ -374,6 +374,35 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const { return "AsciiFile"; }
 
+	/** 
+	 * getdelim() implementation.
+	 * 
+	 * Reads upto delimiter from stream into a dynamically
+	 * expanding buffer, lineptr, and returns the number of
+	 * characters read.
+	 * See specification of standard getdelim() for details.
+	 * 
+	 * @param lineptr Buffer to store the string.
+	 * @param n Size of buffer. 
+	 * @param delimiter Delimiter upto (and including) which to read.
+	 * @param stream FILE pointer to read from.
+	 * 
+	 * @return Number of bytes read.
+	 */
+	static ssize_t getdelim(char **lineptr, size_t *n, char delimiter, FILE* stream);
+
+	/** 
+	 * getline() implementation.
+	 *
+	 * Reads upto and including the first \n from the file.
+	 * @param lineptr Buffer
+	 * @param n Size of buffer
+	 * @param stream FILE pointer to read from
+	 * 
+	 * @return Number of bytes read
+	 */
+	static ssize_t getline(char **lineptr, size_t *n, FILE *stream);
+
 private:
 	/** helper function to read vectors / matrices
 	 *
