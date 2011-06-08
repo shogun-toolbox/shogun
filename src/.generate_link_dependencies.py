@@ -31,6 +31,8 @@ deps['Clustering_doxygen.i']=[]
 deps['Distance_doxygen.i']=[]
 deps['Evaluation_doxygen.i']=[]
 
+modular_deps=['Library_doxygen.i', 'Features_doxygen.i', 'Classifier_doxygen.i', 'Structure_doxygen.i', 'Regression_doxygen.i', 'Kernel_doxygen.i', 'Preprocessor_doxygen.i', 'Distribution_doxygen.i', 'Classifier_doxygen.i','Clustering_doxygen.i','Distance_doxygen.i','Evaluation_doxygen.i']
+
 initial_deps=deps.copy()
 
 def get_deps(f):
@@ -69,6 +71,7 @@ for f in files:
 	#print f,deps[f]
 	#import pdb
 	#pdb.set_trace()
+
 #'./../modular'
 #generate linker dependencies
 for f in deps.iterkeys():
@@ -76,6 +79,8 @@ for f in deps.iterkeys():
 		if file(f).read().find('%module')>-1:
 			str1=os.path.join(os.path.dirname(f), prefix + os.path.basename(f)[:-2]) + suffix + ': ' + f[:-2]+'_wrap.cxx.o' + ' sg_print_functions.cpp.o'
 			str2=os.path.join(os.path.dirname(f), os.path.basename(f)[:-2]) + '_wrap.cxx: ' + f
+
+			str2+=' ' + ' '.join([os.path.join(os.path.dirname(f), m) for m in modular_deps])
 
 			fdep=list();
 			#if not f.startswith('./../modular/'):
