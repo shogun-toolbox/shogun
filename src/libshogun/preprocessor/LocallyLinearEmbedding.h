@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef LLE_H_
-#define LLE_H_
+#ifndef LOCALLYLINEAREMBEDDING_H_
+#define LOCALLYLINEAREMBEDDING_H_
 #ifdef HAVE_LAPACK
 
 #include "preprocessor/SimplePreprocessor.h"
@@ -30,15 +30,15 @@ class CDistance;
  *	An Introduction to Locally Linear Embedding. Available from, 290(5500), 2323-2326.
  *
  */
-class CLLE: public CSimplePreprocessor<float64_t>
+class CLocallyLinearEmbedding: public CSimplePreprocessor<float64_t>
 {
 public:
 
 	/** constructor */
-	CLLE();
+	CLocallyLinearEmbedding();
 
 	/** destructor */
-	virtual ~CLLE();
+	virtual ~CLocallyLinearEmbedding();
 
 	/** init
 	 * @param data feature vectors for preproc
@@ -94,10 +94,10 @@ public:
 	}
 
 	/** get name */
-	virtual inline const char* get_name() const { return "LLE"; };
+	virtual inline const char* get_name() const { return "LocallyLinearEmbedding"; };
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; };
+	virtual inline EPreprocessorType get_type() const { return P_LOCALLYLINEAREMBEDDING; };
 
 protected:
 
@@ -112,4 +112,4 @@ protected:
 }
 
 #endif /* HAVE_LAPACK */
-#endif /* LLE_H_ */
+#endif /* LOCALLYLINEAREMBEDDING_H_ */

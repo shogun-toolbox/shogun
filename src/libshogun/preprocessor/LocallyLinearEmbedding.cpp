@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "preprocessor/LLE.h"
+#include "preprocessor/LocallyLinearEmbedding.h"
 #ifdef HAVE_LAPACK
 #include "lib/lapack.h"
 #include "lib/common.h"
@@ -19,24 +19,24 @@
 
 using namespace shogun;
 
-CLLE::CLLE() : CSimplePreprocessor<float64_t>(), m_target_dim(1), m_k(1)
+CLocallyLinearEmbedding::CLocallyLinearEmbedding() : CSimplePreprocessor<float64_t>(), m_target_dim(1), m_k(1)
 {
 }
 
-CLLE::~CLLE()
+CLocallyLinearEmbedding::~CLocallyLinearEmbedding()
 {
 }
 
-bool CLLE::init(CFeatures* data)
+bool CLocallyLinearEmbedding::init(CFeatures* data)
 {
 	return true;
 }
 
-void CLLE::cleanup()
+void CLocallyLinearEmbedding::cleanup()
 {
 }
 
-float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
+float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 {
 	// shorthand for simplefeatures data
 	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
@@ -104,9 +104,7 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 		{
 			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[j*N+i]);
 			for (k=0; k<dim; k++)
-			{
 				z_matrix[k*m_k+j] = feature_vector[k];
-			}
 		}
 
 		// get i-th feature vector
@@ -114,10 +112,10 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 
 		// center features by subtracting i-th feature column
 		for (j=0; j<m_k; j++)
+		{
 			for (k=0; k<dim; k++)
-			{
 				z_matrix[k*m_k+j] -= feature_vector[k];
-			}
+		}
 
 		// compute local covariance matrix
 		cblas_dgemm(CblasRowMajor,CblasTrans,CblasNoTrans,
@@ -129,9 +127,7 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 		            covariance_matrix,m_k);
 
 		for (j=0; j<m_k; j++)
-		{
 			id_vector[j] = 1.0;
-		}
 
 		// regularize in case of ill-posed system
 		if (m_k>dim)
@@ -139,14 +135,10 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 			// compute tr(C)
 			float64_t trace = 0.0;
 			for (j=0; j<m_k; j++)
-			{
 				trace += covariance_matrix[j*m_k+j];
-			}
 
 			for (j=0; j<m_k; j++)
-			{
 				covariance_matrix[j*m_k+j] += 1e-3*trace;
-			}
 		}
 
 		// solve system of linear equations: covariance_matrix x X = 1
@@ -181,6 +173,7 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 	// W=I-W
 	for (i=0; i<N*N; i++)
 		W_matrix[i] = -W_matrix[i];
+
 	for (i=0; i<N; i++)
 		W_matrix[i*N+i] = 1.0-W_matrix[i*N+i];
 
@@ -207,8 +200,10 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 	// replace features with bottom eigenvectos
 	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
 	for (i=0; i<m_target_dim; i++)
+	{
 		for (j=0; j<N; j++)
 			replace_feature_matrix[j*m_target_dim+i] = m_new_feature_matrix[(i+1)*(N)+j];
+	}
 
 	pdata->set_feature_matrix(replace_feature_matrix,m_target_dim,N);
 
@@ -217,10 +212,9 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 	return replace_feature_matrix;
 }
 
-float64_t* CLLE::apply_to_feature_vector(float64_t* f, int32_t &len)
+float64_t* CLocallyLinearEmbedding::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
-	SG_ERROR("Not implemented");
-	return 0;
+	SG_NOTIMPLEMENTED;
 }
 
 #endif /* HAVE_LAPACK */
