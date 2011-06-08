@@ -13,6 +13,7 @@
 %enddef
 
 %module(docstring=DOCSTR) Clustering
+#undef DOCSTR
 
 /* Documentation */
 %feature("autodoc","0");
@@ -32,11 +33,12 @@
 
 /* Include Module Definitions */
 %include "SGBase.i"
-%{
-#include <shogun/machine/DistanceMachine.h>
-#include <shogun/clustering/KMeans.h>
-#include <shogun/clustering/Hierarchical.h>
-%}
+%include "Features_includes.i"
+%include "Distance_includes.i"
+%include "Clustering_includes.i"
+
+%import "Features.i"
+%import "Distance.i"
 
 /* Typemaps */
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** radii, int32_t* num)};

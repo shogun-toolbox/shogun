@@ -13,6 +13,7 @@
 %enddef
 
 %module(docstring=DOCSTR) Distribution
+#undef DOCSTR
 
 /* Documentation */
 %feature("autodoc","0");
@@ -32,14 +33,10 @@
 
 /* Include Module Definitions */
 %include "SGBase.i"
-%{
-#include <shogun/distributions/Distribution.h>
-#include <shogun/distributions/Histogram.h>
-#include <shogun/distributions/HMM.h>
-#include <shogun/distributions/GHMM.h>
-#include <shogun/distributions/LinearHMM.h>
-#include <shogun/distributions/PositionalPWM.h>
-%}
+%include "Features_includes.i"
+%include "Distribution_includes.i"
+
+%import "Features.i"
 
 /* Typemaps */
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num)};

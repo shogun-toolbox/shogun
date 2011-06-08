@@ -13,6 +13,7 @@
 %enddef
 
 %module(docstring=DOCSTR) Structure
+#undef DOCSTR
 
 /* Documentation */
 %feature("autodoc","0");
@@ -25,15 +26,10 @@
 
 /* Include Module Definitions */
 %include "SGBase.i"
-%{
- #include <shogun/structure/PlifBase.h>
- #include <shogun/structure/Plif.h>
- #include <shogun/structure/PlifArray.h>
- #include <shogun/structure/DynProg.h>
- #include <shogun/structure/PlifMatrix.h>
- #include <shogun/structure/IntronList.h>
- #include <shogun/structure/SegmentLoss.h>
-%}
+%include "Features_includes.i"
+%include "Structure_includes.i"
+
+%import "Features.i"
 
 /* Typemaps */
 %apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* p_limits, int32_t p_len)};
