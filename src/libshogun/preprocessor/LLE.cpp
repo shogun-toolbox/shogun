@@ -9,6 +9,7 @@
  */
 
 #include "preprocessor/LLE.h"
+#ifdef HAVE_LAPACK
 #include "lib/lapack.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -20,13 +21,10 @@ using namespace shogun;
 
 CLLE::CLLE() : CSimplePreprocessor<float64_t>(), m_target_dim(1), m_k(1)
 {
-	// temporary hack. which one will make sense?
-	m_distance = new CEuclidianDistance();
 }
 
 CLLE::~CLLE()
 {
-	delete m_distance;
 }
 
 bool CLLE::init(CFeatures* data)
@@ -46,6 +44,7 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 
 	// get dimensionality and number of vectors of data
 	int32_t dim = pdata->get_num_features();
+	ASSERT(m_target_dim<=dim);
 	int32_t N = pdata->get_num_vectors();
 	ASSERT(m_k<N);
 
@@ -53,10 +52,12 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 	int32_t i,j,k;
 
 	// compute distance matrix
-	ASSERT(m_distance);
-	m_distance->init(data,data);
+	CDistance* distance = new CEuclidianDistance();
+	ASSERT(distance);
+	distance->init(data,data);
 	float64_t* distance_matrix = new float64_t[N*N];
-	m_distance->get_distance_matrix(&distance_matrix,&N,&N);
+	distance->get_distance_matrix(&distance_matrix,&N,&N);
+	delete distance;
 
 	// init matrices to be used
 	int32_t* neighborhood_matrix = new int32_t[N*m_k];
@@ -83,12 +84,13 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 	delete[] local_neighbors;
 	delete[] local_distances;
 
+	// init W (weight) matrix
 	float64_t* W_matrix = new float64_t[N*N];
-	//replace with zerofill
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			W_matrix[i*N+j]=0.0;
 
+	// init matrices to be used
 	float64_t* z_matrix = new float64_t[N*m_k];
 	float64_t* covariance_matrix = new float64_t[N*N];
 	float64_t* feature_vector = new float64_t[dim];
@@ -97,7 +99,7 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 
 	for (i=0; i<N; i++)
 	{
-		// compute local feature matrix containing neighbors of i-th vector (column ~ vector)
+		// compute local feature matrix containing neighbors of i-th vector
 		for (j=0; j<m_k; j++)
 		{
 			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[j*N+i]);
@@ -110,15 +112,14 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 		// get i-th feature vector
 		pdata->get_feature_vector(&feature_vector, &dim, i);
 
-		// center features by subtracting
+		// center features by subtracting i-th feature column
 		for (j=0; j<m_k; j++)
 			for (k=0; k<dim; k++)
 			{
 				z_matrix[k*m_k+j] -= feature_vector[k];
 			}
 
-		//CMath::display_vector(z_matrix,m_k*dim,"Z transformed");
-
+		// compute local covariance matrix
 		cblas_dgemm(CblasRowMajor,CblasTrans,CblasNoTrans,
 		            m_k,m_k,dim,
 		            1.0,
@@ -127,14 +128,12 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 		            0.0,
 		            covariance_matrix,m_k);
 
-		//CMath::display_matrix(covariance_matrix,m_k,m_k,"C");
-
 		for (j=0; j<m_k; j++)
 		{
 			id_vector[j] = 1.0;
 		}
 
-		// regularize
+		// regularize in case of ill-posed system
 		if (m_k>dim)
 		{
 			// compute tr(C)
@@ -150,13 +149,14 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 			}
 		}
 
+		// solve system of linear equations: covariance_matrix x X = 1
 		clapack_dgesv(CblasRowMajor,
 		              m_k,1,
 		              covariance_matrix,m_k,
 		              ipiv,
 		              id_vector,m_k);
 
-		// normalize
+		// normalize weights
 		float64_t normalizer=0.0;
 		for (j=0; j<m_k; j++)
 			normalizer += CMath::abs(id_vector[j]);
@@ -164,12 +164,13 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 		for (j=0; j<m_k; j++)
 			id_vector[j]/=normalizer;
 
-		// fill W matrix
+		// put weights into W matrix
 		for (j=0; j<m_k; j++)
 			W_matrix[i*N+neighborhood_matrix[j*N+i]]=id_vector[j];
 
 	}
 
+	// clean
 	delete[] ipiv;
 	delete[] id_vector;
 	delete[] neighborhood_matrix;
@@ -203,6 +204,7 @@ float64_t* CLLE::apply_to_feature_matrix(CFeatures* data)
 				&status);
 	ASSERT(status==0);
 
+	// replace features with bottom eigenvectos
 	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
 	for (i=0; i<m_target_dim; i++)
 		for (j=0; j<N; j++)
@@ -220,3 +222,5 @@ float64_t* CLLE::apply_to_feature_vector(float64_t* f, int32_t &len)
 	SG_ERROR("Not implemented");
 	return 0;
 }
+
+#endif /* HAVE_LAPACK */

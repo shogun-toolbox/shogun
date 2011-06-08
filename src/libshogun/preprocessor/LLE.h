@@ -10,7 +10,7 @@
 
 #ifndef LLE_H_
 #define LLE_H_
-//#ifdef HAVE_LAPACK
+#ifdef HAVE_LAPACK
 
 #include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
@@ -23,17 +23,21 @@ class CFeatures;
 
 class CDistance;
 
-/** @brief the class LLE
- *	That thing isn't working yet, huh
+/** @brief the class LocallyLinearEmbedding used to preprocess
+ *  data using Locally Linear Embedding algorithm described in
+ *
+ *	Saul, L. K., Ave, P., Park, F., & Roweis, S. T. (2001).
+ *	An Introduction to Locally Linear Embedding. Available from, 290(5500), 2323-2326.
+ *
  */
 class CLLE: public CSimplePreprocessor<float64_t>
 {
 public:
 
-	/* constructor */
+	/** constructor */
 	CLLE();
 
-	/* destructor */
+	/** destructor */
 	virtual ~CLLE();
 
 	/** init
@@ -103,12 +107,9 @@ protected:
 	/* number of neighbors */
 	int32_t m_k;
 
-	/* distance instance */
-	CDistance* m_distance;
-
 };
 
 }
 
-//#endif /* HAVE_LAPACK */
+#endif /* HAVE_LAPACK */
 #endif /* LLE_H_ */
