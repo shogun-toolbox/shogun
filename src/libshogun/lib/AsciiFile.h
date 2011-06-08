@@ -389,7 +389,7 @@ public:
 	 * 
 	 * @return Number of bytes read.
 	 */
-	ssize_t getdelim(char **lineptr, size_t *n, char delimiter, FILE* stream);
+	static ssize_t getdelim(char **lineptr, size_t *n, char delimiter, FILE* stream);
 
 	/** 
 	 * getline() implementation.
@@ -401,7 +401,7 @@ public:
 	 * 
 	 * @return Number of bytes read
 	 */
-	ssize_t getline(char **lineptr, size_t *n, FILE *stream);
+	static ssize_t getline(char **lineptr, size_t *n, FILE *stream);
 
 private:
 	/** helper function to read vectors / matrices

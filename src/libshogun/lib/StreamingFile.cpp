@@ -11,6 +11,7 @@
 #include "features/SparseFeatures.h"
 #include "lib/File.h"
 #include "lib/StreamingFile.h"
+#include "lib/AsciiFile.h"
 #include "lib/Mathematics.h"
 #include <ctype.h>
 
@@ -41,7 +42,7 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
 	char* buffer=new char[buffer_size];							\
 	ssize_t bytes_read;											\
 																\
-	bytes_read=getline(&buffer, &buffer_size, file);			\
+	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
 																\
 																\
 	if (bytes_read<=0)											\
