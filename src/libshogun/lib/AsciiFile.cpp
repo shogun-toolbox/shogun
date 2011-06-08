@@ -1036,7 +1036,7 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 	int32_t threshold_size=100000;
 
 	while (1)
-	{
+o	{
 		// We need some limit in case file does not contain '\n'
 		if (*n > threshold_size)
 			return -1;
@@ -1055,6 +1055,8 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 
 		if (pos==-1)
 		{
+			if (feof(stream))
+				return -1;
 			total_bytes_read+=bytes_read;
 			*lineptr=(char*) SG_REALLOC(*lineptr, (*n)*2);
 			*n=(*n)*2;
@@ -1064,6 +1066,8 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 		{
 			total_bytes_read+=pos+1;
 			(*lineptr)[total_bytes_read]='\0';
+			// Seek back to position after \n
+			fseek(stream, (bytes_read-pos-1) * -1, SEEK_CUR);
 			return total_bytes_read;
 		}
 	}
