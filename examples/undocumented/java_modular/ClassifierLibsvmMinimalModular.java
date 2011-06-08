@@ -12,7 +12,7 @@ public class ClassifierLibsvmMinimalModular {
 		int num = 1000;
 		int dist = 1;
 		double width = 2.1;
-		int C = 1;
+		double C = 1.0;
 
 		DoubleMatrix x = DoubleMatrix.randn(2, num).sub(DoubleMatrix.ones(2, num));
 		DoubleMatrix y = DoubleMatrix.randn(2, num).add(DoubleMatrix.ones(2, num));
@@ -22,16 +22,18 @@ public class ClassifierLibsvmMinimalModular {
 		DoubleMatrix n = DoubleMatrix.randn(2, num).add(DoubleMatrix.ones(2, num));
 		DoubleMatrix testdata_real = DoubleMatrix.concatHorizontally(m, n);
 
-		DoubleMatrix trainlab = DoubleMatrix.concatHorizontally(DoubleMatrix.ones(num).neg(), DoubleMatrix.ones(num));
-		DoubleMatrix testlab = DoubleMatrix.concatHorizontally(DoubleMatrix.ones(num).neg(), DoubleMatrix.ones(num));
+		DoubleMatrix trainlab = DoubleMatrix.concatVertically(DoubleMatrix.ones(num).neg(), DoubleMatrix.ones(num));
+		DoubleMatrix testlab = DoubleMatrix.concatVertically(DoubleMatrix.ones(num).neg(), DoubleMatrix.ones(num));
 
 		RealFeatures feats_train = new RealFeatures();
 		feats_train.set_feature_matrix(traindata_real);
 		RealFeatures feats_test = new RealFeatures();
 		feats_test.set_feature_matrix(testdata_real);
+		System.out.println(feats_train.get_num_vectors());
+		System.out.println(feats_train.get_num_features());
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_train, width);
 
-		Labels labels = new Labels(trainlab);
+		Labels labels = new Labels(trainlab.data);
 		LibSVM svm = new LibSVM(C, kernel, labels);
 		svm.train();
 

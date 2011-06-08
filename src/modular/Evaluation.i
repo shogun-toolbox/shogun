@@ -13,6 +13,7 @@
 %enddef
 
 %module(docstring=DOCSTR) Evaluation
+#undef DOCSTR
 
 /* Documentation */
 %feature("autodoc","0");
@@ -25,16 +26,10 @@
 
 /* Include Module Definitions */
 %include "SGBase.i"
-%{
- #include <shogun/features/Labels.h>
- #include <shogun/evaluation/Evaluation.h>
- #include <shogun/evaluation/BinaryClassEvaluation.h>
- #include <shogun/evaluation/ContingencyTableEvaluation.h>
- #include <shogun/evaluation/MulticlassAccuracy.h>
- #include <shogun/evaluation/MeanSquaredError.h>
- #include <shogun/evaluation/ROCEvaluation.h>
- #include <shogun/evaluation/PRCEvaluation.h>
-%}
+%include "Features_includes.i"
+%include "Evaluation_includes.i"
+
+%import "Features.i"
 
 /* Typemaps */
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** result, int32_t* num)};
@@ -64,7 +59,6 @@
 %rename(SpecificityMeasure) CSpecificityMeasure;
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/features/Labels.h>
 %include <shogun/evaluation/Evaluation.h>
 %include <shogun/evaluation/BinaryClassEvaluation.h>
 %include <shogun/evaluation/ContingencyTableEvaluation.h>

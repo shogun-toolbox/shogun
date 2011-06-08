@@ -13,11 +13,7 @@ public class MatrixTest {
 		DoubleMatrix A = new DoubleMatrix(y);
 		x.set_feature_matrix(A);
 		DoubleMatrix B = x.get_feature_matrix();
-		for (int i = 0; i < 3; i ++) {
-			for (int j = 0; j < 2; j++) {	
-				System.out.println(B.get(i, j));
-			}
-		}
+		System.out.println(B.toString());
 		Features.exit_shogun();
 	}
 }

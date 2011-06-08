@@ -13,6 +13,7 @@
 %enddef
 
 %module(docstring=REGRESSION_DOCSTR) Regression
+#undef DOCSTR
 
 /* Documentation */
 %feature("autodoc","0");
@@ -25,21 +26,12 @@
 
 /* Include Module Definitions */
 %include "SGBase.i"
-%{
- #include <shogun/regression/Regression.h>
- #include <shogun/machine/Machine.h>
- #include <shogun/machine/KernelMachine.h>
- #include <shogun/regression/KRR.h>
- #include <shogun/classifier/svm/SVM.h>
- #include <shogun/classifier/svm/LibSVM.h>
- #include <shogun/regression/svr/LibSVR.h>
- #include <shogun/classifier/mkl/MKL.h>
- #include <shogun/regression/svr/MKLRegression.h>
-#ifdef USE_SVMLIGHT
- #include <shogun/classifier/svm/SVMLight.h>
- #include <shogun/regression/svr/SVRLight.h>
-#endif //USE_SVMLIGHT
-%}
+%include "Features_includes.i"
+%include "Kernel_includes.i"
+%include "Regression_includes.i"
+
+%import "Features.i"
+%import "Kernel.i"
 
 /* Typemaps */
 %apply (int32_t** ARGOUT1, int32_t* DIM1) {(int32_t** svs, int32_t* num)};
