@@ -1036,7 +1036,7 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 	int32_t threshold_size=100000;
 
 	while (1)
-o	{
+	{
 		// We need some limit in case file does not contain '\n'
 		if (*n > threshold_size)
 			return -1;
