@@ -13,6 +13,7 @@
 #include "lib/AsciiFile.h"
 #include "lib/Mathematics.h"
 #include <ctype.h>
+#include <stdio.h>
 
 using namespace shogun;
 
@@ -1015,3 +1016,72 @@ template <class T> void CAsciiFile::append_item(
 	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
 	items->append_element(item);
 }
+
+#ifdef __MACH__
+ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *stream)
+{
+	int32_t total_bytes_read=0;
+	int32_t default_size=10;
+				
+	if ((lineptr == NULL) || (n == NULL) || (stream == NULL))
+		return -1;
+		
+	if ((*lineptr == NULL) && (*n == 0))
+	{
+		*lineptr=(char*) SG_MALLOC(sizeof(char)*default_size);
+		*n=default_size;
+	}
+		
+	int32_t bytes_read, pos=-1;
+	int32_t threshold_size=100000;
+
+	while (1)
+	{
+		// We need some limit in case file does not contain '\n'
+		if (*n > threshold_size)
+			return -1;
+				
+		// Read from file and append to buffer
+		bytes_read=fread(*lineptr+total_bytes_read, sizeof(char), *n-total_bytes_read, stream);
+
+		for (int i=0; i<bytes_read; i++)
+		{
+			if ((*lineptr)[total_bytes_read+i] == delimiter)
+			{
+				pos=i;
+				break;
+			}
+		}
+
+		if (pos==-1)
+		{
+			total_bytes_read+=bytes_read;
+			*lineptr=(char*) SG_REALLOC(*lineptr, (*n)*2);
+			*n=(*n)*2;
+			// A better reallocated size should be used
+		}
+		else
+		{
+			total_bytes_read+=pos+1;
+			(*lineptr)[total_bytes_read]='\0';
+			return total_bytes_read;
+		}
+	}
+}
+
+ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
+{
+	return getdelim(lineptr, n, '\n', stream);
+}
+
+#else
+ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *stream)
+{
+	return getdelim(lineptr, n, delimiter, stream);
+}
+
+ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
+{
+	return getline(lineptr, n, stream);
+}
+#endif
