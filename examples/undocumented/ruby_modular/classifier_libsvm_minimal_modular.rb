@@ -9,7 +9,7 @@ require '../../../src/ruby_modular/Kernel'
 require '../../../src/ruby_modular/Library'
 
 # interactive console for playin wit stuff
-require 'pry'
+#require 'pry'
 
 include Features
 include Classifier
