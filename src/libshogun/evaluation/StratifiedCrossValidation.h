@@ -26,9 +26,7 @@ class CLabels;
 class CStratifiedCrossValidation: public CSplittingStrategy
 {
 public:
-	/** constructor
-	 * Do not use this one. Has to be implemented due to shogun's architecture.
-	 */
+	/** constructor */
 	CStratifiedCrossValidation();
 
 	/** constructor
