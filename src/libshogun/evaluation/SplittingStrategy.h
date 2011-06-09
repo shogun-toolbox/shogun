@@ -33,6 +33,9 @@ class CLabels;
 class CSplittingStrategy: public CSGObject
 {
 public:
+	/** constructor */
+	CSplittingStrategy();
+
 	/** constructor
 	 *
 	 * @param labels labels to be (possibly) used for splitting

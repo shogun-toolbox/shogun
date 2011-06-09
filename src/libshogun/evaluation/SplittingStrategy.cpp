@@ -13,6 +13,10 @@
 
 using namespace shogun;
 
+CSplittingStrategy::CSplittingStrategy() : m_labels(NULL)
+{
+}
+
 CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets) :
 	m_labels(labels)
 {
