@@ -52,11 +52,6 @@ def ary_fill dist
   return ary
 end
 
-# this is very mean!
-def mean stuff
-  stuff
-end
-
 Numeric.class_eval do
   def sign
     return -1 if self < 0
