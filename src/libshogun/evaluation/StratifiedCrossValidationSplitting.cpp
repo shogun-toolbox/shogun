@@ -14,19 +14,19 @@
 
 using namespace shogun;
 
-CStratifiedCrossValidation::CStratifiedCrossValidation() :
+CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting() :
 	CSplittingStrategy(0, 0)
 {
 }
 
-CStratifiedCrossValidation::CStratifiedCrossValidation(CLabels* labels,
-		index_t num_subsets) :
+CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
+		CLabels* labels, index_t num_subsets) :
 	CSplittingStrategy(labels, num_subsets)
 {
 	build_subsets();
 }
 
-void CStratifiedCrossValidation::build_subsets()
+void CStratifiedCrossValidationSplitting::build_subsets()
 {
 	/* extract all labels */
 	CSet<float64_t> unique_labels;

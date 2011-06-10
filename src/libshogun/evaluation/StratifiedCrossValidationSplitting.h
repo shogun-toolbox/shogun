@@ -23,18 +23,18 @@ class CLabels;
  * difference) in which the label ratio is equal (at most one difference) to
  * the label ratio of the specified labels
  */
-class CStratifiedCrossValidation: public CSplittingStrategy
+class CStratifiedCrossValidationSplitting: public CSplittingStrategy
 {
 public:
 	/** constructor */
-	CStratifiedCrossValidation();
+	CStratifiedCrossValidationSplitting();
 
 	/** constructor
 	 *
 	 * @param labels labels to be (possibly) used for splitting
 	 * @param num_subsets desired number of subsets, the labels are split into
 	 */
-	CStratifiedCrossValidation(CLabels* labels, index_t num_subsets);
+	CStratifiedCrossValidationSplitting(CLabels* labels, index_t num_subsets);
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
