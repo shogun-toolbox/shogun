@@ -9,6 +9,7 @@
  */
 
 #include "preprocessor/ClassicMDS.h"
+#ifdef HAVE_LAPACK
 #include "lib/lapack.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -16,7 +17,6 @@
 #include "distance/EuclidianDistance.h"
 #include "lib/Signal.h"
 
-#ifdef HAVE_LAPACK
 using namespace shogun;
 
 CClassicMDS::CClassicMDS() : CSimplePreprocessor<float64_t>(), m_target_dim(1)
@@ -36,11 +36,10 @@ void CClassicMDS::cleanup()
 {
 }
 
-float64_t* CClassicMDS::apply_to_feature_matrix(CFeatures* data)
+bool CClassicMDS::apply_to_distance(CDistance* distance, SGMatrix<float64_t> &output_features)
 {
-	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
-	CDistance* distance = new CEuclidianDistance(pdata,pdata);
-	int32_t N = pdata->get_num_features();
+	ASSERT(distance->get_num_vec_lhs()==distance->get_num_vec_rhs());
+	int32_t N = distance->get_num_vec_lhs();
 
 	// loop variables
 	int32_t i,j;
@@ -48,7 +47,6 @@ float64_t* CClassicMDS::apply_to_feature_matrix(CFeatures* data)
 	// get distance matrix
 	float64_t* D_matrix;
 	distance->get_distance_matrix(&D_matrix,&N,&N);
-	delete distance;
 
 	// get D^2 matrix
 	float64_t* Ds_matrix = new float64_t[N*N];
@@ -63,9 +61,9 @@ float64_t* CClassicMDS::apply_to_feature_matrix(CFeatures* data)
 			H_matrix[i*N+j] = (i==j) ? 1.0-1.0/N : -1.0/N;
 
 	// compute -1/2 H D^2 H (result in Ds_matrix)
-	cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans,
+	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,
 			N,N,N,1.0,H_matrix,N,Ds_matrix,N,0.0,D_matrix,N);
-	cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans,
+	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,
 			N,N,N,-0.5,D_matrix,N,H_matrix,N,0.0,Ds_matrix,N);
 
 	// cleanup
@@ -79,24 +77,44 @@ float64_t* CClassicMDS::apply_to_feature_matrix(CFeatures* data)
 	ASSERT(eigenproblem_status==0);
 
 	// replace feature matrix with (top) eigenvectors associated with largest
-	// positive eigenvalues
+	// positive eigenvalues (ignores negative eigenvalues)
 	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
 	for (i=0; i<m_target_dim; i++)
+	{
+		if (eigenvalues_vector[N-i-1]<0)
+		{
+			m_target_dim = i;
+			break;
+		}
+
 		for (j=0; j<N; j++)
 			replace_feature_matrix[j*m_target_dim+i] = Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
-
-	pdata->set_feature_matrix(replace_feature_matrix,m_target_dim,N);
+	}
 
 	// cleanup
 	delete[] eigenvalues_vector;
 	delete[] Ds_matrix;
 
-	return replace_feature_matrix;
+	output_features.matrix = replace_feature_matrix;
+	output_features.num_cols = N;
+	output_features.num_rows = m_target_dim;
+
+	return true;
+}
+
+float64_t* CClassicMDS::apply_to_feature_matrix(CFeatures* data)
+{
+	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
+	CDistance* distance = new CEuclidianDistance(pdata,pdata);
+
+	SGMatrix<float64_t> features;
+	apply_to_distance(distance,features);
+	pdata->set_feature_matrix(features);
+	return features.matrix;
 }
 
 float64_t* CClassicMDS::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
-	SG_ERROR("Not implemented");
-	return 0;
+	SG_NOTIMPLEMENTED;
 }
 #endif /* HAVE_LAPACK */

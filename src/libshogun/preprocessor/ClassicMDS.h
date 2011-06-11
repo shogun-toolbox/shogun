@@ -86,7 +86,12 @@ public:
 
 protected:
 
-	/* target dim */
+	/** apply preproc to distance
+	 *
+	 */
+	bool apply_to_distance(CDistance* distance, SGMatrix<float64_t> &output_features);
+
+	/** target dim */
 	int32_t m_target_dim;
 };
 

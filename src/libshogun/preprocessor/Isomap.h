@@ -10,7 +10,6 @@
 
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
-
 #ifdef HAVE_LAPACK
 
 #include "preprocessor/ClassicMDS.h"
@@ -61,12 +60,11 @@ public:
 	virtual inline const char* get_name() const { return "ISOMAP"; };
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; };
+	virtual inline EPreprocessorType get_type() const { return P_ISOMAP; };
 
 };
 
 }
 
 #endif /* HAVE_LAPACK */
-
 #endif /* ISOMAP_H_ */
