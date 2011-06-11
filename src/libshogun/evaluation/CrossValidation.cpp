@@ -42,9 +42,9 @@ CCrossValidation::CCrossValidation(CMachine* machine,
 }
 
 float64_t CCrossValidation::evaluate(int32_t num_runs, float64_t conf_int_p,
-			float64_t* conf_int_low, float64_t* conf_int_up)
+		float64_t* conf_int_low, float64_t* conf_int_up)
 {
-	if (num_runs <=0)
+	if (num_runs<=0)
 		SG_ERROR("number of cross-validation runs has to >0\n");
 
 	/* check if confidence interval has to be computed */
@@ -55,7 +55,6 @@ float64_t CCrossValidation::evaluate(int32_t num_runs, float64_t conf_int_p,
 		SG_ERROR("illegal p-value for confidence interval of "
 				"cross-validation\n");
 	}
-
 
 	float64_t* results=new float64_t[num_runs];
 
@@ -68,6 +67,35 @@ float64_t CCrossValidation::evaluate(int32_t num_runs, float64_t conf_int_p,
 
 	float64_t mean=CMath::mean(results, num_runs);
 
+	delete[] results;
+
+	return mean;
+}
+
+float64_t CCrossValidation::evaluate_one_run()
+{
+	index_t num_subsets=m_splitting_strategy->get_num_subsets();
+	float64_t* results=new float64_t[num_subsets];
+
+	/* do actual cross-validation */
+	for (index_t i=0; i<num_subsets; ++i)
+	{
+		/* Lots of TODO's here */
+		/* set feature subset for training */
+
+		/* train */
+
+		/* apply */
+		CLabels* result_labels=m_machine->apply();
+
+		/* label subset for testing */
+		CLabels* real_labels;
+
+		/* evaluate */
+		results[i]=m_evaluation_criterium->evaluate(result_labels, real_labels);
+	}
+
+	float64_t mean=CMath::mean(results, num_subsets);
 	delete[] results;
 
 	return mean;

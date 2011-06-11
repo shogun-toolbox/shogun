@@ -21,20 +21,19 @@ class CMachine;
 class CSplittingStrategy;
 class CEvaluation;
 
-/** @brief abstract base class for cross-validation evaluation.
+/** @brief base class for cross-validation evaluation.
  * Given a learning machine, a splitting strategy and an evaluation criterium,
  * this provides an interface for cross-validation. Results may be retrieved
  * using the evaluate method. A number of repetitions may be specified for
  * obtaining more accurate results. The arithmetic mean of different runs is
  * returned along with confidence intervals for a given p-value.
  *
- * Different implementations may average results of each cross validation fold
- * differently. For example, AUC has to be averaged differently than the
- * f1-measure. For every evaluation criterium, a new class has to implemented,
- * so that the fact that the method of averaging is important may not be ignored.
- *
- * Sub-classes HAVE to override the evaluate_one_run method, which is empty here
- * and which is called by the evaulate method.
+ * This class calculates an evaluation criterium of every fold and then
+ * calculates the arithmetic mean of all folds. This is for example suitable
+ * for the AUC or for Accuracy. However, for example F1-measure may not be
+ * merged this way (result will be biased). To solve this, different sub-classes
+ * may average results of each cross validation fold differently by overwriting
+ * the evaluate_one_run method.
  *
  * See [Forman, G. and Scholz, M. (2009). Apples-to-apples in cross-validation
  * studies: Pitfalls in classifier performance measurement. Technical report,
@@ -63,7 +62,7 @@ public:
 		return m_evaluation_criterium->get_evaluation_direction();
 	}
 
-	/** abstract method for evaluation.
+	/** method for evaluation.
 	 * A number of runs may be specified for repetition of procedure. If this
 	 * number is larger than one, a confidence interval may be calculated if
 	 * provided pointers are non-NULL. A p-value may be specified for this.
@@ -76,7 +75,7 @@ public:
 	 *
 	 * @return arithmetic mean of cross-validation runs
 	 */
-	virtual float64_t evaluate(int32_t num_runs=1, float64_t conf_int_p=0,
+	float64_t evaluate(int32_t num_runs=1, float64_t conf_int_p=0,
 			float64_t* conf_int_low=NULL, float64_t* conf_int_up=NULL);
 
 	/** @return name of the SGSerializable */
@@ -87,10 +86,14 @@ public:
 
 protected:
 	/** evaulates one single cross-validation run.
-	 * Has to be overriden by sub-classes. Be careful when averaging results of
-	 * different folds (see class description)
+	 * Current implementation evaluates each fold seperately and then calculates
+	 * arithmetic mean. Suitable for accuracy and AUC for example. NOT for
+	 * F1-measure. Has to be overriden by sub-classes if results have to be
+	 * merged differently
+	 *
+	 * @return evaluation result of one cross-validation run
 	 */
-	virtual float64_t evaluate_one_run() { return 0; }
+	virtual float64_t evaluate_one_run();
 
 private:
 	CMachine* m_machine;
