@@ -8,9 +8,6 @@ require '../../../src/ruby_modular/Kernel'
 # for randn func
 require '../../../src/ruby_modular/Library'
 
-# interactive console for playin wit stuff
-require 'pry'
-
 include Features
 include Classifier
 include Kernel
@@ -52,11 +49,6 @@ def ary_fill dist
   return ary
 end
 
-# this is very mean!
-def mean stuff
-  stuff
-end
-
 Numeric.class_eval do
   def sign
     return -1 if self < 0
@@ -71,6 +63,7 @@ Array.class_eval do
     self.each do |x|
       a << x.sign
     end
+    a
   end
 
   def eql_items? other
@@ -89,20 +82,21 @@ end
 # i'm being lazy & not doing cool metaprogramming type stuff for now...
 def mean ary
   num_items = ary.size
-  tot = ary.inject do |sum, n|
+  tot = ary.inject(0) do |sum, n|
     if n == true
       sum + 1
-      next
+    elsif (n == false) or (n == nil)
+      sum + 0 # yes it's a dummy
+    else
+      sum + n
     end
-    next if n == false
-    sum + n
   end
   tot.to_f / num_items.to_f
 end
   
 # the actual example
 # example nums
-@num = 10
+@num = 1000
 @dist = 1
 @width = 2.1
 C = 1
@@ -131,7 +125,5 @@ svm.train
 puts "the grand finale"
 kernel.init feats_train, feats_test
 out = svm.apply.get_labels
-testerr = mean out.eql_items? testlab
+testerr = mean out.sign.eql_items? testlab
 puts testerr
-
-binding.pry
