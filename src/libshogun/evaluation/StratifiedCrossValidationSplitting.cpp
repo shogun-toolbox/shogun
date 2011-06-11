@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "evaluation/StratifiedCrossValidation.h"
+#include "evaluation/StratifiedCrossValidationSplitting.h"
 #include "features/Labels.h"
 #include "lib/Set.h"
 
