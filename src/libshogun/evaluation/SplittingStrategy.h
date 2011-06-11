@@ -54,6 +54,8 @@ public:
 	 */
 	SGVector<index_t>* generate_subset_indices(index_t subset_idx);
 
+	index_t get_num_subsets() { return m_subset_indices.get_num_elements(); }
+
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
 	 *
