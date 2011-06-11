@@ -76,7 +76,7 @@ public:
 	 *
 	 * @return arithmetic mean of cross-validation runs
 	 */
-	virtual float64_t evaluate(int32_t num_runs=1, float64_t* conf_int_p=0,
+	virtual float64_t evaluate(int32_t num_runs=1, float64_t conf_int_p=0,
 			float64_t* conf_int_low=NULL, float64_t* conf_int_up=NULL);
 
 	/** @return name of the SGSerializable */
