@@ -22,21 +22,10 @@ class CModelSelectionParameters;
 class CParameterCombination;
 class CMachine;
 
-/** enum which is used to define whether an evaluation criterium has to be
- * minimised or maximised */
-enum EEvaluationDirection
-{
-	MS_UNDEFINED, MS_MINIMIZE, MS_MAXIMIZE
-};
-
 class CModelSelection: public CSGObject
 {
 public:
 	CModelSelection();
-	CModelSelection(CMachine* machine, CEvaluation* evaluation_criterium,
-			EEvaluationDirection eval_direction,
-			CModelSelectionParameters* model_parameters,
-			CSplittingStrategy* splitting_strategy);
 	virtual ~CModelSelection();
 
 	virtual CParameterCombination* select_model();
@@ -52,11 +41,7 @@ public:
 	}
 
 protected:
-	CMachine* m_machine;
-	CEvaluation* m_evaluation_criterium;
-	EEvaluationDirection m_evaluation_direction;
 	CModelSelectionParameters* m_model_parameters;
-	CSplittingStrategy* m_splitting_strategy;
 };
 
 }
