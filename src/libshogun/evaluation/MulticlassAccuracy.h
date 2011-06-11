@@ -46,6 +46,11 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
+	inline EEvaluationDirection get_evaluation_direction()
+	{
+		return ED_MINIMISE;
+	}
+
 	/** get name */
 	virtual inline const char* get_name() const { return "MulticlassAccuracy"; }
 };

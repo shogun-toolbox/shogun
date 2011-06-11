@@ -41,6 +41,35 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 	return 42;
 }
 
+inline EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction()
+{
+	switch (m_type)
+	{
+	case ACCURACY:
+		return ED_MAXIMISE;
+	case ERROR_RATE:
+		return ED_MINIMISE;
+	case BAL:
+		return ED_MINIMISE;
+	case WRACC:
+		return ED_MAXIMISE;
+	case F1:
+		return ED_MAXIMISE;
+	case CROSS_CORRELATION:
+		return ED_MAXIMISE;
+	case RECALL:
+		return ED_MAXIMISE;
+	case PRECISION:
+		return ED_MAXIMISE;
+	case SPECIFICITY:
+		return ED_MAXIMISE;
+	default:
+		SG_NOTIMPLEMENTED;
+	}
+
+	return ED_MINIMISE;
+}
+
 void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(ground_truth->is_two_class_labeling());
