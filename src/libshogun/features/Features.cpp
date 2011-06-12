@@ -48,8 +48,7 @@ CFeatures::CFeatures(CFile* loader)
 
 CFeatures::~CFeatures()
 {
-	if (m_subset_idx)
-		delete[] m_subset_idx;
+	delete[] m_subset_idx;
 
 	clean_preprocs();
 }
