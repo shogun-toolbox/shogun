@@ -36,6 +36,18 @@ void CClassicMDS::cleanup()
 {
 }
 
+CSimpleFeatures<float64_t>* CClassicMDS::apply_to_distance(CDistance* distance)
+{
+	ASSERT(distance);
+
+	SGMatrix<float64_t> features;
+	apply_to_distance(distance,features);
+	CSimpleFeatures<float64_t>* new_features = new CSimpleFeatures<float64_t>();
+	new_features->set_feature_matrix(features);
+
+	return new_features;
+}
+
 bool CClassicMDS::apply_to_distance(CDistance* distance, SGMatrix<float64_t> &output_features)
 {
 	ASSERT(distance->get_num_vec_lhs()==distance->get_num_vec_rhs());

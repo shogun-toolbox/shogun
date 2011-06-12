@@ -51,6 +51,11 @@ public:
 	 */
 	virtual void cleanup();
 
+	/** apply preproc to distance
+	 *
+	 */
+	CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
+
 	/** apply preproc to feature matrix
 	 *
 	 */
