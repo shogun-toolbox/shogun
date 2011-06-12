@@ -18,15 +18,18 @@ namespace shogun
 {
 
 class CMachine;
+class CFeatures;
+class CLabels;
 class CSplittingStrategy;
 class CEvaluation;
 
 /** @brief base class for cross-validation evaluation.
- * Given a learning machine, a splitting strategy and an evaluation criterium,
- * this provides an interface for cross-validation. Results may be retrieved
- * using the evaluate method. A number of repetitions may be specified for
- * obtaining more accurate results. The arithmetic mean of different runs is
- * returned along with confidence intervals for a given p-value.
+ * Given a learning machine, a splitting strategy, an evaluation criterium,
+ * features and crrespnding labels, this provides an interface for
+ * cross-validation. Results may be retrieved using the evaluate method. A
+ * number of repetitions may be specified for obtaining more accurate results.
+ * The arithmetic mean of different runs is returned along with confidence
+ * intervals for a given p-value.
  *
  * This class calculates an evaluation criterium of every fold and then
  * calculates the arithmetic mean of all folds. This is for example suitable
@@ -47,10 +50,13 @@ public:
 
 	/** constructor
 	 * @param machine learning machine to use
+	 * @param features features to use for cross-validation
+	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
 	 * @param evaluation_criterium evaluation criterium to use
 	 */
-	CCrossValidation(CMachine* machine, CSplittingStrategy* splitting_strategy,
+	CCrossValidation(CMachine* machine, CFeatures* features, CLabels* labels,
+			CSplittingStrategy* splitting_strategy,
 			CEvaluation* evaluation_criterium);
 
 	/** destructor */
@@ -97,6 +103,8 @@ protected:
 
 private:
 	CMachine* m_machine;
+	CFeatures* m_features;
+	CLabels* m_labels;
 	CSplittingStrategy* m_splitting_strategy;
 	CEvaluation* m_evaluation_criterium;
 };
