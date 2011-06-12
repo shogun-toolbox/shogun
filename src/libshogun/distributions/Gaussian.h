@@ -131,7 +131,13 @@ class CGaussian : public CDistribution
 		 */
 		virtual SGVector<float64_t> get_mean()
 		{
+<<<<<<< HEAD
 			return SGVector<float64_t>(m_mean,m_mean_length);
+=======
+			*mean=new float64_t[m_mean_length];
+			memcpy(*mean, m_mean, sizeof(float64_t)*m_mean_length);
+			*mean_length=m_mean_length;
+>>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 		}
 
 		/** set mean
@@ -141,8 +147,21 @@ class CGaussian : public CDistribution
 		 */
 		virtual void set_mean(SGVector<float64_t> mean_vector)
 		{
+<<<<<<< HEAD
 			ASSERT(mean_vector.vlen == m_mean_length);
 			memcpy(m_mean, mean_vector.vector, sizeof(float64_t)*m_mean_length);
+=======
+			if (m_mean_length>0)
+			{
+				ASSERT(mean_length==m_mean_length);
+			}
+			else
+			{
+				m_mean_length=mean_length;
+				m_mean=new float64_t[mean_length];
+			}
+			memcpy(m_mean, mean, sizeof(float64_t)*m_mean_length);
+>>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 		}
 
 		/** get cov
@@ -163,12 +182,17 @@ class CGaussian : public CDistribution
 		virtual inline void set_cov(SGMatrix<float64_t> cov_matrix)
 		{
 <<<<<<< HEAD
+<<<<<<< HEAD
 			ASSERT(cov_matrix.num_rows = cov_matrix.num_cols);
 			ASSERT(cov_matrix.num_rows = m_cov_rows);
 			memcpy(m_cov, cov_matrix.matrix, sizeof(float64_t)*m_cov_rows*m_cov_cols);
 =======
 			ASSERT(cov_rows = cov_cols);
 			ASSERT(cov_rows = m_mean_length);
+=======
+			ASSERT(cov_rows==cov_cols);
+			ASSERT(cov_rows==m_mean_length);
+>>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 			decompose_cov(cov, cov_rows);
 >>>>>>> Rewritten Gaussian class to work with different covariance types in log domain.
 			init();
@@ -192,6 +216,46 @@ class CGaussian : public CDistribution
 		inline void set_cov_type(ECovType cov_type)
 		{
 			m_cov_type = cov_type;
+		}
+
+		/** set diagonal
+		 *
+		 * @param d diagonal
+		 * @param d_length diagonal length
+		 */
+		inline void set_d(float64_t* d, int32_t d_length)
+		{
+			if (m_d_length>0)
+			{
+				ASSERT(d_length==m_d_length);
+			}
+			else
+			{
+				m_d_length=d_length;
+				m_d=new float64_t[d_length];
+			}
+			memcpy(m_d, d, sizeof(float64_t)*m_d_length);			
+		}
+
+		/** set unitary matrix
+		 *
+		 * @param d diagonal
+		 * @param d_length diagonal length
+		 */
+		inline void set_u(float64_t* u, int32_t u_rows, int32_t u_cols)
+		{
+			if (m_u_rows>0)
+			{
+				ASSERT(u_rows==u_cols);
+				ASSERT(u_rows==m_u_rows);
+			}
+			else
+			{
+				m_u_rows=u_rows;
+				m_u_cols=u_cols;
+				m_u=new float64_t[m_u_rows*m_u_cols];
+			}
+			memcpy(m_u, u, sizeof(float64_t)*m_u_rows*m_u_cols);			
 		}
 
 		/** @return object name */

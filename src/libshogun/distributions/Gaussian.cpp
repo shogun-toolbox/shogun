@@ -184,7 +184,7 @@ float64_t CGaussian::compute_log_PDF(float64_t* point, int32_t point_len)
 
 void CGaussian::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
 {
-	*cov = new float64_t[m_mean_length*m_mean_length];
+	*cov=new float64_t[m_mean_length*m_mean_length];
 	memset(*cov, 0, sizeof(float64_t)*m_mean_length*m_mean_length);
 
 	if (m_cov_type==FULL)
@@ -219,8 +219,8 @@ void CGaussian::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
 			(*cov)[i*m_mean_length+i]=*m_d;
 	}
 
-	*cov_rows = m_mean_length;
-	*cov_cols = m_mean_length;
+	*cov_rows=m_mean_length;
+	*cov_cols=m_mean_length;
 }
 
 void CGaussian::register_params()

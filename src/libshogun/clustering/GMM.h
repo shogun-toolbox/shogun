@@ -35,7 +35,7 @@ class CGMM : public CDistribution
 		 * @param max_iter maximum iterations
 		 * @param min_change minimal expected log likelihood change
 		 */
-		CGMM(int32_t n, int32_t max_iter, float64_t min_change);
+		CGMM(int32_t n, ECovType cov_type=FULL);
 		virtual ~CGMM();
 
 		/** cleanup */
@@ -48,6 +48,25 @@ class CGMM : public CDistribution
 		 * @return whether training was successful
 		 */
 		virtual bool train(CFeatures* data=NULL);
+
+		/** learn distribution using EM
+		 *
+		 * @param min_cov minimum covariance
+		 * @param max_iter maximum iterations
+		 * @param min_change minimum change in likelihood
+		 *
+		 * @return whether training was successful
+		 */
+		bool train_em(float64_t min_cov=1e-9, int32_t max_iter=1000, float64_t min_change=1e-9);
+
+		/** maximum likelihood estimation
+		 *
+		 * @param alpha point assignment
+		 * @param alpha_row number of rows
+		 * @param alpha_col number of cols
+		 * @param min_cov minimum covariance
+		 */
+		void max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col, float64_t min_cov);
 
 		/** get number of parameters in model
 		 *
@@ -124,6 +143,9 @@ class CGMM : public CDistribution
 		inline virtual const char* get_name() const { return "GMM"; }
 
 	private:
+		/** 1NN assignment initialization */
+		float64_t* alpha_init(float64_t* init_means, int32_t init_mean_dim, int32_t init_mean_size);
+
 		/** Initialize parameters for serialization */
 		void register_params();
 
@@ -136,10 +158,6 @@ class CGMM : public CDistribution
 		float64_t* m_coefficients;
 		/** Coefficient vector size */
 		int32_t m_coef_size;
-		/** Maximum number of iterations */
-		int32_t m_max_iter;
-		/** Minimum expected log-likelihood change */
-		float64_t m_minimal_change;
 };
 }
 #endif //HAVE_LAPACK
