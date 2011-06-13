@@ -38,6 +38,8 @@ void init_shogun(void (*print_message)(FILE* target, const char* str) = NULL,
 		void (*print_error)(FILE* target, const char* str) = NULL,
 		void (*cancel_computations)(bool &delayed, bool &immediately)=NULL);
 
+void init_shogun_with_defaults();
+
 /** This function must be called when one stops using libshogun. It will
  * perform a number of cleanups */
 void exit_shogun();

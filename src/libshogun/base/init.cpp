@@ -37,6 +37,7 @@ namespace shogun
 	/// function called to cancel things
 	void (*sg_cancel_computations)(bool &delayed, bool &immediately)=NULL;
 
+
 	void init_shogun(void (*print_message)(FILE* target, const char* str),
 			void (*print_warning)(FILE* target, const char* str),
 			void (*print_error)(FILE* target, const char* str),
@@ -65,6 +66,17 @@ namespace shogun
 		sg_print_warning=print_warning;
 		sg_print_error=print_error;
 		sg_cancel_computations=cancel_computations;
+	}
+
+	void sg_global_print_default(FILE* target, const char* str)
+	{
+		fprintf(target, "%s", str);
+	}
+
+	void init_shogun_with_defaults()
+	{
+		init_shogun(&sg_global_print_default, &sg_global_print_default,
+				&sg_global_print_default);
 	}
 
 	void exit_shogun()
