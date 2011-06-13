@@ -33,12 +33,12 @@ public class ClassifierLibsvmMinimalModular {
 		System.out.println(feats_train.get_num_features());
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_train, width);
 
-		Labels labels = new Labels(trainlab.data);
+		Labels labels = new Labels(trainlab);
 		LibSVM svm = new LibSVM(C, kernel, labels);
 		svm.train();
 
 		kernel.init(feats_train, feats_test);
-		double[] out = svm.apply().get_labels();
+		DoubleMatrix out = svm.apply().get_labels();
 		Features.exit_shogun();
 	}
 }
