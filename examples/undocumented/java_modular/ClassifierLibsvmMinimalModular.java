@@ -22,8 +22,8 @@ public class ClassifierLibsvmMinimalModular {
 		DoubleMatrix n = DoubleMatrix.randn(2, num).add(DoubleMatrix.ones(2, num));
 		DoubleMatrix testdata_real = DoubleMatrix.concatHorizontally(m, n);
 
-		DoubleMatrix trainlab = DoubleMatrix.concatVertically(DoubleMatrix.ones(num).neg(), DoubleMatrix.ones(num));
-		DoubleMatrix testlab = DoubleMatrix.concatVertically(DoubleMatrix.ones(num).neg(), DoubleMatrix.ones(num));
+		DoubleMatrix trainlab = DoubleMatrix.concatHorizontally(DoubleMatrix.ones(1, num).neg(), DoubleMatrix.ones(1, num));
+		DoubleMatrix testlab = DoubleMatrix.concatHorizontally(DoubleMatrix.ones(1, num).neg(), DoubleMatrix.ones(1, num));
 
 		RealFeatures feats_train = new RealFeatures();
 		feats_train.set_feature_matrix(traindata_real);
