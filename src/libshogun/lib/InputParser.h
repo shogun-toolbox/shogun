@@ -198,7 +198,7 @@ namespace shogun
 
 		pthread_t parse_thread;/**< Parse thread */
 
-		ParseBuffer<T>* examples_buff;
+		CParseBuffer<T>* examples_buff;
 		
 		int32_t number_of_features;
 		int32_t number_of_vectors_parsed;
@@ -245,7 +245,7 @@ namespace shogun
 		else
 			example_type = E_UNLABELLED;
 
-		examples_buff = new ParseBuffer<T>(size);
+		examples_buff = new CParseBuffer<T>(size);
 		current_example = new example<T>();
 	
 		parsing_done = false;
