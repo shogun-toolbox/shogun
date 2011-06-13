@@ -31,7 +31,8 @@ import org.jblas.*;
 	SGTYPE *array;
 	##JNITYPE##Array jarr;
 	JNITYPE *carr;
-	int32_t i, rows, cols;
+	int32_t i, cols;
+	bool isVector;
 	
 	if (!$input) {
 		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
@@ -42,12 +43,12 @@ import org.jblas.*;
 	if (!cls)
 		return $null;
 
-	mid = JCALL3(GetMethodID, jenv, cls, "getRows", "()I");
+	mid = JCALL3(GetMethodID, jenv, cls, "isVector", "()Z");
 	if (!mid) 
 		return $null;
 	
-	rows = (int32_t)JCALL2(CallIntMethod, jenv, $input, mid);
-	if (rows != 1) {
+	isVector = (int32_t)JCALL2(CallIntMethod, jenv, $input, mid);
+	if (!isVector) {
 		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "vector expected");
 		return $null;	
 	}
