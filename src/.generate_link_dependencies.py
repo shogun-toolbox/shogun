@@ -1,5 +1,7 @@
 import os,re,sys
 
+have_doxygen=file('../.config').read().find('-DHAVE_DOXYGEN') is not -1
+
 try:
 	prefix=sys.argv[1]
 	suffix=sys.argv[2]
@@ -7,7 +9,7 @@ except IndexError:
 	prefix='_'
 	suffix='so'
 
-if len(sys.argv)>3 and sys.argv[3]=='external':
+if len(sys.argv)>4 and sys.argv[4]=='external':
 	incexpr=re.compile('^\s*[%#]include ("(\S+)")',re.MULTILINE)
 else:
 	incexpr=re.compile('^\s*[%#]include ("(\S+)"|<shogun/(\S+)>)',re.MULTILINE)
@@ -80,7 +82,8 @@ for f in deps.iterkeys():
 			str1=os.path.join(os.path.dirname(f), prefix + os.path.basename(f)[:-2]) + suffix + ': ' + f[:-2]+'_wrap.cxx.o' + ' sg_print_functions.cpp.o'
 			str2=os.path.join(os.path.dirname(f), os.path.basename(f)[:-2]) + '_wrap.cxx: ' + f
 
-			str2+=' ' + ' '.join([os.path.join(os.path.dirname(f), m) for m in modular_deps])
+			if have_doxygen:
+				str2+=' ' + ' '.join([os.path.join(os.path.dirname(f), m) for m in modular_deps])
 
 			fdep=list();
 			#if not f.startswith('./../modular/'):
