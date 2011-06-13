@@ -15,7 +15,7 @@
 #include "lib/common.h"
 #include "lib/File.h"
 #include "lib/io.h"
-#include "lib/io_buf.h"
+#include "lib/IOBuffer.h"
 
 namespace shogun
 {
@@ -415,7 +415,7 @@ private:
 
 protected:
 
-	io_buf buf;
+	CIOBuffer buf;
 };
 }
 #endif //__ASCII_FILE_H__
