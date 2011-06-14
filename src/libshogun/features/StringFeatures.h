@@ -79,8 +79,8 @@ struct SSKTripleFeature
  *
  * Also note that string features cannot currently be computed on-the-fly.
  *
- * Subset access is supported for this feature type.
- * Simple use the CFeature::set_feature_subset() function.
+ * (Partly) subset access is supported for this feature type.
+ * Simple use the CFeatures::set_subset() function.
  * If done, all calls that work with features are translated to the subset
  * Note that only read only access is possible if subset is set
  *
@@ -256,7 +256,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		virtual void cleanup()
 		{
 			/* reset subset to work on ALL features here */
-			remove_feature_subset();
+			remove_subset();
 
 			if (single_string)
 			{
@@ -671,7 +671,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		void load_ascii_file(char* fname, bool remap_to_bin=true,
 				EAlphabet ascii_alphabet=DNA, EAlphabet binary_alphabet=RAWDNA)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			size_t blocksize=1024*1024;
 			size_t required_blocksize=0;
@@ -819,7 +819,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool load_fasta_file(const char* fname, bool ignore_invalid=false)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			int32_t i=0;
 			uint64_t len=0;
@@ -920,7 +920,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		bool load_fastq_file(const char* fname,
 				bool ignore_invalid=false, bool bitremap_in_single_string=false)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			CMemoryMappedFile<char> f(fname);
 
@@ -1028,7 +1028,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool load_from_directory(char* dirname)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			struct dirent **namelist;
 			int32_t n;
@@ -1110,7 +1110,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool set_features(SGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			if (p_features)
 			{
@@ -1156,7 +1156,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			ASSERT(sf);
 
-			remove_feature_subset();
+			remove_subset();
 
 			SGString<ST>* new_features=new SGString<ST>[sf->get_num_vectors()];
 
@@ -1184,7 +1184,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool append_features(SGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
         {
-			remove_feature_subset();
+			remove_subset();
 
             if (!features)
                 return set_features(p_features, p_num_vectors, p_max_string_length);
@@ -2104,9 +2104,9 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param subset_idx index matrix
 		 * @param subset_len number of subset indices
 		 */
-		virtual void set_feature_subset(int32_t* subset_idx, int32_t subset_len)
+		virtual void set_subset(int32_t* subset_idx, int32_t subset_len)
 		{
-			CFeatures::set_feature_subset(subset_idx, subset_len);
+			CFeatures::set_subset(subset_idx, subset_len);
 			num_vectors = subset_len;
 			determine_maximum_string_length();
 		}
@@ -2114,10 +2114,10 @@ template <class ST> class CStringFeatures : public CFeatures
 		/** resets the current subset indices matrix
 		 * overrides method of superclass and adds resets properties dependend on subset as num_vectors
 		 */
-		inline virtual void remove_feature_subset()
+		inline virtual void remove_subset()
 		{
-			CFeatures::remove_feature_subset();
-			num_vectors = num_vectors_total;
+			CFeatures::remove_subset();
+			num_vectors=num_vectors_total;
 			max_string_length=max_string_length_total;
 		}
 	protected:
@@ -2171,6 +2171,10 @@ template <class ST> class CStringFeatures : public CFeatures
 					"Order used in higher order mapping.");
 			m_parameters->add(&preprocess_on_get, "preprocess_on_get",
 					"Preprocess on-the-fly?");
+
+			/* subset class is not a SGSerializable (init is done by Subset class) */
+			m_parameters->add_vector(&m_subset_idx, &m_subset_len, "subset_idx",
+					"Subset indices.");
 
 			/* TODO M_PARAMETERS->ADD?
 			 * /// order used in higher order mapping
