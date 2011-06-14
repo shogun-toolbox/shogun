@@ -16,32 +16,26 @@
 namespace shogun
 {
 
-class CSplittingStrategy;
-class CEvaluation;
 class CModelSelectionParameters;
+class CCrossValidation;
 class CParameterCombination;
-class CMachine;
 
 class CModelSelection: public CSGObject
 {
 public:
 	CModelSelection();
+	CModelSelection(CModelSelectionParameters* model_parameters,
+			CCrossValidation* cross_validation);
 	virtual ~CModelSelection();
 
-	virtual CParameterCombination* select_model();
+	virtual CParameterCombination* select_model()=0;
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
-	inline virtual const char* get_name() const
-	{
-		return "ModelSelection";
-	}
+	/** @return name of the SGSerializable */
+	inline virtual const char* get_name() const	{ return "ModelSelection"; }
 
 protected:
 	CModelSelectionParameters* m_model_parameters;
+	CCrossValidation* m_cross_validation;
 };
 
 }
