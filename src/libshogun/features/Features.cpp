@@ -66,6 +66,10 @@ CFeatures::init(void)
 							 &num_preproc, "preprocessed",
 							 "Feature[i] is already preprocessed.");
 
+	/* subset class is not a SGSerializable (init is done by Subset class) */
+	m_parameters->add_vector(&m_subset_idx, &m_subset_len, "subset_idx",
+			"Subset indices.");
+
 	properties = FP_NONE;
 	cache_size = 0;
 	preproc = NULL;
