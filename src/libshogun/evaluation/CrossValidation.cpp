@@ -102,7 +102,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* train machine on training features */
 		m_machine->train(m_features);
 
-		/* set feature subset for testing (use method that stores pointer) */
+		/* set feature subset for testing (subset method that stores pointer) */
 		SGVector<index_t> subset_indices;
 		m_splitting_strategy->generate_subset_indices(i, subset_indices);
 		m_features->set_subset(subset_indices.length, subset_indices.vector);
@@ -110,9 +110,14 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
 
-		/* set label subset for testing (this is the SAME matrix as above,
-		 * but this ok since it will be reseted directly after use) */
-		m_labels->set_subset(subset_indices.length, subset_indices.vector);
+		/* set label subset for testing (copy first index vector, subset method
+		 * that stores pointer) */
+		SGVector<index_t> subset_indices_copy(
+				new index_t[subset_indices.length], subset_indices.length);
+		memcpy(subset_indices_copy.vector, subset_indices.vector,
+				subset_indices.length*sizeof(index_t));
+		m_labels->set_subset(subset_indices_copy.length,
+				subset_indices_copy.vector);
 
 		/* evaluate */
 		results[i]=m_evaluation_criterium->evaluate(result_labels, m_labels);
