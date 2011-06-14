@@ -29,8 +29,6 @@ namespace shogun
  */
 class CLabels : public CSGObject
 {
-	void init(int32_t num_labels_, int32_t num_classes);
-
 	public:
 		/** default constructor */
 		CLabels();
@@ -44,12 +42,8 @@ class CLabels : public CSGObject
 		/** constructor
 		 *
 		 * @param src labels to set
-		 * @param len number of labels
 		 */
-		CLabels(SGVector<float64_t> src)
-		{ 
-			CLabels(src.vector, src.length);
-		}
+		CLabels(SGVector<float64_t> src);
 
 		/** constructor
 		 *
@@ -162,20 +156,12 @@ class CLabels : public CSGObject
 		int32_t get_num_classes();
 
 		/** get labels
-		 * caller has to clean up
 		 *
 		 * @param len number of labels
 		 * @return the labels
 		 */
 		float64_t* get_labels(int32_t &len);
 		
-		/** get labels (swig compatible)
-		 *
-		 * @param dst where labels will be stored in
-		 * @param len where number of labels will be stored in
-		 */
-		void get_labels(float64_t** dst, int32_t* len);
-
 		/** get labels
 		 *
 		 * @return labels
@@ -189,11 +175,7 @@ class CLabels : public CSGObject
 		 *
 		 * @param v labels
 		 */
-		void set_labels(SGVector<float64_t> v)
-		{
-			labels=v.vector;
-			num_labels=v.length;
-		}
+		void set_labels(SGVector<float64_t> v);
 
 		/** set labels
 		 *
@@ -262,6 +244,9 @@ class CLabels : public CSGObject
 	protected:
 		/** find labels from the confidences using argmax over the classes. */
 		void find_labels();
+
+	private:
+		void init();
 
 	protected:
 		/** number of labels */

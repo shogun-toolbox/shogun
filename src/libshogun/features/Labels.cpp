@@ -21,33 +21,37 @@ using namespace shogun;
 CLabels::CLabels()
 : CSGObject()
 {
-	init(0, 0);
+	init();
 }
 
 CLabels::CLabels(int32_t num_lab)
 : CSGObject()
 {
-	init(num_lab, 0);
+	init();
 
 	labels=new float64_t[num_lab];
 	for (int32_t i=0; i<num_lab; i++)
 		labels[i]=0;
+
+	num_labels=num_lab;
+}
+
+CLabels::CLabels(SGVector<float64_t> src)
+: CSGObject()
+{
+	init();
+
+	set_labels(src);
+	m_num_classes=get_num_classes();
 }
 
 CLabels::CLabels(float64_t* p_labels, int32_t len)
 : CSGObject()
 {
-	init(0, 0);
+	init();
 
 	set_labels(p_labels, len);
-
-	// We don't allocate the confidences matrix, unless it is
-	// necessary.  For problems with many classes and samples it might
-	// get really big.
 	m_num_classes=get_num_classes();
-	m_confidences=NULL;
-	m_confidence_classes = 0;
-	m_confidence_labels = 0;
 }
 
 void CLabels::set_to_one()
@@ -61,7 +65,7 @@ CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels,
 				 int32_t in_num_classes)
 : CSGObject()
 {
-	init(0, 0);
+	init();
 
 	labels=new float64_t[in_num_labels];
 	for (int32_t i=0; i<in_num_labels; i++)
@@ -77,8 +81,7 @@ CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels,
 CLabels::CLabels(CFile* loader)
 : CSGObject()
 {
-	init(0, 0);
-
+	init();
 	load(loader);
 }
 
@@ -95,8 +98,7 @@ CLabels::~CLabels()
 	m_confidence_labels = 0;
 }
 
-void
-CLabels::init(int32_t num_labels_, int32_t num_classes)
+void CLabels::init()
 {
 	m_parameters->add_vector(&labels, &num_labels, "labels",
 							 "The labels.");
@@ -104,12 +106,19 @@ CLabels::init(int32_t num_labels_, int32_t num_classes)
 							 &m_confidence_labels, "m_confidences",
 							 "Confidence matrix.");
 
-	labels = NULL;
-	num_labels = num_labels_;
+	labels=NULL;
+	num_labels=0;;
 	m_confidences=NULL;
-	m_confidence_classes = 0;
-	m_confidence_labels = 0;
-	m_num_classes=num_classes;
+	m_confidence_classes=0;
+	m_confidence_labels=0;
+	m_num_classes=0;;
+}
+
+void CLabels::set_labels(SGVector<float64_t> v)
+{
+	delete[] labels;
+	labels=v.vector;
+	num_labels=v.length;
 }
 
 void CLabels::set_labels(float64_t* p_labels, int32_t len)
@@ -118,7 +127,7 @@ void CLabels::set_labels(float64_t* p_labels, int32_t len)
 	num_labels=len;
 
 	delete[] labels;
-    labels=CMath::clone_vector(p_labels, len);
+    labels=p_labels;
 }
 
 void CLabels::set_confidences(float64_t* in_confidences, int32_t in_num_labels, 
@@ -258,31 +267,7 @@ int32_t CLabels::get_num_classes()
 float64_t* CLabels::get_labels(int32_t &len)
 {
 	len=num_labels;
-
-	if (num_labels>0)
-	{
-		float64_t* _labels=new float64_t[num_labels] ;
-		for (int32_t i=0; i<len; i++)
-			_labels[i]=get_label(i) ;
-		return _labels ;
-	}
-	else 
-		return NULL;
-}
-
-void CLabels::get_labels(float64_t** p_labels, int32_t* len)
-{
-	ASSERT(p_labels && len);
-	*p_labels=NULL;
-	*len=num_labels;
-
-	if (num_labels>0)
-	{
-		*p_labels=(float64_t*) SG_MALLOC(sizeof(float64_t)*num_labels);
-
-		for (int32_t i=0; i<num_labels; i++)
-			(*p_labels)[i]=get_label(i);
-	}
+	return labels;
 }
 
 int32_t* CLabels::get_int_labels(int32_t &len)

@@ -85,33 +85,30 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 		for (j=0; j<N; j++)
 			W_matrix[i*N+j]=0.0;
 
-	// init matrices to be used
-	float64_t* z_matrix = new float64_t[N*m_k];
+	// init matrices and norm factor to be used
+	float64_t* z_matrix = new float64_t[N*dim];
 	float64_t* covariance_matrix = new float64_t[m_k*m_k];
-	float64_t* feature_vector = new float64_t[dim];
 	float64_t* id_vector = new float64_t[m_k];
 	int32_t* ipiv = new int32_t[m_k];
-
 	float64_t norming = 0.0;
 
 	for (i=0; i<N; i++)
 	{
+		// get feature matrix
+		SGMatrix<float64_t> feature_matrix = pdata->get_feature_matrix();
+
 		// compute local feature matrix containing neighbors of i-th vector
 		for (j=0; j<m_k; j++)
 		{
-			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[j*N+i]);
 			for (k=0; k<dim; k++)
-				z_matrix[j*dim+k] = feature_vector[k];
+				z_matrix[j*dim+k] = feature_matrix.matrix[neighborhood_matrix[j*N+i]*dim+k];
 		}
-
-		// get i-th feature vector
-		pdata->get_feature_vector(&feature_vector, &dim, i);
 
 		// center features by subtracting i-th feature column
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<dim; k++)
-				z_matrix[j*dim+k] -= feature_vector[k];
+				z_matrix[j*dim+k] -= feature_matrix.matrix[i*dim+k];
 		}
 
 		// compute local covariance matrix
@@ -122,8 +119,6 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 		            z_matrix,dim,
 		            0.0,
 		            covariance_matrix,m_k);
-
-		//CMath::display_matrix(covariance_matrix,m_k,m_k,"covar");
 
 		for (j=0; j<m_k; j++)
 			id_vector[j] = 1.0;
@@ -165,7 +160,6 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	delete[] ipiv;
 	delete[] id_vector;
 	delete[] neighborhood_matrix;
-	delete[] feature_vector;
 	delete[] z_matrix;
 	delete[] covariance_matrix;
 
@@ -204,6 +198,10 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 		for (j=0; j<N; j++)
 			new_feature_matrix[j*m_target_dim+i] = M_matrix[(i+1)*(N)+j];
 	}
+
+	// clean
+	delete[] eigenvalues_vector;
+	delete[] M_matrix;
 
 	SGMatrix<float64_t> features(new_feature_matrix,m_target_dim,N);
 	pdata->set_feature_matrix(features);
