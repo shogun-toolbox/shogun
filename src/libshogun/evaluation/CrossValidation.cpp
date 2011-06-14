@@ -84,13 +84,19 @@ float64_t CCrossValidation::evaluate_one_run()
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
 	float64_t* results=new float64_t[num_subsets];
 
+	/* backup feature and label subsets */
+	SGVector<index_t> feature_subset;
+	SGVector<index_t> label_subset;
+	feature_subset.vector=m_features->get_subset(feature_subset.length);
+	label_subset.vector=m_labels->get_subset(label_subset.length);
+
 	/* do actual cross-validation */
 	for (index_t i=0; i<num_subsets; ++i)
 	{
 		/* set feature subset for training (use method that stores pointer) */
 		SGVector<index_t> inverse_subset_indices;
 		m_splitting_strategy->generate_subset_inverse(i, inverse_subset_indices);
-		m_features->set_feature_subset(inverse_subset_indices.length,
+		m_features->set_subset(inverse_subset_indices.length,
 				inverse_subset_indices.vector);
 
 		/* train machine on training features */
@@ -99,17 +105,27 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* set feature subset for testing (use method that stores pointer) */
 		SGVector<index_t> subset_indices;
 		m_splitting_strategy->generate_subset_indices(i, subset_indices);
-		m_features->set_feature_subset(subset_indices.length,
-				subset_indices.vector);
+		m_features->set_subset(subset_indices.length, subset_indices.vector);
 
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
 
+		/* set label subset for testing (this is the SAME matrix as above,
+		 * but this ok since it will be reseted directly after use) */
+		m_labels->set_subset(subset_indices.length, subset_indices.vector);
+
 		/* evaluate */
 		results[i]=m_evaluation_criterium->evaluate(result_labels, m_labels);
 
-		/* clean up */SG_UNREF(result_labels);
+		/* clean up, reset subsets */
+		SG_UNREF(result_labels);
+		m_features->remove_subset();
+		m_labels->remove_subset();
 	}
+
+	/* restore feature and label subsets (use method that stores pointer) */
+	m_features->set_subset(feature_subset.length, feature_subset.vector);
+	m_labels->set_subset(label_subset.length, label_subset.vector);
 
 	/* build arithmetic mean of results */
 	float64_t mean=CMath::mean(results, num_subsets);
