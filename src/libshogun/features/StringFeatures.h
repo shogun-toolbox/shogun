@@ -2172,10 +2172,6 @@ template <class ST> class CStringFeatures : public CFeatures
 			m_parameters->add(&preprocess_on_get, "preprocess_on_get",
 					"Preprocess on-the-fly?");
 
-			/* subset class is not a SGSerializable (init is done by Subset class) */
-			m_parameters->add_vector(&m_subset_idx, &m_subset_len, "subset_idx",
-					"Subset indices.");
-
 			/* TODO M_PARAMETERS->ADD?
 			 * /// order used in higher order mapping
 			 * ST* symbol_mask_table;
