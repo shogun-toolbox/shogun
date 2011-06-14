@@ -116,6 +116,8 @@ void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 			/* custom base b: log_b(i*step)=log_2(i*step)/log_2(b) */
 			m_values.vector[i]=CMath::log2(current)/CMath::log2(type_base);
 			break;
+		default:
+			SG_ERROR("unknown range type!\n");
 		}
 	}
 }
