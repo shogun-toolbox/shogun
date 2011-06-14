@@ -52,17 +52,14 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	int32_t i,j,k;
 
 	// compute distance matrix
-	CDistance* distance = new CEuclidianDistance();
-	ASSERT(distance);
-	distance->init(data,data);
-	float64_t* distance_matrix = new float64_t[N*N];
+	CDistance* distance = new CEuclidianDistance(pdata,pdata);
+	float64_t* distance_matrix;
 	distance->get_distance_matrix(&distance_matrix,&N,&N);
 	delete distance;
 
 	// init matrices to be used
 	int32_t* neighborhood_matrix = new int32_t[N*m_k];
-	float64_t* local_distances = new float64_t[N];
-	int32_t* local_neighbors = new int32_t[N];
+	int32_t* local_neighbors_idxs = new int32_t[N];
 
 	// construct neighborhood matrix (contains idxs of neighbors for
 	// i-th object in i-th column)
@@ -70,19 +67,17 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	{
 		for (j=0; j<N; j++)
 		{
-			local_neighbors[j] = j;
-			local_distances[j] = distance_matrix[i*N+j];
+			local_neighbors_idxs[j] = j;
 		}
 
-		CMath::qsort_index(local_distances,local_neighbors,N);
+		CMath::qsort_index(distance_matrix+(i*N),local_neighbors_idxs,N);
 
 		for (j=0; j<m_k; j++)
-			neighborhood_matrix[j*N+i] = local_neighbors[j+1];
+			neighborhood_matrix[j*N+i] = local_neighbors_idxs[j+1];
 	}
 
 	delete[] distance_matrix;
-	delete[] local_neighbors;
-	delete[] local_distances;
+	delete[] local_neighbors_idxs;
 
 	// init W (weight) matrix
 	float64_t* W_matrix = new float64_t[N*N];
@@ -90,39 +85,38 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 		for (j=0; j<N; j++)
 			W_matrix[i*N+j]=0.0;
 
-	// init matrices to be used
-	float64_t* z_matrix = new float64_t[N*m_k];
-	float64_t* covariance_matrix = new float64_t[N*N];
-	float64_t* feature_vector = new float64_t[dim];
+	// init matrices and norm factor to be used
+	float64_t* z_matrix = new float64_t[N*dim];
+	float64_t* covariance_matrix = new float64_t[m_k*m_k];
 	float64_t* id_vector = new float64_t[m_k];
 	int32_t* ipiv = new int32_t[m_k];
+	float64_t norming = 0.0;
 
 	for (i=0; i<N; i++)
 	{
+		// get feature matrix
+		SGMatrix<float64_t> feature_matrix = pdata->get_feature_matrix();
+
 		// compute local feature matrix containing neighbors of i-th vector
 		for (j=0; j<m_k; j++)
 		{
-			pdata->get_feature_vector(&feature_vector, &dim, neighborhood_matrix[j*N+i]);
 			for (k=0; k<dim; k++)
-				z_matrix[k*m_k+j] = feature_vector[k];
+				z_matrix[j*dim+k] = feature_matrix.matrix[neighborhood_matrix[j*N+i]*dim+k];
 		}
-
-		// get i-th feature vector
-		pdata->get_feature_vector(&feature_vector, &dim, i);
 
 		// center features by subtracting i-th feature column
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<dim; k++)
-				z_matrix[k*m_k+j] -= feature_vector[k];
+				z_matrix[j*dim+k] -= feature_matrix.matrix[i*dim+k];
 		}
 
 		// compute local covariance matrix
-		cblas_dgemm(CblasRowMajor,CblasTrans,CblasNoTrans,
+		cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
 		            m_k,m_k,dim,
 		            1.0,
-		            z_matrix,m_k,
-		            z_matrix,m_k,
+		            z_matrix,dim,
+		            z_matrix,dim,
 		            0.0,
 		            covariance_matrix,m_k);
 
@@ -141,24 +135,24 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 				covariance_matrix[j*m_k+j] += 1e-3*trace;
 		}
 
-		// solve system of linear equations: covariance_matrix x X = 1
-		clapack_dgesv(CblasRowMajor,
+		// solve system of linear equations: covariance_matrix * X = 1
+		clapack_dgesv(CblasColMajor,
 		              m_k,1,
 		              covariance_matrix,m_k,
 		              ipiv,
 		              id_vector,m_k);
 
 		// normalize weights
-		float64_t normalizer=0.0;
+		norming=0.0;
 		for (j=0; j<m_k; j++)
-			normalizer += CMath::abs(id_vector[j]);
+			norming += CMath::abs(id_vector[j]);
 
 		for (j=0; j<m_k; j++)
-			id_vector[j]/=normalizer;
+			id_vector[j]/=norming;
 
 		// put weights into W matrix
 		for (j=0; j<m_k; j++)
-			W_matrix[i*N+neighborhood_matrix[j*N+i]]=id_vector[j];
+			W_matrix[N*neighborhood_matrix[j*N+i]+i]=id_vector[j];
 
 	}
 
@@ -166,50 +160,53 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	delete[] ipiv;
 	delete[] id_vector;
 	delete[] neighborhood_matrix;
-	delete[] feature_vector;
 	delete[] z_matrix;
 	delete[] covariance_matrix;
 
 	// W=I-W
-	for (i=0; i<N*N; i++)
-		W_matrix[i] = -W_matrix[i];
-
 	for (i=0; i<N; i++)
-		W_matrix[i*N+i] = 1.0-W_matrix[i*N+i];
+	{
+		for (j=0; j<N; j++)
+			W_matrix[j*N+i] = (i==j) ? 1.0-W_matrix[j*N+i] : -W_matrix[j*N+i];
+	}
 
-	// compute W'*W
-	float64_t* m_new_feature_matrix = new float64_t[N*N];
-	cblas_dgemm(CblasRowMajor,CblasTrans, CblasNoTrans,
+	// compute M=(W-I)'*(W-I)
+	float64_t* M_matrix = new float64_t[N*N];
+	cblas_dgemm(CblasColMajor,CblasTrans, CblasNoTrans,
 	            N,N,N,1.0,
 	            W_matrix,N,
 	            W_matrix,N,
 	            0.0,
-	            m_new_feature_matrix,N);
+	            M_matrix,N);
 
 	delete[] W_matrix;
 
 	// compute eigenvectors
-	float64_t* eigs = new float64_t[N];
-	int32_t status = 0;
+	float64_t* eigenvalues_vector = new float64_t[N];
+	int32_t eigenproblem_status = 0;
 	wrap_dsyev('V','U',
-				N,m_new_feature_matrix,
-				N,eigs,
-				&status);
-	ASSERT(status==0);
+				N,M_matrix,
+				N,eigenvalues_vector,
+				&eigenproblem_status);
+	ASSERT(eigenproblem_status==0);
 
 	// replace features with bottom eigenvectos
-	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
+	float64_t* new_feature_matrix = new float64_t[N*m_target_dim];
+
 	for (i=0; i<m_target_dim; i++)
 	{
 		for (j=0; j<N; j++)
-			replace_feature_matrix[j*m_target_dim+i] = m_new_feature_matrix[(i+1)*(N)+j];
+			new_feature_matrix[j*m_target_dim+i] = M_matrix[(i+1)*(N)+j];
 	}
 
-	pdata->set_feature_matrix(replace_feature_matrix,m_target_dim,N);
+	// clean
+	delete[] eigenvalues_vector;
+	delete[] M_matrix;
 
-	delete[] m_new_feature_matrix;
+	SGMatrix<float64_t> features(new_feature_matrix,m_target_dim,N);
+	pdata->set_feature_matrix(features);
 
-	return replace_feature_matrix;
+	return features.matrix;
 }
 
 float64_t* CLocallyLinearEmbedding::apply_to_feature_vector(float64_t* f, int32_t &len)

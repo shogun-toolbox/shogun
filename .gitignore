@@ -59,10 +59,11 @@ configure.log
 /src/*_modular/Classifier.i
 /src/*_modular/Features.i
 /src/*_modular/Kernel.i
-/src/*_modular/PreProc.i
+/src/*_modular/Preprocessor.i
 /src/*_modular/Distance.i
 /src/*_modular/Clustering.i
 /src/*_modular/SGBase.i
+/src/*_modular/*_includes.i
 /src/*_modular/Makefile
 
 # particular modular ones
