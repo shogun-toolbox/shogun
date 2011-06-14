@@ -106,6 +106,10 @@ void CLabels::init()
 							 &m_confidence_labels, "m_confidences",
 							 "Confidence matrix.");
 
+	/* subset class is not a SGSerializable (init is done by Subset class) */
+	m_parameters->add_vector(&m_subset_idx, &m_subset_len, "subset_idx",
+			"Subset indices.");
+
 	labels=NULL;
 	num_labels=0;;
 	m_confidences=NULL;

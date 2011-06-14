@@ -16,6 +16,7 @@
 #include "lib/io.h"
 #include "lib/File.h"
 #include "base/SGObject.h"
+#include "features/Subset.h"
 
 namespace shogun
 {
@@ -27,7 +28,7 @@ namespace shogun
  * Labels here are always real-valued and thus applicable to classification
  * (cf.  CClassifier) and regression (cf. CRegression) problems.
  */
-class CLabels : public CSGObject
+class CLabels : public CSGObject, public Subset
 {
 	public:
 		/** default constructor */
