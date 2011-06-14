@@ -100,6 +100,14 @@ public:
 	void set_range(float64_t min, float64_t max, ERangeType type,
 			float64_t step=1, float64_t type_base=2);
 
+	/** setter for values of this node.
+	 * If the latter are not possible to be produced by set_range, a vector may
+	 * be specified directly.
+	 *
+	 * @param values value vector
+	 */
+	void set_values(SGVector<float64_t> values);
+
 	/** SG_PRINT's the tree of which this node is the base
 	 *
 	 * @param prefix_num a number of '\t' tabs that is put before each output

@@ -76,6 +76,15 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 	m_child_nodes.append_element(child);
 }
 
+void CModelSelectionParameters::set_values(SGVector<float64_t> values)
+{
+	/* possibly delete old range values */
+	delete[] m_values.vector;
+
+	m_values.vector=values.vector;
+	m_values.length=values.length;
+}
+
 void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 		ERangeType type, float64_t step, float64_t type_base)
 {
