@@ -91,10 +91,10 @@ public:
 	}
 
 protected:
-	/** evaulates one single cross-validation run.
-	 * Current implementation evaluates each fold seperately and then calculates
+	/** Evaluates one single cross-validation run.
+	 * Current implementation evaluates each fold separately and then calculates
 	 * arithmetic mean. Suitable for accuracy and AUC for example. NOT for
-	 * F1-measure. Has to be overriden by sub-classes if results have to be
+	 * F1-measure. Has to be overridden by sub-classes if results have to be
 	 * merged differently
 	 *
 	 * @return evaluation result of one cross-validation run
