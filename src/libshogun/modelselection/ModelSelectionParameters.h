@@ -139,7 +139,7 @@ protected:
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
-	SGVector<float64_t>* m_values;
+	SGVector<float64_t> m_values;
 	DynArray<CModelSelectionParameters*> m_child_nodes;
 };
 

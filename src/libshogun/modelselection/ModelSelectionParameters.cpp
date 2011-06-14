@@ -18,14 +18,12 @@ using namespace shogun;
 CModelSelectionParameters::CModelSelectionParameters()
 {
 	m_node_name=NULL;
-	m_values=new SGVector<float64_t> (NULL, 0);
 	m_sgobject=NULL;
 }
 
 CModelSelectionParameters::CModelSelectionParameters(const char* node_name) :
 	m_node_name(node_name)
 {
-	m_values=new SGVector<float64_t> (NULL, 0);
 	m_sgobject=NULL;
 }
 
@@ -34,17 +32,11 @@ CModelSelectionParameters::CModelSelectionParameters(const char* node_name,
 	m_sgobject(sgobject), m_node_name(node_name)
 {
 	SG_REF(sgobject);
-	m_values=new SGVector<float64_t> (NULL, 0);
 }
 
 CModelSelectionParameters::~CModelSelectionParameters()
 {
-	if (m_values)
-	{
-		delete[] m_values->vector;
-		delete m_values;
-	}
-
+	delete[] m_values.vector;
 	SG_UNREF(m_sgobject);
 }
 
@@ -59,7 +51,7 @@ void CModelSelectionParameters::destroy()
 void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 {
 	/* only possible if there are no values set */
-	if (m_values->vector)
+	if (m_values.vector)
 		SG_ERROR("not possible to append child: there already is a range\n");
 
 	/* do a basic check if the add is possible (does this node's CSGObject
@@ -94,15 +86,15 @@ void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 	}
 
 	/* possibly delete old range values */
-	delete[] m_values->vector;
+	delete[] m_values.vector;
 
 	if (max<min)
 		SG_ERROR("unable to set range: maximum=%f < minimum=%f\n", max, min);
 
 	/* create value vector */
 	index_t num_values=CMath::round(max-min)/step+1;
-	m_values->length=num_values;
-	m_values->vector=new float64_t[num_values];
+	m_values.length=num_values;
+	m_values.vector=new float64_t[num_values];
 
 	/* fill array */
 	for (index_t i=0; i<num_values; ++i)
@@ -112,17 +104,17 @@ void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 		switch (type)
 		{
 		case R_LINEAR:
-			m_values->vector[i]=current;
+			m_values.vector[i]=current;
 			break;
 		case R_EXP:
-			m_values->vector[i]=CMath::pow(type_base, current);
+			m_values.vector[i]=CMath::pow(type_base, current);
 			break;
 		case R_LOG:
 			if (current<=0)
 				SG_ERROR("log(x) with x=%f\n", current);
 
 			/* custom base b: log_b(i*step)=log_2(i*step)/log_2(b) */
-			m_values->vector[i]=CMath::log2(current)/CMath::log2(type_base);
+			m_values.vector[i]=CMath::log2(current)/CMath::log2(type_base);
 			break;
 		}
 	}
@@ -134,13 +126,13 @@ void CModelSelectionParameters::get_combinations(
 	/* leaf case: node with values and no children.
 	 * build trees of Parameter instances which each contain one value
 	 */
-	if (m_values->vector)
+	if (m_values.vector)
 	{
-		for (index_t i=0; i<m_values->length; ++i)
+		for (index_t i=0; i<m_values.length; ++i)
 		{
 			/* create tree with only one parameter element */
 			Parameter* p=new Parameter();
-			p->add(&m_values->vector[i], m_node_name);
+			p->add(&m_values.vector[i], m_node_name);
 
 			result.append_element(new CParameterCombination(p));
 		}
@@ -152,7 +144,7 @@ void CModelSelectionParameters::get_combinations(
 	 * combine them iteratively children which are something different
 	 */
 	else if ((m_sgobject && m_node_name) ||
-			(!m_node_name && !m_sgobject && !m_values->vector))
+			(!m_node_name && !m_sgobject && !m_values.vector))
 	{
 		/* only consider combinations if this CSGObject has children */
 		if (m_child_nodes.get_num_elements())
@@ -166,7 +158,7 @@ void CModelSelectionParameters::get_combinations(
 				CModelSelectionParameters* current=m_child_nodes[i];
 
 				/* split children with values (leafs) and children with other */
-				if (current->m_values->vector)
+				if (current->m_values.vector)
 					leaf_children.append_element(current);
 				else
 					non_leaf_children.append_element(current);
@@ -327,7 +319,7 @@ void CModelSelectionParameters::get_combinations(
 	 * machine, like "kernel". basically all combinations of all children have to
 	 * be appended to the result and a new root is to be added to all trees
 	 */
-	else if (m_node_name && !m_sgobject && !m_values->vector)
+	else if (m_node_name && !m_sgobject && !m_values.vector)
 	{
 		if (!m_child_nodes.get_num_elements())
 		{
@@ -390,7 +382,7 @@ void CModelSelectionParameters::print(int prefix_num)
 		else
 		{
 			SG_PRINT("%s%s with values: ", prefix, m_node_name);
-			CMath::display_vector(m_values->vector, m_values->length);
+			CMath::display_vector(m_values.vector, m_values.length);
 		}
 	}
 
