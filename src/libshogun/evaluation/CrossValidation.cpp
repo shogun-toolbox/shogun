@@ -87,30 +87,34 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* do actual cross-validation */
 	for (index_t i=0; i<num_subsets; ++i)
 	{
-		/* set feature subset for training */
+		/* set feature subset for training (use method that stores pointer) */
 		SGVector<index_t> inverse_subset_indices;
 		m_splitting_strategy->generate_subset_inverse(i, inverse_subset_indices);
-		m_features->set_feature_subset(inverse_subset_indices.vector,
-				inverse_subset_indices.length);
+		m_features->set_feature_subset(inverse_subset_indices.length,
+				inverse_subset_indices.vector);
 
 		/* train machine on training features */
 		m_machine->train(m_features);
 
-		/* set feature subset for testing */
+		/* set feature subset for testing (use method that stores pointer) */
 		SGVector<index_t> subset_indices;
 		m_splitting_strategy->generate_subset_indices(i, subset_indices);
-		m_features->set_feature_subset(subset_indices.vector,
-				subset_indices.length);
+		m_features->set_feature_subset(subset_indices.length,
+				subset_indices.vector);
 
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
 
 		/* evaluate */
 		results[i]=m_evaluation_criterium->evaluate(result_labels, m_labels);
+
+		/* clean up */SG_UNREF(result_labels);
 	}
 
 	/* build arithmetic mean of results */
 	float64_t mean=CMath::mean(results, num_subsets);
+
+	/* clean up */
 	delete[] results;
 
 	return mean;
