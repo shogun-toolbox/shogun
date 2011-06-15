@@ -28,10 +28,12 @@
 %include "SGBase.i"
 %include "Features_includes.i"
 %include "Kernel_includes.i"
+%include "Classifier_includes.i"
 %include "Regression_includes.i"
 
 %import "Features.i"
 %import "Kernel.i"
+%import "Classifier.i"
 
 /* Typemaps */
 %apply (int32_t** ARGOUT1, int32_t* DIM1) {(int32_t** svs, int32_t* num)};
@@ -44,13 +46,10 @@
 %rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
 %rename(KRR) CKRR;
-%rename(SVM) CSVM;
-%rename(LibSVM) CLibSVM;
 %rename(LibSVR) CLibSVR;
 %rename(MKL) CMKL;
 %rename(MKLRegression) CMKLRegression;
 #ifdef USE_SVMLIGHT
-%rename(SVMLight) CSVMLight;
 %rename(SVRLight) CSVRLight;
 #endif //USE_SVMLIGHT
 
@@ -59,14 +58,11 @@
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/KernelMachine.h>
 %include <shogun/regression/KRR.h>
-%include <shogun/classifier/svm/SVM.h>
-%include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/regression/svr/LibSVR.h>
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/regression/svr/MKLRegression.h>
 
 
 #ifdef USE_SVMLIGHT
-%include <shogun/classifier/svm/SVMLight.h>
 %include <shogun/regression/svr/SVRLight.h>
 #endif //USE_SVMLIGHT

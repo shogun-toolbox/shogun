@@ -83,7 +83,6 @@ bool CCPLEXSVM::train(CFeatures* data)
 		delete[] lb;
 		delete[] ub;
 		delete[] H;
-		delete[] y;
 
 		result = true;
 	}

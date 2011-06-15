@@ -23,7 +23,7 @@ def classifier_gmnpsvm_modular (fm_train_real=traindat,fm_test_real=testdat,labe
 	svm=GMNPSVM(C, kernel, labels)
 	svm.set_epsilon(epsilon)
 	svm.train(feats_train)
-	#kernel.init(feats_train, feats_test)
+	kernel.init(feats_train, feats_test)
 	out=svm.apply(feats_test).get_labels()
 	return out,kernel
 if __name__=='__main__':
