@@ -14,13 +14,8 @@
 
 using namespace shogun;
 
-CModelSelection::CModelSelection()
-{
-	m_model_parameters=NULL;
-	m_cross_validation=NULL;
-}
-
-CModelSelection::CModelSelection(CModelSelectionParameters* model_parameters,
+CModelSelection::CModelSelection(
+		CModelSelectionParameters* model_parameters,
 		CCrossValidation* cross_validation) :
 	m_model_parameters(model_parameters), m_cross_validation(cross_validation)
 {

@@ -23,12 +23,11 @@ class CParameterCombination;
 class CModelSelection: public CSGObject
 {
 public:
-	CModelSelection();
 	CModelSelection(CModelSelectionParameters* model_parameters,
 			CCrossValidation* cross_validation);
 	virtual ~CModelSelection();
 
-	virtual CParameterCombination* select_model()=0;
+	virtual CParameterCombination* select_model(float64_t& best_result)=0;
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const	{ return "ModelSelection"; }
