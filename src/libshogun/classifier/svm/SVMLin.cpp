@@ -106,7 +106,6 @@ bool CSVMLin::train(CFeatures* data)
 
 	delete[] Weights.vec;
 	delete[] Data.C;
-	delete[] train_labels;
 	delete[] Outputs.vec;
 	return true;
 }

@@ -34,10 +34,12 @@
 %include "SGBase.i"
 %include "Features_includes.i"
 %include "Kernel_includes.i"
+%include "Distance_includes.i"
 %include "Classifier_includes.i"
 
 %import "Features.i"
 %import "Kernel.i"
+%import "Distance.i"
 
 /* Typemaps */
 %apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst_w, int32_t* dst_dims)};

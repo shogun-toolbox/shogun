@@ -29,11 +29,9 @@ class CSVM;
 /** @brief class MultiClassSVM */
 class CMultiClassSVM : public CSVM
 {
-	void init(void);
-
 	public:
 		/** default constructor  */
-		CMultiClassSVM(void);
+		CMultiClassSVM();
 
 		/** constructor
 		 *
@@ -147,6 +145,8 @@ class CMultiClassSVM : public CSVM
 		 */
 		inline EMultiClassSVM get_multiclass_type() { return multiclass_type; }
 
+	private:
+		void init();
 
 	protected:
 		/** type of MultiClassSVM */
