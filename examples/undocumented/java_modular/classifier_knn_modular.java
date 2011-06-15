@@ -9,7 +9,7 @@ public class classifier_knn_modular {
 
 	public static void main(String argv[]) {
 		Features.init_shogun_with_defaults();
-		double k = 3;
+		int k = 3;
 
 		DoubleMatrix traindata_real = Load.load_numbers("../../data/toy/fm_train_real.dat");
 		DoubleMatrix testdata_real = Load.load_numbers("../../data/toy/fm_test_real.dat");
