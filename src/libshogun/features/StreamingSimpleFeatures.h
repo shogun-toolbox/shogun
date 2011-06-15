@@ -4,7 +4,7 @@
 #include "lib/common.h"
 #include "lib/Time.h"
 #include "lib/Mathematics.h"
-#include "features/Features.h"
+#include "features/StreamingDotFeatures.h"
 #include "lib/InputParser.h"
 
 namespace shogun
@@ -31,18 +31,18 @@ namespace shogun
  * 
  */
 template <class T>
-class CStreamingDotFeatures : public CFeatures
+class CStreamingSimpleFeatures : public CStreamingDotFeatures
 {
 
 public:
 
-	CStreamingDotFeatures();
+	CStreamingSimpleFeatures();
 
-	CStreamingDotFeatures(CStreamingFile* file,
+	CStreamingSimpleFeatures(CStreamingFile* file,
 			      bool is_labelled,
 			      int32_t size);
 		
-	~CStreamingDotFeatures();
+	~CStreamingSimpleFeatures();
 		
 	void init();
 
@@ -94,7 +94,7 @@ protected:
 	
 	
 template <class T>
-void CStreamingDotFeatures<T>::init()
+void CStreamingSimpleFeatures<T>::init()
 {
 	working_file=NULL;
 	current_vector=NULL;
@@ -102,7 +102,7 @@ void CStreamingDotFeatures<T>::init()
 }
 
 template <class T>
-void CStreamingDotFeatures<T>::init(CStreamingFile* file,
+void CStreamingSimpleFeatures<T>::init(CStreamingFile* file,
 				    bool is_labelled,
 				    int32_t size)
 {
@@ -114,13 +114,13 @@ void CStreamingDotFeatures<T>::init(CStreamingFile* file,
 	
 
 template <class T>
-CStreamingDotFeatures<T>::CStreamingDotFeatures()
+CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures()
 {
 	init();
 }
 
 template <class T>
-CStreamingDotFeatures<T>::CStreamingDotFeatures(CStreamingFile* file,
+CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures(CStreamingFile* file,
 						bool is_labelled,
 						int32_t size)
 {
@@ -128,26 +128,26 @@ CStreamingDotFeatures<T>::CStreamingDotFeatures(CStreamingFile* file,
 }
 
 template <class T>
-CStreamingDotFeatures<T>::~CStreamingDotFeatures()
+CStreamingSimpleFeatures<T>::~CStreamingSimpleFeatures()
 {
 	parser.end_parser();
 }
 
 template <class T>
-void CStreamingDotFeatures<T>::start_parser()
+void CStreamingSimpleFeatures<T>::start_parser()
 {
 	if (!parser.is_running())
 		parser.start_parser();
 }
 
 template <class T>
-void CStreamingDotFeatures<T>::end_parser()
+void CStreamingSimpleFeatures<T>::end_parser()
 {
 	parser.end_parser();
 }
 
 template <class T>
-int32_t CStreamingDotFeatures<T>::get_next_example()
+int32_t CStreamingSimpleFeatures<T>::get_next_example()
 {
 	int32_t ret_value;
 	ret_value = parser.get_next_example(current_vector,
@@ -158,14 +158,14 @@ int32_t CStreamingDotFeatures<T>::get_next_example()
 }
 
 template <class T>
-void CStreamingDotFeatures<T>::get_vector(SGVector<T> &vec)
+void CStreamingSimpleFeatures<T>::get_vector(SGVector<T> &vec)
 {
 	vec.vector=current_vector;
 	vec.length=current_length;
 }
 
 template <class T>
-void CStreamingDotFeatures<T>::get_label(float64_t &label)
+void CStreamingSimpleFeatures<T>::get_label(float64_t &label)
 {
 	ASSERT(has_labels);
 
@@ -173,19 +173,19 @@ void CStreamingDotFeatures<T>::get_label(float64_t &label)
 }
 	
 template <class T>
-void CStreamingDotFeatures<T>::release_example()
+void CStreamingSimpleFeatures<T>::release_example()
 {
 	parser.finalize_example();
 }
 
 template <class T>
-int32_t CStreamingDotFeatures<T>::get_dim_feature_space()
+int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space()
 {
 	return current_length;
 }
 
 template <class T>
-float64_t CStreamingDotFeatures<T>::dot(SGVector<T> &sgvec1)
+float64_t CStreamingSimpleFeatures<T>::dot(SGVector<T> &sgvec1)
 {
 	int32_t len1;
 	len1=sgvec1.length;
@@ -198,7 +198,7 @@ float64_t CStreamingDotFeatures<T>::dot(SGVector<T> &sgvec1)
 }
 
 template <class T>
-float64_t CStreamingDotFeatures<T>::dense_dot(SGVector<T> &sgvec1)
+float64_t CStreamingSimpleFeatures<T>::dense_dot(SGVector<T> &sgvec1)
 {
 	int32_t len1=sgvec1.length;
 
@@ -212,7 +212,7 @@ float64_t CStreamingDotFeatures<T>::dense_dot(SGVector<T> &sgvec1)
 }
 
 template <class T>
-void CStreamingDotFeatures<T>::add_to_dense_vec(float64_t alpha,
+void CStreamingSimpleFeatures<T>::add_to_dense_vec(float64_t alpha,
 						SGVector<T> &vec,
 						bool abs_val)
 {
@@ -231,13 +231,13 @@ void CStreamingDotFeatures<T>::add_to_dense_vec(float64_t alpha,
 }
 
 template <class T>
-int32_t CStreamingDotFeatures<T>::get_num_features()
+int32_t CStreamingSimpleFeatures<T>::get_num_features()
 {
 	return current_length;
 }
 
 template <class T>
-EFeatureClass CStreamingDotFeatures<T>::get_feature_class()
+EFeatureClass CStreamingSimpleFeatures<T>::get_feature_class()
 {
 	return C_SIMPLE;
 }
