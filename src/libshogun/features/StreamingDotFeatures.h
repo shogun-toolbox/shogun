@@ -58,6 +58,8 @@ public:
 
 	virtual void end_parser()=0;
 
+	virtual void get_label(float64_t &label)=0;
+
 	virtual int32_t get_next_example()=0;
 
 	virtual void release_example()=0;
