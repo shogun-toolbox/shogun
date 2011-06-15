@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef __CMODELSELECTIONPARAMETERS_H_
-#define __CMODELSELECTIONPARAMETERS_H_
+#ifndef __MODELSELECTIONPARAMETERS_H_
+#define __MODELSELECTIONPARAMETERS_H_
 
 #include "base/SGObject.h"
 #include "base/DynArray.h"
@@ -124,6 +124,13 @@ public:
 	 */
 	void get_combinations(DynArray<CParameterCombination*>& result);
 
+	/** setter for the destroy tree field. If set to true, destroy will be
+	 * called in the destructor.
+	 *
+	 * @param destroy_tree if true, tree gets destroyed in destructor call
+	 */
+	void set_destroy_tree(bool destroy_tree) { m_destroy_tree=destroy_tree; }
+
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
 	 *
@@ -149,7 +156,9 @@ private:
 	const char* m_node_name;
 	SGVector<float64_t> m_values;
 	DynArray<CModelSelectionParameters*> m_child_nodes;
+
+	bool m_destroy_tree;
 };
 
 }
-#endif /* __CMODELSELECTIONPARAMETERS_H_ */
+#endif /* __MODELSELECTIONPARAMETERS_H_ */

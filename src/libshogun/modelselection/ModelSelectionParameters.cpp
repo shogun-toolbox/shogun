@@ -19,12 +19,14 @@ CModelSelectionParameters::CModelSelectionParameters()
 {
 	m_node_name=NULL;
 	m_sgobject=NULL;
+	m_destroy_tree=false;
 }
 
 CModelSelectionParameters::CModelSelectionParameters(const char* node_name) :
 	m_node_name(node_name)
 {
 	m_sgobject=NULL;
+	m_destroy_tree=false;
 }
 
 CModelSelectionParameters::CModelSelectionParameters(const char* node_name,
@@ -32,12 +34,21 @@ CModelSelectionParameters::CModelSelectionParameters(const char* node_name,
 	m_sgobject(sgobject), m_node_name(node_name)
 {
 	SG_REF(sgobject);
+	m_destroy_tree=false;
 }
 
 CModelSelectionParameters::~CModelSelectionParameters()
 {
-	delete[] m_values.vector;
-	SG_UNREF(m_sgobject);
+	if (m_destroy_tree)
+	{
+		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
+			m_child_nodes[i]->destroy();
+	}
+	else
+	{
+		delete[] m_values.vector;
+		SG_UNREF(m_sgobject);
+	}
 }
 
 void CModelSelectionParameters::destroy()
