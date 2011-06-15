@@ -28,11 +28,13 @@
 %include "SGBase.i"
 %include "Features_includes.i"
 %include "Kernel_includes.i"
+%include "Distance_includes.i"
 %include "Classifier_includes.i"
 %include "Regression_includes.i"
 
 %import "Features.i"
 %import "Kernel.i"
+%import "Distance.i"
 %import "Classifier.i"
 
 /* Typemaps */
