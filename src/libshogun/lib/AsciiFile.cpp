@@ -1081,11 +1081,11 @@ ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
 #else
 ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *stream)
 {
-	return getdelim(lineptr, n, delimiter, stream);
+	return ::getdelim(lineptr, n, delimiter, stream);
 }
 
 ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
 {
-	return getline(lineptr, n, stream);
+	return ::getline(lineptr, n, stream);
 }
 #endif
