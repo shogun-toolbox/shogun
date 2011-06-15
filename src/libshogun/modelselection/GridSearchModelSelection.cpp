@@ -50,14 +50,11 @@ CParameterCombination* CGridSearchModelSelection::select_model(
 	/* apply all combinations and search for best one */
 	for (index_t i=0; i<combinations.get_num_elements(); ++i)
 	{
-		SG_PRINT("trying:\n");
-		combinations[i]->print();
-
 		combinations[i]->apply_to_parameter(
 				m_cross_validation->get_machine()->m_parameters);
 		float64_t result=m_cross_validation->evaluate();
-		SG_PRINT("result: %f\n", result);
 
+		/* check if current result is better, delete old combinations */
 		if (m_cross_validation->get_evaluation_direction()==ED_MAXIMISE)
 		{
 			if (result>best_result)
