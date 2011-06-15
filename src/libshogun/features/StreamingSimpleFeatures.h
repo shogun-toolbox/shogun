@@ -5,10 +5,18 @@
 #include "lib/Time.h"
 #include "lib/Mathematics.h"
 #include "features/StreamingDotFeatures.h"
+#include "base/Parameter.h"
+#include "lib/DataType.h"
 #include "lib/InputParser.h"
 
 namespace shogun
 {
+template <class T> class CInputParser;
+template <class T> class CStreamingSimpleFeatures;
+template <class T> class SGVector;
+class CStreamingDotFeatures;
+class CStreamingFile;
+     
 /** @brief Features that support streaming dot products among other operations.
  *
  * DotFeatures support the following operations:
@@ -30,19 +38,27 @@ namespace shogun
  * - iteration over all (potentially) non-zero features of \f${\bf x}\f$
  * 
  */
-template <class T>
-class CStreamingSimpleFeatures : public CStreamingDotFeatures
+template <class T> class CStreamingSimpleFeatures : public CStreamingDotFeatures
 {
 
 public:
 
-	CStreamingSimpleFeatures();
+	CStreamingSimpleFeatures()
+	{
+		init();
+	}
 
 	CStreamingSimpleFeatures(CStreamingFile* file,
 			      bool is_labelled,
-			      int32_t size);
-		
-	~CStreamingSimpleFeatures();
+			      int32_t size)
+	{
+		init(file, is_labelled, size);
+	}
+			
+	~CStreamingSimpleFeatures()
+	{
+		parser.end_parser();
+	}
 		
 	void init();
 
@@ -70,15 +86,62 @@ public:
 	virtual int32_t get_dim_feature_space();
 
 	virtual float64_t dot(SGVector<T> &vec);
-		
-	virtual float64_t dense_dot(SGVector<T> &vec);
 
-	virtual void add_to_dense_vec(float64_t alpha, SGVector<T> &vec, bool abs_val=false);
+	virtual float64_t dot(CStreamingDotFeatures *df);
+		
+	virtual float64_t dense_dot(SGVector<float64_t> &sgvec1)
+	{
+		int32_t len1=sgvec1.length;
+		
+		ASSERT(len1==current_length);
+		float64_t result=0;
+		
+		for (int32_t i=0; i<current_length; i++)
+			result+=current_vector[i]*sgvec1.vector[i];
+		
+		return result;
+	}
+
+	virtual void add_to_dense_vec(float64_t alpha, SGVector<float64_t> &vec, bool abs_val=false)
+	{
+		ASSERT(vec.length==current_length);
+		
+		if (abs_val)
+		{
+			for (int32_t i=0; i<current_length; i++)
+				vec.vector[i]+=alpha*CMath::abs(current_vector[i]);
+		}
+		else
+		{
+			for (int32_t i=0; i<current_length; i++)
+				vec.vector[i]+=alpha*current_vector[i];
+		}
+	}
+	
 
 	int32_t get_num_features();
-		
+
+	virtual inline EFeatureType get_feature_type();
+	
 	EFeatureClass get_feature_class();
-		
+
+	virtual CFeatures* duplicate() const
+	{
+		return new CStreamingSimpleFeatures<T>(*this);
+	}
+
+	
+	inline virtual const char* get_name() const { return "StreamingSimpleFeatures"; }
+
+	inline virtual int32_t get_num_vectors()
+	{
+		if (current_vector)
+			return 1;
+		return 0;
+	}
+
+	virtual int32_t get_size() { return sizeof(T); }
+	
 protected:
 		
 	/// feature weighting in combined dot features
@@ -91,7 +154,28 @@ protected:
 	int32_t current_length;
 	bool has_labels;
 };
-	
+
+#define GET_FEATURE_TYPE(f_type, sg_type)	\
+template<> inline EFeatureType CStreamingSimpleFeatures<sg_type>::get_feature_type() \
+{ 																			\
+	return f_type; 															\
+}
+
+GET_FEATURE_TYPE(F_BOOL, bool)
+GET_FEATURE_TYPE(F_CHAR, char)
+GET_FEATURE_TYPE(F_BYTE, uint8_t)
+GET_FEATURE_TYPE(F_BYTE, int8_t)
+GET_FEATURE_TYPE(F_SHORT, int16_t)
+GET_FEATURE_TYPE(F_WORD, uint16_t)
+GET_FEATURE_TYPE(F_INT, int32_t)
+GET_FEATURE_TYPE(F_UINT, uint32_t)
+GET_FEATURE_TYPE(F_LONG, int64_t)
+GET_FEATURE_TYPE(F_ULONG, uint64_t)
+GET_FEATURE_TYPE(F_SHORTREAL, float32_t)
+GET_FEATURE_TYPE(F_DREAL, float64_t)
+GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
+#undef GET_FEATURE_TYPE
+
 	
 template <class T>
 void CStreamingSimpleFeatures<T>::init()
@@ -112,27 +196,6 @@ void CStreamingSimpleFeatures<T>::init(CStreamingFile* file,
 	parser.init(file, is_labelled, size);
 }
 	
-
-template <class T>
-CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures()
-{
-	init();
-}
-
-template <class T>
-CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures(CStreamingFile* file,
-						bool is_labelled,
-						int32_t size)
-{
-	init(file, is_labelled, size);
-}
-
-template <class T>
-CStreamingSimpleFeatures<T>::~CStreamingSimpleFeatures()
-{
-	parser.end_parser();
-}
-
 template <class T>
 void CStreamingSimpleFeatures<T>::start_parser()
 {
@@ -185,6 +248,13 @@ int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space()
 }
 
 template <class T>
+	float64_t CStreamingSimpleFeatures<T>::dot(CStreamingDotFeatures* df)
+{
+	// NOT IMPLEMENTED
+	return -1;
+}
+
+template <class T>
 float64_t CStreamingSimpleFeatures<T>::dot(SGVector<T> &sgvec1)
 {
 	int32_t len1;
@@ -195,39 +265,6 @@ float64_t CStreamingSimpleFeatures<T>::dot(SGVector<T> &sgvec1)
 
 	float64_t result=CMath::dot(current_vector, sgvec1.vector, len1);
 	return result;
-}
-
-template <class T>
-float64_t CStreamingSimpleFeatures<T>::dense_dot(SGVector<T> &sgvec1)
-{
-	int32_t len1=sgvec1.length;
-
-	ASSERT(len1==current_length);
-	float64_t result=0;
-		
-	for (int32_t i=0; i<current_length; i++)
-		result+=current_vector[i]*sgvec1.vector[i];
-
-	return result;
-}
-
-template <class T>
-void CStreamingSimpleFeatures<T>::add_to_dense_vec(float64_t alpha,
-						SGVector<T> &vec,
-						bool abs_val)
-{
-	ASSERT(vec.length==current_length);
-
-	if (abs_val)
-	{
-		for (int32_t i=0; i<current_length; i++)
-			vec.vector[i]+=alpha*CMath::abs(current_vector[i]);
-	}
-	else
-	{
-		for (int32_t i=0; i<current_length; i++)
-			vec.vector[i]+=alpha*current_vector[i];
-	}
 }
 
 template <class T>

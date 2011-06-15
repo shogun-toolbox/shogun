@@ -113,6 +113,11 @@ GET_VECTOR(get_shortreal_vector, atof, float32_t)
 GET_VECTOR(get_real_vector, atof, float64_t)
 GET_VECTOR(get_short_vector, atoi, int16_t)
 GET_VECTOR(get_word_vector, atoi, uint16_t)
+GET_VECTOR(get_int8_vector, atoi, int8_t)
+GET_VECTOR(get_uint_vector, atoi, uint32_t)
+GET_VECTOR(get_long_vector, atoi, int64_t)
+GET_VECTOR(get_ulong_vector, atoi, uint64_t)
+GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, conv, sg_type)								\

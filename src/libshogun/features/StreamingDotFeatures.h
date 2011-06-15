@@ -58,9 +58,9 @@ public:
 
 	virtual float64_t dot(CStreamingDotFeatures* df)=0;
 	
-	virtual float64_t dense_dot(const SGVector<float64_t> &vec)=0;
+	virtual float64_t dense_dot(SGVector<float64_t> &vec)=0;
 
-	virtual void add_to_dense_vec(float64_t alpha, const SGVector<float64_t> &vec, bool abs_val=false)=0;
+	virtual void add_to_dense_vec(float64_t alpha, SGVector<float64_t> &vec, bool abs_val=false)=0;
 	/** obtain the dimensionality of the feature space
 	 *
 	 * (not mix this up with the dimensionality of the input space, usually

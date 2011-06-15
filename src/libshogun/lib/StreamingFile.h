@@ -66,6 +66,11 @@ namespace shogun
 		virtual void get_shortreal_vector(float32_t*& vector, int32_t& len);
 		virtual void get_short_vector(int16_t*& vector, int32_t& len);
 		virtual void get_word_vector(uint16_t*& vector, int32_t& len);
+		virtual void get_int8_vector(int8_t*& vector, int32_t& len);
+		virtual void get_uint_vector(uint32_t*& vector, int32_t& len);
+		virtual void get_long_vector(int64_t*& vector, int32_t& len);
+		virtual void get_ulong_vector(uint64_t*& vector, int32_t& len);
+		virtual void get_longreal_vector(floatmax_t*& vector, int32_t& len);
 		//@}
 
 		/** @name Matrix Access Functions
