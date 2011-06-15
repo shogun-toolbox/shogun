@@ -84,6 +84,9 @@ public:
 	float64_t evaluate(int32_t num_runs=1, float64_t conf_int_p=0,
 			float64_t* conf_int_low=NULL, float64_t* conf_int_up=NULL);
 
+	/** @return underlying learning machine */
+	CMachine* get_machine() { return m_machine; }
+
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
 	{
