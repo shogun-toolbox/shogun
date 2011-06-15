@@ -36,25 +36,31 @@ class CStreamingDotFeatures : public CFeatures
 
 public:
 
-	CStreamingDotFeatures();
+	CStreamingDotFeatures()
+	{
+	}
 
 	CStreamingDotFeatures(CStreamingFile* file,
 			      bool is_labelled,
-			      int32_t size);
+			      int32_t size)
+	{
+	}
 		
-	~CStreamingDotFeatures();
+	virtual ~CStreamingDotFeatures()
+	{
+	}
 		
-	virtual void init();
+	virtual void init()=0;
 
-	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size)=0;
 
-	virtual void start_parser();
+	virtual void start_parser()=0;
 
-	virtual void end_parser();
+	virtual void end_parser()=0;
 
-	virtual int32_t get_next_example();
+	virtual int32_t get_next_example()=0;
 
-	virtual void release_example();
+	virtual void release_example()=0;
 
 	virtual float64_t dot(CStreamingDotFeatures* df)=0;
 	
@@ -68,9 +74,9 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space();
+	virtual int32_t get_dim_feature_space()=0;
 
-	virtual int32_t get_num_features();
+	virtual int32_t get_num_features()=0;
 		
 protected:
 		
