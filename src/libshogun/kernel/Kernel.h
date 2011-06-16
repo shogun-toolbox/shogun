@@ -233,6 +233,11 @@ class CKernel : public CSGObject
 		 */
 		void get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n);
 
+		/** get kernel matrix
+		 *
+		 * @return computed kernel matrix (needs to be cleaned up)
+		 */
+		SGMatrix<float64_t> get_kernel_matrix();
 
 		/**
 		 * get column j

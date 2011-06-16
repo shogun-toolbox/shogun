@@ -25,8 +25,8 @@ public class classifier_lda_modular {
 		LDA lda = new LDA(gamma, feats_train, labels);
 		lda.train();
 
-		lda.get_bias();
-		lda.get_w();
+		System.out.println(lda.get_bias());
+		System.out.println(lda.get_w().toString());
 		lda.set_features(feats_test);
 		DoubleMatrix out_labels = lda.apply().get_labels();
 		System.out.println(out_labels.toString());
