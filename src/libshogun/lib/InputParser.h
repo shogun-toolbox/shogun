@@ -219,7 +219,6 @@ namespace shogun
 		
 		int32_t current_len; /**< Features in last
 				      * read example */
-
 		
 	};
 
@@ -321,7 +320,6 @@ namespace shogun
 		if (length < 2)
 		{
 			// Problem reading the example
-			parsing_done=true;
 			return 0;
 		}
 
@@ -344,7 +342,6 @@ namespace shogun
 		if (length < 1)
 		{
 			// Problem reading the example
-			parsing_done=true;
 			return 0;
 		}
 
@@ -396,22 +393,27 @@ namespace shogun
 		// Return the next unused example from the buffer
 
 		example<T> *ex;
-	
+		
 		if (number_of_vectors_parsed <= 0)
 			return NULL;
 
 		if (parsing_done)
 		{
 			if (number_of_vectors_read == number_of_vectors_parsed)
+			{
 				reading_done = true;
+				return NULL;
+			}
 		}
 
 		if (number_of_vectors_read == number_of_vectors_parsed)
+		{
 			return NULL;
-	
+		}
+
 		ex = examples_buff->fetch_example();
 		number_of_vectors_read++;
-
+		
 		return ex;
 	}
 

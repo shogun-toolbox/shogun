@@ -126,7 +126,7 @@ namespace shogun
 		CParseBuffer<T>::CParseBuffer(int32_t size)
 	{
 		int32_t buffer_size_features=size*1024*1024;
-		buffer_size=100;		// HACK!
+		buffer_size=10000;		// HACK!
 		ex_buff=new example<T>[buffer_size];
 		printf("initializing fv_buff with size: %d\n", buffer_size_features);
 		fv_buff=new T[buffer_size_features/sizeof(T)];
