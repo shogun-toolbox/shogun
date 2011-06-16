@@ -9,10 +9,10 @@ public class classifier_gaussiannaivebayes_modular {
 	public static void main(String argv[]) {
 		Features.init_shogun_with_defaults();
 
-		DoubleMatrix traindata_real = Load.load_numbers("../../data/toy/fm_train_real.dat");
-		DoubleMatrix testdata_real = Load.load_numbers("../../data/toy/fm_test_real.dat");
+		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
+		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
 
-		DoubleMatrix trainlab = Load.load_labels("../../data/toy/label_train_multiclass.dat");
+		DoubleMatrix trainlab = Load.load_labels("../data/label_train_multiclass.dat");
 
 		RealFeatures feats_train = new RealFeatures();
 		feats_train.set_feature_matrix(traindata_real);
@@ -23,7 +23,8 @@ public class classifier_gaussiannaivebayes_modular {
 		GaussianNaiveBayes gnb = new GaussianNaiveBayes(feats_train, labels);
 		gnb.train();
 		DoubleMatrix out_labels = gnb.apply(feats_test).get_labels();
-
+		System.out.println(out_labels.toString());
+		
 		Features.exit_shogun();
 	}
 }

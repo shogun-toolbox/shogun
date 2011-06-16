@@ -10,10 +10,10 @@ public class classifier_lda_modular {
 		Features.init_shogun_with_defaults();
 		int gamma = 3;
 
-		DoubleMatrix traindata_real = Load.load_numbers("../../data/toy/fm_train_real.dat");
-		DoubleMatrix testdata_real = Load.load_numbers("../../data/toy/fm_test_real.dat");
+		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
+		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
 
-		DoubleMatrix trainlab = Load.load_labels("../../data/toy/label_train_twoclass.dat");
+		DoubleMatrix trainlab = Load.load_labels("../data/label_train_twoclass.dat");
 
 		RealFeatures feats_train = new RealFeatures();
 		feats_train.set_feature_matrix(traindata_real);
@@ -29,6 +29,7 @@ public class classifier_lda_modular {
 		lda.get_w();
 		lda.set_features(feats_test);
 		DoubleMatrix out_labels = lda.apply().get_labels();
+		System.out.println(out_labels.toString());
 
 		Features.exit_shogun();
 	}
