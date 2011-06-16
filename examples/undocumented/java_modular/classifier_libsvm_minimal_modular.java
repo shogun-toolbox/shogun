@@ -1,6 +1,6 @@
 import org.shogun.*;
 import org.jblas.*;
-public class ClassifierLibsvmMinimalModular {
+public class classifier_libsvm_minimal_modular {
 	static {
 		System.loadLibrary("Features");
 		System.loadLibrary("Classifier");
