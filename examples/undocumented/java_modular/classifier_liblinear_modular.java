@@ -1,5 +1,6 @@
 import org.shogun.*;
 import org.jblas.*;
+import static org.shogun.LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC_DUAL;
 public class classifier_liblinear_modular {
 	static {
 		System.loadLibrary("Features");
@@ -12,11 +13,11 @@ public class classifier_liblinear_modular {
 		double C = 0.9;
 		double epsilon = 1e-3;
 
-		Math_init_random(17);
-		DoubleMatrix traindata_real = Load.load_numbers("../../data/toy/fm_train_real.dat");
-		DoubleMatrix testdata_real = Load.load_numbers("../../data/toy/fm_test_real.dat");
+		org.shogun.Math.init_random(17);
+		DoubleMatrix traindata_real = Load.load_numbers(".../data/fm_train_real.dat");
+		DoubleMatrix testdata_real = Load.load_numbers("../data/toy/fm_test_real.dat");
 
-		DoubleMatrix trainlab = Load.load_labels("../../data/toy/label_train_twoclass.dat");
+		DoubleMatrix trainlab = Load.load_labels("../data/label_train_twoclass.dat");
 
 		RealFeatures feats_train = new RealFeatures();
 		feats_train.set_feature_matrix(traindata_real);
@@ -32,6 +33,7 @@ public class classifier_liblinear_modular {
 		svm.train();
 		svm.set_features(feats_test);
 		DoubleMatrix out_labels = svm.apply().get_labels();
+		System.out.println(out_labels.toString());
 
 		Features.exit_shogun();
 	}

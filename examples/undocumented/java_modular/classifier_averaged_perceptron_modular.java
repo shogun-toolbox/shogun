@@ -11,10 +11,10 @@ public class classifier_averaged_perceptron_modular {
 		double learn_rate = 1.0;
 		int max_iter = 1000;
 
-		DoubleMatrix traindata_real = Load.load_numbers("../../data/toy/fm_train_real.dat");
-		DoubleMatrix testdata_real = Load.load_numbers("../../data/toy/fm_test_real.dat");
+		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
+		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
 
-		DoubleMatrix trainlab = Load.load_labels("../../data/toy/label_train_twoclass.dat");
+		DoubleMatrix trainlab = Load.load_labels("../data/label_train_twoclass.dat");
 		RealFeatures feats_train = new RealFeatures();
 		feats_train.set_feature_matrix(traindata_real);
 		RealFeatures feats_test = new RealFeatures();
@@ -27,6 +27,7 @@ public class classifier_averaged_perceptron_modular {
 
 		perceptron.set_features(feats_test);
 		DoubleMatrix out_labels = perceptron.apply().get_labels();
+		System.out.println(out_labels.toString());
 
 		Features.exit_shogun();
 	}

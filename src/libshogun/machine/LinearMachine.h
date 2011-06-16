@@ -92,6 +92,15 @@ class CLinearMachine : public CMachine
 			memcpy(*dst_w, w, sizeof(float64_t) * (*dst_dims));
 		}
 
+		/** get w
+		 *
+		 * @return weight vector
+		 */
+		inline SGVector<float64_t> get_w()
+		{
+			return SGVector<float64_t>(w, w_dim);
+		}
+
 		/** set w
 		 *
 		 * @param src_w new w
