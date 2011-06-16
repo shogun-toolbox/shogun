@@ -15,6 +15,7 @@
 #include "lib/common.h"
 #include "lib/File.h"
 #include "lib/io.h"
+#include "lib/IOBuffer.h"
 
 namespace shogun
 {
@@ -411,6 +412,10 @@ private:
 	 * @param ptr_item
 	 */
 	template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
+
+protected:
+
+	CIOBuffer buf;
 };
 }
 #endif //__ASCII_FILE_H__

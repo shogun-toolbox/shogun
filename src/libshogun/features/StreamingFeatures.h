@@ -14,7 +14,7 @@
 #include "lib/common.h"
 #include "features/Features.h"
 #include "lib/File.h"
-#include "lib/parser.h"
+#include "lib/InputParser.h"
 #include <pthread.h>
 
 namespace shogun
