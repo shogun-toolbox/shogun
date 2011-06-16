@@ -108,6 +108,14 @@ void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
 	*dst=result;
 }
 
+
+SGMatrix<float64_t> CKernel::get_kernel_matrix()
+{
+	int32_t m,n;
+	float64_t* data=get_kernel_matrix<float64_t>(m,n,NULL);
+	return SGMatrix<float64_t>(data, m,n);
+}
+
 #ifdef USE_SVMLIGHT
 void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 {

@@ -91,6 +91,19 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
+		CSimpleFeatures(SGMatrix<ST> matrix)
+		: CDotFeatures()
+		{
+			init();
+			set_feature_matrix(matrix);
+		}
+
+		/** constructor
+		 *
+		 * @param src feature matrix
+		 * @param num_feat number of features in matrix
+		 * @param num_vec number of vectors in matrix
+		 */
 		CSimpleFeatures(ST* src, int32_t num_feat, int32_t num_vec)
 		: CDotFeatures()
 		{

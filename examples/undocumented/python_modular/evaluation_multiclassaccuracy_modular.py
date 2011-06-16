@@ -2,7 +2,7 @@ from tools.load import LoadMatrix
 from numpy import random
 lm=LoadMatrix()
 
-numpy.random.seed(17)
+random.seed(17)
 ground_truth = lm.load_labels('../data/label_train_multiclass.dat')
 predicted = lm.load_labels('../data/label_train_multiclass.dat') * 2
 

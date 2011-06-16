@@ -79,7 +79,7 @@ void CMKLMultiClass::initsvm()
 	svm->set_epsilon(epsilon);
 
 	int32_t numlabels;
-	float64_t * lb=labels->get_labels ( numlabels);
+	float64_t * lb=labels->get_labels (numlabels);
 
 	if (numlabels<=0)	
 	{
@@ -88,8 +88,6 @@ void CMKLMultiClass::initsvm()
 	}
 
 	CLabels* newlab=new CLabels(lb, labels->get_num_labels() );
-	delete[] lb;
-	lb=NULL;
 
 	svm->set_labels(newlab);
 

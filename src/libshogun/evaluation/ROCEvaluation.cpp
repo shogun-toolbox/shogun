@@ -38,7 +38,8 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 	// initialize number of labels and labels
 	int32_t length = predicted->get_num_labels();
-	float64_t* labels = predicted->get_labels(length);
+	const float64_t* orig_labels = predicted->get_labels(length);
+	float64_t* labels = CMath::clone_vector(orig_labels, length);
 
 	// get sorted indexes
 	int32_t* idxs = new int32_t[length];

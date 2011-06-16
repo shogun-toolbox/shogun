@@ -141,7 +141,6 @@ bool CSVMOcas::train(CFeatures* data)
 	delete[] cp_bias;
 	cp_bias=NULL;
 
-	delete[] lab;
 	lab=NULL;
 
 	delete[] old_w;

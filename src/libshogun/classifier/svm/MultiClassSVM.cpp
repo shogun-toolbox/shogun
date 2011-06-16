@@ -39,8 +39,7 @@ CMultiClassSVM::~CMultiClassSVM()
 	cleanup();
 }
 
-void
-CMultiClassSVM::init(void)
+void CMultiClassSVM::init()
 {
 	m_parameters->add((machine_int_t*) &multiclass_type,
 					  "multiclass_type", "Type of MultiClassSVM.");

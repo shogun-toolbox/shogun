@@ -243,7 +243,6 @@ bool CWDSVMOcas::train(CFeatures* data)
 		delete[] cuts[i];
 	delete[] cuts;
 
-	delete[] lab;
 	lab=NULL;
 
 	SG_UNREF(alphabet);
