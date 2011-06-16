@@ -1,8 +1,15 @@
 /*
   Copyright (c) 2009 Yahoo! Inc.  All rights reserved.  The copyrights
   embodied in the content of this file are licensed under the BSD
-  (revised) open source license
+  (revised) open source license.
+  
+  Copyright (C) 2011 Shashwat Lal Das.  This program is free software;
+  you can redistribute it and/or modify it under the terms of the GNU
+  General Public License as published by the Free Software Foundation;
+  either version 3 of the License, or (at your option) any later
+  version.
 */
+
 #include <string.h>
 #include "lib/IOBuffer.h"
 
@@ -28,7 +35,7 @@ int CIOBuffer::open_file(const char* name, int flag)
 		break;
 
 	default:
-		cerr << "Unknown file operation. Something other than READ/WRITE specified" << endl;
+		SG_ERROR("Unknown file operation. Something other than READ/WRITE specified.\n");
 		ret = 0;
 	}
 	return ret;
@@ -87,7 +94,7 @@ ssize_t CIOBuffer::write_file(const void* buf, size_t nbytes)
 void CIOBuffer::flush()
 {
 	if (write_file(space.begin, space.index()) != (int) space.index())
-		cerr<<"Error, failed to write example!\n";
+		SG_ERROR("Error, failed to write example!\n");
 	space.end = space.begin;
 	fflush(working_file);
 }

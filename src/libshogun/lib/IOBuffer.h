@@ -1,7 +1,13 @@
 /*
   Copyright (c) 2009 Yahoo! Inc.  All rights reserved.  The copyrights
   embodied in the content of this file are licensed under the BSD
-  (revised) open source license
+  (revised) open source license.
+  
+  Copyright (C) 2011 Shashwat Lal Das.  This program is free software;
+  you can redistribute it and/or modify it under the terms of the GNU
+  General Public License as published by the Free Software Foundation;
+  either version 3 of the License, or (at your option) any later
+  version.
 */
 
 #ifndef IOBUFFER_H__
@@ -10,11 +16,12 @@
 #include "lib/v_array.h"
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/DataType.h"
 #include "base/SGObject.h"
 
 #include <stdio.h>
 #include <fcntl.h>
-#include<iostream>
+#include <iostream>
 
 #ifndef O_LARGEFILE //for OSX
 #define O_LARGEFILE 0
@@ -34,7 +41,7 @@ namespace shogun
  *
  */
 
- class CIOBuffer
+ class CIOBuffer : public CSGObject
  {
 
  public:
@@ -131,9 +138,17 @@ namespace shogun
 	 */
 	size_t readto(char* &pointer, char terminal);
 
+	virtual const char* get_name() const
+	{
+		return "IOBuffer";
+	}
+	
+
 public:
   
-	v_array<char> space; /**< space.begin = beginning of loaded values.  space.end = end of read or written values */
+	v_array<char> space; /**< space.begin = beginning of loaded
+			      * values.  space.end = end of read or
+			      * written values */
 	
 	char* endloaded; 	/**< end of loaded values */
 
@@ -144,4 +159,4 @@ public:
 
 };
 }
-#endif	/* IOBUF_H__ */
+#endif	/* IOBUFFER_H__ */
