@@ -5,7 +5,7 @@ then
 	JAVA=java
 fi
 
-export CLASSPATH=/root/jblas/jblas-1.2.1.jar:../../../src/java_modular/shogun.jar:.
+export CLASSPATH=/usr/share/java/jblas.jar:../../../src/java_modular/shogun.jar:.
 ${JAVAC} Load.java
 ${JAVAC} *.java
 
