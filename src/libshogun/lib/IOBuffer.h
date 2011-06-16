@@ -2,12 +2,15 @@
   Copyright (c) 2009 Yahoo! Inc.  All rights reserved.  The copyrights
   embodied in the content of this file are licensed under the BSD
   (revised) open source license.
-  
-  Copyright (C) 2011 Shashwat Lal Das.  This program is free software;
-  you can redistribute it and/or modify it under the terms of the GNU
-  General Public License as published by the Free Software Foundation;
-  either version 3 of the License, or (at your option) any later
-  version.
+
+  Copyright (c) 2011 Berlin Institute of Technology and Max-Planck-Society.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  (at your option) any later version.
+
+  Shogun adjustments (w) 2011 Shashwat Lal Das
 */
 
 #ifndef IOBUFFER_H__
