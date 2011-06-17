@@ -92,11 +92,11 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	int32_t* ipiv = new int32_t[m_k];
 	float64_t norming = 0.0;
 
+	// get feature matrix
+	SGMatrix<float64_t> feature_matrix = pdata->get_feature_matrix();
+
 	for (i=0; i<N; i++)
 	{
-		// get feature matrix
-		SGMatrix<float64_t> feature_matrix = pdata->get_feature_matrix();
-
 		// compute local feature matrix containing neighbors of i-th vector
 		for (j=0; j<m_k; j++)
 		{
@@ -145,7 +145,7 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 		// normalize weights
 		norming=0.0;
 		for (j=0; j<m_k; j++)
-			norming += CMath::abs(id_vector[j]);
+			norming += id_vector[j];
 
 		for (j=0; j<m_k; j++)
 			id_vector[j]/=norming;
@@ -181,6 +181,7 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 
 	delete[] W_matrix;
 
+	// TODO add some more efficient method usage if supported by some library
 	// compute eigenvectors
 	float64_t* eigenvalues_vector = new float64_t[N];
 	int32_t eigenproblem_status = 0;
