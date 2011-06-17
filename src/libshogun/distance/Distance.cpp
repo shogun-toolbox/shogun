@@ -221,6 +221,13 @@ void CDistance::get_distance_matrix(float64_t** dst, int32_t* m, int32_t* n)
 	*dst=result;
 }
 
+SGMatrix<float64_t> CDistance::get_distance_matrix()
+{
+	int32_t m,n;
+	float64_t* data=get_distance_matrix_real(m,n,NULL);
+	return SGMatrix<float64_t>(data, m,n);
+}
+
 float32_t* CDistance::get_distance_matrix_shortreal(
 	int32_t &num_vec1, int32_t &num_vec2, float32_t* target)
 {

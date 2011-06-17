@@ -14,10 +14,10 @@ public class classifier_larank_modular {
 		double epsilon = 1e-5;
 		double C = 1.0;
 
-		DoubleMatrix traindata_real = Load.load_numbers("../../data/toy/fm_train_real.dat");
-		DoubleMatrix testdata_real = Load.load_numbers("../../data/toy/fm_test_real.dat");
+		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
+		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
 
-		DoubleMatrix trainlab = Load.load_labels("../../data/toy/label_train_multiclass.dat");
+		DoubleMatrix trainlab = Load.load_labels("../data/label_train_multiclass.dat");
 
 		RealFeatures feats_train = new RealFeatures();
 		feats_train.set_feature_matrix(traindata_real);
@@ -33,6 +33,7 @@ public class classifier_larank_modular {
 		svm.set_epsilon(epsilon);
 		svm.train();
 		DoubleMatrix out_labels = svm.apply(feats_train).get_labels();
+		System.out.println(out_labels.toString());
 
 		Features.exit_shogun();
 	}
