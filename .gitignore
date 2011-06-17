@@ -12,6 +12,9 @@
 .cpuinfo
 .cpuinfo.c
 *.pyc
+GPATH
+GRTAGS
+GTAGS
 TAGS
 tags
 configure.log
