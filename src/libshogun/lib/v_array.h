@@ -1,5 +1,4 @@
 /*
-<<<<<<< HEAD
   Copyright (c) 2009 Yahoo! Inc.  All rights reserved.  The copyrights
   embodied in the content of this file are licensed under the BSD
   (revised) open source license.
@@ -13,12 +12,6 @@
 
   Shogun adjustments (w) 2011 Shashwat Lal Das
 */
-=======
-Copyright (c) 2009 Yahoo! Inc.  All rights reserved.  The copyrights
-embodied in the content of this file are licensed under the BSD
-(revised) open source license
- */
->>>>>>> upstream/master
 
 #include <stdlib.h>
 
