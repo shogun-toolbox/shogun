@@ -32,9 +32,11 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %include "Features_includes.i"
+%include "Distance_includes.i"
 %include "Kernel_includes.i"
 
 %import "Features.i"
+%import "Distance.i"
 
 /* Typemaps */
 %apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* m, int32_t* n)};
