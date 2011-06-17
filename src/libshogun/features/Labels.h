@@ -28,7 +28,7 @@ namespace shogun
  * Labels here are always real-valued and thus applicable to classification
  * (cf.  CClassifier) and regression (cf. CRegression) problems.
  */
-class CLabels : public CSGObject, public Subset
+class CLabels : public CSGObject
 {
 	public:
 		/** default constructor */
@@ -249,7 +249,7 @@ class CLabels : public CSGObject, public Subset
 	private:
 		void init();
 
-	protected:
+	public:
 		/** number of labels */
 		int32_t num_labels;
 		/** the labels */
@@ -262,6 +262,9 @@ class CLabels : public CSGObject, public Subset
 		float64_t* m_confidences;
 		int32_t m_confidence_classes;
 		int32_t m_confidence_labels;
+
+		/* subset class to enable subset support for this class */
+		CSubset* m_subset;
 };
 }
 #endif
