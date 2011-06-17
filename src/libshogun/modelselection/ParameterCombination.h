@@ -11,7 +11,6 @@
 #ifndef __PARAMETERCOMBINATION_H_
 #define __PARAMETERCOMBINATION_H_
 
-#include "base/SGObject.h"
 #include "base/DynArray.h"
 
 namespace shogun
@@ -19,6 +18,7 @@ namespace shogun
 
 class CModelSelectionParameters;
 class CMachine;
+class Parameter;
 
 /**
  * @brief class that holds ONE combination of parameters for a learning machine.
@@ -42,11 +42,11 @@ class CMachine;
  * Again: Leafs of the tree may only be Parameter nodes.
  *
  */
-class CParameterCombination: public CSGObject
+class ParameterCombination
 {
 public:
 	/** constructor for a root node */
-	CParameterCombination();
+	ParameterCombination();
 
 	/** Prints a representation of the current node
 	 *
@@ -56,19 +56,19 @@ public:
 	void print(int prefix_num=0);
 
 	/** constructor for a name node */
-	CParameterCombination(const char* name);
+	ParameterCombination(const char* name);
 
 	/** constructor for a Parameter node */
-	CParameterCombination(Parameter* param);
+	ParameterCombination(Parameter* param);
 
 	/** destructor */
-	~CParameterCombination();
+	~ParameterCombination();
 
 	/** appends a child to this node
 	 *
 	 * @param child child to append
 	 */
-	void append_child(CParameterCombination* child);
+	void append_child(ParameterCombination* child);
 
 	/** Copies the complete tree of this node. Note that nodes are actually
 	 * copied. If this is a parameter node, a NEW Parameter instance to the same
@@ -76,7 +76,7 @@ public:
 	 *
 	 * @return copy of the tree with this node as root as described above
 	 */
-	CParameterCombination* copy_tree();
+	ParameterCombination* copy_tree();
 
 	/** Destroys the current node. Possibly also data and recursively for all
 	 * child nodes. Do NOT destroy data if nodes contain Parameter instances
@@ -112,19 +112,9 @@ public:
 	 * @param result result set of tree combinations
 	 */
 	static void leaf_sets_multiplication(
-			DynArray<DynArray<CParameterCombination*>*>& sets,
-			CParameterCombination* new_root,
-			DynArray<CParameterCombination*>& result);
-
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
-	inline virtual const char* get_name() const
-	{
-		return "CParameterCombination";
-	}
+			DynArray<DynArray<ParameterCombination*>*>& sets,
+			ParameterCombination* new_root,
+			DynArray<ParameterCombination*>& result);
 
 	/** checks whether this node has children
 	 *
@@ -135,9 +125,12 @@ public:
 	void apply_to_parameter(Parameter* parameter);
 
 private:
+	void init();
+
+private:
 	const char* m_node_name;
 	Parameter* m_param;
-	DynArray<CParameterCombination*>* m_child_nodes;
+	DynArray<ParameterCombination*>* m_child_nodes;
 };
 }
 

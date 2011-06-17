@@ -13,40 +13,40 @@
 
 using namespace shogun;
 
-CParameterCombination::CParameterCombination()
+ParameterCombination::ParameterCombination()
 {
 	m_param=NULL;
 	m_node_name=NULL;
-	m_child_nodes=new DynArray<CParameterCombination*> ();
+	m_child_nodes=new DynArray<ParameterCombination*> ();
 }
 
-CParameterCombination::CParameterCombination(const char* name) :
+ParameterCombination::ParameterCombination(const char* name) :
 	m_node_name(name)
 {
 	m_param=NULL;
-	m_child_nodes=new DynArray<CParameterCombination*> ();
+	m_child_nodes=new DynArray<ParameterCombination*> ();
 
 }
 
-CParameterCombination::CParameterCombination(Parameter* param) :
+ParameterCombination::ParameterCombination(Parameter* param) :
 	m_param(param)
 {
 	m_node_name=NULL;
-	m_child_nodes=new DynArray<CParameterCombination*> ();
+	m_child_nodes=new DynArray<ParameterCombination*> ();
 
 }
 
-CParameterCombination::~CParameterCombination()
+ParameterCombination::~ParameterCombination()
 {
 	delete m_child_nodes;
 }
 
-void CParameterCombination::append_child(CParameterCombination* child)
+void ParameterCombination::append_child(ParameterCombination* child)
 {
 	m_child_nodes->append_element(child);
 }
 
-void CParameterCombination::print(int prefix_num)
+void ParameterCombination::print(int prefix_num)
 {
 	/* prefix is enlarged */
 	char* prefix=new char[prefix_num+1];
@@ -62,10 +62,10 @@ void CParameterCombination::print(int prefix_num)
 	 */
 
 	if (m_node_name)
-		SG_PRINT("%s\"%s\" ", prefix, m_node_name);
+		SG_SPRINT("%s\"%s\" ", prefix, m_node_name);
 	else if (m_param)
 	{
-		SG_PRINT("%s", prefix);
+		SG_SPRINT("%s", prefix);
 		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
 		{
 			/* distinction between sgobject and values */
@@ -73,21 +73,21 @@ void CParameterCombination::print(int prefix_num)
 			{
 				TParameter* param=m_param->get_parameter(i);
 				CSGObject* current_sgobject=*((CSGObject**) param->m_parameter);
-				SG_PRINT("\"%s\":%s at %p ", param->m_name,
+				SG_SPRINT("\"%s\":%s at %p ", param->m_name,
 						current_sgobject->get_name(), current_sgobject);
 			}
 			else
 			{
-				SG_PRINT("\"%s\"=%f ", m_param->get_parameter(i)->m_name,
+				SG_SPRINT("\"%s\"=%f ", m_param->get_parameter(i)->m_name,
 						*((float64_t*)m_param->get_parameter(i)->m_parameter));
 			}
 		}
 
 	}
 	else
-		SG_PRINT("%sroot", prefix);
+		SG_SPRINT("%sroot", prefix);
 
-	SG_PRINT("\n");
+	SG_SPRINT("\n");
 
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		m_child_nodes->get_element(i)->print(prefix_num+1);
@@ -95,7 +95,7 @@ void CParameterCombination::print(int prefix_num)
 	delete[] prefix;
 }
 
-void CParameterCombination::parameter_set_multiplication(
+void ParameterCombination::parameter_set_multiplication(
 		DynArray<Parameter*>& set_1, DynArray<Parameter*>& set_2,
 		DynArray<Parameter*>& result)
 {
@@ -118,10 +118,10 @@ void CParameterCombination::parameter_set_multiplication(
 		delete set_2[i];
 }
 
-void CParameterCombination::leaf_sets_multiplication(
-		DynArray<DynArray<CParameterCombination*>*>& sets,
-		CParameterCombination* new_root,
-		DynArray<CParameterCombination*>& result)
+void ParameterCombination::leaf_sets_multiplication(
+		DynArray<DynArray<ParameterCombination*>*>& sets,
+		ParameterCombination* new_root,
+		DynArray<ParameterCombination*>& result)
 {
 	/* check marginal cases */
 	if (sets.get_num_elements()==1)
@@ -136,7 +136,7 @@ void CParameterCombination::leaf_sets_multiplication(
 		for (index_t i=0; i<result.get_num_elements(); ++i)
 		{
 			/* put new root as root into the tree and replace tree */
-			CParameterCombination* root=new_root->copy_tree();
+			ParameterCombination* root=new_root->copy_tree();
 			root->append_child(result[i]);
 			result.set_element(root, i);
 		}
@@ -150,12 +150,12 @@ void CParameterCombination::leaf_sets_multiplication(
 
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
-			DynArray<CParameterCombination*>* current_set=sets[set_nr];
+			DynArray<ParameterCombination*>* current_set=sets[set_nr];
 			param_sets.append_element(new DynArray<Parameter*> ());
 
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
 			{
-				CParameterCombination* current_node=current_set->get_element(i);
+				ParameterCombination* current_node=current_set->get_element(i);
 
 				if (current_node->m_child_nodes->get_num_elements())
 				{
@@ -202,11 +202,11 @@ void CParameterCombination::leaf_sets_multiplication(
 		for (index_t i=0; i<param_product->get_num_elements(); ++i)
 		{
 			/* build parameter node from parameter product to append to root */
-			CParameterCombination* param_node=new CParameterCombination(
+			ParameterCombination* param_node=new ParameterCombination(
 					param_product->get_element(i));
 
 			/* copy new root node, has to be a new one each time */
-			CParameterCombination* root=new_root->copy_tree();
+			ParameterCombination* root=new_root->copy_tree();
 
 			/* append both and add them to result set */
 			root->append_child(param_node);
@@ -220,7 +220,7 @@ void CParameterCombination::leaf_sets_multiplication(
 		 * array */
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
-			DynArray<CParameterCombination*>* current_set=sets[set_nr];
+			DynArray<ParameterCombination*>* current_set=sets[set_nr];
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
 				delete current_set->get_element(i);
 
@@ -237,7 +237,7 @@ void CParameterCombination::leaf_sets_multiplication(
 	new_root->destroy(true, true);
 }
 
-void CParameterCombination::destroy(bool recursive, bool destroy_data)
+void ParameterCombination::destroy(bool recursive, bool destroy_data)
 {
 	if (destroy_data)
 		delete m_param;
@@ -251,9 +251,9 @@ void CParameterCombination::destroy(bool recursive, bool destroy_data)
 	delete this;
 }
 
-CParameterCombination* CParameterCombination::copy_tree()
+ParameterCombination* ParameterCombination::copy_tree()
 {
-	CParameterCombination* copy=new CParameterCombination();
+	ParameterCombination* copy=new ParameterCombination();
 
 	/* use name of original */
 	copy->m_node_name=m_node_name;
@@ -278,7 +278,7 @@ CParameterCombination* CParameterCombination::copy_tree()
 	return copy;
 }
 
-void CParameterCombination::apply_to_parameter(Parameter* parameter)
+void ParameterCombination::apply_to_parameter(Parameter* parameter)
 {
 	/* case root node or name node */
 	if ((!m_node_name && !m_param) || (m_node_name && !m_param))
@@ -300,7 +300,7 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter)
 			if (m_param->get_num_parameters()>1 ||
 					m_param->get_parameter(0)->m_datatype.m_ptype!=PT_SGOBJECT)
 			{
-				SG_ERROR("invalid CParameterCombination node type, has children"
+				SG_SERROR("invalid ParameterCombination node type, has children"
 						" and more than one parameter or is not a "
 						"CSGObject.\n");
 			}
@@ -324,6 +324,6 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter)
 			parameter->set_from_parameters(m_param);
 	}
 	else
-		SG_ERROR("ParameterCombination node has illegal type.\n");
+		SG_SERROR("ParameterCombination node has illegal type.\n");
 
 }
