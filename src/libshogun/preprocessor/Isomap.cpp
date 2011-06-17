@@ -38,19 +38,11 @@ void CIsomap::cleanup()
 {
 }
 
-float64_t* CIsomap::apply_to_feature_matrix(CFeatures* data)
+CCustomDistance* CIsomap::approx_geodesic_distance(CDistance* distance)
 {
-	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
-	CDistance* distance = new CEuclidianDistance(pdata,pdata);
-
-	// loop variables
-	int32_t i,j,k;
-
-	// get distance matrix
-	int32_t N;
+	int32_t N,k,i,j;
 	float64_t* D_matrix;
 	distance->get_distance_matrix(&D_matrix,&N,&N);
-	delete distance;
 
 	// floyd-warshall
 	for (k=0; k<N; k++)
@@ -62,8 +54,29 @@ float64_t* CIsomap::apply_to_feature_matrix(CFeatures* data)
 		}
 	}
 
+	return new CCustomDistance(D_matrix,N,N);
+}
+
+CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)
+{
+	ASSERT(distance);
+
 	SGMatrix<float64_t> features;
-	apply_to_distance(new CCustomDistance(D_matrix,N,N),features);
+	CClassicMDS::apply_to_distance(approx_geodesic_distance(distance),features);
+	CSimpleFeatures<float64_t>* new_features = new CSimpleFeatures<float64_t>();
+	new_features->set_feature_matrix(features);
+
+	return new_features;
+}
+
+
+float64_t* CIsomap::apply_to_feature_matrix(CFeatures* data)
+{
+	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
+	CDistance* distance = new CEuclidianDistance(pdata,pdata);
+
+	SGMatrix<float64_t> features;
+	CClassicMDS::apply_to_distance(approx_geodesic_distance(distance),features);
 
 	pdata->set_feature_matrix(features);
 	return features.matrix;

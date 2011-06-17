@@ -54,7 +54,7 @@ public:
 	/** apply preproc to distance
 	 *
 	 */
-	CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
+	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
 
 	/** apply preproc to feature matrix
 	 *
