@@ -28,12 +28,6 @@ namespace shogun
 	
 	class CStreamingFeatures: public CFeatures
 	{
-		/** 
-		 * Initialize members.
-		 * 
-		 */
-		void init(void);
-
 	public:
 		
 		/** 
@@ -173,9 +167,17 @@ namespace shogun
 		 */
 		virtual float64_t get_label();
 
+	private:
+		/** 
+		 * Initialize members.
+		 * 
+		 */
+		void init();
+
+
 	protected:
 		
-		CInputParser parser;	/**< Parser object, to parse input data */
+		CInputParser<float64_t> parser;	/**< Parser object, to parse input data */
 
 		CStreamingFile* working_file;
 
