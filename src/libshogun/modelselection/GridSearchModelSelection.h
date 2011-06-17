@@ -28,7 +28,7 @@ public:
 
 	virtual ~CGridSearchModelSelection();
 
-	virtual CParameterCombination* select_model(float64_t& best_result);
+	virtual ParameterCombination* select_model(float64_t& best_result);
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
