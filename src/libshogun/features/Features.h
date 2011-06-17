@@ -53,7 +53,7 @@ namespace shogun
  *
  *   Inherits from Subset to provide feature subset functionality.
  */
-class CFeatures : public CSGObject, public Subset
+class CFeatures : public CSGObject
 {
 	void init(void);
 
@@ -250,6 +250,11 @@ class CFeatures : public CSGObject, public Subset
 
 		/// i'th entry is true if features were already preprocessed with preproc i
 		bool* preprocessed;
+
+
+	public:
+		/* subset class to enable subset support for this class */
+		CSubset* m_subset;
 };
 }
 #endif
