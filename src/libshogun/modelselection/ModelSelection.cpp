@@ -11,16 +11,23 @@
 #include "modelselection/ModelSelection.h"
 #include "modelselection/ModelSelectionParameters.h"
 #include "evaluation/CrossValidation.h"
+#include "base/Parameter.h"
 
 using namespace shogun;
 
-CModelSelection::CModelSelection(
-		CModelSelectionParameters* model_parameters,
+CModelSelection::CModelSelection(CModelSelectionParameters* model_parameters,
 		CCrossValidation* cross_validation) :
 	m_model_parameters(model_parameters), m_cross_validation(cross_validation)
 {
 	SG_REF(m_model_parameters);
 	SG_REF(m_cross_validation);
+
+	m_parameters->add((CSGObject**) &m_model_parameters, "model_parameters",
+			"Parameter tree for model selection");
+
+	m_parameters->add((CSGObject**) &m_cross_validation, "cross_validation",
+			"Cross validation strategy");
+
 }
 
 CModelSelection::~CModelSelection()
@@ -28,3 +35,4 @@ CModelSelection::~CModelSelection()
 	SG_UNREF(m_model_parameters);
 	SG_UNREF(m_cross_validation);
 }
+
