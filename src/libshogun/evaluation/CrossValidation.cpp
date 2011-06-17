@@ -17,11 +17,7 @@ using namespace shogun;
 
 CCrossValidation::CCrossValidation()
 {
-	m_machine=NULL;
-	m_features=NULL;
-	m_labels=NULL;
-	m_splitting_strategy=NULL;
-	m_evaluation_criterium=NULL;
+	init();
 }
 
 CCrossValidation::~CCrossValidation()
@@ -35,17 +31,39 @@ CCrossValidation::~CCrossValidation()
 
 CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CSplittingStrategy* splitting_strategy,
-		CEvaluation* evaluation_criterium) :
-	m_machine(machine), m_features(features), m_labels(labels),
-			m_splitting_strategy(splitting_strategy),
-			m_evaluation_criterium(evaluation_criterium)
-
+		CEvaluation* evaluation_criterium)
 {
+	init();
+
+	m_machine=machine;
+	m_features=features;
+	m_labels=labels;
+	m_splitting_strategy=splitting_strategy;
+	m_evaluation_criterium=evaluation_criterium;
+
 	SG_REF(m_machine);
 	SG_REF(m_features);
 	SG_REF(m_labels);
 	SG_REF(m_splitting_strategy);
 	SG_REF(m_evaluation_criterium);
+}
+
+void CCrossValidation::init()
+{
+	m_machine=NULL;
+	m_features=NULL;
+	m_labels=NULL;
+	m_splitting_strategy=NULL;
+	m_evaluation_criterium=NULL;
+
+	m_parameters->add((CSGObject**) &m_machine, "machine",
+			"Used learning machine");
+	m_parameters->add((CSGObject**) &m_features, "features", "Used features");
+	m_parameters->add((CSGObject**) &m_labels, "labels", "Used labels");
+	m_parameters->add((CSGObject**) &m_splitting_strategy,
+			"splitting_strategy", "Used splitting strategy");
+	m_parameters->add((CSGObject**) &m_evaluation_criterium,
+			"evaluation_criterium", "Used evaluation criterium");
 }
 
 float64_t CCrossValidation::evaluate(int32_t num_runs, float64_t conf_int_p,
@@ -87,8 +105,8 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* backup feature and label subsets */
 	SGVector<index_t> feature_subset;
 	SGVector<index_t> label_subset;
-	feature_subset.vector=m_features->get_subset(feature_subset.length);
-	label_subset.vector=m_labels->get_subset(label_subset.length);
+	feature_subset.vector=m_features->m_subset->get_subset(feature_subset.length);
+	label_subset.vector=m_labels->m_subset->get_subset(label_subset.length);
 
 	/* do actual cross-validation */
 	for (index_t i=0; i<num_subsets; ++i)
@@ -96,7 +114,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* set feature subset for training (use method that stores pointer) */
 		SGVector<index_t> inverse_subset_indices;
 		m_splitting_strategy->generate_subset_inverse(i, inverse_subset_indices);
-		m_features->set_subset(inverse_subset_indices.length,
+		m_features->m_subset->set_subset(inverse_subset_indices.length,
 				inverse_subset_indices.vector);
 
 		/* train machine on training features */
@@ -105,7 +123,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* set feature subset for testing (subset method that stores pointer) */
 		SGVector<index_t> subset_indices;
 		m_splitting_strategy->generate_subset_indices(i, subset_indices);
-		m_features->set_subset(subset_indices.length, subset_indices.vector);
+		m_features->m_subset->set_subset(subset_indices.length, subset_indices.vector);
 
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
@@ -116,7 +134,7 @@ float64_t CCrossValidation::evaluate_one_run()
 				new index_t[subset_indices.length], subset_indices.length);
 		memcpy(subset_indices_copy.vector, subset_indices.vector,
 				subset_indices.length*sizeof(index_t));
-		m_labels->set_subset(subset_indices_copy.length,
+		m_labels->m_subset->set_subset(subset_indices_copy.length,
 				subset_indices_copy.vector);
 
 		/* evaluate */
@@ -124,13 +142,13 @@ float64_t CCrossValidation::evaluate_one_run()
 
 		/* clean up, reset subsets */
 		SG_UNREF(result_labels);
-		m_features->remove_subset();
-		m_labels->remove_subset();
+		m_features->m_subset->remove_subset();
+		m_labels->m_subset->remove_subset();
 	}
 
 	/* restore feature and label subsets (use method that stores pointer) */
-	m_features->set_subset(feature_subset.length, feature_subset.vector);
-	m_labels->set_subset(label_subset.length, label_subset.vector);
+	m_features->m_subset->set_subset(feature_subset.length, feature_subset.vector);
+	m_labels->m_subset->set_subset(label_subset.length, label_subset.vector);
 
 	/* build arithmetic mean of results */
 	float64_t mean=CMath::mean(results, num_subsets);

@@ -93,6 +93,9 @@ public:
 		return "CrossValidation";
 	}
 
+private:
+	void init();
+
 protected:
 	/** Evaluates one single cross-validation run.
 	 * Current implementation evaluates each fold separately and then calculates
