@@ -11,7 +11,7 @@
 #ifndef __SUBSET_H_
 #define __SUBSET_H_
 
-#include "lib/DataType.h"
+#include "base/SGObject.h"
 #include <string.h>
 
 namespace shogun
@@ -19,17 +19,16 @@ namespace shogun
 
 /** @brief class for adding subset support to a class. Provides an interface for
  * getting/setting subset_matrices and index conversion.
- *
- * Note that this class does not inherit from CSGObject.
+ * Do not inherit from this class, use it as variable.
  */
-class Subset
+class CSubset: public CSGObject
 {
 public:
-	Subset();
-	virtual ~Subset();
+	CSubset();
+	virtual ~CSubset();
 
 	/** removes (and deletes) the current subset indices matrix */
-	virtual void remove_subset();
+	void remove_subset();
 
 	/** getter for the subset indices
 	 *
@@ -43,11 +42,13 @@ public:
 	 * @param m_subset_len reference to number of subset indices (returned)
 	 * @return subset indices array
 	 */
-	virtual index_t* get_subset(index_t& subset_len)
+	index_t* get_subset(index_t& subset_len)
 	{
 		subset_len=m_subset_len;
 		return m_subset_idx;
 	}
+
+	bool has_subset() { return m_subset_idx!=NULL; }
 
 	/** sets the subset indices matrix which is afterwards used for feature access
 	 * (no copy, matrix is used directly)
@@ -55,7 +56,7 @@ public:
 	 * @param m_subset_idx index matrix
 	 * @param m_subset_len number of subset indices
 	 */
-	virtual void set_subset(index_t subset_len, index_t* subset_idx);
+	void set_subset(index_t subset_len, index_t* subset_idx);
 
 	/** sets the subset indices matrix which is afterwards used for feature access
 	 * (a copy of the matrix is stored)
@@ -63,9 +64,11 @@ public:
 	 * @param m_subset_idx index matrix
 	 * @param m_subset_len number of subset indices
 	 */
-	virtual void set_subset(index_t* subset_idx, index_t subset_len);
+	void set_subset(index_t* subset_idx, index_t subset_len);
 
-protected:
+	/** @return name of the SGSerializable */
+	inline const char* get_name() const { return "Subset"; }
+
 	/** returns the corresponding real index (in array) of a subset index
 	 * (if there is a subset)
 	 *
@@ -76,7 +79,7 @@ protected:
 		return m_subset_idx ? m_subset_idx[idx] : idx;
 	}
 
-protected:
+private:
 	/* subset indices */
 	index_t* m_subset_idx;
 
