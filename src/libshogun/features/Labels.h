@@ -16,6 +16,7 @@
 #include "lib/io.h"
 #include "lib/File.h"
 #include "base/SGObject.h"
+#include "features/Subset.h"
 
 namespace shogun
 {
@@ -248,7 +249,7 @@ class CLabels : public CSGObject
 	private:
 		void init();
 
-	protected:
+	public:
 		/** number of labels */
 		int32_t num_labels;
 		/** the labels */
@@ -261,6 +262,9 @@ class CLabels : public CSGObject
 		float64_t* m_confidences;
 		int32_t m_confidence_classes;
 		int32_t m_confidence_labels;
+
+		/* subset class to enable subset support for this class */
+		CSubset* m_subset;
 };
 }
 #endif

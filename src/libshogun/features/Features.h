@@ -17,6 +17,7 @@
 #include "base/SGObject.h"
 #include "preprocessor/Preprocessor.h"
 #include "features/FeatureTypes.h"
+#include "features/Subset.h"
 
 namespace shogun
 {
@@ -50,8 +51,7 @@ namespace shogun
  *   set of strings) from which all the specific features like CSimpleFeatures<float64_t>
  *   (dense real valued feature matrices) are derived.
  *
- *   It is possible to set/get/reset subset matrices.
- *   These may be used by subclasses for access to subsets of features.
+ *   Inherits from Subset to provide feature subset functionality.
  */
 class CFeatures : public CSGObject
 {
@@ -160,14 +160,6 @@ class CFeatures : public CSGObject
 		 */
 		virtual int32_t get_num_vectors()=0;
 
-		/** get number of ALL examples/vectors (no subset here)
-		 *
-		 * abstract base method
-		 *
-		 * @ return number of examples/vectors (ALL, nosubset)
-		 */
-		//virtual int32_t get_num_vectors_all()=0;
-
 		/** in case there is a feature matrix allow for reshaping
 		 *
 		 * NOT IMPLEMENTED!
@@ -243,51 +235,6 @@ class CFeatures : public CSGObject
 			properties &= (properties | p) ^ p;
 		}
 
-		/** removes (and deletes) the current subset indices matrix */
-		virtual void remove_feature_subset();
-
-		/** getter for the subset indices
-		 *
-		 * @param m_subset_idx (copy of) subset indices matrix (returned)
-		 * @param m_subset_len (copy of) number ofsubset indices (returned)
-		 */
-		void get_feature_subset(int32_t** subset_idx, int32_t* subset_len);
-
-		/** getter for the subset indices
-		 *
-		 * @param m_subset_len reference to number of subset indices (returned)
-		 * @return subset indices array
-		 */
-		int32_t* get_feature_subset(int32_t& subset_len)
-		{
-			subset_len=m_subset_len;
-			return m_subset_idx;
-		}
-
-		/** sets the subset indices matrix which is afterwards used for feature access
-		 * (no copy, matrix is used directly)
-		 *
-		 * @param m_subset_idx index matrix
-		 * @param m_subset_len number of subset indices
-		 */
-		virtual void set_feature_subset(int32_t subset_len, int32_t* subset_idx);
-
-		/** sets the subset indices matrix which is afterwards used for feature access
-		 * (a copy of the matrix is stored)
-		 *
-		 * @param m_subset_idx index matrix
-		 * @param m_subset_len number of subset indices
-		 */
-		virtual void set_feature_subset(int32_t* subset_idx, int32_t subset_len);
-
-	protected:
-		/** returns the corresponding real index (in array) of a subset index
-		 * (if there is a subset)
-		 *
-		 * @ return array index of the provided subset index
-		 */
-		inline int32_t subset_idx_conversion(int32_t idx) { return m_subset_idx ? m_subset_idx[idx] : idx; }
-
 	private:
 		/** feature properties */
 		uint64_t  properties;
@@ -304,15 +251,10 @@ class CFeatures : public CSGObject
 		/// i'th entry is true if features were already preprocessed with preproc i
 		bool* preprocessed;
 
-	protected:
-		/** (possibly) contains a matrix of indices that form a subset of the stored
-		 * features. If set, all vector access methods work on the specified subset.
-		 * If it is NULL, it is ignored.
-		 */
-		int32_t* m_subset_idx;
 
-		/** length of the subset */
-		int32_t m_subset_len;
+	public:
+		/* subset class to enable subset support for this class */
+		CSubset* m_subset;
 };
 }
 #endif

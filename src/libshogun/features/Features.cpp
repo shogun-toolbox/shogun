@@ -48,10 +48,8 @@ CFeatures::CFeatures(CFile* loader)
 
 CFeatures::~CFeatures()
 {
-	if (m_subset_idx)
-		delete[] m_subset_idx;
-
 	clean_preprocs();
+	delete m_subset;
 }
 
 void
@@ -69,16 +67,14 @@ CFeatures::init(void)
 							 &num_preproc, "preprocessed",
 							 "Feature[i] is already preprocessed.");
 
-	m_parameters->add_vector(&m_subset_idx, &m_subset_len, "subset_idx", "Subset indices.");
+	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
 
-
+	m_subset=new CSubset();
 	properties = FP_NONE;
 	cache_size = 0;
 	preproc = NULL;
 	num_preproc = 0;
 	preprocessed = NULL;
-	m_subset_idx = NULL;
-	m_subset_len = 0;
 }
 
 /// set preprocessor
@@ -282,47 +278,4 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 		result= ( (this->get_feature_class() == f->get_feature_class()) &&
 				(this->get_feature_type() == f->get_feature_type()));
 	return result;
-}
-
-void CFeatures::set_feature_subset(int32_t subset_len, int32_t* subset_idx)
-{
-	if (m_subset_idx)
-		delete[] m_subset_idx;
-
-	m_subset_idx=subset_idx;
-	m_subset_len=subset_len;
-}
-
-void CFeatures::set_feature_subset(int32_t* subset_idx, int32_t subset_len)
-{
-	ASSERT(subset_idx);
-
-	delete[] m_subset_idx;
-	m_subset_idx = NULL;
-
-	int64_t length=sizeof(int32_t)*subset_len;
-
-	m_subset_idx=(int32_t*) SG_MALLOC(length);
-
-	memcpy(m_subset_idx, subset_idx, length);
-}
-
-void CFeatures::remove_feature_subset()
-{
-	if (!m_subset_idx)
-	{
-		delete[] m_subset_idx;
-		m_subset_idx=NULL;
-		m_subset_len=0;
-	}
-}
-
-void CFeatures::get_feature_subset(int32_t** subset_idx, int32_t* subset_len)
-{
-	ASSERT(m_subset_idx);
-	int64_t length = sizeof(int32_t)*m_subset_len;
-
-	*subset_len=m_subset_len;
-	*subset_idx=(int32_t*) SG_MALLOC(length);
-	memcpy(*subset_idx, m_subset_idx, length);
 }

@@ -96,6 +96,7 @@ CLabels::~CLabels()
 	m_confidences=NULL;
 	m_confidence_classes = 0;
 	m_confidence_labels = 0;
+	delete m_subset;
 }
 
 void CLabels::init()
@@ -106,6 +107,10 @@ void CLabels::init()
 							 &m_confidence_labels, "m_confidences",
 							 "Confidence matrix.");
 
+	/* subset class is not a SGSerializable (init is done by Subset class) */
+	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
+
+	m_subset=new CSubset();
 	labels=NULL;
 	num_labels=0;;
 	m_confidences=NULL;
