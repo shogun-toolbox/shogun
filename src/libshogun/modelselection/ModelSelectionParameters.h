@@ -122,7 +122,7 @@ public:
 	 * @param result all trees of parameter combinations are put into here
 	 *
 	 */
-	void get_combinations(DynArray<CParameterCombination*>& result);
+	void get_combinations(DynArray<ParameterCombination*>& result);
 
 	/** setter for the destroy tree field. If set to true, destroy will be
 	 * called in the destructor.
@@ -140,6 +140,9 @@ public:
 	{
 		return "ModelSelectionParameters";
 	}
+
+private:
+	void init();
 
 protected:
 	/** checks if this node has children

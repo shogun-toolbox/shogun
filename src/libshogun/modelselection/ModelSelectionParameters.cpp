@@ -17,24 +17,36 @@ using namespace shogun;
 
 CModelSelectionParameters::CModelSelectionParameters()
 {
-	m_node_name=NULL;
-	m_sgobject=NULL;
-	m_destroy_tree=false;
+	init();
 }
 
-CModelSelectionParameters::CModelSelectionParameters(const char* node_name) :
-	m_node_name(node_name)
+CModelSelectionParameters::CModelSelectionParameters(const char* node_name)
 {
-	m_sgobject=NULL;
-	m_destroy_tree=false;
+	init();
+
+	m_node_name=node_name;
 }
 
 CModelSelectionParameters::CModelSelectionParameters(const char* node_name,
-		CSGObject* sgobject) :
-	m_sgobject(sgobject), m_node_name(node_name)
+		CSGObject* sgobject)
 {
+	init();
+
+	m_node_name=node_name;
+	m_sgobject=sgobject;
 	SG_REF(sgobject);
+}
+
+void CModelSelectionParameters::init()
+{
+	m_node_name=NULL;
+	m_sgobject=NULL;
 	m_destroy_tree=false;
+
+	m_parameters->add((char*)m_node_name, "node_name", "Name of node");
+	m_parameters->add((CSGObject**)&m_sgobject, "sgobject", "CSGObject of this node");
+	m_parameters->add(&m_destroy_tree, "destroy_tree",
+			"Whether tree of this node is destroyed in destructor");
 }
 
 CModelSelectionParameters::~CModelSelectionParameters()
@@ -143,7 +155,7 @@ void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 }
 
 void CModelSelectionParameters::get_combinations(
-		DynArray<CParameterCombination*>& result)
+		DynArray<ParameterCombination*>& result)
 {
 	/* leaf case: node with values and no children.
 	 * build trees of Parameter instances which each contain one value
@@ -156,7 +168,7 @@ void CModelSelectionParameters::get_combinations(
 			Parameter* p=new Parameter();
 			p->add(&m_values.vector[i], m_node_name);
 
-			result.append_element(new CParameterCombination(p));
+			result.append_element(new ParameterCombination(p));
 		}
 	}
 	/* two cases here, similar
@@ -187,33 +199,33 @@ void CModelSelectionParameters::get_combinations(
 			}
 
 			/* extract all tree sets of all leaf children */
-			DynArray<DynArray<CParameterCombination*>*> leaf_sets;
+			DynArray<DynArray<ParameterCombination*>*> leaf_sets;
 			for (index_t i=0; i<leaf_children.get_num_elements(); ++i)
 			{
 				/* temporary DynArray instance */
 				leaf_sets.append_element(
-						new DynArray<CParameterCombination*> ());
+						new DynArray<ParameterCombination*> ());
 
 				/* recursively get all combinations and put into above array */
 				leaf_children[i]->get_combinations(*leaf_sets[i]);
 			}
 
 			/* build product of all these tree sets */
-			DynArray<CParameterCombination*> leaf_combinations;
+			DynArray<ParameterCombination*> leaf_combinations;
 
 			/* new root node is needed for new trees, depends on current case */
-			CParameterCombination* new_root=NULL;
+			ParameterCombination* new_root=NULL;
 			if (m_sgobject)
 			{
 				Parameter* p=new Parameter();
 				p->add(&m_sgobject, m_node_name);
-				new_root=new CParameterCombination(p);
+				new_root=new ParameterCombination(p);
 			}
 			else
-				new_root=new CParameterCombination();
+				new_root=new ParameterCombination();
 
 			/* above created DynArray instances are deleted by this call */
-			CParameterCombination::leaf_sets_multiplication(leaf_sets,
+			ParameterCombination::leaf_sets_multiplication(leaf_sets,
 					new_root, leaf_combinations);
 
 			/* if there are no non-leaf sets, just use the above result */
@@ -224,13 +236,13 @@ void CModelSelectionParameters::get_combinations(
 			else
 			{
 				/* extract all tree sets of non-leaf nodes */
-				DynArray<DynArray<CParameterCombination*>*>
+				DynArray<DynArray<ParameterCombination*>*>
 						non_leaf_combinations;
 				for (index_t i=0; i<non_leaf_children.get_num_elements(); ++i)
 				{
 					/* temporary DynArray instance */
 					non_leaf_combinations.append_element(
-							new DynArray<CParameterCombination*> ());
+							new DynArray<ParameterCombination*> ());
 
 					/* recursively get all combinations and put into above
 					 * array */
@@ -252,18 +264,18 @@ void CModelSelectionParameters::get_combinations(
 					for (index_t j=0; j
 							<non_leaf_combinations.get_num_elements(); ++j)
 					{
-						DynArray<CParameterCombination*>* current_non_leaf_set=
+						DynArray<ParameterCombination*>* current_non_leaf_set=
 								non_leaf_combinations[j];
 
 						for (index_t k=0; k
 								<current_non_leaf_set->get_num_elements(); ++k)
 						{
-							CParameterCombination* current_non_leaf_tree=
+							ParameterCombination* current_non_leaf_tree=
 									current_non_leaf_set->get_element(k);
 
 							/* append new root with rest of tree to current
 							 * tree. re-use of new_root variable, safe here */
-							new_root=new CParameterCombination();
+							new_root=new ParameterCombination();
 							new_root->append_child(current_non_leaf_tree);
 							result.append_element(new_root);
 						}
@@ -276,19 +288,19 @@ void CModelSelectionParameters::get_combinations(
 				{
 					for (index_t i=0; i<leaf_combinations.get_num_elements(); ++i)
 					{
-						CParameterCombination* current_leaf_tree=
+						ParameterCombination* current_leaf_tree=
 								leaf_combinations[i];
 						for (index_t j=0; j
 								<non_leaf_combinations.get_num_elements(); ++j)
 						{
-							DynArray<CParameterCombination*>
+							DynArray<ParameterCombination*>
 									* current_non_leaf_set=
 											non_leaf_combinations[j];
 
 							for (index_t k=0; k
 									<current_non_leaf_set->get_num_elements(); ++k)
 							{
-								CParameterCombination* current_non_leaf_tree=
+								ParameterCombination* current_non_leaf_tree=
 										current_non_leaf_set->get_element(k);
 
 								/* copy the current trees and append non-leaf
@@ -296,9 +308,9 @@ void CModelSelectionParameters::get_combinations(
 								 * non-leaf tree is already the current
 								 * CSGObject and therefore the non-leaf tree
 								 * copy may just be appended as child */
-								CParameterCombination* leaf_copy=
+								ParameterCombination* leaf_copy=
 										current_leaf_tree->copy_tree();
-								CParameterCombination* non_leaf_copy=
+								ParameterCombination* non_leaf_copy=
 										current_non_leaf_tree->copy_tree();
 
 								leaf_copy->append_child(non_leaf_copy);
@@ -315,7 +327,7 @@ void CModelSelectionParameters::get_combinations(
 					for (index_t i=0; i
 							<non_leaf_combinations.get_num_elements(); ++i)
 					{
-						DynArray<CParameterCombination*>* current_non_leaf_set=
+						DynArray<ParameterCombination*>* current_non_leaf_set=
 								non_leaf_combinations[i];
 
 						for (index_t j=0; j
@@ -352,14 +364,14 @@ void CModelSelectionParameters::get_combinations(
 		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
 		{
 			/* recursively get all combinations of the current child */
-			DynArray<CParameterCombination*> child_combinations;
+			DynArray<ParameterCombination*> child_combinations;
 			m_child_nodes[i]->get_combinations(child_combinations);
 
 			/* and process them each */
 			for (index_t j=0; j<child_combinations.get_num_elements(); ++j)
 			{
 				/* append new root node with the name */
-				CParameterCombination* new_root=new CParameterCombination(
+				ParameterCombination* new_root=new ParameterCombination(
 						m_node_name);
 				new_root->append_child(child_combinations[j]);
 				child_combinations.set_element(new_root, j);
