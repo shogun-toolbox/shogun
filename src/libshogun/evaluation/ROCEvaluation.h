@@ -54,12 +54,10 @@ public:
 	 */
 	float64_t get_auROC();
 
-	/** get ROC (swig)
-	 * @param result matrix of ROC graph
-	 * @param num number of points in ROC graph
-	 * @param dim dimensionality (always 2)
+	/** get ROC
+	 * @return ROC graph matrix
 	 */
-	void get_ROC(float64_t** result, int32_t* num, int32_t* dim);
+	SGMatrix<float64_t> get_ROC();
 
 protected:
 

@@ -68,9 +68,9 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 			tp += 1.0;
 
 		// precision (x)
-		m_PRC_graph[i] = tp/(i+1);
+		m_PRC_graph[2*i] = tp/(i+1);
 		// recall (y)
-		m_PRC_graph[length+i] = tp/pos_count;
+		m_PRC_graph[2*i+1] = tp/pos_count;
 	}
 
 	// calc auRPC using area under curve
@@ -83,17 +83,14 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	return m_auPRC;
 }
 
-void CPRCEvaluation::get_PRC(float64_t** result, int32_t* num, int32_t* dim)
+SGMatrix<float64_t> CPRCEvaluation::get_PRC()
 {
 	if (!m_computed)
 		SG_ERROR("Uninitialized, please call evaluate first");
 
 	ASSERT(m_PRC_graph);
-	*num = m_PRC_length;
-	*dim = 2;
 
-	*result = (float64_t*) SG_MALLOC(sizeof(float64_t)*m_PRC_length*2);
-	memcpy(*result, m_PRC_graph, m_PRC_length*2*sizeof(float64_t));
+	return SGMatrix<float64_t>(m_PRC_graph,2,m_PRC_length);
 }
 
 float64_t CPRCEvaluation::get_auPRC()
