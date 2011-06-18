@@ -1,7 +1,8 @@
 from numpy import random
+from tools.load import LoadMatrix
 
-random.seed(17)
-data = random.randn(10,100)
+lm=LoadMatrix()
+data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
@@ -12,7 +13,7 @@ def preprocessor_classicmds_modular(data):
 	features = RealFeatures(data)
 		
 	preprocessor = ClassicMDS()
-	preprocessor.set_target_dim(3)
+	preprocessor.set_target_dim(1)
 	preprocessor.apply_to_feature_matrix(features)
 
 	return features
