@@ -208,6 +208,7 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 float64_t* CLocallyLinearEmbedding::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
 	SG_NOTIMPLEMENTED;
+	return NULL;
 }
 
 #endif /* HAVE_LAPACK */
