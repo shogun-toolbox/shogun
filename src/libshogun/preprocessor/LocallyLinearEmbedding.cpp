@@ -89,7 +89,6 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	float64_t* z_matrix = new float64_t[N*dim];
 	float64_t* covariance_matrix = new float64_t[m_k*m_k];
 	float64_t* id_vector = new float64_t[m_k];
-	int32_t* ipiv = new int32_t[m_k];
 	float64_t norming = 0.0;
 
 	// get feature matrix
@@ -136,11 +135,8 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 		}
 
 		// solve system of linear equations: covariance_matrix * X = 1
-		clapack_dgesv(CblasColMajor,
-		              m_k,1,
-		              covariance_matrix,m_k,
-		              ipiv,
-		              id_vector,m_k);
+		// covariance_matrix is a pos-def matrix
+		clapack_dposv(CblasColMajor,CblasLower,m_k,1,covariance_matrix,m_k,id_vector,m_k);
 
 		// normalize weights
 		norming=0.0;
@@ -157,7 +153,6 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	}
 
 	// clean
-	delete[] ipiv;
 	delete[] id_vector;
 	delete[] neighborhood_matrix;
 	delete[] z_matrix;
