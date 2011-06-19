@@ -10,7 +10,6 @@
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/LogPlusOne.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
-#include <shogun/preprocessor/NormDerivativeLem3.h>
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
