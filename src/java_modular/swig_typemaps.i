@@ -82,7 +82,7 @@ import org.jblas.*;
 %typemap(out) shogun::SGVector<SGTYPE>
 {
 	int32_t rows = 1;
-	int32_t cols = $1.length;
+	int32_t cols = $1.vlen;
 	JNITYPE arr[cols];
 	jobject res;
 	int32_t i;
@@ -269,7 +269,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 			max_len = shogun::CMath::max(len, max_len);
 
 			strings[i].length=len;
-          strings[i].string=NULL;
+            strings[i].string=NULL;
 			
 			if (len >0) {
 				strings[i].string = new SGTYPE[len];

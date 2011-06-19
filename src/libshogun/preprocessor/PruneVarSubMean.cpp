@@ -188,8 +188,8 @@ SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t
 	}
 	else
 	{
-		ret=new float64_t[vector.length] ;
-		for (int32_t i=0; i<vector.length; i++)
+		ret=new float64_t[vector.vlen] ;
+		for (int32_t i=0; i<vector.vlen; i++)
 			ret[i]=vector.vector[i];
 	}
 

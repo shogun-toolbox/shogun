@@ -229,12 +229,12 @@ SGMatrix<float64_t> CPCACut::apply_to_feature_matrix(CFeatures* features)
 SGVector<float64_t> CPCACut::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t *ret=new float64_t[num_dim];
-	float64_t *sub_mean=new float64_t[vector.length];
-	for (int32_t i=0; i<vector.length; i++)
+	float64_t *sub_mean=new float64_t[vector.vlen];
+	for (int32_t i=0; i<vector.vlen; i++)
 		sub_mean[i]=vector.vector[i]-mean[i];
 
 	int nd = (int) num_dim;  /* calling external lib */
-	cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) vector.length, 1.0, (double*) T,
+	cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) vector.vlen, 1.0, (double*) T,
 		nd, (double*) sub_mean, 1, 0, (double*) ret, 1);
 
 	delete[] sub_mean;

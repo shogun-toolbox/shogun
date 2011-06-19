@@ -37,12 +37,6 @@
 %import "Distance.i"
 %import "Classifier.i"
 
-/* Typemaps */
-%apply (int32_t** ARGOUT1, int32_t* DIM1) {(int32_t** svs, int32_t* num)};
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** alphas, int32_t* d1)};
-%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* alphas, int32_t d)};
-%apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* svs, int32_t d)};
-
 /* Remove C Prefix */
 %rename(BaseRegression) CRegression;
 %rename(Machine) CMachine;

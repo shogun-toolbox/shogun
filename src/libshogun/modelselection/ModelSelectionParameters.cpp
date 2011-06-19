@@ -103,9 +103,7 @@ void CModelSelectionParameters::set_values(SGVector<float64_t> values)
 {
 	/* possibly delete old range values */
 	delete[] m_values.vector;
-
-	m_values.vector=values.vector;
-	m_values.length=values.length;
+	m_values=values;
 }
 
 void CModelSelectionParameters::set_range(float64_t min, float64_t max,
@@ -125,7 +123,7 @@ void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 
 	/* create value vector */
 	index_t num_values=CMath::round(max-min)/step+1;
-	m_values.length=num_values;
+	m_values.vlen=num_values;
 	m_values.vector=new float64_t[num_values];
 
 	/* fill array */
@@ -162,7 +160,7 @@ void CModelSelectionParameters::get_combinations(
 	 */
 	if (m_values.vector)
 	{
-		for (index_t i=0; i<m_values.length; ++i)
+		for (index_t i=0; i<m_values.vlen; ++i)
 		{
 			/* create tree with only one parameter element */
 			Parameter* p=new Parameter();
@@ -416,7 +414,7 @@ void CModelSelectionParameters::print(int prefix_num)
 		else
 		{
 			SG_PRINT("%s%s with values: ", prefix, m_node_name);
-			CMath::display_vector(m_values.vector, m_values.length);
+			CMath::display_vector(m_values.vector, m_values.vlen);
 		}
 	}
 

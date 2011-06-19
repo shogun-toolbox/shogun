@@ -130,8 +130,8 @@ void CLabels::set_labels(SGVector<float64_t> v)
 
 	delete[] labels;
 	labels=v.vector;
-	num_labels=v.length;
-	num_labels_total=v.length;
+	num_labels=v.vlen;
+	num_labels_total=v.vlen;
 }
 
 void CLabels::set_labels(float64_t* p_labels, int32_t len)
