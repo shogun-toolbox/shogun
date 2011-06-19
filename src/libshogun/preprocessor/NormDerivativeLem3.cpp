@@ -25,10 +25,10 @@ CNormDerivativeLem3::~CNormDerivativeLem3()
 }
 
 /// initialize preprocessor from features
-bool CNormDerivativeLem3::init(CFeatures* f)
+bool CNormDerivativeLem3::init(CFeatures* features)
 {
-	ASSERT(f->get_feature_class()==C_SIMPLE);
-	ASSERT(f->get_feature_type()==F_DREAL);
+	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_type()==F_DREAL);
 
 	return true;
 }
@@ -57,17 +57,16 @@ bool CNormDerivativeLem3::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-float64_t* CNormDerivativeLem3::apply_to_feature_matrix(CFeatures* f)
+SGMatrix<float64_t> CNormDerivativeLem3::apply_to_feature_matrix(CFeatures* features)
 {
-	return NULL;
+	return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-float64_t* CNormDerivativeLem3::apply_to_feature_vector(
-	float64_t* f, int32_t& len)
+SGVector<float64_t> CNormDerivativeLem3::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	return NULL;
+	return vector;
 }
 
 //#warning TODO implement jahau 

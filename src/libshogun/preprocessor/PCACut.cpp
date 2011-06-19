@@ -44,16 +44,16 @@ CPCACut::~CPCACut()
 }
 
 /// initialize preprocessor from features
-bool CPCACut::init(CFeatures* f)
+bool CPCACut::init(CFeatures* features)
 {
 	if (!initialized)
 	{
-		ASSERT(f->get_feature_class()==C_SIMPLE);
-		ASSERT(f->get_feature_type()==F_DREAL);
+		ASSERT(features->get_feature_class()==C_SIMPLE);
+		ASSERT(features->get_feature_type()==F_DREAL);
 
 		SG_INFO("calling CPCACut::init\n") ;
-		int32_t num_vectors=((CSimpleFeatures<float64_t>*)f)->get_num_vectors() ;
-		int32_t num_features=((CSimpleFeatures<float64_t>*)f)->get_num_features() ;
+		int32_t num_vectors=((CSimpleFeatures<float64_t>*)features)->get_num_vectors();
+		int32_t num_features=((CSimpleFeatures<float64_t>*)features)->get_num_features();
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		delete[] mean ;
 		mean=new float64_t[num_features];
@@ -65,18 +65,14 @@ bool CPCACut::init(CFeatures* f)
 
 		// clear
 		for (j=0; j<num_features; j++)
-			mean[j]=0 ; 
+			mean[j]=0;
 
 		// sum 
+		SGMatrix<float64_t> feature_matrix = ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 		for (i=0; i<num_vectors; i++)
 		{
-			int32_t len;
-			bool free;
-			float64_t* vec=((CSimpleFeatures<float64_t>*) f)->get_feature_vector(i, len, free);
 			for (j=0; j<num_features; j++)
-				mean[j]+= vec[j];
-
-			((CSimpleFeatures<float64_t>*) f)->free_feature_vector(vec, i, free);
+				mean[j]+= feature_matrix.matrix[i*num_features+j];
 		}
 
 		//divide
@@ -96,19 +92,13 @@ bool CPCACut::init(CFeatures* f)
 			if (!(i % (num_vectors/10+1)))
 				SG_PROGRESS(i, 0, num_vectors);
 
-			int32_t len;
-			bool free;
-
-			float64_t* vec=((CSimpleFeatures<float64_t>*) f)->get_feature_vector(i, len, free) ;
             for (int32_t jj=0; jj<num_features; jj++)
-                sub_mean[jj]=vec[jj]-mean[jj];
+                sub_mean[jj]=feature_matrix.matrix[i*num_features+jj]-mean[jj];
 
             /// A = 1.0*xy^T+A blas
             int nf = (int) num_features; /* calling external lib */
             cblas_dger(CblasColMajor, nf, nf, 1.0, sub_mean, 1, sub_mean,
                     1, (double*) cov, nf);
-
-            ((CSimpleFeatures<float64_t>*) f)->free_feature_vector(vec, i, free) ;
 		}
         delete[] sub_mean;
 
@@ -197,15 +187,14 @@ void CPCACut::cleanup()
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
+SGMatrix<float64_t> CPCACut::apply_to_feature_matrix(CFeatures* features)
 {
-	int32_t num_vectors=0;
-	int32_t num_features=0;
-
-	float64_t* m=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
+	SGMatrix<float64_t> m = ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix();
+	int32_t num_vectors = m.num_cols;
+	int32_t num_features = m.num_rows;
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features);
 
-	if (m)
+	if (m.matrix)
 	{
 		SG_INFO("Preprocessing feature matrix\n");
 		float64_t* res= new float64_t[num_dim];
@@ -216,20 +205,20 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 			int32_t i;
 
 			for (i=0; i<num_features; i++)
-				sub_mean[i]=m[num_features*vec+i]-mean[i];
+				sub_mean[i]=m.matrix[num_features*vec+i]-mean[i];
 
 			cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, (int) num_features,
 				1.0, T, num_dim, (double*) sub_mean, 1, 0, (double*) res, 1);
 
-			float64_t* m_transformed=&m[num_dim*vec];
+			float64_t* m_transformed=&m.matrix[num_dim*vec];
 			for (i=0; i<num_dim; i++)
 				m_transformed[i]=res[i];
 		}
 		delete[] res;
 		delete[] sub_mean;
 
-		((CSimpleFeatures<float64_t>*) f)->set_num_features(num_dim);
-		((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
+		((CSimpleFeatures<float64_t>*) features)->set_num_features(num_dim);
+		((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 		SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features);
 	}
 
@@ -237,20 +226,19 @@ float64_t* CPCACut::apply_to_feature_matrix(CFeatures* f)
 }
 
 /// apply preproc to single feature vector
-float64_t* CPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
+SGVector<float64_t> CPCACut::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t *ret=new float64_t[num_dim];
-	float64_t *sub_mean=new float64_t[len];
-	for (int32_t i=0; i<len; i++)
-		sub_mean[i]=f[i]-mean[i];
+	float64_t *sub_mean=new float64_t[vector.length];
+	for (int32_t i=0; i<vector.length; i++)
+		sub_mean[i]=vector.vector[i]-mean[i];
 
 	int nd = (int) num_dim;  /* calling external lib */
-	cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) len, 1.0, (double*) T,
+	cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) vector.length, 1.0, (double*) T,
 		nd, (double*) sub_mean, 1, 0, (double*) ret, 1);
 
 	delete[] sub_mean;
-	len=num_dim;
-	return ret;
+	return SGVector<float64_t>(ret,num_dim);
 }
 
 void CPCACut::get_transformation_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim)

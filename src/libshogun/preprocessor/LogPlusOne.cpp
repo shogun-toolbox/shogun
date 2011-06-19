@@ -27,10 +27,10 @@ CLogPlusOne::~CLogPlusOne()
 }
 
 /// initialize preprocessor from features
-bool CLogPlusOne::init(CFeatures* f)
+bool CLogPlusOne::init(CFeatures* features)
 {
-	ASSERT(f->get_feature_class()==C_SIMPLE);
-	ASSERT(f->get_feature_type()==F_DREAL);
+	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_type()==F_DREAL);
 
 	return true;
 }
@@ -59,32 +59,28 @@ bool CLogPlusOne::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-float64_t* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
+SGMatrix<float64_t> CLogPlusOne::apply_to_feature_matrix(CFeatures* features)
 {
-	int32_t i,j;
-	int32_t num_vec;
-	int32_t num_feat;
-	float64_t* matrix=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_feat, num_vec);
+	SGMatrix<float64_t> feature_matrix =
+			((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 
-	for (i=0; i<num_vec; i++)
+	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 	{
-		float64_t* vec=&matrix[i*num_feat];
-
-		for (j=0; j<num_feat; j++)
-			vec[j]=log(vec[j]+1);
+		for (int32_t j=0; j<feature_matrix.num_rows; j++)
+			feature_matrix.matrix[i*feature_matrix.num_rows+j] =
+					CMath::log(feature_matrix.matrix[i*feature_matrix.num_rows+j]);
 	}
-	return matrix;
+	return feature_matrix;
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-float64_t* CLogPlusOne::apply_to_feature_vector(float64_t* f, int32_t& len)
+SGVector<float64_t> CLogPlusOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* vec=new float64_t[len];
-	int32_t i=0;
+	float64_t* log_vec = new float64_t[vector.length];
 
-	for (i=0; i<len; i++)
-		vec[i]=log(f[i]+1);
+	for (int32_t i=0; i<vector.length; i++)
+		log_vec[i]=CMath::log(vector.vector[i]+1.0);
 
-	return vec;
+	return SGVector<float64_t>(log_vec,vector.length);
 }

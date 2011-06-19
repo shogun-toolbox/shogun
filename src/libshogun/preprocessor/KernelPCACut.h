@@ -51,18 +51,18 @@ class CKernelPCACut : public CSimplePreprocessor<float64_t>
 		virtual ~CKernelPCACut();
 
 		/// initialize preprocessor from features
-		virtual bool init(CFeatures* f);
+		virtual bool init(CFeatures* features);
 		/// cleanup
 		virtual void cleanup();
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual float64_t* apply_to_feature_matrix(CFeatures* f);
+		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
+		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 		void set_kernel(CKernel* k)
 		{

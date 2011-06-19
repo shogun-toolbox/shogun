@@ -41,12 +41,11 @@ template <class ST> class CSimplePreprocessor : public CPreprocessor
 		/// apply preproc on feature matrix
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual ST* apply_to_feature_matrix(CFeatures* f)=0;
+		virtual SGMatrix<ST> apply_to_feature_matrix(CFeatures* features)=0;
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-
-		virtual ST* apply_to_feature_vector(ST* f, int32_t &len)=0;
+		virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector)=0;
 
 		/// return that we are simple features (just fixed size matrices)
 		virtual inline EFeatureClass get_feature_class() { return C_SIMPLE; }

@@ -47,16 +47,16 @@ CKernelPCACut::~CKernelPCACut()
 }
 
 /// initialize preprocessor from features
-bool CKernelPCACut::init(CFeatures* f)
+bool CKernelPCACut::init(CFeatures* features)
 {
 	if (!initialized && kernel)
 	{
-		ASSERT(f->get_feature_class()==C_SIMPLE);
-		ASSERT(f->get_feature_type()==F_DREAL);
+		ASSERT(features->get_feature_class()==C_SIMPLE);
+		ASSERT(features->get_feature_type()==F_DREAL);
 
 		int32_t n=0;
 		int32_t m=0;
-		kernel->init(f,f);
+		kernel->init(features,features);
 		float64_t* km = kernel->get_kernel_matrix(m, n, (float64_t*) NULL);
 		ASSERT(n==m);
 
@@ -107,11 +107,10 @@ bool CKernelPCACut::init(CFeatures* f)
 		delete[] bias_tmp;
 
 		initialized=true;
-		SG_INFO("Done\n") ;
-		return true ;
+		SG_INFO("Done\n");
+		return true;
 	}
-	return 
-		false;
+	return false;
 }
 
 /// initialize preprocessor from features
@@ -124,7 +123,7 @@ void CKernelPCACut::cleanup()
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-float64_t* CKernelPCACut::apply_to_feature_matrix(CFeatures* f)
+SGMatrix<float64_t> CKernelPCACut::apply_to_feature_matrix(CFeatures* features)
 {
 	/*
 	int32_t num_vectors=0;
@@ -164,12 +163,12 @@ float64_t* CKernelPCACut::apply_to_feature_matrix(CFeatures* f)
 
 	return m;
 */
-	return NULL;
+	return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-float64_t* CKernelPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
+SGVector<float64_t> CKernelPCACut::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	/*
 	float64_t *ret=new float64_t[num_dim];
@@ -202,7 +201,7 @@ float64_t* CKernelPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 	}
 	*/
 
-	return NULL;
+	return vector;
 }
 
 void CKernelPCACut::get_transformation_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim)

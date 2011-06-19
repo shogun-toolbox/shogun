@@ -10,6 +10,7 @@
 
 #include "preprocessor/Isomap.h"
 #ifdef HAVE_LAPACK
+#include "preprocessor/DimensionReductionPreprocessor.h"
 #include "lib/lapack.h"
 #include "preprocessor/ClassicMDS.h"
 #include "lib/common.h"
@@ -29,7 +30,7 @@ CIsomap::~CIsomap()
 {
 }
 
-bool CIsomap::init(CFeatures* data)
+bool CIsomap::init(CFeatures* features)
 {
 	return true;
 }
@@ -61,29 +62,33 @@ CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)
 {
 	ASSERT(distance);
 
-	SGMatrix<float64_t> features;
-	CClassicMDS::apply_to_distance(approx_geodesic_distance(distance),features);
-	CSimpleFeatures<float64_t>* new_features = new CSimpleFeatures<float64_t>();
-	new_features->set_feature_matrix(features);
+	SGMatrix<float64_t> new_feature_matrix =
+			embed_by_distance(approx_geodesic_distance(distance));
+
+	CSimpleFeatures<float64_t>* new_features =
+			new CSimpleFeatures<float64_t>(new_feature_matrix);
 
 	return new_features;
 }
 
 
-float64_t* CIsomap::apply_to_feature_matrix(CFeatures* data)
+SGMatrix<float64_t> CIsomap::apply_to_feature_matrix(CFeatures* features)
 {
-	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
-	CDistance* distance = new CEuclidianDistance(pdata,pdata);
+	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
 
-	SGMatrix<float64_t> features;
-	CClassicMDS::apply_to_distance(approx_geodesic_distance(distance),features);
+	SGMatrix<float64_t> new_feature_matrix =
+			embed_by_distance(approx_geodesic_distance(distance));
 
-	pdata->set_feature_matrix(features);
-	return features.matrix;
+	simple_features->set_feature_matrix(new_feature_matrix);
+
+	return new_feature_matrix;
 }
 
-float64_t* CIsomap::apply_to_feature_vector(float64_t* f, int32_t &len)
+SGVector<float64_t> CIsomap::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SG_NOTIMPLEMENTED;
+	return vector;
 }
+
 #endif /* HAVE_LAPACK */
