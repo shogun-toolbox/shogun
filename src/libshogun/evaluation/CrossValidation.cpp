@@ -12,6 +12,7 @@
 #include "machine/Machine.h"
 #include "evaluation/Evaluation.h"
 #include "evaluation/SplittingStrategy.h"
+#include "base/Parameter.h"
 
 using namespace shogun;
 
@@ -102,11 +103,8 @@ float64_t CCrossValidation::evaluate_one_run()
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
 	float64_t* results=new float64_t[num_subsets];
 
-	/* backup feature and label subsets */
-	SGVector<index_t> feature_subset;
-	SGVector<index_t> label_subset;
-	feature_subset.vector=m_features->m_subset->get_subset(feature_subset.length);
-	label_subset.vector=m_labels->m_subset->get_subset(label_subset.length);
+	/* set labels to machine */
+	m_machine->set_labels(m_labels);
 
 	/* do actual cross-validation */
 	for (index_t i=0; i<num_subsets; ++i)
@@ -114,8 +112,21 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* set feature subset for training (use method that stores pointer) */
 		SGVector<index_t> inverse_subset_indices;
 		m_splitting_strategy->generate_subset_inverse(i, inverse_subset_indices);
-		m_features->m_subset->set_subset(inverse_subset_indices.length,
+		m_features->set_subset(inverse_subset_indices.length,
 				inverse_subset_indices.vector);
+
+		/* set label subset for training (copy data before) */
+		SGVector<index_t> inverse_subset_indices_copy(
+				new index_t[inverse_subset_indices.length],
+				inverse_subset_indices.length);
+		memcpy(inverse_subset_indices_copy.vector,
+				inverse_subset_indices.vector,
+				inverse_subset_indices.length*sizeof(index_t));
+		m_labels->set_subset(inverse_subset_indices_copy.length,
+				inverse_subset_indices_copy.vector);
+
+		SG_PRINT("%d %d\n", m_labels->get_num_labels(), m_features->get_num_vectors());
+		SG_PRINT("%d %d\n", inverse_subset_indices_copy.length, inverse_subset_indices.length);
 
 		/* train machine on training features */
 		m_machine->train(m_features);
@@ -123,18 +134,17 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* set feature subset for testing (subset method that stores pointer) */
 		SGVector<index_t> subset_indices;
 		m_splitting_strategy->generate_subset_indices(i, subset_indices);
-		m_features->m_subset->set_subset(subset_indices.length, subset_indices.vector);
+		m_features->set_subset(subset_indices.length, subset_indices.vector);
 
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
 
-		/* set label subset for testing (copy first index vector, subset method
-		 * that stores pointer) */
+		/* set label subset for testing (copy data before) */
 		SGVector<index_t> subset_indices_copy(
 				new index_t[subset_indices.length], subset_indices.length);
 		memcpy(subset_indices_copy.vector, subset_indices.vector,
 				subset_indices.length*sizeof(index_t));
-		m_labels->m_subset->set_subset(subset_indices_copy.length,
+		m_labels->set_subset(subset_indices_copy.length,
 				subset_indices_copy.vector);
 
 		/* evaluate */
@@ -142,13 +152,9 @@ float64_t CCrossValidation::evaluate_one_run()
 
 		/* clean up, reset subsets */
 		SG_UNREF(result_labels);
-		m_features->m_subset->remove_subset();
-		m_labels->m_subset->remove_subset();
+		m_features->remove_subset();
+		m_labels->remove_subset();
 	}
-
-	/* restore feature and label subsets (use method that stores pointer) */
-	m_features->m_subset->set_subset(feature_subset.length, feature_subset.vector);
-	m_labels->m_subset->set_subset(label_subset.length, label_subset.vector);
 
 	/* build arithmetic mean of results */
 	float64_t mean=CMath::mean(results, num_subsets);
