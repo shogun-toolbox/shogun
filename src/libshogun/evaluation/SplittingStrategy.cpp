@@ -47,7 +47,7 @@ void CSplittingStrategy::generate_subset_indices(index_t subset_idx,
 
 	/* fill result vector */
 	result.vector=new index_t[num_elements];
-	result.length=num_elements;
+	result.vlen=num_elements;
 
 	/* copy data */
 	memcpy(result.vector, to_copy->get_array(), sizeof(index_t)*num_elements);
@@ -59,8 +59,8 @@ void CSplittingStrategy::generate_subset_inverse(index_t subset_idx,
 	DynArray<index_t>* to_invert=m_subset_indices.get_element_safe(subset_idx);
 
 	/* fill result vector */
-	result.length=m_labels->get_num_labels()-to_invert->get_num_elements();
-	result.vector=new index_t[result.length];
+	result.vlen=m_labels->get_num_labels()-to_invert->get_num_elements();
+	result.vector=new index_t[result.vlen];
 
 	index_t index=0;
 	for (index_t i=0; i<m_labels->get_num_labels(); ++i)

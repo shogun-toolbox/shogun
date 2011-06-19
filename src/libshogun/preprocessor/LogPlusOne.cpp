@@ -77,10 +77,10 @@ SGMatrix<float64_t> CLogPlusOne::apply_to_feature_matrix(CFeatures* features)
 /// result in feature matrix
 SGVector<float64_t> CLogPlusOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* log_vec = new float64_t[vector.length];
+	float64_t* log_vec = new float64_t[vector.vlen];
 
-	for (int32_t i=0; i<vector.length; i++)
+	for (int32_t i=0; i<vector.vlen; i++)
 		log_vec[i]=CMath::log(vector.vector[i]+1.0);
 
-	return SGVector<float64_t>(log_vec,vector.length);
+	return SGVector<float64_t>(log_vec,vector.vlen);
 }

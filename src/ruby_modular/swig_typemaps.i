@@ -36,9 +36,9 @@
 
 %typemap(out) shogun::SGVector<SGTYPE> {
 	int32_t i;
-	VALUE arr = rb_ary_new2($1.length);
+	VALUE arr = rb_ary_new2($1.vlen);
 
-	for (i = 0; i < $1.length; i++)
+	for (i = 0; i < $1.vlen; i++)
 		rb_ary_push(arr, SG2R($1.vector[i]));
 
 	$result = arr;

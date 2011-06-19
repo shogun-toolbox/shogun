@@ -86,7 +86,6 @@ namespace shogun
 }
 
 /* Hash */
-%apply (uint8_t* IN_ARRAY1, int32_t DIM1) {(uint8_t* data, int32_t len)};
 %include <shogun/lib/Hash.h>
 
 /* Template Class Array */

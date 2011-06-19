@@ -40,12 +40,6 @@
 %import "Features.i"
 %import "Distance.i"
 
-/* Typemaps */
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** radii, int32_t* num)};
-%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** centers, int32_t* dim, int32_t* num)};
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dist, int32_t* num)};
-%apply (int32_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(int32_t** tuples, int32_t* rows, int32_t* num)};
-
 /* Remove C Prefix */
 %rename(DistanceMachine) CDistanceMachine;
 %rename(Hierarchical) CHierarchical;

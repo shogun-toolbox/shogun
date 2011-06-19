@@ -112,21 +112,21 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* set feature subset for training (use method that stores pointer) */
 		SGVector<index_t> inverse_subset_indices;
 		m_splitting_strategy->generate_subset_inverse(i, inverse_subset_indices);
-		m_features->set_subset(inverse_subset_indices.length,
+		m_features->set_subset(inverse_subset_indices.vlen,
 				inverse_subset_indices.vector);
 
 		/* set label subset for training (copy data before) */
 		SGVector<index_t> inverse_subset_indices_copy(
-				new index_t[inverse_subset_indices.length],
-				inverse_subset_indices.length);
+				new index_t[inverse_subset_indices.vlen],
+				inverse_subset_indices.vlen);
 		memcpy(inverse_subset_indices_copy.vector,
 				inverse_subset_indices.vector,
-				inverse_subset_indices.length*sizeof(index_t));
-		m_labels->set_subset(inverse_subset_indices_copy.length,
+				inverse_subset_indices.vlen*sizeof(index_t));
+		m_labels->set_subset(inverse_subset_indices_copy.vlen,
 				inverse_subset_indices_copy.vector);
 
 		SG_PRINT("%d %d\n", m_labels->get_num_labels(), m_features->get_num_vectors());
-		SG_PRINT("%d %d\n", inverse_subset_indices_copy.length, inverse_subset_indices.length);
+		SG_PRINT("%d %d\n", inverse_subset_indices_copy.vlen, inverse_subset_indices.vlen);
 
 		/* train machine on training features */
 		m_machine->train(m_features);
@@ -134,17 +134,17 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* set feature subset for testing (subset method that stores pointer) */
 		SGVector<index_t> subset_indices;
 		m_splitting_strategy->generate_subset_indices(i, subset_indices);
-		m_features->set_subset(subset_indices.length, subset_indices.vector);
+		m_features->set_subset(subset_indices.vlen, subset_indices.vector);
 
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
 
 		/* set label subset for testing (copy data before) */
 		SGVector<index_t> subset_indices_copy(
-				new index_t[subset_indices.length], subset_indices.length);
+				new index_t[subset_indices.vlen], subset_indices.vlen);
 		memcpy(subset_indices_copy.vector, subset_indices.vector,
-				subset_indices.length*sizeof(index_t));
-		m_labels->set_subset(subset_indices_copy.length,
+				subset_indices.vlen*sizeof(index_t));
+		m_labels->set_subset(subset_indices_copy.vlen,
 				subset_indices_copy.vector);
 
 		/* evaluate */

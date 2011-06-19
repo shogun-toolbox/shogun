@@ -24,19 +24,19 @@ typedef int32_t index_t;
 template<class T> struct SGVector
 {
 	/** default constructor */
-	SGVector() : vector(NULL), length(0) { }
+	SGVector() : vector(NULL), vlen(0) { }
 
 	/** constructor for setting params */
-	SGVector(T* v, index_t len) : vector(v), length(len) { }
+	SGVector(T* v, index_t len) : vector(v), vlen(len) { }
 
 	/** copy constructor */
 	SGVector(const SGVector &orig)
-	: vector(orig.vector), length(orig.length) { }
+	: vector(orig.vector), vlen(orig.vlen) { }
 
 	/** vector  */
 	T* vector;
 	/** length of vector  */
-	index_t length;
+	index_t vlen;
 };
 
 template<class T> struct SGMatrix

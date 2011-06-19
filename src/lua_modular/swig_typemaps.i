@@ -62,7 +62,7 @@
 
 %typemap(out) shogun::SGVector<SGTYPE> {
 	int32_t i;
-	int32_t len = $1.length;
+	int32_t len = $1.vlen;
 	SGTYPE* vec = $1.vector;	
 
 	lua_newtable(L);	
