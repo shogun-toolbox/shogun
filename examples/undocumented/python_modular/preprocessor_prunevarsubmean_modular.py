@@ -16,10 +16,10 @@ def preprocessor_prunevarsubmean_modular (fm_train_real=traindat,fm_test_real=te
 
 	preproc=PruneVarSubMean()
 	preproc.init(feats_train)
-	feats_train.add_preproc(preproc)
-	feats_train.apply_preproc()
-	feats_test.add_preproc(preproc)
-	feats_test.apply_preproc()
+	feats_train.add_preprocessor(preproc)
+	feats_train.apply_preprocessor()
+	feats_test.add_preprocessor(preproc)
+	feats_test.apply_preprocessor()
 
 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
 
