@@ -235,6 +235,37 @@ class CFeatures : public CSGObject
 			properties &= (properties | p) ^ p;
 		}
 
+		/*********************************
+		 * wrapper for Subset methods
+		 * (to avoid mutliple inheritance)
+		 ********************************/
+		virtual void remove_subset() { m_subset->remove_subset(); }
+
+		virtual void get_subset(index_t** subset_idx, index_t* subset_len)
+		{
+			m_subset->get_subset(subset_idx, subset_len);
+		}
+
+		virtual index_t* get_subset(index_t& subset_len)
+		{
+			return m_subset->get_subset(subset_len);
+		}
+
+		virtual bool has_subset() { return m_subset->has_subset(); }
+
+		virtual void set_subset(index_t subset_len, index_t* subset_idx)
+		{
+			m_subset->set_subset(subset_len, subset_idx);
+		}
+
+		virtual void set_subset(index_t* subset_idx, index_t subset_len)
+		{
+			m_subset->set_subset(subset_idx, subset_len);
+		}
+		/***********************************
+		 * End of wrapper for Subset methods
+		 **********************************/
+
 	private:
 		/** feature properties */
 		uint64_t  properties;
@@ -251,8 +282,7 @@ class CFeatures : public CSGObject
 		/// i'th entry is true if features were already preprocessed with preproc i
 		bool* preprocessed;
 
-
-	public:
+	protected:
 		/* subset class to enable subset support for this class */
 		CSubset* m_subset;
 };
