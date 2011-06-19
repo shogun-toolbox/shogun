@@ -89,14 +89,13 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	float64_t* z_matrix = new float64_t[N*dim];
 	float64_t* covariance_matrix = new float64_t[m_k*m_k];
 	float64_t* id_vector = new float64_t[m_k];
-	int32_t* ipiv = new int32_t[m_k];
 	float64_t norming = 0.0;
+
+	// get feature matrix
+	SGMatrix<float64_t> feature_matrix = pdata->get_feature_matrix();
 
 	for (i=0; i<N; i++)
 	{
-		// get feature matrix
-		SGMatrix<float64_t> feature_matrix = pdata->get_feature_matrix();
-
 		// compute local feature matrix containing neighbors of i-th vector
 		for (j=0; j<m_k; j++)
 		{
@@ -136,16 +135,13 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 		}
 
 		// solve system of linear equations: covariance_matrix * X = 1
-		clapack_dgesv(CblasColMajor,
-		              m_k,1,
-		              covariance_matrix,m_k,
-		              ipiv,
-		              id_vector,m_k);
+		// covariance_matrix is a pos-def matrix
+		clapack_dposv(CblasColMajor,CblasLower,m_k,1,covariance_matrix,m_k,id_vector,m_k);
 
 		// normalize weights
 		norming=0.0;
 		for (j=0; j<m_k; j++)
-			norming += CMath::abs(id_vector[j]);
+			norming += id_vector[j];
 
 		for (j=0; j<m_k; j++)
 			id_vector[j]/=norming;
@@ -157,7 +153,6 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	}
 
 	// clean
-	delete[] ipiv;
 	delete[] id_vector;
 	delete[] neighborhood_matrix;
 	delete[] z_matrix;
@@ -181,6 +176,7 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 
 	delete[] W_matrix;
 
+	// TODO add some more efficient method usage if supported by some library
 	// compute eigenvectors
 	float64_t* eigenvalues_vector = new float64_t[N];
 	int32_t eigenproblem_status = 0;
@@ -212,6 +208,7 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 float64_t* CLocallyLinearEmbedding::apply_to_feature_vector(float64_t* f, int32_t &len)
 {
 	SG_NOTIMPLEMENTED;
+	return NULL;
 }
 
 #endif /* HAVE_LAPACK */

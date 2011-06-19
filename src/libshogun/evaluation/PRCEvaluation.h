@@ -55,12 +55,10 @@ public:
 	 */
 	float64_t get_auPRC();
 
-	/** get PRC (swig)
-	 * @param result matrix of PRC graph
-	 * @param num number of points in PRC graph
-	 * @param dim dimensionality (always 2)
+	/** get PRC
+	 * @return PRC graph matrix
 	 */
-	void get_PRC(float64_t** result, int32_t* num, int32_t* dim);
+	SGMatrix<float64_t> get_PRC();
 
 protected:
 

@@ -47,9 +47,17 @@ class CCustomKernel: public CKernel
 		 * (from double precision floats)
 		 *
 		 * @param km kernel matrix
+		 */
+		CCustomKernel(SGMatrix<float64_t> km);
+
+		/** constructor
+		 *
+		 * sets full kernel matrix from full kernel matrix
+		 * (from double precision floats)
+		 *
+		 * @param km kernel matrix
 		 * @param rows number of rows in matrix
 		 * @param cols number of cols in matrix
-		 * @return if setting was successful
 		 */
 		CCustomKernel(
 			const float64_t* km, int32_t rows, int32_t cols);

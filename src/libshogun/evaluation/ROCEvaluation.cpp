@@ -88,8 +88,8 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 		if (label != threshold)
 		{
 			threshold = label;
-			m_ROC_graph[j] = fp/neg_count;
-			m_ROC_graph[j+diff_count+1] = tp/pos_count;
+			m_ROC_graph[2*j] = fp/neg_count;
+			m_ROC_graph[2*j+1] = tp/pos_count;
 			j++;
 		}
 
@@ -100,7 +100,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	}
 
 	// add (1,1) to ROC curve
-	m_ROC_graph[diff_count] = 1.0;
+	m_ROC_graph[2*diff_count] = 1.0;
 	m_ROC_graph[2*diff_count+1] = 1.0;
 
 	// set ROC length
@@ -114,17 +114,14 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	return m_auROC;
 }
 
-void CROCEvaluation::get_ROC(float64_t** result, int32_t* num, int32_t* dim)
+SGMatrix<float64_t> CROCEvaluation::get_ROC()
 {
 	if (!m_computed)
 		SG_ERROR("Uninitialized, please call evaluate first");
 
 	ASSERT(m_ROC_graph);
-	*num = m_ROC_length;
-	*dim = 2;
 
-	*result = (float64_t*) SG_MALLOC(sizeof(float64_t)*m_ROC_length*2);
-	memcpy(*result, m_ROC_graph, m_ROC_length*2*sizeof(float64_t));
+	return SGMatrix<float64_t>(m_ROC_graph,2,m_ROC_length);
 }
 
 float64_t CROCEvaluation::get_auROC()

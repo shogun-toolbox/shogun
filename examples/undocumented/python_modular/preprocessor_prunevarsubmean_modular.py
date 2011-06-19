@@ -6,7 +6,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list = [[traindat,testdat,1.5,10],[traindat,testdat,1.5,10]]
 
-def preproc_prunevarsubmean_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
+def preprocessor_prunevarsubmean_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
 	from shogun.Kernel import Chi2Kernel
 	from shogun.Features import RealFeatures
 	from shogun.Preprocessor import PruneVarSubMean
@@ -31,4 +31,4 @@ def preproc_prunevarsubmean_modular (fm_train_real=traindat,fm_test_real=testdat
 
 if __name__=='__main__':
 	print 'PruneVarSubMean'
-	preproc_prunevarsubmean_modular(*parameter_list[0])
+	preprocessor_prunevarsubmean_modular(*parameter_list[0])
