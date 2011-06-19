@@ -3358,8 +3358,8 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 			normalize=get_bool();
 			CStringFeatures<uint16_t>* sf=new CStringFeatures<uint16_t>(RAWDNA);
 			sf->obtain_from_char_features((CStringFeatures<uint8_t>*) feat, start, order, 0, normalize);
-			sf->add_preproc(new CSortWordString());
-			sf->apply_preproc();
+			sf->add_preprocessor(new CSortWordString());
+			sf->apply_preprocessor();
 			SG_UNREF(feat);
 			feat = new CImplicitWeightedSpecFeatures(sf, normalize);
 		}
