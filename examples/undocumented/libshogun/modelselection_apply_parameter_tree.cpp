@@ -47,7 +47,7 @@ CModelSelectionParameters* create_param_tree()
 	return root;
 }
 
-void apply_parameter_tree(DynArray<CParameterCombination*>& combinations)
+void apply_parameter_tree(DynArray<ParameterCombination*>& combinations)
 {
 	/* create some data */
 	float64_t* matrix=new float64_t[6];
@@ -74,7 +74,7 @@ void apply_parameter_tree(DynArray<CParameterCombination*>& combinations)
 	{
 		SG_SPRINT("applying:\n");
 		combinations[i]->print();
-		CParameterCombination* current_combination=combinations[i];
+		ParameterCombination* current_combination=combinations[i];
 		Parameter* current_parameters=svm->m_parameters;
 		current_combination->apply_to_parameter(current_parameters);
 
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("----------------------------------\n");
 
 	/* build combinations of parameter trees */
-	DynArray<CParameterCombination*> combinations;
+	DynArray<ParameterCombination*> combinations;
 	tree->get_combinations(combinations);
 
 	apply_parameter_tree(combinations);
