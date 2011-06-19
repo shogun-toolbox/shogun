@@ -17,6 +17,8 @@
 #include "lib/ParseBuffer.h"
 #include <pthread.h>
 
+#define PARSER_DEFAULT_BUFFSIZE 100
+
 namespace shogun
 {
 	enum E_EXAMPLE_TYPE
@@ -70,6 +72,9 @@ namespace shogun
 		 */
 		int32_t get_number_of_features();
 
+		void read_vector(T* &feature_vector,
+				 int32_t &length);				
+		
 		/**
 		 * Gets feature vector, length and label.
 		 * Sets their values by reference.
@@ -214,12 +219,31 @@ namespace shogun
 		
 		int32_t current_len; /**< Features in last
 				      * read example */
-
 		
 	};
 
-#define PARSER_DEFAULT_BUFFSIZE 100
+#define READ_VECTOR(sg_type, sg_function)						\
+	template <> void CInputParser<sg_type>::read_vector(sg_type* &vec, int32_t &len) \
+	{								\
+		input_source->sg_function(vec, len);		\
+	}
 
+	READ_VECTOR(bool, get_bool_vector);
+	READ_VECTOR(char, get_char_vector);
+	READ_VECTOR(int8_t, get_int8_vector);
+	READ_VECTOR(uint8_t, get_byte_vector);
+	READ_VECTOR(int16_t, get_short_vector);
+	READ_VECTOR(uint16_t, get_word_vector);
+	READ_VECTOR(int32_t, get_int_vector);
+	READ_VECTOR(uint32_t, get_uint_vector);
+	READ_VECTOR(int64_t, get_long_vector);
+	READ_VECTOR(uint64_t, get_ulong_vector);
+	READ_VECTOR(float32_t, get_shortreal_vector);
+	READ_VECTOR(float64_t, get_real_vector);
+	READ_VECTOR(floatmax_t, get_longreal_vector);
+	
+#undef READ_VECTOR		
+	
 	template <class T>
 		CInputParser<T>::CInputParser()
 	{
@@ -289,14 +313,13 @@ namespace shogun
 							      int32_t &length,
 							      float64_t &label)
 	{
-		input_source->get_real_vector(feature_vector, length);
+		read_vector(feature_vector, length);
 		/* The get_real_vector call should be replaced with
 		   a dynamic call depending on the type of feature. */
 
 		if (length < 2)
 		{
 			// Problem reading the example
-			parsing_done=true;
 			return 0;
 		}
 
@@ -311,14 +334,14 @@ namespace shogun
 		int32_t CInputParser<T>::get_vector_only(T* &feature_vector,
 							 int32_t &length)
 	{
-		input_source->get_real_vector(feature_vector, length);
+		
+		read_vector(feature_vector, length);
 		/* The get_real_vector call should be replaced with
 		   a dynamic call depending on the type of feature. */
 
 		if (length < 1)
 		{
 			// Problem reading the example
-			parsing_done=true;
 			return 0;
 		}
 
@@ -370,22 +393,27 @@ namespace shogun
 		// Return the next unused example from the buffer
 
 		example<T> *ex;
-	
+		
 		if (number_of_vectors_parsed <= 0)
 			return NULL;
 
 		if (parsing_done)
 		{
 			if (number_of_vectors_read == number_of_vectors_parsed)
+			{
 				reading_done = true;
+				return NULL;
+			}
 		}
 
 		if (number_of_vectors_read == number_of_vectors_parsed)
+		{
 			return NULL;
-	
+		}
+
 		ex = examples_buff->fetch_example();
 		number_of_vectors_read++;
-
+		
 		return ex;
 	}
 
