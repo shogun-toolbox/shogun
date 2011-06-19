@@ -199,16 +199,18 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				feat=compute_feature_vector(num, len, feat);
 
 
-				if (get_num_preproc())
+				if (get_num_preprocessors())
 				{
 					int32_t tmp_len=len;
 					ST* tmp_feat_before = feat;
 					ST* tmp_feat_after = NULL;
 
-					for (int32_t i=0; i<get_num_preproc(); i++)
+					for (int32_t i=0; i<get_num_preprocessors(); i++)
 					{
-						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preproc(i);
-						tmp_feat_after=p->apply_to_feature_vector(tmp_feat_before, tmp_len);
+						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preprocessor(i);
+						// temporary hack
+						SGVector<ST> applied = p->apply_to_feature_vector(SGVector<ST>(tmp_feat_before,tmp_len));
+						tmp_feat_after = applied.vector;
 						SG_UNREF(p);
 
 						if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
@@ -538,21 +540,21 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param force_preprocessing if preprocssing shall be forced
 		 * @return if applying was successful
 		 */
-		virtual bool apply_preproc(bool force_preprocessing=false)
+		virtual bool apply_preprocessor(bool force_preprocessing=false)
 		{
 			SG_DEBUG( "force: %d\n", force_preprocessing);
 
-			if ( feature_matrix && get_num_preproc())
+			if ( feature_matrix && get_num_preprocessors())
 			{
 
-				for (int32_t i=0; i<get_num_preproc(); i++)
+				for (int32_t i=0; i<get_num_preprocessors(); i++)
 				{ 
 					if ( (!is_preprocessed(i) || force_preprocessing) )
 					{
 						set_preprocessed(i);
-						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preproc(i);
+						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preprocessor(i);
 						SG_INFO( "preprocessing using preproc %s\n", p->get_name());
-						if (p->apply_to_feature_matrix(this) == NULL)
+						if (p->apply_to_feature_matrix(this).matrix == NULL)
 						{
 							SG_UNREF(p);
 							return false;
@@ -567,7 +569,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				if (!feature_matrix)
 					SG_ERROR( "no feature matrix\n");
 
-				if (!get_num_preproc())
+				if (!get_num_preprocessors())
 					SG_ERROR( "no preprocessors available\n");
 
 				return false;

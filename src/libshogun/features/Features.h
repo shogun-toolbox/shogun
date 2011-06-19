@@ -104,20 +104,20 @@ class CFeatures : public CSGObject
 		 * @param p preprocessor to set
 		 * @return something inty
 		 */
-		virtual int32_t add_preproc(CPreprocessor* p);
+		virtual int32_t add_preprocessor(CPreprocessor* p);
 
 		/** delete preprocessor from list
 		 * caller has to clean up returned preproc
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		virtual CPreprocessor* del_preproc(int32_t num);
+		virtual CPreprocessor* del_preprocessor(int32_t num);
 
 		/** get specified preprocessor
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		CPreprocessor* get_preproc(int32_t num);
+		CPreprocessor* get_preprocessor(int32_t num);
 
 		/** set applied flag for preprocessor
 		 *
@@ -141,10 +141,10 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of preprocessors
 		 */
-		inline int32_t get_num_preproc() { return num_preproc; }
+		inline int32_t get_num_preprocessors() { return num_preproc; }
 
 		/** clears all preprocs */
-		void clean_preprocs();
+		void clean_preprocessors();
 
 		/** get cache size
 		 *

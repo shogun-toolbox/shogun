@@ -336,13 +336,13 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				feat=compute_sparse_feature_vector(num, len, feat);
 
 
-				if (get_num_preproc())
+				if (get_num_preprocessors())
 				{
 					int32_t tmp_len=len;
 					SGSparseVectorEntry<ST>* tmp_feat_before = feat;
 					SGSparseVectorEntry<ST>* tmp_feat_after = NULL;
 
-					for (int32_t i=0; i<get_num_preproc(); i++)
+					for (int32_t i=0; i<get_num_preprocessors(); i++)
 					{
 						//tmp_feat_after=((CSparsePreprocessor<ST>*) get_preproc(i))->apply_to_feature_vector(tmp_feat_before, tmp_len);
 
@@ -822,19 +822,19 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param force_preprocessing if preprocssing shall be forced
 		 * @return if applying was successful
 		 */
-		virtual bool apply_preproc(bool force_preprocessing=false)
+		virtual bool apply_preprocessor(bool force_preprocessing=false)
 		{
 			SG_INFO( "force: %d\n", force_preprocessing);
 
-			if ( sparse_feature_matrix && get_num_preproc() )
+			if ( sparse_feature_matrix && get_num_preprocessors() )
 			{
-				for (int32_t i=0; i<get_num_preproc(); i++)
+				for (int32_t i=0; i<get_num_preprocessors(); i++)
 				{
 					if ( (!is_preprocessed(i) || force_preprocessing) )
 					{
 						set_preprocessed(i);
-						SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
-						if (((CSparsePreprocessor<ST>*) get_preproc(i))->apply_to_sparse_feature_matrix(this) == NULL)
+						SG_INFO( "preprocessing using preproc %s\n", get_preprocessor(i)->get_name());
+						if (((CSparsePreprocessor<ST>*) get_preprocessor(i))->apply_to_sparse_feature_matrix(this) == NULL)
 							return false;
 					}
 					return true;
@@ -1222,7 +1222,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * preprocessors are attached */
 		void sort_features()
 		{
-			ASSERT(get_num_preproc()==0);
+			ASSERT(get_num_preprocessors()==0);
 
 			if (!sparse_feature_matrix)
 				SG_ERROR("Requires sparse feature matrix to be available in-memory\n");

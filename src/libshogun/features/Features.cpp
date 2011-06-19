@@ -48,7 +48,7 @@ CFeatures::CFeatures(CFile* loader)
 
 CFeatures::~CFeatures()
 {
-	clean_preprocs();
+	clean_preprocessors();
 	delete m_subset;
 }
 
@@ -78,7 +78,7 @@ CFeatures::init(void)
 }
 
 /// set preprocessor
-int32_t CFeatures::add_preproc(CPreprocessor* p)
+int32_t CFeatures::add_preprocessor(CPreprocessor* p)
 {
 	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc);
 	ASSERT(p);
@@ -108,7 +108,7 @@ int32_t CFeatures::add_preproc(CPreprocessor* p)
 }
 
 /// get current preprocessor
-CPreprocessor* CFeatures::get_preproc(int32_t num)
+CPreprocessor* CFeatures::get_preprocessor(int32_t num)
 {
 	if (num<num_preproc)
 	{
@@ -134,13 +134,13 @@ int32_t CFeatures::get_num_preprocessed()
 }
 
 /// clears all preprocs
-void CFeatures::clean_preprocs()
+void CFeatures::clean_preprocessors()
 {
-	while (del_preproc(0));
+	while (del_preprocessor(0));
 }
 
 /// del current preprocessor
-CPreprocessor* CFeatures::del_preproc(int32_t num)
+CPreprocessor* CFeatures::del_preprocessor(int32_t num)
 {
 	CPreprocessor** pps=NULL;
 	bool* preprocd=NULL;
