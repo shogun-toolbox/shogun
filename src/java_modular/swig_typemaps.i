@@ -105,6 +105,9 @@ import org.jblas.*;
 	for (i = 0; i < cols; i++) {
 		arr[i] = (JNITYPE)$1.vector[i];
 	}
+
+    $1.free_vector();
+
 	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, cols, arr);
 
 	res = JCALL5(NewObject, jenv, cls, mid, rows, cols, jarr);
@@ -175,17 +178,16 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 
 	cols = (int32_t)JCALL2(CallIntMethod, jenv, $input, mid);
 
-    $1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
+	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE>
 {
 	int32_t rows = $1.num_rows;
 	int32_t cols = $1.num_cols;
-	int32_t len = rows * cols;
+	int64_t len = int64_t(rows) * cols;
 	JNITYPE arr[len];
 	jobject res;
-	int32_t i;
 
 	jclass cls;
 	jmethodID mid;
@@ -202,9 +204,10 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 	if (!jarr)
 		return $null;
 
-	for (i = 0; i < len; i++) {
+	for (int64_t i = 0; i < len; i++) {
 		arr[i] = (JNITYPE)$1.matrix[i];
 	}
+	$1.free_matrix();
 	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, len, arr);
 
 	res = JCALL5(NewObject, jenv, cls, mid, rows, cols, jarr);

@@ -72,6 +72,8 @@ TYPEMAP_IN_SGVECTOR(REALSXP, REAL, float64_t, "Double Precision")
     for (int32_t i=0; i<len; i++)
         r_cast($result)[i]=(if_type) vec[i];
 
+    $1.free_vector();
+
     Rf_unprotect(1);
 }
 %enddef
@@ -127,6 +129,9 @@ TYPEMAP_IN_SGMATRIX(REALSXP, REAL, float64_t, "Double Precision")
         for (int32_t j=0; j<num_feat; j++)
             r_cast($result)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];
     }
+
+    $1.free_matrix();
+
     Rf_unprotect(1);
 }
 %enddef

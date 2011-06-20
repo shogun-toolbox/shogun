@@ -250,13 +250,17 @@ TYPEMAP_IN_SGVECTOR(PyObject,      NPY_OBJECT)
 {
     npy_intp dims= (npy_intp) $1.vlen;
     PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
     if (descr)
     {
         $result = PyArray_NewFromDescr(&PyArray_Type,
                 descr, 1, &dims, NULL, (void*) $1.vector, NPY_FARRAY | NPY_WRITEABLE, NULL);
         /*((PyArrayObject*) $result)->flags |= NPY_OWNDATA;*/
     }
-    else
+
+    $1.free_vector();
+
+    if (!descr)
         SWIG_fail;
 }
 %enddef
@@ -321,13 +325,17 @@ TYPEMAP_IN_SGMATRIX(PyObject,      NPY_OBJECT)
 {
     npy_intp dims[2]= {(npy_intp) $1.num_rows, (npy_intp) $1.num_cols };
     PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
     if (descr)
     {
         $result = PyArray_NewFromDescr(&PyArray_Type,
-                descr, 2, dims, NULL, (void*) $1.matrix, NPY_FARRAY | NPY_WRITEABLE, NULL);
+            descr, 2, dims, NULL, (void*) $1.matrix, NPY_FARRAY | NPY_WRITEABLE, NULL);
         /*((PyArrayObject*) $result)->flags |= NPY_OWNDATA;*/
     }
-    else
+
+    $1.free_matrix();
+
+    if (!descr)
         SWIG_fail;
 }
 %enddef

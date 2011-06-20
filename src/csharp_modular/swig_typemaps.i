@@ -48,6 +48,8 @@
 	for (i=0; i < $1.vlen; i++)
 		res[i] = (CSHARPTYPE)$1.vector[i];
 
+    $1.free_matrix();
+
 	if (!res)
 		return NULL;
 	
@@ -158,12 +160,14 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 
 
-    for (i = 0; i < rows; i++) {
-        for (j = 0; j < cols; j++){
+    for (i = 0; i < rows; i++)
+    {
+        for (j = 0; j < cols; j++)
             array[i][j] = (CSHARPTYPE)($1.matrix[(i * rows) + j]);
-	}
     }
    
+    $1.free_matrix();
+
     $result = (CSHARPTYPE **)array;
 
 //  Translation Point

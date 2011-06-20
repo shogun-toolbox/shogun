@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Baozeng Ding
- *  
+ *
  */
 
 /* One dimensional input/output arrays */
@@ -40,6 +40,8 @@
 
 	for (i = 0; i < $1.vlen; i++)
 		rb_ary_push(arr, SG2R($1.vector[i]));
+
+    $1.free_vector();
 
 	$result = arr;
 }
@@ -111,6 +113,8 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 		}
 		rb_ary_push(arr, vec);
 	}
+
+    $1.free_matrix();
 
 	$result = arr;
 }
