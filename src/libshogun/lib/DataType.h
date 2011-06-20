@@ -67,7 +67,7 @@ template<class T> class SGMatrix
 		/** copy constructor */
 		SGMatrix(const SGMatrix &orig)
 			: matrix(orig.matrix), num_rows(orig.num_rows),
-			num_cols(orig.num_cols), do_free(free_matrix) { }
+			num_cols(orig.num_cols), do_free(orig.do_free) { }
 
 		void free_matrix()
 		{
