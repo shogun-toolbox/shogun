@@ -54,13 +54,13 @@ bool CKRR::train(CFeatures* data)
 	ASSERT(kernel && kernel->has_features());
 
 	// Get kernel matrix
-	int32_t m=0;
-	int32_t n=0;
-	float64_t *K = kernel->get_kernel_matrix<float64_t>(m, n, NULL);
-	ASSERT(K && m>0 && n>0);
+	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix<float64_t>();
+	int32_t n = kernel_matrix.num_cols;
+	int32_t m = kernel_matrix.num_rows;
+	ASSERT(kernel_matrix.matrix && m>0 && n>0);
 
 	for(int32_t i=0; i < n; i++)
-		K[i+i*n]+=tau;
+		kernel_matrix.matrix[i+i*n]+=tau;
 
 	// Get labels
 	int32_t numlabels=0;
@@ -76,9 +76,9 @@ bool CKRR::train(CFeatures* data)
 				" columns (num_labels=%d cols=%d\n", numlabels, n);
 	}
 
-	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, K, n, alpha, n);
+	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n, alpha, n);
 
-	delete[] K;
+	delete[] kernel_matrix.matrix;
 	return true;
 }
 
@@ -101,10 +101,11 @@ CLabels* CKRR::classify()
 	ASSERT(kernel);
 
 	// Get kernel matrix
-	int32_t m=0;
-	int32_t n=0;
-	float64_t* K=kernel->get_kernel_matrix<float64_t>(m, n, NULL);
-	ASSERT(K && m>0 && n>0);
+	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix<float64_t>();
+	int32_t n = kernel_matrix.num_cols;
+	int32_t m = kernel_matrix.num_rows;
+	ASSERT(kernel_matrix.matrix && m>0 && n>0);
+
 	float64_t* Yh=new float64_t[n];
 
 	// predict
@@ -113,10 +114,10 @@ CLabels* CKRR::classify()
 	// dgemv('T', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
 	int m_int = (int) m;
 	int n_int = (int) n;
-	cblas_dgemv(CblasColMajor, CblasTrans, m_int, n_int, 1.0, (double*) K,
+	cblas_dgemv(CblasColMajor, CblasTrans, m_int, n_int, 1.0, (double*) kernel_matrix.matrix,
 		m_int, (double*) alpha, 1, 0.0, (double*) Yh, 1);
 
-	delete[] K;
+	delete[] kernel_matrix.matrix;
 
 	CLabels* output=new CLabels(n);
 	output->set_labels(Yh, n);
@@ -131,17 +132,18 @@ float64_t CKRR::classify_example(int32_t num)
 	ASSERT(kernel);
 
 	// Get kernel matrix
-	int32_t m=0;
-	int32_t n=0;
 	// TODO: use get_kernel_column instead of computing the whole matrix!
-	float64_t* K=kernel->get_kernel_matrix<float64_t>(m, n, NULL);
-	ASSERT(K && m>0 && n>0);
+	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix<float64_t>();
+	int32_t n = kernel_matrix.num_cols;
+	int32_t m = kernel_matrix.num_rows;
+	ASSERT(kernel_matrix.matrix && m>0 && n>0);
+
 	float64_t Yh;
 
 	// predict
-	Yh = CMath::dot(K + m*num, alpha, m);
+	Yh = CMath::dot(kernel_matrix.matrix + m*num, alpha, m);
 
-	delete[] K;
+	delete[] kernel_matrix.matrix;
 	return Yh;
 }
 

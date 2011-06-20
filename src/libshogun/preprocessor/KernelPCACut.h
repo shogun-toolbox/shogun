@@ -72,29 +72,18 @@ class CKernelPCACut : public CSimplePreprocessor<float64_t>
 
 		/** get transformation matrix, i.e. eigenvectors
 		 *
-		 * @param dst destination to store matrix in
-		 * @param num_feat number of features (rows of matrix)
-		 * @param num_new_dim number of dimensions after cutoff threshold
-		 *
 		 */
-		void get_transformation_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim);
+		SGMatrix<float64_t> get_transformation_matrix();
 
 		/** get bias of KPCA
 		 *
-		 * @param dst destination to store matrix in
-		 * @param num_new_dim number of dimensions after cutoff threshold
-		 *
 		 */
-		void get_bias(float64_t** dst, int32_t* num_new_dim);
+		SGVector<float64_t> get_bias();
 
 		/** get eigenvalues of KPCA
 		 *
-		 * @param dst destination to store matrix in
-		 * @param num_new_dim number of dimensions after cutoff threshold
-		 *
 		 */
-		void get_eigenvalues(float64_t** dst, int32_t* num_new_dim);
-
+		SGVector<float64_t> get_eigenvalues();
 
 		/** @return object name */
 		virtual inline const char* get_name() const { return "KernelPCACut"; }

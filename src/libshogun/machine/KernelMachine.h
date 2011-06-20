@@ -237,46 +237,40 @@ class CKernelMachine : public CMachine
 				m_svs[i]=svs[i];
 		}
 
-		/** get all support vectors (swig compatible)
+		/** get all support vectors
 		 *
-		 * @param svs array to contain a copy of the support vectors
-		 * @param num number of support vectors in the array
 		 */
-		void get_support_vectors(int32_t** svs, int32_t* num)
+		SGVector<int32_t> get_support_vectors()
 		{
 			int32_t nsv = get_num_support_vectors();
-
-			ASSERT(svs && num);
-			*svs=NULL;
-			*num=nsv;
+			int32_t* svs = NULL;
 
 			if (nsv>0)
 			{
-				*svs = (int32_t*) SG_MALLOC(sizeof(int32_t)*nsv);
+				svs = (int32_t*) SG_MALLOC(sizeof(int32_t)*nsv);
 				for(int32_t i=0; i<nsv; i++)
-					(*svs)[i] = get_support_vector(i);
+					svs[i] = get_support_vector(i);
 			}
+
+			return SGVector<int32_t>(svs,nsv);
 		}
 
-		/** get all alphas (swig compatible)
+		/** get all alphas
 		 *
-		 * @param alphas array to contain a copy of the alphas
-		 * @param d1 number of alphas in the array
 		 */
-		void get_alphas(float64_t** alphas, int32_t* d1)
+		SGVector<float64_t> get_alphas()
 		{
 			int32_t nsv = get_num_support_vectors();
-
-			ASSERT(alphas && d1);
-			*alphas=NULL;
-			*d1=nsv;
+			float64_t* alphas = NULL;
 
 			if (nsv>0)
 			{
-				*alphas = (float64_t*) SG_MALLOC(nsv*sizeof(float64_t));
+				alphas = (float64_t*) SG_MALLOC(nsv*sizeof(float64_t));
 				for(int32_t i=0; i<nsv; i++)
-					(*alphas)[i] = get_alpha(i);
+					alphas[i] = get_alpha(i);
 			}
+
+			return SGVector<float64_t>(alphas,nsv);
 		}
 
 		/** create new model

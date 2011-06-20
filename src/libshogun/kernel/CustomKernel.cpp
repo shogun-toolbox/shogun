@@ -78,23 +78,7 @@ CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 {
 	init();
 
-	set_full_kernel_matrix_from_full(km.matrix, km.num_rows, km.num_cols);
-}
-
-CCustomKernel::CCustomKernel(const float64_t* km, int32_t rows, int32_t cols)
-: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
-{
-	init();
-
-	set_full_kernel_matrix_from_full(km, rows, cols);
-}
-
-CCustomKernel::CCustomKernel(const float32_t* km, int32_t rows, int32_t cols)
-: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
-{
-	init();
-
-	set_full_kernel_matrix_from_full(km, rows, cols);
+	set_full_kernel_matrix_from_full(km);
 }
 
 CCustomKernel::~CCustomKernel()
