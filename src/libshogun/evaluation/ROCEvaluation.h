@@ -51,7 +51,7 @@ public:
 
 	inline EEvaluationDirection get_evaluation_direction()
 	{
-		return ED_MAXIMISE;
+		return ED_MAXIMIZE;
 	}
 
 	/** get auROC
