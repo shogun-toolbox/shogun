@@ -18,8 +18,7 @@ namespace shogun
 
 /** @brief class for adding subset support to a class. Provides an interface for
  * getting/setting subset_matrices and index conversion.
- * Do not inherit from this class, use it as variable. Write wrappers for all
- * get/set functions.
+ * Do not inherit from this class, use it as variable.
  */
 class CSubset: public CSGObject
 {
