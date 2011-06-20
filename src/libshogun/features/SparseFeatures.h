@@ -94,6 +94,20 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		}
 
 		/** convenience constructor that creates sparse features from
+		 * sparse features
+		 *
+		 * @param sparse sparse matrix
+		 */
+		CSparseFeatures(SGSparseMatrix<ST> sparse)
+		: CDotFeatures(0), num_vectors(0), num_features(0),
+			sparse_feature_matrix(NULL), feature_cache(NULL)
+		{
+			init();
+
+			set_sparse_feature_matrix(sparse);
+		}
+
+		/** convenience constructor that creates sparse features from
 		 * dense features
 		 *
 		 * @param dense dense feature matrix
@@ -519,29 +533,17 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			return sparse_feature_matrix;
 		}
 
+		/** get the sparse feature matrix
+		 *
+		 * @return sparse matrix
+		 *
+		 */
         SGSparseMatrix<ST> get_sparse_feature_matrix()
         {
             SGSparseMatrix<ST> sm;
             sm.sparse_matrix=get_sparse_feature_matrix(sm.num_features, sm.num_vectors);
             return sm;
         }
-
-		/** get the pointer to the sparse feature matrix (swig compatible)
-		 * num_feat,num_vectors are returned by reference
-		 *
-		 * @param dst feature matrix
-		 * @param num_feat number of features in matrix
-		 * @param num_vec number of vectors in matrix
-		 * @param nnz number of nonzero elements
-		 */
-        void get_sparse_feature_matrix(SGSparseVector<ST>** dst, int32_t* num_feat,
-                int32_t* num_vec, int64_t* nnz)
-		{
-            *nnz=get_num_nonzero_entries();
-			*num_feat=num_features;
-			*num_vec=num_vectors;
-			*dst=sparse_feature_matrix;
-		}
 
 		/** clean SGSparseVector
 		 *
@@ -652,6 +654,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			num_vectors=num_vec;
 		}
 
+		/** set sparse feature matrix
+		 *
+		 * @param sm sparse feature matrix
+		 *
+		 */
         void set_sparse_feature_matrix(SGSparseMatrix<ST> sm)
         {
             set_sparse_feature_matrix(sm.sparse_matrix, sm.num_features, sm.num_vectors);
