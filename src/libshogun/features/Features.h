@@ -249,11 +249,6 @@ class CFeatures : public CSGObject
 			return m_subset->get_subset();
 		}
 
-		virtual SGVector<index_t>* get_subset_copy()
-		{
-			return m_subset->get_subset_copy();
-		}
-
 		bool has_subset()
 		{
 			return m_subset->has_subset();
