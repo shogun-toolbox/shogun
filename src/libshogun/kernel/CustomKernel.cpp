@@ -19,8 +19,7 @@ using namespace shogun;
 void
 CCustomKernel::init(void)
 {
-	m_parameters->add_matrix(&kmatrix.matrix, &kmatrix.num_rows, &kmatrix.num_cols, "kmatrix",
-							 "Kernel matrix.");
+	m_parameters->add(&kmatrix, "kmatrix", "Kernel matrix.");
 	m_parameters->add(&upper_diagonal, "upper_diagonal");
 }
 
