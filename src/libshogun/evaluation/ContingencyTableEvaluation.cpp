@@ -46,28 +46,28 @@ inline EEvaluationDirection CContingencyTableEvaluation::get_evaluation_directio
 	switch (m_type)
 	{
 	case ACCURACY:
-		return ED_MAXIMISE;
+		return ED_MAXIMIZE;
 	case ERROR_RATE:
-		return ED_MINIMISE;
+		return ED_MINIMIZE;
 	case BAL:
-		return ED_MINIMISE;
+		return ED_MINIMIZE;
 	case WRACC:
-		return ED_MAXIMISE;
+		return ED_MAXIMIZE;
 	case F1:
-		return ED_MAXIMISE;
+		return ED_MAXIMIZE;
 	case CROSS_CORRELATION:
-		return ED_MAXIMISE;
+		return ED_MAXIMIZE;
 	case RECALL:
-		return ED_MAXIMISE;
+		return ED_MAXIMIZE;
 	case PRECISION:
-		return ED_MAXIMISE;
+		return ED_MAXIMIZE;
 	case SPECIFICITY:
-		return ED_MAXIMISE;
+		return ED_MAXIMIZE;
 	default:
 		SG_NOTIMPLEMENTED;
 	}
 
-	return ED_MINIMISE;
+	return ED_MINIMIZE;
 }
 
 void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* ground_truth)

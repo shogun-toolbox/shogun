@@ -42,7 +42,7 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 	m_model_parameters->get_combinations(combinations);
 
 	ParameterCombination* best_combination=NULL;
-	if (m_cross_validation->get_evaluation_direction()==ED_MAXIMISE)
+	if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
 		best_result=CMath::ALMOST_NEG_INFTY;
 	else
 		best_result=CMath::ALMOST_INFTY;
@@ -55,7 +55,7 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 		float64_t result=m_cross_validation->evaluate();
 
 		/* check if current result is better, delete old combinations */
-		if (m_cross_validation->get_evaluation_direction()==ED_MAXIMISE)
+		if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
 		{
 			if (result>best_result)
 			{
