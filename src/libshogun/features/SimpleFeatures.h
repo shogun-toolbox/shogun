@@ -146,7 +146,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			feature_matrix_num_features=num_features;
 			feature_matrix_num_vectors=num_vectors;
             num_vectors=0;
-            num_vectors_total=0;
+            m_num_vectors_total=0;
             num_features=0;
 		}
 
@@ -186,6 +186,10 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			} 
 			else
 			{
+				/* this is due the call compute_feature_vector, which is not
+				 * implemented and returns NULL. Also subset preproc TODO here */
+				SG_NOTIMPLEMENTED;
+
 				ST* feat=NULL;
 				dofree=false;
 
@@ -421,7 +425,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				for (int32_t i=0; i<num_vectors; ++i)
 				{
 					int32_t real_i=m_subset->subset_idx_conversion(i);
-					memcpy(*dst, feature_matrix[real_i*int64_t(num_features)],
+					memcpy(*dst, &feature_matrix[real_i*int64_t(num_features)],
 						num_features*sizeof(ST));
 				}
 			}
@@ -533,12 +537,17 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * and columns are linear in memory
 		 * see below for definition of feature_matrix
 		 *
+		 * not possible with subset
+		 *
 		 * @param fm feature matrix to se
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
 		virtual void set_feature_matrix(ST* fm, int32_t num_feat, int32_t num_vec)
 		{
+			if (m_subset->has_subset())
+				SG_ERROR("A subset is set, cannot call set_feature_matrix\n");
+
 			free_feature_matrix();
 			feature_matrix=fm;
 			feature_matrix_num_features=num_feat;
@@ -554,12 +563,17 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * column offset, and columns are linear in memory
 		 * see below for definition of feature_matrix
 		 *
+		 * not possible with subset
+		 *
 		 * @param src feature matrix to copy
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 */
 		virtual void copy_feature_matrix(ST* src, int32_t num_feat, int32_t num_vec)
 		{
+			if (m_subset->has_subset())
+				SG_ERROR("A subset is set, cannot call copy_feature_matrix\n");
+
 			free_feature_matrix();
 			feature_matrix=new ST[((int64_t) num_feat)*num_vec];
 			feature_matrix_num_features=num_feat;
@@ -574,10 +588,14 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** obtain simple features from other dotfeatures
 		 *
+		 * removes any subset before
+		 *
 		 * @param df dotfeatures to obtain features from
 		 */
 		void obtain_from_dot(CDotFeatures* df)
 		{
+			m_subset->remove_subset();
+
 			int32_t num_feat=df->get_dim_feature_space();
 			int32_t num_vec=df->get_num_vectors();
 
@@ -606,16 +624,23 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** apply preprocessor
 		 *
+		 * applies preprocessors to ALL features (subset removed before and
+		 * restored afterwards)
+		 *
+		 * not possible with subset
+		 *
 		 * @param force_preprocessing if preprocssing shall be forced
 		 * @return if applying was successful
 		 */
 		virtual bool apply_preproc(bool force_preprocessing=false)
 		{
+			if (m_subset->has_subset())
+				SG_ERROR("A subset is set, cannot call apply_preproc\n");
+
 			SG_DEBUG( "force: %d\n", force_preprocessing);
 
 			if ( feature_matrix && get_num_preproc())
 			{
-
 				for (int32_t i=0; i<get_num_preproc(); i++)
 				{ 
 					if ( (!is_preprocessed(i) || force_preprocessing) )
@@ -623,14 +648,17 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 						set_preprocessed(i);
 						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preproc(i);
 						SG_INFO( "preprocessing using preproc %s\n", p->get_name());
+
 						if (p->apply_to_feature_matrix(this) == NULL)
 						{
 							SG_UNREF(p);
 							return false;
 						}
 						SG_UNREF(p);
+
 					}
 				}
+
 				return true;
 			}
 			else
@@ -658,7 +686,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		virtual inline int32_t  get_num_vectors() { return num_vectors; }
 
-		/** get number of features
+		/** get number of features (of possible subset)
 		 *
 		 * @return number of features
 		 */
@@ -676,10 +704,15 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** set number of vectors
 		 *
+		 * not possible with subset
+		 *
 		 * @param num number to set
 		 */
 		inline void set_num_vectors(int32_t num)
 		{
+			if (m_subset->has_subset())
+				SG_ERROR("A subset is set, cannot call set_num_vectors\n");
+
 			num_vectors= num;
 			initialize_cache();
 		}
@@ -687,6 +720,9 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		/* Initialize cache */
 		inline void initialize_cache()
 		{
+			if (m_subset->has_subset())
+				SG_ERROR("A subset is set, cannot call initialize_cache\n");
+
 			if (num_features && num_vectors)
 			{
 				SG_UNREF(feature_cache);
@@ -709,12 +745,17 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** reshape
 		 *
+		 * not possible with subset
+		 *
 		 * @param p_num_features new number of features
 		 * @param p_num_vectors new number of vectors
 		 * @return if reshaping was successful
 		 */
 		virtual bool reshape(int32_t p_num_features, int32_t p_num_vectors)
 		{
+			if (m_subset->has_subset())
+				SG_ERROR("A subset is set, cannot call reshape\n");
+
 			if (p_num_features*p_num_vectors == this->num_features * this->num_vectors)
 			{
 				this->num_features=p_num_features;
@@ -739,6 +780,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices
+		 *
+		 * possible with subset
 		 *
 		 * @param vec_idx1 index of first vector
 		 * @param df DotFeatures (of same kind) to compute dot product with
@@ -767,6 +810,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** compute dot product between vector1 and a dense vector
 		 *
+		 * possible with subset TODO
+		 *
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 pointer to real valued vector
 		 * @param vec2_len length of real valued vector
@@ -774,6 +819,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
 
 		/** add vector 1 multiplied with alpha to dense vector2
+		 *
+		 *possible with subset
 		 *
 		 * @param alpha scalar alpha
 		 * @param vec_idx1 index of first vector
@@ -861,6 +908,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * call get_feature_iterator first, followed by get_next_feature and
 		 * free_feature_iterator to cleanup
 		 *
+		 * possible with subset
+		 *
 		 * @param vector_index the index of the vector over whose components to
 		 * 			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
@@ -884,6 +933,8 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 *
 		 * call this function with the iterator returned by get_first_feature
 		 * and call free_feature_iterator to cleanup
+		 *
+		 * possible with subset
 		 *
 		 * @param index is returned by reference (-1 when not available)
 		 * @param value is returned by reference
@@ -944,6 +995,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		{
 			num_vectors=0;
 			num_features=0;
+			m_num_vectors_total=0;
 
 			feature_matrix=NULL;
 			feature_matrix_num_vectors=0;
@@ -952,7 +1004,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			feature_cache=NULL;
 
 			set_generic<ST>();
-			m_parameters->add(&num_vectors,
+			m_parameters->add(&m_num_vectors_total,
 						"num_vectors", "Number of vectors.");
 			m_parameters->add(&num_features,
 						"num_features", "Number of features.");
@@ -966,7 +1018,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		int32_t num_vectors;
 
 		/* number of vectors regardless of subset */
-		int32_t num_vectors_total;
+		int32_t m_num_vectors_total;
 
 		/// number of features in cache
 		int32_t num_features;
