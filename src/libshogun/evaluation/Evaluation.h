@@ -23,7 +23,7 @@ class CLabels;
  * minimised or maximised */
 enum EEvaluationDirection
 {
-	ED_MINIMISE, ED_MAXIMISE
+	ED_MINIMIZE, ED_MAXIMIZE
 };
 
 /** @brief The class Evaluation
