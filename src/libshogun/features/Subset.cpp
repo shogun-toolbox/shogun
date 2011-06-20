@@ -11,7 +11,6 @@
 #include "features/Subset.h"
 #include "lib/io.h"
 #include "base/Parameter.h"
-#include <string>
 
 using namespace shogun;
 
