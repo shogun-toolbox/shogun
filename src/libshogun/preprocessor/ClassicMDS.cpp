@@ -125,6 +125,6 @@ SGMatrix<float64_t> CClassicMDS::apply_to_feature_matrix(CFeatures* features)
 SGVector<float64_t> CClassicMDS::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SG_NOTIMPLEMENTED;
-	return SGVector<float64_t>();
+	return vector;
 }
 #endif /* HAVE_LAPACK */
