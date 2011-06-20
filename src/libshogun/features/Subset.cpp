@@ -11,45 +11,60 @@
 #include "features/Subset.h"
 #include "lib/io.h"
 #include "base/Parameter.h"
-#include <string>
 
 using namespace shogun;
 
 CSubset::CSubset()
 {
-	m_subset.vector=NULL;
-	m_subset.length=0;
+	m_subset_idx=NULL;
+	m_subset_len=0;
 
-	m_parameters->add(&m_subset, "subset", "Vector of subset indices");
+	m_parameters->add_vector(&m_subset_idx, &m_subset_len, "subset",
+			"Vector of subset indices");
 }
 
 CSubset::~CSubset()
 {
-	delete[] m_subset.vector;
+	delete[] m_subset_idx;
 }
 
-void CSubset::set_subset(SGVector<index_t> subset)
+void CSubset::set_subset(index_t subset_len, index_t* subset_idx)
 {
-	remove_subset();
+	delete[] m_subset_idx;
 
-	m_subset.vector=subset.vector;
-	m_subset.length=subset.length;
+	m_subset_idx=subset_idx;
+	m_subset_len=subset_len;
+}
+
+void CSubset::set_subset(index_t* subset_idx, index_t subset_len)
+{
+	ASSERT(subset_idx);
+
+	delete[] m_subset_idx;
+	m_subset_idx=NULL;
+
+	size_t length=sizeof(index_t)*subset_len;
+
+	m_subset_idx=(index_t*) SG_MALLOC(length);
+
+	memcpy(m_subset_idx, subset_idx, length);
 }
 
 void CSubset::remove_subset()
 {
-	delete[] m_subset.vector;
-	m_subset.vector=NULL;
-	m_subset.length=0;
+	delete[] m_subset_idx;
+	m_subset_idx=NULL;
+	m_subset_len=0;
 }
 
-SGVector<index_t>* CSubset::get_subset_copy()
+void CSubset::get_subset(index_t** subset_idx, index_t* subset_len)
 {
-	SGVector<index_t>* copy=new SGVector<index_t> (
-			(index_t*) SG_MALLOC(m_subset.length*sizeof(index_t)),
-			m_subset.length);
+	if (!m_subset_idx)
+		SG_SERROR("no subset set to copy!\n");
 
-	memcpy(copy->vector, m_subset.vector, m_subset.length*sizeof(index_t));
+	int64_t length=sizeof(index_t)*m_subset_len;
 
-	return copy;
+	*subset_len=m_subset_len;
+	*subset_idx=(index_t*) SG_MALLOC(length);
+	memcpy(*subset_idx, m_subset_idx, length);
 }

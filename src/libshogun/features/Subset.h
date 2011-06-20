@@ -12,6 +12,7 @@
 #define __SUBSET_H_
 
 #include "base/SGObject.h"
+#include <string.h>
 
 namespace shogun
 {
@@ -32,23 +33,39 @@ public:
 
 	/** getter for the subset indices
 	 *
-	 * @return SGVector with subset indices array (no copy)
+	 * @param m_subset_idx (copy of) subset indices matrix (returned)
+	 * @param m_subset_len (copy of) number ofsubset indices (returned)
 	 */
-	SGVector<index_t> get_subset() { return m_subset; }
+	void get_subset(index_t** subset_idx, index_t* subset_len);
 
 	/** getter for the subset indices
 	 *
-	 * @return SGVector with subset indices array (copy)
+	 * @param m_subset_len reference to number of subset indices (returned)
+	 * @return subset indices array
 	 */
-	SGVector<index_t>* get_subset_copy();
+	index_t* get_subset(index_t& subset_len)
+	{
+		subset_len=m_subset_len;
+		return m_subset_idx;
+	}
 
-	bool has_subset() { return m_subset.vector!=NULL; }
+	bool has_subset() { return m_subset_idx!=NULL; }
 
-	/** setter for the subset indices. deletes any old subset vector before
+	/** sets the subset indices matrix which is afterwards used for feature access
+	 * (no copy, matrix is used directly)
 	 *
-	 * @param subset SGVector with subset indices array (directly stored)
+	 * @param m_subset_idx index matrix
+	 * @param m_subset_len number of subset indices
 	 */
-	void set_subset(SGVector<index_t> subset);
+	void set_subset(index_t subset_len, index_t* subset_idx);
+
+	/** sets the subset indices matrix which is afterwards used for feature access
+	 * (a copy of the matrix is stored)
+	 *
+	 * @param m_subset_idx index matrix
+	 * @param m_subset_len number of subset indices
+	 */
+	void set_subset(index_t* subset_idx, index_t subset_len);
 
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "Subset"; }
@@ -60,11 +77,15 @@ public:
 	 */
 	inline index_t subset_idx_conversion(index_t idx)
 	{
-		return m_subset.vector ? m_subset.vector[idx] : idx;
+		return m_subset_idx ? m_subset_idx[idx] : idx;
 	}
 
 private:
-	SGVector<index_t> m_subset;
+	/* subset indices */
+	index_t* m_subset_idx;
+
+	/* length of subset */
+	index_t m_subset_len;
 };
 
 }
