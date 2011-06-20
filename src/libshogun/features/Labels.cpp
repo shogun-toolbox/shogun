@@ -374,7 +374,7 @@ void CLabels::save(CFile* writer)
 void CLabels::set_subset(SGVector<index_t> subset)
 {
 	m_subset->set_subset(subset);
-	num_labels=subset.length;
+	num_labels=subset.vlen;
 }
 
 void CLabels::remove_subset()
