@@ -36,12 +36,6 @@ public:
 	 */
 	SGVector<index_t> get_subset() { return m_subset; }
 
-	/** getter for the subset indices
-	 *
-	 * @return SGVector with subset indices array (copy)
-	 */
-	SGVector<index_t>* get_subset_copy();
-
 	bool has_subset() { return m_subset.vector!=NULL; }
 
 	/** setter for the subset indices. deletes any old subset vector before
