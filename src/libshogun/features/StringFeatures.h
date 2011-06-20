@@ -2103,19 +2103,14 @@ template <class ST> class CStringFeatures : public CFeatures
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StringFeatures"; }
 
-		/** sets the subset indices matrix which is afterwards used for feature access
-		 * overrides method of superclass and adds calculations for this class
-		 *
-		 * @param subset_idx index matrix
-		 * @param subset_len number of subset indices
-		 */
-		void set_subset(int32_t* subset_idx, int32_t subset_len)
+		bool has_subset() { return m_subset->has_subset(); }
+
+		void set_subset(SGVector<index_t> subset)
 		{
-			SGVector<index_t> subset(subset_idx, subset_len);
 			m_subset->set_subset(subset);
-			num_vectors = subset_len;
-			determine_maximum_string_length();
 		}
+
+		SGVector<index_t> get_subset() { return m_subset->get_subset(); }
 
 		/** resets the current subset indices matrix
 		 * overrides method of superclass and adds resets properties dependend on subset as num_vectors
