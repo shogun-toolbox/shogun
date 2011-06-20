@@ -239,28 +239,24 @@ class CFeatures : public CSGObject
 		 * wrapper for Subset methods
 		 * (to avoid mutliple inheritance)
 		 ********************************/
-		virtual void remove_subset() { m_subset->remove_subset(); }
-
-		virtual void get_subset(index_t** subset_idx, index_t* subset_len)
+		virtual void remove_subset()
 		{
-			m_subset->get_subset(subset_idx, subset_len);
+			m_subset->remove_subset();
 		}
 
-		virtual index_t* get_subset(index_t& subset_len)
+		virtual SGVector<index_t> get_subset()
 		{
-			return m_subset->get_subset(subset_len);
+			return m_subset->get_subset();
 		}
 
-		virtual bool has_subset() { return m_subset->has_subset(); }
-
-		virtual void set_subset(index_t subset_len, index_t* subset_idx)
+		bool has_subset()
 		{
-			m_subset->set_subset(subset_len, subset_idx);
+			return m_subset->has_subset();
 		}
 
-		virtual void set_subset(index_t* subset_idx, index_t subset_len)
+		virtual void set_subset(SGVector<index_t> subset)
 		{
-			m_subset->set_subset(subset_idx, subset_len);
+			m_subset->set_subset(subset);
 		}
 		/***********************************
 		 * End of wrapper for Subset methods

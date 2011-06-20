@@ -12,7 +12,6 @@
 #define __SUBSET_H_
 
 #include "base/SGObject.h"
-#include <string.h>
 
 namespace shogun
 {
@@ -33,39 +32,17 @@ public:
 
 	/** getter for the subset indices
 	 *
-	 * @param m_subset_idx (copy of) subset indices matrix (returned)
-	 * @param m_subset_len (copy of) number ofsubset indices (returned)
+	 * @return SGVector with subset indices array (no copy)
 	 */
-	void get_subset(index_t** subset_idx, index_t* subset_len);
+	SGVector<index_t> get_subset() { return m_subset; }
 
-	/** getter for the subset indices
+	bool has_subset() { return m_subset.vector!=NULL; }
+
+	/** setter for the subset indices. deletes any old subset vector before
 	 *
-	 * @param m_subset_len reference to number of subset indices (returned)
-	 * @return subset indices array
+	 * @param subset SGVector with subset indices array (directly stored)
 	 */
-	index_t* get_subset(index_t& subset_len)
-	{
-		subset_len=m_subset_len;
-		return m_subset_idx;
-	}
-
-	bool has_subset() { return m_subset_idx!=NULL; }
-
-	/** sets the subset indices matrix which is afterwards used for feature access
-	 * (no copy, matrix is used directly)
-	 *
-	 * @param m_subset_idx index matrix
-	 * @param m_subset_len number of subset indices
-	 */
-	void set_subset(index_t subset_len, index_t* subset_idx);
-
-	/** sets the subset indices matrix which is afterwards used for feature access
-	 * (a copy of the matrix is stored)
-	 *
-	 * @param m_subset_idx index matrix
-	 * @param m_subset_len number of subset indices
-	 */
-	void set_subset(index_t* subset_idx, index_t subset_len);
+	void set_subset(SGVector<index_t> subset);
 
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "Subset"; }
@@ -77,15 +54,11 @@ public:
 	 */
 	inline index_t subset_idx_conversion(index_t idx)
 	{
-		return m_subset_idx ? m_subset_idx[idx] : idx;
+		return m_subset.vector ? m_subset.vector[idx] : idx;
 	}
 
 private:
-	/* subset indices */
-	index_t* m_subset_idx;
-
-	/* length of subset */
-	index_t m_subset_len;
+	SGVector<index_t> m_subset;
 };
 
 }

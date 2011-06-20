@@ -250,23 +250,19 @@ class CLabels : public CSGObject
 		 * wrapper for Subset methods
 		 * (to avoid mutliple inheritance)
 		 ********************************/
-		void remove_subset();
+		virtual void remove_subset();
 
-		virtual void get_subset(index_t** subset_idx, index_t* subset_len)
+		virtual SGVector<index_t> get_subset()
 		{
-			m_subset->get_subset(subset_idx, subset_len);
+			return m_subset->get_subset();
 		}
 
-		virtual index_t* get_subset(index_t& subset_len)
+		bool has_subset()
 		{
-			return m_subset->get_subset(subset_len);
+			return m_subset->has_subset();
 		}
 
-		virtual bool has_subset() { return m_subset->has_subset(); }
-
-		virtual void set_subset(index_t subset_len, index_t* subset_idx);
-
-		virtual void set_subset(index_t* subset_idx, index_t subset_len);
+		virtual void set_subset(SGVector<index_t> subset);
 		/***********************************
 		 * End of wrapper for Subset methods
 		 **********************************/
