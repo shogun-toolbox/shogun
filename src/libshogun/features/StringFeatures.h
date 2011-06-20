@@ -121,13 +121,9 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** constructor
 		 *
-		 * @param p_features new features
-		 * @param p_num_vectors number of vectors
-		 * @param p_max_string_length maximum string length
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(SGString<ST>* p_features, int32_t p_num_vectors,
-				int32_t p_max_string_length, EAlphabet alpha)
+		CStringFeatures(SGStringList<ST> string_list, EAlphabet alpha)
 		: CFeatures(0), num_vectors(0), num_vectors_total(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
 			max_string_length(0), max_string_length_total(0), order(0),
@@ -139,18 +135,14 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
 			original_num_symbols=num_symbols;
-			set_features(p_features, p_num_vectors, p_max_string_length);
+			set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 		}
 
 		/** constructor
 		 *
-		 * @param p_features new features
-		 * @param p_num_vectors number of vectors
-		 * @param p_max_string_length maximum string length
 		 * @param alpha an actual alphabet
 		 */
-		CStringFeatures(SGString<ST>* p_features, int32_t p_num_vectors,
-				int32_t p_max_string_length, CAlphabet* alpha)
+		CStringFeatures(SGStringList<ST> string_list, CAlphabet* alpha)
 		: CFeatures(0), num_vectors(0), num_vectors_total(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
 			max_string_length(0), max_string_length_total(0), order(0),
@@ -162,7 +154,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
 			original_num_symbols=num_symbols;
-			set_features(p_features, p_num_vectors, p_max_string_length);
+			set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 		}
 
 		/** constructor
@@ -342,11 +334,9 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** get string for selected example num, from the subset if there is one
 		 *
-		 * @param dst destination where vector will be stored
-		 * @param len number of features in vector
 		 * @param num index of the string
 		 */
-		void get_feature_vector(ST** dst, int32_t* len, int32_t num)
+		SGVector<ST> get_feature_vector(int32_t num)
 		{
 			ASSERT(features);
 			if (num>=num_vectors)
@@ -358,10 +348,10 @@ template <class ST> class CStringFeatures : public CFeatures
 			int32_t l;
 			bool free_vec;
 			ST* vec=get_feature_vector(num, l, free_vec);
-			*len=l;
-			*dst=(ST*) SG_MALLOC(*len * sizeof(ST));
-			memcpy(*dst, vec, *len * sizeof(ST));
+			ST* dst=(ST*) SG_MALLOC(l*sizeof(ST));
+			memcpy(dst, vec, l*sizeof(ST));
 			free_feature_vector(vec, num, free_vec);
+			return SGVector<ST>(dst,l);
 		}
 
 		/** set string for selected example num, does not work if subset is set
@@ -370,7 +360,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param len number of features in vector
 		 * @param num index of the string
 		 */
-		void set_feature_vector(ST* src, int32_t len, int32_t num)
+		void set_feature_vector(SGVector<ST> vector, int32_t num)
 		{
 			ASSERT(features);
 
@@ -383,13 +373,13 @@ template <class ST> class CStringFeatures : public CFeatures
 						"requested %d)\n", num_vectors, num);
 			}
 
-			if (len<=0)
+			if (vector.vlen<=0)
 				SG_ERROR("String has zero or negative length\n");
 
 			cleanup_feature_vector(num);
-			features[num].length=len;
-			features[num].string=new ST[len];
-			memcpy(features[num].string, src, len*sizeof(ST));
+			features[num].length=vector.vlen;
+			features[num].string=new ST[vector.vlen];
+			memcpy(features[num].string, vector.vector, vector.vlen*sizeof(ST));
 
 			determine_maximum_string_length();
 		}
@@ -467,8 +457,12 @@ template <class ST> class CStringFeatures : public CFeatures
 			int32_t num_feat;
 			int32_t num_vec;
 			SGString<ST>* s=get_transposed(num_feat, num_vec);
+			SGStringList<ST> string_list;
+			string_list.strings = s;
+			string_list.num_strings = num_vec;
+			string_list.max_string_length = num_feat;
 
-			return new CStringFeatures<ST>(s, num_vec, num_feat, alphabet);
+			return new CStringFeatures<ST>(string_list, alphabet);
 		}
 
 		/** compute and return the transpose of string features matrix
