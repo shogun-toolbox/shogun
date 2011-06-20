@@ -229,13 +229,9 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** set feature vector num
 		 *
-		 * ( only available in-memory feature matrices )
-		 *
-		 * @param src vector
-		 * @param len length of vector
-		 * @param num index where to put vector to
+		 * @param vector vector
 		 */
-		void set_feature_vector(ST* src, int32_t len, int32_t num)
+		void set_feature_vector(SGVector<ST> vector, int32_t num)
 		{
 			if (num>=num_vectors)
 			{
@@ -246,10 +242,10 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			if (!feature_matrix)
 				SG_ERROR("Requires a in-memory feature matrix\n");
 
-			if (len != num_features)
-				SG_ERROR("Vector not of length %d (has %d)\n", num_features, len);
+			if (vector.vlen != num_features)
+				SG_ERROR("Vector not of length %d (has %d)\n", num_features, vector.vlen);
 
-			memcpy(&feature_matrix[num*int64_t(num_features)], src, int64_t(num_features)*sizeof(ST));
+			memcpy(&feature_matrix[num*int64_t(num_features)], vector.vector, int64_t(num_features)*sizeof(ST));
 		}
 
 		/** get feature vector num
@@ -258,7 +254,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param len length of vector
 		 * @param num index of vector
 		 */
-		void get_feature_vector(ST** dst, int32_t* len, int32_t num)
+		SGVector<ST> get_feature_vector(int32_t num)
 		{
 			if (num>=num_vectors)
 			{
@@ -271,11 +267,11 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 			ST* vec= get_feature_vector(num, vlen, free_vec);
 
-			*len=vlen;
-			*dst=(ST*) SG_MALLOC(vlen*sizeof(ST));
-			memcpy(*dst, vec, vlen*sizeof(ST));
+			ST* dst=(ST*) SG_MALLOC(vlen*sizeof(ST));
+			memcpy(dst, vec, vlen*sizeof(ST));
 
 			free_feature_vector(vec, num, free_vec);
+			return SGVector<ST>(dst,vlen);
 		}
 
 		/** free feature vector

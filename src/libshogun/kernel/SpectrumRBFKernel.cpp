@@ -57,9 +57,13 @@ CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int
 	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	read_profiles_and_sequences();
+	SGStringList<char> string_list;
+	string_list.strings = sequences;
+	string_list.num_strings = nof_sequences;
+	string_list.max_string_length = max_sequence_length;
 
 	//string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, PROTEIN);
-	string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, IUPAC_AMINO_ACID);
+	string_features = new CStringFeatures<char>(string_list, IUPAC_AMINO_ACID);
 	init(string_features, string_features);
 	register_param();
 }
