@@ -146,7 +146,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			feature_matrix_num_features=num_features;
 			feature_matrix_num_vectors=num_vectors;
             num_vectors=0;
-            num_vectors_total=0;
             num_features=0;
 		}
 
@@ -163,9 +162,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * for sample num from the matrix as it is if matrix is
 		 * initialized, else return preprocessed compute_feature_vector
 		 *
-		 * possible with subset
-		 *
-		 * @param num index of feature vector, possibly from subset
+		 * @param num index of feature vector
 		 * @param len length is returned by reference
 		 * @param dofree whether returned vector must be freed by
 		 * caller via free_feature_vector
@@ -173,16 +170,12 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree)
 		{
-			/* do index conversion for subset, note that only array accesses
-			 * have to be mapped. All function calls go with the original idx */
-			int32_t real_num=m_subset->subset_idx_conversion(num);
-
 			len=num_features;
 
 			if (feature_matrix)
 			{
 				dofree=false;
-				return &feature_matrix[real_num*int64_t(num_features)];
+				return &feature_matrix[num*int64_t(num_features)];
 			} 
 			else
 			{
@@ -236,8 +229,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** set feature vector num
 		 *
-		 * not possible with subset
-		 *
 		 * ( only available in-memory feature matrices )
 		 *
 		 * @param src vector
@@ -246,9 +237,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		void set_feature_vector(ST* src, int32_t len, int32_t num)
 		{
-			if (m_subset->has_subset())
-				SG_ERROR("A subset is set, cannot set feature vector\n");
-
 			if (num>=num_vectors)
 			{
 				SG_ERROR("Index out of bounds (number of vectors %d, you "
@@ -266,22 +254,16 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** get feature vector num
 		 *
-		 * possible with subset
-		 *
 		 * @param dst destination to store vector in
 		 * @param len length of vector
 		 * @param num index of vector
 		 */
 		void get_feature_vector(ST** dst, int32_t* len, int32_t num)
 		{
-			/* do index conversion for subset, note that only array accesses
-			 * have to be mapped. All function calls go with the original idx */
-			int32_t real_num=m_subset->subset_idx_conversion(num);
-
-			if (real_num>=num_vectors)
+			if (num>=num_vectors)
 			{
 				SG_ERROR("Index out of bounds (number of vectors %d, you "
-						"requested %d)\n", num_vectors, real_num);
+						"requested %d)\n", num_vectors, num);
 			}
 
 			int32_t vlen=0;
@@ -297,8 +279,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		}
 
 		/** free feature vector
-		 *
-		 * possible with subset
 		 *
 		 * @param feat_vec feature vector to free
 		 * @param num index in feature cache
@@ -319,8 +299,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 *
 		 * It does not resize the allocated memory block.
 		 *
-		 * not possible with subset
-		 *
 		 * @param idx index with examples that shall remain in the feature matrix
 		 * @param idx_len length of the index
 		 *
@@ -328,9 +306,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		void vector_subset(int32_t* idx, int32_t idx_len)
 		{
-			if (m_subset->has_subset())
-				SG_ERROR("A subset is set, cannot call vector_subset\n");
-
 			ASSERT(feature_matrix);
 			ASSERT(idx_len<=num_vectors);
 
@@ -362,8 +337,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 *
 		 * It does not resize the allocated memory block.
 		 *
-		 * not possible with subset
-		 *
 		 * @param idx index with features that shall remain in the feature matrix
 		 * @param idx_len length of the index
 		 *
@@ -371,9 +344,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		void feature_subset(int32_t* idx, int32_t idx_len)
 		{
-			if (m_subset->has_subset())
-				SG_ERROR("A subset is set, cannot call feature_subset\n");
-
 			ASSERT(feature_matrix);
 			ASSERT(idx_len<=num_features);
 			int32_t num_feat=num_features;
@@ -401,8 +371,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		/** get a copy of the feature matrix
 		 * num_feat,num_vectors are returned by reference
 		 *
-		 * possible with subset
-		 *
 		 * @param dst destination to store matrix in
 		 * @param num_feat number of features (rows of matrix)
 		 * @param num_vec number of vectors (columns of matrix)
@@ -415,48 +383,18 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			*num_feat=num_features;
 			*num_vec=num_vectors;
 			*dst=(ST*) SG_MALLOC(sizeof(ST)*num);
-
-			/* copying depends on whether a subset is used */
-			if (m_subset->has_subset())
-			{
-				/* copy vector wise */
-				for (int32_t i=0; i<num_vectors; ++i)
-				{
-					int32_t real_i=m_subset->subset_idx_conversion(i);
-					memcpy(*dst, feature_matrix[real_i*int64_t(num_features)],
-						num_features*sizeof(ST));
-				}
-			}
-			else
-			{
-				/* copy complete matrix */
-				memcpy(*dst, feature_matrix, num * sizeof(ST));
-			}
+			if (!*dst)
+				SG_ERROR("Allocating %ld bytes failes\n", sizeof(ST)*num);
+			memcpy(*dst, feature_matrix, num * sizeof(ST));
 		}
 
-		/** not possible with subset
-		 *
-		 * @return feature matrix in SGMatrix format
-		 */
 		SGMatrix<ST> get_feature_matrix()
 		{
-			if (m_subset->has_subset())
-				SG_ERROR("A subset is set, cannot call get_feature_matrix\n");
-
 			return SGMatrix<ST>(feature_matrix, num_features, num_vectors);
 		}
 
-		/** setter for feature matrix.
-		 *
-		 * not possible with subset
-		 *
-		 * @matrix feature matrix to set
-		 */
 		void set_feature_matrix(SGMatrix<ST> matrix)
 		{
-			if (m_subset->has_subset())
-				SG_ERROR("A subset is set, cannot call set_feature_matrix\n");
-
 			feature_matrix=matrix.matrix;
 			num_features=matrix.num_rows;
 			num_vectors=matrix.num_cols;
@@ -465,25 +403,18 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		/** get the pointer to the feature matrix
 		 * num_feat,num_vectors are returned by reference
 		 *
-		 * not possible with subset
-		 *
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
 		 * @return feature matrix
 		 */
 		ST* get_feature_matrix(int32_t &num_feat, int32_t &num_vec)
 		{
-			if (m_subset->has_subset())
-				SG_ERROR("A subset is set, cannot call get_feature_matrix\n");
-
 			num_feat=num_features;
 			num_vec=num_vectors;
 			return feature_matrix;
 		}
 
 		/** get a transposed copy of the features
-		 *
-		 * possible with subset
 		 *
 		 * @return transposed copy
 		 */
@@ -500,8 +431,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * which will be prepocessed.
 		 * num_feat, num_vectors are returned by reference
 		 * caller has to clean up
-		 *
-		 * possible with subset
 		 *
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
@@ -936,7 +865,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		virtual ST* compute_feature_vector(int32_t num, int32_t& len, ST* target=NULL)
 		{
-			SG_NOTIMPLEMENTED;
 			len=0;
 			return NULL;
 		}
@@ -966,9 +894,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 	protected:
 		/// number of vectors in cache
 		int32_t num_vectors;
-
-		/* number of vectors regardless of subset */
-		int32_t num_vectors_total;
 
 		/// number of features in cache
 		int32_t num_features;
