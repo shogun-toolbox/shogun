@@ -364,26 +364,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			}
 		}
 
-		/** get a copy of the feature matrix
-		 * num_feat,num_vectors are returned by reference
-		 *
-		 * @param dst destination to store matrix in
-		 * @param num_feat number of features (rows of matrix)
-		 * @param num_vec number of vectors (columns of matrix)
-		 */
-		void get_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec)
-		{
-			ASSERT(feature_matrix);
-
-			int64_t num=int64_t(num_features)*num_vectors;
-			*num_feat=num_features;
-			*num_vec=num_vectors;
-			*dst=(ST*) SG_MALLOC(sizeof(ST)*num);
-			if (!*dst)
-				SG_ERROR("Allocating %ld bytes failes\n", sizeof(ST)*num);
-			memcpy(*dst, feature_matrix, num * sizeof(ST));
-		}
-
 		SGMatrix<ST> get_feature_matrix()
 		{
 			return SGMatrix<ST>(feature_matrix, num_features, num_vectors);

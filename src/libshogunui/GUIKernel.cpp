@@ -119,9 +119,11 @@ CKernel* CGUIKernel::create_custom(float64_t* kmatrix, int32_t num_feat, int32_t
 
 	bool success=false;
 
-	if (source_is_diag && dest_is_diag && num_vec==num_feat)
+	if (source_is_diag && dest_is_diag && num_feat==1)
+	{
 		success=kern->set_triangle_kernel_matrix_from_triangle(
-				kmatrix, num_vec);
+				SGVector<float64_t>(kmatrix, num_vec));
+	}
 	else if (!source_is_diag && dest_is_diag && num_vec==num_feat)
 		success=kern->set_triangle_kernel_matrix_from_full(km);
 	else

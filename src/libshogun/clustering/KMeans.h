@@ -118,7 +118,7 @@ class CKMeans : public CDistanceMachine
 			return max_iter;
 		}
 
-		/** get radi
+		/** get radiuses
 		 *
 		 */
 		SGVector<float64_t> get_radiuses()

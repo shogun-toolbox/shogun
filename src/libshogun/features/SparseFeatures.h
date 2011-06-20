@@ -96,17 +96,15 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		/** convenience constructor that creates sparse features from
 		 * dense features
 		 *
-		 * @param src dense feature matrix
-		 * @param num_feat number of features
-		 * @param num_vec number of vectors
+		 * @param dense dense feature matrix
 		 */
-		CSparseFeatures(ST* src, int32_t num_feat, int32_t num_vec)
+		CSparseFeatures(SGMatrix<ST> dense)
 		: CDotFeatures(0), num_vectors(0), num_features(0),
 			sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
 			init();
 
-			set_full_feature_matrix(src, num_feat, num_vec);
+			set_full_feature_matrix(dense);
 		}
 
 		/** copy constructor */
@@ -248,11 +246,10 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** get the fully expanded dense feature vector num
 		  *
-		  * @param dst feature vector
-		  * @param len length is returned by reference
+		  * @return dense feature vector
 		  * @param num index of feature vector
 		  */
-		void get_full_feature_vector(ST** dst, int32_t* len, int32_t num)
+		SGVector<ST> get_full_feature_vector(int32_t num)
 		{
 			if (num>=num_vectors)
 			{
@@ -262,20 +259,24 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			bool vfree;
 			int32_t num_feat=0;
-			*len=0;
 			SGSparseVectorEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
+
+			SGVector<ST> dense;
 
 			if (sv)
 			{
-				*len=num_features;
-				*dst= (ST*) SG_MALLOC(sizeof(ST)*num_features);
-				memset(*dst, 0, sizeof(ST)*num_features);
+				dense.do_free=true;
+				dense.vlen=num_features;
+				dense.vector=new ST[num_features];
+				memset(dense.vector, 0, sizeof(ST)*num_features);
 
 				for (int32_t i=0; i<num_feat; i++)
-					(*dst)[sv[i].feat_index]= sv[i].entry;
+					dense.vector[sv[i].feat_index]= sv[i].entry;
 			}
 
 			free_sparse_feature_vector(sv, num, vfree);
+
+			return dense;
 		}
 
 
@@ -657,71 +658,31 @@ template <class ST> class CSparseFeatures : public CDotFeatures
         }
 
 		/** gets a copy of a full feature matrix
-		 * num_feat,num_vectors are returned by reference
 		 *
-		 * @param num_feat number of features in matrix
-		 * @param num_vec number of vectors in matrix
-		 * @return full feature matrix
+		 * @return full dense feature matrix
 		 */
-		ST* get_full_feature_matrix(int32_t &num_feat, int32_t &num_vec)
+		SGMatrix<ST> get_full_feature_matrix()
 		{
+			SGMatrix<ST> full;
+
 			SG_INFO( "converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features);
-			num_feat=num_features;
-			num_vec=num_vectors;
+			full.num_rows=num_features;
+			full.num_cols=num_vectors;
+			full.do_free=true;
+			full.matrix=new ST[int64_t(num_features)*num_vectors];
 
-			ST* fm=new ST[num_feat*num_vec];
+			memset(full.matrix, 0, size_t(num_features)*size_t(num_vectors)*sizeof(ST));
 
-			if (fm)
+			for (int32_t v=0; v<num_vectors; v++)
 			{
-				for (int64_t i=0; i<num_feat*num_vec; i++)
-					fm[i]=0;
-
-				for (int32_t v=0; v<num_vec; v++)
+				for (int32_t f=0; f<sparse_feature_matrix[v].num_feat_entries; f++)
 				{
-					for (int32_t f=0; f<sparse_feature_matrix[v].num_feat_entries; f++)
-					{
-						int64_t offs= (sparse_feature_matrix[v].vec_index * num_feat) + sparse_feature_matrix[v].features[f].feat_index;
-						fm[offs]= sparse_feature_matrix[v].features[f].entry;
-					}
+					int64_t offs= (sparse_feature_matrix[v].vec_index * num_features) + sparse_feature_matrix[v].features[f].feat_index;
+					full.matrix[offs]= sparse_feature_matrix[v].features[f].entry;
 				}
 			}
-			else
-				SG_ERROR( "error allocating memory for dense feature matrix\n");
 
-			return fm;
-		}
-
-		/** gets a copy of a full feature matrix (swig compatible)
-		 * num_feat,num_vectors are returned by reference
-		 *
-		 * @param dst full feature matrix
-		 * @param num_feat number of features in matrix
-		 * @param num_vec number of vectors in matrix
-		 */
-		void get_full_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec)
-		{
-			SG_INFO( "converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features);
-			*num_feat=num_features;
-			*num_vec=num_vectors;
-
-			*dst= (ST*) SG_MALLOC(sizeof(ST)*num_features*num_vectors);
-
-			if (*dst)
-			{
-				for (int64_t i=0; i<num_features*num_vectors; i++)
-					(*dst)[i]=0;
-
-				for (int32_t v=0; v<num_vectors; v++)
-				{
-					for (int32_t f=0; f<sparse_feature_matrix[v].num_feat_entries; f++)
-					{
-						int64_t offs= (sparse_feature_matrix[v].vec_index * num_features) + sparse_feature_matrix[v].features[f].feat_index;
-						(*dst)[offs]= sparse_feature_matrix[v].features[f].entry;
-					}
-				}
-			}
-			else
-				SG_ERROR( "error allocating memory for dense feature matrix\n");
+			return full;
 		}
 
 		/** creates a sparse feature matrix from a full dense feature matrix
@@ -729,12 +690,14 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * where num_features is the column offset, and columns are linear in memory
 		 * see above for definition of sparse_feature_matrix
 		 *
-		 * @param src full feature matrix
-		 * @param num_feat number of features in matrix
-		 * @param num_vec number of vectors in matrix
+		 * @param full full feature matrix
 		 */
-		virtual bool set_full_feature_matrix(ST* src, int32_t num_feat, int32_t num_vec)
+		virtual bool set_full_feature_matrix(SGMatrix<ST> full)
 		{
+			ST* src=full.matrix;
+			int32_t num_feat=full.num_rows;
+			int32_t num_vec=full.num_cols;
+
 			free_sparse_feature_matrix();
 			bool result=true;
 			num_features=num_feat;
@@ -861,12 +824,10 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		bool obtain_from_simple(CSimpleFeatures<ST>* sf)
 		{
-			int32_t num_feat=0;
-			int32_t num_vec=0;
-			ST* fm=sf->get_feature_matrix(num_feat, num_vec);
-			ASSERT(fm && num_feat>0 && num_vec>0);
+			SGMatrix<ST> fm=sf->get_feature_matrix();
+			ASSERT(fm.matrix && fm.num_cols>0 && fm.num_rows>0);
 
-			return set_full_feature_matrix(fm, num_feat, num_vec);
+			return set_full_feature_matrix(fm);
 		}
 
 		/** get number of feature vectors
