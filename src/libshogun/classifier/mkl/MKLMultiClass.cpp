@@ -78,20 +78,13 @@ void CMKLMultiClass::initsvm()
 	svm->set_C(get_C1(),get_C2());
 	svm->set_epsilon(epsilon);
 
-	int32_t numlabels;
-	float64_t * lb=labels->get_labels (numlabels);
-
-	if (numlabels<=0)	
+	if (labels->get_num_labels()<=0)	
 	{
 		SG_ERROR("CMKLMultiClass::initsvm(): the number of labels is "
 				"nonpositive, do not know how to handle this!\n");
 	}
 
-	CLabels* newlab=new CLabels(lb, labels->get_num_labels() );
-
-	svm->set_labels(newlab);
-
-	newlab=NULL;
+	svm->set_labels(labels);
 }
 
 void CMKLMultiClass::initlpsolver()
