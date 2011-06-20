@@ -2111,7 +2111,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		void set_subset(int32_t* subset_idx, int32_t subset_len)
 		{
-			m_subset->set_subset(subset_idx, subset_len);
+			SGVector<index_t> subset(subset_idx, subset_len);
+			m_subset->set_subset(subset);
 			num_vectors = subset_len;
 			determine_maximum_string_length();
 		}
