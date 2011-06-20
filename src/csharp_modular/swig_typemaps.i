@@ -48,7 +48,7 @@
 	for (i=0; i < $1.vlen; i++)
 		res[i] = (CSHARPTYPE)$1.vector[i];
 
-    $1.free_matrix();
+    $1.free_vector();
 
 	if (!res)
 		return NULL;
