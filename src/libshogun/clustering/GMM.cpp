@@ -69,10 +69,12 @@ bool CGMM::train(CFeatures* data)
 	CEuclidianDistance* dist = new CEuclidianDistance();
 	CKMeans* init_k_means = new CKMeans(m_n, dist);
 	init_k_means->train(dotdata);
-	float64_t* init_means;
-	int32_t init_mean_dim;
-	int32_t init_mean_size;
-	init_k_means->get_cluster_centers(&init_means, &init_mean_dim, &init_mean_size);
+	// sorry ;)
+	SGMatrix<float64_t> cluster_centers = init_k_means->get_cluster_centers();
+	float64_t* init_means = cluster_centers.matrix;
+	int32_t init_mean_dim = cluster_centers.num_rows;
+	int32_t init_mean_size = cluster_centers.num_cols;
+
 
 	float64_t* init_cov;
 	int32_t init_cov_rows;
@@ -85,8 +87,8 @@ bool CGMM::train(CFeatures* data)
 	for (int i=0; i<m_n; i++)
 	{
 		m_coefficients[i] = 1.0/m_coef_size;
-		m_components[i] = new CGaussian(&(init_means[i*init_mean_dim]), init_mean_dim,
-								init_cov, init_cov_rows, init_cov_cols);
+		m_components[i] = new CGaussian(SGVector<float64_t>(&(init_means[i*init_mean_dim]), init_mean_dim),
+								        SGMatrix<float64_t>(init_cov, init_cov_rows, init_cov_cols));
 	}
 
 	/** question of faster vs. less memory using */
@@ -155,7 +157,7 @@ bool CGMM::train(CFeatures* data)
 			for (int j=0; j<num_dim; j++)
 				mean_sum[j] /= T_sum;
 			
-			m_components[i]->set_mean(mean_sum, num_dim);
+			m_components[i]->set_mean(SGVector<float64_t>(mean_sum, num_dim));
 
 			cov_sum = new float64_t[num_dim*num_dim];
 			memset(cov_sum, 0, num_dim*num_dim*sizeof(float64_t));
@@ -172,7 +174,7 @@ bool CGMM::train(CFeatures* data)
 			for (int j=0; j<num_dim*num_dim; j++)
 				cov_sum[j] /= T_sum;
 
-			m_components[i]->set_cov(cov_sum, num_dim, num_dim);
+			m_components[i]->set_cov(SGMatrix<float64_t>(cov_sum, num_dim, num_dim));
 
 			delete[] mean_sum;
 			delete[] cov_sum;
