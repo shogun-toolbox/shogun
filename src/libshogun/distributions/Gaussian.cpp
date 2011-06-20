@@ -24,19 +24,16 @@ m_mean_length(0)
 {
 }
 
-CGaussian::CGaussian(float64_t* mean, int32_t mean_length,
-					float64_t* cov, int32_t cov_rows, int32_t cov_cols) : CDistribution(),
+CGaussian::CGaussian(SGVector<float64_t> mean_vector, SGMatrix<float64_t> cov_matrix) : CDistribution(),
 					m_cov_inverse(NULL)
 {
-	ASSERT(mean_length == cov_rows);
-	ASSERT(cov_rows == cov_cols);
-	m_mean = new float64_t[mean_length];
-	memcpy(m_mean, mean, sizeof(float64_t)*mean_length);
-	m_cov = new float64_t[cov_rows*cov_cols];
-	memcpy(m_cov, cov, sizeof(float64_t)*cov_rows*cov_cols);
-	m_mean_length = mean_length;
-	m_cov_rows = cov_rows;
-	m_cov_cols = cov_cols;
+	ASSERT(mean_vector.vlen == cov_matrix.num_rows);
+	ASSERT(cov_matrix.num_rows == cov_matrix.num_cols);
+	m_mean = mean_vector.vector;
+	m_cov = cov_matrix.matrix;
+	m_mean_length = mean_vector.vlen;
+	m_cov_rows = cov_matrix.num_rows;
+	m_cov_cols = cov_matrix.num_cols;
 	init();
 	register_params();
 }

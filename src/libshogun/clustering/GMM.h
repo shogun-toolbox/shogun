@@ -94,39 +94,30 @@ class CGMM : public CDistribution
 
 		/** get nth mean
 		 *
-		 * @param mean copy of the mean
-		 * @param mean_length
 		 * @param num which mean to retrieve
 		 */
-		virtual inline void get_nth_mean(float64_t** mean, int32_t* mean_length, int32_t num)
+		virtual SGVector<float64_t> get_nth_mean(int32_t num)
 		{
 			ASSERT(num<m_n);
-			return m_components[num]->get_mean(mean, mean_length);
+			return m_components[num]->get_mean();
 		}
 
 		/** get nth cov
 		 *
-		 * @param cov copy of the cov
-		 * @param cov_rows
-		 * @param cov_cols
 		 * @param num which covariance to retrieve
 		 */
-		virtual inline void get_nth_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols, int32_t num)
+		virtual SGMatrix<float64_t> get_nth_cov(int32_t num)
 		{
 			ASSERT(num<m_n);
-			return m_components[num]->get_cov(cov, cov_rows, cov_cols);
+			return m_components[num]->get_cov();
 		}
 
 		/** get coefficients
 		 *
-		 * @param coef copy of coeffiecients
-		 * @param coef_length coef vector length
 		 */
-		virtual inline void get_coef(float64_t** coef, int32_t* coef_length)
+		virtual SGVector<float64_t> get_coef()
 		{
-			*coef = new float64_t[m_coef_size];
-			memcpy(*coef, m_coefficients, sizeof(float64_t)*m_coef_size);
-			*coef_length = m_coef_size;
+			return SGVector<float64_t>(m_coefficients,m_coef_size);
 		}
 
 		/** @return object name */
