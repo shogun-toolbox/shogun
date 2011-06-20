@@ -206,12 +206,8 @@ CLabels* CKNN::classify_NN()
 	return output;
 }
 
-void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_out)
+SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 {
-	ASSERT(dst);
-	ASSERT(k_out);
-	ASSERT(num_vec);
-
 	ASSERT(num_classes>0);
 	ASSERT(distance);
 	ASSERT(distance->get_num_vec_rhs());
@@ -272,9 +268,7 @@ void CKNN::classify_for_multiple_k(int32_t** dst, int32_t* num_vec, int32_t* k_o
 	delete[] train_lab;
 	delete[] classes;
 
-	*dst=output;
-	*k_out=m_k;
-	*num_vec=num_lab;
+	return SGMatrix<int32_t>(output,num_lab,m_k);
 }
 
 void CKNN::init_distance(CFeatures* data)

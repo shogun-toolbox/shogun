@@ -40,7 +40,7 @@ public:
 	/** init
 	 * @param data feature vectors for preproc
 	 */
-	virtual bool init(CFeatures* data);
+	virtual bool init(CFeatures* features);
 
 	/** cleanup
 	 *
@@ -55,12 +55,12 @@ public:
 	/** apply preproc to feature matrix
 	 *
 	 */
-	virtual float64_t* apply_to_feature_matrix(CFeatures* f);
+	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 	/** apply preproc to feature vector
 	 *
 	 */
-	virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
+	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** get name */
 	virtual inline const char* get_name() const { return "ISOMAP"; };

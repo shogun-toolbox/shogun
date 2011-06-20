@@ -81,41 +81,6 @@ CKernel::~CKernel()
 	SG_INFO("Kernel deleted (%p).\n", this);
 }
 
-void CKernel::get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n)
-{
-	ASSERT(dst && m && n);
-
-	float64_t* result = NULL;
-
-	if (has_features())
-	{
-		int32_t num_vec1=get_num_vec_lhs();
-		int32_t num_vec2=get_num_vec_rhs();
-		*m=num_vec1;
-		*n=num_vec2;
-
-		int64_t total_num = ((int64_t) num_vec1) * num_vec2;
-		SG_DEBUG( "allocating memory for a kernel matrix"
-				" of size %dx%d\n", num_vec1, num_vec2);
-
-		result=(float64_t*) SG_MALLOC(sizeof(float64_t)*total_num);
-		ASSERT(result);
-		get_kernel_matrix<float64_t>(num_vec1,num_vec2, result);
-	}
-	else
-		SG_ERROR( "no features assigned to kernel\n");
-
-	*dst=result;
-}
-
-
-SGMatrix<float64_t> CKernel::get_kernel_matrix()
-{
-	int32_t m,n;
-	float64_t* data=get_kernel_matrix<float64_t>(m,n,NULL);
-	return SGMatrix<float64_t>(data, m,n);
-}
-
 #ifdef USE_SVMLIGHT
 void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 {
@@ -661,11 +626,10 @@ void CKernel::load(CFile* loader)
 
 void CKernel::save(CFile* writer)
 {
-	int32_t m,n;
-	float64_t* km=get_kernel_matrix<float64_t>(m,n, NULL);
+	SGMatrix<float64_t> k_matrix=get_kernel_matrix<float64_t>();
 	SG_SET_LOCALE_C;
-	writer->set_real_matrix(km, m,n);
-	delete[] km;
+	writer->set_real_matrix(k_matrix.matrix, k_matrix.num_rows, k_matrix.num_cols);
+	delete[] k_matrix.matrix;
 	SG_RESET_LOCALE;
 }
 

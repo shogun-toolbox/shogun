@@ -130,8 +130,8 @@ void CLabels::set_labels(SGVector<float64_t> v)
 
 	delete[] labels;
 	labels=v.vector;
-	num_labels=v.length;
-	num_labels_total=v.length;
+	num_labels=v.vlen;
+	num_labels_total=v.vlen;
 }
 
 void CLabels::set_labels(float64_t* p_labels, int32_t len)
@@ -371,16 +371,10 @@ void CLabels::save(CFile* writer)
 	SG_RESET_LOCALE;
 }
 
-void CLabels::set_subset(index_t subset_len, index_t* subset_idx)
+void CLabels::set_subset(SGVector<index_t> subset)
 {
-	m_subset->set_subset(subset_len, subset_idx);
-	num_labels=subset_len;
-}
-
-void CLabels::set_subset(index_t* subset_idx, index_t subset_len)
-{
-	m_subset->set_subset(subset_idx, subset_len);
-	num_labels=subset_len;
+	m_subset->set_subset(subset);
+	num_labels=subset.length;
 }
 
 void CLabels::remove_subset()

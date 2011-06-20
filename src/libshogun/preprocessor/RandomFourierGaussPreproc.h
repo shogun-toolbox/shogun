@@ -68,7 +68,7 @@ public:
 	 * @return  float64_t * the processed feature matrix from the CSimpleFeatures<float64_t> class
 	 * in case (2) (see description above) this routine requires only steps 2a) and 2b), the rest is determined automatically
 	 */
-	virtual float64_t * apply_to_feature_matrix(CFeatures *f); // ref count fo the feature matrix???
+	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features); // ref count fo the feature matrix???
 
 
 	/** alternative processing routine, inherited from base class
@@ -78,7 +78,7 @@ public:
 	 *
 	 * in order to work this routine requires the steps described above under cases (1) or two (2) before calling this routine
 	 */
-	virtual float64_t * apply_to_feature_vector(float64_t *f, int32_t &len);
+	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** inherited from base class
 	 * @return C_SIMPLE

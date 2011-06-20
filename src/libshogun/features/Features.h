@@ -104,20 +104,20 @@ class CFeatures : public CSGObject
 		 * @param p preprocessor to set
 		 * @return something inty
 		 */
-		virtual int32_t add_preproc(CPreprocessor* p);
+		virtual int32_t add_preprocessor(CPreprocessor* p);
 
 		/** delete preprocessor from list
 		 * caller has to clean up returned preproc
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		virtual CPreprocessor* del_preproc(int32_t num);
+		virtual CPreprocessor* del_preprocessor(int32_t num);
 
 		/** get specified preprocessor
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		CPreprocessor* get_preproc(int32_t num);
+		CPreprocessor* get_preprocessor(int32_t num);
 
 		/** set applied flag for preprocessor
 		 *
@@ -141,10 +141,10 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of preprocessors
 		 */
-		inline int32_t get_num_preproc() { return num_preproc; }
+		inline int32_t get_num_preprocessors() { return num_preproc; }
 
 		/** clears all preprocs */
-		void clean_preprocs();
+		void clean_preprocessors();
 
 		/** get cache size
 		 *
@@ -239,28 +239,29 @@ class CFeatures : public CSGObject
 		 * wrapper for Subset methods
 		 * (to avoid mutliple inheritance)
 		 ********************************/
-		virtual void remove_subset() { m_subset->remove_subset(); }
-
-		virtual void get_subset(index_t** subset_idx, index_t* subset_len)
+		virtual void remove_subset()
 		{
-			m_subset->get_subset(subset_idx, subset_len);
+			m_subset->remove_subset();
 		}
 
-		virtual index_t* get_subset(index_t& subset_len)
+		virtual SGVector<index_t> get_subset()
 		{
-			return m_subset->get_subset(subset_len);
+			return m_subset->get_subset();
 		}
 
-		virtual bool has_subset() { return m_subset->has_subset(); }
-
-		virtual void set_subset(index_t subset_len, index_t* subset_idx)
+		virtual SGVector<index_t>* get_subset_copy()
 		{
-			m_subset->set_subset(subset_len, subset_idx);
+			return m_subset->get_subset_copy();
 		}
 
-		virtual void set_subset(index_t* subset_idx, index_t subset_len)
+		bool has_subset()
 		{
-			m_subset->set_subset(subset_idx, subset_len);
+			return m_subset->has_subset();
+		}
+
+		virtual void set_subset(SGVector<index_t> subset)
+		{
+			m_subset->set_subset(subset);
 		}
 		/***********************************
 		 * End of wrapper for Subset methods

@@ -437,13 +437,13 @@ template <class ST> class CStringFeatures : public CFeatures
 				ST* feat=compute_feature_vector(num, len);
 				dofree=true;
 
-				if (get_num_preproc())
+				if (get_num_preprocessors())
 				{
 					ST* tmp_feat_before=feat;
 
-					for (int32_t i=0; i<get_num_preproc(); i++)
+					for (int32_t i=0; i<get_num_preprocessors(); i++)
 					{
-						CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preproc(i);
+						CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preprocessor(i);
 						feat=p->apply_to_string(tmp_feat_before, len);
 						SG_UNREF(p);
 						delete[] tmp_feat_before;
@@ -1494,16 +1494,16 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param force_preprocessing if preprocssing shall be forced
 		 * @return if applying was successful
 		 */
-		virtual bool apply_preproc(bool force_preprocessing=false)
+		virtual bool apply_preprocessor(bool force_preprocessing=false)
 		{
 			SG_DEBUG( "force: %d\n", force_preprocessing);
 
-			for (int32_t i=0; i<get_num_preproc(); i++)
+			for (int32_t i=0; i<get_num_preprocessors(); i++)
 			{
 				if ( (!is_preprocessed(i) || force_preprocessing) )
 				{
 					set_preprocessed(i);
-					CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preproc(i);
+					CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preprocessor(i);
 					SG_INFO( "preprocessing using preproc %s\n", p->get_name());
 
 					if (!p->apply_to_string_features(this))
@@ -2111,7 +2111,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		void set_subset(int32_t* subset_idx, int32_t subset_len)
 		{
-			m_subset->set_subset(subset_idx, subset_len);
+			SGVector<index_t> subset(subset_idx, subset_len);
+			m_subset->set_subset(subset);
 			num_vectors = subset_len;
 			determine_maximum_string_length();
 		}

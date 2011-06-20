@@ -47,7 +47,7 @@ public:
 
 	inline EEvaluationDirection get_evaluation_direction()
 	{
-		return ED_MINIMISE;
+		return ED_MINIMIZE;
 	}
 
 	/** get name */

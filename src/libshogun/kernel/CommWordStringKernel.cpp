@@ -163,12 +163,12 @@ float64_t CCommWordStringKernel::compute_helper(
 	}
 	else
 	{
-		if ( (l->get_num_preproc() != l->get_num_preprocessed()) ||
-				(r->get_num_preproc() != r->get_num_preprocessed()))
+		if ( (l->get_num_preprocessors() != l->get_num_preprocessed()) ||
+				(r->get_num_preprocessors() != r->get_num_preprocessed()))
 		{
 			SG_ERROR("not all preprocessors have been applied to training (%d/%d)"
-					" or test (%d/%d) data\n", l->get_num_preprocessed(), l->get_num_preproc(),
-					r->get_num_preprocessed(), r->get_num_preproc());
+					" or test (%d/%d) data\n", l->get_num_preprocessed(), l->get_num_preprocessors(),
+					r->get_num_preprocessed(), r->get_num_preprocessors());
 		}
 	}
 

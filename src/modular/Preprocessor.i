@@ -31,25 +31,23 @@
 
 %import "Features.i"
 
-%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim)};
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num_feat)};
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* num_new_dim)};
-
 /* Remove C Prefix */
 %rename(BasePreprocessor) CPreprocessor;
-%rename(LogPlusOne) CLogPlusOne;
-%rename(NormDerivativeLem3) CNormDerivativeLem3;
-%rename(NormOne) CNormOne;
+%rename(SparsePreprocessor) CSparsePreprocessor;
 %rename(PCACut) CPCACut;
 %rename(KernelPCACut) CKernelPCACut;
+%rename(NormOne) CNormOne;
+%rename(LogPlusOne) CLogPlusOne;
 %rename(PruneVarSubMean) CPruneVarSubMean;
-%rename(SortUlongString) CSortUlongString;
-%rename(SortWordString) CSortWordString;
-%rename(SparsePreprocessor) CSparsePreprocessor;
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
+
+%rename(BaseDimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(ClassicMDS) CClassicMDS;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 %rename(Isomap) CIsomap;
+
+%rename(SortUlongString) CSortUlongString;
+%rename(SortWordString) CSortWordString;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
@@ -87,17 +85,19 @@ namespace shogun
     %template(DecompressByteString) CDecompressString<uint8_t>;
     %template(DecompressCharString) CDecompressString<char>;
 }
-
-%include <shogun/preprocessor/LogPlusOne.h>
-%include <shogun/preprocessor/NormDerivativeLem3.h>
-%include <shogun/preprocessor/NormOne.h>
+%include <shogun/preprocessor/SparsePreprocessor.h>
 %include <shogun/preprocessor/PCACut.h>
 %include <shogun/preprocessor/KernelPCACut.h>
+%include <shogun/preprocessor/NormOne.h>
+%include <shogun/preprocessor/LogPlusOne.h>
 %include <shogun/preprocessor/PruneVarSubMean.h>
-%include <shogun/preprocessor/SortUlongString.h>
-%include <shogun/preprocessor/SortWordString.h>
-%include <shogun/preprocessor/SparsePreprocessor.h>
 %include <shogun/preprocessor/RandomFourierGaussPreproc.h>
+
+%include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 %include <shogun/preprocessor/ClassicMDS.h>
 %include <shogun/preprocessor/LocallyLinearEmbedding.h>
 %include <shogun/preprocessor/Isomap.h>
+
+%include <shogun/preprocessor/SortUlongString.h>
+%include <shogun/preprocessor/SortWordString.h>
+

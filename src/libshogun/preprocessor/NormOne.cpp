@@ -26,10 +26,10 @@ CNormOne::~CNormOne()
 }
 
 /// initialize preprocessor from features
-bool CNormOne::init(CFeatures* f)
+bool CNormOne::init(CFeatures* features)
 {
-	ASSERT(f->get_feature_class()==C_SIMPLE);
-	ASSERT(f->get_feature_type()==F_DREAL);
+	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_type()==F_DREAL);
 
 	return true;
 }
@@ -58,30 +58,28 @@ bool CNormOne::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-float64_t* CNormOne::apply_to_feature_matrix(CFeatures* f)
+SGMatrix<float64_t> CNormOne::apply_to_feature_matrix(CFeatures* features)
 {
-	int32_t num_vec;
-	int32_t num_feat;
-	float64_t* matrix=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_feat, num_vec);
+	SGMatrix<float64_t> feature_matrix=((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 
-	for (int32_t i=0; i<num_vec; i++)
+	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 	{
-		float64_t* vec=&matrix[i*num_feat];
-		float64_t norm=CMath::sqrt(CMath::dot(vec, vec, num_feat));
-		CMath::scale_vector(1.0/norm, vec, num_feat);
+		float64_t* vec= &(feature_matrix.matrix[i*feature_matrix.num_rows]);
+		float64_t norm=CMath::sqrt(CMath::dot(vec, vec, feature_matrix.num_rows));
+		CMath::scale_vector(1.0/norm, vec, feature_matrix.num_rows);
 	}
-	return matrix;
+	return feature_matrix;
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-float64_t* CNormOne::apply_to_feature_vector(float64_t* f, int32_t& len)
+SGVector<float64_t> CNormOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* vec=new float64_t[len];
-	float64_t norm=CMath::sqrt(CMath::dot(f, f, len));
+	float64_t* normed_vec = new float64_t[vector.vlen];
+	float64_t norm=CMath::sqrt(CMath::dot(vector.vector, vector.vector, vector.vlen));
 
-	for (int32_t i=0; i<len; i++)
-		vec[i]=f[i]/norm;
+	for (int32_t i=0; i<vector.vlen; i++)
+		normed_vec[i]=vector.vector[i]/norm;
 
-	return vec;
+	return SGVector<float64_t>(normed_vec,vector.vlen);
 }

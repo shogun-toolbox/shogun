@@ -106,7 +106,7 @@ bool CDomainAdaptationSVM::train(CFeatures* data)
 	}
 
 	//set linear term for QP
-	this->set_linear_term(lin_term, num_training_points);
+	this->set_linear_term(SGVector<float64_t>(lin_term, num_training_points));
 
 	delete[] lin_term;
 

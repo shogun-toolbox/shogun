@@ -19,6 +19,7 @@
 
 #include "lib/common.h"
 #include "preprocessor/KernelPCACut.h"
+#include "kernel/Kernel.h"
 #include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "features/SimpleFeatures.h"
@@ -47,27 +48,27 @@ CKernelPCACut::~CKernelPCACut()
 }
 
 /// initialize preprocessor from features
-bool CKernelPCACut::init(CFeatures* f)
+bool CKernelPCACut::init(CFeatures* features)
 {
 	if (!initialized && kernel)
 	{
-		ASSERT(f->get_feature_class()==C_SIMPLE);
-		ASSERT(f->get_feature_type()==F_DREAL);
+		ASSERT(features->get_feature_class()==C_SIMPLE);
+		ASSERT(features->get_feature_type()==F_DREAL);
 
-		int32_t n=0;
-		int32_t m=0;
-		kernel->init(f,f);
-		float64_t* km = kernel->get_kernel_matrix(m, n, (float64_t*) NULL);
+		kernel->init(features,features);
+		SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
+		int32_t n=kernel_matrix.num_cols;
+		int32_t m=kernel_matrix.num_rows;
 		ASSERT(n==m);
 
-		float64_t* bias_tmp=CMath::get_column_sum(km, n,n);
+		float64_t* bias_tmp=CMath::get_column_sum(kernel_matrix.matrix, n,n);
 		CMath::scale_vector(-1.0/n, bias_tmp, n);
 		float64_t s=CMath::sum(bias_tmp, n)/n;
 		CMath::add_scalar(-s, bias_tmp, n);
 
-		CMath::center_matrix(km, n, m);
+		CMath::center_matrix(kernel_matrix.matrix, n, m);
 
-		eigenvalues=CMath::compute_eigenvectors(km, n, n);
+		eigenvalues=CMath::compute_eigenvectors(kernel_matrix.matrix, n, n);
 		num_eigenvalues=n;
 
 
@@ -75,7 +76,7 @@ bool CKernelPCACut::init(CFeatures* f)
 		{	
 			//normalize and trap divide by zero and negative eigenvalues
 			for (int32_t j=0; j<n; j++)
-				km[i*n+j]/=CMath::sqrt(CMath::max(1e-16,eigenvalues[i]));
+				kernel_matrix.matrix[i*n+j]/=CMath::sqrt(CMath::max(1e-16,eigenvalues[i]));
 		}
 
 		//% Sort the eigenvalues and the eigenvectors in descending order.
@@ -85,7 +86,7 @@ bool CKernelPCACut::init(CFeatures* f)
 		//int32_t* index=new int32_t[n];
 		//CMath::range_fill_vector(index, n);
 		//CMath::qsort_backward_index(eigenvalues, index, n);
-		T=km;
+		T=kernel_matrix.matrix;
 		rows_T=n;
 		cols_T=n;
 
@@ -107,11 +108,10 @@ bool CKernelPCACut::init(CFeatures* f)
 		delete[] bias_tmp;
 
 		initialized=true;
-		SG_INFO("Done\n") ;
-		return true ;
+		SG_INFO("Done\n");
+		return true;
 	}
-	return 
-		false;
+	return false;
 }
 
 /// initialize preprocessor from features
@@ -124,7 +124,7 @@ void CKernelPCACut::cleanup()
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-float64_t* CKernelPCACut::apply_to_feature_matrix(CFeatures* f)
+SGMatrix<float64_t> CKernelPCACut::apply_to_feature_matrix(CFeatures* features)
 {
 	/*
 	int32_t num_vectors=0;
@@ -164,12 +164,12 @@ float64_t* CKernelPCACut::apply_to_feature_matrix(CFeatures* f)
 
 	return m;
 */
-	return NULL;
+	return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-float64_t* CKernelPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
+SGVector<float64_t> CKernelPCACut::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	/*
 	float64_t *ret=new float64_t[num_dim];
@@ -202,35 +202,31 @@ float64_t* CKernelPCACut::apply_to_feature_vector(float64_t* f, int32_t &len)
 	}
 	*/
 
-	return NULL;
+	return vector;
 }
 
-void CKernelPCACut::get_transformation_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim)
+SGMatrix<float64_t> CKernelPCACut::get_transformation_matrix()
 {
 	ASSERT(T);
-
 	int64_t num=int64_t(rows_T)*cols_T;
-	*num_feat=cols_T;
-	*num_new_dim=rows_T;
-	*dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*num);
-	memcpy(*dst, T, num * sizeof(float64_t));
+	float64_t* dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*num);
+	memcpy(dst, T, num * sizeof(float64_t));
+	return SGMatrix<float64_t>(dst,rows_T,cols_T);
 }
 
-void CKernelPCACut::get_bias(float64_t** dst, int32_t* new_num_dim)
+SGVector<float64_t> CKernelPCACut::get_bias()
 {
 	ASSERT(bias);
-
-	*new_num_dim=bias_len;
-	*dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*bias_len);
-	memcpy(*dst, bias, bias_len * sizeof(float64_t));
+	float64_t* dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*bias_len);
+	memcpy(dst, bias, bias_len * sizeof(float64_t));\
+	return SGVector<float64_t>(dst,bias_len);
 }
 
-void CKernelPCACut::get_eigenvalues(float64_t** dst, int32_t* new_num_dim)
+SGVector<float64_t> CKernelPCACut::get_eigenvalues()
 {
 	ASSERT(eigenvalues);
-
-	*new_num_dim=num_eigenvalues;
-	*dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*num_eigenvalues);
-	memcpy(*dst, eigenvalues, num_eigenvalues * sizeof(float64_t));
+	float64_t* dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*num_eigenvalues);
+	memcpy(dst, eigenvalues, num_eigenvalues * sizeof(float64_t));
+	return SGVector<float64_t>(dst,num_eigenvalues);
 }
 #endif

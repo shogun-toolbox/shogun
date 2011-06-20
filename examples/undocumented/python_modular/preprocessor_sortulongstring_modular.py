@@ -25,10 +25,10 @@ def preprocessor_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=test
 
 	preproc=SortUlongString()
 	preproc.init(feats_train)
-	feats_train.add_preproc(preproc)
-	feats_train.apply_preproc()
-	feats_test.add_preproc(preproc)
-	feats_test.apply_preproc()
+	feats_train.add_preprocessor(preproc)
+	feats_train.apply_preprocessor()
+	feats_test.add_preprocessor(preproc)
+	feats_test.apply_preprocessor()
 
 	kernel=CommUlongStringKernel(feats_train, feats_train, use_sign)
 

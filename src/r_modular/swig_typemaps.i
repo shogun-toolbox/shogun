@@ -12,6 +12,9 @@
  */
 
 %{
+
+#include <shogun/lib/DataType.h>
+
 extern "C" {
 #include <R.h>
 #include <Rinternals.h>
@@ -29,118 +32,40 @@ extern "C" {
 #endif
 %}
 
-/* TYPEMAP_IN macros
- *
- * This family of typemaps allows pure input C arguments of the form
- *
- *     (type* IN_ARRAY1, int32_t DIM1)
- *     (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
- *
- * where "type" is any type supported by the numpy module, to be
- * called in python with an argument list of a single array (or any
- * python object that can be passed to the numpy.array constructor
- * to produce an arrayof te specified shape).  This can be applied to
- * a existing functions using the %apply directive:
- *
- *     %apply (float64_t* IN_ARRAY1, int32_t DIM1) {float64_t* series, int32_t length}
- *     %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {float64_t* mx, int32_t rows, int32_t cols}
- *     float64_t sum(float64_t* series, int32_t length);
- *     float64_t max(float64_t* mx, int32_t rows, int32_t cols);
- *
- * or with
- *
- *     float64_t sum(float64_t* IN_ARRAY1, int32_t DIM1);
- *     float64_t max(float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2);
- */
-
 /* One dimensional input arrays */
-%define TYPEMAP_IN1(r_type, r_cast, sg_type, error_string)
+%define TYPEMAP_IN_SGVECTOR(r_type, r_cast, sg_type, error_string)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-    (sg_type* IN_ARRAY1, int32_t DIM1)
+    shogun::SGVector<sg_type>
 {
     $1 = (TYPEOF($input) == r_type && Rf_ncols($input)==1 ) ? 1 : 0;
 }
 
-%typemap(in) (sg_type* IN_ARRAY1, int32_t DIM1) (SEXP rvec)
+%typemap(in) shogun::SGVector<sg_type>
 {
-    rvec=$input;
+    SEXP rvec=$input;
     if (TYPEOF(rvec) != r_type || Rf_ncols(rvec)!=1)
     {
         /*SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);*/
         SWIG_fail;
     }
 
-    $1 = (sg_type*) r_cast(rvec);
-    $2 = LENGTH(rvec);
+    $1 = shogun::SGVector<sg_type>((sg_type*) r_cast(rvec), LENGTH(rvec));
 }
-%typemap(freearg) (type* IN_ARRAY1, int32_t DIM1) {
+%typemap(freearg) shogun::SGVector<sg_type>
+{
 }
 %enddef
 
-TYPEMAP_IN1(INTSXP, INTEGER, int32_t, "Integer")
-TYPEMAP_IN1(REALSXP, REAL, float64_t, "Double Precision")
-#undef TYPEMAP_IN1
+TYPEMAP_IN_SGVECTOR(INTSXP, INTEGER, int32_t, "Integer")
+TYPEMAP_IN_SGVECTOR(REALSXP, REAL, float64_t, "Double Precision")
+#undef TYPEMAP_IN_SGVECTOR
 
-%define TYPEMAP_IN2(r_type, r_cast, sg_type, error_string)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        (sg_type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
+/* One dimensional output arrays */
+%define TYPEMAP_OUT_SGVECTOR(r_type, r_cast, sg_type, if_type, error_string)
+%typemap(out) shogun::SGVector<sg_type>
 {
-
-    $1 = (TYPEOF($input) == r_type) ? 1 : 0;
-}
-
-%typemap(in) (sg_type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
-{
-    if( TYPEOF($input) != r_type)
-    {
-        /*SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);*/
-        SWIG_fail;
-    }
-
-    $1 = (sg_type*) r_cast($input);
-    $2 = Rf_nrows($input);
-    $3 = Rf_ncols($input);
-}
-%typemap(freearg) (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {
-}
-%enddef
-
-TYPEMAP_IN2(INTSXP, INTEGER, int32_t, "Integer")
-TYPEMAP_IN2(REALSXP, REAL, float64_t, "Double Precision")
-#undef TYPEMAP_IN2
-
-/* TYPEMAP_ARGOUT macros
- *
- * This family of typemaps allows output C arguments of the form
- *
- *     (type** ARGOUT_ARRAY)
- *
- * where "type" is any type supported by the numpy module, to be
- * called in python with an argument list of a single contiguous
- * numpy array.  This can be applied to an existing function using
- * the %apply directive:
- *
- *     %apply (float64_t** ARGOUT_ARRAY1, {(float64_t** series, int32_t* len)}
- *     %apply (float64_t** ARGOUT_ARRAY2, {(float64_t** matrix, int32_t* d1, int32_t* d2)}
- *
- * with
- *
- *     void sum(float64_t* series, int32_t* len);
- *     void sum(float64_t** series, int32_t* len);
- *     void sum(float64_t** matrix, int32_t* d1, int32_t* d2);
- *
- * where sum mallocs the array and assigns dimensions and the pointer
- *
- */
-%define TYPEMAP_ARGOUT1(r_type, r_cast, sg_type, if_type, error_string)
-%typemap(in, numinputs=0) (sg_type** ARGOUT1, int32_t* DIM1) {
-    $1 = (sg_type**) malloc(sizeof(sg_type*));
-    $2 = (int32_t*) malloc(sizeof(int32_t));
-}
-
-%typemap(argout) (sg_type** ARGOUT1, int32_t* DIM1) {
-    sg_type* vec = *$1;
-    int32_t len = *$2;
+    sg_type* vec = $1.vector;
+    int32_t len = $1.vlen;
 
     Rf_protect( $result = Rf_allocVector(r_type, len) );
 
@@ -148,29 +73,52 @@ TYPEMAP_IN2(REALSXP, REAL, float64_t, "Double Precision")
         r_cast($result)[i]=(if_type) vec[i];
 
     Rf_unprotect(1);
-    free(*$1); free($1); free($2);
 }
 %enddef
 
-TYPEMAP_ARGOUT1(INTSXP, INTEGER, uint8_t, int, "Byte")
-TYPEMAP_ARGOUT1(INTSXP, INTEGER, int32_t, int, "Integer")
-TYPEMAP_ARGOUT1(INTSXP, INTEGER, int16_t, int, "Short")
-TYPEMAP_ARGOUT1(REALSXP, REAL, float32_t, float, "Single Precision")
-TYPEMAP_ARGOUT1(REALSXP, REAL, float64_t, double, "Double Precision")
-TYPEMAP_ARGOUT1(INTSXP, INTEGER, uint16_t, int, "Word")
-#undef TYPEMAP_ARGOUT1
+TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, uint8_t, int, "Byte")
+TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, int32_t, int, "Integer")
+TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, int16_t, int, "Short")
+TYPEMAP_OUT_SGVECTOR(REALSXP, REAL, float32_t, float, "Single Precision")
+TYPEMAP_OUT_SGVECTOR(REALSXP, REAL, float64_t, double, "Double Precision")
+TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, uint16_t, int, "Word")
 
-%define TYPEMAP_ARGOUT2(r_type, r_cast, sg_type, if_type, error_string)
-%typemap(in, numinputs=0) (sg_type** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {
-    $1 = (sg_type**) malloc(sizeof(sg_type*));
-    $2 = (int32_t*) malloc(sizeof(int32_t));
-    $3 = (int32_t*) malloc(sizeof(int32_t));
+#undef TYPEMAP_OUT_SGVECTOR
+
+
+%define TYPEMAP_IN_SGMATRIX(r_type, r_cast, sg_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        shogun::SGMatrix<sg_type>
+{
+
+    $1 = (TYPEOF($input) == r_type) ? 1 : 0;
 }
 
-%typemap(argout) (sg_type** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {
-    sg_type* matrix = *$1;
-    int32_t num_feat = *$2;
-    int32_t num_vec = *$3;
+%typemap(in) shogun::SGMatrix<sg_type>
+{
+    if( TYPEOF($input) != r_type)
+    {
+        /*SG_ERROR("Expected Double Matrix as argument %d\n", m_rhs_counter);*/
+        SWIG_fail;
+    }
+
+    $1 = shogun::SGMatrix<sg_type>((sg_type*) r_cast($input),  Rf_nrows($input), Rf_ncols($input));
+}
+%typemap(freearg) shogun::SGMatrix<sg_type>
+{
+}
+%enddef
+
+TYPEMAP_IN_SGMATRIX(INTSXP, INTEGER, int32_t, "Integer")
+TYPEMAP_IN_SGMATRIX(REALSXP, REAL, float64_t, "Double Precision")
+#undef TYPEMAP_IN_SGMATRIX
+
+%define TYPEMAP_OUT_SGMATRIX(r_type, r_cast, sg_type, if_type, error_string)
+%typemap(out) shogun::SGMatrix<sg_type>
+{
+    sg_type* matrix = $1.matrix;
+    int32_t num_feat = $1.num_rows;
+    int32_t num_vec = $1.num_cols;
 
     Rf_protect( $result = Rf_allocMatrix(r_type, num_feat, num_vec) );
 
@@ -180,21 +128,22 @@ TYPEMAP_ARGOUT1(INTSXP, INTEGER, uint16_t, int, "Word")
             r_cast($result)[i*num_feat+j]=(if_type) matrix[i*num_feat+j];
     }
     Rf_unprotect(1);
-    free(*$1); free($1); free($2); free($3);
 }
 %enddef
 
-TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint8_t, int, "Byte")
-TYPEMAP_ARGOUT2(INTSXP, INTEGER, int32_t, int, "Integer")
-TYPEMAP_ARGOUT2(INTSXP, INTEGER, int16_t, int, "Short")
-TYPEMAP_ARGOUT2(REALSXP, REAL, float32_t, float, "Single Precision")
-TYPEMAP_ARGOUT2(REALSXP, REAL, float64_t, double, "Double Precision")
-TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint16_t, int, "Word")
-#undef TYPEMAP_ARGOUT2
+TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint8_t, int, "Byte")
+TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, int32_t, int, "Integer")
+TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, int16_t, int, "Short")
+TYPEMAP_OUT_SGMATRIX(REALSXP, REAL, float32_t, float, "Single Precision")
+TYPEMAP_OUT_SGMATRIX(REALSXP, REAL, float64_t, double, "Double Precision")
+TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
+#undef TYPEMAP_OUT_SGMATRIX
+
+/* TODO INND ARRAYS */
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(r_type, sg_type, if_type, error_string)
-%typemap(in) (shogun::SGString<sg_type>* IN_STRINGS, int32_t NUM, int32_t MAXLEN)
+%typemap(in) shogun::SGStringList<sg_type>
 {
     int32_t max_len=0;
     int32_t num_strings=0;
@@ -232,11 +181,16 @@ TYPEMAP_ARGOUT2(INTSXP, INTEGER, uint16_t, int, "Word")
             strs[i].string=NULL;
         }
     }
-    $1 = strs;
-    $2 = num_strings;
-    $3 = max_len;
+
+    SGStringList<sg_type> sl;
+    sl.strings=strs;
+    sl.num_strings=num_strings;
+    sl.max_string_length=max_len;
+    $1 = sl;
 }
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(STRSXP, char, CHAR, "Char")
 #undef TYPEMAP_STRINGFEATURES_IN
+
+/* TODO STRING OUT TYPEMAPS */

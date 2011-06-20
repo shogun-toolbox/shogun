@@ -11,8 +11,7 @@
 #ifndef LOCALLYLINEAREMBEDDING_H_
 #define LOCALLYLINEAREMBEDDING_H_
 #ifdef HAVE_LAPACK
-
-#include "preprocessor/SimplePreprocessor.h"
+#include "preprocessor/DimensionReductionPreprocessor.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
 
@@ -30,7 +29,7 @@ class CDistance;
  *	An Introduction to Locally Linear Embedding. Available from, 290(5500), 2323-2326.
  *
  */
-class CLocallyLinearEmbedding: public CSimplePreprocessor<float64_t>
+class CLocallyLinearEmbedding: public CDimensionReductionPreprocessor
 {
 public:
 
@@ -43,7 +42,7 @@ public:
 	/** init
 	 * @param data feature vectors for preproc
 	 */
-	virtual bool init(CFeatures* data);
+	virtual bool init(CFeatures* features);
 
 	/** cleanup
 	 *
@@ -53,29 +52,12 @@ public:
 	/** apply preproc to feature matrix
 	 *
 	 */
-	virtual float64_t* apply_to_feature_matrix(CFeatures* data);
+	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 	/** apply preproc to feature vector
 	 *
 	 */
-	virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
-
-	/** setter for target dimension
-	 * @param dim target dimension
-	 */
-	void inline set_target_dim(int32_t dim)
-	{
-		ASSERT(dim>0);
-		m_target_dim = dim;
-	}
-
-	/** getter for target dimension
-	 * @return target dimension
-	 */
-	int32_t inline get_target_dim()
-	{
-		return m_target_dim;
-	}
+	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** setter for K parameter
 	 * @param k k
@@ -101,14 +83,10 @@ public:
 
 protected:
 
-	/* target dimension */
-	int32_t m_target_dim;
-
 	/* number of neighbors */
 	int32_t m_k;
 
 };
-
 }
 
 #endif /* HAVE_LAPACK */

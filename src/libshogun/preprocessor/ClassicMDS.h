@@ -11,8 +11,7 @@
 #ifndef CLASSICMDS_H_
 #define CLASSICMDS_H_
 #ifdef HAVE_LAPACK
-
-#include "preprocessor/SimplePreprocessor.h"
+#include "preprocessor/DimensionReductionPreprocessor.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
 
@@ -20,7 +19,7 @@ namespace shogun
 {
 
 class CFeatures;
-
+#include "preprocessor/DimensionReductionPreprocessor.h"
 class CDistance;
 
 /** @brief the class ClassicMDS used to perform classic eigenvector
@@ -31,7 +30,7 @@ class CDistance;
  * 	Modern multidimensional scaling: Theory and applications. Springer.
  *
  */
-class CClassicMDS: public CSimplePreprocessor<float64_t>
+class CClassicMDS: public CDimensionReductionPreprocessor
 {
 public:
 
@@ -44,7 +43,7 @@ public:
 	/** init
 	 * @param data feature vectors for preproc
 	 */
-	virtual bool init(CFeatures* data);
+	virtual bool init(CFeatures* features);
 
 	/** cleanup
 	 *
@@ -59,12 +58,12 @@ public:
 	/** apply preproc to feature matrix
 	 *
 	 */
-	virtual float64_t* apply_to_feature_matrix(CFeatures* f);
+	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 	/** apply preproc to feature vector
 	 *
 	 */
-	virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
+	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** get name */
 	virtual inline const char* get_name() const { return "CLASSICMDS"; };
@@ -72,32 +71,13 @@ public:
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_CLASSICMDS; };
 
-	/** setter for target dimension
-	 * @param dim target dimension
-	 */
-	void inline set_target_dim(int32_t dim)
-	{
-		ASSERT(dim>0);
-		m_target_dim = dim;
-	}
-
-	/** getter for target dimension
-	 * @return target dimension
-	 */
-	int32_t inline get_target_dim()
-	{
-		return m_target_dim;
-	}
-
 protected:
 
 	/** apply preproc to distance
 	 *
 	 */
-	bool apply_to_distance(CDistance* distance, SGMatrix<float64_t> &output_features);
+	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
 
-	/** target dim */
-	int32_t m_target_dim;
 };
 
 }

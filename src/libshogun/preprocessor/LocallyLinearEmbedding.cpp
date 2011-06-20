@@ -10,6 +10,7 @@
 
 #include "preprocessor/LocallyLinearEmbedding.h"
 #ifdef HAVE_LAPACK
+#include "preprocessor/DimensionReductionPreprocessor.h"
 #include "lib/lapack.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -19,7 +20,8 @@
 
 using namespace shogun;
 
-CLocallyLinearEmbedding::CLocallyLinearEmbedding() : CSimplePreprocessor<float64_t>(), m_target_dim(1), m_k(1)
+CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
+		CDimensionReductionPreprocessor(), m_k(3)
 {
 }
 
@@ -27,7 +29,7 @@ CLocallyLinearEmbedding::~CLocallyLinearEmbedding()
 {
 }
 
-bool CLocallyLinearEmbedding::init(CFeatures* data)
+bool CLocallyLinearEmbedding::init(CFeatures* features)
 {
 	return true;
 }
@@ -36,23 +38,23 @@ void CLocallyLinearEmbedding::cleanup()
 {
 }
 
-float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
+SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* features)
 {
-	// shorthand for simplefeatures data
-	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
-	ASSERT(pdata);
+	// shorthand for simplefeatures
+	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	ASSERT(simple_features);
 
 	// get dimensionality and number of vectors of data
-	int32_t dim = pdata->get_num_features();
+	int32_t dim = simple_features->get_num_features();
 	ASSERT(m_target_dim<=dim);
-	int32_t N = pdata->get_num_vectors();
+	int32_t N = simple_features->get_num_vectors();
 	ASSERT(m_k<N);
 
 	// loop variables
 	int32_t i,j,k;
 
 	// compute distance matrix
-	CDistance* distance = new CEuclidianDistance(pdata,pdata);
+	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
 	float64_t* distance_matrix;
 	distance->get_distance_matrix(&distance_matrix,&N,&N);
 	delete distance;
@@ -92,7 +94,7 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	float64_t norming = 0.0;
 
 	// get feature matrix
-	SGMatrix<float64_t> feature_matrix = pdata->get_feature_matrix();
+	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
 	for (i=0; i<N; i++)
 	{
@@ -199,16 +201,16 @@ float64_t* CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* data)
 	delete[] eigenvalues_vector;
 	delete[] M_matrix;
 
-	SGMatrix<float64_t> features(new_feature_matrix,m_target_dim,N);
-	pdata->set_feature_matrix(features);
+	SGMatrix<float64_t> feature_sgmatrix(new_feature_matrix,m_target_dim,N);
+	simple_features->set_feature_matrix(feature_sgmatrix);
 
-	return features.matrix;
+	return feature_sgmatrix;
 }
 
-float64_t* CLocallyLinearEmbedding::apply_to_feature_vector(float64_t* f, int32_t &len)
+SGVector<float64_t> CLocallyLinearEmbedding::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SG_NOTIMPLEMENTED;
-	return NULL;
+	return vector;
 }
 
 #endif /* HAVE_LAPACK */

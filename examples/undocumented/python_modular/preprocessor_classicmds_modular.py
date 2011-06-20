@@ -1,4 +1,3 @@
-from numpy import random
 from tools.load import LoadMatrix
 
 lm=LoadMatrix()

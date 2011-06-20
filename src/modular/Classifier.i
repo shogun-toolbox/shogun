@@ -41,24 +41,6 @@
 %import "Kernel.i"
 %import "Distance.i"
 
-/* Typemaps */
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst_w, int32_t* dst_dims)};
-%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* src_w, int32_t src_w_dim)};
-%apply (int32_t** ARGOUT1, int32_t* DIM1) {(int32_t** svs, int32_t* num)};
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** alphas, int32_t* d1)};
-%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* alphas, int32_t d)};
-%apply (int32_t* IN_ARRAY1, int32_t DIM1) {(int32_t* svs, int32_t d)};
-%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* lterm, int32_t num)};
-%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* linear_term, int32_t len)};
-%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* linear_term, index_t len)};
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** linear_term, int32_t* len)};
-%apply (int32_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(int32_t** output, int32_t* num_vec, int32_t* k_out)};
-
-/* for CLabels */
-%apply (float64_t* IN_ARRAY1, int32_t DIM1) {(float64_t* src, int32_t len)};
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** dst, int32_t* len)};
-
-
 /* Remove C Prefix */
 /*%rename(Labels) CLabels;*/
 %rename(Machine) CMachine;

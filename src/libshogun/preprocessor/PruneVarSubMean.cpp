@@ -30,16 +30,16 @@ CPruneVarSubMean::~CPruneVarSubMean()
 }
 
 /// initialize preprocessor from features
-bool CPruneVarSubMean::init(CFeatures* p_f)
+bool CPruneVarSubMean::init(CFeatures* features)
 {
 	if (!initialized)
 	{
-		ASSERT(p_f->get_feature_class()==C_SIMPLE);
-		ASSERT(p_f->get_feature_type()==F_DREAL);
+		ASSERT(features->get_feature_class()==C_SIMPLE);
+		ASSERT(features->get_feature_type()==F_DREAL);
 
-		CSimpleFeatures<float64_t> *f=(CSimpleFeatures<float64_t>*) p_f;
-		int32_t num_examples=f->get_num_vectors();
-		int32_t num_features=((CSimpleFeatures<float64_t>*)f)->get_num_features();
+		CSimpleFeatures<float64_t>* simple_features=(CSimpleFeatures<float64_t>*) features;
+		int32_t num_examples = simple_features->get_num_vectors();
+		int32_t num_features = simple_features->get_num_features();
 
 		delete[] mean;
 		delete[] idx;
@@ -58,31 +58,23 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 			var[i]=0 ;
 		}
 
+		SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
+
 		// compute mean
 		for (i=0; i<num_examples; i++)
 		{
-			int32_t len ; bool free ;
-			float64_t* feature=f->get_feature_vector(i, len, free) ;
-
-			for (j=0; j<len; j++)
-				mean[j]+=feature[j];
-
-			f->free_feature_vector(feature, i, free) ;
+			for (j=0; j<num_features; j++)
+				mean[j]+=feature_matrix.matrix[i*num_features+j];
 		}
 
 		for (j=0; j<num_features; j++)
-			mean[j]/=num_examples ;
+			mean[j]/=num_examples;
 
 		// compute var
 		for (i=0; i<num_examples; i++)
 		{
-			int32_t len ; bool free ;
-			float64_t* feature=f->get_feature_vector(i, len, free) ;
-
 			for (j=0; j<num_features; j++)
-				var[j]+=(mean[j]-feature[j])*(mean[j]-feature[j]) ;
-
-			f->free_feature_vector(feature, i, free) ;
+				var[j]+=CMath::sq(mean[j]-feature_matrix.matrix[i*num_features+j]);
 		}
 
 		int32_t num_ok=0;
@@ -90,11 +82,11 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 
 		for (j=0; j<num_features; j++)
 		{
-			var[j]/=num_examples ;
+			var[j]/=num_examples;
 
 			if (var[j]>=1e-14) 
 			{
-				idx_ok[num_ok]=j ;
+				idx_ok[num_ok]=j;
 				num_ok++ ;
 			}
 		}
@@ -112,14 +104,14 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 			new_mean[j]=mean[idx_ok[j]];
 			std[j]=sqrt(var[idx_ok[j]]);
 		}
-		num_idx=num_ok ;
+		num_idx = num_ok ;
 		delete[] idx_ok ;
 		delete[] mean;
 		delete[] var;
-		mean=new_mean;
+		mean = new_mean;
 
-		initialized=true;
-		return true ;
+		initialized = true;
+		return true;
 	}
 	else
 		return false;
@@ -139,13 +131,13 @@ void CPruneVarSubMean::cleanup()
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-float64_t* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
+SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(initialized);
 
 	int32_t num_vectors=0;
 	int32_t num_features=0;
-	float64_t* m=((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
+	float64_t* m=((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 
 	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features);
 	SG_INFO( "Preprocessing feature matrix\n");
@@ -166,16 +158,16 @@ float64_t* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 		}
 	}
 
-	((CSimpleFeatures<float64_t>*) f)->set_num_features(num_idx);
-	((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
+	((CSimpleFeatures<float64_t>*) features)->set_num_features(num_idx);
+	((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 	SG_INFO( "new Feature matrix: %ix%i\n", num_vectors, num_features);
 
-	return m;
+	return ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix();
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-float64_t* CPruneVarSubMean::apply_to_feature_vector(float64_t* f, int32_t &len)
+SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t* ret=NULL;
 
@@ -186,21 +178,20 @@ float64_t* CPruneVarSubMean::apply_to_feature_vector(float64_t* f, int32_t &len)
 		if (divide_by_std)
 		{
 			for (int32_t i=0; i<num_idx; i++)
-				ret[i]=(f[idx[i]]-mean[i])/std[i];
+				ret[i]=(vector.vector[idx[i]]-mean[i])/std[i];
 		}
 		else
 		{
 			for (int32_t i=0; i<num_idx; i++)
-				ret[i]=(f[idx[i]]-mean[i]);
+				ret[i]=(vector.vector[idx[i]]-mean[i]);
 		}
-		len=num_idx ;
 	}
 	else
 	{
-		ret=new float64_t[len] ;
-		for (int32_t i=0; i<len; i++)
-			ret[i]=f[i];
+		ret=new float64_t[vector.vlen] ;
+		for (int32_t i=0; i<vector.vlen; i++)
+			ret[i]=vector.vector[i];
 	}
 
-	return ret;
+	return SGVector<float64_t>(ret,num_idx);
 }

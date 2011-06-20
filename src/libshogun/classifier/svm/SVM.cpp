@@ -315,26 +315,26 @@ float64_t* CSVM::get_linear_term_array()
 	return a;
 }
 
-void CSVM::set_linear_term(float64_t* linear_term, index_t len)
+void CSVM::set_linear_term(SGVector<float64_t> linear_term)
 {
-	ASSERT(linear_term);
+	ASSERT(linear_term.vector);
 
 	if (!labels)
 		SG_ERROR("Please assign labels first!\n");
 
 	int32_t num_labels=labels->get_num_labels();
 
-	if (num_labels != len)
+	if (num_labels != linear_term.vlen)
 	{
 		SG_ERROR("Number of labels (%d) does not match number"
-				"of entries (%d) in linear term \n", num_labels, len);
+				"of entries (%d) in linear term \n", num_labels, linear_term.vlen);
 	}
 
 	delete[] m_linear_term;
 
-	m_linear_term_len = len;
-	m_linear_term = new float64_t[len];
-	memcpy(m_linear_term, linear_term, len*sizeof (float64_t));
+	m_linear_term_len = linear_term.vlen;
+	m_linear_term = new float64_t[linear_term.vlen];
+	memcpy(m_linear_term, linear_term.vector, linear_term.vlen*sizeof(float64_t));
 }
 
 float64_t* CSVM::get_linear_term_ptr(index_t* y)

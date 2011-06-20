@@ -10,6 +10,7 @@
 
 #include "preprocessor/ClassicMDS.h"
 #ifdef HAVE_LAPACK
+#include "preprocessor/DimensionReductionPreprocessor.h"
 #include "lib/lapack.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -19,7 +20,7 @@
 
 using namespace shogun;
 
-CClassicMDS::CClassicMDS() : CSimplePreprocessor<float64_t>(), m_target_dim(1)
+CClassicMDS::CClassicMDS() : CDimensionReductionPreprocessor()
 {
 }
 
@@ -40,15 +41,15 @@ CSimpleFeatures<float64_t>* CClassicMDS::apply_to_distance(CDistance* distance)
 {
 	ASSERT(distance);
 
-	SGMatrix<float64_t> features;
-	apply_to_distance(distance,features);
-	CSimpleFeatures<float64_t>* new_features = new CSimpleFeatures<float64_t>();
-	new_features->set_feature_matrix(features);
+	SGMatrix<float64_t> new_feature_matrix = embed_by_distance(distance);
+
+	CSimpleFeatures<float64_t>* new_features =
+			new CSimpleFeatures<float64_t>(new_feature_matrix);
 
 	return new_features;
 }
 
-bool CClassicMDS::apply_to_distance(CDistance* distance, SGMatrix<float64_t> &output_features)
+SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 {
 	ASSERT(distance->get_num_vec_lhs()==distance->get_num_vec_rhs());
 	int32_t N = distance->get_num_vec_lhs();
@@ -107,26 +108,23 @@ bool CClassicMDS::apply_to_distance(CDistance* distance, SGMatrix<float64_t> &ou
 	delete[] eigenvalues_vector;
 	delete[] Ds_matrix;
 
-	output_features.matrix = replace_feature_matrix;
-	output_features.num_cols = N;
-	output_features.num_rows = m_target_dim;
-
-	return true;
+	return SGMatrix<float64_t>(replace_feature_matrix,m_target_dim,N);
 }
 
-float64_t* CClassicMDS::apply_to_feature_matrix(CFeatures* data)
+SGMatrix<float64_t> CClassicMDS::apply_to_feature_matrix(CFeatures* features)
 {
-	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
-	CDistance* distance = new CEuclidianDistance(pdata,pdata);
+	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
 
-	SGMatrix<float64_t> features;
-	apply_to_distance(distance,features);
-	pdata->set_feature_matrix(features);
-	return features.matrix;
+	SGMatrix<float64_t> new_feature_matrix = embed_by_distance(distance);
+	simple_features->set_feature_matrix(new_feature_matrix);
+
+	return new_feature_matrix;
 }
 
-float64_t* CClassicMDS::apply_to_feature_vector(float64_t* f, int32_t &len)
+SGVector<float64_t> CClassicMDS::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SG_NOTIMPLEMENTED;
+	return vector;
 }
 #endif /* HAVE_LAPACK */

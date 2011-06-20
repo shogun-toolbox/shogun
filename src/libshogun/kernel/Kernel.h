@@ -227,17 +227,12 @@ class CKernel : public CSGObject
 
 		/** get kernel matrix
 		 *
-		 * @param dst destination where matrix will be stored
-		 * @param m dimension m of matrix
-		 * @param n dimension n of matrix
-		 */
-		void get_kernel_matrix(float64_t** dst, int32_t* m, int32_t* n);
-
-		/** get kernel matrix
-		 *
 		 * @return computed kernel matrix (needs to be cleaned up)
 		 */
-		SGMatrix<float64_t> get_kernel_matrix();
+		SGMatrix<float64_t> get_kernel_matrix()
+		{
+			return get_kernel_matrix<float64_t>();
+		}
 
 		/**
 		 * get column j
@@ -278,30 +273,20 @@ class CKernel : public CSGObject
 
         }
 
-
 		/** get kernel matrix real
 		 *
-		 * @param m dimension m of matrix
-		 * @param n dimension n of matrix
-		 * @param target the kernel matrix
 		 * @return the kernel matrix
 		 */
 		template <class T>
-		T* get_kernel_matrix(int32_t &m, int32_t &n, T* target)
+		SGMatrix<T> get_kernel_matrix()
 		{
 			T* result = NULL;
 
 			if (!has_features())
 				SG_ERROR( "no features assigned to kernel\n");
 
-			if (target && (m!=get_num_vec_lhs() ||
-						n!=get_num_vec_rhs()) )
-			{
-				SG_ERROR( "kernel matrix size mismatch\n");
-			}
-
-			m=get_num_vec_lhs();
-			n=get_num_vec_rhs();
+			int32_t m=get_num_vec_lhs();
+			int32_t n=get_num_vec_rhs();
 
 			int64_t total_num = int64_t(m)*n;
 
@@ -310,10 +295,7 @@ class CKernel : public CSGObject
 
 			SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n);
 
-			if (target)
-				result=target;
-			else
-				result=new T[total_num];
+			result=new T[total_num];
 
 			int32_t num_threads=parallel->get_num_threads();
 			if (num_threads < 2)
@@ -389,7 +371,7 @@ class CKernel : public CSGObject
 
 			SG_DONE();
 
-			return result;
+			return SGMatrix<T>(result,m,n);
 		}
 
 
