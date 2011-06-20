@@ -41,14 +41,3 @@ void CSubset::remove_subset()
 	m_subset.vector=NULL;
 	m_subset.length=0;
 }
-
-SGVector<index_t>* CSubset::get_subset_copy()
-{
-	SGVector<index_t>* copy=new SGVector<index_t> (
-			(index_t*) SG_MALLOC(m_subset.length*sizeof(index_t)),
-			m_subset.length);
-
-	memcpy(copy->vector, m_subset.vector, m_subset.length*sizeof(index_t));
-
-	return copy;
-}
