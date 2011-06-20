@@ -99,70 +99,26 @@ class CHierarchical : public CDistanceMachine
 
 		/** get assignment
 		 *
-		 * @param assign current assignment is stored in here
-		 * @param num number of assignments is stored in here
 		 */
-		inline void get_assignment(int32_t*& assign, int32_t& num)
+		SGVector<int32_t> get_assignment()
 		{
-			assign=assignment;
-			num=table_size;
+			return SGVector<int32_t>(assignment,table_size);
 		}
 
 		/** get merge distance
 		 *
-		 * @param dist current merge distance is stored in here
-		 * @param num number of merge distances is stored in here
 		 */
-		inline void get_merge_distance(float64_t*& dist, int32_t& num)
+		SGVector<float64_t> get_merge_distances()
 		{
-			dist=merge_distance;
-			num=merges;
+			return SGVector<float64_t>(merge_distance,merges);
 		}
 
-		/** get merge distances (swig compatible)
+		/** get cluster pairs
 		 *
-		 * @param dist current merge distances are stored in here
-		 * @param num number of merge distances are stored in here
 		 */
-		inline void get_merge_distances(float64_t** dist, int32_t* num)
+		SGMatrix<int32_t> get_cluster_pairs()
 		{
-			size_t sz=sizeof(*merge_distance)*merges;
-			*dist=(float64_t*) SG_MALLOC(sz);
-			ASSERT(*dist);
-
-			memcpy(*dist, merge_distance, sz);
-			*num=merges;
-		}
-
-		/** get pairs
-		 *
-		 * @param tuples current pairs are stored in here
-		 * @param rows number of rows is stored in here
-		 * @param num number of pairs is stored in here
-		 */
-		inline void get_pairs(int32_t*& tuples, int32_t& rows, int32_t& num)
-		{
-			tuples=pairs;
-			rows=2;
-			num=merges;
-		}
-
-		/** get cluster pairs (swig compatible)
-		 *
-		 * @param tuples current pairs are stored in here
-		 * @param rows number of rows is stored in here
-		 * @param num number of pairs is stored in here
-		 */
-		inline void get_cluster_pairs(
-			int32_t** tuples, int32_t* rows, int32_t* num)
-		{
-			*rows=2;
-			size_t sz=sizeof(*pairs)*(*rows)*merges;
-			*tuples=(int32_t*) SG_MALLOC(sz);
-			ASSERT(*tuples);
-
-			memcpy(*tuples, pairs, sz);
-			*num=merges;
+			return SGMatrix<int32_t>(pairs,2,merges);
 		}
 
 		/** classify objects using the currently set features
