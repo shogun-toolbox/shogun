@@ -65,7 +65,7 @@ bool CKRR::train(CFeatures* data)
 	// Get labels
 	int32_t numlabels=0;
 	const float64_t* alpha_orig=labels->get_labels(numlabels);
-	if (!alpha)
+	if (!alpha_orig)
 		SG_ERROR("No labels set\n");
 
 	alpha=CMath::clone_vector(alpha_orig, numlabels);
