@@ -587,7 +587,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 			if ( feature_matrix && get_num_preprocessors())
 			{
-				for (int32_t i=0; i<get_num_preproc(); i++)
+				for (int32_t i=0; i<get_num_preprocessors(); i++)
 				{ 
 					if ( (!is_preprocessed(i) || force_preprocessing) )
 					{
@@ -931,6 +931,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		virtual ST* compute_feature_vector(int32_t num, int32_t& len, ST* target=NULL)
 		{
+			SG_NOTIMPLEMENTED;
 			len=0;
 			return NULL;
 		}
