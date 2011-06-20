@@ -91,15 +91,19 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 
 	// replace feature matrix with (top) eigenvectors associated with largest
 	// positive eigenvalues (ignores negative eigenvalues)
-	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
 	for (i=0; i<m_target_dim; i++)
 	{
 		if (eigenvalues_vector[N-i-1]<0)
 		{
-			m_target_dim = i;
-			break;
+					SG_WARNING("Can't embed into %dd space, embedded into %dd",m_target_dim,i);
+					m_target_dim = i;
+					break;
 		}
+	}
 
+	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
+	for (i=0; i<m_target_dim; i++)
+	{
 		for (j=0; j<N; j++)
 			replace_feature_matrix[j*m_target_dim+i] = Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
 	}

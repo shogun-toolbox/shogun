@@ -17,7 +17,7 @@ using namespace shogun;
 CSubset::CSubset()
 {
 	m_subset.vector=NULL;
-	m_subset.length=0;
+	m_subset.vlen=0;
 
 	m_parameters->add(&m_subset, "subset", "Vector of subset indices");
 }
@@ -32,12 +32,12 @@ void CSubset::set_subset(SGVector<index_t> subset)
 	remove_subset();
 
 	m_subset.vector=subset.vector;
-	m_subset.length=subset.length;
+	m_subset.vlen=subset.vlen;
 }
 
 void CSubset::remove_subset()
 {
 	delete[] m_subset.vector;
 	m_subset.vector=NULL;
-	m_subset.length=0;
+	m_subset.vlen=0;
 }

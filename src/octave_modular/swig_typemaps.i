@@ -80,6 +80,8 @@ TYPEMAP_IN_SGVECTOR(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
     for (int32_t i=0; i<len; i++)
         mat(i) = (if_type) vec[i];
 
+    $1.free_vector();
+
     $result=mat;
 }
 %enddef
@@ -153,6 +155,8 @@ TYPEMAP_IN_SGMATRIX(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
         for (int32_t j=0; j<num_feat; j++)
             mat(j,i) = (if_type) matrix[j+i*num_feat];
     }
+
+    $1.free_matrix();
 
     $result=mat;
 }

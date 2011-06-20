@@ -120,7 +120,7 @@ float64_t CCrossValidation::evaluate_one_run()
 				inverse_subset_indices.vlen);
 		memcpy(inverse_subset_indices_copy.vector,
 				inverse_subset_indices.vector,
-				inverse_subset_indices.length*sizeof(index_t));
+				inverse_subset_indices.vlen*sizeof(index_t));
 		m_labels->set_subset(inverse_subset_indices_copy);
 
 		/* train machine on training features */
@@ -138,7 +138,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		SGVector<index_t> subset_indices_copy(
 				new index_t[subset_indices.vlen], subset_indices.vlen);
 		memcpy(subset_indices_copy.vector, subset_indices.vector,
-				subset_indices.length*sizeof(index_t));
+				subset_indices.vlen*sizeof(index_t));
 		m_labels->set_subset(subset_indices_copy);
 
 		/* evaluate */

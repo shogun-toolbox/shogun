@@ -67,7 +67,7 @@ template<class T> class SGMatrix
 		/** copy constructor */
 		SGMatrix(const SGMatrix &orig)
 			: matrix(orig.matrix), num_rows(orig.num_rows),
-			num_cols(orig.num_cols), do_free(free_matrix) { }
+			num_cols(orig.num_cols), do_free(orig.do_free) { }
 
 		void free_matrix()
 		{
@@ -91,25 +91,27 @@ template<class T> class SGMatrix
 		bool do_free;
 };
 
-template<class T> struct SGNDArray
+template<class T> class SGNDArray
 {
-	/** default constructor */
-	SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
+    public:
+        /** default constructor */
+        SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
 
-	/** constructor for setting params */
-	SGNDArray(T* a, index_t* d, index_t nd)
-		: array(a), dims(d), num_dims(nd) { }
+        /** constructor for setting params */
+        SGNDArray(T* a, index_t* d, index_t nd)
+            : array(a), dims(d), num_dims(nd) { }
 
-	/** copy constructor */
-	SGNDArray(const SGNDArray &orig)
-	: array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
+        /** copy constructor */
+        SGNDArray(const SGNDArray &orig)
+            : array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
 
-	/** array  */
-	T* array;
-	/** dimension sizes */
-	index_t* dims;
-	/** number of dimensions  */
-	index_t num_dims;
+    public:
+        /** array  */
+        T* array;
+        /** dimension sizes */
+        index_t* dims;
+        /** number of dimensions  */
+        index_t num_dims;
 };
 
 template<class T> struct SGString
