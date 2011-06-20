@@ -650,7 +650,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preprocessor(i);
 						SG_INFO( "preprocessing using preproc %s\n", p->get_name());
 
-						if (p->apply_to_feature_matrix(this).vector==NULL)
+						if (p->apply_to_feature_matrix(this).matrix==NULL)
 						{
 							SG_UNREF(p);
 							return false;
