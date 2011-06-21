@@ -995,8 +995,8 @@ Configuration:
                                  configure shogun for interface
                                  cmdline, python_modular, python, r, r_modular
                                  octave, octave_modular, matlab or libshogun,
-								 java_modular, csharp_modular,
-								 lua_modular, ruby_modular
+                                 java_modular, csharp_modular,
+                                 lua_modular, ruby_modular
   -h, -help, --help              display this help and exit
 
 Installation directories:
