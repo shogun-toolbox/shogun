@@ -408,7 +408,7 @@ namespace shogun
 
 			current_example->label = current_label;
 			current_example->fv.vector = current_feature_vector;
-			current_example->fv.length = current_len;
+			current_example->fv.vlen = current_len;
 
 			examples_buff->copy_example(current_example);
 			number_of_vectors_parsed++;
@@ -471,7 +471,7 @@ namespace shogun
 		}
 	
 		fv = ex->fv.vector;
-		length = ex->fv.length;
+		length = ex->fv.vlen;
 		label = ex->label;
 
 		return 1;

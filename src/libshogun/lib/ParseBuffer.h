@@ -173,7 +173,7 @@ namespace shogun
 	{
 		ex_buff[ex_write_index].label = ex->label;
 		ex_buff[ex_write_index].fv.vector = ex->fv.vector;
-		ex_buff[ex_write_index].fv.length = ex->fv.length;
+		ex_buff[ex_write_index].fv.vlen = ex->fv.vlen;
 		ex_used[ex_write_index] = E_NOT_USED;
 		inc_write_index();
 
