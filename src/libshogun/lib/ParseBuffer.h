@@ -29,6 +29,10 @@ namespace shogun
 		class example
 	{
 	public:
+		example()
+		{
+			fv.vector=NULL;
+		}
 		float64_t label;
 		SGVector<T> fv;
 	};
@@ -40,7 +44,7 @@ namespace shogun
 		/** 
 		 * Constructor, taking buffer size as argument.
 		 * 
-		 * @param size Buffer size in MB
+		 * @param size Ring size as number of examples
 		 */
 		CParseBuffer(int32_t size);
 	
@@ -101,15 +105,13 @@ namespace shogun
 		/** 
 		 * Increments the 'write' position in the buffer.
 		 * 
-		 * @param len Length of feature vector
 		 */
-		virtual void inc_write_index(int32_t len);
+		virtual void inc_write_index();
 	
 	protected:
 	
-		int32_t buffer_size;		/**< buffer size in bytes */
+		int32_t buffer_size;		/**< buffer size as number of examples */
 		example<T>* ex_buff;			/**< buffer of example objects */
-		T* fv_buff;			/**< buffer space for feature vectors */
 
 		E_IS_EXAMPLE_USED* ex_used;
 		pthread_mutex_t* ex_in_use_mutex;
@@ -117,19 +119,14 @@ namespace shogun
 	
 		int32_t ex_write_index;		/**< write position for next example */
 		int32_t ex_read_index;		/**< position of next example to be read */
-	
-		int32_t fv_write_index;		/**< write position for next feature vector */
-	
 	};
 
 	template <class T>
 		CParseBuffer<T>::CParseBuffer(int32_t size)
 	{
-		int32_t buffer_size_features=size*1024*1024;
-		buffer_size=100;		// HACK!
+		buffer_size=size;
 		ex_buff=new example<T>[buffer_size];
-		printf("initializing fv_buff with size: %d\n", buffer_size_features);
-		fv_buff=new T[buffer_size_features/sizeof(T)];
+		printf("Initialized with ring size: %d.\n", buffer_size);
 		ex_used=new E_IS_EXAMPLE_USED[buffer_size];
 	
 		ex_in_use_mutex=new pthread_mutex_t[buffer_size];
@@ -137,8 +134,6 @@ namespace shogun
 	
 		ex_write_index=0;
 		ex_read_index=-1;
-
-		fv_write_index=0;
 
 		for (int32_t i=0; i<buffer_size; i++)
 		{
@@ -152,7 +147,6 @@ namespace shogun
 		CParseBuffer<T>::~CParseBuffer()
 	{
 		delete[] ex_buff;
-		delete[] fv_buff;
 		delete[] ex_used;
 
 		for (int32_t i=0; i<buffer_size; i++)
@@ -169,32 +163,21 @@ namespace shogun
 	}
 
 	template <class T>
-		void CParseBuffer<T>::inc_write_index(int32_t len)
+		void CParseBuffer<T>::inc_write_index()
 	{
 		ex_write_index=(ex_write_index + 1) % buffer_size;
-		fv_write_index=fv_write_index + len;
 	}
 
 	template <class T>
 		int32_t CParseBuffer<T>::write_example(example<T> *ex)
 	{
 		ex_buff[ex_write_index].label = ex->label;
-		ex_buff[ex_write_index].fv.vector = &fv_buff[fv_write_index];
+		ex_buff[ex_write_index].fv.vector = ex->fv.vector;
 		ex_buff[ex_write_index].fv.length = ex->fv.length;
-		
-		//Write feature vector into the fv buffer
-		//First we should check if the remaining length is enough to accommodate the fv
-		//Then realloc/expand if necessary
-
-		for (int i=0; i<ex->fv.length; i++)
-		{
-			fv_buff[fv_write_index+i] = ex->fv.vector[i];
-		}
-
 		ex_used[ex_write_index] = E_NOT_USED;
-		inc_write_index(ex->fv.length);
+		inc_write_index();
 
-		return 1;					// Should check for size and return 0 if insufficient
+		return 1;	
 	}
 
 	template <class T>
@@ -257,11 +240,11 @@ namespace shogun
 	{
 		pthread_mutex_lock(&ex_in_use_mutex[ex_read_index]);
 		ex_used[ex_read_index] = E_USED;
+		delete[] ex_buff[ex_read_index].fv.vector;
 		pthread_cond_signal(&ex_in_use_cond[ex_read_index]);
 		pthread_mutex_unlock(&ex_in_use_mutex[ex_read_index]);
 	
 		inc_read_index();
-
 	}
 
 }

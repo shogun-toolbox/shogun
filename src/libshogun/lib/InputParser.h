@@ -17,6 +17,8 @@
 #include "lib/ParseBuffer.h"
 #include <pthread.h>
 
+#define PARSER_DEFAULT_BUFFSIZE 100
+
 namespace shogun
 {
 	enum E_EXAMPLE_TYPE
@@ -51,7 +53,7 @@ namespace shogun
 		 *
 		 * @param input_file CStreamingFile object
 		 * @param is_labelled Whether example is labelled or not (bool), optional
-		 * @param size Size of the buffer in MB
+		 * @param size Size of the buffer in number of examples
 		 */
 		void init(CStreamingFile* input_file, bool is_labelled, int32_t size);
 
@@ -70,6 +72,27 @@ namespace shogun
 		 */
 		int32_t get_number_of_features();
 
+		/** 
+		 * Reads a line from the input and stores it as a vector of type T.
+		 * 
+		 * @param feature_vector Vector pointer, which is malloced and set by reference.
+		 * @param length Length of the vector returned
+		 */
+		void read_vector(T* &feature_vector,
+				 int32_t &length);				
+
+		/** 
+		 * Reads a line from the input, taking the first element to be
+		 * the label, and the rest as a vector of type T.
+		 * 
+		 * @param feature_vector Vector pointer, malloced and set by reference.
+		 * @param length Length of the vector returned
+		 * @param label Label of the example
+		 */
+		void read_vector_and_label(T* &feature_vector,
+					   int32_t &length,
+					   float64_t &label);
+		
 		/**
 		 * Gets feature vector, length and label.
 		 * Sets their values by reference.
@@ -81,7 +104,6 @@ namespace shogun
 		 *
 		 * @return 1 on success, 0 on failure.
 		 */
-		
 		int32_t get_vector_and_label(T* &feature_vector,
 					     int32_t &length,
 					     float64_t &label);
@@ -214,11 +236,52 @@ namespace shogun
 		
 		int32_t current_len; /**< Features in last
 				      * read example */
-
 		
 	};
 
-#define PARSER_DEFAULT_BUFFSIZE 100
+#define READ_VECTOR(sg_type, sg_function)						\
+	template <> void CInputParser<sg_type>::read_vector(sg_type* &vec, int32_t &len) \
+	{								\
+		input_source->sg_function(vec, len);		\
+	}
+
+	READ_VECTOR(bool, get_bool_vector);
+	READ_VECTOR(char, get_char_vector);
+	READ_VECTOR(int8_t, get_int8_vector);
+	READ_VECTOR(uint8_t, get_byte_vector);
+	READ_VECTOR(int16_t, get_short_vector);
+	READ_VECTOR(uint16_t, get_word_vector);
+	READ_VECTOR(int32_t, get_int_vector);
+	READ_VECTOR(uint32_t, get_uint_vector);
+	READ_VECTOR(int64_t, get_long_vector);
+	READ_VECTOR(uint64_t, get_ulong_vector);
+	READ_VECTOR(float32_t, get_shortreal_vector);
+	READ_VECTOR(float64_t, get_real_vector);
+	READ_VECTOR(floatmax_t, get_longreal_vector);
+	
+#undef READ_VECTOR_AND_LABEL		
+
+	#define READ_VECTOR_AND_LABEL(sg_type, sg_function)						\
+		template <> void CInputParser<sg_type>::read_vector_and_label(sg_type* &vec, int32_t &len, float64_t &label) \
+	{								\
+		input_source->sg_function(vec, len, label);		\
+	}
+
+	READ_VECTOR_AND_LABEL(bool, get_bool_vector_and_label);
+	READ_VECTOR_AND_LABEL(char, get_char_vector_and_label);
+	READ_VECTOR_AND_LABEL(int8_t, get_int8_vector_and_label);
+	READ_VECTOR_AND_LABEL(uint8_t, get_byte_vector_and_label);
+	READ_VECTOR_AND_LABEL(int16_t, get_short_vector_and_label);
+	READ_VECTOR_AND_LABEL(uint16_t, get_word_vector_and_label);
+	READ_VECTOR_AND_LABEL(int32_t, get_int_vector_and_label);
+	READ_VECTOR_AND_LABEL(uint32_t, get_uint_vector_and_label);
+	READ_VECTOR_AND_LABEL(int64_t, get_long_vector_and_label);
+	READ_VECTOR_AND_LABEL(uint64_t, get_ulong_vector_and_label);
+	READ_VECTOR_AND_LABEL(float32_t, get_shortreal_vector_and_label);
+	READ_VECTOR_AND_LABEL(float64_t, get_real_vector_and_label);
+	READ_VECTOR_AND_LABEL(floatmax_t, get_longreal_vector_and_label);
+	
+#undef READ_VECTOR_AND_LABEL		
 
 	template <class T>
 		CInputParser<T>::CInputParser()
@@ -289,20 +352,13 @@ namespace shogun
 							      int32_t &length,
 							      float64_t &label)
 	{
-		input_source->get_real_vector(feature_vector, length);
-		/* The get_real_vector call should be replaced with
-		   a dynamic call depending on the type of feature. */
+		read_vector_and_label(feature_vector, length, label);
 
-		if (length < 2)
+		if (length < 1)
 		{
 			// Problem reading the example
-			parsing_done=true;
 			return 0;
 		}
-
-		label=feature_vector[0];
-		feature_vector++;
-		length--;
 
 		return 1;
 	}
@@ -311,14 +367,11 @@ namespace shogun
 		int32_t CInputParser<T>::get_vector_only(T* &feature_vector,
 							 int32_t &length)
 	{
-		input_source->get_real_vector(feature_vector, length);
-		/* The get_real_vector call should be replaced with
-		   a dynamic call depending on the type of feature. */
+		read_vector(feature_vector, length);
 
 		if (length < 1)
 		{
 			// Problem reading the example
-			parsing_done=true;
 			return 0;
 		}
 
@@ -370,22 +423,27 @@ namespace shogun
 		// Return the next unused example from the buffer
 
 		example<T> *ex;
-	
+		
 		if (number_of_vectors_parsed <= 0)
 			return NULL;
 
 		if (parsing_done)
 		{
 			if (number_of_vectors_read == number_of_vectors_parsed)
+			{
 				reading_done = true;
+				return NULL;
+			}
 		}
 
 		if (number_of_vectors_read == number_of_vectors_parsed)
+		{
 			return NULL;
-	
+		}
+
 		ex = examples_buff->fetch_example();
 		number_of_vectors_read++;
-
+		
 		return ex;
 	}
 
