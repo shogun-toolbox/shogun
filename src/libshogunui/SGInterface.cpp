@@ -3632,7 +3632,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else if (ktype==K_WEIGHTEDDEGREEPOS)
 	{
@@ -3645,7 +3645,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else // all other kernels
 	{
@@ -3696,7 +3696,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else if (ktype==K_WEIGHTEDDEGREEPOS)
 	{
@@ -3709,7 +3709,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else // all other kernels
 	{
@@ -3824,7 +3824,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else if (ktype==K_WEIGHTEDDEGREEPOS)
 	{
@@ -3836,7 +3836,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else // all other kernels
 	{

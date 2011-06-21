@@ -20,10 +20,10 @@ krr.set_tau(1e-6)
 krr.train()
 
 plot(X, Y, '.', label='train data')
-plot(X[0], krr.classify().get_labels(), hold=True, label='train output')
+plot(X[0], krr.apply().get_labels(), hold=True, label='train output')
 
 XE, YE=util.compute_output_plot_isolines_sine(krr, gk, feat)
-YE200=krr.classify_example(200)
+YE200=krr.apply(200)
 
 plot(XE[0], YE, hold=True, label='test output')
 plot([XE[0,200]], [YE200], '+', hold=True)

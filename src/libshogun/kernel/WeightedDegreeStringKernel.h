@@ -454,22 +454,18 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 		/** set wd weights
 		 *
-		 * @param p_weights new eights
-		 * @param d degree
-		 * @return if setting was successful
+		 * @param new_weights new weights
 		 */
-		void set_wd_weights(float64_t* p_weights, int32_t d)
+		inline void set_wd_weights(SGVector<float64_t> new_weights)
 		{
-			set_weights(p_weights,d,0);
+			set_weights(SGMatrix<float64_t>(new_weights.vector,new_weights.vlen,0));
 		}
 
 		/** set weights
 		 *
-		 * @param weights new weights
-		 * @param d degree
-		 * @param len number of weights
+		 * @param new_weights new weights
 		 */
-		bool set_weights(float64_t* weights, int32_t d, int32_t len);
+		bool set_weights(SGMatrix<float64_t> new_weights);
 
 		/** set position weights
 		 *

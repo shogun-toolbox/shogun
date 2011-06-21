@@ -48,7 +48,7 @@
 	for (i=0; i < $1.vlen; i++)
 		res[i] = (CSHARPTYPE)$1.vector[i];
 
-    $1.free_matrix();
+    $1.free_vector();
 
 	if (!res)
 		return NULL;
@@ -59,7 +59,7 @@
 
 
 /* Define concrete examples of the TYPEMAP_SGVECTOR macros */
-TYPEMAP_SGVECTOR(bool, bool, unsigned int)
+TYPEMAP_SGVECTOR(bool, bool, bool)
 TYPEMAP_SGVECTOR(char, char, char)
 TYPEMAP_SGVECTOR(uint8_t, uint8_t, unsigned char)
 TYPEMAP_SGVECTOR(int16_t, short, short)
