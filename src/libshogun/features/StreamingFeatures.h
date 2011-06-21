@@ -108,9 +108,9 @@ public:
 	/**
 	 * Indicate to the parser that it must fetch the next example.
 	 *
-	 * @return 1 on success, 0 on failure (i.e., no more examples).
+	 * @return true on success, false on failure (i.e., no more examples).
 	 */
-	virtual int32_t get_next_example()=0;
+	virtual bool get_next_example()=0;
 
 	/**
 	 * Indicate that processing of the current example is done.
