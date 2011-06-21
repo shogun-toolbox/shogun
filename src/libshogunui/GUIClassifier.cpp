@@ -1300,16 +1300,17 @@ bool CGUIClassifier::get_clustering(
 			CKMeans* clustering=(CKMeans*) classifier;
 
 			bcols=1;
-			float64_t* r=NULL;
-			clustering->get_radi(r, brows);
+			SGVector<float64_t> r=clustering->get_radiuses();
+			brows=r.vlen;
 			radi=new float64_t[brows];
-			memcpy(radi, r, sizeof(float64_t)*brows);
+			memcpy(radi, r.vector, sizeof(float64_t)*brows);
 
 			cols=1;
-			float64_t* c=NULL;
-			clustering->get_centers(c, rows, cols);
+			SGMatrix<float64_t> c=clustering->get_cluster_centers();
+			rows=c.num_rows;
+			cols=c.num_cols;
 			centers=new float64_t[rows*cols];
-			memcpy(centers, c, sizeof(float64_t)*rows*cols);
+			memcpy(centers, c.matrix, sizeof(float64_t)*rows*cols);
 			break;
 		}
 
@@ -1318,17 +1319,18 @@ bool CGUIClassifier::get_clustering(
 			CHierarchical* clustering=(CHierarchical*) classifier;
 
 			// radi == merge_distances, centers == pairs
-			float64_t* r=NULL;
 			bcols=1;
-			clustering->get_merge_distance(r, brows);
+			SGVector<float64_t> r=clustering->get_merge_distances();
+			brows=r.vlen;
 			radi=new float64_t[brows];
-			memcpy(radi, r, sizeof(float64_t)*brows);
+			memcpy(radi, r.vector, sizeof(float64_t)*brows);
 
-			int32_t* p=NULL;
-			clustering->get_pairs(p, rows, cols);
+			SGMatrix<int32_t> p=clustering->get_cluster_pairs();
+			rows=p.num_rows;
+			cols=p.num_cols;
 			centers=new float64_t[rows*cols];
 			for (int32_t i=0; i<rows*cols; i++)
-				centers[i]=(float64_t) p[i];
+				centers[i]=(float64_t) p.matrix[i];
 
 			break;
 		}

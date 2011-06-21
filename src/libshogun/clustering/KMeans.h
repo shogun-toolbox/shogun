@@ -118,61 +118,20 @@ class CKMeans : public CDistanceMachine
 			return max_iter;
 		}
 
-		/** get radi
+		/** get radiuses
 		 *
-		 * @param radi current radi are stored in here
-		 * @param num number of radi is stored in here
 		 */
-		inline void get_radi(float64_t*& radi, int32_t& num)
+		SGVector<float64_t> get_radiuses()
 		{
-			radi=R;
-			num=k;
+			return SGVector<float64_t>(R,k);
 		}
 
 		/** get centers
 		 *
-		 * @param centers current centers are stored in here
-		 * @param dim dimensions are stored in here
-		 * @param num number of centers is stored in here
 		 */
-		inline void get_centers(float64_t*& centers, int32_t& dim, int32_t& num)
+		SGMatrix<float64_t> get_cluster_centers()
 		{
-			centers=mus;
-			dim=dimensions;
-			num=k;
-		}
-
-		/** get radiuses (swig compatible)
-		 *
-		 * @param radii current radiuses are stored in here
-		 * @param num number of radiuses is stored in here
-		 */
-		inline void get_radiuses(float64_t** radii, int32_t* num)
-		{
-			size_t sz=sizeof(*R)*k;
-			*radii=(float64_t*) SG_MALLOC(sz);
-			ASSERT(*radii);
-
-			memcpy(*radii, R, sz);
-			*num=k;
-		}
-
-		/** get cluster centers (swig compatible)
-		 *
-		 * @param centers current cluster centers are stored in here
-		 * @param dim dimensions are stored in here
-		 * @param num number of centers is stored in here
-		 */
-		inline void get_cluster_centers(
-			float64_t** centers, int32_t* dim, int32_t* num)
-		{
-			size_t sz=sizeof(*mus)*dimensions*k;
-			*centers=(float64_t*) SG_MALLOC(sz);
-			ASSERT(*centers);
-
-			memcpy(*centers, mus, sz);
-			*dim=dimensions;
-			*num=k;
+			return SGMatrix<float64_t>(mus,dimensions,k);
 		}
 
 		/** get dimensions

@@ -10,40 +10,6 @@
  *
  */
 
-// Comment by Baozeng Ding 
-/* TYPEMAP_IN macros
- *
- * This family of typemaps allows pure input C arguments of the form
- *
- *     (type* IN_ARRAY1, int32_t DIM1)
- *     (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
- *
- * where "type" is any type supported by the numpy module, to be
- * called in python with an argument list of a single array (or any
- * python object that can be passed to the numpy.array constructor
- * to produce an arrayof te specified shape).  This can be applied to
- * a existing functions using the %apply directive:
- *
- *     %apply (float64_t* IN_ARRAY1, int32_t DIM1) {float64_t* series, int32_t length}
- *     %apply (float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2) {float64_t* mx, int32_t rows, int32_t cols}
- *     float64_t sum(float64_t* series, int32_t length);
- *     float64_t max(float64_t* mx, int32_t rows, int32_t cols);
- *
- * or with
- *
- *     float64_t sum(float64_t* IN_ARRAY1, int32_t DIM1);
- *     float64_t max(float64_t* IN_ARRAY2, int32_t DIM1, int32_t DIM2);
- */
-
-
-////////////////////////////////  Vector Typemaps - Begin /////////////////////////////////////
-
-
-
-
-//%define TYPEMAP_IN1(SGTYPE, JTYPE, JAVATYPE, JNITYPE)
-//%define TYPEMAP_IN1(SGTYPE, CTYPE, CSHARPTYPE) //  - JAVATYPE is removed from the CSHARP marco because JCALLX command not supported in CSharp
-
 %define TYPEMAP_SGVECTOR(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype) shogun::SGVector<SGTYPE>		%{CTYPE*%}         // ctype is the C# equivalent of the javatypemap jni
@@ -77,35 +43,31 @@
 %typemap(out) shogun::SGVector<SGTYPE> {
 
 	int32_t i;
-	CSHARPTYPE res[$1.length]; // = JCALL1(New##JAVATYPE##Array, jenv, $1.length);
+	CSHARPTYPE res[$1.vlen];
 
-	for (i=0; i < $1.length; i++)
+	for (i=0; i < $1.vlen; i++)
 		res[i] = (CSHARPTYPE)$1.vector[i];
+
+    $1.free_vector();
 
 	if (!res)
 		return NULL;
 	
 	$result = res;
 }
-
-//%typemap(javain) shogun::SGVector<SGTYPE> "$javainput"
-//%typemap(javaout) shogun::SGVector<SGTYPE> {
-//	return $jnicall;
-//}
-
 %enddef
 
 
 /* Define concrete examples of the TYPEMAP_SGVECTOR macros */
-TYPEMAP_SGVECTOR(bool, bool, unsigned int)
-TYPEMAP_SGVECTOR(char, byte, char)
-TYPEMAP_SGVECTOR(uint8_t, byte, unsigned char)
+TYPEMAP_SGVECTOR(bool, bool, bool)
+TYPEMAP_SGVECTOR(char, char, char)
+TYPEMAP_SGVECTOR(uint8_t, uint8_t, unsigned char)
 TYPEMAP_SGVECTOR(int16_t, short, short)
 TYPEMAP_SGVECTOR(uint16_t, ushort, unsigned short)
 TYPEMAP_SGVECTOR(int32_t, int, int)
 TYPEMAP_SGVECTOR(uint32_t, uint, unsigned int)
-TYPEMAP_SGVECTOR(int64_t, int, long)
-TYPEMAP_SGVECTOR(uint64_t, uint, unsigned long)
+TYPEMAP_SGVECTOR(int64_t, int64_t, long)
+TYPEMAP_SGVECTOR(uint64_t, uint64_t, unsigned long)
 TYPEMAP_SGVECTOR(long long, long, long long)
 TYPEMAP_SGVECTOR(float32_t, float, float)
 TYPEMAP_SGVECTOR(float64_t, double, double)
@@ -198,12 +160,14 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 
 
-    for (i = 0; i < rows; i++) {
-        for (j = 0; j < cols; j++){
+    for (i = 0; i < rows; i++)
+    {
+        for (j = 0; j < cols; j++)
             array[i][j] = (CSHARPTYPE)($1.matrix[(i * rows) + j]);
-	}
     }
    
+    $1.free_matrix();
+
     $result = (CSHARPTYPE **)array;
 
 //  Translation Point
@@ -215,8 +179,8 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 /*Define concrete examples of the TYPEMAP_SGMATRIX macros */
 
 TYPEMAP_SGMATRIX(bool, bool, unsigned int)
-TYPEMAP_SGMATRIX(char, byte, char)
-TYPEMAP_SGMATRIX(uint8_t, byte, unsigned char)
+TYPEMAP_SGMATRIX(char, char, char)
+TYPEMAP_SGMATRIX(uint8_t, uint8_t, unsigned char)
 TYPEMAP_SGMATRIX(int16_t, short, short)
 TYPEMAP_SGMATRIX(uint16_t, ushort, unsigned short)
 TYPEMAP_SGMATRIX(int32_t, int, int)
@@ -340,8 +304,8 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
          //         IMTYPE == same as CTYPE  
          //(SGTYPE, CTYPE, CSTYPE)
 TYPEMAP_IN1(bool, bool, unsigned int)
-TYPEMAP_IN1(char, byte, char)
-TYPEMAP_IN1(uint8_t, byte, unsigned char)
+TYPEMAP_IN1(char, char, char)
+TYPEMAP_IN1(uint8_t, uint8_t, unsigned char)
 TYPEMAP_IN1(int16_t, short, short)
 TYPEMAP_IN1(uint16_t, ushort, unsigned short)
 TYPEMAP_IN1(int32_t, int, int)
@@ -424,8 +388,8 @@ TYPEMAP_IN1(float64_t, double, double)
 
 
 TYPEMAP_ARRAYOUT1(bool, bool, unsigned int)
-TYPEMAP_ARRAYOUT1(char, byte, char)
-TYPEMAP_ARRAYOUT1(uint8_t, byte, unsigned char)
+TYPEMAP_ARRAYOUT1(char, char, char)
+TYPEMAP_ARRAYOUT1(uint8_t, uint8_t, unsigned char)
 TYPEMAP_ARRAYOUT1(int16_t, short, short)
 TYPEMAP_ARRAYOUT1(uint16_t, ushort, unsigned short)
 TYPEMAP_ARRAYOUT1(int32_t, int, int)

@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
+ * Subset support written (W) 2011 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -79,8 +80,8 @@ struct SSKTripleFeature
  *
  * Also note that string features cannot currently be computed on-the-fly.
  *
- * Subset access is supported for this feature type.
- * Simple use the CFeature::set_feature_subset() function.
+ * (Partly) subset access is supported for this feature type.
+ * Simple use the CFeatures::set_subset() function.
  * If done, all calls that work with features are translated to the subset
  * Note that only read only access is possible if subset is set
  *
@@ -120,13 +121,9 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** constructor
 		 *
-		 * @param p_features new features
-		 * @param p_num_vectors number of vectors
-		 * @param p_max_string_length maximum string length
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(SGString<ST>* p_features, int32_t p_num_vectors,
-				int32_t p_max_string_length, EAlphabet alpha)
+		CStringFeatures(SGStringList<ST> string_list, EAlphabet alpha)
 		: CFeatures(0), num_vectors(0), num_vectors_total(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
 			max_string_length(0), max_string_length_total(0), order(0),
@@ -138,18 +135,14 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
 			original_num_symbols=num_symbols;
-			set_features(p_features, p_num_vectors, p_max_string_length);
+			set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 		}
 
 		/** constructor
 		 *
-		 * @param p_features new features
-		 * @param p_num_vectors number of vectors
-		 * @param p_max_string_length maximum string length
 		 * @param alpha an actual alphabet
 		 */
-		CStringFeatures(SGString<ST>* p_features, int32_t p_num_vectors,
-				int32_t p_max_string_length, CAlphabet* alpha)
+		CStringFeatures(SGStringList<ST> string_list, CAlphabet* alpha)
 		: CFeatures(0), num_vectors(0), num_vectors_total(0), features(NULL),
 			single_string(NULL),length_of_single_string(0),
 			max_string_length(0), max_string_length_total(0), order(0),
@@ -161,7 +154,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			SG_REF(alphabet);
 			num_symbols=alphabet->get_num_symbols();
 			original_num_symbols=num_symbols;
-			set_features(p_features, p_num_vectors, p_max_string_length);
+			set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 		}
 
 		/** constructor
@@ -256,7 +249,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		virtual void cleanup()
 		{
 			/* reset subset to work on ALL features here */
-			remove_feature_subset();
+			remove_subset();
 
 			if (single_string)
 			{
@@ -296,7 +289,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			if (features)
 			{
-				int32_t real_num = subset_idx_conversion(num);
+				int32_t real_num = m_subset->subset_idx_conversion(num);
 				delete[] features[real_num].string;
 				features[real_num].string=NULL;
 				features[real_num].length=0;
@@ -333,7 +326,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual CFeatures* duplicate() const
 		{
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				SG_NOTIMPLEMENTED;
 
 			return new CStringFeatures<ST>(*this);
@@ -341,11 +334,9 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** get string for selected example num, from the subset if there is one
 		 *
-		 * @param dst destination where vector will be stored
-		 * @param len number of features in vector
 		 * @param num index of the string
 		 */
-		void get_feature_vector(ST** dst, int32_t* len, int32_t num)
+		SGVector<ST> get_feature_vector(int32_t num)
 		{
 			ASSERT(features);
 			if (num>=num_vectors)
@@ -357,10 +348,10 @@ template <class ST> class CStringFeatures : public CFeatures
 			int32_t l;
 			bool free_vec;
 			ST* vec=get_feature_vector(num, l, free_vec);
-			*len=l;
-			*dst=(ST*) SG_MALLOC(*len * sizeof(ST));
-			memcpy(*dst, vec, *len * sizeof(ST));
+			ST* dst=(ST*) SG_MALLOC(l*sizeof(ST));
+			memcpy(dst, vec, l*sizeof(ST));
 			free_feature_vector(vec, num, free_vec);
+			return SGVector<ST>(dst,l);
 		}
 
 		/** set string for selected example num, does not work if subset is set
@@ -369,23 +360,26 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param len number of features in vector
 		 * @param num index of the string
 		 */
-		void set_feature_vector(ST* src, int32_t len, int32_t num)
+		void set_feature_vector(SGVector<ST> vector, int32_t num)
 		{
 			ASSERT(features);
-			ASSERT(!m_subset_idx);
+
+			if (m_subset->has_subset())
+				SG_ERROR("A subset is set, cannot set feature vector\n");
+
 			if (num>=num_vectors)
 			{
 				SG_ERROR("Index out of bounds (number of strings %d, you "
 						"requested %d)\n", num_vectors, num);
 			}
 
-			if (len<=0)
+			if (vector.vlen<=0)
 				SG_ERROR("String has zero or negative length\n");
 
 			cleanup_feature_vector(num);
-			features[num].length=len;
-			features[num].string=new ST[len];
-			memcpy(features[num].string, src, len*sizeof(ST));
+			features[num].length=vector.vlen;
+			features[num].string=new ST[vector.vlen];
+			memcpy(features[num].string, vector.vector, vector.vlen*sizeof(ST));
 
 			determine_maximum_string_length();
 		}
@@ -419,7 +413,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(num<num_vectors);
 
 
-			int32_t real_num = subset_idx_conversion(num);
+			int32_t real_num = m_subset->subset_idx_conversion(num);
 
 			if (!preprocess_on_get)
 			{
@@ -433,13 +427,13 @@ template <class ST> class CStringFeatures : public CFeatures
 				ST* feat=compute_feature_vector(num, len);
 				dofree=true;
 
-				if (get_num_preproc())
+				if (get_num_preprocessors())
 				{
 					ST* tmp_feat_before=feat;
 
-					for (int32_t i=0; i<get_num_preproc(); i++)
+					for (int32_t i=0; i<get_num_preprocessors(); i++)
 					{
-						CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preproc(i);
+						CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preprocessor(i);
 						feat=p->apply_to_string(tmp_feat_before, len);
 						SG_UNREF(p);
 						delete[] tmp_feat_before;
@@ -457,14 +451,18 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		CStringFeatures<ST>* get_transposed()
 		{
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				SG_NOTIMPLEMENTED;
 
 			int32_t num_feat;
 			int32_t num_vec;
 			SGString<ST>* s=get_transposed(num_feat, num_vec);
+			SGStringList<ST> string_list;
+			string_list.strings = s;
+			string_list.num_strings = num_vec;
+			string_list.max_string_length = num_feat;
 
-			return new CStringFeatures<ST>(s, num_vec, num_feat, alphabet);
+			return new CStringFeatures<ST>(string_list, alphabet);
 		}
 
 		/** compute and return the transpose of string features matrix
@@ -480,7 +478,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		SGString<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec)
 		{
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				SG_NOTIMPLEMENTED;
 
 			num_feat=num_vectors;
@@ -526,7 +524,7 @@ template <class ST> class CStringFeatures : public CFeatures
 						"num_str_total=%d\n", num, num_vectors, num_vectors_total); 
 			}
 
-			int32_t real_num = subset_idx_conversion(num);
+			int32_t real_num = m_subset->subset_idx_conversion(num);
 
 			if (feature_cache)
 				feature_cache->unlock_entry(real_num);
@@ -671,7 +669,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		void load_ascii_file(char* fname, bool remap_to_bin=true,
 				EAlphabet ascii_alphabet=DNA, EAlphabet binary_alphabet=RAWDNA)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			size_t blocksize=1024*1024;
 			size_t required_blocksize=0;
@@ -819,7 +817,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool load_fasta_file(const char* fname, bool ignore_invalid=false)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			int32_t i=0;
 			uint64_t len=0;
@@ -920,7 +918,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		bool load_fastq_file(const char* fname,
 				bool ignore_invalid=false, bool bitremap_in_single_string=false)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			CMemoryMappedFile<char> f(fname);
 
@@ -1028,7 +1026,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool load_from_directory(char* dirname)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			struct dirent **namelist;
 			int32_t n;
@@ -1110,7 +1108,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool set_features(SGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 		{
-			remove_feature_subset();
+			remove_subset();
 
 			if (p_features)
 			{
@@ -1156,13 +1154,13 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			ASSERT(sf);
 
-			remove_feature_subset();
+			remove_subset();
 
 			SGString<ST>* new_features=new SGString<ST>[sf->get_num_vectors()];
 
 			for (int32_t i=0; i<sf->get_num_vectors(); i++)
 			{
-				int32_t real_i = sf->subset_idx_conversion(i);
+				int32_t real_i = sf->m_subset->subset_idx_conversion(i);
 				int32_t length=sf->features[real_i].length;
 				new_features[i].string=new ST[length];
 				memcpy(new_features[i].string, sf->features[real_i].string, length);
@@ -1184,7 +1182,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		bool append_features(SGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
         {
-			remove_feature_subset();
+			remove_subset();
 
             if (!features)
                 return set_features(p_features, p_num_vectors, p_max_string_length);
@@ -1252,8 +1250,8 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual SGString<ST>* get_features(int32_t& num_str, int32_t& max_str_len)
 		{
-			if (m_subset_idx)
-				SG_ERROR("not possible on subset");
+			if (m_subset->has_subset())
+				SG_ERROR("get features() is not possible on subset");
 
 			num_str=num_vectors_total;
 			max_str_len=max_string_length_total;
@@ -1295,7 +1293,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual void get_features(SGString<ST>** dst, int32_t* num_str)
 		{
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				SG_NOTIMPLEMENTED;
 
 			int32_t num_vec;
@@ -1420,7 +1418,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual bool save_compressed(char* dest, E_COMPRESSION_TYPE compression, int level)
 		{
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				SG_NOTIMPLEMENTED;
 
 			FILE* file=NULL;
@@ -1490,16 +1488,16 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param force_preprocessing if preprocssing shall be forced
 		 * @return if applying was successful
 		 */
-		virtual bool apply_preproc(bool force_preprocessing=false)
+		virtual bool apply_preprocessor(bool force_preprocessing=false)
 		{
 			SG_DEBUG( "force: %d\n", force_preprocessing);
 
-			for (int32_t i=0; i<get_num_preproc(); i++)
+			for (int32_t i=0; i<get_num_preprocessors(); i++)
 			{
 				if ( (!is_preprocessed(i) || force_preprocessing) )
 				{
 					set_preprocessed(i);
-					CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preproc(i);
+					CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preprocessor(i);
 					SG_INFO( "preprocessing using preproc %s\n", p->get_name());
 
 					if (!p->apply_to_string_features(this))
@@ -1525,7 +1523,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		int32_t obtain_by_sliding_window(int32_t window_size, int32_t step_size, int32_t skip=0)
 		{
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				SG_NOTIMPLEMENTED;
 
 			ASSERT(step_size>0);
@@ -1570,7 +1568,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		int32_t obtain_by_position_list(int32_t window_size, CDynamicArray<int32_t>* positions, int32_t skip=0)
 		{
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				SG_NOTIMPLEMENTED;
 
 			ASSERT(positions);
@@ -1656,7 +1654,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		template <class CT>
 			bool obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 			{
-				if (m_subset_idx)
+				if (m_subset->has_subset())
 					SG_NOTIMPLEMENTED;
 
 				ASSERT(sf);
@@ -1765,7 +1763,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		inline void embed_features(int32_t p_order)
 		{
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				SG_NOTIMPLEMENTED;
 
 			ASSERT(alphabet->get_num_symbols_in_histogram() > 0);
@@ -1897,11 +1895,12 @@ template <class ST> class CStringFeatures : public CFeatures
 				max_string_length_total=CMath::max(max_string_length_total, features[i].length);
 
 			/* subset */
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 			{
 				for (int32_t i=0; i<num_vectors; i++)
 				{
-					max_string_length=CMath::max(max_string_length, features[m_subset_idx[i]].length);
+					max_string_length=CMath::max(max_string_length,
+							features[m_subset->subset_idx_conversion(i)].length);
 				}
 			}
 			else
@@ -1935,14 +1934,14 @@ template <class ST> class CStringFeatures : public CFeatures
 			ASSERT(features);
 			ASSERT(num<num_vectors);
 
-			int32_t real_num = subset_idx_conversion(num);
+			int32_t real_num = m_subset->subset_idx_conversion(num);
 
 
 			features[real_num].length=len ;
 			features[real_num].string=string ;
 
 			max_string_length_total=CMath::max(len, max_string_length_total);
-			if (m_subset_idx)
+			if (m_subset->has_subset())
 				max_string_length=CMath::max(len, max_string_length);
 		}
 
@@ -2098,26 +2097,22 @@ template <class ST> class CStringFeatures : public CFeatures
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StringFeatures"; }
 
-		/** sets the subset indices matrix which is afterwards used for feature access
-		 * overrides method of superclass and adds calculations for this class
-		 *
-		 * @param subset_idx index matrix
-		 * @param subset_len number of subset indices
-		 */
-		virtual void set_feature_subset(int32_t* subset_idx, int32_t subset_len)
+		bool has_subset() { return m_subset->has_subset(); }
+
+		void set_subset(SGVector<index_t> subset)
 		{
-			CFeatures::set_feature_subset(subset_idx, subset_len);
-			num_vectors = subset_len;
-			determine_maximum_string_length();
+			m_subset->set_subset(subset);
 		}
+
+		SGVector<index_t> get_subset() { return m_subset->get_subset(); }
 
 		/** resets the current subset indices matrix
 		 * overrides method of superclass and adds resets properties dependend on subset as num_vectors
 		 */
-		inline virtual void remove_feature_subset()
+		inline void remove_subset()
 		{
-			CFeatures::remove_feature_subset();
-			num_vectors = num_vectors_total;
+			m_subset->remove_subset();
+			num_vectors=num_vectors_total;
 			max_string_length=max_string_length_total;
 		}
 	protected:
@@ -2136,7 +2131,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		{
 			ASSERT(features && num<num_vectors);
 
-			int32_t real_num = subset_idx_conversion(num);
+			int32_t real_num = m_subset->subset_idx_conversion(num);
 
 			len=features[real_num].length;
 			if (len<=0)

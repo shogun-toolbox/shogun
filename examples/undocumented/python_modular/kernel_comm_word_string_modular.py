@@ -17,15 +17,15 @@ def kernel_comm_word_string_modular (fm_train_dna=traindat, fm_test_dna=testdat,
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
 	preproc.init(feats_train)
-	feats_train.add_preproc(preproc)
-	feats_train.apply_preproc()
+	feats_train.add_preprocessor(preproc)
+	feats_train.apply_preprocessor()
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	feats_test.add_preproc(preproc)
-	feats_test.apply_preproc()
+	feats_test.add_preprocessor(preproc)
+	feats_test.apply_preprocessor()
 
 	kernel=CommWordStringKernel(feats_train, feats_train, use_sign)
 

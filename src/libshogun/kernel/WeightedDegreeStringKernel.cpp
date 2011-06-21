@@ -622,9 +622,12 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 		return false;
 }
 
-bool CWeightedDegreeStringKernel::set_weights(
-	float64_t* ws, int32_t d, int32_t len)
+bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 {
+	float64_t* ws=new_weights.matrix;
+	int32_t d=new_weights.num_rows;
+	int32_t len=new_weights.num_cols;
+
 	if (d!=degree || len<0)
 		SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree);
 

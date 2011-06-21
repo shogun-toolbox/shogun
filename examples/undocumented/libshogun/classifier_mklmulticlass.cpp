@@ -218,9 +218,9 @@ void tester()
 	CCustomKernel* kernel2=new CCustomKernel();
 	CCustomKernel* kernel3=new CCustomKernel();
 
-	kernel1->set_full_kernel_matrix_from_full(ker1, numdata,numdata);
-	kernel2->set_full_kernel_matrix_from_full(ker2, numdata,numdata);
-	kernel3->set_full_kernel_matrix_from_full(ker3, numdata,numdata);
+	kernel1->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker1, numdata,numdata));
+	kernel2->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker2, numdata,numdata));
+	kernel3->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker3, numdata,numdata));
 
 	ker->append_kernel(kernel1);
 	ker->append_kernel(kernel2);
@@ -281,9 +281,9 @@ void tester()
 	CCustomKernel* tkernel2=new CCustomKernel();
 	CCustomKernel* tkernel3=new CCustomKernel();
 
-	tkernel1->set_full_kernel_matrix_from_full(tker1,numdata, numdatatest);
-	tkernel2->set_full_kernel_matrix_from_full(tker2,numdata, numdatatest);
-	tkernel3->set_full_kernel_matrix_from_full(tker2,numdata, numdatatest);
+	tkernel1->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker1,numdata, numdatatest));
+	tkernel2->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker2,numdata, numdatatest));
+	tkernel3->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker2,numdata, numdatatest));
 
 	tker->append_kernel(tkernel1);
 	tker->append_kernel(tkernel2);

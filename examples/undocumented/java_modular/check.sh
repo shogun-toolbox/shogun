@@ -14,5 +14,5 @@ for filename in *.class
   do
   [ "$filename" = "Load.class" ] && continue
   echo "running ${filename%.class} .."
-  ${JAVA} ${filename%.class}
+  ${JAVA} ${filename%.class} >/dev/null
 done

@@ -13,6 +13,11 @@
 
 using namespace shogun;
 
+CSplittingStrategy::CSplittingStrategy() :
+	m_labels(NULL)
+{
+}
+
 CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets) :
 	m_labels(labels)
 {
@@ -32,21 +37,36 @@ CSplittingStrategy::~CSplittingStrategy()
 	SG_UNREF(m_labels);
 }
 
-SGVector<index_t>* CSplittingStrategy::generate_subset_indices(
-		index_t subset_idx)
+void CSplittingStrategy::generate_subset_indices(index_t subset_idx,
+		SGVector<index_t>& result)
 {
 	/* construct SGVector copy from index vector */
 	DynArray<index_t>* to_copy=m_subset_indices.get_element_safe(subset_idx);
 
 	index_t num_elements=to_copy->get_num_elements();
 
-	SGVector<index_t>* to_return=new SGVector<index_t> (
-			new index_t[num_elements], num_elements);
+	/* fill result vector */
+	result.vector=new index_t[num_elements];
+	result.vlen=num_elements;
 
 	/* copy data */
-	memcpy(to_return->vector, to_copy->get_array(),
-			sizeof(index_t)*num_elements);
-
-	return to_return;
+	memcpy(result.vector, to_copy->get_array(), sizeof(index_t)*num_elements);
 }
 
+void CSplittingStrategy::generate_subset_inverse(index_t subset_idx,
+		SGVector<index_t>& result)
+{
+	DynArray<index_t>* to_invert=m_subset_indices.get_element_safe(subset_idx);
+
+	/* fill result vector */
+	result.vlen=m_labels->get_num_labels()-to_invert->get_num_elements();
+	result.vector=new index_t[result.vlen];
+
+	index_t index=0;
+	for (index_t i=0; i<m_labels->get_num_labels(); ++i)
+	{
+		/* add i to inverse indices if it is not in the to be inverted set */
+		if (to_invert->find_element(i)==-1)
+			result.vector[index++]=i;
+	}
+}

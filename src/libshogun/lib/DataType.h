@@ -21,64 +21,97 @@ namespace shogun
 
 typedef int32_t index_t;
 
-template<class T> struct SGVector
+template<class T> class SGVector
 {
-	/** default constructor */
-	SGVector() : vector(NULL), length(0) { }
+	public:
+		/** default constructor */
+		SGVector() : vector(NULL), vlen(0), do_free(false) { }
 
-	/** constructor for setting params */
-	SGVector(T* v, index_t len) : vector(v), length(len) { }
+		/** constructor for setting params */
+		SGVector(T* v, index_t len, bool free_vec=false)
+			: vector(v), vlen(len), do_free(free_vec) { }
 
-	/** copy constructor */
-	SGVector(const SGVector &orig)
-	: vector(orig.vector), length(orig.length) { }
+		/** copy constructor */
+		SGVector(const SGVector &orig)
+			: vector(orig.vector), vlen(orig.vlen) { }
 
-	/** vector  */
-	T* vector;
-	/** length of vector  */
-	index_t length;
+		void free_vector()
+		{
+			if (do_free)
+				delete[] vector;
+
+			vector=NULL;
+			do_free=false;
+			vlen=0;
+		}
+
+	public:
+		/** vector  */
+		T* vector;
+		/** length of vector  */
+		index_t vlen;
+		/** whether vector needs to be freed */
+		bool do_free;
 };
 
-template<class T> struct SGMatrix
+template<class T> class SGMatrix
 {
-	/** default constructor */
-	SGMatrix() : matrix(NULL), num_rows(0), num_cols(0) { }
+	public:
+		/** default constructor */
+		SGMatrix() : matrix(NULL), num_rows(0), num_cols(0), do_free(false) { }
 
-	/** constructor for setting params */
-	SGMatrix(T* m, index_t nrows, index_t ncols)
-		: matrix(m), num_rows(nrows), num_cols(ncols) { }
+		/** constructor for setting params */
+		SGMatrix(T* m, index_t nrows, index_t ncols, bool free_mat=false)
+			: matrix(m), num_rows(nrows), num_cols(ncols), do_free(free_mat) { }
 
-	/** copy constructor */
-	SGMatrix(const SGMatrix &orig)
-	: matrix(orig.matrix), num_rows(orig.num_rows), num_cols(orig.num_cols) { }
+		/** copy constructor */
+		SGMatrix(const SGMatrix &orig)
+			: matrix(orig.matrix), num_rows(orig.num_rows),
+			num_cols(orig.num_cols), do_free(orig.do_free) { }
 
-	/** matrix  */
-	T* matrix;
-	/** number of rows of matrix  */
-	index_t num_rows;
-	/** number of columns of matrix  */
-	index_t num_cols;
+		void free_matrix()
+		{
+			if (do_free)
+				delete[] matrix;
+
+			matrix=NULL;
+			do_free=false;
+			num_rows=0;
+			num_cols=0;
+		}
+
+	public:
+		/** matrix  */
+		T* matrix;
+		/** number of rows of matrix  */
+		index_t num_rows;
+		/** number of columns of matrix  */
+		index_t num_cols;
+		/** whether matrix needs to be freed */
+		bool do_free;
 };
 
-template<class T> struct SGNDArray
+template<class T> class SGNDArray
 {
-	/** default constructor */
-	SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
+    public:
+        /** default constructor */
+        SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
 
-	/** constructor for setting params */
-	SGNDArray(T* a, index_t* d, index_t nd)
-		: array(a), dims(d), num_dims(nd) { }
+        /** constructor for setting params */
+        SGNDArray(T* a, index_t* d, index_t nd)
+            : array(a), dims(d), num_dims(nd) { }
 
-	/** copy constructor */
-	SGNDArray(const SGNDArray &orig)
-	: array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
+        /** copy constructor */
+        SGNDArray(const SGNDArray &orig)
+            : array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
 
-	/** array  */
-	T* array;
-	/** dimension sizes */
-	index_t* dims;
-	/** number of dimensions  */
-	index_t num_dims;
+    public:
+        /** array  */
+        T* array;
+        /** dimension sizes */
+        index_t* dims;
+        /** number of dimensions  */
+        index_t num_dims;
 };
 
 template<class T> struct SGString

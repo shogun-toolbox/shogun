@@ -308,7 +308,7 @@ CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
 		int32_t num_f=0;
 		int32_t num_v=0;
 		float64_t* feats=src->get_feature_matrix(num_f, num_v);
-		if (target->set_full_feature_matrix(feats, num_f, num_v))
+		if (target->set_full_feature_matrix(SGMatrix<float64_t>(feats, num_f, num_v)))
 			return target;
 
 		SG_UNREF(target);
@@ -486,10 +486,8 @@ CSimpleFeatures<float64_t>* CGUIFeatures::convert_sparse_real_to_simple_real(
 		CSimpleFeatures<float64_t>* rf=new CSimpleFeatures<float64_t>(0);
 		if (rf)
 		{
-			int32_t num_f=0;
-			int32_t num_v=0;
-			float64_t* feats=src->get_full_feature_matrix(num_f, num_v);
-			rf->set_feature_matrix(feats, num_f, num_v);
+			SGMatrix<float64_t> feats=src->get_full_feature_matrix();
+			rf->set_feature_matrix(feats);
 			return rf;
 		}
 	}

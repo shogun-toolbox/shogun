@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Baozeng Ding
- *  
+ *
  */
 
 /* One dimensional input/output arrays */
@@ -36,10 +36,12 @@
 
 %typemap(out) shogun::SGVector<SGTYPE> {
 	int32_t i;
-	VALUE arr = rb_ary_new2($1.length);
+	VALUE arr = rb_ary_new2($1.vlen);
 
-	for (i = 0; i < $1.length; i++)
+	for (i = 0; i < $1.vlen; i++)
 		rb_ary_push(arr, SG2R($1.vector[i]));
+
+    $1.free_vector();
 
 	$result = arr;
 }
@@ -111,6 +113,8 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 		}
 		rb_ary_push(arr, vec);
 	}
+
+    $1.free_matrix();
 
 	$result = arr;
 }

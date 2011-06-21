@@ -31,15 +31,6 @@
 
 %import "Features.i"
 
-/* Typemaps */
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(float64_t** result, int32_t* num)};
-%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(float64_t** result, int32_t* num, int32_t* dim)};
-/* workaround swig bug */
-%apply (float64_t** ARGOUT1, int32_t* DIM1) {(double_t** result, int32_t* num)};
-%apply (float64_t** ARGOUT2, int32_t* DIM1, int32_t* DIM2) {(double_t** result, int32_t* num, int32_t* dim)};
-
-
-
 /* Remove C Prefix */
 %rename(BaseEvaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;

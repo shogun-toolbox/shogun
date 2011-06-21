@@ -3358,8 +3358,8 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 			normalize=get_bool();
 			CStringFeatures<uint16_t>* sf=new CStringFeatures<uint16_t>(RAWDNA);
 			sf->obtain_from_char_features((CStringFeatures<uint8_t>*) feat, start, order, 0, normalize);
-			sf->add_preproc(new CSortWordString());
-			sf->apply_preproc();
+			sf->add_preprocessor(new CSortWordString());
+			sf->apply_preprocessor();
 			SG_UNREF(feat);
 			feat = new CImplicitWeightedSpecFeatures(sf, normalize);
 		}
@@ -3447,13 +3447,8 @@ bool CSGInterface::cmd_get_kernel_matrix()
 		if (!kernel || !kernel->has_features())
 			SG_ERROR("No kernel defined or not initialized.\n");
 
-		int32_t num_vec_lhs=0;
-		int32_t num_vec_rhs=0;
-		float64_t* kmatrix=NULL;
-		kmatrix=kernel->get_kernel_matrix<float64_t>(num_vec_lhs, num_vec_rhs, kmatrix);
-
-		set_real_matrix(kmatrix, num_vec_lhs, num_vec_rhs);
-		delete[] kmatrix;
+		SGMatrix<float64_t> km=kernel->get_kernel_matrix<float64_t>();
+		set_real_matrix(km.matrix, km.num_rows, km.num_cols);
 	}
 
 	delete[] target;
@@ -3637,7 +3632,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else if (ktype==K_WEIGHTEDDEGREEPOS)
 	{
@@ -3650,7 +3645,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else // all other kernels
 	{
@@ -3701,7 +3696,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else if (ktype==K_WEIGHTEDDEGREEPOS)
 	{
@@ -3714,7 +3709,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else // all other kernels
 	{
@@ -3829,7 +3824,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else if (ktype==K_WEIGHTEDDEGREEPOS)
 	{
@@ -3841,7 +3836,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 		if (len==1)
 			len=0;
 
-		success=k->set_weights(weights, dim, len);
+		success=k->set_weights(SGMatrix<float64_t>(weights, dim, len));
 	}
 	else // all other kernels
 	{

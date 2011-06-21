@@ -19,74 +19,27 @@ using namespace shogun;
 void
 CCustomKernel::init(void)
 {
-	m_parameters->add_matrix(&kmatrix, &num_rows, &num_cols, "kmatrix",
-							 "Kernel matrix.");
+	m_parameters->add(&kmatrix, "kmatrix", "Kernel matrix.");
 	m_parameters->add(&upper_diagonal, "upper_diagonal");
 }
 
 CCustomKernel::CCustomKernel()
-: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
+: CKernel(10), kmatrix(), upper_diagonal(false)
 {
 	init();
 }
 
 CCustomKernel::CCustomKernel(CKernel* k)
-: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
+: CKernel(10)
 {
-	init();
-
-	if (k->get_lhs_equals_rhs())
-	{
-		int32_t cols=k->get_num_vec_lhs();
-		SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
-
-		kmatrix= new float32_t[(int64_t(cols)+1)*cols/2];
-
-		upper_diagonal=true;
-		num_rows=cols;
-		num_cols=cols;
-
-		for (int32_t row=0; row<num_rows; row++)
-		{
-			for (int32_t col=row; col<num_cols; col++)
-				kmatrix[int64_t(row) * num_cols - (int64_t(row)+1)*row/2 + col]=k->kernel(row,col);
-		}
-	}
-	else
-	{
-		int32_t rows=k->get_num_vec_lhs();
-		int32_t cols=k->get_num_vec_rhs();
-		kmatrix= new float32_t[int64_t(rows)*cols];
-
-		upper_diagonal=false;
-		num_rows=rows;
-		num_cols=cols;
-
-		for (int32_t row=0; row<num_rows; row++)
-		{
-			for (int32_t col=0; col<num_cols; col++)
-				kmatrix[int64_t(row) * num_cols + col]=k->kernel(row,col);
-		}
-	}
-
-	dummy_init(num_rows, num_cols);
-
+	set_full_kernel_matrix_from_full(k->get_kernel_matrix());
 }
 
-CCustomKernel::CCustomKernel(const float64_t* km, int32_t rows, int32_t cols)
-: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
+CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
+: CKernel(10), upper_diagonal(false)
 {
 	init();
-
-	set_full_kernel_matrix_from_full(km, rows, cols);
-}
-
-CCustomKernel::CCustomKernel(const float32_t* km, int32_t rows, int32_t cols)
-: CKernel(10), kmatrix(NULL), num_rows(0), num_cols(0), upper_diagonal(false)
-{
-	init();
-
-	set_full_kernel_matrix_from_full(km, rows, cols);
+	set_full_kernel_matrix_from_full(km);
 }
 
 CCustomKernel::~CCustomKernel()
@@ -103,21 +56,21 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 {
 	CKernel::init(l, r);
 
-	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), num_rows);
-	SG_DEBUG( "num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), num_cols);
-	ASSERT(l->get_num_vectors()==num_rows);
-	ASSERT(r->get_num_vectors()==num_cols);
+	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows);
+	SG_DEBUG( "num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), kmatrix.num_cols);
+	ASSERT(l->get_num_vectors()==kmatrix.num_rows);
+	ASSERT(r->get_num_vectors()==kmatrix.num_cols);
 	return init_normalizer();
 }
 
 void CCustomKernel::cleanup_custom()
 {
 	SG_DEBUG("cleanup up custom kernel\n");
-	delete[] kmatrix;
-	kmatrix=NULL;
+	delete[] kmatrix.matrix;
+	kmatrix.matrix=NULL;
 	upper_diagonal=false;
-	num_cols=0;
-	num_rows=0;
+	kmatrix.num_cols=0;
+	kmatrix.num_rows=0;
 }
 
 void CCustomKernel::cleanup()

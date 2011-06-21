@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef __CMODELSELECTIONPARAMETERS_H_
-#define __CMODELSELECTIONPARAMETERS_H_
+#ifndef __MODELSELECTIONPARAMETERS_H_
+#define __MODELSELECTIONPARAMETERS_H_
 
 #include "base/SGObject.h"
 #include "base/DynArray.h"
@@ -100,6 +100,14 @@ public:
 	void set_range(float64_t min, float64_t max, ERangeType type,
 			float64_t step=1, float64_t type_base=2);
 
+	/** setter for values of this node.
+	 * If the latter are not possible to be produced by set_range, a vector may
+	 * be specified directly.
+	 *
+	 * @param values value vector
+	 */
+	void set_values(SGVector<float64_t> values);
+
 	/** SG_PRINT's the tree of which this node is the base
 	 *
 	 * @param prefix_num a number of '\t' tabs that is put before each output
@@ -114,7 +122,14 @@ public:
 	 * @param result all trees of parameter combinations are put into here
 	 *
 	 */
-	void get_combinations(DynArray<CParameterCombination*>& result);
+	void get_combinations(DynArray<ParameterCombination*>& result);
+
+	/** setter for the destroy tree field. If set to true, destroy will be
+	 * called in the destructor.
+	 *
+	 * @param destroy_tree if true, tree gets destroyed in destructor call
+	 */
+	void set_destroy_tree(bool destroy_tree) { m_destroy_tree=destroy_tree; }
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
@@ -125,6 +140,9 @@ public:
 	{
 		return "ModelSelectionParameters";
 	}
+
+private:
+	void init();
 
 protected:
 	/** checks if this node has children
@@ -139,9 +157,11 @@ protected:
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
-	SGVector<float64_t>* m_values;
+	SGVector<float64_t> m_values;
 	DynArray<CModelSelectionParameters*> m_child_nodes;
+
+	bool m_destroy_tree;
 };
 
 }
-#endif /* __CMODELSELECTIONPARAMETERS_H_ */
+#endif /* __MODELSELECTIONPARAMETERS_H_ */

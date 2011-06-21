@@ -47,26 +47,12 @@ class CCustomKernel: public CKernel
 		 * (from double precision floats)
 		 *
 		 * @param km kernel matrix
-		 * @param rows number of rows in matrix
-		 * @param cols number of cols in matrix
-		 * @return if setting was successful
 		 */
-		CCustomKernel(
-			const float64_t* km, int32_t rows, int32_t cols);
+		CCustomKernel(SGMatrix<float64_t> km);
 
-		/** constructor
+		/**
 		 *
-		 * sets full kernel matrix from full kernel matrix
-		 * (from single precision floats)
-		 *
-		 * @param km kernel matrix
-		 * @param rows number of rows in matrix
-		 * @param cols number of cols in matrix
-		 * @return if setting was successful
 		 */
-		CCustomKernel(
-			const float32_t* km, int32_t rows, int32_t cols);
-
 		virtual ~CCustomKernel();
 
 		/** initialize kernel with dummy features
@@ -127,25 +113,9 @@ class CCustomKernel: public CKernel
 		 * @return if setting was successful
 		 */
 		bool set_triangle_kernel_matrix_from_triangle(
-			const float64_t* km, int32_t len)
+			SGVector<float64_t> tri_kernel_matrix)
 		{
-			return set_triangle_kernel_matrix_from_triangle_generic(km, len);
-		}
-
-		/** set kernel matrix (only elements from upper triangle)
-		 * from elements of upper triangle (concat'd), including the
-		 * main diagonal
-		 *
-		 * small variant for floats32's, triangle needs to have less than 2**32 elements
-		 *
-		 * @param km kernel matrix
-		 * @param len denotes the size of the array and should match len=cols*(cols+1)/2
-		 * @return if setting was successful
-		 */
-		bool set_triangle_kernel_matrix_from_triangle(
-			const float32_t* km, int32_t len)
-		{
-			return set_triangle_kernel_matrix_from_triangle_generic(km, len);
+			return set_triangle_kernel_matrix_from_triangle_generic(tri_kernel_matrix);
 		}
 
 		/** set kernel matrix (only elements from upper triangle)
@@ -160,17 +130,12 @@ class CCustomKernel: public CKernel
 		 */
 		template <class T>
 		bool set_triangle_kernel_matrix_from_triangle_generic(
-			const T* km, int64_t len)
+			SGVector<T> tri_kernel_matrix)
 		{
-			ASSERT(km);
-			ASSERT(len>0);
+			ASSERT(tri_kernel_matrix.vector);
 
+			int64_t len = tri_kernel_matrix.vlen;
 			int64_t cols = (int64_t) floor(-0.5 + CMath::sqrt(0.25+2*len));
-
-			int64_t int32_max=2147483647;
-
-			if (cols> int32_max)
-				SG_ERROR("Matrix larger than %d x %d\n", int32_max);
 
 			if (cols*(cols+1)/2 != len)
 			{
@@ -181,16 +146,15 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-			kmatrix= new float32_t[len];
-
+			kmatrix.matrix = new float32_t[len];
+			kmatrix.num_rows=cols;
+			kmatrix.num_cols=cols;
 			upper_diagonal=true;
-			num_rows=cols;
-			num_cols=cols;
 
 			for (int64_t i=0; i<len; i++)
-				kmatrix[i]=km[i];
+				kmatrix.matrix[i]=tri_kernel_matrix.vector[i];
 
-			dummy_init(num_rows, num_cols);
+			dummy_init(cols,cols);
 			return true;
 		}
 
@@ -199,124 +163,89 @@ class CCustomKernel: public CKernel
 		 *
 		 * for float64's
 		 *
-		 * @param km kernel matrix
-		 * @param rows number of rows in matrix
-		 * @param cols number of cols in matrix
 		 * @return if setting was successful
 		 */
 		inline bool set_triangle_kernel_matrix_from_full(
-			const float64_t* km, int32_t rows, int32_t cols)
+			SGMatrix<float64_t> full_kernel_matrix)
 		{
-			return set_triangle_kernel_matrix_from_full_generic(km, rows, cols);
+			return set_triangle_kernel_matrix_from_full_generic(full_kernel_matrix);
 		}
 
 		/** set kernel matrix (only elements from upper triangle)
 		 * from squared matrix
 		 *
-		 * for float32's
-		 *
-		 * @param km kernel matrix
-		 * @param rows number of rows in matrix
-		 * @param cols number of cols in matrix
-		 * @return if setting was successful
-		 */
-		inline bool set_triangle_kernel_matrix_from_full(
-			const float32_t* km, int32_t rows, int32_t cols)
-		{
-			return set_triangle_kernel_matrix_from_full_generic(km, rows, cols);
-		}
-
-		/** set kernel matrix (only elements from upper triangle)
-		 * from squared matrix
-		 *
-		 * @param km kernel matrix
-		 * @param rows number of rows in matrix
-		 * @param cols number of cols in matrix
 		 * @return if setting was successful
 		 */
 		template <class T>
 		bool set_triangle_kernel_matrix_from_full_generic(
-			const T* km, int32_t rows, int32_t cols)
+			SGMatrix<T> full_kernel_matrix)
 		{
+			int32_t rows = full_kernel_matrix.num_rows;
+			int32_t cols = full_kernel_matrix.num_cols;
 			ASSERT(rows==cols);
 
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-			kmatrix= new float32_t[(int64_t(cols)+1)*cols/2];
+			kmatrix.matrix = new float32_t[int64_t(rows)*cols];
+			kmatrix.num_rows = rows;
+			kmatrix.num_cols = cols;
+			upper_diagonal = false;
 
-			upper_diagonal=true;
-			num_rows=cols;
-			num_cols=cols;
-
-			for (int64_t row=0; row<num_rows; row++)
+			for (int64_t row=0; row<rows; row++)
 			{
-				for (int64_t col=row; col<num_cols; col++)
+				for (int64_t col=row; col<cols; col++)
 				{
-					int64_t idx=row * num_cols - row*(row+1)/2 + col;
-					kmatrix[idx]= (float32_t) km[col*num_rows+row];
+					int64_t idx=row * cols - row*(row+1)/2 + col;
+					kmatrix.matrix[idx] = full_kernel_matrix.matrix[col*rows+row];
 				}
 			}
+
 			dummy_init(rows, cols);
 			return true;
 		}
 
 		/** set full kernel matrix from full kernel matrix
 		 *
-		 * for float64's
+		 * for float32
 		 *
-		 * @param km kernel matrix
-		 * @param rows number of rows in matrix
-		 * @param cols number of cols in matrix
 		 * @return if setting was successful
 		 */
 		bool set_full_kernel_matrix_from_full(
-			const float64_t* km, int32_t rows, int32_t cols)
-		{
-			return set_full_kernel_matrix_from_full_generic(km, rows, cols);
-		}
-
-		/** set full kernel matrix from full kernel matrix
-		 *
-		 * for float32's
-		 *
-		 * @param km kernel matrix
-		 * @param rows number of rows in matrix
-		 * @param cols number of cols in matrix
-		 * @return if setting was successful
-		 */
-		bool set_full_kernel_matrix_from_full(
-			const float32_t* km, int32_t rows, int32_t cols)
-		{
-			return set_full_kernel_matrix_from_full_generic(km, rows, cols);
-		}
-
-		/** set full kernel matrix from full kernel matrix
-		 *
-		 * @param km kernel matrix
-		 * @param rows number of rows in matrix
-		 * @param cols number of cols in matrix
-		 * @return if setting was successful
-		 */
-		template <class T>
-		bool set_full_kernel_matrix_from_full_generic(
-			const T* km, int32_t rows, int32_t cols)
+			SGMatrix<float32_t> full_kernel_matrix)
 		{
 			cleanup_custom();
+			kmatrix.matrix = full_kernel_matrix.matrix;
+			kmatrix.num_rows=full_kernel_matrix.num_rows;
+			kmatrix.num_cols=full_kernel_matrix.num_cols;
+			dummy_init(kmatrix.num_rows, kmatrix.num_cols);
+			return true;
+		}
+
+		/** set full kernel matrix from full kernel matrix
+		 *
+		 * for float64
+		 *
+		 * @return if setting was successful
+		 */
+		bool set_full_kernel_matrix_from_full(
+			SGMatrix<float64_t> full_kernel_matrix)
+		{
+			cleanup_custom();
+			int32_t rows=full_kernel_matrix.num_rows;
+			int32_t cols=full_kernel_matrix.num_cols;
 			SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);
 
-			kmatrix= new float32_t[int64_t(rows)*cols];
+			kmatrix.matrix = new float32_t[int64_t(rows)*cols];
+			kmatrix.num_rows = rows;
+			kmatrix.num_cols = cols;
+			upper_diagonal = false;
 
-			upper_diagonal=false;
-			num_rows=rows;
-			num_cols=cols;
-
-			for (int32_t row=0; row<num_rows; row++)
+			for (int32_t row=0; row<rows; row++)
 			{
-				for (int32_t col=0; col<num_cols; col++)
-				{
-					kmatrix[int64_t(row) * num_cols + col]=km[int64_t(col)*num_rows+row];
-				}
+				for (int32_t col=0; col<cols; col++)
+					kmatrix.matrix[int64_t(row) * cols + col] =
+							full_kernel_matrix.matrix[int64_t(col)*rows+row];
 			}
 
 			dummy_init(rows, cols);
@@ -329,7 +258,7 @@ class CCustomKernel: public CKernel
 		 */
 		virtual inline int32_t get_num_vec_lhs()
 		{
-			return num_rows;
+			return kmatrix.num_rows;
 		}
 
 		/** get number of vectors of rhs features
@@ -338,7 +267,7 @@ class CCustomKernel: public CKernel
 		 */
 		virtual inline int32_t get_num_vec_rhs()
 		{
-			return num_cols;
+			return kmatrix.num_cols;
 		}
 
 		/** test whether features have been assigned to lhs and rhs
@@ -347,10 +276,11 @@ class CCustomKernel: public CKernel
 		 */
 		virtual inline bool has_features()
 		{
-			return (num_rows>0) && (num_cols>0);
+			return (kmatrix.num_rows>0) && (kmatrix.num_cols>0);
 		}
 
 	protected:
+
 		/** compute kernel function
 		 *
 		 * @param row row
@@ -359,39 +289,38 @@ class CCustomKernel: public CKernel
 		 */
 		inline virtual float64_t compute(int32_t row, int32_t col)
 		{
-			ASSERT(kmatrix);
+			ASSERT(kmatrix.matrix);
 
 			if (upper_diagonal)
 			{
 				if (row <= col)
 				{
 					int64_t r=row;
-					return kmatrix[r*num_cols - r*(r+1)/2 + col];
+					return kmatrix.matrix[r*kmatrix.num_rows - r*(r+1)/2 + col];
 				}
 				else
 				{
 					int64_t c=col;
-					return kmatrix[c*num_cols - c*(c+1)/2 + row];
+					return kmatrix.matrix[c*kmatrix.num_cols - c*(c+1)/2 + row];
 				}
 			}
 			else
 			{
 				int64_t r=row;
-				return kmatrix[r*num_cols+col];
+				return kmatrix.matrix[r*kmatrix.num_cols+col];
 			}
 		}
 
 	private:
+
 		/** only cleanup stuff specific to Custom kernel */
 		void cleanup_custom();
 
 	protected:
+
 		/** kernel matrix */
-		float32_t* kmatrix;
-		/** number of rows */
-		int32_t num_rows;
-		/** number of columns */
-		int32_t num_cols;
+		SGMatrix<float32_t> kmatrix;
+
 		/** upper diagonal */
 		bool upper_diagonal;
 };

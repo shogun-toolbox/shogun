@@ -19,6 +19,13 @@ namespace shogun
 
 class CLabels;
 
+/** enum which is used to define whether an evaluation criterium has to be
+ * minimised or maximised */
+enum EEvaluationDirection
+{
+	ED_MINIMIZE, ED_MAXIMIZE
+};
+
 /** @brief The class Evaluation
  * a main class for other classes
  * used to evaluate labels, e.g. accuracy of classification or
@@ -43,6 +50,9 @@ public:
 	 * @return evaluation result
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
+
+	/** @return whether criterium has to be maximised or minimised */
+	virtual EEvaluationDirection get_evaluation_direction()=0;
 };
 
 }

@@ -8,25 +8,25 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "evaluation/StratifiedCrossValidation.h"
+#include "evaluation/StratifiedCrossValidationSplitting.h"
 #include "features/Labels.h"
 #include "lib/Set.h"
 
 using namespace shogun;
 
-CStratifiedCrossValidation::CStratifiedCrossValidation() :
+CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting() :
 	CSplittingStrategy(0, 0)
 {
 }
 
-CStratifiedCrossValidation::CStratifiedCrossValidation(CLabels* labels,
-		index_t num_subsets) :
+CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
+		CLabels* labels, index_t num_subsets) :
 	CSplittingStrategy(labels, num_subsets)
 {
 	build_subsets();
 }
 
-void CStratifiedCrossValidation::build_subsets()
+void CStratifiedCrossValidationSplitting::build_subsets()
 {
 	/* extract all labels */
 	CSet<float64_t> unique_labels;

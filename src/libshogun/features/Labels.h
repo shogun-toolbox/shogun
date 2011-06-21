@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
+ * Subset support written (W) 2011 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -16,6 +17,7 @@
 #include "lib/io.h"
 #include "lib/File.h"
 #include "base/SGObject.h"
+#include "features/Subset.h"
 
 namespace shogun
 {
@@ -26,6 +28,8 @@ namespace shogun
  *
  * Labels here are always real-valued and thus applicable to classification
  * (cf.  CClassifier) and regression (cf. CRegression) problems.
+ *
+ * Setting subsets is supported
  */
 class CLabels : public CSGObject
 {
@@ -85,10 +89,11 @@ class CLabels : public CSGObject
 		 * @return if setting was successful
 		 */
 		inline bool set_label(int32_t idx, float64_t label)
-		{ 
-			if (labels && idx<num_labels)
+		{
+			int32_t real_num=m_subset->subset_idx_conversion(idx);
+			if (labels && real_num<num_labels)
 			{
-				labels[idx]=label;
+				labels[real_num]=label;
 				return true;
 			}
 			else 
@@ -103,9 +108,10 @@ class CLabels : public CSGObject
 		 */
 		inline bool set_int_label(int32_t idx, int32_t label)
 		{ 
-			if (labels && idx<num_labels)
+			int32_t real_num=m_subset->subset_idx_conversion(idx);
+			if (labels && real_num<num_labels)
 			{
-				labels[idx]= (float64_t) label;
+				labels[real_num]= (float64_t) label;
 				return true;
 			}
 			else 
@@ -119,8 +125,9 @@ class CLabels : public CSGObject
 		 */
 		inline float64_t get_label(int32_t idx)
 		{
-			if (labels && idx<num_labels)
-				return labels[idx];
+			int32_t real_num=m_subset->subset_idx_conversion(idx);
+			if (labels && real_num<num_labels)
+				return labels[real_num];
 			else
 				return -1;
 		}
@@ -132,10 +139,11 @@ class CLabels : public CSGObject
 		 */
 		inline int32_t get_int_label(int32_t idx)
 		{
-			if (labels && idx<num_labels)
+			int32_t real_num=m_subset->subset_idx_conversion(idx);
+			if (labels && real_num<num_labels)
 			{
-				ASSERT(labels[idx]== ((float64_t) ((int32_t) labels[idx])));
-				return ((int32_t) labels[idx]);
+				ASSERT(labels[real_num]== ((float64_t) ((int32_t) labels[real_num])));
+				return ((int32_t) labels[real_num]);
 			}
 			else
 				return -1;
@@ -166,10 +174,7 @@ class CLabels : public CSGObject
 		 *
 		 * @return labels
 		 */
-		SGVector<float64_t> get_labels()
-		{
-			return SGVector<float64_t>(labels, num_labels);
-		}
+		SGVector<float64_t> get_labels();
 
 		/** set labels
 		 *
@@ -184,8 +189,7 @@ class CLabels : public CSGObject
 		 */
 		void set_labels(float64_t* src, int32_t len);
 
-		/** set all labels to +1
-		 */
+		/** set all labels to +1 */
 		void set_to_one();
 
 		/** set confidences 
@@ -241,6 +245,28 @@ class CLabels : public CSGObject
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Labels"; }
 
+
+		/*********************************
+		 * wrapper for Subset methods
+		 * (to avoid mutliple inheritance)
+		 ********************************/
+		virtual void remove_subset();
+
+		virtual SGVector<index_t> get_subset()
+		{
+			return m_subset->get_subset();
+		}
+
+		bool has_subset()
+		{
+			return m_subset->has_subset();
+		}
+
+		virtual void set_subset(SGVector<index_t> subset);
+		/***********************************
+		 * End of wrapper for Subset methods
+		 **********************************/
+
 	protected:
 		/** find labels from the confidences using argmax over the classes. */
 		void find_labels();
@@ -254,13 +280,20 @@ class CLabels : public CSGObject
 		/** the labels */
 		float64_t* labels;
 
+		/** number of labels */
+		int32_t num_labels_total;
+
 		/** number of classes */
 		int32_t m_num_classes;
+
 
 		/** confidence matrix of size: num_classes x num_labels */
 		float64_t* m_confidences;
 		int32_t m_confidence_classes;
 		int32_t m_confidence_labels;
+
+		/* subset class to enable subset support for this class */
+		CSubset* m_subset;
 };
 }
 #endif

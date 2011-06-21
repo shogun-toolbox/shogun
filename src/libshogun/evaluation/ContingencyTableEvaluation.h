@@ -90,6 +90,8 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
+	EEvaluationDirection get_evaluation_direction();
+
 	/** get name */
 	virtual inline const char* get_name() const
 	{

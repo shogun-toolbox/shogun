@@ -199,16 +199,18 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				feat=compute_feature_vector(num, len, feat);
 
 
-				if (get_num_preproc())
+				if (get_num_preprocessors())
 				{
 					int32_t tmp_len=len;
 					ST* tmp_feat_before = feat;
 					ST* tmp_feat_after = NULL;
 
-					for (int32_t i=0; i<get_num_preproc(); i++)
+					for (int32_t i=0; i<get_num_preprocessors(); i++)
 					{
-						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preproc(i);
-						tmp_feat_after=p->apply_to_feature_vector(tmp_feat_before, tmp_len);
+						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preprocessor(i);
+						// temporary hack
+						SGVector<ST> applied = p->apply_to_feature_vector(SGVector<ST>(tmp_feat_before,tmp_len));
+						tmp_feat_after = applied.vector;
 						SG_UNREF(p);
 
 						if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
@@ -227,13 +229,9 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/** set feature vector num
 		 *
-		 * ( only available in-memory feature matrices )
-		 *
-		 * @param src vector
-		 * @param len length of vector
-		 * @param num index where to put vector to
+		 * @param vector vector
 		 */
-		void set_feature_vector(ST* src, int32_t len, int32_t num)
+		void set_feature_vector(SGVector<ST> vector, int32_t num)
 		{
 			if (num>=num_vectors)
 			{
@@ -244,10 +242,10 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 			if (!feature_matrix)
 				SG_ERROR("Requires a in-memory feature matrix\n");
 
-			if (len != num_features)
-				SG_ERROR("Vector not of length %d (has %d)\n", num_features, len);
+			if (vector.vlen != num_features)
+				SG_ERROR("Vector not of length %d (has %d)\n", num_features, vector.vlen);
 
-			memcpy(&feature_matrix[num*int64_t(num_features)], src, int64_t(num_features)*sizeof(ST));
+			memcpy(&feature_matrix[num*int64_t(num_features)], vector.vector, int64_t(num_features)*sizeof(ST));
 		}
 
 		/** get feature vector num
@@ -256,7 +254,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param len length of vector
 		 * @param num index of vector
 		 */
-		void get_feature_vector(ST** dst, int32_t* len, int32_t num)
+		SGVector<ST> get_feature_vector(int32_t num)
 		{
 			if (num>=num_vectors)
 			{
@@ -269,11 +267,11 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 			ST* vec= get_feature_vector(num, vlen, free_vec);
 
-			*len=vlen;
-			*dst=(ST*) SG_MALLOC(vlen*sizeof(ST));
-			memcpy(*dst, vec, vlen*sizeof(ST));
+			ST* dst=(ST*) SG_MALLOC(vlen*sizeof(ST));
+			memcpy(dst, vec, vlen*sizeof(ST));
 
 			free_feature_vector(vec, num, free_vec);
+			return SGVector<ST>(dst,vlen);
 		}
 
 		/** free feature vector
@@ -364,26 +362,6 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 					old_jj=jj;
 				}
 			}
-		}
-
-		/** get a copy of the feature matrix
-		 * num_feat,num_vectors are returned by reference
-		 *
-		 * @param dst destination to store matrix in
-		 * @param num_feat number of features (rows of matrix)
-		 * @param num_vec number of vectors (columns of matrix)
-		 */
-		void get_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec)
-		{
-			ASSERT(feature_matrix);
-
-			int64_t num=int64_t(num_features)*num_vectors;
-			*num_feat=num_features;
-			*num_vec=num_vectors;
-			*dst=(ST*) SG_MALLOC(sizeof(ST)*num);
-			if (!*dst)
-				SG_ERROR("Allocating %ld bytes failes\n", sizeof(ST)*num);
-			memcpy(*dst, feature_matrix, num * sizeof(ST));
 		}
 
 		SGMatrix<ST> get_feature_matrix()
@@ -538,21 +516,21 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 * @param force_preprocessing if preprocssing shall be forced
 		 * @return if applying was successful
 		 */
-		virtual bool apply_preproc(bool force_preprocessing=false)
+		virtual bool apply_preprocessor(bool force_preprocessing=false)
 		{
 			SG_DEBUG( "force: %d\n", force_preprocessing);
 
-			if ( feature_matrix && get_num_preproc())
+			if ( feature_matrix && get_num_preprocessors())
 			{
 
-				for (int32_t i=0; i<get_num_preproc(); i++)
+				for (int32_t i=0; i<get_num_preprocessors(); i++)
 				{ 
 					if ( (!is_preprocessed(i) || force_preprocessing) )
 					{
 						set_preprocessed(i);
-						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preproc(i);
+						CSimplePreprocessor<ST>* p = (CSimplePreprocessor<ST>*) get_preprocessor(i);
 						SG_INFO( "preprocessing using preproc %s\n", p->get_name());
-						if (p->apply_to_feature_matrix(this) == NULL)
+						if (p->apply_to_feature_matrix(this).matrix == NULL)
 						{
 							SG_UNREF(p);
 							return false;
@@ -567,7 +545,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 				if (!feature_matrix)
 					SG_ERROR( "no feature matrix\n");
 
-				if (!get_num_preproc())
+				if (!get_num_preprocessors())
 					SG_ERROR( "no preprocessors available\n");
 
 				return false;

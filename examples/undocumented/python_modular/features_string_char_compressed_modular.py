@@ -56,8 +56,8 @@ def features_string_char_compressed_modular(fname):
 	# load compressed data and uncompress via preprocessor
 	f2=StringCharFeatures(RAWBYTE);
 	f2.load_compressed("foo_lzo.str", False)
-	f2.add_preproc(DecompressCharString(LZO))
-	f2.apply_preproc()
+	f2.add_preprocessor(DecompressCharString(LZO))
+	f2.apply_preprocessor()
 	#print "lzo strings", f2.get_features()
 	#print
 
@@ -65,7 +65,7 @@ def features_string_char_compressed_modular(fname):
 	f2=StringCharFeatures(RAWBYTE);
 	f2.load_compressed("foo_lzo.str", False)
 	#f2.io.set_loglevel(MSG_DEBUG)
-	f2.add_preproc(DecompressCharString(LZO))
+	f2.add_preprocessor(DecompressCharString(LZO))
 	f2.enable_on_the_fly_preprocessing()
 	#print "lzo strings", f2.get_features()
 	#print

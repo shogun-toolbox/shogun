@@ -16,6 +16,7 @@
 #include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
+#include "distance/CustomDistance.h"
 
 namespace shogun
 {
@@ -39,28 +40,37 @@ public:
 	/** init
 	 * @param data feature vectors for preproc
 	 */
-	virtual bool init(CFeatures* data);
+	virtual bool init(CFeatures* features);
 
 	/** cleanup
 	 *
 	 */
 	virtual void cleanup();
 
+	/** apply preproc to distance
+	 *
+	 */
+	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
+
 	/** apply preproc to feature matrix
 	 *
 	 */
-	virtual float64_t* apply_to_feature_matrix(CFeatures* f);
+	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 	/** apply preproc to feature vector
 	 *
 	 */
-	virtual float64_t* apply_to_feature_vector(float64_t* f, int32_t &len);
+	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** get name */
 	virtual inline const char* get_name() const { return "ISOMAP"; };
 
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_ISOMAP; };
+
+protected:
+
+	CCustomDistance* approx_geodesic_distance(CDistance* distance);
 
 };
 

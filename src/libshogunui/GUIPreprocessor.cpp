@@ -222,21 +222,21 @@ bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* test
 		{
 			// if we don't have a preproc for trainfeatures we 
 			// don't need a preproc for test features
-			SG_DEBUG( "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preproc(), testfeat->get_num_preproc());
+			SG_DEBUG( "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preprocessors(), testfeat->get_num_preprocessors());
 
-			if (trainfeat->get_num_preproc() < testfeat->get_num_preproc())
+			if (trainfeat->get_num_preprocessors() < testfeat->get_num_preprocessors())
 			{
 				SG_ERROR( "more preprocessors attached to test features than to train features\n");
 				return false;
 			}
 
-			if (trainfeat->get_num_preproc() && (trainfeat->get_num_preproc() > testfeat->get_num_preproc()))
+			if (trainfeat->get_num_preprocessors() && (trainfeat->get_num_preprocessors() > testfeat->get_num_preprocessors()))
 			{
-				for (int32_t i=0; i<trainfeat->get_num_preproc();  i++)
+				for (int32_t i=0; i<trainfeat->get_num_preprocessors();  i++)
 				{
-					CPreprocessor* preproc = trainfeat->get_preproc(i);
+					CPreprocessor* preproc = trainfeat->get_preprocessor(i);
 					preproc->init(trainfeat);
-					testfeat->add_preproc(preproc);
+					testfeat->add_preprocessor(preproc);
 					SG_UNREF(preproc);
 				}
 
@@ -250,7 +250,7 @@ bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* test
 			if (preproc)
 			{
 				preproc->init(trainfeat);
-				trainfeat->add_preproc(preproc);
+				trainfeat->add_preprocessor(preproc);
 
 				preproc_all_features(trainfeat, force);
 				SG_UNREF(preproc);
@@ -259,7 +259,7 @@ bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* test
 			while ( (preproc = (CPreprocessor*) preprocs->get_next_element()) !=NULL )
 			{
 				preproc->init(trainfeat);
-				trainfeat->add_preproc(preproc);
+				trainfeat->add_preprocessor(preproc);
 				SG_UNREF(preproc);
 
 				preproc_all_features(trainfeat, force);
@@ -282,15 +282,15 @@ bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 			switch (f->get_feature_type())
 			{
 				case F_DREAL:
-					return ((CSimpleFeatures<float64_t>*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<float64_t>*) f)->apply_preprocessor(force);
 				case F_SHORT:
-					return ((CSimpleFeatures<int16_t>*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<int16_t>*) f)->apply_preprocessor(force);
 				case F_WORD:
-					return ((CSimpleFeatures<uint16_t>*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<uint16_t>*) f)->apply_preprocessor(force);
 				case F_CHAR:
-					return ((CSimpleFeatures<char>*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<char>*) f)->apply_preprocessor(force);
 				case F_BYTE:
-					return ((CSimpleFeatures<uint8_t>*) f)->apply_preproc(force);
+					return ((CSimpleFeatures<uint8_t>*) f)->apply_preprocessor(force);
 				default:
 					SG_NOTIMPLEMENTED;
 			}
@@ -299,9 +299,9 @@ bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 			switch (f->get_feature_type())
 			{
 				case F_WORD:
-					return ((CStringFeatures<uint16_t>*) f)->apply_preproc(force);
+					return ((CStringFeatures<uint16_t>*) f)->apply_preprocessor(force);
 				case F_ULONG:
-					return ((CStringFeatures<uint64_t>*) f)->apply_preproc(force);
+					return ((CStringFeatures<uint64_t>*) f)->apply_preprocessor(force);
 				default:
 					SG_NOTIMPLEMENTED;
 			}
@@ -310,7 +310,7 @@ bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 			switch (f->get_feature_type())
 			{
 				case F_DREAL:
-					return ((CSparseFeatures<float64_t>*) f)->apply_preproc(force);
+					return ((CSparseFeatures<float64_t>*) f)->apply_preprocessor(force);
 				default:
 					SG_NOTIMPLEMENTED;
 			};

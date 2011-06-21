@@ -378,11 +378,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 
 		/** set weights
 		 *
-		 * @param weights new weights
-		 * @param d degree
-		 * @param len number of weights
+		 * @param new_weights new weights
 		 */
-		virtual bool set_weights(float64_t* weights, int32_t d, int32_t len=0);
+		bool set_weights(SGMatrix<float64_t> new_weights);
 
 		/** set wd weights
 		 *

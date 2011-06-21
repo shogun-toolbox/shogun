@@ -10,6 +10,7 @@
 
 #include "preprocessor/Isomap.h"
 #ifdef HAVE_LAPACK
+#include "preprocessor/DimensionReductionPreprocessor.h"
 #include "lib/lapack.h"
 #include "preprocessor/ClassicMDS.h"
 #include "lib/common.h"
@@ -29,7 +30,7 @@ CIsomap::~CIsomap()
 {
 }
 
-bool CIsomap::init(CFeatures* data)
+bool CIsomap::init(CFeatures* features)
 {
 	return true;
 }
@@ -38,19 +39,11 @@ void CIsomap::cleanup()
 {
 }
 
-float64_t* CIsomap::apply_to_feature_matrix(CFeatures* data)
+CCustomDistance* CIsomap::approx_geodesic_distance(CDistance* distance)
 {
-	CSimpleFeatures<float64_t>* pdata = (CSimpleFeatures<float64_t>*) data;
-	CDistance* distance = new CEuclidianDistance(pdata,pdata);
-
-	// loop variables
-	int32_t i,j,k;
-
-	// get distance matrix
-	int32_t N;
+	int32_t N,k,i,j;
 	float64_t* D_matrix;
 	distance->get_distance_matrix(&D_matrix,&N,&N);
-	delete distance;
 
 	// floyd-warshall
 	for (k=0; k<N; k++)
@@ -62,15 +55,40 @@ float64_t* CIsomap::apply_to_feature_matrix(CFeatures* data)
 		}
 	}
 
-	SGMatrix<float64_t> features;
-	apply_to_distance(new CCustomDistance(D_matrix,N,N),features);
-
-	pdata->set_feature_matrix(features);
-	return features.matrix;
+	return new CCustomDistance(D_matrix,N,N);
 }
 
-float64_t* CIsomap::apply_to_feature_vector(float64_t* f, int32_t &len)
+CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)
+{
+	ASSERT(distance);
+
+	SGMatrix<float64_t> new_feature_matrix =
+			embed_by_distance(approx_geodesic_distance(distance));
+
+	CSimpleFeatures<float64_t>* new_features =
+			new CSimpleFeatures<float64_t>(new_feature_matrix);
+
+	return new_features;
+}
+
+
+SGMatrix<float64_t> CIsomap::apply_to_feature_matrix(CFeatures* features)
+{
+	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
+
+	SGMatrix<float64_t> new_feature_matrix =
+			embed_by_distance(approx_geodesic_distance(distance));
+
+	simple_features->set_feature_matrix(new_feature_matrix);
+
+	return new_feature_matrix;
+}
+
+SGVector<float64_t> CIsomap::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SG_NOTIMPLEMENTED;
+	return vector;
 }
+
 #endif /* HAVE_LAPACK */

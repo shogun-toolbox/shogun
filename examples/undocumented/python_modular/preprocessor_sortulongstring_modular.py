@@ -6,7 +6,7 @@ testdna = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindna,testdna,4,0,False,False],[traindna,testdna,3,0,False,False]]
 
-def preproc_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
+def preprocessor_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
 
 	from shogun.Kernel import CommUlongStringKernel
 	from shogun.Features import StringCharFeatures, StringUlongFeatures, DNA
@@ -25,10 +25,10 @@ def preproc_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,o
 
 	preproc=SortUlongString()
 	preproc.init(feats_train)
-	feats_train.add_preproc(preproc)
-	feats_train.apply_preproc()
-	feats_test.add_preproc(preproc)
-	feats_test.apply_preproc()
+	feats_train.add_preprocessor(preproc)
+	feats_train.apply_preprocessor()
+	feats_test.add_preprocessor(preproc)
+	feats_test.apply_preprocessor()
 
 	kernel=CommUlongStringKernel(feats_train, feats_train, use_sign)
 
@@ -39,4 +39,4 @@ def preproc_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,o
 
 if __name__=='__main__':
 	print 'CommUlongString'
-	preproc_sortulongstring_modular(*parameter_list[0])
+	preprocessor_sortulongstring_modular(*parameter_list[0])

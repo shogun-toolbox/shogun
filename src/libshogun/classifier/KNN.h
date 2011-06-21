@@ -104,11 +104,8 @@ class CKNN : public CDistanceMachine
 
 		/** classify all examples for 1...k
 		 *
-		 * @param output resulting labels for all k
-		 * @param k_out number of columns (k)
-		 * @param num_vec number of outputs
 		 */
-		void classify_for_multiple_k(int32_t** output, int32_t* num_vec, int32_t* k_out);
+		SGMatrix<int32_t> classify_for_multiple_k();
 
 		/** load from file
 		 *

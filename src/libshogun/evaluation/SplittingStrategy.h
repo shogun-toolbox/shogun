@@ -33,6 +33,9 @@ class CLabels;
 class CSplittingStrategy: public CSGObject
 {
 public:
+	/** constructor */
+	CSplittingStrategy();
+
 	/** constructor
 	 *
 	 * @param labels labels to be (possibly) used for splitting
@@ -47,19 +50,25 @@ public:
 	 * with the desired index
 	 *
 	 * @param subset_idx subset index of the to be generated vector indices
-	 * @return newly created vector of subset indices of the specified subset
+	 * @param result newly created vector of subset indices of the specified
+	 * subset is written here
 	 */
-	SGVector<index_t>* generate_subset_indices(index_t subset_idx);
+	void generate_subset_indices(index_t subset_idx, SGVector<index_t>& result);
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** generates a newly created SGVector<index_t> with inverse indices of the
+	 * subset with the desired index. inverse here means all other indices.
 	 *
-	 * @return name of the SGSerializable
+	 * @param subset_idx subset index of the to be generated inverse indices
+	 * @return result newly created vector of the subset's inverse indices is
+	 * written here
 	 */
-	inline virtual const char* get_name() const
-	{
-		return "SplittingStrategy";
-	}
+	void generate_subset_inverse(index_t subset_idx, SGVector<index_t>& result);
+
+	/** @return number of subsets */
+	index_t get_num_subsets() { return m_subset_indices.get_num_elements(); }
+
+	/** @return name of the SGSerializable */
+	inline virtual const char* get_name() const	{ return "SplittingStrategy"; }
 
 protected:
 	/** Abstract method.

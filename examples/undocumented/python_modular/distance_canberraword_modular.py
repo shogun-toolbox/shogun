@@ -18,15 +18,15 @@ def distance_canberraword_modular (fm_train_dna=traindna,fm_test_dna=testdna,ord
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
 	preproc.init(feats_train)
-	feats_train.add_preproc(preproc)
-	feats_train.apply_preproc()
+	feats_train.add_preprocessor(preproc)
+	feats_train.apply_preprocessor()
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_test_dna)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	feats_test.add_preproc(preproc)
-	feats_test.apply_preproc()
+	feats_test.add_preprocessor(preproc)
+	feats_test.apply_preprocessor()
 
 	distance=CanberraWordDistance(feats_train, feats_train)
 

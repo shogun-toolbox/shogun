@@ -79,7 +79,7 @@ def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=Fal
 	else:
 		classifier.set_features(test)
 
-	labels=classifier.classify().get_labels()
+	labels=classifier.apply().get_labels()
 	z=labels.reshape((size, size))
 
 	return x, y, z
@@ -98,6 +98,6 @@ def compute_output_plot_isolines_sine(classifier, kernel, train):
 	x.sort()
 	test=RealFeatures(x)
 	kernel.init(train, test)
-	y=classifier.classify().get_labels()
+	y=classifier.apply().get_labels()
 
 	return x, y

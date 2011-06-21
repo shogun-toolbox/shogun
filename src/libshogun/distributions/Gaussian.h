@@ -33,8 +33,10 @@ class CDotFeatures;
 class CGaussian : public CDistribution
 {
 	public:
+
 		/** default constructor */
 		CGaussian();
+
 		/** constructor
 		 *
 		 * @param mean mean of the Gaussian
@@ -43,8 +45,8 @@ class CGaussian : public CDistribution
 		 * @param cov_rows
 		 * @param cov_cols
 		 */
-		CGaussian(float64_t* mean, int32_t mean_length,
-					float64_t* cov, int32_t cov_rows, int32_t cov_cols);
+		CGaussian(SGVector<float64_t> mean_vector, SGMatrix<float64_t> cov_matrix);
+
 		virtual ~CGaussian();
 
 		/** Compute the inverse covariance and constant part */
@@ -110,14 +112,10 @@ class CGaussian : public CDistribution
 
 		/** get mean
 		 *
-		 * @param mean copy of the mean
-		 * @param mean_length
 		 */
-		virtual inline void get_mean(float64_t** mean, int32_t* mean_length)
+		virtual SGVector<float64_t> get_mean()
 		{
-			*mean = new float64_t[m_mean_length];
-			memcpy(*mean, m_mean, sizeof(float64_t)*m_mean_length);
-			*mean_length = m_mean_length;
+			return SGVector<float64_t>(m_mean,m_mean_length);
 		}
 
 		/** set mean
@@ -125,37 +123,28 @@ class CGaussian : public CDistribution
 		 * @param mean new mean
 		 * @param mean_length has to match current mean length
 		 */
-		virtual inline void set_mean(float64_t* mean, int32_t mean_length)
+		virtual void set_mean(SGVector<float64_t> mean_vector)
 		{
-			ASSERT(mean_length == m_mean_length);
-			memcpy(m_mean, mean, sizeof(float64_t)*m_mean_length);
+			ASSERT(mean_vector.vlen == m_mean_length);
+			memcpy(m_mean, mean_vector.vector, sizeof(float64_t)*m_mean_length);
 		}
 
 		/** get cov
 		 *
-		 * @param cov copy of the cov
-		 * @param cov_rows
-		 * @param cov_cols
 		 */
-		virtual inline void get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
+		virtual SGMatrix<float64_t> get_cov()
 		{
-			*cov = new float64_t[m_cov_rows*m_cov_cols];
-			memcpy(*cov, m_cov, sizeof(float64_t)*m_cov_rows*m_cov_cols);
-			*cov_rows = m_cov_rows;
-			*cov_cols = m_cov_cols;
+			return SGMatrix<float64_t>(m_cov,m_cov_rows,m_cov_cols);
 		}
 
 		/** set cov
 		 *
-		 * @param cov new cov
-		 * @param cov_rows has to match current cov rows
-		 * @param cov_cols has to be equal to cov_rows
 		 */
-		virtual inline void set_cov(float64_t* cov, int32_t cov_rows, int32_t cov_cols)
+		virtual inline void set_cov(SGMatrix<float64_t> cov_matrix)
 		{
-			ASSERT(cov_rows = cov_cols);
-			ASSERT(cov_rows = m_cov_rows);
-			memcpy(m_cov, cov, sizeof(float64_t)*m_cov_rows*m_cov_cols);
+			ASSERT(cov_matrix.num_rows = cov_matrix.num_cols);
+			ASSERT(cov_matrix.num_rows = m_cov_rows);
+			memcpy(m_cov, cov_matrix.matrix, sizeof(float64_t)*m_cov_rows*m_cov_cols);
 			init();
 		}
 

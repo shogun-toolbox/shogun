@@ -115,17 +115,19 @@ CKernel* CGUIKernel::create_custom(float64_t* kmatrix, int32_t num_feat, int32_t
 	CCustomKernel* kern=new CCustomKernel();
 	SG_DEBUG("created CustomKernel (%p).\n", kern);
 
+	SGMatrix<float64_t> km=SGMatrix<float64_t>(kmatrix, num_feat, num_vec);
+
 	bool success=false;
 
-	if (source_is_diag && dest_is_diag && num_vec==num_feat)
+	if (source_is_diag && dest_is_diag && num_feat==1)
+	{
 		success=kern->set_triangle_kernel_matrix_from_triangle(
-				kmatrix, num_vec);
+				SGVector<float64_t>(kmatrix, num_vec));
+	}
 	else if (!source_is_diag && dest_is_diag && num_vec==num_feat)
-		success=kern->set_triangle_kernel_matrix_from_full(
-				kmatrix, num_feat, num_vec);
+		success=kern->set_triangle_kernel_matrix_from_full(km);
 	else
-		success=kern->set_full_kernel_matrix_from_full(
-				kmatrix, num_feat, num_vec);
+		success=kern->set_full_kernel_matrix_from_full(km);
 
 	delete[] kmatrix;
 	return kern;
@@ -606,7 +608,7 @@ CKernel* CGUIKernel::create_sparselinear(int32_t size, float64_t scale)
 CKernel* CGUIKernel::create_tppk(int32_t size, float64_t* km, int32_t rows, int32_t cols)
 {
 	CCustomKernel* k=new CCustomKernel();
-	k->set_full_kernel_matrix_from_full(km, rows, cols);
+	k->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(km, rows, cols));
 
 	CKernel* kern=new CTensorProductPairKernel(size, k);
 
