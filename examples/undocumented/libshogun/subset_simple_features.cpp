@@ -10,8 +10,6 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/features/Subset.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 
 using namespace shogun;
 
