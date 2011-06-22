@@ -34,17 +34,17 @@ float64_t CDistribution::get_log_likelihood_sample()
 	return sum/features->get_num_vectors();
 }
 
-void CDistribution::get_log_likelihood(float64_t **dst, int32_t *num)
+SGVector<float64_t> CDistribution::get_log_likelihood()
 {
 	ASSERT(features);
 
-	*num=features->get_num_vectors();
-	size_t sz=sizeof(float64_t)*(*num);
-	*dst=(float64_t*) SG_MALLOC(sz);
-	ASSERT(dst);
+	int32_t num=features->get_num_vectors();
+	float64_t* vec=new float64_t[num];
 
-	for (int32_t i=0; i<(*num); i++)
-		*(*dst+i)=get_log_likelihood_example(i);
+	for (int32_t i=0; i<num; i++)
+		vec[i]=get_log_likelihood_example(i);
+
+	return SGVector<float64_t>(vec,num);
 }
 
 int32_t CDistribution::get_num_relevant_model_parameters()
