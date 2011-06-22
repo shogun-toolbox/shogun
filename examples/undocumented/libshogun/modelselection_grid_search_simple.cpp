@@ -33,9 +33,9 @@ CModelSelectionParameters* create_param_tree()
 	root->append_child(c1);
 	c1->set_range(-5, 5, R_EXP);
 
-//	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
-//	root->append_child(c2);
-//	c2->set_range(-5, 5, R_EXP);
+	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
+	root->append_child(c2);
+	c2->set_range(-5, 5, R_EXP);
 
 	return root;
 }
