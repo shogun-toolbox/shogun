@@ -33,9 +33,25 @@
 
 /* Include Module Definitions */
 %include "SGBase.i"
+<<<<<<< HEAD
 %include "Features_includes.i"
 %include "Distribution_includes.i"
+<<<<<<< HEAD
 %include "Preprocessor_includes.i"
+=======
+=======
+%{
+#include <shogun/distributions/Distribution.h>
+#include <shogun/distributions/Histogram.h>
+#include <shogun/distributions/HMM.h>
+#include <shogun/distributions/GHMM.h>
+#include <shogun/distributions/LinearHMM.h>
+#include <shogun/distributions/PositionalPWM.h>
+#include <shogun/distributions/Gaussian.h>
+#include <shogun/clustering/GMM.h>
+%}
+>>>>>>> modular update for Gaussian and GMM
+>>>>>>> modular update for Gaussian and GMM
 
 %import "Features.i"
 
@@ -46,6 +62,8 @@
 %rename(GHMM) CGHMM;
 %rename(LinearHMM) CLinearHMM;
 %rename(PositionalPWM) CPositionalPWM;
+%rename(Gaussian) CGaussian;
+%rename(GMM) CGMM;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>
@@ -54,3 +72,5 @@
 %include <shogun/distributions/GHMM.h>
 %include <shogun/distributions/LinearHMM.h>
 %include <shogun/distributions/PositionalPWM.h>
+%include <shogun/distributions/Gaussian.h>
+%include <shogun/clustering/GMM.h>
