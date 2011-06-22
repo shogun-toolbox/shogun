@@ -42,7 +42,6 @@ CLibLinear::CLibLinear(
 	C1=C;
 	C2=C;
 	use_bias=true;
-	epsilon=1e-5;
 
 	set_features(traindat);
 	set_labels(trainlab);
@@ -58,6 +57,7 @@ void CLibLinear::init()
 	set_max_iterations();
 	m_linear_term=NULL;
 	m_linear_term_len=0;
+	epsilon=1e-5;
 
     m_parameters->add(&C1, "C1",  "C Cost constant 1.");
     m_parameters->add(&C2, "C2",  "C Cost constant 2.");
