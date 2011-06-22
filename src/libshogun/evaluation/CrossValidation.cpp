@@ -145,7 +145,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		results[i]=m_evaluation_criterium->evaluate(result_labels, m_labels);
 
 		/* clean up, reset subsets */
-		SG_UNREF(result_labels);
+		delete result_labels;
 		m_features->remove_subset();
 		m_labels->remove_subset();
 	}
