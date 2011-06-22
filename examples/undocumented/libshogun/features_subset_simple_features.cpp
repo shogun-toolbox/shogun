@@ -26,10 +26,8 @@ int main(int argc, char **argv)
 	init_shogun(&print_message, &print_message, &print_message);
 	const int32_t num_subset_idx=CMath::random(1, num_vectors);
 
-	/* alloc feature data matrix */
-	SGMatrix<int32_t> data(
-			(int32_t*) SG_MALLOC(sizeof(int32_t)*num_vectors*dim_features),
-			dim_features, num_vectors);
+	/* create feature data matrix */
+	SGMatrix<int32_t> data(dim_features, num_vectors);
 
 	/* fill matrix with random data */
 	for (index_t i=0; i<num_vectors; ++i)
@@ -104,4 +102,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
