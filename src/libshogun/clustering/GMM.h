@@ -36,6 +36,14 @@ class CGMM : public CDistribution
 		 * @param min_change minimal expected log likelihood change
 		 */
 		CGMM(int32_t n, ECovType cov_type=FULL);
+		/** constructor
+		 *
+		 * @param components GMM components
+		 * @param components_length number of components
+		 * @param coefficients coefficients
+		 * @param coefficient_length number of coefficients
+		 */
+		CGMM(CGaussian** components, int32_t components_length, float64_t* coefficients, int32_t coefficient_length);
 		virtual ~CGMM();
 
 		/** cleanup */
@@ -138,6 +146,13 @@ class CGMM : public CDistribution
 		{
 			return SGVector<float64_t>(m_coefficients,m_coef_size);
 		}
+
+		/** sample from model
+		 *
+		 * @param samp sample
+		 * @param samp_length sample length
+		 */
+		void sample(float64_t** samp, int32_t* samp_length);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GMM"; }

@@ -263,4 +263,53 @@ void CGaussian::decompose_cov(float64_t* cov, int32_t cov_size)
 			break;
 	}
 }
+
+void CGaussian::sample(float64_t** samp, int32_t* samp_length)
+{
+	float64_t* r_matrix=new float64_t[m_mean_length*m_mean_length];
+	memset(r_matrix, 0, m_mean_length*m_mean_length*sizeof(float64_t));
+
+	switch (m_cov_type)
+	{
+		case FULL:
+		case DIAG:
+			for (int i=0; i<m_mean_length; i++)
+				r_matrix[i*m_mean_length+i]=CMath::sqrt(m_d[i]);
+
+			break;
+		case SPHERICAL:
+			for (int i=0; i<m_mean_length; i++)
+				r_matrix[i*m_mean_length+i]=CMath::sqrt(*m_d);
+
+			break;
+	}
+
+	float64_t* random_vec=new float64_t[m_mean_length];
+
+	for (int i=0; i<m_mean_length; i++)
+		random_vec[i]=CMath::randn_double();
+
+	if (m_cov_type==FULL)
+	{
+		float64_t* temp_matrix=new float64_t[m_d_length*m_d_length];
+		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+					m_d_length, m_d_length, m_d_length, 1, m_u, m_d_length,
+					r_matrix, m_d_length, 0, temp_matrix, m_d_length);
+		delete[] r_matrix;
+		r_matrix=temp_matrix;
+	}
+	
+	*samp=new float64_t[m_mean_length];
+	*samp_length=m_mean_length;
+
+	cblas_dgemv(CblasRowMajor, CblasNoTrans, m_mean_length, m_mean_length,
+				1, r_matrix, m_mean_length, random_vec, 1, 0, *samp, 1);
+
+	for (int i=0; i<m_mean_length; i++)
+		*samp[i]+=m_mean[i];
+
+	delete[] random_vec;
+	delete[] r_matrix;
+}
+
 #endif

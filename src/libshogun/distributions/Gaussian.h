@@ -258,6 +258,13 @@ class CGaussian : public CDistribution
 			memcpy(m_u, u, sizeof(float64_t)*m_u_rows*m_u_cols);			
 		}
 
+		/** sample from distribution
+		 *
+		 * @param samp sample
+		 * @param samp_length sample length
+		 */
+		void sample(float64_t** samp, int32_t* samp_length);
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Gaussian"; }
 

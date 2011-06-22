@@ -31,8 +31,8 @@ CGMM::CGMM() : CDistribution(), m_components(NULL), m_n(0),
 CGMM::CGMM(int32_t n_, ECovType cov_type_) : CDistribution(), m_components(NULL), m_n(n_),
 						m_coefficients(NULL), m_coef_size(n_)
 {
-	m_coefficients = new float64_t[m_coef_size];
-	m_components = new CGaussian*[m_n];
+	m_coefficients=new float64_t[m_coef_size];
+	m_components=new CGaussian*[m_n];
 
 	for (int i=0; i<m_n; i++)
 	{
@@ -40,6 +40,26 @@ CGMM::CGMM(int32_t n_, ECovType cov_type_) : CDistribution(), m_components(NULL)
 		SG_REF(m_components[i]);
 		m_components[i]->set_cov_type(cov_type_);
 	}
+
+	register_params();
+}
+
+CGMM::CGMM(CGaussian** components, int32_t components_length, float64_t* coefficients, int32_t coefficient_length) : CDistribution()
+{
+	ASSERT(components_length==coefficient_length);
+
+	m_coef_size=coefficient_length;
+	m_n=components_length;
+	m_coefficients=new float64_t[m_coef_size];
+	m_components=new CGaussian*[m_n];
+
+	for (int i=0; i<m_n; i++)
+	{
+		m_components[i]=components[i];
+		SG_REF(m_components[i]);
+	}
+
+	memcpy(m_coefficients, coefficients, m_coef_size*sizeof(float64_t));
 
 	register_params();
 }
@@ -374,6 +394,22 @@ float64_t* CGMM::alpha_init(float64_t* init_means, int32_t init_mean_dim, int32_
 	delete[] label_num;
 
 	return alpha;
+}
+
+void CGMM::sample(float64_t** samp, int32_t* samp_length)
+{
+	ASSERT(m_components);
+	float64_t rand_num=CMath::random(float64_t(0), float64_t(1));
+	float64_t cum_sum=0;
+	for (int i=0; i<m_coef_size; i++)
+	{
+		cum_sum+=m_coefficients[i];
+		if (cum_sum>=rand_num)
+		{
+			m_components[i]->sample(samp, samp_length);
+			return;
+		}
+	}
 }
 
 void CGMM::register_params()
