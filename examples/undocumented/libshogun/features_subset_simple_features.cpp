@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 	CMath::display_matrix(data.matrix, data.num_rows, data.num_cols,
 			"feature matrix");
 
-	/* create subset indices with stratified corss validaiton splitting class */
+	/* create subset indices */
 	SGVector<index_t> subset_idx(CMath::randperm(num_subset_idx),
 			num_subset_idx);
 
