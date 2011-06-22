@@ -96,7 +96,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
-	for (i=0; i<N; i++)
+	for (i=0; i<N && !(CSignal::cancel_computations()); i++)
 	{
 		// compute local feature matrix containing neighbors of i-th vector
 		for (j=0; j<m_k; j++)
@@ -182,12 +182,12 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// compute eigenvectors
 	float64_t* eigenvalues_vector = new float64_t[N];
 	int32_t eigenproblem_status = 0;
-	wrap_dsyev('V','U',
-				N,M_matrix,
-				N,eigenvalues_vector,
-				&eigenproblem_status);
-	ASSERT(eigenproblem_status==0);
+	wrap_dsyev('V','U',N,M_matrix,N,eigenvalues_vector,&eigenproblem_status);	
 
+	// check if failed
+	if (eigenproblem_status)
+		SG_ERROR("Eigenproblem failed with code: %d", eigenproblem_status);
+	
 	// replace features with bottom eigenvectos
 	float64_t* new_feature_matrix = new float64_t[N*m_target_dim];
 
