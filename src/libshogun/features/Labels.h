@@ -263,6 +263,11 @@ class CLabels : public CSGObject
 		}
 
 		virtual void set_subset(SGVector<index_t> subset);
+
+		inline index_t subset_idx_conversion(index_t idx) const
+		{
+			return m_subset->subset_idx_conversion(idx);
+		}
 		/***********************************
 		 * End of wrapper for Subset methods
 		 **********************************/
