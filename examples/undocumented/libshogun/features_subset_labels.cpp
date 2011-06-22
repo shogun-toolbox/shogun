@@ -39,14 +39,15 @@ int main(int argc, char **argv)
 	labels_data.vector=labels->get_labels(labels_data.vlen);
 	CMath::display_vector(labels_data.vector, num_labels, "labels");
 
-	/* create subset indices with stratified corss validaiton splitting class */
+	/* create subset indices */
 	SGVector<index_t> subset_idx(CMath::randperm(num_subset_idx),
 			num_subset_idx);
 
 	/* print subset indices */
 	CMath::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
 
-	/* apply subset to features */SG_SPRINT("\n\n-------------------\n"
+	/* apply subset to features */
+	SG_SPRINT("\n\n-------------------\n"
 			"applying subset to features\n"
 			"-------------------\n");
 	labels->set_subset(subset_idx);
@@ -55,16 +56,12 @@ int main(int argc, char **argv)
 	ASSERT(labels->get_num_labels()==num_subset_idx);
 	SG_SPRINT("labels->get_num_labels(): %d\n", labels->get_num_labels());
 
-//	for (index_t i=0; i<features->get_num_labels(); ++i)
-//	{
-//		SGVector<int32_t> vec=features->get_feature_vector(i);
-//		SG_SPRINT("vector %d: ", i);
-//		CMath::display_vector(vec.vector, vec.vlen);
-//
-//		for (index_t j=0; j<dim_features; ++j)
-//			ASSERT(vec.vector[j]==data.matrix[features->subset_idx_conversion(
-//							i)*num_vectors+j]);
-//	}
+	for (index_t i=0; i<labels->get_num_labels(); ++i)
+	{
+		float64_t label=labels->get_label(i);
+		SG_SPRINT("label %f:\n", label);
+		ASSERT(label==labels_data.vector[labels->subset_idx_conversion(i)]);
+	}
 
 	/* remove features subset */SG_SPRINT("\n\n-------------------\n"
 			"removing subset from features\n"
@@ -74,17 +71,12 @@ int main(int argc, char **argv)
 	ASSERT(labels->get_num_labels()==num_labels);
 	SG_SPRINT("labels->get_num_labels(): %d\n", labels->get_num_labels());
 
-//	for (index_t i=0; i<features->get_num_vectors(); ++i)
-//	{
-//		SGVector<int32_t> vec=features->get_feature_vector(i);
-//		SG_SPRINT("vector %d: ", i);
-//		CMath::display_vector(vec.vector, vec.vlen);
-//
-//		for (index_t j=0; j<dim_features; ++j)
-//			ASSERT(vec.vector[j]==data.matrix[features->subset_idx_conversion(i)
-//					*num_vectors+j]);
-//	}
-//
+	for (index_t i=0; i<labels->get_num_labels(); ++i)
+	{
+		float64_t label=labels->get_label(i);
+		SG_SPRINT("label %f:\n", label);
+		ASSERT(label==labels_data.vector[i]);
+	}
 	SG_UNREF(labels);
 
 	SG_SPRINT("\nEND\n");
@@ -92,4 +84,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
