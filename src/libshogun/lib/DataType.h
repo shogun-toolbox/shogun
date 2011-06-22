@@ -31,6 +31,13 @@ template<class T> class SGVector
 		SGVector(T* v, index_t len, bool free_vec=false)
 			: vector(v), vlen(len), do_free(free_vec) { }
 
+		/** constructor to create new vector in memory */
+		SGVector(index_t len, bool free_vec=false) :
+		vlen(len), do_free(free_vec)
+		{
+			vector=new T[len];
+		}
+
 		/** copy constructor */
 		SGVector(const SGVector &orig)
 			: vector(orig.vector), vlen(orig.vlen) { }
@@ -63,6 +70,13 @@ template<class T> class SGMatrix
 		/** constructor for setting params */
 		SGMatrix(T* m, index_t nrows, index_t ncols, bool free_mat=false)
 			: matrix(m), num_rows(nrows), num_cols(ncols), do_free(free_mat) { }
+
+		/** constructor to create new matrix in memory */
+		SGMatrix(index_t nrows, index_t ncols, bool free_mat=false)
+			: num_rows(nrows), num_cols(ncols), do_free(free_mat)
+		{
+			matrix=new T[nrows*ncols];
+		}
 
 		/** copy constructor */
 		SGMatrix(const SGMatrix &orig)
