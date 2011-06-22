@@ -33,9 +33,9 @@
 
 /* Include Module Definitions */
 %include "SGBase.i"
-<<<<<<< HEAD
 %include "Features_includes.i"
 %include "Distribution_includes.i"
+<<<<<<< HEAD
 <<<<<<< HEAD
 %include "Preprocessor_includes.i"
 =======
@@ -52,6 +52,8 @@
 %}
 >>>>>>> modular update for Gaussian and GMM
 >>>>>>> modular update for Gaussian and GMM
+=======
+>>>>>>> Added GMM and Gaussian to modular. Switched to using SGVector and SGMatrix
 
 %import "Features.i"
 

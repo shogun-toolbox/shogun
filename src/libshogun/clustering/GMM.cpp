@@ -101,27 +101,13 @@ bool CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 
 	CKMeans* init_k_means=new CKMeans(m_n, new CEuclidianDistance());
 	init_k_means->train(dotdata);
-	// sorry ;)
-	SGMatrix<float64_t> cluster_centers = init_k_means->get_cluster_centers();
-	float64_t* init_means = cluster_centers.matrix;
-	int32_t init_mean_dim = cluster_centers.num_rows;
-	int32_t init_mean_size = cluster_centers.num_cols;
-
+	SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
 
 	float64_t* alpha;
 
-	alpha=alpha_init(init_means, init_mean_dim, init_mean_size);
+	alpha=alpha_init(init_means.matrix, init_means.num_rows, init_means.num_cols);
 
-<<<<<<< HEAD
-	for (int i=0; i<m_n; i++)
-	{
-		m_coefficients[i] = 1.0/m_coef_size;
-		m_components[i] = new CGaussian(SGVector<float64_t>(&(init_means[i*init_mean_dim]), init_mean_dim),
-								        SGMatrix<float64_t>(init_cov, init_cov_rows, init_cov_cols));
-	}
-=======
 	SG_UNREF(init_k_means);
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 
 	max_likelihood(alpha, num_vectors, m_n, min_cov);
 
@@ -160,8 +146,11 @@ bool CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 		{
 			logPx[i]=0;
 			dotdata->get_feature_vector(&point, &point_len, i);
+<<<<<<< HEAD
 >>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 
+=======
+>>>>>>> Added GMM and Gaussian to modular. Switched to using SGVector and SGMatrix
 			for (int j=0; j<m_n; j++)
 			{
 				logPxy[i*m_n+j]=m_components[j]->compute_log_PDF(point, point_len)+CMath::log(m_coefficients[j]);
@@ -234,16 +223,9 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 			mean_sum[j]/=alpha_sum;
 >>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 
-		m_components[i]->set_mean(mean_sum, num_dim);
+		m_components[i]->set_mean(SGVector<float64_t>(mean_sum, num_dim));
 
-<<<<<<< HEAD
-			for (int j=0; j<num_dim; j++)
-				mean_sum[j] /= T_sum;
-			
-			m_components[i]->set_mean(SGVector<float64_t>(mean_sum, num_dim));
-=======
 		ECovType cov_type=m_components[i]->get_cov_type();
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 
 		if (cov_type==FULL)
 		{
@@ -319,11 +301,7 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 				for (int j=0; j<num_dim; j++)
 					cov_sum[j]/=alpha_sum;
 
-<<<<<<< HEAD
-			m_components[i]->set_cov(SGMatrix<float64_t>(cov_sum, num_dim, num_dim));
-=======
 				m_components[i]->set_d(cov_sum, num_dim);
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 
 				break;
 			case SPHERICAL:
@@ -337,7 +315,6 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 		m_coefficients[i]=alpha_sum;
 		alpha_sum_sum+=alpha_sum;
 
-		delete[] mean_sum;
 		delete[] cov_sum;
 	}
 
@@ -391,12 +368,11 @@ float64_t* CGMM::alpha_init(float64_t* init_means, int32_t init_mean_dim, int32_
 
 	SG_UNREF(knn);
 	SG_UNREF(init_labels);
-	delete[] label_num;
 
 	return alpha;
 }
 
-void CGMM::sample(float64_t** samp, int32_t* samp_length)
+SGVector<float64_t> CGMM::sample()
 {
 	ASSERT(m_components);
 	float64_t rand_num=CMath::random(float64_t(0), float64_t(1));
@@ -405,11 +381,9 @@ void CGMM::sample(float64_t** samp, int32_t* samp_length)
 	{
 		cum_sum+=m_coefficients[i];
 		if (cum_sum>=rand_num)
-		{
-			m_components[i]->sample(samp, samp_length);
-			return;
-		}
+			return m_components[i]->sample();
 	}
+	return m_components[m_coef_size-1]->sample();
 }
 
 void CGMM::register_params()

@@ -121,9 +121,11 @@ class CGMM : public CDistribution
 
 		/** get nth mean
 		 *
+		 * @param mean copy of the mean
+		 * @param mean_length
 		 * @param num which mean to retrieve
 		 */
-		virtual SGVector<float64_t> get_nth_mean(int32_t num)
+		virtual inline SGVector<float64_t> get_nth_mean(int32_t num)
 		{
 			ASSERT(num<m_n);
 			return m_components[num]->get_mean();
@@ -131,9 +133,12 @@ class CGMM : public CDistribution
 
 		/** get nth cov
 		 *
+		 * @param cov copy of the cov
+		 * @param cov_rows
+		 * @param cov_cols
 		 * @param num which covariance to retrieve
 		 */
-		virtual SGMatrix<float64_t> get_nth_cov(int32_t num)
+		virtual inline SGMatrix<float64_t> get_nth_cov(int32_t num)
 		{
 			ASSERT(num<m_n);
 			return m_components[num]->get_cov();
@@ -141,18 +146,18 @@ class CGMM : public CDistribution
 
 		/** get coefficients
 		 *
+		 * @return coeffiecients
 		 */
-		virtual SGVector<float64_t> get_coef()
+		virtual inline SGVector<float64_t> get_coef()
 		{
-			return SGVector<float64_t>(m_coefficients,m_coef_size);
+			return SGVector<float64_t>(m_coefficients, m_coef_size);
 		}
 
 		/** sample from model
 		 *
-		 * @param samp sample
-		 * @param samp_length sample length
+		 * @return sample
 		 */
-		void sample(float64_t** samp, int32_t* samp_length);
+		SGVector<float64_t> sample();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GMM"; }

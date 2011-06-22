@@ -42,27 +42,15 @@ enum ECovType
 class CGaussian : public CDistribution
 {
 	public:
-
 		/** default constructor */
 		CGaussian();
-
 		/** constructor
 		 *
 		 * @param mean mean of the Gaussian
-		 * @param mean_length
 		 * @param cov covariance of the Gaussian
-		 * @param cov_rows
-		 * @param cov_cols
 		 * @param cov_type covariance type
 		 */
-<<<<<<< HEAD
-		CGaussian(SGVector<float64_t> mean_vector, SGMatrix<float64_t> cov_matrix);
-
-=======
-		CGaussian(float64_t* mean, int32_t mean_length,
-					float64_t* cov, int32_t cov_rows, int32_t cov_cols,
-					ECovType cov_type=FULL);
->>>>>>> Rewritten Gaussian class to work with different covariance types in log domain.
+		CGaussian(SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type=FULL);
 		virtual ~CGaussian();
 
 		/** Compute the constant part */
@@ -128,74 +116,49 @@ class CGaussian : public CDistribution
 
 		/** get mean
 		 *
+		 * @return mean
 		 */
-		virtual SGVector<float64_t> get_mean()
+		virtual inline SGVector<float64_t> get_mean()
 		{
-<<<<<<< HEAD
-			return SGVector<float64_t>(m_mean,m_mean_length);
-=======
-			*mean=new float64_t[m_mean_length];
-			memcpy(*mean, m_mean, sizeof(float64_t)*m_mean_length);
-			*mean_length=m_mean_length;
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
+			return SGVector<float64_t>(m_mean, m_mean_length);
 		}
 
 		/** set mean
 		 *
 		 * @param mean new mean
-		 * @param mean_length has to match current mean length
 		 */
-		virtual void set_mean(SGVector<float64_t> mean_vector)
+		virtual inline void set_mean(SGVector<float64_t> mean)
 		{
-<<<<<<< HEAD
-			ASSERT(mean_vector.vlen == m_mean_length);
-			memcpy(m_mean, mean_vector.vector, sizeof(float64_t)*m_mean_length);
-=======
 			if (m_mean_length>0)
 			{
-				ASSERT(mean_length==m_mean_length);
+				ASSERT(mean.vlen==m_mean_length);
 			}
 			else
 			{
-				m_mean_length=mean_length;
-				m_mean=new float64_t[mean_length];
+				m_mean_length=mean.vlen;
 			}
-			memcpy(m_mean, mean, sizeof(float64_t)*m_mean_length);
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
+			m_mean=mean.vector;
 		}
 
 		/** get cov
 		 *
+		 * @param cov cov, memory needs to be freed by user
 		 */
-<<<<<<< HEAD
-		virtual SGMatrix<float64_t> get_cov()
-		{
-			return SGMatrix<float64_t>(m_cov,m_cov_rows,m_cov_cols);
-		}
-=======
-		virtual void get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols);
->>>>>>> Rewritten Gaussian class to work with different covariance types in log domain.
+		virtual SGMatrix<float64_t> get_cov();
 
 		/** set cov
 		 *
+		 * Doesn't store the cov, but decomposes, thus the cov can be freed after exit without harming the object
+		 *
+		 * @param cov new cov
 		 */
-		virtual inline void set_cov(SGMatrix<float64_t> cov_matrix)
+		virtual inline void set_cov(SGMatrix<float64_t> cov)
 		{
-<<<<<<< HEAD
-<<<<<<< HEAD
-			ASSERT(cov_matrix.num_rows = cov_matrix.num_cols);
-			ASSERT(cov_matrix.num_rows = m_cov_rows);
-			memcpy(m_cov, cov_matrix.matrix, sizeof(float64_t)*m_cov_rows*m_cov_cols);
-=======
-			ASSERT(cov_rows = cov_cols);
-			ASSERT(cov_rows = m_mean_length);
-=======
-			ASSERT(cov_rows==cov_cols);
-			ASSERT(cov_rows==m_mean_length);
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
-			decompose_cov(cov, cov_rows);
->>>>>>> Rewritten Gaussian class to work with different covariance types in log domain.
+			ASSERT(cov.num_rows==cov.num_cols);
+			ASSERT(cov.num_rows==m_mean_length);
+			decompose_cov(cov.matrix, cov.num_rows);
 			init();
+			cov.free_matrix();
 		}
 
 		/** get cov type
@@ -260,10 +223,9 @@ class CGaussian : public CDistribution
 
 		/** sample from distribution
 		 *
-		 * @param samp sample
-		 * @param samp_length sample length
+		 * @return sample
 		 */
-		void sample(float64_t** samp, int32_t* samp_length);
+		SGVector<float64_t> sample();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Gaussian"; }
