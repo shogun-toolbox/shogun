@@ -310,7 +310,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/**
 		 * Extracts the feature vectors mentioned in idx and replaces them in
-		 * feature matrix in place. Nothing to do with Subset class.
+		 * feature matrix in place.
 		 *
 		 * It does not resize the allocated memory block.
 		 *
@@ -353,7 +353,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		/**
 		 * Extracts the features mentioned in idx and replaces them in
-		 * feature matrix in place. Nothing to do with the Subset class
+		 * feature matrix in place.
 		 *
 		 * It does not resize the allocated memory block.
 		 *
