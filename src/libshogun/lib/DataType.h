@@ -156,8 +156,21 @@ template <class T> struct SGSparseVector
 };
 
 /** template class SGSparseMatrix */
-template <class T> struct SGSparseMatrix
+template <class T> class SGSparseMatrix
 {
+    public:
+        /** default constructor */
+        SGSparseMatrix() : num_vectors(0), num_features(0), sparse_matrix(NULL) { }
+
+        /** constructor for setting params */
+        SGSparseMatrix(SGSparseVector<T>* vecs, index_t num_feat, index_t num_vec)
+            : num_vectors(num_vec), num_features(num_feat), sparse_matrix(vecs) { }
+
+        /** copy constructor */
+        SGSparseMatrix(const SGSparseMatrix &orig)
+            : num_vectors(orig.num_vectors), num_features(orig.num_features), sparse_matrix(orig.sparse_matrix) { }
+
+    public:
 	/// total number of vectors
 	int32_t num_vectors;
 
