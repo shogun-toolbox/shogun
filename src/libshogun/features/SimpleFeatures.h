@@ -141,12 +141,12 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		void free_feature_matrix()
 		{
-            delete[] feature_matrix;
-            feature_matrix = NULL;
+ 			delete[] feature_matrix;
+			feature_matrix = NULL;
 			feature_matrix_num_features=num_features;
 			feature_matrix_num_vectors=num_vectors;
-            num_vectors=0;
-            num_features=0;
+			num_vectors=0;
+			num_features=0;
 		}
 
 		/** free feature matrix and cache
@@ -371,6 +371,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 		void set_feature_matrix(SGMatrix<ST> matrix)
 		{
+			free_feature_matrix();
 			feature_matrix=matrix.matrix;
 			num_features=matrix.num_rows;
 			num_vectors=matrix.num_cols;
