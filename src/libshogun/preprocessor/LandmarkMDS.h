@@ -8,47 +8,48 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef CLASSICMDS_H_
-#define CLASSICMDS_H_
+#ifndef LANDMARKMDS_H_
+#define LANDMARKMDS_H_
 #ifdef HAVE_LAPACK
-#include "preprocessor/DimensionReductionPreprocessor.h"
+#include "preprocessor/SimplePreprocessor.h"
+#include "preprocessor/ClassicMDS.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
+#include "distance/CustomDistance.h"
 
 namespace shogun
 {
 
 class CFeatures;
-#include "preprocessor/DimensionReductionPreprocessor.h"
+
 class CDistance;
 
-/** @brief the class ClassicMDS used to perform classic eigenvector
- * 	multidimensional scaling.
+/** @brief class LandmarkMDS used to perform
+ *  fast multidimensional scaling using landmark multidimensional
+ *  scaling algorithm described in
  *
- * 	Description is given at p.261 (Section 12.1) of
- * 	Borg, I., & Groenen, P. J. F. (2005).
- * 	Modern multidimensional scaling: Theory and applications. Springer.
  *
  */
-class CClassicMDS: public CDimensionReductionPreprocessor
+class CLandmarkMDS: public CClassicMDS
 {
 public:
 
 	/* constructor */
-	CClassicMDS();
+	CLandmarkMDS();
 
 	/* destructor */
-	virtual ~CClassicMDS();
+	virtual ~CLandmarkMDS();
 
 	/** init
 	 * @param data feature vectors for preproc
 	 */
-	virtual bool init(CFeatures* features);
+	virtual bool init(CFeatures* data);
 
 	/** cleanup
 	 *
 	 */
 	virtual void cleanup();
+
 
 	/** apply preproc to distance
 	 *
@@ -65,16 +66,34 @@ public:
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
+
 	/** get name */
-	virtual inline const char* get_name() const { return "CLASSICMDS"; };
+	virtual inline const char* get_name() const { return "LANDMARKMDS"; };
 
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_CLASSICMDS; };
 
+	/** set number of landmarks */
+	void set_landmark_number(int32_t num)
+	{
+		m_landmark_number = num;
+	};
+
+	/** get number of landmarks */
+	int32_t get_landmark_number()
+	{
+		return m_landmark_number;
+	};
+
 protected:
 
-	/** positive eigenvalues of last call in descending order */
-	SGVector<float64_t> m_eigenvalues;
+	/** number of landmarks */
+	int32_t m_landmark_number;	
+
+	/**
+	 * @return sampled indexes for landmarks
+	 */
+	SGVector<int32_t> get_landmark_idxs(int32_t count, int32_t total_count);
 
 	/** apply preproc to distance
 	 *
@@ -86,4 +105,4 @@ protected:
 }
 
 #endif /* HAVE_LAPACK */
-#endif /* CLASSICMDS_H_ */
+#endif /* LANDMARK_H_ */

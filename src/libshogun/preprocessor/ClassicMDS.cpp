@@ -26,6 +26,7 @@ CClassicMDS::CClassicMDS() : CDimensionReductionPreprocessor()
 
 CClassicMDS::~CClassicMDS()
 {
+	delete[] m_eigenvalues.vector;
 }
 
 bool CClassicMDS::init(CFeatures* data)
@@ -95,11 +96,16 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	{
 		if (eigenvalues_vector[N-i-1]<0)
 		{
-					SG_WARNING("Can't embed into %dd space, embedded into %dd",m_target_dim,i);
-					m_target_dim = i;
-					break;
+			SG_WARNING("Can't embed into %dd space, embedded into %dd",m_target_dim,i);
+			m_target_dim = i;
+			break;
 		}
 	}
+	
+	m_eigenvalues.free_vector();
+	m_eigenvalues = SGVector<float64_t>(new float64_t[m_target_dim],m_target_dim,true);
+	for (i=0; i<m_target_dim; i++)
+		m_eigenvalues.vector[i] = eigenvalues_vector[N-i-1];
 
 	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
 	for (i=0; i<m_target_dim; i++)
