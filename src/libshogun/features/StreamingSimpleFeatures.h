@@ -37,8 +37,6 @@ public:
 	CStreamingSimpleFeatures()
 		: CStreamingDotFeatures()
 	{
-		set_vector_reader();
-		set_vector_and_label_reader();
 		init();
 	}
 
@@ -55,8 +53,6 @@ public:
 				 int32_t size)
 		: CStreamingDotFeatures()
 	{
-		set_vector_reader();
-		set_vector_and_label_reader();
 		init(file, is_labelled, size);
 	}
 

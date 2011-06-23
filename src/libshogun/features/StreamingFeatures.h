@@ -70,7 +70,11 @@ public:
 	 * Doesn't do anything yet.
 	 */
 	CStreamingFeatures()
-		: CFeatures() { }
+		: CFeatures()
+	{
+		set_vector_reader();
+		set_vector_and_label_reader();
+	}
 
 	/**
 	 * Constructor with input information passed.
@@ -80,7 +84,11 @@ public:
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
 	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
-		: CFeatures() { }
+		: CFeatures()
+	{
+		set_vector_reader();
+		set_vector_and_label_reader();
+	}
 
 	/**
 	 * Destructor
