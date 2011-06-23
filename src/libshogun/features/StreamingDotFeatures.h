@@ -49,7 +49,8 @@ class CStreamingDotFeatures : public CStreamingFeatures
 
 public:
 	/** Constructor */
-	CStreamingDotFeatures() { }
+	CStreamingDotFeatures()
+		: CStreamingFeatures() { }
 
 	/**
 	 * Constructor with input information passed.
@@ -58,7 +59,8 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size) { }
+	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
+		: CStreamingFeatures() { }
 
 	virtual ~CStreamingDotFeatures() { }
 
