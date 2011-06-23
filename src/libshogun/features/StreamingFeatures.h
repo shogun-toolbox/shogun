@@ -70,11 +70,7 @@ public:
 	 * Doesn't do anything yet.
 	 */
 	CStreamingFeatures()
-		: CFeatures()
-	{
-		set_vector_reader();
-		set_vector_and_label_reader();
-	}
+		: CFeatures() { }
 
 	/**
 	 * Constructor with input information passed.
@@ -84,17 +80,25 @@ public:
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
 	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
-		: CFeatures()
-	{
-		set_vector_reader();
-		set_vector_and_label_reader();
-	}
-
+		: CFeatures() { }
+	
 	/**
 	 * Destructor
 	 */
 	virtual ~CStreamingFeatures() { }
 
+	/** 
+	 * Set the vector reading functions.
+	 * 
+	 * The functions are implemented specific to the type in the
+	 * derived class.
+	 */
+	void set_read_functions()
+	{
+		set_vector_reader();
+		set_vector_and_label_reader();
+	}
+	
 	/** 
 	 * The derived object must set the function which will be used
 	 * for reading one vector from the file.  This function should

@@ -37,6 +37,7 @@ public:
 	CStreamingSimpleFeatures()
 		: CStreamingDotFeatures()
 	{
+		set_read_functions();
 		init();
 	}
 
@@ -53,6 +54,7 @@ public:
 				 int32_t size)
 		: CStreamingDotFeatures()
 	{
+		set_read_functions();
 		init(file, is_labelled, size);
 	}
 
