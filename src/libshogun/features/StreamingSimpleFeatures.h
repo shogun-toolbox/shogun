@@ -35,6 +35,7 @@ public:
 	 * depending on the type T.
 	 */
 	CStreamingSimpleFeatures()
+		: CStreamingDotFeatures()
 	{
 		set_vector_reader();
 		set_vector_and_label_reader();
@@ -52,6 +53,7 @@ public:
 	CStreamingSimpleFeatures(CStreamingFile* file,
 				 bool is_labelled,
 				 int32_t size)
+		: CStreamingDotFeatures()
 	{
 		set_vector_reader();
 		set_vector_and_label_reader();
@@ -77,7 +79,7 @@ public:
 	 * The parser uses the function set by this while reading
 	 * unlabelled examples.
 	 */
-	void set_vector_reader();
+	virtual void set_vector_reader();
 
 	/** 
 	 * Sets the read function (in case the examples are labelled)
@@ -88,21 +90,21 @@ public:
 	 * The parser uses the function set by this while reading
 	 * labelled examples.
 	 */
-	void set_vector_and_label_reader();
+	virtual void set_vector_and_label_reader();
 
 	/** 
 	 * Starts the parsing thread.
 	 *
 	 * To be called before trying to use any feature vectors from this object.
 	 */
-	void start_parser();
+	virtual void start_parser();
 
 	/** 
 	 * Ends the parsing thread.
 	 *
 	 * Waits for the thread to join.
 	 */
-	void end_parser();
+	virtual void end_parser();
 
 	/** 
 	 * Instructs the parser to return the next example.
@@ -112,7 +114,7 @@ public:
 	 * @return True on success, false if there are no more
 	 * examples, or an error occurred.
 	 */
-	bool get_next_example();
+	virtual bool get_next_example();
 
 	/** 
 	 * Return the current feature vector as an SGVector<T>.
@@ -128,7 +130,7 @@ public:
 	 * 
 	 * @return The label as a float64_t.
 	 */
-	float64_t get_label();
+	virtual float64_t get_label();
 
 	/** 
 	 * Release the current example, indicating to the parser that
@@ -136,7 +138,7 @@ public:
 	 *
 	 * The parser is then free to throw away that example.
 	 */
-	void release_example();
+	virtual void release_example();
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -231,7 +233,7 @@ public:
 	 * 
 	 * @return C_STREAMING_SIMPLE
 	 */
-	EFeatureClass get_feature_class();
+	virtual EFeatureClass get_feature_class();
 
 	/** 
 	 * Duplicate the object.
