@@ -249,35 +249,16 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 	shogun::SGString<SGTYPE>* strings=new shogun::SGString<SGTYPE>[size];
 
 	for (i = 0; i < size; i++) {
-		if (JNIDESC == "String[]") {
-			jstring jstr = (jstring)JCALL2(GetObjectArrayElement, jenv, $input, i);
+		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, $input, i);
+		len = JCALL1(GetArrayLength, jenv, jarr);
+		max_len = shogun::CMath::max(len, max_len);
 
-			len = JCALL1(GetStringUTFLength, jenv, jstr);
-			max_len = shogun::CMath::max(len, max_len);
-			const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
+		strings[i].length=len;
+		strings[i].string=NULL;
 
-			strings[i].length = len;
-			strings[i].string = NULL;
-
-			if (len > 0) {
-				strings[i].string = new SGTYPE[len];
-				memcpy(strings[i].string, str, len);
-			}
-			JCALL2(ReleaseStringUTFChars, jenv, jstr, str);
-		}
-		else {
-			##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, $input, i);
-			len = JCALL1(GetArrayLength, jenv, jarr);
-			max_len = shogun::CMath::max(len, max_len);
-
-			strings[i].length=len;
-            strings[i].string=NULL;
-
-			if (len >0) {
-				strings[i].string = new SGTYPE[len];
-				memcpy(strings[i].string, jarr, len * sizeof(SGTYPE));
-			}
-
+		if (len >0) {
+			strings[i].string = new SGTYPE[len];
+			memcpy(strings[i].string, jarr, len * sizeof(SGTYPE));
 		}
 	}
 
@@ -298,29 +279,23 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 	res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
 
 	for (i = 0; i < num; i++) {
-		if (JNIDESC == "String[]") {
-			jstring jstr = (jstring)JCALL1(NewStringUTF, jenv, (char *)str[i].string);
-			JCALL3(SetObjectArrayElement, jenv, res, i, jstr);
-			JCALL1(DeleteLocalRef, jenv, jstr);
-		}
-		else {
-			SGTYPE* data = new SGTYPE[str[i].length];
-			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
+		SGTYPE* data = new SGTYPE[str[i].length];
+		memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
 
-			##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].length);
+		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].length);
 
-			JNITYPE arr[str[i].length];
-			for (j = 0; j < str[i].length; j++) {
-				arr[j] = (JNITYPE)data[j];
-			}
-			JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, str[i].length, arr);
-			JCALL3(SetObjectArrayElement, jenv, res, i, jarr);
-			JCALL1(DeleteLocalRef, jenv, jarr);
+		JNITYPE arr[str[i].length];
+		for (j = 0; j < str[i].length; j++) {
+			arr[j] = (JNITYPE)data[j];
 		}
-		 delete[] str[i].string;
+		JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, str[i].length, arr);
+		JCALL3(SetObjectArrayElement, jenv, res, i, jarr);
+		JCALL1(DeleteLocalRef, jenv, jarr);
+
+		delete[] str[i].string;
 	}
 	delete[] str;
-	 $result = res;
+	$result = res;
 }
 
 %typemap(javain) shogun::SGStringList<SGTYPE> "$javainput"
@@ -331,7 +306,6 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 %enddef
 
 TYPEMAP_STRINGFEATURES(bool, boolean, Boolean, jboolean, "Boolen[][]", "[[Z")
-TYPEMAP_STRINGFEATURES(char, byte, Byte, jbyte, "String[]", "java/lang/String")
 TYPEMAP_STRINGFEATURES(uint8_t, byte, Byte, jbyte, "Byte[][]", "[[S")
 TYPEMAP_STRINGFEATURES(int16_t, short, Short, jshort, "Short[][]", "[[S")
 TYPEMAP_STRINGFEATURES(uint16_t, int, Int, jint, "Int[][]", "[[I")
@@ -344,3 +318,69 @@ TYPEMAP_STRINGFEATURES(float32_t, float, Float, jfloat, "Float[][]", "[[F")
 TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
 
 #undef TYPEMAP_STRINGFEATURES
+
+/* input/output typemap for SGStringList<char> */
+%typemap(jni) shogun::SGStringList<char>	%{jobjectArray%}
+%typemap(jtype) shogun::SGStringList<char>		%{String []%}
+%typemap(jstype) shogun::SGStringList<char> 	%{String []%}
+
+%typemap(in) shogun::SGStringList<char> {
+	int32_t size = 0;
+	int32_t i;
+	int32_t len, max_len = 0;
+
+	if (!$input) {
+		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+		return $null;
+	}
+
+	size = JCALL1(GetArrayLength, jenv, $input);
+	shogun::SGString<char>* strings=new shogun::SGString<char>[size];
+
+	for (i = 0; i < size; i++) {
+		jstring jstr = (jstring)JCALL2(GetObjectArrayElement, jenv, $input, i);
+
+		len = JCALL1(GetStringUTFLength, jenv, jstr);
+		max_len = shogun::CMath::max(len, max_len);
+		const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
+
+		strings[i].length = len;
+		strings[i].string = NULL;
+
+		if (len > 0) {
+			strings[i].string = new char[len];
+			memcpy(strings[i].string, str, len);
+		}
+		JCALL2(ReleaseStringUTFChars, jenv, jstr, str);
+	}
+
+	SGStringList<char> sl;
+	sl.strings = strings;
+	sl.num_strings = size;
+	sl.max_string_length = max_len;
+	$1 = sl;
+}
+
+%typemap(out) shogun::SGStringList<char> {
+	shogun::SGString<char>* str = $1.strings;
+	int32_t i, j, num = $1.num_strings;
+	jclass cls;
+	jobjectArray res;
+
+	cls = JCALL1(FindClass, jenv, "java/lang/String");
+	res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
+
+	for (i = 0; i < num; i++) {
+		jstring jstr = (jstring)JCALL1(NewStringUTF, jenv, (char *)str[i].string);
+		JCALL3(SetObjectArrayElement, jenv, res, i, jstr);
+		JCALL1(DeleteLocalRef, jenv, jstr);
+		delete[] str[i].string;
+	}
+	delete[] str;
+	$result = res;
+}
+
+%typemap(javain) shogun::SGStringList<char> "$javainput"
+%typemap(javaout) shogun::SGStringList<char> {
+	return $jnicall;
+}
