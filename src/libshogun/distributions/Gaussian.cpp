@@ -40,7 +40,9 @@ CGaussian::CGaussian(SGVector<float64_t> mean, SGMatrix<float64_t> cov,
 	decompose_cov(cov.matrix, cov.num_rows);
 	init();
 	register_params();
-	cov.free_matrix();
+
+	if (cov.do_free)
+		cov.free_matrix();
 }
 
 void CGaussian::init()
@@ -54,7 +56,7 @@ void CGaussian::init()
 				m_constant+=CMath::log(m_d[i]);
 			break;
 		case SPHERICAL:
-			m_constant+=m_mean_length*CMath::log(*m_d);
+			m_constant+=m_mean_length*CMath::log(m_d[0]);
 			break;
 	}
 }
@@ -160,7 +162,7 @@ float64_t CGaussian::compute_log_PDF(float64_t* point, int32_t point_len)
 	else
 	{
 		for (int i=0; i<m_mean_length; i++)
-			answer+=difference[i]*difference[i]/(*m_d);
+			answer+=difference[i]*difference[i]/m_d[0];
 	}
 
 	delete[] difference;
@@ -202,10 +204,9 @@ SGMatrix<float64_t> CGaussian::get_cov()
 	else
 	{
 		for (int i=0; i<m_mean_length; i++)
-			cov[i*m_mean_length+i]=*m_d;
+			cov[i*m_mean_length+i]=m_d[0];
 	}
-
-	return SGMatrix<float64_t>(cov, m_mean_length, m_mean_length, true);
+	return SGMatrix<float64_t>(cov, m_mean_length, m_mean_length, false);//fix needed
 }
 
 void CGaussian::register_params()
@@ -241,9 +242,9 @@ void CGaussian::decompose_cov(float64_t* cov, int32_t cov_size)
 			m_d_length=cov_size;
 			break;
 		case SPHERICAL:
-			m_d=new float64_t;
+			m_d=new float64_t[1];
 
-			*m_d=cov[0];
+			m_d[0]=cov[0];
 			m_d_length=1;
 			break;
 	}
@@ -295,7 +296,7 @@ SGVector<float64_t> CGaussian::sample()
 	delete[] random_vec;
 	delete[] r_matrix;
 
-	return SGVector<float64_t>(samp, m_mean_length, true);
+	return SGVector<float64_t>(samp, m_mean_length, false);//fix needed
 }
 
 #endif

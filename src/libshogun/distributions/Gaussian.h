@@ -136,6 +136,9 @@ class CGaussian : public CDistribution
 			else
 			{
 				m_mean_length=mean.vlen;
+
+				if (mean.vlen==1)
+					m_cov_type=SPHERICAL;
 			}
 			m_mean=mean.vector;
 		}
@@ -158,7 +161,8 @@ class CGaussian : public CDistribution
 			ASSERT(cov.num_rows==m_mean_length);
 			decompose_cov(cov.matrix, cov.num_rows);
 			init();
-			cov.free_matrix();
+			if (cov.do_free)
+				cov.free_matrix();
 		}
 
 		/** get cov type

@@ -240,7 +240,7 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 		else
 		{
 			cov_sum=new float64_t[1];
-			*cov_sum=0;
+			cov_sum[0]=0;
 		}
 
 		for (int j=0; j<alpha_row; j++)
@@ -264,16 +264,16 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 					break;
 				case DIAG:
 					for (int k=0; k<num_dim; k++)
-						cov_sum[k]+=point[k]*alpha[j*alpha_col+i];
+						cov_sum[k]+=point[k]*point[k]*alpha[j*alpha_col+i];
 
 					break;
 				case SPHERICAL:
 					float64_t temp=0;
 
 					for (int k=0; k<num_dim; k++)
-						temp+=point[k];
+						temp+=point[k]*point[k];
 
-					*cov_sum+=temp*alpha[j*alpha_col+i];
+					cov_sum[0]+=temp*alpha[j*alpha_col+i];
 					break;
 >>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 			}
@@ -299,13 +299,17 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 				break;
 			case DIAG:
 				for (int j=0; j<num_dim; j++)
+				{
 					cov_sum[j]/=alpha_sum;
+					cov_sum[j]=CMath::max(min_cov, cov_sum[j]);
+				}
 
 				m_components[i]->set_d(cov_sum, num_dim);
 
 				break;
 			case SPHERICAL:
-				*cov_sum/=alpha_sum*num_dim;
+				cov_sum[0]/=alpha_sum*num_dim;
+				cov_sum[0]=CMath::max(min_cov, cov_sum[0]);
 
 				m_components[i]->set_d(cov_sum, 1);
 
