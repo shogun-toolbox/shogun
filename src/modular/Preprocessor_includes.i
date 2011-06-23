@@ -16,6 +16,7 @@
 #include <shogun/preprocessor/ClassicMDS.h>
 #include <shogun/preprocessor/LocallyLinearEmbedding.h>
 #include <shogun/preprocessor/Isomap.h>
+#include <shogun/preprocessor/LandmarkMDS.h>
 
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/preprocessor/DecompressString.h>
