@@ -69,7 +69,8 @@ public:
 	 * Default constructor with no args.
 	 * Doesn't do anything yet.
 	 */
-	CStreamingFeatures() { }
+	CStreamingFeatures()
+		: CFeatures() { }
 
 	/**
 	 * Constructor with input information passed.
@@ -78,7 +79,8 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size) { }
+	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
+		: CFeatures() { }
 
 	/**
 	 * Destructor
