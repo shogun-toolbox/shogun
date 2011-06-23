@@ -85,6 +85,27 @@ public:
 	 */
 	virtual ~CStreamingFeatures() { }
 
+	/** 
+	 * The derived object must set the function which will be used
+	 * for reading one vector from the file.  This function should
+	 * be a member of the CStreamingFile class.
+	 *
+	 * See the implementation in StreamingSimpleFeatures for
+	 * details.
+	 */
+	virtual void set_vector_reader()=0;
+
+	/** 
+	 * The derived object must set the function which will be used
+	 * by the parser for reading one vector and label from the
+	 * file.  This function should be a member of the
+	 * CStreamingFile class.
+	 *
+	 * See the implementation in StreamingSimpleFeatures for
+	 * details.
+	 */
+	virtual void set_vector_and_label_reader()=0;
+
 	/**
 	 * Start the parser.
 	 * It stores parsed examples from the input in a separate thread.

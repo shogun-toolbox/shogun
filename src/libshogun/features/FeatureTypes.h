@@ -44,6 +44,9 @@ namespace shogun
 		C_SPEC = 80,
 		C_WEIGHTEDSPEC = 90,
 		C_POLY = 100,
+		C_STREAMING_SIMPLE = 110,
+		C_STREAMING_SPARSE = 120,
+		C_STREAMING_STRING = 130,
 		C_ANY = 1000
 	};
 
