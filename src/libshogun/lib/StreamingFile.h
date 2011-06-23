@@ -103,6 +103,52 @@ namespace shogun
 		virtual void get_longreal_vector_and_label(floatmax_t*& vector, int32_t& len, float64_t& label);
 		//@}
 
+		/** @name Vector Access Functions
+		 *
+		 * Functions to access vectors of one of the several base data types.
+		 * These functions are used when loading vectors from e.g. file
+		 * and return the vector and its length len by reference
+		 */
+		//@{
+		virtual void get_bool_string(bool*& vector, int32_t& len);
+		virtual void get_byte_string(uint8_t*& vector, int32_t& len);
+		virtual void get_char_string(char*& vector, int32_t& len);
+		virtual void get_int_string(int32_t*& vector, int32_t& len);
+		virtual void get_real_string(float64_t*& vector, int32_t& len);
+		virtual void get_shortreal_string(float32_t*& vector, int32_t& len);
+		virtual void get_short_string(int16_t*& vector, int32_t& len);
+		virtual void get_word_string(uint16_t*& vector, int32_t& len);
+		virtual void get_int8_string(int8_t*& vector, int32_t& len);
+		virtual void get_uint_string(uint32_t*& vector, int32_t& len);
+		virtual void get_long_string(int64_t*& vector, int32_t& len);
+		virtual void get_ulong_string(uint64_t*& vector, int32_t& len);
+		virtual void get_longreal_string(floatmax_t*& vector, int32_t& len);
+		//@}
+
+		/** @name Label and Vector Access Functions
+		 *
+		 * Functions to access the label and vectors of examples
+		 * one of the several base data types.
+		 * These functions are used when loading vectors from e.g. file
+		 * and return the vector, its length, and the label by reference
+		 */
+		//@{
+		virtual void get_bool_string_and_label(bool*& vector, int32_t& len, float64_t& label);
+		virtual void get_byte_string_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_char_string_and_label(char*& vector, int32_t& len, float64_t& label);
+		virtual void get_int_string_and_label(int32_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_real_string_and_label(float64_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_shortreal_string_and_label(float32_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_short_string_and_label(int16_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_word_string_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_int8_string_and_label(int8_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_uint_string_and_label(uint32_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_long_string_and_label(int64_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_ulong_string_and_label(uint64_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_longreal_string_and_label(floatmax_t*& vector, int32_t& len, float64_t& label);
+		//@}
+
+
 		/** @name Matrix Access Functions
 		 *
 		 * Functions to access matrices of one of the several base data types.
