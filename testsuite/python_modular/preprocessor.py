@@ -1,5 +1,5 @@
 """
-Test PreProc
+Test Preprocessor
 """
 
 from shogun.Kernel import *

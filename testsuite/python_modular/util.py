@@ -3,7 +3,7 @@ Utilities for testing
 """
 
 from shogun.Features import *
-from shogun.PreProc import *
+from shogun.Preprocessor import *
 from shogun.Distance import *
 from shogun.Kernel import *
 from numpy import *
@@ -158,7 +158,7 @@ def get_feats_string_complex (indata, prefix=''):
 	if indata[prefix+'feature_type']=='Word' or \
 		indata[prefix+'feature_type']=='Ulong':
 		name='Sort'+indata[prefix+'feature_type']+'String'
-		return add_preproc(name, feats)
+		return add_preprocessor(name, feats)
 	else:
 		return feats
 
@@ -182,14 +182,14 @@ def get_feats_wd (indata, prefix=''):
 	return feats
 
 
-def add_preproc (name, feats, *args):
+def add_preprocessor(name, feats, *args):
 	fun=eval(name)
 	preproc=fun(*args)
 	preproc.init(feats['train'])
-	feats['train'].add_preproc(preproc)
-	feats['train'].apply_preproc()
-	feats['test'].add_preproc(preproc)
-	feats['test'].apply_preproc()
+	feats['train'].add_preprocessor(preproc)
+	feats['train'].apply_preprocessor()
+	feats['test'].add_preprocessor(preproc)
+	feats['test'].apply_preprocessor()
 
 	return feats
 
