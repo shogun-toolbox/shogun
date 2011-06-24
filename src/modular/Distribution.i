@@ -35,6 +35,7 @@
 %include "SGBase.i"
 %include "Features_includes.i"
 %include "Distribution_includes.i"
+%include "Preprocessor_includes.i"
 
 %import "Features.i"
 

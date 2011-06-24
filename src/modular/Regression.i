@@ -31,6 +31,7 @@
 %include "Distance_includes.i"
 %include "Classifier_includes.i"
 %include "Regression_includes.i"
+%include "Preprocessor_includes.i"
 
 %import "Features.i"
 %import "Kernel.i"
