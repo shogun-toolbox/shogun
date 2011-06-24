@@ -280,9 +280,6 @@ class CLabels : public CSGObject
 		/** the labels */
 		float64_t* labels;
 
-		/** number of labels */
-		int32_t num_labels_total;
-
 		/** number of classes */
 		int32_t m_num_classes;
 

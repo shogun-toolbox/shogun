@@ -34,7 +34,6 @@ CLabels::CLabels(int32_t num_lab)
 	for (int32_t i=0; i<num_lab; i++)
 		labels[i]=0;
 
-	num_labels_total=num_lab;
 	num_labels=num_lab;
 }
 
@@ -93,7 +92,6 @@ CLabels::~CLabels()
 	delete[] m_confidences;
 
 	num_labels=0;
-	num_labels_total=0;
 	m_num_classes=0;
 	labels=NULL;
 	m_confidences=NULL;
@@ -104,7 +102,7 @@ CLabels::~CLabels()
 
 void CLabels::init()
 {
-	m_parameters->add_vector(&labels, &num_labels_total, "labels",
+	m_parameters->add_vector(&labels, &num_labels, "labels",
 							 "The labels.");
 	m_parameters->add_matrix(&m_confidences, &m_confidence_classes,
 							 &m_confidence_labels, "m_confidences",
@@ -116,7 +114,6 @@ void CLabels::init()
 	m_subset=new CSubset();
 	labels=NULL;
 	num_labels=0;
-	num_labels_total=0;
 	m_confidences=NULL;
 	m_confidence_classes=0;
 	m_confidence_labels=0;
@@ -131,7 +128,6 @@ void CLabels::set_labels(SGVector<float64_t> v)
 	delete[] labels;
 	labels=v.vector;
 	num_labels=v.vlen;
-	num_labels_total=v.vlen;
 }
 
 void CLabels::set_labels(float64_t* p_labels, int32_t len)
@@ -142,7 +138,6 @@ void CLabels::set_labels(float64_t* p_labels, int32_t len)
 		SG_ERROR("A subset is set, cannot set labels\n");
 
 	num_labels=len;
-	num_labels_total=len;
 
 	delete[] labels;
     labels=p_labels;
@@ -336,7 +331,6 @@ void CLabels::set_int_labels(int32_t * mylabels, int32_t len)
 		SG_ERROR("set_int_labels() is not possible on subset");
 
 	num_labels = len ;
-	num_labels_total=len;
 	delete[] labels ;
 	
 	labels = new float64_t[num_labels] ;
@@ -355,7 +349,6 @@ void CLabels::load(CFile* loader)
 	m_confidence_classes = 0;
 	m_confidence_labels = 0;
 	num_labels=0;
-	num_labels_total=0;
 	ASSERT(loader);
 	loader->get_real_vector(labels, num_labels);
 	m_num_classes=get_num_classes();
@@ -374,11 +367,9 @@ void CLabels::save(CFile* writer)
 void CLabels::set_subset(SGVector<index_t> subset)
 {
 	m_subset->set_subset(subset);
-	num_labels=subset.vlen;
 }
 
 void CLabels::remove_subset()
 {
 	m_subset->remove_subset();
-	num_labels=num_labels_total;
 }

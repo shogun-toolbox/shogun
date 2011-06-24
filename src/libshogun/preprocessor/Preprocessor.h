@@ -98,7 +98,7 @@ public:
 	virtual EFeatureClass get_feature_class()=0;
 
 	/// return a type of preprocessor
-	virtual inline EPreprocessorType get_type() const=0;
+	virtual EPreprocessorType get_type() const=0;
 };
 }
 #endif // _CPREPROCESSOR__H__
