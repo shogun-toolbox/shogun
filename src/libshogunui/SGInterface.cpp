@@ -1724,7 +1724,7 @@ bool CSGInterface::cmd_get_features()
 		case C_POLY:
 		{
 
-			SGMatrix<float64_t> fmatrix = ((CDotFeatures*) feat)->get_feature_matrix();
+			SGMatrix<float64_t> fmatrix = ((CDotFeatures*) feat)->get_computed_dot_feature_matrix();
 			set_real_matrix(fmatrix.matrix, fmatrix.num_cols, fmatrix.num_rows);
 			fmatrix.free_matrix();
 			break;

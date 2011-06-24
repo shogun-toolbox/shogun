@@ -126,7 +126,7 @@ bool CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 		for (int i=0; i<num_vectors; i++)
 		{
 			logPx[i]=0;
-			SGVector<float64_t> v=dotdata->get_feature_vector(i);
+			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
 			for (int j=0; j<m_n; j++)
 			{
 				logPxy[i*m_n+j]=m_components[j]->compute_log_PDF(v.vector, v.vlen)+CMath::log(m_coefficients[j]);
@@ -179,7 +179,7 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 		for (int j=0; j<alpha_row; j++)
 		{
 			alpha_sum+=alpha[j*alpha_col+i];
-			SGVector<float64_t> v=dotdata->get_feature_vector(j);
+			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(j);
 			CMath::add<float64_t>(mean_sum, alpha[j*alpha_col+i], v.vector, 1, mean_sum, v.vlen);
 			v.free_vector();
 		}
@@ -209,7 +209,7 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 
 		for (int j=0; j<alpha_row; j++)
 		{
-			SGVector<float64_t> v=dotdata->get_feature_vector(j);
+			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(j);
 			CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean_sum, v.vlen);
 
 			switch (cov_type)

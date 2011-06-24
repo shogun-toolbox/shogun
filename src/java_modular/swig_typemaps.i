@@ -7,6 +7,7 @@
  * Written (W) 2011 Baozeng Ding
  *
  */
+
 #ifdef HAVE_JBLAS
 %pragma(java) jniclassimports=%{
 import org.jblas.*;

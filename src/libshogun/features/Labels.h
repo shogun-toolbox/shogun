@@ -126,10 +126,8 @@ class CLabels : public CSGObject
 		inline float64_t get_label(int32_t idx)
 		{
 			int32_t real_num=m_subset->subset_idx_conversion(idx);
-			if (labels && real_num<num_labels)
-				return labels[real_num];
-			else
-				return -1;
+			ASSERT(labels && real_num<num_labels);
+			return labels[real_num];
 		}
 
 		/** get INT label
@@ -140,13 +138,9 @@ class CLabels : public CSGObject
 		inline int32_t get_int_label(int32_t idx)
 		{
 			int32_t real_num=m_subset->subset_idx_conversion(idx);
-			if (labels && real_num<num_labels)
-			{
-				ASSERT(labels[real_num]== ((float64_t) ((int32_t) labels[real_num])));
-				return ((int32_t) labels[real_num]);
-			}
-			else
-				return -1;
+			ASSERT(labels && real_num<num_labels);
+			ASSERT(labels[real_num]== ((float64_t) ((int32_t) labels[real_num])));
+			return ((int32_t) labels[real_num]);
 		}
 
 		/** is two-class labeling

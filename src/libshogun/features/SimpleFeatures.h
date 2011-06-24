@@ -498,7 +498,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 			for (int32_t i=0; i<num_vec; i++)
 			{
-				SGVector<float64_t> v=df->get_feature_vector(i);
+				SGVector<float64_t> v=df->get_computed_dot_feature_vector(i);
 				ASSERT(num_feat==v.vlen);
 
 				for (int32_t j=0; j<num_feat; j++)
