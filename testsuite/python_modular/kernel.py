@@ -4,7 +4,7 @@ Test Kernel
 
 from shogun.Features import *
 from shogun.Kernel import *
-from shogun.PreProc import *
+from shogun.Preprocessor import *
 from shogun.Distance import *
 from shogun.Classifier import PluginEstimate
 from shogun.Distribution import HMM, BW_NORMAL

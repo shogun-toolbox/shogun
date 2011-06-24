@@ -12,11 +12,11 @@ import classifier
 import clustering
 import distribution
 import regression
-import preproc
+import preprocessor
 from shogun.Library import Math_init_random
 
 SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
-	'regression', 'preproc']
+	'regression', 'preprocessor']
 
 def _get_name_fun (fnam):
 	module=None

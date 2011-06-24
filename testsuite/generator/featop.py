@@ -3,7 +3,7 @@ Common operations on features
 """
 
 import shogun.Features as features
-import shogun.PreProc as preproc
+import shogun.Preprocessor as preproc
 
 WORDSTRING_ORDER=3
 WORDSTRING_GAP=0
