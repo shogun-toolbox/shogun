@@ -20,7 +20,7 @@ using namespace shogun;
 CGaussianNaiveBayes::CGaussianNaiveBayes() :
 CMachine(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
-m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
+m_variances(NULL), m_label_prob(NULL), m_rates(NULL)
 {
 
 };
@@ -28,7 +28,7 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
 CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels) :
 CMachine(), m_features(NULL), m_min_label(0), m_labels(NULL),
 m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
-m_variances(NULL), m_label_prob(NULL), m_rates(NULL), m_feat_vec(NULL)
+m_variances(NULL), m_label_prob(NULL), m_rates(NULL)
 {
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
 	set_labels(train_labels);
@@ -42,7 +42,6 @@ CGaussianNaiveBayes::~CGaussianNaiveBayes()
 	SG_UNREF(m_features);
 	delete[] m_means;
 	delete[] m_rates;
-	delete[] m_feat_vec;
 	delete[] m_variances;
 	delete[] m_label_prob;
 	delete[] m_labels;
@@ -91,14 +90,10 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	// allocate memory for label rates
 	m_rates = new float64_t[m_num_classes];
 
-	// allocate memory for storing feature vector
-	m_feat_vec = new float64_t[m_dim];
-
 	// assure that memory is allocated
 	ASSERT(m_means);
 	ASSERT(m_variances);
 	ASSERT(m_rates);
-	ASSERT(m_feat_vec);
 	ASSERT(m_label_prob);
 
 	// make arrays filled by zeros before using
@@ -113,12 +108,13 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 		m_rates[i] = 0.0;
 	}
 
+	SGMatrix<float64_t> feature_matrix = m_features->get_feature_matrix();
+
 	// get sum of features among labels
 	for (i=0; i<m_num_train_labels; i++)
 	{
-	/* FIXME	m_features->get_feature_vector(&m_feat_vec, &m_dim, i); */
 		for (j=0; j<m_dim; j++)
-			m_means[m_dim*m_labels[i]+j]+=m_feat_vec[j];
+			m_means[m_dim*m_labels[i]+j]+=feature_matrix.matrix[i*m_dim+j];
 
 		m_label_prob[m_labels[i]]+=1.0;
 	}
@@ -133,9 +129,9 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	// compute squared residuals with means available
 	for (i=0; i<m_num_train_labels; i++)
 	{
-		/* FIXME m_features->get_feature_vector(&m_feat_vec, &m_dim, i); */
 		for (j=0; j<m_dim; j++)
-			m_variances[m_dim*m_labels[i]+j]+=CMath::pow(m_feat_vec[j]-m_means[m_dim*m_labels[i]+j],2);
+			m_variances[m_dim*m_labels[i]+j]+=
+					CMath::sq(feature_matrix.matrix[i*m_dim+j]-m_means[m_dim*m_labels[i]+j]);
 	}
 
 	// get variance of features of labels
@@ -187,7 +183,7 @@ CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 float64_t CGaussianNaiveBayes::apply(int32_t idx)
 {
 	// get [idx] feature vector
-	/* FIXME m_features->get_feature_vector(&m_feat_vec,&m_dim,idx); */
+	SGVector<float64_t> feature_vector = m_features->get_feature_vector(idx);
 
 	// init loop variables
 	int i,k;
@@ -206,7 +202,7 @@ float64_t CGaussianNaiveBayes::apply(int32_t idx)
 
 		// product all conditional gaussian probabilities
 		for (k=0; k<m_dim; k++)
-			m_rates[i]*= normal_exp(m_feat_vec[k],i,k)/CMath::sqrt(m_variances[i*m_dim+k]);
+			m_rates[i]*= normal_exp(feature_vector.vector[k],i,k)/CMath::sqrt(m_variances[i*m_dim+k]);
 	}
 
 	// find label with maximum rate
