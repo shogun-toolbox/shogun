@@ -414,9 +414,6 @@ namespace shogun
 		// Return the next unused example from the buffer
 
 		example<T> *ex;
-		
-		if (number_of_vectors_parsed <= 0)
-			return NULL;
 
 		if (parsing_done)
 		{
@@ -426,6 +423,9 @@ namespace shogun
 				return NULL;
 			}
 		}
+
+		if (number_of_vectors_parsed <= 0)
+			return NULL;
 
 		if (number_of_vectors_read == number_of_vectors_parsed)
 		{
