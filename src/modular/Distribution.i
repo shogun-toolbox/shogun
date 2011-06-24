@@ -35,25 +35,7 @@
 %include "SGBase.i"
 %include "Features_includes.i"
 %include "Distribution_includes.i"
-<<<<<<< HEAD
-<<<<<<< HEAD
 %include "Preprocessor_includes.i"
-=======
-=======
-%{
-#include <shogun/distributions/Distribution.h>
-#include <shogun/distributions/Histogram.h>
-#include <shogun/distributions/HMM.h>
-#include <shogun/distributions/GHMM.h>
-#include <shogun/distributions/LinearHMM.h>
-#include <shogun/distributions/PositionalPWM.h>
-#include <shogun/distributions/Gaussian.h>
-#include <shogun/clustering/GMM.h>
-%}
->>>>>>> modular update for Gaussian and GMM
->>>>>>> modular update for Gaussian and GMM
-=======
->>>>>>> Added GMM and Gaussian to modular. Switched to using SGVector and SGMatrix
 
 %import "Features.i"
 

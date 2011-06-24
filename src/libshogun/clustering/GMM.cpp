@@ -117,49 +117,25 @@ bool CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 	float64_t* logPxy=new float64_t[num_vectors*m_n];
 	float64_t* logPx=new float64_t[num_vectors];
 	float64_t* logPost=new float64_t[num_vectors*m_n];
-	float64_t* point;
-	int32_t point_len;
 
 	while (iter<max_iter)
 	{
-<<<<<<< HEAD
-		e_log_likelihood_old = e_log_likelihood_new;
-		e_log_likelihood_new = 0;
-
-		/** Precomputing likelihoods */
-		for (int i=0; i<num_vectors; i++)
-		{
-			SGVector<float64_t> v= dotdata->get_feature_vector(i);
-			for (int j=0; j<m_n; j++)
-				pdfs[i*m_n+j] = m_components[j]->compute_PDF(v.vector, v.vlen);
-			v.free_vector();
-		}
-
-		for (int i=0; i<num_vectors; i++)
-		{
-			float64_t sum = 0;
-=======
 		log_likelihood_prev=log_likelihood_cur;
 		log_likelihood_cur=0;
 
 		for (int i=0; i<num_vectors; i++)
 		{
 			logPx[i]=0;
-			dotdata->get_feature_vector(&point, &point_len, i);
-<<<<<<< HEAD
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
-
-=======
->>>>>>> Added GMM and Gaussian to modular. Switched to using SGVector and SGMatrix
+			SGVector<float64_t> v=dotdata->get_feature_vector(i);
 			for (int j=0; j<m_n; j++)
 			{
-				logPxy[i*m_n+j]=m_components[j]->compute_log_PDF(point, point_len)+CMath::log(m_coefficients[j]);
+				logPxy[i*m_n+j]=m_components[j]->compute_log_PDF(v.vector, v.vlen)+CMath::log(m_coefficients[j]);
 				logPx[i]+=CMath::exp(logPxy[i*m_n+j]);
 			}
 
 			logPx[i]=CMath::log(logPx[i]);
 			log_likelihood_cur+=logPx[i];
-			delete[] point;
+			v.free_vector();
 
 			for (int j=0; j<m_n; j++)
 			{
@@ -193,8 +169,6 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 	float64_t alpha_sum_sum=0;
 	float64_t* mean_sum;
 	float64_t* cov_sum;
-	float64_t* point;
-	int32_t point_len;
 
 	for (int i=0; i<alpha_col; i++)
 	{
@@ -205,23 +179,13 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 		for (int j=0; j<alpha_row; j++)
 		{
 			alpha_sum+=alpha[j*alpha_col+i];
-			dotdata->get_feature_vector(&point, &point_len, j);
-			CMath::add<float64_t>(mean_sum, alpha[j*alpha_col+i], point, 1, mean_sum, point_len);
-			delete[] point;
+			SGVector<float64_t> v=dotdata->get_feature_vector(j);
+			CMath::add<float64_t>(mean_sum, alpha[j*alpha_col+i], v.vector, 1, mean_sum, v.vlen);
+			v.free_vector();
 		}
 
-<<<<<<< HEAD
-			for (int j=0; j<num_vectors; j++)
-			{
-				T_sum += T[j*m_n+i];
-				SGVector<float64_t> v=dotdata->get_feature_vector(j);
-				CMath::add<float64_t>(mean_sum, T[j*m_n+i], v.vector, 1, mean_sum, v.vlen);
-				v.free_vector();
-			}
-=======
 		for (int j=0; j<num_dim; j++)
 			mean_sum[j]/=alpha_sum;
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 
 		m_components[i]->set_mean(SGVector<float64_t>(mean_sum, num_dim));
 
@@ -245,40 +209,32 @@ void CGMM::max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col
 
 		for (int j=0; j<alpha_row; j++)
 		{
-			dotdata->get_feature_vector(&point, &point_len, j);
-			CMath::add<float64_t>(point, 1, point, -1, mean_sum, point_len);
+			SGVector<float64_t> v=dotdata->get_feature_vector(j);
+			CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean_sum, v.vlen);
 
 			switch (cov_type)
 			{
-<<<<<<< HEAD
-				SGVector<float64_t> v=dotdata->get_feature_vector(j);	
-				CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean_sum, v.vlen);
-				cblas_dger(CblasRowMajor, num_dim, num_dim, T[j*m_n+i], v.vector, 1, v.vector,
-                    1, (double*) cov_sum, num_dim);
-				v.free_vector();
-=======
 				case FULL:
-					cblas_dger(CblasRowMajor, num_dim, num_dim, alpha[j*alpha_col+i], point, 1, point,
+					cblas_dger(CblasRowMajor, num_dim, num_dim, alpha[j*alpha_col+i], v.vector, 1, v.vector,
 								 1, (double*) cov_sum, num_dim);
 
 					break;
 				case DIAG:
 					for (int k=0; k<num_dim; k++)
-						cov_sum[k]+=point[k]*point[k]*alpha[j*alpha_col+i];
+						cov_sum[k]+=v.vector[k]*v.vector[k]*alpha[j*alpha_col+i];
 
 					break;
 				case SPHERICAL:
 					float64_t temp=0;
 
 					for (int k=0; k<num_dim; k++)
-						temp+=point[k]*point[k];
+						temp+=v.vector[k]*v.vector[k];
 
 					cov_sum[0]+=temp*alpha[j*alpha_col+i];
 					break;
->>>>>>> Rewrote the GMM file to use covariance types and decomposition, optimized start
 			}
 			
-			delete[] point;
+			v.free_vector();
 		}
 
 		switch (cov_type)
