@@ -222,7 +222,7 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& len)		\
 									\
 	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
 									\
-	if (bytes_read<=0)						\
+	if (bytes_read<=1)						\
 	{								\
 		vector=NULL;						\
 		len=-1;							\
@@ -230,7 +230,8 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& len)		\
 	}								\
 									\
 	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
-									\
+	/* Remove terminating \n */					\
+	buffer[bytes_read-1]='\0';					\
 	vector=(sg_type *) buffer;					\
 	len=bytes_read-1;						\
 }									
@@ -259,14 +260,14 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& len, float64_t& label) \
 									\
 	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
 									\
-	if (bytes_read<=0)						\
+	if (bytes_read<=1)						\
 	{								\
 		vector=NULL;						\
 		len=-1;							\
 		return;							\
 	}								\
 									\
-	int32_t str_start_pos;						\
+	int32_t str_start_pos=-1;					\
 									\
 	for (int32_t i=0; i<bytes_read; i++)				\
 	{								\
@@ -279,7 +280,15 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& len, float64_t& label) \
 			break;						\
 		}							\
 	}								\
-									\
+	/* If no label found, set vector=NULL and length=-1 */		\
+	if (str_start_pos == -1)					\
+	{								\
+		vector=NULL;						\
+		len=-1;							\
+		return;							\
+	}								\
+	/* Remove terminating \n */					\
+	buffer[bytes_read-1]='\0';					\
 	vector=(sg_type*) &buffer[str_start_pos];			\
 	len=bytes_read-str_start_pos-1;					\
 }
