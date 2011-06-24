@@ -36,6 +36,9 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %include "Features_includes.i"
+%include "Preprocessor_includes.i"
+
+%import "Preprocessor.i"
 
 /* These functions return new Objects */
 %newobject get_transposed();
