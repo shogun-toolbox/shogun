@@ -115,12 +115,6 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 	copy(feats);
 }
 
-CRandomFourierGaussPreproc & CRandomFourierGaussPreproc::operator=(
-		const CRandomFourierGaussPreproc & feats) {
-	copy(feats);
-	return (*this);
-}
-
 CRandomFourierGaussPreproc::~CRandomFourierGaussPreproc() {
 
 	delete[] randomcoeff_multiplicative;

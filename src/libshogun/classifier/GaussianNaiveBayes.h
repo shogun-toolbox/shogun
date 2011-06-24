@@ -134,8 +134,6 @@ protected:
 	/// a priori probabilities of labels
 	float64_t* m_label_prob;
 
-private:
-
 	/** computes gaussian exponent by x, indexes, m_means and m_variances
 	 * @param x feature value
 	 * @param l_idx index of label
@@ -149,9 +147,6 @@ private:
 
 	/// label rates
 	float64_t* m_rates;
-
-	/// current feature vector
-	float64_t* m_feat_vec;
 };
 
 }
