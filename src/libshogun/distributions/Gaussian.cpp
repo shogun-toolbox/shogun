@@ -110,11 +110,9 @@ float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 {
 	ASSERT(features->has_property(FP_DOT));
-	float64_t* point;
-	int32_t point_len;
-	((CDotFeatures *)features)->get_feature_vector(&point, &point_len, num_example);
-	float64_t answer = compute_log_PDF(point, point_len);
-	delete[] point;
+	SGVector<float64_t> v=((CDotFeatures *)features)->get_feature_vector(num_example);
+	float64_t answer = compute_log_PDF(v.vector, v.vlen);
+	v.free_vector();
 	return answer;
 }
 

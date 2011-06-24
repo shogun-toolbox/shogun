@@ -105,15 +105,12 @@ bool CGMM::train(CFeatures* data)
 		e_log_likelihood_new = 0;
 
 		/** Precomputing likelihoods */
-		float64_t* point;
-		int32_t point_len;
-
 		for (int i=0; i<num_vectors; i++)
 		{
-			dotdata->get_feature_vector(&point, &point_len, i);
+			SGVector<float64_t> v= dotdata->get_feature_vector(i);
 			for (int j=0; j<m_n; j++)
-				pdfs[i*m_n+j] = m_components[j]->compute_PDF(point, point_len);
-			delete[] point;
+				pdfs[i*m_n+j] = m_components[j]->compute_PDF(v.vector, v.vlen);
+			v.free_vector();
 		}
 
 		for (int i=0; i<num_vectors; i++)
@@ -147,9 +144,9 @@ bool CGMM::train(CFeatures* data)
 			for (int j=0; j<num_vectors; j++)
 			{
 				T_sum += T[j*m_n+i];
-				dotdata->get_feature_vector(&point, &point_len, j);
-				CMath::add<float64_t>(mean_sum, T[j*m_n+i], point, 1, mean_sum, point_len);
-				delete[] point;
+				SGVector<float64_t> v=dotdata->get_feature_vector(j);
+				CMath::add<float64_t>(mean_sum, T[j*m_n+i], v.vector, 1, mean_sum, v.vlen);
+				v.free_vector();
 			}
 
 			m_coefficients[i] = T_sum/num_vectors;
@@ -164,11 +161,11 @@ bool CGMM::train(CFeatures* data)
 
 			for (int j=0; j<num_vectors; j++)
 			{
-				dotdata->get_feature_vector(&point, &point_len, j);	
-				CMath::add<float64_t>(point, 1, point, -1, mean_sum, point_len);
-				cblas_dger(CblasRowMajor, num_dim, num_dim, T[j*m_n+i], point, 1, point,
+				SGVector<float64_t> v=dotdata->get_feature_vector(j);	
+				CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean_sum, v.vlen);
+				cblas_dger(CblasRowMajor, num_dim, num_dim, T[j*m_n+i], v.vector, 1, v.vector,
                     1, (double*) cov_sum, num_dim);
-				delete[] point;
+				v.free_vector();
 			}
 
 			for (int j=0; j<num_dim*num_dim; j++)

@@ -282,8 +282,10 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 	return NULL;
 }
 
-void CDotFeatures::get_feature_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_vec)
+SGMatrix<float64_t> CDotFeatures::get_feature_matrix()
 {
+	SGMatrix<float64_t> m;
+	
     int64_t offs=0;
 	int32_t num=get_num_vectors();
     int32_t dim=get_dim_feature_space();
@@ -292,29 +294,36 @@ void CDotFeatures::get_feature_matrix(float64_t** dst, int32_t* num_feat, int32_
 
     int64_t sz=((uint64_t) num)* dim;
 
-    *num_feat=dim;
-    *num_vec=num;
-    *dst=new float64_t[sz];
-    memset(*dst, 0, sz*sizeof(float64_t));
+	m.do_free=true;
+    m.num_cols=dim;
+    m.num_rows=num;
+    m.matrix=new float64_t[sz];
+    memset(m.matrix, 0, sz*sizeof(float64_t));
 
     for (int32_t i=0; i<num; i++)
     {
-		add_to_dense_vec(1.0, i, &((*dst)[offs]), dim);
+		add_to_dense_vec(1.0, i, &(m.matrix[offs]), dim);
         offs+=dim;
     }
+
+	return m;
 }
 
-void CDotFeatures::get_feature_vector(float64_t** dst, int32_t* len, int32_t num)
+SGVector<float64_t> CDotFeatures::get_feature_vector(int32_t num)
 {
+	SGVector<float64_t> v;
+
     int32_t dim=get_dim_feature_space();
     ASSERT(num>=0 && num<=num);
     ASSERT(dim>0);
 
-    *len=dim;
-    *dst=new float64_t[dim];
-    memset(*dst, 0, dim*sizeof(float64_t));
+	v.do_free=true;
+    v.vlen=dim;
+    v.vector=new float64_t[dim];
+    memset(v.vector, 0, dim*sizeof(float64_t));
 
-    add_to_dense_vec(1.0, num, *dst, dim);
+    add_to_dense_vec(1.0, num, v.vector, dim);
+	return v;
 }
 
 void CDotFeatures::benchmark_add_to_dense_vector(int32_t repeats)
@@ -417,20 +426,18 @@ void CDotFeatures::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols
 	int32_t mean_length;
 	get_mean(&mean, &mean_length);
 
-	float64_t* feature_vector;
-	int32_t length;
 	for (int i = 0; i < num; i++)
 	{
-		get_feature_vector(&feature_vector, &length, i);
-		CMath::add<float64_t>(feature_vector, 1, feature_vector, -1, mean, length);
-		for (int m = 0; m < length; m++)
+		SGVector<float64_t> v = get_feature_vector(i);
+		CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean, v.vlen);
+		for (int m = 0; m < v.vlen; m++)
 		{
 			for (int n = 0; n <= m ; n++)
 			{
-				(*cov)[m*length+n] += feature_vector[m]*feature_vector[n];
+				(*cov)[m*v.vlen+n] += v.vector[m]*v.vector[n];
 			}
 		}
-		delete[] feature_vector;
+		v.free_vector();
 	}
 	for (int m = 0; m < dim; m++)
 	{

@@ -116,7 +116,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	// get sum of features among labels
 	for (i=0; i<m_num_train_labels; i++)
 	{
-		m_features->get_feature_vector(&m_feat_vec, &m_dim, i);
+	/* FIXME	m_features->get_feature_vector(&m_feat_vec, &m_dim, i); */
 		for (j=0; j<m_dim; j++)
 			m_means[m_dim*m_labels[i]+j]+=m_feat_vec[j];
 
@@ -133,7 +133,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	// compute squared residuals with means available
 	for (i=0; i<m_num_train_labels; i++)
 	{
-		m_features->get_feature_vector(&m_feat_vec, &m_dim, i);
+		/* FIXME m_features->get_feature_vector(&m_feat_vec, &m_dim, i); */
 		for (j=0; j<m_dim; j++)
 			m_variances[m_dim*m_labels[i]+j]+=CMath::pow(m_feat_vec[j]-m_means[m_dim*m_labels[i]+j],2);
 	}
@@ -187,7 +187,7 @@ CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 float64_t CGaussianNaiveBayes::apply(int32_t idx)
 {
 	// get [idx] feature vector
-	m_features->get_feature_vector(&m_feat_vec,&m_dim,idx);
+	/* FIXME m_features->get_feature_vector(&m_feat_vec,&m_dim,idx); */
 
 	// init loop variables
 	int i,k;

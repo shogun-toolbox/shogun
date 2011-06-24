@@ -1724,13 +1724,9 @@ bool CSGInterface::cmd_get_features()
 		case C_POLY:
 		{
 
-			float64_t* fmatrix=NULL;
-			int32_t num_feat=0;
-			int32_t num_vec=0;
-
-			((CDotFeatures*) feat)->get_feature_matrix(&fmatrix, &num_feat, &num_vec);
-			set_real_matrix(fmatrix, num_feat, num_vec);
-			delete[] fmatrix;
+			SGMatrix<float64_t> fmatrix = ((CDotFeatures*) feat)->get_feature_matrix();
+			set_real_matrix(fmatrix.matrix, fmatrix.num_cols, fmatrix.num_rows);
+			fmatrix.free_matrix();
 			break;
 		}
 
