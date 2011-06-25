@@ -213,6 +213,101 @@ GET_VECTOR_AND_LABEL(get_ulong_vector_and_label, atoi, uint64_t)
 GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 #undef GET_VECTOR_AND_LABEL
 
+#define GET_STRING(fname, conv, sg_type)				\
+void CStreamingFile::fname(sg_type*& vector, int32_t& len)		\
+{									\
+	size_t buffer_size=1024;					\
+	char* buffer=new char[buffer_size];				\
+	ssize_t bytes_read;						\
+									\
+	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+									\
+	if (bytes_read<=1)						\
+	{								\
+		vector=NULL;						\
+		len=-1;							\
+		return;							\
+	}								\
+									\
+	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
+	/* Remove terminating \n */					\
+	buffer[bytes_read-1]='\0';					\
+	vector=(sg_type *) buffer;					\
+	len=bytes_read-1;						\
+}									
+
+GET_STRING(get_bool_string, str_to_bool, bool)
+GET_STRING(get_byte_string, atoi, uint8_t)
+GET_STRING(get_char_string, atoi, char)
+GET_STRING(get_int_string, atoi, int32_t)
+GET_STRING(get_shortreal_string, atof, float32_t)
+GET_STRING(get_real_string, atof, float64_t)
+GET_STRING(get_short_string, atoi, int16_t)
+GET_STRING(get_word_string, atoi, uint16_t)
+GET_STRING(get_int8_string, atoi, int8_t)
+GET_STRING(get_uint_string, atoi, uint32_t)
+GET_STRING(get_long_string, atoi, int64_t)
+GET_STRING(get_ulong_string, atoi, uint64_t)
+GET_STRING(get_longreal_string, atoi, floatmax_t)
+#undef GET_STRING
+
+#define GET_STRING_AND_LABEL(fname, conv, sg_type)			\
+void CStreamingFile::fname(sg_type*& vector, int32_t& len, float64_t& label) \
+{									\
+	size_t buffer_size=1024;					\
+	char* buffer=new char[buffer_size];				\
+	ssize_t bytes_read;						\
+									\
+	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+									\
+	if (bytes_read<=1)						\
+	{								\
+		vector=NULL;						\
+		len=-1;							\
+		return;							\
+	}								\
+									\
+	int32_t str_start_pos=-1;					\
+									\
+	for (int32_t i=0; i<bytes_read; i++)				\
+	{								\
+		if (buffer[i] == ' ')					\
+		{							\
+			buffer[i]='\0';					\
+			label=atoi(buffer);				\
+			buffer[i]=' ';					\
+			str_start_pos=i+1;				\
+			break;						\
+		}							\
+	}								\
+	/* If no label found, set vector=NULL and length=-1 */		\
+	if (str_start_pos == -1)					\
+	{								\
+		vector=NULL;						\
+		len=-1;							\
+		return;							\
+	}								\
+	/* Remove terminating \n */					\
+	buffer[bytes_read-1]='\0';					\
+	vector=(sg_type*) &buffer[str_start_pos];			\
+	len=bytes_read-str_start_pos-1;					\
+}
+
+GET_STRING_AND_LABEL(get_bool_string_and_label, str_to_bool, bool)
+GET_STRING_AND_LABEL(get_byte_string_and_label, atoi, uint8_t)
+GET_STRING_AND_LABEL(get_char_string_and_label, atoi, char)
+GET_STRING_AND_LABEL(get_int_string_and_label, atoi, int32_t)
+GET_STRING_AND_LABEL(get_shortreal_string_and_label, atof, float32_t)
+GET_STRING_AND_LABEL(get_real_string_and_label, atof, float64_t)
+GET_STRING_AND_LABEL(get_short_string_and_label, atoi, int16_t)
+GET_STRING_AND_LABEL(get_word_string_and_label, atoi, uint16_t)
+GET_STRING_AND_LABEL(get_int8_string_and_label, atoi, int8_t)
+GET_STRING_AND_LABEL(get_uint_string_and_label, atoi, uint32_t)
+GET_STRING_AND_LABEL(get_long_string_and_label, atoi, int64_t)
+GET_STRING_AND_LABEL(get_ulong_string_and_label, atoi, uint64_t)
+GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
+#undef GET_STRING_AND_LABEL
+
 #define GET_MATRIX(fname, conv, sg_type)								\
 void CStreamingFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																		\

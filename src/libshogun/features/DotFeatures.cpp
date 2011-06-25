@@ -282,7 +282,7 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 	return NULL;
 }
 
-SGMatrix<float64_t> CDotFeatures::get_feature_matrix()
+SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 {
 	SGMatrix<float64_t> m;
 	
@@ -309,7 +309,7 @@ SGMatrix<float64_t> CDotFeatures::get_feature_matrix()
 	return m;
 }
 
-SGVector<float64_t> CDotFeatures::get_feature_vector(int32_t num)
+SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 {
 	SGVector<float64_t> v;
 
@@ -428,7 +428,7 @@ void CDotFeatures::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols
 
 	for (int i = 0; i < num; i++)
 	{
-		SGVector<float64_t> v = get_feature_vector(i);
+		SGVector<float64_t> v = get_computed_dot_feature_vector(i);
 		CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean, v.vlen);
 		for (int m = 0; m < v.vlen; m++)
 		{

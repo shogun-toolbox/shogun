@@ -24,32 +24,36 @@
 namespace shogun
 {
 class CDotFeatures;
+
+enum ECovType
+{
+	FULL,
+	DIAG,
+	SPHERICAL
+};
+
 /** @brief Gaussian distribution interface.
  *
  * Takes as input a mean vector and covariance matrix.
  * Also possible to train from data.
  * Likelihood is computed using the Gaussian PDF \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
+ * The actuall computations depend on the type of covariance used.
  */
 class CGaussian : public CDistribution
 {
 	public:
-
 		/** default constructor */
 		CGaussian();
-
 		/** constructor
 		 *
 		 * @param mean mean of the Gaussian
-		 * @param mean_length
 		 * @param cov covariance of the Gaussian
-		 * @param cov_rows
-		 * @param cov_cols
+		 * @param cov_type covariance type
 		 */
-		CGaussian(SGVector<float64_t> mean_vector, SGMatrix<float64_t> cov_matrix);
-
+		CGaussian(SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type=FULL);
 		virtual ~CGaussian();
 
-		/** Compute the inverse covariance and constant part */
+		/** Compute the constant part */
 		void init();
 
 		/** learn distribution
@@ -112,41 +116,120 @@ class CGaussian : public CDistribution
 
 		/** get mean
 		 *
+		 * @return mean
 		 */
-		virtual SGVector<float64_t> get_mean()
+		virtual inline SGVector<float64_t> get_mean()
 		{
-			return SGVector<float64_t>(m_mean,m_mean_length);
+			return SGVector<float64_t>(m_mean, m_mean_length);
 		}
 
 		/** set mean
 		 *
 		 * @param mean new mean
-		 * @param mean_length has to match current mean length
 		 */
-		virtual void set_mean(SGVector<float64_t> mean_vector)
+		virtual inline void set_mean(SGVector<float64_t> mean)
 		{
-			ASSERT(mean_vector.vlen == m_mean_length);
-			memcpy(m_mean, mean_vector.vector, sizeof(float64_t)*m_mean_length);
+			if (m_mean_length>0)
+			{
+				ASSERT(mean.vlen==m_mean_length);
+			}
+			else
+			{
+				m_mean_length=mean.vlen;
+
+				if (mean.vlen==1)
+					m_cov_type=SPHERICAL;
+			}
+			m_mean=mean.vector;
 		}
 
 		/** get cov
 		 *
+		 * @param cov cov, memory needs to be freed by user
 		 */
-		virtual SGMatrix<float64_t> get_cov()
-		{
-			return SGMatrix<float64_t>(m_cov,m_cov_rows,m_cov_cols);
-		}
+		virtual SGMatrix<float64_t> get_cov();
 
 		/** set cov
 		 *
+		 * Doesn't store the cov, but decomposes, thus the cov can be freed after exit without harming the object
+		 *
+		 * @param cov new cov
 		 */
-		virtual inline void set_cov(SGMatrix<float64_t> cov_matrix)
+		virtual inline void set_cov(SGMatrix<float64_t> cov)
 		{
-			ASSERT(cov_matrix.num_rows = cov_matrix.num_cols);
-			ASSERT(cov_matrix.num_rows = m_cov_rows);
-			memcpy(m_cov, cov_matrix.matrix, sizeof(float64_t)*m_cov_rows*m_cov_cols);
+			ASSERT(cov.num_rows==cov.num_cols);
+			ASSERT(cov.num_rows==m_mean_length);
+			decompose_cov(cov.matrix, cov.num_rows);
 			init();
+			if (cov.do_free)
+				cov.free_matrix();
 		}
+
+		/** get cov type
+		 *
+		 * @return covariance type
+		 */
+		inline ECovType get_cov_type()
+		{
+			return m_cov_type;
+		}
+
+		/** set cov type
+		 *
+		 * Will only take effect after covariance is changed
+		 *
+		 * @param cov_type new covariance type
+		 */
+		inline void set_cov_type(ECovType cov_type)
+		{
+			m_cov_type = cov_type;
+		}
+
+		/** set diagonal
+		 *
+		 * @param d diagonal
+		 * @param d_length diagonal length
+		 */
+		inline void set_d(float64_t* d, int32_t d_length)
+		{
+			if (m_d_length>0)
+			{
+				ASSERT(d_length==m_d_length);
+			}
+			else
+			{
+				m_d_length=d_length;
+				m_d=new float64_t[d_length];
+			}
+			memcpy(m_d, d, sizeof(float64_t)*m_d_length);			
+		}
+
+		/** set unitary matrix
+		 *
+		 * @param d diagonal
+		 * @param d_length diagonal length
+		 */
+		inline void set_u(float64_t* u, int32_t u_rows, int32_t u_cols)
+		{
+			if (m_u_rows>0)
+			{
+				ASSERT(u_rows==u_cols);
+				ASSERT(u_rows==m_u_rows);
+			}
+			else
+			{
+				m_u_rows=u_rows;
+				m_u_cols=u_cols;
+				m_u=new float64_t[m_u_rows*m_u_cols];
+			}
+			memcpy(m_u, u, sizeof(float64_t)*m_u_rows*m_u_cols);			
+		}
+
+		/** sample from distribution
+		 *
+		 * @return sample
+		 */
+		SGVector<float64_t> sample();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Gaussian"; }
@@ -155,25 +238,28 @@ class CGaussian : public CDistribution
 		/** Initialize parameters for serialization */
 		void register_params();
 
+		/** decompose covariance matrix according to type */
+		void decompose_cov(float64_t* cov, int32_t cov_size);
+
 	protected:
 		/** constant part */
 		float64_t m_constant;
-		/** covariance */
-		float64_t* m_cov;
-		/** covariance row num */
-		int32_t m_cov_rows;
-		/** covariance col num */
-		int32_t m_cov_cols;
-		/** covariance inverse */
-		float64_t* m_cov_inverse;
-		/** covariance inverse row num */
-		int32_t m_cov_inverse_rows;
-		/** covariance inverse col num */
-		int32_t m_cov_inverse_cols;
+		/** diagonal */
+		float64_t* m_d;
+		/** diagonal length */
+		int32_t m_d_length;
+		/** unitary matrix */
+		float64_t* m_u;
+		/** unitary matrix row num */
+		int32_t  m_u_rows;
+		/** unitary matrix col num */
+		int32_t m_u_cols;
 		/** mean */
 		float64_t* m_mean;
 		/** mean length */
 		int32_t m_mean_length;
+		/** covariance type */
+		ECovType m_cov_type;
 };
 }
 #endif //HAVE_LAPACK

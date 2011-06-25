@@ -108,7 +108,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 		m_rates[i] = 0.0;
 	}
 
-	SGMatrix<float64_t> feature_matrix = m_features->get_feature_matrix();
+	SGMatrix<float64_t> feature_matrix = m_features->get_computed_dot_feature_matrix();
 
 	// get sum of features among labels
 	for (i=0; i<m_num_train_labels; i++)
@@ -183,7 +183,7 @@ CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 float64_t CGaussianNaiveBayes::apply(int32_t idx)
 {
 	// get [idx] feature vector
-	SGVector<float64_t> feature_vector = m_features->get_feature_vector(idx);
+	SGVector<float64_t> feature_vector = m_features->get_computed_dot_feature_vector(idx);
 
 	// init loop variables
 	int i,k;

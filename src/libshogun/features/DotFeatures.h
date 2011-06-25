@@ -152,19 +152,17 @@ class CDotFeatures : public CFeatures
 		 */
 		inline void set_combined_feature_weight(float64_t nw) { combined_weight=nw; }
 
-		/** get a copy of the feature matrix (in feature space)
-		 * num_feat,num_vectors are returned by reference
+		/** compute the feature matrix in feature space
 		 *
 		 * @return computed feature matrix
 		 */
-		SGMatrix<float64_t> get_feature_matrix();
+		SGMatrix<float64_t> get_computed_dot_feature_matrix();
 
-		/** get a copy of the feature matrix (in feature space)
-		 * num_feat,num_vectors are returned by reference
+		/** compute the feature vector in feature space
 		 *
 		 * @return computed feature vector
 		 */
-		SGVector<float64_t> get_feature_vector(int32_t num);
+		SGVector<float64_t> get_computed_dot_feature_vector(int32_t num);
 
 		/** run benchmark for add_to_dense_vec */
 		void benchmark_add_to_dense_vector(int32_t repeats=5);

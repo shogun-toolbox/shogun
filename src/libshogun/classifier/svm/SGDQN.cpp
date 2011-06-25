@@ -140,7 +140,7 @@ bool CSGDQN::train(CFeatures* data)
 		bool updateB=false;
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			SGVector<float64_t> v = features->get_feature_vector(i);
+			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
 			ASSERT(w_dim==v.vlen);
 			float64_t eta = 1.0/t;
 			float64_t y = labels->get_label(i);
