@@ -96,6 +96,15 @@ class CMultiClassSVM : public CSVM
 		 */
 		virtual CLabels* apply();
 
+		/** classify all examples
+		 *
+		 * @return resulting labels
+		 */
+		virtual CLabels* apply(CFeatures* data)
+		{
+			return CKernelMachine::apply(data);
+		}
+
 		/** classify one example
 		 *
 		 * @param num number of example to classify

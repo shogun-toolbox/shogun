@@ -79,7 +79,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			init();
 
 			if (!copy)
-				set_sparse_feature_matrix(src, num_feat, num_vec);
+				set_sparse_feature_matrix(SGSparseMatrix<ST>(src, num_feat, num_vec));
 			else
 			{
 				sparse_feature_matrix = new SGSparseVector<ST>[num_vec];
@@ -636,24 +636,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			return sfm;
 		}
 
-		/** set feature matrix
-		 * necessary to set feature_matrix, num_features, num_vectors, where
-		 * num_features is the column offset, and columns are linear in memory
-		 * see below for definition of feature_matrix
-		 *
-		 * @param src new sparse feature matrix
-		 * @param num_feat number of features in matrix
-		 * @param num_vec number of vectors in matrix
-		 */
-		virtual void set_sparse_feature_matrix(SGSparseVector<ST>* src, int32_t num_feat, int32_t num_vec)
-		{
-			free_sparse_feature_matrix();
-
-			sparse_feature_matrix=src;
-			num_features=num_feat;
-			num_vectors=num_vec;
-		}
-
 		/** set sparse feature matrix
 		 *
 		 * @param sm sparse feature matrix
@@ -661,7 +643,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
         void set_sparse_feature_matrix(SGSparseMatrix<ST> sm)
         {
-            set_sparse_feature_matrix(sm.sparse_matrix, sm.num_features, sm.num_vectors);
+			free_sparse_feature_matrix();
+
+			sparse_feature_matrix=sm.sparse_matrix;
+			num_features=sm.num_features;
+			num_vectors=sm.num_vectors;
         }
 
 		/** gets a copy of a full feature matrix
@@ -1507,7 +1493,7 @@ template<> inline void CSparseFeatures<sg_type>::load(CFile* loader)	\
 	int32_t num_feat=0;													\
 	int32_t num_vec=0;													\
 	loader->fname(matrix, num_feat, num_vec);							\
-	set_sparse_feature_matrix(matrix, num_feat, num_vec);				\
+	set_sparse_feature_matrix(SGSparseMatrix<sg_type>(matrix, num_feat, num_vec));				\
 	SG_RESET_LOCALE;													\
 }
 LOAD(get_bool_sparsematrix, bool)

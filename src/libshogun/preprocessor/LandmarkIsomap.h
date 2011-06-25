@@ -8,11 +8,10 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef ISOMAP_H_
-#define ISOMAP_H_
+#ifndef LANDMARKISOMAP_H_
+#define LANDMARKISOMAP_H_
 #ifdef HAVE_LAPACK
-
-#include "preprocessor/ClassicMDS.h"
+#include "preprocessor/LandmarkMDS.h"
 #include "preprocessor/SimplePreprocessor.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
@@ -25,17 +24,17 @@ class CFeatures;
 
 class CDistance;
 
-/** @brief the class Isomap
+/** @brief the class LandmarkIsomap
  */
-class CIsomap: public CClassicMDS
+class CLandmarkIsomap: public CLandmarkMDS
 {
 public:
 
 	/* constructor */
-	CIsomap();
+	CLandmarkIsomap();
 
 	/* destructor */
-	virtual ~CIsomap();
+	virtual ~CLandmarkIsomap();
 
 	/** init
 	 * @param data feature vectors for preproc
@@ -63,18 +62,16 @@ public:
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** get name */
-	virtual inline const char* get_name() const { return "Isomap"; };
+	virtual inline const char* get_name() const { return "LandmarkIsomap"; };
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_ISOMAP; };
+	virtual inline EPreprocessorType get_type() const { return P_LANDMARKISOMAP; };
 
 protected:
 
 	CCustomDistance* approx_geodesic_distance(CDistance* distance);
 
 };
-
 }
-
 #endif /* HAVE_LAPACK */
-#endif /* ISOMAP_H_ */
+#endif /* LANDMARKISOMAP_H_ */

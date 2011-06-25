@@ -106,10 +106,9 @@ class CDistribution : public CSGObject
 
 		/** compute log likelihood for each example
 		 *
-		 * @param dst where likelihood will be stored
-		 * @param num where number of likelihoods will be stored
+		 * @return log likelihood vector
 		 */
-		virtual void get_log_likelihood(float64_t** dst, int32_t *num);
+		virtual SGVector<float64_t> get_log_likelihood();
 
 		/** get model parameter
 		 *

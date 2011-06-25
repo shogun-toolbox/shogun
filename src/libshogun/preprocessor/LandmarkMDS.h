@@ -8,12 +8,11 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef ISOMAP_H_
-#define ISOMAP_H_
+#ifndef LANDMARKMDS_H_
+#define LANDMARKMDS_H_
 #ifdef HAVE_LAPACK
-
-#include "preprocessor/ClassicMDS.h"
 #include "preprocessor/SimplePreprocessor.h"
+#include "preprocessor/ClassicMDS.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
 #include "distance/CustomDistance.h"
@@ -25,27 +24,32 @@ class CFeatures;
 
 class CDistance;
 
-/** @brief the class Isomap
+/** @brief class LandmarkMDS used to perform
+ *  fast multidimensional scaling using landmark multidimensional
+ *  scaling algorithm described in
+ *
+ *
  */
-class CIsomap: public CClassicMDS
+class CLandmarkMDS: public CClassicMDS
 {
 public:
 
 	/* constructor */
-	CIsomap();
+	CLandmarkMDS();
 
 	/* destructor */
-	virtual ~CIsomap();
+	virtual ~CLandmarkMDS();
 
 	/** init
 	 * @param data feature vectors for preproc
 	 */
-	virtual bool init(CFeatures* features);
+	virtual bool init(CFeatures* data);
 
 	/** cleanup
 	 *
 	 */
 	virtual void cleanup();
+
 
 	/** apply preproc to distance
 	 *
@@ -62,19 +66,43 @@ public:
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
+
 	/** get name */
-	virtual inline const char* get_name() const { return "Isomap"; };
+	virtual inline const char* get_name() const { return "LANDMARKMDS"; };
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_ISOMAP; };
+	virtual inline EPreprocessorType get_type() const { return P_LANDMARKMDS; };
+
+	/** set number of landmarks */
+	void set_landmark_number(int32_t num)
+	{
+		m_landmark_number = num;
+	};
+
+	/** get number of landmarks */
+	int32_t get_landmark_number()
+	{
+		return m_landmark_number;
+	};
 
 protected:
 
-	CCustomDistance* approx_geodesic_distance(CDistance* distance);
+	/** number of landmarks */
+	int32_t m_landmark_number;	
+
+	/**
+	 * @return sampled indexes for landmarks
+	 */
+	SGVector<int32_t> get_landmark_idxs(int32_t count, int32_t total_count);
+
+	/** apply preproc to distance
+	 *
+	 */
+	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
 
 };
 
 }
 
 #endif /* HAVE_LAPACK */
-#endif /* ISOMAP_H_ */
+#endif /* LANDMARK_H_ */

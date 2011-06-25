@@ -35,7 +35,15 @@ class CGMM : public CDistribution
 		 * @param max_iter maximum iterations
 		 * @param min_change minimal expected log likelihood change
 		 */
-		CGMM(int32_t n, int32_t max_iter, float64_t min_change);
+		CGMM(int32_t n, ECovType cov_type=FULL);
+		/** constructor
+		 *
+		 * @param components GMM components
+		 * @param components_length number of components
+		 * @param coefficients coefficients
+		 * @param coefficient_length number of coefficients
+		 */
+		CGMM(CGaussian** components, int32_t components_length, float64_t* coefficients, int32_t coefficient_length);
 		virtual ~CGMM();
 
 		/** cleanup */
@@ -48,6 +56,25 @@ class CGMM : public CDistribution
 		 * @return whether training was successful
 		 */
 		virtual bool train(CFeatures* data=NULL);
+
+		/** learn distribution using EM
+		 *
+		 * @param min_cov minimum covariance
+		 * @param max_iter maximum iterations
+		 * @param min_change minimum change in likelihood
+		 *
+		 * @return whether training was successful
+		 */
+		bool train_em(float64_t min_cov=1e-9, int32_t max_iter=1000, float64_t min_change=1e-9);
+
+		/** maximum likelihood estimation
+		 *
+		 * @param alpha point assignment
+		 * @param alpha_row number of rows
+		 * @param alpha_col number of cols
+		 * @param min_cov minimum covariance
+		 */
+		void max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col, float64_t min_cov);
 
 		/** get number of parameters in model
 		 *
@@ -94,9 +121,11 @@ class CGMM : public CDistribution
 
 		/** get nth mean
 		 *
+		 * @param mean copy of the mean
+		 * @param mean_length
 		 * @param num which mean to retrieve
 		 */
-		virtual SGVector<float64_t> get_nth_mean(int32_t num)
+		virtual inline SGVector<float64_t> get_nth_mean(int32_t num)
 		{
 			ASSERT(num<m_n);
 			return m_components[num]->get_mean();
@@ -104,9 +133,12 @@ class CGMM : public CDistribution
 
 		/** get nth cov
 		 *
+		 * @param cov copy of the cov
+		 * @param cov_rows
+		 * @param cov_cols
 		 * @param num which covariance to retrieve
 		 */
-		virtual SGMatrix<float64_t> get_nth_cov(int32_t num)
+		virtual inline SGMatrix<float64_t> get_nth_cov(int32_t num)
 		{
 			ASSERT(num<m_n);
 			return m_components[num]->get_cov();
@@ -114,16 +146,26 @@ class CGMM : public CDistribution
 
 		/** get coefficients
 		 *
+		 * @return coeffiecients
 		 */
-		virtual SGVector<float64_t> get_coef()
+		virtual inline SGVector<float64_t> get_coef()
 		{
-			return SGVector<float64_t>(m_coefficients,m_coef_size);
+			return SGVector<float64_t>(m_coefficients, m_coef_size);
 		}
+
+		/** sample from model
+		 *
+		 * @return sample
+		 */
+		SGVector<float64_t> sample();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GMM"; }
 
 	private:
+		/** 1NN assignment initialization */
+		float64_t* alpha_init(float64_t* init_means, int32_t init_mean_dim, int32_t init_mean_size);
+
 		/** Initialize parameters for serialization */
 		void register_params();
 
@@ -136,10 +178,6 @@ class CGMM : public CDistribution
 		float64_t* m_coefficients;
 		/** Coefficient vector size */
 		int32_t m_coef_size;
-		/** Maximum number of iterations */
-		int32_t m_max_iter;
-		/** Minimum expected log-likelihood change */
-		float64_t m_minimal_change;
 };
 }
 #endif //HAVE_LAPACK

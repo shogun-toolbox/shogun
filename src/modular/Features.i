@@ -36,6 +36,9 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %include "Features_includes.i"
+%include "Preprocessor_includes.i"
+
+%import "Preprocessor.i"
 
 /* These functions return new Objects */
 %newobject get_transposed();
@@ -135,9 +138,9 @@ namespace shogun
     %template(UIntFeatures)  CSimpleFeatures<uint32_t>;
     %template(LongIntFeatures)  CSimpleFeatures<int64_t>;
     %template(ULongIntFeatures)  CSimpleFeatures<uint64_t>;
+    %template(LongRealFeatures) CSimpleFeatures<floatmax_t>;
     %template(ShortRealFeatures) CSimpleFeatures<float32_t>;
     %template(RealFeatures) CSimpleFeatures<float64_t>;
-    %template(LongRealFeatures) CSimpleFeatures<floatmax_t>;
 }
 
 %include <shogun/features/DummyFeatures.h>

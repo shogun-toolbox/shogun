@@ -55,9 +55,6 @@ public:
 	/** alternative constructor */
 	CRandomFourierGaussPreproc(const CRandomFourierGaussPreproc & pr);
 
-	CRandomFourierGaussPreproc & operator=(
-			const CRandomFourierGaussPreproc & pr);
-
 	/** default destructor
 	 * takes care for float64_t* randomcoeff_additive,float64_t* randomcoeff_multiplicative;
 	 */

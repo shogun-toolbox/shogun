@@ -34,8 +34,8 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 
 	svm = GMNPSVM(C, kernel, labels)
 
-	feats.add_preproc(NormOne())
-	feats.add_preproc(LogPlusOne())
+	feats.add_preprocessor(NormOne())
+	feats.add_preprocessor(LogPlusOne())
 	feats.set_preprocessed(1)
 	svm.train(feats)
 

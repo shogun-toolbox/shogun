@@ -70,6 +70,14 @@ const char* typecode_string(int typecode) {
         return type_names[typecode];
 }
 
+void* get_copy(void* src, size_t len)
+{
+    void* copy=SG_MALLOC(len);
+    memcpy(copy, src, len);
+    return copy;
+}
+
+
 /* Make sure input has correct numeric type.  Allow character and byte
  * to match.  Also allow int and long to match.
  */
@@ -328,9 +336,10 @@ TYPEMAP_IN_SGMATRIX(PyObject,      NPY_OBJECT)
 
     if (descr)
     {
+        void* copy=get_copy($1.matrix, sizeof(type)*size_t($1.num_rows)*size_t($1.num_cols));
         $result = PyArray_NewFromDescr(&PyArray_Type,
-            descr, 2, dims, NULL, (void*) $1.matrix, NPY_FARRAY | NPY_WRITEABLE, NULL);
-        /*((PyArrayObject*) $result)->flags |= NPY_OWNDATA;*/
+            descr, 2, dims, NULL, (void*) copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
+        ((PyArrayObject*) $result)->flags |= NPY_OWNDATA;
     }
 
     $1.free_matrix();
@@ -785,7 +794,7 @@ TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for sparse features returns (data, row, ptr) */
 %define TYPEMAP_SPARSEFEATURES_OUT(type,typecode)
-%typemap(out) shogun::SGSparseVector<type>
+%typemap(out) shogun::SGSparseMatrix<type>
     
 {
     shogun::SGSparseVector<type>* sfm=$1.sparse_matrix;

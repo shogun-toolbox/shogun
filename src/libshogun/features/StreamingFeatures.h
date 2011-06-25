@@ -69,7 +69,8 @@ public:
 	 * Default constructor with no args.
 	 * Doesn't do anything yet.
 	 */
-	CStreamingFeatures() { }
+	CStreamingFeatures()
+		: CFeatures() { }
 
 	/**
 	 * Constructor with input information passed.
@@ -78,12 +79,46 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size) { }
-
+	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
+		: CFeatures() { }
+	
 	/**
 	 * Destructor
 	 */
 	virtual ~CStreamingFeatures() { }
+
+	/** 
+	 * Set the vector reading functions.
+	 * 
+	 * The functions are implemented specific to the type in the
+	 * derived class.
+	 */
+	void set_read_functions()
+	{
+		set_vector_reader();
+		set_vector_and_label_reader();
+	}
+	
+	/** 
+	 * The derived object must set the function which will be used
+	 * for reading one vector from the file.  This function should
+	 * be a member of the CStreamingFile class.
+	 *
+	 * See the implementation in StreamingSimpleFeatures for
+	 * details.
+	 */
+	virtual void set_vector_reader()=0;
+
+	/** 
+	 * The derived object must set the function which will be used
+	 * by the parser for reading one vector and label from the
+	 * file.  This function should be a member of the
+	 * CStreamingFile class.
+	 *
+	 * See the implementation in StreamingSimpleFeatures for
+	 * details.
+	 */
+	virtual void set_vector_and_label_reader()=0;
 
 	/**
 	 * Start the parser.
@@ -108,9 +143,9 @@ public:
 	/**
 	 * Indicate to the parser that it must fetch the next example.
 	 *
-	 * @return 1 on success, 0 on failure (i.e., no more examples).
+	 * @return true on success, false on failure (i.e., no more examples).
 	 */
-	virtual int32_t get_next_example()=0;
+	virtual bool get_next_example()=0;
 
 	/**
 	 * Indicate that processing of the current example is done.
