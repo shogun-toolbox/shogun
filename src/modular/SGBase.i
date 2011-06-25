@@ -101,18 +101,32 @@
 
 namespace shogun
 {
-    %template(BoolSparseMatrix) SGSparseVector<bool>;
-    %template(CharSparseMatrix) SGSparseVector<char>;
-    %template(ByteSparseMatrix) SGSparseVector<uint8_t>;
-    %template(WordSparseMatrix) SGSparseVector<uint16_t>;
-    %template(ShortSparseMatrix) SGSparseVector<int16_t>;
-    %template(IntSparseMatrix)  SGSparseVector<int32_t>;
-    %template(UIntSparseMatrix)  SGSparseVector<uint32_t>;
-    %template(LongIntSparseMatrix)  SGSparseVector<int64_t>;
-    %template(ULongIntSparseMatrix)  SGSparseVector<uint64_t>;
-    %template(ShortRealSparseMatrix) SGSparseVector<float32_t>;
-    %template(RealSparseMatrix) SGSparseVector<float64_t>;
-    %template(LongRealSparseMatrix) SGSparseVector<floatmax_t>;
+    %template(BoolSparseMatrix) SGSparseMatrix<bool>;
+    %template(CharSparseMatrix) SGSparseMatrix<char>;
+    %template(ByteSparseMatrix) SGSparseMatrix<uint8_t>;
+    %template(WordSparseMatrix) SGSparseMatrix<uint16_t>;
+    %template(ShortSparseMatrix) SGSparseMatrix<int16_t>;
+    %template(IntSparseMatrix)  SGSparseMatrix<int32_t>;
+    %template(UIntSparseMatrix)  SGSparseMatrix<uint32_t>;
+    %template(LongIntSparseMatrix)  SGSparseMatrix<int64_t>;
+    %template(ULongIntSparseMatrix)  SGSparseMatrix<uint64_t>;
+    %template(ShortRealSparseMatrix) SGSparseMatrix<float32_t>;
+    %template(RealSparseMatrix) SGSparseMatrix<float64_t>;
+    %template(LongRealSparseMatrix) SGSparseMatrix<floatmax_t>;
+
+    %template(BoolStringList) SGStringList<bool>;
+    %template(CharStringList) SGStringList<char>;
+    %template(ByteStringList) SGStringList<uint8_t>;
+    %template(WordStringList) SGStringList<uint16_t>;
+    %template(ShortStringList) SGStringList<int16_t>;
+    %template(IntStringList)  SGStringList<int32_t>;
+    %template(UIntStringList)  SGStringList<uint32_t>;
+    %template(LongIntStringList)  SGStringList<int64_t>;
+    %template(ULongIntStringList)  SGStringList<uint64_t>;
+    %template(ShortRealStringList) SGStringList<float32_t>;
+    %template(RealStringList) SGStringList<float64_t>;
+    %template(LongRealStringList) SGStringList<floatmax_t>;
+
 
     %template(BoolString) SGString<bool>;
     %template(CharString) SGString<char>;
@@ -152,6 +166,19 @@ namespace shogun
     %template(ShortRealMatrix) SGMatrix<float32_t>;
     %template(RealMatrix) SGMatrix<float64_t>;
     %template(LongRealMatrix) SGMatrix<floatmax_t>;
+
+    %template(BoolNDArray) SGNDArray<bool>;
+    %template(CharNDArray) SGNDArray<char>;
+    %template(ByteNDArray) SGNDArray<uint8_t>;
+    %template(WordNDArray) SGNDArray<uint16_t>;
+    %template(ShortNDArray) SGNDArray<int16_t>;
+    %template(IntNDArray)  SGNDArray<int32_t>;
+    %template(UIntNDArray)  SGNDArray<uint32_t>;
+    %template(LongIntNDArray)  SGNDArray<int64_t>;
+    %template(ULongIntNDArray)  SGNDArray<uint64_t>;
+    %template(ShortRealNDArray) SGNDArray<float32_t>;
+    %template(RealNDArray) SGNDArray<float64_t>;
+    %template(LongRealNDArray) SGNDArray<floatmax_t>;
 }
 
 

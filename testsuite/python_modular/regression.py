@@ -56,7 +56,7 @@ def _evaluate (indata):
 
 	kernel.init(feats['train'], feats['test'])
 	classified=max(abs(
-		regression.classify().get_labels()-indata[prefix+'classified']))
+		regression.apply().get_labels()-indata[prefix+'classified']))
 
 	return util.check_accuracy(indata[prefix+'accuracy'], alphas=alphas,
 		bias=bias, support_vectors=sv, classified=classified)

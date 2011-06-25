@@ -180,36 +180,29 @@ class CLinearHMM : public CDistribution
 
 		/** get logarithm of all transition probs
 		 *
-		 * @param dst where logarithm of transition probs will be
-		 *        stored
-		 * @param num where number of logarithm of transition probs
-		 *        will be stored
+		 * @return logarithm of transition probs vector
 		 */
-		virtual void get_log_transition_probs(float64_t** dst, int32_t* num);
+		virtual SGVector<float64_t> get_log_transition_probs();
 
 		/** set logarithm of all transition probs
 		 *
-		 * @param src new logarithms of transition probs
-		 * @param num number of logarithms of transition probs
+		 * @param probs new logarithm transition probs
 		 * @return if setting was successful
 		 */
-		virtual bool set_log_transition_probs(
-			const float64_t* src, int32_t num);
+		virtual bool set_log_transition_probs(SGVector<float64_t> probs);
 
 		/** get all transition probs
 		 *
-		 * @param dst where transition probs will be stored
-		 * @param num where number of transition probs will be stored
+		 * @return vector of transition probs
 		 */
-		virtual void get_transition_probs(float64_t** dst, int32_t* num);
+		virtual SGVector<float64_t> get_transition_probs();
 
 		/** set all transition probs
 		 *
-		 * @param src new transition probs
-		 * @param num number of transition probs
+		 * @param probs new transition probs
 		 * @return if setting was successful
 		 */
-		virtual bool set_transition_probs(const float64_t* src, int32_t num);
+		virtual bool set_transition_probs(SGVector<float64_t> probs);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LinearHMM"; }

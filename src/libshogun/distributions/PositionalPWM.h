@@ -106,44 +106,31 @@ class CPositionalPWM : public CDistribution
 		/** set pwm
 		 *
 		 * @param pwm new pwm (values must be in logspace)
-		 * @param pwm_rows has to match current pwm rows
-		 * @param pwm_cols has to be equal to pwm_rows
 		 */
-		virtual inline void set_pwm(float64_t* pwm, int32_t pwm_rows, int32_t pwm_cols)
+		virtual inline void set_pwm(SGMatrix<float64_t> pwm)
 		{
-			m_pwm_rows=pwm_rows;
-			m_pwm_cols=pwm_cols;
-			delete[] m_pwm;
-            m_pwm=new float64_t[m_pwm_rows*m_pwm_cols];
-			memcpy(m_pwm, pwm, sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
+			m_pwm=pwm.matrix;
+			m_pwm_rows=pwm.num_rows;
+			m_pwm_cols=pwm.num_cols;
 		}
 
 		/** get pwm
 		 *
-		 * @param pwm copy of the pwm
-		 * @param pwm_rows
-		 * @param pwm_cols
+		 * @return current pwm
 		 */
-		virtual inline void get_pwm(float64_t** pwm, int32_t* pwm_rows, int32_t* pwm_cols)
+		virtual inline SGMatrix<float64_t> get_pwm()
 		{
-			*pwm = (float64_t*) SG_MALLOC(sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
-			memcpy(*pwm, m_pwm, sizeof(float64_t)*m_pwm_rows*m_pwm_cols);
-			*pwm_rows = m_pwm_rows;
-			*pwm_cols = m_pwm_cols;
+			return SGMatrix<float64_t>(m_pwm,m_pwm_rows,m_pwm_cols);
 		}
 
 		/** get w
 		 *
-		 * @param w copy of the w
-		 * @param w_rows
-		 * @param w_cols
+		 * @return current w
 		 */
-		virtual inline void get_w(float64_t** w, int32_t* w_rows, int32_t* w_cols)
+		virtual inline SGMatrix<float64_t> get_w()
 		{
-			*w = (float64_t*) SG_MALLOC(sizeof(float64_t)*m_w_rows*m_w_cols);
-			memcpy(*w, m_w, sizeof(float64_t)*m_w_rows*m_w_cols);
-			*w_rows = m_w_rows;
-			*w_cols = m_w_cols;
+			return SGMatrix<float64_t>(m_w,m_w_rows,m_w_cols);
+
 		}
 
 		void compute_scoring(float64_t** poim, int32_t* poim_len, int32_t max_degree);

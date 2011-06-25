@@ -73,6 +73,9 @@ public:
 
 protected:
 
+	/** positive eigenvalues of last call in descending order */
+	SGVector<float64_t> m_eigenvalues;
+
 	/** apply preproc to distance
 	 *
 	 */

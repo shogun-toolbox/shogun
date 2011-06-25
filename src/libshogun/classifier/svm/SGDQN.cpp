@@ -140,10 +140,8 @@ bool CSGDQN::train(CFeatures* data)
 		bool updateB=false;
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			float64_t* dst;
-			int32_t alen;
-			features->get_feature_vector(&dst,&alen,i);
-			ASSERT(w_dim==alen);
+			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
+			ASSERT(w_dim==v.vlen);
 			float64_t eta = 1.0/t;
 			float64_t y = labels->get_label(i);
 			float64_t z = y * features->dense_dot(i, w, w_dim);
@@ -155,13 +153,13 @@ bool CSGDQN::train(CFeatures* data)
 				{
 					w_1=w;
 					float64_t loss_1=CLoss::dloss(z);
-					CMath::vector_multiply(result,Bc,dst,w_dim);
+					CMath::vector_multiply(result,Bc,v.vector,w_dim);
 					CMath::add(w,eta*loss_1*y,result,1.0,w,w_dim);
 					float64_t z2 = y * features->dense_dot(i, w, w_dim);
 					float64_t diffloss = CLoss::dloss(z2) - loss_1;
 					if(diffloss)
 					{
-						compute_ratio(w,w_1,B,dst,w_dim,lambda,y*diffloss);
+						compute_ratio(w,w_1,B,v.vector,w_dim,lambda,y*diffloss);
 						if(t>skip)
 							combine_and_clip(Bc,B,w_dim,(t-skip)/(t+skip),2*skip/(t+skip),1/(100*lambda),100/lambda);
 						else
@@ -183,11 +181,13 @@ bool CSGDQN::train(CFeatures* data)
 				if (z < 1)
 #endif
 				{
-					CMath::vector_multiply(result,Bc,dst,w_dim);
+					CMath::vector_multiply(result,Bc,v.vector,w_dim);
 					CMath::add(w,eta*CLoss::dloss(z)*y,result,1.0,w,w_dim);
 				}
 			}
 			t++;
+
+			v.free_vector();
 		}
 	}
 	delete[] result;

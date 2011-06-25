@@ -239,20 +239,14 @@ float64_t CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 	return result;
 }
 
-void CLinearHMM::get_transition_probs(float64_t** dst, int32_t* num)
+SGVector<float64_t> CLinearHMM::get_transition_probs()
 {
-	*num=num_params;
-	size_t sz=sizeof(*transition_probs)*(*num);
-	*dst=(float64_t*) SG_MALLOC(sz);
-	ASSERT(dst);
-
-	memcpy(*dst, transition_probs, sz);
+	return SGVector<float64_t>(transition_probs, num_params);	
 }
 
-bool CLinearHMM::set_transition_probs(const float64_t* src, int32_t num)
+bool CLinearHMM::set_transition_probs(SGVector<float64_t> probs)
 {
-	if (num!=-1)
-		ASSERT(num==num_params);
+	ASSERT(probs.vlen == num_params);	
 
 	if (!log_transition_probs)
 		log_transition_probs=new float64_t[num_params];
@@ -262,27 +256,21 @@ bool CLinearHMM::set_transition_probs(const float64_t* src, int32_t num)
 
 	for (int32_t i=0; i<num_params; i++)
 	{
-		transition_probs[i]=src[i];
+		transition_probs[i]=probs.vector[i];
 		log_transition_probs[i]=log(transition_probs[i]);
 	}
 
 	return true;
 }
 
-void CLinearHMM::get_log_transition_probs(float64_t** dst, int32_t* num)
+SGVector<float64_t> CLinearHMM::get_log_transition_probs()
 {
-	*num=num_params;
-	size_t sz=sizeof(*log_transition_probs)*(*num);
-	*dst=(float64_t*) SG_MALLOC(sz);
-	ASSERT(dst);
-
-	memcpy(*dst, log_transition_probs, sz);
+	return SGVector<float64_t>(log_transition_probs, num_params);
 }
 
-bool CLinearHMM::set_log_transition_probs(const float64_t* src, int32_t num)
+bool CLinearHMM::set_log_transition_probs(SGVector<float64_t> probs)
 {
-	if (num!=-1)
-		ASSERT(num==num_params);
+	ASSERT(probs.vlen == num_params);
 
 	if (!log_transition_probs)
 		log_transition_probs=new float64_t[num_params];
@@ -290,9 +278,9 @@ bool CLinearHMM::set_log_transition_probs(const float64_t* src, int32_t num)
 	if (!transition_probs)
 		transition_probs=new float64_t[num_params];
 
-	for (int32_t i=0; i< num_params; i++)
+	for (int32_t i=0; i<num_params; i++)
 	{
-		log_transition_probs[i]=src[i];
+		log_transition_probs[i]=probs.vector[i];
 		transition_probs[i]=exp(log_transition_probs[i]);
 	}
 

@@ -145,26 +145,20 @@ float64_t CHistogram::get_log_model_parameter(int32_t num_param)
 	return hist[num_param];
 }
 
-bool CHistogram::set_histogram(float64_t* src, int32_t num)
+bool CHistogram::set_histogram(SGVector<float64_t> histogram)
 {
-	ASSERT(num==get_num_model_parameters());
+	ASSERT(histogram.vlen==get_num_model_parameters());
 
 	delete[] hist;
-	hist=new float64_t[num];
-	for (int32_t i=0; i<num; i++) {
-		hist[i]=src[i];
-	}
-
+	hist=new float64_t[histogram.vlen];
+	for (int32_t i=0; i<histogram.vlen; i++)
+		hist[i]=histogram.vector[i];
+	
 	return true;
 }
 
-void CHistogram::get_histogram(float64_t** dst, int32_t* num)
+SGVector<float64_t> CHistogram::get_histogram()
 {
-	*num=get_num_model_parameters();
-	size_t sz=sizeof(*hist)*(*num);
-	*dst=(float64_t*) SG_MALLOC(sz);
-	ASSERT(dst);
-
-	memcpy(*dst, hist, sz);
+	return SGVector<float64_t>(hist,get_num_model_parameters());
 }
 

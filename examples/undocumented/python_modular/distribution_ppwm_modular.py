@@ -24,7 +24,7 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
                [1.0, 0.0, 0.4, 0.0],
                [0.0, 0.0, 0.0, 0.0]]);
 	ppwm.set_pwm(log(pwm))
-	print ppwm.get_pwm()
+	#print ppwm.get_pwm()
 	ppwm.compute_w(20)
 	w= ppwm.get_w()
 	#print w

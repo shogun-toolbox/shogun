@@ -142,15 +142,12 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		void free_feature_matrix()
 		{
-            delete[] feature_matrix;
-            feature_matrix = NULL;
+ 			delete[] feature_matrix;
+			feature_matrix = NULL;
 			feature_matrix_num_features=num_features;
 			feature_matrix_num_vectors=num_vectors;
-            num_vectors=0;
-            m_num_vectors_total=0;
-            num_features=0;
-
-            CFeatures::remove_subset();
+			num_vectors=0;
+			num_features=0;
 		}
 
 		/** free feature matrix and cache
@@ -449,8 +446,7 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 		 */
 		void set_feature_matrix(SGMatrix<ST> matrix)
 		{
-			remove_subset();
-
+			free_feature_matrix();
 			feature_matrix=matrix.matrix;
 			num_features=matrix.num_rows;
 			num_vectors=matrix.num_cols;
@@ -600,15 +596,13 @@ template <class ST> class CSimpleFeatures: public CDotFeatures
 
 			for (int32_t i=0; i<num_vec; i++)
 			{
-				float64_t* dst;
-				int32_t len;
-				df->get_feature_vector(&dst, &len, i);
-				ASSERT(num_feat==len);
+				SGVector<float64_t> v=df->get_computed_dot_feature_vector(i);
+				ASSERT(num_feat==v.vlen);
 
 				for (int32_t j=0; j<num_feat; j++)
-					feature_matrix[i*int64_t(num_feat)+j]=(ST) dst[j];
+					feature_matrix[i*int64_t(num_feat)+j]=(ST) v.vector[j];
 
-				delete[] dst;
+				v.free_vector();
 			}
 			num_features=num_feat;
 			num_vectors=num_vec;

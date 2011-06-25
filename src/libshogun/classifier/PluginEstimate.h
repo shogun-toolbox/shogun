@@ -142,16 +142,16 @@ class CPluginEstimate: public CMachine
 			float64_t*& pos_params, float64_t*& neg_params,
 			int32_t &seq_length, int32_t &num_symbols)
 		{
-			int32_t num;
-
 			if ((!pos_model) || (!neg_model))
 			{
 				SG_ERROR( "no model available\n");
 				return false;
 			}
 
-			pos_model->get_log_transition_probs(&pos_params, &num);
-			neg_model->get_log_transition_probs(&neg_params, &num);
+			SGVector<float64_t> log_pos_trans = pos_model->get_log_transition_probs();
+			pos_params = log_pos_trans.vector;
+			SGVector<float64_t> log_neg_trans = neg_model->get_log_transition_probs();
+			neg_params = log_neg_trans.vector;
 
 			seq_length = pos_model->get_sequence_length();
 			num_symbols = pos_model->get_num_symbols();
@@ -167,7 +167,7 @@ class CPluginEstimate: public CMachine
 		 * @param num_symbols numbe of symbols
 		 */
 		inline void set_model_params(
-			const float64_t* pos_params, const float64_t* neg_params,
+			float64_t* pos_params, float64_t* neg_params,
 			int32_t seq_length, int32_t num_symbols)
 		{
 			int32_t num_params;
@@ -185,8 +185,8 @@ class CPluginEstimate: public CMachine
 			ASSERT(seq_length*num_symbols==num_params);
 			ASSERT(num_params==neg_model->get_num_model_parameters());
 
-			pos_model->set_log_transition_probs(pos_params, num_params);
-			neg_model->set_log_transition_probs(neg_params, num_params);
+			pos_model->set_log_transition_probs(SGVector<float64_t>(pos_params, num_params));
+			neg_model->set_log_transition_probs(SGVector<float64_t>(neg_params, num_params));
 		}
 
 		/** get number of parameters

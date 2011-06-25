@@ -77,18 +77,16 @@ class CHistogram : public CDistribution
 
 		/** set histogram
 		 *
-		 * @param src new histogram
-		 * @param num number of values in histogram
+		 * @param histogram new histogram
 		 */
-		virtual bool set_histogram(float64_t* src, int32_t num);
+		virtual bool set_histogram(SGVector<float64_t> histogram);
 
 		/** get histogram
 		 *
-		 * @param dst where the histogram will be stored
-		 * @param num where number of values in histogram will be
-		 *        stored
+		 * @return current histogram
+		 * 
 		 */
-		virtual void get_histogram(float64_t** dst, int32_t* num);
+		virtual SGVector<float64_t> get_histogram();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Histogram"; }
