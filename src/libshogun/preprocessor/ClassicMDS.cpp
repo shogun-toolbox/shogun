@@ -22,11 +22,12 @@ using namespace shogun;
 
 CClassicMDS::CClassicMDS() : CDimensionReductionPreprocessor()
 {
+	m_eigenvalues = SGVector<float64_t>(NULL,0,true);
 }
 
 CClassicMDS::~CClassicMDS()
 {
-	delete[] m_eigenvalues.vector;
+	m_eigenvalues.free_vector();
 }
 
 bool CClassicMDS::init(CFeatures* data)
@@ -59,14 +60,13 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	int32_t i,j;
 
 	// get distance matrix
-	float64_t* D_matrix;
-	distance->get_distance_matrix(&D_matrix,&N,&N);
+	SGMatrix<float64_t> D_matrix = distance->get_distance_matrix();
 
 	// get D^2 matrix
 	float64_t* Ds_matrix = new float64_t[N*N];
 	for (i=0;i<N;i++)
 		for (j=0;j<N;j++)
-			Ds_matrix[i*N+j] = D_matrix[i*N+j]*D_matrix[i*N+j];
+			Ds_matrix[i*N+j] = CMath::sq(D_matrix.matrix[i*N+j]);
 
 	// centering matrix
 	float64_t* H_matrix = new float64_t[N*N];
@@ -76,12 +76,12 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 
 	// compute -1/2 H D^2 H (result in Ds_matrix)
 	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,
-			N,N,N,1.0,H_matrix,N,Ds_matrix,N,0.0,D_matrix,N);
+			N,N,N,1.0,H_matrix,N,Ds_matrix,N,0.0,D_matrix.matrix,N);
 	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,
-			N,N,N,-0.5,D_matrix,N,H_matrix,N,0.0,Ds_matrix,N);
+			N,N,N,-0.5,D_matrix.matrix,N,H_matrix,N,0.0,Ds_matrix,N);
 
 	// cleanup
-	delete[] D_matrix;
+	delete[] D_matrix.matrix;
 	delete[] H_matrix;
 
 	// eigendecomposition
@@ -98,6 +98,9 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		{
 			SG_WARNING("Can't embed into %dd space, embedded into %dd",m_target_dim,i);
 			m_target_dim = i;
+			if (i=0)
+				SG_ERROR("No positive eigenvalues. Check distance.");
+
 			break;
 		}
 	}
@@ -111,7 +114,8 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	for (i=0; i<m_target_dim; i++)
 	{
 		for (j=0; j<N; j++)
-			replace_feature_matrix[j*m_target_dim+i] = Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
+			replace_feature_matrix[j*m_target_dim+i] =
+					Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
 	}
 
 	// cleanup
@@ -128,6 +132,8 @@ SGMatrix<float64_t> CClassicMDS::apply_to_feature_matrix(CFeatures* features)
 
 	SGMatrix<float64_t> new_feature_matrix = embed_by_distance(distance);
 	simple_features->set_feature_matrix(new_feature_matrix);
+
+	delete distance;
 
 	return new_feature_matrix;
 }

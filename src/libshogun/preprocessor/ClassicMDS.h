@@ -74,7 +74,9 @@ public:
 	/** get last embedding eigenvectors */
 	SGVector<float64_t> get_eigenvalues() const
 	{
-		return m_eigenvalues;
+		SGVector<float64_t> eigs(m_eigenvalues);
+		eigs.do_free=false;
+		return eigs;
 	}
 
 protected:
