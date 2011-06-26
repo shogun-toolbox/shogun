@@ -434,7 +434,7 @@ public:
 	/** 
 	 * Return the feature class
 	 * 
-	 * @return C_STREAMING_SIMPLE
+	 * @return C_STREAMING_SPARSE
 	 */
 	virtual EFeatureClass get_feature_class();
 
