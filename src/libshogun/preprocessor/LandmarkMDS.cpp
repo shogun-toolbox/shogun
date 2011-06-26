@@ -116,7 +116,9 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	{
 		mean_sq_dist_vector[i] = 0.0;
 		for (j=0; j<lmk_N; j++)
-			mean_sq_dist_vector[i] += lmk_dist_matrix[i*lmk_N+j] / lmk_N;
+			mean_sq_dist_vector[i] += CMath::sq(lmk_dist_matrix[i*lmk_N+j]);
+
+		mean_sq_dist_vector[i] /= lmk_N;
 	}
 
 	// get embedding for non-landmark vectors
@@ -124,7 +126,7 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	j = 0;
 	for (i=0; i<total_N; i++)
 	{
-		// skip if lmk
+		// skip if landmark
 		if (i==lmk_idxs.vector[j])
 		{
 			j++;
@@ -134,8 +136,8 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 		for (k=0; k<lmk_N; k++)
 			current_dist_to_lmk[k] =
 				CMath::sq(dist_matrix.matrix[i*total_N+lmk_idxs.vector[k]]) -
-				CMath::sq(mean_sq_dist_vector[k]);
-		
+				mean_sq_dist_vector[k];
+
 		// compute embedding
 		cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,
 		            m_target_dim,1,lmk_N,
