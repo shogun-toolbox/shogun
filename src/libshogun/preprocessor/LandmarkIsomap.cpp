@@ -57,13 +57,11 @@ CCustomDistance* CLandmarkIsomap::approx_geodesic_distance(CDistance* distance)
 			row[j] = D_matrix[i*N+j];
 			row_idx[j] = j;
 		}
-
 		CMath::qsort_index(row,row_idx,N);
-
 		for (j=m_k+1; j<N; j++)
 		{
-			if (i!=row_idx[j])
-				D_matrix[i*N+row_idx[j]] = CMath::ALMOST_INFTY;
+			D_matrix[i*N+row_idx[j]] = CMath::ALMOST_INFTY;
+			D_matrix[row_idx[j]*N+i] = D_matrix[i*N+row_idx[j]];
 		}
 	}
 
@@ -76,8 +74,18 @@ CCustomDistance* CLandmarkIsomap::approx_geodesic_distance(CDistance* distance)
 		for (i=0; i<N; i++)
 		{
 			for (j=0; j<N; j++)
-				D_matrix[i*N+j] = CMath::min(D_matrix[i*N+j], D_matrix[i*N+k] + D_matrix[k*N+j]);
+				if (D_matrix[i*N+k]<CMath::ALMOST_INFTY && D_matrix[k*N+j]<CMath::ALMOST_INFTY)
+					D_matrix[i*N+j] =
+						CMath::min(D_matrix[i*N+j],
+								   D_matrix[i*N+k] + D_matrix[k*N+j]);
 		}
+	}
+
+	//check connectivity
+	for (i=0; i<N*N; i++)
+	{
+		if (D_matrix[i] == CMath::ALMOST_INFTY)
+			SG_ERROR("Graph is not connected");
 	}
 
 	CCustomDistance* geodesic_distance = new CCustomDistance(D_matrix,N,N);
