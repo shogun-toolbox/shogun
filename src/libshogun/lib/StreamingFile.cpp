@@ -231,9 +231,14 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& len)		\
 									\
 	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
 	/* Remove terminating \n */					\
-	buffer[bytes_read-1]='\0';					\
+	if (buffer[bytes_read-1]=='\n')					\
+	{								\
+		len=bytes_read-1;					\
+		buffer[bytes_read-1]='\0';				\
+	}								\
+	else								\
+		len=bytes_read;						\
 	vector=(sg_type *) buffer;					\
-	len=bytes_read-1;						\
 }									
 
 GET_STRING(get_bool_string, str_to_bool, bool)
@@ -288,9 +293,15 @@ void CStreamingFile::fname(sg_type*& vector, int32_t& len, float64_t& label) \
 		return;							\
 	}								\
 	/* Remove terminating \n */					\
-	buffer[bytes_read-1]='\0';					\
+	if (buffer[bytes_read-1]=='\n')					\
+	{								\
+		buffer[bytes_read-1]='\0';				\
+		len=bytes_read-str_start_pos-1;				\
+	}								\
+	else								\
+		len=bytes_read-str_start_pos;				\
+									\
 	vector=(sg_type*) &buffer[str_start_pos];			\
-	len=bytes_read-str_start_pos-1;					\
 }
 
 GET_STRING_AND_LABEL(get_bool_string_and_label, str_to_bool, bool)
@@ -307,6 +318,239 @@ GET_STRING_AND_LABEL(get_long_string_and_label, atoi, int64_t)
 GET_STRING_AND_LABEL(get_ulong_string_and_label, atoi, uint64_t)
 GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 #undef GET_STRING_AND_LABEL
+
+#define GET_STRING(fname, conv, sg_type)				\
+void CStreamingFile::fname(sg_type*& vector, int32_t& len)		\
+{									\
+	size_t buffer_size=1024;					\
+	char* buffer=new char[buffer_size];				\
+	ssize_t bytes_read;						\
+									\
+	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+									\
+	if (bytes_read<=1)						\
+	{								\
+		vector=NULL;						\
+		len=-1;							\
+		return;							\
+	}								\
+									\
+	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
+	/* Remove terminating \n */					\
+	if (buffer[bytes_read-1]=='\n')					\
+	{								\
+		buffer[bytes_read-1]='\0';				\
+		len=bytes_read-1;					\
+	}								\
+	else								\
+		len=bytes_read;						\
+									\
+	vector=(sg_type *) buffer;					\
+}									
+
+#define GET_SPARSE_VECTOR(fname, conv, sg_type)			\
+void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
+{									\
+	size_t buffer_size=1024;					\
+	char* buffer=new char[buffer_size];				\
+	ssize_t bytes_read;						\
+									\
+	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+									\
+	if (bytes_read<=1)						\
+	{								\
+		vector=NULL;						\
+		len=-1;							\
+		return;							\
+	}								\
+									\
+	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
+									\
+	/* Remove terminating \n */					\
+	int32_t num_chars;						\
+	if (buffer[bytes_read-1]=='\n')					\
+	  {								\
+	    num_chars=bytes_read-1;					\
+	    buffer[num_chars]='\0';					\
+	  }								\
+	else								\
+	  num_chars=bytes_read;						\
+									\
+	int32_t num_dims=0;						\
+	for (int32_t i=0; i<num_chars; i++)				\
+	{								\
+		if (buffer[i]==':')					\
+		{							\
+			num_dims++;					\
+		}							\
+	}								\
+									\
+	int32_t index_start_pos=-1;					\
+	int32_t feature_start_pos;					\
+	int32_t current_feat=0;						\
+	vector=new SGSparseVectorEntry<sg_type>[num_dims];		\
+	for (int32_t i=0; i<num_chars; i++)				\
+	{								\
+		if (buffer[i]==':')					\
+		{							\
+			buffer[i]='\0';					\
+			vector[current_feat].feat_index=(int32_t) atoi(buffer+index_start_pos)-1; \
+			/* Unset index_start_pos */			\
+			index_start_pos=-1;				\
+									\
+			feature_start_pos=i+1;				\
+			while ((buffer[i]!=' ') && (i<num_chars))	\
+			{						\
+				i++;					\
+			}						\
+									\
+			buffer[i]='\0';					\
+			vector[current_feat].entry=(sg_type) conv(buffer+feature_start_pos); \
+									\
+			current_feat++;					\
+		}							\
+		else if (buffer[i]==' ')				\
+		  i++;							\
+		else							\
+		  {							\
+		    /* Set index_start_pos if not set already */	\
+		    /* if already set, it means the index is  */	\
+		    /* more than one digit long.              */	\
+		    if (index_start_pos == -1)				\
+			index_start_pos=i;				\
+		  }							\
+	}								\
+									\
+	len=current_feat;						\
+}
+
+GET_SPARSE_VECTOR(get_bool_sparse_vector, str_to_bool, bool)
+GET_SPARSE_VECTOR(get_byte_sparse_vector, atoi, uint8_t)
+GET_SPARSE_VECTOR(get_char_sparse_vector, atoi, char)
+GET_SPARSE_VECTOR(get_int_sparse_vector, atoi, int32_t)
+GET_SPARSE_VECTOR(get_shortreal_sparse_vector, atof, float32_t)
+GET_SPARSE_VECTOR(get_real_sparse_vector, atof, float64_t)
+GET_SPARSE_VECTOR(get_short_sparse_vector, atoi, int16_t)
+GET_SPARSE_VECTOR(get_word_sparse_vector, atoi, uint16_t)
+GET_SPARSE_VECTOR(get_int8_sparse_vector, atoi, int8_t)
+GET_SPARSE_VECTOR(get_uint_sparse_vector, atoi, uint32_t)
+GET_SPARSE_VECTOR(get_long_sparse_vector, atoi, int64_t)
+GET_SPARSE_VECTOR(get_ulong_sparse_vector, atoi, uint64_t)
+GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
+#undef GET_SPARSE_VECTOR
+
+#define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)			\
+void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) \
+{									\
+	size_t buffer_size=1024;					\
+	char* buffer=new char[buffer_size];				\
+	ssize_t bytes_read;						\
+									\
+	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+									\
+	if (bytes_read<=1)						\
+	{								\
+		vector=NULL;						\
+		len=-1;							\
+		return;							\
+	}								\
+									\
+	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
+									\
+	/* Remove terminating \n */					\
+	int32_t num_chars;						\
+	if (buffer[bytes_read-1]=='\n')					\
+	{								\
+		num_chars=bytes_read-1;					\
+		buffer[num_chars]='\0';					\
+	}								\
+	else								\
+		num_chars=bytes_read;					\
+									\
+	int32_t num_dims=0;						\
+	for (int32_t i=0; i<num_chars; i++)				\
+	{								\
+		if (buffer[i]==':')					\
+		{							\
+			num_dims++;					\
+		}							\
+	}								\
+									\
+	int32_t index_start_pos=-1;					\
+	int32_t feature_start_pos;					\
+	int32_t current_feat=0;						\
+	int32_t label_pos=-1;						\
+	vector=new SGSparseVectorEntry<sg_type>[num_dims];		\
+									\
+	for (int32_t i=1; i<num_chars; i++)				\
+	{								\
+		if (buffer[i]==':')					\
+		{							\
+			break;						\
+		}							\
+		if ( (buffer[i]==' ') && (buffer[i-1]!=' ') )		\
+		{							\
+			buffer[i]='\0';					\
+			label_pos=i;					\
+			label=atof(buffer);				\
+			break;						\
+		}							\
+	}								\
+									\
+	if (label_pos==-1)						\
+		SG_ERROR("No label found!\n");				\
+									\
+	buffer+=label_pos+1;						\
+	num_chars-=label_pos+1;						\
+	for (int32_t i=0; i<num_chars; i++)				\
+	{								\
+		if (buffer[i]==':')					\
+		{							\
+			buffer[i]='\0';					\
+			vector[current_feat].feat_index=(int32_t) atoi(buffer+index_start_pos)-1; \
+			/* Unset index_start_pos */			\
+			index_start_pos=-1;				\
+									\
+			feature_start_pos=i+1;				\
+			while ((buffer[i]!=' ') && (i<num_chars))	\
+			{						\
+				i++;					\
+			}						\
+									\
+			buffer[i]='\0';					\
+			vector[current_feat].entry=(sg_type) conv(buffer+feature_start_pos); \
+									\
+			current_feat++;					\
+		}							\
+		else if (buffer[i]==' ')				\
+			i++;						\
+		else							\
+		{							\
+			/* Set index_start_pos if not set already */	\
+			/* if already set, it means the index is  */	\
+			/* more than one digit long.              */	\
+			if (index_start_pos == -1)			\
+				index_start_pos=i;			\
+		}							\
+	}								\
+									\
+	len=current_feat;						\
+}
+
+GET_SPARSE_VECTOR_AND_LABEL(get_bool_sparse_vector_and_label, str_to_bool, bool)
+GET_SPARSE_VECTOR_AND_LABEL(get_byte_sparse_vector_and_label, atoi, uint8_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_char_sparse_vector_and_label, atoi, char)
+GET_SPARSE_VECTOR_AND_LABEL(get_int_sparse_vector_and_label, atoi, int32_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_shortreal_sparse_vector_and_label, atof, float32_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_real_sparse_vector_and_label, atof, float64_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_short_sparse_vector_and_label, atoi, int16_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_word_sparse_vector_and_label, atoi, uint16_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_int8_sparse_vector_and_label, atoi, int8_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_uint_sparse_vector_and_label, atoi, uint32_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_long_sparse_vector_and_label, atoi, int64_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_ulong_sparse_vector_and_label, atoi, uint64_t)
+GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax_t)
+#undef GET_SPARSE_VECTOR_AND_LABEL
 
 #define GET_MATRIX(fname, conv, sg_type)								\
 void CStreamingFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
