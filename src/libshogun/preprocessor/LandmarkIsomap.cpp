@@ -44,6 +44,7 @@ CCustomDistance* CLandmarkIsomap::approx_geodesic_distance(CDistance* distance)
 	int32_t N,k,i,j;
 	float64_t* D_matrix;
 	distance->get_distance_matrix(&D_matrix,&N,&N);
+	ASSERT(m_k<=N);
 
 	float64_t* row = new float64_t[N];
 	int32_t* row_idx = new int32_t[N];
