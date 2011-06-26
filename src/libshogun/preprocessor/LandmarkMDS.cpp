@@ -70,7 +70,6 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	int32_t lmk_N = m_landmark_number;
 	int32_t total_N = distance->get_num_vec_lhs();
 	SGMatrix<float64_t> dist_matrix = distance->get_distance_matrix();
-	delete distance;
 
 	SGVector<int32_t> lmk_idxs = get_landmark_idxs(lmk_N,total_N);
 
@@ -84,12 +83,12 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	}
 
 	// distance between landmarks
-	CCustomDistance* lmk_distance =
+	CDistance* lmk_distance =
 		new CCustomDistance(lmk_dist_matrix, lmk_N, lmk_N);
 	
 	// get landmarks embedding
 	SGMatrix<float64_t> lmk_feature_matrix = CClassicMDS::embed_by_distance(lmk_distance);
-	
+
 	// construct new feature matrix
 	float64_t* new_feature_matrix = new float64_t[m_target_dim*total_N];
 	for (i=0; i<m_target_dim*total_N; i++)
@@ -175,6 +174,8 @@ SGMatrix<float64_t> CLandmarkMDS::apply_to_feature_matrix(CFeatures* features)
 
 	SGMatrix<float64_t> new_feature_matrix = embed_by_distance(distance);
 	simple_features->set_feature_matrix(new_feature_matrix);
+
+	delete distance;
 
 	return new_feature_matrix;
 }
