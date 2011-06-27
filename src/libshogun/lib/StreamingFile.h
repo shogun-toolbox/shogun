@@ -50,6 +50,22 @@ namespace shogun
 		 */
 		CStreamingFile(char* fname, char rw='r', const char* name=NULL);
 
+		/** 
+		 * Constructor which takes a features object as argument.
+		 * It is used to set the input source to be the features object
+		 * rather than an actual file.
+		 *
+		 * Use the corresponding get_*_vector objects for obtaining
+		 * examples individually.
+		 * 
+		 * @param feat The CFeatures object pointer
+		 */
+		CStreamingFile(CFeatures* feat)
+		{
+			conventional_features=feat;
+			file=NULL;
+		}
+
 		/** default destructor */
 		virtual ~CStreamingFile();
 
