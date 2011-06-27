@@ -244,12 +244,12 @@ class CFeatures : public CSGObject
 			m_subset->remove_subset();
 		}
 
-		virtual SGVector<index_t> get_subset()
+		virtual SGVector<index_t> get_subset() const
 		{
 			return m_subset->get_subset();
 		}
 
-		bool has_subset()
+		bool has_subset() const
 		{
 			return m_subset->has_subset();
 		}
@@ -257,6 +257,11 @@ class CFeatures : public CSGObject
 		virtual void set_subset(SGVector<index_t> subset)
 		{
 			m_subset->set_subset(subset);
+		}
+
+		inline index_t subset_idx_conversion(index_t idx) const
+		{
+			return m_subset->subset_idx_conversion(idx);
 		}
 		/***********************************
 		 * End of wrapper for Subset methods
@@ -278,7 +283,6 @@ class CFeatures : public CSGObject
 		/// i'th entry is true if features were already preprocessed with preproc i
 		bool* preprocessed;
 
-	protected:
 		/* subset class to enable subset support for this class */
 		CSubset* m_subset;
 };

@@ -34,9 +34,9 @@ public:
 	 *
 	 * @return SGVector with subset indices array (no copy)
 	 */
-	SGVector<index_t> get_subset() { return m_subset; }
+	SGVector<index_t> get_subset() const { return m_subset; }
 
-	bool has_subset() { return m_subset.vector!=NULL; }
+	bool has_subset() const { return m_subset.vector!=NULL; }
 
 	/** setter for the subset indices. deletes any old subset vector before
 	 *
@@ -52,7 +52,7 @@ public:
 	 *
 	 * @ return array index of the provided subset index
 	 */
-	inline index_t subset_idx_conversion(index_t idx)
+	inline index_t subset_idx_conversion(index_t idx) const
 	{
 		return m_subset.vector ? m_subset.vector[idx] : idx;
 	}
