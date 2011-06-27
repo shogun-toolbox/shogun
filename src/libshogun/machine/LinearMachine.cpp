@@ -57,8 +57,6 @@ CLabels* CLinearMachine::apply()
 		CLabels* output=new CLabels(num);
 		output->set_labels(out, num);
 
-		delete[] out;
-
 		return output;
 	}
 

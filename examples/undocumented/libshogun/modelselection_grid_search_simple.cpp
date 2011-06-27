@@ -16,8 +16,7 @@
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/classifier/svm/LibLinear.h>
 
 using namespace shogun;
 
@@ -30,23 +29,9 @@ CModelSelectionParameters* create_param_tree()
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 
-	CModelSelectionParameters* kernel=new CModelSelectionParameters("kernel");
-	root->append_child(kernel);
-
 	CModelSelectionParameters* c=new CModelSelectionParameters("C1");
 	root->append_child(c);
-	c->set_range(0, 10, R_EXP);
-
-	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
-	CModelSelectionParameters* param_gaussian_kernel=
-			new CModelSelectionParameters("kernel", gaussian_kernel);
-
-	kernel->append_child(param_gaussian_kernel);
-
-	CModelSelectionParameters* param_gaussian_kernel_width=
-			new CModelSelectionParameters("width");
-	param_gaussian_kernel_width->set_range(1, 10, R_LINEAR);
-	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
+	c->set_range(0, 0, R_EXP);
 
 	return root;
 }
@@ -72,12 +57,8 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<num_features; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
 
-	/* create gaussian kernel with cache 10MB, width does not matter */
-	CGaussianKernel* kernel=new CGaussianKernel(10, 110.5);
-	kernel->init(features, features);
-
-	/* create libsvm */
-	CLibSVM* svm=new CLibSVM(10, kernel, labels);
+	/* create linear classifier */
+	CLibLinear* classifier=new CLibLinear();
 
 	/* splitting strategy */
 	CStratifiedCrossValidationSplitting* splitting_strategy=
@@ -88,7 +69,7 @@ int main(int argc, char **argv)
 			new CContingencyTableEvaluation();
 
 	/* cross validation class for evaluation in model selection */
-	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
+	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
 
 	/* model parameter selection, tree is destroyed by model selection class,

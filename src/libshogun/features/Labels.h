@@ -246,17 +246,22 @@ class CLabels : public CSGObject
 		 ********************************/
 		virtual void remove_subset();
 
-		virtual SGVector<index_t> get_subset()
+		virtual SGVector<index_t> get_subset() const
 		{
 			return m_subset->get_subset();
 		}
 
-		bool has_subset()
+		bool has_subset() const
 		{
 			return m_subset->has_subset();
 		}
 
 		virtual void set_subset(SGVector<index_t> subset);
+
+		inline index_t subset_idx_conversion(index_t idx) const
+		{
+			return m_subset->subset_idx_conversion(idx);
+		}
 		/***********************************
 		 * End of wrapper for Subset methods
 		 **********************************/
@@ -283,6 +288,7 @@ class CLabels : public CSGObject
 		int32_t m_confidence_classes;
 		int32_t m_confidence_labels;
 
+	private:
 		/* subset class to enable subset support for this class */
 		CSubset* m_subset;
 };
