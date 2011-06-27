@@ -87,6 +87,7 @@ _largefile=yes
 _doxygen=auto
 _swig=auto
 _lapack=auto
+_arpack=auto
 _bigstates=yes
 _hmmcache=yes
 _debug=yes
@@ -265,7 +266,6 @@ TMPC="./configure-$RANDOM-$$.c"
 TMPJAVA="./configure.java"
 TMPJAVAO="./configure.class"
 TMPRUBY="./configure-$RANDOM-$$.rb"
-TMPCPP="./configure-$RANDOM-$$.cpp"
 TMPO="./configure-$RANDOM-$$.o"
 TMPSO="./configure-$RANDOM-$$.so"
 TMPS="./configure-$RANDOM-$$.S"
@@ -870,7 +870,7 @@ die () {
   echo
   echo "Error: $@" >&2
   echo >&2
-  rm -f "$TMPO" "$TMPC" "$TMPS" "$TMPCPP"
+  rm -f "$TMPO" "$TMPC" "$TMPS"
   echo "Check "$TMPLOG" if you do not understand why it failed."
   echo "The last 20 lines of "$TMPLOG" are shown below"
   echo
@@ -1022,6 +1022,7 @@ Optional features:
   --enable-readline              enable readline in cmdline interface [auto]
   --enable-largefile             enable large file support (64bit file acces routines) [enabled]
   --enable-lapack                enable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
+  --enable-arpack                enable arpack [auto]
   --enable-cplex                 enable code using CPLEX  [auto]
   --enable-lpsolve               enable code using lpsolve  [auto]
   --enable-glpk                  enable code using GLPK [auto]
@@ -1044,6 +1045,7 @@ Optional features:
   --disable-readline             disable readline in cmdline interface [auto]
   --disable-largefile            disable large file support (64bit file acces routines) [enabled]
   --disable-lapack               disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
+  --disable-arpack               disable arpack [auto]
   --disable-cplex                disable code using CPLEX  [auto]
   --disable-lpsolve              disable code using lpsolve  [auto]
   --disable-glpk                 disable code using GLPK [auto]
@@ -1244,6 +1246,8 @@ for ac_option do
   --disable-doxygen)	_doxygen=no ;;
   --disable-lapack)		_lapack=no	;;
   --enable-lapack)		_lapack=yes	;;
+  --disable-arpack)		_arpack=no	;;
+  --enable-arpack)		_arpack=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
   --disable-lpsolve)	_lpsolve=no	;;
@@ -2962,6 +2966,67 @@ EOF
 				fi
 			fi
 	  fi
+
+		if test "$_arpack" = yes || test "$_arpack" = auto
+		then
+cat > $TMPC << EOF
+extern "C" void dsaupd_(int *ido, char *bmat, int *n, char *which,
+			int *nev, double *tol, double *resid, int *ncv,
+			double *v, int *ldv, int *iparam, int *ipntr,
+			double *workd, double *workl, int *lworkl,
+			int *info);
+
+int main(int argc, char **argv)
+{
+	int ido = 0,n = 3, nev=1;
+	double tol = 0.0;
+	double* resid = new double[n];
+	int ncv = n;
+	int ldv = n;
+	double* v = new double[ldv*ncv];
+	int* iparam = new int[11];
+	iparam[0] = 1;
+	iparam[2] = 3*n;
+	iparam[6] = 1;
+	int* ipntr = new int[11];
+	double* workd = new double[3*n];
+	double* workl = new double[ncv*(ncv+8)];
+	int lworkl = ncv*(ncv+8);
+	char bmat[2] = "I";
+	char which[3] = "SM";
+	int info = 0;
+	dsaupd_(&ido,bmat,&n,which,
+	        &nev,&tol,resid,&ncv,
+	        v,&ldv,iparam,ipntr,
+		workd,workl,&lworkl,&info);
+	delete[] resid;
+	delete[] v;
+	delete[] iparam;
+	delete[] ipntr;
+	delete[] workd;
+	delete[] workl;
+	return 0;
+}
+EOF
+		echocheck "ARPACK support"
+		if cxx_check -larpack
+		then
+			echores "yes"
+			HAVE_ARPACK='#define HAVE_ARPACK 1'
+			DEFINES="$DEFINES -DHAVE_ARPACK"
+			POSTLINKFLAGS="$POSTLINKFLAGS -larpack"
+		else
+			if test "$_arpack" = yes
+			then
+				die "libarpack not found"
+			else
+				echores "no"
+			fi
+		fi
+	fi
+
+
+
 			if test "$_cplex" = yes || test "$_cplex" = auto
 			then
 cat > $TMPC << EOF
@@ -3100,7 +3165,7 @@ EOF
 
 			if test "$_snappy" = yes || test "$_snappy" = auto
 			then
-cat >$TMPCPP<<EOF
+cat >$TMPC<<EOF
 #include <snappy.h>
 int main(int argc, char** argv)
 {
@@ -4482,6 +4547,7 @@ $HAVE_XML
 $HAVE_LARGEFILE
 $HAVE_DOXYGEN
 $HAVE_LAPACK
+$HAVE_ARPACK
 $HAVE_ATLAS
 $HAVE_ACML
 $HAVE_MKL
@@ -4548,7 +4614,7 @@ EOF
 
 clean_up()
 {
-	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS"\
+	rm -f "$TMPC" "$TMPC" "$TMPO" "$TMPS"\
 		"$TMPSS" "$TMPSO" "$TMPJAVA" "$TMPJAVAO" "$TMPRUBY"
 }
 
