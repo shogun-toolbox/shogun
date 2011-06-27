@@ -44,6 +44,31 @@ CCustomDistance* CIsomap::approx_geodesic_distance(CDistance* distance)
 	int32_t N,k,i,j;
 	float64_t* D_matrix;
 	distance->get_distance_matrix(&D_matrix,&N,&N);
+	ASSERT(m_k<=N);
+
+	float64_t* row = new float64_t[N];
+	int32_t* row_idx = new int32_t[N];
+
+	// cut-off by k
+	for (i=0; i<N; i++)
+	{
+		for (j=0; j<N; j++)
+		{
+			row[j] = D_matrix[i*N+j];
+			row_idx[j] = j;
+		}
+
+		CMath::qsort_index(row,row_idx,N);
+
+		for (j=m_k+1; j<N; j++)
+			{
+				if (i!=row_idx[j])
+					D_matrix[i*N+row_idx[j]] = CMath::ALMOST_INFTY;
+			}
+	}
+
+	delete[] row;
+	delete[] row_idx;
 
 	// floyd-warshall
 	for (k=0; k<N; k++)
@@ -55,7 +80,10 @@ CCustomDistance* CIsomap::approx_geodesic_distance(CDistance* distance)
 		}
 	}
 
-	return new CCustomDistance(D_matrix,N,N);
+	CCustomDistance* geodesic_distance = new CCustomDistance(D_matrix,N,N);
+	delete[] D_matrix;
+
+	return geodesic_distance;
 }
 
 CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)

@@ -71,6 +71,14 @@ public:
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_CLASSICMDS; };
 
+	/** get last embedding eigenvectors */
+	SGVector<float64_t> get_eigenvalues() const
+	{
+		SGVector<float64_t> eigs(m_eigenvalues);
+		eigs.do_free=false;
+		return eigs;
+	}
+
 protected:
 
 	/** positive eigenvalues of last call in descending order */

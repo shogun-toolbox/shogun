@@ -25,6 +25,7 @@ class CFeatures;
 class CDistance;
 
 /** @brief the class LandmarkIsomap
+ *
  */
 class CLandmarkIsomap: public CLandmarkMDS
 {
@@ -67,8 +68,28 @@ public:
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_LANDMARKISOMAP; };
 
+	/** setter for k parameter
+	 * @param k
+	 */
+	void inline set_k(int32_t k)
+	{
+		m_k = k;
+	}
+
+	/** getter for k parameter
+	 * @return k value
+	 */
+	int32_t inline get_k()
+	{
+		return m_k;
+	}
+
 protected:
 
+	/** k */
+	float64_t m_k;
+
+	/** approx geodesic distance */
 	CCustomDistance* approx_geodesic_distance(CDistance* distance);
 
 };

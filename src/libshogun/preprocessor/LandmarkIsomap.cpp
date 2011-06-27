@@ -22,7 +22,7 @@
 
 using namespace shogun;
 
-CLandmarkIsomap::CLandmarkIsomap() : CLandmarkMDS()
+CLandmarkIsomap::CLandmarkIsomap() : CLandmarkMDS(), m_k(3)
 {
 }
 
@@ -44,6 +44,29 @@ CCustomDistance* CLandmarkIsomap::approx_geodesic_distance(CDistance* distance)
 	int32_t N,k,i,j;
 	float64_t* D_matrix;
 	distance->get_distance_matrix(&D_matrix,&N,&N);
+	ASSERT(m_k<=N);
+
+	float64_t* row = new float64_t[N];
+	int32_t* row_idx = new int32_t[N];
+
+	// cut-off by k
+	for (i=0; i<N; i++)
+	{
+		for (j=0; j<N; j++)
+		{
+			row[j] = D_matrix[i*N+j];
+			row_idx[j] = j;
+		}
+		CMath::qsort_index(row,row_idx,N);
+		for (j=m_k+1; j<N; j++)
+		{
+			D_matrix[i*N+row_idx[j]] = CMath::ALMOST_INFTY;
+			D_matrix[row_idx[j]*N+i] = D_matrix[i*N+row_idx[j]];
+		}
+	}
+
+	delete[] row;
+	delete[] row_idx;
 
 	// floyd-warshall
 	for (k=0; k<N; k++)
@@ -51,19 +74,36 @@ CCustomDistance* CLandmarkIsomap::approx_geodesic_distance(CDistance* distance)
 		for (i=0; i<N; i++)
 		{
 			for (j=0; j<N; j++)
-				D_matrix[i*N+j] = CMath::min(D_matrix[i*N+j], D_matrix[i*N+k] + D_matrix[k*N+j]);
+				if (D_matrix[i*N+k]<CMath::ALMOST_INFTY && D_matrix[k*N+j]<CMath::ALMOST_INFTY)
+					D_matrix[i*N+j] =
+						CMath::min(D_matrix[i*N+j],
+								   D_matrix[i*N+k] + D_matrix[k*N+j]);
 		}
 	}
 
-	return new CCustomDistance(D_matrix,N,N);
+	//check connectivity
+	for (i=0; i<N*N; i++)
+	{
+		if (D_matrix[i] == CMath::ALMOST_INFTY)
+			SG_ERROR("Graph is not connected");
+	}
+
+	CCustomDistance* geodesic_distance = new CCustomDistance(D_matrix,N,N);
+	delete[] D_matrix;
+
+	return geodesic_distance;
 }
 
 CSimpleFeatures<float64_t>* CLandmarkIsomap::apply_to_distance(CDistance* distance)
 {
 	ASSERT(distance);
 
+	CCustomDistance* geodesic_distance = approx_geodesic_distance(distance);
+
 	SGMatrix<float64_t> new_feature_matrix =
-			CLandmarkMDS::embed_by_distance(approx_geodesic_distance(distance));
+			CLandmarkMDS::embed_by_distance(geodesic_distance);
+
+	delete geodesic_distance;
 
 	CSimpleFeatures<float64_t>* new_features =
 			new CSimpleFeatures<float64_t>(new_feature_matrix);
@@ -75,10 +115,15 @@ CSimpleFeatures<float64_t>* CLandmarkIsomap::apply_to_distance(CDistance* distan
 SGMatrix<float64_t> CLandmarkIsomap::apply_to_feature_matrix(CFeatures* features)
 {
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
 
+	CCustomDistance* geodesic_distance = approx_geodesic_distance(distance);
+
 	SGMatrix<float64_t> new_feature_matrix =
-			CLandmarkMDS::embed_by_distance(approx_geodesic_distance(distance));
+			CLandmarkMDS::embed_by_distance(geodesic_distance);
+
+	delete geodesic_distance;
 
 	simple_features->set_feature_matrix(new_feature_matrix);
 
