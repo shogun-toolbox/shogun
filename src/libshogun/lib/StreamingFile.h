@@ -10,6 +10,7 @@
 #ifndef __STREAMING_FILE_H__
 #define __STREAMING_FILE_H__
 
+#include "features/SimpleFeatures.h"
 #include "lib/config.h"
 #include "base/DynArray.h"
 #include "lib/common.h"
@@ -49,6 +50,22 @@ namespace shogun
 		 */
 		CStreamingFile(char* fname, char rw='r', const char* name=NULL);
 
+		/** 
+		 * Constructor which takes a features object as argument.
+		 * It is used to set the input source to be the features object
+		 * rather than an actual file.
+		 *
+		 * Use the corresponding get_*_vector objects for obtaining
+		 * examples individually.
+		 * 
+		 * @param feat The CFeatures object pointer
+		 */
+		CStreamingFile(CFeatures* feat)
+		{
+			conventional_features=feat;
+			file=NULL;
+		}
+
 		/** default destructor */
 		virtual ~CStreamingFile();
 
@@ -58,6 +75,29 @@ namespace shogun
 		 * @return Boolean value of string
 		 */
 		inline bool str_to_bool(char* str);
+
+		/** @name Vector Access Functions
+		 *
+		 * Functions to access vectors of one of the several base data types.
+		 * These functions are used when loading vectors from e.g. file
+		 * and return the vector and its length len by reference
+		 */
+		//@{
+		virtual void get_bool_simple_vector(bool*& vector, int32_t& len);
+		virtual void get_byte_simple_vector(uint8_t*& vector, int32_t& len);
+		virtual void get_char_simple_vector(char*& vector, int32_t& len);
+		virtual void get_int_simple_vector(int32_t*& vector, int32_t& len);
+		virtual void get_real_simple_vector(float64_t*& vector, int32_t& len);
+		virtual void get_shortreal_simple_vector(float32_t*& vector, int32_t& len);
+		virtual void get_short_simple_vector(int16_t*& vector, int32_t& len);
+		virtual void get_word_simple_vector(uint16_t*& vector, int32_t& len);
+		virtual void get_int8_simple_vector(int8_t*& vector, int32_t& len);
+		virtual void get_uint_simple_vector(uint32_t*& vector, int32_t& len);
+		virtual void get_long_simple_vector(int64_t*& vector, int32_t& len);
+		virtual void get_ulong_simple_vector(uint64_t*& vector, int32_t& len);
+		virtual void get_longreal_simple_vector(floatmax_t*& vector, int32_t& len);
+		//@}
+
 
 		/** @name Vector Access Functions
 		 *
@@ -464,6 +504,10 @@ namespace shogun
 		 * @param ptr_item
 		 */
 		template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
+
+	protected:
+
+		CFeatures* conventional_features;
 	};
 }
 #endif //__STREAMING_FILE_H__

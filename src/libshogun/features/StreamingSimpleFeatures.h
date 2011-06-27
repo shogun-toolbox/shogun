@@ -69,6 +69,24 @@ public:
 	}
 
 	/** 
+	 * Sets the vector reading function to the corresponding
+	 * function from StreamingFile (depending on T)
+	 * which returns examples one by one from a CSimpleFeatures object.
+	 */
+	virtual void set_simple_vector_reader();
+	
+	/** 
+	 * Set it to obtain examples from a CSimpleFeatures<T> object.
+	 *
+	 * For the time being, the StreamingFile is initialized with
+	 * the SimpleFeatures object as the argument.
+	 */
+	void obtain_from_simplefeatures()
+	{
+		set_simple_vector_reader();
+	}
+	
+	/** 
 	 * Sets the read function (in case the examples are
 	 * unlabelled) to get_*_vector() from CStreamingFile.
 	 *
@@ -312,6 +330,28 @@ protected:
 	bool has_labels;
 };
 
+#define SET_SIMPLE_VECTOR_READER(sg_type, sg_function)				\
+template <> void CStreamingSimpleFeatures<sg_type>::set_simple_vector_reader() \
+{									\
+	parser.set_read_vector(&CStreamingFile::sg_function);		\
+}
+
+SET_SIMPLE_VECTOR_READER(bool, get_bool_simple_vector);
+SET_SIMPLE_VECTOR_READER(char, get_char_simple_vector);
+SET_SIMPLE_VECTOR_READER(int8_t, get_int8_simple_vector);
+SET_SIMPLE_VECTOR_READER(uint8_t, get_byte_simple_vector);
+SET_SIMPLE_VECTOR_READER(int16_t, get_short_simple_vector);
+SET_SIMPLE_VECTOR_READER(uint16_t, get_word_simple_vector);
+SET_SIMPLE_VECTOR_READER(int32_t, get_int_simple_vector);
+SET_SIMPLE_VECTOR_READER(uint32_t, get_uint_simple_vector);
+SET_SIMPLE_VECTOR_READER(int64_t, get_long_simple_vector);
+SET_SIMPLE_VECTOR_READER(uint64_t, get_ulong_simple_vector);
+SET_SIMPLE_VECTOR_READER(float32_t, get_shortreal_simple_vector);
+SET_SIMPLE_VECTOR_READER(float64_t, get_real_simple_vector);
+SET_SIMPLE_VECTOR_READER(floatmax_t, get_longreal_simple_vector);
+
+#undef SET_SIMPLE_VECTOR_READER
+	
 #define SET_VECTOR_READER(sg_type, sg_function)				\
 template <> void CStreamingSimpleFeatures<sg_type>::set_vector_reader() \
 {									\
