@@ -39,6 +39,45 @@ inline bool CStreamingFile::str_to_bool(char *str)
 	return (atoi(str)!=0);
 }
 
+#define GET_SIMPLE_VECTOR(fname, sg_type)	\
+void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
+{								\
+static int32_t vector_num=0;					\
+								\
+CSimpleFeatures<sg_type>* simple_features=			\
+	(CSimpleFeatures<sg_type>*) conventional_features;	\
+								\
+if (vector_num >= simple_features->get_num_vectors())		\
+{								\
+	vector=NULL;						\
+	num_feat=-1;						\
+	return;							\
+}								\
+								\
+SGVector<sg_type> sg_vector=					\
+	simple_features->get_feature_vector(vector_num);	\
+								\
+vector = sg_vector.vector;					\
+num_feat = sg_vector.vlen;;					\
+vector_num++;							\
+								\
+}								\
+
+GET_SIMPLE_VECTOR(get_bool_simple_vector, bool)
+GET_SIMPLE_VECTOR(get_byte_simple_vector, uint8_t)
+GET_SIMPLE_VECTOR(get_char_simple_vector, char)
+GET_SIMPLE_VECTOR(get_int_simple_vector, int32_t)
+GET_SIMPLE_VECTOR(get_shortreal_simple_vector, float32_t)
+GET_SIMPLE_VECTOR(get_real_simple_vector, float64_t)
+GET_SIMPLE_VECTOR(get_short_simple_vector, int16_t)
+GET_SIMPLE_VECTOR(get_word_simple_vector, uint16_t)
+GET_SIMPLE_VECTOR(get_int8_simple_vector, int8_t)
+GET_SIMPLE_VECTOR(get_uint_simple_vector, uint32_t)
+GET_SIMPLE_VECTOR(get_long_simple_vector, int64_t)
+GET_SIMPLE_VECTOR(get_ulong_simple_vector, uint64_t)
+GET_SIMPLE_VECTOR(get_longreal_simple_vector, floatmax_t)
+#undef GET_SIMPLE_VECTOR
+
 #define GET_VECTOR(fname, conv, sg_type)						\
 void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
 {																\
