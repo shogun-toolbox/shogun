@@ -98,7 +98,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		{
 			SG_WARNING("Can't embed into %dd space, embedded into %dd",m_target_dim,i);
 			m_target_dim = i;
-			if (i=0)
+			if (i==0)
 				SG_ERROR("No positive eigenvalues. Check distance.");
 
 			break;
