@@ -24,7 +24,7 @@ CStreamingFileFromSimpleFeatures::CStreamingFileFromSimpleFeatures(CFeatures* fe
 	init();
 }
 
-CStreamingFileFromFeatures::~CStreamingFileFromFeatures()
+CStreamingFileFromSimpleFeatures::~CStreamingFileFromSimpleFeatures()
 {
 }
 

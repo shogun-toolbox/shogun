@@ -43,7 +43,7 @@ inline bool CStreamingAsciiFile::str_to_bool(char *str)
 /* Methods for reading dense vectors from an ascii file */
 
 #define GET_VECTOR(fname, conv, sg_type)			\
-void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
+void CStreamingAsciiFile::fname(sg_type*& vector, int32_t& num_feat)	\
 {									\
 	size_t buffer_size=1024;					\
 	char* buffer=new char[buffer_size];				\
@@ -131,7 +131,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 /* Methods for reading a dense vector and a label from an ascii file */
 
 #define GET_VECTOR_AND_LABEL(fname, conv, sg_type)			\
-	void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat, float64_t& label) \
+	void CStreamingAsciiFile::fname(sg_type*& vector, int32_t& num_feat, float64_t& label) \
 	{								\
 		size_t buffer_size=1024;				\
 		char* buffer=new char[buffer_size];			\
@@ -221,7 +221,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 /* Methods for reading a string vector from an ascii file (see StringFeatures) */
 
 #define GET_STRING(fname, conv, sg_type)				\
-void CStreamingFile::fname(sg_type*& vector, int32_t& len)		\
+void CStreamingAsciiFile::fname(sg_type*& vector, int32_t& len)		\
 {									\
 	size_t buffer_size=1024;					\
 	char* buffer=new char[buffer_size];				\
@@ -266,7 +266,7 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 /* Methods for reading a string vector and a label from an ascii file */
 
 #define GET_STRING_AND_LABEL(fname, conv, sg_type)			\
-void CStreamingFile::fname(sg_type*& vector, int32_t& len, float64_t& label) \
+void CStreamingAsciiFile::fname(sg_type*& vector, int32_t& len, float64_t& label) \
 {									\
 	size_t buffer_size=1024;					\
 	char* buffer=new char[buffer_size];				\
@@ -331,7 +331,7 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 /* Methods for reading a sparse vector from an ascii file */
 
 #define GET_SPARSE_VECTOR(fname, conv, sg_type)				\
-void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
+void CStreamingAsciiFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
 {									\
 	size_t buffer_size=1024;					\
 	char* buffer=new char[buffer_size];				\
@@ -424,7 +424,7 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 /* Methods for reading a sparse vector and a label from an ascii file */
 
 #define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)			\
-void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) \
+void CStreamingAsciiFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) \
 {									\
 	size_t buffer_size=1024;					\
 	char* buffer=new char[buffer_size];				\
@@ -536,3 +536,15 @@ GET_SPARSE_VECTOR_AND_LABEL(get_ulong_sparse_vector_and_label, atoi, uint64_t)
 GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax_t)
 #undef GET_SPARSE_VECTOR_AND_LABEL
 
+template <class T>
+void CStreamingAsciiFile::append_item(
+	DynArray<T>* items, char* ptr_data, char* ptr_item)
+{
+	size_t len=(ptr_data-ptr_item)/sizeof(char);
+	char* item=new char[len+1];
+	memset(item, 0, sizeof(char)*(len+1));
+	item=strncpy(item, ptr_item, len);
+
+	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
+	items->append_element(item);
+}
