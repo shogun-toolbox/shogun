@@ -344,7 +344,16 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGMATRIX macros */
-
+TYPEMAP_SGMATRIX(bool, boolean, Boolean, jboolean, "toBooleanArray", "()[[Z", "org/ujmp/core/booleanmatrix/impl/DefaultDenseBooleanMatrix2D", "([BII)V")
+TYPEMAP_SGMATRIX(char, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
+TYPEMAP_SGMATRIX(uint8_t, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
+TYPEMAP_SGMATRIX(int16_t, short, Short, jshort, "toShortArray", "()[[S", "org/ujmp/core/shortmatrix/impl/DefaultDenseShortMatrix2D", "([SII)V")
+TYPEMAP_SGMATRIX(uint16_t, int, Int, jint, "toIntArray", "()[[I", "org/ujmp/core/intmatrix/impl/DefaultDenseIntMatrix2D", "([III)V")
+TYPEMAP_SGMATRIX(int32_t, int, Int, jint, "toIntArray", "()[[I", "org/ujmp/core/intmatrix/impl/DefaultDenseIntMatrix2D", "([III)V")
+TYPEMAP_SGMATRIX(uint32_t, long, Long, jlong, "toLongArray", "()[[J", "org/ujmp/core/longmatrix/impl/DefaultDenseLongMatrix2D", "([JII)V")
+TYPEMAP_SGMATRIX(int64_t, int, Int, jint, "toIntArray", "()[[I", "org/ujmp/core/intmatrix/impl/DefaultDenseIntMatrix2D", "([III)V")
+TYPEMAP_SGMATRIX(uint64_t, long, Long, jlong, "toLongArray", "()[[J", "org/ujmp/core/longmatrix/impl/DefaultDenseLongMatrix2D", "([JII)V")
+TYPEMAP_SGMATRIX(long long, long, Long, jlong, "toLongArray", "()[[J", "org/ujmp/core/longmatrix/impl/DefaultDenseLongMatrix2D", "([JII)V")
 TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "toFloatArray", "()[[F", "org/ujmp/core/floatmatrix/impl/DefaultDenseFloatMatrix2D", "([FII)V")
 TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "org/ujmp/core/doublematrix/impl/DefaultDenseDoubleMatrix2D", "([DII)V")
 
