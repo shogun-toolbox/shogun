@@ -8,7 +8,7 @@
  *
  */
 
-#ifndef HAVE_JBLAS
+#ifdef HAVE_JBLAS
 %pragma(java) jniclassimports=%{
 import org.jblas.*;
 %}
@@ -40,7 +40,7 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 #endif
 #endif
 /* One dimensional input/output arrays */
-#ifndef HAVE_JBLAS
+#ifdef HAVE_JBLAS
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGVECTOR(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
@@ -152,7 +152,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 #undef TYPEMAP_SGVECTOR
 #endif
 
-#ifndef HAVE_JBLAS
+#ifdef HAVE_JBLAS
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
