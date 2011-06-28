@@ -53,7 +53,6 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
-%include <shogun/features/FeatureTypes.h>
 %include <shogun/preprocessor/Preprocessor.h>
 
 /* Templates Class SimplePreprocessor*/

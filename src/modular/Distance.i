@@ -93,7 +93,6 @@ namespace shogun
     %template(StringUlongDistance) CStringDistance<uint64_t>;
 }
 
-%include <shogun/features/FeatureTypes.h>
 %include <shogun/distance/RealDistance.h>
 %include <shogun/distance/CanberraMetric.h>
 %include <shogun/distance/ChebyshewMetric.h>
