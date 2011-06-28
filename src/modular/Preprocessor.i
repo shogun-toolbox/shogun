@@ -44,9 +44,10 @@
 %rename(BaseDimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(ClassicMDS) CClassicMDS;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
-%rename(Isomap) CIsomap;
-%rename(LandmarkMDS) CLandmarkMDS;
+%rename(BaseIsomap) CIsomap;
 %rename(LandmarkIsomap) CLandmarkIsomap;
+%rename(ClassicIsomap) CClassicIsomap;
+%rename(LandmarkMDS) CLandmarkMDS;
 
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
@@ -98,8 +99,8 @@ namespace shogun
 %include <shogun/preprocessor/ClassicMDS.h>
 %include <shogun/preprocessor/LocallyLinearEmbedding.h>
 %include <shogun/preprocessor/Isomap.h>
-%include <shogun/preprocessor/LandmarkMDS.h>
 %include <shogun/preprocessor/LandmarkIsomap.h>
+%include <shogun/preprocessor/LandmarkMDS.h>
 
 %include <shogun/preprocessor/SortUlongString.h>
 %include <shogun/preprocessor/SortWordString.h>
