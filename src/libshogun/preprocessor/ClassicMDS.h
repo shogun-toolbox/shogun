@@ -79,15 +79,15 @@ public:
 		return eigs;
 	}
 
-protected:
-
-	/** positive eigenvalues of last call in descending order */
-	SGVector<float64_t> m_eigenvalues;
-
 	/** apply preproc to distance
 	 *
 	 */
 	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
+
+protected:
+
+	/** positive eigenvalues of last call in descending order */
+	SGVector<float64_t> m_eigenvalues;
 
 };
 

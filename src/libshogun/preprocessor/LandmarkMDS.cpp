@@ -69,6 +69,7 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	int32_t i,j,k;
 	int32_t lmk_N = m_landmark_number;
 	int32_t total_N = distance->get_num_vec_lhs();
+	ASSERT(lmk_N<=total_N);
 	SGMatrix<float64_t> dist_matrix = distance->get_distance_matrix();
 
 	SGVector<int32_t> lmk_idxs = get_landmark_idxs(lmk_N,total_N);
