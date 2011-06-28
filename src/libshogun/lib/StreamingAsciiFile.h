@@ -199,6 +199,16 @@ public:
 		return "StreamingAsciiFile";
 
 	}
+
+private:
+	/** helper function to read vectors / matrices
+	 *
+	 * @param items dynamic array of values
+	 * @param ptr_data
+	 * @param ptr_item
+	 */
+	template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
+
 };
 }
 #endif //__STREAMING_ASCIIFILE_H__
