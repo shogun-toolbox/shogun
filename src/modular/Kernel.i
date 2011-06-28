@@ -173,8 +173,6 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 
 %}
 
-
-%include <shogun/features/FeatureTypes.h>
 %include <shogun/kernel/KernelNormalizer.h>
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/ANOVAKernel.h>

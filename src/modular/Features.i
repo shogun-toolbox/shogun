@@ -35,6 +35,7 @@
 
 /* Include Module Definitions */
 %include "SGBase.i"
+%include <shogun/features/FeatureTypes.h>
 %include "Features_includes.i"
 %include "Preprocessor_includes.i"
 
@@ -67,7 +68,6 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
-%include <shogun/features/FeatureTypes.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
 
