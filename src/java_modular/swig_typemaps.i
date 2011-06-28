@@ -15,6 +15,19 @@ import org.jblas.*;
 %typemap(javaimports) SWIGTYPE%{
 import org.jblas.*;
 %}
+#else
+#ifdef HAVE_UJMP
+%pragma(java) jniclassimports=%{
+import org.ujmp.core.*;
+import org.ujmp.core.doublematrix.impl.DefaultDenseDoubleMatrix2D;
+import org.ujmp.core.floatmatrix.impl.DefaultDenseFloatMatrix2D;
+%}
+%typemap(javaimports) SWIGTYPE%{
+import org.ujmp.core.*;
+import org.ujmp.core.doublematrix.impl.DefaultDenseDoubleMatrix2D;
+import org.ujmp.core.floatmatrix.impl.DefaultDenseFloatMatrix2D;
+%}
+#endif
 #endif
 /* One dimensional input/output arrays */
 #ifdef HAVE_JBLAS
@@ -127,7 +140,9 @@ TYPEMAP_SGVECTOR(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix
 TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
 #undef TYPEMAP_SGVECTOR
+#endif
 
+#ifdef HAVE_JBLAS
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
@@ -227,6 +242,115 @@ TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix
 TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
 #undef TYPEMAP_SGMATRIX
+
+#else
+#ifdef HAVE_UJMP
+/* Two dimensional input/output arrays */
+%define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAYMETHOD, TOARRAYDESC, CLASSDESC, CONSTRUCTOR)
+
+%typemap(jni) shogun::SGMatrix<SGTYPE>		%{jobject%}
+%typemap(jtype) shogun::SGMatrix<SGTYPE>		%{Matrix%}
+%typemap(jstype) shogun::SGMatrix<SGTYPE> 	%{Matrix%}
+
+%typemap(in) shogun::SGMatrix<SGTYPE>
+{
+	jclass cls;
+	jmethodID mid;
+	SGTYPE *array;
+	jobjectArray jobj;
+	##JNITYPE##Array jarr;
+	JNITYPE *carr;
+	int32_t i, j, rows, cols;
+	
+	if (!$input) {
+		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+		return $null;	
+	}
+	
+	cls = JCALL1(GetObjectClass, jenv, $input);
+	if (!cls)
+		return $null;	
+
+	mid = JCALL3(GetMethodID, jenv, cls, TOARRAYMETHOD, TOARRAYDESC);
+	if (!mid)
+		return $null;
+	
+	jobj = (jobjectArray)JCALL2(CallObjectMethod, jenv, $input, mid);
+	rows = JCALL1(GetArrayLength, jenv, jobj);
+	cols = 0;
+	
+	for (i = 0; i < rows; i++) {
+		jarr = (JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, jobj, i);
+		if (!jarr) {
+			SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+			return $null;
+		}
+		if (cols == 0) {
+			cols = JCALL1(GetArrayLength, jenv, jarr);
+			array = new SGTYPE[rows * cols];
+			if (!array) {
+    			SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+    			return $null;
+			}
+		}
+		carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
+		for (j = 0; j < cols; j++) {
+			array[i * cols + j] = carr[j];
+		}
+		JCALL3(Release##JAVATYPE##ArrayElements, jenv, jarr, carr, 0);
+	}
+    
+	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
+}
+
+%typemap(out) shogun::SGMatrix<SGTYPE>
+{
+	int32_t rows = $1.num_rows;
+	int32_t cols = $1.num_cols;
+	int32_t len = rows * cols;
+	JNITYPE arr[len];
+	jobject res;
+	int32_t i;
+	
+	jclass cls;
+	jmethodID mid;
+		
+	cls = JCALL1(FindClass, jenv, CLASSDESC);
+	if (!cls)
+		return $null;
+	
+	mid = JCALL3(GetMethodID, jenv, cls, "<init>", CONSTRUCTOR);
+	if (!mid)
+		return $null;	
+
+	##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, len);
+	if (!jarr)
+		return $null;
+
+	for (i = 0; i < len; i++) {
+		arr[i] = (JNITYPE)$1.matrix[i];
+	}
+	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, len, arr);
+	
+	res = JCALL5(NewObject, jenv, cls, mid, jarr, rows, cols);
+	$result = (jobject)res;
+}
+
+%typemap(javain) shogun::SGMatrix<SGTYPE> "$javainput"
+%typemap(javaout) shogun::SGMatrix<SGTYPE> {
+	return $jnicall;
+}
+
+%enddef
+
+/*Define concrete examples of the TYPEMAP_SGMATRIX macros */
+
+TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "toFloatArray", "()[[F", "org/ujmp/core/floatmatrix/impl/DefaultDenseFloatMatrix2D", "([FII)V")
+TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "org/ujmp/core/doublematrix/impl/DefaultDenseDoubleMatrix2D", "([DII)V")
+
+#undef TYPEMAP_SGMATRIX
+
+#endif
 #endif
 
 /* input/output typemap for CStringFeatures */
