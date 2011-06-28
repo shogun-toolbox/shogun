@@ -20,7 +20,7 @@ CStreamingFileFromFeatures::CStreamingFileFromFeatures(void)
 CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat)
 	: CStreamingFile()
 {
-	features=NULL;
+	features=feat;
 }
 
 CStreamingFileFromFeatures::~CStreamingFileFromFeatures()
