@@ -8,7 +8,7 @@
  *
  */
 
-#ifdef HAVE_JBLAS
+#ifndef HAVE_JBLAS
 %pragma(java) jniclassimports=%{
 import org.jblas.*;
 %}
@@ -21,16 +21,26 @@ import org.jblas.*;
 import org.ujmp.core.*;
 import org.ujmp.core.doublematrix.impl.DefaultDenseDoubleMatrix2D;
 import org.ujmp.core.floatmatrix.impl.DefaultDenseFloatMatrix2D;
+import org.ujmp.core.intmatrix.impl.DefaultDenseIntMatrix2D;
+import org.ujmp.core.longmatrix.impl.DefaultDenseLongMatrix2D;
+import org.ujmp.core.shortmatrix.impl.DefaultDenseShortMatrix2D;
+import org.ujmp.core.bytematrix.impl.DefaultDenseByteMatrix2D;
+import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 %}
 %typemap(javaimports) SWIGTYPE%{
 import org.ujmp.core.*;
 import org.ujmp.core.doublematrix.impl.DefaultDenseDoubleMatrix2D;
 import org.ujmp.core.floatmatrix.impl.DefaultDenseFloatMatrix2D;
+import org.ujmp.core.intmatrix.impl.DefaultDenseIntMatrix2D;
+import org.ujmp.core.longmatrix.impl.DefaultDenseLongMatrix2D;
+import org.ujmp.core.shortmatrix.impl.DefaultDenseShortMatrix2D;
+import org.ujmp.core.bytematrix.impl.DefaultDenseByteMatrix2D;
+import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 %}
 #endif
 #endif
 /* One dimensional input/output arrays */
-#ifdef HAVE_JBLAS
+#ifndef HAVE_JBLAS
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGVECTOR(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
@@ -142,7 +152,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 #undef TYPEMAP_SGVECTOR
 #endif
 
-#ifdef HAVE_JBLAS
+#ifndef HAVE_JBLAS
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
