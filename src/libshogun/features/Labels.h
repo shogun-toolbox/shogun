@@ -29,7 +29,10 @@ namespace shogun
  * Labels here are always real-valued and thus applicable to classification
  * (cf.  CClassifier) and regression (cf. CRegression) problems.
  *
- * Setting subsets is supported
+ * (Partly) subset access is supported.
+ * Simple use the set_subset(), remove_subset() functions.
+ * If done, all calls that work with features are translated to the subset.
+ * See comments to find out whether it is supported for that method
  */
 class CLabels : public CSGObject
 {
@@ -72,11 +75,15 @@ class CLabels : public CSGObject
 
 		/** load labels from file
 		 *
+		 * any subset is removed before
+		 *
 		 * @param loader File object via which to load data
 		 */
 		virtual void load(CFile* loader);
 
 		/** save labels to file
+		 *
+		 * not possible with subset
 		 *
 		 * @param writer File object via which to save data
 		 */
@@ -84,14 +91,16 @@ class CLabels : public CSGObject
 
 		/** set label
 		 *
+		 * possible with subset
+		 *
 		 * @param idx index of label to set
 		 * @param label value of label
 		 * @return if setting was successful
 		 */
 		inline bool set_label(int32_t idx, float64_t label)
 		{
-			int32_t real_num=m_subset->subset_idx_conversion(idx);
-			if (labels && real_num<num_labels)
+			int32_t real_num=subset_idx_conversion(idx);
+			if (labels && real_num<get_num_labels())
 			{
 				labels[real_num]=label;
 				return true;
@@ -102,14 +111,16 @@ class CLabels : public CSGObject
 
 		/** set INT label
 		 *
+		 * possible with subset
+		 *
 		 * @param idx index of label to set
 		 * @param label INT value of label
 		 * @return if setting was successful
 		 */
 		inline bool set_int_label(int32_t idx, int32_t label)
 		{ 
-			int32_t real_num=m_subset->subset_idx_conversion(idx);
-			if (labels && real_num<num_labels)
+			int32_t real_num=subset_idx_conversion(idx);
+			if (labels && real_num<get_num_labels())
 			{
 				labels[real_num]= (float64_t) label;
 				return true;
@@ -120,30 +131,36 @@ class CLabels : public CSGObject
 
 		/** get label
 		 *
+		 * possible with subset
+		 *
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
 		inline float64_t get_label(int32_t idx)
 		{
-			int32_t real_num=m_subset->subset_idx_conversion(idx);
-			ASSERT(labels && real_num<num_labels);
+			int32_t real_num=subset_idx_conversion(idx);
+			ASSERT(labels && idx<get_num_labels());
 			return labels[real_num];
 		}
 
 		/** get INT label
+		 *
+		 * possible with subset
 		 *
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
 		inline int32_t get_int_label(int32_t idx)
 		{
-			int32_t real_num=m_subset->subset_idx_conversion(idx);
-			ASSERT(labels && real_num<num_labels);
+			int32_t real_num=subset_idx_conversion(idx);
+			ASSERT(labels && idx<get_num_labels());
 			ASSERT(labels[real_num]== ((float64_t) ((int32_t) labels[real_num])));
 			return ((int32_t) labels[real_num]);
 		}
 
 		/** is two-class labeling
+		 *
+		 * possible with subset
 		 *
 		 * @return if this is two-class labeling
 		 */
@@ -153,11 +170,15 @@ class CLabels : public CSGObject
 		 * labels have to be zero based 0,1,...C missing
 		 * labels are illegal
 		 *
+		 * possible with subset
+		 *
 		 * @return number of classes
 		 */
 		int32_t get_num_classes();
 
 		/** get labels
+		 *
+		 * not possible with subset
 		 *
 		 * @param len number of labels
 		 * @return the labels
@@ -166,11 +187,15 @@ class CLabels : public CSGObject
 		
 		/** get labels
 		 *
+		 * not possible with subset
+		 *
 		 * @return labels
 		 */
 		SGVector<float64_t> get_labels();
 
 		/** set labels
+		 *
+		 * not possible with subset
 		 *
 		 * @param v labels
 		 */
@@ -178,22 +203,34 @@ class CLabels : public CSGObject
 
 		/** set labels
 		 *
+		 * not possible with subset
+		 *
 		 * @param src labels to set
 		 * @param len number of labels
 		 */
 		void set_labels(float64_t* src, int32_t len);
 
-		/** set all labels to +1 */
+		/**
+		 * set all labels to +1
+		 *
+		 * possible with subset
+		 * */
 		void set_to_one();
 
 		/** set confidences 
+		 *
+		 * not possible with subset
+		 *
 		 * @param in_confidences confidence matrix to be used to derive the labels
 		 * @param in_num_labels number of labels
 		 * @param in_num_classes number of classes
 		 */
 		void set_confidences(float64_t* in_confidences, int32_t in_num_labels, int32_t in_num_classes);
 
-		/** get confidences 
+		/** get confidences (copy)
+		 *
+		 * not implemented for subset
+		 *
 		 * @param out_num_labels number of labels
 		 * @param out_num_classes number of classes will be written to it
 		 * @return pointer to the confidences matrix
@@ -201,6 +238,9 @@ class CLabels : public CSGObject
 		float64_t* get_confidences(int32_t& out_num_labels, int32_t& out_num_classes);
 
 		/** get confidences  (swig compatible)
+		 *
+		 * not implemented for subset
+		 *
 		 * @param dst pointer to the confidences matrix (returned)
 		 * @param out_num_labels number of labels (returned)
 		 * @param out_num_classes number of classes will be written to it (returned)
@@ -208,6 +248,9 @@ class CLabels : public CSGObject
 		void get_confidences(float64_t** dst, int32_t* out_num_labels, int32_t* out_num_classes);
 
 		/** get confidences for a sample
+		 *
+		 * not implemented for subset
+		 *
 		 * @param in_sample_index index of a sample
 		 * @param out_num_classes number of classes will be written to it
 		 * @return pointer to the confidences vector
@@ -217,6 +260,8 @@ class CLabels : public CSGObject
 		/** get INT label vector
 		 * caller has to clean up
 		 *
+		 * possible with subset
+		 *
 		 * @param len number of labels to get
 		 * @return INT labels
 		 */
@@ -225,49 +270,51 @@ class CLabels : public CSGObject
 		/** set INT labels
 		 * caller has to clean up
 		 *
+		 * not possible on subset
+		 *
 		 * @param labels INT labels
 		 * @param len number of INT labels
 		 */
 		void set_int_labels(int32_t *labels, int32_t len) ;
 
-		/** get number of labels
+		/** get number of labels, depending on whether a subset is set
 		 *
 		 * @return number of labels
 		 */
-		inline int32_t get_num_labels() { return num_labels; }
+		inline int32_t get_num_labels()
+		{
+			return m_subset ? m_subset->get_size() : num_labels;
+		}
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Labels"; }
 
+		/** setter for subset variable, deletes old one
+		 *
+		 * @param subset subset instance to set
+		 */
+		virtual void set_subset(CSubset* subset);
 
-		/*********************************
-		 * wrapper for Subset methods
-		 * (to avoid mutliple inheritance)
-		 ********************************/
+		/** deletes any set subset */
 		virtual void remove_subset();
 
-		virtual SGVector<index_t> get_subset() const
+		/** does subset index conversion with the underlying subset if possible
+		 *
+		 * @param idx index to convert
+		 * @return converted index
+		 */
+		inline const index_t subset_idx_conversion(index_t idx) const
 		{
-			return m_subset->get_subset();
+			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
 		}
-
-		bool has_subset() const
-		{
-			return m_subset->has_subset();
-		}
-
-		virtual void set_subset(SGVector<index_t> subset);
-
-		inline index_t subset_idx_conversion(index_t idx) const
-		{
-			return m_subset->subset_idx_conversion(idx);
-		}
-		/***********************************
-		 * End of wrapper for Subset methods
-		 **********************************/
 
 	protected:
-		/** find labels from the confidences using argmax over the classes. */
+		/**
+		 * find labels from the confidences using argmax over the classes.
+		 *
+		 * possible with subset
+		 *
+		 * */
 		void find_labels();
 
 	private:
