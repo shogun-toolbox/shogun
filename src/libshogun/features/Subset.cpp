@@ -14,30 +14,30 @@
 
 using namespace shogun;
 
-CSubset::CSubset()
+CSubset::CSubset() : m_subset_idx(SGVector<index_t>())
 {
-	m_subset.vector=NULL;
-	m_subset.vlen=0;
-
-	m_parameters->add(&m_subset, "subset", "Vector of subset indices");
+	init();
 }
 
-CSubset::~CSubset()
+CSubset::CSubset(SGVector<index_t> subset_idx) : m_subset_idx(subset_idx)
 {
-	delete[] m_subset.vector;
+	init();
 }
 
-void CSubset::set_subset(SGVector<index_t> subset)
-{
-	remove_subset();
-
-	m_subset.vector=subset.vector;
-	m_subset.vlen=subset.vlen;
+CSubset::~CSubset() {
+	delete[] m_subset_idx.vector;
 }
 
-void CSubset::remove_subset()
-{
-	delete[] m_subset.vector;
-	m_subset.vector=NULL;
-	m_subset.vlen=0;
+CSubset* CSubset::duplicate() {
+	SGVector<index_t> idx_copy(new index_t[m_subset_idx.vlen],
+			m_subset_idx.vlen);
+
+	memcpy(idx_copy.vector, m_subset_idx.vector,
+			sizeof(index_t)*m_subset_idx.vlen);
+
+	return new CSubset(idx_copy);
+}
+
+void CSubset::init() {
+	m_parameters->add((CSGObject**)&m_subset_idx, "subset", "Vector of subset indices");
 }

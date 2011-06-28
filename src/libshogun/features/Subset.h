@@ -24,28 +24,25 @@ namespace shogun
 class CSubset: public CSGObject
 {
 public:
+	/** default constructor, do not use */
 	CSubset();
+
+	/** constructor
+	 *
+	 * @subset_idx vector of subset indices, is deleted in destructor
+	 */
+	CSubset(SGVector<index_t> subset_idx);
+
+	/** destructor */
 	virtual ~CSubset();
-
-	/** removes (and deletes) the current subset indices matrix */
-	void remove_subset();
-
-	/** getter for the subset indices
-	 *
-	 * @return SGVector with subset indices array (no copy)
-	 */
-	SGVector<index_t> get_subset() const { return m_subset; }
-
-	bool has_subset() const { return m_subset.vector!=NULL; }
-
-	/** setter for the subset indices. deletes any old subset vector before
-	 *
-	 * @param subset SGVector with subset indices array (directly stored)
-	 */
-	void set_subset(SGVector<index_t> subset);
 
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "Subset"; }
+
+	inline const index_t get_size() const { return m_subset_idx.vlen; }
+
+	/** @return a copy of this instance with a copy of the index vector */
+	CSubset* duplicate();
 
 	/** returns the corresponding real index (in array) of a subset index
 	 * (if there is a subset)
@@ -54,11 +51,13 @@ public:
 	 */
 	inline index_t subset_idx_conversion(index_t idx) const
 	{
-		return m_subset.vector ? m_subset.vector[idx] : idx;
+		return m_subset_idx.vector ? m_subset_idx.vector[idx] : idx;
 	}
+private:
+	void init();
 
 private:
-	SGVector<index_t> m_subset;
+	const SGVector<index_t> m_subset_idx;
 };
 
 }

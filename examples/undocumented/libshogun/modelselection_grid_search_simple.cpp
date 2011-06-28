@@ -29,9 +29,13 @@ CModelSelectionParameters* create_param_tree()
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 
-	CModelSelectionParameters* c=new CModelSelectionParameters("C1");
-	root->append_child(c);
-	c->set_range(0, 0, R_EXP);
+	CModelSelectionParameters* c1=new CModelSelectionParameters("C1");
+	root->append_child(c1);
+	c1->set_range(-5, 5, R_EXP);
+
+	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
+	root->append_child(c2);
+	c2->set_range(-5, 5, R_EXP);
 
 	return root;
 }
@@ -57,8 +61,8 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<num_features; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
 
-	/* create linear classifier */
-	CLibLinear* classifier=new CLibLinear();
+	/* create linear classifier (use -s 2 option to avoid warnings) */
+	CLibLinear* classifier=new CLibLinear(L2R_L2LOSS_SVC);
 
 	/* splitting strategy */
 	CStratifiedCrossValidationSplitting* splitting_strategy=
@@ -66,26 +70,25 @@ int main(int argc, char **argv)
 
 	/* accuracy evaluation */
 	CContingencyTableEvaluation* evaluation_criterium=
-			new CContingencyTableEvaluation();
+			new CContingencyTableEvaluation(ACCURACY);
 
 	/* cross validation class for evaluation in model selection */
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
 
-	/* model parameter selection, tree is destroyed by model selection class,
-	 * so tell it to destroy complete tree on destructor call */
+	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();
-	param_tree->set_destroy_tree(true);
 
 	/* this is on the stack and handles all of the above structures in memory */
 	CGridSearchModelSelection grid_search(param_tree, cross);
 
 	float64_t result;
 	ParameterCombination* best_combination=grid_search.select_model(result);
+	SG_SPRINT("best parameter(s):\n");
 	best_combination->print();
 	SG_SPRINT("result: %f\n", result);
 
-	/* clean up */
+	/* clean up destroy result parameter */
 	best_combination->destroy(true, true);
 
 	SG_SPRINT("\nEND\n");

@@ -41,26 +41,22 @@ void CModelSelectionParameters::init()
 {
 	m_node_name=NULL;
 	m_sgobject=NULL;
-	m_destroy_tree=false;
 
 	m_parameters->add((char*)m_node_name, "node_name", "Name of node");
 	m_parameters->add((CSGObject**)&m_sgobject, "sgobject", "CSGObject of this node");
-	m_parameters->add(&m_destroy_tree, "destroy_tree",
-			"Whether tree of this node is destroyed in destructor");
 }
 
 CModelSelectionParameters::~CModelSelectionParameters()
 {
-	if (m_destroy_tree)
+	/* a root node destroy its whole tree upon destruction */
+	if (!m_node_name && !m_sgobject && !m_values.vector)
 	{
 		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
 			m_child_nodes[i]->destroy();
 	}
-	else
-	{
-		delete[] m_values.vector;
-		SG_UNREF(m_sgobject);
-	}
+
+	delete[] m_values.vector;
+	SG_UNREF(m_sgobject);
 }
 
 void CModelSelectionParameters::destroy()

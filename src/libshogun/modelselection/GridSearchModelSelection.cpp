@@ -59,7 +59,9 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 		{
 			if (result>best_result)
 			{
-				delete best_combination;
+				if (best_combination)
+					best_combination->destroy(true, true);
+
 				best_combination=combinations[i];
 				best_result=result;
 			}
@@ -70,7 +72,9 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 		{
 			if (result<best_result)
 			{
-				delete best_combination;
+				if (best_combination)
+					best_combination->destroy(true, true);
+
 				best_combination=combinations[i];
 				best_result=result;
 			}
