@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	}
 
 	/* delete example tree */
-	tree->destroy();
+	delete tree;
 
 	SG_SPRINT("END\n");
 
