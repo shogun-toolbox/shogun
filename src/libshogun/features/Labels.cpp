@@ -60,7 +60,7 @@ void CLabels::set_to_one()
 	ASSERT(labels);
 	index_t subset_size=get_num_labels();
 	for (int32_t i=0; i<subset_size; i++)
-		labels[m_subset->subset_idx_conversion(i)]=+1;
+		labels[subset_idx_conversion(i)]=+1;
 }
 
 CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels,
@@ -239,7 +239,7 @@ void CLabels::find_labels()
 	int32_t subset_size=get_num_labels();
 	for (int32_t n_samp=0; n_samp<subset_size; n_samp++)
 	{
-		int32_t real_n_samp=m_subset->subset_idx_conversion(n_samp);
+		int32_t real_n_samp=subset_idx_conversion(n_samp);
 		max_conf=m_confidences[n_samp];
 		labels[real_n_samp]=0;
 		for (int32_t n_class=1; n_class<m_num_classes; n_class++)
@@ -263,7 +263,7 @@ bool CLabels::is_two_class_labeling()
 	int32_t subset_size=get_num_labels();
 	for (int32_t i=0; i<subset_size; i++)
 	{
-		int32_t real_i=m_subset->subset_idx_conversion(i);
+		int32_t real_i=subset_idx_conversion(i);
 		if (labels[real_i]==+1.0)
 			found_plus_one=true;
 		else if (labels[real_i]==-1.0)
