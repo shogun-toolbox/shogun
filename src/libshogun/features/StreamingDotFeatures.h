@@ -50,7 +50,11 @@ class CStreamingDotFeatures : public CStreamingFeatures
 public:
 	/** Constructor */
 	CStreamingDotFeatures()
-		: CStreamingFeatures() { }
+		: CStreamingFeatures()
+	{
+		init();
+		set_property(FP_DOT);
+	}
 
 	/**
 	 * Constructor with input information passed.
@@ -60,7 +64,11 @@ public:
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
 	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
-		: CStreamingFeatures() { }
+		: CStreamingFeatures()
+	{
+		init(file, is_labelled, size);
+		set_property(FP_DOT);
+	}
 
 	virtual ~CStreamingDotFeatures() { }
 
