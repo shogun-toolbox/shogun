@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 	/* delete example tree (after processing of combinations because CSGObject
 	 * (namely the kernel) of the tree is SG_UNREF'ed (and not REF'ed anywhere
 	 * else) */
-	tree->destroy();
+	delete tree;
 
 	exit_shogun();
 
