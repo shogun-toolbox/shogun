@@ -14,6 +14,7 @@
 #include "lib/Mathematics.h"
 #include "features/StreamingDotFeatures.h"
 #include "lib/DataType.h"
+#include "lib/StreamingFileFromSimpleFeatures.h"
 #include "lib/InputParser.h"
 
 namespace shogun
