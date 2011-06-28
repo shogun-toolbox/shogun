@@ -385,7 +385,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			preprocess_on_get=false;
 		}
 
-		/** get feature vector for sample num, from subset if there is one
+		/** get feature vector for sample num
+		 *
+		 * possible with subset
 		 *
 		 * @param num index of feature vector
 		 * @param len length is returned by reference
