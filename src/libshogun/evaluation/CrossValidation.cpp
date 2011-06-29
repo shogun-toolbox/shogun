@@ -67,6 +67,11 @@ void CCrossValidation::init()
 			"evaluation_criterium", "Used evaluation criterium");
 }
 
+Parameter* CCrossValidation::get_machine_parameters()
+{
+	return m_machine->m_parameters;
+}
+
 float64_t CCrossValidation::evaluate(int32_t num_runs, float64_t conf_int_p,
 		float64_t* conf_int_low, float64_t* conf_int_up)
 {
@@ -133,7 +138,6 @@ float64_t CCrossValidation::evaluate_one_run()
 
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
-		SG_REF(result_labels);
 
 		/* set label subset for testing (copy data before) */
 		SGVector<index_t> subset_indices_copy(
