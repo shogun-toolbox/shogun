@@ -464,7 +464,7 @@ public:
 
 		ST* fm = new ST[int64_t(num_feat) * num_vec];
 
-		for(int32_t i=0; i<num_vec; i++)
+		for (int32_t i=0; i<num_vec; i++)
 		{
 			int32_t vlen;
 			bool vfree;
