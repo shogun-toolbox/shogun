@@ -35,7 +35,10 @@ CSubset* CSubset::duplicate() {
 	memcpy(idx_copy.vector, m_subset_idx.vector,
 			sizeof(index_t)*m_subset_idx.vlen);
 
-	return new CSubset(idx_copy);
+	CSubset* copy_subset=new CSubset(idx_copy);
+	SG_REF(copy_subset);
+
+	return copy_subset;
 }
 
 void CSubset::init() {
