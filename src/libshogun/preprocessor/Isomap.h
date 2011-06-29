@@ -181,6 +181,7 @@ protected:
 		if (m_type==EISOMAP)
 		{
 			// just replace distances >e with infty
+
 			for (i=0; i<N*N; i++)
 			{
 				if (D_matrix[i]>m_epsilon)
@@ -190,9 +191,11 @@ protected:
 		if (m_type==KISOMAP)
 		{
 			// cut by k-nearest neighbors
+
 			float64_t* col = new float64_t[N];
 			int32_t* col_idx = new int32_t[N];
-
+			
+			// -> INFTY edges connecting NOT neighbors
 			for (i=0; i<N; i++)
 			{
 				for (j=0; j<N; j++)
@@ -203,13 +206,19 @@ protected:
 
 				CMath::qsort_index(col,col_idx,N);
 
-				//CMath::display_vector(col_idx,N,"Idx");
-
 				for (j=m_k+1; j<N; j++)
 				{
-					D_matrix[j*N+col_idx[i]] = CMath::ALMOST_INFTY;
+					D_matrix[col_idx[j]*N+i] = CMath::ALMOST_INFTY;
 				}
 			}
+
+			// symmetrize matrix
+			for (i=0; i<N; i++)
+			{
+				for (j=0; j<N; j++)
+					if (D_matrix[j*N+i] >= CMath::ALMOST_INFTY)
+						D_matrix[i*N+j] = D_matrix[j*N+i];
+			}			
 
 			delete[] col;
 			delete[] col_idx;
@@ -226,8 +235,6 @@ protected:
 									   D_matrix[i*N+k] + D_matrix[k*N+j]);
 			}
 		}
-
-		//CMath::display_matrix(D_matrix,N,N,"D");
 
 		CCustomDistance* geodesic_distance = new CCustomDistance(D_matrix,N,N);
 
