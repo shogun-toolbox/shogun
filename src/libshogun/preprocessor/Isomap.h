@@ -11,7 +11,10 @@
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
 #ifdef HAVE_LAPACK
-#include "preprocessor/SimplePreprocessor.h"
+#include "preprocessor/DimensionReductionPreprocessor.h"
+#include "lib/common.h"
+#include "lib/Mathematics.h"
+#include "lib/io.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
 #include "distance/CustomDistance.h"
@@ -194,15 +197,17 @@ protected:
 			{
 				for (j=0; j<N; j++)
 				{
-					col[j] = D_matrix[i*N+j];
+					col[j] = D_matrix[j*N+i];
 					col_idx[j] = j;
 				}
 
 				CMath::qsort_index(col,col_idx,N);
 
+				//CMath::display_vector(col_idx,N,"Idx");
+
 				for (j=m_k+1; j<N; j++)
 				{
-					D_matrix[i*N+j] = CMath::ALMOST_INFTY;
+					D_matrix[j*N+col_idx[i]] = CMath::ALMOST_INFTY;
 				}
 			}
 
@@ -221,6 +226,8 @@ protected:
 									   D_matrix[i*N+k] + D_matrix[k*N+j]);
 			}
 		}
+
+		//CMath::display_matrix(D_matrix,N,N,"D");
 
 		CCustomDistance* geodesic_distance = new CCustomDistance(D_matrix,N,N);
 
