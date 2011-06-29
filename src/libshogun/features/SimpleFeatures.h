@@ -182,7 +182,7 @@ public:
 				if (feat)
 					return feat;
 				else {
-					feat = feature_cache->set_entry(num);
+					feat = feature_cache->set_entry(real_num);
 				}
 			}
 
@@ -275,7 +275,7 @@ public:
 	 */
 	void free_feature_vector(ST* feat_vec, int32_t num, bool dofree) {
 		if (feature_cache)
-			feature_cache->unlock_entry(num);
+			feature_cache->unlock_entry(subset_idx_conversion(num));
 
 		if (dofree)
 			delete[] feat_vec;
