@@ -57,17 +57,19 @@ void apply_parameter_tree(DynArray<ParameterCombination*>& combinations)
 	/* create three 2-dimensional vectors
 	 * to avoid deleting these, REF now and UNREF when finished */
 	CSimpleFeatures<float64_t>* features=new CSimpleFeatures<float64_t> ();
-	features->set_feature_matrix(matrix, 2, 3);
 	SG_REF(features);
+	features->set_feature_matrix(matrix, 2, 3);
 
 	/* create three labels, will be handed to svm and automaticall deleted */
 	CLabels* labels=new CLabels(3);
+	SG_REF(labels);
 	labels->set_label(0, -1);
 	labels->set_label(1, +1);
 	labels->set_label(2, -1);
 
 	/* create libsvm with C=10 and train */
 	CLibSVM* svm=new CLibSVM();
+	SG_REF(svm);
 	svm->set_labels(labels);
 
 	for (index_t i=0; i<combinations.get_num_elements(); ++i)
@@ -97,6 +99,7 @@ void apply_parameter_tree(DynArray<ParameterCombination*>& combinations)
 
 	/* free up memory */
 	SG_UNREF(features);
+	SG_UNREF(labels);
 	SG_UNREF(svm);
 }
 
@@ -122,7 +125,7 @@ int main(int argc, char **argv)
 	/* delete example tree (after processing of combinations because CSGObject
 	 * (namely the kernel) of the tree is SG_UNREF'ed (and not REF'ed anywhere
 	 * else) */
-	delete tree;
+	SG_UNREF(tree);
 
 	exit_shogun();
 

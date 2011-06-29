@@ -291,8 +291,9 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 
 void CFeatures::set_subset(CSubset* subset)
 {
-	delete m_subset;
+	SG_UNREF(m_subset);
 	m_subset=subset;
+	SG_REF(subset);
 	subset_changed_post();
 }
 

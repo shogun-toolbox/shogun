@@ -374,8 +374,9 @@ void CLabels::save(CFile* writer)
 
 void CLabels::set_subset(CSubset* subset)
 {
-	delete m_subset;
+	SG_UNREF(m_subset);
 	m_subset=subset;
+	SG_REF(subset);
 }
 
 void CLabels::remove_subset()
