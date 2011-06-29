@@ -32,6 +32,7 @@ CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
 : CLinearMachine()
 {
     init();
+    liblinear_solver_type=l;
 }
 
 CLibLinear::CLibLinear(

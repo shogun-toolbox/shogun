@@ -58,8 +58,9 @@ CLabels::CLabels(float64_t* p_labels, int32_t len)
 void CLabels::set_to_one()
 {
 	ASSERT(labels);
-	for (int32_t i=0; i<num_labels; i++)
-		labels[m_subset->subset_idx_conversion(i)]=+1;
+	index_t subset_size=get_num_labels();
+	for (int32_t i=0; i<subset_size; i++)
+		labels[subset_idx_conversion(i)]=+1;
 }
 
 CLabels::CLabels(float64_t* in_confidences, int32_t in_num_labels,
@@ -90,14 +91,15 @@ CLabels::~CLabels()
 {
 	delete[] labels;
 	delete[] m_confidences;
+	delete m_subset;
 
+	m_subset=NULL;
 	num_labels=0;
 	m_num_classes=0;
 	labels=NULL;
 	m_confidences=NULL;
 	m_confidence_classes = 0;
 	m_confidence_labels = 0;
-	delete m_subset;
 }
 
 void CLabels::init()
@@ -108,10 +110,9 @@ void CLabels::init()
 							 &m_confidence_labels, "m_confidences",
 							 "Confidence matrix.");
 
-	/* subset class is not a SGSerializable (init is done by Subset class) */
 	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
 
-	m_subset=new CSubset();
+	m_subset=NULL;
 	labels=NULL;
 	num_labels=0;
 	m_confidences=NULL;
@@ -122,7 +123,7 @@ void CLabels::init()
 
 void CLabels::set_labels(SGVector<float64_t> v)
 {
-	if (m_subset->has_subset())
+	if (m_subset)
 		SG_ERROR("A subset is set, cannot set labels\n");
 
 	delete[] labels;
@@ -132,10 +133,10 @@ void CLabels::set_labels(SGVector<float64_t> v)
 
 void CLabels::set_labels(float64_t* p_labels, int32_t len)
 {
-	ASSERT(len>0);
-
-	if (m_subset->has_subset())
+	if (m_subset)
 		SG_ERROR("A subset is set, cannot set labels\n");
+
+	ASSERT(len>0);
 
 	num_labels=len;
 
@@ -146,8 +147,8 @@ void CLabels::set_labels(float64_t* p_labels, int32_t len)
 void CLabels::set_confidences(float64_t* in_confidences, int32_t in_num_labels, 
 							  int32_t in_num_classes)
 {
-	if (m_subset->has_subset())
-		SG_NOTIMPLEMENTED;
+	if (m_subset)
+		SG_ERROR("A subset is set, cannot set confidences\n");
 
 	if (num_labels && (num_labels != in_num_labels))
 	{
@@ -173,7 +174,7 @@ void CLabels::set_confidences(float64_t* in_confidences, int32_t in_num_labels,
 
 float64_t* CLabels::get_confidences(int32_t& out_num_labels, int32_t& out_num_classes)
 {
-	if (m_subset->has_subset())
+	if (m_subset)
 		SG_NOTIMPLEMENTED;
 
 	out_num_labels=num_labels;
@@ -189,7 +190,7 @@ float64_t* CLabels::get_confidences(int32_t& out_num_labels, int32_t& out_num_cl
 
 void CLabels::get_confidences(float64_t** dst, int32_t* out_num_labels, int32_t* out_num_classes)
 {
-	if (m_subset->has_subset())
+	if (m_subset)
 		SG_NOTIMPLEMENTED;
 
 	ASSERT(dst && out_num_labels && out_num_classes);
@@ -209,7 +210,7 @@ void CLabels::get_confidences(float64_t** dst, int32_t* out_num_labels, int32_t*
 float64_t* CLabels::get_sample_confidences(const int32_t& in_sample_index, 
 										   int32_t& out_num_classes)
 {
-	if (m_subset->has_subset())
+	if (m_subset)
 		SG_NOTIMPLEMENTED;
 
 	out_num_classes=m_num_classes;
@@ -230,25 +231,24 @@ float64_t* CLabels::get_sample_confidences(const int32_t& in_sample_index,
 
 void CLabels::find_labels()
 {
-	if (m_subset->has_subset())
-		SG_NOTIMPLEMENTED;
-
 	ASSERT(m_confidences);
 	ASSERT(labels);
 	
 	float64_t max_conf;
 	int32_t index;
-	for (int32_t n_samp=0; n_samp<num_labels; n_samp++)
+	int32_t subset_size=get_num_labels();
+	for (int32_t n_samp=0; n_samp<subset_size; n_samp++)
 	{
+		int32_t real_n_samp=subset_idx_conversion(n_samp);
 		max_conf=m_confidences[n_samp];
-		labels[m_subset->subset_idx_conversion(n_samp)]=0;
+		labels[real_n_samp]=0;
 		for (int32_t n_class=1; n_class<m_num_classes; n_class++)
 		{
-			index=n_samp+n_class*m_num_classes;
+			index=real_n_samp+n_class*m_num_classes;
 			if (m_confidences[index]>max_conf)
 			{
 				max_conf=m_confidences[index];
-				labels[m_subset->subset_idx_conversion(n_samp)]=n_class;
+				labels[real_n_samp]=n_class;
 			}
 		}
 	}
@@ -260,14 +260,19 @@ bool CLabels::is_two_class_labeling()
 	bool found_plus_one=false;
 	bool found_minus_one=false;
 
-	for (int32_t i=0; i<num_labels; i++)
+	int32_t subset_size=get_num_labels();
+	for (int32_t i=0; i<subset_size; i++)
 	{
-		if (labels[m_subset->subset_idx_conversion(i)]==+1.0)
+		int32_t real_i=subset_idx_conversion(i);
+		if (labels[real_i]==+1.0)
 			found_plus_one=true;
-		else if (labels[m_subset->subset_idx_conversion(i)]==-1.0)
+		else if (labels[real_i]==-1.0)
 			found_minus_one=true;
 		else
-			SG_ERROR("Not a two class labeling label[%d]=%f (only +1/-1 allowed)\n", i, labels[i]);
+		{
+			SG_ERROR("Not a two class labeling label[%d]=%f (only +1/-1 "
+					"allowed)\n", i, labels[real_i]);
+		}
 	}
 
 	if (!found_plus_one)
@@ -294,8 +299,8 @@ int32_t CLabels::get_num_classes()
 
 float64_t* CLabels::get_labels(int32_t &len)
 {
-	if (m_subset->has_subset())
-		SG_ERROR("get_labels() is not possible on subset");
+	if (m_subset)
+		SG_ERROR("get_labels() is not possible on subset\n");
 
 	len=num_labels;
 	return labels;
@@ -304,7 +309,7 @@ float64_t* CLabels::get_labels(int32_t &len)
 
 SGVector<float64_t> CLabels::get_labels()
 {
-	if (m_subset->has_subset())
+	if (m_subset)
 		SG_ERROR("get_labels() is not possible on subset");
 
 	return SGVector<float64_t> (labels, num_labels);
@@ -312,11 +317,11 @@ SGVector<float64_t> CLabels::get_labels()
 
 int32_t* CLabels::get_int_labels(int32_t &len)
 {
-	len=num_labels;
+	len=get_num_labels();
 
-	if (num_labels>0)
+	if (len>0)
 	{
-		int32_t* _labels=new int32_t[num_labels] ;
+		int32_t* _labels=new int32_t[len] ;
 		for (int32_t i=0; i<len; i++)
 			_labels[i]= (int32_t) get_label(i) ;
 		return _labels ;
@@ -327,7 +332,7 @@ int32_t* CLabels::get_int_labels(int32_t &len)
 
 void CLabels::set_int_labels(int32_t * mylabels, int32_t len)
 {
-	if (m_subset->has_subset())
+	if (m_subset)
 		SG_ERROR("set_int_labels() is not possible on subset");
 
 	num_labels = len ;
@@ -357,6 +362,9 @@ void CLabels::load(CFile* loader)
 
 void CLabels::save(CFile* writer)
 {
+	if (m_subset)
+		SG_ERROR("save() is not possible on subset");
+
 	SG_SET_LOCALE_C;
 	ASSERT(writer);
 	ASSERT(labels && labels>0);
@@ -364,12 +372,14 @@ void CLabels::save(CFile* writer)
 	SG_RESET_LOCALE;
 }
 
-void CLabels::set_subset(SGVector<index_t> subset)
+void CLabels::set_subset(CSubset* subset)
 {
-	m_subset->set_subset(subset);
+	SG_UNREF(m_subset);
+	m_subset=subset;
+	SG_REF(subset);
 }
 
 void CLabels::remove_subset()
 {
-	m_subset->remove_subset();
+	set_subset(NULL);
 }

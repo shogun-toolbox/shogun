@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n\n-------------------\n"
 			"applying subset to features\n"
 			"-------------------\n");
-	labels->set_subset(subset_idx);
+	labels->set_subset(new CSubset(subset_idx));
 
 	/* do some stuff do check and output */
 	ASSERT(labels->get_num_labels()==num_subset_idx);

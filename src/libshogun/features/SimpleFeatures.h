@@ -79,6 +79,7 @@ public:
 		copy_feature_matrix(orig.feature_matrix, orig.num_features,
 				orig.num_vectors);
 		initialize_cache();
+		m_subset=orig.m_subset->duplicate();
 	}
 
 	/** constructor
@@ -132,6 +133,7 @@ public:
 	 * Any subset is removed
 	 */
 	void free_feature_matrix() {
+		remove_subset();
 		delete[] feature_matrix;
 		feature_matrix = NULL;
 		feature_matrix_num_features = num_features;
@@ -145,7 +147,7 @@ public:
 	 * Any subset is removed
 	 */
 	void free_features() {
-		CFeatures::remove_subset();
+		remove_subset();
 		free_feature_matrix();
 		SG_UNREF(feature_cache);
 	}
@@ -163,7 +165,7 @@ public:
 	 */
 	ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree) {
 		/* index conversion for subset, only for array access */
-		int32_t real_num = CFeatures::subset_idx_conversion(num);
+		int32_t real_num=subset_idx_conversion(num);
 
 		len = num_features;
 
@@ -224,11 +226,11 @@ public:
 	 */
 	void set_feature_vector(SGVector<ST> vector, int32_t num) {
 		/* index conversion for subset, only for array access */
-		int32_t real_num = CFeatures::subset_idx_conversion(num);
+		int32_t real_num=subset_idx_conversion(num);
 
-		if (real_num >= num_vectors) {
+		if (num>=get_num_vectors()) {
 			SG_ERROR("Index out of bounds (number of vectors %d, you "
-			"requested %d)\n", num_vectors, real_num);
+			"requested %d)\n", get_num_vectors(), num);
 		}
 
 		if (!feature_matrix)
@@ -251,11 +253,11 @@ public:
 	 */
 	SGVector<ST> get_feature_vector(int32_t num) {
 		/* index conversion for subset, only for array access */
-		int32_t real_num = CFeatures::subset_idx_conversion(num);
+		int32_t real_num=subset_idx_conversion(num);
 
-		if (real_num >= num_vectors) {
+		if (num >= get_num_vectors()) {
 			SG_ERROR("Index out of bounds (number of vectors %d, you "
-			"requested %d)\n", num_vectors, real_num);
+			"requested %d)\n", get_num_vectors(), real_num);
 		}
 
 		SGVector<ST> vec;
@@ -293,7 +295,7 @@ public:
 	 * Note: assumes idx is sorted
 	 */
 	void vector_subset(int32_t* idx, int32_t idx_len) {
-		if (CFeatures::has_subset())
+		if (m_subset)
 			SG_ERROR("A subset is set, cannot call vector_subset\n");
 
 		ASSERT(feature_matrix);
@@ -335,7 +337,7 @@ public:
 	 * Note: assumes idx is sorted
 	 */
 	void feature_subset(int32_t* idx, int32_t idx_len) {
-		if (CFeatures::has_subset())
+		if (m_subset)
 			SG_ERROR("A subset is set, cannot call feature_subset\n");
 
 		ASSERT(feature_matrix);
@@ -373,16 +375,16 @@ public:
 	void get_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec) {
 		ASSERT(feature_matrix);
 
-		int64_t num = int64_t(num_features) * num_vectors;
+		int64_t num = int64_t(num_features) * get_num_vectors();
 		*num_feat = num_features;
-		*num_vec = num_vectors;
+		*num_vec = get_num_vectors();
 		*dst = (ST*) SG_MALLOC(sizeof(ST) * num);
 
 		/* copying depends on whether a subset is used */
-		if (CFeatures::has_subset()) {
+		if (m_subset) {
 			/* copy vector wise */
-			for (int32_t i = 0; i < num_vectors; ++i) {
-				int32_t real_i = CFeatures::subset_idx_conversion(i);
+			for (int32_t i = 0; i < *num_vec; ++i) {
+				int32_t real_i = m_subset->subset_idx_conversion(i);
 				memcpy(*dst, &feature_matrix[real_i * int64_t(num_features)],
 						num_features * sizeof(ST));
 			}
@@ -399,7 +401,7 @@ public:
 	 * @return matrix feature matrix
 	 */
 	SGMatrix<ST> get_feature_matrix() {
-		return SGMatrix<ST>(feature_matrix, num_features, m_num_vectors_total);
+		return SGMatrix<ST>(feature_matrix, num_features, num_vectors);
 	}
 
 	/** Setter for feature matrix
@@ -409,11 +411,11 @@ public:
 	 * @param matrix feature matrix to set
 	 */
 	void set_feature_matrix(SGMatrix<ST> matrix) {
+		remove_subset();
 		free_feature_matrix();
 		feature_matrix = matrix.matrix;
 		num_features = matrix.num_rows;
 		num_vectors = matrix.num_cols;
-		m_num_vectors_total = num_vectors;
 	}
 
 	/** get the pointer to the feature matrix
@@ -427,7 +429,7 @@ public:
 	 */
 	ST* get_feature_matrix(int32_t &num_feat, int32_t &num_vec) {
 		num_feat = num_features;
-		num_vec = m_num_vectors_total;
+		num_vec = num_vectors;
 		return feature_matrix;
 	}
 
@@ -457,19 +459,19 @@ public:
 	 * @return transposed sparse feature matrix
 	 */
 	ST* get_transposed(int32_t &num_feat, int32_t &num_vec) {
-		num_feat = num_vectors;
-		num_vec = num_features;
+		num_feat = num_features;
+		num_vec = get_num_vectors();
 
 		ST* fm = new ST[int64_t(num_feat) * num_vec];
 
-for(		int32_t i=0; i<num_vectors; i++)
+		for (int32_t i=0; i<num_vec; i++)
 		{
 			int32_t vlen;
 			bool vfree;
 			ST* vec=get_feature_vector(i, vlen, vfree);
 
 			for (int32_t j=0; j<vlen; j++)
-			fm[j*int64_t(num_vectors)+i]=vec[j];
+			fm[j*int64_t(num_vec)+i]=vec[j];
 
 			free_feature_vector(vec, i, vfree);
 		}
@@ -490,7 +492,7 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 * @param num_vec number of vectors in matrix
 	 */
 	virtual void set_feature_matrix(ST* fm, int32_t num_feat, int32_t num_vec) {
-		if (CFeatures::has_subset())
+		if (m_subset)
 			SG_ERROR("A subset is set, cannot call set_feature_matrix\n");
 
 		free_feature_matrix();
@@ -500,7 +502,6 @@ for(		int32_t i=0; i<num_vectors; i++)
 
 		num_features = num_feat;
 		num_vectors = num_vec;
-		m_num_vectors_total = num_vec;
 		initialize_cache();
 	}
 
@@ -517,12 +518,12 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 */
 	virtual void copy_feature_matrix(ST* src, int32_t num_feat,
 			int32_t num_vec) {
-		if (CFeatures::has_subset())
+		if (m_subset)
 			SG_ERROR("A subset is set, cannot call copy_feature_matrix\n");
 
 		free_feature_matrix();
-		feature_matrix = new ST[((int64_t) num_feat) * num_vec];feature_matrix_num_features
-		= num_feat;
+		feature_matrix = new ST[((int64_t) num_feat) * num_vec];
+		feature_matrix_num_features=num_feat;
 		feature_matrix_num_vectors = num_vec;
 
 		memcpy(feature_matrix, src,
@@ -530,7 +531,6 @@ for(		int32_t i=0; i<num_vectors; i++)
 
 		num_features = num_feat;
 		num_vectors = num_vec;
-		m_num_vectors_total = num_vec;
 		initialize_cache();
 	}
 
@@ -541,7 +541,7 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 * @param df dotfeatures to obtain features from
 	 */
 	void obtain_from_dot(CDotFeatures* df) {
-		CFeatures::remove_subset();
+		remove_subset();
 
 		int32_t num_feat = df->get_dim_feature_space();
 		int32_t num_vec = df->get_num_vectors();
@@ -564,7 +564,6 @@ for(		int32_t i=0; i<num_vectors; i++)
 		}
 		num_features = num_feat;
 		num_vectors = num_vec;
-		m_num_vectors_total = num_vec;
 	}
 
 	/** apply preprocessor
@@ -578,7 +577,7 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 * @return if applying was successful
 	 */
 	virtual bool apply_preprocessor(bool force_preprocessing = false) {
-		if (CFeatures::has_subset())
+		if (m_subset)
 			SG_ERROR("A subset is set, cannot call apply_preproc\n");
 
 		SG_DEBUG( "force: %d\n", force_preprocessing);
@@ -625,7 +624,7 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 * @return number of feature vectors
 	 */
 	virtual inline int32_t get_num_vectors() {
-		return num_vectors;
+		return m_subset ? m_subset->get_size() : num_vectors;
 	}
 
 	/** get number of features (of possible subset)
@@ -652,11 +651,10 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 * @param num number to set
 	 */
 	inline void set_num_vectors(int32_t num) {
-		if (CFeatures::has_subset())
+		if (m_subset)
 			SG_ERROR("A subset is set, cannot call set_num_vectors\n");
 
 		num_vectors = num;
-		m_num_vectors_total = num;
 		initialize_cache();
 	}
 
@@ -665,7 +663,7 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 * not possible with subset
 	 */
 	inline void initialize_cache() {
-		if (CFeatures::has_subset())
+		if (m_subset)
 			SG_ERROR("A subset is set, cannot call initialize_cache\n");
 
 		if (num_features && num_vectors) {
@@ -699,14 +697,13 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 * @return if reshaping was successful
 	 */
 	virtual bool reshape(int32_t p_num_features, int32_t p_num_vectors) {
-		if (CFeatures::has_subset())
+		if (m_subset)
 			SG_ERROR("A subset is set, cannot call reshape\n");
 
 		if (p_num_features * p_num_vectors
 				== this->num_features * this->num_vectors) {
 			num_features = p_num_features;
 			num_vectors = p_num_vectors;
-			m_num_vectors_total = p_num_vectors;
 			return true;
 		} else
 			return false;
@@ -856,9 +853,9 @@ for(		int32_t i=0; i<num_vectors; i++)
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
 	virtual void* get_feature_iterator(int32_t vector_index) {
-		if (vector_index >= num_vectors) {
+		if (vector_index>=get_num_vectors()) {
 			SG_ERROR("Index out of bounds (number of vectors %d, you "
-			"requested %d)\n", num_vectors, vector_index);
+			"requested %d)\n", get_num_vectors(), vector_index);
 		}
 
 		simple_feature_iterator* iterator = new simple_feature_iterator[1];
@@ -912,16 +909,6 @@ for(		int32_t i=0; i<num_vectors; i++)
 		return "SimpleFeatures";
 	}
 
-	virtual void set_subset(SGVector<index_t> subset) {
-		CFeatures::set_subset(subset);
-		num_vectors = subset.vlen;
-	}
-
-	virtual void remove_subset() {
-		CFeatures::remove_subset();
-		num_vectors = m_num_vectors_total;
-	}
-
 protected:
 	/** compute feature vector for sample num
 	 * if target is set the vector is written to target
@@ -945,7 +932,6 @@ private:
 	void init() {
 		num_vectors = 0;
 		num_features = 0;
-		m_num_vectors_total = 0;
 
 		feature_matrix = NULL;
 		feature_matrix_num_vectors = 0;
@@ -955,7 +941,7 @@ private:
 
 		set_generic<ST>();
 		/* not store number of vectors in subset */
-		m_parameters->add(&m_num_vectors_total, "num_vectors",
+		m_parameters->add(&num_vectors, "num_vectors",
 				"Number of vectors.");
 		m_parameters->add(&num_features, "num_features", "Number of features.");
 		m_parameters->add_matrix(&feature_matrix, &feature_matrix_num_features,
@@ -966,9 +952,6 @@ private:
 protected:
 	/// number of vectors in cache
 	int32_t num_vectors;
-
-	/* number of vectors regardless of subset */
-	int32_t m_num_vectors_total;
 
 	/// number of features in cache
 	int32_t num_features;
