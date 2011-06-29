@@ -150,6 +150,142 @@ TYPEMAP_SGVECTOR(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix
 TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
 #undef TYPEMAP_SGVECTOR
+
+#else
+#ifdef HAVE_UJMP
+/* Two dimensional input/output arrays */
+%define TYPEMAP_SGVECTOR(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAYMETHOD, TOARRAYDESC, CLASSDESC, CONSTRUCTOR)
+
+%typemap(jni) shogun::SGVector<SGTYPE>		%{jobject%}
+%typemap(jtype) shogun::SGVector<SGTYPE>		%{Matrix%}
+%typemap(jstype) shogun::SGVector<SGTYPE> 	%{Matrix%}
+
+%typemap(in) shogun::SGVector<SGTYPE>
+{
+	jclass cls;
+	jmethodID mid;
+	SGTYPE *array;
+	jobjectArray jobj;
+	##JNITYPE##Array jarr;
+	JNITYPE *carr;
+	bool isVector;
+	int32_t i, rows, cols;
+	
+	if (!$input) {
+		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+		return $null;	
+	}
+	
+	cls = JCALL1(GetObjectClass, jenv, $input);
+	if (!cls)
+		return $null;
+
+	mid = JCALL3(GetMethodID, jenv, cls, "isRowVector", "()Z");
+	if (!mid)
+		return $null;
+
+	isVector = (int32_t)JCALL2(CallIntMethod, jenv, $input, mid);
+	if (!isVector) {
+		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "vector expected");
+		return $null;
+	}
+
+	mid = JCALL3(GetMethodID, jenv, cls, " getColumnCount", "()I");
+	if (!mid)
+		return $null;
+
+	cols = (int32_t)JCALL2(CallIntMethod, jenv, $input, mid);
+	if (cols < 1) {
+		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null vector");
+		return $null;
+	}
+
+	mid = JCALL3(GetMethodID, jenv, cls, TOARRAYMETHOD, TOARRAYDESC);
+	if (!mid)
+		return $null;
+	
+	jobj = (jobjectArray)JCALL2(CallObjectMethod, jenv, $input, mid);
+	jarr = (JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, jobj, 0);
+	if (!jarr) {
+		SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+		return $null;
+	}
+
+	carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
+	array = new SGTYPE[cols];
+	if (!array) {
+    	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+    	return $null;
+	}
+
+	for (i = 0; i < cols; i++) {
+		array[j] = carr[i];
+	}
+
+	JCALL3(Release##JAVATYPE##ArrayElements, jenv, jarr, carr, 0);
+
+	$1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, cols);
+}
+
+%typemap(out) shogun::SGVector<SGTYPE>
+{
+	int32_t rows = 1;
+	int32_t cols = $1.vlen;
+	JNITYPE arr[cols];
+	jobject res;
+	int32_t i;
+	
+	jclass cls;
+	jmethodID mid;
+		
+	cls = JCALL1(FindClass, jenv, CLASSDESC);
+	if (!cls)
+		return $null;
+	
+	mid = JCALL3(GetMethodID, jenv, cls, "<init>", CONSTRUCTOR);
+	if (!mid)
+		return $null;	
+
+	##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, cols);
+	if (!jarr)
+		return $null;
+
+	for (i = 0; i < cols; i++) {
+		arr[i] = (JNITYPE)$1.vector[i];
+	}
+
+	$1.free_vector();
+
+	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, cols, arr);
+	
+	res = JCALL5(NewObject, jenv, cls, mid, jarr, rows, cols);
+	$result = (jobject)res;
+}
+
+%typemap(javain) shogun::SGVector<SGTYPE> "$javainput"
+%typemap(javaout) shogun::SGVector<SGTYPE> {
+	return $jnicall;
+}
+
+%enddef
+
+/*Define concrete examples of the TYPEMAP_SGVECTOR macros */
+TYPEMAP_SGVECTOR(bool, boolean, Boolean, jboolean, "toBooleanArray", "()[[Z", "org/ujmp/core/booleanmatrix/impl/DefaultDenseBooleanMatrix2D", "([BII)V")
+TYPEMAP_SGVECTOR(char, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
+TYPEMAP_SGVECTOR(uint8_t, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
+TYPEMAP_SGVECTOR(int16_t, short, Short, jshort, "toShortArray", "()[[S", "org/ujmp/core/shortmatrix/impl/DefaultDenseShortMatrix2D", "([SII)V")
+TYPEMAP_SGVECTOR(uint16_t, int, Int, jint, "toIntArray", "()[[I", "org/ujmp/core/intmatrix/impl/DefaultDenseIntMatrix2D", "([III)V")
+TYPEMAP_SGVECTOR(int32_t, int, Int, jint, "toIntArray", "()[[I", "org/ujmp/core/intmatrix/impl/DefaultDenseIntMatrix2D", "([III)V")
+TYPEMAP_SGVECTOR(uint32_t, long, Long, jlong, "toLongArray", "()[[J", "org/ujmp/core/longmatrix/impl/DefaultDenseLongMatrix2D", "([JII)V")
+TYPEMAP_SGVECTOR(int64_t, int, Int, jint, "toIntArray", "()[[I", "org/ujmp/core/intmatrix/impl/DefaultDenseIntMatrix2D", "([III)V")
+TYPEMAP_SGVECTOR(uint64_t, long, Long, jlong, "toLongArray", "()[[J", "org/ujmp/core/longmatrix/impl/DefaultDenseLongMatrix2D", "([JII)V")
+TYPEMAP_SGVECTOR(long long, long, Long, jlong, "toLongArray", "()[[J", "org/ujmp/core/longmatrix/impl/DefaultDenseLongMatrix2D", "([JII)V")
+TYPEMAP_SGVECTOR(float32_t, float, Float, jfloat, "toFloatArray", "()[[F", "org/ujmp/core/floatmatrix/impl/DefaultDenseFloatMatrix2D", "([FII)V")
+TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "org/ujmp/core/doublematrix/impl/DefaultDenseDoubleMatrix2D", "([DII)V")
+
+#undef TYPEMAP_SGVECTOR
+
+#endif
 #endif
 
 #ifdef HAVE_JBLAS
