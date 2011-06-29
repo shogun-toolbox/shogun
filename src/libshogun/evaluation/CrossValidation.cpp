@@ -67,6 +67,11 @@ void CCrossValidation::init()
 			"evaluation_criterium", "Used evaluation criterium");
 }
 
+Parameter* CCrossValidation::get_machine_parameters()
+{
+	return m_machine->m_parameters;
+}
+
 float64_t CCrossValidation::evaluate(int32_t num_runs, float64_t conf_int_p,
 		float64_t* conf_int_low, float64_t* conf_int_up)
 {
@@ -109,10 +114,10 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* do actual cross-validation */
 	for (index_t i=0; i<num_subsets; ++i)
 	{
-		/* set feature subset for training (use method that stores pointer) */
+		/* set feature subset for training */
 		SGVector<index_t> inverse_subset_indices;
 		m_splitting_strategy->generate_subset_inverse(i, inverse_subset_indices);
-		m_features->set_subset(inverse_subset_indices);
+		m_features->set_subset(new CSubset(inverse_subset_indices));
 
 		/* set label subset for training (copy data before) */
 		SGVector<index_t> inverse_subset_indices_copy(
@@ -121,7 +126,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		memcpy(inverse_subset_indices_copy.vector,
 				inverse_subset_indices.vector,
 				inverse_subset_indices.vlen*sizeof(index_t));
-		m_labels->set_subset(inverse_subset_indices_copy);
+		m_labels->set_subset(new CSubset(inverse_subset_indices_copy));
 
 		/* train machine on training features */
 		m_machine->train(m_features);
@@ -129,7 +134,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* set feature subset for testing (subset method that stores pointer) */
 		SGVector<index_t> subset_indices;
 		m_splitting_strategy->generate_subset_indices(i, subset_indices);
-		m_features->set_subset(subset_indices);
+		m_features->set_subset(new CSubset(subset_indices));
 
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
@@ -139,7 +144,7 @@ float64_t CCrossValidation::evaluate_one_run()
 				new index_t[subset_indices.vlen], subset_indices.vlen);
 		memcpy(subset_indices_copy.vector, subset_indices.vector,
 				subset_indices.vlen*sizeof(index_t));
-		m_labels->set_subset(subset_indices_copy);
+		m_labels->set_subset(new CSubset(subset_indices_copy));
 
 		/* evaluate */
 		results[i]=m_evaluation_criterium->evaluate(result_labels, m_labels);

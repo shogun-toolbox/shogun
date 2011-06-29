@@ -19,7 +19,9 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  parameter_iterate_float64 parameter_iterate_sgobject \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \
-		  modelselection_grid_search subset_simple_features
+		  modelselection_grid_search_simple features_subset_labels \
+		  features_subset_simple_features
+
 
 all: $(TARGETS)
 

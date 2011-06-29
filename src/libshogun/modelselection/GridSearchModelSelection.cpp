@@ -50,8 +50,7 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 	/* apply all combinations and search for best one */
 	for (index_t i=0; i<combinations.get_num_elements(); ++i)
 	{
-		combinations[i]->apply_to_parameter(
-				m_cross_validation->get_machine()->m_parameters);
+		combinations[i]->apply_to_parameter(m_cross_validation->get_machine_parameters());
 		float64_t result=m_cross_validation->evaluate();
 
 		/* check if current result is better, delete old combinations */
@@ -59,7 +58,9 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 		{
 			if (result>best_result)
 			{
-				delete best_combination;
+				if (best_combination)
+					best_combination->destroy(true, true);
+
 				best_combination=combinations[i];
 				best_result=result;
 			}
@@ -70,7 +71,9 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 		{
 			if (result<best_result)
 			{
-				delete best_combination;
+				if (best_combination)
+					best_combination->destroy(true, true);
+
 				best_combination=combinations[i];
 				best_result=result;
 			}

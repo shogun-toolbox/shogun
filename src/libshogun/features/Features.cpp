@@ -69,7 +69,7 @@ CFeatures::init(void)
 
 	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
 
-	m_subset=new CSubset();
+	m_subset=NULL;
 	properties = FP_NONE;
 	cache_size = 0;
 	preproc = NULL;
@@ -287,4 +287,17 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 		result= ( (this->get_feature_class() == f->get_feature_class()) &&
 				(this->get_feature_type() == f->get_feature_type()));
 	return result;
+}
+
+void CFeatures::set_subset(CSubset* subset)
+{
+	SG_UNREF(m_subset);
+	m_subset=subset;
+	SG_REF(subset);
+	subset_changed_post();
+}
+
+void CFeatures::remove_subset()
+{
+	set_subset(NULL);
 }

@@ -91,6 +91,8 @@ int main(int argc, char **argv)
 
 	/* create example tree */
 	CModelSelectionParameters* tree=create_param_tree();
+	SG_REF(tree);
+
 	tree->print();
 
 	/* build combinations of parameter trees */
@@ -106,7 +108,7 @@ int main(int argc, char **argv)
 	}
 
 	/* delete example tree */
-	tree->destroy();
+	SG_UNREF(tree);
 
 	SG_SPRINT("END\n");
 

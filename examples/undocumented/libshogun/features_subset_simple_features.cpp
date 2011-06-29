@@ -10,6 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/Subset.h>
 
 using namespace shogun;
 
@@ -55,7 +56,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n\n-------------------\n"
 			"applying subset to features\n"
 			"-------------------\n");
-	features->set_subset(subset_idx);
+	features->set_subset(new CSubset(subset_idx));
 
 	/* do some stuff do check and output */
 	ASSERT(features->get_num_vectors()==num_subset_idx);

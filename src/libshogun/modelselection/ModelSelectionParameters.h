@@ -28,7 +28,8 @@ enum ERangeType
  * structure is organized as a tree with different kinds of nodes, depending on
  * the values of its member variables of name and CSGObject.
  *
- * -root node: no name and no CSGObject, may have children
+ * -root node: no name and no CSGObject, may have children. Note that root nodes
+ * call destroy() upon destructor call and destroy the complete tree
  *
  * -placeholder node: only has a name and children, used to bundle parameters
  * that belong to the learning machine directly, like "kernel" or "C"
@@ -37,7 +38,7 @@ enum ERangeType
  * parameters of the CSGObject. CSGObjects are SG_REF'ed/SG_UNREF'ed
  *
  * -value node: a node with a (parameter) name and an array of values for that
- * parameter. These ranges may be set using set_range(). This nod is always a
+ * parameter. These ranges may be set using set_range(). This node is always a
  * leaf
  *
  * After a (legal!) tree is constructed with the append_child method, all
@@ -124,13 +125,6 @@ public:
 	 */
 	void get_combinations(DynArray<ParameterCombination*>& result);
 
-	/** setter for the destroy tree field. If set to true, destroy will be
-	 * called in the destructor.
-	 *
-	 * @param destroy_tree if true, tree gets destroyed in destructor call
-	 */
-	void set_destroy_tree(bool destroy_tree) { m_destroy_tree=destroy_tree; }
-
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
 	 *
@@ -159,8 +153,6 @@ private:
 	const char* m_node_name;
 	SGVector<float64_t> m_values;
 	DynArray<CModelSelectionParameters*> m_child_nodes;
-
-	bool m_destroy_tree;
 };
 
 }

@@ -51,7 +51,9 @@ namespace shogun
  *   set of strings) from which all the specific features like CSimpleFeatures<float64_t>
  *   (dense real valued feature matrices) are derived.
  *
- *   Inherits from Subset to provide feature subset functionality.
+ *   Subsets may be supported by inheriting classes.
+ *   Sub-classes may want to overwrite the subset_changed_post() method which is
+ *   called automatically after each subset change
  */
 class CFeatures : public CSGObject
 {
@@ -235,37 +237,29 @@ class CFeatures : public CSGObject
 			properties &= (properties | p) ^ p;
 		}
 
-		/*********************************
-		 * wrapper for Subset methods
-		 * (to avoid mutliple inheritance)
-		 ********************************/
-		virtual void remove_subset()
-		{
-			m_subset->remove_subset();
-		}
+		/** setter for subset variable, deletes old one
+		 * subset_changed_post() is called afterwards
+		 *
+		 * @param subset subset instance to set
+		 */
+		virtual void set_subset(CSubset* subset);
 
-		virtual SGVector<index_t> get_subset() const
-		{
-			return m_subset->get_subset();
-		}
+		/** deletes any set subset
+		 * subset_changed_post() is called afterwards */
+		virtual void remove_subset();
 
-		bool has_subset() const
-		{
-			return m_subset->has_subset();
-		}
+		/* method may be overwritten to update things that depend on subset */
+		virtual void subset_changed_post() {}
 
-		virtual void set_subset(SGVector<index_t> subset)
+		/** does subset index conversion with the underlying subset if possible
+		 *
+		 * @param idx index to convert
+		 * @return converted index
+		 */
+		inline const index_t subset_idx_conversion(index_t idx) const
 		{
-			m_subset->set_subset(subset);
+			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
 		}
-
-		inline index_t subset_idx_conversion(index_t idx) const
-		{
-			return m_subset->subset_idx_conversion(idx);
-		}
-		/***********************************
-		 * End of wrapper for Subset methods
-		 **********************************/
 
 	private:
 		/** feature properties */
@@ -283,6 +277,7 @@ class CFeatures : public CSGObject
 		/// i'th entry is true if features were already preprocessed with preproc i
 		bool* preprocessed;
 
+	protected:
 		/* subset class to enable subset support for this class */
 		CSubset* m_subset;
 };
