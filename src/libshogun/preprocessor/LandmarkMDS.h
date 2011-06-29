@@ -85,6 +85,11 @@ public:
 		return m_landmark_number;
 	};
 
+	/** apply preproc to distance
+	 *
+	 */
+	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
+
 protected:
 
 	/** number of landmarks */
@@ -94,11 +99,6 @@ protected:
 	 * @return sampled indexes for landmarks
 	 */
 	SGVector<int32_t> get_landmark_idxs(int32_t count, int32_t total_count);
-
-	/** apply preproc to distance
-	 *
-	 */
-	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
 
 };
 
