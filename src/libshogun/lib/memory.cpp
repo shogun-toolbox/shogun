@@ -101,6 +101,27 @@ void* SG_MALLOC(size_t size)
 	return p;
 }
 
+void* SG_CALLOC(size_t num, size_t size)
+{
+	void* p=calloc(num, size);
+
+	if (!p)
+	{
+		const size_t buf_len=128;
+		char buf[buf_len];
+		size_t written=snprintf(buf, buf_len,
+			"Out of memory error, tried to allocate %lld bytes using calloc.\n",
+			(long long int) size);
+
+		if (written<buf_len)
+			throw ShogunException(buf);
+		else
+			throw ShogunException("Out of memory error using calloc.\n");
+	}
+
+	return p;
+}
+
 void  SG_FREE(void* ptr)
 {
 	free(ptr);

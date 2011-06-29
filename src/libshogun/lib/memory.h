@@ -25,6 +25,7 @@ void operator delete[](void *p);
 void* SG_MALLOC(size_t size);
 void  SG_FREE(void* ptr);
 void* SG_REALLOC(void* ptr, size_t size);
+void* SG_CALLOC(size_t num, size_t size);
 
 #ifdef TRACE_MEMORY_ALLOCS
 namespace shogun

@@ -43,8 +43,7 @@ template <class T> class DynArray
 		{
 			this->resize_granularity=p_resize_granularity;
 
-			array=(T*) calloc(p_resize_granularity, sizeof(T));
-			ASSERT(array);
+			array=(T*)SG_CALLOC(p_resize_granularity, sizeof(T));
 
 			num_elements=p_resize_granularity;
 			last_element_idx=-1;
@@ -345,7 +344,8 @@ template <class T> class DynArray
 			return array[index];
 		}
 
-		/** operator overload for array assignment
+		/** operator overload for array assignment.
+		 * Left array is resized if needed.
 		 *
 		 * @param orig original array
 		 * @return new array
@@ -353,6 +353,14 @@ template <class T> class DynArray
 		DynArray<T>& operator=(DynArray<T>& orig)
 		{
 			resize_granularity=orig.resize_granularity;
+
+			/* check if orig array is larger than current, create new array */
+			if (orig.num_elements>num_elements)
+			{
+				SG_FREE(array);
+				array=(T*)SG_MALLOC(orig.num_elements*sizeof(T));
+			}
+
 			memcpy(array, orig.array, sizeof(T)*orig.num_elements);
 			num_elements=orig.num_elements;
 			last_element_idx=orig.last_element_idx;
