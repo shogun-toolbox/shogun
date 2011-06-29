@@ -435,15 +435,12 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/** get a transposed copy of the features
 		 *
-		 * not implemented for subset
+		 * possible with subset
 		 *
 		 * @return transposed copy
 		 */
 		CStringFeatures<ST>* get_transposed()
 		{
-			if (m_subset)
-				SG_NOTIMPLEMENTED;
-
 			int32_t num_feat;
 			int32_t num_vec;
 			SGString<ST>* s=get_transposed(num_feat, num_vec);
@@ -462,7 +459,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * note that strings all have to have same length
 		 *
-		 * not implemented for subset
+		 * possible with subset
 		 *
 		 * @param num_feat number of features in matrix
 		 * @param num_vec number of vectors in matrix
@@ -470,10 +467,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		SGString<ST>* get_transposed(int32_t &num_feat, int32_t &num_vec)
 		{
-			if (m_subset)
-				SG_NOTIMPLEMENTED;
-
-			num_feat=num_vectors;
+			num_feat=get_num_vectors();
 			num_vec=get_max_vector_length();
 			ASSERT(have_same_length());
 

@@ -182,7 +182,7 @@ public:
 				if (feat)
 					return feat;
 				else {
-					feat = feature_cache->set_entry(num);
+					feat = feature_cache->set_entry(real_num);
 				}
 			}
 
@@ -275,7 +275,7 @@ public:
 	 */
 	void free_feature_vector(ST* feat_vec, int32_t num, bool dofree) {
 		if (feature_cache)
-			feature_cache->unlock_entry(num);
+			feature_cache->unlock_entry(subset_idx_conversion(num));
 
 		if (dofree)
 			delete[] feat_vec;
@@ -459,12 +459,12 @@ public:
 	 * @return transposed sparse feature matrix
 	 */
 	ST* get_transposed(int32_t &num_feat, int32_t &num_vec) {
-		num_feat = num_features;
-		num_vec = get_num_vectors();
+		num_feat = get_num_vectors();
+		num_vec = num_features;
 
 		ST* fm = new ST[int64_t(num_feat) * num_vec];
 
-		for (int32_t i=0; i<num_vec; i++)
+		for (int32_t i=0; i<num_feat; i++)
 		{
 			int32_t vlen;
 			bool vfree;
