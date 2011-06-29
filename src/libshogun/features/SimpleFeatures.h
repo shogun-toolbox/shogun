@@ -459,12 +459,12 @@ public:
 	 * @return transposed sparse feature matrix
 	 */
 	ST* get_transposed(int32_t &num_feat, int32_t &num_vec) {
-		num_feat = num_features;
-		num_vec = get_num_vectors();
+		num_feat = get_num_vectors();
+		num_vec = num_features;
 
 		ST* fm = new ST[int64_t(num_feat) * num_vec];
 
-		for (int32_t i=0; i<num_vec; i++)
+		for (int32_t i=0; i<num_feat; i++)
 		{
 			int32_t vlen;
 			bool vfree;
