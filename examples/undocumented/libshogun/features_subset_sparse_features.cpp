@@ -22,7 +22,7 @@ void print_message(FILE* target, const char* str)
 const int32_t num_vectors=6;
 const int32_t dim_features=6;
 
-bool check_transposed(CSparseFeatures<int32_t>* features)
+void check_transposed(CSparseFeatures<int32_t>* features)
 {
 	CSparseFeatures<int32_t>* transposed=features->get_transposed();
 	CSparseFeatures<int32_t>* double_transposed=transposed->get_transposed();
@@ -37,21 +37,7 @@ bool check_transposed(CSparseFeatures<int32_t>* features)
 				double_transposed->get_sparse_feature_vector(i, len, free_2);
 
 		for (index_t j=0; j<len; j++)
-		{
-			if (orig_vec[j].entry!=new_vec[j].entry)
-			{
-				if (free_1)
-					delete orig_vec;
-
-				if (free_2)
-					delete new_vec;
-
-				SG_UNREF(transposed);
-				SG_UNREF(double_transposed);
-
-				return false;
-			}
-		}
+			ASSERT(orig_vec[j].entry==new_vec[j].entry);
 
 		if (free_1)
 			delete orig_vec;
@@ -63,8 +49,6 @@ bool check_transposed(CSparseFeatures<int32_t>* features)
 
 	SG_UNREF(transposed);
 	SG_UNREF(double_transposed);
-
-	return true;
 }
 
 int main(int argc, char **argv)
@@ -105,7 +89,7 @@ int main(int argc, char **argv)
 
 	/* check get_Transposed method */
 	SG_SPRINT("checking transpose...");
-	ASSERT(check_transposed(features));
+	check_transposed(features);
 	SG_SPRINT("does work\n");
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
@@ -141,6 +125,11 @@ int main(int argc, char **argv)
 	/* do some stuff do check and output */
 	ASSERT(features->get_num_vectors()==num_vectors);
 	SG_SPRINT("features->get_num_vectors(): %d\n", features->get_num_vectors());
+
+	/* check get_Transposed method */
+	SG_SPRINT("checking transpose...");
+	check_transposed(features);
+	SG_SPRINT("does work\n");
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 	{
