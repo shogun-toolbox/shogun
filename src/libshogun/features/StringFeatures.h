@@ -1645,7 +1645,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * wrapper for template method
 		 *
-		 * not implemented for subset
+		 * any subset is removed before
 		 *
 		 * @param sf string features
 		 * @param start start
@@ -1656,16 +1656,12 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		inline bool obtain_from_char(CStringFeatures<char>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 		{
-			// FIXME
-			if (m_subset) //|| sf->m_subset)
-				SG_NOTIMPLEMENTED;
-
 			return obtain_from_char_features(sf, start, p_order, gap, rev);
 		}
 
 		/** template obtain from char features
 		 *
-		 * not implemented for subset
+		 * any subset is removed before, subset of parameter sf is possible
 		 *
 		 * @param sf string features
 		 * @param start start
@@ -1677,10 +1673,6 @@ template <class ST> class CStringFeatures : public CFeatures
 		template <class CT>
 			bool obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 			{
-				//FIXME
-				if (m_subset)// || sf->m_subset)
-					SG_NOTIMPLEMENTED;
-
 				ASSERT(sf);
 
 				CAlphabet* alpha=sf->get_alphabet();
