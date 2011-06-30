@@ -12,7 +12,7 @@
 
 #include "lib/common.h"
 #include "features/Features.h"
-#include "lib/StreamingFile.h"
+#include "lib/FeatureStream.h"
 
 namespace shogun
 {
@@ -20,7 +20,7 @@ namespace shogun
  * algorithms.
  *
  * Reading/parsing of input, and learning through the algorithm are
- * carried out in separate threads. Input is from a CStreamingFile
+ * carried out in separate threads. Input is from a CFeatureStream
  * object.
  *
  * A StreamingFeatures object usually stores only one example at a
@@ -75,11 +75,11 @@ public:
 	/**
 	 * Constructor with input information passed.
 	 *
-	 * @param file CStreamingFile to take input from.
+	 * @param file CFeatureStream to take input from.
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
+	CStreamingFeatures(CFeatureStream* file, bool is_labelled, int32_t size)
 		: CFeatures() { }
 	
 	/**
@@ -102,7 +102,7 @@ public:
 	/** 
 	 * The derived object must set the function which will be used
 	 * for reading one vector from the file.  This function should
-	 * be a member of the CStreamingFile class.
+	 * be a member of the CFeatureStream class.
 	 *
 	 * See the implementation in StreamingSimpleFeatures for
 	 * details.
@@ -113,7 +113,7 @@ public:
 	 * The derived object must set the function which will be used
 	 * by the parser for reading one vector and label from the
 	 * file.  This function should be a member of the
-	 * CStreamingFile class.
+	 * CFeatureStream class.
 	 *
 	 * See the implementation in StreamingSimpleFeatures for
 	 * details.

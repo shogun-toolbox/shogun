@@ -1018,8 +1018,9 @@ template <class T> void CAsciiFile::append_item(
 }
 
 #ifdef __MACH__
-ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *stream)
+ssize_t CAsciiFile::get_delim(char **lineptr, size_t *n, char delimiter)
 {
+	FILE* stream=file;
 	int32_t total_bytes_read=0;
 	int32_t default_size=10;
 				
@@ -1073,19 +1074,19 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 	}
 }
 
-ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
+ssize_t CAsciiFile::get_line(char **lineptr, size_t *n)
 {
-	return getdelim(lineptr, n, '\n', stream);
+	return get_delim(lineptr, n, '\n');
 }
 
 #else
-ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *stream)
+ssize_t CAsciiFile::get_delim(char **lineptr, size_t *n, char delimiter)
 {
-	return ::getdelim(lineptr, n, delimiter, stream);
+	return getdelim(lineptr, n, delimiter, file);
 }
 
-ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
+ssize_t CAsciiFile::get_line(char **lineptr, size_t *n)
 {
-	return ::getline(lineptr, n, stream);
+	return getline(lineptr, n, file);
 }
 #endif

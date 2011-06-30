@@ -386,11 +386,10 @@ public:
 	 * @param lineptr Buffer to store the string.
 	 * @param n Size of buffer. 
 	 * @param delimiter Delimiter upto (and including) which to read.
-	 * @param stream FILE pointer to read from.
 	 * 
 	 * @return Number of bytes read.
 	 */
-	static ssize_t getdelim(char **lineptr, size_t *n, char delimiter, FILE* stream);
+	ssize_t get_delim(char **lineptr, size_t *n, char delimiter);
 
 	/** 
 	 * getline() implementation.
@@ -398,13 +397,11 @@ public:
 	 * Reads upto and including the first \n from the file.
 	 * @param lineptr Buffer
 	 * @param n Size of buffer
-	 * @param stream FILE pointer to read from
 	 * 
 	 * @return Number of bytes read
 	 */
-	static ssize_t getline(char **lineptr, size_t *n, FILE *stream);
-
-private:
+	ssize_t get_line(char **lineptr, size_t *n);
+	
 	/** helper function to read vectors / matrices
 	 *
 	 * @param items dynamic array of values

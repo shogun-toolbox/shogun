@@ -14,7 +14,8 @@
 #include "lib/Mathematics.h"
 #include "features/StreamingDotFeatures.h"
 #include "lib/DataType.h"
-#include "lib/StreamingFileFromSimpleFeatures.h"
+#include "lib/SimpleStreamFromSimpleFeatures.h"
+#include "lib/SimpleAsciiStream.h"
 #include "lib/InputParser.h"
 
 namespace shogun
@@ -32,7 +33,7 @@ public:
 	 * Default constructor.
 	 *
 	 * Sets the reading functions to be
-	 * CStreamingFile::get_*_vector and get_*_vector_and_label
+	 * CFeatureStream::get_*_vector and get_*_vector_and_label
 	 * depending on the type T.
 	 */
 	CStreamingSimpleFeatures()
@@ -46,11 +47,11 @@ public:
 	 * Constructor taking args.
 	 * Initializes the parser with the given args.
 	 * 
-	 * @param file StreamingFile object, input file.
+	 * @param file FeatureStream object, input file.
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingSimpleFeatures(CStreamingFile* file,
+	CStreamingSimpleFeatures(CFeatureStream* file,
 				 bool is_labelled,
 				 int32_t size)
 		: CStreamingDotFeatures()
@@ -59,7 +60,7 @@ public:
 		init(file, is_labelled, size);
 	}
 
-	CStreamingSimpleFeatures(CStreamingFileFromSimpleFeatures* file,
+	CStreamingSimpleFeatures(CSimpleStreamFromSimpleFeatures* file,
 				 bool is_labelled=false, int32_t size=10)
 		: CStreamingDotFeatures()
 	{
@@ -79,7 +80,7 @@ public:
 
 	/** 
 	 * Sets the read function (in case the examples are
-	 * unlabelled) to get_*_vector() from CStreamingFile.
+	 * unlabelled) to get_*_vector() from CFeatureStream.
 	 *
 	 * The exact function depends on type T.
 	 * 
@@ -90,7 +91,7 @@ public:
 
 	/** 
 	 * Sets the read function (in case the examples are labelled)
-	 * to get_*_vector_and_label from CStreamingFile.
+	 * to get_*_vector_and_label from CFeatureStream.
 	 *
 	 * The exact function depends on type T.
 	 * 
@@ -288,11 +289,11 @@ private:
 	/** 
 	 * Calls init, and also initializes the parser with the given args.
 	 * 
-	 * @param file StreamingFile to read from
+	 * @param file FeatureStream to read from
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	void init(CFeatureStream *file, bool is_labelled, int32_t size);
 
 protected:
 		
@@ -302,8 +303,8 @@ protected:
 	/// The parser object, which reads from input and returns parsed example objects.
 	CInputParser<T> parser;
 
-	/// The StreamingFile object to read from.
-	CStreamingFile* working_file;
+	/// The FeatureStream object to read from.
+	CFeatureStream* working_file;
 
 	/// The current example's feature vector as an SGVector<T>
 	SGVector<T> current_sgvector;
@@ -324,7 +325,7 @@ protected:
 #define SET_VECTOR_READER(sg_type, sg_function)				\
 template <> void CStreamingSimpleFeatures<sg_type>::set_vector_reader() \
 {									\
-	parser.set_read_vector(&CStreamingFile::sg_function);		\
+	parser.set_read_vector(&CFeatureStream::sg_function);		\
 }
 
 SET_VECTOR_READER(bool, get_bool_vector);
@@ -346,7 +347,7 @@ SET_VECTOR_READER(floatmax_t, get_longreal_vector);
 #define SET_VECTOR_AND_LABEL_READER(sg_type, sg_function)		\
 template <> void CStreamingSimpleFeatures<sg_type>::set_vector_and_label_reader() \
 {									\
-	parser.set_read_vector_and_label(&CStreamingFile::sg_function); \
+	parser.set_read_vector_and_label(&CFeatureStream::sg_function); \
 }
 
 SET_VECTOR_AND_LABEL_READER(bool, get_bool_vector_and_label);
@@ -396,7 +397,7 @@ void CStreamingSimpleFeatures<T>::init()
 }
 
 template <class T>
-void CStreamingSimpleFeatures<T>::init(CStreamingFile* file,
+void CStreamingSimpleFeatures<T>::init(CFeatureStream* file,
 				    bool is_labelled,
 				    int32_t size)
 {

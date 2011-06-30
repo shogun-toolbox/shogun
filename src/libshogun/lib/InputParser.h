@@ -12,7 +12,7 @@
 #define __INPUTPARSER_H__
 
 #include "lib/io.h"
-#include "lib/StreamingFile.h"
+#include "lib/FeatureStream.h"
 #include "lib/common.h"
 #include "lib/ParseBuffer.h"
 #include <pthread.h>
@@ -51,11 +51,11 @@ namespace shogun
 		 * is_example_used is initialized to EMPTY.
 		 * example_type is LABELLED by default.
 		 *
-		 * @param input_file CStreamingFile object
+		 * @param input_file CFeatureStream object
 		 * @param is_labelled Whether example is labelled or not (bool), optional
 		 * @param size Size of the buffer in number of examples
 		 */
-		void init(CStreamingFile* input_file, bool is_labelled, int32_t size);
+		void init(CFeatureStream* input_file, bool is_labelled, int32_t size);
 
 		/**
 		 * Test if parser is running.
@@ -76,27 +76,27 @@ namespace shogun
 		 * Sets the function used for reading a vector from
 		 * the file.
 		 * 
-		 * The function must be a member of CStreamingFile,
+		 * The function must be a member of CFeatureStream,
 		 * taking a T* as input for the vector, and an int for
 		 * length, setting both by reference. The function
 		 * returns void.
 		 *
 		 * The argument is a function pointer to that function.
 		 */
-		void set_read_vector(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len));
+		void set_read_vector(void (CFeatureStream::*func_ptr)(T* &vec, int32_t &len));
 		
 		/** 
 		 * Sets the function used for reading a vector and
 		 * label from the file.
 		 * 
-		 * The function must be a member of CStreamingFile,
+		 * The function must be a member of CFeatureStream,
 		 * taking a T* as input for the vector, an int for
 		 * length, and a float for the label, setting all by
 		 * reference. The function returns void.
 		 *
 		 * The argument is a function pointer to that function.
 		 */
-		void set_read_vector_and_label(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len, float64_t &label));
+		void set_read_vector_and_label(void (CFeatureStream::*func_ptr)(T* &vec, int32_t &len, float64_t &label));
 
 		/** 
 		 * This is the function pointer to the function to
@@ -104,7 +104,7 @@ namespace shogun
 		 *
 		 * It is called while reading a vector.
 		 */
-		void (CStreamingFile::*read_vector) (T* &vec, int32_t &len);
+		void (CFeatureStream::*read_vector) (T* &vec, int32_t &len);
 
 		/** 
 		 * This is the function pointer to the function to
@@ -112,12 +112,12 @@ namespace shogun
 		 *
 		 * It is called while reading a vector and a label.
 		 */
-		void (CStreamingFile::*read_vector_and_label) (T* &vec, int32_t &len, float64_t &label);
+		void (CFeatureStream::*read_vector_and_label) (T* &vec, int32_t &len, float64_t &label);
 	
 		/**
 		 * Gets feature vector, length and label.
 		 * Sets their values by reference.
-		 * Uses method for reading the vector defined in CStreamingFile.
+		 * Uses method for reading the vector defined in CFeatureStream.
 		 *
 		 * @param feature_vector Pointer to feature vector
 		 * @param length Features in vector
@@ -132,7 +132,7 @@ namespace shogun
 		/**
 		 * Gets feature vector and length by reference.
 		 * Assumes examples are unlabelled.
-		 * Uses method for reading the vector defined in CStreamingFile.
+		 * Uses method for reading the vector defined in CFeatureStream.
 		 *
 		 * @param feature_vector Pointer to feature vector
 		 * @param length Features in vector
@@ -236,8 +236,8 @@ namespace shogun
 
 	protected:
 
-		CStreamingFile* input_source; /**< Input source,
-					       * CStreamingFile object */
+		CFeatureStream* input_source; /**< Input source,
+					       * CFeatureStream object */
 
 		pthread_t parse_thread;/**< Parse thread */
 
@@ -261,14 +261,14 @@ namespace shogun
 	};
 
 	template <class T>
-		void CInputParser<T>::set_read_vector(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len))
+		void CInputParser<T>::set_read_vector(void (CFeatureStream::*func_ptr)(T* &vec, int32_t &len))
 	{
 		// Set read_vector to point to the function passed as arg
 		read_vector=func_ptr;
 	}
 
 	template <class T>
-		void CInputParser<T>::set_read_vector_and_label(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len, float64_t &label))
+		void CInputParser<T>::set_read_vector_and_label(void (CFeatureStream::*func_ptr)(T* &vec, int32_t &len, float64_t &label))
 	{
 		// Set read_vector_and_label to point to the function passed as arg
 		read_vector_and_label=func_ptr;
@@ -290,7 +290,7 @@ namespace shogun
 	}
 
 	template <class T>
-		void CInputParser<T>::init(CStreamingFile* input_file, bool is_labelled = true, int32_t size = PARSER_DEFAULT_BUFFSIZE)
+		void CInputParser<T>::init(CFeatureStream* input_file, bool is_labelled = true, int32_t size = PARSER_DEFAULT_BUFFSIZE)
 	{
 		input_source = input_file;
 

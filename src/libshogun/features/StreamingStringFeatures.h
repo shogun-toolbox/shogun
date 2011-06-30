@@ -32,7 +32,7 @@ public:
 	 * Default constructor.
 	 *
 	 * Sets the reading functions to be
-	 * CStreamingFile::get_*_vector and get_*_vector_and_label
+	 * CFeatureStream::get_*_vector and get_*_vector_and_label
 	 * depending on the type T.
 	 */
 	CStreamingStringFeatures()
@@ -47,11 +47,11 @@ public:
 	 * Constructor taking args.
 	 * Initializes the parser with the given args.
 	 * 
-	 * @param file StreamingFile object, input file.
+	 * @param file FeatureStream object, input file.
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingStringFeatures(CStreamingFile* file,
+	CStreamingStringFeatures(CFeatureStream* file,
 				 bool is_labelled,
 				 int32_t size)
 		: CStreamingFeatures()
@@ -74,7 +74,7 @@ public:
 
 	/** 
 	 * Sets the read function (in case the examples are
-	 * unlabelled) to get_*_vector() from CStreamingFile.
+	 * unlabelled) to get_*_vector() from CFeatureStream.
 	 *
 	 * The exact function depends on type T.
 	 * 
@@ -85,7 +85,7 @@ public:
 
 	/** 
 	 * Sets the read function (in case the examples are labelled)
-	 * to get_*_vector_and_label from CStreamingFile.
+	 * to get_*_vector_and_label from CFeatureStream.
 	 *
 	 * The exact function depends on type T.
 	 * 
@@ -292,11 +292,11 @@ private:
 	/** 
 	 * Calls init, and also initializes the parser with the given args.
 	 * 
-	 * @param file StreamingFile to read from
+	 * @param file FeatureStream to read from
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	void init(CFeatureStream *file, bool is_labelled, int32_t size);
 
 protected:
 
@@ -312,8 +312,8 @@ protected:
 	/// If remapping is enabled, this is the target alphabet
 	CAlphabet* alpha_bin;
 
-	/// The StreamingFile object to read from.
-	CStreamingFile* working_file;
+	/// The FeatureStream object to read from.
+	CFeatureStream* working_file;
 
 	/// The current example's string as an SGString<T>
 	SGString<T> current_sgstring;
@@ -340,44 +340,44 @@ protected:
 #define SET_VECTOR_READER(sg_type, sg_function)				\
 template <> void CStreamingStringFeatures<sg_type>::set_vector_reader() \
 {									\
-	parser.set_read_vector(&CStreamingFile::sg_function);		\
+	parser.set_read_vector(&CFeatureStream::sg_function);		\
 }
 
-SET_VECTOR_READER(bool, get_bool_string);
-SET_VECTOR_READER(char, get_char_string);
-SET_VECTOR_READER(int8_t, get_int8_string);
-SET_VECTOR_READER(uint8_t, get_byte_string);
-SET_VECTOR_READER(int16_t, get_short_string);
-SET_VECTOR_READER(uint16_t, get_word_string);
-SET_VECTOR_READER(int32_t, get_int_string);
-SET_VECTOR_READER(uint32_t, get_uint_string);
-SET_VECTOR_READER(int64_t, get_long_string);
-SET_VECTOR_READER(uint64_t, get_ulong_string);
-SET_VECTOR_READER(float32_t, get_shortreal_string);
-SET_VECTOR_READER(float64_t, get_real_string);
-SET_VECTOR_READER(floatmax_t, get_longreal_string);
+SET_VECTOR_READER(bool, get_bool_vector);
+SET_VECTOR_READER(char, get_char_vector);
+SET_VECTOR_READER(int8_t, get_int8_vector);
+SET_VECTOR_READER(uint8_t, get_byte_vector);
+SET_VECTOR_READER(int16_t, get_short_vector);
+SET_VECTOR_READER(uint16_t, get_word_vector);
+SET_VECTOR_READER(int32_t, get_int_vector);
+SET_VECTOR_READER(uint32_t, get_uint_vector);
+SET_VECTOR_READER(int64_t, get_long_vector);
+SET_VECTOR_READER(uint64_t, get_ulong_vector);
+SET_VECTOR_READER(float32_t, get_shortreal_vector);
+SET_VECTOR_READER(float64_t, get_real_vector);
+SET_VECTOR_READER(floatmax_t, get_longreal_vector);
 	
 #undef SET_VECTOR_READER
 
 #define SET_VECTOR_AND_LABEL_READER(sg_type, sg_function)		\
 template <> void CStreamingStringFeatures<sg_type>::set_vector_and_label_reader() \
 {									\
-	parser.set_read_vector_and_label(&CStreamingFile::sg_function); \
+	parser.set_read_vector_and_label(&CFeatureStream::sg_function); \
 }
 
-SET_VECTOR_AND_LABEL_READER(bool, get_bool_string_and_label);
-SET_VECTOR_AND_LABEL_READER(char, get_char_string_and_label);
-SET_VECTOR_AND_LABEL_READER(int8_t, get_int8_string_and_label);
-SET_VECTOR_AND_LABEL_READER(uint8_t, get_byte_string_and_label);
-SET_VECTOR_AND_LABEL_READER(int16_t, get_short_string_and_label);
-SET_VECTOR_AND_LABEL_READER(uint16_t, get_word_string_and_label);
-SET_VECTOR_AND_LABEL_READER(int32_t, get_int_string_and_label);
-SET_VECTOR_AND_LABEL_READER(uint32_t, get_uint_string_and_label);
-SET_VECTOR_AND_LABEL_READER(int64_t, get_long_string_and_label);
-SET_VECTOR_AND_LABEL_READER(uint64_t, get_ulong_string_and_label);
-SET_VECTOR_AND_LABEL_READER(float32_t, get_shortreal_string_and_label);
-SET_VECTOR_AND_LABEL_READER(float64_t, get_real_string_and_label);
-SET_VECTOR_AND_LABEL_READER(floatmax_t, get_longreal_string_and_label);
+SET_VECTOR_AND_LABEL_READER(bool, get_bool_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(char, get_char_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(int8_t, get_int8_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(uint8_t, get_byte_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(int16_t, get_short_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(uint16_t, get_word_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(int32_t, get_int_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(uint32_t, get_uint_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(int64_t, get_long_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(uint64_t, get_ulong_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(float32_t, get_shortreal_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(float64_t, get_real_vector_and_label);
+SET_VECTOR_AND_LABEL_READER(floatmax_t, get_longreal_vector_and_label);
 	
 #undef SET_VECTOR_AND_LABEL_READER		
 
@@ -417,7 +417,7 @@ void CStreamingStringFeatures<T>::init()
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::init(CStreamingFile* file,
+void CStreamingStringFeatures<T>::init(CFeatureStream* file,
 				       bool is_labelled,
 				       int32_t size)
 {

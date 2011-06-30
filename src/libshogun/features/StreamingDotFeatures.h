@@ -14,7 +14,7 @@
 #include "lib/Time.h"
 #include "lib/Mathematics.h"
 #include "features/StreamingFeatures.h"
-#include "lib/StreamingFile.h"
+#include "lib/FeatureStream.h"
 
 namespace shogun
 {
@@ -45,7 +45,7 @@ class CStreamingDotFeatures : public CStreamingFeatures
 
 	virtual void init() { };
 
-	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size) { };
+	virtual void init(CFeatureStream *file, bool is_labelled, int32_t size) { };
 
 public:
 	/** Constructor */
@@ -59,11 +59,11 @@ public:
 	/**
 	 * Constructor with input information passed.
 	 *
-	 * @param file CStreamingFile to take input from.
+	 * @param file CFeatureStream to take input from.
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
+	CStreamingDotFeatures(CFeatureStream* file, bool is_labelled, int32_t size)
 		: CStreamingFeatures()
 	{
 		init(file, is_labelled, size);
