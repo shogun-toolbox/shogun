@@ -22,14 +22,14 @@ from shogun.Preprocessor import ClassicIsomap, KISOMAP
 cisomap = ClassicIsomap()
 cisomap.set_type(KISOMAP)
 cisomap.set_k(9)
-preprocs.append((cisomap,"Classic Isomap with k=%d" % cisomap.get_k()))
+preprocs.append((cisomap,"Classic K-Isomap with k=%d" % cisomap.get_k()))
 
 from shogun.Preprocessor import LandmarkIsomap
 lisomap = LandmarkIsomap()
 lisomap.set_landmark_number(50)
 lisomap.set_type(KISOMAP)
 lisomap.set_k(9)
-preprocs.append((lisomap,"Landmark Isomap with k=%d" % lisomap.get_k()))
+preprocs.append((lisomap,"L-K-Isomap with k=%d, %d landmarks" % (lisomap.get_k(),lisomap.get_landmark_number())))
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
