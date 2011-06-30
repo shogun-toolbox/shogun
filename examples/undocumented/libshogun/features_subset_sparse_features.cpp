@@ -27,7 +27,7 @@ bool check_transposed(CSparseFeatures<int32_t>* features)
 	CSparseFeatures<int32_t>* transposed=features->get_transposed();
 	CSparseFeatures<int32_t>* double_transposed=transposed->get_transposed();
 
-	for (index_t i=0; i<transposed->get_num_vectors(); ++i)
+	for (index_t i=0; i<features->get_num_vectors(); ++i)
 	{
 		int32_t len;
 		bool free_1, free_2;
