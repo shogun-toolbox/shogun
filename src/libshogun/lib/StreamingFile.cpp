@@ -49,10 +49,7 @@ CStreamingFile::~CStreamingFile()
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
-		SG_INFO("Call to unimplemented vector read function!\n"); \
-		SG_INFO("This means this function is not appropriate "); \
-		SG_INFO("for the type of feature you are working with,"); \
-		SG_INFO("Or the corresponding reader isn't implemented.\n"); \
+		SG_ERROR("Read function not supported by the feature type!"); \
 	}
 
 GET_VECTOR(get_bool_vector, atoi, bool)
@@ -76,10 +73,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
-		SG_INFO("Call to unimplemented vector read function!\n"); \
-		SG_INFO("This means this function is not appropriate "); \
-		SG_INFO("for the type of feature you are working with,"); \
-		SG_INFO("Or the corresponding reader isn't implemented.\n"); \
+		SG_ERROR("Read function not supported by the feature type!"); \
 	}
 
 GET_VECTOR_AND_LABEL(get_bool_vector_and_label, str_to_bool, bool)
