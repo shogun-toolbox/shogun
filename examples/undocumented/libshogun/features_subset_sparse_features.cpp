@@ -59,9 +59,10 @@ bool check_transposed(CSparseFeatures<int32_t>* features)
 		if (free_2)
 			delete new_vec;
 
-		SG_UNREF(transposed);
-		SG_UNREF(double_transposed);
 	}
+
+	SG_UNREF(transposed);
+	SG_UNREF(double_transposed);
 
 	return true;
 }
