@@ -74,7 +74,7 @@ int main()
 	streaming_simple->start_parser();
 
 	int32_t counter=0;
-	SG_PRINTF("Processing examples...\n\n");
+	SG_PRINT("Processing examples...\n\n");
 	
 	// Run a while loop over all the examples.  Note that since
 	// features are "streaming", there is no predefined
@@ -87,10 +87,10 @@ int main()
 		// Get the current vector; no other vector is accessible
 		SGVector<float64_t> vec = streaming_simple->get_vector();
 		
-		SG_PRINTF("Vector %d: [\t", counter);
+		SG_PRINT("Vector %d: [\t", counter);
 		for (int32_t i=0; i<vec.vlen; i++)
 		{
-			SG_PRINTF ("%f\t", vec.vector[i]);
+			SG_PRINT("%f\t", vec.vector[i]);
 		}
 		
 		// Calculate dot product of the current vector (from
@@ -98,8 +98,8 @@ int main()
 		// vector passed as argument)
 		float64_t dot_prod = streaming_simple->dense_dot(vec);
 
-		SG_PRINTF ("]\nDot product of the vector with itself: %f", dot_prod);
-		SG_PRINTF("\n\n");
+		SG_PRINT("]\nDot product of the vector with itself: %f", dot_prod);
+		SG_PRINT("\n\n");
 
 		// Free the example, since we are done with processing it.
 		streaming_simple->release_example();
