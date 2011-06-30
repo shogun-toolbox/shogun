@@ -68,13 +68,13 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 			tp += 1.0;
 
 		// precision (x)
-		m_PRC_graph[2*i] = tp/(i+1);
+		m_PRC_graph[2*i] = tp/float64_t(i+1);
 		// recall (y)
-		m_PRC_graph[2*i+1] = tp/pos_count;
+		m_PRC_graph[2*i+1] = tp/float64_t(pos_count);
 	}
 
 	// calc auRPC using area under curve
-	m_auPRC = CMath::area_under_curve(m_PRC_graph+length,length,m_PRC_graph,length);
+	m_auPRC = CMath::area_under_curve(m_PRC_graph,length,true);
 
 	// set PRC length and computed indicator
 	m_PRC_length = length;

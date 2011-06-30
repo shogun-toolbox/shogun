@@ -364,14 +364,22 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
-		static float64_t area_under_curve(float64_t* x, int32_t x_len, float64_t* y, int32_t y_len)
+		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
 		{
-			ASSERT(x_len>0 && y_len>0 && x_len==y_len);
+			ASSERT(len>0 && xy);
 
-			float64_t area = 0;
-
-			for (int i=1; i<x_len; i++)
-				area += 0.5*(x[i]-x[i-1])*(y[i]+y[i-1]);
+			float64_t area = 0.0;
+			
+			if (!reversed)
+			{
+				for (int i=1; i<len; i++)
+					area += 0.5*(xy[2*i]-xy[2*(i-1)])*(xy[2*i+1]+xy[2*(i-1)+1]);
+			} 
+			else
+			{
+				for (int i=1; i<len; i++)
+					area += 0.5*(xy[2*i+1]-xy[2*(i-1)+1])*(xy[2*i]+xy[2*(i-1)]);	
+			}
 
 			return area;
 		}

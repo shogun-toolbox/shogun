@@ -107,7 +107,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	m_ROC_length = diff_count+1;
 
 	// calc auROC using area under curve
-	m_auROC = CMath::area_under_curve(m_ROC_graph,m_ROC_length,m_ROC_graph+m_ROC_length,m_ROC_length);
+	m_auROC = CMath::area_under_curve(m_ROC_graph,m_ROC_length,false);
 
 	m_computed = true;
 
