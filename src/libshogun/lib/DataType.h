@@ -40,7 +40,7 @@ template<class T> class SGVector
 
 		/** copy constructor */
 		SGVector(const SGVector &orig)
-			: vector(orig.vector), vlen(orig.vlen) { }
+			: vector(orig.vector), vlen(orig.vlen), do_free(orig.do_free) { }
 
 		void free_vector()
 		{
