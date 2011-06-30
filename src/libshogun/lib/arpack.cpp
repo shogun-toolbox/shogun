@@ -9,6 +9,7 @@
  */
 
 #include "lib/arpack.h"
+#ifdef HAVE_ARPACK
 #include "lib/config.h"
 #include <cblas.h>
 #include "lib/common.h"
@@ -128,3 +129,4 @@ void arpack_dsaupd(double* matrix, int n, int nev, char* which,
 };
 
 }
+#endif /* HAVE_ARPACK */
