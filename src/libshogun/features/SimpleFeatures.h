@@ -273,12 +273,25 @@ public:
 	 * @param num index in feature cache
 	 * @param dofree if vector should be really deleted
 	 */
-	void free_feature_vector(ST* feat_vec, int32_t num, bool dofree) {
+	void free_feature_vector(ST* feat_vec, int32_t num, bool dofree)
+	{
 		if (feature_cache)
 			feature_cache->unlock_entry(subset_idx_conversion(num));
 
 		if (dofree)
 			delete[] feat_vec;
+	}
+
+	/** free feature vector
+	 *
+	 * possible with subset
+	 *
+	 * @param vec feature vector to free
+	 * @param num index in feature cache
+	 */
+	void free_feature_vector(SGVector<ST> vec, int32_t num)
+	{
+		free_feature_vector(vec.vector, num, vec.do_free);
 	}
 
 	/**
@@ -462,18 +475,18 @@ public:
 		num_feat = get_num_vectors();
 		num_vec = num_features;
 
+		int32_t old_num_vec=get_num_vectors();
+
 		ST* fm = new ST[int64_t(num_feat) * num_vec];
 
-		for (int32_t i=0; i<num_feat; i++)
+		for (int32_t i=0; i<old_num_vec; i++)
 		{
-			int32_t vlen;
-			bool vfree;
-			ST* vec=get_feature_vector(i, vlen, vfree);
+			SGVector<ST> vec=get_feature_vector(i);
 
-			for (int32_t j=0; j<vlen; j++)
-			fm[j*int64_t(num_vec)+i]=vec[j];
+			for (int32_t j=0; j<vec.vlen; j++)
+				fm[j*int64_t(old_num_vec)+i]=vec.vector[j];
 
-			free_feature_vector(vec, i, vfree);
+			free_feature_vector(vec, i);
 		}
 
 		return fm;
