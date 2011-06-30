@@ -711,17 +711,19 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			memset(full.matrix, 0, size_t(num_features)*size_t(get_num_vectors())*sizeof(ST));
 
-			for (int32_t v=0; v<full.num_cols; v++) {
-			SGSparseVector<ST> current=
+			for (int32_t v=0; v<full.num_cols; v++)
+			{
+				SGSparseVector<ST> current=
 					sparse_feature_matrix[subset_idx_conversion(v)];
 
-			for (int32_t f=0; f<current.num_feat_entries; f++) {
-				int64_t offs=(current.vec_index*num_features)
-						+current.features[f].feat_index;
+				for (int32_t f=0; f<current.num_feat_entries; f++)
+				{
+					int64_t offs=(current.vec_index*num_features)
+							+current.features[f].feat_index;
 
-				full.matrix[offs]=current.features[f].entry;
+					full.matrix[offs]=current.features[f].entry;
+				}
 			}
-		}
 
 			return full;
 		}
@@ -731,10 +733,14 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * where num_features is the column offset, and columns are linear in memory
 		 * see above for definition of sparse_feature_matrix
 		 *
+		 * any subset is removed before
+		 *
 		 * @param full full feature matrix
 		 */
 		virtual bool set_full_feature_matrix(SGMatrix<ST> full)
 		{
+			remove_subset();
+
 			ST* src=full.matrix;
 			int32_t num_feat=full.num_rows;
 			int32_t num_vec=full.num_cols;
@@ -823,6 +829,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** apply preprocessor
 		 *
+		 * possible with subset
+		 *
 		 * @param force_preprocessing if preprocssing shall be forced
 		 * @return if applying was successful
 		 */
@@ -859,6 +867,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		virtual int32_t get_size() { return sizeof(ST); }
 
 		/** obtain sparse features from simple features
+		 *
+		 * subset on input is ignored, subset of this instance is removed
 		 *
 		 * @param sf simple features
 		 * @return if obtaining was successful
@@ -919,6 +929,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** free feature vector
 		 *
+		 * possible with subset
+		 *
 		 * @param feat_vec feature vector to free
 		 * @param num index of vector in cache
 		 * @param free if vector really should be deleted
@@ -926,7 +938,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		void free_feature_vector(SGSparseVectorEntry<ST>* feat_vec, int32_t num, bool free)
 		{
 			if (feature_cache)
-				feature_cache->unlock_entry(num);
+				feature_cache->unlock_entry(subset_idx_conversion(num));
 
 			if (free)
 				delete[] feat_vec ;
@@ -939,13 +951,16 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		int64_t get_num_nonzero_entries()
 		{
 			int64_t num=0;
-			for (int32_t i=0; i<num_vectors; i++)
-				num+=sparse_feature_matrix[i].num_feat_entries;
+			index_t num_vec=get_num_vectors();
+			for (int32_t i=0; i<num_vec; i++)
+				num+=sparse_feature_matrix[subset_idx_conversion(i)].num_feat_entries;
 
 			return num;
 		}
 
 		/** compute a^2 on all feature vectors
+		 *
+		 * possible with subset
 		 *
 		 * @param sq the square for each vector is stored in here
 		 * @return the square for each vector
@@ -957,7 +972,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			int32_t len=0;
 			bool do_free=false;
 
-			for (int32_t i=0; i<this->get_num_vectors(); i++)
+			index_t num_vec=get_num_vectors();
+			for (int32_t i=0; i<num_vec; i++)
 			{
 				sq[i]=0;
 				SGSparseVectorEntry<float64_t>* vec = ((CSparseFeatures<float64_t>*) this)->get_sparse_feature_vector(i, len, do_free);
@@ -975,6 +991,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * usually called by kernels'/distances' compute functions
 		 * works on two feature vectors, although it is a member of a single
 		 * feature: can either be called by lhs or rhs.
+		 *
+		 * possible wiht subsets on lhs or rhs
 		 *
 		 * @param lhs left-hand side features
 		 * @param sq_lhs squared values of left-hand side
@@ -1041,17 +1059,23 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** load features from file
 		 *
+		 * any subset is removed before
+		 *
 		 * @param loader File object to load data from
 		 */
 		void load(CFile* loader);
 
 		/** save features to file
 		 *
+		 * not possible with subset
+		 *
 		 * @param writer File object to write data to
 		 */
 		void save(CFile* writer);
 
 		/** load features from file
+		 *
+		 * any subset is removed before
 		 *
 		 * @param fname filename to load from
 		 * @param do_sort_features if true features will be sorted to ensure they
@@ -1060,6 +1084,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		CLabels* load_svmlight_file(char* fname, bool do_sort_features=true)
 		{
+			remove_subset();
+
 			CLabels* lab=NULL;
 
 			size_t blocksize=1024*1024;
@@ -1224,9 +1250,15 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		}
 
 		/** ensure that features occur in ascending order, only call when no
-		 * preprocessors are attached */
+		 * preprocessors are attached
+		 *
+		 * not possiblwe with subset
+		 * */
 		void sort_features()
 		{
+			if (m_subset)
+				SG_ERROR("sort_features() not allowed with subset\n");
+
 			ASSERT(get_num_preprocessors()==0);
 
 			if (!sparse_feature_matrix)
@@ -1269,12 +1301,17 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** write features to file using svm light format
 		 *
+		 * not possible with subset
+		 *
 		 * @param fname filename to write to
 		 * @param label Label object (number of labels must correspond to number of features)
 		 * @return true if successful
 		 */
 		bool write_svmlight_file(char* fname, CLabels* label)
 		{
+			if (m_subset)
+				SG_ERROR("write_svmlight_file() not allowed with subset\n");
+
 			ASSERT(label);
 			int32_t num=label->get_num_labels();
 			ASSERT(num>0);
@@ -1321,6 +1358,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices
 		 *
+		 * possible with subset of this instance and of DotFeatures
+		 *
 		 * @param vec_idx1 index of first vector
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
@@ -1346,6 +1385,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		}
 
 		/** compute dot product between vector1 and a dense vector
+		 *
+		 * possible with subset
 		 *
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 pointer to real valued vector
@@ -1404,16 +1445,18 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * call get_feature_iterator first, followed by get_next_feature and
 		 * free_feature_iterator to cleanup
 		 *
+		 * possible with subset
+		 *
 		 * @param vector_index the index of the vector over whose components to
 		 * 			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index)
 		{
-			if (vector_index>=num_vectors)
+			if (vector_index>=get_num_vectors())
 			{
 				SG_ERROR("Index out of bounds (number of vectors %d, you "
-						"requested %d)\n", num_vectors, vector_index);
+						"requested %d)\n", get_num_vectors(), vector_index);
 			}
 
 			if (!sparse_feature_matrix)
@@ -1482,6 +1525,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		virtual SGSparseVectorEntry<ST>* compute_sparse_feature_vector(int32_t num, int32_t& len, SGSparseVectorEntry<ST>* target=NULL)
 		{
+			SG_NOTIMPLEMENTED;
+
 			len=0;
 			return NULL;
 		}
@@ -1538,6 +1583,7 @@ GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
 #define LOAD(fname, sg_type)											\
 template<> inline void CSparseFeatures<sg_type>::load(CFile* loader)	\
 {																		\
+	remove_subset();													\
 	SG_SET_LOCALE_C;													\
 	ASSERT(loader);														\
 	SGSparseVector<sg_type>* matrix=NULL;										\
@@ -1565,6 +1611,8 @@ LOAD(get_longreal_sparsematrix, floatmax_t)
 #define WRITE(fname, sg_type)											\
 template<> inline void CSparseFeatures<sg_type>::save(CFile* writer)	\
 {																		\
+	if (m_subset)														\
+		SG_ERROR("save() not allowed with subset\n");					\
 	SG_SET_LOCALE_C;													\
 	ASSERT(writer);														\
 	writer->fname(sparse_feature_matrix, num_features, num_vectors);	\
