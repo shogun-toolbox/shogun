@@ -53,7 +53,7 @@ public:
 		: CStreamingFeatures()
 	{
 		init();
-		set_property(FP_DOT);
+		set_property(FP_STREAMING_DOT);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public:
 		: CStreamingFeatures()
 	{
 		init(file, is_labelled, size);
-		set_property(FP_DOT);
+		set_property(FP_STREAMING_DOT);
 	}
 
 	virtual ~CStreamingDotFeatures() { }
