@@ -54,7 +54,8 @@ namespace shogun
 	enum EFeatureProperty
 	{
 		FP_NONE = 0,
-		FP_DOT = 1
+		FP_DOT = 1,
+		FP_STREAMING_DOT = 2
 	};
 }
 #endif // _FEATURE_TYPES__H__

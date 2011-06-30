@@ -14,6 +14,7 @@
 #include "lib/Mathematics.h"
 #include "features/StreamingDotFeatures.h"
 #include "lib/DataType.h"
+#include "lib/StreamingFileFromSimpleFeatures.h"
 #include "lib/InputParser.h"
 
 namespace shogun
@@ -58,6 +59,14 @@ public:
 		init(file, is_labelled, size);
 	}
 
+	CStreamingSimpleFeatures(CStreamingFileFromSimpleFeatures* file,
+				 bool is_labelled=false, int32_t size=10)
+		: CStreamingDotFeatures()
+	{
+		set_read_functions();
+		init(file, is_labelled, size);
+	}
+	
 	/** 
 	 * Destructor.
 	 * 
@@ -311,7 +320,7 @@ protected:
 	/// Whether examples are labelled or not.
 	bool has_labels;
 };
-
+	
 #define SET_VECTOR_READER(sg_type, sg_function)				\
 template <> void CStreamingSimpleFeatures<sg_type>::set_vector_reader() \
 {									\
