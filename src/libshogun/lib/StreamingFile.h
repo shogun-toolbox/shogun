@@ -52,13 +52,6 @@ namespace shogun
 		/** default destructor */
 		virtual ~CStreamingFile();
 
-		/** convert a given string to bool.
-		 *
-		 * @param str Given string to convert
-		 * @return Boolean value of string
-		 */
-		inline bool str_to_bool(char* str);
-
 		/** @name Vector Access Functions
 		 *
 		 * Functions to access vectors of one of the several base data types.
@@ -66,6 +59,7 @@ namespace shogun
 		 * and return the vector and its length len by reference
 		 */
 		//@{
+		virtual void get_bool_vector(bool*& vector, int32_t& len);
 		virtual void get_byte_vector(uint8_t*& vector, int32_t& len);
 		virtual void get_char_vector(char*& vector, int32_t& len);
 		virtual void get_int_vector(int32_t*& vector, int32_t& len);
@@ -192,15 +186,15 @@ namespace shogun
 		virtual void get_longreal_sparse_vector_and_label(SGSparseVectorEntry<floatmax_t>*& vector, int32_t& len, float64_t& label);
 		//@}
 
-		
-		/** @name Matrix Access Functions
-		 *
-		 * Functions to access matrices of one of the several base data types.
-		 * These functions are used when loading matrices from e.g. file
-		 * and return the matrices and its dimensions num_feat and num_vec
-		 * by reference
-		 */
-		//@{
+
+	/** @name Matrix Access Functions
+	 *
+	 * Functions to access matrices of one of the several base data types.
+	 * These functions are used when loading matrices from e.g. file
+	 * and return the matrices and its dimensions num_feat and num_vec
+	 * by reference
+	 */
+//@{
 		virtual void get_byte_matrix(
 			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_int8_matrix(
@@ -225,16 +219,16 @@ namespace shogun
 			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_word_matrix(
 			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-		//@}
+//@}
 
-		/** @name N-Dimensional Array Access Functions
-		 *
-		 * Functions to access n-dimensional arrays of one of the several base
-		 * data types. These functions are used when loading n-dimensional arrays
-		 * from e.g. file and return the them and its dimensions dims and num_dims
-		 * by reference
-		 */
-		//@{
+/** @name N-Dimensional Array Access Functions
+ *
+ * Functions to access n-dimensional arrays of one of the several base
+ * data types. These functions are used when loading n-dimensional arrays
+ * from e.g. file and return the them and its dimensions dims and num_dims
+ * by reference
+ */
+//@{
 		virtual void get_byte_ndarray(
 			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
 		virtual void get_char_ndarray(
@@ -249,16 +243,16 @@ namespace shogun
 			int16_t*& array, int32_t*& dims, int32_t& num_dims);
 		virtual void get_word_ndarray(
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
-		//@}
+//@}
 
-		/** @name Sparse Matrix Access Functions
-		 *
-		 * Functions to access sparse matrices of one of the several base data types.
-		 * These functions are used when loading sparse matrices from e.g. file
-		 * and return the sparse matrices and its dimensions num_feat and num_vec
-		 * by reference
-		 */
-		//@{
+/** @name Sparse Matrix Access Functions
+ *
+ * Functions to access sparse matrices of one of the several base data types.
+ * These functions are used when loading sparse matrices from e.g. file
+ * and return the sparse matrices and its dimensions num_feat and num_vec
+ * by reference
+ */
+//@{
 		virtual void get_bool_sparsematrix(
 			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_byte_sparsematrix(
@@ -285,17 +279,17 @@ namespace shogun
 			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_longreal_sparsematrix(
 			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		//@}
+//@}
 
 
-		/** @name String Access Functions
-		 *
-		 * Functions to access strings of one of the several base data types.
-		 * These functions are used when loading variable length datatypes
-		 * from e.g. file and return the strings and their number
-		 * by reference
-		 */
-		//@{
+/** @name String Access Functions
+ *
+ * Functions to access strings of one of the several base data types.
+ * These functions are used when loading variable length datatypes
+ * from e.g. file and return the strings and their number
+ * by reference
+ */
+//@{
 		virtual void get_byte_string_list(
 			SGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
@@ -332,15 +326,15 @@ namespace shogun
 		virtual void get_longreal_string_list(
 			SGString<floatmax_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
-		//@}
+//@}
 
-		/** @name Vector Access Functions
-		 *
-		 * Functions to access vectors of one of the several base data types.
-		 * These functions are used when writing vectors of length len
-		 * to e.g. a file
-		 */
-		//@{
+/** @name Vector Access Functions
+ *
+ * Functions to access vectors of one of the several base data types.
+ * These functions are used when writing vectors of length len
+ * to e.g. a file
+ */
+//@{
 		virtual void set_byte_vector(const uint8_t* vector, int32_t len);
 		virtual void set_char_vector(const char* vector, int32_t len);
 		virtual void set_int_vector(const int32_t* vector, int32_t len);
@@ -348,16 +342,16 @@ namespace shogun
 		virtual void set_real_vector(const float64_t* vector, int32_t len);
 		virtual void set_short_vector(const int16_t* vector, int32_t len);
 		virtual void set_word_vector(const uint16_t* vector, int32_t len);
-		//@}
+//@}
 
 
-		/** @name Matrix Access Functions
-		 *
-		 * Functions to access matrices of one of the several base data types.
-		 * These functions are used when writing matrices of num_feat rows and
-		 * num_vec columns to e.g. a file
-		 */
-		//@{
+/** @name Matrix Access Functions
+ *
+ * Functions to access matrices of one of the several base data types.
+ * These functions are used when writing matrices of num_feat rows and
+ * num_vec columns to e.g. a file
+ */
+//@{
 		virtual void set_byte_matrix(
 			const uint8_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_int8_matrix(
@@ -382,15 +376,15 @@ namespace shogun
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_word_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
-		//@}
+//@}
 
-		/** @name Sparse Matrix Access Functions
-		 *
-		 * Functions to access sparse matrices of one of the several base data types.
-		 * These functions are used when writing sparse matrices of num_feat rows and
-		 * num_vec columns to e.g. a file
-		 */
-		//@{
+/** @name Sparse Matrix Access Functions
+ *
+ * Functions to access sparse matrices of one of the several base data types.
+ * These functions are used when writing sparse matrices of num_feat rows and
+ * num_vec columns to e.g. a file
+ */
+//@{
 		virtual void set_bool_sparsematrix(
 			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_byte_sparsematrix(
@@ -417,16 +411,16 @@ namespace shogun
 			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_longreal_sparsematrix(
 			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
-		//@}
+//@}
 
-		/** @name String Access Functions
-		 *
-		 * Functions to access strings of one of the several base data types.
-		 * These functions are used when writing variable length datatypes
-		 * like strings to a file. Here num_str denotes the number of strings
-		 * and strings is a pointer to a string structure.
-		 */
-		//@{
+/** @name String Access Functions
+ *
+ * Functions to access strings of one of the several base data types.
+ * These functions are used when writing variable length datatypes
+ * like strings to a file. Here num_str denotes the number of strings
+ * and strings is a pointer to a string structure.
+ */
+//@{
 		virtual void set_byte_string_list(
 			const SGString<uint8_t>* strings, int32_t num_str);
 		virtual void set_int8_string_list(
@@ -451,19 +445,11 @@ namespace shogun
 			const SGString<float64_t>* strings, int32_t num_str);
 		virtual void set_longreal_string_list(
 			const SGString<floatmax_t>* strings, int32_t num_str);
-		//@}
+//@}
+
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StreamingFile"; }
-
-	private:
-		/** helper function to read vectors / matrices
-		 *
-		 * @param items dynamic array of values
-		 * @param ptr_data
-		 * @param ptr_item
-		 */
-		template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
 	};
 }
 #endif //__STREAMING_FILE_H__
