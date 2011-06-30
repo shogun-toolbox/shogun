@@ -91,13 +91,37 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
 		float64_t* eigenvalues_vector = new float64_t[m_target_dim];
 		int32_t eigenproblem_status = 0;
-		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", eigenvalues_vector, replace_feature_matrix, eigenproblem_status);	
+		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", 
+		              eigenvalues_vector, replace_feature_matrix,
+		              eigenproblem_status);
+
 		ASSERT(eigenproblem_status == 0);
+
+		// reverse eigenvectors order
+		float64_t tmp;
+		for (j=0; j<N; j++)
+		{
+			for (i=0; i<m_target_dim/2; i++)
+			{
+				tmp = replace_feature_matrix[j*m_target_dim+i];
+				replace_feature_matrix[j*m_target_dim+i] = 
+					replace_feature_matrix[j*m_target_dim+(m_target_dim-i-1)];
+				replace_feature_matrix[j*m_target_dim+(m_target_dim-i-1)] = tmp;
+			}
+		}
+		// reverse eigenvalues order
+		for (i=0; i<m_target_dim/2; i++)
+		{
+			tmp = eigenvalues_vector[i];
+			eigenvalues_vector[i] = eigenvalues_vector[m_target_dim-i-1];
+			eigenvalues_vector[m_target_dim-i-1] = tmp;
+		}
 
 		for (i=0; i<m_target_dim; i++)
 		{
 			for (j=0; j<N; j++)
-				replace_feature_matrix[j*m_target_dim+i] *= CMath::sqrt(eigenvalues_vector[i]);	
+				replace_feature_matrix[j*m_target_dim+i] *= 
+					CMath::sqrt(eigenvalues_vector[i]);	
 		}
 		
 		m_eigenvalues.free_vector();
