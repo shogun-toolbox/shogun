@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-CStreamingFileFromFeatures::CStreamingFileFromFeatures(void)
+CStreamingFileFromFeatures::CStreamingFileFromFeatures()
 	: CStreamingFile()
 {
 	features=NULL;

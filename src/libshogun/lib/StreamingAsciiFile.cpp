@@ -15,10 +15,10 @@
 
 using namespace shogun;
 
-CStreamingAsciiFile::CStreamingAsciiFile(void)
+CStreamingAsciiFile::CStreamingAsciiFile()
 	: CStreamingFile()
 {
-	SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile(void)", "\n");
+	SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n");
 }
 
 CStreamingAsciiFile::CStreamingAsciiFile(FILE* f, const char* name)

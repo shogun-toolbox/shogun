@@ -37,7 +37,7 @@ public:
 	/** 
 	 * Default constructor
 	 */
-	CStreamingFileFromFeatures(void);
+	CStreamingFileFromFeatures();
 
 	/** 
 	 * Constructor taking a CFeatures object as argument

@@ -21,7 +21,7 @@ public:
 	/** 
 	 * Default constructor
 	 */
-	CStreamingFileFromSimpleFeatures(void);
+	CStreamingFileFromSimpleFeatures();
 
 	/** 
 	 * Constructor taking a SimpleFeatures object as arg

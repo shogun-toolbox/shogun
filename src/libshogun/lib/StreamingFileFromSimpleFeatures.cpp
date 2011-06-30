@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-CStreamingFileFromSimpleFeatures::CStreamingFileFromSimpleFeatures(void)
+CStreamingFileFromSimpleFeatures::CStreamingFileFromSimpleFeatures()
 	: CStreamingFileFromFeatures()
 {
 	init();

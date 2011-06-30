@@ -27,7 +27,7 @@ public:
 	 * Default constructor
 	 * 
 	 */
-	CStreamingAsciiFile(void);
+	CStreamingAsciiFile();
 
 	/** 
 	 * Constructor taking file arguments

@@ -32,7 +32,7 @@ namespace shogun
 	{
 	public:
 		/** default constructor	 */
-		CStreamingFile(void);
+		CStreamingFile();
 
 		/** constructor
 		 *

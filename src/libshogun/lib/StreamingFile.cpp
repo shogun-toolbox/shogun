@@ -15,9 +15,9 @@
 
 using namespace shogun;
 
-CStreamingFile::CStreamingFile(void)
+CStreamingFile::CStreamingFile()
 {
-	SG_UNSTABLE("CStreamingFile::CStreamingFile(void)", "\n");
+	SG_UNSTABLE("CStreamingFile::CStreamingFile()", "\n");
 }
 
 CStreamingFile::CStreamingFile(FILE* f, const char* name) : CFile(f, name)
@@ -103,10 +103,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		len=-1;							\
-		SG_INFO("Call to unimplemented string read function!\n"); \
-		SG_INFO("This means this function is not appropriate "); \
-		SG_INFO("for the type of feature you are working with,"); \
-		SG_INFO("Or the corresponding reader isn't implemented.\n"); \
+		SG_ERROR("Read function not supported by the feature type!"); \
 	}									
 
 GET_STRING(get_bool_string, str_to_bool, bool)
@@ -130,10 +127,7 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		len=-1;							\
-		SG_INFO("Call to unimplemented string read function!\n"); \
-		SG_INFO("This means this function is not appropriate "); \
-		SG_INFO("for the type of feature you are working with,"); \
-		SG_INFO("Or the corresponding reader isn't implemented.\n"); \
+		SG_ERROR("Read function not supported by the feature type!"); \
 	}
 
 GET_STRING_AND_LABEL(get_bool_string_and_label, str_to_bool, bool)
@@ -157,10 +151,7 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		len=-1;							\
-		SG_INFO("Call to unimplemented sparse vector read function!\n"); \
-		SG_INFO("This means this function is not appropriate "); \
-		SG_INFO("for the type of feature you are working with,"); \
-		SG_INFO("Or the corresponding reader isn't implemented.\n"); \
+		SG_ERROR("Read function not supported by the feature type!"); \
 	}
 
 GET_SPARSE_VECTOR(get_bool_sparse_vector, str_to_bool, bool)
@@ -184,10 +175,7 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 	{								\
 		vector=NULL;						\
 		len=-1;							\
-		SG_INFO("Call to unimplemented sparse vector read function!\n"); \
-		SG_INFO("This means this function is not appropriate "); \
-		SG_INFO("for the type of feature you are working with,"); \
-		SG_INFO("Or the corresponding reader isn't implemented.\n"); \
+		SG_ERROR("Read function not supported by the feature type!"); \
 	}
 
 GET_SPARSE_VECTOR_AND_LABEL(get_bool_sparse_vector_and_label, str_to_bool, bool)
