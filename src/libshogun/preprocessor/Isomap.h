@@ -11,7 +11,10 @@
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
 #ifdef HAVE_LAPACK
-#include "preprocessor/SimplePreprocessor.h"
+#include "preprocessor/DimensionReductionPreprocessor.h"
+#include "lib/common.h"
+#include "lib/Mathematics.h"
+#include "lib/io.h"
 #include "features/Features.h"
 #include "distance/Distance.h"
 #include "distance/CustomDistance.h"
@@ -178,6 +181,7 @@ protected:
 		if (m_type==EISOMAP)
 		{
 			// just replace distances >e with infty
+
 			for (i=0; i<N*N; i++)
 			{
 				if (D_matrix[i]>m_epsilon)
@@ -187,14 +191,16 @@ protected:
 		if (m_type==KISOMAP)
 		{
 			// cut by k-nearest neighbors
+
 			float64_t* col = new float64_t[N];
 			int32_t* col_idx = new int32_t[N];
-
+			
+			// -> INFTY edges connecting NOT neighbors
 			for (i=0; i<N; i++)
 			{
 				for (j=0; j<N; j++)
 				{
-					col[j] = D_matrix[i*N+j];
+					col[j] = D_matrix[j*N+i];
 					col_idx[j] = j;
 				}
 
@@ -202,9 +208,17 @@ protected:
 
 				for (j=m_k+1; j<N; j++)
 				{
-					D_matrix[i*N+j] = CMath::ALMOST_INFTY;
+					D_matrix[col_idx[j]*N+i] = CMath::ALMOST_INFTY;
 				}
 			}
+
+			// symmetrize matrix
+			for (i=0; i<N; i++)
+			{
+				for (j=0; j<N; j++)
+					if (D_matrix[j*N+i] >= CMath::ALMOST_INFTY)
+						D_matrix[i*N+j] = D_matrix[j*N+i];
+			}			
 
 			delete[] col;
 			delete[] col_idx;
