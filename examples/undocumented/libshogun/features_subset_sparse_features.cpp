@@ -39,12 +39,8 @@ void check_transposed(CSparseFeatures<int32_t>* features)
 		for (index_t j=0; j<len; j++)
 			ASSERT(orig_vec[j].entry==new_vec[j].entry);
 
-		if (free_1)
-			delete orig_vec;
-
-		if (free_2)
-			delete new_vec;
-
+		features->free_sparse_feature_vector(orig_vec, i, free_1);
+		double_transposed->free_sparse_feature_vector(new_vec, i, free_2);
 	}
 
 	SG_UNREF(transposed);
@@ -112,8 +108,7 @@ int main(int argc, char **argv)
 			ASSERT(
 					vec[j].entry==data.matrix[features->subset_idx_conversion( i)*num_vectors+j]);
 
-		if (free)
-			delete vec;
+		features->free_sparse_feature_vector(vec, i, free);
 	}
 
 	/* remove features subset */
@@ -150,8 +145,7 @@ int main(int argc, char **argv)
 		for (index_t j=0; j<len; ++j)
 			ASSERT(vec[j].entry==data.matrix[i*num_vectors+j]);
 
-		if (free)
-			delete vec;
+		features->free_sparse_feature_vector(vec, i, free);
 	}
 
 	SG_UNREF(features);
