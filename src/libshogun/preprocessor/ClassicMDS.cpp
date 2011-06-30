@@ -12,6 +12,7 @@
 #ifdef HAVE_LAPACK
 #include "preprocessor/DimensionReductionPreprocessor.h"
 #include "lib/lapack.h"
+#include "lib/arpack.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 #include "lib/io.h"
@@ -85,41 +86,48 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	delete[] H_matrix;
 
 	// eigendecomposition
-	float64_t* eigenvalues_vector = new float64_t[N];
-	int32_t eigenproblem_status = 0;
-	wrap_dsyev('V','U',N,Ds_matrix,N,eigenvalues_vector,&eigenproblem_status);
-	ASSERT(eigenproblem_status==0);
+	#ifdef HAVE_ARPACK
+	// using ARPACK
+		float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
+		float64_t* eigenvalues_vector = new float64_t[m_target_dim];
+		int32_t eigenproblem_status = 0;
+		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", eigenvalues_vector, replace_feature_matrix, eigenproblem_status);	
+		ASSERT(eigenproblem_status == 0);
 
-	// replace feature matrix with (top) eigenvectors associated with largest
-	// positive eigenvalues (ignores negative eigenvalues)
-	for (i=0; i<m_target_dim; i++)
-	{
-		if (eigenvalues_vector[N-i-1]<0)
+		for (i=0; i<m_target_dim; i++)
 		{
-			SG_WARNING("Can't embed into %dd space, embedded into %dd",m_target_dim,i);
-			m_target_dim = i;
-			if (i==0)
-				SG_ERROR("No positive eigenvalues. Check distance.");
-
-			break;
+			for (j=0; j<N; j++)
+				replace_feature_matrix[j*m_target_dim+i] *= CMath::sqrt(eigenvalues_vector[i]);	
 		}
-	}
+		
+		m_eigenvalues.free_vector();
+		m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim,true);
+	#else /* HAVE_ARPACK else */
+	// using LAPACK
+		float64_t* eigenvalues_vector = new float64_t[N];
+		int32_t eigenproblem_status = 0;
+		wrap_dsyev('V','U',N,Ds_matrix,N,eigenvalues_vector,&eigenproblem_status);
+		ASSERT(eigenproblem_status==0);
+		// replace feature matrix with (top) eigenvectors associated with largest
+		// positive eigenvalues
 	
-	m_eigenvalues.free_vector();
-	m_eigenvalues = SGVector<float64_t>(new float64_t[m_target_dim],m_target_dim,true);
-	for (i=0; i<m_target_dim; i++)
-		m_eigenvalues.vector[i] = eigenvalues_vector[N-i-1];
+		m_eigenvalues.free_vector();
+		m_eigenvalues = SGVector<float64_t>(new float64_t[m_target_dim],m_target_dim,true);
+		for (i=0; i<m_target_dim; i++)
+			m_eigenvalues.vector[i] = eigenvalues_vector[N-i-1];
 
-	float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
-	for (i=0; i<m_target_dim; i++)
-	{
-		for (j=0; j<N; j++)
-			replace_feature_matrix[j*m_target_dim+i] =
+		float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
+		for (i=0; i<m_target_dim; i++)
+		{
+			for (j=0; j<N; j++)
+				replace_feature_matrix[j*m_target_dim+i] =
 					Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
-	}
-
-	// cleanup
-	delete[] eigenvalues_vector;
+		}
+	
+		// cleanup
+		delete[] eigenvalues_vector;
+	#endif /* HAVE_ARPACK else */
+	
 	delete[] Ds_matrix;
 
 	return SGMatrix<float64_t>(replace_feature_matrix,m_target_dim,N);
