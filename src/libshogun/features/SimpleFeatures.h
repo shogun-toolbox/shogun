@@ -103,7 +103,7 @@ public:
 	CSimpleFeatures(ST* src, int32_t num_feat, int32_t num_vec) :
 			CDotFeatures() {
 		init();
-		copy_feature_matrix(src, num_feat, num_vec);
+		set_feature_matrix(src, num_feat, num_vec);
 	}
 
 	/** constructor loading features from file
