@@ -583,7 +583,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param sfm sparse feature matrix
 		 * @param num_vec number of vectors in matrix
 		 */
-		void static clean_tsparse(SGSparseVector<ST>* sfm, int32_t num_vec)
+		static void clean_tsparse(SGSparseVector<ST>* sfm, int32_t num_vec)
 		{
 			if (sfm)
 			{
