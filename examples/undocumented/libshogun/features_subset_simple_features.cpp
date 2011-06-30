@@ -19,6 +19,30 @@ void print_message(FILE* target, const char* str)
 	fprintf(target, "%s", str);
 }
 
+void check_transposed(CSimpleFeatures<int32_t>* features)
+{
+	CSimpleFeatures<int32_t>* transposed=features->get_transposed();
+	CSimpleFeatures<int32_t>* double_transposed=transposed->get_transposed();
+
+	for (index_t i=0; i<features->get_num_vectors(); ++i)
+	{
+		SGVector<int32_t> orig_vec=features->get_feature_vector(i);
+		SGVector<int32_t> new_vec=double_transposed->get_feature_vector(i);
+
+		ASSERT(orig_vec.vlen==new_vec.vlen);
+
+		for (index_t j=0; j<orig_vec.vlen; j++)
+			ASSERT(orig_vec.vector[j]==new_vec.vector[j]);
+
+		/* not necessary since feature matrix is in memory. for documentation */
+		features->free_feature_vector(orig_vec,i);
+		double_transposed->free_feature_vector(new_vec, i);
+	}
+
+	SG_UNREF(transposed);
+	SG_UNREF(double_transposed);
+}
+
 const int32_t num_vectors=6;
 const int32_t dim_features=6;
 
@@ -61,6 +85,11 @@ int main(int argc, char **argv)
 	/* do some stuff do check and output */
 	ASSERT(features->get_num_vectors()==num_subset_idx);
 
+	/* check get_Transposed method */
+	SG_SPRINT("checking transpose...");
+	check_transposed(features);
+	SG_SPRINT("does work\n");
+
 	SG_SPRINT("features->get_num_vectors(): %d\n", features->get_num_vectors());
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
@@ -72,6 +101,9 @@ int main(int argc, char **argv)
 		for (index_t j=0; j<dim_features; ++j)
 			ASSERT(vec.vector[j]==data.matrix[features->subset_idx_conversion(
 					i)*num_vectors+j]);
+
+		/* not necessary since feature matrix is in memory. for documentation */
+		features->free_feature_vector(vec, i);
 	}
 
 	/* remove features subset */
@@ -84,6 +116,11 @@ int main(int argc, char **argv)
 	ASSERT(features->get_num_vectors()==num_vectors);
 	SG_SPRINT("features->get_num_vectors(): %d\n", features->get_num_vectors());
 
+	/* check get_Transposed method */
+	SG_SPRINT("checking transpose...");
+//	check_transposed(features);
+	SG_SPRINT("does work\n");
+
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 	{
 		SGVector<int32_t> vec=features->get_feature_vector(i);
@@ -93,6 +130,9 @@ int main(int argc, char **argv)
 		for (index_t j=0; j<dim_features; ++j)
 			ASSERT(vec.vector[j]==data.matrix[features->subset_idx_conversion(i)
 					*num_vectors+j]);
+
+		/* not necessary since feature matrix is in memory. for documentation */
+		features->free_feature_vector(vec, i);
 	}
 
 
