@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 
 	/* check get_Transposed method */
 	SG_SPRINT("checking transpose...");
-//	check_transposed(features);
+	check_transposed(features);
 	SG_SPRINT("does work\n");
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
