@@ -55,7 +55,6 @@ CLabels* CLinearMachine::apply()
 		features->dense_dot_range(out, 0, num, NULL, w, w_dim, bias);
 
 		CLabels* output=new CLabels(num);
-		SG_REF(output);
 		output->set_labels(out, num);
 
 		return output;

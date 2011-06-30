@@ -138,6 +138,7 @@ float64_t CCrossValidation::evaluate_one_run()
 
 		/* apply machine to test features */
 		CLabels* result_labels=m_machine->apply(m_features);
+		SG_REF(result_labels);
 
 		/* set label subset for testing (copy data before) */
 		SGVector<index_t> subset_indices_copy(
