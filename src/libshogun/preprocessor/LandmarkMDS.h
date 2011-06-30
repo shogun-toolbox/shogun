@@ -68,7 +68,7 @@ public:
 
 
 	/** get name */
-	virtual inline const char* get_name() const { return "LANDMARKMDS"; };
+	virtual inline const char* get_name() const { return "LandmarkMDS"; };
 
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_LANDMARKMDS; };
