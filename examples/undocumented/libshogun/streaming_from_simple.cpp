@@ -17,6 +17,7 @@
 
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
 #include <shogun/base/init.h>
 
 #include <stdlib.h>
@@ -52,7 +53,7 @@ void gen_rand_data()
 
 int main()
 {
-	init_shogun();
+	init_shogun_with_defaults();
 
 	// Generate random data
 	gen_rand_data();
@@ -74,7 +75,7 @@ int main()
 	streaming_simple->start_parser();
 
 	int32_t counter=0;
-	SG_PRINT("Processing examples...\n\n");
+	SG_SPRINT("Processing examples...\n\n");
 	
 	// Run a while loop over all the examples.  Note that since
 	// features are "streaming", there is no predefined
@@ -87,10 +88,10 @@ int main()
 		// Get the current vector; no other vector is accessible
 		SGVector<float64_t> vec = streaming_simple->get_vector();
 		
-		SG_PRINT("Vector %d: [\t", counter);
+		SG_SPRINT("Vector %d: [\t", counter);
 		for (int32_t i=0; i<vec.vlen; i++)
 		{
-			SG_PRINT("%f\t", vec.vector[i]);
+			SG_SPRINT("%f\t", vec.vector[i]);
 		}
 		
 		// Calculate dot product of the current vector (from
@@ -98,8 +99,8 @@ int main()
 		// vector passed as argument)
 		float64_t dot_prod = streaming_simple->dense_dot(vec);
 
-		SG_PRINT("]\nDot product of the vector with itself: %f", dot_prod);
-		SG_PRINT("\n\n");
+		SG_SPRINT("]\nDot product of the vector with itself: %f", dot_prod);
+		SG_SPRINT("\n\n");
 
 		// Free the example, since we are done with processing it.
 		streaming_simple->release_example();
