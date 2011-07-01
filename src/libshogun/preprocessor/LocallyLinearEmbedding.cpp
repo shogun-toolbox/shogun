@@ -115,11 +115,9 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 		// compute local covariance matrix
 		cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
 		            m_k,m_k,dim,
-		            1.0,
+		            1.0,z_matrix,dim,
 		            z_matrix,dim,
-		            z_matrix,dim,
-		            0.0,
-		            covariance_matrix,m_k);
+		            0.0,covariance_matrix,m_k);
 
 		for (j=0; j<m_k; j++)
 			id_vector[j] = 1.0;
@@ -170,15 +168,13 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// compute M=(W-I)'*(W-I)
 	float64_t* M_matrix = new float64_t[N*N];
 	cblas_dgemm(CblasColMajor,CblasTrans, CblasNoTrans,
-	            N,N,N,1.0,
+	            N,N,N,
+	            1.0,W_matrix,N,
 	            W_matrix,N,
-	            W_matrix,N,
-	            0.0,
-	            M_matrix,N);
+	            0.0,M_matrix,N);
 
 	delete[] W_matrix;
 
-	// TODO add some more efficient method usage if supported by some library
 	// compute eigenvectors
 	float64_t* eigenvalues_vector = new float64_t[N];
 	int32_t eigenproblem_status = 0;
@@ -188,7 +184,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	if (eigenproblem_status)
 		SG_ERROR("Eigenproblem failed with code: %d", eigenproblem_status);
 	
-	// replace features with bottom eigenvectos
+	// replace features with bottom eigenvectors
 	float64_t* new_feature_matrix = new float64_t[N*m_target_dim];
 
 	for (i=0; i<m_target_dim; i++)
@@ -196,8 +192,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 		for (j=0; j<N; j++)
 			new_feature_matrix[j*m_target_dim+i] = M_matrix[(i+1)*(N)+j];
 	}
-
-	// clean
+	
 	delete[] eigenvalues_vector;
 	delete[] M_matrix;
 
