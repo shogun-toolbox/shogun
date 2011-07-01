@@ -17,7 +17,6 @@ using namespace shogun;
 
 CStreamingFile::CStreamingFile()
 {
-	SG_UNSTABLE("CStreamingFile::CStreamingFile()", "\n");
 }
 
 CStreamingFile::CStreamingFile(FILE* f, const char* name) : CFile(f, name)

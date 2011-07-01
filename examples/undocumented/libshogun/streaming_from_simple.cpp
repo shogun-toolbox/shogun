@@ -30,10 +30,12 @@ using namespace shogun;
 #define DIST 0.5
 
 float64_t* feat;
+float64_t* lab;
 
 void gen_rand_data()
 {
 	feat=new float64_t[NUM*DIMS];
+	lab=new float64_t[NUM];
 
 	for (int32_t i=0; i<NUM; i++)
 	{
@@ -41,11 +43,13 @@ void gen_rand_data()
 		{
 			for (int32_t j=0; j<DIMS; j++)
 				feat[i*DIMS+j]=CMath::random(0.0,1.0)+DIST;
+			lab[i]=0;
 		}
 		else
 		{
 			for (int32_t j=0; j<DIMS; j++)
 				feat[i*DIMS+j]=CMath::random(0.0,1.0)-DIST;
+			lab[i]=1;
 		}
 	}
 	CMath::display_matrix(feat,DIMS, NUM);
@@ -55,7 +59,7 @@ int main()
 {
 	init_shogun_with_defaults();
 
-	// Generate random data
+	// Generate random data, features and labels
 	gen_rand_data();
 
 	// Create features
@@ -63,12 +67,8 @@ int main()
 	SG_REF(features);
 	features->set_feature_matrix(feat, DIMS, NUM);
 
-	// Make a file-like object for streaming vector-by-vector from the CSimpleFeatures object
-	CStreamingFileFromSimpleFeatures* simplefeatures_input = new CStreamingFileFromSimpleFeatures(features);
-	SG_REF(simplefeatures_input);
-
-	// Create a StreamingSimpleFeatures object which uses the above as input
-	CStreamingSimpleFeatures<float64_t>* streaming_simple = new CStreamingSimpleFeatures<float64_t>(simplefeatures_input);
+	// Create a StreamingSimpleFeatures object which uses the above as input; labels (float64_t*) are optional
+	CStreamingSimpleFeatures<float64_t>* streaming_simple = new CStreamingSimpleFeatures<float64_t>(features, lab);
 	SG_REF(streaming_simple);
 
 	// Start parsing of the examples; in this case, it is trivial - returns each vector from the SimpleFeatures object
@@ -76,24 +76,26 @@ int main()
 
 	int32_t counter=0;
 	SG_SPRINT("Processing examples...\n\n");
-	
+
 	// Run a while loop over all the examples.  Note that since
 	// features are "streaming", there is no predefined
 	// number_of_vectors known to the StreamingFeatures object.
 	// Thus, this loop must be used to iterate over all the
-	// features.
+	// features
 	while (streaming_simple->get_next_example())
 	{
 		counter++;
 		// Get the current vector; no other vector is accessible
 		SGVector<float64_t> vec = streaming_simple->get_vector();
-		
+		float64_t label = streaming_simple->get_label();
+
 		SG_SPRINT("Vector %d: [\t", counter);
 		for (int32_t i=0; i<vec.vlen; i++)
 		{
 			SG_SPRINT("%f\t", vec.vector[i]);
 		}
-		
+		SG_SPRINT("Label=%f\t", label);
+
 		// Calculate dot product of the current vector (from
 		// the StreamingFeatures object) with itself (the
 		// vector passed as argument)
@@ -109,10 +111,11 @@ int main()
 	// Now that all examples are used, end the parser.
 	streaming_simple->end_parser();
 
+	delete[] lab;
+
 	SG_UNREF(streaming_simple);
-	SG_UNREF(simplefeatures_input);
 	SG_UNREF(features);
-	
+
 	exit_shogun();
 	return 0;
 }
