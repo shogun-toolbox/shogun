@@ -240,7 +240,6 @@ namespace shogun
 	{
 		pthread_mutex_lock(&ex_in_use_mutex[ex_read_index]);
 		ex_used[ex_read_index] = E_USED;
-		delete[] ex_buff[ex_read_index].fv.vector;
 		pthread_cond_signal(&ex_in_use_cond[ex_read_index]);
 		pthread_mutex_unlock(&ex_in_use_mutex[ex_read_index]);
 	
