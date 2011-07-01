@@ -23,12 +23,21 @@ class CFeatures;
 class CDistance;
 
 /** @brief the class ClassicMDS used to perform classic eigenvector
- * 	multidimensional scaling.
+ * multidimensional scaling.
  *
- * 	Description is given at p.261 (Section 12.1) of
- * 	Borg, I., & Groenen, P. J. F. (2005).
- * 	Modern multidimensional scaling: Theory and applications. Springer.
+ * Description is given at p.261 (Section 12.1) of
+ * Borg, I., & Groenen, P. J. F. (2005).
+ * Modern multidimensional scaling: Theory and applications. Springer.
+ * 
+ * In this preprocessor LAPACK is used for solving eigenproblem. If 
+ * ARPACK is available, it is used instead of LAPACK.
  *
+ * Note that target dimension should be set with sensible value
+ * (using set_target_dim). In case it is higher than intrinsic
+ * dimensionality of the dataset 'extra' features of the output 
+ * may be inconsistent (actually features according to zero or
+ * negative eigenvalues). In this case a warning is throwed.  
+ * 
  */
 class CClassicMDS: public CDimensionReductionPreprocessor
 {
@@ -51,17 +60,17 @@ public:
 	virtual void cleanup();
 
 	/** apply preproc to distance
-	 *
+	 * @param distance 
 	 */
 	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
 
 	/** apply preproc to feature matrix
-	 *
+	 * @param features
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 	/** apply preproc to feature vector
-	 *
+	 * @param vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
@@ -71,7 +80,9 @@ public:
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_CLASSICMDS; };
 
-	/** get last embedding eigenvectors */
+	/** get last embedding eigenvectors 
+	 * @return vector with last eigenvalues
+	 */
 	SGVector<float64_t> get_eigenvalues() const
 	{
 		SGVector<float64_t> eigs(m_eigenvalues);
@@ -80,18 +91,18 @@ public:
 	}
 
 	/** apply preproc to distance
-	 *
+	 * @param distance
+	 * @return feature matrix
 	 */
 	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
 
 protected:
 
-	/** positive eigenvalues of last call in descending order */
+	/** last eigenvalues */
 	SGVector<float64_t> m_eigenvalues;
 
 };
 
 }
-
 #endif /* HAVE_LAPACK */
 #endif /* CLASSICMDS_H_ */
