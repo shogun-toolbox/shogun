@@ -285,7 +285,9 @@ install-octave_modular: $(TEMPLATE_TARGET)
 		>>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
 
 install-java_modular: $(TEMPLATE_TARGET)
-	#TODO
+	install -d -m755 "$(DESTDIR)/share/java"
+	install -m755 java_modular/shogun.jar "$(DESTDIR)/share/java"
+	install -m755 java_modular/lib* $(DESTDIR)$(LIBDIR)
 
 install-ruby_modular: $(TEMPLATE_TARGET)
 	#TODO
