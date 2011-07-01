@@ -14,6 +14,7 @@
 #include "lib/Time.h"
 #include "lib/Mathematics.h"
 #include "features/StreamingFeatures.h"
+#include "features/DotFeatures.h"
 #include "lib/StreamingFile.h"
 
 namespace shogun
@@ -68,6 +69,24 @@ public:
 	{
 		init(file, is_labelled, size);
 		set_property(FP_STREAMING_DOT);
+	}
+
+	/**
+	 * Constructor taking a CDotFeatures object and optionally,
+	 * labels, as args.
+	 *
+	 * The derived class should implement it so that the
+	 * Streaming*Features class uses the DotFeatures object as the
+	 * input, getting examples one by one from the DotFeatures
+	 * object (and labels, if applicable).
+	 *
+	 * @param dot_features CDotFeatures object
+	 * @param lab labels (optional)
+	 */
+	CStreamingDotFeatures(CDotFeatures* dot_features, float64_t* lab=NULL)
+	{
+		SG_NOTIMPLEMENTED;
+		return;
 	}
 
 	virtual ~CStreamingDotFeatures() { }
@@ -144,6 +163,7 @@ public:
 		SG_NOTIMPLEMENTED;
 		return;
 	}
+
 
 protected:
 
