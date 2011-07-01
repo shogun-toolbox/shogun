@@ -17,8 +17,8 @@ size_cache=10;
 degree=3;
 inhomogene=true;
 
-kernel=SparsePolyKernel(feats_train, feats_train, size_cache, degree,
-	inhomogene);
+kernel=PolyKernel(feats_train, feats_train, degree,
+	inhomogene, size_cache);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);

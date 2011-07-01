@@ -13,7 +13,6 @@ testlab=[-ones(1,num), ones(1,num)];
 
 feats_train=RealFeatures(traindata_real);
 feats_test=RealFeatures(testdata_real);
-feats_test.copy_feature_matrix(testdata_real);
 kernel=GaussianKernel(feats_train, feats_train, width);
 
 labels=Labels(trainlab);

@@ -24,6 +24,13 @@
 #include <octave/Cell.h>
 
 #include <shogun/lib/DataType.h>
+
+void* get_copy(void* src, size_t len)
+{
+    void* copy=SG_MALLOC(len);
+    memcpy(copy, src, len);
+    return copy;
+}
 %}
 
 /* One dimensional input arrays */
@@ -47,7 +54,9 @@
     }
 
     m = mat_feat.oct_converter();
-    $1 = shogun::SGVector<sg_type>((sg_type*) m.fortran_vec(), m.cols());
+
+    void* copy=get_copy((void*) m.fortran_vec(), size_t(m.cols())*sizeof(sg_type));
+    $1 = shogun::SGVector<sg_type>((sg_type*) copy, m.cols());
 }
 %typemap(freearg) shogun::SGVector<sg_type>
 {
@@ -119,7 +128,8 @@ TYPEMAP_OUT_SGVECTOR(uint16NDArray, uint16_t, uint16_t, "Word")
 
     m = mat_feat.oct_converter();
 
-    $1 = shogun::SGMatrix<sg_type>((sg_type*) m.fortran_vec(), m.rows(), m.cols());
+    void* copy=get_copy((void*) m.fortran_vec(), size_t(m.cols())*m.rows()*sizeof(sg_type));
+    $1 = shogun::SGMatrix<sg_type>((sg_type*) copy, m.rows(), m.cols());
 }
 %typemap(freearg) shogun::SGMatrix<sg_type>
 {
@@ -176,6 +186,16 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<sg_type>
+{
+    $1=0;
+    octave_value arg=$input;
+    if (arg.is_cell())
+        $1=1;
+    else if (arg.oct_type_check())
+        $1=1;
+}
+
 %typemap(in) shogun::SGStringList<sg_type>
 {
     using namespace shogun;

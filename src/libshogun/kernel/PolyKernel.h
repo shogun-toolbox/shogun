@@ -35,11 +35,9 @@ namespace shogun
  */
 class CPolyKernel: public CDotKernel
 {
-	void init(void);
-
 	public:
 		/** default constructor  */
-		CPolyKernel(void);
+		CPolyKernel();
 
 		/** constructor
 		 *
@@ -95,6 +93,9 @@ class CPolyKernel: public CDotKernel
 		 * @return computed kernel function at indices a,b
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+
+	private:
+		void init();
 
 	protected:
 		/** degree */

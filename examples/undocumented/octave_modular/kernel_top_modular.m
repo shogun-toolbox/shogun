@@ -41,15 +41,15 @@ wordfeats_train=StringWordFeatures(charfeat.get_alphabet());
 wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
 preproc.init(wordfeats_train);
-wordfeats_train.add_preproc(preproc);
-wordfeats_train.apply_preproc();
+wordfeats_train.add_preprocessor(preproc);
+wordfeats_train.apply_preprocessor();
 
 charfeat=StringCharFeatures(CUBE);
 charfeat.set_features(cubesequence);
 wordfeats_test=StringWordFeatures(charfeat.get_alphabet());
 wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
-wordfeats_test.add_preproc(preproc);
-wordfeats_test.apply_preproc();
+wordfeats_test.add_preprocessor(preproc);
+wordfeats_test.apply_preprocessor();
 
 % cheating, BW_NORMAL is somehow not available
 BW_NORMAL=0;

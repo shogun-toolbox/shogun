@@ -15,7 +15,7 @@ feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(feat);
 scale=1.1;
 
-kernel=SparseLinearKernel();
+kernel=LinearKernel();
 kernel.set_normalizer(AvgDiagKernelNormalizer(scale));
 kernel.init(feats_train, feats_train);
 

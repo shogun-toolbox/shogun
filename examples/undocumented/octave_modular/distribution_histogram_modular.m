@@ -16,8 +16,8 @@ feats=StringWordFeatures(charfeat.get_alphabet());
 feats.obtain_from_char(charfeat, order-1, order, gap, reverse);
 preproc=SortWordString();
 preproc.init(feats);
-feats.add_preproc(preproc);
-feats.apply_preproc();
+feats.add_preprocessor(preproc);
+feats.apply_preprocessor();
 
 histo=Histogram(feats);
 histo.train();

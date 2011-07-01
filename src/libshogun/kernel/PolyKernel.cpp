@@ -18,14 +18,6 @@
 
 using namespace shogun;
 
-void
-CPolyKernel::init(void)
-{
-	m_parameters->add(&degree, "degree");
-	m_parameters->add(&inhomogene, "inhomogene",
-					  "If kernel is inhomogeneous.");
-}
-
 CPolyKernel::CPolyKernel(void)
 : CDotKernel(0), degree(0), inhomogene(false)
 {
@@ -77,3 +69,11 @@ float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	return CMath::pow(result, degree);
 }
+
+void CPolyKernel::init()
+{
+	m_parameters->add(&degree, "degree");
+	m_parameters->add(&inhomogene, "inhomogene",
+					  "If kernel is inhomogeneous.");
+}
+

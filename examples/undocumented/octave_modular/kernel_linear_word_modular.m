@@ -12,7 +12,7 @@ feats_test=WordFeatures(fm_test_word);
 do_rescale=true;
 scale=1.4;
 
-kernel=LinearWordKernel();
+kernel=LinearKernel();
 kernel.set_normalizer(AvgDiagKernelNormalizer(scale));
 kernel.init(feats_train, feats_train);
 

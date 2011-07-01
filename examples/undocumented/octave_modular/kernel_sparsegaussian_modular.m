@@ -15,7 +15,7 @@ feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(feat);
 width=1.1;
 
-kernel=SparseGaussianKernel(feats_train, feats_train, width);
+kernel=GaussianKernel(feats_train, feats_train, width);
 
 km_train=kernel.get_kernel_matrix();
 kernel.init(feats_train, feats_test);
