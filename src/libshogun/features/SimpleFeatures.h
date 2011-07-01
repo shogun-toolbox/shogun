@@ -936,7 +936,6 @@ protected:
 	 */
 	virtual ST* compute_feature_vector(int32_t num, int32_t& len, ST* target =
 			NULL) {
-		SG_NOTIMPLEMENTED;
 		len = 0;
 		return NULL;
 	}
