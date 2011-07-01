@@ -85,16 +85,17 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	delete[] D_matrix.matrix;
 	delete[] H_matrix;
 
-	// eigendecomposition
+	float64_t* replace_feature_matrix = new float64_t[m_target_dim*N];
+	float64_t* eigenvalues_vector = new float64_t[m_target_dim];
+	int32_t eigenproblem_status = 0;	
+	
 	#ifdef HAVE_ARPACK
 	// using ARPACK
-		float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
-		float64_t* eigenvalues_vector = new float64_t[m_target_dim];
-		int32_t eigenproblem_status = 0;
+		// solve eigenproblem
 		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", 
 		              eigenvalues_vector, replace_feature_matrix,
 		              eigenproblem_status);
-
+		// check for failure
 		ASSERT(eigenproblem_status == 0);
 
 		// reverse eigenvectors order
@@ -128,30 +129,35 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim,true);
 	#else /* HAVE_ARPACK else */
 	// using LAPACK
-		float64_t* eigenvalues_vector = new float64_t[N];
-		int32_t eigenproblem_status = 0;
+		// solve eigenproblem
 		wrap_dsyev('V','U',N,Ds_matrix,N,eigenvalues_vector,&eigenproblem_status);
+		// check for failure
 		ASSERT(eigenproblem_status==0);
-		// replace feature matrix with (top) eigenvectors associated with largest
-		// positive eigenvalues
 	
 		m_eigenvalues.free_vector();
 		m_eigenvalues = SGVector<float64_t>(new float64_t[m_target_dim],m_target_dim,true);
 		for (i=0; i<m_target_dim; i++)
 			m_eigenvalues.vector[i] = eigenvalues_vector[N-i-1];
 
-		float64_t* replace_feature_matrix = new float64_t[N*m_target_dim];
 		for (i=0; i<m_target_dim; i++)
 		{
 			for (j=0; j<N; j++)
 				replace_feature_matrix[j*m_target_dim+i] =
 					Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
 		}
-	
-		// cleanup
-		delete[] eigenvalues_vector;
 	#endif /* HAVE_ARPACK else */
 	
+	// warn user if there are negative or zero eigenvalues
+	for (i=0; i<m_eigenvalues.vlen; i++)
+	{
+		if (m_eigenvalues.vector[i]<=0.0)
+		{
+			SG_WARNING("Embedding is not consistent: features %d-%d are wrong", i, m_eigenvalues.vlen);
+			break;
+		}
+	}	
+
+	delete[] eigenvalues_vector;
 	delete[] Ds_matrix;
 
 	return SGMatrix<float64_t>(replace_feature_matrix,m_target_dim,N);
