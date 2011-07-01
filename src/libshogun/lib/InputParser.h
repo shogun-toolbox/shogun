@@ -141,6 +141,14 @@ namespace shogun
 		 */
 		int32_t get_vector_only(T* &feature_vector, int32_t &length);
 
+		/** 
+		 * Sets whether to delete[] the vector explicitly
+		 * after it has been used
+		 * 
+		 * @param del whether to delete[] or not, bool
+		 */
+		void set_do_delete(bool del);
+
 		/**
 		 * Starts the parser, creating a new thread.
 		 *
@@ -257,6 +265,8 @@ namespace shogun
 		
 		int32_t current_len; /**< Features in last
 				      * read example */
+
+		bool do_delete;
 		
 	};
 
@@ -310,8 +320,16 @@ namespace shogun
 		current_len = -1;
 		current_label = -1;
 		current_feature_vector = NULL;
+
+		do_delete=true;
 	}
 
+	template <class T>
+		void CInputParser<T>::set_do_delete(bool del)
+	{
+		do_delete=del;
+	}
+	
 	template <class T>
 		void CInputParser<T>::start_parser()
 	{
@@ -479,6 +497,9 @@ namespace shogun
 	template <class T>
 		void CInputParser<T>::finalize_example()
 	{
+		if (do_delete)
+			delete[] current_feature_vector;
+		
 		examples_buff->finalize_example();
 	}
 

@@ -65,6 +65,7 @@ public:
 	{
 		set_read_functions();
 		init(file, is_labelled, size);
+		parser.set_do_delete(false);
 	}
 	
 	/** 
