@@ -43,7 +43,7 @@ class CGMM : public CDistribution
 		 * @param coefficients coefficients
 		 * @param coefficient_length number of coefficients
 		 */
-		CGMM(CGaussian** components, int32_t components_length, float64_t* coefficients, int32_t coefficient_length);
+		CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients);
 		virtual ~CGMM();
 
 		/** cleanup */
@@ -74,7 +74,7 @@ class CGMM : public CDistribution
 		 * @param alpha_col number of cols
 		 * @param min_cov minimum covariance
 		 */
-		void max_likelihood(float64_t* alpha, int32_t alpha_row, int32_t alpha_col, float64_t min_cov);
+		void max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov);
 
 		/** get number of parameters in model
 		 *
@@ -127,8 +127,8 @@ class CGMM : public CDistribution
 		 */
 		virtual inline SGVector<float64_t> get_nth_mean(int32_t num)
 		{
-			ASSERT(num<m_n);
-			return m_components[num]->get_mean();
+			ASSERT(num<m_components.vlen);
+			return m_components.vector[num]->get_mean();
 		}
 
 		/** get nth cov
@@ -140,8 +140,8 @@ class CGMM : public CDistribution
 		 */
 		virtual inline SGMatrix<float64_t> get_nth_cov(int32_t num)
 		{
-			ASSERT(num<m_n);
-			return m_components[num]->get_cov();
+			ASSERT(num<m_components.vlen);
+			return m_components.vector[num]->get_cov();
 		}
 
 		/** get coefficients
@@ -150,7 +150,7 @@ class CGMM : public CDistribution
 		 */
 		virtual inline SGVector<float64_t> get_coef()
 		{
-			return SGVector<float64_t>(m_coefficients, m_coef_size);
+			return m_coefficients;
 		}
 
 		/** sample from model
@@ -171,13 +171,9 @@ class CGMM : public CDistribution
 
 	protected:
 		/** Mixture components */
-		CGaussian** m_components;
-		/** Number of mixture components */
-		int32_t m_n;
+		SGVector<CGaussian*> m_components;
 		/** Mixture coefficients */
-		float64_t* m_coefficients;
-		/** Coefficient vector size */
-		int32_t m_coef_size;
+		SGVector<float64_t> m_coefficients;
 };
 }
 #endif //HAVE_LAPACK
