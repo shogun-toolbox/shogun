@@ -1163,7 +1163,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			index_t sf_num_str=sf->get_num_vectors();
 			for (int32_t i=0; i<sf_num_str; i++)
 			{
-				int32_t real_i = sf->m_subset->subset_idx_conversion(i);
+				int32_t real_i = sf->subset_idx_conversion(i);
 				int32_t length=sf->features[real_i].length;
 				new_features[i].string=new ST[length];
 				memcpy(new_features[i].string, sf->features[real_i].string, length);
@@ -1917,7 +1917,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			for (int32_t i=0; i<num_str; i++)
 			{
 				max_string_length=CMath::max(max_string_length,
-					features[m_subset->subset_idx_conversion(i)].length);
+					features[subset_idx_conversion(i)].length);
 			}
 		}
 
