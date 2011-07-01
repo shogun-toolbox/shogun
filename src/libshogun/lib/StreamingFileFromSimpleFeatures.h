@@ -29,6 +29,14 @@ public:
 	 * @param feat SimpleFeatures object
 	 */
 	CStreamingFileFromSimpleFeatures(CFeatures* feat);
+	
+	/** 
+	 * Constructor taking a SimpleFeatures object as arg
+	 * 
+	 * @param feat SimpleFeatures object
+	 * @param lab Labels as float64_t*
+	 */
+	CStreamingFileFromSimpleFeatures(CFeatures* feat, float64_t* lab);
 
 	/** 
 	 * Destructor
@@ -55,6 +63,29 @@ public:
 	virtual void get_long_vector(int64_t*& vector, int32_t& len);
 	virtual void get_ulong_vector(uint64_t*& vector, int32_t& len);
 	virtual void get_longreal_vector(floatmax_t*& vector, int32_t& len);
+
+	/** @name Label and Vector Access Functions
+	 *
+	 * Functions to access the label and vectors of examples
+	 * one of the several base data types.
+	 * These functions are used when loading vectors from e.g. file
+	 * and return the vector, its length, and the label by reference
+	 */
+	//@{
+	virtual void get_bool_vector_and_label(bool*& vector, int32_t& len, float64_t& label);
+	virtual void get_byte_vector_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_char_vector_and_label(char*& vector, int32_t& len, float64_t& label);
+	virtual void get_int_vector_and_label(int32_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_real_vector_and_label(float64_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_shortreal_vector_and_label(float32_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_short_vector_and_label(int16_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_word_vector_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_int8_vector_and_label(int8_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_uint_vector_and_label(uint32_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_long_vector_and_label(int64_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_ulong_vector_and_label(uint64_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_longreal_vector_and_label(floatmax_t*& vector, int32_t& len, float64_t& label);
+	//@}
 
 	/** @return object name */
 	inline virtual const char* get_name() const
