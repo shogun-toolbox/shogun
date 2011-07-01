@@ -55,16 +55,34 @@ public:
 				 int32_t size)
 		: CStreamingDotFeatures()
 	{
-		set_read_functions();
 		init(file, is_labelled, size);
+		set_read_functions();
 	}
 
-	CStreamingSimpleFeatures(CStreamingFileFromSimpleFeatures* file,
-				 bool is_labelled=false, int32_t size=10)
+	CStreamingSimpleFeatures(CDotFeatures* dot_features,
+				 float64_t* lab=NULL)
 		: CStreamingDotFeatures()
 	{
-		set_read_functions();
+		CSimpleFeatures<T>* simple_features = (CSimpleFeatures<T>*) dot_features;
+
+		CStreamingFileFromSimpleFeatures* file;
+		bool is_labelled;
+		int32_t size = 1;
+		if (lab)
+		{
+			is_labelled = true;
+			file = new CStreamingFileFromSimpleFeatures(simple_features, lab);
+		}
+		else
+		{
+			is_labelled = false;
+			file = new CStreamingFileFromSimpleFeatures(simple_features);
+		}
+
+		SG_REF(file);
+
 		init(file, is_labelled, size);
+		set_read_functions();
 		parser.set_do_delete(false);
 	}
 	
