@@ -22,15 +22,12 @@ class CFeatures;
 
 /** @brief Class GaussianNaiveBayes, a Gaussian Naive Bayes classifier
  *
- *	Formally, chooses class c with maximum \f$ P(c)P(x|c) \f$
- *	probability. Naive bayes assumes \f$ P(x|c) \f$ as product
- *  \f$ \prod_i P(x_i|c) \f$ and gaussian naive bayes assume
- *  \f$P(x_i|c) \sim \mathcal{N} (\mu_{i,c}, {\sigma}^2_{i,c})\f$, where \f$ \mathcal{N} \f$ is
- *  normal distribution and \f$ \mu_{i,c}, {\sigma}^2_{i,c} \f$ are estimates of i-th
- *  feature mean and variance among class \f$ c \f$.
- *
- *  Note that classifier requires ~ (dimensionality)*(number of classes)
- *  memory.
+ * This classifier assumes that a posteriori conditional probabilities
+ * are gaussian pdfs. For each vector gaussian naive bayes chooses
+ * the class C with maximal
+ * \[
+ * P(c) \prod_{i} P(x_i|c)
+ * \]
  *
  */
 class CGaussianNaiveBayes : public CMachine
@@ -43,8 +40,8 @@ public:
 	CGaussianNaiveBayes();
 
 	/** constructor
-	 * 	@param train_examples train examples
-	 *	@param train_labels labels corresponding to train_examples
+	 * @param train_examples train examples
+	 * @param train_labels labels corresponding to train_examples
 	 */
 	CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels);
 
@@ -54,17 +51,17 @@ public:
 	virtual ~CGaussianNaiveBayes();
 
 	/** set features for classify
-	 *
+	 * @param features features to be set
 	 */
-	virtual inline void set_features(CDotFeatures* feat)
+	virtual inline void set_features(CDotFeatures* features)
 	{
 		 SG_UNREF(m_features);
-		 SG_REF(feat);
-		 m_features = feat;
+		 SG_REF(features);
+		 m_features = features;
 	}
 
 	/** get features for classify
-	 *
+	 * @return current features
 	 */
 	virtual inline CDotFeatures* get_features()
 	{
@@ -73,35 +70,35 @@ public:
 	}
 
 	/** train classifier
-	 * 	@param data train examples
-	 * 	@return true if successful
+	 * @param data train examples
+	 * @return true if successful
 	 */
 	virtual bool train(CFeatures* data = NULL);
 
 	/** classify all examples
-	 *  @return labels
+	 * @return labels
 	 */
 	virtual CLabels* apply();
 
 	/** classify specified examples
-	 * 	@param data examples to be classified
-	 * 	@return labels corresponding to data
+	 * @param data examples to be classified
+	 * @return labels corresponding to data
 	 */
 	virtual CLabels* apply(CFeatures* data);
 
 	/** classifiy specified example
-	 * 	@param idx example index
-	 * 	@return label
+	 * @param idx example index
+	 * @return label
 	 */
 	virtual float64_t apply(int32_t idx);
 
-	/**
-	 * 	@return classifier name
+	/** get name
+	 * @return classifier name
 	 */
-	virtual inline const char* get_name() const { return "Gaussian Naive Bayes"; };
+	virtual inline const char* get_name() const { return "GaussianNaiveBayes"; };
 
-	/**
-	 * 	@return classifier type
+	/** get classifier type
+	 * @return classifier type
 	 */
 	virtual inline EClassifierType get_classifier_type() { return CT_GAUSSIANNAIVEBAYES; };
 
