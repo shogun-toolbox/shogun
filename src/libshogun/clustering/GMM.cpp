@@ -315,7 +315,6 @@ float64_t* CGMM::alpha_init(float64_t* init_means, int32_t init_mean_dim, int32_
 	for (int i=0; i<num_vectors; i++)
 		alpha[i*m_components.vlen+init_labels->get_int_label(i)]=1;
 
-	SG_UNREF(knn);
 	SG_UNREF(init_labels);
 
 	return alpha;
