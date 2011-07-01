@@ -47,6 +47,14 @@ public:
 	CStreamingFileFromFeatures(CFeatures* feat);
 
 	/** 
+	 * Constructor taking a CFeatures object and labels as arguments
+	 * 
+	 * @param feat features object
+	 * @param lab labels as float64_t*
+	 */
+	CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab);
+
+	/** 
 	 * Destructor
 	 */
 	virtual ~CStreamingFileFromFeatures();
@@ -58,12 +66,20 @@ public:
 	 */
 	virtual void set_features(CFeatures* feat)
 	{
+		ASSERT(feat);
 		features=feat;
+	}
+
+	virtual void set_labels(float64_t* lab)
+	{
+		ASSERT(lab);
+		labels=lab;
 	}
 
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
+		
 		return "StreamingFileFromFeatures";
 
 	}
@@ -72,6 +88,9 @@ protected:
 
 	/// Features object
 	CFeatures* features;
+
+	/// Labels (if applicable)
+	float64_t* labels;
 };
 }
 #endif //__STREAMING_FILEFROMFEATURES_H__
