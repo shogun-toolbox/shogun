@@ -81,15 +81,15 @@ public:
 	 */
 	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
 		: CFeatures() { }
-	
+
 	/**
 	 * Destructor
 	 */
 	virtual ~CStreamingFeatures() { }
 
-	/** 
+	/**
 	 * Set the vector reading functions.
-	 * 
+	 *
 	 * The functions are implemented specific to the type in the
 	 * derived class.
 	 */
@@ -98,8 +98,8 @@ public:
 		set_vector_reader();
 		set_vector_and_label_reader();
 	}
-	
-	/** 
+
+	/**
 	 * The derived object must set the function which will be used
 	 * for reading one vector from the file.  This function should
 	 * be a member of the CStreamingFile class.
@@ -109,7 +109,7 @@ public:
 	 */
 	virtual void set_vector_reader()=0;
 
-	/** 
+	/**
 	 * The derived object must set the function which will be used
 	 * by the parser for reading one vector and label from the
 	 * file.  This function should be a member of the
@@ -160,6 +160,51 @@ public:
 	 * @return number of features in current example
 	 */
 	virtual int32_t get_num_features()=0;
+
+	/**
+	 * Return whether the examples are labelled or not.
+	 *
+	 * @return true if labelled, else false
+	 */
+	virtual bool get_has_labels()
+	{
+		return has_labels;
+	}
+
+	/**
+	 * Whether the stream is seekable (to check if multiple epochs
+	 * are possible), i.e., whether we can process examples in a
+	 * batch fashion.
+	 *
+	 * A stream can usually seekable when it comes from a file or
+	 * when it comes from another conventional CFeatures object.
+	 *
+	 * @return true if seekable, else false.
+	 */
+	virtual bool is_seekable()
+	{
+		return seekable;
+	}
+
+	/**
+	 * Function to reset the stream (if possible).
+	 */
+	virtual void reset_stream()
+	{
+		SG_NOTIMPLEMENTED;
+		return;
+	}
+
+protected:
+
+	/// Whether examples are labelled or not.
+	bool has_labels;
+
+	/// The StreamingFile object to read from.
+	CStreamingFile* working_file;
+
+	/// Whether the stream is seekable
+	bool seekable;
 
 };
 }

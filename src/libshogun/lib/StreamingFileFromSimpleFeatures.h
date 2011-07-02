@@ -18,32 +18,32 @@ namespace shogun
 class CStreamingFileFromSimpleFeatures: public CStreamingFileFromFeatures
 {
 public:
-	/** 
+	/**
 	 * Default constructor
 	 */
 	CStreamingFileFromSimpleFeatures();
 
-	/** 
+	/**
 	 * Constructor taking a SimpleFeatures object as arg
-	 * 
+	 *
 	 * @param feat SimpleFeatures object
 	 */
 	CStreamingFileFromSimpleFeatures(CFeatures* feat);
-	
-	/** 
+
+	/**
 	 * Constructor taking a SimpleFeatures object as arg
-	 * 
+	 *
 	 * @param feat SimpleFeatures object
 	 * @param lab Labels as float64_t*
 	 */
 	CStreamingFileFromSimpleFeatures(CFeatures* feat, float64_t* lab);
 
-	/** 
+	/**
 	 * Destructor
 	 */
 	virtual ~CStreamingFileFromSimpleFeatures();
 
-	/** 
+	/**
 	 * Functions to read vectors from the SimpleFeatures object
 	 *
 	 * Set vector and length by reference.
@@ -87,6 +87,16 @@ public:
 	virtual void get_longreal_vector_and_label(floatmax_t*& vector, int32_t& len, float64_t& label);
 	//@}
 
+	/**
+	 * Reset the stream so the next example returned is the first
+	 * example in the SimpleFeatures object.
+	 *
+	 */
+	void reset_stream()
+	{
+		vector_num = 0;
+	}
+
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
@@ -95,11 +105,11 @@ public:
 	}
 
 private:
-	/** 
+	/**
 	 * Initialize members to defaults
 	 */
 	void init();
-	
+
 protected:
 
 	/// Index of vector to be returned from the feature matrix

@@ -137,6 +137,18 @@ public:
 		return NULL;
 	}
 
+	/** get number of non-zero features in vector
+	 *
+	 * (in case accurate estimates are too expensive overestimating is OK)
+	 *
+	 * @return number of sparse features in vector
+	 */
+	virtual int32_t get_nnz_features_for_vector()
+	{
+		SG_NOTIMPLEMENTED;
+		return -1;
+	}
+
 	/** iterate over the non-zero features
 	 *
 	 * call this function with the iterator returned by get_first_feature

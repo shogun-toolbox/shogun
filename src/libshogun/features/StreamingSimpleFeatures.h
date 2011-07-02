@@ -84,6 +84,7 @@ public:
 		init(file, is_labelled, size);
 		set_read_functions();
 		parser.set_do_delete(false);
+		seekable=true;
 	}
 	
 	/** 
@@ -131,6 +132,17 @@ public:
 	 * Waits for the thread to join.
 	 */
 	virtual void end_parser();
+
+	virtual void reset_stream()
+	{
+		if (seekable)
+		{
+			((CStreamingFileFromSimpleFeatures*) working_file)->reset_stream();
+			parser.init(working_file, has_labels, 1);
+			parser.set_do_delete(false);
+			parser.start_parser();
+		}
+	}
 
 	/** 
 	 * Instructs the parser to return the next example.
@@ -240,6 +252,15 @@ public:
 		}
 	}
 
+	/** get number of non-zero features in vector
+	 *
+	 * @return number of non-zero features in vector
+	 */
+	virtual inline int32_t get_nnz_features_for_vector()
+	{
+		return current_length;
+	}
+
 	/** 
 	 * Return the number of features in the current example.
 	 * 
@@ -321,9 +342,6 @@ protected:
 	/// The parser object, which reads from input and returns parsed example objects.
 	CInputParser<T> parser;
 
-	/// The StreamingFile object to read from.
-	CStreamingFile* working_file;
-
 	/// The current example's feature vector as an SGVector<T>
 	SGVector<T> current_sgvector;
 
@@ -335,9 +353,6 @@ protected:
 
 	/// Number of features in current example.
 	int32_t current_length;
-
-	/// Whether examples are labelled or not.
-	bool has_labels;
 };
 	
 #define SET_VECTOR_READER(sg_type, sg_function)				\
@@ -411,6 +426,7 @@ void CStreamingSimpleFeatures<T>::init()
 {
 	working_file=NULL;
 	current_vector=NULL;
+	seekable=false;
 	current_length=-1;
 }
 
@@ -423,6 +439,7 @@ void CStreamingSimpleFeatures<T>::init(CStreamingFile* file,
 	has_labels = is_labelled;
 	working_file = file;
 	parser.init(file, is_labelled, size);
+	seekable=false;
 }
 	
 template <class T>
