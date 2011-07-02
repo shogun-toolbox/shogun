@@ -101,9 +101,9 @@ class CGaussian : public CDistribution
 		 * @param point_len
 		 * @return computed PDF
 		 */
-		virtual inline float64_t compute_PDF(float64_t* point, int32_t point_len)
+		virtual inline float64_t compute_PDF(SGVector<float64_t> point)
 		{
-			return CMath::exp(compute_log_PDF(point, point_len));
+			return CMath::exp(compute_log_PDF(point));
 		}
 
 		/** compute log PDF
@@ -112,7 +112,7 @@ class CGaussian : public CDistribution
 		 * @param point_len
 		 * @return computed log PDF
 		 */
-		virtual float64_t compute_log_PDF(float64_t* point, int32_t point_len);
+		virtual float64_t compute_log_PDF(SGVector<float64_t> point);
 
 		/** get mean
 		 *
@@ -120,7 +120,7 @@ class CGaussian : public CDistribution
 		 */
 		virtual inline SGVector<float64_t> get_mean()
 		{
-			return SGVector<float64_t>(m_mean, m_mean_length);
+			return m_mean;
 		}
 
 		/** set mean
@@ -129,18 +129,11 @@ class CGaussian : public CDistribution
 		 */
 		virtual inline void set_mean(SGVector<float64_t> mean)
 		{
-			if (m_mean_length>0)
-			{
-				ASSERT(mean.vlen==m_mean_length);
-			}
-			else
-			{
-				m_mean_length=mean.vlen;
+			m_mean.free_vector();
+			if (mean.vlen==1)
+				m_cov_type=SPHERICAL;
 
-				if (mean.vlen==1)
-					m_cov_type=SPHERICAL;
-			}
-			m_mean=mean.vector;
+			m_mean=mean;
 		}
 
 		/** get cov
@@ -158,7 +151,7 @@ class CGaussian : public CDistribution
 		virtual inline void set_cov(SGMatrix<float64_t> cov)
 		{
 			ASSERT(cov.num_rows==cov.num_cols);
-			ASSERT(cov.num_rows==m_mean_length);
+			ASSERT(cov.num_rows==m_mean.vlen);
 			decompose_cov(cov.matrix, cov.num_rows);
 			init();
 			if (cov.do_free)
@@ -190,18 +183,10 @@ class CGaussian : public CDistribution
 		 * @param d diagonal
 		 * @param d_length diagonal length
 		 */
-		inline void set_d(float64_t* d, int32_t d_length)
+		inline void set_d(SGVector<float64_t> d)
 		{
-			if (m_d_length>0)
-			{
-				ASSERT(d_length==m_d_length);
-			}
-			else
-			{
-				m_d_length=d_length;
-				m_d=new float64_t[d_length];
-			}
-			memcpy(m_d, d, sizeof(float64_t)*m_d_length);			
+			m_d.free_vector();
+			m_d = d;
 		}
 
 		/** set unitary matrix
@@ -209,20 +194,10 @@ class CGaussian : public CDistribution
 		 * @param d diagonal
 		 * @param d_length diagonal length
 		 */
-		inline void set_u(float64_t* u, int32_t u_rows, int32_t u_cols)
+		inline void set_u(SGMatrix<float64_t> u)
 		{
-			if (m_u_rows>0)
-			{
-				ASSERT(u_rows==u_cols);
-				ASSERT(u_rows==m_u_rows);
-			}
-			else
-			{
-				m_u_rows=u_rows;
-				m_u_cols=u_cols;
-				m_u=new float64_t[m_u_rows*m_u_cols];
-			}
-			memcpy(m_u, u, sizeof(float64_t)*m_u_rows*m_u_cols);			
+			m_u.free_matrix();
+			m_u = u;
 		}
 
 		/** sample from distribution
@@ -245,19 +220,11 @@ class CGaussian : public CDistribution
 		/** constant part */
 		float64_t m_constant;
 		/** diagonal */
-		float64_t* m_d;
-		/** diagonal length */
-		int32_t m_d_length;
+		SGVector<float64_t> m_d;
 		/** unitary matrix */
-		float64_t* m_u;
-		/** unitary matrix row num */
-		int32_t  m_u_rows;
-		/** unitary matrix col num */
-		int32_t m_u_cols;
+		SGMatrix<float64_t> m_u;
 		/** mean */
-		float64_t* m_mean;
-		/** mean length */
-		int32_t m_mean_length;
+		SGVector<float64_t> m_mean;
 		/** covariance type */
 		ECovType m_cov_type;
 };
