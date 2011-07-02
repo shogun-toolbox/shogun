@@ -334,6 +334,22 @@ SGVector<float64_t> CGMM::sample()
 	return m_components.vector[m_coefficients.vlen-1]->sample();
 }
 
+SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
+{
+	SGVector<float64_t> answer;
+	answer.vector=new float64_t[m_components.vlen+1];
+	answer.vlen=m_components.vlen+1;
+	answer.vector[m_components.vlen]=0;
+
+	for (int i=0; i<m_components.vlen; i++)
+	{
+		answer.vector[i]=m_components.vector[i]->compute_log_PDF(point)+CMath::log(m_coefficients.vector[i]);
+		answer.vector[m_components.vlen]+=CMath::exp(answer.vector[i]);
+	}
+
+	return answer;
+}
+
 void CGMM::register_params()
 {
 	m_parameters->add((SGVector<CSGObject*>*) &m_components, "m_components", "Mixture components");
