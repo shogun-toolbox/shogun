@@ -288,15 +288,13 @@ public:
 	/**
 	 * Dot product with another dense vector.
 	 * 
-	 * @param sgvec2 The dense vector with which to take the dot product.
+	 * @param vec2 The dense vector with which to take the dot product.
+	 * @param vec2_len length of vector
 	 * 
 	 * @return Dot product as a float64_t.
 	 */
-	virtual float64_t dense_dot(SGVector<float64_t> &sgvec2)
+	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)
 	{
-		float64_t* vec2=sgvec2.vector;
-		int32_t vec2_len=sgvec2.vlen;
-		
 		ASSERT(vec2);
 		if (vec2_len!=current_num_features)
 		{
@@ -319,14 +317,12 @@ public:
 	 * Takes the absolute value of current_vector if specified.
 	 * 
 	 * @param alpha alpha
-	 * @param sgvec2 vector to add to
+	 * @param vec2 vector to add to
+	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, SGVector<float64_t> &sgvec2, bool abs_val=false)
+	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)
 	{
-		float64_t* vec2=sgvec2.vector;
-		int32_t vec2_len=sgvec2.vlen;
-		
 		ASSERT(vec2);
 		if (vec2_len!=current_num_features)
 		{

@@ -101,17 +101,19 @@ public:
 
 	/** compute dot product between current vector and a dense vector
 	 *
-	 * @param vec real valued vector of type SGVector
+	 * @param vec2 real valued vector
+	 * @param vec2_len length of vector
 	 */
-	virtual float64_t dense_dot(SGVector<float64_t> &vec)=0;
+	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)=0;
 
 	/** add current vector multiplied with alpha to dense vector, 'vec'
 	 *
 	 * @param alpha scalar alpha
-	 * @param vec real valued vector to add to, encapsulated in an SGVector object
+	 * @param vec2 real valued vector to add to
+	 * @param vec2_len length of vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, SGVector<float64_t> &vec, bool abs_val=false)=0;
+	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
 
 	/** obtain the dimensionality of the feature space
 	 *
