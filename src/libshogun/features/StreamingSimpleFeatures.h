@@ -194,7 +194,7 @@ public:
 	 * 
 	 * @return Dot product as a float64_t
 	 */
-	virtual float64_t dot(SGVector<T> &vec);
+	virtual float64_t dot(SGVector<T> vec);
 
 	/** 
 	 * Dot product taken with another StreamingDotFeatures object.
@@ -211,19 +211,17 @@ public:
 	/** 
 	 * Dot product with another dense vector.
 	 * 
-	 * @param sgvec1 The dense vector with which to take the dot product.
-	 * 
+	 * @param vec2 The dense vector with which to take the dot product.
+	 * @param vec2_len length of vector
 	 * @return Dot product as a float64_t.
 	 */
-	virtual float64_t dense_dot(SGVector<float64_t> &sgvec1)
+	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)
 	{
-		int32_t len1=sgvec1.vlen;
-		
-		ASSERT(len1==current_length);
+		ASSERT(vec2_len==current_length);
 		float64_t result=0;
 		
 		for (int32_t i=0; i<current_length; i++)
-			result+=current_vector[i]*sgvec1.vector[i];
+			result+=current_vector[i]*vec2[i];
 		
 		return result;
 	}
@@ -233,22 +231,23 @@ public:
 	 * Takes the absolute value of current_vector if specified.
 	 * 
 	 * @param alpha alpha
-	 * @param vec vector to add to
+	 * @param vec2 vector to add to
+	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, SGVector<float64_t> &vec, bool abs_val=false)
+	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len , bool abs_val=false)
 	{
-		ASSERT(vec.vlen==current_length);
+		ASSERT(vec2_len==current_length);
 		
 		if (abs_val)
 		{
 			for (int32_t i=0; i<current_length; i++)
-				vec.vector[i]+=alpha*CMath::abs(current_vector[i]);
+				vec2[i]+=alpha*CMath::abs(current_vector[i]);
 		}
 		else
 		{
 			for (int32_t i=0; i<current_length; i++)
-				vec.vector[i]+=alpha*current_vector[i];
+				vec2[i]+=alpha*current_vector[i];
 		}
 	}
 
@@ -503,7 +502,7 @@ template <class T>
 }
 
 template <class T>
-float64_t CStreamingSimpleFeatures<T>::dot(SGVector<T> &sgvec1)
+float64_t CStreamingSimpleFeatures<T>::dot(SGVector<T> sgvec1)
 {
 	int32_t len1;
 	len1=sgvec1.vlen;
