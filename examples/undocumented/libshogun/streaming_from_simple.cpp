@@ -99,7 +99,7 @@ int main()
 		// Calculate dot product of the current vector (from
 		// the StreamingFeatures object) with itself (the
 		// vector passed as argument)
-		float64_t dot_prod = streaming_simple->dense_dot(vec);
+		float64_t dot_prod = streaming_simple->dense_dot(vec.vector, vec.vlen);
 
 		SG_SPRINT("]\nDot product of the vector with itself: %f", dot_prod);
 		SG_SPRINT("\n\n");
