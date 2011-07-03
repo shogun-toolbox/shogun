@@ -92,7 +92,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	#ifdef HAVE_ARPACK
 	// using ARPACK
 		// solve eigenproblem
-		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", 
+		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", 1, 0.0,
 		              eigenvalues_vector, replace_feature_matrix,
 		              eigenproblem_status);
 		// check for failure
@@ -145,6 +145,8 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 				replace_feature_matrix[j*m_target_dim+i] =
 					Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
 		}
+
+		delete[] eigenvalues_vector;
 	#endif /* HAVE_ARPACK else */
 	
 	// warn user if there are negative or zero eigenvalues
@@ -157,7 +159,6 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		}
 	}	
 
-	delete[] eigenvalues_vector;
 	delete[] Ds_matrix;
 
 	return SGMatrix<float64_t>(replace_feature_matrix,m_target_dim,N);
