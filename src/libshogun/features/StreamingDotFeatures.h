@@ -106,6 +106,44 @@ public:
 	 */
 	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)=0;
 
+	/** Compute the dot product for all vectors. This function makes use of dense_dot
+	 * alphas[i] * sparse[i]^T * w + b
+	 *
+	 * @param output result for the given vector range
+	 * @param alphas scalars to multiply with, may be NULL
+	 * @param vec dense vector to compute dot product with
+	 * @param dim length of the dense vector
+	 * @param b bias
+	 * @param num_vec number of vectors to operate on (indices 0 to num_vec-1)
+	 *
+	 * If num_vec == 0 or left to its default value, the function
+	 * attempts to return dot product for all vectors.  However,
+	 * the given output vector must be preallocated!
+	 *
+	 * note that the result will be written to output[0...(num_vec-1)]
+	 * except when num_vec = 0
+	 */
+	virtual void dense_dot_range(float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b, int32_t num_vec=0)
+	{
+		ASSERT(num_vec>=0);
+		int32_t counter=0;
+		start_parser();
+		while (get_next_example())
+		{
+			if (alphas)
+				output[counter]=alphas[counter]*dense_dot(vec, dim)+b;
+			else
+				output[counter]=dense_dot(vec, dim)+b;
+
+			release_example();
+
+			counter++;
+			if ((counter>=num_vec) && (num_vec>0))
+				break;
+		}
+		end_parser();
+	}
+
 	/** add current vector multiplied with alpha to dense vector, 'vec'
 	 *
 	 * @param alpha scalar alpha
