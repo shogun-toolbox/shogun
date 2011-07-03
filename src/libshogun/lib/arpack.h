@@ -32,20 +32,20 @@ extern "C" void dseupd_(int *rvec, char *All, int *select, double *d,
 namespace shogun
 {
 
-/** Wrapper for ARPACK's dsaupd routine. This wrapper and ARPACK 
- * routine is used to compute specified number of eigenpairs. 
- * Routine under wrapper involves a variant of Arnoldi process
- * called the IRAM (Implicitly Restarted Arnoldi Method) reduced
- * to IRLM (Implicitly Restarted Lanczos Method). A strategy 
- * specifying which eigenpairs to compute should be provided 
- * as parameter.
+/** Wrapper for ARPACK's dsaupd routine for symmetrical real
+ * matrices. This ARPACK routine is used to compute specified
+ * number of eigenpairs (e.g. k largest eigenvalues). Underlying
+ * routine involves a variant of Arnoldi process called the IRAM
+ * (Implicitly Restarted Arnoldi Method) reduced to IRLM 
+ * (Implicitly Restarted Lanczos Method). A strategy specifying 
+ * which eigenpairs to compute should be provided as parameter.
  *
  * Please note that some of routine parameters are hard-coded:
- * e.g. ncv and workaround arrays sizes. 
+ * e.g. ncv and workaround arrays sizes.
  *
  * @param matrix symmetric real matrix of size n*n
  * @param n size of matrix
- * @param nev number of eigenpairs to compute
+ * @param nev number of eigenpairs to compute (nev<=n)
  * @param which eigenvalue finding strategy. Possible values:
  *        - "LM": nev Largest Magnitude eigenvalues
  *        - "SM": nev Smallest Magnitude eigenvalues
@@ -54,12 +54,15 @@ namespace shogun
  *        - "BE": half of nev from each end of the spectrum, i.e. nev%2
  *                smallest and nev%2 largest eigenvalues. If nev is odd,
  *                one more largest eigenvalue will be computed
+ * @param mode shift-mode of IRLM. Possible values:
+ *        - 1: regular mode
+ *        - 2: shift-invert mode
+ * @param shift shift for shift mode of IRLM
  * @param eigenvalues array of size nev to hold computed eigenvalues
  * @param eigenvectors array of size nev*n to hold computed eigenvectors
  */
-void arpack_dsaupd(double* matrix, int n, int nev, char* which,
-		   double* eigenvalues, double* eigenvectors, int& status);
-
+void arpack_dsaupd(double* matrix, int n, int nev, const char* which, int mode,
+                   double shift, double* eigenvalues, double* eigenvectors, int& status);
 }
 #endif /* HAVE_ATLAS */
 #endif /* HAVE_ARPACK */

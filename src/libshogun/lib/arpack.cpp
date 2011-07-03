@@ -10,18 +10,30 @@
 
 #include "lib/arpack.h"
 #ifdef HAVE_ARPACK
+#ifdef HAVE_ATLAS
 #include "lib/config.h"
 #include <cblas.h>
+#include "lib/lapack.h"
 #include "lib/common.h"
 #include "lib/io.h"
+#include <string.h>
 
 using namespace shogun;
 
 namespace shogun
 {
-void arpack_dsaupd(double* matrix, int n, int nev, char* which,
-		   double* eigenvalues, double* eigenvectors, int& status)
+void arpack_dsaupd(double* matrix, int n, int nev, const char* which, 
+                   int mode, double shift,
+                   double* eigenvalues, double* eigenvectors, int& status)
 {
+	// check if nev is greater than n
+	if (nev>n)
+		SG_SERROR("Number of required eigenpairs is greater than order of the matrix");
+
+	// check specified mode
+	if (mode!=1 && mode!=2)
+		SG_SERROR("Unknown mode specified");
+
 	// init ARPACK's reverse communication parameter 
  	// (should be zero initially)
 	int ido = 0;
@@ -46,12 +58,12 @@ void arpack_dsaupd(double* matrix, int n, int nev, char* which,
 
 	// init array for i/o params for routine
 	int* iparam = new int[11];
-	// specify shift strategy 
+	// specify method for selecting implicit shifts (1 - exact shifts) 
 	iparam[0] = 1;
 	// specify max number of iterations
 	iparam[2] = 3*n;
-	// set the computation mode 
-	iparam[6] = 1;
+	// set the computation mode (1 for regular or 2 for shift-inverse)
+	iparam[6] = mode;
 
 	// init array indicating locations of vectors for routine callback
 	int* ipntr = new int[11];
@@ -63,70 +75,130 @@ void arpack_dsaupd(double* matrix, int n, int nev, char* which,
 
 	// init info holding status (should be zero at first call)
 	int info = 0;
+
+	// which eigenpairs to find
+	char* which_ = strdup(which);
+	// All
+	char* all_ = strdup("All");
+
 	// main computation loop
-	do 
+	// shift-invert mode
+	if (mode==2)
 	{
-		// call ARPACK's dsaupd routine
-		dsaupd_(&ido, bmat, &n, which, &nev, &tol, resid,
-		        &ncv, v, &ldv, iparam, ipntr, workd, workl,
-		        &lworkl, &info);
+		double* workt = new double[n];		
 
-		// compute workd(ipntr(1))=matrix*workd(ipntr(0))
-		if ((ido==1)||(ido==-1))
+		for (int i=0; i<n; i++)
+			matrix[i*n+i] -= shift;
+
+		clapack_dpotri(CblasColMajor,CblasUpper,n,matrix,n);
+
+		do 
 		{
-			
-			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-			            n, 1, n,
-				    1.0, matrix, n,
-			            (workd+ipntr[0]-1), n,
-			            0.0, (workd+ipntr[1]-1), n);
-			
-		}
-	} while ((ido==1)||(ido==-1));
-	// allocate select for dseupd
-	int* select = new int[ncv];
-	// allocate d to hold eigenvalues
-	double* d = new double[2*ncv];
+			dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
+			        &ncv, v, &ldv, iparam, ipntr, workd, workl,
+			        &lworkl, &info);
 
-	// sigma for dseupd
-	double sigma;
-	// extract eigenpairs
-	if (info<0)
+			if ((ido==1)||(ido==-1))
+			{
+				memcpy(workt,workd+ipntr[0]-1,n*sizeof(double));
+
+				cblas_dtrmv(CblasColMajor,CblasUpper,CblasNoTrans,CblasNonUnit,
+				            n,matrix,n,
+				            workt,1);
+
+				memcpy(workd+ipntr[1]-1,workt,n*sizeof(double));
+			}
+		} while ((ido==1)||(ido==-1));
+	} 
+	// regular mode
+	if (mode==1)
 	{
-		// tell me tell me what you gonna do
+		do	 
+		{
+			dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
+		        	&ncv, v, &ldv, iparam, ipntr, workd, workl,
+		        	&lworkl, &info);
+
+			if ((ido==1)||(ido==-1))
+			{
+				cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
+			        	    n, 1, n,
+					    1.0, matrix, n,
+				            (workd+ipntr[0]-1), n,
+				            0.0, (workd+ipntr[1]-1), n);		
+			}
+		} while ((ido==1)||(ido==-1));
+	
+	}
+
+	// check if DSAUPD failed
+	if (info<0) 
+	{
+		if ((info<=-1)&&(info>=-6))
+			SG_SWARNING("DSAUPD failed. Wrong parameter passed.");
+		else if (info==-7)
+			SG_SWARNING("DSAUPD failed. Workaround array size is not sufficient.");
+		else 
+			SG_SWARNING("DSAUPD failed. Error code: %d.", info);
+
 		status = -1;
 	}
 	else 
 	{
+		SG_SDEBUG("DSAUPD finished. Taken %d iterations.\n", iparam[2]);
+		if (info==1)
+			SG_SDEBUG("Maximum number of iterations reached.\n");
+			
+		// allocate select for dseupd
+		int* select = new int[ncv];
+		// allocate d to hold eigenvalues
+		double* d = new double[2*ncv];
+		// sigma for dseupd
+		double sigma;
+		
 		// init ierr indicating dseupd possible errors
-		int ierr;
+		int ierr = 0;
 
 		// specify that eigenvectors to be computed too		
 		int rvec = 1;
 
-		dseupd_(&rvec, "All", select, d, v, &ldv, &sigma, bmat,
-		        &n, which, &nev, &tol, resid, &ncv, v, &ldv,
+		dseupd_(&rvec, all_, select, d, v, &ldv, &sigma, bmat,
+		        &n, which_, &nev, &tol, resid, &ncv, v, &ldv,
 		        iparam, ipntr, workd, workl, &lworkl, &ierr);
 
-		// TODO error check
+		if (ierr!=0)
+		{
+			SG_SWARNING("DSEUPD failed with status=%d", ierr);
+			status = -1;
+		}
+		else
+		{
+		
+			for (int i=0; i<nev; i++)
+			{	
+				eigenvalues[i] = d[i];
+			
+				for (int j=0; j<n; j++)
+					eigenvectors[j*nev+i] = v[i*n+j];
+			}
+		}
+		
+		// cleanup
+		delete[] select;
+		delete[] d;
 	}
-	for (int i=0; i<nev; i++)
-	{
-		eigenvalues[i] = d[i];
 
-		for (int j=0; j<n; j++)
-			eigenvectors[j*nev+i] = v[i*n+j];
-	}
 	// cleanup
+	delete[] all_;
+	delete[] which_;
 	delete[] resid;
 	delete[] v;
 	delete[] iparam;
 	delete[] ipntr;
 	delete[] workd;
 	delete[] workl;
-	delete[] select;
-	delete[] d;
 };
 
 }
+#endif /* HAVE_ATLAS */
 #endif /* HAVE_ARPACK */
