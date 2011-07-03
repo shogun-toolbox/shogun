@@ -519,51 +519,17 @@ protected:
 	bool has_labels;
 };
 
-#define SET_VECTOR_READER(sg_type)					\
-template <> void CStreamingSparseFeatures<sg_type>::set_vector_reader() \
-{									\
-	parser.set_read_vector(&CStreamingFile::get_sparse_vector<sg_type>); \
+template <class T> void CStreamingSparseFeatures<T>::set_vector_reader()
+{
+	parser.set_read_vector(&CStreamingFile::get_sparse_vector);
 }
 
-SET_VECTOR_READER(bool);
-SET_VECTOR_READER(char);
-SET_VECTOR_READER(int8_t);
-SET_VECTOR_READER(uint8_t);
-SET_VECTOR_READER(int16_t);
-SET_VECTOR_READER(uint16_t);
-SET_VECTOR_READER(int32_t);
-SET_VECTOR_READER(uint32_t);
-SET_VECTOR_READER(int64_t);
-SET_VECTOR_READER(uint64_t);
-SET_VECTOR_READER(float32_t);
-SET_VECTOR_READER(float64_t);
-SET_VECTOR_READER(floatmax_t);
-	
-#undef SET_VECTOR_READER
-
-#define SET_VECTOR_AND_LABEL_READER(sg_type)				\
-template <> void CStreamingSparseFeatures<sg_type>::set_vector_and_label_reader() \
-{									\
-	parser.set_read_vector_and_label				\
-		(&CStreamingFile::get_sparse_vector_and_label<sg_type>); \
+template <class T> void CStreamingSparseFeatures<T>::set_vector_and_label_reader()
+{
+	parser.set_read_vector_and_label
+		(&CStreamingFile::get_sparse_vector_and_label);
 }
 
-SET_VECTOR_AND_LABEL_READER(bool);
-SET_VECTOR_AND_LABEL_READER(char);
-SET_VECTOR_AND_LABEL_READER(int8_t);
-SET_VECTOR_AND_LABEL_READER(uint8_t);
-SET_VECTOR_AND_LABEL_READER(int16_t);
-SET_VECTOR_AND_LABEL_READER(uint16_t);
-SET_VECTOR_AND_LABEL_READER(int32_t);
-SET_VECTOR_AND_LABEL_READER(uint32_t);
-SET_VECTOR_AND_LABEL_READER(int64_t);
-SET_VECTOR_AND_LABEL_READER(uint64_t);
-SET_VECTOR_AND_LABEL_READER(float32_t);
-SET_VECTOR_AND_LABEL_READER(float64_t);
-SET_VECTOR_AND_LABEL_READER(floatmax_t);
-	
-#undef SET_VECTOR_AND_LABEL_READER		
-	
 #define GET_FEATURE_TYPE(f_type, sg_type)				\
 template<> inline EFeatureType CStreamingSparseFeatures<sg_type>::get_feature_type() \
 {									\

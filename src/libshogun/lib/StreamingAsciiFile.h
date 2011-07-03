@@ -52,138 +52,39 @@ public:
 	 */
 	inline bool str_to_bool(char *str);
 
-	/** @name Dense Vector Access Functions
-	 *
-	 * Functions to access vectors of one of the several base data types.
-	 * These functions are used when loading vectors from e.g. file
-	 * and return the vector and its length len by reference
-	 */
-	//@{
-	virtual void get_vector(uint8_t*& vector, int32_t& len);
-	virtual void get_vector(char*& vector, int32_t& len);
-	virtual void get_vector(int32_t*& vector, int32_t& len);
-	virtual void get_vector(float64_t*& vector, int32_t& len);
-	virtual void get_vector(float32_t*& vector, int32_t& len);
-	virtual void get_vector(int16_t*& vector, int32_t& len);
-	virtual void get_vector(uint16_t*& vector, int32_t& len);
-	virtual void get_int8_vector(int8_t*& vector, int32_t& len);
-	virtual void get_uint_vector(uint32_t*& vector, int32_t& len);
-	virtual void get_long_vector(int64_t*& vector, int32_t& len);
-	virtual void get_ulong_vector(uint64_t*& vector, int32_t& len);
-	virtual void get_longreal_vector(floatmax_t*& vector, int32_t& len);
-	//@}
+#define GET_VECTOR_DECL(sg_type)					\
+	virtual void get_vector						\
+		(sg_type*& vector, int32_t& len);			\
+									\
+	virtual void get_vector_and_label				\
+		(sg_type*& vector, int32_t& len, float64_t& label);	\
+									\
+	virtual void get_string						\
+		(sg_type*& vector, int32_t& len);			\
+									\
+	virtual void get_string_and_label				\
+		(sg_type*& vector, int32_t& len, float64_t& label);	\
+									\
+	virtual void get_sparse_vector					\
+		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len);	\
+									\
+	virtual void get_sparse_vector_and_label			\
+		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label);
 
-	/** @name Label and Dense Vector Access Functions
-	 *
-	 * Functions to access the label and vectors of examples
-	 * one of the several base data types.
-	 * These functions are used when loading vectors from e.g. file
-	 * and return the vector, its length, and the label by reference
-	 */
-	//@{
-	virtual void get_vector_and_label(bool*& vector, int32_t& len, float64_t& label);
-	virtual void get_vector_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_vector_and_label(char*& vector, int32_t& len, float64_t& label);
-	virtual void get_vector_and_label(int32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_vector_and_label(float64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_vector_and_label(float32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_vector_and_label(int16_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_vector_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_int8_vector_and_label(int8_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_uint_vector_and_label(uint32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_long_vector_and_label(int64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_ulong_vector_and_label(uint64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_longreal_vector_and_label(floatmax_t*& vector, int32_t& len, float64_t& label);
-	//@}
-
-	/** @name String Vector Access Functions
-	 *
-	 * Functions to access vectors of one of the several base data types.
-	 * These functions are used when loading vectors from e.g. file
-	 * and return the vector and its length len by reference
-	 */
-	//@{
-	virtual void get_bool_string(bool*& vector, int32_t& len);
-	virtual void get_byte_string(uint8_t*& vector, int32_t& len);
-	virtual void get_char_string(char*& vector, int32_t& len);
-	virtual void get_int_string(int32_t*& vector, int32_t& len);
-	virtual void get_real_string(float64_t*& vector, int32_t& len);
-	virtual void get_shortreal_string(float32_t*& vector, int32_t& len);
-	virtual void get_short_string(int16_t*& vector, int32_t& len);
-	virtual void get_word_string(uint16_t*& vector, int32_t& len);
-	virtual void get_int8_string(int8_t*& vector, int32_t& len);
-	virtual void get_uint_string(uint32_t*& vector, int32_t& len);
-	virtual void get_long_string(int64_t*& vector, int32_t& len);
-	virtual void get_ulong_string(uint64_t*& vector, int32_t& len);
-	virtual void get_longreal_string(floatmax_t*& vector, int32_t& len);
-	//@}
-
-	/** @name Label and String Vector Access Functions
-	 *
-	 * Functions to access the label and vectors of examples
-	 * one of the several base data types.
-	 * These functions are used when loading vectors from e.g. file
-	 * and return the vector, its length, and the label by reference
-	 */
-	//@{
-	virtual void get_bool_string_and_label(bool*& vector, int32_t& len, float64_t& label);
-	virtual void get_byte_string_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_char_string_and_label(char*& vector, int32_t& len, float64_t& label);
-	virtual void get_int_string_and_label(int32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_real_string_and_label(float64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_shortreal_string_and_label(float32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_short_string_and_label(int16_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_word_string_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_int8_string_and_label(int8_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_uint_string_and_label(uint32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_long_string_and_label(int64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_ulong_string_and_label(uint64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_longreal_string_and_label(floatmax_t*& vector, int32_t& len, float64_t& label);
-	//@}
-
-	/** @name Sparse Vector Access Functions
-	 *
-	 * Functions to access vectors of one of the several base data types.
-	 * These functions are used when loading vectors from e.g. file
-	 * and return the vector and its length len by reference
-	 */
-	//@{
-	virtual void get_bool_sparse_vector(SGSparseVectorEntry<bool>*& vector, int32_t& len);
-	virtual void get_byte_sparse_vector(SGSparseVectorEntry<uint8_t>*& vector, int32_t& len);
-	virtual void get_char_sparse_vector(SGSparseVectorEntry<char>*& vector, int32_t& len);
-	virtual void get_int_sparse_vector(SGSparseVectorEntry<int32_t>*& vector, int32_t& len);
-	virtual void get_real_sparse_vector(SGSparseVectorEntry<float64_t>*& vector, int32_t& len);
-	virtual void get_shortreal_sparse_vector(SGSparseVectorEntry<float32_t>*& vector, int32_t& len);
-	virtual void get_short_sparse_vector(SGSparseVectorEntry<int16_t>*& vector, int32_t& len);
-	virtual void get_word_sparse_vector(SGSparseVectorEntry<uint16_t>*& vector, int32_t& len);
-	virtual void get_int8_sparse_vector(SGSparseVectorEntry<int8_t>*& vector, int32_t& len);
-	virtual void get_uint_sparse_vector(SGSparseVectorEntry<uint32_t>*& vector, int32_t& len);
-	virtual void get_long_sparse_vector(SGSparseVectorEntry<int64_t>*& vector, int32_t& len);
-	virtual void get_ulong_sparse_vector(SGSparseVectorEntry<uint64_t>*& vector, int32_t& len);
-	virtual void get_longreal_sparse_vector(SGSparseVectorEntry<floatmax_t>*& vector, int32_t& len);
-	//@}
-
-	/** @name Sparse Vector Access Functions
-	 *
-	 * Functions to access vectors of one of the several base data types.
-	 * These functions are used when loading vectors from e.g. file
-	 * and return the vector and its length len by reference
-	 */
-	//@{
-	virtual void get_bool_sparse_vector_and_label(SGSparseVectorEntry<bool>*& vector, int32_t& len, float64_t& label);
-	virtual void get_byte_sparse_vector_and_label(SGSparseVectorEntry<uint8_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_char_sparse_vector_and_label(SGSparseVectorEntry<char>*& vector, int32_t& len, float64_t& label);
-	virtual void get_int_sparse_vector_and_label(SGSparseVectorEntry<int32_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_real_sparse_vector_and_label(SGSparseVectorEntry<float64_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_shortreal_sparse_vector_and_label(SGSparseVectorEntry<float32_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_short_sparse_vector_and_label(SGSparseVectorEntry<int16_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_word_sparse_vector_and_label(SGSparseVectorEntry<uint16_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_int8_sparse_vector_and_label(SGSparseVectorEntry<int8_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_uint_sparse_vector_and_label(SGSparseVectorEntry<uint32_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_long_sparse_vector_and_label(SGSparseVectorEntry<int64_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_ulong_sparse_vector_and_label(SGSparseVectorEntry<uint64_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_longreal_sparse_vector_and_label(SGSparseVectorEntry<floatmax_t>*& vector, int32_t& len, float64_t& label);
-	//@}
+	GET_VECTOR_DECL(bool)
+	GET_VECTOR_DECL(uint8_t)
+	GET_VECTOR_DECL(char)
+	GET_VECTOR_DECL(int32_t)
+	GET_VECTOR_DECL(float32_t)
+	GET_VECTOR_DECL(float64_t)
+	GET_VECTOR_DECL(int16_t)
+	GET_VECTOR_DECL(uint16_t)
+	GET_VECTOR_DECL(int8_t)
+	GET_VECTOR_DECL(uint32_t)
+	GET_VECTOR_DECL(int64_t)
+	GET_VECTOR_DECL(uint64_t)
+	GET_VECTOR_DECL(floatmax_t)
+#undef GET_VECTOR_DECL
 
 	/** @return object name */
 	inline virtual const char* get_name() const

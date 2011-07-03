@@ -50,42 +50,36 @@ public:
 	 * @param vector vector
 	 * @param len length of vector
 	 */
-	virtual void get_vector(bool*& vector, int32_t& len);
-	virtual void get_vector(uint8_t*& vector, int32_t& len);
-	virtual void get_vector(char*& vector, int32_t& len);
-	virtual void get_vector(int32_t*& vector, int32_t& len);
-	virtual void get_vector(float64_t*& vector, int32_t& len);
-	virtual void get_vector(float32_t*& vector, int32_t& len);
-	virtual void get_vector(int16_t*& vector, int32_t& len);
-	virtual void get_vector(uint16_t*& vector, int32_t& len);
-	virtual void get_int8_vector(int8_t*& vector, int32_t& len);
-	virtual void get_uint_vector(uint32_t*& vector, int32_t& len);
-	virtual void get_long_vector(int64_t*& vector, int32_t& len);
-	virtual void get_ulong_vector(uint64_t*& vector, int32_t& len);
-	virtual void get_longreal_vector(floatmax_t*& vector, int32_t& len);
+	template <class S> void get_vector(S*& vector, int32_t &len)
+	{
+		SG_ERROR("Unsupported reading function called!\n");
+	}
 
-	/** @name Label and Vector Access Functions
+	template <class S> void get_vector_and_label(S*& vector, int32_t &len, float64_t &label)
+	{
+		SG_ERROR("Unsupported reading function called!\n");
+	}
+
+	/**
+	 * This function will be called for reading vectors from the
+	 * corresponding SimpleFeatures object.
+	 * It is specialized depending on class type T.
 	 *
-	 * Functions to access the label and vectors of examples
-	 * one of the several base data types.
-	 * These functions are used when loading vectors from e.g. file
-	 * and return the vector, its length, and the label by reference
+	 * @param vec vector
+	 * @param len length of vector
 	 */
-	//@{
-	virtual void get_bool_vector_and_label(bool*& vector, int32_t& len, float64_t& label);
-	virtual void get_byte_vector_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_char_vector_and_label(char*& vector, int32_t& len, float64_t& label);
-	virtual void get_int_vector_and_label(int32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_real_vector_and_label(float64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_shortreal_vector_and_label(float32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_short_vector_and_label(int16_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_word_vector_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_int8_vector_and_label(int8_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_uint_vector_and_label(uint32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_long_vector_and_label(int64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_ulong_vector_and_label(uint64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_longreal_vector_and_label(floatmax_t*& vector, int32_t& len, float64_t& label);
-	//@}
+	virtual void get_vector(T* &vec, int32_t &len);
+
+	/**
+	 * This function will be called for reading vectors and labels
+	 * from the corresponding SimpleFeatures object.  It is
+	 * specialized depending on class type T.
+	 *
+	 * @param vec vector
+	 * @param len length of vector
+	 * @param label label
+	 */
+	virtual void get_vector_and_label(T* &vec, int32_t &len, float64_t &label);
 
 	/**
 	 * Reset the stream so the next example returned is the first
@@ -160,15 +154,14 @@ void CStreamingFileFromSimpleFeatures<T>::init()
 	vector_num=0;
 }
 
-/* Functions to return the vector from the SimpleFeatures object */
-#define GET_VECTOR(fname, sg_type)					\
-	template <class T>						\
-	void CStreamingFileFromSimpleFeatures<T>::fname(sg_type*& vector, int32_t& num_feat) \
+/* Functions to return the vector from the SimpleFeatures object
+ * If the class is of type T, specialize this function to work for
+ * vectors of that type. */
+#define GET_VECTOR(sg_type)						\
+	template <>							\
+	void CStreamingFileFromSimpleFeatures<sg_type>::get_vector(sg_type*& vector, int32_t& num_feat) \
 	{								\
-		CSimpleFeatures<sg_type>* simple_features=		\
-			(CSimpleFeatures<sg_type>*) features;		\
-									\
-		if (vector_num >= simple_features->get_num_vectors())	\
+		if (vector_num >= features->get_num_vectors())		\
 		{							\
 			vector=NULL;					\
 			num_feat=-1;					\
@@ -176,39 +169,36 @@ void CStreamingFileFromSimpleFeatures<T>::init()
 		}							\
 									\
 		SGVector<sg_type> sg_vector=				\
-			simple_features->get_feature_vector(vector_num); \
+			features->get_feature_vector(vector_num);	\
 									\
 		vector = sg_vector.vector;				\
 		num_feat = sg_vector.vlen;;				\
 		vector_num++;						\
 									\
-	}								\
+	}
 
-GET_VECTOR(get_bool_vector, bool)
-GET_VECTOR(get_byte_vector, uint8_t)
-GET_VECTOR(get_char_vector, char)
-GET_VECTOR(get_int_vector, int32_t)
-GET_VECTOR(get_shortreal_vector, float32_t)
-GET_VECTOR(get_real_vector, float64_t)
-GET_VECTOR(get_short_vector, int16_t)
-GET_VECTOR(get_word_vector, uint16_t)
-GET_VECTOR(get_int8_vector, int8_t)
-GET_VECTOR(get_uint_vector, uint32_t)
-GET_VECTOR(get_long_vector, int64_t)
-GET_VECTOR(get_ulong_vector, uint64_t)
-GET_VECTOR(get_longreal_vector, floatmax_t)
+GET_VECTOR(bool)
+GET_VECTOR(uint8_t)
+GET_VECTOR(char)
+GET_VECTOR(int32_t)
+GET_VECTOR(float32_t)
+GET_VECTOR(float64_t)
+GET_VECTOR(int16_t)
+GET_VECTOR(uint16_t)
+GET_VECTOR(int8_t)
+GET_VECTOR(uint32_t)
+GET_VECTOR(int64_t)
+GET_VECTOR(uint64_t)
+GET_VECTOR(floatmax_t)
 #undef GET_VECTOR
 
 /* Functions to return the vector from the SimpleFeatures object with label */
-#define GET_VECTOR_AND_LABEL(fname, sg_type)				\
-	template <class T>						\
-	void CStreamingFileFromSimpleFeatures<T>::fname			\
+#define GET_VECTOR_AND_LABEL(sg_type)					\
+	template <>							\
+	void CStreamingFileFromSimpleFeatures<sg_type>::get_vector_and_label\
 	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
 	{								\
-		CSimpleFeatures<sg_type>* feat				\
-			=(CSimpleFeatures<sg_type>*) features;		\
-									\
-		if (vector_num >= feat->get_num_vectors())		\
+		if (vector_num >= features->get_num_vectors())		\
 		{							\
 			vector=NULL;					\
 			num_feat=-1;					\
@@ -216,28 +206,28 @@ GET_VECTOR(get_longreal_vector, floatmax_t)
 		}							\
 									\
 		SGVector<sg_type> sg_vector				\
-			=feat->get_feature_vector(vector_num);		\
+			=features->get_feature_vector(vector_num);	\
 									\
 		vector = sg_vector.vector;				\
 		num_feat = sg_vector.vlen;				\
 		label = labels[vector_num];				\
 									\
 		vector_num++;						\
-	}								\
+	}
 
-GET_VECTOR_AND_LABEL(get_bool_vector_and_label, bool)
-GET_VECTOR_AND_LABEL(get_byte_vector_and_label, uint8_t)
-GET_VECTOR_AND_LABEL(get_char_vector_and_label, char)
-GET_VECTOR_AND_LABEL(get_int_vector_and_label, int32_t)
-GET_VECTOR_AND_LABEL(get_shortreal_vector_and_label, float32_t)
-GET_VECTOR_AND_LABEL(get_real_vector_and_label, float64_t)
-GET_VECTOR_AND_LABEL(get_short_vector_and_label, int16_t)
-GET_VECTOR_AND_LABEL(get_word_vector_and_label, uint16_t)
-GET_VECTOR_AND_LABEL(get_int8_vector_and_label, int8_t)
-GET_VECTOR_AND_LABEL(get_uint_vector_and_label, uint32_t)
-GET_VECTOR_AND_LABEL(get_long_vector_and_label, int64_t)
-GET_VECTOR_AND_LABEL(get_ulong_vector_and_label, uint64_t)
-GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, floatmax_t)
+GET_VECTOR_AND_LABEL(bool)
+GET_VECTOR_AND_LABEL(uint8_t)
+GET_VECTOR_AND_LABEL(char)
+GET_VECTOR_AND_LABEL(int32_t)
+GET_VECTOR_AND_LABEL(float32_t)
+GET_VECTOR_AND_LABEL(float64_t)
+GET_VECTOR_AND_LABEL(int16_t)
+GET_VECTOR_AND_LABEL(uint16_t)
+GET_VECTOR_AND_LABEL(int8_t)
+GET_VECTOR_AND_LABEL(uint32_t)
+GET_VECTOR_AND_LABEL(int64_t)
+GET_VECTOR_AND_LABEL(uint64_t)
+GET_VECTOR_AND_LABEL(floatmax_t)
 #undef GET_VECTOR_AND_LABEL
 
 }
