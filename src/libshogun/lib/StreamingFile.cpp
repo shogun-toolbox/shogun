@@ -13,24 +13,8 @@
 
 #include <ctype.h>
 
-using namespace shogun;
-
-CStreamingFile::CStreamingFile()
+namespace shogun
 {
-}
-
-CStreamingFile::CStreamingFile(FILE* f, const char* name) : CFile(f, name)
-{
-}
-
-CStreamingFile::CStreamingFile(char* fname, char rw, const char* name) : CFile(fname, rw, name)
-{
-}
-
-CStreamingFile::~CStreamingFile()
-{
-}
-
 /**
  * Dummy implementations of all the functions declared in the header
  * file.
@@ -44,6 +28,12 @@ CStreamingFile::~CStreamingFile()
 
 /* For dense vectors */
 #define GET_VECTOR(fname, conv, sg_type)				\
+	template<> void CStreamingFile::get_vector<sg_type>	\
+	(sg_type*& vector, int32_t& num_feat)				\
+	{								\
+		fname(vector, num_feat);				\
+	}								\
+									\
 	void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
 	{								\
 		vector=NULL;						\
@@ -68,6 +58,12 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 
 /* For dense vectors with labels */
 #define GET_VECTOR_AND_LABEL(fname, conv, sg_type)			\
+	template<> void CStreamingFile::get_vector_and_label<sg_type>	\
+	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
+	{								\
+		fname(vector, num_feat, label);				\
+	}								\
+									\
 	void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat, float64_t& label) \
 	{								\
 		vector=NULL;						\
@@ -92,6 +88,12 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 
 /* For string vectors */
 #define GET_STRING(fname, conv, sg_type)				\
+	template<> void CStreamingFile::get_string<sg_type>	\
+	(sg_type*& vector, int32_t& num_feat)				\
+	{								\
+		fname(vector, num_feat);				\
+	}								\
+									\
 	void CStreamingFile::fname(sg_type*& vector, int32_t& len)	\
 	{								\
 		vector=NULL;						\
@@ -116,6 +118,12 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 
 /* For string vectors with labels */
 #define GET_STRING_AND_LABEL(fname, conv, sg_type)			\
+	template<> void CStreamingFile::get_string_and_label<sg_type> \
+	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
+	{								\
+		fname(vector, num_feat, label);				\
+	}								\
+								\
 	void CStreamingFile::fname(sg_type*& vector, int32_t& len, float64_t& label) \
 	{								\
 		vector=NULL;						\
@@ -140,6 +148,14 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 
 /* For sparse vectors */
 #define GET_SPARSE_VECTOR(fname, conv, sg_type)				\
+									\
+	template<>							\
+	void CStreamingFile::get_sparse_vector<sg_type>		\
+	(SGSparseVectorEntry<sg_type>*& vector, int32_t& num_feat)	\
+	{								\
+		fname(vector, num_feat);				\
+	}								\
+									\
 	void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
 	{								\
 		vector=NULL;						\
@@ -164,7 +180,18 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 
 /* For sparse vectors with labels */
 #define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)		\
-	void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) \
+									\
+	template<>							\
+	void CStreamingFile::get_sparse_vector_and_label<sg_type> \
+	(SGSparseVectorEntry<sg_type>*& vector,				\
+	 int32_t& num_feat,						\
+	 float64_t &label)						\
+	{								\
+		fname(vector, num_feat, label);				\
+	}								\
+									\
+	void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, \
+				   int32_t& len, float64_t& label)	\
 	{								\
 		vector=NULL;						\
 		len=-1;							\
@@ -185,6 +212,27 @@ GET_SPARSE_VECTOR_AND_LABEL(get_long_sparse_vector_and_label, atoi, int64_t)
 GET_SPARSE_VECTOR_AND_LABEL(get_ulong_sparse_vector_and_label, atoi, uint64_t)
 GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax_t)
 #undef GET_SPARSE_VECTOR_AND_LABEL
+
+}
+
+using namespace shogun;
+
+CStreamingFile::CStreamingFile()
+{
+}
+
+CStreamingFile::CStreamingFile(FILE* f, const char* name) : CFile(f, name)
+{
+}
+
+CStreamingFile::CStreamingFile(char* fname, char rw, const char* name) : CFile(fname, rw, name)
+{
+}
+
+CStreamingFile::~CStreamingFile()
+{
+}
+
 
 /* Miscellaneous functions required to be implemented as they are
  * virtual in CFile.

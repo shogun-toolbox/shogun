@@ -15,6 +15,8 @@
 #include "lib/common.h"
 #include "lib/File.h"
 #include "lib/io.h"
+#include "lib/DataType.h"
+#include <ctype.h>
 
 namespace shogun
 {
@@ -51,6 +53,18 @@ namespace shogun
 
 		/** default destructor */
 		virtual ~CStreamingFile();
+
+		template <class T> void get_vector(T*& vector, int32_t& len);
+
+		template <class T> void get_vector_and_label(T*& vector, int32_t& len, float64_t& label);
+
+		template <class T> void get_string(T*& vector, int32_t& len);
+
+		template <class T> void get_string_and_label(T*& vector, int32_t& len, float64_t& label);
+
+		template <class T> void get_sparse_vector(SGSparseVectorEntry<T>*& vector, int32_t& len);
+
+		template <class T> void get_sparse_vector_and_label(SGSparseVectorEntry<T>*& vector, int32_t& len, float64_t& label);
 
 		/** @name Vector Access Functions
 		 *

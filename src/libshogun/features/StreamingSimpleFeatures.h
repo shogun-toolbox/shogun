@@ -59,24 +59,23 @@ public:
 		set_read_functions();
 	}
 
-	CStreamingSimpleFeatures(CDotFeatures* dot_features,
+	CStreamingSimpleFeatures(CSimpleFeatures<T>* simple_features,
 				 float64_t* lab=NULL)
 		: CStreamingDotFeatures()
 	{
-		CSimpleFeatures<T>* simple_features = (CSimpleFeatures<T>*) dot_features;
-
-		CStreamingFileFromSimpleFeatures* file;
+		CStreamingFileFromSimpleFeatures<T>* file;
 		bool is_labelled;
 		int32_t size = 1;
+
 		if (lab)
 		{
 			is_labelled = true;
-			file = new CStreamingFileFromSimpleFeatures(simple_features, lab);
+			file = new CStreamingFileFromSimpleFeatures<T>(simple_features, lab);
 		}
 		else
 		{
 			is_labelled = false;
-			file = new CStreamingFileFromSimpleFeatures(simple_features);
+			file = new CStreamingFileFromSimpleFeatures<T>(simple_features);
 		}
 
 		SG_REF(file);
@@ -137,7 +136,7 @@ public:
 	{
 		if (seekable)
 		{
-			((CStreamingFileFromSimpleFeatures*) working_file)->reset_stream();
+			((CStreamingFileFromSimpleFeatures<T>*) working_file)->reset_stream();
 			parser.init(working_file, has_labels, 1);
 			parser.set_do_delete(false);
 			parser.start_parser();
@@ -354,50 +353,16 @@ protected:
 	int32_t current_length;
 };
 	
-#define SET_VECTOR_READER(sg_type, sg_function)				\
-template <> void CStreamingSimpleFeatures<sg_type>::set_vector_reader() \
-{									\
-	parser.set_read_vector(&CStreamingFile::sg_function);		\
+template <class T> void CStreamingSimpleFeatures<T>::set_vector_reader()
+{
+	parser.set_read_vector(&CStreamingFile::get_vector);
 }
 
-SET_VECTOR_READER(bool, get_vector);
-SET_VECTOR_READER(char, get_vector);
-SET_VECTOR_READER(int8_t, get_int8_vector);
-SET_VECTOR_READER(uint8_t, get_vector);
-SET_VECTOR_READER(int16_t, get_vector);
-SET_VECTOR_READER(uint16_t, get_vector);
-SET_VECTOR_READER(int32_t, get_vector);
-SET_VECTOR_READER(uint32_t, get_uint_vector);
-SET_VECTOR_READER(int64_t, get_long_vector);
-SET_VECTOR_READER(uint64_t, get_ulong_vector);
-SET_VECTOR_READER(float32_t, get_vector);
-SET_VECTOR_READER(float64_t, get_vector);
-SET_VECTOR_READER(floatmax_t, get_longreal_vector);
-	
-#undef SET_VECTOR_READER
-
-#define SET_VECTOR_AND_LABEL_READER(sg_type, sg_function)		\
-template <> void CStreamingSimpleFeatures<sg_type>::set_vector_and_label_reader() \
-{									\
-	parser.set_read_vector_and_label(&CStreamingFile::sg_function); \
+template <class T> void CStreamingSimpleFeatures<T>::set_vector_and_label_reader()
+{
+	parser.set_read_vector_and_label(&CStreamingFile::get_vector_and_label);
 }
 
-SET_VECTOR_AND_LABEL_READER(bool, get_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(char, get_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(int8_t, get_int8_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(uint8_t, get_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(int16_t, get_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(uint16_t, get_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(int32_t, get_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(uint32_t, get_uint_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(int64_t, get_long_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(uint64_t, get_ulong_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(float32_t, get_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(float64_t, get_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(floatmax_t, get_longreal_vector_and_label);
-	
-#undef SET_VECTOR_AND_LABEL_READER		
-	
 #define GET_FEATURE_TYPE(f_type, sg_type)				\
 template<> inline EFeatureType CStreamingSimpleFeatures<sg_type>::get_feature_type() \
 {									\

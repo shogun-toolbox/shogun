@@ -337,47 +337,48 @@ protected:
 	int32_t num_symbols;
 };
 
-#define SET_VECTOR_READER(sg_type, sg_function)				\
+#define SET_VECTOR_READER(sg_type)					\
 template <> void CStreamingStringFeatures<sg_type>::set_vector_reader() \
 {									\
-	parser.set_read_vector(&CStreamingFile::sg_function);		\
+	parser.set_read_vector(&CStreamingFile::get_string<sg_type>);	\
 }
 
-SET_VECTOR_READER(bool, get_bool_string);
-SET_VECTOR_READER(char, get_char_string);
-SET_VECTOR_READER(int8_t, get_int8_string);
-SET_VECTOR_READER(uint8_t, get_byte_string);
-SET_VECTOR_READER(int16_t, get_short_string);
-SET_VECTOR_READER(uint16_t, get_word_string);
-SET_VECTOR_READER(int32_t, get_int_string);
-SET_VECTOR_READER(uint32_t, get_uint_string);
-SET_VECTOR_READER(int64_t, get_long_string);
-SET_VECTOR_READER(uint64_t, get_ulong_string);
-SET_VECTOR_READER(float32_t, get_shortreal_string);
-SET_VECTOR_READER(float64_t, get_real_string);
-SET_VECTOR_READER(floatmax_t, get_longreal_string);
+SET_VECTOR_READER(bool);
+SET_VECTOR_READER(char);
+SET_VECTOR_READER(int8_t);
+SET_VECTOR_READER(uint8_t);
+SET_VECTOR_READER(int16_t);
+SET_VECTOR_READER(uint16_t);
+SET_VECTOR_READER(int32_t);
+SET_VECTOR_READER(uint32_t);
+SET_VECTOR_READER(int64_t);
+SET_VECTOR_READER(uint64_t);
+SET_VECTOR_READER(float32_t);
+SET_VECTOR_READER(float64_t);
+SET_VECTOR_READER(floatmax_t);
 	
 #undef SET_VECTOR_READER
 
-#define SET_VECTOR_AND_LABEL_READER(sg_type, sg_function)		\
+#define SET_VECTOR_AND_LABEL_READER(sg_type)				\
 template <> void CStreamingStringFeatures<sg_type>::set_vector_and_label_reader() \
 {									\
-	parser.set_read_vector_and_label(&CStreamingFile::sg_function); \
+	parser.set_read_vector_and_label				\
+		(&CStreamingFile::get_string_and_label<sg_type>);	\
 }
 
-SET_VECTOR_AND_LABEL_READER(bool, get_bool_string_and_label);
-SET_VECTOR_AND_LABEL_READER(char, get_char_string_and_label);
-SET_VECTOR_AND_LABEL_READER(int8_t, get_int8_string_and_label);
-SET_VECTOR_AND_LABEL_READER(uint8_t, get_byte_string_and_label);
-SET_VECTOR_AND_LABEL_READER(int16_t, get_short_string_and_label);
-SET_VECTOR_AND_LABEL_READER(uint16_t, get_word_string_and_label);
-SET_VECTOR_AND_LABEL_READER(int32_t, get_int_string_and_label);
-SET_VECTOR_AND_LABEL_READER(uint32_t, get_uint_string_and_label);
-SET_VECTOR_AND_LABEL_READER(int64_t, get_long_string_and_label);
-SET_VECTOR_AND_LABEL_READER(uint64_t, get_ulong_string_and_label);
-SET_VECTOR_AND_LABEL_READER(float32_t, get_shortreal_string_and_label);
-SET_VECTOR_AND_LABEL_READER(float64_t, get_real_string_and_label);
-SET_VECTOR_AND_LABEL_READER(floatmax_t, get_longreal_string_and_label);
+SET_VECTOR_AND_LABEL_READER(bool);
+SET_VECTOR_AND_LABEL_READER(char);
+SET_VECTOR_AND_LABEL_READER(int8_t);
+SET_VECTOR_AND_LABEL_READER(uint8_t);
+SET_VECTOR_AND_LABEL_READER(int16_t);
+SET_VECTOR_AND_LABEL_READER(uint16_t);
+SET_VECTOR_AND_LABEL_READER(int32_t);
+SET_VECTOR_AND_LABEL_READER(uint32_t);
+SET_VECTOR_AND_LABEL_READER(int64_t);
+SET_VECTOR_AND_LABEL_READER(uint64_t);
+SET_VECTOR_AND_LABEL_READER(float32_t);
+SET_VECTOR_AND_LABEL_READER(float64_t);
+SET_VECTOR_AND_LABEL_READER(floatmax_t);
 	
 #undef SET_VECTOR_AND_LABEL_READER		
 
