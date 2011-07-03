@@ -30,21 +30,13 @@ public:
 	CStreamingAsciiFile();
 
 	/** 
-	 * Constructor taking file arguments
-	 * 
-	 * @param f FILE* pointer
-	 * @param name name
-	 */
-	CStreamingAsciiFile(FILE* f, const char* name=NULL);
-
-	/** 
 	 * Constructor taking file name argument
 	 * 
 	 * @param fname file name
 	 * @param rw read/write mode
 	 * @param name name
 	 */
-	CStreamingAsciiFile(char* fname, char rw='r', const char* name=NULL);
+	CStreamingAsciiFile(char* fname, char rw='r');
 
 	/** 
 	 * Destructor
