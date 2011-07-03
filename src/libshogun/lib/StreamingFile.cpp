@@ -28,13 +28,8 @@ namespace shogun
 
 /* For dense vectors */
 #define GET_VECTOR(fname, conv, sg_type)				\
-	template<> void CStreamingFile::get_vector<sg_type>	\
+	void CStreamingFile::get_vector					\
 	(sg_type*& vector, int32_t& num_feat)				\
-	{								\
-		fname(vector, num_feat);				\
-	}								\
-									\
-	void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat)	\
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
@@ -58,13 +53,8 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 
 /* For dense vectors with labels */
 #define GET_VECTOR_AND_LABEL(fname, conv, sg_type)			\
-	template<> void CStreamingFile::get_vector_and_label<sg_type>	\
+	void CStreamingFile::get_vector_and_label			\
 	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
-	{								\
-		fname(vector, num_feat, label);				\
-	}								\
-									\
-	void CStreamingFile::fname(sg_type*& vector, int32_t& num_feat, float64_t& label) \
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
@@ -88,18 +78,13 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 
 /* For string vectors */
 #define GET_STRING(fname, conv, sg_type)				\
-	template<> void CStreamingFile::get_string<sg_type>	\
+	void CStreamingFile::get_string					\
 	(sg_type*& vector, int32_t& num_feat)				\
 	{								\
-		fname(vector, num_feat);				\
-	}								\
-									\
-	void CStreamingFile::fname(sg_type*& vector, int32_t& len)	\
-	{								\
 		vector=NULL;						\
-		len=-1;							\
+		num_feat=-1;						\
 		SG_ERROR("Read function not supported by the feature type!"); \
-	}									
+	}
 
 GET_STRING(get_bool_string, str_to_bool, bool)
 GET_STRING(get_byte_string, atoi, uint8_t)
@@ -118,16 +103,11 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 
 /* For string vectors with labels */
 #define GET_STRING_AND_LABEL(fname, conv, sg_type)			\
-	template<> void CStreamingFile::get_string_and_label<sg_type> \
+	void CStreamingFile::get_string_and_label			\
 	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
 	{								\
-		fname(vector, num_feat, label);				\
-	}								\
-								\
-	void CStreamingFile::fname(sg_type*& vector, int32_t& len, float64_t& label) \
-	{								\
 		vector=NULL;						\
-		len=-1;							\
+		num_feat=-1;							\
 		SG_ERROR("Read function not supported by the feature type!"); \
 	}
 
@@ -149,17 +129,11 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 /* For sparse vectors */
 #define GET_SPARSE_VECTOR(fname, conv, sg_type)				\
 									\
-	template<>							\
-	void CStreamingFile::get_sparse_vector<sg_type>		\
+	void CStreamingFile::get_sparse_vector				\
 	(SGSparseVectorEntry<sg_type>*& vector, int32_t& num_feat)	\
 	{								\
-		fname(vector, num_feat);			\
-	}								\
-									\
-	void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
-	{								\
 		vector=NULL;						\
-		len=-1;							\
+		num_feat=-1;						\
 		SG_ERROR("Read function not supported by the feature type!"); \
 	}
 
@@ -181,20 +155,13 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 /* For sparse vectors with labels */
 #define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)		\
 									\
-	template<>							\
-	void CStreamingFile::get_sparse_vector_and_label<sg_type> \
+	void CStreamingFile::get_sparse_vector_and_label		\
 	(SGSparseVectorEntry<sg_type>*& vector,				\
 	 int32_t& num_feat,						\
 	 float64_t &label)						\
 	{								\
-		fname(vector, num_feat, label);		\
-	}								\
-									\
-	void CStreamingFile::fname(SGSparseVectorEntry<sg_type>*& vector, \
-				   int32_t& len, float64_t& label)	\
-	{								\
 		vector=NULL;						\
-		len=-1;							\
+		num_feat=-1;						\
 		SG_ERROR("Read function not supported by the feature type!"); \
 	}
 
