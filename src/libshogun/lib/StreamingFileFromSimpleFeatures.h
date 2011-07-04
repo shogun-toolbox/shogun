@@ -15,46 +15,81 @@
 
 namespace shogun
 {
-class CStreamingFileFromSimpleFeatures: public CStreamingFileFromFeatures
+template <class T> class CStreamingFileFromSimpleFeatures: public CStreamingFileFromFeatures
 {
 public:
-	/** 
+	/**
 	 * Default constructor
 	 */
 	CStreamingFileFromSimpleFeatures();
 
-	/** 
+	/**
 	 * Constructor taking a SimpleFeatures object as arg
-	 * 
+	 *
 	 * @param feat SimpleFeatures object
 	 */
-	CStreamingFileFromSimpleFeatures(CFeatures* feat);
+	CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat);
 
-	/** 
+	/**
+	 * Constructor taking a SimpleFeatures object as arg
+	 *
+	 * @param feat SimpleFeatures object
+	 * @param lab Labels as float64_t*
+	 */
+	CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat, float64_t* lab);
+
+	/**
 	 * Destructor
 	 */
 	virtual ~CStreamingFileFromSimpleFeatures();
 
-	/** 
+	/**
 	 * Functions to read vectors from the SimpleFeatures object
 	 *
 	 * Set vector and length by reference.
 	 * @param vector vector
 	 * @param len length of vector
 	 */
-	virtual void get_bool_vector(bool*& vector, int32_t& len);
-	virtual void get_byte_vector(uint8_t*& vector, int32_t& len);
-	virtual void get_char_vector(char*& vector, int32_t& len);
-	virtual void get_int_vector(int32_t*& vector, int32_t& len);
-	virtual void get_real_vector(float64_t*& vector, int32_t& len);
-	virtual void get_shortreal_vector(float32_t*& vector, int32_t& len);
-	virtual void get_short_vector(int16_t*& vector, int32_t& len);
-	virtual void get_word_vector(uint16_t*& vector, int32_t& len);
-	virtual void get_int8_vector(int8_t*& vector, int32_t& len);
-	virtual void get_uint_vector(uint32_t*& vector, int32_t& len);
-	virtual void get_long_vector(int64_t*& vector, int32_t& len);
-	virtual void get_ulong_vector(uint64_t*& vector, int32_t& len);
-	virtual void get_longreal_vector(floatmax_t*& vector, int32_t& len);
+	template <class S> void get_vector(S*& vector, int32_t &len)
+	{
+		SG_ERROR("Unsupported reading function called!\n");
+	}
+
+	template <class S> void get_vector_and_label(S*& vector, int32_t &len, float64_t &label)
+	{
+		SG_ERROR("Unsupported reading function called!\n");
+	}
+
+	/**
+	 * This function will be called for reading vectors from the
+	 * corresponding SimpleFeatures object.
+	 * It is specialized depending on class type T.
+	 *
+	 * @param vec vector
+	 * @param len length of vector
+	 */
+	virtual void get_vector(T* &vec, int32_t &len);
+
+	/**
+	 * This function will be called for reading vectors and labels
+	 * from the corresponding SimpleFeatures object.  It is
+	 * specialized depending on class type T.
+	 *
+	 * @param vec vector
+	 * @param len length of vector
+	 * @param label label
+	 */
+	virtual void get_vector_and_label(T* &vec, int32_t &len, float64_t &label);
+
+	/**
+	 * Reset the stream so the next example returned is the first
+	 * example in the SimpleFeatures object.
+	 *
+	 */
+	void reset_stream()
+	{
+		vector_num = 0;
+	}
 
 	/** @return object name */
 	inline virtual const char* get_name() const
@@ -64,16 +99,136 @@ public:
 	}
 
 private:
-	/** 
+	/**
 	 * Initialize members to defaults
 	 */
 	void init();
-	
+
 protected:
+
+	/// SimpleFeatures object
+	CSimpleFeatures<T>* features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
 
 };
+
+template <class T>
+CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures()
+	: CStreamingFileFromFeatures()
+{
+	init();
+}
+
+template <class T>
+CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat)
+	: CStreamingFileFromFeatures()
+{
+	ASSERT(feat);
+	features=feat;
+
+	init();
+}
+
+template <class T>
+CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat, float64_t* lab)
+	: CStreamingFileFromFeatures()
+{
+	ASSERT(feat);
+	ASSERT(lab);
+	features=feat;
+	labels=lab;
+
+	init();
+}
+
+template <class T>
+CStreamingFileFromSimpleFeatures<T>::~CStreamingFileFromSimpleFeatures()
+{
+}
+
+template <class T>
+void CStreamingFileFromSimpleFeatures<T>::init()
+{
+	vector_num=0;
+}
+
+/* Functions to return the vector from the SimpleFeatures object
+ * If the class is of type T, specialize this function to work for
+ * vectors of that type. */
+#define GET_VECTOR(sg_type)						\
+	template <>							\
+	void CStreamingFileFromSimpleFeatures<sg_type>::get_vector(sg_type*& vector, int32_t& num_feat) \
+	{								\
+		if (vector_num >= features->get_num_vectors())		\
+		{							\
+			vector=NULL;					\
+			num_feat=-1;					\
+			return;						\
+		}							\
+									\
+		SGVector<sg_type> sg_vector=				\
+			features->get_feature_vector(vector_num);	\
+									\
+		vector = sg_vector.vector;				\
+		num_feat = sg_vector.vlen;;				\
+		vector_num++;						\
+									\
+	}
+
+GET_VECTOR(bool)
+GET_VECTOR(uint8_t)
+GET_VECTOR(char)
+GET_VECTOR(int32_t)
+GET_VECTOR(float32_t)
+GET_VECTOR(float64_t)
+GET_VECTOR(int16_t)
+GET_VECTOR(uint16_t)
+GET_VECTOR(int8_t)
+GET_VECTOR(uint32_t)
+GET_VECTOR(int64_t)
+GET_VECTOR(uint64_t)
+GET_VECTOR(floatmax_t)
+#undef GET_VECTOR
+
+/* Functions to return the vector from the SimpleFeatures object with label */
+#define GET_VECTOR_AND_LABEL(sg_type)					\
+	template <>							\
+	void CStreamingFileFromSimpleFeatures<sg_type>::get_vector_and_label\
+	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
+	{								\
+		if (vector_num >= features->get_num_vectors())		\
+		{							\
+			vector=NULL;					\
+			num_feat=-1;					\
+			return;						\
+		}							\
+									\
+		SGVector<sg_type> sg_vector				\
+			=features->get_feature_vector(vector_num);	\
+									\
+		vector = sg_vector.vector;				\
+		num_feat = sg_vector.vlen;				\
+		label = labels[vector_num];				\
+									\
+		vector_num++;						\
+	}
+
+GET_VECTOR_AND_LABEL(bool)
+GET_VECTOR_AND_LABEL(uint8_t)
+GET_VECTOR_AND_LABEL(char)
+GET_VECTOR_AND_LABEL(int32_t)
+GET_VECTOR_AND_LABEL(float32_t)
+GET_VECTOR_AND_LABEL(float64_t)
+GET_VECTOR_AND_LABEL(int16_t)
+GET_VECTOR_AND_LABEL(uint16_t)
+GET_VECTOR_AND_LABEL(int8_t)
+GET_VECTOR_AND_LABEL(uint32_t)
+GET_VECTOR_AND_LABEL(int64_t)
+GET_VECTOR_AND_LABEL(uint64_t)
+GET_VECTOR_AND_LABEL(floatmax_t)
+#undef GET_VECTOR_AND_LABEL
+
 }
 #endif //__STREAMING_FILEFROMSIMPLE_H__

@@ -15,15 +15,25 @@ CStreamingFileFromFeatures::CStreamingFileFromFeatures()
 	: CStreamingFile()
 {
 	features=NULL;
+	labels=NULL;
 }
 
 CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat)
 	: CStreamingFile()
 {
 	features=feat;
+	labels=NULL;
+}
+
+CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab)
+	: CStreamingFile()
+{
+	features=feat;
+	labels=lab;
 }
 
 CStreamingFileFromFeatures::~CStreamingFileFromFeatures()
 {
 	features=NULL;
+	labels=NULL;
 }
