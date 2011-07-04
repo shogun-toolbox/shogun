@@ -128,7 +128,7 @@ namespace shogun
 	{
 		buffer_size=size;
 		ex_buff=new example<T>[buffer_size];
-		printf("Initialized with ring size: %d.\n", buffer_size);
+		SG_SINFO("Initialized with ring size: %d.\n", buffer_size);
 		ex_used=new E_IS_EXAMPLE_USED[buffer_size];
 	
 		ex_in_use_mutex=new pthread_mutex_t[buffer_size];

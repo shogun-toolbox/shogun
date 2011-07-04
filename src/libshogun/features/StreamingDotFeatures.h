@@ -153,6 +153,25 @@ public:
 	 */
 	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
 
+	/** 
+	 * Expand the vector passed so that it its length is equal to
+	 * the dimensionality of the features. The previous values are
+	 * kept intact through realloc, and the new ones are set to zero.
+	 * 
+	 * @param vec float64_t* vector
+	 * @param len length of the vector
+	 */
+	inline virtual void expand_if_required(float64_t*& vec, int32_t &len)
+	{
+		int32_t dim = get_dim_feature_space();
+		if (dim > len)
+		{
+			vec = (float64_t*) SG_REALLOC(vec, dim * sizeof(float64_t));
+			memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
+			len = dim;
+		}
+	}
+	
 	/** obtain the dimensionality of the feature space
 	 *
 	 * (not mix this up with the dimensionality of the input space, usually

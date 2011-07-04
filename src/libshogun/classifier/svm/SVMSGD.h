@@ -136,7 +136,7 @@ class CSVMSGD : public CLinearMachine
 	private:
 		void init();
 
-	private:
+	public:
 		float64_t t;
 		float64_t C1;
 		float64_t C2;
