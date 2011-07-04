@@ -15,7 +15,7 @@
 
 namespace shogun
 {
-class CStreamingFileFromSparseFeatures: public CStreamingFileFromFeatures
+template <class T> class CStreamingFileFromSparseFeatures: public CStreamingFileFromFeatures
 {
 public:
 	/** 
@@ -28,7 +28,7 @@ public:
 	 * 
 	 * @param feat SparseFeatures object
 	 */
-	CStreamingFileFromSparseFeatures(CFeatures* feat);
+	CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat);
 
 	/** 
 	 * Constructor taking a SparseFeatures object as arg
@@ -36,56 +36,43 @@ public:
 	 * @param feat SparseFeatures object
 	 * @param lab Labels as float64_t*
 	 */
-	CStreamingFileFromSparseFeatures(CFeatures* feat, float64_t* lab);
+	CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float64_t* lab);
 
 	/** 
 	 * Destructor
 	 */
 	virtual ~CStreamingFileFromSparseFeatures();
 
-	/** 
-	 * Functions to read vectors from the SparseFeatures object
+	/**
+	 * This function will be called for reading vectors from the
+	 * corresponding SparseFeatures object.
+	 * It is specialized depending on class type T.
 	 *
-	 * Set vector and length by reference.
-	 * @param vector vector
+	 * @param vec vector
 	 * @param len length of vector
 	 */
-	virtual void get_bool_sparse_vector(SGSparseVectorEntry<bool>*& vector, int32_t& len);
-	virtual void get_byte_sparse_vector(SGSparseVectorEntry<uint8_t>*& vector, int32_t& len);
-	virtual void get_char_sparse_vector(SGSparseVectorEntry<char>*& vector, int32_t& len);
-	virtual void get_int_sparse_vector(SGSparseVectorEntry<int32_t>*& vector, int32_t& len);
-	virtual void get_real_sparse_vector(SGSparseVectorEntry<float64_t>*& vector, int32_t& len);
-	virtual void get_shortreal_sparse_vector(SGSparseVectorEntry<float32_t>*& vector, int32_t& len);
-	virtual void get_short_sparse_vector(SGSparseVectorEntry<int16_t>*& vector, int32_t& len);
-	virtual void get_word_sparse_vector(SGSparseVectorEntry<uint16_t>*& vector, int32_t& len);
-	virtual void get_int8_sparse_vector(SGSparseVectorEntry<int8_t>*& vector, int32_t& len);
-	virtual void get_uint_sparse_vector(SGSparseVectorEntry<uint32_t>*& vector, int32_t& len);
-	virtual void get_long_sparse_vector(SGSparseVectorEntry<int64_t>*& vector, int32_t& len);
-	virtual void get_ulong_sparse_vector(SGSparseVectorEntry<uint64_t>*& vector, int32_t& len);
-	virtual void get_longreal_sparse_vector(SGSparseVectorEntry<floatmax_t>*& vector, int32_t& len);
+	virtual void get_sparse_vector(SGSparseVectorEntry<T>* &vec, int32_t &len);
 
-	/** @name Label and Vector Access Functions
+	/**
+	 * This function will be called for reading vectors and labels
+	 * from the corresponding SparseFeatures object.  It is
+	 * specialized depending on class type T.
 	 *
-	 * Functions to access the label and vectors of examples
-	 * one of the several base data types.
-	 * These functions are used when loading vectors from e.g. file
-	 * and return the vector, its length, and the label by reference
+	 * @param vec vector
+	 * @param len length of vector
+	 * @param label label
 	 */
-	//@{
-	virtual void get_bool_sparse_vector_and_label(SGSparseVectorEntry<bool>*& vector, int32_t& len, float64_t& label);
-	virtual void get_byte_sparse_vector_and_label(SGSparseVectorEntry<uint8_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_char_sparse_vector_and_label(SGSparseVectorEntry<char>*& vector, int32_t& len, float64_t& label);
-	virtual void get_int_sparse_vector_and_label(SGSparseVectorEntry<int32_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_real_sparse_vector_and_label(SGSparseVectorEntry<float64_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_shortreal_sparse_vector_and_label(SGSparseVectorEntry<float32_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_short_sparse_vector_and_label(SGSparseVectorEntry<int16_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_word_sparse_vector_and_label(SGSparseVectorEntry<uint16_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_int8_sparse_vector_and_label(SGSparseVectorEntry<int8_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_uint_sparse_vector_and_label(SGSparseVectorEntry<uint32_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_long_sparse_vector_and_label(SGSparseVectorEntry<int64_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_ulong_sparse_vector_and_label(SGSparseVectorEntry<uint64_t>*& vector, int32_t& len, float64_t& label);
-	virtual void get_longreal_sparse_vector_and_label(SGSparseVectorEntry<floatmax_t>*& vector, int32_t& len, float64_t& label);
-	//@}
+	virtual void get_sparse_vector_and_label(SGSparseVectorEntry<T>* &vec, int32_t &len, float64_t &label);
+
+	/**
+	 * Reset the stream so the next example returned is the first
+	 * example in the SparseFeatures object.
+	 *
+	 */
+	void reset_stream()
+	{
+		vector_num = 0;
+	}
 
 	/** @return object name */
 	inline virtual const char* get_name() const
@@ -101,10 +88,116 @@ private:
 	void init();
 	
 protected:
+	/// SparseFeatures object
+	CSparseFeatures<T>* features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
 
 };
+
+template <class T>
+CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures()
+	: CStreamingFileFromFeatures()
+{
+	init();
+}
+
+template <class T>
+CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat)
+	: CStreamingFileFromFeatures(feat)
+{
+	init();
+}
+
+template <class T>
+CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float64_t* lab)
+	: CStreamingFileFromFeatures(feat,lab)
+{
+	init();
+}
+
+template <class T>
+CStreamingFileFromSparseFeatures<T>::~CStreamingFileFromSparseFeatures()
+{
+}
+
+template <class T>
+void CStreamingFileFromSparseFeatures<T>::init()
+{
+	vector_num=0;
+}
+
+/* Functions to return the vector from the SparseFeatures object */
+#define GET_SPARSE_VECTOR(sg_type)					\
+	template <>							\
+	void CStreamingFileFromSparseFeatures<sg_type>::get_sparse_vector\
+	(SGSparseVectorEntry<sg_type>*& vector, int32_t& len)		\
+	{								\
+		if (vector_num >= features->get_num_vectors())		\
+		{							\
+			vector=NULL;					\
+			len=-1;						\
+			return;						\
+		}							\
+									\
+		bool vfree;						\
+		vector=features->get_sparse_feature_vector		\
+			(vector_num, len, vfree);			\
+									\
+		vector_num++;						\
+	}								\
+
+GET_SPARSE_VECTOR(bool)
+GET_SPARSE_VECTOR(uint8_t)
+GET_SPARSE_VECTOR(char)
+GET_SPARSE_VECTOR(int32_t)
+GET_SPARSE_VECTOR(float32_t)
+GET_SPARSE_VECTOR(float64_t)
+GET_SPARSE_VECTOR(int16_t)
+GET_SPARSE_VECTOR(uint16_t)
+GET_SPARSE_VECTOR(int8_t)
+GET_SPARSE_VECTOR(uint32_t)
+GET_SPARSE_VECTOR(int64_t)
+GET_SPARSE_VECTOR(uint64_t)
+GET_SPARSE_VECTOR(floatmax_t)
+#undef GET_SPARSE_VECTOR
+
+/* Functions to return the vector from the SparseFeatures object */
+#define GET_SPARSE_VECTOR_AND_LABEL(sg_type)				\
+	template <>							\
+	void CStreamingFileFromSparseFeatures<sg_type>::get_sparse_vector_and_label \
+	(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label)	\
+	{								\
+		if (vector_num >= features->get_num_vectors())		\
+		{							\
+			vector=NULL;					\
+			len=-1;						\
+			return;						\
+		}							\
+									\
+		bool vfree;						\
+		vector=features->get_sparse_feature_vector		\
+			(vector_num, len, vfree);			\
+		label=labels[vector_num];				\
+									\
+		vector_num++;						\
+	}								\
+
+GET_SPARSE_VECTOR_AND_LABEL(bool)
+GET_SPARSE_VECTOR_AND_LABEL(uint8_t)
+GET_SPARSE_VECTOR_AND_LABEL(char)
+GET_SPARSE_VECTOR_AND_LABEL(int32_t)
+GET_SPARSE_VECTOR_AND_LABEL(float32_t)
+GET_SPARSE_VECTOR_AND_LABEL(float64_t)
+GET_SPARSE_VECTOR_AND_LABEL(int16_t)
+GET_SPARSE_VECTOR_AND_LABEL(uint16_t)
+GET_SPARSE_VECTOR_AND_LABEL(int8_t)
+GET_SPARSE_VECTOR_AND_LABEL(uint32_t)
+GET_SPARSE_VECTOR_AND_LABEL(int64_t)
+GET_SPARSE_VECTOR_AND_LABEL(uint64_t)
+GET_SPARSE_VECTOR_AND_LABEL(floatmax_t)
+#undef GET_SPARSE_VECTOR_AND_LABEL
+
 }
 #endif //__STREAMING_FILEFROMSPARSE_H__

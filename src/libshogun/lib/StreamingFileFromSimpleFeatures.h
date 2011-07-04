@@ -44,23 +44,6 @@ public:
 	virtual ~CStreamingFileFromSimpleFeatures();
 
 	/**
-	 * Functions to read vectors from the SimpleFeatures object
-	 *
-	 * Set vector and length by reference.
-	 * @param vector vector
-	 * @param len length of vector
-	 */
-	template <class S> void get_vector(S*& vector, int32_t &len)
-	{
-		SG_ERROR("Unsupported reading function called!\n");
-	}
-
-	template <class S> void get_vector_and_label(S*& vector, int32_t &len, float64_t &label)
-	{
-		SG_ERROR("Unsupported reading function called!\n");
-	}
-
-	/**
 	 * This function will be called for reading vectors from the
 	 * corresponding SimpleFeatures object.
 	 * It is specialized depending on class type T.
