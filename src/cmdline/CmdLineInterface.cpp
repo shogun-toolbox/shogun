@@ -295,13 +295,13 @@ void CCmdLineInterface::fname(sg_type*& vec, int32_t& len)	\
 		SG_ERROR("Could not read data from %s.\n", filename);			\
 	}																	\
 }
-GET_VECTOR(get_byte_vector, uint8_t)
-GET_VECTOR(get_char_vector, char)
-GET_VECTOR(get_int_vector, int32_t)
-GET_VECTOR(get_shortreal_vector, float32_t)
-GET_VECTOR(get_real_vector, float64_t)
-GET_VECTOR(get_short_vector, int16_t)
-GET_VECTOR(get_word_vector, uint16_t)
+GET_VECTOR(get_vector, uint8_t)
+GET_VECTOR(get_vector, char)
+GET_VECTOR(get_vector, int32_t)
+GET_VECTOR(get_vector, float32_t)
+GET_VECTOR(get_vector, float64_t)
+GET_VECTOR(get_vector, int16_t)
+GET_VECTOR(get_vector, uint16_t)
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type) \
@@ -322,86 +322,86 @@ void CCmdLineInterface::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_
 		SG_ERROR("Could not read data from %s.\n", filename);			\
 	}																	\
 }
-GET_MATRIX(get_byte_matrix, uint8_t)
-GET_MATRIX(get_char_matrix, char)
-GET_MATRIX(get_int_matrix, int32_t)
-GET_MATRIX(get_shortreal_matrix, float32_t)
-GET_MATRIX(get_real_matrix, float64_t)
-GET_MATRIX(get_short_matrix, int16_t)
-GET_MATRIX(get_word_matrix, uint16_t)
+GET_MATRIX(get_matrix, uint8_t)
+GET_MATRIX(get_matrix, char)
+GET_MATRIX(get_matrix, int32_t)
+GET_MATRIX(get_matrix, float32_t)
+GET_MATRIX(get_matrix, float64_t)
+GET_MATRIX(get_matrix, int16_t)
+GET_MATRIX(get_matrix, uint16_t)
 #undef GET_MATRIX
 
-void CCmdLineInterface::get_byte_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_char_ndarray(char*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_ndarray(char*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_int_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_shortreal_ndarray(float32_t*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_ndarray(float32_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_real_ndarray(float64_t*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_ndarray(float64_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_short_ndarray(int16_t*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_ndarray(int16_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_word_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)
+void CCmdLineInterface::get_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)
 {
 }
 
-void CCmdLineInterface::get_real_sparsematrix(SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CCmdLineInterface::get_sparse_matrix(SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to read SPARSE REAL matrix.\n");
 
 	CAsciiFile f((char*) filename, 'r');
-	f.get_real_sparsematrix(matrix, num_feat, num_vec);
+	f.get_sparse_matrix(matrix, num_feat, num_vec);
 }
 
 
-void CCmdLineInterface::get_byte_string_list(SGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_char_string_list(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_string_list(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	const char* filename=get_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to read CHAR string list.\n");
 
 	CAsciiFile f((char*) filename, 'r');
-	f.get_char_string_list(strings, num_str, max_string_len);
+	f.get_string_list(strings, num_str, max_string_len);
 }
 
-void CCmdLineInterface::get_int_string_list(SGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_string_list(SGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_short_string_list(SGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_string_list(SGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CCmdLineInterface::get_word_string_list(SGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CCmdLineInterface::get_string_list(SGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -438,9 +438,9 @@ void CCmdLineInterface::fname(sg_type scalar)	\
 	CAsciiFile f((char*) filename, 'w');		\
 	f.mfname(&scalar, 1, 1);					\
 }
-SET_SCALAR(set_int, set_int_matrix, int32_t)
-SET_SCALAR(set_real, set_real_matrix, float64_t)
-SET_SCALAR(set_bool, set_bool_matrix, bool)
+SET_SCALAR(set_int, set_matrix, int32_t)
+SET_SCALAR(set_real, set_matrix, float64_t)
+SET_SCALAR(set_bool, set_matrix, bool)
 #undef SET_SCALAR
 
 #define SET_VECTOR(fname, mfname, sg_type)	\
@@ -453,13 +453,13 @@ void CCmdLineInterface::fname(const sg_type* vec, int32_t len)	\
 	CAsciiFile f((char*) filename, 'w');						\
 	f.mfname(vec, len, 1);										\
 }
-SET_VECTOR(set_byte_vector, set_byte_matrix, uint8_t)
-SET_VECTOR(set_char_vector, set_char_matrix, char)
-SET_VECTOR(set_int_vector, set_int_matrix, int32_t)
-SET_VECTOR(set_shortreal_vector, set_shortreal_matrix, float32_t)
-SET_VECTOR(set_real_vector, set_real_matrix, float64_t)
-SET_VECTOR(set_short_vector, set_short_matrix, int16_t)
-SET_VECTOR(set_word_vector, set_word_matrix, uint16_t)
+SET_VECTOR(set_vector, set_matrix, uint8_t)
+SET_VECTOR(set_vector, set_matrix, char)
+SET_VECTOR(set_vector, set_matrix, int32_t)
+SET_VECTOR(set_vector, set_matrix, float32_t)
+SET_VECTOR(set_vector, set_matrix, float64_t)
+SET_VECTOR(set_vector, set_matrix, int16_t)
+SET_VECTOR(set_vector, set_matrix, uint16_t)
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type)	\
@@ -472,22 +472,22 @@ void CCmdLineInterface::fname(const sg_type* matrix, int32_t num_feat, int32_t n
 	CAsciiFile f((char*) filename, 'w');												\
 	f.fname(matrix, num_feat, num_vec);										\
 }
-SET_MATRIX(set_byte_matrix, uint8_t)
-SET_MATRIX(set_char_matrix, char)
-SET_MATRIX(set_int_matrix, int32_t)
-SET_MATRIX(set_shortreal_matrix, float32_t)
-SET_MATRIX(set_real_matrix, float64_t)
-SET_MATRIX(set_short_matrix, int16_t)
-SET_MATRIX(set_word_matrix, uint16_t)
+SET_MATRIX(set_matrix, uint8_t)
+SET_MATRIX(set_matrix, char)
+SET_MATRIX(set_matrix, int32_t)
+SET_MATRIX(set_matrix, float32_t)
+SET_MATRIX(set_matrix, float64_t)
+SET_MATRIX(set_matrix, int16_t)
+SET_MATRIX(set_matrix, uint16_t)
 
-void CCmdLineInterface::set_real_sparsematrix(const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
+void CCmdLineInterface::set_sparse_matrix(const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec, int64_t nnz)
 {
 	const char* filename=set_arg_increment();
 	if (!filename)
 		SG_ERROR("No filename given to write SPARSE REAL matrix.\n");
 
 	CAsciiFile f((char*) filename, 'w');
-	f.set_real_sparsematrix(matrix, num_feat, num_vec);
+	f.set_sparse_matrix(matrix, num_feat, num_vec);
 }
 
 #define SET_STRING_LIST(fname, sg_type)	\
@@ -500,11 +500,11 @@ void CCmdLineInterface::fname(const SGString<sg_type>* strings, int32_t num_str)
 	CAsciiFile f((char*) filename, 'w');												\
 	f.fname(strings, num_str);															\
 }
-SET_STRING_LIST(set_byte_string_list, uint8_t)
-SET_STRING_LIST(set_char_string_list, char)
-SET_STRING_LIST(set_int_string_list, int32_t)
-SET_STRING_LIST(set_short_string_list, int16_t)
-SET_STRING_LIST(set_word_string_list, uint16_t)
+SET_STRING_LIST(set_string_list, uint8_t)
+SET_STRING_LIST(set_string_list, char)
+SET_STRING_LIST(set_string_list, int32_t)
+SET_STRING_LIST(set_string_list, int16_t)
+SET_STRING_LIST(set_string_list, uint16_t)
 #undef SET_STRING_LIST
 
 void CCmdLineInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)

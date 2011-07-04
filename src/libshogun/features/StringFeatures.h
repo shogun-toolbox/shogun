@@ -2459,18 +2459,18 @@ template<> inline void CStringFeatures<sg_type>::load(CFile* loader)		\
 	SG_RESET_LOCALE;													\
 }
 
-LOAD(get_bool_string_list, bool)
-LOAD(get_char_string_list, char)
+LOAD(get_string_list, bool)
+LOAD(get_string_list, char)
 LOAD(get_int8_string_list, int8_t)
-LOAD(get_byte_string_list, uint8_t)
-LOAD(get_short_string_list, int16_t)
-LOAD(get_word_string_list, uint16_t)
-LOAD(get_int_string_list, int32_t)
+LOAD(get_string_list, uint8_t)
+LOAD(get_string_list, int16_t)
+LOAD(get_string_list, uint16_t)
+LOAD(get_string_list, int32_t)
 LOAD(get_uint_string_list, uint32_t)
 LOAD(get_long_string_list, int64_t)
 LOAD(get_ulong_string_list, uint64_t)
-LOAD(get_shortreal_string_list, float32_t)
-LOAD(get_real_string_list, float64_t)
+LOAD(get_string_list, float32_t)
+LOAD(get_string_list, float64_t)
 LOAD(get_longreal_string_list, floatmax_t)
 #undef LOAD
 
@@ -2485,18 +2485,18 @@ template<> inline void CStringFeatures<sg_type>::save(CFile* writer)		\
 	SG_RESET_LOCALE;													\
 }
 
-SAVE(set_bool_string_list, bool)
-SAVE(set_char_string_list, char)
+SAVE(set_string_list, bool)
+SAVE(set_string_list, char)
 SAVE(set_int8_string_list, int8_t)
-SAVE(set_byte_string_list, uint8_t)
-SAVE(set_short_string_list, int16_t)
-SAVE(set_word_string_list, uint16_t)
-SAVE(set_int_string_list, int32_t)
+SAVE(set_string_list, uint8_t)
+SAVE(set_string_list, int16_t)
+SAVE(set_string_list, uint16_t)
+SAVE(set_string_list, int32_t)
 SAVE(set_uint_string_list, uint32_t)
 SAVE(set_long_string_list, int64_t)
 SAVE(set_ulong_string_list, uint64_t)
-SAVE(set_shortreal_string_list, float32_t)
-SAVE(set_real_string_list, float64_t)
+SAVE(set_string_list, float32_t)
+SAVE(set_string_list, float64_t)
 SAVE(set_longreal_string_list, floatmax_t)
 #undef SAVE
 #endif // DOXYGEN_SHOULD_SKIP_THIS

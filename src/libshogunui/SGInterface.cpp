@@ -1247,8 +1247,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				bool* v=NULL;
 				int32_t len=0;
-				source->get_bool_vector(v, len);
-				target->set_bool_vector(v, len);
+				source->get_vector(v, len);
+				target->set_vector(v, len);
 				delete[] v;
 				break;
 			}
@@ -1256,8 +1256,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				uint8_t* v=NULL;
 				int32_t len=0;
-				source->get_byte_vector(v, len);
-				target->set_byte_vector(v, len);
+				source->get_vector(v, len);
+				target->set_vector(v, len);
 				delete[] v;
 				break;
 			}
@@ -1265,8 +1265,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				char* v=NULL;
 				int32_t len=0;
-				source->get_char_vector(v, len);
-				target->set_char_vector(v, len);
+				source->get_vector(v, len);
+				target->set_vector(v, len);
 				delete[] v;
 				break;
 			}
@@ -1274,8 +1274,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int32_t* v=NULL;
 				int32_t len=0;
-				source->get_int_vector(v, len);
-				target->set_int_vector(v, len);
+				source->get_vector(v, len);
+				target->set_vector(v, len);
 				delete[] v;
 				break;
 			}
@@ -1283,8 +1283,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				float64_t* v=NULL;
 				int32_t len=0;
-				source->get_real_vector(v, len);
-				target->set_real_vector(v, len);
+				source->get_vector(v, len);
+				target->set_vector(v, len);
 				delete[] v;
 				break;
 			}
@@ -1292,8 +1292,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				float32_t* v=NULL;
 				int32_t len=0;
-				source->get_shortreal_vector(v, len);
-				target->set_shortreal_vector(v, len);
+				source->get_vector(v, len);
+				target->set_vector(v, len);
 				delete[] v;
 				break;
 			}
@@ -1301,8 +1301,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				int16_t* v=NULL;
 				int32_t len=0;
-				source->get_short_vector(v, len);
-				target->set_short_vector(v, len);
+				source->get_vector(v, len);
+				target->set_vector(v, len);
 				delete[] v;
 				break;
 			}
@@ -1310,8 +1310,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			{
 				uint16_t* v=NULL;
 				int32_t len=0;
-				source->get_word_vector(v, len);
-				target->set_word_vector(v, len);
+				source->get_vector(v, len);
+				target->set_vector(v, len);
 				delete[] v;
 				break;
 			}
@@ -1321,8 +1321,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_str=0;
 				int32_t max_str_len=0;
 				SGString<uint8_t>* strs=NULL;
-				source->get_byte_string_list(strs, num_str, max_str_len);
-				target->set_byte_string_list(strs, num_str);
+				source->get_string_list(strs, num_str, max_str_len);
+				target->set_string_list(strs, num_str);
 				delete[] strs;
 				break;
 			}
@@ -1331,8 +1331,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_str=0;
 				int32_t max_str_len=0;
 				SGString<char>* strs;
-				source->get_char_string_list(strs, num_str,max_str_len);
-				target->set_char_string_list(strs, num_str);
+				source->get_string_list(strs, num_str,max_str_len);
+				target->set_string_list(strs, num_str);
 				delete[] strs;
 				break;
 			}
@@ -1341,8 +1341,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_str=0;
 				int32_t max_str_len=0;
 				SGString<int32_t>* strs;
-				source->get_int_string_list(strs, num_str,max_str_len);
-				target->set_int_string_list(strs, num_str);
+				source->get_string_list(strs, num_str,max_str_len);
+				target->set_string_list(strs, num_str);
 				delete[] strs;
 				break;
 			}
@@ -1351,8 +1351,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_str=0;
 				int32_t max_str_len=0;
 				SGString<int16_t>* strs=NULL;
-				source->get_short_string_list(strs, num_str, max_str_len);
-				target->set_short_string_list(strs, num_str);
+				source->get_string_list(strs, num_str, max_str_len);
+				target->set_string_list(strs, num_str);
 				delete[] strs;
 				break;
 			}
@@ -1361,8 +1361,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_str=0;
 				int32_t max_str_len=0;
 				SGString<uint16_t>* strs=NULL;
-				source->get_word_string_list(strs, num_str, max_str_len);
-				target->set_word_string_list(strs, num_str);
+				source->get_string_list(strs, num_str, max_str_len);
+				target->set_string_list(strs, num_str);
 				delete[] strs;
 				break;
 			}
@@ -1371,8 +1371,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_feat=0;
 				int32_t num_vec=0;
 				int32_t* fmatrix=NULL;
-				source->get_int_matrix(fmatrix, num_feat, num_vec);
-				target->set_int_matrix(fmatrix, num_feat, num_vec);
+				source->get_matrix(fmatrix, num_feat, num_vec);
+				target->set_matrix(fmatrix, num_feat, num_vec);
 				delete[] fmatrix;
 				break;
 			}
@@ -1381,8 +1381,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_feat=0;
 				int32_t num_vec=0;
 				float64_t* fmatrix=NULL;
-				source->get_real_matrix(fmatrix, num_feat, num_vec);
-				target->set_real_matrix(fmatrix, num_feat, num_vec);
+				source->get_matrix(fmatrix, num_feat, num_vec);
+				target->set_matrix(fmatrix, num_feat, num_vec);
 				delete[] fmatrix;
 				break;
 			}
@@ -1391,8 +1391,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_feat=0;
 				int32_t num_vec=0;
 				int16_t* fmatrix=NULL;
-				source->get_short_matrix(fmatrix, num_feat, num_vec);
-				target->set_short_matrix(fmatrix, num_feat, num_vec);
+				source->get_matrix(fmatrix, num_feat, num_vec);
+				target->set_matrix(fmatrix, num_feat, num_vec);
 				delete[] fmatrix;
 				break;
 			}
@@ -1401,8 +1401,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_feat=0;
 				int32_t num_vec=0;
 				float32_t* fmatrix=NULL;
-				source->get_shortreal_matrix(fmatrix, num_feat, num_vec);
-				target->set_shortreal_matrix(fmatrix, num_feat, num_vec);
+				source->get_matrix(fmatrix, num_feat, num_vec);
+				target->set_matrix(fmatrix, num_feat, num_vec);
 				delete[] fmatrix;
 				break;
 			}
@@ -1411,8 +1411,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_feat=0;
 				int32_t num_vec=0;
 				uint16_t* fmatrix=NULL;
-				source->get_word_matrix(fmatrix, num_feat, num_vec);
-				target->set_word_matrix(fmatrix, num_feat, num_vec);
+				source->get_matrix(fmatrix, num_feat, num_vec);
+				target->set_matrix(fmatrix, num_feat, num_vec);
 				delete[] fmatrix;
 				break;
 			}
@@ -1422,8 +1422,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				uint8_t* a=NULL;
 				int32_t* dims=NULL;
 				int32_t num_dims=0;
-				source->get_byte_ndarray(a, dims, num_dims);
-				target->set_byte_ndarray(a, dims, num_dims);
+				source->get_ndarray(a, dims, num_dims);
+				target->set_ndarray(a, dims, num_dims);
 				delete[] a;
 				delete[] dims;
 				break;
@@ -1433,8 +1433,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				char* a=NULL;
 				int32_t* dims=NULL;
 				int32_t num_dims=0;
-				source->get_char_ndarray(a, dims, num_dims);
-				target->set_char_ndarray(a, dims, num_dims);
+				source->get_ndarray(a, dims, num_dims);
+				target->set_ndarray(a, dims, num_dims);
 				delete[] a;
 				delete[] dims;
 				break;
@@ -1444,8 +1444,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t* a=NULL;
 				int32_t* dims=NULL;
 				int32_t num_dims=0;
-				source->get_int_ndarray(a, dims, num_dims);
-				target->set_int_ndarray(a, dims, num_dims);
+				source->get_ndarray(a, dims, num_dims);
+				target->set_ndarray(a, dims, num_dims);
 				delete[] a;
 				delete[] dims;
 				break;
@@ -1455,8 +1455,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				float64_t* a=NULL;
 				int32_t* dims=NULL;
 				int32_t num_dims=0;
-				source->get_real_ndarray(a, dims, num_dims);
-				target->set_real_ndarray(a, dims, num_dims);
+				source->get_ndarray(a, dims, num_dims);
+				target->set_ndarray(a, dims, num_dims);
 				delete[] a;
 				delete[] dims;
 				break;
@@ -1466,8 +1466,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				float32_t* a=NULL;
 				int32_t* dims=NULL;
 				int32_t num_dims=0;
-				source->get_shortreal_ndarray(a, dims, num_dims);
-				target->set_shortreal_ndarray(a, dims, num_dims);
+				source->get_ndarray(a, dims, num_dims);
+				target->set_ndarray(a, dims, num_dims);
 				delete[] a;
 				delete[] dims;
 				break;
@@ -1477,8 +1477,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int16_t* a=NULL;
 				int32_t* dims=NULL;
 				int32_t num_dims=0;
-				source->get_short_ndarray(a, dims, num_dims);
-				target->set_short_ndarray(a, dims, num_dims);
+				source->get_ndarray(a, dims, num_dims);
+				target->set_ndarray(a, dims, num_dims);
 				delete[] a;
 				delete[] dims;
 				break;
@@ -1488,8 +1488,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				uint16_t* a=NULL;
 				int32_t* dims=NULL;
 				int32_t num_dims=0;
-				source->get_word_ndarray(a, dims, num_dims);
-				target->set_word_ndarray(a, dims, num_dims);
+				source->get_ndarray(a, dims, num_dims);
+				target->set_ndarray(a, dims, num_dims);
 				delete[] a;
 				delete[] dims;
 				break;
@@ -1499,11 +1499,11 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_feat=0;
 				int32_t num_vec=0;
 				SGSparseVector<float64_t>* fmatrix=NULL;
-				source->get_real_sparsematrix(fmatrix, num_feat, num_vec);
+				source->get_sparse_matrix(fmatrix, num_feat, num_vec);
 				int64_t nnz=0;
 				for (int32_t i=0; i<num_vec; i++)
 					nnz+=fmatrix[i].num_feat_entries;
-				target->set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
+				target->set_sparse_matrix(fmatrix, num_feat, num_vec, nnz);
 				delete[] fmatrix;
 				break;
 			}
@@ -1609,49 +1609,49 @@ bool CSGInterface::cmd_get_features()
 				case F_BYTE:
 				{
 					uint8_t* fmatrix=((CSimpleFeatures<uint8_t> *) feat)->get_feature_matrix(num_feat, num_vec);
-					set_byte_matrix(fmatrix, num_feat, num_vec);
+					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_CHAR:
 				{
 					char* fmatrix=((CSimpleFeatures<char> *) feat)->get_feature_matrix(num_feat, num_vec);
-					set_char_matrix(fmatrix, num_feat, num_vec);
+					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_DREAL:
 				{
 					float64_t* fmatrix=((CSimpleFeatures<float64_t> *) feat)->get_feature_matrix(num_feat, num_vec);
-					set_real_matrix(fmatrix, num_feat, num_vec);
+					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_INT:
 				{
 					int32_t* fmatrix=((CSimpleFeatures<int32_t> *) feat)->get_feature_matrix(num_feat, num_vec);
-					set_int_matrix(fmatrix, num_feat, num_vec);
+					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_SHORT:
 				{
 					int16_t* fmatrix=((CSimpleFeatures<int16_t> *) feat)->get_feature_matrix(num_feat, num_vec);
-					set_short_matrix(fmatrix, num_feat, num_vec);
+					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_SHORTREAL:
 				{
 					float32_t* fmatrix=((CSimpleFeatures<float32_t> *) feat)->get_feature_matrix(num_feat, num_vec);
-					set_shortreal_matrix(fmatrix, num_feat, num_vec);
+					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_WORD:
 				{
 					uint16_t* fmatrix=((CSimpleFeatures<uint16_t> *) feat)->get_feature_matrix(num_feat, num_vec);
-					set_word_matrix(fmatrix, num_feat, num_vec);
+					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
@@ -1674,7 +1674,7 @@ bool CSGInterface::cmd_get_features()
 					SGSparseVector<float64_t>* fmatrix=((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
 					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
 
-					set_real_sparsematrix(fmatrix, num_feat, num_vec, nnz);
+					set_sparse_matrix(fmatrix, num_feat, num_vec, nnz);
 					break;
 				}
 
@@ -1693,21 +1693,21 @@ bool CSGInterface::cmd_get_features()
 				case F_BYTE:
 				{
 					SGString<uint8_t>* fmatrix=((CStringFeatures<uint8_t>*) feat)->get_features(num_str, max_str_len);
-					set_byte_string_list(fmatrix, num_str);
+					set_string_list(fmatrix, num_str);
 					break;
 				}
 
 				case F_CHAR:
 				{
 					SGString<char>* fmatrix=((CStringFeatures<char>*) feat)->get_features(num_str, max_str_len);
-					set_char_string_list(fmatrix, num_str);
+					set_string_list(fmatrix, num_str);
 					break;
 				}
 
 				case F_WORD:
 				{
 					SGString<uint16_t>* fmatrix=((CStringFeatures<uint16_t>*) feat)->get_features(num_str, max_str_len);
-					set_word_string_list(fmatrix, num_str);
+					set_string_list(fmatrix, num_str);
 					break;
 				}
 
@@ -1725,7 +1725,7 @@ bool CSGInterface::cmd_get_features()
 		{
 
 			SGMatrix<float64_t> fmatrix = ((CDotFeatures*) feat)->get_computed_dot_feature_matrix();
-			set_real_matrix(fmatrix.matrix, fmatrix.num_cols, fmatrix.num_rows);
+			set_matrix(fmatrix.matrix, fmatrix.num_cols, fmatrix.num_rows);
 			fmatrix.free_matrix();
 			break;
 		}
@@ -1792,7 +1792,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		case SPARSE_REAL:
 		{
 			SGSparseVector<float64_t>* fmatrix=NULL;
-			get_real_sparsematrix(fmatrix, num_feat, num_vec);
+			get_sparse_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSparseFeatures<float64_t>();
 			((CSparseFeatures<float64_t>*) feat)->
@@ -1803,7 +1803,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		case DENSE_REAL:
 		{
 			float64_t* fmatrix=NULL;
-			get_real_matrix(fmatrix, num_feat, num_vec);
+			get_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSimpleFeatures<float64_t>(0);
 			((CSimpleFeatures<float64_t>*) feat)->
@@ -1818,7 +1818,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		case DENSE_INT:
 		{
 			int32_t* fmatrix=NULL;
-			get_int_matrix(fmatrix, num_feat, num_vec);
+			get_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSimpleFeatures<int32_t>(0);
 			((CSimpleFeatures<int32_t>*) feat)->
@@ -1829,7 +1829,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		case DENSE_SHORT:
 		{
 			int16_t* fmatrix=NULL;
-			get_short_matrix(fmatrix, num_feat, num_vec);
+			get_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSimpleFeatures<int16_t>(0);
 			((CSimpleFeatures<int16_t>*) feat)->
@@ -1840,7 +1840,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		case DENSE_WORD:
 		{
 			uint16_t* fmatrix=NULL;
-			get_word_matrix(fmatrix, num_feat, num_vec);
+			get_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSimpleFeatures<uint16_t>(0);
 			((CSimpleFeatures<uint16_t>*) feat)->
@@ -1851,7 +1851,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		case DENSE_SHORTREAL:
 		{
 			float32_t* fmatrix=NULL;
-			get_shortreal_matrix(fmatrix, num_feat, num_vec);
+			get_matrix(fmatrix, num_feat, num_vec);
 
 			feat=new CSimpleFeatures<float32_t>(0);
 			((CSimpleFeatures<float32_t>*) feat)->
@@ -1867,7 +1867,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			int32_t num_str=0;
 			int32_t max_str_len=0;
 			SGString<char>* fmatrix=NULL;
-			get_char_string_list(fmatrix, num_str, max_str_len);
+			get_string_list(fmatrix, num_str, max_str_len);
 
 			int32_t alphabet_len=0;
 			char* alphabet_str=get_string(alphabet_len);
@@ -1940,7 +1940,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			int32_t num_str=0;
 			int32_t max_str_len=0;
 			SGString<uint8_t>* fmatrix=NULL;
-			get_byte_string_list(fmatrix, num_str, max_str_len);
+			get_string_list(fmatrix, num_str, max_str_len);
 
 			int32_t alphabet_len=0;
 			char* alphabet_str=get_string(alphabet_len);
@@ -2332,7 +2332,7 @@ bool CSGInterface::obtain_from_position_list(CFeatures* features)
 
 	int32_t* shifts=NULL;
 	int32_t num_shift=0;
-	get_int_vector(shifts, num_shift);
+	get_vector(shifts, num_shift);
 
 	int32_t skip=0;
 	if (m_nrhs==8)
@@ -2461,7 +2461,7 @@ bool CSGInterface::cmd_set_labels()
 
 	float64_t* lab=NULL;
 	int32_t len=0;
-	get_real_vector(lab, len);
+	get_vector(lab, len);
 
 	CLabels* labels=new CLabels(len);
 	SG_INFO("num labels: %d\n", labels->get_num_labels());
@@ -2516,7 +2516,7 @@ bool CSGInterface::cmd_get_labels()
 	for (int32_t i=0; i<num_labels ; i++)
 		lab[i]=labels->get_label(i);
 
-	set_real_vector(lab, num_labels);
+	set_vector(lab, num_labels);
 	delete[] lab;
 
 	return true;
@@ -2869,7 +2869,7 @@ CKernel* CSGInterface::create_kernel()
 			int32_t length=get_int_from_int_or_str();
 			int32_t* shifts=NULL;
 			int32_t l=0;
-			get_int_vector_from_int_vector_or_str(shifts, l);
+			get_vector_from_int_vector_or_str(shifts, l);
 
 			ASSERT(l==length);
 
@@ -2901,13 +2901,13 @@ CKernel* CSGInterface::create_kernel()
 			int32_t mkl_stepsize=get_int_from_int_or_str();
 			int32_t* shifts=NULL;
 			int32_t l=0;
-			get_int_vector_from_int_vector_or_str(shifts, l);
+			get_vector_from_int_vector_or_str(shifts, l);
 			ASSERT(l==length);
 
 			float64_t* position_weights=NULL;
 			if (m_nrhs>9+length)
 			{
-				get_real_vector_from_real_vector_or_str(
+				get_vector_from_real_vector_or_str(
 					position_weights, length);
 			}
 
@@ -3057,11 +3057,11 @@ CKernel* CSGInterface::create_kernel()
 			float64_t* AA_matrix = NULL;
 
 			//int32_t length=128*128;
-			//get_real_vector_from_real_vector_or_str(AA_matrix, length);
+			//get_vector_from_real_vector_or_str(AA_matrix, length);
 			float64_t* helper_matrix=NULL;
 			int32_t N=0;
 			int32_t M=0;
-			get_real_matrix(helper_matrix, N, M);
+			get_matrix(helper_matrix, N, M);
 
 			if (N == 128 && M == 128)
 			{
@@ -3227,7 +3227,7 @@ CKernel* CSGInterface::create_kernel()
 		float64_t* kmatrix=NULL;
 		int32_t num_feat=0;
 		int32_t num_vec=0;
-		get_real_matrix(kmatrix, num_feat, num_vec);
+		get_matrix(kmatrix, num_feat, num_vec);
 
 		int32_t tlen=0;
 		char* ktype=get_string(tlen);
@@ -3303,7 +3303,7 @@ CKernel* CSGInterface::create_kernel()
 			float64_t* km=NULL;
 			int32_t rows=0;
 			int32_t cols=0;
-			get_real_matrix(km, rows, cols);
+			get_matrix(km, rows, cols);
 			kernel=ui_kernel->create_tppk(size, km, rows, cols);
 		}
 
@@ -3444,7 +3444,7 @@ bool CSGInterface::cmd_get_kernel_matrix()
 			SG_ERROR("No kernel defined or not initialized.\n");
 
 		SGMatrix<float64_t> km=kernel->get_kernel_matrix<float64_t>();
-		set_real_matrix(km.matrix, km.num_rows, km.num_cols);
+		set_matrix(km.matrix, km.num_rows, km.num_cols);
 	}
 
 	delete[] target;
@@ -3476,7 +3476,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
-	get_real_matrix(weights, dim, len);
+	get_matrix(weights, dim, len);
 
 	if (kernel->get_kernel_type()==K_WEIGHTEDDEGREE)
 	{
@@ -3574,7 +3574,7 @@ bool CSGInterface::cmd_get_subkernel_weights()
 		weights=((CCombinedKernel *) kernel)->get_subkernel_weights(num_weights);
 
 		// matrices of shape 1 x num_weight are returned
-		set_real_matrix(weights, 1, num_weights);
+		set_matrix(weights, 1, num_weights);
 		return true;
 	}
 
@@ -3597,7 +3597,7 @@ bool CSGInterface::cmd_get_subkernel_weights()
 	if (length==0)
 		length=1;
 
-	set_real_matrix(weights, degree, length);
+	set_matrix(weights, degree, length);
 	return true;
 }
 
@@ -3614,7 +3614,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
-	get_real_matrix(weights, dim, len);
+	get_matrix(weights, dim, len);
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype==K_WEIGHTEDDEGREE)
@@ -3671,7 +3671,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
-	get_real_matrix(weights, dim, len);
+	get_matrix(weights, dim, len);
 
 	int32_t idx=get_int();
 	SG_DEBUG("using kernel_idx=%i\n", idx);
@@ -3748,7 +3748,7 @@ bool CSGInterface::cmd_get_dotfeature_weights_combined()
 	float64_t* weights=NULL;
 	int32_t len=0;
 	((CCombinedDotFeatures*) features)->get_subfeature_weights(&weights, &len);
-	set_real_vector(weights, len);
+	set_vector(weights, len);
 	delete[] weights;
 
 	return true;
@@ -3782,7 +3782,7 @@ bool CSGInterface::cmd_set_dotfeature_weights_combined()
 	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
-	get_real_matrix(weights, dim, len);
+	get_matrix(weights, dim, len);
 
 	((CCombinedDotFeatures*) features)->set_subfeature_weights(weights, len);
 
@@ -3808,7 +3808,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 	float64_t* weights=NULL;
 	int32_t dim=0;
 	int32_t len=0;
-	get_real_matrix(weights, dim, len);
+	get_matrix(weights, dim, len);
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype==K_WEIGHTEDDEGREE)
@@ -3876,9 +3876,9 @@ bool CSGInterface::cmd_get_WD_position_weights()
 		position_weights=((CWeightedDegreePositionStringKernel*) kernel)->get_position_weights(len);
 
 	if (position_weights==NULL)
-		set_real_vector(position_weights, 0);
+		set_vector(position_weights, 0);
 	else
-		set_real_vector(position_weights, len);
+		set_vector(position_weights, len);
 
 	return true;
 }
@@ -3908,7 +3908,7 @@ bool CSGInterface::cmd_get_last_subkernel_weights()
 		const float64_t* weights=
 			((CCombinedKernel*) kernel)->get_subkernel_weights(num_weights);
 
-		set_real_vector(weights, num_weights);
+		set_vector(weights, num_weights);
 		return true;
 	}
 
@@ -3925,7 +3925,7 @@ bool CSGInterface::cmd_get_last_subkernel_weights()
 	if (len==0)
 		len=1;
 
-	set_real_matrix(weights, degree, len);
+	set_matrix(weights, degree, len);
 
 	return true;
 }
@@ -3989,7 +3989,7 @@ bool CSGInterface::cmd_compute_by_subkernels()
 			k->compute_by_tree(i, &result[i*num_feat]);
 	}
 
-	set_real_matrix(result, num_feat, num_vec);
+	set_matrix(result, num_feat, num_vec);
 	delete[] result;
 
 	return true;
@@ -4048,7 +4048,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 			delete[] sv_idx;
 			delete[] sv_weight;
 
-			set_real_matrix(position_weights, num_sym, num_feat);
+			set_matrix(position_weights, num_sym, num_feat);
 			delete[] position_weights;
 
 			return true;
@@ -4062,7 +4062,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 			float64_t* weights;
 			k->get_dictionary(len, weights);
 
-			set_real_vector(weights, len);
+			set_vector(weights, len);
 			return true;
 		}
 		case K_LINEAR:
@@ -4071,7 +4071,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 			int32_t len=0;
 			const float64_t* weights=k->get_normal(len);
 
-			set_real_vector(weights, len);
+			set_vector(weights, len);
 			return true;
 		}
 		default:
@@ -4190,7 +4190,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 
 	float64_t* lab=NULL;
 	int32_t len=0;
-	get_real_vector(lab, len);
+	get_vector(lab, len);
 
 	CLabels* labels=new CLabels(len);
 	for (int32_t i=0; i<len; i++)
@@ -4327,7 +4327,7 @@ bool CSGInterface::cmd_get_distance_matrix()
 		float64_t* dmatrix=NULL;
 		dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
 
-		set_real_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
+		set_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
 		delete[] dmatrix;
 	}
 
@@ -4366,7 +4366,7 @@ bool CSGInterface::cmd_get_SPEC_consensus()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	set_char_vector(consensus, num_feat);
+	set_vector(consensus, num_feat);
 	delete[] consensus;
 
 	return true;
@@ -4418,7 +4418,7 @@ bool CSGInterface::cmd_get_SPEC_scoring()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	set_real_matrix(position_weights, num_sym, num_feat);
+	set_matrix(position_weights, num_sym, num_feat);
 	delete[] position_weights;
 
 	return true;
@@ -4453,7 +4453,7 @@ bool CSGInterface::cmd_get_WD_consensus()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	set_char_vector(consensus, num_feat);
+	set_vector(consensus, num_feat);
 	delete[] consensus;
 
 	return true;
@@ -4468,7 +4468,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 	float64_t* distribution=NULL;
 	int32_t num_dfeat=0;
 	int32_t num_dvec=0;
-	get_real_matrix(distribution, num_dfeat, num_dvec);
+	get_matrix(distribution, num_dfeat, num_dvec);
 
 	if (!distribution)
 		SG_ERROR("Wrong distribution.\n");
@@ -4521,7 +4521,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		delete[] sv_idx;
 		delete[] sv_weight;
 
-		set_real_matrix(position_weights, num_sym, seqlen);
+		set_matrix(position_weights, num_sym, seqlen);
 		delete[] position_weights;
 
 		return true;
@@ -4566,7 +4566,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 	delete[] sv_idx;
 	delete[] sv_weight;
 
-	set_real_matrix(position_weights, num_sym, num_feat);
+	set_matrix(position_weights, num_sym, num_feat);
 	delete[] position_weights;
 
 	return true;
@@ -4598,7 +4598,7 @@ bool CSGInterface::cmd_classify()
 		result[i]=labels->get_label(i);
 	SG_UNREF(labels);
 
-	set_real_vector(result, num_vec);
+	set_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -4642,12 +4642,12 @@ bool CSGInterface::cmd_get_classifier()
 
 	//SG_PRINT("brows %d, bcols %d\n", brows, bcols);
 	//CMath::display_matrix(bias, brows, bcols);
-	set_real_matrix(bias, brows, bcols);
+	set_matrix(bias, brows, bcols);
 	delete[] bias;
 
 	//SG_PRINT("rows %d, cols %d\n", rows, cols);
 	//CMath::display_matrix(weights, rows, cols);
-	set_real_matrix(weights, rows, cols);
+	set_matrix(weights, rows, cols);
 	delete[] weights;
 
 	return true;
@@ -4734,7 +4734,7 @@ bool CSGInterface::cmd_set_svm()
 	float64_t* alphas=NULL;
 	int32_t num_feat_alphas=0;
 	int32_t num_vec_alphas=0;
-	get_real_matrix(alphas, num_feat_alphas, num_vec_alphas);
+	get_matrix(alphas, num_feat_alphas, num_vec_alphas);
 
 	if (!alphas)
 		SG_ERROR("No proper alphas given.\n");
@@ -4768,7 +4768,7 @@ bool CSGInterface::cmd_set_linear_classifier()
 
 	float64_t* w=NULL;
 	int32_t len=0;
-	get_real_vector(w, len);
+	get_vector(w, len);
 
 	if (!len)
 		SG_ERROR("No proper weight vector given.\n");
@@ -5306,7 +5306,7 @@ bool CSGInterface::cmd_plugin_estimate_classify_example()
 	int32_t idx=get_int();
 	float64_t result=ui_pluginestimate->apply(idx);
 
-	set_real_vector(&result, 1);
+	set_vector(&result, 1);
 	return true;
 }
 
@@ -5326,7 +5326,7 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 		result[i]=labels->get_label(i);
 	SG_UNREF(labels);
 
-	set_real_vector(result, num_vec);
+	set_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -5340,7 +5340,7 @@ bool CSGInterface::cmd_set_plugin_estimate()
 	float64_t* emission_probs=NULL;
 	int32_t num_probs=0;
 	int32_t num_vec=0;
-	get_real_matrix(emission_probs, num_probs, num_vec);
+	get_matrix(emission_probs, num_probs, num_vec);
 
 	if (num_vec!=2)
 		SG_ERROR("Need at least 1 set of positive and 1 set of negative params.\n");
@@ -5350,7 +5350,7 @@ bool CSGInterface::cmd_set_plugin_estimate()
 
 	float64_t* model_sizes=NULL;
 	int32_t len=0;
-	get_real_vector(model_sizes, len);
+	get_vector(model_sizes, len);
 
 	int32_t seq_length=(int32_t) model_sizes[0];
 	int32_t num_symbols=(int32_t) model_sizes[1];
@@ -5386,13 +5386,13 @@ bool CSGInterface::cmd_get_plugin_estimate()
 	for (int32_t i=0; i<num_params; i++)
 		result[i+num_params]=neg_params[i];
 
-	set_real_matrix(result, num_params, 2);
+	set_matrix(result, num_params, 2);
 	delete[] result;
 
 	float64_t model_sizes[2];
 	model_sizes[0]=(float64_t) seq_length;
 	model_sizes[1]=(float64_t) num_symbols;
-	set_real_vector(model_sizes, 2);
+	set_vector(model_sizes, 2);
 
 	return true;
 }
@@ -5451,7 +5451,7 @@ bool CSGInterface::cmd_relative_entropy()
 	if (!success)
 		return false;
 
-	set_real_vector(entropy, len);
+	set_vector(entropy, len);
 
 	delete[] entropy;
 	return true;
@@ -5468,7 +5468,7 @@ bool CSGInterface::cmd_entropy()
 	if (!success)
 		return false;
 
-	set_real_vector(entropy, len);
+	set_vector(entropy, len);
 
 	delete[] entropy;
 	return true;
@@ -5520,7 +5520,7 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 		result[i]=labels->get_label(i);
 	SG_UNREF(labels);
 
-	set_real_vector(result, num_vec);
+	set_vector(result, num_vec);
 	delete[] result;
 
 	return true;
@@ -5644,7 +5644,7 @@ bool CSGInterface::cmd_get_viterbi_path()
 	float64_t likelihood=0;
 	T_STATES* path=h->get_path(dim, likelihood);
 
-	set_word_vector(path, num_feat);
+	set_vector(path, num_feat);
 	delete[] path;
 	set_real(likelihood);
 
@@ -5740,22 +5740,22 @@ bool CSGInterface::cmd_append_hmm()
 
 	float64_t* p=NULL;
 	int32_t N_p=0;
-	get_real_vector(p, N_p);
+	get_vector(p, N_p);
 
 	float64_t* q=NULL;
 	int32_t N_q=0;
-	get_real_vector(q, N_q);
+	get_vector(q, N_q);
 
 	float64_t* a=NULL;
 	int32_t M_a=0;
 	int32_t N_a=0;
-	get_real_matrix(a, M_a, N_a);
+	get_matrix(a, M_a, N_a);
 	int32_t N=N_a;
 
 	float64_t* b=NULL;
 	int32_t M_b=0;
 	int32_t N_b=0;
-	get_real_matrix(b, M_b, N_b);
+	get_matrix(b, M_b, N_b);
 	int32_t M=N_b;
 
 	if (N_p!=N || N_q!=N || N_a!=N || M_a!=N || N_b!=M || M_b!=N)
@@ -5861,22 +5861,22 @@ bool CSGInterface::cmd_set_hmm()
 
 	float64_t* p=NULL;
 	int32_t N_p=0;
-	get_real_vector(p, N_p);
+	get_vector(p, N_p);
 
 	float64_t* q=NULL;
 	int32_t N_q=0;
-	get_real_vector(q, N_q);
+	get_vector(q, N_q);
 
 	float64_t* a=NULL;
 	int32_t M_a=0;
 	int32_t N_a=0;
-	get_real_matrix(a, M_a, N_a);
+	get_matrix(a, M_a, N_a);
 	int32_t N=N_a;
 
 	float64_t* b=NULL;
 	int32_t M_b=0;
 	int32_t N_b=0;
-	get_real_matrix(b, M_b, N_b);
+	get_matrix(b, M_b, N_b);
 	int32_t M=N_b;
 
 	if (N_p!=N || N_q!=N || N_a!=N || M_a!=N || N_b!=M || M_b!=N)
@@ -5984,23 +5984,23 @@ bool CSGInterface::cmd_get_hmm()
 		q[i]=h->get_q(i);
 	}
 
-	set_real_vector(p, N);
+	set_vector(p, N);
 	delete[] p;
-	set_real_vector(q, N);
+	set_vector(q, N);
 	delete[] q;
 
 	float64_t* a=new float64_t[N*N];
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			a[i+j*N]=h->get_a(i, j);
-	set_real_matrix(a, N, N);
+	set_matrix(a, N, N);
 	delete[] a;
 
 	float64_t* b=new float64_t[N*M];
 	for (i=0; i<N; i++)
 		for (j=0; j<M; j++)
 			b[i+j*N]=h->get_b(i, j);
-	set_real_matrix(b, N, M);
+	set_matrix(b, N, M);
 	delete[] b;
 
 	return true;
@@ -6027,10 +6027,10 @@ bool CSGInterface::cmd_best_path_2struct()
 	return true;
 }
 
-void CSGInterface::get_bool_vector(bool*& vector, int32_t& len)
+void CSGInterface::get_vector(bool*& vector, int32_t& len)
 {
 	int32_t* int_vector;
-	get_int_vector(int_vector, len);
+	get_vector(int_vector, len);
 
 	ASSERT(len>0);
 	vector= new bool[len];
@@ -6041,7 +6041,7 @@ void CSGInterface::get_bool_vector(bool*& vector, int32_t& len)
 	delete[] int_vector;
 }
 
-void CSGInterface::set_bool_vector(const bool* vector, int32_t len)
+void CSGInterface::set_vector(const bool* vector, int32_t len)
 {
 	int32_t* int_vector = new int32_t[len];
 	for (int32_t i=0;i<len;i++)
@@ -6051,7 +6051,7 @@ void CSGInterface::set_bool_vector(const bool* vector, int32_t len)
 		else
 			int_vector[i]=0;
 	}
-	set_int_vector(int_vector,len);
+	set_vector(int_vector,len);
 	delete[] int_vector;
 }
 
@@ -6060,56 +6060,56 @@ bool CSGInterface::cmd_set_plif_struct()
 	// ARG 2 
 	int32_t Nid=0;
 	int32_t* ids;
-	get_int_vector(ids,Nid);
+	get_vector(ids,Nid);
 
 	// ARG 3
 	int32_t Nname=0;
 	int32_t Mname=0;
 	SGString<char>* names;
-	get_char_string_list(names, Nname,Mname);
+	get_string_list(names, Nname,Mname);
 
 	// ARG 4
 	int32_t Nlimits=0;
 	int32_t Mlimits=0;
 	float64_t* all_limits;
-	get_real_matrix(all_limits, Mlimits, Nlimits);
+	get_matrix(all_limits, Mlimits, Nlimits);
 
 	// ARG 5
 	int32_t Npenalties=0;
 	int32_t Mpenalties=0;
 	float64_t* all_penalties;
-	get_real_matrix(all_penalties, Mpenalties, Npenalties);
+	get_matrix(all_penalties, Mpenalties, Npenalties);
 
 	// ARG 6
 	int32_t Ntransform=0;
 	int32_t Mtransform=0;
 	SGString<char>* all_transform;
-	get_char_string_list(all_transform, Ntransform, Mtransform);
+	get_string_list(all_transform, Ntransform, Mtransform);
 
 	// ARG 7
 	int32_t Nmin=0;
 	float64_t* min_values;
-	get_real_vector(min_values,Nmin);
+	get_vector(min_values,Nmin);
 
 	// ARG 8
 	int32_t Nmax=0;
 	float64_t* max_values;
-	get_real_vector(max_values,Nmax);
+	get_vector(max_values,Nmax);
 
 	// ARG 9
 	int32_t Ncache=0;
 	bool* all_use_cache;
-	get_bool_vector(all_use_cache,Ncache);
+	get_vector(all_use_cache,Ncache);
 
 	// ARG 10
 	int32_t Nsvm=0;
 	int32_t* all_use_svm;
-	get_int_vector(all_use_svm,Nsvm);
+	get_vector(all_use_svm,Nsvm);
 
 	// ARG 11
 	int32_t Ncalc=0;
 	bool* all_do_calc;
-	get_bool_vector(all_do_calc,Ncalc);
+	get_vector(all_do_calc,Ncalc);
 
 	if (Ncalc!=Nsvm)
 		SG_ERROR("Ncalc!=Nsvm, Ncalc:%i, Nsvm:%i\n",Ncalc,Nsvm);
@@ -6198,16 +6198,16 @@ bool CSGInterface::cmd_get_plif_struct()
 		all_do_calc[i]=PEN[i]->get_do_calc();
 		
 	}
-	set_int_vector(ids,N);
-	set_char_string_list(names, N);
-	set_real_matrix(all_limits, M, N);
-	set_real_matrix(all_penalties, M, N);
-	set_char_string_list(all_transform, N);
-	set_real_vector(min_values,N);
-	set_real_vector(max_values,N);
-	set_bool_vector(all_use_cache,N);
-	set_int_vector(all_use_svm,N);
-	set_bool_vector(all_do_calc,N);
+	set_vector(ids,N);
+	set_string_list(names, N);
+	set_matrix(all_limits, M, N);
+	set_matrix(all_penalties, M, N);
+	set_string_list(all_transform, N);
+	set_vector(min_values,N);
+	set_vector(max_values,N);
+	set_vector(all_use_cache,N);
+	set_vector(all_use_svm,N);
+	set_vector(all_do_calc,N);
 
 	delete[] ids;
 	delete[] max_values;	
@@ -6295,7 +6295,7 @@ bool CSGInterface::cmd_set_model()
 	int32_t numDim=0;
 	int32_t* Dim=0;
 	float64_t* penalties_array=NULL;
-	get_real_ndarray(penalties_array,Dim,numDim);
+	get_ndarray(penalties_array,Dim,numDim);
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
 
@@ -6314,7 +6314,7 @@ bool CSGInterface::cmd_set_model()
 	int32_t Nmod=0;
 	int32_t Mmod=0;
 	int32_t* mod_words;
-	get_int_matrix(mod_words, Nmod,Mmod);
+	get_matrix(mod_words, Nmod,Mmod);
 	if (Nmod != num_svms)
 		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms);
 	ASSERT(Mmod == 2)
@@ -6326,7 +6326,7 @@ bool CSGInterface::cmd_set_model()
 	int32_t num_states=0;
 	int32_t feat_dim3=0;
 	int32_t* state_signals;
-	get_int_matrix(state_signals,num_states,feat_dim3);
+	get_matrix(state_signals,num_states,feat_dim3);
 	ASSERT(num_states==Dim[0]);
 	pm->compute_signal_plifs(state_signals, feat_dim3, num_states);
 	delete[] state_signals;
@@ -6337,7 +6337,7 @@ bool CSGInterface::cmd_set_model()
 	int32_t Norf=0;
 	int32_t Morf=0;
 	int32_t* orf_info;
-	get_int_matrix(orf_info,Norf,Morf);
+	get_matrix(orf_info,Norf,Morf);
 	ASSERT(Norf==num_states)
 	ASSERT(Morf==2)
 
@@ -6362,14 +6362,14 @@ bool CSGInterface::cmd_precompute_content_svms()
 	// all feature positions
 	int32_t Npos=0;
 	int32_t* all_pos;
-	get_int_vector(all_pos, Npos);
+	get_vector(all_pos, Npos);
 
 	//ARG 3
 	// content svm weights
 	int32_t Nweights=0;
 	int32_t num_svms=0;
 	float64_t* weights;
-	get_real_matrix(weights, Nweights, num_svms);
+	get_matrix(weights, Nweights, num_svms);
 	if (Nweights!=5440)
 	  SG_PRINT("Dimension mismatch: got %i, expect %i\n", Nweights, 5440) ;
 	ui_structure->set_content_svm_weights(weights, Nweights, num_svms);
@@ -6405,7 +6405,7 @@ bool CSGInterface::cmd_get_lin_feat()
 	int32_t dim1, dim2 = 0;
 	float64_t* lin_feat = h->get_lin_feat(dim1, dim2);
 
-	set_real_matrix(lin_feat, dim1, dim2);
+	set_matrix(lin_feat, dim1, dim2);
 
 	return true;
 }
@@ -6420,13 +6420,13 @@ bool CSGInterface::cmd_set_lin_feat()
 	// all feature positions
 	int32_t Npos=0;
 	int32_t* all_pos;
-	get_int_vector(all_pos, Npos);
+	get_vector(all_pos, Npos);
 
 	//ARG 3 
 	//
 	int32_t num_svms, seq_len;
 	float64_t* lin_feat=NULL;
-	get_real_matrix(lin_feat, num_svms, seq_len);
+	get_matrix(lin_feat, num_svms, seq_len);
 
         if (Npos!=seq_len)
 	  {
@@ -6478,7 +6478,7 @@ bool CSGInterface::cmd_set_feature_matrix()
 	int32_t* Dims=0;
 	int32_t numDims=0;
 	float64_t* features = NULL;
-	get_real_ndarray(features, Dims, numDims);
+	get_ndarray(features, Dims, numDims);
 	
 	if (numDims!=3)
 		SG_ERROR("expected a 3 dimensional array, got %i dimensions\n", numDims);
@@ -6502,11 +6502,11 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	// feature matrix (#states x #feature_positions x max_num_signals)
 	int32_t dim11, dim12 ;
 	SGSparseVector<float64_t> *features1=NULL ;
-	get_real_sparsematrix(features1, dim11, dim12);
+	get_sparse_matrix(features1, dim11, dim12);
 	
 	int32_t dim21, dim22 ;
 	SGSparseVector<float64_t> *features2=NULL ;
-	get_real_sparsematrix(features2, dim21, dim22);
+	get_sparse_matrix(features2, dim21, dim22);
 
 	ASSERT(dim11==dim21) ;
 	ASSERT(dim12==dim22) ;
@@ -6533,25 +6533,25 @@ bool CSGInterface::cmd_init_intron_list()
 	//ARG1 start_positions
 	int32_t Nstart_positions;
 	int32_t* start_positions;
-	get_int_vector(start_positions, Nstart_positions);
+	get_vector(start_positions, Nstart_positions);
         //SG_PRINT("Nstart_positions:%i\n",Nstart_positions);
 	
 	//ARG2 end_positions
 	int32_t Nend_positions;
 	int32_t* end_positions;
-	get_int_vector(end_positions, Nend_positions);
+	get_vector(end_positions, Nend_positions);
         //SG_PRINT("Nend_positions:%i\n",Nend_positions);
 
 	//ARG3 quality	
 	int32_t Nquality;
         int32_t* quality;
-        get_int_vector(quality, Nquality);
+        get_vector(quality, Nquality);
         //SG_PRINT("Nquality:%i\n",Nquality);
 
 	//ARG4 all candidate positions
 	int32_t Nall_pos;
         int32_t* all_pos;
-        get_int_vector(all_pos, Nall_pos);
+        get_vector(all_pos, Nall_pos);
         //SG_PRINT("Nall_pos:%i\n",Nall_pos);
 
 	ASSERT(Nquality==Nend_positions);
@@ -6590,16 +6590,16 @@ bool CSGInterface::cmd_precompute_tiling_features()
 
 	int32_t Nintensities=0;
 	float64_t* intensities;
-	get_real_vector(intensities, Nintensities);
+	get_vector(intensities, Nintensities);
 
 	int32_t Nprobe_pos=0;
 	int32_t* probe_pos;
-	get_int_vector(probe_pos, Nprobe_pos);
+	get_vector(probe_pos, Nprobe_pos);
 	ASSERT(Nprobe_pos==Nintensities);
 
 	int32_t Ntiling_plif_ids=0;
 	int32_t* tiling_plif_ids;
-	get_int_vector(tiling_plif_ids, Ntiling_plif_ids);
+	get_vector(tiling_plif_ids, Ntiling_plif_ids);
 
 	h->init_tiling_data(probe_pos,intensities, Nprobe_pos);
 	h->precompute_tiling_plifs(PEN, tiling_plif_ids, Ntiling_plif_ids);
@@ -6627,7 +6627,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// transitions from initial state (#states x 1)
 	int32_t Np=0;
 	float64_t* p;
-	get_real_vector(p, Np);
+	get_vector(p, Np);
 	if (Np!=num_states)
 		SG_ERROR("# transitions from initial state (%i) does not match # states (%i)\n", Np, num_states);
 
@@ -6635,7 +6635,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// transitions to end state (#states x 1)
 	int32_t Nq=0;
 	float64_t* q;
-	get_real_vector(q, Nq);
+	get_vector(q, Nq);
 	if (Nq!=num_states)
 		SG_ERROR("# transitions to end state (%i) does not match # states (%i)\n", Nq, num_states);
 
@@ -6643,7 +6643,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// number of best paths
 	int32_t Nnbest=0;
 	int32_t* all_nbest;
-	get_int_vector(all_nbest, Nnbest);
+	get_vector(all_nbest, Nnbest);
 	int32_t nbest;
 	int32_t nother = 0;
 	if (Nnbest==2)
@@ -6662,14 +6662,14 @@ bool CSGInterface::cmd_best_path_trans()
 	int32_t Nseg_path=0;
 	int32_t Mseg_path=0;
 	float64_t* seg_path;
-	get_real_matrix(seg_path, Nseg_path, Mseg_path);
+	get_matrix(seg_path, Nseg_path, Mseg_path);
 
 	// ARG 5
 	// links for transitions (#transitions x 4)
 	int32_t Na_trans=0;
 	int32_t num_a_trans=0;
 	float64_t* a_trans;
-	get_real_matrix(a_trans, num_a_trans, Na_trans);
+	get_matrix(a_trans, num_a_trans, Na_trans);
 
 	// ARG 6
 	// loss matrix (#segment x 2*#segments)
@@ -6678,7 +6678,7 @@ bool CSGInterface::cmd_best_path_trans()
 	int32_t Nloss=0;
 	int32_t Mloss=0;
 	float64_t* loss;
-	get_real_matrix(loss, Nloss,Mloss);
+	get_matrix(loss, Nloss,Mloss);
 	
 	int32_t M = h->get_num_positions();
 	
@@ -6791,9 +6791,9 @@ bool CSGInterface::cmd_best_path_trans()
 	free(my_path);
 	free(my_pos);
 
-	set_real_vector(p_prob,nbest+nother);
-	set_real_vector(d_my_path, (nbest+nother)*M);
-	set_real_vector(d_my_pos, (nbest+nother)*M);
+	set_vector(p_prob,nbest+nother);
+	set_vector(d_my_path, (nbest+nother)*M);
+	set_vector(d_my_pos, (nbest+nother)*M);
 
 	delete[] d_my_path ;
 	delete[] d_my_pos ;
@@ -6816,7 +6816,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// transitions from initial state (#states x 1)
 	int32_t Np=0;
 	float64_t* p=NULL;
-	get_real_vector(p, Np);
+	get_vector(p, Np);
 	if (Np!=num_states)
 		SG_ERROR("Np!=num_states; Np:%i num_states:%i",Np,num_states);
 
@@ -6824,7 +6824,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	// transitions to end state (#states x 1)
 	int32_t Nq=0;
 	float64_t* q=NULL;
-	get_real_vector(q, Nq);
+	get_vector(q, Nq);
 	if (Nq!=num_states)
 		SG_ERROR("Nq!=num_states; Nq:%i num_states:%i",Nq,num_states);
 
@@ -6836,14 +6836,14 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	int32_t Nseg_path=0;
 	int32_t Mseg_path=0;
 	float64_t* seg_path;
-	get_real_matrix(seg_path,Nseg_path,Mseg_path);
+	get_matrix(seg_path,Nseg_path,Mseg_path);
 
 	// ARG 4
 	// links for transitions (#transitions x 4)
 	int32_t Na_trans=0;
 	int32_t num_a_trans=0;
 	float64_t* a_trans=NULL;
-	get_real_matrix(a_trans, num_a_trans, Na_trans);
+	get_matrix(a_trans, num_a_trans, Na_trans);
 
 	// ARG 5
 	// loss matrix (#segment x 2*#segments)
@@ -6852,19 +6852,19 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	int32_t Nloss=0;
 	int32_t Mloss=0;
 	float64_t* loss=NULL;
-	get_real_matrix(loss, Nloss,Mloss);
+	get_matrix(loss, Nloss,Mloss);
 
 	// ARG 6
 	// path to calc derivative for 
 	int32_t Nmystate_seq=0;
 	int32_t* mystate_seq=NULL;
-	get_int_vector(mystate_seq, Nmystate_seq);
+	get_vector(mystate_seq, Nmystate_seq);
 
 	// ARG 7
 	// positions of the path
 	int32_t Nmypos_seq=0;
 	int32_t* mypos_seq=NULL;
-	get_int_vector(mypos_seq, Nmypos_seq);
+	get_vector(mypos_seq, Nmypos_seq);
 
 
 	//a => a_trans
@@ -6957,12 +6957,12 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 			a_Plif_deriv.element(id, j)= deriv[j] ;
 	}
 
-	set_real_vector(p_p_deriv, num_states);
-	set_real_vector(p_q_deriv, num_states);
-	set_real_matrix(p_A_deriv, num_states, num_states);
-	set_real_matrix(p_Plif_deriv, (max_plif_id+1), max_plif_len);
-	set_real_vector(p_my_scores, Nmypos_seq);
-	set_real_vector(p_my_losses, Nmypos_seq);
+	set_vector(p_p_deriv, num_states);
+	set_vector(p_q_deriv, num_states);
+	set_matrix(p_A_deriv, num_states, num_states);
+	set_matrix(p_Plif_deriv, (max_plif_id+1), max_plif_len);
+	set_vector(p_my_scores, Nmypos_seq);
+	set_vector(p_my_losses, Nmypos_seq);
 
 	delete[] p_A_deriv ;
 	delete[] p_p_deriv ;
@@ -7139,7 +7139,7 @@ bool CSGInterface::cmd_translate_string()
 
 	float64_t* string=NULL;
 	int32_t len;
-	get_real_vector(string, len);
+	get_vector(string, len);
 
 	int32_t order=get_int();
 	int32_t start=get_int();
@@ -7191,7 +7191,7 @@ bool CSGInterface::cmd_translate_string()
 		real_obs[i-start]=(float64_t) obs[i];
 	delete[] obs;
 
-	set_real_vector(real_obs, len);
+	set_vector(real_obs, len);
 	delete[] real_obs;
 
 	return true;
@@ -7622,36 +7622,36 @@ bool CSGInterface::cmd_pr_loqo()
 
 	float64_t* c=NULL;
 	int32_t lenc=0;
-	get_real_vector(c, lenc);
+	get_vector(c, lenc);
 
 	int32_t n = lenc;
 
 	float64_t* H=NULL;
 	int32_t nH=0;
 	int32_t mH=0;
-	get_real_matrix(H, nH, mH);
+	get_matrix(H, nH, mH);
 	ASSERT(nH==n && mH==n);
 
 	float64_t* A=NULL;
 	int32_t nA=0;
 	int32_t mA=0;
-	get_real_matrix(A, nA, mA);
+	get_matrix(A, nA, mA);
 	ASSERT(mA==n);
 	int32_t m=nA;
 
 	float64_t* b=NULL;
 	int32_t lenb=0;
-	get_real_vector(b, lenb);
+	get_vector(b, lenb);
 	ASSERT(lenb==m);
 
 	float64_t* l=NULL;
 	int32_t lenl=0;
-	get_real_vector(l, lenl);
+	get_vector(l, lenl);
 	ASSERT(lenl==n);
 
 	float64_t* u=NULL;
 	int32_t lenu=0;
-	get_real_vector(u, lenu);
+	get_vector(u, lenu);
 	ASSERT(lenu==n);
 
 	float64_t* x=new float64_t[3*n];
@@ -7662,8 +7662,8 @@ bool CSGInterface::cmd_pr_loqo()
 
 	pr_loqo(n,m, c, H, A, b, l, u, x, y, 0, 5, 50, 0.05, 100, 0);
 
-	set_real_vector(x, n);
-	set_real_vector(y, m);
+	set_vector(x, n);
+	set_vector(y, m);
 
 	delete[] c;
 	delete[] H;
@@ -7740,7 +7740,7 @@ bool CSGInterface::get_bool_from_bool_or_str()
 		return get_bool();
 }
 
-void CSGInterface::get_int_vector_from_int_vector_or_str(int32_t*& vector, int32_t& len)
+void CSGInterface::get_vector_from_int_vector_or_str(int32_t*& vector, int32_t& len)
 {
 	if (m_legacy_strptr)
 	{
@@ -7763,10 +7763,10 @@ void CSGInterface::get_int_vector_from_int_vector_or_str(int32_t*& vector, int32
 		}
 	}
 	else
-		get_int_vector(vector, len);
+		get_vector(vector, len);
 }
 
-void CSGInterface::get_real_vector_from_real_vector_or_str(
+void CSGInterface::get_vector_from_real_vector_or_str(
 	float64_t*& vector, int32_t& len)
 {
 	if (m_legacy_strptr)
@@ -7790,7 +7790,7 @@ void CSGInterface::get_real_vector_from_real_vector_or_str(
 		}
 	}
 	else
-		get_real_vector(vector, len);
+		get_vector(vector, len);
 }
 
 int32_t CSGInterface::get_vector_len_from_str(int32_t expected_len)

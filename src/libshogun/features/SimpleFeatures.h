@@ -1300,18 +1300,18 @@ template<> inline void CSimpleFeatures<sg_type>::load(CFile* loader)		\
 	SG_RESET_LOCALE;													\
 }
 
-LOAD(get_bool_matrix, bool)
-LOAD(get_char_matrix, char)
+LOAD(get_matrix, bool)
+LOAD(get_matrix, char)
 LOAD(get_int8_matrix, int8_t)
-LOAD(get_byte_matrix, uint8_t)
-LOAD(get_short_matrix, int16_t)
-LOAD(get_word_matrix, uint16_t)
-LOAD(get_int_matrix, int32_t)
+LOAD(get_matrix, uint8_t)
+LOAD(get_matrix, int16_t)
+LOAD(get_matrix, uint16_t)
+LOAD(get_matrix, int32_t)
 LOAD(get_uint_matrix, uint32_t)
 LOAD(get_long_matrix, int64_t)
 LOAD(get_ulong_matrix, uint64_t)
-LOAD(get_shortreal_matrix, float32_t)
-LOAD(get_real_matrix, float64_t)
+LOAD(get_matrix, float32_t)
+LOAD(get_matrix, float64_t)
 LOAD(get_longreal_matrix, floatmax_t)
 #undef LOAD
 
@@ -1324,18 +1324,18 @@ template<> inline void CSimpleFeatures<sg_type>::save(CFile* writer)		\
 	SG_RESET_LOCALE;													\
 }
 
-SAVE(set_bool_matrix, bool)
-SAVE(set_char_matrix, char)
+SAVE(set_matrix, bool)
+SAVE(set_matrix, char)
 SAVE(set_int8_matrix, int8_t)
-SAVE(set_byte_matrix, uint8_t)
-SAVE(set_short_matrix, int16_t)
-SAVE(set_word_matrix, uint16_t)
-SAVE(set_int_matrix, int32_t)
+SAVE(set_matrix, uint8_t)
+SAVE(set_matrix, int16_t)
+SAVE(set_matrix, uint16_t)
+SAVE(set_matrix, int32_t)
 SAVE(set_uint_matrix, uint32_t)
 SAVE(set_long_matrix, int64_t)
 SAVE(set_ulong_matrix, uint64_t)
-SAVE(set_shortreal_matrix, float32_t)
-SAVE(set_real_matrix, float64_t)
+SAVE(set_matrix, float32_t)
+SAVE(set_matrix, float64_t)
 SAVE(set_longreal_matrix, floatmax_t)
 #undef SAVE
 

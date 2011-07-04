@@ -61,10 +61,10 @@ CFile::CFile(char* fname, char rw, const char* name) : CSGObject()
 		set_variable_name(name);
 }
 
-void CFile::get_bool_vector(bool*& vector, int32_t& len)
+void CFile::get_vector(bool*& vector, int32_t& len)
 {
 	int32_t* int_vector;
-	get_int_vector(int_vector, len);
+	get_vector(int_vector, len);
 
 	ASSERT(len>0);
 	vector= new bool[len];
@@ -75,7 +75,7 @@ void CFile::get_bool_vector(bool*& vector, int32_t& len)
 	delete[] int_vector;
 }
 
-void CFile::set_bool_vector(const bool* vector, int32_t len)
+void CFile::set_vector(const bool* vector, int32_t len)
 {
 	int32_t* int_vector = new int32_t[len];
 	for (int32_t i=0;i<len;i++)
@@ -85,14 +85,14 @@ void CFile::set_bool_vector(const bool* vector, int32_t len)
 		else
 			int_vector[i]=0;
 	}
-	set_int_vector(int_vector,len);
+	set_vector(int_vector,len);
 	delete[] int_vector;
 }
 
-void CFile::get_bool_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
+void CFile::get_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	uint8_t * byte_matrix;
-	get_byte_matrix(byte_matrix,num_feat,num_vec);
+	get_matrix(byte_matrix,num_feat,num_vec);
 
 	ASSERT(num_feat > 0 && num_vec > 0)
 	matrix = new bool[num_feat*num_vec];
@@ -106,7 +106,7 @@ void CFile::get_bool_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
 	delete[] byte_matrix;
 }
 
-void CFile::set_bool_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
+void CFile::set_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
 {
 	uint8_t * byte_matrix = new uint8_t[num_feat*num_vec];
 	for(int32_t i = 0;i < num_vec;i++)
@@ -115,12 +115,12 @@ void CFile::set_bool_matrix(const bool* matrix, int32_t num_feat, int32_t num_ve
 			byte_matrix[i*num_feat+j] = matrix[i*num_feat+j] != 0 ? 1 : 0;
 	}
 
-	set_byte_matrix(byte_matrix,num_feat,num_vec);
+	set_matrix(byte_matrix,num_feat,num_vec);
 
 	delete[] byte_matrix;
 }
 
-void CFile::get_bool_string_list(
+void CFile::get_string_list(
 		SGString<bool>*& strings, int32_t& num_str,
 		int32_t& max_string_len)
 {
@@ -143,7 +143,7 @@ void CFile::get_bool_string_list(
 	delete[] strs;
 }
 
-void CFile::set_bool_string_list(const SGString<bool>* strings, int32_t num_str)
+void CFile::set_string_list(const SGString<bool>* strings, int32_t num_str)
 {
 	SGString<int8_t> * strs = new SGString<int8_t>[num_str];
 

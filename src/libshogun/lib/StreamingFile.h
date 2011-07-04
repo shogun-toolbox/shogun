@@ -59,14 +59,14 @@ namespace shogun
 		 * and return the vector and its length len by reference
 		 */
 		//@{
-		virtual void get_bool_vector(bool*& vector, int32_t& len);
-		virtual void get_byte_vector(uint8_t*& vector, int32_t& len);
-		virtual void get_char_vector(char*& vector, int32_t& len);
-		virtual void get_int_vector(int32_t*& vector, int32_t& len);
-		virtual void get_real_vector(float64_t*& vector, int32_t& len);
-		virtual void get_shortreal_vector(float32_t*& vector, int32_t& len);
-		virtual void get_short_vector(int16_t*& vector, int32_t& len);
-		virtual void get_word_vector(uint16_t*& vector, int32_t& len);
+		virtual void get_vector(bool*& vector, int32_t& len);
+		virtual void get_vector(uint8_t*& vector, int32_t& len);
+		virtual void get_vector(char*& vector, int32_t& len);
+		virtual void get_vector(int32_t*& vector, int32_t& len);
+		virtual void get_vector(float64_t*& vector, int32_t& len);
+		virtual void get_vector(float32_t*& vector, int32_t& len);
+		virtual void get_vector(int16_t*& vector, int32_t& len);
+		virtual void get_vector(uint16_t*& vector, int32_t& len);
 		virtual void get_int8_vector(int8_t*& vector, int32_t& len);
 		virtual void get_uint_vector(uint32_t*& vector, int32_t& len);
 		virtual void get_long_vector(int64_t*& vector, int32_t& len);
@@ -82,14 +82,14 @@ namespace shogun
 		 * and return the vector, its length, and the label by reference
 		 */
 		//@{
-		virtual void get_bool_vector_and_label(bool*& vector, int32_t& len, float64_t& label);
-		virtual void get_byte_vector_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
-		virtual void get_char_vector_and_label(char*& vector, int32_t& len, float64_t& label);
-		virtual void get_int_vector_and_label(int32_t*& vector, int32_t& len, float64_t& label);
-		virtual void get_real_vector_and_label(float64_t*& vector, int32_t& len, float64_t& label);
-		virtual void get_shortreal_vector_and_label(float32_t*& vector, int32_t& len, float64_t& label);
-		virtual void get_short_vector_and_label(int16_t*& vector, int32_t& len, float64_t& label);
-		virtual void get_word_vector_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_vector_and_label(bool*& vector, int32_t& len, float64_t& label);
+		virtual void get_vector_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_vector_and_label(char*& vector, int32_t& len, float64_t& label);
+		virtual void get_vector_and_label(int32_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_vector_and_label(float64_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_vector_and_label(float32_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_vector_and_label(int16_t*& vector, int32_t& len, float64_t& label);
+		virtual void get_vector_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_int8_vector_and_label(int8_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_uint_vector_and_label(uint32_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_long_vector_and_label(int64_t*& vector, int32_t& len, float64_t& label);
@@ -195,13 +195,13 @@ namespace shogun
 	 * by reference
 	 */
 //@{
-		virtual void get_byte_matrix(
+		virtual void get_matrix(
 			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_int8_matrix(
 			int8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_char_matrix(
+		virtual void get_matrix(
 			char*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_int_matrix(
+		virtual void get_matrix(
 			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_uint_matrix(
 			uint32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -209,15 +209,15 @@ namespace shogun
 			int64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_ulong_matrix(
 			uint64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_shortreal_matrix(
+		virtual void get_matrix(
 			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_real_matrix(
+		virtual void get_matrix(
 			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_longreal_matrix(
 			floatmax_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_short_matrix(
+		virtual void get_matrix(
 			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_word_matrix(
+		virtual void get_matrix(
 			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 //@}
 
@@ -229,19 +229,19 @@ namespace shogun
  * by reference
  */
 //@{
-		virtual void get_byte_ndarray(
+		virtual void get_ndarray(
 			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_char_ndarray(
+		virtual void get_ndarray(
 			char*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_int_ndarray(
+		virtual void get_ndarray(
 			int32_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_shortreal_ndarray(
+		virtual void get_ndarray(
 			float32_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_real_ndarray(
+		virtual void get_ndarray(
 			float64_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_short_ndarray(
+		virtual void get_ndarray(
 			int16_t*& array, int32_t*& dims, int32_t& num_dims);
-		virtual void get_word_ndarray(
+		virtual void get_ndarray(
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
 //@}
 
@@ -253,15 +253,15 @@ namespace shogun
  * by reference
  */
 //@{
-		virtual void get_bool_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_byte_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_int8_sparsematrix(
 			SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_char_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_int_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_uint_sparsematrix(
 			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -269,13 +269,13 @@ namespace shogun
 			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_ulong_sparsematrix(
 			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_short_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_word_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_shortreal_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-		virtual void get_real_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 		virtual void get_longreal_sparsematrix(
 			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -290,25 +290,25 @@ namespace shogun
  * by reference
  */
 //@{
-		virtual void get_byte_string_list(
+		virtual void get_string_list(
 			SGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_int8_string_list(
 			SGString<int8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
-		virtual void get_char_string_list(
+		virtual void get_string_list(
 			SGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
-		virtual void get_int_string_list(
+		virtual void get_string_list(
 			SGString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_uint_string_list(
 			SGString<uint32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
-		virtual void get_short_string_list(
+		virtual void get_string_list(
 			SGString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
-		virtual void get_word_string_list(
+		virtual void get_string_list(
 			SGString<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_long_string_list(
@@ -317,10 +317,10 @@ namespace shogun
 		virtual void get_ulong_string_list(
 			SGString<uint64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
-		virtual void get_shortreal_string_list(
+		virtual void get_string_list(
 			SGString<float32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
-		virtual void get_real_string_list(
+		virtual void get_string_list(
 			SGString<float64_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 		virtual void get_longreal_string_list(
@@ -335,13 +335,13 @@ namespace shogun
  * to e.g. a file
  */
 //@{
-		virtual void set_byte_vector(const uint8_t* vector, int32_t len);
-		virtual void set_char_vector(const char* vector, int32_t len);
-		virtual void set_int_vector(const int32_t* vector, int32_t len);
-		virtual void set_shortreal_vector( const float32_t* vector, int32_t len);
-		virtual void set_real_vector(const float64_t* vector, int32_t len);
-		virtual void set_short_vector(const int16_t* vector, int32_t len);
-		virtual void set_word_vector(const uint16_t* vector, int32_t len);
+		virtual void set_vector(const uint8_t* vector, int32_t len);
+		virtual void set_vector(const char* vector, int32_t len);
+		virtual void set_vector(const int32_t* vector, int32_t len);
+		virtual void set_vector( const float32_t* vector, int32_t len);
+		virtual void set_vector(const float64_t* vector, int32_t len);
+		virtual void set_vector(const int16_t* vector, int32_t len);
+		virtual void set_vector(const uint16_t* vector, int32_t len);
 //@}
 
 
@@ -352,13 +352,13 @@ namespace shogun
  * num_vec columns to e.g. a file
  */
 //@{
-		virtual void set_byte_matrix(
+		virtual void set_matrix(
 			const uint8_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_int8_matrix(
 			const int8_t* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_char_matrix(
+		virtual void set_matrix(
 			const char* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_int_matrix(
+		virtual void set_matrix(
 			const int32_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_uint_matrix(
 			const uint32_t* matrix, int32_t num_feat, int32_t num_vec);
@@ -366,15 +366,15 @@ namespace shogun
 			const int64_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_ulong_matrix(
 			const uint64_t* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_shortreal_matrix(
+		virtual void set_matrix(
 			const float32_t* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_real_matrix(
+		virtual void set_matrix(
 			const float64_t* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_longreal_matrix(
 			const floatmax_t* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_short_matrix(
+		virtual void set_matrix(
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_word_matrix(
+		virtual void set_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
 //@}
 
@@ -385,15 +385,15 @@ namespace shogun
  * num_vec columns to e.g. a file
  */
 //@{
-		virtual void set_bool_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_byte_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_int8_sparsematrix(
 			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_char_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_int_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_uint_sparsematrix(
 			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec);
@@ -401,13 +401,13 @@ namespace shogun
 			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_ulong_sparsematrix(
 			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_short_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_word_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_shortreal_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
-		virtual void set_real_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 		virtual void set_longreal_sparsematrix(
 			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
@@ -421,27 +421,27 @@ namespace shogun
  * and strings is a pointer to a string structure.
  */
 //@{
-		virtual void set_byte_string_list(
+		virtual void set_string_list(
 			const SGString<uint8_t>* strings, int32_t num_str);
 		virtual void set_int8_string_list(
 			const SGString<int8_t>* strings, int32_t num_str);
-		virtual void set_char_string_list(
+		virtual void set_string_list(
 			const SGString<char>* strings, int32_t num_str);
-		virtual void set_int_string_list(
+		virtual void set_string_list(
 			const SGString<int32_t>* strings, int32_t num_str);
 		virtual void set_uint_string_list(
 			const SGString<uint32_t>* strings, int32_t num_str);
-		virtual void set_short_string_list(
+		virtual void set_string_list(
 			const SGString<int16_t>* strings, int32_t num_str);
-		virtual void set_word_string_list(
+		virtual void set_string_list(
 			const SGString<uint16_t>* strings, int32_t num_str);
 		virtual void set_long_string_list(
 			const SGString<int64_t>* strings, int32_t num_str);
 		virtual void set_ulong_string_list(
 			const SGString<uint64_t>* strings, int32_t num_str);
-		virtual void set_shortreal_string_list(
+		virtual void set_string_list(
 			const SGString<float32_t>* strings, int32_t num_str);
-		virtual void set_real_string_list(
+		virtual void set_string_list(
 			const SGString<float64_t>* strings, int32_t num_str);
 		virtual void set_longreal_string_list(
 			const SGString<floatmax_t>* strings, int32_t num_str);

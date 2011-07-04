@@ -67,13 +67,13 @@ public:
 	 * and return the vector and its length len by reference
 	 */
 	//@{
-	virtual void get_byte_vector(uint8_t*& vector, int32_t& len);
-	virtual void get_char_vector(char*& vector, int32_t& len);
-	virtual void get_int_vector(int32_t*& vector, int32_t& len);
-	virtual void get_real_vector(float64_t*& vector, int32_t& len);
-	virtual void get_shortreal_vector(float32_t*& vector, int32_t& len);
-	virtual void get_short_vector(int16_t*& vector, int32_t& len);
-	virtual void get_word_vector(uint16_t*& vector, int32_t& len);
+	virtual void get_vector(uint8_t*& vector, int32_t& len);
+	virtual void get_vector(char*& vector, int32_t& len);
+	virtual void get_vector(int32_t*& vector, int32_t& len);
+	virtual void get_vector(float64_t*& vector, int32_t& len);
+	virtual void get_vector(float32_t*& vector, int32_t& len);
+	virtual void get_vector(int16_t*& vector, int32_t& len);
+	virtual void get_vector(uint16_t*& vector, int32_t& len);
 	virtual void get_int8_vector(int8_t*& vector, int32_t& len);
 	virtual void get_uint_vector(uint32_t*& vector, int32_t& len);
 	virtual void get_long_vector(int64_t*& vector, int32_t& len);
@@ -89,14 +89,14 @@ public:
 	 * and return the vector, its length, and the label by reference
 	 */
 	//@{
-	virtual void get_bool_vector_and_label(bool*& vector, int32_t& len, float64_t& label);
-	virtual void get_byte_vector_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_char_vector_and_label(char*& vector, int32_t& len, float64_t& label);
-	virtual void get_int_vector_and_label(int32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_real_vector_and_label(float64_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_shortreal_vector_and_label(float32_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_short_vector_and_label(int16_t*& vector, int32_t& len, float64_t& label);
-	virtual void get_word_vector_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_vector_and_label(bool*& vector, int32_t& len, float64_t& label);
+	virtual void get_vector_and_label(uint8_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_vector_and_label(char*& vector, int32_t& len, float64_t& label);
+	virtual void get_vector_and_label(int32_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_vector_and_label(float64_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_vector_and_label(float32_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_vector_and_label(int16_t*& vector, int32_t& len, float64_t& label);
+	virtual void get_vector_and_label(uint16_t*& vector, int32_t& len, float64_t& label);
 	virtual void get_int8_vector_and_label(int8_t*& vector, int32_t& len, float64_t& label);
 	virtual void get_uint_vector_and_label(uint32_t*& vector, int32_t& len, float64_t& label);
 	virtual void get_long_vector_and_label(int64_t*& vector, int32_t& len, float64_t& label);

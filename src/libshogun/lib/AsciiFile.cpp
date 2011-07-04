@@ -61,13 +61,13 @@ void CAsciiFile::fname(sg_type*& vec, int32_t& len) \
 	}												\
 }
 
-GET_VECTOR(get_byte_vector, get_byte_matrix, uint8_t)
-GET_VECTOR(get_char_vector, get_char_matrix, char)
-GET_VECTOR(get_int_vector, get_int_matrix, int32_t)
-GET_VECTOR(get_shortreal_vector, get_shortreal_matrix, float32_t)
-GET_VECTOR(get_real_vector, get_real_matrix, float64_t)
-GET_VECTOR(get_short_vector, get_short_matrix, int16_t)
-GET_VECTOR(get_word_vector, get_word_matrix, uint16_t)
+GET_VECTOR(get_vector, get_matrix, uint8_t)
+GET_VECTOR(get_vector, get_matrix, char)
+GET_VECTOR(get_vector, get_matrix, int32_t)
+GET_VECTOR(get_vector, get_matrix, float32_t)
+GET_VECTOR(get_vector, get_matrix, float64_t)
+GET_VECTOR(get_vector, get_matrix, int16_t)
+GET_VECTOR(get_vector, get_matrix, uint16_t)
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, conv, sg_type)										\
@@ -141,18 +141,18 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 	delete items;																\
 }
 
-GET_MATRIX(get_byte_matrix, atoi, uint8_t)
+GET_MATRIX(get_matrix, atoi, uint8_t)
 GET_MATRIX(get_int8_matrix, atoi, int8_t)
-GET_MATRIX(get_char_matrix, atoi, char)
-GET_MATRIX(get_int_matrix, atoi, int32_t)
+GET_MATRIX(get_matrix, atoi, char)
+GET_MATRIX(get_matrix, atoi, int32_t)
 GET_MATRIX(get_uint_matrix, atoi, uint32_t)
 GET_MATRIX(get_long_matrix, atoll, int64_t)
 GET_MATRIX(get_ulong_matrix, atoll, uint64_t)
-GET_MATRIX(get_shortreal_matrix, atof, float32_t)
-GET_MATRIX(get_real_matrix, atof, float64_t)
+GET_MATRIX(get_matrix, atof, float32_t)
+GET_MATRIX(get_matrix, atof, float64_t)
 GET_MATRIX(get_longreal_matrix, atof, floatmax_t)
-GET_MATRIX(get_short_matrix, atoi, int16_t)
-GET_MATRIX(get_word_matrix, atoi, uint16_t)
+GET_MATRIX(get_matrix, atoi, int16_t)
+GET_MATRIX(get_matrix, atoi, uint16_t)
 #undef GET_MATRIX
 
 #define GET_NDARRAY(fname, conv, sg_type)							\
@@ -259,18 +259,18 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
 	delete items;										\
 }
 
-GET_NDARRAY(get_byte_ndarray, atoi, uint8_t)
+GET_NDARRAY(get_ndarray, atoi, uint8_t)
 GET_NDARRAY(get_int8_ndarray, atoi, int8_t)
-GET_NDARRAY(get_char_ndarray, atoi, char)
-GET_NDARRAY(get_int_ndarray, atoi, int32_t)
+GET_NDARRAY(get_ndarray, atoi, char)
+GET_NDARRAY(get_ndarray, atoi, int32_t)
 GET_NDARRAY(get_uint_ndarray, atoi, uint32_t)
 GET_NDARRAY(get_long_ndarray, atoll, int64_t)
 GET_NDARRAY(get_ulong_ndarray, atoll, uint64_t)
-GET_NDARRAY(get_shortreal_ndarray, atof, float32_t)
-GET_NDARRAY(get_real_ndarray, atof, float64_t)
+GET_NDARRAY(get_ndarray, atof, float32_t)
+GET_NDARRAY(get_ndarray, atof, float64_t)
 GET_NDARRAY(get_longreal_ndarray, atof, floatmax_t)
-GET_NDARRAY(get_short_ndarray, atoi, int16_t)
-GET_NDARRAY(get_word_ndarray, atoi, uint16_t)
+GET_NDARRAY(get_ndarray, atoi, int16_t)
+GET_NDARRAY(get_ndarray, atoi, uint16_t)
 #undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(fname, conv, sg_type)										\
@@ -436,23 +436,23 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 	delete[] dummy;	\
 }
 
-GET_SPARSEMATRIX(get_bool_sparsematrix, atoi, bool)
-GET_SPARSEMATRIX(get_byte_sparsematrix, atoi, uint8_t)
+GET_SPARSEMATRIX(get_sparse_matrix, atoi, bool)
+GET_SPARSEMATRIX(get_sparse_matrix, atoi, uint8_t)
 GET_SPARSEMATRIX(get_int8_sparsematrix, atoi, int8_t)
-GET_SPARSEMATRIX(get_char_sparsematrix, atoi, char)
-GET_SPARSEMATRIX(get_int_sparsematrix, atoi, int32_t)
+GET_SPARSEMATRIX(get_sparse_matrix, atoi, char)
+GET_SPARSEMATRIX(get_sparse_matrix, atoi, int32_t)
 GET_SPARSEMATRIX(get_uint_sparsematrix, atoi, uint32_t)
 GET_SPARSEMATRIX(get_long_sparsematrix, atoll, int64_t)
 GET_SPARSEMATRIX(get_ulong_sparsematrix, atoll, uint64_t)
-GET_SPARSEMATRIX(get_shortreal_sparsematrix, atof, float32_t)
-GET_SPARSEMATRIX(get_real_sparsematrix, atof, float64_t)
+GET_SPARSEMATRIX(get_sparse_matrix, atof, float32_t)
+GET_SPARSEMATRIX(get_sparse_matrix, atof, float64_t)
 GET_SPARSEMATRIX(get_longreal_sparsematrix, atof, floatmax_t)
-GET_SPARSEMATRIX(get_short_sparsematrix, atoi, int16_t)
-GET_SPARSEMATRIX(get_word_sparsematrix, atoi, uint16_t)
+GET_SPARSEMATRIX(get_sparse_matrix, atoi, int16_t)
+GET_SPARSEMATRIX(get_sparse_matrix, atoi, uint16_t)
 #undef GET_SPARSEMATRIX
 
 
-void CAsciiFile::get_byte_string_list(SGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
@@ -642,7 +642,7 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 	delete[] overflow;
 }
 
-void CAsciiFile::get_char_string_list(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
@@ -737,7 +737,7 @@ void CAsciiFile::get_char_string_list(SGString<char>*& strings, int32_t& num_str
 	delete[] overflow;
 }
 
-void CAsciiFile::get_int_string_list(SGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_string_list(SGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -751,14 +751,14 @@ void CAsciiFile::get_uint_string_list(SGString<uint32_t>*& strings, int32_t& num
 	max_string_len=0;
 }
 
-void CAsciiFile::get_short_string_list(SGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_string_list(SGString<int16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_word_string_list(SGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_string_list(SGString<uint16_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -779,14 +779,14 @@ void CAsciiFile::get_ulong_string_list(SGString<uint64_t>*& strings, int32_t& nu
 	max_string_len=0;
 }
 
-void CAsciiFile::get_shortreal_string_list(SGString<float32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_string_list(SGString<float32_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
 	max_string_len=0;
 }
 
-void CAsciiFile::get_real_string_list(SGString<float64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
+void CAsciiFile::get_string_list(SGString<float64_t>*& strings, int32_t& num_str, int32_t& max_string_len)
 {
 	strings=NULL;
 	num_str=0;
@@ -808,13 +808,13 @@ void CAsciiFile::fname(const sg_type* vec, int32_t len)	\
 {															\
 	mfname(vec, len, 1);									\
 }
-SET_VECTOR(set_byte_vector, set_byte_matrix, uint8_t)
-SET_VECTOR(set_char_vector, set_char_matrix, char)
-SET_VECTOR(set_int_vector, set_int_matrix, int32_t)
-SET_VECTOR(set_shortreal_vector, set_shortreal_matrix, float32_t)
-SET_VECTOR(set_real_vector, set_real_matrix, float64_t)
-SET_VECTOR(set_short_vector, set_short_matrix, int16_t)
-SET_VECTOR(set_word_vector, set_word_matrix, uint16_t)
+SET_VECTOR(set_vector, set_matrix, uint8_t)
+SET_VECTOR(set_vector, set_matrix, char)
+SET_VECTOR(set_vector, set_matrix, int32_t)
+SET_VECTOR(set_vector, set_matrix, float32_t)
+SET_VECTOR(set_vector, set_matrix, float64_t)
+SET_VECTOR(set_vector, set_matrix, int16_t)
+SET_VECTOR(set_vector, set_matrix, uint16_t)
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type, fprt_type, type_str) \
@@ -835,17 +835,17 @@ void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)
 		}																			\
 	}																				\
 }
-SET_MATRIX(set_char_matrix, char, char, "%c")
-SET_MATRIX(set_byte_matrix, uint8_t, uint8_t, "%u")
+SET_MATRIX(set_matrix, char, char, "%c")
+SET_MATRIX(set_matrix, uint8_t, uint8_t, "%u")
 SET_MATRIX(set_int8_matrix, int8_t, int8_t, "%d")
-SET_MATRIX(set_int_matrix, int32_t, int32_t, "%i")
+SET_MATRIX(set_matrix, int32_t, int32_t, "%i")
 SET_MATRIX(set_uint_matrix, uint32_t, uint32_t, "%u")
 SET_MATRIX(set_long_matrix, int64_t, long long int, "%lli")
 SET_MATRIX(set_ulong_matrix, uint64_t, long long unsigned int, "%llu")
-SET_MATRIX(set_short_matrix, int16_t, int16_t, "%i")
-SET_MATRIX(set_word_matrix, uint16_t, uint16_t, "%u")
-SET_MATRIX(set_shortreal_matrix, float32_t, float32_t, "%f")
-SET_MATRIX(set_real_matrix, float64_t, float64_t, "%f")
+SET_MATRIX(set_matrix, int16_t, int16_t, "%i")
+SET_MATRIX(set_matrix, uint16_t, uint16_t, "%u")
+SET_MATRIX(set_matrix, float32_t, float32_t, "%f")
+SET_MATRIX(set_matrix, float64_t, float64_t, "%f")
 SET_MATRIX(set_longreal_matrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_MATRIX
 
@@ -875,17 +875,17 @@ void CAsciiFile::fname(const sg_type* array, int32_t * dims, int32_t num_dims)	\
 	}									\
 }
 
-SET_NDARRAY(set_char_ndarray, char, char, "%c")
-SET_NDARRAY(set_byte_ndarray, uint8_t, uint8_t, "%u")
+SET_NDARRAY(set_ndarray, char, char, "%c")
+SET_NDARRAY(set_ndarray, uint8_t, uint8_t, "%u")
 SET_NDARRAY(set_int8_ndarray, int8_t, int8_t, "%d")
-SET_NDARRAY(set_int_ndarray, int32_t, int32_t, "%i")
+SET_NDARRAY(set_ndarray, int32_t, int32_t, "%i")
 SET_NDARRAY(set_uint_ndarray, uint32_t, uint32_t, "%u")
 SET_NDARRAY(set_long_ndarray, int64_t, long long int, "%lli")
 SET_NDARRAY(set_ulong_ndarray, uint64_t, long long unsigned int, "%llu")
-SET_NDARRAY(set_short_ndarray, int16_t, int16_t, "%i")
-SET_NDARRAY(set_word_ndarray, uint16_t, uint16_t, "%u")
-SET_NDARRAY(set_shortreal_ndarray, float32_t, float32_t, "%f")
-SET_NDARRAY(set_real_ndarray, float64_t, float64_t, "%f")
+SET_NDARRAY(set_ndarray, int16_t, int16_t, "%i")
+SET_NDARRAY(set_ndarray, uint16_t, uint16_t, "%u")
+SET_NDARRAY(set_ndarray, float32_t, float32_t, "%f")
+SET_NDARRAY(set_ndarray, float64_t, float64_t, "%f")
 SET_NDARRAY(set_longreal_ndarray, floatmax_t, floatmax_t, "%Lf")
 #undef SET_NDARRAY
 
@@ -915,22 +915,22 @@ void CAsciiFile::fname(const SGSparseVector<sg_type>* matrix, int32_t num_feat, 
 		}																					\
 	}																						\
 }
-SET_SPARSEMATRIX(set_bool_sparsematrix, bool, uint8_t, "%u")
-SET_SPARSEMATRIX(set_char_sparsematrix, char, char, "%c")
-SET_SPARSEMATRIX(set_byte_sparsematrix, uint8_t, uint8_t, "%u")
+SET_SPARSEMATRIX(set_sparse_matrix, bool, uint8_t, "%u")
+SET_SPARSEMATRIX(set_sparse_matrix, char, char, "%c")
+SET_SPARSEMATRIX(set_sparse_matrix, uint8_t, uint8_t, "%u")
 SET_SPARSEMATRIX(set_int8_sparsematrix, int8_t, int8_t, "%d")
-SET_SPARSEMATRIX(set_int_sparsematrix, int32_t, int32_t, "%i")
+SET_SPARSEMATRIX(set_sparse_matrix, int32_t, int32_t, "%i")
 SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, uint32_t, "%u")
 SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, long long int, "%lli")
 SET_SPARSEMATRIX(set_ulong_sparsematrix, uint64_t, long long unsigned int, "%llu")
-SET_SPARSEMATRIX(set_short_sparsematrix, int16_t, int16_t, "%i")
-SET_SPARSEMATRIX(set_word_sparsematrix, uint16_t, uint16_t, "%u")
-SET_SPARSEMATRIX(set_shortreal_sparsematrix, float32_t, float32_t, "%f")
-SET_SPARSEMATRIX(set_real_sparsematrix, float64_t, float64_t, "%f")
+SET_SPARSEMATRIX(set_sparse_matrix, int16_t, int16_t, "%i")
+SET_SPARSEMATRIX(set_sparse_matrix, uint16_t, uint16_t, "%u")
+SET_SPARSEMATRIX(set_sparse_matrix, float32_t, float32_t, "%f")
+SET_SPARSEMATRIX(set_sparse_matrix, float64_t, float64_t, "%f")
 SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, floatmax_t, "%Lf")
 #undef SET_SPARSEMATRIX
 
-void CAsciiFile::set_byte_string_list(const SGString<uint8_t>* strings, int32_t num_str)
+void CAsciiFile::set_string_list(const SGString<uint8_t>* strings, int32_t num_str)
 {
 	if (!(file && strings))
 		SG_ERROR("File or strings invalid.\n");
@@ -956,7 +956,7 @@ void CAsciiFile::set_int8_string_list(const SGString<int8_t>* strings, int32_t n
 	}
 }
 
-void CAsciiFile::set_char_string_list(const SGString<char>* strings, int32_t num_str)
+void CAsciiFile::set_string_list(const SGString<char>* strings, int32_t num_str)
 {
 	if (!(file && strings))
 		SG_ERROR("File or strings invalid.\n");
@@ -969,7 +969,7 @@ void CAsciiFile::set_char_string_list(const SGString<char>* strings, int32_t num
 	}
 }
 
-void CAsciiFile::set_int_string_list(const SGString<int32_t>* strings, int32_t num_str)
+void CAsciiFile::set_string_list(const SGString<int32_t>* strings, int32_t num_str)
 {
 }
 
@@ -977,11 +977,11 @@ void CAsciiFile::set_uint_string_list(const SGString<uint32_t>* strings, int32_t
 {
 }
 
-void CAsciiFile::set_short_string_list(const SGString<int16_t>* strings, int32_t num_str)
+void CAsciiFile::set_string_list(const SGString<int16_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_word_string_list(const SGString<uint16_t>* strings, int32_t num_str)
+void CAsciiFile::set_string_list(const SGString<uint16_t>* strings, int32_t num_str)
 {
 }
 
@@ -993,11 +993,11 @@ void CAsciiFile::set_ulong_string_list(const SGString<uint64_t>* strings, int32_
 {
 }
 
-void CAsciiFile::set_shortreal_string_list(const SGString<float32_t>* strings, int32_t num_str)
+void CAsciiFile::set_string_list(const SGString<float32_t>* strings, int32_t num_str)
 {
 }
 
-void CAsciiFile::set_real_string_list(const SGString<float64_t>* strings, int32_t num_str)
+void CAsciiFile::set_string_list(const SGString<float64_t>* strings, int32_t num_str)
 {
 }
 

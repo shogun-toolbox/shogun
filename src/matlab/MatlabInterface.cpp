@@ -219,13 +219,13 @@ void CMatlabInterface::function_name(sg_type*& vector, int32_t& len)	\
 			vector[i]=data[i];										\
 }
 
-GET_VECTOR(get_byte_vector, "uint8", uint8_t, uint8_t, "Byte")
-GET_VECTOR(get_char_vector, "char", char, mxChar, "Char")
-GET_VECTOR(get_int_vector, "int32", int32_t, int, "Integer")
-GET_VECTOR(get_short_vector, "int16", int16_t, short, "Short")
-GET_VECTOR(get_shortreal_vector, "single", float32_t, float, "Single Precision")
-GET_VECTOR(get_real_vector, "double", float64_t, double, "Double Precision")
-GET_VECTOR(get_word_vector, "uint16", uint16_t, unsigned short, "Word")
+GET_VECTOR(get_vector, "uint8", uint8_t, uint8_t, "Byte")
+GET_VECTOR(get_vector, "char", char, mxChar, "Char")
+GET_VECTOR(get_vector, "int32", int32_t, int, "Integer")
+GET_VECTOR(get_vector, "int16", int16_t, short, "Short")
+GET_VECTOR(get_vector, "single", float32_t, float, "Single Precision")
+GET_VECTOR(get_vector, "double", float64_t, double, "Double Precision")
+GET_VECTOR(get_vector, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_VECTOR
 
 #define GET_MATRIX(function_name, mx_type, sg_type, if_type, error_string)		\
@@ -246,13 +246,13 @@ void CMatlabInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_
 			matrix[i*num_feat+j]=data[i*num_feat+j];							\
 }
 
-GET_MATRIX(get_byte_matrix, "uint8", uint8_t, uint8_t, "Byte")
-GET_MATRIX(get_char_matrix, "char", char, mxChar, "Char")
-GET_MATRIX(get_int_matrix, "int32", int32_t, int, "Integer")
-GET_MATRIX(get_short_matrix, "int16", int16_t, short, "Short")
-GET_MATRIX(get_shortreal_matrix, "single", float32_t, float, "Single Precision")
-GET_MATRIX(get_real_matrix, "double", float64_t, double, "Double Precision")
-GET_MATRIX(get_word_matrix, "uint16", uint16_t, unsigned short, "Word")
+GET_MATRIX(get_matrix, "uint8", uint8_t, uint8_t, "Byte")
+GET_MATRIX(get_matrix, "char", char, mxChar, "Char")
+GET_MATRIX(get_matrix, "int32", int32_t, int, "Integer")
+GET_MATRIX(get_matrix, "int16", int16_t, short, "Short")
+GET_MATRIX(get_matrix, "single", float32_t, float, "Single Precision")
+GET_MATRIX(get_matrix, "double", float64_t, double, "Double Precision")
+GET_MATRIX(get_matrix, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_MATRIX
 
 #define GET_NDARRAY(function_name, mx_type, sg_type, if_type, error_string)		\
@@ -277,13 +277,13 @@ void CMatlabInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 		array[i]=data[i];														\
 }
 
-GET_NDARRAY(get_byte_ndarray, "uint8", uint8_t, uint8_t, "Byte")
-GET_NDARRAY(get_char_ndarray, "char", char, mxChar, "Char")
-GET_NDARRAY(get_int_ndarray, "int32", int32_t, int, "Integer")
-GET_NDARRAY(get_short_ndarray, "int16", int16_t, short, "Short")
-GET_NDARRAY(get_shortreal_ndarray, "single", float32_t, float, "Single Precision")
-GET_NDARRAY(get_real_ndarray, "double", float64_t, double, "Double Precision")
-GET_NDARRAY(get_word_ndarray, "uint16", uint16_t, unsigned short, "Word")
+GET_NDARRAY(get_ndarray, "uint8", uint8_t, uint8_t, "Byte")
+GET_NDARRAY(get_ndarray, "char", char, mxChar, "Char")
+GET_NDARRAY(get_ndarray, "int32", int32_t, int, "Integer")
+GET_NDARRAY(get_ndarray, "int16", int16_t, short, "Short")
+GET_NDARRAY(get_ndarray, "single", float32_t, float, "Single Precision")
+GET_NDARRAY(get_ndarray, "double", float64_t, double, "Double Precision")
+GET_NDARRAY(get_ndarray, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(function_name, mx_type, sg_type, if_type, error_string)		\
@@ -329,14 +329,14 @@ void CMatlabInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& 
 	ASSERT(offset==nzmax); 																\
 }
 
-GET_SPARSEMATRIX(get_real_sparsematrix, "double", float64_t, double, "Double Precision")
+GET_SPARSEMATRIX(get_sparse_matrix, "double", float64_t, double, "Double Precision")
 /*  future versions might support types other than float64_t
-GET_SPARSEMATRIX(get_byte_sparsematrix, "uint8", uint8_t, uint8_t, "Byte")
-GET_SPARSEMATRIX(get_char_sparsematrix, "char", char, mxChar, "Char")
-GET_SPARSEMATRIX(get_int_sparsematrix, "int32", int32_t, int, "Integer")
-GET_SPARSEMATRIX(get_short_sparsematrix, "int16", int16_t, short, "Short")
-GET_SPARSEMATRIX(get_shortreal_sparsematrix, "single", float32_t, float, "Single Precision")
-GET_SPARSEMATRIX(get_word_sparsematrix, "uint16", uint16_t, unsigned short, "Word")*/
+GET_SPARSEMATRIX(get_sparse_matrix, "uint8", uint8_t, uint8_t, "Byte")
+GET_SPARSEMATRIX(get_sparse_matrix, "char", char, mxChar, "Char")
+GET_SPARSEMATRIX(get_sparse_matrix, "int32", int32_t, int, "Integer")
+GET_SPARSEMATRIX(get_sparse_matrix, "int16", int16_t, short, "Short")
+GET_SPARSEMATRIX(get_sparse_matrix, "single", float32_t, float, "Single Precision")
+GET_SPARSEMATRIX(get_sparse_matrix, "uint16", uint16_t, unsigned short, "Word")*/
 #undef GET_SPARSEMATRIX
 
 
@@ -413,11 +413,11 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			mxGetClassName(mx_str), m_rhs_counter);										\
 }
 
-GET_STRINGLIST(get_byte_string_list, "uint8", uint8_t, uint8_t, "Byte")
-GET_STRINGLIST(get_char_string_list, "char", char, mxChar, "Char")
-GET_STRINGLIST(get_int_string_list, "int32", int32_t, int, "Integer")
-GET_STRINGLIST(get_short_string_list, "int16", int16_t, short, "Short")
-GET_STRINGLIST(get_word_string_list, "uint16", uint16_t, unsigned short, "Word")
+GET_STRINGLIST(get_string_list, "uint8", uint8_t, uint8_t, "Byte")
+GET_STRINGLIST(get_string_list, "char", char, mxChar, "Char")
+GET_STRINGLIST(get_string_list, "int32", int32_t, int, "Integer")
+GET_STRINGLIST(get_string_list, "int16", int16_t, short, "Short")
+GET_STRINGLIST(get_string_list, "uint16", uint16_t, unsigned short, "Word")
 #undef GET_STRINGLIST
 
 
@@ -483,13 +483,13 @@ void CMatlabInterface::function_name(const sg_type* vector, int32_t len)		\
 	set_arg_increment(mx_vec);												\
 }
 
-SET_VECTOR(set_byte_vector, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
-SET_VECTOR(set_char_vector, mxCHAR_CLASS, char, mxChar, "Char")
-SET_VECTOR(set_int_vector, mxINT32_CLASS, int32_t, int, "Integer")
-SET_VECTOR(set_short_vector, mxINT16_CLASS, int16_t, short, "Short")
-SET_VECTOR(set_shortreal_vector, mxSINGLE_CLASS, float32_t, float, "Single Precision")
-SET_VECTOR(set_real_vector, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
-SET_VECTOR(set_word_vector, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
+SET_VECTOR(set_vector, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
+SET_VECTOR(set_vector, mxCHAR_CLASS, char, mxChar, "Char")
+SET_VECTOR(set_vector, mxINT32_CLASS, int32_t, int, "Integer")
+SET_VECTOR(set_vector, mxINT16_CLASS, int16_t, short, "Short")
+SET_VECTOR(set_vector, mxSINGLE_CLASS, float32_t, float, "Single Precision")
+SET_VECTOR(set_vector, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
+SET_VECTOR(set_vector, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
 #undef SET_VECTOR
 
 
@@ -512,13 +512,13 @@ void CMatlabInterface::function_name(const sg_type* matrix, int32_t num_feat, in
 	set_arg_increment(mx_mat); 													\
 }
 
-SET_MATRIX(set_byte_matrix, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
-SET_MATRIX(set_char_matrix, mxCHAR_CLASS, char, mxChar, "Char")
-SET_MATRIX(set_int_matrix, mxINT32_CLASS, int32_t, int, "Integer")
-SET_MATRIX(set_short_matrix, mxINT16_CLASS, int16_t, short, "Short")
-SET_MATRIX(set_shortreal_matrix, mxSINGLE_CLASS, float32_t, float, "Single Precision")
-SET_MATRIX(set_real_matrix, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
-SET_MATRIX(set_word_matrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
+SET_MATRIX(set_matrix, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
+SET_MATRIX(set_matrix, mxCHAR_CLASS, char, mxChar, "Char")
+SET_MATRIX(set_matrix, mxINT32_CLASS, int32_t, int, "Integer")
+SET_MATRIX(set_matrix, mxINT16_CLASS, int16_t, short, "Short")
+SET_MATRIX(set_matrix, mxSINGLE_CLASS, float32_t, float, "Single Precision")
+SET_MATRIX(set_matrix, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
+SET_MATRIX(set_matrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
 #undef SET_MATRIX
 
 #define SET_SPARSEMATRIX(function_name, mx_type, sg_type, if_type, error_string)	\
@@ -552,15 +552,15 @@ void CMatlabInterface::function_name(const SGSparseVector<sg_type>* matrix, int3
 	set_arg_increment(mx_mat);												\
 }
 
-SET_SPARSEMATRIX(set_real_sparsematrix, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
+SET_SPARSEMATRIX(set_sparse_matrix, mxDOUBLE_CLASS, float64_t, double, "Double Precision")
 
 /* future version might support this
-SET_SPARSEMATRIX(set_byte_sparsematrix, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
-SET_SPARSEMATRIX(set_char_sparsematrix, mxCHAR_CLASS, char, mxChar, "Char")
-SET_SPARSEMATRIX(set_int_sparsematrix, mxINT32_CLASS, int32_t, int, "Integer")
-SET_SPARSEMATRIX(set_short_sparsematrix, mxINT16_CLASS, int16_t, short, "Short")
-SET_SPARSEMATRIX(set_shortreal_sparsematrix, mxSINGLE_CLASS, float32_t, float, "Single Precision")
-SET_SPARSEMATRIX(set_word_sparsematrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")*/
+SET_SPARSEMATRIX(set_sparse_matrix, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
+SET_SPARSEMATRIX(set_sparse_matrix, mxCHAR_CLASS, char, mxChar, "Char")
+SET_SPARSEMATRIX(set_sparse_matrix, mxINT32_CLASS, int32_t, int, "Integer")
+SET_SPARSEMATRIX(set_sparse_matrix, mxINT16_CLASS, int16_t, short, "Short")
+SET_SPARSEMATRIX(set_sparse_matrix, mxSINGLE_CLASS, float32_t, float, "Single Precision")
+SET_SPARSEMATRIX(set_sparse_matrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")*/
 #undef SET_SPARSEMATRIX
 
 #define SET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
@@ -593,11 +593,11 @@ void CMatlabInterface::function_name(const SGString<sg_type>* strings, int32_t n
 	set_arg_increment(mx_str);														\
 }
 
-SET_STRINGLIST(set_byte_string_list, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
-SET_STRINGLIST(set_char_string_list, mxCHAR_CLASS, char, mxChar, "Char")
-SET_STRINGLIST(set_int_string_list, mxINT32_CLASS, int32_t, int, "Integer")
-SET_STRINGLIST(set_short_string_list, mxINT16_CLASS, int16_t, short, "Short")
-SET_STRINGLIST(set_word_string_list, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
+SET_STRINGLIST(set_string_list, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
+SET_STRINGLIST(set_string_list, mxCHAR_CLASS, char, mxChar, "Char")
+SET_STRINGLIST(set_string_list, mxINT32_CLASS, int32_t, int, "Integer")
+SET_STRINGLIST(set_string_list, mxINT16_CLASS, int16_t, short, "Short")
+SET_STRINGLIST(set_string_list, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
 #undef SET_STRINGLIST
 
 void CMatlabInterface::set_attribute_struct(const CDynamicArray<T_ATTRIBUTE>* attrs)

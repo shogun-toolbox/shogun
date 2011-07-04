@@ -355,7 +355,7 @@ void CLabels::load(CFile* loader)
 	m_confidence_labels = 0;
 	num_labels=0;
 	ASSERT(loader);
-	loader->get_real_vector(labels, num_labels);
+	loader->get_vector(labels, num_labels);
 	m_num_classes=get_num_classes();
 	SG_RESET_LOCALE;
 }
@@ -368,7 +368,7 @@ void CLabels::save(CFile* writer)
 	SG_SET_LOCALE_C;
 	ASSERT(writer);
 	ASSERT(labels && labels>0);
-	writer->set_real_vector(labels, num_labels);
+	writer->set_vector(labels, num_labels);
 	SG_RESET_LOCALE;
 }
 

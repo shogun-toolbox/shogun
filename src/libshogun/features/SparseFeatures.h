@@ -1593,18 +1593,18 @@ template<> inline void CSparseFeatures<sg_type>::load(CFile* loader)	\
 	set_sparse_feature_matrix(SGSparseMatrix<sg_type>(matrix, num_feat, num_vec));				\
 	SG_RESET_LOCALE;													\
 }
-LOAD(get_bool_sparsematrix, bool)
-LOAD(get_char_sparsematrix, char)
-LOAD(get_byte_sparsematrix, uint8_t)
+LOAD(get_sparse_matrix, bool)
+LOAD(get_sparse_matrix, char)
+LOAD(get_sparse_matrix, uint8_t)
 LOAD(get_int8_sparsematrix, int8_t)
-LOAD(get_short_sparsematrix, int16_t)
-LOAD(get_word_sparsematrix, uint16_t)
-LOAD(get_int_sparsematrix, int32_t)
+LOAD(get_sparse_matrix, int16_t)
+LOAD(get_sparse_matrix, uint16_t)
+LOAD(get_sparse_matrix, int32_t)
 LOAD(get_uint_sparsematrix, uint32_t)
 LOAD(get_long_sparsematrix, int64_t)
 LOAD(get_ulong_sparsematrix, uint64_t)
-LOAD(get_shortreal_sparsematrix, float32_t)
-LOAD(get_real_sparsematrix, float64_t)
+LOAD(get_sparse_matrix, float32_t)
+LOAD(get_sparse_matrix, float64_t)
 LOAD(get_longreal_sparsematrix, floatmax_t)
 #undef LOAD
 
@@ -1618,18 +1618,18 @@ template<> inline void CSparseFeatures<sg_type>::save(CFile* writer)	\
 	writer->fname(sparse_feature_matrix, num_features, num_vectors);	\
 	SG_RESET_LOCALE;													\
 }
-WRITE(set_bool_sparsematrix, bool)
-WRITE(set_char_sparsematrix, char)
-WRITE(set_byte_sparsematrix, uint8_t)
+WRITE(set_sparse_matrix, bool)
+WRITE(set_sparse_matrix, char)
+WRITE(set_sparse_matrix, uint8_t)
 WRITE(set_int8_sparsematrix, int8_t)
-WRITE(set_short_sparsematrix, int16_t)
-WRITE(set_word_sparsematrix, uint16_t)
-WRITE(set_int_sparsematrix, int32_t)
+WRITE(set_sparse_matrix, int16_t)
+WRITE(set_sparse_matrix, uint16_t)
+WRITE(set_sparse_matrix, int32_t)
 WRITE(set_uint_sparsematrix, uint32_t)
 WRITE(set_long_sparsematrix, int64_t)
 WRITE(set_ulong_sparsematrix, uint64_t)
-WRITE(set_shortreal_sparsematrix, float32_t)
-WRITE(set_real_sparsematrix, float64_t)
+WRITE(set_sparse_matrix, float32_t)
+WRITE(set_sparse_matrix, float64_t)
 WRITE(set_longreal_sparsematrix, floatmax_t)
 #undef WRITE
 #endif // DOXYGEN_SHOULD_SKIP_THIS

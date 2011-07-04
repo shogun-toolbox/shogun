@@ -42,14 +42,14 @@ public:
 	 * @param vector vector
 	 * @param len length of vector
 	 */
-	virtual void get_bool_vector(bool*& vector, int32_t& len);
-	virtual void get_byte_vector(uint8_t*& vector, int32_t& len);
-	virtual void get_char_vector(char*& vector, int32_t& len);
-	virtual void get_int_vector(int32_t*& vector, int32_t& len);
-	virtual void get_real_vector(float64_t*& vector, int32_t& len);
-	virtual void get_shortreal_vector(float32_t*& vector, int32_t& len);
-	virtual void get_short_vector(int16_t*& vector, int32_t& len);
-	virtual void get_word_vector(uint16_t*& vector, int32_t& len);
+	virtual void get_vector(bool*& vector, int32_t& len);
+	virtual void get_vector(uint8_t*& vector, int32_t& len);
+	virtual void get_vector(char*& vector, int32_t& len);
+	virtual void get_vector(int32_t*& vector, int32_t& len);
+	virtual void get_vector(float64_t*& vector, int32_t& len);
+	virtual void get_vector(float32_t*& vector, int32_t& len);
+	virtual void get_vector(int16_t*& vector, int32_t& len);
+	virtual void get_vector(uint16_t*& vector, int32_t& len);
 	virtual void get_int8_vector(int8_t*& vector, int32_t& len);
 	virtual void get_uint_vector(uint32_t*& vector, int32_t& len);
 	virtual void get_long_vector(int64_t*& vector, int32_t& len);

@@ -628,7 +628,7 @@ void CKernel::save(CFile* writer)
 {
 	SGMatrix<float64_t> k_matrix=get_kernel_matrix<float64_t>();
 	SG_SET_LOCALE_C;
-	writer->set_real_matrix(k_matrix.matrix, k_matrix.num_rows, k_matrix.num_cols);
+	writer->set_matrix(k_matrix.matrix, k_matrix.num_rows, k_matrix.num_cols);
 	delete[] k_matrix.matrix;
 	SG_RESET_LOCALE;
 }

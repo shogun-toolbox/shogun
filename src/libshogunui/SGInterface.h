@@ -582,72 +582,72 @@ class CSGInterface : public CSGObject
 
 		virtual char* get_string(int32_t& len)=0;
 
-		virtual void get_bool_vector(bool*& vector, int32_t& len);
-		virtual void get_byte_vector(uint8_t*& vector, int32_t& len)=0;
-		virtual void get_char_vector(char*& vector, int32_t& len)=0;
-		virtual void get_int_vector(int32_t*& vector, int32_t& len)=0;
-		virtual void get_real_vector(float64_t*& vector, int32_t& len)=0;
-		virtual void get_shortreal_vector(float32_t*& vector, int32_t& len)=0;
-		virtual void get_short_vector(int16_t*& vector, int32_t& len)=0;
-		virtual void get_word_vector(uint16_t*& vector, int32_t& len)=0;
+		virtual void get_vector(bool*& vector, int32_t& len);
+		virtual void get_vector(uint8_t*& vector, int32_t& len)=0;
+		virtual void get_vector(char*& vector, int32_t& len)=0;
+		virtual void get_vector(int32_t*& vector, int32_t& len)=0;
+		virtual void get_vector(float64_t*& vector, int32_t& len)=0;
+		virtual void get_vector(float32_t*& vector, int32_t& len)=0;
+		virtual void get_vector(int16_t*& vector, int32_t& len)=0;
+		virtual void get_vector(uint16_t*& vector, int32_t& len)=0;
 
 
-		virtual void get_byte_matrix(
+		virtual void get_matrix(
 			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_char_matrix(
+		virtual void get_matrix(
 			char*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_int_matrix(
+		virtual void get_matrix(
 			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_shortreal_matrix(
+		virtual void get_matrix(
 			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_real_matrix(
+		virtual void get_matrix(
 			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_short_matrix(
+		virtual void get_matrix(
 			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_word_matrix(
+		virtual void get_matrix(
 			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
-		virtual void get_byte_ndarray(
+		virtual void get_ndarray(
 			uint8_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_char_ndarray(
+		virtual void get_ndarray(
 			char*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_int_ndarray(
+		virtual void get_ndarray(
 			int32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_shortreal_ndarray(
+		virtual void get_ndarray(
 			float32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_real_ndarray(
+		virtual void get_ndarray(
 			float64_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_short_ndarray(
+		virtual void get_ndarray(
 			int16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
-		virtual void get_word_ndarray(
+		virtual void get_ndarray(
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
 
 
-		virtual void get_real_sparsematrix(
+		virtual void get_sparse_matrix(
 			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
 		/*  future versions might support types other than float64_t
 		
-		virtual void get_byte_sparsematrix(SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_char_sparsematrix(SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_int_sparsematrix(SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_shortreal_sparsematrix(SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_short_sparsematrix(SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
-		virtual void get_word_sparsematrix(SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
+		virtual void get_sparse_matrix(SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_sparse_matrix(SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_sparse_matrix(SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_sparse_matrix(SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_sparse_matrix(SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		virtual void get_sparse_matrix(SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
 
-		virtual void get_byte_string_list(
+		virtual void get_string_list(
 			SGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
-		virtual void get_char_string_list(
+		virtual void get_string_list(
 			SGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
-		virtual void get_int_string_list(
+		virtual void get_string_list(
 			SGString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
-		virtual void get_short_string_list(
+		virtual void get_string_list(
 			SGString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
-		virtual void get_word_string_list(
+		virtual void get_string_list(
 			SGString<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 
@@ -661,55 +661,55 @@ class CSGInterface : public CSGObject
 		virtual void set_real(float64_t scalar)=0;
 		virtual void set_bool(bool scalar)=0;
 
-		virtual void set_bool_vector(const bool* vector, int32_t len);
-		virtual void set_byte_vector(const uint8_t* vector, int32_t len)=0;
-		virtual void set_char_vector(const char* vector, int32_t len)=0;
-		virtual void set_int_vector(const int32_t* vector, int32_t len)=0;
-		virtual void set_shortreal_vector(
+		virtual void set_vector(const bool* vector, int32_t len);
+		virtual void set_vector(const uint8_t* vector, int32_t len)=0;
+		virtual void set_vector(const char* vector, int32_t len)=0;
+		virtual void set_vector(const int32_t* vector, int32_t len)=0;
+		virtual void set_vector(
 			const float32_t* vector, int32_t len)=0;
-		virtual void set_real_vector(const float64_t* vector, int32_t len)=0;
-		virtual void set_short_vector(const int16_t* vector, int32_t len)=0;
-		virtual void set_word_vector(const uint16_t* vector, int32_t len)=0;
+		virtual void set_vector(const float64_t* vector, int32_t len)=0;
+		virtual void set_vector(const int16_t* vector, int32_t len)=0;
+		virtual void set_vector(const uint16_t* vector, int32_t len)=0;
 
 
-		virtual void set_byte_matrix(
+		virtual void set_matrix(
 			const uint8_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_char_matrix(
+		virtual void set_matrix(
 			const char* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_int_matrix(
+		virtual void set_matrix(
 			const int32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_shortreal_matrix(
+		virtual void set_matrix(
 			const float32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_real_matrix(
+		virtual void set_matrix(
 			const float64_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_short_matrix(
+		virtual void set_matrix(
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_word_matrix(
+		virtual void set_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
 
-		virtual void set_real_sparsematrix(
+		virtual void set_sparse_matrix(
 			const SGSparseVector<float64_t>* matrix, int32_t num_feat,
 			int32_t num_vec, int64_t nnz)=0;
 
 		/*  future versions might support types other than float64_t
 		
-		virtual void set_byte_sparsematrix(const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_char_sparsematrix(const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_int_sparsematrix(const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_shortreal_sparsematrix(const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_short_sparsematrix(const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
-		virtual void set_word_sparsematrix(const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; */
+		virtual void set_sparse_matrix(const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_sparse_matrix(const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_sparse_matrix(const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_sparse_matrix(const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_sparse_matrix(const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
+		virtual void set_sparse_matrix(const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; */
 
 
-		virtual void set_byte_string_list(
+		virtual void set_string_list(
 			const SGString<uint8_t>* strings, int32_t num_str)=0;
-		virtual void set_char_string_list(
+		virtual void set_string_list(
 			const SGString<char>* strings, int32_t num_str)=0;
-		virtual void set_int_string_list(
+		virtual void set_string_list(
 			const SGString<int32_t>* strings, int32_t num_str)=0;
-		virtual void set_short_string_list(
+		virtual void set_string_list(
 			const SGString<int16_t>* strings, int32_t num_str)=0;
-		virtual void set_word_string_list(
+		virtual void set_string_list(
 			const SGString<uint16_t>* strings, int32_t num_str)=0;
 
 		virtual void set_attribute_struct(
@@ -813,9 +813,9 @@ class CSGInterface : public CSGObject
 		int32_t get_int_from_int_or_str();
 		float64_t get_real_from_real_or_str();
 		bool get_bool_from_bool_or_str();
-		void get_int_vector_from_int_vector_or_str(
+		void get_vector_from_int_vector_or_str(
 			int32_t*& vector, int32_t& len);
-		void get_real_vector_from_real_vector_or_str(
+		void get_vector_from_real_vector_or_str(
 			float64_t*& vector, int32_t& len);
 		int32_t get_vector_len_from_str(int32_t expected_len=0);
 		char* get_str_from_str(int32_t& len);
