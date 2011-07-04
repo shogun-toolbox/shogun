@@ -86,15 +86,14 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	delete[] H_matrix;
 
 	float64_t* replace_feature_matrix = new float64_t[m_target_dim*N];
-	float64_t* eigenvalues_vector = new float64_t[m_target_dim];
 	int32_t eigenproblem_status = 0;	
-	
 	#ifdef HAVE_ARPACK
 	// using ARPACK
+		float64_t* eigenvalues_vector = new float64_t[m_target_dim];
 		// solve eigenproblem
 		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", 1, 0.0,
 		              eigenvalues_vector, replace_feature_matrix,
-		              eigenproblem_status);
+		              &eigenproblem_status);
 		// check for failure
 		ASSERT(eigenproblem_status == 0);
 
@@ -127,8 +126,9 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		
 		m_eigenvalues.free_vector();
 		m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim,true);
-	#else /* HAVE_ARPACK else */
+	#else /* not HAVE_ARPACK */
 	// using LAPACK
+		float64_t* eigenvalues_vector = new float64_t[N];
 		// solve eigenproblem
 		wrap_dsyev('V','U',N,Ds_matrix,N,eigenvalues_vector,&eigenproblem_status);
 		// check for failure
