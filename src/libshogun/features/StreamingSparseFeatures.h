@@ -288,15 +288,13 @@ public:
 	/**
 	 * Dot product with another dense vector.
 	 * 
-	 * @param sgvec2 The dense vector with which to take the dot product.
+	 * @param vec2 The dense vector with which to take the dot product.
+	 * @param vec2_len length of vector
 	 * 
 	 * @return Dot product as a float64_t.
 	 */
-	virtual float64_t dense_dot(SGVector<float64_t> &sgvec2)
+	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)
 	{
-		float64_t* vec2=sgvec2.vector;
-		int32_t vec2_len=sgvec2.vlen;
-		
 		ASSERT(vec2);
 		if (vec2_len!=current_num_features)
 		{
@@ -319,14 +317,12 @@ public:
 	 * Takes the absolute value of current_vector if specified.
 	 * 
 	 * @param alpha alpha
-	 * @param sgvec2 vector to add to
+	 * @param vec2 vector to add to
+	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, SGVector<float64_t> &sgvec2, bool abs_val=false)
+	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)
 	{
-		float64_t* vec2=sgvec2.vector;
-		int32_t vec2_len=sgvec2.vlen;
-		
 		ASSERT(vec2);
 		if (vec2_len!=current_num_features)
 		{
@@ -523,50 +519,17 @@ protected:
 	bool has_labels;
 };
 
-#define SET_VECTOR_READER(sg_type, sg_function)				\
-template <> void CStreamingSparseFeatures<sg_type>::set_vector_reader() \
-{									\
-	parser.set_read_vector(&CStreamingFile::sg_function);		\
+template <class T> void CStreamingSparseFeatures<T>::set_vector_reader()
+{
+	parser.set_read_vector(&CStreamingFile::get_sparse_vector);
 }
 
-SET_VECTOR_READER(bool, get_bool_sparse_vector);
-SET_VECTOR_READER(char, get_char_sparse_vector);
-SET_VECTOR_READER(int8_t, get_int8_sparse_vector);
-SET_VECTOR_READER(uint8_t, get_byte_sparse_vector);
-SET_VECTOR_READER(int16_t, get_short_sparse_vector);
-SET_VECTOR_READER(uint16_t, get_word_sparse_vector);
-SET_VECTOR_READER(int32_t, get_int_sparse_vector);
-SET_VECTOR_READER(uint32_t, get_uint_sparse_vector);
-SET_VECTOR_READER(int64_t, get_long_sparse_vector);
-SET_VECTOR_READER(uint64_t, get_ulong_sparse_vector);
-SET_VECTOR_READER(float32_t, get_shortreal_sparse_vector);
-SET_VECTOR_READER(float64_t, get_real_sparse_vector);
-SET_VECTOR_READER(floatmax_t, get_longreal_sparse_vector);
-	
-#undef SET_VECTOR_READER
-
-#define SET_VECTOR_AND_LABEL_READER(sg_type, sg_function)		\
-template <> void CStreamingSparseFeatures<sg_type>::set_vector_and_label_reader() \
-{									\
-	parser.set_read_vector_and_label(&CStreamingFile::sg_function); \
+template <class T> void CStreamingSparseFeatures<T>::set_vector_and_label_reader()
+{
+	parser.set_read_vector_and_label
+		(&CStreamingFile::get_sparse_vector_and_label);
 }
 
-SET_VECTOR_AND_LABEL_READER(bool, get_bool_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(char, get_char_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(int8_t, get_int8_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(uint8_t, get_byte_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(int16_t, get_short_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(uint16_t, get_word_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(int32_t, get_int_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(uint32_t, get_uint_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(int64_t, get_long_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(uint64_t, get_ulong_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(float32_t, get_shortreal_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(float64_t, get_real_sparse_vector_and_label);
-SET_VECTOR_AND_LABEL_READER(floatmax_t, get_longreal_sparse_vector_and_label);
-	
-#undef SET_VECTOR_AND_LABEL_READER		
-	
 #define GET_FEATURE_TYPE(f_type, sg_type)				\
 template<> inline EFeatureType CStreamingSparseFeatures<sg_type>::get_feature_type() \
 {									\

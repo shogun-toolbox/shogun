@@ -14,6 +14,7 @@
 #include "lib/Time.h"
 #include "lib/Mathematics.h"
 #include "features/StreamingFeatures.h"
+#include "features/DotFeatures.h"
 #include "lib/StreamingFile.h"
 
 namespace shogun
@@ -70,6 +71,24 @@ public:
 		set_property(FP_STREAMING_DOT);
 	}
 
+	/**
+	 * Constructor taking a CDotFeatures object and optionally,
+	 * labels, as args.
+	 *
+	 * The derived class should implement it so that the
+	 * Streaming*Features class uses the DotFeatures object as the
+	 * input, getting examples one by one from the DotFeatures
+	 * object (and labels, if applicable).
+	 *
+	 * @param dot_features CDotFeatures object
+	 * @param lab labels (optional)
+	 */
+	CStreamingDotFeatures(CDotFeatures* dot_features, float64_t* lab=NULL)
+	{
+		SG_NOTIMPLEMENTED;
+		return;
+	}
+
 	virtual ~CStreamingDotFeatures() { }
 
 	/** compute dot product between vectors of two
@@ -82,17 +101,57 @@ public:
 
 	/** compute dot product between current vector and a dense vector
 	 *
-	 * @param vec real valued vector of type SGVector
+	 * @param vec2 real valued vector
+	 * @param vec2_len length of vector
 	 */
-	virtual float64_t dense_dot(SGVector<float64_t> &vec)=0;
+	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)=0;
+
+	/** Compute the dot product for all vectors. This function makes use of dense_dot
+	 * alphas[i] * sparse[i]^T * w + b
+	 *
+	 * @param output result for the given vector range
+	 * @param alphas scalars to multiply with, may be NULL
+	 * @param vec dense vector to compute dot product with
+	 * @param dim length of the dense vector
+	 * @param b bias
+	 * @param num_vec number of vectors to operate on (indices 0 to num_vec-1)
+	 *
+	 * If num_vec == 0 or left to its default value, the function
+	 * attempts to return dot product for all vectors.  However,
+	 * the given output vector must be preallocated!
+	 *
+	 * note that the result will be written to output[0...(num_vec-1)]
+	 * except when num_vec = 0
+	 */
+	virtual void dense_dot_range(float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b, int32_t num_vec=0)
+	{
+		ASSERT(num_vec>=0);
+		int32_t counter=0;
+		start_parser();
+		while (get_next_example())
+		{
+			if (alphas)
+				output[counter]=alphas[counter]*dense_dot(vec, dim)+b;
+			else
+				output[counter]=dense_dot(vec, dim)+b;
+
+			release_example();
+
+			counter++;
+			if ((counter>=num_vec) && (num_vec>0))
+				break;
+		}
+		end_parser();
+	}
 
 	/** add current vector multiplied with alpha to dense vector, 'vec'
 	 *
 	 * @param alpha scalar alpha
-	 * @param vec real valued vector to add to, encapsulated in an SGVector object
+	 * @param vec2 real valued vector to add to
+	 * @param vec2_len length of vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, SGVector<float64_t> &vec, bool abs_val=false)=0;
+	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -116,6 +175,18 @@ public:
 	{
 		SG_NOTIMPLEMENTED;
 		return NULL;
+	}
+
+	/** get number of non-zero features in vector
+	 *
+	 * (in case accurate estimates are too expensive overestimating is OK)
+	 *
+	 * @return number of sparse features in vector
+	 */
+	virtual int32_t get_nnz_features_for_vector()
+	{
+		SG_NOTIMPLEMENTED;
+		return -1;
 	}
 
 	/** iterate over the non-zero features
@@ -144,6 +215,7 @@ public:
 		SG_NOTIMPLEMENTED;
 		return;
 	}
+
 
 protected:
 
