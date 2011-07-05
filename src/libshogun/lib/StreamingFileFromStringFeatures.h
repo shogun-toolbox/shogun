@@ -130,78 +130,47 @@ void CStreamingFileFromStringFeatures<T>::init()
 }
 
 /* Functions to return the vector from the StringFeatures object */
-#define GET_STRING(sg_type)					\
-	template <>								\
-	void CStreamingFileFromStringFeatures<sg_type>::get_string(sg_type*& vector, int32_t& num_feat) \
-	{								\
-		if (vector_num >= features->get_num_vectors())		\
-		{							\
-			vector=NULL;					\
-			num_feat=-1;					\
-			return;						\
-		}							\
-									\
-		SGVector<sg_type> sg_vector=				\
-			features->get_feature_vector(vector_num);	\
-									\
-		vector = sg_vector.vector;				\
-		num_feat = sg_vector.vlen;;				\
-		vector_num++;						\
-									\
-	}								\
+template <class T>
+void CStreamingFileFromStringFeatures<T>::get_string(T*& vector, int32_t& num_feat)
+{
+	if (vector_num >= features->get_num_vectors())
+	{
+		vector=NULL;
+		num_feat=-1;
+		return;
+	}
 
-GET_STRING(bool)
-GET_STRING(uint8_t)
-GET_STRING(char)
-GET_STRING(int32_t)
-GET_STRING(float32_t)
-GET_STRING(float64_t)
-GET_STRING(int16_t)
-GET_STRING(uint16_t)
-GET_STRING(int8_t)
-GET_STRING(uint32_t)
-GET_STRING(int64_t)
-GET_STRING(uint64_t)
-GET_STRING(floatmax_t)
-#undef GET_STRING
+	SGVector<T> sg_vector=
+		features->get_feature_vector(vector_num);
+
+	vector = sg_vector.vector;
+	num_feat = sg_vector.vlen;;
+	vector_num++;
+
+}
 
 /* Functions to return the vector from the StringFeatures object with label */
-#define GET_STRING_AND_LABEL(sg_type)					\
-	template <>							\
-	void CStreamingFileFromStringFeatures<sg_type>::get_string_and_label\
-	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
-	{								\
-		if (vector_num >= features->get_num_vectors())		\
-		{							\
-			vector=NULL;					\
-			num_feat=-1;					\
-			return;						\
-		}							\
-									\
-		SGVector<sg_type> sg_vector				\
-			=features->get_feature_vector(vector_num);		\
-									\
-		vector = sg_vector.vector;				\
-		num_feat = sg_vector.vlen;				\
-		label = labels[vector_num];				\
-									\
-		vector_num++;						\
-	}								\
+template <class T>
+void CStreamingFileFromStringFeatures<T>::get_string_and_label
+(T*& vector, int32_t& num_feat, float64_t& label)
+{
+	if (vector_num >= features->get_num_vectors())
+	{
+		vector=NULL;
+		num_feat=-1;
+		return;
+	}
 
-GET_STRING_AND_LABEL(bool)
-GET_STRING_AND_LABEL(uint8_t)
-GET_STRING_AND_LABEL(char)
-GET_STRING_AND_LABEL(int32_t)
-GET_STRING_AND_LABEL(float32_t)
-GET_STRING_AND_LABEL(float64_t)
-GET_STRING_AND_LABEL(int16_t)
-GET_STRING_AND_LABEL(uint16_t)
-GET_STRING_AND_LABEL(int8_t)
-GET_STRING_AND_LABEL(uint32_t)
-GET_STRING_AND_LABEL(int64_t)
-GET_STRING_AND_LABEL(uint64_t)
-GET_STRING_AND_LABEL(floatmax_t)
-#undef GET_STRING_AND_LABEL
+	SGVector<T> sg_vector
+		=features->get_feature_vector(vector_num);
+
+	vector = sg_vector.vector;
+	num_feat = sg_vector.vlen;
+	label = labels[vector_num];
+
+	vector_num++;
+}
+
 
 }
 #endif //__STREAMING_FILEFROMSTRING_H__
