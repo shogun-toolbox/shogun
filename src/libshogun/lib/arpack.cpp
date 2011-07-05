@@ -23,15 +23,15 @@ using namespace shogun;
 namespace shogun
 {
 void arpack_dsaupd(double* matrix, int n, int nev, const char* which, 
-                   int mode, double shift,
-                   double* eigenvalues, double* eigenvectors, int& status)
+                   int mode, double shift, double* eigenvalues, 
+                   double* eigenvectors, int& status)
 {
 	// check if nev is greater than n
 	if (nev>n)
 		SG_SERROR("Number of required eigenpairs is greater than order of the matrix");
 
 	// check specified mode
-	if (mode!=1 && mode!=2)
+	if (mode!=1 && mode!=3)
 		SG_SERROR("Unknown mode specified");
 
 	// init ARPACK's reverse communication parameter 
@@ -62,7 +62,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	iparam[0] = 1;
 	// specify max number of iterations
 	iparam[2] = 3*n;
-	// set the computation mode (1 for regular or 2 for shift-inverse)
+	// set the computation mode (1 for regular or 3 for shift-inverse)
 	iparam[6] = mode;
 
 	// init array indicating locations of vectors for routine callback
@@ -83,13 +83,15 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 
 	// main computation loop
 	// shift-invert mode
-	if (mode==2)
+	if (mode==3)
 	{
 		double* workt = new double[n];		
+		int* ipiv = new int[n];
 
 		for (int i=0; i<n; i++)
 			matrix[i*n+i] -= shift;
 
+		// cholesky inverse
 		clapack_dpotri(CblasColMajor,CblasUpper,n,matrix,n);
 
 		do 
@@ -100,15 +102,16 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 
 			if ((ido==1)||(ido==-1))
 			{
-				memcpy(workt,workd+ipntr[0]-1,n*sizeof(double));
-
-				cblas_dtrmv(CblasColMajor,CblasUpper,CblasNoTrans,CblasNonUnit,
-				            n,matrix,n,
-				            workt,1);
-
-				memcpy(workd+ipntr[1]-1,workt,n*sizeof(double));
+				// symmetrical matvec 
+				cblas_dsymv(CblasColMajor,CblasUpper,
+				            n,1.0,matrix,n,
+				            workd+ipntr[0]-1,1,
+				            0.0, workd+ipntr[1]-1,1);
 			}
 		} while ((ido==1)||(ido==-1));
+
+		delete[] workt;
+		delete[] ipiv;
 	} 
 	// regular mode
 	if (mode==1)
@@ -121,6 +124,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 
 			if ((ido==1)||(ido==-1))
 			{
+				// general matvec
 				cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
 			        	    n, 1, n,
 					    1.0, matrix, n,

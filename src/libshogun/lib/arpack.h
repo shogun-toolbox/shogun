@@ -57,9 +57,11 @@ namespace shogun
  * @param mode shift-mode of IRLM. Possible values:
  *        - 1: regular mode
  *        - 2: shift-invert mode
- * @param shift shift for shift mode of IRLM
+ * @param shift shift for shift-invert (2) mode of IRLM. In this mode
+ *        routine will compute eigenvalues near provided shift
  * @param eigenvalues array of size nev to hold computed eigenvalues
  * @param eigenvectors array of size nev*n to hold computed eigenvectors
+ * @param status on output sets -1 if failed
  */
 void arpack_dsaupd(double* matrix, int n, int nev, const char* which, int mode,
                    double shift, double* eigenvalues, double* eigenvectors, int& status);
