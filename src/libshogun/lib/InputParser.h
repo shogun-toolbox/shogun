@@ -497,10 +497,7 @@ namespace shogun
 	template <class T>
 		void CInputParser<T>::finalize_example()
 	{
-		if (do_delete)
-			delete[] current_feature_vector;
-		
-		examples_buff->finalize_example();
+		examples_buff->finalize_example(do_delete);
 	}
 
 	template <class T>

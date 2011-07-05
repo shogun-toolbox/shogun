@@ -92,8 +92,10 @@ namespace shogun
 		 * Mark the example in 'read' position as 'used'.
 		 * 
 		 * It will then be free to be overwritten.
+		 * 
+		 * @param do_delete whether to delete[] the vector or not
 		 */
-		void finalize_example();
+		void finalize_example(bool do_delete);
 
 	protected:
 		/** 
@@ -236,10 +238,14 @@ namespace shogun
 	}
 
 	template <class T>
-		void CParseBuffer<T>::finalize_example()
+		void CParseBuffer<T>::finalize_example(bool do_delete)
 	{
 		pthread_mutex_lock(&ex_in_use_mutex[ex_read_index]);
 		ex_used[ex_read_index] = E_USED;
+
+		if (do_delete)
+			delete[] ex_buff[ex_read_index].fv.vector;
+
 		pthread_cond_signal(&ex_in_use_cond[ex_read_index]);
 		pthread_mutex_unlock(&ex_in_use_mutex[ex_read_index]);
 	
