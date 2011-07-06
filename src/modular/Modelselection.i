@@ -38,4 +38,10 @@
 %include <shogun/modelselection/GridSearchModelSelection.h>
 %include <shogun/modelselection/ModelSelection.h>
 %include <shogun/modelselection/ModelSelectionParameters.h>
+%include <shogun/base/DynArray.h>
+
 %include <shogun/modelselection/ParameterCombination.h>
+namespace shogun
+{
+    %template(DynamicParameterCombinationPointerArray) DynArray<ParameterCombination*>;
+}
