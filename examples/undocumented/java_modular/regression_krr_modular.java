@@ -5,6 +5,7 @@ public class regression_krr_modular {
 		System.loadLibrary("Features");
 		System.loadLibrary("Kernel");
 		System.loadLibrary("Regression");
+		System.loadLibrary("Classifier");
 	}
 
 	public static void main(String argv[]) {

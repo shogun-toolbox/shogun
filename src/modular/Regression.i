@@ -41,8 +41,8 @@
 
 /* Remove C Prefix */
 %rename(BaseRegression) CRegression;
-%rename(Machine) CMachine;
-%rename(KernelMachine) CKernelMachine;
+/*%rename(Machine) CMachine;
+%rename(KernelMachine) CKernelMachine; */
 %rename(KRR) CKRR;
 %rename(LibSVR) CLibSVR;
 %rename(MKL) CMKL;
@@ -53,8 +53,8 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>
-%include <shogun/machine/Machine.h>
-%include <shogun/machine/KernelMachine.h>
+/*%include <shogun/machine/Machine.h>
+%include <shogun/machine/KernelMachine.h>*/
 %include <shogun/regression/KRR.h>
 %include <shogun/regression/svr/LibSVR.h>
 %include <shogun/classifier/mkl/MKL.h>
