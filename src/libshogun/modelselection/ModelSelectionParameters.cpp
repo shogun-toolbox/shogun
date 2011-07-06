@@ -145,13 +145,16 @@ void CModelSelectionParameters::set_range(float64_t min, float64_t max,
 			break;
 		default:
 			SG_ERROR("unknown range type!\n");
+			break;
 		}
 	}
 }
 
-void CModelSelectionParameters::get_combinations(
-		DynArray<ParameterCombination*>& result)
+DynArray<ParameterCombination*>* CModelSelectionParameters::get_combinations()
 {
+	DynArray<ParameterCombination*>* result=
+			new DynArray<ParameterCombination*>();
+
 	/* leaf case: node with values and no children.
 	 * build trees of Parameter instances which each contain one value
 	 */
@@ -163,7 +166,7 @@ void CModelSelectionParameters::get_combinations(
 			Parameter* p=new Parameter();
 			p->add(&m_values.vector[i], m_node_name);
 
-			result.append_element(new ParameterCombination(p));
+			result->append_element(new ParameterCombination(p));
 		}
 	}
 	/* two cases here, similar
@@ -197,12 +200,8 @@ void CModelSelectionParameters::get_combinations(
 			DynArray<DynArray<ParameterCombination*>*> leaf_sets;
 			for (index_t i=0; i<leaf_children.get_num_elements(); ++i)
 			{
-				/* temporary DynArray instance */
-				leaf_sets.append_element(
-						new DynArray<ParameterCombination*> ());
-
-				/* recursively get all combinations and put into above array */
-				leaf_children[i]->get_combinations(*leaf_sets[i]);
+				/* recursively get all combinations in a new array */
+				leaf_sets.append_element(leaf_children[i]->get_combinations());
 			}
 
 			/* build product of all these tree sets */
@@ -225,7 +224,7 @@ void CModelSelectionParameters::get_combinations(
 
 			/* if there are no non-leaf sets, just use the above result */
 			if (!non_leaf_children.get_num_elements())
-				result=leaf_combinations;
+				*result=leaf_combinations;
 			/* in the other case, the non-leafs have also to be treated, but
 			 * combined iteratively */
 			else
@@ -235,14 +234,9 @@ void CModelSelectionParameters::get_combinations(
 						non_leaf_combinations;
 				for (index_t i=0; i<non_leaf_children.get_num_elements(); ++i)
 				{
-					/* temporary DynArray instance */
+					/* recursively get all combinations in a new array */
 					non_leaf_combinations.append_element(
-							new DynArray<ParameterCombination*> ());
-
-					/* recursively get all combinations and put into above
-					 * array */
-					non_leaf_children[i]->get_combinations(
-							*non_leaf_combinations[i]);
+							non_leaf_children[i]->get_combinations());
 				}
 
 				/* combine combinations of leafs and non-leafs */
@@ -272,7 +266,7 @@ void CModelSelectionParameters::get_combinations(
 							 * tree. re-use of new_root variable, safe here */
 							new_root=new ParameterCombination();
 							new_root->append_child(current_non_leaf_tree);
-							result.append_element(new_root);
+							result->append_element(new_root);
 						}
 					}
 
@@ -309,7 +303,7 @@ void CModelSelectionParameters::get_combinations(
 										current_non_leaf_tree->copy_tree();
 
 								leaf_copy->append_child(non_leaf_copy);
-								result.append_element(leaf_copy);
+								result->append_element(leaf_copy);
 							}
 						}
 					}
@@ -359,25 +353,29 @@ void CModelSelectionParameters::get_combinations(
 		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
 		{
 			/* recursively get all combinations of the current child */
-			DynArray<ParameterCombination*> child_combinations;
-			m_child_nodes[i]->get_combinations(child_combinations);
+			DynArray<ParameterCombination*>* child_combinations=
+					m_child_nodes[i]->get_combinations();
 
 			/* and process them each */
-			for (index_t j=0; j<child_combinations.get_num_elements(); ++j)
+			for (index_t j=0; j<child_combinations->get_num_elements(); ++j)
 			{
 				/* append new root node with the name */
 				ParameterCombination* new_root=new ParameterCombination(
 						m_node_name);
-				new_root->append_child(child_combinations[j]);
-				child_combinations.set_element(new_root, j);
+				new_root->append_child(child_combinations->get_element(j));
+				child_combinations->set_element(new_root, j);
 
 				/* append them to the result */
-				result.append_element(child_combinations[j]);
+				result->append_element(child_combinations->get_element(j));
 			}
+
+			delete child_combinations;
 		}
 	}
 	else
 		SG_ERROR("Illegal CModelSelectionParameters node type.\n");
+
+	return result;
 }
 
 void CModelSelectionParameters::print_tree(int prefix_num)

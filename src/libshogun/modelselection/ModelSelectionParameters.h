@@ -119,10 +119,10 @@ public:
 	 * structure, a set of trees which contain all combinations of parameters
 	 * that are implied by this tree is generated.
 	 *
-	 * @param result all trees of parameter combinations are put into here
+	 * @result result all trees of parameter combinations are put into here
 	 *
 	 */
-	void get_combinations(DynArray<ParameterCombination*>& result);
+	DynArray<ParameterCombination*>* get_combinations();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.

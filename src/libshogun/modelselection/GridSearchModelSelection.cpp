@@ -38,8 +38,8 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 		float64_t& best_result)
 {
 	/* Retrieve all possible parameter combinations */
-	DynArray<ParameterCombination*> combinations;
-	m_model_parameters->get_combinations(combinations);
+	DynArray<ParameterCombination*>* combinations=
+			m_model_parameters->get_combinations();
 
 	ParameterCombination* best_combination=NULL;
 	if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
@@ -48,9 +48,9 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 		best_result=CMath::ALMOST_INFTY;
 
 	/* apply all combinations and search for best one */
-	for (index_t i=0; i<combinations.get_num_elements(); ++i)
+	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
-		combinations[i]->apply_to_parameter(m_cross_validation->get_machine_parameters());
+		combinations->get_element(i)->apply_to_parameter(m_cross_validation->get_machine_parameters());
 		float64_t result=m_cross_validation->evaluate();
 
 		/* check if current result is better, delete old combinations */
@@ -61,11 +61,11 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 				if (best_combination)
 					best_combination->destroy(true, true);
 
-				best_combination=combinations[i];
+				best_combination=combinations->get_element(i);
 				best_result=result;
 			}
 			else
-				combinations[i]->destroy(true, true);
+				combinations->get_element(i)->destroy(true, true);
 		}
 		else
 		{
@@ -74,13 +74,15 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 				if (best_combination)
 					best_combination->destroy(true, true);
 
-				best_combination=combinations[i];
+				best_combination=combinations->get_element(i);
 				best_result=result;
 			}
 			else
-				combinations[i]->destroy(true, true);
+				combinations->get_element(i)->destroy(true, true);
 		}
 	}
+
+	delete combinations;
 
 	return best_combination;
 }
