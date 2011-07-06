@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	CModelSelectionParameters* tree=create_param_tree();
 	SG_REF(tree);
 
-	tree->print();
+	tree->print_tree();
 
 	/* build combinations of parameter trees */
 	DynArray<ParameterCombination*> combinations;
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("----------------------------------\n");
 	for (index_t i=0; i<combinations.get_num_elements(); ++i)
 	{
-		combinations[i]->print();
+		combinations[i]->print_tree();
 		combinations[i]->destroy(true, true);
 	}
 

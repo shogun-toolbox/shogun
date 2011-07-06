@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 	float64_t result;
 	ParameterCombination* best_combination=grid_search.select_model(result);
 	SG_SPRINT("best parameter(s):\n");
-	best_combination->print();
+	best_combination->print_tree();
 	SG_SPRINT("result: %f\n", result);
 
 	/* clean up destroy result parameter */
