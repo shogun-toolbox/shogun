@@ -20,8 +20,9 @@ namespace shogun
 
 class CFeatures;
 
-/** @brief
- *
+/** @brief the abstract class DimensionReductionPreprocessor, a base
+ * class for preprocessors used to lower the dimensionality of given 
+ * simple features (dense matrices). 
  */
 class CDimensionReductionPreprocessor: public CSimplePreprocessor<float64_t>
 {
@@ -34,7 +35,8 @@ public:
 	virtual ~CDimensionReductionPreprocessor() {};
 
 	/** init
-	 *
+	 * set true by default, should be defined if dimension reduction
+	 * preprocessor is using some initialization
 	 */
 	virtual bool init(CFeatures* data)
 	{
@@ -42,7 +44,8 @@ public:
 	};
 
 	/** cleanup
-	 *
+	 * set empty by default, should be defined if dimension reduction
+	 * preprocessor should free some resources
 	 */
 	virtual void cleanup()
 	{
@@ -50,7 +53,7 @@ public:
 	};
 
 	/** apply preproc to feature matrix
-	 *
+	 * by default does nothing, returns given features' matrix
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features)
 	{
@@ -58,7 +61,7 @@ public:
 	};
 
 	/** apply preproc to feature vector
-	 *
+	 * by default does nothing, returns given feature vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector)
 	{
@@ -69,7 +72,7 @@ public:
 	virtual inline const char* get_name() const { return "DIMREDUCTIONPREPROCESSOR"; };
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; };
+	virtual inline EPreprocessorType get_type() const { return P_DIMENSIONREDUCTIONPREPROCESSOR; };
 
 	/** setter for target dimension
 	 * @param dim target dimension
@@ -90,7 +93,7 @@ public:
 
 protected:
 
-	/** target dim */
+	/** target dim of dimensionality reduction preprocessor */
 	int32_t m_target_dim;
 
 };

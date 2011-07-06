@@ -22,8 +22,8 @@ namespace shogun
 
 class CDistance;
 
-/** @brief the class ClassicIsomap
- *
+/** @brief the class ClassicIsomap used
+ * to perform Isomap using ClassicMDS
  */
 class CClassicIsomap: public CIsomap
 {
