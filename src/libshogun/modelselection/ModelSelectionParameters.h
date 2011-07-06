@@ -74,9 +74,8 @@ public:
 	/** destructor. If set, deletes data array and SG_UNREF's the CSGObject */
 	~CModelSelectionParameters();
 
-	/** method to recursively delete the complete tree of which this node is
-	 * the root */
-	void destroy();
+	/** method to recursively unref all nods of this tree */
+	void unref_childs();
 
 	/** appends a child to this tree. only possible if this is no value node
 	 *
@@ -114,7 +113,7 @@ public:
 	 * @param prefix_num a number of '\t' tabs that is put before each output
 	 * to have a more readable print layout
 	 */
-	void print(int prefix_num=0);
+	void print_tree(int prefix_num=0);
 
 	/** most important method. If the tree was regarding node types and
 	 * structure, a set of trees which contain all combinations of parameters

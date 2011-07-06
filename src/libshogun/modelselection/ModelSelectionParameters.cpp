@@ -48,23 +48,22 @@ void CModelSelectionParameters::init()
 
 CModelSelectionParameters::~CModelSelectionParameters()
 {
-	/* a root node destroy its whole tree upon destruction */
+	/* a root node unref its whole tree upon destruction */
 	if (!m_node_name && !m_sgobject && !m_values.vector)
-	{
-		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
-			m_child_nodes[i]->destroy();
-	}
+		unref_childs();
 
 	delete[] m_values.vector;
 	SG_UNREF(m_sgobject);
 }
 
-void CModelSelectionParameters::destroy()
+void CModelSelectionParameters::unref_childs()
 {
 	for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
-		m_child_nodes[i]->destroy();
-
-	delete this;
+	{
+		CModelSelectionParameters* current=m_child_nodes[i];
+		current->unref_childs();
+		SG_UNREF(current);
+	}
 }
 
 void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
@@ -92,6 +91,8 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 			SG_ERROR("Not possible to add child which has no name.\n");
 		}
 	}
+
+	SG_REF(child);
 	m_child_nodes.append_element(child);
 }
 
@@ -379,7 +380,7 @@ void CModelSelectionParameters::get_combinations(
 		SG_ERROR("Illegal CModelSelectionParameters node type.\n");
 }
 
-void CModelSelectionParameters::print(int prefix_num)
+void CModelSelectionParameters::print_tree(int prefix_num)
 {
 	/* prefix is enlarged */
 	char* prefix=new char[prefix_num+1];
@@ -397,7 +398,7 @@ void CModelSelectionParameters::print(int prefix_num)
 
 		/* cast safe because only CModelSelectionParameters are added to list */
 		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
-			m_child_nodes[i]->print(prefix_num+1);
+			m_child_nodes[i]->print_tree(prefix_num+1);
 	}
 	else
 	{
