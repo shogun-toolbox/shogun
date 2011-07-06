@@ -53,7 +53,7 @@ public:
 	 * @param prefix number of '\t' signs that will be prefixed for every output.
 	 * At each recursion level, one is added.
 	 */
-	void print(int prefix_num=0);
+	void print_tree(int prefix_num=0);
 
 	/** constructor for a name node */
 	ParameterCombination(const char* name);

@@ -46,7 +46,7 @@ void ParameterCombination::append_child(ParameterCombination* child)
 	m_child_nodes->append_element(child);
 }
 
-void ParameterCombination::print(int prefix_num)
+void ParameterCombination::print_tree(int prefix_num)
 {
 	/* prefix is enlarged */
 	char* prefix=new char[prefix_num+1];
@@ -90,7 +90,7 @@ void ParameterCombination::print(int prefix_num)
 	SG_SPRINT("\n");
 
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
-		m_child_nodes->get_element(i)->print(prefix_num+1);
+		m_child_nodes->get_element(i)->print_tree(prefix_num+1);
 
 	delete[] prefix;
 }
