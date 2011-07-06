@@ -15,6 +15,7 @@
 #include <cblas.h>
 #include "lib/lapack.h"
 #include "lib/common.h"
+#include "lib/Mathematics.h"
 #include "lib/io.h"
 #include <string.h>
 
@@ -61,7 +62,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// specify method for selecting implicit shifts (1 - exact shifts) 
 	iparam[0] = 1;
 	// specify max number of iterations
-	iparam[2] = 3*n;
+	iparam[2] = n;
 	// set the computation mode (1 for regular or 3 for shift-inverse)
 	iparam[6] = mode;
 
@@ -81,54 +82,35 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// All
 	char* all_ = strdup("All");
 
-	// main computation loop
 	// shift-invert mode
 	if (mode==3)
 	{
 		for (int i=0; i<n; i++)
 			matrix[i*n+i] -= shift;
 
-		// cholesky inverse
-		clapack_dpotri(CblasColMajor,CblasUpper,n,matrix,n);
-
-		do 
-		{
-			dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
-			        &ncv, v, &ldv, iparam, ipntr, workd, workl,
-			        &lworkl, &info);
-
-			if ((ido==1)||(ido==-1))
-			{
-				// symmetrical matvec 
-				cblas_dsymv(CblasColMajor,CblasUpper,
-				            n,1.0,matrix,n,
-				            workd+ipntr[0]-1,1,
-				            0.0, workd+ipntr[1]-1,1);
-			}
-		} while ((ido==1)||(ido==-1));
-	} 
-	// regular mode
-	if (mode==1)
-	{
-		do	 
-		{
-			dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
-		        	&ncv, v, &ldv, iparam, ipntr, workd, workl,
-		        	&lworkl, &info);
-
-			if ((ido==1)||(ido==-1))
-			{
-				// general matvec
-				cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-			        	    n, 1, n,
-					    1.0, matrix, n,
-				            (workd+ipntr[0]-1), n,
-				            0.0, (workd+ipntr[1]-1), n);		
-			}
-		} while ((ido==1)||(ido==-1));
-	
+		int* ipiv = new int[n*n];
+		clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
+		clapack_dgetri(CblasColMajor,n,matrix,n,ipiv);
+		delete[] ipiv;
 	}
+	// main computation loop 
+	do	 
+	{
+		dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
+	        	&ncv, v, &ldv, iparam, ipntr, workd, workl,
+	        	&lworkl, &info);
 
+		if ((ido==1)||(ido==-1))
+		{
+			// general matvec
+			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
+		        	    n, 1, n,
+				    1.0, matrix, n,
+			            (workd+ipntr[0]-1), n,
+			            0.0, (workd+ipntr[1]-1), n);		
+		}
+	} while ((ido==1)||(ido==-1));
+	
 	// check if DSAUPD failed
 	if (info<0) 
 	{
@@ -143,7 +125,6 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	}
 	else 
 	{
-		SG_SDEBUG("DSAUPD finished. Taken %d iterations.\n", iparam[2]);
 		if (info==1)
 			SG_SDEBUG("Maximum number of iterations reached.\n");
 			
@@ -152,7 +133,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		// allocate d to hold eigenvalues
 		double* d = new double[2*ncv];
 		// sigma for dseupd
-		double sigma;
+		double sigma = shift;
 		
 		// init ierr indicating dseupd possible errors
 		int ierr = 0;
