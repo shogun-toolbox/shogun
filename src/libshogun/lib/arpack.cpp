@@ -10,12 +10,11 @@
 
 #include "lib/arpack.h"
 #ifdef HAVE_ARPACK
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 #include "lib/config.h"
 #include <cblas.h>
 #include "lib/lapack.h"
 #include "lib/common.h"
-#include "lib/Mathematics.h"
 #include "lib/io.h"
 #include <string.h>
 
@@ -83,16 +82,20 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	char* all_ = strdup("All");
 
 	// shift-invert mode
+	#ifdef HAVE_ATLAS
 	if (mode==3)
 	{
 		for (int i=0; i<n; i++)
 			matrix[i*n+i] -= shift;
 
-		int* ipiv = new int[n*n];
+		int* ipiv = new int[n];
 		clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 		clapack_dgetri(CblasColMajor,n,matrix,n,ipiv);
 		delete[] ipiv;
 	}
+	#else /* HAVE_ATLAS */
+	SG_SWARNING("Mode 3 (shift-inverse) is not supported without ATLAS");
+	#endif 
 	// main computation loop 
 	do	 
 	{
@@ -179,5 +182,5 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 };
 
 }
-#endif /* HAVE_ATLAS */
+#endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */
