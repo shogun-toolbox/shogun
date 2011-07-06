@@ -1,5 +1,5 @@
-#ifndef _SVMSGD_H___
-#define _SVMSGD_H___
+#ifndef _ONLINESVMSGD_H___
+#define _ONLINESVMSGD_H___
 
 /*
    SVM with stochastic gradient
@@ -22,15 +22,15 @@
    Shogun adjustments (w) 2008 Soeren Sonnenburg
 */
 
-#include "lib/common.h"
-#include "machine/LinearMachine.h"
-#include "features/DotFeatures.h"
-#include "features/Labels.h"
+#include <shogun/lib/common.h>
+#include "machine/OnlineLinearMachine.h"
+#include <shogun/features/StreamingDotFeatures.h>
+#include <shogun/features/Labels.h>
 
 namespace shogun
 {
 /** @brief class SVMSGD */
-class CSVMSGD : public CLinearMachine
+class CSVMSGD : public COnlineLinearMachine
 {
 	public:
 		/** default constructor  */
@@ -48,9 +48,7 @@ class CSVMSGD : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CSVMSGD(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
+		CSVMSGD(float64_t C, CStreamingDotFeatures* traindat);
 
 		virtual ~CSVMSGD();
 
@@ -130,14 +128,19 @@ class CSVMSGD : public CLinearMachine
 		inline virtual const char* get_name() const { return "SVMSGD"; }
 
 	protected:
-		/** calibrate */
-		void calibrate();
+		/** calibrate
+		 *
+		 * @param max_vec_num Maximum number of vectors to calibrate using
+		 * (optional) if set to -1, tries to calibrate using all vectors
+		 * */
+		void calibrate(int32_t max_vec_num=100);
 
 	private:
 		void init();
 
 	private:
 		float64_t t;
+		float64_t lambda;
 		float64_t C1;
 		float64_t C2;
 		float64_t wscale;
