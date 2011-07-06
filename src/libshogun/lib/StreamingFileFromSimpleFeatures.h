@@ -140,78 +140,46 @@ void CStreamingFileFromSimpleFeatures<T>::init()
 /* Functions to return the vector from the SimpleFeatures object
  * If the class is of type T, specialize this function to work for
  * vectors of that type. */
-#define GET_VECTOR(sg_type)						\
-	template <>							\
-	void CStreamingFileFromSimpleFeatures<sg_type>::get_vector(sg_type*& vector, int32_t& num_feat) \
-	{								\
-		if (vector_num >= features->get_num_vectors())		\
-		{							\
-			vector=NULL;					\
-			num_feat=-1;					\
-			return;						\
-		}							\
-									\
-		SGVector<sg_type> sg_vector=				\
-			features->get_feature_vector(vector_num);	\
-									\
-		vector = sg_vector.vector;				\
-		num_feat = sg_vector.vlen;;				\
-		vector_num++;						\
-									\
+template <class T>
+void CStreamingFileFromSimpleFeatures<T>::get_vector(T*& vector, int32_t& num_feat)
+{
+	if (vector_num >= features->get_num_vectors())
+	{
+		vector=NULL;
+		num_feat=-1;
+		return;
 	}
 
-GET_VECTOR(bool)
-GET_VECTOR(uint8_t)
-GET_VECTOR(char)
-GET_VECTOR(int32_t)
-GET_VECTOR(float32_t)
-GET_VECTOR(float64_t)
-GET_VECTOR(int16_t)
-GET_VECTOR(uint16_t)
-GET_VECTOR(int8_t)
-GET_VECTOR(uint32_t)
-GET_VECTOR(int64_t)
-GET_VECTOR(uint64_t)
-GET_VECTOR(floatmax_t)
-#undef GET_VECTOR
+	SGVector<T> sg_vector=
+		features->get_feature_vector(vector_num);
+
+	vector = sg_vector.vector;
+	num_feat = sg_vector.vlen;;
+	vector_num++;
+
+}
 
 /* Functions to return the vector from the SimpleFeatures object with label */
-#define GET_VECTOR_AND_LABEL(sg_type)					\
-	template <>							\
-	void CStreamingFileFromSimpleFeatures<sg_type>::get_vector_and_label\
-	(sg_type*& vector, int32_t& num_feat, float64_t& label)		\
-	{								\
-		if (vector_num >= features->get_num_vectors())		\
-		{							\
-			vector=NULL;					\
-			num_feat=-1;					\
-			return;						\
-		}							\
-									\
-		SGVector<sg_type> sg_vector				\
-			=features->get_feature_vector(vector_num);	\
-									\
-		vector = sg_vector.vector;				\
-		num_feat = sg_vector.vlen;				\
-		label = labels[vector_num];				\
-									\
-		vector_num++;						\
+template <class T>
+void CStreamingFileFromSimpleFeatures<T>::get_vector_and_label
+(T*& vector, int32_t& num_feat, float64_t& label)
+{
+	if (vector_num >= features->get_num_vectors())
+	{
+		vector=NULL;
+		num_feat=-1;
+		return;
 	}
 
-GET_VECTOR_AND_LABEL(bool)
-GET_VECTOR_AND_LABEL(uint8_t)
-GET_VECTOR_AND_LABEL(char)
-GET_VECTOR_AND_LABEL(int32_t)
-GET_VECTOR_AND_LABEL(float32_t)
-GET_VECTOR_AND_LABEL(float64_t)
-GET_VECTOR_AND_LABEL(int16_t)
-GET_VECTOR_AND_LABEL(uint16_t)
-GET_VECTOR_AND_LABEL(int8_t)
-GET_VECTOR_AND_LABEL(uint32_t)
-GET_VECTOR_AND_LABEL(int64_t)
-GET_VECTOR_AND_LABEL(uint64_t)
-GET_VECTOR_AND_LABEL(floatmax_t)
-#undef GET_VECTOR_AND_LABEL
+	SGVector<T> sg_vector
+		=features->get_feature_vector(vector_num);
+
+	vector = sg_vector.vector;
+	num_feat = sg_vector.vlen;
+	label = labels[vector_num];
+
+	vector_num++;
+}
 
 }
 #endif //__STREAMING_FILEFROMSIMPLE_H__
