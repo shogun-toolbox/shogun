@@ -122,13 +122,9 @@ public:
 	 * @result result all trees of parameter combinations are put into here
 	 *
 	 */
-	DynArray<ParameterCombination*>* get_combinations();
+	DynArray<CParameterCombination*>* get_combinations();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
+	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
 	{
 		return "ModelSelectionParameters";

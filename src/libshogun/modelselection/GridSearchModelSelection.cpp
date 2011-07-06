@@ -34,14 +34,14 @@ CGridSearchModelSelection::~CGridSearchModelSelection()
 {
 }
 
-ParameterCombination* CGridSearchModelSelection::select_model(
+CParameterCombination* CGridSearchModelSelection::select_model(
 		float64_t& best_result)
 {
 	/* Retrieve all possible parameter combinations */
-	DynArray<ParameterCombination*>* combinations=
+	DynArray<CParameterCombination*>* combinations=
 			m_model_parameters->get_combinations();
 
-	ParameterCombination* best_combination=NULL;
+	CParameterCombination* best_combination=NULL;
 	if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
 		best_result=CMath::ALMOST_NEG_INFTY;
 	else

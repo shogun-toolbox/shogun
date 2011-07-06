@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 	tree->print_tree();
 
 	/* build combinations of parameter trees */
-	DynArray<ParameterCombination*>* combinations=tree->get_combinations();
+	DynArray<CParameterCombination*>* combinations=tree->get_combinations();
 
 	/* print and directly delete them all */
 	SG_SPRINT("----------------------------------\n");

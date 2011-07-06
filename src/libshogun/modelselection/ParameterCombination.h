@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef __PARAMETERCOMBINATION_H_
-#define __PARAMETERCOMBINATION_H_
+#ifndef __PARAMETERCOMBINATION_H__
+#define __PARAMETERCOMBINATION_H__
 
 #include "base/DynArray.h"
 
@@ -42,11 +42,11 @@ class Parameter;
  * Again: Leafs of the tree may only be Parameter nodes.
  *
  */
-class ParameterCombination
+class CParameterCombination
 {
 public:
 	/** constructor for a root node */
-	ParameterCombination();
+	CParameterCombination();
 
 	/** Prints a representation of the current node
 	 *
@@ -56,19 +56,19 @@ public:
 	void print_tree(int prefix_num=0);
 
 	/** constructor for a name node */
-	ParameterCombination(const char* name);
+	CParameterCombination(const char* name);
 
 	/** constructor for a Parameter node */
-	ParameterCombination(Parameter* param);
+	CParameterCombination(Parameter* param);
 
 	/** destructor */
-	~ParameterCombination();
+	~CParameterCombination();
 
 	/** appends a child to this node
 	 *
 	 * @param child child to append
 	 */
-	void append_child(ParameterCombination* child);
+	void append_child(CParameterCombination* child);
 
 	/** Copies the complete tree of this node. Note that nodes are actually
 	 * copied. If this is a parameter node, a NEW Parameter instance to the same
@@ -76,7 +76,7 @@ public:
 	 *
 	 * @return copy of the tree with this node as root as described above
 	 */
-	ParameterCombination* copy_tree();
+	CParameterCombination* copy_tree();
 
 	/** Destroys the current node. Possibly also data and recursively for all
 	 * child nodes. Do NOT destroy data if nodes contain Parameter instances
@@ -112,9 +112,9 @@ public:
 	 * @param result result set of tree combinations
 	 */
 	static void leaf_sets_multiplication(
-			DynArray<DynArray<ParameterCombination*>*>& sets,
-			ParameterCombination* new_root,
-			DynArray<ParameterCombination*>& result);
+			DynArray<DynArray<CParameterCombination*>*>& sets,
+			CParameterCombination* new_root,
+			DynArray<CParameterCombination*>& result);
 
 	/** checks whether this node has children
 	 *
@@ -124,14 +124,20 @@ public:
 
 	void apply_to_parameter(Parameter* parameter);
 
+	/** @return name of the SGSerializable */
+	inline virtual const char* get_name() const
+	{
+		return "ParameterCombination";
+	}
+
 private:
 	void init();
 
 private:
 	const char* m_node_name;
 	Parameter* m_param;
-	DynArray<ParameterCombination*>* m_child_nodes;
+	DynArray<CParameterCombination*>* m_child_nodes;
 };
 }
 
-#endif /* __PARAMETERCOMBINATION_H_ */
+#endif /* __PARAMETERCOMBINATION_H__ */

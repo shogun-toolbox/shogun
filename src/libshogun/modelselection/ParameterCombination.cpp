@@ -13,40 +13,40 @@
 
 using namespace shogun;
 
-ParameterCombination::ParameterCombination()
+CParameterCombination::CParameterCombination()
 {
 	m_param=NULL;
 	m_node_name=NULL;
-	m_child_nodes=new DynArray<ParameterCombination*> ();
+	m_child_nodes=new DynArray<CParameterCombination*> ();
 }
 
-ParameterCombination::ParameterCombination(const char* name) :
+CParameterCombination::CParameterCombination(const char* name) :
 	m_node_name(name)
 {
 	m_param=NULL;
-	m_child_nodes=new DynArray<ParameterCombination*> ();
+	m_child_nodes=new DynArray<CParameterCombination*> ();
 
 }
 
-ParameterCombination::ParameterCombination(Parameter* param) :
+CParameterCombination::CParameterCombination(Parameter* param) :
 	m_param(param)
 {
 	m_node_name=NULL;
-	m_child_nodes=new DynArray<ParameterCombination*> ();
+	m_child_nodes=new DynArray<CParameterCombination*> ();
 
 }
 
-ParameterCombination::~ParameterCombination()
+CParameterCombination::~CParameterCombination()
 {
 	delete m_child_nodes;
 }
 
-void ParameterCombination::append_child(ParameterCombination* child)
+void CParameterCombination::append_child(CParameterCombination* child)
 {
 	m_child_nodes->append_element(child);
 }
 
-void ParameterCombination::print_tree(int prefix_num)
+void CParameterCombination::print_tree(int prefix_num)
 {
 	/* prefix is enlarged */
 	char* prefix=new char[prefix_num+1];
@@ -95,7 +95,7 @@ void ParameterCombination::print_tree(int prefix_num)
 	delete[] prefix;
 }
 
-void ParameterCombination::parameter_set_multiplication(
+void CParameterCombination::parameter_set_multiplication(
 		DynArray<Parameter*>& set_1, DynArray<Parameter*>& set_2,
 		DynArray<Parameter*>& result)
 {
@@ -118,10 +118,10 @@ void ParameterCombination::parameter_set_multiplication(
 		delete set_2[i];
 }
 
-void ParameterCombination::leaf_sets_multiplication(
-		DynArray<DynArray<ParameterCombination*>*>& sets,
-		ParameterCombination* new_root,
-		DynArray<ParameterCombination*>& result)
+void CParameterCombination::leaf_sets_multiplication(
+		DynArray<DynArray<CParameterCombination*>*>& sets,
+		CParameterCombination* new_root,
+		DynArray<CParameterCombination*>& result)
 {
 	/* check marginal cases */
 	if (sets.get_num_elements()==1)
@@ -136,7 +136,7 @@ void ParameterCombination::leaf_sets_multiplication(
 		for (index_t i=0; i<result.get_num_elements(); ++i)
 		{
 			/* put new root as root into the tree and replace tree */
-			ParameterCombination* root=new_root->copy_tree();
+			CParameterCombination* root=new_root->copy_tree();
 			root->append_child(result[i]);
 			result.set_element(root, i);
 		}
@@ -150,12 +150,12 @@ void ParameterCombination::leaf_sets_multiplication(
 
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
-			DynArray<ParameterCombination*>* current_set=sets[set_nr];
+			DynArray<CParameterCombination*>* current_set=sets[set_nr];
 			param_sets.append_element(new DynArray<Parameter*> ());
 
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
 			{
-				ParameterCombination* current_node=current_set->get_element(i);
+				CParameterCombination* current_node=current_set->get_element(i);
 
 				if (current_node->m_child_nodes->get_num_elements())
 				{
@@ -202,11 +202,11 @@ void ParameterCombination::leaf_sets_multiplication(
 		for (index_t i=0; i<param_product->get_num_elements(); ++i)
 		{
 			/* build parameter node from parameter product to append to root */
-			ParameterCombination* param_node=new ParameterCombination(
+			CParameterCombination* param_node=new CParameterCombination(
 					param_product->get_element(i));
 
 			/* copy new root node, has to be a new one each time */
-			ParameterCombination* root=new_root->copy_tree();
+			CParameterCombination* root=new_root->copy_tree();
 
 			/* append both and add them to result set */
 			root->append_child(param_node);
@@ -220,7 +220,7 @@ void ParameterCombination::leaf_sets_multiplication(
 		 * array */
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
-			DynArray<ParameterCombination*>* current_set=sets[set_nr];
+			DynArray<CParameterCombination*>* current_set=sets[set_nr];
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
 				delete current_set->get_element(i);
 
@@ -237,7 +237,7 @@ void ParameterCombination::leaf_sets_multiplication(
 	new_root->destroy(true, true);
 }
 
-void ParameterCombination::destroy(bool recursive, bool destroy_data)
+void CParameterCombination::destroy(bool recursive, bool destroy_data)
 {
 	if (destroy_data)
 		delete m_param;
@@ -251,9 +251,9 @@ void ParameterCombination::destroy(bool recursive, bool destroy_data)
 	delete this;
 }
 
-ParameterCombination* ParameterCombination::copy_tree()
+CParameterCombination* CParameterCombination::copy_tree()
 {
-	ParameterCombination* copy=new ParameterCombination();
+	CParameterCombination* copy=new CParameterCombination();
 
 	/* use name of original */
 	copy->m_node_name=m_node_name;
@@ -278,7 +278,7 @@ ParameterCombination* ParameterCombination::copy_tree()
 	return copy;
 }
 
-void ParameterCombination::apply_to_parameter(Parameter* parameter)
+void CParameterCombination::apply_to_parameter(Parameter* parameter)
 {
 	/* case root node or name node */
 	if ((!m_node_name && !m_param) || (m_node_name && !m_param))
@@ -300,7 +300,7 @@ void ParameterCombination::apply_to_parameter(Parameter* parameter)
 			if (m_param->get_num_parameters()>1 ||
 					m_param->get_parameter(0)->m_datatype.m_ptype!=PT_SGOBJECT)
 			{
-				SG_SERROR("invalid ParameterCombination node type, has children"
+				SG_SERROR("invalid CParameterCombination node type, has children"
 						" and more than one parameter or is not a "
 						"CSGObject.\n");
 			}
@@ -324,6 +324,6 @@ void ParameterCombination::apply_to_parameter(Parameter* parameter)
 			parameter->set_from_parameters(m_param);
 	}
 	else
-		SG_SERROR("ParameterCombination node has illegal type.\n");
+		SG_SERROR("CParameterCombination node has illegal type.\n");
 
 }
