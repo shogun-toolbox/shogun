@@ -42,19 +42,19 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 /* One dimensional input/output arrays */
 #ifdef HAVE_JBLAS
 /* Two dimensional input/output arrays */
-%define TYPEMAP_SGVECTOR(SGTYPE)
+%define TYPEMAP_SGVECTOR(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
 %typemap(jni) shogun::SGVector<SGTYPE>		%{jobject%}
-%typemap(jtype) shogun::SGVector<SGTYPE>		%{DoubleMatrix%}
-%typemap(jstype) shogun::SGVector<SGTYPE> 	%{DoubleMatrix%}
+%typemap(jtype) shogun::SGVector<SGTYPE>		%{##JAVATYPE##Matrix%}
+%typemap(jstype) shogun::SGVector<SGTYPE> 	%{##JAVATYPE##Matrix%}
 
 %typemap(in) shogun::SGVector<SGTYPE>
 {
 	jclass cls;
 	jmethodID mid;
 	SGTYPE *array;
-	jdoubleArray jarr;
-	jdouble *carr;
+	##JNITYPE##Array jarr;
+	JNITYPE *carr;
 	int32_t i, cols;
 	bool isVector;
 
@@ -87,18 +87,18 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 		return $null;
 	}
 
-	mid = JCALL3(GetMethodID, jenv, cls, "toArray", "()[D");
+	mid = JCALL3(GetMethodID, jenv, cls, "toArray", TOARRAY);
 	if (!mid)
 		return $null;
 
-	jarr = (jdoubleArray)JCALL2(CallObjectMethod, jenv, $input, mid);
-	carr = JCALL2(GetDoubleArrayElements, jenv, jarr, 0);
+	jarr = (##JNITYPE##Array)JCALL2(CallObjectMethod, jenv, $input, mid);
+	carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
 	array = new SGTYPE[cols];
 	for (i = 0; i < cols; i++) {
 		array[i] = (SGTYPE)carr[i];
 	}
 
-	JCALL3(ReleaseDoubleArrayElements, jenv, jarr, carr, 0);
+	JCALL3(Release##JAVATYPE##ArrayElements, jenv, jarr, carr, 0);
 
     $1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, cols);
 }
@@ -107,32 +107,32 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 {
 	int32_t rows = 1;
 	int32_t cols = $1.vlen;
-	jdouble arr[cols];
+	JNITYPE arr[cols];
 	jobject res;
 	int32_t i;
 
 	jclass cls;
 	jmethodID mid;
 
-	cls = JCALL1(FindClass, jenv, "org/jblas/DoubleMatrix");
+	cls = JCALL1(FindClass, jenv, CLASSDESC);
 	if (!cls)
 		return $null;
 
-	mid = JCALL3(GetMethodID, jenv, cls, "<init>", "(II[D)V");
+	mid = JCALL3(GetMethodID, jenv, cls, "<init>", CONSTRUCTOR);
 	if (!mid)
 		return $null;
 
-	jdoubleArray jarr = (jdoubleArray)JCALL1(NewDoubleArray, jenv, cols);
+	##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, cols);
 	if (!jarr)
 		return $null;
 
 	for (i = 0; i < cols; i++) {
-		arr[i] = (jdouble)$1.vector[i];
+		arr[i] = (JNITYPE)$1.vector[i];
 	}
 
     $1.free_vector();
 
-	JCALL4(SetDoubleArrayRegion, jenv, jarr, 0, cols, arr);
+	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, cols, arr);
 
 	res = JCALL5(NewObject, jenv, cls, mid, rows, cols, jarr);
 	$result = (jobject)res;
@@ -146,18 +146,18 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGVector macros */
-TYPEMAP_SGVECTOR(bool)
-TYPEMAP_SGVECTOR(char)
-TYPEMAP_SGVECTOR(uint8_t)
-TYPEMAP_SGVECTOR(int16_t)
-TYPEMAP_SGVECTOR(uint16_t)
-TYPEMAP_SGVECTOR(int32_t)
-TYPEMAP_SGVECTOR(uint32_t)
-TYPEMAP_SGVECTOR(int64_t)
-TYPEMAP_SGVECTOR(uint64_t)
-TYPEMAP_SGVECTOR(long long)
-TYPEMAP_SGVECTOR(float32_t)
-TYPEMAP_SGVECTOR(float64_t)
+TYPEMAP_SGVECTOR(bool, boolean, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(char, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(uint8_t, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(int16_t, short, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(uint16_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(int32_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(uint32_t, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(int64_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(uint64_t, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(long long, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix","(II[F)V")
+TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
 #undef TYPEMAP_SGVECTOR
 
@@ -300,19 +300,19 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 
 #ifdef HAVE_JBLAS
 /* Two dimensional input/output arrays */
-%define TYPEMAP_SGMATRIX(SGTYPE)
+%define TYPEMAP_SGMATRIX(SGTYPE, JTYPE, JAVATYPE, JNITYPE, TOARRAY, CLASSDESC, CONSTRUCTOR)
 
 %typemap(jni) shogun::SGMatrix<SGTYPE>		%{jobject%}
-%typemap(jtype) shogun::SGMatrix<SGTYPE>		%{DoubleMatrix%}
-%typemap(jstype) shogun::SGMatrix<SGTYPE> 	%{DoubleMatrix%}
+%typemap(jtype) shogun::SGMatrix<SGTYPE>		%{##JAVATYPE##Matrix%}
+%typemap(jstype) shogun::SGMatrix<SGTYPE> 	%{##JAVATYPE##Matrix%}
 
 %typemap(in) shogun::SGMatrix<SGTYPE>
 {
 	jclass cls;
 	jmethodID mid;
 	SGTYPE *array;
-	jdoubleArray jarr;
-	jdouble *carr;
+	##JNITYPE##Array jarr;
+	JNITYPE *carr;
 	int32_t i,len, rows, cols;
 
 	if (!$input) {
@@ -324,19 +324,19 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	if (!cls)
 		return $null;
 
-	mid = JCALL3(GetMethodID, jenv, cls, "toArray", "()[D");
+	mid = JCALL3(GetMethodID, jenv, cls, "toArray", TOARRAY);
 	if (!mid)
 		return $null;
 
-	jarr = (jdoubleArray)JCALL2(CallObjectMethod, jenv, $input, mid);
-	carr = JCALL2(GetDoubleArrayElements, jenv, jarr, 0);
+	jarr = (##JNITYPE##Array)JCALL2(CallObjectMethod, jenv, $input, mid);
+	carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
 	len = JCALL1(GetArrayLength, jenv, jarr);
 	array = new SGTYPE[len];
 	for (i = 0; i < len; i++) {
 		array[i] = (SGTYPE)carr[i];
 	}
 
-	JCALL3(ReleaseDoubleArrayElements, jenv, jarr, carr, 0);
+	JCALL3(Release##JAVATYPE##ArrayElements, jenv, jarr, carr, 0);
 
 	mid = JCALL3(GetMethodID, jenv, cls, "getRows", "()I");
 	if (!mid)
@@ -358,29 +358,29 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	int32_t rows = $1.num_rows;
 	int32_t cols = $1.num_cols;
 	int64_t len = int64_t(rows) * cols;
-	jdouble arr[len];
+	JNITYPE arr[len];
 	jobject res;
 
 	jclass cls;
 	jmethodID mid;
 
-	cls = JCALL1(FindClass, jenv, "org/jblas/DoubleMatrix");
+	cls = JCALL1(FindClass, jenv, CLASSDESC);
 	if (!cls)
 		return $null;
 
-	mid = JCALL3(GetMethodID, jenv, cls, "<init>", "(II[D)V");
+	mid = JCALL3(GetMethodID, jenv, cls, "<init>", CONSTRUCTOR);
 	if (!mid)
 		return $null;
 
-	jdoubleArray jarr = (jdoubleArray)JCALL1(NewDoubleArray, jenv, len);
+	##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, len);
 	if (!jarr)
 		return $null;
 
 	for (int64_t i = 0; i < len; i++) {
-		arr[i] = (jdouble)$1.matrix[i];
+		arr[i] = (JNITYPE)$1.matrix[i];
 	}
 	$1.free_matrix();
-	JCALL4(SetDoubleArrayRegion, jenv, jarr, 0, len, arr);
+	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, len, arr);
 
 	res = JCALL5(NewObject, jenv, cls, mid, rows, cols, jarr);
 	$result = (jobject)res;
@@ -394,18 +394,18 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGMATRIX macros */
-TYPEMAP_SGMATRIX(bool)
-TYPEMAP_SGMATRIX(char)
-TYPEMAP_SGMATRIX(uint8_t)
-TYPEMAP_SGMATRIX(int16_t)
-TYPEMAP_SGMATRIX(uint16_t)
-TYPEMAP_SGMATRIX(int32_t)
-TYPEMAP_SGMATRIX(uint32_t)
-TYPEMAP_SGMATRIX(int64_t)
-TYPEMAP_SGMATRIX(uint64_t)
-TYPEMAP_SGMATRIX(long long)
-TYPEMAP_SGMATRIX(float32_t)
-TYPEMAP_SGMATRIX(float64_t)
+TYPEMAP_SGMATRIX(bool, boolean, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(char, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(uint8_t, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(int16_t, short, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(uint16_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(int32_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(uint32_t, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(int64_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(uint64_t, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(long long, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix","(II[F)V")
+TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
 #undef TYPEMAP_SGMATRIX
 
