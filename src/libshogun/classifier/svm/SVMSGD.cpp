@@ -20,9 +20,9 @@
    Shogun adjustments (w) 2008-2009 Soeren Sonnenburg
 */
 
-#include "classifier/svm/SVMSGD.h"
-#include "base/Parameter.h"
-#include "lib/Signal.h"
+#include "SVMSGD.h"
+#include <shogun/base/Parameter.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 
@@ -103,13 +103,13 @@ float64_t dloss(float64_t z)
 
 
 CSVMSGD::CSVMSGD()
-: CLinearMachine()
+: COnlineLinearMachine()
 {
 	init();
 }
 
 CSVMSGD::CSVMSGD(float64_t C)
-: CLinearMachine()
+: COnlineLinearMachine()
 {
 	init();
 
@@ -117,15 +117,14 @@ CSVMSGD::CSVMSGD(float64_t C)
 	C2=C;
 }
 
-CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine()
+CSVMSGD::CSVMSGD(float64_t C, CStreamingDotFeatures* traindat)
+: COnlineLinearMachine()
 {
 	init();
 	C1=C;
 	C2=C;
 
 	set_features(traindat);
-	set_labels(trainlab);
 }
 
 CSVMSGD::~CSVMSGD()
@@ -134,32 +133,23 @@ CSVMSGD::~CSVMSGD()
 
 bool CSVMSGD::train(CFeatures* data)
 {
-	// allocate memory for w and initialize everyting w and bias with 0
-	ASSERT(labels);
-
 	if (data)
 	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
-		set_features((CDotFeatures*) data);
+		if (!data->has_property(FP_STREAMING_DOT))
+			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
+		set_features((CStreamingDotFeatures*) data);
 	}
 
+	features->start_parser();
+	
+	// allocate memory for w and initialize everyting w and bias with 0
 	ASSERT(features);
-	ASSERT(labels->is_two_class_labeling());
-
-	int32_t num_train_labels=labels->get_num_labels();
-	w_dim=features->get_dim_feature_space();
-	int32_t num_vec=features->get_num_vectors();
-
-	ASSERT(num_vec==num_train_labels);
-	ASSERT(num_vec>0);
-
-	delete[] w;
-	w=new float64_t[w_dim];
-	memset(w, 0, w_dim*sizeof(float64_t));
+	ASSERT(features->get_has_labels());
+	if (w)
+		delete[] w;
+	w_dim=1;
+	w=new float64_t;
 	bias=0;
-
-	float64_t lambda= 1.0/(C1*num_vec);
 
 	// Shift t in order to have a 
 	// reasonable initial learning rate.
@@ -170,29 +160,35 @@ bool CSVMSGD::train(CFeatures* data)
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
-
-
+	
 	//do the sgd
 	calibrate();
+	if (features->is_seekable())
+		features->reset_stream();
 
-	SG_INFO("Training on %d vectors\n", num_vec);
 	CSignal::clear_cancel();
-
+	
+	int32_t vec_count=0;
 	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
 	{
+		vec_count=0;
 		count = skip;
-		for (int32_t i=0; i<num_vec; i++)
+		while (features->get_next_example())
 		{
+			vec_count++;
+			// Expand w vector if more features are seen
+			features->expand_if_required(w, w_dim);
+				
 			float64_t eta = 1.0 / (lambda * t);
-			float64_t y = labels->get_label(i);
-			float64_t z = y * (features->dense_dot(i, w, w_dim) + bias);
+			float64_t y = features->get_label();
+			float64_t z = y * (features->dense_dot(w, w_dim) + bias);
 
 #if LOSS < LOGLOSS
 			if (z < 1)
 #endif
 			{
 				float64_t etd = eta * dloss(z);
-				features->add_to_dense_vec(etd * y / wscale, i, w, w_dim);
+				features->add_to_dense_vec(etd * y / wscale, w, w_dim);
 
 				if (use_bias)
 				{
@@ -211,42 +207,51 @@ bool CSVMSGD::train(CFeatures* data)
 				count = skip;
 			}
 			t++;
+
+			features->release_example();
 		}
+
+		// If the stream is seekable, reset the stream to the first example (for epochs > 1)
+		if (features->is_seekable() && e < epochs-1)
+			features->reset_stream();
+		else
+			break;
+
 	}
 
+	features->end_parser();
 	float64_t wnorm =  CMath::dot(w,w, w_dim);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
 
 	return true;
 }
 
-void CSVMSGD::calibrate()
+void CSVMSGD::calibrate(int32_t max_vec_num)
 { 
-	ASSERT(features);
-	int32_t num_vec=features->get_num_vectors();
-	int32_t c_dim=features->get_dim_feature_space();
-
-	ASSERT(num_vec>0);
-	ASSERT(c_dim>0);
-
-	float64_t* c=new float64_t[c_dim];
-	memset(c, 0, c_dim*sizeof(float64_t));
-
-	SG_INFO("Estimating sparsity and bscale num_vec=%d num_feat=%d.\n", num_vec, c_dim);
-
+	int32_t c_dim=1;
+	float64_t* c=new float64_t;
+	
 	// compute average gradient size
 	int32_t n = 0;
 	float64_t m = 0;
 	float64_t r = 0;
 
-	for (int32_t j=0; j<num_vec && m<=1000; j++, n++)
+	int32_t counter=0;
+	while (features->get_next_example() && m<=1000)
 	{
-		r += features->get_nnz_features_for_vector(j);
-		features->add_to_dense_vec(1, j, c, c_dim, true);
+		features->expand_if_required(c, c_dim);
+			
+		r += features->get_nnz_features_for_vector();
+		features->add_to_dense_vec(1, c, c_dim, true);
 
 		//waste cpu cycles for readability
 		//(only changed dims need checking)
 		m=CMath::max(c, c_dim);
+		n++;
+
+		features->release_example();
+		if (n>=max_vec_num)
+			break;
 	}
 
 	// bias update scaling
@@ -254,6 +259,7 @@ void CSVMSGD::calibrate()
 
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
+
 	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
 
 	delete[] c;
@@ -264,22 +270,24 @@ void CSVMSGD::init()
 	t=1;
 	C1=1;
 	C2=1;
+	lambda=1e-4;
 	wscale=1;
 	bscale=1;
-	epochs=5;
+	epochs=1;
 	skip=1000;
 	count=1000;
 	use_bias=true;
 
 	use_regularized_bias=false;
 
-    m_parameters->add(&C1, "C1",  "Cost constant 1.");
-    m_parameters->add(&C2, "C2",  "Cost constant 2.");
-    m_parameters->add(&wscale, "wscale",  "W scale");
-    m_parameters->add(&bscale, "bscale",  "b scale");
-    m_parameters->add(&epochs, "epochs",  "epochs");
-    m_parameters->add(&skip, "skip",  "skip");
-    m_parameters->add(&count, "count",  "count");
-    m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
-    m_parameters->add(&use_regularized_bias, "use_regularized_bias",  "Indicates if bias is regularized.");
+	m_parameters->add(&C1, "C1",  "Cost constant 1.");
+	m_parameters->add(&C2, "C2",  "Cost constant 2.");
+	m_parameters->add(&lambda, "lambda", "Regularization parameter.");
+	m_parameters->add(&wscale, "wscale",  "W scale");
+	m_parameters->add(&bscale, "bscale",  "b scale");
+	m_parameters->add(&epochs, "epochs",  "epochs");
+	m_parameters->add(&skip, "skip",  "skip");
+	m_parameters->add(&count, "count",  "count");
+	m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
+	m_parameters->add(&use_regularized_bias, "use_regularized_bias",  "Indicates if bias is regularized.");
 }
