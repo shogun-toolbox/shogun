@@ -1383,8 +1383,9 @@ class CMath : public CSGObject
 			return -diff > LOGRANGE? q : q + logtable[(int)(-diff * LOGACCURACY)];
 		}
 
+		static SGVector<float64_t> fishers_exact_test_for_multiple_3x2_tables(SGMatrix<float64_t> tables, float64_t epsilon=1e-10);
 		
-		static float64_t fishers_exact_test_for_3x2_table(SGMatrix<float64_t> table);
+		static float64_t fishers_exact_test_for_3x2_table(SGMatrix<float64_t> table, float64_t epsilon=1e-10);
 
 		///init log table of form log(1+exp(x))
 		static void init_log_table();
