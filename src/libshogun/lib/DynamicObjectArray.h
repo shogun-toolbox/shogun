@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _DYNAMIC_ARRAY_PTR_H_
-#define _DYNAMIC_ARRAY_PTR_H_
+#ifndef _DYNAMIC_OBJECT_ARRAY_H_
+#define _DYNAMIC_OBJECT_ARRAY_H_
 
 #include "base/SGObject.h"
 #include "base/DynArray.h"
@@ -21,11 +21,10 @@ namespace shogun
  * be used like a list or an array.
  *
  * It grows and shrinks dynamically, while elements can be accessed
- * via index.  It is performance tuned for simple types like float
- * etc. and for hi-level objects only stores pointers, which are not
- * automagically SG_REF'd/deleted.
+ * via index.  It only stores CSGObject pointers, which ARE automagically
+ * SG_REF'd/deleted.
  */
-class CDynamicArrayPtr :public CSGObject
+class CDynamicObjectArray :public CSGObject
 {
 	DynArray<CSGObject*> m_array;
 
@@ -34,7 +33,7 @@ class CDynamicArrayPtr :public CSGObject
 		 *
 		 * @param p_resize_granularity resize granularity
 		 */
-		CDynamicArrayPtr(int32_t p_resize_granularity=128)
+		CDynamicObjectArray(int32_t p_resize_granularity=128)
 		: CSGObject()
 		{
 			m_parameters->add_vector(&m_array.array,
@@ -48,7 +47,7 @@ class CDynamicArrayPtr :public CSGObject
 							  "shrink/grow step size.");
 		}
 
-		virtual ~CDynamicArrayPtr() {}
+		virtual ~CDynamicObjectArray() {}
 
 		/** set the resize granularity
 		 *
@@ -80,7 +79,11 @@ class CDynamicArrayPtr :public CSGObject
 		 * @return array element at index
 		 */
 		inline CSGObject* get_element(int32_t index) const
-		{ return m_array.get_element(index); }
+		{
+			CSGObject* element=m_array.get_element(index);
+			SG_REF(element);
+			return element;
+		}
 
 		/** get array element at index
 		 *
@@ -90,7 +93,11 @@ class CDynamicArrayPtr :public CSGObject
 		 * @return array element at index
 		 */
 		inline CSGObject* get_element_safe(int32_t index) const
-		{ return m_array.get_element_safe(index); }
+		{
+			CSGObject* element=m_array.get_element_safe(index);
+			SG_REF(element);
+			return element;
+		}
 
 		/** set array element at index
 		 *
@@ -99,7 +106,16 @@ class CDynamicArrayPtr :public CSGObject
 		 * @return if setting was successful
 		 */
 		inline bool set_element(CSGObject* element, int32_t index)
-		{ return m_array.set_element(element, index); }
+		{
+			CSGObject* old=m_array.get_element(index);
+			SG_UNREF(old);
+
+			bool success=m_array.set_element(element, index);
+			if (success)
+				SG_REF(element);
+
+			return success;
+		}
 
 		/** insert array element at index
 		 *
@@ -108,7 +124,13 @@ class CDynamicArrayPtr :public CSGObject
 		 * @return if setting was successful
 		 */
 		inline bool insert_element(CSGObject* element, int32_t index)
-		{ return m_array.insert_element(element, index); }
+		{
+			bool success=m_array.insert_element(element, index);
+			if (success)
+				SG_REF(element);
+
+			return success;
+		}
 
 		/** append array element to the end of array
 		 *
@@ -116,7 +138,13 @@ class CDynamicArrayPtr :public CSGObject
 		 * @return if setting was successful
 		 */
 		inline bool append_element(CSGObject* element)
-		{ return m_array.append_element(element); }
+		{
+			bool success=m_array.append_element(element);
+			if (success)
+				SG_REF(element);
+
+			return success;
+		}
 
 	    /** ::STD::VECTOR compatible. Append array element to the end
 		 *  of array.
@@ -124,13 +152,21 @@ class CDynamicArrayPtr :public CSGObject
 		 * @param element element to append
 		 */
 		inline void push_back(CSGObject* element)
-		{ m_array.push_back(element); }
+		{
+			SG_REF(element);
+			m_array.push_back(element);
+		}
 
 	    /** ::STD::VECTOR compatible. Delete array element at the end
 		 *  of array.
 		 */
 		inline void pop_back(void)
-		{ m_array.pop_back(); }
+		{
+			CSGObject* element=m_array.back();
+			SG_UNREF(element);
+
+			m_array.pop_back();
+		}
 
 		/** ::STD::VECTOR compatible. Return array element at the end
 		 *  of array.
@@ -138,7 +174,11 @@ class CDynamicArrayPtr :public CSGObject
 		 * @return element at the end of array
 		 */
 		inline CSGObject* back(void)
-		{ return m_array.back(); }
+		{
+			CSGObject* element=m_array.back();
+			SG_REF(element);
+			return element;
+		}
 
 		/** find first occurence of array element and return its index
 		 * or -1 if not available
@@ -156,7 +196,12 @@ class CDynamicArrayPtr :public CSGObject
 		 * @return if deleting was successful
 		 */
 		inline bool delete_element(int32_t idx)
-		{ return m_array.delete_element(idx); }
+		{
+			CSGObject* element=m_array.get_element(idx);
+			SG_UNREF(element);
+
+			return m_array.delete_element(idx);
+		}
 
 		/** resize the array
 		 *
@@ -170,6 +215,8 @@ class CDynamicArrayPtr :public CSGObject
 		 * call get_array just before messing with it DO NOT call any
 		 * [],resize/delete functions after get_array(), the pointer may
 		 * become invalid !
+		 * Also, be carefull with SG_REF/SG_UNREF stuff if working directly on
+		 * array!
 		 *
 		 * @return the array
 		 */
@@ -185,11 +232,17 @@ class CDynamicArrayPtr :public CSGObject
 		inline void set_array(
 			CSGObject** p_array, int32_t p_num_elements,
 			int32_t array_size)
-		{ m_array.set_array(p_array, p_num_elements, array_size); }
+		{
+			unref_all();
+			m_array.set_array(p_array, p_num_elements, array_size);
+		}
 
 		/** clear the array (with zeros) */
 		inline void clear_array(void)
-		{ m_array.clear_array(); }
+		{
+			unref_all();
+			m_array.clear_array();
+		}
 
 		/** operator overload for array read only access
 		 * use set_element() for write access (will also make the array
@@ -201,22 +254,47 @@ class CDynamicArrayPtr :public CSGObject
 		 * @return element at index
 		 */
 		inline CSGObject* operator[](int32_t index) const
-		{ return m_array[index]; }
+		{
+			CSGObject* element=m_array[index];
+			SG_REF(element);
+
+			return element;
+		}
 
 		/** operator overload for array assignment
 		 *
 		 * @param orig original array
 		 * @return new array
 		 */
-		inline CDynamicArrayPtr& operator=(CDynamicArrayPtr& orig)
+		inline CDynamicObjectArray& operator=(CDynamicObjectArray& orig)
 		{
+			unref_all();
+
+			/* SG_REF all new elements */
+			for (index_t i=0; i<orig.get_num_elements(); ++i)
+			{
+				CSGObject* element=orig.get_element(i);
+				SG_REF(element);
+			}
+
 			m_array = orig.m_array;
 			return *this;
 		}
 
 		/** @return object name */
 		inline virtual const char* get_name() const
-		{ return "DynamicArrayPtr"; }
+		{ return "DynamicObjectArray"; }
+
+	private:
+		inline void unref_all()
+		{
+			/* SG_REF all new elements */
+			for (index_t i=0; i<m_array.get_num_elements(); ++i)
+			{
+				CSGObject* element=m_array.get_element(i);
+				SG_UNREF(element);
+			}
+		}
 };
 }
-#endif /* _DYNAMIC_ARRAY_PTR_H_  */
+#endif /* _DYNAMIC_OBJECT_ARRAY_H_  */
