@@ -140,7 +140,7 @@ int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
 #undef DGETRF
 
 int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
-                   const int lda, const int* ipiv)
+                   const int lda, int* ipiv)
 {
 	// now rowmajor?
 	int info=0;
@@ -154,11 +154,11 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 #else
 	int n=N;
 	int LDA=lda;
-	DGETRI(&n,A,&LDA,ipiv,work,-1,&info);
+	DGETRI(&n,A,&LDA,ipiv,work,&(-1),&info);
 	int lwork = (int) work[0];
 	delete[] work;
 	work = new double[lwork];
-	DGETRI(&n,A,&LDA,ipiv,work,lwork,&info);
+	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
 #endif
 	return info;
 }

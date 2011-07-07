@@ -49,7 +49,7 @@ int clapack_dpotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
                    double *A, const int lda, int *ipiv);
 int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
-                   const int lda, const int *ipiv);
+                   const int lda, int *ipiv);
 #endif
 
 namespace shogun
