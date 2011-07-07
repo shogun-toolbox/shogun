@@ -11,11 +11,11 @@
 def modelselection_parameter_tree_modular():
 	from shogun.Modelselection import ParameterCombination
 	from shogun.Modelselection import ModelSelectionParameters, R_EXP, R_LINEAR
+	from shogun.Modelselection import DynamicParameterCombinationPointerArray
 	from shogun.Kernel import PowerKernel
 	from shogun.Kernel import GaussianKernel
 	from shogun.Kernel import DistantSegmentsKernel
 	from shogun.Distance import MinkowskiMetric
-	from shogun.Library import DynamicRealArray
 
 	root=ModelSelectionParameters()
 
@@ -65,14 +65,11 @@ def modelselection_parameter_tree_modular():
 	param_ds_kernel_theta.set_range(1, 2, R_EXP)
 	param_ds_kernel.append_child(param_ds_kernel_theta)
 
-	root._print()
+	root.print_tree()
 
-	combinations=DynamicRealArray
-	root.get_combinations(combinations)
+	combinations=DynamicParameterCombinationPointerArray()
 
-	for combination in combinations:
-		combination._print()
-
+	return
 
 
 if __name__=='__main__':
