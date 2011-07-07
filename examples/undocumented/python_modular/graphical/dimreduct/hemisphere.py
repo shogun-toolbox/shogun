@@ -1,12 +1,12 @@
 import numpy
-tt = numpy.genfromtxt('../../../../data/toy/swissroll_color.dat',unpack=True).T
-X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
+tt = numpy.genfromtxt('../../../../../data/toy/hemisphere_color.dat',unpack=True).T
+X = numpy.genfromtxt('../../../../../data/toy/hemisphere.dat',unpack=True).T
 N = X.shape[1]
 preprocs = []
 
 from shogun.Preprocessor import LocallyLinearEmbedding
 lle = LocallyLinearEmbedding()
-lle.set_k(9)
+lle.set_k(20)
 preprocs.append((lle, "Locally Linear Embedding with k=%d" % lle.get_k()))
 
 from shogun.Preprocessor import ClassicMDS
@@ -42,7 +42,7 @@ plt.subplots_adjust(hspace=0.4)
 from shogun.Features import RealFeatures
 
 for (i, (preproc, label)) in enumerate(preprocs):
-	X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
+	X = numpy.genfromtxt('../../../../../data/toy/hemisphere.dat',unpack=True).T
 	features = RealFeatures(X)
 	preproc.set_target_dim(2)
 	new_feats = preproc.apply_to_feature_matrix(features)

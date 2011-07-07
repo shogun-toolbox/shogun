@@ -11,6 +11,7 @@
 #include "preprocessor/LocallyLinearEmbedding.h"
 #ifdef HAVE_LAPACK
 #include "preprocessor/DimensionReductionPreprocessor.h"
+#include "lib/arpack.h"
 #include "lib/lapack.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -175,10 +176,17 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	delete[] W_matrix;
 
-	// compute eigenvectors
-	float64_t* eigenvalues_vector = new float64_t[N];
-	int32_t eigenproblem_status = 0;
-	wrap_dsyev('V','U',N,M_matrix,N,eigenvalues_vector,&eigenproblem_status);	
+	// get eigenvectors with ARPACK or LAPACK
+	int eigenproblem_status = 0;
+	#ifdef HAVE_ARPACK
+	// using ARPACK (faster)
+		float64_t* eigenvalues_vector = new float64_t[m_target_dim+1];
+		arpack_dsaupd(M_matrix,N,m_target_dim+1,"LM",3,0.0,eigenvalues_vector,M_matrix,eigenproblem_status);		
+	#else 
+	// using LAPACK (slower)
+		float64_t* eigenvalues_vector = new float64_t[N];
+		wrap_dsyev('V','U',N,M_matrix,N,eigenvalues_vector,&eigenproblem_status);
+	#endif	
 
 	// check if failed
 	if (eigenproblem_status)
@@ -187,11 +195,22 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// replace features with bottom eigenvectors
 	float64_t* new_feature_matrix = new float64_t[N*m_target_dim];
 
+	// construct embedding w.r.t to used solver
+	#ifdef HAVE_ARPACK
+	// ARPACKed eigenvectors
 	for (i=0; i<m_target_dim; i++)
 	{
 		for (j=0; j<N; j++)
-			new_feature_matrix[j*m_target_dim+i] = M_matrix[(i+1)*(N)+j];
+			new_feature_matrix[j*m_target_dim+i] = M_matrix[(j)*(m_target_dim+1)+i+1];
 	}
+	#else
+	// LAPACKed eigenvectors
+	for (i=0; i<m_target_dim; i++)
+	{
+		for (j=0; j<N; j++)
+			new_feature_matrix[j*m_target_dim+i] = M_matrix[(i+1)*N+j];
+	}
+	#endif
 	
 	delete[] eigenvalues_vector;
 	delete[] M_matrix;
