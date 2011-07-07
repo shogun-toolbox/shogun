@@ -89,6 +89,8 @@
 #endif //USE_SVMLIGHT
 
 /* These functions return new Objects */
+%newobject apply();
+%newobject apply(CFeatures* data);
 %newobject classify();
 %newobject classify(CFeatures* data);
 
