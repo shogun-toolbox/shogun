@@ -126,6 +126,7 @@ public:
 	virtual void dense_dot_range(float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b, int32_t num_vec=0)
 	{
 		ASSERT(num_vec>=0);
+
 		int32_t counter=0;
 		start_parser();
 		while (get_next_example())
@@ -153,11 +154,11 @@ public:
 	 */
 	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
 
-	/** 
+	/**
 	 * Expand the vector passed so that it its length is equal to
 	 * the dimensionality of the features. The previous values are
 	 * kept intact through realloc, and the new ones are set to zero.
-	 * 
+	 *
 	 * @param vec float64_t* vector
 	 * @param len length of the vector
 	 */
@@ -171,7 +172,7 @@ public:
 			len = dim;
 		}
 	}
-	
+
 	/** obtain the dimensionality of the feature space
 	 *
 	 * (not mix this up with the dimensionality of the input space, usually
