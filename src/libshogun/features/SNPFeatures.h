@@ -28,7 +28,7 @@ class CSNPFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */
-		CSNPFeatures(void);
+		CSNPFeatures();
 
 		/** constructor
 		 *
@@ -221,7 +221,12 @@ class CSNPFeatures : public CDotFeatures
 
 		/** compute histogram over strings
 		 */
-		virtual void get_histogram(float64_t** hist, int32_t* rows, int32_t* cols, bool normalize);
+		virtual SGMatrix<float64_t> get_histogram(bool normalize=true);
+
+		/** 
+		 * compute 3x2 histogram table
+		 */
+		static SGMatrix<float64_t> get_3x2_table(CSNPFeatures* pos, CSNPFeatures* neg);
 
 	protected:
 		/** stringfeatures the wdfeatures are based on*/

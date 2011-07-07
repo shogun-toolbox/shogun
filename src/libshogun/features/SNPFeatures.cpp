@@ -286,7 +286,7 @@ CFeatures* CSNPFeatures::duplicate() const
 	return new CSNPFeatures(*this);
 }
 
-void CSNPFeatures::get_histogram(float64_t** hist, int32_t* rows, int32_t* cols, bool normalize=true)
+SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 {
 	int32_t nsym=3;
 	int64_t sz=int64_t(nsym)*string_length/2*sizeof(float64_t);
@@ -343,7 +343,25 @@ void CSNPFeatures::get_histogram(float64_t** hist, int32_t* rows, int32_t* cols,
 	}
 	delete[] h_normalizer;
 
-	*hist=h;
-	*rows=nsym;
-	*cols=string_length/2;
+	return SGMatrix<float64_t>(h, nsym, string_length/2);
+}
+
+SGMatrix<float64_t> CSNPFeatures::get_3x2_table(CSNPFeatures* pos, CSNPFeatures* neg)
+{
+
+	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length());
+	int32_t len=pos->strings->get_max_vector_length();
+
+	float64_t* table=new float64_t[3*2*len/2];
+
+	SGMatrix<float64_t> p_hist=pos->get_histogram(false);
+	SGMatrix<float64_t> n_hist=neg->get_histogram(false);
+
+
+	for (int32_t i=0; i<3*len/2; i++)
+	{
+		table[i]=p_hist.matrix[i];
+		table[i+3*len/2]=p_hist.matrix[i+3*len/2];
+	}
+	return SGMatrix<float64_t>(table, 3,2*len/2);
 }
