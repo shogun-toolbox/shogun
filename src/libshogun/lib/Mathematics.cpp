@@ -100,6 +100,67 @@ int32_t CMath::determine_logaccuracy(int32_t range)
     return range;
 }
 
+SGVector<float64_t> CMath::fishers_exact_test_for_multiple_3x2_tables(SGMatrix<float64_t> tables, float64_t epsilon)
+{
+	SGMatrix<float64_t> table(3,2);
+
+
+
+}
+
+float64_t CMath::fishers_exact_test_for_3x2_table(SGMatrix<float64_t> table, float64_t epsilon)
+{
+
+function [nonrand_p rand_p, prob_table] = fisher_p23_fast(obs, epsilon)
+
+%build marginals = (n1., n2., n.1, n.2, n.3)
+marginals = [sum(obs, 2)', sum(obs, 1)];
+
+n = sum(marginals) / 2;
+
+x = zeros(2, 3, max(marginals)*max(marginals));
+
+%build log nominator statistic
+log_nom = sum(sum(gammaln(marginals+1))) - gammaln(n+1);
+
+%build log denominator statistic
+log_denom = sum(sum(gammaln(obs+1)));
+
+
+%compute probability of observed table
+prob_table = exp(log_nom - log_denom);
+
+
+nonrand_p = 0.0;
+rand_count = 0;
+
+dim1 = min(marginals(1), marginals(3));
+
+%traverse all possible tables with given marginals
+counter = 0;
+for k=0:dim1
+    for l=max(0,marginals(1)-marginals(5)-k):min(marginals(1)-k, marginals(4))
+        counter = counter+1;
+        x(1, 1, counter) = k;
+        x(1, 2, counter) = l;
+        x(1, 3, counter) = marginals(1) - x(1, 1, counter) - x(1, 2, counter);
+        x(2, 1, counter) = marginals(3) - x(1, 1, counter);
+        x(2, 2, counter) = marginals(4) - x(1, 2, counter);
+        x(2, 3, counter) = marginals(5) - x(1, 3, counter);
+    end
+end
+log_denom = sum(sum(gammaln(x(:, :, 1:counter)+1)));
+log_denom = reshape(log_denom, 1, counter);
+prob_lauf = exp(log_nom - log_denom);
+nonrand_p = sum(prob_lauf(find(prob_lauf <= prob_table)));
+rand_count = length(find(abs(exp(prob_lauf) - exp(prob_table)) < epsilon));
+
+u = rand(1);
+rand_p = max(0.0, nonrand_p - u*rand_count*prob_table);
+% End of function 'fisher_p23_fast'. 
+
+}
+
 //init log table of form log(1+exp(x))
 void CMath::init_log_table()
 {
