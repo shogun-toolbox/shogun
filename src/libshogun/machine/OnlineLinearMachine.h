@@ -165,7 +165,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return classified label
 		 */
-		virtual float64_t apply_to_this_example();
+		virtual float64_t apply_to_current_example();
 
 		/** get features
 		 *
