@@ -83,9 +83,9 @@ int main(int argc, char **argv)
 	CGridSearchModelSelection grid_search(param_tree, cross);
 
 	float64_t result;
-	ParameterCombination* best_combination=grid_search.select_model(result);
+	CParameterCombination* best_combination=grid_search.select_model(result);
 	SG_SPRINT("best parameter(s):\n");
-	best_combination->print();
+	best_combination->print_tree();
 	SG_SPRINT("result: %f\n", result);
 
 	/* clean up destroy result parameter */

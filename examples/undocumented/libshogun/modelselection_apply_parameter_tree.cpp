@@ -47,7 +47,7 @@ CModelSelectionParameters* create_param_tree()
 	return root;
 }
 
-void apply_parameter_tree(DynArray<ParameterCombination*>& combinations)
+void apply_parameter_tree(DynArray<CParameterCombination*>* combinations)
 {
 	/* create some data */
 	float64_t* matrix=new float64_t[6];
@@ -72,11 +72,11 @@ void apply_parameter_tree(DynArray<ParameterCombination*>& combinations)
 	SG_REF(svm);
 	svm->set_labels(labels);
 
-	for (index_t i=0; i<combinations.get_num_elements(); ++i)
+	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
 		SG_SPRINT("applying:\n");
-		combinations[i]->print();
-		ParameterCombination* current_combination=combinations[i];
+		combinations->get_element(i)->print_tree();
+		CParameterCombination* current_combination=combinations->get_element(i);
 		Parameter* current_parameters=svm->m_parameters;
 		current_combination->apply_to_parameter(current_parameters);
 
@@ -109,18 +109,19 @@ int main(int argc, char **argv)
 
 	/* create example tree */
 	CModelSelectionParameters* tree=create_param_tree();
-	tree->print();
+	tree->print_tree();
 	SG_SPRINT("----------------------------------\n");
 
 	/* build combinations of parameter trees */
-	DynArray<ParameterCombination*> combinations;
-	tree->get_combinations(combinations);
+	DynArray<CParameterCombination*>* combinations=tree->get_combinations();
 
 	apply_parameter_tree(combinations);
 
 	/* print and directly delete them all */
-	for (index_t i=0; i<combinations.get_num_elements(); ++i)
-		combinations[i]->destroy(true, true);
+	for (index_t i=0; i<combinations->get_num_elements(); ++i)
+		combinations->get_element(i)->destroy(true, true);
+
+	delete combinations;
 
 	/* delete example tree (after processing of combinations because CSGObject
 	 * (namely the kernel) of the tree is SG_UNREF'ed (and not REF'ed anywhere
