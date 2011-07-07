@@ -1,6 +1,5 @@
-#ifndef _SVMSGD_H___
-#define _SVMSGD_H___
-
+#ifndef _ONLINESVMSGD_H___
+#define _ONLINESVMSGD_H___
 /*
    SVM with stochastic gradient
    Copyright (C) 2007- Leon Bottou
@@ -23,24 +22,24 @@
 */
 
 #include "lib/common.h"
-#include "machine/LinearMachine.h"
-#include "features/DotFeatures.h"
 #include "features/Labels.h"
+#include "machine/OnlineLinearMachine.h"
+#include "features/StreamingDotFeatures.h"
 
 namespace shogun
 {
-/** @brief class SVMSGD */
-class CSVMSGD : public CLinearMachine
+/** @brief class OnlineSVMSGD */
+class COnlineSVMSGD : public COnlineLinearMachine
 {
 	public:
 		/** default constructor  */
-		CSVMSGD();
+		COnlineSVMSGD();
 
 		/** constructor
 		 *
 		 * @param C constant C
 		 */
-		CSVMSGD(float64_t C);
+		COnlineSVMSGD(float64_t C);
 
 		/** constructor
 		 *
@@ -48,15 +47,13 @@ class CSVMSGD : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CSVMSGD(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
+		COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat);
 
-		virtual ~CSVMSGD();
+		virtual ~COnlineSVMSGD();
 
 		/** get classifier type
 		 *
-		 * @return classifier type SVMOCAS
+		 * @return classifier type OnlineSVMSGD
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_SVMSGD; }
 
@@ -101,6 +98,18 @@ class CSVMSGD : public CLinearMachine
 		 * @return the number of training epochs
 		 */
 		inline int32_t get_epochs() { return epochs; }
+		
+		/** set lambda
+		 *
+		 * @param l value of regularization parameter lambda
+		 */
+		inline void set_lambda(float64_t l) { lambda=l; }
+
+		/** get lambda
+		 *
+		 * @return the regularization parameter lambda
+		 */
+		inline float64_t get_lambda() { return lambda; }
 
 		/** set if bias shall be enabled
 		 *
@@ -127,17 +136,22 @@ class CSVMSGD : public CLinearMachine
 		inline bool get_regularized_bias_enabled() { return use_regularized_bias; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SVMSGD"; }
+		inline virtual const char* get_name() const { return "OnlineSVMSGD"; }
 
 	protected:
-		/** calibrate */
-		void calibrate();
+		/** calibrate
+		 *
+		 * @param max_vec_num Maximum number of vectors to calibrate using
+		 * (optional) if set to -1, tries to calibrate using all vectors
+		 * */
+		void calibrate(int32_t max_vec_num=100);
 
 	private:
 		void init();
 
 	private:
 		float64_t t;
+		float64_t lambda;
 		float64_t C1;
 		float64_t C2;
 		float64_t wscale;
