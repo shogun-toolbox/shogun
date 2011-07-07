@@ -19,6 +19,7 @@ namespace shogun
 extern IO* sg_io;
 
 template <class T> class CDynamicArray;
+template <class T> class CDynamicObjectArray;
 
 /** @brief Template Dynamic array class that creates an array that can
  * be used like a list or an array.
@@ -31,7 +32,7 @@ template <class T> class CDynamicArray;
 template <class T> class DynArray
 {
 	friend class CDynamicArray<T>;
-	friend class CDynamicArrayPtr;
+	friend class CDynamicObjectArray<T>;
 	friend class CCommUlongStringKernel;
 
 	public:
