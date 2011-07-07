@@ -70,7 +70,7 @@ int dgesvd_(char* jobu, char* jobvt, int* m, int* n, double* a, int* lda,
 int dposv_(const char *uplo, const int *n, const int *nrhs, double *a, const int *lda, double *b, const int *ldb, int *info);
 int dpotrf_(const char *uplo, int *n, double *a, int * lda, int *info);
 int dpotri_(const char *uplo, int *n, double *a, int * lda, int *info);
-int dgetri_(int *n, double *a, int *lda, int *ipiv, int *work, int *lwork, int *info);
+int dgetri_(int *n, double *a, int *lda, int *ipiv, double *work, int *lwork, int *info);
 int dgetrf_(int *m, int *n, double *a, int *lda, int *ipiv, int *info);
 #endif
 }
