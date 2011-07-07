@@ -146,16 +146,18 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 	int info=0;
 	double* work = new double[1];
 #ifdef HAVE_ACML
-	DGETRI(N,A,lda,ipiv,work,-1,&info);
-	int lwork = (int) work[0];
+	int lwork = -1;
+	DGETRI(N,A,lda,ipiv,work,lwork,&info);
+	lwork = (int) work[0];
 	delete[] work;
 	work = new double[lwork];
 	DGETRI(N,A,lda,ipiv,work,lwork,&info);
 #else
 	int n=N;
 	int LDA=lda;
-	DGETRI(&n,A,&LDA,ipiv,work,&(-1),&info);
-	int lwork = (int) work[0];
+	int lwork = -1;
+	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
+	lwork = (int) work[0];
 	delete[] work;
 	work = new double[lwork];
 	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
