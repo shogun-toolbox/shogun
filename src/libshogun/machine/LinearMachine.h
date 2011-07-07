@@ -77,21 +77,6 @@ class CLinearMachine : public CMachine
 			dst_dims=w_dim;
 		}
 
-		/** get w (swig compatible)
-		 *
-		 * @param dst_w store w in this argument
-		 * @param dst_dims dimension of w
-		 */
-		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
-		{
-			ASSERT(dst_w && dst_dims);
-			ASSERT(w && w_dim>0);
-			*dst_dims=w_dim;
-			*dst_w=(float64_t*) SG_MALLOC(sizeof(float64_t)*(*dst_dims));
-			ASSERT(*dst_w);
-			memcpy(*dst_w, w, sizeof(float64_t) * (*dst_dims));
-		}
-
 		/** get w
 		 *
 		 * @return weight vector
