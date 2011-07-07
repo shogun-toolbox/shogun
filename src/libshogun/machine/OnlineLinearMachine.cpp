@@ -43,8 +43,34 @@ bool COnlineLinearMachine::save(FILE* dstfile)
 
 CLabels* COnlineLinearMachine::apply()
 {
-		SG_NOTIMPLEMENTED;
-		return NULL;
+	ASSERT(features);
+	ASSERT(features->has_property(FP_STREAMING_DOT));
+
+	DynArray<float64_t>* labels_dynarray=new DynArray<float64_t>();
+	int32_t num_labels=0;
+
+	features->start_parser();
+	while (features->get_next_example())
+	{
+		float64_t current_lab=features->dense_dot(w, w_dim) + bias;
+
+		labels_dynarray->append_element(current_lab);
+		num_labels++;
+
+		features->release_example();
+	}
+	features->end_parser();
+
+	float64_t* labels_array=new float64_t[num_labels];
+	for (int32_t i=0; i<num_labels; i++)
+	{
+		labels_array[i]=(*labels_dynarray)[i];
+	}
+
+	CLabels* labels_object=new CLabels(labels_array, num_labels);
+	SG_REF(labels_object);
+
+	return labels_object;
 }
 
 CLabels* COnlineLinearMachine::apply(CFeatures* data)
