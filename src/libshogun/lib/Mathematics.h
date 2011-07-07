@@ -345,6 +345,11 @@ class CMath : public CSGObject
 			return ::exp((double) x);
 		}
 
+		static inline float64_t lgamma(float64_t x)
+		{
+			return ::lgamma((double) x);
+		}
+
 		static inline float64_t log10(float64_t v)
 		{
 			return ::log(v)/::log(10.0);
@@ -1353,6 +1358,9 @@ class CMath : public CSGObject
 #endif
 		}
 
+		static SGVector<float64_t> fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables);
+		
+		static float64_t fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table);
 
 		/**@name summing functions */
 		//@{ 
@@ -1382,10 +1390,6 @@ class CMath : public CSGObject
 				return diff > LOGRANGE? p : p + logtable[(int)(diff * LOGACCURACY)];
 			return -diff > LOGRANGE? q : q + logtable[(int)(-diff * LOGACCURACY)];
 		}
-
-		static SGVector<float64_t> fishers_exact_test_for_multiple_3x2_tables(SGMatrix<float64_t> tables, float64_t epsilon=1e-10);
-		
-		static float64_t fishers_exact_test_for_3x2_table(SGMatrix<float64_t> table, float64_t epsilon=1e-10);
 
 		///init log table of form log(1+exp(x))
 		static void init_log_table();
