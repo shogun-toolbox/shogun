@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2011 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -23,10 +24,13 @@ namespace shogun
  * It grows and shrinks dynamically, while elements can be accessed
  * via index.  It only stores CSGObject pointers, which ARE automagically
  * SG_REF'd/deleted.
+ *
+ * Note that this array is generic, but only takes pointers to objects which
+ * implement the CSGObject interface, so only put these in here.
  */
-class CDynamicObjectArray :public CSGObject
+template<class T>class CDynamicObjectArray :public CSGObject
 {
-	DynArray<CSGObject*> m_array;
+	DynArray<T> m_array;
 
 	public:
 		/** constructor
@@ -78,9 +82,9 @@ class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline CSGObject* get_element(int32_t index) const
+		inline T get_element(int32_t index) const
 		{
-			CSGObject* element=m_array.get_element(index);
+			T element=m_array.get_element(index);
 			SG_REF(element);
 			return element;
 		}
@@ -92,9 +96,9 @@ class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline CSGObject* get_element_safe(int32_t index) const
+		inline T get_element_safe(int32_t index) const
 		{
-			CSGObject* element=m_array.get_element_safe(index);
+			T element=m_array.get_element_safe(index);
 			SG_REF(element);
 			return element;
 		}
@@ -105,9 +109,9 @@ class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool set_element(CSGObject* element, int32_t index)
+		inline bool set_element(T element, int32_t index)
 		{
-			CSGObject* old=m_array.get_element(index);
+			T old=m_array.get_element(index);
 			SG_UNREF(old);
 
 			bool success=m_array.set_element(element, index);
@@ -123,7 +127,7 @@ class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(CSGObject* element, int32_t index)
+		inline bool insert_element(T element, int32_t index)
 		{
 			bool success=m_array.insert_element(element, index);
 			if (success)
@@ -137,7 +141,7 @@ class CDynamicObjectArray :public CSGObject
 		 * @param element element to append
 		 * @return if setting was successful
 		 */
-		inline bool append_element(CSGObject* element)
+		inline bool append_element(T element)
 		{
 			bool success=m_array.append_element(element);
 			if (success)
@@ -151,7 +155,7 @@ class CDynamicObjectArray :public CSGObject
 		 *
 		 * @param element element to append
 		 */
-		inline void push_back(CSGObject* element)
+		inline void push_back(T element)
 		{
 			SG_REF(element);
 			m_array.push_back(element);
@@ -162,7 +166,7 @@ class CDynamicObjectArray :public CSGObject
 		 */
 		inline void pop_back(void)
 		{
-			CSGObject* element=m_array.back();
+			T element=m_array.back();
 			SG_UNREF(element);
 
 			m_array.pop_back();
@@ -173,9 +177,9 @@ class CDynamicObjectArray :public CSGObject
 		 *
 		 * @return element at the end of array
 		 */
-		inline CSGObject* back(void)
+		inline T back(void)
 		{
-			CSGObject* element=m_array.back();
+			T element=m_array.back();
 			SG_REF(element);
 			return element;
 		}
@@ -186,7 +190,7 @@ class CDynamicObjectArray :public CSGObject
 		 * @param element element to search for
 		 * @return index of element or -1
 		 */
-		inline int32_t find_element(CSGObject* element)
+		inline int32_t find_element(T element)
 		{ return m_array.find_element(element); }
 
 		/** delete array element at idx
@@ -197,7 +201,7 @@ class CDynamicObjectArray :public CSGObject
 		 */
 		inline bool delete_element(int32_t idx)
 		{
-			CSGObject* element=m_array.get_element(idx);
+			T element=m_array.get_element(idx);
 			SG_UNREF(element);
 
 			return m_array.delete_element(idx);
@@ -220,7 +224,7 @@ class CDynamicObjectArray :public CSGObject
 		 *
 		 * @return the array
 		 */
-		inline CSGObject** get_array(void)
+		inline T* get_array(void)
 		{ return m_array.get_array(); }
 
 		/** set the array pointer and free previously allocated memory
@@ -230,7 +234,7 @@ class CDynamicObjectArray :public CSGObject
 		 * @param array_size number of elements in array
 		 */
 		inline void set_array(
-			CSGObject** p_array, int32_t p_num_elements,
+			T* p_array, int32_t p_num_elements,
 			int32_t array_size)
 		{
 			unref_all();
@@ -253,9 +257,9 @@ class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return element at index
 		 */
-		inline CSGObject* operator[](int32_t index) const
+		inline T operator[](int32_t index) const
 		{
-			CSGObject* element=m_array[index];
+			T element=m_array[index];
 			SG_REF(element);
 
 			return element;
@@ -273,7 +277,7 @@ class CDynamicObjectArray :public CSGObject
 			/* SG_REF all new elements */
 			for (index_t i=0; i<orig.get_num_elements(); ++i)
 			{
-				CSGObject* element=orig.get_element(i);
+				T element=orig.get_element(i);
 				SG_REF(element);
 			}
 
@@ -291,7 +295,7 @@ class CDynamicObjectArray :public CSGObject
 			/* SG_REF all new elements */
 			for (index_t i=0; i<m_array.get_num_elements(); ++i)
 			{
-				CSGObject* element=m_array.get_element(i);
+				T element=m_array.get_element(i);
 				SG_UNREF(element);
 			}
 		}
