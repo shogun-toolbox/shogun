@@ -15,25 +15,30 @@ using namespace shogun;
 
 CParameterCombination::CParameterCombination()
 {
-	m_param=NULL;
-	m_node_name=NULL;
-	m_child_nodes=new DynArray<CParameterCombination*> ();
+	init();
 }
 
-CParameterCombination::CParameterCombination(const char* name) :
-	m_node_name(name)
+CParameterCombination::CParameterCombination(const char* name)
 {
+	init();
+
+	m_node_name=name;
+}
+
+CParameterCombination::CParameterCombination(Parameter* param)
+{
+	init();
+
+	m_param=param;
+}
+
+void CParameterCombination::init()
+{
+	m_node_name=NULL;
 	m_param=NULL;
 	m_child_nodes=new DynArray<CParameterCombination*> ();
 
-}
-
-CParameterCombination::CParameterCombination(Parameter* param) :
-	m_param(param)
-{
-	m_node_name=NULL;
-	m_child_nodes=new DynArray<CParameterCombination*> ();
-
+	m_parameters->add((char*)m_node_name, "node_name", "name of this node");
 }
 
 CParameterCombination::~CParameterCombination()
