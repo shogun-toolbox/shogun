@@ -19,7 +19,7 @@ namespace shogun
 {
 
 class CFeatures;
-#include "preprocessor/DimensionReductionPreprocessor.h"
+
 class CDistance;
 
 /** @brief the class ClassicMDS used to perform classic eigenvector
@@ -49,27 +49,28 @@ public:
 	/* destructor */
 	virtual ~CClassicMDS();
 
-	/** init
-	 * @param data feature vectors for preproc
+	/** empty init
 	 */
 	virtual bool init(CFeatures* features);
 
-	/** cleanup
-	 *
+	/** empty cleanup
 	 */
 	virtual void cleanup();
 
-	/** apply preproc to distance
-	 * @param distance 
+	/** apply preprocessor to CDistance
+	 * @param distance (should be approximate euclidean for consistent result)
+	 * @return new features with distance similar to given as much as possible
 	 */
 	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
 
-	/** apply preproc to feature matrix
-	 * @param features
+	/** apply preprocessor to feature matrix,
+	 * changes feature matrix to the one having target dimensionality
+	 * @param features features which feature matrix should be processed
+	 * @return new feature matrix
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
-	/** apply preproc to feature vector
+	/** apply preprocessor to feature vector
 	 * @param vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
@@ -90,9 +91,10 @@ public:
 		return eigs;
 	}
 
-	/** apply preproc to distance
-	 * @param distance
-	 * @return feature matrix
+	/** apply preprocessor to CDistance,
+	 * this method internally by other methods involving classic MDS at some stage
+	 * @param distance (should be approximate euclidean for consistent result)
+	 * @return new feature matrix representing given distance
 	 */
 	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
 

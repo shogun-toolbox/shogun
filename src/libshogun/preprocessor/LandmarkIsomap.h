@@ -22,8 +22,8 @@ namespace shogun
 
 class CDistance;
 
-/** @brief the class LandmarkIsomap
- *
+/** @brief the class LandmarkIsomap used to
+ * perform Isomap using LandmarkMDS
  */
 class CLandmarkIsomap: public CIsomap
 {

@@ -26,12 +26,16 @@ using namespace shogun;
 #define DPOSV dposv
 #define DPOTRF dpotrf
 #define DPOTRI dpotri
+#define DGETRI dgetri
+#define DGETRF dgetrf
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
 #define DPOSV dposv_
 #define DPOTRF dpotrf_
 #define DPOTRI dpotri_
+#define DGETRI dgetri_
+#define DGETRF dgetrf_
 #endif
 
 #ifndef HAVE_ATLAS
@@ -117,6 +121,49 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 	return info;
 }
 #undef DPOSV
+
+int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
+                   double *A, const int lda, int *ipiv)
+{
+	// no rowmajor?
+	int info=0;
+#ifdef HAVE_ACML
+	DGETRF(M,N,A,lda,ipiv,&info);
+#else
+	int m=M;
+	int n=N;
+	int LDA=lda;
+	DGETRF(&m,&n,A,&LDA,ipiv,&info);
+#endif
+	return info;
+}
+#undef DGETRF
+
+int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
+                   const int lda, const int* ipiv)
+{
+	// now rowmajor?
+	int info=0;
+	double* work = new work[1];
+#ifdef HAVE_ACML
+	DGETRI(N,A,lda,ipiv,work,-1,&info);
+	int lwork = (int) work[0];
+	delete[] work;
+	work = new work[lwork];
+	DGETRI(N,A,lda,ipiv,work,lwork,&info);
+#else
+	int n=N;
+	int LDA=lda;
+	DGETRI(&n,A,&LDA,ipiv,work,-1,&info);
+	int lwork = (int) work[0];
+	delete[] work;
+	work = new work[lwork];
+	DGETRI(&n,A,&LDA,ipiv,work,lwork,&info);
+#endif
+	return info;
+}
+#undef DGETRI
+
 #endif //HAVE_ATLAS
 
 /*

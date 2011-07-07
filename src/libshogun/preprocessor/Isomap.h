@@ -33,8 +33,12 @@ enum EIsomapType
 	EISOMAP
 };
 
-/** @brief the class Isomap
- *
+/** @brief the base class Isomap used to perform Isomap algorithms:
+ * K-Isomap or E-Isomap. The description is given in
+ * 
+ * Global versus local methods in nonlinear dimensionality reduction
+ * Vin De Silva, Joshua B Tenenbaum (2003)
+ * Advances in Neural Information Processing Systems 15 15 (Figure 2) p.721-728
  */
 class CIsomap: public CDimensionReductionPreprocessor
 {
@@ -48,21 +52,18 @@ public:
 	/* destructor */
 	virtual ~CIsomap() {};
 
-	/** init
-	 * @param data feature vectors for preproc
+	/** empty init
 	 */
-	virtual bool init(CFeatures* features)
-	{
-		return true;
-	};
+	virtual bool init(CFeatures* features) { return true; };
 
-	/** cleanup
-	 *
+	/** empty cleanup
 	 */
 	virtual void cleanup() {};
 
-	/** apply preproc to distance
-	 *
+	/** apply preprocessor to CDistance using
+	 * Isomap of specified type
+	 * @param distance
+	 * @return new features with distance similar to geodesic
 	 */
 	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance)
 	{
@@ -75,8 +76,10 @@ public:
 		return new CSimpleFeatures<float64_t>(new_features);
 	}
 
-	/** apply preproc to feature matrix
-	 *
+	/** apply preprocessor to feature matrix using 
+	 * Isomap of specified type
+	 * @param features
+	 * @return new feature matrix with distance similar to geodesic
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features)
 	{
@@ -96,8 +99,8 @@ public:
 		return new_features;
 	}
 
-	/** apply preproc to feature vector
-	 *
+	/** apply preprocessor to feature vector
+	 * @param vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector)
 	{
@@ -133,6 +136,7 @@ public:
 	 */
 	void inline set_epsilon(float64_t epsilon)
 	{
+		ASSERT(epsilon>0.0);
 		m_epsilon = epsilon;
 	}
 
@@ -149,6 +153,7 @@ public:
 	 */
 	void inline set_k(int32_t k)
 	{
+		ASSERT(k>=1);
 		m_k = k;
 	}
 
@@ -162,16 +167,19 @@ public:
 
 protected:
 
-	/** epsilon */
+	/** epsilon, cut-off parameter for E-Isomap */
 	float64_t m_epsilon;
 
-	/** k */
+	/** k, number of neighbors for K-Isomap */
 	int32_t m_k;
 
 	/** type of Isomap */
 	EIsomapType m_type;
 
-	/** approx geodesic distance */
+	/** approx geodesic distance 
+	 * @param distance
+	 * @return custom distance with approximate geodesic distance matrix
+	 */
 	CCustomDistance* isomap_distance(CDistance* distance)
 	{
 		int32_t N,k,i,j;
@@ -225,6 +233,7 @@ protected:
 		}
 
 		// Floyd-Warshall on distance matrix
+		// TODO replace by dijkstra
 		for (k=0; k<N; k++)
 		{
 			for (i=0; i<N; i++)
@@ -244,10 +253,14 @@ protected:
 		return geodesic_distance;
 	}
 
-	/** mds embedding */
+	/** mds embedding 
+	 * @param distance
+	 * @return new feature representing given distance
+	 */
 	virtual SGMatrix<float64_t> mds_embed(CDistance* distance) = 0;
 
 };
 }
 #endif /* HAVE_LAPACK */
+
 #endif /* ISOMAP_H_ */

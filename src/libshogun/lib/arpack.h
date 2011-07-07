@@ -11,7 +11,7 @@
 #ifndef ARPACK_H_
 #define ARPACK_H_
 #ifdef HAVE_ARPACK
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 #include <cblas.h>
 #include "lib/io.h"
 
@@ -66,7 +66,7 @@ namespace shogun
 void arpack_dsaupd(double* matrix, int n, int nev, const char* which, int mode,
                    double shift, double* eigenvalues, double* eigenvectors, int& status);
 }
-#endif /* HAVE_ATLAS */
+#endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */
 #endif /* ARPACK_H_ */
 
