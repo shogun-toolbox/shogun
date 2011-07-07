@@ -9,8 +9,8 @@
  */
 
 #include "modelselection/ModelSelectionParameters.h"
+#include "modelselection/ParameterCombination.h"
 #include "lib/DataType.h"
-#include "base/DynArray.h"
 #include "base/Parameter.h"
 
 using namespace shogun;
