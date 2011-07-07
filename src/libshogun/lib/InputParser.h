@@ -337,6 +337,11 @@ namespace shogun
 	template <class T>
 		void CInputParser<T>::start_parser()
 	{
+		if (is_running())
+		{
+			SG_SERROR("Parser thread is already running! Multiple parse threads not supported.\n");
+		}
+
 		pthread_create(&parse_thread, NULL, parse_loop_entry_point, this);
 	}
 
