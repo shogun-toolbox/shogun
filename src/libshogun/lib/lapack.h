@@ -46,6 +46,10 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		double *B, const int ldb);
 int clapack_dpotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, double *A, const int LDA);
+int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
+                   double *A, const int lda, int *ipiv);
+int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
+                   const int lda, int *ipiv);
 #endif
 
 namespace shogun
@@ -66,6 +70,8 @@ int dgesvd_(char* jobu, char* jobvt, int* m, int* n, double* a, int* lda,
 int dposv_(const char *uplo, const int *n, const int *nrhs, double *a, const int *lda, double *b, const int *ldb, int *info);
 int dpotrf_(const char *uplo, int *n, double *a, int * lda, int *info);
 int dpotri_(const char *uplo, int *n, double *a, int * lda, int *info);
+int dgetri_(int *n, double *a, int *lda, int *ipiv, double *work, int *lwork, int *info);
+int dgetrf_(int *m, int *n, double *a, int *lda, int *ipiv, int *info);
 #endif
 }
 

@@ -85,12 +85,15 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	delete[] D_matrix.matrix;
 	delete[] H_matrix;
 
+	// feature matrix representing given distance
 	float64_t* replace_feature_matrix = new float64_t[m_target_dim*N];
+ 
+	// status of eigenproblem to be solved
 	int eigenproblem_status = 0;	
 	#ifdef HAVE_ARPACK
 	// using ARPACK
 		float64_t* eigenvalues_vector = new float64_t[m_target_dim];
-		// solve eigenproblem
+		// solve eigenproblem with ARPACK (faster)
 		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", 1, 0.0,
 		              eigenvalues_vector, replace_feature_matrix,
 		              eigenproblem_status);
@@ -117,6 +120,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 			eigenvalues_vector[m_target_dim-i-1] = tmp;
 		}
 
+		// finally construct embedding
 		for (i=0; i<m_target_dim; i++)
 		{
 			for (j=0; j<N; j++)
@@ -124,21 +128,24 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 					CMath::sqrt(eigenvalues_vector[i]);	
 		}
 		
+		// set eigenvalues vector
 		m_eigenvalues.free_vector();
 		m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim,true);
 	#else /* not HAVE_ARPACK */
 	// using LAPACK
 		float64_t* eigenvalues_vector = new float64_t[N];
-		// solve eigenproblem
+		// solve eigenproblem with LAPACK (slower)
 		wrap_dsyev('V','U',N,Ds_matrix,N,eigenvalues_vector,&eigenproblem_status);
 		// check for failure
 		ASSERT(eigenproblem_status==0);
 	
+		// set eigenvalues vector
 		m_eigenvalues.free_vector();
 		m_eigenvalues = SGVector<float64_t>(new float64_t[m_target_dim],m_target_dim,true);
 		for (i=0; i<m_target_dim; i++)
 			m_eigenvalues.vector[i] = eigenvalues_vector[N-i-1];
 
+		// finally construct embedding
 		for (i=0; i<m_target_dim; i++)
 		{
 			for (j=0; j<N; j++)
@@ -158,7 +165,8 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 			break;
 		}
 	}	
-
+	
+	// cleanup
 	delete[] Ds_matrix;
 
 	return SGMatrix<float64_t>(replace_feature_matrix,m_target_dim,N);
@@ -182,4 +190,5 @@ SGVector<float64_t> CClassicMDS::apply_to_feature_vector(SGVector<float64_t> vec
 	SG_NOTIMPLEMENTED;
 	return vector;
 }
+
 #endif /* HAVE_LAPACK */

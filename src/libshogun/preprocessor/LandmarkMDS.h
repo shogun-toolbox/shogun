@@ -25,10 +25,12 @@ class CFeatures;
 class CDistance;
 
 /** @brief class LandmarkMDS used to perform
- *  fast multidimensional scaling using landmark multidimensional
- *  scaling algorithm described in
- *
- *
+ * fast multidimensional scaling using landmark multidimensional
+ * scaling algorithm described in
+ *  
+ * Sparse multidimensional scaling using landmark points
+ * V De Silva, J B Tenenbaum (2004) Technology, p. 1-41
+ * 
  */
 class CLandmarkMDS: public CClassicMDS
 {
@@ -40,29 +42,29 @@ public:
 	/* destructor */
 	virtual ~CLandmarkMDS();
 
-	/** init
-	 * @param data feature vectors for preproc
+	/** empty init
 	 */
 	virtual bool init(CFeatures* data);
 
-	/** cleanup
-	 *
+	/** empty cleanup
 	 */
 	virtual void cleanup();
 
-
-	/** apply preproc to distance
-	 *
-	 */
+	/** apply preprocessor to CDistance using landmark mds
+	 * @param distance (should be approximate euclidean for consistent results)
+	 * @return new features with distance similar to given as much as possible
+	 */	
 	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
 
-	/** apply preproc to feature matrix
-	 *
+	/** apply preprocessor to feature matrix,
+	 * changes feature matrix to the one having target dimensionality
+	 * @param features features which feature matrix should be processed
+	 * @return new feature matrix
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
-	/** apply preproc to feature vector
-	 *
+	/** apply preprocessor to feature vector
+	 * @param vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
@@ -73,29 +75,41 @@ public:
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_LANDMARKMDS; };
 
-	/** set number of landmarks */
+	/** set number of landmarks 
+	 * should be lesser than number of examples and greater than 3
+	 * for consistent embedding
+	 * @param num number of landmark to be set
+	 */
 	void set_landmark_number(int32_t num)
 	{
 		m_landmark_number = num;
 	};
 
-	/** get number of landmarks */
+	/** get number of landmarks 
+	 * @return current number of landmarks
+	 */
 	int32_t get_landmark_number()
 	{
 		return m_landmark_number;
 	};
 
-	/** apply preproc to distance
-	 *
+	/** apply preprocessor to CDistance
+	 * this method is used internally by other preprocessors
+	 * involving landmark MDS (e.g. Landmark Isomap) at some stage
+	 * @param distance given distance (should be approximate euclidean for consistent results)
+	 * @return new feature matrix representing given distance
 	 */
 	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
 
 protected:
 
-	/** number of landmarks */
+	/** current number of landmarks */
 	int32_t m_landmark_number;	
 
-	/**
+	/** subroutine used to shuffle count indexes among of total_count ones
+	 * with Fisher-Yates (as well as Knuth) shuffle
+	 * @param count number of indexes to be shuffled and returned
+	 * @param total_count total number of indexes
 	 * @return sampled indexes for landmarks
 	 */
 	SGVector<int32_t> get_landmark_idxs(int32_t count, int32_t total_count);

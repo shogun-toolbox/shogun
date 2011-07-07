@@ -8,40 +8,36 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _LINEARCLASSIFIER_H__
-#define _LINEARCLASSIFIER_H__
+#ifndef _ONLINELINEARCLASSIFIER_H__
+#define _ONLINELINEARCLASSIFIER_H__
 
 #include "lib/common.h"
 #include "features/Labels.h"
-#include "features/DotFeatures.h"
+#include "features/StreamingDotFeatures.h"
 #include "machine/Machine.h"
 
 #include <stdio.h>
 
 namespace shogun
 {
-	class CDotFeatures;
-	class CMachine;
-	class CLabels;
-
-/** @brief Class LinearMachine is a generic interface for all kinds of linear
- * machines like classifiers.
+/** @brief Class OnlineLinearMachine is a generic interface for linear
+ * machines like classifiers which work through online algorithms.
  *
- * A linear classifier computes 
+ * A linear classifier computes
  *
  *  \f[
  * 		f({\bf x})= {\bf w} \cdot {\bf x} + b
  * 	\f]
  *
- * where \f${\bf w}\f$ are the weights assigned to each feature in training 
+ * where \f${\bf w}\f$ are the weights assigned to each feature in training
  * and \f$b\f$ the bias.
  *
  * To implement a linear classifier all that is required is to define the
  * train() function that delivers \f${\bf w}\f$ above.
  *
- * Note that this framework works with linear classifiers of arbitraty feature
+ * Note that this framework works with linear classifiers of arbitrary feature
  * type, e.g. dense and sparse and even string based features. This is
- * implemented by using CDotFeatures that may provide a mapping function
+ * implemented by using CStreamingDotFeatures that may provide a mapping function
  * \f$\Phi({\bf x})\mapsto {\cal R^D}\f$ encapsulating all the required
  * operations (like the dot product). The decision function is thus
  *
@@ -49,21 +45,13 @@ namespace shogun
  * 		f({\bf x})= {\bf w} \cdot \Phi({\bf x}) + b.
  * 	\f]
  *
- * 	The following linear classifiers are implemented
- * 	\li Linear Descriminant Analysis (CLDA)
- * 	\li Linear Programming Machines (CLPM, CLPBoost)
- * 	\li Perceptron (CPerceptron)
- * 	\li Linear SVMs (CSVMSGD, CLibLinear, CSVMOcas, CSVMLin, CSubgradientSVM)
- *
- * 	\sa CDotFeatures
- *
  * */
-class CLinearMachine : public CMachine
+class COnlineLinearMachine : public CMachine
 {
 	public:
 		/** default constructor */
-		CLinearMachine();
-		virtual ~CLinearMachine();
+		COnlineLinearMachine();
+		virtual ~COnlineLinearMachine();
 
 		/** get w
 		 *
@@ -75,6 +63,21 @@ class CLinearMachine : public CMachine
 			ASSERT(w && w_dim>0);
 			dst_w=w;
 			dst_dims=w_dim;
+		}
+
+		/** get w (swig compatible)
+		 *
+		 * @param dst_w store w in this argument
+		 * @param dst_dims dimension of w
+		 */
+		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
+		{
+			ASSERT(dst_w && dst_dims);
+			ASSERT(w && w_dim>0);
+			*dst_dims=w_dim;
+			*dst_w=(float64_t*) SG_MALLOC(sizeof(float64_t)*(*dst_dims));
+			ASSERT(*dst_w);
+			memcpy(*dst_w, w, sizeof(float64_t) * (*dst_dims));
 		}
 
 		/** get w
@@ -135,7 +138,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CDotFeatures* feat)
+		virtual inline void set_features(CStreamingDotFeatures* feat)
 		{
 			SG_UNREF(features);
 			SG_REF(feat);
@@ -158,21 +161,39 @@ class CLinearMachine : public CMachine
 		/// get output for example "vec_idx"
 		virtual float64_t apply(int32_t vec_idx)
 		{
-			return features->dense_dot(vec_idx, w, w_dim) + bias;
+				SG_NOTIMPLEMENTED;
+				return CMath::INFTY;
 		}
+
+		/**
+		 * apply linear machine to one vector
+		 *
+		 * @param vec feature vector
+		 * @param len length of vector
+		 *
+		 * @return classified label
+		 */
+		virtual float64_t apply(float64_t* vec, int32_t len);
+
+		/**
+		 * apply linear machine to vector currently being processed
+		 *
+		 * @return classified label
+		 */
+		virtual float64_t apply_to_this_example();
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		virtual CDotFeatures* get_features() { SG_REF(features); return features; }
+		virtual CStreamingDotFeatures* get_features() { SG_REF(features); return features; }
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "LinearMachine"; }
+		virtual const char* get_name() const { return "OnlineLinearMachine"; }
 
 	protected:
 		/** dimension of w */
@@ -182,7 +203,7 @@ class CLinearMachine : public CMachine
 		/** bias */
 		float64_t bias;
 		/** features */
-		CDotFeatures* features;
+		CStreamingDotFeatures* features;
 };
 }
 #endif

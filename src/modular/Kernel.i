@@ -35,9 +35,11 @@
 %include "Distance_includes.i"
 %include "Kernel_includes.i"
 %include "Preprocessor_includes.i"
+%include "Library_includes.i"
 
 %import "Features.i"
 %import "Distance.i"
+%import "Library.i"
 
 %ignore CWeightedDegreePositionStringKernel::set_position_weights(float64_t*);
 

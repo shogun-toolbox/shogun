@@ -220,11 +220,15 @@ namespace shogun
 		void finalize_example();
 
 		/**
-		 * End the parser, closing the parse thread.
+		 * End the parser, waiting for the parse thread to complete.
 		 *
 		 */
 		void end_parser();
 
+		/** Terminates the parsing thread
+		 */
+		void exit_parser();
+		
 	private:
 		/**
 		 * Entry point for the parse thread.
@@ -404,6 +408,8 @@ namespace shogun
 
 		while (!parsing_done)
 		{
+			pthread_testcancel();
+
 			if (example_type == E_LABELLED)
 				get_vector_and_label(current_feature_vector, current_len, current_label);
 			else
@@ -421,6 +427,7 @@ namespace shogun
 
 			examples_buff->copy_example(current_example);
 			number_of_vectors_parsed++;
+
 		}
 
 		return NULL;
@@ -504,6 +511,12 @@ namespace shogun
 		void CInputParser<T>::end_parser()
 	{
 		pthread_join(parse_thread, NULL);
+	}
+
+	template <class T>
+		void CInputParser<T>::exit_parser()
+	{
+		pthread_cancel(parse_thread);
 	}
 
 }

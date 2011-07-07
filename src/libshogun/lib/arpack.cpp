@@ -10,7 +10,7 @@
 
 #include "lib/arpack.h"
 #ifdef HAVE_ARPACK
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 #include "lib/config.h"
 #include <cblas.h>
 #include "lib/lapack.h"
@@ -23,15 +23,15 @@ using namespace shogun;
 namespace shogun
 {
 void arpack_dsaupd(double* matrix, int n, int nev, const char* which, 
-                   int mode, double shift,
-                   double* eigenvalues, double* eigenvectors, int& status)
+                   int mode, double shift, double* eigenvalues, 
+                   double* eigenvectors, int& status)
 {
 	// check if nev is greater than n
 	if (nev>n)
 		SG_SERROR("Number of required eigenpairs is greater than order of the matrix");
 
 	// check specified mode
-	if (mode!=1 && mode!=2)
+	if (mode!=1 && mode!=3)
 		SG_SERROR("Unknown mode specified");
 
 	// init ARPACK's reverse communication parameter 
@@ -61,8 +61,8 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// specify method for selecting implicit shifts (1 - exact shifts) 
 	iparam[0] = 1;
 	// specify max number of iterations
-	iparam[2] = 3*n;
-	// set the computation mode (1 for regular or 2 for shift-inverse)
+	iparam[2] = n;
+	// set the computation mode (1 for regular or 3 for shift-inverse)
 	iparam[6] = mode;
 
 	// init array indicating locations of vectors for routine callback
@@ -81,56 +81,35 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// All
 	char* all_ = strdup("All");
 
-	// main computation loop
 	// shift-invert mode
-	if (mode==2)
+	if (mode==3)
 	{
-		double* workt = new double[n];		
-
 		for (int i=0; i<n; i++)
 			matrix[i*n+i] -= shift;
 
-		clapack_dpotri(CblasColMajor,CblasUpper,n,matrix,n);
-
-		do 
-		{
-			dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
-			        &ncv, v, &ldv, iparam, ipntr, workd, workl,
-			        &lworkl, &info);
-
-			if ((ido==1)||(ido==-1))
-			{
-				memcpy(workt,workd+ipntr[0]-1,n*sizeof(double));
-
-				cblas_dtrmv(CblasColMajor,CblasUpper,CblasNoTrans,CblasNonUnit,
-				            n,matrix,n,
-				            workt,1);
-
-				memcpy(workd+ipntr[1]-1,workt,n*sizeof(double));
-			}
-		} while ((ido==1)||(ido==-1));
-	} 
-	// regular mode
-	if (mode==1)
-	{
-		do	 
-		{
-			dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
-		        	&ncv, v, &ldv, iparam, ipntr, workd, workl,
-		        	&lworkl, &info);
-
-			if ((ido==1)||(ido==-1))
-			{
-				cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-			        	    n, 1, n,
-					    1.0, matrix, n,
-				            (workd+ipntr[0]-1), n,
-				            0.0, (workd+ipntr[1]-1), n);		
-			}
-		} while ((ido==1)||(ido==-1));
-	
+		int* ipiv = new int[n];
+		clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
+		clapack_dgetri(CblasColMajor,n,matrix,n,ipiv);
+		delete[] ipiv;
 	}
+	// main computation loop 
+	do	 
+	{
+		dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
+	        	&ncv, v, &ldv, iparam, ipntr, workd, workl,
+	        	&lworkl, &info);
 
+		if ((ido==1)||(ido==-1))
+		{
+			// general matvec
+			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
+		        	    n, 1, n,
+				    1.0, matrix, n,
+			            (workd+ipntr[0]-1), n,
+			            0.0, (workd+ipntr[1]-1), n);		
+		}
+	} while ((ido==1)||(ido==-1));
+	
 	// check if DSAUPD failed
 	if (info<0) 
 	{
@@ -145,7 +124,6 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	}
 	else 
 	{
-		SG_SDEBUG("DSAUPD finished. Taken %d iterations.\n", iparam[2]);
 		if (info==1)
 			SG_SDEBUG("Maximum number of iterations reached.\n");
 			
@@ -154,7 +132,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		// allocate d to hold eigenvalues
 		double* d = new double[2*ncv];
 		// sigma for dseupd
-		double sigma;
+		double sigma = shift;
 		
 		// init ierr indicating dseupd possible errors
 		int ierr = 0;
@@ -200,5 +178,5 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 };
 
 }
-#endif /* HAVE_ATLAS */
+#endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */

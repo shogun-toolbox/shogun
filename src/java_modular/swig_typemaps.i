@@ -146,6 +146,16 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGVector macros */
+TYPEMAP_SGVECTOR(bool, boolean, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(char, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(uint8_t, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(int16_t, short, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(uint16_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(int32_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(uint32_t, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(int64_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(uint64_t, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGVECTOR(long long, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 TYPEMAP_SGVECTOR(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix","(II[F)V")
 TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
@@ -384,6 +394,16 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGMATRIX macros */
+TYPEMAP_SGMATRIX(bool, boolean, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(char, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(uint8_t, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(int16_t, short, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(uint16_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(int32_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(uint32_t, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(int64_t, int, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(uint64_t, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+TYPEMAP_SGMATRIX(long long, long, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 TYPEMAP_SGMATRIX(float32_t, float, Float, jfloat, "()[F", "org/jblas/FloatMatrix","(II[F)V")
 TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 
