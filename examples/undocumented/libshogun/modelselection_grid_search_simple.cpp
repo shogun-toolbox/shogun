@@ -14,6 +14,7 @@
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/modelselection/GridSearchModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
+#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/LibLinear.h>

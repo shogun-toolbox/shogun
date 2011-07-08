@@ -10,6 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
+#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
