@@ -31,8 +31,8 @@ template <class T> class CDynamicObjectArray;
  */
 template <class T> class DynArray
 {
-	friend class CDynamicArray<T>;
-	friend class CDynamicObjectArray<T>;
+	template<class U> friend class CDynamicArray;
+	template<class U> friend class CDynamicObjectArray;
 	friend class CCommUlongStringKernel;
 
 	public:

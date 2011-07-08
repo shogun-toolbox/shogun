@@ -224,9 +224,9 @@ class CSNPFeatures : public CDotFeatures
 		virtual SGMatrix<float64_t> get_histogram(bool normalize=true);
 
 		/** 
-		 * compute 3x2 histogram table
+		 * compute 2x3 histogram table
 		 */
-		static SGMatrix<float64_t> get_3x2_table(CSNPFeatures* pos, CSNPFeatures* neg);
+		static SGMatrix<float64_t> get_2x3_table(CSNPFeatures* pos, CSNPFeatures* neg);
 
 	protected:
 		/** stringfeatures the wdfeatures are based on*/

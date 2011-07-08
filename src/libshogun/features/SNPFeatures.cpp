@@ -346,7 +346,7 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 	return SGMatrix<float64_t>(h, nsym, string_length/2);
 }
 
-SGMatrix<float64_t> CSNPFeatures::get_3x2_table(CSNPFeatures* pos, CSNPFeatures* neg)
+SGMatrix<float64_t> CSNPFeatures::get_2x3_table(CSNPFeatures* pos, CSNPFeatures* neg)
 {
 
 	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length());
@@ -360,8 +360,8 @@ SGMatrix<float64_t> CSNPFeatures::get_3x2_table(CSNPFeatures* pos, CSNPFeatures*
 
 	for (int32_t i=0; i<3*len/2; i++)
 	{
-		table[i]=p_hist.matrix[i];
-		table[i+3*len/2]=p_hist.matrix[i+3*len/2];
+		table[2*i]=p_hist.matrix[i];
+		table[2*i+1]=n_hist.matrix[i];
 	}
-	return SGMatrix<float64_t>(table, 3,2*len/2);
+	return SGMatrix<float64_t>(table, 2,3*len/2);
 }
