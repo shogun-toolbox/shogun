@@ -176,7 +176,7 @@ void CMath::display_matrix(
 
 SGVector<float64_t> CMath::fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables)
 {
-	SGMatrix<float64_t> table((float64_t*)NULL,2,3);
+	SGMatrix<float64_t> table(NULL,2,3,false);
 	int32_t len=tables.num_cols/3;
 
 	SGVector<float64_t> v(len);
