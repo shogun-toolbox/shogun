@@ -14,6 +14,7 @@ On debian, depending on the interface you want, install the package(s)
 \verbatim
 libshogun-dev         - for C++ developers building extensions using
                         libshogun
+shogun-java-modular   - for the modular java interface
 shogun-octave         - for the static octave interface
 shogun-octave-modular - for the modular octave interface
 shogun-python         - for the static python interface
@@ -68,6 +69,9 @@ CPLEX(tm) just make sure cplex can be found in the PATH. If it is not found
 shogun will resort to GLPK (if version at least 4.29 is found) for 1-norm MKL,
 p-norm MKL with p>1 will work nonetheless.
 
+\li To compile the Java interface you need to have the Java developer files 
+(debian package openjdk-6-jdk) installed.
+
 \li To compile the R interface you need to have the R developer files 
 (debian package r-base-dev) installed.
 
@@ -102,6 +106,8 @@ where \b interface is one of the following
 \li octave or octave_modular -- for octave (see http://www.octave.org)
 
 \li r or r_modular -- for r (see http://www.r-project.org).
+
+\li java_modular -- for java (see http://www.java.com).
 
 \li matlab -- for matlab (see http://www.mathworks.com)
 
