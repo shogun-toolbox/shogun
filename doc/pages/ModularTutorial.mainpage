@@ -1,7 +1,7 @@
 /*!
 \page modular_tutorial Tutorial for Modular Interfaces
 
-SHOGUN's "modular" interfaces to Python and Octave 
+SHOGUN's "modular" interfaces to Python, Octave and Java
 give intuitive and easy access to the shogun's functionality.
 Compared to the static interfaces (\subpage staticinterfaces), 
 the modular ones are much more flexible and allow for nearly unlimited extensibility. 
@@ -11,7 +11,7 @@ If this is your first time using shogun, you've found the right place to start!
 
 In this tutorial, we demonstrate how to use shogun to create a simple
 Gaussian kernel based Support Vector Machine (SVM) classifier, but first
-things first. Let's fire up python or octave and load the modular
+things first. Let's fire up python, octave or java and load the modular
 shogun environment.
 
 \section start_shogun_modular Starting SHOGUN
@@ -31,6 +31,28 @@ from shogun.Features import *
 from shogun.Kernel import *
 from shogun.Classifier import *
 from shogun.Evaluation import *
+\endverbatim
+
+Under java we need import shogun package and jblas package.
+
+\verbatim
+import org.shogun.*;
+import org.jblas.*;
+\endverbatim
+
+we also have to specify what we'd like to load. 
+For this example, we will need features and labels to represent our input data, 
+a classifier, a kernel to compare the similarity of features
+
+\verbatim
+System.loadLibrary("Features");
+System.loadLibrary("Classifier");
+System.loadLibrary("Kernel");
+\endverbatim
+
+We also need use the method of Features to init shogun as the following:
+\verbatim
+Features.init_shogun_with_defaults();
 \endverbatim
 
 (Note here that the module shogun.Features contains the class Labels).
@@ -97,8 +119,32 @@ train_labels = [-ones(1,100), ones(1,100)];
 test_labels = [-ones(1,100), ones(1,100)];
 \endverbatim
 
-The rest of this tutorial below will now work the same (identical syntax) for python
-and octave (when using a trailing semicolon for each command, which is optional in python).
+In java, this is is done as follows:
+\verbatim
+dist=0.5
+int num = 1000;
+double dist = 1.0;
+
+DoubleMatrix offs=ones(2, num).mmul(dist);
+DoubleMatrix x = randn(2, num).sub(offs);
+DoubleMatrix y = randn(2, num).add(offs);
+DoubleMatrix traindata_real = concatHorizontally(x, y);
+
+DoubleMatrix m = randn(2, num).sub(offs);
+DoubleMatrix n = randn(2, num).add(offs);
+DoubleMatrix testdata_real = concatHorizontally(m, n);
+
+DoubleMatrix o = ones(1,num);
+DoubleMatrix trainlab = concatHorizontally(o.neg(), o);
+DoubleMatrix testlab = concatHorizontarily(o.neg(), o)
+\endverbatim
+
+The rest of this tutorial below will now work the same (identical syntax) for python,
+octave (when using a trailing semicolon for each command, which is optional in python).
+
+For java, we use DoubleMatrix to represent most of the types. If shogun C++ class need a 
+int Vector/Matrix, we convert the DoubleMatrix into int Vector/Matrix and when returned 
+from the function, we convert the int Vector/Matrix into DoubleMatrix again.
 
 \section svm_tutorial_modular Creating an SVM classifier
 
@@ -181,6 +227,10 @@ A full, working example similar to the one presented above is shown below:
 For octave:
 
 \verbinclude classifier_libsvm_minimal_modular.m
+
+For java:
+
+\verbinclude classifier_libsvm_minimal_modular.java
 
 For python:
 \verbinclude classifier_libsvm_minimal_modular.py
