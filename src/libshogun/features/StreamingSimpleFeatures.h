@@ -65,7 +65,7 @@ public:
 	{
 		CStreamingFileFromSimpleFeatures<T>* file;
 		bool is_labelled;
-		int32_t size = 1;
+		int32_t size = 1024;
 
 		if (lab)
 		{
