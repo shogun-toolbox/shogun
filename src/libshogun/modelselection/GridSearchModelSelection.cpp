@@ -59,26 +59,32 @@ CParameterCombination* CGridSearchModelSelection::select_model(
 			if (result>best_result)
 			{
 				if (best_combination)
-					best_combination->destroy(true, true);
+					SG_UNREF(best_combination);
 
 				best_combination=combinations->get_element(i);
 				best_result=result;
 			}
 			else
-				combinations->get_element(i)->destroy(true, true);
+			{
+				CParameterCombination* combination=combinations->get_element(i);
+				SG_UNREF(combination);
+			}
 		}
 		else
 		{
 			if (result<best_result)
 			{
 				if (best_combination)
-					best_combination->destroy(true, true);
+					SG_UNREF(best_combination);
 
 				best_combination=combinations->get_element(i);
 				best_result=result;
 			}
 			else
-				combinations->get_element(i)->destroy(true, true);
+			{
+				CParameterCombination* combination=combinations->get_element(i);
+				SG_UNREF(combination);
+			}
 		}
 	}
 

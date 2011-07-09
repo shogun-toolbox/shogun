@@ -90,10 +90,11 @@ int main(int argc, char **argv)
 	SG_SPRINT("result: %f\n", result);
 
 	/* clean up destroy result parameter */
-	best_combination->destroy(true, true);
+	SG_UNREF(best_combination);
 
 	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;
 }
+

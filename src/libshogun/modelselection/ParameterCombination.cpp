@@ -36,14 +36,18 @@ void CParameterCombination::init()
 {
 	m_node_name=NULL;
 	m_param=NULL;
-	m_child_nodes=new DynArray<CParameterCombination*> ();
+	m_child_nodes=new CDynamicObjectArray<CParameterCombination> ();
+	SG_REF(m_child_nodes);
 
 	m_parameters->add((char*)m_node_name, "node_name", "name of this node");
+	m_parameters->add((CSGObject**)m_child_nodes, "child nodes",
+			"children of this node");
 }
 
 CParameterCombination::~CParameterCombination()
 {
-	delete m_child_nodes;
+	delete m_param;
+	SG_UNREF(m_child_nodes);
 }
 
 void CParameterCombination::append_child(CParameterCombination* child)
@@ -95,7 +99,11 @@ void CParameterCombination::print_tree(int prefix_num)
 	SG_SPRINT("\n");
 
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
-		m_child_nodes->get_element(i)->print_tree(prefix_num+1);
+	{
+		CParameterCombination* child=m_child_nodes->get_element(i);
+		child->print_tree(prefix_num+1);
+		SG_UNREF(child);
+	}
 
 	delete[] prefix;
 }
@@ -113,14 +121,7 @@ void CParameterCombination::parameter_set_multiplication(
 			p->add_parameters(set_2[j]);
 			result.append_element(p);
 		}
-
-		/* delete input sets */
-		delete set_1[i];
 	}
-
-	/* delete input sets */
-	for (index_t i=0; i<set_2.get_num_elements(); ++i)
-		delete set_2[i];
 }
 
 void CParameterCombination::leaf_sets_multiplication(
@@ -131,7 +132,7 @@ void CParameterCombination::leaf_sets_multiplication(
 	/* check marginal cases */
 	if (sets.get_num_elements()==1)
 	{
-		/* just copy the only element into result array.
+		/* just use the only element into result array.
 		 * put root node before all combinations*/
 		result=*sets[0];
 
@@ -198,6 +199,7 @@ void CParameterCombination::leaf_sets_multiplication(
 
 			param_product=temp_result;
 		}
+
 		/* at this point there is only one DynArray instance remaining:
 		 * param_product. contains all combinations of parameters of all given
 		 * sets */
@@ -219,9 +221,7 @@ void CParameterCombination::leaf_sets_multiplication(
 			result.append_element(root);
 		}
 
-		/* delete old trees. note that the Parameter instances in the
-		 * tree have been deleted with the above call of
-		 * parameter_set_multiplication. also delete elements of input sets
+		/* delete old trees. also delete elements of input sets
 		 * array */
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
@@ -237,23 +237,9 @@ void CParameterCombination::leaf_sets_multiplication(
 		delete param_product;
 	}
 
-	/* delete input new root node with parameter data (was copied) in any
+	/* unref input new root node with parameter data (was copied) in any
 	 * case */
-	new_root->destroy(true, true);
-}
-
-void CParameterCombination::destroy(bool recursive, bool destroy_data)
-{
-	if (destroy_data)
-		delete m_param;
-
-	if (recursive)
-	{
-		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
-			m_child_nodes->get_element(i)->destroy(recursive, destroy_data);
-	}
-
-	delete this;
+	SG_UNREF(new_root);
 }
 
 CParameterCombination* CParameterCombination::copy_tree()
@@ -276,8 +262,9 @@ CParameterCombination* CParameterCombination::copy_tree()
 	/* recursively copy all children */
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 	{
-		copy->m_child_nodes->append_element(
-				m_child_nodes->get_element(i)->copy_tree());
+		CParameterCombination* child=m_child_nodes->get_element(i);
+		copy->m_child_nodes->append_element(child->copy_tree());
+		SG_UNREF(child);
 	}
 
 	return copy;
@@ -292,7 +279,11 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter)
 		 * their values to the current parameter input (its just handed one
 		 * recursion level downwards) */
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
-			m_child_nodes->get_element(i)->apply_to_parameter(parameter);
+		{
+			CParameterCombination* child=m_child_nodes->get_element(i);
+			child->apply_to_parameter(parameter);
+			SG_UNREF(child);
+		}
 	}
 	/* case parameter node */
 	else if (!m_node_name && m_param)
@@ -321,8 +312,9 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter)
 			 * their values */
 			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 			{
-				m_child_nodes->get_element(i)->apply_to_parameter(
-						current_sgobject->m_parameters);
+				CParameterCombination* child=m_child_nodes->get_element(i);
+				child->apply_to_parameter(current_sgobject->m_parameters);
+				SG_UNREF(child);
 			}
 		}
 		else

@@ -311,7 +311,10 @@ DynArray<CParameterCombination*>* CModelSelectionParameters::get_combinations()
 					/* delete non-leaf combination trees */
 					for (index_t i=0; i
 						<leaf_combinations.get_num_elements(); ++i)
-							leaf_combinations[i]->destroy(true, true);
+					{
+						CParameterCombination* tree=leaf_combinations[i];
+						SG_UNREF(tree);
+					}
 
 					for (index_t i=0; i
 							<non_leaf_combinations.get_num_elements(); ++i)
@@ -321,9 +324,11 @@ DynArray<CParameterCombination*>* CModelSelectionParameters::get_combinations()
 
 						for (index_t j=0; j
 								<current_non_leaf_set->get_num_elements(); ++j)
-							current_non_leaf_set->get_element(j)->destroy(true,
-									true);
-
+						{
+							CParameterCombination* tree=
+									current_non_leaf_set->get_element(j);
+							SG_UNREF(tree);
+						}
 					}
 
 					/* the arrays of the non-leaf sets have to be deleted in

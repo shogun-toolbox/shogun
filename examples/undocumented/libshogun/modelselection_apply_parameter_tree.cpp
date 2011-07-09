@@ -120,7 +120,10 @@ int main(int argc, char **argv)
 
 	/* print and directly delete them all */
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
-		combinations->get_element(i)->destroy(true, true);
+	{
+		CParameterCombination* combination=combinations->get_element(i);
+		SG_UNREF(combination);
+	}
 
 	delete combinations;
 

@@ -103,8 +103,9 @@ int main(int argc, char **argv)
 	SG_SPRINT("----------------------------------\n");
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
-		combinations->get_element(i)->print_tree();
-		combinations->get_element(i)->destroy(true, true);
+		CParameterCombination* combination=combinations->get_element(i);
+		combination->print_tree();
+		SG_UNREF(combination);
 	}
 
 	delete combinations;
