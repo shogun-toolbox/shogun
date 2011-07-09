@@ -42,7 +42,7 @@ class Parameter;
  * Again: Leafs of the tree may only be Parameter nodes.
  *
  */
-class CParameterCombination : public CSGObject
+class CParameterCombination
 {
 public:
 	/** constructor for a root node */
