@@ -41,21 +41,29 @@ void CModelSelectionParameters::init()
 {
 	m_node_name=NULL;
 	m_sgobject=NULL;
-	m_child_nodes=new CDynamicObjectArray<CModelSelectionParameters>();
-	SG_REF(m_child_nodes);
 
 	m_parameters->add((char*)m_node_name, "node_name", "Name of node");
-	m_parameters->add((CSGObject**)&m_sgobject, "sgobject",
-			"CSGObject of this node");
-	m_parameters->add((CSGObject**)&m_child_nodes, "child_nodes",
-			"Children of this node");
+	m_parameters->add((CSGObject**)&m_sgobject, "sgobject", "CSGObject of this node");
 }
 
 CModelSelectionParameters::~CModelSelectionParameters()
 {
+	/* a root node unref its whole tree upon destruction */
+	if (!m_node_name && !m_sgobject && !m_values.vector)
+		unref_childs();
+
 	delete[] m_values.vector;
 	SG_UNREF(m_sgobject);
-	SG_UNREF(m_child_nodes);
+}
+
+void CModelSelectionParameters::unref_childs()
+{
+	for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
+	{
+		CModelSelectionParameters* current=m_child_nodes[i];
+		current->unref_childs();
+		SG_UNREF(current);
+	}
 }
 
 void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
@@ -84,7 +92,8 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 		}
 	}
 
-	m_child_nodes->append_element(child);
+	SG_REF(child);
+	m_child_nodes.append_element(child);
 }
 
 void CModelSelectionParameters::set_values(SGVector<float64_t> values)
@@ -170,23 +179,21 @@ DynArray<CParameterCombination*>* CModelSelectionParameters::get_combinations()
 			(!m_node_name && !m_sgobject && !m_values.vector))
 	{
 		/* only consider combinations if this CSGObject has children */
-		if (m_child_nodes->get_num_elements())
+		if (m_child_nodes.get_num_elements())
 		{
 			/* split leaf and no-leaf child combinations */
 			DynArray<CModelSelectionParameters*> leaf_children;
 			DynArray<CModelSelectionParameters*> non_leaf_children;
 
-			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+			for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
 			{
-				CModelSelectionParameters* child=m_child_nodes->get_element(i);
+				CModelSelectionParameters* current=m_child_nodes[i];
 
 				/* split children with values (leafs) and children with other */
-				if (child->m_values.vector)
-					leaf_children.append_element(child);
+				if (current->m_values.vector)
+					leaf_children.append_element(current);
 				else
-					non_leaf_children.append_element(child);
-
-				SG_UNREF(child);
+					non_leaf_children.append_element(current);
 			}
 
 			/* extract all tree sets of all leaf children */
@@ -337,18 +344,17 @@ DynArray<CParameterCombination*>* CModelSelectionParameters::get_combinations()
 	 */
 	else if (m_node_name && !m_sgobject && !m_values.vector)
 	{
-		if (!m_child_nodes->get_num_elements())
+		if (!m_child_nodes.get_num_elements())
 		{
 			SG_ERROR("ModelSelectionParameter node with name but no children or "
 					"values.\n");
 		}
 
-		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
 		{
 			/* recursively get all combinations of the current child */
-			CModelSelectionParameters* child=m_child_nodes->get_element(i);
 			DynArray<CParameterCombination*>* child_combinations=
-					child->get_combinations();
+					m_child_nodes[i]->get_combinations();
 
 			/* and process them each */
 			for (index_t j=0; j<child_combinations->get_num_elements(); ++j)
@@ -364,7 +370,6 @@ DynArray<CParameterCombination*>* CModelSelectionParameters::get_combinations()
 			}
 
 			delete child_combinations;
-			SG_UNREF(child);
 		}
 	}
 	else
@@ -390,12 +395,8 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		/* now recursively print successors */
 
 		/* cast safe because only CModelSelectionParameters are added to list */
-		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
-		{
-			CModelSelectionParameters* child=m_child_nodes->get_element(i);
-			child->print_tree(prefix_num+1);
-			SG_UNREF(child);
-		}
+		for (index_t i=0; i<m_child_nodes.get_num_elements(); ++i)
+			m_child_nodes[i]->print_tree(prefix_num+1);
 	}
 	else
 	{
