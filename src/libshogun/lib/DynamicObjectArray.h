@@ -113,14 +113,14 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 */
 		inline bool set_element(T* element, int32_t index)
 		{
-			CSGObject* old=cast_to_sgobject(m_array.get_element(index));
-			SG_UNREF(old);
-
 			CSGObject* casted=cast_to_sgobject(element);
 			bool success=m_array.set_element(element, index);
 			if (success)
 				SG_REF(casted);
 
+			/* ref before unref to prevent deletion if new=old */
+			CSGObject* old=cast_to_sgobject(m_array.get_element(index));
+			SG_UNREF(old);
 			return success;
 		}
 
