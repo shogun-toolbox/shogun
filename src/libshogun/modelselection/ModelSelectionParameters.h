@@ -13,6 +13,7 @@
 
 #include "base/SGObject.h"
 #include "base/DynArray.h"
+#include "lib/DynamicObjectArray.h"
 
 namespace shogun
 {
@@ -74,9 +75,6 @@ public:
 
 	/** destructor. If set, deletes data array and SG_UNREF's the CSGObject */
 	~CModelSelectionParameters();
-
-	/** method to recursively unref all nods of this tree */
-	void unref_childs();
 
 	/** appends a child to this tree. only possible if this is no value node
 	 *
@@ -141,14 +139,14 @@ protected:
 	 */
 	bool has_children()
 	{
-		return m_child_nodes.get_num_elements()>0;
+		return m_child_nodes->get_num_elements()>0;
 	}
 
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
 	SGVector<float64_t> m_values;
-	DynArray<CModelSelectionParameters*> m_child_nodes;
+	CDynamicObjectArray<CModelSelectionParameters>* m_child_nodes;
 };
 
 }
