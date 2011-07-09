@@ -182,12 +182,10 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// using ARPACK (faster)
 		float64_t* eigenvalues_vector = new float64_t[m_target_dim+1];
 		arpack_dsaupd(M_matrix,N,m_target_dim+1,"LM",3,0.0,false,eigenvalues_vector,M_matrix,eigenproblem_status);
-		CMath::display_vector(eigenvalues_vector,m_target_dim+1,"eigs");
 	#else 
 	// using LAPACK (slower)
 		float64_t* eigenvalues_vector = new float64_t[N];
 		wrap_dsyev('V','U',N,M_matrix,N,eigenvalues_vector,&eigenproblem_status);
-		CMath::display_vector(eigenvalues_vector,N,"eigs");
 	#endif	
 
 	// check if failed

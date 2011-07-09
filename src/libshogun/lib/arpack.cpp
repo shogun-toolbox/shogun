@@ -15,7 +15,6 @@
 #include <cblas.h>
 #include "lib/lapack.h"
 #include "lib/common.h"
-#include "lib/Mathematics.h"
 #include "lib/io.h"
 #include <string.h>
 
@@ -88,8 +87,6 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		for (int i=0; i<n; i++)
 			matrix[i*n+i] -= shift;
 
-//		CMath::display_matrix(matrix,n,n,"M");
-
 		if (pos)
 		{
 			clapack_dpotrf(CblasColMajor,CblasUpper,n,matrix,n);
@@ -102,8 +99,6 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 			clapack_dgetri(CblasColMajor,n,matrix,n,ipiv);
 			delete[] ipiv;
 		}
-
-//		CMath::display_matrix(matrix,n,n,"Minv");
 	}
 	// main computation loop 
 	do	 
