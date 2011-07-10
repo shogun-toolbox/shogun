@@ -1,9 +1,11 @@
 import org.shogun.*;
 import org.jblas.*;
-import static org.shogun.EAlphabet.DNA;
+import static org.shogun.Math.init_random;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class clustering_kmeans_modular {
 	static {
 		System.loadLibrary("Features");
@@ -20,7 +22,7 @@ public class clustering_kmeans_modular {
 	static ArrayList run(int para) {
 		Features.init_shogun_with_defaults();
 		int k = para;
-		Math_init_random(17);
+		init_random(17);
 
 		DoubleMatrix fm_train = Load.load_numbers("../data/fm_train_real.dat");
 

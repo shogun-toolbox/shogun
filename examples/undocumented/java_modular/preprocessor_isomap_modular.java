@@ -13,9 +13,13 @@ public class preprocessor_isomap_modular {
 		DoubleMatrix data = Load.load_numbers("../data/fm_train_real.dat");
 
 		RealFeatures features = new RealFeatures(data);
-		Isomap preprocessor = new Isomap();
-		preprocessor.set_target_dim(1);
-		preprocessor.apply_to_feature_matrix(features);
+		ClassicIsomap classic = new ClassicIsomap();
+		classic.set_target_dim(1);
+		classic.apply_to_feature_matrix(features);
+
+		LandmarkIsomap landmark = new LandmarkIsomap();
+		landmark.set_target_dim(1);
+		landmark.apply_to_feature_matrix(features);
 
 		Features.exit_shogun();
 	}
