@@ -11,6 +11,7 @@
 #include "modelselection/ModelSelectionParameters.h"
 #include "modelselection/ParameterCombination.h"
 #include "lib/DataType.h"
+#include "lib/DynamicObjectArray.h"
 #include "base/Parameter.h"
 
 using namespace shogun;
@@ -41,7 +42,7 @@ void CModelSelectionParameters::init()
 {
 	m_node_name=NULL;
 	m_sgobject=NULL;
-	m_child_nodes=new CDynamicObjectArray<CModelSelectionParameters>();
+	m_child_nodes=new CDynamicObjectArray();
 	SG_REF(m_child_nodes);
 
 	m_parameters->add((char*)m_node_name, "node_name", "Name of node");
@@ -84,7 +85,7 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 		}
 	}
 
-	m_child_nodes->append_element(child);
+	m_child_nodes->append_element((CSGObject*)child);
 }
 
 void CModelSelectionParameters::set_values(SGVector<float64_t> values)
@@ -94,7 +95,7 @@ void CModelSelectionParameters::set_values(SGVector<float64_t> values)
 	m_values=values;
 }
 
-void CModelSelectionParameters::set_range(float64_t min, float64_t max,
+void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 		ERangeType type, float64_t step, float64_t type_base)
 {
 	if (m_sgobject || has_children())
@@ -178,7 +179,10 @@ DynArray<CParameterCombination*>* CModelSelectionParameters::get_combinations()
 
 			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 			{
-				CModelSelectionParameters* current=m_child_nodes->get_element(i);
+				/* cast is safe here */
+				CModelSelectionParameters* current=
+						(CModelSelectionParameters*)m_child_nodes->get_element(
+								i);
 
 				/* split children with values (leafs) and children with other */
 				if (current->m_values.vector)
@@ -351,7 +355,10 @@ DynArray<CParameterCombination*>* CModelSelectionParameters::get_combinations()
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
 			/* recursively get all combinations of the current child */
-			CModelSelectionParameters* child=m_child_nodes->get_element(i);
+
+			/* cast is safe here */
+			CModelSelectionParameters* child=
+					(CModelSelectionParameters*)m_child_nodes->get_element(i);
 			DynArray<CParameterCombination*>* child_combinations=
 					child->get_combinations();
 			SG_UNREF(child);
@@ -397,7 +404,9 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		/* cast safe because only CModelSelectionParameters are added to list */
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
-			CModelSelectionParameters* child=m_child_nodes->get_element(i);
+			/* cast is safe here */
+			CModelSelectionParameters* child=
+			(CModelSelectionParameters*)m_child_nodes->get_element(i);
 			child->print_tree(prefix_num+1);
 			SG_UNREF(child);
 		}
@@ -420,3 +429,7 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 	delete[] prefix;
 }
 
+bool CModelSelectionParameters::has_children()
+{
+	return m_child_nodes->get_num_elements()>0;
+}

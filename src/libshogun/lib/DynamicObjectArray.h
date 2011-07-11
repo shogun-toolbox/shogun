@@ -29,9 +29,9 @@ namespace shogun
  * implement the CSGObject interface, so only put these in here.
  * T specifies the type of the pointers
  */
-template<class T>class CDynamicObjectArray :public CSGObject
+class CDynamicObjectArray :public CSGObject
 {
-	DynArray<T*> m_array;
+	DynArray<CSGObject*> m_array;
 
 	public:
 		/** constructor
@@ -41,9 +41,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		CDynamicObjectArray(int32_t p_resize_granularity=128)
 		: CSGObject()
 		{
-			CSGObject*** casted_array=(CSGObject***)&m_array.array;
-
-			m_parameters->add_vector(casted_array, &m_array.num_elements, "array",
+			m_parameters->add_vector(&m_array.array, &m_array.num_elements, "array",
 					"Memory for dynamic array.");
 			m_parameters->add(&m_array.last_element_idx, "last_element_idx",
 					"Element with largest index.");
@@ -82,11 +80,10 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T* get_element(int32_t index) const
+		inline CSGObject* get_element(int32_t index) const
 		{
-			T* element=m_array.get_element(index);
-			CSGObject* casted=cast_to_sgobject(element);
-			SG_REF(casted);
+			CSGObject* element=m_array.get_element(index);
+			SG_REF(element);
 			return element;
 		}
 
@@ -97,11 +94,10 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T* get_element_safe(int32_t index) const
+		inline CSGObject* get_element_safe(int32_t index) const
 		{
-			T* element=m_array.get_element_safe(index);
-			CSGObject* casted=cast_to_sgobject(element);
-			SG_REF(casted);
+			CSGObject* element=m_array.get_element_safe(index);
+			SG_REF(element);
 			return element;
 		}
 
@@ -111,15 +107,14 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool set_element(T* element, int32_t index)
+		inline bool set_element(CSGObject* element, int32_t index)
 		{
-			CSGObject* casted=cast_to_sgobject(element);
 			bool success=m_array.set_element(element, index);
 			if (success)
-				SG_REF(casted);
+				SG_REF(element);
 
 			/* ref before unref to prevent deletion if new=old */
-			CSGObject* old=cast_to_sgobject(m_array.get_element(index));
+			CSGObject* old=m_array.get_element(index);
 			SG_UNREF(old);
 			return success;
 		}
@@ -130,12 +125,11 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(T* element, int32_t index)
+		inline bool insert_element(CSGObject* element, int32_t index)
 		{
-			CSGObject* casted=cast_to_sgobject(element);
 			bool success=m_array.insert_element(element, index);
 			if (success)
-				SG_REF(casted);
+				SG_REF(element);
 
 			return success;
 		}
@@ -145,12 +139,11 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 * @param element element to append
 		 * @return if setting was successful
 		 */
-		inline bool append_element(T* element)
+		inline bool append_element(CSGObject* element)
 		{
-			CSGObject* casted=cast_to_sgobject(element);
 			bool success=m_array.append_element(element);
 			if (success)
-				SG_REF(casted);
+				SG_REF(element);
 
 			return success;
 		}
@@ -160,11 +153,10 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 *
 		 * @param element element to append
 		 */
-		inline void push_back(T* element)
+		inline void push_back(CSGObject* element)
 		{
-			CSGObject* casted=cast_to_sgobject(element);
-			SG_REF(casted);
-			m_array.push_back(casted);
+			SG_REF(element);
+			m_array.push_back(element);
 		}
 
 	    /** ::STD::VECTOR compatible. Delete array element at the end
@@ -172,7 +164,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 */
 		inline void pop_back(void)
 		{
-			CSGObject* element=cast_to_sgobject(m_array.back());
+			CSGObject* element=m_array.back();
 			SG_UNREF(element);
 
 			m_array.pop_back();
@@ -183,9 +175,9 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 *
 		 * @return element at the end of array
 		 */
-		inline T* back(void)
+		inline CSGObject* back(void)
 		{
-			CSGObject* element=cast_to_sgobject(m_array.back());
+			CSGObject* element=m_array.back();
 			SG_REF(element);
 			return element;
 		}
@@ -196,7 +188,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 * @param element element to search for
 		 * @return index of element or -1
 		 */
-		inline int32_t find_element(T* element)
+		inline int32_t find_element(CSGObject* element)
 		{ return m_array.find_element(element); }
 
 		/** delete array element at idx
@@ -207,7 +199,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 */
 		inline bool delete_element(int32_t idx)
 		{
-			CSGObject* element=cast_to_sgobject(m_array.get_element(idx));
+			CSGObject* element=m_array.get_element(idx);
 			SG_UNREF(element);
 
 			return m_array.delete_element(idx);
@@ -240,7 +232,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			/* SG_REF all new elements */
 			for (index_t i=0; i<orig.get_num_elements(); ++i)
 			{
-				CSGObject* element=cast_to_sgobject(m_array.get_element(i));
+				CSGObject* element=m_array.get_element(i);
 				SG_REF(element);
 			}
 
@@ -260,22 +252,9 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			/* SG_REF all new elements */
 			for (index_t i=0; i<m_array.get_num_elements(); ++i)
 			{
-				CSGObject* element=(CSGObject*)m_array.get_element(i);
+				CSGObject* element=m_array.get_element(i);
 				SG_UNREF(element);
 			}
-		}
-
-		inline CSGObject* cast_to_sgobject(T* element) const
-		{
-			CSGObject* casted=dynamic_cast<CSGObject*>(element);
-
-			if (!casted)
-			{
-				SG_ERROR("Generic type of CDynamicObjectArray is not of type ",
-						"CSGObject!\n");
-			}
-
-			return casted;
 		}
 };
 }
