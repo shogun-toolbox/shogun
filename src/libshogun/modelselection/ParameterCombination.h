@@ -80,16 +80,6 @@ public:
 	 */
 	CParameterCombination* copy_tree();
 
-	/** Fills a DynArray<Parameter*> with pointers to newly created Parameter
-	 * instances, which contain all combinations of the provided Parameters.
-	 *
-	 * @param set_1 DynArray of Parameter instances
-	 * @param set_2 DynArray of Parameter instances
-	 * @param result an DynArray where the combinations are appended to
-	 */
-	static void parameter_set_multiplication(DynArray<Parameter*>& set_1,
-			DynArray<Parameter*>& set_2, DynArray<Parameter*>& result);
-
 	/** Takes a set of sets of leafs nodes (!) and produces a set of instances
 	 * of this class that contain every combination of the paramters in the leaf
 	 * nodes in their Parameter variables. All combinations are put into a newly
@@ -123,6 +113,16 @@ public:
 	}
 
 private:
+	/** Fills a DynArray<Parameter*> with pointers to newly created Parameter
+	 * instances, which contain all combinations of the provided Parameters.
+	 *
+	 * @param set_1 DynArray of Parameter instances
+	 * @param set_2 DynArray of Parameter instances
+	 * @param result an DynArray where the combinations are appended to
+	 */
+	static void parameter_set_multiplication(DynArray<Parameter*>& set_1,
+			DynArray<Parameter*>& set_2, DynArray<Parameter*>& result);
+
 	void init();
 
 private:
