@@ -35,13 +35,13 @@
 %rename(ModelSelection) CModelSelection;
 %rename(ModelSelectionParameters) CModelSelectionParameters;
 
-%include <shogun/modelselection/GridSearchModelSelection.h>
 %include <shogun/modelselection/ModelSelection.h>
 %include <shogun/modelselection/ModelSelectionParameters.h>
+%include <shogun/modelselection/GridSearchModelSelection.h>
 %include <shogun/base/DynArray.h>
 
 %include <shogun/modelselection/ParameterCombination.h>
-namespace shogun
+/*namespace shogun
 {
-    %template(DynamicParameterCombinationPointerArray) DynArray<ParameterCombination*>;
-}
+    %template(DynamicParameterCombinationPointerArray) DynArray<CParameterCombination>;
+}*/
