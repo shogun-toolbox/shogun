@@ -65,7 +65,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(int32_t max_calib_vec=1000, CFeatures* data=NULL);
 
 		/** set C
 		 *

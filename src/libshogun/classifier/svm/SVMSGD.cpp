@@ -169,13 +169,13 @@ bool CSVMSGD::train(CFeatures* data)
 	float64_t eta0 = typw / CMath::max(1.0,dloss(-typw));
 	t = 1 / (eta0 * lambda);
 
-	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
+	SG_SPRINT("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
 
 
 	//do the sgd
 	calibrate();
 
-	SG_INFO("Training on %d vectors\n", num_vec);
+	SG_SPRINT("Training on %d vectors\n", num_vec);
 	CSignal::clear_cancel();
 
 	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
@@ -215,7 +215,7 @@ bool CSVMSGD::train(CFeatures* data)
 	}
 
 	float64_t wnorm =  CMath::dot(w,w, w_dim);
-	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
+	SG_SPRINT("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
 
 	return true;
 }
@@ -254,7 +254,7 @@ void CSVMSGD::calibrate()
 
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
-	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
+	printf("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
 
 	delete[] c;
 }

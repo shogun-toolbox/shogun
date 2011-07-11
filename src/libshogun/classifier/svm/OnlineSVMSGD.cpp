@@ -131,7 +131,7 @@ COnlineSVMSGD::~COnlineSVMSGD()
 {
 }
 
-bool COnlineSVMSGD::train(CFeatures* data)
+bool COnlineSVMSGD::train(int32_t max_calibrate_vec, CFeatures* data)
 {
 	if (data)
 	{
@@ -162,7 +162,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
 	
 	//do the sgd
-	calibrate();
+	calibrate(max_calibrate_vec);
 	if (features->is_seekable())
 		features->reset_stream();
 
@@ -222,7 +222,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 
 	features->end_parser();
 	float64_t wnorm =  CMath::dot(w,w, w_dim);
-	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
+	SG_SPRINT("Vec count: %d. Norm: %.6f, Bias: %.6f\n", vec_count, wnorm, bias);
 
 	return true;
 }
@@ -263,7 +263,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
 
-	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
+	printf("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
 
 	delete[] c;
 }
