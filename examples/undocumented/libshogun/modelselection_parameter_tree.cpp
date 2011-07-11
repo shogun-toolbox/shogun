@@ -10,6 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
+#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/PowerKernel.h>
 #include <shogun/distance/MinkowskiMetric.h>
@@ -93,19 +94,21 @@ int main(int argc, char **argv)
 	CModelSelectionParameters* tree=create_param_tree();
 	SG_REF(tree);
 
-	tree->print();
+	tree->print_tree();
 
 	/* build combinations of parameter trees */
-	DynArray<ParameterCombination*> combinations;
-	tree->get_combinations(combinations);
+	DynArray<CParameterCombination*>* combinations=tree->get_combinations();
 
 	/* print and directly delete them all */
 	SG_SPRINT("----------------------------------\n");
-	for (index_t i=0; i<combinations.get_num_elements(); ++i)
+	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
-		combinations[i]->print();
-		combinations[i]->destroy(true, true);
+		CParameterCombination* combination=combinations->get_element(i);
+		combination->print_tree();
+		SG_UNREF(combination);
 	}
+
+	delete combinations;
 
 	/* delete example tree */
 	SG_UNREF(tree);

@@ -18,7 +18,7 @@ namespace shogun
 
 class CModelSelectionParameters;
 class CCrossValidation;
-class ParameterCombination;
+class CParameterCombination;
 
 class CModelSelection: public CSGObject
 {
@@ -27,7 +27,7 @@ public:
 			CCrossValidation* cross_validation);
 	virtual ~CModelSelection();
 
-	virtual ParameterCombination* select_model(float64_t& best_result)=0;
+	virtual CParameterCombination* select_model(float64_t& best_result)=0;
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const	{ return "ModelSelection"; }

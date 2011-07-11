@@ -34,23 +34,23 @@ CGridSearchModelSelection::~CGridSearchModelSelection()
 {
 }
 
-ParameterCombination* CGridSearchModelSelection::select_model(
+CParameterCombination* CGridSearchModelSelection::select_model(
 		float64_t& best_result)
 {
 	/* Retrieve all possible parameter combinations */
-	DynArray<ParameterCombination*> combinations;
-	m_model_parameters->get_combinations(combinations);
+	DynArray<CParameterCombination*>* combinations=
+			m_model_parameters->get_combinations();
 
-	ParameterCombination* best_combination=NULL;
+	CParameterCombination* best_combination=NULL;
 	if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
 		best_result=CMath::ALMOST_NEG_INFTY;
 	else
 		best_result=CMath::ALMOST_INFTY;
 
 	/* apply all combinations and search for best one */
-	for (index_t i=0; i<combinations.get_num_elements(); ++i)
+	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
-		combinations[i]->apply_to_parameter(m_cross_validation->get_machine_parameters());
+		combinations->get_element(i)->apply_to_parameter(m_cross_validation->get_machine_parameters());
 		float64_t result=m_cross_validation->evaluate();
 
 		/* check if current result is better, delete old combinations */
@@ -59,28 +59,36 @@ ParameterCombination* CGridSearchModelSelection::select_model(
 			if (result>best_result)
 			{
 				if (best_combination)
-					best_combination->destroy(true, true);
+					SG_UNREF(best_combination);
 
-				best_combination=combinations[i];
+				best_combination=combinations->get_element(i);
 				best_result=result;
 			}
 			else
-				combinations[i]->destroy(true, true);
+			{
+				CParameterCombination* combination=combinations->get_element(i);
+				SG_UNREF(combination);
+			}
 		}
 		else
 		{
 			if (result<best_result)
 			{
 				if (best_combination)
-					best_combination->destroy(true, true);
+					SG_UNREF(best_combination);
 
-				best_combination=combinations[i];
+				best_combination=combinations->get_element(i);
 				best_result=result;
 			}
 			else
-				combinations[i]->destroy(true, true);
+			{
+				CParameterCombination* combination=combinations->get_element(i);
+				SG_UNREF(combination);
+			}
 		}
 	}
+
+	delete combinations;
 
 	return best_combination;
 }

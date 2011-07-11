@@ -14,6 +14,7 @@
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/modelselection/GridSearchModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
+#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/LibLinear.h>
@@ -83,16 +84,17 @@ int main(int argc, char **argv)
 	CGridSearchModelSelection grid_search(param_tree, cross);
 
 	float64_t result;
-	ParameterCombination* best_combination=grid_search.select_model(result);
+	CParameterCombination* best_combination=grid_search.select_model(result);
 	SG_SPRINT("best parameter(s):\n");
-	best_combination->print();
+	best_combination->print_tree();
 	SG_SPRINT("result: %f\n", result);
 
 	/* clean up destroy result parameter */
-	best_combination->destroy(true, true);
+	SG_UNREF(best_combination);
 
 	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;
 }
+
