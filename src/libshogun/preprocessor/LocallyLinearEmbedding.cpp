@@ -181,7 +181,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	#ifdef HAVE_ARPACK
 	// using ARPACK (faster)
 		float64_t* eigenvalues_vector = new float64_t[m_target_dim+1];
-		arpack_dsaupd(M_matrix,N,m_target_dim+1,"LM",3,0.0,eigenvalues_vector,M_matrix,eigenproblem_status);		
+		arpack_dsaupd(M_matrix,N,m_target_dim+1,"LM",3,0.0,false,eigenvalues_vector,M_matrix,eigenproblem_status);
 	#else 
 	// using LAPACK (slower)
 		float64_t* eigenvalues_vector = new float64_t[N];

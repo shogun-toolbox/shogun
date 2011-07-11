@@ -7,7 +7,7 @@ make
 sudo make install
 
 which will build shogun for the R, matlab, python, octave and octave_modular,
-python_modular and r_modular interfaces and later install it.
+python_modular, r_modular and java_modular interfaces and later install it.
 If you want specific interfaces use,
 e.g
 
@@ -35,6 +35,9 @@ To compile the R interface you need to have the R developer files
 
 To compile the octave interface you need to have the octave developer files 
 (debian package octave3.0-headers) installed.
+
+To compile the java interface you need to have the java developer files 
+(debian package openjdk-6-jdk) installed.
 
 To compile the python interface you need to have the python developer files
 installed (debian packages python2.5-dev or python2.6-dev) and numpy
@@ -410,6 +413,22 @@ package and configure+compile shogun with:
   make install
 
 to test if it is working try octave ../examples/documented/r_modular/all_classifier.R
+
+object oriented java/swig interface:
+======================================
+
+do all of the above you did for java but now in addition install the swig
+package and configure+compile shogun with:
+
+ ./configure --interfaces=libshogun,libshogunui,python,java_modular
+  make
+  make install
+
+to test if it is working try 
+export CLASSPATH=/usr/share/java/jblas.jar:SHOGUNDIR/src/java_modular/shogun.jar:.
+export LD_LIBRARY_PATH=SHOGUNDIR/src/libshogun:SHOGUNDIR/src/java_modular
+javac ../examples/documented/java_modular/classifier_libsvm_minimal_modular.java
+and java classifier_libsvm_minimal_modular
 
 PROBLEMS
 
