@@ -10,7 +10,6 @@
 
 #include "modelselection/ParameterCombination.h"
 #include "base/Parameter.h"
-#include "lib/DynamicObjectArray.h"
 
 using namespace shogun;
 
@@ -37,7 +36,7 @@ void CParameterCombination::init()
 {
 	m_node_name=NULL;
 	m_param=NULL;
-	m_child_nodes=new CDynamicObjectArray();
+	m_child_nodes=new CDynamicObjectArray<CParameterCombination> ();
 	SG_REF(m_child_nodes);
 
 	m_parameters->add((char*)m_node_name, "node_name", "name of this node");
@@ -101,9 +100,7 @@ void CParameterCombination::print_tree(int prefix_num)
 
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 	{
-		/* cast is safe here */
-		CParameterCombination* child=
-				(CParameterCombination*)m_child_nodes->get_element(i);
+		CParameterCombination* child=m_child_nodes->get_element(i);
 		child->print_tree(prefix_num+1);
 		SG_UNREF(child);
 	}
@@ -265,9 +262,7 @@ CParameterCombination* CParameterCombination::copy_tree()
 	/* recursively copy all children */
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 	{
-		/* cast is safe here */
-		CParameterCombination* child=
-				(CParameterCombination*)m_child_nodes->get_element(i);
+		CParameterCombination* child=m_child_nodes->get_element(i);
 		copy->m_child_nodes->append_element(child->copy_tree());
 		SG_UNREF(child);
 	}
@@ -285,9 +280,7 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter)
 		 * recursion level downwards) */
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
-			/* cast is safe here */
-			CParameterCombination* child=
-					(CParameterCombination*)m_child_nodes->get_element(i);
+			CParameterCombination* child=m_child_nodes->get_element(i);
 			child->apply_to_parameter(parameter);
 			SG_UNREF(child);
 		}
@@ -319,9 +312,7 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter)
 			 * their values */
 			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 			{
-				/* cast is safe here */
-				CParameterCombination* child=
-						(CParameterCombination*)m_child_nodes->get_element(i);
+				CParameterCombination* child=m_child_nodes->get_element(i);
 				child->apply_to_parameter(current_sgobject->m_parameters);
 				SG_UNREF(child);
 			}
@@ -332,9 +323,4 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter)
 	else
 		SG_SERROR("CParameterCombination node has illegal type.\n");
 
-}
-
-bool CParameterCombination::has_children()
-{
-	return m_child_nodes->get_num_elements()>0;
 }

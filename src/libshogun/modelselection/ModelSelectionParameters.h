@@ -13,12 +13,12 @@
 
 #include "base/SGObject.h"
 #include "base/DynArray.h"
+#include "lib/DynamicObjectArray.h"
 
 namespace shogun
 {
 
 class CParameterCombination;
-class CDynamicObjectArray;
 
 enum ERangeType
 {
@@ -96,7 +96,7 @@ public:
 	 * @param step increment instaval for the values
 	 * @param type_base base for EXP or LOG ranges
 	 */
-	void build_values(float64_t min, float64_t max, ERangeType type,
+	void set_range(float64_t min, float64_t max, ERangeType type,
 			float64_t step=1, float64_t type_base=2);
 
 	/** setter for values of this node.
@@ -137,13 +137,16 @@ protected:
 	 *
 	 * @return true if it has children
 	 */
-	bool has_children();
+	bool has_children()
+	{
+		return m_child_nodes->get_num_elements()>0;
+	}
 
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
 	SGVector<float64_t> m_values;
-	CDynamicObjectArray* m_child_nodes;
+	CDynamicObjectArray<CModelSelectionParameters>* m_child_nodes;
 };
 
 }

@@ -12,6 +12,7 @@
 #define __PARAMETERCOMBINATION_H__
 
 #include "base/DynArray.h"
+#include "lib/DynamicObjectArray.h"
 
 namespace shogun
 {
@@ -19,7 +20,6 @@ namespace shogun
 class CModelSelectionParameters;
 class CMachine;
 class Parameter;
-class CDynamicObjectArray;
 
 /**
  * @brief class that holds ONE combination of parameters for a learning machine.
@@ -102,7 +102,7 @@ public:
 	 *
 	 * @return true if node has children
 	 */
-	bool has_children();
+	bool has_children() { return m_child_nodes->get_num_elements()>0; }
 
 	void apply_to_parameter(Parameter* parameter);
 
@@ -128,7 +128,7 @@ private:
 private:
 	const char* m_node_name;
 	Parameter* m_param;
-	CDynamicObjectArray* m_child_nodes;
+	CDynamicObjectArray<CParameterCombination>* m_child_nodes;
 };
 }
 
