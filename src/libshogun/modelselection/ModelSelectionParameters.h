@@ -13,10 +13,12 @@
 
 #include "base/SGObject.h"
 #include "base/DynArray.h"
-#include "modelselection/ParameterCombination.h"
+#include "lib/DynamicObjectArray.h"
 
 namespace shogun
 {
+
+class CParameterCombination;
 
 enum ERangeType
 {
@@ -74,10 +76,6 @@ public:
 	/** destructor. If set, deletes data array and SG_UNREF's the CSGObject */
 	~CModelSelectionParameters();
 
-	/** method to recursively delete the complete tree of which this node is
-	 * the root */
-	void destroy();
-
 	/** appends a child to this tree. only possible if this is no value node
 	 *
 	 * @param child child to append
@@ -114,22 +112,18 @@ public:
 	 * @param prefix_num a number of '\t' tabs that is put before each output
 	 * to have a more readable print layout
 	 */
-	void print(int prefix_num=0);
+	void print_tree(int prefix_num=0);
 
 	/** most important method. If the tree was regarding node types and
 	 * structure, a set of trees which contain all combinations of parameters
 	 * that are implied by this tree is generated.
 	 *
-	 * @param result all trees of parameter combinations are put into here
+	 * @result result all trees of parameter combinations are put into here
 	 *
 	 */
-	void get_combinations(DynArray<ParameterCombination*>& result);
+	DynArray<CParameterCombination*>* get_combinations();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
+	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
 	{
 		return "ModelSelectionParameters";
@@ -145,14 +139,14 @@ protected:
 	 */
 	bool has_children()
 	{
-		return m_child_nodes.get_num_elements()>0;
+		return m_child_nodes->get_num_elements()>0;
 	}
 
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
 	SGVector<float64_t> m_values;
-	DynArray<CModelSelectionParameters*> m_child_nodes;
+	CDynamicObjectArray<CModelSelectionParameters>* m_child_nodes;
 };
 
 }
