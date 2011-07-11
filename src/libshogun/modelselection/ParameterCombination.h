@@ -81,9 +81,9 @@ public:
 	CParameterCombination* copy_tree();
 
 	/** Takes a set of sets of leafs nodes (!) and produces a set of instances
-	 * of this class that contain every combination of the paramters in the leaf
+	 * of this class that contain every combination of the parameters in the leaf
 	 * nodes in their Parameter variables. All combinations are put into a newly
-	 * created tree. The root of this tree wil be a copy of a specified node
+	 * created tree. The root of this tree will be a copy of a specified node
 	 *
 	 * Provided root node and input sets and their content are deleted. Newly
 	 * created Parameter instances are added to the result set.
