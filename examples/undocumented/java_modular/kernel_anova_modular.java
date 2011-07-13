@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class kernel_anova_modular implements test {
+public class kernel_anova_modular {
 	static {
 		System.loadLibrary("Features");
 		System.loadLibrary("Kernel");
