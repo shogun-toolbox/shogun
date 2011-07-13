@@ -5,7 +5,7 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
-def preprocessor_landmarisomap_modular(data):
+def preprocessor_landmarkisomap_modular(data):
 	from shogun.Features import RealFeatures
 	from shogun.Preprocessor import LandmarkIsomap
 	
