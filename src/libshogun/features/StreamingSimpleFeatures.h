@@ -463,8 +463,16 @@ int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space()
 template <class T>
 	float64_t CStreamingSimpleFeatures<T>::dot(CStreamingDotFeatures* df)
 {
-	SG_NOTIMPLEMENTED;
-	return -1;
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+	CStreamingSimpleFeatures<T>* sf = (CStreamingSimpleFeatures<T>*) df;
+
+	SGVector<T> other_vector=sf->get_vector();
+
+	float64_t result = CMath::dot(current_vector, other_vector.vector, current_length);
+
+	return result;
 }
 
 template <class T>
