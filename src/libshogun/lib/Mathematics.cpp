@@ -125,7 +125,7 @@ void CMath::display_vector(const float32_t* vector, int32_t n, const char* name)
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%10.10f%s", vector[i], i==n-1? "" : ",");
+		SG_SPRINT("%g%s", vector[i], i==n-1? "" : ",");
 	SG_SPRINT("]\n");
 }
 
@@ -135,7 +135,17 @@ void CMath::display_vector(const float64_t* vector, int32_t n, const char* name)
 	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%10.10f%s", vector[i], i==n-1? "" : ",");
+		SG_SPRINT("%.18g%s", vector[i], i==n-1? "" : ",");
+	SG_SPRINT("]\n");
+}
+
+template <>
+void CMath::display_vector(const floatmax_t* vector, int32_t n, const char* name)
+{
+	ASSERT(n>=0);
+	SG_SPRINT("%s=[", name);
+	for (int32_t i=0; i<n; i++)
+		SG_SPRINT("%.36Lg%s", (long double) vector[i], i==n-1? "" : ",");
 	SG_SPRINT("]\n");
 }
 
@@ -166,7 +176,7 @@ void CMath::display_matrix(
 	{
 		SG_SPRINT("[");
 		for (int32_t j=0; j<cols; j++)
-			SG_SPRINT("\t%lf%s", (double) matrix[j*rows+i],
+			SG_SPRINT("\t%.18g%s", (double) matrix[j*rows+i],
 				j==cols-1? "" : ",");
 		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
 	}
@@ -206,15 +216,21 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 	float64_t* x = new float64_t[x_len];
 	CMath::fill_vector(x, x_len, 0.0);
 
-	float64_t log_nom=-CMath::lgamma(n+1);
+	float64_t log_nom=0.0;
 	for (int32_t i=0; i<3+2; i++)
 		log_nom+=CMath::lgamma(m[i]+1);
+	log_nom-=CMath::lgamma(n+1.0);
 
-	float64_t log_denom=0;
+	float64_t log_denomf=0;
+	floatmax_t log_denom=0;
+
 	for (int32_t i=0; i<3*2; i++)
-		log_denom+=CMath::lgamma(table.matrix[i]+1);
+	{
+		log_denom+=CMath::lgammal((floatmax_t) table.matrix[i]+1);
+		log_denomf+=gamma(table.matrix[i]+1);
+	}
 
-	float64_t prob_table=CMath::exp(log_nom - log_denom);
+	floatmax_t prob_table_log=log_nom - log_denom;
 
 	int32_t dim1 = CMath::min(m[0], m[2]);
 
@@ -235,41 +251,55 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 		}
 	}
 
+//#define DEBUG_FISHER_TABLE
 #ifdef DEBUG_FISHER_TABLE
-	SG_SPRINT("log_denom=%g\n", log_denom);
-	SG_SPRINT("log_nom=%g\n", log_nom);
+	SG_SPRINT("counter=%d\n", counter);
+	SG_SPRINT("dim1=%d\n", dim1);
+	SG_SPRINT("l=%g...%g\n", CMath::max(0.0,m[0]-m[4]-0), CMath::min(m[0]-0, m[3]));
+	SG_SPRINT("n=%g\n", n);
+	SG_SPRINT("prob_table_log=%.18Lg\n", prob_table_log);
+	SG_SPRINT("log_denomf=%.18g\n", log_denomf);
+	SG_SPRINT("log_denom=%.18Lg\n", log_denom);
+	SG_SPRINT("log_nom=%.18g\n", log_nom);
 	display_vector(m, m_len, "marginals");
-	display_vector(x, counter, "x");
+	display_vector(x, 2*3*counter, "x");
 #endif // DEBUG_FISHER_TABLE
 
 
-	float64_t* log_denom_vec=new float64_t[counter];
-	CMath::fill_vector(log_denom_vec, counter, 0.0);
+	floatmax_t* log_denom_vec=new floatmax_t[counter];
+	CMath::fill_vector(log_denom_vec, counter, (floatmax_t) 0.0);
 
-	for (int32_t i=0; i<2; i++)
+	for (int32_t k=0; k<counter; k++)
 	{
 		for (int32_t j=0; j<3; j++)
 		{
-			for (int32_t k=0; k<counter; k++)
-				log_denom_vec[k]+=CMath::lgamma(x[i + j*2 + k*2*3]+1);
+			for (int32_t i=0; i<2; i++)
+				log_denom_vec[k]+=CMath::lgammal(x[i + j*2 + k*2*3]+1.0);
 		}
 	}
 
 	for (int32_t i=0; i<counter; i++)
-		log_denom_vec[i]=CMath::exp(log_nom-log_denom_vec[i]);
+		log_denom_vec[i]=log_nom-log_denom_vec[i];
 
 #ifdef DEBUG_FISHER_TABLE
 	display_vector(log_denom_vec, counter, "log_denom_vec");
 #endif // DEBUG_FISHER_TABLE
 
 
-	float64_t nonrand_p=0.0;
-
+	float64_t nonrand_p=-CMath::INFTY;
 	for (int32_t i=0; i<counter; i++)
 	{
-		if (log_denom_vec[i]<=prob_table)
-			nonrand_p += log_denom_vec[i];
+		if (log_denom_vec[i]<=prob_table_log)
+			nonrand_p=CMath::logarithmic_sum(nonrand_p, log_denom_vec[i]);
 	}
+
+#ifdef DEBUG_FISHER_TABLE
+	SG_SPRINT("nonrand_p=%.18g\n", nonrand_p);
+	SG_SPRINT("exp_nonrand_p=%.18g\n", CMath::exp(nonrand_p));
+#endif // DEBUG_FISHER_TABLE
+
+	nonrand_p=CMath::exp(nonrand_p);
+
 	delete[] log_denom_vec;
 	delete[] x;
 	delete[] m;
@@ -284,11 +314,11 @@ int32_t CMath::determine_logrange()
     int32_t i;
     float64_t acc=0;
     for (i=0; i<50; i++)
-    {
-	acc=((float64_t)log(1+((float64_t)exp(-float64_t(i)))));
-	if (acc<=(float64_t)LOG_TABLE_PRECISION)
-	    break;
-    }
+	{
+		acc=((float64_t)log(1+((float64_t)exp(-float64_t(i)))));
+		if (acc<=(float64_t)LOG_TABLE_PRECISION)
+			break;
+	}
 
     SG_SINFO( "determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc);
     return i;

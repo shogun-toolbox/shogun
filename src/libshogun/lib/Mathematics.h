@@ -350,6 +350,11 @@ class CMath : public CSGObject
 			return ::lgamma((double) x);
 		}
 
+		static inline floatmax_t lgammal(floatmax_t x)
+		{
+			return ::lgammal((long double) x);
+		}
+
 		static inline float64_t log10(float64_t v)
 		{
 			return ::log(v)/::log(10.0);
