@@ -71,13 +71,6 @@ public:
 	/* applies this parameter tree to a parameter instance */
 	void apply_to_parameter(Parameter* parameter) const;
 
-	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const
-	{
-		return "ParameterCombination";
-	}
-
-//private:
 	/** appends a child to this node
 	 *
 	 * @param child child to append
@@ -112,7 +105,10 @@ public:
 	 *
 	 * @return true if node has children
 	 */
-	bool has_children() const { return m_child_nodes->get_num_elements()>0; }
+	bool has_children() const
+	{
+		return m_child_nodes->get_num_elements()>0;
+	}
 
 	/** Returns a newly created array with pointers to newly created Parameter
 	 * instances, which contain all combinations of the provided Parameters.
@@ -125,6 +121,13 @@ public:
 			const DynArray<Parameter*>& set_1,
 			const DynArray<Parameter*>& set_2);
 
+	/** @return name of the SGSerializable */
+	inline virtual const char* get_name() const
+	{
+		return "ParameterCombination";
+	}
+
+private:
 	void init();
 
 private:
