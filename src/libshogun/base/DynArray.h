@@ -69,7 +69,7 @@ template <class T> class DynArray
 		 *
 		 * @return total array size (including granularity buffer)
 		 */
-		inline int32_t get_array_size(void)
+		inline int32_t get_array_size(void) const
 		{
 			return num_elements;
 		}
