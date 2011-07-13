@@ -55,7 +55,7 @@ void CParameterCombination::append_child(CParameterCombination* child)
 	m_child_nodes->append_element(child);
 }
 
-void CParameterCombination::print_tree(int prefix_num)
+void CParameterCombination::print_tree(int prefix_num) const
 {
 	/* prefix is enlarged */
 	char* prefix=new char[prefix_num+1];
@@ -108,10 +108,11 @@ void CParameterCombination::print_tree(int prefix_num)
 	delete[] prefix;
 }
 
-void CParameterCombination::parameter_set_multiplication(
-		DynArray<Parameter*>& set_1, DynArray<Parameter*>& set_2,
-		DynArray<Parameter*>& result)
+DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
+		const DynArray<Parameter*>& set_1, const DynArray<Parameter*>& set_2)
 {
+	DynArray<Parameter*>* result=new DynArray<Parameter*>();
+
 	for (index_t i=0; i<set_1.get_num_elements(); ++i)
 	{
 		for (index_t j=0; j<set_2.get_num_elements(); ++j)
@@ -119,32 +120,40 @@ void CParameterCombination::parameter_set_multiplication(
 			Parameter* p=new Parameter();
 			p->add_parameters(set_1[i]);
 			p->add_parameters(set_2[j]);
-			result.append_element(p);
+			result->append_element(p);
 		}
 	}
+
+	return result;
 }
 
-void CParameterCombination::leaf_sets_multiplication(
-		DynArray<DynArray<CParameterCombination*>*>& sets,
-		CParameterCombination* new_root,
-		DynArray<CParameterCombination*>& result)
+CDynamicObjectArray<CParameterCombination>* CParameterCombination::leaf_sets_multiplication(
+		const CDynamicObjectArray<CDynamicObjectArray<CParameterCombination> >& sets,
+		const CParameterCombination* new_root)
 {
+	CDynamicObjectArray<CParameterCombination>* result=new CDynamicObjectArray<
+			CParameterCombination>();
+
 	/* check marginal cases */
 	if (sets.get_num_elements()==1)
 	{
+		CDynamicObjectArray<CParameterCombination>* current_set=
+				sets.get_element(0);
+
 		/* just use the only element into result array.
 		 * put root node before all combinations*/
-		result=*sets[0];
+		*result=*current_set;
 
-		/* delete input set */
-		delete sets[0];
+		SG_UNREF(current_set);
 
-		for (index_t i=0; i<result.get_num_elements(); ++i)
+		for (index_t i=0; i<result->get_num_elements(); ++i)
 		{
 			/* put new root as root into the tree and replace tree */
+			CParameterCombination* current=result->get_element(i);
 			CParameterCombination* root=new_root->copy_tree();
-			root->append_child(result[i]);
-			result.set_element(root, i);
+			root->append_child(current);
+			result->set_element(root, i);
+			SG_UNREF(current);
 		}
 	}
 	else if (sets.get_num_elements()>1)
@@ -156,8 +165,10 @@ void CParameterCombination::leaf_sets_multiplication(
 
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
-			DynArray<CParameterCombination*>* current_set=sets[set_nr];
-			param_sets.append_element(new DynArray<Parameter*> ());
+			CDynamicObjectArray<CParameterCombination>* current_set=
+					sets.get_element(set_nr);
+			DynArray<Parameter*>* new_param_set=new DynArray<Parameter*> ();
+			param_sets.append_element(new_param_set);
 
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
 			{
@@ -172,32 +183,41 @@ void CParameterCombination::leaf_sets_multiplication(
 				Parameter* current_param=current_node->m_param;
 
 				if (current_param)
-					param_sets[set_nr]->append_element(current_param);
+					new_param_set->append_element(current_param);
 				else
 				{
 					SG_SERROR("leaf sets multiplication only possible if all "
 							"leafs have non-NULL Parameter instances\n");
 				}
+
+				SG_UNREF(current_node);
 			}
+
+			SG_UNREF(current_set);
 		}
 
 		/* second, build products of all parameter sets */
-		DynArray<Parameter*>* param_product=param_sets[0];
+		DynArray<Parameter*>* param_product=parameter_set_multiplication(
+				*param_sets[0], *param_sets[1]);
+
+		delete param_sets[0];
+		delete param_sets[1];
 
 		/* build product of all remaining sets and collect results. delete all
-		 * old parameter instances */
-		for (index_t i=1; i<param_sets.get_num_elements(); ++i)
+		 * parameter instances of interim products*/
+		for (index_t i=2; i<param_sets.get_num_elements(); ++i)
 		{
-			DynArray<Parameter*>* temp_result=new DynArray<Parameter*> ();
-			parameter_set_multiplication(*param_product, *param_sets[i],
-					*temp_result);
+			DynArray<Parameter*>* old_temp_result=param_product;
+			param_product=parameter_set_multiplication(*param_product,
+					*param_sets[i]);
 
-			/* these two deletes cover all DynArray instances that were yet
-			 * created in this method (in first loop and two lines above) */
-			delete param_product;
+			/* delete interim result parameter instances */
+			for (index_t j=0; j<old_temp_result->get_num_elements(); ++j)
+				delete old_temp_result->get_element(j);
+
+			/* and dyn arrays of interim result and of param_sets */
+			delete old_temp_result;
 			delete param_sets[i];
-
-			param_product=temp_result;
 		}
 
 		/* at this point there is only one DynArray instance remaining:
@@ -217,19 +237,7 @@ void CParameterCombination::leaf_sets_multiplication(
 
 			/* append both and add them to result set */
 			root->append_child(param_node);
-
-			result.append_element(root);
-		}
-
-		/* delete old trees. also delete elements of input sets
-		 * array */
-		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
-		{
-			DynArray<CParameterCombination*>* current_set=sets[set_nr];
-			for (index_t i=0; i<current_set->get_num_elements(); ++i)
-				delete current_set->get_element(i);
-
-			delete current_set;
+			result->append_element(root);
 		}
 
 		/* this is not needed anymore, because the Parameter instances are now
@@ -237,12 +245,10 @@ void CParameterCombination::leaf_sets_multiplication(
 		delete param_product;
 	}
 
-	/* unref input new root node with parameter data (was copied) in any
-	 * case */
-	SG_UNREF(new_root);
+	return result;
 }
 
-CParameterCombination* CParameterCombination::copy_tree()
+CParameterCombination* CParameterCombination::copy_tree() const
 {
 	CParameterCombination* copy=new CParameterCombination();
 
@@ -270,7 +276,7 @@ CParameterCombination* CParameterCombination::copy_tree()
 	return copy;
 }
 
-void CParameterCombination::apply_to_parameter(Parameter* parameter)
+void CParameterCombination::apply_to_parameter(Parameter* parameter) const
 {
 	/* case root node or name node */
 	if ((!m_node_name && !m_param) || (m_node_name && !m_param))
