@@ -203,7 +203,7 @@ template <class T> class DynArray
 		 *
 		 * @return element at the end of array
 		 */
-		inline T back(void)
+		inline T back(void) const
 		{
 			if (get_num_elements() <= 0) return get_element(0);
 			return get_element(get_num_elements()-1);
