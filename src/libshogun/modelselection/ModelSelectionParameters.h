@@ -12,7 +12,6 @@
 #define __MODELSELECTIONPARAMETERS_H_
 
 #include "base/SGObject.h"
-#include "base/DynArray.h"
 #include "lib/DynamicObjectArray.h"
 
 namespace shogun
@@ -30,13 +29,13 @@ enum ERangeType
  * structure is organized as a tree with different kinds of nodes, depending on
  * the values of its member variables of name and CSGObject.
  *
- * -root node: no name and no CSGObject, may have children. Note that root nodes
- * call destroy() upon destructor call and destroy the complete tree
+ * -root node: no name and no CSGObject, may have children. Children may not be
+ * of CSGObject node type (use placeholder node)
  *
  * -placeholder node: only has a name and children, used to bundle parameters
- * that belong to the learning machine directly, like "kernel" or "C"
+ * that belong to the learning machine directly, like "kernel"
  *
- * -CSGObject node: has name and a CSGObject, has children which are the
+ * -CSGObject node: has name and a CSGObject, may have children which are the
  * parameters of the CSGObject. CSGObjects are SG_REF'ed/SG_UNREF'ed
  *
  * -value node: a node with a (parameter) name and an array of values for that
@@ -47,12 +46,6 @@ enum ERangeType
  * possible combinations that are implied by this tree may be extracted with the
  * get_combinations method. It generates a set of trees (different kind than
  * this one) that contain the instanciated parameter combinations.
- *
- * Note again that CSGObjects are SG_REF'ed/SG_UNREF'ed. The method
- * get_combinations() does not do any more. So the produced trees of parameter
- * combinations have to be processes BEFORE this tree is deleted, or there will
- * be an error if the CSGObjects are not referenced elsewhere
- *
  */
 class CModelSelectionParameters: public CSGObject
 {
@@ -96,7 +89,7 @@ public:
 	 * @param step increment instaval for the values
 	 * @param type_base base for EXP or LOG ranges
 	 */
-	void set_range(float64_t min, float64_t max, ERangeType type,
+	void build_values(float64_t min, float64_t max, ERangeType type,
 			float64_t step=1, float64_t type_base=2);
 
 	/** setter for values of this node.
@@ -121,7 +114,7 @@ public:
 	 * @result result all trees of parameter combinations are put into here
 	 *
 	 */
-	DynArray<CParameterCombination*>* get_combinations();
+	CDynamicObjectArray<CParameterCombination>* get_combinations();
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const

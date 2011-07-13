@@ -17,10 +17,13 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  library_dyn_int library_gc_array library_indirect_object \
 		  library_hash parameter_set_from_parameters \
 		  parameter_iterate_float64 parameter_iterate_sgobject \
+		  modelselection_parameter_combination_test \
+		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \
 		  modelselection_grid_search_simple features_subset_labels \
-		  features_subset_simple_features features_subset_sparse_features
+		  features_subset_simple_features \
+		  features_subset_sparse_features \
 
 
 all: $(TARGETS)

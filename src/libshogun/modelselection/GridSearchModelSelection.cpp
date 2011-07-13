@@ -38,7 +38,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(
 		float64_t& best_result)
 {
 	/* Retrieve all possible parameter combinations */
-	DynArray<CParameterCombination*>* combinations=
+	CDynamicObjectArray<CParameterCombination>* combinations=
 			m_model_parameters->get_combinations();
 
 	CParameterCombination* best_combination=NULL;
@@ -50,7 +50,9 @@ CParameterCombination* CGridSearchModelSelection::select_model(
 	/* apply all combinations and search for best one */
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
-		combinations->get_element(i)->apply_to_parameter(m_cross_validation->get_machine_parameters());
+		CParameterCombination* current_combination=combinations->get_element(i);
+		current_combination->apply_to_parameter(
+				m_cross_validation->get_machine_parameters());
 		float64_t result=m_cross_validation->evaluate();
 
 		/* check if current result is better, delete old combinations */
@@ -86,9 +88,11 @@ CParameterCombination* CGridSearchModelSelection::select_model(
 				SG_UNREF(combination);
 			}
 		}
+
+		SG_UNREF(current_combination);
 	}
 
-	delete combinations;
+	SG_UNREF(combinations);
 
 	return best_combination;
 }
