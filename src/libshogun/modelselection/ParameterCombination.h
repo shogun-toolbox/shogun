@@ -11,7 +11,6 @@
 #ifndef __PARAMETERCOMBINATION_H__
 #define __PARAMETERCOMBINATION_H__
 
-#include "base/DynArray.h"
 #include "lib/DynamicObjectArray.h"
 
 namespace shogun
@@ -45,6 +44,9 @@ class Parameter;
  */
 class CParameterCombination : public CSGObject
 {
+
+friend class CModelSelectionParameters;
+
 public:
 	/** constructor for a root node */
 	CParameterCombination();
@@ -54,7 +56,7 @@ public:
 	 * @param prefix number of '\t' signs that will be prefixed for every output.
 	 * At each recursion level, one is added.
 	 */
-	void print_tree(int prefix_num=0);
+	void print_tree(int prefix_num=0) const;
 
 	/** constructor for a name node */
 	CParameterCombination(const char* name);
@@ -64,8 +66,18 @@ public:
 
 	/** destructor
 	 * also recursively destroys complete tree (SG_UNREF of child nodes) */
-	~CParameterCombination();
+	virtual ~CParameterCombination();
 
+	/* applies this parameter tree to a parameter instance */
+	void apply_to_parameter(Parameter* parameter) const;
+
+	/** @return name of the SGSerializable */
+	inline virtual const char* get_name() const
+	{
+		return "ParameterCombination";
+	}
+
+//private:
 	/** appends a child to this node
 	 *
 	 * @param child child to append
@@ -78,14 +90,13 @@ public:
 	 *
 	 * @return copy of the tree with this node as root as described above
 	 */
-	CParameterCombination* copy_tree();
+	CParameterCombination* copy_tree() const;
 
 	/** Takes a set of sets of leafs nodes (!) and produces a set of instances
 	 * of this class that contain every combination of the parameters in the leaf
 	 * nodes in their Parameter variables. All combinations are put into a newly
 	 * created tree. The root of this tree will be a copy of a specified node
 	 *
-	 * Provided root node and input sets and their content are deleted. Newly
 	 * created Parameter instances are added to the result set.
 	 *
 	 * @param sets Set of sets of leafs to combine
@@ -93,35 +104,26 @@ public:
 	 * trees
 	 * @param result result set of tree combinations
 	 */
-	static void leaf_sets_multiplication(
-			DynArray<DynArray<CParameterCombination*>*>& sets,
-			CParameterCombination* new_root,
-			DynArray<CParameterCombination*>& result);
+	static CDynamicObjectArray<CParameterCombination>* leaf_sets_multiplication(
+			const CDynamicObjectArray<CDynamicObjectArray<CParameterCombination> >& sets,
+			const CParameterCombination* new_root);
 
 	/** checks whether this node has children
 	 *
 	 * @return true if node has children
 	 */
-	bool has_children() { return m_child_nodes->get_num_elements()>0; }
+	bool has_children() const { return m_child_nodes->get_num_elements()>0; }
 
-	void apply_to_parameter(Parameter* parameter);
-
-	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const
-	{
-		return "ParameterCombination";
-	}
-
-private:
-	/** Fills a DynArray<Parameter*> with pointers to newly created Parameter
+	/** Returns a newly created array with pointers to newly created Parameter
 	 * instances, which contain all combinations of the provided Parameters.
 	 *
-	 * @param set_1 DynArray of Parameter instances
-	 * @param set_2 DynArray of Parameter instances
-	 * @param result an DynArray where the combinations are appended to
+	 * @param set_1 array of Parameter instances
+	 * @param set_2 array of Parameter instances
+	 * @return result array with all combinations
 	 */
-	static void parameter_set_multiplication(DynArray<Parameter*>& set_1,
-			DynArray<Parameter*>& set_2, DynArray<Parameter*>& result);
+	static DynArray<Parameter*>* parameter_set_multiplication(
+			const DynArray<Parameter*>& set_1,
+			const DynArray<Parameter*>& set_2);
 
 	void init();
 
