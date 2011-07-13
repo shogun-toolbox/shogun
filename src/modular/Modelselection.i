@@ -30,18 +30,28 @@
 
 %import "Modelselection.i"
 
+/* These functions return new Objects */
+%newobject select_model();
+%newobject copy_tree();
+%newobject leaf_sets_multiplication();
+%newobject get_combinations();
+/* what about parameter_set_multiplication returns new DynArray<Parameter*>? */
+%newobject select_model();
+
 /* Remove C Prefix */
 %rename(GridSearchModelSelection) CGridSearchModelSelection;
 %rename(ModelSelection) CModelSelection;
 %rename(ModelSelectionParameters) CModelSelectionParameters;
+%rename(ParameterCombination) CParameterCombination;
 
 %include <shogun/modelselection/ModelSelection.h>
 %include <shogun/modelselection/ModelSelectionParameters.h>
 %include <shogun/modelselection/GridSearchModelSelection.h>
-%include <shogun/base/DynArray.h>
-
 %include <shogun/modelselection/ParameterCombination.h>
-/*namespace shogun
+
+/* Templated Class DynamicObjectArray */
+%include <shogun/lib/DynamicObjectArray.h>
+namespace shogun
 {
-    %template(DynamicParameterCombinationPointerArray) DynArray<CParameterCombination>;
-}*/
+    %template(DynamicParameterCombinationArray) CDynamicObjectArray<CParameterCombination>;
+}

@@ -11,7 +11,7 @@
 def modelselection_parameter_tree_modular():
 	from shogun.Modelselection import ParameterCombination
 	from shogun.Modelselection import ModelSelectionParameters, R_EXP, R_LINEAR
-	from shogun.Modelselection import DynamicParameterCombinationPointerArray
+	from shogun.Modelselection import DynamicParameterCombinationArray
 	from shogun.Kernel import PowerKernel
 	from shogun.Kernel import GaussianKernel
 	from shogun.Kernel import DistantSegmentsKernel
@@ -24,14 +24,14 @@ def modelselection_parameter_tree_modular():
 
 	c=ModelSelectionParameters('C');
 	root.append_child(c)
-	c.set_range(1, 11, R_EXP)
+	c.build_values(1, 11, R_EXP)
 
 	power_kernel=PowerKernel()
 	param_power_kernel=ModelSelectionParameters('kernel', power_kernel)
 	kernel.append_child(param_power_kernel)
 
 	param_power_kernel_degree=ModelSelectionParameters('degree')
-	param_power_kernel_degree.set_range(1, 1, R_EXP)
+	param_power_kernel_degree.build_values(1, 1, R_EXP)
 	param_power_kernel.append_child(param_power_kernel_degree)
 
 	metric1=MinkowskiMetric(10)
@@ -40,7 +40,7 @@ def modelselection_parameter_tree_modular():
 	param_power_kernel.append_child(param_power_kernel_metric1)
 
 	param_power_kernel_metric1_k=ModelSelectionParameters('k')
-	param_power_kernel_metric1_k.set_range(1, 12, R_LINEAR)
+	param_power_kernel_metric1_k.build_values(1, 12, R_LINEAR)
 	param_power_kernel_metric1.append_child(param_power_kernel_metric1_k)
 
 	gaussian_kernel=GaussianKernel()
@@ -49,7 +49,7 @@ def modelselection_parameter_tree_modular():
 	kernel.append_child(param_gaussian_kernel)
 
 	param_gaussian_kernel_width=ModelSelectionParameters('width')
-	param_gaussian_kernel_width.set_range(1, 2, R_EXP)
+	param_gaussian_kernel_width.build_values(1, 2, R_EXP)
 	param_gaussian_kernel.append_child(param_gaussian_kernel_width)
 
 	ds_kernel=DistantSegmentsKernel()
@@ -58,16 +58,14 @@ def modelselection_parameter_tree_modular():
 	kernel.append_child(param_ds_kernel)
 
 	param_ds_kernel_delta=ModelSelectionParameters('delta')
-	param_ds_kernel_delta.set_range(1, 2, R_EXP)
+	param_ds_kernel_delta.build_values(1, 2, R_EXP)
 	param_ds_kernel.append_child(param_ds_kernel_delta)
 
 	param_ds_kernel_theta=ModelSelectionParameters('theta')
-	param_ds_kernel_theta.set_range(1, 2, R_EXP)
+	param_ds_kernel_theta.build_values(1, 2, R_EXP)
 	param_ds_kernel.append_child(param_ds_kernel_theta)
 
 	root.print_tree()
-
-	combinations=DynamicParameterCombinationPointerArray()
 
 	return
 
