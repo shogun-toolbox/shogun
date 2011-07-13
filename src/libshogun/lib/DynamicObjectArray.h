@@ -167,7 +167,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		{
 			CSGObject* casted=cast_to_sgobject(element);
 			SG_REF(casted);
-			m_array.push_back(casted);
+			m_array.push_back(element);
 		}
 
 	    /** ::STD::VECTOR compatible. Delete array element at the end
