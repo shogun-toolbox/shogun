@@ -215,7 +215,7 @@ template <class T> class DynArray
 		 * @param element element to search for
 		 * @return index of element or -1
 		 */
-		int32_t find_element(T element)
+		int32_t find_element(T element) const
 		{
 			int32_t idx=-1;
 			int32_t num=get_num_elements();
