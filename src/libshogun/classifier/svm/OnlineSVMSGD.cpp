@@ -255,6 +255,8 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 			break;
 	}
 
+	SG_PRINT("Online SGD calibrated using %d vectors.\n", n);
+
 	// bias update scaling
 	bscale = m/n;
 
