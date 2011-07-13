@@ -79,7 +79,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// which eigenpairs to find
 	char* which_ = strdup(which);
 	// All
-	char* all_ = strdup("All");
+	char* all_ = strdup("A");
 
 	// shift-invert mode
 	if (mode==3)
@@ -131,7 +131,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	else 
 	{
 		if (info==1)
-			SG_SDEBUG("Maximum number of iterations reached.\n");
+			SG_SWARNING("Maximum number of iterations reached.\n");
 			
 		// allocate select for dseupd
 		int* select = new int[ncv];
