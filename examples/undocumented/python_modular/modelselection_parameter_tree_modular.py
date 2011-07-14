@@ -67,6 +67,8 @@ def modelselection_parameter_tree_modular():
 
 	root.print_tree()
 
+	root.get_combinations()
+
 	return
 
 
