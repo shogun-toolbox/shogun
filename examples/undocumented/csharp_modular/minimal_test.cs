@@ -1,11 +1,21 @@
 using System;
 
-public class HelloWorld
+using org.shogun;
+
+public class minimal_test
 {
-	public static void Main(string[] args)
+	static minimal_test()
 	{
-		Library.init_shogun_with_defaults();
-		GaussianKernel k = new GaussianKernel();
-		Console.WriteLine(k.get_width());
+		System.loadLibrary("Kernel");
+	}
+
+	static void Main(string[] argv)
+	{
+		KernelJNI.init_shogun__SWIG_4();
+		GaussianKernel x = new GaussianKernel();
+		Console.WriteLine(x.get_width());
+		KernelJNI.exit_shogun();
 	}
 }
+
+
