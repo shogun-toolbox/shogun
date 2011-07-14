@@ -19,6 +19,9 @@ def modelselection_parameter_tree_modular():
 
 	root=ModelSelectionParameters()
 
+	combinations=root.get_combinations()
+	combinations.get_num_elements()
+
 	kernel=ModelSelectionParameters('kernel')
 	root.append_child(kernel)
 
