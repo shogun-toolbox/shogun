@@ -404,8 +404,10 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 
 	if (has_children())
 	{
-		/* this node might also be a parameter */
-		SG_PRINT("%s%s with\n", prefix, m_node_name);
+		if (m_sgobject)
+			SG_PRINT("%s%s:\"%s\"\n", prefix, m_node_name, m_sgobject->get_name());
+		else
+			SG_PRINT("%s%s with\n", prefix, m_node_name);
 
 		/* now recursively print successors */
 
