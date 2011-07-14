@@ -1,6 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.EAlphabet.CUBE;
+import static org.shogun.BaumWelchViterbiType.BW_NORMAL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +34,7 @@ public class distribution_hmm_modular {
 
 		HMM hmm = new HMM(feats, N, M, pseudo);
 		hmm.train();
-		//hmm.baum_welch_viterbi_train(BW_NORMAL);
+		hmm.baum_welch_viterbi_train(BW_NORMAL);
 
 		int  num_examples = feats.get_num_vectors();
 		int num_param = hmm.get_num_model_parameters();
