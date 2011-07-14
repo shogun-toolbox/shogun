@@ -38,8 +38,10 @@
 %include <shogun/features/FeatureTypes.h>
 %include "Features_includes.i"
 %include "Preprocessor_includes.i"
+%include "Distribution_includes.i"
 
 %import "Preprocessor.i"
+%import "Distribution.i"
 
 /* These functions return new Objects */
 %newobject get_transposed();
