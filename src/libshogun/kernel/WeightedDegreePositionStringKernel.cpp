@@ -94,7 +94,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	for (int32_t i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
-	set_shifts(s, sl);
+	set_shifts(SGVector<int32_t>(s, sl));
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
@@ -195,7 +195,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 		for (int32_t i=0; i<shift_len; i++) {
 			shifts[i]=1;
 		}
-		set_shifts(shifts, shift_len);
+		set_shifts(SGVector<int32_t>(shifts, shift_len));
 		delete[] shifts;
 	}
 
@@ -834,12 +834,11 @@ float64_t* CWeightedDegreePositionStringKernel::compute_abs_weights(
 	return tries.compute_abs_weights(len);
 }
 
-bool CWeightedDegreePositionStringKernel::set_shifts(
-	int32_t* shift_, int32_t shift_len_)
+void CWeightedDegreePositionStringKernel::set_shifts(SGVector<int32_t> shifts)
 {
 	delete[] shift;
 
-	shift_len = shift_len_ ;
+	shift_len = shifts.vlen;
 	shift = new int32_t[shift_len] ;
 
 	if (shift)
@@ -848,14 +847,12 @@ bool CWeightedDegreePositionStringKernel::set_shifts(
 
 		for (int32_t i=0; i<shift_len; i++)
 		{
-			shift[i] = shift_[i] ;
+			shift[i] = shifts.vector[i] ;
 			max_shift = CMath::max(shift[i], max_shift);
 		}
 
 		ASSERT(max_shift>=0 && max_shift<=shift_len);
 	}
-	
-	return false;
 }
 
 bool CWeightedDegreePositionStringKernel::set_wd_weights()
@@ -928,26 +925,25 @@ bool CWeightedDegreePositionStringKernel::set_weights(SGMatrix<float64_t> new_we
 	return true;
 }
 
-bool CWeightedDegreePositionStringKernel::set_position_weights(
-	float64_t* pws, int32_t len)
+bool CWeightedDegreePositionStringKernel::set_position_weights(SGVector<float64_t> pws)
 {
 	if (seq_length==0)
-		seq_length=len;
+		seq_length=pws.vlen;
 
-	if (seq_length!=len)
+	if (seq_length!=pws.vlen)
 	{
-		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, len);
+		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, pws.vlen);
 		return false;
 	}
 	delete[] position_weights;
-	position_weights=new float64_t[len];
-	position_weights_len=len;
+	position_weights=new float64_t[pws.vlen];
+	position_weights_len=pws.vlen;
 	tries.set_position_weights(position_weights);
 
 	if (position_weights)
 	{
-		for (int32_t i=0; i<len; i++)
-			position_weights[i]=pws[i];
+		for (int32_t i=0; i<pws.vlen; i++)
+			position_weights[i]=pws.vector[i];
 		return true;
 	}
 	else

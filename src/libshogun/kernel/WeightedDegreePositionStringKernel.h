@@ -372,9 +372,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/** set shifts
 		 *
 		 * @param shifts new shifts
-		 * @param len number of shifts
 		 */
-		bool set_shifts(int32_t* shifts, int32_t len);
+		void set_shifts(SGVector<int32_t> shifts);
 
 		/** set weights
 		 *
@@ -391,10 +390,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/** set position weights
 		 *
 		 * @param pws new position weights
-		 * @param len number of position weights
 		 * @return if setting was successful
 		 */
-		virtual bool set_position_weights(float64_t* pws, int32_t len);
+		virtual bool set_position_weights(SGVector<float64_t> pws);
 
 		/** set position weights for left-hand side
 		 *
