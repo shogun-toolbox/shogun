@@ -12,7 +12,8 @@
 #define __SPLITTINGSTRATEGY_H_
 
 #include "base/SGObject.h"
-#include "base/DynArray.h"
+#include "lib/DynamicArray.h"
+#include "lib/DynamicObjectArray.h"
 
 namespace shogun
 {
@@ -50,22 +51,22 @@ public:
 	 * with the desired index
 	 *
 	 * @param subset_idx subset index of the to be generated vector indices
-	 * @param result newly created vector of subset indices of the specified
-	 * subset is written here
+	 * @return newly created vector of subset indices of the specified
+	 * subset is written here. do not forget to free_vector
 	 */
-	void generate_subset_indices(index_t subset_idx, SGVector<index_t>& result);
+	SGVector<index_t> generate_subset_indices(index_t subset_idx);
 
 	/** generates a newly created SGVector<index_t> with inverse indices of the
 	 * subset with the desired index. inverse here means all other indices.
 	 *
 	 * @param subset_idx subset index of the to be generated inverse indices
-	 * @return result newly created vector of the subset's inverse indices is
-	 * written here
+	 * @return newly created vector of the subset's inverse indices is
+	 * written here. do not forget to free_vector
 	 */
-	void generate_subset_inverse(index_t subset_idx, SGVector<index_t>& result);
+	SGVector<index_t> generate_subset_inverse(index_t subset_idx);
 
 	/** @return number of subsets */
-	index_t get_num_subsets() { return m_subset_indices.get_num_elements(); }
+	index_t get_num_subsets() const { return m_subset_indices.get_num_elements(); }
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const	{ return "SplittingStrategy"; }
@@ -73,13 +74,13 @@ public:
 protected:
 	/** Abstract method.
 	 * Has to fill the elements of the m_subset_indices variable with concrete
-	 * indices. Note that DynArray<index_t> instances for every subset are
+	 * indices. Note that CDynamicArray<index_t> instances for every subset are
 	 * created in the constructor of this class - they just have to be filled.
 	 */
 	virtual void build_subsets()=0;
 
 	CLabels* m_labels;
-	DynArray<DynArray<index_t>*> m_subset_indices;
+	CDynamicObjectArray<CDynamicArray<index_t> > m_subset_indices;
 };
 }
 

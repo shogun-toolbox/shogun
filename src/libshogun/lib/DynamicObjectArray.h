@@ -251,6 +251,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			return *this;
 		}
 
+		/** shuffles the array */
 		inline void shuffle() { m_array.shuffle(); }
 
 		/** @return object name */
