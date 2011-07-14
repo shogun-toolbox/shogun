@@ -69,7 +69,7 @@ template <class T> class DynArray
 		 *
 		 * @return total array size (including granularity buffer)
 		 */
-		inline int32_t get_array_size(void)
+		inline int32_t get_array_size(void) const
 		{
 			return num_elements;
 		}
@@ -203,7 +203,7 @@ template <class T> class DynArray
 		 *
 		 * @return element at the end of array
 		 */
-		inline T back(void)
+		inline T back(void) const
 		{
 			if (get_num_elements() <= 0) return get_element(0);
 			return get_element(get_num_elements()-1);
@@ -215,7 +215,7 @@ template <class T> class DynArray
 		 * @param element element to search for
 		 * @return index of element or -1
 		 */
-		int32_t find_element(T element)
+		int32_t find_element(T element) const
 		{
 			int32_t idx=-1;
 			int32_t num=get_num_elements();
