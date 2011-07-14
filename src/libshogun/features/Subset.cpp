@@ -29,14 +29,12 @@ CSubset::~CSubset() {
 }
 
 CSubset* CSubset::duplicate() {
-	SGVector<index_t> idx_copy(new index_t[m_subset_idx.vlen],
-			m_subset_idx.vlen);
+	SGVector<index_t> idx_copy(m_subset_idx.vlen);
 
 	memcpy(idx_copy.vector, m_subset_idx.vector,
 			sizeof(index_t)*m_subset_idx.vlen);
 
 	CSubset* copy_subset=new CSubset(idx_copy);
-	SG_REF(copy_subset);
 
 	return copy_subset;
 }

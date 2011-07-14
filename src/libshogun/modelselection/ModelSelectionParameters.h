@@ -130,7 +130,7 @@ protected:
 	 *
 	 * @return true if it has children
 	 */
-	bool has_children()
+	bool has_children() const
 	{
 		return m_child_nodes->get_num_elements()>0;
 	}

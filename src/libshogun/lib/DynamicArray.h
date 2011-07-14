@@ -247,6 +247,9 @@ template <class T> class CDynamicArray :public CSGObject
 			return *this;
 		}
 
+		/** shuffles the array */
+		inline void shuffle() { m_array.shuffle(); }
+
 		/** @return object name */
 		inline virtual const char* get_name() const
 		{

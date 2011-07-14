@@ -34,9 +34,9 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 		unique_labels.add(m_labels->get_label(i));
 
 	/* for every label, build set for indices */
-	DynArray<DynArray<index_t>*> label_indices;
+	CDynamicObjectArray<CDynamicArray<index_t> > label_indices;
 	for (index_t i=0; i<unique_labels.get_num_elements(); ++i)
-		label_indices.append_element(new DynArray<index_t> ());
+		label_indices.append_element(new CDynamicArray<index_t> ());
 
 	/* fill set with indices, for each label type ... */
 	for (index_t i=0; i<unique_labels.get_num_elements(); ++i)
@@ -45,35 +45,43 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 		for (index_t j=0; j<m_labels->get_num_labels(); ++j)
 		{
 			if (m_labels->get_label(j)==unique_labels[i])
-				label_indices[i]->append_element(j);
+			{
+				CDynamicArray<index_t>* current=label_indices.get_element(i);
+				current->append_element(j);
+				SG_UNREF(current);
+			}
 		}
 	}
 
 	/* shuffle created label sets */
 	for (index_t i=0; i<label_indices.get_num_elements(); ++i)
-		label_indices[i]->shuffle();
+	{
+		CDynamicArray<index_t>* current=label_indices.get_element(i);
+		current->shuffle();
+		SG_UNREF(current);
+	}
 
 	/* distribute labels to subsets for all label types */
 	index_t target_set=0;
 	for (index_t i=0; i<unique_labels.get_num_elements(); ++i)
 	{
 		/* current index set for current label */
-		DynArray<index_t>* current=label_indices[i];
+		CDynamicArray<index_t>* current=label_indices.get_element(i);
 
 		for (index_t j=0; j<current->get_num_elements(); ++j)
 		{
-			m_subset_indices[target_set++]->append_element(
-					current->get_element(j));
+			CDynamicArray<index_t>* next=m_subset_indices.get_element(
+					target_set++);
+			next->append_element(current->get_element(j));
 			target_set%=m_subset_indices.get_num_elements();
+			SG_UNREF(next);
 		}
+
+		SG_UNREF(current);
 	}
 
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets */
 	m_subset_indices.shuffle();
-
-	/* delete created sets */
-	for (index_t i=0; i<label_indices.get_num_elements(); ++i)
-		delete label_indices[i];
 }

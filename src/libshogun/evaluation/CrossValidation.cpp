@@ -115,13 +115,12 @@ float64_t CCrossValidation::evaluate_one_run()
 	for (index_t i=0; i<num_subsets; ++i)
 	{
 		/* set feature subset for training */
-		SGVector<index_t> inverse_subset_indices;
-		m_splitting_strategy->generate_subset_inverse(i, inverse_subset_indices);
+		SGVector<index_t> inverse_subset_indices=
+				m_splitting_strategy->generate_subset_inverse(i);
 		m_features->set_subset(new CSubset(inverse_subset_indices));
 
 		/* set label subset for training (copy data before) */
 		SGVector<index_t> inverse_subset_indices_copy(
-				new index_t[inverse_subset_indices.vlen],
 				inverse_subset_indices.vlen);
 		memcpy(inverse_subset_indices_copy.vector,
 				inverse_subset_indices.vector,
@@ -132,8 +131,8 @@ float64_t CCrossValidation::evaluate_one_run()
 		m_machine->train(m_features);
 
 		/* set feature subset for testing (subset method that stores pointer) */
-		SGVector<index_t> subset_indices;
-		m_splitting_strategy->generate_subset_indices(i, subset_indices);
+		SGVector<index_t> subset_indices=
+				m_splitting_strategy->generate_subset_indices(i);
 		m_features->set_subset(new CSubset(subset_indices));
 
 		/* apply machine to test features */
