@@ -26,7 +26,7 @@ public class Load {
 		return result;
 	}
 	public static String[] load_dna(String filename) {
-		ArrayList list = new ArrayList();		
+		ArrayList<String> list = new ArrayList<String>();		
 		String[] result = null;
 		try {
 			FileInputStream fstream = new FileInputStream(filename);
@@ -49,7 +49,7 @@ public class Load {
 	}
 
 	public static String[] load_cubes(String filename) {
-		ArrayList list = new ArrayList();		
+		ArrayList<String> list = new ArrayList<String>();		
 		String[] result = null;
 		try {
 			FileInputStream fstream = new FileInputStream(filename);
