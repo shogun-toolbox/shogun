@@ -23,13 +23,34 @@ class CLabels;
 class CSplittingStrategy;
 class CEvaluation;
 
+typedef struct
+{
+	float64_t value;
+	bool has_conf_int;
+	float64_t conf_int_low;
+	float64_t conf_int_up;
+	float64_t conf_int_p;
+
+	void print_result()
+	{
+		if (has_conf_int)
+		{
+			SG_SPRINT("[%f,%f] with p=%f, value=%f\n", conf_int_low, conf_int_up,
+					conf_int_p);
+		}
+		else
+			SG_SPRINT("%f\n", value);
+	}
+} CrossValidationResult;
+
 /** @brief base class for cross-validation evaluation.
  * Given a learning machine, a splitting strategy, an evaluation criterium,
- * features and crrespnding labels, this provides an interface for
+ * features and correspnding labels, this provides an interface for
  * cross-validation. Results may be retrieved using the evaluate method. A
  * number of repetitions may be specified for obtaining more accurate results.
  * The arithmetic mean of different runs is returned along with confidence
- * intervals for a given p-value.
+ * intervals, if a p-value is specified.
+ * Default number of runs is one, confidence interval combutation is disabled.
  *
  * This class calculates an evaluation criterium of every fold and then
  * calculates the arithmetic mean of all folds. This is for example suitable
@@ -68,24 +89,23 @@ public:
 		return m_evaluation_criterium->get_evaluation_direction();
 	}
 
-	/** method for evaluation.
-	 * A number of runs may be specified for repetition of procedure. If this
-	 * number is larger than one, a confidence interval may be calculated if
-	 * provided pointers are non-NULL. A p-value may be specified for this.
+	/** method for evaluation. Performs cross-validation.
+	 * Is repeated m_num_runs. If this number is larger than one, a confidence
+	 * interval is calculated if m_conf_int_p is (0<p<1).
+	 * By default m_num_runs=1 and m_conf_int_p=0
 	 *
-	 * @param num_runs number of repetitions. if >1 and the other parameters
-	 * are non-NULL, a confidence interval is calculated
-	 * @param conf_int_p probability that real value lies in confidence interval
-	 * @param conf_int_low lower bound of confidence interval is written here
-	 * @param conf_int_up upper bound of confidence interval is written here
-	 *
-	 * @return arithmetic mean of cross-validation runs
+	 * @return result of evaluation
 	 */
-	float64_t evaluate(int32_t num_runs=1, float64_t conf_int_p=0,
-			float64_t* conf_int_low=NULL, float64_t* conf_int_up=NULL);
+	CrossValidationResult evaluate();
 
 	/** @return parameter instance of underlying learning machine */
-	Parameter* get_machine_parameters();
+	Parameter* get_machine_parameters() const;
+
+	/** setter for the number of runs to use for evaluation */
+	void set_num_runs(int32_t num_runs);
+
+	/** setter for the number of runs to use for evaluation */
+	void set_conf_int_p(float64_t conf_int_p);
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
@@ -108,6 +128,9 @@ protected:
 	virtual float64_t evaluate_one_run();
 
 private:
+	int32_t m_num_runs;
+	float64_t m_conf_int_p;
+
 	CMachine* m_machine;
 	CFeatures* m_features;
 	CLabels* m_labels;

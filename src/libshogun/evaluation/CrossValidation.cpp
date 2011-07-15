@@ -56,6 +56,8 @@ void CCrossValidation::init()
 	m_labels=NULL;
 	m_splitting_strategy=NULL;
 	m_evaluation_criterium=NULL;
+	m_num_runs=1;
+	m_conf_int_p=0;
 
 	m_parameters->add((CSGObject**) &m_machine, "machine",
 			"Used learning machine");
@@ -65,42 +67,62 @@ void CCrossValidation::init()
 			"splitting_strategy", "Used splitting strategy");
 	m_parameters->add((CSGObject**) &m_evaluation_criterium,
 			"evaluation_criterium", "Used evaluation criterium");
+	m_parameters->add(&m_num_runs, "num_runs", "Number of repetitions");
+	m_parameters->add(&m_conf_int_p, "conf_int_p", "p-value of confidence "
+			"interval");
 }
 
-Parameter* CCrossValidation::get_machine_parameters()
+Parameter* CCrossValidation::get_machine_parameters() const
 {
 	return m_machine->m_parameters;
 }
 
-float64_t CCrossValidation::evaluate(int32_t num_runs, float64_t conf_int_p,
-		float64_t* conf_int_low, float64_t* conf_int_up)
+CrossValidationResult CCrossValidation::evaluate()
 {
-	if (num_runs<=0)
-		SG_ERROR("number of cross-validation runs has to >0\n");
+	float64_t* results=new float64_t[m_num_runs];
 
-	/* check if confidence interval has to be computed */
-	bool conf_interval=(conf_int_low!=NULL&&conf_int_up!=NULL);
-
-	if (conf_interval&&(conf_int_p<=0||conf_int_p>=1))
-	{
-		SG_ERROR("illegal p-value for confidence interval of "
-				"cross-validation\n");
-	}
-
-	float64_t* results=new float64_t[num_runs];
-
-	for (index_t i=0; i<num_runs; ++i)
+	for (index_t i=0; i<m_num_runs; ++i)
 		results[i]=evaluate_one_run();
 
-	/* TODO: calculate confidence interval, maybe put this into CMath? */
-	if (conf_interval)
-		SG_NOTIMPLEMENTED;
+	/* construct evaluation result */
+	CrossValidationResult result;
+	result.value=CMath::mean(results, m_num_runs);
+	result.has_conf_int=m_conf_int_p!=0;
+	result.conf_int_p=m_conf_int_p;
 
-	float64_t mean=CMath::mean(results, num_runs);
+	if (result.has_conf_int)
+	{
+		/* TODO: calculate confidence interval, maybe put this into CMath? */
+		SG_NOTIMPLEMENTED;
+	}
+	else
+	{
+		result.conf_int_low=0;
+		result.conf_int_up=0;
+	}
 
 	delete[] results;
 
-	return mean;
+	return result;
+}
+
+void CCrossValidation::set_conf_int_p(float64_t conf_int_p)
+{
+	if (conf_int_p<0||conf_int_p>=1)
+	{
+		SG_ERROR("%f is an illegal p-value for confidence interval of "
+				"cross-validation\n", conf_int_p);
+	}
+
+	m_conf_int_p=conf_int_p;
+}
+
+void CCrossValidation::set_num_runs(int32_t num_runs)
+{
+	if (num_runs<1)
+		SG_ERROR("%d is an illegal number of repetitions\n", num_runs);
+
+	m_num_runs=num_runs;
 }
 
 float64_t CCrossValidation::evaluate_one_run()

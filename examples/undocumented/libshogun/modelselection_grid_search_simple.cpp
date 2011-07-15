@@ -88,7 +88,8 @@ int main(int argc, char **argv)
 	best_combination->print_tree();
 
 	best_combination->apply_to_machine(classifier);
-	SG_SPRINT("result: %f\n", cross->evaluate());
+	CrossValidationResult result=cross->evaluate();
+	result.print_result();
 
 	/* clean up destroy result parameter */
 	SG_UNREF(best_combination);
