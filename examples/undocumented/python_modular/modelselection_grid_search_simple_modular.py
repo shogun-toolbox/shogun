@@ -21,7 +21,7 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def modelselection_grid_search_simple(traindat=traindat, label_traindat=label_traindat):
-	from shogun.Evaluation import CrossValidation
+	from shogun.Evaluation import CrossValidation, CrossValidationResult
 	from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
 	from shogun.Evaluation import StratifiedCrossValidationSplitting
 	from shogun.Modelselection import GridSearchModelSelection
@@ -73,7 +73,8 @@ def modelselection_grid_search_simple(traindat=traindat, label_traindat=label_tr
 
 	# apply them and print result
 	best_parameters.apply_to_machine(classifier)
-	print "accuracy: " + repr(cross_validation.evaluate())
+	result=cross_validation.evaluate()
+	result.print_result()
 
 if __name__=='__main__':
 	print 'GridSearchSimple'
