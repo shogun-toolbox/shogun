@@ -26,8 +26,7 @@ public class kernel_weighted_degree_position_string_modular {
 		StringCharFeatures feats_train = new StringCharFeatures(fm_train_dna, DNA);
 		StringCharFeatures feats_test = new StringCharFeatures(fm_test_dna, DNA);
 
-		WeightedDegreeStringKernel kernel = new WeightedDegreeStringKernel(feats_train, feats_train, degree);
-		kernel.set_shifts(DoubleMatrix.zeros(1, (fm_train_dna[0]).length()));
+		WeightedDegreePositionStringKernel kernel = new WeightedDegreePositionStringKernel(feats_train, feats_train, degree);
 		kernel.set_position_weights(DoubleMatrix.ones(1, (fm_train_dna[0]).length()));
 		
 

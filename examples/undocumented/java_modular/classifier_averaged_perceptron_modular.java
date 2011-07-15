@@ -3,8 +3,9 @@ import org.jblas.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.Serializable;
 
-public class classifier_averaged_perceptron_modular implements test {
+public class classifier_averaged_perceptron_modular{
 	static {
 		System.loadLibrary("Features");
 		System.loadLibrary("Classifier");
@@ -15,7 +16,7 @@ public class classifier_averaged_perceptron_modular implements test {
 		parameter_list.add(Arrays.asList(new Double(10), new Integer(1000)));
 		parameter_list.add(Arrays.asList(new Double(10), new Integer(10)));
 	}
-	public Object run(List para) {
+	public Serializable run(List para) {
 		Features.init_shogun_with_defaults();
 		double learn_rate = ((Double)para.get(0)).doubleValue();
 		int max_iter = ((Integer)para.get(1)).intValue();
