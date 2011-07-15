@@ -83,11 +83,12 @@ int main(int argc, char **argv)
 	/* this is on the stack and handles all of the above structures in memory */
 	CGridSearchModelSelection grid_search(param_tree, cross);
 
-	float64_t result;
-	CParameterCombination* best_combination=grid_search.select_model(result);
+	CParameterCombination* best_combination=grid_search.select_model();
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
-	SG_SPRINT("result: %f\n", result);
+
+	best_combination->apply_to_machine(classifier);
+	SG_SPRINT("result: %f\n", cross->evaluate());
 
 	/* clean up destroy result parameter */
 	SG_UNREF(best_combination);

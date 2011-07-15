@@ -10,6 +10,7 @@
 
 #include "modelselection/ParameterCombination.h"
 #include "base/Parameter.h"
+#include "machine/Machine.h"
 
 using namespace shogun;
 
@@ -274,6 +275,11 @@ CParameterCombination* CParameterCombination::copy_tree() const
 	}
 
 	return copy;
+}
+
+void CParameterCombination::apply_to_machine(CMachine* machine) const
+{
+	apply_to_parameter(machine->m_parameters);
 }
 
 void CParameterCombination::apply_to_parameter(Parameter* parameter) const

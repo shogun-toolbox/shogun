@@ -20,14 +20,32 @@ class CModelSelectionParameters;
 class CCrossValidation;
 class CParameterCombination;
 
+/**
+ * @brief Abstract base class for model selection.
+ * Takes a parameter tree which specifies parameters for model selection,
+ * and a cross-validation instance and searches for the best combination of
+ * parameters in the abstract method select_model(), which has to be implemented
+ * in concrete sub-classes.
+ */
 class CModelSelection: public CSGObject
 {
 public:
+	/** constructor
+	 * @param model_parameters parameter tree with model parameters to optimize
+	 * @param cross_validation cross-validation instance to use for evaluation
+	 * of a certain combination of parameters
+	 */
 	CModelSelection(CModelSelectionParameters* model_parameters,
 			CCrossValidation* cross_validation);
+
+	/** destructor */
 	virtual ~CModelSelection();
 
-	virtual CParameterCombination* select_model(float64_t& best_result)=0;
+	/**
+	 * abstract method to select model
+	 * @return best combination of model parameters
+	 */
+	virtual CParameterCombination* select_model()=0;
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const	{ return "ModelSelection"; }
