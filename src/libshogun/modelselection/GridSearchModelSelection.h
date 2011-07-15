@@ -19,6 +19,10 @@ namespace shogun
 
 class CModelSelectionParameters;
 
+/**
+ * @brief Model selection class which searches for the best model by a grid-
+ * search. See CModelSelection for details.
+ */
 class CGridSearchModelSelection: public CModelSelection
 {
 public:
@@ -28,7 +32,7 @@ public:
 
 	virtual ~CGridSearchModelSelection();
 
-	virtual CParameterCombination* select_model(float64_t& best_result);
+	virtual CParameterCombination* select_model();
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
