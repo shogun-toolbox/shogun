@@ -68,8 +68,18 @@ public:
 	 * also recursively destroys complete tree (SG_UNREF of child nodes) */
 	virtual ~CParameterCombination();
 
-	/* applies this parameter tree to a parameter instance */
+	/** applies this parameter tree to a parameter instance
+	 *
+	 * @param parameter Parameter instance to apply parameter tree to
+	 */
 	void apply_to_parameter(Parameter* parameter) const;
+
+	/**applies this parameter tree to a learning machine
+	 * (wrapper for apply_to_parameter() method)
+	 *
+	 * @param machine learning machine to apply parameter tree to
+	 */
+	void apply_to_machine(CMachine* machine) const;
 
 	/** appends a child to this node
 	 *
