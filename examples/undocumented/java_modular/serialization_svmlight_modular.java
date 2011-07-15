@@ -71,9 +71,9 @@ public class serialization_svmlight_modular {
 		ArrayList result = new ArrayList();
 		result.add(svm);
 		String fname = "out.txt";
-		save(fname, (Serializable)result);
-		ArrayList r = (ArrayList)load(fname);
-		SVMLight svm2 = (SVMLight)r.get(0);
+		//save(fname, (Serializable)result);
+		//ArrayList r = (ArrayList)load(fname);
+		//SVMLight svm2 = (SVMLight)r.get(0);
 
 		Features.exit_shogun();
 	}
