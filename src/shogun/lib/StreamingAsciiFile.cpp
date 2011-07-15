@@ -30,11 +30,6 @@ CStreamingAsciiFile::~CStreamingAsciiFile()
 {
 }
 
-inline bool CStreamingAsciiFile::str_to_bool(char *str)
-{
-	return (atoi(str)!=0);
-}
-
 /* Methods for reading dense vectors from an ascii file */
 
 #define GET_VECTOR(fname, conv, sg_type)			\

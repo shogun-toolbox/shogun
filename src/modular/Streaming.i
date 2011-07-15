@@ -37,6 +37,14 @@
 %rename(StreamingAsciiFile) CStreamingAsciiFile;
 %rename(StreamingFileFromFeatures) CStreamingFileFromFeatures;
 
+%include <shogun/lib/IOBuffer.h>
+%include <shogun/lib/StreamingFile.h>
+%include <shogun/lib/StreamingAsciiFile.h>
+
+%include <shogun/features/StreamingFeatures.h>
+%include <shogun/features/StreamingDotFeatures.h>
+%include <shogun/lib/StreamingFileFromFeatures.h>
+
 /* Templated Class ParseBuffer */
 %include <shogun/lib/ParseBuffer.h>
 namespace shogun
@@ -170,11 +178,3 @@ namespace shogun
     %template(StreamingSparseFeaturesReal) CStreamingSparseFeatures<float64_t>;
     %template(StreamingSparseFeaturesLongReal) CStreamingSparseFeatures<floatmax_t>;
 }
-
-%include <shogun/lib/IOBuffer.h>
-%include <shogun/lib/StreamingFile.h>
-%include <shogun/lib/StreamingAsciiFile.h>
-
-%include <shogun/features/StreamingFeatures.h>
-%include <shogun/features/StreamingDotFeatures.h>
-%include <shogun/lib/StreamingFileFromFeatures.h>
