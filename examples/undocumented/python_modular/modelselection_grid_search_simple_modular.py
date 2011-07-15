@@ -8,15 +8,6 @@
 # Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
 #
 
-from shogun.Evaluation import CrossValidation
-from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
-from shogun.Evaluation import StratifiedCrossValidationSplitting
-from shogun.Modelselection import GridSearchModelSelection
-from shogun.Modelselection import ModelSelectionParameters, R_EXP
-from shogun.Modelselection import ParameterCombination
-from shogun.Features import Labels
-from shogun.Features import RealFeatures
-from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC
 from numpy.random import randn
 from numpy import *
 
@@ -27,46 +18,63 @@ traindat=concatenate((randn(2,num_vectors)-vec_distance,
 	randn(2,num_vectors)+vec_distance), axis=1)
 label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 
-# build parameter tree to select C1 and C2 
-param_tree_root=ModelSelectionParameters()
-c1=ModelSelectionParameters("C1");
-param_tree_root.append_child(c1)
-c1.build_values(-15, 15, R_EXP);
+parameter_list = [[traindat,label_traindat]]
 
-c2=ModelSelectionParameters("C2");
-param_tree_root.append_child(c2);
-c2.build_values(-15, 15, R_EXP);
+def modelselection_grid_search_simple(traindat=traindat, label_traindat=label_traindat):
+	from shogun.Evaluation import CrossValidation
+	from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
+	from shogun.Evaluation import StratifiedCrossValidationSplitting
+	from shogun.Modelselection import GridSearchModelSelection
+	from shogun.Modelselection import ModelSelectionParameters, R_EXP
+	from shogun.Modelselection import ParameterCombination
+	from shogun.Features import Labels
+	from shogun.Features import RealFeatures
+	from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC
 
-# training data
-features=RealFeatures(traindat)
-labels=Labels(label_traindat)
+	# build parameter tree to select C1 and C2 
+	param_tree_root=ModelSelectionParameters()
+	c1=ModelSelectionParameters("C1");
+	param_tree_root.append_child(c1)
+	c1.build_values(-15, 15, R_EXP);
 
-# classifier
-classifier=LibLinear(L2R_L2LOSS_SVC)
+	c2=ModelSelectionParameters("C2");
+	param_tree_root.append_child(c2);
+	c2.build_values(-15, 15, R_EXP);
 
-# splitting strategy for cross-validation
-splitting_strategy=StratifiedCrossValidationSplitting(labels, 10)
+	# training data
+	features=RealFeatures(traindat)
+	labels=Labels(label_traindat)
 
-# evaluation method
-evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
+	# classifier
+	classifier=LibLinear(L2R_L2LOSS_SVC)
 
-# cross-validation instance
-cross_validation=CrossValidation(classifier, features, labels,
-	splitting_strategy, evaluation_criterium)
+	# splitting strategy for cross-validation
+	splitting_strategy=StratifiedCrossValidationSplitting(labels, 10)
 
-# model selection instance
-model_selection=GridSearchModelSelection(param_tree_root,
-	cross_validation)
+	# evaluation method
+	evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
 
-# perform model selection with selected methods
-print "performing model selection of"
-param_tree_root.print_tree()
-best_parameters=model_selection.select_model()
+	# cross-validation instance
+	cross_validation=CrossValidation(classifier, features, labels,
+		splitting_strategy, evaluation_criterium)
 
-# print best parameters
-print "best parameters:"
-best_parameters.print_tree()
+	# model selection instance
+	model_selection=GridSearchModelSelection(param_tree_root,
+		cross_validation)
 
-# apply them and print result
-best_parameters.apply_to_machine(classifier)
-print "accuracy: " + repr(cross_validation.evaluate())
+	# perform model selection with selected methods
+	print "performing model selection of"
+	param_tree_root.print_tree()
+	best_parameters=model_selection.select_model()
+
+	# print best parameters
+	print "best parameters:"
+	best_parameters.print_tree()
+
+	# apply them and print result
+	best_parameters.apply_to_machine(classifier)
+	print "accuracy: " + repr(cross_validation.evaluate())
+
+if __name__=='__main__':
+	print 'GridSearchSimple'
+	modelselection_grid_search_simple(*parameter_list[0])
