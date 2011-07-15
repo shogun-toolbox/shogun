@@ -69,6 +69,9 @@ def modelselection_parameter_tree_modular():
 	param_ds_kernel.append_child(param_ds_kernel_theta)
 
 	root.print_tree()
+	combinations=root.get_combinations()
+	for i in range(combinations.get_num_elements()):
+		combinations.get_element(i).print_tree()
 
 	return
 

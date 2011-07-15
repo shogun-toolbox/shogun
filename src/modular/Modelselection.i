@@ -31,12 +31,11 @@
 %import "Modelselection.i"
 
 /* These functions return new Objects */
-%newobject select_model();
-%newobject copy_tree();
-%newobject leaf_sets_multiplication();
-%newobject get_combinations();
+%newobject CGridSearchModelSelection::select_model();
+%newobject CParameterCombination::copy_tree();
+%newobject CParameterCombination::leaf_sets_multiplication();
+%newobject CModelSelectionParameters::get_combinations();
 /* what about parameter_set_multiplication returns new DynArray<Parameter*>? */
-%newobject select_model();
 
 /* Remove C Prefix */
 %rename(GridSearchModelSelection) CGridSearchModelSelection;
