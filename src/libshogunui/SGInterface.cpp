@@ -3546,7 +3546,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 			else
 			{
 				ui_kernel->init_kernel("TRAIN");
-				success=k->set_position_weights(weights, len);
+				success=k->set_position_weights(SGVector<float64_t>(weights, len));
 			}
 		}
 

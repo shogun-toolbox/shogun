@@ -330,7 +330,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 			position_weights[i]=1.0/length;
 	}
 	((CWeightedDegreePositionStringKernel*) kern)->
-		set_position_weights(position_weights, length);
+		set_position_weights(SGVector<float64_t>(position_weights, length));
 
 	delete[] weights;
 	return kern;
