@@ -13,11 +13,14 @@
  #include <shogun/classifier/svm/LaRank.h>
  #include <shogun/classifier/svm/LibSVMMultiClass.h>
  #include <shogun/classifier/svm/LibSVMOneClass.h>
- #include <shogun/machine/LinearMachine.h> 
+ #include <shogun/machine/LinearMachine.h>
+ #include <shogun/machine/OnlineLinearMachine.h>
  #include <shogun/classifier/LPBoost.h> 
  #include <shogun/classifier/LPM.h>
  #include <shogun/classifier/svm/MPDSVM.h>
  #include <shogun/classifier/svm/MultiClassSVM.h>
+ #include <shogun/classifier/svm/OnlineSVMSGD.h>
+ #include <shogun/classifier/svm/OnlineLibLinear.h>
  #include <shogun/classifier/Perceptron.h>
  #include <shogun/classifier/AveragedPerceptron.h>
  #include <shogun/classifier/SubGradientLPM.h>

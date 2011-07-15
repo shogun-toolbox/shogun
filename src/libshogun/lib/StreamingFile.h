@@ -38,13 +38,6 @@ namespace shogun
 
 		/** constructor
 		 *
-		 * @param f already opened file
-		 * @param name variable name (e.g. "x" or "/path/to/x")
-		 */
-		CStreamingFile(FILE* f, const char* name=NULL);
-
-		/** constructor
-		 *
 		 * @param fname filename to open
 		 * @param rw mode, 'r' or 'w'
 		 */
