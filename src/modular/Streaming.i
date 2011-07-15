@@ -17,13 +17,22 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %include "Features_includes.i"
+%include "Preprocessor_includes.i"
+%include "Distribution_includes.i"
 %include "Library_includes.i"
+%include "Kernel_includes.i"
+%include "Distance_includes.i"
 %include "Streaming_includes.i"
 
+%import "Preprocessor.i"
+%import "Distribution.i"
+%import "Library.i"
 %import "Features.i"
 
 /* Remove C Prefix */
 %rename(IOBuffer) CIOBuffer;
+%rename(StreamingFeatures) CStreamingFeatures;
+%rename(StreamingDotFeatures) CStreamingDotFeatures;
 %rename(StreamingFile) CStreamingFile;
 %rename(StreamingAsciiFile) CStreamingAsciiFile;
 %rename(StreamingFileFromFeatures) CStreamingFileFromFeatures;
@@ -32,62 +41,62 @@
 %include <shogun/lib/ParseBuffer.h>
 namespace shogun
 {
-    %template(ParseBoolBuffer) CParseBuffer<bool>;
-    %template(ParseCharBuffer) CParseBuffer<char>;
-    %template(ParseByteBuffer) CParseBuffer<uint8_t>;
-    %template(ParseShortBuffer) CParseBuffer<int16_t>;
-    %template(ParseWordBuffer) CParseBuffer<uint16_t>;
-    %template(ParseIntBuffer) CParseBuffer<int32_t>;
-    %template(ParseUIntBuffer) CParseBuffer<uint32_t>;
-    %template(ParseLongBuffer) CParseBuffer<int64_t>;
-    %template(ParseUlongBuffer) CParseBuffer<uint64_t>;
-    %template(ParseShortRealBuffer) CParseBuffer<float32_t>;
-    %template(ParseRealBuffer) CParseBuffer<float64_t>;
-    %template(ParseLongRealBuffer) CParseBuffer<floatmax_t>;
+    %template(ExamplesRingBool) CParseBuffer<bool>;
+    %template(ExamplesRingChar) CParseBuffer<char>;
+    %template(ExamplesRingByte) CParseBuffer<uint8_t>;
+    %template(ExamplesRingShort) CParseBuffer<int16_t>;
+    %template(ExamplesRingWord) CParseBuffer<uint16_t>;
+    %template(ExamplesRingInt) CParseBuffer<int32_t>;
+    %template(ExamplesRingUInt) CParseBuffer<uint32_t>;
+    %template(ExamplesRingLong) CParseBuffer<int64_t>;
+    %template(ExamplesRingUlong) CParseBuffer<uint64_t>;
+    %template(ExamplesRingShortReal) CParseBuffer<float32_t>;
+    %template(ExamplesRingReal) CParseBuffer<float64_t>;
+    %template(ExamplesRingLongReal) CParseBuffer<floatmax_t>;
 
-    %template(ParseSparseBoolBuffer) CParseBuffer< SGSparseVectorEntry<bool> >;
-    %template(ParseSparseCharBuffer) CParseBuffer< SGSparseVectorEntry<char> >;
-    %template(ParseSparseByteBuffer) CParseBuffer< SGSparseVectorEntry<uint8_t> >;
-    %template(ParseSparseShortBuffer) CParseBuffer< SGSparseVectorEntry<int16_t> >;
-    %template(ParseSparseWordBuffer) CParseBuffer< SGSparseVectorEntry<uint16_t> >;
-    %template(ParseSparseIntBuffer) CParseBuffer< SGSparseVectorEntry<int32_t> >;
-    %template(ParseSparseUIntBuffer) CParseBuffer< SGSparseVectorEntry<uint32_t> >;
-    %template(ParseSparseLongBuffer) CParseBuffer< SGSparseVectorEntry<int64_t> >;
-    %template(ParseSparseUlongBuffer) CParseBuffer< SGSparseVectorEntry<uint64_t> >;
-    %template(ParseSparseShortRealBuffer) CParseBuffer< SGSparseVectorEntry<float32_t> >;
-    %template(ParseSparseRealBuffer) CParseBuffer< SGSparseVectorEntry<float64_t> >;
-    %template(ParseSparseLongRealBuffer) CParseBuffer< SGSparseVectorEntry<floatmax_t> >;
+    %template(ExamplesRingSparseBool) CParseBuffer< SGSparseVectorEntry<bool> >;
+    %template(ExamplesRingSparseChar) CParseBuffer< SGSparseVectorEntry<char> >;
+    %template(ExamplesRingSparseByte) CParseBuffer< SGSparseVectorEntry<uint8_t> >;
+    %template(ExamplesRingSparseShort) CParseBuffer< SGSparseVectorEntry<int16_t> >;
+    %template(ExamplesRingSparseWord) CParseBuffer< SGSparseVectorEntry<uint16_t> >;
+    %template(ExamplesRingSparseInt) CParseBuffer< SGSparseVectorEntry<int32_t> >;
+    %template(ExamplesRingSparseUInt) CParseBuffer< SGSparseVectorEntry<uint32_t> >;
+    %template(ExamplesRingSparseLong) CParseBuffer< SGSparseVectorEntry<int64_t> >;
+    %template(ExamplesRingSparseUlong) CParseBuffer< SGSparseVectorEntry<uint64_t> >;
+    %template(ExamplesRingSparseShortReal) CParseBuffer< SGSparseVectorEntry<float32_t> >;
+    %template(ExamplesRingSparseReal) CParseBuffer< SGSparseVectorEntry<float64_t> >;
+    %template(ExamplesRingSparseLongReal) CParseBuffer< SGSparseVectorEntry<floatmax_t> >;
 }
 
 /* Templated Class InputParser */
 %include <shogun/lib/InputParser.h>
 namespace shogun
 {
-    %template(InputBoolParser) CInputParser<bool>;
-    %template(InputCharParser) CInputParser<char>;
-    %template(InputByteParser) CInputParser<uint8_t>;
-    %template(InputShortParser) CInputParser<int16_t>;
-    %template(InputWordParser) CInputParser<uint16_t>;
-    %template(InputIntParser) CInputParser<int32_t>;
-    %template(InputUIntParser) CInputParser<uint32_t>;
-    %template(InputLongParser) CInputParser<int64_t>;
-    %template(InputUlongParser) CInputParser<uint64_t>;
-    %template(InputShortRealParser) CInputParser<float32_t>;
-    %template(InputRealParser) CInputParser<float64_t>;
-    %template(InputLongRealParser) CInputParser<floatmax_t>;
+    %template(ParserBool) CInputParser<bool>;
+    %template(ParserChar) CInputParser<char>;
+    %template(ParserByte) CInputParser<uint8_t>;
+    %template(ParserShort) CInputParser<int16_t>;
+    %template(ParserWord) CInputParser<uint16_t>;
+    %template(ParserInt) CInputParser<int32_t>;
+    %template(ParserUInt) CInputParser<uint32_t>;
+    %template(ParserLong) CInputParser<int64_t>;
+    %template(ParserUlong) CInputParser<uint64_t>;
+    %template(ParserShortReal) CInputParser<float32_t>;
+    %template(ParserReal) CInputParser<float64_t>;
+    %template(ParserLongReal) CInputParser<floatmax_t>;
 
-    %template(InputSparseBoolParser) CInputParser< SGSparseVectorEntry<bool> >;
-    %template(InputSparseCharParser) CInputParser< SGSparseVectorEntry<char> >;
-    %template(InputSparseByteParser) CInputParser< SGSparseVectorEntry<uint8_t> >;
-    %template(InputSparseShortParser) CInputParser< SGSparseVectorEntry<int16_t> >;
-    %template(InputSparseWordParser) CInputParser< SGSparseVectorEntry<uint16_t> >;
-    %template(InputSparseIntParser) CInputParser< SGSparseVectorEntry<int32_t> >;
-    %template(InputSparseUIntParser) CInputParser< SGSparseVectorEntry<uint32_t> >;
-    %template(InputSparseLongParser) CInputParser< SGSparseVectorEntry<int64_t> >;
-    %template(InputSparseUlongParser) CInputParser< SGSparseVectorEntry<uint64_t> >;
-    %template(InputSparseShortRealParser) CInputParser< SGSparseVectorEntry<float32_t> >;
-    %template(InputSparseRealParser) CInputParser< SGSparseVectorEntry<float64_t> >;
-    %template(InputSparseLongRealParser) CInputParser< SGSparseVectorEntry<floatmax_t> >;
+    %template(ParserSparseBool) CInputParser< SGSparseVectorEntry<bool> >;
+    %template(ParserSparseChar) CInputParser< SGSparseVectorEntry<char> >;
+    %template(ParserSparseByte) CInputParser< SGSparseVectorEntry<uint8_t> >;
+    %template(ParserSparseShort) CInputParser< SGSparseVectorEntry<int16_t> >;
+    %template(ParserSparseWord) CInputParser< SGSparseVectorEntry<uint16_t> >;
+    %template(ParserSparseInt) CInputParser< SGSparseVectorEntry<int32_t> >;
+    %template(ParserSparseUInt) CInputParser< SGSparseVectorEntry<uint32_t> >;
+    %template(ParserSparseLong) CInputParser< SGSparseVectorEntry<int64_t> >;
+    %template(ParserSparseUlong) CInputParser< SGSparseVectorEntry<uint64_t> >;
+    %template(ParserSparseShortReal) CInputParser< SGSparseVectorEntry<float32_t> >;
+    %template(ParserSparseReal) CInputParser< SGSparseVectorEntry<float64_t> >;
+    %template(ParserSparseLongReal) CInputParser< SGSparseVectorEntry<floatmax_t> >;
 }
 
 /* Templated Class StreamingFileFromSimpleFeatures */
@@ -126,32 +135,8 @@ namespace shogun
     %template(StreamingFileFromSparseFeaturesLongReal) CStreamingFileFromSparseFeatures<floatmax_t>;
 }
 
-/* Templated Class StreamingFileFromStringFeatures */
-%include <shogun/lib/StreamingFileFromStringFeatures.h>
-namespace shogun
-{
-    %template(StreamingFileFromStringFeaturesBool) CStreamingFileFromStringFeatures<bool>;
-    %template(StreamingFileFromStringFeaturesChar) CStreamingFileFromStringFeatures<char>;
-    %template(StreamingFileFromStringFeaturesByte) CStreamingFileFromStringFeatures<uint8_t>;
-    %template(StreamingFileFromStringFeaturesShort) CStreamingFileFromStringFeatures<int16_t>;
-    %template(StreamingFileFromStringFeaturesWord) CStreamingFileFromStringFeatures<uint16_t>;
-    %template(StreamingFileFromStringFeaturesInt) CStreamingFileFromStringFeatures<int32_t>;
-    %template(StreamingFileFromStringFeaturesUInt) CStreamingFileFromStringFeatures<uint32_t>;
-    %template(StreamingFileFromStringFeaturesLong) CStreamingFileFromStringFeatures<int64_t>;
-    %template(StreamingFileFromStringFeaturesUlong) CStreamingFileFromStringFeatures<uint64_t>;
-    %template(StreamingFileFromStringFeaturesShortReal) CStreamingFileFromStringFeatures<float32_t>;
-    %template(StreamingFileFromStringFeaturesReal) CStreamingFileFromStringFeatures<float64_t>;
-    %template(StreamingFileFromStringFeaturesLongReal) CStreamingFileFromStringFeatures<floatmax_t>;
-}
-
-/* StreamingFeatures */
-
-/* Remove C Prefix */
-%rename(StreamingFeatures) CStreamingFeatures;
-%rename(StreamingDotFeatures) CStreamingDotFeatures;
-
 /* Templated Class StreamingSimpleFeatures */
-%include <shogun/lib/StreamingSimpleFeatures.h>
+%include <shogun/features/StreamingSimpleFeatures.h>
 namespace shogun
 {
     %template(StreamingSimpleFeaturesBool) CStreamingSimpleFeatures<bool>;
@@ -169,7 +154,7 @@ namespace shogun
 }
 
 /* Templated Class StreamingSparseFeatures */
-%include <shogun/lib/StreamingSparseFeatures.h>
+%include <shogun/features/StreamingSparseFeatures.h>
 namespace shogun
 {
     %template(StreamingSparseFeaturesBool) CStreamingSparseFeatures<bool>;
@@ -186,20 +171,10 @@ namespace shogun
     %template(StreamingSparseFeaturesLongReal) CStreamingSparseFeatures<floatmax_t>;
 }
 
-/* Templated Class StreamingStringFeatures */
-%include <shogun/lib/StreamingStringFeatures.h>
-namespace shogun
-{
-    %template(StreamingStringFeaturesBool) CStreamingStringFeatures<bool>;
-    %template(StreamingStringFeaturesChar) CStreamingStringFeatures<char>;
-    %template(StreamingStringFeaturesByte) CStreamingStringFeatures<uint8_t>;
-    %template(StreamingStringFeaturesShort) CStreamingStringFeatures<int16_t>;
-    %template(StreamingStringFeaturesWord) CStreamingStringFeatures<uint16_t>;
-    %template(StreamingStringFeaturesInt) CStreamingStringFeatures<int32_t>;
-    %template(StreamingStringFeaturesUInt) CStreamingStringFeatures<uint32_t>;
-    %template(StreamingStringFeaturesLong) CStreamingStringFeatures<int64_t>;
-    %template(StreamingStringFeaturesUlong) CStreamingStringFeatures<uint64_t>;
-    %template(StreamingStringFeaturesShortReal) CStreamingStringFeatures<float32_t>;
-    %template(StreamingStringFeaturesReal) CStreamingStringFeatures<float64_t>;
-    %template(StreamingStringFeaturesLongReal) CStreamingStringFeatures<floatmax_t>;
-}
+%include <shogun/lib/IOBuffer.h>
+%include <shogun/lib/StreamingFile.h>
+%include <shogun/lib/StreamingAsciiFile.h>
+
+%include <shogun/features/StreamingFeatures.h>
+%include <shogun/features/StreamingDotFeatures.h>
+%include <shogun/lib/StreamingFileFromFeatures.h>
