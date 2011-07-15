@@ -40,13 +40,13 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 	CDynamicObjectArray<CParameterCombination>* combinations=
 			m_model_parameters->get_combinations();
 
-	float64_t best_result;
+	CrossValidationResult best_result;
 
 	CParameterCombination* best_combination=NULL;
 	if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
-		best_result=CMath::ALMOST_NEG_INFTY;
+		best_result.value=CMath::ALMOST_NEG_INFTY;
 	else
-		best_result=CMath::ALMOST_INFTY;
+		best_result.value=CMath::ALMOST_INFTY;
 
 	/* apply all combinations and search for best one */
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
@@ -54,12 +54,12 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 		CParameterCombination* current_combination=combinations->get_element(i);
 		current_combination->apply_to_parameter(
 				m_cross_validation->get_machine_parameters());
-		float64_t result=m_cross_validation->evaluate();
+		CrossValidationResult result=m_cross_validation->evaluate();
 
 		/* check if current result is better, delete old combinations */
 		if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
 		{
-			if (result>best_result)
+			if (result.value>best_result.value)
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
@@ -75,7 +75,7 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 		}
 		else
 		{
-			if (result<best_result)
+			if (result.value<best_result.value)
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
