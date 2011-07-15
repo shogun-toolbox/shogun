@@ -10,13 +10,11 @@
  * Copyright (C) 2011 Berlin Institute of Technology
  */
 
-#ifndef _CPCACUT__H__
-#define _CPCACUT__H__
-
-#include "lib/config.h"
-
+#ifndef _CPCA__H__
+#define _CPCA__H__
 #ifdef HAVE_LAPACK
-
+#include "lib/lapack.h"
+#include "lib/config.h"
 #include <stdio.h>
 
 #include "preprocessor/SimplePreprocessor.h"
@@ -25,7 +23,7 @@
 
 namespace shogun
 {
-enum ECutoffType
+enum EPCAMode
 {
 	THRESHOLD,
 	VARIANCE_EXPLAINED,
@@ -44,92 +42,84 @@ enum ECutoffType
  * covariance matrix is of size num_feat*num_feat. Note that vectors don't have
  * to have zero mean as it is substracted.
  */
-class CPCACut : public CSimplePreprocessor<float64_t>
+class CPCA: public CSimplePreprocessor<float64_t>
 {
 	public:
+	
 		/** constructor
-		 *
 		 * @param do_whitening do whitening
 		 * @param type of cutoff
 		 * @param thresh threshold
 		 */
-		CPCACut(bool do_whitening=false, ECutoffType cutoff_type=THRESHOLD, float64_t thresh=1e-6);
-		virtual ~CPCACut();
+		CPCA(bool do_whitening=false, EPCAMode mode=THRESHOLD, float64_t thresh=1e-6);
 
-		/// initialize preprocessor from features
+		/** destructor */
+		virtual ~CPCA();
+
+		/** initialize preprocessor from features 
+		 * @param features 
+		 */
 		virtual bool init(CFeatures* features);
-		/// cleanup
+
+		/** cleanup */
 		virtual void cleanup();
 
-		/// apply preproc on feature matrix
-		/// result in feature matrix
-		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
+		/** apply preprocessor to feature matrix
+		 * @param features features
+		 * @return processed feature matrix 
+		 */
 		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
-		/// apply preproc on single feature vector
-		/// result in feature matrix
+		/** apply preprocessor to feature vector
+		 * @param vector feature vector
+		 * @return processed feature vector
+		 */
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 		/** get transformation matrix, i.e. eigenvectors (potentially scaled if
-		 * do_whitening is true
-		 *
-		 * @param dst destination to store matrix in
-		 * @param num_feat number of features (rows of matrix)
-		 * @param num_new_dim number of dimensions after cutoff threshold
-		 *
+		 * do_whitening is true)
 		 */
-		void get_transformation_matrix(float64_t** dst, int32_t* num_feat, int32_t* num_new_dim);
+		SGMatrix<float64_t> get_transformation_matrix();
 
 		/** get eigenvalues of PCA
-		 *
-		 * @param dst destination to store matrix in
-		 * @param num_new_dim number of dimensions after cutoff threshold
-		 *
 		 */
-		void get_eigenvalues(float64_t** dst, int32_t* num_new_dim);
+		SGVector<float64_t> get_eigenvalues();
 
 		/** get mean vector of original data
-		 *
-		 * @param dst destination to store matrix in
-		 * @param num_feat number of features
-		 *
 		 */
-		void get_mean(float64_t** dst, int32_t* num_feat);
+		SGVector<float64_t> get_mean();
 
 		/** @return object name */
-		virtual inline const char* get_name() const { return "PCACut"; }
+		virtual inline const char* get_name() const { return "PCA"; }
 
-		/// return a type of preprocessor
-		virtual inline EPreprocessorType get_type() const { return P_PCACUT; }
+		/** @return a type of preprocessor */
+		virtual inline EPreprocessorType get_type() const { return P_PCA; }
 
 	protected:
+
 		void init();
 
 	protected:
-		/** T */
-		double* T ;
+
+		/** transformation matrix */
+		SGMatrix<float64_t> m_transformation_matrix;
 		/** num dim */
 		int32_t num_dim;
 		/** num old dim */
 		int32_t num_old_dim;
 
-		/** mean */
-		float64_t *mean ;
-		/** length of mean vector */
-		int32_t length_mean;
+		/** mean vector */
+		SGVector<float64_t> m_mean_vector;
+		/** eigenvalues vector */
+		SGVector<float64_t> m_eigenvalues_vector;
 
-		/** eigenvalues */
-		float64_t* eigenvalues;
-		/** number of eigenvalues */
-		int32_t num_eigenvalues;
-
-		/// true when already initialized
+		/** initialized */
 		bool initialized;
 
 		/** do whitening */
 		bool do_whitening;
 		/** Cutoff type */
-		ECutoffType cutoff_type;
+		EPCAMode m_mode;
 		/** thresh */
 		float64_t thresh;
 };

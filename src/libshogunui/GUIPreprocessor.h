@@ -31,8 +31,8 @@ class CGUIPreprocessor : public CSGObject
 		CPreprocessor* create_generic(EPreprocessorType type);
 		/** create preproc PruneVarSubMean */
 		CPreprocessor* create_prunevarsubmean(bool divide_by_std=false);
-		/** create preproc PCACUT */
-		CPreprocessor* create_pcacut(bool do_whitening, float64_t threshold);
+		/** create preproc PCA */
+		CPreprocessor* create_pca(bool do_whitening, float64_t threshold);
 
 		/** add new preproc to list */
 		bool add_preproc(CPreprocessor* preproc);

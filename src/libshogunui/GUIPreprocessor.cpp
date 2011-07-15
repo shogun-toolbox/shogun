@@ -18,7 +18,7 @@
 #include <shogun/preprocessor/LogPlusOne.h>
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
-#include <shogun/preprocessor/PCACut.h>
+#include <shogun/preprocessor/PCA.h>
 #include <shogun/preprocessor/DecompressString.h>
 #include <shogun/preprocessor/SortWordString.h>
 #include <shogun/preprocessor/SortUlongString.h>
@@ -59,19 +59,19 @@ CPreprocessor* CGUIPreprocessor::create_prunevarsubmean(bool divide_by_std)
 	return preproc;
 }
 
-CPreprocessor* CGUIPreprocessor::create_pcacut(bool do_whitening, float64_t threshold)
+CPreprocessor* CGUIPreprocessor::create_pca(bool do_whitening, float64_t threshold)
 {
 #ifdef HAVE_LAPACK
-	CPreprocessor* preproc=new CPCACut(do_whitening, THRESHOLD, threshold);
+	CPreprocessor* preproc=new CPCA(do_whitening, THRESHOLD, threshold);
 
 	if (preproc)
-		SG_INFO("PCACUT created (%p), do_whitening %i threshold %e", preproc, do_whitening, threshold);
+		SG_INFO("PCA created (%p), do_whitening %i threshold %e", preproc, do_whitening, threshold);
 	else
-		SG_ERROR("Could not create preproc PCACUT, do_whitening %i threshold %e", do_whitening, threshold);
+		SG_ERROR("Could not create preproc PCA, do_whitening %i threshold %e", do_whitening, threshold);
 
 	return preproc;
 #else //HAVE_LAPACK
-	SG_ERROR("Could not create preproc PCACUT - lapack not available at compile time\n");
+	SG_ERROR("Could not create preproc PCA - lapack not available at compile time\n");
 	return NULL;
 #endif //HAVE_LAPACK
 }

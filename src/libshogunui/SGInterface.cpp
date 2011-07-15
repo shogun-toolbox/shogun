@@ -5226,12 +5226,12 @@ bool CSGInterface::cmd_add_preproc()
 	}
 
 #ifdef HAVE_LAPACK
-	else if (strmatch(type, "PCACUT") && m_nrhs==4)
+	else if (strmatch(type, "PCA") && m_nrhs==4)
 	{
 		bool do_whitening=get_bool_from_bool_or_str();
 		float64_t threshold=get_real_from_real_or_str();
 
-		preproc=ui_preproc->create_pcacut(do_whitening, threshold);
+		preproc=ui_preproc->create_pca(do_whitening, threshold);
 	}
 #endif
 
