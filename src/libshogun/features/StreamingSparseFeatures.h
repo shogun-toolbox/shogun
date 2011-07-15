@@ -559,6 +559,7 @@ void CStreamingSparseFeatures<T>::init()
 	current_vector=NULL;
 	current_length=-1;
 	current_vec_index=0;
+	current_num_features=-1;
 }
 
 template <class T>
@@ -593,6 +594,10 @@ bool CStreamingSparseFeatures<T>::get_next_example()
 						   current_length,
 						   current_label);
 
+	// Update number of features based on highest index
+	for (int32_t i=0; i<current_length; i++)
+		if (current_vector[i].feat_index > current_num_features)
+			current_num_features = current_vector[i].feat_index;
 
 	current_vec_index++;
 	return ret_value;
