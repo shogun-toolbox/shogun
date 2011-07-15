@@ -30,6 +30,7 @@
 %include "Structure_includes.i"
 %include "Preprocessor_includes.i"
 %include "Distribution_includes.i"
+%include "Library_includes.i"
 
 %import "Features.i"
 

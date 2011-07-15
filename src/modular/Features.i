@@ -39,9 +39,11 @@
 %include "Features_includes.i"
 %include "Preprocessor_includes.i"
 %include "Distribution_includes.i"
+%include "Library_includes.i"
 
 %import "Preprocessor.i"
 %import "Distribution.i"
+%import "Library.i"
 
 /* These functions return new Objects */
 %newobject get_transposed();
