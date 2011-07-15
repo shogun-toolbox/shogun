@@ -41,6 +41,7 @@
 %import "Features.i"
 %import "Distance.i"
 %import "Library.i"
+%import "Distribution.i"
 
 %ignore CWeightedDegreePositionStringKernel::set_position_weights(float64_t*);
 

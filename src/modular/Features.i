@@ -40,6 +40,8 @@
 %include "Preprocessor_includes.i"
 %include "Distribution_includes.i"
 %include "Library_includes.i"
+%include "Kernel_includes.i"
+%include "Distance_includes.i"
 
 %import "Preprocessor.i"
 %import "Distribution.i"

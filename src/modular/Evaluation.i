@@ -31,6 +31,8 @@
 %include "Evaluation_includes.i"
 %include "Distribution_includes.i"
 %include "Library_includes.i"
+%include "Distance_includes.i"
+%include "Kernel_includes.i"
 
 %import "Features.i"
 
