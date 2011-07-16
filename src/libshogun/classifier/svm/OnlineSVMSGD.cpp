@@ -34,7 +34,7 @@ using namespace shogun;
 #define LOGLOSSMARGIN 11
 
 // Select loss
-#define LOSS HINGELOSS
+#define LOSS SQUAREDHINGELOSS
 
 // One when bias is regularized
 #define REGULARIZEBIAS 0
@@ -258,7 +258,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 	SG_PRINT("Online SGD calibrated using %d vectors.\n", n);
 
 	// bias update scaling
-	bscale = m/n;
+	bscale = 0.5*m/n;
 
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
