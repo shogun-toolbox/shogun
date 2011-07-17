@@ -33,6 +33,15 @@
  using namespace shogun;
 %}
 
+/*#ifdef SWIGJAVA
+%pragma(java) moduleimports=%{
+    import java.io.*; // For Serializable
+%}
+%pragma(java) jniclassinterfaces="Serializable"
+%pragma(java) moduleinterfaces="Serializable"
+#endif
+*/
+
 %init %{
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
 #ifndef DISABLE_CANCEL_CALLBACK
