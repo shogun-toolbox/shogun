@@ -133,9 +133,24 @@ class CPositionalPWM : public CDistribution
 
 		}
 
-		void compute_scoring(float64_t** poim, int32_t* poim_len, int32_t max_degree);
+		/** get poim u
+		 *
+		 * @param d degree for which poim should be obtained
+		 *
+		 * @return poim u
+		 */
+		virtual inline SGMatrix<float64_t> get_scoring(int32_t d)
+		{
+			int32_t offs=0;
+			for (int32_t i=0; i<d; i++)
+				offs+=CMath::pow((int32_t) m_w_rows,i+1);
+			int32_t rows=CMath::pow((int32_t) m_w_rows,d+1);
+			int32_t cols=m_pwm_cols;
+			return SGMatrix<float64_t>(&m_poim[offs],rows,cols);
+		}
 
 		void compute_w(int32_t num_pos);
+		void compute_scoring(int32_t max_degree);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "PositionalPWM"; }
@@ -155,6 +170,9 @@ class CPositionalPWM : public CDistribution
 		int32_t m_w_rows;
 		int32_t m_w_cols;
 		float64_t* m_w;
+
+		int32_t m_poim_len;
+		float64_t* m_poim;
 
 };
 }

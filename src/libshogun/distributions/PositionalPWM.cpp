@@ -10,6 +10,8 @@
 #include "distributions/PositionalPWM.h"
 #include "lib/Mathematics.h"
 #include "base/Parameter.h"
+#include "features/Alphabet.h"
+#include "features/StringFeatures.h"
 
 using namespace shogun;
 
@@ -25,6 +27,7 @@ CPositionalPWM::CPositionalPWM() : CDistribution(),
 CPositionalPWM::~CPositionalPWM()
 {
 	delete[] m_pwm;
+	delete[] m_w;
 }
 
 bool CPositionalPWM::train(CFeatures* data)
@@ -124,27 +127,80 @@ void CPositionalPWM::register_params()
 	m_parameters->add(&m_mean, "mean", "Mean.");
 }
 
-void CPositionalPWM::compute_scoring(float64_t** poim, int32_t* poim_len, int32_t max_degree)
+void CPositionalPWM::compute_scoring(int32_t max_degree)
 {
-	/*
-	int32_t num_wors=4; // assume DNA
-	int32_t len=num_feat*num_sym;
-	float64_t* p=new float64_t[len];
+	ASSERT(m_w);
 
+	int32_t num_feat=m_w_cols;
 	int32_t num_sym=0;
+	int32_t order=m_pwm_cols;
+	int32_t num_words=m_pwm_cols;
+	float64_t* target=new float64_t[num_feat*num_sym];
+	CAlphabet* alpha=new CAlphabet(DNA);
+	CStringFeatures<uint16_t>* str= new CStringFeatures<uint16_t>();
+	int32_t num_bits=alpha->get_num_bits();
 	
 	for (int32_t i=0; i<order; i++)
 		num_sym+=CMath::pow((int32_t) num_words,i+1);
 
-	if (!m_w)
-		compute_w();
+	uint32_t kmer_mask=0;
+	uint32_t words=CMath::pow((int32_t) num_words,(int32_t) order);
+	int32_t offset=0;
 
-	for (int32_t i=0; i<num_sym; i++)
+	for (int32_t o=0; o<max_degree; o++)
 	{
+		float64_t* contrib=&target[offset];
+		offset+=CMath::pow((int32_t) num_words,(int32_t) o+1);
+
+		kmer_mask=(kmer_mask<<(num_bits)) | str->get_masked_symbols(0xffff, 1);
+
+		for (int32_t p=-o; p<order; p++)
+		{
+			int32_t o_sym=0, m_sym=0, il=0,ir=0, jl=0;
+			uint32_t imer_mask=kmer_mask;
+			uint32_t jmer_mask=kmer_mask;
+
+			if (p<0)
+			{
+				il=-p;
+				m_sym=order-o-p-1;
+				o_sym=-p;
+			}
+			else if (p<order-o)
+			{
+				ir=p;
+				m_sym=order-o-1;
+			}
+			else
+			{
+				ir=p;
+				m_sym=p;
+				o_sym=p-order+o+1;
+				jl=order-ir;
+				imer_mask=(kmer_mask>>(num_bits*o_sym));
+				jmer_mask=(kmer_mask>>(num_bits*jl));
+			}
+
+			float64_t marginalizer=
+				1.0/CMath::pow((int32_t) num_words,(int32_t) m_sym);
+			
+			for (uint32_t i=0; i<words; i++)
+			{
+				uint16_t x= ((i << (num_bits*il)) >> (num_bits*ir)) & imer_mask;
+
+				if (p>=0 && p<order-o)
+				{
+					contrib[x]+=m_w[i]*marginalizer;
+				}
+				else
+				{
+					for (uint32_t j=0; j< (uint32_t) CMath::pow((int32_t) num_words, (int32_t) o_sym); j++)
+					{
+						uint32_t c=x | ((j & jmer_mask) << (num_bits*jl));
+						contrib[c]+=m_w[i]*marginalizer;
+					}
+				}
+			}
+		}
 	}
-
-
-	*p=p;
-	*poim_len=len;
-	*/
 }
