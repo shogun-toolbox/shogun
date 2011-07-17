@@ -29,10 +29,6 @@
 %include "Features_includes.i"
 %include "Preprocessor_includes.i"
 %include "Evaluation_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Distance_includes.i"
-%include "Kernel_includes.i"
 
 %import "Features.i"
 
@@ -53,9 +49,6 @@
 %rename(RecallMeasure) CRecallMeasure;
 %rename(PrecisionMeasure) CPrecisionMeasure;
 %rename(SpecificityMeasure) CSpecificityMeasure;
-%rename(CrossValidation) CCrossValidation;
-%rename(SplittingStrategy) CSplittingStrategy;
-%rename(StratifiedCrossValidationSplitting) CStratifiedCrossValidationSplitting;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/Evaluation.h>
@@ -65,6 +58,3 @@
 %include <shogun/evaluation/MeanSquaredError.h>
 %include <shogun/evaluation/ROCEvaluation.h>
 %include <shogun/evaluation/PRCEvaluation.h>
-%include <shogun/evaluation/CrossValidation.h>
-%include <shogun/evaluation/SplittingStrategy.h>
-%include <shogun/evaluation/StratifiedCrossValidationSplitting.h>

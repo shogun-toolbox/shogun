@@ -2,11 +2,15 @@
 #include <shogun/lib/Compressor.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/Features.h>
+#include <shogun/features/StreamingFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/StringFileFeatures.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/features/StreamingDotFeatures.h>
 #include <shogun/features/SparseFeatures.h>
+#include <shogun/features/StreamingSparseFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/StreamingSimpleFeatures.h>
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/features/AttributeFeatures.h>
 #include <shogun/features/Alphabet.h>
@@ -25,4 +29,5 @@
 #include <shogun/features/LBPPyrDotFeatures.h>
 #include <shogun/features/ExplicitSpecFeatures.h>
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
+#include <shogun/lib/InputParser.h>
 %}

@@ -5,7 +5,7 @@
 #include <shogun/preprocessor/SparsePreprocessor.h>
 
 #include <shogun/preprocessor/SimplePreprocessor.h>
-#include <shogun/preprocessor/PCA.h>
+#include <shogun/preprocessor/PCACut.h>
 #include <shogun/preprocessor/KernelPCACut.h>
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/LogPlusOne.h>

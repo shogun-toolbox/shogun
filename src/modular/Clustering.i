@@ -37,9 +37,6 @@
 %include "Distance_includes.i"
 %include "Clustering_includes.i"
 %include "Preprocessor_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Kernel_includes.i"
 
 %import "Features.i"
 %import "Distance.i"

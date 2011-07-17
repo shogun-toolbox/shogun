@@ -28,18 +28,13 @@
 %include "SGBase.i"
 %include "Features_includes.i"
 %include "Preprocessor_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Kernel_includes.i"
-%include "Distance_includes.i"
 
 %import "Features.i"
-%import "Kernel.i"
 
 /* Remove C Prefix */
 %rename(BasePreprocessor) CPreprocessor;
 %rename(SparsePreprocessor) CSparsePreprocessor;
-%rename(PCA) CPCA;
+%rename(PCACut) CPCACut;
 %rename(KernelPCACut) CKernelPCACut;
 %rename(NormOne) CNormOne;
 %rename(LogPlusOne) CLogPlusOne;
@@ -93,7 +88,7 @@ namespace shogun
     %template(DecompressCharString) CDecompressString<char>;
 }
 %include <shogun/preprocessor/SparsePreprocessor.h>
-%include <shogun/preprocessor/PCA.h>
+%include <shogun/preprocessor/PCACut.h>
 %include <shogun/preprocessor/KernelPCACut.h>
 %include <shogun/preprocessor/NormOne.h>
 %include <shogun/preprocessor/LogPlusOne.h>
