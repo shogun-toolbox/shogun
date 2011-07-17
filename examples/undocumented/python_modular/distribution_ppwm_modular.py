@@ -16,20 +16,36 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 	feats=StringByteFeatures(charfeat.get_alphabet())
 	feats.obtain_from_char(charfeat, order-1, order, 0, False)
 
+	L=20
+	k=3
+	sigma = 1;
+	mu = 4
+
 	ppwm=PositionalPWM()
-	ppwm.set_sigma(5.0)
-	ppwm.set_mean(10.0)
+	ppwm.set_sigma(sigma)
+	ppwm.set_mean(mu)
 	pwm=array([[0.0, 0.5, 0.1, 1.0],
                [0.0, 0.5, 0.5, 0.0],
                [1.0, 0.0, 0.4, 0.0],
                [0.0, 0.0, 0.0, 0.0]]);
+	pwm=array([[0.01,0.09,0.1],[0.09,0.01,0.1],[0.85,0.4,0.1],[0.05,0.5,0.7]])
+
+
+
 	ppwm.set_pwm(log(pwm))
 	#print ppwm.get_pwm()
-	ppwm.compute_w(20)
-	w= ppwm.get_w()
-	#print w
+	ppwm.compute_w(L)
+	w=ppwm.get_w()
+	print w
 	#from pylab import *
+	#figure(1)
 	#pcolor(exp(w))
+	#pcolor(w)
+	#colorbar()
+
+	#figure(2)
+	#u=ppwm.get_compute_w(3)
+	#pcolor(exp(u))
 	#show()
 
 	#ppwm=PositionalPWM(feats)
