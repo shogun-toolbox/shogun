@@ -392,7 +392,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param pws new position weights
 		 * @return if setting was successful
 		 */
-		virtual bool set_position_weights(SGVector<float64_t> pws);
+		virtual void set_position_weights(SGVector<float64_t> pws);
 
 		/** set position weights for left-hand side
 		 *

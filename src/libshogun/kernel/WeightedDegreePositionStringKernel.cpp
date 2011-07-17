@@ -925,29 +925,21 @@ bool CWeightedDegreePositionStringKernel::set_weights(SGMatrix<float64_t> new_we
 	return true;
 }
 
-bool CWeightedDegreePositionStringKernel::set_position_weights(SGVector<float64_t> pws)
+void CWeightedDegreePositionStringKernel::set_position_weights(SGVector<float64_t> pws)
 {
 	if (seq_length==0)
 		seq_length=pws.vlen;
 
 	if (seq_length!=pws.vlen)
-	{
 		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, pws.vlen);
-		return false;
-	}
+
 	delete[] position_weights;
 	position_weights=new float64_t[pws.vlen];
 	position_weights_len=pws.vlen;
 	tries.set_position_weights(position_weights);
 
-	if (position_weights)
-	{
-		for (int32_t i=0; i<pws.vlen; i++)
-			position_weights[i]=pws.vector[i];
-		return true;
-	}
-	else
-		return false;
+	for (int32_t i=0; i<pws.vlen; i++)
+		position_weights[i]=pws.vector[i];
 }
 
 bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(float64_t* pws, int32_t len, int32_t num)
