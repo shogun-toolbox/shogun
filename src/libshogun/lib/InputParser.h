@@ -70,7 +70,7 @@ namespace shogun
 		 *
 		 * @return Number of features
 		 */
-		int32_t get_number_of_features();
+		int32_t get_number_of_features() { return number_of_features; }
 		
 		/** 
 		 * Sets the function used for reading a vector from
@@ -147,7 +147,7 @@ namespace shogun
 		 * 
 		 * @param del whether to delete[] or not, bool
 		 */
-		void set_do_delete(bool del);
+		void set_do_delete(bool _del);
 
 		/**
 		 * Starts the parser, creating a new thread.
@@ -329,9 +329,9 @@ namespace shogun
 	}
 
 	template <class T>
-		void CInputParser<T>::set_do_delete(bool del)
+		void CInputParser<T>::set_do_delete(bool _del)
 	{
-		do_delete=del;
+		do_delete=_del;
 	}
 	
 	template <class T>

@@ -50,7 +50,10 @@ public:
 	 * 
 	 * @return boolean value
 	 */
-	inline bool str_to_bool(char *str);
+	inline bool str_to_bool(char *str)
+	{
+		return (atoi(str)!=0);
+	}
 
 #define GET_VECTOR_DECL(sg_type)					\
 	virtual void get_vector						\
