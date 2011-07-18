@@ -59,7 +59,7 @@ OTHERDEPS = $(SWIGSRCFILES) $(SWIGLIBFILES)
 ifeq (yes,$(USE_DOXYGEN))
 OTHERDEPS += $(SWIGDOCFILES)
 endif
-$(shell for i in $(CONFIGPATH)/modular/*.* ; do test -f `basename $$i` || ln -s $$i . ; done )
+$(shell for i in ../modular/*.* ; do test -f `basename $$i` || ln -s $$i . ; done )
 else
 	INCLUDES += $(INCLUDES_STATIC_INTERFACES)
 	LINKFLAGS += $(LINKFLAGS_STATIC_INTERFACES)
