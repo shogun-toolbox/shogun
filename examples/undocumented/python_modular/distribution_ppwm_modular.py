@@ -36,15 +36,16 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 	#print ppwm.get_pwm()
 	ppwm.compute_w(L)
 	w=ppwm.get_w()
-	print w
-	#from pylab import *
-	#figure(1)
+	#print w
+	from pylab import *
+	figure(1)
 	#pcolor(exp(w))
 	#pcolor(w)
 	#colorbar()
 
 	#figure(2)
-	#u=ppwm.get_compute_w(3)
+	ppwm.compute_scoring(1)
+	u=ppwm.get_scoring(0)
 	#pcolor(exp(u))
 	#show()
 
@@ -53,7 +54,7 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 
 	#out_likelihood = histo.get_log_likelihood()
 	#out_sample = histo.get_log_likelihood_sample()
-	#return histo,out_sample,out_likelihood
+	return ppwm,w,u
 ###########################################################################
 # call functions
 ###########################################################################
@@ -61,4 +62,3 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 if __name__=='__main__':
 	print 'PositionalPWM'
 	distribution_ppwm_modular(*parameter_list[0])
-
