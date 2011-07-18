@@ -29,8 +29,6 @@
 %include "Library_includes.i"
 %include "Features_includes.i"
 
-%import "Features.i"
-
 /* Remove C Prefix */
 %rename(IOBuffer) CIOBuffer;
 
