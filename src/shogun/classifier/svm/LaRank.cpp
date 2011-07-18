@@ -49,7 +49,7 @@
 #include <vector>
 #include <algorithm>
 
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>

@@ -15,7 +15,7 @@
 #include <cblas.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <string.h>
 
 using namespace shogun;

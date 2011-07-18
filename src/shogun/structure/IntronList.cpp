@@ -4,7 +4,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/config.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/structure/IntronList.h>
 
 using namespace shogun;

@@ -13,7 +13,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 #ifdef USE_LZO
 #include <lzo/lzoconf.h>

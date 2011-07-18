@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/SNPFeatures.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/features/Alphabet.h>
 
 using namespace shogun;

@@ -16,7 +16,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

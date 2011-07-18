@@ -15,7 +15,7 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclidianDistance.h>
 #include <shogun/lib/Signal.h>
 

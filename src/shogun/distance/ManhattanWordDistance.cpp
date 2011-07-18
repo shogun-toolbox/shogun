@@ -13,7 +13,7 @@
 #include <shogun/distance/ManhattanWordDistance.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

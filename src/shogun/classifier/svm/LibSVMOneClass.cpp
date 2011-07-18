@@ -10,7 +10,7 @@
  */
 
 #include <shogun/classifier/svm/LibSVMOneClass.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

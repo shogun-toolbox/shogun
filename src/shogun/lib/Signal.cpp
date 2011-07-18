@@ -16,7 +16,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 
 using namespace shogun;

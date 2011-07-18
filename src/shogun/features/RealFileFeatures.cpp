@@ -10,7 +10,7 @@
 
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/Features.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 #include <stdio.h>
 #include <string.h>

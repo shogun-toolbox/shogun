@@ -17,7 +17,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 #include <stdio.h>
 #include <stdlib.h>

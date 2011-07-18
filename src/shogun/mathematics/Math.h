@@ -17,7 +17,7 @@
 #define __MATHEMATICS_H_
 
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parallel.h>

@@ -11,7 +11,7 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/base/Parallel.h>
@@ -212,13 +212,13 @@ public:
 	 *
 	 * @param io io object to use
 	 */
-	void set_global_io(IO* io);
+	void set_global_io(SGIO* io);
 
 	/** get the io object
 	 *
 	 * @return io object
 	 */
-	IO* get_global_io();
+	SGIO* get_global_io();
 
 	/** set the parallel object
 	 *
@@ -292,7 +292,7 @@ private:
 	void init();
 
 public:
-	IO* io;
+	SGIO* io;
 	Parallel* parallel;
 	Version* version;
 	Parameter* m_parameters;

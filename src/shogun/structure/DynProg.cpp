@@ -12,7 +12,7 @@
 
 #include <shogun/structure/DynProg.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/Alphabet.h>

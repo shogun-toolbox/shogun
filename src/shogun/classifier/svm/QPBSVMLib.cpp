@@ -51,7 +51,7 @@
 #include <limits.h>
 
 #include <shogun/lib/config.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Cplex.h>
 #include <shogun/mathematics/Math.h>
 

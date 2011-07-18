@@ -11,7 +11,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/kernel/SplineKernel.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/SimpleFeatures.h>

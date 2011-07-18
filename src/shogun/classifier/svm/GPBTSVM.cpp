@@ -11,7 +11,7 @@
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/gpdt.h>
 #include <shogun/classifier/svm/gpdtsolve.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

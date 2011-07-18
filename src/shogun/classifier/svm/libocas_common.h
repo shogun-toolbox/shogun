@@ -1,5 +1,5 @@
 #include <shogun/mathematics/Math.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

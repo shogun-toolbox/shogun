@@ -11,7 +11,7 @@
 #ifndef __SIMPLEFILE_H__
 #define __SIMPLEFILE_H__
 
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
 
 #include <stdio.h>

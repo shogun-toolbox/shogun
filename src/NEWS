@@ -1,16 +1,27 @@
 2011-08-31 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 0.99.9 (libshogun 10.0, data 0.2)
-	* This release contains several enhancements, cleanups and bugfixes:
+	* This release contains major enhancements, cleanups and bugfixes:
 	* Features:
-	   - None
+	   - Support for new languages: java, c#, ruby, lua in modular interfaces.
+	   - LLE,...
+	   - New kernels: xxx
+	   - Streaming Features
+	   - Model selection framework
+	   - SGD-QN, Online SGD, Online Liblinear, Online vowpal vabit
+	   - Gaussian Mixture Models
 	* Bugfixes:
 	   - Fix build failure with ld --as-needed (thanks Matthias Klose for the
 			   patch).
 	   - Fix initialization error in KRR static interfaces (thanks Maxwell
 			   Collins for the patch).
 	* Cleanup and API Changes:
-	   - None
+	   - Introduce Machine, KernelMachine, LinearMachine, LinearOnlineMachine,
+	   DistanceMachine with train() and apply() functions and drop Classifier.
+	   - Restructure source code layout: Merge libshogunui and libshogun into
+	   src/shogun and move all interfaces into src/shogun. Split up lib into
+	   lib, io and mathematics.
+
 
 2010-12-07 Soeren Sonnenburg <sonne@debian.org>
 

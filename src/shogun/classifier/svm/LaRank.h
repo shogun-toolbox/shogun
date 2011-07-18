@@ -60,7 +60,7 @@
 #define std_hash_map STDEXT_NAMESPACE::hash_map
 #define std_hash_set STDEXT_NAMESPACE::hash_set
 
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/classifier/svm/MultiClassSVM.h>
 

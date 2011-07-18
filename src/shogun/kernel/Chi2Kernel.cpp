@@ -12,7 +12,7 @@
 #include <shogun/kernel/Chi2Kernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

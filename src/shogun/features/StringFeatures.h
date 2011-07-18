@@ -14,7 +14,7 @@
 #define _CSTRINGFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/io/File.h>
@@ -1024,11 +1024,11 @@ template <class ST> class CStringFeatures : public CFeatures
 			struct dirent **namelist;
 			int32_t n;
 
-            IO::set_dirname(dirname);
+            SGIO::set_dirname(dirname);
 
 			SG_DEBUG("dirname '%s'\n", dirname);
 
-			n=scandir(dirname, &namelist, &IO::filter, alphasort);
+			n=scandir(dirname, &namelist, &SGIO::filter, alphasort);
 			if (n <= 0)
 			{
 				SG_ERROR("error calling scandir - no files found\n");
@@ -1047,7 +1047,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 				for (int32_t i=0; i<n; i++)
 				{
-					char* fname=IO::concat_filename(namelist[i]->d_name);
+					char* fname=SGIO::concat_filename(namelist[i]->d_name);
 
 					struct stat s;
 					off_t filesize=0;

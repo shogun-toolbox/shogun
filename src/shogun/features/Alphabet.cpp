@@ -12,7 +12,7 @@
 #include <math.h>
 
 #include <shogun/features/Alphabet.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;

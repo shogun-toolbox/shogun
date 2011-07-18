@@ -15,7 +15,7 @@
 #include <shogun/kernel/IdentityKernelNormalizer.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/features/Labels.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

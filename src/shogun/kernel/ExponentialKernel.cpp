@@ -15,7 +15,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/kernel/ExponentialKernel.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

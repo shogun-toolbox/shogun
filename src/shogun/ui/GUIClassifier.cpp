@@ -12,7 +12,7 @@
 #include <shogun/ui/SGInterface.h>
 
 #include <shogun/lib/config.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/RealFileFeatures.h>
@@ -844,7 +844,7 @@ bool CGUIClassifier::load(char* filename, char* type)
 bool CGUIClassifier::save(char* param)
 {
 	bool result=false;
-	param=IO::skip_spaces(param);
+	param=SGIO::skip_spaces(param);
 
 	if (classifier)
 	{

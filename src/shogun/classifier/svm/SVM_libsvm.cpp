@@ -38,7 +38,7 @@
 #include <shogun/lib/memory.h>
 #include <shogun/classifier/svm/SVM_libsvm.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/common.h>

@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/SGObject.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/init.h>
 #include <shogun/base/Version.h>
@@ -28,7 +28,7 @@ namespace shogun
 
 	extern CMath* sg_math;
 	extern Parallel* sg_parallel;
-	extern IO* sg_io;
+	extern SGIO* sg_io;
 	extern Version* sg_version;
 
 	template<> void CSGObject::set_generic<bool>()
@@ -150,14 +150,14 @@ void CSGObject::unset_global_objects()
 	SG_UNREF(io);
 }
 
-void CSGObject::set_global_io(IO* new_io)
+void CSGObject::set_global_io(SGIO* new_io)
 {
 	SG_UNREF(sg_io);
 	sg_io=new_io;
 	SG_REF(sg_io);
 }
 
-IO* CSGObject::get_global_io()
+SGIO* CSGObject::get_global_io()
 {
 	SG_REF(sg_io);
 	return sg_io;

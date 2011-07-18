@@ -13,7 +13,7 @@
 #include "GUISignals.h"
 
 #include <shogun/lib/config.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/genomic_signals/TrainPredMaster.h>
 
 using namespace shogun;

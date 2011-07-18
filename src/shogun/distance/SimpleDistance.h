@@ -13,7 +13,7 @@
 
 #include <shogun/distance/Distance.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

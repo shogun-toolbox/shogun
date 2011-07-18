@@ -15,7 +15,7 @@
 
 namespace shogun
 {
-	class IO;
+	class SGIO;
 	class CMath;
 	class Version;
 	class Parallel;
@@ -48,13 +48,13 @@ void exit_shogun();
  *
  * @param io io object to use
  */
-void set_global_io(IO* io);
+void set_global_io(SGIO* io);
 
 /** get the global io object
  *
  * @return io object
  */
-IO* get_global_io();
+SGIO* get_global_io();
 
 /** set the global parallel object
  *

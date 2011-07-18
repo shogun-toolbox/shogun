@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef __IO_H__
-#define __IO_H__
+#ifndef __SGIO_H__
+#define __SGIO_H__
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -27,8 +27,8 @@
 
 namespace shogun
 {
-	class IO;
-	extern IO* sg_io;
+	class SGIO;
+	extern SGIO* sg_io;
 }
 
 
@@ -101,19 +101,19 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
 
-/** @brief Class IO, used to do input output operations throughout shogun.
+/** @brief Class SGIO, used to do input output operations throughout shogun.
  *
  * Any debug or error or progress message is passed through the functions of
  * this class to be in the end written to the screen. Note that messages don't
  * have to be written to stdout or stderr, but can be redirected to a file.
  */
-class IO
+class SGIO
 {
 	public:
 		/** default constructor */
-		IO();
+		SGIO();
 		/** copy constructor */
-		IO(const IO& orig);
+		SGIO(const SGIO& orig);
 
 		/** set loglevel
 		 *
@@ -392,7 +392,7 @@ class IO
 		}
 
 		/** @return object name */
-		inline const char* get_name() { return "IO"; }
+		inline const char* get_name() { return "SGIO"; }
 
 	protected:
 		/** get message intro
@@ -438,4 +438,4 @@ class IO
 		int32_t refcount;
 };
 }
-#endif // __IO_H__
+#endif // __SGIO_H__

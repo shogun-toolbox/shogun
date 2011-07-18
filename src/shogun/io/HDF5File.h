@@ -14,7 +14,7 @@
 
 #ifdef HAVE_HDF5
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
 #include <shogun/base/SGObject.h>
 #include <hdf5.h>

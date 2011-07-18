@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-extern IO* sg_io;
+extern SGIO* sg_io;
 
 template <class T> class CDynamicArray;
 template <class T> class CDynamicObjectArray;
@@ -104,7 +104,7 @@ template <class T> class DynArray
 		 */
 		inline T get_element_safe(int32_t index) const
 		{
-			IO* io = sg_io;
+			SGIO* io = sg_io;
 
 			if (index>=get_num_elements())
 			{

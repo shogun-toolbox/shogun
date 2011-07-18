@@ -2,7 +2,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/io/AsciiFile.h>
 #include "ui/SGInterface.h"
 

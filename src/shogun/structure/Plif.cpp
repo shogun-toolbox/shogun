@@ -13,7 +13,7 @@
 #include <string.h>
 
 #include <shogun/lib/config.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/structure/Plif.h>
 
 //#define PLIF_DEBUG

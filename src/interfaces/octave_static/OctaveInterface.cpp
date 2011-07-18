@@ -22,7 +22,7 @@
 
 #include "ui/SGInterface.h"
 #include <shogun/lib/ShogunException.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/base/init.h>
 

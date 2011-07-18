@@ -12,7 +12,7 @@
 #include <vector>
 
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Trie.h>
 #include <shogun/base/Parallel.h>

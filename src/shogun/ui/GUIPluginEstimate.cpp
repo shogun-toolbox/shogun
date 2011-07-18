@@ -13,7 +13,7 @@
 #include <shogun/ui/GUIPluginEstimate.h>
 
 #include <shogun/lib/config.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/features/StringFeatures.h>
 
 using namespace shogun;

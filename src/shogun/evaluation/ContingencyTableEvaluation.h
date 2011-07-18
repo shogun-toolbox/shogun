@@ -14,7 +14,7 @@
 #include <shogun/evaluation/BinaryClassEvaluation.h>
 #include <shogun/features/Labels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

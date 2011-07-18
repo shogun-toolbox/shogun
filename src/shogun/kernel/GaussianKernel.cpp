@@ -15,7 +15,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

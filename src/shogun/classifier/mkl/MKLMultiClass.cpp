@@ -9,7 +9,7 @@
  */
 
 #include <shogun/classifier/mkl/MKLMultiClass.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

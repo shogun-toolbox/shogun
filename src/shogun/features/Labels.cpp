@@ -13,7 +13,7 @@
 #include <shogun/features/Labels.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 

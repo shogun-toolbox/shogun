@@ -9,7 +9,7 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/kernel/PolyMatchStringKernel.h>
 #include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/Features.h>

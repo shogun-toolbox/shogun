@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 #include <shogun/structure/PlifArray.h>
 #include <shogun/structure/Plif.h>

@@ -18,7 +18,7 @@
 namespace shogun
 {
 	Parallel* sg_parallel=NULL;
-	IO* sg_io=NULL;
+	SGIO* sg_io=NULL;
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 #ifdef TRACE_MEMORY_ALLOCS
@@ -44,7 +44,7 @@ namespace shogun
 			void (*cancel_computations)(bool &delayed, bool &immediately))
 	{
 		if (!sg_io)
-			sg_io = new shogun::IO();
+			sg_io = new shogun::SGIO();
 		if (!sg_parallel)
 			sg_parallel=new shogun::Parallel();
 		if (!sg_version)
@@ -94,14 +94,14 @@ namespace shogun
 		// will leak memory alloc statistics on exit
 	}
 
-	void set_global_io(IO* io)
+	void set_global_io(SGIO* io)
 	{
 		SG_UNREF(sg_io);
 		sg_io=io;
 		SG_REF(sg_io);
 	}
 
-	IO* get_global_io()
+	SGIO* get_global_io()
 	{
 		SG_REF(sg_io);
 		return sg_io;

@@ -20,7 +20,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Cache.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/io/File.h>
 #include <shogun/lib/DataType.h>

@@ -12,7 +12,7 @@
 
 #ifdef USE_SVMLIGHT
 
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>

@@ -13,7 +13,7 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/SparseSpatialSampleStringKernel.h>
 #include <shogun/features/StringFeatures.h>

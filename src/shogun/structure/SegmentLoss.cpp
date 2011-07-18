@@ -3,7 +3,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/config.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/structure/SegmentLoss.h>
 #include <shogun/lib/Array.h>
 #include <shogun/lib/Array2.h>

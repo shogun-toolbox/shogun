@@ -16,7 +16,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/structure/PlifMatrix.h>
 #include <shogun/structure/PlifBase.h>

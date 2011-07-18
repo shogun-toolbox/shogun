@@ -10,7 +10,7 @@
  */
 
 #include <shogun/preprocessor/Preprocessor.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

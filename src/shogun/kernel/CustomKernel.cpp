@@ -12,7 +12,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DummyFeatures.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

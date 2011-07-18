@@ -7833,7 +7833,7 @@ char* CSGInterface::get_str_from_str(int32_t& len)
 	else
 	{
 		m_legacy_strptr=m_legacy_strptr+len;
-		m_legacy_strptr=IO::skip_spaces(m_legacy_strptr);
+		m_legacy_strptr=SGIO::skip_spaces(m_legacy_strptr);
 	}
 
 	return str;

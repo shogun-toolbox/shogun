@@ -14,7 +14,7 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/io/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/CustomDistance.h>
