@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/DotFeatures.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>

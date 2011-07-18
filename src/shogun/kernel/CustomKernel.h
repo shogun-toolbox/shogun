@@ -11,7 +11,7 @@
 #ifndef _CUSTOMKERNEL_H___
 #define _CUSTOMKERNEL_H___
 
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/features/Features.h>

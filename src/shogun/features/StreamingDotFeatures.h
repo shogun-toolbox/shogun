@@ -12,10 +12,10 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/StreamingFeatures.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/lib/StreamingFile.h>
+#include <shogun/io/StreamingFile.h>
 
 namespace shogun
 {

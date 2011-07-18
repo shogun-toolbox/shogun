@@ -51,9 +51,9 @@
 #include <limits.h>
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/Cplex.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/Cplex.h>
+#include <shogun/mathematics/Math.h>
 
 #include <shogun/classifier/svm/QPBSVMLib.h>
 #include <shogun/classifier/svm/pr_loqo.h>

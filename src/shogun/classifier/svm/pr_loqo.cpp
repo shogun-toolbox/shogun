@@ -14,9 +14,9 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/lapack.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/classifier/svm/pr_loqo.h>
 
 #include <math.h>

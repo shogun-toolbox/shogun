@@ -9,7 +9,7 @@
  */
 
 #include <shogun/lib/Time.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/common.h>
 
 using namespace shogun;

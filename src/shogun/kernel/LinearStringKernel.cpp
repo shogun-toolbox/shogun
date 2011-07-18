@@ -9,8 +9,8 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/kernel/LinearStringKernel.h>
 #include <shogun/features/StringFeatures.h>
 

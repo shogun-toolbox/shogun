@@ -14,7 +14,7 @@
 #include <shogun/distributions/Distribution.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -130,7 +130,6 @@ class CPositionalPWM : public CDistribution
 		virtual inline SGMatrix<float64_t> get_w()
 		{
 			return SGMatrix<float64_t>(m_w,m_w_rows,m_w_cols);
-
 		}
 
 		/** get poim u
@@ -139,15 +138,7 @@ class CPositionalPWM : public CDistribution
 		 *
 		 * @return poim u
 		 */
-		virtual inline SGMatrix<float64_t> get_scoring(int32_t d)
-		{
-			int32_t offs=0;
-			for (int32_t i=0; i<d; i++)
-				offs+=CMath::pow((int32_t) m_w_rows,i+1);
-			int32_t rows=CMath::pow((int32_t) m_w_rows,d+1);
-			int32_t cols=m_pwm_cols;
-			return SGMatrix<float64_t>(&m_poim[offs],rows,cols);
-		}
+		virtual SGMatrix<float64_t> get_scoring(int32_t d);
 
 		void compute_w(int32_t num_pos);
 		void compute_scoring(int32_t max_degree);

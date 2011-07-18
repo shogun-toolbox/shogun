@@ -14,7 +14,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
 
 namespace shogun

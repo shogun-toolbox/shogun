@@ -11,7 +11,7 @@
 
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;

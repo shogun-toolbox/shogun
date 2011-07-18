@@ -8,7 +8,7 @@
 #include <shogun/lib/Time.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/classifier/svm/Tron.h>
 
 using namespace shogun;

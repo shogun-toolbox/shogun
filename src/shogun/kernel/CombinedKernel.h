@@ -13,7 +13,7 @@
 #define _COMBINEDKERNEL_H___
 
 #include <shogun/lib/List.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/kernel/Kernel.h>
 
 #include <shogun/features/Features.h>

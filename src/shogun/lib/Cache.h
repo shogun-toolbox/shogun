@@ -12,8 +12,8 @@
 #define _CACHE_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/SGObject.h>
 
 #include <stdlib.h>

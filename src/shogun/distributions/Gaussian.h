@@ -18,8 +18,8 @@
 #include <shogun/distributions/Distribution.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/lapack.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {

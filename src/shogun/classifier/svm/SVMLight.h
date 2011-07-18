@@ -27,7 +27,7 @@
 #ifdef USE_SVMLIGHT
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 
 #include <stdio.h>

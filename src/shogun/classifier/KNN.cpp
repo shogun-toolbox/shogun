@@ -12,7 +12,7 @@
 
 #include <shogun/classifier/KNN.h>
 #include <shogun/features/Labels.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
 
 using namespace shogun;

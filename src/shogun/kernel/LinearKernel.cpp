@@ -10,7 +10,7 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/kernel/LinearKernel.h>

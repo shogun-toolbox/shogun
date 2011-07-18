@@ -14,8 +14,8 @@
 #include <shogun/ui/GUIPluginEstimate.h>
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/AsciiFile.h>
+#include <shogun/io/io.h>
+#include <shogun/io/AsciiFile.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/Chi2Kernel.h>

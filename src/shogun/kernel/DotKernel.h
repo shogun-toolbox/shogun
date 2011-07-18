@@ -13,7 +13,7 @@
 
 #include <shogun/kernel/Kernel.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 namespace shogun
 {

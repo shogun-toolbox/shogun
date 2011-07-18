@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 #include <shogun/distributions/HMM.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/io.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>

@@ -10,7 +10,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/distance/BrayCurtisDistance.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/SimpleFeatures.h>

@@ -9,10 +9,10 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 using namespace shogun;
 

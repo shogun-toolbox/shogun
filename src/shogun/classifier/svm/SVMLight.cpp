@@ -24,11 +24,11 @@
 
 #ifdef USE_SVMLIGHT
 
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
-#include <shogun/lib/lapack.h>
+#include <shogun/mathematics/lapack.h>
 
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/SVMLight.h>

@@ -13,8 +13,8 @@
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/io.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/io/io.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/CustomDistance.h>

@@ -12,9 +12,9 @@
 #include <shogun/lib/common.h>
 
 #ifdef USE_CPLEX
-#include <shogun/lib/io.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/Cplex.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Cplex.h>
 #include <shogun/features/Labels.h>
 
 using namespace shogun;

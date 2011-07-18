@@ -14,12 +14,12 @@
 #define _CSTRINGFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/lib/DynamicArray.h>
-#include <shogun/lib/File.h>
-#include <shogun/lib/MemoryMappedFile.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/File.h>
+#include <shogun/io/MemoryMappedFile.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Compressor.h>
 #include <shogun/base/Parameter.h>
 

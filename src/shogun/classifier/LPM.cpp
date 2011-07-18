@@ -14,8 +14,8 @@
 
 #include <shogun/classifier/LPM.h>
 #include <shogun/features/Labels.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/Cplex.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Cplex.h>
 
 using namespace shogun;
 

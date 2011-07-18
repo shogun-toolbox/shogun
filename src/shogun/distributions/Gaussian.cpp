@@ -12,7 +12,7 @@
 #ifdef HAVE_LAPACK
 
 #include <shogun/distributions/Gaussian.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;

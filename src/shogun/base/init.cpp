@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/memory.h>
 #include <shogun/lib/Set.h>
 #include <shogun/base/Parallel.h>

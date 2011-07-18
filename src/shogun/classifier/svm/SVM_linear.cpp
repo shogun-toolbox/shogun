@@ -39,7 +39,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/classifier/svm/SVM_linear.h>
 #include <shogun/classifier/svm/Tron.h>
 

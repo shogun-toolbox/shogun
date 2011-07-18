@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/HashedWDFeaturesTransposed.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>
 

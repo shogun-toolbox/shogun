@@ -11,7 +11,7 @@
 #ifndef _CUSTOMDISTANCE_H___
 #define _CUSTOMDISTANCE_H___
 
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Features.h>

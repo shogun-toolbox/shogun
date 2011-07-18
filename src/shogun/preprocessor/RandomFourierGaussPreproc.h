@@ -16,7 +16,7 @@
 #include <algorithm>
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/SimplePreprocessor.h>
 
 namespace shogun {

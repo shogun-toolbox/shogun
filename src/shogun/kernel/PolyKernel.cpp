@@ -11,7 +11,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/kernel/PolyKernel.h>
 #include <shogun/kernel/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/DotFeatures.h>

@@ -15,8 +15,8 @@
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclidianDistance.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/lapack.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/features/Labels.h>
 #include <shogun/classifier/KNN.h>
 

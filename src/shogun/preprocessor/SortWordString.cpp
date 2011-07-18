@@ -11,7 +11,7 @@
 #include <shogun/preprocessor/SortWordString.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 

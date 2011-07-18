@@ -10,7 +10,7 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/kernel/LocalityImprovedStringKernel.h>
 #include <shogun/features/StringFeatures.h>
 

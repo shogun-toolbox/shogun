@@ -2,8 +2,8 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/AsciiFile.h>
+#include <shogun/io/io.h>
+#include <shogun/io/AsciiFile.h>
 #include "ui/SGInterface.h"
 
 #ifdef HAVE_READLINE

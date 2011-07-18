@@ -15,8 +15,8 @@
 #include <stdio.h>
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/File.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/File.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/Features.h>

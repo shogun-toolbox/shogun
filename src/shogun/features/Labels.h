@@ -14,8 +14,8 @@
 #define _LABELS__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/File.h>
+#include <shogun/io/io.h>
+#include <shogun/io/File.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Subset.h>
 

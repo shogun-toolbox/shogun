@@ -12,7 +12,7 @@
 #include <shogun/kernel/GaussianShiftKernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 using namespace shogun;
 

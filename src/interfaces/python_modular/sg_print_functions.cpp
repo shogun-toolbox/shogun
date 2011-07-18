@@ -4,7 +4,7 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <stdio.h>
 
 void sg_global_print_message(FILE* target, const char* str)

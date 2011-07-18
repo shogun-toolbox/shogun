@@ -11,11 +11,11 @@
 #define _STREAMING_SIMPLEFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/StreamingDotFeatures.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/StreamingFileFromSimpleFeatures.h>
-#include <shogun/lib/InputParser.h>
+#include <shogun/io/StreamingFileFromSimpleFeatures.h>
+#include <shogun/io/InputParser.h>
 
 namespace shogun
 {

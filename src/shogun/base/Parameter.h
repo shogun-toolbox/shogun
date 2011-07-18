@@ -11,9 +11,9 @@
 #define __PARAMETER_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/SerializableFile.h>
+#include <shogun/io/SerializableFile.h>
 #include <shogun/base/DynArray.h>
 
 namespace shogun

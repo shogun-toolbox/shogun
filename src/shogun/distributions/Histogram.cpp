@@ -12,8 +12,8 @@
 #include <shogun/distributions/Histogram.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 

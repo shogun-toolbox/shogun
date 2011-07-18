@@ -14,7 +14,7 @@
 #define _CFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/File.h>
+#include <shogun/io/File.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/features/FeatureTypes.h>

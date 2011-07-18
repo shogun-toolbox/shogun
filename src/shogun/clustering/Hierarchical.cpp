@@ -12,7 +12,7 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/Features.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
 
 #ifndef WIN32

@@ -19,7 +19,7 @@
 #include <limits.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 

@@ -56,7 +56,7 @@ e.g. we create some features and a gaussian kernel
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <stdio.h>
 
 void print_message(FILE* target, const char* str)

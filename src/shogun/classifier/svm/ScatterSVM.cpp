@@ -15,7 +15,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/classifier/svm/ScatterSVM.h>
 #include <shogun/kernel/ScatterKernelNormalizer.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 using namespace shogun;
 

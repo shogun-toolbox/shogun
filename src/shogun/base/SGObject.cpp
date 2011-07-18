@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/init.h>
 #include <shogun/base/Version.h>

@@ -33,7 +33,7 @@
 %rename(IOBuffer) CIOBuffer;
 
 /* Templated Class ParseBuffer */
-%include <shogun/lib/ParseBuffer.h>
+%include <shogun/io/ParseBuffer.h>
 namespace shogun
 {
     %template(ExamplesRingBool) CParseBuffer<bool>;
@@ -64,7 +64,7 @@ namespace shogun
 }
 
 /* Templated Class InputParser */
-%include <shogun/lib/InputParser.h>
+%include <shogun/io/InputParser.h>
 namespace shogun
 {
     %template(ParserBool) CInputParser<bool>;
@@ -206,12 +206,12 @@ namespace shogun
 
 %include <shogun/lib/Cache.h>
 %include <shogun/lib/GCArray.h>
-%include <shogun/lib/File.h>
-%include <shogun/lib/StreamingFile.h>
-%include <shogun/lib/StreamingFileFromFeatures.h>
+%include <shogun/io/File.h>
+%include <shogun/io/StreamingFile.h>
+%include <shogun/io/StreamingFileFromFeatures.h>
 
 /* Template Class StreamingFileFromSparseFeatures */
-%include <shogun/lib/StreamingFileFromSparseFeatures.h>
+%include <shogun/io/StreamingFileFromSparseFeatures.h>
 namespace shogun
 {
     %template(StreamingFileFromSparseBoolFeatures) CStreamingFileFromSparseFeatures<bool>;
@@ -229,7 +229,7 @@ namespace shogun
 }
 
 /* Template Class StreamingFileFromSimpleFeatures */
-%include <shogun/lib/StreamingFileFromSimpleFeatures.h>
+%include <shogun/io/StreamingFileFromSimpleFeatures.h>
 namespace shogun
 {
     %template(StreamingFileFromBoolFeatures) CStreamingFileFromSimpleFeatures<bool>;
@@ -247,21 +247,21 @@ namespace shogun
 }
 
 
-%include <shogun/lib/AsciiFile.h>
-%include <shogun/lib/StreamingAsciiFile.h>
-%include <shogun/lib/BinaryFile.h>
-%include <shogun/lib/HDF5File.h>
-%include <shogun/lib/SerializableFile.h>
-%include <shogun/lib/SerializableAsciiFile.h>
-%include <shogun/lib/SerializableHdf5File.h>
-%include <shogun/lib/SerializableJsonFile.h>
-%include <shogun/lib/SerializableXmlFile.h>
+%include <shogun/io/AsciiFile.h>
+%include <shogun/io/StreamingAsciiFile.h>
+%include <shogun/io/BinaryFile.h>
+%include <shogun/io/HDF5File.h>
+%include <shogun/io/SerializableFile.h>
+%include <shogun/io/SerializableAsciiFile.h>
+%include <shogun/io/SerializableHdf5File.h>
+%include <shogun/io/SerializableJsonFile.h>
+%include <shogun/io/SerializableXmlFile.h>
 
 %include <shogun/lib/List.h>
-%include <shogun/lib/Mathematics.h>
+%include <shogun/mathematics/Math.h>
 %include <shogun/lib/Signal.h>
-%include <shogun/lib/SimpleFile.h>
+%include <shogun/io/SimpleFile.h>
 %include <shogun/lib/Time.h>
 %include <shogun/lib/Trie.h>
-%include <shogun/lib/MemoryMappedFile.h>
+%include <shogun/io/MemoryMappedFile.h>
 %include <shogun/lib/Compressor.h>

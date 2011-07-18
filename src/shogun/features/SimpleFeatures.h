@@ -14,10 +14,10 @@
 #define _SIMPLEFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/io.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/Cache.h>
-#include <shogun/lib/File.h>
+#include <shogun/io/File.h>
 #include <shogun/preprocessor/SimplePreprocessor.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>

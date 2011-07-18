@@ -14,8 +14,8 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/File.h>
+#include <shogun/io/io.h>
+#include <shogun/io/File.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/Signal.h>
 

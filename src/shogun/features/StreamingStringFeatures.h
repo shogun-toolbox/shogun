@@ -11,10 +11,10 @@
 #define _STREAMING_STRINGFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/InputParser.h>
+#include <shogun/io/InputParser.h>
 
 #include <shogun/features/StreamingFeatures.h>
 #include <shogun/features/Alphabet.h>

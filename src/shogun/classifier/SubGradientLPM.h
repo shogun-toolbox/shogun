@@ -17,7 +17,7 @@
 #ifdef USE_CPLEX
 #include <shogun/lib/common.h>
 
-#include <shogun/lib/Cplex.h>
+#include <shogun/mathematics/Cplex.h>
 
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/Features.h>

@@ -9,7 +9,7 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/Labels.h>
 #include <shogun/distributions/LinearHMM.h>

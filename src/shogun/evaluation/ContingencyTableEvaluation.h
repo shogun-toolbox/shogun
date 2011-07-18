@@ -13,8 +13,8 @@
 
 #include <shogun/evaluation/BinaryClassEvaluation.h>
 #include <shogun/features/Labels.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/io.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/io/io.h>
 
 namespace shogun
 {

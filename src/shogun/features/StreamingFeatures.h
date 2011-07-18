@@ -12,7 +12,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
-#include <shogun/lib/StreamingFile.h>
+#include <shogun/io/StreamingFile.h>
 
 namespace shogun
 {

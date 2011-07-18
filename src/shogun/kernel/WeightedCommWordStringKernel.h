@@ -13,7 +13,7 @@
 #define _WEIGHTEDCOMMWORDSTRINGKERNEL_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/kernel/CommWordStringKernel.h>
 
 namespace shogun

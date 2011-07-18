@@ -10,7 +10,7 @@
  */
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/machine/LinearMachine.h>

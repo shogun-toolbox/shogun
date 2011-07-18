@@ -9,7 +9,7 @@
  */
 
 #include <shogun/regression/svr/LibSVR.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 using namespace shogun;
 

@@ -11,7 +11,7 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/base/Parallel.h>

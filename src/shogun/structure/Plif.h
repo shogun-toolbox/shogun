@@ -12,7 +12,7 @@
 #define __PLIF_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/structure/PlifBase.h>
 
 namespace shogun

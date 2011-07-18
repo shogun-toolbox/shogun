@@ -10,7 +10,7 @@
 
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/SimplePreprocessor.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/SimpleFeatures.h>
 

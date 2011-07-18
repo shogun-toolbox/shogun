@@ -5,7 +5,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 #include <shogun/lib/ShogunException.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/Signal.h>
 

@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/Subset.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;

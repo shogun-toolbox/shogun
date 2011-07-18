@@ -14,8 +14,8 @@
 
 #include <shogun/classifier/LPBoost.h>
 #include <shogun/features/Labels.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/Cplex.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Cplex.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>

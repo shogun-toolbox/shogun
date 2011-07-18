@@ -8,7 +8,7 @@
  * Copyright (C) 2009 Berlin Institute of Technology
  */
 #include <shogun/lib/Compressor.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <string.h>
 
 #ifdef USE_LZO

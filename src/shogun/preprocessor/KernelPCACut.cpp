@@ -9,13 +9,13 @@
  */
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 
 #include <string.h>
 #include <stdlib.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/lib/lapack.h>
+#include <shogun/mathematics/lapack.h>
 
 #include <shogun/lib/common.h>
 #include <shogun/preprocessor/KernelPCACut.h>
@@ -23,7 +23,7 @@
 #include <shogun/preprocessor/SimplePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 using namespace shogun;
 

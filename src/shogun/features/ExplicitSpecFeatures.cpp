@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/ExplicitSpecFeatures.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 using namespace shogun;
 

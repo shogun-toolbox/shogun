@@ -14,9 +14,9 @@
 
 #include <string.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/base/DynArray.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun

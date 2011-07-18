@@ -10,8 +10,8 @@
  */
 
 #include <shogun/features/CombinedDotFeatures.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 

@@ -23,8 +23,8 @@
 #include <ctype.h>
 #include <algorithm>
 
-#include <shogun/lib/io.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/classifier/svm/ssl.h>
 

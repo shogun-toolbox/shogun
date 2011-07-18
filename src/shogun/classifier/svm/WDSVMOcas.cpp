@@ -10,7 +10,7 @@
  */
 
 #include <shogun/features/Labels.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parallel.h>

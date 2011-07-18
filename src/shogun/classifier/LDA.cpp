@@ -15,8 +15,8 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/LDA.h>
 #include <shogun/features/Labels.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/lapack.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
 
 using namespace shogun;
 

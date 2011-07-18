@@ -13,7 +13,7 @@
 #include <shogun/ui/SGInterface.h>
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/config.h>
 #include <shogun/preprocessor/LogPlusOne.h>
 #include <shogun/preprocessor/NormOne.h>

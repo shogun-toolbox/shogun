@@ -13,7 +13,7 @@
 #ifdef USE_SVMLIGHT
 
 #include <shogun/classifier/svm/DomainAdaptationSVM.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <iostream>
 #include <vector>
 

@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/Features.h>
 

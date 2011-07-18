@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #include <shogun/distributions/PositionalPWM.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/features/Alphabet.h>
 #include <shogun/features/StringFeatures.h>
@@ -199,4 +199,14 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 			}
 		}
 	}
+}
+
+SGMatrix<float64_t> CPositionalPWM::get_scoring(int32_t d)
+{
+	int32_t offs=0;
+	for (int32_t i=0; i<d-1; i++)
+		offs+=CMath::pow((int32_t) m_w_rows,i+1);
+	int32_t rows=CMath::pow((int32_t) m_w_rows,d);
+	int32_t cols=m_w_cols;
+	return SGMatrix<float64_t>(&m_poim[offs],rows,cols);
 }

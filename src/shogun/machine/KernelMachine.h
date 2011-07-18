@@ -12,7 +12,7 @@
 #define _KERNEL_MACHINE_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/features/Labels.h>
 #include <shogun/machine/Machine.h>

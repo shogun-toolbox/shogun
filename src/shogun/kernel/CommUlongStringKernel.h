@@ -12,7 +12,7 @@
 #define _COMMULONGSTRINGKERNEL_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/kernel/StringKernel.h>
 

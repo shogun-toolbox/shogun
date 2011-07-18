@@ -12,10 +12,10 @@
 
 #ifdef USE_SVMLIGHT
 
-#include <shogun/lib/io.h>
-#include <shogun/lib/lapack.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/regression/svr/SVRLight.h>
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/kernel/CombinedKernel.h>

@@ -12,7 +12,7 @@
 #define _SET_H_
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/base/SGObject.h>
 

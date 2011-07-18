@@ -9,7 +9,7 @@
  */
 
 #include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 using namespace shogun;
 

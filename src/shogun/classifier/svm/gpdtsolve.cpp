@@ -78,7 +78,7 @@
 #include <shogun/classifier/svm/gpdt.h>
 #include <shogun/classifier/svm/gpdtsolve.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 using namespace shogun;
 

@@ -22,7 +22,7 @@
 #include <shogun/classifier/svm/SGDQN.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Loss.h>
 
 

@@ -12,7 +12,7 @@
 #include <shogun/ui/SGInterface.h>
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/RealFileFeatures.h>

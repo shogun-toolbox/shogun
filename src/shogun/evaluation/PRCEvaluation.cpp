@@ -9,7 +9,7 @@
  */
 
 #include <shogun/evaluation/PRCEvaluation.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 

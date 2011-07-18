@@ -13,8 +13,8 @@
 
 #ifdef HAVE_LAPACK
 #include <shogun/regression/KRR.h>
-#include <shogun/lib/lapack.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 

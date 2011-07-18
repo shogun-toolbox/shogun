@@ -9,9 +9,9 @@
  */
 
 #include <shogun/classifier/svm/MPDSVM.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 

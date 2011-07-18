@@ -12,7 +12,7 @@
 #define _DISTRIBUTION_H___
 
 #include <shogun/features/Features.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun

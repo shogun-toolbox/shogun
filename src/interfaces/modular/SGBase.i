@@ -11,7 +11,7 @@
  #include <shogun/base/init.h>
 #endif
  #include <shogun/lib/common.h>
- #include <shogun/lib/io.h>
+ #include <shogun/io/io.h>
  #include <shogun/lib/ShogunException.h>
  #include <shogun/lib/DataType.h>
  #include <shogun/base/Version.h>
@@ -102,7 +102,7 @@
 %include <shogun/base/init.h>
 #endif
 %include <shogun/lib/ShogunException.h>
-%include <shogun/lib/io.h>
+%include <shogun/io/io.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>

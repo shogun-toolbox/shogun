@@ -12,9 +12,9 @@
 
 #include <shogun/features/Labels.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/File.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/File.h>
+#include <shogun/io/io.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;

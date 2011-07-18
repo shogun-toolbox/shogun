@@ -13,7 +13,7 @@
 #ifndef _CPCA__H__
 #define _CPCA__H__
 #ifdef HAVE_LAPACK
-#include <shogun/lib/lapack.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/lib/config.h>
 #include <stdio.h>
 

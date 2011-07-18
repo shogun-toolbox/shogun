@@ -11,11 +11,11 @@
 #include <shogun/preprocessor/LocallyLinearEmbedding.h>
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/lib/arpack.h>
-#include <shogun/lib/lapack.h>
+#include <shogun/mathematics/arpack.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/io.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/io/io.h>
 #include <shogun/distance/EuclidianDistance.h>
 #include <shogun/lib/Signal.h>
 

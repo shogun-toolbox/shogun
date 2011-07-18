@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
  */
 
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/classifier/svm/GNPPSVM.h>
 #include <shogun/classifier/svm/GNPPLib.h>
 

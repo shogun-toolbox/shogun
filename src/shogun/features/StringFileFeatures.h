@@ -13,9 +13,9 @@
 
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/Alphabet.h>
-#include <shogun/lib/MemoryMappedFile.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/MemoryMappedFile.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/io/io.h>
 
 namespace shogun
 {

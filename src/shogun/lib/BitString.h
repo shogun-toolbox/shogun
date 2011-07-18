@@ -12,9 +12,9 @@
 
 #include <shogun/features/Alphabet.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
-#include <shogun/lib/MemoryMappedFile.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/io/io.h>
+#include <shogun/io/MemoryMappedFile.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {

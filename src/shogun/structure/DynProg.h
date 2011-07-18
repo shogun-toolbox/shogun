@@ -13,10 +13,10 @@
 #ifndef __CDYNPROG_H__
 #define __CDYNPROG_H__
 
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/io.h>
 #include <shogun/lib/config.h>
 #include <shogun/structure/PlifMatrix.h>
 #include <shogun/structure/PlifBase.h>
