@@ -18,14 +18,14 @@ include .config
 ifeq (.config-local,$(wildcard .config-local))
 include .config-local
 endif
-PARTDEPS = $(foreach part, $(PARTS), $(part)/Makefile )
-all:  $(PARTDEPS) examples
+PARTDEPS = $(foreach part, $(PARTS), interfaces/$(part)/Makefile )
+all:  $(PARTDEPS) examples $(LIBSHOGUN_TARGET)
 	@echo ============================================================
 	@echo ==== Building shogun for platform $(KERNELNAME)-$(MACHINE)
 	@echo ==== opts: $(COMPFLAGS_CPP)
 	@echo ============================================================
 	@echo 
-	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
+	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
 	@echo 
 	@echo ============================================================
 	@echo ==== Done. Check the subdirectories for binaries.
@@ -33,12 +33,20 @@ all:  $(PARTDEPS) examples
 	@echo 
 endif
 
+$(LIBSHOGUN_TARGET): shogun/Makefile 
+	$(MAKE) -C shogun
+
+shogun/Makefile: Makefile.template
+	cat Makefile.template | sed 's/template/libshogun/g' | \
+		sed 's/TEMPLATE/LIBSHOGUN/g' >$@;
+
 examples:
 	$(MAKE) -C../examples
 	touch $@
 
 install:  $(PARTDEPS)
-	+$(foreach part, $(PARTS), $(MAKE) -C $(part) install-$(part) &&) true
+	$(MAKE) -C shogun install
+	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) install-$(part) &&) true
 
 uninstall:
 	@test -z "$(LIBDIR)" || rm -f "$(DESTDIR)$(LIBDIR)/libshogun"*
@@ -55,21 +63,21 @@ tests:
 	$(MAKE) run-testsuite
 
 run-testsuite: $(PARTDEPS)
-	+$(foreach part, $(PARTS), $(MAKE) -C $(part) run-testsuite-$(part) &&) true
+	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) run-testsuite-$(part) &&) true
 
 check-examples: $(PARTDEPS)
-	+$(foreach part, $(PARTS), $(MAKE) -C $(part) check-examples-$(part) &&) true
+	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) check-examples-$(part) &&) true
 
 doc:  $(PARTDEPS)
-	+$(foreach part, $(PARTS), $(MAKE) -C $(part) doc-$(part) &&) true
+	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) doc-$(part) &&) true
 
 distclean: clean
-	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
-	@rm -f .config tags ui shogun libshogunui/shogun
-	@rm -f */Makefile
+	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
+	@rm -f .config tags shogun
+	@rm -f */Makefile interfaces/*/Makefile
 
 clean:  $(PARTDEPS)
-	@+$(foreach part, $(PARTS), $(MAKE) -C $(part) $@ &&) true
+	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
 	@rm -rf configure-*.dSYM
 	@rm -f configure.log .cpuinfo .cpuinfo.c ./configure-* cplex.log examples
 
@@ -79,7 +87,7 @@ dist:	distclean
 
 $(PARTDEPS): Makefile.template
 	@+$(foreach part, $(PARTS), cat Makefile.template | sed 's/template/$(part)/g' | \
-		sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >$(part)/Makefile; )
+		sed 's/TEMPLATE/$(shell echo $(part) | tr 'a-z' 'A-Z')/g' >interfaces/$(part)/Makefile; )
 
 linecount:
 	@echo -n "C/C++ source code files (.cpp,.c):"

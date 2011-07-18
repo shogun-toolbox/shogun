@@ -1,6 +1,6 @@
 #!/bin/bash
 
-static_dirs="cmdline elwms matlab_and_octave python r"
+static_dirs="cmdline_static elwms_static matlab_and_octave python_static r_static"
 modular_dirs="octave_modular python_modular r_modular"
 lib_dirs=libshogun 
 rm -f missing.log

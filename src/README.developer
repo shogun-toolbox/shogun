@@ -1,10 +1,11 @@
 GETTING STARTED
 
 Shogun is split up into libshogun which contains all the machine learning
-algorithms, libshogunui which contains a library for the 'static interfaces',
-the static interfaces python, octave, matlab, r and the modular interfaces
-python_modular, octave_modular and r_modular (all found in the src/
-subdirectory with corresponding name). See src/INSTALL on how to install shogun.
+algorithms and 'static interfaces' helpers,
+the static interfaces python_static, octave_static, matlab_static, r_static and
+the modular interfaces python_modular, octave_modular and r_modular (all found
+in the src/interfaces/ subdirectory with corresponding name). See src/INSTALL on
+how to install shogun.
 
 In case one wants to extend shogun the best way is to start using its library.
 This can be easily done as a number of examples in examples/libshogun document.
@@ -274,7 +275,7 @@ TYPES:
 	int64_t		(64bit int)
 	float32_t	(32bit float)
 	float64_t	(64bit float)
-	float128_t	(128bit float)
+	floatmax_t	(96bit or 128bit float depending on arch)
 
 	exceptions: file IO / matlab interface
 

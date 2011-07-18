@@ -1,6 +1,15 @@
 import os,re,sys
 
-have_doxygen=file('../.config').read().find('-DHAVE_DOXYGEN') is not -1
+f=None
+BASEDIR=None
+try:
+	f=file('../.config')
+	BASEDIR='../'
+except:
+	f=file('../../.config')
+	BASEDIR='../../'
+
+have_doxygen=f.read().find('-DHAVE_DOXYGEN') is not -1
 
 try:
 	prefix=sys.argv[1]
@@ -63,9 +72,9 @@ for f in files:
 		if i[1]:
 			i=i[1]
 			if i.endswith('.h'):
-				i='../shogun/' + i
+				i=BASEDIR + 'shogun/' + i
 		else:
-			i='../shogun/' + i[2]
+			i=BASEDIR + 'shogun/' + i[2]
 
 		dd.append(i)
 

@@ -8,9 +8,7 @@
 #
 VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | cut -f 1 -d ' ' | head -n 1`
 LIBSHOGUNSO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',)' | head -n 1 | cut -f 1 -d '.'`
-LIBSHOGUNUISO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ',)' | head -n 1 | cut -f 1 -d '.'`
 LIBSHOGUNVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',)' | head -n 1`
-LIBSHOGUNUIVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d ',' | cut -f 3 -d ' ' | tr -d ',)' | head -n 1`
 DATAVER=`grep "SHOGUN Release version" NEWS 2>&1 | head -n 1 | cut -d ',' -f 3 | cut -d ' ' -f 3 | tr -d ')'`
 
 [ -n "$VERSION" ] && echo "Running configure for SHOGUN version $VERSION"
@@ -51,10 +49,11 @@ CLASSPATH="$CLASSPATH"
 _swig_version=0.0.0
 _readline=auto
 _hdf5=auto
+_ant=no
 _json=auto
 _xml=auto
 _r=no
-if [ -e libshogun/classifier/svm/SVMLight.cpp ]; then
+if [ -e shogun/classifier/svm/SVMLight.cpp ]; then
   _svm_light=yes
   _gpl=no
 else
@@ -112,8 +111,7 @@ _ld_static=""
 _static=no
 _optimizing=""
 _interfaces=""
-_libshogun=auto
-_libshogunui=auto
+_libshogun=yes
 _python=auto
 _octave=auto
 _r=auto
@@ -178,16 +176,6 @@ INCLUDES_LIBSHOGUN="-I../libshogun -I.."
 PRELINKFLAGS_LIBSHOGUN=
 LINKFLAGS_LIBSHOGUN=
 POSTLINKFLAGS_LIBSHOGUN=
-
-LIBSHOGUNUI_SONAME=libshogunui.so.${LIBSHOGUNUISO}
-LIBSHOGUNUI_TARGET=libshogunui.so.${LIBSHOGUNUIVER}
-LIBSHOGUNUI_DYNAMIC=libshogunui.so
-LIBSHOGUNUI_STATIC=libshogunui.a
-DEFINES_LIBSHOGUNUI=
-INCLUDES_LIBSHOGUNUI="-I../libshogun -I.."
-PRELINKFLAGS_LIBSHOGUNUI=
-LINKFLAGS_LIBSHOGUNUI="-L../libshogun -lshogun"
-POSTLINKFLAGS_LIBSHOGUNUI=
 
 ELWMS_TARGET=
 DEFINES_ELWMS=
@@ -539,7 +527,7 @@ EOF
 			EXT_IF_SWIG_JAVA_MODULAR='stop'
 			PRE_LIB_SWIG_JAVA_MODULAR='lib'
 			EXT_LIB_SWIG_JAVA_MODULAR=.so
-			mkdir -p java_modular/org/shogun >/dev/null 2>&1
+			mkdir -p interfaces/java_modular/org/shogun >/dev/null 2>&1
 			SWIGFLAGS_JAVA_MODULAR="-c++ -java -package org.shogun -outdir org/shogun"
 			INCLUDES_JAVA="-I$(dirname $(java configure java.home))/include"
 			INCLUDES_JAVA="$INCLUDES_JAVA $INCLUDES_JAVA/`uname -s | tr 'A-Z' 'a-z'`"
@@ -549,7 +537,14 @@ EOF
 			LINKFLAGS_JAVA="--shared"
 			echores "yes"
 
-			_java=yes
+			echocheck "Ant"
+			if ant -version >/dev/null 2>&1
+			then
+				echores "`ant -version | cut -f 4 -d ' '`"
+				_java=yes
+			else
+				echores "ant not detected"
+			fi
 		else
 			echores "javac not detected"
 		fi
@@ -671,10 +666,10 @@ EOF
 			then
 			echores "yes"
 			INCLUDES_RUBY=`ruby $TMPRUBY`
-			if ld -lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` >/dev/null 2>&1
-				then
+			if ld -o "$TMPO" -lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` >/dev/null 2>&1
+			then
 				LINKFLAGS_RUBY="-lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` -fPIC -shared"
-				else
+			else
 				LINKFLAGS_RUBY="-lruby -fPIC -shared"
 			fi
 			EXT_IF_SWIG_RUBY_MODULAR='stop'
@@ -682,9 +677,9 @@ EOF
 			EXT_LIB_SWIG_RUBY_MODULAR=.so
 			SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
 			_ruby=yes
-			else
+		else
 			echores "no"
-			fi
+		fi
 	else
 		echores "not detected"
 	fi
@@ -871,10 +866,13 @@ die () {
   echo "Error: $@" >&2
   echo >&2
   rm -f "$TMPO" "$TMPC" "$TMPS"
-  echo "Check "$TMPLOG" if you do not understand why it failed."
-  echo "The last 20 lines of "$TMPLOG" are shown below"
-  echo
-  tail -n 20 "$TMPLOG"
+  if test -f "$TMPLOG"
+  then
+	  echo "Check "$TMPLOG" if you do not understand why it failed."
+	  echo "The last 20 lines of "$TMPLOG" are shown below"
+	  echo
+	  tail -n 20 "$TMPLOG"
+  fi
   exit 1
 }
 
@@ -992,11 +990,24 @@ Usage: $0 [OPTIONS]...
 
 Configuration:
   --interfaces=INTERFACE1,INTERFACE2,...
-                                 configure shogun for interface
-                                 cmdline, python_modular, python, r, r_modular
-                                 octave, octave_modular, matlab or libshogun,
-                                 java_modular, csharp_modular,
-                                 lua_modular, ruby_modular
+               configure shogun for a modular interface (recommended) like
+
+                  python_modular
+                  r_modular
+                  octave_modular
+                  java_modular
+                  csharp_modular
+                  lua_modular
+                  ruby_modular
+
+              or a static one like
+
+                  cmdline_static
+                  r_static
+                  python_static
+                  octave_static
+                  matlab_static
+
   -h, -help, --help              display this help and exit
 
 Installation directories:
@@ -1104,8 +1115,6 @@ _cpudetection=yes
 for ac_option do
   case "$ac_option" in
   --interfaces=*)
-	_libshogun=no
-	_libshogunui=no
 	_cmdline_static=no
 	_python_static=no
 	_octave_static=no
@@ -1124,28 +1133,22 @@ for ac_option do
     for intf in `echo $_interfaces | cut -d '=' -f 2 | tr ',' ' '`
 	do
 	  case "$intf" in
-	  libshogun)
-	  	_libshogun=yes
-		;;
-	  libshogunui)
-	  	_libshogunui=yes
-		;;
-	  cmdline)
+	  cmdline_static)
 	  	_cmdline_static=yes
 		;;
-	  python)
+	  python_static)
 	  	_python_static=yes
 		;;
-	  octave)
+	  octave_static)
 	  	_octave_static=yes
 		;;
-	  matlab)
+	  matlab_static)
 	  	_matlab_static=yes
 		;;
-	  r)
+	  r_static)
 	  	_r_static=yes
 		;;
-	  elwms)
+	  elwms_static)
 	  	_elwms_static=yes
 		;;
 	  python_modular)
@@ -2576,9 +2579,6 @@ EOF
 		LIBSHOGUN_TARGET="libshogun.${LIBSHOGUNVER}.dylib"
 		LIBSHOGUN_SONAME="libshogun.${LIBSHOGUNSO}.dylib"
 		LIBSHOGUN_DYNAMIC="libshogun.dylib"
-		LIBSHOGUNUI_TARGET="libshogunui.${LIBSHOGUNUIVER}.dylib"
-		LIBSHOGUNUI_SONAME="libshogunui.${LIBSHOGUNUISO}.dylib"
-		LIBSHOGUNUI_DYNAMIC="libshogun.dylib"
 
 		if test "$_matlab_static" = yes
 		then
@@ -2605,10 +2605,6 @@ EOF
 		LIBSHOGUN_TARGET=libshogun-${LIBSHOGUNVER}.dll
 		LIBSHOGUN_DYNAMIC=libshogun.dll
 		LIBSHOGUN_STATIC=libshogun.a
-		LIBSHOGUNUI_SONAME=libshogunui-${LIBSHOGUNUISO}.dll
-		LIBSHOGUNUI_TARGET=libshogunui-${LIBSHOGUNUIVER}.dll
-		LIBSHOGUNUI_DYNAMIC=libshogunui.dll
-		LIBSHOGUNUI_STATIC=libshogunui.a
 	else
 		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
@@ -3523,11 +3519,11 @@ test_modular()
 
 test_matlab()
 {
-	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	if test "$_libshogun" = no
 	then
 		if test "$_matlab_static" = yes
 		then
-			die "libshogun and libshogunui are required for matlab"
+			die "libshogun is required for matlab"
 		else
 			_matlab_static=no
 		fi
@@ -3669,7 +3665,7 @@ EOF
 				if cc_check $COMPFLAGS_CPP_MATLAB $INCLUDES_MATLAB $LINKFLAGS_MATLAB
 				then
 					echores "yes"
-					PARTS="$PARTS matlab"
+					PARTS="$PARTS matlab_static"
 					_matlab_static=yes
 					DEFINES_MATLAB="$DEFINES_MATLAB -DHAVE_MATLAB"
 				else
@@ -3686,11 +3682,11 @@ EOF
 
 test_elwms()
 {
-	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	if test "$_libshogun" = no 
 	then
 		if test "$_elwms_static" = yes
 		then
-			die "libshogun and libshogunui are required for elwms"
+			die "libshogun is required for elwms"
 		else
 			_elwms_static=no
 		fi
@@ -3702,7 +3698,7 @@ test_elwms()
 			test "$_matlab_static" = yes || test "$_python_static" = yes
 		then
 			_elwms_static=yes
-			PARTS="$PARTS elwms"
+			PARTS="$PARTS elwms_static"
 			DEFINES_ELWMS="-DHAVE_ELWMS -DR_HOME_ENV=\\\"${R_HOME}\\\" -DLIBPYTHON=\\\"libpython${PYVER}.${EXT_LIB}\\\" $DEFINES_PYTHON $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
 			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PYTHON $INCLUDES_OCTAVE $INCLUDES_MATLAB "
 			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON `echo $LINKFLAGS_R | sed 's/-dynamiclib//g'` `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
@@ -3715,11 +3711,11 @@ test_elwms()
 
 test_octave()
 {
-	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	if test "$_libshogun" = no
 	then
 		if test "$_octave_static" = yes
 		then
-			die "libshogun and libshogunui are required for octave"
+			die "libshogun is required for octave"
 		else
 			_octave_static=no
 		fi
@@ -3846,7 +3842,7 @@ EOF
 
 		if test "$_octave_static" != no
 		then
-			PARTS="$PARTS octave"
+			PARTS="$PARTS octave_static"
 			_octave_static=yes
 		fi
 	fi
@@ -3854,11 +3850,11 @@ EOF
 
 test_python()
 {
-	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	if test "$_libshogun" = no 
 	then
 		if test "$_python_static" = yes
 		then
-			die "libshogun and libshogunui are required for python"
+			die "libshogun is required for python"
 		else
 			_python_static=no
 		fi
@@ -3974,7 +3970,7 @@ EOF
 
 		if test "$_python_static" != no
 		then
-			PARTS="$PARTS python"
+			PARTS="$PARTS python_static"
 			_python_static=yes
 		fi
 	else
@@ -3988,11 +3984,11 @@ EOF
 
 test_r()
 {
-	if test "$_libshogun" = no  || test "$_libshogunui" = no
+	if test "$_libshogun" = no
 	then
 		if test "$_r_static" = yes
 		then
-			die "libshogun and libshogunui are required for r"
+			die "libshogun is required for r"
 		else
 			_r_static=no
 		fi
@@ -4090,7 +4086,7 @@ EOF
 
 		if test "$_r_static" != no
 		then
-			PARTS="$PARTS r"
+			PARTS="$PARTS r_static"
 			_r_static=yes
 		fi
 	fi
@@ -4116,20 +4112,17 @@ int main(int argc, char** argv)
 EOF
 		echocheck "libshogun"
 
-		if test -d libshogun
+		if test -d shogun
 		then
 			echores "yes (internal in source tree)"
-			rm -f shogun
-			ln -s libshogun shogun
 			INCLUDES="-I${SRCDIR} -I.. $INCLUDES"
-			PARTS="$PARTS libshogun"
-			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogun"
-			INCLUDES_MODULAR_INTERFACES="$INCLUDES_MODULAR_INTERFACES -I../libshogun"
+			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../../shogun -I../.."
+			INCLUDES_MODULAR_INTERFACES="$INCLUDES_MODULAR_INTERFACES -I../../shogun -I../.."
 
 			if test "$_static" = no
 			then
-				LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../libshogun -lshogun"
-				LINKFLAGS_MODULAR_INTERFACES="$LINKFLAGS_MODULAR_INTERFACES -L../libshogun -lshogun"
+				LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -L../../shogun -lshogun"
+				LINKFLAGS_MODULAR_INTERFACES="$LINKFLAGS_MODULAR_INTERFACES -L../../shogun -lshogun"
 			fi
 			_libshogun=internal
 			LIBSHOGUN_MODE=internal
@@ -4159,83 +4152,13 @@ EOF
 	fi
 }
 
-test_libshogunui()
+test_cmdline()
 {
 	if test "$_libshogun" = no
 	then
-		if test "$libshogunui" = yes
-		then
-			die "libshogun is required for libshogunui"
-		else
-			_libshogunui=no
-		fi
-	fi
-
-	if test "$_libshogunui" = yes || test "$_libshogunui" = auto
-	then
-
-cat > $TMPC << EOF
-#include <stdio.h>
-#include <shogun/ui/GUITime.h>
-
-int main(int argc, char** argv)
-{
-	init_shogun();
-	CGUITime* t;
-	exit_shogun();
-	return 0;
-}
-EOF
-		echocheck "libshogunui"
-
-		if test -d libshogunui
-		then
-
-			echores "yes (internal in source tree)"
-			rm -f ui
-			ln -s libshogunui ui
-			rm -f libshogunui/shogun
-			( cd libshogunui ; ln -s .. shogun )
-			INCLUDES="-I${SRCDIR} -I.. $INCLUDES"
-			PARTS="$PARTS libshogunui"
-
-			INCLUDES_STATIC_INTERFACES="$INCLUDES_STATIC_INTERFACES -I../libshogunui"
-			if test "$_static" = no
-			then
-				LINKFLAGS_STATIC_INTERFACES="-L../libshogunui -lshogunui $LINKFLAGS_STATIC_INTERFACES"
-			fi
-			_libshogunui=internal
-
-		else
-			if cxx_check -lshogunui -lshogun
-			then
-				echores "yes (found installed)"
-				_libshogunui=external
-				LINKFLAGS_STATIC_INTERFACES="$LINKFLAGS_STATIC_INTERFACES -lshogunui"
-			else
-				echores "no"
-				if test "$_libshogunui" = yes
-				then
-					die "libshogunui neither found installed in system include path nor locally"
-				fi
-			fi
-		fi
-	fi
-
-	if darwin; then
-		POSTLINKFLAGS_LIBSHOGUNUI="-fPIC ${SONAMEOPT}@@PREFIX@@/lib/${LIBSHOGUNUI_SONAME} ${SHAREDOPTS}"
-	else
-		POSTLINKFLAGS_LIBSHOGUNUI="-fPIC ${SONAMEOPT}${LIBSHOGUNUI_SONAME} ${SHAREDOPTS}"
-	fi
-}
-
-test_cmdline()
-{
-	if test "$_libshogun" = no  || test "$_libshogunui" = no
-	then
 		if test "$_cmdline_static" = yes
 		then
-			die "libshogun and libshogunui are required for cmdline"
+			die "libshogun is required for cmdline"
 		else
 			_cmdline_static=no
 		fi
@@ -4243,7 +4166,7 @@ test_cmdline()
 
 	if test "$_cmdline_static" != no
 	then
-		PARTS="$PARTS cmdline"
+		PARTS="$PARTS cmdline_static"
 		CMDLINE_TARGET=shogun
 		if darwin
 		then
@@ -4291,18 +4214,15 @@ LIBSHOGUN_MODE= ${LIBSHOGUN_MODE}
 LIBSHOGUN_TARGET= ${LIBSHOGUN_TARGET}
 LIBSHOGUN_DYNAMIC= ${LIBSHOGUN_DYNAMIC}
 LIBSHOGUN_STATIC= ${LIBSHOGUN_STATIC}
-LIBSHOGUNUI_TARGET= ${LIBSHOGUNUI_TARGET}
-LIBSHOGUNUI_DYNAMIC= ${LIBSHOGUNUI_DYNAMIC}
-LIBSHOGUNUI_STATIC= ${LIBSHOGUNUI_STATIC}
-CMDLINE_TARGET	= ${CMDLINE_TARGET}
-R_TARGET		= ${R_TARGET}
-PYTHON_TARGET	= ${PYTHON_TARGET}
-OCTAVE_TARGET	= ${OCTAVE_TARGET}
-MATLAB_TARGET	= ${MATLAB_TARGET}
-ELWMS_TARGET	= ${ELWMS_TARGET}
+CMDLINE_STATIC_TARGET	= ${CMDLINE_TARGET}
+R_STATIC_TARGET			= ${R_TARGET}
+PYTHON_STATIC_TARGET	= ${PYTHON_TARGET}
+OCTAVE_STATIC_TARGET	= ${OCTAVE_TARGET}
+MATLAB_STATIC_TARGET	= ${MATLAB_TARGET}
+ELWMS_STATIC_TARGET		= ${ELWMS_TARGET}
 R_MODULAR_TARGET		= ${R_MODULAR_TARGET}
 JAVA_MODULAR_TARGET		= ${JAVA_MODULAR_TARGET}
-CSHARP_MODULAR_TARGET		= ${CSHARP_MODULAR_TARGET}
+CSHARP_MODULAR_TARGET	= ${CSHARP_MODULAR_TARGET}
 RUBY_MODULAR_TARGET		= ${RUBY_MODULAR_TARGET}
 LUA_MODULAR_TARGET		= ${LUA_MODULAR_TARGET}
 PYTHON_MODULAR_TARGET	= ${PYTHON_MODULAR_TARGET}
@@ -4360,24 +4280,17 @@ LINKFLAGS_LIBSHOGUN 	= ${LINKFLAGS_LIBSHOGUN}
 POSTLINKFLAGS_LIBSHOGUN	= ${POSTLINKFLAGS_LIBSHOGUN}
 LIBSHOGUN_SONAME	= ${LIBSHOGUN_SONAME}
 
-DEFINES_LIBSHOGUNUI		= ${DEFINES_LIBSHOGUNUI}
-INCLUDES_LIBSHOGUNUI	= ${INCLUDES_LIBSHOGUNUI}
-PRELINKFLAGS_LIBSHOGUNUI	= ${PRELINKFLAGS_LIBSHOGUNUI}
-LINKFLAGS_LIBSHOGUNUI 	= ${LINKFLAGS_LIBSHOGUNUI}
-POSTLINKFLAGS_LIBSHOGUNUI	= ${POSTLINKFLAGS_LIBSHOGUNUI}
-LIBSHOGUNUI_SONAME	= ${LIBSHOGUNUI_SONAME}
+DEFINES_CMDLINE_STATIC			= ${DEFINES_CMDLINE}
+INCLUDES_CMDLINE_STATIC			= ${INCLUDES_CMDLINE}
+PRELINKFLAGS_CMDLINE_STATIC		= ${PRELINKFLAGS_CMDLINE}
+LINKFLAGS_CMDLINE_STATIC 		= ${LINKFLAGS_CMDLINE}
+POSTLINKFLAGS_CMDLINE_STATIC	= ${POSTLINKFLAGS_CMDLINE}
 
-DEFINES_CMDLINE			= ${DEFINES_CMDLINE}
-INCLUDES_CMDLINE		= ${INCLUDES_CMDLINE}
-PRELINKFLAGS_CMDLINE	= ${PRELINKFLAGS_CMDLINE}
-LINKFLAGS_CMDLINE 		= ${LINKFLAGS_CMDLINE}
-POSTLINKFLAGS_CMDLINE	= ${POSTLINKFLAGS_CMDLINE}
-
-DEFINES_MATLAB			= ${DEFINES_MATLAB}
-INCLUDES_MATLAB			= ${INCLUDES_MATLAB}
-PRELINKFLAGS_MATLAB	= ${PRELINKFLAGS_MATLAB}
-LINKFLAGS_MATLAB 		= ${LINKFLAGS_MATLAB}
-POSTLINKFLAGS_MATLAB	= ${POSTLINKFLAGS_MATLAB}
+DEFINES_MATLAB_STATIC			= ${DEFINES_MATLAB}
+INCLUDES_MATLAB_STATIC			= ${INCLUDES_MATLAB}
+PRELINKFLAGS_MATLAB_STATIC		= ${PRELINKFLAGS_MATLAB}
+LINKFLAGS_MATLAB_STATIC 		= ${LINKFLAGS_MATLAB}
+POSTLINKFLAGS_MATLAB_STATIC		= ${POSTLINKFLAGS_MATLAB}
 
 DEFINES_JAVA		= ${DEFINES_JAVA}
 INCLUDES_JAVA		= ${INCLUDES_JAVA}
@@ -4403,29 +4316,29 @@ PRELINKFLAGS_LUA	= ${PRELINKFLAGS_LUA}
 LINKFLAGS_LUA 		= ${LINKFLAGS_LUA}
 POSTLINKFLAGS_LUA	= ${POSTLINKFLAGS_LUA}
 
-OCTAVE_APIVERSION		= ${OCTAVE_APIVERSION}
-DEFINES_OCTAVE			= ${DEFINES_OCTAVE}
-INCLUDES_OCTAVE			= ${INCLUDES_OCTAVE}
-PRELINKFLAGS_OCTAVE	= ${PRELINKFLAGS_OCTAVE}
-LINKFLAGS_OCTAVE 		= ${LINKFLAGS_OCTAVE}
-POSTLINKFLAGS_OCTAVE	= ${POSTLINKFLAGS_OCTAVE}
+OCTAVE_APIVERSION			= ${OCTAVE_APIVERSION}
+DEFINES_OCTAVE_STATIC		= ${DEFINES_OCTAVE}
+INCLUDES_OCTAVE_STATIC		= ${INCLUDES_OCTAVE}
+PRELINKFLAGS_OCTAVE_STATIC	= ${PRELINKFLAGS_OCTAVE}
+LINKFLAGS_OCTAVE_STATIC 	= ${LINKFLAGS_OCTAVE}
+POSTLINKFLAGS_OCTAVE_STATIC	= ${POSTLINKFLAGS_OCTAVE}
 
-DEFINES_R		= ${DEFINES_R}
-INCLUDES_R		= ${INCLUDES_R}
-LINKFLAGS_R 	= ${LINKFLAGS_R}
-POSTLINKFLAGS_R	= ${POSTLINKFLAGS_R}
+DEFINES_R_STATIC		= ${DEFINES_R}
+INCLUDES_R_STATIC		= ${INCLUDES_R}
+LINKFLAGS_R_STATIC 		= ${LINKFLAGS_R}
+POSTLINKFLAGS_R_STATIC	= ${POSTLINKFLAGS_R}
 
-DEFINES_PYTHON		= ${DEFINES_PYTHON}
-INCLUDES_PYTHON		= ${INCLUDES_PYTHON}
-PRELINKFLAGS_PYTHON= ${PRELINKFLAGS_PYTHON}
-LINKFLAGS_PYTHON 	= ${LINKFLAGS_PYTHON}
-POSTLINKFLAGS_PYTHON= ${POSTLINKFLAGS_PYTHON}
+DEFINES_PYTHON_STATIC		= ${DEFINES_PYTHON}
+INCLUDES_PYTHON_STATIC		= ${INCLUDES_PYTHON}
+PRELINKFLAGS_PYTHON_STATIC	= ${PRELINKFLAGS_PYTHON}
+LINKFLAGS_PYTHON_STATIC 	= ${LINKFLAGS_PYTHON}
+POSTLINKFLAGS_PYTHON_STATIC	= ${POSTLINKFLAGS_PYTHON}
 
-DEFINES_ELWMS		= ${DEFINES_ELWMS}
-INCLUDES_ELWMS		= ${INCLUDES_ELWMS}
-PRELINKFLAGS_ELWMS	= ${PRELINKFLAGS_ELWMS}
-LINKFLAGS_ELWMS 	= ${LINKFLAGS_ELWMS}
-POSTLINKFLAGS_ELWMS	= ${POSTLINKFLAGS_ELWMS}
+DEFINES_ELWMS_STATIC		= ${DEFINES_ELWMS}
+INCLUDES_ELWMS_STATIC		= ${INCLUDES_ELWMS}
+PRELINKFLAGS_ELWMS_STATIC	= ${PRELINKFLAGS_ELWMS}
+LINKFLAGS_ELWMS_STATIC 	= ${LINKFLAGS_ELWMS}
+POSTLINKFLAGS_ELWMS_STATIC	= ${POSTLINKFLAGS_ELWMS}
 
 PRE_LIB_SWIG_OCTAVE_MODULAR	= ${PRE_LIB_SWIG_OCTAVE_MODULAR}
 EXT_LIB_SWIG_OCTAVE_MODULAR	= ${EXT_LIB_SWIG_OCTAVE_MODULAR}
@@ -4439,7 +4352,7 @@ SWIGFLAGS_OCTAVE_MODULAR = ${SWIGFLAGS_OCTAVE_MODULAR}
 
 PRE_LIB_SWIG_R_MODULAR	= ${PRE_LIB_SWIG_R_MODULAR}
 EXT_LIB_SWIG_R_MODULAR	= ${EXT_LIB_SWIG_R_MODULAR}
-EXT_IF_SWIG_R_MODULAR		= ${EXT_IF_SWIG_R_MODULAR}
+EXT_IF_SWIG_R_MODULAR	= ${EXT_IF_SWIG_R_MODULAR}
 DEFINES_R_MODULAR		= ${DEFINES_R} -DDISABLE_CANCEL_CALLBACK
 INCLUDES_R_MODULAR		= ${INCLUDES_R}
 PRELINKFLAGS_R_MODULAR	= ${PRELINKFLAGS_R}
@@ -4449,23 +4362,23 @@ SWIGFLAGS_R_MODULAR = ${SWIGFLAGS_R_MODULAR}
 
 PRE_LIB_SWIG_PYTHON_MODULAR	= ${PRE_LIB_SWIG_PYTHON_MODULAR}
 EXT_LIB_SWIG_PYTHON_MODULAR	= ${EXT_LIB_SWIG_PYTHON_MODULAR}
-EXT_IF_SWIG_PYTHON_MODULAR		= ${EXT_IF_SWIG_PYTHON_MODULAR}
+EXT_IF_SWIG_PYTHON_MODULAR	= ${EXT_IF_SWIG_PYTHON_MODULAR}
 DEFINES_PYTHON_MODULAR		= ${DEFINES_PYTHON}
 INCLUDES_PYTHON_MODULAR		= ${INCLUDES_PYTHON}
-PRELINKFLAGS_PYTHON_MODULAR= ${PRELINKFLAGS_PYTHON}
+PRELINKFLAGS_PYTHON_MODULAR	= ${PRELINKFLAGS_PYTHON}
 LINKFLAGS_PYTHON_MODULAR 	= ${LINKFLAGS_PYTHON}
 POSTLINKFLAGS_PYTHON_MODULAR= ${POSTLINKFLAGS_PYTHON}
-SWIGFLAGS_PYTHON_MODULAR = ${SWIGFLAGS_PYTHON_MODULAR}
+SWIGFLAGS_PYTHON_MODULAR 	= ${SWIGFLAGS_PYTHON_MODULAR}
 
 PRE_LIB_SWIG_JAVA_MODULAR	= ${PRE_LIB_SWIG_JAVA_MODULAR}
 EXT_LIB_SWIG_JAVA_MODULAR	= ${EXT_LIB_SWIG_JAVA_MODULAR}
-EXT_IF_SWIG_JAVA_MODULAR		= ${EXT_IF_SWIG_JAVA_MODULAR}
+EXT_IF_SWIG_JAVA_MODULAR	= ${EXT_IF_SWIG_JAVA_MODULAR}
 DEFINES_JAVA_MODULAR		= ${DEFINES_JAVA}
 INCLUDES_JAVA_MODULAR		= ${INCLUDES_JAVA}
-PRELINKFLAGS_JAVA_MODULAR= ${PRELINKFLAGS_JAVA}
-LINKFLAGS_JAVA_MODULAR 	= ${LINKFLAGS_JAVA}
-POSTLINKFLAGS_JAVA_MODULAR= ${POSTLINKFLAGS_JAVA}
-SWIGFLAGS_JAVA_MODULAR = ${SWIGFLAGS_JAVA_MODULAR}
+PRELINKFLAGS_JAVA_MODULAR	= ${PRELINKFLAGS_JAVA}
+LINKFLAGS_JAVA_MODULAR 		= ${LINKFLAGS_JAVA}
+POSTLINKFLAGS_JAVA_MODULAR	= ${POSTLINKFLAGS_JAVA}
+SWIGFLAGS_JAVA_MODULAR 		= ${SWIGFLAGS_JAVA_MODULAR}
 
 PRE_LIB_SWIG_CSHARP_MODULAR	= ${PRE_LIB_SWIG_CSHARP_MODULAR}
 EXT_LIB_SWIG_CSHARP_MODULAR	= ${EXT_LIB_SWIG_CSHARP_MODULAR}
@@ -4599,11 +4512,14 @@ type_buildinfo()
 		cfgopts="with the following $CONFIGURE_OPTIONS"
 	fi
 
+	moreinfo=""
+	test -n "$PARTS" && moreinfo="and the following interfaces: $PARTS"
+
 	cat <<EOF
 
 SHOGUN was configured for
 
-  $PARTS
+  libshogun $moreinfo
 
 interface(s) $cfgopts
 
@@ -4631,17 +4547,17 @@ test_static_linking()
 	then
 		if test "$_octave_static" = yes
 		then
-			POSTLINKFLAGS_OCTAVE="$POSTLINKFLAGS_OCTAVE ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
+			POSTLINKFLAGS_OCTAVE="$POSTLINKFLAGS_OCTAVE ../../shogun/libshogun.a"
 		fi
 
 		if test "$_python_static" = yes
 		then
-			POSTLINKFLAGS_PYTHON="$POSTLINKFLAGS_PYTHON ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
+			POSTLINKFLAGS_PYTHON="$POSTLINKFLAGS_PYTHON ../../shogun/libshogun.a"
 		fi
 
 		if test "$_r_static" = yes
 		then
-			POSTLINKFLAGS_R="$POSTLINKFLAGS_R ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
+			POSTLINKFLAGS_R="$POSTLINKFLAGS_R ../../shogun/libshogun.a"
 		fi
 
 		if test "$_cmdline_static" = yes
@@ -4651,7 +4567,7 @@ test_static_linking()
 
 		if test "$_matlab_static" = yes
 		then
-			POSTLINKFLAGS_MATLAB="$POSTLINKFLAGS_MATLAB ../libshogunui/libshogunui.a ../libshogun/libshogun.a"
+			POSTLINKFLAGS_MATLAB="$POSTLINKFLAGS_MATLAB ../../shogun/libshogun.a"
 		fi
 	fi
 }
@@ -4667,7 +4583,6 @@ check_doxygen
 determine_march_mtune
 set_opts
 test_libshogun
-test_libshogunui
 test_cmdline
 test_python
 test_octave
@@ -4686,7 +4601,7 @@ svmlight_warn_license
 write_dot_config "$SRCDIR/.config"
 if test "$_libshogun" = internal
 then
-	write_config_h "$SRCDIR/libshogun/lib/config.h"
+	write_config_h "$SRCDIR/shogun/lib/config.h"
 fi
 clean_up
 if darwin

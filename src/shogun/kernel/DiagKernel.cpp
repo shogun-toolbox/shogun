@@ -1,0 +1,55 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2009 Soeren Sonnenburg
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+
+#include <shogun/base/Parameter.h>
+#include <shogun/kernel/DiagKernel.h>
+
+using namespace shogun;
+
+CDiagKernel::CDiagKernel()
+: CKernel()
+{
+	init();
+}
+
+CDiagKernel::CDiagKernel(int32_t size, float64_t d)
+: CKernel(size)
+{
+	init();
+	diag=d;
+}
+
+CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, float64_t d)
+: CKernel()
+{
+	init();
+	diag=d;
+	init(l, r);
+}
+
+CDiagKernel::~CDiagKernel()
+{
+}
+
+bool CDiagKernel::init(CFeatures* l, CFeatures* r)
+{
+	CKernel::init(l, r);
+	return init_normalizer();
+}
+
+void CDiagKernel::init()
+{
+	diag=1.0;
+	m_parameters->add(&diag, "diag", "Value on kernel diagonal.");
+}
