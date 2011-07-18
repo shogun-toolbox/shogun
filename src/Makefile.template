@@ -193,8 +193,6 @@ install-libshogun: $(TEMPLATE_TARGET)
 	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o \
 		-name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \) \
 		-exec sh -c "install -m644 {}/*.h $(DESTDIR)$(INCDIR)/shogun/{}" \;
-	find "$(DESTDIR)$(INCDIR)/shogun/" -name '*.h' \
-		-exec $(SEDMI) 's/#include "\([^"]*\)"/#include <shogun\/\1>/' {} \;
 	rm -f $(DESTDIR)$(LIBDIR)/libshogun.$(EXT_LIB) $(DESTDIR)$(LIBDIR)/$(TEMPLATE_SONAME)
 	cd $(DESTDIR)$(LIBDIR) && ( ln -s $(TEMPLATE_TARGET) libshogun.$(EXT_LIB); \
 	ln -s $(TEMPLATE_TARGET) $(TEMPLATE_SONAME) )
