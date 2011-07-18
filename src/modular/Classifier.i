@@ -62,10 +62,13 @@
 %rename(LibSVMMultiClass) CLibSVMMultiClass;
 %rename(LibSVMOneClass) CLibSVMOneClass;
 %rename(LinearMachine) CLinearMachine;
+%rename(OnlineLinearMachine) COnlineLinearMachine;
 %rename(LPBoost) CLPBoost;
 %rename(LPM) CLPM;
 %rename(MPDSVM) CMPDSVM;
 %rename(MultiClassSVM) CMultiClassSVM;
+%rename(OnlineSVMSGD) COnlineSVMSGD;
+%rename(OnlineLibLinear) COnlineLibLinear;
 %rename(Perceptron) CPerceptron;
 %rename(AveragedPerceptron) CAveragedPerceptron;
 %rename(SubGradientLPM) CSubGradientLPM;
@@ -102,7 +105,8 @@
 %include <shogun/machine/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/MultiClassSVM.h>
-%include <shogun/machine/LinearMachine.h> 
+%include <shogun/machine/LinearMachine.h>
+%include <shogun/machine/OnlineLinearMachine.h>
 %include <shogun/classifier/GaussianNaiveBayes.h>
 %include <shogun/classifier/svm/GMNPSVM.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
@@ -119,6 +123,8 @@
 %include <shogun/classifier/LPBoost.h> 
 %include <shogun/classifier/LPM.h>
 %include <shogun/classifier/svm/MPDSVM.h>
+%include <shogun/classifier/svm/OnlineSVMSGD.h>
+%include <shogun/classifier/svm/OnlineLibLinear.h>
 %include <shogun/classifier/Perceptron.h>
 %include <shogun/classifier/AveragedPerceptron.h>
 %include <shogun/classifier/SubGradientLPM.h>
