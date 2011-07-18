@@ -327,7 +327,7 @@ run-testsuite-r_static:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_static:
-	cd $(CONFIGPATH)/../examples/undocumented/r && \
+	cd $(CONFIGPATH)/../examples/undocumented/r_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
@@ -336,7 +336,7 @@ run-testsuite-cmdline_static:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./test_all.sh )
 check-examples-cmdline_static:
-	cd $(CONFIGPATH)/../examples/undocumented/cmdline && \
+	cd $(CONFIGPATH)/../examples/undocumented/cmdline_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./check.sh )
 
@@ -345,7 +345,7 @@ run-testsuite-octave_static:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
 check-examples-octave_static:
-	cd $(CONFIGPATH)/../examples/undocumented/octave && \
+	cd $(CONFIGPATH)/../examples/undocumented/octave_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
 
@@ -355,7 +355,7 @@ run-testsuite-matlab_static:
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
 
 check-examples-matlab_static:
-	cd $(CONFIGPATH)/../examples/undocumented/matlab && \
+	cd $(CONFIGPATH)/../examples/undocumented/matlab_static && \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
 
 run-testsuite-python_modular:
@@ -369,6 +369,9 @@ check-examples-python_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+check-examples-java_modular:
+	cd $(CONFIGPATH)/../examples/undocumented/java_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
 
 run-testsuite-r_modular:
 	cd $(CONFIGPATH)/../testsuite/r_modular && \

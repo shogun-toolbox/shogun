@@ -52,7 +52,7 @@ _hdf5=auto
 _json=auto
 _xml=auto
 _r=no
-if [ -e libshogun/classifier/svm/SVMLight.cpp ]; then
+if [ -e shogun/classifier/svm/SVMLight.cpp ]; then
   _svm_light=yes
   _gpl=no
 else
