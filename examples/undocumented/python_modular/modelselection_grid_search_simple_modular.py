@@ -24,9 +24,9 @@ def modelselection_grid_search_simple(traindat=traindat, label_traindat=label_tr
 	from shogun.Evaluation import CrossValidation, CrossValidationResult
 	from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
 	from shogun.Evaluation import StratifiedCrossValidationSplitting
-	from shogun.Modelselection import GridSearchModelSelection
-	from shogun.Modelselection import ModelSelectionParameters, R_EXP
-	from shogun.Modelselection import ParameterCombination
+	from shogun.ModelSelection import GridSearchModelSelection
+	from shogun.ModelSelection import ModelSelectionParameters, R_EXP
+	from shogun.ModelSelection import ParameterCombination
 	from shogun.Features import Labels
 	from shogun.Features import RealFeatures
 	from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC
