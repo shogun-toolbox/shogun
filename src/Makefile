@@ -73,7 +73,7 @@ doc:  $(PARTDEPS)
 
 distclean: clean
 	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
-	@rm -f .config tags shogun
+	@rm -f .config tags
 	@rm -f */Makefile interfaces/*/Makefile
 
 clean:  $(PARTDEPS)
