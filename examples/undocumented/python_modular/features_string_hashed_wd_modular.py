@@ -10,9 +10,9 @@ parameter_list = [[matrix,3,1,2],[matrix,3,1,2]]
 def features_string_hashed_wd_modular(A=matrix,order=3,start_order=1,hash_bits=2):
     a=LongIntFeatures(A)
     
-    from numpy import *
-    from shogun.Features import *
-    from shogun.Library import MSG_DEBUG
+    from numpy import array, uint8
+    from shogun.Features import HashedWDFeatures, StringByteFeatures, RAWDNA
+    from shogun.IO import MSG_DEBUG
 
     x=[array([0,1,2,3,0,1,2,3,3,2,2,1,1],dtype=uint8)]
     from_order=order
@@ -21,7 +21,7 @@ def features_string_hashed_wd_modular(A=matrix,order=3,start_order=1,hash_bits=2
     f.set_features(x)
 
     y=HashedWDFeatures(f,start_order,order,from_order,hash_bits)
-    fm=y.get_feature_matrix()
+    fm=y.get_computed_dot_feature_matrix()
 
     return fm
 

@@ -14,7 +14,7 @@ def clustering_kmeans_modular (fm_train=traindat,k=3):
 	from shogun.Distance import EuclidianDistance
 	from shogun.Features import RealFeatures
 	from shogun.Clustering import KMeans
-	from shogun.Library import Math_init_random
+	from shogun.Mathematics import Math_init_random
 	Math_init_random(17)
 
 	feats_train=RealFeatures(fm_train)

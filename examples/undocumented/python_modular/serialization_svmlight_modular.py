@@ -1,7 +1,7 @@
 parameter_list=[[10, 1, 2.1, 2.0]]
 
 def serialization_svmlight_modular(num, dist, width, C):
-	from shogun.Library import MSG_DEBUG
+	from shogun.IO import MSG_DEBUG
 	from shogun.Features import RealFeatures, Labels, DNA, Alphabet
 	from shogun.Kernel import WeightedDegreeStringKernel, GaussianKernel
 	from shogun.Classifier import SVMLight

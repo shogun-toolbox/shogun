@@ -2,7 +2,7 @@ parameter_list=[[".", "features_string_char_modular.py"]]
 
 def features_string_file_modular(directory, fname):
 	from shogun.Features import StringCharFeatures, RAWBYTE
-	from shogun.Library import AsciiFile
+	from shogun.IO import AsciiFile
 
 	# load features from directory
 	f=StringCharFeatures(RAWBYTE)

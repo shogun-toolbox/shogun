@@ -12,7 +12,7 @@ def classifier_larank_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	from shogun.Features import RealFeatures, Labels
 	from shogun.Kernel import GaussianKernel
 	from shogun.Classifier import LaRank
-	from shogun.Library import Math_init_random
+	from shogun.Mathematics import Math_init_random
 	Math_init_random(17)
 
 	feats_train=RealFeatures(fm_train_real)

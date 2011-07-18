@@ -8,7 +8,7 @@ parameter_list=[[traindat,testdat,1.9],[traindat,testdat,1.7]]
 def kernel_io_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.9):
 	from shogun.Features import RealFeatures
 	from shogun.Kernel import GaussianKernel
-	from shogun.Library import AsciiFile, BinaryFile
+	from shogun.IO import AsciiFile, BinaryFile
 	
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
