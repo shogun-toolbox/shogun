@@ -38,6 +38,7 @@
 %include "Classifier_includes.i"
 %include "Preprocessor_includes.i"
 %include "Library_includes.i"
+%include "Distribution_includes.i"
 
 %import "Features.i"
 %import "Kernel.i"
@@ -139,7 +140,6 @@
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/mkl/MKLMultiClass.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
-
 
 #ifdef HAVE_PYTHON
 %pythoncode %{

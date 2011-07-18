@@ -29,5 +29,4 @@
 #include <shogun/features/LBPPyrDotFeatures.h>
 #include <shogun/features/ExplicitSpecFeatures.h>
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
-#include <shogun/lib/InputParser.h>
 %}

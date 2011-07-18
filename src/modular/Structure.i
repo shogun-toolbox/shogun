@@ -29,6 +29,10 @@
 %include "Features_includes.i"
 %include "Structure_includes.i"
 %include "Preprocessor_includes.i"
+%include "Distribution_includes.i"
+%include "Library_includes.i"
+%include "Kernel_includes.i"
+%include "Distance_includes.i"
 
 %import "Features.i"
 

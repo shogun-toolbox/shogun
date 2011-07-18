@@ -1,8 +1,13 @@
 %{
 #include <shogun/lib/IOBuffer.h>
 #include <shogun/lib/ParseBuffer.h>
+#include <shogun/lib/InputParser.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/lib/File.h>
+#include <shogun/lib/StreamingFile.h>
+#include <shogun/lib/StreamingFileFromFeatures.h>
+#include <shogun/lib/StreamingFileFromSparseFeatures.h>
+#include <shogun/lib/StreamingFileFromSimpleFeatures.h>
 #include <shogun/lib/AsciiFile.h>
 #include <shogun/lib/StreamingAsciiFile.h>
 #include <shogun/lib/BinaryFile.h>
@@ -12,9 +17,6 @@
 #include <shogun/lib/SerializableHdf5File.h>
 #include <shogun/lib/SerializableJsonFile.h>
 #include <shogun/lib/SerializableXmlFile.h>
-#include <shogun/lib/StreamingFileFromFeatures.h>
-#include <shogun/lib/StreamingFileFromSimpleFeatures.h>
-#include <shogun/lib/StreamingFileFromSparseFeatures.h>
 #include <shogun/lib/List.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/Signal.h>

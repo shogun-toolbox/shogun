@@ -38,15 +38,21 @@
 %include <shogun/features/FeatureTypes.h>
 %include "Features_includes.i"
 %include "Preprocessor_includes.i"
+%include "Distribution_includes.i"
+%include "Library_includes.i"
+%include "Kernel_includes.i"
+%include "Distance_includes.i"
 
 %import "Preprocessor.i"
+%import "Distribution.i"
+%import "Library.i"
 
 /* These functions return new Objects */
 %newobject get_transposed();
 
 /* Remove C Prefix */
 %rename(BaseFeatures) CFeatures;
-%rename(StreamingBaseFeatures) CStreamingFeatures;
+%rename(BaseStreamingFeatures) CStreamingFeatures;
 %rename(DotFeatures) CDotFeatures;
 %rename(StreamingDotFeatures) CStreamingDotFeatures;
 %rename(DummyFeatures) CDummyFeatures;
@@ -202,34 +208,3 @@ namespace shogun
 %include <shogun/features/LBPPyrDotFeatures.h>
 %include <shogun/features/ExplicitSpecFeatures.h>
 %include <shogun/features/ImplicitWeightedSpecFeatures.h>
-
-/* Templated Class InputParser */
-%include <shogun/lib/InputParser.h>
-namespace shogun
-{
-    %template(ParserBool) CInputParser<bool>;
-    %template(ParserChar) CInputParser<char>;
-    %template(ParserByte) CInputParser<uint8_t>;
-    %template(ParserShort) CInputParser<int16_t>;
-    %template(ParserWord) CInputParser<uint16_t>;
-    %template(ParserInt) CInputParser<int32_t>;
-    %template(ParserUInt) CInputParser<uint32_t>;
-    %template(ParserLong) CInputParser<int64_t>;
-    %template(ParserUlong) CInputParser<uint64_t>;
-    %template(ParserShortReal) CInputParser<float32_t>;
-    %template(ParserReal) CInputParser<float64_t>;
-    %template(ParserLongReal) CInputParser<floatmax_t>;
-
-    %template(ParserSparseBool) CInputParser< SGSparseVectorEntry<bool> >;
-    %template(ParserSparseChar) CInputParser< SGSparseVectorEntry<char> >;
-    %template(ParserSparseByte) CInputParser< SGSparseVectorEntry<uint8_t> >;
-    %template(ParserSparseShort) CInputParser< SGSparseVectorEntry<int16_t> >;
-    %template(ParserSparseWord) CInputParser< SGSparseVectorEntry<uint16_t> >;
-    %template(ParserSparseInt) CInputParser< SGSparseVectorEntry<int32_t> >;
-    %template(ParserSparseUInt) CInputParser< SGSparseVectorEntry<uint32_t> >;
-    %template(ParserSparseLong) CInputParser< SGSparseVectorEntry<int64_t> >;
-    %template(ParserSparseUlong) CInputParser< SGSparseVectorEntry<uint64_t> >;
-    %template(ParserSparseShortReal) CInputParser< SGSparseVectorEntry<float32_t> >;
-    %template(ParserSparseReal) CInputParser< SGSparseVectorEntry<float64_t> >;
-    %template(ParserSparseLongReal) CInputParser< SGSparseVectorEntry<floatmax_t> >;
-}

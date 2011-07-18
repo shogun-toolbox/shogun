@@ -27,6 +27,9 @@
 /* Include Module Definitions */
 %include "SGBase.i"
 %include "Library_includes.i"
+%include "Features_includes.i"
+
+%import "Features.i"
 
 /* Remove C Prefix */
 %rename(IOBuffer) CIOBuffer;
@@ -62,10 +65,43 @@ namespace shogun
     %template(ExamplesRingSparseLongReal) CParseBuffer< SGSparseVectorEntry<floatmax_t> >;
 }
 
+/* Templated Class InputParser */
+%include <shogun/lib/InputParser.h>
+namespace shogun
+{
+    %template(ParserBool) CInputParser<bool>;
+    %template(ParserChar) CInputParser<char>;
+    %template(ParserByte) CInputParser<uint8_t>;
+    %template(ParserShort) CInputParser<int16_t>;
+    %template(ParserWord) CInputParser<uint16_t>;
+    %template(ParserInt) CInputParser<int32_t>;
+    %template(ParserUInt) CInputParser<uint32_t>;
+    %template(ParserLong) CInputParser<int64_t>;
+    %template(ParserUlong) CInputParser<uint64_t>;
+    %template(ParserShortReal) CInputParser<float32_t>;
+    %template(ParserReal) CInputParser<float64_t>;
+    %template(ParserLongReal) CInputParser<floatmax_t>;
+
+    %template(ParserSparseBool) CInputParser< SGSparseVectorEntry<bool> >;
+    %template(ParserSparseChar) CInputParser< SGSparseVectorEntry<char> >;
+    %template(ParserSparseByte) CInputParser< SGSparseVectorEntry<uint8_t> >;
+    %template(ParserSparseShort) CInputParser< SGSparseVectorEntry<int16_t> >;
+    %template(ParserSparseWord) CInputParser< SGSparseVectorEntry<uint16_t> >;
+    %template(ParserSparseInt) CInputParser< SGSparseVectorEntry<int32_t> >;
+    %template(ParserSparseUInt) CInputParser< SGSparseVectorEntry<uint32_t> >;
+    %template(ParserSparseLong) CInputParser< SGSparseVectorEntry<int64_t> >;
+    %template(ParserSparseUlong) CInputParser< SGSparseVectorEntry<uint64_t> >;
+    %template(ParserSparseShortReal) CInputParser< SGSparseVectorEntry<float32_t> >;
+    %template(ParserSparseReal) CInputParser< SGSparseVectorEntry<float64_t> >;
+    %template(ParserSparseLongReal) CInputParser< SGSparseVectorEntry<floatmax_t> >;
+}
+
 %rename(Cache) CCache;
 %rename(File) CFile;
+%rename(StreamingFile) CStreamingFile;
 %rename(AsciiFile) CAsciiFile;
 %rename(StreamingAsciiFile) CStreamingAsciiFile;
+%rename(StreamingFileFromFeatures) CStreamingFileFromFeatures;
 %rename(BinaryFile) CBinaryFile;
 %rename(HDF5File) CHDF5File;
 %rename(SerializableFile) CSerializableFile;
@@ -73,7 +109,6 @@ namespace shogun
 %rename(SerializableHdf5File) CSerializableHdf5File;
 %rename(SerializableJsonFile) CSerializableJsonFile;
 %rename(SerializableXmlFile) CSerializableXmlFile;
-%rename(StreamingFileFromFeatures) CStreamingFileFromFeatures;
 %rename(ListElement) CListElement;
 %rename(List) CList;
 %rename(Math) CMath;
@@ -94,42 +129,6 @@ namespace shogun
 %warnfilter(509) CArray3;
 
 /* Include Class Headers to make them visible from within the target language */
-/* Template Class StreamingFileFromSimpleFeatures */
-%include <shogun/lib/StreamingFileFromSimpleFeatures.h>
-namespace shogun
-{
-    %template(StreamingFileFromBoolFeatures) CStreamingFileFromSimpleFeatures<bool>;
-    %template(StreamingFileFromCharFeatures) CStreamingFileFromSimpleFeatures<char>;
-    %template(StreamingFileFromByteFeatures) CStreamingFileFromSimpleFeatures<uint8_t>;
-    %template(StreamingFileFromShortFeatures) CStreamingFileFromSimpleFeatures<int16_t>;
-    %template(StreamingFileFromWordFeatures) CStreamingFileFromSimpleFeatures<uint16_t>;
-    %template(StreamingFileFromIntFeatures) CStreamingFileFromSimpleFeatures<int32_t>;
-    %template(StreamingFileFromUIntFeatures) CStreamingFileFromSimpleFeatures<uint32_t>;
-    %template(StreamingFileFromLongFeatures) CStreamingFileFromSimpleFeatures<int64_t>;
-    %template(StreamingFileFromUlongFeatures) CStreamingFileFromSimpleFeatures<uint64_t>;
-    %template(StreamingFileFromShortRealFeatures) CStreamingFileFromSimpleFeatures<float32_t>;
-    %template(StreamingFileFromRealFeatures) CStreamingFileFromSimpleFeatures<float64_t>;
-    %template(StreamingFileFromLongRealFeatures) CStreamingFileFromSimpleFeatures<floatmax_t>;
-}
-
-/* Template Class StreamingFileFromSparseFeatures */
-%include <shogun/lib/StreamingFileFromSparseFeatures.h>
-namespace shogun
-{
-    %template(StreamingFileFromSparseBoolFeatures) CStreamingFileFromSparseFeatures<bool>;
-    %template(StreamingFileFromSparseCharFeatures) CStreamingFileFromSparseFeatures<char>;
-    %template(StreamingFileFromSparseByteFeatures) CStreamingFileFromSparseFeatures<uint8_t>;
-    %template(StreamingFileFromSparseShortFeatures) CStreamingFileFromSparseFeatures<int16_t>;
-    %template(StreamingFileFromSparseWordFeatures) CStreamingFileFromSparseFeatures<uint16_t>;
-    %template(StreamingFileFromSparseIntFeatures) CStreamingFileFromSparseFeatures<int32_t>;
-    %template(StreamingFileFromSparseUIntFeatures) CStreamingFileFromSparseFeatures<uint32_t>;
-    %template(StreamingFileFromSparseLongFeatures) CStreamingFileFromSparseFeatures<int64_t>;
-    %template(StreamingFileFromSparseUlongFeatures) CStreamingFileFromSparseFeatures<uint64_t>;
-    %template(StreamingFileFromSparseShortRealFeatures) CStreamingFileFromSparseFeatures<float32_t>;
-    %template(StreamingFileFromSparseRealFeatures) CStreamingFileFromSparseFeatures<float64_t>;
-    %template(StreamingFileFromSparseLongRealFeatures) CStreamingFileFromSparseFeatures<floatmax_t>;
-}
-
 /* Template Class DynamicArray */
 %include <shogun/lib/DynamicArray.h>
 %include <shogun/base/DynArray.h>
@@ -210,7 +209,48 @@ namespace shogun
 %include <shogun/lib/Cache.h>
 %include <shogun/lib/GCArray.h>
 %include <shogun/lib/File.h>
+%include <shogun/lib/StreamingFile.h>
+%include <shogun/lib/StreamingFileFromFeatures.h>
+
+/* Template Class StreamingFileFromSparseFeatures */
+%include <shogun/lib/StreamingFileFromSparseFeatures.h>
+namespace shogun
+{
+    %template(StreamingFileFromSparseBoolFeatures) CStreamingFileFromSparseFeatures<bool>;
+    %template(StreamingFileFromSparseCharFeatures) CStreamingFileFromSparseFeatures<char>;
+    %template(StreamingFileFromSparseByteFeatures) CStreamingFileFromSparseFeatures<uint8_t>;
+    %template(StreamingFileFromSparseShortFeatures) CStreamingFileFromSparseFeatures<int16_t>;
+    %template(StreamingFileFromSparseWordFeatures) CStreamingFileFromSparseFeatures<uint16_t>;
+    %template(StreamingFileFromSparseIntFeatures) CStreamingFileFromSparseFeatures<int32_t>;
+    %template(StreamingFileFromSparseUIntFeatures) CStreamingFileFromSparseFeatures<uint32_t>;
+    %template(StreamingFileFromSparseLongFeatures) CStreamingFileFromSparseFeatures<int64_t>;
+    %template(StreamingFileFromSparseUlongFeatures) CStreamingFileFromSparseFeatures<uint64_t>;
+    %template(StreamingFileFromSparseShortRealFeatures) CStreamingFileFromSparseFeatures<float32_t>;
+    %template(StreamingFileFromSparseRealFeatures) CStreamingFileFromSparseFeatures<float64_t>;
+    %template(StreamingFileFromSparseLongRealFeatures) CStreamingFileFromSparseFeatures<floatmax_t>;
+}
+
+/* Template Class StreamingFileFromSimpleFeatures */
+%include <shogun/lib/StreamingFileFromSimpleFeatures.h>
+namespace shogun
+{
+    %template(StreamingFileFromBoolFeatures) CStreamingFileFromSimpleFeatures<bool>;
+    %template(StreamingFileFromCharFeatures) CStreamingFileFromSimpleFeatures<char>;
+    %template(StreamingFileFromByteFeatures) CStreamingFileFromSimpleFeatures<uint8_t>;
+    %template(StreamingFileFromShortFeatures) CStreamingFileFromSimpleFeatures<int16_t>;
+    %template(StreamingFileFromWordFeatures) CStreamingFileFromSimpleFeatures<uint16_t>;
+    %template(StreamingFileFromIntFeatures) CStreamingFileFromSimpleFeatures<int32_t>;
+    %template(StreamingFileFromUIntFeatures) CStreamingFileFromSimpleFeatures<uint32_t>;
+    %template(StreamingFileFromLongFeatures) CStreamingFileFromSimpleFeatures<int64_t>;
+    %template(StreamingFileFromUlongFeatures) CStreamingFileFromSimpleFeatures<uint64_t>;
+    %template(StreamingFileFromShortRealFeatures) CStreamingFileFromSimpleFeatures<float32_t>;
+    %template(StreamingFileFromRealFeatures) CStreamingFileFromSimpleFeatures<float64_t>;
+    %template(StreamingFileFromLongRealFeatures) CStreamingFileFromSimpleFeatures<floatmax_t>;
+}
+
+
 %include <shogun/lib/AsciiFile.h>
+%include <shogun/lib/StreamingAsciiFile.h>
 %include <shogun/lib/BinaryFile.h>
 %include <shogun/lib/HDF5File.h>
 %include <shogun/lib/SerializableFile.h>
@@ -218,6 +258,7 @@ namespace shogun
 %include <shogun/lib/SerializableHdf5File.h>
 %include <shogun/lib/SerializableJsonFile.h>
 %include <shogun/lib/SerializableXmlFile.h>
+
 %include <shogun/lib/List.h>
 %include <shogun/lib/Mathematics.h>
 %include <shogun/lib/Signal.h>
