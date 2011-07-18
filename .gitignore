@@ -29,15 +29,13 @@ configure.log
 /doc/manual
 
 # /src/
-/src/libshogun/lib/versionstring.h
-/src/libshogun/lib/config.h
-/src/libshogun/base/class_list.cpp
-/src/shogun
-/src/libshogun/Makefile
+/src/shogun/lib/versionstring.h
+/src/shogun/lib/config.h
+/src/shogun/base/class_list.cpp
+/src/shogun/Makefile
 /src/cmdline/Makefile
 /src/elwms/Makefile
-/src/libshogun/Makefile
-/src/libshogunui/Makefile
+/src/shogun/Makefile
 /src/interfaces/matlab/Makefile
 /src/interfaces/octave/Makefile
 /src/interfaces/octave_modular/Makefile
@@ -45,8 +43,6 @@ configure.log
 /src/interfaces/python_modular/Makefile
 /src/interfaces/r/Makefile
 /src/interfaces/r_modular/Makefile
-/src/libshogunui/shogun
-/src/ui
 /src/examples
 
 # static interfaces
