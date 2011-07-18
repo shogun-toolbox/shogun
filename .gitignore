@@ -38,44 +38,44 @@ configure.log
 /src/elwms/Makefile
 /src/libshogun/Makefile
 /src/libshogunui/Makefile
-/src/matlab/Makefile
-/src/octave/Makefile
-/src/octave_modular/Makefile
-/src/python/Makefile
-/src/python_modular/Makefile
-/src/r/Makefile
-/src/r_modular/Makefile
+/src/interfaces/matlab/Makefile
+/src/interfaces/octave/Makefile
+/src/interfaces/octave_modular/Makefile
+/src/interfaces/python/Makefile
+/src/interfaces/python_modular/Makefile
+/src/interfaces/r/Makefile
+/src/interfaces/r_modular/Makefile
 /src/libshogunui/shogun
 /src/ui
 /src/examples
 
 # static interfaces
-/src/cmdline/shogun
+/src/interfaces/cmdline_static/shogun
 
 # modular interfaces
-/src/*_modular/*.doxy
-/src/*_modular/Evaluation.i
-/src/*_modular/Regression.i
-/src/*_modular/Library.i
-/src/*_modular/Distribution.i
-/src/*_modular/Structure.i
-/src/*_modular/Classifier.i
-/src/*_modular/Features.i
-/src/*_modular/Kernel.i
-/src/*_modular/Preprocessor.i
-/src/*_modular/Distance.i
-/src/*_modular/Clustering.i
-/src/*_modular/SGBase.i
-/src/*_modular/*_includes.i
-/src/*_modular/Makefile
+/src/interfaces/*_modular/*.doxy
+/src/interfaces/*_modular/Evaluation.i
+/src/interfaces/*_modular/Regression.i
+/src/interfaces/*_modular/Library.i
+/src/interfaces/*_modular/Distribution.i
+/src/interfaces/*_modular/Structure.i
+/src/interfaces/*_modular/Classifier.i
+/src/interfaces/*_modular/Features.i
+/src/interfaces/*_modular/Kernel.i
+/src/interfaces/*_modular/Preprocessor.i
+/src/interfaces/*_modular/Distance.i
+/src/interfaces/*_modular/Clustering.i
+/src/interfaces/*_modular/SGBase.i
+/src/interfaces/*_modular/*_includes.i
+/src/interfaces/*_modular/Makefile
 
 # particular modular ones
-/src/csharp_modular/*.cs
-/src/java_modular/*.java
-/src/java_modular/*.class
-/src/python_modular/*.py
-/src/r_modular/*.R
-/src/r_modular/*.RData
+/src/interfaces/csharp_modular/*.cs
+/src/interfaces/java_modular/*.java
+/src/interfaces/java_modular/*.class
+/src/interfaces/python_modular/*.py
+/src/interfaces/r_modular/*.R
+/src/interfaces/r_modular/*.RData
 
 # /examples/
 /examples/documented

@@ -1,4 +1,3 @@
-#include "../libshogun/lib/memory.cpp"
 #include "GUICommands.h"
 #include "SGInterface.h"
 #include "SyntaxHighLight.h"
@@ -35,6 +34,8 @@
 #include <shogun/structure/SegmentLoss.h>
 
 #include <ctype.h>
+
+using namespace shogun;
 
 CSGInterface* interface=NULL;
 CSyntaxHighLight hilight;
@@ -3546,7 +3547,8 @@ bool CSGInterface::cmd_set_WD_position_weights()
 			else
 			{
 				ui_kernel->init_kernel("TRAIN");
-				success=k->set_position_weights(SGVector<float64_t>(weights, len));
+				k->set_position_weights(SGVector<float64_t>(weights, len));
+				success=true;
 			}
 		}
 

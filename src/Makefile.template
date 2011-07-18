@@ -2,18 +2,32 @@
 # will be replaced with the current interface name
 #
 .SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so .dylib .a _wrap.cxx _wrap.cxx.o
-.PHONY: all out clean end targets warn2err err2warn ctags buildout buildend dist
+.PHONY: all out clean end targets warn2err err2warn ctags buildout buildend dist build
 
 SRCDIR = .
 
-ifneq (../.config,$(wildcard ../.config))
-all:
-	@echo !!! Please run ./configure in the top level directory with the appropriate options first !!!
-else
+ifeq (../.config,$(wildcard ../.config))
+CONFIGPATH = ../
+all: build
 include ../.config
 ifeq (../.config-local,$(wildcard ../.config-local))
 include ../.config-local
 endif
+else
+ifeq (../../.config,$(wildcard ../../.config))
+CONFIGPATH = ../../
+all: build
+include ../../.config
+ifeq (../../.config-local,$(wildcard ../../.config-local))
+include ../../.config-local
+endif
+else
+all: 
+	@echo !!! Please run ./configure in the top level directory with the appropriate options first !!!
+endif
+endif
+
+
 
 ifeq (libshogun,$(findstring libshogun,$(TEMPLATE_TARGET)))
 	OTHER_TARGETS=$(TEMPLATE_STATIC)
@@ -45,7 +59,7 @@ OTHERDEPS = $(SWIGSRCFILES) $(SWIGLIBFILES)
 ifeq (yes,$(USE_DOXYGEN))
 OTHERDEPS += $(SWIGDOCFILES)
 endif
-$(shell for i in ../modular/*.* ; do test -f `basename $$i` || ln -s $$i . ; done )
+$(shell for i in $(CONFIGPATH)/modular/*.* ; do test -f `basename $$i` || ln -s $$i . ; done )
 else
 	INCLUDES += $(INCLUDES_STATIC_INTERFACES)
 	LINKFLAGS += $(LINKFLAGS_STATIC_INTERFACES)
@@ -57,8 +71,7 @@ endif
 
 endif
 
-all: $(TEMPLATE_TARGET) $(OTHER_TARGETS) $(OTHERDEPS)
-endif
+build: $(TEMPLATE_TARGET) $(OTHER_TARGETS) $(OTHERDEPS)
 
 INCLUDES += $(INCLUDES_TEMPLATE)
 DEFINES += $(DEFINES_TEMPLATE)
@@ -98,11 +111,11 @@ SWIGRFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^
 			  sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1R=')
 SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | \
 				  sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1RData=')
-TAR:=../shogun-$(shell date +%Y-%m-%d).tar
+TAR:=$(CONFIGPATH)/shogun-$(shell date +%Y-%m-%d).tar
 
-PRELPATH=$(shell python ../.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
-ORELPATH=$(shell python ../.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
-RRELPATH=$(shell python ../.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
+PRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
+ORELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
+RRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
 
 foo: 
 	echo $(SWIGLIBFILES)
@@ -168,19 +181,6 @@ install-cmdline: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(BINDIR)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(BINDIR)
 
-install-libshogunui: $(TEMPLATE_TARGET)
-	install -d -m755 $(DESTDIR)$(LIBDIR)
-	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/ui"
-	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
-	install -m755 $(TEMPLATE_STATIC) $(DESTDIR)$(LIBDIR)
-	install -m644 *.h "$(DESTDIR)$(INCDIR)/shogun/ui"
-	find "$(DESTDIR)$(INCDIR)/shogun/ui" -name '*.h' -exec $(SEDMI) \
-		's/#include "\([^"]*\)"/#include <shogun\/ui\/\1>/' {} \;
-	rm -f $(DESTDIR)$(LIBDIR)/libshogunui.$(EXT_LIB) $(DESTDIR)$(LIBDIR)/$(TEMPLATE_SONAME)
-	cd $(DESTDIR)$(LIBDIR) && ( ln -s $(TEMPLATE_TARGET) libshogunui.$(EXT_LIB); \
-	ln -s $(TEMPLATE_TARGET) $(TEMPLATE_SONAME) )
-	-ldconfig
-
 install-libshogun: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
@@ -200,22 +200,22 @@ install-libshogun: $(TEMPLATE_TARGET)
 	ln -s $(TEMPLATE_TARGET) $(TEMPLATE_SONAME) )
 	-ldconfig
 
-install-python: $(TEMPLATE_TARGET)
+install-python_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(PYDIR)
 
-install-octave: $(TEMPLATE_TARGET)
+install-octave_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(OCTDIR)
 
-install-r: $(TEMPLATE_TARGET)
+install-r_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(RDIR)/sg/libs
-	install -m644 ../../examples/documented/r/*.R ../../examples/documented/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
-	../.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB)
+	install -m644 $(CONFIGPATH)/../examples/documented/r/*.R $(CONFIGPATH)/../examples/documented/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
+	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB)
 
 install-elwms: $(TEMPLATE_TARGET)
 	#one .so file
@@ -243,9 +243,9 @@ ifneq ($(R_TARGET),)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/R
 	rm -f $(DESTDIR)$(RDIR)/elwms/libs/$(TEMPLATE_TARGET)
 	cd $(DESTDIR)$(RDIR)/elwms/libs && ln -s $(RRELPATH)/$(TEMPLATE_TARGET) 
-	install -m644 ../../examples/documented/r/*.R ../../examples/documented/r/graphical/*.R \
+	install -m644 $(CONFIGPATH)/../examples/documented/r/*.R $(CONFIGPATH)/../examples/documented/r/graphical/*.R \
 		$(DESTDIR)$(RDIR)/elwms/demo
-	../.r-install.sh $(DESTDIR)$(RDIR) elwms $(EXT_LIB)
+	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) elwms $(EXT_LIB)
 endif
 
 install-matlab: $(TEMPLATE_TARGET)
@@ -271,10 +271,10 @@ install-r_modular: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
-	install -m644 ../../examples/documented/r_modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
+	install -m644 $(CONFIGPATH)/../examples/documented/r_modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
 	install -m755 *.$(EXT_LIB) $(DESTDIR)$(RDIR)/shogun/libs
 	install -m755 *.RData $(DESTDIR)$(RDIR)/shogun/R
-	../.r-install.sh $(DESTDIR)$(RDIR) shogun $(EXT_LIB)
+	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) shogun $(EXT_LIB)
 
 install-octave_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(OCTDIR)/shogun"
@@ -304,105 +304,97 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	cd ../../examples/undocumented/libshogun && $(MAKE) clean && \
+	cd $(CONFIGPATH)/../examples/undocumented/libshogun && $(MAKE) clean && \
 		$(MAKE) LIBRARY_PATH="$(LIBRARY_PATH)" LIB_PATH="$(DESTDIR)$(LIBDIR)" \
 		INC_PATH="$(DESTDIR)$(INCDIR)" LIBS="$(LINKFLAGS) -lshogun" check-examples
-
-run-testsuite-libshogunui:
-	true
-check-examples-libshogunui:
-	true
 
 run-testsuite-elwms:
 	true
 check-examples-elwms:
 	true
 
-run-testsuite-python:
-	cd ../../testsuite/python && \
+run-testsuite-python_static:
+	cd $(CONFIGPATH)/../testsuite/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
-check-examples-python:
-	cd ../../examples/undocumented/python && \
+check-examples-python_static:
+	cd $(CONFIGPATH)/../examples/undocumented/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 
 run-testsuite-r:
-	cd ../../testsuite/r && \
+	cd $(CONFIGPATH)/../testsuite/r && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r:
-	cd ../../examples/undocumented/r && \
+	cd $(CONFIGPATH)/../examples/undocumented/r && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
 run-testsuite-cmdline:
-	cd ../../testsuite/cmdline && \
+	cd $(CONFIGPATH)/../testsuite/cmdline && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./test_all.sh )
 check-examples-cmdline:
-	cd ../../examples/undocumented/cmdline && \
+	cd $(CONFIGPATH)/../examples/undocumented/cmdline && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./check.sh )
 
 run-testsuite-octave:
-	cd ../../testsuite/octave && \
+	cd $(CONFIGPATH)/../testsuite/octave && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
 check-examples-octave:
-	cd ../../examples/undocumented/octave && \
+	cd $(CONFIGPATH)/../examples/undocumented/octave && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
 
 run-testsuite-matlab:
-	cd ../../testsuite/matlab && \
-		( ln -sf ../../src/matlab/$(TEMPLATE_TARGET) ; \
+	cd $(CONFIGPATH)/../testsuite/matlab && \
+		( ln -sf $(CONFIGPATH)/../src/matlab/$(TEMPLATE_TARGET) ; \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
 
 check-examples-matlab:
-	cd ../../examples/undocumented/matlab && \
+	cd $(CONFIGPATH)/../examples/undocumented/matlab && \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
 
 run-testsuite-python_modular:
-	cd ../../testsuite/python_modular && \
+	cd $(CONFIGPATH)/../testsuite/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
-	cd ../../testsuite/python_modular && \
+	cd $(CONFIGPATH)/../testsuite/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
 check-examples-python_modular:
-	cd ../../examples/undocumented/python_modular && \
+	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
 
 run-testsuite-r_modular:
-	cd ../../testsuite/r_modular && \
+	cd $(CONFIGPATH)/../testsuite/r_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_modular:
-	cd ../../examples/undocumented/r_modular && \
+	cd $(CONFIGPATH)/../examples/undocumented/r_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
 run-testsuite-octave_modular:
-	cd ../../testsuite/octave_modular && \
+	cd $(CONFIGPATH)/../testsuite/octave_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
 check-examples-octave_modular:
-	cd ../../examples/undocumented/octave_modular && \
+	cd $(CONFIGPATH)/../examples/undocumented/octave_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 
 lib/versionstring.h:    $(SVNEntries) 
-	        sh ../.version.sh > $@
+	        sh $(CONFIGPATH)/.version.sh > $@
 
 doc-libshogun:	lib/versionstring.h
 	-@$(SEDMI) "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `\
-		sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" ../../doc/Doxyfile
-	cd ../../doc && $(MAKE)
-
-doc-libshogunui:
-	true
+		sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" $(CONFIGPATH)/../doc/Doxyfile
+	cd $(CONFIGPATH)/../doc && $(MAKE)
 
 doc-elwms:
 	true
@@ -410,35 +402,35 @@ doc-elwms:
 doc-octave:
 	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
 	-echo "sg('set_output', 'y');sg('help','doxygen');" | \
-		( $(LIBRARY_PATH)=../libshogunui:../libshogun \
+		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)" octave )
 	echo "*/" >>y
-	cat x y >../../doc/pages/StaticOctaveInterface.mainpage
+	cat x y >$(CONFIGPATH)/../doc/pages/StaticOctaveInterface.mainpage
 	rm -f x y
 
 doc-cmdline:
 	echo "/** \page staticcmdline Static Command Line Interface Function Reference" >x
 	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | \
-		( $(LIBRARY_PATH)=../libshogunui:../libshogun  \
+		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  \
 		PATH="./:$(DESTDIR)$(BINDIR)" shogun )
 	echo "*/" >>y
-	cat x y >../../doc/pages/StaticCommandLineInterface.mainpage
+	cat x y >$(CONFIGPATH)/../doc/pages/StaticCommandLineInterface.mainpage
 	rm -f x y
 
-doc-python:
+doc-python_static:
 	echo "/** \page staticpython Static Python Interface Function Reference" >x
 	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\"" | \
-		( $(LIBRARY_PATH)=../libshogunui:../libshogun  PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
+		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
 	echo "*/" >>y
-	cat x y >../../doc/pages/StaticPythonInterface.mainpage
+	cat x y >$(CONFIGPATH)/../doc/pages/StaticPythonInterface.mainpage
 	rm -f x y
 
 doc-r:
 	echo "/** \page staticr Static R Interface Function Reference" >x
 	-echo "library(sg);sg('set_output', 'y');sg('help','doxygen');" | \
-		( $(LIBRARY_PATH)=../libshogunui:../libshogun  R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
+		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
 	echo "*/" >>y
-	cat x y >../../doc/pages/StaticRInterface.mainpage
+	cat x y >$(CONFIGPATH)/../doc/pages/StaticRInterface.mainpage
 	rm -f x y
 
 doc-matlab:
@@ -468,7 +460,7 @@ doc-lua_modular:
 doc-csharp_modular:
 	true
 
-$(OBJFILES): ../.config .depend Makefile ../ChangeLog
+$(OBJFILES): $(CONFIGPATH)/.config .depend Makefile $(CONFIGPATH)/ChangeLog
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
@@ -490,7 +482,7 @@ $(TEMPLATE_STATIC): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 %.R: %${EXT_LIB_SWIG_TEMPLATE}
 %.RData: %.R
 	echo 'f="$<"; fdata="$@"; source(f); save(list=ls(all=TRUE),file=fdata, compress=TRUE); q(save="no")' | \
-		($(LIBRARY_PATH)=../libshogun:../libshogunui R --no-save)
+		($(LIBRARY_PATH)=$(CONFIGPATH)/../shogun R --no-save)
 
 $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
@@ -527,16 +519,16 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
 	$(DOXYGEN) $<
-	$(PYTHON) ../.doxy2swig.py --quiet --no-function-definition \
+	$(PYTHON) $(CONFIGPATH)/.doxy2swig.py --quiet --no-function-definition \
 		$(shell basename $< $(EXT_DOXY))/doxygen_xml/index.xml $@
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) ../.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 endif
 
 # Do not include dependencies when they are about to be removed anyway.
@@ -544,7 +536,7 @@ ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),clean)
 
 # Generate dependecies.
-.depend:	../.config $(DEPDEPS)
+.depend:	$(CONFIGPATH)/.config $(DEPDEPS)
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -555,9 +547,9 @@ ifeq (makedepend,$(MAKEDEPEND))
 else #gcc -MM
 	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
-	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find ../shogun/ -name "*.h"  ) | \
+	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find $(CONFIGPATH)/shogun/ -name "*.h"  ) | \
 	 		sed 's#/[/]*#/#g' | \
-			$(PYTHON) ../.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
+			$(PYTHON) $(CONFIGPATH)/.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
 			"$(EXT_LIB_SWIG_TEMPLATE)" $(LIBSHOGUN_MODE) >>.depend
 ifeq (r_modular,$(TEMPLATE_TARGET))
 	    bash -c "( for i in \`grep '.$(EXT_LIB):' .depend | cut -f 1 -d ':'\` ; \

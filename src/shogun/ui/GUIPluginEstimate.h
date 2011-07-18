@@ -25,6 +25,7 @@ class CGUIPluginEstimate : public CSGObject
 {
 
 	public:
+		CGUIPluginEstimate() {};
 		CGUIPluginEstimate(CSGInterface* interface);
 		~CGUIPluginEstimate();
 

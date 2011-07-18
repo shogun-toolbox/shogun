@@ -27,6 +27,7 @@ class CSGInterface;
 class CGUIStructure : public CSGObject
 {
 	public:
+		CGUIStructure() {};
 		CGUIStructure(CSGInterface* interface);
 		~CGUIStructure();
 

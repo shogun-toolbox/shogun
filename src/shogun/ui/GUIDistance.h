@@ -24,6 +24,7 @@ class CSGInterface;
 class CGUIDistance : public CSGObject
 {
  public:
+	CGUIDistance() {};
 	CGUIDistance(CSGInterface* interface);
 	~CGUIDistance();
 

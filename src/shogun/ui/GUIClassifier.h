@@ -23,6 +23,7 @@ class CSGInterface;
 class CGUIClassifier : public CSGObject
 {
 	public:
+		CGUIClassifier() { };
 		CGUIClassifier(CSGInterface* interface);
 		~CGUIClassifier();
 

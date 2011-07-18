@@ -24,6 +24,7 @@ class CSGInterface;
 class CGUIPreprocessor : public CSGObject
 {
 	public:
+		CGUIPreprocessor() { };
 		CGUIPreprocessor(CSGInterface* interface);
 		~CGUIPreprocessor();
 

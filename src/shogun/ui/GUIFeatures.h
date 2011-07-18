@@ -41,6 +41,7 @@ class CGUIFeatures : public CSGObject
 	};
 
 	public:
+		CGUIFeatures() {};
 		CGUIFeatures(CSGInterface* interface);
 		~CGUIFeatures();
 

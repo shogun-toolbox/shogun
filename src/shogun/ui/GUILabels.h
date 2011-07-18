@@ -23,6 +23,7 @@ class CSGInterface;
 class CGUILabels : public CSGObject
 {
 	public:
+		CGUILabels() {};
 		CGUILabels(CSGInterface* interface);
 		~CGUILabels();
 

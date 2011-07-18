@@ -8,31 +8,29 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef __GUITIME__H_
-#define __GUITIME__H_
+#ifndef __GUIMATH__H__ 
+#define __GUIMATH__H__ 
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/Time.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun
 {
 class CSGInterface;
 
-class CGUITime : public CSGObject
+class CGUIMath : public CSGObject
 {
 	public:
-		CGUITime(CSGInterface* interface);
-		~CGUITime();
-
-		void start();
-		void stop();
+		CGUIMath() {};
+		CGUIMath(CSGInterface* interface);
+		void set_threshold(float64_t value);
+		void init_random(uint32_t initseed=0);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUITime"; }
+		inline virtual const char* get_name() const { return "GUIMath"; }
 	protected:
 		CSGInterface* ui;
-		CTime* time;
+		float64_t threshold;
 };
 }
 #endif

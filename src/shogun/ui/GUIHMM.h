@@ -24,6 +24,7 @@ class CSGInterface;
 class CGUIHMM : public CSGObject
 {
 	public:
+		CGUIHMM() { };
 		CGUIHMM(CSGInterface* interface);
 		~CGUIHMM();
 
