@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/CombinedFeatures.h"
-#include "lib/io.h"
+#include <shogun/features/CombinedFeatures.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

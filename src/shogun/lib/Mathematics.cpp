@@ -14,10 +14,10 @@
 //////////////////////////////////////////////////////////////////////
 
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "lib/lapack.h"
-#include "lib/io.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/lapack.h>
+#include <shogun/lib/io.h>
 
 #include <stdio.h>
 #include <stdlib.h>

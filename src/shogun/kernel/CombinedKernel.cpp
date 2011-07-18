@@ -9,15 +9,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/Signal.h"
-#include "base/Parallel.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/base/Parallel.h>
 
-#include "kernel/Kernel.h"
-#include "kernel/CombinedKernel.h"
-#include "kernel/CustomKernel.h"
-#include "features/CombinedFeatures.h"
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/features/CombinedFeatures.h>
 
 #include <string.h>
 

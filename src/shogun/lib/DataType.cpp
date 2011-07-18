@@ -10,8 +10,8 @@
 
 #include <string.h>
 
-#include "base/SGObject.h"
-#include "lib/DataType.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/DataType.h>
 
 using namespace shogun;
 

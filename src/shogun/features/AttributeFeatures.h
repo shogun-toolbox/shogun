@@ -12,8 +12,8 @@
 
 #include <string.h>
 
-#include "features/Features.h"
-#include "base/DynArray.h"
+#include <shogun/features/Features.h>
+#include <shogun/base/DynArray.h>
 
 namespace shogun
 {

@@ -60,9 +60,9 @@
 #define std_hash_map STDEXT_NAMESPACE::hash_map
 #define std_hash_set STDEXT_NAMESPACE::hash_set
 
-#include "lib/io.h"
-#include "kernel/Kernel.h"
-#include "classifier/svm/MultiClassSVM.h"
+#include <shogun/lib/io.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/classifier/svm/MultiClassSVM.h>
 
 namespace shogun
 {

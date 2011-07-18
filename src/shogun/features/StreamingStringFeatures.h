@@ -10,14 +10,14 @@
 #ifndef _STREAMING_STRINGFEATURES__H__
 #define _STREAMING_STRINGFEATURES__H__
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "base/Parameter.h"
-#include "lib/DataType.h"
-#include "lib/InputParser.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/InputParser.h>
 
-#include "features/StreamingFeatures.h"
-#include "features/Alphabet.h"
+#include <shogun/features/StreamingFeatures.h>
+#include <shogun/features/Alphabet.h>
 
 namespace shogun
 {

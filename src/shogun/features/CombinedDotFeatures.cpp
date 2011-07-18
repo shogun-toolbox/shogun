@@ -9,9 +9,9 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "features/CombinedDotFeatures.h"
-#include "lib/io.h"
-#include "lib/Mathematics.h"
+#include <shogun/features/CombinedDotFeatures.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

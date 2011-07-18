@@ -8,15 +8,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef USE_CPLEX
 #include <unistd.h>
 
-#include "lib/Cplex.h"
-#include "lib/io.h"
-#include "lib/Signal.h"
-#include "lib/Mathematics.h"
+#include <shogun/lib/Cplex.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

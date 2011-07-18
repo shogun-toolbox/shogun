@@ -11,8 +11,8 @@
 #ifndef _POLYMATCHSTRINGKERNEL_H___
 #define _POLYMATCHSTRINGKERNEL_H___
 
-#include "lib/common.h"
-#include "kernel/StringKernel.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/StringKernel.h>
 
 namespace shogun
 {

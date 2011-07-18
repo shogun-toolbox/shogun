@@ -13,20 +13,20 @@
 #ifndef _CSTRINGFEATURES__H__
 #define _CSTRINGFEATURES__H__
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/Cache.h"
-#include "lib/DynamicArray.h"
-#include "lib/File.h"
-#include "lib/MemoryMappedFile.h"
-#include "lib/Mathematics.h"
-#include "lib/Compressor.h"
-#include "base/Parameter.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Cache.h>
+#include <shogun/lib/DynamicArray.h>
+#include <shogun/lib/File.h>
+#include <shogun/lib/MemoryMappedFile.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Compressor.h>
+#include <shogun/base/Parameter.h>
 
-#include "preprocessor/Preprocessor.h"
-#include "preprocessor/StringPreprocessor.h"
-#include "features/Features.h"
-#include "features/Alphabet.h"
+#include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/preprocessor/StringPreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/Alphabet.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

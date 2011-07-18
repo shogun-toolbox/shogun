@@ -9,12 +9,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "preprocessor/PruneVarSubMean.h"
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
-#include "lib/io.h"
-#include "lib/Mathematics.h"
+#include <shogun/preprocessor/PruneVarSubMean.h>
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

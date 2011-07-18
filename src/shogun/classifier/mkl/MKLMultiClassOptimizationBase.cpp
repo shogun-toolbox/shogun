@@ -8,7 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "MKLMultiClassOptimizationBase.h"
+#include <shogun/classifier/mkl/MKLMultiClassOptimizationBase.h>
 
 using namespace shogun;
 

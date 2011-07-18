@@ -8,11 +8,11 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "kernel/GaussianShiftKernel.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
-#include "lib/io.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/GaussianShiftKernel.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

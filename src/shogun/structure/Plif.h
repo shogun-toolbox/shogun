@@ -11,9 +11,9 @@
 #ifndef __PLIF_H__
 #define __PLIF_H__
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "structure/PlifBase.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/structure/PlifBase.h>
 
 namespace shogun
 {

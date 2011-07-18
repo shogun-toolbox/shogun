@@ -11,9 +11,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "features/Alphabet.h"
-#include "lib/io.h"
-#include "base/Parameter.h"
+#include <shogun/features/Alphabet.h>
+#include <shogun/lib/io.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

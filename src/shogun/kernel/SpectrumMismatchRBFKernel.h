@@ -12,14 +12,14 @@
 #ifndef _SPECTRUMMISMATCHRBFKERNEL_H___
 #define _SPECTRUMMISMATCHRBFKERNEL_H___
 
-#include "lib/common.h"
-#include "lib/Trie.h"
-#include "kernel/StringKernel.h"
-#include "features/StringFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Trie.h>
+#include <shogun/kernel/StringKernel.h>
+#include <shogun/features/StringFeatures.h>
 
 
-#include "lib/Array.h"
-#include "lib/Array2.h"
+#include <shogun/lib/Array.h>
+#include <shogun/lib/Array2.h>
 #include <string>
 
 namespace shogun

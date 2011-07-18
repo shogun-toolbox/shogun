@@ -9,18 +9,18 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2011 Berlin Institute of Technology
  */
-#include "preprocessor/PCA.h"
+#include <shogun/preprocessor/PCA.h>
 #ifdef HAVE_LAPACK
-#include "lib/lapack.h"
-#include "lib/config.h"
-#include "lib/Mathematics.h"
+#include <shogun/lib/lapack.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/Mathematics.h>
 #include <string.h>
 #include <stdlib.h>
-#include "lib/common.h"
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
-#include "lib/io.h"
+#include <shogun/lib/common.h>
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

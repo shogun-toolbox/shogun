@@ -11,9 +11,9 @@
 #ifndef _ATTENUATEDEUCLIDIANDISTANCE_H__
 #define _ATTENUATEDEUCLIDIANDISTANCE_H__
 
-#include "lib/common.h"
-#include "distance/RealDistance.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/distance/RealDistance.h>
+#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {

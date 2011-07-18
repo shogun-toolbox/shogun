@@ -11,10 +11,10 @@
 #ifndef _ONLINELINEARCLASSIFIER_H__
 #define _ONLINELINEARCLASSIFIER_H__
 
-#include "lib/common.h"
-#include "features/Labels.h"
-#include "features/StreamingDotFeatures.h"
-#include "machine/Machine.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/Labels.h>
+#include <shogun/features/StreamingDotFeatures.h>
+#include <shogun/machine/Machine.h>
 
 #include <stdio.h>
 

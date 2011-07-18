@@ -12,11 +12,11 @@
 #ifndef _WEIGHTEDDEGREESTRINGKERNEL_H___
 #define _WEIGHTEDDEGREESTRINGKERNEL_H___
 
-#include "lib/common.h"
-#include "lib/Trie.h"
-#include "kernel/StringKernel.h"
-#include "kernel/MultitaskKernelMklNormalizer.h"
-#include "features/StringFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Trie.h>
+#include <shogun/kernel/StringKernel.h>
+#include <shogun/kernel/MultitaskKernelMklNormalizer.h>
+#include <shogun/features/StringFeatures.h>
 
 namespace shogun
 {

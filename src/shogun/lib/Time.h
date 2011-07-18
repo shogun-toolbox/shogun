@@ -14,9 +14,9 @@
 #include <sys/time.h>
 #include <time.h>
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "base/SGObject.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {

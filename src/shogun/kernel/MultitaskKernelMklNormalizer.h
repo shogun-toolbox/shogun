@@ -11,9 +11,9 @@
 #ifndef _MULTITASKKERNELMKLNORMALIZER_H___
 #define _MULTITASKKERNELMKLNORMALIZER_H___
 
-#include "kernel/KernelNormalizer.h"
-#include "kernel/MultitaskKernelMklNormalizer.h"
-#include "kernel/Kernel.h"
+#include <shogun/kernel/KernelNormalizer.h>
+#include <shogun/kernel/MultitaskKernelMklNormalizer.h>
+#include <shogun/kernel/Kernel.h>
 #include <algorithm>
 #include <string>
 

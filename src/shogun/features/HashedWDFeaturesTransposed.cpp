@@ -8,10 +8,10 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "features/HashedWDFeaturesTransposed.h"
-#include "lib/io.h"
-#include "lib/Signal.h"
-#include "base/Parallel.h"
+#include <shogun/features/HashedWDFeaturesTransposed.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/base/Parallel.h>
 
 #ifndef WIN32
 #include <pthread.h>

@@ -13,7 +13,7 @@
 #ifdef HAVE_ARPACK
 #ifdef HAVE_LAPACK
 #include <cblas.h>
-#include "lib/io.h"
+#include <shogun/lib/io.h>
 
 /** external ARPACK routine DSAUPD */
 extern "C" void dsaupd_(int *ido, char *bmat, int *n, char *which,

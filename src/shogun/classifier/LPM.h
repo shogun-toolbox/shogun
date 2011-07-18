@@ -11,13 +11,13 @@
 #ifndef _LPM_H___
 #define _LPM_H___
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifdef USE_CPLEX
 
 #include <stdio.h>
-#include "lib/common.h"
-#include "features/Features.h"
-#include "machine/LinearMachine.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/Features.h>
+#include <shogun/machine/LinearMachine.h>
 
 namespace shogun
 {

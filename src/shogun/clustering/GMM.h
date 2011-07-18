@@ -10,13 +10,13 @@
 #ifndef _GMM_H__
 #define _GMM_H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include "distributions/Distribution.h"
-#include "distributions/Gaussian.h"
-#include "lib/common.h"
+#include <shogun/distributions/Distribution.h>
+#include <shogun/distributions/Gaussian.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {

@@ -11,11 +11,11 @@
 #ifndef _MACHINE_H__
 #define _MACHINE_H__
 
-#include "lib/common.h"
-#include "base/SGObject.h"
-#include "lib/Mathematics.h"
-#include "features/Labels.h"
-#include "features/Features.h"
+#include <shogun/lib/common.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/features/Labels.h>
+#include <shogun/features/Features.h>
 
 namespace shogun
 {

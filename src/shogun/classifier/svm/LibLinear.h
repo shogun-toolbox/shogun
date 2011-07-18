@@ -12,12 +12,12 @@
 #ifndef _LIBLINEAR_H___
 #define _LIBLINEAR_H___
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
-#include "lib/common.h"
-#include "base/Parameter.h"
-#include "machine/LinearMachine.h"
-#include "classifier/svm/SVM_linear.h"
+#include <shogun/lib/common.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/classifier/svm/SVM_linear.h>
 
 namespace shogun
 {

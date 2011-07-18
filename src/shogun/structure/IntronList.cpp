@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "lib/Mathematics.h"
-#include "lib/config.h"
-#include "lib/io.h"
-#include "structure/IntronList.h"
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/structure/IntronList.h>
 
 using namespace shogun;
 

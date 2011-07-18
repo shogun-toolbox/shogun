@@ -10,7 +10,7 @@
 #ifndef __SERIALIZABLE_ASCII_READER_00_H__
 #define __SERIALIZABLE_ASCII_READER_00_H__
 
-#include "lib/SerializableAsciiFile.h"
+#include <shogun/lib/SerializableAsciiFile.h>
 
 namespace shogun
 {

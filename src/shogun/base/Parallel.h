@@ -11,9 +11,9 @@
 #ifndef PARALLEL_H__
 #define PARALLEL_H__
 
-#include "lib/common.h"
-#include "lib/config.h"
-#include "lib/io.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
 
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 #include <unistd.h>

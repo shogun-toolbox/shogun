@@ -74,11 +74,11 @@
 #include <string.h>
 #include <time.h>
 
-#include "classifier/svm/gpm.h"
-#include "classifier/svm/gpdt.h"
-#include "classifier/svm/gpdtsolve.h"
-#include "lib/Signal.h"
-#include "lib/io.h"
+#include <shogun/classifier/svm/gpm.h>
+#include <shogun/classifier/svm/gpdt.h>
+#include <shogun/classifier/svm/gpdtsolve.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

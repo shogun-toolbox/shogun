@@ -8,7 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "MKLMultiClassGLPK.h"
+#include <shogun/classifier/mkl/MKLMultiClassGLPK.h>
 
 using namespace shogun;
 

@@ -16,11 +16,11 @@
 #ifndef IOBUFFER_H__
 #define IOBUFFER_H__
 
-#include "lib/v_array.h"
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/DataType.h"
-#include "base/SGObject.h"
+#include <shogun/lib/v_array.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/base/SGObject.h>
 
 #include <stdio.h>
 #include <fcntl.h>

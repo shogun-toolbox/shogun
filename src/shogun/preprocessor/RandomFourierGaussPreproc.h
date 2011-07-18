@@ -15,9 +15,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "preprocessor/SimplePreprocessor.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/preprocessor/SimplePreprocessor.h>
 
 namespace shogun {
 class CRandomFourierGaussPreproc: public CSimplePreprocessor<float64_t> {

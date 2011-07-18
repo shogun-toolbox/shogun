@@ -8,12 +8,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
-#include "lib/common.h"
-#include "lib/io.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
 
-#include "base/Parameter.h"
-#include "kernel/DiagKernel.h"
+#include <shogun/base/Parameter.h>
+#include <shogun/kernel/DiagKernel.h>
 
 using namespace shogun;
 

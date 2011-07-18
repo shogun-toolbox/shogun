@@ -8,17 +8,17 @@
  * Copyright (c) 2007-2009 The LIBLINEAR Project.
  * Copyright (C) 2007-2010 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include "lib/io.h"
-#include "lib/Signal.h"
-#include "lib/Time.h"
-#include "base/Parameter.h"
-#include "classifier/svm/LibLinear.h"
-#include "classifier/svm/SVM_linear.h"
-#include "classifier/svm/Tron.h"
-#include "features/DotFeatures.h"
+#include <shogun/lib/io.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/classifier/svm/LibLinear.h>
+#include <shogun/classifier/svm/SVM_linear.h>
+#include <shogun/classifier/svm/Tron.h>
+#include <shogun/features/DotFeatures.h>
 
 using namespace shogun;
 

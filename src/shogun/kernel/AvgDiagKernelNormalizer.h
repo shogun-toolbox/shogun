@@ -11,7 +11,7 @@
 #ifndef _AVGDIAGKERNELNORMALIZER_H___
 #define _AVGDIAGKERNELNORMALIZER_H___
 
-#include "kernel/KernelNormalizer.h"
+#include <shogun/kernel/KernelNormalizer.h>
 namespace shogun
 {
 /** @brief Normalize the kernel by either a constant or the average value of the

@@ -10,11 +10,11 @@
 #ifndef __PARAMETER_H__
 #define __PARAMETER_H__
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/DataType.h"
-#include "lib/SerializableFile.h"
-#include "base/DynArray.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/SerializableFile.h>
+#include <shogun/base/DynArray.h>
 
 namespace shogun
 {

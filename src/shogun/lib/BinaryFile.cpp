@@ -8,9 +8,9 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/File.h"
-#include "features/SparseFeatures.h"
-#include "lib/BinaryFile.h"
+#include <shogun/lib/File.h>
+#include <shogun/features/SparseFeatures.h>
+#include <shogun/lib/BinaryFile.h>
 
 using namespace shogun;
 

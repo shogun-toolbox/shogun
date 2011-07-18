@@ -11,8 +11,8 @@
 #ifndef _DREALFILEFEATURES__H__
 #define _DREALFILEFEATURES__H__
 
-#include "lib/common.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {

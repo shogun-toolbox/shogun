@@ -19,11 +19,11 @@
    Shogun adjustments (w) 2011 Siddharth Kherada
 */
 
-#include "classifier/svm/SGDQN.h"
-#include "base/Parameter.h"
-#include "lib/Signal.h"
-#include "lib/Mathematics.h"
-#include "lib/Loss.h"
+#include <shogun/classifier/svm/SGDQN.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Loss.h>
 
 
 using namespace shogun;

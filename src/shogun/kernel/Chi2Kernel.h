@@ -11,10 +11,10 @@
 #ifndef _CHI2KERNEL_H___
 #define _CHI2KERNEL_H___
 
-#include "lib/common.h"
-#include "kernel/DotKernel.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/DotKernel.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {

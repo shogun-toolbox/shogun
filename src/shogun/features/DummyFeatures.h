@@ -11,9 +11,9 @@
 #ifndef _DUMMYFEATURES__H__
 #define _DUMMYFEATURES__H__
 
-#include "lib/common.h"
-#include "features/Features.h"
-#include "base/Parameter.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/Features.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {

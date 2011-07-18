@@ -8,11 +8,11 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/DotFeatures.h"
-#include "lib/io.h"
-#include "lib/Signal.h"
-#include "base/Parallel.h"
-#include "base/Parameter.h"
+#include <shogun/features/DotFeatures.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/Parameter.h>
 
 #ifndef WIN32
 #include <pthread.h>

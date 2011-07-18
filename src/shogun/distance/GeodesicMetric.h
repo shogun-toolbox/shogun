@@ -11,9 +11,9 @@
 #ifndef _GEODESICMETRIC_H___
 #define _GEODESICMETRIC_H___
 
-#include "lib/common.h"
-#include "distance/SimpleDistance.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/distance/SimpleDistance.h>
+#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {

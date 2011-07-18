@@ -11,11 +11,11 @@
 #ifndef _SCATTERKERNELNORMALIZER_H___
 #define _SCATTERKERNELNORMALIZER_H___
 
-#include "kernel/KernelNormalizer.h"
-#include "kernel/IdentityKernelNormalizer.h"
-#include "kernel/Kernel.h"
-#include "features/Labels.h"
-#include "lib/io.h"
+#include <shogun/kernel/KernelNormalizer.h>
+#include <shogun/kernel/IdentityKernelNormalizer.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/features/Labels.h>
+#include <shogun/lib/io.h>
 
 namespace shogun
 {

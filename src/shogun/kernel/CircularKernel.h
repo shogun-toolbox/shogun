@@ -9,14 +9,14 @@
  * Copyright (C) 2011 Indian Institute of Technology Bombay
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifndef _CIRCULARKERNEL_H__
 #define _CIRCULARKERNEL_H__
 
-#include "lib/common.h"
-#include "kernel/Kernel.h"
-#include "distance/Distance.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/distance/Distance.h>
 
 namespace shogun
 {

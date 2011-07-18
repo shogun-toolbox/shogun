@@ -8,8 +8,8 @@
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "PowerKernel.h"
-#include "lib/Mathematics.h"
+#include <shogun/kernel/PowerKernel.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

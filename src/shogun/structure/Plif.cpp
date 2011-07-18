@@ -12,9 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "lib/config.h"
-#include "lib/io.h"
-#include "structure/Plif.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/structure/Plif.h>
 
 //#define PLIF_DEBUG
 

@@ -8,8 +8,8 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/WDFeatures.h"
-#include "lib/io.h"
+#include <shogun/features/WDFeatures.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

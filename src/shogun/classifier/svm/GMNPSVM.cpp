@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
  */
 
-#include "lib/io.h"
-#include "classifier/svm/GMNPSVM.h"
-#include "classifier/svm/GMNPLib.h"
+#include <shogun/lib/io.h>
+#include <shogun/classifier/svm/GMNPSVM.h>
+#include <shogun/classifier/svm/GMNPLib.h>
 
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 #define MINUS_INF INT_MIN

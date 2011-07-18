@@ -1,10 +1,10 @@
 #ifndef _CTron_H
 #define _CTron_H
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include "base/SGObject.h"
+#include <shogun/base/SGObject.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace shogun

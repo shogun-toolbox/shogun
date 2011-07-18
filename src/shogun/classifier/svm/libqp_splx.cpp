@@ -75,8 +75,8 @@
 #include <stdint.h>
 #include <limits.h>
 
-#include "lib/common.h"
-#include "classifier/svm/libqp.h"
+#include <shogun/lib/common.h>
+#include <shogun/classifier/svm/libqp.h>
 namespace shogun
 {
 

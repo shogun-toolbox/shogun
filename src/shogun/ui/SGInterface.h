@@ -11,18 +11,18 @@
 #include <shogun/features/AttributeFeatures.h>
 #include <shogun/kernel/Kernel.h>
 
-#include "GUIClassifier.h"
-#include "GUIDistance.h"
-#include "GUIFeatures.h"
-#include "GUIHMM.h"
-#include "GUIKernel.h"
-#include "GUILabels.h"
-#include "GUIMath.h"
-#include "GUIPluginEstimate.h"
-#include "GUIPreprocessor.h"
-#include "GUITime.h"
-#include "GUIStructure.h"
-#include "GUISignals.h"
+#include <shogun/ui/GUIClassifier.h>
+#include <shogun/ui/GUIDistance.h>
+#include <shogun/ui/GUIFeatures.h>
+#include <shogun/ui/GUIHMM.h>
+#include <shogun/ui/GUIKernel.h>
+#include <shogun/ui/GUILabels.h>
+#include <shogun/ui/GUIMath.h>
+#include <shogun/ui/GUIPluginEstimate.h>
+#include <shogun/ui/GUIPreprocessor.h>
+#include <shogun/ui/GUITime.h>
+#include <shogun/ui/GUIStructure.h>
+#include <shogun/ui/GUISignals.h>
 
 namespace shogun
 {

@@ -11,7 +11,7 @@
 #ifndef __SUBSET_H_
 #define __SUBSET_H_
 
-#include "base/SGObject.h"
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {

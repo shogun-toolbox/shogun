@@ -13,11 +13,11 @@
 #define _KMEANS_H__
 
 #include <stdio.h>
-#include "lib/common.h"
-#include "lib/io.h"
-#include "features/SimpleFeatures.h"
-#include "distance/Distance.h"
-#include "machine/DistanceMachine.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/machine/DistanceMachine.h>
 
 namespace shogun
 {

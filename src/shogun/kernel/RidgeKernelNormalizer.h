@@ -11,7 +11,7 @@
 #ifndef _RIDGEKERNELNORMALIZER_H___
 #define _RIDGEKERNELNORMALIZER_H___
 
-#include "kernel/KernelNormalizer.h"
+#include <shogun/kernel/KernelNormalizer.h>
 
 namespace shogun
 {

@@ -16,10 +16,10 @@
 #include <string.h>
 #include <hdf5.h>
 
-#include "lib/HDF5File.h"
+#include <shogun/lib/HDF5File.h>
 
-#include "features/StringFeatures.h"
-#include "features/SparseFeatures.h"
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/SparseFeatures.h>
 
 using namespace shogun;
 

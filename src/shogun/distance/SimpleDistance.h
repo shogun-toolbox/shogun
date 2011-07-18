@@ -11,9 +11,9 @@
 #ifndef _SIMPLEDISTANCE_H___
 #define _SIMPLEDISTANCE_H___
 
-#include "distance/Distance.h"
-#include "features/SimpleFeatures.h"
-#include "lib/io.h"
+#include <shogun/distance/Distance.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/io.h>
 
 namespace shogun
 {

@@ -11,9 +11,9 @@
 #ifndef _DOTKERNEL_H___
 #define _DOTKERNEL_H___
 
-#include "kernel/Kernel.h"
-#include "features/DotFeatures.h"
-#include "lib/io.h"
+#include <shogun/kernel/Kernel.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/lib/io.h>
 
 namespace shogun
 {

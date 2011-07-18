@@ -14,8 +14,8 @@
 #ifndef _LAPACK_H__
 #define _LAPACK_H__
 
-#include "lib/config.h"
-#include "lib/common.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
 
 #ifdef HAVE_LAPACK
 

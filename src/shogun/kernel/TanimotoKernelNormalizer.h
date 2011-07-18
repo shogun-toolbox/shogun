@@ -11,8 +11,8 @@
 #ifndef _TANIMOTOKERNELNORMALIZER_H___
 #define _TANIMOTOKERNELNORMALIZER_H___
 
-#include "kernel/KernelNormalizer.h"
-#include "kernel/CommWordStringKernel.h"
+#include <shogun/kernel/KernelNormalizer.h>
+#include <shogun/kernel/CommWordStringKernel.h>
 
 namespace shogun
 {

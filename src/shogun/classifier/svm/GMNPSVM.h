@@ -11,9 +11,9 @@
 #ifndef _GMNPSVM_H___
 #define _GMNPSVM_H___
 
-#include "lib/common.h"
-#include "classifier/svm/MultiClassSVM.h"
-#include "features/Features.h"
+#include <shogun/lib/common.h>
+#include <shogun/classifier/svm/MultiClassSVM.h>
+#include <shogun/features/Features.h>
 
 namespace shogun
 {

@@ -10,8 +10,8 @@
 #ifndef __STREAMING_FILEFROMSIMPLE_H__
 #define __STREAMING_FILEFROMSIMPLE_H__
 
-#include "lib/StreamingFileFromFeatures.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/StreamingFileFromFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {

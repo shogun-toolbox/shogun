@@ -12,14 +12,14 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/memory.h"
+#include <shogun/lib/memory.h>
 
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifndef LINUX
 #define RANDOM_MAX 2147483647

@@ -9,17 +9,17 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/Labels.h"
-#include "lib/Mathematics.h"
-#include "lib/DynamicArray.h"
-#include "lib/Time.h"
-#include "base/Parallel.h"
-#include "machine/Machine.h"
-#include "classifier/svm/libocas.h"
-#include "classifier/svm/WDSVMOcas.h"
-#include "features/StringFeatures.h"
-#include "features/Alphabet.h"
-#include "features/Labels.h"
+#include <shogun/features/Labels.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/DynamicArray.h>
+#include <shogun/lib/Time.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/machine/Machine.h>
+#include <shogun/classifier/svm/libocas.h>
+#include <shogun/classifier/svm/WDSVMOcas.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/Alphabet.h>
+#include <shogun/features/Labels.h>
 
 using namespace shogun;
 

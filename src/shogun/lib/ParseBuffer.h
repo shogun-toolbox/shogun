@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "lib/DataType.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/DataType.h>
 #include <pthread.h>
 
 #ifndef __PARSEBUFFER_H__

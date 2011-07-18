@@ -8,16 +8,16 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "preprocessor/ClassicMDS.h"
+#include <shogun/preprocessor/ClassicMDS.h>
 #ifdef HAVE_LAPACK
-#include "preprocessor/DimensionReductionPreprocessor.h"
-#include "lib/lapack.h"
-#include "lib/arpack.h"
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "lib/io.h"
-#include "distance/EuclidianDistance.h"
-#include "lib/Signal.h"
+#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
+#include <shogun/lib/lapack.h>
+#include <shogun/lib/arpack.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/io.h>
+#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 

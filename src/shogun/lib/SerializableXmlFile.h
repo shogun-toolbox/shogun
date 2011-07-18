@@ -10,11 +10,11 @@
 #ifndef __SERIALIZABLE_XML_FILE_H__
 #define __SERIALIZABLE_XML_FILE_H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifdef HAVE_XML
 
-#include "lib/SerializableFile.h"
-#include "base/DynArray.h"
+#include <shogun/lib/SerializableFile.h>
+#include <shogun/base/DynArray.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>

@@ -11,13 +11,13 @@
 #ifndef _LDA_H___
 #define _LDA_H___
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include "lib/common.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
-#include "machine/LinearMachine.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/machine/LinearMachine.h>
 
 namespace shogun
 {

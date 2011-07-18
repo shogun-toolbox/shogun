@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
  */
 
-#include "lib/io.h"
-#include "classifier/svm/GNPPSVM.h"
-#include "classifier/svm/GNPPLib.h"
+#include <shogun/lib/io.h>
+#include <shogun/classifier/svm/GNPPSVM.h>
+#include <shogun/classifier/svm/GNPPLib.h>
 
 using namespace shogun;
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW)) 

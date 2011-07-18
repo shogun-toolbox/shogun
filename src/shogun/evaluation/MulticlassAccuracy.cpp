@@ -8,9 +8,9 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "evaluation/MulticlassAccuracy.h"
-#include "features/Labels.h"
-#include "lib/Mathematics.h"
+#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/features/Labels.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

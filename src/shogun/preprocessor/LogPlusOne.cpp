@@ -8,11 +8,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "preprocessor/LogPlusOne.h"
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
-#include "lib/Mathematics.h"
+#include <shogun/preprocessor/LogPlusOne.h>
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

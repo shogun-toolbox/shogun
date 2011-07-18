@@ -10,13 +10,13 @@
 #ifndef __SERIALIZABLE_JSON_FILE_H__
 #define __SERIALIZABLE_JSON_FILE_H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifdef HAVE_JSON
 
 #include <json.h>
 
-#include "lib/SerializableFile.h"
-#include "base/DynArray.h"
+#include <shogun/lib/SerializableFile.h>
+#include <shogun/base/DynArray.h>
 
 #define STR_KEY_TYPE               "type"
 #define STR_KEY_DATA               "data"

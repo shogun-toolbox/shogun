@@ -8,9 +8,9 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "evaluation/StratifiedCrossValidationSplitting.h"
-#include "features/Labels.h"
-#include "lib/Set.h"
+#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
+#include <shogun/features/Labels.h>
+#include <shogun/lib/Set.h>
 
 using namespace shogun;
 

@@ -9,13 +9,13 @@
  * Copyright (C) 2009 TU Berlin and Max-Planck-Society
  */
 #ifdef USE_SVMLIGHT
-#include "classifier/svm/SVMLightOneClass.h"
+#include <shogun/classifier/svm/SVMLightOneClass.h>
 #endif //USE_SVMLIGHT
 
-#include "kernel/Kernel.h"
-#include "classifier/svm/ScatterSVM.h"
-#include "kernel/ScatterKernelNormalizer.h"
-#include "lib/io.h"
+#include <shogun/kernel/Kernel.h>
+#include <shogun/classifier/svm/ScatterSVM.h>
+#include <shogun/kernel/ScatterKernelNormalizer.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

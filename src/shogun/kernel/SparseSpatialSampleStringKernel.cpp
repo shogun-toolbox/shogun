@@ -12,11 +12,11 @@
  * released under the new BSD License.
  */
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/Mathematics.h"
-#include "kernel/SparseSpatialSampleStringKernel.h"
-#include "features/StringFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/kernel/SparseSpatialSampleStringKernel.h>
+#include <shogun/features/StringFeatures.h>
 
 using namespace shogun;
 

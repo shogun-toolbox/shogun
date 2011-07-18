@@ -10,9 +10,9 @@
 #ifndef _STREAMING_FEATURES__H__
 #define _STREAMING_FEATURES__H__
 
-#include "lib/common.h"
-#include "features/Features.h"
-#include "lib/StreamingFile.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/StreamingFile.h>
 
 namespace shogun
 {

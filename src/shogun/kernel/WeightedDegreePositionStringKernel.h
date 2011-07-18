@@ -12,10 +12,10 @@
 #ifndef _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H___
 #define _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H___
 
-#include "lib/common.h"
-#include "kernel/StringKernel.h"
-#include "kernel/WeightedDegreeStringKernel.h"
-#include "lib/Trie.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/StringKernel.h>
+#include <shogun/kernel/WeightedDegreeStringKernel.h>
+#include <shogun/lib/Trie.h>
 
 namespace shogun
 {

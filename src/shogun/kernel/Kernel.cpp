@@ -12,21 +12,21 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/File.h"
-#include "lib/Time.h"
-#include "lib/Signal.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/File.h>
+#include <shogun/lib/Time.h>
+#include <shogun/lib/Signal.h>
 
-#include "base/Parallel.h"
+#include <shogun/base/Parallel.h>
 
-#include "kernel/Kernel.h"
-#include "kernel/IdentityKernelNormalizer.h"
-#include "features/Features.h"
-#include "base/Parameter.h"
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/IdentityKernelNormalizer.h>
+#include <shogun/features/Features.h>
+#include <shogun/base/Parameter.h>
 
-#include "classifier/svm/SVM.h"
+#include <shogun/classifier/svm/SVM.h>
 
 #include <string.h>
 #include <unistd.h>

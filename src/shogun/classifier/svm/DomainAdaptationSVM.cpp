@@ -8,12 +8,12 @@
  * Copyright (C) 2007-2011 Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef USE_SVMLIGHT
 
-#include "classifier/svm/DomainAdaptationSVM.h"
-#include "lib/io.h"
+#include <shogun/classifier/svm/DomainAdaptationSVM.h>
+#include <shogun/lib/io.h>
 #include <iostream>
 #include <vector>
 

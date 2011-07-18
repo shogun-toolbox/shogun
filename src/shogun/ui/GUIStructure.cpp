@@ -8,8 +8,8 @@
  * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "SGInterface.h"
-#include "GUIStructure.h"
+#include <shogun/ui/SGInterface.h>
+#include <shogun/ui/GUIStructure.h>
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>

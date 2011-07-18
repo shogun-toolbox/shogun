@@ -18,10 +18,10 @@ extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
 }
 #endif
 
-#include "lib/config.h"
-#include "lib/ShogunException.h"
-#include "base/SGObject.h"
-#include "base/init.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/ShogunException.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/base/init.h>
 
 #ifndef WIN32
 #include <signal.h>

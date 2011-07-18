@@ -11,9 +11,9 @@
 #ifndef __DYNINT_H__
 #define __DYNINT_H__
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/Mathematics.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
 
 namespace shogun
 {

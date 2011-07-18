@@ -10,17 +10,17 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "structure/DynProg.h"
-#include "lib/Mathematics.h"
-#include "lib/io.h"
-#include "lib/config.h"
-#include "features/StringFeatures.h"
-#include "features/Alphabet.h"
-#include "structure/Plif.h"
-#include "structure/IntronList.h"
-#include "lib/Array.h"
-#include "lib/Array2.h"
-#include "lib/Array3.h"
+#include <shogun/structure/DynProg.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/config.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/Alphabet.h>
+#include <shogun/structure/Plif.h>
+#include <shogun/structure/IntronList.h>
+#include <shogun/lib/Array.h>
+#include <shogun/lib/Array2.h>
+#include <shogun/lib/Array3.h>
 
 #include <stdlib.h>
 #include <stdio.h>

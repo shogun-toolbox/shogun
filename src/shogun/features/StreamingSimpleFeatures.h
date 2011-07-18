@@ -10,12 +10,12 @@
 #ifndef _STREAMING_SIMPLEFEATURES__H__
 #define _STREAMING_SIMPLEFEATURES__H__
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "features/StreamingDotFeatures.h"
-#include "lib/DataType.h"
-#include "lib/StreamingFileFromSimpleFeatures.h"
-#include "lib/InputParser.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/features/StreamingDotFeatures.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/StreamingFileFromSimpleFeatures.h>
+#include <shogun/lib/InputParser.h>
 
 namespace shogun
 {

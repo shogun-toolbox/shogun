@@ -10,8 +10,8 @@
 #ifndef __STREAMING_FILEFROMSTRING_H__
 #define __STREAMING_FILEFROMSTRING_H__
 
-#include "lib/StreamingFileFromFeatures.h"
-#include "features/StringFeatures.h"
+#include <shogun/lib/StreamingFileFromFeatures.h>
+#include <shogun/features/StringFeatures.h>
 
 namespace shogun
 {

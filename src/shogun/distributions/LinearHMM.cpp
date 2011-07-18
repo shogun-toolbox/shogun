@@ -9,13 +9,13 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "lib/io.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
 
-#include "base/Parameter.h"
+#include <shogun/base/Parameter.h>
 
-#include "distributions/LinearHMM.h"
-#include "features/StringFeatures.h"
+#include <shogun/distributions/LinearHMM.h>
+#include <shogun/features/StringFeatures.h>
 
 using namespace shogun;
 

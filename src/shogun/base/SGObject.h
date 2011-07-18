@@ -11,11 +11,11 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include "lib/io.h"
-#include "lib/DataType.h"
-#include "lib/ShogunException.h"
-#include "base/Parallel.h"
-#include "base/Version.h"
+#include <shogun/lib/io.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/ShogunException.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/Version.h>
 
 #ifndef WIN32
 #include <pthread.h>

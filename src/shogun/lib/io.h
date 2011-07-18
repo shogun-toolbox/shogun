@@ -22,8 +22,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "lib/common.h"
-#include "base/init.h"
+#include <shogun/lib/common.h>
+#include <shogun/base/init.h>
 
 namespace shogun
 {

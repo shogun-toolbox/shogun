@@ -20,9 +20,9 @@
    Shogun adjustments (w) 2008-2009 Soeren Sonnenburg
 */
 
-#include "OnlineSVMSGD.h"
-#include "base/Parameter.h"
-#include "lib/Signal.h"
+#include <shogun/classifier/svm/OnlineSVMSGD.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 

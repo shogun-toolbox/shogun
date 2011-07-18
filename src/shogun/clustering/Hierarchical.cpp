@@ -8,12 +8,12 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "clustering/Hierarchical.h"
-#include "distance/Distance.h"
-#include "features/Labels.h"
-#include "features/Features.h"
-#include "lib/Mathematics.h"
-#include "base/Parallel.h"
+#include <shogun/clustering/Hierarchical.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/features/Labels.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/base/Parallel.h>
 
 #ifndef WIN32
 #include <pthread.h>

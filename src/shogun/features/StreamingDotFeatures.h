@@ -10,12 +10,12 @@
 #ifndef _STREAMING_DOTFEATURES__H__
 #define _STREAMING_DOTFEATURES__H__
 
-#include "lib/common.h"
-#include "lib/Time.h"
-#include "lib/Mathematics.h"
-#include "features/StreamingFeatures.h"
-#include "features/DotFeatures.h"
-#include "lib/StreamingFile.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Time.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/features/StreamingFeatures.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/lib/StreamingFile.h>
 
 namespace shogun
 {

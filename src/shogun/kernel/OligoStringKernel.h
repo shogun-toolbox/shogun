@@ -13,7 +13,7 @@
 #ifndef _OLIGOSTRINGKERNEL_H_
 #define _OLIGOSTRINGKERNEL_H_
 
-#include "kernel/StringKernel.h"
+#include <shogun/kernel/StringKernel.h>
 
 #include <vector>
 #include <string>

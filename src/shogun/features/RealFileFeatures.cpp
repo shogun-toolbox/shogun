@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/RealFileFeatures.h"
-#include "features/Features.h"
-#include "lib/io.h"
+#include <shogun/features/RealFileFeatures.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/io.h>
 
 #include <stdio.h>
 #include <string.h>

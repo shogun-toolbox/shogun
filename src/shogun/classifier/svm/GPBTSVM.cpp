@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/GPBTSVM.h"
-#include "classifier/svm/gpdt.h"
-#include "classifier/svm/gpdtsolve.h"
-#include "lib/io.h"
+#include <shogun/classifier/svm/GPBTSVM.h>
+#include <shogun/classifier/svm/gpdt.h>
+#include <shogun/classifier/svm/gpdtsolve.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

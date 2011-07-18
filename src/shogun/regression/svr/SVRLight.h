@@ -11,11 +11,11 @@
 #ifndef _SVRLight_H___
 #define _SVRLight_H___
 
-#include "lib/config.h"
-#include "regression/Regression.h"
+#include <shogun/lib/config.h>
+#include <shogun/regression/Regression.h>
 
 #ifdef USE_SVMLIGHT
-#include "classifier/svm/SVMLight.h"
+#include <shogun/classifier/svm/SVMLight.h>
 #endif //USE_SVMLIGHT
 
 #ifdef USE_SVMLIGHT

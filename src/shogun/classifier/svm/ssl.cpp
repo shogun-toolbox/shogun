@@ -23,10 +23,10 @@
 #include <ctype.h>
 #include <algorithm>
 
-#include "lib/io.h"
-#include "lib/Mathematics.h"
-#include "features/SparseFeatures.h"
-#include "classifier/svm/ssl.h"
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/features/SparseFeatures.h>
+#include <shogun/classifier/svm/ssl.h>
 
 namespace shogun
 {

@@ -8,12 +8,12 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "kernel/DistanceKernel.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/kernel/DistanceKernel.h>
+#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 

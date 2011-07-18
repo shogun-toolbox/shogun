@@ -12,8 +12,8 @@
 #ifndef _CTOPFEATURES__H__
 #define _CTOPFEATURES__H__
 
-#include "features/SimpleFeatures.h"
-#include "distributions/HMM.h"
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distributions/HMM.h>
 
 namespace shogun
 {

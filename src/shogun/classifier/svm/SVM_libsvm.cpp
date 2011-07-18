@@ -35,14 +35,14 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-#include "lib/memory.h"
-#include "classifier/svm/SVM_libsvm.h"
-#include "kernel/Kernel.h"
-#include "lib/io.h"
-#include "lib/Time.h"
-#include "lib/Signal.h"
-#include "lib/common.h"
-#include "lib/Mathematics.h"
+#include <shogun/lib/memory.h>
+#include <shogun/classifier/svm/SVM_libsvm.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Time.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
 
 #include <stdio.h>
 #include <stdlib.h>

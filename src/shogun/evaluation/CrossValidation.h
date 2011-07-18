@@ -11,8 +11,8 @@
 #ifndef __CROSSVALIDATION_H_
 #define __CROSSVALIDATION_H_
 
-#include "base/SGObject.h"
-#include "evaluation/Evaluation.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/evaluation/Evaluation.h>
 
 namespace shogun
 {

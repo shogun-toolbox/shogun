@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "evaluation/ContingencyTableEvaluation.h"
+#include <shogun/evaluation/ContingencyTableEvaluation.h>
 
 using namespace shogun;
 

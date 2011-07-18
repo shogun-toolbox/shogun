@@ -8,11 +8,11 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "modelselection/ModelSelectionParameters.h"
-#include "modelselection/ParameterCombination.h"
-#include "lib/DataType.h"
-#include "base/Parameter.h"
-#include "base/DynArray.h"
+#include <shogun/modelselection/ModelSelectionParameters.h>
+#include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/base/DynArray.h>
 
 using namespace shogun;
 

@@ -11,10 +11,10 @@
 #ifndef _CSIMPLEPREPROC__H__
 #define _CSIMPLEPREPROC__H__
 
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
-#include "lib/common.h"
-#include "preprocessor/Preprocessor.h"
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/common.h>
+#include <shogun/preprocessor/Preprocessor.h>
 
 namespace shogun
 {

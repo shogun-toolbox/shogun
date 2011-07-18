@@ -11,11 +11,11 @@
 #ifndef LANDMARKISOMAP_H_
 #define LANDMARKISOMAP_H_
 #ifdef HAVE_LAPACK
-#include "preprocessor/Isomap.h"
-#include "preprocessor/LandmarkMDS.h"
-#include "features/Features.h"
-#include "distance/Distance.h"
-#include "distance/CustomDistance.h"
+#include <shogun/preprocessor/Isomap.h>
+#include <shogun/preprocessor/LandmarkMDS.h>
+#include <shogun/features/Features.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/distance/CustomDistance.h>
 
 namespace shogun
 {

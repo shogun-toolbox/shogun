@@ -11,7 +11,7 @@
 #ifndef __SG_CLASS_LIST_H__
 #define __SG_CLASS_LIST_H__
 
-#include "lib/DataType.h"
+#include <shogun/lib/DataType.h>
 
 namespace shogun {
 	class CSGObject;

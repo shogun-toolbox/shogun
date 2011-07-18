@@ -12,9 +12,9 @@
 #ifndef _WEIGHTEDCOMMWORDSTRINGKERNEL_H___
 #define _WEIGHTEDCOMMWORDSTRINGKERNEL_H___
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "kernel/CommWordStringKernel.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/kernel/CommWordStringKernel.h>
 
 namespace shogun
 {

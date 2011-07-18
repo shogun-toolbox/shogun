@@ -11,12 +11,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include "lib/lapack.h"
-#include "lib/common.h"
-#include "lib/io.h"
+#include <shogun/lib/lapack.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

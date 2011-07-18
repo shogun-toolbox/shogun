@@ -13,13 +13,13 @@
 #ifndef _CPCA__H__
 #define _CPCA__H__
 #ifdef HAVE_LAPACK
-#include "lib/lapack.h"
-#include "lib/config.h"
+#include <shogun/lib/lapack.h>
+#include <shogun/lib/config.h>
 #include <stdio.h>
 
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "lib/common.h"
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {

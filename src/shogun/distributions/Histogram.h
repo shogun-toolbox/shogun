@@ -11,8 +11,8 @@
 #ifndef _HISTOGRAM_H___
 #define _HISTOGRAM_H___
 
-#include "features/StringFeatures.h"
-#include "distributions/Distribution.h"
+#include <shogun/features/StringFeatures.h>
+#include <shogun/distributions/Distribution.h>
 
 namespace shogun
 {

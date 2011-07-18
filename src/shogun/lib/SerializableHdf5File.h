@@ -10,13 +10,13 @@
 #ifndef __SERIALIZABLE_HDF5_FILE_H__
 #define __SERIALIZABLE_HDF5_FILE_H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifdef HAVE_HDF5
 
 #include <hdf5.h>
 
-#include "lib/SerializableFile.h"
-#include "base/DynArray.h"
+#include <shogun/lib/SerializableFile.h>
+#include <shogun/base/DynArray.h>
 
 #define TYPE_INDEX                 H5T_NATIVE_INT32
 

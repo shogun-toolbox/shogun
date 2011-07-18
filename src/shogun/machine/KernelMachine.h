@@ -11,11 +11,11 @@
 #ifndef _KERNEL_MACHINE_H__
 #define _KERNEL_MACHINE_H__
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "kernel/Kernel.h"
-#include "features/Labels.h"
-#include "machine/Machine.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/features/Labels.h>
+#include <shogun/machine/Machine.h>
 
 #include <stdio.h>
 

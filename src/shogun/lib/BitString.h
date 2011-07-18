@@ -10,11 +10,11 @@
 #ifndef __BITSTRING_H__
 #define __BITSTRING_H__
 
-#include "features/Alphabet.h"
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/MemoryMappedFile.h"
-#include "lib/Mathematics.h"
+#include <shogun/features/Alphabet.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/MemoryMappedFile.h>
+#include <shogun/lib/Mathematics.h>
 
 namespace shogun
 {

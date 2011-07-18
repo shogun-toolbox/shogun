@@ -10,7 +10,7 @@
  * Copyright (C) 2007-2010 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/OnlineLibLinear.h"
+#include <shogun/classifier/svm/OnlineLibLinear.h>
 
 using namespace shogun;
 

@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "machine/KernelMachine.h"
-#include "lib/Signal.h"
-#include "base/Parameter.h"
+#include <shogun/machine/KernelMachine.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

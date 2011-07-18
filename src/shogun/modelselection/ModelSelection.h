@@ -11,7 +11,7 @@
 #ifndef __MODELSELECTION_H_
 #define __MODELSELECTION_H_
 
-#include "base/SGObject.h"
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {

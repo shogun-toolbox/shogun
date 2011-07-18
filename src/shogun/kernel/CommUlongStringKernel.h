@@ -11,10 +11,10 @@
 #ifndef _COMMULONGSTRINGKERNEL_H___
 #define _COMMULONGSTRINGKERNEL_H___
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "lib/DynamicArray.h"
-#include "kernel/StringKernel.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/DynamicArray.h>
+#include <shogun/kernel/StringKernel.h>
 
 namespace shogun
 {

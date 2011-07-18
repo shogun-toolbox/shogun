@@ -8,22 +8,22 @@
  * Copyright (C) 2011 Berlin Institute of Technology
  */
 
-#include "lib/config.h"
-#include "lib/Mathematics.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/Mathematics.h>
 
 #include <string.h>
 #include <stdlib.h>
 
 #ifdef HAVE_LAPACK
-#include "lib/lapack.h"
+#include <shogun/lib/lapack.h>
 
-#include "lib/common.h"
-#include "preprocessor/KernelPCACut.h"
-#include "kernel/Kernel.h"
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
-#include "lib/io.h"
+#include <shogun/lib/common.h>
+#include <shogun/preprocessor/KernelPCACut.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

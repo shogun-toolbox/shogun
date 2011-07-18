@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifndef WIN32
 
@@ -16,8 +16,8 @@
 #include <signal.h>
 #include <string.h>
 
-#include "lib/io.h"
-#include "lib/Signal.h"
+#include <shogun/lib/io.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 

@@ -9,12 +9,12 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/config.h"
-#include "lib/common.h"
-#include "lib/io.h"
-#include "kernel/PolyKernel.h"
-#include "kernel/SqrtDiagKernelNormalizer.h"
-#include "features/DotFeatures.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/kernel/PolyKernel.h>
+#include <shogun/kernel/SqrtDiagKernelNormalizer.h>
+#include <shogun/features/DotFeatures.h>
 
 using namespace shogun;
 

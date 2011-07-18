@@ -12,10 +12,10 @@
 #ifndef _DISTANCE_MACHINE_H__
 #define _DISTANCE_MACHINE_H__
 
-#include "lib/common.h"
-#include "distance/Distance.h"
-#include "features/Labels.h"
-#include "machine/Machine.h"
+#include <shogun/lib/common.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/features/Labels.h>
+#include <shogun/machine/Machine.h>
 
 #include <stdio.h>
 

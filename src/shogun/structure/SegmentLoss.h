@@ -10,11 +10,11 @@
 #ifndef __SEGMENT_LOSS__
 #define __SEGMENT_LOSS__
 
-#include "lib/common.h"     
-#include "base/SGObject.h"
-#include "lib/Array.h"
-#include "lib/Array2.h"
-#include "lib/Array3.h"
+#include <shogun/lib/common.h>     
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/Array.h>
+#include <shogun/lib/Array2.h>
+#include <shogun/lib/Array3.h>
 
                    
 namespace shogun

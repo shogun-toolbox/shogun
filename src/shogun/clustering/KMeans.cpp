@@ -9,12 +9,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "clustering/KMeans.h"
-#include "distance/Distance.h"
-#include "features/Labels.h"
-#include "features/SimpleFeatures.h"
-#include "lib/Mathematics.h"
-#include "base/Parallel.h"
+#include <shogun/clustering/KMeans.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/features/Labels.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/base/Parallel.h>
 
 #ifndef WIN32
 #include <pthread.h>

@@ -11,9 +11,9 @@
 #ifndef _CNORM_ONE__H__
 #define _CNORM_ONE__H__
 
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "lib/common.h"
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/lib/common.h>
 
 #include <stdio.h>
 

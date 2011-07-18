@@ -8,10 +8,10 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifdef HAVE_HDF5
 
-#include "lib/SerializableHdf5Reader00.h"
+#include <shogun/lib/SerializableHdf5Reader00.h>
 
 using namespace shogun;
 

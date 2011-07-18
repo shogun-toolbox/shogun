@@ -12,10 +12,10 @@
 #ifndef _DOTFEATURES_H___
 #define _DOTFEATURES_H___
 
-#include "lib/common.h"
-#include "lib/Time.h"
-#include "lib/Mathematics.h"
-#include "features/Features.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Time.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/features/Features.h>
 
 namespace shogun
 {

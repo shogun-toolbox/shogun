@@ -13,16 +13,16 @@
 #ifndef _SIMPLEFEATURES__H__
 #define _SIMPLEFEATURES__H__
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "lib/io.h"
-#include "lib/Cache.h"
-#include "lib/File.h"
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/DotFeatures.h"
-#include "features/StringFeatures.h"
-#include "base/Parameter.h"
-#include "lib/DataType.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Cache.h>
+#include <shogun/lib/File.h>
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/lib/DataType.h>
 
 #include <string.h>
 

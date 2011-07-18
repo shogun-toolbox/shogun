@@ -13,10 +13,10 @@
 #ifndef _COMBINEDDOTFEATURES_H___
 #define _COMBINEDDOTFEATURES_H___
 
-#include "lib/common.h"
-#include "lib/List.h"
-#include "features/DotFeatures.h"
-#include "features/Features.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/List.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/Features.h>
 
 namespace shogun
 {

@@ -11,10 +11,10 @@
 #ifndef PYRAMIDCHI2_H_
 #define PYRAMIDCHI2_H_
 
-#include "lib/common.h"
-#include "kernel/DotKernel.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/DotKernel.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {

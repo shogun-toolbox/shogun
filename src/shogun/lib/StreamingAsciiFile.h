@@ -10,9 +10,9 @@
 #ifndef __STREAMING_ASCIIFILE_H__
 #define __STREAMING_ASCIIFILE_H__
 
-#include "lib/AsciiFile.h"
-#include "lib/StreamingFile.h"
-#include "features/SparseFeatures.h"
+#include <shogun/lib/AsciiFile.h>
+#include <shogun/lib/StreamingFile.h>
+#include <shogun/features/SparseFeatures.h>
 
 namespace shogun
 {

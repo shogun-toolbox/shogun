@@ -41,8 +41,8 @@
 #ifndef HASH_H
 #define HASH_H
 
-#include "base/SGObject.h"
-#include "lib/common.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {

@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/LibSVM.h"
-#include "lib/io.h"
+#include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

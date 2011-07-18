@@ -9,18 +9,18 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/Signal.h"
-#include "lib/Trie.h"
-#include "base/Parallel.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Trie.h>
+#include <shogun/base/Parallel.h>
 
-#include "kernel/WeightedDegreePositionStringKernel.h"
-#include "kernel/SqrtDiagKernelNormalizer.h"
-#include "features/Features.h"
-#include "features/StringFeatures.h"
+#include <shogun/kernel/WeightedDegreePositionStringKernel.h>
+#include <shogun/kernel/SqrtDiagKernelNormalizer.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/StringFeatures.h>
 
-#include "classifier/svm/SVM.h"
+#include <shogun/classifier/svm/SVM.h>
 
 #ifndef WIN32
 #include <pthread.h>

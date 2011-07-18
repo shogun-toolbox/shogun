@@ -14,7 +14,7 @@
 */
 
 #include <string.h>
-#include "lib/IOBuffer.h"
+#include <shogun/lib/IOBuffer.h>
 
 using namespace shogun;
 

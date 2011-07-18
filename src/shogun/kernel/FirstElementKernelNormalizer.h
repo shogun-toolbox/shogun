@@ -11,7 +11,7 @@
 #ifndef _FIRSTELEMENTKERNELNORMALIZER_H___
 #define _FIRSTELEMENTKERNELNORMALIZER_H___
 
-#include "kernel/KernelNormalizer.h"
+#include <shogun/kernel/KernelNormalizer.h>
 
 namespace shogun
 {

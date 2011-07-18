@@ -9,18 +9,18 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef USE_CPLEX
 
-#include "lib/Mathematics.h"
-#include "lib/Signal.h"
-#include "lib/Time.h"
-#include "machine/LinearMachine.h"
-#include "classifier/SubGradientLPM.h"
-#include "classifier/svm/qpbsvmlib.h"
-#include "features/DotFeatures.h"
-#include "features/Labels.h"
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/classifier/SubGradientLPM.h>
+#include <shogun/classifier/svm/qpbsvmlib.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/Labels.h>
 
 using namespace shogun;
 

@@ -12,9 +12,9 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
-#include "lib/common.h"
-#include "base/SGObject.h"
-#include "base/Parameter.h"
+#include <shogun/lib/common.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {

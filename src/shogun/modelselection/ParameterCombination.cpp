@@ -8,9 +8,9 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "modelselection/ParameterCombination.h"
-#include "base/Parameter.h"
-#include "machine/Machine.h"
+#include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/machine/Machine.h>
 
 using namespace shogun;
 

@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "lib/StreamingFile.h"
-#include "features/SparseFeatures.h"
+#include <shogun/lib/StreamingFile.h>
+#include <shogun/features/SparseFeatures.h>
 
 #include <ctype.h>
 

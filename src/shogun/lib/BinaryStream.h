@@ -11,8 +11,8 @@
 #ifndef __BINARYSTREAM_H__
 #define __BINARYSTREAM_H__
 
-#include "lib/io.h"
-#include "base/SGObject.h"
+#include <shogun/lib/io.h>
+#include <shogun/base/SGObject.h>
 
 #include <stdio.h>
 #include <string.h>

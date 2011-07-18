@@ -12,8 +12,8 @@
 #define MKLMULTICLASSGLPK_H_
 
 #include <vector>
-#include "base/SGObject.h"
-#include "classifier/mkl/MKLMultiClassOptimizationBase.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/classifier/mkl/MKLMultiClassOptimizationBase.h>
 
 #ifdef USE_GLPK
 #include <glpk.h>

@@ -73,8 +73,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include "classifier/svm/gpdt.h"
-#include "classifier/svm/gpdtsolve.h"
+#include <shogun/classifier/svm/gpdt.h>
+#include <shogun/classifier/svm/gpdtsolve.h>
 
 using namespace shogun;
 

@@ -11,9 +11,9 @@
 #ifndef _ARRAY2_H_
 #define _ARRAY2_H_
 
-#include "lib/common.h"
-#include "base/SGObject.h"
-#include "lib/Array.h"
+#include <shogun/lib/common.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/Array.h>
 
 namespace shogun
 {

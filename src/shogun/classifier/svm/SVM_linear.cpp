@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifdef HAVE_LAPACK
 #include <math.h>
@@ -39,9 +39,9 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "lib/Mathematics.h"
-#include "classifier/svm/SVM_linear.h"
-#include "classifier/svm/Tron.h"
+#include <shogun/lib/Mathematics.h>
+#include <shogun/classifier/svm/SVM_linear.h>
+#include <shogun/classifier/svm/Tron.h>
 
 using namespace shogun;
 

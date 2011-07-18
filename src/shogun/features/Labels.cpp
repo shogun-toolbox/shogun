@@ -10,12 +10,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/Labels.h"
-#include "lib/common.h"
-#include "lib/File.h"
-#include "lib/io.h"
-#include "lib/Mathematics.h"
-#include "base/Parameter.h"
+#include <shogun/features/Labels.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/File.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

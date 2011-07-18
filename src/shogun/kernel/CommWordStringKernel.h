@@ -12,9 +12,9 @@
 #ifndef _COMMWORDSTRINGKERNEL_H___
 #define _COMMWORDSTRINGKERNEL_H___
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "kernel/StringKernel.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/kernel/StringKernel.h>
 
 namespace shogun
 {

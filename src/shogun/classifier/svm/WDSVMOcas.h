@@ -12,11 +12,11 @@
 #ifndef _WDSVMOCAS_H___
 #define _WDSVMOCAS_H___
 
-#include "lib/common.h"
-#include "machine/Machine.h"
-#include "classifier/svm/SVMOcas.h"
-#include "features/StringFeatures.h"
-#include "features/Labels.h"
+#include <shogun/lib/common.h>
+#include <shogun/machine/Machine.h>
+#include <shogun/classifier/svm/SVMOcas.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/Labels.h>
 
 namespace shogun
 {

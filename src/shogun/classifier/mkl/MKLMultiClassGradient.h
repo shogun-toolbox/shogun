@@ -14,8 +14,8 @@
 #include <vector>
 #include <cmath>
 #include <cassert>
-#include "base/SGObject.h"
-#include "classifier/mkl/MKLMultiClassOptimizationBase.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/classifier/mkl/MKLMultiClassOptimizationBase.h>
 
 
 namespace shogun

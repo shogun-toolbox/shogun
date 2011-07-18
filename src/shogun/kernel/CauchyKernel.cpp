@@ -8,8 +8,8 @@
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "CauchyKernel.h"
-#include "lib/Mathematics.h"
+#include <shogun/kernel/CauchyKernel.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

@@ -12,9 +12,9 @@
 #define _KERNELPERCEPTRON_H___
 
 #include <stdio.h>
-#include "lib/common.h"
-#include "features/Features.h"
-#include "machine/KernelMachine.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/Features.h>
+#include <shogun/machine/KernelMachine.h>
 
 namespace shogun
 {

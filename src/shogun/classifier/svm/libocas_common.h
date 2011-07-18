@@ -1,5 +1,5 @@
-#include "lib/Mathematics.h"
-#include "lib/io.h"
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/io.h>
 
 namespace shogun
 {

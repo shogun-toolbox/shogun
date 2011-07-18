@@ -19,9 +19,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "classifier/svm/libocas.h"
-#include "classifier/svm/libocas_common.h"
-#include "classifier/svm/libqp.h"
+#include <shogun/classifier/svm/libocas.h>
+#include <shogun/classifier/svm/libocas_common.h>
+#include <shogun/classifier/svm/libqp.h>
 
 namespace shogun
 {

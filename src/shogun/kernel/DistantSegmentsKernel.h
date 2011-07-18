@@ -12,7 +12,7 @@
 #ifndef DISTANTSEGMENTSKERNEL_H_
 #define DISTANTSEGMENTSKERNEL_H_
 
-#include "kernel/StringKernel.h"
+#include <shogun/kernel/StringKernel.h>
 
 namespace shogun
 {

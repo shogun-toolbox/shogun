@@ -12,12 +12,12 @@
 #ifndef _KRR_H__
 #define _KRR_H__
 
-#include "lib/config.h"
-#include "regression/Regression.h"
+#include <shogun/lib/config.h>
+#include <shogun/regression/Regression.h>
 
 #ifdef HAVE_LAPACK
 
-#include "machine/KernelMachine.h"
+#include <shogun/machine/KernelMachine.h>
 
 namespace shogun
 {

@@ -11,8 +11,8 @@
 #ifndef __GRIDSEARCHMODELSELECTION_H_
 #define __GRIDSEARCHMODELSELECTION_H_
 
-#include "modelselection/ModelSelection.h"
-#include "base/DynArray.h"
+#include <shogun/modelselection/ModelSelection.h>
+#include <shogun/base/DynArray.h>
 
 namespace shogun
 {

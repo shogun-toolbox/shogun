@@ -8,14 +8,14 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef USE_CPLEX
 
-#include "classifier/LPM.h"
-#include "features/Labels.h"
-#include "lib/Mathematics.h"
-#include "lib/Cplex.h"
+#include <shogun/classifier/LPM.h>
+#include <shogun/features/Labels.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Cplex.h>
 
 using namespace shogun;
 

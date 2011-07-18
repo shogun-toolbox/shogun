@@ -11,9 +11,9 @@
 
 #ifndef _LIBSVM_ONECLASS_H___
 #define _LIBSVM_ONECLASS_H___
-#include "lib/common.h"
-#include "classifier/svm/SVM.h"
-#include "classifier/svm/SVM_libsvm.h"
+#include <shogun/lib/common.h>
+#include <shogun/classifier/svm/SVM.h>
+#include <shogun/classifier/svm/SVM_libsvm.h>
 
 #include <stdio.h>
 

@@ -11,8 +11,8 @@
 #ifndef _REALDISTANCE_H__
 #define _REALDISTANCE_H__
 
-#include "distance/SimpleDistance.h"
-#include "lib/common.h"
+#include <shogun/distance/SimpleDistance.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {

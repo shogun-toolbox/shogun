@@ -12,8 +12,8 @@
 #ifndef _CCOMBINEDFEATURES__H__
 #define _CCOMBINEDFEATURES__H__
 
-#include "features/Features.h"
-#include "lib/List.h"
+#include <shogun/features/Features.h>
+#include <shogun/lib/List.h>
 
 namespace shogun
 {

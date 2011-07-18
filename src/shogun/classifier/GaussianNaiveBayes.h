@@ -11,8 +11,8 @@
 #ifndef GAUSSIANNAIVEBAYES_H_
 #define GAUSSIANNAIVEBAYES_H_
 
-#include "machine/Machine.h"
-#include "features/DotFeatures.h"
+#include <shogun/machine/Machine.h>
+#include <shogun/features/DotFeatures.h>
 
 namespace shogun {
 

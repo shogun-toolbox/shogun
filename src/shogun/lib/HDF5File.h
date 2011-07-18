@@ -10,13 +10,13 @@
 #ifndef __HDF5_FILE_H__
 #define __HDF5_FILE_H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_HDF5
-#include "lib/common.h"
-#include "lib/io.h"
-#include "lib/File.h"
-#include "base/SGObject.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/File.h>
+#include <shogun/base/SGObject.h>
 #include <hdf5.h>
 
 

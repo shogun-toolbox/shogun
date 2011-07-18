@@ -22,13 +22,13 @@
 #ifndef _SVMLight_H___
 #define _SVMLight_H___
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef USE_SVMLIGHT
-#include "classifier/svm/SVM.h"
-#include "kernel/Kernel.h"
-#include "lib/Mathematics.h"
-#include "lib/common.h"
+#include <shogun/classifier/svm/SVM.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/common.h>
 
 #include <stdio.h>
 #include <ctype.h>

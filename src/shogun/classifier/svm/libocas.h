@@ -12,7 +12,7 @@
  *  Implementation of SVM-Ocas solver.
  *-------------------------------------------------------------------- */
 
-#include "lib/common.h"
+#include <shogun/lib/common.h>
 
 #ifndef libocas_h
 #define libocas_h

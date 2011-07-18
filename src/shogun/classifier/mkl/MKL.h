@@ -21,11 +21,11 @@ extern "C" {
 }
 #endif
 
-#include "lib/common.h"
-#include "lib/Time.h"
-#include "features/Features.h"
-#include "kernel/Kernel.h"
-#include "classifier/svm/SVM.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Time.h>
+#include <shogun/features/Features.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/classifier/svm/SVM.h>
 
 namespace shogun
 {

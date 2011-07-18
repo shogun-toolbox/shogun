@@ -8,10 +8,10 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifdef HAVE_XML
 
-#include "lib/SerializableXmlReader00.h"
+#include <shogun/lib/SerializableXmlReader00.h>
 
 using namespace shogun;
 

@@ -11,14 +11,14 @@
 #ifndef _CKERNELPCACUT__H__
 #define _CKERNELPCACUT__H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "kernel/Kernel.h"
-#include "lib/common.h"
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {

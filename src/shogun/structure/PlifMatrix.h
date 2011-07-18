@@ -11,13 +11,13 @@
 #ifndef _PLIFMATRIX_H_
 #define _PLIFMATRIX_H_
 
-#include "base/SGObject.h"
-#include "structure/Plif.h"
-#include "structure/PlifBase.h"
-#include "features/StringFeatures.h"
-#include "lib/Array.h"
-#include "lib/Array2.h"
-#include "lib/Array3.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/structure/Plif.h>
+#include <shogun/structure/PlifBase.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/lib/Array.h>
+#include <shogun/lib/Array2.h>
+#include <shogun/lib/Array3.h>
 
 namespace shogun
 {

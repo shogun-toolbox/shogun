@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "lib/StreamingAsciiFile.h"
-#include "lib/Mathematics.h"
+#include <shogun/lib/StreamingAsciiFile.h>
+#include <shogun/lib/Mathematics.h>
 
 #include <ctype.h>
 

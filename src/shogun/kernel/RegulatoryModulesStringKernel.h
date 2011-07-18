@@ -11,9 +11,9 @@
 #ifndef _REGULATORYMODULESSTRINGKERNEL_H___
 #define _REGULATORYMODULESSTRINGKERNEL_H___
 
-#include "lib/common.h"
-#include "kernel/StringKernel.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/StringKernel.h>
+#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {

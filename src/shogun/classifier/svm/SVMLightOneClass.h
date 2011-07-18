@@ -11,11 +11,11 @@
 #ifndef _SVMLIGHTONECLASS_H___
 #define _SVMLIGHTONECLASS_H___
 
-#include "lib/config.h"
-#include "machine/Machine.h"
+#include <shogun/lib/config.h>
+#include <shogun/machine/Machine.h>
 
 #ifdef USE_SVMLIGHT
-#include "classifier/svm/SVMLight.h"
+#include <shogun/classifier/svm/SVMLight.h>
 #endif //USE_SVMLIGHT
 
 #ifdef USE_SVMLIGHT

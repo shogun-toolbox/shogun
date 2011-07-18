@@ -8,9 +8,9 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/SNPFeatures.h"
-#include "lib/io.h"
-#include "features/Alphabet.h"
+#include <shogun/features/SNPFeatures.h>
+#include <shogun/lib/io.h>
+#include <shogun/features/Alphabet.h>
 
 using namespace shogun;
 

@@ -8,8 +8,8 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include "GUIClassifier.h"
-#include "SGInterface.h"
+#include <shogun/ui/GUIClassifier.h>
+#include <shogun/ui/SGInterface.h>
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>

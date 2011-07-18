@@ -60,8 +60,8 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 
 -------------------------------------------------------------------- */
 
-#include "classifier/svm/GMNPLib.h"
-#include "lib/Mathematics.h"
+#include <shogun/classifier/svm/GMNPLib.h>
+#include <shogun/lib/Mathematics.h>
 
 #include <string.h>
 #include <limits.h>

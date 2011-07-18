@@ -17,8 +17,8 @@
 //#define ARRAY_ASSERT(x) ASSERT(x)
 #define ARRAY_ASSERT(x)
 
-#include "lib/common.h"
-#include "base/SGObject.h"
+#include <shogun/lib/common.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {

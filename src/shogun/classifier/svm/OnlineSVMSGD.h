@@ -21,10 +21,10 @@
    Shogun adjustments (w) 2008 Soeren Sonnenburg
 */
 
-#include "lib/common.h"
-#include "features/Labels.h"
-#include "machine/OnlineLinearMachine.h"
-#include "features/StreamingDotFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/Labels.h>
+#include <shogun/machine/OnlineLinearMachine.h>
+#include <shogun/features/StreamingDotFeatures.h>
 
 namespace shogun
 {

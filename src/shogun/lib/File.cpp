@@ -13,10 +13,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lib/File.h"
+#include <shogun/lib/File.h>
 
-#include "features/StringFeatures.h"
-#include "features/SparseFeatures.h"
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/SparseFeatures.h>
 
 using namespace shogun;
 

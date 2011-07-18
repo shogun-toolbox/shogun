@@ -8,14 +8,14 @@
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifndef POWERKERNEL_H_
 #define POWERKERNEL_H_
 
-#include "lib/common.h"
-#include "kernel/Kernel.h"
-#include "distance/Distance.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/distance/Distance.h>
 
 namespace shogun
 {

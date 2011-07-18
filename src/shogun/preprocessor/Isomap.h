@@ -11,14 +11,14 @@
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
 #ifdef HAVE_LAPACK
-#include "preprocessor/DimensionReductionPreprocessor.h"
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "lib/io.h"
-#include "features/Features.h"
-#include "distance/Distance.h"
-#include "distance/CustomDistance.h"
-#include "distance/EuclidianDistance.h"
+#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/io.h>
+#include <shogun/features/Features.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/distance/CustomDistance.h>
+#include <shogun/distance/EuclidianDistance.h>
 
 namespace shogun
 {

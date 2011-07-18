@@ -11,7 +11,7 @@
 #ifndef _ZEROMEANCENTERKERNELNORMALIZER_H___
 #define _ZEROMEANCENTERKERNELNORMALIZER_H___
 
-#include "kernel/KernelNormalizer.h"
+#include <shogun/kernel/KernelNormalizer.h>
 
 namespace shogun
 {

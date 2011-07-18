@@ -9,12 +9,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include "regression/KRR.h"
-#include "lib/lapack.h"
-#include "lib/Mathematics.h"
+#include <shogun/regression/KRR.h>
+#include <shogun/lib/lapack.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

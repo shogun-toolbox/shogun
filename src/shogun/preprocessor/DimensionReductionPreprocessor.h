@@ -11,9 +11,9 @@
 #ifndef DIMENSIONREDUCTIONPREPROCESSOR_H_
 #define DIMENSIONREDUCTIONPREPROCESSOR_H_
 
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "distance/Distance.h"
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/distance/Distance.h>
 
 namespace shogun
 {

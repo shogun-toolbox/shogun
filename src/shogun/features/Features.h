@@ -13,12 +13,12 @@
 #ifndef _CFEATURES__H__
 #define _CFEATURES__H__
 
-#include "lib/common.h"
-#include "lib/File.h"
-#include "base/SGObject.h"
-#include "preprocessor/Preprocessor.h"
-#include "features/FeatureTypes.h"
-#include "features/Subset.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/File.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/features/FeatureTypes.h>
+#include <shogun/features/Subset.h>
 
 namespace shogun
 {

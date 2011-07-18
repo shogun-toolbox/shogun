@@ -8,10 +8,10 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "features/SparseFeatures.h"
-#include "lib/File.h"
-#include "lib/AsciiFile.h"
-#include "lib/Mathematics.h"
+#include <shogun/features/SparseFeatures.h>
+#include <shogun/lib/File.h>
+#include <shogun/lib/AsciiFile.h>
+#include <shogun/lib/Mathematics.h>
 #include <ctype.h>
 #include <stdio.h>
 

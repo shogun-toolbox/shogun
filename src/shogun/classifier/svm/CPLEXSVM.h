@@ -10,11 +10,11 @@
 
 #ifndef _CPLEXSVM_H___
 #define _CPLEXSVM_H___
-#include "lib/common.h"
+#include <shogun/lib/common.h>
 
 #ifdef USE_CPLEX
-#include "classifier/svm/SVM.h"
-#include "lib/Cache.h"
+#include <shogun/classifier/svm/SVM.h>
+#include <shogun/lib/Cache.h>
 
 namespace shogun
 {

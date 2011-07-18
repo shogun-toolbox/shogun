@@ -11,8 +11,8 @@
 #ifndef _SPARSEDISTANCE_H___
 #define _SPARSEDISTANCE_H___
 
-#include "distance/Distance.h"
-#include "features/SparseFeatures.h"
+#include <shogun/distance/Distance.h>
+#include <shogun/features/SparseFeatures.h>
 
 namespace shogun
 {

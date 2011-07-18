@@ -10,10 +10,10 @@
 #ifndef __SERIALIZABLE_HDF5_READER_00_H__
 #define __SERIALIZABLE_HDF5_READER_00_H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifdef HAVE_HDF5
 
-#include "lib/SerializableHdf5File.h"
+#include <shogun/lib/SerializableHdf5File.h>
 
 namespace shogun
 {

@@ -7,18 +7,18 @@
  * Written (W) 2011 Soeren Sonnenburg
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#include "distributions/PositionalPWM.h"
-#include "lib/Mathematics.h"
-#include "base/Parameter.h"
-#include "features/Alphabet.h"
-#include "features/StringFeatures.h"
+#include <shogun/distributions/PositionalPWM.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/features/Alphabet.h>
+#include <shogun/features/StringFeatures.h>
 
 using namespace shogun;
 
 CPositionalPWM::CPositionalPWM() : CDistribution(),
 	m_pwm_rows(0), m_pwm_cols(0), m_pwm(NULL),
 	m_sigma(0), m_mean(0),
-	m_w_rows(0), m_w_cols(0), m_w(NULL)
+	m_w_rows(0), m_w_cols(0), m_w(NULL), m_poim(NULL)
 
 {
 	register_params();
@@ -107,20 +107,11 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 		}
 
 	}
-
-/*	CMath::fill_vector(m_w, m_w_rows*m_w_cols, 0.0);
-	for (int32_t j=0; j<4; j++)
-	{
-		for (int32_t i=10; i<15; i++)
-		{
-			m_w[i*m_w_rows+j]=10;
-		}
-	}
-*/
 }
 
 void CPositionalPWM::register_params()
 {
+	m_parameters->add_vector(&m_poim, &m_poim_len, "poim", "POIM Scoring Matrix");
 	m_parameters->add_matrix(&m_w, &m_w_rows, &m_w_cols, "w", "Scoring Matrix");
 	m_parameters->add_matrix(&m_pwm, &m_pwm_rows, &m_pwm_cols, "pwm", "Positional Weight Matrix.");
 	m_parameters->add(&m_sigma, "sigma", "Standard Deviation.");
@@ -135,13 +126,18 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 	int32_t num_sym=0;
 	int32_t order=m_pwm_cols;
 	int32_t num_words=m_pwm_cols;
-	float64_t* target=new float64_t[num_feat*num_sym];
+
 	CAlphabet* alpha=new CAlphabet(DNA);
-	CStringFeatures<uint16_t>* str= new CStringFeatures<uint16_t>();
+	CStringFeatures<uint16_t>* str= new CStringFeatures<uint16_t>(alpha);
 	int32_t num_bits=alpha->get_num_bits();
+	str->compute_symbol_mask_table(num_bits);
 	
 	for (int32_t i=0; i<order; i++)
 		num_sym+=CMath::pow((int32_t) num_words,i+1);
+
+	delete[] m_poim;
+	m_poim_len=num_feat*num_sym;
+	m_poim=new float64_t[num_feat*num_sym];
 
 	uint32_t kmer_mask=0;
 	uint32_t words=CMath::pow((int32_t) num_words,(int32_t) order);
@@ -149,7 +145,7 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 
 	for (int32_t o=0; o<max_degree; o++)
 	{
-		float64_t* contrib=&target[offset];
+		float64_t* contrib=&m_poim[offset];
 		offset+=CMath::pow((int32_t) num_words,(int32_t) o+1);
 
 		kmer_mask=(kmer_mask<<(num_bits)) | str->get_masked_symbols(0xffff, 1);
@@ -190,14 +186,14 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 
 				if (p>=0 && p<order-o)
 				{
-					contrib[x]+=m_w[i]*marginalizer;
+					contrib[x]+=m_w[m_w_cols*ir+i]*marginalizer;
 				}
 				else
 				{
 					for (uint32_t j=0; j< (uint32_t) CMath::pow((int32_t) num_words, (int32_t) o_sym); j++)
 					{
 						uint32_t c=x | ((j & jmer_mask) << (num_bits*jl));
-						contrib[c]+=m_w[i]*marginalizer;
+						contrib[c]+=m_w[m_w_cols*il+i]*marginalizer;
 					}
 				}
 			}

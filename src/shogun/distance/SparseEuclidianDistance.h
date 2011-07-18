@@ -11,9 +11,9 @@
 #ifndef _SPARSEEUCLIDIANDISTANCE_H__
 #define _SPARSEEUCLIDIANDISTANCE_H__
 
-#include "lib/common.h"
-#include "distance/SparseDistance.h"
-#include "features/SparseFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/distance/SparseDistance.h>
+#include <shogun/features/SparseFeatures.h>
 
 namespace shogun
 {

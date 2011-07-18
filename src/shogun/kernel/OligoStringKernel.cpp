@@ -11,9 +11,9 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  *
  */
-#include "kernel/OligoStringKernel.h"
-#include "kernel/SqrtDiagKernelNormalizer.h"
-#include "features/StringFeatures.h"
+#include <shogun/kernel/OligoStringKernel.h>
+#include <shogun/kernel/SqrtDiagKernelNormalizer.h>
+#include <shogun/features/StringFeatures.h>
 
 #include <map>
 #include <vector>

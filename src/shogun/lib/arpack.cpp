@@ -8,14 +8,14 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "lib/arpack.h"
+#include <shogun/lib/arpack.h>
 #ifdef HAVE_ARPACK
 #ifdef HAVE_LAPACK
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #include <cblas.h>
-#include "lib/lapack.h"
-#include "lib/common.h"
-#include "lib/io.h"
+#include <shogun/lib/lapack.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
 #include <string.h>
 
 using namespace shogun;

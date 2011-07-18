@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "evaluation/SplittingStrategy.h"
-#include "features/Labels.h"
+#include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/features/Labels.h>
 
 using namespace shogun;
 

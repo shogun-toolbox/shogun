@@ -8,11 +8,11 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max Planck Society
  */
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "distance/AttenuatedEuclidianDistance.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/distance/AttenuatedEuclidianDistance.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 

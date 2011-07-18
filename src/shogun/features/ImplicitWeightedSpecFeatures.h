@@ -12,10 +12,10 @@
 #ifndef _IMPLICITSPECFEATURES_H___
 #define _IMPLICITSPECFEATURES_H___
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "features/DotFeatures.h"
-#include "features/StringFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/StringFeatures.h>
 
 namespace shogun
 {

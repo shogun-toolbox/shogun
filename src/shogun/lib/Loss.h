@@ -11,11 +11,11 @@
 #ifndef __LOSS_H_
 #define __LOSS_H_
 
-#include "lib/common.h"
-#include "lib/io.h"
-//#include "lib/lapack.h"
-//#include "base/SGObject.h"
-//#include "base/Parallel.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+//#include <shogun/lib/lapack.h>
+//#include <shogun/base/SGObject.h>
+//#include <shogun/base/Parallel.h>
 
 
 // Available losses

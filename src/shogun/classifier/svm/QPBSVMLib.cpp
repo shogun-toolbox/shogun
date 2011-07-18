@@ -50,13 +50,13 @@
 #include <string.h>
 #include <limits.h>
 
-#include "lib/config.h"
-#include "lib/io.h"
-#include "lib/Cplex.h"
-#include "lib/Mathematics.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Cplex.h>
+#include <shogun/lib/Mathematics.h>
 
-#include "classifier/svm/QPBSVMLib.h"
-#include "classifier/svm/pr_loqo.h"
+#include <shogun/classifier/svm/QPBSVMLib.h>
+#include <shogun/classifier/svm/pr_loqo.h>
 
 using namespace shogun;
 

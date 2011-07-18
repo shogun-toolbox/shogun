@@ -3,13 +3,13 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "lib/config.h"
-#include "lib/Signal.h"
-#include "lib/Time.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
 
 #ifdef HAVE_LAPACK
-#include "lib/Mathematics.h"
-#include "classifier/svm/Tron.h"
+#include <shogun/lib/Mathematics.h>
+#include <shogun/classifier/svm/Tron.h>
 
 using namespace shogun;
 

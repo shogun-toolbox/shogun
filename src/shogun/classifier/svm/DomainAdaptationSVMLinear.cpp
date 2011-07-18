@@ -8,13 +8,13 @@
  * Copyright (C) 2007-2011 Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include "classifier/svm/DomainAdaptationSVMLinear.h"
-#include "lib/io.h"
-#include "base/Parameter.h"
+#include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
+#include <shogun/lib/io.h>
+#include <shogun/base/Parameter.h>
 #include <iostream>
 #include <vector>
 

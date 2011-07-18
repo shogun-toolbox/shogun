@@ -35,11 +35,11 @@
 #ifndef _LIBLINEAR_H
 #define _LIBLINEAR_H
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include "classifier/svm/Tron.h"
-#include "features/DotFeatures.h"
+#include <shogun/classifier/svm/Tron.h>
+#include <shogun/features/DotFeatures.h>
 #include <vector>
 
 namespace shogun

@@ -8,17 +8,17 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef USE_SVMLIGHT
 
-#include "lib/io.h"
-#include "lib/lapack.h"
-#include "lib/Signal.h"
-#include "lib/Mathematics.h"
-#include "classifier/svm/SVMLightOneClass.h"
-#include "machine/KernelMachine.h"
-#include "kernel/CombinedKernel.h"
+#include <shogun/lib/io.h>
+#include <shogun/lib/lapack.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/classifier/svm/SVMLightOneClass.h>
+#include <shogun/machine/KernelMachine.h>
+#include <shogun/kernel/CombinedKernel.h>
 
 #include <unistd.h>
 
@@ -28,7 +28,7 @@ extern "C" {
 }
 #endif
 
-#include "base/Parallel.h"
+#include <shogun/base/Parallel.h>
 
 #ifndef WIN32
 #include <pthread.h>

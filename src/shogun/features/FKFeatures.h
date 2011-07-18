@@ -12,8 +12,8 @@
 #ifndef _CFKFEATURES__H__
 #define _CFKFEATURES__H__
 
-#include "features/SimpleFeatures.h"
-#include "distributions/HMM.h"
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distributions/HMM.h>
 
 namespace shogun
 {

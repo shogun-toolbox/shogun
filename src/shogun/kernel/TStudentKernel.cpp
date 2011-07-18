@@ -9,8 +9,8 @@
  */
 
 #include <math.h>
-#include "TStudentKernel.h"
-#include "lib/Mathematics.h"
+#include <shogun/kernel/TStudentKernel.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

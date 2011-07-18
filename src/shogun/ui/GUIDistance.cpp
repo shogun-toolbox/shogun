@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "GUIDistance.h"
-#include "SGInterface.h"
+#include <shogun/ui/GUIDistance.h>
+#include <shogun/ui/SGInterface.h>
 
 #include <string.h>
 

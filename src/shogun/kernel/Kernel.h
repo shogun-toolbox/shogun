@@ -15,14 +15,14 @@
 #ifndef _KERNEL_H___
 #define _KERNEL_H___
 
-#include "lib/common.h"
-#include "lib/Signal.h"
-#include "lib/File.h"
-#include "lib/Mathematics.h"
-#include "features/FeatureTypes.h"
-#include "base/SGObject.h"
-#include "features/Features.h"
-#include "kernel/KernelNormalizer.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/File.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/features/FeatureTypes.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/features/Features.h>
+#include <shogun/kernel/KernelNormalizer.h>
 
 #include <vector>
 #include <set>

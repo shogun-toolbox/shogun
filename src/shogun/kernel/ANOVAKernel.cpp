@@ -9,8 +9,8 @@
  */
 
 #include <math.h>
-#include "ANOVAKernel.h"
-#include "lib/Mathematics.h"
+#include <shogun/kernel/ANOVAKernel.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

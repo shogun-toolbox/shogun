@@ -12,12 +12,12 @@
 #ifndef _COMBINEDKERNEL_H___
 #define _COMBINEDKERNEL_H___
 
-#include "lib/List.h"
-#include "lib/io.h"
-#include "kernel/Kernel.h"
+#include <shogun/lib/List.h>
+#include <shogun/lib/io.h>
+#include <shogun/kernel/Kernel.h>
 
-#include "features/Features.h"
-#include "features/CombinedFeatures.h"
+#include <shogun/features/Features.h>
+#include <shogun/features/CombinedFeatures.h>
 
 namespace shogun
 {

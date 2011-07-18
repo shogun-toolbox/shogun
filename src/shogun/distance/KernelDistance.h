@@ -8,15 +8,15 @@
  * Copyright (C) 2010 Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 
 #ifndef _KERNELDISTANCE_H___
 #define _KERNELDISTANCE_H___
 
-#include "lib/common.h"
-#include "distance/Distance.h"
-#include "kernel/Kernel.h"
+#include <shogun/lib/common.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/kernel/Kernel.h>
 
 namespace shogun
 {

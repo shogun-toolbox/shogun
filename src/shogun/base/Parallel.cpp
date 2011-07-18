@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "base/Parallel.h"
+#include <shogun/base/Parallel.h>
 
 using namespace shogun;
 

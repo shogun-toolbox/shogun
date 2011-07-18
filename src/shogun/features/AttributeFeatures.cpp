@@ -8,8 +8,8 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/Features.h"
-#include "features/AttributeFeatures.h"
+#include <shogun/features/Features.h>
+#include <shogun/features/AttributeFeatures.h>
 
 using namespace shogun;
 

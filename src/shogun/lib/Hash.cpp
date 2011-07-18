@@ -38,8 +38,8 @@
  *     machines.
  */
 
-#include "lib/common.h"
-#include "lib/Hash.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Hash.h>
 
 using namespace shogun;
 

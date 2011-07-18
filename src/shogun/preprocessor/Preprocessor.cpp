@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "preprocessor/Preprocessor.h"
-#include "lib/io.h"
+#include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

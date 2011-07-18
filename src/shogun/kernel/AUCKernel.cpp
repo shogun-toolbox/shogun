@@ -9,11 +9,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "kernel/AUCKernel.h"
-#include "features/SimpleFeatures.h"
-#include "lib/io.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/kernel/AUCKernel.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

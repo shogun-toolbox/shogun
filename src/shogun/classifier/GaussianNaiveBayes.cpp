@@ -8,12 +8,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "GaussianNaiveBayes.h"
-#include "machine/Machine.h"
-#include "features/Features.h"
-#include "features/Labels.h"
-#include "lib/Mathematics.h"
-#include "lib/Signal.h"
+#include <shogun/classifier/GaussianNaiveBayes.h>
+#include <shogun/machine/Machine.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/Labels.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 

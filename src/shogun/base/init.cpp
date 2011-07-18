@@ -8,12 +8,12 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "base/init.h"
-#include "lib/Mathematics.h"
-#include "lib/memory.h"
-#include "lib/Set.h"
-#include "base/Parallel.h"
-#include "base/Version.h"
+#include <shogun/base/init.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/memory.h>
+#include <shogun/lib/Set.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/Version.h>
 
 namespace shogun
 {

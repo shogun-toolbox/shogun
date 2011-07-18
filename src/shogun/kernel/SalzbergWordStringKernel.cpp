@@ -8,13 +8,13 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "kernel/SalzbergWordStringKernel.h"
-#include "features/Features.h"
-#include "features/StringFeatures.h"
-#include "features/Labels.h"
-#include "classifier/PluginEstimate.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/kernel/SalzbergWordStringKernel.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/features/Labels.h>
+#include <shogun/classifier/PluginEstimate.h>
 
 using namespace shogun;
 

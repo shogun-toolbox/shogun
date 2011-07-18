@@ -11,9 +11,9 @@
 #ifndef LOCALLYLINEAREMBEDDING_H_
 #define LOCALLYLINEAREMBEDDING_H_
 #ifdef HAVE_LAPACK
-#include "preprocessor/DimensionReductionPreprocessor.h"
-#include "features/Features.h"
-#include "distance/Distance.h"
+#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/distance/Distance.h>
 
 namespace shogun
 {

@@ -9,11 +9,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "distributions/Histogram.h"
-#include "lib/common.h"
-#include "features/StringFeatures.h"
-#include "lib/io.h"
-#include "lib/Mathematics.h"
+#include <shogun/distributions/Histogram.h>
+#include <shogun/lib/common.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

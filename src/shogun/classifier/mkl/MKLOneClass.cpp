@@ -1,5 +1,5 @@
-#include "classifier/mkl/MKLOneClass.h"
-#include "classifier/svm/LibSVMOneClass.h"
+#include <shogun/classifier/mkl/MKLOneClass.h>
+#include <shogun/classifier/svm/LibSVMOneClass.h>
 
 using namespace shogun;
 

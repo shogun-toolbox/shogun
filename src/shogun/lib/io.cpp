@@ -9,14 +9,14 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
-#include "lib/io.h"
-#include "lib/ShogunException.h"
-#include "lib/Signal.h"
-#include "lib/common.h"
-#include "lib/Time.h"
-#include "lib/Mathematics.h"
+#include <shogun/lib/io.h>
+#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/Time.h>
+#include <shogun/lib/Mathematics.h>
 
 #include <stdio.h>
 #include <stdarg.h>

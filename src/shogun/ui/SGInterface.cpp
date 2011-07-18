@@ -1,6 +1,6 @@
-#include "GUICommands.h"
-#include "SGInterface.h"
-#include "SyntaxHighLight.h"
+#include <shogun/ui/GUICommands.h>
+#include <shogun/ui/SGInterface.h>
+#include <shogun/ui/SyntaxHighLight.h>
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>

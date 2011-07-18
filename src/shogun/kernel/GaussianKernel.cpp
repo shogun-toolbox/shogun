@@ -10,12 +10,12 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/common.h"
-#include "base/Parameter.h"
-#include "kernel/GaussianKernel.h"
-#include "features/DotFeatures.h"
-#include "features/SimpleFeatures.h"
-#include "lib/io.h"
+#include <shogun/lib/common.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

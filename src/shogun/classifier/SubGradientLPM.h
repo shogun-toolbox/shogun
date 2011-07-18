@@ -12,16 +12,16 @@
 #ifndef _SUBGRADIENTLPM_H___
 #define _SUBGRADIENTLPM_H___
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifdef USE_CPLEX
-#include "lib/common.h"
+#include <shogun/lib/common.h>
 
-#include "lib/Cplex.h"
+#include <shogun/lib/Cplex.h>
 
-#include "machine/LinearMachine.h"
-#include "features/Features.h"
-#include "features/Labels.h"
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/Labels.h>
 
 namespace shogun
 {

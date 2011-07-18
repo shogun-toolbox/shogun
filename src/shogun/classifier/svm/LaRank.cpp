@@ -49,12 +49,12 @@
 #include <vector>
 #include <algorithm>
 
-#include "lib/io.h"
-#include "lib/Signal.h"
-#include "lib/Time.h"
-#include "lib/Mathematics.h"
-#include "classifier/svm/LaRank.h"
-#include "kernel/Kernel.h"
+#include <shogun/lib/io.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/classifier/svm/LaRank.h>
+#include <shogun/kernel/Kernel.h>
 
 using namespace shogun;
 

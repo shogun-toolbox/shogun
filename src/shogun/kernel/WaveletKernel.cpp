@@ -8,9 +8,9 @@
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "kernel/WaveletKernel.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/WaveletKernel.h>
+#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 

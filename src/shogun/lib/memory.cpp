@@ -8,10 +8,10 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/ShogunException.h"
-#include "lib/memory.h"
-#include "lib/common.h"
-#include "lib/Set.h"
+#include <shogun/lib/ShogunException.h>
+#include <shogun/lib/memory.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/Set.h>
 
 using namespace shogun;
 

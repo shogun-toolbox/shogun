@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "machine/LinearMachine.h"
-#include "base/Parameter.h"
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 

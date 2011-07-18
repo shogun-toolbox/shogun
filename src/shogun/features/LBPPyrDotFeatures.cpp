@@ -8,7 +8,7 @@
  * Copyright (C) 2010 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
  * Copyright (C) 2010 Berlin Institute of Technology
  */
-#include "features/LBPPyrDotFeatures.h"
+#include <shogun/features/LBPPyrDotFeatures.h>
 
 using namespace shogun;
 

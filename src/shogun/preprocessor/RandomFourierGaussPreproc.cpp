@@ -9,7 +9,7 @@
  * Copyright (C) 2010-2011 Berlin Institute of Technology
  */
 
-#include "RandomFourierGaussPreproc.h"
+#include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 #include <cmath>
 
 using namespace shogun;

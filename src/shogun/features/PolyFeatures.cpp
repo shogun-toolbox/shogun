@@ -1,4 +1,4 @@
-#include "features/PolyFeatures.h"
+#include <shogun/features/PolyFeatures.h>
 
 using namespace shogun;
 

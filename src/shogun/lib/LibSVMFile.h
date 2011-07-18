@@ -10,10 +10,10 @@
 #ifndef __LIBSVM_FILE_H__
 #define __LIBSVM_FILE_H__
 
-#include "lib/config.h"
-#include "lib/common.h"
-#include "base/SGObject.h"
-#include "lib/io.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/io.h>
 
 namespace shogun
 {

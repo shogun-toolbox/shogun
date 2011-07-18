@@ -8,7 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "MKLMultiClassGradient.h"
+#include <shogun/classifier/mkl/MKLMultiClassGradient.h>
 
 using namespace shogun;
 

@@ -10,10 +10,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/Features.h"
-#include "preprocessor/Preprocessor.h"
-#include "lib/io.h"
-#include "base/Parameter.h"
+#include <shogun/features/Features.h>
+#include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/lib/io.h>
+#include <shogun/base/Parameter.h>
 
 #include <string.h>
 

@@ -8,14 +8,14 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/CPLEXSVM.h"
-#include "lib/common.h"
+#include <shogun/classifier/svm/CPLEXSVM.h>
+#include <shogun/lib/common.h>
 
 #ifdef USE_CPLEX
-#include "lib/io.h"
-#include "lib/Mathematics.h"
-#include "lib/Cplex.h"
-#include "features/Labels.h"
+#include <shogun/lib/io.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Cplex.h>
+#include <shogun/features/Labels.h>
 
 using namespace shogun;
 

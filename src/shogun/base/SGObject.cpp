@@ -8,12 +8,12 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
-#include "base/SGObject.h"
-#include "lib/io.h"
-#include "base/Parallel.h"
-#include "base/init.h"
-#include "base/Version.h"
-#include "base/Parameter.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/io.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/init.h>
+#include <shogun/base/Version.h>
+#include <shogun/base/Parameter.h>
 
 #include <stdlib.h>
 #include <stdio.h>

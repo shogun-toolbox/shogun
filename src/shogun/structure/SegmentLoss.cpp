@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "lib/Mathematics.h"
-#include "lib/config.h"
-#include "lib/io.h"
-#include "structure/SegmentLoss.h"
-#include "lib/Array.h"
-#include "lib/Array2.h"
-#include "lib/Array3.h"
-#include "base/SGObject.h" 
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/io.h>
+#include <shogun/structure/SegmentLoss.h>
+#include <shogun/lib/Array.h>
+#include <shogun/lib/Array2.h>
+#include <shogun/lib/Array3.h>
+#include <shogun/base/SGObject.h> 
 //# define DEBUG
 
 using namespace shogun;

@@ -11,9 +11,9 @@
 #ifndef _MULTICLASSSVM_H___
 #define _MULTICLASSSVM_H___
 
-#include "lib/common.h"
-#include "features/Features.h"
-#include "classifier/svm/SVM.h"
+#include <shogun/lib/common.h>
+#include <shogun/features/Features.h>
+#include <shogun/classifier/svm/SVM.h>
 
 namespace shogun
 {

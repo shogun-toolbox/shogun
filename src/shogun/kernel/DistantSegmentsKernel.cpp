@@ -9,7 +9,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "kernel/DistantSegmentsKernel.h"
+#include <shogun/kernel/DistantSegmentsKernel.h>
 #include <string>
 
 using namespace shogun;

@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "RationalQuadraticKernel.h"
-#include "lib/Mathematics.h"
+#include <shogun/kernel/RationalQuadraticKernel.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

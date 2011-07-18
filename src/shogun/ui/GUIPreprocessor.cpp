@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "GUIPreprocessor.h"
-#include "SGInterface.h"
+#include <shogun/ui/GUIPreprocessor.h>
+#include <shogun/ui/SGInterface.h>
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/io.h>

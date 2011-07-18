@@ -10,10 +10,10 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "classifier/KNN.h"
-#include "features/Labels.h"
-#include "lib/Mathematics.h"
-#include "lib/Signal.h"
+#include <shogun/classifier/KNN.h>
+#include <shogun/features/Labels.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 

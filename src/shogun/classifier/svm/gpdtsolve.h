@@ -26,7 +26,7 @@
  *** SHOGUN adaptions  Written (W) 2006-2008 Soeren Sonnenburg              ***
  */
 
-#include "base/SGObject.h"
+#include <shogun/base/SGObject.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace shogun

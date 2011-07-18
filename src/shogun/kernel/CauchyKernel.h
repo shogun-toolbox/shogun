@@ -8,14 +8,14 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 #ifndef CAUCHYKERNEL_H_
 #define CAUCHYKERNEL_H_
 
-#include "lib/common.h"
-#include "kernel/Kernel.h"
-#include "distance/Distance.h"
+#include <shogun/lib/common.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/distance/Distance.h>
 
 namespace shogun
 {

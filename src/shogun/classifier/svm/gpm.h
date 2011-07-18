@@ -26,7 +26,7 @@
  *** SHOGUN adaptions  Written (W) 2006-2008 Soeren Sonnenburg              ***
  */
 
-#include "lib/common.h"
+#include <shogun/lib/common.h>
 
 namespace shogun
 {

@@ -9,11 +9,11 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "features/Features.h"
-#include "features/DotFeatures.h"
-#include "kernel/LinearKernel.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/kernel/LinearKernel.h>
 
 using namespace shogun;
 

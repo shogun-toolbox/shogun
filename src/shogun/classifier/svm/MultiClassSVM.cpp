@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
-#include "lib/io.h"
-#include "classifier/svm/MultiClassSVM.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/classifier/svm/MultiClassSVM.h>
 
 using namespace shogun;
 

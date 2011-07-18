@@ -8,8 +8,8 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/ExplicitSpecFeatures.h"
-#include "lib/io.h"
+#include <shogun/features/ExplicitSpecFeatures.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

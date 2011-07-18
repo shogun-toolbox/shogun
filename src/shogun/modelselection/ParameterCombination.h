@@ -11,7 +11,7 @@
 #ifndef __PARAMETERCOMBINATION_H__
 #define __PARAMETERCOMBINATION_H__
 
-#include "lib/DynamicObjectArray.h"
+#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {

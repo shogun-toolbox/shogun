@@ -8,12 +8,12 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST
  */
 
-#include "lib/config.h"
-#include "lib/common.h"
-#include "lib/io.h"
-#include "distance/TanimotoDistance.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/io.h>
+#include <shogun/distance/TanimotoDistance.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 

@@ -12,10 +12,10 @@
 #ifndef _SUBGRADIENTSVM_H___
 #define _SUBGRADIENTSVM_H___
 
-#include "lib/common.h"
-#include "machine/LinearMachine.h"
-#include "features/DotFeatures.h"
-#include "features/Labels.h"
+#include <shogun/lib/common.h>
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/Labels.h>
 
 namespace shogun
 {

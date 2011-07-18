@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "base/Version.h"
-#include "lib/versionstring.h"
+#include <shogun/base/Version.h>
+#include <shogun/lib/versionstring.h>
 
 using namespace shogun;
 

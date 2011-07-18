@@ -10,10 +10,10 @@
 #ifndef __SERIALIZABLE_JSON_READER_00_H__
 #define __SERIALIZABLE_JSON_READER_00_H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 #ifdef HAVE_JSON
 
-#include "lib/SerializableJsonFile.h"
+#include <shogun/lib/SerializableJsonFile.h>
 
 namespace shogun
 {

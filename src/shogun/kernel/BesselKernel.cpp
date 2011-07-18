@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "BesselKernel.h"
-#include "lib/Mathematics.h"
+#include <shogun/kernel/BesselKernel.h>
+#include <shogun/lib/Mathematics.h>
 #include <math.h>
 
 using namespace shogun;

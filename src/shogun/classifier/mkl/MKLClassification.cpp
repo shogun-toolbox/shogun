@@ -1,8 +1,8 @@
-#include "classifier/mkl/MKLClassification.h"
+#include <shogun/classifier/mkl/MKLClassification.h>
 #ifdef USE_SVMLIGHT
-#include "classifier/svm/SVMLight.h"
+#include <shogun/classifier/svm/SVMLight.h>
 #endif //USE_SVMLIGHT
-#include "classifier/svm/LibSVM.h"
+#include <shogun/classifier/svm/LibSVM.h>
 
 using namespace shogun;
 

@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/KernelPerceptron.h"
-#include "features/Labels.h"
-#include "lib/Mathematics.h"
+#include <shogun/classifier/KernelPerceptron.h>
+#include <shogun/features/Labels.h>
+#include <shogun/lib/Mathematics.h>
 
 using namespace shogun;
 

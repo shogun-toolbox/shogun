@@ -8,8 +8,8 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/mkl/MKLMultiClass.h"
-#include "lib/io.h"
+#include <shogun/classifier/mkl/MKLMultiClass.h>
+#include <shogun/lib/io.h>
 
 using namespace shogun;
 

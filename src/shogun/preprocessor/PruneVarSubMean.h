@@ -12,10 +12,10 @@
 #ifndef _CPRUNE_VAR_SUB_MEAN__H__
 #define _CPRUNE_VAR_SUB_MEAN__H__
 
-#include "preprocessor/SimplePreprocessor.h"
-#include "features/Features.h"
-#include "features/SimpleFeatures.h"
-#include "lib/common.h"
+#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/lib/common.h>
 
 #include <stdio.h>
 

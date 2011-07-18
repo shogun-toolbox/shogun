@@ -17,19 +17,19 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "lib/common.h"
-#include "lib/Mathematics.h"
-#include "lib/Cache.h"
-#include "lib/io.h"
-#include "lib/Cache.h"
-#include "lib/File.h"
-#include "lib/DataType.h"
+#include <shogun/lib/common.h>
+#include <shogun/lib/Mathematics.h>
+#include <shogun/lib/Cache.h>
+#include <shogun/lib/io.h>
+#include <shogun/lib/Cache.h>
+#include <shogun/lib/File.h>
+#include <shogun/lib/DataType.h>
 
-#include "features/Labels.h"
-#include "features/Features.h"
-#include "features/DotFeatures.h"
-#include "features/SimpleFeatures.h"
-#include "preprocessor/SparsePreprocessor.h"
+#include <shogun/features/Labels.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/preprocessor/SparsePreprocessor.h>
 
 namespace shogun
 {
