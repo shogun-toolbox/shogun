@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/evaluation
+INPUT                  = ../../shogun/evaluation
 OUTPUT_DIRECTORY       = Evaluation
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/kernel
+INPUT                  = ../../shogun/kernel
 OUTPUT_DIRECTORY       = Kernel
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

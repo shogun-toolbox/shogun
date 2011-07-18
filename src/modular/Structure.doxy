@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/structure
+INPUT                  = ../../shogun/structure
 OUTPUT_DIRECTORY       = Structure
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

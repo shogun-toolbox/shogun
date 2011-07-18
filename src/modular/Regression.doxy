@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/regression
+INPUT                  = ../../shogun/regression
 OUTPUT_DIRECTORY       = Regression
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/distance
+INPUT                  = ../../shogun/distance
 OUTPUT_DIRECTORY       = Distance
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

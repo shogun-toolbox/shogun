@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/classifier
+INPUT                  = ../../shogun/classifier
 OUTPUT_DIRECTORY       = Classifier
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

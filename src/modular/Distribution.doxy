@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/distributions
+INPUT                  = ../../shogun/distributions
 OUTPUT_DIRECTORY       = Distribution
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

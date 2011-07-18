@@ -32,7 +32,7 @@ class CAsciiFile: public CFile
 {
 public:
 	/** default constructor  */
-	CAsciiFile(void);
+	CAsciiFile();
 
 	/** constructor
 	 *

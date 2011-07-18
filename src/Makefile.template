@@ -177,7 +177,7 @@ clean: swigclean swigdocclean
 
 install: install-template
 
-install-cmdline: $(TEMPLATE_TARGET)
+install-cmdline_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(BINDIR)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(BINDIR)
 
@@ -217,7 +217,7 @@ install-r_static: $(TEMPLATE_TARGET)
 	install -m644 $(CONFIGPATH)/../examples/documented/r/*.R $(CONFIGPATH)/../examples/documented/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
 	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB)
 
-install-elwms: $(TEMPLATE_TARGET)
+install-elwms_static: $(TEMPLATE_TARGET)
 	#one .so file
 ifneq ($(CMDLINE_TARGET),)
 	install -d -m755 $(DESTDIR)$(LIBDIR)/shogun
@@ -248,7 +248,7 @@ ifneq ($(R_TARGET),)
 	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) elwms $(EXT_LIB)
 endif
 
-install-matlab: $(TEMPLATE_TARGET)
+install-matlab_static: $(TEMPLATE_TARGET)
 	@echo "The matlab interface needs to be installed"
 	@echo "using a different mechanism:"
 	@echo
@@ -322,39 +322,39 @@ check-examples-python_static:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 
-run-testsuite-r:
+run-testsuite-r_static:
 	cd $(CONFIGPATH)/../testsuite/r && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
-check-examples-r:
+check-examples-r_static:
 	cd $(CONFIGPATH)/../examples/undocumented/r && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
-run-testsuite-cmdline:
+run-testsuite-cmdline_static:
 	cd $(CONFIGPATH)/../testsuite/cmdline && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./test_all.sh )
-check-examples-cmdline:
+check-examples-cmdline_static:
 	cd $(CONFIGPATH)/../examples/undocumented/cmdline && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./check.sh )
 
-run-testsuite-octave:
+run-testsuite-octave_static:
 	cd $(CONFIGPATH)/../testsuite/octave && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
-check-examples-octave:
+check-examples-octave_static:
 	cd $(CONFIGPATH)/../examples/undocumented/octave && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
 
-run-testsuite-matlab:
+run-testsuite-matlab_static:
 	cd $(CONFIGPATH)/../testsuite/matlab && \
 		( ln -sf $(CONFIGPATH)/../src/matlab/$(TEMPLATE_TARGET) ; \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
 
-check-examples-matlab:
+check-examples-matlab_static:
 	cd $(CONFIGPATH)/../examples/undocumented/matlab && \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
 
@@ -396,10 +396,10 @@ doc-libshogun:	lib/versionstring.h
 		sed -n 's/^#define VERSION_RELEASE "\(.*\)_"/\1/p' $@`/" $(CONFIGPATH)/../doc/Doxyfile
 	cd $(CONFIGPATH)/../doc && $(MAKE)
 
-doc-elwms:
+doc-elwms_static:
 	true
 
-doc-octave:
+doc-octave_static:
 	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
 	-echo "sg('set_output', 'y');sg('help','doxygen');" | \
 		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun \
@@ -408,7 +408,7 @@ doc-octave:
 	cat x y >$(CONFIGPATH)/../doc/pages/StaticOctaveInterface.mainpage
 	rm -f x y
 
-doc-cmdline:
+doc-cmdline_static:
 	echo "/** \page staticcmdline Static Command Line Interface Function Reference" >x
 	-bash -c "echo -e \"set_output y\nhelp doxygen\n\"" | \
 		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  \
@@ -425,7 +425,7 @@ doc-python_static:
 	cat x y >$(CONFIGPATH)/../doc/pages/StaticPythonInterface.mainpage
 	rm -f x y
 
-doc-r:
+doc-r_static:
 	echo "/** \page staticr Static R Interface Function Reference" >x
 	-echo "library(sg);sg('set_output', 'y');sg('help','doxygen');" | \
 		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  R_PATH="$(DESTDIR)$(RDIR)" R --no-save)
@@ -433,7 +433,7 @@ doc-r:
 	cat x y >$(CONFIGPATH)/../doc/pages/StaticRInterface.mainpage
 	rm -f x y
 
-doc-matlab:
+doc-matlab_static:
 	@echo "Check the octave documentation."
 	@echo
 	@echo " or just use sg('help') "

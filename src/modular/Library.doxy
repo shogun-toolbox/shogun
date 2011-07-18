@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/lib
+INPUT                  = ../../shogun/lib
 OUTPUT_DIRECTORY       = Library
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/modelselection
+INPUT                  = ../../shogun/modelselection
 OUTPUT_DIRECTORY       = Modelselection
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

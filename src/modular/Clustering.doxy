@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/clustering
+INPUT                  = ../../shogun/clustering
 OUTPUT_DIRECTORY       = Clustering
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

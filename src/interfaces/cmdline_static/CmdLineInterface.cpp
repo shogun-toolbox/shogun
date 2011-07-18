@@ -440,7 +440,7 @@ void CCmdLineInterface::fname(sg_type scalar)	\
 }
 SET_SCALAR(set_int, set_matrix, int32_t)
 SET_SCALAR(set_real, set_matrix, float64_t)
-SET_SCALAR(set_bool, set_matrix, bool)
+SET_SCALAR(set_bool, CFile::set_matrix, bool)
 #undef SET_SCALAR
 
 #define SET_VECTOR(fname, mfname, sg_type)	\

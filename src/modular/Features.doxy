@@ -1,4 +1,4 @@
-INPUT                  = ../shogun/features
+INPUT                  = ../../shogun/features
 OUTPUT_DIRECTORY       = Features
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VERSION=`head -n 3 ../NEWS | tail -n 1| awk '{ print $5 }'`
-DATE=`head -n 1 ../NEWS | cut -f 1 -d ' '`
+VERSION=`head -n 3 ../../NEWS | tail -n 1| awk '{ print $5 }'`
+DATE=`head -n 1 ../../NEWS | cut -f 1 -d ' '`
 RVERSION="`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
 PLATFORM=`echo 'R.version$platform' | R --no-save 2>/dev/null | grep '\[1\]' | cut -f 2 -d '"'`
 DATE="`date '+%Y-%m-%d %H:%M:%S'`"
