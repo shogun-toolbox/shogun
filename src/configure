@@ -49,6 +49,7 @@ CLASSPATH="$CLASSPATH"
 _swig_version=0.0.0
 _readline=auto
 _hdf5=auto
+_ant=no
 _json=auto
 _xml=auto
 _r=no
@@ -536,7 +537,14 @@ EOF
 			LINKFLAGS_JAVA="--shared"
 			echores "yes"
 
-			_java=yes
+			echocheck "Ant"
+			if ant -version >/dev/null 2>&1
+			then
+				echores "`ant -version | cut -f 4 -d ' '`"
+				_java=yes
+			else
+				echores "ant not detected"
+			fi
 		else
 			echores "javac not detected"
 		fi
