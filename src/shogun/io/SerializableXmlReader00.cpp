@@ -11,7 +11,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_XML
 
-#include <shogun/lib/SerializableXmlReader00.h>
+#include <shogun/io/SerializableXmlReader00.h>
 
 using namespace shogun;
 

@@ -1,5 +1,5 @@
 from numpy import *
-from shogun.Library import *
+from shogun.Mathematics import *
 
 x=array([[20.0,15,15],[10,20,20]])
 y=array([[21,21,18],[19,19,22]])

@@ -23,7 +23,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/Loss.h>
+#include <shogun/mathematics/Loss.h>
 
 
 using namespace shogun;

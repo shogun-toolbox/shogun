@@ -12,7 +12,7 @@
 #ifdef HAVE_XML
 
 #include <shogun/io/SerializableXmlFile.h>
-#include <shogun/lib/SerializableXmlReader00.h>
+#include <shogun/io/SerializableXmlReader00.h>
 
 #define STR_ROOT_NAME_00 \
 	"_SHOGUN_SERIALIZABLE_XML_FILE_V_00_"

@@ -11,7 +11,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_HDF5
 
-#include <shogun/lib/SerializableHdf5Reader00.h>
+#include <shogun/io/SerializableHdf5Reader00.h>
 
 using namespace shogun;
 

@@ -8,7 +8,7 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/lib/SerializableAsciiReader00.h>
+#include <shogun/io/SerializableAsciiReader00.h>
 
 using namespace shogun;
 

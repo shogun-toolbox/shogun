@@ -11,7 +11,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_JSON
 
-#include <shogun/lib/SerializableJsonReader00.h>
+#include <shogun/io/SerializableJsonReader00.h>
 
 using namespace shogun;
 

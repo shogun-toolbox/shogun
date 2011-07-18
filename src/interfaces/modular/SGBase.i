@@ -101,96 +101,13 @@
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
-%include <shogun/lib/ShogunException.h>
 %include <shogun/io/io.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
-%include <shogun/lib/DataType.h>
+%include "Library_includes.i"
 
-namespace shogun
-{
-    %template(BoolSparseMatrix) SGSparseMatrix<bool>;
-    %template(CharSparseMatrix) SGSparseMatrix<char>;
-    %template(ByteSparseMatrix) SGSparseMatrix<uint8_t>;
-    %template(WordSparseMatrix) SGSparseMatrix<uint16_t>;
-    %template(ShortSparseMatrix) SGSparseMatrix<int16_t>;
-    %template(IntSparseMatrix)  SGSparseMatrix<int32_t>;
-    %template(UIntSparseMatrix)  SGSparseMatrix<uint32_t>;
-    %template(LongIntSparseMatrix)  SGSparseMatrix<int64_t>;
-    %template(ULongIntSparseMatrix)  SGSparseMatrix<uint64_t>;
-    %template(ShortRealSparseMatrix) SGSparseMatrix<float32_t>;
-    %template(RealSparseMatrix) SGSparseMatrix<float64_t>;
-    %template(LongRealSparseMatrix) SGSparseMatrix<floatmax_t>;
-
-    %template(BoolStringList) SGStringList<bool>;
-    %template(CharStringList) SGStringList<char>;
-    %template(ByteStringList) SGStringList<uint8_t>;
-    %template(WordStringList) SGStringList<uint16_t>;
-    %template(ShortStringList) SGStringList<int16_t>;
-    %template(IntStringList)  SGStringList<int32_t>;
-    %template(UIntStringList)  SGStringList<uint32_t>;
-    %template(LongIntStringList)  SGStringList<int64_t>;
-    %template(ULongIntStringList)  SGStringList<uint64_t>;
-    %template(ShortRealStringList) SGStringList<float32_t>;
-    %template(RealStringList) SGStringList<float64_t>;
-    %template(LongRealStringList) SGStringList<floatmax_t>;
-
-
-    %template(BoolString) SGString<bool>;
-    %template(CharString) SGString<char>;
-    %template(ByteString) SGString<uint8_t>;
-    %template(WordString) SGString<uint16_t>;
-    %template(ShortString) SGString<int16_t>;
-    %template(IntString)  SGString<int32_t>;
-    %template(UIntString)  SGString<uint32_t>;
-    %template(LongIntString)  SGString<int64_t>;
-    %template(ULongIntString)  SGString<uint64_t>;
-    %template(ShortRealString) SGString<float32_t>;
-    %template(RealString) SGString<float64_t>;
-    %template(LongRealString) SGString<floatmax_t>;
-
-    %template(BoolVector) SGVector<bool>;
-    %template(CharVector) SGVector<char>;
-    %template(ByteVector) SGVector<uint8_t>;
-    %template(WordVector) SGVector<uint16_t>;
-    %template(ShortVector) SGVector<int16_t>;
-    %template(IntVector)  SGVector<int32_t>;
-    %template(UIntVector)  SGVector<uint32_t>;
-    %template(LongIntVector)  SGVector<int64_t>;
-    %template(ULongIntVector)  SGVector<uint64_t>;
-    %template(ShortRealVector) SGVector<float32_t>;
-    %template(RealVector) SGVector<float64_t>;
-    %template(LongRealVector) SGVector<floatmax_t>;
-
-    %template(BoolMatrix) SGMatrix<bool>;
-    %template(CharMatrix) SGMatrix<char>;
-    %template(ByteMatrix) SGMatrix<uint8_t>;
-    %template(WordMatrix) SGMatrix<uint16_t>;
-    %template(ShortMatrix) SGMatrix<int16_t>;
-    %template(IntMatrix)  SGMatrix<int32_t>;
-    %template(UIntMatrix)  SGMatrix<uint32_t>;
-    %template(LongIntMatrix)  SGMatrix<int64_t>;
-    %template(ULongIntMatrix)  SGMatrix<uint64_t>;
-    %template(ShortRealMatrix) SGMatrix<float32_t>;
-    %template(RealMatrix) SGMatrix<float64_t>;
-    %template(LongRealMatrix) SGMatrix<floatmax_t>;
-
-    %template(BoolNDArray) SGNDArray<bool>;
-    %template(CharNDArray) SGNDArray<char>;
-    %template(ByteNDArray) SGNDArray<uint8_t>;
-    %template(WordNDArray) SGNDArray<uint16_t>;
-    %template(ShortNDArray) SGNDArray<int16_t>;
-    %template(IntNDArray)  SGNDArray<int32_t>;
-    %template(UIntNDArray)  SGNDArray<uint32_t>;
-    %template(LongIntNDArray)  SGNDArray<int64_t>;
-    %template(ULongIntNDArray)  SGNDArray<uint64_t>;
-    %template(ShortRealNDArray) SGNDArray<float32_t>;
-    %template(RealNDArray) SGNDArray<float64_t>;
-    %template(LongRealNDArray) SGNDArray<floatmax_t>;
-}
-
-
+%import "Library.i"
 
 %include stl.i
 /* instantiate the required template specializations */
@@ -205,19 +122,19 @@ namespace std {
 %pythoncode %{
 import tempfile, random, os, exceptions
 
-try: import Library as shogunLibrary
-except exceptions.ImportError: import shogun.Library as shogunLibrary
+try: import IO as shogunIO
+except exceptions.ImportError: import shogun.Library as shogunIO
 
 def __SGgetstate__(self):
     fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
         + str(random.randint(0, 1e15))
 
     try:
-        fstream = shogunLibrary.SerializableAsciiFile(fname, "w") \
+        fstream = shogunIO.SerializableAsciiFile(fname, "w") \
             if self.__pickle_ascii__ \
-            else shogunLibrary.SerializableHDF5File(fname, "w")
+            else shogunIO.SerializableHDF5File(fname, "w")
     except exceptions.AttributeError:
-        fstream = shogunLibrary.SerializableAsciiFile(fname, "w")
+        fstream = shogunIO.SerializableAsciiFile(fname, "w")
         self.__pickle_ascii__ = True
 
     if not self.save_serializable(fstream):
@@ -241,9 +158,9 @@ def __SGsetstate__(self, state_tuple):
     fstream.close()
 
     try:
-        fstream = shogunLibrary.SerializableAsciiFile(fname, "r") \
+        fstream = shogunIO.SerializableAsciiFile(fname, "r") \
             if state_tuple[0] \
-            else shogunLibrary.SerializableHDF5File(fname, "r")
+            else shogunIO.SerializableHDF5File(fname, "r")
     except exceptions.AttributeError:
         raise exceptions.IOError("File contains an HDF5 stream but " \
                                  "Shogun was not compiled with HDF5" \
@@ -264,7 +181,7 @@ def __SGstr__(self):
     fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
         + str(random.randint(0, 1e15))
 
-    fstream = shogunLibrary.SerializableAsciiFile(fname, "w")
+    fstream = shogunIO.SerializableAsciiFile(fname, "w")
     if not self.save_serializable(fstream):
         fstream.close(); os.remove(fname)
         raise exceptions.IOError("Could not dump Shogun object!")

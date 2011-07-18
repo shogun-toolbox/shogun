@@ -12,7 +12,7 @@
 #ifdef HAVE_JSON
 
 #include <shogun/io/SerializableJsonFile.h>
-#include <shogun/lib/SerializableJsonReader00.h>
+#include <shogun/io/SerializableJsonReader00.h>
 
 #define STR_KEY_FILETYPE           "filetype"
 #define STR_FILETYPE_00 \
