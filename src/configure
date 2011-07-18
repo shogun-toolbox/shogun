@@ -4504,11 +4504,14 @@ type_buildinfo()
 		cfgopts="with the following $CONFIGURE_OPTIONS"
 	fi
 
+	moreinfo=""
+	test -n "$PARTS" && moreinfo="and the following interfaces: $PARTS"
+
 	cat <<EOF
 
 SHOGUN was configured for
 
-  $PARTS
+  libshogun $moreinfo
 
 interface(s) $cfgopts
 
