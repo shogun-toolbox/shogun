@@ -9,10 +9,10 @@
  */
  
 %define DOCSTR
-"The `Modelselection` module gathers all model selection stuff available in the SHOGUN toolkit."
+"The `ModelSelection` module gathers all model selection stuff available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Modelselection
+%module(docstring=DOCSTR) ModelSelection
 #undef DOCSTR
 
 /* Documentation */
@@ -20,15 +20,15 @@
 
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY
-#%include "Modelselection_doxygen.i"
+#%include "ModelSelection_doxygen.i"
 #endif
 #endif
 
 /* Include Module Definitions */
 %include "SGBase.i"
-%include "Modelselection_includes.i"
+%include "ModelSelection_includes.i"
 
-%import "Modelselection.i"
+%import "ModelSelection.i"
 
 /* These functions return new Objects */
 %newobject CGridSearchModelSelection::select_model();
@@ -39,7 +39,7 @@
 
 /* Remove C Prefix */
 %rename(GridSearchModelSelection) CGridSearchModelSelection;
-%rename(ModelSelection) CModelSelection;
+%rename(ModelSelectionBase) CModelSelection;
 %rename(ModelSelectionParameters) CModelSelectionParameters;
 %rename(ParameterCombination) CParameterCombination;
 

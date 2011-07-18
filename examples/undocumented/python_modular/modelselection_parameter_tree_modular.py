@@ -9,9 +9,9 @@
 #
 
 def modelselection_parameter_tree_modular():
-	from shogun.Modelselection import ParameterCombination
-	from shogun.Modelselection import ModelSelectionParameters, R_EXP, R_LINEAR
-	from shogun.Modelselection import DynamicParameterCombinationArray
+	from shogun.ModelSelection import ParameterCombination
+	from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
+	from shogun.ModelSelection import DynamicParameterCombinationArray
 	from shogun.Kernel import PowerKernel
 	from shogun.Kernel import GaussianKernel
 	from shogun.Kernel import DistantSegmentsKernel
