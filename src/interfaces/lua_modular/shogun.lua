@@ -12,6 +12,7 @@ require("Preprocessor");
 DistanceMachine = Classifier.DistanceMachine
 KernelMachine = Classifier.KernelMachine
 KernelPerceptron = Classifier.KernelPerceptron
+AveragedPerceptron = Classifier.AveragedPerceptron
 KNN = Classifier.KNN
 KRR = Classifier.KRR
 LDA = Classifier.LDA
