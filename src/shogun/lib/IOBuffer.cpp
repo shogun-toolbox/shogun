@@ -18,11 +18,32 @@
 
 using namespace shogun;
 
+CIOBuffer::CIOBuffer()
+{
+	init();
+}
+
+CIOBuffer::CIOBuffer(int fd)
+{
+	init();
+	working_file = fd;
+}
+
+CIOBuffer::~CIOBuffer()
+{
+	free(space.begin);
+}
+
 void CIOBuffer::init()
 {
 	size_t s = 1 << 16;
 	space.reserve(s);
 	endloaded = space.begin;
+}
+
+void CIOBuffer::use_file(int fd)
+{
+	working_file = fd;
 }
 
 int CIOBuffer::open_file(const char* name, char flag)
@@ -49,16 +70,6 @@ void CIOBuffer::reset_file()
 	lseek(working_file, 0, SEEK_SET);
 	endloaded = space.begin;
 	space.end = space.begin;
-}
-
-CIOBuffer::CIOBuffer()
-{
-	init();
-}
-
-CIOBuffer::~CIOBuffer()
-{
-	free(space.begin);
 }
 
 void CIOBuffer::set(char *p)
@@ -115,7 +126,7 @@ bool CIOBuffer::close_file()
 	}
 }
 
-size_t CIOBuffer::readto(char* &pointer, char terminal)
+ssize_t CIOBuffer::readto(char* &pointer, char terminal)
 {
 //Return a pointer to the bytes before the terminal.  Must be less
 //than the buffer size.

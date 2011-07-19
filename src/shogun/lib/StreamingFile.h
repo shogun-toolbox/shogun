@@ -16,6 +16,7 @@
 #include "lib/File.h"
 #include "lib/io.h"
 #include "lib/DataType.h"
+#include "lib/IOBuffer.h"
 
 #include <ctype.h>
 #include <fcntl.h>
@@ -55,9 +56,8 @@ namespace shogun
 		void close()
 		{
 			SG_FREE(filename);
-			if (file >= 0)
-				::close(file);
 			filename=NULL;
+			buf->close_file();
 		}
 
 		/** @name Dense Vector Access Functions
@@ -260,8 +260,9 @@ namespace shogun
 		inline virtual const char* get_name() const { return "StreamingFile"; }
 
 	protected:
-		/// File descriptor
-		int file;
+
+		/// Buffer to hold stuff in memory
+		CIOBuffer* buf;
 		/// Task
 		char task;
 		/// Name of the handled file

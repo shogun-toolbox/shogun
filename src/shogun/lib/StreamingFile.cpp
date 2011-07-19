@@ -9,7 +9,6 @@
  */
 
 #include "lib/StreamingFile.h"
-#include "features/SparseFeatures.h"
 
 #include <ctype.h>
 
@@ -186,7 +185,7 @@ using namespace shogun;
 
 CStreamingFile::CStreamingFile() : CSGObject()
 {
-	file=-1;
+	buf=NULL;
 	filename=NULL;
 }
 
@@ -210,9 +209,12 @@ CStreamingFile::CStreamingFile(char* fname, char rw) : CSGObject()
 	
 	if (filename)
 	{
-		file = open((const char*) filename, mode);
+		int file = open((const char*) filename, mode);
 		if (file < 0)
 			SG_ERROR("Error opening file '%s'\n", filename);
+
+		buf = new CIOBuffer(file);
+		SG_REF(buf);
 	}
 	else
 		SG_ERROR("Error getting the file name!\n");
@@ -220,4 +222,5 @@ CStreamingFile::CStreamingFile(char* fname, char rw) : CSGObject()
 
 CStreamingFile::~CStreamingFile()
 {
+	SG_UNREF(buf);
 }
