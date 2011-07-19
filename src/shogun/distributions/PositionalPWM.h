@@ -12,7 +12,7 @@
 #define _POSITIONAL_PWM_H__
 
 #include <shogun/distributions/Distribution.h>
-#include <shogun/features/DotFeatures.h>
+#include <shogun/features/StringFeatures.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 

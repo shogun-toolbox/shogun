@@ -64,8 +64,26 @@ float64_t CPositionalPWM::get_log_derivative(int32_t num_param, int32_t num_exam
 
 float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
 {
-	SG_NOTIMPLEMENTED;
-	return 0;
+	ASSERT(features);
+	ASSERT(features->get_feature_class() == C_STRING);
+	ASSERT(features->get_feature_type()==F_BYTE);
+
+	CStringFeatures<uint8_t>* strs=(CStringFeatures<uint8_t>*) features;
+
+	float64_t lik=0;
+	int32_t len=0;
+	bool do_free=false;
+
+	uint8_t* str = strs->get_feature_vector(num_example, len, do_free);
+
+	if (!(m_w && m_w_cols==len))
+		return 0; //TODO
+
+	for (int32_t i=0; i<len; i++)
+		lik+=m_w[4*i+str[i]];
+
+	strs->free_feature_vector(str, num_example, do_free);
+	return lik;
 }
 
 float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos)
@@ -138,6 +156,7 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 	delete[] m_poim;
 	m_poim_len=num_feat*num_sym;
 	m_poim=new float64_t[num_feat*num_sym];
+	memset(m_poim,0, size_t(num_feat)*size_t(num_sym));
 
 	uint32_t kmer_mask=0;
 	uint32_t words=CMath::pow((int32_t) num_words,(int32_t) order);
