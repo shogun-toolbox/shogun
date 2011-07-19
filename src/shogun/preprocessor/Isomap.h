@@ -183,8 +183,8 @@ protected:
 	CCustomDistance* isomap_distance(CDistance* distance)
 	{
 		int32_t N,k,i,j;
-		float64_t* D_matrix;
-		distance->get_distance_matrix(&D_matrix,&N,&N);
+		SGMatrix<float64_t> D_matrix=distance->get_distance_matrix();
+		N=D_matrix.num_cols;
 
 		if (m_type==EISOMAP)
 		{
@@ -192,8 +192,8 @@ protected:
 
 			for (i=0; i<N*N; i++)
 			{
-				if (D_matrix[i]>m_epsilon)
-					D_matrix[i] = CMath::ALMOST_INFTY;
+				if (D_matrix.matrix[i]>m_epsilon)
+					D_matrix.matrix[i] = CMath::ALMOST_INFTY;
 			}
 		}
 		if (m_type==KISOMAP)
@@ -208,7 +208,7 @@ protected:
 			{
 				for (j=0; j<N; j++)
 				{
-					col[j] = D_matrix[j*N+i];
+					col[j] = D_matrix.matrix[j*N+i];
 					col_idx[j] = j;
 				}
 
@@ -216,7 +216,7 @@ protected:
 
 				for (j=m_k+1; j<N; j++)
 				{
-					D_matrix[col_idx[j]*N+i] = CMath::ALMOST_INFTY;
+					D_matrix.matrix[col_idx[j]*N+i] = CMath::ALMOST_INFTY;
 				}
 			}
 
@@ -224,8 +224,8 @@ protected:
 			for (i=0; i<N; i++)
 			{
 				for (j=0; j<N; j++)
-					if (D_matrix[j*N+i] >= CMath::ALMOST_INFTY)
-						D_matrix[i*N+j] = D_matrix[j*N+i];
+					if (D_matrix.matrix[j*N+i] >= CMath::ALMOST_INFTY)
+						D_matrix.matrix[i*N+j] = D_matrix.matrix[j*N+i];
 			}			
 
 			delete[] col;
@@ -239,16 +239,18 @@ protected:
 			for (i=0; i<N; i++)
 			{
 				for (j=0; j<N; j++)
-					D_matrix[i*N+j] =
-							CMath::min(D_matrix[i*N+j],
-									   D_matrix[i*N+k] + D_matrix[k*N+j]);
+				{
+					D_matrix.matrix[i*N+j] =
+							CMath::min(D_matrix.matrix[i*N+j],
+									   D_matrix.matrix[i*N+k] + D_matrix.matrix[k*N+j]);
+				}
 			}
 		}
 
-		CCustomDistance* geodesic_distance = new CCustomDistance(D_matrix,N,N);
+		CCustomDistance* geodesic_distance = new CCustomDistance(D_matrix.matrix,N,N);
 
 		// should be removed if custom distance doesn't copy the matrix
-		delete[] D_matrix;
+		delete[] D_matrix.matrix;
 
 		return geodesic_distance;
 	}

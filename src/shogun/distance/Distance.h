@@ -112,14 +112,6 @@ class CDistance : public CSGObject
 
 		/** get distance matrix
 		 *
-		 * @param dst distance matrix is stored in here
-		 * @param m dimension m of matrix is stored in here
-		 * @param n dimension n of matrix is stored in here
-		 */
-		void get_distance_matrix(float64_t** dst,int32_t* m, int32_t* n);
-
-		/** get distance matrix
-		 *
 		 * @return computed distance matrix (needs to be cleaned up)
 		 */
 		SGMatrix<float64_t> get_distance_matrix();

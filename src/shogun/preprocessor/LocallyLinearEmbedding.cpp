@@ -56,8 +56,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	float64_t* distance_matrix;
-	distance->get_distance_matrix(&distance_matrix,&N,&N);
+	SGMatrix<float64_t> distance_matrix=distance->get_distance_matrix();
 	delete distance;
 
 	// init matrices to be used
@@ -73,13 +72,13 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 			local_neighbors_idxs[j] = j;
 		}
 
-		CMath::qsort_index(distance_matrix+(i*N),local_neighbors_idxs,N);
+		CMath::qsort_index(distance_matrix.matrix+(i*N),local_neighbors_idxs,N);
 
 		for (j=0; j<m_k; j++)
 			neighborhood_matrix[j*N+i] = local_neighbors_idxs[j+1];
 	}
 
-	delete[] distance_matrix;
+	delete[] distance_matrix.matrix;
 	delete[] local_neighbors_idxs;
 
 	// init W (weight) matrix
