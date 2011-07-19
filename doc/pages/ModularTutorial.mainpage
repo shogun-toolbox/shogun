@@ -1,7 +1,7 @@
 /*!
 \page modular_tutorial Tutorial for Modular Interfaces
 
-SHOGUN's "modular" interfaces to Python, Octave and Java
+SHOGUN's "modular" interfaces to Python, Octave, Java and Lua
 give intuitive and easy access to the shogun's functionality.
 Compared to the static interfaces (\subpage staticinterfaces), 
 the modular ones are much more flexible and allow for nearly unlimited extensibility. 
@@ -11,7 +11,7 @@ If this is your first time using shogun, you've found the right place to start!
 
 In this tutorial, we demonstrate how to use shogun to create a simple
 Gaussian kernel based Support Vector Machine (SVM) classifier, but first
-things first. Let's fire up python, octave or java and load the modular
+things first. Let's fire up python, octave, java or lua and load the modular
 shogun environment.
 
 \section start_shogun_modular Starting SHOGUN
@@ -38,6 +38,23 @@ Under java we need import shogun package and jblas package.
 \verbatim
 import org.shogun.*;
 import org.jblas.*;
+\endverbatim
+
+Under lua We need set LUA_PATH and LUA_CPATH to find the *.lua lib and *.so lib
+that lua_modular requires. For instance, if current dir is examples/undocumented
+/lua_modular, we need set the path as the following when we want to test the
+examples:
+
+\verbatim
+export LUA_PATH=../../../src/interfaces/lua_modular/?.lua\;?.lua
+export LUA_CPATH=../../../src/interfaces/lua_modular/?.so
+\endverbatim
+
+we need import shogun package, which includes all the sub package, such
+as kernel, classifier, distance and so on.
+
+\verbatim
+require('shogun')
 \endverbatim
 
 we also have to specify what we'd like to load. 
