@@ -21,7 +21,7 @@ using namespace shogun;
 void CIOBuffer::init()
 {
 	size_t s = 1 << 16;
-	reserve(space, s);
+	space.reserve(s);
 	endloaded = space.begin;
 }
 
@@ -76,7 +76,7 @@ size_t CIOBuffer::fill()
 	if (space.end_array - endloaded == 0)
 	{
 		size_t offset = endloaded - space.begin;
-		reserve(space, 2 * (space.end_array - space.begin));
+		space.reserve(2 * (space.end_array - space.begin));
 		endloaded = space.begin+offset;
 	}
 	ssize_t num_read = read_file(endloaded, space.end_array - endloaded);
