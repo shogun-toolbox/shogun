@@ -35,12 +35,10 @@ CStreamingAsciiFile::~CStreamingAsciiFile()
 #define GET_VECTOR(fname, conv, sg_type)			\
 void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 {									\
-	size_t buffer_size=1024;					\
-	char* buffer=new char[buffer_size];				\
+	char* buffer = NULL;						\
 	ssize_t bytes_read;						\
 									\
-	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
-									\
+	bytes_read = buf->read_line(buffer);				\
 									\
 	if (bytes_read<=0)						\
 	{								\
@@ -48,9 +46,6 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 		num_feat=-1;						\
 		return;							\
 	}								\
-									\
-									\
-	SG_DEBUG("line read from file:\n%s\n", buffer);			\
 									\
 	/* determine num_feat, populate dynamic array */		\
 	int32_t nf=0;							\
@@ -63,7 +58,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 	while (*ptr_data)						\
 	{								\
 		if ((*ptr_data=='\n') ||				\
-		    (ptr_data - buffer >= bytes_read - 1))		\
+		    (ptr_data - buffer >= bytes_read))			\
 		{							\
 			if (ptr_item)					\
 				nf++;					\
@@ -90,7 +85,6 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 	}								\
 									\
 	SG_DEBUG("num_feat %d\n", num_feat);				\
-	delete buffer;							\
 									\
 	/* now copy data into vector */					\
 	vector=new sg_type[num_feat];					\
@@ -124,12 +118,10 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 #define GET_VECTOR_AND_LABEL(fname, conv, sg_type)			\
 	void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& num_feat, float64_t& label) \
 	{								\
-		size_t buffer_size=1024;				\
-		char* buffer=new char[buffer_size];			\
+		char* buffer = NULL;					\
 		ssize_t bytes_read;					\
 									\
-		bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file); \
-									\
+		bytes_read = buf->read_line(buffer);			\
 									\
 		if (bytes_read<=0)					\
 		{							\
@@ -137,9 +129,6 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 			num_feat=-1;					\
 			return;						\
 		}							\
-									\
-									\
-		SG_DEBUG("line read from file:\n%s\n", buffer);		\
 									\
 		/* determine num_feat, populate dynamic array */	\
 		int32_t nf=0;						\
@@ -152,7 +141,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 		while (*ptr_data)					\
 		{							\
 			if ((*ptr_data=='\n') ||			\
-			    (ptr_data - buffer >= bytes_read - 1))	\
+			    (ptr_data - buffer >= bytes_read))		\
 			{						\
 				if (ptr_item)				\
 					nf++;				\
@@ -179,7 +168,6 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 		}							\
 									\
 		SG_DEBUG("num_feat %d\n", num_feat);			\
-		delete buffer;						\
 		/* The first element is the label */			\
 		label=atof(items->get_element(0));			\
 		/* now copy rest of the data into vector */		\
@@ -214,11 +202,10 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 #define GET_STRING(fname, conv, sg_type)				\
 void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)		\
 {									\
-	size_t buffer_size=1024;					\
-	char* buffer=new char[buffer_size];				\
+	char* buffer = NULL;						\
 	ssize_t bytes_read;						\
 									\
-	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+	bytes_read = buf->read_line(buffer);				\
 									\
 	if (bytes_read<=1)						\
 	{								\
@@ -228,7 +215,7 @@ void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)		\
 	}								\
 									\
 	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
-	/* Remove terminating \n */					\
+	/* Remove the terminating \n */					\
 	if (buffer[bytes_read-1]=='\n')					\
 	{								\
 		len=bytes_read-1;					\
@@ -259,11 +246,10 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 #define GET_STRING_AND_LABEL(fname, conv, sg_type)			\
 void CStreamingAsciiFile::get_string_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
 {									\
-	size_t buffer_size=1024;					\
-	char* buffer=new char[buffer_size];				\
+	char* buffer = NULL;						\
 	ssize_t bytes_read;						\
 									\
-	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+	bytes_read = buf->read_line(buffer);				\
 									\
 	if (bytes_read<=1)						\
 	{								\
@@ -324,11 +310,10 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 #define GET_SPARSE_VECTOR(fname, conv, sg_type)				\
 void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
 {									\
-	size_t buffer_size=1024;					\
-	char* buffer=new char[buffer_size];				\
+	char* buffer = NULL;						\
 	ssize_t bytes_read;						\
 									\
-	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+	bytes_read = buf->read_line(buffer);				\
 									\
 	if (bytes_read<=1)						\
 	{								\
@@ -336,8 +321,6 @@ void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vecto
 		len=-1;							\
 		return;							\
 	}								\
-									\
-	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
 									\
 	/* Remove terminating \n */					\
 	int32_t num_chars;						\
@@ -417,11 +400,10 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 #define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)			\
 void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) \
 {									\
-	size_t buffer_size=1024;					\
-	char* buffer=new char[buffer_size];				\
+	char* buffer = NULL;						\
 	ssize_t bytes_read;						\
 									\
-	bytes_read=CAsciiFile::getline(&buffer, &buffer_size, file);	\
+	bytes_read = buf->read_line(buffer);				\
 									\
 	if (bytes_read<=1)						\
 	{								\
@@ -429,8 +411,6 @@ void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_typ
 		len=-1;							\
 		return;							\
 	}								\
-									\
-	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
 									\
 	/* Remove terminating \n */					\
 	int32_t num_chars;						\

@@ -186,7 +186,7 @@ using namespace shogun;
 
 CStreamingFile::CStreamingFile() : CSGObject()
 {
-	file=NULL;
+	buf=NULL;
 	filename=NULL;
 }
 
@@ -194,22 +194,34 @@ CStreamingFile::CStreamingFile(char* fname, char rw) : CSGObject()
 {
 	task=rw;
 	filename=strdup(fname);
-	char mode[2];
-	mode[0]=rw;
-	mode[1]='\0';
+	int mode;
 
-	if (rw=='r' || rw == 'w')
+	switch (rw)
 	{
-		if (filename)
-		{
-			if (!(file=fopen((const char*) filename, (const char*) mode)))
-				SG_ERROR("Error opening file '%s'\n", filename);
-		}
+	case 'r':
+		mode = O_RDONLY | O_LARGEFILE;
+		break;
+	case 'w':
+		mode = O_WRONLY | O_LARGEFILE;
+		break;
+	default:
+		SG_ERROR("Unknown mode '%c'\n", task);
+	}
+	
+	if (filename)
+	{
+		int file = open((const char*) filename, mode);
+		if (file < 0)
+			SG_ERROR("Error opening file '%s'\n", filename);
+
+		buf = new CIOBuffer(file);
+		SG_REF(buf);
 	}
 	else
-		SG_ERROR("unknown mode '%c'\n", mode[0]);
+		SG_ERROR("Error getting the file name!\n");
 }
 
 CStreamingFile::~CStreamingFile()
 {
+	SG_UNREF(buf);
 }
