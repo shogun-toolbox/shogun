@@ -56,7 +56,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	SGMatrix<float64_t> distance_matrix=distance->get_distance_matrix();
+	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
 	delete distance;
 
 	// init matrices to be used
@@ -166,64 +166,70 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	}
 
 	// compute M=(W-I)'*(W-I)
-	float64_t* M_matrix = new float64_t[N*N];
+	SGMatrix<float64_t> M_matrix = SGMatrix<float64_t>(new float64_t[N*N],N,N,true);
 	cblas_dgemm(CblasColMajor,CblasTrans, CblasNoTrans,
 	            N,N,N,
 	            1.0,W_matrix,N,
 	            W_matrix,N,
-	            0.0,M_matrix,N);
+	            0.0,M_matrix.matrix,N);
 
 	delete[] W_matrix;
 
-	// get eigenvectors with ARPACK or LAPACK
-	int eigenproblem_status = 0;
-	#ifdef HAVE_ARPACK
-	// using ARPACK (faster)
-		float64_t* eigenvalues_vector = new float64_t[m_target_dim+1];
-		arpack_dsaupd(M_matrix,N,m_target_dim+1,"LA",3,0.0,false,eigenvalues_vector,M_matrix,eigenproblem_status);
-	#else 
-	// using LAPACK (slower)
-		float64_t* eigenvalues_vector = new float64_t[N];
-		wrap_dsyev('V','U',N,M_matrix,N,eigenvalues_vector,&eigenproblem_status);
-	#endif	
+	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim));
+	M_matrix.free_matrix();
 
-	// check if failed
-	if (eigenproblem_status)
-		SG_ERROR("Eigenproblem failed with code: %d", eigenproblem_status);
-	
-	// replace features with bottom eigenvectors
-	float64_t* new_feature_matrix = new float64_t[N*m_target_dim];
-
-	// construct embedding w.r.t to used solver
-	#ifdef HAVE_ARPACK
-	// ARPACKed eigenvectors
-	for (i=0; i<m_target_dim; i++)
-	{
-		for (j=0; j<N; j++)
-			new_feature_matrix[j*m_target_dim+i] = M_matrix[(j)*(m_target_dim+1)+i+1];
-	}
-	#else
-	// LAPACKed eigenvectors
-	for (i=0; i<m_target_dim; i++)
-	{
-		for (j=0; j<N; j++)
-			new_feature_matrix[j*m_target_dim+i] = M_matrix[(i+1)*N+j];
-	}
-	#endif
-	
-	delete[] eigenvalues_vector;
-	delete[] M_matrix;
-
-	SGMatrix<float64_t> feature_sgmatrix(new_feature_matrix,m_target_dim,N);
-	simple_features->set_feature_matrix(feature_sgmatrix);
-
-	return feature_sgmatrix;
+	return simple_features->get_feature_matrix();
 }
 
 SGVector<float64_t> CLocallyLinearEmbedding::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SG_NOTIMPLEMENTED;
 	return vector;
+}
+
+SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t> matrix, int dimension)
+{
+	int i,j;
+	ASSERT(matrix.num_cols==matrix.num_rows);
+	int N = matrix.num_cols;
+	// get eigenvectors with ARPACK or LAPACK
+	int eigenproblem_status = 0;
+	#ifdef HAVE_ARPACK
+	// using ARPACK (faster)
+		float64_t* eigenvalues_vector = new float64_t[dimension+1];
+		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,0.0,false,eigenvalues_vector,matrix.matrix,eigenproblem_status);
+	#else 
+	// using LAPACK (slower)
+		float64_t* eigenvalues_vector = new float64_t[N];
+		wrap_dsyev('V','U',N,matrix.matrix,N,eigenvalues_vector,&eigenproblem_status);
+	#endif	
+
+	// check if failed
+	if (eigenproblem_status)
+		SG_ERROR("Eigenproblem failed with code: %d", eigenproblem_status);
+	
+	// allocate null space feature matrix
+	float64_t* null_space_features = new float64_t[N*dimension];
+
+	// construct embedding w.r.t to used solver (prefer ARPACK if available)
+	#ifdef HAVE_ARPACK
+	// ARPACKed eigenvectors
+	for (i=0; i<dimension; i++)
+	{
+		for (j=0; j<N; j++)
+			null_space_features[j*dimension+i] = matrix.matrix[j*(dimension+1)+i+1];
+	}
+	#else
+	// LAPACKed eigenvectors
+	for (i=0; i<dimension; i++)
+	{
+		for (j=0; j<N; j++)
+			null_space_features[j*dimension+i] = matrix.matrix[(i+1)*N+j];
+	}
+	#endif
+	delete[] eigenvalues_vector;
+
+	return SGMatrix<float64_t>(null_space_features,dimension,N);
 }
 
 #endif /* HAVE_LAPACK */

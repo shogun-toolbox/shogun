@@ -23,10 +23,10 @@ class CFeatures;
 class CDistance;
 
 /** @brief the class LocallyLinearEmbedding used to preprocess
- *  data using Locally Linear Embedding algorithm described in
+ * data using Locally Linear Embedding algorithm described in
  *
- *	Saul, L. K., Ave, P., Park, F., & Roweis, S. T. (2001).
- *	An Introduction to Locally Linear Embedding. Available from, 290(5500), 2323-2326.
+ * Saul, L. K., Ave, P., Park, F., & Roweis, S. T. (2001).
+ * An Introduction to Locally Linear Embedding. Available from, 290(5500), 2323-2326.
  *
  */
 class CLocallyLinearEmbedding: public CDimensionReductionPreprocessor
@@ -80,6 +80,14 @@ public:
 
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_LOCALLYLINEAREMBEDDING; };
+
+protected:
+
+	/** find null space of given matrix 
+	 * @param matrix given matrix
+	 * @param dimension dimension of null space to be computed
+	 */
+	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension);
 
 protected:
 
