@@ -40,7 +40,12 @@ int32_t CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -2
 
 const float64_t CMath::INFTY            =  -log(0.0);	// infinity
 const float64_t CMath::ALMOST_INFTY		=  +1e+20;		//a large number
-const float64_t CMath::ALMOST_NEG_INFTY =  -1000;	
+const float64_t CMath::ALMOST_NEG_INFTY =  -1000;
+const float64_t CMath::PI=PI;
+const float64_t CMath::MACHINE_EPSILON=5E-16;
+const float64_t CMath::MAX_REAL_NUMBER=1E300;
+const float64_t CMath::MIN_REAL_NUMBER=1E-300;
+
 #ifdef USE_LOGCACHE
 float64_t* CMath::logtable = NULL;
 #endif
