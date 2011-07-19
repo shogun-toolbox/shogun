@@ -10,7 +10,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/init.h>
 

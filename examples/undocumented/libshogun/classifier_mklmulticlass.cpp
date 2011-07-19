@@ -8,7 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 #include <iostream>
-#include <shogun/lib/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
@@ -336,7 +336,7 @@ void tester()
 namespace shogun
 {
 	extern Version* sg_version;
-	extern IO* sg_io;
+	extern SGIO* sg_io;
 }
 
 int main()

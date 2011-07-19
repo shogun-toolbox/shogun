@@ -66,6 +66,7 @@ run-testsuite: $(PARTDEPS)
 	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) run-testsuite-$(part) &&) true
 
 check-examples: $(PARTDEPS)
+	$(MAKE) -C shogun check-examples
 	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) check-examples-$(part) &&) true
 
 doc:  $(PARTDEPS)

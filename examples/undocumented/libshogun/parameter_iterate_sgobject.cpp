@@ -14,7 +14,7 @@
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

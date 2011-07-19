@@ -2,7 +2,7 @@
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/SGIO.h>
 #include <stdio.h>
 
 using namespace shogun;

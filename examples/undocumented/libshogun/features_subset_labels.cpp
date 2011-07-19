@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/Labels.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 

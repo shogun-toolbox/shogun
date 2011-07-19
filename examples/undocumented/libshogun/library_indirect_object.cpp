@@ -1,7 +1,7 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/IndirectObject.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/SGObject.h>
 
 #include <stdio.h>
