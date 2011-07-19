@@ -58,7 +58,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 	while (*ptr_data)						\
 	{								\
 		if ((*ptr_data=='\n') ||				\
-		    (ptr_data - buffer >= bytes_read - 1))		\
+		    (ptr_data - buffer >= bytes_read))			\
 		{							\
 			if (ptr_item)					\
 				nf++;					\
@@ -141,7 +141,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 		while (*ptr_data)					\
 		{							\
 			if ((*ptr_data=='\n') ||			\
-			    (ptr_data - buffer >= bytes_read - 1))	\
+			    (ptr_data - buffer >= bytes_read))		\
 			{						\
 				if (ptr_item)				\
 					nf++;				\
