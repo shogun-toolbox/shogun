@@ -59,11 +59,11 @@ namespace shogun
 	 * Open a file, in read or write mode.
 	 * 
 	 * @param name File name.
-	 * @param flag CIOBuffer::READ or CIOBuffer::WRITE
+	 * @param flag 'r' or 'w'
 	 * 
 	 * @return 1 on success, 0 on error.
 	 */
-	virtual int open_file(const char* name, int flag=READ);
+	virtual int open_file(const char* name, char flag='r');
 
 	/** 
 	 * Seek back to zero, reset the buffer markers.
@@ -141,6 +141,18 @@ namespace shogun
 	 */
 	size_t readto(char* &pointer, char terminal);
 
+	/** 
+	 * Reads upto a newline character from the buffer.
+	 * 
+	 * @param pointer Start of the string, set by reference
+	 * 
+	 * @return NUmber of characters read.
+	 */
+	inline size_t read_line(char* &pointer)
+	{
+		return readto(pointer, '\n');
+	}
+
 	virtual const char* get_name() const
 	{
 		return "IOBuffer";
@@ -155,10 +167,7 @@ public:
 	
 	char* endloaded; 	/**< end of loaded values */
 
-	FILE* working_file;
-	static const int READ = 1;
-	static const int WRITE = 2;
-
+	int working_file;
 
 };
 }

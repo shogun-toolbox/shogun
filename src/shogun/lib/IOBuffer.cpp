@@ -25,20 +25,20 @@ void CIOBuffer::init()
 	endloaded = space.begin;
 }
 
-int CIOBuffer::open_file(const char* name, int flag)
+int CIOBuffer::open_file(const char* name, char flag)
 {
 	int ret=1;
 	switch(flag){
-	case READ:
-		working_file = fopen(name, "r");
+	case 'r':
+		working_file = open(name, O_RDONLY|O_LARGEFILE);
 		break;
 
-	case WRITE:
-		working_file = fopen(name, "w");
+	case 'w':
+		working_file = open(name, O_WRONLY|O_LARGEFILE);
 		break;
 
 	default:
-		SG_ERROR("Unknown file operation. Something other than READ/WRITE specified.\n");
+		SG_ERROR("Unknown file operation. Something other than 'r'/'w' specified.\n");
 		ret = 0;
 	}
 	return ret;
@@ -46,7 +46,7 @@ int CIOBuffer::open_file(const char* name, int flag)
 
 void CIOBuffer::reset_file()
 {
-	rewind(working_file);
+	lseek(working_file, 0, SEEK_SET);
 	endloaded = space.begin;
 	space.end = space.begin;
 }
@@ -68,7 +68,7 @@ void CIOBuffer::set(char *p)
 
 ssize_t CIOBuffer::read_file(void* buf, size_t nbytes)
 {
-	return fread(buf, 1, nbytes, working_file);
+	return read(working_file, buf, nbytes);
 }
 
 size_t CIOBuffer::fill()
@@ -91,7 +91,7 @@ size_t CIOBuffer::fill()
 
 ssize_t CIOBuffer::write_file(const void* buf, size_t nbytes)
 {
-	return fwrite(buf, 1, nbytes, working_file);
+	return write(working_file, buf, nbytes);
 }
 
 void CIOBuffer::flush()
@@ -99,20 +99,26 @@ void CIOBuffer::flush()
 	if (write_file(space.begin, space.index()) != (int) space.index())
 		SG_ERROR("Error, failed to write example!\n");
 	space.end = space.begin;
-	fflush(working_file);
+	fsync(working_file);
 }
 
 bool CIOBuffer::close_file()
 {
-	if (working_file == NULL)
+	if (working_file < 0)
 		return false;
 	else
-		return bool(fclose(working_file));
+	{
+		int r = close(working_file);
+		if (r < 0)
+			SG_ERROR("Error closing the file!\n");
+		return true;
+	}
 }
 
 size_t CIOBuffer::readto(char* &pointer, char terminal)
 {
-//Return a pointer to the bytes before the terminal.  Must be less than the buffer size.
+//Return a pointer to the bytes before the terminal.  Must be less
+//than the buffer size.
 	pointer = space.end;
 	while (pointer != endloaded && *pointer != terminal)
 		pointer++;
