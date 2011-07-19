@@ -30,8 +30,6 @@
 #define O_LARGEFILE 0
 #endif
 
-using namespace std;
-
 namespace shogun
 {
 /** @brief An I/O buffer class.
@@ -49,116 +47,136 @@ namespace shogun
 
  public:
 
-	/** 
-	 * Initialize the buffer, reserve 64K memory by default.
-	 * 
-	 */
-	void init();
-
-	/** 
-	 * Open a file, in read or write mode.
-	 * 
-	 * @param name File name.
-	 * @param flag CIOBuffer::READ or CIOBuffer::WRITE
-	 * 
-	 * @return 1 on success, 0 on error.
-	 */
-	virtual int open_file(const char* name, int flag=READ);
-
-	/** 
-	 * Seek back to zero, reset the buffer markers.
-	 * 
-	 */
-	virtual void reset_file();
-
-	/** 
+	/**
 	 * Constructor.
-	 * 
 	 */
 	CIOBuffer();
 
-	/** 
+	/**
+	 * Constructor taking file descriptor as parameter
+	 *
+	 * @param fd file descriptor to use
+	 */
+	CIOBuffer(int fd);
+
+	/**
 	 * Destructor.
-	 * 
 	 */
 	~CIOBuffer();
 
-	/** 
+	/**
+	 * Initialize the buffer, reserve 64K memory by default.
+	 */
+	void init();
+
+	/**
+	 * Uses the passed file descriptor
+	 *
+	 * @param fd file descriptor to use
+	 */
+	virtual void use_file(int fd);
+
+	/**
+	 * Open a file, in read or write mode.
+	 *
+	 * @param name File name.
+	 * @param flag 'r' or 'w'
+	 *
+	 * @return 1 on success, 0 on error.
+	 */
+	virtual int open_file(const char* name, char flag='r');
+
+	/**
+	 * Seek back to zero, reset the buffer markers.
+	 */
+	virtual void reset_file();
+
+	/**
 	 * Set the buffer marker to a position.
-	 * 
+	 *
 	 * @param p Character pointer to which the end of buffer space is assigned.
 	 */
 	void set(char *p);
 
-	/** 
+	/**
 	 * Read some bytes from the file into memory.
-	 * 
+	 *
 	 * @param buf void* buffer into which to read.
 	 * @param nbytes number of bytes to read
-	 * 
+	 *
 	 * @return Number of bytes read successfully.
 	 */
 	virtual ssize_t read_file(void* buf, size_t nbytes);
 
-	/** 
+	/**
 	 * Fill the buffer by reading as many bytes from the file as required.
-	 * 
+	 *
 	 * @return Number of bytes read.
 	 */
 	size_t fill();
 
-	/** 
+	/**
 	 * Write to the file from memory.
-	 * 
+	 *
 	 * @param buf void* buffer from which to write.
 	 * @param nbytes Number of bytes to write.
-	 * 
+	 *
 	 * @return Number of bytes successfully written.
 	 */
 	virtual ssize_t write_file(const void* buf, size_t nbytes);
 
-	/** 
+	/**
 	 * Flush the stream; commit all operations to file.
-	 * 
 	 */
 	virtual void flush();
 
-	/** 
+	/**
 	 * Close the file.
-	 * 
-	 * 
+	 *
 	 * @return true on success, false otherwise.
 	 */
 	virtual bool close_file();
 
-	/** 
+	/**
 	 * Reads upto a terminal character from the buffer.
-	 * 
+	 *
 	 * @param pointer Start of the string in the buffer, set by reference.
 	 * @param terminal Terminal character upto which to read.
-	 * 
+	 *
 	 * @return Number of characters read.
 	 */
-	size_t readto(char* &pointer, char terminal);
+	ssize_t readto(char* &pointer, char terminal);
+
+	/**
+	 * Reads upto a newline character from the buffer.
+	 *
+	 * @param pointer Start of the string, set by reference
+	 *
+	 * @return Number of characters read.
+	 */
+	inline ssize_t read_line(char* &pointer)
+	{
+		return readto(pointer, '\n');
+	}
 
 	virtual const char* get_name() const
 	{
 		return "IOBuffer";
 	}
-	
+
 
 public:
-  
-	v_array<char> space; /**< space.begin = beginning of loaded
-			      * values.  space.end = end of read or
-			      * written values */
-	
-	char* endloaded; 	/**< end of loaded values */
 
-	FILE* working_file;
-	static const int READ = 1;
-	static const int WRITE = 2;
+	/// buffer space
+	v_array<char> space;
+	/* space.begin = beginning of loaded values
+	 * space.end   = end of read or written values */
 
+	/// end of loaded values
+	char* endloaded;
+
+	/// file descriptor
+	int working_file;
 
 };
 }
