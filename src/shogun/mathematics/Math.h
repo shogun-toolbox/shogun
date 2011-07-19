@@ -870,6 +870,7 @@ class CMath : public CSGObject
 				return CMath::abs(x-y)<precision;
 			}
 
+		/** @deprecated use CStatistics::mean() instead */
 		static inline float64_t mean(float64_t* vec, int32_t len)
 		{
 			ASSERT(vec);
