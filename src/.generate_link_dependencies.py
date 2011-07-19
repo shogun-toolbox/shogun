@@ -41,6 +41,9 @@ deps['Classifier_doxygen.i']=[]
 deps['Clustering_doxygen.i']=[]
 deps['Distance_doxygen.i']=[]
 deps['Evaluation_doxygen.i']=[]
+deps['IO_doxygen.i']=[]
+deps['ModelSelection_doxygen.i']=[]
+deps['Mathematics_doxygen.i']=[]
 
 modular_deps=['Library_doxygen.i', 'Features_doxygen.i', 'Classifier_doxygen.i', 'Structure_doxygen.i', 'Regression_doxygen.i', 'Kernel_doxygen.i', 'Preprocessor_doxygen.i', 'Distribution_doxygen.i', 'Classifier_doxygen.i','Clustering_doxygen.i','Distance_doxygen.i','Evaluation_doxygen.i', 'IO_doxygen.i', 'ModelSelection_doxygen.i', 'Mathematics_doxygen.i']
 
