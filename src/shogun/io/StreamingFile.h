@@ -16,7 +16,7 @@
 #include <shogun/io/File.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/IOBuffer.h>
+#include <shogun/io/IOBuffer.h>
 
 #include <ctype.h>
 #include <fcntl.h>
