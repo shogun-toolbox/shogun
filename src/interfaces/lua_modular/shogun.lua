@@ -139,3 +139,4 @@ CrossCorrelationMeasure = modshogun.CrossCorrelationMeasure
 RecallMeasure = modshogun.RecallMeasure
 PrecisionMeasure = modshogun.PrecisionMeasure
 SpecificityMeasure = modshogun.SpecificityMeasure
+ClassicIsomap = modshogun.ClassicIsomap
