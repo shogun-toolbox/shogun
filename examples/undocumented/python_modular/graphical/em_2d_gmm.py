@@ -11,8 +11,6 @@ max_iter=1000
 min_change=1e-9
 cov_type=0
 
-gaus1=Gaussian(array([1.0, 1.0]), array([[1.0, 0.2],[0.2, 0.1]]))
-gaus2=Gaussian(array([-1.0, -1.0]), array([[0.3, 0.1],[0.1, 1.0]]))
 real_gmm=GMM(2)
 
 real_gmm.set_nth_mean(array([1.0, 1.0]), 0)
