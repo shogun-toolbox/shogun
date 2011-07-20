@@ -656,7 +656,7 @@ void CKernel::remove_lhs()
 		rhs=NULL;
 	SG_UNREF(lhs);
 	lhs = NULL;
-	num_lhs=NULL;
+	num_lhs=0;
 	lhs_equals_rhs=false;
 #ifdef USE_SVMLIGHT
 	cache_reset();
@@ -669,7 +669,7 @@ void CKernel::remove_rhs()
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
-	num_rhs=NULL;
+	num_rhs=0;
 	lhs_equals_rhs=false;
 
 #ifdef USE_SVMLIGHT

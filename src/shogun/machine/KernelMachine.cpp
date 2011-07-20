@@ -37,23 +37,19 @@ CKernelMachine::CKernelMachine()
 					  "Bias shall be used.");
 	m_parameters->add(&m_bias, "m_bias",
 					  "Bias term.");
-	m_parameters->add_vector(&m_alpha, &num_svs, "m_alpha",
-							 "Array of coefficients alpha.");
-	m_parameters->add_vector(&m_svs, &num_svs, "m_svs",
-							 "Number of ``support vectors''.");
+	m_parameters->add(&m_alpha, "m_alpha",
+			"Array of coefficients alpha.");
+	m_parameters->add(&m_svs, "m_svs", "Number of ``support vectors''.");
 
 	m_bias=0.0;
-	m_alpha=NULL;
-	m_svs=NULL;
-	num_svs=0;
 }
 
 CKernelMachine::~CKernelMachine()
 {
 	SG_UNREF(kernel);
 
-	delete[] m_alpha;
-	delete[] m_svs;
+	delete[] m_alpha.vector;
+	delete[] m_svs.vector;
 }
 
 bool CKernelMachine::init_kernel_optimization()
