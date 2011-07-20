@@ -9,7 +9,7 @@
  *  Based upon code by Baozeng Ding for the modular java interface
  *
  */
-
+/*
 %define TYPEMAP_SGVECTOR(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype) shogun::SGVector<SGTYPE>		%{CTYPE*%}         // ctype is the C# equivalent of the javatypemap jni
@@ -58,7 +58,6 @@
 %enddef
 
 
-/* Define concrete examples of the TYPEMAP_SGVECTOR macros */
 TYPEMAP_SGVECTOR(bool, bool, bool)
 TYPEMAP_SGVECTOR(char, char, char)
 TYPEMAP_SGVECTOR(uint8_t, uint8_t, byte)
@@ -80,7 +79,6 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 /////////////////////////////////  SGMATRIX Typemaps - Begin ////////////////////////////////////////
 
-/* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype) shogun::SGMatrix<SGTYPE> %{CSHARPTYPE**%}  //  CTYPE
@@ -169,8 +167,6 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 %enddef
 
-/*Define concrete examples of the TYPEMAP_SGMATRIX macros */
-
 TYPEMAP_SGMATRIX(bool, bool, bool)
 TYPEMAP_SGMATRIX(char, char, char)
 TYPEMAP_SGMATRIX(uint8_t, uint8_t, byte)
@@ -185,5 +181,5 @@ TYPEMAP_SGMATRIX(float32_t, float, float)
 TYPEMAP_SGMATRIX(float64_t, double, double)
 
 #undef TYPEMAP_SGMATRIX
-
 /////////////////////////////////  SGMATRIX Typemaps - End //////////////////////////////////////////
+*/
