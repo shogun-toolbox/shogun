@@ -88,10 +88,10 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 			W_matrix[i*N+j]=0.0;
 
 	// init matrices and norm factor to be used
-	float64_t* z_matrix = new float64_t[N*dim];
+	float64_t* z_matrix = new float64_t[m_k*dim];
 	float64_t* covariance_matrix = new float64_t[m_k*m_k];
 	float64_t* id_vector = new float64_t[m_k];
-	float64_t norming = 0.0;
+	float64_t norming;
 
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
