@@ -61,8 +61,8 @@ float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 	/* degrees of freedom */
 	int32_t deg=values.vlen-1;
 
-	/* compute t-value */
-	float64_t t=inverse_student_t_distribution(deg, alpha);
+	/* compute absolute value of t-value */
+	float64_t t=CMath::abs(inverse_student_t_distribution(deg, alpha));
 
 	/* values for calculating confidence interval */
 	float64_t std_dev=std_deviation(values);
