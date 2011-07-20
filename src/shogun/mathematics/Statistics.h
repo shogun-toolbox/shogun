@@ -16,7 +16,7 @@
 #ifndef __STATISTICS_H_
 #define __STATISTICS_H_
 
-#include "base/SGObject.h"
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
@@ -54,6 +54,8 @@ public:
 	 * the confidence interval for the actual mean for a given p-value,
 	 * asuming that the actual variance and mean are unknown (These are
 	 * estimated by the samples)
+	 *
+	 * Only for normally distributed data
 	 *
 	 * @param values vector of values that are used for calculations
 	 * @param alpha actual mean lies in confidence interval with (1-alpha)*100%
