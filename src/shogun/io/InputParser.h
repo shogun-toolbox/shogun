@@ -248,30 +248,44 @@ namespace shogun
 
 	protected:
 
-		CStreamingFile* input_source; /**< Input source,
-					       * CStreamingFile object */
+		/// Input source, CStreamingFile object
+		CStreamingFile* input_source;
 
-		pthread_t parse_thread;/**< Parse thread */
+		/// Thread in which the parser runs
+		pthread_t parse_thread;
 
+		/// The ring of examples, stored as they are parsed
 		CParseBuffer<T>* examples_buff;
-		
+
+		/// Number of features in dataset (max of 'seen' features upto point of access)
 		int32_t number_of_features;
+
+		/// Number of vectors parsed
 		int32_t number_of_vectors_parsed;
+
+		/// Number of vectors used by external algorithm
 		int32_t number_of_vectors_read;
 
+		/// Example currently being used
 		example<T>* current_example;
-		
-		SGVector<T> current_fv;	/**< Yet to be used in the code! */
-		T* current_feature_vector; /**< Points to feature
-					    * vector of last read example */
-		
-		float64_t current_label; /**< Label of last read example */
-		
-		int32_t current_len; /**< Features in last
-				      * read example */
 
+		/// Feature vector of current example
+		T* current_feature_vector;
+
+		/// Label of current example
+		float64_t current_label;
+
+		/// Number of features in current example
+		int32_t current_len;
+
+		/// Whether to delete[] vector after it is used
 		bool do_delete;
-		
+
+		/// Mutex which is used when getting/setting state of examples (whether a new example is ready)
+		pthread_mutex_t examples_state_lock;
+
+		/// Condition variable to indicate change of state of examples
+		pthread_cond_t examples_state_changed;
 	};
 
 	template <class T>
@@ -298,7 +312,9 @@ namespace shogun
 		CInputParser<T>::~CInputParser()
 	{
 		end_parser();
-	
+
+		pthread_mutex_destroy(&examples_state_lock);
+		pthread_cond_destroy(&examples_state_changed);
 		delete current_example;
 		delete examples_buff;
 	}
@@ -326,6 +342,9 @@ namespace shogun
 		current_feature_vector = NULL;
 
 		do_delete=true;
+
+		pthread_mutex_init(&examples_state_lock, NULL);
+		pthread_cond_init(&examples_state_changed, NULL);
 	}
 
 	template <class T>
@@ -356,13 +375,20 @@ namespace shogun
 	template <class T>
 		bool CInputParser<T>::is_running()
 	{
+		bool ret;
+
+		pthread_mutex_lock(&examples_state_lock);
+
 		if (parsing_done)
 			if (reading_done)
-				return false;
+				ret = false;
 			else
-				return true;
+				ret = true;
 		else
-			return false;
+			ret = false;
+
+		pthread_mutex_unlock(&examples_state_lock);
+		return ret;
 	}
 
 	template <class T>
@@ -411,8 +437,16 @@ namespace shogun
 		CInputParser* this_obj = (CInputParser *) params;
 		this->input_source = this_obj->input_source;
 
-		while (!parsing_done)
+		while (1)
 		{
+			pthread_mutex_lock(&examples_state_lock);
+			if (parsing_done)
+			{
+				pthread_mutex_unlock(&examples_state_lock);
+				return NULL;
+			}
+			pthread_mutex_unlock(&examples_state_lock);
+
 			pthread_testcancel();
 
 			if (example_type == E_LABELLED)
@@ -422,7 +456,10 @@ namespace shogun
 
 			if (current_len < 0)
 			{
+				pthread_mutex_lock(&examples_state_lock);
 				parsing_done = true;
+				pthread_cond_signal(&examples_state_changed);
+				pthread_mutex_unlock(&examples_state_lock);
 				return NULL;
 			}
 
@@ -431,8 +468,11 @@ namespace shogun
 			current_example->fv.vlen = current_len;
 
 			examples_buff->copy_example(current_example);
-			number_of_vectors_parsed++;
 
+			pthread_mutex_lock(&examples_state_lock);
+			number_of_vectors_parsed++;
+			pthread_cond_signal(&examples_state_changed);
+			pthread_mutex_unlock(&examples_state_lock);
 		}
 
 		return NULL;
@@ -441,8 +481,7 @@ namespace shogun
 	template <class T>
 		example<T>* CInputParser<T>::retrieve_example()
 	{
-		// Return the next unused example from the buffer
-
+		/* This function should be guarded by mutexes while calling  */
 		example<T> *ex;
 
 		if (parsing_done)
@@ -450,6 +489,8 @@ namespace shogun
 			if (number_of_vectors_read == number_of_vectors_parsed)
 			{
 				reading_done = true;
+				/* Signal to waiting threads that no more examples are left */
+				pthread_cond_signal(&examples_state_changed);
 				return NULL;
 			}
 		}
@@ -483,14 +524,33 @@ namespace shogun
 			if (reading_done)
 				return 0;
 
+			pthread_mutex_lock(&examples_state_lock);
 			ex = retrieve_example();
-		
+
 			if (ex == NULL)
-				continue;
+			{
+				if (reading_done)
+				{
+					/* No more examples left, return */
+					pthread_mutex_unlock(&examples_state_lock);
+					return 0;
+				}
+				else
+				{
+					/* Examples left, wait for one to become ready */
+					pthread_cond_wait(&examples_state_changed, &examples_state_lock);
+					pthread_mutex_unlock(&examples_state_lock);
+					continue;
+				}
+			}
 			else
+			{
+				/* Example ready, return the example */
+				pthread_mutex_unlock(&examples_state_lock);
 				break;
+			}
 		}
-	
+
 		fv = ex->fv.vector;
 		length = ex->fv.vlen;
 		label = ex->label;
