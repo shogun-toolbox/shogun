@@ -8,22 +8,6 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
  
-%define DOCSTR
-"The `ModelSelection` module gathers all model selection stuff available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) ModelSelection*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-#%include "ModelSelection_doxygen.i"
-#endif
-#endif
-
 /* These functions return new Objects */
 %newobject CGridSearchModelSelection::select_model();
 %newobject CParameterCombination::copy_tree();

@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
  
-%define REGRESSION_DOCSTR
-"The `Regression` module gathers all regression methods available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=REGRESSION_DOCSTR) Regression*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Regression_doxygen.i"
-#endif
-#endif
-
 /* Remove C Prefix */
 %rename(Regression) CRegression;
 %rename(KRR) CKRR;

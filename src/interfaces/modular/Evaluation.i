@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
  
-%define DOCSTR
-"The `Evaluation` module is a collection of classes like PerformanceMeasures for the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Evaluation*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Evaluation_doxygen.i"
-#endif
-#endif
-
 /* Remove C Prefix */
 %rename(Evaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;

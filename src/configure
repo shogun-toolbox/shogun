@@ -4513,7 +4513,7 @@ type_buildinfo()
 	fi
 
 	moreinfo=""
-	test -n "$PARTS" && moreinfo="and the following interfaces: $PARTS"
+	test -n "$PARTS" && moreinfo="and the following interfaces:$PARTS"
 
 	cat <<EOF
 

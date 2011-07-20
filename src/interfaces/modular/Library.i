@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-%define DOCSTR
-"The `Library` module gathers all miscellaneous Objects in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Library*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Library_doxygen.i"
-#endif
-#endif
-
 %rename(Cache) CCache;
 %rename(ListElement) CListElement;
 %rename(List) CList;

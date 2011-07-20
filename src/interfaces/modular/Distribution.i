@@ -8,27 +8,11 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
  
-%define DOCSTR
-"The `Distribution` module gathers all distributions available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Distribution*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_log_likelihood(self) -> numpy 1dim array of float") get_log_likelihood;
 %feature("autodoc", "get_histogram(self) -> numpy 1dim array of float") get_histogram;
 %feature("autodoc", "get_log_transition_probs(self) -> numpy 1dim array of %float") get_log_transition_probs;
 %feature("autodoc", "get_transition_probs(self) -> numpy 1dim array of %float") get_transition_probs;
-#endif
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Distribution_doxygen.i"
-#endif
 #endif
 
 /* Remove C Prefix */

@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
  
-%define DOCSTR
-"The `Preprocessor` module gathers all preprocessors available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Preprocessor*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Preprocessor_doxygen.i"
-#endif
-#endif
-
 /* Remove C Prefix */
 %rename(Preprocessor) CPreprocessor;
 %rename(SparsePreprocessor) CSparsePreprocessor;

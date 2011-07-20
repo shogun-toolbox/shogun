@@ -17,6 +17,13 @@
 
 /* Documentation */
 %feature("autodoc","0");
+
+#ifdef HAVE_DOXYGEN
+#ifndef SWIGRUBY
+%include "modshogun_doxygen.i"
+#endif
+#endif
+
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"
 %include "Distance_includes.i"

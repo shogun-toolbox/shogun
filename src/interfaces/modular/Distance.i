@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
  
-%define DOCSTR
-"The `Distance` module gathers all distances available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Distance*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Distance_doxygen.i"
-#endif
-#endif
-
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_distance_matrix(self) -> numpy 2dim array of float") get_distance_matrix;
 #endif

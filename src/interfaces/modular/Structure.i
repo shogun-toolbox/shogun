@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
  
-%define DOCSTR
-"The `Structure` module gathers all structure related learners available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Structure*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Structure_doxygen.i"
-#endif
-#endif
-
 /* Remove C Prefix */
 %rename(PlifBase) CPlifBase;
 %rename(Plif) CPlif;

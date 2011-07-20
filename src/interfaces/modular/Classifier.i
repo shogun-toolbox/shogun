@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-%define DOCSTR
-"The `Classifier` module gathers all classifiers available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Classifier*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Classifier_doxygen.i"
-#endif
-#endif
-
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_w(self) -> [] of float") get_w;
 %feature("autodoc", "get_support_vectors(self) -> [] of int") get_support_vectors;

@@ -8,22 +8,5 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-%define DOCSTR
-"The `Mathematics` module gathers all math related Objects in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Mathematics*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Mathematics_doxygen.i"
-#endif
-#endif
-
 %rename(Math) CMath;
-
 %include <shogun/mathematics/Math.h>

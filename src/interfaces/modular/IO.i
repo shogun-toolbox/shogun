@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-%define DOCSTR
-"The `IO` module gathers all i/o Objects in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) IO*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "IO_doxygen.i"
-#endif
-#endif
-
 /* Remove C Prefix */
 %rename(IOBuffer) CIOBuffer;
 

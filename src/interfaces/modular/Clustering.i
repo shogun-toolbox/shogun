@@ -8,22 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-%define DOCSTR
-"The `Clustering` module gathers all clustering methods available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Clustering*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Clustering_doxygen.i"
-#endif
-#endif
-
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_radi(self) -> numpy 1dim array of float") get_radi;
 %feature("autodoc", "get_centers(self) -> numpy 2dim array of float") get_centers;

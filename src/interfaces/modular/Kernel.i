@@ -7,23 +7,6 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-
-%define DOCSTR
-"The `Kernel` module gathers all kernels available in the SHOGUN toolkit."
-%enddef
-
-/*%module(docstring=DOCSTR) Kernel*/
-#undef DOCSTR
-
-/* Documentation */
-%feature("autodoc","0");
-
-#ifdef HAVE_DOXYGEN
-#ifndef SWIGRUBY
-%include "Kernel_doxygen.i"
-#endif
-#endif
-
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_kernel_matrix(self) -> numpy 2dim array of float") get_kernel_matrix;
 %feature("autodoc", "get_POIM2(self) -> [] of float") get_POIM2;
