@@ -1,15 +1,14 @@
 require 'shogun'
 require 'load'
 
-ground__truth = load_labels('../data/label_train_twoclass.dat')
+ground_truth = load_labels('../data/label_train_twoclass.dat')
 math.randomseed(17)
 
---predicted = random.randn(len(ground_truth))
-predicte = {}
-for i = 1, #ground__truth do
-	table.insert(predicte, math.random())
+predicted = {}
+for i = 1, #ground_truth do
+	table.insert(predicted, math.random())
 end
-parameter_list = {{ground__truth,predicte}}
+parameter_list = {{ground_truth,predicted}}
 
 function evaluation_contingencytableevaluation_modular(ground_truth, predicted)
 
