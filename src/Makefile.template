@@ -256,15 +256,15 @@ install-matlab_static: $(TEMPLATE_TARGET)
 
 install-python_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
-	install -m644 $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
-	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PYDIR)/shogun"
+	install -m644 $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)"
+	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PYDIR)"
 	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 	for i in Kernel Distance Features Classifier Regression \
 		Features Clustering Evaluation IO Library Mathematics \
 		ModelSelection Preprocessor Structure Distribution;\
 	do \
 		install -d -m755 "$(DESTDIR)$(PYDIR)/shogun/$$i" ;\
-		echo "from shogun.modshogun import *" > "$(DESTDIR)$(PYDIR)/shogun/$$i/__init__.py" ;\
+		echo "from modshogun import *" > "$(DESTDIR)$(PYDIR)/shogun/$$i/__init__.py" ;\
 		echo "\"$$i\"," >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py" ;\
 	done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
