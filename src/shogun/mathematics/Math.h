@@ -345,9 +345,22 @@ class CMath : public CSGObject
 			return ::exp((double) x);
 		}
 
+		/** @return natural logarithm of the gamma function of input */
 		static inline float64_t lgamma(float64_t x)
 		{
 			return ::lgamma((double) x);
+		}
+
+		/** @return gamma function of input */
+		static inline float64_t tgamma(float64_t x)
+		{
+			return ::tgamma((double) x);
+		}
+
+		/** @return arcus tangens of input */
+		static inline float64_t atan(float64_t x)
+		{
+			return ::atan((double) x);
 		}
 
 		static inline floatmax_t lgammal(floatmax_t x)
@@ -857,6 +870,7 @@ class CMath : public CSGObject
 				return CMath::abs(x-y)<precision;
 			}
 
+		/** @deprecated use CStatistics::mean() instead */
 		static inline float64_t mean(float64_t* vec, int32_t len)
 		{
 			ASSERT(vec);
@@ -1460,6 +1474,16 @@ class CMath : public CSGObject
 
 				/// almost neg (log) infinity
 				static const float64_t ALMOST_NEG_INFTY;
+
+				/** the number pi */
+				static const float64_t PI;
+
+				/** machine epsilon for float64_t */
+				static const float64_t MACHINE_EPSILON;
+
+				/* largest and smallest possible float64_t */
+				static const float64_t MAX_REAL_NUMBER;
+				static const float64_t MIN_REAL_NUMBER;
 
 	protected:
 				/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0

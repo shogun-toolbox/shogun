@@ -34,8 +34,8 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * via compute_diag(idx), this flag enables this
 		 */
 		CSqrtDiagKernelNormalizer(bool use_opt_diag=false): CKernelNormalizer(),
-			sqrtdiag_lhs(NULL), num_sqrtdiag_lhs(NULL),
-			sqrtdiag_rhs(NULL), num_sqrtdiag_rhs(NULL),
+			sqrtdiag_lhs(NULL), num_sqrtdiag_lhs(0),
+			sqrtdiag_rhs(NULL), num_sqrtdiag_rhs(0),
 			use_optimized_diagonal_computation(use_opt_diag)
 		{
 			m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs",
