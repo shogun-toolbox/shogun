@@ -24,6 +24,7 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  modelselection_grid_search_simple features_subset_labels \
 		  features_subset_simple_features \
 		  features_subset_sparse_features \
+		  mathematics_confidence_intervals
 
 
 all: $(TARGETS)
