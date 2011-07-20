@@ -16,7 +16,7 @@
 #ifndef __STATISTICS_H_
 #define __STATISTICS_H_
 
-#include "base/SGObject.h"
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {

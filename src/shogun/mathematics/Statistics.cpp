@@ -13,8 +13,8 @@
  * for shogun)
  */
 
-#include "mathematics/Statistics.h"
-#include "mathematics/Math.h"
+#include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
