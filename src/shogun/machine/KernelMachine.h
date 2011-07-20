@@ -151,8 +151,8 @@ class CKernelMachine : public CMachine
 		 */
 		inline int32_t get_support_vector(int32_t idx)
 		{
-			ASSERT(m_svs && idx<num_svs);
-			return m_svs[idx];
+			ASSERT(m_svs.vector && idx<m_svs.vlen);
+			return m_svs.vector[idx];
 		}
 
 		/** get alpha at given index
@@ -162,8 +162,8 @@ class CKernelMachine : public CMachine
 		 */
 		inline float64_t get_alpha(int32_t idx)
 		{
-			ASSERT(m_alpha && idx<num_svs);
-			return m_alpha[idx];
+			ASSERT(m_alpha.vector && idx<m_svs.vlen);
+			return m_alpha.vector[idx];
 		}
 
 		/** set support vector at given index to given value
@@ -174,8 +174,8 @@ class CKernelMachine : public CMachine
 		 */
 		inline bool set_support_vector(int32_t idx, int32_t val)
 		{
-			if (m_svs && idx<num_svs)
-				m_svs[idx]=val;
+			if (m_svs.vector && idx<m_svs.vlen)
+				m_svs.vector[idx]=val;
 			else
 				return false;
 
@@ -190,8 +190,8 @@ class CKernelMachine : public CMachine
 		 */
 		inline bool set_alpha(int32_t idx, float64_t val)
 		{
-			if (m_alpha && idx<num_svs)
-				m_alpha[idx]=val;
+			if (m_alpha.vector && idx<m_svs.vlen)
+				m_alpha.vector[idx]=val;
 			else
 				return false;
 
@@ -204,7 +204,7 @@ class CKernelMachine : public CMachine
 		 */
 		inline int32_t get_num_support_vectors()
 		{
-			return num_svs;
+			return m_svs.vlen;
 		}
 
 		/** set alphas to given values
@@ -215,11 +215,11 @@ class CKernelMachine : public CMachine
 		void set_alphas(float64_t* alphas, int32_t d)
 		{
 			ASSERT(alphas);
-			ASSERT(m_alpha);
-			ASSERT(d==num_svs);
+			ASSERT(m_alpha.vector);
+			ASSERT(d==m_svs.vlen);
 
 			for(int32_t i=0; i<d; i++)
-				m_alpha[i]=alphas[i];
+				m_alpha.vector[i]=alphas[i];
 		}
 
 		/** set support vectors to given values
@@ -229,12 +229,12 @@ class CKernelMachine : public CMachine
 		 */
 		void set_support_vectors(int32_t* svs, int32_t d)
 		{
-			ASSERT(m_svs);
+			ASSERT(m_svs.vector);
 			ASSERT(svs);
-			ASSERT(d==num_svs);
+			ASSERT(d==m_svs.vlen);
 
 			for(int32_t i=0; i<d; i++)
-				m_svs[i]=svs[i];
+				m_svs.vector[i]=svs[i];
 		}
 
 		/** get all support vectors
@@ -279,22 +279,22 @@ class CKernelMachine : public CMachine
 		 */
 		inline bool create_new_model(int32_t num)
 		{
-			delete[] m_alpha;
-			delete[] m_svs;
+			delete[] m_alpha.vector;
+			delete[] m_svs.vector;
 
 			m_bias=0;
-			num_svs=num;
+			m_svs.vlen=num;
 
 			if (num>0)
 			{
-				m_alpha= new float64_t[num];
-				m_svs= new int32_t[num];
-				return (m_alpha!=NULL && m_svs!=NULL);
+				m_alpha.vector= new float64_t[num];
+				m_svs.vector= new int32_t[num];
+				return (m_alpha.vector!=NULL && m_svs.vector!=NULL);
 			}
 			else
 			{
-				m_alpha= NULL;
-				m_svs=NULL;
+				m_alpha.vector= NULL;
+				m_svs.vector=NULL;
 				return true;
 			}
 		}
@@ -343,12 +343,12 @@ class CKernelMachine : public CMachine
 		bool use_bias;
 		/**  bias term b */
 		float64_t m_bias;
-		/** array of coefficients alpha */
-		float64_t* m_alpha;
-		/** array of ``support vectors'' */
-		int32_t* m_svs;
-		/** number of ``support vectors'' */
-		int32_t num_svs;
+
+		/** coefficients alpha */
+		SGVector<float64_t> m_alpha;
+
+		/** array of ``support vectors'' (indices of feature objects) */
+		SGVector<int32_t> m_svs;
 };
 }
 #endif /* _KERNEL_MACHINE_H__ */
