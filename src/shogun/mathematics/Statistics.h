@@ -55,6 +55,8 @@ public:
 	 * asuming that the actual variance and mean are unknown (These are
 	 * estimated by the samples)
 	 *
+	 * Only for normally distributed data
+	 *
 	 * @param values vector of values that are used for calculations
 	 * @param alpha actual mean lies in confidence interval with (1-alpha)*100%
 	 * @param conf_int_low lower confidence interval border is written here
