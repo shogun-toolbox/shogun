@@ -12,7 +12,7 @@
 "The `IO` module gathers all i/o Objects in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) IO
+/*%module(docstring=DOCSTR) IO*/
 #undef DOCSTR
 
 /* Documentation */
@@ -23,11 +23,6 @@
 %include "IO_doxygen.i"
 #endif
 #endif
-
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "IO_includes.i"
-%include "Features_includes.i"
 
 /* Remove C Prefix */
 %rename(IOBuffer) CIOBuffer;

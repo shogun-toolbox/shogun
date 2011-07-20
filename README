@@ -18,8 +18,6 @@ The following table depicts the status of each interface available in shogun:
 |python            | mature (no known problems)                                |
 |r                 | mature (no known problems)                                |
 |libshogun         | mature (no known problems)                                |
-|libshogunui       | mature (no known problems, only required for static       |
-|                  | interfaces)                                               |
 |cmdline           | stable but some data types incomplete                     |
 |                  |                                                           |
 |elwms             | this is the eierlegendewollmilchsau interface, a chimera  |
@@ -28,15 +26,14 @@ The following table depicts the status of each interface available in shogun:
 |                  | using the in octave,r,matlab available variables, etc)    |
 +------------------+-----------------------------------------------------------+
 |python_modular    | mature (no known problems)                                |
-|octave_modular    | beta (although all of the features work stably, octave    |
-|                  | will crash when exiting (a known bug in octave)           |
+|octave_modular    | mature (no known problems)                                |
 |r_modular         | pre-alpha quality (swig does not properly handle reference|
 |                  | counting and thus only for the brave:                     |
 |                  | --disable-reference-counting to get it to work, but beware|
 |                  | that it will leak memory; disabled by default.)           |
-|java_modular      | pre-alpha work in progress quality - proof-of-concept only|
+|java_modular      | beta quality - not all examples are ported and working    |
+|lua_modular       | alpha work in progress quality - some examples work       |
 |ruby_modular      | pre-alpha work in progress quality - proof-of-concept only|
-|lua_modular       | pre-alpha work in progress quality - proof-of-concept only|
 |csharp_modular    | pre-alpha work in progress quality - proof-of-concept only|
 +==================+===========================================================+
 

@@ -12,7 +12,7 @@
 "The `Evaluation` module is a collection of classes like PerformanceMeasures for the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Evaluation
+/*%module(docstring=DOCSTR) Evaluation*/
 #undef DOCSTR
 
 /* Documentation */
@@ -24,20 +24,8 @@
 #endif
 #endif
 
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Preprocessor_includes.i"
-%include "Evaluation_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Distance_includes.i"
-%include "Kernel_includes.i"
-
-%import "Features.i"
-
 /* Remove C Prefix */
-%rename(BaseEvaluation) CEvaluation;
+%rename(Evaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;

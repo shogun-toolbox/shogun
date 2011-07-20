@@ -12,7 +12,7 @@
 "The `Preprocessor` module gathers all preprocessors available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Preprocessor
+/*%module(docstring=DOCSTR) Preprocessor*/
 #undef DOCSTR
 
 /* Documentation */
@@ -24,20 +24,8 @@
 #endif
 #endif
 
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Preprocessor_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Kernel_includes.i"
-%include "Distance_includes.i"
-
-%import "Features.i"
-%import "Kernel.i"
-
 /* Remove C Prefix */
-%rename(BasePreprocessor) CPreprocessor;
+%rename(Preprocessor) CPreprocessor;
 %rename(SparsePreprocessor) CSparsePreprocessor;
 %rename(PCA) CPCA;
 %rename(KernelPCACut) CKernelPCACut;

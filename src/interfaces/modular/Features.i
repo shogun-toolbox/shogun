@@ -12,7 +12,7 @@
 "The `Features` module gathers all Feature objects available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Features
+/*%module(docstring=DOCSTR) Features*/
 #undef DOCSTR
 
 /* Documentation */
@@ -33,26 +33,12 @@
 %feature("autodoc", "get_labels(self) -> numpy 1dim array of float") get_labels;
 #endif
 
-/* Include Module Definitions */
-%include "SGBase.i"
-%include <shogun/features/FeatureTypes.h>
-%include "Features_includes.i"
-%include "Preprocessor_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Kernel_includes.i"
-%include "Distance_includes.i"
-
-%import "Preprocessor.i"
-%import "Distribution.i"
-%import "Library.i"
-
 /* These functions return new Objects */
 %newobject get_transposed();
 
 /* Remove C Prefix */
-%rename(BaseFeatures) CFeatures;
-%rename(BaseStreamingFeatures) CStreamingFeatures;
+%rename(Features) CFeatures;
+%rename(StreamingFeatures) CStreamingFeatures;
 %rename(DotFeatures) CDotFeatures;
 %rename(StreamingDotFeatures) CStreamingDotFeatures;
 %rename(DummyFeatures) CDummyFeatures;
@@ -75,6 +61,7 @@
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/features/FeatureTypes.h>
 %include <shogun/lib/Compressor.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/StreamingFeatures.h>

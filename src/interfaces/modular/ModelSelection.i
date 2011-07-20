@@ -12,7 +12,7 @@
 "The `ModelSelection` module gathers all model selection stuff available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) ModelSelection
+/*%module(docstring=DOCSTR) ModelSelection*/
 #undef DOCSTR
 
 /* Documentation */
@@ -23,12 +23,6 @@
 #%include "ModelSelection_doxygen.i"
 #endif
 #endif
-
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "ModelSelection_includes.i"
-
-%import "ModelSelection.i"
 
 /* These functions return new Objects */
 %newobject CGridSearchModelSelection::select_model();

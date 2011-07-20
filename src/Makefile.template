@@ -259,10 +259,19 @@ install-python_modular: $(TEMPLATE_TARGET)
 	install -m644 $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PYDIR)/shogun"
 	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
-	for i in $(SWIGPYFILES) ; do echo $$i \
-		| sed -e 's=.*/="=' -e 's/\.py/", /' \
-		>>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
+	for i in Kernel Distance Features Classifier Regression \
+		Features Clustering Evaluation IO Library Mathematics \
+		ModelSelection Preprocessor Structure Distribution;\
+	do \
+		install -d -m755 "$(DESTDIR)$(PYDIR)/shogun/$$i" ;\
+		echo "from shogun.modshogun import *" > "$(DESTDIR)$(PYDIR)/shogun/$$i/__init__.py" ;\
+		echo "\"$$i\"," >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py" ;\
+	done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
+#echo "'*'" > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
+#for i in $(SWIGPYFILES) ; do echo $$i \
+#	| sed -e 's=.*/="=' -e 's/\.py/", /' \
+#	>>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
 
 install-r_modular: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/demo

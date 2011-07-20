@@ -12,7 +12,7 @@
 "The `Kernel` module gathers all kernels available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Kernel
+/*%module(docstring=DOCSTR) Kernel*/
 #undef DOCSTR
 
 /* Documentation */
@@ -29,24 +29,10 @@
 %feature("autodoc", "get_POIM2(self) -> [] of float") get_POIM2;
 #endif
 
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Distance_includes.i"
-%include "Kernel_includes.i"
-%include "Preprocessor_includes.i"
-%include "Library_includes.i"
-%include "Distribution_includes.i"
-
-%import "Features.i"
-%import "Distance.i"
-%import "Library.i"
-%import "Distribution.i"
-
 %ignore CWeightedDegreePositionStringKernel::set_position_weights(float64_t*);
 
 /* Remove C Prefix */
-%rename(BaseKernel) CKernel;
+%rename(Kernel) CKernel;
 %rename(KernelNormalizer) CKernelNormalizer;
 %rename(PyramidChi2) CPyramidChi2;
 %rename(ANOVAKernel) CANOVAKernel;
@@ -246,11 +232,3 @@ shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
 %include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
 %include <shogun/kernel/MultiquadricKernel.h>
 %include <shogun/kernel/RationalQuadraticKernel.h>
-
-%include std_vector.i
-%include std_pair.i
-/* instantiate the required template specializations */
-%template(NodeSet) std::vector<shogun::CNode *>;
-%template(Pairii) std::pair<int32_t, int32_t>;
-%template(PairiiVec) std::vector<std::pair<int32_t, int32_t> >;
-

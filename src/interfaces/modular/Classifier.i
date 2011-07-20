@@ -12,7 +12,7 @@
 "The `Classifier` module gathers all classifiers available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Classifier
+/*%module(docstring=DOCSTR) Classifier*/
 #undef DOCSTR
 
 /* Documentation */
@@ -30,22 +30,7 @@
 %feature("autodoc", "get_alphas(self) -> [] of float") get_alphas;
 #endif
 
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Kernel_includes.i"
-%include "Distance_includes.i"
-%include "Classifier_includes.i"
-%include "Preprocessor_includes.i"
-%include "Library_includes.i"
-%include "Distribution_includes.i"
-
-%import "Features.i"
-%import "Kernel.i"
-%import "Distance.i"
-
 /* Remove C Prefix */
-/*%rename(Labels) CLabels;*/
 %rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
 %rename(GMNPSVM) CGMNPSVM;
@@ -99,7 +84,6 @@
 %newobject classify(CFeatures* data);
 
 /* Include Class Headers to make them visible from within the target language */
-/*%include <shogun/features/Labels.h>*/
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/KernelMachine.h>
 %include <shogun/machine/DistanceMachine.h>

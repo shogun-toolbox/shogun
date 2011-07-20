@@ -12,7 +12,7 @@
 "The `Structure` module gathers all structure related learners available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Structure
+/*%module(docstring=DOCSTR) Structure*/
 #undef DOCSTR
 
 /* Documentation */
@@ -23,18 +23,6 @@
 %include "Structure_doxygen.i"
 #endif
 #endif
-
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Structure_includes.i"
-%include "Preprocessor_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Kernel_includes.i"
-%include "Distance_includes.i"
-
-%import "Features.i"
 
 /* Remove C Prefix */
 %rename(PlifBase) CPlifBase;

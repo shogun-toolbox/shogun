@@ -12,7 +12,7 @@
 "The `Distance` module gathers all distances available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Distance
+/*%module(docstring=DOCSTR) Distance*/
 #undef DOCSTR
 
 /* Documentation */
@@ -28,19 +28,8 @@
 %feature("autodoc", "get_distance_matrix(self) -> numpy 2dim array of float") get_distance_matrix;
 #endif
 
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Distance_includes.i"
-%include "Preprocessor_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Kernel_includes.i"
-
-%import "Features.i"
-
 /* Remove C Prefix */
-%rename(BaseDistance) CDistance;
+%rename(Distance) CDistance;
 %rename(CustomDistance) CCustomDistance;
 %rename(KernelDistance) CKernelDistance;
 %rename(RealDistance) CRealDistance;

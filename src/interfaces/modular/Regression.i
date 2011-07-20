@@ -12,7 +12,7 @@
 "The `Regression` module gathers all regression methods available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=REGRESSION_DOCSTR) Regression
+/*%module(docstring=REGRESSION_DOCSTR) Regression*/
 #undef DOCSTR
 
 /* Documentation */
@@ -24,27 +24,8 @@
 #endif
 #endif
 
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Kernel_includes.i"
-%include "Distance_includes.i"
-%include "Classifier_includes.i"
-%include "Regression_includes.i"
-%include "Preprocessor_includes.i"
-%include "Library_includes.i"
-%include "Distribution_includes.i"
-
-
-%import "Features.i"
-%import "Kernel.i"
-%import "Distance.i"
-%import "Classifier.i"
-
 /* Remove C Prefix */
-%rename(BaseRegression) CRegression;
-/*%rename(Machine) CMachine;
-%rename(KernelMachine) CKernelMachine; */
+%rename(Regression) CRegression;
 %rename(KRR) CKRR;
 %rename(LibSVR) CLibSVR;
 %rename(MKL) CMKL;
@@ -55,8 +36,6 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>
-/*%include <shogun/machine/Machine.h>
-%include <shogun/machine/KernelMachine.h>*/
 %include <shogun/regression/KRR.h>
 %include <shogun/regression/svr/LibSVR.h>
 %include <shogun/classifier/mkl/MKL.h>

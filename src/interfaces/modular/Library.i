@@ -12,7 +12,7 @@
 "The `Library` module gathers all miscellaneous Objects in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Library
+/*%module(docstring=DOCSTR) Library*/
 #undef DOCSTR
 
 /* Documentation */
@@ -23,10 +23,6 @@
 %include "Library_doxygen.i"
 #endif
 #endif
-
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Library_includes.i"
 
 %rename(Cache) CCache;
 %rename(ListElement) CListElement;
@@ -160,7 +156,7 @@ namespace shogun
 %include <shogun/lib/Hash.h>
 
 /* Template Class Array */
-%include <shogun/lib/Array.h>
+/*%include <shogun/lib/Array.h>
 namespace shogun
 {
     %template(CharArray) CArray<char>;
@@ -173,10 +169,10 @@ namespace shogun
     %template(ULongArray) CArray<uint64_t>;
     %template(ShortRealArray) CArray<float32_t>;
     %template(RealArray) CArray<float64_t>;
-}
+}*/
 
 /* Template Class Array2 */
-%include <shogun/lib/Array2.h>
+/*%include <shogun/lib/Array2.h>
 namespace shogun
 {
     %template(CharArray2) CArray2<char>;
@@ -189,10 +185,10 @@ namespace shogun
     %template(ULongArray2) CArray2<uint64_t>;
     %template(ShortRealArray2) CArray2<float32_t>;
     %template(RealArray2) CArray2<float64_t>;
-}
+}*/
 
 /* Template Class Array3 */
-%include <shogun/lib/Array3.h>
+/*%include <shogun/lib/Array3.h>
 namespace shogun
 {
     %template(CharArray3) CArray3<char>;
@@ -205,7 +201,7 @@ namespace shogun
     %template(ULongArray3) CArray3<uint64_t>;
     %template(ShortRealArray3) CArray3<float32_t>;
     %template(RealArray3) CArray3<float64_t>;
-}
+}*/
 
 %include <shogun/lib/Cache.h>
 %include <shogun/lib/GCArray.h>

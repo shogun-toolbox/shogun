@@ -12,7 +12,7 @@
 "The `Mathematics` module gathers all math related Objects in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Mathematics
+/*%module(docstring=DOCSTR) Mathematics*/
 #undef DOCSTR
 
 /* Documentation */
@@ -23,10 +23,6 @@
 %include "Mathematics_doxygen.i"
 #endif
 #endif
-
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Mathematics_includes.i"
 
 %rename(Math) CMath;
 

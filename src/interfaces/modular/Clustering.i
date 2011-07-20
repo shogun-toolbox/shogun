@@ -12,7 +12,7 @@
 "The `Clustering` module gathers all clustering methods available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Clustering
+/*%module(docstring=DOCSTR) Clustering*/
 #undef DOCSTR
 
 /* Documentation */
@@ -30,19 +30,6 @@
 %feature("autodoc", "get_merge_distance(self) -> [] of float") get_merge_distance;
 %feature("autodoc", "get_pairs(self) -> [] of float") get_pairs;
 #endif
-
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Distance_includes.i"
-%include "Clustering_includes.i"
-%include "Preprocessor_includes.i"
-%include "Distribution_includes.i"
-%include "Library_includes.i"
-%include "Kernel_includes.i"
-
-%import "Features.i"
-%import "Distance.i"
 
 /* Remove C Prefix */
 %rename(DistanceMachine) CDistanceMachine;

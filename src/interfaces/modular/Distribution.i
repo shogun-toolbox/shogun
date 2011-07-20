@@ -12,7 +12,7 @@
 "The `Distribution` module gathers all distributions available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) Distribution
+/*%module(docstring=DOCSTR) Distribution*/
 #undef DOCSTR
 
 /* Documentation */
@@ -31,19 +31,8 @@
 #endif
 #endif
 
-/* Include Module Definitions */
-%include "SGBase.i"
-%include "Features_includes.i"
-%include "Distribution_includes.i"
-%include "Preprocessor_includes.i"
-%include "Library_includes.i"
-%include "Kernel_includes.i"
-%include "Distance_includes.i"
-
-%import "Features.i"
-
 /* Remove C Prefix */
-%rename(BaseDistribution) CDistribution;
+%rename(Distribution) CDistribution;
 %rename(Histogram) CHistogram;
 %rename(HMM) CHMM;
 %rename(GHMM) CGHMM;
