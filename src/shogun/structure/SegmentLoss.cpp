@@ -19,7 +19,7 @@ CSegmentLoss::CSegmentLoss()
 	m_segment_loss(1,1,2),
 	m_segment_ids(NULL),
 	m_segment_mask(NULL),
-	m_num_segment_types(NULL)
+	m_num_segment_types(0)
 {
 }
 CSegmentLoss::~CSegmentLoss()
