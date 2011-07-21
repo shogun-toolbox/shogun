@@ -171,7 +171,11 @@ class CFeatures : public CSGObject
 		 * @param num_vectors new number of vectors
 		 * @return if reshaping was successful
 		 */
-		virtual bool reshape(int32_t num_features, int32_t num_vectors) { return false; }
+		virtual bool reshape(int32_t num_features, int32_t num_vectors)
+		{
+			SG_NOTIMPLEMENTED;
+			return false;
+		}
 
 		/** get memory footprint of one feature
 		 *
@@ -260,6 +264,21 @@ class CFeatures : public CSGObject
 		inline const index_t subset_idx_conversion(index_t idx) const
 		{
 			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
+		}
+
+		/** Creates a new CFeatures instance containing copies of the elements
+		 * which are specified by the provided indices.
+		 *
+		 * This method is needed for a KernelMachine to store its model data.
+		 * NOT IMPLEMENTED!
+		 *
+		 * @param indices indices of feature elements to copy
+		 * @return new CFeatures instance with copies of feature data
+		 */
+		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
 		}
 
 	private:
