@@ -30,7 +30,7 @@ CGPBTSVM::~CGPBTSVM()
 	SG_FREE(model);
 }
 
-bool CGPBTSVM::train(CFeatures* data)
+bool CGPBTSVM::train_kernel_machine(CFeatures* data)
 {
 	float64_t* solution;                     /* store the solution found       */
 	QPproblem prob;                          /* object containing the solvers  */

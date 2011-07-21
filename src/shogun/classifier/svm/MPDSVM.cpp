@@ -29,7 +29,7 @@ CMPDSVM::~CMPDSVM()
 {
 }
 
-bool CMPDSVM::train(CFeatures* data)
+bool CMPDSVM::train_kernel_machine(CFeatures* data)
 {
 	ASSERT(labels);
 	ASSERT(kernel);

@@ -29,7 +29,6 @@
 #include <shogun/classifier/LPM.h>
 #include <shogun/classifier/LPBoost.h>
 #include <shogun/classifier/Perceptron.h>
-#include <shogun/classifier/KernelPerceptron.h>
 
 #include <shogun/machine/LinearMachine.h>
 
@@ -235,12 +234,6 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_INFO("created KRR object %p\n", classifier);
 	}
 #endif //HAVE_LAPACK
-	else if (strcmp(name,"KERNELPERCEPTRON")==0)
-	{
-		SG_UNREF(classifier);
-		classifier= new CKernelPerceptron();
-		SG_INFO("created Kernel Perceptron object\n") ;
-	}
 	else if (strcmp(name,"PERCEPTRON")==0)
 	{
 		SG_UNREF(classifier);
@@ -1114,7 +1107,6 @@ CLabels* CGUIClassifier::classify()
 		case CT_CPLEXSVM:
 		case CT_GMNPSVM:
 		case CT_GNPPSVM:
-		case CT_KERNELPERCEPTRON:
 		case CT_LIBSVR:
 		case CT_LIBSVMMULTICLASS:
 		case CT_LIBSVMONECLASS:
@@ -1209,7 +1201,6 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_GPBT:
 		case CT_CPLEXSVM:
 		case CT_GMNPSVM:
-		case CT_KERNELPERCEPTRON:
 		case CT_LIBSVR:
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:

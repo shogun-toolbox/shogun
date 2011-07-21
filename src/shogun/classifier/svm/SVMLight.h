@@ -246,16 +246,6 @@ class CSVMLight : public CSVM
   /** init SVM */
   void init();
 
-  /** train SVM classifier
-   *
-   * @param data training data (parameter can be avoided if distance or
-   * kernel-based classifiers are used and distance/kernels are
-   * initialized with train data)
-   *
-   * @return whether training was successful
-   */
-  virtual bool train(CFeatures* data=NULL);
-
   /** get classifier type
    *
    * @return classifier type LIGHT
@@ -653,6 +643,16 @@ protected:
 	/* interface to QP-solver */
 	float64_t *optimize_qp( QP *qp,float64_t *epsilon_crit, int32_t nx,
 			float64_t *threshold, int32_t& svm_maxqpsize);
+
+	/** train SVM classifier
+	 *
+	 * @param data training data (parameter can be avoided if distance or
+	 * kernel-based classifiers are used and distance/kernels are
+	 * initialized with train data)
+	 *
+	 * @return whether training was successful
+	 */
+	virtual bool train_kernel_machine(CFeatures* data=NULL);
 
  protected:
   /** model */

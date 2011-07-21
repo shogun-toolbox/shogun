@@ -320,9 +320,6 @@ namespace shogun
 
 			virtual ~CLaRank ();
 
-			bool train(CFeatures* data);
-
-
 			// LEARNING FUNCTION: add new patterns and run optimization steps
 			// selected with adaptative schedule
 			virtual int32_t add (int32_t x_id, int32_t yi);
@@ -361,6 +358,8 @@ namespace shogun
 			void set_tau(float64_t t) { tau=t; };
 			float64_t get_tau() { return tau; };
 
+		protected:
+			bool train_kernel_machine(CFeatures* data);
 
 		private:
 			/*

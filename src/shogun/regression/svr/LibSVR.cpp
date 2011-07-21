@@ -35,7 +35,7 @@ CLibSVR::~CLibSVR()
 	SG_FREE(model);
 }
 
-bool CLibSVR::train(CFeatures* data)
+bool CLibSVR::train_kernel_machine(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());

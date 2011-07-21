@@ -49,16 +49,6 @@ class CDomainAdaptationSVM : public CSVMLight
 		 * */
 		void init(CSVM* presvm, float64_t B);
 
-		/** train SVM classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return classifier type
@@ -105,6 +95,16 @@ class CDomainAdaptationSVM : public CSVMLight
 		 * @return true if sane, throws SG_ERROR otherwise
 		 */
 		virtual bool is_presvm_sane();
+
+		/** train SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
 
 	private:
 		void init();

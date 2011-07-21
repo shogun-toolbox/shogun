@@ -64,16 +64,6 @@ class CLibSVR : public CSVM
 		CLibSVR(float64_t C, float64_t epsilon, CKernel* k, CLabels* lab);
 		virtual ~CLibSVR();
 
-		/** train regression
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based regressor are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return classifie type LIBSVR
@@ -82,6 +72,17 @@ class CLibSVR : public CSVM
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LibSVR"; }
+
+	protected:
+		/** train regression
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based regressor are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
 	protected:
 		/** SVM problem */
 		svm_problem problem;

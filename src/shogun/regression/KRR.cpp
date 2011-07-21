@@ -40,7 +40,7 @@ CKRR::~CKRR()
 	delete[] alpha;
 }
 
-bool CKRR::train(CFeatures* data)
+bool CKRR::train_kernel_machine(CFeatures* data)
 {
 	delete[] alpha;
 
@@ -96,7 +96,7 @@ bool CKRR::save(FILE* dstfile)
 	return false;
 }
 
-CLabels* CKRR::classify()
+CLabels* CKRR::apply()
 {
 	ASSERT(kernel);
 
@@ -127,7 +127,7 @@ CLabels* CKRR::classify()
 	return output;
 }
 
-float64_t CKRR::classify_example(int32_t num)
+float64_t CKRR::apply(int32_t num)
 {
 	ASSERT(kernel);
 
