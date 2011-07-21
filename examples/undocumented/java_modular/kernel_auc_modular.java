@@ -4,12 +4,11 @@ import static org.jblas.DoubleMatrix.randn;
 
 public class kernel_auc_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 1.6;
 
 		DoubleMatrix train_real = Load.load_numbers("../data/fm_train_real.dat");
@@ -27,6 +26,6 @@ public class kernel_auc_modular {
 		DoubleMatrix km_train = kernel.get_kernel_matrix();
 		System.out.println(km_train.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

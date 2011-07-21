@@ -1,13 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class kernel_sigmoid_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int size_cache = 10;
 		double gamma = 1.2;
 		double coef0 = 1.3;
@@ -27,6 +27,6 @@ public class kernel_sigmoid_modular {
 		System.out.println(km_train.toString());
 		System.out.println(km_test.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

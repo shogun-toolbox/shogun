@@ -1,15 +1,14 @@
 import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC_DUAL;
+
 public class classifier_liblinear_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Library");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double C = 0.9;
 		double epsilon = 1e-3;
 
@@ -35,6 +34,6 @@ public class classifier_liblinear_modular {
 		DoubleMatrix out_labels = svm.apply().get_labels();
 		System.out.println(out_labels.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

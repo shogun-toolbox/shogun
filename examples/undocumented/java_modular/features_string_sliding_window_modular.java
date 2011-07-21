@@ -4,10 +4,10 @@ import static org.shogun.EAlphabet.DNA;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class features_string_sliding_window_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Library");
+		System.loadLibrary("modshogun");
 	}
 
 	public static String[] strings = null;
@@ -15,7 +15,7 @@ public class features_string_sliding_window_modular {
 		strings = new String[] {"AAAAAAAAAACCCCCCCCCCGGGGGGGGGGTTTTTTTTTT"};
 	}
 	static ArrayList run(String[] strs ) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		StringCharFeatures f = new StringCharFeatures(strs, DNA);
 		f.obtain_by_sliding_window(5,1);
 
@@ -31,7 +31,7 @@ public class features_string_sliding_window_modular {
 		ArrayList result = new ArrayList();
 		result.add(f);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

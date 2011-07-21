@@ -1,15 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class regression_libsvr_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Regression");
-		System.loadLibrary("Classifier");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 0.8;
 		int C = 1;
 		double epsilon = 1e-5;
@@ -34,6 +32,6 @@ public class regression_libsvr_modular {
 		DoubleMatrix out_labels = svr.apply().get_labels();
 		System.out.println(out_labels.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

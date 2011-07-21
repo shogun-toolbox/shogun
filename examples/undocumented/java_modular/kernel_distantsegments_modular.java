@@ -1,14 +1,14 @@
 import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.EAlphabet.DNA;
+
 public class kernel_distantsegments_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int delta = 5;
 		int theta = 5;
 
@@ -23,6 +23,6 @@ public class kernel_distantsegments_modular {
 		DoubleMatrix km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);
 		DoubleMatrix km_test = kernel.get_kernel_matrix();
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

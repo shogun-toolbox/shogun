@@ -9,14 +9,11 @@ import java.io.*;
 
 public class serialization_complex_example {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Library");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		int num = 1000;
 		double dist = 1.0;
@@ -44,6 +41,6 @@ public class serialization_complex_example {
 		SerializableAsciiFile fstream = new SerializableAsciiFile("blaah.asc", 'w');
 		//svm.save_serializable(fstream);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

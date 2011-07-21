@@ -1,15 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class regression_krr_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Regression");
-		System.loadLibrary("Classifier");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 0.8;
 		double tau = 1e-6;
 
@@ -31,6 +29,6 @@ public class regression_krr_modular {
 		DoubleMatrix out_labels = krr.apply().get_labels();
 		System.out.println(out_labels.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

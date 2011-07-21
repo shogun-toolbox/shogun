@@ -4,10 +4,10 @@ import static org.shogun.EAlphabet.DNA;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class distribution_ppwm_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Distribution");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -18,7 +18,7 @@ public class distribution_ppwm_modular {
 	}
 	static void run(List para) {
 		boolean reverse = false;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int order = ((Integer)para.get(0)).intValue();
 		int gap = ((Integer)para.get(1)).intValue();
 
@@ -38,6 +38,7 @@ public class distribution_ppwm_modular {
 		//ppwm.set_pwm(DoubleMatrix.log(pwm));
 		ppwm.compute_w(20);
 		DoubleMatrix w = ppwm.get_w();
+		modshogun.exit_shogun();
 	}
 	public static void main(String argv[]) {
 		distribution_ppwm_modular x = new distribution_ppwm_modular();

@@ -7,8 +7,7 @@ import java.io.Serializable;
 
 public class classifier_averaged_perceptron_modular{
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2); 
@@ -17,7 +16,7 @@ public class classifier_averaged_perceptron_modular{
 		parameter_list.add(Arrays.asList(new Double(10), new Integer(10)));
 	}
 	public Serializable run(List para) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double learn_rate = ((Double)para.get(0)).doubleValue();
 		int max_iter = ((Integer)para.get(1)).intValue();
 
@@ -41,7 +40,7 @@ public class classifier_averaged_perceptron_modular{
 		result.add(perceptron);
 		result.add(out_labels);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

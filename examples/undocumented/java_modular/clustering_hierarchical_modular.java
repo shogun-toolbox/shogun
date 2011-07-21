@@ -4,11 +4,10 @@ import static org.shogun.EAlphabet.DNA;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class clustering_hierarchical_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Clustering");
-		System.loadLibrary("Distance");
+		System.loadLibrary("modshogun");
 	}
 
 	public int[] parameter_list = new int[2];
@@ -17,7 +16,7 @@ public class clustering_hierarchical_modular {
 		parameter_list[1] = 4;
 	}
 	static ArrayList run(int para) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int merges = para;
 
 		DoubleMatrix fm_train = Load.load_numbers("../data/fm_train_real.dat");
@@ -35,7 +34,7 @@ public class clustering_hierarchical_modular {
 		result.add(hierarchical);
 		result.add(out_distance);
 		result.add(out_cluster);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

@@ -8,10 +8,7 @@ import java.util.List;
 
 public class clustering_kmeans_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Clustering");
-		System.loadLibrary("Distance");
-		System.loadLibrary("Library");
+		System.loadLibrary("modshogun");
 	}
 
 	public int[] parameter_list = new int[2];
@@ -20,7 +17,7 @@ public class clustering_kmeans_modular {
 		parameter_list[1] = 4;
 	}
 	static ArrayList run(int para) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int k = para;
 		init_random(17);
 
@@ -39,7 +36,7 @@ public class clustering_kmeans_modular {
 		result.add(kmeans);
 		result.add(out_centers);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

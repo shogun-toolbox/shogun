@@ -7,8 +7,7 @@ import java.util.List;
 
 public class kernel_combined_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2); 
@@ -17,7 +16,7 @@ public class kernel_combined_modular {
 		parameter_list.add(Arrays.asList(new Integer(5), new Integer(10)));
 	}
 	public Object run(List para) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int cardinality = ((Integer)para.get(0)).intValue();
 		int size_cache = ((Integer)para.get(1)).intValue();
 
@@ -63,7 +62,7 @@ public class kernel_combined_modular {
 		result.add(km_test);
 		result.add(kernel);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return (Object)result;
 	}
 	public static void main(String argv[]) {

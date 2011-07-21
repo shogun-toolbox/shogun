@@ -4,9 +4,10 @@ import static org.shogun.EAlphabet.RAWBYTE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class features_string_char_modular {
 	static {
-		System.loadLibrary("Features");
+		System.loadLibrary("modshogun");
 	}
 
 	public static String[] strings = null;
@@ -14,7 +15,7 @@ public class features_string_char_modular {
 		strings = new String[] { "hey","guys","i","am","a","string"};
 	}
 	static ArrayList run(String[] strs) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		StringCharFeatures f = new StringCharFeatures(strings, RAWBYTE);
 		f.set_feature_vector(new DoubleMatrix(new double[][] {{'t','e','s','t'}}), 0);
 
@@ -22,7 +23,7 @@ public class features_string_char_modular {
 		result.add(f.get_features());
 		result.add(f);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

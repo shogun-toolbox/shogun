@@ -1,14 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class mkl_binclass_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 2.1;
 		double epsilon = 1e-5;
 		double C = 1.0;
@@ -56,6 +55,6 @@ public class mkl_binclass_modular {
 		mkl.set_kernel(kernel2);
 		mkl.apply();
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

@@ -4,12 +4,11 @@ import static org.jblas.DoubleMatrix.randn;
 
 public class evaluation_meansquarederror_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Evaluation");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int N = 100;		
 
 		DoubleMatrix ground_truth = randn(1, N);
@@ -23,6 +22,6 @@ public class evaluation_meansquarederror_modular {
 
 		System.out.println(mse);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

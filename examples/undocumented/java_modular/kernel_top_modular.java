@@ -5,10 +5,10 @@ import static org.shogun.BaumWelchViterbiType.BW_NORMAL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class kernel_top_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Distribution");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -19,7 +19,7 @@ public class kernel_top_modular {
 	}
 	static ArrayList run(List para) {
 		boolean reverse = false;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int N = ((Integer)para.get(0)).intValue();
 		int M = ((Integer)para.get(1)).intValue();
 		double pseudo = ((Double)para.get(2)).doubleValue();
@@ -89,7 +89,7 @@ public class kernel_top_modular {
 		result.add(km_train);
 		result.add(km_test);
 		result.add(kernel);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

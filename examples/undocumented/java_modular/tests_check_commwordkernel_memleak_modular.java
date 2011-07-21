@@ -1,11 +1,10 @@
 import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.EAlphabet.DNA;
+
 public class tests_check_commwordkernel_memleak_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Preprocessor");
+		System.loadLibrary("modshogun");
 	}
 	public static String repeat(String toRepeat, int num) {
 		StringBuilder repeated = new StringBuilder(toRepeat.length() * num);
@@ -15,7 +14,7 @@ public class tests_check_commwordkernel_memleak_modular {
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int num = 10;
 		int order = 7;
 		int gap = 0;
@@ -65,6 +64,6 @@ public class tests_check_commwordkernel_memleak_modular {
 			DoubleMatrix K = spec.get_kernel_matrix();
 		}
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

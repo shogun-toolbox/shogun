@@ -1,13 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class classifier_gaussiannaivebayes_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
 		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
@@ -25,6 +25,6 @@ public class classifier_gaussiannaivebayes_modular {
 		DoubleMatrix out_labels = gnb.apply(feats_test).get_labels();
 		System.out.println(out_labels.toString());
 		
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

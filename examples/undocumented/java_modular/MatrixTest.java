@@ -1,12 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class MatrixTest {
 	static {
-		System.loadLibrary("Features");
+		System.loadLibrary("modshogun");
 	}
 	
 	public static void main(String argv[]) {
-		Features.init_shogun();
+		modshogun.init_shogun();
 		System.out.println("Test DoubleMatrix(jblas):");
 		RealFeatures x = new RealFeatures();		
 		double y[][] = {{1, 2},{3, 4}, {5, 6}};
@@ -14,6 +15,6 @@ public class MatrixTest {
 		x.set_feature_matrix(A);
 		DoubleMatrix B = x.get_feature_matrix();
 		System.out.println(B.toString());
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

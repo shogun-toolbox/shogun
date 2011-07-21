@@ -1,15 +1,14 @@
 import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.EAlphabet.DNA;
+
 public class kernel_comm_ulong_string_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Preprocessor");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int order = 3;
 		int gap = 0;
 		boolean reverse = false;
@@ -39,6 +38,6 @@ public class kernel_comm_ulong_string_modular {
 		DoubleMatrix km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);
 		DoubleMatrix km_test = kernel.get_kernel_matrix();
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

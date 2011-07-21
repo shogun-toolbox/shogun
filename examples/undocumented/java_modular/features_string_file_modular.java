@@ -4,10 +4,10 @@ import static org.shogun.EAlphabet.RAWBYTE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class features_string_file_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Library");
+		System.loadLibrary("modshogun");
 	}
 
 	public static String fname = new String();
@@ -15,7 +15,7 @@ public class features_string_file_modular {
 		fname = "features_string_char_modular.java";
 	}
 	static ArrayList run(String filename) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		StringCharFeatures f = new StringCharFeatures(RAWBYTE);
 		f.load_from_directory(".");
 
@@ -26,7 +26,7 @@ public class features_string_file_modular {
 		result.add(f.get_features());
 		result.add(f);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

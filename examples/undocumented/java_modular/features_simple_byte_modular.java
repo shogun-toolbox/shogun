@@ -3,9 +3,10 @@ import org.jblas.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class features_simple_byte_modular {
 	static {
-		System.loadLibrary("Features");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList();
@@ -15,7 +16,7 @@ public class features_simple_byte_modular {
 	}
 	static ArrayList run(List para) {
 		boolean reverse = false;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		DoubleMatrix A = (DoubleMatrix)para.get(0);
 
 		ByteFeatures a = new ByteFeatures(A);
@@ -25,7 +26,7 @@ public class features_simple_byte_modular {
 		ArrayList result = new ArrayList();
 		result.add(a_out);
 		result.add(a);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		
 		return result;
 	}

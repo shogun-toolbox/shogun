@@ -4,9 +4,10 @@ import static org.shogun.EAlphabet.RAWDNA;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class features_string_hashed_wd_modular {
 	static {
-		System.loadLibrary("Features");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList();
@@ -16,7 +17,7 @@ public class features_string_hashed_wd_modular {
 	}
 	static ArrayList run(List para) {
 		boolean reverse = false;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		DoubleMatrix A = (DoubleMatrix)para.get(0);
 		int order = ((Integer)para.get(1)).intValue();
 		int start_order = ((Integer)para.get(2)).intValue();
@@ -32,7 +33,7 @@ public class features_string_hashed_wd_modular {
 		ArrayList result = new ArrayList();
 		result.add(y);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		
 		return result;
 	}

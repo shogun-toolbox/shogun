@@ -1,13 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class kernel_custom_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int dim = 7;
 
 		DoubleMatrix data = DoubleMatrix.rand(dim, dim);
@@ -36,6 +36,6 @@ public class kernel_custom_modular {
 		kernel.set_full_kernel_matrix_from_full(data);
 		DoubleMatrix km_fullfull=kernel.get_kernel_matrix();
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

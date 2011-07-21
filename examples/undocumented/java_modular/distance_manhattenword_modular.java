@@ -1,15 +1,14 @@
 import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.EAlphabet.DNA;
+
 public class distance_manhattenword_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Distance");
-		System.loadLibrary("Preprocessor");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int order = 3;
 		int gap = 0;
 		boolean reverse = false;
@@ -39,6 +38,6 @@ public class distance_manhattenword_modular {
 		DoubleMatrix dm_train = distance.get_distance_matrix();
 		distance.init(feats_train, feats_test);
 		DoubleMatrix dm_test = distance.get_distance_matrix();
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

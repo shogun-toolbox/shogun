@@ -1,14 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class preprocessor_normone_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Preprocessor");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 1.4;
 		int size_cache = 10;
 
@@ -35,6 +34,6 @@ public class preprocessor_normone_modular {
 		System.out.println(km_train.toString());
 		System.out.println(km_test.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

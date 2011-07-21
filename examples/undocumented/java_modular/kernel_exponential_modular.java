@@ -7,9 +7,7 @@ import java.util.List;
 
 public class kernel_exponential_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Distance");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2); 
@@ -18,7 +16,7 @@ public class kernel_exponential_modular {
 		parameter_list.add(Arrays.asList(new Double(5.0)));
 	}
 	public Object run(List para) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double tau_coef = ((Double)para.get(0)).doubleValue();
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
@@ -40,7 +38,7 @@ public class kernel_exponential_modular {
 		result.add(km_test);
 		result.add(kernel);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return (Object)result;
 	}
 	public static void main(String argv[]) {

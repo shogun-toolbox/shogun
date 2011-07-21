@@ -4,10 +4,10 @@ import static org.shogun.EAlphabet.DNA;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class kernel_weighted_degree_position_string_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -17,7 +17,7 @@ public class kernel_weighted_degree_position_string_modular {
 		parameter_list.add(Arrays.asList(new Integer(20)));
 	}
 	static ArrayList run(List para) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int degree = ((Integer)para.get(0)).intValue();
 
 		String[] fm_train_dna = Load.load_dna("../data/fm_train_dna.dat");
@@ -38,7 +38,7 @@ public class kernel_weighted_degree_position_string_modular {
 		result.add(km_train);
 		result.add(km_test);
 		result.add(kernel);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

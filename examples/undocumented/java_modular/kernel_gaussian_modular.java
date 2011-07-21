@@ -1,5 +1,6 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class kernel_gaussian_modular {
 	static {
 		System.loadLibrary("modshogun");

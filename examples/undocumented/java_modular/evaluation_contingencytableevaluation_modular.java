@@ -4,12 +4,11 @@ import static org.jblas.DoubleMatrix.randn;
 
 public class evaluation_contingencytableevaluation_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Evaluation");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		DoubleMatrix ground_truth = Load.load_labels("../data/label_train_twoclass.dat");
 		DoubleMatrix predicted = randn(1, ground_truth.getLength());
@@ -49,6 +48,6 @@ public class evaluation_contingencytableevaluation_modular {
 
 		System.out.printf("%f, %f, %f, %f, %f, %f, %f, %f, %f\n", accuracy, errorrate, bal, wracc, f1, crosscorrelation, recall, precision, specificity);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

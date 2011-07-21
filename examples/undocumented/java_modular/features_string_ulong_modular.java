@@ -4,9 +4,10 @@ import static org.shogun.EAlphabet.RAWBYTE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class features_string_ulong_modular {
 	static {
-		System.loadLibrary("Features");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -15,7 +16,7 @@ public class features_string_ulong_modular {
 		parameter_list.add(Arrays.asList(new Integer(0), new Integer(3), new Integer(0)));
 	}
 	static ArrayList run(List para) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		boolean rev = false;
 		int start = ((Integer)para.get(0)).intValue();
 		int order = ((Integer)para.get(1)).intValue();
@@ -31,7 +32,7 @@ public class features_string_ulong_modular {
 		result.add(uf.get_feature_vector(2));
 		result.add(uf.get_num_vectors());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

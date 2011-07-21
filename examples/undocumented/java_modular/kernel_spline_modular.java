@@ -1,13 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class kernel_spline_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double sigma = 1.0;
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
@@ -25,6 +25,6 @@ public class kernel_spline_modular {
 		System.out.println(km_train.toString());
 		System.out.println(km_test.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

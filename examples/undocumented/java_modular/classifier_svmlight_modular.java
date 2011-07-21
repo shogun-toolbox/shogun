@@ -4,11 +4,10 @@ import static org.shogun.EAlphabet.DNA;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class classifier_svmlight_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -19,7 +18,7 @@ public class classifier_svmlight_modular {
 	}
 	static ArrayList run(List para) {
 		int degree = 20;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double C = ((Double)para.get(0)).doubleValue();
 		double epsilon = ((Double)para.get(1)).doubleValue();
 		int num_threads = ((Integer)para.get(2)).intValue();
@@ -43,7 +42,7 @@ public class classifier_svmlight_modular {
 
 		ArrayList result = new ArrayList();
 		result.add(kernel);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

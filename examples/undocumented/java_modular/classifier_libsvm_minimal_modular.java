@@ -7,13 +7,11 @@ import static org.jblas.DoubleMatrix.randn;
 
 public class classifier_libsvm_minimal_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 	
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		int num = 1000;
 		double dist = 1.0;
@@ -43,6 +41,6 @@ public class classifier_libsvm_minimal_modular {
 		DoubleMatrix out = svm.apply(feats_test).get_labels();
 
 		System.out.println("Mean Error = " + signum(out).ne(testlab).mean());
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

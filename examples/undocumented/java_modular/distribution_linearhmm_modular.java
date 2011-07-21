@@ -4,10 +4,10 @@ import static org.shogun.EAlphabet.DNA;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class distribution_linearhmm_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Distribution");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -18,7 +18,7 @@ public class distribution_linearhmm_modular {
 	}
 	static ArrayList run(List para) {
 		boolean reverse = false;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int order = ((Integer)para.get(0)).intValue();
 		int gap = ((Integer)para.get(1)).intValue();
 
@@ -47,7 +47,7 @@ public class distribution_linearhmm_modular {
 		result.add(hmm);
 		result.add(out_sample);
 		result.add(out_likelihood);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

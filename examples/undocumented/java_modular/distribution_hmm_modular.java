@@ -5,10 +5,10 @@ import static org.shogun.BaumWelchViterbiType.BW_NORMAL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 public class distribution_hmm_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Distribution");
+		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -19,7 +19,7 @@ public class distribution_hmm_modular {
 	}
 	static ArrayList run(List para) {
 		boolean reverse = false;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int N = ((Integer)para.get(0)).intValue();
 		int M = ((Integer)para.get(1)).intValue();
 		double pseudo = ((Double)para.get(2)).doubleValue();
@@ -58,7 +58,7 @@ public class distribution_hmm_modular {
 		result.add(lik_example);
 		result.add(lik_sample);
 		result.add(hmm);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	public static void main(String argv[]) {

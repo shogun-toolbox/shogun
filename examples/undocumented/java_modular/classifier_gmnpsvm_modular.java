@@ -1,14 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class classifier_gmnpsvm_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 2.1;
 		double epsilon = 1e-5;
 		double C = 1.0;
@@ -34,6 +33,6 @@ public class classifier_gmnpsvm_modular {
 		DoubleMatrix out_labels = svm.apply(feats_test).get_labels();
 		System.out.println(out_labels.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

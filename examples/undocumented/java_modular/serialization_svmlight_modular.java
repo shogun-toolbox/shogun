@@ -9,9 +9,7 @@ import java.io.*;
 
 public class serialization_svmlight_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 	
 	public static void save(String fname, Object obj) {
@@ -41,7 +39,7 @@ public class serialization_svmlight_modular {
 		return r;
 	}
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		int num = 1000;
 		double dist = 1.0;
@@ -75,6 +73,6 @@ public class serialization_svmlight_modular {
 		//ArrayList r = (ArrayList)load(fname);
 		//SVMLight svm2 = (SVMLight)r.get(0);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

@@ -1,13 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class kernel_linear_byte_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double scale = 1.2;
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_byte.dat");
@@ -27,6 +27,6 @@ public class kernel_linear_byte_modular {
 		System.out.println(km_train.toString());
 		System.out.println(km_test.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

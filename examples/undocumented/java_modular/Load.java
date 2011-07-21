@@ -2,6 +2,7 @@ import org.shogun.*;
 import org.jblas.*;
 import java.io.*;
 import java.util.*;
+
 public class Load {
 	public static DoubleMatrix load_numbers(String filename) {
 		DoubleMatrix result = null;

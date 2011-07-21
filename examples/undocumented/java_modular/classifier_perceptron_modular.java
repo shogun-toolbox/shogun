@@ -1,13 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class classifier_perceptron_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double learn_rate = 1.0;
 		int max_iter = 1000;
 
@@ -32,6 +32,6 @@ public class classifier_perceptron_modular {
 		DoubleMatrix out_labels = perceptron.apply().get_labels();
 		System.out.println(out_labels.toString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

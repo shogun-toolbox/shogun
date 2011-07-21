@@ -4,12 +4,11 @@ import static org.jblas.DoubleMatrix.randn;
 
 public class evaluation_multiclassaccuracy_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Evaluation");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		double mul = 2.0;
 		DoubleMatrix ground_truth = Load.load_labels("../data/label_train_multiclass.dat");
@@ -23,6 +22,6 @@ public class evaluation_multiclassaccuracy_modular {
 
 		System.out.println(accuracy);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

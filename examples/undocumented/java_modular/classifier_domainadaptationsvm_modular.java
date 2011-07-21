@@ -1,15 +1,14 @@
 import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.EAlphabet.DNA;
+
 public class classifier_domainadaptationsvm_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Classifier");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int degree = 3;
 		int C = 1;
 
@@ -48,6 +47,6 @@ public class classifier_domainadaptationsvm_modular {
 		dasvm.train();
 
 		DoubleMatrix out = dasvm.apply(feats_test).get_labels();
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

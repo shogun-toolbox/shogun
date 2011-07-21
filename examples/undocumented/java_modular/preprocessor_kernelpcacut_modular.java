@@ -1,14 +1,13 @@
 import org.shogun.*;
 import org.jblas.*;
+
 public class preprocessor_kernelpcacut_modular {
 	static {
-		System.loadLibrary("Features");
-		System.loadLibrary("Preprocessor");
-		System.loadLibrary("Kernel");
+		System.loadLibrary("modshogun");
 	}
 
 	public static void main(String argv[]) {
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 2.0;
 		double threshold = 0.05;
 
@@ -21,6 +20,6 @@ public class preprocessor_kernelpcacut_modular {
 		preprocessor.init(features);
 		preprocessor.apply_to_feature_matrix(features);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }
