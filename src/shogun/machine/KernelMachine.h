@@ -60,12 +60,12 @@ class CKernelMachine : public CMachine
 
 		virtual bool train(CFeatures* data=NULL)
 		{
-//			bool result=train_kernel_machine(data);
+			bool result=train_kernel_machine(data);
 
 			if (m_store_sv_features)
 				store_sv_features();
 
-			return false;
+			return result;
 		}
 
 		/** set kernel
@@ -362,7 +362,11 @@ class CKernelMachine : public CMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_kernel_machine(CFeatures* data=NULL)=0;
+		virtual bool train_kernel_machine(CFeatures* data=NULL)
+		{
+			SG_NOTIMPLEMENTED;
+			return false;
+		}
 
 		virtual void store_sv_features();
 
