@@ -3,7 +3,6 @@
  #include <shogun/classifier/svm/GMNPSVM.h>
  #include <shogun/classifier/svm/GNPPSVM.h>
  #include <shogun/classifier/svm/GPBTSVM.h>
- #include <shogun/classifier/KernelPerceptron.h> 
  #include <shogun/machine/DistanceMachine.h>
  #include <shogun/classifier/KNN.h>
  #include <shogun/classifier/LDA.h>

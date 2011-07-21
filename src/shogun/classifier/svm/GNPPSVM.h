@@ -33,16 +33,6 @@ class CGNPPSVM : public CSVM
 
 		virtual ~CGNPPSVM();
 
-		/** train SVM classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return classifier type GNPPSVM
@@ -51,6 +41,17 @@ class CGNPPSVM : public CSVM
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GNPPSVM"; }
+
+	protected:
+		/** train SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
 };
 }
 #endif

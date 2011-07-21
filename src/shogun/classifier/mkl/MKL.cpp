@@ -190,7 +190,7 @@ bool CMKL::check_lpx_status(LPX *lp)
 }
 #endif // USE_GLPK
 
-bool CMKL::train(CFeatures* data)
+bool CMKL::train_kernel_machine(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());

@@ -20,7 +20,7 @@ using namespace shogun;
 
 float64_t CStatistics::mean(SGVector<float64_t> values)
 {
-	ASSERT(values.vlen);
+	ASSERT(values.vlen>0);
 	ASSERT(values.vector);
 
 	float64_t sum=0;

@@ -873,6 +873,7 @@ class CMath : public CSGObject
 		/** @deprecated use CStatistics::mean() instead */
 		static inline float64_t mean(float64_t* vec, int32_t len)
 		{
+			SG_SDEPRECATED;
 			ASSERT(vec);
 			ASSERT(len>0);
 

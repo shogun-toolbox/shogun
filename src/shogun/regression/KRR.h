@@ -72,28 +72,18 @@ class CKRR : public CKernelMachine
 		 */
 		inline void set_tau(float64_t t) { tau = t; };
 
-		/** train regression
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based regressors are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** classify regression
 		 *
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify();
+		virtual CLabels* apply();
 
 		/** classify one example
 		 *
 		 * @param num which example to classify
 		 * @return result
 		 */
-		virtual float64_t classify_example(int32_t num);
+		virtual float64_t apply(int32_t num);
 
 		/** load regression from file
 		 *
@@ -120,6 +110,17 @@ class CKRR : public CKernelMachine
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KRR"; }
+
+	protected:
+		/** train regression
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based regressors are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
 
 	private:
 		/** alpha */

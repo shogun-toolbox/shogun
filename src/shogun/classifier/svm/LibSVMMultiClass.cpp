@@ -28,7 +28,7 @@ CLibSVMMultiClass::~CLibSVMMultiClass()
 	//SG_PRINT("deleting LibSVM\n");
 }
 
-bool CLibSVMMultiClass::train(CFeatures* data)
+bool CLibSVMMultiClass::train_kernel_machine(CFeatures* data)
 {
 	struct svm_node* x_space;
 

@@ -133,17 +133,6 @@ class CMKL : public CSVM
 			return svm;
 		}
 
-
-		/** train MKL classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** set C mkl
 		 *
 		 * @param C new C_mkl
@@ -265,7 +254,20 @@ class CMKL : public CSVM
 		 */
 		virtual void compute_sum_beta(float64_t* sumw);
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "MKL"; }
+
 	protected:
+		/** train MKL classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
+
 		/** check run before starting training (to e.g. check if labeling is
 		 * two-class labeling in classification case
 		 */
@@ -441,9 +443,6 @@ class CMKL : public CSVM
 		 */
 		bool check_lpx_status(LPX *lp);
 #endif
-
-		/** @return object name */
-		inline virtual const char* get_name() const { return "MKL"; }
 
 	protected:
 		/** wrapper SVM */

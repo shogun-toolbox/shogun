@@ -21,7 +21,6 @@
 %rename(GNPPSVM) CGNPPSVM;
 %rename(GPBTSVM) CGPBTSVM;
 %rename(GaussianNaiveBayes) CGaussianNaiveBayes;
-%rename(KernelPerceptron) CKernelPerceptron;
 %rename(KNN) CKNN;
 %rename(LDA) CLDA;
 %rename(LibLinear) CLibLinear;
@@ -79,7 +78,6 @@
 %include <shogun/classifier/svm/GMNPSVM.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
 %include <shogun/classifier/svm/GPBTSVM.h>
-%include <shogun/classifier/KernelPerceptron.h> 
 %include <shogun/classifier/KNN.h>
 %include <shogun/classifier/LDA.h>
 %include <shogun/classifier/svm/LibLinear.h>

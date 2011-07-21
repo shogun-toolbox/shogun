@@ -28,7 +28,7 @@ CCPLEXSVM::~CCPLEXSVM()
 {
 }
 
-bool CCPLEXSVM::train(CFeatures* data)
+bool CCPLEXSVM::train_kernel_machine(CFeatures* data)
 {
 	bool result = false;
 	CCplex cplex;

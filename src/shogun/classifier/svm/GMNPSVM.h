@@ -40,16 +40,6 @@ class CGMNPSVM : public CMultiClassSVM
 		/** default destructor */
 		virtual ~CGMNPSVM();
 
-		/** train SVM
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return classifier type GMNPSVM
@@ -69,6 +59,17 @@ class CGMNPSVM : public CMultiClassSVM
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GMNPSVM"; }
+
+	protected:
+		/** train SVM
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
 
 	protected:
 		/** required for CMKLMulticlass
