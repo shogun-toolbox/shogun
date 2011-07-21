@@ -266,6 +266,8 @@ class CFeatures : public CSGObject
 			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
 		}
 
+		inline bool has_subset() const { return m_subset!=NULL; }
+
 		/** Creates a new CFeatures instance containing copies of the elements
 		 * which are specified by the provided indices.
 		 *
