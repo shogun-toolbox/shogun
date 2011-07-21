@@ -78,7 +78,7 @@ bool CDomainAdaptationSVM::is_presvm_sane()
 }
 
 
-bool CDomainAdaptationSVM::train(CFeatures* data)
+bool CDomainAdaptationSVM::train_kernel_machine(CFeatures* data)
 {
 
 	if (data)
@@ -111,7 +111,7 @@ bool CDomainAdaptationSVM::train(CFeatures* data)
 	delete[] lin_term;
 
 	//train SVM
-	bool success = CSVMLight::train();
+	bool success = CSVMLight::train_kernel_machine();
 
 	ASSERT(presvm)
 

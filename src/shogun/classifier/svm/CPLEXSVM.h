@@ -26,6 +26,9 @@ IGNORE_IN_CLASSLIST class CCPLEXSVM : public CSVM
 		CCPLEXSVM();
 		virtual ~CCPLEXSVM();
 
+		virtual inline EClassifierType get_classifier_type() { return CT_CPLEXSVM; }
+
+	protected:
 		/** train SVM classifier
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -34,9 +37,7 @@ IGNORE_IN_CLASSLIST class CCPLEXSVM : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
-
-		virtual inline EClassifierType get_classifier_type() { return CT_CPLEXSVM; }
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
 };
 }
 #endif

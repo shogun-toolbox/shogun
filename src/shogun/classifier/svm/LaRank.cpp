@@ -602,7 +602,7 @@ CLaRank::~CLaRank ()
 	destroy();
 }
 
-bool CLaRank::train(CFeatures* data)
+bool CLaRank::train_kernel_machine(CFeatures* data)
 {
 	tau = 0.0001;
 

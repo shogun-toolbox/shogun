@@ -32,16 +32,6 @@ class CMPDSVM : public CSVM
 		CMPDSVM(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CMPDSVM();
 
-		/** train SVM classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return classifier type MPD
@@ -52,6 +42,16 @@ class CMPDSVM : public CSVM
 		inline virtual const char* get_name() const { return "MPDSVM"; }
 
 	protected:
+		/** train SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
+
 		/** compute H
 		 *
 		 * @param i index of H

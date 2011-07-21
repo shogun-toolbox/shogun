@@ -77,16 +77,6 @@ class CSVRLight: public CSVMLight
 		/** default destructor */
 		virtual ~CSVRLight() { }
 
-		/** train regression
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based regressors are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return classifier type SVRLIGHT
@@ -239,6 +229,16 @@ class CSVRLight: public CSVMLight
 			j=regression_fix_index(j);
 			return kernel->kernel(i, j);
 		}
+
+		/** train regression
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based regressors are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
 
 		/** number of train elements */
 		int32_t num_vectors;

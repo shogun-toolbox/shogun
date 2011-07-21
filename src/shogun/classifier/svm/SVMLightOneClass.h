@@ -41,6 +41,13 @@ class CSVMLightOneClass: public CSVMLight
 		/** default destructor */
 		virtual ~CSVMLightOneClass() { }
 
+		/** get classifier type
+		 *
+		 * @return classifier type LIGHTONECLASS
+		 */
+		virtual inline EClassifierType get_classifier_type() { return CT_LIGHTONECLASS; }
+
+	protected:
 		/** train one class svm
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -49,13 +56,7 @@ class CSVMLightOneClass: public CSVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
-
-		/** get classifier type
-		 *
-		 * @return classifier type LIGHTONECLASS
-		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_LIGHTONECLASS; }
+		virtual bool train_kernel_machine(CFeatures* data=NULL);
 };
 }
 #endif //USE_SVMLIGHT

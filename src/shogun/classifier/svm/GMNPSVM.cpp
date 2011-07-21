@@ -48,7 +48,7 @@ CGMNPSVM::init(void)
 	m_basealphas = NULL, m_basealphas_y = 0, m_basealphas_x = 0;
 }
 
-bool CGMNPSVM::train(CFeatures* data)
+bool CGMNPSVM::train_kernel_machine(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());

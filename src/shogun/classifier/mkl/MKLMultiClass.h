@@ -49,16 +49,6 @@ public:
 	 */
 	virtual ~CMKLMultiClass();
 
-	/** train Multiclass MKL classifier
-	 *
-	 * @param data training data (parameter can be avoided if distance or
-	 * kernel-based classifiers are used and distance/kernels are
-	 * initialized with train data)
-	 *
-	 * @return whether training was successful
-	 */
-	virtual bool train(CFeatures* data=NULL);
-
 	/** get classifier type
 	 *
 	 * @return classifier type GMNPMKL
@@ -158,6 +148,15 @@ protected:
 			const int32_t ind);
 	
 
+	/** train Multiclass MKL classifier
+	 *
+	 * @param data training data (parameter can be avoided if distance or
+	 * kernel-based classifiers are used and distance/kernels are
+	 * initialized with train data)
+	 *
+	 * @return whether training was successful
+	 */
+	virtual bool train_kernel_machine(CFeatures* data=NULL);
 	
 
 protected:

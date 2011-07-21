@@ -29,7 +29,7 @@ CGNPPSVM::~CGNPPSVM()
 {
 }
 
-bool CGNPPSVM::train(CFeatures* data)
+bool CGNPPSVM::train_kernel_machine(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(labels && labels->get_num_labels());
