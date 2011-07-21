@@ -57,6 +57,17 @@ class CKernelMachine : public CMachine
 		virtual const char* get_name(void) const {
 			return "KernelMachine"; }
 
+
+		virtual bool train(CFeatures* data=NULL)
+		{
+//			bool result=train_kernel_machine(data);
+
+			if (m_store_sv_features)
+				store_sv_features();
+
+			return false;
+		}
+
 		/** set kernel
 		 *
 		 * @param k kernel
@@ -332,6 +343,29 @@ class CKernelMachine : public CMachine
 		 */
 		static void* apply_helper(void* p);
 
+		/** TODO comment
+		 *
+		 */
+		inline void set_store_sv_features(bool store)
+		{
+			m_store_sv_features=store;
+		}
+
+	protected:
+		/** train classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * NOT IMPLEMENTED!
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_kernel_machine(CFeatures* data=NULL)=0;
+
+		virtual void store_sv_features();
+
 	protected:
 		/** kernel */
 		CKernel* kernel;
@@ -349,6 +383,8 @@ class CKernelMachine : public CMachine
 
 		/** array of ``support vectors'' (indices of feature objects) */
 		SGVector<int32_t> m_svs;
+
+		bool m_store_sv_features;
 };
 }
 #endif /* _KERNEL_MACHINE_H__ */

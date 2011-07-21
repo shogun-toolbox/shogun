@@ -40,8 +40,11 @@ CKernelMachine::CKernelMachine()
 	m_parameters->add(&m_alpha, "m_alpha",
 			"Array of coefficients alpha.");
 	m_parameters->add(&m_svs, "m_svs", "Number of ``support vectors''.");
+	m_parameters->add(&m_store_sv_features, "store_sv_features",
+			"Should SV-feature be stored after training?");
 
 	m_bias=0.0;
+	m_store_sv_features=false;
 }
 
 CKernelMachine::~CKernelMachine()
@@ -264,4 +267,28 @@ void* CKernelMachine::apply_helper(void* p)
 	}
 
 	return NULL;
+}
+
+void CKernelMachine::store_sv_features()
+{
+	if (!kernel)
+		SG_ERROR("kernel is needed to store SV features.\n");
+
+	CFeatures* lhs=kernel->get_lhs();
+	CFeatures* rhs=kernel->get_rhs();
+
+	if (!lhs)
+		SG_ERROR("kernel lhs is needed to store SV features.\n");
+
+	/* copy sv feature data */
+	CFeatures* sv_features=lhs->copy_subset(m_svs);
+	SG_UNREF(lhs);
+
+	/* now sv indices are just the identity */
+	CMath::range_fill_vector(m_svs.vector, m_svs.vlen, 0);
+
+	/* set new lhs to kernel */
+	kernel->init(sv_features, rhs);
+
+	SG_UNREF(rhs);
 }
