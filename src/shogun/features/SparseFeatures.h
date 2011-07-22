@@ -885,7 +885,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @return number of feature vectors
 		 */
-		virtual inline int32_t  get_num_vectors()
+		virtual inline int32_t  get_num_vectors() const
 		{
 			return m_subset ? m_subset->get_size() : num_vectors;
 		}

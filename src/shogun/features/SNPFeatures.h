@@ -149,7 +149,7 @@ class CSNPFeatures : public CDotFeatures
 		 *
 		 * @return number of vectors
 		 */
-		inline virtual int32_t get_num_vectors()
+		inline virtual int32_t get_num_vectors() const
 		{
 			return num_strings;
 		}

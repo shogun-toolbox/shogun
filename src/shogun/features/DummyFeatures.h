@@ -58,7 +58,7 @@ class CDummyFeatures : public CFeatures
 		}
 
 		/** get number of feature vectors */
-		virtual int32_t get_num_vectors()
+		virtual int32_t get_num_vectors() const
 		{
 			return num_vectors;
 		}

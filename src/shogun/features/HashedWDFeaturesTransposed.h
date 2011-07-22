@@ -148,7 +148,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 			return C_WD;
 		}
 
-		inline virtual int32_t get_num_vectors()
+		inline virtual int32_t get_num_vectors() const
 		{
 			return num_strings;
 		}

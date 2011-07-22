@@ -179,7 +179,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 *
 		 * @return number of strings
 		 */
-		inline virtual int32_t get_num_vectors()
+		inline virtual int32_t get_num_vectors() const
 		{
 			return num_strings;
 		}
