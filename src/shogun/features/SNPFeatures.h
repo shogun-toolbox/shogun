@@ -212,9 +212,12 @@ class CSNPFeatures : public CDotFeatures
 			return (char*) m_str_maj;
 		}
 
-		/** compute the basee strings from current strings */
-		void obtain_base_strings();
-
+		/** compute the base strings from current strings optionally taking
+		 * into account snp
+		 *
+		 * @param snp optionally compute base string for snp too
+		 */
+		void obtain_base_strings(CSNPFeatures* snp=NULL);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SNPFeatures"; }
@@ -227,6 +230,15 @@ class CSNPFeatures : public CDotFeatures
 		 * compute 2x3 histogram table
 		 */
 		static SGMatrix<float64_t> get_2x3_table(CSNPFeatures* pos, CSNPFeatures* neg);
+
+	private:
+		/** determine minor and major base strings from current strings
+		 * @arg minor - array of string_length inited with zero that will
+		 *              contain the minor base string
+		 * @arg major - array of string_length inited with zero that will
+		 *              contain the major base string
+		 */
+		void find_minor_major_strings(uint8_t* minor, uint8_t* major);
 
 	protected:
 		/** stringfeatures the wdfeatures are based on*/

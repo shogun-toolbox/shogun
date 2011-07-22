@@ -208,7 +208,7 @@ void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 
-void CSNPFeatures::obtain_base_strings()
+void CSNPFeatures::find_minor_major_strings(uint8_t* minor, uint8_t* major)
 {
 	for (int32_t i=0; i<num_strings; i++)
 	{
@@ -217,29 +217,37 @@ void CSNPFeatures::obtain_base_strings()
 		uint8_t* vec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(i, len, free_vec);
 		ASSERT(string_length==len);
 
-		if (i==0)
-		{
-			size_t tlen=(len+1)*sizeof(uint8_t);
-			m_str_min=(uint8_t*) SG_MALLOC(tlen);
-			m_str_maj=(uint8_t*) SG_MALLOC(tlen);
-			memset(m_str_min, 0, tlen);
-			memset(m_str_maj, 0, tlen);
-		}
-
 		for (int32_t j=0; j<len; j++)
 		{
 			// skip sequencing errors
 			if (vec[j]=='0')
 				continue;
 
-			if (m_str_min[j]==0)
-				m_str_min[j]=vec[j];
-            else if (m_str_maj[j]==0 && vec[j]!=m_str_min[j])
-				m_str_maj[j]=vec[j];
+			if (minor[j]==0)
+				minor[j]=vec[j];
+            else if (major[j]==0 && vec[j]!=minor[j])
+				major[j]=vec[j];
 		}
 
 		((CStringFeatures<uint8_t>*) strings)->free_feature_vector(vec, i, free_vec);
 	}
+}
+
+void CSNPFeatures::obtain_base_strings(CSNPFeatures* snp)
+{
+	SG_FREE(m_str_min);
+	SG_FREE(m_str_maj);
+	size_t tlen=(string_length+1)*sizeof(uint8_t);
+
+	m_str_min=(uint8_t*) SG_MALLOC(tlen);
+	m_str_maj=(uint8_t*) SG_MALLOC(tlen);
+	memset(m_str_min, 0, tlen);
+	memset(m_str_maj, 0, tlen);
+
+	find_minor_major_strings(m_str_min, m_str_maj);
+
+	if (snp)
+		snp->find_minor_major_strings(m_str_min, m_str_maj);
 
 	for (int32_t j=0; j<string_length; j++)
 	{
