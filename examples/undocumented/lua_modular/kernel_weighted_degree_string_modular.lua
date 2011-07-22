@@ -26,7 +26,6 @@ function kernel_weighted_degree_string_modular (fm_train_dna,fm_test_dna,degree)
 	return km_train, km_test, kernel
 end
 
-
 if debug.getinfo(3) == nill then
 	print 'WeightedDegreeString'
 	kernel_weighted_degree_string_modular(unpack(parameter_list[1]))

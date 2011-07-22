@@ -48,6 +48,8 @@ function evaluation_contingencytableevaluation_modular(ground_truth, predicted)
 	return accuracy, errorrate, bal, wracc, f1, crosscorrelation, recall, precision, specificity
 end
 
-print 'ContingencyTableEvaluation'
-evaluation_contingencytableevaluation_modular(unpack(parameter_list[1]))
+if debug.getinfo(3) == nill then
+	print 'ContingencyTableEvaluation'
+	evaluation_contingencytableevaluation_modular(unpack(parameter_list[1]))
+end
 
