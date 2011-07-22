@@ -20,5 +20,7 @@ function kernel_gaussian_modular (fm_train_real,fm_test_real,width)
 	return km_train,km_test,kernel
 end
 
-print 'Gaussian'
-kernel_gaussian_modular(unpack(parameter_list[1]))
+if debug.getinfo(3) == nill then
+	print 'Gaussian'
+	kernel_gaussian_modular(unpack(parameter_list[1]))
+end

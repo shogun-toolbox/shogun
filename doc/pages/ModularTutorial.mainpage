@@ -156,8 +156,67 @@ DoubleMatrix trainlab = concatHorizontally(o.neg(), o);
 DoubleMatrix testlab = concatHorizontarily(o.neg(), o)
 \endverbatim
 
+In lua, this is is done as follows:
+\verbatim
+require 'shogun'
+require 'load'
+
+function concatenate(...)
+	local result = ...
+	for _,t in ipairs{select(2, ...)} do
+		for row,rowdata in ipairs(t) do
+			for col,coldata in ipairs(rowdata) do
+				table.insert(result[row], coldata)
+			end		
+		end
+	end
+	return result
+end
+
+function rand_matrix(rows, cols, dist)
+  local matrix = {}
+	for i = 1, rows do
+		matrix[i] = {}
+		for j = 1, cols do
+			matrix[i][j] = math.random() + dist
+		end	
+	end
+	return matrix
+end
+
+function ones(num)
+	r={}
+	for i=1,num do
+		r[i]=1
+	end
+	return r
+end
+
+
+num=1000
+dist=1
+width=2.1
+C=1
+
+traindata_real=concatenate(rand_matrix(2,num, -dist),rand_matrix(2,num,dist))
+testdata_real=concatenate(rand_matrix(2,num,-dist), rand_matrix(2,num, dist))
+trainlab={}
+for i = 1, num do
+	trainlab[i] = -1
+	trainlab[i + num] = 1
+end
+
+testlab={}
+for i = 1, num do
+	testlab[i] = -1
+	testlab[i + num] = 1
+end
+
+\endverbatim
+
 The rest of this tutorial below will now work the same (identical syntax) for python,
-octave (when using a trailing semicolon for each command, which is optional in python).
+octave (when using a trailing semicolon for each command, which is optional in python),
+lua(we use colon to get the method of an object).
 
 For java, we use DoubleMatrix to represent most of the types. If shogun C++ class need a 
 int Vector/Matrix, we convert the DoubleMatrix into int Vector/Matrix and when returned 
@@ -248,6 +307,10 @@ For octave:
 For java:
 
 \verbinclude classifier_libsvm_minimal_modular.java
+
+For lua:
+
+\verbinclude classifier_libsvm_minimal_modular.lua
 
 For python:
 \verbinclude classifier_libsvm_minimal_modular.py

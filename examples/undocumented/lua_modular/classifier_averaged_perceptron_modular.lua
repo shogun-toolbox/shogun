@@ -22,8 +22,11 @@ function classifier_averaged_perceptron_modular (fm_train_real,fm_test_real,labe
 
 	perceptron:set_features(feats_test)
 	out_labels = perceptron:apply():get_labels()
+
 	return perceptron, out_labels
 end
 
-print 'AveragedPerceptron'
-classifier_averaged_perceptron_modular(unpack(parameter_list[1]))
+if debug.getinfo(3) == nill then
+	print 'AveragedPerceptron'
+	classifier_averaged_perceptron_modular(unpack(parameter_list[1]))
+end

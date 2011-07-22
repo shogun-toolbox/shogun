@@ -116,5 +116,7 @@ function serialization_complex_example(num, dist, dim, C, width)
 	return svm,new_svm
 end
 
-print 'Serialization SVMLight'
-serialization_complex_example(unpack(parameter_list[1]))
+if debug.getinfo(3) == nill then
+	print 'Serialization SVMLight'
+	serialization_complex_example(unpack(parameter_list[1]))
+end

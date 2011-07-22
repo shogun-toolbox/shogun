@@ -20,5 +20,7 @@ function distance_braycurtis_modular (fm_train_real,fm_test_real)
 	return distance,dm_train,dm_test
 end
 
-print 'BrayCurtisDistance'
-distance_braycurtis_modular(unpack(parameter_list[1]))
+if debug.getinfo(3) == nill then
+	print 'BrayCurtisDistance'
+	distance_braycurtis_modular(unpack(parameter_list[1]))
+end
