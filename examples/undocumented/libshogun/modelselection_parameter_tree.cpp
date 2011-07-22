@@ -27,9 +27,6 @@ CModelSelectionParameters* create_param_tree()
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 
-	CModelSelectionParameters* kernel=new CModelSelectionParameters("kernel");
-	root->append_child(kernel);
-
 	CModelSelectionParameters* c=new CModelSelectionParameters("C");
 	root->append_child(c);
 	c->build_values(1, 11, R_EXP);
@@ -38,7 +35,7 @@ CModelSelectionParameters* create_param_tree()
 	CModelSelectionParameters* param_power_kernel=
 			new CModelSelectionParameters("kernel", power_kernel);
 
-	kernel->append_child(param_power_kernel);
+	root->append_child(param_power_kernel);
 
 	CModelSelectionParameters* param_power_kernel_degree=
 			new CModelSelectionParameters("degree");
@@ -60,7 +57,7 @@ CModelSelectionParameters* create_param_tree()
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 
-	kernel->append_child(param_gaussian_kernel);
+	root->append_child(param_gaussian_kernel);
 
 	CModelSelectionParameters* param_gaussian_kernel_width=
 			new CModelSelectionParameters("width");
@@ -71,7 +68,7 @@ CModelSelectionParameters* create_param_tree()
 	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters("kernel",
 			ds_kernel);
 
-	kernel->append_child(param_ds_kernel);
+	root->append_child(param_ds_kernel);
 
 	CModelSelectionParameters* param_ds_kernel_delta=
 			new CModelSelectionParameters("delta");
