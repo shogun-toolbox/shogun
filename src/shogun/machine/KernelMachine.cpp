@@ -209,15 +209,6 @@ float64_t CKernelMachine::apply(int32_t num)
 {
 	ASSERT(kernel);
 
-	/* check that lhs does not have a subset. Might be very bad because of a
-	 * sv index kaboom: the sv indices are the ones for the original training
-	 * data, not for the subset, so better just forbid this */
-	CFeatures* lhs=kernel->get_lhs();
-	if (lhs && lhs->has_subset())
-		SG_ERROR("A subset on the lhs is not allowed when calling apply().\n");
-
-	SG_UNREF(lhs);
-
 	if (kernel->has_property(KP_LINADD) && (kernel->get_is_initialized()))
 	{
 		float64_t score = kernel->compute_optimized(num);
