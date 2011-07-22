@@ -918,6 +918,27 @@ public:
 		delete[] it;
 	}
 
+	/** Creates a new CFeatures instance containing copies of the elements
+	 * which are specified by the provided indices.
+	 *
+	 * @param indices indices of feature elements to copy
+	 * @return new CFeatures instance with copies of feature data
+	 */
+	virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+	{
+		SGMatrix<ST> feature_matrix_copy(num_features, indices.vlen);
+
+		for (index_t i=0; i<indices.vlen; ++i)
+		{
+			index_t real_idx=subset_idx_conversion(indices.vector[i]);
+			memcpy(&feature_matrix_copy.matrix[i*num_features],
+					&feature_matrix[real_idx*num_features],
+					num_features*sizeof(ST));
+		}
+
+		return new CSimpleFeatures(feature_matrix_copy);
+	}
+
 	/** @return object name */
 	inline virtual const char* get_name() const {
 		return "SimpleFeatures";
@@ -937,6 +958,7 @@ protected:
 	 */
 	virtual ST* compute_feature_vector(int32_t num, int32_t& len, ST* target =
 			NULL) {
+		SG_NOTIMPLEMENTED;
 		len = 0;
 		return NULL;
 	}
