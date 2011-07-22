@@ -27,9 +27,6 @@ CModelSelectionParameters* build_complex_example_tree()
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 
-	CModelSelectionParameters* kernel=new CModelSelectionParameters("kernel");
-	root->append_child(kernel);
-
 	CModelSelectionParameters* c=new CModelSelectionParameters("C");
 	root->append_child(c);
 	c->build_values(1, 1, R_EXP);
@@ -38,7 +35,7 @@ CModelSelectionParameters* build_complex_example_tree()
 	CModelSelectionParameters* param_power_kernel=
 			new CModelSelectionParameters("kernel", power_kernel);
 
-	kernel->append_child(param_power_kernel);
+	root->append_child(param_power_kernel);
 
 	CModelSelectionParameters* param_power_kernel_degree=
 			new CModelSelectionParameters("degree");
@@ -60,7 +57,7 @@ CModelSelectionParameters* build_complex_example_tree()
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 
-	kernel->append_child(param_gaussian_kernel);
+	root->append_child(param_gaussian_kernel);
 
 	CModelSelectionParameters* param_gaussian_kernel_width=
 			new CModelSelectionParameters("width");
@@ -71,7 +68,7 @@ CModelSelectionParameters* build_complex_example_tree()
 	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters("kernel",
 			ds_kernel);
 
-	kernel->append_child(param_ds_kernel);
+	root->append_child(param_ds_kernel);
 
 	CModelSelectionParameters* param_ds_kernel_delta=
 			new CModelSelectionParameters("delta");
@@ -108,19 +105,6 @@ CModelSelectionParameters* build_root_no_childs_tree()
 	return new CModelSelectionParameters();
 }
 
-CModelSelectionParameters* build_name_node_one_child_tree()
-{
-	CModelSelectionParameters* kernel=new CModelSelectionParameters("kernel");
-
-	CPowerKernel* power_kernel=new CPowerKernel();
-	CModelSelectionParameters* param_power_kernel=new CModelSelectionParameters(
-			"kernel", power_kernel);
-
-	kernel->append_child(param_power_kernel);
-
-	return kernel;
-}
-
 CModelSelectionParameters* build_root_value_childs_tree()
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
@@ -136,28 +120,22 @@ CModelSelectionParameters* build_root_value_childs_tree()
 	return root;
 }
 
-CModelSelectionParameters* build_root_name_sg_object_child_tree()
+CModelSelectionParameters* build_root_sg_object_child_tree()
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
-
-	CModelSelectionParameters* kernel=new CModelSelectionParameters("kernel");
-		root->append_child(kernel);
 
 	CPowerKernel* power_kernel=new CPowerKernel();
 	CModelSelectionParameters* param_power_kernel=
 			new CModelSelectionParameters("kernel", power_kernel);
 
-	kernel->append_child(param_power_kernel);
+	root->append_child(param_power_kernel);
 
 	return root;
 }
 
-CModelSelectionParameters* build_root_name_sg_object_child_value_child_tree()
+CModelSelectionParameters* build_root_sg_object_child_value_child_tree()
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
-
-	CModelSelectionParameters* kernel=new CModelSelectionParameters("kernel");
-		root->append_child(kernel);
 
 	CPowerKernel* power_kernel=new CPowerKernel();
 	CModelSelectionParameters* param_power_kernel=
@@ -167,7 +145,7 @@ CModelSelectionParameters* build_root_name_sg_object_child_value_child_tree()
 	root->append_child(c);
 	c->build_values(1, 1, R_EXP);
 
-	kernel->append_child(param_power_kernel);
+	root->append_child(param_power_kernel);
 
 	return root;
 }
@@ -212,22 +190,17 @@ int main(int argc, char **argv)
 	test_get_combinations(tree);
 	SG_UNREF(tree);
 
-	tree=build_name_node_one_child_tree();
-	SG_REF(tree);
-	test_get_combinations(tree);
-	SG_UNREF(tree);
-
 	tree=build_root_value_childs_tree();
 	SG_REF(tree);
 	test_get_combinations(tree);
 	SG_UNREF(tree);
 
-	tree=build_root_name_sg_object_child_tree();
+	tree=build_root_sg_object_child_tree();
 	SG_REF(tree);
 	test_get_combinations(tree);
 	SG_UNREF(tree);
 
-	tree=build_root_name_sg_object_child_value_child_tree();
+	tree=build_root_sg_object_child_value_child_tree();
 	SG_REF(tree);
 	test_get_combinations(tree);
 	SG_UNREF(tree);
