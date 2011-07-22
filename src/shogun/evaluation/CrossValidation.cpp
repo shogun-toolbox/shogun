@@ -87,7 +87,7 @@ CrossValidationResult CCrossValidation::evaluate()
 
 	/* construct evaluation result */
 	CrossValidationResult result;
-	result.value=CMath::mean(results, m_num_runs);
+	result.value=CStatistics::mean(SGVector<float64_t>(results, m_num_runs));
 	result.has_conf_int=m_conf_int_p!=0;
 	result.conf_int_p=m_conf_int_p;
 
