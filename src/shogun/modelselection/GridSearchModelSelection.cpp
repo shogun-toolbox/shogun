@@ -44,9 +44,9 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 
 	CParameterCombination* best_combination=NULL;
 	if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
-		best_result.value=CMath::ALMOST_NEG_INFTY;
+		best_result.mean=CMath::ALMOST_NEG_INFTY;
 	else
-		best_result.value=CMath::ALMOST_INFTY;
+		best_result.mean=CMath::ALMOST_INFTY;
 
 	/* apply all combinations and search for best one */
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
@@ -59,7 +59,7 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 		/* check if current result is better, delete old combinations */
 		if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
 		{
-			if (result.value>best_result.value)
+			if (result.mean>best_result.mean)
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
@@ -75,7 +75,7 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 		}
 		else
 		{
-			if (result.value<best_result.value)
+			if (result.mean<best_result.mean)
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
