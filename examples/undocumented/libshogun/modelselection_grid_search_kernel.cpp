@@ -19,6 +19,8 @@
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/PowerKernel.h>
+#include <shogun/distance/MinkowskiMetric.h>
 
 
 using namespace shogun;
@@ -40,13 +42,36 @@ CModelSelectionParameters* create_param_tree()
 	root->append_child(c2);
 	c2->build_values(-5, 5, R_EXP);
 
-	CGaussianKernel* kernel=new CGaussianKernel();
-	CModelSelectionParameters* param_kernel=
-			new CModelSelectionParameters("kernel",	kernel);
-	CModelSelectionParameters* kernel_width=new CModelSelectionParameters("width");
-	kernel_width->build_values(-5, 5, R_EXP, 1, 2);
-	param_kernel->append_child(kernel_width);
-	root->append_child(param_kernel);
+	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+	CModelSelectionParameters* param_gaussian_kernel=
+			new CModelSelectionParameters("kernel", gaussian_kernel);
+	CModelSelectionParameters* gaussian_kernel_width=
+			new CModelSelectionParameters("width");
+	gaussian_kernel_width->build_values(-5, 5, R_EXP, 1, 2);
+	param_gaussian_kernel->append_child(gaussian_kernel_width);
+	root->append_child(param_gaussian_kernel);
+
+	CPowerKernel* power_kernel=new CPowerKernel();
+	CModelSelectionParameters* param_power_kernel=
+	new CModelSelectionParameters("kernel", power_kernel);
+
+	root->append_child(param_power_kernel);
+
+	CModelSelectionParameters* param_power_kernel_degree=
+			new CModelSelectionParameters("degree");
+	param_power_kernel_degree->build_values(1, 1, R_EXP);
+	param_power_kernel->append_child(param_power_kernel_degree);
+
+	CMinkowskiMetric* m_metric=new CMinkowskiMetric(10);
+	CModelSelectionParameters* param_power_kernel_metric1=
+			new CModelSelectionParameters("distance", m_metric);
+
+	param_power_kernel->append_child(param_power_kernel_metric1);
+
+	CModelSelectionParameters* param_power_kernel_metric1_k=
+			new CModelSelectionParameters("k");
+	param_power_kernel_metric1_k->build_values(1, 12, R_LINEAR);
+	param_power_kernel_metric1->append_child(param_power_kernel_metric1_k);
 
 	return root;
 }
