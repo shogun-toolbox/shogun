@@ -260,7 +260,7 @@ public:
 	 * 
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	inline virtual int32_t get_num_vectors()
+	inline virtual int32_t get_num_vectors() const
 	{
 		if (current_string)
 			return 1;

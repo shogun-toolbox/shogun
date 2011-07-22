@@ -69,7 +69,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return number of feature vectors
 		 */
-		inline virtual int32_t get_num_vectors()
+		inline virtual int32_t get_num_vectors() const
 		{
 			return num_vec;
 		}

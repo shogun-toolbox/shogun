@@ -87,7 +87,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 *
 		 * @return number of vectors
 		 */
-		inline virtual int32_t get_num_vectors()
+		inline virtual int32_t get_num_vectors() const
 		{
 			if (m_feat)
 				return m_feat->get_num_vectors();

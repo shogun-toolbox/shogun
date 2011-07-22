@@ -161,7 +161,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of examples/vectors (possibly of subset, if implemented)
 		 */
-		virtual int32_t get_num_vectors()=0;
+		virtual int32_t get_num_vectors() const=0;
 
 		/** in case there is a feature matrix allow for reshaping
 		 *
