@@ -23,23 +23,28 @@ class CLabels;
 class CSplittingStrategy;
 class CEvaluation;
 
+/** @brief type to encapsulate the results of an evaluation run.
+ * May contain confidence interval (if conf_int_alpha!=0).
+ * m_conf_int_alpha is the probability for an error, i.e. the value does not lie
+ * in the confidence interval.
+ */
 typedef struct
 {
-	float64_t value;
+	float64_t mean;
 	bool has_conf_int;
 	float64_t conf_int_low;
 	float64_t conf_int_up;
-	float64_t conf_int_p;
+	float64_t conf_int_alpha;
 
 	void print_result()
 	{
 		if (has_conf_int)
 		{
-			SG_SPRINT("[%f,%f] with p=%f, value=%f\n", conf_int_low, conf_int_up,
-					conf_int_p);
+			SG_SPRINT("[%f,%f] with alpha=%f, mean=%f\n", conf_int_low, conf_int_up,
+					conf_int_alpha, mean);
 		}
 		else
-			SG_SPRINT("%f\n", value);
+			SG_SPRINT("%f\n", mean);
 	}
 } CrossValidationResult;
 
@@ -91,8 +96,8 @@ public:
 
 	/** method for evaluation. Performs cross-validation.
 	 * Is repeated m_num_runs. If this number is larger than one, a confidence
-	 * interval is calculated if m_conf_int_p is (0<p<1).
-	 * By default m_num_runs=1 and m_conf_int_p=0
+	 * interval is calculated if m_conf_int_alpha is (0<p<1).
+	 * By default m_num_runs=1 and m_conf_int_alpha=0
 	 *
 	 * @return result of evaluation
 	 */
@@ -105,7 +110,7 @@ public:
 	void set_num_runs(int32_t num_runs);
 
 	/** setter for the number of runs to use for evaluation */
-	void set_conf_int_p(float64_t conf_int_p);
+	void set_conf_int_alpha(float64_t m_conf_int_alpha);
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
@@ -129,7 +134,7 @@ protected:
 
 private:
 	int32_t m_num_runs;
-	float64_t m_conf_int_p;
+	float64_t m_conf_int_alpha;
 
 	CMachine* m_machine;
 	CFeatures* m_features;

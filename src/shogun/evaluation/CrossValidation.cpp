@@ -58,7 +58,7 @@ void CCrossValidation::init()
 	m_splitting_strategy=NULL;
 	m_evaluation_criterium=NULL;
 	m_num_runs=1;
-	m_conf_int_p=0;
+	m_conf_int_alpha=0;
 
 	m_parameters->add((CSGObject**) &m_machine, "machine",
 			"Used learning machine");
@@ -69,7 +69,7 @@ void CCrossValidation::init()
 	m_parameters->add((CSGObject**) &m_evaluation_criterium,
 			"evaluation_criterium", "Used evaluation criterium");
 	m_parameters->add(&m_num_runs, "num_runs", "Number of repetitions");
-	m_parameters->add(&m_conf_int_p, "conf_int_p", "p-value of confidence "
+	m_parameters->add(&m_conf_int_alpha, "conf_int_alpha", "alpha-value of confidence "
 			"interval");
 }
 
@@ -80,42 +80,43 @@ Parameter* CCrossValidation::get_machine_parameters() const
 
 CrossValidationResult CCrossValidation::evaluate()
 {
-	float64_t* results=new float64_t[m_num_runs];
+	SGVector<float64_t> results(m_num_runs);
 
 	for (index_t i=0; i<m_num_runs; ++i)
-		results[i]=evaluate_one_run();
+		results.vector[i]=evaluate_one_run();
 
 	/* construct evaluation result */
 	CrossValidationResult result;
-	result.value=CStatistics::mean(SGVector<float64_t>(results, m_num_runs));
-	result.has_conf_int=m_conf_int_p!=0;
-	result.conf_int_p=m_conf_int_p;
+	result.has_conf_int=m_conf_int_alpha!=0;
+	result.conf_int_alpha=m_conf_int_alpha;
 
 	if (result.has_conf_int)
 	{
-		/* TODO: calculate confidence interval, maybe put this into CMath? */
-		SG_NOTIMPLEMENTED;
+		result.conf_int_alpha=m_conf_int_alpha;
+		result.mean=CStatistics::confidence_intervals_mean(results,
+				result.conf_int_alpha, result.conf_int_low, result.conf_int_up);
 	}
 	else
 	{
+		result.mean=CStatistics::mean(results);
 		result.conf_int_low=0;
 		result.conf_int_up=0;
 	}
 
-	delete[] results;
+	delete[] results.vector;
 
 	return result;
 }
 
-void CCrossValidation::set_conf_int_p(float64_t conf_int_p)
+void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 {
-	if (conf_int_p<0||conf_int_p>=1)
+	if (conf_int_alpha<0||conf_int_alpha>=1)
 	{
-		SG_ERROR("%f is an illegal p-value for confidence interval of "
-				"cross-validation\n", conf_int_p);
+		SG_ERROR("%f is an illegal alpha-value for confidence interval of "
+				"cross-validation\n", conf_int_alpha);
 	}
 
-	m_conf_int_p=conf_int_p;
+	m_conf_int_alpha=conf_int_alpha;
 }
 
 void CCrossValidation::set_num_runs(int32_t num_runs)
