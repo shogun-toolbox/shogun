@@ -150,3 +150,4 @@ DNA = modshogun.DNA
 ByteFeatures =  modshogun.ByteFeatures
 WordFeatures = modshogun.WordFeatures
 AvgDiagKernelNormalizer = modshogun.AvgDiagKernelNormalizer
+StringUlongFeatures = modshogun.StringUlongFeatures
