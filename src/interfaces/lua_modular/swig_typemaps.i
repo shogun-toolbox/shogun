@@ -197,6 +197,22 @@ TYPEMAP_SGMATRIX(float64_t)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, TYPECODE)
 
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<SGTYPE> {
+	if(!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "table");		
+		$1 = 0;
+	}
+	else {
+		$1 = 1;
+		int numitems = 0;
+		numitems = lua_objlen(L, $input);
+		if(numitems == 0) {
+			luaL_argerror(L, $input, "empty table");
+			$1 = 0;
+		}
+	}
+}
+
 %typemap(in) shogun::SGStringList<SGTYPE> {
 	int32_t size = 0;
 	int32_t i;
