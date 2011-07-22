@@ -151,3 +151,4 @@ ByteFeatures =  modshogun.ByteFeatures
 WordFeatures = modshogun.WordFeatures
 AvgDiagKernelNormalizer = modshogun.AvgDiagKernelNormalizer
 StringUlongFeatures = modshogun.StringUlongFeatures
+StringWordFeatures = modshogun.StringWordFeatures
