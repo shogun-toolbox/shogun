@@ -18,7 +18,6 @@
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/kernel/GaussianKernel.h>
 
 
