@@ -15,6 +15,8 @@ function preprocessor_classicisomap_modular(data)
 	return features
 end
 
-print 'ClassicIsomap'
-preprocessor_classicisomap_modular(unpack(parameter_list[1]))
+if debug.getinfo(3) == nill then
+	print 'ClassicIsomap'
+	preprocessor_classicisomap_modular(unpack(parameter_list[1]))
+end
 

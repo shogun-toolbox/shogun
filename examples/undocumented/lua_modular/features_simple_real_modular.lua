@@ -13,5 +13,7 @@ function features_simple_real_modular(A)
 	return a_out
 end
 
-print 'simple_real'
-features_simple_real_modular(unpack(parameter_list[1]))
+if debug.getinfo(3) == nill then
+ 	print 'simple_real'
+	features_simple_real_modular(unpack(parameter_list[1]))
+end
