@@ -145,3 +145,5 @@ SerializableHdf5File = modshogun.SerializableHdf5File
 SerializableAsciiFile = modshogun.SerializableAsciiFile
 SerializableJsonFile = modshogun.SerializableJsonFile
 SerializableXmlFil = modshogun.SerializableXmlFil
+StringCharFeatures = modshogun.StringCharFeatures
+DNA = modshogun.DNA
