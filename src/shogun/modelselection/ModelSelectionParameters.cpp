@@ -86,10 +86,6 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 		}
 	}
 
-	/* root nodes may not have sgobject children */
-	if (!m_node_name && !has_children() && child->m_sgobject)
-		SG_ERROR("root node may not have CSGObject children\n");
-
 	m_child_nodes->append_element(child);
 }
 
@@ -340,52 +336,6 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 			}
 		}
 
-	}
-
-	/* case name placeholder node: a node which contains a (parameter) name and
-	 * one (or more) CSGObject nodes which are to be substituted into the
-	 * parameter with the above name. The parameter name is one of the learning
-	 * machine, like "kernel". basically all combinations of all children have to
-	 * be appended to the result and a new root is to be added to all trees
-	 */
-	else if (m_node_name && !m_sgobject && !m_values.vector)
-	{
-		if (!m_child_nodes->get_num_elements())
-		{
-			SG_ERROR("ModelSelectionParameter node with name but no children or "
-					"values.\n");
-		}
-
-		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
-		{
-			/* recursively get all combinations of the current child */
-			CModelSelectionParameters* child=m_child_nodes->get_element(i);
-			CDynamicObjectArray<CParameterCombination>* child_combinations=
-					child->get_combinations();
-			SG_REF(child_combinations);
-
-			SG_UNREF(child);
-
-			/* and process them each */
-			for (index_t j=0; j<child_combinations->get_num_elements(); ++j)
-			{
-				CParameterCombination* current=child_combinations->get_element(
-						j);
-
-				/* append new root node with the name */
-				CParameterCombination* new_root=new CParameterCombination(
-						m_node_name);
-				new_root->append_child(current);
-				child_combinations->set_element(new_root, j);
-
-				SG_UNREF(current);
-
-				/* append them to the result */
-				result->append_element(new_root);
-			}
-
-			SG_UNREF(child_combinations);
-		}
 	}
 	else
 		SG_ERROR("Illegal CModelSelectionParameters node type.\n");

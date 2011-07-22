@@ -22,16 +22,13 @@ def modelselection_parameter_tree_modular():
 	combinations=root.get_combinations()
 	combinations.get_num_elements()
 
-	kernel=ModelSelectionParameters('kernel')
-	root.append_child(kernel)
-
 	c=ModelSelectionParameters('C');
 	root.append_child(c)
 	c.build_values(1, 11, R_EXP)
 
 	power_kernel=PowerKernel()
 	param_power_kernel=ModelSelectionParameters('kernel', power_kernel)
-	kernel.append_child(param_power_kernel)
+	root.append_child(param_power_kernel)
 
 	param_power_kernel_degree=ModelSelectionParameters('degree')
 	param_power_kernel_degree.build_values(1, 1, R_EXP)
@@ -49,7 +46,7 @@ def modelselection_parameter_tree_modular():
 	gaussian_kernel=GaussianKernel()
 	param_gaussian_kernel=ModelSelectionParameters('kernel', gaussian_kernel)
 
-	kernel.append_child(param_gaussian_kernel)
+	root.append_child(param_gaussian_kernel)
 
 	param_gaussian_kernel_width=ModelSelectionParameters('width')
 	param_gaussian_kernel_width.build_values(1, 2, R_EXP)
@@ -58,7 +55,7 @@ def modelselection_parameter_tree_modular():
 	ds_kernel=DistantSegmentsKernel()
 	param_ds_kernel=ModelSelectionParameters('kernel', ds_kernel)
 
-	kernel.append_child(param_ds_kernel)
+	root.append_child(param_ds_kernel)
 
 	param_ds_kernel_delta=ModelSelectionParameters('delta')
 	param_ds_kernel_delta.build_values(1, 2, R_EXP)

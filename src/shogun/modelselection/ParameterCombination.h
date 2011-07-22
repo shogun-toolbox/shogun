@@ -32,9 +32,6 @@ class Parameter;
  * -root node: no name and no Parameter instance, every tree has such a node as
  * root. Has children.
  *
- * -name node: a node with only a name. This is used to bundle parameters that
- * are directly of from the learning machine, like "kernel". Has children.
- *
  * -Parameter node: a node with no name and an instance of Parameter, filled
  * with one or more values. There may be different elements in these Parameter
  * instances. Parameter nodes may have children with sub-parameters.
@@ -57,9 +54,6 @@ public:
 	 * At each recursion level, one is added.
 	 */
 	void print_tree(int prefix_num=0) const;
-
-	/** constructor for a name node */
-	CParameterCombination(const char* name);
 
 	/** constructor for a Parameter node */
 	CParameterCombination(Parameter* param);
@@ -141,7 +135,6 @@ private:
 	void init();
 
 private:
-	const char* m_node_name;
 	Parameter* m_param;
 	CDynamicObjectArray<CParameterCombination>* m_child_nodes;
 };

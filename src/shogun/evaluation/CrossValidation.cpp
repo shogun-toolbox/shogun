@@ -13,6 +13,7 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -86,7 +87,7 @@ CrossValidationResult CCrossValidation::evaluate()
 
 	/* construct evaluation result */
 	CrossValidationResult result;
-	result.value=CMath::mean(results, m_num_runs);
+	result.value=CStatistics::mean(SGVector<float64_t>(results, m_num_runs));
 	result.has_conf_int=m_conf_int_p!=0;
 	result.conf_int_p=m_conf_int_p;
 
@@ -178,7 +179,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	}
 
 	/* build arithmetic mean of results */
-	float64_t mean=CMath::mean(results, num_subsets);
+	float64_t mean=CStatistics::mean(SGVector<float64_t>(results, num_subsets));
 
 	/* clean up */
 	delete[] results;

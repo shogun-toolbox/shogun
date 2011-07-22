@@ -29,11 +29,7 @@ enum ERangeType
  * structure is organized as a tree with different kinds of nodes, depending on
  * the values of its member variables of name and CSGObject.
  *
- * -root node: no name and no CSGObject, may have children. Children may not be
- * of CSGObject node type (use placeholder node)
- *
- * -placeholder node: only has a name and children, used to bundle parameters
- * that belong to the learning machine directly, like "kernel"
+ * -root node: no name and no CSGObject, may have children
  *
  * -CSGObject node: has name and a CSGObject, may have children which are the
  * parameters of the CSGObject. CSGObjects are SG_REF'ed/SG_UNREF'ed
@@ -45,7 +41,7 @@ enum ERangeType
  * After a (legal!) tree is constructed with the append_child method, all
  * possible combinations that are implied by this tree may be extracted with the
  * get_combinations method. It generates a set of trees (different kind than
- * this one) that contain the instanciated parameter combinations.
+ * this one) that contain the instantiated parameter combinations.
  */
 class CModelSelectionParameters: public CSGObject
 {
@@ -79,9 +75,6 @@ public:
 	 * node. A minimum and a maximum is specified, step interval, and an
 	 * ERangeType (s. above) of the range, which is used to fill an array with
 	 * concrete values. For some range types, a base is required
-	 *
-	 * Calling this function transforms a placeholder node (without children)
-	 * into a value node.
 	 *
 	 * @param min minimum of desired range. Requires min<max
 	 * @param max maximum of desired range. Requires min<max

@@ -19,13 +19,6 @@ CParameterCombination::CParameterCombination()
 	init();
 }
 
-CParameterCombination::CParameterCombination(const char* name)
-{
-	init();
-
-	m_node_name=name;
-}
-
 CParameterCombination::CParameterCombination(Parameter* param)
 {
 	init();
@@ -35,12 +28,10 @@ CParameterCombination::CParameterCombination(Parameter* param)
 
 void CParameterCombination::init()
 {
-	m_node_name=NULL;
 	m_param=NULL;
 	m_child_nodes=new CDynamicObjectArray<CParameterCombination> ();
 	SG_REF(m_child_nodes);
 
-	m_parameters->add((char*)m_node_name, "node_name", "name of this node");
 	m_parameters->add((CSGObject**)m_child_nodes, "child nodes",
 			"children of this node");
 }
@@ -66,14 +57,11 @@ void CParameterCombination::print_tree(int prefix_num) const
 	prefix[prefix_num]='\0';
 
 	/* cases:
-	 * -node with only a name and children
 	 * -node with a Parameter instance and a possible children
 	 * -root node with children
 	 */
 
-	if (m_node_name)
-		SG_SPRINT("%s\"%s\" ", prefix, m_node_name);
-	else if (m_param)
+	if (m_param)
 	{
 		SG_SPRINT("%s", prefix);
 		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
@@ -253,9 +241,6 @@ CParameterCombination* CParameterCombination::copy_tree() const
 {
 	CParameterCombination* copy=new CParameterCombination();
 
-	/* use name of original */
-	copy->m_node_name=m_node_name;
-
 	/* but build new Parameter instance */
 
 	/* only call add_parameters() argument is non-null */
@@ -285,7 +270,7 @@ void CParameterCombination::apply_to_machine(CMachine* machine) const
 void CParameterCombination::apply_to_parameter(Parameter* parameter) const
 {
 	/* case root node or name node */
-	if ((!m_node_name && !m_param) || (m_node_name && !m_param))
+	if (!m_param)
 	{
 		/* iterate over all children and recursively set parameters from
 		 * their values to the current parameter input (its just handed one
@@ -298,7 +283,7 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter) const
 		}
 	}
 	/* case parameter node */
-	else if (!m_node_name && m_param)
+	else if (m_param)
 	{
 		/* does this node has sub parameters? */
 		if (has_children())
