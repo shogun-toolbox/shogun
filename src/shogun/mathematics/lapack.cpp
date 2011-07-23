@@ -28,6 +28,7 @@ using namespace shogun;
 #define DPOTRI dpotri
 #define DGETRI dgetri
 #define DGETRF dgetrf
+#define DGEQRF dgeqrf
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
@@ -36,6 +37,7 @@ using namespace shogun;
 #define DPOTRI dpotri_
 #define DGETRI dgetri_
 #define DGETRF dgetrf_
+#define DGEQRF dgeqrf_
 #endif
 
 #ifndef HAVE_ATLAS
@@ -213,6 +215,27 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 	delete[] work;
 #endif
 }
+
+void wrap_dgeqrf(int m, int n, double *a, int lda, int *info)
+{
+	double* tau = new double[m<=n ? m : n];
+#ifdef HAVE_ACML
+	DGEQRF(m, n, a, lda, tau, info);
+#else
+	int lwork = -1;
+	double* work = new double[1];
+	DGEQRF(&m, &n, a, &lda, tau, work, &lwork, info);
+	ASSERT(*info==0);
+	lwork = (int) work[0];
+	ASSERT(lwork>0)
+	delete[] work;
+	work = new double[lwork];
+	DGEQRF(&m, &n, a, &lda, tau, work, &lwork, info);
+	delete[] work;
+#endif
+}
+
+
 }
 #undef DGESVD
 #endif //HAVE_LAPACK
