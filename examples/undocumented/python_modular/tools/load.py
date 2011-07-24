@@ -8,13 +8,7 @@ class LoadMatrix:
 
 
 	def load_numbers(self, filename):
-		matrix=fromfile(filename, sep=' ')
-		# whole matrix is 1-dim now, so reshape
-		matrix=matrix.reshape(2, len(matrix)/2)
-		#matrix=matrix.reshape(len(matrix)/2, 2)
-
-		return matrix
-
+		return numpy.loadtxt(filename).T
 
 	def load_dna(self, filename):
 		fh=open(filename, 'r');
