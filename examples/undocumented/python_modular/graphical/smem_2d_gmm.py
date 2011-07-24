@@ -33,9 +33,32 @@ generated=generated.transpose()
 feat_train=RealFeatures(generated)
 est_smem_gmm=GMM(3, cov_type)
 est_smem_gmm.train(feat_train)
+
+est_smem_gmm.set_nth_mean(array([2.0, 0.0]), 0)
+est_smem_gmm.set_nth_mean(array([-2.0, -2.0]), 1)
+est_smem_gmm.set_nth_mean(array([-3.0, -3.0]), 2)
+
+est_smem_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 0)
+est_smem_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 1)
+est_smem_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 2)
+
+est_smem_gmm.set_coef(array([0.3333, 0.3333, 0.3334]))
+
 print est_smem_gmm.train_smem(max_iter, max_cand, min_cov, max_em_iter, min_change)
+
 est_em_gmm=GMM(3, cov_type)
 est_em_gmm.train(feat_train)
+
+est_em_gmm.set_nth_mean(array([2.0, 0.0]), 0)
+est_em_gmm.set_nth_mean(array([-2.0, -2.0]), 1)
+est_em_gmm.set_nth_mean(array([-3.0, -3.0]), 2)
+
+est_em_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 0)
+est_em_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 1)
+est_em_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 2)
+
+est_em_gmm.set_coef(array([0.3333, 0.3333, 0.3334]))
+
 print est_em_gmm.train_em(min_cov, max_em_iter, min_change)
 
 min_x_gen=min(min(generated[[0]]))-0.1
@@ -58,7 +81,7 @@ plot_est_smem=reshape(plot_est_smem, (arange(min_x_gen, max_x_gen, 0.05).shape[0
 plot_est_em=reshape(plot_est_em, (arange(min_x_gen, max_x_gen, 0.05).shape[0], arange(min_y_gen, max_y_gen, 0.05).shape[0]))
 
 real_plot=contour(arange(min_x_gen, max_x_gen, 0.05), arange(min_y_gen, max_y_gen, 0.05), plot_real.transpose(), colors="b")
-est_smem_plot=contour(arange(min_x_gen, max_x_gen, 0.05), arange(min_y_gen, max_y_gen, 0.05), plot_est_smem.transpose(), 3, colors="r")
+est_smem_plot=contour(arange(min_x_gen, max_x_gen, 0.05), arange(min_y_gen, max_y_gen, 0.05), plot_est_smem.transpose(), colors="r")
 est_em_plot=contour(arange(min_x_gen, max_x_gen, 0.05), arange(min_y_gen, max_y_gen, 0.05), plot_est_em.transpose(), colors="g")
 real_scatter=scatter(generated[[0]], generated[[1]], c="gray")
 legend((real_plot.collections[0], est_em_plot.collections[0], est_smem_plot.collections[0]), ("Real GMM", "Estimated EM GMM", "Estimated SMEM GMM"))

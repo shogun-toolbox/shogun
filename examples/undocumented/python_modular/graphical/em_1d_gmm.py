@@ -4,6 +4,8 @@ from shogun.Distribution import Gaussian, GMM
 from shogun.Features import RealFeatures
 import util
 
+util.set_title('EM for 1d GMM example')
+
 min_cov=1e-9
 max_iter=1000
 min_change=1e-9
