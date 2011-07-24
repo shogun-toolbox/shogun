@@ -58,7 +58,7 @@ plot_est_smem=reshape(plot_est_smem, (arange(min_x_gen, max_x_gen, 0.05).shape[0
 plot_est_em=reshape(plot_est_em, (arange(min_x_gen, max_x_gen, 0.05).shape[0], arange(min_y_gen, max_y_gen, 0.05).shape[0]))
 
 real_plot=contour(arange(min_x_gen, max_x_gen, 0.05), arange(min_y_gen, max_y_gen, 0.05), plot_real.transpose(), colors="b")
-est_smem_plot=contour(arange(min_x_gen, max_x_gen, 0.05), arange(min_y_gen, max_y_gen, 0.05), plot_est_smem.transpose(), 3, colors="r")
+est_smem_plot=contour(arange(min_x_gen, max_x_gen, 0.05), arange(min_y_gen, max_y_gen, 0.05), plot_est_smem.transpose(), colors="r")
 est_em_plot=contour(arange(min_x_gen, max_x_gen, 0.05), arange(min_y_gen, max_y_gen, 0.05), plot_est_em.transpose(), colors="g")
 real_scatter=scatter(generated[[0]], generated[[1]], c="gray")
 legend((real_plot.collections[0], est_em_plot.collections[0], est_smem_plot.collections[0]), ("Real GMM", "Estimated EM GMM", "Estimated SMEM GMM"))
