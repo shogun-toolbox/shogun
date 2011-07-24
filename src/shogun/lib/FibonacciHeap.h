@@ -48,6 +48,8 @@ struct FibonacciHeapNode
 /** @brief the class FibonacciHeap, a fibonacci
  * heap. Generally used by Isomap for Dijkstra heap
  * algorithm
+ *
+ * w: http://en.wikipedia.org/wiki/Fibonacci_heap
  */
 class CFibonacciHeap: public CSGObject
 {
@@ -86,7 +88,7 @@ public:
 	 * in array of nodes with index.
 	 * Have amortized time of O(1).
 	 */
-	void insert(int32_t idx, float64_t key);
+	void insert(int32_t index, float64_t key);
 
 	/** Deletes and returns item with minimal key.
 	 * Have amortized time of O(log n)
@@ -103,22 +105,6 @@ public:
 	void decrease_key(int32_t index, float64_t key);
 
 	void debug_print();
-
-protected:
-	/** Minimal root in heap. */
-	FibonacciHeapNode* min_root;
-
-	/** Array of nodes for fast search by index. */
-	FibonacciHeapNode** nodes;
-
-	/** Number of nodes. */
-	int32_t num_nodes;
-
-	/** Number of trees. */
-	int32_t num_trees;
-
-	/** Maximum number of nodes. */
-	int32_t max_num_nodes;
 
 private:
 	/** Adds node to roots list. */
@@ -138,6 +124,22 @@ private:
 
 	/** */
 	void cascading_cut(FibonacciHeapNode* tree);
+
+protected:
+	/** Minimal root in heap. */
+	FibonacciHeapNode* min_root;
+
+	/** Array of nodes for fast search by index. */
+	FibonacciHeapNode** nodes;
+
+	/** Number of nodes. */
+	int32_t num_nodes;
+
+	/** Number of trees. */
+	int32_t num_trees;
+
+	/** Maximum number of nodes. */
+	int32_t max_num_nodes;
 };
 
 }
