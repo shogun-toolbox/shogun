@@ -8,7 +8,7 @@ public class Load {
 		DoubleMatrix result = null;
 		try {
 			DoubleMatrix temp = DoubleMatrix.loadAsciiFile(filename);
-			result = temp.reshape(2, temp.getLength() / 2);
+			result = temp.transpose();
 		} catch(java.io.IOException e) {
 			System.out.println("Unable to create matrix from " + filename + ": " + e.getMessage());
 			System.exit(-1);
