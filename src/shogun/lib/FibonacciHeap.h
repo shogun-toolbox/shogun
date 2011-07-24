@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Evgeniy Andreev (gsomix)
- * Written (W) 2011 Sergey Lisitsyn
  *
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
@@ -15,7 +14,6 @@
 
 #include "base/SGObject.h"
 #include "lib/common.h"
-#include "lib/Mathematics.h"
 
 namespace shogun
 {
@@ -138,7 +136,7 @@ private:
 	/** Cuts child node from childs list of parent. */
 	void cut(FibonacciHeapNode *child, FibonacciHeapNode *parent);
 
-	/** Cascading cut. */
+	/** */
 	void cascading_cut(FibonacciHeapNode* tree);
 };
 
