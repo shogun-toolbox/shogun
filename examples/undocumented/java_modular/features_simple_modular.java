@@ -9,37 +9,34 @@ public class features_simple_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public ArrayList parameter_list = new ArrayList();
-	public features_simple_modular() {
-		DoubleMatrix A = new DoubleMatrix(new double [][] {{1,2,3},{4,0,0},{0,0,0},{0,5,0},{0,0,6},{9,9,9}});
-		parameter_list.add(Arrays.asList(A));
-	}
-	static ArrayList run(List para) {
-		boolean reverse = false;
+	public static void main(String[] argv) {
 		modshogun.init_shogun_with_defaults();
-		DoubleMatrix A = (DoubleMatrix)para.get(0);
 
-		RealFeatures a = new RealFeatures(A);		
-		LongIntFeatures b = new LongIntFeatures(A);
-		ByteFeatures c = new ByteFeatures(A);
-		a.set_feature_vector(new DoubleMatrix(new double[][] {{1,4,0,0,0,9}}), 0);
-		DoubleMatrix a_out = a.get_feature_matrix();
-		DoubleMatrix b_out = b.get_feature_matrix();
-		DoubleMatrix c_out = c.get_feature_matrix();
+		ArrayList<DoubleMatrix> result = new ArrayList<DoubleMatrix>(4);
 
-		ArrayList result = new ArrayList();
-		result.add(a_out);
-		result.add(b_out);
-		result.add(c_out);
-		result.add(a);
-		result.add(a);
-		result.add(c);
+		DoubleMatrix inputRealMatrix = Load.load_numbers("../data/fm_train_real.dat");
+		RealFeatures realFeatures = new RealFeatures(inputRealMatrix);	
+		DoubleMatrix outputRealMatrix = realFeatures.get_feature_matrix();
+
+		result.add(inputRealMatrix);
+		result.add(outputRealMatrix);
+
+		DoubleMatrix inputByteMatrix = Load.load_numbers("../data/fm_train_byte.dat");
+		ByteFeatures byteFeatures = new ByteFeatures(inputByteMatrix);
+		DoubleMatrix outputByteMatrix = byteFeatures.get_feature_matrix();
+
+		result.add(inputByteMatrix);
+		result.add(outputByteMatrix);
+
+		DoubleMatrix inputLongMatrix = Load.load_numbers("../data/fm_train_byte.dat");
+		LongFeatures byteFeatures = new LongFeatures(inputLongMatrix);
+		DoubleMatrix outputLongMatrix = longFeatures.get_feature_matrix();
+
+		result.add(inputByteMatrix);
+		result.add(outputByteMatrix);
+
+		System.out.println(result);
+
 		modshogun.exit_shogun();
-		
-		return result;
-	}
-	public static void main(String argv[]) {
-		features_simple_modular x = new features_simple_modular();
-		run((List)x.parameter_list.get(0));
 	}
 }
