@@ -4,12 +4,13 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 20?? Shane Saunders (University of Canterbury)
+ * Written (W) 2011 Evgeniy Andreev (gsomix)
  * Written (W) 2011 Sergey Lisitsyn
+ *
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-// FibonacciHeap.cpp: implementation of the CMFibonacciHeap class.
+// FibonacciHeap.cpp: implementation of the CFibonacciHeap class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -17,342 +18,352 @@
 
 using namespace shogun;
 
-CFibonacciHeap::CFibonacciHeap(void)
+CFibonacciHeap::CFibonacciHeap()
 {
-	max_num_trees = 0;
-	max_num_nodes = 0;
+	min_root = NULL;
 
-	trees = NULL;
+	max_num_nodes = 0;
 	nodes = NULL;
 
-	num_items = 0;
-	sum_tree = 0;
+	num_nodes = 0;
+	num_trees = 0;
 }
 
 CFibonacciHeap::CFibonacciHeap(int32_t capacity)
 {
-    int32_t i;
+	min_root = NULL;
 
-    max_num_trees = 1 + (int32_t)(1.44 * CMath::log2((float32_t)capacity));
-    max_num_nodes = capacity;
+	max_num_nodes = capacity;
+	nodes = new FibonacciHeapNode* [max_num_nodes];
+	for(int32_t i = 0; i < max_num_nodes; i++)
+	{
+		nodes[i] = new FibonacciHeapNode;
+		clear_node(i);
+	}
 
-    trees = new FibonacciHeapNode* [max_num_trees];
-    for(i = 0; i < max_num_trees; i++) trees[i] = NULL;
-
-    nodes = new FibonacciHeapNode* [capacity];
-    for(i = 0; i < capacity; i++) nodes[i] = NULL;
-
-    num_items = 0;
-
-    /* The sum_tree of the heap helps to keep track of the maximum rank while
-     * nodes are inserted or deleted.
-     */
-    sum_tree = 0;
+	num_nodes = 0;
+	num_trees = 0;
 }
 
-CFibonacciHeap::~CFibonacciHeap(void)
+CFibonacciHeap::~CFibonacciHeap()
 {
 	for(int32_t i = 0; i < max_num_nodes; i++)
-		delete nodes[i];
-
-	delete[] nodes;
-	delete[] trees;
-}
-
-void CFibonacciHeap::insert(int32_t item, float64_t key)
-{
-	FibonacciHeapNode* new_node;
-
-	new_node = new FibonacciHeapNode;
-	new_node->child = NULL;
-
-	new_node->left = new_node;
-	new_node->right = new_node;
-
-	new_node->rank = 0;
-	new_node->item = item;
-	new_node->key = key;
-
-	nodes[item] = new_node;
-	meld(new_node);
-	num_items++;
-}
-
-int32_t CFibonacciHeap::delete_min(void)
-{
-	FibonacciHeapNode *min_node, *child, *next;
-	float64_t key, key_a;
-	int32_t temp_rank, temp_sum, temp_item;
-
-	/* First we determine the maximum rank in the heap. */
-	temp_sum = sum_tree;
-	temp_rank = -1;
-
-	while(temp_sum)
 	{
-		temp_sum >>= 1;
-		temp_rank++;
+		if(nodes[i] != NULL)
+			delete nodes[i];
 	}
 
-	/* Now determine which root node is the minimum. */
-	min_node = trees[temp_rank];
-	key = min_node->key;
-
-	while(temp_rank > 0)
-	{
-		temp_rank--;
-		next = trees[temp_rank];
-
-		if(next)
-		{
-			key_a = next->key;
-			if(key_a < key)
-			{
-				key = key_a;
-				min_node = next;
-			}
-		}
-	}
-
-	/* We remove the minimum node from the heap but keep a pointer to it. */
-	temp_rank = min_node->rank;
-	trees[temp_rank] = NULL;
-
-	sum_tree -= (1 << temp_rank);
-
-	child = min_node->child;
-	if(child)
-		meld(child);
-
-	/* Record the vertex no of the old minimum node before deleting it. */
-	temp_item = min_node->item;
-	nodes[temp_item] = NULL;
-
-	delete min_node;
-
-	num_items--;
-
-	return temp_item;
+	delete [] nodes;
 }
 
-void CFibonacciHeap::decrease_key(int32_t item, float64_t key)
+void CFibonacciHeap::insert(int32_t idx, float64_t key)
 {
-	FibonacciHeapNode *cut_node, *new_roots;
-	FibonacciHeapNode *parent, *left, *right;
-
-	int32_t prev_rank;
-
-	/* Obtain a pointer to the decreased node and its parent then decrease the
-	 * nodes key.
-	 */
-	cut_node = nodes[item];
-	parent = cut_node->parent;
-	cut_node->key = key;
-
-	/* No reinsertion occurs if the node changed was a root. */
-	if(!parent)
+	if(idx > max_num_nodes || idx < 0)
 		return;
 
-	/* Update the left and right pointers of cutNode and its two neighbouring
-	 * nodes.
-	 */
-	left = cut_node->left;
-	right = cut_node->right;
-	left->right = right;
-	right->left = left;
+	if(nodes[idx]->index != -1)
+		return; // node is not empty
 
-	cut_node->left = cut_node;
-	cut_node->right = cut_node;
+	// init "new" node in array
+	nodes[idx]->child = NULL;
+	nodes[idx]->parent = NULL;
 
-	/* Initially the list of new roots contains only one node. */
-	new_roots = cut_node;
+	nodes[idx]->rank = 0;
+	nodes[idx]->index = idx;
+	nodes[idx]->key = key;
+	nodes[idx]->marked = false;
 
-	/* While there is a parent node that is marked a cascading cut occurs. */
-	while(parent && parent->marked)
+	add_to_roots(nodes[idx]);
+	num_nodes++;
+}
+
+int32_t CFibonacciHeap::extract_min(float64_t &ret_key)
+{
+	FibonacciHeapNode *min_node;
+	FibonacciHeapNode *child, *next_child;
+
+	int32_t result;
+
+	if(num_nodes == 0)
+		return -1;
+
+	min_node = min_root;
+	if(min_node == NULL)
+		return -1; // heap is empty now
+
+	child = min_node->child;
+	while(child != NULL && child->parent != NULL)
 	{
-		/* Decrease the rank of cutNode's parent and update its child pointer.
-		 */
-		parent->rank--;
-		if(parent->rank)
-		{
-			if(parent->child == cut_node)
-				parent->child = right;
-		}
-		else
-		{
-			parent->child = NULL;
-		}
+		next_child = child->right;
 
-		/* Update the cutNode and parent pointers to the parent. */
-		cut_node = parent;
-		parent = cut_node->parent;
+		// delete current child from childs list
+		child->left->right = child->right;
+		child->right->left = child->left;
 
-		/* Update the left and right pointers of cutNodes two neighbouring
-		 * nodes.
-		 */
-		left = cut_node->left;
-		right = cut_node->right;
+		// and insert in root list
+		child->right = min_node->right;
+		child->left = min_node;
 
-		left->right = right;
-		right->left = left;
+		child->left->right = child;
+		child->right->left = child;
 
-		/* Add cutNode to the list of nodes to be reinserted as new roots. */
-		left = new_roots->left;
+		// parent of all root's nodes is NULL
+		child->parent = NULL;
 
-		new_roots->left = cut_node;
-		left->right = cut_node;
+		num_trees++;
 
-		cut_node->left = left;
-		cut_node->right = new_roots;
-
-		new_roots = cut_node;
+		// next iteration
+		child = next_child;
 	}
 
-	/* If the root node is being relocated then update the trees[] array.
-	 * Otherwise mark the parent of the last node cut.
-	 */
+	// delete minimun from root list
+	min_node->left->right = min_node->right;
+	min_node->right->left = min_node->left;
 
-	if(!parent)
+	if(min_node == min_node->right)
 	{
-		prev_rank = cut_node->rank + 1;
-		trees[prev_rank] = NULL;
-		sum_tree -= (1 << prev_rank);
+		min_root = NULL; // remove last element
 	}
 	else
 	{
-		/* Decrease the rank of cutNode's parent an update its child pointer.
-		 */
-		parent->rank--;
-		if(parent->rank)
-		{
-			if(parent->child == cut_node)
-				parent->child = right;
-		}
-		else
-		{
-			parent->child = NULL;
-		}
-
-		parent->marked = true;
+		min_root = min_node->right;
+		consolidate();
 	}
 
-	/* Meld the new roots into the heap. */
-	meld(new_roots);
+	result = min_node->index;
+	ret_key = min_node->key;
+	clear_node(result);
+
+	num_nodes--;
+	num_trees--;
+
+	return result;
 }
 
-void CFibonacciHeap::meld(FibonacciHeapNode* tree_list)
+void CFibonacciHeap::clear()
 {
-	FibonacciHeapNode *first, *next, *node_ptr, *new_root;
-	FibonacciHeapNode *temp, *temp_a, *left, *right;
+	min_root = NULL;
 
-	int32_t temp_rank;
+	// clear all nodes
+	for(int32_t i = 0; i < max_num_nodes; i++)
+	{
+		clear_node(i);
+	}
 
-	/* We meld each tree in the circularly linked list back into the root level
-	 * of the heap.  Each node in the linked list is the root node of a tree.
-	 * The circularly linked list uses the sibling pointers of nodes.  This
-	 *  makes melding of the child nodes from a deleteMin operation simple.
-	 */
+	num_nodes = 0;
+	num_trees = 0;
+}
 
-	node_ptr = tree_list;
-	first = tree_list;
+void CFibonacciHeap::decrease_key(int32_t index, float64_t key)
+{
+	FibonacciHeapNode* parent;
+
+	if(index > max_num_nodes || index < 0)
+		return;
+	if(nodes[index]->index == -1)
+		return; // node is empty
+	if(key > nodes[index]->key)
+		return;
+
+	nodes[index]->key = key;
+
+	parent = nodes[index]->parent;
+	if(parent != NULL && nodes[index]->key < parent->key)
+	{
+		cut(nodes[index], parent);
+		cascading_cut(parent);
+	}
+
+	if(nodes[index]->key < min_root->key)
+		min_root = nodes[index];
+}
+
+
+void CFibonacciHeap::add_to_roots(FibonacciHeapNode *up_node)
+{
+	if(min_root == NULL)
+	{
+		// if heap is empty, node becomes circular root list
+		min_root = up_node;
+
+		up_node->left = up_node;
+		up_node->right = up_node;
+	}
+	else
+	{
+		// insert node to root list
+		up_node->right = min_root->right;
+		up_node->left = min_root;
+
+		up_node->left->right = up_node;
+		up_node->right->left = up_node;
+
+		// nomination of new minimum node
+		if(up_node->key < min_root->key)
+		{
+			min_root = up_node;
+		}
+	}
+
+	num_trees++;
+}
+
+void CFibonacciHeap::consolidate()
+{
+	FibonacciHeapNode *x, *y, *w;
+	FibonacciHeapNode **A;
+
+	int32_t Dn, d;
+
+	Dn = 1 + (int32_t)(8*sizeof(long));
+
+	A = new FibonacciHeapNode* [Dn];
+	for(int32_t i = 0; i < Dn; i++)
+	{
+		A[i] = NULL;
+	}
+
+	min_root->left->right = NULL;
+	min_root->left = NULL;
+	w = min_root;
 
 	do
 	{
-		/* Keep a pointer to the next node and remove sibling and parent links
-		 * from the current node.  nodePtr points to the current node.
-		 */
+		x = w;
+		d = x->rank;
+		w = w->right;
 
-		next = node_ptr->right;
-
-		node_ptr->right = node_ptr;
-		node_ptr->left = node_ptr;
-
-		/* We merge the current node, nodePtr, by inserting it into the
-		 * root level of the heap.
-		 */
-
-		new_root = node_ptr;
-		temp_rank = node_ptr->rank;
-
-		/* This loop inserts the new root into the heap, possibly restructuring
-		 * the heap to ensure that only one tree for each degree exists.
-		 */
-
-		do
+		while(A[d] != NULL)
 		{
-			/* Check if there is already a tree of degree r in the heap.
-			 * If there is then we need to link it with newRoot so it will be
-			 * reinserted into a new place in the heap.
-			 */
-
-			temp = trees[temp_rank];
-			if(temp)
+			y = A[d];
+			if(y->key < x->key)
 			{
-				/* temp will be linked to newRoot and relocated so we no
-				 * longer will have a tree of degree r.
-				 */
-
-				trees[temp_rank] = NULL;
-				sum_tree -= (1 << temp_rank);
-
-				/* Swap temp and newRoot if necessary so that newRoot always
-				 * points to the root node which has the smaller key of the
-				 * two.
-				 */
-
-				if(temp->key < new_root->key)
-				{
-					temp_a = new_root;
-					new_root = temp;
-					temp = temp_a;
-				}
-
-				/* Link temp with newRoot, making sure that sibling pointers
-				 * get updated if rank is greater than 0.  Also, increase r for
-				 * the next pass through the loop since the rank of new has
-				 * increased.
-				 */
-
-				if(temp_rank++ > 0)
-				{
-					right = new_root->child;
-					left = right->left;
-
-					temp->left = left;
-					temp->right = right;
-
-					left->right = temp;
-					right->left = temp;
-				}
-
-				new_root->child = temp;
-				new_root->rank = temp_rank;
-
-				temp->parent = new_root;
-				temp->marked = false;
-			}
-			else
-			{
-				/* Otherwise if there is not a tree of degree r in the heap we
-				 * allow newRoot, which possibly carries moved trees in the heap,
-				 * to be a tree of degree r in the heap.
-				 */
-
-				trees[temp_rank] = new_root;
-				sum_tree += (1 << temp_rank);
-
-				/* NOTE:  Because newRoot is now a root we ensure it is
-				 *        marked.
-				 */
-				new_root->marked = true;
+				float64_t temp;
+				temp = y->key;
+				y->key = x->key;
+				x->key = temp;
 			}
 
-		} while(temp);
+			if(w == y)
+			{
+				w = y->right;
+			}
 
-		node_ptr = next;
+			link_nodes(y, x);
 
-	} while(node_ptr != first);
+			A[d] = NULL;
+			d++;
+		}
+		A[d] = x;
+	}
+	while(w != NULL);
+
+	min_root = NULL;
+	num_trees = 0;
+
+	for(int32_t i = 0; i < Dn; i++)
+	{
+		if(A[i] != NULL)
+		{
+			A[i]->marked = false;
+			add_to_roots(A[i]);
+		}
+	}
 }
 
+void CFibonacciHeap::link_nodes(FibonacciHeapNode *y, FibonacciHeapNode *x)
+{
+	if(y->right != NULL)
+		y->right->left = y->left;
+	if(y->left != NULL)
+		y->left->right = y->right;
 
+	num_trees--;
 
+	y->left = y;
+	y->right = y;
+
+	y->parent = x;
+
+	if(x->child == NULL)
+	{
+		x->child = y;
+	}
+	else
+	{
+		y->left = x->child;
+		y->right = x->child->right;
+
+		x->child->right = y;
+		y->right->left = y;
+	}
+
+	x->rank++;
+
+	y->marked = false;
+}
+
+void CFibonacciHeap::clear_node(int32_t index)
+{
+	nodes[index]->parent = NULL;
+	nodes[index]->child = NULL;
+	nodes[index]->left = NULL;
+	nodes[index]->right = NULL;
+
+	nodes[index]->rank = 0;
+	nodes[index]->index = -1;
+	nodes[index]->key = 0;
+
+	nodes[index]->marked = false;
+}
+
+void CFibonacciHeap::cut(FibonacciHeapNode *child, FibonacciHeapNode *parent)
+{
+	if(parent->child == child)
+		parent->child = child->right;
+
+	if(parent->child == child)
+		parent->child = NULL;
+
+	parent->rank--;
+
+	child->left->right = child->right;
+	child->right->left = child->left;
+
+	add_to_roots(child);
+}
+
+void CFibonacciHeap::cascading_cut(FibonacciHeapNode *tree)
+{
+	FibonacciHeapNode *temp;
+
+	temp = tree->parent;
+	if(temp != NULL)
+	{
+		if(!tree->marked)
+		{
+			tree->marked = true;
+		}
+		else
+		{
+			cut(tree, temp);
+			cascading_cut(temp);
+		}
+	}
+}
+
+void CFibonacciHeap::debug_print()
+{
+	printf("%d %d\n", num_trees, num_nodes);
+	for(int32_t i = 0; i < max_num_nodes; i++)
+	{
+		if(nodes[i]->index == -1)
+		{
+			printf("None\n");
+		}
+		else
+		{
+			printf("%f\n",nodes[i]->key);
+		}
+	}
+}
