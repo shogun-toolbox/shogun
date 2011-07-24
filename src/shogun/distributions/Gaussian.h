@@ -196,6 +196,7 @@ class CGaussian : public CDistribution
 		{
 			m_d.free_vector();
 			m_d = d;
+			init();
 		}
 
 		/** get unitary matrix
