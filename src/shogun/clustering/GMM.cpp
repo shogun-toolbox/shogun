@@ -52,6 +52,10 @@ CGMM::CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients, bo
 	{
 		m_components=components;
 		m_coefficients=coefficients;
+		for (int i=0; i<components.vlen; i++)
+		{
+			SG_REF(m_components.vector[i]);
+		}
 	}
 	else
 	{
@@ -101,7 +105,6 @@ void CGMM::cleanup()
 {
 	for (int i = 0; i < m_components.vlen; i++)
 		SG_UNREF(m_components.vector[i]);
-
 	if (m_components.do_free)
 	{
 		m_components.free_vector();
@@ -250,14 +253,20 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 				logPost[i*m_components.vlen+j]=logPxy[i*m_components.vlen+j]-logPx[i];
 				logPostSum[j]+=CMath::exp(logPost[i*m_components.vlen+j]);
 				logPostSum2[j]+=CMath::exp(2*logPost[i*m_components.vlen+j]);
-				int32_t skip_sum=0;
-				for (int k=0; k<j; k++)
+			}
+
+			int32_t counter=0;
+			for (int j=0; j<m_components.vlen; j++)
+			{
+				for (int k=j+1; k<m_components.vlen; k++)
 				{
-					logPostSumSum[skip_sum+j]+=CMath::exp(logPost[i*m_components.vlen+j]+logPost[i*m_components.vlen+k]);
-					skip_sum+=m_components.vlen-k;
+					logPostSumSum[counter]+=CMath::exp(logPost[i*m_components.vlen+j]+logPost[i*m_components.vlen+k]);
+					counter++;
 				}
 			}
 		}
+
+		int32_t counter=0;
 		for (int i=0; i<m_components.vlen; i++)
 		{
 			logPostSum[i]=CMath::log(logPostSum[i]);
@@ -268,27 +277,30 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 				split_crit[i]+=(logPost[j*m_components.vlen+i]-logPostSum[i]-logPxy[j*m_components.vlen+i]+CMath::log(m_coefficients.vector[i]))*
 								(CMath::exp(logPost[j*m_components.vlen+i])/CMath::exp(logPostSum[i]));
 			}
-			int32_t counter=0;
 			for (int j=i+1; j<m_components.vlen; j++)
 			{
 				merge_crit[counter]=CMath::log(logPostSumSum[counter])-(0.5*CMath::log(logPostSum2[i]))-(0.5*CMath::log(logPostSum2[j]));
 				merge_ind[counter]=i*m_components.vlen+j;
+				counter++;
 			}
 		}
 		CMath::qsort_backward_index(split_crit, split_ind, m_components.vlen);
-		CMath::qsort_backward_index(merge_crit, merge_ind, m_components.vlen);
+		CMath::qsort_backward_index(merge_crit, merge_ind, m_components.vlen*(m_components.vlen-1)/2);
 
 		bool better_found=false;
+		int32_t candidates_checked=0;
 		for (int i=0; i<m_components.vlen; i++)
 		{
 			for (int j=0; j<m_components.vlen*(m_components.vlen-1)/2; j++)
 			{
-				if (merge_ind[j]/m_components.vlen != split_ind[i] || merge_ind[j]%m_components.vlen != split_ind[i])
+				if (merge_ind[j]/m_components.vlen != split_ind[i] && merge_ind[j]%m_components.vlen != split_ind[i])
 				{
+					candidates_checked++;
 					CGMM* candidate=new CGMM(m_components, m_coefficients, true);
 					candidate->train(features);
 					candidate->partial_em(split_ind[i], merge_ind[j]/m_components.vlen, merge_ind[j]%m_components.vlen, min_cov, max_em_iter, min_change);
 					float64_t cand_likelihood=candidate->train_em(min_cov, max_em_iter, min_change);
+
 					if (cand_likelihood>cur_likelihood)
 					{
 						cur_likelihood=cand_likelihood;
@@ -304,19 +316,28 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						candidate->get_coef().do_free=true;
 						delete candidate;
 					}
+					if (candidates_checked>=max_cand)
+						break;
 				}
 			}
-			if (better_found)
+			if (better_found || candidates_checked>=max_cand)
 				break;
 		}
+		if (!better_found)
+			break;
+		iter++;
 	}
-
 
 	delete[] logPxy;
 	delete[] logPx;
 	delete[] logPost;
 	delete[] split_crit;
 	delete[] merge_crit;
+	delete[] logPostSum;
+	delete[] logPostSum2;
+	delete[] logPostSumSum;
+	delete[] split_ind;
+	delete[] merge_ind;
 
 	return cur_likelihood;
 }
@@ -449,6 +470,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	}
 
 	CGMM* partial_candidate=new CGMM(components, coefficients);
+	partial_candidate->train(features);
 
 	float64_t log_likelihood_prev=0;
 	float64_t log_likelihood_cur=0;
@@ -498,8 +520,16 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	m_coefficients.vector[comp2]=coefficients.vector[1];
 	m_coefficients.vector[comp3]=coefficients.vector[2];
 
+	partial_candidate->get_comp().do_free=true;
 	partial_candidate->get_coef().do_free=true;
 	delete partial_candidate;
+	alpha.free_matrix();
+	delete[] logPxy;
+	delete[] logPx;
+	delete[] init_logPxy;
+	delete[] init_logPx;
+	delete[] init_logPx_fix;
+	delete[] post_add;
 }
 
 void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
