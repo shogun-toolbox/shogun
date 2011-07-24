@@ -178,6 +178,15 @@ class CGaussian : public CDistribution
 			m_cov_type = cov_type;
 		}
 
+		/** get diagonal
+		 *
+		 * @return diagonal
+		*/
+		inline SGVector<float64_t> get_d()
+		{
+			return m_d;
+		}
+
 		/** set diagonal
 		 *
 		 * @param d diagonal
@@ -187,6 +196,15 @@ class CGaussian : public CDistribution
 		{
 			m_d.free_vector();
 			m_d = d;
+		}
+
+		/** get unitary matrix
+		 *
+		 * @return unitary matrix
+		*/
+		inline SGMatrix<float64_t> get_u()
+		{
+			return m_u;
 		}
 
 		/** set unitary matrix
