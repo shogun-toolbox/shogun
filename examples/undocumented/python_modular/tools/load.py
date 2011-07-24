@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from numpy import double, fromfile
+from numpy import double, fromfile, loadtxt
 
 class LoadMatrix:
 	def __init__(self):
@@ -8,7 +8,7 @@ class LoadMatrix:
 
 
 	def load_numbers(self, filename):
-		return numpy.loadtxt(filename).T
+		return loadtxt(filename).T
 
 	def load_dna(self, filename):
 		fh=open(filename, 'r');
