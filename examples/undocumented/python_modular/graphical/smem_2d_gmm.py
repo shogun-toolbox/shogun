@@ -33,9 +33,32 @@ generated=generated.transpose()
 feat_train=RealFeatures(generated)
 est_smem_gmm=GMM(3, cov_type)
 est_smem_gmm.train(feat_train)
+
+est_smem_gmm.set_nth_mean(array([2.0, 0.0]), 0)
+est_smem_gmm.set_nth_mean(array([-2.0, -2.0]), 1)
+est_smem_gmm.set_nth_mean(array([-3.0, -3.0]), 2)
+
+est_smem_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 0)
+est_smem_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 1)
+est_smem_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 2)
+
+est_smem_gmm.set_coef(array([0.3333, 0.3333, 0.3334]))
+
 print est_smem_gmm.train_smem(max_iter, max_cand, min_cov, max_em_iter, min_change)
+
 est_em_gmm=GMM(3, cov_type)
 est_em_gmm.train(feat_train)
+
+est_em_gmm.set_nth_mean(array([2.0, 0.0]), 0)
+est_em_gmm.set_nth_mean(array([-2.0, -2.0]), 1)
+est_em_gmm.set_nth_mean(array([-3.0, -3.0]), 2)
+
+est_em_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 0)
+est_em_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 1)
+est_em_gmm.set_nth_cov(array([[1.0, 0.0],[0.0, 1.0]]), 2)
+
+est_em_gmm.set_coef(array([0.3333, 0.3333, 0.3334]))
+
 print est_em_gmm.train_em(min_cov, max_em_iter, min_change)
 
 min_x_gen=min(min(generated[[0]]))-0.1
