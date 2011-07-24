@@ -15,8 +15,6 @@ public class preprocessor_landmarkisomap_modular {
 		LandmarkIsomap landmark = new LandmarkIsomap();
 		landmark.set_target_dim(1);
 		landmark.apply_to_feature_matrix(features);
-
-		System.out.println(features.get_feature_matrix());
 	
 		modshogun.exit_shogun();
 	}
