@@ -44,12 +44,53 @@ CGMM::CGMM(int32_t n, ECovType cov_type) : CDistribution(), m_components(), m_co
 	register_params();
 }
 
-CGMM::CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients) : CDistribution()
+CGMM::CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy) : CDistribution()
 {
 	ASSERT(components.vlen==coefficients.vlen);
 
-	m_components=components;
-	m_coefficients=coefficients;
+	if (!copy)
+	{
+		m_components=components;
+		m_coefficients=coefficients;
+		for (int i=0; i<components.vlen; i++)
+		{
+			SG_REF(m_components.vector[i]);
+		}
+	}
+	else
+	{
+		m_coefficients.vector=new float64_t[components.vlen];
+		m_coefficients.vlen=components.vlen;
+		m_components.vector=new CGaussian*[components.vlen];
+		m_components.vlen=components.vlen;
+
+		for (int i=0; i<components.vlen; i++)
+		{
+			m_components.vector[i]=new CGaussian();
+			SG_REF(m_components.vector[i]);
+			m_components.vector[i]->set_cov_type(components.vector[i]->get_cov_type());
+
+			SGVector<float64_t> old_mean=components.vector[i]->get_mean();
+			SGVector<float64_t> new_mean(old_mean.vlen);
+			memcpy(new_mean.vector, old_mean.vector, old_mean.vlen*sizeof(float64_t));
+			m_components.vector[i]->set_mean(new_mean);
+
+			SGVector<float64_t> old_d=components.vector[i]->get_d();
+			SGVector<float64_t> new_d(old_d.vlen);
+			memcpy(new_d.vector, old_d.vector, old_d.vlen*sizeof(float64_t));
+			m_components.vector[i]->set_d(new_d);
+
+			if (components.vector[i]->get_cov_type()==FULL)
+			{
+				SGMatrix<float64_t> old_u=components.vector[i]->get_u();
+				SGMatrix<float64_t> new_u(old_u.num_rows, old_u.num_cols);
+				memcpy(new_u.matrix, old_u.matrix, old_u.num_rows*old_u.num_cols*sizeof(float64_t));
+				m_components.vector[i]->set_u(new_u);
+			}
+
+			m_coefficients.vector[i]=coefficients.vector[i];
+		}
+	}
 
 	register_params();
 }
@@ -64,9 +105,14 @@ void CGMM::cleanup()
 {
 	for (int i = 0; i < m_components.vlen; i++)
 		SG_UNREF(m_components.vector[i]);
-
-	m_components.free_vector();
-	m_coefficients.free_vector();
+	if (m_components.do_free)
+	{
+		m_components.free_vector();
+	}
+	if (m_coefficients.do_free)
+	{
+		m_coefficients.free_vector();
+	}
 }
 
 bool CGMM::train(CFeatures* data)
@@ -84,31 +130,40 @@ bool CGMM::train(CFeatures* data)
 	return true;
 }
 
-bool CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
+float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 {
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
 
-	CKMeans* init_k_means=new CKMeans(m_components.vlen, new CEuclidianDistance());
-	init_k_means->train(dotdata);
-	SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
-
 	SGMatrix<float64_t> alpha;
 
-	alpha.matrix=alpha_init(init_means.matrix, init_means.num_rows, init_means.num_cols);
-	alpha.num_rows=num_vectors;
-	alpha.num_cols=m_components.vlen;
+	if (m_components.vector[0]->get_mean().vector==NULL)
+	{
+		CKMeans* init_k_means=new CKMeans(m_components.vlen, new CEuclidianDistance());
+		init_k_means->train(dotdata);
+		SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
 
-	SG_UNREF(init_k_means);
+		alpha.matrix=alpha_init(init_means.matrix, init_means.num_rows, init_means.num_cols);
+		alpha.num_rows=num_vectors;
+		alpha.num_cols=m_components.vlen;
 
-	max_likelihood(alpha, min_cov);
+		SG_UNREF(init_k_means);
+
+		max_likelihood(alpha, min_cov);
+	}
+	else
+	{
+		alpha.matrix=new float64_t[num_vectors*m_components.vlen];
+		alpha.num_rows=num_vectors;
+		alpha.num_cols=m_components.vlen;
+	}
 
 	int32_t iter=0;
 	float64_t log_likelihood_prev=0;
 	float64_t log_likelihood_cur=0;
 	float64_t* logPxy=new float64_t[num_vectors*m_components.vlen];
 	float64_t* logPx=new float64_t[num_vectors];
-	float64_t* logPost=new float64_t[num_vectors*m_components.vlen];
+	//float64_t* logPost=new float64_t[num_vectors*m_components.vlen];
 
 	while (iter<max_iter)
 	{
@@ -131,8 +186,8 @@ bool CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 
 			for (int j=0; j<m_components.vlen; j++)
 			{
-				logPost[i*m_components.vlen+j]=logPxy[i*m_components.vlen+j]-logPx[i];
-				alpha.matrix[i*m_components.vlen+j]=CMath::exp(logPost[i*m_components.vlen+j]);
+				//logPost[i*m_components.vlen+j]=logPxy[i*m_components.vlen+j]-logPx[i];
+				alpha.matrix[i*m_components.vlen+j]=CMath::exp(logPxy[i*m_components.vlen+j]-logPx[i]);
 			}
 		}
 
@@ -146,10 +201,335 @@ bool CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 
 	delete[] logPxy;
 	delete[] logPx;
-	delete[] logPost;
+	//delete[] logPost;
 	alpha.free_matrix();
 
-	return true;
+	return log_likelihood_cur;
+}
+
+float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
+{
+	if (m_components.vlen<3)
+	{
+		SG_ERROR("Can't run SMEM with less than 3 component mixture model.\n");
+	}
+	CDotFeatures* dotdata=(CDotFeatures *) features;
+	int32_t num_vectors=dotdata->get_num_vectors();
+
+	float64_t cur_likelihood=train_em(min_cov, max_em_iter, min_change);
+
+	int32_t iter=0;
+	float64_t* logPxy=new float64_t[num_vectors*m_components.vlen];
+	float64_t* logPx=new float64_t[num_vectors];
+	float64_t* logPost=new float64_t[num_vectors*m_components.vlen];
+	float64_t* logPostSum=new float64_t[m_components.vlen];
+	float64_t* logPostSum2=new float64_t[m_components.vlen];
+	float64_t* logPostSumSum=new float64_t[m_components.vlen*(m_components.vlen-1)/2];
+	float64_t* split_crit=new float64_t[m_components.vlen];
+	float64_t* merge_crit=new float64_t[m_components.vlen*(m_components.vlen-1)/2];
+	int32_t* split_ind=new int32_t[m_components.vlen];
+	int32_t* merge_ind=new int32_t[m_components.vlen*(m_components.vlen-1)/2];
+
+	while (iter<max_iter)
+	{
+		memset(logPostSum, 0, m_components.vlen*sizeof(float64_t));
+		memset(logPostSum2, 0, m_components.vlen*sizeof(float64_t));
+		memset(logPostSumSum, 0, (m_components.vlen*(m_components.vlen-1)/2)*sizeof(float64_t));
+		for (int i=0; i<num_vectors; i++)
+		{
+			logPx[i]=0;
+			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
+			for (int j=0; j<m_components.vlen; j++)
+			{
+				logPxy[i*m_components.vlen+j]=m_components.vector[j]->compute_log_PDF(v)+CMath::log(m_coefficients.vector[j]);
+				logPx[i]+=CMath::exp(logPxy[i*m_components.vlen+j]);
+			}
+
+			logPx[i]=CMath::log(logPx[i]);
+			v.free_vector();
+
+			for (int j=0; j<m_components.vlen; j++)
+			{
+				logPost[i*m_components.vlen+j]=logPxy[i*m_components.vlen+j]-logPx[i];
+				logPostSum[j]+=CMath::exp(logPost[i*m_components.vlen+j]);
+				logPostSum2[j]+=CMath::exp(2*logPost[i*m_components.vlen+j]);
+			}
+
+			int32_t counter=0;
+			for (int j=0; j<m_components.vlen; j++)
+			{
+				for (int k=j+1; k<m_components.vlen; k++)
+				{
+					logPostSumSum[counter]+=CMath::exp(logPost[i*m_components.vlen+j]+logPost[i*m_components.vlen+k]);
+					counter++;
+				}
+			}
+		}
+
+		int32_t counter=0;
+		for (int i=0; i<m_components.vlen; i++)
+		{
+			logPostSum[i]=CMath::log(logPostSum[i]);
+			split_crit[i]=0;
+			split_ind[i]=i;
+			for (int j=0; j<num_vectors; j++)
+			{
+				split_crit[i]+=(logPost[j*m_components.vlen+i]-logPostSum[i]-logPxy[j*m_components.vlen+i]+CMath::log(m_coefficients.vector[i]))*
+								(CMath::exp(logPost[j*m_components.vlen+i])/CMath::exp(logPostSum[i]));
+			}
+			for (int j=i+1; j<m_components.vlen; j++)
+			{
+				merge_crit[counter]=CMath::log(logPostSumSum[counter])-(0.5*CMath::log(logPostSum2[i]))-(0.5*CMath::log(logPostSum2[j]));
+				merge_ind[counter]=i*m_components.vlen+j;
+				counter++;
+			}
+		}
+		CMath::qsort_backward_index(split_crit, split_ind, m_components.vlen);
+		CMath::qsort_backward_index(merge_crit, merge_ind, m_components.vlen*(m_components.vlen-1)/2);
+
+		bool better_found=false;
+		int32_t candidates_checked=0;
+		for (int i=0; i<m_components.vlen; i++)
+		{
+			for (int j=0; j<m_components.vlen*(m_components.vlen-1)/2; j++)
+			{
+				if (merge_ind[j]/m_components.vlen != split_ind[i] && merge_ind[j]%m_components.vlen != split_ind[i])
+				{
+					candidates_checked++;
+					CGMM* candidate=new CGMM(m_components, m_coefficients, true);
+					candidate->train(features);
+					candidate->partial_em(split_ind[i], merge_ind[j]/m_components.vlen, merge_ind[j]%m_components.vlen, min_cov, max_em_iter, min_change);
+					float64_t cand_likelihood=candidate->train_em(min_cov, max_em_iter, min_change);
+
+					if (cand_likelihood>cur_likelihood)
+					{
+						cur_likelihood=cand_likelihood;
+						set_comp(candidate->get_comp());
+						set_coef(candidate->get_coef());
+						delete candidate;
+						better_found=true;
+						break;
+					}
+					else
+					{
+						candidate->get_comp().do_free=true;
+						candidate->get_coef().do_free=true;
+						delete candidate;
+					}
+					if (candidates_checked>=max_cand)
+						break;
+				}
+			}
+			if (better_found || candidates_checked>=max_cand)
+				break;
+		}
+		if (!better_found)
+			break;
+		iter++;
+	}
+
+	delete[] logPxy;
+	delete[] logPx;
+	delete[] logPost;
+	delete[] split_crit;
+	delete[] merge_crit;
+	delete[] logPostSum;
+	delete[] logPostSum2;
+	delete[] logPostSumSum;
+	delete[] split_ind;
+	delete[] merge_ind;
+
+	return cur_likelihood;
+}
+
+void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
+{
+	CDotFeatures* dotdata=(CDotFeatures *) features;
+	int32_t num_vectors=dotdata->get_num_vectors();
+
+	float64_t* init_logPxy=new float64_t[num_vectors*m_components.vlen];
+	float64_t* init_logPx=new float64_t[num_vectors];
+	float64_t* init_logPx_fix=new float64_t[num_vectors];
+	float64_t* post_add=new float64_t[num_vectors];
+
+	for (int i=0; i<num_vectors; i++)
+	{
+		init_logPx[i]=0;
+		init_logPx_fix[i]=0;
+
+		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
+		for (int j=0; j<m_components.vlen; j++)
+		{
+			init_logPxy[i*m_components.vlen+j]=m_components.vector[j]->compute_log_PDF(v)+CMath::log(m_coefficients.vector[j]);
+			init_logPx[i]+=CMath::exp(init_logPxy[i*m_components.vlen+j]);
+			if (j!=comp1 && j!=comp2 && j!=comp3)
+			{
+				init_logPx_fix[i]+=CMath::exp(init_logPxy[i*m_components.vlen+j]);
+			}
+		}
+
+		init_logPx[i]=CMath::log(init_logPx[i]);
+		post_add[i]=CMath::log(CMath::exp(init_logPxy[i*m_components.vlen+comp1]-init_logPx[i])+
+					CMath::exp(init_logPxy[i*m_components.vlen+comp2]-init_logPx[i])+
+					CMath::exp(init_logPxy[i*m_components.vlen+comp3]-init_logPx[i]));
+		v.free_vector();
+	}
+
+	SGVector<CGaussian*> components(3);
+	SGVector<float64_t> coefficients(3);
+	components.vector[0]=m_components.vector[comp1];
+	components.vector[1]=m_components.vector[comp2];
+	components.vector[2]=m_components.vector[comp3];
+	coefficients.vector[0]=m_coefficients.vector[comp1];
+	coefficients.vector[1]=m_coefficients.vector[comp2];
+	coefficients.vector[2]=m_coefficients.vector[comp3];
+	float64_t coef_sum=coefficients.vector[0]+coefficients.vector[1]+coefficients.vector[2];
+
+	int32_t dim_n=components.vector[0]->get_mean().vlen;
+
+	float64_t alpha1=coefficients.vector[1]/(coefficients.vector[1]+coefficients.vector[2]);
+	float64_t alpha2=coefficients.vector[2]/(coefficients.vector[1]+coefficients.vector[2]);
+
+	float64_t noise_mag=CMath::twonorm(components.vector[0]->get_mean().vector, dim_n)*0.1/
+						CMath::sqrt((float64_t)dim_n);
+
+	CMath::add(components.vector[1]->get_mean().vector, alpha1, components.vector[1]->get_mean().vector, alpha2,
+				components.vector[2]->get_mean().vector, dim_n);
+
+	for (int i=0; i<dim_n; i++)
+	{
+		components.vector[2]->get_mean().vector[i]=components.vector[0]->get_mean().vector[i]+CMath::randn_double()*noise_mag;
+		components.vector[0]->get_mean().vector[i]=components.vector[0]->get_mean().vector[i]+CMath::randn_double()*noise_mag;
+	}
+
+	coefficients.vector[1]=coefficients.vector[1]+coefficients.vector[2];
+	coefficients.vector[2]=coefficients.vector[0]*0.5;
+	coefficients.vector[0]=coefficients.vector[0]*0.5;
+
+	if (components.vector[0]->get_cov_type()==FULL)
+	{
+		SGMatrix<float64_t> c1=components.vector[1]->get_cov();
+		SGMatrix<float64_t> c2=components.vector[2]->get_cov();
+		CMath::add(c1.matrix, alpha1, c1.matrix, alpha2, c2.matrix, dim_n*dim_n);
+
+		delete[] components.vector[1]->get_d().vector;
+		delete[] components.vector[1]->get_u().matrix;
+		components.vector[1]->get_d().vector=CMath::compute_eigenvectors(c1.matrix, dim_n, dim_n);
+		components.vector[1]->get_u().matrix=c1.matrix;
+
+		c2.free_matrix();
+
+		float64_t new_d=1;
+		for (int i=0; i<dim_n; i++)
+		{
+			new_d*=components.vector[0]->get_d().vector[i];
+			for (int j=0; j<dim_n; j++)
+			{
+				if (i==j)
+				{
+					components.vector[0]->get_u().matrix[i*dim_n+j]=1;
+					components.vector[2]->get_u().matrix[i*dim_n+j]=1;
+				}
+				else
+				{
+					components.vector[0]->get_u().matrix[i*dim_n+j]=0;
+					components.vector[2]->get_u().matrix[i*dim_n+j]=0;
+				}
+			}
+		}
+		new_d=CMath::pow(new_d, 1/dim_n);
+		for (int i=0; i<dim_n; i++)
+		{
+			components.vector[0]->get_d().vector[i]=new_d;
+			components.vector[2]->get_d().vector[i]=new_d;
+		}
+	}
+	else if(components.vector[0]->get_cov_type()==DIAG)
+	{
+		CMath::add(components.vector[1]->get_d().vector, alpha1, components.vector[1]->get_d().vector,
+					alpha2, components.vector[2]->get_d().vector, dim_n);
+
+		float64_t new_d=1;
+		for (int i=0; i<dim_n; i++)
+		{
+			new_d*=components.vector[0]->get_d().vector[i];
+		}
+		new_d=CMath::pow(new_d, 1/dim_n);
+		for (int i=0; i<dim_n; i++)
+		{
+			components.vector[0]->get_d().vector[i]=new_d;
+			components.vector[2]->get_d().vector[i]=new_d;
+		}
+	}
+	else if(components.vector[0]->get_cov_type()==SPHERICAL)
+	{
+		components.vector[1]->get_d().vector[0]=alpha1*components.vector[1]->get_d().vector[0]+
+												alpha2*components.vector[2]->get_d().vector[0];
+
+		components.vector[2]->get_d().vector[0]=components.vector[0]->get_d().vector[0];
+	}
+
+	CGMM* partial_candidate=new CGMM(components, coefficients);
+	partial_candidate->train(features);
+
+	float64_t log_likelihood_prev=0;
+	float64_t log_likelihood_cur=0;
+	int32_t iter=0;
+	SGMatrix<float64_t> alpha(num_vectors, 3);
+	float64_t* logPxy=new float64_t[num_vectors*3];
+	float64_t* logPx=new float64_t[num_vectors];
+	//float64_t* logPost=new float64_t[num_vectors*m_components.vlen];
+
+	while (iter<max_em_iter)
+	{
+		log_likelihood_prev=log_likelihood_cur;
+		log_likelihood_cur=0;
+
+		for (int i=0; i<num_vectors; i++)
+		{
+			logPx[i]=0;
+			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
+			for (int j=0; j<3; j++)
+			{
+				logPxy[i*3+j]=components.vector[j]->compute_log_PDF(v)+CMath::log(coefficients.vector[j]);
+				logPx[i]+=CMath::exp(logPxy[i*3+j]);
+			}
+
+			logPx[i]=CMath::log(logPx[i]+init_logPx_fix[i]);
+			log_likelihood_cur+=logPx[i];
+			v.free_vector();
+
+			for (int j=0; j<3; j++)
+			{
+				//logPost[i*m_components.vlen+j]=logPxy[i*m_components.vlen+j]-logPx[i];
+				alpha.matrix[i*3+j]=CMath::exp(logPxy[i*3+j]-logPx[i]+post_add[i]);
+			}
+		}
+
+		if (iter>0 && log_likelihood_cur-log_likelihood_prev<min_change)
+			break;
+
+		partial_candidate->max_likelihood(alpha, min_cov);
+		partial_candidate->get_coef().vector[0]=partial_candidate->get_coef().vector[0]*coef_sum;
+		partial_candidate->get_coef().vector[1]=partial_candidate->get_coef().vector[1]*coef_sum;
+		partial_candidate->get_coef().vector[2]=partial_candidate->get_coef().vector[2]*coef_sum;
+		iter++;
+	}
+
+	m_coefficients.vector[comp1]=coefficients.vector[0];
+	m_coefficients.vector[comp2]=coefficients.vector[1];
+	m_coefficients.vector[comp3]=coefficients.vector[2];
+
+	partial_candidate->get_comp().do_free=true;
+	partial_candidate->get_coef().do_free=true;
+	delete partial_candidate;
+	alpha.free_matrix();
+	delete[] logPxy;
+	delete[] logPx;
+	delete[] init_logPxy;
+	delete[] init_logPx;
+	delete[] init_logPx_fix;
+	delete[] post_add;
 }
 
 void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
@@ -160,7 +540,7 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 	float64_t alpha_sum;
 	float64_t alpha_sum_sum=0;
 	float64_t* mean_sum;
-	float64_t* cov_sum;
+	float64_t* cov_sum=NULL;
 
 	for (int i=0; i<alpha.num_cols; i++)
 	{
@@ -193,7 +573,7 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 			cov_sum=new float64_t[num_dim];
 			memset(cov_sum, 0, num_dim*sizeof(float64_t));
 		}
-		else
+		else if(cov_type==SPHERICAL)
 		{
 			cov_sum=new float64_t[1];
 			cov_sum[0]=0;

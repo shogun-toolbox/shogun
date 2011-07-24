@@ -40,7 +40,7 @@ class CGMM : public CDistribution
 		 * @param components GMM components
 		 * @param coefficients coefficients
 		 */
-		CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients);
+		CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy=false);
 		virtual ~CGMM();
 
 		/** cleanup */
@@ -60,9 +60,21 @@ class CGMM : public CDistribution
 		 * @param max_iter maximum iterations
 		 * @param min_change minimum change in likelihood
 		 *
-		 * @return whether training was successful
+		 * @return log likelihood of training data
 		 */
-		bool train_em(float64_t min_cov=1e-9, int32_t max_iter=1000, float64_t min_change=1e-9);
+		float64_t train_em(float64_t min_cov=1e-9, int32_t max_iter=1000, float64_t min_change=1e-9);
+
+		/** learn distribution using SMEM
+		 *
+		 * @param max_iter maximum SMEM iterations
+		 * @param max_cand maximum split-merge candidates
+		 * @param min_cov minimum covariance
+		 * @param max_em_iter maximum iterations for EM
+		 * @param min_change minimum change in likelihood
+		 *
+		 * @return log likelihood of training data
+		 */
+		float64_t train_smem(int32_t max_iter=100, int32_t max_cand=5, float64_t min_cov=1e-9, int32_t max_em_iter=1000, float64_t min_change=1e-9);
 
 		/** maximum likelihood estimation
 		 *
@@ -179,6 +191,35 @@ class CGMM : public CDistribution
 			m_coefficients=coefficients;
 		}
 
+		/** get components
+		 *
+		 * @return components
+		 */
+		virtual inline SGVector<CGaussian*> get_comp()
+		{
+			return m_components;
+		}
+
+		/** set components
+		 *
+		 * @param components
+		 */
+		virtual inline void set_comp(SGVector<CGaussian*> components)
+		{
+			for (int i=0; i<m_components.vlen; i++)
+			{
+				SG_UNREF(m_components.vector[i]);
+			}
+
+			m_components.free_vector();
+			m_components=components;
+
+			for (int i=0; i<m_components.vlen; i++)
+			{
+				SG_REF(m_components.vector[i]);
+			}
+		}
+
 		/** sample from model
 		 *
 		 * @return sample
@@ -201,6 +242,10 @@ class CGMM : public CDistribution
 
 		/** Initialize parameters for serialization */
 		void register_params();
+
+
+		/** apply the partial EM algorithm on 3 components */
+		void partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min_cov, int32_t max_em_iter, float64_t min_change);
 
 	protected:
 		/** Mixture components */
