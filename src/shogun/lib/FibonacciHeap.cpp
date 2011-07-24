@@ -9,10 +9,6 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-// FibonacciHeap.cpp: implementation of the CFibonacciHeap class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "lib/FibonacciHeap.h"
 
 using namespace shogun;
@@ -353,16 +349,16 @@ void CFibonacciHeap::cascading_cut(FibonacciHeapNode *tree)
 
 void CFibonacciHeap::debug_print()
 {
-	printf("%d %d\n", num_trees, num_nodes);
+	SG_SPRINT("%d %d\n", num_trees, num_nodes);
 	for(int32_t i = 0; i < max_num_nodes; i++)
 	{
 		if(nodes[i]->index == -1)
 		{
-			printf("None\n");
+			SG_SPRINT("None\n");
 		}
 		else
 		{
-			printf("%f\n",nodes[i]->key);
+			SG_SPRINT("%f\n",nodes[i]->key);
 		}
 	}
 }
