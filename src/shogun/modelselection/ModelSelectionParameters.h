@@ -31,20 +31,10 @@ enum EMSParamType
 	MSPT_NONE=0,
 
 	/* float64_t */
-<<<<<<< HEAD
 	MSPT_FLOAT64,
 
 	/* int32_t */
 	MSPT_INT32,
-=======
-	MSPT_FLOAT,
-
-	/* int32_t */
-	MSPT_INT,
-
-	/* bool */
-	MSPT_BOOL
->>>>>>> work towards handling of multiple data types
 };
 
 /**
@@ -120,15 +110,11 @@ public:
 
 	/** float64_t wrapper for build_values() */
 	void build_values(float64_t min, float64_t max, ERangeType type,
-<<<<<<< HEAD
 			float64_t step=1.0, float64_t type_base=2.0);
 
 	/** int32_t wrapper for build_values() */
 	void build_values(int32_t min, int32_t max, ERangeType type, int32_t step=1,
 			int32_t type_base=2);
-=======
-			float64_t step=1, float64_t type_base=2);
->>>>>>> work towards handling of multiple data types
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
