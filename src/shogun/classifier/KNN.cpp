@@ -52,7 +52,10 @@ bool CKNN::train(CFeatures* data)
 		distance->init(data, data);
 	}
 
-	train_labels=labels->get_int_labels(num_train_labels);
+	SGVector<int32_t> lab=labels->get_int_labels();
+	num_train_labels=lab.vlen;
+	train_labels=CMath::clone_vector(lab.vector, lab.vlen);
+	lab.free_vector();
 	ASSERT(train_labels);
 	ASSERT(num_train_labels>0);
 

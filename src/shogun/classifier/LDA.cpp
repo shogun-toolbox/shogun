@@ -47,13 +47,12 @@ bool CLDA::train(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features);
-	int32_t num_train_labels=0;
-	int32_t* train_labels=labels->get_int_labels(num_train_labels);
-	ASSERT(train_labels);
+	SGVector<int32_t> train_labels=labels->get_int_labels();
+	ASSERT(train_labels.vector);
 
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
-	ASSERT(num_vec==num_train_labels);
+	ASSERT(num_vec==train_labels.vlen);
 
 	int32_t* classidx_neg=new int32_t[num_vec];
 	int32_t* classidx_pos=new int32_t[num_vec];
@@ -62,11 +61,11 @@ bool CLDA::train(CFeatures* data)
 	int32_t j=0;
 	int32_t num_neg=0;
 	int32_t num_pos=0;
-	for (i=0; i<num_train_labels; i++)
+	for (i=0; i<train_labels.vlen; i++)
 	{
-		if (train_labels[i]==-1)
+		if (train_labels.vector[i]==-1)
 			classidx_neg[num_neg++]=i;
-		else if (train_labels[i]==+1)
+		else if (train_labels.vector[i]==+1)
 			classidx_pos[num_pos++]=i;
 		else
 		{
@@ -153,8 +152,8 @@ bool CLDA::train(CFeatures* data)
 			buffer[num_feat*i+j]-=mean_pos[j];
 	}
 	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, nf, nf, (int) num_pos,
-		1.0/(num_train_labels-1), buffer, nf, buffer, nf,
-		1.0/(num_train_labels-1), scatter, nf);
+		1.0/(train_labels.vlen-1), buffer, nf, buffer, nf,
+		1.0/(train_labels.vlen-1), scatter, nf);
 
 	float64_t trace=CMath::trace((float64_t*) scatter, num_feat, num_feat);
 
@@ -189,7 +188,7 @@ bool CLDA::train(CFeatures* data)
     CMath::display_vector(mean_neg, num_feat, "mean_neg");
 #endif
 
-	delete[] train_labels;
+	train_labels.free_vector();
 	delete[] mean_neg;
 	delete[] mean_pos;
 	delete[] scatter;

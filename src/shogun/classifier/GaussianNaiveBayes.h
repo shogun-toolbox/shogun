@@ -110,12 +110,6 @@ protected:
 	/// minimal label
 	int32_t m_min_label;
 
-	/// actual int labels
-	int32_t* m_labels;
-
-	/// number of train labels
-	int32_t m_num_train_labels;
-
 	/// number of different classes (labels)
 	int32_t m_num_classes;
 

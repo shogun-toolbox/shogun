@@ -61,16 +61,11 @@ CLabels* COnlineLinearMachine::apply()
 	}
 	features->end_parser();
 
-	float64_t* labels_array=new float64_t[num_labels];
+	SGVector<float64_t> labels_array(num_labels);
 	for (int32_t i=0; i<num_labels; i++)
-	{
-		labels_array[i]=(*labels_dynarray)[i];
-	}
+		labels_array.vector[i]=(*labels_dynarray)[i];
 
-	CLabels* labels_object=new CLabels(labels_array, num_labels);
-	SG_REF(labels_object);
-
-	return labels_object;
+	return new CLabels(labels_array);
 }
 
 CLabels* COnlineLinearMachine::apply(CFeatures* data)

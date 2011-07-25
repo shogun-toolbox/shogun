@@ -124,7 +124,7 @@ SSKFeatures *CSparseSpatialSampleStringKernel::extractDouble(int **S, int *len, 
 
 void CSparseSpatialSampleStringKernel::compute_double(int32_t idx_a, int32_t idx_b)
 {
-	int d1, d2;
+	int d1;
 	SSKFeatures *features;
 	int *sortIdx;
 	int *features_srt;

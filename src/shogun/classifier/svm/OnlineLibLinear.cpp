@@ -184,6 +184,7 @@ bool COnlineLibLinear::train(CFeatures* data)
 
 		SG_INFO("Objective value = %lf\n", v/2);
 		SG_INFO("nSV = %d\n", nSV);
+		SG_INFO("gap = %g\n", gap);
 
 		return true;
 }

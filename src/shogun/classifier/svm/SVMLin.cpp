@@ -49,12 +49,11 @@ bool CSVMLin::train(CFeatures* data)
 
 	ASSERT(features);
 
-	int32_t num_train_labels=0;
-	float64_t* train_labels=labels->get_labels(num_train_labels);
+	SGVector<float64_t> train_labels=labels->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
+	ASSERT(num_vec==train_labels.vlen);
 	delete[] w;
 
 	struct options Options;
@@ -67,7 +66,7 @@ bool CSVMLin::train(CFeatures* data)
 	Data.u=0; 
 	Data.n=num_feat+1;
 	Data.nz=num_feat+1;
-	Data.Y=train_labels;
+	Data.Y=train_labels.vector;
 	Data.features=features;
 	Data.C = new float64_t[Data.l];
 
@@ -89,7 +88,7 @@ bool CSVMLin::train(CFeatures* data)
 
 	for (int32_t i=0;i<num_vec;i++)
 	{
-		if(train_labels[i]>0) 
+		if(train_labels.vector[i]>0) 
 			Data.C[i]=Options.Cp;
 		else 
 			Data.C[i]=Options.Cn;
@@ -97,7 +96,7 @@ bool CSVMLin::train(CFeatures* data)
 	ssl_train(&Data, &Options, &Weights, &Outputs);
 	ASSERT(Weights.vec && Weights.d==num_feat+1);
 
-	float64_t sgn=train_labels[0];
+	float64_t sgn=train_labels.vector[0];
 	for (int32_t i=0; i<num_feat+1; i++)
 		Weights.vec[i]*=sgn;
 
@@ -107,5 +106,6 @@ bool CSVMLin::train(CFeatures* data)
 	delete[] Weights.vec;
 	delete[] Data.C;
 	delete[] Outputs.vec;
+	train_labels.free_vector();
 	return true;
 }

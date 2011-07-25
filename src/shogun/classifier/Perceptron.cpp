@@ -42,12 +42,11 @@ bool CPerceptron::train(CFeatures* data)
 	ASSERT(features);
 	bool converged=false;
 	int32_t iter=0;
-	int32_t num_train_labels=0;
-	int32_t* train_labels=labels->get_int_labels(num_train_labels);
+	SGVector<int32_t> train_labels=labels->get_int_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
+	ASSERT(num_vec==train_labels.vlen);
 	delete[] w;
 	w_dim=num_feat;
 	w=new float64_t[num_feat];
@@ -67,11 +66,11 @@ bool CPerceptron::train(CFeatures* data)
 		{
 			output[i]=apply(i);
 
-			if (CMath::sign<float64_t>(output[i]) != train_labels[i])
+			if (CMath::sign<float64_t>(output[i]) != train_labels.vector[i])
 			{
 				converged=false;
-				bias+=learn_rate*train_labels[i];
-				features->add_to_dense_vec(learn_rate*train_labels[i], i, w, w_dim);
+				bias+=learn_rate*train_labels.vector[i];
+				features->add_to_dense_vec(learn_rate*train_labels.vector[i], i, w, w_dim);
 			}
 		}
 
@@ -84,7 +83,7 @@ bool CPerceptron::train(CFeatures* data)
 		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter);
 
 	delete[] output;
-	delete[] train_labels;
+	train_labels.free_vector();
 
 	return converged;
 }

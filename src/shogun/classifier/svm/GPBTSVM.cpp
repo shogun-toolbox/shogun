@@ -45,11 +45,10 @@ bool CGPBTSVM::train_kernel_machine(CFeatures* data)
 		kernel->init(data, data);
 	}
 
-	int32_t num_lab = 0;
-	int32_t* lab=labels->get_int_labels(num_lab);
-	prob.KER=new sKernel(kernel, num_lab);
-	prob.y=lab;
-	prob.ell=num_lab;
+	SGVector<int32_t> lab=labels->get_int_labels();
+	prob.KER=new sKernel(kernel, lab.vlen);
+	prob.y=lab.vector;
+	prob.ell=lab.vlen;
 	SG_INFO( "%d trainlabels\n", prob.ell);
 
 	//  /*** set options defaults ***/
@@ -126,7 +125,7 @@ bool CGPBTSVM::train_kernel_machine(CFeatures* data)
 	}
 
 	delete prob.KER;
-	delete[] prob.y;
+	lab.free_vector();
 	delete[] solution;
 
 	return true;

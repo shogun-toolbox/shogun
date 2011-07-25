@@ -54,8 +54,7 @@ CLabels* CLinearMachine::apply()
 		float64_t* out=new float64_t[num];
 		features->dense_dot_range(out, 0, num, NULL, w, w_dim, bias);
 
-		CLabels* output=new CLabels(num);
-		output->set_labels(out, num);
+		CLabels* output=new CLabels(SGVector<float64_t>(out,num));
 
 		return output;
 	}

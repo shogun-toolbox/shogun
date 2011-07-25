@@ -3221,7 +3221,7 @@ bool CHMM::load_model(FILE* file)
 	const_p[]=[ [<int32_t>, <DOUBLE>], ... , [<int32_t>,<DOUBLE>], [-1,-1] ];
 	const_q[]=[ [<int32_t>, <DOUBLE>], ... , [<int32_t>,<DOUBLE>], [-1,-1] ];
 	*/
-bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
+bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 {
 	if (model)
 		delete model ;
@@ -3881,7 +3881,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 	{
 		model->sort_learn_a() ;
 		model->sort_learn_b() ;
-		if (initialize)
+		if (_initialize)
 		{
 			init_model_defined(); ;
 			convert_to_log();

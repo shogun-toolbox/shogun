@@ -18,16 +18,16 @@
 using namespace shogun;
 
 CGaussianNaiveBayes::CGaussianNaiveBayes() :
-CMachine(), m_features(NULL), m_min_label(0), m_labels(NULL),
-m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
+CMachine(), m_features(NULL), m_min_label(0),
+m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL)
 {
 
 };
 
 CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels) :
-CMachine(), m_features(NULL), m_min_label(0), m_labels(NULL),
-m_num_train_labels(0), m_num_classes(0), m_dim(0), m_means(NULL),
+CMachine(), m_features(NULL), m_min_label(0),
+m_num_classes(0), m_dim(0), m_means(NULL),
 m_variances(NULL), m_label_prob(NULL), m_rates(NULL)
 {
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
@@ -44,7 +44,6 @@ CGaussianNaiveBayes::~CGaussianNaiveBayes()
 	delete[] m_rates;
 	delete[] m_variances;
 	delete[] m_label_prob;
-	delete[] m_labels;
 };
 
 bool CGaussianNaiveBayes::train(CFeatures* data)
@@ -56,26 +55,26 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 				SG_ERROR("Specified features are not of type CDotFeatures\n");
 		set_features((CDotFeatures*) data);
 	}
-	// get int labels to m_labels and check length equality
+	// get int labels to train_labels and check length equality
 	ASSERT(labels);
-	m_labels = labels->get_int_labels(m_num_train_labels);
-	ASSERT(m_features->get_num_vectors()==m_num_train_labels);
+	SGVector<int32_t> train_labels = labels->get_int_labels();
+	ASSERT(m_features->get_num_vectors()==train_labels.vlen);
 
 	// init min_label, max_label and loop variables
-	int32_t min_label = m_labels[0];
-	int32_t max_label = m_labels[0];
+	int32_t min_label = train_labels.vector[0];
+	int32_t max_label = train_labels.vector[0];
 	int i,j;
 
 	// find minimal and maximal label
-	for (i=1; i<m_num_train_labels; i++)
+	for (i=1; i<train_labels.vlen; i++)
 	{
-		min_label = CMath::min(min_label, m_labels[i]);
-		max_label = CMath::max(max_label, m_labels[i]);
+		min_label = CMath::min(min_label, train_labels.vector[i]);
+		max_label = CMath::max(max_label, train_labels.vector[i]);
 	}
 
 	// subtract minimal label from all labels
-	for (i=0; i<m_num_train_labels; i++)
-		m_labels[i]-= min_label;
+	for (i=0; i<train_labels.vlen; i++)
+		train_labels.vector[i]-= min_label;
 
 	// get number of classes, minimal label and dimensionality
 	m_num_classes = max_label-min_label+1;
@@ -111,12 +110,12 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	SGMatrix<float64_t> feature_matrix = m_features->get_computed_dot_feature_matrix();
 
 	// get sum of features among labels
-	for (i=0; i<m_num_train_labels; i++)
+	for (i=0; i<train_labels.vlen; i++)
 	{
 		for (j=0; j<m_dim; j++)
-			m_means[m_dim*m_labels[i]+j]+=feature_matrix.matrix[i*m_dim+j];
+			m_means[m_dim*train_labels.vector[i]+j]+=feature_matrix.matrix[i*m_dim+j];
 
-		m_label_prob[m_labels[i]]+=1.0;
+		m_label_prob[train_labels.vector[i]]+=1.0;
 	}
 
 	// get means of features of labels
@@ -127,11 +126,11 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	}
 
 	// compute squared residuals with means available
-	for (i=0; i<m_num_train_labels; i++)
+	for (i=0; i<train_labels.vlen; i++)
 	{
 		for (j=0; j<m_dim; j++)
-			m_variances[m_dim*m_labels[i]+j]+=
-					CMath::sq(feature_matrix.matrix[i*m_dim+j]-m_means[m_dim*m_labels[i]+j]);
+			m_variances[m_dim*train_labels.vector[i]+j]+=
+					CMath::sq(feature_matrix.matrix[i*m_dim+j]-m_means[m_dim*train_labels.vector[i]+j]);
 	}
 
 	// get variance of features of labels
@@ -146,6 +145,8 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	{
 		m_label_prob[i]/= m_num_classes;
 	}
+
+	train_labels.free_vector();
 
 	return true;
 }

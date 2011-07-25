@@ -50,18 +50,17 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	ASSERT(labels->is_two_class_labeling());
 
 	// get the original labels
-	int32_t num=0;
 	ASSERT(labels);
-	int32_t* int_labels=labels->get_int_labels(num);
-	ASSERT(subkernel->get_num_vec_rhs()==num);
+	SGVector<int32_t> int_labels=labels->get_int_labels();
+	ASSERT(subkernel->get_num_vec_rhs()==int_labels.vlen);
 
 	// count positive and negative
 	int32_t num_pos=0;
 	int32_t num_neg=0;
 
-	for (int32_t i=0; i<num; i++)
+	for (int32_t i=0; i<int_labels.vlen; i++)
 	{
-		if (int_labels[i]==1)
+		if (int_labels.vector[i]==1)
 			num_pos++;
 		else 
 			num_neg++;
@@ -75,14 +74,14 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	int32_t* labels_auc = new int32_t[num_auc];
 	int32_t n=0 ;
 
-	for (int32_t i=0; i<num; i++)
+	for (int32_t i=0; i<int_labels.vlen; i++)
 	{
-		if (int_labels[i]!=1)
+		if (int_labels.vector[i]!=1)
 			continue;
 
-		for (int32_t j=0; j<num; j++)
+		for (int32_t j=0; j<int_labels.vlen; j++)
 		{
-			if (int_labels[j]!=-1)
+			if (int_labels.vector[j]!=-1)
 				continue;
 
 			// create about as many positively as negatively labeled examples
@@ -106,7 +105,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 
 	// create label object and attach it to svm
 	CLabels* lab_auc = new CLabels(num_auc);
-	lab_auc->set_int_labels(labels_auc, num_auc);
+	lab_auc->set_int_labels(SGVector<int32_t>(labels_auc, num_auc));
 	SG_REF(lab_auc);
 
 	// create feature object
@@ -116,7 +115,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	// create AUC kernel and attach the features
 	init(f,f);
 
-	delete[] int_labels;
+	int_labels.free_vector();
 	delete[] labels_auc;
 
 	return lab_auc;

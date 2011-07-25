@@ -254,7 +254,7 @@ libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
           {
             i = inx[LIBQP_INDEX(j,k,n)];
            
-            if(x[i] > 0 && i != u) 
+            if(x[i] > 0 && i != uint32_t(u)) 
             {
               tmp_num = x[i]*(d[i] - d[u]); 
               tmp_den = x[i]*x[i]*(diag_H[u] - 2*col_u[i] + diag_H[i]);

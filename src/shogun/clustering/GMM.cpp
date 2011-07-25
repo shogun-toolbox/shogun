@@ -680,12 +680,12 @@ float64_t* CGMM::alpha_init(float64_t* init_means, int32_t init_mean_dim, int32_
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
 
-	float64_t* label_num=new float64_t[init_mean_size];
+	SGVector<float64_t> label_num(init_mean_size);
 
 	for (int i=0; i<init_mean_size; i++)
-		label_num[i]=i;
+		label_num.vector[i]=i;
 
-	CKNN* knn=new CKNN(1, new CEuclidianDistance(), new CLabels(label_num, init_mean_size));
+	CKNN* knn=new CKNN(1, new CEuclidianDistance(), new CLabels(label_num));
 	knn->train(new CSimpleFeatures<float64_t>(init_means, init_mean_dim, init_mean_size));
 	CLabels* init_labels=knn->apply(features);
 

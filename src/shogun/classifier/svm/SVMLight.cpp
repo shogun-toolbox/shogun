@@ -298,10 +298,13 @@ void CSVMLight::svm_learn()
 	int32_t runtime_start,runtime_end;
 	int32_t iterations;
 	int32_t trainpos=0, trainneg=0 ;
-	int32_t totdoc=0;
 	ASSERT(labels);
-	int32_t* label=labels->get_int_labels(totdoc);
-	ASSERT(label);
+	SGVector<int32_t> lab=labels->get_int_labels();
+	int32_t totdoc=lab.vlen;
+	ASSERT(lab.vector && lab.vlen);
+	int32_t* label=CMath::clone_vector(lab.vector, lab.vlen);
+	lab.free_vector();
+
 	int32_t* docs=new int32_t[totdoc];
 	delete[] W;
 	W=NULL;

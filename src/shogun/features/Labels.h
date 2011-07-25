@@ -59,13 +59,6 @@ class CLabels : public CSGObject
 		 */
 		CLabels(float64_t* src, int32_t len);
 
-		/** constructor 
-		 * @param in_confidences confidence matrix to be used to derive the labels
-		 * @param in_num_labels number of labels
-		 * @param in_num_classes number of classes
-		 */
-		CLabels(float64_t* in_confidences, int32_t in_num_labels, int32_t in_num_classes);
-
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
@@ -199,46 +192,6 @@ class CLabels : public CSGObject
 		 * */
 		void set_to_one();
 
-		/** set confidences 
-		 *
-		 * not possible with subset
-		 *
-		 * @param in_confidences confidence matrix to be used to derive the labels
-		 * @param in_num_labels number of labels
-		 * @param in_num_classes number of classes
-		 */
-		void set_confidences(float64_t* in_confidences, int32_t in_num_labels, int32_t in_num_classes);
-
-		/** get confidences (copy)
-		 *
-		 * not implemented for subset
-		 *
-		 * @param out_num_labels number of labels
-		 * @param out_num_classes number of classes will be written to it
-		 * @return pointer to the confidences matrix
-		 */
-		float64_t* get_confidences(int32_t& out_num_labels, int32_t& out_num_classes);
-
-		/** get confidences  (swig compatible)
-		 *
-		 * not implemented for subset
-		 *
-		 * @param dst pointer to the confidences matrix (returned)
-		 * @param out_num_labels number of labels (returned)
-		 * @param out_num_classes number of classes will be written to it (returned)
-		 */
-		void get_confidences(float64_t** dst, int32_t* out_num_labels, int32_t* out_num_classes);
-
-		/** get confidences for a sample
-		 *
-		 * not implemented for subset
-		 *
-		 * @param in_sample_index index of a sample
-		 * @param out_num_classes number of classes will be written to it
-		 * @return pointer to the confidences vector
-		 */
-		float64_t* get_sample_confidences(const int32_t& in_sample_index, int32_t& out_num_classes);
-
 		/** get INT label vector
 		 * caller has to clean up
 		 *
@@ -288,15 +241,6 @@ class CLabels : public CSGObject
 			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
 		}
 
-	protected:
-		/**
-		 * find labels from the confidences using argmax over the classes.
-		 *
-		 * possible with subset
-		 *
-		 * */
-		void find_labels();
-
 	private:
 		void init();
 
@@ -306,12 +250,6 @@ class CLabels : public CSGObject
 
 		/** number of classes */
 		int32_t m_num_classes;
-
-
-		/** confidence matrix of size: num_classes x num_labels */
-		float64_t* m_confidences;
-		int32_t m_confidence_classes;
-		int32_t m_confidence_labels;
 
 	private:
 		/* subset class to enable subset support for this class */

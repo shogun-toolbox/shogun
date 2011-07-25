@@ -173,8 +173,8 @@ bool CWDSVMOcas::train(CFeatures* data)
 
 	alphabet_size=alphabet->get_num_symbols();
 	string_length=features->get_num_vectors();
-	int32_t num_train_labels=0;
-	lab=labels->get_labels(num_train_labels);
+	SGVector<float64_t> labvec=labels->get_labels();
+	lab=labvec.vector;
 
 	w_dim_single_char=set_wd_weights();
 	//CMath::display_vector(wd_weights, degree, "wd_weights");
@@ -184,8 +184,8 @@ bool CWDSVMOcas::train(CFeatures* data)
 	num_vec=get_features()->get_max_vector_length();
 
 	set_normalization_const();
-	SG_INFO("num_vec: %d num_lab: %d\n", num_vec, num_train_labels);
-	ASSERT(num_vec==num_train_labels);
+	SG_INFO("num_vec: %d num_lab: %d\n", num_vec, labvec.vlen);
+	ASSERT(num_vec==labvec.vlen);
 	ASSERT(num_vec>0);
 
 	delete[] w;
@@ -244,6 +244,7 @@ bool CWDSVMOcas::train(CFeatures* data)
 	delete[] cuts;
 
 	lab=NULL;
+	labvec.free_vector();
 
 	SG_UNREF(alphabet);
 
