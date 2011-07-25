@@ -1,4 +1,5 @@
 *.o
+*.class
 *doxygen_xml
 *_wrap.h
 *_wrap.cxx
@@ -62,13 +63,20 @@ configure.log
 /src/interfaces/*_modular/Distance.i
 /src/interfaces/*_modular/Clustering.i
 /src/interfaces/*_modular/SGBase.i
+/src/interfaces/*_modular/IO.i
+/src/interfaces/*_modular/Mathematics.i
+/src/interfaces/*_modular/ModelSelection.i
+/src/interfaces/*_modular/modshogun.i
 /src/interfaces/*_modular/*_includes.i
 /src/interfaces/*_modular/Makefile
 
 # particular modular ones
 /src/interfaces/csharp_modular/*.cs
 /src/interfaces/java_modular/*.java
+/src/interfaces/java_modular/*.jar
 /src/interfaces/java_modular/*.class
+/src/interfaces/java_modular/org/*
+/src/interfaces/java_modular/shogun/*
 /src/interfaces/python_modular/*.py
 /src/interfaces/r_modular/*.R
 /src/interfaces/r_modular/*.RData
