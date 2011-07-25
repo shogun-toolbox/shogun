@@ -130,23 +130,78 @@ template<class T> class SGNDArray
 
 template<class T> struct SGString
 {
+public:
+	/** default constructor */
+	SGString() : string(NULL), length(0), do_free(false) { }
+
+	/** constructor for setting params */
+	SGString(T* s, index_t l, bool free_string=false)
+		: string(s), length(l), do_free(free_string) { }
+
+	/** constructor for setting params from a SGVector*/
+	SGString(SGVector<T> v)
+		: string(v.vector), length(v.vlen), do_free(v.do_free) { }
+
+	/** constructor to create new matrix in memory */
+	SGString(index_t len, bool free_string=false) :
+		length(len), do_free(free_string)
+	{
+		string=new T[len];
+	}
+
+	/** copy constructor */
+	SGString(const SGString &orig)
+		: string(orig.string), length(orig.length), do_free(orig.do_free) { }
+
+public:
 	/** string  */
 	T* string;
 	/** length of string  */
 	index_t length;
+	/** whether string needs to be freed */
+	bool do_free;
 };
 
 /** template class SGStringList */
 template <class T> struct SGStringList
 {
+public:
+	/** default constructor */
+	SGStringList() : strings(NULL), num_strings(0), max_string_length(0),
+		do_free(false) { }
+
+	/** constructor for setting params */
+	SGStringList(T* s, index_t num_s, index_t max_length, bool free_strings=false)
+		: strings(s), num_strings(num_s), max_string_length(max_length),
+		  do_free(free_strings) { }
+
+	/** constructor to create new matrix in memory */
+	SGStringList(index_t num_s, index_t max_length, bool free_strings=false)
+		: num_strings(num_s), max_string_length(max_length),
+		  do_free(free_strings)
+	{
+		strings=new SGString<T>[num_strings];
+	}
+
+	/** copy constructor */
+	SGStringList(const SGStringList &orig)
+		: num_strings(orig.num_strings),
+		  max_string_length(orig.max_string_length), strings(orig.strings),
+		  do_free(orig.do_free) { }
+
+
+public:
 	/* number of strings */
-	int32_t num_strings;
+	index_t num_strings;
 
 	/** length of longest string */
-	int32_t max_string_length;
+	index_t max_string_length;
 
 	/// this contains the array of features.
 	SGString<T>* strings;
+
+	/** whether vector needs to be freed */
+	bool do_free;
 };
 
 /** template class SGSparseVectorEntry */
