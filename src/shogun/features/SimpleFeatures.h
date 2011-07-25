@@ -969,6 +969,8 @@ public:
 	/** Creates a new CFeatures instance containing copies of the elements
 	 * which are specified by the provided indices.
 	 *
+	 * possible with subset
+	 *
 	 * @param indices indices of feature elements to copy
 	 * @return new CFeatures instance with copies of feature data
 	 */
