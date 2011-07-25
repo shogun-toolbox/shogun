@@ -76,9 +76,19 @@ void CParameterCombination::print_tree(int prefix_num) const
 			}
 			else
 			{
-				SG_SPRINT("\"%s\"=%f ", m_param->get_parameter(i)->m_name,
-						*((float64_t*)m_param->get_parameter(i)->m_parameter));
+				SG_SPRINT("\"%s\"=", m_param->get_parameter(i)->m_name);
+				void* param=m_param->get_parameter(i)->m_parameter;
+
+				if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_FLOAT64)
+					SG_SPRINT("%f ", *((float64_t*)param));
+				else if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_INT32)
+					SG_SPRINT("%i ", *((int32_t*)param));
+				else if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_BOOL)
+					SG_SPRINT("%s ", *((bool*)param ? "true" : "false"));
+				else
+					SG_NOTIMPLEMENTED;
 			}
+
 		}
 
 	}
