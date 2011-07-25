@@ -455,7 +455,6 @@ void CModelSelectionParameters::delete_values()
 			break;
 		case MSPT_INT32:
 			delete[] (int32_t*) m_values.vector;
->>>>>>> merge of current upstream
 			break;
 		case MSPT_NONE:
 			SG_ERROR("Value node has no type!\n");
