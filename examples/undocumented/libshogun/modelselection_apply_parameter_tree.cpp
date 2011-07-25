@@ -29,7 +29,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* c=new CModelSelectionParameters("C1");
 	root->append_child(c);
-	c->build_values(1, 2, R_EXP);
+	c->build_values(1.0, 2.0, R_EXP);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
 	CModelSelectionParameters* param_gaussian_kernel=
@@ -39,7 +39,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* param_gaussian_kernel_width=
 			new CModelSelectionParameters("width");
-	param_gaussian_kernel_width->build_values(1, 2, R_EXP);
+	param_gaussian_kernel_width->build_values(1.0, 2.0, R_EXP);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	return root;

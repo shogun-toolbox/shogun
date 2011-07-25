@@ -32,11 +32,11 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* c1=new CModelSelectionParameters("C1");
 	root->append_child(c1);
-	c1->build_values(-15, 15, R_EXP);
+	c1->build_values(-15.0, 15.0, R_EXP);
 
 	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
 	root->append_child(c2);
-	c2->build_values(-15, 15, R_EXP);
+	c2->build_values(-15.0, 15.0, R_EXP);
 
 	return root;
 }
