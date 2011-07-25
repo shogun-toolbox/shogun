@@ -35,9 +35,8 @@ int main(int argc, char **argv)
 	SG_REF(labels);
 
 	/* print labels */
-	SGVector<float64_t> labels_data;
-	labels_data.vector=labels->get_labels(labels_data.vlen);
-	CMath::display_vector(labels_data.vector, num_labels, "labels");
+	SGVector<float64_t> labels_data=labels->get_labels();
+	CMath::display_vector(labels_data.vector, labels_data.vlen, "labels");
 
 	/* create subset indices */
 	SGVector<index_t> subset_idx(CMath::randperm(num_subset_idx),

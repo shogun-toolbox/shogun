@@ -110,18 +110,18 @@
 %pythoncode %{
 import tempfile, random, os, exceptions
 
-import shogun
+import modshogun
 
 def __SGgetstate__(self):
     fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
         + str(random.randint(0, 1e15))
 
     try:
-        fstream = shogun.SerializableAsciiFile(fname, "w") \
+        fstream = modshogun.SerializableAsciiFile(fname, "w") \
             if self.__pickle_ascii__ \
-            else shogun.SerializableHDF5File(fname, "w")
+            else modshogun.SerializableHDF5File(fname, "w")
     except exceptions.AttributeError:
-        fstream = shogun.SerializableAsciiFile(fname, "w")
+        fstream = modshogun.SerializableAsciiFile(fname, "w")
         self.__pickle_ascii__ = True
 
     if not self.save_serializable(fstream):
@@ -145,9 +145,9 @@ def __SGsetstate__(self, state_tuple):
     fstream.close()
 
     try:
-        fstream = shogun.SerializableAsciiFile(fname, "r") \
+        fstream = modshogun.SerializableAsciiFile(fname, "r") \
             if state_tuple[0] \
-            else shogun.SerializableHDF5File(fname, "r")
+            else modshogun.SerializableHDF5File(fname, "r")
     except exceptions.AttributeError:
         raise exceptions.IOError("File contains an HDF5 stream but " \
                                  "Shogun was not compiled with HDF5" \
@@ -168,7 +168,7 @@ def __SGstr__(self):
     fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
         + str(random.randint(0, 1e15))
 
-    fstream = shogun.SerializableAsciiFile(fname, "w")
+    fstream = modshogun.SerializableAsciiFile(fname, "w")
     if not self.save_serializable(fstream):
         fstream.close(); os.remove(fname)
         raise exceptions.IOError("Could not dump Shogun object!")

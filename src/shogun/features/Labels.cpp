@@ -58,7 +58,7 @@ CLabels::CLabels(CFile* loader)
 
 CLabels::~CLabels()
 {
-	labels.free_vector();
+	delete[] labels.vector;
 	delete m_subset;
 	m_subset=NULL;
 
@@ -70,9 +70,9 @@ void CLabels::init()
 	m_parameters->add(&labels, "labels", "The labels.");
 	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
 
-	m_subset=NULL;
 	labels=SGVector<float64_t>();
-	m_num_classes=0;;
+	m_num_classes=0;
+	m_subset=NULL;
 }
 
 void CLabels::set_labels(SGVector<float64_t> v)
@@ -82,6 +82,7 @@ void CLabels::set_labels(SGVector<float64_t> v)
 
 	labels.free_vector();
 	labels=v;
+	labels.do_free=false;
 }
 
 bool CLabels::is_two_class_labeling()
@@ -115,13 +116,9 @@ bool CLabels::is_two_class_labeling()
 
 int32_t CLabels::get_num_classes()
 {
-	SGVector<int32_t> lab=get_int_labels();
-
 	int32_t num_classes=0;
-	for (int32_t i=0; i<lab.vlen; i++)
-		num_classes=CMath::max(num_classes,lab.vector[i]);
-
-	lab.free_vector();
+	for (int32_t i=0; i<get_num_labels(); i++)
+		num_classes=CMath::max(num_classes, int32_t(get_label(i)));
 
 	return num_classes+1;
 }

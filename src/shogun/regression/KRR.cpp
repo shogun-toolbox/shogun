@@ -106,7 +106,7 @@ CLabels* CKRR::apply()
 	int32_t m = kernel_matrix.num_rows;
 	ASSERT(kernel_matrix.matrix && m>0 && n>0);
 
-	float64_t* Yh=new float64_t[n];
+	SGVector<float64_t> Yh(n);
 
 	// predict
 	// K is symmetric, CblasColMajor is same as CblasRowMajor 
@@ -115,16 +115,11 @@ CLabels* CKRR::apply()
 	int m_int = (int) m;
 	int n_int = (int) n;
 	cblas_dgemv(CblasColMajor, CblasTrans, m_int, n_int, 1.0, (double*) kernel_matrix.matrix,
-		m_int, (double*) alpha, 1, 0.0, (double*) Yh, 1);
+		m_int, (double*) alpha, 1, 0.0, (double*) Yh.vector, 1);
 
 	delete[] kernel_matrix.matrix;
 
-	CLabels* output=new CLabels(n);
-	output->set_labels(SGVector<float64_t>(Yh, n));
-
-	delete[] Yh;
-
-	return output;
+	return new CLabels(Yh);
 }
 
 float64_t CKRR::apply(int32_t num)

@@ -45,21 +45,17 @@ bool CLinearMachine::save(FILE* dstfile)
 
 CLabels* CLinearMachine::apply()
 {
-	if (features)
-	{
-		int32_t num=features->get_num_vectors();
-		ASSERT(num>0);
-		ASSERT(w_dim==features->get_dim_feature_space());
+	if (!features)
+		return NULL;
 
-		float64_t* out=new float64_t[num];
-		features->dense_dot_range(out, 0, num, NULL, w, w_dim, bias);
+	int32_t num=features->get_num_vectors();
+	ASSERT(num>0);
+	ASSERT(w_dim==features->get_dim_feature_space());
 
-		CLabels* output=new CLabels(SGVector<float64_t>(out,num));
+	float64_t* out=new float64_t[num];
+	features->dense_dot_range(out, 0, num, NULL, w, w_dim, bias);
 
-		return output;
-	}
-
-	return NULL;
+	return new CLabels(SGVector<float64_t>(out,num));
 }
 
 CLabels* CLinearMachine::apply(CFeatures* data)

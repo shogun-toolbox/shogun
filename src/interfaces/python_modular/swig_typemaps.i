@@ -261,9 +261,10 @@ TYPEMAP_IN_SGVECTOR(PyObject,      NPY_OBJECT)
 
     if (descr)
     {
+        void* copy=get_copy($1.vector, sizeof(type)*size_t($1.vlen));
         $result = PyArray_NewFromDescr(&PyArray_Type,
-                descr, 1, &dims, NULL, (void*) $1.vector, NPY_FARRAY | NPY_WRITEABLE, NULL);
-        /*((PyArrayObject*) $result)->flags |= NPY_OWNDATA;*/
+                descr, 1, &dims, NULL, copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
+        ((PyArrayObject*) $result)->flags |= NPY_OWNDATA;
     }
 
     $1.free_vector();
@@ -377,7 +378,7 @@ TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
 %typemap(in) shogun::SGNDArray<type>
 {
     (PyObject* array=NULL, int is_new_object, int32_t* temp_dims=NULL)
-    array = make_contiguous($input, &is_new_object, -1,typecode);
+    array = make_contiguous($input, &is_new_object, -1,typecode, true);
     if (!array)
         SWIG_fail;
 

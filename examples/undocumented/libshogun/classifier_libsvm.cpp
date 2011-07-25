@@ -66,8 +66,7 @@ int main()
 	gen_rand_data();
 
 	// create train labels
-	CLabels* labels=new CLabels();
-	labels->set_labels(lab, NUM);
+	CLabels* labels=new CLabels(SGVector<float64_t>(lab, NUM));
 	SG_REF(labels);
 
 	// create train features

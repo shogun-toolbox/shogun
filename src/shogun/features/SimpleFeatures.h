@@ -62,20 +62,19 @@ class CDotFeatures;
  * \li 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
  * \li 96bit Float matrix - CSimpleFeatures<floatmax_t>
  */
-template<class ST> class CSimpleFeatures: public CDotFeatures {
+template<class ST> class CSimpleFeatures: public CDotFeatures
+{
 public:
 	/** constructor
 	 *
 	 * @param size cache size
 	 */
-	CSimpleFeatures(int32_t size = 0) :
-			CDotFeatures(size) {
-		init();
-	}
+	CSimpleFeatures(int32_t size = 0) : CDotFeatures(size) { init(); }
 
 	/** copy constructor */
 	CSimpleFeatures(const CSimpleFeatures & orig) :
-			CDotFeatures(orig) {
+			CDotFeatures(orig)
+	{
 		copy_feature_matrix(orig.feature_matrix, orig.num_features,
 				orig.num_vectors);
 		initialize_cache();
@@ -89,7 +88,8 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 */
 	CSimpleFeatures(SGMatrix<ST> matrix) :
-			CDotFeatures() {
+			CDotFeatures()
+	{
 		init();
 		set_feature_matrix(matrix);
 	}
@@ -101,7 +101,8 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 */
 	CSimpleFeatures(ST* src, int32_t num_feat, int32_t num_vec) :
-			CDotFeatures() {
+			CDotFeatures()
+	{
 		init();
 		set_feature_matrix(src, num_feat, num_vec);
 	}
@@ -111,7 +112,8 @@ public:
 	 * @param loader File object via which to load data
 	 */
 	CSimpleFeatures(CFile* loader) :
-			CDotFeatures(loader) {
+			CDotFeatures(loader)
+	{
 		init();
 		load(loader);
 	}
@@ -120,19 +122,19 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual CFeatures* duplicate() const {
+	virtual CFeatures* duplicate() const
+	{
 		return new CSimpleFeatures<ST>(*this);
 	}
 
-	virtual ~CSimpleFeatures() {
-		free_features();
-	}
+	virtual ~CSimpleFeatures() { free_features(); }
 
 	/** free feature matrix
 	 *
 	 * Any subset is removed
 	 */
-	void free_feature_matrix() {
+	void free_feature_matrix()
+	{
 		remove_subset();
 		delete[] feature_matrix;
 		feature_matrix = NULL;
@@ -146,7 +148,8 @@ public:
 	 *
 	 * Any subset is removed
 	 */
-	void free_features() {
+	void free_features()
+	{
 		remove_subset();
 		free_feature_matrix();
 		SG_UNREF(feature_cache);
@@ -163,59 +166,63 @@ public:
 	 * caller via free_feature_vector
 	 * @return feature vector
 	 */
-	ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree) {
+	ST* get_feature_vector(int32_t num, int32_t& len, bool& dofree)
+	{
 		/* index conversion for subset, only for array access */
 		int32_t real_num=subset_idx_conversion(num);
 
 		len = num_features;
 
-		if (feature_matrix) {
+		if (feature_matrix)
+		{
 			dofree = false;
 			return &feature_matrix[real_num * int64_t(num_features)];
-		} else {
-			ST* feat = NULL;
-			dofree = false;
-
-			if (feature_cache) {
-				feat = feature_cache->lock_entry(num);
-
-				if (feat)
-					return feat;
-				else {
-					feat = feature_cache->set_entry(real_num);
-				}
-			}
-
-			if (!feat)
-				dofree = true;
-			feat = compute_feature_vector(num, len, feat);
-
-			if (get_num_preprocessors()) {
-				int32_t tmp_len = len;
-				ST* tmp_feat_before = feat;
-				ST* tmp_feat_after = NULL;
-
-				for (int32_t i = 0; i < get_num_preprocessors(); i++) {
-					CSimplePreprocessor<ST>* p =
-							(CSimplePreprocessor<ST>*) get_preprocessor(i);
-					// temporary hack
-					SGVector<ST> applied = p->apply_to_feature_vector(
-							SGVector<ST>(tmp_feat_before, tmp_len));
-					tmp_feat_after = applied.vector;
-					SG_UNREF(p);
-
-					if (i != 0) // delete feature vector, except for the the first one, i.e., feat
-						delete[] tmp_feat_before;
-					tmp_feat_before = tmp_feat_after;
-				}
-
-				memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
-				delete[] tmp_feat_after;
-
-				len = tmp_len;
-			}
-			return feat;
 		}
+
+		ST* feat = NULL;
+		dofree = false;
+
+		if (feature_cache)
+		{
+			feat = feature_cache->lock_entry(num);
+
+			if (feat)
+				return feat;
+			else 
+				feat = feature_cache->set_entry(real_num);
+		}
+
+		if (!feat)
+			dofree = true;
+		feat = compute_feature_vector(num, len, feat);
+
+		if (get_num_preprocessors())
+		{
+			int32_t tmp_len = len;
+			ST* tmp_feat_before = feat;
+			ST* tmp_feat_after = NULL;
+
+			for (int32_t i = 0; i < get_num_preprocessors(); i++)
+			{
+				CSimplePreprocessor<ST>* p =
+						(CSimplePreprocessor<ST>*) get_preprocessor(i);
+				// temporary hack
+				SGVector<ST> applied = p->apply_to_feature_vector(
+						SGVector<ST>(tmp_feat_before, tmp_len));
+				tmp_feat_after = applied.vector;
+				SG_UNREF(p);
+
+				if (i != 0) // delete feature vector, except for the the first one, i.e., feat
+					delete[] tmp_feat_before;
+				tmp_feat_before = tmp_feat_after;
+			}
+
+			memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
+			delete[] tmp_feat_after;
+
+			len = tmp_len;
+		}
+		return feat;
 	}
 
 	/** set feature vector num
@@ -224,11 +231,13 @@ public:
 	 *
 	 * @param vector vector
 	 */
-	void set_feature_vector(SGVector<ST> vector, int32_t num) {
+	void set_feature_vector(SGVector<ST> vector, int32_t num)
+	{
 		/* index conversion for subset, only for array access */
 		int32_t real_num=subset_idx_conversion(num);
 
-		if (num>=get_num_vectors()) {
+		if (num>=get_num_vectors())
+		{
 			SG_ERROR("Index out of bounds (number of vectors %d, you "
 			"requested %d)\n", get_num_vectors(), num);
 		}
@@ -251,11 +260,13 @@ public:
 	 * @param num index of vector
 	 * @return feature vector
 	 */
-	SGVector<ST> get_feature_vector(int32_t num) {
+	SGVector<ST> get_feature_vector(int32_t num)
+	{
 		/* index conversion for subset, only for array access */
 		int32_t real_num=subset_idx_conversion(num);
 
-		if (num >= get_num_vectors()) {
+		if (num >= get_num_vectors())
+		{
 			SG_ERROR("Index out of bounds (number of vectors %d, you "
 			"requested %d)\n", get_num_vectors(), real_num);
 		}
@@ -307,7 +318,8 @@ public:
 	 *
 	 * Note: assumes idx is sorted
 	 */
-	void vector_subset(int32_t* idx, int32_t idx_len) {
+	void vector_subset(int32_t* idx, int32_t idx_len)
+	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call vector_subset\n");
 
@@ -319,12 +331,13 @@ public:
 
 		int32_t old_ii = -1;
 
-		for (int32_t i = 0; i < idx_len; i++) {
+		for (int32_t i = 0; i < idx_len; i++)
+		{
 			int32_t ii = idx[i];
 			ASSERT(old_ii<ii);
+
 			if (ii < 0 || ii >= num_vec)
-				SG_ERROR(
-						"Index out of range: should be 0<%d<%d\n", ii, num_vec);
+				SG_ERROR( "Index out of range: should be 0<%d<%d\n", ii, num_vec);
 
 			if (i == ii)
 				continue;
@@ -349,7 +362,8 @@ public:
 	 *
 	 * Note: assumes idx is sorted
 	 */
-	void feature_subset(int32_t* idx, int32_t idx_len) {
+	void feature_subset(int32_t* idx, int32_t idx_len)
+	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call feature_subset\n");
 
@@ -358,12 +372,14 @@ public:
 		int32_t num_feat = num_features;
 		num_features = idx_len;
 
-		for (int32_t i = 0; i < num_vectors; i++) {
+		for (int32_t i = 0; i < num_vectors; i++)
+		{
 			ST* src = &feature_matrix[int64_t(num_feat) * i];
 			ST* dst = &feature_matrix[int64_t(num_features) * i];
 
 			int32_t old_jj = -1;
-			for (int32_t j = 0; j < idx_len; j++) {
+			for (int32_t j = 0; j < idx_len; j++)
+			{
 				int32_t jj = idx[j];
 				ASSERT(old_jj<jj);
 				if (jj < 0 || jj >= num_feat)
@@ -385,7 +401,8 @@ public:
 	 * @param num_feat number of features (rows of matrix)
 	 * @param num_vec number of vectors (columns of matrix)
 	 */
-	void get_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec) {
+	void get_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec)
+	{
 		ASSERT(feature_matrix);
 
 		int64_t num = int64_t(num_features) * get_num_vectors();
@@ -394,14 +411,18 @@ public:
 		*dst = (ST*) SG_MALLOC(sizeof(ST) * num);
 
 		/* copying depends on whether a subset is used */
-		if (m_subset) {
+		if (m_subset)
+		{
 			/* copy vector wise */
-			for (int32_t i = 0; i < *num_vec; ++i) {
+			for (int32_t i = 0; i < *num_vec; ++i)
+			{
 				int32_t real_i = m_subset->subset_idx_conversion(i);
 				memcpy(*dst, &feature_matrix[real_i * int64_t(num_features)],
 						num_features * sizeof(ST));
 			}
-		} else {
+		}
+		else
+		{
 			/* copy complete matrix */
 			memcpy(*dst, feature_matrix, num * sizeof(ST));
 		}
@@ -413,7 +434,8 @@ public:
 	 *
 	 * @return matrix feature matrix
 	 */
-	SGMatrix<ST> get_feature_matrix() {
+	SGMatrix<ST> get_feature_matrix()
+	{
 		return SGMatrix<ST>(feature_matrix, num_features, num_vectors);
 	}
 
@@ -423,12 +445,15 @@ public:
 	 *
 	 * @param matrix feature matrix to set
 	 */
-	void set_feature_matrix(SGMatrix<ST> matrix) {
+	void set_feature_matrix(SGMatrix<ST> matrix)
+	{
 		remove_subset();
 		free_feature_matrix();
 		feature_matrix = matrix.matrix;
 		num_features = matrix.num_rows;
 		num_vectors = matrix.num_cols;
+		feature_matrix_num_vectors = num_vectors;
+		feature_matrix_num_features = num_features;
 	}
 
 	/** get the pointer to the feature matrix
@@ -440,7 +465,8 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 * @return feature matrix
 	 */
-	ST* get_feature_matrix(int32_t &num_feat, int32_t &num_vec) {
+	ST* get_feature_matrix(int32_t &num_feat, int32_t &num_vec)
+	{
 		num_feat = num_features;
 		num_vec = num_vectors;
 		return feature_matrix;
@@ -452,7 +478,8 @@ public:
 	 *
 	 * @return transposed copy
 	 */
-	CSimpleFeatures<ST>* get_transposed() {
+	CSimpleFeatures<ST>* get_transposed()
+	{
 		int32_t num_feat;
 		int32_t num_vec;
 		ST* fm = get_transposed(num_feat, num_vec);
@@ -471,7 +498,8 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 * @return transposed sparse feature matrix
 	 */
-	ST* get_transposed(int32_t &num_feat, int32_t &num_vec) {
+	ST* get_transposed(int32_t &num_feat, int32_t &num_vec)
+	{
 		num_feat = get_num_vectors();
 		num_vec = num_features;
 
@@ -504,7 +532,8 @@ public:
 	 * @param num_feat number of features in matrix
 	 * @param num_vec number of vectors in matrix
 	 */
-	virtual void set_feature_matrix(ST* fm, int32_t num_feat, int32_t num_vec) {
+	virtual void set_feature_matrix(ST* fm, int32_t num_feat, int32_t num_vec)
+	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call set_feature_matrix\n");
 
@@ -530,7 +559,8 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 */
 	virtual void copy_feature_matrix(ST* src, int32_t num_feat,
-			int32_t num_vec) {
+			int32_t num_vec)
+	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call copy_feature_matrix\n");
 
@@ -553,7 +583,8 @@ public:
 	 *
 	 * @param df dotfeatures to obtain features from
 	 */
-	void obtain_from_dot(CDotFeatures* df) {
+	void obtain_from_dot(CDotFeatures* df)
+	{
 		remove_subset();
 
 		int32_t num_feat = df->get_dim_feature_space();
@@ -562,11 +593,12 @@ public:
 		ASSERT(num_feat>0 && num_vec>0);
 
 		free_feature_matrix();
-		feature_matrix = new ST[((int64_t) num_feat) * num_vec];feature_matrix_num_features
-		= num_feat;
+		feature_matrix = new ST[((int64_t) num_feat) * num_vec];
+		feature_matrix_num_features = num_feat;
 		feature_matrix_num_vectors = num_vec;
 
-		for (int32_t i = 0; i < num_vec; i++) {
+		for (int32_t i = 0; i < num_vec; i++)
+		{
 			SGVector<float64_t> v = df->get_computed_dot_feature_vector(i);
 			ASSERT(num_feat==v.vlen);
 
@@ -589,15 +621,19 @@ public:
 	 * @param force_preprocessing if preprocssing shall be forced
 	 * @return if applying was successful
 	 */
-	virtual bool apply_preprocessor(bool force_preprocessing = false) {
+	virtual bool apply_preprocessor(bool force_preprocessing = false)
+	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call apply_preproc\n");
 
 		SG_DEBUG( "force: %d\n", force_preprocessing);
 
-		if (feature_matrix && get_num_preprocessors()) {
-			for (int32_t i = 0; i < get_num_preprocessors(); i++) {
-				if ((!is_preprocessed(i) || force_preprocessing)) {
+		if (feature_matrix && get_num_preprocessors())
+		{
+			for (int32_t i = 0; i < get_num_preprocessors(); i++)
+			{
+				if ((!is_preprocessed(i) || force_preprocessing))
+				{
 					set_preprocessed(i);
 					CSimplePreprocessor<ST>* p =
 							(CSimplePreprocessor<ST>*) get_preprocessor(i);
@@ -613,7 +649,9 @@ public:
 			}
 
 			return true;
-		} else {
+		}
+		else
+		{
 			if (!feature_matrix)
 				SG_ERROR( "no feature matrix\n");
 
@@ -628,9 +666,7 @@ public:
 	 *
 	 * @return memory footprint of one feature
 	 */
-	virtual int32_t get_size() {
-		return sizeof(ST);
-	}
+	virtual int32_t get_size() { return sizeof(ST); }
 
 	/** get number of feature vectors
 	 *
@@ -645,15 +681,14 @@ public:
 	 *
 	 * @return number of features
 	 */
-	inline int32_t get_num_features() {
-		return num_features;
-	}
+	inline int32_t get_num_features() { return num_features; }
 
 	/** set number of features
 	 *
 	 * @param num number to set
 	 */
-	inline void set_num_features(int32_t num) {
+	inline void set_num_features(int32_t num)
+	{
 		num_features = num;
 		initialize_cache();
 	}
@@ -664,7 +699,8 @@ public:
 	 *
 	 * @param num number to set
 	 */
-	inline void set_num_vectors(int32_t num) {
+	inline void set_num_vectors(int32_t num)
+	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call set_num_vectors\n");
 
@@ -676,11 +712,13 @@ public:
 	 *
 	 * not possible with subset
 	 */
-	inline void initialize_cache() {
+	inline void initialize_cache()
+	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call initialize_cache\n");
 
-		if (num_features && num_vectors) {
+		if (num_features && num_vectors)
+		{
 			SG_UNREF(feature_cache);
 			feature_cache = new CCache<ST>(get_cache_size(), num_features,
 					num_vectors);
@@ -692,9 +730,7 @@ public:
 	 *
 	 * @return feature class SIMPLE
 	 */
-	inline virtual EFeatureClass get_feature_class() {
-		return C_SIMPLE;
-	}
+	inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
 
 	/** get feature type
 	 *
@@ -710,12 +746,14 @@ public:
 	 * @param p_num_vectors new number of vectors
 	 * @return if reshaping was successful
 	 */
-	virtual bool reshape(int32_t p_num_features, int32_t p_num_vectors) {
+	virtual bool reshape(int32_t p_num_features, int32_t p_num_vectors)
+	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call reshape\n");
 
 		if (p_num_features * p_num_vectors
-				== this->num_features * this->num_vectors) {
+				== this->num_features * this->num_vectors)
+		{
 			num_features = p_num_features;
 			num_vectors = p_num_vectors;
 			return true;
@@ -730,9 +768,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() {
-		return num_features;
-	}
+	virtual int32_t get_dim_feature_space() { return num_features; }
 
 	/** compute dot product between vector1 and vector2,
 	 * appointed by their indices
@@ -744,7 +780,8 @@ public:
 	 * @param vec_idx2 index of second vector
 	 */
 	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
-			int32_t vec_idx2) {
+			int32_t vec_idx2)
+	{
 		ASSERT(df);
 		ASSERT(df->get_feature_type() == get_feature_type());
 		ASSERT(df->get_feature_class() == get_feature_class());
@@ -786,7 +823,8 @@ public:
 	 * @param abs_val if true add the absolute value
 	 */
 	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-			float64_t* vec2, int32_t vec2_len, bool abs_val = false) {
+			float64_t* vec2, int32_t vec2_len, bool abs_val = false)
+	{
 		ASSERT(vec2_len == num_features);
 
 		int32_t vlen;
@@ -795,10 +833,13 @@ public:
 
 		ASSERT(vlen == num_features);
 
-		if (abs_val) {
+		if (abs_val)
+		{
 			for (int32_t i = 0; i < num_features; i++)
 				vec2[i] += alpha * CMath::abs(vec1[i]);
-		} else {
+		}
+		else
+		{
 			for (int32_t i = 0; i < num_features; i++)
 				vec2[i] += alpha * vec1[i];
 		}
@@ -811,7 +852,8 @@ public:
 	 * @param num which vector
 	 * @return number of non-zero features in vector
 	 */
-	virtual inline int32_t get_nnz_features_for_vector(int32_t num) {
+	virtual inline int32_t get_nnz_features_for_vector(int32_t num)
+	{
 		/* H.Strathmann: TODO fix according to Soerens mail */
 		return num_features;
 	}
@@ -824,7 +866,8 @@ public:
 	 * @return if aligning was successful
 	 */
 	virtual inline bool Align_char_features(CStringFeatures<char>* cf,
-			CStringFeatures<char>* Ref, float64_t gapCost) {
+			CStringFeatures<char>* Ref, float64_t gapCost)
+	{
 		return false;
 	}
 
@@ -841,7 +884,8 @@ public:
 	virtual inline void save(CFile* saver);
 
 	/** iterator for simple features */
-	struct simple_feature_iterator {
+	struct simple_feature_iterator
+	{
 		/** pointer to feature vector */
 		ST* vec;
 		/** index of vector */
@@ -866,8 +910,10 @@ public:
 	 * 			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
-	virtual void* get_feature_iterator(int32_t vector_index) {
-		if (vector_index>=get_num_vectors()) {
+	virtual void* get_feature_iterator(int32_t vector_index)
+	{
+		if (vector_index>=get_num_vectors())
+		{
 			SG_ERROR("Index out of bounds (number of vectors %d, you "
 			"requested %d)\n", get_num_vectors(), vector_index);
 		}
@@ -893,7 +939,8 @@ public:
 	 * @return true if a new non-zero feature got returned
 	 */
 	virtual bool get_next_feature(int32_t& index, float64_t& value,
-			void* iterator) {
+			void* iterator)
+	{
 		simple_feature_iterator* it = (simple_feature_iterator*) iterator;
 		if (!it || it->index >= it->vlen)
 			return false;
@@ -909,7 +956,8 @@ public:
 	 *
 	 * @param iterator as returned by get_first_feature
 	 */
-	virtual void free_feature_iterator(void* iterator) {
+	virtual void free_feature_iterator(void* iterator)
+	{
 		if (!iterator)
 			return;
 
@@ -940,9 +988,7 @@ public:
 	}
 
 	/** @return object name */
-	inline virtual const char* get_name() const {
-		return "SimpleFeatures";
-	}
+	inline virtual const char* get_name() const { return "SimpleFeatures"; }
 
 protected:
 	/** compute feature vector for sample num
@@ -957,14 +1003,16 @@ protected:
 	 * @return feature vector
 	 */
 	virtual ST* compute_feature_vector(int32_t num, int32_t& len, ST* target =
-			NULL) {
+			NULL)
+	{
 		SG_NOTIMPLEMENTED;
 		len = 0;
 		return NULL;
 	}
 
 private:
-	void init() {
+	void init()
+	{
 		num_vectors = 0;
 		num_features = 0;
 
@@ -1036,7 +1084,8 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
  */
 template<> inline bool CSimpleFeatures<float64_t>::Align_char_features(
 		CStringFeatures<char>* cf, CStringFeatures<char>* Ref,
-		float64_t gapCost) {
+		float64_t gapCost)
+{
 	ASSERT(cf);
 	/*num_vectors=cf->get_num_vectors();
 	 num_features=Ref->get_num_vectors();
@@ -1067,7 +1116,8 @@ template<> inline bool CSimpleFeatures<float64_t>::Align_char_features(
 }
 
 template<> inline float64_t CSimpleFeatures<bool>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len) {
+		const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1086,7 +1136,8 @@ template<> inline float64_t CSimpleFeatures<bool>::dense_dot(int32_t vec_idx1,
 }
 
 template<> inline float64_t CSimpleFeatures<char>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len) {
+		const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1105,7 +1156,8 @@ template<> inline float64_t CSimpleFeatures<char>::dense_dot(int32_t vec_idx1,
 }
 
 template<> inline float64_t CSimpleFeatures<int8_t>::dense_dot(int32_t vec_idx1,
-		const float64_t* vec2, int32_t vec2_len) {
+		const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1124,7 +1176,8 @@ template<> inline float64_t CSimpleFeatures<int8_t>::dense_dot(int32_t vec_idx1,
 }
 
 template<> inline float64_t CSimpleFeatures<uint8_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1143,7 +1196,8 @@ template<> inline float64_t CSimpleFeatures<uint8_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<int16_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1162,7 +1216,8 @@ template<> inline float64_t CSimpleFeatures<int16_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<uint16_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1181,7 +1236,8 @@ template<> inline float64_t CSimpleFeatures<uint16_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<int32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1200,7 +1256,8 @@ template<> inline float64_t CSimpleFeatures<int32_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<uint32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1219,7 +1276,8 @@ template<> inline float64_t CSimpleFeatures<uint32_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<int64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1238,7 +1296,8 @@ template<> inline float64_t CSimpleFeatures<int64_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<uint64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1257,7 +1316,8 @@ template<> inline float64_t CSimpleFeatures<uint64_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<float32_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1276,7 +1336,8 @@ template<> inline float64_t CSimpleFeatures<float32_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<float64_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;
@@ -1292,7 +1353,8 @@ template<> inline float64_t CSimpleFeatures<float64_t>::dense_dot(
 }
 
 template<> inline float64_t CSimpleFeatures<floatmax_t>::dense_dot(
-		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) {
+		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+{
 	ASSERT(vec2_len == num_features);
 
 	int32_t vlen;

@@ -54,16 +54,11 @@ class CLabels : public CSGObject
 
 		/** constructor
 		 *
-		 * @param src labels to set
-		 * @param len number of labels
-		 */
-		CLabels(float64_t* src, int32_t len);
-
-		/** constructor
-		 *
 		 * @param loader File object via which to load data
 		 */
 		CLabels(CFile* loader);
+
+		/** destructor */
 		virtual ~CLabels();
 
 		/** load labels from file
@@ -147,8 +142,10 @@ class CLabels : public CSGObject
 		{
 			int32_t real_num=subset_idx_conversion(idx);
 			ASSERT(labels.vector && idx<get_num_labels());
-			ASSERT(labels.vector[real_num] == ((float64_t) ((int32_t) labels.vector[real_num])));
-			return ((int32_t) labels.vector[real_num]);
+			if (labels.vector[real_num] != float64_t((int32_t(labels.vector[real_num]))))
+				SG_ERROR("label[%d]=%g is not an integer\n", labels.vector[real_num]);
+
+			return int32_t(labels.vector[real_num]);
 		}
 
 		/** is two-class labeling

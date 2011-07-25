@@ -258,7 +258,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	if (prefix == NULL || *prefix == '\0')
 		file->close();
 
-	SG_DEBUG("DONE SAVING CSGObject '%s'\n", get_name());
+	SG_DEBUG("DONE SAVING CSGObject '%s' (%p)\n", get_name(), this);
 
 	return true;;
 }
@@ -308,7 +308,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 				   "called!\n", prefix, get_name());
 		return false;
 	}
-	SG_DEBUG("DONE LOADING CSGObject '%s'\n", get_name());
+	SG_DEBUG("DONE LOADING CSGObject '%s' (%p)\n", get_name(), this);
 
 	return true;
 }
