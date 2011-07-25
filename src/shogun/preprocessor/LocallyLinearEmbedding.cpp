@@ -175,7 +175,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	delete[] W_matrix;
 
-	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,true));
+	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,false));
 	M_matrix.free_matrix();
 
 	return simple_features->get_feature_matrix();
@@ -187,7 +187,7 @@ SGVector<float64_t> CLocallyLinearEmbedding::apply_to_feature_vector(SGVector<fl
 	return vector;
 }
 
-SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t> matrix, int dimension, bool force_lapack = false)
+SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t> matrix, int dimension, bool force_lapack)
 {
 	int i,j;
 	ASSERT(matrix.num_cols==matrix.num_rows);
