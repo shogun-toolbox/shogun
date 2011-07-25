@@ -2112,6 +2112,36 @@ template <class ST> class CStringFeatures : public CFeatures
 		}
 	*/
 
+		/** Creates a new CFeatures instance containing copies of the elements
+		 * which are specified by the provided indices.
+		 *
+		 * possible with subset
+		 *
+		 * @param indices indices of feature elements to copy
+		 * @return new CFeatures instance with copies of feature data
+		 */
+		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		{
+			/* string list to create new CStringFeatures from */
+			SGStringList<ST> copy(indices.vlen, max_string_length);
+
+			/* copy all features */
+			for (index_t i=0; i<indices.vlen; ++i)
+			{
+				/* eventually check subset */
+				index_t real_idx=subset_idx_conversion(indices.vector[i]);
+				copy.strings[i]=features[real_idx];
+			}
+
+			/* create copy instance */
+			CStringFeatures* result=new CStringFeatures(copy, alphabet);
+
+			/* max string length may have changed */
+			result->determine_maximum_string_length();
+
+			return result;
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StringFeatures"; }
 
