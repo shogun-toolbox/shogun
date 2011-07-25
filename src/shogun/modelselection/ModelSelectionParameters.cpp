@@ -44,19 +44,22 @@ void CModelSelectionParameters::init()
 	m_sgobject=NULL;
 	m_child_nodes=new CDynamicObjectArray<CModelSelectionParameters>();
 	SG_REF(m_child_nodes);
+	m_value_type=MSPT_NONE;
 
 	m_parameters->add((char*)m_node_name, "node_name", "Name of node");
 	m_parameters->add((CSGObject**)&m_sgobject, "sgobject",
 			"CSGObject of this node");
 	m_parameters->add((CSGObject**)m_child_nodes, "child nodes",
 			"children of this node");
+//	m_parameters->add(&m_value_type, "value_type",
+//				"type of the values of this node");
 }
 
 CModelSelectionParameters::~CModelSelectionParameters()
 {
 	SG_UNREF(m_child_nodes);
 	SG_UNREF(m_sgobject);
-	SG_FREE(m_values.vector);
+	delete_values();
 }
 
 void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
@@ -89,15 +92,22 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 	m_child_nodes->append_element(child);
 }
 
-void CModelSelectionParameters::set_values(SGVector<float64_t> values)
+void CModelSelectionParameters::set_values(SGVector<void> values)
 {
 	/* possibly delete old range values */
-	SG_FREE(m_values.vector);
+	delete_values();
 	m_values=values;
 }
 
 void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 		ERangeType type, float64_t step, float64_t type_base)
+{
+	build_values(MSPT_FLOAT, (void*)&min, (void*)&max, type, (void*)&step,
+			(void*)&type_base);
+}
+
+void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
+		void* max, ERangeType type, void* step, void* type_base)
 {
 	if (m_sgobject || has_children())
 	{
@@ -106,40 +116,38 @@ void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 	}
 
 	/* possibly delete old range values */
-	SG_FREE(m_values.vector);
+	delete_values();
 
-	if (max<min)
-		SG_ERROR("unable to set range: maximum=%f < minimum=%f\n", max, min);
+	/* save new type */
+	m_value_type=value_type;
 
-	/* create value vector */
-	index_t num_values=CMath::round(max-min)/step+1;
-	m_values.vlen=num_values;
-	m_values.vector=SG_MALLOC(float64_t, num_values);
-
-	/* fill array */
-	for (index_t i=0; i<num_values; ++i)
+	if (value_type==MSPT_FLOAT)
 	{
-		float64_t current=min+i*step;
+		SGVector<float64_t> values=create_range_array<float64_t>(
+				*((float64_t*)min),
+				*((float64_t*)max),
+				type,
+				*((float64_t*)step),
+				*((float64_t*)type_base));
 
-		switch (type)
-		{
-		case R_LINEAR:
-			m_values.vector[i]=current;
-			break;
-		case R_EXP:
-			m_values.vector[i]=CMath::pow(type_base, current);
-			break;
-		case R_LOG:
-			if (current<=0)
-				SG_ERROR("log(x) with x=%f\n", current);
-
-			/* custom base b: log_b(i*step)=log_2(i*step)/log_2(b) */
-			m_values.vector[i]=CMath::log2(current)/CMath::log2(type_base);
-			break;
-		default:
-			SG_ERROR("unknown range type!\n");
-			break;
-		}
+		m_values.vector=(void*)values.vector;
+		m_values.vlen=values.vlen;
+	}
+	else if (value_type==MSPT_INT)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	else if (value_type==MSPT_BOOL)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	else if (value_type==MSPT_BOOL)
+	{
+		SG_ERROR("Value node has no type!\n");
+	}
+	else
+	{
+		SG_ERROR("Unknown type for model selection parameter!\n");
 	}
 }
 
@@ -157,7 +165,25 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 		{
 			/* create tree with only one parameter element */
 			Parameter* p=new Parameter();
-			p->add(&m_values.vector[i], m_node_name);
+
+			switch (m_value_type)
+			{
+			case MSPT_FLOAT:
+				p->add(&((float64_t*)m_values.vector)[i], m_node_name);
+				break;
+			case MSPT_INT:
+				SG_NOTIMPLEMENTED;
+				break;
+			case MSPT_BOOL:
+				SG_NOTIMPLEMENTED;
+				break;
+			case MSPT_NONE:
+				SG_ERROR("Value node has no type!\n");
+				break;
+			default:
+				SG_ERROR("Unknown type for model selection parameter!\n");
+				break;
+			}
 
 			result->append_element(new CParameterCombination(p));
 		}
@@ -379,11 +405,60 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		}
 		else
 		{
-			SG_PRINT("%s%s with values: ", prefix, m_node_name);
-			CMath::display_vector(m_values.vector, m_values.vlen);
+
+			if (m_values.vector)
+			{
+				/* value node */
+				SG_PRINT("%s%s with values: ", prefix, m_node_name);
+
+				switch (m_value_type)
+				{
+				case MSPT_FLOAT:
+					CMath::display_vector((float64_t*)m_values.vector, m_values.vlen);
+					break;
+				case MSPT_INT:
+					SG_NOTIMPLEMENTED;
+					break;
+				case MSPT_BOOL:
+					SG_NOTIMPLEMENTED;
+					break;
+				case MSPT_NONE:
+					SG_ERROR("Value node has no type!\n");
+					break;
+				default:
+					SG_ERROR("Unknown type for model selection parameter!\n");
+					break;
+				}
+			}
+			else
+				SG_PRINT("root\n");
 		}
 	}
 
 	SG_FREE(prefix);
 }
 
+void CModelSelectionParameters::delete_values()
+{
+	if (m_values.vector)
+	{
+		switch (m_value_type)
+		{
+		case MSPT_FLOAT:
+			delete[] (float64_t*) m_values.vector;
+			break;
+		case MSPT_INT:
+			SG_NOTIMPLEMENTED;
+			break;
+		case MSPT_BOOL:
+			SG_NOTIMPLEMENTED;
+			break;
+		case MSPT_NONE:
+			SG_ERROR("Value node has no type!\n");
+			break;
+		default:
+			SG_ERROR("Unknown type for model selection parameter!\n");
+			break;
+		}
+	}
+}
