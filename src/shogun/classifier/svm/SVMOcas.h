@@ -202,7 +202,7 @@ class CSVMOcas : public CLinearMachine
 		/** nDim big */
 		float64_t* tmp_a_buf;
 		/** labels */
-		float64_t* lab;
+		SGVector<float64_t> lab;
 
 		/** sparse representation of
 		 * cutting planes */

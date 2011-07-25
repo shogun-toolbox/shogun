@@ -100,9 +100,9 @@ class CLabels : public CSGObject
 		inline bool set_label(int32_t idx, float64_t label)
 		{
 			int32_t real_num=subset_idx_conversion(idx);
-			if (labels && real_num<get_num_labels())
+			if (labels.vector && real_num<get_num_labels())
 			{
-				labels[real_num]=label;
+				labels.vector[real_num]=label;
 				return true;
 			}
 			else 
@@ -120,9 +120,9 @@ class CLabels : public CSGObject
 		inline bool set_int_label(int32_t idx, int32_t label)
 		{ 
 			int32_t real_num=subset_idx_conversion(idx);
-			if (labels && real_num<get_num_labels())
+			if (labels.vector && real_num<get_num_labels())
 			{
-				labels[real_num]= (float64_t) label;
+				labels.vector[real_num]= (float64_t) label;
 				return true;
 			}
 			else 
@@ -139,8 +139,8 @@ class CLabels : public CSGObject
 		inline float64_t get_label(int32_t idx)
 		{
 			int32_t real_num=subset_idx_conversion(idx);
-			ASSERT(labels && idx<get_num_labels());
-			return labels[real_num];
+			ASSERT(labels.vector && idx<get_num_labels());
+			return labels.vector[real_num];
 		}
 
 		/** get INT label
@@ -153,9 +153,9 @@ class CLabels : public CSGObject
 		inline int32_t get_int_label(int32_t idx)
 		{
 			int32_t real_num=subset_idx_conversion(idx);
-			ASSERT(labels && idx<get_num_labels());
-			ASSERT(labels[real_num]== ((float64_t) ((int32_t) labels[real_num])));
-			return ((int32_t) labels[real_num]);
+			ASSERT(labels.vector && idx<get_num_labels());
+			ASSERT(labels.vector[real_num] == ((float64_t) ((int32_t) labels.vector[real_num])));
+			return ((int32_t) labels.vector[real_num]);
 		}
 
 		/** is two-class labeling
@@ -180,15 +180,6 @@ class CLabels : public CSGObject
 		 *
 		 * not possible with subset
 		 *
-		 * @param len number of labels
-		 * @return the labels
-		 */
-		float64_t* get_labels(int32_t &len);
-		
-		/** get labels
-		 *
-		 * not possible with subset
-		 *
 		 * @return labels
 		 */
 		SGVector<float64_t> get_labels();
@@ -200,15 +191,6 @@ class CLabels : public CSGObject
 		 * @param v labels
 		 */
 		void set_labels(SGVector<float64_t> v);
-
-		/** set labels
-		 *
-		 * not possible with subset
-		 *
-		 * @param src labels to set
-		 * @param len number of labels
-		 */
-		void set_labels(float64_t* src, int32_t len);
 
 		/**
 		 * set all labels to +1
@@ -262,10 +244,9 @@ class CLabels : public CSGObject
 		 *
 		 * possible with subset
 		 *
-		 * @param len number of labels to get
 		 * @return INT labels
 		 */
-		int32_t* get_int_labels(int32_t &len);
+		SGVector<int32_t> get_int_labels();
 
 		/** set INT labels
 		 * caller has to clean up
@@ -273,9 +254,8 @@ class CLabels : public CSGObject
 		 * not possible on subset
 		 *
 		 * @param labels INT labels
-		 * @param len number of INT labels
 		 */
-		void set_int_labels(int32_t *labels, int32_t len) ;
+		void set_int_labels(SGVector<int32_t> labels);
 
 		/** get number of labels, depending on whether a subset is set
 		 *
@@ -283,7 +263,7 @@ class CLabels : public CSGObject
 		 */
 		inline int32_t get_num_labels()
 		{
-			return m_subset ? m_subset->get_size() : num_labels;
+			return m_subset ? m_subset->get_size() : labels.vlen;
 		}
 
 		/** @return object name */
@@ -321,10 +301,8 @@ class CLabels : public CSGObject
 		void init();
 
 	protected:
-		/** number of labels */
-		int32_t num_labels;
-		/** the labels */
-		float64_t* labels;
+		/** the label vector */
+		SGVector<float64_t> labels;
 
 		/** number of classes */
 		int32_t m_num_classes;

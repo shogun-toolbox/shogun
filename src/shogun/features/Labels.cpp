@@ -29,12 +29,7 @@ CLabels::CLabels(int32_t num_lab)
 : CSGObject()
 {
 	init();
-
-	labels=new float64_t[num_lab];
-	for (int32_t i=0; i<num_lab; i++)
-		labels[i]=0;
-
-	num_labels=num_lab;
+	labels=SGVector<float64_t>(num_lab);
 }
 
 CLabels::CLabels(SGVector<float64_t> src)
@@ -43,15 +38,6 @@ CLabels::CLabels(SGVector<float64_t> src)
 	init();
 
 	set_labels(src);
-	m_num_classes=get_num_classes();
-}
-
-CLabels::CLabels(float64_t* p_labels, int32_t len)
-: CSGObject()
-{
-	init();
-
-	set_labels(p_labels, len);
 	m_num_classes=get_num_classes();
 }
 
@@ -312,7 +298,7 @@ SGVector<float64_t> CLabels::get_labels()
 	if (m_subset)
 		SG_ERROR("get_labels() is not possible on subset");
 
-	return SGVector<float64_t> (labels, num_labels);
+	return labels;
 }
 
 int32_t* CLabels::get_int_labels(int32_t &len)

@@ -66,13 +66,12 @@ bool CSVMOcas::train(CFeatures* data)
 	ASSERT(features);
 	ASSERT(labels->is_two_class_labeling());
 
-	int32_t num_train_labels=0;
-	lab=labels->get_labels(num_train_labels);
+	lab=labels->get_labels();
 	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	if (num_vec!=num_train_labels || num_vec<=0)
-		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, num_train_labels);
+	if (num_vec!=lab.vlen || num_vec<=0)
+		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, lab.vlen);
 
 	delete[] w;
 	w=new float64_t[w_dim];
@@ -190,7 +189,7 @@ int CSVMOcas::add_new_cut(
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	CDotFeatures* f = o->features;
 	uint32_t nDim=(uint32_t) o->w_dim;
-	float64_t* y = o->lab;
+	float64_t* y = o->lab.vector;
 
 	float64_t** c_val = o->cp_value;
 	uint32_t** c_idx = o->cp_index;
@@ -276,7 +275,7 @@ int CSVMOcas::compute_output(float64_t *output, void* ptr)
 	CDotFeatures* f=o->features;
 	int32_t nData=f->get_num_vectors();
 
-	float64_t* y = o->lab;
+	float64_t* y = o->lab.vector;
 
 	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
 

@@ -242,12 +242,9 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 {
 
 	std::vector<int> trainlabels2(labels->get_num_labels());
-	int32_t tmpint;
-	int32_t * lab=labels->get_int_labels ( tmpint);
-	std::copy(lab,lab+labels->get_num_labels(), trainlabels2.begin());
-	delete[] lab;
-	lab=NULL;
-
+	SGVector<int32_t> lab=labels->get_int_labels();
+	std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
+	lab.free_vector();
 
 	ASSERT (trainlabels2.size()>0);
 	float64_t sum=0;
