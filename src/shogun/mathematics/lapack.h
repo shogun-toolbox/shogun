@@ -59,7 +59,8 @@ void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda,
 void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, 
 		double *sing, double *u, int ldu, double *vt, int ldvt, 
 		int *info);
-void wrap_dgeqrf(int m, int n, double *a, int lda, int *info);
+void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info);
+void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info);
 }
 
 // only MKL, ACML and Mac OS vector library provide a header file for the lapack routines
@@ -74,6 +75,7 @@ int dpotri_(const char *uplo, int *n, double *a, int * lda, int *info);
 int dgetri_(int *n, double *a, int *lda, int *ipiv, double *work, int *lwork, int *info);
 int dgetrf_(int *m, int *n, double *a, int *lda, int *ipiv, int *info);
 int dgeqrf_(int*, int*, double*, int*, double*, double*, int*, int*);
+int dorgqr_(int*, int*, int*, double*, int*, double*, double*, int*, int*);
 #endif
 }
 

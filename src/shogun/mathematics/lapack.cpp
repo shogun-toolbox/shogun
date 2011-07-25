@@ -29,6 +29,7 @@ using namespace shogun;
 #define DGETRI dgetri
 #define DGETRF dgetrf
 #define DGEQRF dgeqrf
+#define DORGQR dorgqr
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
@@ -38,6 +39,7 @@ using namespace shogun;
 #define DGETRI dgetri_
 #define DGETRF dgetrf_
 #define DGEQRF dgeqrf_
+#define DORGQR dorgqr_
 #endif
 
 #ifndef HAVE_ATLAS
@@ -216,9 +218,8 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 #endif
 }
 
-void wrap_dgeqrf(int m, int n, double *a, int lda, int *info)
+void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info)
 {
-	double* tau = new double[m<=n ? m : n];
 #ifdef HAVE_ACML
 	DGEQRF(m, n, a, lda, tau, info);
 #else
@@ -235,6 +236,23 @@ void wrap_dgeqrf(int m, int n, double *a, int lda, int *info)
 #endif
 }
 
+void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info)
+{
+#ifdef HAVE_ACML
+	DORGQR(m, n, k, a, lda, tau, info);
+#else
+	int lwork = -1;
+	double* work = new double[1];
+	DORGQR(&m, &n, &k, a, &lda, tau, work, &lwork, info);
+	ASSERT(*info==0);
+	lwork = (int) work[0];
+	ASSERT(lwork>0);
+	delete[] work;
+	work = new double[lwork];
+	DORGQR(&m, &n, &k, a, &lda, tau, work, &lwork, info);
+	delete[] work;
+#endif
+}
 
 }
 #undef DGESVD
