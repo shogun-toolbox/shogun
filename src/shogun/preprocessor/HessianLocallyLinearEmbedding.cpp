@@ -206,7 +206,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 
 	// finally construct embedding
 	SGMatrix<float64_t> W_sgmatrix = SGMatrix<float64_t>(W_matrix,N,N,true);
-	simple_features->set_feature_matrix(find_null_space(W_sgmatrix,m_target_dim,true));
+	simple_features->set_feature_matrix(find_null_space(W_sgmatrix,m_target_dim,false));
 	W_sgmatrix.free_matrix();
 
 	return simple_features->get_feature_matrix();
