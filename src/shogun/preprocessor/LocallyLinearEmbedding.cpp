@@ -175,7 +175,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	delete[] W_matrix;
 
-	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim));
+	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,false));
 	M_matrix.free_matrix();
 
 	return simple_features->get_feature_matrix();
@@ -187,22 +187,35 @@ SGVector<float64_t> CLocallyLinearEmbedding::apply_to_feature_vector(SGVector<fl
 	return vector;
 }
 
-SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t> matrix, int dimension)
+SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t> matrix, int dimension, bool force_lapack = false)
 {
 	int i,j;
 	ASSERT(matrix.num_cols==matrix.num_rows);
 	int N = matrix.num_cols;
 	// get eigenvectors with ARPACK or LAPACK
 	int eigenproblem_status = 0;
+
+	bool arpack = false;
 	#ifdef HAVE_ARPACK
-	// using ARPACK (faster)
-		float64_t* eigenvalues_vector = new float64_t[dimension+1];
+	arpack = true;
+	#endif
+	if (force_lapack) arpack = false;
+
+	float64_t* eigenvalues_vector;
+
+	if (arpack)
+	{
+		// using ARPACK (faster)
+		eigenvalues_vector = new float64_t[dimension+1];
 		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,0.0,false,eigenvalues_vector,matrix.matrix,eigenproblem_status);
-	#else 
-	// using LAPACK (slower)
-		float64_t* eigenvalues_vector = new float64_t[N];
+		CMath::display_vector(eigenvalues_vector,dimension+1,"eigs");
+	}
+	else
+	{
+		// using LAPACK (slower)
+		eigenvalues_vector = new float64_t[N];
 		wrap_dsyev('V','U',N,matrix.matrix,N,eigenvalues_vector,&eigenproblem_status);
-	#endif	
+	}
 
 	// check if failed
 	if (eigenproblem_status)
@@ -212,21 +225,24 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 	float64_t* null_space_features = new float64_t[N*dimension];
 
 	// construct embedding w.r.t to used solver (prefer ARPACK if available)
-	#ifdef HAVE_ARPACK
-	// ARPACKed eigenvectors
-	for (i=0; i<dimension; i++)
+	if (arpack) 
 	{
-		for (j=0; j<N; j++)
-			null_space_features[j*dimension+i] = matrix.matrix[j*(dimension+1)+i+1];
+		// ARPACKed eigenvectors
+		for (i=0; i<dimension; i++)
+		{
+			for (j=0; j<N; j++)
+				null_space_features[j*dimension+i] = matrix.matrix[j*(dimension+1)+i+1];
+		}
 	}
-	#else
-	// LAPACKed eigenvectors
-	for (i=0; i<dimension; i++)
+	else
 	{
-		for (j=0; j<N; j++)
-			null_space_features[j*dimension+i] = matrix.matrix[(i+1)*N+j];
+		// LAPACKed eigenvectors
+		for (i=0; i<dimension; i++)
+		{
+			for (j=0; j<N; j++)
+				null_space_features[j*dimension+i] = matrix.matrix[(i+1)*N+j];
+		}
 	}
-	#endif
 	delete[] eigenvalues_vector;
 
 	return SGMatrix<float64_t>(null_space_features,dimension,N);

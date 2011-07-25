@@ -86,8 +86,9 @@ protected:
 	/** find null space of given matrix 
 	 * @param matrix given matrix
 	 * @param dimension dimension of null space to be computed
+	 * @param force_lapack true if lapack should be used
 	 */
-	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension);
+	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension, bool force_lapack);
 
 protected:
 
