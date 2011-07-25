@@ -59,6 +59,10 @@ CModelSelectionParameters::~CModelSelectionParameters()
 {
 	SG_UNREF(m_child_nodes);
 	SG_UNREF(m_sgobject);
+<<<<<<< HEAD
+=======
+
+>>>>>>> work towards handling of multiple data types
 	delete_values();
 }
 
@@ -102,6 +106,7 @@ void CModelSelectionParameters::set_values(SGVector<void> values)
 void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 		ERangeType type, float64_t step, float64_t type_base)
 {
+<<<<<<< HEAD
 	build_values(MSPT_FLOAT64, (void*)&min, (void*)&max, type, (void*)&step,
 			(void*)&type_base);
 }
@@ -110,6 +115,9 @@ void CModelSelectionParameters::build_values(int32_t min, int32_t max,
 		ERangeType type, int32_t step, int32_t type_base)
 {
 	build_values(MSPT_INT32, (void*)&min, (void*)&max, type, (void*)&step,
+=======
+	build_values(MSPT_FLOAT, (void*)&min, (void*)&max, type, (void*)&step,
+>>>>>>> work towards handling of multiple data types
 			(void*)&type_base);
 }
 
@@ -124,11 +132,19 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 
 	/* possibly delete old range values */
 	delete_values();
+<<<<<<< HEAD
 
 	/* save new type */
 	m_value_type=value_type;
 
 	if (value_type==MSPT_FLOAT64)
+=======
+
+	/* save new type */
+	m_value_type=value_type;
+
+	if (value_type==MSPT_FLOAT)
+>>>>>>> work towards handling of multiple data types
 	{
 		SGVector<float64_t> values=create_range_array<float64_t>(
 				*((float64_t*)min),
@@ -140,6 +156,7 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 		m_values.vector=(void*)values.vector;
 		m_values.vlen=values.vlen;
 	}
+<<<<<<< HEAD
 	else if (value_type==MSPT_INT32)
 	{
 		SGVector<int32_t> values=create_range_array<int32_t>(
@@ -153,6 +170,17 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 		m_values.vlen=values.vlen;
 	}
 	else if (value_type==MSPT_NONE)
+=======
+	else if (value_type==MSPT_INT)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	else if (value_type==MSPT_BOOL)
+	{
+		SG_NOTIMPLEMENTED;
+	}
+	else if (value_type==MSPT_BOOL)
+>>>>>>> work towards handling of multiple data types
 	{
 		SG_ERROR("Value node has no type!\n");
 	}
@@ -179,11 +207,22 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 
 			switch (m_value_type)
 			{
+<<<<<<< HEAD
 			case MSPT_FLOAT64:
 				p->add(&((float64_t*)m_values.vector)[i], m_node_name);
 				break;
 			case MSPT_INT32:
 				p->add(&((int32_t*)m_values.vector)[i], m_node_name);;
+=======
+			case MSPT_FLOAT:
+				p->add(&((float64_t*)m_values.vector)[i], m_node_name);
+				break;
+			case MSPT_INT:
+				SG_NOTIMPLEMENTED;
+				break;
+			case MSPT_BOOL:
+				SG_NOTIMPLEMENTED;
+>>>>>>> work towards handling of multiple data types
 				break;
 			case MSPT_NONE:
 				SG_ERROR("Value node has no type!\n");
@@ -421,11 +460,22 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 
 				switch (m_value_type)
 				{
+<<<<<<< HEAD
 				case MSPT_FLOAT64:
 					CMath::display_vector((float64_t*)m_values.vector, m_values.vlen);
 					break;
 				case MSPT_INT32:
 					CMath::display_vector((int32_t*)m_values.vector, m_values.vlen);;
+=======
+				case MSPT_FLOAT:
+					CMath::display_vector((float64_t*)m_values.vector, m_values.vlen);
+					break;
+				case MSPT_INT:
+					SG_NOTIMPLEMENTED;
+					break;
+				case MSPT_BOOL:
+					SG_NOTIMPLEMENTED;
+>>>>>>> work towards handling of multiple data types
 					break;
 				case MSPT_NONE:
 					SG_ERROR("Value node has no type!\n");
@@ -449,11 +499,22 @@ void CModelSelectionParameters::delete_values()
 	{
 		switch (m_value_type)
 		{
+<<<<<<< HEAD
 		case MSPT_FLOAT64:
 			delete[] (float64_t*) m_values.vector;
 			break;
 		case MSPT_INT32:
 			delete[] (int32_t*) m_values.vector;
+=======
+		case MSPT_FLOAT:
+			delete[] (float64_t*) m_values.vector;
+			break;
+		case MSPT_INT:
+			SG_NOTIMPLEMENTED;
+			break;
+		case MSPT_BOOL:
+			SG_NOTIMPLEMENTED;
+>>>>>>> work towards handling of multiple data types
 			break;
 		case MSPT_NONE:
 			SG_ERROR("Value node has no type!\n");
