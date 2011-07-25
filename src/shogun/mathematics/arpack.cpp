@@ -84,8 +84,11 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// shift-invert mode
 	if (mode==3)
 	{
-		for (int i=0; i<n; i++)
-			matrix[i*n+i] -= shift;
+		if (shift!=0.0)
+		{
+			for (int i=0; i<n; i++)
+				matrix[i*n+i] -= shift;
+		}
 
 		if (pos)
 		{
