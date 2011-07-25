@@ -4,7 +4,7 @@ from shogun.Library import Math_init_random
 
 Math_init_random(5)
 
-real_gmm=GMM(2)
+real_gmm=GMM(2,0)
 
 real_gmm.set_nth_mean(array([1.0, 1.0]), 0)
 real_gmm.set_nth_mean(array([-1.0, -1.0]), 1)
@@ -20,7 +20,7 @@ for i in range(199):
 
 generated=generated.transpose()
 
-parameter_list = [generated]
+parameter_list = [[generated,2,1e-9,1000,1e-9,0]]
 
 def clustering_gmm_modular (fm_train=generated,n=2,min_cov=1e-9,max_iter=1000,min_change=1e-9,cov_type=0):
 
