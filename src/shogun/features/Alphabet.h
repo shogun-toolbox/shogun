@@ -29,13 +29,13 @@ enum EAlphabet
 	/// RNA - letters A,C,G,U
 	RNA=2,
 
-	/// PROTEIN - letters a-z
+	/// PROTEIN - letters A-Z
 	PROTEIN=3,
 
 	// BINARY just 0 and 1
 	BINARY=4,
 
-	/// ALPHANUM - [0-9a-z]
+	/// ALPHANUM - [0-9A-Z]
 	ALPHANUM=5,
 
 	/// CUBE - [1-6]
