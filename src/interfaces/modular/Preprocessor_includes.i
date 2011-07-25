@@ -15,6 +15,7 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/ClassicMDS.h>
 #include <shogun/preprocessor/LocallyLinearEmbedding.h>
+#include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
 #include <shogun/preprocessor/Isomap.h>
 #include <shogun/preprocessor/LandmarkIsomap.h>
 #include <shogun/preprocessor/ClassicIsomap.h>

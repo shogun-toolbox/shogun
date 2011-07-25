@@ -21,6 +21,7 @@
 %rename(BaseDimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(ClassicMDS) CClassicMDS;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
+%rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
 %rename(BaseIsomap) CIsomap;
 %rename(LandmarkIsomap) CLandmarkIsomap;
 %rename(ClassicIsomap) CClassicIsomap;
@@ -75,6 +76,7 @@ namespace shogun
 %include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 %include <shogun/preprocessor/ClassicMDS.h>
 %include <shogun/preprocessor/LocallyLinearEmbedding.h>
+%include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
 %include <shogun/preprocessor/Isomap.h>
 %include <shogun/preprocessor/LandmarkIsomap.h>
 %include <shogun/preprocessor/ClassicIsomap.h>
