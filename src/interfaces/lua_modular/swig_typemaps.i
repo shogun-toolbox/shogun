@@ -153,7 +153,7 @@ TYPEMAP_SGVECTOR(float64_t)
 				return luaL_argerror(L, 1, "matrix must contain numbers");
 			}
 			
-			array[i * cols + j] = (SGTYPE)lua_tonumber(L, -1);
+			array[j * rows + i] = (SGTYPE)lua_tonumber(L, -1);
 			lua_pop(L, 1);
 		}
 		lua_pop(L, 1);
@@ -173,7 +173,7 @@ TYPEMAP_SGVECTOR(float64_t)
 	for (i = 0; i < rows; i++) {
 		lua_newtable(L);
 		for (j = 0; j < cols; j++) {
-			lua_pushnumber(L, (lua_Number)$1.matrix[i * cols + j]);
+			lua_pushnumber(L, (lua_Number)$1.matrix[j * rows + i]);
 			lua_rawseti(L, -2, j + 1);
 		}
 		lua_rawseti(L, -2, i + 1);
