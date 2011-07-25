@@ -175,7 +175,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	delete[] W_matrix;
 
-	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,false));
+	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,true));
 	M_matrix.free_matrix();
 
 	return simple_features->get_feature_matrix();
@@ -207,8 +207,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 	{
 		// using ARPACK (faster)
 		eigenvalues_vector = new float64_t[dimension+1];
-		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,0.0,false,eigenvalues_vector,matrix.matrix,eigenproblem_status);
-		CMath::display_vector(eigenvalues_vector,dimension+1,"eigs");
+		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,-1e-3,false,eigenvalues_vector,matrix.matrix,eigenproblem_status);
 	}
 	else
 	{
