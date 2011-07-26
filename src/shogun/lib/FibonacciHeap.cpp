@@ -51,24 +51,24 @@ CFibonacciHeap::~CFibonacciHeap()
 	delete [] nodes;
 }
 
-void CFibonacciHeap::insert(int32_t idx, float64_t key)
+void CFibonacciHeap::insert(int32_t index, float64_t key)
 {
-	if(idx > max_num_nodes || idx < 0)
+	if(index >= max_num_nodes || index < 0)
 		return;
 
-	if(nodes[idx]->index != -1)
+	if(nodes[index]->index != -1)
 		return; // node is not empty
 
 	// init "new" node in array
-	nodes[idx]->child = NULL;
-	nodes[idx]->parent = NULL;
+	nodes[index]->child = NULL;
+	nodes[index]->parent = NULL;
 
-	nodes[idx]->rank = 0;
-	nodes[idx]->index = idx;
-	nodes[idx]->key = key;
-	nodes[idx]->marked = false;
+	nodes[index]->rank = 0;
+	nodes[index]->index = index;
+	nodes[index]->key = key;
+	nodes[index]->marked = false;
 
-	add_to_roots(nodes[idx]);
+	add_to_roots(nodes[index]);
 	num_nodes++;
 }
 
@@ -151,7 +151,7 @@ void CFibonacciHeap::clear()
 
 int32_t CFibonacciHeap::get_key(int32_t index, float64_t &ret_key)
 {
-	if(index > max_num_nodes || index < 0)
+	if(index >= max_num_nodes || index < 0)
 		return -1;
 	if(nodes[index]->index == -1)
 		return -1;
@@ -166,7 +166,7 @@ void CFibonacciHeap::decrease_key(int32_t index, float64_t key)
 {
 	FibonacciHeapNode* parent;
 
-	if(index > max_num_nodes || index < 0)
+	if(index >= max_num_nodes || index < 0)
 		return;
 	if(nodes[index]->index == -1)
 		return; // node is empty
