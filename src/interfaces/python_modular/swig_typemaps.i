@@ -77,45 +77,6 @@ void* get_copy(void* src, size_t len)
     return copy;
 }
 
-
-/* Make sure input has correct numeric type.  Allow character and byte
- * to match.  Also allow int and long to match.
- */
-int type_match(int actual_type, int desired_type) {
-  return PyArray_EquivTypenums(actual_type, desired_type);
-}
-
-/* Given a PyObject pointer, cast it to a PyArrayObject pointer if
- * legal.  If not, set the python error string appropriately and
- * return NULL./
- */
-PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode)
-{
-  PyArrayObject* ary = NULL;
-  if (is_array(input) && (typecode == PyArray_NOTYPE || 
-			  PyArray_EquivTypenums(array_type(input), 
-						typecode))) {
-        ary = (PyArrayObject*) input;
-    }
-    else if (is_array(input)) {
-      const char* desired_type = typecode_string(typecode);
-      const char* actual_type = typecode_string(array_type(input));
-      PyErr_Format(PyExc_TypeError, 
-		   "Array of type '%s' required.  Array of type '%s' given", 
-		   desired_type, actual_type);
-      ary = NULL;
-    }
-    else {
-      const char* desired_type = typecode_string(typecode);
-      const char* actual_type = typecode_string(input);
-      PyErr_Format(PyExc_TypeError, 
-		   "Array of type '%s' required.  Array of type '%s' given", 
-		   desired_type, actual_type);
-      ary = NULL;
-    }
-  return ary;
-}
-
 /* Given a PyArrayObject, check to see if it is contiguous.  If so,
  * return the input pointer and flag it as not a new object.  If it is
  * not contiguous, create a new PyArrayObject using the original data,
@@ -182,34 +143,6 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
     return array;
 }
 
-/* Test whether a python object is contiguous.  If array is
- * contiguous, return 1.  Otherwise, set the python error string and
- * return 0.
- */
-int require_contiguous(PyObject* ary) {
-  int contiguous = 1;
-  if (!array_is_contiguous(ary)) {
-    PyErr_SetString(PyExc_TypeError, "Array must be contiguous.  A discontiguous array was given");
-    contiguous = 0;
-  }
-  return contiguous;
-}
-
-/* Require the given PyObject to have a specified number of
- * dimensions.  If the array has the specified number of dimensions,
- * return 1.  Otherwise, set the python error string and return 0.
- */
-int require_dimensions(PyObject* ary, int exact_dimensions) {
-  int success = 1;
-  if (array_dimensions(ary) != exact_dimensions) {
-    PyErr_Format(PyExc_TypeError, 
-		 "Array must have %d dimensions.  Given array has %d dimensions", 
-		 exact_dimensions, array_dimensions(ary));
-    success = 0;
-  }
-  return success;
-}
-
 /* End John Hunter translation (with modifications by Bill Spotz) */
 %}
 
@@ -232,6 +165,8 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
         SWIG_fail;
 
     $1 = shogun::SGVector<type>((type*) PyArray_BYTES(array), PyArray_DIM(array,0));
+    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
+    Py_DECREF(array);
 }
 %enddef
 
@@ -308,6 +243,9 @@ TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
 
     $1 = shogun::SGMatrix<type>((type*) PyArray_BYTES(array),
             PyArray_DIM(array,0), PyArray_DIM(array,1));
+
+    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
+    Py_DECREF(array);
 }
 %enddef
 
@@ -393,12 +331,10 @@ TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
     for (int32_t i=0; i<ndim; i++)
       temp_dims[i] = py_dims[i];
     
-    $1 = SGNDArray((type*) PyArray_BYTES(array), temp_dims, ndim)
-}
-%typemap(freearg) shogun::SGNDArray<type>
-{
-  if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
-  delete[] temp_dims$argnum;
+    $1 = SGNDArray((type*) PyArray_BYTES(array), temp_dims, ndim);
+
+    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
+    Py_DECREF(array);
 }
 %enddef
 
