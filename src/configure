@@ -751,6 +751,7 @@ EOF
 				echores "yes"
 				DEFINES="$DEFINES -DHAVE_RUBY_NARRAY"
 				HAVE_NARRAY='#define HAVE_RUBY_NARRAY 1'
+				LINKFLAGS_RUBY="$LINKFLAGS_RUBY $LINKFLAGS_NARRAY"
 			else
 				echores "no"
 			fi
