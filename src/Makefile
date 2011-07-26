@@ -37,7 +37,7 @@ $(LIBSHOGUN_TARGET): shogun/Makefile
 	$(MAKE) -C shogun
 
 shogun/Makefile: Makefile.template
-	cat Makefile.template | sed 's/template/libshogun/g' | \
+	@cat Makefile.template | sed 's/template/libshogun/g' | \
 		sed 's/TEMPLATE/LIBSHOGUN/g' >$@;
 
 examples:
