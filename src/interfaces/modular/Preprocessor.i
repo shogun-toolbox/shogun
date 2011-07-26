@@ -18,10 +18,11 @@
 %rename(PruneVarSubMean) CPruneVarSubMean;
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 
-%rename(BaseDimensionReductionPreprocessor) CDimensionReductionPreprocessor;
+%rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(ClassicMDS) CClassicMDS;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 %rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
+%rename(LocalTangentSpaceAlignment) CLocalTangentSpaceAlignment;
 %rename(BaseIsomap) CIsomap;
 %rename(LandmarkIsomap) CLandmarkIsomap;
 %rename(ClassicIsomap) CClassicIsomap;
@@ -77,6 +78,7 @@ namespace shogun
 %include <shogun/preprocessor/ClassicMDS.h>
 %include <shogun/preprocessor/LocallyLinearEmbedding.h>
 %include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
+%include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
 %include <shogun/preprocessor/Isomap.h>
 %include <shogun/preprocessor/LandmarkIsomap.h>
 %include <shogun/preprocessor/ClassicIsomap.h>
