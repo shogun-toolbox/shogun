@@ -149,6 +149,19 @@ void CFibonacciHeap::clear()
 	num_trees = 0;
 }
 
+int32_t CFibonacciHeap::get_key(int32_t index, float64_t &ret_key)
+{
+	if(index > max_num_nodes || index < 0)
+		return -1;
+	if(nodes[index]->index == -1)
+		return -1;
+
+	int32_t result = nodes[index]->index;
+	ret_key = nodes[index]->key;
+
+	return result;
+}
+
 void CFibonacciHeap::decrease_key(int32_t index, float64_t key)
 {
 	FibonacciHeapNode* parent;

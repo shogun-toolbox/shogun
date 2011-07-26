@@ -100,6 +100,11 @@ public:
 	 */
 	void clear();
 
+	/** Returns key by index.
+	 * @return -1 if not valid
+	 */
+	int32_t get_key(int32_t index, float64_t &ret_key);
+
 	/**
 	 */
 	void decrease_key(int32_t index, float64_t key);
