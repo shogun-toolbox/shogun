@@ -84,10 +84,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	SG_FREE(local_neighbors_idxs);
 
 	// init W (weight) matrix
-	float64_t* W_matrix = SG_MALLOC(float64_t, N*N);
-	for (i=0; i<N; i++)
-		for (j=0; j<N; j++)
-			W_matrix[i*N+j]=0.0;
+	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 
 	// init matrices and norm factor to be used
 	float64_t* local_feature_matrix = SG_MALLOC(float64_t, m_k*dim);
