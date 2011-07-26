@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
+#include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
@@ -20,25 +20,25 @@
 
 using namespace shogun;
 
-CHessianLocallyLinearEmbedding::CHessianLocallyLinearEmbedding() :
+CLocalTangentSpaceAlignment::CLocalTangentSpaceAlignment() :
 		CLocallyLinearEmbedding()
 {
 }
 
-CHessianLocallyLinearEmbedding::~CHessianLocallyLinearEmbedding()
+CLocalTangentSpaceAlignment::~CLocalTangentSpaceAlignment()
 {
 }
 
-bool CHessianLocallyLinearEmbedding::init(CFeatures* features)
+bool CLocalTangentSpaceAlignment::init(CFeatures* features)
 {
 	return true;
 }
 
-void CHessianLocallyLinearEmbedding::cleanup()
+void CLocalTangentSpaceAlignment::cleanup()
 {
 }
 
-SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatures* features)
 {
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
@@ -51,10 +51,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	ASSERT(m_k<N);
 
 	// loop variables
-	int32_t i,j,k,l;
-
-	int32_t dp = m_target_dim*(m_target_dim+1)/2;
-	ASSERT(m_k>=(1+m_target_dim+dp));
+	int32_t i,j,k;
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
@@ -80,22 +77,20 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 			neighborhood_matrix[j*N+i] = local_neighbors_idxs[j+1];
 	}
 
-	SG_FREE(distance_matrix.matrix);
-	SG_FREE(local_neighbors_idxs);
+	delete[] distance_matrix.matrix;
+	delete[] local_neighbors_idxs;
 
 	// init W (weight) matrix
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 
 	// init matrices and norm factor to be used
 	float64_t* local_feature_matrix = SG_MALLOC(float64_t, m_k*dim);
-	float64_t* s_values_vector = SG_MALLOC(float64_t, dim);
-	float64_t* tau = SG_MALLOC(float64_t, CMath::min((1+m_target_dim+dp),m_k));
 	float64_t* mean_vector = SG_MALLOC(float64_t, dim);
 	float64_t* q_matrix = SG_MALLOC(float64_t, m_k*m_k);
-	float64_t* w_sum_vector = SG_MALLOC(float64_t, dp);
+	float64_t* s_values_vector = SG_MALLOC(float64_t, dim);
 
-	// Yi
-	float64_t* Yi_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim+dp));
+	// G
+	float64_t* G_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim));
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
@@ -103,7 +98,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	{
 		// Yi(:,0) = 1
 		for (j=0; j<m_k; j++)
-			Yi_matrix[j] = 1.0;
+			G_matrix[j] = 1.0/CMath::sqrt((float64_t)m_k);
 
 		// fill mean vector with zeros
 		for (j=0; j<dim; j++)
@@ -136,65 +131,31 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 		                     s_values_vector,
 		                     NULL,1, NULL,1, &info);
 		ASSERT(info==0);
-
-		// Yi(0:m_k,1:1+m_target_dim) = Vh(0:m_k, 0:target_dim)
+		
 		for (j=0; j<m_target_dim; j++)
 		{
 			for (k=0; k<m_k; k++)
-				Yi_matrix[(j+1)*m_k+k] = local_feature_matrix[k*dim+j];
-		}
-
-		int32_t ct = 0;
-		
-		// construct 2nd order hessian approx
-		for (j=0; j<m_target_dim; j++)
-		{
-			for (k=0; k<m_target_dim-j; k++)
-			{
-				for (l=0; l<m_k; l++)
-				{
-					Yi_matrix[(ct+k+1+m_target_dim)*m_k+l] = Yi_matrix[(j+1)*m_k+l]*Yi_matrix[(j+k+1)*m_k+l];
-				}
-			}
-			ct += ct + m_target_dim - j;
+				G_matrix[(j+1)*m_k+k] = local_feature_matrix[k*dim+j];
 		}
 	
-		// perform QR factorization
-		wrap_dgeqrf(m_k,(1+m_target_dim+dp),Yi_matrix,m_k,tau,&info);
-		ASSERT(info==0);
-		wrap_dorgqr(m_k,(1+m_target_dim+dp),CMath::min((1+m_target_dim+dp),m_k),Yi_matrix,m_k,tau,&info);
-		ASSERT(info==0);
-		
-		float64_t* Pii = (Yi_matrix+m_k*(1+m_target_dim));
-
-		for (j=0; j<dp; j++)
-		{
-			w_sum_vector[j] = 0.0;
-			for (k=0; k<m_k; k++)
-			{
-				w_sum_vector[j] += Pii[j*m_k+k];
-			}
-			if (w_sum_vector[j]<0.001) 
-				w_sum_vector[j] = 1.0;
-			for (k=0; k<m_k; k++)
-				Pii[j*m_k+k] /= w_sum_vector[j];
-		}
-		
+		// compute GG'
 		cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,
-		            m_k,m_k,dp,
-		            1.0,Pii,m_k,
-		                Pii,m_k,
+		            m_k,m_k,1+m_target_dim,
+		            1.0,G_matrix,m_k,
+		                G_matrix,m_k,
 		            0.0,q_matrix,m_k);
 		
+		// W[neighbors of i, neighbors of i] = I - GG'
 		for (j=0; j<m_k; j++)
 		{
+			W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[j*N+i]] += 1.0;
 			for (k=0; k<m_k; k++)
-				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] += q_matrix[j*m_k+k];
+				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] -= q_matrix[j*m_k+k];
 		}
 	}
 
 	// clean
-	SG_FREE(Yi_matrix);
+	SG_FREE(G_matrix);
 	SG_FREE(s_values_vector);
 	SG_FREE(mean_vector);
 	SG_FREE(neighborhood_matrix);
@@ -202,14 +163,14 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	SG_FREE(q_matrix);
 
 	// finally construct embedding
-	SGMatrix<float64_t> W_sgmatrix = SGMatrix<float64_t>(W_matrix,N,N,true);
+	SGMatrix<float64_t> W_sgmatrix(W_matrix,N,N,true);
 	simple_features->set_feature_matrix(find_null_space(W_sgmatrix,m_target_dim,false));
 	W_sgmatrix.free_matrix();
 
 	return simple_features->get_feature_matrix();
 }
 
-SGVector<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SG_NOTIMPLEMENTED;
 	return vector;
