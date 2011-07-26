@@ -75,6 +75,7 @@
 %enddef
 
 /* Define concrete examples of the TYPEMAP_SGVECTOR macros */
+TYPEMAP_SGVECTOR(char)
 TYPEMAP_SGVECTOR(uint8_t)
 TYPEMAP_SGVECTOR(int32_t)
 TYPEMAP_SGVECTOR(int16_t)
@@ -185,6 +186,7 @@ TYPEMAP_SGVECTOR(float64_t)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_SGMATRIX macros */
+TYPEMAP_SGMATRIX(char)
 TYPEMAP_SGMATRIX(uint8_t)
 TYPEMAP_SGMATRIX(int32_t)
 TYPEMAP_SGMATRIX(int16_t)
