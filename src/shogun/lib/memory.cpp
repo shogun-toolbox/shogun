@@ -85,6 +85,10 @@ void operator delete[](void *p)
 void* sg_malloc(size_t size)
 {
 	void* p=malloc(size);
+#ifdef TRACE_MEMORY_ALLOCS
+	if (sg_mallocs)
+		sg_mallocs->add(MemoryBlock(p,size));
+#endif
 
 	if (!p)
 	{
@@ -104,6 +108,10 @@ void* sg_malloc(size_t size)
 void* sg_calloc(size_t num, size_t size)
 {
 	void* p=calloc(num, size);
+#ifdef TRACE_MEMORY_ALLOCS
+	if (sg_mallocs)
+		sg_mallocs->add(MemoryBlock(p,size));
+#endif
 
 	if (!p)
 	{
@@ -124,12 +132,24 @@ void* sg_calloc(size_t num, size_t size)
 
 void  sg_free(void* ptr)
 {
+#ifdef TRACE_MEMORY_ALLOCS
+	if (sg_mallocs)
+		sg_mallocs->remove(MemoryBlock(ptr));
+#endif
 	free(ptr);
 }
 
 void* sg_realloc(void* ptr, size_t size)
 {
 	void* p=realloc(ptr, size);
+
+#ifdef TRACE_MEMORY_ALLOCS
+	if (sg_mallocs)
+		sg_mallocs->remove(MemoryBlock(ptr));
+
+	if (sg_mallocs)
+		sg_mallocs->add(MemoryBlock(p,size));
+#endif
 
 	if (!p && (size || !ptr))
 	{

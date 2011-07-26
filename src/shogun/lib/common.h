@@ -43,6 +43,8 @@
 #define __STDC_FORMAT_MACROS 1
 #include <inttypes.h>
 
+#undef __STDC_FORMAT_MACROS
+
 /**
  * Implementations tend to follow IEEE754
  * @see http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=4610935

@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/DynamicArray.h>
+#include <shogun/base/DynArray.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun
@@ -29,14 +29,13 @@ template <class T> class CSet : public CSGObject
 		/** Default constructor */
 		CSet()
 		{
-			array = new CDynamicArray<T>();
-			SG_REF(array);
+			array = new DynArray<T>();
 		}
 
 		/** Default destructor */
 		~CSet()
 		{
-			SG_UNREF(array);
+			delete array;
 		}
 
 		/** Add an element to the set
@@ -109,7 +108,7 @@ template <class T> class CSet : public CSGObject
 
 	protected:
 		/** dynamic array the set is based on */
-		CDynamicArray<T>* array;
+		DynArray<T>* array;
 };
 }
 #endif //_SET_H_

@@ -15,15 +15,16 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
+#ifdef TRACE_MEMORY_ALLOCS
+shogun::CSet<shogun::MemoryBlock>* sg_mallocs=NULL;
+#endif
+
 namespace shogun
 {
 	Parallel* sg_parallel=NULL;
 	SGIO* sg_io=NULL;
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
-#ifdef TRACE_MEMORY_ALLOCS
-	CSet<MemoryBlock>* sg_mallocs=NULL;
-#endif
 
 	/// function called to print normal messages
 	void (*sg_print_message)(FILE* target, const char* str) = NULL;

@@ -69,7 +69,7 @@ template <class T> class DynArray
 		 *
 		 * @return total array size (including granularity buffer)
 		 */
-		inline int32_t get_array_size(void) const
+		inline int32_t get_array_size() const
 		{
 			return num_elements;
 		}
@@ -78,7 +78,7 @@ template <class T> class DynArray
 		 *
 		 * @return number of elements
 		 */
-		inline int32_t get_num_elements(void) const
+		inline int32_t get_num_elements() const
 		{
 			return last_element_idx+1;
 		}
@@ -273,11 +273,15 @@ template <class T> class DynArray
 			{
 				array=p;
 				if (new_num_elements > num_elements)
+				{
 					memset(&array[num_elements], 0,
 						   (new_num_elements-num_elements)*sizeof(T));
+				}
 				else if (n+1<new_num_elements)
+				{
 					memset(&array[n+1], 0,
 						   (new_num_elements-n-1)*sizeof(T));
+				}
 
 				//in case of shrinking we must adjust last element idx
 				if (n-1<last_element_idx)

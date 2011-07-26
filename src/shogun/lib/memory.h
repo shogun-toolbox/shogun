@@ -43,18 +43,24 @@ class MemoryBlock
 		{
 			ptr=p;
 			size=0;
+			file=NULL;
+			line=NULL;
 		}
 
-		MemoryBlock(void* p, size_t sz)
+		MemoryBlock(void* p, size_t sz, const char* fname=NULL, const char* lineinfo=NULL)
 		{
 			ptr=p;
 			size=sz;
+			file=fname;
+			line=lineinfo;
 		}
 
         MemoryBlock(const MemoryBlock &b)
         {
 			ptr=b.ptr;
 			size=b.size;
+			file=b.file;
+			line=b.line;
         }
 
 
@@ -65,15 +71,17 @@ class MemoryBlock
 
 		void display()
 		{
-			printf("Object at %p of size %lld bytes\n", ptr, (long long int) size);
+			printf("Object at %p of size %lld bytes (allocated in %s:%s)\n", ptr, (long long int) size, line, file);
 		}
 
 	protected:
 		void* ptr;
 		size_t size;
+		const char* file;
+		const char* line;
 };
+}
 
 void list_memory_allocs();
-}
 #endif
 #endif // __MEMORY_H__

@@ -7,6 +7,7 @@
 #include <shogun/lib/ShogunException.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Hash.h>
+#include <shogun/lib/Set.h>
 #include <shogun/lib/Signal.h>
 
 #include <shogun/classifier/svm/SVM.h>
@@ -7531,6 +7532,9 @@ bool CSGInterface::cmd_help()
 
 	return true;
 }
+#ifdef TRACE_MEMORY_ALLOCS
+	extern CSet<MemoryBlock>* sg_mallocs;
+#endif
 
 bool CSGInterface::cmd_whos()
 {
