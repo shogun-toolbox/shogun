@@ -147,6 +147,7 @@ SerializableJsonFile = modshogun.SerializableJsonFile
 SerializableXmlFil = modshogun.SerializableXmlFil
 StringCharFeatures = modshogun.StringCharFeatures
 DNA = modshogun.DNA
+RAWBYTE = modshogun.RAWBYTE
 ByteFeatures =  modshogun.ByteFeatures
 WordFeatures = modshogun.WordFeatures
 AvgDiagKernelNormalizer = modshogun.AvgDiagKernelNormalizer
