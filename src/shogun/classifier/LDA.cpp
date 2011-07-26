@@ -92,7 +92,7 @@ bool CLDA::train(CFeatures* data)
 
 	/* calling external lib */
 	double* scatter=new double[num_feat*num_feat];
-	double* buffer=new double[num_feat*CMath::max(num_neg, num_pos)];
+	double* buffer=SG_MALLOC(double, num_feat*CMath::max(num_neg, num_pos));
 	int nf = (int) num_feat;
 
 	CSimpleFeatures<float64_t>* rf = (CSimpleFeatures<float64_t>*) features;

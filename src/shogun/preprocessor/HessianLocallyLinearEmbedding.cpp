@@ -92,7 +92,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	// init matrices and norm factor to be used
 	float64_t* local_feature_matrix = new float64_t[m_k*dim];
 	float64_t* s_values_vector = new float64_t[dim];
-	float64_t* tau = new float64_t[CMath::min((1+m_target_dim+dp),m_k)];
+	float64_t* tau = SG_MALLOC(float64_t, CMath::min((1+m_target_dim+dp),m_k));
 	float64_t* mean_vector = new float64_t[dim];
 	float64_t* q_matrix = new float64_t[m_k*m_k];
 	float64_t* w_sum_vector = new float64_t[dp];

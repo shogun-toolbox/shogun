@@ -1002,7 +1002,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
 bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
 {
 	SG_FREE(block_weights);
-	block_weights=new float64_t[CMath::max(seq_length,degree)];
+	block_weights=SG_MALLOC(float64_t, CMath::max(seq_length,degree));
 
 	if (block_weights)
 	{
@@ -1023,7 +1023,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 {
 	ASSERT(weights);
 	SG_FREE(block_weights);
-	block_weights=new float64_t[CMath::max(seq_length,degree)];
+	block_weights=SG_MALLOC(float64_t, CMath::max(seq_length,degree));
 
 	if (block_weights)
 	{

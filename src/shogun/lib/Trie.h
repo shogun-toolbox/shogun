@@ -2138,7 +2138,7 @@ void CTrie<Trie>::fill_backtracking_table(
 						bt=j;
 						max_score=sc;
 
-						//SG_PRINT("new max[%i,%i] = %f\n", j,i, max_score);
+						//SG_PRINT("new_max[%i,%i] = %f\n", j,i, max_score);
 					}
 				}
 			}

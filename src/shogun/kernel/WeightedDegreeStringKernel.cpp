@@ -685,7 +685,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
 {
 	SG_FREE(block_weights);
-	block_weights=new float64_t[CMath::max(seq_length,degree)];
+	block_weights=SG_MALLOC(float64_t, CMath::max(seq_length,degree));
 
 	int32_t k;
 	float64_t d=degree; // use float to evade rounding errors below
@@ -703,7 +703,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd_external()
 {
 	ASSERT(weights);
 	SG_FREE(block_weights);
-	block_weights=new float64_t[CMath::max(seq_length,degree)];
+	block_weights=SG_MALLOC(float64_t, CMath::max(seq_length,degree));
 
 	int32_t i=0;
 	block_weights[0]=weights[0];
