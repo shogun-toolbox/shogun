@@ -209,7 +209,7 @@ SGMatrix<float64_t> CKernelPCACut::get_transformation_matrix()
 {
 	ASSERT(T);
 	int64_t num=int64_t(rows_T)*cols_T;
-	float64_t* dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*num);
+	float64_t* dst=SG_MALLOC(float64_t, num);
 	memcpy(dst, T, num * sizeof(float64_t));
 	return SGMatrix<float64_t>(dst,rows_T,cols_T);
 }
@@ -217,7 +217,7 @@ SGMatrix<float64_t> CKernelPCACut::get_transformation_matrix()
 SGVector<float64_t> CKernelPCACut::get_bias()
 {
 	ASSERT(bias);
-	float64_t* dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*bias_len);
+	float64_t* dst=SG_MALLOC(float64_t, bias_len);
 	memcpy(dst, bias, bias_len * sizeof(float64_t));\
 	return SGVector<float64_t>(dst,bias_len);
 }
@@ -225,7 +225,7 @@ SGVector<float64_t> CKernelPCACut::get_bias()
 SGVector<float64_t> CKernelPCACut::get_eigenvalues()
 {
 	ASSERT(eigenvalues);
-	float64_t* dst=(float64_t*) SG_MALLOC(sizeof(float64_t)*num_eigenvalues);
+	float64_t* dst=SG_MALLOC(float64_t, num_eigenvalues);
 	memcpy(dst, eigenvalues, num_eigenvalues * sizeof(float64_t));
 	return SGVector<float64_t>(dst,num_eigenvalues);
 }

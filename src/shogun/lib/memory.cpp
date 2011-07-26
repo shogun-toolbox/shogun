@@ -82,7 +82,7 @@ void operator delete[](void *p)
 	free(p);
 }
 
-void* SG_MALLOC(size_t size)
+void* sg_malloc(size_t size)
 {
 	void* p=malloc(size);
 
@@ -101,7 +101,7 @@ void* SG_MALLOC(size_t size)
 	return p;
 }
 
-void* SG_CALLOC(size_t num, size_t size)
+void* sg_calloc(size_t num, size_t size)
 {
 	void* p=calloc(num, size);
 
@@ -122,12 +122,12 @@ void* SG_CALLOC(size_t num, size_t size)
 	return p;
 }
 
-void  SG_FREE(void* ptr)
+void  sg_free(void* ptr)
 {
 	free(ptr);
 }
 
-void* SG_REALLOC(void* ptr, size_t size)
+void* sg_realloc(void* ptr, size_t size)
 {
 	void* p=realloc(ptr, size);
 

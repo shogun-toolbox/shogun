@@ -255,9 +255,7 @@ template <class T> class CArray : public CSGObject
 			INCREMENT_ARRAY_STATISTICS_VALUE(resize_array);
 			ARRAY_ASSERT(free_array);
 
-			T* p= (T*) SG_REALLOC(array, sizeof(T)*n);
-			if (!p)
-				return false;
+			T* p= SG_REALLOC(T, array, n);
 			array=p;
 			if (n > array_size)
 				memset(&array[array_size], 0, (n-array_size)*sizeof(T));
@@ -291,7 +289,7 @@ template <class T> class CArray : public CSGObject
 			SG_FREE(this->array);
 			if (copy_array)
 			{
-				this->array=(T*)SG_MALLOC(p_array_size*sizeof(T));
+				this->array=SG_MALLOC(T, p_array_size);
 				memcpy(this->array, p_array, p_array_size*sizeof(T));
 			}
 			else
@@ -309,7 +307,7 @@ template <class T> class CArray : public CSGObject
 		{
 			INCREMENT_ARRAY_STATISTICS_VALUE(set_array);
 			SG_FREE(this->array);
-			this->array=(T*)SG_MALLOC(p_array_size*sizeof(T));
+			this->array=SG_MALLOC(T, p_array_size);
 			memcpy(this->array, p_array, p_array_size*sizeof(T));
 			this->array_size=p_array_size;
 			this->free_array=true;

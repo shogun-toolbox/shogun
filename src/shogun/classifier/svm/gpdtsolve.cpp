@@ -171,16 +171,16 @@ sCache::sCache(sKernel* sk, int32_t Mbyte, int32_t _ell) : KER(sk), ell(_ell)
   maxmw = Mbyte*1024*(1024/4) / maxmw;
 
   /* arrays allocation */
-  mw     = (cache_entry  *)SG_MALLOC(maxmw * sizeof(cache_entry));
-  pindmw = (cache_entry **)SG_MALLOC(ell * sizeof(cache_entry *));
-  onerow = (cachetype    *)SG_MALLOC(ell * sizeof(cachetype    ));
+  mw     = SG_MALLOC(cache_entry, maxmw);
+  pindmw = SG_MALLOC(cache_entry*,  ell);
+  onerow = SG_MALLOC(cachetype,     ell);
 
   /* arrays initialization */
   for (i = 0; i < maxmw; i++)
   {
       mw[i].prev           = (i == 0 ? &mw[maxmw-1] : &mw[i-1]);
       mw[i].next           = (i == maxmw-1 ? &mw[0] : &mw[i+1]);
-      mw[i].data           = (cachetype *)SG_MALLOC(ell*sizeof(cachetype));
+      mw[i].data           = SG_MALLOC(cachetype, ell);
       mw[i].row            = -1;    // unused row
       mw[i].last_access_it = -1;
   }
@@ -305,7 +305,7 @@ int32_t sCache::DivideMP(int32_t *out, int32_t *in, int32_t n)
   int32_t *remained, nremained, k;
   int32_t i;
 
-  remained = (int32_t *) SG_MALLOC(n*sizeof(int32_t));
+  remained = SG_MALLOC(int32_t, n);
 
   nremained = 0;
   k = 0;
@@ -736,14 +736,14 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
       SG_INFO(", size = %d\n",sl);
   }
 
-  sv_loc   = (int32_t *) SG_MALLOC(s*sizeof(int32_t));
-  bsv_loc  = (int32_t *)SG_MALLOC(s*sizeof(int32_t));
-  sp_alpha = (float64_t *)SG_MALLOC(sl*sizeof(float64_t));
-  sp_h     = (float64_t *)SG_MALLOC(sl*sizeof(float64_t));
-  sp_y     = (int32_t *)SG_MALLOC(sl*sizeof(int32_t));
+  sv_loc   = SG_MALLOC(int32_t, s);
+  bsv_loc  = SG_MALLOC(int32_t, s);
+  sp_alpha = SG_MALLOC(float64_t, sl);
+  sp_h     = SG_MALLOC(float64_t, sl);
+  sp_y     = SG_MALLOC(int32_t, sl);
 
   if (sl < 500)
-      sp_D = (float32_t *)SG_MALLOC(sl*sl * sizeof(float32_t));
+      sp_D = SG_MALLOC(float32_t, sl*sl);
 
   for (i = 0; i < sl; i++)
        sp_h[i] = -1.0;
@@ -933,12 +933,12 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
 
   /* arrays allocation */
   SG_DEBUG("ell:%d, chunk_size:%d, nb:%d dim:%d\n", ell, chunk_size,nb, dim);
-  ing       = (int32_t *) SG_MALLOC(ell*sizeof(int32_t));
-  inaux     = (int32_t *) SG_MALLOC(ell*sizeof(int32_t));
-  index_in  = (int32_t *) SG_MALLOC(chunk_size*sizeof(int32_t));
-  index_out = (int32_t *) SG_MALLOC(ell*sizeof(int32_t));
-  indnzout  = (int32_t *) SG_MALLOC(nb*sizeof(int32_t));
-  alpha     = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
+  ing       = SG_MALLOC(int32_t, ell);
+  inaux     = SG_MALLOC(int32_t, ell);
+  index_in  = SG_MALLOC(int32_t, chunk_size);
+  index_out = SG_MALLOC(int32_t, ell);
+  indnzout  = SG_MALLOC(int32_t, nb);
+  alpha     = SG_MALLOC(float64_t, ell);
 
   memset(alpha, 0, ell*sizeof(float64_t));
   memset(ing,   0, ell*sizeof(int32_t));
@@ -970,18 +970,18 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   }
 
   /* arrays allocation */
-  bmem     = (int32_t *)SG_MALLOC(ell*sizeof(int32_t));
-  bmemrid  = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
-  pbmr     = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
-  cec      = (int32_t *)SG_MALLOC(ell*sizeof(int32_t));
-  indnzin  = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
-  inold    = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
-  incom    = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
-  vau      = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
-  grad     = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
-  weight   = (float64_t *)SG_MALLOC(dim*sizeof(float64_t    ));
-  st       = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
-  stloc    = (float64_t *)SG_MALLOC(ell*sizeof(float64_t    ));
+  bmem     = SG_MALLOC(int32_t, ell);
+  bmemrid  = SG_MALLOC(int32_t, chunk_size);
+  pbmr     = SG_MALLOC(int32_t, chunk_size);
+  cec      = SG_MALLOC(int32_t, ell);
+  indnzin  = SG_MALLOC(int32_t, chunk_size);
+  inold    = SG_MALLOC(int32_t, chunk_size);
+  incom    = SG_MALLOC(int32_t, chunk_size);
+  vau      = SG_MALLOC(float64_t, ell);
+  grad     = SG_MALLOC(float64_t, ell);
+  weight   = SG_MALLOC(float64_t, dim);
+  st       = SG_MALLOC(float64_t, ell);
+  stloc    = SG_MALLOC(float64_t, ell);
 
   for (i = 0; i < ell; i++)
   {
@@ -990,11 +990,11 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       st[i]   = 0;
   }
 
-  sp_y     = (int32_t *)SG_MALLOC(chunk_size*sizeof(int32_t));
-  sp_D     = (float32_t  *)SG_MALLOC(chunk_size*chunk_size * sizeof(float32_t));
-  sp_alpha = (float64_t *)SG_MALLOC(chunk_size*sizeof(float64_t            ));
-  sp_h     = (float64_t *)SG_MALLOC(chunk_size*sizeof(float64_t            ));
-  sp_hloc  = (float64_t *)SG_MALLOC(chunk_size*sizeof(float64_t            ));
+  sp_y     = SG_MALLOC(int32_t, chunk_size);
+  sp_D     = SG_MALLOC(float32_t, chunk_size*chunk_size);
+  sp_alpha = SG_MALLOC(float64_t, chunk_size);
+  sp_h     = SG_MALLOC(float64_t, chunk_size);
+  sp_hloc  = SG_MALLOC(float64_t, chunk_size);
 
   for (i = 0; i < chunk_size; i++)
       cec[index_in[i]] = cec[index_in[i]]+1;

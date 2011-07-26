@@ -1816,8 +1816,7 @@ void CWeightedDegreePositionStringKernel::prepare_POIM2(
 	float64_t* distrib, int32_t num_sym, int32_t num_feat)
 {
 	SG_FREE(m_poim_distrib);
-	m_poim_distrib=(float64_t*)SG_MALLOC(num_sym*num_feat*sizeof(float64_t));
-	ASSERT(m_poim_distrib);
+	m_poim_distrib=SG_MALLOC(float64_t, num_sym*num_feat);
 
 	memcpy(m_poim_distrib, distrib, num_sym*num_feat*sizeof(float64_t));
 	m_poim_num_sym=num_sym;
@@ -1862,7 +1861,7 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(
 void CWeightedDegreePositionStringKernel::get_POIM2(
 	float64_t** poim, int32_t* result_len)
 {
-	*poim=(float64_t*) SG_MALLOC(m_poim_result_len*sizeof(float64_t));
+	*poim=SG_MALLOC(float64_t, m_poim_result_len);
 	ASSERT(*poim);
 	memcpy(*poim, m_poim, m_poim_result_len*sizeof(float64_t)) ;
 	*result_len=m_poim_result_len ;

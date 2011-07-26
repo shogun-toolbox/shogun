@@ -408,7 +408,7 @@ public:
 		int64_t num = int64_t(num_features) * get_num_vectors();
 		*num_feat = num_features;
 		*num_vec = get_num_vectors();
-		*dst = (ST*) SG_MALLOC(sizeof(ST) * num);
+		*dst = SG_MALLOC(ST, num);
 
 		/* copying depends on whether a subset is used */
 		if (m_subset)

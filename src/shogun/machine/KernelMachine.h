@@ -259,7 +259,7 @@ class CKernelMachine : public CMachine
 
 			if (nsv>0)
 			{
-				svs = (int32_t*) SG_MALLOC(sizeof(int32_t)*nsv);
+				svs = SG_MALLOC(int32_t, nsv);
 				for(int32_t i=0; i<nsv; i++)
 					svs[i] = get_support_vector(i);
 			}
@@ -277,7 +277,7 @@ class CKernelMachine : public CMachine
 
 			if (nsv>0)
 			{
-				alphas = (float64_t*) SG_MALLOC(nsv*sizeof(float64_t));
+				alphas = SG_MALLOC(float64_t, nsv);
 				for(int32_t i=0; i<nsv; i++)
 					alphas[i] = get_alpha(i);
 			}

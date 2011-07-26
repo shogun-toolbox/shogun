@@ -167,7 +167,7 @@ public:
 		int32_t dim = get_dim_feature_space();
 		if (dim > len)
 		{
-			vec = (float64_t*) SG_REALLOC(vec, dim * sizeof(float64_t));
+			vec = SG_REALLOC(float64_t, vec, dim);
 			memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
 			len = dim;
 		}

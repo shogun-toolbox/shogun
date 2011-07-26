@@ -64,7 +64,6 @@ template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
 }
 #define INF HUGE_VAL
 #define TAU 1e-12
-#define Malloc(type,n) (type *)SG_MALLOC((n)*sizeof(type))
 
 class QMatrix;
 class SVC_QMC;
@@ -155,7 +154,7 @@ int32_t Cache::get_data(const int32_t index, Qfloat **data, int32_t len)
 		}
 
 		// allocate new space
-		h->data = (Qfloat *)SG_REALLOC(h->data,sizeof(Qfloat)*len);
+		h->data = SG_REALLOC(Qfloat, h->data, len);
 		size -= more;
 		CMath::swap(h->len,len);
 	}
@@ -1903,7 +1902,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	int32_t l = prob->l;
 	float64_t nu = param->nu;
 
-	float64_t *alpha = Malloc(float64_t, prob->l);
+	float64_t *alpha = SG_MALLOC(float64_t, prob->l);
 	schar *y = new schar[l];
 
 	for(int32_t i=0;i<l;i++)
@@ -1951,13 +1950,13 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 
 	model->l=l;
 	// rho[0]= rho in mcsvm paper, rho[1]...rho[nr_class] is bias in mcsvm paper
-	model->rho = Malloc(float64_t, nr_class+1);
+	model->rho = SG_MALLOC(float64_t, nr_class+1);
 	model->nr_class = nr_class;
 	model->label = NULL;
-	model->SV = Malloc(svm_node*,nr_class);
-	model->nSV = Malloc(int32_t, nr_class);
-	model->sv_coef = Malloc(float64_t *,nr_class);
-	model->normwcw = Malloc(float64_t,nr_class);
+	model->SV = SG_MALLOC(svm_node*,nr_class);
+	model->nSV = SG_MALLOC(int32_t, nr_class);
+	model->sv_coef = SG_MALLOC(float64_t *,nr_class);
+	model->normwcw = SG_MALLOC(float64_t,nr_class);
 
 	for (int32_t i=0; i<nr_class+1; i++)
 		model->rho[i]=0;
@@ -1974,8 +1973,8 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	for (int32_t i=0; i<nr_class; i++)
 	{
 		model->nSV[i]=class_sv_count[i];
-		model->SV[i] = Malloc(svm_node,class_sv_count[i]);
-		model->sv_coef[i] = Malloc(float64_t,class_sv_count[i]);
+		model->SV[i] = SG_MALLOC(svm_node,class_sv_count[i]);
+		model->sv_coef[i] = SG_MALLOC(float64_t,class_sv_count[i]);
 		class_sv_count[i]=0;
 	}
 
@@ -2116,7 +2115,7 @@ decision_function svm_train_one(
 	const svm_problem *prob, const svm_parameter *param,
 	float64_t Cp, float64_t Cn)
 {
-	float64_t *alpha = Malloc(float64_t, prob->l);
+	float64_t *alpha = SG_MALLOC(float64_t, prob->l);
 	Solver::SolutionInfo si;
 	switch(param->svm_type)
 	{
@@ -2181,9 +2180,9 @@ void svm_group_classes(
 	int32_t l = prob->l;
 	int32_t max_nr_class = 16;
 	int32_t nr_class = 0;
-	int32_t *label = Malloc(int32_t, max_nr_class);
-	int32_t *count = Malloc(int32_t, max_nr_class);
-	int32_t *data_label = Malloc(int32_t, l);
+	int32_t *label = SG_MALLOC(int32_t, max_nr_class);
+	int32_t *count = SG_MALLOC(int32_t, max_nr_class);
+	int32_t *data_label = SG_MALLOC(int32_t, l);
 	int32_t i;
 
 	for(i=0;i<l;i++)
@@ -2204,8 +2203,8 @@ void svm_group_classes(
 			if(nr_class == max_nr_class)
 			{
 				max_nr_class *= 2;
-				label=(int32_t *) SG_REALLOC(label,max_nr_class*sizeof(int32_t));
-				count=(int32_t *) SG_REALLOC(count,max_nr_class*sizeof(int32_t));
+				label=SG_REALLOC(int32_t, label,max_nr_class);
+				count=SG_REALLOC(int32_t, count,max_nr_class);
 			}
 			label[nr_class] = this_label;
 			count[nr_class] = 1;
@@ -2213,7 +2212,7 @@ void svm_group_classes(
 		}
 	}
 
-	int32_t *start = Malloc(int32_t, nr_class);
+	int32_t *start = SG_MALLOC(int32_t, nr_class);
 	start[0] = 0;
 	for(i=1;i<nr_class;i++)
 		start[i] = start[i-1]+count[i-1];
@@ -2238,7 +2237,7 @@ void svm_group_classes(
 //
 svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 {
-	svm_model *model = Malloc(svm_model,1);
+	svm_model *model = SG_MALLOC(svm_model,1);
 	model->param = *param;
 	model->free_sv = 0;	// XXX
 
@@ -2252,9 +2251,9 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		model->nr_class = 2;
 		model->label = NULL;
 		model->nSV = NULL;
-		model->sv_coef = Malloc(float64_t *,1);
+		model->sv_coef = SG_MALLOC(float64_t *,1);
 		decision_function f = svm_train_one(prob,param,0,0);
-		model->rho = Malloc(float64_t, 1);
+		model->rho = SG_MALLOC(float64_t, 1);
 		model->rho[0] = f.rho;
 		model->objective = f.objective;
 
@@ -2263,8 +2262,8 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		for(i=0;i<prob->l;i++)
 			if(fabs(f.alpha[i]) > 0) ++nSV;
 		model->l = nSV;
-		model->SV = Malloc(svm_node *,nSV);
-		model->sv_coef[0] = Malloc(float64_t, nSV);
+		model->SV = SG_MALLOC(svm_node *,nSV);
+		model->sv_coef[0] = SG_MALLOC(float64_t, nSV);
 		int32_t j = 0;
 		for(i=0;i<prob->l;i++)
 			if(fabs(f.alpha[i]) > 0)
@@ -2290,13 +2289,13 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		int32_t *label = NULL;
 		int32_t *start = NULL;
 		int32_t *count = NULL;
-		int32_t *perm = Malloc(int32_t, l);
+		int32_t *perm = SG_MALLOC(int32_t, l);
 
 		// group training data of the same class
 		svm_group_classes(prob,&nr_class,&label,&start,&count,perm);
-		svm_node **x = Malloc(svm_node *,l);
-		float64_t *C = Malloc(float64_t,l);
-		float64_t *pv = Malloc(float64_t,l);
+		svm_node **x = SG_MALLOC(svm_node *,l);
+		float64_t *C = SG_MALLOC(float64_t,l);
+		float64_t *pv = SG_MALLOC(float64_t,l);
 
 
 		int32_t i;
@@ -2318,7 +2317,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 
 
 		// calculate weighted C
-		float64_t *weighted_C = Malloc(float64_t, nr_class);
+		float64_t *weighted_C = SG_MALLOC(float64_t, nr_class);
 		for(i=0;i<nr_class;i++)
 			weighted_C[i] = param->C;
 		for(i=0;i<param->nr_weight;i++)
@@ -2335,10 +2334,10 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 
 		// train k*(k-1)/2 models
 
-		bool *nonzero = Malloc(bool,l);
+		bool *nonzero = SG_MALLOC(bool,l);
 		for(i=0;i<l;i++)
 			nonzero[i] = false;
-		decision_function *f = Malloc(decision_function,nr_class*(nr_class-1)/2);
+		decision_function *f = SG_MALLOC(decision_function,nr_class*(nr_class-1)/2);
 
 		int32_t p = 0;
 		for(i=0;i<nr_class;i++)
@@ -2348,10 +2347,10 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				int32_t si = start[i], sj = start[j];
 				int32_t ci = count[i], cj = count[j];
 				sub_prob.l = ci+cj;
-				sub_prob.x = Malloc(svm_node *,sub_prob.l);
-				sub_prob.y = Malloc(float64_t,sub_prob.l+1); //dirty hack to surpress valgrind err
-				sub_prob.C = Malloc(float64_t,sub_prob.l+1);
-				sub_prob.pv = Malloc(float64_t,sub_prob.l+1);
+				sub_prob.x = SG_MALLOC(svm_node *,sub_prob.l);
+				sub_prob.y = SG_MALLOC(float64_t,sub_prob.l+1); //dirty hack to surpress valgrind err
+				sub_prob.C = SG_MALLOC(float64_t,sub_prob.l+1);
+				sub_prob.pv = SG_MALLOC(float64_t,sub_prob.l+1);
 
 				int32_t k;
 				for(k=0;k<ci;k++)
@@ -2392,17 +2391,17 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		model->objective = f[0].objective;
 		model->nr_class = nr_class;
 
-		model->label = Malloc(int32_t, nr_class);
+		model->label = SG_MALLOC(int32_t, nr_class);
 		for(i=0;i<nr_class;i++)
 			model->label[i] = label[i];
 
-		model->rho = Malloc(float64_t, nr_class*(nr_class-1)/2);
+		model->rho = SG_MALLOC(float64_t, nr_class*(nr_class-1)/2);
 		for(i=0;i<nr_class*(nr_class-1)/2;i++)
 			model->rho[i] = f[i].rho;
 
 		int32_t total_sv = 0;
-		int32_t *nz_count = Malloc(int32_t, nr_class);
-		model->nSV = Malloc(int32_t, nr_class);
+		int32_t *nz_count = SG_MALLOC(int32_t, nr_class);
+		model->nSV = SG_MALLOC(int32_t, nr_class);
 		for(i=0;i<nr_class;i++)
 		{
 			int32_t nSV = 0;
@@ -2419,19 +2418,19 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		SG_SINFO("Total nSV = %d\n",total_sv);
 
 		model->l = total_sv;
-		model->SV = Malloc(svm_node *,total_sv);
+		model->SV = SG_MALLOC(svm_node *,total_sv);
 		p = 0;
 		for(i=0;i<l;i++)
 			if(nonzero[i]) model->SV[p++] = x[i];
 
-		int32_t *nz_start = Malloc(int32_t, nr_class);
+		int32_t *nz_start = SG_MALLOC(int32_t, nr_class);
 		nz_start[0] = 0;
 		for(i=1;i<nr_class;i++)
 			nz_start[i] = nz_start[i-1]+nz_count[i-1];
 
-		model->sv_coef = Malloc(float64_t *,nr_class-1);
+		model->sv_coef = SG_MALLOC(float64_t *,nr_class-1);
 		for(i=0;i<nr_class-1;i++)
-			model->sv_coef[i] = Malloc(float64_t, total_sv);
+			model->sv_coef[i] = SG_MALLOC(float64_t, total_sv);
 
 		p = 0;
 		for(i=0;i<nr_class;i++)
@@ -2559,8 +2558,8 @@ const char *svm_check_parameter(
 		int32_t l = prob->l;
 		int32_t max_nr_class = 16;
 		int32_t nr_class = 0;
-		int32_t *label = Malloc(int32_t, max_nr_class);
-		int32_t *count = Malloc(int32_t, max_nr_class);
+		int32_t *label = SG_MALLOC(int32_t, max_nr_class);
+		int32_t *count = SG_MALLOC(int32_t, max_nr_class);
 
 		int32_t i;
 		for(i=0;i<l;i++)
@@ -2578,10 +2577,8 @@ const char *svm_check_parameter(
 				if(nr_class == max_nr_class)
 				{
 					max_nr_class *= 2;
-					label=(int32_t *) SG_REALLOC(label,
-						max_nr_class*sizeof(int32_t));
-					count=(int32_t *) SG_REALLOC(count,
-						max_nr_class*sizeof(int32_t));
+					label=SG_REALLOC(int32_t, label, max_nr_class);
+					count=SG_REALLOC(int32_t, count, max_nr_class);
 				}
 				label[nr_class] = this_label;
 				count[nr_class] = 1;

@@ -844,12 +844,10 @@ void CDynProg::get_scores(float64_t **scores, int32_t *m)
    //*scores=m_scores.get_array();
    *m=m_scores.get_dim1();
 
-   int32_t sz = sizeof(float64_t)*(*m);
-
-   *scores = (float64_t*) SG_MALLOC(sz);
+   *scores = SG_MALLOC(float64_t, *m);
    ASSERT(*scores);
 
-   memcpy(*scores,m_scores.get_array(),sz);
+   memcpy(*scores,m_scores.get_array(), sizeof(float64_t)*(*m));
 }
 
 void CDynProg::get_states(int32_t **states, int32_t *m, int32_t *n) 
@@ -859,11 +857,11 @@ void CDynProg::get_states(int32_t **states, int32_t *m, int32_t *n)
 	*m=m_states.get_dim1() ;
 	*n=m_states.get_dim2() ;
 
-   int32_t sz = sizeof(int32_t)*( (*m) * (*n) );
 
-   *states = (int32_t*) SG_MALLOC(sz);
+   *states = SG_MALLOC(int32_t, (*m) * (*n));
    ASSERT(*states);
 
+   int32_t sz = sizeof(int32_t)*( (*m) * (*n) );
    memcpy(*states,m_states.get_array(),sz);
 }
 
@@ -876,7 +874,7 @@ void CDynProg::get_positions(int32_t **positions, int32_t *m, int32_t *n)
 
    int32_t sz = sizeof(int32_t)*( (*m) * (*n) );
 
-   *positions = (int32_t*) SG_MALLOC(sz);
+   *positions = SG_MALLOC(int32_t, (*m) * (*n));
    ASSERT(*positions);
 
    memcpy(*positions,m_positions.get_array(),sz);
@@ -890,7 +888,7 @@ void CDynProg::get_path_scores(float64_t** scores, int32_t* seq_len)
 
    int32_t sz = sizeof(float64_t)*(*seq_len);
 
-   *scores = (float64_t*) SG_MALLOC(sz);
+   *scores = SG_MALLOC(float64_t, *seq_len);
    ASSERT(*scores);
 
    memcpy(*scores,m_my_scores.get_array(),sz);
@@ -904,7 +902,7 @@ void CDynProg::get_path_losses(float64_t** losses, int32_t* seq_len)
 
    int32_t sz = sizeof(float64_t)*(*seq_len);
 
-   *losses = (float64_t*) SG_MALLOC(sz);
+   *losses = SG_MALLOC(float64_t, *seq_len);
    ASSERT(*losses);
 
    memcpy(*losses,m_my_losses.get_array(),sz);

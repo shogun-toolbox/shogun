@@ -521,8 +521,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 			SG_DEBUG( "Extending TreeMem from %i to %i elements\n",
 					TreeMemPtrMax, (int32_t) ((float64_t)TreeMemPtrMax*1.2));
 			TreeMemPtrMax = (int32_t) ((float64_t)TreeMemPtrMax*1.2);
-			TreeMem = (Trie*) SG_REALLOC(TreeMem,
-					TreeMemPtrMax*sizeof(Trie));
+			TreeMem = SG_REALLOC(Trie, TreeMem, TreeMemPtrMax);
 		}
 
 		/** set weights in tree
@@ -682,7 +681,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 	{
 		TreeMemPtrMax=1024*1024/sizeof(Trie);
 		TreeMemPtr=0;
-		TreeMem=(Trie*) SG_MALLOC(TreeMemPtrMax*sizeof(Trie));
+		TreeMem=SG_MALLOC(Trie, TreeMemPtrMax);
 
 		length=0;
 		trees=NULL;
@@ -707,7 +706,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 
 		TreeMemPtrMax=to_copy.TreeMemPtrMax;
 		TreeMemPtr=to_copy.TreeMemPtr;
-		TreeMem=(Trie*) SG_MALLOC(TreeMemPtrMax*sizeof(Trie));
+		TreeMem=SG_MALLOC(Trie, TreeMemPtrMax);
 		memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie));
 
 		length=to_copy.length;
@@ -739,7 +738,7 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 	TreeMemPtrMax=to_copy.TreeMemPtrMax ;
 	TreeMemPtr=to_copy.TreeMemPtr ;
 	SG_FREE(TreeMem) ;
-	TreeMem = (Trie*) SG_MALLOC(TreeMemPtrMax*sizeof(Trie)) ;
+	TreeMem = SG_MALLOC(Trie, TreeMemPtrMax);
 	memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie)) ;
 
 	length = to_copy.length ;

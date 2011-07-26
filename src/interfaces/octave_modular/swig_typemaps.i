@@ -27,7 +27,7 @@
 
 void* get_copy(void* src, size_t len)
 {
-    void* copy=SG_MALLOC(len);
+    void* copy=SG_MALLOC(uint8_t, len);
     memcpy(copy, src, len);
     return copy;
 }

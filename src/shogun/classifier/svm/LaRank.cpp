@@ -63,8 +63,7 @@ namespace shogun
 	static larank_kcache_t* larank_kcache_create (CKernel* kernelfunc)
 	{
 		larank_kcache_t *self;
-		self = (larank_kcache_t *) SG_MALLOC (sizeof (larank_kcache_t));
-		memset (self, 0, sizeof (larank_kcache_t));
+		self = SG_CALLOC (larank_kcache_t, 1);
 		self->l = 0;
 		self->maxrowlen = 0;
 		self->func = kernelfunc;
@@ -72,8 +71,8 @@ namespace shogun
 		self->nextbuddy = self;
 		self->cursize = sizeof (larank_kcache_t);
 		self->maxsize = 256 * 1024 * 1024;
-		self->qprev = (int32_t *) SG_MALLOC (sizeof (int32_t));
-		self->qnext = (int32_t *) SG_MALLOC (sizeof (int32_t));
+		self->qprev = SG_MALLOC(int32_t, 1);
+		self->qnext = SG_MALLOC(int32_t, 1);
 		self->rnext = self->qnext + 1;
 		self->rprev = self->qprev + 1;
 		self->rprev[-1] = -1;
@@ -90,7 +89,7 @@ namespace shogun
 			float32_t *odata = self->rdata[k];
 			if (nlen > 0)
 			{
-				ndata = (float32_t *) SG_MALLOC (nlen * sizeof (float32_t));
+				ndata = SG_MALLOC(float32_t, nlen);
 				memcpy (ndata, odata, nlen * sizeof (float32_t));
 			}
 			else
@@ -171,13 +170,13 @@ namespace shogun
 			int32_t nl = CMath::max (256, ol);
 			while (nl < n)
 				nl = nl + nl;
-			self->i2r = (int32_t *) SG_REALLOC (self->i2r, nl * sizeof (int32_t));
-			self->r2i = (int32_t *) SG_REALLOC (self->r2i, nl * sizeof (int32_t));
-			self->rsize = (int32_t *) SG_REALLOC (self->rsize, nl * sizeof (int32_t));
-			self->qnext = (int32_t *) SG_REALLOC (self->qnext, (1 + nl) * sizeof (int32_t));
-			self->qprev = (int32_t *) SG_REALLOC (self->qprev, (1 + nl) * sizeof (int32_t));
-			self->rdiag = (float32_t *) SG_REALLOC (self->rdiag, nl * sizeof (float32_t));
-			self->rdata = (float32_t **) SG_REALLOC (self->rdata, nl * sizeof (float32_t *));
+			self->i2r = SG_REALLOC (int32_t, self->i2r, nl);
+			self->r2i = SG_REALLOC (int32_t, self->r2i, nl);
+			self->rsize = SG_REALLOC (int32_t, self->rsize, nl);
+			self->qnext = SG_REALLOC (int32_t, self->qnext, (1 + nl));
+			self->qprev = SG_REALLOC (int32_t, self->qprev, (1 + nl));
+			self->rdiag = SG_REALLOC (float32_t, self->rdiag, nl);
+			self->rdata = SG_REALLOC (float32_t*, self->rdata, nl);
 			self->rnext = self->qnext + 1;
 			self->rprev = self->qprev + 1;
 			for (i = ol; i < nl; i++)
@@ -204,7 +203,7 @@ namespace shogun
 		int32_t olen = self->rsize[k];
 		if (nlen > olen)
 		{
-			float32_t *ndata = (float32_t *) SG_MALLOC (nlen * sizeof (float32_t));
+			float32_t *ndata = SG_MALLOC(float32_t, nlen);
 			if (olen > 0)
 			{
 				float32_t *odata = self->rdata[k];

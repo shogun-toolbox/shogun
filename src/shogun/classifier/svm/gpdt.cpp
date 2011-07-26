@@ -122,7 +122,7 @@ void QPproblem::Subproblem(QPproblem &p, int32_t len, int32_t *perm)
   ell = len;
 
   KER->SetSubproblem(p.KER, len, perm);
-  y = (int32_t *)SG_MALLOC(len * sizeof(int32_t));
+  y = SG_MALLOC(int32_t, len);
   for (k = 0; k < ell; k++)
       y[k] = p.y[perm[k]];
 }
@@ -233,9 +233,8 @@ void sKernel::SetData(
 
   dim  = _dim;
   ell  = _ell;
-  nor  = (float64_t *)SG_MALLOC(ell*sizeof(float64_t));
-  vaux = (float32_t  *)SG_MALLOC(dim*sizeof(float32_t ));
-  memset(vaux, 0, dim*sizeof(float32_t));
+  nor  = SG_MALLOC(float64_t, ell);
+  vaux = SG_CALLOC(float32_t, dim);
 
   IsSubproblem = 0;
   x  = x_;
@@ -265,13 +264,12 @@ void sKernel::SetSubproblem(sKernel* ker, int32_t len, int32_t *perm)
   int32_t k;
 
   /* arrays allocations */
-  nor  = (float64_t *) SG_MALLOC(len*sizeof(float64_t));
-  vaux = (float32_t  *) SG_MALLOC(ker->dim*sizeof(float32_t));
-  memset(vaux, 0, ker->dim*sizeof(float32_t));
+  nor  = SG_MALLOC(float64_t, len);
+  vaux = SG_CALLOC(float32_t, ker->dim);
 
-  lx = (int32_t *) SG_MALLOC(len * sizeof(int32_t));
-  ix = (int32_t **) SG_MALLOC(len * sizeof(int32_t *));
-  x  = (float32_t **) SG_MALLOC(len * sizeof(float32_t *));
+  lx = SG_MALLOC(int32_t, len);
+  ix = SG_MALLOC(int32_t*, len);
+  x  = SG_MALLOC(float32_t*, len);
   IsSubproblem = 1;
 
   for (k = 0; k < len; k++)

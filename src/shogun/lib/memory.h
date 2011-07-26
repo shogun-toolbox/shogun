@@ -22,10 +22,15 @@ void operator delete(void *p);
 void* operator new[](size_t size);
 void operator delete[](void *p);
 
-void* SG_MALLOC(size_t size);
-void  SG_FREE(void* ptr);
-void* SG_REALLOC(void* ptr, size_t size);
-void* SG_CALLOC(size_t num, size_t size);
+#define SG_MALLOC(type, len) (type*) sg_malloc(sizeof(type)*size_t(len))
+#define SG_CALLOC(type, len) (type*) sg_calloc(size_t(len), sizeof(type))
+#define SG_REALLOC(type, ptr, len) (type*) sg_realloc(ptr, sizeof(type)*size_t(len))
+#define SG_FREE(ptr) sg_free(ptr)
+
+void* sg_malloc(size_t size);
+void  sg_free(void* ptr);
+void* sg_realloc(void* ptr, size_t size);
+void* sg_calloc(size_t num, size_t size);
 
 #ifdef TRACE_MEMORY_ALLOCS
 namespace shogun

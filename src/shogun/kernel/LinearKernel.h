@@ -135,7 +135,7 @@ class CLinearKernel: public CDotKernel
 			int32_t len = ((CDotFeatures*) lhs)->get_dim_feature_space();
 			ASSERT(dst_w && dst_dims);
 			*dst_dims=len;
-			*dst_w=(float64_t*) SG_MALLOC(sizeof(float64_t)*(*dst_dims));
+			*dst_w=SG_MALLOC(float64_t, *dst_dims);
 			ASSERT(*dst_w);
 			memcpy(*dst_w, normal, sizeof(float64_t) * (*dst_dims));
 		}

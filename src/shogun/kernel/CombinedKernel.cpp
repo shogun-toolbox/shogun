@@ -692,7 +692,7 @@ void CCombinedKernel::get_subkernel_weights(float64_t** weights, int32_t* num_we
 
 	ASSERT(num>0);
 	*num_weights=num;
-	*weights = (float64_t*) SG_MALLOC(num*sizeof(float64_t));
+	*weights = SG_MALLOC(float64_t, num);
 	memcpy(*weights, w, num*sizeof(float64_t));
 }
 

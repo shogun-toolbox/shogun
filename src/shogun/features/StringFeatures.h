@@ -332,7 +332,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			int32_t l;
 			bool free_vec;
 			ST* vec=get_feature_vector(num, l, free_vec);
-			ST* dst=(ST*) SG_MALLOC(l*sizeof(ST));
+			ST* dst=SG_MALLOC(ST, l);
 			memcpy(dst, vec, l*sizeof(ST));
 			free_feature_vector(vec, num, free_vec);
 			return SGVector<ST>(dst,l);
@@ -1969,7 +1969,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			int32_t nsym=get_num_symbols();
 			int32_t slen=get_max_vector_length();
 			int64_t sz=int64_t(nsym)*slen*sizeof(float64_t);
-			float64_t* h= (float64_t*) SG_MALLOC(sz);
+			float64_t* h= SG_MALLOC(float64_t, sz);
 			memset(h, 0, sz);
 
 			float64_t* h_normalizer=new float64_t[slen];

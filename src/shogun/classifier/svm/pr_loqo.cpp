@@ -361,32 +361,32 @@ int32_t pr_loqo(
   int32_t i,j;
 
   /* memory allocation */
-  workspace = (float64_t*) SG_MALLOC((n*(m+2)+2*m)*sizeof(float64_t));
-  diag_h_x  = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  h_y       = (float64_t*) SG_MALLOC(m*m*sizeof(float64_t));
-  c_x       = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  c_y       = (float64_t*) SG_MALLOC(m*sizeof(float64_t));
-  h_dot_x   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  workspace = SG_MALLOC(float64_t, (n*(m+2)+2*m));
+  diag_h_x  = SG_MALLOC(float64_t, n);
+  h_y       = SG_MALLOC(float64_t, m*m);
+  c_x       = SG_MALLOC(float64_t, n);
+  c_y       = SG_MALLOC(float64_t, m);
+  h_dot_x   = SG_MALLOC(float64_t, n);
 
-  rho       = (float64_t*) SG_MALLOC(m*sizeof(float64_t));
-  nu        = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  tau       = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  sigma     = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  rho       = SG_MALLOC(float64_t, m);
+  nu        = SG_MALLOC(float64_t, n);
+  tau       = SG_MALLOC(float64_t, n);
+  sigma     = SG_MALLOC(float64_t, n);
 
-  gamma_z   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  gamma_s   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  gamma_z   = SG_MALLOC(float64_t, n);
+  gamma_s   = SG_MALLOC(float64_t, n);
 
-  hat_nu    = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  hat_tau   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  hat_nu    = SG_MALLOC(float64_t, n);
+  hat_tau   = SG_MALLOC(float64_t, n);
 
-  delta_x   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  delta_y   = (float64_t*) SG_MALLOC(m*sizeof(float64_t));
-  delta_s   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  delta_z   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  delta_g   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
-  delta_t   = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  delta_x   = SG_MALLOC(float64_t, n);
+  delta_y   = SG_MALLOC(float64_t, m);
+  delta_s   = SG_MALLOC(float64_t, n);
+  delta_z   = SG_MALLOC(float64_t, n);
+  delta_g   = SG_MALLOC(float64_t, n);
+  delta_t   = SG_MALLOC(float64_t, n);
 
-  d         = (float64_t*) SG_MALLOC(n*sizeof(float64_t));
+  d         = SG_MALLOC(float64_t, n);
 
   /* pointers into the external variables */
   x = primal;			/* n */

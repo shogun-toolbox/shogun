@@ -138,15 +138,15 @@ int32_t gvpm(
   float64_t  *g, *y, *tempv, *d, *Ad, *t;
 
   /*** array allocations ***/
-  ipt   = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
-  ipt2  = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
-  uv    = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
-  g     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  y     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  d     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  Ad    = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  t     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  tempv = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  ipt   = SG_MALLOC(int32_t, n);
+  ipt2  = SG_MALLOC(int32_t, n);
+  uv    = SG_MALLOC(int32_t, n);
+  g     = SG_MALLOC(float64_t, n);
+  y     = SG_MALLOC(float64_t, n);
+  d     = SG_MALLOC(float64_t, n);
+  Ad    = SG_MALLOC(float64_t, n);
+  t     = SG_MALLOC(float64_t, n);
+  tempv = SG_MALLOC(float64_t, n);
 
 #endif
 
@@ -471,19 +471,19 @@ int32_t FletcherAlg2A(
   float64_t *g, *y, *tempv, *d, *Ad, *t, *xplus, *tplus, *sk, *yk;
 
   /*** arrays allocation ***/
-  ipt   = (int32_t *)SG_MALLOC(n * sizeof(int32_t));
-  ipt2  = (int32_t *)SG_MALLOC(n * sizeof(int32_t));
-  uv    = (int32_t *)SG_MALLOC(n * sizeof(int32_t));
-  g     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  y     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  tempv = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  d     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  Ad    = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  t     = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  xplus = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  tplus = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  sk    = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
-  yk    = (float64_t *)SG_MALLOC(n * sizeof(float64_t));
+  ipt   = SG_MALLOC(int32_t, n);
+  ipt2  = SG_MALLOC(int32_t, n);
+  uv    = SG_MALLOC(int32_t, n);
+  g     = SG_MALLOC(float64_t, n);
+  y     = SG_MALLOC(float64_t, n);
+  tempv = SG_MALLOC(float64_t, n);
+  d     = SG_MALLOC(float64_t, n);
+  Ad    = SG_MALLOC(float64_t, n);
+  t     = SG_MALLOC(float64_t, n);
+  xplus = SG_MALLOC(float64_t, n);
+  tplus = SG_MALLOC(float64_t, n);
+  sk    = SG_MALLOC(float64_t, n);
+  yk    = SG_MALLOC(float64_t, n);
 
 #endif
 
@@ -1068,16 +1068,16 @@ int32_t Pardalos(
   float64_t *xint, *xint2, *a, *b, *at, *bt, *newdia, *newdt;
 
   /*** arrays allocation ***/
-  uv     = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
-  uvt    = (int32_t *) SG_MALLOC(n * sizeof(int32_t));
-  a      = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
-  b      = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
-  at     = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
-  bt     = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
-  newdia = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
-  newdt  = (float64_t *)SG_MALLOC(n * sizeof(float64_t        ));
-  xint   = (float64_t *)SG_MALLOC((2*n + 2) * sizeof(float64_t));
-  xint2  = (float64_t *)SG_MALLOC((2*n + 2) * sizeof(float64_t));
+  uv     = SG_MALLOC(int32_t, n);
+  uvt    = SG_MALLOC(int32_t, n);
+  a      = SG_MALLOC(float64_t, n);
+  b      = SG_MALLOC(float64_t, n);
+  at     = SG_MALLOC(float64_t, n);
+  bt     = SG_MALLOC(float64_t, n);
+  newdia = SG_MALLOC(float64_t, n);
+  newdt  = SG_MALLOC(float64_t, n);
+  xint   = SG_MALLOC(float64_t, (2*n + 2));
+  xint2  = SG_MALLOC(float64_t, (2*n + 2));
 
 #endif
 

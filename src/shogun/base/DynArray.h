@@ -44,7 +44,7 @@ template <class T> class DynArray
 		{
 			this->resize_granularity=p_resize_granularity;
 
-			array=(T*)SG_CALLOC(p_resize_granularity, sizeof(T));
+			array=SG_CALLOC(T, p_resize_granularity);
 
 			num_elements=p_resize_granularity;
 			last_element_idx=-1;
@@ -268,7 +268,7 @@ template <class T> class DynArray
 			int32_t new_num_elements= ((n/resize_granularity)+1)
 				*resize_granularity;
 
-			T* p= (T*) SG_REALLOC(array, sizeof(T)*new_num_elements);
+			T* p= SG_REALLOC(T, array, new_num_elements);
 			if (p)
 			{
 				array=p;
@@ -359,7 +359,7 @@ template <class T> class DynArray
 			if (orig.num_elements>num_elements)
 			{
 				SG_FREE(array);
-				array=(T*)SG_MALLOC(orig.num_elements*sizeof(T));
+				array=SG_MALLOC(T, orig.num_elements);
 			}
 
 			memcpy(array, orig.array, sizeof(T)*orig.num_elements);

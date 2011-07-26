@@ -84,11 +84,8 @@ void CSNPStringKernel::obtain_base_strings()
 		if (m_str_len==0)
 		{
 			m_str_len=len;
-			size_t tlen=(len+1)*sizeof(char);
-			m_str_min=(char*) SG_MALLOC(tlen);
-			m_str_maj=(char*) SG_MALLOC(tlen);
-			memset(m_str_min, 0, tlen);
-			memset(m_str_maj, 0, tlen);
+			m_str_min=SG_CALLOC(char, len+1);
+			m_str_maj=SG_CALLOC(char, len+1);
 		}
 		else
 		{
