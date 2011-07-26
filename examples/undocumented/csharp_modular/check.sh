@@ -12,8 +12,8 @@ echo "Usage: ./check.sh   check all examples.
 exit 0
 fi
 
-export CLASSPATH=/usr/share/java/jblas.jar:../../../src/java_modular/shogun.jar:.
-export LD_LIBRARY_PATH=../../../src/libshogun:../../../src/java_modular
+export CLASSPATH=/usr/share/java/jblas.jar:../../../src/interfaces/java_modular/shogun.jar:.
+export LD_LIBRARY_PATH=../../../src/shogun:../../../src/interfaces/java_modular
 
 if [ $args -eq 0 ]; then
   ${JAVAC} Load.cs

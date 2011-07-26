@@ -2,17 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class kernel_gaussian_shift_modular
 {
 	static kernel_gaussian_shift_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 1.8;
 		int max_shift = 2;
 		int shift_step = 1;
@@ -32,6 +33,6 @@ public class kernel_gaussian_shift_modular
 		Console.WriteLine(km_train.ToString());
 		Console.WriteLine(km_test.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

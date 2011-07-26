@@ -2,18 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class kernel_io_modular
 {
 	static kernel_io_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Library");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 1.2;
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
@@ -35,6 +35,6 @@ public class kernel_io_modular
 		Console.WriteLine(km_train.ToString());
 		Console.WriteLine(km_test.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

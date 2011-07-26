@@ -2,18 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class classifier_libsvmmulticlass_modular
 {
 	static classifier_libsvmmulticlass_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 2.1;
 		double epsilon = 1e-5;
 		double C = 1.0;
@@ -40,6 +40,6 @@ public class classifier_libsvmmulticlass_modular
 		DoubleMatrix out_labels = svm.apply().get_labels();
 		Console.WriteLine(out_labels.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

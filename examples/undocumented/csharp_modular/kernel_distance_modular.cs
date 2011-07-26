@@ -2,18 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class kernel_distance_modular
 {
 	static kernel_distance_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Distance");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 1.7;
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
@@ -33,6 +33,6 @@ public class kernel_distance_modular
 		Console.WriteLine(dm_train.ToString());
 		Console.WriteLine(dm_test.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

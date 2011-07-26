@@ -1,16 +1,17 @@
 using org.shogun;
 using org.jblas;
+
 public class preprocessor_landmarkmds_modular
 {
 	static preprocessor_landmarkmds_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Preprocessor");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		DoubleMatrix data = Load.load_numbers("../data/fm_train_real.dat");
 
@@ -19,6 +20,6 @@ public class preprocessor_landmarkmds_modular
 		preprocessor.set_target_dim(1);
 		preprocessor.apply_to_feature_matrix(features);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

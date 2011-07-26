@@ -2,16 +2,16 @@ using System.Collections;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
-import static org.shogun.EAlphabet.DNA;
+// This Java 'import static' statement cannot be converted to .NET:
+import static org.shogun.Math.init_random;
+
+
 public class clustering_kmeans_modular
 {
 	static clustering_kmeans_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Clustering");
-		System.loadLibrary("Distance");
-		System.loadLibrary("Library");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	public int[] parameter_list = new int[2];
@@ -22,9 +22,9 @@ public class clustering_kmeans_modular
 	}
 	internal static ArrayList run(int para)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int k = para;
-		Math_init_random(17);
+		init_random(17);
 
 		DoubleMatrix fm_train = Load.load_numbers("../data/fm_train_real.dat");
 
@@ -41,7 +41,7 @@ public class clustering_kmeans_modular
 		result.Add(kmeans);
 		result.Add(out_centers);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	static void Main(string[] argv)

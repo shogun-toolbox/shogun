@@ -1,19 +1,19 @@
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.shogun.EAlphabet.DNA;
+
 public class classifier_domainadaptationsvm_modular
 {
 	static classifier_domainadaptationsvm_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Classifier");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int degree = 3;
 		int C = 1;
 
@@ -34,6 +34,6 @@ public class classifier_domainadaptationsvm_modular
 		dasvm.train();
 
 		DoubleMatrix @out = dasvm.apply(feats_test).get_labels();
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

@@ -2,18 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class classifier_knn_modular
 {
 	static classifier_knn_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Distance");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int k = 3;
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
@@ -32,6 +32,6 @@ public class classifier_knn_modular
 		DoubleMatrix out_labels = knn.apply(feats_test).get_labels();
 		Console.WriteLine(out_labels.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

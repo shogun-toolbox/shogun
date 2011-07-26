@@ -2,18 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class kernel_combined_custom_poly_modular
 {
 	static kernel_combined_custom_poly_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 2.1;
 		double epsilon = 1e-5;
 		double C = 1.0;
@@ -65,6 +65,6 @@ public class kernel_combined_custom_poly_modular
 		DoubleMatrix km_train =kernel.get_kernel_matrix();
 		Console.WriteLine(km_train.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

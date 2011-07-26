@@ -2,19 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class regression_svrlight_modular
 {
 	static regression_svrlight_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Regression");
-		System.loadLibrary("Classifier");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 0.8;
 		int C = 1;
 		double epsilon = 1e-5;
@@ -41,6 +40,6 @@ public class regression_svrlight_modular
 		DoubleMatrix out_labels = svr.apply().get_labels();
 		Console.WriteLine(out_labels.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

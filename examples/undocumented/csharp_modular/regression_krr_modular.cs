@@ -2,19 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class regression_krr_modular
 {
 	static regression_krr_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Regression");
-		System.loadLibrary("Classifier");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 0.8;
 		double tau = 1e-6;
 
@@ -36,6 +35,6 @@ public class regression_krr_modular
 		DoubleMatrix out_labels = krr.apply().get_labels();
 		Console.WriteLine(out_labels.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

@@ -2,20 +2,20 @@ using System;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.jblas.DoubleMatrix.randn;
 
 public class evaluation_multiclassaccuracy_modular
 {
 	static evaluation_multiclassaccuracy_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Evaluation");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		double mul = 2.0;
 		DoubleMatrix ground_truth = Load.load_labels("../data/label_train_multiclass.dat");
@@ -29,6 +29,6 @@ public class evaluation_multiclassaccuracy_modular
 
 		Console.WriteLine(accuracy);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

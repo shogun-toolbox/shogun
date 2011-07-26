@@ -2,27 +2,26 @@ using System;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.jblas.MatrixFunctions.signum;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.jblas.DoubleMatrix.concatHorizontally;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.jblas.DoubleMatrix.ones;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.jblas.DoubleMatrix.randn;
 
 public class classifier_libsvm_minimal_modular
 {
 	static classifier_libsvm_minimal_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 
 		int num = 1000;
 		double dist = 1.0;
@@ -52,6 +51,6 @@ public class classifier_libsvm_minimal_modular
 		DoubleMatrix @out = svm.apply(feats_test).get_labels();
 
 		Console.WriteLine("Mean Error = " + signum(@out).ne(testlab).mean());
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

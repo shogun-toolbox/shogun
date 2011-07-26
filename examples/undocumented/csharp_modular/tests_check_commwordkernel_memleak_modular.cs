@@ -2,15 +2,15 @@ using System.Text;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.shogun.EAlphabet.DNA;
+
 public class tests_check_commwordkernel_memleak_modular
 {
 	static tests_check_commwordkernel_memleak_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Preprocessor");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 	public static string repeat(string toRepeat, int num)
 	{
@@ -24,7 +24,7 @@ public class tests_check_commwordkernel_memleak_modular
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int num = 10;
 		int order = 7;
 		int gap = 0;
@@ -82,6 +82,6 @@ public class tests_check_commwordkernel_memleak_modular
 			DoubleMatrix K = spec.get_kernel_matrix();
 		}
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

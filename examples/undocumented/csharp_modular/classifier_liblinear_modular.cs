@@ -2,20 +2,20 @@ using System;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.shogun.LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC_DUAL;
+
 public class classifier_liblinear_modular
 {
 	static classifier_liblinear_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Library");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double C = 0.9;
 		double epsilon = 1e-3;
 
@@ -41,6 +41,6 @@ public class classifier_liblinear_modular
 		DoubleMatrix out_labels = svm.apply().get_labels();
 		Console.WriteLine(out_labels.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

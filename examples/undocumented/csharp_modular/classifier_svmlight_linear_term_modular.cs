@@ -2,15 +2,15 @@ using System.Collections;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.shogun.EAlphabet.DNA;
+
 public class classifier_svmlight_linear_term_modular
 {
 	static classifier_svmlight_linear_term_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
-		System.loadLibrary("Classifier");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -23,7 +23,7 @@ public class classifier_svmlight_linear_term_modular
 	internal static DoubleMatrix run(IList para)
 	{
 		int degree = 20;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double C = (double)((double?)para[0]);
 		double epsilon = (double)((double?)para[1]);
 		int num_threads = (int)((int?)para[2]);
@@ -48,7 +48,7 @@ public class classifier_svmlight_linear_term_modular
 		kernel.init(feats_train, feats_test);
 		DoubleMatrix @out = svm.apply().get_labels();
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return @out;
 	}
 	static void Main(string[] argv)

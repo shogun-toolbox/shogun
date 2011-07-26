@@ -2,20 +2,20 @@ using System;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.jblas.DoubleMatrix.randn;
 
 public class evaluation_meansquarederror_modular
 {
 	static evaluation_meansquarederror_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Evaluation");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int N = 100;
 
 		DoubleMatrix ground_truth = randn(1, N);
@@ -29,6 +29,6 @@ public class evaluation_meansquarederror_modular
 
 		Console.WriteLine(mse);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

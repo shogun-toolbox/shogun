@@ -2,17 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class classifier_perceptron_modular
 {
 	static classifier_perceptron_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double learn_rate = 1.0;
 		int max_iter = 1000;
 
@@ -37,6 +38,6 @@ public class classifier_perceptron_modular
 		DoubleMatrix out_labels = perceptron.apply().get_labels();
 		Console.WriteLine(out_labels.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

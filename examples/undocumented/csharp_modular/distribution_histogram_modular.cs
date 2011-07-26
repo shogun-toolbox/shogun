@@ -2,14 +2,15 @@ using System.Collections;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.shogun.EAlphabet.DNA;
+
 public class distribution_histogram_modular
 {
 	static distribution_histogram_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Distribution");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -22,7 +23,7 @@ public class distribution_histogram_modular
 	internal static ArrayList run(IList para)
 	{
 		bool reverse = false;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int order = (int)((int?)para[0]);
 		int gap = (int)((int?)para[1]);
 
@@ -47,7 +48,7 @@ public class distribution_histogram_modular
 		result.Add(histo);
 		result.Add(out_sample);
 		result.Add(out_likelihood);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	static void Main(string[] argv)

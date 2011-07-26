@@ -2,15 +2,15 @@ using System.Collections;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.shogun.EAlphabet.DNA;
+
 public class clustering_hierarchical_modular
 {
 	static clustering_hierarchical_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Clustering");
-		System.loadLibrary("Distance");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	public int[] parameter_list = new int[2];
@@ -21,7 +21,7 @@ public class clustering_hierarchical_modular
 	}
 	internal static ArrayList run(int para)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int merges = para;
 
 		DoubleMatrix fm_train = Load.load_numbers("../data/fm_train_real.dat");
@@ -39,7 +39,7 @@ public class clustering_hierarchical_modular
 		result.Add(hierarchical);
 		result.Add(out_distance);
 		result.Add(out_cluster);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	static void Main(string[] argv)

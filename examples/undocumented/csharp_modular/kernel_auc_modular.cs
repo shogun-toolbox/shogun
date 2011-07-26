@@ -2,20 +2,20 @@ using System;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.jblas.DoubleMatrix.randn;
 
 public class kernel_auc_modular
 {
 	static kernel_auc_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 1.6;
 
 		DoubleMatrix train_real = Load.load_numbers("../data/fm_train_real.dat");
@@ -33,6 +33,6 @@ public class kernel_auc_modular
 		DoubleMatrix km_train = kernel.get_kernel_matrix();
 		Console.WriteLine(km_train.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

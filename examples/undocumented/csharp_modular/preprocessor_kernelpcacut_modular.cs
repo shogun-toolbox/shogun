@@ -1,17 +1,17 @@
 using org.shogun;
 using org.jblas;
+
 public class preprocessor_kernelpcacut_modular
 {
 	static preprocessor_kernelpcacut_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Preprocessor");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double width = 2.0;
 		double threshold = 0.05;
 
@@ -24,6 +24,6 @@ public class preprocessor_kernelpcacut_modular
 		preprocessor.init(features);
 		preprocessor.apply_to_feature_matrix(features);
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

@@ -2,15 +2,15 @@ using System.Collections;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.shogun.EAlphabet.DNA;
+
 public class classifier_svmlight_modular
 {
 	static classifier_svmlight_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Classifier");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	public ArrayList parameter_list = new ArrayList(2);
@@ -23,7 +23,7 @@ public class classifier_svmlight_modular
 	internal static ArrayList run(IList para)
 	{
 		int degree = 20;
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double C = (double)((double?)para[0]);
 		double epsilon = (double)((double?)para[1]);
 		int num_threads = (int)((int?)para[2]);
@@ -47,7 +47,7 @@ public class classifier_svmlight_modular
 
 		ArrayList result = new ArrayList();
 		result.Add(kernel);
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 		return result;
 	}
 	static void Main(string[] argv)

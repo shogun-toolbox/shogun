@@ -2,17 +2,18 @@ using System;
 
 using org.shogun;
 using org.jblas;
+
 public class kernel_const_modular
 {
 	static kernel_const_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		double c = 23;
 
 		DummyFeatures feats_train = new DummyFeatures(10);
@@ -28,6 +29,6 @@ public class kernel_const_modular
 		Console.WriteLine(km_train.ToString());
 		Console.WriteLine(km_test.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }

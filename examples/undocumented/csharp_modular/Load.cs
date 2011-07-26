@@ -1,8 +1,9 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 using org.shogun;
 using org.jblas;
+
 public class Load
 {
 	public static DoubleMatrix load_numbers(string filename)
@@ -37,7 +38,36 @@ public class Load
 	}
 	public static string[] load_dna(string filename)
 	{
-		ArrayList list = new ArrayList();
+		List<string> list = new List<string>();
+		string[] result = null;
+		try
+		{
+			FileInputStream fstream = new FileInputStream(filename);
+			DataInputStream @in = new DataInputStream(fstream);
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(@in));
+			string line;
+			while((line = buffer.readLine()) != null)
+			{
+				list.Add(line);
+			}
+			@in.close();
+			result = new string[list.Count];
+			for (int i = 0; i < list.Count; i++)
+			{
+				result[i] = (string)list[i];
+			}
+		}
+		catch(java.io.IOException e)
+		{
+			Console.WriteLine("Unable to create matrix from " + filename + ": " + e.Message);
+			Environment.Exit(-1);
+		}
+		return result;
+	}
+
+	public static string[] load_cubes(string filename)
+	{
+		List<string> list = new List<string>();
 		string[] result = null;
 		try
 		{

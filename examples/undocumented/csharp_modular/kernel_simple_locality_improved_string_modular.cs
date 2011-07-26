@@ -2,19 +2,20 @@ using System;
 
 using org.shogun;
 using org.jblas;
-// 'import static' statement cannot be converted to .NET:
+// This Java 'import static' statement cannot be converted to .NET:
 import static org.shogun.EAlphabet.DNA;
+
 public class kernel_simple_locality_improved_string_modular
 {
 	static kernel_simple_locality_improved_string_modular()
 	{
-		System.loadLibrary("Features");
-		System.loadLibrary("Kernel");
+// The library is specified in the 'DllImport' attribute for .NET:
+//		System.loadLibrary("modshogun");
 	}
 
 	static void Main(string[] argv)
 	{
-		Features.init_shogun_with_defaults();
+		modshogun.init_shogun_with_defaults();
 		int length = 5;
 		int inner_degree = 3;
 		int outer_degree = 2;
@@ -34,6 +35,6 @@ public class kernel_simple_locality_improved_string_modular
 		Console.WriteLine(km_train.ToString());
 		Console.WriteLine(km_test.ToString());
 
-		Features.exit_shogun();
+		modshogun.exit_shogun();
 	}
 }
