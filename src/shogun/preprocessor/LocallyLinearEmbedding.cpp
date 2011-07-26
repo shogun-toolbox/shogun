@@ -196,13 +196,14 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 	int eigenproblem_status = 0;
 
 	bool arpack = false;
-	#ifdef HAVE_ARPACK
-	arpack = true;
-	#endif
+#ifdef HAVE_ARPACK
+arpack = true;
+#endif
 	if (force_lapack) arpack = false;
 
 	float64_t* eigenvalues_vector;
 
+#ifdef HAVE_ARPACK
 	if (arpack)
 	{
 		// using ARPACK (faster)
@@ -210,6 +211,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,-1e-3,false,eigenvalues_vector,matrix.matrix,eigenproblem_status);
 	}
 	else
+#endif //HAVE_ARPACK
 	{
 		// using LAPACK (slower)
 		eigenvalues_vector = new float64_t[N];
@@ -223,6 +225,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 	// allocate null space feature matrix
 	float64_t* null_space_features = new float64_t[N*dimension];
 
+#ifdef HAVE_ARPACK
 	// construct embedding w.r.t to used solver (prefer ARPACK if available)
 	if (arpack) 
 	{
@@ -234,6 +237,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		}
 	}
 	else
+#endif //HAVE_ARPACK
 	{
 		// LAPACKed eigenvectors
 		for (i=0; i<dimension; i++)
