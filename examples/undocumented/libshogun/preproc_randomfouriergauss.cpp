@@ -494,13 +494,13 @@ std::cout<< "classification errors gaussian kernel and rfgauss  "<< err1 << " " 
 
 
 
-	delete[] randomcoeff_additive2;
-	delete[] randomcoeff_multiplicative2;
+	SG_FREE(randomcoeff_additive2);
+	SG_FREE(randomcoeff_multiplicative2);
 
-	delete[] labtr;
-	delete[] labte;
-	delete[] kertr1;
-	delete[] kertr2;
+	SG_FREE(labtr);
+	SG_FREE(labte);
+	SG_FREE(kertr1);
+	SG_FREE(kertr2);
 
 	SG_UNREF(labelstr);
 	SG_UNREF(kerneltr1);

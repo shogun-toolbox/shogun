@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
-	delete[] feature_copy_subset.vector;
+	SG_FREE(feature_copy_subset.vector);
 
 	SG_SPRINT("\nEND\n");
 	exit_shogun();

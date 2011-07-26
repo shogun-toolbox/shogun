@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 	}
 
 	SG_UNREF(features);
-	delete[] data.matrix;
+	SG_FREE(data.matrix);
 
 	SG_SPRINT("\nEND\n");
 	exit_shogun();

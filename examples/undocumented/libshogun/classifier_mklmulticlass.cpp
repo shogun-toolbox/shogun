@@ -256,9 +256,9 @@ void tester()
 	SG_SPRINT("prediction error on training data (3 classes): %f ",err);
 	SG_SPRINT("random guess error would be: %f \n",2/3.0);
 
-	delete[] ker1;
-	delete[] ker2;
-	delete[] ker3;
+	SG_FREE(ker1);
+	SG_FREE(ker2);
+	SG_FREE(ker3);
 
 	//generate test data
 	CLabels* tlab=NULL;
@@ -317,9 +317,9 @@ void tester()
 	SG_SPRINT("prediction error on test data (3 classes): %f ",terr);
 	SG_SPRINT("random guess error would be: %f \n",2/3.0);
 
-	delete[] tker1;
-	delete[] tker2;
-	delete[] tker3;
+	SG_FREE(tker1);
+	SG_FREE(tker2);
+	SG_FREE(tker3);
 	SG_UNREF(tsvm);
 	SG_UNREF(res);
 	SG_UNREF(tres);
@@ -327,7 +327,7 @@ void tester()
 	SG_UNREF(tlab);
 	SG_UNREF(tker);
 
-	delete[] weights;
+	SG_FREE(weights);
 	weights=NULL;
 
 	SG_SPRINT( "finished \n");

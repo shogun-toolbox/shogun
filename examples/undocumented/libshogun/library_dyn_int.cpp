@@ -108,8 +108,8 @@ int main()
 			printf("\n");
 		}
 
-		delete[] a;
-		delete[] b;
+		SG_FREE(a);
+		SG_FREE(b);
 	}
 	catch(ShogunException & sh)
 	{

@@ -111,7 +111,7 @@ int main()
 	// Now that all examples are used, end the parser.
 	streaming_simple->end_parser();
 
-	delete[] lab;
+	SG_FREE(lab);
 
 	SG_UNREF(streaming_simple);
 	SG_UNREF(features);

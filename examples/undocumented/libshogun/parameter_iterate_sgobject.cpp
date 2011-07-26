@@ -86,8 +86,8 @@ int main(int argc, char** argv)
 		delete parameters[i];
 
 	/* delete created arrays */
-	delete[] kernels;
-	delete[] parameters;
+	SG_FREE(kernels);
+	SG_FREE(parameters);
 
 	/* this also handles features, labels, and last kernel in kernels[n-1] */
 	SG_UNREF(svm);
