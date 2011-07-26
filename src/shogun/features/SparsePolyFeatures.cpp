@@ -172,7 +172,7 @@ void CSparsePolyFeatures::store_normalization_values()
 
 	m_normalization_values_len = this->get_num_vectors();
 
-	m_normalization_values=SG_MALLOCX(float64_t, m_normalization_values_len);
+	m_normalization_values=SG_MALLOC(float64_t, m_normalization_values_len);
 	for (int i=0; i<m_normalization_values_len; i++)
 	{
 		float64_t val = CMath::sqrt(dot(i, this,i)); 

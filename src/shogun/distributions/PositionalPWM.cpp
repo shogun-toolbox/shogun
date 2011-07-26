@@ -104,9 +104,9 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 	m_w_cols=num_pos;
 
 	SG_FREE(m_w);
-	m_w=SG_MALLOCX(float64_t, m_w_cols*m_w_rows);
+	m_w=SG_MALLOC(float64_t, m_w_cols*m_w_rows);
 
-	uint8_t* window=SG_MALLOCX(uint8_t, m_pwm_cols);
+	uint8_t* window=SG_MALLOC(uint8_t, m_pwm_cols);
 	CMath::fill_vector(window, m_pwm_cols, (uint8_t) 0);
 
 	const int32_t last_idx=m_pwm_cols-1;
@@ -155,7 +155,7 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 
 	SG_FREE(m_poim);
 	m_poim_len=num_feat*num_sym;
-	m_poim=SG_MALLOCX(float64_t, num_feat*num_sym);
+	m_poim=SG_MALLOC(float64_t, num_feat*num_sym);
 	memset(m_poim,0, size_t(num_feat)*size_t(num_sym));
 
 	uint32_t kmer_mask=0;

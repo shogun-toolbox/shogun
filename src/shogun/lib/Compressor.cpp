@@ -59,7 +59,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 			{
 				initial_buffer_size=uncompressed_size;
 				compressed_size=uncompressed_size;
-				compressed=SG_MALLOCX(uint8_t, compressed_size);
+				compressed=SG_MALLOC(uint8_t, compressed_size);
 				memcpy(compressed, uncompressed, uncompressed_size);
 				break;
 			}
@@ -77,7 +77,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 					uncompressed_size / 16+ 64 + 3;
 
 				compressed_size=initial_buffer_size;
-				compressed=SG_MALLOCX(uint8_t, initial_buffer_size);
+				compressed=SG_MALLOC(uint8_t, initial_buffer_size);
 
 				lzo_uint lzo_size=compressed_size;
 
@@ -107,7 +107,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 			{
 				initial_buffer_size=1.001*uncompressed_size + 12;
 				compressed_size=initial_buffer_size;
-				compressed=SG_MALLOCX(uint8_t, initial_buffer_size);
+				compressed=SG_MALLOC(uint8_t, initial_buffer_size);
 				uLongf gz_size=compressed_size;
 
 				if (compress2(compressed, &gz_size, uncompressed,
@@ -128,7 +128,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				strm.opaque=NULL;
 				initial_buffer_size=1.01*uncompressed_size + 600;
 				compressed_size=initial_buffer_size;
-				compressed=SG_MALLOCX(uint8_t, initial_buffer_size);
+				compressed=SG_MALLOC(uint8_t, initial_buffer_size);
 				if (BZ2_bzCompressInit(&strm, level, 0, 0)!=BZ_OK)
 					SG_ERROR("Error initializing bzip2 compressor\n");
 
@@ -161,7 +161,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				lzma_stream strm = LZMA_STREAM_INIT;
 				initial_buffer_size = lzma_stream_buffer_bound(uncompressed_size);
 				compressed_size=initial_buffer_size;
-				compressed=SG_MALLOCX(uint8_t, initial_buffer_size);
+				compressed=SG_MALLOC(uint8_t, initial_buffer_size);
 				strm.next_in=uncompressed;
 				strm.avail_in=(size_t) uncompressed_size;
 				strm.next_out=compressed;
@@ -191,7 +191,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 #ifdef USE_SNAPPY
 		case SNAPPY:
 			{
-				compressed=SG_MALLOCX(uint8_t, snappy::MaxCompressedLength((size_t) uncompressed_size));
+				compressed=SG_MALLOC(uint8_t, snappy::MaxCompressedLength((size_t) uncompressed_size));
 				size_t output_length;
 				snappy::RawCompress((char*) uncompressed, size_t(uncompressed_size), (char*) compressed, &output_length);
 				compressed_size=(uint64_t) output_length;

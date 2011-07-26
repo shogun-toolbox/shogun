@@ -325,7 +325,7 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 	if (src && src->get_feature_class()==C_SIMPLE)
 	{
 		int32_t num_vec=src->get_num_vectors();
-		SGString<char>* strings=SG_MALLOCX(SGString<char>, num_vec);
+		SGString<char>* strings=SG_MALLOC(SGString<char>, num_vec);
 		int32_t max_len=-1;
 
 		for (int32_t i=0; i<num_vec; i++)
@@ -340,7 +340,7 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 					strings[i].length=j ;
 					break ;
 				} ;
-			strings[i].string=SG_MALLOCX(char, strings[i].length);
+			strings[i].string=SG_MALLOC(char, strings[i].length);
 
 			for (int32_t j=0; j<strings[i].length; j++)
 				strings[i].string[j]=str[j];
@@ -374,7 +374,7 @@ CSimpleFeatures<float64_t>* CGUIFeatures::convert_simple_word_to_simple_salzberg
 		CSimpleFeatures<float64_t>* target=new CSimpleFeatures<float64_t>(0);
 		int32_t num_feat=src->get_num_features();
 		int32_t num_vec=src->get_num_vectors();
-		float64_t* fm=SG_MALLOCX(float64_t, num_vec*num_feat);
+		float64_t* fm=SG_MALLOC(float64_t, num_vec*num_feat);
 
 		if (fm)
 		{

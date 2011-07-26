@@ -34,8 +34,8 @@ float64_t* lab;
 
 void gen_rand_data()
 {
-	feat=SG_MALLOCX(float64_t, NUM*DIMS);
-	lab=SG_MALLOCX(float64_t, NUM);
+	feat=SG_MALLOC(float64_t, NUM*DIMS);
+	lab=SG_MALLOC(float64_t, NUM);
 
 	for (int32_t i=0; i<NUM; i++)
 	{

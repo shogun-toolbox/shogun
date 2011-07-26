@@ -64,7 +64,7 @@ bool CLinearHMM::train(CFeatures* data)
 	}
 	SG_FREE(transition_probs);
 	SG_FREE(log_transition_probs);
-	int32_t* int_transition_probs=SG_MALLOCX(int32_t, num_params);
+	int32_t* int_transition_probs=SG_MALLOC(int32_t, num_params);
 
 	int32_t vec;
 	int32_t i;
@@ -89,8 +89,8 @@ bool CLinearHMM::train(CFeatures* data)
 	}
 
 	//trade memory for speed
-	transition_probs=SG_MALLOCX(float64_t, num_params);
-	log_transition_probs=SG_MALLOCX(float64_t, num_params);
+	transition_probs=SG_MALLOC(float64_t, num_params);
+	log_transition_probs=SG_MALLOC(float64_t, num_params);
 
 	for (i=0;i<sequence_length;i++)
 	{
@@ -125,7 +125,7 @@ bool CLinearHMM::train(
 {
 	SG_FREE(transition_probs);
 	SG_FREE(log_transition_probs);
-	int32_t* int_transition_probs=SG_MALLOCX(int32_t, num_params);
+	int32_t* int_transition_probs=SG_MALLOC(int32_t, num_params);
 	int32_t vec;
 	int32_t i;
 
@@ -152,8 +152,8 @@ bool CLinearHMM::train(
 	}
 
 	//trade memory for speed
-	transition_probs=SG_MALLOCX(float64_t, num_params);
-	log_transition_probs=SG_MALLOCX(float64_t, num_params);
+	transition_probs=SG_MALLOC(float64_t, num_params);
+	log_transition_probs=SG_MALLOC(float64_t, num_params);
 
 	for (i=0;i<sequence_length;i++)
 	{
@@ -249,10 +249,10 @@ bool CLinearHMM::set_transition_probs(SGVector<float64_t> probs)
 	ASSERT(probs.vlen == num_params);	
 
 	if (!log_transition_probs)
-		log_transition_probs=SG_MALLOCX(float64_t, num_params);
+		log_transition_probs=SG_MALLOC(float64_t, num_params);
 
 	if (!transition_probs)
-		transition_probs=SG_MALLOCX(float64_t, num_params);
+		transition_probs=SG_MALLOC(float64_t, num_params);
 
 	for (int32_t i=0; i<num_params; i++)
 	{
@@ -273,10 +273,10 @@ bool CLinearHMM::set_log_transition_probs(SGVector<float64_t> probs)
 	ASSERT(probs.vlen == num_params);
 
 	if (!log_transition_probs)
-		log_transition_probs=SG_MALLOCX(float64_t, num_params);
+		log_transition_probs=SG_MALLOC(float64_t, num_params);
 
 	if (!transition_probs)
-		transition_probs=SG_MALLOCX(float64_t, num_params);
+		transition_probs=SG_MALLOC(float64_t, num_params);
 
 	for (int32_t i=0; i<num_params; i++)
 	{

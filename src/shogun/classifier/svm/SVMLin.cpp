@@ -68,7 +68,7 @@ bool CSVMLin::train(CFeatures* data)
 	Data.nz=num_feat+1;
 	Data.Y=train_labels.vector;
 	Data.features=features;
-	Data.C = SG_MALLOCX(float64_t, Data.l);
+	Data.C = SG_MALLOC(float64_t, Data.l);
 
 	Options.algo = SVM;
 	Options.lambda=1/(2*get_C1());

@@ -114,9 +114,9 @@ void gentrainkernel(float64_t * & ker1 ,float64_t * & ker2, float64_t * & ker3  
 
 	float64_t fm1=0, mean1=0,fm2=0, mean2=0,fm3=0, mean3=0;
 
-	ker1=SG_MALLOCX(float64_t,  x.size()*x.size());
-	ker2=SG_MALLOCX(float64_t,  x.size()*x.size());
-	ker3=SG_MALLOCX(float64_t,  x.size()*x.size());
+	ker1=SG_MALLOC(float64_t,  x.size()*x.size());
+	ker2=SG_MALLOC(float64_t,  x.size()*x.size());
+	ker3=SG_MALLOC(float64_t,  x.size()*x.size());
 
 
 	for(size_t l=0; l< x.size();++l)
@@ -164,9 +164,9 @@ void gentestkernel(float64_t * & ker1 ,float64_t * & ker2,float64_t * & ker3,
 		const std::vector<float64_t> & x,const std::vector<float64_t> & y,
 		const std::vector<float64_t> & tx,const std::vector<float64_t> & ty)
 {
-	ker1=SG_MALLOCX(float64_t,  x.size()*tx.size());
-	ker2=SG_MALLOCX(float64_t,  x.size()*tx.size());
-	ker3=SG_MALLOCX(float64_t,  x.size()*tx.size());
+	ker1=SG_MALLOC(float64_t,  x.size()*tx.size());
+	ker2=SG_MALLOC(float64_t,  x.size()*tx.size());
+	ker3=SG_MALLOC(float64_t,  x.size()*tx.size());
 
 	for(size_t l=0; l< x.size();++l)
 	{

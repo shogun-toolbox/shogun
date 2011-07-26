@@ -604,7 +604,7 @@ CSerializableHdf5File::write_sparse_begin_wrapped(
 
 	/* ************************************************************ */
 
-	char* buf = SG_MALLOCX(char, sizeof_sparsetype());
+	char* buf = SG_MALLOC(char, sizeof_sparsetype());
 
 	*(index_t*) buf = vec_index;
 
@@ -740,13 +740,13 @@ CSerializableHdf5File::write_type_begin_wrapped(
 	switch (type->m_ctype) {
 	case CT_SCALAR:
 		m->rank = 0;
-		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOCX(hvl_t, 1);
+		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOC(hvl_t, 1);
 		break;
 	case CT_VECTOR:
 		m->rank = 1; m->dims[0] = *type->m_length_y;
 		if (m->dims[0] == 0) m->dspace = H5Screate(H5S_NULL);
 		if (type->m_stype == ST_STRING)
-			m->vltype = SG_MALLOCX(hvl_t, m->dims[0]);
+			m->vltype = SG_MALLOC(hvl_t, m->dims[0]);
 		break;
 	case CT_MATRIX:
 		m->rank = 2;
@@ -754,7 +754,7 @@ CSerializableHdf5File::write_type_begin_wrapped(
 		if (m->dims[0] *m->dims[1] == 0)
 			m->dspace = H5Screate(H5S_NULL);
 		if (type->m_stype == ST_STRING)
-			m->vltype = SG_MALLOCX(hvl_t, m->dims[0] *m->dims[1]);
+			m->vltype = SG_MALLOC(hvl_t, m->dims[0] *m->dims[1]);
 		break;
 	}
 

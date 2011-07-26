@@ -396,7 +396,7 @@ bool CSpectrumMismatchRBFKernel::set_weights(
 
 	int32_t num_weights=degree*(length+max_mismatch);
 	SG_FREE(weights);
-	weights=SG_MALLOCX(float64_t, num_weights);
+	weights=SG_MALLOC(float64_t, num_weights);
 
 	if (weights)
 	{
@@ -418,7 +418,7 @@ bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_, int32_t nr
 		if (nr!=128 || nc!=128)
 			SG_ERROR("AA_matrix should be of shape 128x128\n");
 		SG_FREE(AA_matrix);
-		AA_matrix=SG_MALLOCX(float64_t, nc*nr);
+		AA_matrix=SG_MALLOC(float64_t, nc*nr);
 		memcpy(AA_matrix, AA_matrix_, nc*nr*sizeof(float64_t)) ;
 		SG_DEBUG("Setting AA_matrix\n") ;
 		memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;

@@ -75,8 +75,8 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	SG_FREE(ld_mean_lhs);
 	ld_mean_lhs=NULL;
 
-	sqrtdiag_lhs=SG_MALLOCX(float64_t, l->get_num_vectors());
-	ld_mean_lhs=SG_MALLOCX(float64_t, l->get_num_vectors());
+	sqrtdiag_lhs=SG_MALLOC(float64_t, l->get_num_vectors());
+	ld_mean_lhs=SG_MALLOC(float64_t, l->get_num_vectors());
 
 	for (i=0; i<l->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
@@ -88,11 +88,11 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	}
 	else
 	{
-		sqrtdiag_rhs=SG_MALLOCX(float64_t, r->get_num_vectors());
+		sqrtdiag_rhs=SG_MALLOC(float64_t, r->get_num_vectors());
 		for (i=0; i<r->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 
-		ld_mean_rhs=SG_MALLOCX(float64_t, r->get_num_vectors());
+		ld_mean_rhs=SG_MALLOC(float64_t, r->get_num_vectors());
 	}
 
 	float64_t* l_ld_mean_lhs=ld_mean_lhs;
@@ -120,9 +120,9 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 		SG_FREE(variance);
 		SG_FREE(mean);
-		mean=SG_MALLOCX(float64_t, num_params);
+		mean=SG_MALLOC(float64_t, num_params);
 		ASSERT(mean);
-		variance=SG_MALLOCX(float64_t, num_params);
+		variance=SG_MALLOC(float64_t, num_params);
 		ASSERT(variance);
 
 		for (i=0; i<num_params; i++)

@@ -54,9 +54,9 @@ bool CLibSVR::train_kernel_machine(CFeatures* data)
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
-	problem.y=SG_MALLOCX(float64_t, problem.l);
-	problem.x=SG_MALLOCX(struct svm_node*, problem.l);
-	x_space=SG_MALLOCX(struct svm_node, 2*problem.l);
+	problem.y=SG_MALLOC(float64_t, problem.l);
+	problem.x=SG_MALLOC(struct svm_node*, problem.l);
+	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
 	for (int32_t i=0; i<problem.l; i++)
 	{

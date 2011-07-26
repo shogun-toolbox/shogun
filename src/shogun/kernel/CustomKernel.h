@@ -146,7 +146,7 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-			kmatrix.matrix = SG_MALLOCX(float32_t, len);
+			kmatrix.matrix = SG_MALLOC(float32_t, len);
 			kmatrix.num_rows=cols;
 			kmatrix.num_cols=cols;
 			upper_diagonal=true;
@@ -187,7 +187,7 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-			kmatrix.matrix = SG_MALLOCX(float32_t, int64_t(rows)*cols);
+			kmatrix.matrix = SG_MALLOC(float32_t, int64_t(rows)*cols);
 			kmatrix.num_rows = rows;
 			kmatrix.num_cols = cols;
 			upper_diagonal = false;
@@ -236,7 +236,7 @@ class CCustomKernel: public CKernel
 			int32_t cols=full_kernel_matrix.num_cols;
 			SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);
 
-			kmatrix.matrix = SG_MALLOCX(float32_t, int64_t(rows)*cols);
+			kmatrix.matrix = SG_MALLOC(float32_t, int64_t(rows)*cols);
 			kmatrix.num_rows = rows;
 			kmatrix.num_cols = cols;
 			upper_diagonal = false;

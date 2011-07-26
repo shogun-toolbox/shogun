@@ -74,7 +74,7 @@ CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
 		working_filename=strdup(orig.working_filename);
 	if (orig.labels && get_num_vectors())
 	{
-		labels=SG_MALLOCX(int32_t, get_num_vectors());
+		labels=SG_MALLOC(int32_t, get_num_vectors());
 		memcpy(labels, orig.labels, sizeof(int32_t)*get_num_vectors());
 	}
 }
@@ -86,7 +86,7 @@ float64_t* CRealFileFeatures::compute_feature_vector(
 	len=num_features;
 	float64_t* featurevector=target;
 	if (!featurevector)
-		featurevector=SG_MALLOCX(float64_t, num_features);
+		featurevector=SG_MALLOC(float64_t, num_features);
 	ASSERT(working_file);
 	fseek(working_file, filepos+num_features*doublelen*num, SEEK_SET);
 	ASSERT(fread(featurevector, doublelen, num_features, working_file)==(size_t) num_features);
@@ -101,7 +101,7 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 
 	SG_INFO( "allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
-	feature_matrix=SG_MALLOCX(float64_t, num_features*num_vectors);
+	feature_matrix=SG_MALLOC(float64_t, num_features*num_vectors);
 
 	SG_INFO( "loading... be patient.\n");
 
@@ -146,7 +146,7 @@ bool CRealFileFeatures::load_base_data()
 	set_num_features(num_feat);
 	fseek(working_file, filepos+num_features*num_vectors*doublelen, SEEK_SET);
 	SG_FREE(labels);
-	labels=SG_MALLOCX(int, num_vec);
+	labels=SG_MALLOC(int, num_vec);
 	ASSERT(fread(labels, intlen, num_vec, working_file) == num_vec);
 	return true;
 }

@@ -241,7 +241,7 @@ char* COctaveInterface::get_string(int32_t& len)
 	len=std_str.length();
 	ASSERT(str && len>0);
 
-	char* cstr=SG_MALLOCX(char, len+1);
+	char* cstr=SG_MALLOC(char, len+1);
 	memcpy(cstr, str, len+1);
 	cstr[len]='\0';
 
@@ -262,7 +262,7 @@ void COctaveInterface::function_name(sg_type*& vec, int32_t& len)						\
 			"of shape (%dx%d)\n", m_rhs_counter, m.rows(), m.cols()); 				\
 																					\
 	len = m.cols();																	\
-	vec=SG_MALLOCX(sg_type, len);															\
+	vec=SG_MALLOC(sg_type, len);															\
 																					\
 	for (int32_t i=0; i<len; i++)														\
 			vec[i]= (sg_type) m(i);													\
@@ -287,7 +287,7 @@ void COctaveInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_
 	oct_type m = mat_feat.oct_converter();												\
 	num_vec = m.cols();																\
 	num_feat = m.rows();															\
-	matrix = SG_MALLOCX(sg_type, num_vec*num_feat);											\
+	matrix = SG_MALLOC(sg_type, num_vec*num_feat);											\
 																					\
 	for (int32_t i=0; i<num_vec; i++)													\
 		for (int32_t j=0; j<num_feat; j++)												\
@@ -312,14 +312,14 @@ void COctaveInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 	num_dims = (int32_t) mat_feat.ndims();											\
 	dim_vector dimvec = mat_feat.dims();											\
 																					\
-	dims=SG_MALLOCX(int32_t, num_dims);														\
+	dims=SG_MALLOC(int32_t, num_dims);														\
 	for (int32_t d=0; d<num_dims; d++)												\
 		dims[d]=(int32_t) dimvec(d);												\
 																					\
 	oct_type m = mat_feat.oct_converter();											\
 	int64_t total_size=m.nelem();													\
 																					\
-	array=SG_MALLOCX(sg_type, total_size);													\
+	array=SG_MALLOC(sg_type, total_size);													\
 	for (int64_t i=0; i<total_size; i++)											\
 		array[i]= (sg_type) m(i);													\
 }
@@ -343,7 +343,7 @@ void COctaveInterface::get_sparse_matrix(SGSparseVector<float64_t>*& matrix, int
 	num_feat=sm.rows();
 	int64_t nnz=sm.nelem();
 
-	matrix=SG_MALLOCX(SGSparseVector<float64_t>, num_vec);
+	matrix=SG_MALLOC(SGSparseVector<float64_t>, num_vec);
 
 	int64_t offset=0;
 	for (int32_t i=0; i<num_vec; i++)
@@ -354,7 +354,7 @@ void COctaveInterface::get_sparse_matrix(SGSparseVector<float64_t>*& matrix, int
 
 		if (len>0)
 		{
-			matrix[i].features=SG_MALLOCX(SGSparseVectorEntry<float64_t>, len);
+			matrix[i].features=SG_MALLOC(SGSparseVectorEntry<float64_t>, len);
 
 			for (int32_t j=0; j<len; j++)
 			{
@@ -380,7 +380,7 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		Cell c = arg.cell_value();													\
 		num_str=c.nelem();															\
 		ASSERT(num_str>=1);															\
-		strings=SG_MALLOCX(SGString<sg_type>, num_str);										\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);										\
 																					\
 		for (int32_t i=0; i<num_str; i++)												\
 		{																			\
@@ -394,7 +394,7 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			if (len>0) 																\
 			{ 																		\
 				strings[i].length=len; /* all must have same length in octave */ 	\
-				strings[i].string=SG_MALLOCX(sg_type, len+1); /* not zero terminated in octave */ \
+				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */ \
 				int32_t j; 																\
 				for (j=0; j<len; j++) 												\
 					strings[i].string[j]=str(0,j); 									\
@@ -414,14 +414,14 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		oct_type data=arg.oct_converter();											\
 		num_str=data.cols(); 														\
 		int32_t len=data.rows(); 														\
-		strings=SG_MALLOCX(SGString<sg_type>, num_str); 									\
+		strings=SG_MALLOC(SGString<sg_type>, num_str); 									\
 																					\
 		for (int32_t i=0; i<num_str; i++) 												\
 		{ 																			\
 			if (len>0) 																\
 			{ 																		\
 				strings[i].length=len; /* all must have same length in octave */ 	\
-				strings[i].string=SG_MALLOCX(sg_type, len+1); /* not zero terminated in octave */ \
+				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */ \
 				int32_t j; 																\
 				for (j=0; j<len; j++) 												\
 					strings[i].string[j]=data(j,i);									\

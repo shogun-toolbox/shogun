@@ -70,8 +70,8 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	int32_t num_auc = num_pos*num_neg;
 	SG_INFO("num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc);
 
-	uint16_t* features_auc = SG_MALLOCX(uint16_t, num_auc*2);
-	int32_t* labels_auc = SG_MALLOCX(int32_t, num_auc);
+	uint16_t* features_auc = SG_MALLOC(uint16_t, num_auc*2);
+	int32_t* labels_auc = SG_MALLOC(int32_t, num_auc);
 	int32_t n=0 ;
 
 	for (int32_t i=0; i<int_labels.vlen; i++)

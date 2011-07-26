@@ -148,13 +148,13 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 {
 	// now rowmajor?
 	int info=0;
-	double* work = SG_MALLOCX(double, 1);
+	double* work = SG_MALLOC(double, 1);
 #ifdef HAVE_ACML
 	int lwork = -1;
 	DGETRI(N,A,lda,ipiv,work,lwork,&info);
 	lwork = (int) work[0];
 	SG_FREE(work);
-	work = SG_MALLOCX(double, lwork);
+	work = SG_MALLOC(double, lwork);
 	DGETRI(N,A,lda,ipiv,work,lwork,&info);
 #else
 	int n=N;
@@ -163,7 +163,7 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
 	lwork = (int) work[0];
 	SG_FREE(work);
-	work = SG_MALLOCX(double, lwork);
+	work = SG_MALLOC(double, lwork);
 	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
 #endif
 	return info;
@@ -193,7 +193,7 @@ void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, double *w, int 
 	ASSERT(*info==0);
 	ASSERT(work1>0);
 	lwork=(int) work1;
-	double* work=SG_MALLOCX(double, lwork);
+	double* work=SG_MALLOC(double, lwork);
 	DSYEV(&jobz, &uplo, &n, a, &lda, w, work, &lwork, info);
 	SG_FREE(work);
 #endif
@@ -212,7 +212,7 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 	ASSERT(*info==0);
 	ASSERT(work1>0);
 	lwork=(int) work1;
-	double* work=SG_MALLOCX(double, lwork);
+	double* work=SG_MALLOC(double, lwork);
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, work, &lwork, info);
 	SG_FREE(work);
 #endif
@@ -224,13 +224,13 @@ void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info)
 	DGEQRF(m, n, a, lda, tau, info);
 #else
 	int lwork = -1;
-	double* work = SG_MALLOCX(double, 1);
+	double* work = SG_MALLOC(double, 1);
 	DGEQRF(&m, &n, a, &lda, tau, work, &lwork, info);
 	ASSERT(*info==0);
 	lwork = (int) work[0];
 	ASSERT(lwork>0)
 	SG_FREE(work);
-	work = SG_MALLOCX(double, lwork);
+	work = SG_MALLOC(double, lwork);
 	DGEQRF(&m, &n, a, &lda, tau, work, &lwork, info);
 	SG_FREE(work);
 #endif
@@ -242,13 +242,13 @@ void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info
 	DORGQR(m, n, k, a, lda, tau, info);
 #else
 	int lwork = -1;
-	double* work = SG_MALLOCX(double, 1);
+	double* work = SG_MALLOC(double, 1);
 	DORGQR(&m, &n, &k, a, &lda, tau, work, &lwork, info);
 	ASSERT(*info==0);
 	lwork = (int) work[0];
 	ASSERT(lwork>0);
 	SG_FREE(work);
-	work = SG_MALLOCX(double, lwork);
+	work = SG_MALLOC(double, lwork);
 	DORGQR(&m, &n, &k, a, &lda, tau, work, &lwork, info);
 	SG_FREE(work);
 #endif

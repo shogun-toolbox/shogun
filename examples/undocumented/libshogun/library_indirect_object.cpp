@@ -16,13 +16,13 @@ int main(int argc, char** argv)
 	init_shogun();
 
 	// create array a
-	int32_t* a=SG_MALLOCX(int32_t, l);
+	int32_t* a=SG_MALLOC(int32_t, l);
 	for (int i=0; i<l; i++)
 		a[i]=l-i;
 	typedef CIndirectObject<int32_t, int32_t**> INDIRECT;
 	// create array of indirect objects pointing to array a
 	INDIRECT::set_array(&a);
-	INDIRECT* x = SG_MALLOCX(INDIRECT, l);
+	INDIRECT* x = SG_MALLOC(INDIRECT, l);
 	INDIRECT::init_slice(x, l);
 
 

@@ -62,8 +62,8 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	delete distance;
 
 	// init matrices to be used
-	int32_t* neighborhood_matrix = SG_MALLOCX(int32_t, N*m_k);
-	int32_t* local_neighbors_idxs = SG_MALLOCX(int32_t, N);
+	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
+	int32_t* local_neighbors_idxs = SG_MALLOC(int32_t, N);
 
 	// construct neighborhood matrix (contains idxs of neighbors for
 	// i-th object in i-th column)
@@ -84,21 +84,21 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	SG_FREE(local_neighbors_idxs);
 
 	// init W (weight) matrix
-	float64_t* W_matrix = SG_MALLOCX(float64_t, N*N);
+	float64_t* W_matrix = SG_MALLOC(float64_t, N*N);
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			W_matrix[i*N+j]=0.0;
 
 	// init matrices and norm factor to be used
-	float64_t* local_feature_matrix = SG_MALLOCX(float64_t, m_k*dim);
-	float64_t* s_values_vector = SG_MALLOCX(float64_t, dim);
+	float64_t* local_feature_matrix = SG_MALLOC(float64_t, m_k*dim);
+	float64_t* s_values_vector = SG_MALLOC(float64_t, dim);
 	float64_t* tau = SG_MALLOC(float64_t, CMath::min((1+m_target_dim+dp),m_k));
-	float64_t* mean_vector = SG_MALLOCX(float64_t, dim);
-	float64_t* q_matrix = SG_MALLOCX(float64_t, m_k*m_k);
-	float64_t* w_sum_vector = SG_MALLOCX(float64_t, dp);
+	float64_t* mean_vector = SG_MALLOC(float64_t, dim);
+	float64_t* q_matrix = SG_MALLOC(float64_t, m_k*m_k);
+	float64_t* w_sum_vector = SG_MALLOC(float64_t, dp);
 
 	// Yi
-	float64_t* Yi_matrix = SG_MALLOCX(float64_t, m_k*(1+m_target_dim+dp));
+	float64_t* Yi_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim+dp));
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 

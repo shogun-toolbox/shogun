@@ -73,7 +73,7 @@ float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(alen==blen && alen>0);
 
 	int32_t i,t;
-	float64_t* match=SG_MALLOCX(float64_t, alen);
+	float64_t* match=SG_MALLOC(float64_t, alen);
 
 	// initialize match table 1 -> match;  0 -> no match
 	for (i = 0; i<alen; i++)

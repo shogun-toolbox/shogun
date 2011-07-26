@@ -103,8 +103,8 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	}
 	else
 	{
-		pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
-		DF_THREAD_PARAM* params = SG_MALLOCX(DF_THREAD_PARAM, num_threads);
+		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+		DF_THREAD_PARAM* params = SG_MALLOC(DF_THREAD_PARAM, num_threads);
 		int32_t step= num_vectors/num_threads;
 
 		int32_t t;
@@ -181,8 +181,8 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	}
 	else
 	{
-		pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
-		DF_THREAD_PARAM* params = SG_MALLOCX(DF_THREAD_PARAM, num_threads);
+		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+		DF_THREAD_PARAM* params = SG_MALLOC(DF_THREAD_PARAM, num_threads);
 		int32_t step= num/num_threads;
 
 		int32_t t;
@@ -297,7 +297,7 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 	m.do_free=true;
     m.num_cols=dim;
     m.num_rows=num;
-    m.matrix=SG_MALLOCX(float64_t, sz);
+    m.matrix=SG_MALLOC(float64_t, sz);
     memset(m.matrix, 0, sz*sizeof(float64_t));
 
     for (int32_t i=0; i<num; i++)
@@ -319,7 +319,7 @@ SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 
 	v.do_free=true;
     v.vlen=dim;
-    v.vector=SG_MALLOCX(float64_t, dim);
+    v.vector=SG_MALLOC(float64_t, dim);
     memset(v.vector, 0, dim*sizeof(float64_t));
 
     add_to_dense_vec(1.0, num, v.vector, dim);
@@ -330,7 +330,7 @@ void CDotFeatures::benchmark_add_to_dense_vector(int32_t repeats)
 {
 	int32_t num=get_num_vectors();
 	int32_t d=get_dim_feature_space();
-	float64_t* w= SG_MALLOCX(float64_t, d);
+	float64_t* w= SG_MALLOC(float64_t, d);
 	CMath::fill_vector(w, d, 0.0);
 
 	CTime t;
@@ -353,9 +353,9 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 {
 	int32_t num=get_num_vectors();
 	int32_t d=get_dim_feature_space();
-	float64_t* w= SG_MALLOCX(float64_t, d);
-	float64_t* out= SG_MALLOCX(float64_t, num);
-	float64_t* alphas= SG_MALLOCX(float64_t, num);
+	float64_t* w= SG_MALLOC(float64_t, d);
+	float64_t* out= SG_MALLOC(float64_t, num);
+	float64_t* alphas= SG_MALLOC(float64_t, num);
 	CMath::range_fill_vector(w, d, 17.0);
 	CMath::range_fill_vector(alphas, num, 1.2345);
 	//CMath::fill_vector(w, d, 17.0);
@@ -370,7 +370,7 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 
 #ifdef DEBUG_DOTFEATURES
     CMath::display_vector(out, 40, "dense_dot_range");
-	float64_t* out2= SG_MALLOCX(float64_t, num);
+	float64_t* out2= SG_MALLOC(float64_t, num);
 
 	for (int32_t r=0; r<repeats; r++)
     {
@@ -400,7 +400,7 @@ void CDotFeatures::get_mean(float64_t** mean, int32_t* mean_length)
 	ASSERT(dim>0);
 
 	*mean_length = dim;
-	*mean = SG_MALLOCX(float64_t, dim);
+	*mean = SG_MALLOC(float64_t, dim);
     memset(*mean, 0, sizeof(float64_t)*dim);
 
 	for (int i = 0; i < num; i++)
@@ -419,7 +419,7 @@ void CDotFeatures::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols
 	*cov_rows = dim;
 	*cov_cols = dim;
 
-	*cov = SG_MALLOCX(float64_t, dim*dim);
+	*cov = SG_MALLOC(float64_t, dim*dim);
     memset(*cov, 0, sizeof(float64_t)*dim*dim);
 
 	float64_t* mean;

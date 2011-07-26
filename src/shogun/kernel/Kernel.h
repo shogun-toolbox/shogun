@@ -295,7 +295,7 @@ class CKernel : public CSGObject
 
 			SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n);
 
-			result=SG_MALLOCX(T, total_num);
+			result=SG_MALLOC(T, total_num);
 
 			int32_t num_threads=parallel->get_num_threads();
 			if (num_threads < 2)
@@ -315,8 +315,8 @@ class CKernel : public CSGObject
 			}
 			else
 			{
-				pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
-				K_THREAD_PARAM<T>* params = SG_MALLOCX(K_THREAD_PARAM<T>, num_threads);
+				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+				K_THREAD_PARAM<T>* params = SG_MALLOC(K_THREAD_PARAM<T>, num_threads);
 				int64_t step= total_num/num_threads;
 
 				int32_t t;

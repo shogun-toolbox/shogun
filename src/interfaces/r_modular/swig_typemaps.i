@@ -162,7 +162,7 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 
     num_strings=Rf_length($input);
     ASSERT(num_strings>=1);
-    strs=SG_MALLOCX(shogun::SGString<sg_type>, num_strings);
+    strs=SG_MALLOC(shogun::SGString<sg_type>, num_strings);
 
     for (int32_t i=0; i<num_strings; i++)
     {
@@ -172,7 +172,7 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
 
         if (len>0) 
         { 
-			sg_type* dst=SG_MALLOCX(sg_type, len+1);
+			sg_type* dst=SG_MALLOC(sg_type, len+1);
             /*ASSERT(strs[i].string);*/
 			strs[i].string=(sg_type*) memcpy(dst, c, len*sizeof(sg_type));
             strs[i].string[len]='\0'; /* zero terminate */

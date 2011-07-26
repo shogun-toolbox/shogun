@@ -43,7 +43,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, boo
 CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig), 
 	num_strings(orig.num_strings), alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
-	k_spectrum= SG_MALLOCX(float64_t*, num_strings);
+	k_spectrum= SG_MALLOC(float64_t*, num_strings);
 	for (int32_t i=0; i<num_strings; i++)
 		k_spectrum[i]=CMath::clone_vector(k_spectrum[i], spec_size);
 }
@@ -101,11 +101,11 @@ void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, 
 
 void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 {
-	k_spectrum= SG_MALLOCX(float64_t*, num_strings);
+	k_spectrum= SG_MALLOC(float64_t*, num_strings);
 
 	for (int32_t i=0; i<num_strings; i++)
 	{
-		k_spectrum[i]=SG_MALLOCX(float64_t, spec_size);
+		k_spectrum[i]=SG_MALLOC(float64_t, spec_size);
 		memset(k_spectrum[i], 0, sizeof(float64_t)*spec_size);
 
 		int32_t len=0;

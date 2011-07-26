@@ -54,7 +54,7 @@ void CLinearKernel::clear_normal()
 	int32_t num = ((CDotFeatures*) lhs)->get_dim_feature_space();
 	if (normal==NULL)
 	{
-		normal = SG_MALLOCX(float64_t, num);
+		normal = SG_MALLOC(float64_t, num);
 		normal_length=num;
 	}
 

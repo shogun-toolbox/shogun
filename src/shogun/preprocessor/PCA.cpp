@@ -53,7 +53,7 @@ bool CPCA::init(CFeatures* features)
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		
 		m_mean_vector.vlen = num_features;
-		m_mean_vector.vector = SG_MALLOCX(float64_t, num_features);
+		m_mean_vector.vector = SG_MALLOC(float64_t, num_features);
 			
 		// loop varibles
 		int32_t i,j,k;
@@ -76,12 +76,12 @@ bool CPCA::init(CFeatures* features)
 		SG_DONE();
 		SG_DEBUG("Computing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
 
-		float64_t* cov = SG_MALLOCX(float64_t, num_features*num_features);
+		float64_t* cov = SG_MALLOC(float64_t, num_features*num_features);
 
 		for (j=0; j<num_features*num_features; j++)
 			cov[j] = 0.0;
 
-		float64_t* sub_mean= SG_MALLOCX(float64_t, num_features);
+		float64_t* sub_mean= SG_MALLOC(float64_t, num_features);
 
 		for (i=0; i<num_vectors; i++)
 		{
@@ -188,8 +188,8 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 	if (m.matrix)
 	{
 		SG_INFO("Preprocessing feature matrix\n");
-		float64_t* res = SG_MALLOCX(float64_t, num_dim);
-		float64_t* sub_mean = SG_MALLOCX(float64_t, num_features);
+		float64_t* res = SG_MALLOC(float64_t, num_dim);
+		float64_t* sub_mean = SG_MALLOC(float64_t, num_features);
 
 		for (int32_t vec=0; vec<num_vectors; vec++)
 		{
@@ -222,8 +222,8 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 
 SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* result = SG_MALLOCX(float64_t, num_dim);
-	float64_t* sub_mean = SG_MALLOCX(float64_t, vector.vlen);
+	float64_t* result = SG_MALLOC(float64_t, num_dim);
+	float64_t* sub_mean = SG_MALLOC(float64_t, vector.vlen);
 	
 	for (int32_t i=0; i<vector.vlen; i++)
 		sub_mean[i]=vector.vector[i]-m_mean_vector.vector[i];

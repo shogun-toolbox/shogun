@@ -212,7 +212,7 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
 	}
 
 	float64_t* weights(NULL);
-	weights=SG_MALLOCX(float64_t, curweights.size());
+	weights=SG_MALLOC(float64_t, curweights.size());
 	std::copy(curweights.begin(),curweights.end(),weights);
 
 	kernel->set_subkernel_weights(  weights, curweights.size());
@@ -411,7 +411,7 @@ float64_t* CMKLMultiClass::getsubkernelweights(int32_t & numweights)
 	std::vector<float64_t> subkerw=weightshistory.back();
 	numweights=weightshistory.back().size();
 
-	float64_t* res=SG_MALLOCX(float64_t, numweights);
+	float64_t* res=SG_MALLOC(float64_t, numweights);
 	std::copy(weightshistory.back().begin(), weightshistory.back().end(),res);
 	return res;
 }

@@ -133,7 +133,7 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 float64_t CRegulatoryModulesStringKernel::compute_wds(
 	char* avec, char* bvec, int32_t len)
 {
-	float64_t* max_shift_vec = SG_MALLOCX(float64_t, shift);
+	float64_t* max_shift_vec = SG_MALLOC(float64_t, shift);
 	float64_t sum0=0 ;
 	for (int32_t i=0; i<shift; i++)
 		max_shift_vec[i]=0 ;
@@ -200,7 +200,7 @@ void CRegulatoryModulesStringKernel::set_wd_weights()
 	ASSERT(degree>0);
 
 	SG_FREE(weights);
-	weights=SG_MALLOCX(float64_t, degree);
+	weights=SG_MALLOC(float64_t, degree);
 		
 	int32_t i;
 	float64_t sum=0;

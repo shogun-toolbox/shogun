@@ -46,7 +46,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	double tol = 0.0;
 
 	// allocate array to hold residuals
-	double* resid = SG_MALLOCX(double, n);
+	double* resid = SG_MALLOC(double, n);
 
 	// set number of Lanczos basis vectors to be used
 	// (with max(4*nev,n) sufficient for most tasks)
@@ -54,10 +54,10 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 
 	// allocate array 'v' for dsaupd routine usage
 	int ldv = n;
-	double* v = SG_MALLOCX(double, ldv*ncv);
+	double* v = SG_MALLOC(double, ldv*ncv);
 
 	// init array for i/o params for routine
-	int* iparam = SG_MALLOCX(int, 11);
+	int* iparam = SG_MALLOC(int, 11);
 	// specify method for selecting implicit shifts (1 - exact shifts) 
 	iparam[0] = 1;
 	// specify max number of iterations
@@ -66,12 +66,12 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	iparam[6] = mode;
 
 	// init array indicating locations of vectors for routine callback
-	int* ipntr = SG_MALLOCX(int, 11);
+	int* ipntr = SG_MALLOC(int, 11);
 
 	// allocate workaround arrays
-	double* workd = SG_MALLOCX(double, 3*n);
+	double* workd = SG_MALLOC(double, 3*n);
 	int lworkl = ncv*(ncv+8);
-	double* workl = SG_MALLOCX(double, lworkl);
+	double* workl = SG_MALLOC(double, lworkl);
 
 	// init info holding status (should be zero at first call)
 	int info = 0;
@@ -97,7 +97,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		}
 		else
 		{
-			int* ipiv = SG_MALLOCX(int, n);
+			int* ipiv = SG_MALLOC(int, n);
 			clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 			clapack_dgetri(CblasColMajor,n,matrix,n,ipiv);
 			SG_FREE(ipiv);
@@ -137,9 +137,9 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 			SG_SWARNING("Maximum number of iterations reached.\n");
 			
 		// allocate select for dseupd
-		int* select = SG_MALLOCX(int, ncv);
+		int* select = SG_MALLOC(int, ncv);
 		// allocate d to hold eigenvalues
-		double* d = SG_MALLOCX(double, 2*ncv);
+		double* d = SG_MALLOC(double, 2*ncv);
 		// sigma for dseupd
 		double sigma = shift;
 		

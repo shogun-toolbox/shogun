@@ -317,7 +317,7 @@ bool CMKL::train_kernel_machine(CFeatures* data)
 	}
 	else
 	{
-		float64_t* sumw = SG_MALLOCX(float64_t, num_kernels);
+		float64_t* sumw = SG_MALLOC(float64_t, num_kernels);
 
 		
 
@@ -405,7 +405,7 @@ bool CMKL::perform_mkl_step(
 	int32_t nweights=0;
 	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
 	ASSERT(nweights==num_kernels);
-	float64_t* beta = SG_MALLOCX(float64_t, num_kernels);
+	float64_t* beta = SG_MALLOC(float64_t, num_kernels);
 
 	int32_t inner_iters=0;
 	float64_t mkl_objective=0;
@@ -587,7 +587,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 	if (labels && kernel && kernel->get_kernel_type() == K_COMBINED)
 	{
 		// Compute Elastic-net dual
-		float64_t* nm = SG_MALLOCX(float64_t, num_kernels);
+		float64_t* nm = SG_MALLOC(float64_t, num_kernels);
 		float64_t del=0;
 		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
 
@@ -800,8 +800,8 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 	const int inLogSpace = 0;
 
 	const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
-	float64_t* newtDir = SG_MALLOCX(float64_t,  num_kernels );
-	float64_t* newtBeta = SG_MALLOCX(float64_t,  num_kernels );
+	float64_t* newtDir = SG_MALLOC(float64_t,  num_kernels );
+	float64_t* newtBeta = SG_MALLOC(float64_t,  num_kernels );
 	float64_t newtStep;
 	float64_t stepSize;
 	float64_t Z;
@@ -982,7 +982,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 	ASSERT(old_beta);
 
 	int32_t NUMCOLS = 2*num_kernels + 1;
-	double* x=SG_MALLOCX(double, NUMCOLS);
+	double* x=SG_MALLOC(double, NUMCOLS);
 
 	if (!lp_initialized)
 	{
@@ -1167,7 +1167,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			status = CPXbaropt(env, lp_cplex);
 		else // q-norm MKL
 		{
-			float64_t* beta=SG_MALLOCX(float64_t, 2*num_kernels+1);
+			float64_t* beta=SG_MALLOC(float64_t, 2*num_kernels+1);
 			float64_t objval_old=1e-8; //some value to cause the loop to not terminate yet
 			for (int32_t i=0; i<num_kernels; i++)
 				beta[i]=old_beta[i];
@@ -1220,8 +1220,8 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 		int32_t num_rows=cur_numrows;
 		ASSERT(cur_numcols<=2*num_kernels+1);
 
-		float64_t* slack=SG_MALLOCX(float64_t, cur_numrows);
-		float64_t* pi=SG_MALLOCX(float64_t, cur_numrows);
+		float64_t* slack=SG_MALLOC(float64_t, cur_numrows);
+		float64_t* pi=SG_MALLOC(float64_t, cur_numrows);
 
 		/* calling external lib */
 		int solstat=0;
@@ -1407,9 +1407,9 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 	int32_t num_rows=cur_numrows;
 	ASSERT(cur_numcols<=2*num_kernels+1);
 
-	float64_t* col_primal = SG_MALLOCX(float64_t, cur_numcols);
-	float64_t* row_primal = SG_MALLOCX(float64_t, cur_numrows);
-	float64_t* row_dual = SG_MALLOCX(float64_t, cur_numrows);
+	float64_t* col_primal = SG_MALLOC(float64_t, cur_numcols);
+	float64_t* row_primal = SG_MALLOC(float64_t, cur_numrows);
+	float64_t* row_dual = SG_MALLOC(float64_t, cur_numrows);
 
 	for (int i=0; i<cur_numrows; i++)
 	{
@@ -1472,7 +1472,7 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 
 	int32_t nsv=svm->get_num_support_vectors();
 	int32_t num_kernels = kernel->get_num_subkernels();
-	float64_t* beta = SG_MALLOCX(float64_t, num_kernels);
+	float64_t* beta = SG_MALLOC(float64_t, num_kernels);
 	int32_t nweights=0;
 	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
 	ASSERT(nweights==num_kernels);
@@ -1563,10 +1563,10 @@ void CMKL::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 {
 	ASSERT(num_kernels>0);
 
-	float64_t* grad_beta=SG_MALLOCX(float64_t, num_kernels);
-	float64_t* hess_beta=SG_MALLOCX(float64_t, num_kernels+1);
-	float64_t* lin_term=SG_MALLOCX(float64_t, num_kernels+1);
-	int* ind=SG_MALLOCX(int, num_kernels+1);
+	float64_t* grad_beta=SG_MALLOC(float64_t, num_kernels);
+	float64_t* hess_beta=SG_MALLOC(float64_t, num_kernels+1);
+	float64_t* lin_term=SG_MALLOC(float64_t, num_kernels+1);
+	int* ind=SG_MALLOC(int, num_kernels+1);
 
 	//CMath::display_vector(beta, num_kernels, "beta");
 	double const_term = 1-CMath::qsq(beta, num_kernels, mkl_norm);

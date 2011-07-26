@@ -88,11 +88,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				set_sparse_feature_matrix(SGSparseMatrix<ST>(src, num_feat, num_vec));
 			else
 			{
-				sparse_feature_matrix = SG_MALLOCX(SGSparseVector<ST>, num_vec);
+				sparse_feature_matrix = SG_MALLOC(SGSparseVector<ST>, num_vec);
 				memcpy(sparse_feature_matrix, src, sizeof(SGSparseVector<ST>)*num_vec);
 				for (int32_t i=0; i< num_vec; i++)
 				{
-					sparse_feature_matrix[i].features = SG_MALLOCX(SGSparseVectorEntry<ST>, sparse_feature_matrix[i].num_feat_entries);
+					sparse_feature_matrix[i].features = SG_MALLOC(SGSparseVectorEntry<ST>, sparse_feature_matrix[i].num_feat_entries);
 					memcpy(sparse_feature_matrix[i].features, src[i].features, sizeof(SGSparseVectorEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
 
 				}
@@ -139,11 +139,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			if (orig.sparse_feature_matrix)
 			{
 				free_sparse_feature_matrix();
-				sparse_feature_matrix=SG_MALLOCX(SGSparseVector<ST>, num_vectors);
+				sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
 				memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(SGSparseVector<ST>)*num_vectors);
 				for (int32_t i=0; i< num_vectors; i++)
 				{
-					sparse_feature_matrix[i].features=SG_MALLOCX(SGSparseVectorEntry<ST>, sparse_feature_matrix[i].num_feat_entries);
+					sparse_feature_matrix[i].features=SG_MALLOC(SGSparseVectorEntry<ST>, sparse_feature_matrix[i].num_feat_entries);
 					memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(SGSparseVectorEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
 
 				}
@@ -257,7 +257,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			if (sv)
 			{
 				len=num_features;
-				fv=SG_MALLOCX(ST, num_features);
+				fv=SG_MALLOC(ST, num_features);
 
 				for (i=0; i<num_features; i++)
 					fv[i]=0;
@@ -294,7 +294,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			{
 				dense.do_free=true;
 				dense.vlen=num_features;
-				dense.vector=SG_MALLOCX(ST, num_features);
+				dense.vector=SG_MALLOC(ST, num_features);
 				memset(dense.vector, 0, sizeof(ST)*num_features);
 
 				for (int32_t i=0; i<num_feat; i++)
@@ -624,7 +624,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			num_feat=get_num_vectors();
 			num_vec=num_features;
 
-			int32_t* hist=SG_MALLOCX(int32_t, num_features);
+			int32_t* hist=SG_MALLOC(int32_t, num_features);
 			memset(hist, 0, sizeof(int32_t)*num_features);
 
 			// count how lengths of future feature vectors
@@ -641,10 +641,10 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			}
 
 			// allocate room for future feature vectors
-			SGSparseVector<ST>* sfm=SG_MALLOCX(SGSparseVector<ST>, num_vec);
+			SGSparseVector<ST>* sfm=SG_MALLOC(SGSparseVector<ST>, num_vec);
 			for (int32_t v=0; v<num_vec; v++)
 			{
-				sfm[v].features= SG_MALLOCX(SGSparseVectorEntry<ST>, hist[v]);
+				sfm[v].features= SG_MALLOC(SGSparseVectorEntry<ST>, hist[v]);
 				sfm[v].num_feat_entries=hist[v];
 				sfm[v].vec_index=v;
 			}
@@ -707,7 +707,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			full.num_rows=num_features;
 			full.num_cols=get_num_vectors();
 			full.do_free=true;
-			full.matrix=SG_MALLOCX(ST, int64_t(num_features)*get_num_vectors());
+			full.matrix=SG_MALLOC(ST, int64_t(num_features)*get_num_vectors());
 
 			memset(full.matrix, 0, size_t(num_features)*size_t(get_num_vectors())*sizeof(ST));
 
@@ -751,7 +751,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			num_vectors=num_vec;
 
 			SG_INFO("converting dense feature matrix to sparse one\n");
-			int32_t* num_feat_entries=SG_MALLOCX(int, num_vectors);
+			int32_t* num_feat_entries=SG_MALLOC(int, num_vectors);
 
 			if (num_feat_entries)
 			{
@@ -770,7 +770,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 				if (num_vec>0)
 				{
-					sparse_feature_matrix=SG_MALLOCX(SGSparseVector<ST>, num_vec);
+					sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vec);
 
 					if (sparse_feature_matrix)
 					{
@@ -782,7 +782,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 							if (num_feat_entries[i]>0)
 							{
-								sparse_feature_matrix[i].features= SG_MALLOCX(SGSparseVectorEntry<ST>, num_feat_entries[i]);
+								sparse_feature_matrix[i].features= SG_MALLOC(SGSparseVectorEntry<ST>, num_feat_entries[i]);
 
 								if (!sparse_feature_matrix[i].features)
 								{
@@ -1090,7 +1090,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			size_t blocksize=1024*1024;
 			size_t required_blocksize=blocksize;
-			uint8_t* dummy=SG_MALLOCX(uint8_t, blocksize);
+			uint8_t* dummy=SG_MALLOC(uint8_t, blocksize);
 			FILE* f=fopen(fname, "ro");
 
 			if (f)
@@ -1128,10 +1128,10 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				SG_INFO("found %d feature vectors\n", num_vectors);
 				SG_FREE(dummy);
 				blocksize=required_blocksize;
-				dummy = SG_MALLOCX(uint8_t, blocksize+1); //allow setting of '\0' at EOL
+				dummy = SG_MALLOC(uint8_t, blocksize+1); //allow setting of '\0' at EOL
 
 				lab=new CLabels(num_vectors);
-				sparse_feature_matrix=SG_MALLOCX(SGSparseVector<ST>, num_vectors);
+				sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
 
 				rewind(f);
 				sz=blocksize;
@@ -1178,7 +1178,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 										dims, len, len, (const char*) data);
 							}
 
-							SGSparseVectorEntry<ST>* feat=SG_MALLOCX(SGSparseVectorEntry<ST>, dims);
+							SGSparseVectorEntry<ST>* feat=SG_MALLOC(SGSparseVectorEntry<ST>, dims);
 							int32_t j=0;
 							for (; j<len; j++)
 							{
@@ -1272,8 +1272,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 					continue;
 
 				SGSparseVectorEntry<ST>* sf_orig=sparse_feature_matrix[i].features;
-				int32_t* feat_idx=SG_MALLOCX(int32_t, len);
-				int32_t* orig_idx=SG_MALLOCX(int32_t, len);
+				int32_t* feat_idx=SG_MALLOC(int32_t, len);
+				int32_t* orig_idx=SG_MALLOC(int32_t, len);
 
 				for (int j=0; j<len; j++)
 				{
@@ -1283,7 +1283,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 				CMath::qsort_index(feat_idx, orig_idx, len);
 
-				SGSparseVectorEntry<ST>* sf_new= SG_MALLOCX(SGSparseVectorEntry<ST>, len);
+				SGSparseVectorEntry<ST>* sf_new= SG_MALLOC(SGSparseVectorEntry<ST>, len);
 				for (int j=0; j<len; j++)
 					sf_new[j]=sf_orig[orig_idx[j]];
 
@@ -1462,7 +1462,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			if (!sparse_feature_matrix)
 				SG_ERROR("Requires a in-memory feature matrix\n");
 
-			sparse_feature_iterator* it=SG_MALLOCX(sparse_feature_iterator, 1);
+			sparse_feature_iterator* it=SG_MALLOC(sparse_feature_iterator, 1);
 			it->sv=get_sparse_feature_vector(vector_index, it->num_feat_entries, it->vfree);
 			it->vidx=vector_index;
 			it->index=0;

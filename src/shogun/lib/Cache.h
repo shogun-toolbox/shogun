@@ -84,9 +84,9 @@ template<class T> class CCache : public CSGObject
 		nr_cache_lines=CMath::min((int64_t) (cache_size*1024*1024/obj_size/sizeof(T)), num_entries+1);
 
 		SG_INFO("creating %d cache lines (total size: %ld byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
-		cache_block=SG_MALLOCX(T, obj_size*nr_cache_lines);
-		lookup_table=SG_MALLOCX(TEntry, num_entries);
-		cache_table=SG_MALLOCX(TEntry*, nr_cache_lines);
+		cache_block=SG_MALLOC(T, obj_size*nr_cache_lines);
+		lookup_table=SG_MALLOC(TEntry, num_entries);
+		cache_table=SG_MALLOC(TEntry*, nr_cache_lines);
 
 		ASSERT(cache_block);
 		ASSERT(lookup_table);

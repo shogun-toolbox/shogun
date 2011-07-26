@@ -87,7 +87,7 @@ class CBitString : public CSGObject
 		{
 			cleanup();
 			uint64_t stream_len=len/sizeof(uint64_t)+1;
-			string=SG_MALLOCX(uint64_t, stream_len);
+			string=SG_MALLOC(uint64_t, stream_len);
 			length=len;
 
 			uint64_t w=0;
@@ -167,7 +167,7 @@ class CBitString : public CSGObject
 
 					len = fasta_len-spanned_lines;
 					uint64_t stream_len=len/(nfit)+1;
-					string=SG_MALLOCX(uint64_t, stream_len);
+					string=SG_MALLOC(uint64_t, stream_len);
 					length=len;
 
 					uint64_t idx=0;
@@ -222,7 +222,7 @@ class CBitString : public CSGObject
 		{
 			cleanup();
 			uint64_t stream_len=len/sizeof(uint64_t)+1;
-			string=SG_MALLOCX(uint64_t, stream_len);
+			string=SG_MALLOC(uint64_t, stream_len);
 			CMath::fill_vector(string, (int32_t) stream_len, (uint64_t) 0);
 			length=len;
 		}

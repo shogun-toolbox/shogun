@@ -90,7 +90,7 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 			(ndims==2 && dims[0]==1 && dims[1]==nelements) ||						\
 			(ndims==1 && dims[0]==nelements)))										\
 		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0]);	\
-	vec=SG_MALLOCX(sg_type, nelements);														\
+	vec=SG_MALLOC(sg_type, nelements);														\
 	len=nelements;																	\
 	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
 			H5S_ALL, H5P_DEFAULT, vec);												\
@@ -137,7 +137,7 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 	get_dims(dataset, dims, ndims, nelements);										\
 	if (ndims!=2)																	\
 		SG_ERROR("Error not a 2-dimensional matrix\n");								\
-	matrix=SG_MALLOCX(sg_type, nelements);													\
+	matrix=SG_MALLOC(sg_type, nelements);													\
 	num_feat=dims[0];																\
 	num_vec=dims[1];																\
 	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
@@ -427,8 +427,8 @@ void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 
 	ndims = H5Sget_simple_extent_ndims(dataspace); 
 	total_elements=H5Sget_simple_extent_npoints(dataspace);
-	hsize_t* dims_out=SG_MALLOCX(hsize_t, ndims);
-	dims=SG_MALLOCX(int32_t, ndims);
+	hsize_t* dims_out=SG_MALLOC(hsize_t, ndims);
+	dims=SG_MALLOC(int32_t, ndims);
 	H5Sget_simple_extent_dims(dataspace, dims_out, NULL);
 	for (int32_t i=0; i<ndims; i++)
 		dims[i]=dims_out[i];

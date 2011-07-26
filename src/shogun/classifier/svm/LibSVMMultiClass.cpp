@@ -46,12 +46,12 @@ bool CLibSVMMultiClass::train_kernel_machine(CFeatures* data)
 		kernel->init(data, data);
 	}
 
-	problem.y=SG_MALLOCX(float64_t, problem.l);
-	problem.x=SG_MALLOCX(struct svm_node*, problem.l);
-	problem.pv=SG_MALLOCX(float64_t, problem.l);
-    problem.C=SG_MALLOCX(float64_t, problem.l);
+	problem.y=SG_MALLOC(float64_t, problem.l);
+	problem.x=SG_MALLOC(struct svm_node*, problem.l);
+	problem.pv=SG_MALLOC(float64_t, problem.l);
+    problem.C=SG_MALLOC(float64_t, problem.l);
 
-	x_space=SG_MALLOCX(struct svm_node, 2*problem.l);
+	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
@@ -99,7 +99,7 @@ bool CLibSVMMultiClass::train_kernel_machine(CFeatures* data)
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef));
 		create_multiclass_svm(num_classes);
 
-		int32_t* offsets=SG_MALLOCX(int32_t, num_classes);
+		int32_t* offsets=SG_MALLOC(int32_t, num_classes);
 		offsets[0]=0;
 
 		for (int32_t i=1; i<num_classes; i++)

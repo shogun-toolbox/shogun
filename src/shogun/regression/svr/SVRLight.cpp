@@ -161,9 +161,9 @@ void CSVRLight::svr_learn()
 	num_vectors=totdoc;
 
 	// set up regression problem in standard form
-	docs=SG_MALLOCX(int32_t, 2*totdoc);
-	label=SG_MALLOCX(int32_t, 2*totdoc);
-	c = SG_MALLOCX(float64_t, 2*totdoc);
+	docs=SG_MALLOC(int32_t, 2*totdoc);
+	label=SG_MALLOC(int32_t, 2*totdoc);
+	c = SG_MALLOC(float64_t, 2*totdoc);
 
   for(i=0;i<totdoc;i++) {
 	  docs[i]=i;
@@ -206,7 +206,7 @@ void CSVRLight::svr_learn()
 
 	if (kernel->has_property(KP_KERNCOMBINATION) && callback)
 	{
-		W = SG_MALLOCX(float64_t, totdoc*kernel->get_num_subkernels());
+		W = SG_MALLOC(float64_t, totdoc*kernel->get_num_subkernels());
 		for (i=0; i<totdoc*kernel->get_num_subkernels(); i++)
 			W[i]=0;
 	}
@@ -219,26 +219,26 @@ void CSVRLight::svr_learn()
 
 	init_shrink_state(&shrink_state,totdoc,(int32_t)MAXSHRINK);
 
-	inconsistent = SG_MALLOCX(int32_t, totdoc);
-	a = SG_MALLOCX(float64_t, totdoc);
-	a_fullset = SG_MALLOCX(float64_t, totdoc);
-	xi_fullset = SG_MALLOCX(float64_t, totdoc);
-	lin = SG_MALLOCX(float64_t, totdoc);
-	learn_parm->svm_cost = SG_MALLOCX(float64_t, totdoc);
+	inconsistent = SG_MALLOC(int32_t, totdoc);
+	a = SG_MALLOC(float64_t, totdoc);
+	a_fullset = SG_MALLOC(float64_t, totdoc);
+	xi_fullset = SG_MALLOC(float64_t, totdoc);
+	lin = SG_MALLOC(float64_t, totdoc);
+	learn_parm->svm_cost = SG_MALLOC(float64_t, totdoc);
 	if (m_linear_term_len > 0)
 		learn_parm->eps=get_linear_term_array();
 	else
 	{
-		learn_parm->eps=SG_MALLOCX(float64_t, totdoc);      /* equivalent regression epsilon for classification */
+		learn_parm->eps=SG_MALLOC(float64_t, totdoc);      /* equivalent regression epsilon for classification */
 		CMath::fill_vector(learn_parm->eps, totdoc, tube_epsilon);
 	}
 
 	SG_FREE(model->supvec);
 	SG_FREE(model->alpha);
 	SG_FREE(model->index);
-	model->supvec = SG_MALLOCX(int32_t, totdoc+2);
-	model->alpha = SG_MALLOCX(float64_t, totdoc+2);
-	model->index = SG_MALLOCX(int32_t, totdoc+2);
+	model->supvec = SG_MALLOC(int32_t, totdoc+2);
+	model->alpha = SG_MALLOC(float64_t, totdoc+2);
+	model->index = SG_MALLOC(int32_t, totdoc+2);
 
 	model->at_upper_bound=0;
 	model->b=0;
@@ -410,8 +410,8 @@ void CSVRLight::update_linear_component(
 					int32_t num_elem = 0 ;
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t* threads = SG_MALLOCX(pthread_t, parallel->get_num_threads()-1);
-					S_THREAD_PARAM* params = SG_MALLOCX(S_THREAD_PARAM, parallel->get_num_threads()-1);
+					pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
+					S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, parallel->get_num_threads()-1);
 					int32_t start = 0 ;
 					int32_t step = num_elem/parallel->get_num_threads() ;
 					int32_t end = step ;
@@ -501,8 +501,8 @@ void CSVRLight::update_linear_component_mkl(
 	}
 	else // hope the kernel is fast ...
 	{
-		float64_t* w_backup = SG_MALLOCX(float64_t, num_kernels);
-		float64_t* w1 = SG_MALLOCX(float64_t, num_kernels);
+		float64_t* w_backup = SG_MALLOC(float64_t, num_kernels);
+		float64_t* w1 = SG_MALLOC(float64_t, num_kernels);
 
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
@@ -551,8 +551,8 @@ void CSVRLight::update_linear_component_mkl_linadd(
 
 	ASSERT(num_weights==num_kernels);
 
-	float64_t* w_backup=SG_MALLOCX(float64_t, num_kernels);
-	float64_t* w1=SG_MALLOCX(float64_t, num_kernels);
+	float64_t* w_backup=SG_MALLOC(float64_t, num_kernels);
+	float64_t* w1=SG_MALLOC(float64_t, num_kernels);
 
 	// backup and set to one
 	for (int32_t i=0; i<num_kernels; i++)
@@ -590,13 +590,13 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	int nk = (int) num_kernels; // calling external lib
 	float64_t sumalpha = 0;
-	float64_t* sumw=SG_MALLOCX(float64_t, num_kernels);
+	float64_t* sumw=SG_MALLOC(float64_t, num_kernels);
 
 	for (int32_t i=0; i<num; i++)
 		sumalpha-=a[i]*(learn_parm->eps[i]-label[i]*c[i]);
 
 #ifdef HAVE_LAPACK
-	double* alphay  = SG_MALLOCX(double, num);
+	double* alphay  = SG_MALLOC(double, num);
 	for (int32_t i=0; i<num; i++)
 		alphay[i]=a[i]*label[i];
 
@@ -677,10 +677,10 @@ void CSVRLight::reactivate_inactive_examples(
   }
   else
   {
-	  changed=SG_MALLOCX(int32_t, totdoc);
-	  changed2dnum=SG_MALLOCX(int32_t, totdoc+11);
-	  inactive=SG_MALLOCX(int32_t, totdoc);
-	  inactive2dnum=SG_MALLOCX(int32_t, totdoc+11);
+	  changed=SG_MALLOC(int32_t, totdoc);
+	  changed2dnum=SG_MALLOC(int32_t, totdoc+11);
+	  inactive=SG_MALLOC(int32_t, totdoc);
+	  inactive2dnum=SG_MALLOC(int32_t, totdoc+11);
 	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
 		  if(verbosity>=2) {
 			  SG_INFO( "%ld..",t);

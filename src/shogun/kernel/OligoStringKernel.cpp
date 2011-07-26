@@ -141,7 +141,7 @@ void COligoStringKernel::getSequences(
 void COligoStringKernel::getExpFunctionCache(uint32_t sequence_length)
 {
 	SG_FREE(gauss_table);
-	gauss_table=SG_MALLOCX(float64_t, sequence_length);
+	gauss_table=SG_MALLOC(float64_t, sequence_length);
 
 	gauss_table[0] = 1;
 	for (uint32_t i = 1; i < sequence_length; i++)

@@ -54,8 +54,8 @@ bool CLDA::train(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 	ASSERT(num_vec==train_labels.vlen);
 
-	int32_t* classidx_neg=SG_MALLOCX(int32_t, num_vec);
-	int32_t* classidx_pos=SG_MALLOCX(int32_t, num_vec);
+	int32_t* classidx_neg=SG_MALLOC(int32_t, num_vec);
+	int32_t* classidx_pos=SG_MALLOC(int32_t, num_vec);
 
 	int32_t i=0;
 	int32_t j=0;
@@ -81,17 +81,17 @@ bool CLDA::train(CFeatures* data)
 	}
 
 	SG_FREE(w);
-	w=SG_MALLOCX(float64_t, num_feat);
+	w=SG_MALLOC(float64_t, num_feat);
 	w_dim=num_feat;
 
-	float64_t* mean_neg=SG_MALLOCX(float64_t, num_feat);
+	float64_t* mean_neg=SG_MALLOC(float64_t, num_feat);
 	memset(mean_neg,0,num_feat*sizeof(float64_t));
 
-	float64_t* mean_pos=SG_MALLOCX(float64_t, num_feat);
+	float64_t* mean_pos=SG_MALLOC(float64_t, num_feat);
 	memset(mean_pos,0,num_feat*sizeof(float64_t));
 
 	/* calling external lib */
-	double* scatter=SG_MALLOCX(double, num_feat*num_feat);
+	double* scatter=SG_MALLOC(double, num_feat*num_feat);
 	double* buffer=SG_MALLOC(double, num_feat*CMath::max(num_neg, num_pos));
 	int nf = (int) num_feat;
 

@@ -86,8 +86,8 @@ int32_t CDistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
 		int32_t tLength, int32_t delta_m, int32_t theta_m)
 {
 	int32_t c=0;
-	int32_t* i_=SG_MALLOCX(int32_t, delta_m+1);
-	int32_t* l_=SG_MALLOCX(int32_t, delta_m+1);
+	int32_t* i_=SG_MALLOC(int32_t, delta_m+1);
+	int32_t* l_=SG_MALLOC(int32_t, delta_m+1);
 	for (int32_t j_s=0; j_s<=(int32_t) sLength-1; j_s++)
 	{
 		for (int32_t j_t=0; j_t<=(int32_t) tLength-1; j_t++)

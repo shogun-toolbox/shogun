@@ -118,9 +118,9 @@ bool CLibLinear::train(CFeatures* data)
 	}
 	SG_FREE(w);
 	if (use_bias)
-		w=SG_MALLOCX(float64_t, num_feat+1);
+		w=SG_MALLOC(float64_t, num_feat+1);
 	else
-		w=SG_MALLOCX(float64_t, num_feat+0);
+		w=SG_MALLOC(float64_t, num_feat+0);
 	w_dim=num_feat;
 
 	problem prob;
@@ -136,7 +136,7 @@ bool CLibLinear::train(CFeatures* data)
 	}
 	prob.l=num_vec;
 	prob.x=features;
-	prob.y=SG_MALLOCX(int, prob.l);
+	prob.y=SG_MALLOC(int, prob.l);
 	prob.use_bias=use_bias;
 
 	for (int32_t i=0; i<prob.l; i++)
@@ -256,10 +256,10 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	int w_size = prob->n;
 	int i, s, iter = 0;
 	double C, d, G;
-	double *QD = SG_MALLOCX(double, l);
-	int *index = SG_MALLOCX(int, l);
-	double *alpha = SG_MALLOCX(double, l);
-	int32_t *y = SG_MALLOCX(int32_t, l);
+	double *QD = SG_MALLOC(double, l);
+	int *index = SG_MALLOC(int, l);
+	double *alpha = SG_MALLOC(double, l);
+	int32_t *y = SG_MALLOC(int32_t, l);
 	int active_size = l;
 
 	// PG: projected gradient, for shrinking and stopping
@@ -467,10 +467,10 @@ void CLibLinear::solve_l1r_l2_svc(
 	double loss_old=0, loss_new;
 	double appxcond, cond;
 
-	int *index = SG_MALLOCX(int, w_size);
-	int32_t *y = SG_MALLOCX(int32_t, l);
-	double *b = SG_MALLOCX(double, l); // b = 1-ywTx
-	double *xj_sq = SG_MALLOCX(double, w_size);
+	int *index = SG_MALLOC(int, w_size);
+	int32_t *y = SG_MALLOC(int32_t, l);
+	double *b = SG_MALLOC(double, l); // b = 1-ywTx
+	double *xj_sq = SG_MALLOC(double, w_size);
 
 	CDotFeatures* x = (CDotFeatures*) prob_col->x;
 	void* iterator;
@@ -814,14 +814,14 @@ void CLibLinear::solve_l1r_lr(
 	double sum2, appxcond2;
 	double cond;
 
-	int *index = SG_MALLOCX(int, w_size);
-	int32_t *y = SG_MALLOCX(int32_t, l);
-	double *exp_wTx = SG_MALLOCX(double, l);
-	double *exp_wTx_new = SG_MALLOCX(double, l);
-	double *xj_max = SG_MALLOCX(double, w_size);
-	double *C_sum = SG_MALLOCX(double, w_size);
-	double *xjneg_sum = SG_MALLOCX(double, w_size);
-	double *xjpos_sum = SG_MALLOCX(double, w_size);
+	int *index = SG_MALLOC(int, w_size);
+	int32_t *y = SG_MALLOC(int32_t, l);
+	double *exp_wTx = SG_MALLOC(double, l);
+	double *exp_wTx_new = SG_MALLOC(double, l);
+	double *xj_max = SG_MALLOC(double, w_size);
+	double *C_sum = SG_MALLOC(double, w_size);
+	double *xjneg_sum = SG_MALLOC(double, w_size);
+	double *xjpos_sum = SG_MALLOC(double, w_size);
 
 	CDotFeatures* x = prob_col->x;
 	void* iterator;
@@ -1163,7 +1163,7 @@ void CLibLinear::init_linear_term()
 	SG_FREE(m_linear_term);
 
 	m_linear_term_len=labels->get_num_labels();
-	m_linear_term = SG_MALLOCX(float64_t, m_linear_term_len);
+	m_linear_term = SG_MALLOC(float64_t, m_linear_term_len);
 	CMath::fill_vector(m_linear_term, m_linear_term_len, -1.0);
 }
 

@@ -165,7 +165,7 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 	uint32_t offs=0;
 	bool first=true;
 	int32_t num=stop-start;
-	float64_t* tmp=SG_MALLOCX(float64_t, num);
+	float64_t* tmp=SG_MALLOC(float64_t, num);
 
 	while (f)
 	{
@@ -199,7 +199,7 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 	bool first=true;
-	float64_t* tmp=SG_MALLOCX(float64_t, num);
+	float64_t* tmp=SG_MALLOC(float64_t, num);
 
 	while (f)
 	{
@@ -263,7 +263,7 @@ void CCombinedDotFeatures::get_subfeature_weights(float64_t** weights, int32_t* 
 	*num_weights = get_num_feature_obj();
 	ASSERT(*num_weights > 0);
 
-	*weights=SG_MALLOCX(float64_t, *num_weights);
+	*weights=SG_MALLOC(float64_t, *num_weights);
 	float64_t* w = *weights;
 
 	CListElement* current = NULL;

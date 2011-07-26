@@ -35,7 +35,7 @@ template<class T> class SGVector
 		SGVector(index_t len, bool free_vec=false) :
 		vlen(len), do_free(free_vec)
 		{
-			vector=SG_MALLOCX(T, len);
+			vector=SG_MALLOC(T, len);
 		}
 
 		/** copy constructor */
@@ -81,7 +81,7 @@ template<class T> class SGMatrix
 		SGMatrix(index_t nrows, index_t ncols, bool free_mat=false)
 			: num_rows(nrows), num_cols(ncols), do_free(free_mat)
 		{
-			matrix=SG_MALLOCX(T, nrows*ncols);
+			matrix=SG_MALLOC(T, nrows*ncols);
 		}
 
 		/** copy constructor */

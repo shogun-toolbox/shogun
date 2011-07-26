@@ -50,7 +50,7 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uin
 
 void CImplicitWeightedSpecFeatures::compute_normalization_const()
 {
-	float64_t* factors=SG_MALLOCX(float64_t, num_strings);
+	float64_t* factors=SG_MALLOC(float64_t, num_strings);
 
 	for (int32_t i=0; i<num_strings; i++)
 		factors[i]=1.0/CMath::sqrt(dot(i, this, i));
@@ -62,7 +62,7 @@ void CImplicitWeightedSpecFeatures::compute_normalization_const()
 bool CImplicitWeightedSpecFeatures::set_wd_weights()
 {
 	SG_FREE(spec_weights);
-	spec_weights=SG_MALLOCX(float64_t, degree);
+	spec_weights=SG_MALLOC(float64_t, degree);
 
 	int32_t i;
 	float64_t sum=0;
@@ -85,7 +85,7 @@ bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 	ASSERT(d==degree);
 
 	SG_FREE(spec_weights);
-	spec_weights=SG_MALLOCX(float64_t, degree);
+	spec_weights=SG_MALLOC(float64_t, degree);
 	for (int32_t i=0; i<degree; i++)
 		spec_weights[i]=CMath::sqrt(w[i]);
 	return true;
@@ -253,7 +253,7 @@ void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
 				"requested %d)\n", num_strings, vector_index);
 	}
 
-	wspec_feature_iterator* it=SG_MALLOCX(wspec_feature_iterator, 1);
+	wspec_feature_iterator* it=SG_MALLOC(wspec_feature_iterator, 1);
 	it->vec= strings->get_feature_vector(vector_index, it->vlen, it->vfree);
 	it->vidx=vector_index;
 

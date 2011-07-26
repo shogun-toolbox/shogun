@@ -105,7 +105,7 @@ bool CSGDQN::train(CFeatures* data)
 	ASSERT(num_vec>0);
 
 	SG_FREE(w);
-	w=SG_MALLOCX(float64_t, w_dim);
+	w=SG_MALLOC(float64_t, w_dim);
 	memset(w, 0, w_dim*sizeof(float64_t));
 
 	float64_t lambda= 1.0/(C1*num_vec);
@@ -121,12 +121,12 @@ bool CSGDQN::train(CFeatures* data)
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
 
 
-	float64_t* Bc=SG_MALLOCX(float64_t, w_dim);
+	float64_t* Bc=SG_MALLOC(float64_t, w_dim);
 	CMath::fill_vector(Bc, w_dim, 1/lambda);
 
-	float64_t* result=SG_MALLOCX(float64_t, w_dim);
-	float64_t* B=SG_MALLOCX(float64_t, w_dim);
-	float64_t* w_1=SG_MALLOCX(float64_t, w_dim);
+	float64_t* result=SG_MALLOC(float64_t, w_dim);
+	float64_t* B=SG_MALLOC(float64_t, w_dim);
+	float64_t* w_1=SG_MALLOC(float64_t, w_dim);
 
 	//Calibrate
 	calibrate();

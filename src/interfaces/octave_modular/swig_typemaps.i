@@ -209,7 +209,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
         Cell c = arg.cell_value();
         num_strings=c.nelem();
         ASSERT(num_strings>=1);
-        strings=SG_MALLOCX(SGString<sg_type>, num_strings);
+        strings=SG_MALLOC(SGString<sg_type>, num_strings);
 
         for (int32_t i=0; i<num_strings; i++)
         {
@@ -224,7 +224,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
             if (len>0) 
             { 
                 strings[i].length=len; /* all must have same length in octave */
-                strings[i].string=SG_MALLOCX(sg_type, len+1); /* not zero terminated in octave */
+                strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
                 int32_t j; 
                 for (j=0; j<len; j++)
@@ -245,7 +245,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
         oct_type data=arg.oct_converter();
         num_strings=data.cols(); 
         int32_t len=data.rows();
-        strings=SG_MALLOCX(SGString<sg_type>, num_strings);
+        strings=SG_MALLOC(SGString<sg_type>, num_strings);
         ASSERT(strings);
 
         for (int32_t i=0; i<num_strings; i++)
@@ -253,7 +253,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
             if (len>0) 
             { 
                 strings[i].length=len; /* all must have same length in octave */
-                strings[i].string=SG_MALLOCX(sg_type, len+1); /* not zero terminated in octave */
+                strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
                 int32_t j;
                 for (j=0; j<len; j++)

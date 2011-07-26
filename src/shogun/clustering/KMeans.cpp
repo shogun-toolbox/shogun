@@ -59,7 +59,7 @@ bool CKMeans::train(CFeatures* data)
 	int32_t num=lhs->get_num_vectors();
 	SG_UNREF(lhs);
 
-	Weights=SG_MALLOCX(float64_t, num);
+	Weights=SG_MALLOC(float64_t, num);
 	for (int32_t i=0; i<num; i++)
 		Weights[i]=1.0;
 
@@ -143,10 +143,10 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	int32_t iter=0;
 
 	SG_FREE(R);
-	R=SG_MALLOCX(float64_t, k);
+	R=SG_MALLOC(float64_t, k);
 
 	SG_FREE(mus);
-	mus=SG_MALLOCX(float64_t, XDimk);
+	mus=SG_MALLOC(float64_t, XDimk);
 
 	int32_t *ClList = (int32_t*) calloc(XSize, sizeof(int32_t));
 	float64_t *weights_set = (float64_t*) calloc(k, sizeof(float64_t));

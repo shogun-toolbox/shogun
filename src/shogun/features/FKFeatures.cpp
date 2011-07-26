@@ -93,8 +93,8 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 	if (a==-1)
 	{
 		SG_INFO( "estimating a.\n");
-		pos_prob=SG_MALLOCX(float64_t, pos->get_observations()->get_num_vectors());
-		neg_prob=SG_MALLOCX(float64_t, pos->get_observations()->get_num_vectors());
+		pos_prob=SG_MALLOC(float64_t, pos->get_observations()->get_num_vectors());
+		neg_prob=SG_MALLOC(float64_t, pos->get_observations()->get_num_vectors());
 		for (int32_t i=0; i<pos->get_observations()->get_num_vectors(); i++)
 		{
 			pos_prob[i]=pos->model_probability(i) ;
@@ -226,7 +226,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 
 	SG_INFO( "allocating FK feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
-	feature_matrix=SG_MALLOCX(float64_t, num_features*num_vectors);
+	feature_matrix=SG_MALLOC(float64_t, num_features*num_vectors);
 
 	SG_INFO( "calculating FK feature matrix\n");
 

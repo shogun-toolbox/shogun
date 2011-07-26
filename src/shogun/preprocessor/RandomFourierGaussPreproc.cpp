@@ -33,7 +33,7 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 							"void CRandomFourierGaussPreproc::copy(...): feats.randomcoeff_additive==NULL && cur_dim_feature_space>0 \n");
 		}
 
-		randomcoeff_additive = SG_MALLOCX(float64_t, cur_dim_feature_space);
+		randomcoeff_additive = SG_MALLOC(float64_t, cur_dim_feature_space);
 		std::copy(feats.randomcoeff_additive,feats.randomcoeff_additive+cur_dim_feature_space,randomcoeff_additive);
 	}
 	else
@@ -49,7 +49,7 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 							"void CRandomFourierGaussPreproc::copy(...): feats.randomcoeff_multiplicative==NULL && cur_dim_feature_space>0 &&(cur_dim_input_space>0)  \n");
 		}
 
-		randomcoeff_multiplicative=SG_MALLOCX(float64_t, cur_dim_feature_space*cur_dim_input_space);
+		randomcoeff_multiplicative=SG_MALLOC(float64_t, cur_dim_feature_space*cur_dim_input_space);
 		std::copy(feats.randomcoeff_multiplicative,feats.randomcoeff_multiplicative+cur_dim_feature_space*cur_dim_input_space,randomcoeff_multiplicative);
 	}
 	else
@@ -213,9 +213,9 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 
 
 	cur_dim_feature_space=dim_feature_space;
-	randomcoeff_additive=SG_MALLOCX(float64_t, cur_dim_feature_space);
+	randomcoeff_additive=SG_MALLOC(float64_t, cur_dim_feature_space);
 	cur_dim_input_space = dim_input_space;
-	randomcoeff_multiplicative=SG_MALLOCX(float64_t, cur_dim_feature_space*cur_dim_input_space);
+	randomcoeff_multiplicative=SG_MALLOC(float64_t, cur_dim_feature_space*cur_dim_input_space);
 
 	cur_kernelwidth=kernelwidth;
 
@@ -265,8 +265,8 @@ void CRandomFourierGaussPreproc::get_randomcoefficients(
 	*dim_input_space2 = cur_dim_input_space;
 	*kernelwidth2=cur_kernelwidth;
 
-	*randomcoeff_additive2 = SG_MALLOCX(float64_t, cur_dim_feature_space);
-	*randomcoeff_multiplicative2 = SG_MALLOCX(float64_t, cur_dim_feature_space*cur_dim_input_space);
+	*randomcoeff_additive2 = SG_MALLOC(float64_t, cur_dim_feature_space);
+	*randomcoeff_multiplicative2 = SG_MALLOC(float64_t, cur_dim_feature_space*cur_dim_input_space);
 
 	std::copy(randomcoeff_additive, randomcoeff_additive+cur_dim_feature_space,
 			*randomcoeff_additive2);
@@ -295,8 +295,8 @@ void CRandomFourierGaussPreproc::set_randomcoefficients(
 
 	if( (dim_feature_space>0) && (dim_input_space>0) )
 	{
-	randomcoeff_additive=SG_MALLOCX(float64_t, cur_dim_feature_space);
-	randomcoeff_multiplicative=SG_MALLOCX(float64_t, cur_dim_feature_space*cur_dim_input_space);
+	randomcoeff_additive=SG_MALLOC(float64_t, cur_dim_feature_space);
+	randomcoeff_multiplicative=SG_MALLOC(float64_t, cur_dim_feature_space*cur_dim_input_space);
 
 	std::copy(randomcoeff_additive2, randomcoeff_additive2
 			+ dim_feature_space, randomcoeff_additive);
@@ -346,7 +346,7 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 	}
 
 	float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
-	float64_t *res = SG_MALLOCX(float64_t, cur_dim_feature_space);
+	float64_t *res = SG_MALLOC(float64_t, cur_dim_feature_space);
 
 	for (int32_t od = 0; od < cur_dim_feature_space; ++od) {
 		res[od] = val * cos(randomcoeff_additive[od] + CMath::dot(vector.vector,
@@ -375,7 +375,7 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 	}
 
 	if (m) {
-		float64_t* res = SG_MALLOCX(float64_t, num_vectors * cur_dim_feature_space);
+		float64_t* res = SG_MALLOC(float64_t, num_vectors * cur_dim_feature_space);
 		if (res == NULL) {
 			throw ShogunException(
 					"CRandomFourierGaussPreproc::apply_to_feature_matrix(...): memory allocation failed \n");

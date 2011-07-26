@@ -119,7 +119,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
 		{
 			SG_FREE(v);
-			v=SG_MALLOCX(float64_t, num);
+			v=SG_MALLOC(float64_t, num);
 
 			for (int32_t i=0; i<num; i++)
 			{

@@ -57,7 +57,7 @@ bool CScatterSVM::train_kernel_machine(CFeatures* data)
 		kernel->init(data, data);
 	}
 
-	int32_t* numc=SG_MALLOCX(int32_t, m_num_classes);
+	int32_t* numc=SG_MALLOC(int32_t, m_num_classes);
 	CMath::fill_vector(numc, m_num_classes, 0);
 
 	for (int32_t i=0; i<num_vectors; i++)
@@ -114,9 +114,9 @@ bool CScatterSVM::train_no_bias_libsvm()
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
-	problem.y=SG_MALLOCX(float64_t, problem.l);
-	problem.x=SG_MALLOCX(struct svm_node*, problem.l);
-	x_space=SG_MALLOCX(struct svm_node, 2*problem.l);
+	problem.y=SG_MALLOC(float64_t, problem.l);
+	problem.x=SG_MALLOC(struct svm_node*, problem.l);
+	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
@@ -172,7 +172,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 		rho=model->rho[0];
 
 		SG_FREE(norm_wcw);
-		norm_wcw = SG_MALLOCX(float64_t, m_num_svms);
+		norm_wcw = SG_MALLOC(float64_t, m_num_svms);
 
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
@@ -226,7 +226,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 	light->train();
 
 	SG_FREE(norm_wcw);
-	norm_wcw = SG_MALLOCX(float64_t, m_num_classes);
+	norm_wcw = SG_MALLOC(float64_t, m_num_classes);
 
 	int32_t num_sv=light->get_num_support_vectors();
 	create_new_model(num_sv);
@@ -248,9 +248,9 @@ bool CScatterSVM::train_testrule12()
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
-	problem.y=SG_MALLOCX(float64_t, problem.l);
-	problem.x=SG_MALLOCX(struct svm_node*, problem.l);
-	x_space=SG_MALLOCX(struct svm_node, 2*problem.l);
+	problem.y=SG_MALLOC(float64_t, problem.l);
+	problem.x=SG_MALLOC(struct svm_node*, problem.l);
+	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
@@ -301,7 +301,7 @@ bool CScatterSVM::train_testrule12()
 		rho=model->rho[0];
 
 		SG_FREE(norm_wcw);
-		norm_wcw = SG_MALLOCX(float64_t, m_num_svms);
+		norm_wcw = SG_MALLOC(float64_t, m_num_svms);
 
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
@@ -344,7 +344,7 @@ bool CScatterSVM::train_testrule12()
 void CScatterSVM::compute_norm_wc()
 {
 	SG_FREE(norm_wc);
-	norm_wc = SG_MALLOCX(float64_t, m_num_svms);
+	norm_wc = SG_MALLOC(float64_t, m_num_svms);
 	for (int32_t i=0; i<m_num_svms; i++)
 		norm_wc[i]=0;
 
@@ -396,7 +396,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 #ifdef USE_SVMLIGHT
 		else if (scatter_type == NO_BIAS_SVMLIGHT)
 		{
-			float64_t* outputs=SG_MALLOCX(float64_t, num_vectors*m_num_classes);
+			float64_t* outputs=SG_MALLOC(float64_t, num_vectors*m_num_classes);
 			CMath::fill_vector(outputs,num_vectors*m_num_classes,0.0);
 
 			for (int32_t i=0; i<num_vectors; i++)
@@ -439,7 +439,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 		{
 			ASSERT(m_num_svms>0);
 			ASSERT(num_vectors==output->get_num_labels());
-			CLabels** outputs=SG_MALLOCX(CLabels*, m_num_svms);
+			CLabels** outputs=SG_MALLOC(CLabels*, m_num_svms);
 
 			for (int32_t i=0; i<m_num_svms; i++)
 			{
@@ -482,7 +482,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 float64_t CScatterSVM::apply(int32_t num)
 {
 	ASSERT(m_num_svms>0);
-	float64_t* outputs=SG_MALLOCX(float64_t, m_num_svms);
+	float64_t* outputs=SG_MALLOC(float64_t, m_num_svms);
 	int32_t winner=0;
 
 	if (scatter_type == TEST_RULE1)

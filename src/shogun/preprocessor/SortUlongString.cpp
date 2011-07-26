@@ -82,7 +82,7 @@ bool CSortUlongString::apply_to_string_features(CFeatures* f)
 /// apply preproc on single feature vector
 uint64_t* CSortUlongString::apply_to_string(uint64_t* f, int32_t& len)
 {
-	uint64_t* vec=SG_MALLOCX(uint64_t, len);
+	uint64_t* vec=SG_MALLOC(uint64_t, len);
 	int32_t i=0;
 
 	for (i=0; i<len; i++)

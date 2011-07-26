@@ -41,8 +41,8 @@ bool CLibSVMOneClass::train_kernel_machine(CFeatures* data)
 	SG_INFO("%d train data points\n", problem.l);
 
 	problem.y=NULL;
-	problem.x=SG_MALLOCX(struct svm_node*, problem.l);
-	x_space=SG_MALLOCX(struct svm_node, 2*problem.l);
+	problem.x=SG_MALLOC(struct svm_node*, problem.l);
+	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
 	for (int32_t i=0; i<problem.l; i++)
 	{

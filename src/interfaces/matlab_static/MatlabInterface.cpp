@@ -188,9 +188,9 @@ char* CMatlabInterface::get_string(int32_t& len)
 	len=mxGetN(s);
 	char* string=NULL;
 	if (zero_terminate)
-		string=SG_MALLOCX(char, len+1);
+		string=SG_MALLOC(char, len+1);
 	else
-		string=SG_MALLOCX(char, len);
+		string=SG_MALLOC(char, len);
 	mxChar* c=mxGetChars(s);
 	ASSERT(c);
 	for (int32_t i=0; i<len; i++)
@@ -212,7 +212,7 @@ void CMatlabInterface::function_name(sg_type*& vector, int32_t& len)	\
 			mxGetClassName(mx_vec), mxGetM(mx_vec), mxGetN(mx_vec), m_rhs_counter); 				\
 																	\
 	len=mxGetNumberOfElements(mx_vec); 								\
-	vector=SG_MALLOCX(sg_type, len);										\
+	vector=SG_MALLOC(sg_type, len);										\
 	if_type* data=(if_type*) mxGetData(mx_vec);						\
 																	\
 	for (int32_t i=0; i<len; i++)										\
@@ -238,7 +238,7 @@ void CMatlabInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_
  																				\
 	num_vec=mxGetN(mx_mat); 													\
 	num_feat=mxGetM(mx_mat); 													\
-	matrix=SG_MALLOCX(sg_type, num_vec*num_feat); 										\
+	matrix=SG_MALLOC(sg_type, num_vec*num_feat); 										\
 	if_type* data=(if_type*) mxGetData(mx_mat); 								\
  																				\
 	for (int32_t i=0; i<num_vec; i++) 												\
@@ -268,11 +268,11 @@ void CMatlabInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 	mwSize total_size=mxGetNumberOfElements(mx_array);							\
 	if_type* data=(if_type*) mxGetData(mx_array); 								\
  																				\
-	dims=SG_MALLOCX(int32_t, num_dims);														\
+	dims=SG_MALLOC(int32_t, num_dims);														\
 	for (int32_t d=0; d<num_dims; d++)												\
 		dims[d]=(int32_t) mw_dims[d];												\
 																				\
-	array=SG_MALLOCX(sg_type, total_size); 												\
+	array=SG_MALLOC(sg_type, total_size); 												\
 	for (mwSize i=0; i<total_size; i++) 										\
 		array[i]=data[i];														\
 }
@@ -299,7 +299,7 @@ void CMatlabInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& 
  																						\
 	num_vec=mxGetN(mx_mat); 															\
 	num_feat=mxGetM(mx_mat); 															\
-	matrix=SG_MALLOCX(SGSparseVector<sg_type>, num_vec); 												\
+	matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec); 												\
 	if_type* data=(if_type*) mxGetData(mx_mat); 										\
  																						\
 	int64_t nzmax=mxGetNzmax(mx_mat); 														\
@@ -314,7 +314,7 @@ void CMatlabInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& 
  																						\
 		if (len>0) 																		\
 		{ 																				\
-			matrix[i].features=SG_MALLOCX(SGSparseVectorEntry<sg_type>, len); 							\
+			matrix[i].features=SG_MALLOC(SGSparseVectorEntry<sg_type>, len); 							\
  																						\
 			for (int32_t j=0; j<len; j++) 													\
 			{ 																			\
@@ -352,7 +352,7 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		num_str=mxGetNumberOfElements(mx_str);											\
 		ASSERT(num_str>=1);																\
 																						\
-		strings=SG_MALLOCX(SGString<sg_type>, num_str);											\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);											\
 		for (int32_t i=0; i<num_str; i++)													\
 		{																				\
 			mxArray* str=mxGetCell(mx_str, i);											\
@@ -366,7 +366,7 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			{ 																			\
 				if_type* data=(if_type*) mxGetData(str);								\
 				strings[i].length=len; /* all must have same length in matlab */ 		\
-				strings[i].string=SG_MALLOCX(sg_type, len+1); /* not zero terminated in matlab */ \
+				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in matlab */ \
 				int32_t j; 																	\
 				for (j=0; j<len; j++) 													\
 					strings[i].string[j]= (sg_type) data[j]; 							\
@@ -386,14 +386,14 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		if_type* data=(if_type*) mxGetData(mx_str);										\
 		num_str=mxGetN(mx_str); 														\
 		int32_t len=mxGetM(mx_str); 														\
-		strings=SG_MALLOCX(SGString<sg_type>, num_str); 										\
+		strings=SG_MALLOC(SGString<sg_type>, num_str); 										\
 																						\
 		for (int32_t i=0; i<num_str; i++) 													\
 		{ 																				\
 			if (len>0) 																	\
 			{ 																			\
 				strings[i].length=len; /* all must have same length in matlab */ 		\
-				strings[i].string=SG_MALLOCX(sg_type, len+1); /* not zero terminated in matlab */ \
+				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in matlab */ \
 				int32_t j; 																	\
 				for (j=0; j<len; j++) 													\
 					strings[i].string[j]=(sg_type) data[j+i*len]; 						\

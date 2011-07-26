@@ -54,7 +54,7 @@ bool CWeightedDegreeRBFKernel::init_wd_weights()
 	ASSERT(degree>0);
 
 	if (weights!=0)	SG_FREE(weights);
-	weights=SG_MALLOCX(float64_t, degree);
+	weights=SG_MALLOC(float64_t, degree);
 	if (weights)
 	{
 		int32_t i;

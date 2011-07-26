@@ -386,8 +386,8 @@ public:
 		SGSparseVectorEntry<T>* sf_orig=current_vector;
 		int32_t len=current_length;
 
-		int32_t* feat_idx=SG_MALLOCX(int32_t, len);
-		int32_t* orig_idx=SG_MALLOCX(int32_t, len);
+		int32_t* feat_idx=SG_MALLOC(int32_t, len);
+		int32_t* orig_idx=SG_MALLOC(int32_t, len);
 		
 		for (int32_t i=0; i<len; i++)
 		{
@@ -397,7 +397,7 @@ public:
 
 		CMath::qsort_index(feat_idx, orig_idx, len);
 
-		SGSparseVectorEntry<T>* sf_new=SG_MALLOCX(SGSparseVectorEntry<T>, len);
+		SGSparseVectorEntry<T>* sf_new=SG_MALLOC(SGSparseVectorEntry<T>, len);
 
 		for (int32_t i=0; i<len; i++)
 			sf_new[i]=sf_orig[orig_idx[i]];

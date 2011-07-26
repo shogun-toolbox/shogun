@@ -104,7 +104,7 @@ template <class T> class CSimpleFile : public CSGObject
 				if (num>0)
 				{
 					if (!target)
-						target=SG_MALLOCX(T, num);
+						target=SG_MALLOC(T, num);
 
 					if (target)
 					{
@@ -140,7 +140,7 @@ template <class T> class CSimpleFile : public CSGObject
 				if (num>0)
 				{
 					if (!target)
-						target=SG_MALLOCX(T, num);
+						target=SG_MALLOC(T, num);
 
 					if (target)
 					{
@@ -163,7 +163,7 @@ template <class T> class CSimpleFile : public CSGObject
 			/*
 			if (!line_buffer)
 			{
-				line_buffer=SG_MALLOCX(char, line_buffer_size);
+				line_buffer=SG_MALLOC(char, line_buffer_size);
 				size_t num_read=fread((void*) target, sizeof(T), num, file);
 
 					if (target)

@@ -216,7 +216,7 @@ SerializableHdf5Reader00::read_sparse_begin_wrapped(
 
 	/* ************************************************************ */
 
-	char* buf = SG_MALLOCX(char, CSerializableHdf5File::sizeof_sparsetype());
+	char* buf = SG_MALLOC(char, CSerializableHdf5File::sizeof_sparsetype());
 
 	hid_t mem_type_id;
 	if ((mem_type_id = CSerializableHdf5File::new_sparsetype()) < 0)
@@ -366,19 +366,19 @@ SerializableHdf5Reader00::read_type_begin_wrapped(
 	switch (type->m_ctype) {
 	case CT_SCALAR:
 		if (m->rank != 0) return false;
-		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOCX(hvl_t, 1);
+		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOC(hvl_t, 1);
 		break;
 	case CT_VECTOR:
 		if (H5Sget_simple_extent_type(m->dspace) != H5S_NULL
 			&& m->rank != 1) return false;
 		if (type->m_stype == ST_STRING)
-			m->vltype = SG_MALLOCX(hvl_t, m->dims[0]);
+			m->vltype = SG_MALLOC(hvl_t, m->dims[0]);
 		break;
 	case CT_MATRIX:
 		if (H5Sget_simple_extent_type(m->dspace) != H5S_NULL
 			&& m->rank != 2) return false;
 		if (type->m_stype == ST_STRING)
-			m->vltype = SG_MALLOCX(hvl_t, m->dims[0] *m->dims[1]);
+			m->vltype = SG_MALLOC(hvl_t, m->dims[0] *m->dims[1]);
 		break;
 	}
 

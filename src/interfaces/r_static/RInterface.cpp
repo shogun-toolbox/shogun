@@ -159,7 +159,7 @@ char* CRInterface::get_string(int32_t& len)
 	const char* str= CHAR(rstr);
 	len=LENGTH(rstr);
 	ASSERT(len>0);
-	char* res=SG_MALLOCX(char, len+1);
+	char* res=SG_MALLOC(char, len+1);
 	memcpy(res, str, len*sizeof(char));
 	res[len]='\0';
 	return res;
@@ -187,7 +187,7 @@ void CRInterface::get_vector(int32_t*& vec, int32_t& len)
 		SG_ERROR("Expected Integer Vector as argument %d\n", m_rhs_counter);
 
 	len=LENGTH(rvec);
-	vec=SG_MALLOCX(int32_t, len);
+	vec=SG_MALLOC(int32_t, len);
 	ASSERT(vec);
 
 	for (int32_t i=0; i<len; i++)
@@ -207,7 +207,7 @@ void CRInterface::get_vector(float64_t*& vec, int32_t& len)
 		SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);
 
 	len=LENGTH(rvec);
-	vec=SG_MALLOCX(float64_t, len);
+	vec=SG_MALLOC(float64_t, len);
 	ASSERT(vec);
 
 	for (int32_t i=0; i<len; i++)
@@ -251,7 +251,7 @@ void CRInterface::get_matrix(float64_t*& matrix, int32_t& num_feat, int32_t& num
 
 	num_vec = ncols(feat);
 	num_feat = nrows(feat);
-	matrix=SG_MALLOCX(float64_t, num_vec*num_feat);
+	matrix=SG_MALLOC(float64_t, num_vec*num_feat);
 	ASSERT(matrix);
 
 	for (int32_t i=0; i<num_vec; i++)
@@ -319,12 +319,12 @@ void CRInterface::get_string_list(SGString<char>*& strings, int32_t& num_str, in
 		num_str = ncols(strs);
 		max_string_len = nrows(strs);
 
-		strings=SG_MALLOCX(SGString<char>, num_str);
+		strings=SG_MALLOC(SGString<char>, num_str);
 		ASSERT(strings);
 
 		for (int32_t i=0; i<num_str; i++)
 		{
-			char* dst=SG_MALLOCX(char, max_string_len+1);
+			char* dst=SG_MALLOC(char, max_string_len+1);
 			for (int32_t j=0; j<max_string_len; j++)
 			{
 				SEXPREC* s= STRING_ELT(strs,i*max_string_len+j);
@@ -341,7 +341,7 @@ void CRInterface::get_string_list(SGString<char>*& strings, int32_t& num_str, in
 	{
 		max_string_len=0;
 		num_str=Rf_length(strs);
-		strings=SG_MALLOCX(SGString<char>, num_str);
+		strings=SG_MALLOC(SGString<char>, num_str);
 		ASSERT(strings);
 
 		for (int32_t i=0; i<num_str; i++)
@@ -352,7 +352,7 @@ void CRInterface::get_string_list(SGString<char>*& strings, int32_t& num_str, in
 
 			if (len && c)
 			{
-				char* dst=SG_MALLOCX(char, len+1);
+				char* dst=SG_MALLOC(char, len+1);
 				strings[i].string=(char*) memcpy(dst, c, len*sizeof(char));
 				strings[i].string[len]='\0';
 				strings[i].length=len;

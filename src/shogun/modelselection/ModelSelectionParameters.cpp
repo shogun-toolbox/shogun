@@ -114,7 +114,7 @@ void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 	/* create value vector */
 	index_t num_values=CMath::round(max-min)/step+1;
 	m_values.vlen=num_values;
-	m_values.vector=SG_MALLOCX(float64_t, num_values);
+	m_values.vector=SG_MALLOC(float64_t, num_values);
 
 	/* fill array */
 	for (index_t i=0; i<num_values; ++i)
@@ -346,7 +346,7 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 void CModelSelectionParameters::print_tree(int prefix_num)
 {
 	/* prefix is enlarged */
-	char* prefix=SG_MALLOCX(char, prefix_num+1);
+	char* prefix=SG_MALLOC(char, prefix_num+1);
 	for (index_t i=0; i<prefix_num; ++i)
 		prefix[i]='\t';
 

@@ -30,7 +30,7 @@ extern "C" {
 
 	if (rb_obj_is_kind_of($input,rb_cArray)) {
 		len = RARRAY_LEN($input);
-		array = SG_MALLOCX(SGTYPE, len);
+		array = SG_MALLOC(SGTYPE, len);
 
 		ptr = RARRAY_PTR($input);
 		for (i = 0; i < len; i++, ptr++) {
@@ -41,7 +41,7 @@ extern "C" {
 		if (NA_IsNArray($input)) {
 			VALUE v = na_to_array($input);
 			len = RARRAY_LEN(v);
-			array = SG_MALLOCX(SGTYPE, len);
+			array = SG_MALLOC(SGTYPE, len);
 
 			ptr = RARRAY_PTR(v);
 			for (i = 0; i < len; i++, ptr++) {
@@ -117,7 +117,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 			}
 			if (cols == 0) {
 				cols = RARRAY_LEN(vec);
-				array = SG_MALLOCX(SGTYPE, rows * cols);
+				array = SG_MALLOC(SGTYPE, rows * cols);
 			}
 			for (j = 0; j < cols; j++) {
 				array[i * cols + j] = R2SG(rb_ary_entry(vec, j));
@@ -180,7 +180,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	}
 	
 	size = RARRAY_LEN($input);
-	shogun::SGString<SGTYPE>* strings=SG_MALLOCX(shogun::SGString<SGTYPE>, size);
+	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, size);
 
 	for (i = 0; i < size; i++) {
 		VALUE arr = rb_ary_entry($input, i);
@@ -193,7 +193,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			strings[i].string = NULL;
 			
 			if (len > 0) {
-				strings[i].string = SG_MALLOCX(SGTYPE, len);
+				strings[i].string = SG_MALLOC(SGTYPE, len);
 				memcpy(strings[i].string, str, len);
 			}
 		}
@@ -205,7 +205,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 				strings[i].length=len;
 			strings[i].string=NULL;
 				if (len > 0) {
-					strings[i].string = SG_MALLOCX(SGTYPE, len);
+					strings[i].string = SG_MALLOC(SGTYPE, len);
 					for (j = 0; j < len; j++) {
 						strings[i].string[j] = R2SG(RARRAY_PTR(arr)[j]);
 					}
@@ -237,7 +237,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			rb_ary_push(arr, vec);
 		}
 		else {
-			SGTYPE* data = SG_MALLOCX(SGTYPE, str[i].length);
+			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].length);
 			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
 			
 			VALUE vec = rb_ary_new2(str[i].length);

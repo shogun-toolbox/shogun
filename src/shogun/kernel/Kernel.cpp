@@ -182,13 +182,13 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
 	ASSERT(buffer_size < (((uint64_t) 1) << (sizeof(KERNELCACHE_IDX)*8-1)));
 
-	kernel_cache.index = SG_MALLOCX(int32_t, totdoc);
-	kernel_cache.occu = SG_MALLOCX(int32_t, totdoc);
-	kernel_cache.lru = SG_MALLOCX(int32_t, totdoc);
-	kernel_cache.invindex = SG_MALLOCX(int32_t, totdoc);
-	kernel_cache.active2totdoc = SG_MALLOCX(int32_t, totdoc);
-	kernel_cache.totdoc2active = SG_MALLOCX(int32_t, totdoc);
-	kernel_cache.buffer = SG_MALLOCX(KERNELCACHE_ELEM, buffer_size);
+	kernel_cache.index = SG_MALLOC(int32_t, totdoc);
+	kernel_cache.occu = SG_MALLOC(int32_t, totdoc);
+	kernel_cache.lru = SG_MALLOC(int32_t, totdoc);
+	kernel_cache.invindex = SG_MALLOC(int32_t, totdoc);
+	kernel_cache.active2totdoc = SG_MALLOC(int32_t, totdoc);
+	kernel_cache.totdoc2active = SG_MALLOC(int32_t, totdoc);
+	kernel_cache.buffer = SG_MALLOC(KERNELCACHE_ELEM, buffer_size);
 	kernel_cache.buffsize=buffer_size;
 	kernel_cache.max_elems=(int32_t) (kernel_cache.buffsize/totdoc);
 
@@ -366,14 +366,14 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 	else
 	{
 		// fill up kernel cache
-		int32_t* uncached_rows = SG_MALLOCX(int32_t, num_rows);
-		KERNELCACHE_ELEM** cache = SG_MALLOCX(KERNELCACHE_ELEM*, num_rows);
-		pthread_t* threads = SG_MALLOCX(pthread_t, parallel->get_num_threads()-1);
-		S_KTHREAD_PARAM* params = SG_MALLOCX(S_KTHREAD_PARAM, parallel->get_num_threads()-1);
+		int32_t* uncached_rows = SG_MALLOC(int32_t, num_rows);
+		KERNELCACHE_ELEM** cache = SG_MALLOC(KERNELCACHE_ELEM*, num_rows);
+		pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
+		S_KTHREAD_PARAM* params = SG_MALLOC(S_KTHREAD_PARAM, parallel->get_num_threads()-1);
 		int32_t num_threads=parallel->get_num_threads()-1;
 		int32_t num_vec=get_num_vec_lhs();
 		ASSERT(num_vec>0);
-		uint8_t* needs_computation=SG_MALLOCX(uint8_t, num_vec);
+		uint8_t* needs_computation=SG_MALLOC(uint8_t, num_vec);
 		memset(needs_computation, 0, sizeof(uint8_t)*num_vec);
 		int32_t step=0;
 		int32_t num=0;
@@ -477,7 +477,7 @@ void CKernel::kernel_cache_shrink(
 	KERNELCACHE_IDX from=0,to=0;
 	int32_t *keep;
 
-	keep=SG_MALLOCX(int32_t, totdoc);
+	keep=SG_MALLOC(int32_t, totdoc);
 	for(j=0;j<totdoc;j++) {
 		keep[j]=1;
 	}
@@ -845,8 +845,8 @@ void CKernel::set_subkernel_weights(float64_t* weights, int32_t num_weights)
 bool CKernel::init_optimization_svm(CSVM * svm)
 {
 	int32_t num_suppvec=svm->get_num_support_vectors();
-	int32_t* sv_idx=SG_MALLOCX(int32_t, num_suppvec);
-	float64_t* sv_weight=SG_MALLOCX(float64_t, num_suppvec);
+	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
+	float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
 
 	for (int32_t i=0; i<num_suppvec; i++)
 	{

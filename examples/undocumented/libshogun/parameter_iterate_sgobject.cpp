@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	init_shogun(&print_message);
 
 	/* create some random data and hand it to each kernel */
-	float64_t* matrix=SG_MALLOCX(float64_t, n*n);
+	float64_t* matrix=SG_MALLOC(float64_t, n*n);
 	for (int32_t k=0; k<n*n; ++k)
 		matrix[k]=CMath::random((float64_t) -n, (float64_t) n);
 	SG_SPRINT("feature data:\n");
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 	features->set_feature_matrix(matrix, n, n);
 
 	/* create n kernels with n features each */
-	CGaussianKernel** kernels=SG_MALLOCX(CGaussianKernel*, n);
+	CGaussianKernel** kernels=SG_MALLOC(CGaussianKernel*, n);
 	for (int32_t i=0; i<n; ++i)
 	{
 		kernels[i]=new CGaussianKernel(10, CMath::random(0.0, (float64_t)n*n));
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 	}
 
 	/* create n parameter instances, each with one kernel */
-	Parameter** parameters=SG_MALLOCX(Parameter*, n);
+	Parameter** parameters=SG_MALLOC(Parameter*, n);
 	for (int32_t i=0; i<n; ++i)
 	{
 		parameters[i]=new Parameter();

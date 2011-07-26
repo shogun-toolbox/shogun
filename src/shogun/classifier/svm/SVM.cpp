@@ -309,7 +309,7 @@ float64_t* CSVM::get_linear_term_array()
 	if (m_linear_term_len == 0)
 		return NULL;
 
-	float64_t* a = SG_MALLOCX(float64_t, m_linear_term_len);
+	float64_t* a = SG_MALLOC(float64_t, m_linear_term_len);
 	memcpy(a, m_linear_term, m_linear_term_len*sizeof (float64_t));
 
 	return a;
@@ -333,7 +333,7 @@ void CSVM::set_linear_term(SGVector<float64_t> linear_term)
 	SG_FREE(m_linear_term);
 
 	m_linear_term_len = linear_term.vlen;
-	m_linear_term = SG_MALLOCX(float64_t, linear_term.vlen);
+	m_linear_term = SG_MALLOC(float64_t, linear_term.vlen);
 	memcpy(m_linear_term, linear_term.vector, linear_term.vlen*sizeof(float64_t));
 }
 

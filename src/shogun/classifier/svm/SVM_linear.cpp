@@ -53,9 +53,9 @@ l2r_lr_fun::l2r_lr_fun(const problem *p, float64_t Cp, float64_t Cn)
 
 	this->prob = p;
 
-	z = SG_MALLOCX(double, l);
-	D = SG_MALLOCX(double, l);
-	C = SG_MALLOCX(double, l);
+	z = SG_MALLOC(double, l);
+	D = SG_MALLOC(double, l);
+	C = SG_MALLOC(double, l);
 
 	for (i=0; i<l; i++)
 	{
@@ -125,7 +125,7 @@ void l2r_lr_fun::Hv(double *s, double *Hs)
 	int i;
 	int l=prob->l;
 	int w_size=get_nr_variable();
-	double *wa = SG_MALLOCX(double, l);
+	double *wa = SG_MALLOC(double, l);
 
 	Xv(s, wa);
 	for(i=0;i<l;i++)
@@ -179,10 +179,10 @@ l2r_l2_svc_fun::l2r_l2_svc_fun(const problem *p, double Cp, double Cn)
 
 	this->prob = p;
 
-	z = SG_MALLOCX(double, l);
-	D = SG_MALLOCX(double, l);
-	C = SG_MALLOCX(double, l);
-	I = SG_MALLOCX(int, l);
+	z = SG_MALLOC(double, l);
+	D = SG_MALLOC(double, l);
+	C = SG_MALLOC(double, l);
+	I = SG_MALLOC(int, l);
 
 	for (i=0; i<l; i++)
 	{
@@ -253,7 +253,7 @@ void l2r_l2_svc_fun::Hv(double *s, double *Hs)
 	int i;
 	int l=prob->l;
 	int w_size=get_nr_variable();
-	double *wa = SG_MALLOCX(double, l);
+	double *wa = SG_MALLOC(double, l);
 
 	subXv(s, wa);
 	for(i=0;i<sizeI;i++)
@@ -349,8 +349,8 @@ Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class, double *weighted
 	this->max_iter = max_it;
 	this->prob = p;
 	this->C = weighted_C;
-	this->B = SG_MALLOCX(double, nr_class);
-	this->G = SG_MALLOCX(double, nr_class);
+	this->B = SG_MALLOC(double, nr_class);
+	this->G = SG_MALLOC(double, nr_class);
 }
 
 Solver_MCSVM_CS::~Solver_MCSVM_CS()
@@ -406,16 +406,16 @@ void Solver_MCSVM_CS::Solve(double *w)
 {
 	int i, m, s;
 	int iter = 0;
-	double *alpha =  SG_MALLOCX(double, l*nr_class);
-	double *alpha_new = SG_MALLOCX(double, nr_class);
-	int *index = SG_MALLOCX(int, l);
-	double *QD = SG_MALLOCX(double, l);
-	int *d_ind = SG_MALLOCX(int, nr_class);
-	double *d_val = SG_MALLOCX(double, nr_class);
-	int *alpha_index = SG_MALLOCX(int, nr_class*l);
-	int *y_index = SG_MALLOCX(int, l);
+	double *alpha =  SG_MALLOC(double, l*nr_class);
+	double *alpha_new = SG_MALLOC(double, nr_class);
+	int *index = SG_MALLOC(int, l);
+	double *QD = SG_MALLOC(double, l);
+	int *d_ind = SG_MALLOC(int, nr_class);
+	double *d_val = SG_MALLOC(double, nr_class);
+	int *alpha_index = SG_MALLOC(int, nr_class*l);
+	int *y_index = SG_MALLOC(int, l);
 	int active_size = l;
-	int *active_size_i = SG_MALLOCX(int, l);
+	int *active_size_i = SG_MALLOC(int, l);
 	double eps_shrink = CMath::max(10.0*eps, 1.0); // stopping tolerance for shrinking
 	bool start_from_all = true;
 	// initial

@@ -29,7 +29,7 @@ CFibonacciHeap::CFibonacciHeap(int32_t capacity)
 	min_root = NULL;
 
 	max_num_nodes = capacity;
-	nodes = SG_MALLOCX(FibonacciHeapNode* , max_num_nodes);
+	nodes = SG_MALLOC(FibonacciHeapNode* , max_num_nodes);
 	for(int32_t i = 0; i < max_num_nodes; i++)
 	{
 		nodes[i] = new FibonacciHeapNode;
@@ -225,7 +225,7 @@ void CFibonacciHeap::consolidate()
 
 	Dn = 1 + (int32_t)(8*sizeof(long));
 
-	A = SG_MALLOCX(FibonacciHeapNode* , Dn);
+	A = SG_MALLOC(FibonacciHeapNode* , Dn);
 	for(int32_t i = 0; i < Dn; i++)
 	{
 		A[i] = NULL;

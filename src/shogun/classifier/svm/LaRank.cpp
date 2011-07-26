@@ -399,8 +399,8 @@ void LaRankOutput::initialize (CKernel* kfunc, int64_t cache)
 {
 	kernel = larank_kcache_create (kfunc);
 	larank_kcache_set_maximum_size (kernel, cache * 1024 * 1024);
-	beta = SG_MALLOCX(float32_t, 1);
-	g = SG_MALLOCX(float32_t, 1);
+	beta = SG_MALLOC(float32_t, 1);
+	g = SG_MALLOC(float32_t, 1);
 	*beta=0;
 	*g=0;
 	l = 0;
@@ -572,7 +572,7 @@ bool LaRankOutput::isSupportVector (int32_t x_id) const
 //
 int32_t LaRankOutput::getSV (float32_t* &sv) const
 {
-	sv=SG_MALLOCX(float32_t, l);
+	sv=SG_MALLOC(float32_t, l);
 	int32_t *r2i = larank_kcache_r2i (kernel, l);
 	for (int32_t r = 0; r < l; r++)
 		sv[r]=r2i[r];

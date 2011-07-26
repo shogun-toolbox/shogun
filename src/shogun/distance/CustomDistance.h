@@ -179,7 +179,7 @@ class CCustomDistance: public CDistance
 			cleanup_custom();
 			SG_DEBUG( "using custom distance of size %dx%d\n", cols,cols);
 
-			dmatrix= SG_MALLOCX(float32_t, len);
+			dmatrix= SG_MALLOC(float32_t, len);
 
 			upper_diagonal=true;
 			num_rows=cols;
@@ -241,7 +241,7 @@ class CCustomDistance: public CDistance
 			cleanup_custom();
 			SG_DEBUG( "using custom distance of size %dx%d\n", cols,cols);
 
-			dmatrix= SG_MALLOCX(float32_t, int64_t(cols)*(cols+1)/2);
+			dmatrix= SG_MALLOC(float32_t, int64_t(cols)*(cols+1)/2);
 
 			upper_diagonal=true;
 			num_rows=cols;
@@ -303,7 +303,7 @@ class CCustomDistance: public CDistance
 			cleanup_custom();
 			SG_DEBUG( "using custom distance of size %dx%d\n", rows,cols);
 
-			dmatrix= SG_MALLOCX(float32_t, rows*cols);
+			dmatrix= SG_MALLOC(float32_t, rows*cols);
 
 			upper_diagonal=false;
 			num_rows=rows;

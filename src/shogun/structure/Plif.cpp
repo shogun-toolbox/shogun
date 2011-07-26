@@ -82,7 +82,7 @@ void CPlif::init_penalty_struct_cache()
 	if (max_value<=0)
 		return ;
 
-	float64_t* local_cache=SG_MALLOCX(float64_t,  ((int32_t) max_value) + 2);
+	float64_t* local_cache=SG_MALLOC(float64_t,  ((int32_t) max_value) + 2);
 	
 	if (local_cache)
 	{
@@ -100,7 +100,7 @@ void CPlif::init_penalty_struct_cache()
 void CPlif::set_plif_name(char *p_name)
 {
 	SG_FREE(name);
-	name=SG_MALLOCX(char, strlen(p_name)+1);
+	name=SG_MALLOC(char, strlen(p_name)+1);
 	strcpy(name,p_name) ;
 }
 

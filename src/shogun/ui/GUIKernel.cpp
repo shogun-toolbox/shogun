@@ -282,7 +282,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring(
 	int32_t center, float64_t step)
 {
 	int32_t i=0;
-	int32_t* shifts=SG_MALLOCX(int32_t, length);
+	int32_t* shifts=SG_MALLOC(int32_t, length);
 
 	for (i=center; i<length; i++)
 		shifts[i]=(int32_t) floor(((float64_t) (i-center))/step);
@@ -325,7 +325,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 
 	if (!position_weights)
 	{
-		position_weights=SG_MALLOCX(float64_t, length);
+		position_weights=SG_MALLOC(float64_t, length);
 		for (int32_t i=0; i<length; i++)
 			position_weights[i]=1.0/length;
 	}
@@ -355,7 +355,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring2(
 
 float64_t* CGUIKernel::get_weights(int32_t order, int32_t max_mismatch)
 {
-	float64_t *weights=SG_MALLOCX(float64_t, order*(1+max_mismatch));
+	float64_t *weights=SG_MALLOC(float64_t, order*(1+max_mismatch));
 	float64_t sum=0;
 	int32_t i=0;
 
@@ -728,8 +728,8 @@ bool CGUIKernel::init_kernel_optimization()
 		if (kernel->has_property(KP_LINADD))
 		{
 			int32_t num_sv=svm->get_num_support_vectors();
-			int32_t* sv_idx=SG_MALLOCX(int32_t, num_sv);
-			float64_t* sv_weight=SG_MALLOCX(float64_t, num_sv);
+			int32_t* sv_idx=SG_MALLOC(int32_t, num_sv);
+			float64_t* sv_weight=SG_MALLOC(float64_t, num_sv);
 			
 			for (int32_t i=0; i<num_sv; i++)
 			{

@@ -61,8 +61,8 @@ bool CKernelMachine::init_kernel_optimization()
 
 	if (kernel && kernel->has_property(KP_LINADD) && num_sv>0)
 	{
-		int32_t * sv_idx    = SG_MALLOCX(int32_t, num_sv);
-		float64_t* sv_weight = SG_MALLOCX(float64_t, num_sv);
+		int32_t * sv_idx    = SG_MALLOC(int32_t, num_sv);
+		float64_t* sv_weight = SG_MALLOC(float64_t, num_sv);
 
 		for(int32_t i=0; i<num_sv; i++)
 		{
@@ -110,14 +110,14 @@ CLabels* CKernelMachine::apply()
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
 		{
-			float64_t* output=SG_MALLOCX(float64_t, num_vectors);
+			float64_t* output=SG_MALLOC(float64_t, num_vectors);
 			memset(output, 0, sizeof(float64_t)*num_vectors);
 
 			if (get_num_support_vectors()>0)
 			{
-				int32_t* sv_idx=SG_MALLOCX(int32_t, get_num_support_vectors());
-				float64_t* sv_weight=SG_MALLOCX(float64_t, get_num_support_vectors());
-				int32_t* idx=SG_MALLOCX(int32_t, num_vectors);
+				int32_t* sv_idx=SG_MALLOC(int32_t, get_num_support_vectors());
+				float64_t* sv_weight=SG_MALLOC(float64_t, get_num_support_vectors());
+				int32_t* idx=SG_MALLOC(int32_t, num_vectors);
 
 				//compute output for all vectors v[0]...v[num_vectors-1]
 				for (int32_t i=0; i<num_vectors; i++)
@@ -159,8 +159,8 @@ CLabels* CKernelMachine::apply()
 #ifndef WIN32
 			else
 			{
-				pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
-				S_THREAD_PARAM* params = SG_MALLOCX(S_THREAD_PARAM, num_threads);
+				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+				S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, num_threads);
 				int32_t step= num_vectors/num_threads;
 
 				int32_t t;

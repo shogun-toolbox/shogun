@@ -39,9 +39,9 @@ void CLandmarkMDS::cleanup()
 
 SGVector<int32_t> CLandmarkMDS::get_landmark_idxs(int32_t count, int32_t total_count)
 {
-	int32_t* idxs = SG_MALLOCX(int32_t, total_count);
+	int32_t* idxs = SG_MALLOC(int32_t, total_count);
 	int32_t i,rnd;
-	int32_t* permuted_idxs = SG_MALLOCX(int32_t, count);
+	int32_t* permuted_idxs = SG_MALLOC(int32_t, count);
 
 	// reservoir sampling
 	for (i=0; i<total_count; i++)
@@ -75,7 +75,7 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	SGVector<int32_t> lmk_idxs = get_landmark_idxs(lmk_N,total_N);
 
 	// compute distance between landmarks
-	float64_t* lmk_dist_matrix = SG_MALLOCX(float64_t, lmk_N*lmk_N);
+	float64_t* lmk_dist_matrix = SG_MALLOC(float64_t, lmk_N*lmk_N);
 	for (i=0; i<lmk_N; i++)
 	{
 		for (j=0; j<lmk_N; j++)
@@ -91,7 +91,7 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	SGMatrix<float64_t> lmk_feature_matrix = CClassicMDS::embed_by_distance(lmk_distance);
 
 	// construct new feature matrix
-	float64_t* new_feature_matrix = SG_MALLOCX(float64_t, m_target_dim*total_N);
+	float64_t* new_feature_matrix = SG_MALLOC(float64_t, m_target_dim*total_N);
 	for (i=0; i<m_target_dim*total_N; i++)
 		new_feature_matrix[i] = 0.0;	
 
@@ -112,7 +112,7 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	}
 
 	// compute mean vector of squared distances
-	float64_t* mean_sq_dist_vector = SG_MALLOCX(float64_t, lmk_N);
+	float64_t* mean_sq_dist_vector = SG_MALLOC(float64_t, lmk_N);
 	for (i=0; i<lmk_N; i++)
 	{
 		mean_sq_dist_vector[i] = 0.0;
@@ -123,7 +123,7 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	}
 
 	// get embedding for non-landmark vectors
-	float64_t* current_dist_to_lmk = SG_MALLOCX(float64_t, lmk_N);
+	float64_t* current_dist_to_lmk = SG_MALLOC(float64_t, lmk_N);
 	j = 0;
 	for (i=0; i<total_N; i++)
 	{

@@ -130,7 +130,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 float64_t CCrossValidation::evaluate_one_run()
 {
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
-	float64_t* results=SG_MALLOCX(float64_t, num_subsets);
+	float64_t* results=SG_MALLOC(float64_t, num_subsets);
 
 	/* set labels to machine */
 	m_machine->set_labels(m_labels);

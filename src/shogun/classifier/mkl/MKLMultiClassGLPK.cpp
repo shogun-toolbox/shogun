@@ -84,7 +84,7 @@ void MKLMultiClassGLPK::setup(const int32_t numkernels2)
 	glp_add_rows(linearproblem,1);
 
 	int32_t*betainds(NULL);
-	betainds=SG_MALLOCX(int, 1+numkernels);
+	betainds=SG_MALLOC(int, 1+numkernels);
 	for (int32_t i=0; i<numkernels;++i)
 	{
 		betainds[1+i]=2+i; // coefficient for theta stays zero, therefore
@@ -92,7 +92,7 @@ void MKLMultiClassGLPK::setup(const int32_t numkernels2)
 	}
 
 	float64_t *betacoeffs(NULL);
-	betacoeffs=SG_MALLOCX(float64_t, 1+numkernels);
+	betacoeffs=SG_MALLOC(float64_t, 1+numkernels);
 
 	for (int32_t i=0; i<numkernels;++i)
 	{
@@ -128,7 +128,7 @@ void MKLMultiClassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 	int32_t curconstraint=glp_get_num_rows(linearproblem);
 
 	int32_t *betainds(NULL);
-	betainds=SG_MALLOCX(int, 1+1+numkernels);
+	betainds=SG_MALLOC(int, 1+1+numkernels);
 
 	betainds[1]=1;
 	for (int32_t i=0; i<numkernels;++i)
@@ -138,7 +138,7 @@ void MKLMultiClassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 	}
 
 	float64_t *betacoeffs(NULL);
-	betacoeffs=SG_MALLOCX(float64_t, 1+1+numkernels);
+	betacoeffs=SG_MALLOC(float64_t, 1+1+numkernels);
 
 	betacoeffs[1]=-1;
 

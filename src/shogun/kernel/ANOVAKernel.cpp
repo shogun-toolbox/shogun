@@ -131,12 +131,12 @@ void CANOVAKernel::allocate_arrays()
 	
 	//compute_recursive1
 	DP_len=(cardinality+1)*(num_feat+1);
-	DP = SG_MALLOCX(float64_t, DP_len);
+	DP = SG_MALLOC(float64_t, DP_len);
 	
 	//compute_recursive2
-	KD = SG_MALLOCX(float64_t, cardinality+1);
-	KS = SG_MALLOCX(float64_t, cardinality+1);
-	vec_pow = SG_MALLOCX(float64_t, num_feat);
+	KD = SG_MALLOC(float64_t, cardinality+1);
+	KS = SG_MALLOC(float64_t, cardinality+1);
+	vec_pow = SG_MALLOC(float64_t, num_feat);
 }
 
 void CANOVAKernel::cleanup()

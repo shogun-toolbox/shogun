@@ -55,13 +55,13 @@ uint32_t CMath::seed = 0;
 CMath::CMath()
 : CSGObject()
 {
-	CMath::rand_state=SG_MALLOCX(char, RNG_SEED_SIZE);
+	CMath::rand_state=SG_MALLOC(char, RNG_SEED_SIZE);
 	init_random();
 
 #ifdef USE_LOGCACHE
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
-    CMath::logtable=SG_MALLOCX(float64_t, LOGRANGE*LOGACCURACY);
+    CMath::logtable=SG_MALLOC(float64_t, LOGRANGE*LOGACCURACY);
     init_log_table();
 #else
 	int32_t i=0;
@@ -209,7 +209,7 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 	ASSERT(table.num_cols==3);
 
 	int32_t m_len=3+2;
-	float64_t* m=SG_MALLOCX(float64_t, 3+2);
+	float64_t* m=SG_MALLOC(float64_t, 3+2);
 	m[0]=table.matrix[0]+table.matrix[2]+table.matrix[4];
 	m[1]=table.matrix[1]+table.matrix[3]+table.matrix[5];
 	m[2]=table.matrix[0]+table.matrix[1];
@@ -218,7 +218,7 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 
 	float64_t n = CMath::sum(m, m_len) / 2.0;
 	int32_t x_len=2*3* CMath::sq(CMath::max(m, m_len));
-	float64_t* x = SG_MALLOCX(float64_t, x_len);
+	float64_t* x = SG_MALLOC(float64_t, x_len);
 	CMath::fill_vector(x, x_len, 0.0);
 
 	float64_t log_nom=0.0;
@@ -271,7 +271,7 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 #endif // DEBUG_FISHER_TABLE
 
 
-	floatmax_t* log_denom_vec=SG_MALLOCX(floatmax_t, counter);
+	floatmax_t* log_denom_vec=SG_MALLOC(floatmax_t, counter);
 	CMath::fill_vector(log_denom_vec, counter, (floatmax_t) 0.0);
 
 	for (int32_t k=0; k<counter; k++)
@@ -388,10 +388,10 @@ float64_t CMath::Align(
 {
   float64_t actCost=0 ;
   int32_t i1, i2 ;
-  float64_t* const gapCosts1 = SG_MALLOCX(float64_t,  l1 );
-  float64_t* const gapCosts2 = SG_MALLOCX(float64_t,  l2 );
-  float64_t* costs2_0 = SG_MALLOCX(float64_t,  l2 + 1 );
-  float64_t* costs2_1 = SG_MALLOCX(float64_t,  l2 + 1 );
+  float64_t* const gapCosts1 = SG_MALLOC(float64_t,  l1 );
+  float64_t* const gapCosts2 = SG_MALLOC(float64_t,  l2 );
+  float64_t* costs2_0 = SG_MALLOC(float64_t,  l2 + 1 );
+  float64_t* costs2_1 = SG_MALLOC(float64_t,  l2 + 1 );
 
   // initialize borders
   for( i1 = 0; i1 < l1; ++i1 ) {
@@ -472,7 +472,7 @@ float64_t* CMath::pinv(
 	float64_t* matrix, int32_t rows, int32_t cols, float64_t* target)
 {
 	if (!target)
-		target=SG_MALLOCX(float64_t, rows*cols);
+		target=SG_MALLOC(float64_t, rows*cols);
 
 	char jobu='A';
 	char jobvt='A';
@@ -483,9 +483,9 @@ float64_t* CMath::pinv(
 	int ldvt=n; /* for calling external lib */
 	int info=-1; /* for calling external lib */
 	int32_t lsize=CMath::min((int32_t) m, (int32_t) n);
-	double* s=SG_MALLOCX(double, lsize);
-	double* u=SG_MALLOCX(double, m*m);
-	double* vt=SG_MALLOCX(double, n*n);
+	double* s=SG_MALLOC(double, lsize);
+	double* u=SG_MALLOC(double, m*m);
+	double* vt=SG_MALLOC(double, n*n);
 
 	wrap_dgesvd(jobu, jobvt, m, n, matrix, lda, s, u, ldu, vt, ldvt, &info);
 	ASSERT(info==0);

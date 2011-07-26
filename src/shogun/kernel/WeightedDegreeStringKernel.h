@@ -290,7 +290,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			num_weights = get_num_subkernels();
 
 			SG_FREE(weights_buffer);
-			weights_buffer = SG_MALLOCX(float64_t, num_weights);
+			weights_buffer = SG_MALLOC(float64_t, num_weights);
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				for (int32_t i=0; i<num_weights; i++)

@@ -125,7 +125,7 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
-	uint32_t* val=SG_MALLOCX(uint32_t, len);
+	uint32_t* val=SG_MALLOC(uint32_t, len);
 
 	uint32_t offs=0;
 
@@ -170,7 +170,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
-	uint32_t* val=SG_MALLOCX(uint32_t, len);
+	uint32_t* val=SG_MALLOC(uint32_t, len);
 
 	uint32_t offs=0;
 
@@ -218,7 +218,7 @@ void CHashedWDFeatures::set_wd_weights()
 	partial_w_dim=1<<m_hash_bits;
 	w_dim=partial_w_dim*string_length*(degree-start_degree);
 
-	wd_weights=SG_MALLOCX(float64_t, degree);
+	wd_weights=SG_MALLOC(float64_t, degree);
 
 	for (int32_t i=0; i<degree; i++)
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));

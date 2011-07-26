@@ -77,7 +77,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 	if (stat(filename, &stats)!=0)												\
 		SG_ERROR("Could not get file statistics.\n");							\
 																				\
-	char* data=SG_MALLOCX(char, stats.st_size+1);										\
+	char* data=SG_MALLOC(char, stats.st_size+1);										\
 	memset(data, 0, sizeof(char)*(stats.st_size+1));							\
 	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
 	if (nread<=0)																\
@@ -128,7 +128,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 	SG_FREE(data);																\
 																				\
 	/* now copy data into matrix */ 											\
-	matrix=SG_MALLOCX(sg_type, num_vec*num_feat);										\
+	matrix=SG_MALLOC(sg_type, num_vec*num_feat);										\
 	for (int32_t i=0; i<num_vec; i++)											\
 	{																			\
 		for (int32_t j=0; j<num_feat; j++)										\
@@ -162,7 +162,7 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
 	if (stat(filename, &stats)!=0)								\
 		SG_ERROR("Could not get file statistics.\n");					\
 												\
-	char* data=SG_MALLOCX(char, stats.st_size+1);							\
+	char* data=SG_MALLOC(char, stats.st_size+1);							\
 	memset(data, 0, sizeof(char)*(stats.st_size+1));					\
 	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
 	if (nread<=0)										\
@@ -237,7 +237,7 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
         if(atoi(item) != num_dims)                                                              \
             SG_ERROR("Invalid number of dimensions!\n");                            		\
         SG_FREE(item);                                                                          \
-        dims = SG_MALLOCX(int32_t, num_dims);                                                           \
+        dims = SG_MALLOC(int32_t, num_dims);                                                           \
         for(int32_t i =0;i < num_dims;i++)                                              	\
         {                                                                                       \
             item = items->get_element(i+1);                                 			\
@@ -249,7 +249,7 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
                                                                                     		\
         /* converting array data */								\
         total *= length;									\
-	array=SG_MALLOCX(sg_type, total);        							\
+	array=SG_MALLOC(sg_type, total);        							\
 	for (size_t i=0; i<total; i++)								\
 	{											\
 			item=items->get_element(i+(num_dims+1));				\
@@ -278,7 +278,7 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 {	\
 	size_t blocksize=1024*1024;	\
 	size_t required_blocksize=blocksize;	\
-	uint8_t* dummy=SG_MALLOCX(uint8_t, blocksize);	\
+	uint8_t* dummy=SG_MALLOC(uint8_t, blocksize);	\
 	\
 	if (file)	\
 	{	\
@@ -314,8 +314,8 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 		SG_INFO("found %d feature vectors\n", num_vec);	\
 		SG_FREE(dummy);	\
 		blocksize=required_blocksize;	\
-		dummy = SG_MALLOCX(uint8_t, blocksize+1); /*allow setting of '\0' at EOL*/	\
-		matrix=SG_MALLOCX(SGSparseVector<sg_type>, num_vec);	\
+		dummy = SG_MALLOC(uint8_t, blocksize+1); /*allow setting of '\0' at EOL*/	\
+		matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec);	\
 	\
 		rewind(file);	\
 		sz=blocksize;	\
@@ -362,7 +362,7 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 								dims, len, len, (const char*) data);	\
 					}	\
 	\
-					SGSparseVectorEntry<sg_type>* feat=SG_MALLOCX(SGSparseVectorEntry<sg_type>, dims);	\
+					SGSparseVectorEntry<sg_type>* feat=SG_MALLOC(SGSparseVectorEntry<sg_type>, dims);	\
 	\
 					/* skip label part */	\
 					size_t j=0;	\
@@ -456,7 +456,7 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
-	uint8_t* dummy=SG_MALLOCX(uint8_t, blocksize);
+	uint8_t* dummy=SG_MALLOC(uint8_t, blocksize);
 	uint8_t* overflow=NULL;
 	int32_t overflow_len=0;
 
@@ -495,9 +495,9 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 		SG_DEBUG("block_size=%d\n", required_blocksize);
 		SG_FREE(dummy);
 		blocksize=required_blocksize;
-		dummy=SG_MALLOCX(uint8_t, blocksize);
-		overflow=SG_MALLOCX(uint8_t, blocksize);
-		strings=SG_MALLOCX(SGString<uint8_t>, num_str);
+		dummy=SG_MALLOC(uint8_t, blocksize);
+		overflow=SG_MALLOC(uint8_t, blocksize);
+		strings=SG_MALLOC(SGString<uint8_t>, num_str);
 
 		rewind(file);
 		sz=blocksize;
@@ -516,7 +516,7 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
 					strings[lines].length=len+overflow_len;
-					strings[lines].string=SG_MALLOCX(uint8_t, len+overflow_len);
+					strings[lines].string=SG_MALLOC(uint8_t, len+overflow_len);
 
 					for (int32_t j=0; j<overflow_len; j++)
 						strings[lines].string[j]=overflow[j];
@@ -551,7 +551,7 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
-	int8_t* dummy=SG_MALLOCX(int8_t, blocksize);
+	int8_t* dummy=SG_MALLOC(int8_t, blocksize);
 	int8_t* overflow=NULL;
 	int32_t overflow_len=0;
 
@@ -590,9 +590,9 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 		SG_DEBUG("block_size=%d\n", required_blocksize);
 		SG_FREE(dummy);
 		blocksize=required_blocksize;
-		dummy=SG_MALLOCX(int8_t, blocksize);
-		overflow=SG_MALLOCX(int8_t, blocksize);
-		strings=SG_MALLOCX(SGString<int8_t>, num_str);
+		dummy=SG_MALLOC(int8_t, blocksize);
+		overflow=SG_MALLOC(int8_t, blocksize);
+		strings=SG_MALLOC(SGString<int8_t>, num_str);
 
 		rewind(file);
 		sz=blocksize;
@@ -611,7 +611,7 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
 					strings[lines].length=len+overflow_len;
-					strings[lines].string=SG_MALLOCX(int8_t, len+overflow_len);
+					strings[lines].string=SG_MALLOC(int8_t, len+overflow_len);
 
 					for (int32_t j=0; j<overflow_len; j++)
 						strings[lines].string[j]=overflow[j];
@@ -646,7 +646,7 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 {
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
-	char* dummy=SG_MALLOCX(char, blocksize);
+	char* dummy=SG_MALLOC(char, blocksize);
 	char* overflow=NULL;
 	int32_t overflow_len=0;
 
@@ -685,9 +685,9 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 		SG_DEBUG("block_size=%d\n", required_blocksize);
 		SG_FREE(dummy);
 		blocksize=required_blocksize;
-		dummy=SG_MALLOCX(char, blocksize);
-		overflow=SG_MALLOCX(char, blocksize);
-		strings=SG_MALLOCX(SGString<char>, num_str);
+		dummy=SG_MALLOC(char, blocksize);
+		overflow=SG_MALLOC(char, blocksize);
+		strings=SG_MALLOC(SGString<char>, num_str);
 
 		rewind(file);
 		sz=blocksize;
@@ -706,7 +706,7 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
 					strings[lines].length=len+overflow_len;
-					strings[lines].string=SG_MALLOCX(char, len+overflow_len);
+					strings[lines].string=SG_MALLOC(char, len+overflow_len);
 
 					for (int32_t j=0; j<overflow_len; j++)
 						strings[lines].string[j]=overflow[j];
@@ -1009,7 +1009,7 @@ template <class T> void CAsciiFile::append_item(
 	DynArray<T>* items, char* ptr_data, char* ptr_item)
 {
 	size_t len=(ptr_data-ptr_item)/sizeof(char);
-	char* item=SG_MALLOCX(char, len+1);
+	char* item=SG_MALLOC(char, len+1);
 	memset(item, 0, sizeof(char)*(len+1));
 	item=strncpy(item, ptr_item, len);
 

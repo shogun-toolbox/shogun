@@ -40,7 +40,7 @@ CLPBoost::~CLPBoost()
 
 bool CLPBoost::init(int32_t num_vec)
 {
-	u=SG_MALLOCX(float64_t, num_vec);
+	u=SG_MALLOC(float64_t, num_vec);
 	for (int32_t i=0; i<num_vec; i++)
 		u[i]=1.0/num_vec;
 
@@ -111,7 +111,7 @@ bool CLPBoost::train(CFeatures* data)
 
 	ASSERT(num_vec==num_train_labels);
 	SG_FREE(w);
-	w=SG_MALLOCX(float64_t, num_feat);
+	w=SG_MALLOC(float64_t, num_feat);
 	memset(w,0,sizeof(float64_t)*num_feat);
 	w_dim=num_feat;
 
@@ -156,7 +156,7 @@ bool CLPBoost::train(CFeatures* data)
 		if (get_max_train_time()>0 && time.cur_time_diff()>get_max_train_time())
 			break;
 	}
-	float64_t* lambda=SG_MALLOCX(float64_t, num_hypothesis);
+	float64_t* lambda=SG_MALLOC(float64_t, num_hypothesis);
 	solver.optimize(u, lambda);
 
 	//CMath::display_vector(lambda, num_hypothesis, "lambda");

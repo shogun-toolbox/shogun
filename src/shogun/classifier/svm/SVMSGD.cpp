@@ -155,7 +155,7 @@ bool CSVMSGD::train(CFeatures* data)
 	ASSERT(num_vec>0);
 
 	SG_FREE(w);
-	w=SG_MALLOCX(float64_t, w_dim);
+	w=SG_MALLOC(float64_t, w_dim);
 	memset(w, 0, w_dim*sizeof(float64_t));
 	bias=0;
 
@@ -229,7 +229,7 @@ void CSVMSGD::calibrate()
 	ASSERT(num_vec>0);
 	ASSERT(c_dim>0);
 
-	float64_t* c=SG_MALLOCX(float64_t, c_dim);
+	float64_t* c=SG_MALLOC(float64_t, c_dim);
 	memset(c, 0, c_dim*sizeof(float64_t));
 
 	SG_INFO("Estimating sparsity and bscale num_vec=%d num_feat=%d.\n", num_vec, c_dim);

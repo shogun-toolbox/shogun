@@ -122,7 +122,7 @@ template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 
 			len=uncompressed_size;
 			uncompressed_size*=sizeof(ST);
-			ST* vec=SG_MALLOCX(ST, len);
+			ST* vec=SG_MALLOC(ST, len);
 			compressor->decompress((uint8_t*) (&f[offs]), compressed_size,
 					(uint8_t*) vec, uncompressed_size);
 

@@ -115,10 +115,10 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 
 	m_raw_intensities = NULL;
 	m_probe_pos = NULL;
-	m_num_probes_cum = SG_MALLOCX(int32_t, 100);
+	m_num_probes_cum = SG_MALLOC(int32_t, 100);
 	m_num_probes_cum[0] = 0;
 	//m_use_tiling=false;
-	m_num_lin_feat_plifs_cum = SG_MALLOCX(int32_t, 100);
+	m_num_lin_feat_plifs_cum = SG_MALLOC(int32_t, 100);
 	m_num_lin_feat_plifs_cum[0] = m_num_svms;
 	m_num_raw_data = 0;
 #ifdef ARRAY_STATISTICS
@@ -247,8 +247,8 @@ void CDynProg::init_tiling_data(
 	m_num_raw_data++;
 	m_num_probes_cum[m_num_raw_data] = m_num_probes_cum[m_num_raw_data-1]+num_probes;
 
-	int32_t* tmp_probe_pos = SG_MALLOCX(int32_t, m_num_probes_cum[m_num_raw_data]);
-	float64_t* tmp_raw_intensities = SG_MALLOCX(float64_t, m_num_probes_cum[m_num_raw_data]);
+	int32_t* tmp_probe_pos = SG_MALLOC(int32_t, m_num_probes_cum[m_num_raw_data]);
+	float64_t* tmp_raw_intensities = SG_MALLOC(float64_t, m_num_probes_cum[m_num_raw_data]);
 
 
 	if (m_num_raw_data==1){
@@ -263,8 +263,8 @@ void CDynProg::init_tiling_data(
 	}
 	SG_FREE(m_probe_pos);
 	SG_FREE(m_raw_intensities);
-	m_probe_pos = tmp_probe_pos; //SG_MALLOCX(int32_t, num_probes);
-	m_raw_intensities = tmp_raw_intensities;//SG_MALLOCX(float64_t, num_probes);
+	m_probe_pos = tmp_probe_pos; //SG_MALLOC(int32_t, num_probes);
+	m_raw_intensities = tmp_raw_intensities;//SG_MALLOC(float64_t, num_probes);
 
 	//memcpy(m_probe_pos, probe_pos, num_probes*sizeof(int32_t));
 	//memcpy(m_raw_intensities, intensities, num_probes*sizeof(float64_t));
@@ -291,7 +291,7 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat)
 
 
 	float64_t* arr = m_lin_feat.get_array();
-	float64_t* tmp = SG_MALLOCX(float64_t, (dim1+num_new_feat)*dim2);	
+	float64_t* tmp = SG_MALLOC(float64_t, (dim1+num_new_feat)*dim2);	
 	memset(tmp, 0, (dim1+num_new_feat)*dim2*sizeof(float64_t)) ;
 	for(int32_t j=0;j<m_seq_len;j++)
                 for(int32_t k=0;k<m_num_lin_feat_plifs_cum[m_num_raw_data-1];k++)
@@ -318,11 +318,11 @@ void CDynProg::precompute_tiling_plifs(
 	CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs)
 {
 	m_num_lin_feat_plifs_cum[m_num_raw_data] = m_num_lin_feat_plifs_cum[m_num_raw_data-1]+ num_tiling_plifs;
-	float64_t* tiling_plif = SG_MALLOCX(float64_t, num_tiling_plifs);
-	float64_t* svm_value = SG_MALLOCX(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
+	float64_t* tiling_plif = SG_MALLOC(float64_t, num_tiling_plifs);
+	float64_t* svm_value = SG_MALLOC(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
 	for (int32_t i=0; i<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; i++)
 		svm_value[i]=0.0;
-	int32_t* tiling_rows = SG_MALLOCX(int32_t, num_tiling_plifs);
+	int32_t* tiling_rows = SG_MALLOC(int32_t, num_tiling_plifs);
 	for (int32_t i=0; i<num_tiling_plifs; i++)
 	{
 		tiling_plif[i]=0.0;
@@ -366,16 +366,16 @@ void CDynProg::precompute_tiling_plifs(
 void CDynProg::create_word_string()
 {
 	SG_FREE(m_wordstr);
-	m_wordstr=SG_MALLOCX(uint16_t**, 5440);
+	m_wordstr=SG_MALLOC(uint16_t**, 5440);
 	int32_t k=0;
 	int32_t genestr_len=m_genestr.get_dim1();
 
-	m_wordstr[k]=SG_MALLOCX(uint16_t*, m_num_degrees);
+	m_wordstr[k]=SG_MALLOC(uint16_t*, m_num_degrees);
 	for (int32_t j=0; j<m_num_degrees; j++)
 	{
 		m_wordstr[k][j]=NULL ;
 		{
-			m_wordstr[k][j]=SG_MALLOCX(uint16_t, genestr_len);
+			m_wordstr[k][j]=SG_MALLOC(uint16_t, genestr_len);
 			for (int32_t i=0; i<genestr_len; i++)
 				switch (m_genestr[i])
 				{
@@ -403,7 +403,7 @@ void CDynProg::precompute_content_values()
 	{
 		int32_t from_pos = m_pos[p];
 		int32_t to_pos = m_pos[p+1];
-		float64_t* my_svm_values_unnormalized = SG_MALLOCX(float64_t, m_num_svms);
+		float64_t* my_svm_values_unnormalized = SG_MALLOC(float64_t, m_num_svms);
 		//SG_PRINT("%i(%i->%i) ",p,from_pos, to_pos);
 		
 	    ASSERT(from_pos<=m_genestr.get_dim1());
@@ -506,10 +506,10 @@ void CDynProg::set_a_trans_matrix(
 
 	trans_list_forward_cnt=NULL ;
 	trans_list_len = m_N ;
-	trans_list_forward = SG_MALLOCX(T_STATES*, m_N);
-	trans_list_forward_cnt = SG_MALLOCX(T_STATES, m_N);
-	trans_list_forward_val = SG_MALLOCX(float64_t*, m_N);
-	trans_list_forward_id = SG_MALLOCX(int32_t*, m_N);
+	trans_list_forward = SG_MALLOC(T_STATES*, m_N);
+	trans_list_forward_cnt = SG_MALLOC(T_STATES, m_N);
+	trans_list_forward_val = SG_MALLOC(float64_t*, m_N);
+	trans_list_forward_id = SG_MALLOC(int32_t*, m_N);
 	
 	int32_t start_idx=0;
 	for (int32_t j=0; j<m_N; j++)
@@ -534,9 +534,9 @@ void CDynProg::set_a_trans_matrix(
 		
 		if (len>0)
 		{
-			trans_list_forward[j]     = SG_MALLOCX(T_STATES, len);
-			trans_list_forward_val[j] = SG_MALLOCX(float64_t, len);
-			trans_list_forward_id[j] = SG_MALLOCX(int32_t, len);
+			trans_list_forward[j]     = SG_MALLOC(T_STATES, len);
+			trans_list_forward_val[j] = SG_MALLOC(float64_t, len);
+			trans_list_forward_id[j] = SG_MALLOC(int32_t, len);
 		}
 		else
 		{
@@ -693,8 +693,8 @@ void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t
 
 	if (seg_path!=NULL)
 	{
-		int32_t *segment_ids = SG_MALLOCX(int32_t, m_seq_len);
-		float64_t *segment_mask = SG_MALLOCX(float64_t, m_seq_len);
+		int32_t *segment_ids = SG_MALLOC(int32_t, m_seq_len);
+		float64_t *segment_mask = SG_MALLOC(float64_t, m_seq_len);
 		for (int32_t i=0; i<m_seq_len; i++)
 		{
 		        segment_ids[i] = (int32_t)seg_path[2*i] ;
@@ -706,8 +706,8 @@ void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t
 	}
 	else
 	{
-		int32_t *izeros = SG_MALLOCX(int32_t, m_seq_len);
-		float64_t *dzeros = SG_MALLOCX(float64_t, m_seq_len);
+		int32_t *izeros = SG_MALLOC(int32_t, m_seq_len);
+		float64_t *dzeros = SG_MALLOC(float64_t, m_seq_len);
 		for (int32_t i=0; i<m_seq_len; i++)
 		{
 			izeros[i]=0 ;
@@ -1055,7 +1055,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		SG_PRINT("\n");
 #endif
 
-		float64_t* svm_value = SG_MALLOCX(float64_t , m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
+		float64_t* svm_value = SG_MALLOC(float64_t , m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
 		{ // initialize svm_svalue
 			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
 				svm_value[s]=0 ;
@@ -1189,7 +1189,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		long_transition_content_end_position.zero() ;
 #endif
 
-		svm_value = SG_MALLOCX(float64_t , m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
+		svm_value = SG_MALLOC(float64_t , m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
 		{ // initialize svm_svalue
 			for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
 				svm_value[s]=0 ;
@@ -1335,9 +1335,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		ktable_end.set_array_name("ktable_end");
 		//ktable_end.zero() ;
 
-		float64_t * fixedtempvv=SG_MALLOCX(float64_t, look_back_buflen);
+		float64_t * fixedtempvv=SG_MALLOC(float64_t, look_back_buflen);
 		memset(fixedtempvv, 0, look_back_buflen*sizeof(float64_t)) ;
-		int32_t * fixedtempii=SG_MALLOCX(int32_t, look_back_buflen);
+		int32_t * fixedtempii=SG_MALLOC(int32_t, look_back_buflen);
 		memset(fixedtempii, 0, look_back_buflen*sizeof(int32_t)) ;
 
 		CArray<float64_t> oldtempvv(look_back_buflen) ;
@@ -2159,9 +2159,9 @@ void CDynProg::best_path_trans_deriv(
 	//m_transition_matrix_a_id.display_array() ;
 
 	// compute derivatives for given path
-	float64_t* svm_value = SG_MALLOCX(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
-	float64_t* svm_value_part1 = SG_MALLOCX(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
-	float64_t* svm_value_part2 = SG_MALLOCX(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
+	float64_t* svm_value = SG_MALLOC(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
+	float64_t* svm_value_part1 = SG_MALLOC(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
+	float64_t* svm_value_part2 = SG_MALLOC(float64_t, m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
 	for (int32_t s=0; s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; s++)
 	{
 		svm_value[s]=0 ;
@@ -2365,7 +2365,7 @@ void CDynProg::best_path_trans_deriv(
 				{
 					for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;s++)
 						svm_value[s]=-CMath::INFTY;
-					float64_t* intensities = SG_MALLOCX(float64_t, m_num_probes_cum[d]);
+					float64_t* intensities = SG_MALLOC(float64_t, m_num_probes_cum[d]);
 					int32_t num_intensities = raw_intensities_interval_query(m_pos[from_pos], m_pos[from_pos_thresh],intensities, d);
 					for (int32_t k=0;k<num_intensities;k++)
 					{
@@ -2394,7 +2394,7 @@ void CDynProg::best_path_trans_deriv(
 				{
 					for (int32_t s=0;s<m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs;s++)
 						svm_value[s]=-CMath::INFTY;
-					float64_t* intensities = SG_MALLOCX(float64_t, m_num_probes_cum[d]);
+					float64_t* intensities = SG_MALLOC(float64_t, m_num_probes_cum[d]);
 					int32_t num_intensities = raw_intensities_interval_query(m_pos[from_pos], m_pos[to_pos],intensities, d);
 					//SG_PRINT("m_pos[from_pos]:%i, m_pos[to_pos]:%i, num_intensities:%i\n",m_pos[from_pos],m_pos[to_pos], num_intensities);
 					for (int32_t k=0;k<num_intensities;k++)
@@ -2525,7 +2525,7 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 	}
 	if (m_intron_list)
 	{
-		int32_t* support = SG_MALLOCX(int32_t, m_num_intron_plifs);
+		int32_t* support = SG_MALLOC(int32_t, m_num_intron_plifs);
 		m_intron_list->get_intron_support(support, from_state, to_state);
 		int32_t intron_list_start = m_num_lin_feat_plifs_cum[m_num_raw_data];
 		int32_t intron_list_end = m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs; 

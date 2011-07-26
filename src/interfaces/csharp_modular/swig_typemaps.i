@@ -26,7 +26,7 @@
 	
 	len = ((sizeof($input)) / (sizeof($input[0])));		
 
-	array = SG_MALLOCX(SGTYPE, len);
+	array = SG_MALLOC(SGTYPE, len);
 
 	if (!array) {
 		SWIG_CSharpSetPendingException(SWIG_CSharpOutOfMemoryException, "array memory allocation failed");
@@ -113,7 +113,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
         }       
     }
    
-    array = SG_MALLOCX(SGTYPE, rows * cols);
+    array = SG_MALLOC(SGTYPE, rows * cols);
    
     if (!array) {
         SWIG_CSharpSetPendingException(SWIG_CSharpOutOfMemoryException, "array memory allocation failed");

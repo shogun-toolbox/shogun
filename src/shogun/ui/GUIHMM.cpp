@@ -274,8 +274,8 @@ bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 	SG_DEBUG("h %d , M: %d\n", h, h->get_M());
 	if (base1!=-1 && base2!=-1)
 	{
-		float64_t* cur_o=SG_MALLOCX(float64_t, h->get_M());
-		float64_t* app_o=SG_MALLOCX(float64_t, h->get_M());
+		float64_t* cur_o=SG_MALLOC(float64_t, h->get_M());
+		float64_t* app_o=SG_MALLOC(float64_t, h->get_M());
 
 		for (int32_t i=0; i<h->get_M(); i++)
 		{
@@ -571,11 +571,11 @@ bool CGUIHMM::relative_entropy(float64_t*& values, int32_t& len)
 	if (pos_M!=neg_M || pos_N!=neg_N)
 		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n");
 
-	float64_t* p=SG_MALLOCX(float64_t, pos_M);
-	float64_t* q=SG_MALLOCX(float64_t, neg_M);
+	float64_t* p=SG_MALLOC(float64_t, pos_M);
+	float64_t* q=SG_MALLOC(float64_t, neg_M);
 
 	SG_FREE(values);
-	values=SG_MALLOCX(float64_t, pos_N);
+	values=SG_MALLOC(float64_t, pos_N);
 
 	for (int32_t i=0; i<pos_N; i++)
 	{
@@ -601,10 +601,10 @@ bool CGUIHMM::entropy(float64_t*& values, int32_t& len)
 
 	int32_t n=working->get_N();
 	int32_t m=working->get_M();
-	float64_t* p=SG_MALLOCX(float64_t, m);
+	float64_t* p=SG_MALLOC(float64_t, m);
 
 	SG_FREE(values);
-	values=SG_MALLOCX(float64_t, n);
+	values=SG_MALLOC(float64_t, n);
 
 	for (int32_t i=0; i<n; i++)
 	{

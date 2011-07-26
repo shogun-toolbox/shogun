@@ -163,7 +163,7 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
-	uint32_t* val=SG_MALLOCX(uint32_t, len);
+	uint32_t* val=SG_MALLOC(uint32_t, len);
 
 	uint32_t offs=0;
 
@@ -200,7 +200,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	ASSERT(start>=0);
 	ASSERT(start<stop);
 	ASSERT(stop<=get_num_vectors());
-	uint32_t* index=SG_MALLOCX(uint32_t, stop);
+	uint32_t* index=SG_MALLOC(uint32_t, stop);
 
 	int32_t num_vectors=stop-start;
 	ASSERT(num_vectors>0);
@@ -233,8 +233,8 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	}
 	else
 	{
-		pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
-		HASHEDWD_THREAD_PARAM* params = SG_MALLOCX(HASHEDWD_THREAD_PARAM, num_threads);
+		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+		HASHEDWD_THREAD_PARAM* params = SG_MALLOC(HASHEDWD_THREAD_PARAM, num_threads);
 		int32_t step= num_vectors/num_threads;
 
 		int32_t t;
@@ -287,7 +287,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	ASSERT(sub_index);
 	ASSERT(output);
 
-	uint32_t* index=SG_MALLOCX(uint32_t, num);
+	uint32_t* index=SG_MALLOC(uint32_t, num);
 
 	int32_t num_threads=parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -317,8 +317,8 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	}
 	else
 	{
-		pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
-		HASHEDWD_THREAD_PARAM* params = SG_MALLOCX(HASHEDWD_THREAD_PARAM, num_threads);
+		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+		HASHEDWD_THREAD_PARAM* params = SG_MALLOC(HASHEDWD_THREAD_PARAM, num_threads);
 		int32_t step= num/num_threads;
 
 		int32_t t;
@@ -479,7 +479,7 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
-	uint32_t* val=SG_MALLOCX(uint32_t, len);
+	uint32_t* val=SG_MALLOC(uint32_t, len);
 
 	uint32_t offs=0;
 	float64_t factor=alpha/normalization_const;
@@ -520,7 +520,7 @@ void CHashedWDFeaturesTransposed::set_wd_weights()
 	partial_w_dim=1<<m_hash_bits;
 	w_dim=partial_w_dim*string_length*(degree-start_degree);
 
-	wd_weights=SG_MALLOCX(float64_t, degree);
+	wd_weights=SG_MALLOC(float64_t, degree);
 
 	for (int32_t i=0; i<degree; i++)
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));

@@ -52,7 +52,7 @@ CLabels* CLinearMachine::apply()
 	ASSERT(num>0);
 	ASSERT(w_dim==features->get_dim_feature_space());
 
-	float64_t* out=SG_MALLOCX(float64_t, num);
+	float64_t* out=SG_MALLOC(float64_t, num);
 	features->dense_dot_range(out, 0, num, NULL, w, w_dim, bias);
 
 	return new CLabels(SGVector<float64_t>(out,num));

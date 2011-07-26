@@ -47,9 +47,9 @@ bool CCPLEXSVM::train_kernel_machine(CFeatures* data)
 		float64_t* y = labels->get_labels(num_label);
 		float64_t* H = kernel->get_kernel_matrix<float64_t>(m, n, NULL);
 		ASSERT(n>0 && n==m && n==num_label);
-		float64_t* alphas=SG_MALLOCX(float64_t, n);
-		float64_t* lb=SG_MALLOCX(float64_t, n);
-		float64_t* ub=SG_MALLOCX(float64_t, n);
+		float64_t* alphas=SG_MALLOC(float64_t, n);
+		float64_t* lb=SG_MALLOC(float64_t, n);
+		float64_t* ub=SG_MALLOC(float64_t, n);
 
 		//hessian y'y.*K
 		for (int32_t i=0; i<n; i++)

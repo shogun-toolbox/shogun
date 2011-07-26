@@ -56,8 +56,8 @@ void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t id
 #ifndef WIN32
     else
     {
-        pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
-        D_THREAD_PARAM* params = SG_MALLOCX(D_THREAD_PARAM, num_threads);
+        pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+        D_THREAD_PARAM* params = SG_MALLOC(D_THREAD_PARAM, num_threads);
         int32_t num_vec=idx_a2-idx_a1+1; 
         int32_t step= num_vec/num_threads;
         int32_t t;
@@ -118,8 +118,8 @@ void CDistanceMachine::distances_rhs(float64_t* result,int32_t idx_b1,int32_t id
 #ifndef WIN32
     else
     {
-        pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
-        D_THREAD_PARAM* params = SG_MALLOCX(D_THREAD_PARAM, num_threads);
+        pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+        D_THREAD_PARAM* params = SG_MALLOC(D_THREAD_PARAM, num_threads);
         int32_t num_vec=idx_b2-idx_b1+1; 
         int32_t step= num_vec/num_threads;
         int32_t t;

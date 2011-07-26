@@ -297,7 +297,7 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 	int32_t nsym=3;
 	float64_t* h= SG_CALLOC(float64_t, size_t(nsym)*string_length/2);
 
-	float64_t* h_normalizer=SG_MALLOCX(float64_t, string_length/2);
+	float64_t* h_normalizer=SG_MALLOC(float64_t, string_length/2);
 	memset(h_normalizer, 0, string_length/2*sizeof(float64_t));
 	int32_t num_str=get_num_vectors();
 	for (int32_t i=0; i<num_str; i++)
@@ -355,7 +355,7 @@ SGMatrix<float64_t> CSNPFeatures::get_2x3_table(CSNPFeatures* pos, CSNPFeatures*
 	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length());
 	int32_t len=pos->strings->get_max_vector_length();
 
-	float64_t* table=SG_MALLOCX(float64_t, 3*2*len/2);
+	float64_t* table=SG_MALLOC(float64_t, 3*2*len/2);
 
 	SGMatrix<float64_t> p_hist=pos->get_histogram(false);
 	SGMatrix<float64_t> n_hist=neg->get_histogram(false);

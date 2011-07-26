@@ -185,7 +185,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index)
 		{
-			combined_feature_iterator* it=SG_MALLOCX(combined_feature_iterator, 1);
+			combined_feature_iterator* it=SG_MALLOC(combined_feature_iterator, 1);
 
 			it->current=NULL;
 			it->f=get_first_feature_obj(it->current);

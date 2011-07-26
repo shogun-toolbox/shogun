@@ -91,7 +91,7 @@ float64_t* CTOPFeatures::compute_feature_vector(
 	float64_t* featurevector=target;
 
 	if (!featurevector) 
-		featurevector=SG_MALLOCX(float64_t, get_num_features());
+		featurevector=SG_MALLOC(float64_t, get_num_features());
 
 	if (!featurevector)
 		return NULL;
@@ -202,7 +202,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	num_vectors=pos->get_observations()->get_num_vectors();
 	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
 	SG_FREE(feature_matrix);
-	feature_matrix=SG_MALLOCX(float64_t, num_features*num_vectors);
+	feature_matrix=SG_MALLOC(float64_t, num_features*num_vectors);
 	if (!feature_matrix)
 	{
       SG_ERROR( "allocation not successful!");
@@ -262,28 +262,28 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 	if (hmm_idx->num_p > 0)
 	{
-		hmm_idx->idx_p=SG_MALLOCX(int32_t, hmm_idx->num_p);
+		hmm_idx->idx_p=SG_MALLOC(int32_t, hmm_idx->num_p);
 		ASSERT(hmm_idx->idx_p);
 	}
 
 	if (hmm_idx->num_q > 0)
 	{
-		hmm_idx->idx_q=SG_MALLOCX(int32_t, hmm_idx->num_q);
+		hmm_idx->idx_q=SG_MALLOC(int32_t, hmm_idx->num_q);
 		ASSERT(hmm_idx->idx_q);
 	}
 
 	if (hmm_idx->num_a > 0)
 	{
-		hmm_idx->idx_a_rows=SG_MALLOCX(int32_t, hmm_idx->num_a);
-		hmm_idx->idx_a_cols=SG_MALLOCX(int32_t, hmm_idx->num_a);
+		hmm_idx->idx_a_rows=SG_MALLOC(int32_t, hmm_idx->num_a);
+		hmm_idx->idx_a_cols=SG_MALLOC(int32_t, hmm_idx->num_a);
 		ASSERT(hmm_idx->idx_a_rows);
 		ASSERT(hmm_idx->idx_a_cols);
 	}
 
 	if (hmm_idx->num_b > 0)
 	{
-		hmm_idx->idx_b_rows=SG_MALLOCX(int32_t, hmm_idx->num_b);
-		hmm_idx->idx_b_cols=SG_MALLOCX(int32_t, hmm_idx->num_b);
+		hmm_idx->idx_b_rows=SG_MALLOC(int32_t, hmm_idx->num_b);
+		hmm_idx->idx_b_cols=SG_MALLOC(int32_t, hmm_idx->num_b);
 		ASSERT(hmm_idx->idx_b_rows);
 		ASSERT(hmm_idx->idx_b_cols);
 	}

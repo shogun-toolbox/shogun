@@ -64,13 +64,13 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	SGMatrix<float64_t> D_matrix = distance->get_distance_matrix();
 
 	// get D^2 matrix
-	float64_t* Ds_matrix = SG_MALLOCX(float64_t, N*N);
+	float64_t* Ds_matrix = SG_MALLOC(float64_t, N*N);
 	for (i=0;i<N;i++)
 		for (j=0;j<N;j++)
 			Ds_matrix[i*N+j] = CMath::sq(D_matrix.matrix[i*N+j]);
 
 	// centering matrix
-	float64_t* H_matrix = SG_MALLOCX(float64_t, N*N);
+	float64_t* H_matrix = SG_MALLOC(float64_t, N*N);
 	for (i=0;i<N;i++)
 		for (j=0;j<N;j++)
 			H_matrix[i*N+j] = (i==j) ? 1.0-1.0/N : -1.0/N;
@@ -86,13 +86,13 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	SG_FREE(H_matrix);
 
 	// feature matrix representing given distance
-	float64_t* replace_feature_matrix = SG_MALLOCX(float64_t, m_target_dim*N);
+	float64_t* replace_feature_matrix = SG_MALLOC(float64_t, m_target_dim*N);
  
 	// status of eigenproblem to be solved
 	int eigenproblem_status = 0;	
 	#ifdef HAVE_ARPACK
 	// using ARPACK
-		float64_t* eigenvalues_vector = SG_MALLOCX(float64_t, m_target_dim);
+		float64_t* eigenvalues_vector = SG_MALLOC(float64_t, m_target_dim);
 		// solve eigenproblem with ARPACK (faster)
 		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", 1, 0.0, false,
 		              eigenvalues_vector, replace_feature_matrix,
@@ -133,7 +133,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim,true);
 	#else /* not HAVE_ARPACK */
 	// using LAPACK
-		float64_t* eigenvalues_vector = SG_MALLOCX(float64_t, N);
+		float64_t* eigenvalues_vector = SG_MALLOC(float64_t, N);
 		// solve eigenproblem with LAPACK (slower)
 		wrap_dsyev('V','U',N,Ds_matrix,N,eigenvalues_vector,&eigenproblem_status);
 		// check for failure
