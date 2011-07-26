@@ -1800,7 +1800,7 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 				= new floatmax_t[new_length]; break;
 		case PT_SGOBJECT:
 			*(CSGObject***) m_parameter
-				= new CSGObject*[new_length]();
+				= SG_MALLOC(CSGObject*, new_length);
 			break;
 		}
 		break;

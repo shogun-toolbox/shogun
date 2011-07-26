@@ -166,7 +166,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	}
 
 	// compute M=(W-I)'*(W-I)
-	SGMatrix<float64_t> M_matrix = SGMatrix<float64_t>(new float64_t[N*N],N,N,true);
+	SGMatrix<float64_t> M_matrix(N,N,true);
 	cblas_dgemm(CblasColMajor,CblasTrans, CblasNoTrans,
 	            N,N,N,
 	            1.0,W_matrix,N,

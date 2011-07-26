@@ -164,8 +164,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		SG_REF(result_labels);
 
 		/* set label subset for testing (copy data before) */
-		SGVector<index_t> subset_indices_copy(
-				new index_t[subset_indices.vlen], subset_indices.vlen);
+		SGVector<index_t> subset_indices_copy(subset_indices.vlen);
 		memcpy(subset_indices_copy.vector, subset_indices.vector,
 				subset_indices.vlen*sizeof(index_t));
 		m_labels->set_subset(new CSubset(subset_indices_copy));

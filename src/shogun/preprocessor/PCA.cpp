@@ -147,8 +147,7 @@ bool CPCA::init(CFeatures* features)
 
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
 		
-		m_transformation_matrix = SGMatrix<float64_t>(new float64_t[num_dim*num_features],
-		                                              num_features,num_dim);
+		m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
 		num_old_dim=num_features;
 
 		int32_t offs=0;

@@ -141,7 +141,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	
 		// set eigenvalues vector
 		m_eigenvalues.free_vector();
-		m_eigenvalues = SGVector<float64_t>(new float64_t[m_target_dim],m_target_dim,true);
+		m_eigenvalues = SGVector<float64_t>(m_target_dim,true);
 		for (i=0; i<m_target_dim; i++)
 			m_eigenvalues.vector[i] = eigenvalues_vector[N-i-1];
 
