@@ -2,16 +2,8 @@
 
 ## copy from ../examples/undocumented/python_modular/classifier_libsvm_minimal_modular.py
 
-require '../../../src/ruby_modular/Features'
-require '../../../src/ruby_modular/Classifier'
-require '../../../src/ruby_modular/Kernel'
-# for randn func
-require '../../../src/ruby_modular/Library'
-
-include Features
-include Classifier
-include Kernel
-
+require 'modshogun'
+require 'narray'
 # helper methods for all this fun stuff
 
 def gen_ones_vec
@@ -27,7 +19,7 @@ end
 
 # for random numbers:
 def randn
-  Library::Math.randn_double
+  Modshogun::Math.randn_double
 end
 
 # 2 high, num wide random arrays, concatenated together [] + []
@@ -110,16 +102,16 @@ trainlab = gen_ones_vec
 testlab = gen_ones_vec
 
 puts "doing feature stuff"
-feats_train = RealFeatures.new
+feats_train = Modshogun::RealFeatures.new
 feats_train.set_feature_matrix traindata_real
-feats_test = RealFeatures.new
+feats_test = Modshogun::RealFeatures.new
 feats_test.set_feature_matrix testdata_real
-kernel = GaussianKernel.new feats_train, feats_train, @width
+kernel = Modshogun::GaussianKernel.new feats_train, feats_train, @width
 
 puts "labeling stuff"
-labels = Labels.new
+labels = Modshogun::Labels.new
 labels.set_labels trainlab
-svm = LibSVM.new C, kernel, labels
+svm = Modshogun::LibSVM.new C, kernel, labels
 svm.train
 
 puts "the grand finale"

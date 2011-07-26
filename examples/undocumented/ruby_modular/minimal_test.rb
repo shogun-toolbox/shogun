@@ -1,3 +1,3 @@
-require 'Kernel'
-gk=GaussianKernel.new()
+require 'modshogun'
+gk=Modshogun::GaussianKernel.new()
 puts gk.get_width()
