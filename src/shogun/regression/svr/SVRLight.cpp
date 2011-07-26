@@ -201,7 +201,7 @@ void CSVRLight::svr_learn()
   timing_profile.time_check=0;
   timing_profile.time_select=0;
 
-	delete[] W;
+	SG_FREE(W);
 	W=NULL;
 
 	if (kernel->has_property(KP_KERNCOMBINATION) && callback)
@@ -233,9 +233,9 @@ void CSVRLight::svr_learn()
 		CMath::fill_vector(learn_parm->eps, totdoc, tube_epsilon);
 	}
 
-	delete[] model->supvec;
-	delete[] model->alpha;
-	delete[] model->index;
+	SG_FREE(model->supvec);
+	SG_FREE(model->alpha);
+	SG_FREE(model->index);
 	model->supvec = new int32_t[totdoc+2];
 	model->alpha = new float64_t[totdoc+2];
 	model->index = new int32_t[totdoc+2];
@@ -318,15 +318,15 @@ void CSVRLight::svr_learn()
   }
 
   shrink_state_cleanup(&shrink_state);
-	delete[] label;
-	delete[] inconsistent;
-	delete[] c;
-	delete[] a;
-	delete[] a_fullset;
-	delete[] xi_fullset;
-	delete[] lin;
-	delete[] learn_parm->svm_cost;
-	delete[] docs;
+	SG_FREE(label);
+	SG_FREE(inconsistent);
+	SG_FREE(c);
+	SG_FREE(a);
+	SG_FREE(a_fullset);
+	SG_FREE(xi_fullset);
+	SG_FREE(lin);
+	SG_FREE(learn_parm->svm_cost);
+	SG_FREE(docs);
 }
 
 float64_t CSVRLight::compute_objective_function(
@@ -438,8 +438,8 @@ void CSVRLight::update_linear_component(
 					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
 
-					delete[] params;
-					delete[] threads;
+					SG_FREE(params);
+					SG_FREE(threads);
 				}
 #endif
 			}
@@ -529,8 +529,8 @@ void CSVRLight::update_linear_component_mkl(
 		// restore old weights
 		kernel->set_subkernel_weights(w_backup,num_weights) ;
 
-		delete[] w_backup ;
-		delete[] w1 ;
+		SG_FREE(w_backup);
+		SG_FREE(w1);
 	}
 
 	call_mkl_callback(a, label, lin, c, totdoc);
@@ -578,8 +578,8 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	// restore old weights
 	kernel->set_subkernel_weights(w_backup,num_weights) ;
 
-	delete[] w_backup ;
-	delete[] w1 ;
+	SG_FREE(w_backup);
+	SG_FREE(w1);
 
 	call_mkl_callback(a, label, lin, c, totdoc);
 }
@@ -606,7 +606,7 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
 		nk, (double*) alphay, 1, 1.0, (double*) sumw, 1);
 
-	delete[] alphay;
+	SG_FREE(alphay);
 #else
 	for (int32_t d=0; d<num_kernels; d++)
 	{
@@ -635,7 +635,7 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 #endif
 
 
-	delete[] sumw;
+	SG_FREE(sumw);
 }
 
 
@@ -700,10 +700,10 @@ void CSVRLight::reactivate_inactive_examples(
 				  lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 		  }
 	  }
-	  delete[] changed;
-	  delete[] changed2dnum;
-	  delete[] inactive;
-	  delete[] inactive2dnum;
+	  SG_FREE(changed);
+	  SG_FREE(changed2dnum);
+	  SG_FREE(inactive);
+	  SG_FREE(inactive2dnum);
   }
 
   (*maxdiff)=0;
@@ -742,7 +742,7 @@ void CSVRLight::reactivate_inactive_examples(
 		  (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
 	  }
 	  for(t=shrink_state->deactnum-2;(t>=0) && shrink_state->a_history[t];t--) {
-		  delete[] shrink_state->a_history[t];
+		  SG_FREE(shrink_state->a_history[t]);
 		  shrink_state->a_history[t]=0;
 	  }
   }

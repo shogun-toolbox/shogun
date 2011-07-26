@@ -237,7 +237,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 			if (single_string)
 			{
-				delete[] single_string;
+				SG_FREE(single_string);
 				single_string=NULL;
 			}
 			else
@@ -247,8 +247,8 @@ template <class ST> class CStringFeatures : public CFeatures
 			}
 
 			num_vectors=0;
-			delete[] features;
-			delete[] symbol_mask_table;
+			SG_FREE(features);
+			SG_FREE(symbol_mask_table);
 			features=NULL;
 			symbol_mask_table=NULL;
 
@@ -275,7 +275,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			if (features)
 			{
 				int32_t real_num=subset_idx_conversion(num);
-				delete[] features[real_num].string;
+				SG_FREE(features[real_num].string);
 				features[real_num].string=NULL;
 				features[real_num].length=0;
 
@@ -424,7 +424,7 @@ template <class ST> class CStringFeatures : public CFeatures
 						CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preprocessor(i);
 						feat=p->apply_to_string(tmp_feat_before, len);
 						SG_UNREF(p);
-						delete[] tmp_feat_before;
+						SG_FREE(tmp_feat_before);
 						tmp_feat_before=feat;
 					}
 				}
@@ -519,7 +519,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				feature_cache->unlock_entry(real_num);
 
 			if (dofree)
-				delete[] feat_vec ;
+				SG_FREE(feat_vec);
 		}
 
 		/** get feature
@@ -718,7 +718,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				}
 
 				SG_INFO("found %d strings\n", num_vectors);
-				delete[] dummy;
+				SG_FREE(dummy);
 				blocksize=required_blocksize;
 				dummy=new uint8_t[blocksize];
 				overflow=new uint8_t[blocksize];
@@ -786,7 +786,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				fclose(f);
 			}
 
-			delete[] dummy;
+			SG_FREE(dummy);
 
 			SG_UNREF(alphabet);
 
@@ -1181,7 +1181,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param p_num_vectors number of vectors
 		 * @param p_max_string_length maximum string length
 		 *
-		 * note that p_features will be delete[]'d on success
+		 * note that p_features will be SG_FREE()'d on success
 		 *
 		 * @return if setting was successful
 		 */
@@ -1225,8 +1225,8 @@ template <class ST> class CStringFeatures : public CFeatures
                         new_features[i].length=p_features[i-old_num_vectors].length;
                     }
                 }
-                delete[] features;
-				delete[] p_features; // free now obsolete features
+                SG_FREE(features);
+				SG_FREE(p_features); // free now obsolete features
 
                 this->features=new_features;
                 max_string_length=CMath::max(max_string_length, p_max_string_length);
@@ -1396,7 +1396,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					uncompressed_size*=sizeof(ST);
 					compressor->decompress(compressed, len_compressed,
 							(uint8_t*) features[i].string, uncompressed_size);
-					delete[] compressed;
+					SG_FREE(compressed);
 					ASSERT(uncompressed_size==((uint64_t) len_uncompressed)*sizeof(ST));
 				}
 				else
@@ -1479,7 +1479,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				fwrite(&len, sizeof(int32_t), 1, file);
 				// vector raw data
 				fwrite(compressed, compressed_size, 1, file);
-				delete[] compressed;
+				SG_FREE(compressed);
 
 				free_feature_vector(vec, i, vfree);
 			}
@@ -1567,7 +1567,7 @@ template <class ST> class CStringFeatures : public CFeatures
 				offs+=step_size;
 			}
 			single_string=features[0].string;
-			delete[] features;
+			SG_FREE(features);
 			features=f;
 			max_string_length=window_size-skip;
 
@@ -1627,14 +1627,14 @@ template <class ST> class CStringFeatures : public CFeatures
 					max_string_length=len;
 					features[0].length=len;
 					single_string=NULL;
-					delete[] f;
+					SG_FREE(f);
 					SG_ERROR("window (size:%d) starting at position[%d]=%d does not fit in sequence(len:%d)\n",
 							window_size, i, p, len);
 					return -1;
 				}
 			}
 
-			delete[] features;
+			SG_FREE(features);
 			features=f;
 			max_string_length=window_size-skip;
 
@@ -1844,7 +1844,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			if (m_subset)
 				SG_NOTIMPLEMENTED;
 
-			delete[] symbol_mask_table;
+			SG_FREE(symbol_mask_table);
 			symbol_mask_table=new ST[256];
 
 			uint64_t mask=0;
@@ -1999,7 +1999,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					}
 				}
 			}
-			delete[] h_normalizer;
+			SG_FREE(h_normalizer);
 
 			*hist=h;
 			*rows=nsym;
@@ -2038,7 +2038,7 @@ template <class ST> class CStringFeatures : public CFeatures
 					sf[i].string[j]=alphabet->remap_to_char(c);
 				}
 			}
-			delete[] randoms;
+			SG_FREE(randoms);
 			set_features(sf, num_vec, cols);
 		}
 

@@ -98,18 +98,18 @@ CWeightedDegreeStringKernel::~CWeightedDegreeStringKernel()
 {
 	cleanup();
 
-	delete[] weights;
+	SG_FREE(weights);
 	weights=NULL;
 	weights_degree=0;
 	weights_length=0;
 
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=NULL;
 
-	delete[] position_weights;
+	SG_FREE(position_weights);
 	position_weights=NULL;
 
-	delete[] weights_buffer;
+	SG_FREE(weights_buffer);
 	weights_buffer=NULL;
 }
 
@@ -185,7 +185,7 @@ void CWeightedDegreeStringKernel::cleanup()
 	SG_DEBUG("deleting CWeightedDegreeStringKernel optimization\n");
 	delete_optimization();
 
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=NULL;
 
 	if (tries!=NULL)
@@ -429,7 +429,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree(
 			tries->add_to_trie(i, 0, vec, normalizer->normalize_lhs(alpha_pw, idx), weights, (length!=0));
 		}
 	}
-	delete[] vec ;
+	SG_FREE(vec);
 	tree_initialized=true ;
 }
 
@@ -454,7 +454,7 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(
 	if (alpha!=0.0)
 		tries->add_to_trie(tree_num, 0, vec, normalizer->normalize_lhs(alpha, idx), weights, (length!=0));
 
-	delete[] vec ;
+	SG_FREE(vec);
 	tree_initialized=true ;
 }
 
@@ -480,7 +480,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(int32_t idx, floa
 			tries->add_example_to_tree_mismatch_recursion(NO_CHILD, i, normalizer->normalize_lhs(alpha, idx), &vec[i], len-i, 0, 0, max_mismatch, weights);
 	}
 
-	delete[] vec ;
+	SG_FREE(vec);
 	tree_initialized=true ;
 }
 
@@ -507,7 +507,7 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(
 			0, 0, max_mismatch, weights);
 	}
 
-	delete[] vec;
+	SG_FREE(vec);
 	tree_initialized=true;
 }
 
@@ -532,7 +532,7 @@ float64_t CWeightedDegreeStringKernel::compute_by_tree(int32_t idx)
 	for (int32_t i=0; i<len; i++)
 		sum+=tries->compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0));
 
-	delete[] vec;
+	SG_FREE(vec);
 	return normalizer->normalize_rhs(sum, idx);
 }
 
@@ -560,7 +560,7 @@ void CWeightedDegreeStringKernel::compute_by_tree(
 				mkl_stepsize, weights, (length!=0));
 	}
 
-	delete[] vec ;
+	SG_FREE(vec);
 }
 
 float64_t *CWeightedDegreeStringKernel::compute_abs_weights(int32_t &len)
@@ -574,7 +574,7 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 	ASSERT(degree>0);
 	ASSERT(p_type==E_WD); /// if we know a better weighting later on do a switch
 
-	delete[] weights;
+	SG_FREE(weights);
 	weights=new float64_t[degree];
 	weights_degree=degree;
 	weights_length=1;
@@ -643,7 +643,7 @@ bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 
 	SG_DEBUG("Creating weights of size %dx%d\n", weights_degree, weights_length);
 	int32_t num_weights=weights_degree*weights_length;
-	delete[] weights;
+	SG_FREE(weights);
 	weights=new float64_t[num_weights];
 
 	for (int32_t i=0; i<degree*len; i++)
@@ -657,7 +657,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 {
 	if (len==0)
 	{
-		delete[] position_weights;
+		SG_FREE(position_weights);
 		position_weights=NULL;
 		ASSERT(tries);
 		tries->set_position_weights(position_weights);
@@ -666,7 +666,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 	if (seq_length!=len)
 		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, len);
 
-	delete[] position_weights;
+	SG_FREE(position_weights);
 	position_weights=new float64_t[len];
 	position_weights_len=len;
 	ASSERT(tries);
@@ -684,7 +684,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 
 bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[CMath::max(seq_length,degree)];
 
 	int32_t k;
@@ -702,7 +702,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd()
 bool CWeightedDegreeStringKernel::init_block_weights_from_wd_external()
 {
 	ASSERT(weights);
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[CMath::max(seq_length,degree)];
 
 	int32_t i=0;
@@ -725,7 +725,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd_external()
 
 bool CWeightedDegreeStringKernel::init_block_weights_const()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	for (int32_t i=1; i<seq_length+1 ; i++)
@@ -735,7 +735,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_const()
 
 bool CWeightedDegreeStringKernel::init_block_weights_linear()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	for (int32_t i=1; i<seq_length+1 ; i++)
@@ -746,7 +746,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_linear()
 
 bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	for (int32_t i=1; i<degree+1 ; i++)
@@ -760,7 +760,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
 
 bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	for (int32_t i=1; i<degree+1 ; i++)
@@ -773,7 +773,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
 
 bool CWeightedDegreeStringKernel::init_block_weights_exp()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	for (int32_t i=1; i<degree+1 ; i++)
@@ -787,7 +787,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_exp()
 
 bool CWeightedDegreeStringKernel::init_block_weights_log()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	for (int32_t i=1; i<degree+1 ; i++)
@@ -951,13 +951,13 @@ void CWeightedDegreeStringKernel::compute_batch(
 				pthread_join(threads[t], NULL);
 			SG_PROGRESS(j,0,num_feat);
 
-			delete[] params;
-			delete[] threads;
+			SG_FREE(params);
+			SG_FREE(threads);
 		}
 	}
 #endif
 
-	delete[] vec;
+	SG_FREE(vec);
 
 	//really also free memory as this can be huge on testing especially when
 	//using the combined kernel

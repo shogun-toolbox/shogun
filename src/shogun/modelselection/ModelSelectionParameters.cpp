@@ -56,7 +56,7 @@ CModelSelectionParameters::~CModelSelectionParameters()
 {
 	SG_UNREF(m_child_nodes);
 	SG_UNREF(m_sgobject);
-	delete[] m_values.vector;
+	SG_FREE(m_values.vector);
 }
 
 void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
@@ -92,7 +92,7 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 void CModelSelectionParameters::set_values(SGVector<float64_t> values)
 {
 	/* possibly delete old range values */
-	delete[] m_values.vector;
+	SG_FREE(m_values.vector);
 	m_values=values;
 }
 
@@ -106,7 +106,7 @@ void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 	}
 
 	/* possibly delete old range values */
-	delete[] m_values.vector;
+	SG_FREE(m_values.vector);
 
 	if (max<min)
 		SG_ERROR("unable to set range: maximum=%f < minimum=%f\n", max, min);
@@ -384,6 +384,6 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		}
 	}
 
-	delete[] prefix;
+	SG_FREE(prefix);
 }
 

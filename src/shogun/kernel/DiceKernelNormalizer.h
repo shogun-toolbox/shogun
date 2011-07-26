@@ -46,8 +46,8 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		/** default destructor */
 		virtual ~CDiceKernelNormalizer()
 		{
-			delete[] diag_lhs;
-			delete[] diag_rhs;
+			SG_FREE(diag_lhs);
+			SG_FREE(diag_rhs);
 		}
 
 		/** initialization of the normalizer 
@@ -124,7 +124,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 */
 		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
 		{
-			delete[] v;
+			SG_FREE(v);
 			v=new float64_t[num];
 
 			for (int32_t i=0; i<num; i++)

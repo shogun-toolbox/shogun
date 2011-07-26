@@ -66,7 +66,7 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 void CCustomKernel::cleanup_custom()
 {
 	SG_DEBUG("cleanup up custom kernel\n");
-	delete[] kmatrix.matrix;
+	SG_FREE(kmatrix.matrix);
 	kmatrix.matrix=NULL;
 	upper_diagonal=false;
 	kmatrix.num_cols=0;

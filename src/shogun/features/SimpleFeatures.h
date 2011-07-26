@@ -136,7 +136,7 @@ public:
 	void free_feature_matrix()
 	{
 		remove_subset();
-		delete[] feature_matrix;
+		SG_FREE(feature_matrix);
 		feature_matrix = NULL;
 		feature_matrix_num_features = num_features;
 		feature_matrix_num_vectors = num_vectors;
@@ -213,12 +213,12 @@ public:
 				SG_UNREF(p);
 
 				if (i != 0) // delete feature vector, except for the the first one, i.e., feat
-					delete[] tmp_feat_before;
+					SG_FREE(tmp_feat_before);
 				tmp_feat_before = tmp_feat_after;
 			}
 
 			memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
-			delete[] tmp_feat_after;
+			SG_FREE(tmp_feat_after);
 
 			len = tmp_len;
 		}
@@ -290,7 +290,7 @@ public:
 			feature_cache->unlock_entry(subset_idx_conversion(num));
 
 		if (dofree)
-			delete[] feat_vec;
+			SG_FREE(feat_vec);
 	}
 
 	/** free feature vector
@@ -963,7 +963,7 @@ public:
 
 		simple_feature_iterator* it = (simple_feature_iterator*) iterator;
 		free_feature_vector(it->vec, it->vidx, it->vfree);
-		delete[] it;
+		SG_FREE(it);
 	}
 
 	/** Creates a new CFeatures instance containing copies of the elements

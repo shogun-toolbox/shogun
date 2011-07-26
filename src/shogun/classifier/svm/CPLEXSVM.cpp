@@ -79,10 +79,10 @@ bool CCPLEXSVM::train_kernel_machine(CFeatures* data)
 		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
 		SG_INFO( "Number of SV: %ld\n", get_num_support_vectors());
 
-		delete[] alphas;
-		delete[] lb;
-		delete[] ub;
-		delete[] H;
+		SG_FREE(alphas);
+		SG_FREE(lb);
+		SG_FREE(ub);
+		SG_FREE(H);
 
 		result = true;
 	}

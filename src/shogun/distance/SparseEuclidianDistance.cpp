@@ -58,10 +58,10 @@ bool CSparseEuclidianDistance::init(CFeatures* l, CFeatures* r)
 void CSparseEuclidianDistance::cleanup()
 {
 	if (sq_lhs != sq_rhs)
-		delete[] sq_rhs;
+		SG_FREE(sq_rhs);
 	sq_rhs = NULL;
 
-	delete[] sq_lhs;
+	SG_FREE(sq_lhs);
 	sq_lhs = NULL;
 }
 

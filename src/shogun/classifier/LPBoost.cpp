@@ -56,7 +56,7 @@ bool CLPBoost::init(int32_t num_vec)
 
 void CLPBoost::cleanup()
 {
-	delete[] u;
+	SG_FREE(u);
 	u=NULL;
 
 	((CSparseFeatures<float64_t>*) features)->clean_tsparse(sfeat, num_svec);
@@ -110,7 +110,7 @@ bool CLPBoost::train(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
-	delete[] w;
+	SG_FREE(w);
 	w=new float64_t[num_feat];
 	memset(w,0,sizeof(float64_t)*num_feat);
 	w_dim=num_feat;

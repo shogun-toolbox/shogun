@@ -408,9 +408,9 @@ public:
 		for (int32_t i=0; i<len-1; i++)
 			ASSERT(sf_new[i].feat_index<sf_new[i+1].feat_index);
 
-		delete[] orig_idx;
-		delete[] feat_idx;
-		delete[] sf_orig;
+		SG_FREE(orig_idx);
+		SG_FREE(feat_idx);
+		SG_FREE(sf_orig);
 	}
 	
 	/** 

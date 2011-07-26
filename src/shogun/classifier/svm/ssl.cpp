@@ -68,8 +68,8 @@ void ssl_train(struct data *Data,
 			SG_SERROR("Algorithm unspecified");
 	}
 
-	delete[] Subset->vec;
-    delete[] Subset;
+	SG_FREE(Subset->vec);
+    SG_FREE(Subset);
 	return;
 }
 
@@ -185,10 +185,10 @@ int32_t CGLS(
 	SG_SDEBUG("...Done.");
 	SG_SINFO("CGLS converged in %d iteration(s)", cgiter);
 
-	delete[] z;
-	delete[] q;
-	delete[] r;
-	delete[] p;
+	SG_FREE(z);
+	SG_FREE(q);
+	SG_FREE(r);
+	SG_FREE(p);
 	return optimality;
 }
 
@@ -299,12 +299,12 @@ int32_t L2_SVM_MFN(
 					w[i]=w_bar[i];      
 				for (int32_t i=m; i-- ;)
 					o[i]=o_bar[i]; 
-				delete[] ActiveSubset->vec;
-				delete[] ActiveSubset;
-				delete[] o_bar;
-				delete[] w_bar;
-				delete[] Weights_bar;
-				delete[] Outputs_bar;
+				SG_FREE(ActiveSubset->vec);
+				SG_FREE(ActiveSubset);
+				SG_FREE(o_bar);
+				SG_FREE(w_bar);
+				SG_FREE(Weights_bar);
+				SG_FREE(Outputs_bar);
 				SG_SINFO("L2_SVM_MFN converged (optimality) in %d", iter);
 				return 1;      
 			}
@@ -343,12 +343,12 @@ int32_t L2_SVM_MFN(
 			return 2;
 		}
 	}
-	delete[] ActiveSubset->vec;
-	delete[] ActiveSubset;
-	delete[] o_bar;
-	delete[] w_bar;
-	delete[] Weights_bar;
-	delete[] Outputs_bar;
+	SG_FREE(ActiveSubset->vec);
+	SG_FREE(ActiveSubset);
+	SG_FREE(o_bar);
+	SG_FREE(w_bar);
+	SG_FREE(Weights_bar);
+	SG_FREE(Outputs_bar);
 	SG_SINFO("L2_SVM_MFN converged (max iter exceeded) in %d iterations", iter);
 	return 0;
 }
@@ -827,16 +827,16 @@ int32_t optimize_w(
 					if(labeled_indices[i]==0)
 						Data->Y[i]=0.0;
 				}
-				delete[] ActiveSubset->vec;
-				delete[] ActiveSubset;
-				delete[] o_bar;
-				delete[] w_bar;
-				delete[] o;
-				delete[] Weights_bar;
-				delete[] Outputs_bar;
-				delete[] Y;
-				delete[] C;
-				delete[] labeled_indices;
+				SG_FREE(ActiveSubset->vec);
+				SG_FREE(ActiveSubset);
+				SG_FREE(o_bar);
+				SG_FREE(w_bar);
+				SG_FREE(o);
+				SG_FREE(Weights_bar);
+				SG_FREE(Outputs_bar);
+				SG_FREE(Y);
+				SG_FREE(C);
+				SG_FREE(labeled_indices);
 				SG_SINFO("L2_SVM_MFN converged in %d iteration(s)", iter);
 				return 1;      
 			}
@@ -912,16 +912,16 @@ int32_t optimize_w(
 		if(labeled_indices[i]==0)
 			Data->Y[i]=0.0;
 	}
-	delete[] ActiveSubset->vec;
-	delete[] labeled_indices;
-	delete[] ActiveSubset;
-	delete[] o_bar;
-	delete[] w_bar;
-	delete[] o;
-	delete[] Weights_bar;
-	delete[] Outputs_bar;
-	delete[] Y;
-	delete[] C;
+	SG_FREE(ActiveSubset->vec);
+	SG_FREE(labeled_indices);
+	SG_FREE(ActiveSubset);
+	SG_FREE(o_bar);
+	SG_FREE(w_bar);
+	SG_FREE(o);
+	SG_FREE(Weights_bar);
+	SG_FREE(Outputs_bar);
+	SG_FREE(Y);
+	SG_FREE(C);
 	SG_SINFO("L2_SVM_MFN converged in %d iterations", iter);
 	return 0;
 }

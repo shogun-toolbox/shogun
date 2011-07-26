@@ -43,7 +43,7 @@ COligoStringKernel::~COligoStringKernel()
 
 void COligoStringKernel::cleanup()
 {
-	delete[] gauss_table;
+	SG_FREE(gauss_table);
 	gauss_table=NULL;
 	gauss_table_len=0;
 
@@ -140,7 +140,7 @@ void COligoStringKernel::getSequences(
 
 void COligoStringKernel::getExpFunctionCache(uint32_t sequence_length)
 {
-	delete[] gauss_table;
+	SG_FREE(gauss_table);
 	gauss_table=new float64_t[sequence_length];
 
 	gauss_table[0] = 1;

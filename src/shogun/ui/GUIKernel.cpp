@@ -129,7 +129,7 @@ CKernel* CGUIKernel::create_custom(float64_t* kmatrix, int32_t num_feat, int32_t
 	else
 		success=kern->set_full_kernel_matrix_from_full(km);
 
-	delete[] kmatrix;
+	SG_FREE(kmatrix);
 	return kern;
 }
 
@@ -273,7 +273,7 @@ CKernel* CGUIKernel::create_weighteddegreestring(
 	((CWeightedDegreeStringKernel*) kern)->set_mkl_stepsize(mkl_stepsize);
 	((CWeightedDegreeStringKernel*) kern)->set_which_degree(single_degree);
 
-	delete[] weights;
+	SG_FREE(weights);
 	return kern;
 }
 
@@ -307,8 +307,8 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring(
 	else
 		SG_DEBUG("created WeightedDegreePositionStringKernel with size %d, order %d, max_mismatch %d, length %d, center %d, step %f.\n", kern, size, order, max_mismatch, length, center, step);
 
-	delete[] weights;
-	delete[] shifts;
+	SG_FREE(weights);
+	SG_FREE(shifts);
 	return kern;
 }
 
@@ -332,7 +332,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 	((CWeightedDegreePositionStringKernel*) kern)->
 		set_position_weights(SGVector<float64_t>(position_weights, length));
 
-	delete[] weights;
+	SG_FREE(weights);
 	return kern;
 }
 
@@ -349,7 +349,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring2(
 
 	SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d, use_normalization %d.\n", kern, size, order, max_mismatch, length, use_normalization);
 
-	delete[] weights;
+	SG_FREE(weights);
 	return kern;
 }
 
@@ -739,8 +739,8 @@ bool CGUIKernel::init_kernel_optimization()
 
 			bool ret=kernel->init_optimization(num_sv, sv_idx, sv_weight);
 
-			delete[] sv_idx;
-			delete[] sv_weight;
+			SG_FREE(sv_idx);
+			SG_FREE(sv_weight);
 
 			if (!ret)
 				SG_ERROR("Initialization of kernel optimization failed\n");

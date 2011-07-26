@@ -71,7 +71,7 @@ void CLibLinear::init()
 
 CLibLinear::~CLibLinear()
 {
-	delete[] m_linear_term;
+	SG_FREE(m_linear_term);
 }
 
 bool CLibLinear::train(CFeatures* data)
@@ -116,7 +116,7 @@ bool CLibLinear::train(CFeatures* data)
 					num_vec, num_train_labels);
 		}
 	}
-	delete[] w;
+	SG_FREE(w);
 	if (use_bias)
 		w=new float64_t[num_feat+1];
 	else
@@ -216,7 +216,7 @@ bool CLibLinear::train(CFeatures* data)
 	else
 		set_bias(0);
 
-    delete[] prob.y;
+    SG_FREE(prob.y);
 
 	return true;
 }
@@ -1160,7 +1160,7 @@ void CLibLinear::init_linear_term()
 	if (!labels)
 		SG_ERROR("Please assign labels first!\n");
 
-	delete[] m_linear_term;
+	SG_FREE(m_linear_term);
 
 	m_linear_term_len=labels->get_num_labels();
 	m_linear_term = new float64_t[m_linear_term_len];

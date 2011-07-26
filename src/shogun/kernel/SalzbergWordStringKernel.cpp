@@ -65,14 +65,14 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	initialized=false;
 
 	if (sqrtdiag_lhs!=sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
+		SG_FREE(sqrtdiag_rhs);
 	sqrtdiag_rhs=NULL;
-	delete[] sqrtdiag_lhs;
+	SG_FREE(sqrtdiag_lhs);
 	sqrtdiag_lhs=NULL;
 	if (ld_mean_lhs!=ld_mean_rhs)
-		delete[] ld_mean_rhs;
+		SG_FREE(ld_mean_rhs);
 	ld_mean_rhs=NULL;
-	delete[] ld_mean_lhs;
+	SG_FREE(ld_mean_lhs);
 	ld_mean_lhs=NULL;
 
 	sqrtdiag_lhs=new float64_t[l->get_num_vectors()];
@@ -118,8 +118,8 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 			return false ;
 		} ;
 
-		delete[] variance;
-		delete[] mean;
+		SG_FREE(variance);
+		SG_FREE(mean);
 		mean=new float64_t[num_params];
 		ASSERT(mean);
 		variance=new float64_t[num_params];
@@ -291,24 +291,24 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 void CSalzbergWordStringKernel::cleanup()
 {
-	delete[] variance;
+	SG_FREE(variance);
 	variance=NULL;
 
-	delete[] mean;
+	SG_FREE(mean);
 	mean=NULL;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
+		SG_FREE(sqrtdiag_rhs);
 	sqrtdiag_rhs=NULL;
 
-	delete[] sqrtdiag_lhs;
+	SG_FREE(sqrtdiag_lhs);
 	sqrtdiag_lhs=NULL;
 
 	if (ld_mean_lhs!=ld_mean_rhs)
-		delete[] ld_mean_rhs ;
+		SG_FREE(ld_mean_rhs);
 	ld_mean_rhs=NULL;
 
-	delete[] ld_mean_lhs ;
+	SG_FREE(ld_mean_lhs);
 	ld_mean_lhs=NULL;
 
 	CKernel::cleanup();

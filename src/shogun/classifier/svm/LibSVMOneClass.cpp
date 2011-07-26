@@ -96,8 +96,8 @@ bool CLibSVMOneClass::train_kernel_machine(CFeatures* data)
 			set_alpha(i, model->sv_coef[0][i]);
 		}
 
-		delete[] problem.x;
-		delete[] x_space;
+		SG_FREE(problem.x);
+		SG_FREE(x_space);
 		svm_destroy_model(model);
 		model=NULL;
 

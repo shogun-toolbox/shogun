@@ -186,7 +186,7 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
-	delete[] tmp;
+	SG_FREE(tmp);
 }
 
 void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
@@ -220,7 +220,7 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 		SG_UNREF(f);
 		f=get_next_feature_obj(current);
 	}
-	delete[] tmp;
+	SG_FREE(tmp);
 }
 
 void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)

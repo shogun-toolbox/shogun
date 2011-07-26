@@ -93,7 +93,7 @@ namespace shogun
 		 * 
 		 * It will then be free to be overwritten.
 		 * 
-		 * @param do_delete whether to delete[] the vector or not
+		 * @param do_delete whether to SG_FREE() the vector or not
 		 */
 		void finalize_example(bool do_delete);
 
@@ -148,8 +148,8 @@ namespace shogun
 	template <class T>
 		CParseBuffer<T>::~CParseBuffer()
 	{
-		delete[] ex_buff;
-		delete[] ex_used;
+		SG_FREE(ex_buff);
+		SG_FREE(ex_used);
 
 		for (int32_t i=0; i<buffer_size; i++)
 		{
@@ -244,7 +244,7 @@ namespace shogun
 		ex_used[ex_read_index] = E_USED;
 
 		if (do_delete)
-			delete[] ex_buff[ex_read_index].fv.vector;
+			SG_FREE(ex_buff[ex_read_index].fv.vector);
 
 		pthread_cond_signal(&ex_in_use_cond[ex_read_index]);
 		pthread_mutex_unlock(&ex_in_use_mutex[ex_read_index]);

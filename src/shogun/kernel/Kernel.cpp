@@ -459,11 +459,11 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
 		}
 
-		delete[] needs_computation;
-		delete[] params;
-		delete[] threads;
-		delete[] cache;
-		delete[] uncached_rows;
+		SG_FREE(needs_computation);
+		SG_FREE(params);
+		SG_FREE(threads);
+		SG_FREE(cache);
+		SG_FREE(uncached_rows);
 	}
 #endif
 }
@@ -522,7 +522,7 @@ void CKernel::kernel_cache_shrink(
 		kernel_cache.max_elems=totdoc;
 	}
 
-	delete[] keep;
+	SG_FREE(keep);
 
 }
 
@@ -541,13 +541,13 @@ void CKernel::kernel_cache_reset_lru()
 
 void CKernel::kernel_cache_cleanup()
 {
-	delete[] kernel_cache.index;
-	delete[] kernel_cache.occu;
-	delete[] kernel_cache.lru;
-	delete[] kernel_cache.invindex;
-	delete[] kernel_cache.active2totdoc;
-	delete[] kernel_cache.totdoc2active;
-	delete[] kernel_cache.buffer;
+	SG_FREE(kernel_cache.index);
+	SG_FREE(kernel_cache.occu);
+	SG_FREE(kernel_cache.lru);
+	SG_FREE(kernel_cache.invindex);
+	SG_FREE(kernel_cache.active2totdoc);
+	SG_FREE(kernel_cache.totdoc2active);
+	SG_FREE(kernel_cache.buffer);
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
 
@@ -629,7 +629,7 @@ void CKernel::save(CFile* writer)
 	SGMatrix<float64_t> k_matrix=get_kernel_matrix<float64_t>();
 	SG_SET_LOCALE_C;
 	writer->set_matrix(k_matrix.matrix, k_matrix.num_rows, k_matrix.num_cols);
-	delete[] k_matrix.matrix;
+	SG_FREE(k_matrix.matrix);
 	SG_RESET_LOCALE;
 }
 
@@ -855,8 +855,8 @@ bool CKernel::init_optimization_svm(CSVM * svm)
 	}
 	bool ret = init_optimization(num_suppvec, sv_idx, sv_weight);
 
-	delete[] sv_idx;
-	delete[] sv_weight;
+	SG_FREE(sv_idx);
+	SG_FREE(sv_weight);
 	return ret;
 }
 

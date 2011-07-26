@@ -25,7 +25,7 @@ CSubset::CSubset(SGVector<index_t> subset_idx) : m_subset_idx(subset_idx)
 }
 
 CSubset::~CSubset() {
-	delete[] m_subset_idx.vector;
+	SG_FREE(m_subset_idx.vector);
 }
 
 CSubset* CSubset::duplicate() {

@@ -411,8 +411,8 @@ void LaRankOutput::destroy ()
 {
 	larank_kcache_destroy (kernel);
 	kernel=NULL;
-	delete[] beta;
-	delete[] g;
+	SG_FREE(beta);
+	SG_FREE(g);
 	beta=NULL;
 	g=NULL;
 }
@@ -838,7 +838,7 @@ int32_t CLaRank::getNSV ()
 	{
 		float32_t* sv=NULL;
 		res += it->second.getSV (sv);
-		delete[] sv;
+		SG_FREE(sv);
 	}
 	return res;
 }

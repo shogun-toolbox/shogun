@@ -191,7 +191,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 	for (int32_t i=0; i<shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
-	delete[] max_shift_vec;
+	SG_FREE(max_shift_vec);
 	return result ;
 }
 
@@ -199,7 +199,7 @@ void CRegulatoryModulesStringKernel::set_wd_weights()
 {
 	ASSERT(degree>0);
 
-	delete[] weights;
+	SG_FREE(weights);
 	weights=new float64_t[degree];
 		
 	int32_t i;

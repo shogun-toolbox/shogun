@@ -593,7 +593,7 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 				from_if->translate_arg(from_if, in);
 
 				setVar(install(var_name), in->get_return_values(), R_GlobalEnv);
-				delete[] var_name;
+				SG_FREE(var_name);
 				SG_UNREF(in);
 			}
 		}

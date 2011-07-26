@@ -111,9 +111,9 @@ template<class T> class CCache : public CSGObject
 
 	virtual ~CCache()
 	{
-		delete[] cache_block;
-		delete[] lookup_table;
-		delete[] cache_table;
+		SG_FREE(cache_block);
+		SG_FREE(lookup_table);
+		SG_FREE(cache_table);
 	}
 
 	/** checks if an object is cached

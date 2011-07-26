@@ -72,7 +72,7 @@ void CFile::get_vector(bool*& vector, int32_t& len)
 	for (int32_t i=0; i<len; i++)
 		vector[i]= (int_vector[i]!=0);
 
-	delete[] int_vector;
+	SG_FREE(int_vector);
 }
 
 void CFile::set_vector(const bool* vector, int32_t len)
@@ -86,7 +86,7 @@ void CFile::set_vector(const bool* vector, int32_t len)
 			int_vector[i]=0;
 	}
 	set_vector(int_vector,len);
-	delete[] int_vector;
+	SG_FREE(int_vector);
 }
 
 void CFile::get_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
@@ -103,7 +103,7 @@ void CFile::get_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
 			matrix[i*num_feat+j] = byte_matrix[i*num_feat+j] != 0 ? 1 : 0;
 	}
 
-	delete[] byte_matrix;
+	SG_FREE(byte_matrix);
 }
 
 void CFile::set_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
@@ -117,7 +117,7 @@ void CFile::set_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
 
 	set_matrix(byte_matrix,num_feat,num_vec);
 
-	delete[] byte_matrix;
+	SG_FREE(byte_matrix);
 }
 
 void CFile::get_string_list(
@@ -139,8 +139,8 @@ void CFile::get_string_list(
 	}
 
 	for(int32_t i = 0;i < num_str;i++)
-		delete[] strs[i].string;
-	delete[] strs;
+		SG_FREE(strs[i].string);
+	SG_FREE(strs);
 }
 
 void CFile::set_string_list(const SGString<bool>* strings, int32_t num_str)
@@ -158,8 +158,8 @@ void CFile::set_string_list(const SGString<bool>* strings, int32_t num_str)
 	set_int8_string_list(strs,num_str);
 
 	for(int32_t i = 0;i < num_str;i++)
-		delete[] strs[i].string;
-	delete[] strs;
+		SG_FREE(strs[i].string);
+	SG_FREE(strs);
 }
 
 CFile::~CFile()

@@ -90,8 +90,8 @@ void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t id
             pthread_join(threads[t], NULL);
 
         pthread_attr_destroy(&attr);
-        delete[] params;
-        delete[] threads;
+        SG_FREE(params);
+        SG_FREE(threads);
     }
 #endif
 }
@@ -152,8 +152,8 @@ void CDistanceMachine::distances_rhs(float64_t* result,int32_t idx_b1,int32_t id
             pthread_join(threads[t], NULL);
 
         pthread_attr_destroy(&attr);
-        delete[] params;
-        delete[] threads;
+        SG_FREE(params);
+        SG_FREE(threads);
     }
 #endif
 }

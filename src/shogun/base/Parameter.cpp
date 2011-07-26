@@ -1626,31 +1626,31 @@ TParameter::delete_cont(void)
 		case ST_NONE:
 			switch (m_datatype.m_ptype) {
 			case PT_BOOL:
-				delete[] *(bool**) m_parameter; break;
+				SG_FREE(*(bool**) m_parameter); break;
 			case PT_CHAR:
-				delete[] *(char**) m_parameter; break;
+				SG_FREE(*(char**) m_parameter); break;
 			case PT_INT8:
-				delete[] *(int8_t**) m_parameter; break;
+				SG_FREE(*(int8_t**) m_parameter); break;
 			case PT_UINT8:
-				delete[] *(uint8_t**) m_parameter; break;
+				SG_FREE(*(uint8_t**) m_parameter); break;
 			case PT_INT16:
-				delete[] *(int16_t**) m_parameter; break;
+				SG_FREE(*(int16_t**) m_parameter); break;
 			case PT_UINT16:
-				delete[] *(uint16_t**) m_parameter; break;
+				SG_FREE(*(uint16_t**) m_parameter); break;
 			case PT_INT32:
-				delete[] *(int32_t**) m_parameter; break;
+				SG_FREE(*(int32_t**) m_parameter); break;
 			case PT_UINT32:
-				delete[] *(uint32_t**) m_parameter; break;
+				SG_FREE(*(uint32_t**) m_parameter); break;
 			case PT_INT64:
-				delete[] *(int64_t**) m_parameter; break;
+				SG_FREE(*(int64_t**) m_parameter); break;
 			case PT_UINT64:
-				delete[] *(uint64_t**) m_parameter; break;
+				SG_FREE(*(uint64_t**) m_parameter); break;
 			case PT_FLOAT32:
-				delete[] *(float32_t**) m_parameter; break;
+				SG_FREE(*(float32_t**) m_parameter); break;
 			case PT_FLOAT64:
-				delete[] *(float64_t**) m_parameter; break;
+				SG_FREE(*(float64_t**) m_parameter); break;
 			case PT_FLOATMAX:
-				delete[] *(floatmax_t**) m_parameter; break;
+				SG_FREE(*(floatmax_t**) m_parameter); break;
 			case PT_SGOBJECT:
 				CSGObject** buf =
 					*(CSGObject***) m_parameter;
@@ -1664,36 +1664,36 @@ TParameter::delete_cont(void)
 			for (index_t i=0; i<old_length; i++) {
 				SGString<char>* buf = (SGString<char>*) (*(char**)
 						m_parameter + i *m_datatype.sizeof_stype());
-				if (buf->length > 0) delete[] buf->string;
+				if (buf->length > 0) SG_FREE(buf->string);
 			}
 
 			switch (m_datatype.m_ptype) {
 			case PT_BOOL:
-				delete[] *(SGString<bool>**) m_parameter; break;
+				SG_FREE(*(SGString<bool>**) m_parameter); break;
 			case PT_CHAR:
-				delete[] *(SGString<char>**) m_parameter; break;
+				SG_FREE(*(SGString<char>**) m_parameter); break;
 			case PT_INT8:
-				delete[] *(SGString<int8_t>**) m_parameter; break;
+				SG_FREE(*(SGString<int8_t>**) m_parameter); break;
 			case PT_UINT8:
-				delete[] *(SGString<uint8_t>**) m_parameter; break;
+				SG_FREE(*(SGString<uint8_t>**) m_parameter); break;
 			case PT_INT16:
-				delete[] *(SGString<int16_t>**) m_parameter; break;
+				SG_FREE(*(SGString<int16_t>**) m_parameter); break;
 			case PT_UINT16:
-				delete[] *(SGString<uint16_t>**) m_parameter; break;
+				SG_FREE(*(SGString<uint16_t>**) m_parameter); break;
 			case PT_INT32:
-				delete[] *(SGString<int32_t>**) m_parameter; break;
+				SG_FREE(*(SGString<int32_t>**) m_parameter); break;
 			case PT_UINT32:
-				delete[] *(SGString<uint32_t>**) m_parameter; break;
+				SG_FREE(*(SGString<uint32_t>**) m_parameter); break;
 			case PT_INT64:
-				delete[] *(SGString<int64_t>**) m_parameter; break;
+				SG_FREE(*(SGString<int64_t>**) m_parameter); break;
 			case PT_UINT64:
-				delete[] *(SGString<uint64_t>**) m_parameter; break;
+				SG_FREE(*(SGString<uint64_t>**) m_parameter); break;
 			case PT_FLOAT32:
-				delete[] *(SGString<float32_t>**) m_parameter; break;
+				SG_FREE(*(SGString<float32_t>**) m_parameter); break;
 			case PT_FLOAT64:
-				delete[] *(SGString<float64_t>**) m_parameter; break;
+				SG_FREE(*(SGString<float64_t>**) m_parameter); break;
 			case PT_FLOATMAX:
-				delete[] *(SGString<floatmax_t>**) m_parameter; break;
+				SG_FREE(*(SGString<floatmax_t>**) m_parameter); break;
 			case PT_SGOBJECT:
 				SG_SERROR("TParameter::delete_cont(): Implementation "
 						 "error: Could not delete "
@@ -1705,36 +1705,36 @@ TParameter::delete_cont(void)
 			for (index_t i=0; i<old_length; i++) {
 				SGSparseVector<char>* buf = (SGSparseVector<char>*) (*(char**)
 						m_parameter + i *m_datatype.sizeof_stype());
-				if (buf->num_feat_entries > 0) delete[] buf->features;
+				if (buf->num_feat_entries > 0) SG_FREE(buf->features);
 			}
 
 			switch (m_datatype.m_ptype) {
 			case PT_BOOL:
-				delete[] *(SGSparseVector<bool>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<bool>**) m_parameter); break;
 			case PT_CHAR:
-				delete[] *(SGSparseVector<char>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<char>**) m_parameter); break;
 			case PT_INT8:
-				delete[] *(SGSparseVector<int8_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<int8_t>**) m_parameter); break;
 			case PT_UINT8:
-				delete[] *(SGSparseVector<uint8_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<uint8_t>**) m_parameter); break;
 			case PT_INT16:
-				delete[] *(SGSparseVector<int16_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<int16_t>**) m_parameter); break;
 			case PT_UINT16:
-				delete[] *(SGSparseVector<uint16_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<uint16_t>**) m_parameter); break;
 			case PT_INT32:
-				delete[] *(SGSparseVector<int32_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<int32_t>**) m_parameter); break;
 			case PT_UINT32:
-				delete[] *(SGSparseVector<uint32_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<uint32_t>**) m_parameter); break;
 			case PT_INT64:
-				delete[] *(SGSparseVector<int64_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<int64_t>**) m_parameter); break;
 			case PT_UINT64:
-				delete[] *(SGSparseVector<uint64_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<uint64_t>**) m_parameter); break;
 			case PT_FLOAT32:
-				delete[] *(SGSparseVector<float32_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<float32_t>**) m_parameter); break;
 			case PT_FLOAT64:
-				delete[] *(SGSparseVector<float64_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<float64_t>**) m_parameter); break;
 			case PT_FLOATMAX:
-				delete[] *(SGSparseVector<floatmax_t>**) m_parameter; break;
+				SG_FREE(*(SGSparseVector<floatmax_t>**) m_parameter); break;
 			case PT_SGOBJECT:
 				SG_SERROR("TParameter::delete_cont(): Implementation "
 						 "error: Could not delete "
@@ -2145,7 +2145,7 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 	char* buf=new char[buflen];
 	m_datatype.to_string(buf, buflen);
 	SG_SDEBUG("Saving parameter '%s' of type '%s'\n", m_name, buf);
-	delete[] buf;
+	SG_FREE(buf);
 
 	if (!file->write_type_begin(&m_datatype, m_name, prefix))
 		return false;
@@ -2228,7 +2228,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	char* buf=new char[buflen];
 	m_datatype.to_string(buf, buflen);
 	SG_SDEBUG("Loading parameter '%s' of type '%s'\n", m_name, buf);
-	delete[] buf;
+	SG_FREE(buf);
 
 	if (!file->read_type_begin(&m_datatype, m_name, prefix))
 		return false;

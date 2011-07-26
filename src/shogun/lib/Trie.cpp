@@ -430,6 +430,6 @@ void CTrie<POIMTrie>::POIMs_add_SLR(
   for( i = 0; i < N; ++i ) {
     POIMs_add_SLR_helper1( trees[i], 0, i, 0*NUM_SYMS, poims, K, debug );
   }
-  delete[] nofsKmers;
+  SG_FREE(nofsKmers);
 }
 }

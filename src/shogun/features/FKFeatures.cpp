@@ -114,8 +114,8 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 			a=(la+ua)/2;
 			SG_INFO( "opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e\n", a, da, la ,ua);
 		}
-		delete[] pos_prob;
-		delete[] neg_prob;
+		SG_FREE(pos_prob);
+		SG_FREE(neg_prob);
 		pos_prob=NULL;
 		neg_prob=NULL;
 	}

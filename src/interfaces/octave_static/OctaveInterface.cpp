@@ -694,7 +694,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 #else
 				set_global_value(var_name, in->get_return_values()(0));
 #endif
-				delete[] var_name;
+				SG_FREE(var_name);
 				SG_UNREF(in);
 			}
 		}
@@ -706,7 +706,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 #endif
 		reset_error_handler ();
 		eval_string(octave_code, false, parse_status);
-		delete[] octave_code;
+		SG_FREE(octave_code);
 
 		int32_t sz=0;
 		octave_value_list results;

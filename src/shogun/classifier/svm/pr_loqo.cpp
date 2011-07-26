@@ -88,7 +88,7 @@ bool choldc(float64_t* a, int32_t n, float64_t* p)
 	if (result>0)
 		SG_SDEBUG("Choldc failed, matrix not positive definite\n");
 
-	delete[] a2;
+	SG_FREE(a2);
 	
 	return result==0;
 }

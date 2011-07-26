@@ -1250,7 +1250,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t len=0;
 				source->get_vector(v, len);
 				target->set_vector(v, len);
-				delete[] v;
+				SG_FREE(v);
 				break;
 			}
 		case VECTOR_BYTE:
@@ -1259,7 +1259,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t len=0;
 				source->get_vector(v, len);
 				target->set_vector(v, len);
-				delete[] v;
+				SG_FREE(v);
 				break;
 			}
 		case VECTOR_CHAR:
@@ -1268,7 +1268,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t len=0;
 				source->get_vector(v, len);
 				target->set_vector(v, len);
-				delete[] v;
+				SG_FREE(v);
 				break;
 			}
 		case VECTOR_INT:
@@ -1277,7 +1277,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t len=0;
 				source->get_vector(v, len);
 				target->set_vector(v, len);
-				delete[] v;
+				SG_FREE(v);
 				break;
 			}
 		case VECTOR_REAL:
@@ -1286,7 +1286,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t len=0;
 				source->get_vector(v, len);
 				target->set_vector(v, len);
-				delete[] v;
+				SG_FREE(v);
 				break;
 			}
 		case VECTOR_SHORTREAL:
@@ -1295,7 +1295,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t len=0;
 				source->get_vector(v, len);
 				target->set_vector(v, len);
-				delete[] v;
+				SG_FREE(v);
 				break;
 			}
 		case VECTOR_SHORT:
@@ -1304,7 +1304,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t len=0;
 				source->get_vector(v, len);
 				target->set_vector(v, len);
-				delete[] v;
+				SG_FREE(v);
 				break;
 			}
 		case VECTOR_WORD:
@@ -1313,7 +1313,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t len=0;
 				source->get_vector(v, len);
 				target->set_vector(v, len);
-				delete[] v;
+				SG_FREE(v);
 				break;
 			}
 
@@ -1324,7 +1324,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<uint8_t>* strs=NULL;
 				source->get_string_list(strs, num_str, max_str_len);
 				target->set_string_list(strs, num_str);
-				delete[] strs;
+				SG_FREE(strs);
 				break;
 			}
 		case STRING_CHAR:
@@ -1334,7 +1334,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<char>* strs;
 				source->get_string_list(strs, num_str,max_str_len);
 				target->set_string_list(strs, num_str);
-				delete[] strs;
+				SG_FREE(strs);
 				break;
 			}
 		case STRING_INT:
@@ -1344,7 +1344,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<int32_t>* strs;
 				source->get_string_list(strs, num_str,max_str_len);
 				target->set_string_list(strs, num_str);
-				delete[] strs;
+				SG_FREE(strs);
 				break;
 			}
 		case STRING_SHORT:
@@ -1354,7 +1354,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<int16_t>* strs=NULL;
 				source->get_string_list(strs, num_str, max_str_len);
 				target->set_string_list(strs, num_str);
-				delete[] strs;
+				SG_FREE(strs);
 				break;
 			}
 		case STRING_WORD:
@@ -1364,7 +1364,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<uint16_t>* strs=NULL;
 				source->get_string_list(strs, num_str, max_str_len);
 				target->set_string_list(strs, num_str);
-				delete[] strs;
+				SG_FREE(strs);
 				break;
 			}
 		case DENSE_INT:
@@ -1374,7 +1374,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t* fmatrix=NULL;
 				source->get_matrix(fmatrix, num_feat, num_vec);
 				target->set_matrix(fmatrix, num_feat, num_vec);
-				delete[] fmatrix;
+				SG_FREE(fmatrix);
 				break;
 			}
 		case DENSE_REAL:
@@ -1384,7 +1384,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				float64_t* fmatrix=NULL;
 				source->get_matrix(fmatrix, num_feat, num_vec);
 				target->set_matrix(fmatrix, num_feat, num_vec);
-				delete[] fmatrix;
+				SG_FREE(fmatrix);
 				break;
 			}
 		case DENSE_SHORT:
@@ -1394,7 +1394,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int16_t* fmatrix=NULL;
 				source->get_matrix(fmatrix, num_feat, num_vec);
 				target->set_matrix(fmatrix, num_feat, num_vec);
-				delete[] fmatrix;
+				SG_FREE(fmatrix);
 				break;
 			}
 		case DENSE_SHORTREAL:
@@ -1404,7 +1404,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				float32_t* fmatrix=NULL;
 				source->get_matrix(fmatrix, num_feat, num_vec);
 				target->set_matrix(fmatrix, num_feat, num_vec);
-				delete[] fmatrix;
+				SG_FREE(fmatrix);
 				break;
 			}
 		case DENSE_WORD:
@@ -1414,7 +1414,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				uint16_t* fmatrix=NULL;
 				source->get_matrix(fmatrix, num_feat, num_vec);
 				target->set_matrix(fmatrix, num_feat, num_vec);
-				delete[] fmatrix;
+				SG_FREE(fmatrix);
 				break;
 			}
 			/*
@@ -1425,8 +1425,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_dims=0;
 				source->get_ndarray(a, dims, num_dims);
 				target->set_ndarray(a, dims, num_dims);
-				delete[] a;
-				delete[] dims;
+				SG_FREE(a);
+				SG_FREE(dims);
 				break;
 			}
 		case NDARRAY_CHAR:
@@ -1436,8 +1436,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_dims=0;
 				source->get_ndarray(a, dims, num_dims);
 				target->set_ndarray(a, dims, num_dims);
-				delete[] a;
-				delete[] dims;
+				SG_FREE(a);
+				SG_FREE(dims);
 				break;
 			}
 		case NDARRAY_INT:
@@ -1447,8 +1447,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_dims=0;
 				source->get_ndarray(a, dims, num_dims);
 				target->set_ndarray(a, dims, num_dims);
-				delete[] a;
-				delete[] dims;
+				SG_FREE(a);
+				SG_FREE(dims);
 				break;
 			}
 		case NDARRAY_REAL:
@@ -1458,8 +1458,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_dims=0;
 				source->get_ndarray(a, dims, num_dims);
 				target->set_ndarray(a, dims, num_dims);
-				delete[] a;
-				delete[] dims;
+				SG_FREE(a);
+				SG_FREE(dims);
 				break;
 			}
 		case NDARRAY_SHORTREAL:
@@ -1469,8 +1469,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_dims=0;
 				source->get_ndarray(a, dims, num_dims);
 				target->set_ndarray(a, dims, num_dims);
-				delete[] a;
-				delete[] dims;
+				SG_FREE(a);
+				SG_FREE(dims);
 				break;
 			}
 		case NDARRAY_SHORT:
@@ -1480,8 +1480,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_dims=0;
 				source->get_ndarray(a, dims, num_dims);
 				target->set_ndarray(a, dims, num_dims);
-				delete[] a;
-				delete[] dims;
+				SG_FREE(a);
+				SG_FREE(dims);
 				break;
 			}
 		case NDARRAY_WORD:
@@ -1491,8 +1491,8 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				int32_t num_dims=0;
 				source->get_ndarray(a, dims, num_dims);
 				target->set_ndarray(a, dims, num_dims);
-				delete[] a;
-				delete[] dims;
+				SG_FREE(a);
+				SG_FREE(dims);
 				break;
 			}*/
 		case SPARSE_REAL:
@@ -1505,7 +1505,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				for (int32_t i=0; i<num_vec; i++)
 					nnz+=fmatrix[i].num_feat_entries;
 				target->set_sparse_matrix(fmatrix, num_feat, num_vec, nnz);
-				delete[] fmatrix;
+				SG_FREE(fmatrix);
 				break;
 			}
 
@@ -1537,10 +1537,10 @@ bool CSGInterface::cmd_load_features()
 	bool success=ui_features->load(
 		filename, fclass, type, target, size, comp_features);
 
-	delete[] filename;
-	delete[] fclass;
-	delete[] type;
-	delete[] target;
+	SG_FREE(filename);
+	SG_FREE(fclass);
+	SG_FREE(type);
+	SG_FREE(target);
 	return success;
 }
 
@@ -1556,9 +1556,9 @@ bool CSGInterface::cmd_save_features()
 
 	bool success=ui_features->save(filename, type, target);
 
-	delete[] filename;
-	delete[] type;
-	delete[] target;
+	SG_FREE(filename);
+	SG_FREE(type);
+	SG_FREE(target);
 	return success;
 }
 
@@ -1572,7 +1572,7 @@ bool CSGInterface::cmd_clean_features()
 
 	bool success=ui_features->clean(target);
 
-	delete[] target;
+	SG_FREE(target);
 	return success;
 }
 
@@ -1591,10 +1591,10 @@ bool CSGInterface::cmd_get_features()
 		feat=ui_features->get_test_features();
 	else
 	{
-		delete[] target;
+		SG_FREE(target);
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
-	delete[] target;
+	SG_FREE(target);
 
 	ASSERT(feat);
 
@@ -1780,7 +1780,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 	char* target=get_string(tlen);
 	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
-		delete[] target;
+		SG_FREE(target);
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
@@ -1876,7 +1876,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			if (strmatch(alphabet_str, "DNABINFILE"))
 			{
-				delete[] alphabet_str;
+				SG_FREE(alphabet_str);
 
 				ASSERT(fmatrix[0].string);
 				feat=new CStringFeatures<uint8_t>(DNA);
@@ -1912,7 +1912,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 					alphabet=new CAlphabet(alphabet_str, alphabet_len);
 
 				SG_REF(alphabet);
-				delete[] alphabet_str;
+				SG_FREE(alphabet_str);
 
 				feat=new CStringFeatures<char>(alphabet);
 
@@ -1948,7 +1948,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			ASSERT(alphabet_str);
 			CAlphabet* alphabet=NULL;
 			alphabet=new CAlphabet(alphabet_str, alphabet_len);
-			delete[] alphabet_str;
+			SG_FREE(alphabet_str);
 
 			feat=new CStringFeatures<uint8_t>(alphabet);
 			if (!((CStringFeatures<uint8_t>*) feat)->set_features(fmatrix, num_str, max_str_len))
@@ -2002,7 +2002,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		}
 	}
 
-	delete[] target;
+	SG_FREE(target);
 
 	return true;
 }
@@ -2017,7 +2017,7 @@ bool CSGInterface::cmd_set_reference_features()
 
 	bool success=ui_features->set_reference_features(target);
 
-	delete[] target;
+	SG_FREE(target);
 	return success;
 }
 
@@ -2030,7 +2030,7 @@ bool CSGInterface::cmd_del_last_features()
 	char* target=get_str_from_str_or_direct(len);
 	bool success=ui_features->del_last_feature_obj(target);
 
-	delete[] target;
+	SG_FREE(target);
 	return success;
 }
 
@@ -2044,7 +2044,7 @@ bool CSGInterface::cmd_convert()
 	CFeatures* features=ui_features->get_convert_features(target);
 	if (!features)
 	{
-		delete[] target;
+		SG_FREE(target);
 		SG_ERROR("No \"%s\" features available.\n", target);
 	}
 
@@ -2153,7 +2153,7 @@ bool CSGInterface::cmd_convert()
 								if (rev_str)
 									rev=rev_str[0];
 
-								delete[] rev_str;
+								SG_FREE(rev_str);
 							}
 						}
 					}
@@ -2211,7 +2211,7 @@ bool CSGInterface::cmd_convert()
 								if (rev_str)
 									rev=rev_str[0];
 
-								delete[] rev_str;
+								SG_FREE(rev_str);
 							}
 						}
 					}
@@ -2269,11 +2269,11 @@ bool CSGInterface::cmd_convert()
 	else
 		SG_ERROR("Conversion failed.\n");
 
-	delete[] target;
-	delete[] from_class;
-	delete[] from_type;
-	delete[] to_class;
-	delete[] to_type;
+	SG_FREE(target);
+	SG_FREE(from_class);
+	SG_FREE(from_type);
+	SG_FREE(to_class);
+	SG_FREE(to_type);
 	return (result!=NULL);
 }
 
@@ -2427,7 +2427,7 @@ bool CSGInterface::cmd_reshape()
 
 	bool success=ui_features->reshape(target, num_feat, num_vec);
 
-	delete[] target;
+	SG_FREE(target);
 	return success;
 }
 
@@ -2442,8 +2442,8 @@ bool CSGInterface::cmd_load_labels()
 
 	bool success=ui_labels->load(filename, target);
 
-	delete[] filename;
-	delete[] target;
+	SG_FREE(filename);
+	SG_FREE(target);
 	return success;
 }
 
@@ -2456,7 +2456,7 @@ bool CSGInterface::cmd_set_labels()
 	char* target=get_string(tlen);
 	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
-		delete[] target;
+		SG_FREE(target);
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
 
@@ -2472,7 +2472,7 @@ bool CSGInterface::cmd_set_labels()
 		if (!labels->set_label(i, lab[i]))
 			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
 	}
-	delete[] lab;
+	SG_FREE(lab);
 
 	if (strmatch(target, "TRAIN"))
 		ui_labels->set_train_labels(labels);
@@ -2480,10 +2480,10 @@ bool CSGInterface::cmd_set_labels()
 		ui_labels->set_test_labels(labels);
 	else
 	{
-		delete[] target;
+		SG_FREE(target);
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
-	delete[] target;
+	SG_FREE(target);
 
 	return true;
 }
@@ -2503,10 +2503,10 @@ bool CSGInterface::cmd_get_labels()
 		labels=ui_labels->get_test_labels();
 	else
 	{
-		delete[] target;
+		SG_FREE(target);
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
-	delete[] target;
+	SG_FREE(target);
 
 	if (!labels)
 		SG_ERROR("No labels.\n");
@@ -2518,7 +2518,7 @@ bool CSGInterface::cmd_get_labels()
 		lab[i]=labels->get_label(i);
 
 	set_vector(lab, num_labels);
-	delete[] lab;
+	SG_FREE(lab);
 
 	return true;
 }
@@ -2544,7 +2544,7 @@ bool CSGInterface::cmd_set_kernel_normalization()
 
 	bool success=ui_kernel->set_normalization(normalization, c, r);
 
-	delete[] normalization;
+	SG_FREE(normalization);
 	return success;
 }
 
@@ -2636,7 +2636,7 @@ CKernel* CSGInterface::create_kernel()
                         kernel=ui_kernel->create_sigmoid(size, Wdilation, Wtranslation);
                 }
 
-                delete[] dtype;
+                SG_FREE(dtype);
         }
 	else if (strmatch(type, "LINEAR"))
 	{
@@ -2662,7 +2662,7 @@ CKernel* CSGInterface::create_kernel()
 		else if (strmatch(dtype, "SPARSEREAL"))
 			kernel=ui_kernel->create_sparselinear(size, scale);
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "HISTOGRAM"))
 	{
@@ -2676,7 +2676,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_histogramword(size);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "SALZBERG"))
 	{
@@ -2690,7 +2690,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_salzbergword(size);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "POLYMATCH"))
 	{
@@ -2725,7 +2725,7 @@ CKernel* CSGInterface::create_kernel()
 				size, degree, inhomogene, normalize);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "MATCH"))
 	{
@@ -2747,7 +2747,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_matchwordstring(size, d, normalize);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "WEIGHTEDCOMMSTRING") || strmatch(type, "COMMSTRING"))
 	{
@@ -2783,8 +2783,8 @@ CKernel* CSGInterface::create_kernel()
 				size, use_sign, norm_str, K_COMMULONGSTRING);
 		}
 
-		delete[] dtype;
-		delete[] norm_str;
+		SG_FREE(dtype);
+		SG_FREE(norm_str);
 	}
 	else if (strmatch(type, "CHI2"))
 	{
@@ -2803,7 +2803,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_chi2(size, width);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "FIXEDDEGREE"))
 	{
@@ -2821,7 +2821,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_fixeddegreestring(size, d);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "LOCALALIGNMENT"))
 	{
@@ -2836,7 +2836,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_localalignmentstring(size);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "OLIGO"))
 	{
@@ -2853,7 +2853,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_oligo(size, k, w);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "WEIGHTEDDEGREEPOS2") ||
 		strmatch(type, "WEIGHTEDDEGREEPOS2_NONORM"))
@@ -2882,10 +2882,10 @@ CKernel* CSGInterface::create_kernel()
 				size, order, max_mismatch, shifts, length,
 				use_normalization);
 
-			delete[] shifts;
+			SG_FREE(shifts);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "WEIGHTEDDEGREEPOS3"))
 	{
@@ -2916,11 +2916,11 @@ CKernel* CSGInterface::create_kernel()
 				size, order, max_mismatch, shifts, length,
 				mkl_stepsize, position_weights);
 
-			delete[] position_weights;
-			delete[] shifts ;
+			SG_FREE(position_weights);
+			SG_FREE(shifts);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "WEIGHTEDDEGREEPOS"))
 	{
@@ -2964,7 +2964,7 @@ CKernel* CSGInterface::create_kernel()
 				size, order, max_mismatch, length, center, step);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "WEIGHTEDDEGREE"))
 	{
@@ -3015,7 +3015,7 @@ CKernel* CSGInterface::create_kernel()
 				mkl_stepsize, block_computation, single_degree);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "WEIGHTEDDEGREERBF"))
 	{
@@ -3040,7 +3040,7 @@ CKernel* CSGInterface::create_kernel()
 		
 		kernel=ui_kernel->create_weighteddegreerbf(size, degree, nof_properties, width);
 
-		delete[] dtype;
+		SG_FREE(dtype);
 
 	}
 	else if (strmatch(type, "SPECTRUMMISMATCHRBF"))
@@ -3075,7 +3075,7 @@ CKernel* CSGInterface::create_kernel()
 				SG_ERROR("Matrix size %d %d\n", N, M);
 			}
 		}
-		delete[] dtype;
+		SG_FREE(dtype);
 
 	}
 
@@ -3119,7 +3119,7 @@ CKernel* CSGInterface::create_kernel()
 			}
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "POLY"))
 	{
@@ -3156,7 +3156,7 @@ CKernel* CSGInterface::create_kernel()
 				size, degree, inhomogene, normalize);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "SIGMOID"))
 	{
@@ -3181,7 +3181,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_sigmoid(size, gamma, coef0);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "GAUSSIAN")) // RBF
 	{
@@ -3199,7 +3199,7 @@ CKernel* CSGInterface::create_kernel()
 		else if (strmatch(dtype, "SPARSEREAL"))
 			kernel=ui_kernel->create_sparsegaussian(size, width);
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "GAUSSIANSHIFT")) // RBF
 	{
@@ -3218,7 +3218,7 @@ CKernel* CSGInterface::create_kernel()
 				size, width, max_shift, shift_step);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "CUSTOM"))
 	{
@@ -3237,7 +3237,7 @@ CKernel* CSGInterface::create_kernel()
 				!strmatch(ktype, "FULL") &&
 				!strmatch(ktype, "FULL2DIAG"))
 		{
-			delete[] ktype;
+			SG_FREE(ktype);
 			SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
 		}
 
@@ -3271,7 +3271,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_const(size, c);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else if (strmatch(type, "DIAG"))
 	{
@@ -3289,7 +3289,7 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_diag(size, diag);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 
 	else if (strmatch(type, "TPPK"))
@@ -3308,12 +3308,12 @@ CKernel* CSGInterface::create_kernel()
 			kernel=ui_kernel->create_tppk(size, km, rows, cols);
 		}
 
-		delete[] dtype;
+		SG_FREE(dtype);
 	}
 	else
 		SG_NOTIMPLEMENTED;
 
-	delete[] type;
+	SG_FREE(type);
 	SG_DEBUG("created kernel: %p\n", kernel);
 	return kernel;
 }
@@ -3360,7 +3360,7 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 			SG_UNREF(feat);
 			feat = new CImplicitWeightedSpecFeatures(sf, normalize);
 		}
-		delete[] feature_class_str;
+		SG_FREE(feature_class_str);
 
 		SG_UNREF(alphabet);
 	}
@@ -3392,7 +3392,7 @@ CFeatures* CSGInterface::create_custom_real_features(CSimpleFeatures<float64_t>*
 		else 	
 			SG_ERROR("Unknown feature class: %s\n", feature_class_str);
 
-		delete[] feature_class_str;
+		SG_FREE(feature_class_str);
 	}
 
 	return feat;
@@ -3422,7 +3422,7 @@ bool CSGInterface::cmd_save_kernel()
 
 	bool success=ui_kernel->save_kernel(filename);
 
-	delete[] filename;
+	SG_FREE(filename);
 	return success;
 }
 
@@ -3448,7 +3448,7 @@ bool CSGInterface::cmd_get_kernel_matrix()
 		set_matrix(km.matrix, km.num_rows, km.num_cols);
 	}
 
-	delete[] target;
+	SG_FREE(target);
 
 	return success;
 }
@@ -3503,13 +3503,13 @@ bool CSGInterface::cmd_set_WD_position_weights()
 			target=get_string(tlen);
 			if (!target)
 			{
-				delete[] weights;
+				SG_FREE(weights);
 				SG_ERROR("Couldn't find second argument to method.\n");
 			}
 
 			if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 			{
-				delete[] target;
+				SG_FREE(target);
 				SG_ERROR("Second argument none of TRAIN or TEST.\n");
 			}
 
@@ -3519,7 +3519,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 		
 		if (dim!=1 && len>0)
 		{
-			delete[] target;
+			SG_FREE(target);
 			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
 			}
 
@@ -3552,7 +3552,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 			}
 		}
 
-		delete[] target;
+		SG_FREE(target);
 	}
 
 	return success;
@@ -3737,10 +3737,10 @@ bool CSGInterface::cmd_get_dotfeature_weights_combined()
 		features=ui_features->get_test_features();
 	else
 	{
-		delete[] target;
+		SG_FREE(target);
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
-	delete[] target;
+	SG_FREE(target);
 
 	if (!features)
 		SG_ERROR("No features.\n");
@@ -3751,7 +3751,7 @@ bool CSGInterface::cmd_get_dotfeature_weights_combined()
 	int32_t len=0;
 	((CCombinedDotFeatures*) features)->get_subfeature_weights(&weights, &len);
 	set_vector(weights, len);
-	delete[] weights;
+	SG_FREE(weights);
 
 	return true;
 }
@@ -3771,10 +3771,10 @@ bool CSGInterface::cmd_set_dotfeature_weights_combined()
 		features=ui_features->get_test_features();
 	else
 	{
-		delete[] target;
+		SG_FREE(target);
 		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
 	}
-	delete[] target;
+	SG_FREE(target);
 
 	if (!features)
 		SG_ERROR("No features.\n");
@@ -3992,7 +3992,7 @@ bool CSGInterface::cmd_compute_by_subkernels()
 	}
 
 	set_matrix(result, num_feat, num_vec);
-	delete[] result;
+	SG_FREE(result);
 
 	return true;
 }
@@ -4047,11 +4047,11 @@ bool CSGInterface::cmd_get_kernel_optimization()
 
 			float64_t* position_weights=k->extract_w(max_order, num_feat,
 				num_sym, NULL, num_suppvec, sv_idx, sv_weight);
-			delete[] sv_idx;
-			delete[] sv_weight;
+			SG_FREE(sv_idx);
+			SG_FREE(sv_weight);
 
 			set_matrix(position_weights, num_sym, num_feat);
-			delete[] position_weights;
+			SG_FREE(position_weights);
 
 			return true;
 		}
@@ -4130,7 +4130,7 @@ bool CSGInterface::cmd_set_kernel_optimization_type()
 
 	bool success=ui_kernel->set_optimization_type(opt_type);
 
-	delete[] opt_type;
+	SG_FREE(opt_type);
 	return success;
 }
 
@@ -4144,7 +4144,7 @@ bool CSGInterface::cmd_set_solver()
 
 	bool success=ui_classifier->set_solver(solver);
 
-	delete[] solver;
+	SG_FREE(solver);
 	return success;
 }
 
@@ -4158,7 +4158,7 @@ bool CSGInterface::cmd_set_constraint_generator()
 
 	bool success=ui_classifier->set_constraint_generator(cg);
 
-	delete[] cg;
+	SG_FREE(cg);
 	return success;
 }
 
@@ -4200,7 +4200,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 		if (!labels->set_label(i, lab[i]))
 			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
 	}
-	delete[] lab;
+	SG_FREE(lab);
 
 	kernel->set_prior_probs_from_labels(labels);
 
@@ -4297,8 +4297,8 @@ bool CSGInterface::cmd_set_distance()
 	else
 		SG_NOTIMPLEMENTED;
 
-	delete[] type;
-	delete[] dtype;
+	SG_FREE(type);
+	SG_FREE(dtype);
 	return ui_distance->set_distance(distance);
 }
 
@@ -4330,7 +4330,7 @@ bool CSGInterface::cmd_get_distance_matrix()
 		dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
 
 		set_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
-		delete[] dmatrix;
+		SG_FREE(dmatrix);
 	}
 
 	return success;
@@ -4365,11 +4365,11 @@ bool CSGInterface::cmd_get_SPEC_consensus()
 
 	char* consensus=((CCommWordStringKernel*) kernel)->compute_consensus(
 		num_feat, num_suppvec, sv_idx, sv_weight);
-	delete[] sv_idx;
-	delete[] sv_weight;
+	SG_FREE(sv_idx);
+	SG_FREE(sv_weight);
 
 	set_vector(consensus, num_feat);
-	delete[] consensus;
+	SG_FREE(consensus);
 
 	return true;
 }
@@ -4417,11 +4417,11 @@ bool CSGInterface::cmd_get_SPEC_scoring()
 		position_weights=((CWeightedCommWordStringKernel*) kernel)->compute_scoring(
 			max_order, num_feat, num_sym, NULL,
 			num_suppvec, sv_idx, sv_weight);
-	delete[] sv_idx;
-	delete[] sv_weight;
+	SG_FREE(sv_idx);
+	SG_FREE(sv_weight);
 
 	set_matrix(position_weights, num_sym, num_feat);
-	delete[] position_weights;
+	SG_FREE(position_weights);
 
 	return true;
 }
@@ -4452,11 +4452,11 @@ bool CSGInterface::cmd_get_WD_consensus()
 
 	char* consensus=((CWeightedDegreePositionStringKernel*) kernel)->compute_consensus(
 			num_feat, num_suppvec, sv_idx, sv_weight);
-	delete[] sv_idx;
-	delete[] sv_weight;
+	SG_FREE(sv_idx);
+	SG_FREE(sv_weight);
 
 	set_vector(consensus, num_feat);
-	delete[] consensus;
+	SG_FREE(consensus);
 
 	return true;
 }
@@ -4520,11 +4520,11 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		position_weights=((CWeightedDegreePositionStringKernel*) kernel)->compute_POIM(
 				max_order, seqlen, num_sym, NULL,
 				num_suppvec, sv_idx, sv_weight, distribution);
-		delete[] sv_idx;
-		delete[] sv_weight;
+		SG_FREE(sv_idx);
+		SG_FREE(sv_weight);
 
 		set_matrix(position_weights, num_sym, seqlen);
-		delete[] position_weights;
+		SG_FREE(position_weights);
 
 		return true;
 	}
@@ -4565,11 +4565,11 @@ bool CSGInterface::cmd_compute_POIM_WD()
 	float64_t* position_weights=
 		((CWeightedDegreePositionStringKernel*) kernel)->compute_scoring(
 			max_order, num_feat, num_sym, NULL, num_suppvec, sv_idx, sv_weight);
-	delete[] sv_idx;
-	delete[] sv_weight;
+	SG_FREE(sv_idx);
+	SG_FREE(sv_weight);
 
 	set_matrix(position_weights, num_sym, num_feat);
-	delete[] position_weights;
+	SG_FREE(position_weights);
 
 	return true;
 }
@@ -4601,7 +4601,7 @@ bool CSGInterface::cmd_classify()
 	SG_UNREF(labels);
 
 	set_vector(result, num_vec);
-	delete[] result;
+	SG_FREE(result);
 
 	return true;
 }
@@ -4645,12 +4645,12 @@ bool CSGInterface::cmd_get_classifier()
 	//SG_PRINT("brows %d, bcols %d\n", brows, bcols);
 	//CMath::display_matrix(bias, brows, bcols);
 	set_matrix(bias, brows, bcols);
-	delete[] bias;
+	SG_FREE(bias);
 
 	//SG_PRINT("rows %d, cols %d\n", rows, cols);
 	//CMath::display_matrix(weights, rows, cols);
 	set_matrix(weights, rows, cols);
-	delete[] weights;
+	SG_FREE(weights);
 
 	return true;
 }
@@ -4675,7 +4675,7 @@ bool CSGInterface::cmd_new_classifier()
 
 	bool success=ui_classifier->new_classifier(name, d, from_d);
 
-	delete[] name;
+	SG_FREE(name);
 	return success;
 }
 
@@ -4689,7 +4689,7 @@ bool CSGInterface::cmd_save_classifier()
 
 	bool success=ui_classifier->save(filename);
 
-	delete[] filename;
+	SG_FREE(filename);
 	return success;
 }
 
@@ -4704,8 +4704,8 @@ bool CSGInterface::cmd_load_classifier()
 
 	bool success=ui_classifier->load(filename, type);
 
-	delete[] filename;
-	delete[] type;
+	SG_FREE(filename);
+	SG_FREE(type);
 	return success;
 }
 
@@ -4756,7 +4756,7 @@ bool CSGInterface::cmd_set_svm()
 		svm->set_alpha(i, alphas[i]);
 		svm->set_support_vector(i, (int32_t) alphas[i+num_support_vectors]);
 	}
-	delete[] alphas ;
+	SG_FREE(alphas);
 
 	return true;
 }
@@ -4782,7 +4782,7 @@ bool CSGInterface::cmd_set_linear_classifier()
 	c->set_w(w, len);
 	c->set_bias(bias);
 
-	delete[] w;
+	SG_FREE(w);
 
 	return true;
 }
@@ -5240,7 +5240,7 @@ bool CSGInterface::cmd_add_preproc()
 	else
 		SG_NOTIMPLEMENTED;
 
-	delete[] type;
+	SG_FREE(type);
 	return ui_preproc->add_preproc(preproc);
 }
 
@@ -5266,7 +5266,7 @@ bool CSGInterface::cmd_attach_preproc()
 
 	bool success=ui_preproc->attach_preproc(target, do_force);
 
-	delete[] target;
+	SG_FREE(target);
 	return success;
 }
 
@@ -5329,7 +5329,7 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 	SG_UNREF(labels);
 
 	set_vector(result, num_vec);
-	delete[] result;
+	SG_FREE(result);
 
 	return true;
 }
@@ -5389,7 +5389,7 @@ bool CSGInterface::cmd_get_plugin_estimate()
 		result[i+num_params]=neg_params[i];
 
 	set_matrix(result, num_params, 2);
-	delete[] result;
+	SG_FREE(result);
 
 	float64_t model_sizes[2];
 	model_sizes[0]=(float64_t) seq_length;
@@ -5455,7 +5455,7 @@ bool CSGInterface::cmd_relative_entropy()
 
 	set_vector(entropy, len);
 
-	delete[] entropy;
+	SG_FREE(entropy);
 	return true;
 }
 
@@ -5472,7 +5472,7 @@ bool CSGInterface::cmd_entropy()
 
 	set_vector(entropy, len);
 
-	delete[] entropy;
+	SG_FREE(entropy);
 	return true;
 }
 
@@ -5523,7 +5523,7 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 	SG_UNREF(labels);
 
 	set_vector(result, num_vec);
-	delete[] result;
+	SG_FREE(result);
 
 	return true;
 }
@@ -5609,7 +5609,7 @@ bool CSGInterface::cmd_save_likelihood()
 
 	bool success=ui_hmm->save_likelihood(filename, is_binary);
 
-	delete[] filename;
+	SG_FREE(filename);
 	return success;
 }
 
@@ -5647,7 +5647,7 @@ bool CSGInterface::cmd_get_viterbi_path()
 	T_STATES* path=h->get_path(dim, likelihood);
 
 	set_vector(path, num_feat);
-	delete[] path;
+	SG_FREE(path);
 	set_real(likelihood);
 
 	return true;
@@ -5706,7 +5706,7 @@ bool CSGInterface::cmd_linear_train()
 
 		bool success=ui_hmm->linear_train(align[0]);
 
-		delete[] align;
+		SG_FREE(align);
 		return success;
 	}
 	else
@@ -5727,7 +5727,7 @@ bool CSGInterface::cmd_save_path()
 
 	bool success=ui_hmm->save_path(filename, is_binary);
 
-	delete[] filename;
+	SG_FREE(filename);
 	return success;
 }
 
@@ -5809,7 +5809,7 @@ bool CSGInterface::cmd_append_model()
 
 	bool success=ui_hmm->append_model(filename, base1, base2);
 
-	delete[] filename;
+	SG_FREE(filename);
 	return success;
 }
 
@@ -5834,7 +5834,7 @@ bool CSGInterface::cmd_load_hmm()
 
 	bool success=ui_hmm->load(filename);
 
-	delete[] filename;
+	SG_FREE(filename);
 	return success;
 }
 
@@ -5852,7 +5852,7 @@ bool CSGInterface::cmd_save_hmm()
 
 	bool success=ui_hmm->save(filename, is_binary);
 
-	delete[] filename;
+	SG_FREE(filename);
 	return success;
 }
 
@@ -5924,7 +5924,7 @@ bool CSGInterface::cmd_set_hmm_as()
 
 	bool success=ui_hmm->set_hmm_as(target);
 
-	delete[] target;
+	SG_FREE(target);
 	return success;
 }
 
@@ -5960,7 +5960,7 @@ bool CSGInterface::cmd_load_definitions()
 
 	bool success=ui_hmm->load_definitions(filename, do_init);
 
-	delete[] filename;
+	SG_FREE(filename);
 	return success;
 }
 
@@ -5987,23 +5987,23 @@ bool CSGInterface::cmd_get_hmm()
 	}
 
 	set_vector(p, N);
-	delete[] p;
+	SG_FREE(p);
 	set_vector(q, N);
-	delete[] q;
+	SG_FREE(q);
 
 	float64_t* a=new float64_t[N*N];
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			a[i+j*N]=h->get_a(i, j);
 	set_matrix(a, N, N);
-	delete[] a;
+	SG_FREE(a);
 
 	float64_t* b=new float64_t[N*M];
 	for (i=0; i<N; i++)
 		for (j=0; j<M; j++)
 			b[i+j*N]=h->get_b(i, j);
 	set_matrix(b, N, M);
-	delete[] b;
+	SG_FREE(b);
 
 	return true;
 }
@@ -6040,7 +6040,7 @@ void CSGInterface::get_vector(bool*& vector, int32_t& len)
 	for (int32_t i=0; i<len; i++)
 		vector[i]= (int_vector[i]!=0);
 
-	delete[] int_vector;
+	SG_FREE(int_vector);
 }
 
 void CSGInterface::set_vector(const bool* vector, int32_t len)
@@ -6054,7 +6054,7 @@ void CSGInterface::set_vector(const bool* vector, int32_t len)
 			int_vector[i]=0;
 	}
 	set_vector(int_vector,len);
-	delete[] int_vector;
+	SG_FREE(int_vector);
 }
 
 bool CSGInterface::cmd_set_plif_struct()
@@ -6148,15 +6148,15 @@ bool CSGInterface::cmd_set_plif_struct()
 	pm->set_plif_names(names, N);
 	pm->set_plif_transform_type(all_transform, N);
 
-	delete[] all_limits ;
-	delete[] all_penalties ;
-	delete[] names;
-	delete[] all_transform;
-	delete[] min_values;
-	delete[] max_values; 
-	delete[] all_use_cache; 
-	delete[] all_use_svm;
-	delete[] all_do_calc;
+	SG_FREE(all_limits);
+	SG_FREE(all_penalties);
+	SG_FREE(names);
+	SG_FREE(all_transform);
+	SG_FREE(min_values);
+	SG_FREE(max_values); 
+	SG_FREE(all_use_cache); 
+	SG_FREE(all_use_svm);
+	SG_FREE(all_do_calc);
 
 	return true;
 }
@@ -6211,16 +6211,16 @@ bool CSGInterface::cmd_get_plif_struct()
 	set_vector(all_use_svm,N);
 	set_vector(all_do_calc,N);
 
-	delete[] ids;
-	delete[] max_values;	
-	delete[] min_values;
-	delete[] names;
-	delete[] all_transform;
-	delete[] all_limits;
-	delete[] all_penalties;
-	delete[] all_use_cache;
-	delete[] all_use_svm;
-	delete[] all_do_calc;
+	SG_FREE(ids);
+	SG_FREE(max_values);	
+	SG_FREE(min_values);
+	SG_FREE(names);
+	SG_FREE(all_transform);
+	SG_FREE(all_limits);
+	SG_FREE(all_penalties);
+	SG_FREE(all_use_cache);
+	SG_FREE(all_use_svm);
+	SG_FREE(all_do_calc);
 
 	return true;
 }
@@ -6304,7 +6304,7 @@ bool CSGInterface::cmd_set_model()
 	if (!pm->compute_plif_matrix(penalties_array, Dim, numDim))
 		SG_ERROR("error computing plif  matrix\n");
 	ui_structure->set_num_states(Dim[0]);
-	delete[] penalties_array ;
+	SG_FREE(penalties_array);
 
 	// ARG 2
 	// bool-> determines if orf information should be used
@@ -6321,7 +6321,7 @@ bool CSGInterface::cmd_set_model()
 		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms);
 	ASSERT(Mmod == 2)
 	h->init_mod_words_array(mod_words, Nmod, Mmod) ;
-	delete[] mod_words;
+	SG_FREE(mod_words);
 
 	// ARG 4
 	// links: states -> signal plifs (#states x 2)
@@ -6331,7 +6331,7 @@ bool CSGInterface::cmd_set_model()
 	get_matrix(state_signals,num_states,feat_dim3);
 	ASSERT(num_states==Dim[0]);
 	pm->compute_signal_plifs(state_signals, feat_dim3, num_states);
-	delete[] state_signals;
+	SG_FREE(state_signals);
 
 
 	// ARG 5
@@ -6345,7 +6345,7 @@ bool CSGInterface::cmd_set_model()
 
 	ui_structure->set_orf_info(orf_info, Norf, Morf);
 	h->set_orf_info(orf_info, Norf, Morf);
-	delete[] orf_info;
+	SG_FREE(orf_info);
 
 	h->set_num_states(num_states) ;
 	
@@ -6386,12 +6386,12 @@ bool CSGInterface::cmd_precompute_content_svms()
 	//int32_t Nweights = ui_structure->get_num_svm_weights();
 	h->set_pos(all_pos, Npos);
 	h->set_gene_string(seq, seq_len);
-	delete[] seq;
+	SG_FREE(seq);
 	h->create_word_string();
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms);
 	h->set_dict_weights(weights, Nweights, num_svms);
-	delete[] weights;
+	SG_FREE(weights);
 	h->precompute_content_values();
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
@@ -6434,9 +6434,9 @@ bool CSGInterface::cmd_set_lin_feat()
 	  {
 	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len) ;
 
-	    delete[] lin_feat ;
-	    delete[] seq ;
-	    delete[] all_pos ;
+	    SG_FREE(lin_feat);
+	    SG_FREE(seq);
+	    SG_FREE(all_pos);
 	    
 	    return false ;
 	  }
@@ -6451,9 +6451,9 @@ bool CSGInterface::cmd_set_lin_feat()
 	h->init_content_svm_value_array(num_svms);
 	h->set_lin_feat(lin_feat, num_svms, seq_len);
 
-	delete[] lin_feat ;
-	delete[] seq ;
-	delete[] all_pos ;
+	SG_FREE(lin_feat);
+	SG_FREE(seq);
+	SG_FREE(all_pos);
 
 	return true;
 }
@@ -6490,8 +6490,8 @@ bool CSGInterface::cmd_set_feature_matrix()
 
 	ASSERT(ui_structure->set_feature_dims(Dims));
 
-	delete[] features ;
-	delete[] Dims ;
+	SG_FREE(features);
+	SG_FREE(Dims);
 
 	return true;
 }
@@ -6524,9 +6524,9 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	ASSERT(ui_structure->set_feature_matrix_sparse(features1, features2, Dims));
 	ASSERT(ui_structure->set_feature_dims(Dims));
 
-	delete[] features1 ;
-	delete[] features2 ;
-	delete[] Dims ;
+	SG_FREE(features1);
+	SG_FREE(features2);
+	SG_FREE(Dims);
 	
 	return true;
 }
@@ -6565,10 +6565,10 @@ bool CSGInterface::cmd_init_intron_list()
 
 	intron_list->read_introns(start_positions, end_positions, quality, Nstart_positions);
 
-	delete[] start_positions;
-	delete[] end_positions;
-	delete[] quality;
-	delete[] all_pos;
+	SG_FREE(start_positions);
+	SG_FREE(end_positions);
+	SG_FREE(quality);
+	SG_FREE(all_pos);
 
 	//int32_t test;
 	//int32_t testq;
@@ -6655,7 +6655,7 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	else
 		nbest =all_nbest[0];	
-	delete[] all_nbest;
+	SG_FREE(all_nbest);
 
 	// ARG 4
 	// segment path (2 x #feature_positions)
@@ -6693,9 +6693,9 @@ bool CSGInterface::cmd_best_path_trans()
 	ASSERT(PEN);
 	
 	h->set_p_vector(p, num_states);
-	delete[] p ; p=NULL ;
+	SG_FREE(p); p=NULL ;
 	h->set_q_vector(q, num_states);
-	delete[] q ; q=NULL ;
+	SG_FREE(q); q=NULL ;
 
 	if (seg_path!=NULL)
 	{
@@ -6705,7 +6705,7 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 		h->set_a_trans_matrix(a_trans, num_a_trans, 3) ; // segment_id = 0 
 	}
-	delete[] a_trans ;
+	SG_FREE(a_trans);
 	a_trans=NULL ;
 
 	if (!h->check_svm_arrays())
@@ -6731,7 +6731,7 @@ bool CSGInterface::cmd_best_path_trans()
 		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
 	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
-	delete[] seg_path;
+	SG_FREE(seg_path);
 	
 	bool segment_loss_non_zero=false;
 	for (int32_t i=0; i<Nloss*Mloss; i++)
@@ -6740,7 +6740,7 @@ bool CSGInterface::cmd_best_path_trans()
 			segment_loss_non_zero=true;
 	}
 
-	delete[] loss;
+	SG_FREE(loss);
 	loss=NULL;
 
 	h->set_orf_info(orf_info, num_states, 2);
@@ -6797,8 +6797,8 @@ bool CSGInterface::cmd_best_path_trans()
 	set_vector(d_my_path, (nbest+nother)*M);
 	set_vector(d_my_pos, (nbest+nother)*M);
 
-	delete[] d_my_path ;
-	delete[] d_my_pos ;
+	SG_FREE(d_my_path);
+	SG_FREE(d_my_pos);
 
 	return true;
 
@@ -6966,23 +6966,23 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	set_vector(p_my_scores, Nmypos_seq);
 	set_vector(p_my_losses, Nmypos_seq);
 
-	delete[] p_A_deriv ;
-	delete[] p_p_deriv ;
-	delete[] p_q_deriv ;
-	delete[] p_Plif_deriv;
+	SG_FREE(p_A_deriv);
+	SG_FREE(p_p_deriv);
+	SG_FREE(p_q_deriv);
+	SG_FREE(p_Plif_deriv);
 	free(p_my_scores);
 	free(p_my_losses);
 
-	delete[] my_path ;
-	delete[] my_pos ;
+	SG_FREE(my_path);
+	SG_FREE(my_pos);
 
-	delete[] p ;
-	delete[] q ;
-	delete[] seg_path ;
-	delete[] a_trans ;
-	delete[] loss ;
-	delete[] mystate_seq ;
-	delete[] mypos_seq ;
+	SG_FREE(p);
+	SG_FREE(q);
+	SG_FREE(seg_path);
+	SG_FREE(a_trans);
+	SG_FREE(loss);
+	SG_FREE(mystate_seq);
+	SG_FREE(mypos_seq);
 
 	return true ;
 }
@@ -7006,10 +7006,10 @@ bool CSGInterface::cmd_crc()
 
 	for (int32_t i=0; i<slen; i++)
 		bstring[i]=string[i];
-	delete[] string;
+	SG_FREE(string);
 
 	int32_t val=CHash::crc32(bstring, slen);
-	delete[] bstring;
+	SG_FREE(bstring);
 	set_int(val);
 
 	return true;
@@ -7025,14 +7025,14 @@ bool CSGInterface::cmd_system()
 	memset(command, 0, sizeof(char)*10000);
 	char* cmd=get_str_from_str_or_direct(len);
 	strncat(command, cmd, 10000);
-	delete[] cmd;
+	SG_FREE(cmd);
 
 	while (m_rhs_counter<m_nrhs)
 	{
 		strncat(command, " ", 10000);
 		char* arg=get_str_from_str_or_direct(len);
 		strncat(command, arg, 10000);
-		delete[] arg;
+		SG_FREE(arg);
 	}
 
 	int32_t success=system(command);
@@ -7056,7 +7056,7 @@ bool CSGInterface::cmd_exec()
 	FILE* file=fopen(filename, "r");
 	if (!file)
 	{
-		delete[] filename;
+		SG_FREE(filename);
 		SG_ERROR("Error opening file: %s.\n", filename);
 	}
 
@@ -7191,10 +7191,10 @@ bool CSGInterface::cmd_translate_string()
 	float64_t* real_obs=new float64_t[len];
 	for (i=start; i<len; i++)
 		real_obs[i-start]=(float64_t) obs[i];
-	delete[] obs;
+	SG_FREE(obs);
 
 	set_vector(real_obs, len);
-	delete[] real_obs;
+	SG_FREE(real_obs);
 
 	return true;
 }
@@ -7248,7 +7248,7 @@ bool CSGInterface::cmd_print()
 
 	SG_PRINT("%s\n", msg);
 
-	delete[] msg;
+	SG_FREE(msg);
 	return true;
 }
 
@@ -7271,7 +7271,7 @@ bool CSGInterface::cmd_echo()
 		SG_INFO("Echo is on.\n");
 	}
 
-	delete[] level;
+	SG_FREE(level);
 	return true;
 }
 
@@ -7306,7 +7306,7 @@ bool CSGInterface::cmd_loglevel()
 
 	SG_INFO("Loglevel set to %s.\n", level);
 
-	delete[] level;
+	SG_FREE(level);
 	return true;
 }
 
@@ -7333,7 +7333,7 @@ bool CSGInterface::cmd_syntax_highlight()
 
 	SG_INFO("Syntax hilighting set to %s.\n", hili);
 
-	delete[] hili;
+	SG_FREE(hili);
 	return true;
 }
 
@@ -7354,7 +7354,7 @@ bool CSGInterface::cmd_progress()
 
 	SG_INFO("Progress set to %s.\n", progress);
 
-	delete[] progress;
+	SG_FREE(progress);
 	return true;
 }
 
@@ -7523,7 +7523,7 @@ bool CSGInterface::cmd_help()
 					hilight.get_command_prefix(), hilight.get_command_suffix());
 		}
 
-		delete[] command;
+		SG_FREE(command);
 	}
 
 
@@ -7594,8 +7594,8 @@ bool CSGInterface::cmd_send_command()
 	if (!success)
 		SG_ERROR("Non-supported legacy command %s.\n", command);
 
-	delete[] command;
-	delete[] arg;
+	SG_FREE(command);
+	SG_FREE(arg);
 	return success;
 }
 
@@ -7667,14 +7667,14 @@ bool CSGInterface::cmd_pr_loqo()
 	set_vector(x, n);
 	set_vector(y, m);
 
-	delete[] c;
-	delete[] H;
-	delete[] A;
-	delete[] b;
-	delete[] l;
-	delete[] u;
-	delete[] x;
-	delete[] y;
+	SG_FREE(c);
+	SG_FREE(H);
+	SG_FREE(A);
+	SG_FREE(b);
+	SG_FREE(l);
+	SG_FREE(u);
+	SG_FREE(x);
+	SG_FREE(y);
 	return true;
 }
 
@@ -7705,7 +7705,7 @@ int32_t CSGInterface::get_int_from_int_or_str()
 		char* str=get_str_from_str(len);
 		int32_t val=strtol(str, NULL, 10);
 
-		delete[] str;
+		SG_FREE(str);
 		return val;
 	}
 	else
@@ -7720,7 +7720,7 @@ float64_t CSGInterface::get_real_from_real_or_str()
 		char* str=get_str_from_str(len);
 		float64_t val=strtod(str, NULL);
 
-		delete[] str;
+		SG_FREE(str);
 		return val;
 	}
 	else
@@ -7735,7 +7735,7 @@ bool CSGInterface::get_bool_from_bool_or_str()
 		char* str=get_str_from_str(len);
 		bool val=strtol(str, NULL, 10)!=0;
 
-		delete[] str;
+		SG_FREE(str);
 		return val;
 	}
 	else
@@ -7761,7 +7761,7 @@ void CSGInterface::get_vector_from_int_vector_or_str(int32_t*& vector, int32_t& 
 			str=get_str_from_str(slen);
 			vector[i]=strtol(str, NULL, 10);
 			//SG_DEBUG("vec[%d]: %d\n", i, vector[i]);
-			delete[] str;
+			SG_FREE(str);
 		}
 	}
 	else
@@ -7788,7 +7788,7 @@ void CSGInterface::get_vector_from_real_vector_or_str(
 			str=get_str_from_str(slen);
 			vector[i]=strtod(str, NULL);
 			//SG_DEBUG("vec[%d]: %f\n", i, vector[i]);
-			delete[] str;
+			SG_FREE(str);
 		}
 	}
 	else
@@ -7929,6 +7929,6 @@ bool CSGInterface::handle()
 				command,
 				hilight.get_command_suffix());
 
-	delete[] command;
+	SG_FREE(command);
 	return success;
 }

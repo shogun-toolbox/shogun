@@ -723,7 +723,7 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 	degree=to_copy.degree ;
 	use_compact_terminal_nodes=to_copy.use_compact_terminal_nodes ;
 
-	delete[] position_weights ;
+	SG_FREE(position_weights);
 	position_weights=NULL ;
 	if (to_copy.position_weights!=NULL)
 	{
@@ -743,7 +743,7 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 
 	length = to_copy.length ;
 	if (trees)
-		delete[] trees ;
+		SG_FREE(trees);
 	trees=new int32_t[length] ;		
 	for (int32_t i=0; i<length; i++)
 		trees[i]=to_copy.trees[i] ;
@@ -1116,7 +1116,7 @@ void CTrie<Trie>::display_node(int32_t node) const
 
 	}
 
-	delete[] trace ;
+	SG_FREE(trace);
 #else
 	SG_ERROR( "not implemented\n") ;
 #endif
@@ -1137,7 +1137,7 @@ template <class Trie> void CTrie<Trie>::destroy()
 		delete_trees();
 		for (int32_t i=0; i<length; i++)
 			trees[i] = NO_CHILD;
-		delete[] trees;
+		SG_FREE(trees);
 
 		TreeMemPtr=0;
 		length=0;

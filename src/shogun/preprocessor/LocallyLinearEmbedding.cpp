@@ -78,8 +78,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 			neighborhood_matrix[j*N+i] = local_neighbors_idxs[j+1];
 	}
 
-	delete[] distance_matrix.matrix;
-	delete[] local_neighbors_idxs;
+	SG_FREE(distance_matrix.matrix);
+	SG_FREE(local_neighbors_idxs);
 
 	// init W (weight) matrix
 	float64_t* W_matrix = new float64_t[N*N];
@@ -153,10 +153,10 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	}
 
 	// clean
-	delete[] id_vector;
-	delete[] neighborhood_matrix;
-	delete[] z_matrix;
-	delete[] covariance_matrix;
+	SG_FREE(id_vector);
+	SG_FREE(neighborhood_matrix);
+	SG_FREE(z_matrix);
+	SG_FREE(covariance_matrix);
 
 	// W=I-W
 	for (i=0; i<N; i++)
@@ -173,7 +173,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	            W_matrix,N,
 	            0.0,M_matrix.matrix,N);
 
-	delete[] W_matrix;
+	SG_FREE(W_matrix);
 
 	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,false));
 	M_matrix.free_matrix();
@@ -246,7 +246,7 @@ arpack = true;
 				null_space_features[j*dimension+i] = matrix.matrix[(i+1)*N+j];
 		}
 	}
-	delete[] eigenvalues_vector;
+	SG_FREE(eigenvalues_vector);
 
 	return SGMatrix<float64_t>(null_space_features,dimension,N);
 }

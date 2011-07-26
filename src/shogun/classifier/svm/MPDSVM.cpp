@@ -255,10 +255,10 @@ bool CMPDSVM::train_kernel_machine(CFeatures* data)
 	SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
 	SG_INFO( "Number of SV: %ld\n", get_num_support_vectors());
 
-	delete[] alphas;
-	delete[] dalphas;
-	delete[] hessres;
-	delete[] F;
+	SG_FREE(alphas);
+	SG_FREE(dalphas);
+	SG_FREE(hessres);
+	SG_FREE(F);
 	delete kernel_cache;
 
 	return true;

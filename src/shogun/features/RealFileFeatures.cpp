@@ -62,9 +62,9 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
 
 CRealFileFeatures::~CRealFileFeatures()
 {
-	delete[] feature_matrix;
-	delete[] working_filename;
-	delete[] labels;
+	SG_FREE(feature_matrix);
+	SG_FREE(working_filename);
+	SG_FREE(labels);
 }
 
 CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
@@ -97,7 +97,7 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 {
 	ASSERT(working_file);
 	fseek(working_file, filepos, SEEK_SET);
-	delete[] feature_matrix;
+	SG_FREE(feature_matrix);
 
 	SG_INFO( "allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
@@ -145,7 +145,7 @@ bool CRealFileFeatures::load_base_data()
 	set_num_vectors(num_vec);
 	set_num_features(num_feat);
 	fseek(working_file, filepos+num_features*num_vectors*doublelen, SEEK_SET);
-	delete[] labels;
+	SG_FREE(labels);
 	labels=new int[num_vec];
 	ASSERT(fread(labels, intlen, num_vec, working_file) == num_vec);
 	return true;

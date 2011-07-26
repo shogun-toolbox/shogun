@@ -147,42 +147,42 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 CDynProg::~CDynProg()
 {
 	if (trans_list_forward_cnt)
-		delete[] trans_list_forward_cnt;
+		SG_FREE(trans_list_forward_cnt);
 	if (trans_list_forward)
 	{
 		for (int32_t i=0; i<trans_list_len; i++)
 		{
 			if (trans_list_forward[i])
-				delete[] trans_list_forward[i];
+				SG_FREE(trans_list_forward[i]);
 		}
-		delete[] trans_list_forward;
+		SG_FREE(trans_list_forward);
 	}
 	if (trans_list_forward_val)
 	{
 		for (int32_t i=0; i<trans_list_len; i++)
 		{
 			if (trans_list_forward_val[i])
-				delete[] trans_list_forward_val[i];
+				SG_FREE(trans_list_forward_val[i]);
 		}
-		delete[] trans_list_forward_val;
+		SG_FREE(trans_list_forward_val);
 	}
 	if (trans_list_forward_id)
 	{
 		for (int32_t i=0; i<trans_list_len; i++)
 		{
 			if (trans_list_forward_id[i])
-				delete[] trans_list_forward_id[i];
+				SG_FREE(trans_list_forward_id[i]);
 		}
-		delete[] trans_list_forward_id;
+		SG_FREE(trans_list_forward_id);
 	}
 	if (m_raw_intensities)
-		delete[] m_raw_intensities;
+		SG_FREE(m_raw_intensities);
 	if (m_probe_pos)
-		delete[] m_probe_pos;
+		SG_FREE(m_probe_pos);
 	if (m_num_probes_cum)
-	  delete[] m_num_probes_cum ;
+	  SG_FREE(m_num_probes_cum);
 	if (m_num_lin_feat_plifs_cum)
-	  delete[] m_num_lin_feat_plifs_cum ;
+	  SG_FREE(m_num_lin_feat_plifs_cum);
 
 	delete m_intron_list;
 
@@ -261,8 +261,8 @@ void CDynProg::init_tiling_data(
 		memcpy(tmp_probe_pos+m_num_probes_cum[m_num_raw_data-1], probe_pos, num_probes*sizeof(int32_t));	
 		memcpy(tmp_raw_intensities+m_num_probes_cum[m_num_raw_data-1], intensities, num_probes*sizeof(float64_t));	
 	}
-	delete[] m_probe_pos;
-	delete[] m_raw_intensities;
+	SG_FREE(m_probe_pos);
+	SG_FREE(m_raw_intensities);
 	m_probe_pos = tmp_probe_pos; //new int32_t[num_probes];
 	m_raw_intensities = tmp_raw_intensities;//new float64_t[num_probes];
 
@@ -298,7 +298,7 @@ void CDynProg::resize_lin_feat(const int32_t num_new_feat)
 			tmp[j*(dim1+num_new_feat)+k] = arr[j*dim1+k];
 
 	m_lin_feat.set_array(tmp, dim1+num_new_feat,dim2, true, true);// copy array and free it later 
-	delete[] tmp;
+	SG_FREE(tmp);
 
 	/*for(int32_t j=0;j<5;j++)
 	{
@@ -358,14 +358,14 @@ void CDynProg::precompute_tiling_plifs(
 		for (int32_t i=0; i<num_tiling_plifs; i++)
 			m_lin_feat.set_element(tiling_plif[i],tiling_rows[i]-1,pos_idx);
 	}
-	delete[] svm_value;
-	delete[] tiling_plif;
-	delete[] tiling_rows;
+	SG_FREE(svm_value);
+	SG_FREE(tiling_plif);
+	SG_FREE(tiling_rows);
 }
 
 void CDynProg::create_word_string()
 {
-	delete[] m_wordstr;
+	SG_FREE(m_wordstr);
 	m_wordstr=new uint16_t**[5440];
 	int32_t k=0;
 	int32_t genestr_len=m_genestr.get_dim1();
@@ -437,11 +437,11 @@ void CDynProg::precompute_content_values()
 			}
 			m_lin_feat.set_element(prev + my_svm_values_unnormalized[s], s, p+1);
 		}
-		delete[] my_svm_values_unnormalized;
+		SG_FREE(my_svm_values_unnormalized);
 	}
 	//for (int32_t j=0; j<m_num_degrees; j++)
-	//	delete[] m_wordstr[0][j] ;
-	//delete[] m_wordstr[0] ;
+	//	SG_FREE(m_wordstr[0][j]);
+	//SG_FREE(m_wordstr[0]);
 }
 
 void CDynProg::set_p_vector(float64_t *p, int32_t N)
@@ -489,10 +489,10 @@ void CDynProg::set_a_trans_matrix(
 	if (!((num_cols==3) || (num_cols==4)))
 		SG_ERROR("!((num_cols==3) || (num_cols==4)), num_cols: %i\n",num_cols);
 
-	delete[] trans_list_forward ;
-	delete[] trans_list_forward_cnt ;
-	delete[] trans_list_forward_val ;
-	delete[] trans_list_forward_id ;
+	SG_FREE(trans_list_forward);
+	SG_FREE(trans_list_forward_cnt);
+	SG_FREE(trans_list_forward_val);
+	SG_FREE(trans_list_forward_id);
 
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -701,8 +701,8 @@ void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t
 		        segment_mask[i] = seg_path[2*i+1] ;
 		}
 		best_path_set_segment_ids_mask(segment_ids, segment_mask, m_seq_len) ;
-		delete[] segment_ids;
-		delete[] segment_mask;
+		SG_FREE(segment_ids);
+		SG_FREE(segment_mask);
 	}
 	else
 	{
@@ -714,8 +714,8 @@ void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t
 			dzeros[i]=0.0 ;
 		}
 		best_path_set_segment_ids_mask(izeros, dzeros, m_seq_len) ;
-		delete[] izeros ;
-		delete[] dzeros ;
+		SG_FREE(izeros);
+		SG_FREE(dzeros);
 	}
 }
 
@@ -1144,7 +1144,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 							break ;
 					}
 			delete seq_input;
-			delete[] svm_value;
+			SG_FREE(svm_value);
 		}
 
 		// allow longer transitions than look_back
@@ -2070,8 +2070,8 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  content_svm_values_time=%1.2f  content_plifs_time=%1.2f\ninner_loop_max_time=%1.2f inner_loop=%1.2f long_transition_time=%1.2f\n total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, content_svm_values_time, content_plifs_time, inner_loop_max_time, inner_loop_time, long_transition_time, MyTime2.time_diff_sec()) ;
 #endif
 
-		delete[] fixedtempvv ;
-		delete[] fixedtempii ;
+		SG_FREE(fixedtempvv);
+		SG_FREE(fixedtempii);
 	}
 
 
@@ -2384,7 +2384,7 @@ void CDynProg::best_path_trans_deriv(
 						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;	
 
 					}
-					delete[] intensities;
+					SG_FREE(intensities);
 
 				}
 			}
@@ -2405,7 +2405,7 @@ void CDynProg::best_path_trans_deriv(
 						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;	
 
 					}
-					delete[] intensities;
+					SG_FREE(intensities);
 				}
 			}
 
@@ -2472,9 +2472,9 @@ void CDynProg::best_path_trans_deriv(
 	//SG_PRINT( "total score = %f \n", total_score) ;
 	//SG_PRINT( "total loss = %f \n", total_loss) ;
 	//#endif
-	delete[] svm_value;
-	delete[] svm_value_part1 ;
-	delete[] svm_value_part2 ;
+	SG_FREE(svm_value);
+	SG_FREE(svm_value_part1);
+	SG_FREE(svm_value_part2);
 }
 
 int32_t CDynProg::raw_intensities_interval_query(const int32_t from_pos, const int32_t to_pos, float64_t* intensities, int32_t type)
@@ -2537,7 +2537,7 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 		}
 		//if (to_pos>3990 && to_pos<4010)
 		//	SG_PRINT("from_state:%i to_state:%i support[0]:%i support[1]:%i\n",from_state, to_state, support[0], support[1]);
-		delete[] support;
+		SG_FREE(support);
 	}
 	// find the correct row with precomputed frame predictions
 	if (frame!=-1)

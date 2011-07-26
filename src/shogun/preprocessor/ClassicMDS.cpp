@@ -82,8 +82,8 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 			N,N,N,-0.5,D_matrix.matrix,N,H_matrix,N,0.0,Ds_matrix,N);
 
 	// cleanup
-	delete[] D_matrix.matrix;
-	delete[] H_matrix;
+	SG_FREE(D_matrix.matrix);
+	SG_FREE(H_matrix);
 
 	// feature matrix representing given distance
 	float64_t* replace_feature_matrix = new float64_t[m_target_dim*N];
@@ -153,7 +153,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 					Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
 		}
 
-		delete[] eigenvalues_vector;
+		SG_FREE(eigenvalues_vector);
 	#endif /* HAVE_ARPACK else */
 	
 	// warn user if there are negative or zero eigenvalues
@@ -167,7 +167,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	}	
 	
 	// cleanup
-	delete[] Ds_matrix;
+	SG_FREE(Ds_matrix);
 
 	return SGMatrix<float64_t>(replace_feature_matrix,m_target_dim,N);
 }

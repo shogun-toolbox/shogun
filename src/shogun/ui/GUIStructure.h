@@ -70,7 +70,7 @@ class CGUIStructure : public CSGObject
 
 		inline bool set_feature_matrix(float64_t* feat, int32_t* dims)
 		{
-			delete[] m_feature_matrix;
+			SG_FREE(m_feature_matrix);
 			int32_t len = dims[0]*dims[1]*dims[2];
 			m_feature_matrix = new float64_t[len];
 			memcpy(m_feature_matrix, feat, len*sizeof(float64_t));
@@ -79,8 +79,8 @@ class CGUIStructure : public CSGObject
 
 		inline bool set_feature_matrix_sparse(SGSparseVector<float64_t> *f1, SGSparseVector<float64_t> *f2, int32_t* dims)
 		{
-			delete[] m_feature_matrix_sparse1 ;
-			delete[] m_feature_matrix_sparse2 ;
+			SG_FREE(m_feature_matrix_sparse1);
+			SG_FREE(m_feature_matrix_sparse2);
 
 			m_feature_matrix_sparse1 = new CSparseFeatures<float64_t>(f1, dims[0], dims[1], true) ;
 			m_feature_matrix_sparse2 = new CSparseFeatures<float64_t>(f2, dims[0], dims[1], true) ;
@@ -90,7 +90,7 @@ class CGUIStructure : public CSGObject
 
 		inline bool set_feature_dims(int32_t* dims)
 		{
-			delete[] m_feature_dims;
+			SG_FREE(m_feature_dims);
 			m_feature_dims = new int32_t[3];
 			memcpy(m_feature_dims, dims,3*sizeof(int32_t));
 			return true;
@@ -100,7 +100,7 @@ class CGUIStructure : public CSGObject
 		inline bool set_all_pos(int32_t* pos, int32_t Npos)
 		{
 			if (m_all_positions!=pos)
-				delete[] m_all_positions;
+				SG_FREE(m_all_positions);
 			int32_t* cp_array = new int32_t[Npos];
 			memcpy(cp_array, pos, Npos*sizeof(int32_t));
 			m_num_positions = Npos;
@@ -115,7 +115,7 @@ class CGUIStructure : public CSGObject
 			int32_t Mweights /* ==num_svms */)
 		{
 			if (m_content_svm_weights!=weights)
-				delete[] m_content_svm_weights;
+				SG_FREE(m_content_svm_weights);
 			float64_t* cp_array = new float64_t[Nweights*Mweights];
 			memcpy(cp_array, weights,Nweights*Mweights*sizeof(float64_t));
 			m_content_svm_weights = cp_array;
@@ -131,7 +131,7 @@ class CGUIStructure : public CSGObject
 			int32_t* orf_info, int32_t Norf_info, int32_t Morf_info)
 		{
 			if (m_orf_info!=orf_info)
-				delete[] m_orf_info;
+				SG_FREE(m_orf_info);
 			int32_t* cp_array = new int32_t[Norf_info*Morf_info];
 			memcpy(cp_array, orf_info,Norf_info*Morf_info*sizeof(int32_t));
 			m_orf_info = cp_array;
@@ -154,7 +154,7 @@ class CGUIStructure : public CSGObject
 			int32_t* mod_words, int32_t Nmod_words, int32_t Mmod_words)
 		{
 			if (mod_words!=m_mod_words)
-				delete[] m_mod_words;
+				SG_FREE(m_mod_words);
 			int32_t* cp_array = new int32_t[Nmod_words*Mmod_words];
 			memcpy(cp_array, mod_words, Nmod_words*Mmod_words*sizeof(int32_t));
 			m_mod_words = cp_array;
@@ -171,12 +171,12 @@ class CGUIStructure : public CSGObject
 		inline bool cleanup()
 		{
 			delete m_dp;
-			//delete[] m_feature_matrix;
+			//SG_FREE(m_feature_matrix);
 			//delete m_feature_matrix_sparse1;
 			//delete m_feature_matrix_sparse2;
-			//delete[] m_feature_dims;
-			//delete[] m_all_positions;
-			//delete[] m_content_svm_weights;
+			//SG_FREE(m_feature_dims);
+			//SG_FREE(m_all_positions);
+			//SG_FREE(m_content_svm_weights);
 			//delete m_orf_info;
 			//delete m_mod_words;
 			//delete m_plif_matrix;

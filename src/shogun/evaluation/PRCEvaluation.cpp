@@ -15,7 +15,7 @@ using namespace shogun;
 
 CPRCEvaluation::~CPRCEvaluation()
 {
-	delete[] m_PRC_graph;
+	SG_FREE(m_PRC_graph);
 }
 
 float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
@@ -46,8 +46,8 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	CMath::qsort_backward_index(labels,idxs,length);
 
 	// clean and initialize graph and auPRC
-	delete[] labels;
-	delete[] m_PRC_graph;
+	SG_FREE(labels);
+	SG_FREE(m_PRC_graph);
 	m_PRC_graph = new float64_t[length*2];
 	m_auPRC = 0.0;
 

@@ -47,7 +47,7 @@ bool CPerceptron::train(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen);
-	delete[] w;
+	SG_FREE(w);
 	w_dim=num_feat;
 	w=new float64_t[num_feat];
 	float64_t* output=new float64_t[num_vec];
@@ -82,7 +82,7 @@ bool CPerceptron::train(CFeatures* data)
 	else
 		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter);
 
-	delete[] output;
+	SG_FREE(output);
 	train_labels.free_vector();
 
 	return converged;

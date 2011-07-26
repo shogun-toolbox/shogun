@@ -80,7 +80,7 @@ bool CLDA::train(CFeatures* data)
 		return false;
 	}
 
-	delete[] w;
+	SG_FREE(w);
 	w=new float64_t[num_feat];
 	w_dim=num_feat;
 
@@ -189,13 +189,13 @@ bool CLDA::train(CFeatures* data)
 #endif
 
 	train_labels.free_vector();
-	delete[] mean_neg;
-	delete[] mean_pos;
-	delete[] scatter;
-	delete[] inv_scatter;
-	delete[] classidx_neg;
-	delete[] classidx_pos;
-	delete[] buffer;
+	SG_FREE(mean_neg);
+	SG_FREE(mean_pos);
+	SG_FREE(scatter);
+	SG_FREE(inv_scatter);
+	SG_FREE(classidx_neg);
+	SG_FREE(classidx_pos);
+	SG_FREE(buffer);
 	return true;
 }
 #endif

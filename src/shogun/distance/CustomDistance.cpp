@@ -100,7 +100,7 @@ bool CCustomDistance::init(CFeatures* l, CFeatures* r)
 void CCustomDistance::cleanup_custom()
 {
 	SG_DEBUG("cleanup up custom distance\n");
-	delete[] dmatrix;
+	SG_FREE(dmatrix);
 	dmatrix=NULL;
 	upper_diagonal=false;
 	num_cols=0;

@@ -47,17 +47,17 @@ CHistogramWordStringKernel::~CHistogramWordStringKernel()
 {
 	SG_UNREF(estimate);
 
-	delete[] variance;
-	delete[] mean;
+	SG_FREE(variance);
+	SG_FREE(mean);
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
+		SG_FREE(sqrtdiag_rhs);
+	SG_FREE(sqrtdiag_lhs);
 	if (ld_mean_lhs!=ld_mean_rhs)
-		delete[] ld_mean_rhs ;
-	delete[] ld_mean_lhs ;
+		SG_FREE(ld_mean_rhs);
+	SG_FREE(ld_mean_lhs);
 	if (plo_lhs!=plo_rhs)
-		delete[] plo_rhs ;
-	delete[] plo_lhs ;
+		SG_FREE(plo_rhs);
+	SG_FREE(plo_lhs);
 }
 
 bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
@@ -73,19 +73,19 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	initialized=false;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
+		SG_FREE(sqrtdiag_rhs);
 	sqrtdiag_rhs=NULL ;
-	delete[] sqrtdiag_lhs;
+	SG_FREE(sqrtdiag_lhs);
 	sqrtdiag_lhs=NULL ;
 	if (ld_mean_lhs!=ld_mean_rhs)
-		delete[] ld_mean_rhs ;
+		SG_FREE(ld_mean_rhs);
 	ld_mean_rhs=NULL ;
-	delete[] ld_mean_lhs ;
+	SG_FREE(ld_mean_lhs);
 	ld_mean_lhs=NULL ;
 	if (plo_lhs!=plo_rhs)
-		delete[] plo_rhs ;
+		SG_FREE(plo_rhs);
 	plo_rhs=NULL ;
-	delete[] plo_lhs ;
+	SG_FREE(plo_lhs);
 	plo_lhs=NULL ;
 
 	sqrtdiag_lhs= new float64_t[l->get_num_vectors()];
@@ -140,9 +140,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		//add 1 as we have the 'bias' also in this vector
 		num_params2++;
 
-		delete[] mean;
+		SG_FREE(mean);
 		mean=new float64_t[num_params2];
-		delete[] variance;
+		SG_FREE(variance);
 		variance=new float64_t[num_params2];
 
 		for (i=0; i<num_params2; i++)
@@ -318,31 +318,31 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 void CHistogramWordStringKernel::cleanup()
 {
-	delete[] variance;
+	SG_FREE(variance);
 	variance=NULL;
 
-	delete[] mean;
+	SG_FREE(mean);
 	mean=NULL;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
+		SG_FREE(sqrtdiag_rhs);
 	sqrtdiag_rhs=NULL;
 
-	delete[] sqrtdiag_lhs;
+	SG_FREE(sqrtdiag_lhs);
 	sqrtdiag_lhs=NULL;
 
 	if (ld_mean_lhs!=ld_mean_rhs)
-		delete[] ld_mean_rhs ;
+		SG_FREE(ld_mean_rhs);
 	ld_mean_rhs=NULL;
 
-	delete[] ld_mean_lhs ;
+	SG_FREE(ld_mean_lhs);
 	ld_mean_lhs=NULL;
 
 	if (plo_lhs!=plo_rhs)
-		delete[] plo_rhs ;
+		SG_FREE(plo_rhs);
 	plo_rhs=NULL;
 
-	delete[] plo_lhs ;
+	SG_FREE(plo_lhs);
 	plo_lhs=NULL;
 
 	num_params2=0;

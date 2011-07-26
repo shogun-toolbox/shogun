@@ -43,19 +43,19 @@ CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig)
 
 CTOPFeatures::~CTOPFeatures()
 {
-	delete[] pos_relevant_indizes.idx_p;
-	delete[] pos_relevant_indizes.idx_q;
-	delete[] pos_relevant_indizes.idx_a_cols;
-	delete[] pos_relevant_indizes.idx_a_rows;
-	delete[] pos_relevant_indizes.idx_b_cols;
-	delete[] pos_relevant_indizes.idx_b_rows;
+	SG_FREE(pos_relevant_indizes.idx_p);
+	SG_FREE(pos_relevant_indizes.idx_q);
+	SG_FREE(pos_relevant_indizes.idx_a_cols);
+	SG_FREE(pos_relevant_indizes.idx_a_rows);
+	SG_FREE(pos_relevant_indizes.idx_b_cols);
+	SG_FREE(pos_relevant_indizes.idx_b_rows);
 
-	delete[] neg_relevant_indizes.idx_p;
-	delete[] neg_relevant_indizes.idx_q;
-	delete[] neg_relevant_indizes.idx_a_cols;
-	delete[] neg_relevant_indizes.idx_a_rows;
-	delete[] neg_relevant_indizes.idx_b_cols;
-	delete[] neg_relevant_indizes.idx_b_rows;
+	SG_FREE(neg_relevant_indizes.idx_p);
+	SG_FREE(neg_relevant_indizes.idx_q);
+	SG_FREE(neg_relevant_indizes.idx_a_cols);
+	SG_FREE(neg_relevant_indizes.idx_a_rows);
+	SG_FREE(neg_relevant_indizes.idx_b_cols);
+	SG_FREE(neg_relevant_indizes.idx_b_rows);
 
 	SG_UNREF(pos);
 	SG_UNREF(neg);
@@ -71,7 +71,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	neg=n;
 	set_num_vectors(0);
 
-	delete[] feature_matrix  ;
+	SG_FREE(feature_matrix);
 	feature_matrix=NULL ;
 
 
@@ -201,7 +201,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 
 	num_vectors=pos->get_observations()->get_num_vectors();
 	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
-	delete[] feature_matrix;
+	SG_FREE(feature_matrix);
 	feature_matrix=new float64_t[num_features*num_vectors];
 	if (!feature_matrix)
 	{

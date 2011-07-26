@@ -199,9 +199,9 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 		iter++;
 	}
 
-	delete[] logPxy;
-	delete[] logPx;
-	//delete[] logPost;
+	SG_FREE(logPxy);
+	SG_FREE(logPx);
+	//SG_FREE(logPost);
 	alpha.free_matrix();
 
 	return log_likelihood_cur;
@@ -328,16 +328,16 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 		iter++;
 	}
 
-	delete[] logPxy;
-	delete[] logPx;
-	delete[] logPost;
-	delete[] split_crit;
-	delete[] merge_crit;
-	delete[] logPostSum;
-	delete[] logPostSum2;
-	delete[] logPostSumSum;
-	delete[] split_ind;
-	delete[] merge_ind;
+	SG_FREE(logPxy);
+	SG_FREE(logPx);
+	SG_FREE(logPost);
+	SG_FREE(split_crit);
+	SG_FREE(merge_crit);
+	SG_FREE(logPostSum);
+	SG_FREE(logPostSum2);
+	SG_FREE(logPostSumSum);
+	SG_FREE(split_ind);
+	SG_FREE(merge_ind);
 
 	return cur_likelihood;
 }
@@ -412,8 +412,8 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		SGMatrix<float64_t> c2=components.vector[2]->get_cov();
 		CMath::add(c1.matrix, alpha1, c1.matrix, alpha2, c2.matrix, dim_n*dim_n);
 
-		delete[] components.vector[1]->get_d().vector;
-		delete[] components.vector[1]->get_u().matrix;
+		SG_FREE(components.vector[1]->get_d().vector);
+		SG_FREE(components.vector[1]->get_u().matrix);
 		components.vector[1]->get_d().vector=CMath::compute_eigenvectors(c1.matrix, dim_n, dim_n);
 		components.vector[1]->get_u().matrix=c1.matrix;
 
@@ -524,12 +524,12 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	partial_candidate->get_coef().do_free=true;
 	delete partial_candidate;
 	alpha.free_matrix();
-	delete[] logPxy;
-	delete[] logPx;
-	delete[] init_logPxy;
-	delete[] init_logPx;
-	delete[] init_logPx_fix;
-	delete[] post_add;
+	SG_FREE(logPxy);
+	SG_FREE(logPx);
+	SG_FREE(init_logPxy);
+	SG_FREE(init_logPx);
+	SG_FREE(init_logPx_fix);
+	SG_FREE(post_add);
 }
 
 void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)

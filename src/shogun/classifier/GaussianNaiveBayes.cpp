@@ -40,10 +40,10 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL)
 CGaussianNaiveBayes::~CGaussianNaiveBayes()
 {
 	SG_UNREF(m_features);
-	delete[] m_means;
-	delete[] m_rates;
-	delete[] m_variances;
-	delete[] m_label_prob;
+	SG_FREE(m_means);
+	SG_FREE(m_rates);
+	SG_FREE(m_variances);
+	SG_FREE(m_label_prob);
 };
 
 bool CGaussianNaiveBayes::train(CFeatures* data)

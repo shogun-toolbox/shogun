@@ -47,8 +47,8 @@ CLinearHMM::CLinearHMM(int32_t p_num_features, int32_t p_num_symbols)
 
 CLinearHMM::~CLinearHMM()
 {
-	delete[] transition_probs;
-	delete[] log_transition_probs;
+	SG_FREE(transition_probs);
+	SG_FREE(log_transition_probs);
 }
 
 bool CLinearHMM::train(CFeatures* data)
@@ -62,8 +62,8 @@ bool CLinearHMM::train(CFeatures* data)
 		}
 		set_features(data);
 	}
-	delete[] transition_probs;
-	delete[] log_transition_probs;
+	SG_FREE(transition_probs);
+	SG_FREE(log_transition_probs);
 	int32_t* int_transition_probs=new int32_t[num_params];
 
 	int32_t vec;
@@ -116,15 +116,15 @@ bool CLinearHMM::train(CFeatures* data)
 		}
 	}
 
-	delete[] int_transition_probs;
+	SG_FREE(int_transition_probs);
 	return true;
 }
 
 bool CLinearHMM::train(
 	const int32_t* indizes, int32_t num_indizes, float64_t pseudo)
 {
-	delete[] transition_probs;
-	delete[] log_transition_probs;
+	SG_FREE(transition_probs);
+	SG_FREE(log_transition_probs);
 	int32_t* int_transition_probs=new int32_t[num_params];
 	int32_t vec;
 	int32_t i;
@@ -179,7 +179,7 @@ bool CLinearHMM::train(
 		}
 	}
 
-	delete[] int_transition_probs;
+	SG_FREE(int_transition_probs);
 	return true;
 }
 

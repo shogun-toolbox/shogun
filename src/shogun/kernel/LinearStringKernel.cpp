@@ -107,7 +107,7 @@ bool CLinearStringKernel::init_optimization(
 
 bool CLinearStringKernel::delete_optimization()
 {
-	delete[] normal;
+	SG_FREE(normal);
 	normal = NULL;
 	set_is_initialized(false);
 	return true;

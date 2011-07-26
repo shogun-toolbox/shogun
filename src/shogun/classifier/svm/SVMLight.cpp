@@ -158,18 +158,18 @@ void CSVMLight::init()
 CSVMLight::~CSVMLight()
 {
 
-  delete[] model->supvec;
-  delete[] model->alpha;
-  delete[] model->index;
-  delete[] model;
-  delete[] learn_parm;
+  SG_FREE(model->supvec);
+  SG_FREE(model->alpha);
+  SG_FREE(model->index);
+  SG_FREE(model);
+  SG_FREE(learn_parm);
 
   // MKL stuff
-  delete[] W ;
+  SG_FREE(W);
 
   // optimizer variables
-  delete[] dual;
-  delete[] primal;
+  SG_FREE(dual);
+  SG_FREE(primal);
 }
 
 bool CSVMLight::train_kernel_machine(CFeatures* data)
@@ -306,7 +306,7 @@ void CSVMLight::svm_learn()
 	lab.free_vector();
 
 	int32_t* docs=new int32_t[totdoc];
-	delete[] W;
+	SG_FREE(W);
 	W=NULL;
 	count = 0 ;
 
@@ -358,9 +358,9 @@ void CSVMLight::svm_learn()
 
 	learn_parm->svm_cost = new float64_t[totdoc];
 
-	delete[] model->supvec;
-	delete[] model->alpha;
-	delete[] model->index;
+	SG_FREE(model->supvec);
+	SG_FREE(model->alpha);
+	SG_FREE(model->index);
 	model->supvec = new int32_t[totdoc+2];
 	model->alpha = new float64_t[totdoc+2];
 	model->index = new int32_t[totdoc+2];
@@ -478,10 +478,10 @@ void CSVMLight::svm_learn()
       a[i]=alpha[i];
     }
 
-    delete[] index;
-    delete[] index2dnum;
-    delete[] aicache;
-    delete[] alpha;
+    SG_FREE(index);
+    SG_FREE(index2dnum);
+    SG_FREE(aicache);
+    SG_FREE(alpha);
 
     if(verbosity>=1)
 		SG_DONE();
@@ -531,16 +531,16 @@ void CSVMLight::svm_learn()
 	}
 
 	shrink_state_cleanup(&shrink_state);
-	delete[] label;
-	delete[] inconsistent;
-	delete[] c;
-	delete[] a;
-	delete[] a_fullset;
-	delete[] xi_fullset;
-	delete[] lin;
-	delete[] learn_parm->eps;
-	delete[] learn_parm->svm_cost;
-	delete[] docs;
+	SG_FREE(label);
+	SG_FREE(inconsistent);
+	SG_FREE(c);
+	SG_FREE(a);
+	SG_FREE(a_fullset);
+	SG_FREE(xi_fullset);
+	SG_FREE(lin);
+	SG_FREE(learn_parm->eps);
+	SG_FREE(learn_parm->svm_cost);
+	SG_FREE(docs);
 }
 
 int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_t totdoc,
@@ -931,22 +931,22 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   criterion=compute_objective_function(a,lin,c,learn_parm->eps,label,totdoc);
   CSVM::set_objective(criterion);
 
-  delete[] chosen;
-  delete[] last_suboptimal_at;
-  delete[] key;
-  delete[] selcrit;
-  delete[] selexam;
-  delete[] a_old;
-  delete[] aicache;
-  delete[] working2dnum;
-  delete[] active2dnum;
-  delete[] qp.opt_ce;
-  delete[] qp.opt_ce0;
-  delete[] qp.opt_g;
-  delete[] qp.opt_g0;
-  delete[] qp.opt_xinit;
-  delete[] qp.opt_low;
-  delete[] qp.opt_up;
+  SG_FREE(chosen);
+  SG_FREE(last_suboptimal_at);
+  SG_FREE(key);
+  SG_FREE(selcrit);
+  SG_FREE(selexam);
+  SG_FREE(a_old);
+  SG_FREE(aicache);
+  SG_FREE(working2dnum);
+  SG_FREE(active2dnum);
+  SG_FREE(qp.opt_ce);
+  SG_FREE(qp.opt_ce0);
+  SG_FREE(qp.opt_g);
+  SG_FREE(qp.opt_g0);
+  SG_FREE(qp.opt_xinit);
+  SG_FREE(qp.opt_low);
+  SG_FREE(qp.opt_up);
 
   learn_parm->epsilon_crit=epsilon_crit_org; /* restore org */
 
@@ -1117,8 +1117,8 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 			pthread_join(threads[t], NULL);
 
-		delete[] params;
-		delete[] threads;
+		SG_FREE(params);
+		SG_FREE(threads);
 
 		Knum=0 ;
 		for (i=0;i<varnum;i++) {
@@ -1155,9 +1155,9 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 			}
 		}
 
-		delete[] KI ;
-		delete[] KJ ;
-		delete[] Kval ;
+		SG_FREE(KI);
+		SG_FREE(KJ);
+		SG_FREE(Kval);
 
 		for (i=0;i<varnum;i++) {
 			/* assure starting at feasible point */
@@ -1494,8 +1494,8 @@ void CSVMLight::update_linear_component(
 					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
 
-					delete[] params;
-					delete[] threads;
+					SG_FREE(params);
+					SG_FREE(threads);
 				}
 #endif
 			}
@@ -1587,8 +1587,8 @@ void CSVMLight::update_linear_component_mkl(
 		// restore old weights
 		kernel->set_subkernel_weights(w_backup,num_weights) ;
 
-		delete[] w_backup ;
-		delete[] w1 ;
+		SG_FREE(w_backup);
+		SG_FREE(w1);
 	}
 
 	call_mkl_callback(a, label, lin);
@@ -1658,16 +1658,16 @@ void CSVMLight::update_linear_component_mkl_linadd(
 		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 			pthread_join(threads[t], NULL);
 
-		delete[] params;
-		delete[] threads;
+		SG_FREE(params);
+		SG_FREE(threads);
 	}
 #endif
 
 	// restore old weights
 	kernel->set_subkernel_weights(w_backup,num_weights);
 
-	delete[] w_backup;
-	delete[] w1;
+	SG_FREE(w_backup);
+	SG_FREE(w1);
 
 	call_mkl_callback(a, label, lin);
 }
@@ -1709,7 +1709,7 @@ void CSVMLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin)
 	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, (int) num, 0.5, (double*) W,
 			num_kernels, alphay, 1, 1.0, (double*) sumw, 1);
 
-	delete[] alphay;
+	SG_FREE(alphay);
 #else
 	for (int32_t i=0; i<num; i++)
 		suma += a[i];
@@ -1741,7 +1741,7 @@ void CSVMLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin)
                 lin[i] += new_beta[d]*W[i*num_kernels+d] ;
 #endif
 
-	delete[] sumw;
+	SG_FREE(sumw);
 }
 
 
@@ -1968,13 +1968,13 @@ void CSVMLight::init_shrink_state(
 
 void CSVMLight::shrink_state_cleanup(SHRINK_STATE *shrink_state)
 {
-  delete[] shrink_state->active;
-  delete[] shrink_state->inactive_since;
+  SG_FREE(shrink_state->active);
+  SG_FREE(shrink_state->inactive_since);
   if(shrink_state->deactnum > 0)
-    delete[] (shrink_state->a_history[shrink_state->deactnum-1]);
-  delete[] (shrink_state->a_history);
-  delete[] (shrink_state->last_a);
-  delete[] (shrink_state->last_lin);
+    SG_FREE((shrink_state->a_history[shrink_state->deactnum-1]));
+  SG_FREE((shrink_state->a_history));
+  SG_FREE((shrink_state->last_a));
+  SG_FREE((shrink_state->last_lin));
 }
 
 int32_t CSVMLight::shrink_problem(
@@ -2175,8 +2175,8 @@ void CSVMLight::reactivate_inactive_examples(
 				  for (t=0; t<num_threads-1; t++)
 					  pthread_join(threads[t], NULL);
 
-				  delete[] threads;
-				  delete[] params;
+				  SG_FREE(threads);
+				  SG_FREE(params);
 			  }
 #endif
 
@@ -2229,17 +2229,17 @@ void CSVMLight::reactivate_inactive_examples(
 					  shrink_state->last_lin[i]=lin[i];
 				  }
 
-				  delete[] dest;
+				  SG_FREE(dest);
 			  }
 			  else
 			  {
 				  for (i=0;i<totdoc;i++)
 					  shrink_state->last_lin[i]=lin[i];
 			  }
-			  delete[] inactive_idx;
+			  SG_FREE(inactive_idx);
 		  }
-		  delete[] alphas;
-		  delete[] idx;
+		  SG_FREE(alphas);
+		  SG_FREE(idx);
 	  }
 
 	  kernel->delete_optimization();
@@ -2336,18 +2336,18 @@ void CSVMLight::reactivate_inactive_examples(
 						  lin[j]+=tmp_lin[totdoc*thr+j];
 				  }
 
-				  delete[] tmp_lin;
-				  delete[] tmp_aicache;
-				  delete[] threads;
-				  delete[] params;
+				  SG_FREE(tmp_lin);
+				  SG_FREE(tmp_aicache);
+				  SG_FREE(threads);
+				  SG_FREE(params);
 			  }
 		  }
 #endif
 	  }
-	  delete[] changed;
-	  delete[] changed2dnum;
-	  delete[] inactive;
-	  delete[] inactive2dnum;
+	  SG_FREE(changed);
+	  SG_FREE(changed2dnum);
+	  SG_FREE(inactive);
+	  SG_FREE(inactive2dnum);
   }
 
   (*maxdiff)=0;
@@ -2387,7 +2387,7 @@ void CSVMLight::reactivate_inactive_examples(
 		  (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
 	  }
 	  for (t=shrink_state->deactnum-2;(t>=0) && shrink_state->a_history[t];t--) {
-		  delete[] shrink_state->a_history[t];
+		  SG_FREE(shrink_state->a_history[t]);
 		  shrink_state->a_history[t]=0;
 	  }
   }

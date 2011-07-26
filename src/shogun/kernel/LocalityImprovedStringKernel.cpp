@@ -91,7 +91,7 @@ float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 		inner_sum = pow(inner_sum, inner_degree + 1);
 		outer_sum += inner_sum;
 	}
-	delete[] match;
+	SG_FREE(match);
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);

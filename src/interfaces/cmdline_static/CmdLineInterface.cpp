@@ -212,8 +212,8 @@ IFType CCmdLineInterface::get_argument_type()
 		}
 	}
 
-	delete[] signature;
-	delete[] chunk;
+	SG_FREE(signature);
+	SG_FREE(chunk);
 	return argtype;
 }
 

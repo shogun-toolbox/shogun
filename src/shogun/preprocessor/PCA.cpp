@@ -98,7 +98,7 @@ bool CPCA::init(CFeatures* features)
 			           cov, num_features);
 		}
 
-        	delete[] sub_mean;
+        	SG_FREE(sub_mean);
 
 		SG_DONE();
 
@@ -164,7 +164,7 @@ bool CPCA::init(CFeatures* features)
 			offs++;
 		}
 
-		delete[] cov;
+		SG_FREE(cov);
 		initialized = true;
 		return true;
 	}
@@ -210,8 +210,8 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			for (i=0; i<num_dim; i++)
 				m_transformed[i] = res[i];
 		}
-		delete[] res;
-		delete[] sub_mean;
+		SG_FREE(res);
+		SG_FREE(sub_mean);
 
 		((CSimpleFeatures<float64_t>*) features)->set_num_features(num_dim);
 		((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
@@ -235,7 +235,7 @@ SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 	            sub_mean,1, 
 	            0.0,result,1);
 
-	delete[] sub_mean;
+	SG_FREE(sub_mean);
 	return SGVector<float64_t>(result,num_dim);
 }
 

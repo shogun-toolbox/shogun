@@ -313,10 +313,10 @@ float64_t CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 
 	alpha = hinge_point[i];
 
-	delete[] D;
-	delete[] C;
-	delete[] B;
-	delete[] A;
+	SG_FREE(D);
+	SG_FREE(C);
+	SG_FREE(B);
+	SG_FREE(A);
 
 	//SG_PRINT("alpha=%f\n", alpha);
 	return alpha;
@@ -435,7 +435,7 @@ void CSubGradientLPM::update_projection(float64_t alpha, int32_t num_vec)
 void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 {
 	// alloc normal and bias inited with 0
-	delete[] w;
+	SG_FREE(w);
 	w=new float64_t[num_feat];
 	w_dim=num_feat;
 	for (int32_t i=0; i<num_feat; i++)
@@ -500,22 +500,22 @@ void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 
 void CSubGradientLPM::cleanup()
 {
-	delete[] hinge_idx;
-	delete[] hinge_point;
-	delete[] grad_proj;
-	delete[] proj;
-	delete[] tmp_proj;
-	delete[] tmp_proj_idx;
-	delete[] active;
-	delete[] old_active;
-	delete[] idx_bound;
-	delete[] idx_active;
-	delete[] sum_CXy_active;
-	delete[] w_pos;
-	delete[] w_zero;
-	delete[] w_neg;
-	delete[] grad_w;
-	delete[] beta;
+	SG_FREE(hinge_idx);
+	SG_FREE(hinge_point);
+	SG_FREE(grad_proj);
+	SG_FREE(proj);
+	SG_FREE(tmp_proj);
+	SG_FREE(tmp_proj_idx);
+	SG_FREE(active);
+	SG_FREE(old_active);
+	SG_FREE(idx_bound);
+	SG_FREE(idx_active);
+	SG_FREE(sum_CXy_active);
+	SG_FREE(w_pos);
+	SG_FREE(w_zero);
+	SG_FREE(w_neg);
+	SG_FREE(grad_w);
+	SG_FREE(beta);
 
 	hinge_idx=NULL;
 	hinge_point=NULL;

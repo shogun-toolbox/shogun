@@ -143,15 +143,15 @@ CGMNPLib::CGMNPLib(
 CGMNPLib::~CGMNPLib()
 {
 	for(int32_t i = 0; i < Cache_Size; i++ ) 
-		delete[] kernel_columns[i];
+		SG_FREE(kernel_columns[i]);
 
 	for(int32_t i = 0; i < 3; i++ ) 
-		delete[] virt_columns[i];
+		SG_FREE(virt_columns[i]);
 
-	delete[] cache_index;
-	delete[] kernel_columns;
+	SG_FREE(cache_index);
+	SG_FREE(kernel_columns);
 
-	delete[] diag_H;
+	SG_FREE(diag_H);
 }
 
 /* ------------------------------------------------------------
@@ -445,7 +445,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
       tmp_ptr[INDEX(1,t,2)] = UB;
       
       History_size += HISTORY_BUF;
-      delete[] History;
+      SG_FREE(History);
       History = tmp_ptr;
     }
   }
@@ -465,7 +465,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   (*ptr_History) = History;
 
   /* Free memory */
-  delete[] Ha;
+  SG_FREE(Ha);
   
   return( exitflag ); 
 }

@@ -53,7 +53,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		{
 			for (int32_t i=0; i<size; i++)
 				SG_UNREF(array[i]);
-			delete[] array;
+			SG_FREE(array);
 		}
 
 		/** write access operator

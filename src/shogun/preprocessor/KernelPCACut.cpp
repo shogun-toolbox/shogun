@@ -43,7 +43,7 @@ CKernelPCACut::CKernelPCACut(CKernel* k, float64_t thresh_)
 
 CKernelPCACut::~CKernelPCACut()
 {
-	delete[] T;
+	SG_FREE(T);
 	SG_UNREF(kernel);
 }
 
@@ -104,8 +104,8 @@ bool CKernelPCACut::init(CFeatures* features)
 			for (int32_t j=0; j<rows_T; j++)
 				T[j+rows_T*i]-=rowsum[i];
 		}
-		delete[] rowsum;
-		delete[] bias_tmp;
+		SG_FREE(rowsum);
+		SG_FREE(bias_tmp);
 
 		initialized=true;
 		SG_INFO("Done\n");
@@ -117,7 +117,7 @@ bool CKernelPCACut::init(CFeatures* features)
 /// initialize preprocessor from features
 void CKernelPCACut::cleanup()
 {
-	delete[] T ;
+	SG_FREE(T);
 	T=NULL ;
 }
 
@@ -154,8 +154,8 @@ SGMatrix<float64_t> CKernelPCACut::apply_to_feature_matrix(CFeatures* features)
 			for (i=0; i<num_dim; i++)
 				m_transformed[i]=res[i];
 		}
-		delete[] res;
-		delete[] sub_mean;
+		SG_FREE(res);
+		SG_FREE(sub_mean);
 
 		((CSimpleFeatures<float64_t>*) f)->set_num_features(num_dim);
 		((CSimpleFeatures<float64_t>*) f)->get_feature_matrix(num_features, num_vectors);
@@ -181,7 +181,7 @@ SGVector<float64_t> CKernelPCACut::apply_to_feature_vector(SGVector<float64_t> v
 	cblas_dgemv(CblasColMajor, CblasNoTrans, nd, (int) len, 1.0, (double*) T,
 		nd, (double*) sub_mean, 1, 0, (double*) ret, 1);
 
-	delete[] sub_mean ;
+	SG_FREE(sub_mean);
 	len=num_dim ;
 	//	  SG_DEBUG( "num_dim: %d\n", num_dim);
 	return ret;

@@ -238,7 +238,7 @@ class CDistance : public CSGObject
 		
 			if (!precompute_matrix)
 			{
-				delete[] precomputed_matrix;
+				SG_FREE(precomputed_matrix);
 				precomputed_matrix=NULL;
 			}
 		}

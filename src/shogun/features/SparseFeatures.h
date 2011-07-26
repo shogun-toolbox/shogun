@@ -379,12 +379,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 						//tmp_feat_after=((CSparsePreprocessor<ST>*) get_preproc(i))->apply_to_feature_vector(tmp_feat_before, tmp_len);
 
 						if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
-							delete[] tmp_feat_before;
+							SG_FREE(tmp_feat_before);
 						tmp_feat_before=tmp_feat_after;
 					}
 
 					memcpy(feat, tmp_feat_after, sizeof(SGSparseVectorEntry<ST>)*tmp_len);
-					delete[] tmp_feat_after;
+					SG_FREE(tmp_feat_after);
 					len=tmp_len ;
 					SG_DEBUG( "len: %d len2: %d\n", len, num_features);
 				}
@@ -538,7 +538,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				feature_cache->unlock_entry(subset_idx_conversion(num));
 
 			if (free)
-				delete[] feat_vec ;
+				SG_FREE(feat_vec);
 		} 
 
 		/** get the pointer to the sparse feature matrix
@@ -588,9 +588,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			if (sfm)
 			{
 				for (int32_t i=0; i<num_vec; i++)
-					delete[] sfm[i].features;
+					SG_FREE(sfm[i].features);
 
-				delete[] sfm;
+				SG_FREE(sfm);
 			}
 		}
 
@@ -669,7 +669,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				free_sparse_feature_vector(sv, v, vfree);
 			}
 
-			delete[] hist;
+			SG_FREE(hist);
 			return sfm;
 		}
 
@@ -823,7 +823,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 					result=false;
 				}
 			}
-			delete[] num_feat_entries;
+			SG_FREE(num_feat_entries);
 			return result;
 		}
 
@@ -941,7 +941,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				feature_cache->unlock_entry(subset_idx_conversion(num));
 
 			if (free)
-				delete[] feat_vec ;
+				SG_FREE(feat_vec);
 		}
 
 		/** get number of non-zero entries in sparse feature matrix
@@ -1126,7 +1126,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				}
 
 				SG_INFO("found %d feature vectors\n", num_vectors);
-				delete[] dummy;
+				SG_FREE(dummy);
 				blocksize=required_blocksize;
 				dummy = new uint8_t[blocksize+1]; //allow setting of '\0' at EOL
 
@@ -1241,7 +1241,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				fclose(f);
 			}
 
-			delete[] dummy;
+			SG_FREE(dummy);
 
 			if (do_sort_features)
 				sort_features();
@@ -1293,9 +1293,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 				for (int j=0; j<len-1; j++)
 					ASSERT(sf_new[j].feat_index<sf_new[j+1].feat_index);
 
-				delete[] orig_idx;
-				delete[] feat_idx;
-				delete[] sf_orig;
+				SG_FREE(orig_idx);
+				SG_FREE(feat_idx);
+				SG_FREE(sf_orig);
 			}
 		}
 
@@ -1506,7 +1506,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			sparse_feature_iterator* it=(sparse_feature_iterator*) iterator;
 			free_sparse_feature_vector(it->sv, it->vidx, it->vfree);
-			delete[] it;
+			SG_FREE(it);
 		}
 
 		/** @return object name */

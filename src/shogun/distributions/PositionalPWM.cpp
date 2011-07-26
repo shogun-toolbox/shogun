@@ -26,8 +26,8 @@ CPositionalPWM::CPositionalPWM() : CDistribution(),
 
 CPositionalPWM::~CPositionalPWM()
 {
-	delete[] m_pwm;
-	delete[] m_w;
+	SG_FREE(m_pwm);
+	SG_FREE(m_w);
 }
 
 bool CPositionalPWM::train(CFeatures* data)
@@ -103,7 +103,7 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 	m_w_rows=CMath::pow(m_pwm_rows, m_pwm_cols);
 	m_w_cols=num_pos;
 
-	delete[] m_w;
+	SG_FREE(m_w);
 	m_w=new float64_t[m_w_cols*m_w_rows];
 
 	uint8_t* window=new uint8_t[m_pwm_cols];
@@ -153,7 +153,7 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 	for (int32_t i=0; i<order; i++)
 		num_sym+=CMath::pow((int32_t) num_words,i+1);
 
-	delete[] m_poim;
+	SG_FREE(m_poim);
 	m_poim_len=num_feat*num_sym;
 	m_poim=new float64_t[num_feat*num_sym];
 	memset(m_poim,0, size_t(num_feat)*size_t(num_sym));

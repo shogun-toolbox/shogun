@@ -47,7 +47,7 @@ CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32
 
 CSparsePolyFeatures::~CSparsePolyFeatures()
 {
-	delete[] m_normalization_values;
+	SG_FREE(m_normalization_values);
 	SG_UNREF(m_feat);
 }
 
@@ -168,7 +168,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 
 void CSparsePolyFeatures::store_normalization_values()
 {
-	delete[] m_normalization_values;
+	SG_FREE(m_normalization_values);
 
 	m_normalization_values_len = this->get_num_vectors();
 

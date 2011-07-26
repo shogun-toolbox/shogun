@@ -73,11 +73,11 @@ bool CSVMOcas::train(CFeatures* data)
 	if (num_vec!=lab.vlen || num_vec<=0)
 		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, lab.vlen);
 
-	delete[] w;
+	SG_FREE(w);
 	w=new float64_t[w_dim];
 	memset(w, 0, w_dim*sizeof(float64_t));
 
-	delete[] old_w;
+	SG_FREE(old_w);
 	old_w=new float64_t[w_dim];
 	memset(old_w, 0, w_dim*sizeof(float64_t));
 	bias=0;
@@ -118,7 +118,7 @@ bool CSVMOcas::train(CFeatures* data)
 			"ocas_time %f s\n\n", result.nIter, result.output_time, result.sort_time,
 			result.add_time, result.w_time, result.qp_solver_time, result.ocas_time);
 
-	delete[] tmp_a_buf;
+	SG_FREE(tmp_a_buf);
 
 	uint32_t num_cut_planes = result.nCutPlanes;
 
@@ -126,23 +126,23 @@ bool CSVMOcas::train(CFeatures* data)
 	for (uint32_t i=0; i<num_cut_planes; i++)
 	{
 		SG_DEBUG("cp_value[%d]=%p\n", i, cp_value);
-		delete[] cp_value[i];
+		SG_FREE(cp_value[i]);
 		SG_DEBUG("cp_index[%d]=%p\n", i, cp_index);
-		delete[] cp_index[i];
+		SG_FREE(cp_index[i]);
 	}
 
-	delete[] cp_value;
+	SG_FREE(cp_value);
 	cp_value=NULL;
-	delete[] cp_index;
+	SG_FREE(cp_index);
 	cp_index=NULL;
-	delete[] cp_nz_dims;
+	SG_FREE(cp_nz_dims);
 	cp_nz_dims=NULL;
-	delete[] cp_bias;
+	SG_FREE(cp_bias);
 	cp_bias=NULL;
 
 	lab=NULL;
 
-	delete[] old_w;
+	SG_FREE(old_w);
 	old_w=NULL;
 
 	return true;

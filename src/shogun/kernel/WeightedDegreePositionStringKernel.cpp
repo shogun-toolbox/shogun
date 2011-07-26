@@ -121,27 +121,27 @@ CWeightedDegreePositionStringKernel::~CWeightedDegreePositionStringKernel()
 	cleanup();
 	cleanup_POIM2();
 
-	delete[] shift;
+	SG_FREE(shift);
 	shift=NULL;
 
-	delete[] weights;
+	SG_FREE(weights);
 	weights=NULL;
 	weights_degree=0;
 	weights_length=0;
 
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=NULL;
 
-	delete[] position_weights;
+	SG_FREE(position_weights);
 	position_weights=NULL;
 
-	delete[] position_weights_lhs;
+	SG_FREE(position_weights_lhs);
 	position_weights_lhs=NULL;
 
-	delete[] position_weights_rhs;
+	SG_FREE(position_weights_rhs);
 	position_weights_rhs=NULL;
 
-	delete[] weights_buffer;
+	SG_FREE(weights_buffer);
 	weights_buffer=NULL;
 }
 
@@ -196,7 +196,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 			shifts[i]=1;
 		}
 		set_shifts(SGVector<int32_t>(shifts, shift_len));
-		delete[] shifts;
+		SG_FREE(shifts);
 	}
 
 
@@ -229,7 +229,7 @@ void CWeightedDegreePositionStringKernel::cleanup()
 	SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n");
 	delete_optimization();
 
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=NULL;
 
 	tries.destroy();
@@ -391,7 +391,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_with_mismatch(
     for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 	
-	delete[] max_shift_vec;
+	SG_FREE(max_shift_vec);
     return result ;
 }
 
@@ -456,7 +456,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch(
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
-	delete[] max_shift_vec;
+	SG_FREE(max_shift_vec);
 
 	return result ;
 }
@@ -521,7 +521,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
-	delete[] max_shift_vec;
+	SG_FREE(max_shift_vec);
 	return result ;
 }
 
@@ -600,7 +600,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_without_mismatch_position
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
-	delete[] max_shift_vec;
+	SG_FREE(max_shift_vec);
 	return result ;
 }
 
@@ -688,7 +688,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(
 		}
 	}
 
-	delete[] vec ;
+	SG_FREE(vec);
 	tree_initialized=true ;
 }
 
@@ -742,7 +742,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(
 			}
 		}
 	}
-	delete[] vec ;
+	SG_FREE(vec);
 	tree_initialized=true ;
 }
 
@@ -780,7 +780,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 		}
 	}
 
-	delete[] vec ;
+	SG_FREE(vec);
 
 	return normalizer->normalize_rhs(sum, idx);
 }
@@ -825,7 +825,7 @@ void CWeightedDegreePositionStringKernel::compute_by_tree(
 			}
 	}
 
-	delete[] vec ;
+	SG_FREE(vec);
 }
 
 float64_t* CWeightedDegreePositionStringKernel::compute_abs_weights(
@@ -836,7 +836,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_abs_weights(
 
 void CWeightedDegreePositionStringKernel::set_shifts(SGVector<int32_t> shifts)
 {
-	delete[] shift;
+	SG_FREE(shift);
 
 	shift_len = shifts.vlen;
 	shift = new int32_t[shift_len] ;
@@ -859,7 +859,7 @@ bool CWeightedDegreePositionStringKernel::set_wd_weights()
 {
 	ASSERT(degree>0);
 
-	delete[] weights;
+	SG_FREE(weights);
 	weights=new float64_t[degree];
 	weights_degree=degree;
 	weights_length=1;
@@ -916,7 +916,7 @@ bool CWeightedDegreePositionStringKernel::set_weights(SGMatrix<float64_t> new_we
 
 	SG_DEBUG("Creating weights of size %dx%d\n", weights_degree, weights_length);
 	int32_t num_weights=weights_degree*weights_length;
-	delete[] weights;
+	SG_FREE(weights);
 	weights=new float64_t[num_weights];
 
 	for (int32_t i=0; i<degree*len; i++)
@@ -933,7 +933,7 @@ void CWeightedDegreePositionStringKernel::set_position_weights(SGVector<float64_
 	if (seq_length!=pws.vlen)
 		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, pws.vlen);
 
-	delete[] position_weights;
+	SG_FREE(position_weights);
 	position_weights=new float64_t[pws.vlen];
 	position_weights_len=pws.vlen;
 	tries.set_position_weights(position_weights);
@@ -960,7 +960,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_lhs(float64_t* pw
 		return false;
 	}
 	
-	delete[] position_weights_lhs;
+	SG_FREE(position_weights_lhs);
 	position_weights_lhs=new float64_t[len*num];
 	position_weights_lhs_len=len*num;
 
@@ -989,7 +989,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
 		return false;
 	}
 	
-	delete[] position_weights_rhs;
+	SG_FREE(position_weights_rhs);
 	position_weights_rhs=new float64_t[len*num];
 	position_weights_rhs_len=len*num;
 
@@ -1001,7 +1001,7 @@ bool CWeightedDegreePositionStringKernel::set_position_weights_rhs(
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[CMath::max(seq_length,degree)];
 
 	if (block_weights)
@@ -1022,7 +1022,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
 bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 {
 	ASSERT(weights);
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[CMath::max(seq_length,degree)];
 
 	if (block_weights)
@@ -1049,7 +1049,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_const()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
@@ -1063,7 +1063,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_const()
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_linear()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
@@ -1077,7 +1077,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_linear()
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_sqpoly()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
@@ -1094,7 +1094,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_sqpoly()
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_cubicpoly()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
@@ -1111,7 +1111,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_cubicpoly()
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_exp()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
@@ -1128,7 +1128,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights_exp()
 
 bool CWeightedDegreePositionStringKernel::init_block_weights_log()
 {
-	delete[] block_weights;
+	SG_FREE(block_weights);
 	block_weights=new float64_t[seq_length];
 
 	if (block_weights)
@@ -1327,13 +1327,13 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 				pthread_join(threads[t], NULL);
 			SG_PROGRESS(j,0,num_feat);
 
-			delete[] params;
-			delete[] threads;
+			SG_FREE(params);
+			SG_FREE(threads);
 		}
 	}
 #endif
 
-	delete[] vec;
+	SG_FREE(vec);
 
 	//really also free memory as this can be huge on testing especially when
 	//using the combined kernel
@@ -1482,17 +1482,17 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 	num_feat=1;
 	num_sym = bigtabSize;
 	// --- clean up
-	delete[] nofsKmers;
-	delete[] margFactors;
-	delete[] substrs;
-	delete[] x;
-	delete[] C;
+	SG_FREE(nofsKmers);
+	SG_FREE(margFactors);
+	SG_FREE(substrs);
+	SG_FREE(x);
+	SG_FREE(C);
 	for( k = 0; k < max_degree; ++k ) {
-		delete[] L[k];
-		delete[] R[k];
+		SG_FREE(L[k]);
+		SG_FREE(R[k]);
 	}
-	delete[] L;
-	delete[] R;
+	SG_FREE(L);
+	SG_FREE(R);
 	return result;
 }
 
@@ -1608,7 +1608,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 	for (int32_t i=0; i<num_tables; i++)
 		delete table[i];
 
-	delete[] table;
+	SG_FREE(table);
 	return result;
 }
 
@@ -1661,14 +1661,14 @@ float64_t* CWeightedDegreePositionStringKernel::extract_w(
   for( k = 0; k < max_degree; ++k ) {
     subs[k] = &w_result[ offsets[k] ];
   }
-  delete[] offsets;
+  SG_FREE(offsets);
 
   // === init trees; extract "w"
   init_optimization( num_suppvec, IDX, alphas, -1);
   poim_tries.POIMs_extract_W( subs, max_degree );
 
   // === clean; return "subs" as vector
-  delete[] subs;
+  SG_FREE(subs);
   num_feat = 1;
   num_sym = bigTabSize;
   use_poim_tries=false;
@@ -1762,7 +1762,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_POIM(
   for (k=0; k<max_degree; ++k)
     subs[k]=&poim_result[offsets[k]];
 
-  delete[] offsets;
+  SG_FREE(offsets);
 
   // === init trees; precalc S, L and R
   init_optimization( num_suppvec, IDX, alphas, -1);
@@ -1801,7 +1801,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_POIM(
   poim_tries.POIMs_add_SLR( subs, max_degree, debug );
 
   // === clean; return "subs" as vector
-  delete[] subs;
+  SG_FREE(subs);
   num_feat = 1;
   num_sym = bigTabSize;
 
@@ -1854,8 +1854,8 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(
 	ASSERT(num_feat==1);
 	m_poim_result_len=num_sym;
 	
-	delete[] sv_weight;
-	delete[] sv_idx;
+	SG_FREE(sv_weight);
+	SG_FREE(sv_idx);
 }
 
 void CWeightedDegreePositionStringKernel::get_POIM2(

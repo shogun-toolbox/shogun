@@ -292,8 +292,8 @@ bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 
 		working->append_model(h, cur_o, app_o);
 
-		delete[] cur_o;
-		delete[] app_o;
+		SG_FREE(cur_o);
+		SG_FREE(app_o);
 	}
 	else
 		working->append_model(h);
@@ -574,7 +574,7 @@ bool CGUIHMM::relative_entropy(float64_t*& values, int32_t& len)
 	float64_t* p=new float64_t[pos_M];
 	float64_t* q=new float64_t[neg_M];
 
-	delete[] values;
+	SG_FREE(values);
 	values=new float64_t[pos_N];
 
 	for (int32_t i=0; i<pos_N; i++)
@@ -587,8 +587,8 @@ bool CGUIHMM::relative_entropy(float64_t*& values, int32_t& len)
 
 		values[i]=CMath::relative_entropy(p, q, pos_M);
 	}
-	delete[] p;
-	delete[] q;
+	SG_FREE(p);
+	SG_FREE(q);
 
 	len=pos_N;
 	return true;
@@ -603,7 +603,7 @@ bool CGUIHMM::entropy(float64_t*& values, int32_t& len)
 	int32_t m=working->get_M();
 	float64_t* p=new float64_t[m];
 
-	delete[] values;
+	SG_FREE(values);
 	values=new float64_t[n];
 
 	for (int32_t i=0; i<n; i++)
@@ -613,7 +613,7 @@ bool CGUIHMM::entropy(float64_t*& values, int32_t& len)
 
 		values[i]=CMath::entropy(p, m);
 	}
-	delete[] p;
+	SG_FREE(p);
 
 	len=m;
 	return true;

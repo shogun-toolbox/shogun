@@ -93,7 +93,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 	{								\
 		char* item=items->get_element(i);			\
 		vector[i]=conv(item);					\
-		delete[] item;						\
+		SG_FREE(item);						\
 	}								\
 	delete items;							\
 }
@@ -176,7 +176,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 		{							\
 			char* item=items->get_element(i);		\
 			vector[i-1]=conv(item);				\
-			delete[] item;					\
+			SG_FREE(item);					\
 		}							\
 		delete items;						\
 		num_feat--;						\

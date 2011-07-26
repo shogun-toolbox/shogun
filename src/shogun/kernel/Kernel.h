@@ -365,8 +365,8 @@ class CKernel : public CSGObject
 						SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
 				}
 
-				delete[] params;
-				delete[] threads;
+				SG_FREE(params);
+				SG_FREE(threads);
 			}
 
 			SG_DONE();

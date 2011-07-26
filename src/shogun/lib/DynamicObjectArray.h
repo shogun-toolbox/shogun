@@ -204,7 +204,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		{ return m_array.find_element(element); }
 
 		/** delete array element at idx
-		 * (does not call delete[] or the like)
+		 * (does not call SG_FREE() or the like)
 		 *
 		 * @param idx index
 		 * @return if deleting was successful

@@ -80,7 +80,7 @@ CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
 CHashedWDFeatures::~CHashedWDFeatures()
 {
 	SG_UNREF(strings);
-	delete[] wd_weights;
+	SG_FREE(wd_weights);
 }
 
 float64_t CHashedWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
@@ -155,7 +155,7 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 		}
 		offs+=partial_w_dim*len;
 	}
-	delete[] val;
+	SG_FREE(val);
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 
 	return sum/normalization_const;
@@ -206,7 +206,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 		offs+=partial_w_dim*len;
 	}
 
-	delete[] val;
+	SG_FREE(val);
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 

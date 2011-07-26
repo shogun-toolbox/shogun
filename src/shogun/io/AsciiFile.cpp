@@ -51,7 +51,7 @@ void CAsciiFile::fname(sg_type*& vec, int32_t& len) \
 	}												\
 	else											\
 	{												\
-		delete[] vec;								\
+		SG_FREE(vec);								\
 		vec=NULL;									\
 		len=0;										\
 		SG_ERROR("Could not read vector from"		\
@@ -125,7 +125,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 	}																			\
 																				\
 	SG_DEBUG("num feat: %d, num_vec %d\n", num_feat, num_vec);					\
-	delete[] data;																\
+	SG_FREE(data);																\
 																				\
 	/* now copy data into matrix */ 											\
 	matrix=new sg_type[num_vec*num_feat];										\
@@ -135,7 +135,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 		{																		\
 			char* item=items->get_element(i*num_feat+j);						\
 			matrix[i*num_feat+j]=conv(item);									\
-			delete[] item;														\
+			SG_FREE(item);														\
 		}																		\
 	}																			\
 	delete items;																\
@@ -229,20 +229,20 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
 	}											\
 												\
 	SG_DEBUG("num of data in line: %d, num of lines %d\n", counter, total);			\
-	delete[] data;										\
+	SG_FREE(data);										\
 												\
 	/* determining sizes of dimensions*/                                                	\
         char * item;                                                                            \
         item=items->get_element(0);                                                             \
         if(atoi(item) != num_dims)                                                              \
             SG_ERROR("Invalid number of dimensions!\n");                            		\
-        delete[] item;                                                                          \
+        SG_FREE(item);                                                                          \
         dims = new int32_t[num_dims];                                                           \
         for(int32_t i =0;i < num_dims;i++)                                              	\
         {                                                                                       \
             item = items->get_element(i+1);                                 			\
             dims[i] = atoi(item);                                                           	\
-            delete[] item;                                                                      \
+            SG_FREE(item);                                                                      \
         }                                                                                       \
         if (dims[num_dims-1] != length)                                                 	\
             SG_ERROR("Invalid number of lines in file!\n");                 			\
@@ -254,7 +254,7 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
 	{											\
 			item=items->get_element(i+(num_dims+1));				\
 			array[i]=conv(item);							\
-			delete[] item;								\
+			SG_FREE(item);								\
 	}											\
 	delete items;										\
 }
@@ -312,7 +312,7 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 		}	\
 	\
 		SG_INFO("found %d feature vectors\n", num_vec);	\
-		delete[] dummy;	\
+		SG_FREE(dummy);	\
 		blocksize=required_blocksize;	\
 		dummy = new uint8_t[blocksize+1]; /*allow setting of '\0' at EOL*/	\
 		matrix=new SGSparseVector<sg_type>[num_vec];	\
@@ -433,7 +433,7 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 		SG_INFO("file successfully read\n");	\
 	}	\
 	\
-	delete[] dummy;	\
+	SG_FREE(dummy);	\
 }
 
 GET_SPARSEMATRIX(get_sparse_matrix, atoi, bool)
@@ -493,7 +493,7 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 
 		SG_INFO("found %d strings\n", num_str);
 		SG_DEBUG("block_size=%d\n", required_blocksize);
-		delete[] dummy;
+		SG_FREE(dummy);
 		blocksize=required_blocksize;
 		dummy=new uint8_t[blocksize];
 		overflow=new uint8_t[blocksize];
@@ -543,8 +543,8 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 		SG_INFO("num_strings=%d\n", num_str);
 	}
 
-	delete[] dummy;
-	delete[] overflow;
+	SG_FREE(dummy);
+	SG_FREE(overflow);
 }
 
 void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_str, int32_t& max_string_len)
@@ -588,7 +588,7 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 
 		SG_INFO("found %d strings\n", num_str);
 		SG_DEBUG("block_size=%d\n", required_blocksize);
-		delete[] dummy;
+		SG_FREE(dummy);
 		blocksize=required_blocksize;
 		dummy=new int8_t[blocksize];
 		overflow=new int8_t[blocksize];
@@ -638,8 +638,8 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 		SG_INFO("num_strings=%d\n", num_str);
 	}
 
-	delete[] dummy;
-	delete[] overflow;
+	SG_FREE(dummy);
+	SG_FREE(overflow);
 }
 
 void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int32_t& max_string_len)
@@ -683,7 +683,7 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 
 		SG_INFO("found %d strings\n", num_str);
 		SG_DEBUG("block_size=%d\n", required_blocksize);
-		delete[] dummy;
+		SG_FREE(dummy);
 		blocksize=required_blocksize;
 		dummy=new char[blocksize];
 		overflow=new char[blocksize];
@@ -733,8 +733,8 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 		SG_INFO("num_strings=%d\n", num_str);
 	}
 
-	delete[] dummy;
-	delete[] overflow;
+	SG_FREE(dummy);
+	SG_FREE(overflow);
 }
 
 void CAsciiFile::get_string_list(SGString<int32_t>*& strings, int32_t& num_str, int32_t& max_string_len)

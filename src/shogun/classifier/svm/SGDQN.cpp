@@ -104,7 +104,7 @@ bool CSGDQN::train(CFeatures* data)
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
 
-	delete[] w;
+	SG_FREE(w);
 	w=new float64_t[w_dim];
 	memset(w, 0, w_dim*sizeof(float64_t));
 
@@ -190,9 +190,9 @@ bool CSGDQN::train(CFeatures* data)
 			v.free_vector();
 		}
 	}
-	delete[] result;
-	delete[] w_1;
-	delete[] B;
+	SG_FREE(result);
+	SG_FREE(w_1);
+	SG_FREE(B);
 
 	return true;
 }

@@ -70,7 +70,7 @@ CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(
 CSpectrumMismatchRBFKernel::~CSpectrumMismatchRBFKernel()
 {
 	cleanup();
-	delete[] AA_matrix ;
+	SG_FREE(AA_matrix);
 }
 
 
@@ -395,7 +395,7 @@ bool CSpectrumMismatchRBFKernel::set_weights(
 		length=1;
 
 	int32_t num_weights=degree*(length+max_mismatch);
-	delete[] weights;
+	SG_FREE(weights);
 	weights=new float64_t[num_weights];
 
 	if (weights)
@@ -417,7 +417,7 @@ bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_, int32_t nr
 	{
 		if (nr!=128 || nc!=128)
 			SG_ERROR("AA_matrix should be of shape 128x128\n");
-		delete[] AA_matrix;
+		SG_FREE(AA_matrix);
 		AA_matrix=new float64_t[nc*nr];
 		memcpy(AA_matrix, AA_matrix_, nc*nr*sizeof(float64_t)) ;
 		SG_DEBUG("Setting AA_matrix\n") ;

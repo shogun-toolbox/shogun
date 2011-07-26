@@ -120,22 +120,22 @@ Model::Model()
 
 Model::~Model()
 {
-	delete[] const_a;
-	delete[] const_b;
-	delete[] const_p;
-	delete[] const_q;
-	delete[] const_a_val;
-	delete[] const_b_val;
-	delete[] const_p_val;
-	delete[] const_q_val;
+	SG_FREE(const_a);
+	SG_FREE(const_b);
+	SG_FREE(const_p);
+	SG_FREE(const_q);
+	SG_FREE(const_a_val);
+	SG_FREE(const_b_val);
+	SG_FREE(const_p_val);
+	SG_FREE(const_q_val);
 
-	delete[] learn_a;
-	delete[] learn_b;
-	delete[] learn_p;
-	delete[] learn_q;
+	SG_FREE(learn_a);
+	SG_FREE(learn_b);
+	SG_FREE(learn_p);
+	SG_FREE(learn_q);
 
 #ifdef FIX_POS
-	delete[] fix_pos_state;
+	SG_FREE(fix_pos_state);
 #endif
 
 }
@@ -364,29 +364,29 @@ CHMM::~CHMM()
 	SG_UNREF(p_observations);
 
 	if (trans_list_forward_cnt)
-	  delete[] trans_list_forward_cnt ;
+	  SG_FREE(trans_list_forward_cnt);
 	if (trans_list_backward_cnt)
-		delete[] trans_list_backward_cnt ;
+		SG_FREE(trans_list_backward_cnt);
 	if (trans_list_forward)
 	{
 	    for (int32_t i=0; i<trans_list_len; i++)
 			if (trans_list_forward[i])
-				delete[] trans_list_forward[i] ;
-	    delete[] trans_list_forward ;
+				SG_FREE(trans_list_forward[i]);
+	    SG_FREE(trans_list_forward);
 	}
 	if (trans_list_forward_val)
 	{
 	    for (int32_t i=0; i<trans_list_len; i++)
 			if (trans_list_forward_val[i])
-				delete[] trans_list_forward_val[i] ;
-	    delete[] trans_list_forward_val ;
+				SG_FREE(trans_list_forward_val[i]);
+	    SG_FREE(trans_list_forward_val);
 	}
 	if (trans_list_backward)
 	  {
 	    for (int32_t i=0; i<trans_list_len; i++)
 	      if (trans_list_backward[i])
-		delete[] trans_list_backward[i] ;
-	    delete[] trans_list_backward ;
+		SG_FREE(trans_list_backward[i]);
+	    SG_FREE(trans_list_backward);
 	  } ;
 
 	free_state_dependend_arrays();
@@ -396,24 +396,24 @@ CHMM::~CHMM()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		for (int32_t i=0; i<parallel->get_num_threads(); i++)
 		{
-			delete[] alpha_cache[i].table;
-			delete[] beta_cache[i].table;
+			SG_FREE(alpha_cache[i].table);
+			SG_FREE(beta_cache[i].table);
 			alpha_cache[i].table=NULL;
 			beta_cache[i].table=NULL;
 		}
 
-		delete[] alpha_cache;
-		delete[] beta_cache;
+		SG_FREE(alpha_cache);
+		SG_FREE(beta_cache);
 		alpha_cache=NULL;
 		beta_cache=NULL;
 #else // USE_HMMPARALLEL_STRUCTURES
-		delete[] alpha_cache.table;
-		delete[] beta_cache.table;
+		SG_FREE(alpha_cache.table);
+		SG_FREE(beta_cache.table);
 		alpha_cache.table=NULL;
 		beta_cache.table=NULL;
 #endif // USE_HMMPARALLEL_STRUCTURES
 
-		delete[] states_per_observation_psi;
+		SG_FREE(states_per_observation_psi);
 		states_per_observation_psi=NULL;
 	}
 
@@ -421,23 +421,23 @@ CHMM::~CHMM()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
 		for (int32_t i=0; i<parallel->get_num_threads(); i++)
-			delete[] arrayS[i];
-		delete[] arrayS ;
+			SG_FREE(arrayS[i]);
+		SG_FREE(arrayS);
 	} ;
 #else //USE_HMMPARALLEL_STRUCTURES
-	delete[] arrayS;
+	SG_FREE(arrayS);
 #endif //USE_HMMPARALLEL_STRUCTURES
 #endif //USE_LOGSUMARRAY
 
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		delete[] path_prob_updated ;
-		delete[] path_prob_dimension ;
+		SG_FREE(path_prob_updated);
+		SG_FREE(path_prob_dimension);
 		for (int32_t i=0; i<parallel->get_num_threads(); i++)
-			delete[] path[i] ;
+			SG_FREE(path[i]);
 #endif //USE_HMMPARALLEL_STRUCTURES
-		delete[] path;
+		SG_FREE(path);
 	}
 }
 
@@ -517,26 +517,26 @@ void CHMM::free_state_dependend_arrays()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 	{
-		delete[] arrayN1[i];
-		delete[] arrayN2[i];
+		SG_FREE(arrayN1[i]);
+		SG_FREE(arrayN2[i]);
 
 		arrayN1[i]=NULL;
 		arrayN2[i]=NULL;
 	}
 #else
-	delete[] arrayN1;
-	delete[] arrayN2;
+	SG_FREE(arrayN1);
+	SG_FREE(arrayN2);
 	arrayN1=NULL;
 	arrayN2=NULL;
 #endif
 	if (observation_matrix_b)
 	{
-		delete[] transition_matrix_A;
-		delete[] observation_matrix_B;
-		delete[] transition_matrix_a;
-		delete[] observation_matrix_b;
-		delete[] initial_state_distribution_p;
-		delete[] end_state_distribution_q;
+		SG_FREE(transition_matrix_A);
+		SG_FREE(observation_matrix_B);
+		SG_FREE(transition_matrix_a);
+		SG_FREE(observation_matrix_b);
+		SG_FREE(initial_state_distribution_p);
+		SG_FREE(end_state_distribution_q);
 	} ;
 	
 	transition_matrix_A=NULL;
@@ -1272,14 +1272,14 @@ float64_t CHMM::model_probability_comp()
 
 	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 	{
-		delete[] params[i].p_buf;
-		delete[] params[i].q_buf;
-		delete[] params[i].a_buf;
-		delete[] params[i].b_buf;
+		SG_FREE(params[i].p_buf);
+		SG_FREE(params[i].q_buf);
+		SG_FREE(params[i].a_buf);
+		SG_FREE(params[i].b_buf);
 	}
 
-	delete[] threads;
-	delete[] params;
+	SG_FREE(threads);
+	SG_FREE(params);
 
 	mod_prob_updated=true;
 	return mod_prob;
@@ -1458,14 +1458,14 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 
 	for (cpu=0; cpu<num_threads; cpu++)
 	{
-		delete[] params[cpu].p_buf;
-		delete[] params[cpu].q_buf;
-		delete[] params[cpu].a_buf;
-		delete[] params[cpu].b_buf;
+		SG_FREE(params[cpu].p_buf);
+		SG_FREE(params[cpu].q_buf);
+		SG_FREE(params[cpu].a_buf);
+		SG_FREE(params[cpu].b_buf);
 	}
 
-	delete[] threads ;
-	delete[] params ;
+	SG_FREE(threads);
+	SG_FREE(params);
 	
 	//cache hmm model probability
 	hmm->mod_prob=fullmodprob;
@@ -1862,8 +1862,8 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 		}
 	}
 #ifdef USE_HMMPARALLEL
-	delete[] threads ;
-	delete[] params ;
+	SG_FREE(threads);
+	SG_FREE(params);
 #endif
 
 
@@ -1972,8 +1972,8 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	delete[] threads;
-	delete[] params;
+	SG_FREE(threads);
+	SG_FREE(params);
 #endif 
 
 	allpatprob/=p_observations->get_num_vectors() ;
@@ -2096,8 +2096,8 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 	}
 
 #ifdef USE_HMMPARALLEL
-	delete[] threads ;
-	delete[] params ;
+	SG_FREE(threads);
+	SG_FREE(params);
 #endif
 
 	//estimate->invalidate_model() ;
@@ -2508,7 +2508,7 @@ void CHMM::init_model_defined()
 			for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
 		}
 	}
-	delete[] R ; R=NULL ;
+	SG_FREE(R); R=NULL ;
 
 	//initialize b values that have to be learned
 	R=new float64_t[M] ;
@@ -2537,7 +2537,7 @@ void CHMM::init_model_defined()
 			for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
 		}
 	}
-	delete[] R ; R=NULL ;
+	SG_FREE(R); R=NULL ;
 
 	//set consts into a
 	i=0;
@@ -2675,25 +2675,25 @@ void CHMM::invalidate_model()
 	if (mem_initialized)
 	{
 	  if (trans_list_forward_cnt)
-	    delete[] trans_list_forward_cnt ;
+	    SG_FREE(trans_list_forward_cnt);
 	  trans_list_forward_cnt=NULL ;
 	  if (trans_list_backward_cnt)
-	    delete[] trans_list_backward_cnt ;
+	    SG_FREE(trans_list_backward_cnt);
 	  trans_list_backward_cnt=NULL ;
 	  if (trans_list_forward)
 	    {
 	      for (int32_t i=0; i<trans_list_len; i++)
 		if (trans_list_forward[i])
-		  delete[] trans_list_forward[i] ;
-	      delete[] trans_list_forward ;
+		  SG_FREE(trans_list_forward[i]);
+	      SG_FREE(trans_list_forward);
 	      trans_list_forward=NULL ;
 	    }
 	  if (trans_list_backward)
 	    {
 	      for (int32_t i=0; i<trans_list_len; i++)
 		if (trans_list_backward[i])
-		  delete[] trans_list_backward[i] ;
-	      delete[] trans_list_backward ;
+		  SG_FREE(trans_list_backward[i]);
+	      SG_FREE(trans_list_backward);
 	      trans_list_backward = NULL ;
 	    } ;
 
@@ -4442,8 +4442,8 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	save_model_bin(file) ;
 
 #ifdef USE_HMMPARALLEL
-	delete[] threads ;
-	delete[] params ;
+	SG_FREE(threads);
+	SG_FREE(params);
 #endif
 
 	result=true;
@@ -4884,10 +4884,10 @@ bool CHMM::append_model(CHMM* app_model)
 		alloc_state_dependend_arrays();
 
 		//delete + adjust pointers
-		delete[] initial_state_distribution_p;
-		delete[] end_state_distribution_q;
-		delete[] transition_matrix_a;
-		delete[] observation_matrix_b;
+		SG_FREE(initial_state_distribution_p);
+		SG_FREE(end_state_distribution_q);
+		SG_FREE(transition_matrix_a);
+		SG_FREE(observation_matrix_b);
 
 		transition_matrix_a=n_a;
 		observation_matrix_b=n_b;
@@ -4993,10 +4993,10 @@ bool CHMM::append_model(CHMM* app_model, float64_t* cur_out, float64_t* app_out)
 		alloc_state_dependend_arrays();
 
 		//delete + adjust pointers
-		delete[] initial_state_distribution_p;
-		delete[] end_state_distribution_q;
-		delete[] transition_matrix_a;
-		delete[] observation_matrix_b;
+		SG_FREE(initial_state_distribution_p);
+		SG_FREE(end_state_distribution_q);
+		SG_FREE(transition_matrix_a);
+		SG_FREE(observation_matrix_b);
 
 		transition_matrix_a=n_a;
 		observation_matrix_b=n_b;
@@ -5058,10 +5058,10 @@ void CHMM::add_states(int32_t num_states, float64_t default_value)
 	alloc_state_dependend_arrays();
 
 	//delete + adjust pointers
-	delete[] initial_state_distribution_p;
-	delete[] end_state_distribution_q;
-	delete[] transition_matrix_a;
-	delete[] observation_matrix_b;
+	SG_FREE(initial_state_distribution_p);
+	SG_FREE(end_state_distribution_q);
+	SG_FREE(transition_matrix_a);
+	SG_FREE(observation_matrix_b);
 
 	transition_matrix_a=n_a;
 	observation_matrix_b=n_b;
@@ -5207,8 +5207,8 @@ bool CHMM::linear_train(bool right_align)
 			}
 		}
 
-		delete[] hist;
-		delete[] startendhist;
+		SG_FREE(hist);
+		SG_FREE(startendhist);
 		convert_to_log();
 		invalidate_model();
 		return true;
@@ -5232,10 +5232,10 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		for (int32_t i=0; i<parallel->get_num_threads(); i++) 
 		{
-			delete[] alpha_cache[i].table;
-			delete[] beta_cache[i].table;
-			delete[] states_per_observation_psi[i];
-			delete[] path[i];
+			SG_FREE(alpha_cache[i].table);
+			SG_FREE(beta_cache[i].table);
+			SG_FREE(states_per_observation_psi[i]);
+			SG_FREE(path[i]);
 
 			alpha_cache[i].table=NULL;
 			beta_cache[i].table=NULL;
@@ -5243,10 +5243,10 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 			path[i]=NULL;
 		} ;
 #else
-		delete[] alpha_cache.table;
-		delete[] beta_cache.table;
-		delete[] states_per_observation_psi;
-		delete[] path;
+		SG_FREE(alpha_cache.table);
+		SG_FREE(beta_cache.table);
+		SG_FREE(states_per_observation_psi);
+		SG_FREE(path);
 
 		alpha_cache.table=NULL;
 		beta_cache.table=NULL;
@@ -5288,10 +5288,10 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		for (int32_t i=0; i<parallel->get_num_threads(); i++) 
 		{
-			delete[] alpha_cache[i].table;
-			delete[] beta_cache[i].table;
-			delete[] states_per_observation_psi[i];
-			delete[] path[i];
+			SG_FREE(alpha_cache[i].table);
+			SG_FREE(beta_cache[i].table);
+			SG_FREE(states_per_observation_psi[i]);
+			SG_FREE(path[i]);
 
 			alpha_cache[i].table=NULL;
 			beta_cache[i].table=NULL;
@@ -5299,10 +5299,10 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			path[i]=NULL;
 		} ;
 #else
-		delete[] alpha_cache.table;
-		delete[] beta_cache.table;
-		delete[] states_per_observation_psi;
-		delete[] path;
+		SG_FREE(alpha_cache.table);
+		SG_FREE(beta_cache.table);
+		SG_FREE(states_per_observation_psi);
+		SG_FREE(path);
 
 		alpha_cache.table=NULL;
 		beta_cache.table=NULL;
@@ -5454,7 +5454,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 			}
 			p_observations->free_feature_vector(obs, sequence_number, free_vec);
 
-			delete[] hist;
+			SG_FREE(hist);
 		}
 		return true;
 	}

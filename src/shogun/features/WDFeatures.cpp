@@ -71,7 +71,7 @@ CWDFeatures::CWDFeatures(const CWDFeatures& orig)
 CWDFeatures::~CWDFeatures()
 {
 	SG_UNREF(strings);
-	delete[] wd_weights;
+	SG_FREE(wd_weights);
 }
 
 float64_t CWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
@@ -137,7 +137,7 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 		asize*=alphabet_size;
 		asizem1*=alphabet_size;
 	}
-	delete[] val;
+	SG_FREE(val);
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 
 	return sum/normalization_const;
@@ -177,7 +177,7 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 		asize*=alphabet_size;
 		asizem1*=alphabet_size;
 	}
-	delete[] val;
+	SG_FREE(val);
 
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
@@ -185,7 +185,7 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 void CWDFeatures::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
-	delete[] wd_weights;
+	SG_FREE(wd_weights);
 	wd_weights=new float64_t[degree];
 	w_dim=0;
 
@@ -285,8 +285,8 @@ void CWDFeatures::free_feature_iterator(void* iterator)
 	ASSERT(iterator);
 	wd_feature_iterator* it=(wd_feature_iterator*) iterator;
 	strings->free_feature_vector(it->vec, it->vidx, it->vfree);
-	delete[] it->val;
-	delete[] it;
+	SG_FREE(it->val);
+	SG_FREE(it);
 }
 
 CFeatures* CWDFeatures::duplicate() const

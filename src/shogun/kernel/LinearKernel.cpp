@@ -97,7 +97,7 @@ bool CLinearKernel::init_optimization(CKernelMachine* km)
 
 bool CLinearKernel::delete_optimization()
 {
-	delete[] normal;
+	SG_FREE(normal);
 	normal_length=0;
 	normal=NULL;
 	set_is_initialized(false);

@@ -57,7 +57,7 @@ SGVector<int32_t> CLandmarkMDS::get_landmark_idxs(int32_t count, int32_t total_c
 			 permuted_idxs[rnd] = idxs[i];
 	}
 
-	delete[] idxs;
+	SG_FREE(idxs);
 
 	CMath::qsort(permuted_idxs,count);
 
@@ -148,12 +148,12 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	}
 
 	// cleanup
-	delete[] lmk_feature_matrix.matrix;
-	delete[] current_dist_to_lmk;
-	delete[] mean_sq_dist_vector;
-	delete[] lmk_dist_matrix;
+	SG_FREE(lmk_feature_matrix.matrix);
+	SG_FREE(current_dist_to_lmk);
+	SG_FREE(mean_sq_dist_vector);
+	SG_FREE(lmk_dist_matrix);
 	delete lmk_distance;
-	delete[] dist_matrix.matrix;
+	SG_FREE(dist_matrix.matrix);
 
 	return SGMatrix<float64_t>(new_feature_matrix,m_target_dim,total_N);
 }

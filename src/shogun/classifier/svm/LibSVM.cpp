@@ -129,13 +129,13 @@ bool CLibSVM::train_kernel_machine(CFeatures* data)
 			set_alpha(i, sgn*model->sv_coef[0][i]);
 		}
 
-		delete[] problem.x;
-		delete[] problem.y;
-		delete[] problem.pv;
-        delete[] problem.C;
+		SG_FREE(problem.x);
+		SG_FREE(problem.y);
+		SG_FREE(problem.pv);
+        SG_FREE(problem.C);
 
 
-		delete[] x_space;
+		SG_FREE(x_space);
 
 		svm_destroy_model(model);
 		model=NULL;

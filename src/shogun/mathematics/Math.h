@@ -237,7 +237,7 @@ class CMath : public CSGObject
 				T* new_data = new T[new_size];
 				for (int64_t i=0; i<old_size && i<new_size; i++)
 					new_data[i]=data[i];
-				delete[] data;
+				SG_FREE(data);
 				data=new_data;
 			}
 
@@ -418,7 +418,7 @@ class CMath : public CSGObject
 					transposed[i+j*num_vec]=matrix[i*num_feat+j];
 			}
 
-			delete[] matrix;
+			SG_FREE(matrix);
 			matrix=transposed;
 
 			CMath::swap(num_feat, num_vec);
@@ -1255,8 +1255,8 @@ class CMath : public CSGObject
 						matrix[int64_t(i)*m+j]+=s-colsums[j]-rowsums[i];
 				}
 
-				delete[] rowsums;
-				delete[] colsums;
+				SG_FREE(rowsums);
+				SG_FREE(colsums);
 			}
 
 		/* finds an element in a sorted array via binary search

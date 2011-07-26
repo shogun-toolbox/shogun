@@ -41,8 +41,8 @@ CKMeans::CKMeans(int32_t k_, CDistance* d)
 
 CKMeans::~CKMeans()
 {
-	delete[] R;
-	delete[] mus;
+	SG_FREE(R);
+	SG_FREE(mus);
 }
 
 bool CKMeans::train(CFeatures* data)
@@ -64,7 +64,7 @@ bool CKMeans::train(CFeatures* data)
 		Weights[i]=1.0;
 
 	clustknb(false, NULL);
-	delete[] Weights;
+	SG_FREE(Weights);
 
 	return true;
 }
@@ -142,10 +142,10 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	const int32_t XDimk=dimensions*k;
 	int32_t iter=0;
 
-	delete[] R;
+	SG_FREE(R);
 	R=new float64_t[k];
 
-	delete[] mus;
+	SG_FREE(mus);
 	mus=new float64_t[XDimk];
 
 	int32_t *ClList = (int32_t*) calloc(XSize, sizeof(int32_t));

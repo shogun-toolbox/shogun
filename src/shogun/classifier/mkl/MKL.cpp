@@ -254,7 +254,7 @@ bool CMKL::train_kernel_machine(CFeatures* data)
 	}
 
 	kernel->set_subkernel_weights(beta, num_kernels);
-	delete[] beta;
+	SG_FREE(beta);
 
 	svm->set_bias_enabled(get_bias_enabled());
 	svm->set_epsilon(get_epsilon());
@@ -340,7 +340,7 @@ bool CMKL::train_kernel_machine(CFeatures* data)
 				break;
 		}
 
-		delete[] sumw;
+		SG_FREE(sumw);
 	}
 #ifdef USE_CPLEX
 	cleanup_cplex();
@@ -454,7 +454,7 @@ bool CMKL::perform_mkl_step(
 	}
 
 	kernel->set_subkernel_weights(beta, num_kernels);
-	delete[] beta;
+	SG_FREE(beta);
 
 	return converged();
 }
@@ -642,7 +642,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 		}
 		mkl_obj=-ff;
 
-		delete[] nm;
+		SG_FREE(nm);
 
 		mkl_obj+=compute_sum_alpha();
 
@@ -960,8 +960,8 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 		if( stepSize < epsStep )
 			break;
 	}
-	delete[] newtDir;
-	delete[] newtBeta;
+	SG_FREE(newtDir);
+	SG_FREE(newtBeta);
 
 	// === return new objective
 	obj = -suma;
@@ -1208,7 +1208,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 
 				inner_iters++;
 			}
-			delete[] beta;
+			SG_FREE(beta);
 		}
 
 		if ( status )
@@ -1294,8 +1294,8 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			//CMath::display_vector(x, num_kernels, "beta");
 
 			rho = -x[2*num_kernels] ;
-			delete[] pi ;
-			delete[] slack ;
+			SG_FREE(pi);
+			SG_FREE(slack);
 
 		}
 		else
@@ -1308,7 +1308,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 	for (int32_t i=0; i<num_kernels; i++)
 		new_beta[i]=x[i];
 
-	delete[] x;
+	SG_FREE(x);
 #else
 	SG_ERROR("Cplex not enabled at compile time\n");
 #endif
@@ -1455,9 +1455,9 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		}
 	}
 
-	delete[] row_dual;
-	delete[] row_primal;
-	delete[] col_primal;
+	SG_FREE(row_dual);
+	SG_FREE(row_primal);
+	SG_FREE(col_primal);
 #else
 	SG_ERROR("Glpk not enabled at compile time\n");
 #endif
@@ -1602,9 +1602,9 @@ void CMKL::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 	//CPXwriteprob (env, lp_cplex, "prob.lp", NULL);
 	//CPXqpwrite (env, lp_cplex, "prob.qp");
 
-	delete[] grad_beta;
-	delete[] hess_beta;
-	delete[] lin_term;
-	delete[] ind;
+	SG_FREE(grad_beta);
+	SG_FREE(hess_beta);
+	SG_FREE(lin_term);
+	SG_FREE(ind);
 }
 #endif // USE_CPLEX

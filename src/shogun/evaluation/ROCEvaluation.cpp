@@ -15,7 +15,7 @@ using namespace shogun;
 
 CROCEvaluation::~CROCEvaluation()
 {
-	delete[] m_ROC_graph;
+	SG_FREE(m_ROC_graph);
 }
 
 float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
@@ -62,7 +62,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	delete [] labels;
 
 	// initialize graph and auROC
-	delete[] m_ROC_graph;
+	SG_FREE(m_ROC_graph);
 	m_ROC_graph = new float64_t[diff_count*2+2];
 	m_auROC = 0.0;
 

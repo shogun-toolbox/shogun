@@ -58,7 +58,7 @@ CLabels::CLabels(CFile* loader)
 
 CLabels::~CLabels()
 {
-	delete[] labels.vector;
+	SG_FREE(labels.vector);
 	delete m_subset;
 	m_subset=NULL;
 

@@ -94,7 +94,7 @@ void CParameterCombination::print_tree(int prefix_num) const
 		SG_UNREF(child);
 	}
 
-	delete[] prefix;
+	SG_FREE(prefix);
 }
 
 DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(

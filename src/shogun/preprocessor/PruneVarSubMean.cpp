@@ -41,9 +41,9 @@ bool CPruneVarSubMean::init(CFeatures* features)
 		int32_t num_examples = simple_features->get_num_vectors();
 		int32_t num_features = simple_features->get_num_features();
 
-		delete[] mean;
-		delete[] idx;
-		delete[] std;
+		SG_FREE(mean);
+		SG_FREE(idx);
+		SG_FREE(std);
 		mean=NULL;
 		idx=NULL;
 		std=NULL;
@@ -93,7 +93,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 
 		SG_INFO( "Reducing number of features from %i to %i\n", num_features, num_ok) ;
 
-		delete[] idx ;
+		SG_FREE(idx);
 		idx=new int[num_ok];
 		float64_t* new_mean=new float64_t[num_ok];
 		std=new float64_t[num_ok];
@@ -105,9 +105,9 @@ bool CPruneVarSubMean::init(CFeatures* features)
 			std[j]=sqrt(var[idx_ok[j]]);
 		}
 		num_idx = num_ok ;
-		delete[] idx_ok ;
-		delete[] mean;
-		delete[] var;
+		SG_FREE(idx_ok);
+		SG_FREE(mean);
+		SG_FREE(var);
 		mean = new_mean;
 
 		initialized = true;
@@ -120,11 +120,11 @@ bool CPruneVarSubMean::init(CFeatures* features)
 /// clean up allocated memory
 void CPruneVarSubMean::cleanup()
 {
-	delete[] idx;
+	SG_FREE(idx);
 	idx=NULL;
-	delete[] mean;
+	SG_FREE(mean);
 	mean=NULL;
-	delete[] std;
+	SG_FREE(std);
 	std=NULL;
 }
 

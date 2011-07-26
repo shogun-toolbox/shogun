@@ -38,9 +38,9 @@ CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, b
 
 CPolyFeatures::~CPolyFeatures()
 {
-	delete[] m_multi_index;
-	delete[] m_multinomial_coefficients;
-	delete[] m_normalization_values;
+	SG_FREE(m_multi_index);
+	SG_FREE(m_multinomial_coefficients);
+	SG_FREE(m_normalization_values);
 	SG_UNREF(m_feat);
 }
 
@@ -140,7 +140,7 @@ void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_
 }
 void CPolyFeatures::store_normalization_values()
 {
-	delete[] m_normalization_values;
+	SG_FREE(m_normalization_values);
 
 	int32_t num_vec = this->get_num_vectors();
 
@@ -159,7 +159,7 @@ void CPolyFeatures::store_normalization_values()
 
 void CPolyFeatures::store_multi_index()
 {
-	delete[] m_multi_index;
+	SG_FREE(m_multi_index);
 
         m_multi_index=new uint16_t[m_output_dimensions*m_degree];
 
@@ -170,7 +170,7 @@ void CPolyFeatures::store_multi_index()
         uint16_t* index = m_multi_index;
         enumerate_multi_index(0, &index, exponents, m_degree);
 
-	delete[] exponents;
+	SG_FREE(exponents);
 }
 
 void CPolyFeatures::enumerate_multi_index(const int32_t feat_idx, uint16_t** index, uint16_t* exponents, const int32_t degree)
@@ -203,7 +203,7 @@ void CPolyFeatures::enumerate_multi_index(const int32_t feat_idx, uint16_t** ind
 
 void CPolyFeatures::store_multinomial_coefficients()
 {
-	delete[] m_multinomial_coefficients;
+	SG_FREE(m_multinomial_coefficients);
 
 	m_multinomial_coefficients = new float64_t[m_output_dimensions];
 	int32_t* exponents = new int32_t[m_input_dimensions];
@@ -226,7 +226,7 @@ void CPolyFeatures::store_multinomial_coefficients()
 			exponents[k]=0;
 		}
 	}
-	delete[] exponents;
+	SG_FREE(exponents);
 }
 
 int32_t CPolyFeatures::bico2(int32_t n, int32_t k)

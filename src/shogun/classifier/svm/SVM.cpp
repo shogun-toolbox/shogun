@@ -41,7 +41,7 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CSVM::~CSVM()
 {
-	delete[] m_linear_term;
+	SG_FREE(m_linear_term);
 	SG_UNREF(mkl);
 }
 
@@ -330,7 +330,7 @@ void CSVM::set_linear_term(SGVector<float64_t> linear_term)
 				"of entries (%d) in linear term \n", num_labels, linear_term.vlen);
 	}
 
-	delete[] m_linear_term;
+	SG_FREE(m_linear_term);
 
 	m_linear_term_len = linear_term.vlen;
 	m_linear_term = new float64_t[linear_term.vlen];

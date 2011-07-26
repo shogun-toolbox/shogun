@@ -423,8 +423,8 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
 
                     for (int32_t j=0; j<i; j++)
-                        delete[] strings[i].string;
-                    delete[] strings;
+                        SG_FREE(strings[i].string);
+                    SG_FREE(strings);
                     SWIG_fail;
                 }
             }
@@ -458,8 +458,8 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
 
                     for (int32_t j=0; j<i; j++)
-                        delete[] strings[i].string;
-                    delete[] strings;
+                        SG_FREE(strings[i].string);
+                    SG_FREE(strings);
                     SWIG_fail;
                 }
             }

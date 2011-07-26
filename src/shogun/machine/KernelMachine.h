@@ -291,8 +291,8 @@ class CKernelMachine : public CMachine
 		 */
 		inline bool create_new_model(int32_t num)
 		{
-			delete[] m_alpha.vector;
-			delete[] m_svs.vector;
+			SG_FREE(m_alpha.vector);
+			SG_FREE(m_svs.vector);
 
 			m_bias=0;
 			m_svs.vlen=num;

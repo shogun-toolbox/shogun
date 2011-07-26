@@ -34,7 +34,7 @@ CGMNPSVM::CGMNPSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CGMNPSVM::~CGMNPSVM()
 {
-	if (m_basealphas != NULL) delete[] m_basealphas;
+	if (m_basealphas != NULL) SG_FREE(m_basealphas);
 }
 
 void
@@ -154,7 +154,7 @@ bool CGMNPSVM::train_kernel_machine(CFeatures* data)
 		set_svm(i, svm);
 	}
 
-	if (m_basealphas != NULL) delete[] m_basealphas;
+	if (m_basealphas != NULL) SG_FREE(m_basealphas);
 	m_basealphas_y = num_classes, m_basealphas_x = num_data;
 	m_basealphas = new float64_t[m_basealphas_y*m_basealphas_x];
 	for (index_t i=0; i<m_basealphas_y*m_basealphas_x; i++)
@@ -168,12 +168,12 @@ bool CGMNPSVM::train_kernel_machine(CFeatures* data)
 		m_basealphas[inx1*m_basealphas_y + (inx2-1)] = alpha[j];
 	}
 
-	delete[] vector_c;
-	delete[] alpha;
-	delete[] all_alphas;
-	delete[] all_bs;
-	delete[] vector_y;
-	delete[] History;
+	SG_FREE(vector_c);
+	SG_FREE(alpha);
+	SG_FREE(all_alphas);
+	SG_FREE(all_bs);
+	SG_FREE(vector_y);
+	SG_FREE(History);
 
 	return true;
 }

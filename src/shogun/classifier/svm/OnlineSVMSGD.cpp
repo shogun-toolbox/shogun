@@ -146,7 +146,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	ASSERT(features);
 	ASSERT(features->get_has_labels());
 	if (w)
-		delete[] w;
+		SG_FREE(w);
 	w_dim=1;
 	w=new float64_t;
 	bias=0;
@@ -265,7 +265,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 
 	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
 
-	delete[] c;
+	SG_FREE(c);
 }
 
 void COnlineSVMSGD::init()

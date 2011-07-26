@@ -108,7 +108,7 @@ bool CDomainAdaptationSVM::train_kernel_machine(CFeatures* data)
 	//set linear term for QP
 	this->set_linear_term(SGVector<float64_t>(lin_term, num_training_points));
 
-	delete[] lin_term;
+	SG_FREE(lin_term);
 
 	//train SVM
 	bool success = CSVMLight::train_kernel_machine();

@@ -75,10 +75,10 @@ CGNPPLib::CGNPPLib(
 CGNPPLib::~CGNPPLib()
 {
   for(int32_t i = 0; i < Cache_Size; i++ ) 
-      delete[] kernel_columns[i];
+      SG_FREE(kernel_columns[i]);
 
-  delete[] cache_index;
-  delete[] kernel_columns;
+  SG_FREE(cache_index);
+  SG_FREE(kernel_columns);
 }
 
 /* --------------------------------------------------------------
@@ -319,7 +319,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
       tmp_ptr[INDEX(1,t,2)] = UB;
       
       History_size += HISTORY_BUF;
-      delete[] History;
+      SG_FREE(History);
       History = tmp_ptr;
     }
   }
@@ -339,8 +339,8 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
   (*ptr_History) = History;
 
   /* Free memory */
-  delete[] Ha1 ;
-  delete[] Ha2;
+  SG_FREE(Ha1);
+  SG_FREE(Ha2);
   
   return( exitflag ); 
 }
@@ -655,7 +655,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
       tmp_ptr[INDEX(1,t,2)] = UB;
       
       History_size += HISTORY_BUF;
-      delete[] History;
+      SG_FREE(History);
       History = tmp_ptr;
     }
   }
@@ -675,8 +675,8 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
   (*ptr_History) = History;
 
   /* Free memory */
-  delete[] Ha1;
-  delete[] Ha2;
+  SG_FREE(Ha1);
+  SG_FREE(Ha2);
   
   return( exitflag ); 
 }

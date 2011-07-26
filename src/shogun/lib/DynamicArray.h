@@ -172,7 +172,7 @@ template <class T> class CDynamicArray :public CSGObject
 		}
 
 		/** delete array element at idx
-		 * (does not call delete[] or the like)
+		 * (does not call SG_FREE() or the like)
 		 *
 		 * @param idx index
 		 * @return if deleting was successful

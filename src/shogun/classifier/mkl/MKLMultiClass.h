@@ -63,7 +63,7 @@ public:
 	 * have been computed or to the number of MKL weights which is equal to the number of kernels
 	 * 
 	 * @return NULL if no weights have been computed or otherwise an array
-	 * with the weights, caller has to delete[] the output by itself
+	 * with the weights, caller has to SG_FREE() the output
 	 */
 	float64_t* getsubkernelweights(int32_t & numweights);
 	

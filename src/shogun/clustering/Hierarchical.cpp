@@ -46,9 +46,9 @@ CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
 
 CHierarchical::~CHierarchical()
 {
-	delete[] merge_distance;
-	delete[] assignment;
-	delete[] pairs;
+	SG_FREE(merge_distance);
+	SG_FREE(assignment);
+	SG_FREE(pairs);
 }
 
 bool CHierarchical::train(CFeatures* data)
@@ -66,15 +66,15 @@ bool CHierarchical::train(CFeatures* data)
 
 	const int32_t num_pairs=num*(num-1)/2;
 
-	delete[] merge_distance;
+	SG_FREE(merge_distance);
 	merge_distance=new float64_t[num];
 	CMath::fill_vector(merge_distance, num, -1.0);
 
-	delete[] assignment;
+	SG_FREE(assignment);
 	assignment=new int32_t[num];
 	CMath::range_fill_vector(assignment, num);
 
-	delete[] pairs;
+	SG_FREE(pairs);
 	pairs=new int32_t[2*num];
 	CMath::fill_vector(pairs, 2*num, -1);
 
@@ -143,8 +143,8 @@ bool CHierarchical::train(CFeatures* data)
 	assignment_size=num;
 	table_size=l-1;
 	ASSERT(table_size>0);
-	delete[] distances;
-	delete[] index;
+	SG_FREE(distances);
+	SG_FREE(index);
 	SG_UNREF(lhs)
 
 	return true;

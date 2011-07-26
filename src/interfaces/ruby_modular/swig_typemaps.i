@@ -246,9 +246,9 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			}
 			rb_ary_push(arr, vec);
 		}
-		delete[] str[i].string;
+		SG_FREE(str[i].string);
 	}
-	delete[] str;
+	SG_FREE(str);
 }
 
 %enddef

@@ -80,8 +80,8 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 			neighborhood_matrix[j*N+i] = local_neighbors_idxs[j+1];
 	}
 
-	delete[] distance_matrix.matrix;
-	delete[] local_neighbors_idxs;
+	SG_FREE(distance_matrix.matrix);
+	SG_FREE(local_neighbors_idxs);
 
 	// init W (weight) matrix
 	float64_t* W_matrix = new float64_t[N*N];
@@ -197,12 +197,12 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	}
 
 	// clean
-	delete[] Yi_matrix;
-	delete[] s_values_vector;
-	delete[] mean_vector;
-	delete[] neighborhood_matrix;
-	delete[] local_feature_matrix;
-	delete[] q_matrix;
+	SG_FREE(Yi_matrix);
+	SG_FREE(s_values_vector);
+	SG_FREE(mean_vector);
+	SG_FREE(neighborhood_matrix);
+	SG_FREE(local_feature_matrix);
+	SG_FREE(q_matrix);
 
 	// finally construct embedding
 	SGMatrix<float64_t> W_sgmatrix = SGMatrix<float64_t>(W_matrix,N,N,true);

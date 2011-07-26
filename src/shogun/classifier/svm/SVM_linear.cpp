@@ -68,9 +68,9 @@ l2r_lr_fun::l2r_lr_fun(const problem *p, float64_t Cp, float64_t Cn)
 
 l2r_lr_fun::~l2r_lr_fun()
 {
-	delete[] z;
-	delete[] D;
-	delete[] C;
+	SG_FREE(z);
+	SG_FREE(D);
+	SG_FREE(C);
 }
 
 
@@ -134,7 +134,7 @@ void l2r_lr_fun::Hv(double *s, double *Hs)
 	XTv(wa, Hs);
 	for(i=0;i<w_size;i++)
 		Hs[i] = s[i] + Hs[i];
-	delete[] wa;
+	SG_FREE(wa);
 }
 
 void l2r_lr_fun::Xv(double *v, double *res_Xv)
@@ -195,10 +195,10 @@ l2r_l2_svc_fun::l2r_l2_svc_fun(const problem *p, double Cp, double Cn)
 
 l2r_l2_svc_fun::~l2r_l2_svc_fun()
 {
-	delete[] z;
-	delete[] D;
-	delete[] C;
-	delete[] I;
+	SG_FREE(z);
+	SG_FREE(D);
+	SG_FREE(C);
+	SG_FREE(I);
 }
 
 double l2r_l2_svc_fun::fun(double *w)
@@ -262,7 +262,7 @@ void l2r_l2_svc_fun::Hv(double *s, double *Hs)
 	subXTv(wa, Hs);
 	for(i=0;i<w_size;i++)
 		Hs[i] = s[i] + 2*Hs[i];
-	delete[] wa;
+	SG_FREE(wa);
 }
 
 void l2r_l2_svc_fun::Xv(double *v, double *res_Xv)
@@ -355,8 +355,8 @@ Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class, double *weighted
 
 Solver_MCSVM_CS::~Solver_MCSVM_CS()
 {
-	delete[] B;
-	delete[] G;
+	SG_FREE(B);
+	SG_FREE(G);
 }
 
 int compare_double(const void *a, const void *b)
@@ -389,7 +389,7 @@ void Solver_MCSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int act
 		else
 			alpha_new[r] = CMath::min((double)0, (beta - B[r])/A_i);
 	}
-	delete[] D;
+	SG_FREE(D);
 }
 
 bool Solver_MCSVM_CS::be_shrunk(int i, int m, int yi, double alpha_i, double minG)

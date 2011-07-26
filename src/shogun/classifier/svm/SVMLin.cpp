@@ -54,7 +54,7 @@ bool CSVMLin::train(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen);
-	delete[] w;
+	SG_FREE(w);
 
 	struct options Options;
 	struct data Data;
@@ -103,9 +103,9 @@ bool CSVMLin::train(CFeatures* data)
 	set_w(Weights.vec, num_feat);
 	set_bias(Weights.vec[num_feat]);
 
-	delete[] Weights.vec;
-	delete[] Data.C;
-	delete[] Outputs.vec;
+	SG_FREE(Weights.vec);
+	SG_FREE(Data.C);
+	SG_FREE(Outputs.vec);
 	train_labels.free_vector();
 	return true;
 }

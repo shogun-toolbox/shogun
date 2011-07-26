@@ -216,7 +216,7 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
 	std::copy(curweights.begin(),curweights.end(),weights);
 
 	kernel->set_subkernel_weights(  weights, curweights.size());
-	delete[] weights;
+	SG_FREE(weights);
 	weights=NULL;
 
 	initsvm();

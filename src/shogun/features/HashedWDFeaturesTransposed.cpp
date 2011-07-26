@@ -115,11 +115,11 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(const CHashedWDFeatures
 CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 {
 	for (int32_t i=0; i<string_length; i++)
-		delete[] transposed_strings[i].string;
-	delete[] transposed_strings;
+		SG_FREE(transposed_strings[i].string);
+	SG_FREE(transposed_strings);
 
 	SG_UNREF(strings);
-	delete[] wd_weights;
+	SG_FREE(wd_weights);
 }
 
 float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
@@ -185,7 +185,7 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 		}
 		offs+=partial_w_dim*degree;
 	}
-	delete[] val;
+	SG_FREE(val);
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 
 	return sum/normalization_const;
@@ -270,11 +270,11 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		for (t=0; t<num_threads-1; t++)
 			pthread_join(threads[t], NULL);
 
-		delete[] params;
-		delete[] threads;
+		SG_FREE(params);
+		SG_FREE(threads);
 	}
 #endif
-	delete[] index;
+	SG_FREE(index);
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
@@ -354,9 +354,9 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		for (t=0; t<num_threads-1; t++)
 			pthread_join(threads[t], NULL);
 
-		delete[] params;
-		delete[] threads;
-		delete[] index;
+		SG_FREE(params);
+		SG_FREE(threads);
+		SG_FREE(index);
 	}
 #endif
 
@@ -508,7 +508,7 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 		offs+=partial_w_dim*degree;
 	}
 
-	delete[] val;
+	SG_FREE(val);
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 

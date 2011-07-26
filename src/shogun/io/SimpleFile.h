@@ -183,7 +183,7 @@ template <class T> class CSimpleFile : public CSGObject
 		/** free the line buffer */
 		void free_line_buffer()
 		{
-			delete[] line_buffer;
+			SG_FREE(line_buffer);
 			line_buffer=NULL;
 		}
 

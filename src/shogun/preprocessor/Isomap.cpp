@@ -65,8 +65,8 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 					D_matrix.matrix[i*N+j] = D_matrix.matrix[j*N+i];
 		}			
 
-		delete[] col;
-		delete[] col_idx;
+		SG_FREE(col);
+		SG_FREE(col_idx);
 	}
 
 	// Floyd-Warshall on distance matrix
@@ -87,7 +87,7 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	CCustomDistance* geodesic_distance = new CCustomDistance(D_matrix.matrix,N,N);
 
 	// should be removed if custom distance doesn't copy the matrix
-	delete[] D_matrix.matrix;
+	SG_FREE(D_matrix.matrix);
 
 	return geodesic_distance;
 }

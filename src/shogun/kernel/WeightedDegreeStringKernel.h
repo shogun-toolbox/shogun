@@ -289,7 +289,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 			num_weights = get_num_subkernels();
 
-			delete[] weights_buffer ;
+			SG_FREE(weights_buffer);
 			weights_buffer = new float64_t[num_weights];
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
@@ -535,7 +535,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		bool delete_position_weights()
 		{
-			delete[] position_weights;
+			SG_FREE(position_weights);
 			position_weights=NULL;
 			return true;
 		}

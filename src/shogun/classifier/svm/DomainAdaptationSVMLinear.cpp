@@ -152,7 +152,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
 
 	//set w (copied in setter)
     set_w(tmp_w_copy, w_dim);
-    delete[] tmp_w_copy;
+    SG_FREE(tmp_w_copy);
 	*/
 
 	bool success = false;

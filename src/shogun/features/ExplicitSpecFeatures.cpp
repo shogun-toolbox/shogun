@@ -134,9 +134,9 @@ void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
 void CExplicitSpecFeatures::delete_kmer_spectrum()
 {
 	for (int32_t i=0; i<num_strings; i++)
-		delete[] k_spectrum[i];
+		SG_FREE(k_spectrum[i]);
 
-	delete[] k_spectrum;
+	SG_FREE(k_spectrum);
 	k_spectrum=NULL;
 }
 

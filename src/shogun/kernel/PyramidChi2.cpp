@@ -68,7 +68,7 @@ void CPyramidChi2::cleanup()
 
 	num_randfeats_forwidthcomputation=-1;
 
-	delete[] weights;
+	SG_FREE(weights);
 	weights=NULL;
 
 	CKernel::cleanup();
@@ -200,7 +200,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 				}
 
 			}
-			delete[] featindices;
+			SG_FREE(featindices);
 		}
 		else
 		{
@@ -252,7 +252,7 @@ void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
 	if(num_cells<=0)
 		SG_ERROR("CPyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive");
 	if(weights)
-		delete[] weights;
+		SG_FREE(weights);
 	weights=new float64_t[num_cells];
 	if(weights_foreach_cell2)
 	{

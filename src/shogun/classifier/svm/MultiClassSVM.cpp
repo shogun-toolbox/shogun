@@ -53,7 +53,7 @@ void CMultiClassSVM::cleanup()
 	for (int32_t i=0; i<m_num_svms; i++)
 		SG_UNREF(m_svms[i]);
 
-	delete[] m_svms;
+	SG_FREE(m_svms);
 	m_num_svms=0;
 	m_svms=NULL;
 }
@@ -168,11 +168,11 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 			result->set_label(v, winner);
 		}
 
-		delete[] votes;
+		SG_FREE(votes);
 
 		for (int32_t i=0; i<m_num_svms; i++)
 			SG_UNREF(outputs[i]);
-		delete[] outputs;
+		SG_FREE(outputs);
 	}
 
 	return result;
@@ -228,7 +228,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 		for (int32_t i=0; i<m_num_svms; i++)
 			SG_UNREF(outputs[i]);
 
-		delete[] outputs;
+		SG_FREE(outputs);
 	}
 
 	return result;
@@ -262,7 +262,7 @@ float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 			max_out=outputs[i];
 		}
 	}
-	delete[] outputs;
+	SG_FREE(outputs);
 
 	return winner;
 }
@@ -298,7 +298,7 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 		}
 	}
 
-	delete[] votes;
+	SG_FREE(votes);
 
 	return winner;
 }

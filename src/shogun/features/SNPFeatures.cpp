@@ -344,7 +344,7 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 			}
 		}
 	}
-	delete[] h_normalizer;
+	SG_FREE(h_normalizer);
 
 	return SGMatrix<float64_t>(h, nsym, string_length/2);
 }

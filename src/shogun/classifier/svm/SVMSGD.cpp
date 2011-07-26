@@ -154,7 +154,7 @@ bool CSVMSGD::train(CFeatures* data)
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
 
-	delete[] w;
+	SG_FREE(w);
 	w=new float64_t[w_dim];
 	memset(w, 0, w_dim*sizeof(float64_t));
 	bias=0;
@@ -256,7 +256,7 @@ void CSVMSGD::calibrate()
 	skip = (int32_t) ((16 * n * c_dim) / r);
 	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
 
-	delete[] c;
+	SG_FREE(c);
 }
 
 void CSVMSGD::init()

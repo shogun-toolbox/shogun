@@ -204,14 +204,14 @@ bool CCplex::setup_subgradientlpm_QP(
 
 	//write_problem("problem.lp");
 
-	delete[] sense;
-	delete[] lb;
-	delete[] ub;
-	delete[] obj;
-	delete[] cmatbeg;
-	delete[] cmatcnt;
-	delete[] cmatind;
-	delete[] cmatval;
+	SG_FREE(sense);
+	SG_FREE(lb);
+	SG_FREE(ub);
+	SG_FREE(obj);
+	SG_FREE(cmatbeg);
+	SG_FREE(cmatcnt);
+	SG_FREE(cmatind);
+	SG_FREE(cmatval);
 
 	//// setup QP part (diagonal matrix 1 for v, 0 for x...)
 	int* qmatbeg=new int[num_variables];
@@ -244,10 +244,10 @@ bool CCplex::setup_subgradientlpm_QP(
 	if (result)
 		result = CPXcopyquad(env, lp, qmatbeg, qmatcnt, qmatind, qmatval) == 0;
 
-	delete[] qmatbeg;
-	delete[] qmatcnt;
-	delete[] qmatind;
-	delete[] qmatval;
+	SG_FREE(qmatbeg);
+	SG_FREE(qmatcnt);
+	SG_FREE(qmatind);
+	SG_FREE(qmatval);
 
 	if (!result)
 		SG_ERROR("CPXcopyquad failed.\n");
@@ -283,9 +283,9 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 		CPXgeterrorstring (env, status, errmsg);
 		SG_ERROR( "%s", errmsg);
 	}
-	delete[] obj;
-	delete[] lb;
-	delete[] ub;
+	SG_FREE(obj);
+	SG_FREE(lb);
+	SG_FREE(ub);
 	return status==0;
 }
 
@@ -454,14 +454,14 @@ bool CCplex::setup_lpm(
 			f, b, sense, amatbeg, amatcnt, amatind, amatval, lb, ub, NULL) == 0;
 
 
-	delete[] amatval;
-	delete[] amatcnt;
-	delete[] amatind;
-	delete[] amatbeg;
-	delete[] b;
-	delete[] f;
-	delete[] ub;
-	delete[] lb;
+	SG_FREE(amatval);
+	SG_FREE(amatcnt);
+	SG_FREE(amatind);
+	SG_FREE(amatbeg);
+	SG_FREE(b);
+	SG_FREE(f);
+	SG_FREE(ub);
+	SG_FREE(lb);
 
 	return result;
 }
@@ -511,9 +511,9 @@ bool CCplex::dense_to_cplex_sparse(
 
 	if (!(qmatbeg && qmatcnt && qmatind))
 	{
-		delete[] qmatbeg;
-		delete[] qmatcnt;
-		delete[] qmatind;
+		SG_FREE(qmatbeg);
+		SG_FREE(qmatcnt);
+		SG_FREE(qmatind);
 		return false;
 	}
 
@@ -556,7 +556,7 @@ bool CCplex::setup_lp(
 		ASSERT(result);
 		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
 				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
-		delete[] constraints_mat;
+		SG_FREE(constraints_mat);
 	}
 	else
 	{
@@ -567,10 +567,10 @@ bool CCplex::setup_lp(
 				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
 	}
 
-	delete[] sense;
-	delete[] qmatbeg;
-	delete[] qmatcnt;
-	delete[] qmatind;
+	SG_FREE(sense);
+	SG_FREE(qmatbeg);
+	SG_FREE(qmatcnt);
+	SG_FREE(qmatind);
 
 	if (!result)
 		SG_WARNING("CPXcopylp failed.\n");
@@ -588,9 +588,9 @@ bool CCplex::setup_qp(float64_t* H, int32_t dim)
 	if (result)
 		result = CPXcopyquad(env, lp, qmatbeg, qmatcnt, qmatind, qmatval) == 0;
 
-	delete[] qmatbeg;
-	delete[] qmatcnt;
-	delete[] qmatind;
+	SG_FREE(qmatbeg);
+	SG_FREE(qmatcnt);
+	SG_FREE(qmatind);
 
 	if (!result)
 		SG_WARNING("CPXcopyquad failed.\n");

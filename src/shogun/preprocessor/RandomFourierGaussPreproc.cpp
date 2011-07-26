@@ -117,8 +117,8 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 
 CRandomFourierGaussPreproc::~CRandomFourierGaussPreproc() {
 
-	delete[] randomcoeff_multiplicative;
-	delete[] randomcoeff_additive;
+	SG_FREE(randomcoeff_multiplicative);
+	SG_FREE(randomcoeff_additive);
 
 }
 
@@ -206,9 +206,9 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 	float64_t pi = 3.14159265;
 	
 
-	delete[] randomcoeff_multiplicative;
+	SG_FREE(randomcoeff_multiplicative);
 	randomcoeff_multiplicative=NULL;
-	delete[] randomcoeff_additive;
+	SG_FREE(randomcoeff_additive);
 	randomcoeff_additive=NULL;
 
 
@@ -284,9 +284,9 @@ void CRandomFourierGaussPreproc::set_randomcoefficients(
 	dim_input_space = dim_input_space2;
 	kernelwidth=kernelwidth2;
 	
-	delete[] randomcoeff_multiplicative;
+	SG_FREE(randomcoeff_multiplicative);
 	randomcoeff_multiplicative=NULL;
-	delete[] randomcoeff_additive;
+	SG_FREE(randomcoeff_additive);
 	randomcoeff_additive=NULL;
 
 	cur_dim_feature_space=dim_feature_space;

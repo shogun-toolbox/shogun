@@ -14,21 +14,21 @@ CPlifMatrix::~CPlifMatrix()
 {
 	for (int32_t i=0; i<m_num_plifs; i++)
 		delete m_PEN[i];	
-	delete[] m_PEN;
+	SG_FREE(m_PEN);
 	
 	for (int32_t i=0; i<m_num_states*m_num_states; i++)
 		delete m_plif_matrix[i];
 
-	delete[] m_plif_matrix;	
+	SG_FREE(m_plif_matrix);	
 
-	delete[] m_state_signals;
+	SG_FREE(m_state_signals);
 }
 
 void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 {
 	for (int32_t i=0; i<m_num_plifs; i++)	
 		delete m_PEN[i];
-	delete[] m_PEN;
+	SG_FREE(m_PEN);
 	m_PEN=NULL;
 
 	m_num_plifs=num_plifs;
@@ -119,7 +119,7 @@ void CPlifMatrix::set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t 
 		int32_t id=get_plif_id(i);
 		m_PEN[id]->set_plif_limits(lim, m_num_limits);
 	}
-	delete[] lim;
+	SG_FREE(lim);
 }
 
 void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, int32_t num_limits)
@@ -140,7 +140,7 @@ void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, in
 		int32_t id=get_plif_id(i);
 		m_PEN[id]->set_plif_penalty(pen, m_num_limits);
 	}
-	delete[] pen;
+	SG_FREE(pen);
 }
 
 void CPlifMatrix::set_plif_names(SGString<char>* names, int32_t num_values, int32_t maxlen)
@@ -153,7 +153,7 @@ void CPlifMatrix::set_plif_names(SGString<char>* names, int32_t num_values, int3
 		int32_t id=get_plif_id(i);
 		char* name = CStringFeatures<char>::get_zero_terminated_string_copy(names[i]);
 		m_PEN[id]->set_plif_name(name);
-		delete[] name;
+		SG_FREE(name);
 	}
 }
 
@@ -169,13 +169,13 @@ void CPlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_
 
 		if (!m_PEN[id]->set_transform_type(transform_str))
 		{
-			delete[] m_PEN;
+			SG_FREE(m_PEN);
 			m_PEN=NULL;
 			m_num_plifs=0;
 			m_num_limits=0;
 			SG_ERROR( "transform type not recognized ('%s')\n", transform_str) ;
 		}
-		delete[] transform_str;
+		SG_FREE(transform_str);
 	}
 }
 
@@ -189,7 +189,7 @@ bool CPlifMatrix::compute_plif_matrix(
 
 	for (int32_t i=0; i<m_num_states*m_num_states; i++)
 		delete  m_plif_matrix[i];
-	delete[] m_plif_matrix ;
+	SG_FREE(m_plif_matrix);
 
 	m_num_states = num_states;
 	m_plif_matrix = new CPlifBase*[num_states*num_states] ;
@@ -250,7 +250,7 @@ bool  CPlifMatrix::compute_signal_plifs(
 	int32_t Nplif = get_num_plifs();
 	CPlif** PEN = get_PEN();
 
-	delete[] m_state_signals;
+	SG_FREE(m_state_signals);
 	m_feat_dim3 = feat_dim3;
 
 	CPlifBase **PEN_state_signal = new CPlifBase*[feat_dim3*num_states] ;

@@ -74,10 +74,10 @@ CMath::CMath()
 
 CMath::~CMath()
 {
-	delete[] CMath::rand_state;
+	SG_FREE(CMath::rand_state);
 	CMath::rand_state=NULL;
 #ifdef USE_LOGCACHE
-	delete[] CMath::logtable;
+	SG_FREE(CMath::logtable);
 	CMath::logtable=NULL;
 #endif
 }
@@ -305,9 +305,9 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 
 	nonrand_p=CMath::exp(nonrand_p);
 
-	delete[] log_denom_vec;
-	delete[] x;
-	delete[] m;
+	SG_FREE(log_denom_vec);
+	SG_FREE(x);
+	SG_FREE(m);
 
 	return nonrand_p;
 }
@@ -498,9 +498,9 @@ float64_t* CMath::pinv(
 
 	cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, m, n, m, 1.0, vt, ldvt, u, ldu, 0, target, m);
 
-	delete[] u;
-	delete[] vt;
-	delete[] s;
+	SG_FREE(u);
+	SG_FREE(vt);
+	SG_FREE(s);
 
 	return target;
 }

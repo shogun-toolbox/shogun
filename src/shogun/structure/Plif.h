@@ -207,7 +207,7 @@ class CPlif: public CPlifBase
 		 */
 		void invalidate_cache()
 		{
-			delete[] cache;
+			SG_FREE(cache);
 			cache=NULL;
 		}
 		
@@ -285,9 +285,9 @@ class CPlif: public CPlifBase
 			if (len!=p_len)
 			{
 				len=p_len;
-				delete[] limits;
-				delete[] penalties;
-				delete[] cum_derivatives;
+				SG_FREE(limits);
+				SG_FREE(penalties);
+				SG_FREE(cum_derivatives);
 
 				SG_DEBUG( "set_plif len=%i\n", p_len);
 				limits=new float64_t[len];

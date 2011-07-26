@@ -42,11 +42,11 @@ CPlif::CPlif(int32_t l)
 
 CPlif::~CPlif()
 {
-	delete[] limits;
-	delete[] penalties;
-	delete[] name;
-	delete[] cache;
-	delete[] cum_derivatives;
+	SG_FREE(limits);
+	SG_FREE(penalties);
+	SG_FREE(name);
+	SG_FREE(cache);
+	SG_FREE(cum_derivatives);
 }
 
 bool CPlif::set_transform_type(const char *type_str)
@@ -99,7 +99,7 @@ void CPlif::init_penalty_struct_cache()
 
 void CPlif::set_plif_name(char *p_name)
 {
-	delete[] name ;
+	SG_FREE(name);
 	name=new char[strlen(p_name)+1] ;
 	strcpy(name,p_name) ;
 }
@@ -108,7 +108,7 @@ void CPlif::delete_penalty_struct(CPlif** PEN, int32_t P)
 {
 	for (int32_t i=0; i<P; i++)
 		delete PEN[i] ;
-	delete[] PEN ;
+	SG_FREE(PEN);
 }
 
 float64_t CPlif::lookup_penalty_svm(

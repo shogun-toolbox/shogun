@@ -32,7 +32,7 @@ CHistogram::CHistogram(CStringFeatures<uint16_t> *f)
 
 CHistogram::~CHistogram()
 {
-	delete[] hist;
+	SG_FREE(hist);
 }
 
 bool CHistogram::train(CFeatures* data)
@@ -149,7 +149,7 @@ bool CHistogram::set_histogram(SGVector<float64_t> histogram)
 {
 	ASSERT(histogram.vlen==get_num_model_parameters());
 
-	delete[] hist;
+	SG_FREE(hist);
 	hist=new float64_t[histogram.vlen];
 	for (int32_t i=0; i<histogram.vlen; i++)
 		hist[i]=histogram.vector[i];

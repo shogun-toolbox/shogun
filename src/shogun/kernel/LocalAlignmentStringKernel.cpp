@@ -124,7 +124,7 @@ bool CLocalAlignmentStringKernel::init(CFeatures* l, CFeatures* r)
 
 void CLocalAlignmentStringKernel::cleanup()
 {
-	delete[] scaled_blosum;
+	SG_FREE(scaled_blosum);
 	scaled_blosum=NULL;
 
 	SG_FREE(isAA);
@@ -338,11 +338,11 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
   /*  kernel_value = LOGP( aux , aux2 );*/
 
   /* Memory release */
-	delete[] logM;
-	delete[] logX;
-	delete[] logY;
-	delete[] logX2;
-	delete[] logY2;
+	SG_FREE(logM);
+	SG_FREE(logX);
+	SG_FREE(logY);
+	SG_FREE(logX2);
+	SG_FREE(logY2);
 
   /* Return the logarithm of the kernel */
   return (float32_t)LOGP(aux,aux2)/INTSCALE;

@@ -592,9 +592,9 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 		JCALL3(SetObjectArrayElement, jenv, res, i, jarr);
 		JCALL1(DeleteLocalRef, jenv, jarr);
 
-		delete[] str[i].string;
+		SG_FREE(str[i].string);
 	}
-	delete[] str;
+	SG_FREE(str);
 	$result = res;
 }
 
@@ -674,9 +674,9 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
 		jstring jstr = (jstring)JCALL1(NewStringUTF, jenv, (char *)str[i].string);
 		JCALL3(SetObjectArrayElement, jenv, res, i, jstr);
 		JCALL1(DeleteLocalRef, jenv, jstr);
-		delete[] str[i].string;
+		SG_FREE(str[i].string);
 	}
-	delete[] str;
+	SG_FREE(str);
 	$result = res;
 }
 

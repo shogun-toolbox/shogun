@@ -116,7 +116,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	init(f,f);
 
 	int_labels.free_vector();
-	delete[] labels_auc;
+	SG_FREE(labels_auc);
 
 	return lab_auc;
 }

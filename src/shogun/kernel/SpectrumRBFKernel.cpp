@@ -84,7 +84,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel(
 CSpectrumRBFKernel::~CSpectrumRBFKernel()
 {
 	cleanup();
-	delete[] AA_matrix ;
+	SG_FREE(AA_matrix);
 }
 
 

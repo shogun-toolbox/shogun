@@ -61,7 +61,7 @@ void CImplicitWeightedSpecFeatures::compute_normalization_const()
 
 bool CImplicitWeightedSpecFeatures::set_wd_weights()
 {
-	delete[] spec_weights;
+	SG_FREE(spec_weights);
 	spec_weights=new float64_t[degree];
 
 	int32_t i;
@@ -84,7 +84,7 @@ bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 {
 	ASSERT(d==degree);
 
-	delete[] spec_weights;
+	SG_FREE(spec_weights);
 	spec_weights=new float64_t[degree];
 	for (int32_t i=0; i<degree; i++)
 		spec_weights[i]=CMath::sqrt(w[i]);
@@ -102,8 +102,8 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeig
 CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
 {
 	SG_UNREF(strings);
-	delete[] spec_weights;
-	delete[] normalization_factors;
+	SG_FREE(spec_weights);
+	SG_FREE(normalization_factors);
 }
 
 float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
@@ -301,5 +301,5 @@ void CImplicitWeightedSpecFeatures::free_feature_iterator(void* iterator)
 	ASSERT(iterator);
 	wspec_feature_iterator* it=(wspec_feature_iterator*) iterator;
 	strings->free_feature_vector(it->vec, it->vidx, it->vfree);
-	delete[] it;
+	SG_FREE(it);
 }

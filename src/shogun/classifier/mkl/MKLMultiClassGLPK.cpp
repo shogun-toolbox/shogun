@@ -102,10 +102,10 @@ void MKLMultiClassGLPK::setup(const int32_t numkernels2)
 	glp_set_mat_row(linearproblem,1,numkernels, betainds,betacoeffs);
 	glp_set_row_bnds(linearproblem,1,GLP_FX,1.0,1.0);
 
-	delete[] betainds;
+	SG_FREE(betainds);
 	betainds=NULL;
 
-	delete[] betacoeffs;
+	SG_FREE(betacoeffs);
 	betacoeffs=NULL;
 #else
 	SG_ERROR(
@@ -151,10 +151,10 @@ void MKLMultiClassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 	glp_set_row_bnds(linearproblem,curconstraint,GLP_LO,sumofpositivealphas,
 			sumofpositivealphas);
 
-	delete[] betainds;
+	SG_FREE(betainds);
 	betainds=NULL;
 
-	delete[] betacoeffs;
+	SG_FREE(betacoeffs);
 	betacoeffs=NULL;
 
 #else

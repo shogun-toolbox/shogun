@@ -51,8 +51,8 @@ CKernelMachine::~CKernelMachine()
 {
 	SG_UNREF(kernel);
 
-	delete[] m_alpha.vector;
-	delete[] m_svs.vector;
+	SG_FREE(m_alpha.vector);
+	SG_FREE(m_svs.vector);
 }
 
 bool CKernelMachine::init_kernel_optimization()
@@ -72,8 +72,8 @@ bool CKernelMachine::init_kernel_optimization()
 
 		bool ret = kernel->init_optimization(num_sv, sv_idx, sv_weight) ;
 
-		delete[] sv_idx ;
-		delete[] sv_weight ;
+		SG_FREE(sv_idx);
+		SG_FREE(sv_weight);
 
 		if (!ret)
 			SG_ERROR( "initialization of kernel optimization failed\n");
@@ -131,15 +131,15 @@ CLabels* CKernelMachine::apply()
 
 				kernel->compute_batch(num_vectors, idx,
 						output, get_num_support_vectors(), sv_idx, sv_weight);
-				delete[] sv_idx ;
-				delete[] sv_weight ;
-				delete[] idx;
+				SG_FREE(sv_idx);
+				SG_FREE(sv_weight);
+				SG_FREE(idx);
 			}
 
 			for (int32_t i=0; i<num_vectors; i++)
 				lab->set_label(i, get_bias()+output[i]);
 
-			delete[] output;
+			SG_FREE(output);
 		}
 		else
 		{
@@ -186,8 +186,8 @@ CLabels* CKernelMachine::apply()
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
 
-				delete[] params;
-				delete[] threads;
+				SG_FREE(params);
+				SG_FREE(threads);
 			}
 #endif
 		}

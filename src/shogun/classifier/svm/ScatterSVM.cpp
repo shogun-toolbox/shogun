@@ -40,8 +40,8 @@ CScatterSVM::CScatterSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CScatterSVM::~CScatterSVM()
 {
-	delete[] norm_wc;
-	delete[] norm_wcw;
+	SG_FREE(norm_wc);
+	SG_FREE(norm_wcw);
 }
 
 bool CScatterSVM::train_kernel_machine(CFeatures* data)
@@ -74,7 +74,7 @@ bool CScatterSVM::train_kernel_machine(CFeatures* data)
 		}
 
 	}
-	delete[] numc;
+	SG_FREE(numc);
 	m_num_classes=m_num_classes;
 
 	bool result=false;
@@ -171,7 +171,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 
 		rho=model->rho[0];
 
-		delete[] norm_wcw;
+		SG_FREE(norm_wcw);
 		norm_wcw = new float64_t[m_num_svms];
 
 		for (int32_t i=0; i<m_num_classes; i++)
@@ -192,9 +192,9 @@ bool CScatterSVM::train_no_bias_libsvm()
 			set_svm(i, svm);
 		}
 
-		delete[] problem.x;
-		delete[] problem.y;
-		delete[] x_space;
+		SG_FREE(problem.x);
+		SG_FREE(problem.y);
+		SG_FREE(x_space);
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
 			SG_FREE(model->SV[i]);
@@ -225,7 +225,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 	light->set_linadd_enabled(false);
 	light->train();
 
-	delete[] norm_wcw;
+	SG_FREE(norm_wcw);
 	norm_wcw = new float64_t[m_num_classes];
 
 	int32_t num_sv=light->get_num_support_vectors();
@@ -300,7 +300,7 @@ bool CScatterSVM::train_testrule12()
 
 		rho=model->rho[0];
 
-		delete[] norm_wcw;
+		SG_FREE(norm_wcw);
 		norm_wcw = new float64_t[m_num_svms];
 
 		for (int32_t i=0; i<m_num_classes; i++)
@@ -321,9 +321,9 @@ bool CScatterSVM::train_testrule12()
 			set_svm(i, svm);
 		}
 
-		delete[] problem.x;
-		delete[] problem.y;
-		delete[] x_space;
+		SG_FREE(problem.x);
+		SG_FREE(problem.y);
+		SG_FREE(x_space);
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
 			SG_FREE(model->SV[i]);
@@ -343,7 +343,7 @@ bool CScatterSVM::train_testrule12()
 
 void CScatterSVM::compute_norm_wc()
 {
-	delete[] norm_wc;
+	SG_FREE(norm_wc);
 	norm_wc = new float64_t[m_num_svms];
 	for (int32_t i=0; i<m_num_svms; i++)
 		norm_wc[i]=0;
@@ -432,7 +432,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 				output->set_label(i, winner);
 			}
 
-			delete[] outputs;
+			SG_FREE(outputs);
 		}
 #endif //USE_SVMLIGHT
 		else
@@ -472,7 +472,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 			for (int32_t i=0; i<m_num_svms; i++)
 				SG_UNREF(outputs[i]);
 
-			delete[] outputs;
+			SG_FREE(outputs);
 		}
 	}
 
@@ -540,6 +540,6 @@ float64_t CScatterSVM::apply(int32_t num)
 		}
 	}
 
-	delete[] outputs;
+	SG_FREE(outputs);
 	return winner;
 }

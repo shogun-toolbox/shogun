@@ -45,7 +45,7 @@ template<class T> class SGVector
 		void free_vector()
 		{
 			if (do_free)
-				delete[] vector;
+				SG_FREE(vector);
 
 			vector=NULL;
 			do_free=false;
@@ -92,7 +92,7 @@ template<class T> class SGMatrix
 		void free_matrix()
 		{
 			if (do_free)
-				delete[] matrix;
+				SG_FREE(matrix);
 
 			matrix=NULL;
 			do_free=false;

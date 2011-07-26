@@ -103,7 +103,7 @@ CrossValidationResult CCrossValidation::evaluate()
 		result.conf_int_up=0;
 	}
 
-	delete[] results.vector;
+	SG_FREE(results.vector);
 
 	return result;
 }
@@ -183,7 +183,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	float64_t mean=CStatistics::mean(SGVector<float64_t>(results, num_subsets));
 
 	/* clean up */
-	delete[] results;
+	SG_FREE(results);
 
 	return mean;
 }

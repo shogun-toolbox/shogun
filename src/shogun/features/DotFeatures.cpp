@@ -140,8 +140,8 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		for (t=0; t<num_threads-1; t++)
 			pthread_join(threads[t], NULL);
 
-		delete[] params;
-		delete[] threads;
+		SG_FREE(params);
+		SG_FREE(threads);
 	}
 #endif
 
@@ -218,8 +218,8 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 		for (t=0; t<num_threads-1; t++)
 			pthread_join(threads[t], NULL);
 
-		delete[] params;
-		delete[] threads;
+		SG_FREE(params);
+		SG_FREE(threads);
 	}
 #endif
 
@@ -346,7 +346,7 @@ void CDotFeatures::benchmark_add_to_dense_vector(int32_t repeats)
 			repeats, num, (t.get_runtime()-start_cpu)/repeats,
 			(t.get_curtime()-start_wall)/repeats);
 
-	delete[] w;
+	SG_FREE(w);
 }
 
 void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
@@ -387,9 +387,9 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 			repeats, num, (t.get_runtime()-start_cpu)/repeats,
 			(t.get_curtime()-start_wall)/repeats);
 
-	delete[] alphas;
-	delete[] out;
-	delete[] w;
+	SG_FREE(alphas);
+	SG_FREE(out);
+	SG_FREE(w);
 }
 
 void CDotFeatures::get_mean(float64_t** mean, int32_t* mean_length)
@@ -453,5 +453,5 @@ void CDotFeatures::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols
 			(*cov)[m*dim+n] = (*cov)[n*dim+m];
 		}
 	}
-	delete[] mean;
+	SG_FREE(mean);
 }

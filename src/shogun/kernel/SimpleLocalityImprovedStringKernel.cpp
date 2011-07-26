@@ -63,7 +63,7 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	const int32_t pyra_len  = num_features-PYRAL+1;
 	const int32_t pyra_len2 = (int32_t) pyra_len/2;
 
-	delete[] pyramid_weights;
+	SG_FREE(pyramid_weights);
 
 	pyramid_weights = new float64_t[pyra_len];
 	num_pyramid_weights=pyra_len;
@@ -107,7 +107,7 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 
 void CSimpleLocalityImprovedStringKernel::cleanup()
 {
-	delete[] pyramid_weights;
+	SG_FREE(pyramid_weights);
 	pyramid_weights = NULL;
 	num_pyramid_weights = 0;
 

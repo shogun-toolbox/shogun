@@ -38,7 +38,7 @@ CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel(
 
 CWeightedDegreeRBFKernel::~CWeightedDegreeRBFKernel()
 {
-	delete[] weights;
+	SG_FREE(weights);
 	weights=NULL;
 }
 
@@ -53,7 +53,7 @@ bool CWeightedDegreeRBFKernel::init_wd_weights()
 {
 	ASSERT(degree>0);
 
-	if (weights!=0)	delete[] weights;
+	if (weights!=0)	SG_FREE(weights);
 	weights=new float64_t[degree];
 	if (weights)
 	{

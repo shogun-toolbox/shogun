@@ -46,7 +46,7 @@ bool CAveragedPerceptron::train(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen);
-	delete[] w;
+	SG_FREE(w);
 	w_dim=num_feat;
 	w=new float64_t[num_feat];
 	float64_t* tmp_w=new float64_t[num_feat];
@@ -93,9 +93,9 @@ bool CAveragedPerceptron::train(CFeatures* data)
 		w[i]=tmp_w[i]/(num_vec*iter);
 	bias=tmp_bias/(num_vec*iter);
 
-	delete[] output;
+	SG_FREE(output);
 	train_labels.free_vector();
-	delete[] tmp_w;
+	SG_FREE(tmp_w);
 
 	return converged;
 }

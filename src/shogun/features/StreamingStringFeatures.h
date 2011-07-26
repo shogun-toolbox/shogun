@@ -69,7 +69,7 @@ public:
 	~CStreamingStringFeatures()
 	{
 		parser.end_parser();
-		delete[] current_string;
+		SG_FREE(current_string);
 	}
 
 	/** 

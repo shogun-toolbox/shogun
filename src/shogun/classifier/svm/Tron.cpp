@@ -134,10 +134,10 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 
 	SG_DONE();
 
-	delete[] g;
-	delete[] r;
-	delete[] w_new;
-	delete[] s;
+	SG_FREE(g);
+	SG_FREE(r);
+	SG_FREE(w_new);
+	SG_FREE(s);
 }
 
 int32_t CTron::trcg(float64_t delta, double* g, double* s, double* r)
@@ -199,8 +199,8 @@ int32_t CTron::trcg(float64_t delta, double* g, double* s, double* r)
 		rTr = rnewTrnew;
 	}
 
-	delete[] d;
-	delete[] Hd;
+	SG_FREE(d);
+	SG_FREE(Hd);
 
 	return(cg_iter);
 }

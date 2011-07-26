@@ -100,7 +100,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 			int* ipiv = new int[n];
 			clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 			clapack_dgetri(CblasColMajor,n,matrix,n,ipiv);
-			delete[] ipiv;
+			SG_FREE(ipiv);
 		}
 	}
 	// main computation loop 
@@ -171,19 +171,19 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		}
 		
 		// cleanup
-		delete[] select;
-		delete[] d;
+		SG_FREE(select);
+		SG_FREE(d);
 	}
 
 	// cleanup
-	delete[] all_;
-	delete[] which_;
-	delete[] resid;
-	delete[] v;
-	delete[] iparam;
-	delete[] ipntr;
-	delete[] workd;
-	delete[] workl;
+	SG_FREE(all_);
+	SG_FREE(which_);
+	SG_FREE(resid);
+	SG_FREE(v);
+	SG_FREE(iparam);
+	SG_FREE(ipntr);
+	SG_FREE(workd);
+	SG_FREE(workl);
 };
 
 }

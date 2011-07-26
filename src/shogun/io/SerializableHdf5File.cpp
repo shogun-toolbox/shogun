@@ -38,7 +38,7 @@ CSerializableHdf5File::type_item_t::~type_item_t(void)
 	if (dset >= 0) H5Dclose(dset);
 	if (dtype >= 0) H5Tclose(dtype);
 	if (dspace >= 0) H5Sclose(dspace);
-	if (vltype != NULL) delete[] vltype;
+	if (vltype != NULL) SG_FREE(vltype);
 	/* Do not delete SPARSE_PTR  */
 }
 

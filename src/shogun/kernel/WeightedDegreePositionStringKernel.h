@@ -253,7 +253,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		{
 			num_weights = get_num_subkernels() ;
 
-			delete[] weights_buffer ;
+			SG_FREE(weights_buffer);
 			weights_buffer = new float64_t[num_weights] ;
 
 			if (position_weights!=NULL)
@@ -472,7 +472,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 */
 		bool delete_position_weights()
 		{
-			delete[] position_weights;
+			SG_FREE(position_weights);
 			position_weights=NULL;
 			return true;
 		}
@@ -483,7 +483,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 */
 		bool delete_position_weights_lhs()
 		{
-			delete[] position_weights_lhs;
+			SG_FREE(position_weights_lhs);
 			position_weights_lhs=NULL;
 			return true;
 		}
@@ -494,7 +494,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 */
 		bool delete_position_weights_rhs()
 		{
-			delete[] position_weights_rhs;
+			SG_FREE(position_weights_rhs);
 			position_weights_rhs=NULL;
 			return true;
 		}

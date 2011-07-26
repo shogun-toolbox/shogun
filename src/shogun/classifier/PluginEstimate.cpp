@@ -87,8 +87,8 @@ bool CPluginEstimate::train(CFeatures* data)
 	pos_model->train(pos_indizes, pos_idx, m_pos_pseudo);
 	neg_model->train(neg_indizes, neg_idx, m_neg_pseudo);
 
-	delete[] pos_indizes;
-	delete[] neg_indizes;
+	SG_FREE(pos_indizes);
+	SG_FREE(neg_indizes);
 	
 	return true;
 }

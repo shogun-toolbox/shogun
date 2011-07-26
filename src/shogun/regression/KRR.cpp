@@ -37,12 +37,12 @@ CKRR::CKRR(float64_t t, CKernel* k, CLabels* lab)
 
 CKRR::~CKRR()
 {
-	delete[] alpha;
+	SG_FREE(alpha);
 }
 
 bool CKRR::train_kernel_machine(CFeatures* data)
 {
-	delete[] alpha;
+	SG_FREE(alpha);
 
 	ASSERT(labels);
 	if (data)
@@ -78,7 +78,7 @@ bool CKRR::train_kernel_machine(CFeatures* data)
 
 	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n, alpha, n);
 
-	delete[] kernel_matrix.matrix;
+	SG_FREE(kernel_matrix.matrix);
 	return true;
 }
 
@@ -117,7 +117,7 @@ CLabels* CKRR::apply()
 	cblas_dgemv(CblasColMajor, CblasTrans, m_int, n_int, 1.0, (double*) kernel_matrix.matrix,
 		m_int, (double*) alpha, 1, 0.0, (double*) Yh.vector, 1);
 
-	delete[] kernel_matrix.matrix;
+	SG_FREE(kernel_matrix.matrix);
 
 	return new CLabels(Yh);
 }
@@ -138,7 +138,7 @@ float64_t CKRR::apply(int32_t num)
 	// predict
 	Yh = CMath::dot(kernel_matrix.matrix + m*num, alpha, m);
 
-	delete[] kernel_matrix.matrix;
+	SG_FREE(kernel_matrix.matrix);
 	return Yh;
 }
 

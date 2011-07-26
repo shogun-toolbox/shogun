@@ -142,10 +142,10 @@ namespace shogun
 		int32_t get_vector_only(T* &feature_vector, int32_t &length);
 
 		/** 
-		 * Sets whether to delete[] the vector explicitly
+		 * Sets whether to SG_FREE() the vector explicitly
 		 * after it has been used
 		 * 
-		 * @param del whether to delete[] or not, bool
+		 * @param del whether to SG_FREE() or not, bool
 		 */
 		void set_do_delete(bool _del);
 
@@ -278,7 +278,7 @@ namespace shogun
 		/// Number of features in current example
 		int32_t current_len;
 
-		/// Whether to delete[] vector after it is used
+		/// Whether to SG_FREE() vector after it is used
 		bool do_delete;
 
 		/// Mutex which is used when getting/setting state of examples (whether a new example is ready)

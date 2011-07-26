@@ -44,7 +44,7 @@ bool CLPM::train(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
-	delete[] w;
+	SG_FREE(w);
 	w=new float64_t[num_feat];
 	w_dim=num_feat;
 
@@ -73,7 +73,7 @@ bool CLPM::train(CFeatures* data)
 	CMath::display_vector(&params[1],w_dim, "w+");
 	CMath::display_vector(&params[1+w_dim],w_dim, "w-");
 #endif
-	delete[] params;
+	SG_FREE(params);
 
 	return result;
 }

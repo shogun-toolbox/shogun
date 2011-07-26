@@ -25,7 +25,7 @@ CLinearMachine::CLinearMachine()
 
 CLinearMachine::~CLinearMachine()
 {
-	delete[] w;
+	SG_FREE(w);
 	SG_UNREF(features);
 }
 

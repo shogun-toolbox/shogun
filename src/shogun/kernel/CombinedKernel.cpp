@@ -55,7 +55,7 @@ CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 
 CCombinedKernel::~CCombinedKernel()
 {
-	delete[] subkernel_weights_buffer;
+	SG_FREE(subkernel_weights_buffer);
 	subkernel_weights_buffer=NULL;
 	
 	cleanup();
@@ -321,10 +321,10 @@ bool CCombinedKernel::delete_optimization()
 		k = get_next_kernel(current);
 	}
 
-	delete[] sv_idx;
+	SG_FREE(sv_idx);
 	sv_idx = NULL;
 
-	delete[] sv_weight;
+	SG_FREE(sv_weight);
 	sv_weight = NULL;
 
 	sv_count = 0;
@@ -457,8 +457,8 @@ void CCombinedKernel::emulate_compute_batch(
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
 
-				delete[] params;
-				delete[] threads;
+				SG_FREE(params);
+				SG_FREE(threads);
 			}
 #endif
 
@@ -523,8 +523,8 @@ void CCombinedKernel::emulate_compute_batch(
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
 
-				delete[] params;
-				delete[] threads;
+				SG_FREE(params);
+				SG_FREE(threads);
 			}
 #endif
 		}
@@ -646,7 +646,7 @@ void CCombinedKernel::compute_by_subkernel(
 const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 {
 	num_weights = get_num_subkernels() ;
-	delete[] subkernel_weights_buffer ;
+	SG_FREE(subkernel_weights_buffer);
 	subkernel_weights_buffer = new float64_t[num_weights] ;
 
 	if (append_subkernel_weights)

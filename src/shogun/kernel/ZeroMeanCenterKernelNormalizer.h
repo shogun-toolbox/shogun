@@ -56,8 +56,8 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		/** default destructor */
 		virtual ~CZeroMeanCenterKernelNormalizer()
 		{
-			delete[] ktrain_row_means;
-			delete[] ktest_row_means;    
+			SG_FREE(ktrain_row_means);
+			SG_FREE(ktest_row_means);    
 		}
 
 		/** initialization of the normalizer 
@@ -134,7 +134,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 */
 		bool alloc_and_compute_row_means(CKernel* k, float64_t* &v, int32_t num_lhs, int32_t num_rhs)
 		{
-			delete[] v;
+			SG_FREE(v);
 			v=new float64_t[num_rhs];
 
 			for (int32_t i=0; i<num_rhs; i++)

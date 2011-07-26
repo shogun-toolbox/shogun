@@ -112,8 +112,8 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 	virtual void cleanup()
 	{
 		CStringFeatures<ST>::num_vectors=0;
-		delete[] CStringFeatures<ST>::features;
-		delete[] CStringFeatures<ST>::symbol_mask_table;
+		SG_FREE(CStringFeatures<ST>::features);
+		SG_FREE(CStringFeatures<ST>::symbol_mask_table);
 		CStringFeatures<ST>::features=NULL;
 		CStringFeatures<ST>::symbol_mask_table=NULL;
 

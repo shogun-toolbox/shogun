@@ -91,8 +91,8 @@ int32_t CFeatures::add_preprocessor(CPreprocessor* p)
 		pps[i]=preproc[i];
 		preprocd[i]=preprocessed[i];
 	}
-	delete[] preproc;
-	delete[] preprocessed;
+	SG_FREE(preproc);
+	SG_FREE(preprocessed);
 	preproc=pps;
 	preprocessed=preprocd;
 	preproc[num_preproc]=p;
@@ -171,9 +171,9 @@ CPreprocessor* CFeatures::del_preprocessor(int32_t num)
 			}
 		}
 
-		delete[] preproc;
+		SG_FREE(preproc);
 		preproc=pps;
-		delete[] preprocessed;
+		SG_FREE(preprocessed);
 		preprocessed=preprocd;
 
 		num_preproc--;

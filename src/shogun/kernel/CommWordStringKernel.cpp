@@ -46,7 +46,7 @@ CCommWordStringKernel::CCommWordStringKernel(
 bool CCommWordStringKernel::init_dictionary(int32_t size)
 {
 	dictionary_size= size;
-	delete[] dictionary_weights;
+	SG_FREE(dictionary_weights);
 	dictionary_weights=new float64_t[size];
 	SG_DEBUG( "using dictionary of %d words\n", size);
 	clear_normal();
@@ -58,8 +58,8 @@ CCommWordStringKernel::~CCommWordStringKernel()
 {
 	cleanup();
 
-	delete[] dictionary_weights;
-	delete[] dict_diagonal_optimization ;
+	SG_FREE(dictionary_weights);
+	SG_FREE(dict_diagonal_optimization);
 }
   
 bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
@@ -68,7 +68,7 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 
 	if (use_dict_diagonal_optimization)
 	{
-		delete[] dict_diagonal_optimization ;
+		SG_FREE(dict_diagonal_optimization);
 		dict_diagonal_optimization=new int32_t[int32_t(((CStringFeatures<uint16_t>*)l)->get_num_symbols())];
 		ASSERT(((CStringFeatures<uint16_t>*)l)->get_num_symbols() == ((CStringFeatures<uint16_t>*)r)->get_num_symbols()) ;
 	}
@@ -228,8 +228,8 @@ float64_t CCommWordStringKernel::compute_helper(
 
 	if (do_sort)
 	{
-		delete[] avec;
-		delete[] bvec;
+		SG_FREE(avec);
+		SG_FREE(bvec);
 	}
 
 	l->free_feature_vector(av, idx_a, free_av);
@@ -594,8 +594,8 @@ char* CCommWordStringKernel::compute_consensus(
 		max_idx=bt[num_words*i + max_idx];
 	}
 
-	delete[] bt;
-	delete[] score;
+	SG_FREE(bt);
+	SG_FREE(score);
 	SG_UNREF(alpha);
 	return result;
 }

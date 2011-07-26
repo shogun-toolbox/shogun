@@ -43,7 +43,7 @@ CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs) : CSGObject()
 
 CDistance::~CDistance()
 {
-	delete[] precomputed_matrix;
+	SG_FREE(precomputed_matrix);
 	precomputed_matrix=NULL;
 
 	remove_lhs_and_rhs();
@@ -69,7 +69,7 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 	lhs=l;
 	rhs=r;
 
-	delete[] precomputed_matrix ;
+	SG_FREE(precomputed_matrix);
 	precomputed_matrix=NULL ;
 
 	return true;
@@ -123,7 +123,7 @@ CFeatures* CDistance::replace_rhs(CFeatures* r)
      
      rhs=r;
 
-     delete[] precomputed_matrix ;
+     SG_FREE(precomputed_matrix);
      precomputed_matrix=NULL ;
 
 	 // return old features including reference count
@@ -140,7 +140,7 @@ void CDistance::do_precompute_matrix()
 	ASSERT(lhs==rhs);
 	int32_t num=num_left;
 	
-	delete[] precomputed_matrix;
+	SG_FREE(precomputed_matrix);
 	precomputed_matrix=new float32_t[num*(num+1)/2];
 
 	for (int32_t i=0; i<num; i++)

@@ -96,10 +96,10 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 			H5S_ALL, H5P_DEFAULT, vec);												\
 	H5Dclose(dataset);																\
 	H5Tclose(dtype);																\
-	delete[] dims;																	\
+	SG_FREE(dims);																	\
 	if (status<0)																	\
 	{																				\
-		delete[] vec;																\
+		SG_FREE(vec);																\
 		SG_ERROR("Error reading dataset\n");										\
 	}																				\
 }
@@ -144,10 +144,10 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 			H5S_ALL, H5P_DEFAULT, matrix);											\
 	H5Dclose(dataset);																\
 	H5Tclose(dtype);																\
-	delete[] dims;																	\
+	SG_FREE(dims);																	\
 	if (status<0)																	\
 	{																				\
-		delete[] matrix;															\
+		SG_FREE(matrix);															\
 		SG_ERROR("Error reading dataset\n");										\
 	}																				\
 }
@@ -432,7 +432,7 @@ void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 	H5Sget_simple_extent_dims(dataspace, dims_out, NULL);
 	for (int32_t i=0; i<ndims; i++)
 		dims[i]=dims_out[i];
-	delete[] dims_out;
+	SG_FREE(dims_out);
 	H5Sclose(dataspace);
 }
 

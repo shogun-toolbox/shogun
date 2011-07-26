@@ -239,7 +239,7 @@ class CCombinedDotFeatures : public CDotFeatures
 				combined_feature_iterator* it = (combined_feature_iterator*) iterator;
 				if (it->iterator && it->f)
 					it->f->free_feature_iterator(it->iterator);
-				delete[] it;
+				SG_FREE(it);
 			}
 		}
 

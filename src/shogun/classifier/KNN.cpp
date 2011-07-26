@@ -37,7 +37,7 @@ CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
 
 CKNN::~CKNN()
 {
-	delete[] train_labels;
+	SG_FREE(train_labels);
 }
 
 bool CKNN::train(CFeatures* data)
@@ -145,9 +145,9 @@ CLabels* CKNN::apply()
 		output->set_label(i, out_idx+min_label);
 	}
 
-	delete[] classes;
-	delete[] dists;
-	delete[] train_lab;
+	SG_FREE(classes);
+	SG_FREE(dists);
+	SG_FREE(train_lab);
 
 	return output;
 }
@@ -267,9 +267,9 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 		}
 	}
 
-	delete[] dists;
-	delete[] train_lab;
-	delete[] classes;
+	SG_FREE(dists);
+	SG_FREE(train_lab);
+	SG_FREE(classes);
 
 	return SGMatrix<int32_t>(output,num_lab,m_k);
 }

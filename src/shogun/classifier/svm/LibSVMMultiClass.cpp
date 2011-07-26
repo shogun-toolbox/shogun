@@ -175,10 +175,10 @@ bool CLibSVMMultiClass::train_kernel_machine(CFeatures* data)
 
 		CSVM::set_objective(model->objective);
 
-		delete[] offsets;
-		delete[] problem.x;
-		delete[] problem.y;
-		delete[] x_space;
+		SG_FREE(offsets);
+		SG_FREE(problem.x);
+		SG_FREE(problem.y);
+		SG_FREE(x_space);
 
 		svm_destroy_model(model);
 		model=NULL;

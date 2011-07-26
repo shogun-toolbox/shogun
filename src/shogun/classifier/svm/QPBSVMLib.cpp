@@ -101,7 +101,7 @@ CQPBSVMLib::CQPBSVMLib(
 
 CQPBSVMLib::~CQPBSVMLib()
 {
-	delete[] m_diag_H;
+	SG_FREE(m_diag_H);
 }
 
 int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
@@ -112,7 +112,7 @@ int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 	for (int32_t i=0; i<m_dim; i++)
 		Nabla[i]=m_f[i];
 
-	delete[] m_diag_H;
+	SG_FREE(m_diag_H);
 	m_diag_H=new float64_t[m_dim];
 
 	for (int32_t i=0; i<m_dim; i++)
@@ -154,9 +154,9 @@ int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 			break;
 	}
 
-	delete[] History;
-	delete[] Nabla;
-	delete[] m_diag_H;
+	SG_FREE(History);
+	SG_FREE(Nabla);
+	SG_FREE(m_diag_H);
 	m_diag_H=NULL;
 
 	return status;
@@ -289,7 +289,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
       tmp_ptr[INDEX(1,t,2)] = Q_D;
       
       History_size += HISTORY_BUF;
-      delete[] History;
+      SG_FREE(History);
       History = tmp_ptr;
     }
   }
@@ -446,7 +446,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
       tmp_ptr[INDEX(1,t,2)] = Q_D;
       
       History_size += HISTORY_BUF;
-      delete[] History;
+      SG_FREE(History);
       History = tmp_ptr;
     }
   }
@@ -575,11 +575,11 @@ int32_t CQPBSVMLib::qpbsvm_prloqo(float64_t *x,
 	int32_t result=pr_loqo(m_dim, 1, m_f, m_H, a, &b, lb, ub, primal, dual,
 			2, 5, 1, -0.95, 10,0);
 
-	delete[] a;
-	delete[] lb;
-	delete[] ub;
-	delete[] primal;
-	delete[] dual;
+	SG_FREE(a);
+	SG_FREE(lb);
+	SG_FREE(ub);
+	SG_FREE(primal);
+	SG_FREE(dual);
 
 	*ptr_t=0;
 	*ptr_History=NULL;
@@ -676,8 +676,8 @@ int32_t CQPBSVMLib::qpbsvm_cplex(float64_t *x,
 	cplex.optimize(x);
 	cplex.cleanup();
 
-	delete[] lb;
-	delete[] ub;
+	SG_FREE(lb);
+	SG_FREE(ub);
 
 	*ptr_t=0;
 	*ptr_History=NULL;

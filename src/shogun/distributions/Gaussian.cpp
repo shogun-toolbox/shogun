@@ -85,7 +85,7 @@ bool CGaussian::train(CFeatures* data)
 	dotdata->get_cov(&cov, &cov_rows, &cov_cols);
 
 	decompose_cov(cov, cov_rows);
-	delete[] cov;
+	SG_FREE(cov);
 
 	init();
 
@@ -148,7 +148,7 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 		for (int i=0; i<m_d.vlen; i++)
 			answer+=temp_holder[i]*temp_holder[i]/m_d.vector[i];
 
-		delete[] temp_holder;
+		SG_FREE(temp_holder);
 	}
 	else if (m_cov_type==DIAG)
 	{
@@ -161,7 +161,7 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 			answer+=difference[i]*difference[i]/m_d.vector[0];
 	}
 
-	delete[] difference;
+	SG_FREE(difference);
 
 	return -0.5*answer;
 }
@@ -189,8 +189,8 @@ SGMatrix<float64_t> CGaussian::get_cov()
 					m_d.vlen, m_d.vlen, m_d.vlen, 1, temp_holder, m_d.vlen,
 					m_u.matrix, m_d.vlen, 0, cov, m_d.vlen);
 
-		delete[] diag_holder;
-		delete[] temp_holder;
+		SG_FREE(diag_holder);
+		SG_FREE(temp_holder);
 	}
 	else if (m_cov_type==DIAG)
 	{
@@ -277,7 +277,7 @@ SGVector<float64_t> CGaussian::sample()
 		cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
 					m_d.vlen, m_d.vlen, m_d.vlen, 1, m_u.matrix, m_d.vlen,
 					r_matrix, m_d.vlen, 0, temp_matrix, m_d.vlen);
-		delete[] r_matrix;
+		SG_FREE(r_matrix);
 		r_matrix=temp_matrix;
 	}
 	
@@ -289,8 +289,8 @@ SGVector<float64_t> CGaussian::sample()
 	for (int i=0; i<m_mean.vlen; i++)
 		samp[i]+=m_mean.vector[i];
 
-	delete[] random_vec;
-	delete[] r_matrix;
+	SG_FREE(random_vec);
+	SG_FREE(r_matrix);
 
 	return SGVector<float64_t>(samp, m_mean.vlen, false);//fix needed
 }

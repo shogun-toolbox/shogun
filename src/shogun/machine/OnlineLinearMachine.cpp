@@ -23,7 +23,7 @@ COnlineLinearMachine::COnlineLinearMachine()
 
 COnlineLinearMachine::~COnlineLinearMachine()
 {
-	delete[] w;
+	SG_FREE(w);
 	SG_UNREF(features);
 }
 

@@ -153,7 +153,7 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 	int lwork = -1;
 	DGETRI(N,A,lda,ipiv,work,lwork,&info);
 	lwork = (int) work[0];
-	delete[] work;
+	SG_FREE(work);
 	work = new double[lwork];
 	DGETRI(N,A,lda,ipiv,work,lwork,&info);
 #else
@@ -162,7 +162,7 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 	int lwork = -1;
 	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
 	lwork = (int) work[0];
-	delete[] work;
+	SG_FREE(work);
 	work = new double[lwork];
 	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
 #endif
@@ -195,7 +195,7 @@ void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, double *w, int 
 	lwork=(int) work1;
 	double* work=new double[lwork];
 	DSYEV(&jobz, &uplo, &n, a, &lda, w, work, &lwork, info);
-	delete[] work;
+	SG_FREE(work);
 #endif
 }
 #undef DSYEV
@@ -214,7 +214,7 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 	lwork=(int) work1;
 	double* work=new double[lwork];
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, work, &lwork, info);
-	delete[] work;
+	SG_FREE(work);
 #endif
 }
 
@@ -229,10 +229,10 @@ void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info)
 	ASSERT(*info==0);
 	lwork = (int) work[0];
 	ASSERT(lwork>0)
-	delete[] work;
+	SG_FREE(work);
 	work = new double[lwork];
 	DGEQRF(&m, &n, a, &lda, tau, work, &lwork, info);
-	delete[] work;
+	SG_FREE(work);
 #endif
 }
 
@@ -247,10 +247,10 @@ void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info
 	ASSERT(*info==0);
 	lwork = (int) work[0];
 	ASSERT(lwork>0);
-	delete[] work;
+	SG_FREE(work);
 	work = new double[lwork];
 	DORGQR(&m, &n, &k, a, &lda, tau, work, &lwork, info);
-	delete[] work;
+	SG_FREE(work);
 #endif
 }
 

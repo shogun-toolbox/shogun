@@ -385,8 +385,8 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			else															\
 			{																\
 				for (int32_t j=0; j<i; j++)										\
-					delete[] strings[i].string;								\
-				delete[] strings;											\
+					SG_FREE(strings[i].string);								\
+				SG_FREE(strings);											\
 				SG_ERROR("All elements in list must be strings, error in line %d.\n", i);\
 			}																\
 		}																	\
@@ -676,7 +676,7 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 			in->create_return_values(1);
 			from_if->translate_arg(from_if, in);
 			PyDict_SetItemString(globals, var_name, in->get_return_values());
-			delete[] var_name;
+			SG_FREE(var_name);
 			Py_DECREF(tuple);
 			SG_UNREF(in);
 		}
@@ -689,7 +689,7 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 		from_if->SG_ERROR("Compiling python code failed.");
 	}
 
-	delete[] python_code;
+	SG_FREE(python_code);
 
 	PyObject* res = PyEval_EvalCode((PyCodeObject*) python_code_obj, globals, NULL);
 	Py_DECREF(python_code_obj);

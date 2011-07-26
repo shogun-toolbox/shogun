@@ -42,7 +42,7 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 
 CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel()
 {
-	delete[] weights;
+	SG_FREE(weights);
 }
 
 bool CWeightedCommWordStringKernel::init(CFeatures* l, CFeatures* r)
@@ -58,7 +58,7 @@ bool CWeightedCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 
 void CWeightedCommWordStringKernel::cleanup()
 {
-	delete[] weights;
+	SG_FREE(weights);
 	weights=NULL;
 
 	CCommWordStringKernel::cleanup();
@@ -66,7 +66,7 @@ void CWeightedCommWordStringKernel::cleanup()
 
 bool CWeightedCommWordStringKernel::set_wd_weights()
 {
-	delete[] weights;
+	SG_FREE(weights);
 	weights=new float64_t[degree];
 
 	int32_t i;
@@ -86,7 +86,7 @@ bool CWeightedCommWordStringKernel::set_weights(float64_t* w, int32_t d)
 {
 	ASSERT(d==degree);
 
-	delete[] weights;
+	SG_FREE(weights);
 	weights=new float64_t[degree];
 	for (int32_t i=0; i<degree; i++)
 		weights[i]=CMath::sqrt(w[i]);
@@ -178,8 +178,8 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 
 	if (do_sort)
 	{
-		delete[] avec;
-		delete[] bvec;
+		SG_FREE(avec);
+		SG_FREE(bvec);
 	}
 
 	l->free_feature_vector(av, idx_a, free_avec);
@@ -247,7 +247,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 
 	init_dictionary(1<<(sizeof(uint16_t)*8));
 	memcpy(dictionary_weights, dic, sizeof(float64_t)*dic_size);
-	delete[] dic;
+	SG_FREE(dic);
 }
 
 float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
@@ -302,7 +302,7 @@ float64_t* CWeightedCommWordStringKernel::compute_scoring(
 
 	init_dictionary(1<<(sizeof(uint16_t)*9));
 	memcpy(dictionary_weights,dic,  sizeof(float64_t)*dic_size);
-	delete[] dic;
+	SG_FREE(dic);
 
 	return result;
 }

@@ -416,7 +416,7 @@ void CSubGradientSVM::update_projection(float64_t alpha, int32_t num_vec)
 void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
 {
 	// alloc normal and bias inited with 0
-	delete[] w;
+	SG_FREE(w);
 	w=new float64_t[num_feat];
 	w_dim=num_feat;
 	memset(w,0,sizeof(float64_t)*num_feat);
@@ -492,26 +492,26 @@ void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
 
 void CSubGradientSVM::cleanup()
 {
-	delete[] hinge_idx;
-	delete[] hinge_point;
-	delete[] grad_proj;
-	delete[] proj;
-	delete[] tmp_proj;
-	delete[] tmp_proj_idx;
-	delete[] active;
-	delete[] old_active;
-	delete[] idx_bound;
-	delete[] idx_active;
-	delete[] sum_CXy_active;
-	delete[] grad_w;
-	delete[] v;
-	delete[] Z;
-	delete[] Zv;
-	delete[] beta;
-	delete[] old_v;
-	delete[] old_Z;
-	delete[] old_Zv;
-	delete[] old_beta;
+	SG_FREE(hinge_idx);
+	SG_FREE(hinge_point);
+	SG_FREE(grad_proj);
+	SG_FREE(proj);
+	SG_FREE(tmp_proj);
+	SG_FREE(tmp_proj_idx);
+	SG_FREE(active);
+	SG_FREE(old_active);
+	SG_FREE(idx_bound);
+	SG_FREE(idx_active);
+	SG_FREE(sum_CXy_active);
+	SG_FREE(grad_w);
+	SG_FREE(v);
+	SG_FREE(Z);
+	SG_FREE(Zv);
+	SG_FREE(beta);
+	SG_FREE(old_v);
+	SG_FREE(old_Z);
+	SG_FREE(old_Zv);
+	SG_FREE(old_beta);
 
 	hinge_idx=NULL;
 	proj=NULL;

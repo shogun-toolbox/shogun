@@ -24,9 +24,9 @@ CIntronList::~CIntronList()
 		SG_FREE(m_intron_list[i]);
 		SG_FREE(m_quality_list[i]);
 	}
-	delete[] m_intron_list;
-	delete[] m_quality_list;
-	delete[] m_all_pos;
+	SG_FREE(m_intron_list);
+	SG_FREE(m_quality_list);
+	SG_FREE(m_all_pos);
 }
 void CIntronList::init_list(int32_t* all_pos, int32_t len)
 {

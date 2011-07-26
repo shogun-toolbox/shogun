@@ -121,11 +121,11 @@ bool CGNPPSVM::train_kernel_machine(CFeatures* data)
 		}
 	}
 
-	delete[] vector_c;
-	delete[] alpha;
-	delete[] diagK;
-	delete[] vector_y;
-	delete[] History;
+	SG_FREE(vector_c);
+	SG_FREE(alpha);
+	SG_FREE(diagK);
+	SG_FREE(vector_y);
+	SG_FREE(History);
 
 	return true;
 }

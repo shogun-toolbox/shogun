@@ -254,8 +254,8 @@ LibSVMKernel::LibSVMKernel(int32_t l, svm_node * const * x_, const svm_parameter
 
 LibSVMKernel::~LibSVMKernel()
 {
-	delete[] x;
-	delete[] x_square;
+	SG_FREE(x);
+	SG_FREE(x_square);
 }
 
 // Generalized SMO+SVMlight algorithm
@@ -690,13 +690,13 @@ void Solver::Solve(
 
 	SG_SINFO("\noptimization finished, #iter = %d\n",iter);
 
-	delete[] p;
-	delete[] y;
-	delete[] alpha;
-	delete[] alpha_status;
-	delete[] active_set;
-	delete[] G;
-	delete[] G_bar;
+	SG_FREE(p);
+	SG_FREE(y);
+	SG_FREE(alpha);
+	SG_FREE(alpha_status);
+	SG_FREE(active_set);
+	SG_FREE(G);
+	SG_FREE(G_bar);
 }
 
 // return 1 if already optimal, return 0 otherwise
@@ -1273,9 +1273,9 @@ public:
 
 	~SVC_QMC()
 	{
-		delete[] y;
+		SG_FREE(y);
 		delete cache;
-		delete[] QD;
+		SG_FREE(QD);
 	}
 private:
 	float64_t factor;
@@ -1436,7 +1436,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	}
 	SG_SPRINT("sumb=%f\n", sumb);
 
-	delete[] zero_counts;
+	SG_FREE(zero_counts);
 
 	for (int32_t i=0; i<l; i++)
 		outputs[i]+=biases[(int32_t) y[i]+1];
@@ -1462,9 +1462,9 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 
 	//SG_SPRINT("primal=%10.10f\n", primal);
 
-	delete[] y;
-	delete[] alpha;
-	delete[] alpha_status;
+	SG_FREE(y);
+	SG_FREE(alpha);
+	SG_FREE(alpha_status);
 
 	return primal;
 }
@@ -1567,11 +1567,11 @@ int32_t Solver_NUMC::select_working_set(
 	if(gap < eps)
 		retval=1;
 
-	delete[] Gmaxp;
-	delete[] Gmaxp2;
-	delete[] Gmaxp_idx;
-	delete[] Gmin_idx;
-	delete[] obj_diff_min;
+	SG_FREE(Gmaxp);
+	SG_FREE(Gmaxp2);
+	SG_FREE(Gmaxp_idx);
+	SG_FREE(Gmin_idx);
+	SG_FREE(obj_diff_min);
 
 	return retval;
 }
@@ -1636,9 +1636,9 @@ public:
 
 	~SVC_Q()
 	{
-		delete[] y;
+		SG_FREE(y);
 		delete cache;
-		delete[] QD;
+		SG_FREE(QD);
 	}
 private:
 	schar *y;
@@ -1686,7 +1686,7 @@ public:
 	~ONE_CLASS_Q()
 	{
 		delete cache;
-		delete[] QD;
+		SG_FREE(QD);
 	}
 private:
 	Cache *cache;
@@ -1752,11 +1752,11 @@ public:
 	~SVR_Q()
 	{
 		delete cache;
-		delete[] sign;
-		delete[] index;
-		delete[] buffer[0];
-		delete[] buffer[1];
-		delete[] QD;
+		SG_FREE(sign);
+		SG_FREE(index);
+		SG_FREE(buffer[0]);
+		SG_FREE(buffer[1]);
+		SG_FREE(QD);
 	}
 
 private:
@@ -1801,7 +1801,7 @@ static void solve_c_svc(
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
 
-	delete[] y;
+	SG_FREE(y);
 }
 
 
@@ -1837,8 +1837,8 @@ void solve_c_svc_weighted(
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
 
-	delete[] minus_ones;
-	delete[] y;
+	SG_FREE(minus_ones);
+	SG_FREE(y);
 }
 
 static void solve_nu_svc(
@@ -1892,8 +1892,8 @@ static void solve_nu_svc(
 	si->upper_bound_p = 1/r;
 	si->upper_bound_n = 1/r;
 
-	delete[] y;
-	delete[] zeros;
+	SG_FREE(y);
+	SG_FREE(zeros);
 }
 
 static void solve_nu_multiclass_svc(const svm_problem *prob,
@@ -1922,7 +1922,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 		alpha[i] = CMath::min(1.0,sum_class[int32_t(y[i])]);
 		sum_class[int32_t(y[i])] -= alpha[i];
 	}
-	delete[] sum_class;
+	SG_FREE(sum_class);
 
 
 	float64_t *zeros = new float64_t[l];
@@ -1988,8 +1988,8 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 		}
 	}
 
-	delete[] y;
-	delete[] zeros;
+	SG_FREE(y);
+	SG_FREE(zeros);
 	SG_FREE(alpha);
 }
 
@@ -2021,8 +2021,8 @@ static void solve_one_class(
 	s.Solve(l, ONE_CLASS_Q(*prob,*param), zeros, ones,
 		alpha, 1.0, 1.0, param->eps, si, param->shrinking, param->use_bias);
 
-	delete[] zeros;
-	delete[] ones;
+	SG_FREE(zeros);
+	SG_FREE(ones);
 }
 
 static void solve_epsilon_svr(
@@ -2058,9 +2058,9 @@ static void solve_epsilon_svr(
 	}
 	SG_SINFO("nu = %f\n",sum_alpha/(param->C*l));
 
-	delete[] alpha2;
-	delete[] linear_term;
-	delete[] y;
+	SG_FREE(alpha2);
+	SG_FREE(linear_term);
+	SG_FREE(y);
 }
 
 static void solve_nu_svr(
@@ -2096,9 +2096,9 @@ static void solve_nu_svr(
 	for(i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
 
-	delete[] alpha2;
-	delete[] linear_term;
-	delete[] y;
+	SG_FREE(alpha2);
+	SG_FREE(linear_term);
+	SG_FREE(y);
 }
 
 //

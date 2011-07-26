@@ -136,9 +136,9 @@ CLabels* CWDSVMOcas::apply(CFeatures* data)
 int32_t CWDSVMOcas::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
-	delete[] wd_weights;
+	SG_FREE(wd_weights);
 	wd_weights=new float32_t[degree];
-	delete[] w_offsets;
+	SG_FREE(w_offsets);
 	w_offsets=new int32_t[degree];
 	int32_t w_dim_single_c=0;
 
@@ -188,11 +188,11 @@ bool CWDSVMOcas::train(CFeatures* data)
 	ASSERT(num_vec==labvec.vlen);
 	ASSERT(num_vec>0);
 
-	delete[] w;
+	SG_FREE(w);
 	w=new float32_t[w_dim];
 	memset(w, 0, w_dim*sizeof(float32_t));
 
-	delete[] old_w;
+	SG_FREE(old_w);
 	old_w=new float32_t[w_dim];
 	memset(old_w, 0, w_dim*sizeof(float32_t));
 	bias=0;
@@ -210,7 +210,7 @@ bool CWDSVMOcas::train(CFeatures* data)
 	compute_output(tmp, this);
 	start=CTime::get_curtime()-start;
 	SG_PRINT("timing:%f\n", start);
-	delete[] tmp;
+	SG_FREE(tmp);
 	exit(1);*/
 /////speed tests/////
 	float64_t TolAbs=0;
@@ -240,8 +240,8 @@ bool CWDSVMOcas::train(CFeatures* data)
 			result.add_time, result.w_time, result.qp_solver_time, result.ocas_time);
 
 	for (int32_t i=bufsize-1; i>=0; i--)
-		delete[] cuts[i];
-	delete[] cuts;
+		SG_FREE(cuts[i]);
+	SG_FREE(cuts);
 
 	lab=NULL;
 	labvec.free_vector();
@@ -339,7 +339,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	}
 
 	//p->new_a=new_a;
-	delete[] val;
+	SG_FREE(val);
 	return NULL;
 }
 
@@ -407,7 +407,7 @@ int CWDSVMOcas::add_new_cut(
 		//float32_t* a=params_add[t].new_a;
 		//for (i=0; i<nDim; i++)
 		//	new_a[i]+=a[i];
-		//delete[] a;
+		//SG_FREE(a);
 	}
 
 	for(i=0; i < cut_length; i++) 
@@ -425,8 +425,8 @@ int CWDSVMOcas::add_new_cut(
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
 	//CMath::display_vector(cuts[nSel], nDim, "cut[nSel]");
 	//
-	delete[] threads;
-	delete[] params_add;
+	SG_FREE(threads);
+	SG_FREE(params_add);
 
 	return 0;
 }
@@ -589,10 +589,10 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		if (pthread_join(threads[t], NULL) != 0)
 			SG_SWARNING( "pthread_join failed\n");
 	}
-	delete[] threads;
-	delete[] params_output;
-	delete[] val;
-	delete[] out;
+	SG_FREE(threads);
+	SG_FREE(params_output);
+	SG_FREE(val);
+	SG_FREE(out);
 	return 0;
 }
 /*----------------------------------------------------------------------

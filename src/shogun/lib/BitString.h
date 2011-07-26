@@ -73,7 +73,7 @@ class CBitString : public CSGObject
 		/** free up memory */
 		void cleanup()
 		{
-			delete[] string;
+			SG_FREE(string);
 			string=NULL;
 			length=0;
 		}

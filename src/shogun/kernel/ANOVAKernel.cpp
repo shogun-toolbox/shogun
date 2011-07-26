@@ -142,16 +142,16 @@ void CANOVAKernel::allocate_arrays()
 void CANOVAKernel::cleanup()
 {
 	//compute_recursive1
-	delete[] DP;
+	SG_FREE(DP);
 	DP=NULL;
 	DP_len=0;
 
 	//compute_recursive2
-	delete[] KD;
+	SG_FREE(KD);
 	KD=NULL;
-	delete[] KS;
+	SG_FREE(KS);
 	KS=NULL;
-	delete[] vec_pow;
+	SG_FREE(vec_pow);
 	vec_pow=NULL;
 }
 
