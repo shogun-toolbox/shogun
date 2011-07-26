@@ -2,20 +2,19 @@ require 'shogun'
 require 'load'
 
 strings = {'hey','guys','i','am','a','string'}
-parameter_list={{{strings}}}
+parameter_list={{strings}}
 
 function features_string_char_modular(strings)
-
+	for k, v in pairs(strings) do print(v) end
 	f=StringCharFeatures(strings, RAWBYTE)
 
-	print("max string length" ..f:get_max_vector_length())
-	--print "number of strings", f:get_num_vectors()
-	--print "length of first string", f:get_vector_length(0)
-	--print "strings", f.get_features()
+	print("max string length " ..f:get_max_vector_length())
+	print("number of strings " .. f:get_num_vectors())
+	--print ("length of first string" ..f:get_vector_length(0))
+	--print ("strings" .. f:get_features())
 
-	f:set_feature_vector({'t','e','s','t'}, 0)
+	f:set_feature_vector({"t","e","s","t"}, 0)
 
-	print ("strings" .. f:get_features())
 	return f:get_features(), f
 end
 
