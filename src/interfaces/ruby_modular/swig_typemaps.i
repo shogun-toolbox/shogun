@@ -7,12 +7,20 @@
  * Written (W) 2011 Baozeng Ding
  *
  */
+%{
+extern "C" {
+#include <narray.h>
+}
+%}
 
 /* One dimensional input/output arrays */
 %define TYPEMAP_SGVECTOR(SGTYPE, R2SG, SG2R)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE> {
-	$1 = ($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) ? 1 : 0;
+	$1 = (
+					($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) ||
+					($input && NA_IsNArray($input) && NA_SHAPE0($input) > 0)
+			)? 1 : 0;
 }
 
 %typemap(in) shogun::SGVector<SGTYPE> {
@@ -20,17 +28,31 @@
 	SGTYPE *array;
 	VALUE *ptr;
 
-	if (!rb_obj_is_kind_of($input,rb_cArray))
-		rb_raise(rb_eArgError, "Expected Array");
+	if (rb_obj_is_kind_of($input,rb_cArray)) {
+		len = RARRAY_LEN($input);
+		array = new SGTYPE[len];
 
-	len = RARRAY_LEN($input);
-	array = new SGTYPE[len];
-	
-	ptr = RARRAY_PTR($input);
-	for (i = 0; i < len; i++, ptr++) {
-		array[i] = R2SG(*ptr);
+		ptr = RARRAY_PTR($input);
+		for (i = 0; i < len; i++, ptr++) {
+			array[i] = R2SG(*ptr);
+		}
 	}
-	
+	else {
+		if (NA_IsNArray($input)) {
+			VALUE v = na_to_array($input);
+			len = RARRAY_LEN(v);
+			array = new SGTYPE[len];
+
+			ptr = RARRAY_PTR(v);
+			for (i = 0; i < len; i++, ptr++) {
+				array[i] = R2SG(*ptr);
+			}
+		}
+		else {
+			rb_raise(rb_eArgError, "Expected Array");
+		}
+	}
+
 	$1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, len);
 }
 
@@ -41,9 +63,9 @@
 	for (i = 0; i < $1.vlen; i++)
 		rb_ary_push(arr, SG2R($1.vector[i]));
 
-    $1.free_vector();
+	$1.free_vector();
 
-	$result = arr;
+	$result = na_to_narray(arr);
 }
 
 %enddef
@@ -66,35 +88,46 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<SGTYPE>
 {
-	$1 = ($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0 && TYPE(rb_ary_entry($input, 0)) == T_ARRAY) ? 1 : 0;
+	$1 = (
+					($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0 && TYPE(rb_ary_entry($input, 0)) == T_ARRAY) ||
+					($input &&  NA_IsNArray($input) && NA_SHAPE1($input) > 0 && NA_SHAPE0($input) > 0)		
+				) ? 1 : 0;
 }
 
 %typemap(in) shogun::SGMatrix<SGTYPE> {
 	int32_t i, j, rows, cols;
 	SGTYPE *array;
 	VALUE vec;
+	VALUE v;
 
-	if (!rb_obj_is_kind_of($input,rb_cArray))
-		rb_raise(rb_eArgError, "Expected Arrays");
-
-        rows = RARRAY_LEN($input);
-	cols = 0;
-
-	for (i = 0; i < rows; i++) {
-		vec = rb_ary_entry($input, i);
-		if (!rb_obj_is_kind_of(vec,rb_cArray)) {
-			rb_raise(rb_eArgError, "Expected Arrays");
+	if (rb_obj_is_kind_of($input,rb_cArray) || NA_IsNArray($input)) {
+		if (NA_IsNArray($input))	{
+			v = na_to_array($input);	
 		}
-		if (cols == 0) {
-			cols = RARRAY_LEN(vec);
-			array = new SGTYPE[rows * cols];
+		else {
+			v = $input;		
 		}
-		for (j = 0; j < cols; j++) {
-			array[i * cols + j] = R2SG(rb_ary_entry(vec, j));
+		rows = RARRAY_LEN(v);
+		cols = 0;
+
+		for (i = 0; i < rows; i++) {
+			vec = rb_ary_entry(v, i);
+			if (!rb_obj_is_kind_of(vec,rb_cArray)) {
+				rb_raise(rb_eArgError, "Expected Arrays");
+			}
+			if (cols == 0) {
+				cols = RARRAY_LEN(vec);
+				array = new SGTYPE[rows * cols];
+			}
+			for (j = 0; j < cols; j++) {
+				array[i * cols + j] = R2SG(rb_ary_entry(vec, j));
+			}
 		}
 	}
-	
-	 $1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
+	else {
+		rb_raise(rb_eArgError, "Expected Arrays");
+	}
+	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE> {
@@ -114,9 +147,9 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 		rb_ary_push(arr, vec);
 	}
 
-    $1.free_matrix();
+	$1.free_matrix();
 
-	$result = arr;
+	$result = na_to_narray(arr);
 }
 
 %enddef
