@@ -75,7 +75,6 @@
 %enddef
 
 /* Define concrete examples of the TYPEMAP_SGVECTOR macros */
-TYPEMAP_SGVECTOR(char)
 TYPEMAP_SGVECTOR(uint8_t)
 TYPEMAP_SGVECTOR(int32_t)
 TYPEMAP_SGVECTOR(int16_t)
@@ -84,6 +83,73 @@ TYPEMAP_SGVECTOR(float32_t)
 TYPEMAP_SGVECTOR(float64_t)
 
 #undef TYPEMAP_SGVECTOR
+
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<char> {
+	if(!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "vector");		
+		$1 = 0;
+	}
+	else {
+		$1 = 1;
+		int numitems = 0;
+		numitems = lua_objlen(L, $input);
+		if(numitems == 0) {
+			luaL_argerror(L, $input, "empty vector");
+			$1 = 0;
+		}
+	}
+}
+
+%typemap(in) shogun::SGVector<char> {
+	char *array;
+	int32_t i, len;
+
+	if (!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "vector");
+		return 0;
+	}
+	
+	len = lua_objlen(L, $input);
+	if (len == 0){
+		luaL_argerror(L, $input, "empty vector");
+		return 0;
+	}
+	
+	array = new char[len];
+	for (i = 0; i < len; i++) {
+		lua_rawgeti(L, $input, i + 1);
+		if (lua_isstring(L, -1)){
+			len = 0;				
+			const char *str = lua_tolstring(L, -1, (size_t *)&len);
+			if (len != 1) {
+				luaL_argerror(L, $input, "no more than one charactor expected");
+			}
+			array[i] = (char)*str;
+		}
+		else {
+			lua_pop(L, 1);
+			luaL_argerror(L, $input, "char vector expected");
+			delete [] array;
+			return 0;
+		}
+		lua_pop(L,1);
+	}
+
+	$1 = shogun::SGVector<char>((char *)array, len);
+}
+
+%typemap(out) shogun::SGVector<char> {
+	int32_t i;
+	int32_t len = $1.vlen;
+	char* vec = $1.vector;	
+
+	lua_newtable(L);	
+	for (i = 0; i < len; i++) {
+		lua_pushstring(L, (char *)vec++);
+		lua_rawseti(L, -2, i + 1);
+	}
+ 	SWIG_arg++;
+}
 
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE)
@@ -291,9 +357,7 @@ TYPEMAP_SGMATRIX(float64_t)
 			}
 			lua_rawseti(L, -2, i + 1);
 		}
-		delete[] str[i].string;
 	}
-	delete[] str;
 	SWIG_arg++;
 }
 
