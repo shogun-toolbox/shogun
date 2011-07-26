@@ -496,7 +496,7 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
-%typemap(out) shogun::SGString<type>
+%typemap(out) shogun::SGStringList<type>
 {
     shogun::SGString<type>* str=$1.strings;
     int32_t num=$1.num_strings;
@@ -532,9 +532,7 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
             }
 
             PyList_SetItem(list, i, s);
-            delete[] str[i].string;
         }
-        delete[] str;
         $result = list;
     }
     else
