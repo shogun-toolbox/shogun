@@ -481,7 +481,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		 *
 		 * @param p_position_weights new position weights
 		 */
-		inline void set_position_weights(const float64_t * p_position_weights)
+		inline void set_position_weights(float64_t* p_position_weights)
 		{
 			position_weights=p_position_weights;
 		}
@@ -639,7 +639,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		/** degree */
 		int32_t degree;
 		/** position weights */
-		float64_t const *  position_weights;
+		float64_t*  position_weights;
 
 		/** tree memory */
 		Trie* TreeMem;
