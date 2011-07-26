@@ -118,6 +118,7 @@ _r=auto
 _java=no
 _csharp=no
 _ruby=no
+_ruby_narray=auto
 _lua=no
 #static interfaces
 _cmdline_static=auto
@@ -128,12 +129,12 @@ _elwms_static=no
 _matlab_static=auto
 #modular interfaces
 _python_modular=auto
-_octave_modular=no
-_r_modular=no
+_octave_modular=auto
 _java_modular=auto
+_ruby_modular=auto
+_lua_modular=auto
+_r_modular=no
 _csharp_modular=no
-_ruby_modular=no
-_lua_modular=no
 _optimization=yes
 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
@@ -506,6 +507,10 @@ test_java()
 		fi
 	fi
 
+	if test "$_java_modular" = no
+	then
+		return
+	fi
 	echocheck "Java"
 	if java -version >/dev/null 2>&1
 	then
@@ -555,6 +560,11 @@ EOF
 
 test_jblas()
 {
+	if test "$_java" = no
+	then
+		return
+	fi
+
 	echocheck "Jblas"
 cat > $TMPJAVA << EOF
 import org.jblas.DoubleMatrix;
@@ -590,6 +600,11 @@ EOF
 
 test_ujmp()
 {
+	if test "$_java" = no
+	then
+		return
+	fi
+
 	echocheck "UJMP"
 cat > $TMPJAVA << EOF
 import org.ujmp.core.Matrix;
@@ -626,6 +641,11 @@ EOF
 
 test_csharp()
 {
+	if test "$_csharp_modular" = no
+	then
+		return
+	fi
+
 	echocheck "Mono C#"
 	if gmcs --version >/dev/null 2>&1
 	then
@@ -647,6 +667,11 @@ test_csharp()
 
 test_ruby()
 {
+	if test "$_ruby_modular" = no
+	then
+		return
+	fi
+
 	echocheck "Ruby"
 	if ruby -v >/dev/null 2>&1
 	then
@@ -656,14 +681,14 @@ test_ruby()
 cat >$TMPRUBY << EOF
 require('mkmf')
 if RUBY_VERSION[0,3] == '1.8'
-	puts "-I#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
+puts "-I#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
 else
-	puts "-I#{Config::expand(CONFIG['rubyhdrdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
+puts "-I#{Config::expand(CONFIG['rubyhdrdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
 end
 EOF
 		echocheck "Ruby Developer Files"
 		if ruby $TMPRUBY >/dev/null 2>&1 
-			then
+		then
 			echores "yes"
 			INCLUDES_RUBY=`ruby $TMPRUBY`
 			if ld -o "$TMPO" -lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` >/dev/null 2>&1
@@ -685,8 +710,63 @@ EOF
 	fi
 }
 
+test_ruby_narray()
+{
+	if test "$_ruby" = yes
+	then
+cat >$TMPRUBY << EOF
+require 'narray'
+NArray[[1, 0, 0], [0, 1, 2]]
+EOF
+		echocheck "Ruby NArray"
+		if ruby $TMPRUBY >/dev/null 2>&1 
+		then
+			echores "yes"
+
+cat >$TMPC << EOF
+#include <ruby.h>
+#include <narray.h>
+
+int main(void)
+{
+    volatile VALUE obj;
+    VALUE x = na_make_scalar(obj, NA_DFLOAT);
+    return IsNArray(x) ? 1 : 0;
+}
+EOF
+
+cat >$TMPRUBY << EOF
+require('mkmf')
+if RUBY_VERSION[0,3] == '1.8'
+	puts "#{Config::expand(CONFIG["archdir"])}/narray.so" if CONFIG["archdir"]
+else
+	puts "#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}/narray.so" if CONFIG['rubyhdrdir']
+end
+EOF
+			LINKFLAGS_NARRAY=`ruby "$TMPRUBY" 2>/dev/null`
+
+			echocheck "Ruby NArray Developer Files"
+			if cc_check $INCLUDES_RUBY $LINKFLAGS_RUBY $LINKFLAGS_NARRAY
+			then
+				echores "yes"
+				DEFINES="$DEFINES -DHAVE_RUBY_NARRAY"
+				HAVE_NARRAY='#define HAVE_RUBY_NARRAY 1'
+			else
+				echores "no"
+			fi
+		else
+			echores "no"
+		fi
+	fi
+}
+
 test_lua()
 {
+	if test "$_lua_modular" = no
+	then
+		return
+	fi
+
 	echocheck "Lua"
 	if lua -v >/dev/null 2>&1
 	then
@@ -4470,6 +4550,7 @@ $HAVE_SQRTL
 $HAVE_LOG2
 $HAVE_JBLAS
 $HAVE_UJMP
+$HAVE_RUBY_NARRAY
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE
 $USE_LOGSUMARRAY
@@ -4594,6 +4675,7 @@ test_jblas
 test_ujmp
 test_csharp
 test_ruby
+test_ruby_narray
 test_lua
 test_modular
 test_static_linking
