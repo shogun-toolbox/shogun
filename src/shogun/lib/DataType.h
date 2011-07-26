@@ -52,6 +52,12 @@ template<class T> class SGVector
 			vlen=0;
 		}
 
+		void destroy_vector()
+		{
+			do_free=true;
+			free_vector();
+		}
+
 	public:
 		/** vector  */
 		T* vector;
@@ -92,6 +98,12 @@ template<class T> class SGMatrix
 			do_free=false;
 			num_rows=0;
 			num_cols=0;
+		}
+
+		void destroy_matrix()
+		{
+			do_free=true;
+			free_matrix();
 		}
 
 	public:
