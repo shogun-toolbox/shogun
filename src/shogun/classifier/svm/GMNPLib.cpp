@@ -116,12 +116,12 @@ CGMNPLib::CGMNPLib(
   ASSERT(Cache_Size>=2);
 
   /* allocates memory for kernel cache */
-  kernel_columns = new float64_t*[Cache_Size];
-  cache_index = new float64_t[Cache_Size];
+  kernel_columns = SG_MALLOCX(float64_t*, Cache_Size);
+  cache_index = SG_MALLOCX(float64_t, Cache_Size);
 
   for(int32_t i = 0; i < Cache_Size; i++ )
   {
-    kernel_columns[i] = new float64_t[num_data];
+    kernel_columns[i] = SG_MALLOCX(float64_t, num_data);
     cache_index[i] = -2;
   }
   first_kernel_inx = 0;
@@ -130,11 +130,11 @@ CGMNPLib::CGMNPLib(
 
   for(int32_t i = 0; i < 3; i++ )
   {
-    virt_columns[i] = new float64_t[num_virt_data];
+    virt_columns[i] = SG_MALLOCX(float64_t, num_virt_data);
   }
   first_virt_inx = 0;
 
-  diag_H = new float64_t[num_virt_data];
+  diag_H = SG_MALLOCX(float64_t, num_virt_data);
 
   for(int32_t i = 0; i < num_virt_data; i++ )
 	  diag_H[i] = kernel_fce(i,i);
@@ -292,11 +292,11 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   /* Initialization                                               */
   /* ------------------------------------------------------------ */
 
-  Ha = new float64_t[dim];
+  Ha = SG_MALLOCX(float64_t, dim);
   if( Ha == NULL ) SG_ERROR("Not enough memory.");
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
-  History = new float64_t[History_size*2];
+  History = SG_MALLOCX(float64_t, History_size*2);
   if( History == NULL ) SG_ERROR("Not enough memory.");
 
   /* inx = argmin(0.5*diag_H + vector_c ); */
@@ -435,7 +435,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
       History[INDEX(1,t,2)] = UB;
     }
     else {
-      tmp_ptr = new float64_t[(History_size+HISTORY_BUF)*2];
+      tmp_ptr = SG_MALLOCX(float64_t, (History_size+HISTORY_BUF)*2);
       if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.");
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];

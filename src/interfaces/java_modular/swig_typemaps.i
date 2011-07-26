@@ -93,7 +93,7 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 
 	jarr = (##JNITYPE##Array)JCALL2(CallObjectMethod, jenv, $input, mid);
 	carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
-	array = new SGTYPE[cols];
+	array = SG_MALLOCX(SGTYPE, cols);
 	for (i = 0; i < cols; i++) {
 		array[i] = (SGTYPE)carr[i];
 	}
@@ -222,7 +222,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 	}
 
 	carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
-	array = new SGTYPE[cols];
+	array = SG_MALLOCX(SGTYPE, cols);
 	if (!array) {
     	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     	return $null;
@@ -331,7 +331,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	jarr = (##JNITYPE##Array)JCALL2(CallObjectMethod, jenv, $input, mid);
 	carr = JCALL2(Get##JAVATYPE##ArrayElements, jenv, jarr, 0);
 	len = JCALL1(GetArrayLength, jenv, jarr);
-	array = new SGTYPE[len];
+	array = SG_MALLOCX(SGTYPE, len);
 	for (i = 0; i < len; i++) {
 		array[i] = (SGTYPE)carr[i];
 	}
@@ -453,7 +453,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 		}
 		if (cols == 0) {
 			cols = JCALL1(GetArrayLength, jenv, jarr);
-			array = new SGTYPE[rows * cols];
+			array = SG_MALLOCX(SGTYPE, rows * cols);
 			if (!array) {
     			SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     			return $null;
@@ -546,7 +546,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	}
 
 	size = JCALL1(GetArrayLength, jenv, $input);
-	shogun::SGString<SGTYPE>* strings=new shogun::SGString<SGTYPE>[size];
+	shogun::SGString<SGTYPE>* strings=SG_MALLOCX(shogun::SGString<SGTYPE>, size);
 
 	for (i = 0; i < size; i++) {
 		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL2(GetObjectArrayElement, jenv, $input, i);
@@ -557,7 +557,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 		strings[i].string=NULL;
 
 		if (len >0) {
-			strings[i].string = new SGTYPE[len];
+			strings[i].string = SG_MALLOCX(SGTYPE, len);
 			memcpy(strings[i].string, jarr, len * sizeof(SGTYPE));
 		}
 	}
@@ -579,7 +579,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
 
 	for (i = 0; i < num; i++) {
-		SGTYPE* data = new SGTYPE[str[i].length];
+		SGTYPE* data = SG_MALLOCX(SGTYPE, str[i].length);
 		memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
 
 		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].length);
@@ -635,7 +635,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
 	}
 
 	size = JCALL1(GetArrayLength, jenv, $input);
-	shogun::SGString<char>* strings=new shogun::SGString<char>[size];
+	shogun::SGString<char>* strings=SG_MALLOCX(shogun::SGString<char>, size);
 
 	for (i = 0; i < size; i++) {
 		jstring jstr = (jstring)JCALL2(GetObjectArrayElement, jenv, $input, i);
@@ -648,7 +648,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
 		strings[i].string = NULL;
 
 		if (len > 0) {
-			strings[i].string = new char[len];
+			strings[i].string = SG_MALLOCX(char, len);
 			memcpy(strings[i].string, str, len);
 		}
 		JCALL2(ReleaseStringUTFChars, jenv, jstr, str);

@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	init_shogun(&print_message);
 
 	/* create some random data */
-	float64_t* matrix = new float64_t[n*n];
+	float64_t* matrix = SG_MALLOCX(float64_t, n*n);
 	for(int32_t i=0; i<n*n; ++i)
 		matrix[i]=CMath::random((float64_t)-n,(float64_t)n);
 

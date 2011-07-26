@@ -169,7 +169,7 @@ char* CPythonInterface::get_string(int32_t& len)
 	char* str=PyString_AS_STRING(s);
 	ASSERT(str && len>0);
 
-	char* cstr=new char[len+1];
+	char* cstr=SG_MALLOCX(char, len+1);
 	memcpy(cstr, str, len+1);
 	cstr[len]='\0';
 
@@ -189,7 +189,7 @@ void CPythonInterface::function_name(sg_type*& vector, int32_t& len)		\
 																			\
 	len=py_vec->dimensions[0]; 												\
 	npy_intp stride_offs= py_vec->strides[0];								\
-	vector=new sg_type[len];												\
+	vector=SG_MALLOCX(sg_type, len);												\
 	char* data=(char*) py_vec->data;										\
 	npy_intp offs=0;														\
 																			\
@@ -223,7 +223,7 @@ void CPythonInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_
  																			\
 	num_feat=py_mat->dimensions[0]; 										\
 	num_vec=py_mat->dimensions[1]; 											\
-	matrix=new sg_type[num_vec*num_feat]; 									\
+	matrix=SG_MALLOCX(sg_type, num_vec*num_feat); 									\
 	char* data=py_mat->data; 												\
 	npy_intp* strides= py_mat->strides; 									\
 	npy_intp d2_offs=0;														\
@@ -262,14 +262,14 @@ void CPythonInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
  	num_dims=py_mat->nd;													\
 	int64_t total_size=0;														\
 																			\
-	dims=new int32_t[num_dims];													\
+	dims=SG_MALLOCX(int32_t, num_dims);													\
 	for (int32_t d=0; d<num_dims; d++)											\
 	{																		\
 		dims[d]=(int32_t) py_mat->dimensions[d];								\
 		total_size+=dims[d];												\
 	}																		\
 																			\
-	array=new sg_type[total_size]; 											\
+	array=SG_MALLOCX(sg_type, total_size); 											\
 																			\
 	char* data=py_mat->data; 												\
 	for (int64_t i=0; i<total_size; i++) 										\
@@ -303,7 +303,7 @@ void CPythonInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& 
  																			\
 	num_vec=py_mat->dimensions[0]; 											\
 	num_feat=py_mat->nd; 													\
-	matrix=new SGSparseVector<sg_type>[num_vec]; 									\
+	matrix=SG_MALLOCX(SGSparseVector<sg_type>, num_vec); 									\
 	if_type* data=(if_type*) py_mat->data; 									\
  																			\
 	int64_t nzmax=mxGetNzmax(mx_mat); 											\
@@ -318,7 +318,7 @@ void CPythonInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& 
  																			\
 		if (len>0) 															\
 		{ 																	\
-			matrix[i].features=new SGSparseVectorEntry<sg_type>[len]; 				\
+			matrix[i].features=SG_MALLOCX(SGSparseVectorEntry<sg_type>, len); 				\
 			for (int32_t j=0; j<len; j++) 										\
 			{ 																\
 				matrix[i].features[j].entry=data[offset]; 					\
@@ -360,7 +360,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		num_str=PyList_Size((PyObject*) py_str);							\
 		ASSERT(num_str>=1);													\
 																			\
-		strings=new SGString<sg_type>[num_str];								\
+		strings=SG_MALLOCX(SGString<sg_type>, num_str);								\
 		ASSERT(strings);													\
 																			\
 		for (int32_t i=0; i<num_str; i++)										\
@@ -377,7 +377,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 																			\
 				if (len>0)													\
 				{															\
-					strings[i].string=new sg_type[len+1];					\
+					strings[i].string=SG_MALLOCX(sg_type, len+1);					\
 					memcpy(strings[i].string, str, len);					\
 					strings[i].string[len]='\0';							\
 				}															\
@@ -397,14 +397,14 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		if_type* data=(if_type*) py_array_str->data;						\
 		num_str=py_array_str->dimensions[0]; 								\
 		int32_t len=py_array_str->dimensions[1]; 								\
-		strings=new SGString<sg_type>[num_str]; 							\
+		strings=SG_MALLOCX(SGString<sg_type>, num_str); 							\
 																			\
 		for (int32_t i=0; i<num_str; i++) 										\
 		{ 																	\
 			if (len>0) 														\
 			{ 																\
 				strings[i].length=len; /* all must have same length*/		\
-				strings[i].string=new sg_type[len+1]; /* not zero terminated */	\
+				strings[i].string=SG_MALLOCX(sg_type, len+1); /* not zero terminated */	\
 				int32_t j; 														\
 				for (j=0; j<len; j++) 										\
 					strings[i].string[j]=data[j+i*len]; 					\

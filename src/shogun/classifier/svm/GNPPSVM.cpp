@@ -44,7 +44,7 @@ bool CGNPPSVM::train_kernel_machine(CFeatures* data)
 	int32_t num_data=labels->get_num_labels();
 	SG_INFO("%d trainlabels\n", num_data);
 
-	float64_t* vector_y = new float64_t[num_data];
+	float64_t* vector_y = SG_MALLOCX(float64_t, num_data);
 	for (int32_t i=0; i<num_data; i++)
 	{
 		if (get_labels()->get_label(i)==+1)
@@ -64,13 +64,13 @@ bool CGNPPSVM::train_kernel_machine(CFeatures* data)
 	if (C!=0)
 		reg_const=1/C;
 
-	float64_t* diagK=new float64_t[num_data];
+	float64_t* diagK=SG_MALLOCX(float64_t, num_data);
 	for(int32_t i=0; i<num_data; i++) {
 		diagK[i]=2*kernel->kernel(i,i)+reg_const;
 	}
 
-	float64_t* alpha=new float64_t[num_data];
-	float64_t* vector_c=new float64_t[num_data];
+	float64_t* alpha=SG_MALLOCX(float64_t, num_data);
+	float64_t* vector_c=SG_MALLOCX(float64_t, num_data);
 	memset(vector_c, 0, num_data*sizeof(float64_t));
 
 	float64_t thlb=10000000000.0;

@@ -65,7 +65,7 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 
 	SG_FREE(pyramid_weights);
 
-	pyramid_weights = new float64_t[pyra_len];
+	pyramid_weights = SG_MALLOCX(float64_t, pyra_len);
 	num_pyramid_weights=pyra_len;
 
 	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",

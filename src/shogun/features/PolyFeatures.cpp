@@ -144,7 +144,7 @@ void CPolyFeatures::store_normalization_values()
 
 	int32_t num_vec = this->get_num_vectors();
 
-	m_normalization_values=new float32_t[num_vec];
+	m_normalization_values=SG_MALLOCX(float32_t, num_vec);
 	for (int i=0; i<num_vec; i++)
 	{
 		float64_t tmp = CMath::sqrt(dot(i, this,i));
@@ -161,9 +161,9 @@ void CPolyFeatures::store_multi_index()
 {
 	SG_FREE(m_multi_index);
 
-        m_multi_index=new uint16_t[m_output_dimensions*m_degree];
+        m_multi_index=SG_MALLOCX(uint16_t, m_output_dimensions*m_degree);
 
-        uint16_t* exponents = new uint16_t[m_input_dimensions];
+        uint16_t* exponents = SG_MALLOCX(uint16_t, m_input_dimensions);
         if (!exponents)
 		SG_ERROR( "Error allocating mem \n");	
 	/*copy adress: otherwise it will be overwritten in recursion*/
@@ -205,8 +205,8 @@ void CPolyFeatures::store_multinomial_coefficients()
 {
 	SG_FREE(m_multinomial_coefficients);
 
-	m_multinomial_coefficients = new float64_t[m_output_dimensions];
-	int32_t* exponents = new int32_t[m_input_dimensions];
+	m_multinomial_coefficients = SG_MALLOCX(float64_t, m_output_dimensions);
+	int32_t* exponents = SG_MALLOCX(int32_t, m_input_dimensions);
 	if (!exponents)
 		SG_ERROR( "Error allocating mem \n");
 	int32_t j=0;

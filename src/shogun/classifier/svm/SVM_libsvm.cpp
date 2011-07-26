@@ -59,7 +59,7 @@ typedef float64_t schar;
 
 template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
 {
-	dst = new T[n];
+	dst = SG_MALLOCX(T, n);
 	memcpy((void *)dst,(void *)src,sizeof(T)*n);
 }
 #define INF HUGE_VAL
@@ -404,14 +404,14 @@ void Solver::Solve(
 
 	// initialize alpha_status
 	{
-		alpha_status = new char[l];
+		alpha_status = SG_MALLOCX(char, l);
 		for(int32_t i=0;i<l;i++)
 			update_alpha_status(i);
 	}
 
 	// initialize active set (for shrinking)
 	{
-		active_set = new int32_t[l];
+		active_set = SG_MALLOCX(int32_t, l);
 		for(int32_t i=0;i<l;i++)
 			active_set[i] = i;
 		active_size = l;
@@ -421,8 +421,8 @@ void Solver::Solve(
 	CSignal::clear_cancel();
 	CTime start_time;
 	{
-		G = new float64_t[l];
-		G_bar = new float64_t[l];
+		G = SG_MALLOCX(float64_t, l);
+		G_bar = SG_MALLOCX(float64_t, l);
 		int32_t i;
 		for(i=0;i<l;i++)
 		{
@@ -1226,7 +1226,7 @@ public:
 		factor=fac;
 		clone(y,y_,prob.l);
 		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
-		QD = new Qfloat[prob.l];
+		QD = SG_MALLOCX(Qfloat, prob.l);
 		for(int32_t i=0;i<prob.l;i++)
 		{
 			QD[i]= factor*(nr_class-1)*kernel_function(i,i);
@@ -1328,12 +1328,12 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 	clone(y, p_y,l);
 	clone(alpha,p_alpha,l);
 
-	alpha_status = new char[l];
+	alpha_status = SG_MALLOCX(char, l);
 	for(int32_t i=0;i<l;i++)
 		update_alpha_status(i);
 
-	float64_t* class_count = new float64_t[nr_class];
-	float64_t* outputs = new float64_t[l];
+	float64_t* class_count = SG_MALLOCX(float64_t, nr_class);
+	float64_t* outputs = SG_MALLOCX(float64_t, l);
 
 	for (int32_t i=0; i<nr_class; i++)
 	{
@@ -1355,7 +1355,7 @@ float64_t Solver_NUMC::compute_primal(const schar* p_y, float64_t* p_alpha, floa
 
 	float64_t rho=0;
 	float64_t quad=0;
-	float64_t* zero_counts  = new float64_t[nr_class];
+	float64_t* zero_counts  = SG_MALLOCX(float64_t, nr_class);
 	float64_t normwc_const = 0;
 
 	for (int32_t i=0; i<nr_class; i++)
@@ -1485,12 +1485,12 @@ int32_t Solver_NUMC::select_working_set(
 	int32_t best_out_i=-1;
 	int32_t best_out_j=-1;
 
-	float64_t* Gmaxp = new float64_t[nr_class];
-	float64_t* Gmaxp2 = new float64_t[nr_class];
-	int32_t* Gmaxp_idx = new int32_t[nr_class];
+	float64_t* Gmaxp = SG_MALLOCX(float64_t, nr_class);
+	float64_t* Gmaxp2 = SG_MALLOCX(float64_t, nr_class);
+	int32_t* Gmaxp_idx = SG_MALLOCX(int32_t, nr_class);
 
-	int32_t* Gmin_idx = new int32_t[nr_class];
-	float64_t* obj_diff_min = new float64_t[nr_class];
+	int32_t* Gmin_idx = SG_MALLOCX(int32_t, nr_class);
+	float64_t* obj_diff_min = SG_MALLOCX(float64_t, nr_class);
 
 	for (int32_t i=0; i<nr_class; i++)
 	{
@@ -1604,7 +1604,7 @@ public:
 	{
 		clone(y,y_,prob.l);
 		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
-		QD = new Qfloat[prob.l];
+		QD = SG_MALLOCX(Qfloat, prob.l);
 		for(int32_t i=0;i<prob.l;i++)
 			QD[i]= (Qfloat)kernel_function(i,i);
 	}
@@ -1654,7 +1654,7 @@ public:
 	:LibSVMKernel(prob.l, prob.x, param)
 	{
 		cache = new Cache(prob.l,(int64_t)(param.cache_size*(1l<<20)));
-		QD = new Qfloat[prob.l];
+		QD = SG_MALLOCX(Qfloat, prob.l);
 		for(int32_t i=0;i<prob.l;i++)
 			QD[i]= (Qfloat)kernel_function(i,i);
 	}
@@ -1701,9 +1701,9 @@ public:
 	{
 		l = prob.l;
 		cache = new Cache(l,(int64_t)(param.cache_size*(1l<<20)));
-		QD = new Qfloat[2*l];
-		sign = new schar[2*l];
-		index = new int32_t[2*l];
+		QD = SG_MALLOCX(Qfloat, 2*l);
+		sign = SG_MALLOCX(schar, 2*l);
+		index = SG_MALLOCX(int32_t, 2*l);
 		for(int32_t k=0;k<l;k++)
 		{
 			sign[k] = 1;
@@ -1713,8 +1713,8 @@ public:
 			QD[k]= (Qfloat)kernel_function(k,k);
 			QD[k+l]=QD[k];
 		}
-		buffer[0] = new Qfloat[2*l];
-		buffer[1] = new Qfloat[2*l];
+		buffer[0] = SG_MALLOCX(Qfloat, 2*l);
+		buffer[1] = SG_MALLOCX(Qfloat, 2*l);
 		next_buffer = 0;
 	}
 
@@ -1777,7 +1777,7 @@ static void solve_c_svc(
 	float64_t *alpha, Solver::SolutionInfo* si, float64_t Cp, float64_t Cn)
 {
 	int32_t l = prob->l;
-	schar *y = new schar[l];
+	schar *y = SG_MALLOCX(schar, l);
 
 	int32_t i;
 
@@ -1811,8 +1811,8 @@ void solve_c_svc_weighted(
 	float64_t *alpha, Solver::SolutionInfo* si, float64_t Cp, float64_t Cn)
 {
 	int l = prob->l;
-	float64_t *minus_ones = new float64_t[l];
-	schar *y = new schar[l];
+	float64_t *minus_ones = SG_MALLOCX(float64_t, l);
+	schar *y = SG_MALLOCX(schar, l);
 
 	int i;
 
@@ -1849,7 +1849,7 @@ static void solve_nu_svc(
 	int32_t l = prob->l;
 	float64_t nu = param->nu;
 
-	schar *y = new schar[l];
+	schar *y = SG_MALLOCX(schar, l);
 
 	for(i=0;i<l;i++)
 		if(prob->y[i]>0)
@@ -1872,7 +1872,7 @@ static void solve_nu_svc(
 			sum_neg -= alpha[i];
 		}
 
-	float64_t *zeros = new float64_t[l];
+	float64_t *zeros = SG_MALLOCX(float64_t, l);
 
 	for(i=0;i<l;i++)
 		zeros[i] = 0;
@@ -1903,7 +1903,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	float64_t nu = param->nu;
 
 	float64_t *alpha = SG_MALLOC(float64_t, prob->l);
-	schar *y = new schar[l];
+	schar *y = SG_MALLOCX(schar, l);
 
 	for(int32_t i=0;i<l;i++)
 	{
@@ -1912,7 +1912,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	}
 
 	int32_t nr_class=param->nr_class;
-	float64_t* sum_class = new float64_t[nr_class];
+	float64_t* sum_class = SG_MALLOCX(float64_t, nr_class);
 
 	for (int32_t j=0; j<nr_class; j++)
 		sum_class[j] = nu*l/nr_class;
@@ -1925,7 +1925,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	SG_FREE(sum_class);
 
 
-	float64_t *zeros = new float64_t[l];
+	float64_t *zeros = SG_MALLOCX(float64_t, l);
 
 	for (int32_t i=0;i<l;i++)
 		zeros[i] = 0;
@@ -1937,7 +1937,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking, param->use_bias);
 
 
-	int32_t* class_sv_count=new int32_t[nr_class];
+	int32_t* class_sv_count=SG_MALLOCX(int32_t, nr_class);
 
 	for (int32_t i=0; i<nr_class; i++)
 		class_sv_count[i]=0;
@@ -1998,8 +1998,8 @@ static void solve_one_class(
 	float64_t *alpha, Solver::SolutionInfo* si)
 {
 	int32_t l = prob->l;
-	float64_t *zeros = new float64_t[l];
-	schar *ones = new schar[l];
+	float64_t *zeros = SG_MALLOCX(float64_t, l);
+	schar *ones = SG_MALLOCX(schar, l);
 	int32_t i;
 
 	int32_t n = (int32_t)(param->nu*prob->l);	// # of alpha's at upper bound
@@ -2030,9 +2030,9 @@ static void solve_epsilon_svr(
 	float64_t *alpha, Solver::SolutionInfo* si)
 {
 	int32_t l = prob->l;
-	float64_t *alpha2 = new float64_t[2*l];
-	float64_t *linear_term = new float64_t[2*l];
-	schar *y = new schar[2*l];
+	float64_t *alpha2 = SG_MALLOCX(float64_t, 2*l);
+	float64_t *linear_term = SG_MALLOCX(float64_t, 2*l);
+	schar *y = SG_MALLOCX(schar, 2*l);
 	int32_t i;
 
 	for(i=0;i<l;i++)
@@ -2069,9 +2069,9 @@ static void solve_nu_svr(
 {
 	int32_t l = prob->l;
 	float64_t C = param->C;
-	float64_t *alpha2 = new float64_t[2*l];
-	float64_t *linear_term = new float64_t[2*l];
-	schar *y = new schar[2*l];
+	float64_t *alpha2 = SG_MALLOCX(float64_t, 2*l);
+	float64_t *linear_term = SG_MALLOCX(float64_t, 2*l);
+	schar *y = SG_MALLOCX(schar, 2*l);
 	int32_t i;
 
 	float64_t sum = C * param->nu * l / 2;

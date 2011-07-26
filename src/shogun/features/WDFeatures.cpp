@@ -115,7 +115,7 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
-	int32_t* val=new int32_t[len];
+	int32_t* val=SG_MALLOCX(int32_t, len);
 	CMath::fill_vector(val, len, 0);
 
 	int32_t asize=alphabet_size;
@@ -152,7 +152,7 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 	int32_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
-	int32_t* val=new int32_t[len];
+	int32_t* val=SG_MALLOCX(int32_t, len);
 	CMath::fill_vector(val, len, 0);
 
 	int32_t asize=alphabet_size;
@@ -186,7 +186,7 @@ void CWDFeatures::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
 	SG_FREE(wd_weights);
-	wd_weights=new float64_t[degree];
+	wd_weights=SG_MALLOCX(float64_t, degree);
 	w_dim=0;
 
 	for (int32_t i=0; i<degree; i++)
@@ -222,14 +222,14 @@ void* CWDFeatures::get_feature_iterator(int32_t vector_index)
 				"requested %d)\n", num_strings, vector_index);
 	}
 
-	wd_feature_iterator* it=new wd_feature_iterator[1];
+	wd_feature_iterator* it=SG_MALLOCX(wd_feature_iterator, 1);
 
 	it->lim=CMath::min(degree, string_length);
 	it->vec= strings->get_feature_vector(vector_index, it->vlen, it->vfree);
 	it->vidx=vector_index;
 
 	it->vec = strings->get_feature_vector(vector_index, it->vlen, it->vfree);
-	it->val=new int32_t[it->vlen];
+	it->val=SG_MALLOCX(int32_t, it->vlen);
 	CMath::fill_vector(it->val, it->vlen, 0);
 
 	it->asize=alphabet_size;

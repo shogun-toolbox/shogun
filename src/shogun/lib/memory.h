@@ -22,6 +22,7 @@ void operator delete(void *p);
 void* operator new[](size_t size);
 void operator delete[](void *p);
 
+#define SG_MALLOCX(type, len) (type*) sg_malloc(sizeof(type)*size_t(len))
 #define SG_MALLOC(type, len) (type*) sg_malloc(sizeof(type)*size_t(len))
 #define SG_CALLOC(type, len) (type*) sg_calloc(size_t(len), sizeof(type))
 #define SG_REALLOC(type, ptr, len) (type*) sg_realloc(ptr, sizeof(type)*size_t(len))

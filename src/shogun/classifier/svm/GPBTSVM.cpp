@@ -90,7 +90,7 @@ bool CGPBTSVM::train_kernel_machine(CFeatures* data)
 	}
 
 	/*** compute the problem solution *******************************************/
-	solution = new float64_t[prob.ell];
+	solution = SG_MALLOCX(float64_t, prob.ell);
 	prob.gpdtsolve(solution);
 	/****************************************************************************/
 

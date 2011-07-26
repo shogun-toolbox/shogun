@@ -48,8 +48,8 @@ bool CPruneVarSubMean::init(CFeatures* features)
 		idx=NULL;
 		std=NULL;
 
-		mean=new float64_t[num_features];
-		float64_t* var=new float64_t[num_features];
+		mean=SG_MALLOCX(float64_t, num_features);
+		float64_t* var=SG_MALLOCX(float64_t, num_features);
 		int32_t i,j;
 
 		for (i=0; i<num_features; i++)
@@ -78,7 +78,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 		}
 
 		int32_t num_ok=0;
-		int32_t* idx_ok=new int[num_features];
+		int32_t* idx_ok=SG_MALLOCX(int, num_features);
 
 		for (j=0; j<num_features; j++)
 		{
@@ -94,9 +94,9 @@ bool CPruneVarSubMean::init(CFeatures* features)
 		SG_INFO( "Reducing number of features from %i to %i\n", num_features, num_ok) ;
 
 		SG_FREE(idx);
-		idx=new int[num_ok];
-		float64_t* new_mean=new float64_t[num_ok];
-		std=new float64_t[num_ok];
+		idx=SG_MALLOCX(int, num_ok);
+		float64_t* new_mean=SG_MALLOCX(float64_t, num_ok);
+		std=SG_MALLOCX(float64_t, num_ok);
 
 		for (j=0; j<num_ok; j++)
 		{
@@ -173,7 +173,7 @@ SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t
 
 	if (initialized)
 	{
-		ret=new float64_t[num_idx] ;
+		ret=SG_MALLOCX(float64_t, num_idx);
 
 		if (divide_by_std)
 		{
@@ -188,7 +188,7 @@ SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t
 	}
 	else
 	{
-		ret=new float64_t[vector.vlen] ;
+		ret=SG_MALLOCX(float64_t, vector.vlen);
 		for (int32_t i=0; i<vector.vlen; i++)
 			ret[i]=vector.vector[i];
 	}

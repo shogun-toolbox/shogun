@@ -34,7 +34,7 @@ CFeatures::CFeatures(const CFeatures& orig)
 	preproc = orig.preproc;
 	num_preproc = orig.num_preproc;
 
-	preprocessed=new bool[orig.num_preproc];
+	preprocessed=SG_MALLOCX(bool, orig.num_preproc);
 	memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 }
 
@@ -84,8 +84,8 @@ int32_t CFeatures::add_preprocessor(CPreprocessor* p)
 	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc);
 	ASSERT(p);
 
-	bool* preprocd=new bool[num_preproc+1];
-	CPreprocessor** pps=new CPreprocessor*[num_preproc+1];
+	bool* preprocd=SG_MALLOCX(bool, num_preproc+1);
+	CPreprocessor** pps=SG_MALLOCX(CPreprocessor*, num_preproc+1);
 	for (int32_t i=0; i<num_preproc; i++)
 	{
 		pps[i]=preproc[i];
@@ -153,8 +153,8 @@ CPreprocessor* CFeatures::del_preprocessor(int32_t num)
 
 		if (num_preproc>1)
 		{
-			pps= new CPreprocessor*[num_preproc-1];
-			preprocd= new bool[num_preproc-1];
+			pps= SG_MALLOCX(CPreprocessor*, num_preproc-1);
+			preprocd= SG_MALLOCX(bool, num_preproc-1);
 
 			if (pps && preprocd)
 			{

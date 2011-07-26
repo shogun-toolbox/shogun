@@ -38,7 +38,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	orig_labels.free_vector();
 
 	// get indexes for sort
-	int32_t* idxs = new int32_t[length];
+	int32_t* idxs = SG_MALLOCX(int32_t, length);
 	for(i=0; i<length; i++)
 		idxs[i] = i;
 
@@ -48,7 +48,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	// clean and initialize graph and auPRC
 	SG_FREE(labels);
 	SG_FREE(m_PRC_graph);
-	m_PRC_graph = new float64_t[length*2];
+	m_PRC_graph = SG_MALLOCX(float64_t, length*2);
 	m_auPRC = 0.0;
 
 	// get total numbers of positive and negative labels

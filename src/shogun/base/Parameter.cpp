@@ -1584,7 +1584,7 @@ TParameter::~TParameter(void)
 char*
 TParameter::new_prefix(const char* s1, const char* s2)
 {
-	char* tmp = new char[strlen(s1)+strlen(s2)+2];
+	char* tmp = SG_MALLOCX(char, strlen(s1)+strlen(s2)+2);
 
 	sprintf(tmp, "%s%s/", s1, s2);
 
@@ -1761,46 +1761,46 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 		switch (m_datatype.m_ptype) {
 		case PT_BOOL:
 			*(bool**) m_parameter
-				= new bool[new_length]; break;
+				= SG_MALLOCX(bool, new_length); break;
 		case PT_CHAR:
 			*(char**) m_parameter
-				= new char[new_length]; break;
+				= SG_MALLOCX(char, new_length); break;
 		case PT_INT8:
 			*(int8_t**) m_parameter
-				= new int8_t[new_length]; break;
+				= SG_MALLOCX(int8_t, new_length); break;
 		case PT_UINT8:
 			*(uint8_t**) m_parameter
-				= new uint8_t[new_length]; break;
+				= SG_MALLOCX(uint8_t, new_length); break;
 		case PT_INT16:
 			*(int16_t**) m_parameter
-				= new int16_t[new_length]; break;
+				= SG_MALLOCX(int16_t, new_length); break;
 		case PT_UINT16:
 			*(uint16_t**) m_parameter
-				= new uint16_t[new_length]; break;
+				= SG_MALLOCX(uint16_t, new_length); break;
 		case PT_INT32:
 			*(int32_t**) m_parameter
-				= new int32_t[new_length]; break;
+				= SG_MALLOCX(int32_t, new_length); break;
 		case PT_UINT32:
 			*(uint32_t**) m_parameter
-				= new uint32_t[new_length]; break;
+				= SG_MALLOCX(uint32_t, new_length); break;
 		case PT_INT64:
 			*(int64_t**) m_parameter
-				= new int64_t[new_length]; break;
+				= SG_MALLOCX(int64_t, new_length); break;
 		case PT_UINT64:
 			*(uint64_t**) m_parameter
-				= new uint64_t[new_length]; break;
+				= SG_MALLOCX(uint64_t, new_length); break;
 		case PT_FLOAT32:
 			*(float32_t**) m_parameter
-				= new float32_t[new_length]; break;
+				= SG_MALLOCX(float32_t, new_length); break;
 		case PT_FLOAT64:
 			*(float64_t**) m_parameter
-				= new float64_t[new_length]; break;
+				= SG_MALLOCX(float64_t, new_length); break;
 		case PT_FLOATMAX:
 			*(floatmax_t**) m_parameter
-				= new floatmax_t[new_length]; break;
+				= SG_MALLOCX(floatmax_t, new_length); break;
 		case PT_SGOBJECT:
 			*(CSGObject***) m_parameter
-				= SG_MALLOC(CSGObject*, new_length);
+				= SG_CALLOC(CSGObject*, new_length);
 			break;
 		}
 		break;
@@ -1808,43 +1808,43 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 		switch (m_datatype.m_ptype) {
 		case PT_BOOL:
 			*(SGString<bool>**) m_parameter
-				= new SGString<bool>[new_length]; break;
+				= SG_MALLOCX(SGString<bool>, new_length); break;
 		case PT_CHAR:
 			*(SGString<char>**) m_parameter
-				= new SGString<char>[new_length]; break;
+				= SG_MALLOCX(SGString<char>, new_length); break;
 		case PT_INT8:
 			*(SGString<int8_t>**) m_parameter
-				= new SGString<int8_t>[new_length]; break;
+				= SG_MALLOCX(SGString<int8_t>, new_length); break;
 		case PT_UINT8:
 			*(SGString<uint8_t>**) m_parameter
-				= new SGString<uint8_t>[new_length]; break;
+				= SG_MALLOCX(SGString<uint8_t>, new_length); break;
 		case PT_INT16:
 			*(SGString<int16_t>**) m_parameter
-				= new SGString<int16_t>[new_length]; break;
+				= SG_MALLOCX(SGString<int16_t>, new_length); break;
 		case PT_UINT16:
 			*(SGString<uint16_t>**) m_parameter
-				= new SGString<uint16_t>[new_length]; break;
+				= SG_MALLOCX(SGString<uint16_t>, new_length); break;
 		case PT_INT32:
 			*(SGString<int32_t>**) m_parameter
-				= new SGString<int32_t>[new_length]; break;
+				= SG_MALLOCX(SGString<int32_t>, new_length); break;
 		case PT_UINT32:
 			*(SGString<uint32_t>**) m_parameter
-				= new SGString<uint32_t>[new_length]; break;
+				= SG_MALLOCX(SGString<uint32_t>, new_length); break;
 		case PT_INT64:
 			*(SGString<int64_t>**) m_parameter
-				= new SGString<int64_t>[new_length]; break;
+				= SG_MALLOCX(SGString<int64_t>, new_length); break;
 		case PT_UINT64:
 			*(SGString<uint64_t>**) m_parameter
-				= new SGString<uint64_t>[new_length]; break;
+				= SG_MALLOCX(SGString<uint64_t>, new_length); break;
 		case PT_FLOAT32:
 			*(SGString<float32_t>**) m_parameter
-				= new SGString<float32_t>[new_length]; break;
+				= SG_MALLOCX(SGString<float32_t>, new_length); break;
 		case PT_FLOAT64:
 			*(SGString<float64_t>**) m_parameter
-				= new SGString<float64_t>[new_length]; break;
+				= SG_MALLOCX(SGString<float64_t>, new_length); break;
 		case PT_FLOATMAX:
 			*(SGString<floatmax_t>**) m_parameter
-				= new SGString<floatmax_t>[new_length]; break;
+				= SG_MALLOCX(SGString<floatmax_t>, new_length); break;
 		case PT_SGOBJECT:
 			SG_SERROR("TParameter::new_cont(): Implementation "
 					 "error: Could not allocate "
@@ -1858,43 +1858,43 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 		switch (m_datatype.m_ptype) {
 		case PT_BOOL:
 			*(SGSparseVector<bool>**) m_parameter
-				= new SGSparseVector<bool>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<bool>, new_length); break;
 		case PT_CHAR:
 			*(SGSparseVector<char>**) m_parameter
-				= new SGSparseVector<char>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<char>, new_length); break;
 		case PT_INT8:
 			*(SGSparseVector<int8_t>**) m_parameter
-				= new SGSparseVector<int8_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<int8_t>, new_length); break;
 		case PT_UINT8:
 			*(SGSparseVector<uint8_t>**) m_parameter
-				= new SGSparseVector<uint8_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<uint8_t>, new_length); break;
 		case PT_INT16:
 			*(SGSparseVector<int16_t>**) m_parameter
-				= new SGSparseVector<int16_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<int16_t>, new_length); break;
 		case PT_UINT16:
 			*(SGSparseVector<uint16_t>**) m_parameter
-				= new SGSparseVector<uint16_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<uint16_t>, new_length); break;
 		case PT_INT32:
 			*(SGSparseVector<int32_t>**) m_parameter
-				= new SGSparseVector<int32_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<int32_t>, new_length); break;
 		case PT_UINT32:
 			*(SGSparseVector<uint32_t>**) m_parameter
-				= new SGSparseVector<uint32_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<uint32_t>, new_length); break;
 		case PT_INT64:
 			*(SGSparseVector<int64_t>**) m_parameter
-				= new SGSparseVector<int64_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<int64_t>, new_length); break;
 		case PT_UINT64:
 			*(SGSparseVector<uint64_t>**) m_parameter
-				= new SGSparseVector<uint64_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<uint64_t>, new_length); break;
 		case PT_FLOAT32:
 			*(SGSparseVector<float32_t>**) m_parameter
-				= new SGSparseVector<float32_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<float32_t>, new_length); break;
 		case PT_FLOAT64:
 			*(SGSparseVector<float64_t>**) m_parameter
-				= new SGSparseVector<float64_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<float64_t>, new_length); break;
 		case PT_FLOATMAX:
 			*(SGSparseVector<floatmax_t>**) m_parameter
-				= new SGSparseVector<floatmax_t>[new_length]; break;
+				= SG_MALLOCX(SGSparseVector<floatmax_t>, new_length); break;
 		case PT_SGOBJECT:
 			SG_SERROR("TParameter::new_cont(): Implementation "
 					 "error: Could not allocate "
@@ -2092,7 +2092,7 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 				&m_datatype, m_name, prefix, &len_real))
 			return false;
 		str_ptr->string = len_real > 0
-			? new char[len_real*m_datatype.sizeof_ptype()]: NULL;
+			? SG_MALLOC(char, len_real*m_datatype.sizeof_ptype()): NULL;
 		for (index_t i=0; i<len_real; i++) {
 			if (!file->read_stringentry_begin(
 					&m_datatype, m_name, prefix, i)) return false;
@@ -2112,8 +2112,8 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 				&m_datatype, m_name, prefix, &spr_ptr->vec_index,
 				&len_real)) return false;
 		spr_ptr->features = len_real > 0? (SGSparseVectorEntry<char>*)
-			new char[len_real *TSGDataType::sizeof_sparseentry(
-				m_datatype.m_ptype)]: NULL;
+			SG_MALLOC(char, len_real *TSGDataType::sizeof_sparseentry(
+				m_datatype.m_ptype)): NULL;
 		for (index_t i=0; i<len_real; i++) {
 			SGSparseVectorEntry<char>* cur = (SGSparseVectorEntry<char>*)
 				((char*) spr_ptr->features + i *TSGDataType
@@ -2142,7 +2142,7 @@ bool
 TParameter::save(CSerializableFile* file, const char* prefix)
 {
 	const int32_t buflen=100;
-	char* buf=new char[buflen];
+	char* buf=SG_MALLOCX(char, buflen);
 	m_datatype.to_string(buf, buflen);
 	SG_SDEBUG("Saving parameter '%s' of type '%s'\n", m_name, buf);
 	SG_FREE(buf);
@@ -2225,7 +2225,7 @@ bool
 TParameter::load(CSerializableFile* file, const char* prefix)
 {
 	const int32_t buflen=100;
-	char* buf=new char[buflen];
+	char* buf=SG_MALLOCX(char, buflen);
 	m_datatype.to_string(buf, buflen);
 	SG_SDEBUG("Loading parameter '%s' of type '%s'\n", m_name, buf);
 	SG_FREE(buf);

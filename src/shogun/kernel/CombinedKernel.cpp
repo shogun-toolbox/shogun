@@ -293,8 +293,8 @@ bool CCombinedKernel::init_optimization(
 	{
 		SG_WARNING( "some kernels in the kernel-list are not optimized\n");
 
-		sv_idx=new int32_t[count];
-		sv_weight=new float64_t[count];
+		sv_idx=SG_MALLOCX(int32_t, count);
+		sv_weight=SG_MALLOCX(float64_t, count);
 		sv_count=count;
 		for (int32_t i=0; i<count; i++)
 		{
@@ -431,8 +431,8 @@ void CCombinedKernel::emulate_compute_batch(
 #ifndef WIN32
 			else
 			{
-				pthread_t* threads = new pthread_t[num_threads-1];
-				S_THREAD_PARAM* params = new S_THREAD_PARAM[num_threads];
+				pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
+				S_THREAD_PARAM* params = SG_MALLOCX(S_THREAD_PARAM, num_threads);
 				int32_t step= num_vec/num_threads;
 
 				int32_t t;
@@ -491,8 +491,8 @@ void CCombinedKernel::emulate_compute_batch(
 #ifndef WIN32
 			else
 			{
-				pthread_t* threads = new pthread_t[num_threads-1];
-				S_THREAD_PARAM* params = new S_THREAD_PARAM[num_threads];
+				pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
+				S_THREAD_PARAM* params = SG_MALLOCX(S_THREAD_PARAM, num_threads);
 				int32_t step= num_vec/num_threads;
 
 				int32_t t;
@@ -647,7 +647,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 {
 	num_weights = get_num_subkernels() ;
 	SG_FREE(subkernel_weights_buffer);
-	subkernel_weights_buffer = new float64_t[num_weights] ;
+	subkernel_weights_buffer = SG_MALLOCX(float64_t, num_weights);
 
 	if (append_subkernel_weights)
 	{

@@ -30,8 +30,8 @@ using namespace shogun;
 
 void gen_rand_data(float64_t* & feat, float64_t* & lab,const int32_t num,const int32_t dims,const float64_t dist)
 {
-	lab=new float64_t[num];
-	feat=new float64_t[num*dims];
+	lab=SG_MALLOCX(float64_t, num);
+	feat=SG_MALLOCX(float64_t, num*dims);
 
 	for (int32_t i=0; i<num; i++)
 	{
@@ -86,7 +86,7 @@ int main()
 	a=time(NULL);
 	std::cout << "generating train data"<<std::endl;
 	gen_rand_data(feattr,labtr,numtr,dims,dist);
-	float64_t* feattr2=new float64_t[numtr*dims];
+	float64_t* feattr2=SG_MALLOCX(float64_t, numtr*dims);
 	std::copy(feattr,feattr+numtr*dims,feattr2);
 	std::cout << "finished"<<std::endl;
 	b=time(NULL);
@@ -98,9 +98,9 @@ int main()
 	a=time(NULL);
 	std::cout << "generating test data"<<std::endl;
 	gen_rand_data(featte,labte,numte,dims,dist);
-	float64_t* featte2=new float64_t[numtr*dims];
+	float64_t* featte2=SG_MALLOCX(float64_t, numtr*dims);
 	std::copy(featte,featte+numtr*dims,featte2);
-	float64_t* featte3=new float64_t[numtr*dims];
+	float64_t* featte3=SG_MALLOCX(float64_t, numtr*dims);
 	std::copy(featte,featte+numtr*dims,featte3);
 	std::cout << "finished"<<std::endl;
 	b=time(NULL);

@@ -40,10 +40,10 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 	/* calling external lib */
 	int n = (int) fun_obj->get_nr_variable();
 	int search = 1, iter = 1, inc = 1;
-	double *s = new double[n];
-	double *r = new double[n];
-	double *w_new = new double[n];
-	double *g = new double[n];
+	double *s = SG_MALLOCX(double, n);
+	double *r = SG_MALLOCX(double, n);
+	double *w_new = SG_MALLOCX(double, n);
+	double *g = SG_MALLOCX(double, n);
 
 	for (i=0; i<n; i++)
 		w[i] = 0;
@@ -147,8 +147,8 @@ int32_t CTron::trcg(float64_t delta, double* g, double* s, double* r)
 	int n = (int) fun_obj->get_nr_variable();
 	int inc = 1;
 	double one = 1;
-	double *Hd = new double[n];
-	double *d = new double[n];
+	double *Hd = SG_MALLOCX(double, n);
+	double *d = SG_MALLOCX(double, n);
 	double rTr, rnewTrnew, alpha, beta, cgtol;
 
 	for (i=0; i<n; i++)

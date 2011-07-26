@@ -73,7 +73,7 @@ bool CMultiClassSVM::create_multiclass_svm(int32_t num_classes)
 		else
 			SG_ERROR("unknown multiclass type\n");
 
-		m_svms=new CSVM*[m_num_svms];
+		m_svms=SG_MALLOCX(CSVM*, m_num_svms);
 		if (m_svms)
 		{
 			memset(m_svms,0, m_num_svms*sizeof(CSVM*));
@@ -126,7 +126,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 		SG_REF(result);
 
 		ASSERT(num_vectors==result->get_num_labels());
-		CLabels** outputs=new CLabels*[m_num_svms];
+		CLabels** outputs=SG_MALLOCX(CLabels*, m_num_svms);
 
 		for (int32_t i=0; i<m_num_svms; i++)
 		{
@@ -136,7 +136,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 			outputs[i]=m_svms[i]->apply();
 		}
 
-		int32_t* votes=new int32_t[m_num_classes];
+		int32_t* votes=SG_MALLOCX(int32_t, m_num_classes);
 		for (int32_t v=0; v<num_vectors; v++)
 		{
 			int32_t s=0;
@@ -197,7 +197,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 		SG_REF(result);
 
 		ASSERT(num_vectors==result->get_num_labels());
-		CLabels** outputs=new CLabels*[m_num_svms];
+		CLabels** outputs=SG_MALLOCX(CLabels*, m_num_svms);
 
 		for (int32_t i=0; i<m_num_svms; i++)
 		{
@@ -249,7 +249,7 @@ float64_t CMultiClassSVM::apply(int32_t num)
 float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 {
 	ASSERT(m_num_svms>0);
-	float64_t* outputs=new float64_t[m_num_svms];
+	float64_t* outputs=SG_MALLOCX(float64_t, m_num_svms);
 	int32_t winner=0;
 	float64_t max_out=m_svms[0]->apply(num);
 
@@ -272,7 +272,7 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 	ASSERT(m_num_svms>0);
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
 
-	int32_t* votes=new int32_t[m_num_classes];
+	int32_t* votes=SG_MALLOCX(int32_t, m_num_classes);
 	int32_t s=0;
 
 	for (int32_t i=0; i<m_num_classes; i++)

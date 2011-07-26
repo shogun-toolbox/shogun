@@ -161,14 +161,14 @@ IFType CCmdLineInterface::get_argument_type()
 	if (!fh)
 		SG_ERROR("Could not find file %s.\n", filename);
 
-	char* chunk=new char[len+1];
+	char* chunk=SG_MALLOCX(char, len+1);
 	memset(chunk, 0, sizeof(char)*(len+1));
 	size_t nread=fread(chunk, sizeof(char), len, fh);
 	fclose(fh);
 	if (nread<=0)
 		SG_ERROR("Could not read data from %s.\n");
 
-	char* signature=new char[len+1];
+	char* signature=SG_MALLOCX(char, len+1);
 	int32_t num=sscanf(chunk, "### SHOGUN V0 %s\n", signature);
 
 	// if file has valid shogun signature use it to determine file type
@@ -270,7 +270,7 @@ char* CCmdLineInterface::get_string(int32_t& len)
 	len=strlen(s);
 	ASSERT(len>0);
 
-	char* result=new char[len+1];
+	char* result=SG_MALLOCX(char, len+1);
 	memcpy(result, s, len*sizeof(char));
 	result[len]='\0';
 

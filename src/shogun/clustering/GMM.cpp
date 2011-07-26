@@ -29,9 +29,9 @@ CGMM::CGMM() : CDistribution(), m_components(),	m_coefficients()
 
 CGMM::CGMM(int32_t n, ECovType cov_type) : CDistribution(), m_components(), m_coefficients()
 {
-	m_coefficients.vector=new float64_t[n];
+	m_coefficients.vector=SG_MALLOCX(float64_t, n);
 	m_coefficients.vlen=n;
-	m_components.vector=new CGaussian*[n];
+	m_components.vector=SG_MALLOCX(CGaussian*, n);
 	m_components.vlen=n;
 
 	for (int i=0; i<n; i++)
@@ -59,9 +59,9 @@ CGMM::CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients, bo
 	}
 	else
 	{
-		m_coefficients.vector=new float64_t[components.vlen];
+		m_coefficients.vector=SG_MALLOCX(float64_t, components.vlen);
 		m_coefficients.vlen=components.vlen;
-		m_components.vector=new CGaussian*[components.vlen];
+		m_components.vector=SG_MALLOCX(CGaussian*, components.vlen);
 		m_components.vlen=components.vlen;
 
 		for (int i=0; i<components.vlen; i++)
@@ -153,7 +153,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	}
 	else
 	{
-		alpha.matrix=new float64_t[num_vectors*m_components.vlen];
+		alpha.matrix=SG_MALLOCX(float64_t, num_vectors*m_components.vlen);
 		alpha.num_rows=num_vectors;
 		alpha.num_cols=m_components.vlen;
 	}
@@ -161,9 +161,9 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	int32_t iter=0;
 	float64_t log_likelihood_prev=0;
 	float64_t log_likelihood_cur=0;
-	float64_t* logPxy=new float64_t[num_vectors*m_components.vlen];
-	float64_t* logPx=new float64_t[num_vectors];
-	//float64_t* logPost=new float64_t[num_vectors*m_components.vlen];
+	float64_t* logPxy=SG_MALLOCX(float64_t, num_vectors*m_components.vlen);
+	float64_t* logPx=SG_MALLOCX(float64_t, num_vectors);
+	//float64_t* logPost=SG_MALLOCX(float64_t, num_vectors*m_components.vlen);
 
 	while (iter<max_iter)
 	{
@@ -219,16 +219,16 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 	float64_t cur_likelihood=train_em(min_cov, max_em_iter, min_change);
 
 	int32_t iter=0;
-	float64_t* logPxy=new float64_t[num_vectors*m_components.vlen];
-	float64_t* logPx=new float64_t[num_vectors];
-	float64_t* logPost=new float64_t[num_vectors*m_components.vlen];
-	float64_t* logPostSum=new float64_t[m_components.vlen];
-	float64_t* logPostSum2=new float64_t[m_components.vlen];
-	float64_t* logPostSumSum=new float64_t[m_components.vlen*(m_components.vlen-1)/2];
-	float64_t* split_crit=new float64_t[m_components.vlen];
-	float64_t* merge_crit=new float64_t[m_components.vlen*(m_components.vlen-1)/2];
-	int32_t* split_ind=new int32_t[m_components.vlen];
-	int32_t* merge_ind=new int32_t[m_components.vlen*(m_components.vlen-1)/2];
+	float64_t* logPxy=SG_MALLOCX(float64_t, num_vectors*m_components.vlen);
+	float64_t* logPx=SG_MALLOCX(float64_t, num_vectors);
+	float64_t* logPost=SG_MALLOCX(float64_t, num_vectors*m_components.vlen);
+	float64_t* logPostSum=SG_MALLOCX(float64_t, m_components.vlen);
+	float64_t* logPostSum2=SG_MALLOCX(float64_t, m_components.vlen);
+	float64_t* logPostSumSum=SG_MALLOCX(float64_t, m_components.vlen*(m_components.vlen-1)/2);
+	float64_t* split_crit=SG_MALLOCX(float64_t, m_components.vlen);
+	float64_t* merge_crit=SG_MALLOCX(float64_t, m_components.vlen*(m_components.vlen-1)/2);
+	int32_t* split_ind=SG_MALLOCX(int32_t, m_components.vlen);
+	int32_t* merge_ind=SG_MALLOCX(int32_t, m_components.vlen*(m_components.vlen-1)/2);
 
 	while (iter<max_iter)
 	{
@@ -347,10 +347,10 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
 
-	float64_t* init_logPxy=new float64_t[num_vectors*m_components.vlen];
-	float64_t* init_logPx=new float64_t[num_vectors];
-	float64_t* init_logPx_fix=new float64_t[num_vectors];
-	float64_t* post_add=new float64_t[num_vectors];
+	float64_t* init_logPxy=SG_MALLOCX(float64_t, num_vectors*m_components.vlen);
+	float64_t* init_logPx=SG_MALLOCX(float64_t, num_vectors);
+	float64_t* init_logPx_fix=SG_MALLOCX(float64_t, num_vectors);
+	float64_t* post_add=SG_MALLOCX(float64_t, num_vectors);
 
 	for (int i=0; i<num_vectors; i++)
 	{
@@ -476,9 +476,9 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	float64_t log_likelihood_cur=0;
 	int32_t iter=0;
 	SGMatrix<float64_t> alpha(num_vectors, 3);
-	float64_t* logPxy=new float64_t[num_vectors*3];
-	float64_t* logPx=new float64_t[num_vectors];
-	//float64_t* logPost=new float64_t[num_vectors*m_components.vlen];
+	float64_t* logPxy=SG_MALLOCX(float64_t, num_vectors*3);
+	float64_t* logPx=SG_MALLOCX(float64_t, num_vectors);
+	//float64_t* logPost=SG_MALLOCX(float64_t, num_vectors*m_components.vlen);
 
 	while (iter<max_em_iter)
 	{
@@ -545,7 +545,7 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 	for (int i=0; i<alpha.num_cols; i++)
 	{
 		alpha_sum=0;
-		mean_sum=new float64_t[num_dim];
+		mean_sum=SG_MALLOCX(float64_t, num_dim);
 		memset(mean_sum, 0, num_dim*sizeof(float64_t));
 
 		for (int j=0; j<alpha.num_rows; j++)
@@ -565,17 +565,17 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 
 		if (cov_type==FULL)
 		{
-			cov_sum=new float64_t[num_dim*num_dim];
+			cov_sum=SG_MALLOCX(float64_t, num_dim*num_dim);
 			memset(cov_sum, 0, num_dim*num_dim*sizeof(float64_t));
 		}
 		else if(cov_type==DIAG)
 		{
-			cov_sum=new float64_t[num_dim];
+			cov_sum=SG_MALLOCX(float64_t, num_dim);
 			memset(cov_sum, 0, num_dim*sizeof(float64_t));
 		}
 		else if(cov_type==SPHERICAL)
 		{
-			cov_sum=new float64_t[1];
+			cov_sum=SG_MALLOCX(float64_t, 1);
 			cov_sum[0]=0;
 		}
 
@@ -689,7 +689,7 @@ float64_t* CGMM::alpha_init(float64_t* init_means, int32_t init_mean_dim, int32_
 	knn->train(new CSimpleFeatures<float64_t>(init_means, init_mean_dim, init_mean_size));
 	CLabels* init_labels=knn->apply(features);
 
-	float64_t* alpha=new float64_t[num_vectors*m_components.vlen];
+	float64_t* alpha=SG_MALLOCX(float64_t, num_vectors*m_components.vlen);
 	memset(alpha, 0, num_vectors*m_components.vlen*sizeof(float64_t));
 
 	for (int i=0; i<num_vectors; i++)
@@ -717,7 +717,7 @@ SGVector<float64_t> CGMM::sample()
 SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
 {
 	SGVector<float64_t> answer;
-	answer.vector=new float64_t[m_components.vlen+1];
+	answer.vector=SG_MALLOCX(float64_t, m_components.vlen+1);
 	answer.vlen=m_components.vlen+1;
 	answer.vector[m_components.vlen]=0;
 

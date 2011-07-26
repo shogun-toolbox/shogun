@@ -144,8 +144,8 @@ void CSVMLight::init()
 
 	// svm variables
 	W=NULL;
-	model=new MODEL[1];
-	learn_parm=new LEARN_PARM[1];
+	model=SG_MALLOCX(MODEL, 1);
+	learn_parm=SG_MALLOCX(LEARN_PARM, 1);
 	model->supvec=NULL;
 	model->alpha=NULL;
 	model->index=NULL;
@@ -305,14 +305,14 @@ void CSVMLight::svm_learn()
 	int32_t* label=CMath::clone_vector(lab.vector, lab.vlen);
 	lab.free_vector();
 
-	int32_t* docs=new int32_t[totdoc];
+	int32_t* docs=SG_MALLOCX(int32_t, totdoc);
 	SG_FREE(W);
 	W=NULL;
 	count = 0 ;
 
 	if (kernel->has_property(KP_KERNCOMBINATION) && callback)
 	{
-		W = new float64_t[totdoc*kernel->get_num_subkernels()];
+		W = SG_MALLOCX(float64_t, totdoc*kernel->get_num_subkernels());
 		for (i=0; i<totdoc*kernel->get_num_subkernels(); i++)
 			W[i]=0;
 	}
@@ -342,28 +342,28 @@ void CSVMLight::svm_learn()
 
 	init_shrink_state(&shrink_state,totdoc,(int32_t)MAXSHRINK);
 
-	inconsistent = new int32_t[totdoc];
-	c = new float64_t[totdoc];
-	a = new float64_t[totdoc];
-	a_fullset = new float64_t[totdoc];
-	xi_fullset = new float64_t[totdoc];
-	lin = new float64_t[totdoc];
+	inconsistent = SG_MALLOCX(int32_t, totdoc);
+	c = SG_MALLOCX(float64_t, totdoc);
+	a = SG_MALLOCX(float64_t, totdoc);
+	a_fullset = SG_MALLOCX(float64_t, totdoc);
+	xi_fullset = SG_MALLOCX(float64_t, totdoc);
+	lin = SG_MALLOCX(float64_t, totdoc);
 	if (m_linear_term_len > 0)
 		learn_parm->eps=get_linear_term_array();
 	else
 	{
-		learn_parm->eps=new float64_t[totdoc];      /* equivalent regression epsilon for classification */
+		learn_parm->eps=SG_MALLOCX(float64_t, totdoc);      /* equivalent regression epsilon for classification */
 		CMath::fill_vector(learn_parm->eps, totdoc, -1.0);
 	}
 
-	learn_parm->svm_cost = new float64_t[totdoc];
+	learn_parm->svm_cost = SG_MALLOCX(float64_t, totdoc);
 
 	SG_FREE(model->supvec);
 	SG_FREE(model->alpha);
 	SG_FREE(model->index);
-	model->supvec = new int32_t[totdoc+2];
-	model->alpha = new float64_t[totdoc+2];
-	model->index = new int32_t[totdoc+2];
+	model->supvec = SG_MALLOCX(int32_t, totdoc+2);
+	model->alpha = SG_MALLOCX(float64_t, totdoc+2);
+	model->index = SG_MALLOCX(int32_t, totdoc+2);
 
 	model->at_upper_bound=0;
 	model->b=0;
@@ -413,7 +413,7 @@ void CSVMLight::svm_learn()
 			SG_INFO( "Computing starting state...");
 		}
 
-	float64_t* alpha = new float64_t[totdoc];
+	float64_t* alpha = SG_MALLOCX(float64_t, totdoc);
 
 	for (i=0; i<totdoc; i++)
 		alpha[i]=0;
@@ -421,9 +421,9 @@ void CSVMLight::svm_learn()
 	for (i=0; i<get_num_support_vectors(); i++)
 		alpha[get_support_vector(i)]=get_alpha(i);
 
-    int32_t* index = new int32_t[totdoc];
-    int32_t* index2dnum = new int32_t[totdoc+11];
-    float64_t* aicache = new float64_t[totdoc];
+    int32_t* index = SG_MALLOCX(int32_t, totdoc);
+    int32_t* index2dnum = SG_MALLOCX(int32_t, totdoc+11);
+    float64_t* aicache = SG_MALLOCX(float64_t, totdoc);
     for (i=0;i<totdoc;i++) {    /* create full index and clip alphas */
       index[i]=1;
       alpha[i]=fabs(alpha[i]);
@@ -595,22 +595,22 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   (*maxdiff)=1;
 
   SG_DEBUG("totdoc:%d\n",totdoc);
-  chosen = new int32_t[totdoc];
-  last_suboptimal_at =new int32_t[totdoc];
-  key =new int32_t[totdoc+11];
-  selcrit =new float64_t[totdoc];
-  selexam =new int32_t[totdoc];
-  a_old =new float64_t[totdoc];
-  aicache =new float64_t[totdoc];
-  working2dnum =new int32_t[totdoc+11];
-  active2dnum =new int32_t[totdoc+11];
-  qp.opt_ce =new float64_t[learn_parm->svm_maxqpsize];
-  qp.opt_ce0 =new float64_t[1];
-  qp.opt_g =new float64_t[learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize];
-  qp.opt_g0 =new float64_t[learn_parm->svm_maxqpsize];
-  qp.opt_xinit =new float64_t[learn_parm->svm_maxqpsize];
-  qp.opt_low=new float64_t[learn_parm->svm_maxqpsize];
-  qp.opt_up=new float64_t[learn_parm->svm_maxqpsize];
+  chosen = SG_MALLOCX(int32_t, totdoc);
+  last_suboptimal_at =SG_MALLOCX(int32_t, totdoc);
+  key =SG_MALLOCX(int32_t, totdoc+11);
+  selcrit =SG_MALLOCX(float64_t, totdoc);
+  selexam =SG_MALLOCX(int32_t, totdoc);
+  a_old =SG_MALLOCX(float64_t, totdoc);
+  aicache =SG_MALLOCX(float64_t, totdoc);
+  working2dnum =SG_MALLOCX(int32_t, totdoc+11);
+  active2dnum =SG_MALLOCX(int32_t, totdoc+11);
+  qp.opt_ce =SG_MALLOCX(float64_t, learn_parm->svm_maxqpsize);
+  qp.opt_ce0 =SG_MALLOCX(float64_t, 1);
+  qp.opt_g =SG_MALLOCX(float64_t, learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize);
+  qp.opt_g0 =SG_MALLOCX(float64_t, learn_parm->svm_maxqpsize);
+  qp.opt_xinit =SG_MALLOCX(float64_t, learn_parm->svm_maxqpsize);
+  qp.opt_low=SG_MALLOCX(float64_t, learn_parm->svm_maxqpsize);
+  qp.opt_up=SG_MALLOCX(float64_t, learn_parm->svm_maxqpsize);
 
   choosenum=0;
   inconsistentnum=0;
@@ -1078,10 +1078,10 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		}
 
 		ASSERT(parallel->get_num_threads()>1);
-		int32_t *KI=new int32_t[varnum*varnum] ;
-		int32_t *KJ=new int32_t[varnum*varnum] ;
+		int32_t *KI=SG_MALLOCX(int32_t, varnum*varnum);
+		int32_t *KJ=SG_MALLOCX(int32_t, varnum*varnum);
 		int32_t Knum=0 ;
-		float64_t *Kval = new float64_t[varnum*(varnum+1)/2] ;
+		float64_t *Kval = SG_MALLOCX(float64_t, varnum*(varnum+1)/2);
 		for (i=0;i<varnum;i++) {
 			ki=key[i];
 			KI[Knum]=docs[ki] ;
@@ -1097,8 +1097,8 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		}
 		ASSERT(Knum<=varnum*(varnum+1)/2);
 
-		pthread_t* threads = new pthread_t[parallel->get_num_threads()-1];
-		S_THREAD_PARAM_KERNEL* params = new S_THREAD_PARAM_KERNEL[parallel->get_num_threads()-1];
+		pthread_t* threads = SG_MALLOCX(pthread_t, parallel->get_num_threads()-1);
+		S_THREAD_PARAM_KERNEL* params = SG_MALLOCX(S_THREAD_PARAM_KERNEL, parallel->get_num_threads()-1);
 		int32_t step= Knum/parallel->get_num_threads();
 		//SG_DEBUG( "\nkernel-step size: %i\n", step) ;
 		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
@@ -1468,8 +1468,8 @@ void CSVMLight::update_linear_component(
 					int32_t num_elem = 0 ;
 					for (jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t* threads = new pthread_t[parallel->get_num_threads()-1] ;
-					S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel->get_num_threads()-1] ;
+					pthread_t* threads = SG_MALLOCX(pthread_t, parallel->get_num_threads()-1);
+					S_THREAD_PARAM* params = SG_MALLOCX(S_THREAD_PARAM, parallel->get_num_threads()-1);
 					int32_t start = 0 ;
 					int32_t step = num_elem/parallel->get_num_threads();
 					int32_t end = step ;
@@ -1559,8 +1559,8 @@ void CSVMLight::update_linear_component_mkl(
 	}
 	else // hope the kernel is fast ...
 	{
-		float64_t* w_backup = new float64_t[num_kernels] ;
-		float64_t* w1 = new float64_t[num_kernels] ;
+		float64_t* w_backup = SG_MALLOCX(float64_t, num_kernels);
+		float64_t* w1 = SG_MALLOCX(float64_t, num_kernels);
 
 		// backup and set to zero
 		for (int32_t i=0; i<num_kernels; i++)
@@ -1610,8 +1610,8 @@ void CSVMLight::update_linear_component_mkl_linadd(
 	const float64_t* old_beta   = kernel->get_subkernel_weights(num_weights);
 	ASSERT(num_weights==num_kernels);
 
-	float64_t* w_backup = new float64_t[num_kernels] ;
-	float64_t* w1 = new float64_t[num_kernels] ;
+	float64_t* w_backup = SG_MALLOCX(float64_t, num_kernels);
+	float64_t* w1 = SG_MALLOCX(float64_t, num_kernels);
 
 	// backup and set to one
 	for (int32_t i=0; i<num_kernels; i++)
@@ -1639,8 +1639,8 @@ void CSVMLight::update_linear_component_mkl_linadd(
 #ifndef WIN32
 	else
 	{
-		pthread_t* threads = new pthread_t[parallel->get_num_threads()-1];
-		S_THREAD_PARAM* params = new S_THREAD_PARAM[parallel->get_num_threads()-1];
+		pthread_t* threads = SG_MALLOCX(pthread_t, parallel->get_num_threads()-1);
+		S_THREAD_PARAM* params = SG_MALLOCX(S_THREAD_PARAM, parallel->get_num_threads()-1);
 		int32_t step= num/parallel->get_num_threads();
 
 		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
@@ -1693,9 +1693,9 @@ void CSVMLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin)
     int nk = (int) num_kernels; /* calling external lib */
 
 	float64_t suma=0;
-	float64_t* sumw=new float64_t[num_kernels];
+	float64_t* sumw=SG_MALLOCX(float64_t, num_kernels);
 #ifdef HAVE_LAPACK
-	double* alphay  = new double[num];
+	double* alphay  = SG_MALLOCX(double, num);
 
 	for (int32_t i=0; i<num; i++)
 	{
@@ -1951,12 +1951,12 @@ void CSVMLight::init_shrink_state(
   int32_t i;
 
   shrink_state->deactnum=0;
-  shrink_state->active = new int32_t[totdoc];
-  shrink_state->inactive_since = new int32_t[totdoc];
-  shrink_state->a_history = new float64_t*[maxhistory];
+  shrink_state->active = SG_MALLOCX(int32_t, totdoc);
+  shrink_state->inactive_since = SG_MALLOCX(int32_t, totdoc);
+  shrink_state->a_history = SG_MALLOCX(float64_t*, maxhistory);
   shrink_state->maxhistory=maxhistory;
-  shrink_state->last_lin = new float64_t[totdoc];
-  shrink_state->last_a = new float64_t[totdoc];
+  shrink_state->last_lin = SG_MALLOCX(float64_t, totdoc);
+  shrink_state->last_a = SG_MALLOCX(float64_t, totdoc);
 
   for (i=0;i<totdoc;i++) {
     shrink_state->active[i]=1;
@@ -2010,7 +2010,7 @@ int32_t CSVMLight::shrink_problem(
 
 	  if (!(kernel->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
 
-		  a_old=new float64_t[totdoc];
+		  a_old=SG_MALLOCX(float64_t, totdoc);
 		  shrink_state->a_history[shrink_state->deactnum]=a_old;
 		  for (i=0;i<totdoc;i++) {
 			  a_old[i]=a[i];
@@ -2147,8 +2147,8 @@ void CSVMLight::reactivate_inactive_examples(
 #ifndef WIN32
 			  else
 			  {
-				  pthread_t* threads = new pthread_t[num_threads-1];
-				  S_THREAD_PARAM_REACTIVATE_LINADD* params = new S_THREAD_PARAM_REACTIVATE_LINADD[num_threads];
+				  pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
+				  S_THREAD_PARAM_REACTIVATE_LINADD* params = SG_MALLOCX(S_THREAD_PARAM_REACTIVATE_LINADD, num_threads);
 				  int32_t step= totdoc/num_threads;
 
 				  for (t=0; t<num_threads-1; t++)
@@ -2184,8 +2184,8 @@ void CSVMLight::reactivate_inactive_examples(
 	  }
 	  else
 	  {
-		  float64_t *alphas = new float64_t[totdoc] ;
-		  int32_t *idx = new int32_t[totdoc] ;
+		  float64_t *alphas = SG_MALLOCX(float64_t, totdoc);
+		  int32_t *idx = SG_MALLOCX(int32_t, totdoc);
 		  int32_t num_suppvec=0 ;
 
 		  for (i=0; i<totdoc; i++)
@@ -2202,7 +2202,7 @@ void CSVMLight::reactivate_inactive_examples(
 		  if (num_suppvec>0)
 		  {
 			  int32_t num_inactive=0;
-			  int32_t* inactive_idx=new int32_t[totdoc]; // infact we only need a subset
+			  int32_t* inactive_idx=SG_MALLOCX(int32_t, totdoc); // infact we only need a subset
 
 			  j=0;
 			  for (i=0;i<totdoc;i++)
@@ -2216,7 +2216,7 @@ void CSVMLight::reactivate_inactive_examples(
 
 			  if (num_inactive>0)
 			  {
-				  float64_t* dest = new float64_t[num_inactive];
+				  float64_t* dest = SG_MALLOCX(float64_t, num_inactive);
 				  memset(dest, 0, sizeof(float64_t)*num_inactive);
 
 				  kernel->compute_batch(num_inactive, inactive_idx, dest, num_suppvec, idx, alphas);
@@ -2246,10 +2246,10 @@ void CSVMLight::reactivate_inactive_examples(
   }
   else
   {
-	  changed=new int32_t[totdoc];
-	  changed2dnum=new int32_t[totdoc+11];
-	  inactive=new int32_t[totdoc];
-	  inactive2dnum=new int32_t[totdoc+11];
+	  changed=SG_MALLOCX(int32_t, totdoc);
+	  changed2dnum=SG_MALLOCX(int32_t, totdoc+11);
+	  inactive=SG_MALLOCX(int32_t, totdoc);
+	  inactive2dnum=SG_MALLOCX(int32_t, totdoc+11);
 	  for (t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--)
 	  {
 		  if(verbosity>=2) {
@@ -2286,14 +2286,14 @@ void CSVMLight::reactivate_inactive_examples(
 
 			  if (num_changed>0)
 			  {
-				  pthread_t* threads= new pthread_t[num_threads-1];
-				  S_THREAD_PARAM_REACTIVATE_VANILLA* params = new S_THREAD_PARAM_REACTIVATE_VANILLA[num_threads];
+				  pthread_t* threads= SG_MALLOCX(pthread_t, num_threads-1);
+				  S_THREAD_PARAM_REACTIVATE_VANILLA* params = SG_MALLOCX(S_THREAD_PARAM_REACTIVATE_VANILLA, num_threads);
 				  int32_t step= num_changed/num_threads;
 
 				  // alloc num_threads many tmp buffers
-				  float64_t* tmp_lin=new float64_t[totdoc*num_threads];
+				  float64_t* tmp_lin=SG_MALLOCX(float64_t, totdoc*num_threads);
 				  memset(tmp_lin, 0, sizeof(float64_t)*((size_t) totdoc)*num_threads);
-				  float64_t* tmp_aicache=new float64_t[totdoc*num_threads];
+				  float64_t* tmp_aicache=SG_MALLOCX(float64_t, totdoc*num_threads);
 				  memset(tmp_aicache, 0, sizeof(float64_t)*((size_t) totdoc)*num_threads);
 
 				  int32_t thr;
@@ -2406,8 +2406,8 @@ float64_t* CSVMLight::optimize_qp(
 	int32_t iter;
 
 	if(!primal) { /* allocate memory at first call */
-		primal=new float64_t[nx*3];
-		dual=new float64_t[nx*2+1];
+		primal=SG_MALLOCX(float64_t, nx*3);
+		dual=SG_MALLOCX(float64_t, nx*2+1);
 	}
 
 	obj_before=0; /* calculate objective before optimization */

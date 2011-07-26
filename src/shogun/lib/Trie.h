@@ -697,7 +697,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		if (to_copy.position_weights!=NULL)
 		{
 			position_weights = to_copy.position_weights;
-			/*new float64_t[to_copy.length];
+			/*SG_MALLOCX(float64_t, to_copy.length);
 			  for (int32_t i=0; i<to_copy.length; i++)
 			  position_weights[i]=to_copy.position_weights[i]; */
 		}
@@ -710,7 +710,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie));
 
 		length=to_copy.length;
-		trees=new int32_t[length];
+		trees=SG_MALLOCX(int32_t, length);
 		for (int32_t i=0; i<length; i++)
 			trees[i]=to_copy.trees[i];
 
@@ -728,7 +728,7 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 	if (to_copy.position_weights!=NULL)
 	{
 		position_weights=to_copy.position_weights ;
-		/*position_weights = new float64_t[to_copy.length] ;
+		/*position_weights = SG_MALLOCX(float64_t, to_copy.length);
 		  for (int32_t i=0; i<to_copy.length; i++)
 		  position_weights[i]=to_copy.position_weights[i] ;*/
 	}
@@ -744,7 +744,7 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 	length = to_copy.length ;
 	if (trees)
 		SG_FREE(trees);
-	trees=new int32_t[length] ;		
+	trees=SG_MALLOCX(int32_t, length);		
 	for (int32_t i=0; i<length; i++)
 		trees[i]=to_copy.trees[i] ;
 
@@ -1062,7 +1062,7 @@ template <class Trie>
 void CTrie<Trie>::display_node(int32_t node) const
 {
 #ifdef TRIE_CHECK_EVERYTHING
-	int32_t * trace=new int32_t[2*degree] ;
+	int32_t * trace=SG_MALLOCX(int32_t, 2*degree);
 	int32_t trace_len=-1 ;
 	bool found = false ;
 	int32_t tree=-1 ;
@@ -1156,7 +1156,7 @@ template <class Trie> void CTrie<Trie>::create(
 {
 	destroy();
 
-	trees=new int32_t[len] ;		
+	trees=SG_MALLOCX(int32_t, len);		
 	TreeMemPtr=0 ;
 	for (int32_t i=0; i<len; i++)
 		trees[i]=get_node(degree==1);
@@ -1211,7 +1211,7 @@ float64_t CTrie<Trie>::compute_abs_weights_tree(int32_t tree, int32_t depth)
 	template <class Trie>
 float64_t *CTrie<Trie>::compute_abs_weights(int32_t &len)
 {
-	float64_t * sum=new float64_t[length*4] ;
+	float64_t * sum=SG_MALLOCX(float64_t, length*4);
 	for (int32_t i=0; i<length*4; i++)
 		sum[i]=0 ;
 	len=length ;
@@ -1946,7 +1946,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 	{
 		/*if (!position_mask)
 		  {		
-		  position_mask = new bool[len] ;
+		  position_mask = SG_MALLOCX(bool, len);
 		  for (int32_t i=0; i<len; i++)
 		  {
 		  position_mask[i]=false ;

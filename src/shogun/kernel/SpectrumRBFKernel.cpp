@@ -51,7 +51,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int
 
 	target_letter_0=-1 ;
 
-	AA_matrix=new float64_t[128*128];
+	AA_matrix=SG_MALLOCX(float64_t, 128*128);
 	
 
 	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
@@ -74,7 +74,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel(
 {
 	target_letter_0=-1 ;
 
-	AA_matrix=new float64_t[128*128];
+	AA_matrix=SG_MALLOCX(float64_t, 128*128);
 	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	init(l, r);
@@ -264,13 +264,13 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	fin.close();
 
 	nof_sequences = seqs.size();
-	sequences = new SGString<char>[nof_sequences];
+	sequences = SG_MALLOCX(SGString<char>, nof_sequences);
 
 	int max_len = 0;
 	for (int i=0; i < nof_sequences; ++i)
 	{
 		int len = seqs[i].length();
-		sequences[i].string = new char[len+1];
+		sequences[i].string = SG_MALLOCX(char, len+1);
 		sequences[i].length = len;
 		strcpy(sequences[i].string, seqs[i].c_str());
 

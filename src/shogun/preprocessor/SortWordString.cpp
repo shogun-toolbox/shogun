@@ -79,7 +79,7 @@ bool CSortWordString::apply_to_string_features(CFeatures* f)
 /// apply preproc on single feature vector
 uint16_t* CSortWordString::apply_to_string(uint16_t* f, int32_t& len)
 {
-	uint16_t* vec=new uint16_t[len];
+	uint16_t* vec=SG_MALLOCX(uint16_t, len);
 	int32_t i=0;
 
 	for (i=0; i<len; i++)

@@ -245,10 +245,10 @@ float64_t CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 	float64_t alpha=0;
 	float64_t sgrad=0;
 
-	float64_t* A=new float64_t[num_feat+num_vec];
-	float64_t* B=new float64_t[num_feat+num_vec];
-	float64_t* C=new float64_t[num_feat+num_vec];
-	float64_t* D=new float64_t[num_feat+num_vec];
+	float64_t* A=SG_MALLOCX(float64_t, num_feat+num_vec);
+	float64_t* B=SG_MALLOCX(float64_t, num_feat+num_vec);
+	float64_t* C=SG_MALLOCX(float64_t, num_feat+num_vec);
+	float64_t* D=SG_MALLOCX(float64_t, num_feat+num_vec);
 
 	for (int32_t i=0; i<num_feat+num_vec; i++)
 	{
@@ -436,7 +436,7 @@ void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 {
 	// alloc normal and bias inited with 0
 	SG_FREE(w);
-	w=new float64_t[num_feat];
+	w=SG_MALLOCX(float64_t, num_feat);
 	w_dim=num_feat;
 	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0;
@@ -445,54 +445,54 @@ void CSubGradientLPM::init(int32_t num_vec, int32_t num_feat)
 	num_it_noimprovement=0;
 	grad_b=0;
 
-	w_pos=new int32_t[num_feat];
+	w_pos=SG_MALLOCX(int32_t, num_feat);
 	memset(w_pos,0,sizeof(int32_t)*num_feat);
 
-	w_zero=new int32_t[num_feat];
+	w_zero=SG_MALLOCX(int32_t, num_feat);
 	memset(w_zero,0,sizeof(int32_t)*num_feat);
 
-	w_neg=new int32_t[num_feat];
+	w_neg=SG_MALLOCX(int32_t, num_feat);
 	memset(w_neg,0,sizeof(int32_t)*num_feat);
 
-	grad_w=new float64_t[num_feat+1];
+	grad_w=SG_MALLOCX(float64_t, num_feat+1);
 	memset(grad_w,0,sizeof(float64_t)*(num_feat+1));
 
-	sum_CXy_active=new float64_t[num_feat];
+	sum_CXy_active=SG_MALLOCX(float64_t, num_feat);
 	memset(sum_CXy_active,0,sizeof(float64_t)*num_feat);
 
 	sum_Cy_active=0;
 
-	proj=new float64_t[num_vec];
+	proj=SG_MALLOCX(float64_t, num_vec);
 	memset(proj,0,sizeof(float64_t)*num_vec);
 
-	tmp_proj=new float64_t[num_vec];
+	tmp_proj=SG_MALLOCX(float64_t, num_vec);
 	memset(proj,0,sizeof(float64_t)*num_vec);
 
-	tmp_proj_idx=new int32_t[num_vec];
+	tmp_proj_idx=SG_MALLOCX(int32_t, num_vec);
 	memset(tmp_proj_idx,0,sizeof(int32_t)*num_vec);
 
-	grad_proj=new float64_t[num_vec];
+	grad_proj=SG_MALLOCX(float64_t, num_vec);
 	memset(grad_proj,0,sizeof(float64_t)*num_vec);
 
-	hinge_point=new float64_t[num_vec+num_feat];
+	hinge_point=SG_MALLOCX(float64_t, num_vec+num_feat);
 	memset(hinge_point,0,sizeof(float64_t)*(num_vec+num_feat));
 
-	hinge_idx=new int32_t[num_vec+num_feat];
+	hinge_idx=SG_MALLOCX(int32_t, num_vec+num_feat);
 	memset(hinge_idx,0,sizeof(int32_t)*(num_vec+num_feat));
 
-	active=new uint8_t[num_vec];
+	active=SG_MALLOCX(uint8_t, num_vec);
 	memset(active,0,sizeof(uint8_t)*num_vec);
 
-	old_active=new uint8_t[num_vec];
+	old_active=SG_MALLOCX(uint8_t, num_vec);
 	memset(old_active,0,sizeof(uint8_t)*num_vec);
 
-	idx_bound=new int32_t[num_vec];
+	idx_bound=SG_MALLOCX(int32_t, num_vec);
 	memset(idx_bound,0,sizeof(int32_t)*num_vec);
 
-	idx_active=new int32_t[num_vec];
+	idx_active=SG_MALLOCX(int32_t, num_vec);
 	memset(idx_active,0,sizeof(int32_t)*num_vec);
 
-	beta=new float64_t[num_feat+1+num_feat+num_vec];
+	beta=SG_MALLOCX(float64_t, num_feat+1+num_feat+num_vec);
 	memset(beta,0,sizeof(float64_t)*num_feat+1+num_feat+num_vec);
 
 	solver=new CCplex();

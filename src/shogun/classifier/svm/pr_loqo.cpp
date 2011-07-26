@@ -63,7 +63,7 @@ bool choldc(float64_t* a, int32_t n, float64_t* p)
 	if (n<=0)
 		return false;
 
-	float64_t* a2=new float64_t[n*n];
+	float64_t* a2=SG_MALLOCX(float64_t, n*n);
 
 	for (int32_t i=0; i<n; i++)
 	{

@@ -324,7 +324,7 @@ TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
     if (ndim <= 0)
       SWIG_fail;
 
-    temp_dims = new int32_t[ndim];
+    temp_dims = SG_MALLOCX(int32_t, ndim);
 
     npy_intp* py_dims = PyArray_DIMS(array);
 
@@ -395,7 +395,7 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
         int32_t size=PyList_Size(list);
-        shogun::SGString<type>* strings=new shogun::SGString<type>[size];
+        shogun::SGString<type>* strings=SG_MALLOCX(shogun::SGString<type>, size);
 
         int32_t max_len=0;
         for (int32_t i=0; i<size; i++)
@@ -414,7 +414,7 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
 
                     if (len>0)
                     {
-                        strings[i].string=new type[len];
+                        strings[i].string=SG_MALLOCX(type, len);
                         memcpy(strings[i].string, str, len);
                     }
                 }
@@ -446,7 +446,7 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
 
                     if (len>0)
                     {
-                        strings[i].string=new type[len];
+                        strings[i].string=SG_MALLOCX(type, len);
                         memcpy(strings[i].string, str, len*sizeof(type));
                     }
 
@@ -656,7 +656,7 @@ TYPEMAP_STRINGFEATURES_OUT(PyObject,      NPY_OBJECT)
         if (len_indices!=len_data)
             SWIG_fail;
 
-        shogun::SGSparseVector<type>* sfm = new shogun::SGSparseVector<type>[num_vec];
+        shogun::SGSparseVector<type>* sfm = SG_MALLOCX(shogun::SGSparseVector<type>, num_vec);
 
         for (int32_t i=0; i<num_vec; i++)
         {
@@ -671,7 +671,7 @@ TYPEMAP_STRINGFEATURES_OUT(PyObject,      NPY_OBJECT)
             
             if (num>0)
             {
-                shogun::SGSparseVectorEntry<type>* features=new shogun::SGSparseVectorEntry<type>[num];
+                shogun::SGSparseVectorEntry<type>* features=SG_MALLOCX(shogun::SGSparseVectorEntry<type>, num);
 
                 for (int32_t j=0; j<num; j++)
                 {

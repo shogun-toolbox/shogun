@@ -67,8 +67,8 @@ bool CPluginEstimate::train(CFeatures* data)
 	SG_REF(pos_model);
 	SG_REF(neg_model);
 
-	int32_t* pos_indizes=new int32_t[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
-	int32_t* neg_indizes=new int32_t[((CStringFeatures<uint16_t>*) features)->get_num_vectors()];
+	int32_t* pos_indizes=SG_MALLOCX(int32_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
+	int32_t* neg_indizes=SG_MALLOCX(int32_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
 
 	ASSERT(labels->get_num_labels()==features->get_num_vectors());
 

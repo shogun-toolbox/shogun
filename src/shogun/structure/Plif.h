@@ -290,9 +290,9 @@ class CPlif: public CPlifBase
 				SG_FREE(cum_derivatives);
 
 				SG_DEBUG( "set_plif len=%i\n", p_len);
-				limits=new float64_t[len];
-				penalties=new float64_t[len];
-				cum_derivatives=new float64_t[len];
+				limits=SG_MALLOCX(float64_t, len);
+				penalties=SG_MALLOCX(float64_t, len);
+				cum_derivatives=SG_MALLOCX(float64_t, len);
 			}
 
 			for (int32_t i=0; i<len; i++)

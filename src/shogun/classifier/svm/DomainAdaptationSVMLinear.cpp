@@ -142,7 +142,7 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
     presvm->get_w(tmp_w, w_dim);
 
     //copy vector
-    float64_t* tmp_w_copy = new float64_t[w_dim];
+    float64_t* tmp_w_copy = SG_MALLOCX(float64_t, w_dim);
     std::copy(tmp_w, tmp_w + w_dim, tmp_w_copy);
 
 	for (int32_t i=0; i!=w_dim; i++)

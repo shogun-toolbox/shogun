@@ -45,11 +45,11 @@ bool CLPM::train(CFeatures* data)
 
 	ASSERT(num_vec==num_train_labels);
 	SG_FREE(w);
-	w=new float64_t[num_feat];
+	w=SG_MALLOCX(float64_t, num_feat);
 	w_dim=num_feat;
 
 	int32_t num_params=1+2*num_feat+num_vec; //b,w+,w-,xi
-	float64_t* params=new float64_t[num_params];
+	float64_t* params=SG_MALLOCX(float64_t, num_params);
 	memset(params,0,sizeof(float64_t)*num_params);
 
 	CCplex solver;

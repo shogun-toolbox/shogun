@@ -33,7 +33,7 @@ void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 
 	m_num_plifs=num_plifs;
 	m_num_limits=num_limits;
-	m_PEN = new CPlif*[num_plifs] ;
+	m_PEN = SG_MALLOCX(CPlif*, num_plifs);
 	for (int32_t i=0; i<num_plifs; i++)	
 		m_PEN[i]=new CPlif(num_limits) ;
 }
@@ -109,7 +109,7 @@ void CPlifMatrix::set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t 
 				m_num_plifs, m_num_limits, num_plifs, num_limits);
 	}
 
-	float64_t* lim = new float64_t[m_num_limits];
+	float64_t* lim = SG_MALLOCX(float64_t, m_num_limits);
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 
@@ -130,7 +130,7 @@ void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, in
 				m_num_plifs, m_num_limits, num_plifs, num_limits);
 	}
 
-	float64_t* pen = new float64_t[m_num_limits];
+	float64_t* pen = SG_MALLOCX(float64_t, m_num_limits);
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 
@@ -192,7 +192,7 @@ bool CPlifMatrix::compute_plif_matrix(
 	SG_FREE(m_plif_matrix);
 
 	m_num_states = num_states;
-	m_plif_matrix = new CPlifBase*[num_states*num_states] ;
+	m_plif_matrix = SG_MALLOCX(CPlifBase*, num_states*num_states);
 
 	CArray3<float64_t> penalties(penalties_array, num_states, num_states, Dim[2], true, true) ;
 
@@ -253,7 +253,7 @@ bool  CPlifMatrix::compute_signal_plifs(
 	SG_FREE(m_state_signals);
 	m_feat_dim3 = feat_dim3;
 
-	CPlifBase **PEN_state_signal = new CPlifBase*[feat_dim3*num_states] ;
+	CPlifBase **PEN_state_signal = SG_MALLOCX(CPlifBase*, feat_dim3*num_states);
 	for (int32_t i=0; i<num_states*feat_dim3; i++)
 	{
 		int32_t id = (int32_t) state_signals[i]-1 ;

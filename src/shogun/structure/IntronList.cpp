@@ -31,10 +31,10 @@ CIntronList::~CIntronList()
 void CIntronList::init_list(int32_t* all_pos, int32_t len)
 {
 	m_length = len;
-	m_all_pos = new int32_t[len];
+	m_all_pos = SG_MALLOCX(int32_t, len);
 	memcpy(m_all_pos, all_pos, len*sizeof(int32_t));
-	m_intron_list = new int32_t*[len];
-	m_quality_list = new int32_t*[len];
+	m_intron_list = SG_MALLOCX(int32_t*, len);
+	m_quality_list = SG_MALLOCX(int32_t*, len);
 	if (m_intron_list==NULL||m_quality_list==NULL)
 		SG_ERROR("IntronList: Out of mem 1");
 	//initialize all elements with an array of length one

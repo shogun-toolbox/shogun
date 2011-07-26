@@ -88,9 +88,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	SG_FREE(plo_lhs);
 	plo_lhs=NULL ;
 
-	sqrtdiag_lhs= new float64_t[l->get_num_vectors()];
-	ld_mean_lhs = new float64_t[l->get_num_vectors()];
-	plo_lhs     = new float64_t[l->get_num_vectors()];
+	sqrtdiag_lhs= SG_MALLOCX(float64_t, l->get_num_vectors());
+	ld_mean_lhs = SG_MALLOCX(float64_t, l->get_num_vectors());
+	plo_lhs     = SG_MALLOCX(float64_t, l->get_num_vectors());
 
 	for (i=0; i<l->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
@@ -103,12 +103,12 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	}
 	else
 	{
-		sqrtdiag_rhs=new float64_t[r->get_num_vectors()];
+		sqrtdiag_rhs=SG_MALLOCX(float64_t, r->get_num_vectors());
 		for (i=0; i<r->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 
-		ld_mean_rhs=new float64_t[r->get_num_vectors()];
-		plo_rhs=new float64_t[r->get_num_vectors()];
+		ld_mean_rhs=SG_MALLOCX(float64_t, r->get_num_vectors());
+		plo_rhs=SG_MALLOCX(float64_t, r->get_num_vectors());
 	}
 
 	float64_t* l_plo_lhs=plo_lhs;
@@ -141,9 +141,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		num_params2++;
 
 		SG_FREE(mean);
-		mean=new float64_t[num_params2];
+		mean=SG_MALLOCX(float64_t, num_params2);
 		SG_FREE(variance);
-		variance=new float64_t[num_params2];
+		variance=SG_MALLOCX(float64_t, num_params2);
 
 		for (i=0; i<num_params2; i++)
 		{

@@ -42,7 +42,7 @@
 		return 0;
 	}
 	
-	array = new SGTYPE[len];
+	array = SG_MALLOCX(SGTYPE, len);
 	for ( i = 0; i < len; i++) {
 		lua_rawgeti(L, $input, i + 1);
 		if (lua_isnumber(L, -1)){
@@ -115,7 +115,7 @@ TYPEMAP_SGVECTOR(float64_t)
 		return 0;
 	}
 	
-	array = new char[len];
+	array = SG_MALLOCX(char, len);
 	for (i = 0; i < len; i++) {
 		lua_rawgeti(L, $input, i + 1);
 		if (lua_isstring(L, -1)){
@@ -202,7 +202,7 @@ TYPEMAP_SGVECTOR(float64_t)
 	}
 	lua_pop(L, 1);
 
-	array = new SGTYPE[rows * cols];
+	array = SG_MALLOCX(SGTYPE, rows * cols);
 	for (i = 0; i < rows; i++) {
 		lua_rawgeti(L, $input, i + 1);
 		if (!lua_istable(L, -1)) {
@@ -291,7 +291,7 @@ TYPEMAP_SGMATRIX(float64_t)
 	}
 	
 	size = lua_objlen(L, $input);
-	shogun::SGString<SGTYPE>* strings=new shogun::SGString<SGTYPE>[size];
+	shogun::SGString<SGTYPE>* strings=SG_MALLOCX(shogun::SGString<SGTYPE>, size);
 
 	for (i = 0; i < size; i++) {
 		lua_rawgeti(L, $input, i + 1);
@@ -304,7 +304,7 @@ TYPEMAP_SGMATRIX(float64_t)
 			strings[i].string = NULL;
 			
 			if (len > 0) {			
-				strings[i].string = new SGTYPE[len];
+				strings[i].string = SG_MALLOCX(SGTYPE, len);
 				memcpy(strings[i].string, str, len);
 			}
 		}
@@ -320,7 +320,7 @@ TYPEMAP_SGMATRIX(float64_t)
           strings[i].string=NULL;
 			
 			if (len > 0) {
-				strings[i].string = new SGTYPE[len];
+				strings[i].string = SG_MALLOCX(SGTYPE, len);
 				memcpy(strings[i].string, arr, len * sizeof(SGTYPE));
 			}
 			
@@ -347,7 +347,7 @@ TYPEMAP_SGMATRIX(float64_t)
 			lua_rawseti(L, -2, i + 1);
 		}
 		else {
-			SGTYPE* data = new SGTYPE[str[i].length];
+			SGTYPE* data = SG_MALLOCX(SGTYPE, str[i].length);
 			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
 			
 			lua_newtable(L);

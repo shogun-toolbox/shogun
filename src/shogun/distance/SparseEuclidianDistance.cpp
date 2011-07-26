@@ -41,14 +41,14 @@ bool CSparseEuclidianDistance::init(CFeatures* l, CFeatures* r)
 
 	cleanup();
 
-	sq_lhs=new float64_t[lhs->get_num_vectors()];
+	sq_lhs=SG_MALLOCX(float64_t, lhs->get_num_vectors());
 	sq_lhs=((CSparseFeatures<float64_t>*) lhs)->compute_squared(sq_lhs);
 
 	if (lhs==rhs)
 		sq_rhs=sq_lhs;
 	else
 	{
-		sq_rhs=new float64_t[rhs->get_num_vectors()];
+		sq_rhs=SG_MALLOCX(float64_t, rhs->get_num_vectors());
 		sq_rhs=((CSparseFeatures<float64_t>*) rhs)->compute_squared(sq_rhs);
 	}
 

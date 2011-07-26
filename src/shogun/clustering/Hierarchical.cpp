@@ -67,19 +67,19 @@ bool CHierarchical::train(CFeatures* data)
 	const int32_t num_pairs=num*(num-1)/2;
 
 	SG_FREE(merge_distance);
-	merge_distance=new float64_t[num];
+	merge_distance=SG_MALLOCX(float64_t, num);
 	CMath::fill_vector(merge_distance, num, -1.0);
 
 	SG_FREE(assignment);
-	assignment=new int32_t[num];
+	assignment=SG_MALLOCX(int32_t, num);
 	CMath::range_fill_vector(assignment, num);
 
 	SG_FREE(pairs);
-	pairs=new int32_t[2*num];
+	pairs=SG_MALLOCX(int32_t, 2*num);
 	CMath::fill_vector(pairs, 2*num, -1);
 
-	pair* index=new pair[num_pairs];
-	float64_t* distances=new float64_t[num_pairs];
+	pair* index=SG_MALLOCX(pair, num_pairs);
+	float64_t* distances=SG_MALLOCX(float64_t, num_pairs);
 
 	int32_t offs=0;
 	for (int32_t i=0; i<num; i++)

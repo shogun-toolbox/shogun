@@ -42,7 +42,7 @@ void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
 																					\
 	if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
 		SG_ERROR("Failed to read vector length\n");									\
-	vec=new sg_type[len];															\
+	vec=SG_MALLOCX(sg_type, len);															\
 	if (fread(vec, sizeof(sg_type), len, file)!=(size_t) len)						\
 		SG_ERROR("Failed to read Matrix\n");										\
 }
@@ -68,7 +68,7 @@ void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		
 	if (fread(&num_feat, sizeof(int32_t), 1, file)!=1 ||							\
 			fread(&num_vec, sizeof(int32_t), 1, file)!=1)							\
 		SG_ERROR("Failed to read Matrix dimensions\n");								\
-	matrix=new sg_type[int64_t(num_feat)*num_vec];									\
+	matrix=SG_MALLOCX(sg_type, int64_t(num_feat)*num_vec);									\
 	if (fread(matrix, sizeof(sg_type)*num_feat, num_vec, file)!=(size_t) num_vec)	\
 		SG_ERROR("Failed to read Matrix\n");										\
 }
@@ -104,14 +104,14 @@ void CBinaryFile::fname(sg_type *& array, int32_t *& dims,int32_t & num_dims)\
 	if (fread(&num_dims,sizeof(int32_t),1,file) != 1)						\
 		SG_ERROR("Failed to read number of dimensions");					\
 																			\
-	dims = new int32_t[num_dims];											\
+	dims = SG_MALLOCX(int32_t, num_dims);											\
 	if (fread(dims,sizeof(int32_t),num_dims,file) != (size_t)num_dims)		\
 		SG_ERROR("Failed to read sizes of dimensions!");					\
 																			\
 	for (int32_t i = 0;i < num_dims;i++)									\
 		total *= dims[i];													\
 																			\
-	array = new sg_type[total];												\
+	array = SG_MALLOCX(sg_type, total);												\
 	if (fread(array,sizeof(sg_type),total,file) != (size_t)total)			\
 		SG_ERROR("Failed to read array data!");								\
 }
@@ -138,7 +138,7 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 	if (fread(&num_vec, sizeof(int32_t), 1, file)!=1)									\
 		SG_ERROR("Failed to read number of vectors\n");									\
 																						\
-	matrix=new SGSparseVector<sg_type>[num_vec];												\
+	matrix=SG_MALLOCX(SGSparseVector<sg_type>, num_vec);												\
 																						\
 	for (int32_t i=0; i<num_vec; i++)													\
 	{																					\
@@ -146,7 +146,7 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
 			SG_ERROR("Failed to read sparse vector length of vector idx=%d\n", i);		\
 		matrix[i].num_feat_entries=len;													\
-		SGSparseVectorEntry<sg_type>* vec = new SGSparseVectorEntry<sg_type>[len];					\
+		SGSparseVectorEntry<sg_type>* vec = SG_MALLOCX(SGSparseVectorEntry<sg_type>, len);					\
 		if (fread(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len)		\
 			SG_ERROR("Failed to read sparse vector %d\n", i);							\
 		matrix[i].features=vec;															\
@@ -185,7 +185,7 @@ void CBinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& 
 	if (fread(&num_str, sizeof(int32_t), 1, file)!=1)											\
 		SG_ERROR("Failed to read number of strings\n");											\
 																								\
-	strings=new SGString<sg_type>[num_str];														\
+	strings=SG_MALLOCX(SGString<sg_type>, num_str);														\
 																								\
 	for (int32_t i=0; i<num_str; i++)															\
 	{																							\
@@ -193,7 +193,7 @@ void CBinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& 
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
 			SG_ERROR("Failed to read string length of string with idx=%d\n", i);				\
 		strings[i].length=len;																	\
-		sg_type* str = new sg_type[len];														\
+		sg_type* str = SG_MALLOCX(sg_type, len);														\
 		if (fread(str, sizeof(sg_type), len, file)!= (size_t) len)								\
 			SG_ERROR("Failed to read string %d\n", i);											\
 		strings[i].string=str;																	\

@@ -39,7 +39,7 @@ width_computation_type(width_computation_type2), width(width2),
 {
 	if(num_cells<=0)
 		SG_ERROR("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
-	weights=new float64_t[num_cells];
+	weights=SG_MALLOCX(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
 		for (int32_t i=0; i<num_cells; ++i)
@@ -92,7 +92,7 @@ width_computation_type(width_computation_type2), width(width2),
 {
 	if(num_cells<=0)
 		SG_ERROR("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive");
-	weights=new float64_t[num_cells];
+	weights=SG_MALLOCX(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
 		for (int32_t i=0; i<num_cells; ++i)
@@ -154,7 +154,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			{
 				numind= ((CSimpleFeatures<float64_t>*) lhs)->get_num_vectors();
 			}
-			float64_t* featindices = new float64_t[numind];
+			float64_t* featindices = SG_MALLOCX(float64_t, numind);
 
 			if (num_randfeats_forwidthcomputation >0)
 			{
@@ -253,7 +253,7 @@ void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
 		SG_ERROR("CPyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive");
 	if(weights)
 		SG_FREE(weights);
-	weights=new float64_t[num_cells];
+	weights=SG_MALLOCX(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
 		for (int32_t i=0; i<num_cells; ++i)

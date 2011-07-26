@@ -67,7 +67,7 @@ void CFile::get_vector(bool*& vector, int32_t& len)
 	get_vector(int_vector, len);
 
 	ASSERT(len>0);
-	vector= new bool[len];
+	vector= SG_MALLOCX(bool, len);
 
 	for (int32_t i=0; i<len; i++)
 		vector[i]= (int_vector[i]!=0);
@@ -77,7 +77,7 @@ void CFile::get_vector(bool*& vector, int32_t& len)
 
 void CFile::set_vector(const bool* vector, int32_t len)
 {
-	int32_t* int_vector = new int32_t[len];
+	int32_t* int_vector = SG_MALLOCX(int32_t, len);
 	for (int32_t i=0;i<len;i++)
 	{
 		if (vector[i])
@@ -95,7 +95,7 @@ void CFile::get_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
 	get_matrix(byte_matrix,num_feat,num_vec);
 
 	ASSERT(num_feat > 0 && num_vec > 0)
-	matrix = new bool[num_feat*num_vec];
+	matrix = SG_MALLOCX(bool, num_feat*num_vec);
 
 	for(int32_t i = 0;i < num_vec;i++)
 	{
@@ -108,7 +108,7 @@ void CFile::get_matrix(bool*& matrix, int32_t& num_feat, int32_t& num_vec)
 
 void CFile::set_matrix(const bool* matrix, int32_t num_feat, int32_t num_vec)
 {
-	uint8_t * byte_matrix = new uint8_t[num_feat*num_vec];
+	uint8_t * byte_matrix = SG_MALLOCX(uint8_t, num_feat*num_vec);
 	for(int32_t i = 0;i < num_vec;i++)
 	{
 		for(int32_t j = 0;j < num_feat;j++)
@@ -128,12 +128,12 @@ void CFile::get_string_list(
 	get_int8_string_list(strs, num_str, max_string_len);
 
 	ASSERT(num_str>0 && max_string_len>0);
-	strings=new SGString<bool>[num_str];
+	strings=SG_MALLOCX(SGString<bool>, num_str);
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
 		strings[i].length = strs[i].length;
-                strings[i].string = new bool[strs[i].length];
+                strings[i].string = SG_MALLOCX(bool, strs[i].length);
 		for(int32_t j = 0;j < strs[i].length;j++)
 		strings[i].string[j] = strs[i].string[j] != 0 ? 1 : 0;
 	}
@@ -145,12 +145,12 @@ void CFile::get_string_list(
 
 void CFile::set_string_list(const SGString<bool>* strings, int32_t num_str)
 {
-	SGString<int8_t> * strs = new SGString<int8_t>[num_str];
+	SGString<int8_t> * strs = SG_MALLOCX(SGString<int8_t>, num_str);
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
 		strs[i].length = strings[i].length;
-		strs[i].string = new int8_t[strings[i].length];
+		strs[i].string = SG_MALLOCX(int8_t, strings[i].length);
 		for(int32_t j = 0;j < strings[i].length;j++)
 		strs[i].string[j] = strings[i].string[j] != 0 ? 1 : 0;
 	}

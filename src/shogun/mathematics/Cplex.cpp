@@ -97,14 +97,14 @@ bool CCplex::setup_subgradientlpm_QP(
 	ASSERT(num_dim>0);
 
 	// setup LP part
-	float64_t* lb=new float64_t[num_variables];
-	float64_t* ub=new float64_t[num_variables];
-	float64_t* obj=new float64_t[num_variables];
-	char* sense = new char[num_dim];
-	int* cmatbeg=new int[num_variables];
-	int* cmatcnt=new int[num_variables];
-	int* cmatind=new int[cmatsize];
-	double* cmatval=new double[cmatsize];
+	float64_t* lb=SG_MALLOCX(float64_t, num_variables);
+	float64_t* ub=SG_MALLOCX(float64_t, num_variables);
+	float64_t* obj=SG_MALLOCX(float64_t, num_variables);
+	char* sense = SG_MALLOCX(char, num_dim);
+	int* cmatbeg=SG_MALLOCX(int, num_variables);
+	int* cmatcnt=SG_MALLOCX(int, num_variables);
+	int* cmatind=SG_MALLOCX(int, cmatsize);
+	double* cmatval=SG_MALLOCX(double, cmatsize);
 
 	for (int32_t i=0; i<num_variables; i++)
 	{
@@ -214,10 +214,10 @@ bool CCplex::setup_subgradientlpm_QP(
 	SG_FREE(cmatval);
 
 	//// setup QP part (diagonal matrix 1 for v, 0 for x...)
-	int* qmatbeg=new int[num_variables];
-	int* qmatcnt=new int[num_variables];
-	int* qmatind=new int[num_variables];
-	double* qmatval=new double[num_variables];
+	int* qmatbeg=SG_MALLOCX(int, num_variables);
+	int* qmatcnt=SG_MALLOCX(int, num_variables);
+	int* qmatind=SG_MALLOCX(int, num_variables);
+	double* qmatval=SG_MALLOCX(double, num_variables);
 
 	float64_t diag=2.0;
 
@@ -265,9 +265,9 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 	if (status)
 		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
 
-	double* obj=new double[num_cols];
-	double* lb=new double[num_cols];
-	double* ub=new double[num_cols];
+	double* obj=SG_MALLOCX(double, num_cols);
+	double* lb=SG_MALLOCX(double, num_cols);
+	double* ub=SG_MALLOCX(double, num_cols);
 
 	for (int32_t i=0; i<num_cols; i++)
 	{
@@ -332,18 +332,18 @@ bool CCplex::setup_lpm(
 	int32_t num_dims=1+2*num_feat+num_vec;
 	int32_t num_constraints=num_vec; 
 
-	float64_t* lb=new float64_t[num_dims];
-	float64_t* ub=new float64_t[num_dims];
-	float64_t* f=new float64_t[num_dims];
-	float64_t* b=new float64_t[num_dims];
+	float64_t* lb=SG_MALLOCX(float64_t, num_dims);
+	float64_t* ub=SG_MALLOCX(float64_t, num_dims);
+	float64_t* f=SG_MALLOCX(float64_t, num_dims);
+	float64_t* b=SG_MALLOCX(float64_t, num_dims);
 
 	//number of non zero entries in A (b,w+,w-,xi)
 	int64_t amatsize=((int64_t) num_vec)+nnz+nnz+num_vec; 
 
-	int* amatbeg=new int[num_dims]; /* for calling external lib */
-	int* amatcnt=new int[num_dims]; /* for calling external lib */
-	int* amatind=new int[amatsize]; /* for calling external lib */
-	double* amatval= new double[amatsize]; /* for calling external lib */
+	int* amatbeg=SG_MALLOCX(int, num_dims); /* for calling external lib */
+	int* amatcnt=SG_MALLOCX(int, num_dims); /* for calling external lib */
+	int* amatind=SG_MALLOCX(int, amatsize); /* for calling external lib */
+	double* amatval= SG_MALLOCX(double, amatsize); /* for calling external lib */
 
 	for (int32_t i=0; i<num_dims; i++)
 	{
@@ -378,7 +378,7 @@ bool CCplex::setup_lpm(
 	for (int32_t i=0; i<num_constraints; i++)
 		b[i]=-1;
 
-	char* sense=new char[num_constraints];
+	char* sense=SG_MALLOCX(char, num_constraints);
 	memset(sense,'L',sizeof(char)*num_constraints);
 
 	//construct A
@@ -504,9 +504,9 @@ bool CCplex::dense_to_cplex_sparse(
 	float64_t* H, int32_t rows, int32_t cols, int* &qmatbeg, int* &qmatcnt,
 	int* &qmatind, double* &qmatval)
 {
-	qmatbeg=new int[cols];
-	qmatcnt=new int[cols];
-	qmatind=new int[cols*rows];
+	qmatbeg=SG_MALLOCX(int, cols);
+	qmatcnt=SG_MALLOCX(int, cols);
+	qmatind=SG_MALLOCX(int, cols*rows);
 	qmatval = H;
 
 	if (!(qmatbeg && qmatcnt && qmatind))
@@ -547,9 +547,9 @@ bool CCplex::setup_lp(
 		rows=1;
 		float64_t dummy=0;
 		rhs=&dummy;
-		sense=new char[rows];
+		sense=SG_MALLOCX(char, rows);
 		memset(sense,'L',sizeof(char)*rows);
-		constraints_mat=new float64_t[cols];
+		constraints_mat=SG_MALLOCX(float64_t, cols);
 		memset(constraints_mat, 0, sizeof(float64_t)*cols);
 
 		result=dense_to_cplex_sparse(constraints_mat, 0, cols, qmatbeg, qmatcnt, qmatind, qmatval);
@@ -560,7 +560,7 @@ bool CCplex::setup_lp(
 	}
 	else
 	{
-		sense=new char[rows];
+		sense=SG_MALLOCX(char, rows);
 		memset(sense,'L',sizeof(char)*rows);
 		result=dense_to_cplex_sparse(constraints_mat, rows, cols, qmatbeg, qmatcnt, qmatind, qmatval);
 		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 

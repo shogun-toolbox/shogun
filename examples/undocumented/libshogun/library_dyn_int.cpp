@@ -32,8 +32,8 @@ void print_error(FILE* target, const char* str)
 
 void gen_ints(uint256_t* &a, uint32_t* &b, uint32_t len)
 {
-	a=new uint256_t[len];
-	b=new uint32_t[len];
+	a=SG_MALLOC(uint256_t, len);
+	b=SG_MALLOC(uint32_t, len);
 
 	CMath::init_random(17);
 

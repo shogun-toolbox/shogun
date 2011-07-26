@@ -38,7 +38,7 @@ void ssl_train(struct data *Data,
 	// initialize 
 	initialize(Weights,Data->n,0.0);
 	initialize(Outputs,Data->m,0.0);
-	vector_int    *Subset  = new vector_int[1];
+	vector_int    *Subset  = SG_MALLOCX(vector_int, 1);
 	initialize(Subset,Data->m);
 	// call the right algorithm
 	int32_t optimality = 0;
@@ -93,14 +93,14 @@ int32_t CGLS(
 	float64_t *beta = Weights->vec;
 	float64_t *o  = Outputs->vec; 
 	// initialize z 
-	float64_t *z = new float64_t[active];
-	float64_t *q = new float64_t[active];
+	float64_t *z = SG_MALLOCX(float64_t, active);
+	float64_t *q = SG_MALLOCX(float64_t, active);
 	int32_t ii=0;
 	for (int32_t i = active ; i-- ;){
 		ii=J[i];      
 		z[i]  = C[ii]*(Y[ii] - o[ii]);
 	}
-	float64_t *r = new float64_t[n];
+	float64_t *r = SG_MALLOCX(float64_t, n);
 	for (int32_t i = n ; i-- ;)
 		r[i] = 0.0;
 	for (register int32_t j=0; j < active; j++)
@@ -108,7 +108,7 @@ int32_t CGLS(
 		features->add_to_dense_vec(z[j], J[j], r, n-1);
 		r[n-1]+=Options->bias*z[j]; //bias (modelled as last dim)
 	}
-	float64_t *p = new float64_t[n];   
+	float64_t *p = SG_MALLOCX(float64_t, n);   
 	float64_t omega1 = 0.0;
 	for (int32_t i = n ; i-- ;)
 	{
@@ -210,8 +210,8 @@ int32_t L2_SVM_MFN(
 	float64_t F_old = 0.0;
 	float64_t F = 0.0;
 	float64_t diff=0.0;
-	vector_int *ActiveSubset = new vector_int[1];
-	ActiveSubset->vec = new int32_t[m];
+	vector_int *ActiveSubset = SG_MALLOCX(vector_int, 1);
+	ActiveSubset->vec = SG_MALLOCX(int32_t, m);
 	ActiveSubset->d = m;
 	// initialize
 	if(ini==0) {
@@ -243,10 +243,10 @@ int32_t L2_SVM_MFN(
 	int32_t iter=0;
 	int32_t opt=0;
 	int32_t opt2=0;
-	vector_double *Weights_bar = new vector_double[1];
-	vector_double *Outputs_bar = new vector_double[1];
-	float64_t *w_bar = new float64_t[n];
-	float64_t *o_bar = new float64_t[m];
+	vector_double *Weights_bar = SG_MALLOCX(vector_double, 1);
+	vector_double *Outputs_bar = SG_MALLOCX(vector_double, 1);
+	float64_t *w_bar = SG_MALLOCX(float64_t, n);
+	float64_t *o_bar = SG_MALLOCX(float64_t, m);
 	Weights_bar->vec=w_bar;
 	Outputs_bar->vec=o_bar;
 	Weights_bar->d=n;
@@ -388,7 +388,7 @@ float64_t line_search(float64_t *w,
 	}
 	L+=omegaL;
 	R+=omegaR;
-	Delta* deltas=new Delta[l];    
+	Delta* deltas=SG_MALLOCX(Delta, l);    
 	int32_t p=0;
 	for(int32_t i=0;i<l;i++)
 	{ 
@@ -436,8 +436,8 @@ int32_t TSVM_MFN(
 	struct vector_double *Weights, struct vector_double *Outputs)
 {
 	/* Setup labeled-only examples and train L2_SVM_MFN */
-	struct data *Data_Labeled = new data[1];
-	struct vector_double *Outputs_Labeled = new vector_double[1];
+	struct data *Data_Labeled = SG_MALLOCX(data, 1);
+	struct vector_double *Outputs_Labeled = SG_MALLOCX(vector_double, 1);
 	initialize(Outputs_Labeled,Data->l,0.0);
 	SG_SDEBUG("Initializing weights, unknown labels");
 	GetLabeledData(Data_Labeled,Data); /* gets labeled data and sets C=1/l */
@@ -447,8 +447,8 @@ int32_t TSVM_MFN(
 	   positive*/
 	int32_t p=0,q=0;
 	float64_t t=0.0;
-	int32_t *JU = new int32_t[Data->u];
-	float64_t *ou = new float64_t[Data->u];
+	int32_t *JU = SG_MALLOCX(int32_t, Data->u);
+	float64_t *ou = SG_MALLOCX(float64_t, Data->u);
 	float64_t lambda_0 = TSVM_LAMBDA_SMALL;
 	for (int32_t i=0;i<Data->m;i++)
 	{
@@ -528,8 +528,8 @@ int32_t switch_labels(float64_t* Y, float64_t* o, int32_t* JU, int32_t u, int32_
 		if((Y[JU[i]]>0) && (o[JU[i]]<1.0)) npos++;   
 		if((Y[JU[i]]<0) && (-o[JU[i]]<1.0)) nneg++;        
 	}     
-	Delta* positive=new Delta[npos];
-	Delta* negative=new Delta[nneg];  
+	Delta* positive=SG_MALLOCX(Delta, npos);
+	Delta* negative=SG_MALLOCX(Delta, nneg);  
 	int32_t p=0;
 	int32_t n=0;
 	int32_t ii=0;
@@ -570,12 +570,12 @@ int32_t DA_S3VM(
 {
 	float64_t T = DA_INIT_TEMP*Options->lambda_u;
 	int32_t iter1 = 0, iter2 =0;
-	float64_t *p = new float64_t[Data->u];
-	float64_t *q = new float64_t[Data->u];
-	float64_t *g = new float64_t[Data->u];
+	float64_t *p = SG_MALLOCX(float64_t, Data->u);
+	float64_t *q = SG_MALLOCX(float64_t, Data->u);
+	float64_t *g = SG_MALLOCX(float64_t, Data->u);
 	float64_t F,F_min;
-	float64_t *w_min = new float64_t[Data->n];
-	float64_t *o_min = new float64_t[Data->m];
+	float64_t *w_min = SG_MALLOCX(float64_t, Data->n);
+	float64_t *o_min = SG_MALLOCX(float64_t, Data->m);
 	float64_t *w = Weights->vec;
 	float64_t *o = Outputs->vec;
 	float64_t kl_divergence = 1.0;
@@ -584,7 +584,7 @@ int32_t DA_S3VM(
 	for (int32_t i=0;i<Data->u; i++)
 		p[i] = Options->R;
 	/* record which examples are unlabeled */
-	int32_t *JU = new int32_t[Data->u];
+	int32_t *JU = SG_MALLOCX(int32_t, Data->u);
 	int32_t j=0;
 	for(int32_t i=0;i<Data->m;i++)
 	{
@@ -659,16 +659,16 @@ int32_t optimize_w(
 	float64_t lambda = Options->lambda;
 	float64_t epsilon;
 	float64_t *w = Weights->vec;
-	float64_t *o = new float64_t[m+u];
-	float64_t *Y = new float64_t[m+u];
-	float64_t *C = new float64_t[m+u];
-	int32_t *labeled_indices = new int32_t[m];
+	float64_t *o = SG_MALLOCX(float64_t, m+u);
+	float64_t *Y = SG_MALLOCX(float64_t, m+u);
+	float64_t *C = SG_MALLOCX(float64_t, m+u);
+	int32_t *labeled_indices = SG_MALLOCX(int32_t, m);
 	float64_t F_old = 0.0;
 	float64_t F = 0.0;
 	float64_t diff=0.0;
 	float64_t lambda_u_by_u = Options->lambda_u/u;
-	vector_int *ActiveSubset = new vector_int[1];
-	ActiveSubset->vec = new int32_t[m];
+	vector_int *ActiveSubset = SG_MALLOCX(vector_int, 1);
+	ActiveSubset->vec = SG_MALLOCX(int32_t, m);
 	ActiveSubset->d = m;
 	// initialize
 	if(ini==0) 
@@ -750,10 +750,10 @@ int32_t optimize_w(
 	int32_t iter=0;
 	int32_t opt=0;
 	int32_t opt2=0;
-	vector_double *Weights_bar = new vector_double[1];
-	vector_double *Outputs_bar = new vector_double[1];
-	float64_t *w_bar = new float64_t[n];
-	float64_t *o_bar = new float64_t[m+u];
+	vector_double *Weights_bar = SG_MALLOCX(vector_double, 1);
+	vector_double *Outputs_bar = SG_MALLOCX(vector_double, 1);
+	float64_t *w_bar = SG_MALLOCX(float64_t, n);
+	float64_t *o_bar = SG_MALLOCX(float64_t, m+u);
 	Weights_bar->vec=w_bar;
 	Outputs_bar->vec=o_bar;
 	Weights_bar->d=n;
@@ -1073,7 +1073,7 @@ float64_t norm_square(const vector_double *A)
 
 void initialize(struct vector_double *A, int32_t k, float64_t a)
 {
-	float64_t *vec = new float64_t[k];
+	float64_t *vec = SG_MALLOCX(float64_t, k);
 	for (int32_t i=0;i<k;i++)
 		vec[i]=a;
 	A->vec = vec;
@@ -1083,7 +1083,7 @@ void initialize(struct vector_double *A, int32_t k, float64_t a)
 
 void initialize(struct vector_int *A, int32_t k)
 {
-	int32_t *vec = new int32_t[k];
+	int32_t *vec = SG_MALLOCX(int32_t, k);
 	for(int32_t i=0;i<k;i++)
 		vec[i]=i; 
 	A->vec = vec;
@@ -1094,9 +1094,9 @@ void initialize(struct vector_int *A, int32_t k)
 void GetLabeledData(struct data *D, const struct data *Data)
 {
 	/*FIXME
-	int32_t *J = new int[Data->l];
-	D->C   = new float64_t[Data->l];
-	D->Y   = new float64_t[Data->l];
+	int32_t *J = SG_MALLOCX(int, Data->l);
+	D->C   = SG_MALLOCX(float64_t, Data->l);
+	D->Y   = SG_MALLOCX(float64_t, Data->l);
 	int32_t nz=0;
 	int32_t k=0;
 	int32_t rowptrs_=Data->l;
@@ -1111,8 +1111,8 @@ void GetLabeledData(struct data *D, const struct data *Data)
 			k++;
 		}
 	}  
-	D->val    = new float64_t[nz];
-	D->colind = new int32_t[nz]; 
+	D->val    = SG_MALLOCX(float64_t, nz);
+	D->colind = SG_MALLOCX(int32_t, nz); 
 	D->rowptr = new int32_trowptrs_+1];
 	nz=0;
 	for(int32_t i=0;i<Data->l;i++)

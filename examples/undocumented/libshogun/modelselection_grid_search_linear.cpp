@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	int32_t num_features=11;
 
 	/* create some data */
-	float64_t* matrix=new float64_t[num_features*2];
+	float64_t* matrix=SG_MALLOCX(float64_t, num_features*2);
 	for (int32_t i=0; i<num_features*2; i++)
 		matrix[i]=i;
 

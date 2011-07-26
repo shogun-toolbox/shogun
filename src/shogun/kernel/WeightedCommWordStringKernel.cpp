@@ -67,7 +67,7 @@ void CWeightedCommWordStringKernel::cleanup()
 bool CWeightedCommWordStringKernel::set_wd_weights()
 {
 	SG_FREE(weights);
-	weights=new float64_t[degree];
+	weights=SG_MALLOCX(float64_t, degree);
 
 	int32_t i;
 	float64_t sum=0;
@@ -87,7 +87,7 @@ bool CWeightedCommWordStringKernel::set_weights(float64_t* w, int32_t d)
 	ASSERT(d==degree);
 
 	SG_FREE(weights);
-	weights=new float64_t[degree];
+	weights=SG_MALLOCX(float64_t, degree);
 	for (int32_t i=0; i<degree; i++)
 		weights[i]=CMath::sqrt(w[i]);
 	return true;
@@ -112,7 +112,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 	{
 		if (alen>0)
 		{
-			avec=new uint16_t[alen];
+			avec=SG_MALLOCX(uint16_t, alen);
 			memcpy(avec, av, sizeof(uint16_t)*alen);
 			CMath::radix_sort(avec, alen);
 		}
@@ -121,7 +121,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 
 		if (blen>0)
 		{
-			bvec=new uint16_t[blen];
+			bvec=SG_MALLOCX(uint16_t, blen);
 			memcpy(bvec, bv, sizeof(uint16_t)*blen);
 			CMath::radix_sort(bvec, blen);
 		}
@@ -226,7 +226,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
 	uint32_t num_symbols=(uint32_t) s->get_num_symbols();
 	int32_t dic_size=1<<(sizeof(uint16_t)*8);
-	float64_t* dic=new float64_t[dic_size];
+	float64_t* dic=SG_MALLOCX(float64_t, dic_size);
 	memset(dic, 0, sizeof(float64_t)*dic_size);
 
 	for (uint32_t sym=0; sym<num_symbols; sym++)
@@ -293,7 +293,7 @@ float64_t* CWeightedCommWordStringKernel::compute_scoring(
 		CCommWordStringKernel::init_optimization(num_suppvec, IDX, alphas);
 
 	int32_t dic_size=1<<(sizeof(uint16_t)*9);
-	float64_t* dic=new float64_t[dic_size];
+	float64_t* dic=SG_MALLOCX(float64_t, dic_size);
 	memcpy(dic, dictionary_weights, sizeof(float64_t)*dic_size);
 
 	merge_normal();

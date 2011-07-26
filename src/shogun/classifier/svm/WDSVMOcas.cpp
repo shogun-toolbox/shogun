@@ -137,9 +137,9 @@ int32_t CWDSVMOcas::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<=8);
 	SG_FREE(wd_weights);
-	wd_weights=new float32_t[degree];
+	wd_weights=SG_MALLOCX(float32_t, degree);
 	SG_FREE(w_offsets);
-	w_offsets=new int32_t[degree];
+	w_offsets=SG_MALLOCX(int32_t, degree);
 	int32_t w_dim_single_c=0;
 
 	for (int32_t i=0; i<degree; i++)
@@ -189,22 +189,22 @@ bool CWDSVMOcas::train(CFeatures* data)
 	ASSERT(num_vec>0);
 
 	SG_FREE(w);
-	w=new float32_t[w_dim];
+	w=SG_MALLOCX(float32_t, w_dim);
 	memset(w, 0, w_dim*sizeof(float32_t));
 
 	SG_FREE(old_w);
-	old_w=new float32_t[w_dim];
+	old_w=SG_MALLOCX(float32_t, w_dim);
 	memset(old_w, 0, w_dim*sizeof(float32_t));
 	bias=0;
 	old_bias=0;
 
-	cuts=new float32_t*[bufsize];
+	cuts=SG_MALLOCX(float32_t*, bufsize);
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
-	cp_bias=new float64_t[bufsize];
+	cp_bias=SG_MALLOCX(float64_t, bufsize);
 	memset(cp_bias, 0, sizeof(float64_t)*bufsize);
 
 /////speed tests/////
-	/*float64_t* tmp = new float64_t[num_vec];
+	/*float64_t* tmp = SG_MALLOCX(float64_t, num_vec);
 	float64_t start=CTime::get_curtime();
 	CMath::random_vector(w, w_dim, (float32_t) 0, (float32_t) 1000);
 	compute_output(tmp, this);
@@ -311,10 +311,10 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 
 	// temporary vector
 	float32_t* new_a = p->new_a;
-	//float32_t* new_a = new float32_t[nDim];
+	//float32_t* new_a = SG_MALLOCX(float32_t, nDim);
 	//memset(new_a, 0, sizeof(float32_t)*nDim);
 
-	int32_t* val=new int32_t[cut_length];
+	int32_t* val=SG_MALLOCX(int32_t, cut_length);
 	for (int32_t j=start; j<end; j++)
 	{
 		int32_t offs=o->w_dim_single_char*j;
@@ -354,9 +354,9 @@ int CWDSVMOcas::add_new_cut(
 	float64_t* c_bias = o->cp_bias;
 
 	uint32_t i;
-	wdocas_thread_params_add* params_add=new wdocas_thread_params_add[o->parallel->get_num_threads()];
-	pthread_t* threads=new pthread_t[o->parallel->get_num_threads()];
-	float32_t* new_a=new float32_t[nDim];
+	wdocas_thread_params_add* params_add=SG_MALLOCX(wdocas_thread_params_add, o->parallel->get_num_threads());
+	pthread_t* threads=SG_MALLOCX(pthread_t, o->parallel->get_num_threads());
+	float32_t* new_a=SG_MALLOCX(float32_t, nDim);
 	memset(new_a, 0, sizeof(float32_t)*nDim);
 
 	int32_t t;
@@ -538,11 +538,11 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 {
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	int32_t nData=o->num_vec;
-	wdocas_thread_params_output* params_output=new wdocas_thread_params_output[o->parallel->get_num_threads()];
-	pthread_t* threads = new pthread_t[o->parallel->get_num_threads()];
+	wdocas_thread_params_output* params_output=SG_MALLOCX(wdocas_thread_params_output, o->parallel->get_num_threads());
+	pthread_t* threads = SG_MALLOCX(pthread_t, o->parallel->get_num_threads());
 
-	float32_t* out=new float32_t[nData];
-	int32_t* val=new int32_t[nData];
+	float32_t* out=SG_MALLOCX(float32_t, nData);
+	int32_t* val=SG_MALLOCX(int32_t, nData);
 	memset(out, 0, sizeof(float32_t)*nData);
 
 	int32_t t;

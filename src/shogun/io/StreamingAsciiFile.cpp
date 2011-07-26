@@ -87,7 +87,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 	SG_DEBUG("num_feat %d\n", num_feat);				\
 									\
 	/* now copy data into vector */					\
-	vector=new sg_type[num_feat];					\
+	vector=SG_MALLOCX(sg_type, num_feat);					\
 	SG_SPRINT("alloced %d sg_type in address:%p.\n", num_feat, vector); \
 	for (int32_t i=0; i<num_feat; i++)				\
 	{								\
@@ -171,7 +171,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 		/* The first element is the label */			\
 		label=atof(items->get_element(0));			\
 		/* now copy rest of the data into vector */		\
-		vector=new sg_type[num_feat-1];				\
+		vector=SG_MALLOCX(sg_type, num_feat-1);				\
 		for (int32_t i=1; i<num_feat; i++)			\
 		{							\
 			char* item=items->get_element(i);		\
@@ -344,7 +344,7 @@ void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vecto
 	int32_t index_start_pos=-1;					\
 	int32_t feature_start_pos;					\
 	int32_t current_feat=0;						\
-	vector=new SGSparseVectorEntry<sg_type>[num_dims];		\
+	vector=SG_MALLOCX(SGSparseVectorEntry<sg_type>, num_dims);		\
 	for (int32_t i=0; i<num_chars; i++)				\
 	{								\
 		if (buffer[i]==':')					\
@@ -435,7 +435,7 @@ void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_typ
 	int32_t feature_start_pos;					\
 	int32_t current_feat=0;						\
 	int32_t label_pos=-1;						\
-	vector=new SGSparseVectorEntry<sg_type>[num_dims];		\
+	vector=SG_MALLOCX(SGSparseVectorEntry<sg_type>, num_dims);		\
 									\
 	for (int32_t i=1; i<num_chars; i++)				\
 	{								\
@@ -512,7 +512,7 @@ void CStreamingAsciiFile::append_item(
 	DynArray<T>* items, char* ptr_data, char* ptr_item)
 {
 	size_t len=(ptr_data-ptr_item)/sizeof(char);
-	char* item=new char[len+1];
+	char* item=SG_MALLOCX(char, len+1);
 	memset(item, 0, sizeof(char)*(len+1));
 	item=strncpy(item, ptr_item, len);
 

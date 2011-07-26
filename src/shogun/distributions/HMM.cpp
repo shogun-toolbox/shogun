@@ -80,23 +80,23 @@ const float64_t Model::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
 
 Model::Model()
 {
-	const_a=new int[ARRAY_SIZE];				///////static fixme 
-	const_b=new int[ARRAY_SIZE];
-	const_p=new int[ARRAY_SIZE];
-	const_q=new int[ARRAY_SIZE];
-	const_a_val=new float64_t[ARRAY_SIZE];			///////static fixme 
-	const_b_val=new float64_t[ARRAY_SIZE];
-	const_p_val=new float64_t[ARRAY_SIZE];
-	const_q_val=new float64_t[ARRAY_SIZE];
+	const_a=SG_MALLOCX(int, ARRAY_SIZE);				///////static fixme 
+	const_b=SG_MALLOCX(int, ARRAY_SIZE);
+	const_p=SG_MALLOCX(int, ARRAY_SIZE);
+	const_q=SG_MALLOCX(int, ARRAY_SIZE);
+	const_a_val=SG_MALLOCX(float64_t, ARRAY_SIZE);			///////static fixme 
+	const_b_val=SG_MALLOCX(float64_t, ARRAY_SIZE);
+	const_p_val=SG_MALLOCX(float64_t, ARRAY_SIZE);
+	const_q_val=SG_MALLOCX(float64_t, ARRAY_SIZE);
 
 
-	learn_a=new int[ARRAY_SIZE];
-	learn_b=new int[ARRAY_SIZE];
-	learn_p=new int[ARRAY_SIZE];
-	learn_q=new int[ARRAY_SIZE];
+	learn_a=SG_MALLOCX(int, ARRAY_SIZE);
+	learn_b=SG_MALLOCX(int, ARRAY_SIZE);
+	learn_p=SG_MALLOCX(int, ARRAY_SIZE);
+	learn_q=SG_MALLOCX(int, ARRAY_SIZE);
 
 #ifdef FIX_POS
-	fix_pos_state = new char[ARRAY_SIZE];
+	fix_pos_state = SG_MALLOCX(char, ARRAY_SIZE);
 #endif
 	for (int32_t i=0; i<ARRAY_SIZE; i++)
 	{
@@ -286,9 +286,9 @@ CHMM::CHMM(
 
 	trans_list_forward_cnt=NULL ;
 	trans_list_len = N ;
-	trans_list_forward = new T_STATES*[N] ;
-	trans_list_forward_val = new float64_t*[N] ;
-	trans_list_forward_cnt = new T_STATES[N] ;
+	trans_list_forward = SG_MALLOCX(T_STATES*, N);
+	trans_list_forward_val = SG_MALLOCX(float64_t*, N);
+	trans_list_forward_cnt = SG_MALLOCX(T_STATES, N);
 	
 	int32_t start_idx=0;
 	for (int32_t j=0; j<N; j++)
@@ -315,8 +315,8 @@ CHMM::CHMM(
 		
 		if (len>0)
 		{
-			trans_list_forward[j]     = new T_STATES[len] ;
-			trans_list_forward_val[j] = new float64_t[len] ;
+			trans_list_forward[j]     = SG_MALLOCX(T_STATES, len);
+			trans_list_forward_val[j] = SG_MALLOCX(float64_t, len);
 		}
 		else
 		{
@@ -461,10 +461,10 @@ bool CHMM::alloc_state_dependend_arrays()
 	if (!transition_matrix_a && !observation_matrix_b &&
 		!initial_state_distribution_p && !end_state_distribution_q)
 	{
-		transition_matrix_a=new float64_t[N*N];
-		observation_matrix_b=new float64_t[N*M];	
-		initial_state_distribution_p=new float64_t[N];
-		end_state_distribution_q=new float64_t[N];
+		transition_matrix_a=SG_MALLOCX(float64_t, N*N);
+		observation_matrix_b=SG_MALLOCX(float64_t, N*M);	
+		initial_state_distribution_p=SG_MALLOCX(float64_t, N);
+		end_state_distribution_q=SG_MALLOCX(float64_t, N);
 		init_model_random();
 		convert_to_log();
 	}
@@ -472,24 +472,24 @@ bool CHMM::alloc_state_dependend_arrays()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 	{
-		arrayN1[i]=new float64_t[N];
-		arrayN2[i]=new float64_t[N];
+		arrayN1[i]=SG_MALLOCX(float64_t, N);
+		arrayN2[i]=SG_MALLOCX(float64_t, N);
 	}
 #else //USE_HMMPARALLEL_STRUCTURES
-	arrayN1=new float64_t[N];
-	arrayN2=new float64_t[N];
+	arrayN1=SG_MALLOCX(float64_t, N);
+	arrayN2=SG_MALLOCX(float64_t, N);
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	for (int32_t i=0; i<parallel->get_num_threads(); i++)
-		arrayS[i]=new float64_t[(int32_t)(this->N/2+1)];
+		arrayS[i]=SG_MALLOCX(float64_t, (int32_t)(this->N/2+1));
 #else //USE_HMMPARALLEL_STRUCTURES
-	arrayS=new float64_t[(int32_t)(this->N/2+1)];
+	arrayS=SG_MALLOCX(float64_t, (int32_t)(this->N/2+1));
 #endif //USE_HMMPARALLEL_STRUCTURES
 #endif //LOG_SUMARRAY
-	transition_matrix_A=new float64_t[this->N*this->N];
-	observation_matrix_B=new float64_t[this->N*this->M];
+	transition_matrix_A=SG_MALLOCX(float64_t, this->N*this->N);
+	observation_matrix_B=SG_MALLOCX(float64_t, this->N*this->M);
 
 	if (p_observations)
 	{
@@ -570,9 +570,9 @@ bool CHMM::initialize(Model* m, float64_t pseudo, FILE* modelfile)
 	this->reused_caches=false;
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	alpha_cache=new T_ALPHA_BETA[parallel->get_num_threads()] ;
-	beta_cache=new T_ALPHA_BETA[parallel->get_num_threads()] ;
-	states_per_observation_psi=new P_STATES[parallel->get_num_threads()] ;
+	alpha_cache=SG_MALLOCX(T_ALPHA_BETA, parallel->get_num_threads());
+	beta_cache=SG_MALLOCX(T_ALPHA_BETA, parallel->get_num_threads());
+	states_per_observation_psi=SG_MALLOCX(P_STATES, parallel->get_num_threads());
 
 	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 	{
@@ -595,10 +595,10 @@ bool CHMM::initialize(Model* m, float64_t pseudo, FILE* modelfile)
 		files_ok= files_ok && load_model(modelfile);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	path_prob_updated=new bool[parallel->get_num_threads()];
-	path_prob_dimension=new int[parallel->get_num_threads()];
+	path_prob_updated=SG_MALLOCX(bool, parallel->get_num_threads());
+	path_prob_dimension=SG_MALLOCX(int, parallel->get_num_threads());
 
-	path=new P_STATES[parallel->get_num_threads()];
+	path=SG_MALLOCX(P_STATES, parallel->get_num_threads());
 
 	for (int32_t i=0; i<parallel->get_num_threads(); i++)
 		this->path[i]=NULL;
@@ -609,13 +609,13 @@ bool CHMM::initialize(Model* m, float64_t pseudo, FILE* modelfile)
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayN1=new float64_t*[parallel->get_num_threads()];
-	arrayN2=new float64_t*[parallel->get_num_threads()];
+	arrayN1=SG_MALLOCX(float64_t*, parallel->get_num_threads());
+	arrayN2=SG_MALLOCX(float64_t*, parallel->get_num_threads());
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef LOG_SUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	arrayS=new float64_t*[parallel->get_num_threads()] ;	  
+	arrayS=SG_MALLOCX(float64_t*, parallel->get_num_threads());	  
 #endif // USE_HMMPARALLEL_STRUCTURES
 #endif //LOG_SUMARRAY
 
@@ -1246,8 +1246,8 @@ float64_t CHMM::model_probability_comp()
 
 float64_t CHMM::model_probability_comp() 
 {
-	pthread_t *threads=new pthread_t[parallel->get_num_threads()];
-	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[parallel->get_num_threads()];
+	pthread_t *threads=SG_MALLOCX(pthread_t, parallel->get_num_threads());
+	S_BW_THREAD_PARAM *params=SG_MALLOCX(S_BW_THREAD_PARAM, parallel->get_num_threads());
 
 	SG_INFO( "computing full model probablity\n");
 	mod_prob=0;
@@ -1257,10 +1257,10 @@ float64_t CHMM::model_probability_comp()
 		params[cpu].hmm=this ;
 		params[cpu].dim_start= p_observations->get_num_vectors()*cpu/parallel->get_num_threads();
 		params[cpu].dim_stop= p_observations->get_num_vectors()*(cpu+1)/parallel->get_num_threads();
-		params[cpu].p_buf=new float64_t[N];
-		params[cpu].q_buf=new float64_t[N];
-		params[cpu].a_buf=new float64_t[N*N];
-		params[cpu].b_buf=new float64_t[N*M];
+		params[cpu].p_buf=SG_MALLOCX(float64_t, N);
+		params[cpu].q_buf=SG_MALLOCX(float64_t, N);
+		params[cpu].a_buf=SG_MALLOCX(float64_t, N*N);
+		params[cpu].b_buf=SG_MALLOCX(float64_t, N*M);
 		pthread_create(&threads[cpu], NULL, bw_dim_prefetch, (void*)&params[cpu]);
 	}
 
@@ -1406,18 +1406,18 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 
 	int32_t num_threads = parallel->get_num_threads();
 	
-	pthread_t *threads=new pthread_t[num_threads] ;
-	S_BW_THREAD_PARAM *params=new S_BW_THREAD_PARAM[num_threads] ;
+	pthread_t *threads=SG_MALLOCX(pthread_t, num_threads);
+	S_BW_THREAD_PARAM *params=SG_MALLOCX(S_BW_THREAD_PARAM, num_threads);
 
 	if (p_observations->get_num_vectors()<num_threads)
 		num_threads=p_observations->get_num_vectors();
 
 	for (cpu=0; cpu<num_threads; cpu++)
 	{
-		params[cpu].p_buf=new float64_t[N];
-		params[cpu].q_buf=new float64_t[N];
-		params[cpu].a_buf=new float64_t[N*N];
-		params[cpu].b_buf=new float64_t[N*M];
+		params[cpu].p_buf=SG_MALLOCX(float64_t, N);
+		params[cpu].q_buf=SG_MALLOCX(float64_t, N);
+		params[cpu].a_buf=SG_MALLOCX(float64_t, N*N);
+		params[cpu].b_buf=SG_MALLOCX(float64_t, N*M);
 
 		params[cpu].hmm=hmm;
 		int32_t start = p_observations->get_num_vectors()*cpu / num_threads;
@@ -1758,8 +1758,8 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = parallel->get_num_threads();
-	pthread_t *threads=new pthread_t[num_threads] ;
-	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[num_threads] ;
+	pthread_t *threads=SG_MALLOCX(pthread_t, num_threads);
+	S_DIM_THREAD_PARAM *params=SG_MALLOCX(S_DIM_THREAD_PARAM, num_threads);
 
 	if (p_observations->get_num_vectors()<num_threads)
 		num_threads=p_observations->get_num_vectors();
@@ -1922,8 +1922,8 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = parallel->get_num_threads();
-	pthread_t *threads=new pthread_t[num_threads] ;
-	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[num_threads] ;
+	pthread_t *threads=SG_MALLOCX(pthread_t, num_threads);
+	S_DIM_THREAD_PARAM *params=SG_MALLOCX(S_DIM_THREAD_PARAM, num_threads);
 
 	if (p_observations->get_num_vectors()<num_threads)
 		num_threads=p_observations->get_num_vectors();
@@ -2047,8 +2047,8 @@ void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = parallel->get_num_threads();
-	pthread_t *threads=new pthread_t[num_threads] ;
-	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[num_threads] ;
+	pthread_t *threads=SG_MALLOCX(pthread_t, num_threads);
+	S_DIM_THREAD_PARAM *params=SG_MALLOCX(S_DIM_THREAD_PARAM, num_threads);
 #endif
 
 	float64_t allpatprob=0.0 ;
@@ -2483,7 +2483,7 @@ void CHMM::init_model_defined()
 
 
 	//initialize a values that have to be learned
-	float64_t *R=new float64_t[N] ;
+	float64_t *R=SG_MALLOCX(float64_t, N);
 	for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
 	i=0; sum=0; k=i; 
 	j=model->get_learn_a(i,0);
@@ -2511,7 +2511,7 @@ void CHMM::init_model_defined()
 	SG_FREE(R); R=NULL ;
 
 	//initialize b values that have to be learned
-	R=new float64_t[M] ;
+	R=SG_MALLOCX(float64_t, M);
 	for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
 	i=0; sum=0; k=0 ;
 	j=model->get_learn_b(i,0);
@@ -2698,13 +2698,13 @@ void CHMM::invalidate_model()
 	    } ;
 
 	  trans_list_len = N ;
-	  trans_list_forward = new T_STATES*[N] ;
-	  trans_list_forward_cnt = new T_STATES[N] ;
+	  trans_list_forward = SG_MALLOCX(T_STATES*, N);
+	  trans_list_forward_cnt = SG_MALLOCX(T_STATES, N);
 
 	  for (int32_t j=0; j<N; j++)
 	    {
 	      trans_list_forward_cnt[j]= 0 ;
-	      trans_list_forward[j]= new T_STATES[N] ;
+	      trans_list_forward[j]= SG_MALLOCX(T_STATES, N);
 	      for (int32_t i=0; i<N; i++)
 		if (get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 		  {
@@ -2713,13 +2713,13 @@ void CHMM::invalidate_model()
 		  } 
 	    } ;
 	  
-	  trans_list_backward = new T_STATES*[N] ;
-	  trans_list_backward_cnt = new T_STATES[N] ;
+	  trans_list_backward = SG_MALLOCX(T_STATES*, N);
+	  trans_list_backward_cnt = SG_MALLOCX(T_STATES, N);
 	  
 	  for (int32_t i=0; i<N; i++)
 	    {
 	      trans_list_backward_cnt[i]= 0 ;
-	      trans_list_backward[i]= new T_STATES[N] ;
+	      trans_list_backward[i]= SG_MALLOCX(T_STATES, N);
 	      for (int32_t j=0; j<N; j++)
 		if (get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 		  {
@@ -3031,7 +3031,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						float64_t f;
 
-						transition_matrix_a=new float64_t[N*N];
+						transition_matrix_a=SG_MALLOCX(float64_t, N*N);
 						open_bracket(file);
 						for (i=0; i<this->N; i++)
 						{
@@ -3065,7 +3065,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						float64_t f;
 
-						observation_matrix_b=new float64_t[N*M];	
+						observation_matrix_b=SG_MALLOCX(float64_t, N*M);	
 						open_bracket(file);
 						for (i=0; i<this->N; i++)
 						{
@@ -3099,7 +3099,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						float64_t f;
 
-						initial_state_distribution_p=new float64_t[N];
+						initial_state_distribution_p=SG_MALLOCX(float64_t, N);
 						open_bracket(file);
 						for (i=0; i<this->N ; i++)
 						{
@@ -3122,7 +3122,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						float64_t f;
 
-						end_state_distribution_q=new float64_t[N];
+						end_state_distribution_q=SG_MALLOCX(float64_t, N);
 						open_bracket(file);
 						for (i=0; i<this->N ; i++)
 						{
@@ -4027,7 +4027,7 @@ T_STATES* CHMM::get_path(int32_t dim, float64_t& prob)
 	T_STATES* result = NULL;
 
 	prob = best_path(dim);
-	result = new T_STATES[p_observations->get_vector_length(dim)];
+	result = SG_MALLOCX(T_STATES, p_observations->get_vector_length(dim));
 
 	for (int32_t i=0; i<p_observations->get_vector_length(dim); i++)
 		result[i]=PATH(dim)[i];
@@ -4343,8 +4343,8 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = parallel->get_num_threads();
-	pthread_t *threads=new pthread_t[num_threads] ;
-	S_DIM_THREAD_PARAM *params=new S_DIM_THREAD_PARAM[num_threads] ;
+	pthread_t *threads=SG_MALLOCX(pthread_t, num_threads);
+	S_DIM_THREAD_PARAM *params=SG_MALLOCX(S_DIM_THREAD_PARAM, num_threads);
 
 	if (p_observations->get_num_vectors()<num_threads)
 		num_threads=p_observations->get_num_vectors();
@@ -4822,11 +4822,11 @@ bool CHMM::append_model(CHMM* app_model)
 	SG_DEBUG( "old N:%d M:%d\n", app_model->get_N(), app_model->get_M());
 	if (app_model->get_M() == get_M())
 	{
-		float64_t* n_p=new float64_t[N+num_states];
-		float64_t* n_q=new float64_t[N+num_states];
-		float64_t* n_a=new float64_t[(N+num_states)*(N+num_states)];
+		float64_t* n_p=SG_MALLOCX(float64_t, N+num_states);
+		float64_t* n_q=SG_MALLOCX(float64_t, N+num_states);
+		float64_t* n_a=SG_MALLOCX(float64_t, (N+num_states)*(N+num_states));
 		//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
-		float64_t* n_b=new float64_t[(N+num_states)*M];
+		float64_t* n_b=SG_MALLOCX(float64_t, (N+num_states)*M);
 
 		//clear n_x 
 		for (i=0; i<N+num_states; i++)
@@ -4912,11 +4912,11 @@ bool CHMM::append_model(CHMM* app_model, float64_t* cur_out, float64_t* app_out)
 
 	if (app_model->get_M() == get_M())
 	{
-		float64_t* n_p=new float64_t[N+num_states];
-		float64_t* n_q=new float64_t[N+num_states];
-		float64_t* n_a=new float64_t[(N+num_states)*(N+num_states)];
+		float64_t* n_p=SG_MALLOCX(float64_t, N+num_states);
+		float64_t* n_q=SG_MALLOCX(float64_t, N+num_states);
+		float64_t* n_a=SG_MALLOCX(float64_t, (N+num_states)*(N+num_states));
 		//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
-		float64_t* n_b=new float64_t[(N+num_states)*M];
+		float64_t* n_b=SG_MALLOCX(float64_t, (N+num_states)*M);
 
 		//clear n_x 
 		for (i=0; i<N+num_states; i++)
@@ -5018,11 +5018,11 @@ void CHMM::add_states(int32_t num_states, float64_t default_value)
 	const float64_t MIN_RAND=1e-2; //this is the range of the random values for the new variables
 	const float64_t MAX_RAND=2e-1;
 
-	float64_t* n_p=new float64_t[N+num_states];
-	float64_t* n_q=new float64_t[N+num_states];
-	float64_t* n_a=new float64_t[(N+num_states)*(N+num_states)];
+	float64_t* n_p=SG_MALLOCX(float64_t, N+num_states);
+	float64_t* n_q=SG_MALLOCX(float64_t, N+num_states);
+	float64_t* n_a=SG_MALLOCX(float64_t, (N+num_states)*(N+num_states));
 	//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
-	float64_t* n_b=new float64_t[(N+num_states)*M];
+	float64_t* n_b=SG_MALLOCX(float64_t, (N+num_states)*M);
 
 	// warning pay attention to the ordering of 
 	// transition_matrix_a, observation_matrix_b !!!
@@ -5105,8 +5105,8 @@ bool CHMM::linear_train(bool right_align)
 	if (p_observations)
 	{
 		int32_t histsize=(get_M()*get_N());
-		int32_t* hist=new int32_t[histsize];
-		int32_t* startendhist=new int32_t[get_N()];
+		int32_t* hist=SG_MALLOCX(int32_t, histsize);
+		int32_t* startendhist=SG_MALLOCX(int32_t, get_N());
 		int32_t i,dim;
 
 		ASSERT(p_observations->get_max_vector_length()<=get_N());
@@ -5342,20 +5342,20 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			SG_INFO( "allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float32_t)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
 			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			{
-				if ((states_per_observation_psi[i]=new T_STATES[max_T*N])!=NULL)
+				if ((states_per_observation_psi[i]=SG_MALLOC(T_STATES,max_T*N))!=NULL)
 					SG_DEBUG( "path_table[%i] successfully allocated\n",i) ;
 				else
 					SG_ERROR( "failed allocating memory for path_table[%i].\n",i) ;
-				path[i]=new T_STATES[max_T];
+				path[i]=SG_MALLOCX(T_STATES, max_T);
 			}
 #else // no USE_HMMPARALLEL_STRUCTURES 
 			SG_INFO( "allocating mem of size %.2f Megabytes (%d*%d) for path-table ....", ((float32_t)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
-			if ((states_per_observation_psi=new T_STATES[max_T*N]) != NULL)
+			if ((states_per_observation_psi=SG_MALLOC(T_STATES,max_T*N)) != NULL)
 				SG_DONE();
 			else
 				SG_ERROR( "failed.\n") ;
 
-			path=new T_STATES[max_T];
+			path=SG_MALLOCX(T_STATES, max_T);
 #endif // USE_HMMPARALLEL_STRUCTURES
 #ifdef USE_HMMCACHE
 			SG_INFO( "allocating mem for caches each of size %.2f Megabytes (%d*%d) ....\n", ((float32_t)max_T)*N*sizeof(T_ALPHA_BETA_TABLE)/(1024*1024), max_T, N);
@@ -5363,23 +5363,23 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 #ifdef USE_HMMPARALLEL_STRUCTURES
 			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			{
-				if ((alpha_cache[i].table=new T_ALPHA_BETA_TABLE[max_T*N])!=NULL)
+				if ((alpha_cache[i].table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N))!=NULL)
 					SG_DEBUG( "alpha_cache[%i].table successfully allocated\n",i) ;
 				else
 					SG_ERROR("allocation of alpha_cache[%i].table failed\n",i) ;
 
-				if ((beta_cache[i].table=new T_ALPHA_BETA_TABLE[max_T*N]) != NULL)
+				if ((beta_cache[i].table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N)) != NULL)
 					SG_DEBUG("beta_cache[%i].table successfully allocated\n",i) ;
 				else
 					SG_ERROR("allocation of beta_cache[%i].table failed\n",i) ;
 			} ;
 #else // USE_HMMPARALLEL_STRUCTURES
-			if ((alpha_cache.table=new T_ALPHA_BETA_TABLE[max_T*N]) != NULL)
+			if ((alpha_cache.table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N)) != NULL)
 				SG_DEBUG( "alpha_cache.table successfully allocated\n") ;
 			else
 				SG_ERROR( "allocation of alpha_cache.table failed\n") ;
 
-			if ((beta_cache.table=new T_ALPHA_BETA_TABLE[max_T*N]) != NULL)
+			if ((beta_cache.table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N)) != NULL)
 				SG_DEBUG( "beta_cache.table successfully allocated\n") ;
 			else
 				SG_ERROR( "allocation of beta_cache.table failed\n") ;
@@ -5427,7 +5427,7 @@ bool CHMM::permutation_entropy(int32_t window_width, int32_t sequence_number)
 			uint16_t* obs=p_observations->get_feature_vector(sequence_number, sequence_length, free_vec);
 
 			int32_t histsize=get_M();
-			int64_t* hist=new int64_t[histsize];
+			int64_t* hist=SG_MALLOCX(int64_t, histsize);
 			int32_t i,j;
 
 			for (i=0; i<sequence_length-window_width; i++)

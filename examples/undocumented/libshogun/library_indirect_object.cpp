@@ -1,5 +1,6 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/memory.h>
 #include <shogun/lib/IndirectObject.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/SGObject.h>
@@ -15,14 +16,14 @@ int main(int argc, char** argv)
 	init_shogun();
 
 	// create array a
-	int32_t* a=new int32_t[l];
+	int32_t* a=SG_MALLOCX(int32_t, l);
 	for (int i=0; i<l; i++)
 		a[i]=l-i;
-
+	typedef CIndirectObject<int32_t, int32_t**> INDIRECT;
 	// create array of indirect objects pointing to array a
-	CIndirectObject<int32_t, int32_t**>::set_array(&a);
-	CIndirectObject<int32_t, int32_t**>* x = new CIndirectObject<int32_t, int32_t**>[l];
-	CIndirectObject<int32_t, int32_t**>::init_slice(x, l);
+	INDIRECT::set_array(&a);
+	INDIRECT* x = SG_MALLOCX(INDIRECT, l);
+	INDIRECT::init_slice(x, l);
 
 
 	printf("created array a and indirect object array x pointing to a.\n\n");

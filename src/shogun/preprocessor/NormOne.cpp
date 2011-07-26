@@ -75,7 +75,7 @@ SGMatrix<float64_t> CNormOne::apply_to_feature_matrix(CFeatures* features)
 /// result in feature matrix
 SGVector<float64_t> CNormOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* normed_vec = new float64_t[vector.vlen];
+	float64_t* normed_vec = SG_MALLOCX(float64_t, vector.vlen);
 	float64_t norm=CMath::sqrt(CMath::dot(vector.vector, vector.vector, vector.vlen));
 
 	for (int32_t i=0; i<vector.vlen; i++)

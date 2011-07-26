@@ -83,14 +83,14 @@ bool CKernelPCACut::init(CFeatures* features)
 		//[Lambda,ordered]=sort(-Lambda);
 		//Lambda=-Lambda;
 		//U=U(:,ordered);
-		//int32_t* index=new int32_t[n];
+		//int32_t* index=SG_MALLOCX(int32_t, n);
 		//CMath::range_fill_vector(index, n);
 		//CMath::qsort_backward_index(eigenvalues, index, n);
 		T=kernel_matrix.matrix;
 		rows_T=n;
 		cols_T=n;
 
-		bias=new float64_t[cols_T];
+		bias=SG_MALLOCX(float64_t, cols_T);
 		CMath::fill_vector(bias, cols_T, 0.0);
 		bias_len=cols_T;
 
@@ -136,8 +136,8 @@ SGMatrix<float64_t> CKernelPCACut::apply_to_feature_matrix(CFeatures* features)
 	if (m)
 	{
 		SG_INFO("Preprocessing feature matrix\n");
-		float64_t* res= new float64_t[num_dim];
-		float64_t* sub_mean= new float64_t[num_features];
+		float64_t* res= SG_MALLOCX(float64_t, num_dim);
+		float64_t* sub_mean= SG_MALLOCX(float64_t, num_features);
 
 		for (int32_t vec=0; vec<num_vectors; vec++)
 		{
@@ -172,8 +172,8 @@ SGMatrix<float64_t> CKernelPCACut::apply_to_feature_matrix(CFeatures* features)
 SGVector<float64_t> CKernelPCACut::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	/*
-	float64_t *ret=new float64_t[num_dim];
-	float64_t *sub_mean=new float64_t[len];
+	float64_t *ret=SG_MALLOCX(float64_t, num_dim);
+	float64_t *sub_mean=SG_MALLOCX(float64_t, len);
 	for (int32_t i=0; i<len; i++)
 		sub_mean[i]=f[i]-mean[i];
 

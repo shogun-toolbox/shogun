@@ -83,7 +83,7 @@ bool CLinearStringKernel::init_optimization(
 	int32_t num_feat = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
 	ASSERT(num_feat);
 
-	normal = new float64_t[num_feat];
+	normal = SG_MALLOCX(float64_t, num_feat);
 	ASSERT(normal);
 	clear_normal();
 

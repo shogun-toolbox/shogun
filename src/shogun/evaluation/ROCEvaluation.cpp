@@ -43,7 +43,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	orig_labels.free_vector();
 
 	// get sorted indexes
-	int32_t* idxs = new int32_t[length];
+	int32_t* idxs = SG_MALLOCX(int32_t, length);
 	for(i=0; i<length; i++)
 		idxs[i] = i;
 
@@ -63,7 +63,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 	// initialize graph and auROC
 	SG_FREE(m_ROC_graph);
-	m_ROC_graph = new float64_t[diff_count*2+2];
+	m_ROC_graph = SG_MALLOCX(float64_t, diff_count*2+2);
 	m_auROC = 0.0;
 
 	// get total numbers of positive and negative labels

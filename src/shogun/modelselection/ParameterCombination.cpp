@@ -50,7 +50,7 @@ void CParameterCombination::append_child(CParameterCombination* child)
 void CParameterCombination::print_tree(int prefix_num) const
 {
 	/* prefix is enlarged */
-	char* prefix=new char[prefix_num+1];
+	char* prefix=SG_MALLOCX(char, prefix_num+1);
 	for (index_t i=0; i<prefix_num; ++i)
 		prefix[i]='\t';
 

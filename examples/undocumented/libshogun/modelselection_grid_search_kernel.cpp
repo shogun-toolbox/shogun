@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 	int32_t dim_vectors=3;
 
 	/* create some data and labels */
-	float64_t* matrix=new float64_t[num_vectors*dim_vectors];
+	float64_t* matrix=SG_MALLOCX(float64_t, num_vectors*dim_vectors);
 	CLabels* labels=new CLabels(num_vectors);
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
 		matrix[i]=CMath::randn_double();

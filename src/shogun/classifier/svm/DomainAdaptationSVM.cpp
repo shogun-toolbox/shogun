@@ -91,7 +91,7 @@ bool CDomainAdaptationSVM::train_kernel_machine(CFeatures* data)
 	int32_t num_training_points = get_labels()->get_num_labels();
 
 
-	float64_t* lin_term = new float64_t[num_training_points];
+	float64_t* lin_term = SG_MALLOCX(float64_t, num_training_points);
 
 	// grab current training features
 	CFeatures* train_data = get_kernel()->get_lhs();

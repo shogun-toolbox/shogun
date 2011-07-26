@@ -141,7 +141,7 @@ void CDistance::do_precompute_matrix()
 	int32_t num=num_left;
 	
 	SG_FREE(precomputed_matrix);
-	precomputed_matrix=new float32_t[num*(num+1)/2];
+	precomputed_matrix=SG_MALLOCX(float32_t, num*(num+1)/2);
 
 	for (int32_t i=0; i<num; i++)
 	{
@@ -183,7 +183,7 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 		if (target)
 			result=target;
 		else
-			result=new float32_t[total_num];
+			result=SG_MALLOCX(float32_t, total_num);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{
@@ -252,7 +252,7 @@ float64_t* CDistance::get_distance_matrix_real(
 		if (target)
 			result=target;
 		else
-			result=new float64_t[total_num];
+			result=SG_MALLOCX(float64_t, total_num);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{

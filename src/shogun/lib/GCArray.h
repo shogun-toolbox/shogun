@@ -44,7 +44,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		CGCArray(int32_t sz) : CSGObject()
 		{
 			ASSERT(sz>0);
-			array = new T[sz];
+			array = SG_MALLOCX(T, sz);
 			size=sz;
 		}
 

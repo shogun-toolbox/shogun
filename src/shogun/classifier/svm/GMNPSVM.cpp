@@ -69,7 +69,7 @@ bool CGMNPSVM::train_kernel_machine(CFeatures* data)
 
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
 
-	float64_t* vector_y = new float64_t[num_data];
+	float64_t* vector_y = SG_MALLOCX(float64_t, num_data);
 	for (int32_t i=0; i<num_data; i++)
 	{
 		vector_y[i]= labels->get_label(i)+1;
@@ -86,8 +86,8 @@ bool CGMNPSVM::train_kernel_machine(CFeatures* data)
 		reg_const = 1/(2*C);
 
 
-	float64_t* alpha = new float64_t[num_virtual_data];
-	float64_t* vector_c = new float64_t[num_virtual_data];
+	float64_t* alpha = SG_MALLOCX(float64_t, num_virtual_data);
+	float64_t* vector_c = SG_MALLOCX(float64_t, num_virtual_data);
 	memset(vector_c, 0, num_virtual_data*sizeof(float64_t));
 
 	float64_t thlb = 10000000000.0;
@@ -101,11 +101,11 @@ bool CGMNPSVM::train_kernel_machine(CFeatures* data)
 				  tolabs, tolrel, thlb, alpha, &t, &History, verb);
 
 	/* matrix alpha [num_classes x num_data] */
-	float64_t* all_alphas= new float64_t[num_classes*num_data];
+	float64_t* all_alphas= SG_MALLOCX(float64_t, num_classes*num_data);
 	memset(all_alphas,0,num_classes*num_data*sizeof(float64_t));
 
 	/* bias vector b [num_classes x 1] */
-	float64_t* all_bs=new float64_t[num_classes];
+	float64_t* all_bs=SG_MALLOCX(float64_t, num_classes);
 	memset(all_bs,0,num_classes*sizeof(float64_t));
 
 	/* compute alpha/b from virt_data */
@@ -156,7 +156,7 @@ bool CGMNPSVM::train_kernel_machine(CFeatures* data)
 
 	if (m_basealphas != NULL) SG_FREE(m_basealphas);
 	m_basealphas_y = num_classes, m_basealphas_x = num_data;
-	m_basealphas = new float64_t[m_basealphas_y*m_basealphas_x];
+	m_basealphas = SG_MALLOCX(float64_t, m_basealphas_y*m_basealphas_x);
 	for (index_t i=0; i<m_basealphas_y*m_basealphas_x; i++)
 		m_basealphas[i] = 0.0;
 

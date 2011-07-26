@@ -60,8 +60,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	delete distance;
 
 	// init matrices to be used
-	int32_t* neighborhood_matrix = new int32_t[N*m_k];
-	int32_t* local_neighbors_idxs = new int32_t[N];
+	int32_t* neighborhood_matrix = SG_MALLOCX(int32_t, N*m_k);
+	int32_t* local_neighbors_idxs = SG_MALLOCX(int32_t, N);
 
 	// construct neighborhood matrix (contains idxs of neighbors for
 	// i-th object in i-th column)
@@ -82,15 +82,15 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	SG_FREE(local_neighbors_idxs);
 
 	// init W (weight) matrix
-	float64_t* W_matrix = new float64_t[N*N];
+	float64_t* W_matrix = SG_MALLOCX(float64_t, N*N);
 	for (i=0; i<N; i++)
 		for (j=0; j<N; j++)
 			W_matrix[i*N+j]=0.0;
 
 	// init matrices and norm factor to be used
-	float64_t* z_matrix = new float64_t[m_k*dim];
-	float64_t* covariance_matrix = new float64_t[m_k*m_k];
-	float64_t* id_vector = new float64_t[m_k];
+	float64_t* z_matrix = SG_MALLOCX(float64_t, m_k*dim);
+	float64_t* covariance_matrix = SG_MALLOCX(float64_t, m_k*m_k);
+	float64_t* id_vector = SG_MALLOCX(float64_t, m_k);
 	float64_t norming;
 
 	// get feature matrix
@@ -207,14 +207,14 @@ arpack = true;
 	if (arpack)
 	{
 		// using ARPACK (faster)
-		eigenvalues_vector = new float64_t[dimension+1];
+		eigenvalues_vector = SG_MALLOCX(float64_t, dimension+1);
 		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,-1e-3,false,eigenvalues_vector,matrix.matrix,eigenproblem_status);
 	}
 	else
 #endif //HAVE_ARPACK
 	{
 		// using LAPACK (slower)
-		eigenvalues_vector = new float64_t[N];
+		eigenvalues_vector = SG_MALLOCX(float64_t, N);
 		wrap_dsyev('V','U',N,matrix.matrix,N,eigenvalues_vector,&eigenproblem_status);
 	}
 
@@ -223,7 +223,7 @@ arpack = true;
 		SG_ERROR("Eigenproblem failed with code: %d", eigenproblem_status);
 	
 	// allocate null space feature matrix
-	float64_t* null_space_features = new float64_t[N*dimension];
+	float64_t* null_space_features = SG_MALLOCX(float64_t, N*dimension);
 
 #ifdef HAVE_ARPACK
 	// construct embedding w.r.t to used solver (prefer ARPACK if available)

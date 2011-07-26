@@ -254,7 +254,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 			num_weights = get_num_subkernels() ;
 
 			SG_FREE(weights_buffer);
-			weights_buffer = new float64_t[num_weights] ;
+			weights_buffer = SG_MALLOCX(float64_t, num_weights);
 
 			if (position_weights!=NULL)
 				for (int32_t i=0; i<num_weights; i++)

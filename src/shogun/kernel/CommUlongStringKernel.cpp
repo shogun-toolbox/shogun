@@ -154,7 +154,6 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 
 	if (vec && len>0)
 	{
-		//use SG_MALLOC not new [] as DynamicArray uses it
 		uint64_t* dic= SG_MALLOC(uint64_t, len+dictionary.get_num_elements());
 		float64_t* dic_weights= SG_MALLOC(float64_t, len+dictionary.get_num_elements());
 

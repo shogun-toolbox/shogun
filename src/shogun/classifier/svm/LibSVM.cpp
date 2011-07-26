@@ -58,17 +58,17 @@ bool CLibSVM::train_kernel_machine(CFeatures* data)
 	else
 	{
 		// fill with minus ones
-		problem.pv = new float64_t[problem.l];
+		problem.pv = SG_MALLOCX(float64_t, problem.l);
 
 		for (int i=0; i!=problem.l; i++)
 			problem.pv[i] = -1.0;
 	}
 
-	problem.y=new float64_t[problem.l];
-	problem.x=new struct svm_node*[problem.l];
-    problem.C=new float64_t[problem.l];
+	problem.y=SG_MALLOCX(float64_t, problem.l);
+	problem.x=SG_MALLOCX(struct svm_node*, problem.l);
+    problem.C=SG_MALLOCX(float64_t, problem.l);
 
-	x_space=new struct svm_node[2*problem.l];
+	x_space=SG_MALLOCX(struct svm_node, 2*problem.l);
 
 	for (int32_t i=0; i<problem.l; i++)
 	{

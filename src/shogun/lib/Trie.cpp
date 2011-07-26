@@ -416,7 +416,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR(
   ASSERT(K>=1);
   {
     const int32_t m = ( degree > K ) ? degree : K;
-    nofsKmers = new int32_t[ m+1 ];
+    nofsKmers = SG_MALLOCX(int32_t,  m+1 );
     int32_t n;
     int32_t k;
     n = 1;

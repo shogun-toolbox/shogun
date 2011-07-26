@@ -1258,12 +1258,12 @@ bool CGUIClassifier::get_svm(
 	{
 		brows=1;
 		bcols=1;
-		bias=new float64_t[1];
+		bias=SG_MALLOCX(float64_t, 1);
 		*bias=svm->get_bias();
 
 		rows=svm->get_num_support_vectors();
 		cols=2;
-		weights=new float64_t[rows*cols];
+		weights=SG_MALLOCX(float64_t, rows*cols);
 
 		for (int32_t i=0; i<rows; i++)
 		{
@@ -1293,14 +1293,14 @@ bool CGUIClassifier::get_clustering(
 			bcols=1;
 			SGVector<float64_t> r=clustering->get_radiuses();
 			brows=r.vlen;
-			radi=new float64_t[brows];
+			radi=SG_MALLOCX(float64_t, brows);
 			memcpy(radi, r.vector, sizeof(float64_t)*brows);
 
 			cols=1;
 			SGMatrix<float64_t> c=clustering->get_cluster_centers();
 			rows=c.num_rows;
 			cols=c.num_cols;
-			centers=new float64_t[rows*cols];
+			centers=SG_MALLOCX(float64_t, rows*cols);
 			memcpy(centers, c.matrix, sizeof(float64_t)*rows*cols);
 			break;
 		}
@@ -1313,13 +1313,13 @@ bool CGUIClassifier::get_clustering(
 			bcols=1;
 			SGVector<float64_t> r=clustering->get_merge_distances();
 			brows=r.vlen;
-			radi=new float64_t[brows];
+			radi=SG_MALLOCX(float64_t, brows);
 			memcpy(radi, r.vector, sizeof(float64_t)*brows);
 
 			SGMatrix<int32_t> p=clustering->get_cluster_pairs();
 			rows=p.num_rows;
 			cols=p.num_cols;
-			centers=new float64_t[rows*cols];
+			centers=SG_MALLOCX(float64_t, rows*cols);
 			for (int32_t i=0; i<rows*cols; i++)
 				centers[i]=(float64_t) p.matrix[i];
 
@@ -1342,7 +1342,7 @@ bool CGUIClassifier::get_linear(
 	if (!linear)
 		return false;
 
-	bias=new float64_t[1];
+	bias=SG_MALLOCX(float64_t, 1);
 	*bias=linear->get_bias();
 	brows=1;
 	bcols=1;
@@ -1351,7 +1351,7 @@ bool CGUIClassifier::get_linear(
 	float64_t* w=NULL;
 	linear->get_w(w, rows);
 
-	weights= new float64_t[rows];
+	weights= SG_MALLOCX(float64_t, rows);
 	memcpy(weights, w, sizeof(float64_t)*rows);
 
 	return true;

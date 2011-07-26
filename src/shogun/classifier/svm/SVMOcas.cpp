@@ -74,22 +74,22 @@ bool CSVMOcas::train(CFeatures* data)
 		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, lab.vlen);
 
 	SG_FREE(w);
-	w=new float64_t[w_dim];
+	w=SG_MALLOCX(float64_t, w_dim);
 	memset(w, 0, w_dim*sizeof(float64_t));
 
 	SG_FREE(old_w);
-	old_w=new float64_t[w_dim];
+	old_w=SG_MALLOCX(float64_t, w_dim);
 	memset(old_w, 0, w_dim*sizeof(float64_t));
 	bias=0;
 	old_bias=0;
 
-	tmp_a_buf=new float64_t[w_dim];
-	cp_value=new float64_t*[bufsize];
+	tmp_a_buf=SG_MALLOCX(float64_t, w_dim);
+	cp_value=SG_MALLOCX(float64_t*, bufsize);
 	memset(cp_value, sizeof(float64_t*)*bufsize, 0);
-	cp_index=new uint32_t*[bufsize];
+	cp_index=SG_MALLOCX(uint32_t*, bufsize);
 	memset(cp_index, sizeof(float64_t*)*bufsize, 0);
-	cp_nz_dims=new uint32_t[bufsize];
-	cp_bias=new float64_t[bufsize];
+	cp_nz_dims=SG_MALLOCX(uint32_t, bufsize);
+	cp_bias=SG_MALLOCX(float64_t, bufsize);
 	memset(cp_bias, 0, sizeof(float64_t)*bufsize);
 
 	float64_t TolAbs=0;
@@ -228,8 +228,8 @@ int CSVMOcas::add_new_cut(
 
 	if(nz_dims > 0)
 	{
-		c_idx[nSel]=new uint32_t[nz_dims];
-		c_val[nSel]=new float64_t[nz_dims];
+		c_idx[nSel]=SG_MALLOCX(uint32_t, nz_dims);
+		c_val[nSel]=SG_MALLOCX(float64_t, nz_dims);
 
 		uint32_t idx=0;
 		for(j=0; j < nDim; j++ )

@@ -37,8 +37,8 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	{
 		// cut by k-nearest neighbors
 
-		float64_t* col = new float64_t[N];
-		int32_t* col_idx = new int32_t[N];
+		float64_t* col = SG_MALLOCX(float64_t, N);
+		int32_t* col_idx = SG_MALLOCX(int32_t, N);
 			
 		// -> INFTY edges connecting NOT neighbors
 		for (i=0; i<N; i++)

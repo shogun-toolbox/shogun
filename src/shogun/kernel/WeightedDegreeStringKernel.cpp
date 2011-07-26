@@ -74,7 +74,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	type=E_EXTERNAL;
 	degree=d;
 
-	weights=new float64_t[degree*(1+max_mismatch)];
+	weights=SG_MALLOCX(float64_t, degree*(1+max_mismatch));
 	weights_degree=degree;
 	weights_length=(1+max_mismatch);
 
@@ -397,7 +397,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree(
 	bool free_vec;
 	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0);
-	int32_t *vec=new int32_t[len];
+	int32_t *vec=SG_MALLOCX(int32_t, len);
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
@@ -443,7 +443,7 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(
 	bool free_vec;
 	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(max_mismatch==0);
-	int32_t *vec = new int32_t[len] ;
+	int32_t *vec = SG_MALLOCX(int32_t, len);
 
 	for (int32_t i=tree_num; i<tree_num+degree && i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
@@ -468,7 +468,7 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(int32_t idx, floa
 	bool free_vec;
 	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
 
-	int32_t *vec = new int32_t[len] ;
+	int32_t *vec = SG_MALLOCX(int32_t, len);
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
@@ -494,7 +494,7 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(
 	int32_t len=0;
 	bool free_vec;
 	char* char_vec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx, len, free_vec);
-	int32_t *vec=new int32_t[len];
+	int32_t *vec=SG_MALLOCX(int32_t, len);
 
 	for (int32_t i=tree_num; i<len && i<tree_num+degree; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
@@ -521,7 +521,7 @@ float64_t CWeightedDegreeStringKernel::compute_by_tree(int32_t idx)
 	bool free_vec;
 	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len, free_vec);
 	ASSERT(char_vec && len>0);
-	int32_t *vec=new int32_t[len];
+	int32_t *vec=SG_MALLOCX(int32_t, len);
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
@@ -546,7 +546,7 @@ void CWeightedDegreeStringKernel::compute_by_tree(
 	bool free_vec;
 	char* char_vec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx, len, free_vec);
 
-	int32_t *vec = new int32_t[len] ;
+	int32_t *vec = SG_MALLOCX(int32_t, len);
 
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
@@ -575,7 +575,7 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 	ASSERT(p_type==E_WD); /// if we know a better weighting later on do a switch
 
 	SG_FREE(weights);
-	weights=new float64_t[degree];
+	weights=SG_MALLOCX(float64_t, degree);
 	weights_degree=degree;
 	weights_length=1;
 
@@ -644,7 +644,7 @@ bool CWeightedDegreeStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 	SG_DEBUG("Creating weights of size %dx%d\n", weights_degree, weights_length);
 	int32_t num_weights=weights_degree*weights_length;
 	SG_FREE(weights);
-	weights=new float64_t[num_weights];
+	weights=SG_MALLOCX(float64_t, num_weights);
 
 	for (int32_t i=0; i<degree*len; i++)
 		weights[i]=ws[i];
@@ -667,7 +667,7 @@ bool CWeightedDegreeStringKernel::set_position_weights(
 		SG_ERROR("seq_length = %i, position_weights_length=%i\n", seq_length, len);
 
 	SG_FREE(position_weights);
-	position_weights=new float64_t[len];
+	position_weights=SG_MALLOCX(float64_t, len);
 	position_weights_len=len;
 	ASSERT(tries);
 	tries->set_position_weights(position_weights);
@@ -726,7 +726,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_from_wd_external()
 bool CWeightedDegreeStringKernel::init_block_weights_const()
 {
 	SG_FREE(block_weights);
-	block_weights=new float64_t[seq_length];
+	block_weights=SG_MALLOCX(float64_t, seq_length);
 
 	for (int32_t i=1; i<seq_length+1 ; i++)
 		block_weights[i-1]=1.0/seq_length;
@@ -736,7 +736,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_const()
 bool CWeightedDegreeStringKernel::init_block_weights_linear()
 {
 	SG_FREE(block_weights);
-	block_weights=new float64_t[seq_length];
+	block_weights=SG_MALLOCX(float64_t, seq_length);
 
 	for (int32_t i=1; i<seq_length+1 ; i++)
 		block_weights[i-1]=degree*i;
@@ -747,7 +747,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_linear()
 bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
 {
 	SG_FREE(block_weights);
-	block_weights=new float64_t[seq_length];
+	block_weights=SG_MALLOCX(float64_t, seq_length);
 
 	for (int32_t i=1; i<degree+1 ; i++)
 		block_weights[i-1]=((float64_t) i)*i;
@@ -761,7 +761,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_sqpoly()
 bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
 {
 	SG_FREE(block_weights);
-	block_weights=new float64_t[seq_length];
+	block_weights=SG_MALLOCX(float64_t, seq_length);
 
 	for (int32_t i=1; i<degree+1 ; i++)
 		block_weights[i-1]=((float64_t) i)*i*i;
@@ -774,7 +774,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_cubicpoly()
 bool CWeightedDegreeStringKernel::init_block_weights_exp()
 {
 	SG_FREE(block_weights);
-	block_weights=new float64_t[seq_length];
+	block_weights=SG_MALLOCX(float64_t, seq_length);
 
 	for (int32_t i=1; i<degree+1 ; i++)
 		block_weights[i-1]=exp(((float64_t) i/10.0));
@@ -788,7 +788,7 @@ bool CWeightedDegreeStringKernel::init_block_weights_exp()
 bool CWeightedDegreeStringKernel::init_block_weights_log()
 {
 	SG_FREE(block_weights);
-	block_weights=new float64_t[seq_length];
+	block_weights=SG_MALLOCX(float64_t, seq_length);
 
 	for (int32_t i=1; i<degree+1 ; i++)
 		block_weights[i-1]=CMath::pow(CMath::log((float64_t) i),2);
@@ -878,7 +878,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 	ASSERT(num_feat>0);
 	int32_t num_threads=parallel->get_num_threads();
 	ASSERT(num_threads>0);
-	int32_t* vec=new int32_t[num_threads*num_feat];
+	int32_t* vec=SG_MALLOCX(int32_t, num_threads*num_feat);
 
 	if (num_threads < 2)
 	{
@@ -914,8 +914,8 @@ void CWeightedDegreeStringKernel::compute_batch(
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
-			pthread_t* threads = new pthread_t[num_threads-1];
-			S_THREAD_PARAM* params = new S_THREAD_PARAM[num_threads];
+			pthread_t* threads = SG_MALLOCX(pthread_t, num_threads-1);
+			S_THREAD_PARAM* params = SG_MALLOCX(S_THREAD_PARAM, num_threads);
 			int32_t step= num_vec/num_threads;
 			int32_t t;
 

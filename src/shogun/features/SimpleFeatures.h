@@ -505,7 +505,7 @@ public:
 
 		int32_t old_num_vec=get_num_vectors();
 
-		ST* fm = new ST[int64_t(num_feat) * num_vec];
+		ST* fm = SG_MALLOCX(ST, int64_t(num_feat) * num_vec);
 
 		for (int32_t i=0; i<old_num_vec; i++)
 		{
@@ -565,7 +565,7 @@ public:
 			SG_ERROR("A subset is set, cannot call copy_feature_matrix\n");
 
 		free_feature_matrix();
-		feature_matrix = new ST[((int64_t) num_feat) * num_vec];
+		feature_matrix = SG_MALLOCX(ST, ((int64_t) num_feat) * num_vec);
 		feature_matrix_num_features=num_feat;
 		feature_matrix_num_vectors = num_vec;
 
@@ -593,7 +593,7 @@ public:
 		ASSERT(num_feat>0 && num_vec>0);
 
 		free_feature_matrix();
-		feature_matrix = new ST[((int64_t) num_feat) * num_vec];
+		feature_matrix = SG_MALLOCX(ST, ((int64_t) num_feat) * num_vec);
 		feature_matrix_num_features = num_feat;
 		feature_matrix_num_vectors = num_vec;
 
@@ -918,7 +918,7 @@ public:
 			"requested %d)\n", get_num_vectors(), vector_index);
 		}
 
-		simple_feature_iterator* iterator = new simple_feature_iterator[1];
+		simple_feature_iterator* iterator = SG_MALLOCX(simple_feature_iterator, 1);
 		iterator->vec = get_feature_vector(vector_index, iterator->vlen,
 				iterator->vfree);
 		iterator->vidx = vector_index;
@@ -1092,7 +1092,7 @@ template<> inline bool CSimpleFeatures<float64_t>::Align_char_features(
 
 	 int64_t len=((int64_t) num_vectors)*num_features;
 	 free_feature_matrix();
-	 feature_matrix=new float64_t[len];
+	 feature_matrix=SG_MALLOCX(float64_t, len);
 	 int32_t num_cf_feat=0;
 	 int32_t num_cf_vec=0;
 	 int32_t num_ref_feat=0;

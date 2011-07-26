@@ -127,12 +127,12 @@ namespace shogun
 		CParseBuffer<T>::CParseBuffer(int32_t size)
 	{
 		buffer_size=size;
-		ex_buff=new example<T>[buffer_size];
+		ex_buff=SG_MALLOCX(example<T>, buffer_size);
 		SG_SINFO("Initialized with ring size: %d.\n", buffer_size);
-		ex_used=new E_IS_EXAMPLE_USED[buffer_size];
+		ex_used=SG_MALLOCX(E_IS_EXAMPLE_USED, buffer_size);
 	
-		ex_in_use_mutex=new pthread_mutex_t[buffer_size];
-		ex_in_use_cond=new pthread_cond_t[buffer_size];
+		ex_in_use_mutex=SG_MALLOCX(pthread_mutex_t, buffer_size);
+		ex_in_use_cond=SG_MALLOCX(pthread_cond_t, buffer_size);
 	
 		ex_write_index=0;
 		ex_read_index=-1;

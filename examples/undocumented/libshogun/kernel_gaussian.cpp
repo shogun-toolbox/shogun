@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 	init_shogun(&print_message);
 
 	// create some data
-	float64_t* matrix = new float64_t[6];
+	float64_t* matrix = SG_MALLOCX(float64_t, 6);
 	for (int32_t i=0; i<6; i++)
 		matrix[i]=i;
 

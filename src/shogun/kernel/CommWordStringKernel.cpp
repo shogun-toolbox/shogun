@@ -47,7 +47,7 @@ bool CCommWordStringKernel::init_dictionary(int32_t size)
 {
 	dictionary_size= size;
 	SG_FREE(dictionary_weights);
-	dictionary_weights=new float64_t[size];
+	dictionary_weights=SG_MALLOCX(float64_t, size);
 	SG_DEBUG( "using dictionary of %d words\n", size);
 	clear_normal();
 
@@ -69,7 +69,7 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	if (use_dict_diagonal_optimization)
 	{
 		SG_FREE(dict_diagonal_optimization);
-		dict_diagonal_optimization=new int32_t[int32_t(((CStringFeatures<uint16_t>*)l)->get_num_symbols())];
+		dict_diagonal_optimization=SG_MALLOCX(int32_t, int32_t(((CStringFeatures<uint16_t>*)l)->get_num_symbols()));
 		ASSERT(((CStringFeatures<uint16_t>*)l)->get_num_symbols() == ((CStringFeatures<uint16_t>*)r)->get_num_symbols()) ;
 	}
 
@@ -145,7 +145,7 @@ float64_t CCommWordStringKernel::compute_helper(
 	{
 		if (alen>0)
 		{
-			avec=new uint16_t[alen];
+			avec=SG_MALLOCX(uint16_t, alen);
 			memcpy(avec, av, sizeof(uint16_t)*alen);
 			CMath::radix_sort(avec, alen);
 		}
@@ -154,7 +154,7 @@ float64_t CCommWordStringKernel::compute_helper(
 
 		if (blen>0)
 		{
-			bvec=new uint16_t[blen];
+			bvec=SG_MALLOCX(uint16_t, blen);
 			memcpy(bvec, bv, sizeof(uint16_t)*blen);
 			CMath::radix_sort(bvec, blen);
 		}
@@ -397,7 +397,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 			num_feat, num_sym, num_feat*num_sym);
 
 	if (!target)
-		target=new float64_t[num_feat*num_sym];
+		target=SG_MALLOCX(float64_t, num_feat*num_sym);
 	memset(target, 0, num_feat*num_sym*sizeof(float64_t));
 
 	if (do_init)
@@ -517,9 +517,9 @@ char* CCommWordStringKernel::compute_consensus(
 	//init
 	init_optimization(num_suppvec, IDX, alphas);
 
-	char* result=new char[result_len];
-	int32_t* bt=new int32_t[total_len];
-	float64_t* score=new float64_t[total_len];
+	char* result=SG_MALLOCX(char, result_len);
+	int32_t* bt=SG_MALLOCX(int32_t, total_len);
+	float64_t* score=SG_MALLOCX(float64_t, total_len);
 
 	for (int64_t i=0; i<total_len; i++)
 	{

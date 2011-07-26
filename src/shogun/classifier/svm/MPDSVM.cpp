@@ -57,12 +57,12 @@ bool CMPDSVM::train_kernel_machine(CFeatures* data)
 	int64_t niter=0;
 
 	kernel_cache = new CCache<KERNELCACHE_ELEM>(kernel->get_cache_size(), n, n);
-	float64_t* alphas=new float64_t[n];
-	float64_t* dalphas=new float64_t[n];
-	//float64_t* hessres=new float64_t[2*n];
-	float64_t* hessres=new float64_t[n];
-	//float64_t* F=new float64_t[2*n];
-	float64_t* F=new float64_t[n];
+	float64_t* alphas=SG_MALLOCX(float64_t, n);
+	float64_t* dalphas=SG_MALLOCX(float64_t, n);
+	//float64_t* hessres=SG_MALLOCX(float64_t, 2*n);
+	float64_t* hessres=SG_MALLOCX(float64_t, n);
+	//float64_t* F=SG_MALLOCX(float64_t, 2*n);
+	float64_t* F=SG_MALLOCX(float64_t, n);
 
 	//float64_t hessest[2]={0,0};
 	//float64_t hstep[2];

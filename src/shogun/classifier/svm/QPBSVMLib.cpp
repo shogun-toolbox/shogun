@@ -108,12 +108,12 @@ int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 {
 	int32_t status = -1;
 	ASSERT(len==m_dim);
-	float64_t* Nabla=new float64_t[m_dim];
+	float64_t* Nabla=SG_MALLOCX(float64_t, m_dim);
 	for (int32_t i=0; i<m_dim; i++)
 		Nabla[i]=m_f[i];
 
 	SG_FREE(m_diag_H);
-	m_diag_H=new float64_t[m_dim];
+	m_diag_H=SG_MALLOCX(float64_t, m_dim);
 
 	for (int32_t i=0; i<m_dim; i++)
 		m_diag_H[i]=m_H[i*m_dim+i];
@@ -197,7 +197,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
   t = 0;
 
   History_size = (m_tmax < HISTORY_BUF ) ? m_tmax+1 : HISTORY_BUF;
-  History=new float64_t[History_size*2];
+  History=SG_MALLOCX(float64_t, History_size*2);
   memset(History, 0, sizeof(float64_t)*History_size*2);
 
   /* compute Q_P and Q_D */
@@ -278,7 +278,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
       History[INDEX(1,t,2)] = Q_D;
     }
     else {
-      tmp_ptr=new float64_t[(History_size+HISTORY_BUF)*2];
+      tmp_ptr=SG_MALLOCX(float64_t, (History_size+HISTORY_BUF)*2);
       memset(tmp_ptr, 0, sizeof(float64_t)*(History_size+HISTORY_BUF)*2);
 
       for( i = 0; i < History_size; i++ ) {
@@ -343,7 +343,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
   t = 0;
 
   History_size = (m_tmax < HISTORY_BUF ) ? m_tmax+1 : HISTORY_BUF;
-  History=new float64_t[History_size*2];
+  History=SG_MALLOCX(float64_t, History_size*2);
   memset(History, 0, sizeof(float64_t)*History_size*2);
 
   /* compute Q_P and Q_D */
@@ -436,7 +436,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
       History[INDEX(1,t,2)] = Q_D;
     }
     else {
-      tmp_ptr=new float64_t[(History_size+HISTORY_BUF)*2];
+      tmp_ptr=SG_MALLOCX(float64_t, (History_size+HISTORY_BUF)*2);
       memset(tmp_ptr, 0, (History_size+HISTORY_BUF)*2*sizeof(float64_t));
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
@@ -525,7 +525,7 @@ int32_t CQPBSVMLib::qpbsvm_scamv(float64_t *x,
     }
   }
 
-  History=new float64_t[(t+1)*2];
+  History=SG_MALLOCX(float64_t, (t+1)*2);
   memset(History, 0, sizeof(float64_t)*(t+1)*2);
 
   fval = 0;
@@ -556,11 +556,11 @@ int32_t CQPBSVMLib::qpbsvm_prloqo(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
-	float64_t* lb=new float64_t[m_dim];
-	float64_t* ub=new float64_t[m_dim];
-	float64_t* primal=new float64_t[3*m_dim];
-	float64_t* dual=new float64_t[1+2*m_dim];
-	float64_t* a=new float64_t[m_dim];
+	float64_t* lb=SG_MALLOCX(float64_t, m_dim);
+	float64_t* ub=SG_MALLOCX(float64_t, m_dim);
+	float64_t* primal=SG_MALLOCX(float64_t, 3*m_dim);
+	float64_t* dual=SG_MALLOCX(float64_t, 1+2*m_dim);
+	float64_t* a=SG_MALLOCX(float64_t, m_dim);
 
 	for (int32_t i=0; i<m_dim; i++)
 	{
@@ -660,8 +660,8 @@ int32_t CQPBSVMLib::qpbsvm_cplex(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
-	float64_t* lb=new float64_t[m_dim];
-	float64_t* ub=new float64_t[m_dim];
+	float64_t* lb=SG_MALLOCX(float64_t, m_dim);
+	float64_t* ub=SG_MALLOCX(float64_t, m_dim);
 
 	for (int32_t i=0; i<m_dim; i++)
 	{

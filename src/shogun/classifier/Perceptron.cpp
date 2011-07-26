@@ -49,8 +49,8 @@ bool CPerceptron::train(CFeatures* data)
 	ASSERT(num_vec==train_labels.vlen);
 	SG_FREE(w);
 	w_dim=num_feat;
-	w=new float64_t[num_feat];
-	float64_t* output=new float64_t[num_vec];
+	w=SG_MALLOCX(float64_t, num_feat);
+	float64_t* output=SG_MALLOCX(float64_t, num_vec);
 
 	//start with uniform w, bias=0
 	bias=0;

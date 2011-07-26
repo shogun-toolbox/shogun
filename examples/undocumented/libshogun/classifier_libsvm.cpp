@@ -28,8 +28,8 @@ float64_t* feat;
 
 void gen_rand_data()
 {
-	lab=new float64_t[NUM];
-	feat=new float64_t[NUM*DIMS];
+	lab=SG_MALLOCX(float64_t, NUM);
+	feat=SG_MALLOCX(float64_t, NUM*DIMS);
 
 	for (int32_t i=0; i<NUM; i++)
 	{

@@ -234,7 +234,7 @@ class CMath : public CSGObject
 			{
 				if (old_size==new_size)
 					return;
-				T* new_data = new T[new_size];
+				T* new_data = SG_MALLOCX(T, new_size);
 				for (int64_t i=0; i<old_size && i<new_size; i++)
 					new_data[i]=data[i];
 				SG_FREE(data);
@@ -411,7 +411,7 @@ class CMath : public CSGObject
 		static void transpose_matrix(
 			T*& matrix, int32_t& num_feat, int32_t& num_vec)
 		{
-			T* transposed=new T[num_vec*num_feat];
+			T* transposed=SG_MALLOCX(T, num_vec*num_feat);
 			for (int32_t i=0; i<num_vec; i++)
 			{
 				for (int32_t j=0; j<num_feat; j++)
@@ -577,7 +577,7 @@ class CMath : public CSGObject
 		template <class T>
 			static T* clone_vector(const T* vec, int32_t len)
 			{
-				T* result = new T[len];
+				T* result = SG_MALLOCX(T, len);
 				for (int32_t i=0; i<len; i++)
 					result[i]=vec[i];
 
@@ -605,7 +605,7 @@ class CMath : public CSGObject
 
 		static inline int32_t* randperm(int32_t n)
 		{
-			int32_t* perm = new int32_t[n];
+			int32_t* perm = SG_MALLOCX(int32_t, n);
 
 			if (!perm)
 				return NULL;
@@ -1186,7 +1186,7 @@ class CMath : public CSGObject
 			int info;
 			int ord=n;
 			int lda=n;
-			double* eigenvalues=new float64_t[n+1];
+			double* eigenvalues=SG_MALLOCX(float64_t, n+1);
 			fill_vector(eigenvalues, n+1, 0.0);
 
 			// lapack sym matrix eigenvalues+vectors
@@ -1207,7 +1207,7 @@ class CMath : public CSGObject
 		template <class T>
 			static T* get_row_sum(T* matrix, int32_t m, int32_t n)
 			{
-				T* rowsums=new T[n];
+				T* rowsums=SG_MALLOCX(T, n);
 				fill_vector(rowsums, n, (T) 0);
 
 				for (int32_t i=0; i<n; i++)
@@ -1222,7 +1222,7 @@ class CMath : public CSGObject
 		template <class T>
 			static T* get_column_sum(T* matrix, int32_t m, int32_t n)
 			{
-				T* colsums=new T[m];
+				T* colsums=SG_MALLOCX(T, m);
 				fill_vector(colsums, m, (T) 0);
 
 				for (int32_t i=0; i<n; i++)

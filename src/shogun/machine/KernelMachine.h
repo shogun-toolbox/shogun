@@ -299,8 +299,8 @@ class CKernelMachine : public CMachine
 
 			if (num>0)
 			{
-				m_alpha.vector= new float64_t[num];
-				m_svs.vector= new int32_t[num];
+				m_alpha.vector= SG_MALLOCX(float64_t, num);
+				m_svs.vector= SG_MALLOCX(int32_t, num);
 				return (m_alpha.vector!=NULL && m_svs.vector!=NULL);
 			}
 			else

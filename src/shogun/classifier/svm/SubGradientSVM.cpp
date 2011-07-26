@@ -417,7 +417,7 @@ void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
 {
 	// alloc normal and bias inited with 0
 	SG_FREE(w);
-	w=new float64_t[num_feat];
+	w=SG_MALLOCX(float64_t, num_feat);
 	w_dim=num_feat;
 	memset(w,0,sizeof(float64_t)*num_feat);
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
@@ -426,66 +426,66 @@ void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
 	grad_b=0;
 	qpsize_limit=5000;
 
-	grad_w=new float64_t[num_feat];
+	grad_w=SG_MALLOCX(float64_t, num_feat);
 	memset(grad_w,0,sizeof(float64_t)*num_feat);
 
-	sum_CXy_active=new float64_t[num_feat];
+	sum_CXy_active=SG_MALLOCX(float64_t, num_feat);
 	memset(sum_CXy_active,0,sizeof(float64_t)*num_feat);
 
-	v=new float64_t[num_feat];
+	v=SG_MALLOCX(float64_t, num_feat);
 	memset(v,0,sizeof(float64_t)*num_feat);
 
-	old_v=new float64_t[num_feat];
+	old_v=SG_MALLOCX(float64_t, num_feat);
 	memset(old_v,0,sizeof(float64_t)*num_feat);
 
 	sum_Cy_active=0;
 
-	proj= new float64_t[num_vec];
+	proj= SG_MALLOCX(float64_t, num_vec);
 	memset(proj,0,sizeof(float64_t)*num_vec);
 
-	tmp_proj=new float64_t[num_vec];
+	tmp_proj=SG_MALLOCX(float64_t, num_vec);
 	memset(proj,0,sizeof(float64_t)*num_vec);
 
-	tmp_proj_idx= new int32_t[num_vec];
+	tmp_proj_idx= SG_MALLOCX(int32_t, num_vec);
 	memset(tmp_proj_idx,0,sizeof(int32_t)*num_vec);
 
-	grad_proj= new float64_t[num_vec];
+	grad_proj= SG_MALLOCX(float64_t, num_vec);
 	memset(grad_proj,0,sizeof(float64_t)*num_vec);
 
-	hinge_point= new float64_t[num_vec];
+	hinge_point= SG_MALLOCX(float64_t, num_vec);
 	memset(hinge_point,0,sizeof(float64_t)*num_vec);
 
-	hinge_idx= new int32_t[num_vec];
+	hinge_idx= SG_MALLOCX(int32_t, num_vec);
 	memset(hinge_idx,0,sizeof(int32_t)*num_vec);
 
-	active=new uint8_t[num_vec];
+	active=SG_MALLOCX(uint8_t, num_vec);
 	memset(active,0,sizeof(uint8_t)*num_vec);
 
-	old_active=new uint8_t[num_vec];
+	old_active=SG_MALLOCX(uint8_t, num_vec);
 	memset(old_active,0,sizeof(uint8_t)*num_vec);
 
-	idx_bound=new int32_t[num_vec];
+	idx_bound=SG_MALLOCX(int32_t, num_vec);
 	memset(idx_bound,0,sizeof(int32_t)*num_vec);
 
-	idx_active=new int32_t[num_vec];
+	idx_active=SG_MALLOCX(int32_t, num_vec);
 	memset(idx_active,0,sizeof(int32_t)*num_vec);
 
-	Z=new float64_t[qpsize_limit*qpsize_limit];
+	Z=SG_MALLOCX(float64_t, qpsize_limit*qpsize_limit);
 	memset(Z,0,sizeof(float64_t)*qpsize_limit*qpsize_limit);
 
-	Zv=new float64_t[qpsize_limit];
+	Zv=SG_MALLOCX(float64_t, qpsize_limit);
 	memset(Zv,0,sizeof(float64_t)*qpsize_limit);
 
-	beta=new float64_t[qpsize_limit];
+	beta=SG_MALLOCX(float64_t, qpsize_limit);
 	memset(beta,0,sizeof(float64_t)*qpsize_limit);
 
-	old_Z=new float64_t[qpsize_limit*qpsize_limit];
+	old_Z=SG_MALLOCX(float64_t, qpsize_limit*qpsize_limit);
 	memset(old_Z,0,sizeof(float64_t)*qpsize_limit*qpsize_limit);
 
-	old_Zv=new float64_t[qpsize_limit];
+	old_Zv=SG_MALLOCX(float64_t, qpsize_limit);
 	memset(old_Zv,0,sizeof(float64_t)*qpsize_limit);
 
-	old_beta=new float64_t[qpsize_limit];
+	old_beta=SG_MALLOCX(float64_t, qpsize_limit);
 	memset(old_beta,0,sizeof(float64_t)*qpsize_limit);
 
 }

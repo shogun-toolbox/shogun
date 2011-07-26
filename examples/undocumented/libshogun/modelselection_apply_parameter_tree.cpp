@@ -48,7 +48,7 @@ CModelSelectionParameters* create_param_tree()
 void apply_parameter_tree(CDynamicObjectArray<CParameterCombination>* combinations)
 {
 	/* create some data */
-	float64_t* matrix=new float64_t[6];
+	float64_t* matrix=SG_MALLOCX(float64_t, 6);
 	for (index_t i=0; i<6; i++)
 		matrix[i]=i;
 

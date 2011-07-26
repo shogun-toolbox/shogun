@@ -62,7 +62,7 @@ void CGaussianKernel::precompute_squared_helper(float64_t* &buf, CDotFeatures* d
 {
 	ASSERT(df);
 	int32_t num_vec=df->get_num_vectors();
-	buf=new float64_t[num_vec];
+	buf=SG_MALLOCX(float64_t, num_vec);
 
 	for (int32_t i=0; i<num_vec; i++)
 		buf[i]=df->dot(i,df, i);
