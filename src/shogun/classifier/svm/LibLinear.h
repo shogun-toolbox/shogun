@@ -79,16 +79,6 @@ class CLibLinear : public CLinearMachine
 			liblinear_solver_type=st;
 		}
 
-		/** train linear SVM classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return the classifier type
@@ -176,6 +166,23 @@ class CLibLinear : public CLinearMachine
 
 		/** set the linear term for qp */
 		void init_linear_term();
+
+		/** Stores feature data of underlying model. Does nothing because
+		 * LibLinear stores the normal vector of the separating hyperplane
+		 * and therefore the model anyway
+		 */
+		virtual void store_model_features() {}
+
+	protected:
+		/** train linear SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	private:
 		/** set up parameters */
