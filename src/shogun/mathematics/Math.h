@@ -317,16 +317,12 @@ class CMath : public CSGObject
 
 		static inline int32_t pow(int32_t x, int32_t n)
 		{
-			if (n>=0)
-			{
-				int32_t result=1;
-				while (n--)
-					result*=x;
+			ASSERT(n>=0);
+			int32_t result=1;
+			while (n--)
+				result*=x;
 
-				return result;
-			}
-			else
-				return pow((float64_t)x, (float64_t)n);
+			return result;
 		}
 
 		static inline float64_t pow(float64_t x, int32_t n)
