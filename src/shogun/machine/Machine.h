@@ -112,7 +112,7 @@ class CMachine : public CSGObject
 		{
 			bool result=train_machine(data);
 
-			if (m_store_model)
+			if (m_store_model_features)
 				store_model_features();
 
 			return false;
@@ -224,11 +224,12 @@ class CMachine : public CSGObject
 
 		/** Setter for store-model-features-after-training flag
 		 *
-		 * @param store_model whether model should be stored after training
+		 * @param store_model_features whether model should be stored after
+		 * training
 		 */
-		virtual void set_store_model(bool store_model)
+		virtual void set_store_model_features(bool store_model_features)
 		{
-			m_store_model=store_model;
+			m_store_model_features=store_model_features;
 		}
 
 		/** Stores feature data of underlying mode. */
@@ -262,7 +263,7 @@ class CMachine : public CSGObject
 		ESolverType solver_type;
 
 		/** whether model features should be stored after training */
-		bool m_store_model;
+		bool m_store_model_features;
 };
 }
 #endif // _MACHINE_H__
