@@ -336,7 +336,7 @@ class CMath : public CSGObject
 				return result;
 			}
 			else
-				return pow(x, (float64_t)n);
+				return ::pow((double)x, (double)n);
 		}
 
 		static inline float64_t pow(float64_t x, float64_t n)
