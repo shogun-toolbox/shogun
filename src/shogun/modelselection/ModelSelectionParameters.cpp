@@ -59,6 +59,10 @@ CModelSelectionParameters::~CModelSelectionParameters()
 {
 	SG_UNREF(m_child_nodes);
 	SG_UNREF(m_sgobject);
+<<<<<<< HEAD
+=======
+
+>>>>>>> kernelmachine
 	delete_values();
 }
 
@@ -124,10 +128,17 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 
 	/* possibly delete old range values */
 	delete_values();
+<<<<<<< HEAD
 
 	/* save new type */
 	m_value_type=value_type;
 
+=======
+
+	/* save new type */
+	m_value_type=value_type;
+
+>>>>>>> kernelmachine
 	if (value_type==MSPT_FLOAT64)
 	{
 		SGVector<float64_t> values=create_range_array<float64_t>(
