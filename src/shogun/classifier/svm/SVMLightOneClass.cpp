@@ -48,7 +48,7 @@ CSVMLightOneClass::CSVMLightOneClass()
 {
 }
 
-bool CSVMLightOneClass::train_kernel_machine(CFeatures* data)
+bool CSVMLightOneClass::train_machine(CFeatures* data)
 {
 	//certain setup params
 	mkl_converged=false;

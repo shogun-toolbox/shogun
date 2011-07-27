@@ -29,7 +29,7 @@ CLibSVM::~CLibSVM()
 }
 
 
-bool CLibSVM::train_kernel_machine(CFeatures* data)
+bool CLibSVM::train_machine(CFeatures* data)
 {
 	struct svm_node* x_space;
 
