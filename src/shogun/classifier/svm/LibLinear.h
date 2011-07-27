@@ -167,12 +167,6 @@ class CLibLinear : public CLinearMachine
 		/** set the linear term for qp */
 		void init_linear_term();
 
-		/** Stores feature data of underlying model. Does nothing because
-		 * LibLinear stores the normal vector of the separating hyperplane
-		 * and therefore the model anyway
-		 */
-		virtual void store_model_features() {}
-
 	protected:
 		/** train linear SVM classifier
 		 *
