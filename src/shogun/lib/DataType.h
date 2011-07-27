@@ -183,9 +183,9 @@ public:
 		do_free(false) { }
 
 	/** constructor for setting params */
-	SGStringList(T* s, index_t num_s, index_t max_length, bool free_strings=false)
-		: strings(s), num_strings(num_s), max_string_length(max_length),
-		  do_free(free_strings) { }
+	SGStringList(SGString<T>* s, index_t num_s, index_t max_length, bool free_strings=false)
+		: num_strings(num_s), max_string_length(max_length),
+		strings(s), do_free(free_strings) { }
 
 	/** constructor to create new matrix in memory */
 	SGStringList(index_t num_s, index_t max_length, bool free_strings=false)
