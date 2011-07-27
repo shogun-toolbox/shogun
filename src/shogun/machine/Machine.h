@@ -115,7 +115,7 @@ class CMachine : public CSGObject
 			if (m_store_model_features)
 				store_model_features();
 
-			return false;
+			return result;
 		}
 
 		/** apply machine to the currently set features
@@ -227,9 +227,9 @@ class CMachine : public CSGObject
 		 * @param store_model_features whether model should be stored after
 		 * training
 		 */
-		virtual void set_store_model_features(bool store_model_features)
+		virtual void set_store_model_features(bool store_model)
 		{
-			m_store_model_features=store_model_features;
+			m_store_model_features=store_model;
 		}
 
 		/** Stores feature data of underlying model.
