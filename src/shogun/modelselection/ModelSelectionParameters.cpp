@@ -451,10 +451,10 @@ void CModelSelectionParameters::delete_values()
 		switch (m_value_type)
 		{
 		case MSPT_FLOAT64:
-			delete[] (float64_t*) m_values.vector;
+			SG_FREE((float64_t*) m_values.vector);
 			break;
 		case MSPT_INT32:
-			delete[] (int32_t*) m_values.vector;
+			SG_FREE((int32_t*) m_values.vector);
 			break;
 		case MSPT_NONE:
 			SG_ERROR("Value node has no type!\n");
