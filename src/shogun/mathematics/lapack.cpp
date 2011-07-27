@@ -174,16 +174,9 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 
 #endif //HAVE_ATLAS
 
-/*
- * Wrapper files for LAPACK if there isn't a clapack interface
- * 
- */
-
 namespace shogun
 {
-/*  DSYEV computes all eigenvalues and, optionally, eigenvectors of a
- *  real symmetric matrix A.
- */
+
 void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, double *w, int *info)
 {
 #ifdef HAVE_ACML
@@ -259,7 +252,6 @@ void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info
 }
 #undef DORGQR
 
-// hard-coded to compute first k eigenvalues
 void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int ul, 
                  double *eigenvalues, double *eigenvectors, int *info)
 {
