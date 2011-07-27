@@ -135,6 +135,10 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* set labels to machine */
 	m_machine->set_labels(m_labels);
 
+	/* tell machine to store model internally
+	 * (otherwise changing subset of features will kaboom the classifier) */
+	m_machine->set_store_model_features(true);
+
 	/* do actual cross-validation */
 	for (index_t i=0; i<num_subsets; ++i)
 	{

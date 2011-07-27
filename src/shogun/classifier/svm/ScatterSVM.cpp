@@ -44,7 +44,7 @@ CScatterSVM::~CScatterSVM()
 	SG_FREE(norm_wcw);
 }
 
-bool CScatterSVM::train_kernel_machine(CFeatures* data)
+bool CScatterSVM::train_machine(CFeatures* data)
 {
 	ASSERT(labels && labels->get_num_labels());
 	m_num_classes = labels->get_num_classes();

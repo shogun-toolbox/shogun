@@ -59,7 +59,7 @@ CSVRLight::CSVRLight()
 {
 }
 
-bool CSVRLight::train_kernel_machine(CFeatures* data)
+bool CSVRLight::train_machine(CFeatures* data)
 {
 	//certain setup params
 	verbosity=1;

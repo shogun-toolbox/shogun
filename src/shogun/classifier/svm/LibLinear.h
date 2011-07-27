@@ -79,16 +79,6 @@ class CLibLinear : public CLinearMachine
 			liblinear_solver_type=st;
 		}
 
-		/** train linear SVM classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return the classifier type
@@ -176,6 +166,17 @@ class CLibLinear : public CLinearMachine
 
 		/** set the linear term for qp */
 		void init_linear_term();
+
+	protected:
+		/** train linear SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	private:
 		/** set up parameters */

@@ -238,7 +238,7 @@ class CSVRLight: public CSVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_kernel_machine(CFeatures* data=NULL);
+		virtual bool train_machine(CFeatures* data=NULL);
 
 		/** number of train elements */
 		int32_t num_vectors;

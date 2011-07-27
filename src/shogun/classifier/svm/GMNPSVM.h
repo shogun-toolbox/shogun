@@ -69,7 +69,7 @@ class CGMNPSVM : public CMultiClassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_kernel_machine(CFeatures* data=NULL);
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 		/** required for CMKLMulticlass
