@@ -56,7 +56,6 @@ bool CKNN::train(CFeatures* data)
 	num_train_labels=lab.vlen;
 	train_labels=CMath::clone_vector(lab.vector, lab.vlen);
 	lab.free_vector();
-	ASSERT(train_labels);
 	ASSERT(num_train_labels>0);
 
 	int32_t max_class=train_labels[0];
