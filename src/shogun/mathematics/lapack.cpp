@@ -30,6 +30,7 @@ using namespace shogun;
 #define DGETRF dgetrf
 #define DGEQRF dgeqrf
 #define DORGQR dorgqr
+#define DSYEVR dsyevr
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
@@ -40,6 +41,7 @@ using namespace shogun;
 #define DGETRF dgetrf_
 #define DGEQRF dgeqrf_
 #define DORGQR dorgqr_
+#define DSYEVR dsyevr_
 #endif
 
 #ifndef HAVE_ATLAS
@@ -217,6 +219,7 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 	SG_FREE(work);
 #endif
 }
+#undef DGESVD
 
 void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info)
 {
@@ -235,6 +238,7 @@ void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info)
 	SG_FREE(work);
 #endif
 }
+#undef DGEQRF
 
 void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info)
 {
@@ -253,7 +257,45 @@ void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info
 	SG_FREE(work);
 #endif
 }
+#undef DORGQR
+
+// hard-coded to compute first k eigenvalues
+void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int ul, 
+                 double *eigenvalues, double *eigenvectors, int *info)
+{
+	int m;
+	double vl,vu; 
+	double abstol = 0.0;
+	char I = 'I';
+	int* isuppz = SG_MALLOC(int, n);
+#ifdef HAVE_ACML
+	DSYEVR(jobz,I,uplo,n,a,lda,vl,vu,il,ul,abstol,m,
+	       eigenvalues,eigenvectors,n,isuppz,info);
+#else
+	int lwork = -1;
+	int liwork = -1;
+	double* work = SG_MALLOC(double, 1);
+	int* iwork = SG_MALLOC(int, 1);
+	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&ul,&abstol,
+               &m,eigenvalues,eigenvectors,&n,isuppz,
+               work,&lwork,iwork,&liwork,info);
+	ASSERT(*info==0);
+	lwork = (int)work[0];
+	liwork = iwork[0];
+	SG_FREE(work);
+	SG_FREE(iwork);
+	work = SG_MALLOC(double, lwork);
+	iwork = SG_MALLOC(int, liwork);
+	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&ul,&abstol,
+               &m,eigenvalues,eigenvectors,&n,isuppz,
+               work,&lwork,iwork,&liwork,info);
+	ASSERT(*info==0);
+	SG_FREE(work);
+	SG_FREE(iwork);
+	SG_FREE(isuppz);
+#endif
+}
+#undef DSYEVR
 
 }
-#undef DGESVD
 #endif //HAVE_LAPACK
