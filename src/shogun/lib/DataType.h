@@ -158,7 +158,7 @@ public:
 	SGString(index_t len, bool free_string=false) :
 		length(len), do_free(free_string)
 	{
-		string=new T[len];
+		string=SG_MALLOC(T, len);
 	}
 
 	/** copy constructor */
@@ -192,7 +192,7 @@ public:
 		: num_strings(num_s), max_string_length(max_length),
 		  do_free(free_strings)
 	{
-		strings=new SGString<T>[num_strings];
+		strings=SG_MALLOC(SGString<T>, num_strings);
 	}
 
 	/** copy constructor */
