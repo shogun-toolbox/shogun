@@ -94,15 +94,11 @@ CLabels* CKNN::apply()
 	float64_t* dists=SG_MALLOC(float64_t, num_train_labels);
 	int32_t* train_lab=SG_MALLOC(int32_t, num_train_labels);
 
-	ASSERT(dists);
-	ASSERT(train_lab);
-
 	SG_INFO( "%d test examples\n", num_lab);
 	CSignal::clear_cancel();
 
 	///histogram of classes and returned output
 	float64_t* classes=SG_MALLOC(float64_t, num_classes);
-	ASSERT(classes);
 
 	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 	{
@@ -174,7 +170,6 @@ CLabels* CKNN::classify_NN()
 	CLabels* output = new CLabels(num_lab);
 	float64_t* distances = SG_MALLOC(float64_t, num_train_labels);
 
-	ASSERT(distances);
 	SG_INFO("%d test examples\n", num_lab);
 	CSignal::clear_cancel();
 
