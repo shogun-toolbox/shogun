@@ -86,7 +86,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	SG_FREE(H_matrix);
 
 	// feature matrix representing given distance
-	float64_t* replace_feature_matrix = SG_MALLOC(float64_t, m_target_dim*N);
+	float64_t* replace_feature_matrix = SG_MALLOC(float64_t, N*m_target_dim);
  
 	// status of eigenproblem to be solved
 	int eigenproblem_status = 0;	
@@ -133,27 +133,30 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim,true);
 	#else /* not HAVE_ARPACK */
 	// using LAPACK
-		float64_t* eigenvalues_vector = SG_MALLOC(float64_t, N);
-		// solve eigenproblem with LAPACK (slower)
-		wrap_dsyev('V','U',N,Ds_matrix,N,eigenvalues_vector,&eigenproblem_status);
+		float64_t* eigenvalues_vector = SG_MALLOC(float64_t, m_target_dim);
+		// solve eigenproblem with LAPACK
+		wrap_dsyevr('V','U',N,Ds_matrix,N,N-m_target_dim+1,N,eigenvalues_vector,Ds_matrix,&eigenproblem_status);
 		// check for failure
 		ASSERT(eigenproblem_status==0);
 	
 		// set eigenvalues vector
-		m_eigenvalues.free_vector();
+		//m_eigenvalues.free_vector();
 		m_eigenvalues = SGVector<float64_t>(m_target_dim,true);
-		for (i=0; i<m_target_dim; i++)
-			m_eigenvalues.vector[i] = eigenvalues_vector[N-i-1];
+		SG_FREE(eigenvalues_vector);
 
-		// finally construct embedding
+		// fill eigenvalues vector in backwards order
+		for (i=0; i<m_target_dim; i++)
+			m_eigenvalues.vector[i] = eigenvalues_vector[m_target_dim-i-1];
+
+		// construct embedding
 		for (i=0; i<m_target_dim; i++)
 		{
 			for (j=0; j<N; j++)
-				replace_feature_matrix[j*m_target_dim+i] =
-					Ds_matrix[(N-i-1)*N+j]*CMath::sqrt(eigenvalues_vector[N-i-1]);
+			{
+				replace_feature_matrix[j*m_target_dim+i] = 
+				      Ds_matrix[(m_target_dim-i-1)*N+j] * CMath::sqrt(m_eigenvalues.vector[i]);
+			}
 		}
-
-		SG_FREE(eigenvalues_vector);
 	#endif /* HAVE_ARPACK else */
 	
 	// warn user if there are negative or zero eigenvalues
