@@ -234,11 +234,12 @@ class CMachine : public CSGObject
 
 		/** Stores feature data of underlying model.
 		 *
-		 * NOT IMPLEMENTED!
+		 * NOT IMPLEMENTED! Has to be done in subclasses
 		 */
 		virtual void store_model_features()
 		{
-			SG_NOTIMPLEMENTED;
+			SG_ERROR("Model storage and therefore Cross-Validation and "
+					"Model-Selection is not supported for %s\n", get_name());
 		}
 
 	protected:
