@@ -232,8 +232,14 @@ class CMachine : public CSGObject
 			m_store_model_features=store_model_features;
 		}
 
-		/** Stores feature data of underlying mode. */
-		virtual void store_model_features();
+		/** Stores feature data of underlying model.
+		 *
+		 * NOT IMPLEMENTED!
+		 */
+		virtual void store_model_features()
+		{
+			SG_NOTIMPLEMENTED;
+		}
 
 	protected:
 		/** train machine

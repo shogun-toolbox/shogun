@@ -332,6 +332,11 @@ class CKernelMachine : public CMachine
 		 */
 		static void* apply_helper(void* p);
 
+		/** Stores feature data of the SV indices and sets it to the lhs of the
+		 * underlying kernel. Then, all SV indices are set to identity.
+		 */
+		virtual void store_model_features();
+
 	protected:
 		/** kernel */
 		CKernel* kernel;
