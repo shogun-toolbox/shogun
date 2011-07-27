@@ -52,3 +52,26 @@ We integrated the work of the following people:
  Elpmis Lee
 	- Translation of the documentation to Chinese 
 
+ Baozeng Ding
+   - Support for modular java, c#, ruby, lua interfaces
+
+ Sergey Lisitsyn
+  - Locally Linear Embedding, Multidimensional Scaling, Local
+  Tangent Space Alignment, Kernel PCA
+  - Arpack wrappers
+  - Various bugfixes and structural improvements
+
+ Shashwat Lal Das
+  - Streaming / Online Feature Framework for SimpleFeatures, SparseFeatures,
+  StringFeatures, SGD-QN, Online SGD, Online Liblinear, Online Vowpal Vabit
+  
+ Heiko Strathmann
+  - Model selection framework for arbitrary Machines
+  - Statistics module
+  - Subset support in features
+
+ Alesis Novik
+  - Gaussian Mixture Models
+
+ Evgeniy Andreev:
+  - FibonacciHeap
