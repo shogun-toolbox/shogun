@@ -40,11 +40,15 @@ template <class T> class DynArray
 		 *
 		 * @param p_resize_granularity resize granularity
 		 */
-		DynArray(int32_t p_resize_granularity=128)
+		DynArray(int32_t p_resize_granularity=128, bool tracable=true)
 		{
 			this->resize_granularity=p_resize_granularity;
+            use_sg_mallocs=tracable;
 
-			array=SG_CALLOC(T, p_resize_granularity);
+            if (use_sg_mallocs)
+                array=SG_CALLOC(T, p_resize_granularity);
+            else
+                array=(T*) calloc(p_resize_granularity, sizeof(T));
 
 			num_elements=p_resize_granularity;
 			last_element_idx=-1;
@@ -93,6 +97,18 @@ template <class T> class DynArray
 		inline T get_element(int32_t index) const
 		{
 			return array[index];
+		}
+
+		/** get array element at index as pointer
+		 *
+		 * (does NOT do bounds checking)
+		 *
+		 * @param index index
+		 * @return array element at index
+		 */
+		inline T* get_element_ptr(int32_t index)
+		{
+			return &array[index];
 		}
 
 		/** get array element at index
@@ -245,7 +261,7 @@ template <class T> class DynArray
 				for (int32_t i=idx; i<last_element_idx; i++)
 					array[i]=array[i+1];
 
-				array[last_element_idx]=0;
+				memset(&array[last_element_idx], 0, sizeof(T));
 				last_element_idx--;
 
 				if (num_elements - last_element_idx
@@ -268,7 +284,12 @@ template <class T> class DynArray
 			int32_t new_num_elements= ((n/resize_granularity)+1)
 				*resize_granularity;
 
-			T* p= SG_REALLOC(T, array, new_num_elements);
+			T* p;
+            
+            if (use_sg_mallocs)
+                p = SG_REALLOC(T, array, new_num_elements);
+            else
+                p = (T*) realloc(array, new_num_elements*sizeof(T));
 			if (p)
 			{
 				array=p;
@@ -363,7 +384,11 @@ template <class T> class DynArray
 			if (orig.num_elements>num_elements)
 			{
 				SG_FREE(array);
-				array=SG_MALLOC(T, orig.num_elements);
+
+                if (use_sg_mallocs)
+                    array=SG_MALLOC(T, orig.num_elements);
+                else
+                    array=(T*) malloc(sizeof(T)*orig.num_elements);
 			}
 
 			memcpy(array, orig.array, sizeof(T)*orig.num_elements);
@@ -388,6 +413,9 @@ template <class T> class DynArray
 
 		/** the element in the array that has largest index */
 		int32_t last_element_idx;
+
+        /** whether SG_MALLOC or just malloc etc shall be used */
+        bool use_sg_mallocs;
 };
 }
 #endif /* _DYNARRAY_H_  */

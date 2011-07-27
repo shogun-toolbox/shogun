@@ -333,8 +333,23 @@ void CSGObject::save_serializable_post() throw (ShogunException)
 	m_save_post_called = true;
 }
 
+#ifdef TRACE_MEMORY_ALLOCS
+#include <shogun/lib/Set.h>
+extern CSet<shogun::MemoryBlock>* sg_mallocs;
+#endif
 void CSGObject::init()
 {
+#ifdef TRACE_MEMORY_ALLOCS
+	if (sg_mallocs)
+	{
+		int32_t idx=sg_mallocs->index_of(MemoryBlock(this));
+		if (idx>-1)
+		{
+			MemoryBlock* b=sg_mallocs->get_element_ptr(idx);
+			b->set_sgobject();
+		}
+	}
+#endif
 	m_refcount = 0;
 	io = NULL;
 	parallel = NULL;

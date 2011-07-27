@@ -12,11 +12,65 @@
 #include <shogun/lib/memory.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Set.h>
+#include <shogun/base/SGObject.h>
 
 using namespace shogun;
 
 #ifdef TRACE_MEMORY_ALLOCS
-extern CSet<MemoryBlock>* sg_mallocs;
+extern CSet<shogun::MemoryBlock>* sg_mallocs;
+
+MemoryBlock::MemoryBlock(void* p) : ptr(p), size(0), file(NULL),
+	line(-1), is_sgobject(false)
+{
+}
+
+MemoryBlock::MemoryBlock(void* p, size_t sz, const char* fname, int linenr) :
+	ptr(p), size(sz), file(fname), line(linenr), is_sgobject(false)
+{
+}
+
+MemoryBlock::MemoryBlock(const MemoryBlock &b)
+{
+	ptr=b.ptr;
+	size=b.size;
+	file=b.file;
+	line=b.line;
+	is_sgobject=b.is_sgobject;
+}
+
+
+bool MemoryBlock::operator==(const MemoryBlock &b) const
+{
+	return ptr==b.ptr;
+}
+
+void MemoryBlock::display()
+{
+	if (line!=-1)
+	{
+		printf("Memory block at %p of size %lld bytes (allocated in %s line %d)\n",
+				ptr, (long long int) size, file, line);
+	}
+	else
+	{
+		if (is_sgobject)
+		{
+			CSGObject* obj=(CSGObject*) ptr;
+			printf("SGObject '%s' at %p of size %lld bytes with %d ref's\n",
+					obj->get_name(), obj, (long long int) size, obj->ref_count());
+		}
+		else
+		{
+			printf("Object at %p of size %lld bytes\n",
+					ptr, (long long int) size);
+		}
+	}
+}
+
+void MemoryBlock::set_sgobject()
+{
+	is_sgobject=true;
+}
 #endif
 
 void* operator new(size_t size) throw (std::bad_alloc)
@@ -45,7 +99,7 @@ void operator delete(void *p)
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(p));
+		sg_mallocs->remove(MemoryBlock(p, true));
 #endif
 	free(p);
 }
@@ -77,17 +131,21 @@ void operator delete[](void *p)
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(p));
+		sg_mallocs->remove(MemoryBlock(p, false));
 #endif
 	free(p);
 }
 
-void* sg_malloc(size_t size)
+void* sg_malloc(size_t size
+#ifdef TRACE_MEMORY_ALLOCS
+		, const char* file, int line
+#endif
+)
 {
 	void* p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size));
+		sg_mallocs->add(MemoryBlock(p,size, file, line));
 #endif
 
 	if (!p)
@@ -105,12 +163,16 @@ void* sg_malloc(size_t size)
 	return p;
 }
 
-void* sg_calloc(size_t num, size_t size)
+void* sg_calloc(size_t num, size_t size
+#ifdef TRACE_MEMORY_ALLOCS
+		, const char* file, int line
+#endif
+)
 {
 	void* p=calloc(num, size);
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size));
+		sg_mallocs->add(MemoryBlock(p,size, file, line));
 #endif
 
 	if (!p)
@@ -134,21 +196,25 @@ void  sg_free(void* ptr)
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(ptr));
+		sg_mallocs->remove(MemoryBlock(ptr, false));
 #endif
 	free(ptr);
 }
 
-void* sg_realloc(void* ptr, size_t size)
+void* sg_realloc(void* ptr, size_t size
+#ifdef TRACE_MEMORY_ALLOCS
+		, const char* file, int line
+#endif
+)
 {
 	void* p=realloc(ptr, size);
 
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(ptr));
+		sg_mallocs->remove(MemoryBlock(ptr, false));
 
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size));
+		sg_mallocs->add(MemoryBlock(p,size, file, line));
 #endif
 
 	if (!p && (size || !ptr))
@@ -173,6 +239,7 @@ void list_memory_allocs()
 	{
 		int32_t num=sg_mallocs->get_num_elements();
 		printf("%d Blocks are allocated:\n", num);
+
 
 		for (int32_t i=0; i<num; i++)
 			sg_mallocs->get_element(i).display();

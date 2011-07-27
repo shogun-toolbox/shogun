@@ -27,9 +27,9 @@ template <class T> class CSet : public CSGObject
 {
 	public:
 		/** Default constructor */
-		CSet()
+		CSet(bool traceable=true)
 		{
-			array = new DynArray<T>();
+			array = new DynArray<T>(1024, traceable);
 		}
 
 		/** Default destructor */
@@ -50,7 +50,7 @@ template <class T> class CSet : public CSGObject
 
 		/** Remove an element from the set
 		 * 
-		 * @param e elemet to be removed
+		 * @param e element to be removed
 		 */
 		inline void remove(T e)
 		{
@@ -61,12 +61,22 @@ template <class T> class CSet : public CSGObject
 
 		/** Remove an element from the set
 		 * 
-		 * @param e elemet to be removed
+		 * @param e element to be looked for
 		 */
 		inline bool contains(T e)
 		{
 			int32_t idx=array->find_element(e);
 			return (idx!=-1);
+		}
+
+		/** Index of element in the set
+		 * 
+		 * @param e element to be removed
+		 * @return index of the element or -1 if not found
+		 */
+		inline int32_t index_of(T e)
+		{
+			return array->find_element(e);
 		}
 
 		/** get number of elements
@@ -88,6 +98,18 @@ template <class T> class CSet : public CSGObject
 		inline T get_element(int32_t index) const
 		{
 			return array->get_element(index);
+		}
+
+		/** get set element at index as reference
+		 *
+		 * (does NOT do bounds checking)
+		 *
+		 * @param index index
+		 * @return array element at index
+		 */
+		inline T* get_element_ptr(int32_t index)
+		{
+			return array->get_element_ptr(index);
 		}
 
 		/** operator overload for set read only access

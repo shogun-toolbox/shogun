@@ -54,7 +54,7 @@ namespace shogun
 			sg_math = new shogun::CMath();
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
-			sg_mallocs = new shogun::CSet<MemoryBlock>();
+			sg_mallocs = new shogun::CSet<MemoryBlock>(false);
 
 		SG_REF(sg_mallocs);
 #endif

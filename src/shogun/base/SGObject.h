@@ -14,6 +14,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/ShogunException.h>
+#include <shogun/lib/memory.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
@@ -243,6 +244,13 @@ public:
 	 * @return version object
 	 */
 	Version* get_global_version();
+
+#ifdef TRACE_MEMORY_ALLOCS
+    static void list_memory_allocs()
+    {
+        ::list_memory_allocs();
+    }
+#endif
 
 protected:
 
