@@ -181,11 +181,8 @@ class CKNN : public CDistanceMachine
 		///	smallest label, i.e. -1
 		int32_t min_label;
 
-		/// number of train examples
-		int32_t num_train_labels;
-
-		/// the actual trainlabels
-		int32_t* train_labels;
+		/* the actual trainlabels */
+		SGVector<int32_t> train_labels;
 };
 }
 #endif

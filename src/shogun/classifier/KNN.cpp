@@ -18,26 +18,25 @@
 using namespace shogun;
 
 CKNN::CKNN()
-: CDistanceMachine(), m_k(3), m_q(1.0), num_classes(0),
-  num_train_labels(0), train_labels(NULL)
+: CDistanceMachine(), m_k(3), m_q(1.0), num_classes(0)
 {
 }
 
 CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
-: CDistanceMachine(), m_k(k), m_q(1.0), num_classes(0), train_labels(NULL)
+: CDistanceMachine(), m_k(k), m_q(1.0), num_classes(0)
 {
 	ASSERT(d);
 	ASSERT(trainlab);
 
     set_distance(d);
     set_labels(trainlab);
-    num_train_labels=trainlab->get_num_labels();
+    train_labels.vlen=trainlab->get_num_labels();
 }
 
 
 CKNN::~CKNN()
 {
-	SG_FREE(train_labels);
+	SG_FREE(train_labels.vector);
 }
 
 bool CKNN::train(CFeatures* data)
@@ -53,28 +52,29 @@ bool CKNN::train(CFeatures* data)
 	}
 
 	SGVector<int32_t> lab=labels->get_int_labels();
-	num_train_labels=lab.vlen;
-	train_labels=CMath::clone_vector(lab.vector, lab.vlen);
+	train_labels.vlen=lab.vlen;
+	train_labels.vector=CMath::clone_vector(lab.vector, lab.vlen);
 	lab.free_vector();
-	ASSERT(num_train_labels>0);
+	ASSERT(train_labels.vlen>0);
 
-	int32_t max_class=train_labels[0];
-	int32_t min_class=train_labels[0];
+	int32_t max_class=train_labels.vector[0];
+	int32_t min_class=train_labels.vector[0];
 
 	int32_t i;
-	for (i=1; i<num_train_labels; i++)
+	for (i=1; i<train_labels.vlen; i++)
 	{
-		max_class=CMath::max(max_class, train_labels[i]);
-		min_class=CMath::min(min_class, train_labels[i]);
+		max_class=CMath::max(max_class, train_labels.vector[i]);
+		min_class=CMath::min(min_class, train_labels.vector[i]);
 	}
 
-	for (i=0; i<num_train_labels; i++)
-		train_labels[i]-=min_class;
+	for (i=0; i<train_labels.vlen; i++)
+		train_labels.vector[i]-=min_class;
 
 	min_label=min_class;
 	num_classes=max_class-min_class+1;
 
-	SG_INFO( "num_classes: %d (%+d to %+d) num_train: %d\n", num_classes, min_class, max_class, num_train_labels);
+	SG_INFO( "num_classes: %d (%+d to %+d) num_train: %d\n", num_classes,
+			min_class, max_class, train_labels.vlen);
 	return true;
 }
 
@@ -90,8 +90,8 @@ CLabels* CKNN::apply()
 	CLabels* output=new CLabels(num_lab);
 
 	//distances to train data and working buffer of train_labels
-	float64_t* dists=SG_MALLOC(float64_t, num_train_labels);
-	int32_t* train_lab=SG_MALLOC(int32_t, num_train_labels);
+	float64_t* dists=SG_MALLOC(float64_t, train_labels.vlen);
+	int32_t* train_lab=SG_MALLOC(int32_t, train_labels.vlen);
 
 	SG_INFO( "%d test examples\n", num_lab);
 	CSignal::clear_cancel();
@@ -104,15 +104,15 @@ CLabels* CKNN::apply()
 		SG_PROGRESS(i, 0, num_lab);
 
 		// lhs idx 1..n and rhs idx i
-		distances_lhs(dists,0,num_train_labels-1,i);
+		distances_lhs(dists,0,train_labels.vlen-1,i);
 		int32_t j;
 
-		for (j=0; j<num_train_labels; j++)
-			train_lab[j]=train_labels[j];
+		for (j=0; j<train_labels.vlen; j++)
+			train_lab[j]=train_labels.vector[j];
 
 		//sort the distance vector for test example j to all train examples
 		//classes[1..k] then holds the classes for minimum distance
-		CMath::qsort_index(dists, train_lab, num_train_labels);
+		CMath::qsort_index(dists, train_lab, train_labels.vlen);
 
 		//compute histogram of class outputs of the first k nearest neighbours
 		for (j=0; j<num_classes; j++)
@@ -167,7 +167,7 @@ CLabels* CKNN::classify_NN()
 	ASSERT(num_lab);
 
 	CLabels* output = new CLabels(num_lab);
-	float64_t* distances = SG_MALLOC(float64_t, num_train_labels);
+	float64_t* distances = SG_MALLOC(float64_t, train_labels.vlen);
 
 	SG_INFO("%d test examples\n", num_lab);
 	CSignal::clear_cancel();
@@ -178,7 +178,7 @@ CLabels* CKNN::classify_NN()
 		SG_PROGRESS(i,0,num_lab);
 
 		// get distances from i-th test example to 0..num_train_labels-1 train examples
-		distances_lhs(distances,0,num_train_labels-1,i);
+		distances_lhs(distances,0,train_labels.vlen-1,i);
 		int32_t j;
 
 		// assuming 0th train examples as nearest to i-th test example
@@ -186,7 +186,7 @@ CLabels* CKNN::classify_NN()
 		float64_t min_dist = distances[0];
 
 		// searching for nearest neighbor by comparing distances
-		for (j=0; j<num_train_labels; j++)
+		for (j=0; j<train_labels.vlen; j++)
 		{
 			if (distances[j]<min_dist)
 			{
@@ -196,7 +196,7 @@ CLabels* CKNN::classify_NN()
 		}
 
 		// label i-th test example with label of nearest neighbor with out_idx index
-		output->set_label(i,train_labels[out_idx]+min_label);
+		output->set_label(i,train_labels.vector[out_idx]+min_label);
 	}
 
 	delete [] distances;
@@ -215,8 +215,8 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	int32_t* output=SG_MALLOC(int32_t, m_k*num_lab);
 
 	//distances to train data and working buffer of train_labels
-	float64_t* dists=SG_MALLOC(float64_t, num_train_labels);
-	int32_t* train_lab=SG_MALLOC(int32_t, num_train_labels);
+	float64_t* dists=SG_MALLOC(float64_t, train_labels.vlen);
+	int32_t* train_lab=SG_MALLOC(int32_t, train_labels.vlen);
 
 	///histogram of classes and returned output
 	int32_t* classes=SG_MALLOC(int32_t, num_classes);
@@ -229,13 +229,13 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 		SG_PROGRESS(i, 0, num_lab);
 
 		// lhs idx 1..n and rhs idx i
-		distances_lhs(dists,0,num_train_labels-1,i);
-		for (int32_t j=0; j<num_train_labels; j++)
-			train_lab[j]=train_labels[j];
+		distances_lhs(dists,0,train_labels.vlen-1,i);
+		for (int32_t j=0; j<train_labels.vlen; j++)
+			train_lab[j]=train_labels.vector[j];
 
 		//sort the distance vector for test example j to all train examples
 		//classes[1..k] then holds the classes for minimum distance
-		CMath::qsort_index(dists, train_lab, num_train_labels);
+		CMath::qsort_index(dists, train_lab, train_labels.vlen);
 
 		//compute histogram of class outputs of the first k nearest neighbours
 		for (int32_t j=0; j<num_classes; j++)
