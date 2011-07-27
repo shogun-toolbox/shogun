@@ -172,7 +172,7 @@ CSVMLight::~CSVMLight()
   SG_FREE(primal);
 }
 
-bool CSVMLight::train_kernel_machine(CFeatures* data)
+bool CSVMLight::train_machine(CFeatures* data)
 {
 	//certain setup params
 	mkl_converged=false;

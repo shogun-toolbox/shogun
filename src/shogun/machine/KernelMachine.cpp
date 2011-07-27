@@ -40,11 +40,8 @@ CKernelMachine::CKernelMachine()
 	m_parameters->add(&m_alpha, "m_alpha",
 			"Array of coefficients alpha.");
 	m_parameters->add(&m_svs, "m_svs", "Number of ``support vectors''.");
-	m_parameters->add(&m_store_sv_features, "store_sv_features",
-			"Should SV-feature be stored after training?");
 
 	m_bias=0.0;
-	m_store_sv_features=false;
 }
 
 CKernelMachine::~CKernelMachine()
@@ -269,7 +266,7 @@ void* CKernelMachine::apply_helper(void* p)
 	return NULL;
 }
 
-void CKernelMachine::store_sv_features()
+void CKernelMachine::store_model_features()
 {
 	if (!kernel)
 		SG_ERROR("kernel is needed to store SV features.\n");

@@ -266,7 +266,7 @@ class CMKL : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_kernel_machine(CFeatures* data=NULL);
+		virtual bool train_machine(CFeatures* data=NULL);
 
 		/** check run before starting training (to e.g. check if labeling is
 		 * two-class labeling in classification case

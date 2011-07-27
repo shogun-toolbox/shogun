@@ -184,7 +184,7 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 			result.vector[i]=current;
 			break;
 		case R_EXP:
-			result.vector[i]=CMath::pow(type_base, current);
+			result.vector[i]=CMath::pow((float64_t)type_base, current);
 			break;
 		case R_LOG:
 			if (current<=0)

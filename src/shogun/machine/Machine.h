@@ -99,18 +99,23 @@ class CMachine : public CSGObject
 		CMachine();
 		virtual ~CMachine();
 
-		/** train classifier
+		/** train machine
 		 *
 		 * @param data training data (parameter can be avoided if distance or
 		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
+		 * initialized with train data).
+		 * If flag is set, model features will be stored after training.
 		 *
 		 * @return whether training was successful
 		 */
 		virtual bool train(CFeatures* data=NULL)
 		{
-			SG_NOTIMPLEMENTED;
-			return false;
+			bool result=train_machine(data);
+
+			if (m_store_model_features)
+				store_model_features();
+
+			return result;
 		}
 
 		/** apply machine to the currently set features
@@ -217,6 +222,43 @@ class CMachine : public CSGObject
 		 */
 		inline ESolverType get_solver_type() { return solver_type; }
 
+		/** Setter for store-model-features-after-training flag
+		 *
+		 * @param store_model_features whether model should be stored after
+		 * training
+		 */
+		virtual void set_store_model_features(bool store_model)
+		{
+			m_store_model_features=store_model;
+		}
+
+		/** Stores feature data of underlying model.
+		 *
+		 * NOT IMPLEMENTED! Has to be done in subclasses
+		 */
+		virtual void store_model_features()
+		{
+			SG_ERROR("Model storage and therefore Cross-Validation and "
+					"Model-Selection is not supported for %s\n", get_name());
+		}
+
+	protected:
+		/** train machine
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * NOT IMPLEMENTED!
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL)
+		{
+			SG_NOTIMPLEMENTED;
+			return false;
+		}
+
 	protected:
 		/** maximum training time */
 		float64_t max_train_time;
@@ -226,6 +268,9 @@ class CMachine : public CSGObject
 
 		/** solver type */
 		ESolverType solver_type;
+
+		/** whether model features should be stored after training */
+		bool m_store_model_features;
 };
 }
 #endif // _MACHINE_H__
