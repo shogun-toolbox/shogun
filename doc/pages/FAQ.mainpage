@@ -9,12 +9,6 @@ flexible and easily extensible. However, in case you just want to train a single
 SVM with a single or multiple kernels all of the static interfaces are
 sufficient. And well, of course you should be using \b python http://www.python.org :-)
 
-\li Q: Just recently - when I run any of the octave_modular examples octave
-will crash on exit.
-A: These examples all run fine. The problem is there is a bug in octave that on exit crashes unregistering global variables.
-This same thing happens when you run clear all and is currently only fixed in octave-svn but still awaits to be fixed within swig.
-The report and relevant thread is here http://old.nabble.com/crashes-when-exiting-octave-and-loading-swig-wrapped-code-to25989323.html
-
 \li Q: I've found a bug, where should I report it?
 A: Either report it in our bug tracker http://trac.tuebingen.mpg.de/shogun or
 ask on the mailinglist.
