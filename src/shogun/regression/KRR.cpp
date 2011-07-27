@@ -40,7 +40,7 @@ CKRR::~CKRR()
 	SG_FREE(alpha);
 }
 
-bool CKRR::train_kernel_machine(CFeatures* data)
+bool CKRR::train_machine(CFeatures* data)
 {
 	SG_FREE(alpha);
 

@@ -20,6 +20,10 @@ CMachine::CMachine() : CSGObject(), max_train_time(0), labels(NULL),
 					  "Maximum training time.");
 	m_parameters->add((machine_int_t*) &solver_type, "solver_type");
 	m_parameters->add((CSGObject**) &labels, "labels");
+	m_parameters->add(&m_store_model_features, "store_model_features",
+			"Should feature data of model be stored after training?");
+
+	m_store_model_features=false;
 }
 
 CMachine::~CMachine()

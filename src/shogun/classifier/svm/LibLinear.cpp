@@ -74,7 +74,7 @@ CLibLinear::~CLibLinear()
 	SG_FREE(m_linear_term);
 }
 
-bool CLibLinear::train(CFeatures* data)
+bool CLibLinear::train_machine(CFeatures* data)
 {
 	CSignal::clear_cancel();
 	ASSERT(labels);

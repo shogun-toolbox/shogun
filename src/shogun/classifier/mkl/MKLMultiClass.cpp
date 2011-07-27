@@ -322,7 +322,7 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 }
 
 
-bool CMKLMultiClass::train_kernel_machine(CFeatures* data)
+bool CMKLMultiClass::train_machine(CFeatures* data)
 {
 	int numcl=labels->get_num_classes();
 	ASSERT(kernel);

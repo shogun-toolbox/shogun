@@ -29,7 +29,7 @@ CLibSVMOneClass::~CLibSVMOneClass()
 	SG_FREE(model);
 }
 
-bool CLibSVMOneClass::train_kernel_machine(CFeatures* data)
+bool CLibSVMOneClass::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);
 	if (data)

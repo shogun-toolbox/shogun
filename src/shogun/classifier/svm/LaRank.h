@@ -359,7 +359,7 @@ namespace shogun
 			float64_t get_tau() { return tau; };
 
 		protected:
-			bool train_kernel_machine(CFeatures* data);
+			bool train_machine(CFeatures* data);
 
 		private:
 			/*

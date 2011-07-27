@@ -57,18 +57,6 @@ class CKernelMachine : public CMachine
 		virtual const char* get_name(void) const {
 			return "KernelMachine"; }
 
-
-		virtual bool train(CFeatures* data=NULL)
-		{
-			bool result=train_kernel_machine(data);
-
-			/* store sv feature data if wanted */
-			if (m_store_sv_features)
-				store_sv_features();
-
-			return result;
-		}
-
 		/** set kernel
 		 *
 		 * @param k kernel
@@ -344,37 +332,10 @@ class CKernelMachine : public CMachine
 		 */
 		static void* apply_helper(void* p);
 
-		/** When set, store_sv_features() is called after training
-		 *
-		 * @param store whether sv features should be stored after training
-		 */
-		inline void set_store_sv_features(bool store)
-		{
-			m_store_sv_features=store;
-		}
-
-	protected:
-		/** train classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * NOT IMPLEMENTED!
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train_kernel_machine(CFeatures* data=NULL)
-		{
-			SG_NOTIMPLEMENTED;
-			return false;
-		}
-
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.
-		 * This way, this kernel machine now uses its own data copy for
-		 * classification. */
-		virtual void store_sv_features();
+		 */
+		virtual void store_model_features();
 
 	protected:
 		/** kernel */
@@ -393,9 +354,6 @@ class CKernelMachine : public CMachine
 
 		/** array of ``support vectors'' (indices of feature objects) */
 		SGVector<int32_t> m_svs;
-
-		/** whether sv features should be stored after training */
-		bool m_store_sv_features;
 };
 }
 #endif /* _KERNEL_MACHINE_H__ */
