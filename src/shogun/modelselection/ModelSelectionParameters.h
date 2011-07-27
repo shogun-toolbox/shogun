@@ -24,6 +24,19 @@ enum ERangeType
 	R_LINEAR, R_EXP, R_LOG
 };
 
+/** value type of a model selection parameter node */
+enum EMSParamType
+{
+	/** no type */
+	MSPT_NONE=0,
+
+	/* float64_t */
+	MSPT_FLOAT64,
+
+	/* int32_t */
+	MSPT_INT32,
+};
+
 /**
  * @brief Class to select parameters and their ranges for model selection. The
  * structure is organized as a tree with different kinds of nodes, depending on
@@ -35,8 +48,8 @@ enum ERangeType
  * parameters of the CSGObject. CSGObjects are SG_REF'ed/SG_UNREF'ed
  *
  * -value node: a node with a (parameter) name and an array of values for that
- * parameter. These ranges may be set using set_range(). This node is always a
- * leaf
+ * parameter. These ranges may be set using build_values().
+ * This node is always a leaf.
  *
  * After a (legal!) tree is constructed with the append_child method, all
  * possible combinations that are implied by this tree may be extracted with the
@@ -71,27 +84,13 @@ public:
 	 */
 	void append_child(CModelSelectionParameters* child);
 
-	/** setter for the range of this node. Only possible if this is a value
-	 * node. A minimum and a maximum is specified, step interval, and an
-	 * ERangeType (s. above) of the range, which is used to fill an array with
-	 * concrete values. For some range types, a base is required
-	 *
-	 * @param min minimum of desired range. Requires min<max
-	 * @param max maximum of desired range. Requires min<max
-	 * @param type the way the values are created, see ERangeType
-	 * @param step increment instaval for the values
-	 * @param type_base base for EXP or LOG ranges
-	 */
-	void build_values(float64_t min, float64_t max, ERangeType type,
-			float64_t step=1, float64_t type_base=2);
-
 	/** setter for values of this node.
 	 * If the latter are not possible to be produced by set_range, a vector may
 	 * be specified directly.
 	 *
 	 * @param values value vector
 	 */
-	void set_values(SGVector<float64_t> values);
+	void set_values(SGVector<void> values);
 
 	/** SG_PRINT's the tree of which this node is the base
 	 *
@@ -109,6 +108,14 @@ public:
 	 */
 	CDynamicObjectArray<CParameterCombination>* get_combinations();
 
+	/** float64_t wrapper for build_values() */
+	void build_values(float64_t min, float64_t max, ERangeType type,
+			float64_t step=1.0, float64_t type_base=2.0);
+
+	/** int32_t wrapper for build_values() */
+	void build_values(int32_t min, int32_t max, ERangeType type, int32_t step=1,
+			int32_t type_base=2);
+
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
 	{
@@ -117,6 +124,13 @@ public:
 
 private:
 	void init();
+
+	/** deletes the values vector with respect to its type */
+	void delete_values();
+
+	/** generic wrapper for create_range_array */
+	void build_values(EMSParamType param_type, void* min, void* max,
+			ERangeType type, void* step, void* type_base);
 
 protected:
 	/** checks if this node has children
@@ -131,9 +145,62 @@ protected:
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
-	SGVector<float64_t> m_values;
+	SGVector<void> m_values;
 	CDynamicObjectArray<CModelSelectionParameters>* m_child_nodes;
+	EMSParamType m_value_type;
 };
+
+/** Creates an array of values specified by the parameters.
+ * A minimum and a maximum is specified, step interval, and an
+ * ERangeType (s. above) of the range, which is used to fill an array with
+ * concrete values. For some range types, a base is required.
+ * All values are given by void pointers to them (type conversion is done
+ * via m_value_type variable).
+ *
+ * @param min minimum of desired range. Requires min<max
+ * @param max maximum of desired range. Requires min<max
+ * @param type the way the values are created, see ERangeType
+ * @param step increment instaval for the values
+ * @param type_base base for EXP or LOG ranges
+ */
+template <class T> SGVector<T> create_range_array(T min, T max,
+		ERangeType type, T step, T type_base)
+{
+	if (max<min)
+		SG_SERROR("unable build values: max=%f < min=%f\n", max, min);
+
+	/* create value vector */
+	index_t num_values=CMath::round(max-min)/step+1;
+	SGVector<T> result(num_values);
+
+	/* fill array */
+	for (index_t i=0; i<num_values; ++i)
+	{
+		T current=min+i*step;
+
+		switch (type)
+		{
+		case R_LINEAR:
+			result.vector[i]=current;
+			break;
+		case R_EXP:
+			result.vector[i]=CMath::pow(type_base, current);
+			break;
+		case R_LOG:
+			if (current<=0)
+				SG_SERROR("log(x) with x=%f\n", current);
+
+			/* custom base b: log_b(i*step)=log_2(i*step)/log_2(b) */
+			result.vector[i]=CMath::log2(current)/CMath::log2(type_base);
+			break;
+		default:
+			SG_SERROR("unknown range type!\n");
+			break;
+		}
+	}
+
+	return result;
+}
 
 }
 #endif /* __MODELSELECTIONPARAMETERS_H_ */
