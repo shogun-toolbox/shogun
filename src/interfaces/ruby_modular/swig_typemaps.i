@@ -170,6 +170,12 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, R2SG, SG2R, TYPECODE)
 
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<SGTYPE> {
+	$1 = 0;
+	if (TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) {
+		$1 = 1;
+	}
+}
 %typemap(in) shogun::SGStringList<SGTYPE> {
 	int32_t size = 0;
 	int32_t i, j;
