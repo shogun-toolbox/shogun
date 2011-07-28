@@ -75,10 +75,7 @@ int main(int argc, char **argv)
 
 		SG_SPRINT("\n");
 
-		f->free_feature_vector(vec, i);
-
-		/* temp quick fix to delete copy that was created by get_feature_vector */
-		SG_FREE(vec.vector);
+		f->free_feature_vector(vec.vector, i, vec.do_free);
 	}
 
 
@@ -102,10 +99,7 @@ int main(int argc, char **argv)
 
 		SG_SPRINT("\n");
 
-		subset_copy->free_feature_vector(vec, i);
-
-		/* temp quick fix to delete copy that was created by get_feature_vector */
-		SG_FREE(vec.vector);
+		subset_copy->free_feature_vector(vec.vector, i, vec.do_free);
 	}
 
 	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
@@ -118,10 +112,7 @@ int main(int argc, char **argv)
 			ASSERT(vec.vector[j]==strings.strings[offset_idx].string[j]);
 		}
 
-		subset_copy->free_feature_vector(vec, i);
-
-		/* temp quick fix to delete copy that was created by get_feature_vector */
-		SG_FREE(vec.vector);
+		subset_copy->free_feature_vector(vec.vector, i, vec.do_free);
 	}
 
 	SG_UNREF(f);
