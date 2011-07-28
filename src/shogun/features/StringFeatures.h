@@ -2155,6 +2155,9 @@ template <class ST> class CStringFeatures : public CFeatures
 			{
 				/* eventually check subset */
 				index_t real_idx=subset_idx_conversion(indices.vector[i]);
+				SGString<ST> string_copy(features[real_idx].slen);
+				memcpy(copy.strings[i].string, features[real_idx].vector,
+					features[real_idx].slen*sizeof(ST));
 				copy.strings[i]=features[real_idx];
 			}
 
