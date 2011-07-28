@@ -1664,7 +1664,7 @@ TParameter::delete_cont(void)
 			for (index_t i=0; i<old_length; i++) {
 				SGString<char>* buf = (SGString<char>*) (*(char**)
 						m_parameter + i *m_datatype.sizeof_stype());
-				if (buf->length > 0) SG_FREE(buf->string);
+				if (buf->slen > 0) SG_FREE(buf->string);
 			}
 
 			switch (m_datatype.m_ptype) {
@@ -2018,7 +2018,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 		if (!save_ptype(file, param, prefix)) return false;
 		break;
 	case ST_STRING:
-		len_real = str_ptr->length;
+		len_real = str_ptr->slen;
 		if (str_ptr->string == NULL && len_real != 0) {
 			SG_SWARNING("Inconsistency between data structure and "
 					   "len during saving string `%s%s'!  Continuing"
@@ -2105,7 +2105,7 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 		if (!file->read_string_end(
 				&m_datatype, m_name, prefix, len_real))
 			return false;
-		str_ptr->length = len_real;
+		str_ptr->slen = len_real;
 		break;
 	case ST_SPARSE:
 		if (!file->read_sparse_begin(
