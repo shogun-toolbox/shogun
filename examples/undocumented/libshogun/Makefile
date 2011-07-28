@@ -26,7 +26,8 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  features_subset_simple_features \
 		  features_subset_sparse_features \
 		  mathematics_confidence_intervals \
-		  features_copy_subset_simple_features
+		  features_copy_subset_simple_features \
+		  features_copy_subset_string_features
 
 
 all: $(TARGETS)
