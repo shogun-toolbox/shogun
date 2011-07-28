@@ -335,7 +335,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			ST* dst=SG_MALLOC(ST, l);
 			memcpy(dst, vec, l*sizeof(ST));
 			free_feature_vector(vec, num, free_vec);
-			return SGVector<ST>(dst, l, true);
+			return SGVector<ST>(dst, l);
 		}
 
 		/** set string for selected example num
