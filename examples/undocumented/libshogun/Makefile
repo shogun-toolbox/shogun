@@ -22,7 +22,8 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \
 		  modelselection_grid_search_linear features_subset_labels \
-		  modelselection_grid_search_kernel\
+		  modelselection_grid_search_kernel \
+		  modelselection_grid_search_string_kernel \
 		  features_subset_simple_features \
 		  features_subset_sparse_features \
 		  mathematics_confidence_intervals \
