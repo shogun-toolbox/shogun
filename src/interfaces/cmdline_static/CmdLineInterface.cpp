@@ -525,7 +525,7 @@ bool CCmdLineInterface::skip_line(const char* line)
 
 	//SG_PRINT("ascii(0) %d, %c\n", int(line[0]), line[0]);
 
-	char* skipped=IO::skip_blanks((char*) line);
+	char* skipped=SGIO::skip_blanks((char*) line);
 	if (skipped[0]==CMDLINE_COMMENT0 || skipped[0]==CMDLINE_COMMENT1)
 		return true;
 

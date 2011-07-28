@@ -380,22 +380,22 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		Cell c = arg.cell_value();													\
 		num_str=c.nelem();															\
 		ASSERT(num_str>=1);															\
-		strings=SG_MALLOC(SGString<sg_type>, num_str);										\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);								\
 																					\
-		for (int32_t i=0; i<num_str; i++)												\
+		for (int32_t i=0; i<num_str; i++)											\
 		{																			\
 			if (!c.elem(i).oct_type_check1() || !c.elem(i).oct_type_check2()		\
-					|| !c.elem(i).rows()==1)				\
+					|| !c.elem(i).rows()==1)										\
 				SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter); \
 																					\
 			oct_type str=c.elem(i).oct_converter();									\
 																					\
-			int32_t len=str.cols();														\
+			int32_t len=str.cols();													\
 			if (len>0) 																\
 			{ 																		\
-				strings[i].length=len; /* all must have same length in octave */ 	\
+				strings[i].slen=len; /* all must have same length in octave */ 		\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */ \
-				int32_t j; 																\
+				int32_t j; 															\
 				for (j=0; j<len; j++) 												\
 					strings[i].string[j]=str(0,j); 									\
 				strings[i].string[j]='\0'; 											\
@@ -404,7 +404,7 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			else																	\
 			{																		\
 				SG_WARNING( "string with index %d has zero length.\n", i+1);		\
-				strings[i].length=0;												\
+				strings[i].slen=0;													\
 				strings[i].string=NULL;												\
 			}																		\
 		} 																			\
@@ -413,16 +413,16 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 	{																				\
 		oct_type data=arg.oct_converter();											\
 		num_str=data.cols(); 														\
-		int32_t len=data.rows(); 														\
-		strings=SG_MALLOC(SGString<sg_type>, num_str); 									\
+		int32_t len=data.rows(); 													\
+		strings=SG_MALLOC(SGString<sg_type>, num_str); 								\
 																					\
-		for (int32_t i=0; i<num_str; i++) 												\
+		for (int32_t i=0; i<num_str; i++) 											\
 		{ 																			\
 			if (len>0) 																\
 			{ 																		\
-				strings[i].length=len; /* all must have same length in octave */ 	\
+				strings[i].slen=len; /* all must have same length in octave */ 		\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */ \
-				int32_t j; 																\
+				int32_t j; 															\
 				for (j=0; j<len; j++) 												\
 					strings[i].string[j]=data(j,i);									\
 				strings[i].string[j]='\0'; 											\
@@ -430,7 +430,7 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			else 																	\
 			{ 																		\
 				SG_WARNING( "string with index %d has zero length.\n", i+1); 		\
-				strings[i].length=0; 												\
+				strings[i].slen=0; 													\
 				strings[i].string=NULL; 											\
 			} 																		\
 		} 																			\
@@ -545,20 +545,20 @@ void COctaveInterface::function_name(const SGString<sg_type>* strings, int32_t n
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n");									\
 																					\
-	Cell c= Cell(dim_vector(num_str));															\
+	Cell c= Cell(dim_vector(num_str));												\
 	if (c.nelem()!=num_str)															\
 		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);			\
 																					\
-	for (int32_t i=0; i<num_str; i++)													\
+	for (int32_t i=0; i<num_str; i++)												\
 	{																				\
-		int32_t len=strings[i].length;													\
+		int32_t len=strings[i].slen;												\
 		if (len>0)																	\
 		{																			\
 			oct_type str(dim_vector(1,len));										\
 			if (str.cols()!=len)													\
 				SG_ERROR("Couldn't create " error_string " String %d of length %d.\n", i, len);	\
 																					\
-			for (int32_t j=0; j<len; j++)												\
+			for (int32_t j=0; j<len; j++)											\
 				str(j)= (if_type) strings[i].string[j];								\
 			c.elem(i)=str;															\
 		}																			\

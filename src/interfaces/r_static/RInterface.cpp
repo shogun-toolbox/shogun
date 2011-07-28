@@ -334,7 +334,7 @@ void CRInterface::get_string_list(SGString<char>*& strings, int32_t& num_str, in
 			}
 			strings[i].string=dst;
 			strings[i].string[max_string_len]='\0';
-			strings[i].length=max_string_len;
+			strings[i].slen=max_string_len;
 		}
 	}
 	else
@@ -355,14 +355,14 @@ void CRInterface::get_string_list(SGString<char>*& strings, int32_t& num_str, in
 				char* dst=SG_MALLOC(char, len+1);
 				strings[i].string=(char*) memcpy(dst, c, len*sizeof(char));
 				strings[i].string[len]='\0';
-				strings[i].length=len;
+				strings[i].slen=len;
 				max_string_len=CMath::max(max_string_len, len);
 			}
 			else
 			{
 				SG_WARNING( "string with index %d has zero length\n", i+1);
 				strings[i].string=0;
-				strings[i].length=0;
+				strings[i].slen=0;
 			}
 		}
 	}
@@ -505,7 +505,7 @@ void CRInterface::set_string_list(const SGString<char>* strings, int32_t num_str
 
 	for (int32_t i=0; i<num_str; i++)
 	{
-		int32_t len=strings[i].length;
+		int32_t len=strings[i].slen;
 		if (len>0)
 			SET_STRING_ELT(feat, i, mkChar(strings[i].string));
 	}

@@ -365,7 +365,7 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			if (len>0) 																	\
 			{ 																			\
 				if_type* data=(if_type*) mxGetData(str);								\
-				strings[i].length=len; /* all must have same length in matlab */ 		\
+				strings[i].slen=len; /* all must have same length in matlab */ 		\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in matlab */ \
 				int32_t j; 																	\
 				for (j=0; j<len; j++) 													\
@@ -376,7 +376,7 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			else																		\
 			{																			\
 				SG_WARNING( "string with index %d has zero length.\n", i+1);			\
-				strings[i].length=0;													\
+				strings[i].slen=0;													\
 				strings[i].string=NULL;													\
 			}																			\
 		}																				\
@@ -392,7 +392,7 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		{ 																				\
 			if (len>0) 																	\
 			{ 																			\
-				strings[i].length=len; /* all must have same length in matlab */ 		\
+				strings[i].slen=len; /* all must have same length in matlab */ 		\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in matlab */ \
 				int32_t j; 																	\
 				for (j=0; j<len; j++) 													\
@@ -402,7 +402,7 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			else 																		\
 			{ 																			\
 				SG_WARNING( "string with index %d has zero length.\n", i+1); 			\
-				strings[i].length=0; 													\
+				strings[i].slen=0; 													\
 				strings[i].string=NULL; 												\
 			} 																			\
 		} 																				\
@@ -573,9 +573,9 @@ void CMatlabInterface::function_name(const SGString<sg_type>* strings, int32_t n
 	if (!mx_str)																	\
 		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);			\
 																					\
-	for (int32_t i=0; i<num_str; i++)													\
+	for (int32_t i=0; i<num_str; i++)												\
 	{																				\
-		int32_t len=strings[i].length;													\
+		int32_t len=strings[i].slen;												\
 		if (len>0)																	\
 		{																			\
 			mxArray* str=mxCreateNumericMatrix(1, len, mx_type, mxREAL);			\
@@ -584,7 +584,7 @@ void CMatlabInterface::function_name(const SGString<sg_type>* strings, int32_t n
 																					\
 			if_type* data=(if_type*) mxGetData(str);								\
 																					\
-			for (int32_t j=0; j<len; j++)												\
+			for (int32_t j=0; j<len; j++)											\
 				data[j]=strings[i].string[j];										\
 			mxSetCell(mx_str, i, str);												\
 		}																			\
