@@ -165,15 +165,6 @@ public:
 	SGString(const SGString &orig)
 		: string(orig.string), slen(orig.slen), do_free(orig.do_free) { }
 
-	/** prints the string */
-	void display()
-	{
-		for (index_t i=0; i<slen; ++i)
-			SG_SPRINT("%c", string[i]);
-
-		SG_SPRINT("\n");
-	}
-
 public:
 	/** string  */
 	T* string;
