@@ -55,7 +55,12 @@ template <class T> class DynArray
 		}
 
 		virtual ~DynArray(void)
-		{ SG_FREE(array); }
+		{
+			if (use_sg_mallocs)
+				SG_FREE(array);
+			else
+				free(array);
+		}
 
 		/** set the resize granularity
 		 *

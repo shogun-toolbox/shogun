@@ -82,6 +82,12 @@ namespace shogun
 
 	void exit_shogun()
 	{
+#ifdef TRACE_MEMORY_ALLOCS
+		list_memory_allocs();
+		shogun::CSet<shogun::MemoryBlock>* mallocs=sg_mallocs;
+		sg_mallocs=NULL;
+		SG_UNREF(mallocs);
+#endif
 		sg_print_message=NULL;
 		sg_print_warning=NULL;
 		sg_print_error=NULL;
@@ -92,7 +98,6 @@ namespace shogun
 		SG_UNREF(sg_parallel);
 		SG_UNREF(sg_io);
 
-		// will leak memory alloc statistics on exit
 	}
 
 	void set_global_io(SGIO* io)
