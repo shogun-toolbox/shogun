@@ -195,7 +195,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			const char *str = StringValuePtr(arr);
 			max_len = shogun::CMath::max(len, max_len);
 
-			strings[i].length = len;
+			strings[i].slen = len;
 			strings[i].string = NULL;
 			
 			if (len > 0) {
@@ -208,7 +208,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 				len = RARRAY_LEN(arr);
 				max_len = shogun::CMath::max(len, max_len);
 
-				strings[i].length=len;
+				strings[i].slen=len;
 			strings[i].string=NULL;
 				if (len > 0) {
 					strings[i].string = SG_MALLOC(SGTYPE, len);
@@ -243,11 +243,11 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			rb_ary_push(arr, vec);
 		}
 		else {
-			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].length);
-			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
+			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
+			memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
 			
-			VALUE vec = rb_ary_new2(str[i].length);
-			for (j = 0; j < str[i].length; j++) {
+			VALUE vec = rb_ary_new2(str[i].slen);
+			for (j = 0; j < str[i].slen; j++) {
 				rb_ary_push(vec, SG2R(data[j]));
 			}
 			rb_ary_push(arr, vec);

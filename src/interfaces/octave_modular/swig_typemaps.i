@@ -223,7 +223,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
             int32_t len=str.cols();
             if (len>0) 
             { 
-                strings[i].length=len; /* all must have same length in octave */
+                strings[i].slen=len; /* all must have same length in octave */
                 strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
                 int32_t j; 
@@ -235,7 +235,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
             else
             {
                 /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-                strings[i].length=0;
+                strings[i].slen=0;
                 strings[i].string=NULL;
             }
         }
@@ -252,7 +252,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
         { 
             if (len>0) 
             { 
-                strings[i].length=len; /* all must have same length in octave */
+                strings[i].slen=len; /* all must have same length in octave */
                 strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
                 int32_t j;
@@ -263,7 +263,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
             else
             { 
                 /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-                strings[i].length=0;
+                strings[i].slen=0;
                 strings[i].string=NULL;
             }
         }

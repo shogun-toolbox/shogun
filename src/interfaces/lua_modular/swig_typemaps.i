@@ -300,7 +300,7 @@ TYPEMAP_SGMATRIX(float64_t)
 			const char *str = lua_tolstring(L, -1, (size_t *)&len);
 			max_len = shogun::CMath::max(len, max_len);
 
-			strings[i].length = len;
+			strings[i].slen = len;
 			strings[i].string = NULL;
 			
 			if (len > 0) {			
@@ -316,7 +316,7 @@ TYPEMAP_SGMATRIX(float64_t)
 			len = lua_objlen(L, -1);
 			max_len = shogun::CMath::max(len, max_len);
 
-			strings[i].length=len;
+			strings[i].slen=len;
           strings[i].string=NULL;
 			
 			if (len > 0) {
@@ -347,11 +347,11 @@ TYPEMAP_SGMATRIX(float64_t)
 			lua_rawseti(L, -2, i + 1);
 		}
 		else {
-			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].length);
-			memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
+			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
+			memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
 			
 			lua_newtable(L);
-			for (j = 0; j < str[i].length; j++) {
+			for (j = 0; j < str[i].slen; j++) {
 				lua_pushnumber(L, (lua_Number)data[j]);
 				lua_rawseti(L, -2, j + 1);
 			}

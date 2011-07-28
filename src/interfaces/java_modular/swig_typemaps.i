@@ -553,7 +553,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 		len = JCALL1(GetArrayLength, jenv, jarr);
 		max_len = shogun::CMath::max(len, max_len);
 
-		strings[i].length=len;
+		strings[i].slen=len;
 		strings[i].string=NULL;
 
 		if (len >0) {
@@ -579,16 +579,16 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	res = JCALL3(NewObjectArray, jenv, num, cls, NULL);
 
 	for (i = 0; i < num; i++) {
-		SGTYPE* data = SG_MALLOC(SGTYPE, str[i].length);
-		memcpy(data, str[i].string, str[i].length * sizeof(SGTYPE));
+		SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
+		memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
 
-		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].length);
+		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].slen);
 
-		JNITYPE arr[str[i].length];
-		for (j = 0; j < str[i].length; j++) {
+		JNITYPE arr[str[i].slen];
+		for (j = 0; j < str[i].slen; j++) {
 			arr[j] = (JNITYPE)data[j];
 		}
-		JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, str[i].length, arr);
+		JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, str[i].slen, arr);
 		JCALL3(SetObjectArrayElement, jenv, res, i, jarr);
 		JCALL1(DeleteLocalRef, jenv, jarr);
 
@@ -644,7 +644,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
 		max_len = shogun::CMath::max(len, max_len);
 		const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
 
-		strings[i].length = len;
+		strings[i].slen = len;
 		strings[i].string = NULL;
 
 		if (len > 0) {

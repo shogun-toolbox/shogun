@@ -176,13 +176,13 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
             /*ASSERT(strs[i].string);*/
 			strs[i].string=(sg_type*) memcpy(dst, c, len*sizeof(sg_type));
             strs[i].string[len]='\0'; /* zero terminate */
-            strs[i].length=len;
+            strs[i].slen=len;
             max_len=CMath::max(max_len, len);
         }
         else
         {
             /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
-            strs[i].length=0;
+            strs[i].slen=0;
             strs[i].string=NULL;
         }
     }
