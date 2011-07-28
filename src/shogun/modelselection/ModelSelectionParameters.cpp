@@ -204,7 +204,7 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 	 * combine them iteratively children which are something different
 	 */
 	else if ((m_sgobject && m_node_name) ||
-			(!m_node_name && !m_sgobject && !m_values.vector))
+			(!m_node_name && !m_sgobject))
 	{
 		/* only consider combinations if this node has children */
 		if (m_child_nodes->get_num_elements())
