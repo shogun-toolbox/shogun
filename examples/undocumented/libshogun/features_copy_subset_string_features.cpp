@@ -41,11 +41,12 @@ int main(int argc, char **argv)
 		{
 			current.string[j]=(char)CMath::random('A', 'Z');
 
-			char* string=new char[2];
+			/* attach \0 to print letter */
+			char* string=SG_MALLOC(char, 2);
 			string[0]=current.string[j];
 			string[1]='\0';
 			SG_SPRINT("%s", string);
-			delete[] string;
+			SG_FREE(string);
 		}
 		SG_SPRINT("\"\n");
 
@@ -75,6 +76,9 @@ int main(int argc, char **argv)
 		SG_SPRINT("\n");
 
 		f->free_feature_vector(vec, i);
+
+		/* temp quick fix to delete copy that was created by get_feature_vector */
+		SG_FREE(vec.vector);
 	}
 
 
@@ -99,6 +103,9 @@ int main(int argc, char **argv)
 		SG_SPRINT("\n");
 
 		subset_copy->free_feature_vector(vec, i);
+
+		/* temp quick fix to delete copy that was created by get_feature_vector */
+		SG_FREE(vec.vector);
 	}
 
 	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
@@ -112,13 +119,15 @@ int main(int argc, char **argv)
 		}
 
 		subset_copy->free_feature_vector(vec, i);
+
+		/* temp quick fix to delete copy that was created by get_feature_vector */
+		SG_FREE(vec.vector);
 	}
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
 	SG_FREE(feature_copy_subset.vector);
 
-	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;
