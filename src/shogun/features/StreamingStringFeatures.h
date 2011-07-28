@@ -379,7 +379,7 @@ void CStreamingStringFeatures<T>::init()
 	current_string=NULL;
 	current_length=-1;
 	current_sgstring.string=current_string;
-	current_sgstring.length=current_length;
+	current_sgstring.slen=current_length;
 }
 
 template <class T>
@@ -459,7 +459,7 @@ template <class T>
 SGString<T> CStreamingStringFeatures<T>::get_vector()
 {
 	current_sgstring.string=current_string;
-	current_sgstring.length=current_length;
+	current_sgstring.slen=current_length;
 
 	return current_sgstring;
 }
