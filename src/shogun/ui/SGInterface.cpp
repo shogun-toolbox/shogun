@@ -6184,7 +6184,7 @@ bool CSGInterface::cmd_get_plif_struct()
 	{
 		ids[i]=PEN[i]->get_id();
 		names[i].string = PEN[i]->get_plif_name();
-		names[i].length = strlen(PEN[i]->get_plif_name());
+		names[i].slen = strlen(PEN[i]->get_plif_name());
 		float64_t* limits = PEN[i]->get_plif_limits();
 		float64_t* penalties = PEN[i]->get_plif_penalties();
 		for (int32_t j=0;j<M;j++)
@@ -6193,7 +6193,7 @@ bool CSGInterface::cmd_get_plif_struct()
 			all_penalties[i*M+j]=penalties[j];
 		}
 		all_transform[i].string = (char*) PEN[i]->get_transform_type();
-		all_transform[i].length = strlen(PEN[i]->get_transform_type());		
+		all_transform[i].slen = strlen(PEN[i]->get_transform_type());
 		min_values[i]=PEN[i]->get_min_value();
 		max_values[i]=PEN[i]->get_max_value();
 		all_use_cache[i]=PEN[i]->get_use_cache();

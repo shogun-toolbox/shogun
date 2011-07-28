@@ -279,7 +279,9 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
 		{
-			SG_NOTIMPLEMENTED;
+			SG_ERROR("copy_subset and therefore model storage of CMachine "
+					"(required for cross-validation and model-selection is ",
+					"not yet implemented for feature type %s\n", get_name());
 			return NULL;
 		}
 

@@ -95,6 +95,12 @@ class CDistanceMachine : public CMachine
 		 */
 		virtual CLabels* apply(CFeatures* data)=0;
 
+
+		/** Stores feature data of underlying model.
+		 *
+		 */
+		virtual void store_model_features();
+
 	protected:
 		/** the distance */
 		CDistance* distance;

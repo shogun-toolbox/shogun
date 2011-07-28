@@ -189,3 +189,8 @@ void* CDistanceMachine::run_distance_thread_rhs(void* p)
 
     return NULL;
 }
+
+void CDistanceMachine::store_model_features()
+{
+
+}

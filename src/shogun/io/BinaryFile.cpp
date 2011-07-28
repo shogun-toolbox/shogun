@@ -192,7 +192,7 @@ void CBinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& 
 		int32_t len=0;																			\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
 			SG_ERROR("Failed to read string length of string with idx=%d\n", i);				\
-		strings[i].length=len;																	\
+		strings[i].slen=len;																	\
 		sg_type* str = SG_MALLOC(sg_type, len);														\
 		if (fread(str, sizeof(sg_type), len, file)!= (size_t) len)								\
 			SG_ERROR("Failed to read string %d\n", i);											\
@@ -345,7 +345,7 @@ void CBinaryFile::fname(const SGString<sg_type>* strings, int32_t num_str)	\
 	TSGDataType t dtype; write_header(&t);								                \
 	for (int32_t i=0; i<num_str; i++)													\
 	{																					\
-		int32_t len = strings[i].length;												\
+		int32_t len = strings[i].slen;												\
 		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||								\
 				(fwrite(strings[i].string, sizeof(sg_type), len, file)!= (size_t) len))	\
 			SG_ERROR("Failed to write Sparse Matrix\n");								\

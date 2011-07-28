@@ -409,7 +409,7 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
                     max_len=shogun::CMath::max(len,max_len);
                     const char* str=PyString_AsString(o);
 
-                    strings[i].length=len;
+                    strings[i].slen=len;
                     strings[i].string=NULL;
 
                     if (len>0)
@@ -441,7 +441,7 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
                     int32_t len = PyArray_DIM(array,0);
                     max_len=shogun::CMath::max(len,max_len);
 
-                    strings[i].length=len;
+                    strings[i].slen=len;
                     strings[i].string=NULL;
 
                     if (len>0)
@@ -512,16 +512,16 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
             {
                 /* This path is only taking if str[i].string is a char*. However this cast is
                    required to build through for non char types. */
-                s=PyString_FromStringAndSize((char*) str[i].string, str[i].length);
+                s=PyString_FromStringAndSize((char*) str[i].string, str[i].slen);
             }
             else
             {
                 PyArray_Descr* descr=PyArray_DescrFromType(typecode);
-                type* data = (type*) malloc(str[i].length*sizeof(type));
+                type* data = (type*) malloc(str[i].slen*sizeof(type));
                 if (descr && data)
                 {
-                    memcpy(data, str[i].string, str[i].length*sizeof(type));
-                    npy_intp dims = str[i].length;
+                    memcpy(data, str[i].string, str[i].slen*sizeof(type));
+                    npy_intp dims = str[i].slen;
 
                     s = PyArray_NewFromDescr(&PyArray_Type,
                             descr, 1, &dims, NULL, (void*) data, NPY_FARRAY | NPY_WRITEABLE, NULL);
