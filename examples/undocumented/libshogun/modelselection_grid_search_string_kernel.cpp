@@ -34,11 +34,11 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* c1=new CModelSelectionParameters("C1");
 	root->append_child(c1);
-	c1->build_values(-1.0, 1.0, R_EXP);
+	c1->build_values(1.0, 2.0, R_EXP);
 
 	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
 	root->append_child(c2);
-	c2->build_values(-1.0, 1.0, R_EXP);
+	c2->build_values(1.0, 2.0, R_EXP);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
 	CModelSelectionParameters* param_ds_kernel=
@@ -47,12 +47,12 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* ds_kernel_delta=
 			new CModelSelectionParameters("delta");
-	ds_kernel_delta->build_values(1, 3, R_LINEAR);
+	ds_kernel_delta->build_values(1, 2, R_LINEAR);
 	param_ds_kernel->append_child(ds_kernel_delta);
 
 	CModelSelectionParameters* ds_kernel_theta=
 			new CModelSelectionParameters("theta");
-	ds_kernel_theta->build_values(1, 3, R_LINEAR);
+	ds_kernel_theta->build_values(1, 2, R_LINEAR);
 	param_ds_kernel->append_child(ds_kernel_theta);
 
 	return root;
@@ -139,7 +139,6 @@ int main(int argc, char **argv)
 	/* clean up destroy result parameter */
 	SG_UNREF(best_combination);
 
-	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;
