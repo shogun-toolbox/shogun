@@ -515,7 +515,7 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 					int32_t len=i-old_sz;
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
-					strings[lines].length=len+overflow_len;
+					strings[lines].slen=len+overflow_len;
 					strings[lines].string=SG_MALLOC(uint8_t, len+overflow_len);
 
 					for (int32_t j=0; j<overflow_len; j++)
@@ -610,7 +610,7 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 					int32_t len=i-old_sz;
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
-					strings[lines].length=len+overflow_len;
+					strings[lines].slen=len+overflow_len;
 					strings[lines].string=SG_MALLOC(int8_t, len+overflow_len);
 
 					for (int32_t j=0; j<overflow_len; j++)
@@ -705,7 +705,7 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 					int32_t len=i-old_sz;
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
-					strings[lines].length=len+overflow_len;
+					strings[lines].slen=len+overflow_len;
 					strings[lines].string=SG_MALLOC(char, len+overflow_len);
 
 					for (int32_t j=0; j<overflow_len; j++)
@@ -937,7 +937,7 @@ void CAsciiFile::set_string_list(const SGString<uint8_t>* strings, int32_t num_s
 
 	for (int32_t i=0; i<num_str; i++)
 	{
-		int32_t len = strings[i].length;
+		int32_t len = strings[i].slen;
 		fwrite(strings[i].string, sizeof(uint8_t), len, file);
 		fprintf(file, "\n");
 	}
@@ -950,7 +950,7 @@ void CAsciiFile::set_int8_string_list(const SGString<int8_t>* strings, int32_t n
 
 	for (int32_t i=0; i<num_str; i++)
 	{
-		int32_t len = strings[i].length;
+		int32_t len = strings[i].slen;
 		fwrite(strings[i].string, sizeof(int8_t), len, file);
 		fprintf(file, "\n");
 	}
@@ -963,7 +963,7 @@ void CAsciiFile::set_string_list(const SGString<char>* strings, int32_t num_str)
 
 	for (int32_t i=0; i<num_str; i++)
 	{
-		int32_t len = strings[i].length;
+		int32_t len = strings[i].slen;
 		fwrite(strings[i].string, sizeof(char), len, file);
 		fprintf(file, "\n");
 	}
