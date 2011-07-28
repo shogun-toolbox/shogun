@@ -144,32 +144,41 @@ template<class T> struct SGString
 {
 public:
 	/** default constructor */
-	SGString() : string(NULL), length(0), do_free(false) { }
+	SGString() : string(NULL), slen(0), do_free(false) { }
 
 	/** constructor for setting params */
 	SGString(T* s, index_t l, bool free_string=false)
-		: string(s), length(l), do_free(free_string) { }
+		: string(s), slen(l), do_free(free_string) { }
 
 	/** constructor for setting params from a SGVector*/
 	SGString(SGVector<T> v)
-		: string(v.vector), length(v.vlen), do_free(v.do_free) { }
+		: string(v.vector), slen(v.vlen), do_free(v.do_free) { }
 
 	/** constructor to create new matrix in memory */
 	SGString(index_t len, bool free_string=false) :
-		length(len), do_free(free_string)
+		slen(len), do_free(free_string)
 	{
 		string=SG_MALLOC(T, len);
 	}
 
 	/** copy constructor */
 	SGString(const SGString &orig)
-		: string(orig.string), length(orig.length), do_free(orig.do_free) { }
+		: string(orig.string), slen(orig.slen), do_free(orig.do_free) { }
+
+	/** prints the string */
+	void display()
+	{
+		for (index_t i=0; i<slen; ++i)
+			SG_SPRINT("%c", string[i]);
+
+		SG_SPRINT("\n");
+	}
 
 public:
 	/** string  */
 	T* string;
 	/** length of string  */
-	index_t length;
+	index_t slen;
 	/** whether string needs to be freed */
 	bool do_free;
 };
