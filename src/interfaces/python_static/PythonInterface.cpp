@@ -371,7 +371,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 				int32_t len=PyString_Size(o);									\
 				const sg_type* str= (const sg_type*) PyString_AsString(o);	\
 																			\
-				strings[i].length=len;										\
+				strings[i].slen=len;										\
 				strings[i].string=NULL;										\
 				max_string_len=CMath::max(max_string_len, len);				\
 																			\
@@ -403,7 +403,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		{ 																	\
 			if (len>0) 														\
 			{ 																\
-				strings[i].length=len; /* all must have same length*/		\
+				strings[i].slen=len; /* all must have same length*/			\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated */	\
 				int32_t j; 														\
 				for (j=0; j<len; j++) 										\
@@ -413,7 +413,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			else 															\
 			{ 																\
 				SG_WARNING( "string with index %d has zero length.\n", i+1);	\
-				strings[i].length=0; 										\
+				strings[i].slen=0; 											\
 				strings[i].string=NULL; 									\
 			} 																\
 		} 																	\
@@ -588,9 +588,9 @@ void CPythonInterface::function_name(const SGString<sg_type>* strings, int32_t n
 	if (!py_str || PyTuple_GET_SIZE(py_str)!=num_str)							\
 		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);		\
 																				\
-	for (int32_t i=0; i<num_str; i++)												\
+	for (int32_t i=0; i<num_str; i++)											\
 	{																			\
-		int32_t len=strings[i].length;												\
+		int32_t len=strings[i].slen;											\
 		if (len>0)																\
 		{																		\
 			PyObject* str=PyString_FromStringAndSize((const char*) strings[i].string, len); \

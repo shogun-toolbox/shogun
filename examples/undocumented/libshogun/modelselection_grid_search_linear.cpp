@@ -81,9 +81,9 @@ int main(int argc, char **argv)
 	CModelSelectionParameters* param_tree=create_param_tree();
 
 	/* this is on the stack and handles all of the above structures in memory */
-	CGridSearchModelSelection grid_search(param_tree, cross);
+	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(param_tree, cross);
 
-	CParameterCombination* best_combination=grid_search.select_model();
+	CParameterCombination* best_combination=grid_search->select_model();
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 
@@ -93,6 +93,7 @@ int main(int argc, char **argv)
 
 	/* clean up destroy result parameter */
 	SG_UNREF(best_combination);
+	SG_UNREF(grid_search);
 
 	SG_SPRINT("\nEND\n");
 	exit_shogun();
