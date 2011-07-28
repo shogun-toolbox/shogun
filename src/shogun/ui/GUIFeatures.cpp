@@ -333,20 +333,20 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 			bool to_free=false;
 			int32_t len=0;
 			char* str=src->get_feature_vector(i, len, to_free);
-			strings[i].length=len ;
+			strings[i].slen=len ;
 			for (int32_t j=0; j<len; j++)
 				if (str[j]==0)
 				{
-					strings[i].length=j ;
+					strings[i].slen=j ;
 					break ;
 				} ;
-			strings[i].string=SG_MALLOC(char, strings[i].length);
+			strings[i].string=SG_MALLOC(char, strings[i].slen);
 
-			for (int32_t j=0; j<strings[i].length; j++)
+			for (int32_t j=0; j<strings[i].slen; j++)
 				strings[i].string[j]=str[j];
 
-			if (strings[i].length> max_len)
-				max_len=strings[i].length;
+			if (strings[i].slen> max_len)
+				max_len=strings[i].slen;
 
 			src->free_feature_vector(str, i, to_free);
 		}

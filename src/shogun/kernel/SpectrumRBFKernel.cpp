@@ -271,7 +271,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	{
 		int len = seqs[i].length();
 		sequences[i].string = SG_MALLOC(char, len+1);
-		sequences[i].length = len;
+		sequences[i].slen = len;
 		strcpy(sequences[i].string, seqs[i].c_str());
 
 		if (len > max_len) max_len = len;

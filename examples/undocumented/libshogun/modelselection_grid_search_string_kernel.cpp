@@ -16,8 +16,10 @@
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
-#include <shogun/classifier/svm/LibLinear.h>
+#include <shogun/features/StringFeatures.h>
+#include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/kernel/DistantSegmentsKernel.h>
+
 
 using namespace shogun;
 
@@ -32,38 +34,74 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* c1=new CModelSelectionParameters("C1");
 	root->append_child(c1);
-	c1->build_values(-2.0, 2.0, R_EXP);
+	c1->build_values(1.0, 2.0, R_EXP);
 
 	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
 	root->append_child(c2);
-	c2->build_values(-2.0, 2.0, R_EXP);
+	c2->build_values(1.0, 2.0, R_EXP);
+
+	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
+	CModelSelectionParameters* param_ds_kernel=
+			new CModelSelectionParameters("kernel", ds_kernel);
+	root->append_child(param_ds_kernel);
+
+	CModelSelectionParameters* ds_kernel_delta=
+			new CModelSelectionParameters("delta");
+	ds_kernel_delta->build_values(1, 2, R_LINEAR);
+	param_ds_kernel->append_child(ds_kernel_delta);
+
+	CModelSelectionParameters* ds_kernel_theta=
+			new CModelSelectionParameters("theta");
+	ds_kernel_theta->build_values(1, 2, R_LINEAR);
+	param_ds_kernel->append_child(ds_kernel_theta);
 
 	return root;
 }
+
 
 int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	int32_t num_subsets=5;
-	int32_t num_features=11;
+	index_t num_strings=10;
+	index_t max_string_length=20;
+	index_t min_string_length=max_string_length/2;
+	index_t num_subsets=num_strings/3;
 
-	/* create some data */
-	float64_t* matrix=SG_MALLOC(float64_t, num_features*2);
-	for (int32_t i=0; i<num_features*2; i++)
-		matrix[i]=i;
+	SGStringList<char> strings(num_strings, max_string_length);
+
+	for (index_t i=0; i<num_strings; ++i)
+	{
+		index_t len=CMath::random(min_string_length, max_string_length);
+		SGString<char> current(len);
+
+		SG_SPRINT("string %i: \"", i);
+		/* fill with random uppercase letters (ASCII) */
+		for (index_t j=0; j<len; ++j)
+		{
+			current.string[j]=(char)CMath::random('A', 'Z');
+
+			char* string=new char[2];
+			string[0]=current.string[j];
+			string[1]='\0';
+			SG_SPRINT("%s", string);
+			delete[] string;
+		}
+		SG_SPRINT("\"\n");
+
+		strings.strings[i]=current;
+	}
 
 	/* create num_feautres 2-dimensional vectors */
-	CSimpleFeatures<float64_t>* features=new CSimpleFeatures<float64_t> ();
-	features->set_feature_matrix(matrix, 2, num_features);
+	CStringFeatures<char>* features=new CStringFeatures<char>(strings, ALPHANUM);
 
-	/* create three labels */
-	CLabels* labels=new CLabels(num_features);
-	for (index_t i=0; i<num_features; ++i)
+	/* create labels, two classes */
+	CLabels* labels=new CLabels(num_strings);
+	for (index_t i=0; i<num_strings; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
 
-	/* create linear classifier (use -s 2 option to avoid warnings) */
-	CLibLinear* classifier=new CLibLinear(L2R_L2LOSS_SVC);
+	/* create svm classifier */
+	CLibSVM* classifier=new CLibSVM();
 
 	/* splitting strategy */
 	CStratifiedCrossValidationSplitting* splitting_strategy=
@@ -73,12 +111,14 @@ int main(int argc, char **argv)
 	CContingencyTableEvaluation* evaluation_criterium=
 			new CContingencyTableEvaluation(ACCURACY);
 
-	/* cross validation class for evaluation in model selection */
+	/* cross validation class for evaluation in model selection, 3 repetitions */
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
+	cross->set_num_runs(3);
 
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();
+	param_tree->print_tree();
 
 	/* this is on the stack and handles all of the above structures in memory */
 	CGridSearchModelSelection grid_search(param_tree, cross);
@@ -88,13 +128,17 @@ int main(int argc, char **argv)
 	best_combination->print_tree();
 
 	best_combination->apply_to_machine(classifier);
+
+	/* larger number of runs to have tighter confidence intervals */
+	cross->set_num_runs(100);
+	cross->set_conf_int_alpha(0.01);
 	CrossValidationResult result=cross->evaluate();
+	SG_SPRINT("result: ");
 	result.print_result();
 
 	/* clean up destroy result parameter */
 	SG_UNREF(best_combination);
 
-	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;

@@ -166,7 +166,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 				}
 
 				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].string=line;
-				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].length=len;
+				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].slen=len;
 				CStringFeatures<ST>::max_string_length=CMath::max(CStringFeatures<ST>::max_string_length, (int32_t) len);
 			}
 			else

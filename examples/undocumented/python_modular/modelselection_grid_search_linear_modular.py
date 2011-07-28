@@ -35,11 +35,11 @@ def modelselection_grid_search_simple(traindat=traindat, label_traindat=label_tr
 	param_tree_root=ModelSelectionParameters()
 	c1=ModelSelectionParameters("C1");
 	param_tree_root.append_child(c1)
-	c1.build_values(-15, 15, R_EXP);
+	c1.build_values(-2.0, 2.0, R_EXP);
 
 	c2=ModelSelectionParameters("C2");
 	param_tree_root.append_child(c2);
-	c2.build_values(-15, 15, R_EXP);
+	c2.build_values(-2.0, 2.0, R_EXP);
 
 	# training data
 	features=RealFeatures(traindat)

@@ -204,7 +204,7 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 	 * combine them iteratively children which are something different
 	 */
 	else if ((m_sgobject && m_node_name) ||
-			(!m_node_name && !m_sgobject && !m_values.vector))
+			(!m_node_name && !m_sgobject))
 	{
 		/* only consider combinations if this node has children */
 		if (m_child_nodes->get_num_elements())
@@ -451,10 +451,10 @@ void CModelSelectionParameters::delete_values()
 		switch (m_value_type)
 		{
 		case MSPT_FLOAT64:
-			delete[] (float64_t*) m_values.vector;
+			SG_FREE((float64_t*) m_values.vector);
 			break;
 		case MSPT_INT32:
-			delete[] (int32_t*) m_values.vector;
+			SG_FREE((int32_t*) m_values.vector);
 			break;
 		case MSPT_NONE:
 			SG_ERROR("Value node has no type!\n");
