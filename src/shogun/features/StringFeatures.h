@@ -335,7 +335,7 @@ template <class ST> class CStringFeatures : public CFeatures
 			ST* dst=SG_MALLOC(ST, l);
 			memcpy(dst, vec, l*sizeof(ST));
 			free_feature_vector(vec, num, free_vec);
-			return SGVector<ST>(dst,l);
+			return SGVector<ST>(dst, l, true);
 		}
 
 		/** set string for selected example num
@@ -2148,21 +2148,24 @@ template <class ST> class CStringFeatures : public CFeatures
 		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
 		{
 			/* string list to create new CStringFeatures from */
-			SGStringList<ST> copy(indices.vlen, max_string_length);
+			SGStringList<ST> list_copy(indices.vlen, max_string_length);
 
 			/* copy all features */
 			for (index_t i=0; i<indices.vlen; ++i)
 			{
-				/* eventually check subset */
+				/* index with respect to possible subset */
 				index_t real_idx=subset_idx_conversion(indices.vector[i]);
-				SGString<ST> string_copy(features[real_idx].slen);
-				memcpy(copy.strings[i].string, features[real_idx].string,
-					features[real_idx].slen*sizeof(ST));
-				copy.strings[i]=features[real_idx];
+
+				/* copy string */
+				SGString<ST> current_string=features[real_idx];
+				SGString<ST> string_copy(current_string.slen);
+				memcpy(string_copy.string, current_string.string,
+					current_string.slen*sizeof(ST));
+				list_copy.strings[i]=string_copy;
 			}
 
 			/* create copy instance */
-			CStringFeatures* result=new CStringFeatures(copy, alphabet);
+			CStringFeatures* result=new CStringFeatures(list_copy, alphabet);
 
 			/* max string length may have changed */
 			result->determine_maximum_string_length();
