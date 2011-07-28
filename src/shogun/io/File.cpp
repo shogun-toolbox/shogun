@@ -132,9 +132,9 @@ void CFile::get_string_list(
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
-		strings[i].length = strs[i].length;
-                strings[i].string = SG_MALLOC(bool, strs[i].length);
-		for(int32_t j = 0;j < strs[i].length;j++)
+		strings[i].slen = strs[i].slen;
+                strings[i].string = SG_MALLOC(bool, strs[i].slen);
+		for(int32_t j = 0;j < strs[i].slen;j++)
 		strings[i].string[j] = strs[i].string[j] != 0 ? 1 : 0;
 	}
 
@@ -149,9 +149,9 @@ void CFile::set_string_list(const SGString<bool>* strings, int32_t num_str)
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
-		strs[i].length = strings[i].length;
-		strs[i].string = SG_MALLOC(int8_t, strings[i].length);
-		for(int32_t j = 0;j < strings[i].length;j++)
+		strs[i].slen = strings[i].slen;
+		strs[i].string = SG_MALLOC(int8_t, strings[i].slen);
+		for(int32_t j = 0;j < strings[i].slen;j++)
 		strs[i].string[j] = strings[i].string[j] != 0 ? 1 : 0;
 	}
 
