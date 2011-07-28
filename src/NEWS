@@ -4,26 +4,32 @@
 	* This release contains major enhancements, cleanups and bugfixes:
 	* Features:
 	   - Support for new languages: java, c#, ruby, lua in modular interfaces
-		 (GSoC project of Baozeng Ding)
-	   - Port all examples to the new languages.
-	   - Implement Locally Linear Embedding, Multidimensional Scaling, Local
-		 Tangent Space Alignment, Kernel PCA (GSoC project of Sergey Lisitsyn)
+	     (GSoC project of Baozeng Ding)
+	   - Port all examples to the new languages
+	   - Dimensionality reduction (manifold learning) algorithms
+	     are now available. In particular: Locally Linear Embedding (LLE), Hessian 
+	     Locally Linear Embedding (HLLE), Local Tangent Space Alignment (LTSA),
+	     Kernel PCA (kPCA), Classic and Landmark Multidimensional Scaling (MDS, LMDS), 
+	     Classic and Landmark Isomap (Isomap, both e-Isomap and k-Isomap),
+	     Laplacian Eigenmaps (GSoC project of Sergey Lisitsyn)
 	   - Various new kernels: TStudentKernel, CircularKernel, WaveKernel,
 	     SplineKernel, LogKernel, RationalQuadraticKernel, WaveletKernel,
 	     BesselKernel, PowerKernel, ExponentialKernel, CauchyKernel,ANOVAKernel,
 	     MultiquadricKernel, SphericalKernel
-		 (thanks GSoC students for the contributions!)
+	     (thanks GSoC students for the contributions!)
 	   - Streaming / Online Feature Framework for SimpleFeatures,
 	     SparseFeatures, StringFeatures (GSoC project of Shashwat Lal Das)
 	   - SGD-QN, Online SGD, Online Liblinear, Online Vowpal Vabit (GSoC
 		 project of Shashwat Lal Das)
-	   - Model selection framework for arbitrary Machines (GSoC project of
-			   Heiko Strathmann)
+	   - Model selection framework for arbitrary Machines 
+	     (GSoC project of Heiko Strathmann)
 	   - Gaussian Mixture Models (GSoC project of Alesis Novik)
-	   - Add FibonacciHeap (thanks Evgeniy Andreev)
-	   - Add arpack wrappers and support (Sergey Lisitsyn)
-	   - Add Statistics module in math (Heiko Strathmann)
-	   - Add subset support to features (Heiko Strathmann)
+	   - FibonacciHeap for efficient shortest-path 
+	     problem solving (thanks Evgeniy Andreev)
+	   - ARPACK wrapper (dseupd) for symmetric eigenproblems, 
+	     some new LAPACK wrappers (Sergey Lisitsyn)
+	   - New Statistics module for various statistics measures (Heiko Strathmann)
+	   - Subset support to features (Heiko Strathmann)
 	* Bugfixes:
 	   - Fix build failure with ld --as-needed (thanks Matthias Klose for the
 			   patch).
