@@ -55,7 +55,8 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	ASSERT(distance->get_feature_type()==F_DREAL);
 
-	CSimpleFeatures<float64_t>* lhs=(CSimpleFeatures<float64_t>*) distance->get_lhs();
+	CSimpleFeatures<float64_t>* lhs=
+			(CSimpleFeatures<float64_t>*)distance->get_lhs();
 	ASSERT(lhs);
 	int32_t num=lhs->get_num_vectors();
 	SG_UNREF(lhs);
@@ -417,12 +418,10 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	}
         distance->replace_rhs(rhs_cache);
         delete rhs_mus;        
-
 	SG_FREE(ClList);
 	SG_FREE(weights_set);
 	SG_FREE(dists);
 	SG_UNREF(lhs);
-} 
 
 void CKMeans::init()
 {
@@ -439,5 +438,10 @@ void CKMeans::init()
 
 void CKMeans::store_model_features()
 {
+	/* set lhs of underlying distance to cluster centers */
+	CSimpleFeatures<float64_t>* cluster_centers=new CSimpleFeatures<float64_t>(
+			SGMatrix<float64_t>(mus, dimensions, k));
+	CFeatures* rhs=distance->get_rhs();
+	distance->init(cluster_centers, rhs);
+} 
 
-}
