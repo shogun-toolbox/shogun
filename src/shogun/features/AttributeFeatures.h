@@ -168,7 +168,7 @@ public:
 	 *
 	 * @return number of examples/vectors
 	 */
-	virtual int32_t get_num_vectors()=0 ;
+	virtual int32_t get_num_vectors() const=0 ;
 
 	/** get memory footprint of one feature
 	 *
