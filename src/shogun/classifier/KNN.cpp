@@ -295,3 +295,15 @@ bool CKNN::save(FILE* dstfile)
 	SG_RESET_LOCALE;
 	return false;
 }
+
+void CDistanceMachine::store_model_features()
+{
+	CFeatures* d_lhs=distance->get_lhs();
+	CFeatures* d_rhs=distance->get_rhs();
+
+	/* copy feature data of underlying distance */
+	distance->init(d_lhs->duplicate(), d_rhs->duplicate());
+
+	SG_UNREF(d_lhs);
+	SG_UNREF(d_rhs);
+}
