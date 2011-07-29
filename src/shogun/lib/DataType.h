@@ -19,6 +19,8 @@
 namespace shogun
 {
 
+template<class T> class CCache;
+
 typedef int32_t index_t;
 
 template<class T> class SGVector
@@ -42,7 +44,7 @@ template<class T> class SGVector
 		SGVector(const SGVector &orig)
 			: vector(orig.vector), vlen(orig.vlen), do_free(orig.do_free) { }
 
-		void free_vector()
+		virtual void free_vector()
 		{
 			if (do_free)
 				SG_FREE(vector);
@@ -52,7 +54,7 @@ template<class T> class SGVector
 			vlen=0;
 		}
 
-		void destroy_vector()
+		virtual void destroy_vector()
 		{
 			do_free=true;
 			free_vector();
@@ -65,6 +67,47 @@ template<class T> class SGVector
 		index_t vlen;
 		/** whether vector needs to be freed */
 		bool do_free;
+};
+
+template<class T> class SGCachedVector : public SGVector<T>
+{
+	public:
+		/** default constructor */
+		SGCachedVector(CCache<T>* c, int32_t i)
+			: SGVector<T>(), cache(c), idx(i)
+		{
+		}
+
+		/** constructor for setting params */
+		SGCachedVector(CCache<T>* c, int32_t i,
+				T* v, index_t len, bool free_vec=false)
+			: SGVector<T>(v, len, free_vec), cache(c), idx(i)
+		{
+		}
+
+		/** constructor to create new vector in memory */
+		SGCachedVector(CCache<T>* c, int32_t i, index_t len, bool free_vec=false) :
+			SGVector<T>(len, free_vec), cache(c), idx(i)
+		{
+		}
+ 
+		virtual void free_vector()
+		{
+			//clean up cache fixme
+			SGVector<T>::free_vector();
+		}
+
+		virtual void destroy_vector()
+		{
+			//clean up cache fixme
+			SGVector<T>::destroy_vector();
+			if (cache)
+				cache->unlock_entry(idx);
+		}
+
+	public:	
+		int idx;
+		CCache<T>* cache;
 };
 
 template<class T> class SGMatrix
