@@ -36,18 +36,18 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* c1=new CModelSelectionParameters("C1");
 	root->append_child(c1);
-	c1->build_values(-5.0, 3.0, R_EXP);
+	c1->build_values(-1.0, 1.0, R_EXP);
 
 	CModelSelectionParameters* c2=new CModelSelectionParameters("C2");
 	root->append_child(c2);
-	c2->build_values(-5.0, 3.0, R_EXP);
+	c2->build_values(-1.0, 1.0, R_EXP);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 	CModelSelectionParameters* gaussian_kernel_width=
 			new CModelSelectionParameters("width");
-	gaussian_kernel_width->build_values(-5.0, 3.0, R_EXP, 1.0, 2.0);
+	gaussian_kernel_width->build_values(-1.0, 1.0, R_EXP, 1.0, 2.0);
 	param_gaussian_kernel->append_child(gaussian_kernel_width);
 	root->append_child(param_gaussian_kernel);
 
@@ -59,7 +59,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* param_power_kernel_degree=
 			new CModelSelectionParameters("degree");
-	param_power_kernel_degree->build_values(1.0, 3.0, R_LINEAR);
+	param_power_kernel_degree->build_values(1.0, 2.0, R_LINEAR);
 	param_power_kernel->append_child(param_power_kernel_degree);
 
 	CMinkowskiMetric* m_metric=new CMinkowskiMetric(10);
@@ -70,7 +70,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* param_power_kernel_metric1_k=
 			new CModelSelectionParameters("k");
-	param_power_kernel_metric1_k->build_values(1.0, 3.0, R_LINEAR);
+	param_power_kernel_metric1_k->build_values(1.0, 2.0, R_LINEAR);
 	param_power_kernel_metric1->append_child(param_power_kernel_metric1_k);
 
 	return root;
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<num_vectors; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
 
-	/* create linear classifier (use -s 2 option to avoid warnings) */
+	/* create svm */
 	CLibSVM* classifier=new CLibSVM();
 
 	/* splitting strategy */
@@ -109,26 +109,27 @@ int main(int argc, char **argv)
 	CContingencyTableEvaluation* evaluation_criterium=
 			new CContingencyTableEvaluation(ACCURACY);
 
-	/* cross validation class for evaluation in model selection, 3 repetitions */
+	/* cross validation class for evaluation in model selection */
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
-	cross->set_num_runs(3);
+	cross->set_num_runs(1);
 
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();
 	param_tree->print_tree();
 
-	/* this is on the stack and handles all of the above structures in memory */
-	CGridSearchModelSelection grid_search(param_tree, cross);
+	/* handles all of the above structures in memory */
+	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
+			param_tree, cross);
 
-	CParameterCombination* best_combination=grid_search.select_model();
+	CParameterCombination* best_combination=grid_search->select_model();
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 
 	best_combination->apply_to_machine(classifier);
 
 	/* larger number of runs to have tighter confidence intervals */
-	cross->set_num_runs(100);
+	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
 	CrossValidationResult result=cross->evaluate();
 	SG_SPRINT("result: ");
@@ -136,6 +137,7 @@ int main(int argc, char **argv)
 
 	/* clean up destroy result parameter */
 	SG_UNREF(best_combination);
+	SG_UNREF(grid_search);
 
 	SG_SPRINT("\nEND\n");
 	exit_shogun();
