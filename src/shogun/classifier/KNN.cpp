@@ -296,7 +296,7 @@ bool CKNN::save(FILE* dstfile)
 	return false;
 }
 
-void CDistanceMachine::store_model_features()
+void CKNN::store_model_features()
 {
 	CFeatures* d_lhs=distance->get_lhs();
 	CFeatures* d_rhs=distance->get_rhs();
