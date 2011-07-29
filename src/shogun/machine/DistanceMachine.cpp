@@ -9,6 +9,7 @@
  */
 
 #include <shogun/machine/DistanceMachine.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
