@@ -32,7 +32,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 
 	// check specified mode
 	if (mode!=1 && mode!=3)
-		SG_SERROR("Unknown mode specified");
+		SG_SERROR("Mode not supported yet");
 
 	// init ARPACK's reverse communication parameter 
  	// (should be zero initially)
@@ -61,7 +61,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// specify method for selecting implicit shifts (1 - exact shifts) 
 	iparam[0] = 1;
 	// specify max number of iterations
-	iparam[2] = 2*2*n;
+	iparam[2] = 3*n;
 	// set the computation mode (1 for regular or 3 for shift-inverse)
 	iparam[6] = mode;
 
@@ -81,7 +81,8 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// All
 	char* all_ = strdup("A");
 
-	// shift-invert mode
+	int* ipiv;
+	// shift-invert mode init
 	if (mode==3)
 	{
 		if (shift!=0.0)
@@ -93,17 +94,17 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		if (pos)
 		{
 			clapack_dpotrf(CblasColMajor,CblasUpper,n,matrix,n);
-			clapack_dpotri(CblasColMajor,CblasUpper,n,matrix,n);
 		}
 		else
 		{
-			int* ipiv = SG_MALLOC(int, n);
+			ipiv = SG_MALLOC(int, n);
 			clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
-			clapack_dgetri(CblasColMajor,n,matrix,n,ipiv);
-			SG_FREE(ipiv);
 		}
 	}
-	// main computation loop 
+	// main computation loop
+	double* tmp;
+	if (mode==3) tmp = SG_MALLOC(double, n);
+	int i,j;
 	do	 
 	{
 		dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
@@ -112,12 +113,30 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 
 		if ((ido==1)||(ido==-1))
 		{
-			cblas_dsymv(CblasColMajor,CblasUpper,
-			            n,1.0,matrix,n,
-			            (workd+ipntr[0]-1),1,
-			            0.0,(workd+ipntr[1]-1),1);
+			if (mode==1)
+			{
+				cblas_dsymv(CblasColMajor,CblasUpper,
+				            n,1.0,matrix,n,
+				            (workd+ipntr[0]-1),1,
+				            0.0,(workd+ipntr[1]-1),1);
+			}
+			if (mode==3)
+			{
+				for (i=0; i<n; i++)
+					tmp[i] = (workd+ipntr[0]-1)[i];
+
+				if (pos)
+					clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,tmp,n);
+				else 
+					clapack_dgetrs(CblasColMajor,CblasNoTrans,n,1,matrix,n,ipiv,tmp,n);
+
+				for (i=0; i<n; i++)
+					(workd+ipntr[1]-1)[i] = tmp[i];
+			}
 		}
 	} while ((ido==1)||(ido==-1));
+	if (!pos) SG_FREE(ipiv);
+	if (mode==3) SG_FREE(tmp);
 	
 	// check if DSAUPD failed
 	if (info<0) 
@@ -160,12 +179,11 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		}
 		else
 		{
-		
-			for (int i=0; i<nev; i++)
+			for (i=0; i<nev; i++)
 			{	
 				eigenvalues[i] = d[i];
 			
-				for (int j=0; j<n; j++)
+				for (j=0; j<n; j++)
 					eigenvectors[j*nev+i] = v[i*n+j];
 			}
 		}
