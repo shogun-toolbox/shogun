@@ -437,3 +437,8 @@ void CKMeans::init()
 	m_parameters->add(&dimensions, "dimensions", "Dimensions of data");
 	m_parameters->add(&R, "R", "Cluster radiuses");
 }
+
+void CKMeans::store_model_features()
+{
+
+}

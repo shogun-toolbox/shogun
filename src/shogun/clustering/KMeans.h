@@ -159,6 +159,9 @@ class CKMeans : public CDistanceMachine
 			return NULL;
 		}
 
+		/** Stores centers of clusters in lhs of model */
+		virtual void store_model_features();
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KMeans"; }
 
