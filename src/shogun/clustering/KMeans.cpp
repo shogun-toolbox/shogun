@@ -445,3 +445,54 @@ void CKMeans::store_model_features()
 	distance->init(cluster_centers, rhs);
 } 
 
+CLabels* CKMeans::apply(CFeatures* data)
+{
+	/* set distance features to given ones and apply to all */
+	CFeatures* lhs=distance->get_lhs();
+	distance->init(lhs, data);
+	SG_UNREF(lhs);
+
+	/* build result labels and classify all elements of procedure */
+	CLabels* result=new CLabels(data->get_num_vectors());
+	for (index_t i=0; i<data->get_num_vectors(); ++i)
+		result->set_label(i, apply(i));
+
+	return result;
+}
+
+CLabels* CKMeans::apply()
+{
+	/* call apply on complete right hand side */
+	CFeatures* all=distance->get_rhs();
+	SG_UNREF(all);
+	return apply(all);
+}
+
+float64_t CKMeans::apply(int32_t num)
+{
+	if (!R)
+		SG_ERROR("call train before calling apply!\n");
+
+	/* number of clusters */
+	CFeatures* lhs=distance->get_lhs();
+	int32_t num_clusters=lhs->get_num_vectors();
+	SG_UNREF(lhs);
+
+	/* (multiple threads) calculate distances to all cluster centers */
+	float64_t* dists=SG_MALLOC(float64_t, num_clusters);
+	distances_lhs(dists, 0, num_clusters, num);
+
+	/* find cluster index with smallest distance */
+	float64_t result=dists[0];
+	index_t best_index=0;
+	for (index_t i=1; i<num_clusters; ++i)
+	{
+		if (dists[i]<result)
+		{
+			result=dists[i];
+			best_index=i;
+		}
+	}
+
+	return (float64_t) best_index;
+}

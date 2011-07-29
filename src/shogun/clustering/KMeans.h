@@ -150,22 +150,21 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return classified labels
 		 */
-		virtual CLabels* apply()
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual CLabels* apply();
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual CLabels* apply(CFeatures* data);
+
+		/** apply machine to one example
+		 *
+		 * @param num which example to apply machine to
+		 * @return cluster label nearest to example
+		 */
+		virtual float64_t apply(int32_t num);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KMeans"; }
