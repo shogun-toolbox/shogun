@@ -19,16 +19,16 @@ using namespace shogun;
 
 CGaussianNaiveBayes::CGaussianNaiveBayes() :
 CMachine(), m_features(NULL), m_min_label(0),
-m_num_classes(0), m_dim(0), m_means(NULL),
-m_variances(NULL), m_label_prob(NULL), m_rates(NULL)
+m_num_classes(0), m_dim(0), m_means(),
+m_variances(), m_label_prob(), m_rates()
 {
 
 };
 
 CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels) :
 CMachine(), m_features(NULL), m_min_label(0),
-m_num_classes(0), m_dim(0), m_means(NULL),
-m_variances(NULL), m_label_prob(NULL), m_rates(NULL)
+m_num_classes(0), m_dim(0), m_means(),
+m_variances(), m_label_prob(), m_rates()
 {
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
 	set_labels(train_labels);
@@ -40,10 +40,11 @@ m_variances(NULL), m_label_prob(NULL), m_rates(NULL)
 CGaussianNaiveBayes::~CGaussianNaiveBayes()
 {
 	SG_UNREF(m_features);
-	SG_FREE(m_means);
-	SG_FREE(m_rates);
-	SG_FREE(m_variances);
-	SG_FREE(m_label_prob);
+
+	m_means.destroy_vector();
+	m_rates.destroy_vector();
+	m_variances.destroy_vector();
+	m_label_prob.destroy_vector();
 };
 
 bool CGaussianNaiveBayes::train(CFeatures* data)
@@ -82,29 +83,35 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	m_dim = m_features->get_dim_feature_space();
 
 	// allocate memory for distributions' parameters and a priori probability
-	m_means = SG_MALLOC(float64_t, m_num_classes*m_dim);
-	m_variances = SG_MALLOC(float64_t, m_num_classes*m_dim);
-	m_label_prob = SG_MALLOC(float64_t, m_num_classes);
+	m_means.vector = SG_MALLOC(float64_t, m_num_classes*m_dim);
+	m_means.vlen = m_num_classes*m_dim;
+
+	m_variances.vector = SG_MALLOC(float64_t, m_num_classes*m_dim);
+	m_variances.vlen = m_num_classes*m_dim;
+
+	m_label_prob.vector = SG_MALLOC(float64_t, m_num_classes);
+	m_label_prob.vlen = m_num_classes;
 
 	// allocate memory for label rates
-	m_rates = SG_MALLOC(float64_t, m_num_classes);
+	m_rates.vector = SG_MALLOC(float64_t, m_num_classes);
+	m_rates.vlen = m_num_classes;
 
 	// assure that memory is allocated
-	ASSERT(m_means);
-	ASSERT(m_variances);
-	ASSERT(m_rates);
-	ASSERT(m_label_prob);
+	ASSERT(m_means.vector);
+	ASSERT(m_variances.vector);
+	ASSERT(m_rates.vector);
+	ASSERT(m_label_prob.vector);
 
 	// make arrays filled by zeros before using
 	for (i=0;i<m_num_classes*m_dim;i++)
 	{
-		m_means[i] = 0.0;
-		m_variances[i] = 0.0;
+		m_means.vector[i] = 0.0;
+		m_variances.vector[i] = 0.0;
 	}
 	for (i=0;i<m_num_classes;i++)
 	{
-		m_label_prob[i] = 0.0;
-		m_rates[i] = 0.0;
+		m_label_prob.vector[i] = 0.0;
+		m_rates.vector[i] = 0.0;
 	}
 
 	SGMatrix<float64_t> feature_matrix = m_features->get_computed_dot_feature_matrix();
@@ -113,37 +120,37 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	for (i=0; i<train_labels.vlen; i++)
 	{
 		for (j=0; j<m_dim; j++)
-			m_means[m_dim*train_labels.vector[i]+j]+=feature_matrix.matrix[i*m_dim+j];
+			m_means.vector[m_dim*train_labels.vector[i]+j]+=feature_matrix.matrix[i*m_dim+j];
 
-		m_label_prob[train_labels.vector[i]]+=1.0;
+		m_label_prob.vector[train_labels.vector[i]]+=1.0;
 	}
 
 	// get means of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
 		for (j=0; j<m_dim; j++)
-			m_means[m_dim*i+j] /= m_label_prob[i];
+			m_means.vector[m_dim*i+j] /= m_label_prob.vector[i];
 	}
 
 	// compute squared residuals with means available
 	for (i=0; i<train_labels.vlen; i++)
 	{
 		for (j=0; j<m_dim; j++)
-			m_variances[m_dim*train_labels.vector[i]+j]+=
-					CMath::sq(feature_matrix.matrix[i*m_dim+j]-m_means[m_dim*train_labels.vector[i]+j]);
+			m_variances.vector[m_dim*train_labels.vector[i]+j]+=
+					CMath::sq(feature_matrix.matrix[i*m_dim+j]-m_means.vector[m_dim*train_labels.vector[i]+j]);
 	}
 
 	// get variance of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
 		for (j=0; j<m_dim; j++)
-			m_variances[m_dim*i+j] /= m_label_prob[i] > 1 ? m_label_prob[i]-1 : 1;
+			m_variances.vector[m_dim*i+j] /= m_label_prob.vector[i] > 1 ? m_label_prob.vector[i]-1 : 1;
 	}
 
 	// get a priori probabilities of labels
 	for (i=0; i<m_num_classes; i++)
 	{
-		m_label_prob[i]/= m_num_classes;
+		m_label_prob.vector[i]/= m_num_classes;
 	}
 
 	train_labels.free_vector();
@@ -193,17 +200,17 @@ float64_t CGaussianNaiveBayes::apply(int32_t idx)
 	for (i=0; i<m_num_classes; i++)
 	{
 		// set rate to 0.0 if a priori probability is 0.0 and continue
-		if (m_label_prob[i]==0.0)
+		if (m_label_prob.vector[i]==0.0)
 		{
-			m_rates[i] = 0.0;
+			m_rates.vector[i] = 0.0;
 			continue;
 		}
 		else
-			m_rates[i] = m_label_prob[i];
+			m_rates.vector[i] = m_label_prob.vector[i];
 
 		// product all conditional gaussian probabilities
 		for (k=0; k<m_dim; k++)
-			m_rates[i]*= normal_exp(feature_vector.vector[k],i,k)/CMath::sqrt(m_variances[i*m_dim+k]);
+			m_rates.vector[i]*= normal_exp(feature_vector.vector[k],i,k)/CMath::sqrt(m_variances.vector[i*m_dim+k]);
 	}
 
 	// find label with maximum rate
@@ -211,7 +218,7 @@ float64_t CGaussianNaiveBayes::apply(int32_t idx)
 
 	for (i=0; i<m_num_classes; i++)
 	{
-		if (m_rates[i]>m_rates[max_label_idx])
+		if (m_rates.vector[i]>m_rates.vector[max_label_idx])
 			max_label_idx = i;
 	}
 
