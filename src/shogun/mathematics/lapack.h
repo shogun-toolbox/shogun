@@ -46,10 +46,16 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		double *B, const int ldb);
 int clapack_dpotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, double *A, const int LDA);
+int clapack_dpotrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+                   const int N, const int NRHS, double *A, const int lda,
+                   double *B, const int ldb);
 int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
                    double *A, const int lda, int *ipiv);
 int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
                    const int lda, int *ipiv);
+int clapack_dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
+                   const int N, const int NRHS, double *A, const int lda,
+                   int *ipiv, double *B, const int ldb);
 #endif
 
 namespace shogun
@@ -81,6 +87,8 @@ int dorgqr_(int*, int*, int*, double*, int*, double*, double*, int*, int*);
 int dsyevr_(const char*, const char*, const char*, int*, double*, int*, 
             double*, double*, int*, int*, double*, int*, double*, double*,
             int*, int*, double*, int*, int*, int*, int*);
+int dgetrs_(const char*, int*, int*, double*, int*, int*, double*, int*, int*);
+int dpotrs_(const char*, int*, int*, double*, int*, double*, int*, int*);
 #endif
 }
 

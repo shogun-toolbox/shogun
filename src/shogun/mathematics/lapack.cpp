@@ -31,6 +31,7 @@ using namespace shogun;
 #define DGEQRF dgeqrf
 #define DORGQR dorgqr
 #define DSYEVR dsyevr
+#define DPOTRS dpotrs
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
@@ -42,6 +43,8 @@ using namespace shogun;
 #define DGEQRF dgeqrf_
 #define DORGQR dorgqr_
 #define DSYEVR dsyevr_
+#define DGETRS dgetrs_
+#define DPOTRS dpotrs_
 #endif
 
 #ifndef HAVE_ATLAS
@@ -145,10 +148,10 @@ int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
 }
 #undef DGETRF
 
+// order not supported (yet?)
 int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
                    const int lda, int* ipiv)
 {
-	// now rowmajor?
 	int info=0;
 	double* work = SG_MALLOC(double, 1);
 #ifdef HAVE_ACML
@@ -171,6 +174,54 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 	return info;
 }
 #undef DGETRI
+
+// order not supported (yet?)
+int clapack_dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
+                   const int N, const int NRHS, double *A, const int lda, 
+                   int *ipiv, double *B, const int ldb)
+{
+	int info = 0;
+	char trans = 'N';
+	if (Transpose==CblasTrans) 
+	{
+		trans = 'T';
+	}
+#ifdef HAVE_ACML
+	DGETRS(trans,N,NRHS,A,lda,ipiv,B,ldb,info);
+#else
+	int n=N;
+	int nrhs=NRHS;
+	int LDA=lda;
+	int LDB=ldb;
+	DGETRS(&trans,&n,&nrhs,A,&LDA,ipiv,B,&LDB,&info);
+#endif
+	return info;
+}
+#undef DGETRS
+
+// order not supported (yet?)
+int clapack_dpotrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+                   const int N, const int NRHS, double *A, const int lda,
+                   double *B, const int ldb)
+{
+	int info=0;
+	char uplo = 'U';
+	if (Uplo==CblasLower)
+	{
+		uplo = 'L';
+	}
+#ifdef HAVE_ACML
+	DPOTRS(uplo,N,NRHS,A,lda,B,ldb,info);
+#else
+	int n=N;
+	int nrhs=NRHS;
+	int LDA=lda;
+	int LDB=ldb;
+	DPOTRS(&uplo,&n,&nrhs,A,&LDA,B,&LDB,&info);
+#endif
+	return info;
+}
+#undef DPOTRS
 
 #endif //HAVE_ATLAS
 
