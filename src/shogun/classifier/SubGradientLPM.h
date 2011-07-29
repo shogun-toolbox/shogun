@@ -56,16 +56,6 @@ class CSubGradientLPM : public CLinearClassifier
 
 		virtual inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTLPM; }
 
-		/** train classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** set C
 		 *
 		 * @param c_neg new C constant for negatively labeled examples
@@ -126,6 +116,17 @@ class CSubGradientLPM : public CLinearClassifier
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SubGradientLPM"; }
+
+	protected:
+		/** train classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 		float64_t C1;

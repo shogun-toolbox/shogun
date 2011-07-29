@@ -72,16 +72,6 @@ class CKNN : public CDistanceMachine
 		virtual inline EClassifierType get_classifier_type() { return CT_KNN; }
 		//inline EDistanceType get_distance_type() { return DT_KNN;}
 
-		/** train k-NN classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** classify all examples
 		 *
 		 * @return resulting labels
@@ -167,6 +157,16 @@ class CKNN : public CDistanceMachine
 		 * @param test examples
 		 */
 		void init_distance(CFeatures* data);
+
+		/** train k-NN classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 		/// the k parameter in KNN

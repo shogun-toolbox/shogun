@@ -51,7 +51,7 @@ CHierarchical::~CHierarchical()
 	SG_FREE(pairs);
 }
 
-bool CHierarchical::train(CFeatures* data)
+bool CHierarchical::train_machine(CFeatures* data)
 {
 	ASSERT(distance);
 

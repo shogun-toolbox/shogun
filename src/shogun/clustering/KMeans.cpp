@@ -45,7 +45,7 @@ CKMeans::~CKMeans()
 	SG_FREE(mus);
 }
 
-bool CKMeans::train(CFeatures* data)
+bool CKMeans::train_machine(CFeatures* data)
 {
 	ASSERT(distance);
 

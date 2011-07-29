@@ -94,7 +94,7 @@ bool CDomainAdaptationSVMLinear::is_presvm_sane()
 }
 
 
-bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
+bool CDomainAdaptationSVMLinear::train_machine(CDotFeatures* train_data)
 {
 
 	CDotFeatures* tmp_data;
@@ -160,9 +160,9 @@ bool CDomainAdaptationSVMLinear::train(CDotFeatures* train_data)
 	//train SVM
 	if (train_data)
 	{
-		success = CLibLinear::train(train_data);
+		success = CLibLinear::train_machine(train_data);
 	} else {
-		success = CLibLinear::train();
+		success = CLibLinear::train_machine();
 	}
 
 	//ASSERT(presvm)

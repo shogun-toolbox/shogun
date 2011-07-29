@@ -538,7 +538,7 @@ void CSubGradientLPM::cleanup()
 	solver=NULL;
 }
 
-bool CSubGradientLPM::train(CFeatures* data)
+bool CSubGradientLPM::train_machine(CFeatures* data)
 {
 	lpmtim=0;
 	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);

@@ -43,7 +43,7 @@ CPluginEstimate::~CPluginEstimate()
 	SG_UNREF(features);
 }
 
-bool CPluginEstimate::train(CFeatures* data)
+bool CPluginEstimate::train_machine(CFeatures* data)
 {
 	ASSERT(labels);
 	if (data)

@@ -29,7 +29,7 @@ CLPM::~CLPM()
 {
 }
 
-bool CLPM::train(CFeatures* data)
+bool CLPM::train_machine(CFeatures* data)
 {
 	ASSERT(labels);
 	if (data)
