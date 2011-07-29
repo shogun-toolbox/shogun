@@ -37,7 +37,7 @@ CLDA::~CLDA()
 {
 }
 
-bool CLDA::train(CFeatures* data)
+bool CLDA::train_machine(CFeatures* data)
 {
 	ASSERT(labels);
 	if (data)

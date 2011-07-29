@@ -36,7 +36,7 @@ CSVMLin::~CSVMLin()
 {
 }
 
-bool CSVMLin::train(CFeatures* data)
+bool CSVMLin::train_machine(CFeatures* data)
 {
 	ASSERT(labels);
 

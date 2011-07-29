@@ -51,7 +51,7 @@ CSVMOcas::~CSVMOcas()
 {
 }
 
-bool CSVMOcas::train(CFeatures* data)
+bool CSVMOcas::train_machine(CFeatures* data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;

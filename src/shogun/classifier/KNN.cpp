@@ -39,7 +39,7 @@ CKNN::~CKNN()
 	SG_FREE(train_labels.vector);
 }
 
-bool CKNN::train(CFeatures* data)
+bool CKNN::train_machine(CFeatures* data)
 {
 	ASSERT(labels);
 	ASSERT(distance);

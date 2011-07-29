@@ -54,16 +54,6 @@ class CHierarchical : public CDistanceMachine
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_HIERARCHICAL; }
 
-		/** estimate hierarchical clustering
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** load distance machine from file
 		 *
 		 * @param srcfile file to load from
@@ -144,6 +134,17 @@ class CHierarchical : public CDistanceMachine
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Hierarchical"; }
+
+	protected:
+		/** estimate hierarchical clustering
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 		/// the number of merges in hierarchical clustering

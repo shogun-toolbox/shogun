@@ -527,7 +527,7 @@ void CSubGradientSVM::cleanup()
 	beta=NULL;
 }
 
-bool CSubGradientSVM::train(CFeatures* data)
+bool CSubGradientSVM::train_machine(CFeatures* data)
 {
 	tim=0;
 	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);

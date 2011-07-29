@@ -85,16 +85,6 @@ class CLDA : public CLinearMachine
 			return m_gamma;
 		}
 
-		/** train LDA classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** get classifier type
 		 *
 		 * @return classifier type LDA
@@ -119,6 +109,17 @@ class CLDA : public CLinearMachine
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LDA"; }
+
+	protected:
+		/** train LDA classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 		/** gamma */
