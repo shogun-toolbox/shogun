@@ -32,6 +32,7 @@ using namespace shogun;
 #define DORGQR dorgqr
 #define DSYEVR dsyevr
 #define DPOTRS dpotrs
+#define DGETRS dgetrs
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
