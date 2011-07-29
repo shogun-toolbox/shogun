@@ -53,19 +53,6 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * */
 		void init(CLinearMachine* presvm, float64_t B);
 
-
-
-		/** train SVM classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CDotFeatures* data=NULL);
-
-
 		/** get classifier type
 		 *
 		 * @return classifier type DASVMLINEAR
@@ -134,6 +121,17 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 */
 		virtual bool is_presvm_sane();
 
+		/** train SVM classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CDotFeatures* data=NULL);
+
+	protected:
 
 		/** SVM to regularize against */
 		CLinearMachine* presvm;

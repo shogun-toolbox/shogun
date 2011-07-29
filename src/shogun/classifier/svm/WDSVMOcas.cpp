@@ -151,7 +151,7 @@ int32_t CWDSVMOcas::set_wd_weights()
 	return w_dim_single_c;
 }
 
-bool CWDSVMOcas::train(CFeatures* data)
+bool CWDSVMOcas::train_machine(CFeatures* data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 

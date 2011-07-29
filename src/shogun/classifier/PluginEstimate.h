@@ -41,16 +41,6 @@ class CPluginEstimate: public CMachine
 		CPluginEstimate(float64_t pos_pseudo=1e-10, float64_t neg_pseudo=1e-10);
 		virtual ~CPluginEstimate();
 
-		/** train plugin estimate classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** classify objects using the currently set features
 		 *
 		 * @return classified labels
@@ -209,6 +199,17 @@ class CPluginEstimate: public CMachine
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "PluginEstimate"; }
+
+	protected:
+		/** train plugin estimate classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 		/** pseudo count for positive class */

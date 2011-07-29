@@ -132,7 +132,7 @@ CSVMSGD::~CSVMSGD()
 {
 }
 
-bool CSVMSGD::train(CFeatures* data)
+bool CSVMSGD::train_machine(CFeatures* data)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
 	ASSERT(labels);

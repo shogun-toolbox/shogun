@@ -56,16 +56,6 @@ class CKMeans : public CDistanceMachine
 		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_KMEANS; }
 
-		/** train k-means
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/** load distance machine from file
 		 *
 		 * @param srcfile file to load from
@@ -172,10 +162,18 @@ class CKMeans : public CDistanceMachine
 			return NULL;
 		}
 
-
-
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KMeans"; }
+
+		/** train k-means
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 		/// maximum number of iterations

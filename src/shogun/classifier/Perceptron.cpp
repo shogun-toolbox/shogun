@@ -30,7 +30,7 @@ CPerceptron::~CPerceptron()
 {
 }
 
-bool CPerceptron::train(CFeatures* data)
+bool CPerceptron::train_machine(CFeatures* data)
 {
 	ASSERT(labels);
 	if (data)
