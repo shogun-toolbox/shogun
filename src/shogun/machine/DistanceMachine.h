@@ -95,30 +95,30 @@ class CDistanceMachine : public CMachine
 		 */
 		virtual CLabels* apply(CFeatures* data)=0;
 
+		/** Does nothing here , if needed, has to be done in subclasses */
+		virtual void store_model_features() {}
 
-		/** Stores feature data of underlying model.
-		 *
-		 */
-		virtual void store_model_features();
+	private:
+		void init();
 
 	protected:
-		/** the distance */
-		CDistance* distance;
-                
 		/** 
 		 * pthread function for compute distance values
 		 *
 		 * @param p thread parameter 
 		 */
 		static void* run_distance_thread_lhs(void* p);
-                
+
 		/** 
 		 * pthread function for compute distance values
 		 *
 		 * @param p thread parameter 
 		 */
 		static void* run_distance_thread_rhs(void* p);
-                
+
+	protected:
+		/** the distance */
+		CDistance* distance;
 };
 }
 #endif

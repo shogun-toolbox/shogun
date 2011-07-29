@@ -9,6 +9,7 @@
  */
 
 #include <shogun/machine/DistanceMachine.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
@@ -25,13 +26,20 @@ struct D_THREAD_PARAM
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CDistanceMachine::CDistanceMachine()
-: CMachine(), distance(NULL)
+: CMachine()
 {
+	init();
 }
 
 CDistanceMachine::~CDistanceMachine()
 {
 	SG_UNREF(distance);
+}
+
+void CDistanceMachine::init()
+{
+	distance=NULL;
+	m_parameters->add((CSGObject**) distance, "distance", "Distance to use");
 }
 
 void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t idx_a2,int32_t idx_b)
@@ -188,9 +196,4 @@ void* CDistanceMachine::run_distance_thread_rhs(void* p)
         res[i] =distance->distance(idx_c,idx_act);
 
     return NULL;
-}
-
-void CDistanceMachine::store_model_features()
-{
-
 }
