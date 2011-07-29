@@ -197,15 +197,3 @@ void* CDistanceMachine::run_distance_thread_rhs(void* p)
 
     return NULL;
 }
-
-void CDistanceMachine::store_model_features()
-{
-	CFeatures* d_lhs=distance->get_lhs();
-	CFeatures* d_rhs=distance->get_rhs();
-
-	/* copy feature data of distance */
-	distance->init(d_lhs->duplicate(), d_rhs->duplicate());
-
-	SG_UNREF(d_lhs);
-	SG_UNREF(d_rhs);
-}
