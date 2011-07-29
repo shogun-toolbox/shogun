@@ -118,7 +118,15 @@ class CKMeans : public CDistanceMachine
 		 */
 		SGMatrix<float64_t> get_cluster_centers()
 		{
-			return SGMatrix<float64_t>(mus,dimensions,k);
+			/* return empty matrix if no radiuses are there (not trained yet) */
+			if (!R)
+				return SGMatrix<float64_t>();
+
+			CSimpleFeatures<float64_t>* lhs=
+				(CSimpleFeatures<float64_t>*)distance->get_lhs();
+			SGMatrix<float64_t> centers=lhs->get_feature_matrix();
+			SG_UNREF(lhs);
+			return centers;
 		}
 
 		/** get dimensions
@@ -159,9 +167,6 @@ class CKMeans : public CDistanceMachine
 			return NULL;
 		}
 
-		/** Stores centers of clusters in lhs of model */
-		virtual void store_model_features();
-
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KMeans"; }
 
@@ -191,9 +196,6 @@ class CKMeans : public CDistanceMachine
 		/// radi of the clusters (size k)
 		SGVector<float64_t> R;
 		
-		/// centers of the clusters (size dimensions x k)
-		float64_t* mus;
-
 	private:
 		/// weighting over the train data
 		SGVector<float64_t> Weights;

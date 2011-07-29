@@ -43,7 +43,7 @@ CKMeans::CKMeans(int32_t k_, CDistance* d)
 CKMeans::~CKMeans()
 {
 	R.destroy_vector();
-	SG_FREE(mus);
+	SG_UNREF(distance);
 }
 
 bool CKMeans::train_machine(CFeatures* data)
@@ -146,8 +146,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	R.destroy_vector();
 	R=SGVector<float64_t>(k);
 
-	SG_FREE(mus);
-	mus=SG_MALLOC(float64_t, XDimk);
+	float64_t* mus=SG_MALLOC(float64_t, XDimk);
 
 	int32_t *ClList=SG_CALLOC(int32_t, XSize);
 	float64_t *weights_set=SG_CALLOC(float64_t, k);
