@@ -146,20 +146,26 @@ class CKMeans : public CDistanceMachine
 		 */
 		void clustknb(bool use_old_mus, float64_t *mus_start);
 
-		/** classify objects using the currently set features
+		/** Classify all rhs features using the built clusters.
+		 * Cluster with smallest distance to to be classified element is
+		 * returned
 		 *
 		 * @return classified labels
 		 */
 		virtual CLabels* apply();
 
-		/** classify objects
+		/** Classify all provided features.
+		 * Cluster with smallest distance to to be classified element is
+		 * returned
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
 		virtual CLabels* apply(CFeatures* data);
 
-		/** apply machine to one example
+		/** Apply machine to one example.
+		 * Cluster with smallest distance to to be classified element is
+		 * returned
 		 *
 		 * @param num which example to apply machine to
 		 * @return cluster label nearest to example
