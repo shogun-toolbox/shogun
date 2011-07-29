@@ -111,33 +111,35 @@ int main(int argc, char **argv)
 	CContingencyTableEvaluation* evaluation_criterium=
 			new CContingencyTableEvaluation(ACCURACY);
 
-	/* cross validation class for evaluation in model selection, 3 repetitions */
+	/* cross validation class for evaluation in model selection */
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
-	cross->set_num_runs(3);
+	cross->set_num_runs(2);
 
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();
 	param_tree->print_tree();
 
-	/* this is on the stack and handles all of the above structures in memory */
-	CGridSearchModelSelection grid_search(param_tree, cross);
+	/* handles all of the above structures in memory */
+	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
+			param_tree, cross);
 
-	CParameterCombination* best_combination=grid_search.select_model();
+	CParameterCombination* best_combination=grid_search->select_model();
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 
 	best_combination->apply_to_machine(classifier);
 
 	/* larger number of runs to have tighter confidence intervals */
-	cross->set_num_runs(100);
+	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
 	CrossValidationResult result=cross->evaluate();
 	SG_SPRINT("result: ");
 	result.print_result();
 
-	/* clean up destroy result parameter */
+	/* clean up */
 	SG_UNREF(best_combination);
+	SG_UNREF(grid_search);
 
 	exit_shogun();
 

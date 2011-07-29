@@ -79,9 +79,11 @@ int main(int argc, char **argv)
 
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();
+	param_tree->print_tree();
 
-	/* this is on the stack and handles all of the above structures in memory */
-	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(param_tree, cross);
+	/* handles all of the above structures in memory */
+	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
+			param_tree, cross);
 
 	CParameterCombination* best_combination=grid_search->select_model();
 	SG_SPRINT("best parameter(s):\n");
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
 	CrossValidationResult result=cross->evaluate();
 	result.print_result();
 
-	/* clean up destroy result parameter */
+	/* clean up */
 	SG_UNREF(best_combination);
 	SG_UNREF(grid_search);
 
