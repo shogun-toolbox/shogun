@@ -85,18 +85,22 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// shift-invert mode init
 	if (mode==3)
 	{
+		// subtract shift from main diagonal
 		if (shift!=0.0)
 		{
 			for (int i=0; i<n; i++)
 				matrix[i*n+i] -= shift;
 		}
 
+		// compute factorization according to pos value
 		if (pos)
 		{
+			SG_SDEBUG("ARPACK: Using Cholesky factorization");
 			clapack_dpotrf(CblasColMajor,CblasUpper,n,matrix,n);
 		}
 		else
 		{
+			SG_SDEBUG("ARPACK: Using LUP factorization");
 			ipiv = SG_MALLOC(int, n);
 			clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 		}
@@ -114,6 +118,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		if ((ido==1)||(ido==-1))
 		{
 			if (mode==1)
+			// compute (workd+ipntr[1]-1) = A*(workd+ipntr[0]-1)
 			{
 				cblas_dsymv(CblasColMajor,CblasUpper,
 				            n,1.0,matrix,n,
@@ -122,6 +127,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 			}
 			if (mode==3)
 			{
+			// solve system of eqs A*(workd+ipntr[0]-1) = (workd+ipntr[1]-1)
 				for (i=0; i<n; i++)
 					tmp[i] = (workd+ipntr[0]-1)[i];
 
@@ -168,10 +174,12 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		// specify that eigenvectors to be computed too		
 		int rvec = 1;
 
+		// call dseupd_ routine
 		dseupd_(&rvec, all_, select, d, v, &ldv, &sigma, bmat,
 		        &n, which_, &nev, &tol, resid, &ncv, v, &ldv,
 		        iparam, ipntr, workd, workl, &lworkl, &ierr);
 
+		// check for errors
 		if (ierr!=0)
 		{
 			SG_SWARNING("DSEUPD failed with status=%d", ierr);
@@ -179,6 +187,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 		}
 		else
 		{
+			// store eigenpairs to specified arrays
 			for (i=0; i<nev; i++)
 			{	
 				eigenvalues[i] = d[i];

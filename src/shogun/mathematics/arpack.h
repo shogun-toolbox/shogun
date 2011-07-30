@@ -44,25 +44,28 @@ namespace shogun
  * e.g. ncv and workaround arrays sizes.
  *
  * @param matrix symmetric real matrix of size n*n
+ *        (contains LU or Cholesky factors on exit if mode==3)
  * @param n size of matrix
  * @param nev number of eigenpairs to compute (nev<=n)
  * @param which eigenvalue finding strategy. Possible values:
  *        - "LM": nev Largest Magnitude eigenvalues
  *        - "SM": nev Smallest Magnitude eigenvalues
  *        - "LA": nev Largest Algebraic eigenvalues
+ *                (if mode==3 eigenvalues from the right of shift) 
  *        - "SA": nev Smallest Algebraic eigenvalues
+ *                (if mode==3 eigenvalues from the left of shift)
  *        - "BE": half of nev from each end of the spectrum, i.e. nev%2
  *                smallest and nev%2 largest eigenvalues. If nev is odd,
  *                one more largest eigenvalue will be computed
  * @param mode shift-mode of IRLM. Possible values:
  *        - 1: regular mode
- *        - 2: shift-invert mode
- * @param pos true if positive definite (when Cholesky is used)
- * @param shift shift for shift-invert (2) mode of IRLM. In this mode
+ *        - 3: shift-invert mode
+ * @param pos true if matrix is positive definite (Cholesky factorization)
+ * @param shift shift for shift-invert (3) mode of IRLM. In this mode
  *        routine will compute eigenvalues near provided shift
  * @param eigenvalues array of size nev to hold computed eigenvalues
  * @param eigenvectors array of size nev*n to hold computed eigenvectors
- * @param status on output sets -1 if failed
+ * @param status on output -1 if computation failed
  */
 void arpack_dsaupd(double* matrix, int n, int nev, const char* which, int mode, bool pos,
                    double shift, double* eigenvalues, double* eigenvectors, int& status);
