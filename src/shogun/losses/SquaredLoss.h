@@ -45,28 +45,6 @@ public:
 	virtual float64_t loss(float64_t prediction, float64_t label);
 
 	/**
-	 * Get the updated learning rate for an example
-	 *
-	 * @param prediction prediction
-	 * @param label label
-	 * @param eta_t learning rate
-	 * @param norm norm
-	 *
-	 * @return update
-	 */
-	virtual float64_t get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm);
-
-	/**
-	 * Get square of the gradient of the loss function
-	 *
-	 * @param prediction prediction
-	 * @param label label
-	 *
-	 * @return square of gradient
-	 */
-	virtual float64_t square_grad(float64_t prediction, float64_t label);
-
-	/**
 	 * Get square of the gradient of the loss function
 	 *
 	 * @param prediction prediction
