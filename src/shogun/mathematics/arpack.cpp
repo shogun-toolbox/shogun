@@ -141,7 +141,7 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 			}
 		}
 	} while ((ido==1)||(ido==-1));
-	if (!pos) SG_FREE(ipiv);
+	if (!pos && mode==3) SG_FREE(ipiv);
 	if (mode==3) SG_FREE(tmp);
 	
 	// check if DSAUPD failed
