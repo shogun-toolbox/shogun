@@ -75,6 +75,22 @@ public:
 		return m_k;
 	}
 
+	/** setter for posdef parameter
+	 * @param posdef posdef value
+	 */
+	void inline set_posdef(bool posdef)
+	{
+		m_posdef = posdef;
+	}
+
+	/** getter for posdef parameter
+	 * @return posdef value
+	 */
+	bool inline get_posdef()
+	{
+		return m_posdef;
+	}
+
 	/** get name */
 	virtual inline const char* get_name() const { return "LocallyLinearEmbedding"; };
 
@@ -92,8 +108,11 @@ protected:
 
 protected:
 
-	/* number of neighbors */
+	/** number of neighbors */
 	int32_t m_k;
+
+	/** boolean indicating if matrix should be considered as positive-definite */
+	bool m_posdef;
 
 };
 }

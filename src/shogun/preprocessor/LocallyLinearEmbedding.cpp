@@ -22,7 +22,7 @@
 using namespace shogun;
 
 CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
-		CDimensionReductionPreprocessor(), m_k(3)
+		CDimensionReductionPreprocessor(), m_k(3), m_posdef(true)
 {
 }
 
@@ -207,7 +207,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
-		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,-1e-3,false,eigenvalues_vector,matrix.matrix,eigenproblem_status);
+		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,m_posdef,-1e-6,eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
 	}
 	else
