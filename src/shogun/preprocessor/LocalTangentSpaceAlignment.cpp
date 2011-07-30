@@ -163,9 +163,9 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 	SG_FREE(q_matrix);
 
 	// finally construct embedding
-	SGMatrix<float64_t> W_sgmatrix(W_matrix,N,N,true);
+	SGMatrix<float64_t> W_sgmatrix(W_matrix,N,N);
 	simple_features->set_feature_matrix(find_null_space(W_sgmatrix,m_target_dim,false));
-	W_sgmatrix.free_matrix();
+	W_sgmatrix.destroy_matrix();
 
 	return simple_features->get_feature_matrix();
 }

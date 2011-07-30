@@ -163,7 +163,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	}
 
 	// compute M=(W-I)'*(W-I)
-	SGMatrix<float64_t> M_matrix(N,N,true);
+	SGMatrix<float64_t> M_matrix(N,N);
 	cblas_dgemm(CblasColMajor,CblasTrans, CblasNoTrans,
 	            N,N,N,
 	            1.0,W_matrix,N,
@@ -173,7 +173,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	SG_FREE(W_matrix);
 
 	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,false));
-	M_matrix.free_matrix();
+	M_matrix.destroy_matrix();
 
 	return simple_features->get_feature_matrix();
 }
