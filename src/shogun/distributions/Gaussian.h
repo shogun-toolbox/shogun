@@ -129,7 +129,7 @@ class CGaussian : public CDistribution
 		 */
 		virtual inline void set_mean(SGVector<float64_t> mean)
 		{
-			m_mean.free_vector();
+			m_mean.destroy_vector();
 			if (mean.vlen==1)
 				m_cov_type=SPHERICAL;
 
@@ -215,7 +215,7 @@ class CGaussian : public CDistribution
 		 */
 		inline void set_u(SGMatrix<float64_t> u)
 		{
-			m_u.free_matrix();
+			m_u.destroy_matrix();
 			m_u = u;
 		}
 

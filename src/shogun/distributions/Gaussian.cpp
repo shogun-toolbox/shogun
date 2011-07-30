@@ -59,8 +59,8 @@ void CGaussian::init()
 
 CGaussian::~CGaussian()
 {
-	m_d.free_vector();
-	m_u.free_matrix();
+	m_d.destroy_vector();
+	m_u.destroy_matrix();
 	m_mean.free_vector();
 }
 
@@ -216,11 +216,11 @@ void CGaussian::register_params()
 
 void CGaussian::decompose_cov(float64_t* cov, int32_t cov_size)
 {
-	m_d.free_vector();
+	m_d.destroy_vector();
 	switch (m_cov_type)
 	{
 		case FULL:
-			m_u.free_matrix();
+			m_u.destroy_matrix();
 			m_u.matrix=SG_MALLOC(float64_t, cov_size*cov_size);
 			memcpy(m_u.matrix, cov, sizeof(float64_t)*cov_size*cov_size);
 

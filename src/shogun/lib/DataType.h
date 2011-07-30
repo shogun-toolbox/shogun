@@ -34,8 +34,8 @@ template<class T> class SGVector
 			: vector(v), vlen(len), do_free(free_vec) { }
 
 		/** constructor to create new vector in memory */
-		SGVector(index_t len, bool free_vec=false) :
-		vlen(len), do_free(free_vec)
+		SGVector(index_t len, bool free_vec=false)
+			: vlen(len), do_free(free_vec)
 		{
 			vector=SG_MALLOC(T, len);
 		}
@@ -43,6 +43,15 @@ template<class T> class SGVector
 		/** copy constructor */
 		SGVector(const SGVector &orig)
 			: vector(orig.vector), vlen(orig.vlen), do_free(orig.do_free) { }
+
+		static SGVector get_vector(SGVector &src, bool own=true)
+		{
+			if (!own)
+				return src;
+
+			src.do_free=false;
+			return SGVector(src.vector, src.vlen);
+		}
 
 		virtual void free_vector()
 		{

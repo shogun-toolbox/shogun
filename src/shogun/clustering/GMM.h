@@ -243,7 +243,6 @@ class CGMM : public CDistribution
 		/** Initialize parameters for serialization */
 		void register_params();
 
-
 		/** apply the partial EM algorithm on 3 components */
 		void partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min_cov, int32_t max_em_iter, float64_t min_change);
 

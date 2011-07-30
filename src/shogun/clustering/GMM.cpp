@@ -105,14 +105,9 @@ void CGMM::cleanup()
 {
 	for (int i = 0; i < m_components.vlen; i++)
 		SG_UNREF(m_components.vector[i]);
-	if (m_components.do_free)
-	{
-		m_components.free_vector();
-	}
-	if (m_coefficients.do_free)
-	{
-		m_coefficients.free_vector();
-	}
+
+	m_components.destroy_vector();
+	m_coefficients.destroy_vector();
 }
 
 bool CGMM::train(CFeatures* data)
@@ -311,11 +306,8 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						break;
 					}
 					else
-					{
-						candidate->get_comp().do_free=true;
-						candidate->get_coef().do_free=true;
 						delete candidate;
-					}
+
 					if (candidates_checked>=max_cand)
 						break;
 				}
@@ -520,8 +512,6 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	m_coefficients.vector[comp2]=coefficients.vector[1];
 	m_coefficients.vector[comp3]=coefficients.vector[2];
 
-	partial_candidate->get_comp().do_free=true;
-	partial_candidate->get_coef().do_free=true;
 	delete partial_candidate;
 	alpha.free_matrix();
 	SG_FREE(logPxy);
