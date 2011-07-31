@@ -187,7 +187,7 @@ class CGMM : public CDistribution
 		 */
 		virtual inline void set_coef(SGVector<float64_t> coefficients)
 		{
-			m_coefficients.free_vector();
+			m_coefficients.destroy_vector();
 			m_coefficients=coefficients;
 		}
 
@@ -211,7 +211,7 @@ class CGMM : public CDistribution
 				SG_UNREF(m_components.vector[i]);
 			}
 
-			m_components.free_vector();
+			m_components.destroy_vector();
 			m_components=components;
 
 			for (int i=0; i<m_components.vlen; i++)
