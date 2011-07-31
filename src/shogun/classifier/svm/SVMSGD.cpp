@@ -99,7 +99,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw));
+	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
@@ -124,7 +124,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 			if (z < 1)
 #endif
 			{
-				float64_t etd = -eta * loss->loss(y,z/y);
+				float64_t etd = -eta * loss->first_derivative(z,1);
 				features->add_to_dense_vec(etd * y / wscale, i, w, w_dim);
 
 				if (use_bias)
