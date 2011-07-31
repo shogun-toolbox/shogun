@@ -111,6 +111,11 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	SG_INFO("Training on %d vectors\n", num_vec);
 	CSignal::clear_cancel();
 
+	ELossType loss_type = loss->get_loss_type();
+	bool is_log_loss = false;
+	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
+		is_log_loss = true;
+	
 	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
 	{
 		count = skip;
@@ -120,9 +125,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 			float64_t y = labels->get_label(i);
 			float64_t z = y * (features->dense_dot(i, w, w_dim) + bias);
 
-#if LOSS < LOGLOSS
-			if (z < 1)
-#endif
+			if (z < 1 || is_log_loss)
 			{
 				float64_t etd = -eta * loss->first_derivative(z,1);
 				features->add_to_dense_vec(etd * y / wscale, i, w, w_dim);

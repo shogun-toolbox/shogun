@@ -34,5 +34,5 @@ float64_t CLogLoss::second_derivative(float64_t prediction, float64_t label)
 	float64_t z = prediction * label;
 	float64_t ez = exp(z);
 
-	return ez / (ez*(ez + 2) + 1)
+	return ez / (ez*(ez + 2) + 1);
 }

@@ -64,6 +64,13 @@ public:
 	 */
 	virtual float64_t second_derivative(float64_t prediction, float64_t label);
 
+	/** 
+	 * Return loss type
+	 * 
+	 * @return L_SQUAREDLOSS
+	 */
+	virtual ELossType get_loss_type() { return L_SQUAREDLOSS; }
+	
 	virtual const char* get_name() const { return "SquaredLoss"; }
 };
 

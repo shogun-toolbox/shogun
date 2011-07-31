@@ -18,10 +18,24 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
+#include <math.h>
 
 namespace shogun
 {
+	/// shogun loss type
+	enum ELossType
+	{
+		L_HINGELOSS = 0,
+		L_SMOOTHHINGELOSS = 10,
+		L_SQUAREDHINGELOSS = 20,
+		L_SQUAREDLOSS = 30,
+		L_LOGLOSS = 100,
+		L_LOGLOSSMARGIN = 110
+	};
+}
 
+namespace shogun
+{
 class CLossFunction: public CSGObject
 {
 public:
@@ -59,6 +73,15 @@ public:
 	 * @return second derivative
 	 */
 	virtual float64_t second_derivative(float64_t prediction, float64_t label) = 0;
+
+	/** 
+	 * Get loss type
+	 * 
+	 * abstract base method
+	 * 
+	 * @return loss type as enum
+	 */
+	virtual ELossType get_loss_type()=0;
 
 	virtual const char* get_name() const { return "LossFunction"; }
 };

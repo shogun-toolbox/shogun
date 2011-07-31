@@ -64,6 +64,13 @@ public:
 	 */
 	virtual float64_t second_derivative(float64_t prediction, float64_t label);
 
+	/** 
+	 * Return type of loss
+	 * 
+	 * @return L_HINGELOSS
+	 */
+	virtual ELossType get_loss_type() { return L_HINGELOSS; }
+
 	virtual const char* get_name() const { return "HingeLoss"; }
 };
 

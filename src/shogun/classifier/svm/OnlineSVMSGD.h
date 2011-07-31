@@ -25,6 +25,7 @@
 #include <shogun/features/Labels.h>
 #include <shogun/machine/OnlineLinearMachine.h>
 #include <shogun/features/StreamingDotFeatures.h>
+#include <shogun/loss/LossFunction.h>
 
 namespace shogun
 {
@@ -134,6 +135,18 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 * @return if regularized bias is enabled
 		 */
 		inline bool get_regularized_bias_enabled() { return use_regularized_bias; }
+		
+		/** Set the loss function to use
+		 *
+		 * @param loss_func object derived from CLossFunction
+		 */
+		void set_loss_function(CLossFunction* loss_func);
+
+		/** Return the loss function
+		 *
+		 * @return loss function as CLossFunction*
+		 */
+		inline CLossFunction* get_loss_function() { return loss; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "OnlineSVMSGD"; }
@@ -162,6 +175,8 @@ class COnlineSVMSGD : public COnlineLinearMachine
 
 		bool use_bias;
 		bool use_regularized_bias;
+
+		CLossFunction* loss;
 };
 }
 #endif
