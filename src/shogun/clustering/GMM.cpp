@@ -299,13 +299,8 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 					if (cand_likelihood>cur_likelihood)
 					{
 						cur_likelihood=cand_likelihood;
-						SGVector<CGaussian*> comp_copy(candidate->get_comp().vlen);
-						SGVector<float64_t> coef_copy(candidate->get_coef().vlen);
-						memcpy(comp_copy.vector, candidate->get_comp().vector, comp_copy.vlen*sizeof(CGaussian*));
-						memcpy(coef_copy.vector, candidate->get_coef().vector, coef_copy.vlen*sizeof(float64_t));
-						set_comp(comp_copy);
-						set_coef(coef_copy);
-						delete candidate;
+						set_comp(candidate->get_comp());
+						set_coef(candidate->get_coef());
 						better_found=true;
 						break;
 					}
