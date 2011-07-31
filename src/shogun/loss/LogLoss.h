@@ -62,7 +62,7 @@ public:
 	/** 
 	 * Return loss type
 	 * 
-	 * @return E_LOGLOSS
+	 * @return L_LOGLOSS
 	 */
 	virtual ELossType get_loss_type() { return L_LOGLOSS; }
 	
