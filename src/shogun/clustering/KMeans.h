@@ -193,7 +193,7 @@ class CKMeans : public CDistanceMachine
 
 	private:
 		/// weighting over the train data
-		float64_t* Weights;
+		SGVector<float64_t> Weights;
 };
 }
 #endif

@@ -60,12 +60,12 @@ bool CKMeans::train_machine(CFeatures* data)
 	int32_t num=lhs->get_num_vectors();
 	SG_UNREF(lhs);
 
-	Weights=SG_MALLOC(float64_t, num);
+	Weights=SGVector<float64_t>(num);
 	for (int32_t i=0; i<num; i++)
-		Weights[i]=1.0;
+		Weights.vector[i]=1.0;
 
 	clustknb(false, NULL);
-	SG_FREE(Weights);
+	Weights.destroy_vector();
 
 	return true;
 }
@@ -149,9 +149,9 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	SG_FREE(mus);
 	mus=SG_MALLOC(float64_t, XDimk);
 
-	int32_t *ClList = (int32_t*) calloc(XSize, sizeof(int32_t));
-	float64_t *weights_set = (float64_t*) calloc(k, sizeof(float64_t));
-	float64_t *dists = (float64_t*) calloc(k*XSize, sizeof(float64_t));
+	int32_t *ClList=SG_CALLOC(int32_t, XSize);
+	float64_t *weights_set=SG_CALLOC(float64_t, k);
+	float64_t *dists=SG_CALLOC(float64_t, k*XSize);
 
 	///replace rhs feature vectors
 	CSimpleFeatures<float64_t>* rhs_mus = new CSimpleFeatures<float64_t>(0);
@@ -193,7 +193,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 		{
 			const int32_t Cl=CMath::random(0, k-1);
 			int32_t j;
-			float64_t weight=Weights[i];
+			float64_t weight=Weights.vector[i];
 
 			weights_set[Cl]+=weight;
 			ClList[i]=Cl;
@@ -247,7 +247,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 		for (i=0; i<XSize; i++) 
 		{
 			const int32_t Cl = ClList[i];
-			float64_t weight=Weights[i];
+			float64_t weight=Weights.vector[i];
 			weights_set[Cl]+=weight;
 #ifndef MUSRECALC
 			vec=lhs->get_feature_vector(i, vlen, vfree);
@@ -292,7 +292,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 		{
 			int32_t j;
 			int32_t Cl=ClList[i];
-			float64_t weight=Weights[i];
+			float64_t weight=Weights.vector[i];
 
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
@@ -321,7 +321,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			int32_t imini, j;
 			float64_t mini, weight;
 
-			weight=Weights[Pat];
+			weight=Weights.vector[Pat];
 
 			/* compute the distance of this point to all centers */
 			for(int32_t idx_k=0;idx_k<k;idx_k++)
@@ -431,7 +431,6 @@ void CKMeans::init()
 	k=3;
 	dimensions=0;
 	mus=NULL;
-	Weights=NULL;
 
 	m_parameters->add(&max_iter, "max_iter", "Maximum number of iterations");
 	m_parameters->add(&k, "k", "Parameter k");
