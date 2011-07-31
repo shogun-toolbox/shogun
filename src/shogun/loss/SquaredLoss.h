@@ -64,13 +64,35 @@ public:
 	 */
 	virtual float64_t second_derivative(float64_t prediction, float64_t label);
 
-	/** 
+	/**
+	 * Get importance aware weight update for this loss function
+	 *
+	 * @param prediction prediction
+	 * @param label label
+	 * @param eta_t learning rate at update number t
+	 * @param norm scale value
+	 *
+	 * @return update
+	 */
+	virtual float64_t get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm);
+
+	/**
+	 * Get square of gradient, used for adaptive learning
+	 *
+	 * @param prediction prediction
+	 * @param label label
+	 *
+	 * @return square of gradient
+	 */
+	virtual float64_t get_square_grad(float64_t prediction, float64_t label);
+
+	/**
 	 * Return loss type
-	 * 
+	 *
 	 * @return L_SQUAREDLOSS
 	 */
 	virtual ELossType get_loss_type() { return L_SQUAREDLOSS; }
-	
+
 	virtual const char* get_name() const { return "SquaredLoss"; }
 };
 

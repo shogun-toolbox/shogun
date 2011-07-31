@@ -34,3 +34,21 @@ float64_t CSquaredLoss::second_derivative(float64_t prediction, float64_t label)
 {
 	return 2;
 }
+
+float64_t CSquaredLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
+{
+    if (eta_t < 1e-6)
+    {
+      /* When exp(-eta_t)~= 1 we replace 1-exp(-eta_t)
+       * with its first order Taylor expansion around 0
+       * to avoid catastrophic cancellation.
+       */
+      return (label - prediction)*eta_t/norm;
+    }
+    return (label - prediction)*(1-exp(-eta_t))/norm;
+}
+
+float64_t CSquaredLoss::get_square_grad(float64_t prediction, float64_t label)
+{
+	return (prediction - label) * (prediction - label);
+}

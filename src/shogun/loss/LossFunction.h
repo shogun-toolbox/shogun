@@ -74,11 +74,33 @@ public:
 	 */
 	virtual float64_t second_derivative(float64_t prediction, float64_t label) = 0;
 
-	/** 
+	/**
+	 * Get importance aware weight update for this loss function
+	 *
+	 * @param prediction prediction
+	 * @param label label
+	 * @param eta_t learning rate at update number t
+	 * @param norm scale value
+	 *
+	 * @return update
+	 */
+	virtual float64_t get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm) = 0;
+
+	/**
+	 * Get square of gradient, used for adaptive learning
+	 *
+	 * @param prediction prediction
+	 * @param label label
+	 *
+	 * @return square of gradient
+	 */
+	virtual float64_t get_square_grad(float64_t prediction, float64_t label) = 0;
+
+	/**
 	 * Get loss type
-	 * 
+	 *
 	 * abstract base method
-	 * 
+	 *
 	 * @return loss type as enum
 	 */
 	virtual ELossType get_loss_type()=0;

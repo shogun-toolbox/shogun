@@ -35,3 +35,15 @@ float64_t CSquaredHingeLoss::second_derivative(float64_t prediction, float64_t l
 		return 1;
 	return 0;
 }
+
+float64_t CSquaredHingeLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
+{
+	SG_NOTIMPLEMENTED;
+	return -1;
+}
+
+float64_t CSquaredHingeLoss::get_square_grad(float64_t prediction, float64_t label)
+{
+	SG_NOTIMPLEMENTED;
+	return -1;
+}
