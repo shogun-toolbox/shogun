@@ -27,36 +27,22 @@
 using namespace shogun;
 
 CKMeans::CKMeans()
-: CDistanceMachine()
+: CDistanceMachine(), max_iter(10000), k(3), dimensions(0), R(NULL),
+	mus(NULL), Weights(NULL)
 {
-	init();
 }
 
 CKMeans::CKMeans(int32_t k_, CDistance* d)
-: CDistanceMachine()
+: CDistanceMachine(), max_iter(10000), k(k_), dimensions(0), R(NULL),
+	mus(NULL), Weights(NULL)
 {
-	init();
-	k=k_;
 	set_distance(d);
 }
 
-
-
 CKMeans::~CKMeans()
 {
-	SG_FREE(R.vector);
+	SG_FREE(R);
 	SG_FREE(mus);
-}
-
-void CKMeans::init()
-{
-	Weights=NULL;
-	max_iter=10000;
-	k=3;
-
-	m_parameters->add(&R, "R", "Radiuses of the cluster");
-	m_parameters->add(&max_iter, "max_iter", "Maximum number of iterations");
-	m_parameters->add(&k, "k", "Parameter k");
 }
 
 bool CKMeans::train_machine(CFeatures* data)
@@ -156,8 +142,8 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	const int32_t XDimk=dimensions*k;
 	int32_t iter=0;
 
-	SG_FREE(R.vector);
-	R.vector=SG_MALLOC(float64_t, k);
+	SG_FREE(R);
+	R=SG_MALLOC(float64_t, k);
 
 	SG_FREE(mus);
 	mus=SG_MALLOC(float64_t, XDimk);
@@ -427,7 +413,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			}
 		}
 
-		R.vector[i]=(0.7*CMath::sqrt(rmin1)+0.3*CMath::sqrt(rmin2));
+		R[i]=(0.7*sqrt(rmin1)+0.3*sqrt(rmin2));
 	}
         distance->replace_rhs(rhs_cache);
         delete rhs_mus;        
