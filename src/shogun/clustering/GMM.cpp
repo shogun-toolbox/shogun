@@ -301,6 +301,12 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						cur_likelihood=cand_likelihood;
 						set_comp(candidate->get_comp());
 						set_coef(candidate->get_coef());
+
+						for (int i=0; i<candidate->get_comp().vlen; i++)
+						{
+							SG_UNREF(candidate->get_comp().vector[i]);
+						}
+
 						better_found=true;
 						break;
 					}
