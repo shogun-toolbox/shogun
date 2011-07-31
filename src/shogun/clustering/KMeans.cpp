@@ -42,7 +42,7 @@ CKMeans::CKMeans(int32_t k_, CDistance* d)
 
 CKMeans::~CKMeans()
 {
-	SG_FREE(R.vector);
+	R.destroy_vector();
 	SG_FREE(mus);
 }
 
@@ -143,7 +143,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	const int32_t XDimk=dimensions*k;
 	int32_t iter=0;
 
-	SG_FREE(R.vector);
+	R.destroy_vector();
 	R.vector=SG_MALLOC(float64_t, k);
 	R.vlen=k;
 
