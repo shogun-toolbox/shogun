@@ -51,6 +51,7 @@ CKMeans::~CKMeans()
 void CKMeans::init()
 {
 	Weights=NULL;
+	R=NULL;
 	max_iter=10000;
 	k=3;
 
