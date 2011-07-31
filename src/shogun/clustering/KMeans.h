@@ -111,10 +111,7 @@ class CKMeans : public CDistanceMachine
 		/** get radiuses
 		 *
 		 */
-		SGVector<float64_t> get_radiuses()
-		{
-			return SGVector<float64_t>(R,k);
-		}
+		SGVector<float64_t> get_radiuses() { return R; }
 
 		/** get centers
 		 *
@@ -175,6 +172,9 @@ class CKMeans : public CDistanceMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+	private:
+		void init();
+
 	protected:
 		/// maximum number of iterations
 		int32_t max_iter;
@@ -186,7 +186,7 @@ class CKMeans : public CDistanceMachine
 		int32_t dimensions;
 
 		/// radi of the clusters (size k)
-		float64_t* R;
+		SGVector<float64_t> R;
 		
 		/// centers of the clusters (size dimensions x k)
 		float64_t* mus;
