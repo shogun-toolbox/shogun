@@ -233,6 +233,12 @@ class CMachine : public CSGObject
 		}
 
 		/** Stores feature data of underlying model.
+		 * After this method has been called, it is possible to change
+		 * the machine's feature data and call apply(), which is then performed
+		 * on the training feature data that is part of the machine's model.
+		 *
+		 * Base method, has to be implemented in order to allow cross-validation
+		 * and model selection.
 		 *
 		 * NOT IMPLEMENTED! Has to be done in subclasses
 		 */
@@ -255,7 +261,8 @@ class CMachine : public CSGObject
 		 */
 		virtual bool train_machine(CFeatures* data=NULL)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_ERROR("train_machine is not yet implemented for %s!\n",
+					get_name());
 			return false;
 		}
 

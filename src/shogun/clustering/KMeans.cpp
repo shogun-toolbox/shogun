@@ -423,27 +423,24 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	SG_FREE(dists);
 	SG_UNREF(lhs);
 
+	/* set lhs of underlying distance to cluster centers */
+	CSimpleFeatures<float64_t>* cluster_centers=new CSimpleFeatures<float64_t>(
+			SGMatrix<float64_t>(mus, dimensions, k));
+	CFeatures* rhs=distance->get_rhs();
+	distance->init(cluster_centers, rhs);
+}
+
 void CKMeans::init()
 {
 	max_iter=10000;
 	k=3;
 	dimensions=0;
-	mus=NULL;
 
 	m_parameters->add(&max_iter, "max_iter", "Maximum number of iterations");
 	m_parameters->add(&k, "k", "Parameter k");
 	m_parameters->add(&dimensions, "dimensions", "Dimensions of data");
 	m_parameters->add(&R, "R", "Cluster radiuses");
 }
-
-void CKMeans::store_model_features()
-{
-	/* set lhs of underlying distance to cluster centers */
-	CSimpleFeatures<float64_t>* cluster_centers=new CSimpleFeatures<float64_t>(
-			SGMatrix<float64_t>(mus, dimensions, k));
-	CFeatures* rhs=distance->get_rhs();
-	distance->init(cluster_centers, rhs);
-} 
 
 CLabels* CKMeans::apply(CFeatures* data)
 {
@@ -470,7 +467,7 @@ CLabels* CKMeans::apply()
 
 float64_t CKMeans::apply(int32_t num)
 {
-	if (!R)
+	if (!R.vector)
 		SG_ERROR("call train before calling apply!\n");
 
 	/* number of clusters */
@@ -494,5 +491,7 @@ float64_t CKMeans::apply(int32_t num)
 		}
 	}
 
-	return (float64_t) best_index;
+	SG_FREE(dists);
+
+	return labels->get_label(best_index);
 }

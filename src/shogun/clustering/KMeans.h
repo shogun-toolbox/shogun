@@ -119,7 +119,7 @@ class CKMeans : public CDistanceMachine
 		SGMatrix<float64_t> get_cluster_centers()
 		{
 			/* return empty matrix if no radiuses are there (not trained yet) */
-			if (!R)
+			if (!R.vector)
 				return SGMatrix<float64_t>();
 
 			CSimpleFeatures<float64_t>* lhs=
@@ -138,13 +138,6 @@ class CKMeans : public CDistanceMachine
 			return dimensions;
 		}
 
-	protected:
-		/** clustknb
-		 *
-		 * @param use_old_mus if old mus shall be used
-		 * @param mus_start mus start
-		 */
-		void clustknb(bool use_old_mus, float64_t *mus_start);
 
 		/** Classify all rhs features using the built clusters.
 		 * Cluster with smallest distance to to be classified element is
@@ -175,6 +168,14 @@ class CKMeans : public CDistanceMachine
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KMeans"; }
 
+	protected:
+		/** clustknb
+		 *
+		 * @param use_old_mus if old mus shall be used
+		 * @param mus_start mus start
+		 */
+		void clustknb(bool use_old_mus, float64_t *mus_start);
+
 		/** train k-means
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -183,7 +184,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_distance_machine(CFeatures* data=NULL);
 
 	private:
 		void init();
