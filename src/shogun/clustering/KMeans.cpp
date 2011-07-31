@@ -144,8 +144,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	int32_t iter=0;
 
 	R.destroy_vector();
-	R.vector=SG_MALLOC(float64_t, k);
-	R.vlen=k;
+	R.vector=SGVector<float64_t>(k);
 
 	SG_FREE(mus);
 	mus=SG_MALLOC(float64_t, XDimk);
