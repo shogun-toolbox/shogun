@@ -1,17 +1,17 @@
 /*
    SVM with stochastic gradient
    Copyright (C) 2007- Leon Bottou
-   
+
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
@@ -23,84 +23,9 @@
 #include <shogun/classifier/svm/SVMSGD.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/loss/HingeLoss.h>
 
 using namespace shogun;
-
-// Available losses
-#define HINGELOSS 1
-#define SMOOTHHINGELOSS 2
-#define SQUAREDHINGELOSS 3
-#define LOGLOSS 10
-#define LOGLOSSMARGIN 11
-
-// Select loss
-#define LOSS SQUAREDHINGELOSS
-
-// One when bias is regularized
-#define REGULARIZEBIAS 0
-
-inline
-float64_t loss(float64_t z)
-{
-#if LOSS == LOGLOSS
-	if (z >= 0)
-		return log(1+exp(-z));
-	else
-		return -z + log(1+exp(z));
-#elif LOSS == LOGLOSSMARGIN
-	if (z >= 1)
-		return log(1+exp(1-z));
-	else
-		return 1-z + log(1+exp(z-1));
-#elif LOSS == SMOOTHHINGELOSS
-	if (z < 0)
-		return 0.5 - z;
-	if (z < 1)
-		return 0.5 * (1-z) * (1-z);
-	return 0;
-#elif LOSS == SQUAREDHINGELOSS
-	if (z < 1)
-		return 0.5 * (1 - z) * (1 - z);
-	return 0;
-#elif LOSS == HINGELOSS
-	if (z < 1)
-		return 1 - z;
-	return 0;
-#else
-# error "Undefined loss"
-#endif
-}
-
-inline
-float64_t dloss(float64_t z)
-{
-#if LOSS == LOGLOSS
-	if (z < 0)
-		return 1 / (exp(z) + 1);
-	float64_t ez = exp(-z);
-	return ez / (ez + 1);
-#elif LOSS == LOGLOSSMARGIN
-	if (z < 1)
-		return 1 / (exp(z-1) + 1);
-	float64_t ez = exp(1-z);
-	return ez / (ez + 1);
-#elif LOSS == SMOOTHHINGELOSS
-	if (z < 0)
-		return 1;
-	if (z < 1)
-		return 1-z;
-	return 0;
-#elif LOSS == SQUAREDHINGELOSS
-	if (z < 1)
-		return (1 - z);
-	return 0;
-#else
-	if (z < 1)
-		return 1;
-	return 0;
-#endif
-}
-
 
 CSVMSGD::CSVMSGD()
 : CLinearMachine()
@@ -132,6 +57,14 @@ CSVMSGD::~CSVMSGD()
 {
 }
 
+void CSVMSGD::set_loss_function(CLossFunction* loss_func)
+{
+	if (loss)
+		SG_UNREF(loss);
+	loss=loss_func;
+	SG_REF(loss);
+}
+
 bool CSVMSGD::train_machine(CFeatures* data)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
@@ -161,12 +94,12 @@ bool CSVMSGD::train_machine(CFeatures* data)
 
 	float64_t lambda= 1.0/(C1*num_vec);
 
-	// Shift t in order to have a 
+	// Shift t in order to have a
 	// reasonable initial learning rate.
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,dloss(-typw));
+	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw));
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
@@ -191,7 +124,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 			if (z < 1)
 #endif
 			{
-				float64_t etd = eta * dloss(z);
+				float64_t etd = -eta * loss->loss(y,z/y);
 				features->add_to_dense_vec(etd * y / wscale, i, w, w_dim);
 
 				if (use_bias)
@@ -221,7 +154,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 }
 
 void CSVMSGD::calibrate()
-{ 
+{
 	ASSERT(features);
 	int32_t num_vec=features->get_num_vectors();
 	int32_t c_dim=features->get_dim_feature_space();
@@ -272,6 +205,8 @@ void CSVMSGD::init()
 	use_bias=true;
 
 	use_regularized_bias=false;
+
+	loss=new CHingeLoss();
 
     m_parameters->add(&C1, "C1",  "Cost constant 1.");
     m_parameters->add(&C2, "C2",  "Cost constant 2.");

@@ -26,6 +26,7 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Labels.h>
+#include <shogun/loss/LossFunction.h>
 
 namespace shogun
 {
@@ -116,6 +117,18 @@ class CSVMSGD : public CLinearMachine
 		 */
 		inline bool get_regularized_bias_enabled() { return use_regularized_bias; }
 
+		/** Set the loss function to use
+		 *
+		 * @param loss_func object derived from CLossFunction
+		 */
+		void set_loss_function(CLossFunction* loss_func);
+
+		/** Return the loss function
+		 *
+		 * @return loss function as CLossFunction*
+		 */
+		inline CLossFunction* get_loss_function() { return loss; }
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SVMSGD"; }
 
@@ -148,6 +161,8 @@ class CSVMSGD : public CLinearMachine
 
 		bool use_bias;
 		bool use_regularized_bias;
+
+		CLossFunction* loss;
 };
 }
 #endif
