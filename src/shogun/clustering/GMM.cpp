@@ -301,7 +301,6 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						cur_likelihood=cand_likelihood;
 						set_comp(candidate->get_comp());
 						set_coef(candidate->get_coef());
-						delete candidate;
 						better_found=true;
 						break;
 					}
@@ -404,12 +403,10 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		SGMatrix<float64_t> c2=components.vector[2]->get_cov();
 		CMath::add(c1.matrix, alpha1, c1.matrix, alpha2, c2.matrix, dim_n*dim_n);
 
-		SG_FREE(components.vector[1]->get_d().vector);
-		SG_FREE(components.vector[1]->get_u().matrix);
-		components.vector[1]->get_d().vector=CMath::compute_eigenvectors(c1.matrix, dim_n, dim_n);
-		components.vector[1]->get_u().matrix=c1.matrix;
+		components.vector[1]->set_d(SGVector<float64_t>(CMath::compute_eigenvectors(c1.matrix, dim_n, dim_n), dim_n));
+		components.vector[1]->set_u(c1);
 
-		c2.free_matrix();
+		c2.destroy_matrix();
 
 		float64_t new_d=1;
 		for (int i=0; i<dim_n; i++)
@@ -513,7 +510,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	m_coefficients.vector[comp3]=coefficients.vector[2];
 
 	delete partial_candidate;
-	alpha.free_matrix();
+	alpha.destroy_matrix();
 	SG_FREE(logPxy);
 	SG_FREE(logPx);
 	SG_FREE(init_logPxy);

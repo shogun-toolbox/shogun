@@ -194,7 +194,7 @@ class CGaussian : public CDistribution
 		 */
 		inline void set_d(SGVector<float64_t> d)
 		{
-			m_d.free_vector();
+			m_d.destroy_vector();
 			m_d = d;
 			init();
 		}
