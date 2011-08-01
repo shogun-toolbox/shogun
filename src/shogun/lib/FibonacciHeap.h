@@ -12,9 +12,9 @@
 #ifndef FIBONACCI_H_
 #define FIBONACCI_H_
 
-#include "shogun/base/SGObject.h"
-#include "shogun/lib/common.h"
-#include "shogun/mathematics/Math.h"
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/common.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
