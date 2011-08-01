@@ -43,7 +43,6 @@ CKMeans::CKMeans(int32_t k_, CDistance* d)
 CKMeans::~CKMeans()
 {
 	R.destroy_vector();
-	SG_FREE(mus);
 }
 
 bool CKMeans::train_machine(CFeatures* data)
@@ -55,7 +54,8 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	ASSERT(distance->get_feature_type()==F_DREAL);
 
-	CSimpleFeatures<float64_t>* lhs=(CSimpleFeatures<float64_t>*) distance->get_lhs();
+	CSimpleFeatures<float64_t>* lhs=
+			(CSimpleFeatures<float64_t>*)distance->get_lhs();
 	ASSERT(lhs);
 	int32_t num=lhs->get_num_vectors();
 	SG_UNREF(lhs);
@@ -146,8 +146,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	R.destroy_vector();
 	R=SGVector<float64_t>(k);
 
-	SG_FREE(mus);
-	mus=SG_MALLOC(float64_t, XDimk);
+	mus=SGMatrix<float64_t>(dimensions, k);
 
 	int32_t *ClList=SG_CALLOC(int32_t, XSize);
 	float64_t *weights_set=SG_CALLOC(float64_t, k);
@@ -162,33 +161,15 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	float64_t* vec=NULL;
 
 	/* ClList=zeros(XSize,1) ; */
-	for (i=0; i<XSize; i++) ClList[i]=0;
+	memset(ClList, 0, sizeof(int32_t)*XSize);
 	/* weights_set=zeros(k,1) ; */
-	for (i=0; i<k; i++) weights_set[i]=0;
+	memset(weights_set, 0, sizeof(float64_t)*k);
 
-	/* mus=zeros(dimensions, k) ; */
-	for (i=0; i<XDimk; i++) mus[i]=0;
+	/* cluster_centers=zeros(dimensions, k) ; */
+	memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
 
 	if (!use_old_mus)
 	{
-		/* random clustering (select random subsets) */
-		/*  ks=ceil(rand(1,XSize)*k);
-		 *  for i=1:k,
-		 *	actks= (ks==i);
-		 *	c=sum(actks);
-		 *	weights_set(i)=c;
-		 *
-		 *	ClList(actks)=i*ones(1, c);
-		 *
-		 *	if ~mus_recalc,
-		 *		if c>1
-		 *			mus(:,i) = sum(XData(:,actks)')'/c;
-		 *		elseif c>0
-		 *			mus(:,i) = XData(:,actks);
-		 *		end;
-		 *	end;
-		 *   end ; */
-
 		for (i=0; i<XSize; i++) 
 		{
 			const int32_t Cl=CMath::random(0, k-1);
@@ -201,7 +182,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
 			for (j=0; j<dimensions; j++)
-				mus[Cl*dimensions+j] += weight*vec[j];
+				mus.matrix[Cl*dimensions+j] += weight*vec[j];
 
 			lhs->free_feature_vector(vec, i, vfree);
 		}
@@ -211,7 +192,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 
 			if (weights_set[i]!=0.0)
 				for (j=0; j<dimensions; j++)
-					mus[i*dimensions+j] /= weights_set[i];
+					mus.matrix[i*dimensions+j] /= weights_set[i];
 		}
 	}
 	else 
@@ -253,7 +234,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
 			for (j=0; j<dimensions; j++)
-				mus[Cl*dimensions+j] += weight*vec[j];
+				mus.matrix[Cl*dimensions+j] += weight*vec[j];
 
 			lhs->free_feature_vector(vec, i, vfree);
 #endif
@@ -266,7 +247,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			{
 				int32_t j;
 				for (j=0; j<dimensions; j++)
-					mus[i*dimensions+j] /= weights_set[i];
+					mus.matrix[i*dimensions+j] /= weights_set[i];
 			}
 		}
 #endif
@@ -286,7 +267,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 
 #ifdef MUSRECALC
 		/* mus=zeros(dimensions, k) ; */
-		for (i=0; i<XDimk; i++) mus[i]=0;
+		memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
 
 		for (i=0; i<XSize; i++) 
 		{
@@ -297,7 +278,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
 			for (j=0; j<dimensions; j++)
-				mus[Cl*dimensions+j] += weight*vec[j];
+				mus.matrix[Cl*dimensions+j] += weight*vec[j];
 
 			lhs->free_feature_vector(vec, i, vfree);
 		}
@@ -307,11 +288,11 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 
 			if (weights_set[i]!=0.0)
 				for (j=0; j<dimensions; j++)
-					mus[i*dimensions+j] /= weights_set[i];
+					mus.matrix[i*dimensions+j] /= weights_set[i];
 		}
 #endif
 		///update rhs
-		rhs_mus->copy_feature_matrix(mus,dimensions,k);
+		rhs_mus->copy_feature_matrix(mus.matrix,dimensions,k);
 
 		for (i=0; i<XSize; i++)
 		{
@@ -345,12 +326,14 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 				/* weights_set(j)     = weights_set(j)     - weight ; */
 				weights_set[ClList_Pat]-= weight;
 
-				/* mu_new=mu_old + (x - mu_old)/(n+1) */
-				/* mus(:,imini)=mus(:,imini) + (XData(:,i) - mus(:,imini)) * (weight / weights_set(imini)) ; */
 				vec=lhs->get_feature_vector(Pat, vlen, vfree);
 
 				for (j=0; j<dimensions; j++)
-					mus[imini*dimensions+j]-=(vec[j]-mus[imini*dimensions+j])*(weight/weights_set[imini]);
+				{
+					mus.matrix[imini*dimensions+j]-=(vec[j]
+							-mus.matrix[imini*dimensions+j])
+							*(weight/weights_set[imini]);
+				}
 
 				lhs->free_feature_vector(vec, Pat, vfree);
 
@@ -358,17 +341,22 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 				/* if weights_set(j)~=0 */
 				if (weights_set[ClList_Pat]!=0.0)
 				{
-					/* mus(:,j)=mus(:,j) - (XData(:,i) - mus(:,j)) * (weight/weights_set(j)) ; */
 					vec=lhs->get_feature_vector(Pat, vlen, vfree);
 
 					for (j=0; j<dimensions; j++)
-						mus[ClList_Pat*dimensions+j]-=(vec[j]-mus[ClList_Pat*dimensions+j])*(weight/weights_set[ClList_Pat]);
+					{
+						mus.matrix[ClList_Pat*dimensions+j]-=
+								(vec[j]
+										-mus.matrix[ClList_Pat
+												*dimensions+j])
+										*(weight/weights_set[ClList_Pat]);
+					}
 					lhs->free_feature_vector(vec, Pat, vfree);
 				}
 				else
 					/*  mus(:,j)=zeros(dimensions,1) ; */
 					for (j=0; j<dimensions; j++)
-						mus[ClList_Pat*dimensions+j]=0;
+						mus.matrix[ClList_Pat*dimensions+j]=0;
 
 				/* ClList(i)= imini ; */
 				ClList[Pat] = imini;
@@ -392,7 +380,11 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 				float64_t dist = 0;
 
 				for (l=0; l<dimensions; l++)
-					dist+=CMath::sq(mus[i*dimensions+l]-mus[j*dimensions+l]);
+				{
+					dist+=CMath::sq(
+							mus.matrix[i*dimensions+l]
+									-mus.matrix[j*dimensions+l]);
+				}
 
 				if (first_round)
 				{
@@ -418,22 +410,37 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	}
         distance->replace_rhs(rhs_cache);
         delete rhs_mus;        
-
 	SG_FREE(ClList);
 	SG_FREE(weights_set);
 	SG_FREE(dists);
 	SG_UNREF(lhs);
-} 
+}
+
+void CKMeans::store_model_features()
+{
+	/* set lhs of underlying distance to cluster centers */
+	CSimpleFeatures<float64_t>* cluster_centers=new CSimpleFeatures<float64_t>(
+			mus);
+
+	/* reset mus variable to avoid interference with above features */
+	mus.do_free=false;
+	mus.free_matrix();
+
+	/* store cluster centers in lhs of distance variable */
+	CFeatures* rhs=distance->get_rhs();
+	distance->init(cluster_centers, rhs);
+	SG_UNREF(rhs);
+}
 
 void CKMeans::init()
 {
 	max_iter=10000;
 	k=3;
 	dimensions=0;
-	mus=NULL;
 
 	m_parameters->add(&max_iter, "max_iter", "Maximum number of iterations");
 	m_parameters->add(&k, "k", "Parameter k");
 	m_parameters->add(&dimensions, "dimensions", "Dimensions of data");
 	m_parameters->add(&R, "R", "Cluster radiuses");
 }
+

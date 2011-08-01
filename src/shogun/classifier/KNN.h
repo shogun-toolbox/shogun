@@ -88,7 +88,7 @@ class CKNN : public CDistanceMachine
 		/// get output for example "vec_idx"
 		virtual float64_t apply(int32_t vec_idx)
 		{
-			SG_ERROR( "for performance reasons use classify() instead of classify_example\n");
+			SG_ERROR( "for performance reasons use apply() instead of apply(int32_t vec_idx)\n");
 			return 0;
 		}
 
@@ -148,6 +148,12 @@ class CKNN : public CDistanceMachine
 		inline virtual const char* get_name() const { return "KNN"; }
 
 	protected:
+		/** Stores feature data of underlying model.
+		 *
+		 * Replaces lhs and rhs of underlying distance with copies of themselves
+		 */
+		virtual void store_model_features();
+
 		/** classify all examples with nearest neighbor (k=1)
 		 * @return classified labels
 		 */
@@ -167,6 +173,9 @@ class CKNN : public CDistanceMachine
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
+
+	private:
+		void init();
 
 	protected:
 		/// the k parameter in KNN

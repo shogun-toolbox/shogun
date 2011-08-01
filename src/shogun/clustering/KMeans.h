@@ -118,7 +118,15 @@ class CKMeans : public CDistanceMachine
 		 */
 		SGMatrix<float64_t> get_cluster_centers()
 		{
-			return SGMatrix<float64_t>(mus,dimensions,k);
+			/* return empty matrix if no radiuses are there (not trained yet) */
+			if (!R.vector)
+				return SGMatrix<float64_t>();
+
+			CSimpleFeatures<float64_t>* lhs=
+				(CSimpleFeatures<float64_t>*)distance->get_lhs();
+			SGMatrix<float64_t> centers=lhs->get_feature_matrix();
+			SG_UNREF(lhs);
+			return centers;
 		}
 
 		/** get dimensions
@@ -130,6 +138,9 @@ class CKMeans : public CDistanceMachine
 			return dimensions;
 		}
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "KMeans"; }
+
 	protected:
 		/** clustknb
 		 *
@@ -137,30 +148,6 @@ class CKMeans : public CDistanceMachine
 		 * @param mus_start mus start
 		 */
 		void clustknb(bool use_old_mus, float64_t *mus_start);
-
-		/** classify objects using the currently set features
-		 *
-		 * @return classified labels
-		 */
-		virtual CLabels* apply()
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
-
-		/** classify objects
-		 *
-		 * @param data (test)data to be classified
-		 * @return classified labels
-		 */
-		virtual CLabels* apply(CFeatures* data)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
-
-		/** @return object name */
-		inline virtual const char* get_name() const { return "KMeans"; }
 
 		/** train k-means
 		 *
@@ -171,6 +158,9 @@ class CKMeans : public CDistanceMachine
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
+
+		/** Ensures cluster centers are in lhs of underlying distance */
+		virtual void store_model_features();
 
 	private:
 		void init();
@@ -188,12 +178,13 @@ class CKMeans : public CDistanceMachine
 		/// radi of the clusters (size k)
 		SGVector<float64_t> R;
 		
-		/// centers of the clusters (size dimensions x k)
-		float64_t* mus;
-
 	private:
-		/// weighting over the train data
+		/* temporary variable for weighting over the train data */
 		SGVector<float64_t> Weights;
+
+		/* temp variable for cluster centers */
+		SGMatrix<float64_t> mus;
+
 };
 }
 #endif
