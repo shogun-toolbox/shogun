@@ -83,7 +83,7 @@ class CDistanceMachine : public CMachine
 		virtual const char* get_name(void) const { return "DistanceMachine"; }
 
 		/** Classify all rhs features using the built clusters.
-		 * Cluster with smallest distance to to be classified element is
+		 * Cluster index with smallest distance to to be classified element is
 		 * returned
 		 *
 		 * @return classified labels
@@ -91,7 +91,7 @@ class CDistanceMachine : public CMachine
 		virtual CLabels* apply();
 
 		/** Classify all provided features.
-		 * Cluster with smallest distance to to be classified element is
+		 * Cluster index with smallest distance to to be classified element is
 		 * returned
 		 *
 		 * @param data (test)data to be classified
@@ -100,7 +100,7 @@ class CDistanceMachine : public CMachine
 		virtual CLabels* apply(CFeatures* data);
 
 		/** Apply machine to one example.
-		 * Cluster with smallest distance to to be classified element is
+		 * Cluster index with smallest distance to to be classified element is
 		 * returned
 		 *
 		 * @param num which example to apply machine to
