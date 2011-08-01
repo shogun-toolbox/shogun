@@ -26,6 +26,7 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Labels.h>
+#include <shogun/loss/LossFunction.h>
 
 namespace shogun
 {
@@ -108,6 +109,18 @@ class CSGDQN : public CLinearMachine
 		/** combine and clip scaling matrix B */
 		void combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1,float64_t c2,float64_t v1,float64_t v2);
 
+		/** Set the loss function to use
+		 *
+		 * @param loss_func object derived from CLossFunction
+		 */
+		void set_loss_function(CLossFunction* loss_func);
+
+		/** Return the loss function
+		 *
+		 * @return loss function as CLossFunction*
+		 */
+		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SGDQN"; }
 
@@ -125,6 +138,8 @@ class CSGDQN : public CLinearMachine
 		int32_t epochs;
 		int32_t skip;
 		int32_t count;
+
+		CLossFunction* loss;
 };
 }
 #endif

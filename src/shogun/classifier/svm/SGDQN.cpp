@@ -23,8 +23,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Loss.h>
-
+#include <shogun/loss/HingeLoss.h>
 
 using namespace shogun;
 
@@ -56,15 +55,24 @@ CSGDQN::CSGDQN(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 
 CSGDQN::~CSGDQN()
 {
+	SG_UNREF(loss);
 }
 
-void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss)
+void CSGDQN::set_loss_function(CLossFunction* loss_func)
+{
+	if (loss)
+		SG_UNREF(loss);
+	loss=loss_func;
+	SG_REF(loss);
+}
+
+void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss_val)
 {
 	for (int32_t i=0; i < dim;i++)
 	{
 		float64_t diffw=W_1[i]-W[i];
 		if(diffw)
-			B[i]+=diffw/ (lambda*diffw+ loss*dst[i]);
+			B[i]+=diffw/ (lambda*diffw+ loss_val*dst[i]);
 		else
 			B[i]+=1/lambda;
 	}
@@ -115,7 +123,7 @@ bool CSGDQN::train(CFeatures* data)
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,CLoss::dloss(-typw));
+	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
@@ -134,6 +142,11 @@ bool CSGDQN::train(CFeatures* data)
 	SG_INFO("Training on %d vectors\n", num_vec);
 	CSignal::clear_cancel();
 
+	ELossType loss_type = loss->get_loss_type();
+	bool is_log_loss = false;
+	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
+		is_log_loss = true;
+
 	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
 	{
 		count = skip;
@@ -147,16 +160,14 @@ bool CSGDQN::train(CFeatures* data)
 			float64_t z = y * features->dense_dot(i, w, w_dim);
 			if(updateB==true)
 			{
-#if LOSS < LOGLOSS
-				if (z < 1)
-#endif
+				if (z < 1 || is_log_loss)
 				{
 					w_1=w;
-					float64_t loss_1=CLoss::dloss(z);
+					float64_t loss_1=-loss->first_derivative(z,1);
 					CMath::vector_multiply(result,Bc,v.vector,w_dim);
 					CMath::add(w,eta*loss_1*y,result,1.0,w,w_dim);
 					float64_t z2 = y * features->dense_dot(i, w, w_dim);
-					float64_t diffloss = CLoss::dloss(z2) - loss_1;
+					float64_t diffloss = -loss->first_derivative(z2,1) - loss_1;
 					if(diffloss)
 					{
 						compute_ratio(w,w_1,B,v.vector,w_dim,lambda,y*diffloss);
@@ -177,12 +188,11 @@ bool CSGDQN::train(CFeatures* data)
 					count = skip;
 					updateB=true;
 				}
-#if LOSS < LOGLOSS
-				if (z < 1)
-#endif
+
+				if (z < 1 || is_log_loss)
 				{
 					CMath::vector_multiply(result,Bc,v.vector,w_dim);
-					CMath::add(w,eta*CLoss::dloss(z)*y,result,1.0,w,w_dim);
+					CMath::add(w,eta*-loss->first_derivative(z,1)*y,result,1.0,w,w_dim);
 				}
 			}
 			t++;
@@ -230,6 +240,9 @@ void CSGDQN::init()
 	skip=1000;
 	count=1000;
 
+	loss=new CHingeLoss();
+	SG_REF(loss);
+	
 	m_parameters->add(&C1, "C1",  "Cost constant 1.");
 	m_parameters->add(&C2, "C2",  "Cost constant 2.");
 	m_parameters->add(&epochs, "epochs",  "epochs");
