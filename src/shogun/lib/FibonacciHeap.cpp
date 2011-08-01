@@ -95,17 +95,7 @@ int32_t CFibonacciHeap::extract_min(float64_t &ret_key)
 		child->left->right = child->right;
 		child->right->left = child->left;
 
-		// and insert in root list
-		child->right = min_node->right;
-		child->left = min_node;
-
-		child->left->right = child;
-		child->right->left = child;
-
-		// parent of all root's nodes is NULL
-		child->parent = NULL;
-
-		num_trees++;
+		add_to_roots(child);
 
 		// next iteration
 		child = next_child;
@@ -114,6 +104,8 @@ int32_t CFibonacciHeap::extract_min(float64_t &ret_key)
 	// delete minimun from root list
 	min_node->left->right = min_node->right;
 	min_node->right->left = min_node->left;
+
+	num_trees--;
 
 	if(min_node == min_node->right)
 	{
@@ -130,7 +122,6 @@ int32_t CFibonacciHeap::extract_min(float64_t &ret_key)
 	clear_node(result);
 
 	num_nodes--;
-	num_trees--;
 
 	return result;
 }
@@ -173,9 +164,11 @@ void CFibonacciHeap::decrease_key(int32_t index, float64_t key)
 	if(key > nodes[index]->key)
 		return;
 
+
 	nodes[index]->key = key;
 
 	parent = nodes[index]->parent;
+
 	if(parent != NULL && nodes[index]->key < parent->key)
 	{
 		cut(nodes[index], parent);
@@ -213,6 +206,7 @@ void CFibonacciHeap::add_to_roots(FibonacciHeapNode *up_node)
 		}
 	}
 
+	up_node->parent = NULL;
 	num_trees++;
 }
 
@@ -223,7 +217,7 @@ void CFibonacciHeap::consolidate()
 
 	int32_t Dn, d;
 
-	Dn = 1 + (int32_t)(8*sizeof(long));
+	Dn = 1 + (int32_t)(CMath::log2(max_num_nodes));
 
 	A = SG_MALLOC(FibonacciHeapNode* , Dn);
 	for(int32_t i = 0; i < Dn; i++)
@@ -244,17 +238,14 @@ void CFibonacciHeap::consolidate()
 		while(A[d] != NULL)
 		{
 			y = A[d];
+
 			if(y->key < x->key)
 			{
-				float64_t temp;
-				temp = y->key;
-				y->key = x->key;
-				x->key = temp;
-			}
+				FibonacciHeapNode *temp;
 
-			if(w == y)
-			{
-				w = y->right;
+				temp = y;
+				y = x;
+				x = temp;
 			}
 
 			link_nodes(y, x);
@@ -339,6 +330,7 @@ void CFibonacciHeap::cut(FibonacciHeapNode *child, FibonacciHeapNode *parent)
 	child->right->left = child->left;
 
 	add_to_roots(child);
+	child->marked = false;
 }
 
 void CFibonacciHeap::cascading_cut(FibonacciHeapNode *tree)
