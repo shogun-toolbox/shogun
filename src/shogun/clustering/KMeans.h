@@ -138,33 +138,6 @@ class CKMeans : public CDistanceMachine
 			return dimensions;
 		}
 
-
-		/** Classify all rhs features using the built clusters.
-		 * Cluster with smallest distance to to be classified element is
-		 * returned
-		 *
-		 * @return classified labels
-		 */
-		virtual CLabels* apply();
-
-		/** Classify all provided features.
-		 * Cluster with smallest distance to to be classified element is
-		 * returned
-		 *
-		 * @param data (test)data to be classified
-		 * @return classified labels
-		 */
-		virtual CLabels* apply(CFeatures* data);
-
-		/** Apply machine to one example.
-		 * Cluster with smallest distance to to be classified element is
-		 * returned
-		 *
-		 * @param num which example to apply machine to
-		 * @return cluster label nearest to example
-		 */
-		virtual float64_t apply(int32_t num);
-
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KMeans"; }
 
@@ -184,7 +157,10 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_distance_machine(CFeatures* data=NULL);
+		virtual bool train_machine(CFeatures* data=NULL);
+
+		/** Ensures cluster centers are in lhs of underlying distance */
+		virtual void store_model_features();
 
 	private:
 		void init();
@@ -203,8 +179,12 @@ class CKMeans : public CDistanceMachine
 		SGVector<float64_t> R;
 		
 	private:
-		/// weighting over the train data
+		/* temporary variable for weighting over the train data */
 		SGVector<float64_t> Weights;
+
+		/* temp variable for cluster centers */
+		SGMatrix<float64_t> mus;
+
 };
 }
 #endif
