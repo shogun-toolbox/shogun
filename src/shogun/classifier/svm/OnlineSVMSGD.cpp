@@ -23,84 +23,9 @@
 #include <shogun/classifier/svm/OnlineSVMSGD.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/loss/HingeLoss.h>
 
 using namespace shogun;
-
-// Available losses
-#define HINGELOSS 1
-#define SMOOTHHINGELOSS 2
-#define SQUAREDHINGELOSS 3
-#define LOGLOSS 10
-#define LOGLOSSMARGIN 11
-
-// Select loss
-#define LOSS SQUAREDHINGELOSS
-
-// One when bias is regularized
-#define REGULARIZEBIAS 0
-
-inline
-float64_t loss(float64_t z)
-{
-#if LOSS == LOGLOSS
-	if (z >= 0)
-		return log(1+exp(-z));
-	else
-		return -z + log(1+exp(z));
-#elif LOSS == LOGLOSSMARGIN
-	if (z >= 1)
-		return log(1+exp(1-z));
-	else
-		return 1-z + log(1+exp(z-1));
-#elif LOSS == SMOOTHHINGELOSS
-	if (z < 0)
-		return 0.5 - z;
-	if (z < 1)
-		return 0.5 * (1-z) * (1-z);
-	return 0;
-#elif LOSS == SQUAREDHINGELOSS
-	if (z < 1)
-		return 0.5 * (1 - z) * (1 - z);
-	return 0;
-#elif LOSS == HINGELOSS
-	if (z < 1)
-		return 1 - z;
-	return 0;
-#else
-# error "Undefined loss"
-#endif
-}
-
-inline
-float64_t dloss(float64_t z)
-{
-#if LOSS == LOGLOSS
-	if (z < 0)
-		return 1 / (exp(z) + 1);
-	float64_t ez = exp(-z);
-	return ez / (ez + 1);
-#elif LOSS == LOGLOSSMARGIN
-	if (z < 1)
-		return 1 / (exp(z-1) + 1);
-	float64_t ez = exp(1-z);
-	return ez / (ez + 1);
-#elif LOSS == SMOOTHHINGELOSS
-	if (z < 0)
-		return 1;
-	if (z < 1)
-		return 1-z;
-	return 0;
-#elif LOSS == SQUAREDHINGELOSS
-	if (z < 1)
-		return (1 - z);
-	return 0;
-#else
-	if (z < 1)
-		return 1;
-	return 0;
-#endif
-}
-
 
 COnlineSVMSGD::COnlineSVMSGD()
 : COnlineLinearMachine()
@@ -129,6 +54,15 @@ COnlineSVMSGD::COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat)
 
 COnlineSVMSGD::~COnlineSVMSGD()
 {
+	SG_UNREF(loss);
+}
+
+void COnlineSVMSGD::set_loss_function(CLossFunction* loss_func)
+{
+	if (loss)
+		SG_UNREF(loss);
+	loss=loss_func;
+	SG_REF(loss);
 }
 
 bool COnlineSVMSGD::train(CFeatures* data)
@@ -156,7 +90,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,dloss(-typw));
+	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
@@ -167,7 +101,12 @@ bool COnlineSVMSGD::train(CFeatures* data)
 		features->reset_stream();
 
 	CSignal::clear_cancel();
-	
+
+	ELossType loss_type = loss->get_loss_type();
+	bool is_log_loss = false;
+	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
+		is_log_loss = true;
+
 	int32_t vec_count;
 	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
 	{
@@ -183,11 +122,9 @@ bool COnlineSVMSGD::train(CFeatures* data)
 			float64_t y = features->get_label();
 			float64_t z = y * (features->dense_dot(w, w_dim) + bias);
 
-#if LOSS < LOGLOSS
-			if (z < 1)
-#endif
+			if (z < 1 || is_log_loss)
 			{
-				float64_t etd = eta * dloss(z);
+				float64_t etd = -eta * loss->first_derivative(z,1);
 				features->add_to_dense_vec(etd * y / wscale, w, w_dim);
 
 				if (use_bias)
@@ -282,6 +219,9 @@ void COnlineSVMSGD::init()
 	use_bias=true;
 
 	use_regularized_bias=false;
+
+	loss=new CHingeLoss();
+	SG_REF(loss);
 
 	m_parameters->add(&C1, "C1",  "Cost constant 1.");
 	m_parameters->add(&C2, "C2",  "Cost constant 2.");
