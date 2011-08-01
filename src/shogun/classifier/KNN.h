@@ -144,16 +144,16 @@ class CKNN : public CDistanceMachine
 		 */
 		inline float64_t get_q() { return m_q; }
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "KNN"; }
+
+	protected:
 		/** Stores feature data of underlying model.
 		 *
 		 * Replaces lhs and rhs of underlying distance with copies of themselves
 		 */
 		virtual void store_model_features();
 
-		/** @return object name */
-		inline virtual const char* get_name() const { return "KNN"; }
-
-	protected:
 		/** classify all examples with nearest neighbor (k=1)
 		 * @return classified labels
 		 */
