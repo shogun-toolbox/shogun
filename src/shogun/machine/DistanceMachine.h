@@ -82,23 +82,48 @@ class CDistanceMachine : public CMachine
 		 */
 		virtual const char* get_name(void) const { return "DistanceMachine"; }
 
-		/** apply distance machine to objects using the currently set features
+		/** Classify all rhs features using the built clusters.
+		 * Cluster with smallest distance to to be classified element is
+		 * returned
 		 *
 		 * @return classified labels
 		 */
-		virtual CLabels* apply()=0;
+		virtual CLabels* apply();
 
-		/** apply distance machine data 
+		/** Classify all provided features.
+		 * Cluster with smallest distance to to be classified element is
+		 * returned
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data)=0;
+		virtual CLabels* apply(CFeatures* data);
 
-	private:
-		void init();
+		/** Apply machine to one example.
+		 * Cluster with smallest distance to to be classified element is
+		 * returned
+		 *
+		 * @param num which example to apply machine to
+		 * @return cluster label nearest to example
+		 */
+		virtual float64_t apply(int32_t num);
 
 	protected:
+		/** Ensures cluster centers are in lhs of underlying distance
+		 *
+		 * NOT IMPLEMENTED!
+		 * Base method. Is called automatically after train because flag is
+		 * always true for distance machines.
+		 * Since every distance machine has to make sure that
+		 * cluster centers are in lhs of distance variable, it is unimplemented
+		 * here and HAS to be implemented in subclasses.
+		 */
+		virtual void store_model_features()
+		{
+			SG_ERROR("store_model_features not yet implemented for %s!\n",
+					get_name());
+		}
+
 		/** 
 		 * pthread function for compute distance values
 		 *
@@ -112,6 +137,9 @@ class CDistanceMachine : public CMachine
 		 * @param p thread parameter 
 		 */
 		static void* run_distance_thread_rhs(void* p);
+
+	private:
+		void init();
 
 	protected:
 		/** the distance */
