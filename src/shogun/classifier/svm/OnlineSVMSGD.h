@@ -146,7 +146,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @return loss function as CLossFunction*
 		 */
-		inline CLossFunction* get_loss_function() { return loss; }
+		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "OnlineSVMSGD"; }

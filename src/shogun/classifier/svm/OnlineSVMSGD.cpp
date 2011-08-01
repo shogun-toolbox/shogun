@@ -220,6 +220,7 @@ void COnlineSVMSGD::init()
 	use_regularized_bias=false;
 
 	loss=new CHingeLoss();
+	SG_REF(loss);
 
 	m_parameters->add(&C1, "C1",  "Cost constant 1.");
 	m_parameters->add(&C2, "C2",  "Cost constant 2.");

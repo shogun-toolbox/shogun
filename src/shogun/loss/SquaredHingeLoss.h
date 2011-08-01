@@ -22,7 +22,7 @@ public:
 	/**
 	 * Constructor
 	 */
-	CSquaredHingeLoss() {};
+	CSquaredHingeLoss(): CLossFunction() {};
 
 	/**
 	 * Destructor

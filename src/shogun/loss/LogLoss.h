@@ -22,7 +22,7 @@ public:
 	/**
 	 * Constructor
 	 */
-	CLogLoss() {};
+	CLogLoss(): CLossFunction() {};
 
 	/**
 	 * Destructor

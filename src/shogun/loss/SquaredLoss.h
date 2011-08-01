@@ -27,7 +27,7 @@ public:
 	/**
 	 * Constructor
 	 */
-	CSquaredLoss() {};
+	CSquaredLoss(): CLossFunction() {};
 
 	/**
 	 * Destructor

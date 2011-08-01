@@ -39,6 +39,12 @@ namespace shogun
 class CLossFunction: public CSGObject
 {
 public:
+
+	/**
+	 * Constructor
+	 */
+	CLossFunction(): CSGObject() {}
+
 	/**
 	 * Destructor
 	 */

@@ -27,7 +27,7 @@ public:
 	/**
 	 * Constructor
 	 */
-	CHingeLoss() {};
+	CHingeLoss(): CLossFunction() {};
 
 	/**
 	 * Destructor

@@ -22,7 +22,7 @@ public:
 	/**
 	 * Constructor
 	 */
-	CSmoothHingeLoss() {};
+	CSmoothHingeLoss(): CLossFunction() {};
 
 	/**
 	 * Destructor
