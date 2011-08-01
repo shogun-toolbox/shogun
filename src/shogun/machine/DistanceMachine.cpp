@@ -206,6 +206,8 @@ void* CDistanceMachine::run_distance_thread_rhs(void* p)
 
 CLabels* CDistanceMachine::apply(CFeatures* data)
 {
+	ASSERT(data);
+
 	/* set distance features to given ones and apply to all */
 	CFeatures* lhs=distance->get_lhs();
 	distance->init(lhs, data);
@@ -223,8 +225,9 @@ CLabels* CDistanceMachine::apply()
 {
 	/* call apply on complete right hand side */
 	CFeatures* all=distance->get_rhs();
+	CLabels* result=apply(all);
 	SG_UNREF(all);
-	return apply(all);
+	return result;
 }
 
 float64_t CDistanceMachine::apply(int32_t num)
@@ -236,7 +239,7 @@ float64_t CDistanceMachine::apply(int32_t num)
 
 	/* (multiple threads) calculate distances to all cluster centers */
 	float64_t* dists=SG_MALLOC(float64_t, num_clusters);
-	distances_lhs(dists, 0, num_clusters, num);
+	distances_lhs(dists, 0, num_clusters-1, num);
 
 	/* find cluster index with smallest distance */
 	float64_t result=dists[0];
@@ -252,5 +255,6 @@ float64_t CDistanceMachine::apply(int32_t num)
 
 	SG_FREE(dists);
 
-	return labels->get_label(best_index);
+	/* implicit cast */
+	return best_index;
 }
