@@ -301,8 +301,8 @@ void CKNN::store_model_features()
 	CFeatures* d_lhs=distance->get_lhs();
 	CFeatures* d_rhs=distance->get_rhs();
 
-	/* copy feature data of underlying distance */
-	distance->init(d_lhs->duplicate(), d_rhs->duplicate());
+	/* copy lhs of underlying distance */
+	distance->init(d_lhs->duplicate(), d_rhs);
 
 	SG_UNREF(d_lhs);
 	SG_UNREF(d_rhs);
