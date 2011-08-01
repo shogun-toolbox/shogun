@@ -55,6 +55,7 @@ CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 
 CSVMSGD::~CSVMSGD()
 {
+	SG_UNREF(loss);
 }
 
 void CSVMSGD::set_loss_function(CLossFunction* loss_func)

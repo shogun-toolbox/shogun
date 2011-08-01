@@ -55,6 +55,7 @@ CSGDQN::CSGDQN(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 
 CSGDQN::~CSGDQN()
 {
+	SG_UNREF(loss);
 }
 
 void CSGDQN::set_loss_function(CLossFunction* loss_func)

@@ -54,6 +54,7 @@ COnlineSVMSGD::COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat)
 
 COnlineSVMSGD::~COnlineSVMSGD()
 {
+	SG_UNREF(loss);
 }
 
 void COnlineSVMSGD::set_loss_function(CLossFunction* loss_func)
