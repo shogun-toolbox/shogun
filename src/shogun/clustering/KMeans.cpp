@@ -425,8 +425,11 @@ void CKMeans::store_model_features()
 	/* reset mus variable to avoid interference with above features */
 	mus.do_free=false;
 	mus.free_matrix();
+
+	/* store cluster centers in lhs of distance variable */
 	CFeatures* rhs=distance->get_rhs();
 	distance->init(cluster_centers, rhs);
+	SG_UNREF(rhs);
 }
 
 void CKMeans::init()
