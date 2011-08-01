@@ -10,7 +10,6 @@
  */
 
 #include "lib/FibonacciHeap.h"
-#include "stdio.h"
 
 using namespace shogun;
 
@@ -218,7 +217,7 @@ void CFibonacciHeap::consolidate()
 
 	int32_t Dn, d;
 
-	Dn = 1 + (int32_t)(CMath::log2(max_num_nodes));
+	eoDn = 1 + (int32_t)(CMath::log2(max_num_nodes));
 
 	A = SG_MALLOC(FibonacciHeapNode* , Dn);
 	for(int32_t i = 0; i < Dn; i++)
