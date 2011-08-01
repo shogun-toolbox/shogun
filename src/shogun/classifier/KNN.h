@@ -174,6 +174,9 @@ class CKNN : public CDistanceMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+	private:
+		void init();
+
 	protected:
 		/// the k parameter in KNN
 		int32_t m_k;

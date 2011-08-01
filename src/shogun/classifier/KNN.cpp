@@ -18,13 +18,18 @@
 using namespace shogun;
 
 CKNN::CKNN()
-: CDistanceMachine(), m_k(3), m_q(1.0), num_classes(0)
+: CDistanceMachine()
 {
+	init();
 }
 
 CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
-: CDistanceMachine(), m_k(k), m_q(1.0), num_classes(0)
+: CDistanceMachine()
 {
+	init();
+
+	m_k=k;
+
 	ASSERT(d);
 	ASSERT(trainlab);
 
@@ -33,6 +38,20 @@ CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
     train_labels.vlen=trainlab->get_num_labels();
 }
 
+void CKNN::init()
+{
+	/* do not store model features by default (CDistanceMachine::apply(...) is
+	 * overwritten */
+	set_store_model_features(false);
+
+	m_k=3;
+	m_q=1.0;
+	num_classes=0;
+
+	m_parameters->add(&m_k, "k", "Parameter k");
+	m_parameters->add(&m_q, "q", "Parameter q");
+	m_parameters->add(&num_classes, "num_classes", "Number of classes");
+}
 
 CKNN::~CKNN()
 {
