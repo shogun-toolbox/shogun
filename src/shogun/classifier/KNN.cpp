@@ -14,6 +14,7 @@
 #include <shogun/features/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
