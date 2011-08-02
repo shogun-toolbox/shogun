@@ -205,8 +205,6 @@ void CSGObject::print_serializable(const char* prefix)
 {
 	SG_PRINT("\n%s\n================================================================================\n", get_name());
 	m_parameters->print(prefix);
-	SG_PRINT("\nParameters available for model selection:\n");
-	m_model_selection_parameters->print(prefix);
 }
 
 bool CSGObject::save_serializable(CSerializableFile* file,
