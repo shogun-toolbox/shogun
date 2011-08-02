@@ -139,7 +139,6 @@ int main(int argc, char **argv)
 	SG_UNREF(best_combination);
 	SG_UNREF(grid_search);
 
-	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;
