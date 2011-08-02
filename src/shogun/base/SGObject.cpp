@@ -205,8 +205,6 @@ void CSGObject::print_serializable(const char* prefix)
 {
 	SG_PRINT("\n%s\n================================================================================\n", get_name());
 	m_parameters->print(prefix);
-	SG_PRINT("\nParameters available for model selection:\n");
-	m_model_selection_parameters->print(prefix);
 }
 
 bool CSGObject::save_serializable(CSerializableFile* file,
@@ -359,4 +357,52 @@ void CSGObject::init()
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
+}
+
+SGVector<char*> CSGObject::get_modelsel_names()
+{
+	SGVector<char*> result=SGVector<char*>(
+			m_model_selection_parameters->get_num_parameters());
+
+	for (index_t i=0; i<result.vlen; ++i)
+		result.vector[i]=m_model_selection_parameters->get_parameter(i)->m_name;
+
+	return result;
+}
+
+char* CSGObject::get_modsel_param_descr(const char* param_name)
+{
+	index_t index=get_modsel_param_index(param_name);
+
+	if (index<0)
+	{
+		SG_ERROR("There is no model selection parameter called \"%s\" for %s",
+				param_name, get_name());
+	}
+
+	return m_model_selection_parameters->get_parameter(index)->m_description;
+}
+
+index_t CSGObject::get_modsel_param_index(const char* param_name)
+{
+	/* use fact that names extracted from below method are in same order than
+	 * in m_model_selection_parameters variable */
+	SGVector<char*> names=get_modelsel_names();
+
+	/* search for parameter with provided name */
+	index_t index=-1;
+	for (index_t i=0; i<names.vlen; ++i)
+	{
+		TParameter* current=m_model_selection_parameters->get_parameter(i);
+		if (!strcmp(param_name, current->m_name))
+		{
+			index=i;
+			break;
+		}
+	}
+
+	/* clean up */
+	names.destroy_vector();
+
+	return index;
 }

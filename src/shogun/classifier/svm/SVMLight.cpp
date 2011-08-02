@@ -348,7 +348,7 @@ void CSVMLight::svm_learn()
 	a_fullset = SG_MALLOC(float64_t, totdoc);
 	xi_fullset = SG_MALLOC(float64_t, totdoc);
 	lin = SG_MALLOC(float64_t, totdoc);
-	if (m_linear_term_len > 0)
+	if (m_linear_term.vlen>0)
 		learn_parm->eps=get_linear_term_array();
 	else
 	{

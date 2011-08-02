@@ -82,8 +82,9 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	if (!m_compact)
 	{
-		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
-		return exp(-result/width);
+		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]
+				-2*CDotKernel::compute(idx_a, idx_b);
+		return CMath::exp(-result/width);
 	}
 
 	int32_t len_features, power;

@@ -144,25 +144,28 @@ class CLibLinear : public CLinearMachine
 		}
 
 		/** set the linear term for qp */
-		inline void set_linear_term(float64_t* linear_term, int32_t len)
+		inline void set_linear_term(SGVector<float64_t> linear_term)
 		{
 			if (!labels)
 				SG_ERROR("Please assign labels first!\n");
 
 			int32_t num_labels=labels->get_num_labels();
 
-			if (num_labels!=len)
+			if (num_labels!=linear_term.vlen)
 			{
 				SG_ERROR("Number of labels (%d) does not match number"
-						"of entries (%d) in linear term \n", num_labels, len);
+						" of entries (%d) in linear term \n", num_labels,
+						linear_term.vlen);
 			}
 
-			m_linear_term = CMath::clone_vector(linear_term, len);
-			m_linear_term_len = len;
+			m_linear_term.destroy_vector();
+			m_linear_term.vector=CMath::clone_vector(linear_term.vector,
+				linear_term.vlen);
+			m_linear_term.vlen=linear_term.vlen;
 		}
 
 		/** get the linear term for qp */
-		void get_linear_term(float64_t** linear_term, int32_t* len);
+		SGVector<float64_t> get_linear_term();
 
 		/** set the linear term for qp */
 		void init_linear_term();
@@ -203,9 +206,7 @@ class CLibLinear : public CLinearMachine
 		int32_t max_iterations;
 
 		/** precomputed linear term */
-		float64_t* m_linear_term;
-		/** length of linear term */
-		int32_t m_linear_term_len;
+		SGVector<float64_t> m_linear_term;
 
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;

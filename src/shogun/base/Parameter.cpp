@@ -2370,6 +2370,8 @@ void Parameter::set_from_parameters(Parameter* params)
 		TParameter* current=params->get_parameter(i);
 		TSGDataType current_type=current->m_datatype;
 
+		ASSERT(m_params.get_num_elements());
+
 		/* search for own parameter with same name and check types if found */
 		TParameter* own=NULL;
 		for (index_t j=0; j<m_params.get_num_elements(); ++j)
