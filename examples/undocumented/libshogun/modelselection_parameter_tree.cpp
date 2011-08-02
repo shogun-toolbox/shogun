@@ -29,7 +29,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* c=new CModelSelectionParameters("C");
 	root->append_child(c);
-	c->build_values(1, 11, R_EXP);
+	c->build_values(1, 2, R_EXP);
 
 	CPowerKernel* power_kernel=new CPowerKernel();
 	CModelSelectionParameters* param_power_kernel=
@@ -39,7 +39,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* param_power_kernel_degree=
 			new CModelSelectionParameters("degree");
-	param_power_kernel_degree->build_values(1, 1, R_EXP);
+	param_power_kernel_degree->build_values(1, 2, R_EXP);
 	param_power_kernel->append_child(param_power_kernel_degree);
 
 	CMinkowskiMetric* m_metric=new CMinkowskiMetric(10);
@@ -50,7 +50,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* param_power_kernel_metric1_k=
 			new CModelSelectionParameters("k");
-	param_power_kernel_metric1_k->build_values(1, 12, R_LINEAR);
+	param_power_kernel_metric1_k->build_values(1, 2, R_LINEAR);
 	param_power_kernel_metric1->append_child(param_power_kernel_metric1_k);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
@@ -109,8 +109,6 @@ int main(int argc, char **argv)
 
 	/* delete example tree */
 	SG_UNREF(tree);
-
-	SG_SPRINT("END\n");
 
 	exit_shogun();
 
