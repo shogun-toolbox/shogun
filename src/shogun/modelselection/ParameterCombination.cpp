@@ -274,12 +274,13 @@ CParameterCombination* CParameterCombination::copy_tree() const
 
 void CParameterCombination::apply_to_machine(CMachine* machine) const
 {
-	apply_to_parameter(machine->m_parameters);
+	apply_to_modesel_parameter(machine->m_model_selection_parameters);
 }
 
-void CParameterCombination::apply_to_parameter(Parameter* parameter) const
+void CParameterCombination::apply_to_modesel_parameter(
+		Parameter* parameter) const
 {
-	/* case root node or name node */
+	/* case root node */
 	if (!m_param)
 	{
 		/* iterate over all children and recursively set parameters from
@@ -288,13 +289,16 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter) const
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
 			CParameterCombination* child=m_child_nodes->get_element(i);
-			child->apply_to_parameter(parameter);
+			child->apply_to_modesel_parameter(parameter);
 			SG_UNREF(child);
 		}
 	}
 	/* case parameter node */
 	else if (m_param)
 	{
+		/* set parameters */
+		parameter->set_from_parameters(m_param);
+
 		/* does this node has sub parameters? */
 		if (has_children())
 		{
@@ -312,22 +316,17 @@ void CParameterCombination::apply_to_parameter(Parameter* parameter) const
 			CSGObject* current_sgobject=
 					*((CSGObject**)(m_param->get_parameter(0)->m_parameter));
 
-			/* set parameters */
-			parameter->set_from_parameters(m_param);
-
 			/* iterate over all children and recursively set parameters from
 			 * their values */
 			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 			{
 				CParameterCombination* child=m_child_nodes->get_element(i);
-				child->apply_to_parameter(current_sgobject->m_parameters);
+				child->apply_to_modesel_parameter(
+						current_sgobject->m_model_selection_parameters);
 				SG_UNREF(child);
 			}
 		}
-		else
-			parameter->set_from_parameters(m_param);
 	}
 	else
 		SG_SERROR("CParameterCombination node has illegal type.\n");
-
 }
