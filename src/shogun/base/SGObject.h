@@ -230,6 +230,26 @@ public:
 	 */
 	Version* get_global_version();
 
+	/** @return vector of names of all parameters which are registered for model
+	 * selection */
+	SGVector<char*> get_modelsel_names();
+
+	/** Returns description of a given parameter string, if it exists. SG_ERROR
+	 * otherwise
+	 *
+	 * @param modsel_param name of the parameter
+	 * @return description of the parameter
+	 */
+	char* get_modsel_param_descr(const char* param_name);
+
+	/** Returns index of model selection parameter with provided index
+	 *
+	 * @param param_name name of model selection parameter
+	 * @return index of model selection parameter with provided name,
+	 * -1 if there is no such
+	 */
+	index_t get_modsel_param_index(const char* param_name);
+
 #ifdef TRACE_MEMORY_ALLOCS
     static void list_memory_allocs()
     {
