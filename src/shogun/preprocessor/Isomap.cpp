@@ -57,14 +57,6 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 			}
 		}
 
-		// symmetrize matrix
-		for (i=0; i<N; i++)
-		{
-			for (j=0; j<N; j++)
-				if (D_matrix.matrix[j*N+i] >= CMath::ALMOST_INFTY)
-					D_matrix.matrix[i*N+j] = D_matrix.matrix[j*N+i];
-		}			
-
 		SG_FREE(col);
 		SG_FREE(col_idx);
 	}
