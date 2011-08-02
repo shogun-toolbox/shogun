@@ -56,22 +56,23 @@ void CLibLinear::init()
 	C1=1;
 	C2=1;
 	set_max_iterations();
-	m_linear_term=NULL;
-	m_linear_term_len=0;
 	epsilon=1e-5;
 
-    m_parameters->add(&C1, "C1",  "C Cost constant 1.");
-    m_parameters->add(&C2, "C2",  "C Cost constant 2.");
-    m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
-    m_parameters->add(&epsilon, "epsilon",  "Convergence precision.");
-    m_parameters->add(&max_iterations, "max_iterations",  "Max number of iterations.");
-    m_parameters->add_vector(&m_linear_term, &m_linear_term_len, "linear_term", "Linear Term");
-    m_parameters->add((machine_int_t*) &liblinear_solver_type, "liblinear_solver_type", "Type of LibLinear solver.");
+	SG_ADD(&C1, "C1", "C Cost constant 1.", MS_AVAILABLE);
+	SG_ADD(&C2, "C2", "C Cost constant 2.", MS_AVAILABLE);
+	SG_ADD(&use_bias, "use_bias", "Indicates if bias is used.",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&epsilon, "epsilon", "Convergence precision.", MS_NOT_AVAILABLE);
+	SG_ADD(&max_iterations, "max_iterations", "Max number of iterations.",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_linear_term, "linear_term", "Linear Term", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &liblinear_solver_type, "liblinear_solver_type",
+			"Type of LibLinear solver.", MS_NOT_AVAILABLE);
 }
 
 CLibLinear::~CLibLinear()
 {
-	SG_FREE(m_linear_term);
+	m_linear_term.destroy_vector();
 }
 
 bool CLibLinear::train_machine(CFeatures* data)
@@ -329,8 +330,8 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			if (prob->use_bias)
 				G+=w[n];
 
-			if (m_linear_term)
-				G = G*yi + m_linear_term[i];
+			if (m_linear_term.vector)
+				G = G*yi + m_linear_term.vector[i];
 			else
 				G = G*yi-1;
 
@@ -1144,15 +1145,12 @@ void CLibLinear::solve_l1r_lr(
 	delete [] xjpos_sum;
 }
 
-void CLibLinear::get_linear_term(float64_t** linear_term, int32_t* len)
+SGVector<float64_t> CLibLinear::get_linear_term()
 {
-	if (!m_linear_term_len || !m_linear_term)
+	if (!m_linear_term.vlen || !m_linear_term.vector)
 		SG_ERROR("Please assign linear term first!\n");
 
-	*linear_term=SG_MALLOC(float64_t, m_linear_term_len);
-
-	for (int32_t i=0; i<m_linear_term_len; i++)
-		(*linear_term)[i]=m_linear_term[i];
+	return m_linear_term;
 }
 
 void CLibLinear::init_linear_term()
@@ -1160,11 +1158,10 @@ void CLibLinear::init_linear_term()
 	if (!labels)
 		SG_ERROR("Please assign labels first!\n");
 
-	SG_FREE(m_linear_term);
+	m_linear_term.destroy_vector();
 
-	m_linear_term_len=labels->get_num_labels();
-	m_linear_term = SG_MALLOC(float64_t, m_linear_term_len);
-	CMath::fill_vector(m_linear_term, m_linear_term_len, -1.0);
+	m_linear_term=SGVector<float64_t>(labels->get_num_labels());
+	CMath::fill_vector(m_linear_term.vector, m_linear_term.vlen, -1.0);
 }
 
 #endif //HAVE_LAPACK

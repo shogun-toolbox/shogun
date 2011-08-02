@@ -225,7 +225,7 @@ void CSVRLight::svr_learn()
 	xi_fullset = SG_MALLOC(float64_t, totdoc);
 	lin = SG_MALLOC(float64_t, totdoc);
 	learn_parm->svm_cost = SG_MALLOC(float64_t, totdoc);
-	if (m_linear_term_len > 0)
+	if (m_linear_term.vlen>0)
 		learn_parm->eps=get_linear_term_array();
 	else
 	{

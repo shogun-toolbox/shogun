@@ -103,8 +103,8 @@ public:
 	 */
 	CrossValidationResult evaluate();
 
-	/** @return parameter instance of underlying learning machine */
-	Parameter* get_machine_parameters() const;
+	/** @return underlying learning machine */
+	CMachine* get_machine() const;
 
 	/** setter for the number of runs to use for evaluation */
 	void set_num_runs(int32_t num_runs);

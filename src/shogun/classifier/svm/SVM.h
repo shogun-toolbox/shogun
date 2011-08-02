@@ -69,11 +69,9 @@ class CSVM : public CKernelMachine
 		/**
 		 * get linear term
 		 *
-		 * @param len lenght of the linear term vector (returned)
-		 *
 		 * @return the linear term
 		 */
-		virtual float64_t* get_linear_term_ptr(index_t* len);
+		virtual SGVector<float64_t> get_linear_term();
 
 
 		/**
@@ -237,8 +235,7 @@ class CSVM : public CKernelMachine
 		virtual float64_t* get_linear_term_array();
 
 		/** linear term in qp */
-		float64_t* m_linear_term;
-		index_t m_linear_term_len;
+		SGVector<float64_t> m_linear_term;
 
 		/** if SVM is loaded */
 		bool svm_loaded;

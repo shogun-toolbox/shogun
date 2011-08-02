@@ -28,18 +28,15 @@ struct S_THREAD_PARAM
 CKernelMachine::CKernelMachine()
 : CMachine(), kernel(NULL), use_batch_computation(true), use_linadd(true), use_bias(true)
 {
-	m_parameters->add((CSGObject**) &kernel, "kernel");
-	m_parameters->add(&use_batch_computation, "use_batch_computation",
-					  "Batch computation is enabled.");
-	m_parameters->add(&use_linadd, "use_linadd",
-					  "Linadd is enabled.");
-	m_parameters->add(&use_bias, "use_bias",
-					  "Bias shall be used.");
-	m_parameters->add(&m_bias, "m_bias",
-					  "Bias term.");
-	m_parameters->add(&m_alpha, "m_alpha",
-			"Array of coefficients alpha.");
-	m_parameters->add(&m_svs, "m_svs", "Number of ``support vectors''.");
+	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
+	SG_ADD(&use_batch_computation, "use_batch_computation",
+			"Batch computation is enabled.", MS_NOT_AVAILABLE);
+	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.", MS_NOT_AVAILABLE);
+	SG_ADD(&use_bias, "use_bias", "Bias shall be used.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_bias, "m_bias", "Bias term.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", MS_NOT_AVAILABLE);
 
 	m_bias=0.0;
 }

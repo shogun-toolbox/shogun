@@ -41,29 +41,27 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CSVM::~CSVM()
 {
-	SG_FREE(m_linear_term);
+	m_linear_term.destroy_vector();
 	SG_UNREF(mkl);
 }
 
 void CSVM::set_defaults(int32_t num_sv)
 {
-	m_parameters->add(&C1, "C1");
-	m_parameters->add(&C2, "C2");
-	m_parameters->add(&svm_loaded, "svm_loaded",
-					  "SVM is loaded.");
-	m_parameters->add(&epsilon, "epsilon");
-	m_parameters->add(&tube_epsilon, "tube_epsilon",
-					  "Tube epsilon for support vector regression.");
-	m_parameters->add(&nu, "nu");
-	m_parameters->add(&objective, "objective");
-	m_parameters->add(&qpsize, "qpsize");
-	m_parameters->add(&use_shrinking, "use_shrinking",
-					  "Shrinking shall be used.");
-	m_parameters->add((CSGObject**) &mkl, "mkl",
-					  "MKL object that svm optimizers need.");
-	m_parameters->add_vector(&m_linear_term, &m_linear_term_len,
-							 "linear_term",
-							 "Linear term in qp.");
+	SG_ADD(&C1, "C1", "", MS_AVAILABLE);
+	SG_ADD(&C2, "C2", "", MS_AVAILABLE);
+	SG_ADD(&svm_loaded, "svm_loaded", "SVM is loaded.", MS_NOT_AVAILABLE);
+	SG_ADD(&epsilon, "epsilon", "", MS_NOT_AVAILABLE);
+	SG_ADD(&tube_epsilon, "tube_epsilon",
+			"Tube epsilon for support vector regression.", MS_NOT_AVAILABLE);
+	SG_ADD(&nu, "nu", "", MS_AVAILABLE);
+	SG_ADD(&objective, "objective", "", MS_NOT_AVAILABLE);
+	SG_ADD(&qpsize, "qpsize", "", MS_NOT_AVAILABLE);
+	SG_ADD(&use_shrinking, "use_shrinking", "Shrinking shall be used.",
+			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &mkl, "mkl", "MKL object that svm optimizers need.",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_linear_term, "linear_term", "Linear term in qp.",
+			MS_NOT_AVAILABLE);
 
 	callback=NULL;
 	mkl=NULL;
@@ -84,9 +82,6 @@ void CSVM::set_defaults(int32_t num_sv)
 	use_shrinking=true;
 	use_batch_computation=true;
 	use_linadd=true;
-
-	m_linear_term = NULL;
-	m_linear_term_len = 0;
 
     if (num_sv>0)
         create_new_model(num_sv);
@@ -306,13 +301,14 @@ float64_t CSVM::compute_svm_primal_objective()
 
 float64_t* CSVM::get_linear_term_array()
 {
-	if (m_linear_term_len == 0)
+	if (m_linear_term.vlen==0)
 		return NULL;
 
-	float64_t* a = SG_MALLOC(float64_t, m_linear_term_len);
-	memcpy(a, m_linear_term, m_linear_term_len*sizeof (float64_t));
+	SGVector<float64_t> a(m_linear_term.vlen);
+	memcpy(a.vector, m_linear_term.vector,
+			m_linear_term.vlen*sizeof(float64_t));
 
-	return a;
+	return a.vector;
 }
 
 void CSVM::set_linear_term(SGVector<float64_t> linear_term)
@@ -330,18 +326,15 @@ void CSVM::set_linear_term(SGVector<float64_t> linear_term)
 				"of entries (%d) in linear term \n", num_labels, linear_term.vlen);
 	}
 
-	SG_FREE(m_linear_term);
+	m_linear_term.destroy_vector();
 
-	m_linear_term_len = linear_term.vlen;
-	m_linear_term = SG_MALLOC(float64_t, linear_term.vlen);
-	memcpy(m_linear_term, linear_term.vector, linear_term.vlen*sizeof(float64_t));
+	m_linear_term.vlen=linear_term.vlen;
+	m_linear_term=SGVector<float64_t> (linear_term.vlen);
+	memcpy(m_linear_term.vector, linear_term.vector,
+			linear_term.vlen*sizeof(float64_t));
 }
 
-float64_t* CSVM::get_linear_term_ptr(index_t* y)
+SGVector<float64_t> CSVM::get_linear_term()
 {
-	if (y == NULL)
-		return NULL;
-
-	*y = m_linear_term_len;
 	return m_linear_term;
 }
