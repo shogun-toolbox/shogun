@@ -68,7 +68,7 @@ public:
 	 *
 	 * @param parameter Parameter instance to apply parameter tree to
 	 */
-	void apply_to_modesel_parameter(Parameter* parameter) const;
+	void apply_to_modsel_parameter(Parameter* parameter) const;
 
 	/**applies this parameter tree to a learning machine
 	 * (wrapper for apply_to_modesel_parameter() method)

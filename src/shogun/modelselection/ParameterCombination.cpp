@@ -274,10 +274,10 @@ CParameterCombination* CParameterCombination::copy_tree() const
 
 void CParameterCombination::apply_to_machine(CMachine* machine) const
 {
-	apply_to_modesel_parameter(machine->m_model_selection_parameters);
+	apply_to_modsel_parameter(machine->m_model_selection_parameters);
 }
 
-void CParameterCombination::apply_to_modesel_parameter(
+void CParameterCombination::apply_to_modsel_parameter(
 		Parameter* parameter) const
 {
 	/* case root node */
@@ -289,7 +289,7 @@ void CParameterCombination::apply_to_modesel_parameter(
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
 			CParameterCombination* child=m_child_nodes->get_element(i);
-			child->apply_to_modesel_parameter(parameter);
+			child->apply_to_modsel_parameter(parameter);
 			SG_UNREF(child);
 		}
 	}
@@ -321,7 +321,7 @@ void CParameterCombination::apply_to_modesel_parameter(
 			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 			{
 				CParameterCombination* child=m_child_nodes->get_element(i);
-				child->apply_to_modesel_parameter(
+				child->apply_to_modsel_parameter(
 						current_sgobject->m_model_selection_parameters);
 				SG_UNREF(child);
 			}
