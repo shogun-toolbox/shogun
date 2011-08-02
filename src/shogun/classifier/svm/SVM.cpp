@@ -57,7 +57,7 @@ void CSVM::set_defaults(int32_t num_sv)
 	SG_ADD(&objective, "objective", "", MS_NOT_AVAILABLE);
 	SG_ADD(&qpsize, "qpsize", "", MS_NOT_AVAILABLE);
 	SG_ADD(&use_shrinking, "use_shrinking", "Shrinking shall be used.",
-			MS_AVAILABLE);
+			MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &mkl, "mkl", "MKL object that svm optimizers need.",
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_linear_term, "linear_term", "Linear term in qp.",
