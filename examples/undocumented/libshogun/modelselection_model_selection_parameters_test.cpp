@@ -210,8 +210,6 @@ int main(int argc, char **argv)
 	test_get_combinations(tree);
 	SG_UNREF(tree);
 
-	SG_SPRINT("END\n");
-
 	exit_shogun();
 
 	return 0;
