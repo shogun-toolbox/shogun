@@ -57,21 +57,6 @@ class CSerializableFile;
 		if (ms_available)\
 			m_model_selection_parameters->add(param, name, description);\
 }
-
-#define SG_ADD_VECTOR(param, length, name, description, ms_available) {\
-		m_parameters->add_vector(param, length, name, description);\
-		if (ms_available)\
-			m_model_selection_parameters->add_vector(param, length, name,\
-					description);\
-}
-
-#define SG_ADD_MATRIX(param, length_y, length_x, name, description,\
-							ms_available) {\
-		m_parameters->add_matrix(param, length_y, length_x, name, description);\
-		if (ms_available)\
-			m_model_selection_parameters->add_matrix(param, length_y, length_x,\
-					name, description);\
-}
 /*******************************************************************************
  * End of macros for registering parameters/model selection parameters
  ******************************************************************************/
