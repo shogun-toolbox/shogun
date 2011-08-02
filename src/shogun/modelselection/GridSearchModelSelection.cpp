@@ -48,12 +48,15 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 	else
 		best_result.mean=CMath::ALMOST_INFTY;
 
+	/* underlying learning machine */
+	CMachine* machine=m_cross_validation->get_machine();
+
 	/* apply all combinations and search for best one */
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
 		CParameterCombination* current_combination=combinations->get_element(i);
 		current_combination->apply_to_parameter(
-				m_cross_validation->get_machine_parameters());
+				machine->m_model_selection_parameters);
 		CrossValidationResult result=m_cross_validation->evaluate();
 
 		/* check if current result is better, delete old combinations */
@@ -93,6 +96,7 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 		SG_UNREF(current_combination);
 	}
 
+	SG_UNREF(machine);
 	SG_UNREF(combinations);
 
 	return best_combination;
