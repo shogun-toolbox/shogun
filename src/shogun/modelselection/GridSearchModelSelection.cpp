@@ -55,7 +55,7 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
 		CParameterCombination* current_combination=combinations->get_element(i);
-		current_combination->apply_to_parameter(
+		current_combination->apply_to_modesel_parameter(
 				machine->m_model_selection_parameters);
 		CrossValidationResult result=m_cross_validation->evaluate();
 
