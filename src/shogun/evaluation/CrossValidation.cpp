@@ -73,9 +73,10 @@ void CCrossValidation::init()
 			"interval");
 }
 
-Parameter* CCrossValidation::get_machine_parameters() const
+CMachine* CCrossValidation::get_machine() const
 {
-	return m_machine->m_parameters;
+	SG_REF(m_machine);
+	return m_machine;
 }
 
 CrossValidationResult CCrossValidation::evaluate()
@@ -110,7 +111,7 @@ CrossValidationResult CCrossValidation::evaluate()
 
 void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 {
-	if (conf_int_alpha<0||conf_int_alpha>=1)
+	if (conf_int_alpha<0 || conf_int_alpha>=1)
 	{
 		SG_ERROR("%f is an illegal alpha-value for confidence interval of "
 				"cross-validation\n", conf_int_alpha);
