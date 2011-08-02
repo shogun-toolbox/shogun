@@ -130,7 +130,8 @@ bool CDomainAdaptationSVMLinear::train_machine(CDotFeatures* train_data)
         }
 
     	// set linear term for QP
-    	this->set_linear_term(&lin_term[0], lin_term.size());
+		this->set_linear_term(
+				SGVector<float64_t>(&lin_term[0], lin_term.size()));
 
     }
 
