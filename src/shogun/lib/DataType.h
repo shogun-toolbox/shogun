@@ -315,7 +315,7 @@ template <class T> struct SGSparseVector
 public:
 	/** default constructor */
 	SGSparseVector() :
-		features(NULL), num_feat_entries(0), vec_index(0), do_free(false) {}
+		vec_index(0), num_feat_entries(0), features(NULL), do_free(false) {}
 
 	/** constructor for setting params */
 	SGSparseVector(SGSparseVectorEntry<T>* feats, index_t num_entries,
