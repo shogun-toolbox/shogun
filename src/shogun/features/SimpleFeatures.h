@@ -768,7 +768,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() { return num_features; }
+	virtual int32_t get_dim_feature_space() const { return num_features; }
 
 	/** compute dot product between vector1 and vector2,
 	 * appointed by their indices

@@ -1350,7 +1350,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		virtual int32_t get_dim_feature_space()
+		virtual int32_t get_dim_feature_space() const
 		{
 			return num_features;
 		}
