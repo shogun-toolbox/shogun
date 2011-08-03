@@ -1501,11 +1501,14 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
 		{
-			SGSparseMatrix<ST> matrix_copy=SGSparseMatrix<ST>(
-				get_dim_feature_space(), get_num_vectors());
+			SGSparseMatrix<ST> matrix_copy=SGSparseMatrix<ST>(get_num_vectors(),
+				get_dim_feature_space());
 
-
-
+			for (index_t i=0; i<get_num_vectors(); ++i)
+			{
+				SGSparseVector<ST> current=get_sparse_feature_vector()
+				matrix_copy.sparse_matrix[i]=
+			}
 
 			return new CSparseFeatures<ST>(matrix_copy);
 		}
