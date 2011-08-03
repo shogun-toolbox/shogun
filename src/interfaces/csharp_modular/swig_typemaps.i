@@ -1,4 +1,3 @@
-
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,22 +8,24 @@
  *  Based upon code by Baozeng Ding for the modular java interface
  *
  */
-/*
+
 %define TYPEMAP_SGVECTOR(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype) shogun::SGVector<SGTYPE>		%{CTYPE*%}         // ctype is the C# equivalent of the javatypemap jni
-%typemap(imtype) shogun::SGVector<SGTYPE>		%{CSHARPTYPE[]%}   // imtype is the C# equivalent of the java typemap jtype
+%typemap(imtype, inattributes="[MarshalAs(UnmanagedType.LPArray)]", outattributes="[MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE>		%{CSHARPTYPE[]%} // imtype is the C# equivalent of the java typemap jtype
 %typemap(cstype) shogun::SGVector<SGTYPE> 	%{CSHARPTYPE[]%}       // cstype is the C# equivalent of the java typemap cstype
 
 %typemap(in) shogun::SGVector<SGTYPE> (CTYPE *jarr) {
 	int32_t i, len;
 	SGTYPE *array;
+
 	if (!$input) {
 		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
 		return $null;	
 	}
-	
-	len = ((sizeof($input)) / (sizeof($input[0])));		
+	jarr = (CTYPE *)$input;
+	len = ((sizeof($input)) / (sizeof($input[0])));	
+	printf("the len is %d\n", len);
 
 	array = SG_MALLOC(SGTYPE, len);
 
@@ -55,19 +56,21 @@
 	
 	$result = res;
 }
+
+%typemap(csin) shogun::SGVector<SGTYPE> "$csinput"
 %enddef
 
 
 TYPEMAP_SGVECTOR(bool, bool, bool)
-TYPEMAP_SGVECTOR(char, char, char)
-TYPEMAP_SGVECTOR(uint8_t, uint8_t, byte)
+TYPEMAP_SGVECTOR(char, signed char, sbyte)
+TYPEMAP_SGVECTOR(uint8_t, unsigned char, byte)
 TYPEMAP_SGVECTOR(int16_t, short, short)
-TYPEMAP_SGVECTOR(uint16_t, ushort, ushort)
+TYPEMAP_SGVECTOR(uint16_t, unsigned short, ushort)
 TYPEMAP_SGVECTOR(int32_t, int, int)
-TYPEMAP_SGVECTOR(uint32_t, uint, uint)
-TYPEMAP_SGVECTOR(int64_t, int64_t, long)
-TYPEMAP_SGVECTOR(uint64_t, uint64_t, ulong)
-TYPEMAP_SGVECTOR(long long, long, long long)
+TYPEMAP_SGVECTOR(uint32_t, unsigned int, uint)
+TYPEMAP_SGVECTOR(int64_t, long, int)
+TYPEMAP_SGVECTOR(uint64_t, unsigned long, ulong)
+TYPEMAP_SGVECTOR(long long, long long, long)
 TYPEMAP_SGVECTOR(float32_t, float, float)
 TYPEMAP_SGVECTOR(float64_t, double, double)
 
@@ -79,7 +82,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 /////////////////////////////////  SGMATRIX Typemaps - Begin ////////////////////////////////////////
 
-%define TYPEMAP_SGMATRIX(SGTYPE, CTYPE, CSHARPTYPE)
+/*%define TYPEMAP_SGMATRIX(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype) shogun::SGMatrix<SGTYPE> %{CSHARPTYPE**%}  //  CTYPE
 %typemap(imtype) shogun::SGMatrix<SGTYPE> %{CSHARPTYPE[][]%}
@@ -180,6 +183,5 @@ TYPEMAP_SGMATRIX(long long, long, long long)
 TYPEMAP_SGMATRIX(float32_t, float, float)
 TYPEMAP_SGMATRIX(float64_t, double, double)
 
-#undef TYPEMAP_SGMATRIX
+#undef TYPEMAP_SGMATRIX*/
 /////////////////////////////////  SGMATRIX Typemaps - End //////////////////////////////////////////
-*/
