@@ -1493,6 +1493,23 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			SG_FREE(it);
 		}
 
+		/** Creates a new CFeatures instance containing copies of the elements
+		 * which are specified by the provided indices.
+		 *
+		 * @param indices indices of feature elements to copy
+		 * @return new CFeatures instance with copies of feature data
+		 */
+		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		{
+			SGSparseMatrix<ST> matrix_copy=SGSparseMatrix<ST>(
+				get_dim_feature_space(), get_num_vectors());
+
+
+
+
+			return new CSparseFeatures<ST>(matrix_copy);
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SparseFeatures"; }
 
