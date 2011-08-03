@@ -659,7 +659,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 					int32_t vidx=sv.features[i].feat_index;
 					int32_t fidx=v;
 					sfm[vidx].features[hist[vidx]].feat_index=fidx;
-					sfm[vidx].features[hist[vidx]].entry=sv[i].entry;
+					sfm[vidx].features[hist[vidx]].entry=sv.features[i].entry;
 					hist[vidx]++;
 				}
 
@@ -964,19 +964,16 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		{
 			ASSERT(sq);
 
-			int32_t len=0;
-			bool do_free=false;
-
 			index_t num_vec=get_num_vectors();
 			for (int32_t i=0; i<num_vec; i++)
 			{
 				sq[i]=0;
-				SGSparseVector<float64_t> vec=get_sparse_feature_vector(i);
+				SGSparseVector<ST> vec=get_sparse_feature_vector(i);
 
-				for (int32_t j=0; j<len; j++)
-					sq[i] += vec.features[j].entry * vec.features[j].entry;
+				for (int32_t j=0; j<vec.num_feat_entries; j++)
+					sq[i]+=vec.features[j].entry*vec.features[j].entry;
 
-				((CSparseFeatures<float64_t>*)this)->free_feature_vector(vec, i);
+				free_feature_vector(vec, i);
 			}
 
 			return sq;
@@ -999,8 +996,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		float64_t compute_squared_norm(CSparseFeatures<float64_t>* lhs, float64_t* sq_lhs, int32_t idx_a, CSparseFeatures<float64_t>* rhs, float64_t* sq_rhs, int32_t idx_b)
 		{
 			int32_t i,j;
-			int32_t alen, blen;
-			bool afree, bfree;
 			ASSERT(lhs);
 			ASSERT(rhs);
 
@@ -1011,17 +1006,19 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b];
 
-			if (alen<=blen)
+			if (avec.num_feat_entries<=bvec.num_feat_entries)
 			{
 				j=0;
-				for (i=0; i<alen; i++)
+				for (i=0; i<avec.num_feat_entries; i++)
 				{
 					int32_t a_feat_idx=avec.features[i].feat_index;
 
-					while ((j<blen) && (bvec.features[j].feat_index < a_feat_idx))
+					while ((j<bvec.num_feat_entries)
+							&&(bvec.features[j].feat_index<a_feat_idx))
 						j++;
 
-					if ((j<blen) && (bvec.features[j].feat_index == a_feat_idx))
+					if ((j<bvec.num_feat_entries)
+							&&(bvec.features[j].feat_index==a_feat_idx))
 					{
 						result-=2*(avec.features[i].entry*bvec.features[j].entry);
 						j++;
@@ -1031,14 +1028,16 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			else
 			{
 				j=0;
-				for (i=0; i<blen; i++)
+				for (i=0; i<bvec.num_feat_entries; i++)
 				{
 					int32_t b_feat_idx=bvec.features[i].feat_index;
 
-					while ((j<alen) && (avec.features[j].feat_index<b_feat_idx))
+					while ((j<avec.num_feat_entries)
+							&&(avec.features[j].feat_index<b_feat_idx))
 						j++;
 
-					if ((j<alen) && (avec.features[j].feat_index == b_feat_idx))
+					if ((j<avec.num_feat_entries)
+							&&(avec.features[j].feat_index==b_feat_idx))
 					{
 						result-=2*(bvec.features[i].entry*avec.features[j].entry);
 						j++;
