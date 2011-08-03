@@ -328,50 +328,52 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * possible with subset
 		 *
 		 * @param num index of feature vector
-		 * @param len number of sparse entries is returned by reference
-		 * @param vfree whether returned vector must be freed by caller via
-		 *              free_sparse_feature_vector
 		 * @return sparse feature vector
 		 */
-		SGSparseVectorEntry<ST>* get_sparse_feature_vector(int32_t num, int32_t& len, bool& vfree)
+		SGSparseVector<ST> get_sparse_feature_vector(int32_t num)
 		{
 			ASSERT(num<get_num_vectors());
 
 			index_t real_num=subset_idx_conversion(num);
 
+			SGSparseVector<ST> result;
+
 			if (sparse_feature_matrix)
 			{
-				len=sparse_feature_matrix[real_num].num_feat_entries;
-				vfree=false ;
-				return sparse_feature_matrix[real_num].features;
+				result.num_feat_entries=
+					sparse_feature_matrix[real_num].num_feat_entries;
+				result.do_free=false;
+				result.features=sparse_feature_matrix[real_num].features;
+				return result;
 			} 
 			else
 			{
 				SGSparseVectorEntry<ST>* feat=NULL;
-				vfree=false;
+				result.do_free=false;
 
 				if (feature_cache)
 				{
-					feat=feature_cache->lock_entry(num);
+					result.features=feature_cache->lock_entry(num);
 
 					if (feat)
 						return feat;
 					else
 					{
-						feat=feature_cache->set_entry(num);
+						result.features=feature_cache->set_entry(num);
 					}
 				}
 
 				if (!feat)
-					vfree=true;
+					result.do_free=true;
 
-				feat=compute_sparse_feature_vector(num, len, feat);
+				result.features=compute_sparse_feature_vector(num,
+					result.num_feat_entries, result.features);
 
 
 				if (get_num_preprocessors())
 				{
-					int32_t tmp_len=len;
-					SGSparseVectorEntry<ST>* tmp_feat_before = feat;
+					int32_t tmp_len=result.num_feat_entries;
+					SGSparseVectorEntry<ST>* tmp_feat_before=result.features;
 					SGSparseVectorEntry<ST>* tmp_feat_after = NULL;
 
 					for (int32_t i=0; i<get_num_preprocessors(); i++)
@@ -383,12 +385,14 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 						tmp_feat_before=tmp_feat_after;
 					}
 
-					memcpy(feat, tmp_feat_after, sizeof(SGSparseVectorEntry<ST>)*tmp_len);
+					memcpy(result.features, tmp_feat_after,
+							sizeof(SGSparseVectorEntry<ST>)*tmp_len);
+
 					SG_FREE(tmp_feat_after);
-					len=tmp_len ;
-					SG_DEBUG( "len: %d len2: %d\n", len, num_features);
+					result.num_feat_entries=tmp_len ;
+					SG_DEBUG( "len: %d len2: %d\n", result.num_feat_entries, num_features);
 				}
-				return feat ;
+				return result ;
 			}
 		}
 
