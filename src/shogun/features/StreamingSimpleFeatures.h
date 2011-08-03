@@ -455,7 +455,7 @@ void CStreamingSimpleFeatures<T>::release_example()
 }
 
 template <class T>
-int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space()
+int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space() const
 {
 	return current_length;
 }

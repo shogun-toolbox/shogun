@@ -630,7 +630,7 @@ void CStreamingSparseFeatures<T>::release_example()
 }
 
 template <class T>
-int32_t CStreamingSparseFeatures<T>::get_dim_feature_space()
+int32_t CStreamingSparseFeatures<T>::get_dim_feature_space() const
 {
 	return current_num_features;
 }
