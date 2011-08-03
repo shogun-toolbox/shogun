@@ -199,16 +199,16 @@ public:
 	SGString() : string(NULL), slen(0), do_free(false) { }
 
 	/** constructor for setting params */
-	SGString(T* s, index_t l, bool free_string=false)
-		: string(s), slen(l), do_free(free_string) { }
+	SGString(T* s, index_t l, bool free=false)
+		: string(s), slen(l), do_free(free) { }
 
 	/** constructor for setting params from a SGVector*/
 	SGString(SGVector<T> v)
 		: string(v.vector), slen(v.vlen), do_free(v.do_free) { }
 
-	/** constructor to create new matrix in memory */
-	SGString(index_t len, bool free_string=false) :
-		slen(len), do_free(free_string)
+	/** constructor to create new string in memory */
+	SGString(index_t len, bool free=false) :
+		slen(len), do_free(free)
 	{
 		string=SG_MALLOC(T, len);
 	}
@@ -216,6 +216,22 @@ public:
 	/** copy constructor */
 	SGString(const SGString &orig)
 		: string(orig.string), slen(orig.slen), do_free(orig.do_free) { }
+
+	void free_string()
+	{
+		if (do_free)
+			SG_FREE(string);
+
+		string=NULL;
+		do_free=false;
+		slen=0;
+	}
+
+	void destroy_string()
+	{
+		do_free=true;
+		free_string();
+	}
 
 public:
 	/** string  */
@@ -235,11 +251,11 @@ public:
 		do_free(false) { }
 
 	/** constructor for setting params */
-	SGStringList(SGString<T>* s, index_t num_s, index_t max_length, bool free_strings=false)
-		: num_strings(num_s), max_string_length(max_length),
-		strings(s), do_free(free_strings) { }
+	SGStringList(SGString<T>* s, index_t num_s, index_t max_length,
+			bool free_strings=false) : num_strings(num_s),
+			max_string_length(max_length), strings(s), do_free(free_strings) { }
 
-	/** constructor to create new matrix in memory */
+	/** constructor to create new string list in memory */
 	SGStringList(index_t num_s, index_t max_length, bool free_strings=false)
 		: num_strings(num_s), max_string_length(max_length),
 		  do_free(free_strings)
@@ -248,11 +264,27 @@ public:
 	}
 
 	/** copy constructor */
-	SGStringList(const SGStringList &orig)
-		: num_strings(orig.num_strings),
-		  max_string_length(orig.max_string_length), strings(orig.strings),
-		  do_free(orig.do_free) { }
+	SGStringList(const SGStringList &orig) :
+		num_strings(orig.num_strings),
+		max_string_length(orig.max_string_length),
+		strings(orig.strings), do_free(orig.do_free) { }
 
+	void free_list()
+	{
+		if (do_free)
+			SG_FREE(strings);
+
+		strings=NULL;
+		do_free=false;
+		num_strings=0;
+		max_string_length=0;
+	}
+
+	void destroy_list()
+	{
+		do_free=true;
+		free_list();
+	}
 
 public:
 	/* number of strings */
@@ -280,30 +312,106 @@ template <class T> struct SGSparseVectorEntry
 /** template class SGSparseVector */
 template <class T> struct SGSparseVector
 {
+public:
+	/** default constructor */
+	SGSparseVector() :
+		features(NULL), num_feat_entries(0), vec_index(0), do_free(false) {}
+
+	/** constructor for setting params */
+	SGSparseVector(SGSparseVectorEntry<T>* feats, index_t num_entries,
+			index_t index, bool free=false) :
+			features(feats), num_feat_entries(num_entries), vec_index(index),
+			do_free(free) {}
+
+	/** constructor to create new vector in memory */
+	SGSparseVector(index_t num_entries, index_t index) :
+			num_feat_entries(num_entries), vec_index(index)
+	{
+		features=SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
+	}
+
+	/** copy constructor */
+	SGSparseVector(const SGSparseVector& orig) :
+			vec_index(orig.vec_index), num_feat_entries(orig.num_feat_entries),
+			features(orig.features) {}
+
+	void free_vector()
+	{
+		if (do_free)
+			SG_FREE(features);
+
+		features=NULL;
+		do_free=false;
+		vec_index=0;
+		num_feat_entries=0;
+	}
+
+	void destroy_vector()
+	{
+		do_free=true;
+		free_vector();
+	}
+
+public:
 	/** vector index */
 	index_t vec_index;
+
 	/** number of feature entries */
 	index_t num_feat_entries;
+
 	/** features */
 	SGSparseVectorEntry<T>* features;
+
+	/** whether vector needs to be freed */
+	bool do_free;
 };
 
 /** template class SGSparseMatrix */
 template <class T> class SGSparseMatrix
 {
-    public:
-        /** default constructor */
-        SGSparseMatrix() : num_vectors(0), num_features(0), sparse_matrix(NULL) { }
+	public:
+		/** default constructor */
+		SGSparseMatrix() :
+			num_vectors(0), num_features(0), sparse_matrix(NULL),
+			do_free(false) { }
 
-        /** constructor for setting params */
-        SGSparseMatrix(SGSparseVector<T>* vecs, index_t num_feat, index_t num_vec)
-            : num_vectors(num_vec), num_features(num_feat), sparse_matrix(vecs) { }
 
-        /** copy constructor */
-        SGSparseMatrix(const SGSparseMatrix &orig)
-            : num_vectors(orig.num_vectors), num_features(orig.num_features), sparse_matrix(orig.sparse_matrix) { }
+		/** constructor for setting params */
+		SGSparseMatrix(SGSparseVector<T>* vecs, index_t num_feat,
+				index_t num_vec, bool free=false) :
+			num_vectors(num_vec), num_features(num_feat),
+			sparse_matrix(vecs), do_free(free) { }
 
-    public:
+		/** constructor to create new matrix in memory */
+		SGSparseMatrix(index_t num_vec, index_t num_feat, bool free=false) :
+			num_vectors(num_vectors), num_features(num_feat), do_free(free)
+		{
+			sparse_matrix=SG_MALLOC(SGSparseVector<T>, num_vectors);
+		}
+
+		/** copy constructor */
+		SGSparseMatrix(const SGSparseMatrix &orig) :
+			num_vectors(orig.num_vectors), num_features(orig.num_features),
+			sparse_matrix(orig.sparse_matrix), do_free(orig.do_free) { }
+
+		void free_matrix()
+		{
+			if (do_free)
+				SG_FREE(sparse_matrix);
+
+			sparse_matrix=NULL;
+			do_free=false;
+			num_vectors=0;
+			num_features=0;
+		}
+
+		void destroy_matrix()
+		{
+			do_free=true;
+			free_matrix();
+		}
+
+	public:
 	/// total number of vectors
 	int32_t num_vectors;
 
@@ -312,6 +420,9 @@ template <class T> class SGSparseMatrix
 
 	/// array of sparse vectors of size num_vectors
 	SGSparseVector<T>* sparse_matrix;
+
+	/** whether vector needs to be freed */
+	bool do_free;
 };
 
 enum EContainerType
