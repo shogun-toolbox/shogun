@@ -311,7 +311,7 @@ template <class T>
 
     pthread_mutex_destroy(&examples_state_lock);
     pthread_cond_destroy(&examples_state_changed);
-    delete current_example;
+
     delete examples_buff;
 }
 

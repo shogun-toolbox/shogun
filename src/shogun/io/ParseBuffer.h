@@ -29,18 +29,6 @@ namespace shogun
 		class Example
 	{
 	public:
-		Example()
-		{
-			fv.vector = new T();
-			fv.vlen = 1;
-			label = FLT_MAX;
-		}
-
-		~Example()
-		{
-			if (fv.vector != NULL)
-				delete fv.vector;
-		}
 		float64_t label;
 		SGVector<T> fv;
 	};
@@ -165,22 +153,25 @@ namespace shogun
 	{
 		buffer_size=size;
 
-		ex_buff=new Example<T>[buffer_size]();
+		ex_buff = SG_CALLOC(Example<T>, buffer_size);
 
 		SG_SINFO("Initialized with ring size: %d.\n", buffer_size);
-		ex_used=new E_IS_EXAMPLE_USED[buffer_size];
+		ex_used = SG_MALLOC(E_IS_EXAMPLE_USED, buffer_size);
+		ex_in_use_mutex = SG_MALLOC(pthread_mutex_t, buffer_size);
+		ex_in_use_cond = SG_MALLOC(pthread_cond_t, buffer_size);
+		read_lock = new pthread_mutex_t;
+		write_lock = new pthread_mutex_t;
 	
-		ex_in_use_mutex=new pthread_mutex_t[buffer_size];
-		ex_in_use_cond=new pthread_cond_t[buffer_size];
-		read_lock=new pthread_mutex_t;
-		write_lock=new pthread_mutex_t;
-	
-		ex_write_index=0;
-		ex_read_index=0;
+		ex_write_index = 0;
+		ex_read_index = 0;
 
 		for (int32_t i=0; i<buffer_size; i++)
 		{
 			ex_used[i] = E_EMPTY;
+			ex_buff[i].fv.vector = new T();
+			ex_buff[i].fv.vlen = 1;
+			ex_buff[i].label = FLT_MAX;
+
 			pthread_cond_init(&ex_in_use_cond[i], NULL);
 			pthread_mutex_init(&ex_in_use_mutex[i], NULL);
 		}
@@ -191,16 +182,18 @@ namespace shogun
 	template <class T>
 		CParseBuffer<T>::~CParseBuffer()
 	{
-		delete[] ex_buff;
-		delete[] ex_used;
-
 		for (int32_t i=0; i<buffer_size; i++)
 		{
+			if (ex_buff[i].fv.vector != NULL)
+				delete ex_buff[i].fv.vector;
 			pthread_mutex_destroy(&ex_in_use_mutex[i]);
 			pthread_cond_destroy(&ex_in_use_cond[i]);
 		}
-		delete[] ex_in_use_mutex;
-		delete[] ex_in_use_cond;
+		SG_FREE(ex_buff);
+		SG_FREE(ex_used);
+		SG_FREE(ex_in_use_mutex);
+		SG_FREE(ex_in_use_cond);
+
 		delete read_lock;
 		delete write_lock;
 	}
