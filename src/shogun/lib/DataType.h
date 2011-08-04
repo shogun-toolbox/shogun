@@ -199,16 +199,16 @@ public:
 	SGString() : string(NULL), slen(0), do_free(false) { }
 
 	/** constructor for setting params */
-	SGString(T* s, index_t l, bool free=false)
-		: string(s), slen(l), do_free(free) { }
+	SGString(T* s, index_t l, bool free_s=false)
+		: string(s), slen(l), do_free(free_s) { }
 
 	/** constructor for setting params from a SGVector*/
 	SGString(SGVector<T> v)
 		: string(v.vector), slen(v.vlen), do_free(v.do_free) { }
 
 	/** constructor to create new string in memory */
-	SGString(index_t len, bool free=false) :
-		slen(len), do_free(free)
+	SGString(index_t len, bool free_s=false) :
+		slen(len), do_free(free_s)
 	{
 		string=SG_MALLOC(T, len);
 	}
@@ -319,13 +319,13 @@ public:
 
 	/** constructor for setting params */
 	SGSparseVector(SGSparseVectorEntry<T>* feats, index_t num_entries,
-			index_t index, bool free=false) :
+			index_t index, bool free_v=false) :
 			vec_index(index), num_feat_entries(num_entries), features(feats),
-			do_free(free) {}
+			do_free(free_v) {}
 
 	/** constructor to create new vector in memory */
-	SGSparseVector(index_t num_entries, index_t index, bool free=false) :
-		vec_index(index), num_feat_entries(num_entries), do_free(false)
+	SGSparseVector(index_t num_entries, index_t index, bool free_v=false) :
+		vec_index(index), num_feat_entries(num_entries), do_free(free_v)
 	{
 		features=SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
 	}
@@ -378,13 +378,13 @@ template <class T> class SGSparseMatrix
 
 		/** constructor for setting params */
 		SGSparseMatrix(SGSparseVector<T>* vecs, index_t num_feat,
-				index_t num_vec, bool free=false) :
+				index_t num_vec, bool free_m=false) :
 			num_vectors(num_vec), num_features(num_feat),
-			sparse_matrix(vecs), do_free(free) { }
+			sparse_matrix(vecs), do_free(free_m) { }
 
 		/** constructor to create new matrix in memory */
-		SGSparseMatrix(index_t num_vec, index_t num_feat, bool free=false) :
-			num_vectors(num_vectors), num_features(num_feat), do_free(free)
+		SGSparseMatrix(index_t num_vec, index_t num_feat, bool free_m=false) :
+			num_vectors(num_vectors), num_features(num_feat), do_free(free_m)
 		{
 			sparse_matrix=SG_MALLOC(SGSparseVector<T>, num_vectors);
 		}
