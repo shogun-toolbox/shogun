@@ -335,11 +335,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			if (sparse_feature_matrix)
 			{
-				result.num_feat_entries=
-					sparse_feature_matrix[real_num].num_feat_entries;
-				result.do_free=false;
-				result.features=sparse_feature_matrix[real_num].features;
-				return result;
+				return sparse_feature_matrix[real_num];
 			} 
 			else
 			{
@@ -386,6 +382,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 					result.num_feat_entries=tmp_len ;
 					SG_DEBUG( "len: %d len2: %d\n", result.num_feat_entries, num_features);
 				}
+				result.vec_index=num;
 				return result ;
 			}
 		}
@@ -1504,14 +1501,21 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			SGSparseMatrix<ST> matrix_copy=SGSparseMatrix<ST>(get_num_vectors(),
 				get_dim_feature_space());
 
-			for (index_t i=0; i<get_num_vectors(); ++i)
+			for (index_t i=0; i<indices.vlen; ++i)
 			{
-				SGSparseVector<ST> current=get_sparse_feature_vector(i);
+				/* index to copy */
+				index_t index=indices.vector[i];
+
+				/* copy sparse vector */
+				SGSparseVector<ST> current=get_sparse_feature_vector(index);
 				matrix_copy.sparse_matrix[i]=SGSparseVector<ST>(
-					current.num_feat_entries, i);
+					current.num_feat_entries, current.vec_index);
+
+				/* copy entries */
 				memcpy(matrix_copy.sparse_matrix[i].features, current.features,
-					sizeof(ST)*current.num_feat_entries);
-				free_sparse_feature_vector(current, i);
+					sizeof(SGSparseVectorEntry<ST>)*current.num_feat_entries);
+
+				free_sparse_feature_vector(current, index);
 			}
 
 			return new CSparseFeatures<ST>(matrix_copy);
