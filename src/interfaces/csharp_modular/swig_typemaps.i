@@ -12,7 +12,7 @@
 %define TYPEMAP_SGVECTOR(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype) shogun::SGVector<SGTYPE>		%{CTYPE*%}         // ctype is the C# equivalent of the javatypemap jni
-%typemap(imtype, inattributes="[MarshalAs(UnmanagedType.LPArray)]", outattributes="[MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE>		%{CSHARPTYPE[]%} // imtype is the C# equivalent of the java typemap jtype
+%typemap(imtype, inattributes="[MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE>		%{CSHARPTYPE[]%} // imtype is the C# equivalent of the java typemap jtype
 %typemap(cstype) shogun::SGVector<SGTYPE> 	%{CSHARPTYPE[]%}       // cstype is the C# equivalent of the java typemap cstype
 
 %typemap(in) shogun::SGVector<SGTYPE> (CTYPE *jarr) {
@@ -58,6 +58,10 @@
 }
 
 %typemap(csin) shogun::SGVector<SGTYPE> "$csinput"
+%typemap(csout) shogun::SGVector<SGTYPE> {
+		CSHARPTYPE[] ret = $imcall;$excode		
+		return ret;
+}
 %enddef
 
 
