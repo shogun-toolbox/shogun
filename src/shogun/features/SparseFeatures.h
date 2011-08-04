@@ -1499,7 +1499,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		virtual CFeatures* copy_subset(SGVector<index_t> indices)
 		{
 			SGSparseMatrix<ST> matrix_copy=SGSparseMatrix<ST>(get_num_vectors(),
 				get_dim_feature_space());
