@@ -1508,7 +1508,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param target target
 		 */
 		virtual SGSparseVectorEntry<ST>* compute_sparse_feature_vector(int32_t num,
-			int32_t& len, SGSparseVectorEntry<ST>* target=NULL) const
+			int32_t& len, SGSparseVectorEntry<ST>* target=NULL)
 		{
 			SG_NOTIMPLEMENTED;
 
