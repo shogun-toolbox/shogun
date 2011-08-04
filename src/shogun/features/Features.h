@@ -144,7 +144,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of preprocessors
 		 */
-		inline int32_t get_num_preprocessors() { return num_preproc; }
+		inline int32_t get_num_preprocessors() const { return num_preproc; }
 
 		/** clears all preprocs */
 		void clean_preprocessors();
