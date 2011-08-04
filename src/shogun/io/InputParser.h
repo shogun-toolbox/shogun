@@ -70,11 +70,11 @@ public:
      * @return Number of features
      */
     int32_t get_number_of_features() { return number_of_features; }
-    
-    /** 
+
+    /**
      * Sets the function used for reading a vector from
      * the file.
-     * 
+     *
      * The function must be a member of CStreamingFile,
      * taking a T* as input for the vector, and an int for
      * length, setting both by reference. The function
@@ -83,11 +83,11 @@ public:
      * The argument is a function pointer to that function.
      */
     void set_read_vector(void (CStreamingFile::*func_ptr)(T* &vec, int32_t &len));
-    
-    /** 
+
+    /**
      * Sets the function used for reading a vector and
      * label from the file.
-     * 
+     *
      * The function must be a member of CStreamingFile,
      * taking a T* as input for the vector, an int for
      * length, and a float for the label, setting all by
@@ -124,10 +124,10 @@ public:
      */
     int32_t get_vector_only(T* &feature_vector, int32_t &length);
 
-    /** 
+    /**
      * Sets whether to SG_FREE() the vector explicitly
      * after it has been used
-     * 
+     *
      * @param del whether to SG_FREE() or not, bool
      */
     void set_do_delete(bool _del);
@@ -149,22 +149,22 @@ public:
      */
     void* main_parse_loop(void* params);
 
-    
-    /** 
+
+    /**
      * Copy example into the buffer.
-     * 
+     *
      * @param ex Example to be copied.
      */
-    void copy_example_into_buffer(example<T>* ex);
+    void copy_example_into_buffer(Example<T>* ex);
 
-    /** 
+    /**
      * Retrieves the next example from the buffer.
-     * 
-     * 
+     *
+     *
      * @return The example pointer.
      */
-    example<T>* retrieve_example();
-    
+    Example<T>* retrieve_example();
+
     /**
      * Gets the next example, assuming it to be labelled.
      *
@@ -181,17 +181,16 @@ public:
                  int32_t &length,
                  float64_t &label);
 
-    /** 
+    /**
      * Gets the next example, assuming it to be unlabelled.
-     * 
-     * @param feature_vector 
-     * @param length 
-     * 
+     *
+     * @param feature_vector
+     * @param length
+     *
      * @return 1 if an example could be fetched, 0 otherwise
      */
     int32_t get_next_example(T* &feature_vector,
                  int32_t &length);
-    
 
     /**
      * Finalize the current example, indicating that the buffer
@@ -211,7 +210,7 @@ public:
     /** Terminates the parsing thread
      */
     void exit_parser();
-    
+
 private:
     /**
      * Entry point for the parse thread.
@@ -229,7 +228,7 @@ public:
     E_EXAMPLE_TYPE example_type; /**< LABELLED or UNLABELLED */
 
 protected:
-    /** 
+    /**
      * This is the function pointer to the function to
      * read a vector from the input.
      *
@@ -237,7 +236,7 @@ protected:
      */
     void (CStreamingFile::*read_vector) (T* &vec, int32_t &len);
 
-    /** 
+    /**
      * This is the function pointer to the function to
      * read a vector and label from the input.
      *
@@ -264,7 +263,7 @@ protected:
     int32_t number_of_vectors_read;
 
     /// Example currently being used
-    example<T>* current_example;
+    Example<T>* current_example;
 
     /// Feature vector of current example
     T* current_feature_vector;
@@ -327,7 +326,6 @@ template <class T>
         example_type = E_UNLABELLED;
 
     examples_buff = new CParseBuffer<T>(size);
-    current_example = new example<T>();
 
     parsing_done = false;
     reading_done = false;
@@ -420,7 +418,7 @@ template <class T>
 }
 
 template <class T>
-    void CInputParser<T>::copy_example_into_buffer(example<T>* ex)
+    void CInputParser<T>::copy_example_into_buffer(Example<T>* ex)
 {
     examples_buff->copy_example(ex);
 }
@@ -444,6 +442,11 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
         pthread_mutex_unlock(&examples_state_lock);
 
         pthread_testcancel();
+
+	current_example = examples_buff->get_free_example();
+	current_feature_vector = current_example->fv.vector;
+	current_len = current_example->fv.vlen;
+	current_label = current_example->label;
 
         if (example_type == E_LABELLED)
             get_vector_and_label(current_feature_vector, current_len, current_label);
@@ -474,10 +477,10 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
     return NULL;
 }
 
-template <class T> example<T>* CInputParser<T>::retrieve_example()
+template <class T> Example<T>* CInputParser<T>::retrieve_example()
 {
     /* This function should be guarded by mutexes while calling  */
-    example<T> *ex;
+    Example<T> *ex;
 
     if (parsing_done)
     {
@@ -500,7 +503,7 @@ template <class T> example<T>* CInputParser<T>::retrieve_example()
 
     ex = examples_buff->fetch_example();
     number_of_vectors_read++;
-    
+
     return ex;
 }
 
@@ -512,7 +515,7 @@ template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
        otherwise, wait for further parsing, get the example and
        return 1 */
 
-    example<T> *ex;
+    Example<T> *ex;
 
     while (1)
     {
