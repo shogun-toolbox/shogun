@@ -325,7 +325,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param num index of feature vector
 		 * @return sparse feature vector
 		 */
-		SGSparseVector<ST> get_sparse_feature_vector(int32_t num)
+		SGSparseVector<ST> get_sparse_feature_vector(int32_t num) const
 		{
 			ASSERT(num<get_num_vectors());
 
@@ -1507,7 +1507,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param len len
 		 * @param target target
 		 */
-		virtual SGSparseVectorEntry<ST>* compute_sparse_feature_vector(int32_t num, int32_t& len, SGSparseVectorEntry<ST>* target=NULL)
+		virtual SGSparseVectorEntry<ST>* compute_sparse_feature_vector(int32_t num,
+			int32_t& len, SGSparseVectorEntry<ST>* target=NULL) const
 		{
 			SG_NOTIMPLEMENTED;
 
