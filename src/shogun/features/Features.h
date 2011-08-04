@@ -277,7 +277,7 @@ class CFeatures : public CSGObject
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		virtual CFeatures* copy_subset(SGVector<index_t> indices)
 		{
 			SG_ERROR("copy_subset and therefore model storage of CMachine "
 					"(required for cross-validation and model-selection is ",

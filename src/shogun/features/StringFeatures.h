@@ -2145,7 +2145,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		virtual CFeatures* copy_subset(SGVector<index_t> indices)
 		{
 			/* string list to create new CStringFeatures from */
 			SGStringList<ST> list_copy(indices.vlen, max_string_length);
