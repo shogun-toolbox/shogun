@@ -53,7 +53,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return dimensions of feature space
 		 */ 
-		inline virtual int32_t get_dim_feature_space()
+		inline virtual int32_t get_dim_feature_space() const
 		{
 			return m_output_dimensions;
 		}

@@ -186,7 +186,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space();
+	virtual int32_t get_dim_feature_space() const;
 
 	/** 
 	 * Dot product taken with another StreamingDotFeatures object.
@@ -630,7 +630,7 @@ void CStreamingSparseFeatures<T>::release_example()
 }
 
 template <class T>
-int32_t CStreamingSparseFeatures<T>::get_dim_feature_space()
+int32_t CStreamingSparseFeatures<T>::get_dim_feature_space() const
 {
 	return current_num_features;
 }

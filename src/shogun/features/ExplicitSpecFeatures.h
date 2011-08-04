@@ -56,7 +56,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		inline virtual int32_t get_dim_feature_space()
+		inline virtual int32_t get_dim_feature_space() const
 		{
 			return spec_size;
 		}
