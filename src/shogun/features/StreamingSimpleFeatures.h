@@ -185,7 +185,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space();
+	virtual int32_t get_dim_feature_space() const;
 
 	/** 
 	 * Dot product using the current vector and another vector, passed as arg.
@@ -455,7 +455,7 @@ void CStreamingSimpleFeatures<T>::release_example()
 }
 
 template <class T>
-int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space()
+int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space() const
 {
 	return current_length;
 }
