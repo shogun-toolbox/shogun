@@ -384,7 +384,7 @@ template <class T> class SGSparseMatrix
 
 		/** constructor to create new matrix in memory */
 		SGSparseMatrix(index_t num_vec, index_t num_feat, bool free_m=false) :
-			num_vectors(num_vectors), num_features(num_feat), do_free(free_m)
+			num_vectors(num_vec), num_features(num_feat), do_free(free_m)
 		{
 			sparse_matrix=SG_MALLOC(SGSparseVector<T>, num_vectors);
 		}
