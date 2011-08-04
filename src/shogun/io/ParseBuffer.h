@@ -244,8 +244,6 @@ namespace shogun
 	template <class T>
 		int32_t CParseBuffer<T>::copy_example(Example<T> *ex)
 	{
-		// Check this mutex call.. It should probably be locked regardless of ex in use
-
 		pthread_mutex_lock(write_lock);
 		int32_t ret;
 		int32_t current_index = ex_write_index;
