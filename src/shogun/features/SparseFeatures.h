@@ -1506,8 +1506,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			for (index_t i=0; i<get_num_vectors(); ++i)
 			{
-				SGSparseVector<ST> current=get_sparse_feature_vector()
-				matrix_copy.sparse_matrix[i]=
+				SGSparseVector<ST> current=get_sparse_feature_vector(i);
+				matrix_copy.sparse_matrix[i]=SGSparseVector<ST>(
+					current.num_feat_entries, i);
+				memcpy(matrix_copy.sparse_matrix[i].features, current.features,
+					sizeof(ST)*current.num_feat_entries);
+				free_sparse_feature_vector(current, i);
 			}
 
 			return new CSparseFeatures<ST>(matrix_copy);
