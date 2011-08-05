@@ -11,13 +11,11 @@
  * Written (W) 2011 Shashwat Lal Das
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
-
 #ifndef _VW_TYPES_H__
 #define _VW_TYPES_H__
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
-#include <shogun/io/IOBuffer.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/vw/substring.h>
 #include <shogun/lib/vw/parse_primitives.h>
@@ -502,15 +500,16 @@ public:
 	 */
 	void init(VwEnvironment* env = NULL)
 	{
+		/* For each feature, there should be 'stride' number of elements in the weight vector */
 		size_t length = ((size_t) 1) << env->num_bits;
 		env->thread_mask = (env->stride * (length >> env->thread_bits)) - 1;
 
+		/* Only one learning thread for now */
 		size_t num_threads = 1;
 		weight_vectors = SG_CALLOC(float*, num_threads);
 
 		for (size_t i=0; i<num_threads; i++)
 		{
-			/* Initialize vectors to zero */
 			weight_vectors[i] = SG_CALLOC(float, env->stride * length / num_threads);
 
 			if (env->random_weights)
@@ -537,10 +536,8 @@ public:
 public:
 	/// Weight vectors, one array for each thread
 	float** weight_vectors;
-
 	/// Loss function
 	CLossFunction* loss;
 };
-
 }
-#endif
+#endif // _VW_TYPES_H__
