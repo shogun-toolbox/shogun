@@ -18,7 +18,6 @@
 #include <shogun/lib/v_array.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/vw/substring.h>
-#include <shogun/lib/vw/parse_primitives.h>
 #include <shogun/loss/SquaredLoss.h>
 
 #include <math.h>
@@ -346,10 +345,10 @@ public:
 	 * Constructor
 	 */
 	VwExample(): tag(), indices(), atomics(),
-		num_features(0), pass(0), final_prediction(0.),
-		global_prediction(0), loss(0), eta_round(0.),
-		eta_global(0), global_weight(0),
-		example_t(0), total_sum_feat_sq(1), revert_weight(0)
+		num_features(0), pass(0),
+		final_prediction(0.), loss(0),
+		eta_round(0.), global_weight(0),
+		example_t(0), total_sum_feat_sq(1), sorted(false)
 	{
 		ld = new VwLabel();
 	}
@@ -398,7 +397,6 @@ public:
 
 		indices.erase();
 		tag.erase();
-		sorted = false;
 	}
 
 public:
@@ -434,6 +432,8 @@ public:
 
 	/// Example counter
 	size_t example_counter;
+	/// Whether features are sorted by weight index
+	bool sorted;
 };
 
 /** @brief Regressor used by VW
@@ -506,20 +506,16 @@ public:
 
 		/* Only one learning thread for now */
 		size_t num_threads = 1;
-		weight_vectors = SG_CALLOC(float*, num_threads);
+		weight_vectors = new float*[num_threads];
 
 		for (size_t i=0; i<num_threads; i++)
 		{
-			weight_vectors[i] = SG_CALLOC(float, env->stride * length / num_threads);
+			weight_vectors[i] = new float[env->stride * length / num_threads];
 
 			if (env->random_weights)
 			{
-				if (env->rank > 0)
-					for (size_t j = 0; j < env->stride*length/num_threads; j++)
-						weight_vectors[i][j] = (double) 0.1 * rand() / ((double) RAND_MAX + 1.0);
-				else
-					for (size_t j = 0; j < length/num_threads; j++)
-						weight_vectors[i][j] = drand48() - 0.5;
+				for (size_t j = 0; j < length/num_threads; j++)
+					weight_vectors[i][j] = drand48() - 0.5;
 			}
 
 			if (env->initial_weight != 0.)
