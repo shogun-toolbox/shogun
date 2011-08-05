@@ -59,16 +59,16 @@ float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t v
 
 	CSparsePolyFeatures* pf=(CSparsePolyFeatures*) df;
 
-	int32_t len1, len2;
-	bool do_free1, do_free2;
-	SGSparseVectorEntry<float64_t>* vec1 = m_feat->get_sparse_feature_vector(vec_idx1, len1, do_free1);
-	SGSparseVectorEntry<float64_t>* vec2 = pf->m_feat->get_sparse_feature_vector(vec_idx2, len2, do_free2);
+	SGSparseVector<float64_t> vec1=m_feat->get_sparse_feature_vector(vec_idx1);
+	SGSparseVector<float64_t> vec2=pf->m_feat->get_sparse_feature_vector(
+			vec_idx2);
 
-	float64_t result=CSparseFeatures<float64_t>::sparse_dot(1, vec1, len1, vec2, len2);
+	float64_t result=CSparseFeatures<float64_t>::sparse_dot(1, vec1.features,
+			vec1.num_feat_entries, vec2.features, vec2.num_feat_entries);
 	result=CMath::pow(result, m_degree);
 
-	m_feat->free_feature_vector(vec1, len1, do_free1);
-	pf->m_feat->free_feature_vector(vec2, len2, do_free2);
+	m_feat->free_feature_vector(vec1, vec_idx1);
+	pf->m_feat->free_feature_vector(vec2, vec_idx2);
 
 	return result;
 }
@@ -78,26 +78,28 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions);
 
-	int32_t vlen;
-	bool do_free;
-	SGSparseVectorEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
+	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(vec_idx1);
 
 	float64_t result=0;
 
-	if (vec)
+	if (vec.features)
 	{
 		if (m_degree==2)
 		{
 			/* (a+b)^2 = a^2 + 2ab +b^2 */
-			for (int32_t i=0; i<vlen; i++)
+			for (int32_t i=0; i<vec.num_feat_entries; i++)
 			{
-				float64_t v1=vec[i].entry;
-				uint32_t seed=CHash::MurmurHash2((uint8_t*) &(vec[i].feat_index), sizeof(int32_t), 0xDEADBEAF);
+				float64_t v1=vec.features[i].entry;
+				uint32_t seed=CHash::MurmurHash2(
+						(uint8_t*)&(vec.features[i].feat_index),
+						sizeof(int32_t), 0xDEADBEAF);
 
-				for (int32_t j=i; j<vlen; j++)
+				for (int32_t j=i; j<vec.num_feat_entries; j++)
 				{
-					float64_t v2=vec[j].entry;
-					uint32_t h=CHash::MurmurHash2((uint8_t*) &(vec[j].feat_index), sizeof(int32_t), seed) & mask;
+					float64_t v2=vec.features[j].entry;
+					uint32_t h=CHash::MurmurHash2(
+							(uint8_t*)&(vec.features[j].feat_index),
+							sizeof(int32_t), seed)&mask;
 					float64_t v;
 
 					if (i==j)
@@ -116,18 +118,16 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 	if (m_normalize)
 		result/=m_normalization_values[vec_idx1];
 
-	m_feat->free_feature_vector(vec, vlen, do_free);
+	m_feat->free_feature_vector(vec, vec_idx1);
 	return result;
 }
 
 void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	if (vec2_len != m_output_dimensions)
+	if (vec2_len!=m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions);
 
-	int32_t vlen;
-	bool do_free;
-	SGSparseVectorEntry<float64_t>* vec = m_feat->get_sparse_feature_vector(vec_idx1, vlen, do_free);
+	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(vec_idx1);
 
 	float64_t norm_val=1.0;
 	if (m_normalize)
@@ -137,15 +137,19 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 	if (m_degree==2)
 	{
 		/* (a+b)^2 = a^2 + 2ab +b^2 */
-		for (int32_t i=0; i<vlen; i++)
+		for (int32_t i=0; i<vec.num_feat_entries; i++)
 		{
-			float64_t v1=vec[i].entry;
-			uint32_t seed=CHash::MurmurHash2((uint8_t*) &(vec[i].feat_index), sizeof(int32_t), 0xDEADBEAF);
+			float64_t v1=vec.features[i].entry;
+			uint32_t seed=CHash::MurmurHash2(
+					(uint8_t*)&(vec.features[i].feat_index), sizeof(int32_t),
+					0xDEADBEAF);
 
-			for (int32_t j=i; j<vlen; j++)
+			for (int32_t j=i; j<vec.num_feat_entries; j++)
 			{
-				float64_t v2=vec[j].entry;
-				uint32_t h=CHash::MurmurHash2((uint8_t*) &(vec[j].feat_index), sizeof(int32_t), seed) & mask;
+				float64_t v2=vec.features[j].entry;
+				uint32_t h=CHash::MurmurHash2(
+						(uint8_t*)&(vec.features[j].feat_index),
+						sizeof(int32_t), seed)&mask;
 				float64_t v;
 
 				if (i==j)
@@ -163,7 +167,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 	else if (m_degree==3)
 		SG_NOTIMPLEMENTED;
 
-	m_feat->free_feature_vector(vec, vlen, do_free);
+	m_feat->free_feature_vector(vec, vec_idx1);
 }
 
 void CSparsePolyFeatures::store_normalization_values()
