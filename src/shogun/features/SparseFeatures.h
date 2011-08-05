@@ -335,11 +335,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			if (sparse_feature_matrix)
 			{
-				result.num_feat_entries=
-					sparse_feature_matrix[real_num].num_feat_entries;
-				result.do_free=false;
-				result.features=sparse_feature_matrix[real_num].features;
-				return result;
+				return sparse_feature_matrix[real_num];
 			} 
 			else
 			{
@@ -386,6 +382,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 					result.num_feat_entries=tmp_len ;
 					SG_DEBUG( "len: %d len2: %d\n", result.num_feat_entries, num_features);
 				}
+				result.vec_index=num;
 				return result ;
 			}
 		}
@@ -1493,6 +1490,37 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			SG_FREE(it);
 		}
 
+		/** Creates a new CFeatures instance containing copies of the elements
+		 * which are specified by the provided indices.
+		 *
+		 * @param indices indices of feature elements to copy
+		 * @return new CFeatures instance with copies of feature data
+		 */
+		virtual CFeatures* copy_subset(SGVector<index_t> indices)
+		{
+			SGSparseMatrix<ST> matrix_copy=SGSparseMatrix<ST>(indices.vlen,
+				get_dim_feature_space());
+
+			for (index_t i=0; i<indices.vlen; ++i)
+			{
+				/* index to copy */
+				index_t index=indices.vector[i];
+
+				/* copy sparse vector TODO THINK ABOUT VECTOR INDEX (i or vec.index*/
+				SGSparseVector<ST> current=get_sparse_feature_vector(index);
+				matrix_copy.sparse_matrix[i]=SGSparseVector<ST>(
+					current.num_feat_entries, current.vec_index);
+
+				/* copy entries */
+				memcpy(matrix_copy.sparse_matrix[i].features, current.features,
+					sizeof(SGSparseVectorEntry<ST>)*current.num_feat_entries);
+
+				free_sparse_feature_vector(current, index);
+			}
+
+			return new CSparseFeatures<ST>(matrix_copy);
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "SparseFeatures"; }
 
@@ -1507,7 +1535,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param len len
 		 * @param target target
 		 */
-		virtual SGSparseVectorEntry<ST>* compute_sparse_feature_vector(int32_t num, int32_t& len, SGSparseVectorEntry<ST>* target=NULL)
+		virtual SGSparseVectorEntry<ST>* compute_sparse_feature_vector(int32_t num,
+			int32_t& len, SGSparseVectorEntry<ST>* target=NULL)
 		{
 			SG_NOTIMPLEMENTED;
 
