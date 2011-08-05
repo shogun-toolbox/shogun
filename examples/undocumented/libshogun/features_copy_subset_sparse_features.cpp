@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/SparseFeatures.h>
 #include <shogun/features/Subset.h>
 
 using namespace shogun;
@@ -23,11 +23,37 @@ int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	SGMatrix<float64_t> data(3, 10);
-	CSimpleFeatures<float64_t>* f=new CSimpleFeatures<float64_t>(data);
-	CMath::range_fill_vector(data.matrix, data.num_cols*data.num_rows, 1.0);
-	CMath::display_matrix(data.matrix, data.num_rows, data.num_cols,
-			"original feature data");
+	index_t num_vectors=10;
+	index_t num_features=3;
+
+	/* create some sparse data */
+	SGSparseMatrix<float64_t> data=SGSparseMatrix<float64_t>(num_vectors,
+			num_features);
+
+	for (index_t i=0; i<num_vectors; ++i)
+	{
+		/* put elements only at even indices */
+		data.sparse_matrix[i]=SGSparseVector<float64_t>(num_features, 2*i);
+
+		/* fill */
+		for (index_t j=0; j<num_features; ++j)
+		{
+			data.sparse_matrix[i].features[j].entry=i+j;
+			data.sparse_matrix[i].features[j].feat_index=3*j;
+		}
+	}
+	CSparseFeatures<float64_t>* f=new CSparseFeatures<float64_t>(data);
+
+	/* display sparse matrix */
+	SG_SPRINT("original data\n");
+	for (index_t i=0; i<num_vectors; ++i)
+	{
+		SG_SPRINT("sparse vector at %i: [", data.sparse_matrix[i].vec_index);
+		for (index_t j=0; j<num_features; ++j)
+			SG_SPRINT("%f, ", data.sparse_matrix[i].features[j].entry);
+
+		SG_SPRINT("]\n");
+	}
 
 	index_t offset_subset=1;
 	SGVector<index_t> feature_subset(8);
@@ -40,10 +66,13 @@ int main(int argc, char **argv)
 	SG_SPRINT("feature vectors after setting subset on original data:\n");
 	for (index_t i=0; i<f->get_num_vectors(); ++i)
 	{
-		SGVector<float64_t> vec=f->get_feature_vector(i);
-		SG_SPRINT("%i: ", i);
-		CMath::display_vector(vec.vector, vec.vlen);
-		f->free_feature_vector(vec, i);
+		SGSparseVector<float64_t> vec=f->get_sparse_feature_vector(i);
+		SG_SPRINT("sparse vector at %i: ", vec.vec_index);
+		for (index_t j=0; j<num_features; ++j)
+			SG_SPRINT("%f, ", vec.features[j].entry);
+
+		SG_SPRINT("]\n");
+		f->free_sparse_feature_vector(vec, i);
 	}
 
 	index_t offset_copy=2;
@@ -53,26 +82,44 @@ int main(int argc, char **argv)
 	CMath::display_vector(feature_copy_subset.vector, feature_copy_subset.vlen,
 			"indices that are to be copied");
 
-	CSimpleFeatures<float64_t>* subset_copy=
-			(CSimpleFeatures<float64_t>*)f->copy_subset(feature_copy_subset);
+	CSparseFeatures<float64_t>* subset_copy=
+			(CSparseFeatures<float64_t>*)f->copy_subset(feature_copy_subset);
 
-	SGMatrix<float64_t> subset_copy_matrix=subset_copy->get_feature_matrix();
-	CMath::display_matrix(subset_copy_matrix.matrix,
-			subset_copy_matrix.num_rows, subset_copy_matrix.num_cols,
-			"copy matrix");
-
-	index_t num_its=subset_copy_matrix.num_rows*subset_copy_matrix.num_cols;
-	for (index_t i=0; i<num_its; ++i)
+	SG_SPRINT("copied features:\n");
+	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
 	{
-		index_t idx=i+(offset_copy+offset_subset)*subset_copy_matrix.num_rows;
-		ASSERT(subset_copy_matrix.matrix[i]==data.matrix[idx]);
+		SGSparseVector<float64_t> vec=subset_copy->get_sparse_feature_vector(i);
+		SG_SPRINT("sparse vector at %i: ", vec.vec_index);
+		for (index_t j=0; j<num_features; ++j)
+			SG_SPRINT("%f, ", vec.features[j].entry);
+
+		SG_SPRINT("]\n");
+		subset_copy->free_sparse_feature_vector(vec, i);
+	}
+
+	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
+	{
+		SGSparseVector<float64_t> vec=subset_copy->get_sparse_feature_vector(i);
+		index_t ind=i+offset_copy+offset_subset;
+
+		for (index_t j=0; j<vec.num_feat_entries; ++j)
+		{
+			float64_t a_entry=vec.features[j].entry;
+			float64_t b_entry=data.sparse_matrix[ind].features[j].entry;
+			index_t a_idx=vec.features[j].feat_index;
+			index_t b_idx=data.sparse_matrix[ind].features[j].feat_index;
+
+			ASSERT(a_entry==b_entry);
+			ASSERT(a_idx==b_idx);
+		}
+
+		subset_copy->free_sparse_feature_vector(vec, i);
 	}
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
-	SG_FREE(feature_copy_subset.vector);
+	feature_copy_subset.destroy_vector();
 
-	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;
