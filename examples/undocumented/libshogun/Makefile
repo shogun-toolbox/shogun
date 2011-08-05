@@ -16,6 +16,7 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  classifier_mklmulticlass kernel_gaussian kernel_revlin \
 		  library_dyn_int library_gc_array library_indirect_object \
 		  library_hash parameter_set_from_parameters \
+		  library_stringmap \
 		  parameter_iterate_float64 parameter_iterate_sgobject \
 		  parameter_modsel_parameters \
 		  modelselection_parameter_combination_test \
@@ -27,10 +28,10 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  modelselection_grid_search_string_kernel \
 		  features_subset_simple_features \
 		  features_subset_sparse_features \
-		  mathematics_confidence_intervals \
 		  features_copy_subset_simple_features \
 		  features_copy_subset_string_features \
 		  features_copy_subset_sparse_features \
+		  mathematics_confidence_intervals \
 		  clustering_kmeans
 
 
