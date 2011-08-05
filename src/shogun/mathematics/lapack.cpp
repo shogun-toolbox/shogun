@@ -8,6 +8,7 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2006-2007 Mikio L. Braun
  * Written (W) 2008 Jochen Garcke
+ * Written (W) 2011 Sergey Lisitsyn
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -33,6 +34,7 @@ using namespace shogun;
 #define DSYEVR dsyevr
 #define DPOTRS dpotrs
 #define DGETRS dgetrs
+#define DSYGVX dsygvx
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
@@ -46,6 +48,7 @@ using namespace shogun;
 #define DSYEVR dsyevr_
 #define DGETRS dgetrs_
 #define DPOTRS dpotrs_
+#define DSYGVX dsygvx_
 #endif
 
 #ifndef HAVE_ATLAS
@@ -304,7 +307,7 @@ void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info
 }
 #undef DORGQR
 
-void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int ul, 
+void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu, 
                  double *eigenvalues, double *eigenvectors, int *info)
 {
 	int m;
@@ -313,14 +316,14 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int ul
 	char I = 'I';
 	int* isuppz = SG_MALLOC(int, n);
 #ifdef HAVE_ACML
-	DSYEVR(jobz,I,uplo,n,a,lda,vl,vu,il,ul,abstol,m,
+	DSYEVR(jobz,I,uplo,n,a,lda,vl,vu,il,iu,abstol,m,
 	       eigenvalues,eigenvectors,n,isuppz,info);
 #else
 	int lwork = -1;
 	int liwork = -1;
 	double* work = SG_MALLOC(double, 1);
 	int* iwork = SG_MALLOC(int, 1);
-	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&ul,&abstol,
+	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
                &m,eigenvalues,eigenvectors,&n,isuppz,
                work,&lwork,iwork,&liwork,info);
 	ASSERT(*info==0);
@@ -330,7 +333,7 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int ul
 	SG_FREE(iwork);
 	work = SG_MALLOC(double, lwork);
 	iwork = SG_MALLOC(int, liwork);
-	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&ul,&abstol,
+	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
                &m,eigenvalues,eigenvectors,&n,isuppz,
                work,&lwork,iwork,&liwork,info);
 	ASSERT(*info==0);
@@ -340,6 +343,40 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int ul
 #endif
 }
 #undef DSYEVR
+
+void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, double *b,
+                 int ldb, int il, int iu, double *eigenvalues, double *eigenvectors, int *info)
+{
+	int m;
+	double abstol = 0.0;
+	double vl,vu;
+	int* ifail = SG_MALLOC(int, n);
+	char I = 'I';
+#ifdef HAVE_ACML
+	DSYGVX(itype,jobz,I,uplo,n,a,lda,b,ldb,vl,vu,
+               il,iu,abstol,m,eigenvalues,
+               eigenvectors,n,ifail,info);
+#else
+	int lwork = -1;
+	double* work = SG_MALLOC(double, 1);
+	int* iwork = SG_MALLOC(int, 5*n);
+	DSYGVX(&itype,&jobz,&I,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
+               &il,&iu,&abstol,&m,eigenvalues,eigenvectors,
+               &n,work,&lwork,iwork,ifail,info);
+	ASSERT(*info==0);
+	SG_FREE(work);
+	lwork = (int)work[0];
+	work = SG_MALLOC(double, lwork);
+	DSYGVX(&itype,&jobz,&I,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
+               &il,&iu,&abstol,&m,eigenvalues,eigenvectors,
+               &n,work,&lwork,iwork,ifail,info);
+	ASSERT(*info==0);
+	SG_FREE(work);
+	SG_FREE(iwork);
+	SG_FREE(ifail);
+#endif
+}
+#undef DSYGVX
 
 }
 #endif //HAVE_LAPACK

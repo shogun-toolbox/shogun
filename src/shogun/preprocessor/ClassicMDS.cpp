@@ -94,7 +94,7 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	// using ARPACK
 		float64_t* eigenvalues_vector = SG_MALLOC(float64_t, m_target_dim);
 		// solve eigenproblem with ARPACK (faster)
-		arpack_dsaupd(Ds_matrix, N, m_target_dim, "LM", 1, false, 0.0,
+		arpack_dsaupd(Ds_matrix, NULL, N, m_target_dim, "LM", 1, false, 0.0,
 		              eigenvalues_vector, replace_feature_matrix,
 		              eigenproblem_status);
 		// check for failure

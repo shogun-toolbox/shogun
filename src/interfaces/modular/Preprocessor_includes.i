@@ -17,6 +17,7 @@
 #include <shogun/preprocessor/LocallyLinearEmbedding.h>
 #include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
 #include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
+#include <shogun/preprocessor/LaplacianEigenmaps.h>
 #include <shogun/preprocessor/Isomap.h>
 #include <shogun/preprocessor/LandmarkIsomap.h>
 #include <shogun/preprocessor/ClassicIsomap.h>

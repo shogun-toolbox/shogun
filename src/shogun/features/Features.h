@@ -144,7 +144,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of preprocessors
 		 */
-		inline int32_t get_num_preprocessors() { return num_preproc; }
+		inline int32_t get_num_preprocessors() const { return num_preproc; }
 
 		/** clears all preprocs */
 		void clean_preprocessors();
@@ -277,7 +277,7 @@ class CFeatures : public CSGObject
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		virtual CFeatures* copy_subset(SGVector<index_t> indices)
 		{
 			SG_ERROR("copy_subset and therefore model storage of CMachine "
 					"(required for cross-validation and model-selection is ",

@@ -70,7 +70,7 @@ class CDotFeatures : public CFeatures
 		 *
 		 * @return dimensionality
 		 */
-		virtual int32_t get_dim_feature_space()=0;
+		virtual int32_t get_dim_feature_space() const=0;
 
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices

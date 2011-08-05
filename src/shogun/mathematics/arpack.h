@@ -40,11 +40,10 @@ namespace shogun
  * (Implicitly Restarted Lanczos Method). A strategy specifying 
  * which eigenpairs to compute should be provided as parameter.
  *
- * Please note that some of routine parameters are hard-coded:
- * e.g. ncv and workaround arrays sizes.
- *
  * @param matrix symmetric real matrix of size n*n
- *        (contains LU or Cholesky factors on exit if mode==3)
+ *        (will be modified if mode==3)
+ * @param rhs_diag array of size n representing right hand side diagonal matrix,
+ *        should be NULL if non-general eigenproblem to be solved
  * @param n size of matrix
  * @param nev number of eigenpairs to compute (nev<=n)
  * @param which eigenvalue finding strategy. Possible values:
@@ -67,8 +66,9 @@ namespace shogun
  * @param eigenvectors array of size nev*n to hold computed eigenvectors
  * @param status on output -1 if computation failed
  */
-void arpack_dsaupd(double* matrix, int n, int nev, const char* which, int mode, bool pos,
-                   double shift, double* eigenvalues, double* eigenvectors, int& status);
+void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, 
+                   const char* which, int mode, bool pos, double shift,
+                   double* eigenvalues, double* eigenvectors, int& status);
 }
 #endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */
