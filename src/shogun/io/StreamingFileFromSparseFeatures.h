@@ -140,9 +140,12 @@ void CStreamingFileFromSparseFeatures<T>::get_sparse_vector
 		return;
 	}
 
-	bool vfree;
-	vector=features->get_sparse_feature_vector
-		(vector_num, len, vfree);
+	SGSparseVector<T> vec=
+			((CSparseFeatures<T>*)this)->get_sparse_feature_vector(vector_num);
+	vector=vec.features;
+	len=vec.num_feat_entries;
+
+	/* TODO. check if vector needs to be freed? */
 
 	vector_num++;
 }
@@ -152,19 +155,8 @@ template <class T>
 void CStreamingFileFromSparseFeatures<T>::get_sparse_vector_and_label
 (SGSparseVectorEntry<T>*& vector, int32_t& len, float64_t& label)
 {
-	if (vector_num >= features->get_num_vectors())
-	{
-		vector=NULL;
-		len=-1;
-		return;
-	}
-
-	bool vfree;
-	vector=features->get_sparse_feature_vector
-		(vector_num, len, vfree);
+	get_sparse_vector(vector, len);
 	label=labels[vector_num];
-
-	vector_num++;
 }
 
 }
