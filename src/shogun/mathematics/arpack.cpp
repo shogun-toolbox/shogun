@@ -22,10 +22,13 @@ using namespace shogun;
 
 namespace shogun
 {
-void arpack_dsaupd(double* matrix, int n, int nev, const char* which, 
+void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char* which, 
                    int mode, bool pos, double shift, double* eigenvalues, 
                    double* eigenvectors, int& status)
 {
+	// loop vars
+	int i,j;
+
 	// check if nev is greater than n
 	if (nev>n)
 		SG_SERROR("Number of required eigenpairs is greater than order of the matrix");
@@ -38,9 +41,11 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
  	// (should be zero initially)
 	int ido = 0;
 
-	// specify that non-general eigenproblem will be solved
-	// (Ax=lGx, where G=I)
+	// specify general or non-general eigenproblem will be solved
+ 	// w.r.t. to given rhs_diag
 	char bmat[2] = "I";
+	if (rhs_diag)
+		bmat[0] = 'G';
 
 	// init tolerance (zero means machine precision)
 	double tol = 0.0;
@@ -81,45 +86,52 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 	// All
 	char* all_ = strdup("A");
 
-	int* ipiv;
+	// ipiv for LUP factorization
+	int* ipiv = NULL;
 	// shift-invert mode init
 	if (mode==3)
 	{
-		// subtract shift from main diagonal
+		// subtract shift from main diagonal if necessary
 		if (shift!=0.0)
 		{
-			for (int i=0; i<n; i++)
-				matrix[i*n+i] -= shift;
+			// if right hand side diagonal matrix is provided
+			if (rhs_diag)
+				// subtract I*diag(rhs_diag)
+				for (i=0; i<n; i++)
+					matrix[i*n+i] -= shift*rhs_diag[i];
+			else
+				// subtract I
+				for (i=0; i<n; i++)
+					matrix[i*n+i] -= shift;
 		}
-
+		
 		// compute factorization according to pos value
 		if (pos)
 		{
+			// with Cholesky
 			SG_SDEBUG("ARPACK: Using Cholesky factorization");
 			clapack_dpotrf(CblasColMajor,CblasUpper,n,matrix,n);
 		}
 		else
 		{
+			// with LUP
 			SG_SDEBUG("ARPACK: Using LUP factorization");
 			ipiv = SG_MALLOC(int, n);
 			clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 		}
 	}
 	// main computation loop
-	double* tmp;
-	if (mode==3) tmp = SG_MALLOC(double, n);
-	int i,j;
 	do	 
 	{
 		dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
 	        	&ncv, v, &ldv, iparam, ipntr, workd, workl,
 	        	&lworkl, &info);
 
-		if ((ido==1)||(ido==-1))
+		if ((ido==1)||(ido==-1)||(ido==2))
 		{
 			if (mode==1)
-			// compute (workd+ipntr[1]-1) = A*(workd+ipntr[0]-1)
 			{
+				// compute (workd+ipntr[1]-1) = A*(workd+ipntr[0]-1)
 				cblas_dsymv(CblasColMajor,CblasUpper,
 				            n,1.0,matrix,n,
 				            (workd+ipntr[0]-1),1,
@@ -127,22 +139,50 @@ void arpack_dsaupd(double* matrix, int n, int nev, const char* which,
 			}
 			if (mode==3)
 			{
-			// solve system of eqs A*(workd+ipntr[0]-1) = (workd+ipntr[1]-1)
-				for (i=0; i<n; i++)
-					tmp[i] = (workd+ipntr[0]-1)[i];
+				if (!rhs_diag)
+				{
+					// solve system of eqs A*(workd+ipntr[0]-1) = (workd+ipntr[1]-1)
+					for (i=0; i<n; i++)
+						(workd+ipntr[1]-1)[i] = (workd+ipntr[0]-1)[i];
 
-				if (pos)
-					clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,tmp,n);
-				else 
-					clapack_dgetrs(CblasColMajor,CblasNoTrans,n,1,matrix,n,ipiv,tmp,n);
+					// solve w.r.t. to factorization used before 
+					if (pos)
+						clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,(workd+ipntr[1]-1),n);
+					else 
+						clapack_dgetrs(CblasColMajor,CblasNoTrans,n,1,matrix,n,ipiv,(workd+ipntr[1]-1),n);
+				}
+				else
+				{
+					if (ido==-1)
+					{
+						for (i=0; i<n; i++)
+							(workd+ipntr[1]-1)[i] = rhs_diag[i]*(workd+ipntr[0]-1)[i];
+						
+						if (pos)
+							clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,(workd+ipntr[1]-1),n);
+						else 
+							clapack_dgetrs(CblasColMajor,CblasNoTrans,n,1,matrix,n,ipiv,(workd+ipntr[1]-1),n);
+					}
+					if (ido==1)
+					{
+						for (i=0; i<n; i++)
+							(workd+ipntr[1]-1)[i] = (workd+ipntr[2]-1)[i];
 
-				for (i=0; i<n; i++)
-					(workd+ipntr[1]-1)[i] = tmp[i];
+						if (pos)
+							clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,(workd+ipntr[1]-1),n);
+						else 
+							clapack_dgetrs(CblasColMajor,CblasNoTrans,n,1,matrix,n,ipiv,(workd+ipntr[1]-1),n);
+					}
+					if (ido==2)
+					{
+						for (i=0; i<n; i++)
+							(workd+ipntr[1]-1)[i] = rhs_diag[i]*(workd+ipntr[0]-1)[i]; 
+					}
+				}
 			}
 		}
-	} while ((ido==1)||(ido==-1));
+	} while ((ido==1)||(ido==-1)||(ido==2));
 	if (!pos && mode==3) SG_FREE(ipiv);
-	if (mode==3) SG_FREE(tmp);
 	
 	// check if DSAUPD failed
 	if (info<0) 
