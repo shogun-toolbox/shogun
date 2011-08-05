@@ -55,6 +55,7 @@ int main(int argc, char **argv)
 		SG_SPRINT("]\n");
 	}
 
+	/* indices for a subset */
 	index_t offset_subset=1;
 	SGVector<index_t> feature_subset(8);
 	CMath::range_fill_vector(feature_subset.vector, feature_subset.vlen,
@@ -62,6 +63,7 @@ int main(int argc, char **argv)
 	CMath::display_vector(feature_subset.vector, feature_subset.vlen,
 			"feature subset");
 
+	/* set subset and print data */
 	f->set_subset(new CSubset(feature_subset));
 	SG_SPRINT("feature vectors after setting subset on original data:\n");
 	for (index_t i=0; i<f->get_num_vectors(); ++i)
@@ -75,6 +77,7 @@ int main(int argc, char **argv)
 		f->free_sparse_feature_vector(vec, i);
 	}
 
+	/* indices that are to copy */
 	index_t offset_copy=2;
 	SGVector<index_t> feature_copy_subset(4);
 	CMath::range_fill_vector(feature_copy_subset.vector,
@@ -82,9 +85,11 @@ int main(int argc, char **argv)
 	CMath::display_vector(feature_copy_subset.vector, feature_copy_subset.vlen,
 			"indices that are to be copied");
 
+	/* copy a subset of features */
 	CSparseFeatures<float64_t>* subset_copy=
 			(CSparseFeatures<float64_t>*)f->copy_subset(feature_copy_subset);
 
+	/* print copied subset */
 	SG_SPRINT("copied features:\n");
 	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
 	{
@@ -97,6 +102,7 @@ int main(int argc, char **argv)
 		subset_copy->free_sparse_feature_vector(vec, i);
 	}
 
+	/* test if all elements are copied correctly */
 	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
 	{
 		SGSparseVector<float64_t> vec=subset_copy->get_sparse_feature_vector(i);
