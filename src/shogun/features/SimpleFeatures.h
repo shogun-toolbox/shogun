@@ -974,7 +974,7 @@ public:
 	 * @param indices indices of feature elements to copy
 	 * @return new CFeatures instance with copies of feature data
 	 */
-	virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+	virtual CFeatures* copy_subset(SGVector<index_t> indices)
 	{
 		SGMatrix<ST> feature_matrix_copy(num_features, indices.vlen);
 

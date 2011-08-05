@@ -29,19 +29,16 @@ void check_transposed(CSparseFeatures<int32_t>* features)
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 	{
-		int32_t len;
-		bool free_1, free_2;
-		SGSparseVectorEntry<int32_t>* orig_vec=
-				features->get_sparse_feature_vector(i, len, free_1);
-		SGSparseVectorEntry<int32_t>* new_vec=
-				double_transposed->get_sparse_feature_vector(i, len, free_2);
+		SGSparseVector<int32_t> orig_vec=features->get_sparse_feature_vector(i);
+		SGSparseVector<int32_t> new_vec=
+				double_transposed->get_sparse_feature_vector(i);
 
-		for (index_t j=0; j<len; j++)
-			ASSERT(orig_vec[j].entry==new_vec[j].entry);
+		for (index_t j=0; j<dim_features; j++)
+			ASSERT(orig_vec.features[j].entry==new_vec.features[j].entry);
 
 		/* not necessary since feature matrix is in memory. for documentation */
-		features->free_sparse_feature_vector(orig_vec, i, free_1);
-		double_transposed->free_sparse_feature_vector(new_vec, i, free_2);
+		features->free_sparse_feature_vector(orig_vec, i);
+		double_transposed->free_sparse_feature_vector(new_vec, i);
 	}
 
 	SG_UNREF(transposed);
@@ -91,26 +88,26 @@ int main(int argc, char **argv)
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 	{
-		int32_t len;
-		bool free;
-		SGSparseVectorEntry<int32_t>* vec=features->get_sparse_feature_vector(i,
-				len, free);
+		SGSparseVector<int32_t> vec=features->get_sparse_feature_vector(i);
 		SG_SPRINT("sparse_vector[%d]=", i);
-		for (index_t j=0; j<len; ++j)
+		for (index_t j=0; j<vec.num_feat_entries; ++j)
 		{
-			SG_SPRINT("%d", vec[j].entry);
-			if (j<len-1)
+			SG_SPRINT("%d", vec.features[j].entry);
+			if (j<vec.num_feat_entries-1)
 				SG_SPRINT(",");
 		}
 
 		SG_SPRINT("\n");
 
-		for (index_t j=0; j<len; ++j)
-			ASSERT(
-					vec[j].entry==data.matrix[features->subset_idx_conversion( i)*num_vectors+j]);
+		for (index_t j=0; j<vec.num_feat_entries; ++j)
+		{
+			int32_t a=vec.features[j].entry;
+			index_t ind=features->subset_idx_conversion(i)*num_vectors+j;
+			int32_t	b=data.matrix[ind];
+			ASSERT(a==b);
+		}
 
-		/* not necessary since feature matrix is in memory. for documentation */
-		features->free_sparse_feature_vector(vec, i, free);
+		features->free_sparse_feature_vector(vec, i);
 	}
 
 	/* remove features subset */
@@ -130,32 +127,28 @@ int main(int argc, char **argv)
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 	{
-		int32_t len;
-		bool free;
-		SGSparseVectorEntry<int32_t>* vec=features->get_sparse_feature_vector(i,
-				len, free);
+		SGSparseVector<int32_t> vec=features->get_sparse_feature_vector(i);
 		SG_SPRINT("sparse_vector[%d]=", i);
-		for (index_t j=0; j<len; ++j)
+		for (index_t j=0; j<vec.num_feat_entries; ++j)
 		{
-			SG_SPRINT("%d", vec[j].entry);
-			if (j<len-1)
+			SG_SPRINT("%d", vec.features[j].entry);
+			if (j<vec.num_feat_entries-1)
 				SG_SPRINT(",");
 		}
 
 		SG_SPRINT("\n");
 
-		for (index_t j=0; j<len; ++j)
-			ASSERT(vec[j].entry==data.matrix[i*num_vectors+j]);
+		for (index_t j=0; j<vec.num_feat_entries; ++j)
+			ASSERT(vec.features[j].entry==data.matrix[i*num_vectors+j]);
 
-		/* not necessary since feature matrix is in memory. for documentation */
-		features->free_sparse_feature_vector(vec, i, free);
+		features->free_sparse_feature_vector(vec, i);
 	}
 
 	SG_UNREF(features);
 	SG_FREE(data.matrix);
 
-	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;
 }
+
