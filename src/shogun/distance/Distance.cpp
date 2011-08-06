@@ -29,6 +29,17 @@
 
 using namespace shogun;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct D_THREAD_PARAM
+{
+	CDistance* dist;
+	float64_t* matrix;
+	int32_t idx_start;
+	int32_t idx_stop;
+	int32_t idx_step;
+};
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
 CDistance::CDistance() : CSGObject()
 {
 	init();
@@ -62,8 +73,8 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 	//remove references to previous features
 	remove_lhs_and_rhs();
 
-    //increase reference counts
-    SG_REF(l);
+	//increase reference counts
+    	SG_REF(l);
 	SG_REF(r);
 
 	lhs=l;
@@ -225,7 +236,7 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 		SG_DONE();
 	}
 	else
-      SG_ERROR( "no features assigned to distance\n");
+      		SG_ERROR("no features assigned to distance\n");
 
 	return result;
 }
@@ -256,6 +267,34 @@ float64_t* CDistance::get_distance_matrix_real(
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{
+		#ifndef WIN32
+			// twice CPU?
+			int32_t num_threads = 2*parallel->get_num_threads();
+			ASSERT(num_threads>0);
+			pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
+			D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM,num_threads);
+			pthread_attr_t attr;
+			pthread_attr_init(&attr);
+			pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+			for (int32_t t=0; t<num_threads; t++)
+			{
+				parameters[t].idx_start = t;
+				parameters[t].idx_stop = num_vec1;
+				parameters[t].idx_step = num_threads;
+				parameters[t].matrix = result;
+				parameters[t].dist = this;
+				
+				pthread_create(&threads[t], &attr, CDistance::run_distance_thread, (void*)&parameters[t]);
+			}
+			for (int32_t t=0; t<num_threads; t++)
+			{
+				pthread_join(threads[t], NULL);
+			}
+			pthread_attr_destroy(&attr);
+			
+			SG_FREE(parameters);
+			SG_FREE(threads);
+		#else
 			for (int32_t i=0; i<num_vec1; i++)
 			{
 				for (int32_t j=i; j<num_vec1; j++)
@@ -274,6 +313,7 @@ float64_t* CDistance::get_distance_matrix_real(
 						num_done+=1;
 				}
 			}
+		#endif
 		}
 		else
 		{
@@ -294,7 +334,7 @@ float64_t* CDistance::get_distance_matrix_real(
 		SG_DONE();
 	}
 	else
-      SG_ERROR( "no features assigned to distance\n");
+      		SG_ERROR("no features assigned to distance\n");
 
 	return result;
 }
@@ -310,4 +350,24 @@ void CDistance::init()
 					  "Feature vectors to occur on left hand side.");
 	m_parameters->add((CSGObject**) &rhs, "rhs",
 					  "Feature vectors to occur on right hand side.");
+}
+
+void* CDistance::run_distance_thread(void* p)
+{
+	D_THREAD_PARAM* parameters = (D_THREAD_PARAM*)p;
+	float64_t* matrix = parameters->matrix;
+	CDistance* dist = parameters->dist;
+	int32_t idx_start = parameters->idx_start;
+	int32_t idx_stop = parameters->idx_stop;
+	int32_t idx_step = parameters->idx_step;
+	for (int32_t i=idx_start; i<idx_stop; i+=idx_step)
+	{
+		for (int32_t j=i; j<idx_stop; j++)
+		{
+			float64_t ij_dist = dist->compute(i,j);
+			matrix[i*idx_stop+j] = ij_dist;
+			matrix[j*idx_stop+i] = ij_dist;
+		}
+	}
+	return NULL;
 }
