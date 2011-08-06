@@ -149,7 +149,7 @@ public:
 	float32_t power_t;
 
 	/// Example number
-	long long int example_number;
+	int64_t example_number;
 	/// Weighted examples
 	float64_t weighted_examples;
 	/// Weighted unlabelled examples

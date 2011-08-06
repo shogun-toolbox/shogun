@@ -92,7 +92,7 @@ inline float32_t double_of_substring(substring s)
  * @param s substring
  * @return int value of substring
  */
-inline int int_of_substring(substring s)
+inline int32_t int_of_substring(substring s)
 {
 	return atoi(std::string(s.start, s.end-s.start).c_str());
 }
@@ -102,7 +102,7 @@ inline int int_of_substring(substring s)
  * @param s substring
  * @return unsigned long value of substring
  */
-inline unsigned long ulong_of_substring(substring s)
+inline uint32_t ulong_of_substring(substring s)
 {
 	return strtoul(std::string(s.start, s.end-s.start).c_str(),NULL,10);
 }
@@ -112,7 +112,7 @@ inline unsigned long ulong_of_substring(substring s)
  * @param s substring
  * @return length of substring
  */
-inline unsigned long ss_length(substring s)
+inline uint32_t ss_length(substring s)
 {
 	return (s.end - s.start);
 }
