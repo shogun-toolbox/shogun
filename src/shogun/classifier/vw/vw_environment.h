@@ -80,13 +80,13 @@ public:
 	 * Return minimum label encountered
 	 * @return min label
 	 */
-	inline double get_min_label() { return min_label; }
+	inline float64_t get_min_label() { return min_label; }
 
 	/**
 	 * Return maximum label encountered
 	 * @return max label
 	 */
-	inline double get_max_label() { return max_label; }
+	inline float64_t get_max_label() { return max_label; }
 
 	/**
 	 * Return number of threads used for learning
@@ -119,9 +119,9 @@ public:
 	index_t stride;
 
 	/// Smallest label seen
-	double min_label;
+	float64_t min_label;
 	/// Largest label seen
-	double max_label;
+	float64_t max_label;
 
 	/// Learning rate
 	float32_t eta;
@@ -144,22 +144,22 @@ public:
 	/// Value of t
 	float32_t t;
 	/// Initial value of t
-	double initial_t;
+	float64_t initial_t;
 	/// t power value while updating
 	float32_t power_t;
 
 	/// Example number
 	long long int example_number;
 	/// Weighted examples
-	double weighted_examples;
+	float64_t weighted_examples;
 	/// Weighted unlabelled examples
-	double weighted_unlabeled_examples;
+	float64_t weighted_unlabeled_examples;
 	/// Weighted labels
-	double weighted_labels;
+	float64_t weighted_labels;
 	/// Total number of features
 	index_t total_features;
 	/// Sum of losses
-	double sum_loss;
+	float64_t sum_loss;
 	/// Number of passes complete
 	index_t passes_complete;
 
