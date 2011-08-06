@@ -99,10 +99,10 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	D_matrix.destroy_matrix();
 
 #ifndef WIN32
+
 	// Parallel Dijkstra with Fibonacci Heap 
-	int32_t num_threads = 2*parallel->get_num_threads();
+	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
-	SG_PRINT("Using %d threads\n",num_threads);
 	// allocate threads and thread parameters
 	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
 	D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM, num_threads);
@@ -110,6 +110,7 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	CFibonacciHeap** heaps = SG_MALLOC(CFibonacciHeap*, num_threads);
 	for (t=0; t<num_threads; t++)
 		heaps[t] = new CFibonacciHeap(N);
+
 #else
 	int32_t num_threads = 1;	
 #endif	
@@ -122,6 +123,7 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	float64_t* shortest_D = SG_MALLOC(float64_t,N*N);
 
 #ifndef WIN32
+
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
@@ -149,6 +151,7 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	SG_FREE(heaps);
 	SG_FREE(parameters);
 	SG_FREE(threads);
+
 #else
 	D_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = 0;
