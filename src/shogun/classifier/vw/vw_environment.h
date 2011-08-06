@@ -15,6 +15,7 @@
 #ifndef _VW_ENV_H__
 #define _VW_ENV_H__
 
+#include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
 
@@ -55,25 +56,25 @@ public:
 	 * Set number of bits used for the weight vector
 	 * @param bits number of bits
 	 */
-	inline void set_num_bits(size_t bits) { num_bits = bits; }
+	inline void set_num_bits(index_t bits) { num_bits = bits; }
 
 	/**
 	 * Return number of bits used for weight vector
 	 * @return number of bits
 	 */
-	inline size_t get_num_bits() { return num_bits; }
+	inline index_t get_num_bits() { return num_bits; }
 
 	/**
 	 * Set mask used while accessing features
 	 * @param m mask
 	 */
-	inline void set_mask(size_t m) { mask = m; }
+	inline void set_mask(index_t m) { mask = m; }
 
 	/**
 	 * Return the mask used
 	 * @return mask
 	 */
-	inline size_t get_mask() { return mask; }
+	inline index_t get_mask() { return mask; }
 
 	/**
 	 * Return minimum label encountered
@@ -91,13 +92,13 @@ public:
 	 * Return number of threads used for learning
 	 * @return number of threads
 	 */
-	inline size_t num_threads() { return 1 << thread_bits; }
+	inline index_t num_threads() { return 1 << thread_bits; }
 
 	/**
 	 * Return length of weight vector
 	 * @return length of weight vector
 	 */
-	inline size_t length() { return 1 << num_bits; }
+	inline index_t length() { return 1 << num_bits; }
 
 private:
 	/**
@@ -107,15 +108,15 @@ private:
 
 public:
 	/// log_2 of the number of features
-	size_t num_bits;
+	index_t num_bits;
 	/// log_2 of the number of threads
-	size_t thread_bits;
+	index_t thread_bits;
 	/// Mask used for hashing
-	size_t mask;
+	index_t mask;
 	/// Mask used by regressor for learning
-	size_t thread_mask;
+	index_t thread_mask;
 	/// Number of elements in weight vector per feature
-	size_t stride;
+	index_t stride;
 
 	/// Smallest label seen
 	double min_label;
@@ -123,29 +124,29 @@ public:
 	double max_label;
 
 	/// Learning rate
-	float eta;
+	float32_t eta;
 	/// Decay rate of eta per pass
-	float eta_decay_rate;
+	float32_t eta_decay_rate;
 
 	/// Whether adaptive learning is used
 	bool adaptive;
 	/// Level of L1 regularization
-	float l1_regularization;
+	float32_t l1_regularization;
 
 	/// Whether to use random weights
 	bool random_weights;
 	/// Initial value of all elements in weight vector
-	float initial_weight;
+	float32_t initial_weight;
 
 	/// Sum of updates
-	float update_sum;
+	float32_t update_sum;
 
 	/// Value of t
-	float t;
+	float32_t t;
 	/// Initial value of t
 	double initial_t;
 	/// t power value while updating
-	float power_t;
+	float32_t power_t;
 
 	/// Example number
 	long long int example_number;
@@ -156,11 +157,11 @@ public:
 	/// Weighted labels
 	double weighted_labels;
 	/// Total number of features
-	size_t total_features;
+	index_t total_features;
 	/// Sum of losses
 	double sum_loss;
 	/// Number of passes complete
-	size_t passes_complete;
+	index_t passes_complete;
 
 	/// Whether some namespaces are ignored
 	bool ignore_some;

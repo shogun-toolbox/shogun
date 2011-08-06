@@ -15,6 +15,7 @@
 #ifndef _VW_LABEL_H__
 #define _VW_LABEL_H__
 
+#include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
 #include <shogun/classifier/vw/substring.h>
@@ -45,37 +46,37 @@ public:
 	 * Get label value
 	 * @return label
 	 */
-	inline float get_label() { return label; }
+	inline float32_t get_label() { return label; }
 
 	/**
 	 * Set label value
 	 * @param l label value
 	 */
-	inline void set_label(float l) { label = l; }
+	inline void set_label(float32_t l) { label = l; }
 
 	/**
 	 * Get weight
 	 * @return example weight
 	 */
-	inline float get_weight() { return weight; }
+	inline float32_t get_weight() { return weight; }
 
 	/**
 	 * Set weight
 	 * @param w example weight
 	 */
-	inline void set_weight(float w) { weight = w; }
+	inline void set_weight(float32_t w) { weight = w; }
 
 	/**
 	 * Get initial value
 	 * @return initial value
 	 */
-	inline float get_initial() { return initial; }
+	inline float32_t get_initial() { return initial; }
 
 	/**
 	 * Set initial value
 	 * @param i initial value
 	 */
-	inline void set_initial(float i) { initial = i; }
+	inline void set_initial(float32_t i) { initial = i; }
 
 	/**
 	 * Parse a substring to get a label
@@ -86,11 +87,11 @@ public:
 
 public:
 	/// Label value
-	float label;
+	float32_t label;
 	/// Weight of example
-	float weight;
+	float32_t weight;
 	/// Initial approximation
-	float initial;
+	float32_t initial;
 };
 
 }

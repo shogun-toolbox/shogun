@@ -15,6 +15,7 @@
 #ifndef _VW_COMMON_H__
 #define _VW_COMMON_H__
 
+#include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 
@@ -29,7 +30,7 @@ namespace shogun
 
 using std::string;
 
-typedef size_t (*hash_func_t)(substring, unsigned long);
+typedef index_t (*hash_func_t)(substring, unsigned long);
 
 const int quadratic_constant = 27942141;
 const int constant = 11650396;

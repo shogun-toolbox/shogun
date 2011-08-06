@@ -15,6 +15,7 @@
 #ifndef _VW_REGRESSOR_H__
 #define _VW_REGRESSOR_H__
 
+#include <shogun/lib/DataType.h>
 #include <shogun/classifier/vw/vw_environment.h>
 #include <shogun/loss/LossFunction.h>
 
@@ -82,7 +83,7 @@ public:
 
 public:
 	/// Weight vectors, one array for each thread
-	float** weight_vectors;
+	float32_t** weight_vectors;
 	/// Loss function
 	CLossFunction* loss;
 };

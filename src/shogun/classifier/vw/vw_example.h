@@ -15,6 +15,7 @@
 #ifndef _VW_EXAMPLE_H__
 #define _VW_EXAMPLE_H__
 
+#include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
 #include <shogun/classifier/vw/vw_label.h>
@@ -31,7 +32,7 @@ class VwFeature
 {
 public:
 	/// Feature value
-	float x;
+	float32_t x;
 
 	/// Hashed index in weight vector
 	uint32_t weight_index;
@@ -77,32 +78,32 @@ public:
 	/// Tag
 	v_array<char> tag;
 	/// Array of namespaces
-	v_array<size_t> indices;
+	v_array<index_t> indices;
 	/// Array of features
 	v_array<VwFeature> atomics[256];
 
 	/// Number of features
-	size_t num_features;
+	index_t num_features;
 	/// Pass
-	size_t pass;
+	index_t pass;
 	/// Final prediction
-	float final_prediction;
+	float32_t final_prediction;
 	/// Loss
-	float loss;
+	float32_t loss;
 	/// Learning rate for this round
-	float eta_round;
+	float32_t eta_round;
 	/// Global weight
-	float global_weight;
+	float32_t global_weight;
 	/// t value for this example
-	float example_t;
+	float32_t example_t;
 
 	/// Sum of square of features
 	float64_t sum_feat_sq[256];
 	/// Total sum of square of features
-	float total_sum_feat_sq;
+	float32_t total_sum_feat_sq;
 
 	/// Example counter
-	size_t example_counter;
+	index_t example_counter;
 	/// Whether features are sorted by weight index
 	bool sorted;
 };

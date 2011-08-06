@@ -13,6 +13,7 @@
 #ifndef _VW_SUBSTRING_H__
 #define _VW_SUBSTRING_H__
 
+#include <shogun/lib/DataType.h>
 #include <shogun/io/SGIO.h>
 
 #include <stdlib.h>
@@ -40,7 +41,7 @@ struct substring
  */
 inline char* c_string_of_substring(substring s)
 {
-	size_t len = s.end - s.start+1;
+	index_t len = s.end - s.start+1;
 	char* ret = SG_CALLOC(char, len);
 	memcpy(ret,s.start,len-1);
 	return ret;
@@ -59,12 +60,12 @@ inline void print_substring(substring s)
  * Get value of substring as float
  * (if possible)
  * @param s substring
- * @return float value of substring
+ * @return float32_t value of substring
  */
-inline float float_of_substring(substring s)
+inline float32_t float_of_substring(substring s)
 {
 	char* endptr = s.end;
-	float f = strtof(s.start,&endptr);
+	float32_t f = strtof(s.start,&endptr);
 	if (endptr == s.start && s.start != s.end)
 		SG_SERROR("error: %s is not a float!\n", std::string(s.start, s.end-s.start).c_str());
 
@@ -76,10 +77,10 @@ inline float float_of_substring(substring s)
  * @param s substring
  * @return substring as double
  */
-inline float double_of_substring(substring s)
+inline float32_t double_of_substring(substring s)
 {
 	char* endptr = s.end;
-	float f = strtod(s.start,&endptr);
+	float32_t f = strtod(s.start,&endptr);
 	if (endptr == s.start && s.start != s.end)
 		SG_SERROR("Error!:%s is not a double!\n", std::string(s.start, s.end-s.start).c_str());
 
