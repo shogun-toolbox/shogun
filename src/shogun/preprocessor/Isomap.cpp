@@ -15,25 +15,67 @@
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/base/Parallel.h>
 #include <shogun/lib/Signal.h>
+
+#ifndef WIN32
+#include <pthread.h>
+#endif
 
 using namespace shogun;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/* struct storing thread params
+ */
+struct D_THREAD_PARAM
+{
+	// heap to be used
+	CFibonacciHeap* heap;
+	// const matrix storing edges lengths
+	const float64_t* edges_matrix;
+	// const matrix storing edges idxs
+	const int32_t* edges_idx_matrix;
+	// matrix to store shortest paths
+	float64_t* shortest_D;
+	// idx of threads start
+	int32_t idx_start;
+	// idx of thread stop
+	int32_t idx_stop;
+	// idx of thread step
+	int32_t idx_step;
+	// k param
+	int32_t m_k;
+	// (s)olution bool array
+	bool* s;
+	// (f)rontier bool array
+	bool* f;
+};
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
 CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 {
-	int32_t N,k,i,j;
+	int32_t N,t,i,j;
 	float64_t tmp;
 	SGMatrix<float64_t> D_matrix=distance->get_distance_matrix();
-	N=D_matrix.num_cols;
-	ASSERT(m_k<N);
-	CFibonacciHeap* heap = new CFibonacciHeap(N);
-
+	N = D_matrix.num_cols;
+	if (D_matrix.num_cols!=D_matrix.num_rows)
+	{
+		D_matrix.destroy_matrix();
+		SG_ERROR("Given distance matrix is not square.\n");
+	}
+	if (m_k>=N)
+	{
+		D_matrix.destroy_matrix();
+		SG_ERROR("K parameter should be less than number of given vectors (k=%d, N=%d)\n",
+		         m_k, N);
+	}
+	
 	// cut by k-nearest neighbors
 	int32_t* edges_idx_matrix = SG_MALLOC(int32_t, N*m_k);
 	float64_t* edges_matrix = SG_MALLOC(float64_t, N*m_k);
 			
 	// query neighbors and edges to neighbors
-	heap->clear();
+	CFibonacciHeap* heap = new CFibonacciHeap(N);
 	for (i=0; i<N; i++)
 	{
 		// insert distances to heap
@@ -53,24 +95,108 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 		heap->clear();
 	}
 	// cleanup
+	delete heap;
 	D_matrix.destroy_matrix();
 
-	// Dijkstra with Fibonacci Heap (not very efficient yet)
+#ifndef WIN32
+	// Parallel Dijkstra with Fibonacci Heap 
+	int32_t num_threads = 2*parallel->get_num_threads();
+	ASSERT(num_threads>0);
+	SG_PRINT("Using %d threads\n",num_threads);
+	// allocate threads and thread parameters
+	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
+	D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM, num_threads);
+	// allocate heaps
+	CFibonacciHeap** heaps = SG_MALLOC(CFibonacciHeap*, num_threads);
+	for (t=0; t<num_threads; t++)
+		heaps[t] = new CFibonacciHeap(N);
+#else
+	int32_t num_threads = 1;	
+#endif	
+
 	// allocate (s)olution
-	bool* s = SG_MALLOC(bool,N);
+	bool* s = SG_MALLOC(bool,N*num_threads);
 	// allocate (f)rontier
-	bool* f = SG_MALLOC(bool,N);
-	// temporary float to store distance
-	float64_t dist;
-	// temporary ints to represent nodes
-	int32_t min_item, w;
+	bool* f = SG_MALLOC(bool,N*num_threads);
 	// init matrix to store shortest distances
 	float64_t* shortest_D = SG_MALLOC(float64_t,N*N);
-	// clear heap
-	heap->clear();
 
-	// for each vertex k
-	for (k=0; k<N; k++)
+#ifndef WIN32
+	pthread_attr_t attr;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+	for (t=0; t<num_threads; t++)
+	{
+		parameters[t].idx_start = t;	
+		parameters[t].idx_stop = N;	
+		parameters[t].idx_step = num_threads;	
+		parameters[t].heap = heaps[t];	
+		parameters[t].edges_matrix = edges_matrix;	
+		parameters[t].edges_idx_matrix = edges_idx_matrix;	
+		parameters[t].s = s+t*N;	
+		parameters[t].f = f+t*N;	
+		parameters[t].m_k = m_k;
+		parameters[t].shortest_D = shortest_D;	
+		pthread_create(&threads[t], &attr, CIsomap::run_dijkstra_thread, (void*)&parameters[t]);
+	}
+	for (t=0; t<num_threads; t++)
+	{
+		pthread_join(threads[t], NULL);
+	}
+	pthread_attr_destroy(&attr);
+	for (t=0; t<num_threads; t++)
+		delete heaps[t];
+	SG_FREE(heaps);
+	SG_FREE(parameters);
+	SG_FREE(threads);
+#else
+	D_THREAD_PARAM single_thread_param;
+	single_thread_param.idx_start = 0;
+	single_thread_param.idx_stop = N;
+	single_thread_param.idx_step = 1;
+	single_thread_param.m_k = m_k;
+	single_thread_param.heap = new CFibonacciHeap(N);
+	single_thread_param.edges_matrix = edges_matrix;
+	single_thread_param.edges_idx_matrix = edges_idx_matrix;
+	single_thread_param.s = s;
+	single_thread_param.f = f;
+	single_thread_param.shortest_D = shortest_D;
+	
+	run_dijkstra_thread((void*)&single_thread_param);
+	delete single_thread_param.heap;
+#endif
+	// cleanup
+	SG_FREE(edges_matrix);
+	SG_FREE(edges_idx_matrix);
+	SG_FREE(s);
+	SG_FREE(f);
+
+	CCustomDistance* geodesic_distance = new CCustomDistance(shortest_D,N,N);
+
+	// should be removed if custom distance doesn't copy the matrix
+	SG_FREE(shortest_D);
+
+	return geodesic_distance;
+}
+
+void* CIsomap::run_dijkstra_thread(void *p)
+{	
+	D_THREAD_PARAM* parameters = (D_THREAD_PARAM*)p;
+	CFibonacciHeap* heap = parameters->heap;
+	int32_t idx_start = parameters->idx_start;
+	int32_t idx_stop = parameters->idx_stop;
+	int32_t idx_step = parameters->idx_step;
+	bool* s = parameters->s;
+	bool* f = parameters->f;
+	const float64_t* edges_matrix = parameters->edges_matrix;
+	const int32_t* edges_idx_matrix = parameters->edges_idx_matrix;
+	float64_t* shortest_D = parameters->shortest_D;
+	int32_t m_k = parameters->m_k;
+	int32_t k,j,i,min_item,w;
+	int32_t N = idx_stop;
+	float64_t dist,tmp;
+
+	for (k=idx_start; k<idx_stop; k+=idx_step)
 	{
 		// fill s and f with false, fill shortest_D with infinity
 		for (j=0; j<N; j++)
@@ -128,18 +254,7 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 		// clear heap to re-use
 		heap->clear();
 	}
-	// cleanup
-	delete heap;
-	SG_FREE(edges_matrix);
-	SG_FREE(s);
-	SG_FREE(f);
-
-	CCustomDistance* geodesic_distance = new CCustomDistance(shortest_D,N,N);
-
-	// should be removed if custom distance doesn't copy the matrix
-	SG_FREE(shortest_D);
-
-	return geodesic_distance;
+	return NULL;
 }
 
 #endif /* HAVE_LAPACK */

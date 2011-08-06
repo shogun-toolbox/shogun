@@ -128,6 +128,13 @@ protected:
 	/** k, number of neighbors for K-Isomap */
 	int32_t m_k;
 
+protected:
+
+	/** run dijkstra thread
+	 * p thread params
+	 */
+	static void* run_dijkstra_thread(void* p);
+
 	/** approx geodesic distance 
 	 * @param distance
 	 * @return custom distance with approximate geodesic distance matrix
