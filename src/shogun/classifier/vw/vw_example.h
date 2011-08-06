@@ -17,7 +17,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
-#include <shogun/lib/vw/vw_label.h>
+#include <shogun/classifier/vw/vw_label.h>
 
 namespace shogun
 {

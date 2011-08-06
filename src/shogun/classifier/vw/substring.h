@@ -17,7 +17,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
 
 namespace shogun
 {
@@ -42,7 +41,7 @@ struct substring
 inline char* c_string_of_substring(substring s)
 {
 	size_t len = s.end - s.start+1;
-	char* ret = (char *)calloc(len,sizeof(char));
+	char* ret = SG_CALLOC(char, len);
 	memcpy(ret,s.start,len-1);
 	return ret;
 }
