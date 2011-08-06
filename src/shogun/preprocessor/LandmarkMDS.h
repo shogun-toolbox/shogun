@@ -106,11 +106,18 @@ protected:
 	/** current number of landmarks */
 	int32_t m_landmark_number;	
 
+protected:
+
+	/** run triangulation thread
+	 * p thread parameters
+	 */
+	static void* run_triangulation_thread(void* p);
+
 	/** subroutine used to shuffle count indexes among of total_count ones
-	 * with Fisher-Yates (as well as Knuth) shuffle
+	 * with Fisher-Yates (known as Knuth too) shuffle algorithm
 	 * @param count number of indexes to be shuffled and returned
 	 * @param total_count total number of indexes
-	 * @return sampled indexes for landmarks
+	 * @return shuffled indexes for landmarks
 	 */
 	SGVector<int32_t> get_landmark_idxs(int32_t count, int32_t total_count);
 
