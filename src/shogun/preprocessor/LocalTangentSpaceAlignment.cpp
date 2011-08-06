@@ -58,7 +58,9 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance);
 
 	// init W (weight) matrix
-	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
+	float64_t* W_matrix = SG_MALLOC(float64_t, N*N);
+	for (i=0; i<N*N; i++)
+		W_matrix[i] = 0.0;
 
 	// init matrices and norm factor to be used
 	float64_t* local_feature_matrix = SG_MALLOC(float64_t, m_k*dim);
