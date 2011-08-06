@@ -18,7 +18,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
-#include <shogun/classifier/vw/substring.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 
 namespace shogun
