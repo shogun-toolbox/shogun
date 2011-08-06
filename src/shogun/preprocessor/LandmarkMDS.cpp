@@ -215,6 +215,7 @@ SGMatrix<float64_t> CLandmarkMDS::embed_by_distance(CDistance* distance)
 	// cleanup
 	lmk_feature_matrix.destroy_matrix();
 	SG_FREE(current_dist_to_lmks);
+	lmk_idxs.destroy_vector();
 	SG_FREE(mean_sq_dist_vector);
 	dist_matrix.destroy_matrix();
 	SG_FREE(to_process);
