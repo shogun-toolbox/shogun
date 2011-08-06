@@ -16,7 +16,7 @@
 #include <shogun/io/SGIO.h>
 
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 
 namespace shogun
 {
