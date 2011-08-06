@@ -34,29 +34,29 @@ void VwRegressor::init(VwEnvironment* env)
 {
 	// For each feature, there should be 'stride' number of
 	// elements in the weight vector
-	size_t length = ((size_t) 1) << env->num_bits;
+	index_t length = ((index_t) 1) << env->num_bits;
 	env->thread_mask = (env->stride * (length >> env->thread_bits)) - 1;
 
 	// Only one learning thread for now
-	size_t num_threads = 1;
-	weight_vectors = SG_MALLOC(float*, num_threads);
+	index_t num_threads = 1;
+	weight_vectors = SG_MALLOC(float32_t*, num_threads);
 
-	for (size_t i = 0; i < num_threads; i++)
+	for (index_t i = 0; i < num_threads; i++)
 	{
 		weight_vectors[i] = SG_CALLOC(float, env->stride * length / num_threads);
 
 		if (env->random_weights)
 		{
-			for (size_t j = 0; j < length/num_threads; j++)
+			for (index_t j = 0; j < length/num_threads; j++)
 				weight_vectors[i][j] = drand48() - 0.5;
 		}
 
 		if (env->initial_weight != 0.)
-			for (size_t j = 0; j < env->stride*length/num_threads; j+=env->stride)
+			for (index_t j = 0; j < env->stride*length/num_threads; j+=env->stride)
 				weight_vectors[i][j] = env->initial_weight;
 
 		if (env->adaptive)
-			for (size_t j = 1; j < env->stride*length/num_threads; j+=env->stride)
+			for (index_t j = 1; j < env->stride*length/num_threads; j+=env->stride)
 				weight_vectors[i][j] = 1;
 	}
 }

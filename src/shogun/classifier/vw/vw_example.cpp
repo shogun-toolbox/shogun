@@ -35,7 +35,7 @@ VwExample::~VwExample()
 		tag.end_array = tag.begin;
 	}
 
-	for (size_t j = 0; j < 256; j++)
+	for (index_t j = 0; j < 256; j++)
 	{
 		if (atomics[j].begin != atomics[j].end_array)
 			free(atomics[j].begin);
@@ -54,7 +54,7 @@ void VwExample::reset_members()
 	final_prediction = 0;
 	loss = 0;
 
-	for (size_t* i = indices.begin; i != indices.end; i++)
+	for (index_t* i = indices.begin; i != indices.end; i++)
 	{
 		atomics[*i].erase();
 		sum_feat_sq[*i]=0;
