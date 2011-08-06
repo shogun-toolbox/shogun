@@ -15,7 +15,7 @@
 #ifndef _VW_REGRESSOR_H__
 #define _VW_REGRESSOR_H__
 
-#include <shogun/lib/vw/vw_environment.h>
+#include <shogun/classifier/vw/vw_environment.h>
 #include <shogun/loss/LossFunction.h>
 
 namespace shogun

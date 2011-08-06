@@ -19,10 +19,10 @@
 #include <shogun/mathematics/Math.h>
 
 #include <shogun/lib/v_array.h>
-#include <shogun/lib/vw/substring.h>
-#include <shogun/lib/vw/vw_environment.h>
-#include <shogun/lib/vw/vw_label.h>
-#include <shogun/lib/vw/vw_example.h>
+#include <shogun/classifier/vw/substring.h>
+#include <shogun/classifier/vw/vw_environment.h>
+#include <shogun/classifier/vw/vw_label.h>
+#include <shogun/classifier/vw/vw_example.h>
 
 namespace shogun
 {
