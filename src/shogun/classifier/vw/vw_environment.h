@@ -158,6 +158,8 @@ public:
 	float64_t sum_loss;
 	/// Number of passes complete
 	index_t passes_complete;
+	/// Number of passes
+	index_t num_passes;
 
 	/// Whether some namespaces are ignored
 	bool ignore_some;

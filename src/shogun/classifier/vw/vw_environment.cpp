@@ -53,6 +53,7 @@ void VwEnvironment::init()
 	total_features = 0;
 	sum_loss = 0.;
 	passes_complete = 0;
+	num_passes = 1;
 
 	ignore_some = false;
 }
