@@ -74,7 +74,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	float64_t* w_sum_vector = SG_MALLOC(float64_t, dp);
 
 	// Yi
-	float64_t* Yi_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim+dp));
+	float64_t* Yi_matrix = SG_CALLOC(float64_t, m_k*(1+m_target_dim+dp));
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
@@ -176,6 +176,8 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	SG_FREE(Yi_matrix);
 	SG_FREE(s_values_vector);
 	SG_FREE(mean_vector);
+	SG_FREE(tau);
+	SG_FREE(w_sum_vector);
 	neighborhood_matrix.destroy_matrix();
 	SG_FREE(local_feature_matrix);
 	SG_FREE(q_matrix);
