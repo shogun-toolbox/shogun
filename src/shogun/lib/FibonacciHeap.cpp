@@ -268,6 +268,7 @@ void CFibonacciHeap::consolidate()
 			add_to_roots(A[i]);
 		}
 	}
+	SG_FREE(A);
 }
 
 void CFibonacciHeap::link_nodes(FibonacciHeapNode *y, FibonacciHeapNode *x)
