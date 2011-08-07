@@ -28,7 +28,7 @@ CClassicMDS::CClassicMDS() : CDimensionReductionPreprocessor()
 
 CClassicMDS::~CClassicMDS()
 {
-	m_eigenvalues.free_vector();
+	m_eigenvalues.destroy_vector();
 }
 
 bool CClassicMDS::init(CFeatures* data)
@@ -129,24 +129,25 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 		}
 		
 		// set eigenvalues vector
-		m_eigenvalues.free_vector();
+		m_eigenvalues.destroy_vector();
 		m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim,true);
 	#else /* not HAVE_ARPACK */
 		// using LAPACK
-		float64_t* eigenvalues_vector = SG_MALLOC(float64_t, m_target_dim);
+		float64_t* eigenvalues_vector = SG_MALLOC(float64_t, N);
 		// solve eigenproblem with LAPACK
 		wrap_dsyevr('V','U',N,Ds_matrix,N,N-m_target_dim+1,N,eigenvalues_vector,Ds_matrix,&eigenproblem_status);
 		// check for failure
 		ASSERT(eigenproblem_status==0);
 	
 		// set eigenvalues vector
-		//m_eigenvalues.free_vector();
-		m_eigenvalues = SGVector<float64_t>(m_target_dim,true);
-		SG_FREE(eigenvalues_vector);
+		m_eigenvalues.destroy_vector();
+		m_eigenvalues = SGVector<float64_t>(m_target_dim);
 
 		// fill eigenvalues vector in backwards order
 		for (i=0; i<m_target_dim; i++)
 			m_eigenvalues.vector[i] = eigenvalues_vector[m_target_dim-i-1];
+
+		SG_FREE(eigenvalues_vector);
 
 		// construct embedding
 		for (i=0; i<m_target_dim; i++)
