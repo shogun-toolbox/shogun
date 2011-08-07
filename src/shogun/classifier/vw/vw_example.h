@@ -78,14 +78,14 @@ public:
 	/// Tag
 	v_array<char> tag;
 	/// Array of namespaces
-	v_array<index_t> indices;
+	v_array<size_t> indices;
 	/// Array of features
 	v_array<VwFeature> atomics[256];
 
 	/// Number of features
-	index_t num_features;
+	size_t num_features;
 	/// Pass
-	index_t pass;
+	size_t pass;
 	/// Final prediction
 	float32_t final_prediction;
 	/// Loss
@@ -103,7 +103,7 @@ public:
 	float32_t total_sum_feat_sq;
 
 	/// Example counter
-	index_t example_counter;
+	size_t example_counter;
 	/// Whether features are sorted by weight index
 	bool sorted;
 };

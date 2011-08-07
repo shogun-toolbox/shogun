@@ -28,9 +28,7 @@
 namespace shogun
 {
 
-using std::string;
-
-typedef index_t (*hash_func_t)(substring, unsigned long);
+typedef size_t (*hash_func_t)(substring, unsigned long);
 
 const int32_t quadratic_constant = 27942141;
 const int32_t constant = 11650396;
