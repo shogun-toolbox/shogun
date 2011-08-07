@@ -180,21 +180,21 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 	if (force_lapack) arpack = false;
 
 	float64_t* eigenvalues_vector;
-
+	float64_t* eigenvectors;
 	if (arpack)
 	{
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
-		arpack_dsaupd(matrix.matrix,NULL,N,dimension+1,"LA",3,m_posdef,-1e-6,eigenvalues_vector,matrix.matrix,eigenproblem_status);
+		arpack_dsaupd(matrix.matrix,NULL,N,dimension+1,"LA",3,m_posdef,0.0,eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
 	}
 	else
 	{
 		// using LAPACK (slower)
 		eigenvalues_vector = SG_MALLOC(float64_t, N);
-		//wrap_dsyev('V','U',N,matrix.matrix,N,eigenvalues_vector,&eigenproblem_status);
-		wrap_dsyevr('V','U',N,matrix.matrix,N,1,dimension+2,eigenvalues_vector,matrix.matrix,&eigenproblem_status);
+		eigenvectors = SG_MALLOC(float64_t,(dimension+1)*N);
+		wrap_dsyevr('V','U',N,matrix.matrix,N,2,dimension+2,eigenvalues_vector,eigenvectors,&eigenproblem_status);
 	}
 
 	// check if failed
@@ -220,9 +220,10 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		for (i=0; i<dimension; i++)
 		{
 			for (j=0; j<N; j++)
-				null_space_features[j*dimension+i] = matrix.matrix[(i+1)*N+j];
+				null_space_features[j*dimension+i] = eigenvectors[i*N+j];
 		}
 	}
+	SG_FREE(eigenvectors);
 	SG_FREE(eigenvalues_vector);
 
 	return SGMatrix<float64_t>(null_space_features,dimension,N);
