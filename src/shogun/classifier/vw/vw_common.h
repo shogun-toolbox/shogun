@@ -31,7 +31,7 @@ namespace shogun
 typedef size_t (*hash_func_t)(substring, unsigned long);
 
 const int32_t quadratic_constant = 27942141;
-const int32_t constant = 11650396;
+const int32_t constant_hash = 11650396;
 
 }
 #endif // _VW_COMMON_H__
