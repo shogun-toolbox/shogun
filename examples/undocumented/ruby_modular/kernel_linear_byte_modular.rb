@@ -24,6 +24,6 @@ def kernel_linear_byte_modular(fm_train_byte=traindat,fm_test_byte=testdat)
 end
 
 if __FILE__ == $0
-	print 'LinearByte'
+	puts 'LinearByte'
 	kernel_linear_byte_modular(*parameter_list[0])
 end
