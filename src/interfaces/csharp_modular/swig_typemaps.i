@@ -11,69 +11,75 @@
 
 %define TYPEMAP_SGVECTOR(SGTYPE, CTYPE, CSHARPTYPE)
 
-%typemap(ctype) shogun::SGVector<SGTYPE>		%{CTYPE*%}         // ctype is the C# equivalent of the javatypemap jni
-%typemap(imtype, inattributes="[MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE>		%{CSHARPTYPE[]%} // imtype is the C# equivalent of the java typemap jtype
-%typemap(cstype) shogun::SGVector<SGTYPE> 	%{CSHARPTYPE[]%}       // cstype is the C# equivalent of the java typemap cstype
+%typemap(ctype, out="CTYPE*") shogun::SGVector<SGTYPE>		%{int size, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE>		%{CSHARPTYPE[]%}
+%typemap(cstype) shogun::SGVector<SGTYPE> 	%{CSHARPTYPE[]%}
 
-%typemap(in) shogun::SGVector<SGTYPE> (CTYPE *jarr) {
-	int32_t i, len;
+%typemap(in) shogun::SGVector<SGTYPE> {
+	int32_t i;
 	SGTYPE *array;
 
 	if (!$input) {
 		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
 		return $null;	
 	}
-	jarr = (CTYPE *)$input;
-	len = ((sizeof($input)) / (sizeof($input[0])));	
-	printf("the len is %d\n", len);
 
-	array = SG_MALLOC(SGTYPE, len);
+	array = SG_MALLOC(SGTYPE, size);
 
 	if (!array) {
 		SWIG_CSharpSetPendingException(SWIG_CSharpOutOfMemoryException, "array memory allocation failed");
 		return $null;
 	}
-	for (i = 0; i < len; i++) {
-		array[i] = jarr[i];	
+	for (i = 0; i < size; i++) {
+		array[i] = (SGTYPE)$input[i];	
 	}
 	
-	$1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, len);
+	$1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, size);
 }
 
 
 %typemap(out) shogun::SGVector<SGTYPE> {
 
 	int32_t i;
-	CTYPE res[$1.vlen];
+	CTYPE *res;
+	int len = $1.vlen;
 
-	for (i=0; i < $1.vlen; i++)
-		res[i] = (CTYPE) $1.vector[i];
+	res = SG_MALLOC(CTYPE, len + 1);
+	res[0] = len;
 
-    $1.free_vector();
+	for (i = 0; i < len; i++) {
+		res[i + 1] = (CTYPE) $1.vector[i];
+	}
 
-	if (!res)
-		return NULL;
-	
+	$1.free_vector();
+
 	$result = res;
 }
 
-%typemap(csin) shogun::SGVector<SGTYPE> "$csinput"
+%typemap(csin) shogun::SGVector<SGTYPE> "$csinput.Length, $csinput"
 %typemap(csout) shogun::SGVector<SGTYPE> {
-		CSHARPTYPE[] ret = $imcall;$excode		
+		IntPtr ptr = $imcall;$excode
+		CSHARPTYPE[] size = new CSHARPTYPE[1];
+		Marshal.Copy(ptr, size, 0, 1);
+
+		int len = (int)size[0];
+
+		CSHARPTYPE[] ret = new CSHARPTYPE[len];
+
+		Marshal.Copy(new IntPtr(ptr.ToInt32() + Marshal.SizeOf(typeof(CSHARPTYPE))), ret, 0, len);
 		return ret;
 }
 %enddef
 
 
-TYPEMAP_SGVECTOR(bool, bool, bool)
-TYPEMAP_SGVECTOR(char, signed char, sbyte)
+TYPEMAP_SGVECTOR(char, signed char, byte)
 TYPEMAP_SGVECTOR(uint8_t, unsigned char, byte)
 TYPEMAP_SGVECTOR(int16_t, short, short)
-TYPEMAP_SGVECTOR(uint16_t, unsigned short, ushort)
+TYPEMAP_SGVECTOR(uint16_t, unsigned short, short)
 TYPEMAP_SGVECTOR(int32_t, int, int)
-TYPEMAP_SGVECTOR(uint32_t, unsigned int, uint)
+TYPEMAP_SGVECTOR(uint32_t, unsigned int, int)
 TYPEMAP_SGVECTOR(int64_t, long, int)
-TYPEMAP_SGVECTOR(uint64_t, unsigned long, ulong)
+TYPEMAP_SGVECTOR(uint64_t, unsigned long, long)
 TYPEMAP_SGVECTOR(long long, long long, long)
 TYPEMAP_SGVECTOR(float32_t, float, float)
 TYPEMAP_SGVECTOR(float64_t, double, double)
