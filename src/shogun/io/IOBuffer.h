@@ -24,7 +24,6 @@
 
 #include <stdio.h>
 #include <fcntl.h>
-#include <iostream>
 
 #ifndef O_LARGEFILE //for OSX
 #define O_LARGEFILE 0
@@ -159,11 +158,28 @@ namespace shogun
 		return readto(pointer, '\n');
 	}
 
+	/**
+	 * Return a pointer to the next n bytes to write into
+	 *
+	 * @param pointer returned pointer
+	 * @param n number of bytes to write
+	 */
+	void buf_write(char* &pointer, int n);
+
+	/**
+	 * Return a pointer to position in buffer after reading n bytes
+	 *
+	 * @param pointer returned pointer
+	 * @param n bytes to read
+	 *
+	 * @return bytes read
+	 */
+	unsigned int buf_read(char* &pointer, int n);
+
 	virtual const char* get_name() const
 	{
 		return "IOBuffer";
 	}
-
 
 public:
 
@@ -177,7 +193,6 @@ public:
 
 	/// file descriptor
 	int working_file;
-
 };
 }
 #endif	/* IOBUFFER_H__ */
