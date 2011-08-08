@@ -15,6 +15,7 @@
 #ifndef _VW_ENV_H__
 #define _VW_ENV_H__
 
+#include <shogun/base/SGObject.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
@@ -23,30 +24,30 @@
 namespace shogun
 {
 
-/** @brief Class VwEnvironment is the environment used by VW.
+/** @brief Class CVwEnvironment is the environment used by VW.
  *
  * Contains global constants and settings which change the behaviour
  * of Vowpal Wabbit.
  *
  * It is used while parsing input, and also while learning.
  *
- * One VwEnvironment object should be bound to the CStreamingVwFile or
+ * One CVwEnvironment object should be bound to the CStreamingVwFile or
  * CStreamingVwCacheFile, and the pointer to it propagated upwards
  * to CStreamingVwFeatures and finally to CVowpalWabbit.
  */
-class VwEnvironment
+class CVwEnvironment: public CSGObject
 {
 public:
 	/**
 	 * Default constructor
 	 * Should initialize with reasonable default values
 	 */
-	VwEnvironment();
+	CVwEnvironment();
 
 	/**
 	 * Destructor
 	 */
-	~VwEnvironment() { }
+	virtual ~CVwEnvironment() { }
 
 	/**
 	 * Set number of bits used for the weight vector
@@ -96,11 +97,18 @@ public:
 	 */
 	inline index_t length() { return 1 << num_bits; }
 
+	/**
+	 * Return the name of the object
+	 *
+	 * @return VwEnvironment
+	 */
+	virtual const char* get_name() const { return "VwEnvironment"; }
+
 private:
 	/**
 	 * Initialize to default values
 	 */
-	void init();
+	virtual void init();
 
 public:
 	/// log_2 of the number of features

@@ -12,16 +12,17 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
-#include <shogun/classifier/vw/vw_environment.h>
+#include <shogun/classifier/vw/VwEnvironment.h>
 
 using namespace shogun;
 
-VwEnvironment::VwEnvironment()
+CVwEnvironment::CVwEnvironment()
+	: CSGObject()
 {
 	init();
 }
 
-void VwEnvironment::init()
+void CVwEnvironment::init()
 {
 	num_bits = 18;
 	thread_bits = 0;
