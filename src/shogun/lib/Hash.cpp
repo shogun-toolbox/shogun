@@ -439,3 +439,23 @@ uint32_t CHash::IncrementalMurmurHash2(uint8_t data, uint32_t h)
 
 	return h;
 } 
+
+uint32_t CHash::MurmurHashString(substring s, uint32_t h)
+{
+	uint32_t ret = 0;
+
+	// Trim leading whitespace
+	for(; *(s.start) <= 0x20 && s.start < s.end; s.start++);
+
+	// Trim trailing white space
+	for(; *(s.end-1) <= 0x20 && s.end > s.start; s.end--);
+
+	char *p = s.start;
+	while (p != s.end)
+		if (isdigit(*p))
+			ret = 10*ret + *(p++) - '0';
+		else
+			return MurmurHash2((uint8_t *)s.start, s.end - s.start, h);
+
+	return ret + h;
+}

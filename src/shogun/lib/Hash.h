@@ -95,6 +95,18 @@ class CHash : public CSGObject
 		 */
 		static uint32_t IncrementalMurmurHash2(uint8_t data, uint32_t h);
 
+		/** Apply Murmur Hash on the non-numeric part of
+		 * a substring.
+		 *
+		 * The integral part is returned as-is.
+		 *
+		 * @param s substring
+		 * @param h initial seed
+		 *
+		 * @return hash
+		 */
+		static uint32_t MurmurHashString(substring s, uint32_t h);
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Hash"; }
 
