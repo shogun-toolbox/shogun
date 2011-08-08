@@ -40,6 +40,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/Hash.h>
+#include <ctype.h>
 
 using namespace shogun;
 
