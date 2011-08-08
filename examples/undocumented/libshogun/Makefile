@@ -12,7 +12,7 @@ LINKFLAGS+=$(LIBS) -L$(LIB_PATH)
 CXXFLAGS+=-I$(INC_PATH) $(INCLUDES)
 CC=c++
 
-TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
+TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  classifier_mklmulticlass kernel_gaussian kernel_revlin \
 		  library_dyn_int library_gc_array library_indirect_object \
 		  library_hash parameter_set_from_parameters \
@@ -32,7 +32,7 @@ TARGETS = basic_minimal classifier_libsvm classifier_minimal_svm \
 		  features_copy_subset_string_features \
 		  features_copy_subset_sparse_features \
 		  mathematics_confidence_intervals \
-		  clustering_kmeans
+		  clustering_kmeans base_parameter_map
 
 
 all: $(TARGETS)
