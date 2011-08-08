@@ -40,6 +40,7 @@ public:
 	{
 		set_read_functions();
 		init();
+		parser.set_do_delete(false);
 	}
 
 	/** 
@@ -57,6 +58,7 @@ public:
 	{
 		init(file, is_labelled, size);
 		set_read_functions();
+		parser.set_do_delete(false);
 	}
 
 	CStreamingSimpleFeatures(CSimpleFeatures<T>* simple_features,
