@@ -52,6 +52,9 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 
 	// allocate array to hold residuals
 	double* resid = SG_MALLOC(double, n);
+	// fill residual vector with ones
+	for (i=0; i<n; i++)
+		resid[i] = 1.0;
 
 	// set number of Lanczos basis vectors to be used
 	// (with max(4*nev,n) sufficient for most tasks)
@@ -71,15 +74,15 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 	iparam[6] = mode;
 
 	// init array indicating locations of vectors for routine callback
-	int* ipntr = SG_MALLOC(int, 11);
+	int* ipntr = SG_CALLOC(int, 11);
 
 	// allocate workaround arrays
 	double* workd = SG_MALLOC(double, 3*n);
 	int lworkl = ncv*(ncv+8);
 	double* workl = SG_MALLOC(double, lworkl);
 
-	// init info holding status (should be zero at first call)
-	int info = 0;
+	// init info holding status (1 means that residual vector is provided initially)
+	int info = 1;
 
 	// which eigenpairs to find
 	char* which_ = strdup(which);
@@ -94,6 +97,7 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 		// subtract shift from main diagonal if necessary
 		if (shift!=0.0)
 		{
+			SG_SDEBUG("Subtracting shift\n");
 			// if right hand side diagonal matrix is provided
 			if (rhs_diag)
 				// subtract I*diag(rhs_diag)
@@ -109,14 +113,14 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 		if (pos)
 		{
 			// with Cholesky
-			SG_SDEBUG("ARPACK: Using Cholesky factorization");
+			SG_SDEBUG("ARPACK: Using Cholesky factorization\n");
 			clapack_dpotrf(CblasColMajor,CblasUpper,n,matrix,n);
 		}
 		else
 		{
 			// with LUP
-			SG_SDEBUG("ARPACK: Using LUP factorization");
-			ipiv = SG_MALLOC(int, n);
+			SG_SDEBUG("ARPACK: Using LUP factorization\n");
+			ipiv = SG_CALLOC(int, n);
 			clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 		}
 	}
@@ -141,11 +145,9 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 			{
 				if (!rhs_diag)
 				{
-					// solve system of eqs A*(workd+ipntr[0]-1) = (workd+ipntr[1]-1)
 					for (i=0; i<n; i++)
 						(workd+ipntr[1]-1)[i] = (workd+ipntr[0]-1)[i];
 
-					// solve w.r.t. to factorization used before 
 					if (pos)
 						clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,(workd+ipntr[1]-1),n);
 					else 
@@ -182,6 +184,7 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 			}
 		}
 	} while ((ido==1)||(ido==-1)||(ido==2));
+	
 	if (!pos && mode==3) SG_FREE(ipiv);
 	
 	// check if DSAUPD failed
@@ -211,7 +214,7 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 		// init ierr indicating dseupd possible errors
 		int ierr = 0;
 
-		// specify that eigenvectors to be computed too		
+		// specify that eigenvectors are going to be computed too		
 		int rvec = 1;
 
 		// call dseupd_ routine
