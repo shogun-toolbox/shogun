@@ -73,11 +73,13 @@ doc:  $(PARTDEPS)
 	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) doc-$(part) &&) true
 
 distclean: clean
+	$(MAKE) -C shogun distclean
 	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
 	@rm -f .config tags
 	@rm -f */Makefile interfaces/*/Makefile
 
 clean:  $(PARTDEPS)
+	$(MAKE) -C shogun clean
 	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
 	@rm -rf configure-*.dSYM
 	@rm -f configure.log .cpuinfo .cpuinfo.c ./configure-* cplex.log examples
