@@ -230,6 +230,13 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 		return false;
 	}
 
+	/* save parameter version first, construct TParameter to do this */
+	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
+	int32_t v=version->get_version_parameter();
+	TParameter p(&t, &v, "version_parameter",
+			"Version of parameters of this object");
+	p.save(file, prefix);
+
 	if (!m_parameters->save(file, prefix))
 		return false;
 

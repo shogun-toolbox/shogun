@@ -21,6 +21,7 @@ const int32_t Version::version_month = VERSION_MONTH;
 const int32_t Version::version_day = VERSION_DAY;
 const int32_t Version::version_hour = VERSION_HOUR;
 const int32_t Version::version_minute = VERSION_MINUTE;
+const int32_t Version::version_parameter=VERSION_PARAMETER;
 const char Version::version_extra[128] = VERSION_EXTRA;
 const char Version::version_release[128] = VERSION_RELEASE;
 }
