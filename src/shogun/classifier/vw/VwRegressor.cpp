@@ -18,6 +18,7 @@
 using namespace shogun;
 
 CVwRegressor::CVwRegressor()
+	: CSGObject()
 {
 	weight_vectors = NULL;
 	loss = new CSquaredLoss();
@@ -25,6 +26,7 @@ CVwRegressor::CVwRegressor()
 }
 
 CVwRegressor::CVwRegressor(CVwEnvironment* env)
+	: CSGObject()
 {
 	weight_vectors = NULL;
 	loss = new CSquaredLoss();
