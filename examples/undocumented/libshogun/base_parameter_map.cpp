@@ -18,53 +18,72 @@ void print_message(FILE* target, const char* str)
 	fprintf(target, "%s", str);
 }
 
+void print_value(CSGParamInfo* key, CParameterMap* map)
+{
+	CSGParamInfo* current=map->get(key);
+	SG_SPRINT("key: ");
+	key->print();
+	SG_SPRINT("value: ");
+
+	if (current)
+		current->print();
+	else
+		SG_SPRINT("no element\n");
+
+	SG_SPRINT("\n");
+
+	SG_UNREF(current);
+}
+
 int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
 	CParameterMap* map=new CParameterMap();
-	map->put(new CSGParamInfo("1"), new CSGParamInfo("eins"));
-	map->put(new CSGParamInfo("2"), new CSGParamInfo("zwei"));
-	map->put(new CSGParamInfo("3"), new CSGParamInfo("drei"));
-	map->put(new CSGParamInfo("4"), new CSGParamInfo("vier"));
 
-	CSGParamInfo* info;
-	CSGParamInfo* current;
+	EContainerType cfrom=CT_SCALAR;
+	EContainerType cto=CT_MATRIX;
 
-	info=new CSGParamInfo("1");
-	current=map->get(info);
-	SG_SPRINT("key: \"%s\" ", info->m_name);
-	if (current) current->print(); else SG_SPRINT("no element\n");
-	SG_UNREF(current);
-	SG_UNREF(info);
+	EStructType sfrom=ST_NONE;
+	EStructType sto=ST_STRING;
 
-	info=new CSGParamInfo("2");
-	current=map->get(info);
-	SG_SPRINT("key: \"%s\" ", info->m_name);
-	if (current) current->print(); else SG_SPRINT("no element\n");
-	SG_UNREF(current);
-	SG_UNREF(info);
+	EPrimitiveType pfrom=PT_BOOL;
+	EPrimitiveType pto=PT_SGOBJECT;
 
-	info=new CSGParamInfo("3");
-	current=map->get(info);
-	SG_SPRINT("key: \"%s\" ", info->m_name);
-	if (current) current->print(); else SG_SPRINT("no element\n");
-	SG_UNREF(current);
-	SG_UNREF(info);
+	map->put(new CSGParamInfo("1", cfrom, sfrom, pfrom),
+			new CSGParamInfo("eins", cto, sto, pto));
+	map->put(new CSGParamInfo("2", cfrom, sfrom, pfrom),
+			new CSGParamInfo("zwei", cto, sto, pto));
+	map->put(new CSGParamInfo("3", cfrom, sfrom, pfrom),
+			new CSGParamInfo("drei", cto, sto, pto));
+	map->put(new CSGParamInfo("4", cfrom, sfrom, pfrom),
+			new CSGParamInfo("vier", cto, sto, pto));
 
-	info=new CSGParamInfo("4");
-	current=map->get(info);
-	SG_SPRINT("key: \"%s\" ", info->m_name);
-	if (current) current->print(); else SG_SPRINT("no element\n");
-	SG_UNREF(current);
-	SG_UNREF(info);
+	CSGParamInfo* key;
 
-	info=new CSGParamInfo("5");
-	current=map->get(info);
-	SG_SPRINT("key: \"%s\" ", info->m_name);
-	if (current) current->print(); else SG_SPRINT("no element\n");
-	SG_UNREF(current);
-	SG_UNREF(info);
+	key=new CSGParamInfo("1", cfrom, sfrom, pfrom);
+	print_value(key, map);
+	SG_UNREF(key);
+
+	key=new CSGParamInfo("2", cfrom, sfrom, pfrom);
+	print_value(key, map);
+	SG_UNREF(key);
+
+	key=new CSGParamInfo("2", cto, sfrom, pfrom);
+	print_value(key, map);
+	SG_UNREF(key);
+
+	key=new CSGParamInfo("2", cfrom, sto, pfrom);
+	print_value(key, map);
+	SG_UNREF(key);
+
+	key=new CSGParamInfo("2", cfrom, sfrom, pto);
+	print_value(key, map);
+	SG_UNREF(key);
+
+	key=new CSGParamInfo("5", cfrom, sfrom, pfrom);
+	print_value(key, map);
+	SG_UNREF(key);
 
 	SG_UNREF(map);
 
