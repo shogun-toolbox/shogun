@@ -12,25 +12,34 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
-#include <shogun/classifier/vw/vw_regressor.h>
+#include <shogun/classifier/vw/VwRegressor.h>
 #include <shogun/loss/SquaredLoss.h>
 
 using namespace shogun;
 
-VwRegressor::VwRegressor(VwEnvironment* env)
+CVwRegressor::CVwRegressor()
+	: CSGObject()
+{
+	weight_vectors = NULL;
+	loss = new CSquaredLoss();
+	init(NULL);
+}
+
+CVwRegressor::CVwRegressor(CVwEnvironment* env)
+	: CSGObject()
 {
 	weight_vectors = NULL;
 	loss = new CSquaredLoss();
 	init(env);
 }
 
-VwRegressor::~VwRegressor()
+CVwRegressor::~CVwRegressor()
 {
 	SG_FREE(weight_vectors);
 	SG_UNREF(loss);
 }
 
-void VwRegressor::init(VwEnvironment* env)
+void CVwRegressor::init(CVwEnvironment* env)
 {
 	// For each feature, there should be 'stride' number of
 	// elements in the weight vector

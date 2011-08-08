@@ -37,6 +37,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 {									\
 	char* buffer = NULL;						\
 	ssize_t bytes_read;						\
+	int32_t old_len = num_feat;					\
 									\
 	bytes_read = buf->read_line(buffer);				\
 									\
@@ -87,8 +88,11 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 	SG_DEBUG("num_feat %d\n", num_feat);				\
 									\
 	/* now copy data into vector */					\
-	vector=SG_MALLOC(sg_type, num_feat);					\
-	SG_SPRINT("alloced %d sg_type in address:%p.\n", num_feat, vector); \
+	if (old_len < num_feat)						\
+	{								\
+		vector=SG_REALLOC(sg_type, vector, num_feat);		\
+		SG_SPRINT("alloced %d sg_type in address:%p.\n", num_feat, vector); \
+	}								\
 	for (int32_t i=0; i<num_feat; i++)				\
 	{								\
 		char* item=items->get_element(i);			\
@@ -120,6 +124,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 	{								\
 		char* buffer = NULL;					\
 		ssize_t bytes_read;					\
+		int32_t old_len = num_feat;				\
 									\
 		bytes_read = buf->read_line(buffer);			\
 									\
@@ -171,7 +176,9 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 		/* The first element is the label */			\
 		label=atof(items->get_element(0));			\
 		/* now copy rest of the data into vector */		\
-		vector=SG_MALLOC(sg_type, num_feat-1);				\
+		if (old_len < num_feat - 1)				\
+			vector=SG_REALLOC(sg_type, vector, num_feat-1);	\
+									\
 		for (int32_t i=1; i<num_feat; i++)			\
 		{							\
 			char* item=items->get_element(i);		\

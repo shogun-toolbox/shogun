@@ -21,7 +21,7 @@
 
 #include <shogun/lib/v_array.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/classifier/vw/vw_environment.h>
+#include <shogun/classifier/vw/VwEnvironment.h>
 #include <shogun/classifier/vw/vw_label.h>
 #include <shogun/classifier/vw/vw_example.h>
 
