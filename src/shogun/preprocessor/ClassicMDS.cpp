@@ -134,8 +134,9 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	#else /* not HAVE_ARPACK */
 		// using LAPACK
 		float64_t* eigenvalues_vector = SG_MALLOC(float64_t, N);
+		float64_t* eigenvectors = SG_MALLOC(float64_t, m_target_dim*N);
 		// solve eigenproblem with LAPACK
-		wrap_dsyevr('V','U',N,Ds_matrix,N,N-m_target_dim+1,N,eigenvalues_vector,Ds_matrix,&eigenproblem_status);
+		wrap_dsyevr('V','U',N,Ds_matrix,N,N-m_target_dim+1,N,eigenvalues_vector,eigenvectors,&eigenproblem_status);
 		// check for failure
 		ASSERT(eigenproblem_status==0);
 	
@@ -155,9 +156,10 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 			for (j=0; j<N; j++)
 			{
 				replace_feature_matrix[j*m_target_dim+i] = 
-				      Ds_matrix[(m_target_dim-i-1)*N+j] * CMath::sqrt(m_eigenvalues.vector[i]);
+				      eigenvectors[(m_target_dim-i-1)*N+j] * CMath::sqrt(m_eigenvalues.vector[i]);
 			}
 		}
+		SG_FREE(eigenvectors);
 	#endif /* HAVE_ARPACK else */
 	
 	// warn user if there are negative or zero eigenvalues
@@ -165,7 +167,8 @@ SGMatrix<float64_t> CClassicMDS::embed_by_distance(CDistance* distance)
 	{
 		if (m_eigenvalues.vector[i]<=0.0)
 		{
-			SG_WARNING("Embedding is not consistent: features %d-%d are wrong", i, m_eigenvalues.vlen);
+			SG_WARNING("Embedding is not consistent (got neg eigenvalues): features %d-%d are wrong",
+			           i, m_eigenvalues.vlen);
 			break;
 		}
 	}	
