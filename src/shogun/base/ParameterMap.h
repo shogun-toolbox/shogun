@@ -32,8 +32,12 @@ public:
 	/** constructor
 	 *
 	 * @param name name of parameter, is copied
+	 * @param ctype container type of parameter
+	 * @param stype struct type of parameter
+	 * @param ptype primitive type of parameter
 	 */
-	CSGParamInfo(const char* name);
+	CSGParamInfo(const char* name, EContainerType ctype, EStructType stype,
+			EPrimitiveType ptype);
 
 	/** destructor */
 	virtual ~CSGParamInfo();
@@ -52,7 +56,9 @@ private:
 
 public:
 	char* m_name;
-
+	EContainerType m_ctype;
+	EStructType m_stype;
+	EPrimitiveType m_ptype;
 };
 
 /** @brief Class to hold instances of a parameter map. Each element contains a
