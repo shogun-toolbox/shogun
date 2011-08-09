@@ -328,9 +328,9 @@ void CFibonacciHeap::cut(FibonacciHeapNode *child, FibonacciHeapNode *parent)
 
 	child->left->right = child->right;
 	child->right->left = child->left;
+	child->marked = false;
 
 	add_to_roots(child);
-	child->marked = false;
 }
 
 void CFibonacciHeap::cascading_cut(FibonacciHeapNode *tree)
