@@ -13,6 +13,7 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/lib/FibonacciHeap.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
@@ -56,30 +57,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
+	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance);
 	delete distance;
-
-	// init matrices to be used
-	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
-	int32_t* local_neighbors_idxs = SG_MALLOC(int32_t, N);
-
-	// construct neighborhood matrix (contains idxs of neighbors for
-	// i-th object in i-th column)
-	for (i=0; i<N; i++)
-	{
-		for (j=0; j<N; j++)
-		{
-			local_neighbors_idxs[j] = j;
-		}
-
-		CMath::qsort_index(distance_matrix.matrix+(i*N),local_neighbors_idxs,N);
-
-		for (j=0; j<m_k; j++)
-			neighborhood_matrix[j*N+i] = local_neighbors_idxs[j+1];
-	}
-
-	SG_FREE(distance_matrix.matrix);
-	SG_FREE(local_neighbors_idxs);
 
 	// init W (weight) matrix
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
@@ -99,7 +78,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<dim; k++)
-				z_matrix[j*dim+k] = feature_matrix.matrix[neighborhood_matrix[j*N+i]*dim+k];
+				z_matrix[j*dim+k] = feature_matrix.matrix[neighborhood_matrix.matrix[j*N+i]*dim+k];
 		}
 
 		// center features by subtracting i-th feature column
@@ -145,13 +124,13 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 		// put weights into W matrix
 		for (j=0; j<m_k; j++)
-			W_matrix[N*neighborhood_matrix[j*N+i]+i]=id_vector[j];
+			W_matrix[N*neighborhood_matrix.matrix[j*N+i]+i]=id_vector[j];
 
 	}
 
 	// clean
 	SG_FREE(id_vector);
-	SG_FREE(neighborhood_matrix);
+	neighborhood_matrix.destroy_matrix();
 	SG_FREE(z_matrix);
 	SG_FREE(covariance_matrix);
 
@@ -201,21 +180,21 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 	if (force_lapack) arpack = false;
 
 	float64_t* eigenvalues_vector;
-
+	float64_t* eigenvectors;
 	if (arpack)
 	{
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
-		arpack_dsaupd(matrix.matrix,N,dimension+1,"LA",3,m_posdef,-1e-6,eigenvalues_vector,matrix.matrix,eigenproblem_status);
+		arpack_dsaupd(matrix.matrix,NULL,N,dimension+1,"LA",3,m_posdef,-1e-6,eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
 	}
 	else
 	{
 		// using LAPACK (slower)
 		eigenvalues_vector = SG_MALLOC(float64_t, N);
-		//wrap_dsyev('V','U',N,matrix.matrix,N,eigenvalues_vector,&eigenproblem_status);
-		wrap_dsyevr('V','U',N,matrix.matrix,N,1,dimension+2,eigenvalues_vector,matrix.matrix,&eigenproblem_status);
+		eigenvectors = SG_MALLOC(float64_t,(dimension+1)*N);
+		wrap_dsyevr('V','U',N,matrix.matrix,N,2,dimension+2,eigenvalues_vector,eigenvectors,&eigenproblem_status);
 	}
 
 	// check if failed
@@ -241,12 +220,47 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		for (i=0; i<dimension; i++)
 		{
 			for (j=0; j<N; j++)
-				null_space_features[j*dimension+i] = matrix.matrix[(i+1)*N+j];
+				null_space_features[j*dimension+i] = eigenvectors[i*N+j];
 		}
+		SG_FREE(eigenvectors);
 	}
 	SG_FREE(eigenvalues_vector);
 
 	return SGMatrix<float64_t>(null_space_features,dimension,N);
+}
+
+SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* distance)
+{
+	int32_t i,j;
+	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
+	int32_t N = distance->get_num_vec_lhs();
+	// init matrix and heap to be used
+	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
+	float64_t tmp;
+	CFibonacciHeap* heap = new CFibonacciHeap(N);
+
+	// construct neighborhood matrix (contains idxs of neighbors for
+	// i-th object in i-th column)
+	for (i=0; i<N; i++)
+	{
+		for (j=0; j<N; j++)
+		{
+			heap->insert(j,distance_matrix.matrix[i*N+j]);
+		}
+
+		heap->extract_min(tmp);
+
+		for (j=0; j<m_k; j++)
+			neighborhood_matrix[j*N+i] = heap->extract_min(tmp);
+
+		heap->clear();
+	}
+
+	// cleanup
+	delete heap;
+	distance_matrix.destroy_matrix();
+
+	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
 }
 
 #endif /* HAVE_LAPACK */

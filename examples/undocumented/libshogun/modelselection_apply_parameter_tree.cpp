@@ -76,7 +76,7 @@ void apply_parameter_tree(CDynamicObjectArray<CParameterCombination>* combinatio
 		CParameterCombination* current_combination=combinations->get_element(i);
 		current_combination->print_tree();
 		Parameter* current_parameters=svm->m_parameters;
-		current_combination->apply_to_parameter(current_parameters);
+		current_combination->apply_to_modsel_parameter(current_parameters);
 		SG_UNREF(current_combination);
 
 		/* get kernel to set features, get_kernel SG_REF's the kernel */

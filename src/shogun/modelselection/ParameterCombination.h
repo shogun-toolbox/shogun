@@ -63,13 +63,15 @@ public:
 	virtual ~CParameterCombination();
 
 	/** applies this parameter tree to a parameter instance
+	 * Recursively iterates over all children of the tree and sets model
+	 * selection parameters of children to sub-parameters
 	 *
 	 * @param parameter Parameter instance to apply parameter tree to
 	 */
-	void apply_to_parameter(Parameter* parameter) const;
+	void apply_to_modsel_parameter(Parameter* parameter) const;
 
 	/**applies this parameter tree to a learning machine
-	 * (wrapper for apply_to_parameter() method)
+	 * (wrapper for apply_to_modesel_parameter() method)
 	 *
 	 * @param machine learning machine to apply parameter tree to
 	 */

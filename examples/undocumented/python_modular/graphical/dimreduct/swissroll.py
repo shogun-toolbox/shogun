@@ -15,19 +15,17 @@ preprocs.append((mds, "Classic MDS"))
 
 from shogun.Preprocessor import LandmarkMDS
 lmds = LandmarkMDS()
-lmds.set_landmark_number(50)
+lmds.set_landmark_number(20)
 preprocs.append((lmds,"LMDS with %d landmarks" % lmds.get_landmark_number()))
 
-from shogun.Preprocessor import ClassicIsomap, KISOMAP
+from shogun.Preprocessor import ClassicIsomap
 cisomap = ClassicIsomap()
-cisomap.set_type(KISOMAP)
 cisomap.set_k(9)
 preprocs.append((cisomap,"K-Isomap with k=%d" % cisomap.get_k()))
 
 from shogun.Preprocessor import LandmarkIsomap
 lisomap = LandmarkIsomap()
-lisomap.set_landmark_number(50)
-lisomap.set_type(KISOMAP)
+lisomap.set_landmark_number(500)
 lisomap.set_k(9)
 preprocs.append((lisomap,"K-LIsomap with k=%d, %d landmarks" % (lisomap.get_k(),lisomap.get_landmark_number())))
 
@@ -40,6 +38,12 @@ from shogun.Preprocessor import LocalTangentSpaceAlignment
 ltsa = LocalTangentSpaceAlignment()
 ltsa.set_k(6)
 preprocs.append((ltsa,"LTSA with k=%d" % (ltsa.get_k())))
+
+from shogun.Preprocessor import LaplacianEigenmaps
+le = LaplacianEigenmaps()
+le.set_k(15)
+le.set_tau(25.0)
+preprocs.append((le,"Laplacian Eigenmaps with k=%d, tau=%d" % (le.get_k(),le.get_tau())))
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D

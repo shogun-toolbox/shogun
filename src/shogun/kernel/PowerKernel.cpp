@@ -51,8 +51,9 @@ bool CPowerKernel::init(CFeatures* l, CFeatures* r)
 
 void CPowerKernel::init()
 {
-	m_parameters->add(&m_degree, "degree", "Degree kernel parameter.");
-	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
+	SG_ADD(&m_degree, "degree", "Degree kernel parameter.", MS_AVAILABLE);
+	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
+			MS_AVAILABLE);
 }
 
 float64_t CPowerKernel::compute(int32_t idx_a, int32_t idx_b)

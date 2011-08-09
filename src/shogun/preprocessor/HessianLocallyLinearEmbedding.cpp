@@ -58,33 +58,12 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
-	delete distance;
-
-	// init matrices to be used
-	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
-	int32_t* local_neighbors_idxs = SG_MALLOC(int32_t, N);
-
-	// construct neighborhood matrix (contains idxs of neighbors for
-	// i-th object in i-th column)
-	for (i=0; i<N; i++)
-	{
-		for (j=0; j<N; j++)
-		{
-			local_neighbors_idxs[j] = j;
-		}
-
-		CMath::qsort_index(distance_matrix.matrix+(i*N),local_neighbors_idxs,N);
-
-		for (j=0; j<m_k; j++)
-			neighborhood_matrix[j*N+i] = local_neighbors_idxs[j+1];
-	}
-
-	SG_FREE(distance_matrix.matrix);
-	SG_FREE(local_neighbors_idxs);
+	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance);
 
 	// init W (weight) matrix
-	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
+	float64_t* W_matrix = SG_MALLOC(float64_t, N*N);
+	for (i=0; i<N*N; i++)
+		W_matrix[i] = 0.0;
 
 	// init matrices and norm factor to be used
 	float64_t* local_feature_matrix = SG_MALLOC(float64_t, m_k*dim);
@@ -95,7 +74,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	float64_t* w_sum_vector = SG_MALLOC(float64_t, dp);
 
 	// Yi
-	float64_t* Yi_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim+dp));
+	float64_t* Yi_matrix = SG_CALLOC(float64_t, m_k*(1+m_target_dim+dp));
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
@@ -114,7 +93,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 		{
 			for (k=0; k<dim; k++)
 			{
-				local_feature_matrix[j*dim+k] = feature_matrix.matrix[neighborhood_matrix[j*N+i]*dim+k];
+				local_feature_matrix[j*dim+k] = feature_matrix.matrix[neighborhood_matrix.matrix[j*N+i]*dim+k];
 				mean_vector[k] += local_feature_matrix[j*dim+k];
 			}
 		}
@@ -189,7 +168,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] += q_matrix[j*m_k+k];
+				W_matrix[N*neighborhood_matrix.matrix[k*N+i]+neighborhood_matrix.matrix[j*N+i]] += q_matrix[j*m_k+k];
 		}
 	}
 
@@ -197,7 +176,9 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	SG_FREE(Yi_matrix);
 	SG_FREE(s_values_vector);
 	SG_FREE(mean_vector);
-	SG_FREE(neighborhood_matrix);
+	SG_FREE(tau);
+	SG_FREE(w_sum_vector);
+	neighborhood_matrix.destroy_matrix();
 	SG_FREE(local_feature_matrix);
 	SG_FREE(q_matrix);
 

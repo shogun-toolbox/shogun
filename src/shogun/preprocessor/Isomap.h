@@ -27,14 +27,8 @@ class CFeatures;
 
 class CDistance;
 
-enum EIsomapType
-{
-	KISOMAP,
-	EISOMAP
-};
-
-/** @brief the base class Isomap used to perform Isomap algorithms:
- * K-Isomap or E-Isomap. The description is given in
+/** @brief the base class Isomap used to preprocess data using Classic
+ * or Landmark K-Isomap. The description is given in
  * 
  * Global versus local methods in nonlinear dimensionality reduction
  * Vin De Silva, Joshua B Tenenbaum (2003)
@@ -45,9 +39,7 @@ class CIsomap: public CDimensionReductionPreprocessor
 public:
 
 	/* constructor */
-	CIsomap() :
-		CDimensionReductionPreprocessor(), m_epsilon(1.0),
-		m_k(3), m_type(EISOMAP) {};
+	CIsomap() : CDimensionReductionPreprocessor(), m_k(3) {};
 
 	/* destructor */
 	virtual ~CIsomap() {};
@@ -114,40 +106,6 @@ public:
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_ISOMAP; };
 
-	/** setter for type of isomap
-	 * @param type
-	 */
-	void inline set_type(EIsomapType type)
-	{
-		m_type = type;
-	}
-
-	/** getter for type of isomap
-	 * @return current type
-	 */
-	EIsomapType inline get_type()
-	{
-		return m_type;
-	}
-
-
-	/** setter for epsilon parameter
-	 * @param epsilon
-	 */
-	void inline set_epsilon(float64_t epsilon)
-	{
-		ASSERT(epsilon>0.0);
-		m_epsilon = epsilon;
-	}
-
-	/** getter for epsilon parameter
-	 * @return epsilon value
-	 */
-	int32_t inline get_epsilon()
-	{
-		return m_epsilon;
-	}
-
 	/** setter for k parameter
 	 * @param k
 	 */
@@ -167,14 +125,15 @@ public:
 
 protected:
 
-	/** epsilon, cut-off parameter for E-Isomap */
-	float64_t m_epsilon;
-
 	/** k, number of neighbors for K-Isomap */
 	int32_t m_k;
 
-	/** type of Isomap */
-	EIsomapType m_type;
+protected:
+
+	/** run dijkstra thread
+	 * p thread params
+	 */
+	static void* run_dijkstra_thread(void* p);
 
 	/** approx geodesic distance 
 	 * @param distance

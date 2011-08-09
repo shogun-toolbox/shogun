@@ -127,6 +127,9 @@ bool CGMM::train(CFeatures* data)
 
 float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 {
+	if (!features)
+		SG_ERROR("No features to train on.\n");
+
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
 
@@ -204,10 +207,12 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 
 float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
 {
+	if (!features)
+		SG_ERROR("No features to train on.\n");
+
 	if (m_components.vlen<3)
-	{
 		SG_ERROR("Can't run SMEM with less than 3 component mixture model.\n");
-	}
+
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
 
@@ -302,9 +307,9 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 						set_comp(candidate->get_comp());
 						set_coef(candidate->get_coef());
 
-						for (int i=0; i<candidate->get_comp().vlen; i++)
+						for (int k=0; k<candidate->get_comp().vlen; k++)
 						{
-							SG_UNREF(candidate->get_comp().vector[i]);
+							SG_UNREF(candidate->get_comp().vector[k]);
 						}
 
 						better_found=true;
@@ -709,9 +714,7 @@ SGVector<float64_t> CGMM::sample()
 
 SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
 {
-	SGVector<float64_t> answer;
-	answer.vector=SG_MALLOC(float64_t, m_components.vlen+1);
-	answer.vlen=m_components.vlen+1;
+	SGVector<float64_t> answer(m_components.vlen+1);
 	answer.vector[m_components.vlen]=0;
 
 	for (int i=0; i<m_components.vlen; i++)
@@ -719,6 +722,7 @@ SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
 		answer.vector[i]=m_components.vector[i]->compute_log_PDF(point)+CMath::log(m_coefficients.vector[i]);
 		answer.vector[m_components.vlen]+=CMath::exp(answer.vector[i]);
 	}
+	answer.vector[m_components.vlen]=CMath::log(answer.vector[m_components.vlen]);
 
 	return answer;
 }

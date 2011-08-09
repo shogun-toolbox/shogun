@@ -180,7 +180,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space()=0;
+	virtual int32_t get_dim_feature_space() const=0;
 
 	/** iterate over the non-zero features
 	 *

@@ -159,7 +159,6 @@ int main(int argc, char **argv)
 
 	test_parameter_set_multiplication();
 	test_leaf_sets_multiplication();
-	SG_SPRINT("END\n");
 
 	exit_shogun();
 

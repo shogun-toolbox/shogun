@@ -106,6 +106,11 @@ protected:
 	 */
 	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension, bool force_lapack);
 
+	/** construct neighborhood matrix by distance
+	 * @param distance distance to be used
+	 */
+	SGMatrix<int32_t> get_neighborhood_matrix(CDistance* distance);
+
 protected:
 
 	/** number of neighbors */

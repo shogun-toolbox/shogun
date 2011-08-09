@@ -2,6 +2,21 @@
 %include "stdint.i"
 %include "exception.i"
 
+#ifdef SWIGJAVA
+%typemap(javainterfaces) SWIGTYPE "Serializable"
+
+%typemap(javacode) SWIGTYPE
+%{
+    private void writeObject(java.io.ObjectOutputStream out)
+    {
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+    {
+    }
+    %}
+#endif
+
 %{
  /* required for python */
  #define SWIG_FILE_WITH_INIT

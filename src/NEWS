@@ -10,8 +10,8 @@
 	     are now available. In particular: Locally Linear Embedding (LLE), Hessian 
 	     Locally Linear Embedding (HLLE), Local Tangent Space Alignment (LTSA),
 	     Kernel PCA (kPCA), Classic and Landmark Multidimensional Scaling (MDS, LMDS), 
-	     Classic and Landmark Isomap (Isomap, both e-Isomap and k-Isomap),
-	     Laplacian Eigenmaps (GSoC project of Sergey Lisitsyn)
+	     Classic and Landmark Isomap, Laplacian Eigenmaps 
+	     (GSoC project of Sergey Lisitsyn)
 	   - Various new kernels: TStudentKernel, CircularKernel, WaveKernel,
 	     SplineKernel, LogKernel, RationalQuadraticKernel, WaveletKernel,
 	     BesselKernel, PowerKernel, ExponentialKernel, CauchyKernel,ANOVAKernel,
@@ -26,7 +26,8 @@
 	   - Gaussian Mixture Models (GSoC project of Alesis Novik)
 	   - FibonacciHeap for efficient shortest-path 
 	     problem solving (thanks Evgeniy Andreev)
-	   - ARPACK wrapper (dseupd) for symmetric eigenproblems, 
+	   - ARPACK wrapper (dseupd) for symmetric eigenproblems (both
+	     generalized and non-generalized), 
 	     some new LAPACK wrappers (Sergey Lisitsyn)
 	   - New Statistics module for various statistics measures (Heiko Strathmann)
 	   - Subset support to features (Heiko Strathmann)

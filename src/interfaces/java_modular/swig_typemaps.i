@@ -15,6 +15,7 @@
 import org.jblas.*;
 %}
 %typemap(javaimports) SWIGTYPE%{
+import java.io.Serializable;
 import org.jblas.*;
 %}
 #else

@@ -96,6 +96,9 @@ class CDistance : public CSGObject
 					idx_b=2*num_vectors-1-idx_b;
 			}
 
+			ASSERT(idx_a<lhs->get_num_vectors());
+			ASSERT(idx_b<rhs->get_num_vectors());
+
 			if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
 				do_precompute_matrix() ;
 
@@ -286,6 +289,10 @@ class CDistance : public CSGObject
 		}
 
 	protected:
+
+		/// run distance thread
+		static void* run_distance_thread(void* p);		
+
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object

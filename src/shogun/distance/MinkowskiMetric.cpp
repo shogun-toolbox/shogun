@@ -89,5 +89,5 @@ float64_t CMinkowskiMetric::compute(int32_t idx_a, int32_t idx_b)
 void CMinkowskiMetric::init()
 {
 	k = 2.0;
-	m_parameters->add(&k, "k", "L_k norm.");
+	SG_ADD(&k, "k", "L_k norm.", MS_AVAILABLE);
 }

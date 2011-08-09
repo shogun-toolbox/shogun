@@ -111,27 +111,6 @@ class CHierarchical : public CDistanceMachine
 			return SGMatrix<int32_t>(pairs,2,merges);
 		}
 
-		/** classify objects using the currently set features
-		 *
-		 * @return classified labels
-		 */
-		virtual CLabels* apply()
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
-
-		/** classify objects
-		 *
-		 * @param data (test)data to be classified
-		 * @return classified labels
-		 */
-		virtual CLabels* apply(CFeatures* data)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
-
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Hierarchical"; }
 
@@ -145,6 +124,20 @@ class CHierarchical : public CDistanceMachine
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
+
+		/** TODO: Ensures cluster centers are in lhs of underlying distance
+		 * Currently: does nothing.
+		 * */
+		virtual void store_model_features();
+
+		/** NOT IMPLEMENTED */
+		virtual CLabels* apply();
+
+		/** NOT IMPLEMENTED */
+		virtual CLabels* apply(CFeatures* data);
+
+		/** NOT IMPLEMENTED */
+		virtual float64_t apply(int32_t num);
 
 	protected:
 		/// the number of merges in hierarchical clustering

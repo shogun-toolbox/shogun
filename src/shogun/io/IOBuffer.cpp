@@ -156,3 +156,55 @@ ssize_t CIOBuffer::readto(char* &pointer, char terminal)
 			return 0;
 	}
 }
+
+void CIOBuffer::buf_write(char* &pointer, int n)
+{
+	if (space.end + n <= space.end_array)
+	{
+		pointer = space.end;
+		space.end += n;
+	}
+	else // Time to dump the file
+	{
+		if (space.end != space.begin)
+			flush();
+		else // Array is short, so increase size.
+		{
+			space.reserve(2 * (space.end_array - space.begin));
+			endloaded = space.begin;
+		}
+		buf_write(pointer,n);
+	}
+}
+
+unsigned int CIOBuffer::buf_read(char* &pointer, int n)
+{
+	// Return a pointer to the next n bytes.
+	// n must be smaller than the maximum size.
+	if (space.end + n <= endloaded)
+	{
+		pointer = space.end;
+		space.end += n;
+		return n;
+	}
+	else // out of bytes, so refill.
+	{
+		if (space.end != space.begin) //There exists room to shift.
+		{
+			// Out of buffer so swap to beginning.
+			int left = endloaded - space.end;
+			memmove(space.begin, space.end, left);
+			space.end = space.begin;
+			endloaded = space.begin+left;
+		}
+		if (fill() > 0)
+			return buf_read(pointer,n);// more bytes are read.
+		else
+		{
+			// No more bytes to read, return all that we have left.
+			pointer = space.end;
+			space.end = endloaded;
+			return endloaded - pointer;
+		}
+	}
+}
