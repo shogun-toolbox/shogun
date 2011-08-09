@@ -43,10 +43,16 @@ public:
 	virtual ~CSGParamInfo();
 
 	/** prints all parameter values */
-	void print();
+	void print_param_info();
 
-	/** operator for comparison, true iff m_name is equal */
+	/** operator for comparison, true iff all attributes are equal */
 	bool operator==(const CSGParamInfo& other) const;
+
+	/** operator for comparison (by string m_name) */
+	bool operator<(const CSGParamInfo& other) const;
+
+	/** operator for comparison (by string m_name) */
+	bool operator>(const CSGParamInfo& other) const;
 
 	/** @return name of the SG_SERIALIZABLE */
 	inline virtual const char* get_name() const { return "SGParamInfo";	}
@@ -80,6 +86,15 @@ public:
 	/** destructor */
 	virtual ~CParameterMapElement();
 
+	/** operator for comparison, true iff m_key is equal */
+	bool operator==(const CParameterMapElement& other) const;
+
+	/** operator for comparison (by m_key) */
+	bool operator<(const CParameterMapElement& other) const;
+
+	/** operator for comparison (by m_key) */
+	bool operator>(const CParameterMapElement& other) const;
+
 	/** @return name of the SG_SERIALIZABLE */
 	inline virtual const char* get_name() const
 	{
@@ -97,8 +112,13 @@ public:
 
 /** @brief Implements a map of CParameterMapElement instances
  *
- * Implementation is simple: O(n) for get, O(1) for put.
- * Beware of putting large amounts of elements in this map! Slow.
+ * Implementation is done via an array. Via the call finalize_map(), it is
+ * sorted. Then, get() may be called. If it is called before, an error is
+ * thrown.
+ *
+ * In finalize_map() the array is sorted.
+ * So inserting n elements is n*O(1) + O(n*log n) = O(n*log n).
+ * Getting an element is then possible in O(log n) by binary search
  */
 class CParameterMap: public CSGObject
 {
@@ -117,18 +137,34 @@ public:
 	void put(CSGParamInfo* key, CSGParamInfo* value);
 
 	/** Gets a specific element of the map. Note that it is SG_REF'ed
+	 * finalize_map() has to be called first if more than one elements are in
+	 * map
 	 *
 	 * @param key key of the element to get
 	 * @return value of the key element
 	 */
 	CSGParamInfo* get(CSGParamInfo* key) const;
 
+	/** Finalizes the map. Has to be called before get may be called if more
+	 * than one element in map */
+	void finalize_map();
+
+	/** prints all elements of this map */
+	void print_map();
+
 	/** @return name of the SG_SERIALIZABLE */
 	inline virtual const char* get_name() const { return "ParameterMap"; }
+
+private:
+	void init();
 
 protected:
 	/** list of CLinearMap elements, this is always kept sorted */
 	CDynamicObjectArray<CParameterMapElement>* m_map_elements;
+
+	/** variable that indicates if underlying array is sorted (and thus get
+	 * may safely be called) */
+	bool m_finalized;
 };
 
 }

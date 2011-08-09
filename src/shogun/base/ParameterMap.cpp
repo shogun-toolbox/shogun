@@ -13,13 +13,13 @@
 
 using namespace shogun;
 
-CSGParamInfo::CSGParamInfo()
+CSGParamInfo::CSGParamInfo() : CSGObject()
 {
 	init();
 }
 
 CSGParamInfo::CSGParamInfo(const char* name, EContainerType ctype,
-		EStructType stype, EPrimitiveType ptype)
+		EStructType stype, EPrimitiveType ptype) : CSGObject()
 {
 	init();
 
@@ -37,7 +37,7 @@ CSGParamInfo::~CSGParamInfo()
 	SG_FREE(m_name);
 }
 
-void CSGParamInfo::print()
+void CSGParamInfo::print_param_info()
 {
 	SG_PRINT("%s with: ", get_name());
 
@@ -76,13 +76,23 @@ bool CSGParamInfo::operator==(const CSGParamInfo& other) const
 	return result;
 }
 
-CParameterMapElement::CParameterMapElement()
+bool CSGParamInfo::operator<(const CSGParamInfo& other) const
+{
+	return strcmp(m_name, other.m_name)<0;
+}
+
+bool CSGParamInfo::operator>(const CSGParamInfo& other) const
+{
+	return strcmp(m_name, other.m_name)>0;
+}
+
+CParameterMapElement::CParameterMapElement() : CSGObject()
 {
 	init();
 }
 
 CParameterMapElement::CParameterMapElement(CSGParamInfo* key,
-		CSGParamInfo* value)
+		CSGParamInfo* value) : CSGObject()
 {
 	init();
 
@@ -99,6 +109,21 @@ CParameterMapElement::~CParameterMapElement()
 	SG_UNREF(m_value);
 }
 
+bool CParameterMapElement::operator==(const CParameterMapElement& other) const
+{
+	return *m_key==*other.m_key;
+}
+
+bool CParameterMapElement::operator<(const CParameterMapElement& other) const
+{
+	return *m_key<*other.m_key;
+}
+
+bool CParameterMapElement::operator>(const CParameterMapElement& other) const
+{
+	return *m_key>*other.m_key;
+}
+
 void CParameterMapElement::init()
 {
 	m_key=NULL;
@@ -108,10 +133,21 @@ void CParameterMapElement::init()
 	m_parameters->add((CSGObject**)&m_value, "value", "Value of map element");
 }
 
-CParameterMap::CParameterMap()
+CParameterMap::CParameterMap() : CSGObject()
+{
+	init();
+}
+
+void CParameterMap::init()
 {
 	m_map_elements=new CDynamicObjectArray<CParameterMapElement>();
 	SG_REF(m_map_elements);
+
+	m_finalized=false;
+
+	m_parameters->add((CSGObject**)&m_map_elements, "map_elements",
+			"Array of map elements");
+	m_parameters->add(&m_finalized, "finalized", "Whether map is finalized");
 }
 
 CParameterMap::~CParameterMap()
@@ -122,25 +158,58 @@ CParameterMap::~CParameterMap()
 void CParameterMap::put(CSGParamInfo* key, CSGParamInfo* value)
 {
 	m_map_elements->append_element(new CParameterMapElement(key, value));
+	m_finalized=false;
 }
 
 CSGParamInfo* CParameterMap::get(CSGParamInfo* key) const
 {
-	/* perform linear search to find corresponding value */
-	index_t i;
-	for (i=0; i<m_map_elements->get_num_elements(); ++i)
+	index_t num_elements=m_map_elements->get_num_elements();
+
+	/* check if underlying array is sorted */
+	if (!m_finalized && num_elements>1)
+		SG_ERROR("Call finalize_map() before calling get()\n");
+
+	/* do binary search in array of pointers */
+	SGVector<CParameterMapElement*> array(m_map_elements->get_array(),
+			num_elements);
+
+	/* dummy element for searching */
+	CParameterMapElement* dummy=new CParameterMapElement(key, key);
+	index_t index=CMath::binary_search<CParameterMapElement> (array, dummy);
+	SG_UNREF(dummy);
+
+	if (index==-1)
+		return NULL;
+
+	CParameterMapElement* element=m_map_elements->get_element(index);
+	CSGParamInfo* value=element->m_value;
+	SG_REF(value);
+	SG_UNREF(element);
+
+	return value;
+}
+
+void CParameterMap::finalize_map()
+{
+	/* sort underlying array */
+	SGVector<CParameterMapElement*> array(m_map_elements->get_array(),
+			m_map_elements->get_num_elements());
+
+	CMath::qsort<CParameterMapElement> (array);
+
+	m_finalized=true;
+}
+
+void CParameterMap::print_map()
+{
+	for (index_t i=0; i< m_map_elements->get_num_elements(); ++i)
 	{
 		CParameterMapElement* current=m_map_elements->get_element(i);
-		if (*current->m_key==*key)
-		{
-			CSGParamInfo* value=current->m_value;
-			SG_UNREF(current);
-			SG_REF(value);
-			return value;
-		}
-
+		SG_PRINT("%d\n", i);
+		SG_PRINT("key: ");
+		current->m_key->print_param_info();
+		SG_PRINT("value: ");
+		current->m_value->print_param_info();
 		SG_UNREF(current);
 	}
-
-	return NULL;
 }
