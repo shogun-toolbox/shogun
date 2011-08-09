@@ -39,6 +39,6 @@ def kernel_comm_ulong_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,
 end
 
 if __FILE__ == $0
-	print 'CommUlongString'
+	puts 'CommUlongString'
 	kernel_comm_ulong_string_modular(*parameter_list[0])
 end
