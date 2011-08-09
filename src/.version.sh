@@ -5,6 +5,7 @@ export LC_ALL
 
 prefix=""
 mainversion=`awk '/Release/{print $5;exit}' ../NEWS`
+parameter=`awk '/Release/{print $11;exit}' ../NEWS`
 extra=""
 if test -d .svn
 then
@@ -67,3 +68,4 @@ echo "#define VERSION_MONTH `echo ${month} | sed 's/^[0]//g'`"
 echo "#define VERSION_DAY `echo ${day} | sed 's/^[0]//g'`"
 echo "#define VERSION_HOUR `echo ${hour} | sed 's/^[0]//g'`"
 echo "#define VERSION_MINUTE `echo ${minute} | sed 's/^[0]//g'`"
+echo "#define VERSION_PARAMETER `echo ${parameter} | sed 's/\(.*\)./\1/'`"

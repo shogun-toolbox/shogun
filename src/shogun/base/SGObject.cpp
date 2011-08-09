@@ -230,6 +230,10 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 		return false;
 	}
 
+	/* save parameter version */
+	if (!save_parameter_version(file, prefix))
+		return false;
+
 	if (!m_parameters->save(file, prefix))
 		return false;
 
@@ -284,6 +288,26 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 		return false;
 	}
 
+	/* try to load version of parameters */
+	int32_t file_version=load_parameter_version(file, prefix);
+
+	if (file_version<0)
+	{
+		SG_WARNING("%s%s::load_serializable(): File contains no parameter "
+				"version. Seems like your file is from the days before this "
+				"was introduced. Ignore warning or serialize with this version "
+				"of shogun to get rid of above and this warnings.\n",
+				prefix, get_name());
+	}
+
+	if (file_version>version->get_version_parameter())
+	{
+		SG_WARNING("%s%s::load_serializable(): parameter version of file "
+				"larger than the one of shogun. Try with a more recent version "
+				"of shogun.\n", prefix, get_name());
+		return false;
+	}
+
 	if (!m_parameters->load(file, prefix))
 		return false;
 
@@ -309,6 +333,28 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	SG_DEBUG("DONE LOADING CSGObject '%s' (%p)\n", get_name(), this);
 
 	return true;
+}
+
+bool CSGObject::save_parameter_version(CSerializableFile* file,
+		const char* prefix)
+{
+	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
+	int32_t v=version->get_version_parameter();
+	TParameter p(&t, &v, "version_parameter",
+			"Version of parameters of this object");
+	return p.save(file, prefix);
+}
+
+int32_t CSGObject::load_parameter_version(CSerializableFile* file,
+		const char* prefix)
+{
+	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
+	int32_t v;
+	TParameter tp(&t, &v, "version_parameter", "");
+	if (tp.load(file, prefix))
+		return v;
+	else
+		return -1;
 }
 
 void CSGObject::load_serializable_pre() throw (ShogunException)
