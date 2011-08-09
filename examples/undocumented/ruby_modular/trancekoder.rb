@@ -96,7 +96,8 @@ if __FILE__ == $0
     kode = Trancekoder.new file
     kode.trancekode
     File.open(kode.filename, 'w') do |f|
-      f = kode.to_s
-    end unless File.exists? kode.filename
+      f << kode.to_s
+      puts f
+    end if (File.size(kode.filename) < 10)
   end
 end
