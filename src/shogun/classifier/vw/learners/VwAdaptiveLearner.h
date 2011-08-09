@@ -55,7 +55,7 @@ public:
 	 * @param ex example
 	 * @param update the update
 	 */
-	virtual void train(VwExample* &ex, float update);
+	virtual void train(VwExample* &ex, float32_t update);
 
 	/**
 	 * Return the name of the object
@@ -77,9 +77,9 @@ private:
 	 * @param ex example (unused)
 	 * @param ctr counter (unused)
 	 */
-	void quad_update(float* weights, VwFeature& page_feature,
+	void quad_update(float32_t* weights, VwFeature& page_feature,
 			 v_array<VwFeature> &offer_features, size_t mask,
-			 float update, float g, VwExample* ex, size_t& ctr);
+			 float32_t update, float32_t g, VwExample* ex, size_t& ctr);
 };
 }
 

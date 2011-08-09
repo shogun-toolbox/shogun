@@ -31,7 +31,7 @@ CVwAdaptiveLearner::~CVwAdaptiveLearner()
 {
 }
 
-void CVwAdaptiveLearner::train(VwExample* &ex, float update)
+void CVwAdaptiveLearner::train(VwExample* &ex, float32_t update)
 {
 	if (fabs(update) == 0.)
 		return;
@@ -39,20 +39,21 @@ void CVwAdaptiveLearner::train(VwExample* &ex, float update)
 	size_t thread_num = 0;
 
 	size_t thread_mask = env->thread_mask;
-	float* weights = reg->weight_vectors[thread_num];
+	float32_t* weights = reg->weight_vectors[thread_num];
 
-	float g = reg->loss->get_square_grad(ex->final_prediction, ex->ld->label) * ex->ld->weight;
+	float32_t g = reg->loss->get_square_grad(ex->final_prediction, ex->ld->label) * ex->ld->weight;
 	size_t ctr = 0;
 	for (size_t* i = ex->indices.begin; i != ex->indices.end; i++)
 	{
 		for (VwFeature *f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
 		{
-			float* w = &weights[f->weight_index & thread_mask];
+			float32_t* w = &weights[f->weight_index & thread_mask];
 			w[1] += g * f->x * f->x;
-			float t = f->x * CMath::invsqrt(w[1]);
+			float32_t t = f->x * CMath::invsqrt(w[1]);
 			w[0] += update * t;
 		}
 	}
+
 	for (int32_t k = 0; k < env->pairs.get_num_elements(); k++)
 	{
 		char* i = env->pairs.get_element(k);
@@ -65,19 +66,19 @@ void CVwAdaptiveLearner::train(VwExample* &ex, float update)
 	}
 }
 
-void CVwAdaptiveLearner::quad_update(float* weights, VwFeature& page_feature,
-				    v_array<VwFeature> &offer_features, size_t mask,
-				    float update, float g, VwExample* ex, size_t& ctr)
+void CVwAdaptiveLearner::quad_update(float32_t* weights, VwFeature& page_feature,
+				     v_array<VwFeature> &offer_features, size_t mask,
+				     float32_t update, float32_t g, VwExample* ex, size_t& ctr)
 {
 	size_t halfhash = quadratic_constant * page_feature.weight_index;
 	update *= page_feature.x;
-	float update2 = g * page_feature.x * page_feature.x;
+	float32_t update2 = g * page_feature.x * page_feature.x;
 
 	for (VwFeature* elem = offer_features.begin; elem != offer_features.end; elem++)
 	{
-		float* w = &weights[(halfhash + elem->weight_index) & mask];
+		float32_t* w = &weights[(halfhash + elem->weight_index) & mask];
 		w[1] += update2 * elem->x * elem->x;
-		float t = elem->x * CMath::invsqrt(w[1]);
+		float32_t t = elem->x * CMath::invsqrt(w[1]);
 		w[0] += update * t;
 	}
 }

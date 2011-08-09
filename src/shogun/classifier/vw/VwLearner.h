@@ -68,7 +68,7 @@ public:
 	 * @param ex example
 	 * @param update update
 	 */
-	virtual void train(VwExample* &ex, float update) = 0;
+	virtual void train(VwExample* &ex, float32_t update) = 0;
 
 	/**
 	 * Return the name of the object
