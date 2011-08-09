@@ -304,6 +304,17 @@ private:
 	void unset_global_objects();
 	void init();
 
+	/** stores the current parameter version in the provided file
+	 *  @return true iff successful
+	 */
+	bool save_parameter_version(CSerializableFile* file, const char* prefix="");
+
+	/** loads the parameter version of the provided file.
+	 * @return parameter version of file, -1 if there is no such
+	 */
+	int32_t load_parameter_version(CSerializableFile* file,
+			const char* prefix="");
+
 public:
 	SGIO* io;
 	Parallel* parallel;
