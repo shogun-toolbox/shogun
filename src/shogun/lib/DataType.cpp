@@ -309,24 +309,17 @@ size_t TSGDataType::get_size()
 
 index_t TSGDataType::get_num_elements()
 {
-	index_t num_elements;
-
 	switch (m_ctype)
 	{
-	case CT_SCALAR:
-		num_elements=1;
-		break;
-	case CT_VECTOR:
-		/* length_y contains the length for vectors */
-		num_elements=*m_length_y;
-		break;
-	case CT_MATRIX:
-		num_elements=(*m_length_y)*(*m_length_x);
-		break;
-	case CT_NDARRAY:
-		SG_SNOTIMPLEMENTED;
-		break;
+		case CT_SCALAR:
+			return 1;
+		case CT_VECTOR:
+			/* length_y contains the length for vectors */
+			return *m_length_y;
+		case CT_MATRIX:
+			return (*m_length_y)*(*m_length_x);
+		case CT_NDARRAY:
+			SG_SNOTIMPLEMENTED;
+			return 0;
 	}
-
-	return num_elements;
 }
