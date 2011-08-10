@@ -144,10 +144,8 @@ bool CSVRLight::train_machine(CFeatures* data)
 void CSVRLight::svr_learn()
 {
 	int32_t *inconsistent, i, j;
-	int32_t inconsistentnum;
 	int32_t upsupvecnum;
 	float64_t maxdiff, *lin, *c, *a;
-	int32_t runtime_start,runtime_end;
 	int32_t iterations;
 	float64_t *xi_fullset; /* buffer for storing xi on full sample in loo */
 	float64_t *a_fullset;  /* buffer for storing alpha on full sample in loo */
@@ -192,7 +190,6 @@ void CSVRLight::svr_learn()
 	  }
   }
 
-  runtime_start=get_runtime();
   timing_profile.time_kernel=0;
   timing_profile.time_opti=0;
   timing_profile.time_shrink=0;
@@ -255,7 +252,6 @@ void CSVRLight::svr_learn()
 	model->xa_error=-1;
 	model->xa_recall=-1;
 	model->xa_precision=-1;
-	inconsistentnum=0;
 
   for(i=0;i<totdoc;i++) {    /* various inits */
     inconsistent[i]=0;
@@ -292,7 +288,6 @@ void CSVRLight::svr_learn()
 		SG_INFO( "Optimization finished (maxdiff=%.8f).\n",maxdiff);
 		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),model->b);
 
-		runtime_end=get_runtime();
 		upsupvecnum=0;
 
 		SG_DEBUG( "num sv: %d\n", model->sv_num);
