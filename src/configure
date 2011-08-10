@@ -4282,9 +4282,9 @@ write_dot_config()
 
 #enable additional warnings / -Wfloat-equal -W
 if test "$_cc_major" -ge "3" 2>/dev/null ; then
-	COMPFLAGS_C=`echo "$COMPFLAGS_C" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow/'`
+	COMPFLAGS_C=`echo "$COMPFLAGS_C" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow/'`
 	COMPFLAGS_SWIG_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/-Wall//'`
-	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow -Wno-deprecated/'`
+	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-deprecated/'`
 fi
 
 cat > "$1" <<EOF
