@@ -28,7 +28,7 @@
 namespace shogun
 {
 
-typedef size_t (*hash_func_t)(substring, uint32_t);
+typedef uint32_t (*hash_func_t)(substring, uint32_t);
 
 const int32_t quadratic_constant = 27942141;
 const int32_t constant_hash = 11650396;
