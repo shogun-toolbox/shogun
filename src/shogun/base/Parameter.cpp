@@ -1617,6 +1617,8 @@ TParameter::delete_cont(void)
 	if (*(void**) m_parameter != NULL) {
 		index_t old_length = *m_datatype.m_length_y;
 		switch (m_datatype.m_ctype) {
+		case CT_NDARRAY:
+			SG_NOTIMPLEMENTED;
 		case CT_MATRIX:
 			old_length *= *m_datatype.m_length_x; break;
 		case CT_SCALAR: case CT_VECTOR: break;
