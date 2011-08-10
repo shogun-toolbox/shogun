@@ -283,28 +283,23 @@ TSGDataType::string_to_ptype(EPrimitiveType* ptype, const char* str)
 
 size_t TSGDataType::get_size()
 {
-	size_t size;
-
 	switch (m_stype)
 	{
-	case ST_NONE:
-		size=get_num_elements()*sizeof_ptype();
-		break;
-	case ST_STRING:
-		if (m_ptype==PT_SGOBJECT)
-			return -1;
+		case ST_NONE:
+			return get_num_elements()*sizeof_ptype();
+		case ST_STRING:
+			if (m_ptype==PT_SGOBJECT)
+				return 0;
 
-		size=get_num_elements()*sizeof_stype();
-		break;
-	case ST_SPARSE:
-		if (m_ptype==PT_SGOBJECT)
-			return -1;
+			return get_num_elements()*sizeof_stype();
+		case ST_SPARSE:
+			if (m_ptype==PT_SGOBJECT)
+				return 0;
 
-		size=get_num_elements()*sizeof_sparseentry(m_ptype);
-		break;
+			return get_num_elements()*sizeof_sparseentry(m_ptype);
 	}
 
-	return size;
+	return 0;
 }
 
 index_t TSGDataType::get_num_elements()
@@ -320,6 +315,6 @@ index_t TSGDataType::get_num_elements()
 			return (*m_length_y)*(*m_length_x);
 		case CT_NDARRAY:
 			SG_SNOTIMPLEMENTED;
-			return 0;
 	}
+	return 0;
 }
