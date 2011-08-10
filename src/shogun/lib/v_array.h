@@ -14,10 +14,14 @@
 */
 
 #include <stdlib.h>
+#include <shogun/lib/memory.h>
+#include <shogun/mathematics/Math.h>
 
 #ifndef VARRAY_H__
 #define VARRAY_H__
 
+namespace shogun
+{
 template<class T> class v_array
 {
 public:
@@ -135,7 +139,7 @@ inline void v_array<T>::push(const T &new_elem)
 		size_t old_length = end_array - begin;
 		size_t new_length = 2 * old_length + 3;
 		//size_t new_length = old_length + 1;
-		begin = (T *)realloc(begin,sizeof(T) * new_length);
+		begin = SG_REALLOC(T, begin, new_length);
 		end = begin + old_length;
 		end_array = begin + new_length;
 	}
@@ -148,9 +152,9 @@ inline void v_array<T>::push_many(const T* new_elem, size_t num)
 	if(end+num >= end_array)
 	{
 		size_t length = end - begin;
-		size_t new_length = max(2 * (size_t)(end_array - begin) + 3, 
-					end - begin + num);
-		begin = (T *)realloc(begin,sizeof(T) * new_length);
+		size_t new_length = CMath::max(2 * (size_t)(end_array - begin) + 3,
+					       end - begin + num);
+		begin = SG_REALLOC(T, begin, new_length);
 		end = begin + length;
 		end_array = begin + new_length;
 	}
@@ -162,7 +166,7 @@ template<class T>
 inline void v_array<T>::reserve(size_t length)
 {
 	size_t old_length = end_array-begin;
-	begin = (T *)realloc(begin, sizeof(T) * length);
+	begin = SG_REALLOC(T, begin, length);
 	if (old_length < length)
 		bzero(begin + old_length, (length - old_length)*sizeof(T));
   
@@ -173,7 +177,7 @@ inline void v_array<T>::reserve(size_t length)
 template<class T>
 inline void v_array<T>::calloc_reserve(size_t length)
 {
-	begin = (T *) calloc(length, sizeof(T));
+	begin = SG_CALLOC(T, length);
 	end = begin;
 	end_array = begin + length;
 }
@@ -186,5 +190,5 @@ inline v_array<T> v_array<T>::pop(v_array< v_array<T> > &stack)
 	else
 		return v_array<T>();
 }
-
+}
 #endif  // VARRAY_H__

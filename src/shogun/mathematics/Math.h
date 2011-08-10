@@ -303,7 +303,7 @@ class CMath : public CSGObject
 		}
 
 		/// x^-0.5
-		static float32_t invsqrt(float32_t x)
+		static inline float32_t invsqrt(float32_t x)
 		{
 			float32_t xhalf = 0.5f * x;
 			int32_t i = *(int32_t*)&x; // store floating-point bits in integer
