@@ -296,14 +296,12 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 		while (sz == blocksize)	\
 		{	\
 			sz=fread(dummy, sizeof(uint8_t), blocksize, file);	\
-			bool contains_cr=false;	\
 			for (size_t i=0; i<sz; i++)	\
 			{	\
 				block_offs++;	\
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))	\
 				{	\
 					num_vec++;	\
-					contains_cr=true;	\
 					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs+1);	\
 					old_block_offs=block_offs;	\
 				}	\
@@ -476,14 +474,12 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 		while (sz == blocksize)
 		{
 			sz=fread(dummy, sizeof(uint8_t), blocksize, file);
-			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
 				block_offs++;
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
 					num_str++;
-					contains_cr=true;
 					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
 					old_block_offs=block_offs;
 				}
@@ -571,14 +567,12 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 		while (sz == blocksize)
 		{
 			sz=fread(dummy, sizeof(int8_t), blocksize, file);
-			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
 				block_offs++;
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
 					num_str++;
-					contains_cr=true;
 					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
 					old_block_offs=block_offs;
 				}
@@ -666,14 +660,12 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 		while (sz == blocksize)
 		{
 			sz=fread(dummy, sizeof(char), blocksize, file);
-			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
 				block_offs++;
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
 					num_str++;
-					contains_cr=true;
 					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
 					old_block_offs=block_offs;
 				}

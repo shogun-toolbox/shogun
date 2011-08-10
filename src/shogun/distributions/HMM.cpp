@@ -4202,7 +4202,6 @@ bool CHMM::save_model_bin(FILE* file)
 bool CHMM::save_path_derivatives(FILE* logfile)
 {
 	int32_t dim,i,j;
-	float64_t prob;
 
 	if (logfile)
 	{
@@ -4218,7 +4217,7 @@ bool CHMM::save_path_derivatives(FILE* logfile)
 
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{	
-		prob=best_path(dim);
+		best_path(dim);
 
 		fprintf(logfile, "[ ");
 
