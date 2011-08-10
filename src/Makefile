@@ -75,7 +75,7 @@ doc:  $(PARTDEPS)
 distclean: clean
 	$(MAKE) -C shogun distclean
 	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
-	@rm -f .config tags shogun/lib/versionstring.h
+	@rm -f .config tags
 	@rm -f */Makefile interfaces/*/Makefile
 
 clean:  $(PARTDEPS)
