@@ -17,6 +17,7 @@
 #define _VW_LEARNER_H__
 
 #include <shogun/base/SGObject.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/classifier/vw/vw_common.h>
 #include <shogun/classifier/vw/VwRegressor.h>
 
@@ -36,7 +37,10 @@ public:
 	 * Default constructor
 	 */
 	CVwLearner()
-		: CSGObject(), reg(NULL), env(NULL) { }
+		: CSGObject(), reg(NULL), env(NULL)
+	{
+		register_learner_params();
+	}
 
 	/**
 	 * Constructor, initializes regressor and environment
@@ -49,6 +53,7 @@ public:
 	{
 		SG_REF(reg);
 		SG_REF(env);
+		register_learner_params();
 	}
 
 	/**
@@ -60,6 +65,17 @@ public:
 			SG_UNREF(reg);
 		if (env)
 			SG_UNREF(env);
+	}
+
+	/**
+	 * Add parameters to make them serializable
+	 */
+	void register_learner_params()
+	{
+		SG_ADD((CSGObject**) &reg, "vw_regressor", "Regressor object",
+		       MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject**) &env, "vw_env", "Environment",
+		       MS_NOT_AVAILABLE);
 	}
 
 	/**
