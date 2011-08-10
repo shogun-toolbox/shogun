@@ -31,7 +31,8 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  features_copy_subset_string_features \
 		  features_copy_subset_sparse_features \
 		  mathematics_confidence_intervals \
-		  clustering_kmeans base_parameter_map
+		  clustering_kmeans base_parameter_map \
+		  serialization_ascii
 
 
 all: $(TARGETS)
