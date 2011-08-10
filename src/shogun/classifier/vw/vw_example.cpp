@@ -31,16 +31,16 @@ VwExample::~VwExample()
 		delete ld;
 	if (tag.end_array != tag.begin)
 	{
-		free(tag.begin);
+		SG_FREE(tag.begin);
 		tag.end_array = tag.begin;
 	}
 
 	for (size_t j = 0; j < 256; j++)
 	{
 		if (atomics[j].begin != atomics[j].end_array)
-			free(atomics[j].begin);
+			SG_FREE(atomics[j].begin);
 	}
-	free(indices.begin);
+	SG_FREE(indices.begin);
 }
 
 void VwExample::reset_members()

@@ -41,11 +41,11 @@ CVwParser::CVwParser(CVwEnvironment* env_to_use)
 
 CVwParser::~CVwParser()
 {
-	free(channels.begin);
+	SG_FREE(channels.begin);
 	channels.begin = channels.end = channels.end_array = NULL;
-	free(words.begin);
+	SG_FREE(words.begin);
 	words.begin = words.end = words.end_array = NULL;
-	free(name.begin);
+	SG_FREE(name.begin);
 	name.begin = name.end = name.end_array = NULL;
 
 	SG_UNREF(env);
