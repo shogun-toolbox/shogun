@@ -302,6 +302,16 @@ class CMath : public CSGObject
 #endif
 		}
 
+		/// x^-0.5
+		static float32_t invsqrt(float32_t x)
+		{
+			float32_t xhalf = 0.5f * x;
+			int32_t i = *(int32_t*)&x; // store floating-point bits in integer
+			i = 0x5f3759d5 - (i >> 1); // initial guess for Newton's method
+			x = *(float32_t*)&i; // convert new bits into float
+			x = x*(1.5f - xhalf*x*x); // One round of Newton's method
+			return x;
+		}
 
 		/// x^n
 		static inline floatmax_t powl(floatmax_t x, floatmax_t n)
