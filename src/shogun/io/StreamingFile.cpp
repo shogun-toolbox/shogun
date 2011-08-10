@@ -9,7 +9,6 @@
  */
 
 #include <shogun/io/StreamingFile.h>
-#include <shogun/features/SparseFeatures.h>
 
 #include <ctype.h>
 
@@ -180,8 +179,17 @@ GET_SPARSE_VECTOR_AND_LABEL(get_ulong_sparse_vector_and_label, atoi, uint64_t)
 GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax_t)
 #undef GET_SPARSE_VECTOR_AND_LABEL
 
+void CStreamingFile::get_vector(VwExample*& ex, int32_t &len)
+{
+	SG_ERROR("Read function not supported by the feature type!\n");
 }
 
+void CStreamingFile::get_vector_and_label(VwExample*& ex, int32_t &len, float64_t &label)
+{
+	SG_ERROR("Read function not supported by the feature type!\n");
+}
+
+}
 using namespace shogun;
 
 CStreamingFile::CStreamingFile() : CSGObject()
