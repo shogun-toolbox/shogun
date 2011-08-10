@@ -260,21 +260,19 @@ void CVwParser::init_cache(char * fname, EVwCacheType type)
 	if (!fname)
 		file_name = default_cache_name;
 
+	write_cache = true;
+	cache_type = type;
+
 	switch (type)
 	{
 	case C_NATIVE:
 		cache_writer = new CVwNativeCacheWriter(file_name, env);
-		break;
-
+		return;
 	case C_PROTOBUF:
 		SG_ERROR("Protocol buffers cache support is not implemented yet.\n");
-		break;
-	default:
-		SG_ERROR("Unexpected cache type specified!\n");
 	}
 
-	write_cache = true;
-	cache_type = type;
+	SG_ERROR("Unexpected cache type specified!\n");
 }
 
 void CVwParser::feature_value(substring &s, v_array<substring>& feat_name, float32_t &v)
