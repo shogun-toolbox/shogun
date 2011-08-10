@@ -17,6 +17,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/io/IOBuffer.h>
+#include <shogun/classifier/vw/vw_common.h>
 
 #include <ctype.h>
 #include <fcntl.h>
@@ -59,6 +60,18 @@ namespace shogun
 			filename=NULL;
 			buf->close_file();
 		}
+
+		/**
+		 * Whether the stream is seekable/resettable
+		 *
+		 * @return false by default, unless overloaded
+		 */
+		inline virtual bool is_seekable() { return false; }
+
+		/**
+		 * Reset the stream, should be overloaded if possible
+		 */
+		virtual void reset_stream() { SG_ERROR("Unable to reset the input stream!\n"); }
 
 		/** @name Dense Vector Access Functions
 		 *
@@ -254,7 +267,25 @@ namespace shogun
 			(SGSparseVectorEntry<uint64_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
 			(SGSparseVectorEntry<floatmax_t>*& vector, int32_t& len, float64_t& label);
+
 		//@}
+
+		/**
+		 * Function to read VW examples without labels
+		 *
+		 * @param ex example
+		 * @param len length of feature vector
+		 */
+		virtual void get_vector(VwExample*& ex, int32_t& len);
+
+		/**
+		 * Function to read VW examples with labels
+		 *
+		 * @param ex example
+		 * @param len length of feature vector
+		 * @param label label
+		 */
+		virtual void get_vector_and_label(VwExample*& ex, int32_t& len, float64_t &label);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StreamingFile"; }
