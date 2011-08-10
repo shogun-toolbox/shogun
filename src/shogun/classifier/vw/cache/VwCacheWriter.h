@@ -55,7 +55,7 @@ public:
 	 * @param f descriptor of opened cache file
 	 * @param env_to_use environment
 	 */
-	CVwCacheWriter(int f, CVwEnvironment* env_to_use);
+	CVwCacheWriter(int32_t f, CVwEnvironment* env_to_use);
 
 	/**
 	 * Destructor
@@ -67,7 +67,7 @@ public:
 	 *
 	 * @param f descriptor of cache file
 	 */
-	virtual void set_file(int f);
+	virtual void set_file(int32_t f);
 
 	/**
 	 * Set the environment
@@ -93,7 +93,7 @@ public:
 protected:
 
 	/// File descriptor
-	int fd;
+	int32_t fd;
 
 	/// Environment
 	CVwEnvironment* env;
