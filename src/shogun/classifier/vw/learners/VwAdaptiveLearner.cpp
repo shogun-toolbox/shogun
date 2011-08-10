@@ -58,11 +58,11 @@ void CVwAdaptiveLearner::train(VwExample* &ex, float32_t update)
 	{
 		char* i = env->pairs.get_element(k);
 
-		v_array<VwFeature> temp = ex->atomics[(int)(i[0])];
-		temp.begin = ex->atomics[(int)(i[0])].begin;
-		temp.end = ex->atomics[(int)(i[0])].end;
+		v_array<VwFeature> temp = ex->atomics[(int32_t)(i[0])];
+		temp.begin = ex->atomics[(int32_t)(i[0])].begin;
+		temp.end = ex->atomics[(int32_t)(i[0])].end;
 		for (; temp.begin != temp.end; temp.begin++)
-			quad_update(weights, *temp.begin, ex->atomics[(int)(i[1])], thread_mask, update, g, ex, ctr);
+			quad_update(weights, *temp.begin, ex->atomics[(int32_t)(i[1])], thread_mask, update, g, ex, ctr);
 	}
 }
 

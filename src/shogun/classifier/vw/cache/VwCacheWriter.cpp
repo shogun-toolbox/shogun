@@ -36,7 +36,7 @@ CVwCacheWriter::CVwCacheWriter(char * fname, CVwEnvironment* env_to_use)
 	SG_REF(env);
 }
 
-CVwCacheWriter::CVwCacheWriter(int f, CVwEnvironment* env_to_use)
+CVwCacheWriter::CVwCacheWriter(int32_t f, CVwEnvironment* env_to_use)
 	: CSGObject()
 {
 	fd = f;
@@ -50,7 +50,7 @@ CVwCacheWriter::~CVwCacheWriter()
 		SG_UNREF(env);
 }
 
-void CVwCacheWriter::set_file(int f)
+void CVwCacheWriter::set_file(int32_t f)
 {
 	fd = f;
 }

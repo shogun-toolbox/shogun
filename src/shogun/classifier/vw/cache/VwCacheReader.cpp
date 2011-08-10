@@ -36,7 +36,7 @@ CVwCacheReader::CVwCacheReader(char * fname, CVwEnvironment* env_to_use)
 	SG_REF(env);
 }
 
-CVwCacheReader::CVwCacheReader(int f, CVwEnvironment* env_to_use)
+CVwCacheReader::CVwCacheReader(int32_t f, CVwEnvironment* env_to_use)
 	: CSGObject()
 {
 	fd = f;
@@ -52,7 +52,7 @@ CVwCacheReader::~CVwCacheReader()
 		SG_UNREF(env);
 }
 
-void CVwCacheReader::set_file(int f)
+void CVwCacheReader::set_file(int32_t f)
 {
 	fd = f;
 }
