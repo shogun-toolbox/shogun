@@ -241,7 +241,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		}
 
 		/** @return underlying array of pointers */
-		inline T** get_array() { return m_array.get_array(); }
+		inline T** get_array() const { return m_array.get_array(); }
 
 		/** shuffles the array */
 		inline void shuffle() { m_array.shuffle(); }
