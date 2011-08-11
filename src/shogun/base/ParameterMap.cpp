@@ -13,13 +13,13 @@
 
 using namespace shogun;
 
-CSGParamInfo::CSGParamInfo() : CSGObject()
+SGParamInfo::SGParamInfo()
 {
 	init();
 }
 
-CSGParamInfo::CSGParamInfo(const char* name, EContainerType ctype,
-		EStructType stype, EPrimitiveType ptype) : CSGObject()
+SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
+		EStructType stype, EPrimitiveType ptype)
 {
 	init();
 
@@ -32,14 +32,14 @@ CSGParamInfo::CSGParamInfo(const char* name, EContainerType ctype,
 	m_ptype=ptype;
 }
 
-CSGParamInfo::~CSGParamInfo()
+SGParamInfo::~SGParamInfo()
 {
 	SG_FREE(m_name);
 }
 
-void CSGParamInfo::print_param_info()
+void SGParamInfo::print_param_info()
 {
-	SG_PRINT("%s with: ", get_name());
+	SG_SPRINT("SGParamInfo with: ");
 
 	SG_SPRINT("name=\"%s\"", m_name);
 
@@ -47,26 +47,26 @@ void CSGParamInfo::print_param_info()
 	index_t buffer_length=100;
 	char* buffer=SG_MALLOC(char, buffer_length);
 	t.to_string(buffer, buffer_length);
-	SG_PRINT(", type=%s", buffer);
+	SG_SPRINT(", type=%s", buffer);
 	SG_FREE(buffer);
 
-	SG_PRINT("\n");
+	SG_SPRINT("\n");
 }
 
-void CSGParamInfo::init()
+SGParamInfo* SGParamInfo::duplicate() const
+{
+	return new SGParamInfo(m_name, m_ctype, m_stype, m_ptype);
+}
+
+void SGParamInfo::init()
 {
 	m_name=NULL;
 	m_ctype=(EContainerType) 0;
 	m_stype=(EStructType) 0;
 	m_ptype=(EPrimitiveType) 0;
-
-	m_parameters->add(m_name, "name", "Name of parameter");
-	m_parameters->add((int*) &m_ctype, "ctype", "Container type of parameter");
-	m_parameters->add((int*) &m_stype, "stype", "Structure type of parameter");
-	m_parameters->add((int*) &m_ptype, "ptype", "Primitive type of parameter");
 }
 
-bool CSGParamInfo::operator==(const CSGParamInfo& other) const
+bool SGParamInfo::operator==(const SGParamInfo& other) const
 {
 	bool result=true;
 	result&=!strcmp(m_name, other.m_name);
@@ -76,140 +76,126 @@ bool CSGParamInfo::operator==(const CSGParamInfo& other) const
 	return result;
 }
 
-bool CSGParamInfo::operator<(const CSGParamInfo& other) const
+bool SGParamInfo::operator<(const SGParamInfo& other) const
 {
 	return strcmp(m_name, other.m_name)<0;
 }
 
-bool CSGParamInfo::operator>(const CSGParamInfo& other) const
+bool SGParamInfo::operator>(const SGParamInfo& other) const
 {
 	return strcmp(m_name, other.m_name)>0;
 }
 
-CParameterMapElement::CParameterMapElement() : CSGObject()
+ParameterMapElement::ParameterMapElement()
 {
 	init();
 }
 
-CParameterMapElement::CParameterMapElement(CSGParamInfo* key,
-		CSGParamInfo* value) : CSGObject()
+ParameterMapElement::ParameterMapElement(SGParamInfo* key,
+		SGParamInfo* value)
 {
 	init();
 
 	m_key=key;
 	m_value=value;
-
-	SG_REF(m_key);
-	SG_REF(m_value);
 }
 
-CParameterMapElement::~CParameterMapElement()
+ParameterMapElement::~ParameterMapElement()
 {
-	SG_UNREF(m_key);
-	SG_UNREF(m_value);
+	delete m_key;
+	delete m_value;
 }
 
-bool CParameterMapElement::operator==(const CParameterMapElement& other) const
+bool ParameterMapElement::operator==(const ParameterMapElement& other) const
 {
 	return *m_key==*other.m_key;
 }
 
-bool CParameterMapElement::operator<(const CParameterMapElement& other) const
+bool ParameterMapElement::operator<(const ParameterMapElement& other) const
 {
 	return *m_key<*other.m_key;
 }
 
-bool CParameterMapElement::operator>(const CParameterMapElement& other) const
+bool ParameterMapElement::operator>(const ParameterMapElement& other) const
 {
 	return *m_key>*other.m_key;
 }
 
-void CParameterMapElement::init()
+void ParameterMapElement::init()
 {
 	m_key=NULL;
 	m_value=NULL;
-
-	m_parameters->add((CSGObject**)&m_key, "key", "Key of map element");
-	m_parameters->add((CSGObject**)&m_value, "value", "Value of map element");
 }
 
-CParameterMap::CParameterMap() : CSGObject()
+ParameterMap::ParameterMap()
 {
 	init();
 }
 
-void CParameterMap::init()
+void ParameterMap::init()
 {
-	m_map_elements=new CDynamicObjectArray<CParameterMapElement>();
-	SG_REF(m_map_elements);
-
-	m_finalized=false;
-
-	m_parameters->add((CSGObject**)&m_map_elements, "map_elements",
-			"Array of map elements");
-	m_parameters->add(&m_finalized, "finalized", "Whether map is finalized");
-}
-
-CParameterMap::~CParameterMap()
-{
-	SG_UNREF(m_map_elements);
-}
-
-void CParameterMap::put(CSGParamInfo* key, CSGParamInfo* value)
-{
-	m_map_elements->append_element(new CParameterMapElement(key, value));
 	m_finalized=false;
 }
 
-CSGParamInfo* CParameterMap::get(CSGParamInfo* key) const
+ParameterMap::~ParameterMap()
 {
-	index_t num_elements=m_map_elements->get_num_elements();
+	for (index_t i=0; i<m_map_elements.get_num_elements(); ++i)
+		delete m_map_elements[i];
+}
+
+void ParameterMap::put(SGParamInfo* key, SGParamInfo* value)
+{
+	m_map_elements.append_element(new ParameterMapElement(key, value));
+	m_finalized=false;
+}
+
+SGParamInfo* ParameterMap::get(SGParamInfo* key) const
+{
+	index_t num_elements=m_map_elements.get_num_elements();
 
 	/* check if underlying array is sorted */
 	if (!m_finalized && num_elements>1)
-		SG_ERROR("Call finalize_map() before calling get()\n");
+		SG_SERROR("Call finalize_map() before calling get()\n");
 
 	/* do binary search in array of pointers */
-	SGVector<CParameterMapElement*> array(m_map_elements->get_array(),
+	SGVector<ParameterMapElement*> array(m_map_elements.get_array(),
 			num_elements);
 
 	/* dummy element for searching */
-	CParameterMapElement* dummy=new CParameterMapElement(key, key);
-	index_t index=CMath::binary_search<CParameterMapElement> (array, dummy);
-	SG_UNREF(dummy);
+	ParameterMapElement* dummy=new ParameterMapElement(key->duplicate(),
+			key->duplicate());
+	index_t index=CMath::binary_search<ParameterMapElement> (array, dummy);
+	delete dummy;
 
 	if (index==-1)
 		return NULL;
 
-	CParameterMapElement* element=m_map_elements->get_element(index);
-	CSGParamInfo* value=element->m_value;
-	SG_REF(value);
-	SG_UNREF(element);
+	ParameterMapElement* element=m_map_elements.get_element(index);
+	SGParamInfo* value=element->m_value;
 
 	return value;
 }
 
-void CParameterMap::finalize_map()
+void ParameterMap::finalize_map()
 {
 	/* sort underlying array */
-	SGVector<CParameterMapElement*> array(m_map_elements->get_array(),
-			m_map_elements->get_num_elements());
+	SGVector<ParameterMapElement*> array(m_map_elements.get_array(),
+			m_map_elements.get_num_elements());
 
-	CMath::qsort<CParameterMapElement> (array);
+	CMath::qsort<ParameterMapElement> (array);
 
 	m_finalized=true;
 }
 
-void CParameterMap::print_map()
+void ParameterMap::print_map()
 {
-	for (index_t i=0; i< m_map_elements->get_num_elements(); ++i)
+	for (index_t i=0; i< m_map_elements.get_num_elements(); ++i)
 	{
-		CParameterMapElement* current=m_map_elements->get_element(i);
-		SG_PRINT("%d\n", i);
-		SG_PRINT("key: ");
+		ParameterMapElement* current=m_map_elements[i];
+		SG_SPRINT("%d\n", i);
+		SG_SPRINT("key: ");
 		current->m_key->print_param_info();
-		SG_PRINT("value: ");
+		SG_SPRINT("value: ");
 		current->m_value->print_param_info();
-		SG_UNREF(current);
 	}
 }
