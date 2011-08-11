@@ -89,10 +89,8 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 									\
 	/* now copy data into vector */					\
 	if (old_len < num_feat)						\
-	{								\
 		vector=SG_REALLOC(sg_type, vector, num_feat);		\
-		SG_SPRINT("alloced %d sg_type in address:%p.\n", num_feat, vector); \
-	}								\
+									\
 	for (int32_t i=0; i<num_feat; i++)				\
 	{								\
 		char* item=items->get_element(i);			\
@@ -106,8 +104,6 @@ GET_VECTOR(get_bool_vector, str_to_bool, bool)
 GET_VECTOR(get_byte_vector, atoi, uint8_t)
 GET_VECTOR(get_char_vector, atoi, char)
 GET_VECTOR(get_int_vector, atoi, int32_t)
-GET_VECTOR(get_shortreal_vector, atof, float32_t)
-GET_VECTOR(get_real_vector, atof, float64_t)
 GET_VECTOR(get_short_vector, atoi, int16_t)
 GET_VECTOR(get_word_vector, atoi, uint16_t)
 GET_VECTOR(get_int8_vector, atoi, int8_t)
@@ -116,6 +112,40 @@ GET_VECTOR(get_long_vector, atoi, int64_t)
 GET_VECTOR(get_ulong_vector, atoi, uint64_t)
 GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 #undef GET_VECTOR
+
+#define GET_FLOAT_VECTOR(sg_type)					\
+	void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& len) \
+	{								\
+		char *line=NULL;					\
+		int32_t num_chars = buf->read_line(line);		\
+		int32_t old_len = len;					\
+									\
+		if (num_chars == 0)					\
+		{							\
+			len = -1;					\
+			return;						\
+		}							\
+									\
+		substring example_string = {line, line + num_chars};	\
+									\
+		CAsciiFile::tokenize(' ', example_string, words);	\
+									\
+		len = words.index();					\
+		substring* feature_start = &words[0];			\
+									\
+		if (len > old_len)					\
+			vector = SG_REALLOC(sg_type, vector, len);	\
+									\
+		int32_t j=0;						\
+		for (substring* i = feature_start; i != words.end; i++)	\
+		{							\
+			vector[j++] = float_of_substring(*i);		\
+		}							\
+	}
+
+GET_FLOAT_VECTOR(float32_t)
+GET_FLOAT_VECTOR(float64_t)
+#undef GET_FLOAT_VECTOR
 
 /* Methods for reading a dense vector and a label from an ascii file */
 
@@ -193,8 +223,6 @@ GET_VECTOR_AND_LABEL(get_bool_vector_and_label, str_to_bool, bool)
 GET_VECTOR_AND_LABEL(get_byte_vector_and_label, atoi, uint8_t)
 GET_VECTOR_AND_LABEL(get_char_vector_and_label, atoi, char)
 GET_VECTOR_AND_LABEL(get_int_vector_and_label, atoi, int32_t)
-GET_VECTOR_AND_LABEL(get_shortreal_vector_and_label, atof, float32_t)
-GET_VECTOR_AND_LABEL(get_real_vector_and_label, atof, float64_t)
 GET_VECTOR_AND_LABEL(get_short_vector_and_label, atoi, int16_t)
 GET_VECTOR_AND_LABEL(get_word_vector_and_label, atoi, uint16_t)
 GET_VECTOR_AND_LABEL(get_int8_vector_and_label, atoi, int8_t)
@@ -203,6 +231,42 @@ GET_VECTOR_AND_LABEL(get_long_vector_and_label, atoi, int64_t)
 GET_VECTOR_AND_LABEL(get_ulong_vector_and_label, atoi, uint64_t)
 GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 #undef GET_VECTOR_AND_LABEL
+
+#define GET_FLOAT_VECTOR_AND_LABEL(sg_type)				\
+	void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
+	{								\
+		char *line=NULL;					\
+		int32_t num_chars = buf->read_line(line);		\
+		int32_t old_len = len;					\
+									\
+		if (num_chars == 0)					\
+		{							\
+			len = -1;					\
+			return;						\
+		}							\
+									\
+		substring example_string = {line, line + num_chars};	\
+									\
+		CAsciiFile::tokenize(' ', example_string, words);	\
+									\
+		label = float_of_substring(words[0]);			\
+									\
+		len = words.index() - 1;				\
+		substring* feature_start = &words[1];			\
+									\
+		if (len > old_len)					\
+			vector = SG_REALLOC(sg_type, vector, len);	\
+									\
+		int32_t j=0;						\
+		for (substring* i = feature_start; i != words.end; i++)	\
+		{							\
+			vector[j++] = float_of_substring(*i);		\
+		}							\
+	}
+
+GET_FLOAT_VECTOR_AND_LABEL(float32_t)
+GET_FLOAT_VECTOR_AND_LABEL(float64_t)
+#undef GET_FLOAT_VECTOR_AND_LABEL
 
 /* Methods for reading a string vector from an ascii file (see StringFeatures) */
 

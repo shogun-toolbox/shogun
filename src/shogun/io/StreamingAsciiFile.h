@@ -105,6 +105,8 @@ private:
 	 */
 	template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
 
+	/// Helper for parsing
+	v_array<substring> words;
 };
 }
 #endif //__STREAMING_ASCIIFILE_H__
