@@ -70,6 +70,14 @@ public:
 		set_read_functions();
 	}
 
+	/**
+	 * Constructor used when initialized
+	 * with a cache file.
+	 *
+	 * @param file StreamingVwCacheFile object
+	 * @param is_labelled Whether examples are labelled or not
+	 * @param size Number of example objects to be stored in the parser at a time
+	 */
 	CStreamingVwFeatures(CStreamingVwCacheFile* file,
 			     bool is_labelled,
 			     int32_t size)
@@ -89,6 +97,11 @@ public:
 		parser.end_parser();
 	}
 
+	/**
+	 * Duplicate this object
+	 *
+	 * @return a copy of this object
+	 */
 	CFeatures* duplicate() const
 	{
 		return new CStreamingVwFeatures(*this);
