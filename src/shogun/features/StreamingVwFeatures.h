@@ -95,6 +95,7 @@ public:
 	~CStreamingVwFeatures()
 	{
 		parser.end_parser();
+		SG_UNREF(env);
 	}
 
 	/**

@@ -37,6 +37,7 @@ void CStreamingVwFeatures::init()
 	working_file=NULL;
 	seekable=false;
 	current_length=-1;
+	current_example=NULL;
 
 	example_count = 0;
 }
@@ -52,6 +53,7 @@ void CStreamingVwFeatures::init(CStreamingVwFile* file, bool is_labelled, int32_
 
 	// Get environment from the StreamingVwFile
 	env = ((CStreamingVwFile*) file)->get_env();
+	SG_REF(env);
 }
 
 void CStreamingVwFeatures::init(CStreamingVwCacheFile* file, bool is_labelled, int32_t size)
@@ -65,6 +67,7 @@ void CStreamingVwFeatures::init(CStreamingVwCacheFile* file, bool is_labelled, i
 
 	// Get environment from the StreamingVwFile
 	env = ((CStreamingVwCacheFile*) file)->get_env();
+	SG_REF(env);
 }
 
 void CStreamingVwFeatures::setup_example(VwExample* ae)
