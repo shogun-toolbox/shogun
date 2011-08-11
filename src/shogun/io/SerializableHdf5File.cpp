@@ -133,7 +133,7 @@ CSerializableHdf5File::index2string(
 	char* dest, size_t n, EContainerType ctype, index_t y, index_t x)
 {
 	switch (ctype) {
-	case CT_NDARRAY: SG_NOTIMPLEMENTED;
+	case CT_NDARRAY: SG_SNOTIMPLEMENTED;
 	case CT_SCALAR: return false;
 	case CT_VECTOR: snprintf(dest, n, "y%u", y); break;
 	case CT_MATRIX: snprintf(dest, n, "y%u_x%u", y, x); break;
