@@ -247,7 +247,7 @@ template <class T> struct SGStringList
 {
 public:
 	/** default constructor */
-	SGStringList() : strings(NULL), num_strings(0), max_string_length(0),
+	SGStringList() : num_strings(0), max_string_length(0), strings(NULL), 
 		do_free(false) { }
 
 	/** constructor for setting params */

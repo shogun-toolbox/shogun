@@ -202,15 +202,15 @@ CStreamingFile::CStreamingFile(char* fname, char rw) : CSGObject()
 {
 	task=rw;
 	filename=strdup(fname);
-	int mode;
+	int mode = O_LARGEFILE;
 
 	switch (rw)
 	{
 	case 'r':
-		mode = O_RDONLY | O_LARGEFILE;
+		mode |= O_RDONLY;
 		break;
 	case 'w':
-		mode = O_WRONLY | O_LARGEFILE;
+		mode |= O_WRONLY;
 		break;
 	default:
 		SG_ERROR("Unknown mode '%c'\n", task);

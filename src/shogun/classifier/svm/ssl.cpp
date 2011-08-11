@@ -65,8 +65,11 @@ void ssl_train(struct data *Data,
 			optimality=DA_S3VM(Data,Options,Weights,Outputs);
 			break;
 		default:
-			SG_SERROR("Algorithm unspecified");
+			SG_SERROR("Algorithm unspecified\n");
 	}
+
+	if (!optimality)
+		SG_SWARNING("SSL-Algorithm terminated without reaching optimum.\n");
 
 	SG_FREE(Subset->vec);
     SG_FREE(Subset);
