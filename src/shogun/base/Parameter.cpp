@@ -2452,8 +2452,8 @@ void Parameter::set_from_parameters(Parameter* params)
 		}
 
 		/* construct pointers to the to be copied parameter data */
-		void* dest;
-		void* source;
+		void* dest=NULL;
+		void* source=NULL;
 		if (current_type.m_ctype==CT_SCALAR)
 		{
 			/* for scalar values, just copy content the pointer points to */
