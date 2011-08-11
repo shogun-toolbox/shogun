@@ -2153,6 +2153,8 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 		return false;
 
 	switch (m_datatype.m_ctype) {
+	case CT_NDARRAY:
+		SG_SNOTIMPLEMENTED;
 	case CT_SCALAR:
 		if (!save_stype(file, m_parameter, prefix)) return false;
 		break;
@@ -2169,6 +2171,8 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 		}
 
 		switch (m_datatype.m_ctype) {
+		case CT_NDARRAY:
+			SG_SNOTIMPLEMENTED;
 		case CT_VECTOR:
 			len_real_x = 1; break;
 		case CT_MATRIX:
@@ -2237,6 +2241,8 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 
 	switch (m_datatype.m_ctype)
 	{
+		case CT_NDARRAY:
+			SG_SNOTIMPLEMENTED;
 		case CT_SCALAR:
 			if (!load_stype(file, m_parameter, prefix))
 				return false;
@@ -2251,6 +2257,8 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 
 			switch (m_datatype.m_ctype)
 			{
+				case CT_NDARRAY:
+					SG_SNOTIMPLEMENTED;
 				case CT_VECTOR:
 					len_read_x = 1;
 					new_cont(len_read_y, len_read_x);
@@ -2281,6 +2289,8 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 
 			switch (m_datatype.m_ctype)
 			{
+				case CT_NDARRAY:
+					SG_SNOTIMPLEMENTED;
 				case CT_VECTOR:
 					*m_datatype.m_length_y = len_read_y;
 					break;
