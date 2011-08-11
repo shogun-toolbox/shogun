@@ -97,6 +97,8 @@ SerializableAsciiReader00::read_cont_begin_wrapped(
 	const TSGDataType* type, index_t* len_read_y, index_t* len_read_x)
 {
 	switch (type->m_ctype) {
+	case CT_NDARRAY:
+		SG_NOTIMPLEMENTED;
 	case CT_SCALAR:
 		SG_ERROR("read_cont_begin_wrapped(): Implementation error "
 				 "during writing AsciiFile!");

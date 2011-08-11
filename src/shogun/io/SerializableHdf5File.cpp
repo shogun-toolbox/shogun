@@ -133,6 +133,7 @@ CSerializableHdf5File::index2string(
 	char* dest, size_t n, EContainerType ctype, index_t y, index_t x)
 {
 	switch (ctype) {
+	case CT_NDARRAY: SG_NOTIMPLEMENTED;
 	case CT_SCALAR: return false;
 	case CT_VECTOR: snprintf(dest, n, "y%u", y); break;
 	case CT_MATRIX: snprintf(dest, n, "y%u_x%u", y, x); break;
@@ -176,6 +177,7 @@ CSerializableHdf5File::dspace_select(EContainerType ctype, index_t y,
 
 	hsize_t coord[2];
 	switch (ctype) {
+	case CT_NDARRAY: SG_NOTIMPLEMENTED;
 	case CT_SCALAR: return false;
 	case CT_MATRIX: coord[1] = x; /* break;  */
 	case CT_VECTOR: coord[0] = y; break;
@@ -499,6 +501,8 @@ CSerializableHdf5File::write_cont_begin_wrapped(
 	if (!attr_write_string(STR_CTYPE_NAME, ctype_buf)) return false;
 
 	switch (type->m_ctype) {
+	case CT_NDARRAY:
+		SG_NOTIMPLEMENTED;
 	case CT_SCALAR:
 		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
 				 "during writing Hdf5File!");
@@ -738,6 +742,8 @@ CSerializableHdf5File::write_type_begin_wrapped(
 	}
 
 	switch (type->m_ctype) {
+	case CT_NDARRAY:
+		SG_NOTIMPLEMENTED;
 	case CT_SCALAR:
 		m->rank = 0;
 		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOC(hvl_t, 1);
