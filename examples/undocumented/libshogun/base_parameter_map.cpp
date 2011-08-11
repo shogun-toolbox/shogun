@@ -18,9 +18,9 @@ void print_message(FILE* target, const char* str)
 	fprintf(target, "%s", str);
 }
 
-void print_value(CSGParamInfo* key, CParameterMap* map)
+void print_value(SGParamInfo* key, ParameterMap* map)
 {
-	CSGParamInfo* current=map->get(key);
+	SGParamInfo* current=map->get(key);
 	key->print_param_info();
 	SG_SPRINT("value: ");
 
@@ -30,15 +30,13 @@ void print_value(CSGParamInfo* key, CParameterMap* map)
 		SG_SPRINT("no element\n");
 
 	SG_SPRINT("\n");
-
-	SG_UNREF(current);
 }
 
 int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	CParameterMap* map=new CParameterMap();
+	ParameterMap* map=new ParameterMap();
 
 	EContainerType cfrom=CT_SCALAR;
 	EContainerType cto=CT_MATRIX;
@@ -49,14 +47,14 @@ int main(int argc, char **argv)
 	EPrimitiveType pfrom=PT_BOOL;
 	EPrimitiveType pto=PT_SGOBJECT;
 
-	map->put(new CSGParamInfo("2", cfrom, sfrom, pfrom),
-			new CSGParamInfo("zwei", cto, sto, pto));
-	map->put(new CSGParamInfo("1", cfrom, sfrom, pfrom),
-			new CSGParamInfo("eins", cto, sto, pto));
-	map->put(new CSGParamInfo("4", cfrom, sfrom, pfrom),
-			new CSGParamInfo("vier", cto, sto, pto));
-	map->put(new CSGParamInfo("3", cfrom, sfrom, pfrom),
-			new CSGParamInfo("drei", cto, sto, pto));
+	map->put(new SGParamInfo("2", cfrom, sfrom, pfrom),
+			new SGParamInfo("zwei", cto, sto, pto));
+	map->put(new SGParamInfo("1", cfrom, sfrom, pfrom),
+			new SGParamInfo("eins", cto, sto, pto));
+	map->put(new SGParamInfo("4", cfrom, sfrom, pfrom),
+			new SGParamInfo("vier", cto, sto, pto));
+	map->put(new SGParamInfo("3", cfrom, sfrom, pfrom),
+			new SGParamInfo("drei", cto, sto, pto));
 
 	SG_SPRINT("before finalization:\n");
 	map->print_map();
@@ -65,40 +63,34 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n\nafter finalization:\n");
 	map->print_map();
 
-	CSGParamInfo* key;
+	SGParamInfo* key;
 
 	SG_SPRINT("\n\ntesting map\n");
-	key=new CSGParamInfo("1", cfrom, sfrom, pfrom);
-	SG_REF(key);
+	key=new SGParamInfo("1", cfrom, sfrom, pfrom);
 	print_value(key, map);
-	SG_UNREF(key);
+	delete key;
 
-	key=new CSGParamInfo("2", cfrom, sfrom, pfrom);
-	SG_REF(key);
+	key=new SGParamInfo("2", cfrom, sfrom, pfrom);
 	print_value(key, map);
-	SG_UNREF(key);
+	delete key;
 
-	key=new CSGParamInfo("2", cto, sfrom, pfrom);
-	SG_REF(key);
+	key=new SGParamInfo("2", cto, sfrom, pfrom);
 	print_value(key, map);
-	SG_UNREF(key);
+	delete key;
 
-	key=new CSGParamInfo("2", cfrom, sto, pfrom);
-	SG_REF(key);
+	key=new SGParamInfo("2", cfrom, sto, pfrom);
 	print_value(key, map);
-	SG_UNREF(key);
+	delete key;
 
-	key=new CSGParamInfo("2", cfrom, sfrom, pto);
-	SG_REF(key);
+	key=new SGParamInfo("2", cfrom, sfrom, pto);
 	print_value(key, map);
-	SG_UNREF(key);
+	delete key;
 
-	key=new CSGParamInfo("5", cfrom, sfrom, pfrom);
-	SG_REF(key);
+	key=new SGParamInfo("5", cfrom, sfrom, pfrom);
 	print_value(key, map);
-	SG_UNREF(key);
+	delete key;
 
-	SG_UNREF(map);
+	delete map;
 
 	exit_shogun();
 
