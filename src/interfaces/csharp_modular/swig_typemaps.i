@@ -172,3 +172,180 @@ TYPEMAP_SGMATRIX(float32_t, float, float)
 TYPEMAP_SGMATRIX(float64_t, double, double)
 
 #undef TYPEMAP_SGMATRIX
+
+
+/* input/output typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES(SGTYPE, CTYPE, CSHARPTYPE)
+
+%typemap(ctype, out="CTYPE*") shogun::SGStringList<SGTYPE>	%{int rows, int cols, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<SGTYPE>		%{CSHARPTYPE[,]%}
+%typemap(cstype) shogun::SGStringList<SGTYPE> 	%{CSHARPTYPE[,]%}
+
+%typemap(in) shogun::SGStringList<SGTYPE> {
+	int32_t i;
+	int32_t len, max_len = 0;
+	CTYPE * array = $input;
+
+	if (!$input) {
+		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
+		return $null;
+	}
+
+	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, rows);
+
+	for (i = 0; i < rows; i++) {
+		len = cols;
+		max_len = shogun::CMath::max(len, max_len);
+
+		strings[i].slen = len;
+		strings[i].string = NULL;
+
+		if (len >0) {
+			strings[i].string = SG_MALLOC(SGTYPE, len);
+			memcpy(strings[i].string, array, len * sizeof(SGTYPE));
+		}
+		array = array + len;
+	}
+
+	SGStringList<SGTYPE> sl;
+	sl.strings=strings;
+	sl.num_strings=rows;
+	sl.max_string_length=max_len;
+	$1 = sl;
+}
+
+%typemap(out) shogun::SGStringList<SGTYPE> {
+	shogun::SGString<SGTYPE>* str = $1.strings;
+	int32_t i, j;
+	int32_t rows = $1.num_strings;
+	int32_t cols = str[0].slen;
+	int32_t len = rows * cols;
+	
+	CTYPE *res = SG_MALLOC(CTYPE, len + 2);
+	res[0] = rows;
+	res[1] = cols;
+
+	res = res + 2;
+
+	for (i = 0; i < rows; i++) {
+		memcpy(res, str[i].string, str[i].slen * sizeof(SGTYPE));
+		res = res + cols;
+		SG_FREE(str[i].string);
+	}
+	SG_FREE(str);
+	$result = res;
+}
+
+%typemap(csin) shogun::SGStringList<SGTYPE> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
+%typemap(csout) shogun::SGStringList<SGTYPE> {
+	IntPtr ptr = $imcall;$excode
+	CSHARPTYPE[] ranks = new CSHARPTYPE[2];
+	Marshal.Copy(ptr, ranks, 0, 2);
+
+	int rows = (int)ranks[0];
+	int cols = (int)ranks[1];
+	int len = rows * cols;
+
+	CSHARPTYPE[] ret = new CSHARPTYPE[len];
+
+	Marshal.Copy(new IntPtr(ptr.ToInt32() + 2 * Marshal.SizeOf(typeof(CSHARPTYPE))), ret, 0, len);
+
+	CSHARPTYPE[,] result = new CSHARPTYPE[rows, cols];
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			result[i, j] = ret[i * cols + j];
+		}
+	}
+	return result;
+}
+
+%enddef
+
+//TYPEMAP_STRINGFEATURES(char, signed char, byte)
+TYPEMAP_STRINGFEATURES(uint8_t, unsigned char, byte)
+TYPEMAP_STRINGFEATURES(int16_t, short, short)
+TYPEMAP_STRINGFEATURES(uint16_t, unsigned short, short)
+TYPEMAP_STRINGFEATURES(int32_t, int, int)
+TYPEMAP_STRINGFEATURES(uint32_t, unsigned int, int)
+TYPEMAP_STRINGFEATURES(int64_t, long, int)
+TYPEMAP_STRINGFEATURES(uint64_t, unsigned long, long)
+TYPEMAP_STRINGFEATURES(long long, long long, long)
+TYPEMAP_STRINGFEATURES(float32_t, float, float)
+TYPEMAP_STRINGFEATURES(float64_t, double, double)
+
+/* input/output typemap for SGStringList<char> */
+%typemap(ctype, out="char **") shogun::SGStringList<char>	%{int size, char **%}
+%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<char>		%{string []%}
+%typemap(cstype) shogun::SGStringList<char> 	%{string []%}
+
+%typemap(in) shogun::SGStringList<char> {
+	int32_t i;
+	int32_t len, max_len = 0;
+	char * str;
+
+	if (!$input) {
+		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
+		return $null;
+	}
+
+	shogun::SGString<char>* strings=SG_MALLOC(shogun::SGString<char>, size);
+
+	for (i = 0; i < size; i++) {
+		str = $input[i];
+		len = strlen(str);
+		max_len = shogun::CMath::max(len, max_len);
+
+		strings[i].slen = len + 1;
+		strings[i].string = NULL;
+
+		if (len > 0) {
+			strings[i].string = SG_MALLOC(char, len + 1);
+			memcpy(strings[i].string, str, len + 1);
+		}
+	}
+
+	SGStringList<char> sl;
+	sl.strings = strings;
+	sl.num_strings = size;
+	sl.max_string_length = max_len;
+	$1 = sl;
+}
+
+%typemap(out) shogun::SGStringList<char> {
+	shogun::SGString<char>* str = $1.strings;
+	int32_t i, j;
+	int32_t size = $1.num_strings;
+	int32_t max_size = 32;
+	
+	char ** res = SG_MALLOC(char*, size + 1);
+	res[0] = SG_MALLOC(char, max_size);
+	sprintf(res[0], "%d", size);
+
+	for (i = 0; i < size; i++) {
+		res[i + 1] = SG_MALLOC(char, str[i].slen);
+		memcpy(res[i + 1], str[i].string, str[i].slen * sizeof(char));
+	}
+	$result = res;
+}
+
+%typemap(csin) shogun::SGStringList<char> "$csinput.Length, $csinput"
+%typemap(csout) shogun::SGStringList<char> {
+	IntPtr ptr = $imcall;$excode
+	
+	IntPtr[] ranks = new IntPtr[1];
+	Marshal.Copy(ptr, ranks, 0, 1);
+
+	string len = Marshal.PtrToStringAnsi(ranks[0]);
+	int size = Convert.ToInt32(len);
+	IntPtr[] ptrarray = new IntPtr[size + 1];
+	Marshal.Copy(ptr, ptrarray, 0, size + 1);
+
+	string[] result = new string[size];
+	for (int i = 0; i < size; i++) {
+			result[i] = Marshal.PtrToStringAnsi(ptrarray[i + 1]);
+	}
+	
+	Marshal.FreeCoTaskMem(ranks[0]);
+	Marshal.FreeCoTaskMem(ptr);
+	return result;
+}
