@@ -11,7 +11,7 @@
 #ifndef __PARAMETERMAP_
 #define __PARAMETERMAP_
 
-#include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/base/DynArray.h>
 
 namespace shogun
 {
@@ -20,14 +20,14 @@ namespace shogun
  * CSGObject. Contains name, type, etc.
  * This is used for mapping types that have changed in different versions of
  * shogun.
- * Instances of this class may be compared to each other using == and the
- * parameter's name is used for comparison.
+ * Instances of this class may be compared to each other. Ordering is based on
+ * name, equalness is based on all attributes
  */
-class CSGParamInfo: public CSGObject
+class SGParamInfo
 {
 public:
 	/** constructor */
-	CSGParamInfo();
+	SGParamInfo();
 
 	/** constructor
 	 *
@@ -36,26 +36,26 @@ public:
 	 * @param stype struct type of parameter
 	 * @param ptype primitive type of parameter
 	 */
-	CSGParamInfo(const char* name, EContainerType ctype, EStructType stype,
+	SGParamInfo(const char* name, EContainerType ctype, EStructType stype,
 			EPrimitiveType ptype);
 
 	/** destructor */
-	virtual ~CSGParamInfo();
+	virtual ~SGParamInfo();
 
 	/** prints all parameter values */
 	void print_param_info();
 
+	/** @return an identical copy */
+	SGParamInfo* duplicate() const;
+
 	/** operator for comparison, true iff all attributes are equal */
-	bool operator==(const CSGParamInfo& other) const;
+	bool operator==(const SGParamInfo& other) const;
 
 	/** operator for comparison (by string m_name) */
-	bool operator<(const CSGParamInfo& other) const;
+	bool operator<(const SGParamInfo& other) const;
 
 	/** operator for comparison (by string m_name) */
-	bool operator>(const CSGParamInfo& other) const;
-
-	/** @return name of the SG_SERIALIZABLE */
-	inline virtual const char* get_name() const { return "SGParamInfo";	}
+	bool operator>(const SGParamInfo& other) const;
 
 private:
 	void init();
@@ -68,32 +68,33 @@ public:
 };
 
 /** @brief Class to hold instances of a parameter map. Each element contains a
- * key and a value, which are of type CSGParamInfo.
+ * key and a value, which are of type SGParamInfo.
+ * May be compared to each other based on their keys
  */
-class CParameterMapElement: public CSGObject
+class ParameterMapElement
 {
 public:
 	/** constructor */
-	CParameterMapElement();
+	ParameterMapElement();
 
 	/** constructor
 	 *
-	 * @param key key of this element
-	 * @param value value of this element
+	 * @param key key of this element, is copied
+	 * @param value value of this element, is copied
 	 */
-	CParameterMapElement(CSGParamInfo* key, CSGParamInfo* value);
+	ParameterMapElement(SGParamInfo* key, SGParamInfo* value);
 
 	/** destructor */
-	virtual ~CParameterMapElement();
+	virtual ~ParameterMapElement();
 
 	/** operator for comparison, true iff m_key is equal */
-	bool operator==(const CParameterMapElement& other) const;
+	bool operator==(const ParameterMapElement& other) const;
 
 	/** operator for comparison (by m_key) */
-	bool operator<(const CParameterMapElement& other) const;
+	bool operator<(const ParameterMapElement& other) const;
 
 	/** operator for comparison (by m_key) */
-	bool operator>(const CParameterMapElement& other) const;
+	bool operator>(const ParameterMapElement& other) const;
 
 	/** @return name of the SG_SERIALIZABLE */
 	inline virtual const char* get_name() const
@@ -105,12 +106,12 @@ private:
 	void init();
 
 public:
-	CSGParamInfo* m_key;
-	CSGParamInfo* m_value;
+	SGParamInfo* m_key;
+	SGParamInfo* m_value;
 
 };
 
-/** @brief Implements a map of CParameterMapElement instances
+/** @brief Implements a map of ParameterMapElement instances
  *
  * Implementation is done via an array. Via the call finalize_map(), it is
  * sorted. Then, get() may be called. If it is called before, an error is
@@ -120,21 +121,21 @@ public:
  * So inserting n elements is n*O(1) + O(n*log n) = O(n*log n).
  * Getting an element is then possible in O(log n) by binary search
  */
-class CParameterMap: public CSGObject
+class ParameterMap
 {
 public:
 	/** constructor */
-	CParameterMap();
+	ParameterMap();
 
 	/** destructor */
-	virtual ~CParameterMap();
+	virtual ~ParameterMap();
 
 	/** Puts an newly allocated element into the map
 	 *
 	 * @param key key of the element
 	 * @param value value of the lement
 	 */
-	void put(CSGParamInfo* key, CSGParamInfo* value);
+	void put(SGParamInfo* key, SGParamInfo* value);
 
 	/** Gets a specific element of the map. Note that it is SG_REF'ed
 	 * finalize_map() has to be called first if more than one elements are in
@@ -143,7 +144,7 @@ public:
 	 * @param key key of the element to get
 	 * @return value of the key element
 	 */
-	CSGParamInfo* get(CSGParamInfo* key) const;
+	SGParamInfo* get(SGParamInfo* key) const;
 
 	/** Finalizes the map. Has to be called before get may be called if more
 	 * than one element in map */
@@ -152,15 +153,12 @@ public:
 	/** prints all elements of this map */
 	void print_map();
 
-	/** @return name of the SG_SERIALIZABLE */
-	inline virtual const char* get_name() const { return "ParameterMap"; }
-
 private:
 	void init();
 
 protected:
 	/** list of CLinearMap elements, this is always kept sorted */
-	CDynamicObjectArray<CParameterMapElement>* m_map_elements;
+	DynArray<ParameterMapElement*> m_map_elements;
 
 	/** variable that indicates if underlying array is sorted (and thus get
 	 * may safely be called) */
