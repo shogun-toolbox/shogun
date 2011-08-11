@@ -199,7 +199,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 *
 		 * @return the array
 		 */
-		inline T* get_array()
+		inline T* get_array() const
 		{
 			return m_array.get_array();
 		}
