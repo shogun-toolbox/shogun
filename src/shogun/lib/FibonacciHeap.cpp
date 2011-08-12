@@ -9,7 +9,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include "lib/FibonacciHeap.h"
+#include <shogun/lib/FibonacciHeap.h>
 
 using namespace shogun;
 
@@ -19,6 +19,7 @@ CFibonacciHeap::CFibonacciHeap()
 
 	max_num_nodes = 0;
 	nodes = NULL;
+	Dn = 0;
 
 	num_nodes = 0;
 	num_trees = 0;
@@ -36,6 +37,13 @@ CFibonacciHeap::CFibonacciHeap(int32_t capacity)
 		clear_node(i);
 	}
 
+	Dn = 1 + (int32_t)(CMath::log2(max_num_nodes));
+	A = SG_MALLOC(FibonacciHeapNode* , Dn);
+	for(int32_t i = 0; i < Dn; i++)
+	{
+		A[i] = NULL;
+	}
+
 	num_nodes = 0;
 	num_trees = 0;
 }
@@ -47,8 +55,7 @@ CFibonacciHeap::~CFibonacciHeap()
 		if(nodes[i] != NULL)
 			delete nodes[i];
 	}
-
-	delete [] nodes;
+	SG_FREE(nodes);
 }
 
 void CFibonacciHeap::insert(int32_t index, float64_t key)
@@ -213,13 +220,8 @@ void CFibonacciHeap::add_to_roots(FibonacciHeapNode *up_node)
 void CFibonacciHeap::consolidate()
 {
 	FibonacciHeapNode *x, *y, *w;
-	FibonacciHeapNode **A;
+	int32_t d;
 
-	int32_t Dn, d;
-
-	Dn = 1 + (int32_t)(CMath::log2(max_num_nodes));
-
-	A = SG_MALLOC(FibonacciHeapNode* , Dn);
 	for(int32_t i = 0; i < Dn; i++)
 	{
 		A[i] = NULL;
@@ -268,7 +270,6 @@ void CFibonacciHeap::consolidate()
 			add_to_roots(A[i]);
 		}
 	}
-	SG_FREE(A);
 }
 
 void CFibonacciHeap::link_nodes(FibonacciHeapNode *y, FibonacciHeapNode *x)
