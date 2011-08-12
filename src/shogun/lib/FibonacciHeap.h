@@ -55,10 +55,10 @@ struct FibonacciHeapNode
 class CFibonacciHeap: public CSGObject
 {
 public:
-	/** Empty constructor. */
+
 	CFibonacciHeap();
 
-	/** Constructor for heap with specified capacity. */
+	/** Constructor for heap with specified capacity */
 	CFibonacciHeap(int32_t capacity);
 
 	virtual inline const char* get_name() const
@@ -66,7 +66,6 @@ public:
 		return "FibonacciHeap";
 	}
 
-	/** Destructor. */
 	virtual ~CFibonacciHeap();
 
 
@@ -85,67 +84,71 @@ public:
 		return max_num_nodes;
 	}
 
-	/** Inserts nodes with certain key
-	 * in array of nodes with index.
-	 * Have amortized time of O(1).
+	/** Inserts nodes with certain key in array of nodes with index
+	 * Have time of O(1)
 	 */
 	void insert(int32_t index, float64_t key);
 
-	/** Deletes and returns item with minimal key.
+	/** Deletes and returns item with minimal key
 	 * Have amortized time of O(log n)
 	 * @return item with minimal key
 	 */
 	int32_t extract_min(float64_t &ret_key);
 
-	/** Clears all nodes in heap.
-	 */
+	/** Clears all nodes in heap */
 	void clear();
 
-	/** Returns key by index.
+	/** Returns key by index
 	 * @return -1 if not valid
 	 */
 	int32_t get_key(int32_t index, float64_t &ret_key);
 
-	/**
+	/** Decreases key by index
+	 * Have amortized time of O(1)
 	 */
 	void decrease_key(int32_t index, float64_t key);
 
 	void debug_print();
 
 private:
-	/** Adds node to roots list. */
+	/** Adds node to roots list */
 	void add_to_roots(FibonacciHeapNode *up_node);
 
-	/** Consolidates heap. */
+	/** Consolidates heap */
 	void consolidate();
 
-	/** Links right node to childs of left node. */
+	/** Links right node to childs of left node */
 	void link_nodes(FibonacciHeapNode *right, FibonacciHeapNode *left);
 
-	/** Clears node by index. */
+	/** Clears node by index */
 	void clear_node(int32_t index);
 
-	/** Cuts child node from childs list of parent. */
+	/** Cuts child node from childs list of parent */
 	void cut(FibonacciHeapNode *child, FibonacciHeapNode *parent);
 
-	/** */
 	void cascading_cut(FibonacciHeapNode* tree);
 
 protected:
-	/** Minimal root in heap. */
+	/** minimal root in heap */
 	FibonacciHeapNode* min_root;
 
-	/** Array of nodes for fast search by index. */
+	/** array of nodes for fast search by index */
 	FibonacciHeapNode** nodes;
 
-	/** Number of nodes. */
+	/** number of nodes */
 	int32_t num_nodes;
 
-	/** Number of trees. */
+	/** number of trees */
 	int32_t num_trees;
 
-	/** Maximum number of nodes. */
+	/** maximum number of nodes */
 	int32_t max_num_nodes;
+
+	/** supporting array */
+	FibonacciHeapNode **A;
+
+	/** size of supporting array */
+	int32_t Dn;
 };
 
 }
