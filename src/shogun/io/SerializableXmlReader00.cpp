@@ -108,6 +108,8 @@ SerializableXmlReader00::read_cont_begin_wrapped(
 	xmlNode* m = m_file->m_stack_stream.back();
 
 	switch (type->m_ctype) {
+	case CT_NDARRAY:
+		SG_NOTIMPLEMENTED;
 	case CT_SCALAR: break;
 	case CT_VECTOR:
 		*len_read_y = xmlChildElementCount(m);
@@ -251,6 +253,8 @@ SerializableXmlReader00::read_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
 	switch (type->m_ctype) {
+	case CT_NDARRAY:
+		SG_NOTIMPLEMENTED;
 	case CT_SCALAR: break;
 	case CT_VECTOR:
 		if (y == 0) {
