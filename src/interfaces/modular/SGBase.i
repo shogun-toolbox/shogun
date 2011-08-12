@@ -5,15 +5,68 @@
 #ifdef SWIGJAVA
 %typemap(javainterfaces) SWIGTYPE "Serializable"
 
+%typemap(javaincludes) SWIGTYPE
+%{
+import org.shogun.SerializableFile;
+import org.shogun.SerializableAsciiFile;
+%}
 %typemap(javacode) SWIGTYPE
 %{
-    private void writeObject(java.io.ObjectOutputStream out)
-    {
-    }
+        private void writeObject(java.io.ObjectOutputStream out) { 
+                // to be improved still
+                String tmpFileName = System.getProperty("java.io.tmpdir") + "/shogun.tmp";
+                java.io.File file = null; 
+                java.io.FileInputStream in = null;
+                int ch;
+                try {
+                        file = new java.io.File(tmpFileName);
+                        file.createNewFile();
+                        SerializableFile tmpFile = new SerializableAsciiFile(tmpFileName);
+                        this.save_serializable(tmpFile);
+                        tmpFile.close();
+                        in = new java.io.FileInputStream(file);
+                        while((ch=in.read()) != -1) {
+                                out.write(ch);
+                        }
+                        out.flush();
+                } catch (java.io.IOException ex) {
 
-    private void readObject(java.io.ObjectInputStream in)
-    {
-    }
+                } finally {
+                        try { 
+                                in.close();
+                        } catch (java.io.IOException ex) {
+
+                        }
+                }
+        }
+
+        private void readObject(java.io.ObjectInputStream in) {
+                // to be improved still
+                String tmpFileName = System.getProperty("java.io.tmpdir") + "/shogun.tmp";
+                java.io.File file = null;
+                java.io.FileOutputStream out = null;
+                int ch;
+                try {
+                        file = new java.io.File(tmpFileName);
+                        file.createNewFile();
+                        out = new java.io.FileOutputStream(file);
+                        while ((ch=in.read()) != -1) {
+                                out.write(ch);
+                        }
+                        out.close();
+                        SerializableFile tmpFile = new SerializableAsciiFile(tmpFileName);
+                        this.load_serializable(tmpFile);
+                        tmpFile.close();
+                } catch (java.io.IOException ex) {
+
+                } finally {
+                        try {
+                                out.close();
+                        } catch (java.io.IOException ex) {
+
+                        }
+                }
+        }
     %}
 #endif
 
@@ -119,6 +172,10 @@
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
+%extend shogun::Parallel {
+       bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; };
+       bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; };
+};
 
 #ifdef SWIGPYTHON
 

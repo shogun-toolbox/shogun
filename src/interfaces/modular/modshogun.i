@@ -24,6 +24,8 @@
 #endif
 #endif
 
+%include "modshogun_ignores.i"
+
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"
 %include "Distance_includes.i"
@@ -55,3 +57,4 @@
 %include "Clustering.i"
 %include "ModelSelection.i"
 %include "Structure.i"
+

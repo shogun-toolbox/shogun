@@ -140,7 +140,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_FREE(cp_bias);
 	cp_bias=NULL;
 
-	lab=NULL;
+	lab.destroy_vector();
 
 	SG_FREE(old_w);
 	old_w=NULL;
@@ -345,7 +345,7 @@ void CSVMOcas::init()
 	w=NULL;
 	old_w=NULL;
 	tmp_a_buf=NULL;
-	lab=NULL;
+	lab.destroy_vector();
 	cp_value=NULL;
 	cp_index=NULL;
 	cp_nz_dims=NULL;

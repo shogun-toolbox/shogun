@@ -564,7 +564,9 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 	compute_projection(num_feat, num_vec);
 
 	CTime time;
+#ifdef DEBUG_SUBGRADIENTSVM
 	float64_t loop_time=0;
+#endif
 	while (!(CSignal::cancel_computations()))
 	{
 		CTime t;
@@ -638,7 +640,9 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 		//CMath::display_vector(proj, num_vec, "proj");
 
 		t.stop();
+#ifdef DEBUG_SUBGRADIENTSVM
 		loop_time=t.time_diff_sec();
+#endif
 		num_iterations++;
 
 		if (get_max_train_time()>0 && time.cur_time_diff()>get_max_train_time())

@@ -1566,8 +1566,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 						MyTime3.start() ;
 #endif				
 						int32_t num_ok_pos = 0 ;
-						float64_t last_mval=0 ;
-						int32_t last_ts = 0 ;
 
 						for (int32_t ts=t-1; ts>=0 && m_pos[t]-m_pos[ts]<=look_back_; ts--)
 						{
@@ -1639,8 +1637,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 										fixed_list_len = 1 ;
 										fixedtemplong = false ;
 									}
-									last_mval = mval ;
-									last_ts = ts ;
 								}
 								else
 								{
@@ -1944,12 +1940,6 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 									fixed_list_len = 1 ;
 									fixedtemplong = true ;
 								}
-
-								/* // extra check
-								   float64_t mval_trans2 = -( elem_val[i] + pen_val_3p + delta.element(delta_array, ts, ii, 0, m_seq_len, m_N) ) ;
-								   if (last_ts==ts && fabs(last_mval-mval_trans2)>1e-5)
-								   SG_PRINT("last_mval=%1.2f at m_pos %i vs. mval_trans2=%1.2f at m_pos %i (diff=%f)\n", last_mval, m_pos[last_ts], mval_trans2, m_pos[ts], last_mval-mval_trans2) ;
-								   */
 							}
 						}
 					}

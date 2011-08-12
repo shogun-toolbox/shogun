@@ -327,7 +327,7 @@ template <class T> class DynArray
 		 *
 		 * @return the array
 		 */
-		inline T* get_array(void)
+		inline T* get_array(void) const
 		{
 			return array;
 		}

@@ -302,6 +302,26 @@ class CMath : public CSGObject
 #endif
 		}
 
+		/// x^-0.5
+		static inline float32_t invsqrt(float32_t x)
+		{
+			union float_to_int
+			{
+				float32_t f;
+				int32_t i;
+			};
+
+			float_to_int tmp;
+			tmp.f=x;
+
+			float32_t xhalf = 0.5f * x;
+			// store floating-point bits in integer tmp.i
+			// and do initial guess for Newton's method
+			tmp.i = 0x5f3759d5 - (tmp.i >> 1);
+			x = tmp.f; // convert new bits into float
+			x = x*(1.5f - xhalf*x*x); // One round of Newton's method
+			return x;
+		}
 
 		/// x^n
 		static inline floatmax_t powl(floatmax_t x, floatmax_t n)
@@ -1081,6 +1101,53 @@ class CMath : public CSGObject
 					qsort(&output[left],size-left);
 			}
 
+		/**Performs a quicksort on an array of pointers.
+		 * It is sorted from in ascending (for type T)
+		 *
+		 * Every element is dereferenced once before being compared
+		 *
+		 * @param array array of pointers to sort
+		 *
+		 * */
+		template <class T>
+			static void qsort(SGVector<T*> array)
+			{
+				if (array.vlen==1)
+					return;
+
+				if (array.vlen==2)
+				{
+					if (*array.vector[0]>*array.vector[1])
+						swap(array.vector[0],array.vector[1]);
+					return;
+				}
+				T* split=array.vector[array.vlen/2];
+
+				int32_t left=0;
+				int32_t right=array.vlen-1;
+
+				while (left<=right)
+				{
+					while (*array.vector[left]<*split)
+						++left;
+					while (*array.vector[right]>*split)
+						--right;
+
+					if (left<=right)
+					{
+						swap(array.vector[left],array.vector[right]);
+						++left;
+						--right;
+					}
+				}
+
+				if (right+1>1)
+					qsort(SGVector<T*>(array.vector,right+1));
+
+				if (array.vlen-left>1)
+					qsort(SGVector<T*>(&array.vector[left],array.vlen-left));
+			}
+
 		/// display bits (useful for debugging)
 		template <class T> static void display_bits(T word, int32_t width=8*sizeof(T))
 		{
@@ -1300,10 +1367,42 @@ class CMath : public CSGObject
 				return -1;
 			}
 
-		/* finds an element in a sorted array via binary search 
-		 * if it exists, else the index the largest smaller element
-		 * is returned
-		 * note: a successor is not mandatory */
+		/* Finds an element in a sorted array of pointers via binary search
+		 * Every element is dereferenced once before being compared
+		 *
+		 * @param array array of pointers to search in (assumed being sorted)
+		 * @param elem pointer to element to search for
+		 * @return index of elem, -1 if not found */
+		template<class T>
+			static inline int32_t binary_search(SGVector<T*> array, T* elem)
+			{
+				int32_t start=0;
+				int32_t end=array.vlen-1;
+
+				if (array.vlen<1)
+					return -1;
+
+				while (start<end)
+				{
+					int32_t middle=(start+end)/2;
+
+					if (*array.vector[middle]>*elem)
+						end=middle-1;
+					else if (*array.vector[middle]<*elem)
+						start=middle+1;
+					else
+					{
+						start=middle;
+						break;
+					}
+				}
+
+				if (start>=0&&*array.vector[start]==*elem)
+					return start;
+
+				return -1;
+			}
+
 		template <class T>
 			static int32_t binary_search_max_lower_equal(
 				T* output, int32_t size, T elem)

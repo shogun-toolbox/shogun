@@ -661,10 +661,8 @@ float64_t CMKL::compute_optimal_betas_block_norm(
 	float64_t obj;
 	float64_t Z=0;
 	int32_t p;
-	int32_t nofKernelsGood;
 
 	// --- optimal beta
-	nofKernelsGood = num_kernels;
 	for( p=0; p<num_kernels; ++p )
 	{
 		ASSERT(sumw[p]>=0);
@@ -802,7 +800,7 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 	const float64_t r = mkl_norm / ( mkl_norm - 1.0 );
 	float64_t* newtDir = SG_MALLOC(float64_t,  num_kernels );
 	float64_t* newtBeta = SG_MALLOC(float64_t,  num_kernels );
-	float64_t newtStep;
+	//float64_t newtStep;
 	float64_t stepSize;
 	float64_t Z;
 	float64_t obj;
@@ -880,7 +878,7 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 	{
 		// --- compute Newton direction (Hessian is diagonal)
 		const float64_t gqq1 = mkl_norm * (mkl_norm-1.0) * gamma;
-		newtStep = 0.0;
+		// newtStep = 0.0;
 		for( p=0; p<num_kernels; ++p )
 		{
 			ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );

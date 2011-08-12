@@ -25,6 +25,6 @@ def kernel_gaussian_modular(fm_train_real=traindat,fm_test_real=testdat, width=1
 end
 
 if __FILE__ == $0 then
-	print 'Gaussian'
+	puts 'Gaussian'
 	kernel_gaussian_modular(traindat, testdat, 1.3)
 end

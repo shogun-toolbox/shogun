@@ -28,10 +28,11 @@
 namespace shogun
 {
 
-typedef size_t (*hash_func_t)(substring, unsigned long);
+typedef uint32_t (*hash_func_t)(substring, uint32_t);
 
 const int32_t quadratic_constant = 27942141;
 const int32_t constant_hash = 11650396;
+const uint32_t hash_base = 97562527;
 
 }
 #endif // _VW_COMMON_H__

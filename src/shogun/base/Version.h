@@ -88,6 +88,11 @@ public:
 		return version_year;
 	}
 
+	static inline const int32_t get_version_parameter()
+	{
+		return version_parameter;
+	}
+
 	static inline int64_t get_version_in_minutes()
 	{
 		return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
@@ -125,6 +130,7 @@ protected:
 	static const int32_t version_day;
 	static const int32_t version_hour;
 	static const int32_t version_minute;
+	static const int32_t version_parameter;
 private:
 	int32_t refcount;
 };

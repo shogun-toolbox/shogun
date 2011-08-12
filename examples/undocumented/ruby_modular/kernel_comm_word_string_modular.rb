@@ -35,6 +35,6 @@ def kernel_comm_word_string_modular (fm_train_dna=traindat, fm_test_dna=testdat,
 end
 
 if __FILE__ == $0
-	print 'CommWordString'
+	puts 'CommWordString'
 	kernel_comm_word_string_modular(*parameter_list[0])
 end

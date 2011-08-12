@@ -25,6 +25,6 @@ def kernel_linear_word_modular(fm_train_word=traindat,fm_test_word=testdat,scale
 end
 
 if __FILE__ == $0
-	print 'LinearWord'
+	puts 'LinearWord'
 	kernel_linear_word_modular(*parameter_list[0])
 end

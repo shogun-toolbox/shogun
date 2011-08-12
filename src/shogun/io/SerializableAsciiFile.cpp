@@ -166,6 +166,8 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
 	switch (type->m_ctype) {
+	case CT_NDARRAY:
+		SG_NOTIMPLEMENTED;
 	case CT_SCALAR:
 		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
 				 "during writing AsciiFile!");

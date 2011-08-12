@@ -2,6 +2,9 @@ require 'narray'
 require 'modshogun'
 require 'load'
 require 'pp'
+# testing 
+require 'rubygems'
+require 'pry'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_byte.dat')
 testdat = LoadMatrix.load_numbers('../data/fm_test_byte.dat')
@@ -24,6 +27,6 @@ def kernel_linear_byte_modular(fm_train_byte=traindat,fm_test_byte=testdat)
 end
 
 if __FILE__ == $0
-	print 'LinearByte'
+	puts 'LinearByte'
 	kernel_linear_byte_modular(*parameter_list[0])
 end

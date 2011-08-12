@@ -128,9 +128,17 @@ public:
      * Sets whether to SG_FREE() the vector explicitly
      * after it has been used
      *
-     * @param del whether to SG_FREE() or not, bool
+     * @param free_vec whether to SG_FREE() or not, bool
      */
-    void set_do_delete(bool _del);
+    void set_free_vector_after_release(bool free_vec);
+
+    /**
+     * Sets whether to free all vectors that were
+     * allocated in the ring upon destruction of the ring.
+     *
+     * @param destroy free all vectors on destruction
+     */
+    void set_free_vectors_on_destruct(bool destroy);
 
     /**
      * Starts the parser, creating a new thread.
@@ -211,6 +219,13 @@ public:
      */
     void exit_parser();
 
+    /**
+     * Returns the size of the examples ring
+     *
+     * @return ring size in terms of number of examples
+     */
+    int32_t get_ring_size() { return ring_size; }
+
 private:
     /**
      * Entry point for the parse thread.
@@ -251,7 +266,7 @@ protected:
     pthread_t parse_thread;
 
     /// The ring of examples, stored as they are parsed
-    CParseBuffer<T>* examples_buff;
+    CParseBuffer<T>* examples_ring;
 
     /// Number of features in dataset (max of 'seen' features upto point of access)
     int32_t number_of_features;
@@ -275,7 +290,10 @@ protected:
     int32_t current_len;
 
     /// Whether to SG_FREE() vector after it is used
-    bool do_delete;
+    bool free_after_release;
+
+    /// Size of the ring of examples
+    int32_t ring_size;
 
     /// Mutex which is used when getting/setting state of examples (whether a new example is ready)
     pthread_mutex_t examples_state_lock;
@@ -312,7 +330,7 @@ template <class T>
     pthread_mutex_destroy(&examples_state_lock);
     pthread_cond_destroy(&examples_state_changed);
 
-    delete examples_buff;
+    delete examples_ring;
 }
 
 template <class T>
@@ -325,7 +343,7 @@ template <class T>
     else
         example_type = E_UNLABELLED;
 
-    examples_buff = new CParseBuffer<T>(size);
+    examples_ring = new CParseBuffer<T>(size);
 
     parsing_done = false;
     reading_done = false;
@@ -336,16 +354,23 @@ template <class T>
     current_label = -1;
     current_feature_vector = NULL;
 
-    do_delete=true;
+    free_after_release=true;
+    ring_size=size;
 
     pthread_mutex_init(&examples_state_lock, NULL);
     pthread_cond_init(&examples_state_changed, NULL);
 }
 
 template <class T>
-    void CInputParser<T>::set_do_delete(bool _del)
+    void CInputParser<T>::set_free_vector_after_release(bool free_vec)
 {
-    do_delete=_del;
+    free_after_release=free_vec;
+}
+
+template <class T>
+    void CInputParser<T>::set_free_vectors_on_destruct(bool destroy)
+{
+	examples_ring->set_free_vectors_on_destruct(destroy);
 }
 
 template <class T>
@@ -420,7 +445,7 @@ template <class T>
 template <class T>
     void CInputParser<T>::copy_example_into_buffer(Example<T>* ex)
 {
-    examples_buff->copy_example(ex);
+    examples_ring->copy_example(ex);
 }
 
 template <class T> void* CInputParser<T>::main_parse_loop(void* params)
@@ -443,7 +468,7 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 
         pthread_testcancel();
 
-	current_example = examples_buff->get_free_example();
+	current_example = examples_ring->get_free_example();
 	current_feature_vector = current_example->fv.vector;
 	current_len = current_example->fv.vlen;
 	current_label = current_example->label;
@@ -466,7 +491,7 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
         current_example->fv.vector = current_feature_vector;
         current_example->fv.vlen = current_len;
 
-        examples_buff->copy_example(current_example);
+        examples_ring->copy_example(current_example);
 
         pthread_mutex_lock(&examples_state_lock);
         number_of_vectors_parsed++;
@@ -501,7 +526,7 @@ template <class T> Example<T>* CInputParser<T>::retrieve_example()
         return NULL;
     }
 
-    ex = examples_buff->fetch_example();
+    ex = examples_ring->get_unused_example();
     number_of_vectors_read++;
 
     return ex;
@@ -567,7 +592,7 @@ template <class T>
 template <class T>
     void CInputParser<T>::finalize_example()
 {
-    examples_buff->finalize_example(do_delete);
+    examples_ring->finalize_example(free_after_release);
 }
 
 template <class T> void CInputParser<T>::end_parser()

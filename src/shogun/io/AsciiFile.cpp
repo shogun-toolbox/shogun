@@ -4,6 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Parts of this code are copyright (c) 2009 Yahoo! Inc.
+ * All rights reserved.  The copyrights embodied in the content of
+ * this file are licensed under the BSD (revised) open source license.
+ *
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -296,14 +300,12 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 		while (sz == blocksize)	\
 		{	\
 			sz=fread(dummy, sizeof(uint8_t), blocksize, file);	\
-			bool contains_cr=false;	\
 			for (size_t i=0; i<sz; i++)	\
 			{	\
 				block_offs++;	\
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))	\
 				{	\
 					num_vec++;	\
-					contains_cr=true;	\
 					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs+1);	\
 					old_block_offs=block_offs;	\
 				}	\
@@ -476,14 +478,12 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 		while (sz == blocksize)
 		{
 			sz=fread(dummy, sizeof(uint8_t), blocksize, file);
-			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
 				block_offs++;
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
 					num_str++;
-					contains_cr=true;
 					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
 					old_block_offs=block_offs;
 				}
@@ -571,14 +571,12 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 		while (sz == blocksize)
 		{
 			sz=fread(dummy, sizeof(int8_t), blocksize, file);
-			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
 				block_offs++;
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
 					num_str++;
-					contains_cr=true;
 					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
 					old_block_offs=block_offs;
 				}
@@ -666,14 +664,12 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 		while (sz == blocksize)
 		{
 			sz=fread(dummy, sizeof(char), blocksize, file);
-			bool contains_cr=false;
 			for (size_t i=0; i<sz; i++)
 			{
 				block_offs++;
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
 					num_str++;
-					contains_cr=true;
 					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
 					old_block_offs=block_offs;
 				}
@@ -1089,3 +1085,26 @@ ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
 	return ::getline(lineptr, n, stream);
 }
 #endif
+
+void CAsciiFile::tokenize(char delim, substring s, v_array<substring>& ret)
+{
+	ret.erase();
+	char *last = s.start;
+	for (; s.start != s.end; s.start++)
+	{
+		if (*s.start == delim)
+		{
+			if (s.start != last)
+			{
+				substring temp = {last,s.start};
+				ret.push(temp);
+			}
+			last = s.start+1;
+		}
+	}
+	if (s.start != last)
+	{
+		substring final = {last, s.start};
+		ret.push(final);
+	}
+}

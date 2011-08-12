@@ -61,19 +61,14 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		inline int32_t set_granularity(int32_t g)
 		{ return m_array.set_granularity(g); }
 
-		/** get array size (including granularity buffer)
-		 *
-		 * @return total array size (including granularity buffer)
-		 */
-		inline int32_t get_array_size(void) const
-		{ return m_array.get_array_size(); }
-
 		/** get number of elements
 		 *
 		 * @return number of elements
 		 */
 		inline int32_t get_num_elements(void) const
-		{ return m_array.get_num_elements(); }
+		{
+			return m_array.get_num_elements();
+		}
 
 		/** get array element at index
 		 *
@@ -170,7 +165,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			m_array.push_back(element);
 		}
 
-	    /** ::STD::VECTOR compatible. Delete array element at the end
+		/** ::STD::VECTOR compatible. Delete array element at the end
 		 *  of array.
 		 */
 		inline void pop_back(void)
@@ -201,7 +196,9 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 * @return index of element or -1
 		 */
 		inline int32_t find_element(T* element) const
-		{ return m_array.find_element(element); }
+		{
+			return m_array.find_element(element);
+		}
 
 		/** delete array element at idx
 		 * (does not call SG_FREE() or the like)
@@ -217,16 +214,8 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			return m_array.delete_element(idx);
 		}
 
-		/** resize the array
-		 *
-		 * @param n new size
-		 * @return if resizing was successful
-		 */
-		inline bool resize_array(int32_t n)
-		{ return m_array.resize_array(n); }
-
 		/** clear the array (with zeros) */
-		inline void clear_array(void)
+		inline void clear_array()
 		{
 			unref_all();
 			m_array.clear_array();
@@ -251,6 +240,9 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			return *this;
 		}
 
+		/** @return underlying array of pointers */
+		inline T** get_array() const { return m_array.get_array(); }
+
 		/** shuffles the array */
 		inline void shuffle() { m_array.shuffle(); }
 
@@ -270,7 +262,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			}
 		}
 
-		/** dynamicly casts the given element to a CSGObject, if non-NULL.
+		/** Dynamically casts the given element to a CSGObject, if non-NULL.
 		 * Used for all method that have some input elements that are to be put
 		 * into the array */
 		inline CSGObject* cast_to_sgobject(T* element) const
@@ -282,8 +274,8 @@ template<class T>class CDynamicObjectArray :public CSGObject
 
 			if (!casted)
 			{
-				SG_ERROR(
-					"Generic type of CDynamicObjectArray is not of type CSGObject!\n");
+				SG_ERROR("Generic type of CDynamicObjectArray is not of type "
+						"CSGObject!\n");
 			}
 
 			return casted;

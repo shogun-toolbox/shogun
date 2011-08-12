@@ -40,7 +40,7 @@ public:
 	{
 		set_read_functions();
 		init();
-		parser.set_do_delete(false);
+		parser.set_free_vector_after_release(false);
 	}
 
 	/** 
@@ -58,7 +58,7 @@ public:
 	{
 		init(file, is_labelled, size);
 		set_read_functions();
-		parser.set_do_delete(false);
+		parser.set_free_vector_after_release(false);
 	}
 
 	CStreamingSimpleFeatures(CSimpleFeatures<T>* simple_features,
@@ -84,7 +84,8 @@ public:
 
 		init(file, is_labelled, size);
 		set_read_functions();
-		parser.set_do_delete(false);
+		parser.set_free_vector_after_release(false);
+		parser.set_free_vectors_on_destruct(false);
 		seekable=true;
 	}
 	
@@ -141,7 +142,7 @@ public:
 			((CStreamingFileFromSimpleFeatures<T>*) working_file)->reset_stream();
 			parser.exit_parser();
 			parser.init(working_file, has_labels, 1);
-			parser.set_do_delete(false);
+			parser.set_free_vector_after_release(false);
 			parser.start_parser();
 		}
 	}

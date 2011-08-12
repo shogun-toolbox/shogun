@@ -361,7 +361,6 @@ int CWDSVMOcas::add_new_cut(
 
 	int32_t t;
 	int32_t nthreads=o->parallel->get_num_threads()-1;
-	int32_t end=0;
 	int32_t step= string_length/o->parallel->get_num_threads();
 
 	if (step<1)
@@ -386,7 +385,6 @@ int CWDSVMOcas::add_new_cut(
 			SG_SWARNING("thread creation failed\n");
 			break;
 		}
-		end=params_add[t].end;
 	}
 
 	params_add[t].wdocas=o;
@@ -547,7 +545,6 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 
 	int32_t t;
 	int32_t nthreads=o->parallel->get_num_threads()-1;
-	int32_t end=0;
 	int32_t step= nData/o->parallel->get_num_threads();
 
 	if (step<1)
@@ -572,7 +569,6 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 			SG_SWARNING("thread creation failed\n");
 			break;
 		}
-		end=params_output[t].end;
 	}
 
 	params_output[t].wdocas=o;

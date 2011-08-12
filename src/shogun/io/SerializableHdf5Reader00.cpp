@@ -79,6 +79,8 @@ SerializableHdf5Reader00::read_cont_begin_wrapped(
 
 	if (type->m_ptype != PT_SGOBJECT) {
 		switch (type->m_ctype) {
+		case CT_NDARRAY:
+			SG_NOTIMPLEMENTED;
 		case CT_SCALAR:
 			SG_ERROR("read_cont_begin_wrapped(): Implementation error"
 					 " during writing Hdf5File (0)!");
@@ -101,6 +103,8 @@ SerializableHdf5Reader00::read_cont_begin_wrapped(
 	if (strcmp(ctype_buf, buf) != 0) return false;
 
 	switch (type->m_ctype) {
+	case CT_NDARRAY:
+		SG_NOTIMPLEMENTED;
 	case CT_SCALAR:
 		SG_ERROR("read_cont_begin_wrapped(): Implementation error"
 				 " during writing Hdf5File (1)!");
@@ -364,6 +368,8 @@ SerializableHdf5Reader00::read_type_begin_wrapped(
 			) < 0) return false;
 
 	switch (type->m_ctype) {
+	case CT_NDARRAY:
+		SG_NOTIMPLEMENTED;
 	case CT_SCALAR:
 		if (m->rank != 0) return false;
 		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOC(hvl_t, 1);

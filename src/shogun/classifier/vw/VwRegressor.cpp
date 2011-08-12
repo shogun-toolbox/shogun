@@ -52,7 +52,7 @@ void CVwRegressor::init(CVwEnvironment* env)
 
 	for (index_t i = 0; i < num_threads; i++)
 	{
-		weight_vectors[i] = SG_CALLOC(float, env->stride * length / num_threads);
+		weight_vectors[i] = SG_CALLOC(float32_t, env->stride * length / num_threads);
 
 		if (env->random_weights)
 		{

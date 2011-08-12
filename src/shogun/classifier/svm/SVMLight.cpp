@@ -292,10 +292,8 @@ int32_t CSVMLight::get_runtime()
 void CSVMLight::svm_learn()
 {
 	int32_t *inconsistent, i;
-	int32_t inconsistentnum;
 	int32_t misclassified,upsupvecnum;
 	float64_t maxdiff, *lin, *c, *a;
-	int32_t runtime_start,runtime_end;
 	int32_t iterations;
 	int32_t trainpos=0, trainneg=0 ;
 	ASSERT(labels);
@@ -325,7 +323,6 @@ void CSVMLight::svm_learn()
 	TIMING timing_profile;
 	SHRINK_STATE shrink_state;
 
-	runtime_start=get_runtime();
 	timing_profile.time_kernel=0;
 	timing_profile.time_opti=0;
 	timing_profile.time_shrink=0;
@@ -380,8 +377,6 @@ void CSVMLight::svm_learn()
 	model->xa_error=-1;
 	model->xa_recall=-1;
 	model->xa_precision=-1;
-	inconsistentnum=0;
-
 
 	for (i=0;i<totdoc;i++) {    /* various inits */
 		inconsistent[i]=0;
@@ -517,7 +512,6 @@ void CSVMLight::svm_learn()
 		if (maxdiff>epsilon)
 			SG_WARNING( "maximum violation (%f) exceeds svm_epsilon (%f) due to numerical difficulties\n", maxdiff, epsilon);
 
-		runtime_end=get_runtime();
 		upsupvecnum=0;
 		for (i=1;i<model->sv_num;i++)
 		{
@@ -574,8 +568,6 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   float64_t criterion, eq;
   float64_t *a_old;
   int32_t t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
-  int32_t transductcycle;
-  int32_t transduction;
   float64_t epsilon_crit_org;
   float64_t bestmaxdiff;
   float64_t worstmaxdiff;
@@ -614,8 +606,6 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 
   choosenum=0;
   inconsistentnum=0;
-  transductcycle=0;
-  transduction=0;
   if(!retrain) retrain=1;
   iteration=1;
   bestmaxdiffiter=1;

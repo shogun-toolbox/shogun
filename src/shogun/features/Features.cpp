@@ -227,6 +227,9 @@ void CFeatures::list_feature_obj()
 		case C_STREAMING_STRING:
 			SG_INFO( "C_STREAMING_STRING ");
 			break;
+		case C_STREAMING_VW:
+			SG_INFO( "C_STREAMING_VW ");
+			break;
 		case C_ANY:
 			SG_INFO( "C_ANY ");
 			break;
