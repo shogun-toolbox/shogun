@@ -1,7 +1,7 @@
 /*!
 \page modular_tutorial Tutorial for Modular Interfaces
 
-SHOGUN's "modular" interfaces to Python, Octave, Java and Lua
+SHOGUN's "modular" interfaces to Python, Octave, Java, Lua, Ruby and C#
 give intuitive and easy access to the shogun's functionality.
 Compared to the static interfaces (\subpage staticinterfaces), 
 the modular ones are much more flexible and allow for nearly unlimited extensibility. 
@@ -11,7 +11,7 @@ If this is your first time using shogun, you've found the right place to start!
 
 In this tutorial, we demonstrate how to use shogun to create a simple
 Gaussian kernel based Support Vector Machine (SVM) classifier, but first
-things first. Let's fire up python, octave, java or lua and load the modular
+things first. Let's fire up python, octave, java, lua, ruby or C#, and load the modular
 shogun environment.
 
 \section start_shogun_modular Starting SHOGUN
@@ -48,6 +48,19 @@ examples:
 \verbatim
 export LUA_PATH=../../../src/interfaces/lua_modular/?.lua\;?.lua
 export LUA_CPATH=../../../src/interfaces/lua_modular/?.so
+\endverbatim
+
+Under ruby we need import shogun package and narray package.
+
+\verbatim
+require 'modshogun'
+require 'narray'
+\endverbatim
+
+Under c# we need import system package.
+
+\verbatim
+using System;
 \endverbatim
 
 we need import shogun package, which includes all the sub package, such
@@ -214,9 +227,81 @@ end
 
 \endverbatim
 
+In ruby, this is is done as follows:
+\verbatim
+@num = 1000
+@dist = 1
+@width = 2.1
+C = 1
+
+def gen_rand_ary
+  ary = [[],[]]
+  ary.each do |p|
+    p << ary_fill( @dist ) + ary_fill( -@dist )
+    p.flatten!
+  end
+  return ary
+end
+
+def gen_ones_vec
+  ary = []
+  @num.times do
+    ary << -1
+  end
+  @num.times do
+    ary << 1
+  end
+  return ary
+end
+
+puts "generating training data"
+traindata_real = gen_rand_ary
+testdata_real = gen_rand_ary
+
+puts "generating labels"
+trainlab = gen_ones_vec
+testlab = gen_ones_vec
+\endverbatim
+
+In C#, this is is done as follows:
+int num = 1000;
+double dist = 1.0;
+double width = 2.1;
+double C = 1.0;
+
+Random RandomNumber = new Random();
+
+double[,] traindata_real = new double[2, num * 2];
+for (int i = 0; i < num; i ++) {
+	traindata_real[0, i] = RandomNumber.NextDouble() - dist;
+	traindata_real[0, i + num] = RandomNumber.NextDouble() + dist;
+	traindata_real[1, i] = RandomNumber.NextDouble() - dist;
+	traindata_real[1, i + num] = RandomNumber.NextDouble() + dist;
+}
+
+double[,] testdata_real = new double[2, num * 2];
+for (int i = 0; i < num; i ++) {
+	testdata_real[0, i] = RandomNumber.NextDouble() - dist;
+	testdata_real[0, i + num] = RandomNumber.NextDouble() + dist;
+	testdata_real[1, i] = RandomNumber.NextDouble() - dist;
+	testdata_real[1, i + num] = RandomNumber.NextDouble() + dist;
+}
+
+double[] trainlab = new double[num * 2];
+for (int i = 0; i < num; i ++) {
+	trainlab[i] = -1;
+	trainlab[i + num] = 1;
+}
+
+double[] testlab = new double[num * 2];
+for (int i = 0; i < num; i ++) {
+	testlab[i] = -1;
+	testlab[i + num] = 1;
+}
+
 The rest of this tutorial below will now work the same (identical syntax) for python,
 octave (when using a trailing semicolon for each command, which is optional in python),
-lua(we use colon to get the method of an object).
+lua(we use colon to get the method of an object), ruby and C#
 
 For java, we use DoubleMatrix to represent most of the types. If shogun C++ class need a 
 int Vector/Matrix, we convert the DoubleMatrix into int Vector/Matrix and when returned 
@@ -311,6 +396,14 @@ For java:
 For lua:
 
 \verbinclude classifier_libsvm_minimal_modular.lua
+
+For ruby:
+
+\verbinclude classifier_libsvm_minimal_modular.rb
+
+For csharp:
+
+\verbinclude classifier_libsvm_minimal_modular.cs
 
 For python:
 \verbinclude classifier_libsvm_minimal_modular.py
