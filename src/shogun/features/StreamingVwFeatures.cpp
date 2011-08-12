@@ -48,7 +48,7 @@ void CStreamingVwFeatures::init(CStreamingVwFile* file, bool is_labelled, int32_
 	has_labels = is_labelled;
 	working_file = file;
 	parser.init(file, is_labelled, size);
-	parser.set_do_delete(false);
+	parser.set_free_vector_after_release(false);
 	seekable=false;
 
 	// Get environment from the StreamingVwFile
@@ -62,7 +62,7 @@ void CStreamingVwFeatures::init(CStreamingVwCacheFile* file, bool is_labelled, i
 	has_labels = is_labelled;
 	working_file = file;
 	parser.init(file, is_labelled, size);
-	parser.set_do_delete(false);
+	parser.set_free_vector_after_release(false);
 	seekable=true;
 
 	// Get environment from the StreamingVwFile

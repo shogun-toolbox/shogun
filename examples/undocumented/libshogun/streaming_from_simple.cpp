@@ -13,11 +13,11 @@
  */
 
 #include <shogun/features/StreamingSimpleFeatures.h>
-#include <shogun/lib/StreamingFileFromSimpleFeatures.h>
+#include <shogun/io/StreamingFileFromSimpleFeatures.h>
 
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/io.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/base/init.h>
 
 #include <stdlib.h>
