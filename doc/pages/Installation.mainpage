@@ -14,6 +14,7 @@ On debian, depending on the interface you want, install the package(s)
 \verbatim
 libshogun-dev         - for C++ developers building extensions using
                         libshogun
+shogun-csharp-modular - for the modular csharp interface
 shogun-lua-modular    - for the modular lua interface
 shogun-java-modular   - for the modular java interface
 shogun-octave         - for the static octave interface
@@ -21,6 +22,7 @@ shogun-octave-modular - for the modular octave interface
 shogun-python         - for the static python interface
 shogun-python-modular - for the modular python interface
 shogun-r              - for the r interface
+shogun-ruby           - for the ruby interface
 shogun-cmdline        - for the command-line interface.
 shogun-elwms          - for the eierlegende wollmilchsau interface
                         (one interface to r/python/octave allowing
@@ -70,6 +72,9 @@ CPLEX(tm) just make sure cplex can be found in the PATH. If it is not found
 shogun will resort to GLPK (if version at least 4.29 is found) for 1-norm MKL,
 p-norm MKL with p>1 will work nonetheless.
 
+\li To compile the C# interface you need to have the C# developer files 
+(debian package mono-utils) installed.
+
 \li To compile the Lua interface you need to have the Lua developer files 
 (debian package lua) installed.
 
@@ -78,6 +83,9 @@ p-norm MKL with p>1 will work nonetheless.
 
 \li To compile the R interface you need to have the R developer files 
 (debian package r-base-dev) installed.
+
+\li To compile the Ruby interface you need to have the Ruby developer files 
+(debian package ruby) installed.
 
 \li To compile the octave interface you need to have the octave developer files 
 (debian package octave3.0-headers) installed.
@@ -114,6 +122,10 @@ where \b interface is one of the following
 \li java_modular -- for java (see http://www.java.com).
 
 \li lua_modular -- for lua (see http://www.lua.org).
+
+\li ruby_modular -- for ruby (see http://ruby-lang.org/).
+
+\li csharp_modular -- for csharp (see http://www.csharp-station.com/).
 
 \li matlab -- for matlab (see http://www.mathworks.com)
 
