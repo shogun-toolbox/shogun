@@ -195,12 +195,12 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			const char *str = StringValuePtr(arr);
 			max_len = shogun::CMath::max(len, max_len);
 
-			strings[i].slen = len;
+			strings[i].slen = len + 1;
 			strings[i].string = NULL;
 			
 			if (len > 0) {
-				strings[i].string = SG_MALLOC(SGTYPE, len);
-				memcpy(strings[i].string, str, len);
+				strings[i].string = SG_MALLOC(SGTYPE, len + 1);
+				memcpy(strings[i].string, str, len + 1);
 			}
 		}
 		else {
@@ -209,7 +209,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 				max_len = shogun::CMath::max(len, max_len);
 
 				strings[i].slen=len;
-			strings[i].string=NULL;
+				strings[i].string=NULL;
 				if (len > 0) {
 					strings[i].string = SG_MALLOC(SGTYPE, len);
 					for (j = 0; j < len; j++) {
@@ -252,9 +252,8 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			}
 			rb_ary_push(arr, vec);
 		}
-		SG_FREE(str[i].string);
 	}
-	SG_FREE(str);
+	$result = arr;
 }
 
 %enddef
