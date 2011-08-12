@@ -166,6 +166,8 @@ namespace shogun
     SERIALIZABLE_DUMMY(SGNDArray<bool>);
     %template(CharNDArray) SGNDArray<char>;
     SERIALIZABLE_DUMMY(SGNDArray<char>);
+    %template(WordNDArray) SGNDArray<uint16_t>;
+    SERIALIZABLE_DUMMY(SGNDArray<uint16_t>);
     %template(ByteNDArray) SGNDArray<uint8_t>;
     SERIALIZABLE_DUMMY(SGNDArray<uint8_t>);
     %template(ShortNDArray) SGNDArray<int16_t>;
