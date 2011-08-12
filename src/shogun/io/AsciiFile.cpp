@@ -4,6 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Parts of this code are copyright (c) 2009 Yahoo! Inc.
+ * All rights reserved.  The copyrights embodied in the content of
+ * this file are licensed under the BSD (revised) open source license.
+ *
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -1081,3 +1085,26 @@ ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
 	return ::getline(lineptr, n, stream);
 }
 #endif
+
+void CAsciiFile::tokenize(char delim, substring s, v_array<substring>& ret)
+{
+	ret.erase();
+	char *last = s.start;
+	for (; s.start != s.end; s.start++)
+	{
+		if (*s.start == delim)
+		{
+			if (s.start != last)
+			{
+				substring temp = {last,s.start};
+				ret.push(temp);
+			}
+			last = s.start+1;
+		}
+	}
+	if (s.start != last)
+	{
+		substring final = {last, s.start};
+		ret.push(final);
+	}
+}

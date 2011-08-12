@@ -4,6 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Parts of this code are copyright (c) 2009 Yahoo! Inc.
+ * All rights reserved.  The copyrights embodied in the content of
+ * this file are licensed under the BSD (revised) open source license.
+ *
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -404,6 +408,16 @@ public:
 	 */
 	static ssize_t getline(char **lineptr, size_t *n, FILE *stream);
 
+	/**
+	 * Split a given substring into an array of substrings
+	 * based on a specified delimiter
+	 *
+	 * @param delim delimiter to use
+	 * @param s substring to tokenize
+	 * @param ret array of substrings, returned
+	 */
+	static void tokenize(char delim, substring s, v_array<substring> &ret);
+
 private:
 	/** helper function to read vectors / matrices
 	 *
@@ -415,6 +429,7 @@ private:
 
 protected:
 
+	/// IOBuffer through which the file can be read
 	CIOBuffer buf;
 };
 }
