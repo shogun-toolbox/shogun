@@ -155,7 +155,7 @@ public:
 			working_file->reset_stream();
 			parser.exit_parser();
 			parser.init(working_file, has_labels, parser.get_ring_size());
-			parser.set_do_delete(false);
+			parser.set_free_vector_after_release(false);
 			parser.start_parser();
 		}
 		else
