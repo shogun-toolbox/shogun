@@ -10,7 +10,7 @@ parameter_list=[[strings]]
 def features_string_char_modular(strings)
 
 	#create string features
-	f=StringCharFeatures(strings, RAWBYTE)
+	f=Modshogun::StringCharFeatures.new(strings, Modshogun::RAWBYTE)
 
 	#and output several stats
 	#print "max string length", f.get_max_vector_length()
@@ -20,7 +20,7 @@ def features_string_char_modular(strings)
 	#print "strings", f.get_features()
 
 	#replace string 0
-	f.set_feature_vector(array(['t','e','s','t']), 0)
+	f.set_feature_vector(['t','e','s','t'], 0)
 
 	#print "strings", f.get_features()
 	return f.get_features(), f
