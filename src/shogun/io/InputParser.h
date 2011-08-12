@@ -211,6 +211,13 @@ public:
      */
     void exit_parser();
 
+    /**
+     * Returns the size of the examples ring
+     *
+     * @return ring size in terms of number of examples
+     */
+    int32_t get_ring_size() { return ring_size; }
+
 private:
     /**
      * Entry point for the parse thread.
@@ -277,6 +284,9 @@ protected:
     /// Whether to SG_FREE() vector after it is used
     bool do_delete;
 
+    /// Size of the ring of examples
+    int32_t ring_size;
+
     /// Mutex which is used when getting/setting state of examples (whether a new example is ready)
     pthread_mutex_t examples_state_lock;
 
@@ -337,6 +347,7 @@ template <class T>
     current_feature_vector = NULL;
 
     do_delete=true;
+    ring_size=size;
 
     pthread_mutex_init(&examples_state_lock, NULL);
     pthread_cond_init(&examples_state_changed, NULL);
