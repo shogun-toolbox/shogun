@@ -11,68 +11,6 @@
 /* Remove C Prefix */
 %rename(IOBuffer) CIOBuffer;
 
-/* Templated Class ParseBuffer */
-%include <shogun/io/ParseBuffer.h>
-namespace shogun
-{
-    %template(ExamplesRingBool) CParseBuffer<bool>;
-    %template(ExamplesRingChar) CParseBuffer<char>;
-    %template(ExamplesRingByte) CParseBuffer<uint8_t>;
-    %template(ExamplesRingShort) CParseBuffer<int16_t>;
-    %template(ExamplesRingWord) CParseBuffer<uint16_t>;
-    %template(ExamplesRingInt) CParseBuffer<int32_t>;
-    %template(ExamplesRingUInt) CParseBuffer<uint32_t>;
-    %template(ExamplesRingLong) CParseBuffer<int64_t>;
-    %template(ExamplesRingUlong) CParseBuffer<uint64_t>;
-    %template(ExamplesRingShortReal) CParseBuffer<float32_t>;
-    %template(ExamplesRingReal) CParseBuffer<float64_t>;
-    %template(ExamplesRingLongReal) CParseBuffer<floatmax_t>;
-
-    %template(ExamplesRingSparseBool) CParseBuffer< SGSparseVectorEntry<bool> >;
-    %template(ExamplesRingSparseChar) CParseBuffer< SGSparseVectorEntry<char> >;
-    %template(ExamplesRingSparseByte) CParseBuffer< SGSparseVectorEntry<uint8_t> >;
-    %template(ExamplesRingSparseShort) CParseBuffer< SGSparseVectorEntry<int16_t> >;
-    %template(ExamplesRingSparseWord) CParseBuffer< SGSparseVectorEntry<uint16_t> >;
-    %template(ExamplesRingSparseInt) CParseBuffer< SGSparseVectorEntry<int32_t> >;
-    %template(ExamplesRingSparseUInt) CParseBuffer< SGSparseVectorEntry<uint32_t> >;
-    %template(ExamplesRingSparseLong) CParseBuffer< SGSparseVectorEntry<int64_t> >;
-    %template(ExamplesRingSparseUlong) CParseBuffer< SGSparseVectorEntry<uint64_t> >;
-    %template(ExamplesRingSparseShortReal) CParseBuffer< SGSparseVectorEntry<float32_t> >;
-    %template(ExamplesRingSparseReal) CParseBuffer< SGSparseVectorEntry<float64_t> >;
-    %template(ExamplesRingSparseLongReal) CParseBuffer< SGSparseVectorEntry<floatmax_t> >;
-}
-
-/* Templated Class InputParser */
-%include <shogun/io/InputParser.h>
-namespace shogun
-{
-    %template(ParserBool) CInputParser<bool>;
-    %template(ParserChar) CInputParser<char>;
-    %template(ParserByte) CInputParser<uint8_t>;
-    %template(ParserShort) CInputParser<int16_t>;
-    %template(ParserWord) CInputParser<uint16_t>;
-    %template(ParserInt) CInputParser<int32_t>;
-    %template(ParserUInt) CInputParser<uint32_t>;
-    %template(ParserLong) CInputParser<int64_t>;
-    %template(ParserUlong) CInputParser<uint64_t>;
-    %template(ParserShortReal) CInputParser<float32_t>;
-    %template(ParserReal) CInputParser<float64_t>;
-    %template(ParserLongReal) CInputParser<floatmax_t>;
-
-    %template(ParserSparseBool) CInputParser< SGSparseVectorEntry<bool> >;
-    %template(ParserSparseChar) CInputParser< SGSparseVectorEntry<char> >;
-    %template(ParserSparseByte) CInputParser< SGSparseVectorEntry<uint8_t> >;
-    %template(ParserSparseShort) CInputParser< SGSparseVectorEntry<int16_t> >;
-    %template(ParserSparseWord) CInputParser< SGSparseVectorEntry<uint16_t> >;
-    %template(ParserSparseInt) CInputParser< SGSparseVectorEntry<int32_t> >;
-    %template(ParserSparseUInt) CInputParser< SGSparseVectorEntry<uint32_t> >;
-    %template(ParserSparseLong) CInputParser< SGSparseVectorEntry<int64_t> >;
-    %template(ParserSparseUlong) CInputParser< SGSparseVectorEntry<uint64_t> >;
-    %template(ParserSparseShortReal) CInputParser< SGSparseVectorEntry<float32_t> >;
-    %template(ParserSparseReal) CInputParser< SGSparseVectorEntry<float64_t> >;
-    %template(ParserSparseLongReal) CInputParser< SGSparseVectorEntry<floatmax_t> >;
-}
-
 %rename(File) CFile;
 %rename(StreamingFile) CStreamingFile;
 %rename(AsciiFile) CAsciiFile;
