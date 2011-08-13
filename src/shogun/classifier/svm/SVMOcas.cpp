@@ -140,7 +140,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_FREE(cp_bias);
 	cp_bias=NULL;
 
-	lab.destroy_vector();
+	lab.free_vector();
 
 	SG_FREE(old_w);
 	old_w=NULL;

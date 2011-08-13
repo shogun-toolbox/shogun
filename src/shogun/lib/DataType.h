@@ -405,6 +405,14 @@ template <class T> class SGSparseMatrix
 			num_features=0;
 		}
 
+		void own_matrix()
+		{
+			for (int32_t i=0; i<num_vectors; i++)
+				sparse_matrix[i].do_free=false;
+
+			do_free=false;
+		}
+
 		void destroy_matrix()
 		{
 			do_free=true;

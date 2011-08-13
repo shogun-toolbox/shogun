@@ -335,7 +335,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 			if (sparse_feature_matrix)
 			{
-				return sparse_feature_matrix[real_num];
+				result=sparse_feature_matrix[real_num];
+				result.do_free=false;
+				return result;
 			} 
 			else
 			{
@@ -681,6 +683,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 
 			free_sparse_feature_matrix();
+			sm.own_matrix();
 
 			sparse_feature_matrix=sm.sparse_matrix;
 			num_features=sm.num_features;
