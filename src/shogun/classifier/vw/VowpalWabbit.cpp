@@ -18,6 +18,7 @@
 using namespace shogun;
 
 CVowpalWabbit::CVowpalWabbit()
+	: COnlineLinearMachine()
 {
 	reg=NULL;
 	learner=NULL;
@@ -25,6 +26,7 @@ CVowpalWabbit::CVowpalWabbit()
 }
 
 CVowpalWabbit::CVowpalWabbit(CStreamingVwFeatures* feat)
+	: COnlineLinearMachine()
 {
 	reg=NULL;
 	learner=NULL;
@@ -61,7 +63,7 @@ void CVowpalWabbit::add_quadratic_pair(char* pair)
 	env->pairs.push_back(pair);
 }
 
-void CVowpalWabbit::train(CStreamingVwFeatures* feat)
+bool CVowpalWabbit::train_machine(CStreamingVwFeatures* feat)
 {
 	ASSERT(features);
 
@@ -71,18 +73,17 @@ void CVowpalWabbit::train(CStreamingVwFeatures* feat)
 	size_t current_pass = 0;
 	float32_t dump_interval = exp(1.);
 
-	const char * header_fmt = "%-10s %-10s %8s %8s %10s %8s %8s\n";
+	const char* header_fmt = "%-10s %-10s %8s %8s %10s %8s %8s\n";
 
 	if (!quiet)
 	{
-		fprintf(stdout, header_fmt,
-			"average", "since", "example", "example",
-			"current", "current", "current");
-		fprintf(stdout, header_fmt,
-			"loss", "last", "counter", "weight", "label", "predict", "features");
+		SG_SPRINT(header_fmt,
+			  "average", "since", "example", "example",
+			  "current", "current", "current");
+		SG_SPRINT(header_fmt,
+			  "loss", "last", "counter", "weight", "label", "predict", "features");
 	}
 
-	int32_t cnt = 0;
 	features->start_parser();
 	while (env->passes_complete < env->num_passes)
 	{
@@ -96,12 +97,9 @@ void CVowpalWabbit::train(CStreamingVwFeatures* feat)
 				current_pass = example->pass;
 			}
 
-			cnt++;
-
 			predict_and_finalize(example);
 
 			learner->train(example, example->eta_round);
-
 			example->eta_round = 0.;
 
 			if (!quiet)
@@ -132,6 +130,8 @@ void CVowpalWabbit::train(CStreamingVwFeatures* feat)
 
 	if (reg_name != NULL)
 		reg->dump_regressor(reg_name, reg_dump_text);
+
+	return true;
 }
 
 float32_t CVowpalWabbit::predict_and_finalize(VwExample* ex)
@@ -161,15 +161,20 @@ float32_t CVowpalWabbit::predict_and_finalize(VwExample* ex)
 
 void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 {
-	features=feat;
-	env=feat->get_env();
-	reg=new CVwRegressor(env);
+	features = feat;
+	env = feat->get_env();
+	reg = new CVwRegressor(env);
 	SG_REF(env);
 	SG_REF(reg);
 
-	quiet=false;
-	reg_name=NULL;
-	reg_dump_text=true;
+	quiet = false;
+	reg_name = NULL;
+	reg_dump_text = true;
+
+	w = NULL;		// TODO: Use real weight vector after
+				// transition to float32_t
+	w_dim = 1 << env->num_bits;
+	bias = 0.;
 }
 
 void CVowpalWabbit::set_learner()
@@ -196,12 +201,12 @@ float32_t CVowpalWabbit::inline_l1_predict(VwExample* &ex)
 	{
 		char* i = env->pairs.get_element(k);
 
-		v_array<VwFeature> temp = ex->atomics[(int)(i[0])];
-		temp.begin = ex->atomics[(int)(i[0])].begin;
-		temp.end = ex->atomics[(int)(i[0])].end;
+		v_array<VwFeature> temp = ex->atomics[(int32_t)(i[0])];
+		temp.begin = ex->atomics[(int32_t)(i[0])].begin;
+		temp.end = ex->atomics[(int32_t)(i[0])].end;
 		for (; temp.begin != temp.end; temp.begin++)
 			prediction += one_pf_quad_predict_trunc(weights, *temp.begin,
-								ex->atomics[(int)(i[1])], thread_mask,
+								ex->atomics[(int32_t)(i[1])], thread_mask,
 								env->l1_regularization * env->update_sum);
 	}
 
@@ -221,12 +226,12 @@ float32_t CVowpalWabbit::inline_predict(VwExample* &ex)
 	{
 		char* i = env->pairs.get_element(k);
 
-		v_array<VwFeature> temp = ex->atomics[(int)(i[0])];
-		temp.begin = ex->atomics[(int)(i[0])].begin;
-		temp.end = ex->atomics[(int)(i[0])].end;
+		v_array<VwFeature> temp = ex->atomics[(int32_t)(i[0])];
+		temp.begin = ex->atomics[(int32_t)(i[0])].begin;
+		temp.end = ex->atomics[(int32_t)(i[0])].end;
 		for (; temp.begin != temp.end; temp.begin++)
 			prediction += one_pf_quad_predict(weights, *temp.begin,
-							  ex->atomics[(int)(i[1])],
+							  ex->atomics[(int32_t)(i[1])],
 							  thread_mask);
 	}
 
@@ -247,7 +252,6 @@ float32_t CVowpalWabbit::finalize_prediction(float32_t ret)
 
 void CVowpalWabbit::print_update(VwExample* &ex)
 {
-
 	SG_SPRINT("%-10.6f %-10.6f %8lld %8.1f %8.4f %8.4f %8lu\n",
 		  env->sum_loss/env->weighted_examples,
 		  0.0,

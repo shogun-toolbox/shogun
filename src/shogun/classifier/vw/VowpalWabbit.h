@@ -35,7 +35,7 @@ namespace shogun
  * For more details, refer to the tutorial at
  * https://github.com/JohnLangford/vowpal_wabbit/wiki/v5.1_tutorial.pdf
  */
-class CVowpalWabbit
+class CVowpalWabbit: public COnlineLinearMachine
 {
 public:
 	/**
@@ -94,7 +94,7 @@ public:
 	 *
 	 * @param feat StreamingVwFeatures to train using
 	 */
-	virtual void train(CStreamingVwFeatures* feat = NULL);
+	virtual bool train_machine(CStreamingVwFeatures* feat = NULL);
 
 	/**
 	 * Predict for an example
@@ -116,7 +116,13 @@ public:
 		return env;
 	}
 
-	//virtual float64_t apply(SGSparseVector<float64_t> vec);
+	/**
+	 * Return the name of the object
+	 *
+	 * @return VowpalWabbit
+	 */
+	virtual const char* get_name() const { return "VowpalWabbit"; }
+
 private:
 	/**
 	 * Initialize members
