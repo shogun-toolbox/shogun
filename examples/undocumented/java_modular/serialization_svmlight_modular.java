@@ -14,28 +14,26 @@ public class serialization_svmlight_modular {
 	
 	public static void save(String fname, Object obj) {
 		try {
-			FileOutputStream fs = new FileOutputStream(fname);
-			ObjectOutputStream out =  new ObjectOutputStream(fs);
+			ObjectOutputStream out =  new ObjectOutputStream(new FileOutputStream(fname));
 			out.writeObject(obj);
 			out.close();
-        }
+        	}
 		catch(Exception ex){
 			ex.printStackTrace();  
-        }
+        	}
 	}
 
 	public static Object load(String fname) {
 		Object r = null;		
 		try {
-			FileInputStream fs = new FileInputStream(fname);
-			ObjectInputStream in =  new ObjectInputStream(fs);
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(fname));
 			r = in.readObject();
 			in.close();
 			return r;
-        }
+        	}
 		catch(Exception ex){
 			ex.printStackTrace();  
-        }
+        	}
 		return r;
 	}
 	public static void main(String argv[]) {
@@ -66,12 +64,9 @@ public class serialization_svmlight_modular {
 		SVMLight svm = new SVMLight(C, kernel, labels);
 		svm.train();
 
-		ArrayList result = new ArrayList();
-		result.add(svm);
-		String fname = "out.txt";
-		//save(fname, (Serializable)result);
-		//ArrayList r = (ArrayList)load(fname);
-		//SVMLight svm2 = (SVMLight)r.get(0);
+		String fname = "tmp.dat";
+		save(fname, svm);
+		SVMLight svm_readed = (SVMLight)load(fname);
 
 		modshogun.exit_shogun();
 	}
