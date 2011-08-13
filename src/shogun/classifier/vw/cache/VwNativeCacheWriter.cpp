@@ -61,7 +61,7 @@ void CVwNativeCacheWriter::init()
 
 void CVwNativeCacheWriter::write_header()
 {
-	char vw_version[4] = "5.1";
+	const char* vw_version = env->vw_version;
 	size_t numbits = env->num_bits;
 	size_t v_length = 4;
 
