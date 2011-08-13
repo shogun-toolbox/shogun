@@ -194,7 +194,31 @@ namespace shogun
 /* Template Class DynamicArray */
 %include <shogun/lib/DynamicArray.h>
 %include <shogun/base/DynArray.h>
-
+namespace shogun
+{
+        %template(DynamicCharArray) CDynamicArray<char>;
+        SERIALIZABLE_DUMMY(CDynamicArray<char>);
+        %template(DynamicByteArray) CDynamicArray<uint8_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<uint8_t>);
+        %template(DynamicShortArray) CDynamicArray<int16_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<int16_t>);
+        %template(DynamicWordArray) CDynamicArray<uint16_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<uint16_t>);
+        %template(DynamicIntArray) CDynamicArray<int32_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<int32_t>);
+        %template(DynamicUIntArray) CDynamicArray<uint32_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<uint32_t>);
+        %template(DynamicLongArray) CDynamicArray<int64_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<int64_t>);
+        %template(DynamicULongArray) CDynamicArray<uint64_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<uint64_t>);
+        %template(DynamicShortRealArray) CDynamicArray<float32_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<float32_t>);
+        %template(DynamicRealArray) CDynamicArray<float64_t>;
+        SERIALIZABLE_DUMMY(CDynamicArray<float64_t>);
+        %template(DynamicPlifArray) DynArray<shogun::CPlifBase*>;
+        SERIALIZABLE_DUMMY(DynArray<shogun::CPlifBase*>);
+}
 /* Template Class GCArray */
 %include <shogun/lib/GCArray.h>
 
