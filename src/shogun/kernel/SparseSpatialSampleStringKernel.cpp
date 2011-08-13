@@ -130,13 +130,12 @@ void CSparseSpatialSampleStringKernel::compute_double(int32_t idx_a, int32_t idx
 	int *features_srt;
 	int *group_srt;
 	int maxIdx;
-	char *kernelfilename;
-	int **S;
-	int *len;
-	int nStr, nfeat;
+	int **S=NULL;
+	int *len=NULL;
+	int nStr=0, nfeat;
 	int i;
 	int na;
-	int *K;
+	int *K=NULL;
 
 	for (d1 = 1; d1 <= d; ++d1)
 	{
@@ -196,13 +195,12 @@ void CSparseSpatialSampleStringKernel::compute_triple(int32_t idx_a, int32_t idx
 	int *features_srt;
 	int *group_srt;
 	int maxIdx;
-	char *kernelfilename;
-	int **S;
-	int *len;
-	int nStr, nfeat;
+	int **S=NULL;
+	int *len=NULL;
+	int nStr=0, nfeat;
 	int i;
 	int na;
-	int *K;
+	int *K=NULL;
 
 	for (d1 = 1; d1 <= d; ++d1)
 	{

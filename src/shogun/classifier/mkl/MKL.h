@@ -151,7 +151,7 @@ class CMKL : public CSVM
 		 *               lambda=0: L1-MKL
 		 *               lambda=1: Linfinity-MKL
 		 */
-		void set_elasticnet_lambda(float64_t lambda);
+		void set_elasticnet_lambda(float64_t elasticnet_lambda);
 
 		/** set block norm q (used in block norm mkl)
 		 *
