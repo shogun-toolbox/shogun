@@ -12,64 +12,59 @@ import org.shogun.SerializableAsciiFile;
 %}
 %typemap(javacode) SWIGTYPE
 %{
-        
-        public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
-                java.util.Random randomGenerator = new java.util.Random();
-                String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
-                java.io.File file = null; 
-                java.io.FileInputStream in = null;
-                int ch;
+public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        java.util.Random randomGenerator = new java.util.Random();
+        String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
+        java.io.File file = null; 
+        java.io.FileInputStream in = null;
+        int ch;
+        try {
+                file = new java.io.File(tmpFileName);
+                file.createNewFile();
+                SerializableAsciiFile tmpFile = new SerializableAsciiFile(tmpFileName, 'w');
+                this.save_serializable(tmpFile);
+                tmpFile.close();
+                in = new java.io.FileInputStream(file);
+                // TODO bufferize
+                while((ch=in.read()) != -1) {
+                        out.write(ch);
+                }
+                file.delete();
+        } catch (java.io.IOException ex) {
+        } finally {
                 try {
-                        file = new java.io.File(tmpFileName);
-                        file.createNewFile();
-                        SerializableAsciiFile tmpFile = new SerializableAsciiFile(tmpFileName, 'w');
-                        this.save_serializable(tmpFile);
-                        tmpFile.close();
-                        in = new java.io.FileInputStream(file);
-                        // TODO bufferize
-                        while((ch=in.read()) != -1) {
-                                out.write(ch);
-                        }
-                        file.delete();
+                        in.close();
                 } catch (java.io.IOException ex) {
-
-                } finally {
-                        try {
-                                in.close();
-                        } catch (java.io.IOException ex) {
-
-                        }
                 }
         }
+}
 
-        public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
-                java.util.Random randomGenerator = new java.util.Random();
-                String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
-                java.io.File file = null;
-                java.io.FileOutputStream out = null;
-                int ch;
+public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+        java.util.Random randomGenerator = new java.util.Random();
+        String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
+        java.io.File file = null;
+        java.io.FileOutputStream out = null;
+        int ch;
+        try {
+                file = new java.io.File(tmpFileName);
+                file.createNewFile();
+                out = new java.io.FileOutputStream(file);
+                while ((ch=in.read()) != -1) {
+                        out.write(ch);
+                }
+                out.close();
+                SerializableAsciiFile tmpFile = new SerializableAsciiFile(tmpFileName,'r');
+                this.load_serializable(tmpFile);
+                tmpFile.close();
+                file.delete();
+        } catch (java.io.IOException ex) {
+        } finally {
                 try {
-                        file = new java.io.File(tmpFileName);
-                        file.createNewFile();
-                        out = new java.io.FileOutputStream(file);
-                        while ((ch=in.read()) != -1) {
-                                out.write(ch);
-                        }
                         out.close();
-                        SerializableAsciiFile tmpFile = new SerializableAsciiFile(tmpFileName,'r');
-                        this.load_serializable(tmpFile);
-                        tmpFile.close();
-                        file.delete();
                 } catch (java.io.IOException ex) {
-
-                } finally {
-                        try {
-                                out.close();
-                        } catch (java.io.IOException ex) {
-
-                        }
                 }
         }
+}
     %}
 #endif
 
