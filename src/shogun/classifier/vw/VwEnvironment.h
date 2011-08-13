@@ -169,6 +169,11 @@ public:
 	/// Number of passes
 	index_t num_passes;
 
+	/// ngrams to generate
+	size_t ngram;
+	/// Skips in ngrams
+	size_t skips;
+
 	/// Whether some namespaces are ignored
 	bool ignore_some;
 	/// Which namespaces to ignore
@@ -176,6 +181,11 @@ public:
 
 	/// Pairs of features to cross for quadratic updates
 	DynArray<char*> pairs;
+
+	/// VW version
+	const char* vw_version;
+	/// Length of version string
+	size_t v_length;
 };
 
 }
