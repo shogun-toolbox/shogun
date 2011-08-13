@@ -156,7 +156,7 @@ void CVwRegressor::dump_regressor(char* reg_name, bool as_text)
 			else
 			{
 				char buff[512];
-				int len = sprintf(buff, "%d:%f\n", i, v);
+				int32_t len = sprintf(buff, "%d:%f\n", i, v);
 				io_temp.write_file(buff, len);
 			}
 		}
