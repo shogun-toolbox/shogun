@@ -75,12 +75,10 @@ void CVwNativeCacheReader::check_cache_metadata()
 	if (strcmp(t,vw_version) != 0)
 		SG_SERROR("Cache has possibly incompatible version!\n");
 
-	int32_t total = sizeof(size_t);
-	char* p[total];
-	if (buf.read_file(p, total) < total)
+	size_t cache_numbits = 0;
+	if (buf.read_file(&cache_numbits, sizeof(size_t)) < ssize_t(sizeof(size_t)))
 		return;
 
-	size_t cache_numbits = *(size_t *)p;
 	if (cache_numbits != numbits)
 		SG_SERROR("Bug encountered in caching! Bits used for weight in cache: %d.\n", cache_numbits);
 }
