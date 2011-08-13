@@ -3,7 +3,7 @@
 %include "exception.i"
 
 #ifdef SWIGJAVA
-%typemap(javainterfaces) SWIGTYPE "Serializable"
+%typemap(javainterfaces) SWIGTYPE "java.io.Externalizable"
 
 %typemap(javaincludes) SWIGTYPE
 %{
@@ -12,27 +12,29 @@ import org.shogun.SerializableAsciiFile;
 %}
 %typemap(javacode) SWIGTYPE
 %{
-        private void writeObject(java.io.ObjectOutputStream out) { 
-                // to be improved still
-                String tmpFileName = System.getProperty("java.io.tmpdir") + "/shogun.tmp";
+        
+        public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+                java.util.Random randomGenerator = new java.util.Random();
+                String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
                 java.io.File file = null; 
                 java.io.FileInputStream in = null;
                 int ch;
                 try {
                         file = new java.io.File(tmpFileName);
                         file.createNewFile();
-                        SerializableFile tmpFile = new SerializableAsciiFile(tmpFileName);
+                        SerializableAsciiFile tmpFile = new SerializableAsciiFile(tmpFileName, 'w');
                         this.save_serializable(tmpFile);
                         tmpFile.close();
                         in = new java.io.FileInputStream(file);
+                        // TODO bufferize
                         while((ch=in.read()) != -1) {
                                 out.write(ch);
                         }
-                        out.flush();
+                        file.delete();
                 } catch (java.io.IOException ex) {
 
                 } finally {
-                        try { 
+                        try {
                                 in.close();
                         } catch (java.io.IOException ex) {
 
@@ -40,9 +42,9 @@ import org.shogun.SerializableAsciiFile;
                 }
         }
 
-        private void readObject(java.io.ObjectInputStream in) {
-                // to be improved still
-                String tmpFileName = System.getProperty("java.io.tmpdir") + "/shogun.tmp";
+        public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
+                java.util.Random randomGenerator = new java.util.Random();
+                String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
                 java.io.File file = null;
                 java.io.FileOutputStream out = null;
                 int ch;
@@ -54,9 +56,10 @@ import org.shogun.SerializableAsciiFile;
                                 out.write(ch);
                         }
                         out.close();
-                        SerializableFile tmpFile = new SerializableAsciiFile(tmpFileName);
+                        SerializableAsciiFile tmpFile = new SerializableAsciiFile(tmpFileName,'r');
                         this.load_serializable(tmpFile);
                         tmpFile.close();
+                        file.delete();
                 } catch (java.io.IOException ex) {
 
                 } finally {
@@ -200,7 +203,6 @@ def __SGgetstate__(self):
         fstream.close(); os.remove(fname)
         raise exceptions.IOError("Could not dump Shogun object!")
     fstream.close()
-
     fstream = open(fname, "r"); result = fstream.read();
     fstream.close()
 
