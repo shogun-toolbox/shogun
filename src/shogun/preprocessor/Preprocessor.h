@@ -26,6 +26,7 @@ enum EFeatureType;
 
 enum EFeatureClass;
 
+/** enumeration of possible preprocessor types */
 enum EPreprocessorType
 {
 	P_UNKNOWN=0,
@@ -76,14 +77,10 @@ class CPreprocessor : public CSGObject
 {
 public:
 	/** constructor
-	 *
-	 * @param name preprocessor's name
-	 * @param id preprocessor's id
 	 */
 	CPreprocessor();
 
 	/** destructor
-	 *
 	 */
 	virtual ~CPreprocessor();
 

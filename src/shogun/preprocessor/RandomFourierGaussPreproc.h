@@ -61,18 +61,16 @@ public:
 	~CRandomFourierGaussPreproc();
 
 	/** default processing routine, inherited from base class
-	 * @param CFeatures *f - the features to be processed, must be of type CSimpleFeatures<float64_t>
-	 * @return  float64_t * the processed feature matrix from the CSimpleFeatures<float64_t> class
+	 * @param features the features to be processed, must be of type CSimpleFeatures<float64_t>
+	 * @return the processed feature matrix from the CSimpleFeatures<float64_t> class
 	 * in case (2) (see description above) this routine requires only steps 2a) and 2b), the rest is determined automatically
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features); // ref count fo the feature matrix???
 
 
 	/** alternative processing routine, inherited from base class
-	 * @param float64_t *f - the one feature to be processed
-	 * @return float64_t * - processed feature
-	 * @return int32_t &len - length of processed feature, is equal to return value of get_dim_feature_space()
-	 *
+	 * @param vector the feature vector to be processed
+	 * @return processed feature vector
 	 * in order to work this routine requires the steps described above under cases (1) or two (2) before calling this routine
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
@@ -91,18 +89,18 @@ public:
 	 * calls set_dim_input_space(const int32_t dim); with the proper value
 	 * calls init_randomcoefficients(); this call does NOT override a previous call to void set_randomcoefficients(...) IF and ONLY IF
 	 * the dimensions of input AND feature space are equal to the values from the previous call to void set_randomcoefficients(...)
-	 * @param CFeatures *f - the features to be processed, must be of type CSimpleFeatures<float64_t>
-	 * @return returns true if new random coefficients were generated, false if old ones from a call to set_randomcoefficients(...) are kept
+	 * @param f the features to be processed, must be of type CSimpleFeatures<float64_t>
+	 * @return true if new random coefficients were generated, false if old ones from a call to set_randomcoefficients(...) are kept
 	 */
 	virtual bool init(CFeatures *f);
 
 	/**  setter for kernel width
-	 * @param kernelwidth to be set
+	 * @param width kernel width to be set
 	 */
-	void set_kernelwidth(const float64_t );
+	void set_kernelwidth(const float64_t width);
 
 	/**  getter for kernel width
-	 * @return kernelwidth
+	 * @return kernel width
 	 * throws exception if kernelwidth <=0
 	 */
 	float64_t get_kernelwidth( ) const;
@@ -127,13 +125,13 @@ public:
 			const int32_t dim_feature_space2, const int32_t dim_input_space2, const float64_t kernelwidth2);
 
 	/** a setter
-	 * @param sets the value of protected member dim_input_space
+	 * @param dim the value of protected member dim_input_space
 	 * throws a shogun exception if dim<=0
 	 */
 	void set_dim_input_space(const int32_t dim);
 
 	/** a setter
-	 * @param sets the value of protected member dim_feature_space
+	 * @param dim the value of protected member dim_feature_space
 	 * throws a shogun exception if dim<=0
 	 *
 	 */

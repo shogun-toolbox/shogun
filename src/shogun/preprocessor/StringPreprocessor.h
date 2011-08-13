@@ -31,9 +31,6 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 {
 	public:
 		/** constructor
-		 *
-		 * @param name string preprocessor's name
-		 * @param id string preprocessor's id
 		 */
 		CStringPreprocessor() : CPreprocessor() {}
 

@@ -34,9 +34,6 @@ template <class ST> class CSparsePreprocessor : public CPreprocessor
 {
 public:
 	/** constructor
-	 *
-	 * @param name sparse preprocessor's name
-	 * @param id sparse preprocessor's id
 	 */
 	CSparsePreprocessor() : CPreprocessor() {}
 

@@ -32,9 +32,6 @@ template <class ST> class CSimplePreprocessor : public CPreprocessor
 {
 	public:
 		/** constructor
-		 *
-		 * @param name simple preprocessor's name
-		 * @param id simple preprocessor's id
 		 */
 		CSimplePreprocessor() : CPreprocessor() {}
 
