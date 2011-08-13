@@ -47,6 +47,7 @@ class CSerializableFile;
 #else
 #define SG_REF(x)
 #define SG_UNREF(x)
+#define SG_UNREF_NO_NULL(x)
 #endif
 
 /*******************************************************************************
