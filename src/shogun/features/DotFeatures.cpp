@@ -392,49 +392,46 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 	SG_FREE(w);
 }
 
-void CDotFeatures::get_mean(float64_t** mean, int32_t* mean_length)
+SGVector<float64_t> CDotFeatures::get_mean()
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
 	ASSERT(num>0);
 	ASSERT(dim>0);
 
-	*mean_length = dim;
-	*mean = SG_MALLOC(float64_t, dim);
-    memset(*mean, 0, sizeof(float64_t)*dim);
+	SGVector<float64_t> mean(dim);
+    memset(mean.vector, 0, sizeof(float64_t)*dim);
 
 	for (int i = 0; i < num; i++)
-		add_to_dense_vec(1, i, *mean, dim);
+		add_to_dense_vec(1, i, mean.vector, dim);
 	for (int j = 0; j < dim; j++)
-		(*mean)[j] /= num;
+		mean.vector[j] /= num;
+
+	return mean;
 }									
 
-void CDotFeatures::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols)
+SGMatrix<float64_t> CDotFeatures::get_cov()
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
 	ASSERT(num>0);
 	ASSERT(dim>0);
 
-	*cov_rows = dim;
-	*cov_cols = dim;
+	SGMatrix<float64_t> cov(dim, dim);
 
-	*cov = SG_MALLOC(float64_t, dim*dim);
-    memset(*cov, 0, sizeof(float64_t)*dim*dim);
+    memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
 
-	float64_t* mean;
-	int32_t mean_length;
-	get_mean(&mean, &mean_length);
+	SGVector<float64_t> mean = get_mean();
 
 	for (int i = 0; i < num; i++)
 	{
 		SGVector<float64_t> v = get_computed_dot_feature_vector(i);
-		CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean, v.vlen);
+		CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
 		for (int m = 0; m < v.vlen; m++)
 		{
 			for (int n = 0; n <= m ; n++)
 			{
-				(*cov)[m*v.vlen+n] += v.vector[m]*v.vector[n];
+				(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
 			}
 		}
 		v.free_vector();
@@ -443,15 +440,16 @@ void CDotFeatures::get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols
 	{
 		for (int n = 0; n <= m ; n++)
 		{
-			(*cov)[m*dim+n] /= num;
+			(cov.matrix)[m*dim+n] /= num;
 		}
 	}
 	for (int m = 0; m < dim-1; m++)
 	{
 		for (int n = m+1; n < dim; n++)
 		{
-			(*cov)[m*dim+n] = (*cov)[n*dim+m];
+			(cov.matrix)[m*dim+n] = (cov.matrix)[n*dim+m];
 		}
 	}
-	SG_FREE(mean);
+	mean.destroy_vector();
+	return cov;
 }

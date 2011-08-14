@@ -37,7 +37,7 @@ enum ECovType
  * Takes as input a mean vector and covariance matrix.
  * Also possible to train from data.
  * Likelihood is computed using the Gaussian PDF \f$(2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}e^{-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)}\f$
- * The actuall computations depend on the type of covariance used.
+ * The actual computations depend on the type of covariance used.
  */
 class CGaussian : public CDistribution
 {
@@ -48,7 +48,7 @@ class CGaussian : public CDistribution
 		 *
 		 * @param mean mean of the Gaussian
 		 * @param cov covariance of the Gaussian
-		 * @param cov_type covariance type
+		 * @param cov_type covariance type (full, diagonal or shperical)
 		 */
 		CGaussian(SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type=FULL);
 		virtual ~CGaussian();
@@ -97,8 +97,7 @@ class CGaussian : public CDistribution
 
 		/** compute PDF
 		 *
-		 * @param point
-		 * @param point_len
+		 * @param point point for which to compute the PDF
 		 * @return computed PDF
 		 */
 		virtual inline float64_t compute_PDF(SGVector<float64_t> point)
@@ -108,8 +107,7 @@ class CGaussian : public CDistribution
 
 		/** compute log PDF
 		 *
-		 * @param point
-		 * @param point_len
+		 * @param point point for which to compute the log PDF
 		 * @return computed log PDF
 		 */
 		virtual float64_t compute_log_PDF(SGVector<float64_t> point);
@@ -136,29 +134,29 @@ class CGaussian : public CDistribution
 			m_mean=mean;
 		}
 
-		/** get cov
+		/** get covariance
 		 *
-		 * @param cov cov, memory needs to be freed by user
+		 * @param cov covariance, memory needs to be freed by user
 		 */
 		virtual SGMatrix<float64_t> get_cov();
 
-		/** set cov
+		/** set covariance
 		 *
-		 * Doesn't store the cov, but decomposes, thus the cov can be freed after exit without harming the object
+		 * Doesn't store the covariance, but decomposes, thus the covariance can be freed after exit without harming the object
 		 *
-		 * @param cov new cov
+		 * @param cov new covariance
 		 */
 		virtual inline void set_cov(SGMatrix<float64_t> cov)
 		{
 			ASSERT(cov.num_rows==cov.num_cols);
 			ASSERT(cov.num_rows==m_mean.vlen);
-			decompose_cov(cov.matrix, cov.num_rows);
+			decompose_cov(cov);
 			init();
 			if (cov.do_free)
 				cov.free_matrix();
 		}
 
-		/** get cov type
+		/** get covariance type
 		 *
 		 * @return covariance type
 		 */
@@ -167,7 +165,7 @@ class CGaussian : public CDistribution
 			return m_cov_type;
 		}
 
-		/** set cov type
+		/** set covariance type
 		 *
 		 * Will only take effect after covariance is changed
 		 *
@@ -189,8 +187,7 @@ class CGaussian : public CDistribution
 
 		/** set diagonal
 		 *
-		 * @param d diagonal
-		 * @param d_length diagonal length
+		 * @param d new diagonal
 		 */
 		inline void set_d(SGVector<float64_t> d)
 		{
@@ -210,8 +207,7 @@ class CGaussian : public CDistribution
 
 		/** set unitary matrix
 		 *
-		 * @param d diagonal
-		 * @param d_length diagonal length
+		 * @param u new unitary matrix
 		 */
 		inline void set_u(SGMatrix<float64_t> u)
 		{
@@ -232,8 +228,11 @@ class CGaussian : public CDistribution
 		/** Initialize parameters for serialization */
 		void register_params();
 
-		/** decompose covariance matrix according to type */
-		void decompose_cov(float64_t* cov, int32_t cov_size);
+		/** decompose covariance matrix according to type 
+		 *
+		 * @param cov covariance
+		 */
+		void decompose_cov(SGMatrix<float64_t> cov);
 
 	protected:
 		/** constant part */
