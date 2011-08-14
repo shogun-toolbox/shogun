@@ -20,7 +20,29 @@
 #include <shogun/distance/EuclidianDistance.h>
 #include <shogun/lib/Signal.h>
 
+#ifndef WIN32
+#include <pthread.h>
+#endif
+
 using namespace shogun;
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct D_THREAD_PARAM
+{
+	int32_t idx_start;
+	int32_t idx_stop;
+	int32_t idx_step;
+	int32_t m_k;
+	int32_t dim;
+	int32_t N;
+	const int32_t* neighborhood_matrix;
+	const float64_t* feature_matrix;
+	float64_t* z_matrix;
+	float64_t* covariance_matrix;
+	float64_t* id_vector;
+	float64_t* W_matrix;
+};
+#endif
 
 CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 		CDimensionReductionPreprocessor(), m_k(3), m_posdef(true)
@@ -53,7 +75,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	ASSERT(m_k<N);
 
 	// loop variables
-	int32_t i,j,k;
+	int32_t i,j,t;
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
@@ -63,70 +85,64 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// init W (weight) matrix
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 
+#ifndef WIN32
+	int32_t num_threads = parallel->get_num_threads();
+	ASSERT(num_threads>0);
+	// allocate threads
+	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
+	D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM, num_threads);
+	pthread_attr_t attr;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+#else
+	int32_t num_threads = 1;
+#endif 
 	// init matrices and norm factor to be used
-	float64_t* z_matrix = SG_MALLOC(float64_t, m_k*dim);
-	float64_t* covariance_matrix = SG_MALLOC(float64_t, m_k*m_k);
-	float64_t* id_vector = SG_MALLOC(float64_t, m_k);
-	float64_t norming;
+	float64_t* z_matrix = SG_MALLOC(float64_t, m_k*dim*num_threads);
+	float64_t* covariance_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
+	float64_t* id_vector = SG_MALLOC(float64_t, m_k*num_threads);
 
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
-	for (i=0; i<N && !(CSignal::cancel_computations()); i++)
+#ifndef WIN32
+	for (t=0; t<num_threads; t++)
 	{
-		// compute local feature matrix containing neighbors of i-th vector
-		for (j=0; j<m_k; j++)
-		{
-			for (k=0; k<dim; k++)
-				z_matrix[j*dim+k] = feature_matrix.matrix[neighborhood_matrix.matrix[j*N+i]*dim+k];
-		}
-
-		// center features by subtracting i-th feature column
-		for (j=0; j<m_k; j++)
-		{
-			for (k=0; k<dim; k++)
-				z_matrix[j*dim+k] -= feature_matrix.matrix[i*dim+k];
-		}
-
-		// compute local covariance matrix
-		cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
-		            m_k,m_k,dim,
-		            1.0,z_matrix,dim,
-		            z_matrix,dim,
-		            0.0,covariance_matrix,m_k);
-
-		for (j=0; j<m_k; j++)
-			id_vector[j] = 1.0;
-
-		// regularize in case of ill-posed system
-		if (m_k>dim)
-		{
-			// compute tr(C)
-			float64_t trace = 0.0;
-			for (j=0; j<m_k; j++)
-				trace += covariance_matrix[j*m_k+j];
-
-			for (j=0; j<m_k; j++)
-				covariance_matrix[j*m_k+j] += 1e-3*trace;
-		}
-
-		// solve system of linear equations: covariance_matrix * X = 1
-		// covariance_matrix is a pos-def matrix
-		clapack_dposv(CblasColMajor,CblasLower,m_k,1,covariance_matrix,m_k,id_vector,m_k);
-
-		// normalize weights
-		norming=0.0;
-		for (j=0; j<m_k; j++)
-			norming += id_vector[j];
-
-		for (j=0; j<m_k; j++)
-			id_vector[j]/=norming;
-
-		// put weights into W matrix
-		for (j=0; j<m_k; j++)
-			W_matrix[N*neighborhood_matrix.matrix[j*N+i]+i]=id_vector[j];
-
+		parameters[t].idx_start = t;
+		parameters[t].idx_step = num_threads;
+		parameters[t].idx_stop = N;
+		parameters[t].m_k = m_k;
+		parameters[t].dim = dim;
+		parameters[t].N = N;
+		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
+		parameters[t].z_matrix = z_matrix+(m_k*dim)*t;
+		parameters[t].feature_matrix = feature_matrix.matrix;
+		parameters[t].covariance_matrix = covariance_matrix+(m_k*m_k)*t;
+		parameters[t].id_vector = id_vector+m_k*t;
+		parameters[t].W_matrix = W_matrix;
+		pthread_create(&threads[t], &attr, run_linearreconstruction_thread, (void*)&parameters[t]);
 	}
+	for (t=0; t<num_threads; t++)
+		pthread_join(threads[t], NULL);
+	pthread_attr_destroy(&attr);
+	SG_FREE(parameters);
+	SG_FREE(threads);
+#else
+	D_THREAD_PARAM single_thread_param;
+	single_thread_param.idx_start = 0;
+	single_thread_param.idx_step = 1;
+	single_thread_param.idx_stop = N;
+	single_thread_param.m_k = m_k;
+	single_thread_param.dim = dim;
+	single_thread_param.N = N;
+	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
+	single_thread_param.z_matrix = z_matrix;
+	single_thread_param.feature_matrix = feature_matrix.matrix;
+	single_thread_param.covariance_matrix = covariance_matrix;
+	single_thread_param.id_vector = id_vector;
+	single_thread_param.W_matrix = W_matrix;
+	run_linearreconstruction_thread((void*)single_thread_param);
+#endif
 
 	// clean
 	SG_FREE(id_vector);
@@ -227,6 +243,82 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 	SG_FREE(eigenvalues_vector);
 
 	return SGMatrix<float64_t>(null_space_features,dimension,N);
+}
+
+void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
+{
+	D_THREAD_PARAM* parameters = (D_THREAD_PARAM*)p;
+	int32_t idx_start = parameters->idx_start;
+	int32_t idx_step = parameters->idx_step;
+	int32_t idx_stop = parameters->idx_stop;
+	int32_t m_k = parameters->m_k;
+	int32_t dim = parameters->dim;
+	int32_t N = parameters->N;
+	const int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
+	float64_t* z_matrix = parameters->z_matrix;
+	const float64_t* feature_matrix = parameters->feature_matrix;
+	float64_t* covariance_matrix = parameters->covariance_matrix;
+	float64_t* id_vector = parameters->id_vector;
+	float64_t* W_matrix = parameters->W_matrix;
+
+	int32_t i,j,k;
+	float64_t norming,trace;
+
+	for (i=idx_start; i<idx_stop; i+=idx_step)
+	{
+		// compute local feature matrix containing neighbors of i-th vector
+		for (j=0; j<m_k; j++)
+		{
+			for (k=0; k<dim; k++)
+				z_matrix[j*dim+k] = feature_matrix[neighborhood_matrix[j*N+i]*dim+k];
+		}
+
+		// center features by subtracting i-th feature column
+		for (j=0; j<m_k; j++)
+		{
+			for (k=0; k<dim; k++)
+				z_matrix[j*dim+k] -= feature_matrix[i*dim+k];
+		}
+
+		// compute local covariance matrix
+		cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
+		            m_k,m_k,dim,
+		            1.0,z_matrix,dim,
+		            z_matrix,dim,
+		            0.0,covariance_matrix,m_k);
+
+		for (j=0; j<m_k; j++)
+			id_vector[j] = 1.0;
+
+		// regularize in case of ill-posed system
+		if (m_k>dim)
+		{
+			// compute tr(C)
+			trace = 0.0;
+			for (j=0; j<m_k; j++)
+				trace += covariance_matrix[j*m_k+j];
+
+			for (j=0; j<m_k; j++)
+				covariance_matrix[j*m_k+j] += 1e-3*trace;
+		}
+
+		// solve system of linear equations: covariance_matrix * X = 1
+		// covariance_matrix is a pos-def matrix
+		clapack_dposv(CblasColMajor,CblasLower,m_k,1,covariance_matrix,m_k,id_vector,m_k);
+
+		// normalize weights
+		norming=0.0;
+		for (j=0; j<m_k; j++)
+			norming += id_vector[j];
+
+		for (j=0; j<m_k; j++)
+			id_vector[j]/=norming;
+
+		// put weights into W matrix
+		for (j=0; j<m_k; j++)
+			W_matrix[N*neighborhood_matrix[j*N+i]+i]=id_vector[j];
+	}
+	return NULL;
 }
 
 SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* distance)
