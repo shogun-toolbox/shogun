@@ -125,7 +125,8 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual inline void set_features(CStreamingDotFeatures* feat)
 		{
-			SG_UNREF(features);
+			if (features)
+				SG_UNREF(features);
 			SG_REF(feat);
 			features=feat;
 		}

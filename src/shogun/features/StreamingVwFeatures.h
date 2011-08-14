@@ -25,6 +25,7 @@
 #include <shogun/io/StreamingVwCacheFile.h>
 #include <shogun/features/StreamingDotFeatures.h>
 #include <shogun/classifier/vw/vw_common.h>
+#include <shogun/classifier/vw/vw_math.h>
 
 namespace shogun
 {

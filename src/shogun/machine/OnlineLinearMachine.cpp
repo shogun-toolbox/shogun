@@ -23,7 +23,10 @@ COnlineLinearMachine::COnlineLinearMachine()
 
 COnlineLinearMachine::~COnlineLinearMachine()
 {
-	SG_FREE(w);
+	// It is possible that a derived class may have already
+	// called SG_FREE() on the weight vector
+	if (w != NULL)
+		SG_FREE(w);
 	SG_UNREF(features);
 }
 
