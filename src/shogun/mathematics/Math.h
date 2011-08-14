@@ -1257,8 +1257,7 @@ class CMath : public CSGObject
 			int info;
 			int ord=n;
 			int lda=n;
-			double* eigenvalues=SG_MALLOC(float64_t, n+1);
-			fill_vector(eigenvalues, n+1, 0.0);
+			double* eigenvalues=SG_CALLOC(float64_t, n+1);
 
 			// lapack sym matrix eigenvalues+vectors
 			wrap_dsyev(V, U,  ord, matrix, lda,
@@ -1278,8 +1277,7 @@ class CMath : public CSGObject
 		template <class T>
 			static T* get_row_sum(T* matrix, int32_t m, int32_t n)
 			{
-				T* rowsums=SG_MALLOC(T, n);
-				fill_vector(rowsums, n, (T) 0);
+				T* rowsums=SG_CALLOC(T, n);
 
 				for (int32_t i=0; i<n; i++)
 				{
@@ -1293,8 +1291,7 @@ class CMath : public CSGObject
 		template <class T>
 			static T* get_column_sum(T* matrix, int32_t m, int32_t n)
 			{
-				T* colsums=SG_MALLOC(T, m);
-				fill_vector(colsums, m, (T) 0);
+				T* colsums=SG_CALLOC(T, m);
 
 				for (int32_t i=0; i<n; i++)
 				{
