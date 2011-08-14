@@ -107,31 +107,31 @@ namespace shogun
 		 */
 		//@{
 		virtual void get_vector_and_label
-			(bool*& vector, int32_t& len, float32_t& label);
+			(bool*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(uint8_t*& vector, int32_t& len, float32_t& label);
+			(uint8_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(char*& vector, int32_t& len, float32_t& label);
+			(char*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(int32_t*& vector, int32_t& len, float32_t& label);
+			(int32_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(float32_t*& vector, int32_t& len, float32_t& label);
+			(float32_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(float64_t*& vector, int32_t& len, float32_t& label);
+			(float64_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(int16_t*& vector, int32_t& len, float32_t& label);
+			(int16_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(uint16_t*& vector, int32_t& len, float32_t& label);
+			(uint16_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(int8_t*& vector, int32_t& len, float32_t& label);
+			(int8_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(uint32_t*& vector, int32_t& len, float32_t& label);
+			(uint32_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(int64_t*& vector, int32_t& len, float32_t& label);
+			(int64_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(uint64_t*& vector, int32_t& len, float32_t& label);
+			(uint64_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_vector_and_label
-			(floatmax_t*& vector, int32_t& len, float32_t& label);
+			(floatmax_t*& vector, int32_t& len, float64_t& label);
 		//@}
 
 		/** @name String Access Functions
@@ -168,31 +168,31 @@ namespace shogun
 		 */
 		//@{
 		virtual void get_string_and_label
-			(bool*& vector, int32_t& len, float32_t& label);
+			(bool*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(uint8_t*& vector, int32_t& len, float32_t& label);
+			(uint8_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(char*& vector, int32_t& len, float32_t& label);
+			(char*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(int32_t*& vector, int32_t& len, float32_t& label);
+			(int32_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(float32_t*& vector, int32_t& len, float32_t& label);
+			(float32_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(float64_t*& vector, int32_t& len, float32_t& label);
+			(float64_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(int16_t*& vector, int32_t& len, float32_t& label);
+			(int16_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(uint16_t*& vector, int32_t& len, float32_t& label);
+			(uint16_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(int8_t*& vector, int32_t& len, float32_t& label);
+			(int8_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(uint32_t*& vector, int32_t& len, float32_t& label);
+			(uint32_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(int64_t*& vector, int32_t& len, float32_t& label);
+			(int64_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(uint64_t*& vector, int32_t& len, float32_t& label);
+			(uint64_t*& vector, int32_t& len, float64_t& label);
 		virtual void get_string_and_label
-			(floatmax_t*& vector, int32_t& len, float32_t& label);
+			(floatmax_t*& vector, int32_t& len, float64_t& label);
 		//@}
 
 		/** @name Sparse Vector Access Functions
@@ -242,31 +242,31 @@ namespace shogun
 		 */
 		//@{
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<bool>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<bool>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<uint8_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<uint8_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<char>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<char>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<int32_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<int32_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<float32_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<float32_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<float64_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<float64_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<int16_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<int16_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<uint16_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<uint16_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<int8_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<int8_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<uint32_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<uint32_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<int64_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<int64_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<uint64_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<uint64_t>*& vector, int32_t& len, float64_t& label);
 		virtual void get_sparse_vector_and_label
-			(SGSparseVectorEntry<floatmax_t>*& vector, int32_t& len, float32_t& label);
+			(SGSparseVectorEntry<floatmax_t>*& vector, int32_t& len, float64_t& label);
 
 		//@}
 
@@ -285,7 +285,7 @@ namespace shogun
 		 * @param len length of feature vector
 		 * @param label label
 		 */
-		virtual void get_vector_and_label(VwExample*& ex, int32_t& len, float32_t& label);
+		virtual void get_vector_and_label(VwExample*& ex, int32_t& len, float64_t& label);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StreamingFile"; }

@@ -49,7 +49,7 @@ CLabels* COnlineLinearMachine::apply()
 	ASSERT(features);
 	ASSERT(features->has_property(FP_STREAMING_DOT));
 
-	DynArray<float64_t>* labels_dynarray=new DynArray<float32_t>();
+	DynArray<float64_t>* labels_dynarray=new DynArray<float64_t>();
 	int32_t num_labels=0;
 
 	features->start_parser();

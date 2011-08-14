@@ -83,7 +83,7 @@ public:
 	 * @param dot_features CDotFeatures object
 	 * @param lab labels (optional)
 	 */
-	CStreamingDotFeatures(CDotFeatures* dot_features, float32_t* lab=NULL)
+	CStreamingDotFeatures(CDotFeatures* dot_features, float64_t* lab=NULL)
 	{
 		SG_NOTIMPLEMENTED;
 		return;
@@ -169,6 +169,25 @@ public:
 		{
 			vec = SG_REALLOC(float32_t, vec, dim);
 			memset(&vec[len], 0, (dim-len) * sizeof(float32_t));
+			len = dim;
+		}
+	}
+
+	/**
+	 * Expand the vector passed so that it its length is equal to
+	 * the dimensionality of the features. The previous values are
+	 * kept intact through realloc, and the new ones are set to zero.
+	 *
+	 * @param vec float64_t* vector
+	 * @param len length of the vector
+	 */
+	inline virtual void expand_if_required(float64_t*& vec, int32_t &len)
+	{
+		int32_t dim = get_dim_feature_space();
+		if (dim > len)
+		{
+			vec = SG_REALLOC(float64_t, vec, dim);
+			memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
 			len = dim;
 		}
 	}

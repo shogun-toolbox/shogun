@@ -58,7 +58,7 @@ void CStreamingVwFile::get_vector(VwExample* &ex, int32_t &len)
 		len = -1;	// indicates failure
 }
 
-void CStreamingVwFile::get_vector_and_label(VwExample* &ex, int32_t &len, float32_t &label)
+void CStreamingVwFile::get_vector_and_label(VwExample* &ex, int32_t &len, float64_t &label)
 {
 	len = (parser->*parse_example)(buf, ex);
 	if (len == 0)

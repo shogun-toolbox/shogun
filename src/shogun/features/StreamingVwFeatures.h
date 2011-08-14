@@ -206,9 +206,9 @@ public:
 	 *
 	 * Examples must be labelled, otherwise an error occurs.
 	 *
-	 * @return The label as a float32_t.
+	 * @return The label as a float64_t.
 	 */
-	virtual float32_t get_label();
+	virtual float64_t get_label();
 
 	/**
 	 * Release the current example, indicating to the parser that
@@ -421,7 +421,7 @@ protected:
 	size_t example_count;
 
 	/// The current example's label.
-	float32_t current_label;
+	float64_t current_label;
 
 	/// Number of features in current example.
 	int32_t current_length;

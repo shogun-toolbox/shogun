@@ -29,12 +29,12 @@ using namespace shogun;
 #define DIMS 2
 #define DIST 0.5
 
-float64_t* feat;
+float32_t* feat;
 float64_t* lab;
 
 void gen_rand_data()
 {
-	feat=SG_MALLOC(float64_t, NUM*DIMS);
+	feat=SG_MALLOC(float32_t, NUM*DIMS);
 	lab=SG_MALLOC(float64_t, NUM);
 
 	for (int32_t i=0; i<NUM; i++)
@@ -63,12 +63,12 @@ int main()
 	gen_rand_data();
 
 	// Create features
-	CSimpleFeatures<float64_t>* features = new CSimpleFeatures<float64_t>();
+	CSimpleFeatures<float32_t>* features = new CSimpleFeatures<float32_t>();
 	SG_REF(features);
 	features->set_feature_matrix(feat, DIMS, NUM);
 
-	// Create a StreamingSimpleFeatures object which uses the above as input; labels (float64_t*) are optional
-	CStreamingSimpleFeatures<float64_t>* streaming_simple = new CStreamingSimpleFeatures<float64_t>(features, lab);
+	// Create a StreamingSimpleFeatures object which uses the above as input; labels (float32_t*) are optional
+	CStreamingSimpleFeatures<float32_t>* streaming_simple = new CStreamingSimpleFeatures<float32_t>(features, lab);
 	SG_REF(streaming_simple);
 
 	// Start parsing of the examples; in this case, it is trivial - returns each vector from the SimpleFeatures object
@@ -86,7 +86,7 @@ int main()
 	{
 		counter++;
 		// Get the current vector; no other vector is accessible
-		SGVector<float64_t> vec = streaming_simple->get_vector();
+		SGVector<float32_t> vec = streaming_simple->get_vector();
 		float64_t label = streaming_simple->get_label();
 
 		SG_SPRINT("Vector %d: [\t", counter);
@@ -99,7 +99,7 @@ int main()
 		// Calculate dot product of the current vector (from
 		// the StreamingFeatures object) with itself (the
 		// vector passed as argument)
-		float64_t dot_prod = streaming_simple->dense_dot(vec.vector, vec.vlen);
+		float32_t dot_prod = streaming_simple->dense_dot(vec.vector, vec.vlen);
 
 		SG_SPRINT("]\nDot product of the vector with itself: %f", dot_prod);
 		SG_SPRINT("\n\n");

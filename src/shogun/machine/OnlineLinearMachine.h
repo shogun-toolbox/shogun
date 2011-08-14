@@ -58,10 +58,25 @@ class COnlineLinearMachine : public CMachine
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		inline void get_w(float32_t*& dst_w, int32_t& dst_dims)
+		virtual inline void get_w(float32_t*& dst_w, int32_t& dst_dims)
 		{
 			ASSERT(w && w_dim>0);
 			dst_w=w;
+			dst_dims=w_dim;
+		}
+
+		/**
+		 * Get w as a _new_ float64_t array
+		 *
+		 * @param dst_w store w in this argument
+		 * @param dst_dims dimension of w
+		 */
+		virtual void get_w(float64_t*& dst_w, int32_t& dst_dims)
+		{
+			ASSERT(w && w_dim>0);
+			dst_w=SG_MALLOC(float64_t, w_dim);
+			for (int32_t i=0; i<w_dim; i++)
+				dst_w[i]=w[i];
 			dst_dims=w_dim;
 		}
 
@@ -69,7 +84,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return weight vector
 		 */
-		inline SGVector<float32_t> get_w()
+		virtual inline SGVector<float32_t> get_w()
 		{
 			return SGVector<float32_t>(w, w_dim);
 		}
@@ -79,7 +94,7 @@ class COnlineLinearMachine : public CMachine
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w
 		 */
-		inline void set_w(float32_t* src_w, int32_t src_w_dim)
+		virtual inline void set_w(float32_t* src_w, int32_t src_w_dim)
 		{
 			SG_FREE(w);
 			w=SG_MALLOC(float32_t, src_w_dim);
@@ -87,11 +102,26 @@ class COnlineLinearMachine : public CMachine
 			w_dim=src_w_dim;
 		}
 
+		/**
+		 * Set weight vector from a float64_t vector
+		 *
+		 * @param src_w new w
+		 * @param src_w_dim dimension of new w
+		 */
+		virtual void set_w(float64_t* src_w, int32_t src_w_dim)
+		{
+			SG_FREE(w);
+			w=SG_MALLOC(float32_t, src_w_dim);
+			for (int32_t i=0; i<src_w_dim; i++)
+				w[i] = src_w[i];
+			w_dim=src_w_dim;
+		}
+
 		/** set bias
 		 *
 		 * @param b new bias
 		 */
-		inline void set_bias(float32_t b)
+		virtual inline void set_bias(float32_t b)
 		{
 			bias=b;
 		}
@@ -100,7 +130,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return bias
 		 */
-		inline float32_t get_bias()
+		virtual inline float32_t get_bias()
 		{
 			return bias;
 		}

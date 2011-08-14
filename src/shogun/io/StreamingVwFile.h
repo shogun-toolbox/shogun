@@ -75,7 +75,7 @@ public:
 	 * @param len length of vector, untouched
 	 * @param label label, untouched
 	 */
-	virtual void get_vector_and_label(VwExample* &ex, int32_t &len, float32_t &label);
+	virtual void get_vector_and_label(VwExample* &ex, int32_t &len, float64_t &label);
 
 	/**
 	 * Set environment for vw

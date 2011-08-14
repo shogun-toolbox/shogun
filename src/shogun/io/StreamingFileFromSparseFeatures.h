@@ -34,9 +34,9 @@ public:
 	 * Constructor taking a SparseFeatures object as arg
 	 *
 	 * @param feat SparseFeatures object
-	 * @param lab Labels as float32_t*
+	 * @param lab Labels as float64_t*
 	 */
-	CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float32_t* lab);
+	CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float64_t* lab);
 
 	/**
 	 * Destructor
@@ -62,7 +62,7 @@ public:
 	 * @param len length of vector
 	 * @param label label
 	 */
-	virtual void get_sparse_vector_and_label(SGSparseVectorEntry<T>* &vec, int32_t &len, float32_t &label);
+	virtual void get_sparse_vector_and_label(SGSparseVectorEntry<T>* &vec, int32_t &len, float64_t &label);
 
 	/**
 	 * Reset the stream so the next example returned is the first
@@ -111,7 +111,7 @@ CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFea
 }
 
 template <class T>
-CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float32_t* lab)
+CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float64_t* lab)
 	: CStreamingFileFromFeatures(feat,lab)
 {
 	init();
@@ -153,7 +153,7 @@ void CStreamingFileFromSparseFeatures<T>::get_sparse_vector
 /* Functions to return the vector from the SparseFeatures object */
 template <class T>
 void CStreamingFileFromSparseFeatures<T>::get_sparse_vector_and_label
-(SGSparseVectorEntry<T>*& vector, int32_t& len, float32_t& label)
+(SGSparseVectorEntry<T>*& vector, int32_t& len, float64_t& label)
 {
 	get_sparse_vector(vector, len);
 	label=labels[vector_num];

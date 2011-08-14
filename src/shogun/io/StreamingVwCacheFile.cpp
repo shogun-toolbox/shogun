@@ -43,7 +43,7 @@ void CStreamingVwCacheFile::get_vector(VwExample* &ex, int32_t& len)
 		len = -1;
 }
 
-void CStreamingVwCacheFile::get_vector_and_label(VwExample* &ex, int32_t &len, float32_t &label)
+void CStreamingVwCacheFile::get_vector_and_label(VwExample* &ex, int32_t &len, float64_t &label)
 {
 	if (cache_reader->read_cached_example(ex))
 		len = 1;

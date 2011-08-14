@@ -205,9 +205,9 @@ public:
 	 * 
 	 * Examples must be labelled, otherwise an error occurs.
 	 * 
-	 * @return The label as a float32_t.
+	 * @return The label as a float64_t.
 	 */
-	virtual float32_t get_label();
+	virtual float64_t get_label();
 
 	/** 
 	 * Release the current example, indicating to the parser that
@@ -325,7 +325,7 @@ protected:
 	int32_t current_length;
 
 	/// The label of the current example, if applicable
-	float32_t current_label;
+	float64_t current_label;
 
 	/// Whether examples are labelled or not
 	bool has_labels;
@@ -465,7 +465,7 @@ SGString<T> CStreamingStringFeatures<T>::get_vector()
 }
 
 template <class T>
-float32_t CStreamingStringFeatures<T>::get_label()
+float64_t CStreamingStringFeatures<T>::get_label()
 {
 	ASSERT(has_labels);
 

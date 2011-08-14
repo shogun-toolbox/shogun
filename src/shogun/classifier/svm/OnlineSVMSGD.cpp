@@ -137,7 +137,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 
 			if (--count <= 0)
 			{
-				float64_t r = 1 - eta * lambda * skip;
+				float32_t r = 1 - eta * lambda * skip;
 				if (r < 0.8)
 					r = pow(1 - eta * lambda, skip);
 				CMath::scale_vector(r, w, w_dim);

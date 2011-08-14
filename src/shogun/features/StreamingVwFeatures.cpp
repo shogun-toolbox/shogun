@@ -163,7 +163,7 @@ VwExample* CStreamingVwFeatures::get_example()
 	return current_example;
 }
 
-float32_t CStreamingVwFeatures::get_label()
+float64_t CStreamingVwFeatures::get_label()
 {
 	ASSERT(has_labels);
 

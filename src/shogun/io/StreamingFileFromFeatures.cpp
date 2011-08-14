@@ -25,7 +25,7 @@ CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat)
 	labels=NULL;
 }
 
-CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat, float32_t* lab)
+CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab)
 	: CStreamingFile()
 {
 	features=feat;
