@@ -4,13 +4,13 @@ require 'modshogun'
 require 'load'
 require 'pp'
 # create string features with a single string
-s=10*'A' + 10*'C' + 10*'G' + 10*'T'
+s='A'*10 + 'C'*10 + 'G'*10 + 'T'*10
 
 parameter_list=[[s]]
 
 def features_string_sliding_window_modular(strings)
 
-	f=StringCharFeatures([strings], DNA)
+	f=Modshogun::StringCharFeatures.new([strings])
 
 	# slide a window of length 5 over features
 	# (memory efficient, does not copy strings)
