@@ -1497,10 +1497,10 @@ class CMath : public CSGObject
 		{
 			float64_t diff;
 
-			if (!CMath::finite(p))
+			if (!CMath::is_finite(p))
 				return q;
 
-			if (!CMath::finite(q))
+			if (!CMath::is_finite(q))
 			{
 				SG_SWARNING("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
 				return NAN;
