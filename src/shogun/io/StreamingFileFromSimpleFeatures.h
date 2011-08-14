@@ -34,9 +34,9 @@ public:
 	 * Constructor taking a SimpleFeatures object as arg
 	 *
 	 * @param feat SimpleFeatures object
-	 * @param lab Labels as float64_t*
+	 * @param lab Labels as float32_t*
 	 */
-	CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat, float64_t* lab);
+	CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat, float32_t* lab);
 
 	/**
 	 * Destructor
@@ -62,7 +62,7 @@ public:
 	 * @param len length of vector
 	 * @param label label
 	 */
-	virtual void get_vector_and_label(T* &vec, int32_t &len, float64_t &label);
+	virtual void get_vector_and_label(T* &vec, int32_t &len, float32_t &label);
 
 	/**
 	 * Reset the stream so the next example returned is the first
@@ -115,7 +115,7 @@ CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFea
 }
 
 template <class T>
-CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat, float64_t* lab)
+CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat, float32_t* lab)
 	: CStreamingFileFromFeatures()
 {
 	ASSERT(feat);
@@ -162,7 +162,7 @@ void CStreamingFileFromSimpleFeatures<T>::get_vector(T*& vector, int32_t& num_fe
 /* Functions to return the vector from the SimpleFeatures object with label */
 template <class T>
 void CStreamingFileFromSimpleFeatures<T>::get_vector_and_label
-(T*& vector, int32_t& num_feat, float64_t& label)
+(T*& vector, int32_t& num_feat, float32_t& label)
 {
 	if (vector_num >= features->get_num_vectors())
 	{

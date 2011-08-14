@@ -82,7 +82,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	if (w)
 		SG_FREE(w);
 	w_dim=1;
-	w=new float64_t;
+	w=new float32_t;
 	bias=0;
 
 	// Shift t in order to have a 
@@ -167,7 +167,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 { 
 	int32_t c_dim=1;
-	float64_t* c=new float64_t;
+	float32_t* c=new float32_t;
 	
 	// compute average gradient size
 	int32_t n = 0;

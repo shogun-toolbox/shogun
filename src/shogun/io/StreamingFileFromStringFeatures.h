@@ -34,9 +34,9 @@ public:
 	 * Constructor taking a StringFeatures object as arg
 	 *
 	 * @param feat StringFeatures object
-	 * @param lab Labels as float64_t*
+	 * @param lab Labels as float32_t*
 	 */
-	CStreamingFileFromStringFeatures(CStringFeatures<T>* feat, float64_t* lab);
+	CStreamingFileFromStringFeatures(CStringFeatures<T>* feat, float32_t* lab);
 
 	/**
 	 * Destructor
@@ -62,7 +62,7 @@ public:
 	 * @param len length of vector
 	 * @param label label
 	 */
-	virtual void get_string_and_label(T* &vec, int32_t &len, float64_t &label);
+	virtual void get_string_and_label(T* &vec, int32_t &len, float32_t &label);
 
 	/**
 	 * Reset the stream so the next example returned is the first
@@ -112,7 +112,7 @@ CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(CStringFea
 }
 
 template <class T>
-CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(CStringFeatures<T>* feat, float64_t* lab)
+CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(CStringFeatures<T>* feat, float32_t* lab)
 	: CStreamingFileFromFeatures(feat,lab)
 {
 	init();
@@ -152,7 +152,7 @@ void CStreamingFileFromStringFeatures<T>::get_string(T*& vector, int32_t& num_fe
 /* Functions to return the vector from the StringFeatures object with label */
 template <class T>
 void CStreamingFileFromStringFeatures<T>::get_string_and_label
-(T*& vector, int32_t& num_feat, float64_t& label)
+(T*& vector, int32_t& num_feat, float32_t& label)
 {
 	if (vector_num >= features->get_num_vectors())
 	{

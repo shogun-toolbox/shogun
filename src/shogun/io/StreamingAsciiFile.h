@@ -60,19 +60,19 @@ public:
 		(sg_type*& vector, int32_t& len);			\
 									\
 	virtual void get_vector_and_label				\
-		(sg_type*& vector, int32_t& len, float64_t& label);	\
+		(sg_type*& vector, int32_t& len, float32_t& label);	\
 									\
 	virtual void get_string						\
 		(sg_type*& vector, int32_t& len);			\
 									\
 	virtual void get_string_and_label				\
-		(sg_type*& vector, int32_t& len, float64_t& label);	\
+		(sg_type*& vector, int32_t& len, float32_t& label);	\
 									\
 	virtual void get_sparse_vector					\
 		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len);	\
 									\
 	virtual void get_sparse_vector_and_label			\
-		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label);
+		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float32_t& label);
 
 	GET_VECTOR_DECL(bool)
 	GET_VECTOR_DECL(uint8_t)

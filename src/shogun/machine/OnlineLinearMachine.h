@@ -58,7 +58,7 @@ class COnlineLinearMachine : public CMachine
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		inline void get_w(float64_t*& dst_w, int32_t& dst_dims)
+		inline void get_w(float32_t*& dst_w, int32_t& dst_dims)
 		{
 			ASSERT(w && w_dim>0);
 			dst_w=w;
@@ -69,9 +69,9 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return weight vector
 		 */
-		inline SGVector<float64_t> get_w()
+		inline SGVector<float32_t> get_w()
 		{
-			return SGVector<float64_t>(w, w_dim);
+			return SGVector<float32_t>(w, w_dim);
 		}
 
 		/** set w
@@ -79,11 +79,11 @@ class COnlineLinearMachine : public CMachine
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w
 		 */
-		inline void set_w(float64_t* src_w, int32_t src_w_dim)
+		inline void set_w(float32_t* src_w, int32_t src_w_dim)
 		{
 			SG_FREE(w);
-			w=SG_MALLOC(float64_t, src_w_dim);
-			memcpy(w, src_w, size_t(src_w_dim)*sizeof(float64_t));
+			w=SG_MALLOC(float32_t, src_w_dim);
+			memcpy(w, src_w, size_t(src_w_dim)*sizeof(float32_t));
 			w_dim=src_w_dim;
 		}
 
@@ -91,7 +91,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @param b new bias
 		 */
-		inline void set_bias(float64_t b)
+		inline void set_bias(float32_t b)
 		{
 			bias=b;
 		}
@@ -100,7 +100,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return bias
 		 */
-		inline float64_t get_bias()
+		inline float32_t get_bias()
 		{
 			return bias;
 		}
@@ -147,8 +147,8 @@ class COnlineLinearMachine : public CMachine
 		/// get output for example "vec_idx"
 		virtual float64_t apply(int32_t vec_idx)
 		{
-				SG_NOTIMPLEMENTED;
-				return CMath::INFTY;
+			SG_NOTIMPLEMENTED;
+			return CMath::INFTY;
 		}
 
 		/**
@@ -159,14 +159,14 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return classified label
 		 */
-		virtual float64_t apply(float64_t* vec, int32_t len);
+		virtual float32_t apply(float32_t* vec, int32_t len);
 
 		/**
 		 * apply linear machine to vector currently being processed
 		 *
 		 * @return classified label
 		 */
-		virtual float64_t apply_to_current_example();
+		virtual float32_t apply_to_current_example();
 
 		/** get features
 		 *
@@ -185,9 +185,9 @@ class COnlineLinearMachine : public CMachine
 		/** dimension of w */
 		int32_t w_dim;
 		/** w */
-		float64_t* w;
+		float32_t* w;
 		/** bias */
-		float64_t bias;
+		float32_t bias;
 		/** features */
 		CStreamingDotFeatures* features;
 };

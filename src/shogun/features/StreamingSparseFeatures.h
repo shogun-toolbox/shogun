@@ -148,9 +148,9 @@ public:
 	 * 
 	 * Examples must be labelled, otherwise an error occurs.
 	 * 
-	 * @return The label as a float64_t.
+	 * @return The label as a float32_t.
 	 */
-	virtual float64_t get_label();
+	virtual float32_t get_label();
 
 	/** 
 	 * Release the current example, indicating to the parser that
@@ -202,16 +202,16 @@ public:
 	 * the dimensionality of the features. The previous values are
 	 * kept intact through realloc, and the new ones are set to zero.
 	 *
-	 * @param vec float64_t* vector
+	 * @param vec float32_t* vector
 	 * @param len length of the vector
 	 */
-	inline virtual void expand_if_required(float64_t*& vec, int32_t &len)
+	inline virtual void expand_if_required(float32_t*& vec, int32_t &len)
 	{
 		int32_t dim = get_dim_feature_space();
 		if (dim+1 > len)
 		{
-			vec = SG_REALLOC(float64_t, vec, dim+1);
-			memset(&vec[len], 0, (dim+1-len) * sizeof(float64_t));
+			vec = SG_REALLOC(float32_t, vec, dim+1);
+			memset(&vec[len], 0, (dim+1-len) * sizeof(float32_t));
 			len = dim+1;
 		}
 	}
@@ -226,7 +226,7 @@ public:
 	 * 
 	 * @return Dot product.
 	 */
-	virtual float64_t dot(CStreamingDotFeatures *df);
+	virtual float32_t dot(CStreamingDotFeatures *df);
 	
 	/** compute the dot product between two sparse feature vectors
 	 * alpha * vec^T * vec
@@ -319,9 +319,9 @@ public:
 	 * @param vec2 The dense vector with which to take the dot product.
 	 * @param vec2_len length of vector
 	 * 
-	 * @return Dot product as a float64_t.
+	 * @return Dot product as a float32_t.
 	 */
-	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)
+	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len)
 	{
 		ASSERT(vec2);
 		if (vec2_len < current_num_features+1)
@@ -330,7 +330,7 @@ public:
 				 vec2_len, current_num_features+1);
 		}
 		
-		float64_t result=0;
+		float32_t result=0;
 		if (current_vector)
 		{
 			for (int32_t i=0; i<current_length; i++)
@@ -349,7 +349,7 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)
+	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val=false)
 	{
 		ASSERT(vec2);
 		if (vec2_len < current_num_features+1)
@@ -392,11 +392,11 @@ public:
 	 * 
 	 * @return sum of squares for current vector
 	 */
-	float64_t compute_squared()
+	float32_t compute_squared()
 	{
 		ASSERT(current_vector);
 
-		float64_t sq=0;
+		float32_t sq=0;
 		
 		for (int32_t i=0; i<current_length; i++)
 			sq += current_vector[i].entry * current_vector[i].entry;
@@ -524,7 +524,7 @@ private:
 protected:
 		
 	/// feature weighting in combined dot features
-	float64_t combined_weight;
+	float32_t combined_weight;
 
 	/// The parser object, which reads from input and returns parsed example objects.
 	CInputParser< SGSparseVectorEntry<T> > parser;
@@ -542,7 +542,7 @@ protected:
 	index_t current_vec_index;
 	
 	/// The current example's label.
-	float64_t current_label;
+	float32_t current_label;
 
 	/// Number of set indices in current example.
 	int32_t current_length;
@@ -648,7 +648,7 @@ SGSparseVector<T> CStreamingSparseFeatures<T>::get_vector()
 }
 
 template <class T>
-float64_t CStreamingSparseFeatures<T>::get_label()
+float32_t CStreamingSparseFeatures<T>::get_label()
 {
 	ASSERT(has_labels);
 
@@ -668,7 +668,7 @@ int32_t CStreamingSparseFeatures<T>::get_dim_feature_space() const
 }
 
 template <class T>
-	float64_t CStreamingSparseFeatures<T>::dot(CStreamingDotFeatures* df)
+	float32_t CStreamingSparseFeatures<T>::dot(CStreamingDotFeatures* df)
 {
 	SG_NOTIMPLEMENTED;
 	return -1;

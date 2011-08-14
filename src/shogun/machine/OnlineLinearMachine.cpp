@@ -49,7 +49,7 @@ CLabels* COnlineLinearMachine::apply()
 	ASSERT(features);
 	ASSERT(features->has_property(FP_STREAMING_DOT));
 
-	DynArray<float64_t>* labels_dynarray=new DynArray<float64_t>();
+	DynArray<float64_t>* labels_dynarray=new DynArray<float32_t>();
 	int32_t num_labels=0;
 
 	features->start_parser();
@@ -81,12 +81,12 @@ CLabels* COnlineLinearMachine::apply(CFeatures* data)
 	return apply();
 }
 
-float64_t COnlineLinearMachine::apply(float64_t* vec, int32_t len)
+float32_t COnlineLinearMachine::apply(float32_t* vec, int32_t len)
 {
 		return CMath::dot(vec, w, len)+bias;
 }
 
-float64_t COnlineLinearMachine::apply_to_current_example()
+float32_t COnlineLinearMachine::apply_to_current_example()
 {
 		return features->dense_dot(w, w_dim)+bias;
 }

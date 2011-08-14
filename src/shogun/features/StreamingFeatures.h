@@ -138,7 +138,7 @@ public:
 	 *
 	 * @return Label (if labelled example)
 	 */
-	virtual float64_t get_label()=0;
+	virtual float32_t get_label()=0;
 
 	/**
 	 * Indicate to the parser that it must fetch the next example.

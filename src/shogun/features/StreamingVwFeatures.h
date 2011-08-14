@@ -206,9 +206,9 @@ public:
 	 *
 	 * Examples must be labelled, otherwise an error occurs.
 	 *
-	 * @return The label as a float64_t.
+	 * @return The label as a float32_t.
 	 */
-	virtual float64_t get_label();
+	virtual float32_t get_label();
 
 	/**
 	 * Release the current example, indicating to the parser that
@@ -253,7 +253,7 @@ public:
 	 *
 	 * @return Dot product.
 	 */
-	virtual float64_t dot(CStreamingDotFeatures *df);
+	virtual float32_t dot(CStreamingDotFeatures *df);
 
 	/**
 	 * Dot product of an example with a vector
@@ -285,16 +285,7 @@ public:
 	 *
 	 * @return dot product between dense weights and a sparse feature vector
 	 */
-	virtual float32_t dense_dot(SGSparseVector<float64_t>* vec1, const float32_t* vec2);
-
-	/**
-	 * Dot product with another dense vector.
-	 *
-	 * @param vec2 The dense vector with which to take the dot product.
-	 * @param vec2_len length of vector
-	 * @return Dot product as a float64_t.
-	 */
-	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len);
+	virtual float32_t dense_dot(SGSparseVector<float32_t>* vec1, const float32_t* vec2);
 
 	/**
 	 * Calculate dot product of features with another vector, truncating the elements
@@ -330,17 +321,6 @@ public:
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
 	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val = false);
-
-	/**
-	 * Add alpha*current_vector to another dense vector.
-	 * Takes the absolute value of current_vector if specified.
-	 *
-	 * @param alpha alpha
-	 * @param vec2 vector to add to
-	 * @param vec2_len length of vector
-	 * @param abs_val true if abs of current_vector should be taken
-	 */
-	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len , bool abs_val=false);
 
 	/** get number of non-zero features in vector
 	 *
@@ -441,7 +421,7 @@ protected:
 	size_t example_count;
 
 	/// The current example's label.
-	float64_t current_label;
+	float32_t current_label;
 
 	/// Number of features in current example.
 	int32_t current_length;

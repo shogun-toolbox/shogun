@@ -50,9 +50,9 @@ public:
 	 * Constructor taking a CFeatures object and labels as arguments
 	 * 
 	 * @param feat features object
-	 * @param lab labels as float64_t*
+	 * @param lab labels as float32_t*
 	 */
-	CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab);
+	CStreamingFileFromFeatures(CFeatures* feat, float32_t* lab);
 
 	/** 
 	 * Destructor
@@ -70,7 +70,7 @@ public:
 		features=feat;
 	}
 
-	virtual void set_labels(float64_t* lab)
+	virtual void set_labels(float32_t* lab)
 	{
 		ASSERT(lab);
 		labels=lab;
@@ -90,7 +90,7 @@ protected:
 	CFeatures* features;
 
 	/// Labels (if applicable)
-	float64_t* labels;
+	float32_t* labels;
 };
 }
 #endif //__STREAMING_FILEFROMFEATURES_H__

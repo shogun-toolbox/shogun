@@ -62,7 +62,7 @@ public:
 	}
 
 	CStreamingSimpleFeatures(CSimpleFeatures<T>* simple_features,
-				 float64_t* lab=NULL)
+				 float32_t* lab=NULL)
 		: CStreamingDotFeatures()
 	{
 		CStreamingFileFromSimpleFeatures<T>* file;
@@ -173,9 +173,9 @@ public:
 	 * 
 	 * Examples must be labelled, otherwise an error occurs.
 	 * 
-	 * @return The label as a float64_t.
+	 * @return The label as a float32_t.
 	 */
-	virtual float64_t get_label();
+	virtual float32_t get_label();
 
 	/** 
 	 * Release the current example, indicating to the parser that
@@ -199,9 +199,9 @@ public:
 	 * 
 	 * @param vec The vector with which to calculate the dot product.
 	 * 
-	 * @return Dot product as a float64_t
+	 * @return Dot product as a float32_t
 	 */
-	virtual float64_t dot(SGVector<T> vec);
+	virtual float32_t dot(SGVector<T> vec);
 
 	/** 
 	 * Dot product taken with another StreamingDotFeatures object.
@@ -213,19 +213,19 @@ public:
 	 * 
 	 * @return Dot product.
 	 */
-	virtual float64_t dot(CStreamingDotFeatures *df);
+	virtual float32_t dot(CStreamingDotFeatures *df);
 
 	/** 
 	 * Dot product with another dense vector.
 	 * 
 	 * @param vec2 The dense vector with which to take the dot product.
 	 * @param vec2_len length of vector
-	 * @return Dot product as a float64_t.
+	 * @return Dot product as a float32_t.
 	 */
-	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)
+	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len)
 	{
 		ASSERT(vec2_len==current_length);
-		float64_t result=0;
+		float32_t result=0;
 		
 		for (int32_t i=0; i<current_length; i++)
 			result+=current_vector[i]*vec2[i];
@@ -242,7 +242,7 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len , bool abs_val=false)
+	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len , bool abs_val=false)
 	{
 		ASSERT(vec2_len==current_length);
 		
@@ -343,7 +343,7 @@ private:
 protected:
 		
 	/// feature weighting in combined dot features
-	float64_t combined_weight;
+	float32_t combined_weight;
 
 	/// The parser object, which reads from input and returns parsed example objects.
 	CInputParser<T> parser;
@@ -355,7 +355,7 @@ protected:
 	T* current_vector;
 
 	/// The current example's label.
-	float64_t current_label;
+	float32_t current_label;
 
 	/// Number of features in current example.
 	int32_t current_length;
@@ -448,7 +448,7 @@ SGVector<T> CStreamingSimpleFeatures<T>::get_vector()
 }
 
 template <class T>
-float64_t CStreamingSimpleFeatures<T>::get_label()
+float32_t CStreamingSimpleFeatures<T>::get_label()
 {
 	ASSERT(has_labels);
 
@@ -468,7 +468,7 @@ int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space() const
 }
 
 template <class T>
-	float64_t CStreamingSimpleFeatures<T>::dot(CStreamingDotFeatures* df)
+	float32_t CStreamingSimpleFeatures<T>::dot(CStreamingDotFeatures* df)
 {
 	ASSERT(df);
 	ASSERT(df->get_feature_type() == get_feature_type());
@@ -477,13 +477,13 @@ template <class T>
 
 	SGVector<T> other_vector=sf->get_vector();
 
-	float64_t result = CMath::dot(current_vector, other_vector.vector, current_length);
+	float32_t result = CMath::dot(current_vector, other_vector.vector, current_length);
 
 	return result;
 }
 
 template <class T>
-float64_t CStreamingSimpleFeatures<T>::dot(SGVector<T> sgvec1)
+float32_t CStreamingSimpleFeatures<T>::dot(SGVector<T> sgvec1)
 {
 	int32_t len1;
 	len1=sgvec1.vlen;
@@ -491,7 +491,7 @@ float64_t CStreamingSimpleFeatures<T>::dot(SGVector<T> sgvec1)
 	if (len1 != current_length)
 		SG_ERROR("Lengths %d and %d not equal while computing dot product!\n", len1, current_length);
 
-	float64_t result=CMath::dot(current_vector, sgvec1.vector, len1);
+	float32_t result=CMath::dot(current_vector, sgvec1.vector, len1);
 	return result;
 }
 

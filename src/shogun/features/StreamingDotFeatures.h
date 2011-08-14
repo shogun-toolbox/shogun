@@ -83,7 +83,7 @@ public:
 	 * @param dot_features CDotFeatures object
 	 * @param lab labels (optional)
 	 */
-	CStreamingDotFeatures(CDotFeatures* dot_features, float64_t* lab=NULL)
+	CStreamingDotFeatures(CDotFeatures* dot_features, float32_t* lab=NULL)
 	{
 		SG_NOTIMPLEMENTED;
 		return;
@@ -97,14 +97,14 @@ public:
 	 * @param df StreamingDotFeatures (of same kind) to compute
 	 * dot product with
 	 */
-	virtual float64_t dot(CStreamingDotFeatures* df)=0;
+	virtual float32_t dot(CStreamingDotFeatures* df)=0;
 
 	/** compute dot product between current vector and a dense vector
 	 *
 	 * @param vec2 real valued vector
 	 * @param vec2_len length of vector
 	 */
-	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)=0;
+	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len)=0;
 
 	/** Compute the dot product for all vectors. This function makes use of dense_dot
 	 * alphas[i] * sparse[i]^T * w + b
@@ -123,7 +123,7 @@ public:
 	 * note that the result will be written to output[0...(num_vec-1)]
 	 * except when num_vec = 0
 	 */
-	virtual void dense_dot_range(float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b, int32_t num_vec=0)
+	virtual void dense_dot_range(float32_t* output, float32_t* alphas, float32_t* vec, int32_t dim, float32_t b, int32_t num_vec=0)
 	{
 		ASSERT(num_vec>=0);
 
@@ -152,23 +152,23 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
+	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
 
 	/**
 	 * Expand the vector passed so that it its length is equal to
 	 * the dimensionality of the features. The previous values are
 	 * kept intact through realloc, and the new ones are set to zero.
 	 *
-	 * @param vec float64_t* vector
+	 * @param vec float32_t* vector
 	 * @param len length of the vector
 	 */
-	inline virtual void expand_if_required(float64_t*& vec, int32_t &len)
+	inline virtual void expand_if_required(float32_t*& vec, int32_t &len)
 	{
 		int32_t dim = get_dim_feature_space();
 		if (dim > len)
 		{
-			vec = SG_REALLOC(float64_t, vec, dim);
-			memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
+			vec = SG_REALLOC(float32_t, vec, dim);
+			memset(&vec[len], 0, (dim-len) * sizeof(float32_t));
 			len = dim;
 		}
 	}
@@ -219,7 +219,7 @@ public:
 	 * @param iterator as returned by get_first_feature
 	 * @return true if a new non-zero feature got returned
 	 */
-	virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
+	virtual bool get_next_feature(int32_t& index, float32_t& value, void* iterator)
 	{
 		SG_NOTIMPLEMENTED;
 		return false;
@@ -240,7 +240,7 @@ public:
 protected:
 
 	/// feature weighting in combined dot features
-	float64_t combined_weight;
+	float32_t combined_weight;
 };
 }
 #endif // _STREAMING_DOTFEATURES__H__
