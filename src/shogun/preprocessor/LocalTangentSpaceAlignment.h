@@ -66,6 +66,13 @@ public:
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_LOCALTANGENTSPACEALIGNMENT; };
 
+protected:
+
+	/** run ltsa thread
+	 * @param p thread params
+	 */
+	static void* run_ltsa_thread(void* p);
+
 };
 }
 
