@@ -182,16 +182,14 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 		pthread_create(&threads[t], &attr, CIsomap::run_dijkstra_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
-	{
 		pthread_join(threads[t], NULL);
-	}
 	pthread_attr_destroy(&attr);
 	for (t=0; t<num_threads; t++)
 		delete heaps[t];
 	SG_FREE(heaps);
 	SG_FREE(parameters);
 	SG_FREE(threads);
-
+	pthread_exit(NULL);
 #else
 	D_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = 0;
