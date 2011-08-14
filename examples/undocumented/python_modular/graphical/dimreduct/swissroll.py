@@ -9,25 +9,25 @@ lle = LocallyLinearEmbedding()
 lle.set_k(9)
 preprocs.append((lle, "LLE with k=%d" % lle.get_k()))
 
-from shogun.Preprocessor import ClassicMDS
-mds = ClassicMDS()
+from shogun.Preprocessor import MultidimensionalScaling
+mds = MultidimensionalScaling()
 preprocs.append((mds, "Classic MDS"))
 
-from shogun.Preprocessor import LandmarkMDS
-lmds = LandmarkMDS()
+lmds = MultidimensionalScaling()
+lmds.set_landmark(True)
 lmds.set_landmark_number(20)
-preprocs.append((lmds,"LMDS with %d landmarks" % lmds.get_landmark_number()))
+preprocs.append((lmds,"Landmark MDS with %d landmarks" % lmds.get_landmark_number()))
 
-from shogun.Preprocessor import ClassicIsomap
-cisomap = ClassicIsomap()
+from shogun.Preprocessor import Isomap
+cisomap = Isomap()
 cisomap.set_k(9)
-preprocs.append((cisomap,"K-Isomap with k=%d" % cisomap.get_k()))
+preprocs.append((cisomap,"Isomap with k=%d" % cisomap.get_k()))
 
-from shogun.Preprocessor import LandmarkIsomap
-lisomap = LandmarkIsomap()
+lisomap = Isomap()
+lisomap.set_landmark(True)
 lisomap.set_landmark_number(500)
 lisomap.set_k(9)
-preprocs.append((lisomap,"K-LIsomap with k=%d, %d landmarks" % (lisomap.get_k(),lisomap.get_landmark_number())))
+preprocs.append((lisomap,"Landmark Isomap with k=%d, %d landmarks" % (lisomap.get_k(),lisomap.get_landmark_number())))
 
 from shogun.Preprocessor import HessianLocallyLinearEmbedding
 hlle = HessianLocallyLinearEmbedding()
