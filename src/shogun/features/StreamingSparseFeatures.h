@@ -159,7 +159,16 @@ public:
 	 * The parser is then free to throw away that example.
 	 */
 	virtual void release_example();
-	
+
+	/**
+	 * Reset the file back to the first example
+	 * if possible.
+	 */
+	virtual void reset_stream()
+	{
+		return;
+	}
+
 	/** set number of features
 	 *
 	 * Sometimes when loading sparse features not all possible dimensions
@@ -187,6 +196,25 @@ public:
 	 * @return dimensionality
 	 */
 	virtual int32_t get_dim_feature_space() const;
+
+	/**
+	 * Expand the vector passed so that it its length is equal to
+	 * the dimensionality of the features. The previous values are
+	 * kept intact through realloc, and the new ones are set to zero.
+	 *
+	 * @param vec float64_t* vector
+	 * @param len length of the vector
+	 */
+	inline virtual void expand_if_required(float64_t*& vec, int32_t &len)
+	{
+		int32_t dim = get_dim_feature_space();
+		if (dim+1 > len)
+		{
+			vec = SG_REALLOC(float64_t, vec, dim+1);
+			memset(&vec[len], 0, (dim+1-len) * sizeof(float64_t));
+			len = dim+1;
+		}
+	}
 
 	/** 
 	 * Dot product taken with another StreamingDotFeatures object.
@@ -270,7 +298,7 @@ public:
 	T dense_dot(T alpha, T* vec, int32_t dim, T b)
 	{
 		ASSERT(vec);
-		ASSERT(dim==current_num_features);
+		ASSERT(dim>=current_num_features);
 		T result=b;
 
 		int32_t num_feat=current_length;
@@ -296,10 +324,10 @@ public:
 	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)
 	{
 		ASSERT(vec2);
-		if (vec2_len!=current_num_features)
+		if (vec2_len < current_num_features+1)
 		{
 			SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
-				 vec2_len, current_num_features);
+				 vec2_len, current_num_features+1);
 		}
 		
 		float64_t result=0;
@@ -324,10 +352,10 @@ public:
 	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)
 	{
 		ASSERT(vec2);
-		if (vec2_len!=current_num_features)
+		if (vec2_len < current_num_features+1)
 		{
 			SG_ERROR("dimension of vec (=%d) does not match number of features (=%d)\n",
-				 vec2_len, current_num_features);
+				 vec2_len, current_num_features+1);
 		}
 
 		SGSparseVectorEntry<T>* sv=current_vector;
@@ -418,11 +446,18 @@ public:
 	 * 
 	 * @return number of features as int
 	 */
-	int32_t get_num_features();
-	
-	/** 
+	virtual int32_t get_num_features();
+
+	/**
+	 * Return the number of non-zero features in vector
+	 *
+	 * @return number of sparse features in vector
+	 */
+	virtual int32_t get_nnz_features_for_vector();
+
+	/**
 	 * Return the feature type, depending on T.
-	 * 
+	 *
 	 * @return Feature type as EFeatureType
 	 */
 	virtual inline EFeatureType get_feature_type();
@@ -514,9 +549,6 @@ protected:
 
 	/// Number of features in current vector (as seen so far upto the current vector)
 	int32_t current_num_features;
-
-	/// Whether examples are labelled or not.
-	bool has_labels;
 };
 
 template <class T> void CStreamingSparseFeatures<T>::set_vector_reader()
@@ -646,6 +678,12 @@ template <class T>
 int32_t CStreamingSparseFeatures<T>::get_num_features()
 {
 	return current_num_features;
+}
+
+template <class T>
+int32_t CStreamingSparseFeatures<T>::get_nnz_features_for_vector()
+{
+	return current_length;
 }
 
 template <class T>
