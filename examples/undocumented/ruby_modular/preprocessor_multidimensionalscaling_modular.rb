@@ -8,11 +8,11 @@ data = LoadMatrix.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
-def preprocessor_landmarkmds_modular(data)
+def preprocessor_multidimensionalscaling_modular(data)
 	
 	features = RealFeatures(data)
 		
-	preprocessor = LandmarkMDS()
+	preprocessor = MultidimensionalScaling()
 	preprocessor.set_target_dim(1)
 	preprocessor.apply_to_feature_matrix(features)
 
@@ -22,8 +22,8 @@ def preprocessor_landmarkmds_modular(data)
 
 end
 if __FILE__ == $0
-	print 'LandmarkMDS'
-	preprocessor_landmarkmds_modular(*parameter_list[0])
+	print 'MultidimensionalScaling'
+	preprocessor_multidimensionalscaling_modular(*parameter_list[0])
 
 
 end

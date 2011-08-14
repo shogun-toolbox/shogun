@@ -8,7 +8,7 @@ public class preprocessor_classicisomap_modular {
 
 		RealFeatures features = new RealFeatures(data);
 		
-		ClassicIsomap preprocessor = new ClassicIsomap();
+		Isomap preprocessor = new Isomap();
 		preprocessor.set_target_dim(1);
 		preprocessor.apply_to_feature_matrix(features);
 

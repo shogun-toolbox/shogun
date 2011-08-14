@@ -5,20 +5,20 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
-def preprocessor_classicisomap_modular(data):
+def preprocessor_multidimensionalscaling_modular(data):
 	from shogun.Features import RealFeatures
-	from shogun.Preprocessor import ClassicIsomap
+	from shogun.Preprocessor import MultidimensionalScaling
 	
 	features = RealFeatures(data)
 		
-	preprocessor = ClassicIsomap()
+	preprocessor = MultidimensionalScaling()
 	preprocessor.set_target_dim(1)
+	preprocessor.set_landmark(False)
 	preprocessor.apply_to_feature_matrix(features)
 
 	return features
 
 
 if __name__=='__main__':
-	print 'ClassicIsomap'
-	preprocessor_classicisomap_modular(*parameter_list[0])
-
+	print 'MultidimensionalScaling'
+	preprocessor_multidimensionalscaling_modular(*parameter_list[0])

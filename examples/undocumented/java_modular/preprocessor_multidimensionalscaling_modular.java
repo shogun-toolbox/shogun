@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-public class preprocessor_landmarkisomap_modular {
+public class preprocessor_multidimensionalscaling_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
@@ -12,9 +12,11 @@ public class preprocessor_landmarkisomap_modular {
 		DoubleMatrix data = Load.load_numbers("../data/fm_train_real.dat");
 
 		RealFeatures features = new RealFeatures(data);
-		LandmarkIsomap landmark = new LandmarkIsomap();
-		landmark.set_target_dim(1);
-		landmark.apply_to_feature_matrix(features);
+		MultidimensionalScaling mds = new MultidimensionalScaling();
+		mds.set_target_dim(1);
+		mds.set_landmark(false);
+
+		mds.apply_to_feature_matrix(features);
 	
 		modshogun.exit_shogun();
 	}

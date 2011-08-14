@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-public class preprocessor_classicisomap_modular {
+public class preprocessor_isomap_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
@@ -12,9 +12,11 @@ public class preprocessor_classicisomap_modular {
 		DoubleMatrix data = Load.load_numbers("../data/fm_train_real.dat");
 
 		RealFeatures features = new RealFeatures(data);
-		ClassicIsomap classic = new ClassicIsomap();
-		classic.set_target_dim(1);
-		classic.apply_to_feature_matrix(features);
+		Isomap isomap = new Isomap();
+		isomap.set_target_dim(1);
+		isomap.set_k(6);
+		isomap.set_landmark(false);
+		isomap.apply_to_feature_matrix(features);
 	
 		modshogun.exit_shogun();
 	}

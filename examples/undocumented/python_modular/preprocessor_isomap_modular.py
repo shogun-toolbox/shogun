@@ -5,13 +5,16 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
-def preprocessor_landmarkmds_modular(data):
+def preprocessor_isomap_modular(data):
 	from shogun.Features import RealFeatures
-	from shogun.Preprocessor import LandmarkMDS
+	from shogun.Preprocessor import Isomap
 	
 	features = RealFeatures(data)
 		
-	preprocessor = LandmarkMDS()
+	preprocessor = Isomap()
+	preprocessor.set_landmark(True)
+	preprocessor.set_landmark_number(5)
+	preprocessor.set_k(6)
 	preprocessor.set_target_dim(1)
 	preprocessor.apply_to_feature_matrix(features)
 
@@ -19,6 +22,6 @@ def preprocessor_landmarkmds_modular(data):
 
 
 if __name__=='__main__':
-	print 'LandmarkMDS'
-	preprocessor_landmarkmds_modular(*parameter_list[0])
+	print 'Isomap'
+	preprocessor_isomap_modular(*parameter_list[0])
 
