@@ -135,6 +135,10 @@ public:
 	 */
 	virtual void end_parser();
 
+	/**
+	 * Reset a file back to the first example
+	 * if possible.
+	 */
 	virtual void reset_stream()
 	{
 		if (seekable)
