@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef CLASSICMDS_H_
-#define CLASSICMDS_H_
+#ifndef MULTIDIMENSIONALSCALING_H_
+#define MULTIDIMENSIONALSCALING_H_
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
@@ -26,8 +26,14 @@ class CDistance;
  * multidimensional scaling.
  *
  * Description is given at p.261 (Section 12.1) of
+ *
  * Borg, I., & Groenen, P. J. F. (2005).
  * Modern multidimensional scaling: Theory and applications. Springer.
+ *
+ * and in
+ *
+ * Sparse multidimensional scaling using landmark points
+ * V De Silva, J B Tenenbaum (2004) Technology, p. 1-4
  * 
  * In this preprocessor LAPACK is used for solving eigenproblem. If 
  * ARPACK is available, it is used instead of LAPACK.
@@ -39,23 +45,23 @@ class CDistance;
  * negative eigenvalues). In this case a warning is throwed.  
  * 
  */
-class CClassicMDS: public CDimensionReductionPreprocessor
+class CMultidimensionalScaling: public CDimensionReductionPreprocessor
 {
 public:
 
 	/* constructor */
-	CClassicMDS();
+	CMultidimensionalScaling();
 
 	/* destructor */
-	virtual ~CClassicMDS();
+	virtual ~CMultidimensionalScaling();
 
 	/** empty init
 	 */
-	virtual bool init(CFeatures* features);
+	virtual bool init(CFeatures* features) { return true; };
 
 	/** empty cleanup
 	 */
-	virtual void cleanup();
+	virtual void cleanup() {};
 
 	/** apply preprocessor to CDistance
 	 * @param distance (should be approximate euclidean for consistent result)
@@ -76,10 +82,10 @@ public:
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** get name */
-	virtual inline const char* get_name() const { return "ClassicMDS"; };
+	virtual inline const char* get_name() const { return "MultidimensionalScaling"; };
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_CLASSICMDS; };
+	virtual inline EPreprocessorType get_type() const { return P_MULTIDIMENSIONALSCALING; };
 
 	/** get last embedding eigenvectors 
 	 * @return vector with last eigenvalues
@@ -91,20 +97,84 @@ public:
 		return eigs;
 	}
 
-	/** apply preprocessor to CDistance,
-	 * this method internally by other methods involving classic MDS at some stage
-	 * @param distance (should be approximate euclidean for consistent result)
+	/** set number of landmarks⋅
+	 * should be lesser than number of examples and greater than 3
+	 * for consistent embedding
+	 * @param num number of landmark to be set
+	 */
+	void set_landmark_number(int32_t num)
+	{
+		if (num<3)
+			SG_ERROR("Landmark number should be greater than 3 (%d given).", num);
+		m_landmark_number = num;
+	};
+	
+	/** get number of landmarks⋅
+	 * @return current number of landmarks
+	 */
+	int32_t get_landmark_number() const
+	{
+		return m_landmark_number;
+	};
+
+	/** setter for landmark parameter
+	 * @param landmark true if landmark embedding should be used
+	 */
+	void set_landmark(bool landmark)
+	{
+		m_landmark = landmark;
+	};
+
+	/** getter for landmark parameter
+	 * @return true if landmark embedding is used
+	 */
+	bool get_landmark() const
+	{
+		return m_landmark;
+	};
+
+protected:
+
+	 /** classical embedding
+	 * @param distance distance
 	 * @return new feature matrix representing given distance
 	 */
-	SGMatrix<float64_t> embed_by_distance(CDistance* distance);
+	SGMatrix<float64_t> classic_embedding(CDistance* distance);
+
+	 /** landmark embedding
+	 * @param distance distance
+	 * @return new feature matrix representing given distance
+	 */
+	SGMatrix<float64_t> landmark_embedding(CDistance* distance);
+
+protected:
+
+	/** run triangulation thread for landmark embedding
+→→→→→→→→ * p thread parameters
+→→→→→→→→ */
+	static void* run_triangulation_thread(void* p);
+
+	/** subroutine used to shuffle count indexes among of total_count ones
+→→→→→→→→ * with Fisher-Yates (known as Knuth too) shuffle algorithm
+→→→→→→→→ * @param count number of indexes to be shuffled and returned
+→→→→→→→→ * @param total_count total number of indexes
+→→→→→→→→ * @return shuffled indexes for landmarks
+→→→→→→→→ */
+	static SGVector<int32_t> shuffle(int32_t count, int32_t total_count);
 
 protected:
 
 	/** last eigenvalues */
 	SGVector<float64_t> m_eigenvalues;
 
+	/** use landmark approximation? */
+	bool m_landmark;
+
+	/** number of landmarks */
+	int32_t m_landmark_number;
+
 };
 
 }
 #endif /* HAVE_LAPACK */
-#endif /* CLASSICMDS_H_ */
+#endif /* MULTIDIMENSIONALSCALING_H_ */

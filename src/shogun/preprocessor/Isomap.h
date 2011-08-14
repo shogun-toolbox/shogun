@@ -11,7 +11,7 @@
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
 #ifdef HAVE_LAPACK
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
+#include <shogun/preprocessor/MultidimensionalScaling.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
@@ -33,13 +33,18 @@ class CDistance;
  * Global versus local methods in nonlinear dimensionality reduction
  * Vin De Silva, Joshua B Tenenbaum (2003)
  * Advances in Neural Information Processing Systems 15 15 (Figure 2) p.721-728
+ *
+ *
+ *
+ *
+ *
  */
-class CIsomap: public CDimensionReductionPreprocessor
+class CIsomap: public CMultidimensionalScaling
 {
 public:
 
 	/* constructor */
-	CIsomap() : CDimensionReductionPreprocessor(), m_k(3) {};
+	CIsomap() : CMultidimensionalScaling(), m_k(3) {};
 
 	/* destructor */
 	virtual ~CIsomap() {};
@@ -57,48 +62,19 @@ public:
 	 * @param distance
 	 * @return new features with distance similar to geodesic
 	 */
-	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance)
-	{
-		CDistance* geodesic_distance = isomap_distance(distance);
-
-		SGMatrix<float64_t> new_features = mds_embed(geodesic_distance);
-
-		delete geodesic_distance;
-
-		return new CSimpleFeatures<float64_t>(new_features);
-	}
+	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
 
 	/** apply preprocessor to feature matrix using 
 	 * Isomap of specified type
 	 * @param features
 	 * @return new feature matrix with distance similar to geodesic
 	 */
-	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features)
-	{
-		CSimpleFeatures<float64_t>* simple_features =
-				(CSimpleFeatures<float64_t>*) features;
-		CDistance* euclidian_distance = new CEuclidianDistance();
-		euclidian_distance->init(simple_features,simple_features);
-		CDistance* geodesic_distance = isomap_distance(euclidian_distance);
-
-		SGMatrix<float64_t> new_features = mds_embed(geodesic_distance);
-
-		delete geodesic_distance;
-		delete euclidian_distance;
-
-		simple_features->set_feature_matrix(new_features);
-
-		return new_features;
-	}
-
+	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
+	
 	/** apply preprocessor to feature vector
 	 * @param vector
 	 */
-	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector)
-	{
-		SG_NOTIMPLEMENTED;
-		return vector;
-	}
+	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** get name */
 	virtual inline const char* get_name() const { return "Isomap"; };
@@ -123,6 +99,7 @@ public:
 		return m_k;
 	}
 
+
 protected:
 
 	/** k, number of neighbors for K-Isomap */
@@ -135,17 +112,11 @@ protected:
 	 */
 	static void* run_dijkstra_thread(void* p);
 
-	/** approx geodesic distance 
-	 * @param distance
+	/** approximate geodesic distance with shortest path in kNN graph
+	 * @param distance given distance for shortest path computing
 	 * @return custom distance with approximate geodesic distance matrix
 	 */
 	CCustomDistance* isomap_distance(CDistance* distance);
-
-	/** mds embedding 
-	 * @param distance
-	 * @return new feature matrix representing given distance
-	 */
-	virtual SGMatrix<float64_t> mds_embed(CDistance* distance) = 0;
 
 };
 }

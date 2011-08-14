@@ -19,15 +19,12 @@
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 
 %rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
-%rename(ClassicMDS) CClassicMDS;
+%rename(MultidimensionalScaling) CMultidimensionalScaling;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 %rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
 %rename(LocalTangentSpaceAlignment) CLocalTangentSpaceAlignment;
 %rename(LaplacianEigenmaps) CLaplacianEigenmaps;
 %rename(Isomap) CIsomap;
-%rename(LandmarkIsomap) CLandmarkIsomap;
-%rename(ClassicIsomap) CClassicIsomap;
-%rename(LandmarkMDS) CLandmarkMDS;
 
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
@@ -76,15 +73,12 @@ namespace shogun
 %include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 
 %include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-%include <shogun/preprocessor/ClassicMDS.h>
+%include <shogun/preprocessor/MultidimensionalScaling.h>
 %include <shogun/preprocessor/LocallyLinearEmbedding.h>
 %include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
 %include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
 %include <shogun/preprocessor/LaplacianEigenmaps.h>
 %include <shogun/preprocessor/Isomap.h>
-%include <shogun/preprocessor/LandmarkIsomap.h>
-%include <shogun/preprocessor/ClassicIsomap.h>
-%include <shogun/preprocessor/LandmarkMDS.h>
 
 %include <shogun/preprocessor/SortUlongString.h>
 %include <shogun/preprocessor/SortWordString.h>

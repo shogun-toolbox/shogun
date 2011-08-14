@@ -52,6 +52,47 @@ struct D_THREAD_PARAM
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
+CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)
+{
+	CDistance* geodesic_distance = isomap_distance(distance);
+
+	CSimpleFeatures<float64_t>* new_features = CMultidimensionalScaling::apply_to_distance(geodesic_distance);
+
+	delete geodesic_distance;
+
+	return new_features;
+}
+
+
+SGMatrix<float64_t> CIsomap::apply_to_feature_matrix(CFeatures* features)
+{
+	CSimpleFeatures<float64_t>* simple_features =
+		(CSimpleFeatures<float64_t>*) features;
+	CDistance* euclidian_distance = new CEuclidianDistance();
+	euclidian_distance->init(simple_features,simple_features);
+	CDistance* geodesic_distance = isomap_distance(euclidian_distance);
+
+	SGMatrix<float64_t> new_features;
+
+	if (m_landmark) 
+		new_features = CMultidimensionalScaling::landmark_embedding(geodesic_distance);
+	else
+		new_features = CMultidimensionalScaling::classic_embedding(geodesic_distance);
+
+	delete geodesic_distance;
+	delete euclidian_distance;
+
+	simple_features->set_feature_matrix(new_features);
+
+	return new_features;
+}
+	
+SGVector<float64_t> CIsomap::apply_to_feature_vector(SGVector<float64_t> vector)
+{
+	SG_NOTIMPLEMENTED;
+	return vector;
+}
+	
 CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 {
 	int32_t N,t,i,j;
@@ -66,8 +107,7 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	if (m_k>=N)
 	{
 		D_matrix.destroy_matrix();
-		SG_ERROR("K parameter should be less than number of given vectors (k=%d, N=%d)\n",
-		         m_k, N);
+		SG_ERROR("K parameter should be less than number of given vectors (k=%d, N=%d)\n", m_k, N);
 	}
 	
 	// cut by k-nearest neighbors
