@@ -335,7 +335,6 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 	pthread_attr_destroy(&attr);
 	SG_FREE(parameters);
 	SG_FREE(threads);
-	pthread_exit(NULL);
 #else
 	// run single 'thread'
 	float64_t* current_dist_to_lmks = SG_MALLOC(float64_t, lmk_N);

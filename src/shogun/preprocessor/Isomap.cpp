@@ -189,7 +189,6 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	SG_FREE(heaps);
 	SG_FREE(parameters);
 	SG_FREE(threads);
-	pthread_exit(NULL);
 #else
 	D_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = 0;
