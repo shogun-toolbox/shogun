@@ -45,6 +45,9 @@ bool CPCA::init(CFeatures* features)
 {
 	if (!initialized)
 	{
+		// loop varibles
+		int32_t i,j,k;
+
 		ASSERT(features->get_feature_class()==C_SIMPLE);
 		ASSERT(features->get_feature_type()==F_DREAL);
 
@@ -53,14 +56,8 @@ bool CPCA::init(CFeatures* features)
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		
 		m_mean_vector.vlen = num_features;
-		m_mean_vector.vector = SG_MALLOC(float64_t, num_features);
-			
-		// loop varibles
-		int32_t i,j,k;
-
-		for (i=0; i<num_features; i++)
-			m_mean_vector.vector[i] = 0.0;
-
+		m_mean_vector.vector = SG_CALLOC(float64_t, num_features);
+		
 		// sum 
 		SGMatrix<float64_t> feature_matrix = ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 		for (i=0; i<num_vectors; i++)
@@ -76,10 +73,7 @@ bool CPCA::init(CFeatures* features)
 		SG_DONE();
 		SG_DEBUG("Computing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
 
-		float64_t* cov = SG_MALLOC(float64_t, num_features*num_features);
-
-		for (j=0; j<num_features*num_features; j++)
-			cov[j] = 0.0;
+		float64_t* cov = SG_CALLOC(float64_t, num_features*num_features);
 
 		float64_t* sub_mean= SG_MALLOC(float64_t, num_features);
 
@@ -150,8 +144,9 @@ bool CPCA::init(CFeatures* features)
 		m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
 		num_old_dim=num_features;
 
+		SG_PRINT("num_dim=%d", num_dim);
 		int32_t offs=0;
-		for (i=num_features-1; i<num_features-num_dim-1; i++)
+		for (i=num_features-num_dim; i<num_features; i++)
 		{
 			for (k=0; k<num_features; k++)
 				if (do_whitening)
@@ -262,12 +257,12 @@ SGVector<float64_t> CPCA::get_mean()
 
 void CPCA::init()
 {
-//	m_parameters->add_matrix(&T, &num_dim, &num_old_dim,
-//					"T", "Transformation matrix (Eigenvectors of covarience matrix).");
-//	m_parameters->add_vector(&mean, &length_mean,
-//					"mean", "Mean Vector.");
-//	m_parameters->add_vector(&eigenvalues, &num_eigenvalues,
-//					"eigenvalues", "Vector with Eigenvalues.");
+	m_parameters->add(&m_transformation_matrix,
+					"transformation matrix", "Transformation matrix (Eigenvectors of covariance matrix).");
+	m_parameters->add(&m_mean_vector,
+					"mean vector", "Mean Vector.");
+	m_parameters->add(&m_eigenvalues_vector,
+					"eigenvalues vector", "Vector with Eigenvalues.");
 	m_parameters->add(&initialized,
 			"initalized", "True when initialized.");
 	m_parameters->add(&do_whitening,
