@@ -137,10 +137,9 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 	}
 	for (t=0; t<num_threads; t++)
 		pthread_join(threads[t], NULL);
-	//pthread_mutex_destroy(&W_matrix_mutex);
+	pthread_mutex_destroy(&W_matrix_mutex);
 	SG_FREE(parameters);
 	SG_FREE(threads);
-	//pthread_exit(NULL);
 #else
 	D_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = 0;
@@ -201,7 +200,9 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 	float64_t* s_values_vector = parameters->s_values_vector;
 	float64_t* q_matrix = parameters->q_matrix;
 	float64_t* W_matrix = parameters->W_matrix;
+#ifndef WIN32
 	pthread_mutex_t* W_matrix_mutex = parameters->W_matrix_mutex;
+#endif
 
 	int i,j,k;
 
