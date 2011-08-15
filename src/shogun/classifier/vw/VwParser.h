@@ -204,6 +204,7 @@ protected:
 	 * Initialize the cache writer
 	 *
 	 * @param fname cache file name
+	 * @param type cache type as EVwCacheType, default is C_NATIVE
 	 */
 	void init_cache(char * fname, EVwCacheType type = C_NATIVE);
 

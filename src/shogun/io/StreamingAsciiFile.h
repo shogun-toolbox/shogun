@@ -34,7 +34,6 @@ public:
 	 * 
 	 * @param fname file name
 	 * @param rw read/write mode
-	 * @param name name
 	 */
 	CStreamingAsciiFile(char* fname, char rw='r');
 

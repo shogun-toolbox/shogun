@@ -24,6 +24,8 @@
 namespace shogun
 {
 
+/// Enum EVwCacheType specifies the type of
+/// cache used, either C_NATIVE or C_PROTOBUF.
 enum EVwCacheType
 {
 	C_NATIVE = 0,
@@ -50,6 +52,7 @@ public:
 	 * Constructor, opens file specified by filename
 	 *
 	 * @param fname name of file to open
+	 * @param env_to_use Environment to use
 	 */
 	CVwCacheReader(char * fname, CVwEnvironment* env_to_use);
 
@@ -58,6 +61,7 @@ public:
 	 * as argument.
 	 *
 	 * @param f file descriptor
+	 * @param env_to_use VwEnvironment object to use
 	 */
 	CVwCacheReader(int32_t f, CVwEnvironment* env_to_use);
 

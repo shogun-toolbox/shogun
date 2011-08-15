@@ -22,11 +22,25 @@
 
 namespace shogun
 {
+/** @brief Class v_array is a templated class used to
+ * store variable length arrays. Memory locations
+ * are stored as 'extents', i.e., address of the
+ * first memory location and address after the last member.
+ *
+ * `begin', `end' and `end_array' handle the extent of the array.
+ * `end_array' is the address at the end of the space allocated
+ * for the array while `end' is the address at the end of the
+ * space actually filled with elements.
+ *
+ * The class should be instantiated on the basis of the
+ * data type of the contained array, eg. v_array<float32_t> if
+ * one wants to store a float32_t* array.
+ */
 template<class T> class v_array
 {
 public:
 
-	/** 
+	/**
 	 * Constructor.
 	 * Sets begin and end pointers to NULL.
 	 */
@@ -36,83 +50,91 @@ public:
 		end = NULL;
 		end_array = NULL;
 	}
-  
+
+	/**
+	 * Operator [] overloaded to return the
+	 * i-th element of the stored array.
+	 *
+	 * @param i index of the element, starting at 0
+	 *
+	 * @return element at position i
+	 */
 	T& operator[](unsigned int i) { return begin[i]; }
 
-	/** 
+	/**
 	 * Return the last element.
-	 * 
+	 *
 	 * @return Last element of array
 	 */
 	inline T last() { return *(end-1); }
 
-	/** 
+	/**
 	 * Pop from the array.
-	 * 
+	 *
 	 * @return Popped element
 	 */
 	inline T pop() { return *(--end); }
 
-	/** 
+	/**
 	 * Check if array is empty or not.
-	 * 
+	 *
 	 * @return whether array is empty
 	 */
 	inline bool empty() { return begin == end; }
 
-	/** 
+	/**
 	 * Decrement the 'end' pointer.
-	 * 
+	 *
 	 */
 	inline void decr() { end--; }
 
-	/** 
+	/**
 	 * Get number of elements in array.
-	 * 
+	 *
 	 * @return number of array elements
 	 */
 	inline unsigned int index() { return end-begin; }
 
-	/** 
+	/**
 	 * Empty the array.
-	 * 
+	 *
 	 */
 	inline void erase() { end = begin; }
 
-	/** 
+	/**
 	 * Push an element into the array.
-	 * 
+	 *
 	 * @param new_elem element to be pushed
 	 */
 	void push(const T &new_elem);
 
-	/** 
+	/**
 	 * Push multiple elements into the array.
-	 * 
+	 *
 	 * @param new_elem pointer to first element
 	 * @param num number of elements
 	 */
 	void push_many(const T* new_elem, size_t num);
 
-	/** 
+	/**
 	 * Reserve space for specified number of elements.
 	 * Reallocate, keeping the elements currently in the array.
-	 * 
+	 *
 	 * @param length number of elements to accommodate
 	 */
 	void reserve(size_t length);
 
-	/** 
+	/**
 	 * Reserve space for specified number of elements.
 	 * No reallocation is done, array is replaced.
-	 * 
-	 * @param length 
+	 *
+	 * @param length
 	 */
 	void calloc_reserve(size_t length);
 
-	/** 
+	/**
 	 * Pop an array from a list of arrays.
-	 * 
+	 *
 	 * @param stack array of arrays
 	 * @return popped array
 	 */
@@ -169,7 +191,7 @@ inline void v_array<T>::reserve(size_t length)
 	begin = SG_REALLOC(T, begin, length);
 	if (old_length < length)
 		bzero(begin + old_length, (length - old_length)*sizeof(T));
-  
+
 	end = begin;
 	end_array = begin + length;
 }

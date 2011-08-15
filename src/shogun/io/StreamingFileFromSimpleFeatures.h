@@ -15,6 +15,15 @@
 
 namespace shogun
 {
+/** @brief Class CStreamingFileFromSimpleFeatures is a derived
+ * class of CStreamingFile which creates an input source
+ * for the online framework from a CSimpleFeatures object.
+ *
+ * This kind of input is seekable, and hence can be used for
+ * making multiple passes over data.
+ *
+ * It is useful for testing/comparison purposes.
+ */
 template <class T> class CStreamingFileFromSimpleFeatures: public CStreamingFileFromFeatures
 {
 public:

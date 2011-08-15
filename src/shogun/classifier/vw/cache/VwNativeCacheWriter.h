@@ -35,6 +35,7 @@ public:
 	 * Constructor, opens a file whose name is specified
 	 *
 	 * @param fname file name
+	 * @param env_to_use Environment to use
 	 */
 	CVwNativeCacheWriter(char * fname, CVwEnvironment* env_to_use);
 
@@ -141,12 +142,15 @@ private:
 	void output_features(unsigned char index, VwFeature* begin, VwFeature* end);
 
 protected:
+	/// IOBuffer used for writing
 	CIOBuffer buf;
 
 private:
-	// Used for encoding data
+	/// Used for encoding/decoding -1
 	size_t neg_1;
+	/// Used for encoding/decoding other numbers
 	size_t general;
+	/// int size for encoding/decoding
 	size_t int_size;
 };
 

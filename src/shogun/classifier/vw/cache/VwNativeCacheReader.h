@@ -24,6 +24,7 @@ namespace shogun
 /// Packed structure for efficient storage
 struct one_float
 {
+	/// The float to store
 	float32_t f;
 } __attribute__((packed));
 
@@ -44,6 +45,7 @@ public:
 	 * Constructor, opens a file whose name is specified
 	 *
 	 * @param fname file name
+	 * @param env_to_use Environment to use
 	 */
 	CVwNativeCacheReader(char * fname, CVwEnvironment* env_to_use);
 
@@ -51,6 +53,7 @@ public:
 	 * Constructor, passed a file descriptor
 	 *
 	 * @param f descriptor of opened file
+	 * @param env_to_use Environment to use
 	 */
 	CVwNativeCacheReader(int32_t f, CVwEnvironment* env_to_use);
 
