@@ -36,6 +36,19 @@ namespace shogun
 
 namespace shogun
 {
+/** @brief Class CLossFunction is the base class of
+ * all loss functions.
+ *
+ * The class provides the loss for one example,
+ * first and second derivates of the loss function,
+ * (used very commonly) the square of the gradient and
+ * the importance-aware weight update for the function.
+ * (used mainly for VW)
+ *
+ * Refer: Online Importance Weight Aware Updates,
+ * Nikos Karampatziakis, John Langford
+ * http://arxiv.org/abs/1011.1576
+ */
 class CLossFunction: public CSGObject
 {
 public:
@@ -111,7 +124,12 @@ public:
 	 */
 	virtual ELossType get_loss_type()=0;
 
+	/**
+	 * Return the name of the object
+	 *
+	 * @return LossFunction
+	 */
 	virtual const char* get_name() const { return "LossFunction"; }
 };
 }
-#endif
+#endif // _LOSSFUNCTION_H__

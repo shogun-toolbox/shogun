@@ -90,7 +90,7 @@ public:
 	/**
 	 * Set environment for vw
 	 *
-	 * @param env CVwEnvironment* environment
+	 * @param env_to_use CVwEnvironment* environment
 	 */
 	void set_env(CVwEnvironment* env_to_use);
 

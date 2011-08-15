@@ -15,7 +15,9 @@
 
 namespace shogun
 {
-
+/** @brief Class CSquaredHingeLoss implements a
+ * squared hinge loss function.
+ */
 class CSquaredHingeLoss: public CLossFunction
 {
 public:
@@ -88,9 +90,14 @@ public:
 	 */
 	virtual ELossType get_loss_type() { return L_SQUAREDHINGELOSS; }
 
+	/**
+	 * Return the name of the object
+	 *
+	 * @return SquaredHingeLoss
+	 */
 	virtual const char* get_name() const { return "SquaredHingeLoss"; }
 };
 
 }
 
-#endif
+#endif // _SQUAREDHINGELOSS_H__

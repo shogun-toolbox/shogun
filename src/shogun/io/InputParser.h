@@ -21,12 +21,62 @@
 
 namespace shogun
 {
+	/// Type of example, either E_LABELLED
+	/// or E_UNLABELLED
 	enum E_EXAMPLE_TYPE
 	{
 		E_LABELLED = 1,
 		E_UNLABELLED = 2
 	};
 
+/** @brief Class CInputParser is a templated class used to
+ * maintain the reading/parsing/providing of examples.
+ *
+ * Parsing is done in a thread separate from the learner.
+ *
+ * Note that parsing is not done directly by this class,
+ * but by the Streaming*File classes. This class only calls
+ * the required get_vector* functions from the StreamingFile
+ * object. (Exactly which function should be called is set
+ * through the set_read_vector* functions)
+ *
+ * The template type should be the type of feature vector the
+ * parser should return. Eg. CInputParser<float32_t> means it
+ * will expect a float32_t* vector to be returned from the get_vector
+ * function. Other parameters returned are length of feature vector
+ * and the label, if applicable.
+ *
+ * If the vectors cannot be directly represented as say float32_t*
+ * one can instantiate eg. CInputParser<VwExample> and it looks for
+ * a get_vector function which returns a VwExample, which may contain
+ * any kind of data, including label, vector, weights, etc. It is then
+ * up to the external algorithm to handle such objects.
+
+ * The parser should first be started with a call to the start_parser()
+ * function which starts a new thread for continuous parsing of examples.
+ *
+ * Parsing is done through the CParseBuffer object, which in its
+ * current implementation is a ring of a specified number of examples.
+ * It is the task of the CInputParser object to ensure that this ring
+ * is being updated with new parsed examples.
+ *
+ * CInputParser provides mainly the get_next_example function which
+ * returns the next example from the CParseBuffer object to the caller
+ * (usually a StreamingFeatures object). When one is done using
+ * the example, finalize_example() should be called, leaving the
+ * spot free for a new example to be loaded.
+ *
+ * The parsing thread should be joined with a call to end_parser().
+ * exit_parser() may be used to cancel the parse thread if needed.
+ *
+ * Options are provided for automatic SG_FREEing of example objects
+ * after each finalize_example() and also on CInputParser destruction.
+ * They are set through the set_free_vector* functions.
+ * Do not free vectors on finalize_example() if you intend to reuse the
+ * same vector memory locations for different examples.
+ * Do not free vectors on destruction if you are bound to free them
+ * manually later.
+ */
 template <class T> class CInputParser
 {
 public:

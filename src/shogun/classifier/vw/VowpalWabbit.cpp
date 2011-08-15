@@ -52,6 +52,13 @@ void CVowpalWabbit::set_adaptive(bool adaptive_learning)
 		env->adaptive = false;
 }
 
+void CVowpalWabbit::load_regressor(char* file_name)
+{
+	reg->load_regressor(file_name);
+	w = reg->weight_vectors[0];
+	w_dim = 1 << env->num_bits;
+}
+
 void CVowpalWabbit::set_regressor_out(char* file_name, bool is_text)
 {
 	reg_name = file_name;

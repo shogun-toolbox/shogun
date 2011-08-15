@@ -74,6 +74,13 @@ public:
 	}
 
 	/**
+	 * Load regressor from a dump file
+	 *
+	 * @param file_name name of regressor file
+	 */
+	void load_regressor(char* file_name);
+
+	/**
 	 * Set regressor output parameters
 	 *
 	 * @param file_name name of file to save regressor to

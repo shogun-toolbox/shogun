@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-
+/// Parse function typedef. Takes an IOBuffer and VwExample as arguments.
 typedef int32_t (CVwParser::*parse_func)(CIOBuffer*, VwExample*&);
 
 /** @brief Class StreamingVwFile to read vector-by-vector from
@@ -37,7 +37,6 @@ public:
 	 *
 	 * @param fname file name
 	 * @param rw read/write mode
-	 * @param name name
 	 */
 	CStreamingVwFile(char* fname, char rw='r');
 
@@ -80,7 +79,7 @@ public:
 	/**
 	 * Set environment for vw
 	 *
-	 * @param env CVwEnvironment* environment
+	 * @param env_to_use CVwEnvironment* environment
 	 */
 	void set_env(CVwEnvironment* env_to_use)
 	{
