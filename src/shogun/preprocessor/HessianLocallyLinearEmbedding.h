@@ -67,6 +67,13 @@ public:
 	/** get type */
 	virtual inline EPreprocessorType get_type() const { return P_HESSIANLOCALLYLINEAREMBEDDING; };
 
+protected:
+
+	/** run hessian estimation thread
+	 * @param p thread params
+	 */
+	static void* run_hessianestimation_thread(void* p);
+
 };
 }
 
