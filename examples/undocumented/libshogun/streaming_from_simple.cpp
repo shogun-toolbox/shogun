@@ -67,7 +67,7 @@ int main()
 	SG_REF(features);
 	features->set_feature_matrix(feat, DIMS, NUM);
 
-	// Create a StreamingSimpleFeatures object which uses the above as input; labels (float32_t*) are optional
+	// Create a StreamingSimpleFeatures object which uses the above as input; labels (float64_t*) are optional
 	CStreamingSimpleFeatures<float32_t>* streaming_simple = new CStreamingSimpleFeatures<float32_t>(features, lab);
 	SG_REF(streaming_simple);
 
