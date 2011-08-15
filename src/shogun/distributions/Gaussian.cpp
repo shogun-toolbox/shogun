@@ -33,7 +33,7 @@ CGaussian::CGaussian(SGVector<float64_t> mean, SGMatrix<float64_t> cov,
 	if (cov.num_rows==1)
 		m_cov_type=SPHERICAL;
 
-	decompose_cov(cov.matrix, cov.num_rows);
+	decompose_cov(cov);
 	init();
 	register_params();
 
@@ -73,19 +73,15 @@ bool CGaussian::train(CFeatures* data)
 				SG_ERROR("Specified features are not of type CDotFeatures\n");		
 		set_features(data);
 	}
-	CDotFeatures* dotdata = (CDotFeatures *) data;
+	CDotFeatures* dotdata=(CDotFeatures *) data;
 
-	m_mean.free_vector();
+	m_mean.destroy_vector();
 
-	float64_t* cov;
-	int32_t cov_rows;
-	int32_t cov_cols;
+	m_mean=dotdata->get_mean();
+	SGMatrix<float64_t> cov=dotdata->get_cov();
 
-	dotdata->get_mean(&m_mean.vector, &m_mean.vlen);
-	dotdata->get_cov(&cov, &cov_rows, &cov_cols);
-
-	decompose_cov(cov, cov_rows);
-	SG_FREE(cov);
+	decompose_cov(cov);
+	cov.destroy_matrix();
 
 	init();
 
@@ -122,7 +118,7 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 {
 	ASSERT(features->has_property(FP_DOT));
 	SGVector<float64_t> v=((CDotFeatures *)features)->get_computed_dot_feature_vector(num_example);
-	float64_t answer = compute_log_PDF(v);
+	float64_t answer=compute_log_PDF(v);
 	v.free_vector();
 	return answer;
 }
@@ -214,33 +210,33 @@ void CGaussian::register_params()
 	m_parameters->add((machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.");
 }
 
-void CGaussian::decompose_cov(float64_t* cov, int32_t cov_size)
+void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 {
 	m_d.destroy_vector();
 	switch (m_cov_type)
 	{
 		case FULL:
 			m_u.destroy_matrix();
-			m_u.matrix=SG_MALLOC(float64_t, cov_size*cov_size);
-			memcpy(m_u.matrix, cov, sizeof(float64_t)*cov_size*cov_size);
+			m_u.matrix=SG_MALLOC(float64_t, cov.num_rows*cov.num_rows);
+			memcpy(m_u.matrix, cov.matrix, sizeof(float64_t)*cov.num_rows*cov.num_rows);
 
-			m_d.vector=CMath::compute_eigenvectors(m_u.matrix, cov_size, cov_size);
-			m_d.vlen=cov_size;
-			m_u.num_rows=cov_size;
-			m_u.num_cols=cov_size;
+			m_d.vector=CMath::compute_eigenvectors(m_u.matrix, cov.num_rows, cov.num_rows);
+			m_d.vlen=cov.num_rows;
+			m_u.num_rows=cov.num_rows;
+			m_u.num_cols=cov.num_rows;
 			break;
 		case DIAG:
-			m_d.vector=SG_MALLOC(float64_t, cov_size);
+			m_d.vector=SG_MALLOC(float64_t, cov.num_rows);
 
-			for (int i=0; i<cov_size; i++)
-				m_d.vector[i]=cov[i*cov_size+i];
+			for (int i=0; i<cov.num_rows; i++)
+				m_d.vector[i]=cov.matrix[i*cov.num_rows+i];
 			
-			m_d.vlen=cov_size;
+			m_d.vlen=cov.num_rows;
 			break;
 		case SPHERICAL:
 			m_d.vector=SG_MALLOC(float64_t, 1);
 
-			m_d.vector[0]=cov[0];
+			m_d.vector[0]=cov.matrix[0];
 			m_d.vlen=1;
 			break;
 	}

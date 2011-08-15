@@ -141,9 +141,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 		init_k_means->train(dotdata);
 		SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
 
-		alpha.matrix=alpha_init(init_means.matrix, init_means.num_rows, init_means.num_cols);
-		alpha.num_rows=num_vectors;
-		alpha.num_cols=m_components.vlen;
+		alpha=alpha_init(init_means);
 
 		SG_UNREF(init_k_means);
 
@@ -673,25 +671,25 @@ float64_t CGMM::get_log_likelihood_example(int32_t num_example)
 	return 1;
 }
 
-float64_t* CGMM::alpha_init(float64_t* init_means, int32_t init_mean_dim, int32_t init_mean_size)
+SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 {
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
 
-	SGVector<float64_t> label_num(init_mean_size);
+	SGVector<float64_t> label_num(init_means.num_cols);
 
-	for (int i=0; i<init_mean_size; i++)
+	for (int i=0; i<init_means.num_cols; i++)
 		label_num.vector[i]=i;
 
 	CKNN* knn=new CKNN(1, new CEuclidianDistance(), new CLabels(label_num));
-	knn->train(new CSimpleFeatures<float64_t>(init_means, init_mean_dim, init_mean_size));
+	knn->train(new CSimpleFeatures<float64_t>(init_means));
 	CLabels* init_labels=knn->apply(features);
 
-	float64_t* alpha=SG_MALLOC(float64_t, num_vectors*m_components.vlen);
-	memset(alpha, 0, num_vectors*m_components.vlen*sizeof(float64_t));
+	SGMatrix<float64_t> alpha(num_vectors, m_components.vlen);
+	memset(alpha.matrix, 0, num_vectors*m_components.vlen*sizeof(float64_t));
 
 	for (int i=0; i<num_vectors; i++)
-		alpha[i*m_components.vlen+init_labels->get_int_label(i)]=1;
+		alpha.matrix[i*m_components.vlen+init_labels->get_int_label(i)]=1;
 
 	SG_UNREF(init_labels);
 

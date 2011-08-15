@@ -202,17 +202,15 @@ class CDotFeatures : public CFeatures
 
 		/** get mean
 		 *
-		 * @param mean returned
-		 * @param mean length returned
+		 * @return mean returned
 		 */
-		virtual void get_mean(float64_t** mean, int32_t* mean_length);
+		virtual SGVector<float64_t> get_mean();
 
 		/** get covariance
-		 * @param covariance returned
-		 * @param covariance rows returned
-		 * @param covariance cols returned
+		 *
+		 * @return covariance
 		 */
-		virtual void get_cov(float64_t** cov, int32_t* cov_rows, int32_t* cov_cols);
+		virtual SGMatrix<float64_t> get_cov();
 
 	protected:
 		/** display progress output

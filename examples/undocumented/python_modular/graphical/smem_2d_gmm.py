@@ -1,5 +1,5 @@
 from pylab import figure,scatter,contour,show,legend,connect
-from numpy import array, append, arange, reshape, empty
+from numpy import array, append, arange, reshape, empty, exp
 from shogun.Distribution import Gaussian, GMM
 from shogun.Features import RealFeatures
 import util
@@ -72,9 +72,9 @@ plot_est_em=empty(0)
 
 for i in arange(min_x_gen, max_x_gen, 0.05):
     for j in arange(min_y_gen, max_y_gen, 0.05):
-        plot_real=append(plot_real, array([real_gmm.cluster(array([i, j]))[3]]))
-        plot_est_smem=append(plot_est_smem, array([est_smem_gmm.cluster(array([i, j]))[3]]))
-        plot_est_em=append(plot_est_em, array([est_em_gmm.cluster(array([i, j]))[3]]))
+        plot_real=append(plot_real, array([exp(real_gmm.cluster(array([i, j]))[3])]))
+        plot_est_smem=append(plot_est_smem, array([exp(est_smem_gmm.cluster(array([i, j]))[3])]))
+        plot_est_em=append(plot_est_em, array([exp(est_em_gmm.cluster(array([i, j]))[3])]))
 
 plot_real=reshape(plot_real, (arange(min_x_gen, max_x_gen, 0.05).shape[0], arange(min_y_gen, max_y_gen, 0.05).shape[0]))
 plot_est_smem=reshape(plot_est_smem, (arange(min_x_gen, max_x_gen, 0.05).shape[0], arange(min_y_gen, max_y_gen, 0.05).shape[0]))
