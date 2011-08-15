@@ -253,7 +253,7 @@ class CFeatures : public CSGObject
 		 * subset_changed_post() is called afterwards */
 		virtual void remove_subset();
 
-		/* method may be overwritten to update things that depend on subset */
+		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post() {}
 
 		/** does subset index conversion with the underlying subset if possible
@@ -266,6 +266,9 @@ class CFeatures : public CSGObject
 			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
 		}
 
+		/** check if has subsets
+		 * @return true if has subsets
+		 */
 		inline bool has_subset() const { return m_subset!=NULL; }
 
 		/** Creates a new CFeatures instance containing copies of the elements
@@ -302,7 +305,8 @@ class CFeatures : public CSGObject
 		bool* preprocessed;
 
 	protected:
-		/* subset class to enable subset support for this class */
+
+		/** subset class to enable subset support for this class */
 		CSubset* m_subset;
 };
 }

@@ -39,6 +39,9 @@ public:
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "Subset"; }
 
+	/** get size of subset
+	 * @return size of subset
+	 */
 	inline const index_t get_size() const { return m_subset_idx.vlen; }
 
 	/** @return a copy of this instance with a copy of the index vector */

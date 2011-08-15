@@ -48,6 +48,7 @@ class CMath;
 template <class ST> class CStringPreprocessor;
 template <class T> class SGString;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct SSKDoubleFeature
 {
 	int feature1;
@@ -62,6 +63,7 @@ struct SSKTripleFeature
 	int feature3;
 	int group;
 };
+#endif
 
 /** @brief Template class StringFeatures implements a list of strings.
  *
@@ -1260,6 +1262,9 @@ template <class ST> class CStringFeatures : public CFeatures
             return false;
         }
 
+	/** get_features 
+	 * @return features
+	 */
         SGStringList<ST> get_features()
         {
             SGStringList<ST> sl;
@@ -2249,16 +2254,16 @@ template <class ST> class CStringFeatures : public CFeatures
 
 	protected:
 
-		/// alphabet
+		/** alphabet */
 		CAlphabet* alphabet;
 
-		/* number of string vectors (for subset, is updated) */
+		/** number of string vectors (for subset, is updated) */
 		int32_t num_vectors;
 
-		/// this contains the array of features.
+		/** this contains the array of features */
 		SGString<ST>* features;
 
-		/// true when single string / created by sliding window
+		/** true when single string / created by sliding window */
 		ST* single_string;
 
 		/// length of prior single string

@@ -170,7 +170,7 @@ class CCombinedDotFeatures : public CDotFeatures
 			CListElement* current;
 			/** pointer to combined feature iterator */
 			void* iterator;
-			/* the index of the vector over whose components to iterate over */
+			/** the index of the vector over whose components to iterate over */
 			int32_t vector_index;
 		};
 

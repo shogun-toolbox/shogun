@@ -44,6 +44,10 @@ template<class T> class SGVector
 		SGVector(const SGVector &orig)
 			: vector(orig.vector), vlen(orig.vlen), do_free(orig.do_free) { }
 
+		/** get vector
+		 * @param src vector to get
+		 * @param own true if should be owned
+		 */
 		static SGVector get_vector(SGVector &src, bool own=true)
 		{
 			if (!own)
@@ -53,6 +57,7 @@ template<class T> class SGVector
 			return SGVector(src.vector, src.vlen);
 		}
 
+		/** free vector */
 		virtual void free_vector()
 		{
 			if (do_free)
@@ -63,6 +68,7 @@ template<class T> class SGVector
 			vlen=0;
 		}
 
+		/** destroy vector */
 		virtual void destroy_vector()
 		{
 			do_free=true;
@@ -100,12 +106,14 @@ template<class T> class SGCachedVector : public SGVector<T>
 		{
 		}
  
+ 		/** free vector */
 		virtual void free_vector()
 		{
 			//clean up cache fixme
 			SGVector<T>::free_vector();
 		}
 
+		/** destroy vector */
 		virtual void destroy_vector()
 		{
 			//clean up cache fixme
@@ -114,8 +122,11 @@ template<class T> class SGCachedVector : public SGVector<T>
 				cache->unlock_entry(idx);
 		}
 
-	public:	
+	public:
+		/** idx */
 		int idx;
+
+		/** cache */
 		CCache<T>* cache;
 };
 
@@ -141,6 +152,7 @@ template<class T> class SGMatrix
 			: matrix(orig.matrix), num_rows(orig.num_rows),
 			num_cols(orig.num_cols), do_free(orig.do_free) { }
 
+		/** free matrix */
 		void free_matrix()
 		{
 			if (do_free)
@@ -152,6 +164,7 @@ template<class T> class SGMatrix
 			num_cols=0;
 		}
 
+		/** destroy matrix */
 		void destroy_matrix()
 		{
 			do_free=true;
@@ -217,6 +230,7 @@ public:
 	SGString(const SGString &orig)
 		: string(orig.string), slen(orig.slen), do_free(orig.do_free) { }
 
+	/** free string */
 	void free_string()
 	{
 		if (do_free)
@@ -227,6 +241,7 @@ public:
 		slen=0;
 	}
 
+	/** destroy string */
 	void destroy_string()
 	{
 		do_free=true;
@@ -269,6 +284,7 @@ public:
 		max_string_length(orig.max_string_length),
 		strings(orig.strings), do_free(orig.do_free) { }
 
+	/** free list */
 	void free_list()
 	{
 		if (do_free)
@@ -280,6 +296,7 @@ public:
 		max_string_length=0;
 	}
 
+	/** destroy list */
 	void destroy_list()
 	{
 		do_free=true;
@@ -335,6 +352,7 @@ public:
 			vec_index(orig.vec_index), num_feat_entries(orig.num_feat_entries),
 			features(orig.features), do_free(orig.do_free) {}
 
+	/** free vector */
 	void free_vector()
 	{
 		if (do_free)
@@ -346,6 +364,7 @@ public:
 		num_feat_entries=0;
 	}
 
+	/** destroy vector */
 	void destroy_vector()
 	{
 		do_free=true;
@@ -394,6 +413,7 @@ template <class T> class SGSparseMatrix
 			num_vectors(orig.num_vectors), num_features(orig.num_features),
 			sparse_matrix(orig.sparse_matrix), do_free(orig.do_free) { }
 
+		/** free matrix */
 		void free_matrix()
 		{
 			if (do_free)
@@ -405,6 +425,7 @@ template <class T> class SGSparseMatrix
 			num_features=0;
 		}
 
+		/** own matrix */
 		void own_matrix()
 		{
 			for (int32_t i=0; i<num_vectors; i++)
@@ -413,6 +434,7 @@ template <class T> class SGSparseMatrix
 			do_free=false;
 		}
 
+		/** destroy matrix */
 		void destroy_matrix()
 		{
 			do_free=true;
@@ -433,6 +455,7 @@ template <class T> class SGSparseMatrix
 	bool do_free;
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EContainerType
 {
 	CT_SCALAR,
@@ -465,49 +488,106 @@ enum EPrimitiveType
 	PT_FLOATMAX,
 	PT_SGOBJECT
 };
+#endif
 
 /* Datatypes that shogun supports. */
 struct TSGDataType
 {
+	/** container type */
 	EContainerType m_ctype;
+	/** struct type */
 	EStructType m_stype;
+	/** primitive type */
 	EPrimitiveType m_ptype;
+
+	/** lengths */
 	index_t *m_length_y, *m_length_x;
 
+	/** constructor 
+	 * @param ctype
+	 * @param stype
+	 * @param ptype
+	 */
 	explicit TSGDataType(EContainerType ctype, EStructType stype,
 						 EPrimitiveType ptype);
+	/** constructor
+	 * @param ctype
+	 * @param stype
+	 * @param ptype
+	 * @param length
+	 */
 	explicit TSGDataType(EContainerType ctype, EStructType stype,
 						 EPrimitiveType ptype, index_t* length);
+	/** constructor
+	 * @param ctype
+	 * @param stype
+	 * @param ptype
+	 * @param length_y
+	 * @param length_x
+	 */
 	explicit TSGDataType(EContainerType ctype, EStructType stype,
 						 EPrimitiveType ptype, index_t* length_y,
 						 index_t* length_x);
 
+	/** equality */
 	bool operator==(const TSGDataType& a);
+	/** inequality
+	 * @param a
+	 */
 	inline bool operator!=(const TSGDataType& a)
 	{
 		return !(*this == a);
 	}
 
+	/** to string
+	 * @param dest
+	 * @param n
+	 */
 	void to_string(char* dest, size_t n) const;
+
+	/** size of stype */
 	size_t sizeof_stype(void) const;
+	/** size of ptype */
 	size_t sizeof_ptype(void) const;
 
+	/** size of sparse entry 
+	 * @param ptype
+	 */
 	static size_t sizeof_sparseentry(EPrimitiveType ptype);
+
+	/** offset of sparse entry
+	 * @param ptype
+	 */
 	static size_t offset_sparseentry(EPrimitiveType ptype);
 
+	/** stype to string
+	 * @param dest
+	 * @param stype
+	 * @param ptype
+	 * @param n
+	 */
 	static void stype_to_string(char* dest, EStructType stype,
-								EPrimitiveType ptype, size_t n);
+	                            EPrimitiveType ptype, size_t n);
+	/** ptype to string 
+	 * @param dest
+	 * @param ptype
+	 * @param n
+	 */
 	static void ptype_to_string(char* dest, EPrimitiveType ptype,
-								size_t n);
+	                            size_t n);
+	/** string to ptype 
+	 * @param ptype
+	 * @param str
+	 */
 	static bool string_to_ptype(EPrimitiveType* ptype,
-								const char* str);
+	                            const char* str);
 
-	/**
+	/** get size
 	 * @return size of type in bytes
 	 */
 	size_t get_size();
 
-	/**
+	/** get num of elements
 	 * @return number of (matrix, vector, scalar) elements of type
 	 */
 	index_t get_num_elements();

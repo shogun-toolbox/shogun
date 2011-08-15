@@ -1045,7 +1045,11 @@ protected:
 	 * above have the same sizes if feature_matrix != NULL
 	 * */
 	ST* feature_matrix;
+
+	/** number of vectors in feature matrix */
 	int32_t feature_matrix_num_vectors;
+
+	/** number of features in feature matrix */
 	int32_t feature_matrix_num_features;
 
 	/** feature cache */

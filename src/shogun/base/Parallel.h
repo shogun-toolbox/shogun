@@ -33,10 +33,18 @@ namespace shogun
 class Parallel
 {
 public:
+	/** constructor */
 	Parallel();
+
+	/** copy constructor */
 	Parallel(const Parallel& orig);
+
+	/** destructor */
 	virtual ~Parallel();
 
+	/** get num of cpus
+	 * @return number of CPUs
+	 */
 	inline int32_t get_num_cpus() const
 	{
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
@@ -50,6 +58,9 @@ public:
 		return 1;
 	}
 
+	/** set number of threads
+	 * @param n number of threads 
+	 */
 	inline void set_num_threads(int32_t n)
 	{
 #ifdef WIN32
@@ -58,22 +69,34 @@ public:
 		num_threads=n;
 	}
 
+	/** get number of threads 
+	 * @return number of threads
+	 */
 	inline int32_t get_num_threads() const
 	{
 		return num_threads;
 	}
 
+	/** ref
+	 * @return current ref counter
+	 */
 	inline int32_t ref()
 	{
 		++refcount;
 		return refcount;
 	}
 
+	/** get ref count
+	 * @return current ref counter
+	 */
 	inline int32_t ref_count() const
 	{
 		return refcount;
 	}
 
+	/** unref
+	 * @return current ref counter
+	 */
 	inline int32_t unref()
 	{
 		if (refcount==0 || --refcount==0)
@@ -86,7 +109,11 @@ public:
 	}
 
 private:
+
+	/** ref counter */
 	int32_t refcount;
+
+	/** number of threads */
 	int32_t num_threads;
 };
 }
