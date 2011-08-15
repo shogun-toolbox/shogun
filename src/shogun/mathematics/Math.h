@@ -1445,11 +1445,13 @@ class CMath : public CSGObject
 			return CMath::LOGRANGE;
 		}
 
+#ifdef USE_LOGCACHE	
 		/// returns range of logtable
 		inline static uint32_t get_log_accuracy()
 		{
 			return CMath::LOGACCURACY;
 		}
+#endif
 
 		/// checks whether a float is finite
 		inline static int is_finite(double f)
