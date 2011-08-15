@@ -225,7 +225,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 		if (m_eigenvalues.vector[i]<=0.0)
 		{
 			SG_WARNING("Embedding is not consistent (got neg eigenvalues): features %d-%d are wrong",
-			           i, m_eigenvalues.vlen);
+			           i, m_eigenvalues.vlen-1);
 			break;
 		}
 	}	
@@ -241,6 +241,11 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 	int32_t i,j,t;
 	int32_t lmk_N = m_landmark_number;
 	int32_t total_N = distance->get_num_vec_lhs();
+	if (lmk_N<3)
+	{
+		SG_ERROR("Number of landmarks (%d) should be greater than 3 for proper triangulation.\n", 
+		         lmk_N);
+	}
 	if (lmk_N>total_N)
 	{
 		SG_ERROR("Number of landmarks (%d) should be less than total number of vectors (%d).\n",

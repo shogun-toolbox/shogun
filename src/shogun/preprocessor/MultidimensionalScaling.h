@@ -22,28 +22,34 @@ class CFeatures;
 
 class CDistance;
 
-/** @brief the class ClassicMDS used to perform classic eigenvector
- * multidimensional scaling.
+/** @brief the class Multidimensionalscaling used to perform
+ * multidimensional scaling (capable of landmark approximation
+ * if requested).
  *
- * Description is given at p.261 (Section 12.1) of
- *
+ * Description of classical embedding is given at p.261 (Section 12.1) of
  * Borg, I., & Groenen, P. J. F. (2005).
  * Modern multidimensional scaling: Theory and applications. Springer.
  *
- * and in
+ * Description of landmark MDS approximation is given in
  *
  * Sparse multidimensional scaling using landmark points
  * V De Silva, J B Tenenbaum (2004) Technology, p. 1-4
  * 
- * In this preprocessor LAPACK is used for solving eigenproblem. If 
- * ARPACK is available, it is used instead of LAPACK.
+ * In this preprocessor LAPACK routine DSYEVR is used for
+ * solving eigenproblem. If ARPACK library is available,
+ * its routines DSAUPD/DSEUPD are used instead.
  *
- * Note that target dimension should be set with sensible value
+ * Note that target dimension should be set with reasonable value
  * (using set_target_dim). In case it is higher than intrinsic
  * dimensionality of the dataset 'extra' features of the output 
- * may be inconsistent (actually features according to zero or
- * negative eigenvalues). In this case a warning is throwed.  
- * 
+ * might be inconsistent (essentially, according to zero or
+ * negative eigenvalues). In this case a warning is showed.
+ *
+ * Faster landmark approximation is parallel using pthreads.
+ * As for choice of landmark number it should be at least 3 for
+ * proper triangulation. For reasonable embedding accuracy greater
+ * values (30%-50% of total examples number) is pretty good for the
+ * most tasks.
  */
 class CMultidimensionalScaling: public CDimensionReductionPreprocessor
 {

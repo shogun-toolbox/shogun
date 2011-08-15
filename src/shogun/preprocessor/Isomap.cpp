@@ -185,16 +185,16 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 	for (t=0; t<num_threads; t++)
 	{
-		parameters[t].idx_start = t;	
-		parameters[t].idx_stop = N;	
-		parameters[t].idx_step = num_threads;	
-		parameters[t].heap = heaps[t];	
-		parameters[t].edges_matrix = edges_matrix;	
-		parameters[t].edges_idx_matrix = edges_idx_matrix;	
-		parameters[t].s = s+t*N;	
-		parameters[t].f = f+t*N;	
+		parameters[t].idx_start = t;
+		parameters[t].idx_stop = N;
+		parameters[t].idx_step = num_threads;
+		parameters[t].heap = heaps[t];
+		parameters[t].edges_matrix = edges_matrix;
+		parameters[t].edges_idx_matrix = edges_idx_matrix;
+		parameters[t].s = s+t*N;
+		parameters[t].f = f+t*N;
 		parameters[t].m_k = m_k;
-		parameters[t].shortest_D = shortest_D;	
+		parameters[t].shortest_D = shortest_D;
 		pthread_create(&threads[t], &attr, CIsomap::run_dijkstra_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)

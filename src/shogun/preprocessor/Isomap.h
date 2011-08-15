@@ -27,17 +27,16 @@ class CFeatures;
 
 class CDistance;
 
-/** @brief the base class Isomap used to preprocess data using Classic
- * or Landmark K-Isomap. The description is given in
+/** @brief the class Isomap used to preprocess data using K-Isomap algorithm.
+ * The description is given in
  * 
- * Global versus local methods in nonlinear dimensionality reduction
- * Vin De Silva, Joshua B Tenenbaum (2003)
- * Advances in Neural Information Processing Systems 15 15 (Figure 2) p.721-728
+ * Silva, V. D., & Tenenbaum, J. B. (2003). 
+ * Global versus local methods in nonlinear dimensionality reduction. 
+ * Advances in Neural Information Processing Systems 15, 15(Figure 2), 721-728. MIT Press. 
+ * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.9.3407&rep=rep1&type=pdf
  *
- *
- *
- *
- *
+ * Shortest paths are being computed with Dijkstra's algorithm with heap
+ * in parallel. Due to sparsity of kNN graph Fibonacci Heap is used. 
  */
 class CIsomap: public CMultidimensionalScaling
 {
@@ -59,15 +58,15 @@ public:
 
 	/** apply preprocessor to CDistance using
 	 * Isomap of specified type
-	 * @param distance
-	 * @return new features with distance similar to geodesic
+	 * @param distance distance
+	 * @return new features with euclidean distance similar to geodesic
 	 */
 	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
 
 	/** apply preprocessor to feature matrix using 
 	 * Isomap of specified type
-	 * @param features
-	 * @return new feature matrix with distance similar to geodesic
+	 * @param features 
+	 * @return new feature matrix with euclidean distance similar to geodesic
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 	

@@ -29,6 +29,15 @@ class CDistance;
  * reduction via tangent space alignment, SIAM J. Sci. Comput. 26 (1)
  * (2004) 313–338.
  *
+ * Stated eigenproblem is solved in the same way as in
+ * CLocallyLinearEmbedding (LAPACK or ARPACK if available).
+ *
+ * Local tangent space alignment step is parallel. Neighborhood
+ * determination is not parallel as in CLocallyLinearEmbedding.
+ *
+ * This algorithm is pretty stable for variations of k parameter but
+ * be sure it set with consistent value (at least 3-5) for reasonable
+ * results.
  */
 class CLocalTangentSpaceAlignment: public CLocallyLinearEmbedding
 {

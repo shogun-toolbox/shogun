@@ -30,6 +30,19 @@ class CDistance;
  * Science, 14, 585-591. MIT Press. 
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.19.9400&rep=rep1&type=pdf
  *
+ * Note that algorithm is very sensitive to heat distribution coefficient and number
+ * of neighbors for nearest neighbor graph. With no connectivity check is provided
+ * preprocessor can produce not really reasonable embeddings if K value makes graph
+ * not connected.
+ *
+ * This implementation is not parallel due to performance issues. Generalized 
+ * eigenproblem is the bottleneck of this algorithm.
+ *
+ * Solving of generalized eigenproblem involves LAPACK DSYGVX routine
+ * and requires extra memory for right-hand side matrix storage. 
+ * If ARPACK is available DSAUPD/DSEUPD is used with no extra 
+ * memory usage. 
+ *
  */
 class CLaplacianEigenmaps: public CDimensionReductionPreprocessor
 {

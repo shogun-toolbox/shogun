@@ -29,7 +29,15 @@ class CDistance;
  * Hessian eigenmaps: new tools for nonlinear dimensionality reduction.
  * Proceedings of National Academy of Science (Vol. 100, pp. 5591-5596).
  *
+ * Stated eigenproblem is solved in the same way as in
+ * CLocallyLinearEmbedding (LAPACK or ARPACK if available).
  *
+ * Hessian estimation step is parallel and neighborhood determination 
+ * is not as in CLocallyLinearEmbedding.
+ *
+ * Be sure k value is set with at least 
+ * 1+[target dim]+1/2 [target_dim]*[1 + target dim], e.g.
+ * greater than 6 for target dimensionality of 2.
  */
 class CHessianLocallyLinearEmbedding: public CLocallyLinearEmbedding
 {
