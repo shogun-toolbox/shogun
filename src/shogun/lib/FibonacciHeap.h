@@ -19,6 +19,7 @@
 namespace shogun
 {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct FibonacciHeapNode
 {
 	/** pointer to parent node */
@@ -150,6 +151,7 @@ protected:
 	/** size of supporting array */
 	int32_t Dn;
 };
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 }
 #endif /* FIBONACCI_H_ */

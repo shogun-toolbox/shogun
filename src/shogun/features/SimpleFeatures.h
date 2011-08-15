@@ -83,9 +83,7 @@ public:
 
 	/** constructor
 	 *
-	 * @param src feature matrix
-	 * @param num_feat number of features in matrix
-	 * @param num_vec number of vectors in matrix
+	 * @param matrix feature matrix
 	 */
 	CSimpleFeatures(SGMatrix<ST> matrix) :
 			CDotFeatures()
@@ -230,6 +228,7 @@ public:
 	 * possible with subset
 	 *
 	 * @param vector vector
+	 * @param num index if vector to set
 	 */
 	void set_feature_vector(SGVector<ST> vector, int32_t num)
 	{

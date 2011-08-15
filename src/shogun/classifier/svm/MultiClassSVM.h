@@ -18,11 +18,13 @@
 namespace shogun
 {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EMultiClassSVM
 {
 	ONE_VS_REST,
 	ONE_VS_ONE,
 };
+#endif
 
 class CSVM;
 

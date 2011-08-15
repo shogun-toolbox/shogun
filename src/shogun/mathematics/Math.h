@@ -1486,8 +1486,14 @@ class CMath : public CSGObject
 #endif
 		}
 
+		/** fisher's test for multiple 2x3 tables 
+		 * @param tables
+		 */
 		static SGVector<float64_t> fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables);
 		
+		/** fisher's test for 2x3 table
+		 * @param table
+		 */
 		static float64_t fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table);
 
 		/**@name summing functions */

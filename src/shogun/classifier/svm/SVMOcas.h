@@ -20,11 +20,13 @@
 
 namespace shogun
 {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum E_SVM_TYPE
 {
 	SVM_OCAS = 0,
 	SVM_BMRM = 1
 };
+#endif
 
 /** @brief class SVMOcas */
 class CSVMOcas : public CLinearMachine

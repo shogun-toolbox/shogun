@@ -17,12 +17,13 @@
 
 namespace shogun
 {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum LIBSVM_SOLVER_TYPE
 {
 	LIBSVM_C_SVC = 1,
 	LIBSVM_NU_SVC = 2
 };
-
+#endif
 /** @brief LibSVM */
 class CLibSVM : public CSVM
 {

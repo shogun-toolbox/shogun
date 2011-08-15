@@ -27,6 +27,7 @@
 namespace shogun
 {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum E_QPB_SOLVER
 {
 	QPB_SOLVER_SCA,	// sequential coordinate wise (gaussian seidel based)
@@ -38,6 +39,7 @@ enum E_QPB_SOLVER
 	QPB_SOLVER_GS,  // gaussian seidel
 	QPB_SOLVER_GRADDESC  // gaussian seidel
 };
+#endif
 
 /** @brief class QPBSVMLib */
 class CQPBSVMLib: public CSGObject

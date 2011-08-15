@@ -65,6 +65,11 @@ class CPositionalPWM : public CDistribution
 		 */
 		virtual float64_t get_log_likelihood_example(int32_t num_example);
 
+		/** get log likelihood window
+		 * @param window
+		 * @param len
+		 * @param pos
+		 */
 		float64_t get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos);
 
 		/** get sigma
@@ -140,7 +145,14 @@ class CPositionalPWM : public CDistribution
 		 */
 		virtual SGMatrix<float64_t> get_scoring(int32_t d);
 
+		/** compute w
+		 * @param num_pos 
+		 */
 		void compute_w(int32_t num_pos);
+
+		/** compute scoring
+		 * @param max_degree
+		 */
 		void compute_scoring(int32_t max_degree);
 
 		/** @return object name */
@@ -151,18 +163,35 @@ class CPositionalPWM : public CDistribution
 		void register_params();
 
 	protected:
+
+		/** pwm rows */
 		int32_t m_pwm_rows;
+
+		/** pwm cols */
 		int32_t m_pwm_cols;
+
+		/** pwm */
 		float64_t* m_pwm;
 
+		/** sigma */
 		float64_t m_sigma;
+
+		/** mean */
 		float64_t m_mean;
 
+		/** w rows */
 		int32_t m_w_rows;
+
+		/** w cols */
 		int32_t m_w_cols;
+
+		/** w */
 		float64_t* m_w;
 
+		/** POIM len */
 		int32_t m_poim_len;
+
+		/** poim */
 		float64_t* m_poim;
 
 };

@@ -112,7 +112,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		}
 
 		/** constructor
-		 *
+		 * @param string_list
 		 * @param alpha alphabet (type) to use for string features
 		 */
 		CStringFeatures(SGStringList<ST> string_list, EAlphabet alpha)
@@ -128,7 +128,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		}
 
 		/** constructor
-		 *
+		 * @param string_list
 		 * @param alpha an actual alphabet
 		 */
 		CStringFeatures(SGStringList<ST> string_list, CAlphabet* alpha)
@@ -342,8 +342,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * not possible with subset
 		 *
-		 * @param src destination where vector will be copied from
-		 * @param len number of features in vector
+		 * @param vector 
 		 * @param num index of the string
 		 */
 		void set_feature_vector(SGVector<ST> vector, int32_t num)
