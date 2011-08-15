@@ -15,6 +15,10 @@
 
 namespace shogun
 {
+/** @brief Class CStreamingFileFromSparseFeatures is derived from CStreamingFile
+ * and provides an input source for the online framework. It uses an existing
+ * CSparseFeatures object to generate online examples.
+ */
 template <class T> class CStreamingFileFromSparseFeatures: public CStreamingFileFromFeatures
 {
 public:

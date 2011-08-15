@@ -17,7 +17,8 @@
 
 namespace shogun
 {
-
+	/// Specifies whether location is empty,
+	/// contains an unused example or a used example.
 	enum E_IS_EXAMPLE_USED
 	{
 		E_EMPTY = 1,
@@ -25,14 +26,41 @@ namespace shogun
 		E_USED = 3
 	};
 
+	/** @brief Class Example is the container type for
+	 * the vector+label combination.
+	 *
+	 * The vector is stored as an SGVector<T>, and the
+	 * label is a float64_t.
+	 *
+	 * Objects of this type are stored in the ring of
+	 * class CParseBuffer.
+	 */
 	template <class T>
 		class Example
 	{
 	public:
+		/// Label
 		float64_t label;
+		/// Feature vector of type T
 		SGVector<T> fv;
 	};
 
+	/** @brief Class CParseBuffer implements a ring of
+	 * examples of a defined size. The ring stores
+	 * objects of the Example type.
+	 *
+	 * The feature vector and label are provided to this
+	 * class from an external source. CParseBuffer is
+	 * only responsible for managing how these examples
+	 * are represented and stored in the memory. It is
+	 * also responsible for returning stored examples to be
+	 * used by an external caller, and freeing up the space
+	 * when the example is used to make room for another
+	 * example to take its place.
+	 *
+	 * Writing of examples is done into whichever position
+	 * in the ring is free to be overwritten, or empty.
+	 */
 	template <class T>
 		class CParseBuffer
 	{

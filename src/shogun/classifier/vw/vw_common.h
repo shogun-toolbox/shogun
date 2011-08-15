@@ -27,11 +27,16 @@
 
 namespace shogun
 {
-
+/// Hash function typedef, takes a substring and seed as parameters
 typedef uint32_t (*hash_func_t)(substring, uint32_t);
 
+/// Constant used while hashing/accessing quadratic features
 const int32_t quadratic_constant = 27942141;
+
+/// Constant used to access the constant feature
 const int32_t constant_hash = 11650396;
+
+/// Seed for hash
 const uint32_t hash_base = 97562527;
 
 }

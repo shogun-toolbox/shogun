@@ -20,7 +20,9 @@
 
 namespace shogun
 {
-
+/** @brief CSquaredLoss implements the
+ * squared loss function.
+ */
 class CSquaredLoss: public CLossFunction
 {
 public:

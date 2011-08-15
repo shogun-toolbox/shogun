@@ -15,7 +15,9 @@
 
 namespace shogun
 {
-
+/**@brief CLogLoss implements the logarithmic loss
+ * function.
+ */
 class CLogLoss: public CLossFunction
 {
 public:

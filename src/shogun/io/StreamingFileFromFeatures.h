@@ -70,6 +70,11 @@ public:
 		features=feat;
 	}
 
+	/**
+	 * Set the labels
+	 *
+	 * @param lab array of labels
+	 */
 	virtual void set_labels(float64_t* lab)
 	{
 		ASSERT(lab);

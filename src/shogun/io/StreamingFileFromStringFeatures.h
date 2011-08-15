@@ -15,6 +15,10 @@
 
 namespace shogun
 {
+/** @brief Class CStreamingFileFromStringFeatures is derived from
+ * CStreamingFile and provides an input source for the online
+ * framework from a CStringFeatures object.
+ */
 template <class T> class CStreamingFileFromStringFeatures: public CStreamingFileFromFeatures
 {
 public:
