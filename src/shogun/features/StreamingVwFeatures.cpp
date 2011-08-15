@@ -192,7 +192,7 @@ int32_t CStreamingVwFeatures::get_dim_feature_space() const
 	return current_length;
 }
 
-float64_t CStreamingVwFeatures::dot(CStreamingDotFeatures* df)
+float32_t CStreamingVwFeatures::dot(CStreamingDotFeatures* df)
 {
 	SG_NOTIMPLEMENTED;
 	return CMath::INFTY;
@@ -200,7 +200,7 @@ float64_t CStreamingVwFeatures::dot(CStreamingDotFeatures* df)
 
 float32_t CStreamingVwFeatures::dense_dot(VwExample* &ex, const float32_t* vec2)
 {
-	float64_t ret = 0.;
+	float32_t ret = 0.;
 	for (size_t* i = ex->indices.begin; i!= ex->indices.end; i++)
 	{
 		for (VwFeature* f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
@@ -214,19 +214,13 @@ float32_t CStreamingVwFeatures::dense_dot(const float32_t* vec2, int32_t vec2_le
 	return dense_dot(current_example, vec2);
 }
 
-float32_t CStreamingVwFeatures::dense_dot(SGSparseVector<float64_t>* vec1, const float32_t* vec2)
+float32_t CStreamingVwFeatures::dense_dot(SGSparseVector<float32_t>* vec1, const float32_t* vec2)
 {
-	float64_t ret = 0.;
+	float32_t ret = 0.;
 	for (int32_t i = 0; i < vec1->num_feat_entries; i++)
 		ret += vec1->features[i].entry * vec2[vec1->features[i].feat_index & env->mask];
 
 	return ret;
-}
-
-float64_t CStreamingVwFeatures::dense_dot(const float64_t* vec2, int32_t vec2_len)
-{
-	SG_NOTIMPLEMENTED;
-	return CMath::INFTY;
 }
 
 float32_t CStreamingVwFeatures::dense_dot_truncated(const float32_t* vec2, VwExample* &ex, float32_t gravity)
@@ -268,11 +262,6 @@ void CStreamingVwFeatures::add_to_dense_vec(float32_t alpha, VwExample* &ex, flo
 void CStreamingVwFeatures::add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	add_to_dense_vec(alpha, current_example, vec2, vec2_len, abs_val);
-}
-
-void CStreamingVwFeatures::add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len , bool abs_val)
-{
-	SG_NOTIMPLEMENTED;
 }
 
 int32_t CStreamingVwFeatures::get_num_features()

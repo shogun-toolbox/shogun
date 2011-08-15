@@ -157,7 +157,7 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 	void CStreamingFile::get_sparse_vector_and_label		\
 	(SGSparseVectorEntry<sg_type>*& vector,				\
 	 int32_t& num_feat,						\
-	 float64_t &label)						\
+	 float64_t& label)						\
 	{								\
 		vector=NULL;						\
 		num_feat=-1;						\
@@ -184,7 +184,7 @@ void CStreamingFile::get_vector(VwExample*& ex, int32_t &len)
 	SG_ERROR("Read function not supported by the feature type!\n");
 }
 
-void CStreamingFile::get_vector_and_label(VwExample*& ex, int32_t &len, float64_t &label)
+void CStreamingFile::get_vector_and_label(VwExample*& ex, int32_t& len, float64_t& label)
 {
 	SG_ERROR("Read function not supported by the feature type!\n");
 }

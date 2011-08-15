@@ -171,8 +171,7 @@ void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 	reg_name = NULL;
 	reg_dump_text = true;
 
-	w = NULL;		// TODO: Use real weight vector after
-				// transition to float32_t
+	w = reg->weight_vectors[0];
 	w_dim = 1 << env->num_bits;
 	bias = 0.;
 }

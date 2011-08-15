@@ -187,6 +187,24 @@ void CMath::display_matrix(
 	}
 	SG_SPRINT("]\n");
 }
+
+template <>
+void CMath::display_matrix(
+	const float32_t* matrix, int32_t rows, int32_t cols, const char* name)
+{
+	ASSERT(rows>=0 && cols>=0);
+	SG_SPRINT("%s=[\n", name);
+	for (int32_t i=0; i<rows; i++)
+	{
+		SG_SPRINT("[");
+		for (int32_t j=0; j<cols; j++)
+			SG_SPRINT("\t%.18g%s", (float) matrix[j*rows+i],
+				j==cols-1? "" : ",");
+		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
+	}
+	SG_SPRINT("]\n");
+}
+
 }
 
 SGVector<float64_t> CMath::fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables)

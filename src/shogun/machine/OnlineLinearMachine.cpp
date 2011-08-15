@@ -81,12 +81,12 @@ CLabels* COnlineLinearMachine::apply(CFeatures* data)
 	return apply();
 }
 
-float64_t COnlineLinearMachine::apply(float64_t* vec, int32_t len)
+float32_t COnlineLinearMachine::apply(float32_t* vec, int32_t len)
 {
 		return CMath::dot(vec, w, len)+bias;
 }
 
-float64_t COnlineLinearMachine::apply_to_current_example()
+float32_t COnlineLinearMachine::apply_to_current_example()
 {
 		return features->dense_dot(w, w_dim)+bias;
 }
