@@ -99,6 +99,9 @@ public:
 
 protected:
 
+	/** init */
+	void init();
+
 	/** runs linear reconstruction thread
 	 * @param p thread params
 	 */

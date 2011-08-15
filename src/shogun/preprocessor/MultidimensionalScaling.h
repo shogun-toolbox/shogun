@@ -135,6 +135,9 @@ public:
 
 protected:
 
+	/** init */
+	void init();
+
 	 /** classical embedding
 	 * @param distance distance
 	 * @return new feature matrix representing given distance

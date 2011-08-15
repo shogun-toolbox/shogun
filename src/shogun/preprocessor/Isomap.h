@@ -44,10 +44,10 @@ class CIsomap: public CMultidimensionalScaling
 public:
 
 	/* constructor */
-	CIsomap() : CMultidimensionalScaling(), m_k(3) {};
+	CIsomap();
 
 	/* destructor */
-	virtual ~CIsomap() {};
+	virtual ~CIsomap();
 
 	/** empty init
 	 */
@@ -106,6 +106,9 @@ protected:
 	int32_t m_k;
 
 protected:
+
+	/** init */
+	void init();
 
 	/** run dijkstra thread
 	 * p thread params

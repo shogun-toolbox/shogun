@@ -49,6 +49,16 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 {
 }
 
+void CLocallyLinearEmbedding::init()
+{
+	m_k = 3;
+	m_posdef = true;
+
+	m_parameters->add(&m_k, "k", "number of neighbors");
+	m_parameters->add(&m_posdef, "posdef", 
+	                  "indicates if matrix should be considered as positive definite");
+}
+
 CLocallyLinearEmbedding::~CLocallyLinearEmbedding()
 {
 }

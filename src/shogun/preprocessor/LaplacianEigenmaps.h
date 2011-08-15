@@ -101,6 +101,11 @@ public:
 
 protected:
 
+	/** init */
+	void init();
+
+protected:
+
 	/** number of neighbors */
 	int32_t m_k;
 

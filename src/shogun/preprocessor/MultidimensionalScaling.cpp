@@ -48,8 +48,16 @@ struct D_THREAD_PARAM
 CMultidimensionalScaling::CMultidimensionalScaling() : CDimensionReductionPreprocessor()
 {
 	m_eigenvalues = SGVector<float64_t>(NULL,0,true);
+	init();
+}
+
+void CMultidimensionalScaling::init()
+{
 	m_landmark_number = 3;
 	m_landmark = false;
+
+	m_parameters->add(&m_landmark, "landmark", "indicates if landmark approximation should be used");
+	m_parameters->add(&m_landmark_number, "landmark number", "the number of landmarks for approximation");
 }
 
 CMultidimensionalScaling::~CMultidimensionalScaling()

@@ -23,8 +23,18 @@
 using namespace shogun;
 
 CLaplacianEigenmaps::CLaplacianEigenmaps() :
-		CDimensionReductionPreprocessor(), m_k(3), m_tau(1.0)
+		CDimensionReductionPreprocessor()
 {
+	init();
+}
+
+void CLaplacianEigenmaps::init()
+{
+	m_k = 3;
+	m_tau = 1.0;
+
+	m_parameters->add(&m_k, "k", "number of neighbors");
+	m_parameters->add(&m_tau, "tau", "heat distribution coefficient");
 }
 
 CLaplacianEigenmaps::~CLaplacianEigenmaps()

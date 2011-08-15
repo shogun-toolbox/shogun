@@ -52,6 +52,22 @@ struct D_THREAD_PARAM
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
+CIsomap::CIsomap() : CMultidimensionalScaling()
+{
+	init();
+}
+
+void CIsomap::init()
+{
+	m_k = 3;
+
+	m_parameters->add(&m_k, "k", "number of neighbors");
+}
+
+CIsomap::~CIsomap()
+{
+}
+
 CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)
 {
 	CDistance* geodesic_distance = isomap_distance(distance);
