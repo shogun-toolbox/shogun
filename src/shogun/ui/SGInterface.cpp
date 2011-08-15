@@ -1192,8 +1192,8 @@ CSGInterface::CSGInterface(bool print_copyright)
 				CMath::get_seed(), RNG_SEED_SIZE);
 #ifdef USE_LOGCACHE
 		SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",
-				CMath::LOGRANGE,CMath::LOGACCURACY,sizeof(float64_t),
-				CMath::LOGRANGE*CMath::LOGACCURACY*sizeof(float64_t)/(1024.0*1024.0));
+				CMath::get_log_range(),CMath::get_log_accuracy(),sizeof(float64_t),
+				CMath::get_log_range()*CMath::get_log_accuracy()*sizeof(float64_t)/(1024.0*1024.0));
 #else
 		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::get_log_range());
 #endif 
