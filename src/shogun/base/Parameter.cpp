@@ -2385,6 +2385,23 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	return true;
 }
 
+bool TParameter::operator==(const TParameter& other) const
+{
+	bool result=true;
+	result&=!strcmp(m_name, other.m_name);
+	return result;
+}
+
+bool TParameter::operator<(const TParameter& other) const
+{
+	return strcmp(m_name, other.m_name)<0;
+}
+
+bool TParameter::operator>(const TParameter& other) const
+{
+	return strcmp(m_name, other.m_name)>0;
+}
+
 Parameter::Parameter(void)
 {
 	SG_REF(sg_io);

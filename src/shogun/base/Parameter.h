@@ -58,6 +58,16 @@ struct TParameter
 	/** description of parameter */
 	char* m_description;
 
+public:
+	/** operator for comparison, (by string m_name) */
+	bool operator==(const TParameter& other) const;
+
+	/** operator for comparison (by string m_name) */
+	bool operator<(const TParameter& other) const;
+
+	/** operator for comparison (by string m_name) */
+	bool operator>(const TParameter& other) const;
+
 private:
 	char* new_prefix(const char* s1, const char* s2);
 	void delete_cont(void);
