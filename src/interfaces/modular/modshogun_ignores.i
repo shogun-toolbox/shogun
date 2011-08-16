@@ -3,11 +3,8 @@
 %ignore operator==;
 %ignore operator!=;
 
-%ignore SGIO;
-%ignore Version;
 %ignore QP;
 %ignore ConsensusEntry;
-%ignore CrossValidationResult;
 %ignore DNATrie;
 %ignore Model;
 %ignore substring;
