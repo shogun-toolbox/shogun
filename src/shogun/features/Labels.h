@@ -157,8 +157,6 @@ class CLabels : public CSGObject
 		bool is_two_class_labeling();
 
 		/** return number of classes (for multiclass)
-		 * labels have to be zero based 0,1,...C missing
-		 * labels are illegal
 		 *
 		 * possible with subset
 		 *
@@ -197,6 +195,15 @@ class CLabels : public CSGObject
 		 * @return INT labels
 		 */
 		SGVector<int32_t> get_int_labels();
+
+		/** get classes of labels
+		 * Caller has to clean up
+		 *
+		 * possible with subset
+		 *
+		 * @return classes of labels
+		 */
+		SGVector<float64_t> get_classes();
 
 		/** set INT labels
 		 * caller has to clean up
