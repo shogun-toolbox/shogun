@@ -3639,7 +3639,7 @@ test_matlab()
 			if matlab -nojvm -nodisplay -r 'version;quit' >/dev/null 2>&1
 			then
 				 echores "`echo \"fprintf(2,'ver:%s\n',version);quit\" | matlab -nojvm -nodisplay  2>&1 | grep '^>> ver:' | cut -f '2-' -d ':'`"
-				 MATLAB_DIR=`echo "unix('env');quit" | matlab -nojvm -nodisplay | grep '^MATLAB=' | cut -c 8-`
+				 MATLAB_DIR=`echo 'disp(matlabroot); quit;' | matlab -nojvm -nodisplay  2>&1 | grep '^>> ' | cut -c 4-`
 				 MATLAB_SRCDIR="$MATLAB_DIR/extern/src"
 				 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
 				 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
