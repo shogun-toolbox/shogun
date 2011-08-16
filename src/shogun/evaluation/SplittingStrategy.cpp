@@ -13,30 +13,44 @@
 
 using namespace shogun;
 
-CSplittingStrategy::CSplittingStrategy() :
-	m_labels(NULL)
+CSplittingStrategy::CSplittingStrategy()
 {
+	init();
 }
 
-CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets) :
-	m_labels(labels)
+CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets)
 {
+	init();
+
+	m_labels=labels;
+	SG_REF(m_labels);
+
 	/* construct all arrays */
 	for (index_t i=0; i<num_subsets; ++i)
-		m_subset_indices.append_element(new CDynamicArray<index_t> ());
+		m_subset_indices->append_element(new CDynamicArray<index_t> ());
+}
 
-	SG_REF(m_labels);
+void CSplittingStrategy::init()
+{
+	m_labels=NULL;
+	m_subset_indices=new CDynamicObjectArray<CDynamicArray<index_t> >();
+	SG_REF(m_subset_indices);
+
+	m_parameters->add((CSGObject**)m_labels, "labels", "Labels for subsets");
+	m_parameters->add((CSGObject**)m_subset_indices, "subset_indices",
+			"Set of sets of subset indices");
 }
 
 CSplittingStrategy::~CSplittingStrategy()
 {
 	SG_UNREF(m_labels);
+	SG_UNREF(m_subset_indices);
 }
 
 SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx)
 {
 	/* construct SGVector copy from index vector */
-	CDynamicArray<index_t>* to_copy=m_subset_indices.get_element_safe(
+	CDynamicArray<index_t>* to_copy=m_subset_indices->get_element_safe(
 			subset_idx);
 
 	index_t num_elements=to_copy->get_num_elements();
@@ -52,7 +66,7 @@ SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx
 
 SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx)
 {
-	CDynamicArray<index_t>* to_invert=m_subset_indices.get_element_safe(
+	CDynamicArray<index_t>* to_invert=m_subset_indices->get_element_safe(
 			subset_idx);
 
 	SGVector<index_t> result(
