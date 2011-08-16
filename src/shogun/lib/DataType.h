@@ -58,7 +58,7 @@ template<class T> class SGVector
 		}
 
 		/** free vector */
-		virtual void free_vector()
+		void free_vector()
 		{
 			if (do_free)
 				SG_FREE(vector);
@@ -69,7 +69,7 @@ template<class T> class SGVector
 		}
 
 		/** destroy vector */
-		virtual void destroy_vector()
+		void destroy_vector()
 		{
 			do_free=true;
 			free_vector();
@@ -84,51 +84,51 @@ template<class T> class SGVector
 		bool do_free;
 };
 
-template<class T> class SGCachedVector : public SGVector<T>
-{
-	public:
-		/** default constructor */
-		SGCachedVector(CCache<T>* c, int32_t i)
-			: SGVector<T>(), cache(c), idx(i)
-		{
-		}
-
-		/** constructor for setting params */
-		SGCachedVector(CCache<T>* c, int32_t i,
-				T* v, index_t len, bool free_vec=false)
-			: SGVector<T>(v, len, free_vec), cache(c), idx(i)
-		{
-		}
-
-		/** constructor to create new vector in memory */
-		SGCachedVector(CCache<T>* c, int32_t i, index_t len, bool free_vec=false) :
-			SGVector<T>(len, free_vec), cache(c), idx(i)
-		{
-		}
- 
- 		/** free vector */
-		virtual void free_vector()
-		{
-			//clean up cache fixme
-			SGVector<T>::free_vector();
-		}
-
-		/** destroy vector */
-		virtual void destroy_vector()
-		{
-			//clean up cache fixme
-			SGVector<T>::destroy_vector();
-			if (cache)
-				cache->unlock_entry(idx);
-		}
-
-	public:
-		/** idx */
-		int idx;
-
-		/** cache */
-		CCache<T>* cache;
-};
+//template<class T> class SGCachedVector : public SGVector<T>
+//{
+//	public:
+//		/** default constructor */
+//		SGCachedVector(CCache<T>* c, int32_t i)
+//			: SGVector<T>(), cache(c), idx(i)
+//		{
+//		}
+//
+//		/** constructor for setting params */
+//		SGCachedVector(CCache<T>* c, int32_t i,
+//				T* v, index_t len, bool free_vec=false)
+//			: SGVector<T>(v, len, free_vec), cache(c), idx(i)
+//		{
+//		}
+//
+//		/** constructor to create new vector in memory */
+//		SGCachedVector(CCache<T>* c, int32_t i, index_t len, bool free_vec=false) :
+//			SGVector<T>(len, free_vec), cache(c), idx(i)
+//		{
+//		}
+// 
+// 		/** free vector */
+//		virtual void free_vector()
+//		{
+//			//clean up cache fixme
+//			SGVector<T>::free_vector();
+//		}
+//
+//		/** destroy vector */
+//		virtual void destroy_vector()
+//		{
+//			//clean up cache fixme
+//			SGVector<T>::destroy_vector();
+//			if (cache)
+//				cache->unlock_entry(idx);
+//		}
+//
+//	public:
+//		/** idx */
+//		int idx;
+//
+//		/** cache */
+//		CCache<T>* cache;
+//};
 
 template<class T> class SGMatrix
 {
