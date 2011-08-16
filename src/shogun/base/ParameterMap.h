@@ -16,6 +16,8 @@
 namespace shogun
 {
 
+struct TParameter;
+
 /** @brief Class that holds informations about a certain parameter of an
  * CSGObject. Contains name, type, etc.
  * This is used for mapping types that have changed in different versions of
@@ -35,9 +37,17 @@ public:
 	 * @param ctype container type of parameter
 	 * @param stype struct type of parameter
 	 * @param ptype primitive type of parameter
+	 * @param param_version version of parameter
 	 */
 	SGParamInfo(const char* name, EContainerType ctype, EStructType stype,
-			EPrimitiveType ptype);
+			EPrimitiveType ptype, int32_t param_version);
+
+	/** constructor to create from a TParameter instance
+	 *
+	 * @param param TParameter instance to use
+	 * @param param_version version of parameter
+	 */
+	SGParamInfo(const TParameter* param, int32_t param_version);
 
 	/** destructor */
 	virtual ~SGParamInfo();
@@ -51,10 +61,10 @@ public:
 	/** operator for comparison, true iff all attributes are equal */
 	bool operator==(const SGParamInfo& other) const;
 
-	/** operator for comparison (by string m_name) */
+	/** operator for comparison (by string m_name, if equal by version) */
 	bool operator<(const SGParamInfo& other) const;
 
-	/** operator for comparison (by string m_name) */
+	/** operator for comparison (by string m_name, if equal by version) */
 	bool operator>(const SGParamInfo& other) const;
 
 private:

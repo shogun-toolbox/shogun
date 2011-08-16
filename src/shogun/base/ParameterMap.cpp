@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/ParameterMap.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -19,7 +20,7 @@ SGParamInfo::SGParamInfo()
 }
 
 SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
-		EStructType stype, EPrimitiveType ptype)
+		EStructType stype, EPrimitiveType ptype, int32_t param_version)
 {
 	init();
 
@@ -30,6 +31,22 @@ SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 	m_ctype=ctype;
 	m_stype=stype;
 	m_ptype=ptype;
+	m_param_version=param_version;
+}
+
+SGParamInfo::SGParamInfo(const TParameter* param, int32_t param_version)
+{
+	init();
+
+	/* copy name */
+	m_name=SG_MALLOC(char, strlen(param->m_name)+1);
+	strcpy(m_name, param->m_name);
+
+	TSGDataType type=param->m_datatype;
+	m_ctype=type.m_ctype;
+	m_stype=type.m_stype;
+	m_ptype=type.m_ptype;
+	m_param_version=param_version;
 }
 
 SGParamInfo::~SGParamInfo()
@@ -50,12 +67,14 @@ void SGParamInfo::print_param_info()
 	SG_SPRINT(", type=%s", buffer);
 	SG_FREE(buffer);
 
+	SG_SPRINT(", param_version=%d", m_param_version);
+
 	SG_SPRINT("\n");
 }
 
 SGParamInfo* SGParamInfo::duplicate() const
 {
-	return new SGParamInfo(m_name, m_ctype, m_stype, m_ptype);
+	return new SGParamInfo(m_name, m_ctype, m_stype, m_ptype, m_param_version);
 }
 
 void SGParamInfo::init()
@@ -64,6 +83,7 @@ void SGParamInfo::init()
 	m_ctype=(EContainerType) 0;
 	m_stype=(EStructType) 0;
 	m_ptype=(EPrimitiveType) 0;
+	m_param_version=0;
 }
 
 bool SGParamInfo::operator==(const SGParamInfo& other) const
@@ -73,17 +93,30 @@ bool SGParamInfo::operator==(const SGParamInfo& other) const
 	result&=m_ctype==other.m_ctype;
 	result&=m_stype==other.m_stype;
 	result&=m_ptype==other.m_ptype;
+	result&=m_param_version==other.m_param_version;
 	return result;
 }
 
 bool SGParamInfo::operator<(const SGParamInfo& other) const
 {
-	return strcmp(m_name, other.m_name)<0;
+	int32_t result=strcmp(m_name, other.m_name);
+
+	/* if strings are equal, sort by version */
+	if (!result)
+		return m_param_version<other.m_param_version;
+	else
+		return result<0;
 }
 
 bool SGParamInfo::operator>(const SGParamInfo& other) const
 {
-	return strcmp(m_name, other.m_name)>0;
+	int32_t result=strcmp(m_name, other.m_name);
+
+	/* if strings are equal, sort by version */
+	if (!result)
+		return m_param_version>other.m_param_version;
+	else
+		return result>0;
 }
 
 ParameterMapElement::ParameterMapElement()
