@@ -3,6 +3,10 @@
 %ignore operator==;
 %ignore operator!=;
 
+#ifdef SWIGJAVA
+%ignore SGIO;
+#endif
+
 %ignore QP;
 %ignore ConsensusEntry;
 %ignore DNATrie;
