@@ -41,6 +41,7 @@ class CBesselKernel: public CDistanceKernel
 		 * @param order the order of the bessel function
 		 * @param width the kernel width
 		 * @param degree the kernel degree
+		 * @param dist distance to be used
 		 */
 		CBesselKernel(int32_t size, float64_t order,
 				float64_t width, int32_t degree,
@@ -50,10 +51,11 @@ class CBesselKernel: public CDistanceKernel
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param size cache size
 		 * @param order of the bessel function
 		 * @param width the kernel width
 		 * @param degree the degree
+		 * @param dist distance to be used
+		 * @param size cache size
 		 */
 		CBesselKernel(CFeatures* l, CFeatures* r,
 				float64_t order, float64_t width, int32_t degree,
@@ -72,6 +74,7 @@ class CBesselKernel: public CDistanceKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
 
+		/** cleanup */
 		virtual void cleanup();
 
 		/** return what type of kernel we are
@@ -110,7 +113,7 @@ class CBesselKernel: public CDistanceKernel
 
 		/** set the kernel's order
 		 *
-		 * @param kernel order
+		 * @param v kernel order
 		 */
 		inline virtual void set_order(float64_t v)
 		{
@@ -146,7 +149,7 @@ class CBesselKernel: public CDistanceKernel
 
 		/** set the kernel's degree
 		 *
-		 * @param kernel degree
+		 * @param n kernel degree
 		 */
 		inline virtual void set_degree(int32_t n)
 		{

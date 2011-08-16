@@ -24,6 +24,7 @@ class CFeatures;
 class CLabels;
 class CMath;
 
+/** classifier type */
 enum EClassifierType
 {
 	CT_NONE = 0,
@@ -70,6 +71,7 @@ enum EClassifierType
 
 };
 
+/** solver type */
 enum ESolverType
 {
 	ST_AUTO=0,

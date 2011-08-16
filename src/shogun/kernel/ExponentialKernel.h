@@ -47,6 +47,7 @@ class CExponentialKernel: public CDotKernel
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param width width
+		 * @param dist distance to be used
 		 * @param size cache size
 		 */
 		CExponentialKernel(CDotFeatures* l, CDotFeatures* r,

@@ -61,9 +61,13 @@ private:
 	void init();
 
 public:
+	/** name */
 	char* m_name;
+	/** container type */
 	EContainerType m_ctype;
+	/** struct type */
 	EStructType m_stype;
+	/** primitive type */
 	EPrimitiveType m_ptype;
 };
 

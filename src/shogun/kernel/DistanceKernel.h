@@ -94,7 +94,7 @@ class CDistanceKernel: public CKernel
 
 		/** set the kernel's width
 		 *
-		 * @param kernel width
+		 * @param w kernel width
 		 */
 		inline virtual void set_width(float64_t w)
 		{

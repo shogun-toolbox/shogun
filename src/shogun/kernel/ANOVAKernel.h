@@ -50,6 +50,7 @@ public:
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @param d kernel parameter cardinality
+	 * @param cache cache size
 	 */
 	CANOVAKernel(
 		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d, int32_t cache);

@@ -37,20 +37,25 @@ namespace shogun
 	enum EFeatureClass;
 
 #ifdef USE_SHORTREAL_KERNELCACHE
+	/** kernel cache element */
 	typedef float32_t KERNELCACHE_ELEM;
 #else
+	/** kernel cache element */
 	typedef float64_t KERNELCACHE_ELEM;
 #endif
 
+/** kernel cache index */
 typedef int64_t KERNELCACHE_IDX;
 
 
+/** optimization type */
 enum EOptimizationType
 {
 	FASTBUTMEMHUNGRY,
 	SLOWBUTMEMEFFICIENT
 };
 
+/** kernel type */
 enum EKernelType
 {
 	K_UNKNOWN = 0,

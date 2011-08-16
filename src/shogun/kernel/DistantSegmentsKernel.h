@@ -109,8 +109,8 @@ private:
 	 *
 	 * @param s first string for kernel computation
 	 * @param sLength length of that string
-	 * @param t second string for kernel computation
-	 * @param tLength length of that string
+	 * @param b second string for kernel computation
+	 * @param bLength length of that string
 	 * @param delta_m delta parameter
 	 * @param theta_m theta parameter
 	 * @return computed kernel function of the given strings and parameters
