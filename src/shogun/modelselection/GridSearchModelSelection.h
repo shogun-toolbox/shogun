@@ -26,12 +26,20 @@ class CModelSelectionParameters;
 class CGridSearchModelSelection: public CModelSelection
 {
 public:
+	/** constructor */
 	CGridSearchModelSelection();
+
+	/** constructor
+	 * @param model_parameters
+	 * @param cross_validation
+	 */
 	CGridSearchModelSelection(CModelSelectionParameters* model_parameters,
 				CCrossValidation* cross_validation);
 
+	/** destructor */
 	virtual ~CGridSearchModelSelection();
 
+	/** select model */
 	virtual CParameterCombination* select_model();
 
 	/** @return name of the SGSerializable */

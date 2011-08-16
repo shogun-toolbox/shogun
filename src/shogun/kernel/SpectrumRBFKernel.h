@@ -34,9 +34,10 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		CSpectrumRBFKernel(void);
 
 		/** constructor
-		 *
-		 * @param 
-		 * @param degree degree
+		 * @Param size
+		 * @param AA_matrix
+		 * @param degree
+		 * @param width
 		 */
 		CSpectrumRBFKernel(int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
 
@@ -44,11 +45,15 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param degree degree
+		 * @param size 
+		 * @param AA_matrix
+		 * @param degree
+		 * @param width
 		 */
 		CSpectrumRBFKernel(
 			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
 
+		/** destructor */
 		virtual ~CSpectrumRBFKernel();
 
 		/** initialize kernel

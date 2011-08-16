@@ -109,6 +109,7 @@ public:
 	/** constructor
 	 *
 	 * @param fstream already opened file
+	 * @param rw
 	 */
 	explicit CSerializableAsciiFile(FILE* fstream, char rw);
 

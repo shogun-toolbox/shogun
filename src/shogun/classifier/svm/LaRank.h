@@ -322,26 +322,39 @@ namespace shogun
 
 			// LEARNING FUNCTION: add new patterns and run optimization steps
 			// selected with adaptative schedule
+			/** add 
+			 * @param x_id
+			 * @param yi
+			 */
 			virtual int32_t add (int32_t x_id, int32_t yi);
 
 			// PREDICTION FUNCTION: main function in la_rank_classify
+			/** predict
+			 * @param x_id
+			 */
 			virtual int32_t predict (int32_t x_id);
 
+			/** destroy */
 			virtual void destroy ();
 
-			// Compute Duality gap (costly but used in stopping criteria in batch mode)                     
+			// Compute Duality gap (costly but used in stopping criteria in batch mode)
+			/** computeGap */
 			virtual float64_t computeGap ();
 
 			// Nuber of classes so far
+			/** get num outputs */
 			virtual uint32_t getNumOutputs () const;
 
 			// Number of Support Vectors
+			/** get NSV */
 			int32_t getNSV ();
 
 			// Norm of the parameters vector
+			/** compute W2 */
 			float64_t computeW2 ();
 
 			// Compute Dual objective value
+			/** get Dual */
 			float64_t getDual ();
 
 			/** get classifier type
@@ -353,12 +366,23 @@ namespace shogun
 			/** @return object name */
 			inline virtual const char* get_name() const { return "LaRank"; }
 
+			/** set batch mode
+			 * @param enable 
+			 */
 			void set_batch_mode(bool enable) { batch_mode=enable; };
+			/** get batch mode */
 			bool get_batch_mode() { return batch_mode; };
+			/** set tau
+			 * @param t
+			 */
 			void set_tau(float64_t t) { tau=t; };
+			/** get tau
+			 * @return tau
+			 */
 			float64_t get_tau() { return tau; };
 
 		protected:
+			/** train machine */
 			bool train_machine(CFeatures* data);
 
 		private:
@@ -367,10 +391,12 @@ namespace shogun
 			 */
 
 			// Hash Table used to store the different outputs
+			/** output hash */
 			typedef std_hash_map < int32_t, LaRankOutput > outputhash_t;	// class index -> LaRankOutput
 
-
+			/** outputs */
 			outputhash_t outputs;
+
 			LaRankOutput *getOutput (int32_t index);
 
 			// 
@@ -440,20 +466,26 @@ namespace shogun
 
 		protected:
 
+			/// classes
 			std_hash_set < int32_t >classes;
 
+			/// class count
 			inline uint32_t class_count () const
 			{
 				return classes.size ();
 			}
 
+			/// tau
 			float64_t tau;
+
+			/// nb train
 			int32_t nb_train;
+			/// cache
 			int64_t cache;
-			// whether to use online learning or batch training
+			/// whether to use online learning or batch training
 			bool batch_mode;
 
-			//progess output
+			/// progess output
 			int32_t step;
 	};
 }

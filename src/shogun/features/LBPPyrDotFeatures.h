@@ -186,15 +186,23 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 	protected:
+		
+		/** lib lbp pyr get dim
+		 * @param nPyramids
+		 */
 		uint32_t liblbp_pyr_get_dim(uint16_t nPyramids);
 
 	protected:
 		/** features in original space*/
 		CSimpleFeatures<uint32_t>* m_feat;
 
+		/** img */
 		uint32_t* img;
+		/** img nRows */
 		int32_t img_nRows;
+		/** img nCols */
 		int32_t img_nCols;
+		/** vec nDim */
 		int32_t vec_nDim;
 };
 }

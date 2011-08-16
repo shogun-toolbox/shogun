@@ -73,13 +73,6 @@ public:
 	 */
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
-	/** sets L^p norm
-	*
-	* @param weights2 stores the new weights
-	* 
-	*/
-	
-
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
@@ -115,10 +108,11 @@ protected:
 	*
 	*/
 	float64_t objectives(const ::std::vector<float64_t> & weights, const int32_t index);
+
 	/** helper routine for MKL optimization, performs linesearch
 	*
-	*	@param oldweights - MKL weights to start from 
-	*	@param weights - new MKL weights
+	* @param finalbeta
+	* @param oldweights
 	*
 	*/
 	void linesearch(std::vector<float64_t> & finalbeta,const std::vector<float64_t> & oldweights);

@@ -161,8 +161,8 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 
 		/** compute helper
 		 * @param joint_seq
-		 * @param joint index
-		 * @param joint mismatch
+		 * @param joint_index
+		 * @param joint_mismatch
 		 * @param path
 		 * @param d
 		 * @param alen

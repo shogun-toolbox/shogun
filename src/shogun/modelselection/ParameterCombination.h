@@ -50,7 +50,7 @@ public:
 
 	/** Prints a representation of the current node
 	 *
-	 * @param prefix number of '\t' signs that will be prefixed for every output.
+	 * @param prefix_num number of '\t' signs that will be prefixed for every output.
 	 * At each recursion level, one is added.
 	 */
 	void print_tree(int prefix_num=0) const;
@@ -101,7 +101,7 @@ public:
 	 * @param sets Set of sets of leafs to combine
 	 * @param new_root root node that is copied and put as root into all result
 	 * trees
-	 * @param result result set of tree combinations
+	 * @result result set of tree combinations
 	 */
 	static CDynamicObjectArray<CParameterCombination>* leaf_sets_multiplication(
 			const CDynamicObjectArray<CDynamicObjectArray<CParameterCombination> >& sets,

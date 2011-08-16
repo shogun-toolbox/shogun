@@ -175,7 +175,8 @@ public:
 
 	/** constructor
 	 *
-	 * @param f already opened file
+	 * @param fstream already opened file
+	 * @param rw
 	 */
 	explicit CSerializableFile(FILE* fstream, char rw);
 

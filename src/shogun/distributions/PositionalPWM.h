@@ -73,8 +73,6 @@ class CPositionalPWM : public CDistribution
 		float64_t get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos);
 
 		/** get sigma
-		 *
-		 * @param sigma
 		 */
 		virtual inline float64_t get_sigma()
 		{
@@ -91,8 +89,6 @@ class CPositionalPWM : public CDistribution
 		}
 
 		/** get mean
-		 *
-		 * @param mean
 		 */
 		virtual inline float64_t get_mean()
 		{

@@ -44,6 +44,7 @@ public:
 	 *
 	 * @param task_lhs task vector with containing task_id for each example for left hand side
 	 * @param task_rhs task vector with containing task_id for each example for right hand side
+	 * @param active_tasks_vec
 	 */
 	CMultitaskKernelMaskNormalizer(std::vector<int32_t> task_lhs,
 								   std::vector<int32_t> task_rhs,
