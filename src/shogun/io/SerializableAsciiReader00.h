@@ -19,7 +19,12 @@ class SerializableAsciiReader00
 	CSerializableAsciiFile* m_file;
 
 public:
+	/** constructor
+	 * @param file
+	 */
 	explicit SerializableAsciiReader00(CSerializableAsciiFile* file);
+
+	/** destructor */
 	virtual ~SerializableAsciiReader00(void);
 
 	/** @return object name */
@@ -27,6 +32,7 @@ public:
 		return "SerializableAsciiReader00";
 	}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	virtual bool read_scalar_wrapped(
 		const TSGDataType* type, void* param);
 
@@ -79,6 +85,7 @@ public:
 	virtual bool read_type_end_wrapped(
 		const TSGDataType* type, const char* name,
 		const char* prefix);
+#endif
 };
 }
 

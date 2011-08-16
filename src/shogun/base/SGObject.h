@@ -238,7 +238,7 @@ public:
 	/** Returns description of a given parameter string, if it exists. SG_ERROR
 	 * otherwise
 	 *
-	 * @param modsel_param name of the parameter
+	 * @param param_name name of the parameter
 	 * @return description of the parameter
 	 */
 	char* get_modsel_param_descr(const char* param_name);
@@ -317,10 +317,19 @@ private:
 			const char* prefix="");
 
 public:
+	/** io */
 	SGIO* io;
+
+	/** parallel */
 	Parallel* parallel;
+
+	/** version */
 	Version* version;
+
+	/** parameters */
 	Parameter* m_parameters;
+
+	/** model selection parameters */
 	Parameter* m_model_selection_parameters;
 
 private:

@@ -54,6 +54,7 @@ public:
 	/** default destructor */
 	virtual ~CFile();
 
+	/** close */
 	void close()
 	{
 		SG_FREE(variable_name);

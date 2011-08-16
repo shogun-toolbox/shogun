@@ -530,7 +530,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * possible with subset
 		 *
-		 * @param feat_vec feature vector to free
+		 * @param vec feature vector to free
 		 * @param num index of this vector in the cache
 		 */
 		void free_sparse_feature_vector(SGSparseVector<ST> vec, int32_t num)
@@ -928,7 +928,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * possible with subset
 		 *
-		 * @param feat_vec feature vector to free
+		 * @param vec feature vector to free
 		 * @param num index of vector in cache
 		 */
 		void free_feature_vector(SGSparseVector<ST> vec, int32_t num)

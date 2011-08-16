@@ -153,7 +153,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			return success;
 		}
 
-	    /** ::STD::VECTOR compatible. Append array element to the end
+		/** STD VECTOR compatible. Append array element to the end
 		 *  of array.
 		 *
 		 * @param element element to append
@@ -165,7 +165,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			m_array.push_back(element);
 		}
 
-		/** ::STD::VECTOR compatible. Delete array element at the end
+		/** STD VECTOR compatible. Delete array element at the end
 		 *  of array.
 		 */
 		inline void pop_back(void)
@@ -176,7 +176,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 			m_array.pop_back();
 		}
 
-		/** ::STD::VECTOR compatible. Return array element at the end
+		/** STD VECTOR compatible. Return array element at the end
 		 *  of array.
 		 *
 		 * @return element at the end of array

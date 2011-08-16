@@ -29,7 +29,7 @@ public:
 
 	/** constructor
 	 *
-	 * @subset_idx vector of subset indices, is deleted in destructor
+	 * @param subset_idx vector of subset indices, is deleted in destructor
 	 */
 	CSubset(SGVector<index_t> subset_idx);
 

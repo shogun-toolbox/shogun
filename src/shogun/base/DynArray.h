@@ -39,21 +39,23 @@ template <class T> class DynArray
 		/** constructor
 		 *
 		 * @param p_resize_granularity resize granularity
+		 * @param tracable
 		 */
 		DynArray(int32_t p_resize_granularity=128, bool tracable=true)
 		{
 			this->resize_granularity=p_resize_granularity;
-            use_sg_mallocs=tracable;
+			use_sg_mallocs=tracable;
 
-            if (use_sg_mallocs)
-                array=SG_CALLOC(T, p_resize_granularity);
-            else
-                array=(T*) calloc(p_resize_granularity, sizeof(T));
+			if (use_sg_mallocs)
+				array=SG_CALLOC(T, p_resize_granularity);
+			else
+				array=(T*) calloc(p_resize_granularity, sizeof(T));
 
 			num_elements=p_resize_granularity;
 			last_element_idx=-1;
 		}
 
+		/** destructor */
 		virtual ~DynArray(void)
 		{
 			if (use_sg_mallocs)
@@ -199,7 +201,7 @@ template <class T> class DynArray
 			return set_element(element, last_element_idx+1);
 		}
 
-		/** ::STD::VECTOR compatible. Append array element to the end
+		/** STD VECTOR compatible. Append array element to the end
 		 *  of array.
 		 *
 		 * @param element element to append
@@ -210,7 +212,7 @@ template <class T> class DynArray
 			else set_element(element, get_num_elements());
 		}
 
-		/** ::STD::VECTOR compatible. Delete array element at the end
+		/** STD VECTOR compatible. Delete array element at the end
 		 *  of array.
 		 */
 		inline void pop_back(void)
@@ -219,7 +221,7 @@ template <class T> class DynArray
 			delete_element(get_num_elements()-1);
 		}
 
-		/** ::STD::VECTOR compatible. Return array element at the end
+		/** STD VECTOR compatible. Return array element at the end
 		 *  of array.
 		 *
 		 * @return element at the end of array

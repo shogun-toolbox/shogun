@@ -304,13 +304,13 @@ public:
 	}
 
 public:
-	/* number of strings */
+	/** number of strings */
 	index_t num_strings;
 
 	/** length of longest string */
 	index_t max_string_length;
 
-	/// this contains the array of features.
+	/** this contains the array of features */
 	SGString<T>* strings;
 
 	/** whether vector needs to be freed */
@@ -500,8 +500,10 @@ struct TSGDataType
 	/** primitive type */
 	EPrimitiveType m_ptype;
 
-	/** lengths */
-	index_t *m_length_y, *m_length_x;
+	/** length y */
+	index_t *m_length_y;
+	/** length x */
+	index_t *m_length_x;
 
 	/** constructor 
 	 * @param ctype

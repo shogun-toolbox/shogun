@@ -447,9 +447,12 @@ class SGIO
  */
 struct substring
 {
+	/** start */
 	char *start;
+	/** end */
 	char *end;
 };
+
 
 /**
  * Return a C string from the substring

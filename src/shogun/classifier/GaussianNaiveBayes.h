@@ -25,9 +25,10 @@ class CFeatures;
  * This classifier assumes that a posteriori conditional probabilities
  * are gaussian pdfs. For each vector gaussian naive bayes chooses
  * the class C with maximal
- * \[
+ *
+ * \f[
  * P(c) \prod_{i} P(x_i|c)
- * \]
+ * \f]
  *
  */
 class CGaussianNaiveBayes : public CMachine

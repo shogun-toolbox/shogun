@@ -48,7 +48,7 @@ public:
 	/** constructor
 	 * @param l features left-side
 	 * @param r features right-side
-	 * @param coef kernel parameter coefficient
+	 * @param c kernel parameter coefficient
 	 * @param dist distance to be used
 	 */
 	CRationalQuadraticKernel(CFeatures *l, CFeatures *r, float64_t c, CDistance* dist);
@@ -86,7 +86,7 @@ public:
 	inline virtual const float64_t get_coef() const { return m_coef; }
 
 	/** setter for degree parameter
-	 *  @param value coefficient parameter of kernel
+	 *  @param coef coefficient parameter of kernel
 	 */
 	inline void set_coef(float64_t coef) { m_coef=coef; }
 

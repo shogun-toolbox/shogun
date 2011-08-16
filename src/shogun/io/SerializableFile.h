@@ -181,12 +181,16 @@ public:
 	/** default destructor */
 	virtual ~CSerializableFile(void);
 
+	/** close */
 	virtual void close(void);
+
+	/** is opened */
 	virtual bool is_opened(void);
 
 	/* ************************************************************ */
 	/* Begin of public wrappers  */
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	virtual bool write_scalar(
 		const TSGDataType* type, const char* name, const char* prefix,
 		const void* param);
@@ -305,7 +309,7 @@ public:
 		const TSGDataType* type, const char* name, const char* prefix);
 	virtual bool read_type_end(
 		const TSGDataType* type, const char* name, const char* prefix);
-
+#endif
 	/* End of public wrappers  */
 	/* ************************************************************ */
 };

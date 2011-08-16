@@ -40,9 +40,15 @@ class CSerializableAsciiFile :public CSerializableFile
 	bool ignore(void);
 
 protected:
+
+	/** new reader
+	 * @param dest_version
+	 * @param n
+	 */
 	virtual TSerializableReader* new_reader(
 		char* dest_version, size_t n);
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	virtual bool write_scalar_wrapped(
 		const TSGDataType* type, const void* param);
 
@@ -95,7 +101,7 @@ protected:
 	virtual bool write_type_end_wrapped(
 		const TSGDataType* type, const char* name,
 		const char* prefix);
-
+#endif
 public:
 	/** default constructor */
 	explicit CSerializableAsciiFile(void);
