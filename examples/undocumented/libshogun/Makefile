@@ -32,7 +32,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  features_copy_subset_sparse_features \
 		  mathematics_confidence_intervals \
 		  clustering_kmeans base_parameter_map \
-		  serialization_ascii
+		  serialization_ascii splitting_stratified_crossvalidation
 
 
 all: $(TARGETS)

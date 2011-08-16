@@ -16,6 +16,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/Set.h>
 
 using namespace shogun;
 
@@ -116,11 +117,28 @@ bool CLabels::is_two_class_labeling()
 
 int32_t CLabels::get_num_classes()
 {
-	int32_t num_classes=0;
+	CSet<float64_t>* classes=new CSet<float64_t>();
 	for (int32_t i=0; i<get_num_labels(); i++)
-		num_classes=CMath::max(num_classes, int32_t(get_label(i)));
+		classes->add(get_label(i));
 
-	return num_classes+1;
+	int32_t result=classes->get_num_elements();
+	SG_UNREF(classes);
+	return result;
+}
+
+SGVector<float64_t> CLabels::get_classes()
+{
+	CSet<float64_t>* classes=new CSet<float64_t>();
+
+	for (int32_t i=0; i<get_num_labels(); i++)
+		classes->add(get_label(i));
+
+	SGVector<float64_t> result(classes->get_num_elements());
+	memcpy(result.vector, classes->get_array(),
+			sizeof(float64_t)*classes->get_num_elements());
+
+	SG_UNREF(classes);
+	return result;
 }
 
 SGVector<float64_t> CLabels::get_labels()

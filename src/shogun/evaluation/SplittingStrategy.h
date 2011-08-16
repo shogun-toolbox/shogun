@@ -66,7 +66,9 @@ public:
 	SGVector<index_t> generate_subset_inverse(index_t subset_idx);
 
 	/** @return number of subsets */
-	index_t get_num_subsets() const { return m_subset_indices.get_num_elements(); }
+	index_t get_num_subsets() const {
+		return m_subset_indices->get_num_elements();
+	}
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const	{ return "SplittingStrategy"; }
@@ -79,8 +81,13 @@ protected:
 	 */
 	virtual void build_subsets()=0;
 
+private:
+	void init();
+
+protected:
+
 	CLabels* m_labels;
-	CDynamicObjectArray<CDynamicArray<index_t> > m_subset_indices;
+	CDynamicObjectArray<CDynamicArray<index_t> >* m_subset_indices;
 };
 }
 
