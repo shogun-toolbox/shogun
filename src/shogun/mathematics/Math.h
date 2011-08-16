@@ -1551,7 +1551,7 @@ class CMath : public CSGObject
 			return -diff > LOGRANGE? q : q + log(1 + exp(diff));
 		}
 #endif
-#ifdef LOG_SUM_ARRAY
+#ifdef USE_LOGSUMARRAY
 				/** sum up a whole array of values in logspace.
 				 * This function addresses the numeric instabiliy caused by simply summing up N elements by adding 
 				 * each of the elements to some variable. Instead array neighbours are summed up until one element remains.
@@ -1577,7 +1577,7 @@ class CMath : public CSGObject
 					}
 					return logarithmic_sum_array(p,len%2+len>>1) ;
 				} 
-#endif
+#endif //USE_LOGSUMARRAY
 				//@}
 
 				/** @return object name */
