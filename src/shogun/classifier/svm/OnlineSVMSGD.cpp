@@ -174,7 +174,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 	float64_t m = 0;
 	float64_t r = 0;
 
-	while (features->get_next_example() && m<=1000)
+	while (features->get_next_example())
 	{
 		//Expand c if more features are seen in this example
 		features->expand_if_required(c, c_dim);
@@ -188,7 +188,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 		n++;
 
 		features->release_example();
-		if (n>=max_vec_num)
+		if (n>=max_vec_num || m > 1000)
 			break;
 	}
 
