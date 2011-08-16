@@ -49,13 +49,14 @@ void CIOBuffer::use_file(int fd)
 int CIOBuffer::open_file(const char* name, char flag)
 {
 	int ret=1;
-	switch(flag){
+	switch(flag)
+	{
 	case 'r':
 		working_file = open(name, O_RDONLY|O_LARGEFILE);
 		break;
 
 	case 'w':
-		working_file = open(name, O_WRONLY|O_LARGEFILE);
+		working_file = open(name, O_CREAT|O_TRUNC|O_WRONLY, 0666);
 		break;
 
 	default:
