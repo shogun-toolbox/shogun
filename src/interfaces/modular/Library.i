@@ -8,14 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-%define SERIALIZABLE_DUMMY(SWIGCLASS)
-%extend SWIGCLASS {
-        bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; };
-        bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; };
-}
-%enddef
-
-
 %rename(Cache) CCache;
 %rename(ListElement) CListElement;
 %rename(List) CList;

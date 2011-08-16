@@ -2,6 +2,13 @@
 %include "stdint.i"
 %include "exception.i"
 
+%define SERIALIZABLE_DUMMY(SWIGCLASS)
+%extend SWIGCLASS {
+bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; };
+bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; };
+}
+%enddef
+
 #ifdef SWIGJAVA
 %typemap(javainterfaces) SWIGTYPE "java.io.Externalizable"
 
@@ -167,13 +174,12 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %include <shogun/base/init.h>
 #endif
 %include <shogun/io/SGIO.h>
+SERIALIZABLE_DUMMY(shogun::SGIO);
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
+SERIALIZABLE_DUMMY(shogun::Version);
 %include <shogun/base/Parallel.h>
-%extend shogun::Parallel {
-       bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; };
-       bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; };
-};
+SERIALIZABLE_DUMMY(shogun::Parallel);
 
 #ifdef SWIGPYTHON
 
