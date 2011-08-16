@@ -26,7 +26,7 @@ namespace shogun
  * \f[
  * k({\bf x},({\bf x'})= \sum_{i=0}^{l} \mbox{min}(x^{\beta}_i, x'^{\beta}_i)
  * \f]
- * with \beta=1 by default
+ * with \f$\beta=1\f$ by default
  * */
 class CHistogramIntersectionKernel: public CDotKernel
 {
@@ -37,7 +37,6 @@ class CHistogramIntersectionKernel: public CDotKernel
 		/** constructor
 		 *
 		 * @param size cache size
-		 * @param width width
 		 */
 		CHistogramIntersectionKernel(int32_t size);
 
@@ -45,7 +44,6 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param width width
 		 * @param size cache size
 		 */
 		CHistogramIntersectionKernel(
@@ -82,7 +80,7 @@ class CHistogramIntersectionKernel: public CDotKernel
 		inline float64_t get_beta() { return this->beta; }
 
 		/** setter for beta parameter
-		 *  @param beta value
+		 *  @param value beta value
 		 */
 		inline void set_beta(float64_t value) { this->beta = value; }
 

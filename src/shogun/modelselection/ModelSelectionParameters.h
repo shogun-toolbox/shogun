@@ -64,7 +64,7 @@ public:
 
 	/** constructor for a value node
 	 *
-	 * @param name name of the parameter the values will belong to
+	 * @param node_name name of the parameter the values will belong to
 	 */
 	CModelSelectionParameters(const char* node_name);
 
@@ -94,7 +94,7 @@ public:
 
 	/** SG_PRINT's the tree of which this node is the base
 	 *
-	 * @param prefix_num a number of '\t' tabs that is put before each output
+	 * @param prefix_num a number of tabs that is put before each output
 	 * to have a more readable print layout
 	 */
 	void print_tree(int prefix_num=0);

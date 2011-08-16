@@ -147,7 +147,7 @@ class CMKL : public CSVM
 
 		/** set elasticnet lambda
 		 *
-		 * @param lambda new elastic net lambda (must be 0<=lambda<=1)
+		 * @param elasticnet_lambda new elastic net lambda (must be 0<=lambda<=1)
 		 *               lambda=0: L1-MKL
 		 *               lambda=1: Linfinity-MKL
 		 */

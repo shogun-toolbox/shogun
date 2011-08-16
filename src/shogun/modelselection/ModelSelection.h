@@ -51,7 +51,9 @@ public:
 	inline virtual const char* get_name() const	{ return "ModelSelection"; }
 
 protected:
+	/** model parameters */
 	CModelSelectionParameters* m_model_parameters;
+	/** cross validation */
 	CCrossValidation* m_cross_validation;
 };
 

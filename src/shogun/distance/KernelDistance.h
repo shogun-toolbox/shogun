@@ -38,9 +38,8 @@ class CKernelDistance: public CDistance
 
 		/** constructor
 		 *
-		 * @param cache cache size
 		 * @param width width
-		 * @param dist distance
+		 * @param k kernel
 		 */
 		CKernelDistance(float64_t width, CKernel* k);
 
@@ -49,11 +48,12 @@ class CKernelDistance: public CDistance
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 * @param width width
-		 * @param dist distance
+		 * @param k kernel
 		 */
 		CKernelDistance(
 			CFeatures *l, CFeatures *r, float64_t width, CKernel* k);
 
+		/** destructor */
 		virtual ~CKernelDistance();
 
 		/** initialize kernel

@@ -146,10 +146,14 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
     protected:
 		/** sqrt diagonal left-hand side */
 		float64_t* sqrtdiag_lhs;
+
+		/** num sqrt diagonal left-hand side */
 		int32_t num_sqrtdiag_lhs;
 
 		/** sqrt diagonal right-hand side */
 		float64_t* sqrtdiag_rhs;
+
+		/** num sqrt diagonal right-hand side */
 		int32_t num_sqrtdiag_rhs;
 
 		/** f optimized diagonal computation is used */

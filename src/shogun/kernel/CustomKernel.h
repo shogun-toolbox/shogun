@@ -108,8 +108,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * small variant for floats64's, triangle needs to have less than 2**32 elements
 		 *
-		 * @param km kernel matrix
-		 * @param len denotes the size of the array and should match len=cols*(cols+1)/2
+		 * @param tri_kernel_matrix tri kernel matrix
 		 * @return if setting was successful
 		 */
 		bool set_triangle_kernel_matrix_from_triangle(
@@ -124,8 +123,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * big variant, allowing the triangle to have more than 2**31-1 elements
 		 *
-		 * @param km kernel matrix
-		 * @param len denotes the size of the array and should match len=cols*(cols+1)/2
+		 * @param tri_kernel_matrix tri kernel matrix
 		 * @return if setting was successful
 		 */
 		template <class T>
@@ -162,7 +160,7 @@ class CCustomKernel: public CKernel
 		 * from squared matrix
 		 *
 		 * for float64's
-		 *
+		 * 
 		 * @return if setting was successful
 		 */
 		inline bool set_triangle_kernel_matrix_from_full(

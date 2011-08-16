@@ -93,7 +93,7 @@ class CGaussianKernel: public CDotKernel
 
 		/** set the kernel's width
 		 *
-		 * @param kernel width
+		 * @param w kernel width
 		 */
 		inline virtual void set_width(float64_t w)
 		{
@@ -111,7 +111,7 @@ class CGaussianKernel: public CDotKernel
 
 		/** set the compact option
 		 *
-		 * @param value of the compact option
+		 * @param compact value of the compact option
 		 */
 		inline void set_compact_enabled(bool compact)
 		{
@@ -151,10 +151,7 @@ class CGaussianKernel: public CDotKernel
 	private:
 		/** helper function to compute quadratic terms in
 		 * (a-b)^2 (== a^2+b^2-2ab)
-		 *
-		 * @param buf buffer to store squared terms (will be allocated)
-		 * @param df dot feature object based on which k(i,i) is computed
-		 * */
+		 */
 		void precompute_squared();
 
 		/** helper function to compute quadratic terms in

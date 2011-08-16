@@ -226,7 +226,7 @@ class CMachine : public CSGObject
 
 		/** Setter for store-model-features-after-training flag
 		 *
-		 * @param store_model_features whether model should be stored after
+		 * @param store_model whether model should be stored after
 		 * training
 		 */
 		virtual void set_store_model_features(bool store_model)

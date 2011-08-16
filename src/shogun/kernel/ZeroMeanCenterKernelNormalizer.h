@@ -150,12 +150,19 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		inline virtual const char* get_name() const { return "ZeroMeanCenterKernelNormalizer"; }
 
 	protected:
+		/** train row means */
 		float64_t* ktrain_row_means;
+
+		/** num k train */
 		int32_t num_ktrain;
 
+		/** test row means */
 		float64_t* ktest_row_means;
+
+		/** num k test */
 		int32_t num_ktest;
 
+		/** train mean */
 		float64_t ktrain_mean;
 };
 }

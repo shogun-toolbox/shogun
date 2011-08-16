@@ -28,6 +28,7 @@ public:
 		/* ******************************************************** */
 		/* Begin of abstract write methods  */
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		virtual bool read_scalar_wrapped(
 			const TSGDataType* type, void* param) = 0;
 
@@ -81,20 +82,25 @@ public:
 			const TSGDataType* type, const char* name,
 			const char* prefix) = 0;
 
+#endif
 		/* End of abstract write methods  */
 		/* ******************************************************** */
 
 	}; /* struct TSerializableReader  */
 /* public:  */
 private:
+	/// reader
 	TSerializableReader* m_reader;
 
 	bool is_task_warn(char rw, const char* name, const char* prefix);
 	bool false_warn(const char* prefix, const char* name);
 
 protected:
+	/** file stream */
 	FILE* m_fstream;
+	/** task */
 	char m_task;
+	/** filename */
 	char* m_filename;
 
 	virtual void init(FILE* fstream, char task, const char* filename);
@@ -102,6 +108,7 @@ protected:
 	/* ************************************************************ */
 	/* Begin of abstract write methods  */
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	virtual TSerializableReader* new_reader(
 		char* dest_version, size_t n) = 0;
 
@@ -157,6 +164,7 @@ protected:
 	virtual bool write_type_end_wrapped(
 		const TSGDataType* type, const char* name,
 		const char* prefix) = 0;
+#endif
 
 	/* End of abstract write methods  */
 	/* ************************************************************ */

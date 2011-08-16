@@ -96,15 +96,23 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 */
 		inline int32_t get_degree() { return degree; }
 
-
+		/** set AA matrix
+		 * @param AA_matrix_
+		 */
 		bool set_AA_matrix(float64_t* AA_matrix_);
 
 	protected:
 
+		/** AA helper
+		 * @param path
+		 * @param degree
+		 * @param joint_seq
+		 * @param index
+		 */
 		float64_t AA_helper(const char* path, const int degree, const char* joint_seq, unsigned int index);
 
-		void read_profiles_and_sequences(); // profile
-		
+		/** read profiles and sequences */
+		void read_profiles_and_sequences();
 
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -118,8 +126,8 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
-	    /* register the parameters */
-	    virtual void register_param();
+		/* register the parameters */
+		virtual void register_param();
 		/* register the alphabet */
 		void register_alphabet();
 
@@ -130,29 +138,35 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** degree */
 		int32_t degree;
 		/** maximum mismatch */
-	    int32_t max_mismatch;
+		int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
 		float64_t* AA_matrix ; 
-	    /*length of the AA_matrix -- for registration*/
-	    int32_t AA_matrix_length;
+		/** length of the AA_matrix -- for registration*/
+		int32_t AA_matrix_length;
 		/** width of Gaussian*/
 		float64_t width;
 
 		//int32_t* aa_to_index; // profile
 
 		//double background[20]; // profile
+		/** profiles */
 		std::vector< std::vector<float64_t> > profiles; //profile
+		/** sequence labels */
 		std::vector<std::string> sequence_labels; // profile
+		/** sequences */
 		SGString<char>* sequences; // profile
+		/** string features */
 		CStringFeatures<char>* string_features; 
+		/** nof sequences */
 		int32_t nof_sequences;
+		/** max sequence length */
 		int32_t max_sequence_length;
 
 		/** if kernel is initialized */
 		bool initialized;
-		
-
+		/** kernel matrix */
 		CArray2<float64_t> kernel_matrix;
+		/** target letter 0 */
 		int32_t target_letter_0;
 	
 	private:

@@ -94,7 +94,17 @@ public:
 	 */
 	inline void set_cardinality(int32_t value) { this->cardinality = value; }
 
+	/** compute rec 1
+	 * @param idx_a
+	 * @param idx_b
+	 * @return rec1
+	 */
 	float64_t compute_rec1(int32_t idx_a, int32_t idx_b);
+	/** computer rec 2
+	 * @param idx_a
+	 * @param idx_b
+	 * @return rec2
+	 */
 	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
 protected:
 
@@ -107,12 +117,16 @@ protected:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
+	/** init */
 	void init();
+
+	/** allocate arrays */
 	void allocate_arrays();
 
 	/** clean up kernel */
 	virtual void cleanup();
 
+	/** register params */
 	void register_params();
 
 	/** Can (optionally) be overridden to post-initialize some member
@@ -140,7 +154,9 @@ protected:
 	
 	/// arrays for compute_recursive2
 	float64_t* KD;
+	/// KS
 	float64_t* KS;
+	/// vec pow
 	float64_t* vec_pow;
 };
 }

@@ -1244,7 +1244,9 @@ class CMath : public CSGObject
 
 		/** compute eigenvalues and eigenvectors of symmetric matrix
 		 *
-		 * @param matrix is overwritten and contains n orthonormal eigenvectors
+		 * @param matrix  overwritten and contains n orthonormal eigenvectors
+		 * @param n
+		 * @param m
 		 * @return eigenvalues (array of length n, to be deleted[])
 		 * */
 		static double* compute_eigenvectors(double* matrix, int n, int m)

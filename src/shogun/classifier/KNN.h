@@ -160,7 +160,7 @@ class CKNN : public CDistanceMachine
 		virtual CLabels* classify_NN();
 
 		/** init distances to test examples
-		 * @param test examples
+		 * @param data test examples
 		 */
 		void init_distance(CFeatures* data);
 
