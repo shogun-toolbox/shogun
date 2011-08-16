@@ -36,11 +36,7 @@ public:
 	 */
 	CStratifiedCrossValidationSplitting(CLabels* labels, index_t num_subsets);
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
+	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
 	{
 		return "StratifiedCrossValidation";

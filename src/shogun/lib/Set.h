@@ -125,6 +125,12 @@ template <class T> class CSet : public CSGObject
 			return array->get_element(index);
 		}
 
+		/** @return underlying array in memory */
+		inline T* get_array()
+		{
+			return array->get_array();
+		}
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Set"; }
 

@@ -70,10 +70,10 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 
 		for (index_t j=0; j<current->get_num_elements(); ++j)
 		{
-			CDynamicArray<index_t>* next=m_subset_indices.get_element(
+			CDynamicArray<index_t>* next=m_subset_indices->get_element(
 					target_set++);
 			next->append_element(current->get_element(j));
-			target_set%=m_subset_indices.get_num_elements();
+			target_set%=m_subset_indices->get_num_elements();
 			SG_UNREF(next);
 		}
 
@@ -83,5 +83,5 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets */
-	m_subset_indices.shuffle();
+	m_subset_indices->shuffle();
 }
