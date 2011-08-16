@@ -22,6 +22,43 @@ CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets)
 {
 	init();
 
+	/* "assert" that num_subsets is smaller than num labels */
+	if (labels->get_num_labels()<num_subsets)
+	{
+		SG_ERROR("Only %d labels for %d subsets!\n", labels->get_num_labels(),
+				num_subsets);
+	}
+
+	/* check for "stupid" combinations of label numbers and num_subsets.
+	 * if there are of a class less labels than num_subsets, the class will not
+	 * appear in every subset, leading to subsets of only one class in the
+	 * extreme case of a two class labeling. */
+	SGVector<index_t> labels_per_class(labels->get_num_classes());
+	SGVector<float64_t> classes=labels->get_classes();
+
+	for (index_t i=0; i<labels->get_num_classes(); ++i)
+	{
+		labels_per_class.vector[i]=0;
+		for (index_t j=0; j<labels->get_num_labels(); ++j)
+		{
+			if (classes.vector[i]==labels->get_label(j))
+				labels_per_class.vector[i]++;
+		}
+	}
+
+	for (index_t i=0; i<labels->get_num_classes(); ++i)
+	{
+		if (labels_per_class.vector[i]<num_subsets)
+		{
+			SG_WARNING("There are only %d labels of class %.18g, but %d "
+					"subsets. Labels of that class will not appear in every "
+					"subset!\n", labels_per_class.vector[i], classes.vector[i], num_subsets);
+		}
+	}
+
+	labels_per_class.destroy_vector();
+	classes.destroy_vector();
+
 	m_labels=labels;
 	SG_REF(m_labels);
 
