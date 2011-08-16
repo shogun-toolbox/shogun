@@ -32,7 +32,11 @@ class IO;
 class Parallel;
 class Version;
 class Parameter;
+class ParameterMap;
+class SGParamInfo;
 class CSerializableFile;
+struct TParameter;
+template <class T> class DynArray;
 
 // define reference counter macros
 //
@@ -161,6 +165,37 @@ public:
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
 								   const char* prefix="");
+
+
+	/** loads a a specified parameter from a file with a specified version
+	 * The provided parameter info has a version which is recursively mapped
+	 * until the file parameter version is reached.
+	 *
+	 * @param param_info information of parameter
+	 * @param file_version parameter version of the file, must be <= provided
+	 * parameter version
+	 * @param file file to load from
+	 * @param prefix prefix for members
+	 * @return new TParameter instance with the attached data
+	 */
+	TParameter* load_file_parameter(SGParamInfo* param_info,
+			int32_t file_version, CSerializableFile* file,
+			const char* prefix="");
+
+	/** maps all parameters of this instance to the version that is present
+	 * in the provided file and loads all data from the file into an array,
+	 * which is sorted
+	 *
+	 * @param file_version parameter version of the file
+	 * @param file file to load from
+	 * @param prefix prefix for members
+	 * @return (sorted) array of created TParameter instances with file data
+	 */
+	DynArray<TParameter*>* load_file_parameters(int32_t file_version,
+			CSerializableFile* file, const char* prefix="");
+
+	void map_parameters(DynArray<TParameter*>* param_base,
+			int32_t& base_version, DynArray<SGParamInfo*>* target_param_infos);
 
 	/** set the io object
 	 *
@@ -298,6 +333,7 @@ public:
 
 	/** model selection parameters */
 	Parameter* m_model_selection_parameters;
+	ParameterMap* m_parameter_map;
 
 private:
 	EPrimitiveType m_generic;

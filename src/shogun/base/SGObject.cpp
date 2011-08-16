@@ -15,6 +15,8 @@
 #include <shogun/base/init.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/ParameterMap.h>
+#include <shogun/base/DynArray.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -126,6 +128,7 @@ CSGObject::~CSGObject()
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
+	delete m_parameter_map;
 }
 
 #ifdef USE_REFERENCE_COUNTING
@@ -392,6 +395,105 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	return true;
 }
 
+TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
+		int32_t file_version, CSerializableFile* file, const char* prefix)
+{
+	/* ensure that recursion works */
+	if (file_version>param_info->m_param_version)
+		SG_ERROR("parameter version in file is more recent than provided!\n");
+
+	TParameter* result;
+
+	/* do mapping */
+	SGParamInfo* old=m_parameter_map->get(param_info);
+
+	/* if no mapping is found, versions have to be the same,
+	 * or something went wrong */
+	ASSERT(old || file_version==param_info->m_param_version);
+
+	/* case file version same as provided version.
+	 * means that parameter has to be loaded from file, recursion stops here */
+	if (file_version==param_info->m_param_version)
+	{
+		/* create datatype from param info */
+		TSGDataType type(param_info->m_ctype, param_info->m_stype,
+				param_info->m_ptype);
+
+		/* allocate space for data, size depends on type */
+		void* data=SG_MALLOC(char, type.get_size());
+
+		/* create TParameter instance */
+		result=new TParameter(&type, data, param_info->m_name, "");
+
+		/* tell instance to load data from file */
+		result->load(file, prefix);
+	}
+	/* recursion with mapped type, a mapping exists in this case (ensured by
+	 * above assert) */
+	else
+		result=load_file_parameter(old, file_version, file, prefix);
+
+	return result;
+}
+
+DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
+		CSerializableFile* file, const char* prefix)
+{
+	DynArray<TParameter*>* result=new DynArray<TParameter*>();
+
+	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+	{
+		/* extract current parameter info */
+		SGParamInfo* info=new SGParamInfo(m_parameters->get_parameter(i),
+				VERSION_PARAMETER);
+
+		/* load parameter data from file */
+		result->append_element(load_file_parameter(info, file_version, file,
+				prefix));
+
+		/* clean up */
+		delete info;
+	}
+
+	/* sort array before returning */
+	SGVector<TParameter*> to_sort(result->get_array(),
+			result->get_num_elements());
+	CMath::qsort(to_sort);
+
+	return result;
+}
+
+void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
+		int32_t& base_version, DynArray<SGParamInfo*>* target_param_infos)
+{
+	/* map all target parameter infos once */
+	DynArray<SGParamInfo*>* mapped_infos=new DynArray<SGParamInfo>();
+	for (index_t i=0; i<target_param_infos->get_num_elements(); ++i)
+	{
+		SGParamInfo* mapped=m_parameter_map->get(
+				target_param_infos->get_element(i));
+
+		if (mapped)
+			mapped_infos->append_element(mapped);
+	}
+
+	ASSERT(mapped_infos->get_num_elements());
+	int32_t new_version=mapped_infos->get_element(0)->m_param_version;
+
+	/* recursion, after this call, base is at version of mapped infos */
+	if (new_version!=base_version)
+		map_parameters(param_base, base_version, mapped_infos);
+
+	/* do mapping */
+	for (index_t i=0; i<target_param_infos->get_num_elements(); ++i)
+		migrate(param_base, target_param_infos->get_element(i));
+
+	/* sort base */
+	SGVector<TParameter*> to_sort(param_base->get_array(),
+			param_base->get_num_elements());
+	CMath::qsort(to_sort);
+}
+
 bool CSGObject::save_parameter_version(CSerializableFile* file,
 		const char* prefix)
 {
@@ -461,6 +563,7 @@ void CSGObject::init()
 	version = NULL;
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
+	m_parameter_map=new ParameterMap();
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
