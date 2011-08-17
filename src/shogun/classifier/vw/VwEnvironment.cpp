@@ -61,6 +61,6 @@ void CVwEnvironment::init()
 
 	ignore_some = false;
 
-	index_t length = ((index_t) 1) << num_bits;
-	thread_mask = (stride * (length >> thread_bits)) - 1;
+	index_t len= ((index_t) 1) << num_bits;
+	thread_mask = (stride * (len >> thread_bits)) - 1;
 }
