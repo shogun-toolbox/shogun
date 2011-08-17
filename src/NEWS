@@ -9,8 +9,9 @@
 	   - Dimensionality reduction (manifold learning) algorithms
 	     are now available. In particular: Locally Linear Embedding (LLE), Hessian 
 	     Locally Linear Embedding (HLLE), Local Tangent Space Alignment (LTSA),
-	     Kernel PCA (kPCA), Classic and Landmark Multidimensional Scaling (MDS, LMDS), 
-	     Classic and Landmark Isomap, Laplacian Eigenmaps 
+	     Kernel PCA (kPCA), Multidimensional Scaling (MDS, with possible landmark
+	     approximation), Isomap (using Fibonacci Heap Dijkstra for shortest paths),
+	     Laplacian Eigenmaps
 	     (GSoC project of Sergey Lisitsyn)
 	   - Various new kernels: TStudentKernel, CircularKernel, WaveKernel,
 	     SplineKernel, LogKernel, RationalQuadraticKernel, WaveletKernel,
@@ -24,13 +25,15 @@
 	   - Model selection framework for arbitrary Machines 
 	     (GSoC project of Heiko Strathmann)
 	   - Gaussian Mixture Models (GSoC project of Alesis Novik)
-	   - FibonacciHeap for efficient shortest-path 
-	     problem solving (thanks Evgeniy Andreev)
+	   - FibonacciHeap for efficient shortest-path
+	     problem solving (thanks to Evgeniy Andreev)
+	   - Efficient HashSet (thanks to Evgeniy Andreev)
 	   - ARPACK wrapper (dseupd) for symmetric eigenproblems (both
 	     generalized and non-generalized), 
 	     some new LAPACK wrappers (Sergey Lisitsyn)
 	   - New Statistics module for various statistics measures (Heiko Strathmann)
 	   - Subset support to features (Heiko Strathmann)
+	   - Java externalization support (Sergey Lisitsyn)
 	   - Support matlab 2011a.
 	* Bugfixes:
 	   - Fix build failure with ld --as-needed (thanks Matthias Klose for the
@@ -51,6 +54,7 @@
 	     pointers on set/get operations.
 	   - Stop using new[] / delete[] and switch to SG_MALLOC, SG_CALLOC,
 	     SG_REALLOC, SG_FREE macros.
+	   - Preproc renamed to preprocessor, PCACut renamed to PCA
 
 2010-12-07 Soeren Sonnenburg <sonne@debian.org>
 
