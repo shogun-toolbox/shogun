@@ -31,6 +31,7 @@
 	     some new LAPACK wrappers (Sergey Lisitsyn)
 	   - New Statistics module for various statistics measures (Heiko Strathmann)
 	   - Subset support to features (Heiko Strathmann)
+	   - Support matlab 2011a.
 	* Bugfixes:
 	   - Fix build failure with ld --as-needed (thanks Matthias Klose for the
 			   patch).
