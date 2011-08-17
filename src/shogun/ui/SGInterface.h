@@ -99,7 +99,12 @@ enum E_WHICH_OBJ
 class CSGInterface : public CSGObject
 {
 	public:
+		/** constructor 
+		 * @param print_copyrights
+		 */
 		CSGInterface(bool print_copyrights=true);
+
+		/** destructor */
 		~CSGInterface();
 
 		/// reset to clean state
@@ -408,35 +413,35 @@ class CSGInterface : public CSGObject
 		 * precompute subkernels of a combined kernel
 		 */
 		bool cmd_precompute_subkernels();
-		/**
+		/** cmd signals model
 		 * 
 		 */
 		bool cmd_signals_set_model() { return false; };
-		/**
+		/** cmd signals set position
 		 * 
 		 */
 		bool cmd_signals_set_positions();
-		/**
+		/** cmd signals set labels
 		 * 
 		 */
 		bool cmd_signals_set_labels();
-		/**
+		/** cmd signals set split
 		 * 
 		 */
 		bool cmd_signals_set_split();
-		/**
+		/** cmd signals set train mask
 		 * 
 		 */
 		bool cmd_signals_set_train_mask();
-		/**
+		/** cmd signals add feature
 		 * 
 		 */
 		bool cmd_signals_add_feature();
-		/**
+		/** cmd signals add kernel
 		 * 
 		 */
 		bool cmd_signals_add_kernel();
-		/**
+		/** cmd signals run
 		 * 
 		 */
 		bool cmd_signals_run();
@@ -576,53 +581,164 @@ class CSGInterface : public CSGObject
 		/// get type of current argument (does not increment argument counter)
 		virtual IFType get_argument_type()=0;
 
+		/** get int */
 		virtual int32_t get_int()=0;
+		/** get real */
 		virtual float64_t get_real()=0;
+		/** get bool */
 		virtual bool get_bool()=0;
 
+		/** get string 
+		 * @param len
+		 */
 		virtual char* get_string(int32_t& len)=0;
 
+		/** get vector 
+		 * @param vector
+		 * @param len
+		 */
 		virtual void get_vector(bool*& vector, int32_t& len);
+		/** get vector 
+		 * @param vector
+		 * @param len
+		 */
 		virtual void get_vector(uint8_t*& vector, int32_t& len)=0;
+		/** get vector 
+		 * @param vector
+		 * @param len
+		 */
 		virtual void get_vector(char*& vector, int32_t& len)=0;
+		/** get vector 
+		 * @param vector
+		 * @param len
+		 */
 		virtual void get_vector(int32_t*& vector, int32_t& len)=0;
+		/** get vector 
+		 * @param vector
+		 * @param len
+		 */
 		virtual void get_vector(float64_t*& vector, int32_t& len)=0;
+		/** get vector 
+		 * @param vector
+		 * @param len
+		 */
 		virtual void get_vector(float32_t*& vector, int32_t& len)=0;
+		/** get vector 
+		 * @param vector
+		 * @param len
+		 */
 		virtual void get_vector(int16_t*& vector, int32_t& len)=0;
+		/** get vector 
+		 * @param vector
+		 * @param len
+		 */
 		virtual void get_vector(uint16_t*& vector, int32_t& len)=0;
 
-
+		/** get matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void get_matrix(
 			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		/** get matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void get_matrix(
 			char*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		/** get matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void get_matrix(
 			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		/** get matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void get_matrix(
 			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		/** get matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void get_matrix(
 			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		/** get matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void get_matrix(
 			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
+		/** get matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void get_matrix(
 			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
+		/** get nd array
+		 * @param array
+		 * @param dims
+		 * @param num_dims
+		 */
 		virtual void get_ndarray(
 			uint8_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		/** get nd array
+		 * @param array
+		 * @param dims
+		 * @param num_dims
+		 */
 		virtual void get_ndarray(
 			char*& array, int32_t*& dims, int32_t& num_dims)=0;
+		/** get nd array
+		 * @param array
+		 * @param dims
+		 * @param num_dims
+		 */
 		virtual void get_ndarray(
 			int32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		/** get nd array
+		 * @param array
+		 * @param dims
+		 * @param num_dims
+		 */
 		virtual void get_ndarray(
 			float32_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		/** get nd array
+		 * @param array
+		 * @param dims
+		 * @param num_dims
+		 */
 		virtual void get_ndarray(
 			float64_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		/** get nd array
+		 * @param array
+		 * @param dims
+		 * @param num_dims
+		 */
 		virtual void get_ndarray(
 			int16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
+		/** get nd array
+		 * @param array
+		 * @param dims
+		 * @param num_dims
+		 */
 		virtual void get_ndarray(
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
 
-
+		/** get sparse matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void get_sparse_matrix(
 			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
@@ -635,58 +751,169 @@ class CSGInterface : public CSGObject
 		virtual void get_sparse_matrix(SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 		virtual void get_sparse_matrix(SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
 
+		/** get string list 
+		 * @param strings
+		 * @param num_str
+		 * @param max_string_len
+		 */
 		virtual void get_string_list(
 			SGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
+		/** get string list 
+		 * @param strings
+		 * @param num_str
+		 * @param max_string_len
+		 */
 		virtual void get_string_list(
 			SGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
+		/** get string list 
+		 * @param strings
+		 * @param num_str
+		 * @param max_string_len
+		 */
 		virtual void get_string_list(
 			SGString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
+		/** get string list 
+		 * @param strings
+		 * @param num_str
+		 * @param max_string_len
+		 */
 		virtual void get_string_list(
 			SGString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
+		/** get string list 
+		 * @param strings
+		 * @param num_str
+		 * @param max_string_len
+		 */
 		virtual void get_string_list(
 			SGString<uint16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
 
+		/** get attribute struct
+		 * @param attrs
+		 */
 		virtual void get_attribute_struct(
 			const CDynamicArray<T_ATTRIBUTE>* &attrs)=0;
 
-		/** set functions - to pass data from shogun to the target interface */
+		// set functions - to pass data from shogun to the target interface
+		/** create return values 
+		 * @parma num_val
+		 */
 		virtual bool create_return_values(int32_t num_val)=0;
 
+		/** set int
+		 * @param scalar
+		 */
 		virtual void set_int(int32_t scalar)=0;
+		/** set real
+		 * @param scalar
+		 */
 		virtual void set_real(float64_t scalar)=0;
+		/** set bool
+		 * @param scalar
+		 */
 		virtual void set_bool(bool scalar)=0;
 
+		/** set vector
+		 * @param vector
+		 * @param len
+		 */
 		virtual void set_vector(const bool* vector, int32_t len);
+		/** set vector
+		 * @param vector
+		 * @param len
+		 */
 		virtual void set_vector(const uint8_t* vector, int32_t len)=0;
+		/** set vector
+		 * @param vector
+		 * @param len
+		 */
 		virtual void set_vector(const char* vector, int32_t len)=0;
+		/** set vector
+		 * @param vector
+		 * @param len
+		 */
 		virtual void set_vector(const int32_t* vector, int32_t len)=0;
-		virtual void set_vector(
-			const float32_t* vector, int32_t len)=0;
+		/** set vector
+		 * @param vector
+		 * @param len
+		 */
+		virtual void set_vector(const float32_t* vector, int32_t len)=0;
+		/** set vector
+		 * @param vector
+		 * @param len
+		 */
 		virtual void set_vector(const float64_t* vector, int32_t len)=0;
+		/** set vector
+		 * @param vector
+		 * @param len
+		 */
 		virtual void set_vector(const int16_t* vector, int32_t len)=0;
+		/** set vector
+		 * @param vector
+		 * @param len
+		 */
 		virtual void set_vector(const uint16_t* vector, int32_t len)=0;
 
-
+		/** set matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void set_matrix(
 			const uint8_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		/** set matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void set_matrix(
 			const char* matrix, int32_t num_feat, int32_t num_vec)=0;
+		/** set matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void set_matrix(
 			const int32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		/** set matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void set_matrix(
 			const float32_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		/** set matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void set_matrix(
 			const float64_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		/** set matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void set_matrix(
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+		/** set matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 */
 		virtual void set_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
 
+		/** set sparse matrix
+		 * @param matrix
+		 * @param num_feat
+		 * @param num_vec
+		 * @param nnz
+		 */
 		virtual void set_sparse_matrix(
 			const SGSparseVector<float64_t>* matrix, int32_t num_feat,
 			int32_t num_vec, int64_t nnz)=0;
@@ -700,18 +927,40 @@ class CSGInterface : public CSGObject
 		virtual void set_sparse_matrix(const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 		virtual void set_sparse_matrix(const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec)=0; */
 
-
+		/** set string list
+		 * @param strings
+		 * @param num_str
+		 */
 		virtual void set_string_list(
 			const SGString<uint8_t>* strings, int32_t num_str)=0;
+		/** set string list
+		 * @param strings
+		 * @param num_str
+		 */
 		virtual void set_string_list(
 			const SGString<char>* strings, int32_t num_str)=0;
+		/** set string list
+		 * @param strings
+		 * @param num_str
+		 */
 		virtual void set_string_list(
 			const SGString<int32_t>* strings, int32_t num_str)=0;
+		/** set string list
+		 * @param strings
+		 * @param num_str
+		 */
 		virtual void set_string_list(
 			const SGString<int16_t>* strings, int32_t num_str)=0;
+		/** set string list
+		 * @param strings
+		 * @param num_str
+		 */
 		virtual void set_string_list(
 			const SGString<uint16_t>* strings, int32_t num_str)=0;
 
+		/** set attribute struct
+		 * @param attrs
+		 */
 		virtual void set_attribute_struct(
 			const CDynamicArray<T_ATTRIBUTE>* attrs)=0;
 
@@ -728,22 +977,33 @@ class CSGInterface : public CSGObject
 		int32_t get_nrhs() { return m_nrhs; }
 
 
-		/** ui lib */
+		// ui lib 
+		/** ui classifier */
 		CGUIClassifier* ui_classifier;
+		/** ui distance */
 		CGUIDistance* ui_distance;
+		/** ui features */
 		CGUIFeatures* ui_features;
+		/** ui hmm */
 		CGUIHMM* ui_hmm;
+		/** ui kernel */
 		CGUIKernel* ui_kernel;
+		/** ui labels */
 		CGUILabels* ui_labels;
+		/** ui math */
 		CGUIMath* ui_math;
+		/** ui pluginestimate */
 		CGUIPluginEstimate* ui_pluginestimate;
+		/** ui preproc */
 		CGUIPreprocessor* ui_preproc;
+		/** ui time */
 		CGUITime* ui_time;
+		/** ui structure */
 		CGUIStructure* ui_structure;
 		//CGUISignals* ui_signals;
 
 	protected:
-		/* return true if str starts with cmd
+		/** return true if str starts with cmd
 		 *
 		 * @param str string to look in, not necessarily 0-terminated
 		 * @param cmd 0-terminated string const
@@ -762,6 +1022,10 @@ class CSGInterface : public CSGObject
 			return (strncmp(str, cmd, len)==0);
 		}
 
+		/** ends with 
+		 * @param str
+		 * @param cmd
+		 */
 		static bool strendswith(const char* str, const char* cmd)
 		{
 			size_t idx=strlen(str);
@@ -826,25 +1090,36 @@ class CSGInterface : public CSGObject
 		char* get_line(FILE* infile=stdin, bool show_prompt=true);
 
 	protected:
+		/** lhs counter */
 		int32_t m_lhs_counter;
+		/** rhs counter */
 		int32_t m_rhs_counter;
+		/** nlhs */
 		int32_t m_nlhs;
+		/** nrhs */
 		int32_t m_nrhs;
 
 		// related to cmd_exec and cmd_echo
 		FILE* file_out;
+		/** input */
 		char input[10000];
+		/** echo */
 		bool echo;
 
+		/** legacy strptr */
 		char* m_legacy_strptr;
 };
 
 typedef bool (CSGInterface::*CSGInterfacePtr)();
 
 typedef struct {
+	/// command
 	const char* command;
+	/// method
 	CSGInterfacePtr method;
+	/// usage prefix
 	const char* usage_prefix;
+	/// usage suffix
 	const char* usage_suffix;
 } CSGInterfaceMethod;
 }
