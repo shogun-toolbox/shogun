@@ -2,6 +2,7 @@
 #define __CMDLINEINTERFACE__H_
 
 #include <shogun/base/DynArray.h>
+#include <shogun/io/SGIO.h>
 
 #include "ui/SGInterface.h"
 

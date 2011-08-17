@@ -12,6 +12,7 @@
 #define _DYNARRAY_H_
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
 
 namespace shogun
