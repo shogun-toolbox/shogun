@@ -54,6 +54,7 @@
 %rename(MKLClassification) CMKLClassification;
 %rename(MKLOneClass) CMKLOneClass;
 %rename(MKLMultiClass) CMKLMultiClass;
+%rename(VowpalWabbit) CVowpalWabbit;
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
@@ -105,6 +106,7 @@
 %include <shogun/classifier/mkl/MKLClassification.h>
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/mkl/MKLMultiClass.h>
+%include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 
 #ifdef HAVE_PYTHON
