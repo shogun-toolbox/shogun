@@ -22,21 +22,23 @@ class CFeatures;
 
 class CDistance;
 
+
 /** @brief the class LocalTangentSpaceAlignment used to preprocess
- * data using Local Tangent Space Alignment (LTSA) algorithm described in
+ * data using Local Tangent Space Alignment (LTSA) algorithm as described in:
  *
- * Z. Zhang, H. Zha, Principal manifolds and nonlinear dimensionality
- * reduction via tangent space alignment, SIAM J. Sci. Comput. 26 (1)
- * (2004) 313–338.
+ * Zhang, Z., & Zha, H. (2002). Principal Manifolds 
+ * and Nonlinear Dimension Reduction via Local Tangent Space Alignment. 
+ * Journal of Shanghai University English Edition, 8(4), 406-424. SIAM. 
+ * Retrieved from http://arxiv.org/abs/cs/0212008
  *
- * Stated eigenproblem is solved in the same way as in
+ * The stated eigenproblem is solved in the same way as
  * CLocallyLinearEmbedding (LAPACK or ARPACK if available).
  *
- * Local tangent space alignment step is parallel. Neighborhood
+ * The local tangent space alignment step is parallel. Neighborhood
  * determination is not parallel as in CLocallyLinearEmbedding.
  *
  * This algorithm is pretty stable for variations of k parameter but
- * be sure it set with consistent value (at least 3-5) for reasonable
+ * be sure it is set with a consistent value (at least 3-5) for reasonable
  * results.
  */
 class CLocalTangentSpaceAlignment: public CLocallyLinearEmbedding

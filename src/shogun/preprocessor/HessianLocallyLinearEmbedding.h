@@ -32,7 +32,7 @@ class CDistance;
  * Stated eigenproblem is solved in the same way as in
  * CLocallyLinearEmbedding (LAPACK or ARPACK if available).
  *
- * Hessian estimation step is parallel and neighborhood determination 
+ * The hessian estimation step is parallel and neighborhood determination 
  * is not as in CLocallyLinearEmbedding.
  *
  * Be sure k value is set with at least 

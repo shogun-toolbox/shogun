@@ -27,8 +27,8 @@ class CFeatures;
 
 class CDistance;
 
-/** @brief the class Isomap used to preprocess data using K-Isomap algorithm.
- * The description is given in
+/** @brief the class Isomap used to preprocess data using K-Isomap algorithm
+ * as described in
  * 
  * Silva, V. D., & Tenenbaum, J. B. (2003). 
  * Global versus local methods in nonlinear dimensionality reduction. 
@@ -36,7 +36,8 @@ class CDistance;
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.9.3407&rep=rep1&type=pdf
  *
  * Shortest paths are being computed with Dijkstra's algorithm with heap
- * in parallel. Due to sparsity of kNN graph Fibonacci Heap is used. 
+ * in parallel. Due to sparsity of the kNN graph Fibonacci Heap with
+ * amortized O(1) Extract-Min operation time complexity is used.
  */
 class CIsomap: public CMultidimensionalScaling
 {

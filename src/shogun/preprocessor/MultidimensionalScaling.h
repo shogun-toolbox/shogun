@@ -22,11 +22,11 @@ class CFeatures;
 
 class CDistance;
 
-/** @brief the class Multidimensionalscaling used to perform
+/** @brief the class Multidimensionalscaling is used to perform
  * multidimensional scaling (capable of landmark approximation
  * if requested).
  *
- * Description of classical embedding is given at p.261 (Section 12.1) of
+ * Description of classical embedding is given on p.261 (Section 12.1) of
  * Borg, I., & Groenen, P. J. F. (2005).
  * Modern multidimensional scaling: Theory and applications. Springer.
  *
@@ -35,8 +35,8 @@ class CDistance;
  * Sparse multidimensional scaling using landmark points
  * V De Silva, J B Tenenbaum (2004) Technology, p. 1-4
  * 
- * In this preprocessor LAPACK routine DSYEVR is used for
- * solving eigenproblem. If ARPACK library is available,
+ * In this preprocessor the LAPACK routine DSYEVR is used for
+ * solving an eigenproblem. If ARPACK library is available,
  * its routines DSAUPD/DSEUPD are used instead.
  *
  * Note that target dimension should be set with reasonable value

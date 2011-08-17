@@ -27,19 +27,21 @@ class CDistance;
  *
  * Saul, L. K., Ave, P., Park, F., & Roweis, S. T. (2001).
  * An Introduction to Locally Linear Embedding. Available from, 290(5500), 2323-2326.
+ * Retrieved from:
+ * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7319&rep=rep1&type=pdf
  *
  * The process of finding nearest neighbors involves Fibonacci Heap 
- * and Euclidian distance. Note it is not parallel still.
+ * and Euclidian distance. Note: it is still not parallel.
  *
  * Linear reconstruction step runs in parallel for objects and 
- * involves LAPACK routine DPOSV for solving system of linear equations.
+ * involves LAPACK routine DPOSV for solving a system of linear equations.
  *
- * Eigenproblem stated in the algorithm is solved with LAPACK routine 
+ * The eigenproblem stated in the algorithm is solved with LAPACK routine 
  * DSYEVR or with ARPACK DSAUPD/DSEUPD routines if available.
  *
- * Due to computation speed in case of ARPACK is being used small 
- * regularization and Cholesky factorization is used internally 
- * for Lanzcos iterations. In case of results aren't reasonable
+ * Due to computation speed, ARPACK is being used with small 
+ * regularization of weight matrix and Cholesky factorization is used
+ * internally for Lanzcos iterations. If the results aren't reasonable
  * LUP factorization could be used with posdef parameter set to 
  * false using set_posdef.
  *

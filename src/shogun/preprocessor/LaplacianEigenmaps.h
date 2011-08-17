@@ -23,24 +23,24 @@ class CFeatures;
 class CDistance;
 
 /** @brief the class LaplacianEigenmaps used to preprocess
- * data using Laplacian Eigenmaps algorithm described in
+ * data using Laplacian Eigenmaps algorithm as described in:
  *
  * Belkin, M., & Niyogi, P. (2002). 
  * Laplacian Eigenmaps and Spectral Techniques for Embedding and Clustering. 
  * Science, 14, 585-591. MIT Press. 
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.19.9400&rep=rep1&type=pdf
  *
- * Note that algorithm is very sensitive to heat distribution coefficient and number
- * of neighbors for nearest neighbor graph. With no connectivity check is provided
- * preprocessor can produce not really reasonable embeddings if K value makes graph
- * not connected.
+ * Note that the algorithm is very sensitive to the heat distribution coefficient
+ * and number of neighbors in the nearest neighbor graph. No connectivity check
+ * is provided, so the preprocessor will not produce reasonable embeddings if the k value
+ * makes a graph that is not connected. 
  *
  * This implementation is not parallel due to performance issues. Generalized 
- * eigenproblem is the bottleneck of this algorithm.
+ * eigenproblem is the bottleneck for this algorithm.
  *
  * Solving of generalized eigenproblem involves LAPACK DSYGVX routine
  * and requires extra memory for right-hand side matrix storage. 
- * If ARPACK is available DSAUPD/DSEUPD is used with no extra 
+ * If ARPACK is available then DSAUPD/DSEUPD is used with no extra 
  * memory usage. 
  *
  */
