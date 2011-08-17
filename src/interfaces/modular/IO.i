@@ -15,6 +15,8 @@
 %rename(StreamingFile) CStreamingFile;
 %rename(AsciiFile) CAsciiFile;
 %rename(StreamingAsciiFile) CStreamingAsciiFile;
+%rename(StreamingVwFile) CStreamingVwFile;
+%rename(StreamingVwCacheFile) CStreamingVwCacheFile;
 %rename(StreamingFileFromFeatures) CStreamingFileFromFeatures;
 %rename(BinaryFile) CBinaryFile;
 %rename(HDF5File) CHDF5File;
@@ -66,9 +68,10 @@ namespace shogun
     %template(StreamingFileFromLongRealFeatures) CStreamingFileFromSimpleFeatures<floatmax_t>;
 }
 
-
 %include <shogun/io/AsciiFile.h>
 %include <shogun/io/StreamingAsciiFile.h>
+%include <shogun/io/StreamingVwFile.h>
+%include <shogun/io/StreamingVwCacheFile.h>
 %include <shogun/io/BinaryFile.h>
 %include <shogun/io/HDF5File.h>
 %include <shogun/io/SerializableFile.h>

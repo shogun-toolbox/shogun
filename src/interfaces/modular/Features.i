@@ -25,6 +25,7 @@
 %rename(StreamingFeatures) CStreamingFeatures;
 %rename(DotFeatures) CDotFeatures;
 %rename(StreamingDotFeatures) CStreamingDotFeatures;
+%rename(StreamingVwFeatures) CStreamingVwFeatures;
 %rename(DummyFeatures) CDummyFeatures;
 %rename(AttributeFeatures) CAttributeFeatures;
 %rename(Alphabet) CAlphabet;
@@ -48,9 +49,10 @@
 %include <shogun/features/FeatureTypes.h>
 %include <shogun/lib/Compressor.h>
 %include <shogun/features/Features.h>
-%include <shogun/features/StreamingFeatures.h>
 %include <shogun/features/DotFeatures.h>
+%include <shogun/features/StreamingFeatures.h>
 %include <shogun/features/StreamingDotFeatures.h>
+%include <shogun/features/StreamingVwFeatures.h>
 
 /* Templated Class StringFeatures */
 %include <shogun/features/StringFeatures.h>
@@ -145,7 +147,7 @@ namespace shogun
 /* Templated Class StreamingSimpleFeatures */
 %include <shogun/features/StreamingSimpleFeatures.h>
 namespace shogun
-{
+ {
     %template(StreamingBoolFeatures) CStreamingSimpleFeatures<bool>;
     %template(StreamingCharFeatures) CStreamingSimpleFeatures<char>;
     %template(StreamingByteFeatures) CStreamingSimpleFeatures<uint8_t>;

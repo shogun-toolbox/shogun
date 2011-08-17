@@ -58,9 +58,10 @@ public:
 		virtual bool train(CFeatures* data=NULL);
 
 		/**
-		 * Set constant Cn
+		 * Set C1 and C2 constants
 		 *
-		 * @param Cn_ new Cn value
+		 * @param c_neg C1 value
+		 * @param c_pos C2 value
 		 */
 		virtual void set_C(float64_t c_neg, float64_t c_pos) { C1=c_neg; C2=c_pos; }
 
