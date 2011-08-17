@@ -9,6 +9,8 @@
 #include <shogun/io/StreamingFileFromSimpleFeatures.h>
 #include <shogun/io/AsciiFile.h>
 #include <shogun/io/StreamingAsciiFile.h>
+#include <shogun/io/StreamingVwFile.h>
+#include <shogun/io/StreamingVwCacheFile.h>
 #include <shogun/io/BinaryFile.h>
 #include <shogun/io/HDF5File.h>
 #include <shogun/io/SerializableFile.h>

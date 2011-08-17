@@ -46,7 +46,6 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @param C constant C
 		 * @param traindat training features
-		 * @param trainlab labels for training features
 		 */
 		COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat);
 
