@@ -6139,13 +6139,13 @@ bool CSGInterface::cmd_set_plif_struct()
 	int32_t M = Mlimits; 	
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 	pm->create_plifs(N, M);
-	pm->set_plif_ids(ids, N);
-	pm->set_plif_min_values(min_values, N);
-	pm->set_plif_max_values(max_values, N);
-	pm->set_plif_use_cache(all_use_cache, N);
-	pm->set_plif_use_svm(all_use_svm, N);
-	pm->set_plif_limits(all_limits, N, M);
-	pm->set_plif_penalties(all_penalties, N, M);
+	pm->set_plif_ids(SGVector<int32_t>(ids, N));
+	pm->set_plif_min_values(SGVector<float64_t>(min_values, N));
+	pm->set_plif_max_values(SGVector<float64_t>(max_values, N));
+	pm->set_plif_use_cache(SGVector<bool>(all_use_cache, N));
+	pm->set_plif_use_svm(SGVector<int32_t>(all_use_svm, N));
+	pm->set_plif_limits(SGMatrix<float64_t>(all_limits, N, M));
+	pm->set_plif_penalties(SGMatrix<float64_t>(all_penalties, N, M));
 	pm->set_plif_names(names, N);
 	pm->set_plif_transform_type(all_transform, N);
 
@@ -6302,7 +6302,7 @@ bool CSGInterface::cmd_set_model()
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
 
-	if (!pm->compute_plif_matrix(penalties_array, Dim, numDim))
+	if (!pm->compute_plif_matrix(SGNDArray<float64_t>(penalties_array, Dim, numDim)))
 		SG_ERROR("error computing plif  matrix\n");
 	ui_structure->set_num_states(Dim[0]);
 	SG_FREE(penalties_array);
@@ -6385,8 +6385,8 @@ bool CSGInterface::cmd_precompute_content_svms()
 	//float64_t* weights = ui_structure->get_content_svm_weights();
 	//int32_t Mweights = h->get_num_svms();
 	//int32_t Nweights = ui_structure->get_num_svm_weights();
-	h->set_pos(all_pos, Npos);
-	h->set_gene_string(seq, seq_len);
+	h->set_pos(SGVector<int32_t>(all_pos, Npos));
+	h->set_gene_string(SGVector<char>(seq, seq_len));
 	SG_FREE(seq);
 	h->create_word_string();
 	h->precompute_stop_codons();
@@ -6446,8 +6446,8 @@ bool CSGInterface::cmd_set_lin_feat()
 	if (!h)
 		SG_ERROR("no DynProg object found, use set_model first\n");
 
-	h->set_pos(all_pos, Npos);
-	h->set_gene_string(seq, Nseq);
+	h->set_pos(SGVector<int32_t>(all_pos, Npos));
+	h->set_gene_string(SGVector<char>(seq, Nseq));
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms);
 	h->set_lin_feat(lin_feat, num_svms, seq_len);

@@ -212,7 +212,7 @@ public:
 	 * @param pos the position
 	 * @param seq_len length of sequence
 	 */
-	void set_pos(int32_t* pos, int32_t seq_len);
+	void set_pos(SGVector<int32_t> pos);
 
 	/** set best path orf info
 	 * only for compute_nbest_paths
@@ -228,7 +228,7 @@ public:
 	 * @param genestr gene string
 	 * @param genestr_len length of gene string
 	 */
-	void set_gene_string(char* genestr, int32_t genestr_len);
+	void set_gene_string(SGVector<char> genestr);
 
 
 	/** set best path dict weights

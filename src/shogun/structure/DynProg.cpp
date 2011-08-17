@@ -719,13 +719,10 @@ void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t
 	}
 }
 
-void CDynProg::set_pos(int32_t* pos, int32_t seq_len)  
+void CDynProg::set_pos(SGVector<int32_t> pos)
 {
-	//if (seq_len!=m_observation_matrix.get_dim2())
-	//	SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_observation_matrix.get_dim2()) ;
-	
-	m_pos.set_array(pos, seq_len, true, true) ;
-	m_seq_len = seq_len;
+	m_pos.set_array(pos.vector, pos.vlen, true, true) ;
+	m_seq_len = pos.vlen;
 }
 
 void CDynProg::set_orf_info(int32_t* orf_info, int32_t m, int32_t n) 
@@ -760,12 +757,12 @@ void CDynProg::set_plif_matrices(CPlifMatrix* pm)
 	SG_REF(m_plif_matrices);
 }
 
-void CDynProg::set_gene_string(char* genestr, int32_t genestr_len)
+void CDynProg::set_gene_string(SGVector<char> genestr)
 {
-	ASSERT(genestr);
-	ASSERT(genestr_len>0);
+	ASSERT(genestr.vector);
+	ASSERT(genestr.vlen>0);
 
-	m_genestr.set_array(genestr, genestr_len, true, true) ;
+	m_genestr.set_array(genestr.vector, genestr.vlen, true, true) ;
 }
 
 void CDynProg::set_my_state_seq(int32_t* my_state_seq)

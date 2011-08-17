@@ -88,35 +88,35 @@ class CPlifMatrix: public CSGObject
 		 * @param ids plif ids
 		 * @param num_ids number of ids
 		 */
-		void set_plif_ids(int32_t* ids, int32_t num_ids);
+		void set_plif_ids(SGVector<int32_t> ids);
 
 		/** set array of min values for all plifs
 		 * 
 		 * @param min_values array of min values
 		 * @param num_values length of array
 		 */
-		void set_plif_min_values(float64_t* min_values, int32_t num_values);
+		void set_plif_min_values(SGVector<float64_t> min_values);
 
 		/** set array of max values for all plifs
 		 * 
 		 * @param max_values array of max values
 		 * @param num_values length of array
 		 */
-		void set_plif_max_values(float64_t* max_values, int32_t num_values);
+		void set_plif_max_values(SGVector<float64_t> max_values);
 
 		/** set plif use cache
 		 * 
 		 * @param use_cache set array of bool values 
 		 * @param num_values length of array
 		 */
-		void set_plif_use_cache(bool* use_cache, int32_t num_values);
+		void set_plif_use_cache(SGVector<bool> use_cache);
 
 		/** set plif use svm
 		 * 
 		 * @param use_svm use svm
 		 * @param num_values length of array
 		 */
-		void set_plif_use_svm(int32_t* use_svm, int32_t num_values);
+		void set_plif_use_svm(SGVector<int32_t> use_svm);
 
 		/** set all abscissa values of the support points for the 
 		 *  for the pice wise linear transformations (PLiFs)
@@ -125,7 +125,7 @@ class CPlifMatrix: public CSGObject
 		 * @param num_plifs number of plifs
 		 * @param num_limits number of support vectors
 		 */
-		void set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t num_limits);
+		void set_plif_limits(SGMatrix<float64_t> limits);
 
 		/** set all ordinate values of the support points for the
 		 *  for the pice wise linear transformations (PLiFs)
@@ -134,7 +134,7 @@ class CPlifMatrix: public CSGObject
 		 * @param num_plifs number of plifs
 		 * @param num_limits number of support vectors
 		 */
-		void set_plif_penalties(float64_t* penalties, int32_t num_plifs, int32_t num_limits);
+		void set_plif_penalties(SGMatrix<float64_t> penalties);
 
 		/** set names for the PLiFs
 		 * 
@@ -177,8 +177,7 @@ class CPlifMatrix: public CSGObject
 		 * @param numDims number of dimensions
 		 * @return success
 		 */
-		bool compute_plif_matrix(
-				float64_t* penalties_array, int32_t* Dim, int32_t numDims);
+		bool compute_plif_matrix(SGNDArray<float64_t> penalties_array);
 
 		/** parse an 3D array of plif ids and compute the corresponding 
 		 *  3D plif array; 

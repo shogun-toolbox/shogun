@@ -38,13 +38,13 @@ void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 		m_PEN[i]=new CPlif(num_limits) ;
 }
 
-void CPlifMatrix::set_plif_ids(int32_t* plif_ids, int32_t num_ids)
+void CPlifMatrix::set_plif_ids(SGVector<int32_t> plif_ids)
 {
-	if (num_ids!=m_num_plifs)
-		SG_ERROR("plif_ids size mismatch (num_ids=%d vs.num_plifs=%d)\n", num_ids, m_num_plifs);
+	if (plif_ids.vlen!=m_num_plifs)
+		SG_ERROR("plif_ids size mismatch (num_ids=%d vs.num_plifs=%d)\n", plif_ids.vlen, m_num_plifs);
 
 	m_ids.resize_array(m_num_plifs);
-	m_ids.set_array(plif_ids, num_ids, true, true);
+	m_ids.set_array(plif_ids.vector, plif_ids.vlen, true, true);
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
@@ -53,68 +53,67 @@ void CPlifMatrix::set_plif_ids(int32_t* plif_ids, int32_t num_ids)
 	}
 }
 
-void CPlifMatrix::set_plif_min_values(float64_t* min_values, int32_t num_values)
+void CPlifMatrix::set_plif_min_values(SGVector<float64_t> min_values)
 {
-	if (num_values!=m_num_plifs)
-		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs);
+	if (min_values.vlen!=m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", min_values.vlen, m_num_plifs);
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_min_value(min_values[i]);
+		m_PEN[id]->set_min_value(min_values.vector[i]);
 	}
 }
 
-void CPlifMatrix::set_plif_max_values(float64_t* max_values, int32_t num_values)
+void CPlifMatrix::set_plif_max_values(SGVector<float64_t> max_values)
 {
-	if (num_values!=m_num_plifs)
-		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs);
+	if (max_values.vlen!=m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", max_values.vlen, m_num_plifs);
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_max_value(max_values[i]);
+		m_PEN[id]->set_max_value(max_values.vector[i]);
 	}
 }
 
-void CPlifMatrix::set_plif_use_cache(bool* use_cache, int32_t num_values)
+void CPlifMatrix::set_plif_use_cache(SGVector<bool> use_cache)
 {
-	if (num_values!=m_num_plifs)
-		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs);
+	if (use_cache.vlen!=m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", use_cache.vlen, m_num_plifs);
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_use_cache(use_cache[i]);
+		m_PEN[id]->set_use_cache(use_cache.vector[i]);
 	}
 }
 
-void CPlifMatrix::set_plif_use_svm(int32_t* use_svm, int32_t num_values)
+void CPlifMatrix::set_plif_use_svm(SGVector<int32_t> use_svm)
 {
-	if (num_values!=m_num_plifs)
-		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs);
+	if (use_svm.vlen!=m_num_plifs)
+		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", use_svm.vlen, m_num_plifs);
 
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_use_svm(use_svm[i]);
+		m_PEN[id]->set_use_svm(use_svm.vector[i]);
 	}
 }
 
-void CPlifMatrix::set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t num_limits)
+void CPlifMatrix::set_plif_limits(SGMatrix<float64_t> limits)
 {
-	if (num_plifs!=m_num_plifs ||  num_limits!=m_num_limits)
+	if (limits.num_rows!=m_num_plifs ||  limits.num_cols!=m_num_limits)
 	{
 		SG_ERROR("limits size mismatch expected (%d,%d) got (%d,%d)\n",
-				m_num_plifs, m_num_limits, num_plifs, num_limits);
+				m_num_plifs, m_num_limits, limits.num_rows, limits.num_cols);
 	}
 
 	float64_t* lim = SG_MALLOC(float64_t, m_num_limits);
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
-
 		for (int32_t k=0; k<m_num_limits; k++)
-			lim[k] = limits[i*m_num_limits+k];
+			lim[k] = limits.matrix[i*m_num_limits+k];
 
 		int32_t id=get_plif_id(i);
 		m_PEN[id]->set_plif_limits(lim, m_num_limits);
@@ -122,12 +121,12 @@ void CPlifMatrix::set_plif_limits(float64_t* limits, int32_t num_plifs, int32_t 
 	SG_FREE(lim);
 }
 
-void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, int32_t num_limits)
+void CPlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
 {
-	if (num_plifs!=m_num_plifs ||  num_limits!=m_num_limits)
+	if (penalties.num_rows!=m_num_plifs ||  penalties.num_cols!=m_num_limits)
 	{
 		SG_ERROR("penalties size mismatch expected (%d,%d) got (%d,%d)\n",
-				m_num_plifs, m_num_limits, num_plifs, num_limits);
+				m_num_plifs, m_num_limits, penalties.num_rows, penalties.num_cols);
 	}
 
 	float64_t* pen = SG_MALLOC(float64_t, m_num_limits);
@@ -135,7 +134,7 @@ void CPlifMatrix::set_plif_penalties(float64_t* penalties, int32_t num_plifs, in
 	{
 
 		for (int32_t k=0; k<m_num_limits; k++)
-			pen[k] = penalties[i*m_num_limits+k];
+			pen[k] = penalties.matrix[i*m_num_limits+k];
 
 		int32_t id=get_plif_id(i);
 		m_PEN[id]->set_plif_penalty(pen, m_num_limits);
@@ -180,11 +179,10 @@ void CPlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_
 }
 
 
-bool CPlifMatrix::compute_plif_matrix(
-	float64_t* penalties_array, int32_t* Dim, int32_t numDims)
+bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 {
 	CPlif** PEN = get_PEN();
-	int32_t num_states = Dim[0];
+	int32_t num_states = penalties_array.dims[0];
 	int32_t num_plifs = get_num_plifs();
 
 	for (int32_t i=0; i<m_num_states*m_num_states; i++)
@@ -194,7 +192,7 @@ bool CPlifMatrix::compute_plif_matrix(
 	m_num_states = num_states;
 	m_plif_matrix = SG_MALLOC(CPlifBase*, num_states*num_states);
 
-	CArray3<float64_t> penalties(penalties_array, num_states, num_states, Dim[2], true, true) ;
+	CArray3<float64_t> penalties(penalties_array.array, num_states, num_states, penalties_array.dims[2], true, true) ;
 
 	for (int32_t i=0; i<num_states; i++)
 	{
@@ -202,7 +200,7 @@ bool CPlifMatrix::compute_plif_matrix(
 		{
 			CPlifArray * plif_array = NULL;
 			CPlif * plif = NULL ;
-			for (int32_t k=0; k<Dim[2]; k++)
+			for (int32_t k=0; k<penalties_array.dims[2]; k++)
 			{
 				if (penalties.element(i,j,k)==0)
 					continue ;
