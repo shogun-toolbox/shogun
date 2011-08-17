@@ -315,8 +315,8 @@ TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
 
 %typemap(in) shogun::SGNDArray<type>
 {
-    (PyObject* array=NULL, int is_new_object, int32_t* temp_dims=NULL)
-    array = make_contiguous($input, &is_new_object, -1,typecode, true);
+    int is_new_object;
+    PyObject* array = make_contiguous($input, &is_new_object, -1,typecode, true);
     if (!array)
         SWIG_fail;
 
@@ -324,14 +324,14 @@ TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
     if (ndim <= 0)
       SWIG_fail;
 
-    temp_dims = SG_MALLOC(int32_t, ndim);
+    int32_t* temp_dims = SG_MALLOC(int32_t, ndim);
 
     npy_intp* py_dims = PyArray_DIMS(array);
 
     for (int32_t i=0; i<ndim; i++)
       temp_dims[i] = py_dims[i];
     
-    $1 = SGNDArray((type*) PyArray_BYTES(array), temp_dims, ndim);
+    $1 = SGNDArray<type>((type*) PyArray_BYTES(array), temp_dims, ndim);
 
     ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
     Py_DECREF(array);
