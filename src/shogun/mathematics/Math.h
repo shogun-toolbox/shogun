@@ -1575,7 +1575,7 @@ class CMath : public CSGObject
 						for (register int32_t j=0; j < len>>1; j++)
 							pp[j]=logarithmic_sum(pp[j<<1], pp[1+(j<<1)]) ;
 					}
-					return logarithmic_sum_array(p,len%2+len>>1) ;
+					return logarithmic_sum_array(p,len%2 + (len>>1)) ;
 				} 
 #endif //USE_LOGSUMARRAY
 				//@}
