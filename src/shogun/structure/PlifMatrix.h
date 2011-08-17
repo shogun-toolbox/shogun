@@ -187,10 +187,7 @@ class CPlifMatrix: public CSGObject
 		 * @param num_states number of states
 		 * @return success
 		 */
-		bool compute_signal_plifs(
-				int32_t* state_signals, int32_t feat_dim3, int32_t num_states);
-
-
+		bool compute_signal_plifs(SGMatrix<int32_t> state_signals);
 
 		/** set best path plif state signal matrix
 		 *

@@ -444,47 +444,48 @@ void CDynProg::precompute_content_values()
 	//SG_FREE(m_wordstr[0]);
 }
 
-void CDynProg::set_p_vector(float64_t *p, int32_t N)
+void CDynProg::set_p_vector(SGVector<float64_t> p)
 {
-	if (!(N==m_N))
-		SG_ERROR("length of start prob vector p (%i) is not equal to the number of states (%i), N: %i\n",N, m_N);
+	if (!(p.vlen==m_N))
+		SG_ERROR("length of start prob vector p (%i) is not equal to the number of states (%i), N: %i\n",p.vlen, m_N);
 
-	m_initial_state_distribution_p.set_array(p, N, true, true);
+	m_initial_state_distribution_p.set_array(p.vector, p.vlen, true, true);
 }
 
-void CDynProg::set_q_vector(float64_t *q, int32_t N)
+void CDynProg::set_q_vector(SGVector<float64_t> q)
 {
-	if (!(N==m_N))
-		SG_ERROR("length of end prob vector q (%i) is not equal to the number of states (%i), N: %i\n",N, m_N);
-	m_end_state_distribution_q.set_array(q, N, true, true);
+	if (!(q.vlen==m_N))
+		SG_ERROR("length of end prob vector q (%i) is not equal to the number of states (%i), N: %i\n",q.vlen, m_N);
+	m_end_state_distribution_q.set_array(q.vector, q.vlen, true, true);
 }
 
-void CDynProg::set_a(float64_t *a, int32_t M, int32_t N)
+void CDynProg::set_a(SGMatrix<float64_t> a)
 {
-	ASSERT(N==m_N);
-	ASSERT(M==N);
-	m_transition_matrix_a.set_array(a, N, N, true, true);
-	m_transition_matrix_a_deriv.resize_array(N, N);
+	ASSERT(a.num_cols==m_N);
+	ASSERT(a.num_rows==m_N);
+	m_transition_matrix_a.set_array(a.matrix, m_N, m_N, true, true);
+	m_transition_matrix_a_deriv.resize_array(m_N, m_N);
 }
 
-void CDynProg::set_a_id(int32_t *a, int32_t M, int32_t N)
+void CDynProg::set_a_id(SGMatrix<int32_t> a)
 {
-	ASSERT(N==m_N);
-	ASSERT(M==N);
-	m_transition_matrix_a_id.set_array(a, N, N, true, true);
+	ASSERT(a.num_cols==m_N);
+	ASSERT(a.num_rows==m_N);
+	m_transition_matrix_a_id.set_array(a.matrix, m_N, m_N, true, true);
 	m_max_a_id = 0;
-	for (int32_t i=0; i<N; i++)
+	for (int32_t i=0; i<m_N; i++)
 	{
-		for (int32_t j=0; j<N; j++)
+		for (int32_t j=0; j<m_N; j++)
 			m_max_a_id=CMath::max(m_max_a_id, m_transition_matrix_a_id.element(i,j));
 	}
 }
 
-void CDynProg::set_a_trans_matrix(
-	float64_t *a_trans, int32_t num_trans, int32_t num_cols)
+void CDynProg::set_a_trans_matrix(SGMatrix<float64_t> a_trans)
 {
+	int32_t num_trans=a_trans.num_rows;
+	int32_t num_cols=a_trans.num_cols;
 
-	//CMath::display_matrix(a_trans,num_trans, num_cols,"a_trans");
+	//CMath::display_matrix(a_trans.matrix,num_trans, num_cols,"a_trans");
 
 	if (!((num_cols==3) || (num_cols==4)))
 		SG_ERROR("!((num_cols==3) || (num_cols==4)), num_cols: %i\n",num_cols);
@@ -516,16 +517,16 @@ void CDynProg::set_a_trans_matrix(
 	{
 		int32_t old_start_idx=start_idx;
 
-		while (start_idx<num_trans && a_trans[start_idx+num_trans]==j)
+		while (start_idx<num_trans && a_trans.matrix[start_idx+num_trans]==j)
 		{
 			start_idx++;
 			
 			if (start_idx>1 && start_idx<num_trans)
-				ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
+				ASSERT(a_trans.matrix[start_idx+num_trans-1] <= a_trans.matrix[start_idx+num_trans]);
 		}
 		
 		if (start_idx>1 && start_idx<num_trans)
-			ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
+			ASSERT(a_trans.matrix[start_idx+num_trans-1] <= a_trans.matrix[start_idx+num_trans]);
 		
 		int32_t len=start_idx-old_start_idx;
 		ASSERT(len>=0);
@@ -548,12 +549,12 @@ void CDynProg::set_a_trans_matrix(
 	
 	for (int32_t i=0; i<num_trans; i++)
 	{
-		int32_t from_state   = (int32_t)a_trans[i] ;
-		int32_t to_state = (int32_t)a_trans[i+num_trans] ;
-		float64_t val = a_trans[i+num_trans*2] ;
+		int32_t from_state   = (int32_t)a_trans.matrix[i] ;
+		int32_t to_state = (int32_t)a_trans.matrix[i+num_trans] ;
+		float64_t val = a_trans.matrix[i+num_trans*2] ;
 		int32_t id = 0 ;
 		if (num_cols==4)
-			id = (int32_t)a_trans[i+num_trans*3] ;
+			id = (int32_t)a_trans.matrix[i+num_trans*3] ;
 		//SG_DEBUG( "id=%i\n", id) ;
 			
 		ASSERT(to_state>=0 && to_state<m_N);
@@ -580,25 +581,24 @@ void CDynProg::set_a_trans_matrix(
 }
 
 
-void CDynProg::init_mod_words_array(
-	int32_t * mod_words_input, int32_t num_elem, int32_t num_columns)
+void CDynProg::init_mod_words_array(SGMatrix<int32_t> mod_words_input)
 {
-	//for (int32_t i=0; i<num_columns; i++)
+	//for (int32_t i=0; i<mod_words_input.num_cols; i++)
 	//{
-	//	for (int32_t j=0; j<num_elem; j++)
-	//		SG_PRINT("%i ",mod_words_input[i*num_elem+j]);
+	//	for (int32_t j=0; j<mod_words_input.num_rows; j++)
+	//		SG_PRINT("%i ",mod_words_input[i*mod_words_input.num_rows+j]);
 	//	SG_PRINT("\n");
 	//}
 	m_svm_arrays_clean=false ;
 
-	ASSERT(m_num_svms==num_elem);
-	ASSERT(num_columns==2);
+	ASSERT(m_num_svms==mod_words_input.num_rows);
+	ASSERT(mod_words_input.num_cols==2);
 
-	m_mod_words.set_array(mod_words_input, num_elem, 2, true, true) ;
+	m_mod_words.set_array(mod_words_input.matrix, mod_words_input.num_rows, 2, true, true) ;
 	m_mod_words_array = m_mod_words.get_array() ;
 	
 	/*SG_DEBUG( "m_mod_words=[") ;
-	for (int32_t i=0; i<num_elem; i++)
+	for (int32_t i=0; i<mod_words_input.num_rows; i++)
 		SG_DEBUG( "%i, ", p_mod_words_array[i]) ;
 		SG_DEBUG( "]\n") ;*/
 } 
@@ -659,14 +659,14 @@ bool CDynProg::check_svm_arrays()
 	}
 }
 
-void CDynProg::set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndims)
+void CDynProg::set_observation_matrix(SGNDArray<float64_t> seq)
 {
-	if (ndims!=3)
+	if (seq.num_dims!=3)
 		SG_ERROR("Expected 3-dimensional Matrix\n");
 
-	int32_t N=dims[0];
-	int32_t cand_pos=dims[1];
-	int32_t max_num_features=dims[2];
+	int32_t N=seq.dims[0];
+	int32_t cand_pos=seq.dims[1];
+	int32_t max_num_features=seq.dims[2];
 
 	if (!m_svm_arrays_clean)
 	{
@@ -679,26 +679,26 @@ void CDynProg::set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndi
 	ASSERT(m_initial_state_distribution_p.get_dim1()==N);
 	ASSERT(m_end_state_distribution_q.get_dim1()==N);
 	
-	m_observation_matrix.set_array(seq, N, m_seq_len, max_num_features, true, true) ;
+	m_observation_matrix.set_array(seq.array, N, m_seq_len, max_num_features, true, true) ;
 }
 int32_t CDynProg::get_num_positions()
 {
 	return m_seq_len;
 }
 
-void CDynProg::set_content_type_array(float64_t* seg_path, int32_t rows, int32_t cols)
+void CDynProg::set_content_type_array(SGMatrix<float64_t> seg_path)
 {
-	ASSERT(rows==2);
-	ASSERT(cols==m_seq_len);
+	ASSERT(seg_path.num_rows==2);
+	ASSERT(seg_path.num_cols==m_seq_len);
 
-	if (seg_path!=NULL)
+	if (seg_path.matrix!=NULL)
 	{
 		int32_t *segment_ids = SG_MALLOC(int32_t, m_seq_len);
 		float64_t *segment_mask = SG_MALLOC(float64_t, m_seq_len);
 		for (int32_t i=0; i<m_seq_len; i++)
 		{
-		        segment_ids[i] = (int32_t)seg_path[2*i] ;
-		        segment_mask[i] = seg_path[2*i+1] ;
+		        segment_ids[i] = (int32_t)seg_path.matrix[2*i] ;
+		        segment_mask[i] = seg_path.matrix[2*i+1] ;
 		}
 		best_path_set_segment_ids_mask(segment_ids, segment_mask, m_seq_len) ;
 		SG_FREE(segment_ids);
@@ -725,12 +725,12 @@ void CDynProg::set_pos(SGVector<int32_t> pos)
 	m_seq_len = pos.vlen;
 }
 
-void CDynProg::set_orf_info(int32_t* orf_info, int32_t m, int32_t n) 
+void CDynProg::set_orf_info(SGMatrix<int32_t> orf_info)
 {
-	if (n!=2)
-		SG_ERROR( "orf_info size incorrect %i!=2\n", n) ;
+	if (orf_info.num_cols!=2)
+		SG_ERROR( "orf_info size incorrect %i!=2\n", orf_info.num_cols) ;
 
-	m_orf_info.set_array(orf_info, m, n, true, true) ;
+	m_orf_info.set_array(orf_info.matrix, orf_info.num_rows, orf_info.num_cols, true, true) ;
 	m_orf_info.set_array_name("orf_info") ;
 }
 
@@ -781,13 +781,15 @@ void CDynProg::set_my_pos_seq(int32_t* my_pos_seq)
 		m_my_pos_seq[i]=my_pos_seq[i];
 }
 
-void CDynProg::set_dict_weights(
-	float64_t* dictionary_weights, int32_t dict_len, int32_t n)
+void CDynProg::set_dict_weights(SGMatrix<float64_t> dictionary_weights)
 {
-	if (m_num_svms!=n)
-		SG_ERROR( "m_dict_weights array does not match num_svms=%i!=%i\n", m_num_svms, n) ;
+	if (m_num_svms!=dictionary_weights.num_cols)
+	{
+		SG_ERROR( "m_dict_weights array does not match num_svms=%i!=%i\n",
+				m_num_svms, dictionary_weights.num_cols) ;
+	}
 
-	m_dict_weights.set_array(dictionary_weights, dict_len, m_num_svms, true, true) ;
+	m_dict_weights.set_array(dictionary_weights.matrix, dictionary_weights.num_rows, m_num_svms, true, true) ;
 
 	// initialize, so it does not bother when not used
 	m_segment_loss.resize_array(m_max_a_id+1, m_max_a_id+1, 2) ;
@@ -798,9 +800,10 @@ void CDynProg::set_dict_weights(
 	m_segment_mask.zero() ;
 }
 
-void CDynProg::best_path_set_segment_loss(
-	float64_t* segment_loss, int32_t m, int32_t n)
+void CDynProg::best_path_set_segment_loss(SGMatrix<float64_t> segment_loss)
 {
+	int32_t m=segment_loss.num_rows;
+	int32_t n=segment_loss.num_cols;
 	// here we need two matrices. Store it in one: 2N x N
 	if (2*m!=n)
 		SG_ERROR( "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
@@ -808,7 +811,7 @@ void CDynProg::best_path_set_segment_loss(
 	if (m!=m_max_a_id+1)
 		SG_ERROR( "segment_loss size should match m_max_a_id: %i!=%i\n", m, m_max_a_id+1) ;
 
-	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
+	m_segment_loss.set_array(segment_loss.matrix, m, n/2, 2, true, true) ;
 	/*for (int32_t i=0; i<n; i++)
 		for (int32_t j=0; j<n; j++)
 		SG_DEBUG( "loss(%i,%i)=%f\n", i,j, m_segment_loss.element(0,i,j)) ;*/

@@ -6321,7 +6321,7 @@ bool CSGInterface::cmd_set_model()
 	if (Nmod != num_svms)
 		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms);
 	ASSERT(Mmod == 2)
-	h->init_mod_words_array(mod_words, Nmod, Mmod) ;
+	h->init_mod_words_array(SGMatrix<int32_t>(mod_words, Nmod, Mmod));
 	SG_FREE(mod_words);
 
 	// ARG 4
@@ -6331,7 +6331,7 @@ bool CSGInterface::cmd_set_model()
 	int32_t* state_signals;
 	get_matrix(state_signals,num_states,feat_dim3);
 	ASSERT(num_states==Dim[0]);
-	pm->compute_signal_plifs(state_signals, feat_dim3, num_states);
+	pm->compute_signal_plifs(SGMatrix<int32_t>(state_signals, feat_dim3, num_states));
 	SG_FREE(state_signals);
 
 
@@ -6345,7 +6345,7 @@ bool CSGInterface::cmd_set_model()
 	ASSERT(Morf==2)
 
 	ui_structure->set_orf_info(orf_info, Norf, Morf);
-	h->set_orf_info(orf_info, Norf, Morf);
+	h->set_orf_info(SGMatrix<int32_t>(orf_info, Norf, Morf));
 	SG_FREE(orf_info);
 
 	h->set_num_states(num_states) ;
@@ -6391,7 +6391,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	h->create_word_string();
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms);
-	h->set_dict_weights(weights, Nweights, num_svms);
+	h->set_dict_weights(SGMatrix<float64_t>(weights, Nweights, num_svms));
 	SG_FREE(weights);
 	h->precompute_content_values();
 	SG_DEBUG("precompute_content_svms done\n");
@@ -6693,18 +6693,18 @@ bool CSGInterface::cmd_best_path_trans()
 	CPlif** PEN=pm->get_PEN();
 	ASSERT(PEN);
 	
-	h->set_p_vector(p, num_states);
+	h->set_p_vector(SGVector<float64_t>(p, num_states));
 	SG_FREE(p); p=NULL ;
-	h->set_q_vector(q, num_states);
+	h->set_q_vector(SGVector<float64_t>(q, num_states));
 	SG_FREE(q); q=NULL ;
 
 	if (seg_path!=NULL)
 	{
-		h->set_a_trans_matrix(a_trans, num_a_trans, Na_trans) ;
+		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, Na_trans)) ;
 	}
 	else
 	{
-		h->set_a_trans_matrix(a_trans, num_a_trans, 3) ; // segment_id = 0 
+		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ; // segment_id = 0 
 	}
 	SG_FREE(a_trans);
 	a_trans=NULL ;
@@ -6718,20 +6718,20 @@ bool CSGInterface::cmd_best_path_trans()
 	
 	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 	
-	h->set_observation_matrix(features, feat_dims, 3);
+	h->set_observation_matrix(SGNDArray<float64_t>(features, feat_dims, 3));
 
 	if (seg_path!=NULL)
 	{
-		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
+		h->best_path_set_segment_loss(SGMatrix<float64_t>(loss, Nloss, Mloss)) ;
 		seg_loss_obj->set_segment_loss(loss, Nloss, Mloss);
 	}
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
-		h->best_path_set_segment_loss(zero2, 2, 1) ;
+		h->best_path_set_segment_loss(SGMatrix<float64_t>(zero2, 2, 1)) ;
 		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
-	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
+	h->set_content_type_array(SGMatrix<float64_t>(seg_path,Nseg_path,Mseg_path));
 	SG_FREE(seg_path);
 	
 	bool segment_loss_non_zero=false;
@@ -6744,7 +6744,7 @@ bool CSGInterface::cmd_best_path_trans()
 	SG_FREE(loss);
 	loss=NULL;
 
-	h->set_orf_info(orf_info, num_states, 2);
+	h->set_orf_info(SGMatrix<int32_t>(orf_info, num_states, 2));
 	h->set_sparse_features(features_sparse1, features_sparse2);
 	h->set_plif_matrices(pm);
 
@@ -6888,13 +6888,13 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	CDynProg* h = ui_structure->get_dyn_prog();
 	CSegmentLoss* seg_loss_obj = h->get_segment_loss_object();
 	h->set_num_states(num_states) ;
-	h->set_p_vector(p, num_states) ;
-	h->set_q_vector(q, num_states) ;
+	h->set_p_vector(SGVector<float64_t>(p, num_states)) ;
+	h->set_q_vector(SGVector<float64_t>(q, num_states)) ;
 
 	if (seg_path!=NULL) 
-		h->set_a_trans_matrix(a_trans, num_a_trans, Na_trans) ;
+		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, Na_trans)) ;
 	else
-		h->set_a_trans_matrix(a_trans, num_a_trans, 3) ;
+		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ;
 
 	if (!h->check_svm_arrays())
 		SG_ERROR( "svm arrays inconsistent\n") ;
@@ -6904,7 +6904,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	int32_t *my_pos = SG_MALLOC(int32_t, Nmypos_seq+1);
 	memset(my_pos, -1, Nmypos_seq*sizeof(int32_t)) ;
 
-	h->set_observation_matrix(features, feat_dims, 3);
+	h->set_observation_matrix(SGNDArray<float64_t>(features, feat_dims, 3));
 	for (int32_t i=0; i<Nmypos_seq; i++)
 	{
 		my_path[i] = mystate_seq[i] ;
@@ -6913,16 +6913,16 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 	if (seg_path!=NULL)
 	{
-		h->best_path_set_segment_loss(loss, Nloss, Mloss) ;
+		h->best_path_set_segment_loss(SGMatrix<float64_t>(loss, Nloss, Mloss)) ;
 		seg_loss_obj->set_segment_loss(loss, Nloss, Mloss);
 	}
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
-		h->best_path_set_segment_loss(zero2, 2, 1) ;
+		h->best_path_set_segment_loss(SGMatrix<float64_t>(zero2, 2, 1)) ;
 		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
-	h->set_content_type_array(seg_path,Nseg_path,Mseg_path);
+	h->set_content_type_array(SGMatrix<float64_t>(seg_path,Nseg_path,Mseg_path));
 
 	float64_t* p_Plif_deriv = SG_MALLOC(float64_t, (max_plif_id+1)*max_plif_len);
 	CArray2<float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;

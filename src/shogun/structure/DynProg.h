@@ -130,14 +130,14 @@ public:
 	 * @param p new vector p
 	 * @param N size of vector p
 	 */
-	void set_p_vector(float64_t* p, int32_t N);
+	void set_p_vector(SGVector<float64_t> p);
 
 	/** set vector q
 	 *
 	 * @param q new vector q
 	 * @param N size of vector q
 	 */
-	void set_q_vector(float64_t* q, int32_t N);
+	void set_q_vector(SGVector<float64_t> q);
 	
 	/** set matrix a
 	 *
@@ -145,7 +145,7 @@ public:
 	 * @param M dimension M of matrix a
 	 * @param N dimension N of matrix a
 	 */
-	void set_a(float64_t* a, int32_t M, int32_t N);
+	void set_a(SGMatrix<float64_t> a);
 	
 	/** set a id
 	 *
@@ -153,7 +153,7 @@ public:
 	 * @param M dimension M of matrix a
 	 * @param N dimension N of matrix a
 	 */
-	void set_a_id(int32_t *a, int32_t M, int32_t N);
+	void set_a_id(SGMatrix<int32_t> a);
 	
 	/** set a transition matrix
 	 *
@@ -161,7 +161,7 @@ public:
 	 * @param num_trans number of transitions
 	 * @param N dimension N of matrix a
 	 */
-	void set_a_trans_matrix(float64_t *a_trans, int32_t num_trans, int32_t N);
+	void set_a_trans_matrix(SGMatrix<float64_t> a_trans);
 
 	/** init mod words array
 	 *
@@ -169,7 +169,7 @@ public:
 	 * @param num_elem number of array elements
 	 * @param num_columns number of columns
 	 */
-	void init_mod_words_array(int32_t * p_mod_words_array, int32_t num_elem, int32_t num_columns);
+	void init_mod_words_array(SGMatrix<int32_t> p_mod_words_array);
 
 	/** check SVM arrays
 	 * call this function to check consistency
@@ -184,7 +184,7 @@ public:
 	 * @param dims dimensions
 	 * @param ndims number of dimensions
 	 */
-	void set_observation_matrix(float64_t* seq, int32_t* dims, int32_t ndims);
+	void set_observation_matrix(SGNDArray<float64_t> seq);
 
 	/** get number of positions; the dynamic program is sparse encoded
 	 *  and this function gives the number of positions that can actually
@@ -205,7 +205,7 @@ public:
 	 * @param rows rows
 	 * @param cols cols
 	 */
-	void set_content_type_array(float64_t* seg_path, int32_t rows, int32_t cols);
+	void set_content_type_array(SGMatrix<float64_t> seg_path);
 
 	/** set best path pos
 	 *
@@ -221,7 +221,7 @@ public:
 	 * @param m dimension m
 	 * @param n dimension n
 	 */
-	void set_orf_info(int32_t* orf_info, int32_t m, int32_t n);
+	void set_orf_info(SGMatrix<int32_t> orf_info);
 
 	/** set best path genesstr
 	 *
@@ -237,7 +237,7 @@ public:
 	 * @param dict_len length of dictionary weights
 	 * @param n dimension n
 	 */
-	void set_dict_weights(float64_t* dictionary_weights, int32_t dict_len, int32_t n);
+	void set_dict_weights(SGMatrix<float64_t> dictionary_weights);
 
 	/** set best path segment loss
 	 *
@@ -245,7 +245,7 @@ public:
 	 * @param num_segment_id1 number of segment id1
 	 * @param num_segment_id2 number of segment id2
 	 */
-	void best_path_set_segment_loss(float64_t * segment_loss, int32_t num_segment_id1, int32_t num_segment_id2);
+	void best_path_set_segment_loss(SGMatrix<float64_t> segment_loss);
 
 	/** set best path segmend ids mask
 	 *

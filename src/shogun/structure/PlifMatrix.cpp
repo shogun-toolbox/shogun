@@ -242,19 +242,18 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 	return true;
 }
 
-bool  CPlifMatrix::compute_signal_plifs(
-	int32_t* state_signals, int32_t feat_dim3, int32_t num_states)
+bool  CPlifMatrix::compute_signal_plifs(SGMatrix<int32_t> state_signals)
 {
 	int32_t Nplif = get_num_plifs();
 	CPlif** PEN = get_PEN();
 
 	SG_FREE(m_state_signals);
-	m_feat_dim3 = feat_dim3;
+	m_feat_dim3 = state_signals.num_rows;
 
-	CPlifBase **PEN_state_signal = SG_MALLOC(CPlifBase*, feat_dim3*num_states);
-	for (int32_t i=0; i<num_states*feat_dim3; i++)
+	CPlifBase **PEN_state_signal = SG_MALLOC(CPlifBase*, state_signals.num_rows*state_signals.num_cols);
+	for (int32_t i=0; i<state_signals.num_cols*state_signals.num_rows; i++)
 	{
-		int32_t id = (int32_t) state_signals[i]-1 ;
+		int32_t id = (int32_t) state_signals.matrix[i]-1 ;
 		if ((id<0 || id>=Nplif) && (id!=-1))
 		{
 			SG_ERROR( "id out of range\n") ;
