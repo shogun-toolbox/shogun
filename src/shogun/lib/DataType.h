@@ -459,6 +459,7 @@ template <class T> class SGSparseMatrix
 enum EContainerType
 {
 	CT_SCALAR,
+	CT_SGVECTOR,
 	CT_VECTOR,
 	CT_MATRIX,
 	CT_NDARRAY
