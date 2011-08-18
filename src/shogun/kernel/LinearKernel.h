@@ -80,6 +80,9 @@ class CLinearKernel: public CDotKernel
 		virtual bool init_optimization(
 			int32_t num_suppvec, int32_t* sv_idx, float64_t* alphas);
 
+		/** init optimization
+		 * @param km
+		 */
 		virtual bool init_optimization(CKernelMachine* km);
 
 		/** delete optimization

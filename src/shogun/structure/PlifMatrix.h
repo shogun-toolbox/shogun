@@ -86,35 +86,30 @@ class CPlifMatrix: public CSGObject
 		/** set plif ids
 		 *
 		 * @param ids plif ids
-		 * @param num_ids number of ids
 		 */
 		void set_plif_ids(SGVector<int32_t> ids);
 
 		/** set array of min values for all plifs
 		 * 
 		 * @param min_values array of min values
-		 * @param num_values length of array
 		 */
 		void set_plif_min_values(SGVector<float64_t> min_values);
 
 		/** set array of max values for all plifs
 		 * 
 		 * @param max_values array of max values
-		 * @param num_values length of array
 		 */
 		void set_plif_max_values(SGVector<float64_t> max_values);
 
 		/** set plif use cache
 		 * 
 		 * @param use_cache set array of bool values 
-		 * @param num_values length of array
 		 */
 		void set_plif_use_cache(SGVector<bool> use_cache);
 
 		/** set plif use svm
 		 * 
 		 * @param use_svm use svm
-		 * @param num_values length of array
 		 */
 		void set_plif_use_svm(SGVector<int32_t> use_svm);
 
@@ -122,8 +117,6 @@ class CPlifMatrix: public CSGObject
 		 *  for the pice wise linear transformations (PLiFs)
 		 * 
 		 * @param limits array of length num_plifs*num_limits
-		 * @param num_plifs number of plifs
-		 * @param num_limits number of support vectors
 		 */
 		void set_plif_limits(SGMatrix<float64_t> limits);
 
@@ -131,8 +124,6 @@ class CPlifMatrix: public CSGObject
 		 *  for the pice wise linear transformations (PLiFs)
 		 * 
 		 * @param penalties plif values: array of length num_plifs*num_limits
-		 * @param num_plifs number of plifs
-		 * @param num_limits number of support vectors
 		 */
 		void set_plif_penalties(SGMatrix<float64_t> penalties);
 
@@ -173,8 +164,6 @@ class CPlifMatrix: public CSGObject
 		 *        all individual plifs and sums them up.
 		 * 
 		 * @param penalties_array 3D array of plif ids (nofstates x nofstates x nof(features for each transition))
-		 * @param Dim array of dimensions
-		 * @param numDims number of dimensions
 		 * @return success
 		 */
 		bool compute_plif_matrix(SGNDArray<float64_t> penalties_array);
@@ -183,8 +172,6 @@ class CPlifMatrix: public CSGObject
 		 *  3D plif array; 
 		 * 
 		 * @param state_signals mapping of features to states
-		 * @param feat_dim3 maximal number of features to be considered in one state
-		 * @param num_states number of states
 		 * @return success
 		 */
 		bool compute_signal_plifs(SGMatrix<int32_t> state_signals);

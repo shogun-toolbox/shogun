@@ -800,7 +800,7 @@ class CSGInterface : public CSGObject
 
 		// set functions - to pass data from shogun to the target interface
 		/** create return values 
-		 * @parma num_val
+		 * @param num_val
 		 */
 		virtual bool create_return_values(int32_t num_val)=0;
 

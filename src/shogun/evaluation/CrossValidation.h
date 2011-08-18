@@ -30,10 +30,15 @@ class CEvaluation;
  */
 typedef struct
 {
+	/** mean */
 	float64_t mean;
+	/** has conf int */
 	bool has_conf_int;
+	/** conf int low */
 	float64_t conf_int_low;
+	/** conf int up */
 	float64_t conf_int_up;
+	/** conf int alpha */
 	float64_t conf_int_alpha;
 
 	void print_result()

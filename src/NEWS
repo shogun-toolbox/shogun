@@ -5,7 +5,8 @@
 	* Features:
 	   - Support for new languages: java, c#, ruby, lua in modular interfaces
 	     (GSoC project of Baozeng Ding)
-	   - Port all examples to the new languages
+	   - Port all examples to the new languages:
+	     Ruby examples with example transition tool (thanks to Justin Patera aka serialhex)
 	   - Dimensionality reduction (manifold learning) algorithms
 	     are now available. In particular: Locally Linear Embedding (LLE), Hessian 
 	     Locally Linear Embedding (HLLE), Local Tangent Space Alignment (LTSA),
@@ -15,13 +16,13 @@
 	     (GSoC project of Sergey Lisitsyn)
 	   - Various new kernels: TStudentKernel, CircularKernel, WaveKernel,
 	     SplineKernel, LogKernel, RationalQuadraticKernel, WaveletKernel,
-	     BesselKernel, PowerKernel, ExponentialKernel, CauchyKernel,ANOVAKernel,
-	     MultiquadricKernel, SphericalKernel, DistantSegmentsKernel
-	     (thanks GSoC students for the contributions!)
+	     BesselKernel, PowerKernel, ExponentialKernel, CauchyKernel, 
+	     ANOVAKernel, MultiquadricKernel, SphericalKernel, 
+	     DistantSegmentsKernel (thanks GSoC students for the contributions!)
 	   - Streaming / Online Feature Framework for SimpleFeatures,
 	     SparseFeatures, StringFeatures (GSoC project of Shashwat Lal Das)
 	   - SGD-QN, Online SGD, Online Liblinear, Online Vowpal Vabit (GSoC
-		 project of Shashwat Lal Das)
+	     project of Shashwat Lal Das)
 	   - Model selection framework for arbitrary Machines 
 	     (GSoC project of Heiko Strathmann)
 	   - Gaussian Mixture Models (GSoC project of Alesis Novik)

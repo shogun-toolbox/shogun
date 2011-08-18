@@ -86,7 +86,9 @@ private:
 
 protected:
 
+	/** labels */
 	CLabels* m_labels;
+	/** subset indices */
 	CDynamicObjectArray<CDynamicArray<index_t> >* m_subset_indices;
 };
 }

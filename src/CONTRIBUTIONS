@@ -19,7 +19,7 @@ We integrated the work of the following people:
 	- the Gradient Projection Decomposition Technique (GPDT) - SVM
 
  Vikas Sindhwani
-    - SVM-lin: Fast SVM Solvers for Supervised and Semi-supervised Learning
+	- SVM-lin: Fast SVM Solvers for Supervised and Semi-supervised Learning
 
  Vojtech Franc
 	- Generalized Nearest Point Problem Solver based L2 (slacks) SVM
@@ -61,7 +61,6 @@ We integrated the work of the following people:
 	  Hessian Locally Linear Embedding, Isomap, Laplacian Eigenmaps
 	- ARPACK wrapper
 	- Various bugfixes and structural improvements
-	- Translation of the documentation to Russian
 
  Shashwat Lal Das
 	- Streaming / Online Feature Framework for SimpleFeatures, SparseFeatures,
@@ -72,9 +71,14 @@ We integrated the work of the following people:
 	- Statistics module
 	- Subset support in features
 	- Various bugfixes and structural improvements
+	- Serialization improvements and fixes
 	
  Alesis Novik
 	- Gaussian Mixture Models
 
  Evgeniy Andreev:
 	- FibonacciHeap
+	- HashSet
+
+ Justin Patera
+ 	- Ruby examples

@@ -31,6 +31,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		/** constructor
 		 * 
 		 * @param images images
+		 * @param num_pyramids
 		 */
 		CLBPPyrDotFeatures(CSimpleFeatures<uint32_t>* images, uint16_t num_pyramids);
 

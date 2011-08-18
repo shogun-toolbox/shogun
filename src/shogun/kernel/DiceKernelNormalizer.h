@@ -149,10 +149,12 @@ class CDiceKernelNormalizer : public CKernelNormalizer
     protected:
 		/** diagonal left-hand side */
 		float64_t* diag_lhs;
+		/** num diag lhs */
 		int32_t num_diag_lhs;
 
 		/** diagonal right-hand side */
 		float64_t* diag_rhs;
+		/** num diag rhs */
 		int32_t num_diag_rhs;
 
 		/** flat if optimized diagonal computation is used */
