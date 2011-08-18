@@ -1619,8 +1619,17 @@ TParameter::delete_cont(void)
 	 * data does not start at m_parameter, since the latter may have
 	 * methods so move start pointer to array of struct */
 	void* data_start=m_parameter;
-	if (m_datatype.m_ctype==CT_SGVECTOR)
+	switch(m_datatype.m_ctype)
+	{
+	case CT_SGVECTOR:
 		data_start=&(((SGVector<void>*)m_parameter)->vector);
+		break;
+	case CT_SGMATRIX:
+		data_start=&(((SGMatrix<void>*)m_parameter)->matrix);
+		break;
+	default:
+		break;
+	}
 
 	if (*(void**) data_start != NULL) {
 		index_t old_length = *m_datatype.m_length_y;
@@ -1771,8 +1780,17 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 	 * data does not start at m_parameter, since the latter may have
 	 * methods so move start pointer to array of struct */
 	void* data_start=m_parameter;
-	if (m_datatype.m_ctype==CT_SGVECTOR)
+	switch(m_datatype.m_ctype)
+	{
+	case CT_SGVECTOR:
 		data_start=&(((SGVector<void>*)m_parameter)->vector);
+		break;
+	case CT_SGMATRIX:
+		data_start=&(((SGMatrix<void>*)m_parameter)->matrix);
+		break;
+	default:
+		break;
+	}
 
 	switch (m_datatype.m_stype) {
 	case ST_NONE:
