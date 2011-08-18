@@ -24,8 +24,13 @@ class CSGInterface;
 class CGUIDistance : public CSGObject
 {
  public:
+ 	/** constructor */
 	CGUIDistance() {};
+	/** constructor
+	 * @param interface
+	 */
 	CGUIDistance(CSGInterface* interface);
+	/** destructor */
 	~CGUIDistance();
 
 	/** get current distance */
@@ -42,16 +47,23 @@ class CGUIDistance : public CSGObject
 
 	/** initialize distance */
 	bool init_distance(const char* target);
+	/** save distance
+	 * @param param
+	 */
 	bool save_distance(char* param);
 
+	/** is initialized */
 	bool is_initialized() { return initialized; }
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "GUIDistance"; }
 
  protected:
+ 	/** distance */
 	CDistance* distance;
+	/** ui */
 	CSGInterface* ui;
+	/** initialized */
 	bool initialized;
 };
 }

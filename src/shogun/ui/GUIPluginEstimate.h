@@ -25,32 +25,53 @@ class CGUIPluginEstimate : public CSGObject
 {
 
 	public:
+		/** constructor */
 		CGUIPluginEstimate() {};
+		/** constructor 
+		 * @param interface
+		 */
 		CGUIPluginEstimate(CSGInterface* interface);
+		/** destructor */
 		~CGUIPluginEstimate();
 
 		/** create new estimator */
 		bool new_estimator(float64_t pos, float64_t neg);
 		/** train estimator */
 		bool train();
+		/** marginalized train
+		 * @param param
+		 */
 		bool marginalized_train(char* param);
-		/** test estimator */
+		/** load 
+		 * @param param
+		 */
 		bool load(char* param);
+		/** save
+		 * @param param
+		 */
 		bool save(char* param);
 
+		/** get estimator */
 		inline CPluginEstimate* get_estimator() { return estimator; }
 
+		/** apply */
 		CLabels* apply();
+		/** apply
+		 * @param idx
+		 */
 		float64_t apply(int32_t idx);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GUIPluginEstimate"; }
 
 	protected:
+		/** ui */
 		CSGInterface* ui;
-
+		/** estimator */
 		CPluginEstimate* estimator;
+		/** pos pseudo */
 		float64_t pos_pseudo;
+		/** neg pseudo */
 		float64_t neg_pseudo;
 };
 }

@@ -45,6 +45,9 @@ class CLoss
 		///Destructor - frees logtable
 		virtual ~CLoss();
 		//@}
+		/** loss
+		 * @param z
+		 */
 		static inline float64_t loss(float64_t z)
 		{
 #if LOSS == LOGLOSS
@@ -76,6 +79,9 @@ class CLoss
 #endif
 		}
 
+		/** dloss 
+		 * @param z
+		 */
 		static inline float64_t dloss(float64_t z)
 		{
 #if LOSS == LOGLOSS

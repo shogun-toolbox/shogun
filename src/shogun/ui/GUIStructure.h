@@ -147,7 +147,7 @@ class CGUIStructure : public CSGObject
 		/** set content svm weights 
 		 * @param weights
 		 * @param Nweights
-		 * @param MWeights
+		 * @param Mweights
 		 */
 		inline bool set_content_svm_weights(
 			float64_t* weights, int32_t Nweights,

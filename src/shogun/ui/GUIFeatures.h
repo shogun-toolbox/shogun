@@ -34,6 +34,7 @@ class CSGInterface;
 
 class CGUIFeatures : public CSGObject
 {
+	/** feature type */
 	enum EFeatureType
 	{
 		Simple,
@@ -41,13 +42,23 @@ class CGUIFeatures : public CSGObject
 	};
 
 	public:
+		/** constructor */
 		CGUIFeatures() {};
+		/** constructor 
+		 * @param interface
+		 */
 		CGUIFeatures(CSGInterface* interface);
+		/** destructor */
 		~CGUIFeatures();
 
+		/** get train features */
 		inline CFeatures *get_train_features() { return train_features; }
+		/** get test features */
 		inline CFeatures *get_test_features() { return test_features; }
 
+		/** set train features
+		 * @param f
+		 */
 		inline bool set_train_features(CFeatures* f)
 		{ 
 			//invalidate_train();
@@ -57,6 +68,9 @@ class CGUIFeatures : public CSGObject
 			return true;
 		}
 
+		/** set test features
+		 * @param f
+		 */
 		inline bool set_test_features(CFeatures* f)
 		{ 
 			//invalidate_test();
@@ -66,15 +80,29 @@ class CGUIFeatures : public CSGObject
 			return true;
 		}
 
+		/** add train features
+		 * @param f
+		 */
 		void add_train_features(CFeatures* f);
+		/** add test features
+		 * @param f
+		 */
 		void add_test_features(CFeatures* f);
+		/** add train dotfeatures
+		 * @param f
+		 */
 		void add_train_dotfeatures(CDotFeatures* f);
+		/** add test dotfeatures 
+		 * @param f
+		 */
 		void add_test_dotfeatures(CDotFeatures* f);
 
 		/** delete last feature obj from combined features */
 		bool del_last_feature_obj(char* target);
 
+		/** invalidate train */
 		void invalidate_train();
+		/** invalidate test */
 		void invalidate_test();
 
 		/** load features from file */
@@ -96,23 +124,54 @@ class CGUIFeatures : public CSGObject
 		/* convert features from one class/type to another */
 		CSparseFeatures<float64_t>* convert_simple_real_to_sparse_real(
 			CSimpleFeatures<float64_t>* src);
+		/** converst simple char to string char
+		 * @param src
+		 */
 		CStringFeatures<char>* convert_simple_char_to_string_char(
 			CSimpleFeatures<char>* src);
+		/** convert simple char to simple align
+		 * @param src
+		 * @param gap_cost
+		 */
 		CSimpleFeatures<float64_t>* convert_simple_char_to_simple_align(
 			CSimpleFeatures<char>* src,
 			float64_t gap_cost=0);
+		/** convert simple word to simple salzberg 
+		 * @param src
+		 */
 		CSimpleFeatures<float64_t>* convert_simple_word_to_simple_salzberg(
 			CSimpleFeatures<uint16_t>* src);
 
+		/** convert string word to simple top 
+		 * @param src
+		 */
 		CTOPFeatures* convert_string_word_to_simple_top(
 			CStringFeatures<uint16_t>* src);
+		/** convert string word to simple fk 
+		 * @param src
+		 */
 		CFKFeatures* convert_string_word_to_simple_fk(
 			CStringFeatures<uint16_t>* src);
+		/** convert sparse real to simple real
+		 * @param src
+		 */
 		CSimpleFeatures<float64_t>* convert_sparse_real_to_simple_real(
 			CSparseFeatures<float64_t>* src);
+		/** convert string byte to spec word
+		 * @param src
+		 * @param use_norm
+		 */
 		CExplicitSpecFeatures* convert_string_byte_to_spec_word(
 				CStringFeatures<uint16_t>* src, bool use_norm);
 
+		/** convert string char to string generic
+		 * @param src
+		 * @param order
+		 * @param start
+		 * @param gap
+		 * @param rev
+		 * @param alpha
+		 */
 		template <class CT, class ST>
 		CStringFeatures<ST>* convert_string_char_to_string_generic(
 			CStringFeatures<CT>* src,
@@ -162,9 +221,13 @@ class CGUIFeatures : public CSGObject
 		inline virtual const char* get_name() const { return "GUIFeatures"; }
 
 	protected:
+		/** ui */
 		CSGInterface* ui;
+		/** train features */
 		CFeatures *train_features;
+		/** test features */
 		CFeatures *test_features;
+		/** ref features */
 		CFeatures *ref_features;
 };
 }
