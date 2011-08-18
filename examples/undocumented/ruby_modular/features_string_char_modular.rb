@@ -1,12 +1,9 @@
-# this was trancekoded by the awesome trancekoder
-require 'narray'
 require 'modshogun'
-require 'load'
 require 'pp'
 
 strings=['hey','guys','i','am','a','string']
 
-parameter_list=[[strings]]
+parameter_list=[strings]
 
 def features_string_char_modular(strings)
 
@@ -23,13 +20,11 @@ def features_string_char_modular(strings)
 	#replace string 0
 	f.set_feature_vector(['t','e','s','t'], 0)
 
-	puts "it fails right..."
 	return f.get_features, f
 
-
 end
+
 if __FILE__ == $0
 	puts 'StringCharFeatures'
-	features_string_char_modular(*parameter_list[0])
-
+	pp features_string_char_modular(*parameter_list)
 end
