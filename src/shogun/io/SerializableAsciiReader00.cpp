@@ -103,7 +103,7 @@ SerializableAsciiReader00::read_cont_begin_wrapped(
 		SG_ERROR("read_cont_begin_wrapped(): Implementation error "
 				 "during writing AsciiFile!");
 		return false;
-	case CT_VECTOR:
+	case CT_VECTOR: case CT_SGVECTOR:
 		if (fscanf(m_file->m_fstream, "%"SCNi32" ", len_read_y) != 1)
 			return false;
 		*len_read_x = 1;
