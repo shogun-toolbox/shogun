@@ -177,7 +177,7 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 					CHAR_CONT_BEGIN) <= 0)
 			return false;
 		break;
-	case CT_MATRIX:
+	case CT_MATRIX: case CT_SGMATRIX:
 		if (fprintf(m_fstream, "%"PRIi32" %"PRIi32" %c",
 					len_real_y, len_real_x, CHAR_CONT_BEGIN) <= 0)
 			return false;

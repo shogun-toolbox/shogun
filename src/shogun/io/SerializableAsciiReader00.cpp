@@ -108,7 +108,7 @@ SerializableAsciiReader00::read_cont_begin_wrapped(
 			return false;
 		*len_read_x = 1;
 		break;
-	case CT_MATRIX:
+	case CT_MATRIX: case CT_SGMATRIX:
 		if (fscanf(m_file->m_fstream, "%"SCNi32" %"SCNi32" ",
 				   len_read_y, len_read_x) != 2)
 			return false;
