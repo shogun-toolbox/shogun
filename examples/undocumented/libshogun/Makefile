@@ -1,5 +1,5 @@
 LIB_PATH=/usr/lib
-INC_PATH=/usr/include /usr/include/json /usr/include/libxml2
+INC_PATH=/usr/include
 
 INCLUDES=
 LIBS=-lshogun -lblas
@@ -33,7 +33,6 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  mathematics_confidence_intervals \
 		  clustering_kmeans base_parameter_map \
 		  splitting_stratified_crossvalidation \
-		  serialization_vector_matrix
 
 
 all: $(TARGETS)
