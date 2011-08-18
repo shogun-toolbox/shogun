@@ -98,7 +98,7 @@ SerializableJsonReader00::read_cont_begin_wrapped(
 
 	*len_read_y = json_object_array_length(m);
 
-	if (type->m_ctype == CT_MATRIX) {
+	if (type->m_ctype==CT_MATRIX || type->m_ctype==CT_SGMATRIX) {
 		*len_read_x = *len_read_y;
 		for (index_t i=0; i<*len_read_x; i++) {
 			json_object* buf = json_object_array_get_idx(m, i);
@@ -233,7 +233,7 @@ SerializableJsonReader00::read_item_begin_wrapped(
 {
 	json_object* m = m_file->m_stack_stream.back();
 
-	if (type->m_ctype == CT_MATRIX)
+	if (type->m_ctype==CT_MATRIX || type->m_ctype==CT_SGMATRIX)
 		m = json_object_array_get_idx(m, x);
 	m = json_object_array_get_idx(m, y);
 
