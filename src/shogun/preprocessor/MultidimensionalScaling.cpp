@@ -29,18 +29,31 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct D_THREAD_PARAM
 {
+	/// idx of loop start
 	int32_t idx_start;
+	/// idx of loop stop
 	int32_t idx_stop;
+	/// idx step of loop
 	int32_t idx_step;
+	/// number of landmarks
 	int32_t lmk_N;
+	/// total number of examples
 	int32_t total_N;
+	/// target dimensionality
 	int32_t m_target_dim;
+	/// distances from current object to landmarks
 	float64_t* current_dist_to_lmks;
+	/// feature matrix of landmarks
 	float64_t* lmk_feature_matrix;
+	/// new feature matrix to write
 	float64_t* new_feature_matrix;
+	/// const distance matrix
 	const float64_t* dist_matrix;
+	/// const mean squared distances
 	const float64_t* mean_sq_dist_vector;
+	/// idxs of landmark examples
 	const int32_t* lmk_idxs;
+	/// indicates which examples to triangulate
 	const bool* to_process;
 };
 #endif
