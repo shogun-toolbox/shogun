@@ -59,6 +59,18 @@ document_interface()
 						(R)
 							prefix="#"
 							;;
+						(rb)
+							prefix="#"
+							;;
+						(lua)
+							prefix="- "
+							;;
+						(java)
+							prefix="//"
+							;;
+						(cs)
+							prefix="//"
+							;;
 					esac
 					( cat descriptions/${if_descr_dir}/$doc | sed "s/^/$prefix /" ; \
 						echo; \
