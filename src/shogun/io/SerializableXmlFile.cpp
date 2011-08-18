@@ -242,8 +242,9 @@ bool
 CSerializableXmlFile::write_cont_end_wrapped(
 	const TSGDataType* type, index_t len_real_y, index_t len_real_x)
 {
-	if (type->m_ctype == CT_MATRIX && len_real_y *len_real_x > 0)
-		pop_node();
+	if (type->m_ctype==CT_MATRIX || type->m_ctype==CT_SGMATRIX)
+		if (len_real_y*len_real_x>0)
+			pop_node();
 
 	return true;
 }
@@ -329,11 +330,14 @@ bool
 CSerializableXmlFile::write_item_begin_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	if (type->m_ctype == CT_MATRIX && y == 0) {
-		if (x != 0) pop_node();
+	if (type->m_ctype==CT_MATRIX || type->m_ctype==CT_SGMATRIX) {
+		if (y==0)
+		{
+			if (x != 0) pop_node();
 
-		string_t buf_x; snprintf(buf_x, STRING_LEN, "x%"PRIi32, x);
-		if (!push_node(BAD_CAST buf_x)) return false;
+			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%"PRIi32, x);
+			if (!push_node(BAD_CAST buf_x)) return false;
+		}
 	}
 
 	push_node(BAD_CAST STR_ITEM);

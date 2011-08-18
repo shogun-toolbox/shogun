@@ -135,8 +135,8 @@ CSerializableHdf5File::index2string(
 	switch (ctype) {
 	case CT_NDARRAY: SG_SNOTIMPLEMENTED;
 	case CT_SCALAR: return false;
-	case CT_VECTOR: snprintf(dest, n, "y%u", y); break;
-	case CT_MATRIX: snprintf(dest, n, "y%u_x%u", y, x); break;
+	case CT_VECTOR: case CT_SGVECTOR: snprintf(dest, n, "y%u", y); break;
+	case CT_MATRIX: case CT_SGMATRIX: snprintf(dest, n, "y%u_x%u", y, x); break;
 	}
 
 	return true;
@@ -179,8 +179,8 @@ CSerializableHdf5File::dspace_select(EContainerType ctype, index_t y,
 	switch (ctype) {
 	case CT_NDARRAY: SG_NOTIMPLEMENTED;
 	case CT_SCALAR: return false;
-	case CT_MATRIX: coord[1] = x; /* break;  */
-	case CT_VECTOR: coord[0] = y; break;
+	case CT_MATRIX: case CT_SGMATRIX: coord[1] = x; /* break;  */
+	case CT_VECTOR: case CT_SGVECTOR: coord[0] = y; break;
 	}
 	if (H5Sselect_elements(m->dspace, H5S_SELECT_SET, 1, coord) < 0)
 		return false;
@@ -449,9 +449,9 @@ CSerializableHdf5File::write_scalar_wrapped(
 
 		if ((m->sub_y
 			 < (index_t) m->vltype[m->x*m->dims[1] + m->y].len-1)
-			|| (type->m_ctype == CT_VECTOR && m->y
+			|| ((type->m_ctype == CT_VECTOR || type->m_ctype == CT_SGVECTOR) && m->y
 				< (index_t) m->dims[0]-1)
-			|| (type->m_ctype == CT_MATRIX
+			|| ((type->m_ctype == CT_MATRIX || type->m_ctype==CT_SGMATRIX)
 				&& (m->x < (index_t) m->dims[0]-1
 					|| m->y < (index_t) m->dims[1]-1)))
 			return true;
@@ -507,11 +507,11 @@ CSerializableHdf5File::write_cont_begin_wrapped(
 		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
 				 "during writing Hdf5File!");
 		return false;
-	case CT_MATRIX:
+	case CT_MATRIX: case CT_SGMATRIX:
 		if (!attr_write_scalar(TYPE_INDEX, STR_LENGTH_X, &len_real_x))
 			return false;
 		/* break;  */
-	case CT_VECTOR:
+	case CT_VECTOR: case CT_SGVECTOR:
 		if (!attr_write_scalar(TYPE_INDEX, STR_LENGTH_Y, &len_real_y))
 			return false;
 		break;
@@ -748,13 +748,13 @@ CSerializableHdf5File::write_type_begin_wrapped(
 		m->rank = 0;
 		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOC(hvl_t, 1);
 		break;
-	case CT_VECTOR:
+	case CT_VECTOR: case CT_SGVECTOR:
 		m->rank = 1; m->dims[0] = *type->m_length_y;
 		if (m->dims[0] == 0) m->dspace = H5Screate(H5S_NULL);
 		if (type->m_stype == ST_STRING)
 			m->vltype = SG_MALLOC(hvl_t, m->dims[0]);
 		break;
-	case CT_MATRIX:
+	case CT_MATRIX: case CT_SGMATRIX:
 		m->rank = 2;
 		m->dims[0] = *type->m_length_x; m->dims[1] = *type->m_length_y;
 		if (m->dims[0] *m->dims[1] == 0)
