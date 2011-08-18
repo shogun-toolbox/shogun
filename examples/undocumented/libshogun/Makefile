@@ -2,7 +2,7 @@ LIB_PATH=/usr/lib
 INC_PATH=/usr/include
 
 INCLUDES=
-LIBS=-lshogun -lblas
+LIBS=-lshogun -lblas -llapack
 
 LINKFLAGS=
 CXXFLAGS=-O3 -g
