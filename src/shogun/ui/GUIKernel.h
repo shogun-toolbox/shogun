@@ -25,6 +25,9 @@ class CGUIKernel : public CSGObject
  public:
  	/** constructor */
 	CGUIKernel() { };
+	/** constructor
+	 * @param interface
+	 */
 	CGUIKernel(CSGInterface* interface);
 
 	/** destructor */
@@ -110,10 +113,12 @@ class CGUIKernel : public CSGObject
 	CKernel* create_weighteddegreepositionstring(
 		int32_t size=10, int32_t order=3, int32_t max_mismatch=1,
 		int32_t length=0, int32_t center=0, float64_t step=1);
+	/** create a new WeightedDegreePositionString3 */
 	CKernel* create_weighteddegreepositionstring3(
 		int32_t size=10, int32_t order=3, int32_t max_mismatch=1,
 		int32_t* shifts=NULL, int32_t length=0, int32_t mkl_stepsize=1,
 		float64_t* position_weights=NULL);
+	/** create a new WeightedDegreePositionString2 */
 	CKernel* create_weighteddegreepositionstring2(
 		int32_t size=10, int32_t order=3, int32_t max_mismatch=1,
 		int32_t* shifts=NULL, int32_t length=0, bool use_normalization=true);
@@ -166,8 +171,11 @@ class CGUIKernel : public CSGObject
 	inline virtual const char* get_name() const { return "GUIKernel"; }
 
  protected:
+ 	/** kernel */
 	CKernel* kernel;
+	/** ui */
 	CSGInterface* ui;
+	/** initialized */
 	bool initialized;
 
  private:

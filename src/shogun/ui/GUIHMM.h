@@ -24,8 +24,13 @@ class CSGInterface;
 class CGUIHMM : public CSGObject
 {
 	public:
+		/** constructor */
 		CGUIHMM() { };
+		/** constructor
+		 * @param interface
+		 */
 		CGUIHMM(CSGInterface* interface);
+		/** destructor */
 		~CGUIHMM();
 
 		/** create new HMM */
@@ -35,17 +40,27 @@ class CGUIHMM : public CSGObject
 		/** save HMM to file */
 		bool save(char* filename, bool is_binary=false);
 
+		/** set num hmm tables
+		 * @param param
+		 */
 		bool set_num_hmm_tables(char* param) ;
 		/** train Baum-Welch */
 		bool baum_welch_train();
 		/** train Baum-Welch trans */
 		bool baum_welch_trans_train();
+		/** train Baum-Welch defined */
 		bool baum_welch_train_defined();
 		/** train Viterbi defined */
 		bool viterbi_train_defined();
 		/** train Viterbi */
 		bool viterbi_train();
+		/** linear train
+		 * @param align
+		 */
 		bool linear_train(char align='l');
+		/** linear train from file
+		 * @param param
+		 */
 		bool linear_train_from_file(char* param);
 		/** append HMM/model for CmdlineInterface */
 		bool append_model(char* filename, int32_t base1=-1, int32_t base2=-1);
@@ -64,50 +79,110 @@ class CGUIHMM : public CSGObject
 		bool output_hmm_defined();
 		/** print best path */
 		bool best_path(int32_t from=0, int32_t to=100);
+		/** normalize
+		 * @param keep_dead_states
+		 */
 		bool normalize(bool keep_dead_states=false);
+		/** save path
+		 * @param filename
+		 * @param is_binary
+		 */
 		bool save_path(char* filename, bool is_binary=false);
 		/** save HMM likelihood  to file */
 		bool save_likelihood(char* filename, bool is_binary=false);
+		/** load definitions
+		 * @param filename
+		 * @param do_init
+		 */
 		bool load_definitions(char* filename, bool do_init=false);
+		/** set max dim
+		 * @param param
+		 */
 		bool set_max_dim(char* param);
 		/** HMM likelihood */
 		bool likelihood();
 		/** chop HMM */
 		bool chop(float64_t value);
+		/** relative entropy
+		 * @param values
+		 * @param len
+		 */
 		bool relative_entropy(float64_t*& values, int32_t& len);
+		/** entropy
+		 * @param values
+		 * @param len
+		 */
 		bool entropy(float64_t*& values, int32_t& len);
 		/** define permutation entropy */
 		bool permutation_entropy(int32_t width=0, int32_t seq_num=-1);
+		/** get pos */
 		inline CHMM* get_pos() { return pos; }
+		/** get neg */
 		inline CHMM* get_neg() { return neg; }
+		/** get test */
 		inline CHMM* get_test() { return test; }
+		/** set current
+		 * @param h
+		 */
 		inline void set_current(CHMM* h) { working=h; }
+		/** get current */
 		inline CHMM* get_current() { return working; }
+		/** get pseudo */
 		inline float64_t get_pseudo() { return PSEUDO; }
 
+		/** classify
+		 * @param output 
+		 */
 		CLabels* classify(CLabels* output=NULL);
+		/** classify example
+		 * @param idx
+		 */
 		float64_t classify_example(int32_t idx);
+		/** one class classify 
+		 * @param output
+		 */
 		CLabels* one_class_classify(CLabels* output=NULL);
+		/** linear one class classify
+		 * @param output
+		 */
 		CLabels* linear_one_class_classify(CLabels* output=NULL);
+		/** one class classfiy example 
+		 * @param idx
+		 */
 		float64_t one_class_classify_example(int32_t idx);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GUIHMM"; }
 
 	protected:
+		/** converge
+		 * @param x
+		 * @param y
+		 */
 		bool converge(float64_t x, float64_t y);
+		/** switch model 
+		 * @param m1
+		 * @param m2
+		 */
 		void switch_model(CHMM** m1, CHMM** m2);
 
+		/** working */
 		CHMM* working;
 
+		/** pos */
 		CHMM* pos;
+		/** neg */
 		CHMM* neg;
+		/** test */
 		CHMM* test;
 
+		/** pseudo */
 		float64_t PSEUDO;
+		/** M */
 		int32_t M;
 
 	protected:
+		/** ui */
 		CSGInterface* ui;
 };
 }

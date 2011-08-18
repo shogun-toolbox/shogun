@@ -22,17 +22,26 @@ class CSGInterface;
 class CGUITime : public CSGObject
 {
 	public:
+		/** constructor */
 		CGUITime() { };
+		/** constructor
+		 * @param interface
+		 */
 		CGUITime(CSGInterface* interface);
+		/** destructor */
 		~CGUITime();
 
+		/** start */
 		void start();
+		/** stop */
 		void stop();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GUITime"; }
 	protected:
+		/** ui */
 		CSGInterface* ui;
+		/** time */
 		CTime* time;
 };
 }

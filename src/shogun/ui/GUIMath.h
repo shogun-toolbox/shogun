@@ -21,15 +21,27 @@ class CSGInterface;
 class CGUIMath : public CSGObject
 {
 	public:
+		/** constructor */
 		CGUIMath() {};
+		/** constructor
+		 * @param interface
+		 */
 		CGUIMath(CSGInterface* interface);
+		/** set threshold 
+		 * @param value
+		 */
 		void set_threshold(float64_t value);
+		/** init random
+		 * @param initseed
+		 */
 		void init_random(uint32_t initseed=0);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GUIMath"; }
 	protected:
+		/** ui */
 		CSGInterface* ui;
+		/** threshold */
 		float64_t threshold;
 };
 }

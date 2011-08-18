@@ -24,8 +24,13 @@ class CSGInterface;
 class CGUIPreprocessor : public CSGObject
 {
 	public:
+		/** constructor */
 		CGUIPreprocessor() { };
+		/** constructor 
+		 * @param interface
+		 */
 		CGUIPreprocessor(CSGInterface* interface);
+		/** destructor */
 		~CGUIPreprocessor();
 
 		/** create generic Preprocessor */
@@ -52,10 +57,21 @@ class CGUIPreprocessor : public CSGObject
 		inline virtual const char* get_name() const { return "GUIPreprocessor"; }
 
 	protected:
+		/** preprocess features
+		 * @param trainfeat
+		 * @param testfeat
+		 * @param force
+		 */
 		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
+		/** preproc all features
+		 * @param f
+		 * @param force
+		 */
 		bool preproc_all_features(CFeatures* f, bool force);
 
+		/** preprocs */
 		CList* preprocs;
+		/** ui */
 		CSGInterface* ui;
 };
 }

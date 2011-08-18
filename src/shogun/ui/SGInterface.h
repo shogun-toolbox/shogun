@@ -1100,6 +1100,7 @@ class CSGInterface : public CSGObject
 		int32_t m_nrhs;
 
 		// related to cmd_exec and cmd_echo
+		/** file out */
 		FILE* file_out;
 		/** input */
 		char input[10000];

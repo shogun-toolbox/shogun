@@ -27,10 +27,18 @@ class CSGInterface;
 class CGUIStructure : public CSGObject
 {
 	public:
+		/** constructor */
 		CGUIStructure() {};
+		/** constructor
+		 * @param interface
+		 */
 		CGUIStructure(CSGInterface* interface);
+		/** destructor */
 		~CGUIStructure();
 
+		/** set dyn prog
+		 * @param h
+		 */
 		inline bool set_dyn_prog(CDynProg* h)
 		{
 			SG_UNREF(m_dp);
@@ -38,6 +46,7 @@ class CGUIStructure : public CSGObject
 			return true;
 		}
 
+		/** get dyn prog */
 		inline CDynProg* get_dyn_prog()
 		{
 			if (!m_dp)
@@ -45,6 +54,9 @@ class CGUIStructure : public CSGObject
 			return m_dp;
 		}
 
+		/** get feature matrix
+		 * @param copy
+		 */
 		inline float64_t* get_feature_matrix(bool copy)
 		{
 			if (copy)
@@ -58,6 +70,9 @@ class CGUIStructure : public CSGObject
 				return m_feature_matrix;
 		}
 
+		/** get feature matrix sparse
+		 * @param index
+		 */
 		inline CSparseFeatures<float64_t>* get_feature_matrix_sparse(int32_t index)
 		{
 			ASSERT(index>=0 && index<=1) ;
@@ -68,6 +83,10 @@ class CGUIStructure : public CSGObject
 			return NULL ;
 		}
 
+		/** set feature matrix 
+		 * @param feat
+		 * @param dims
+		 */
 		inline bool set_feature_matrix(float64_t* feat, int32_t* dims)
 		{
 			SG_FREE(m_feature_matrix);
@@ -77,6 +96,11 @@ class CGUIStructure : public CSGObject
 			return true;
 		}
 
+		/** set feature matrix sparse
+		 * @param f1
+		 * @param f2
+		 * @param dims
+		 */
 		inline bool set_feature_matrix_sparse(SGSparseVector<float64_t> *f1, SGSparseVector<float64_t> *f2, int32_t* dims)
 		{
 			SG_FREE(m_feature_matrix_sparse1);
@@ -88,6 +112,9 @@ class CGUIStructure : public CSGObject
 			return true;
 		}
 
+		/** set feature dims
+		 * @param dims
+		 */
 		inline bool set_feature_dims(int32_t* dims)
 		{
 			SG_FREE(m_feature_dims);
@@ -95,8 +122,13 @@ class CGUIStructure : public CSGObject
 			memcpy(m_feature_dims, dims,3*sizeof(int32_t));
 			return true;
 		}
+		/** get feature dims */
 		inline int32_t* get_feature_dims() { return m_feature_dims; }
 
+		/** set all pos
+		 * @param pos
+		 * @param Npos
+		 */
 		inline bool set_all_pos(int32_t* pos, int32_t Npos)
 		{
 			if (m_all_positions!=pos)
@@ -107,9 +139,16 @@ class CGUIStructure : public CSGObject
 			m_all_positions = cp_array;
 			return true;
 		}
+		/** get all positions */
 		inline int32_t* get_all_positions() { return m_all_positions; }
+		/** get num positions */
 		inline int32_t get_num_positions() { return m_num_positions; }
 
+		/** set content svm weights 
+		 * @param weights
+		 * @param Nweights
+		 * @param MWeights
+		 */
 		inline bool set_content_svm_weights(
 			float64_t* weights, int32_t Nweights,
 			int32_t Mweights /* ==num_svms */)
@@ -122,11 +161,19 @@ class CGUIStructure : public CSGObject
 			m_num_svm_weights = Nweights;
 			return true;
 		}
+		/** get content svm weights */
 		inline float64_t* get_content_svm_weights() { return m_content_svm_weights; }
+		/** get num svm weights */
 		inline int32_t get_num_svm_weights() { return m_num_svm_weights; }
-
+		
+		/** get plif matrix */
 		inline CPlifMatrix* get_plif_matrix() { return m_plif_matrix; }
 
+		/** set orf info
+		 * @param orf_info
+		 * @param Norf_info
+		 * @param Morf_info
+		 */
 		inline bool set_orf_info(
 			int32_t* orf_info, int32_t Norf_info, int32_t Morf_info)
 		{
@@ -138,18 +185,28 @@ class CGUIStructure : public CSGObject
 			return true;
 		}
 
+		/** get orf info */
 		inline int32_t* get_orf_info()
 		{
 			return m_orf_info;
 		}
 
+		/** set use orf
+		 * @param use_orf
+		 */
 		inline bool set_use_orf(bool use_orf)
 		{
 			m_use_orf = use_orf;
 			return true;
 		}
+		/** get use orf */
 		inline bool get_use_orf() { return m_use_orf; }
 
+		/** set mod words 
+		 * @param mod_words
+		 * @param Nmod_words
+		 * @param Mmod_words
+		 */
 		inline bool set_mod_words(
 			int32_t* mod_words, int32_t Nmod_words, int32_t Mmod_words)
 		{
@@ -160,14 +217,19 @@ class CGUIStructure : public CSGObject
 			m_mod_words = cp_array;
 			return true;	
 		}
+		/** get mod words */
 		inline int32_t* get_mod_words() { return m_mod_words; }
+		/** get num states */
 		inline int32_t get_num_states() { return m_num_states; }
+		/** set num states 
+		 * @param num 
+		 */
 		inline bool set_num_states(int32_t num)
 		{
 			m_num_states = num; 
 			return true;
 		}
-
+		/** cleanup */
 		inline bool cleanup()
 		{
 			delete m_dp;
@@ -188,22 +250,39 @@ class CGUIStructure : public CSGObject
 		inline virtual const char* get_name() const { return "GUIStructure"; }
 
 	protected:
+		/** ui */
 		CSGInterface* ui;
+		/** num plifs */
 		int32_t m_num_plifs;
+		/** num limits */
 		int32_t m_num_limits;
+		/** num states */
 		int32_t m_num_states;
+		/** dp */
 		CDynProg* m_dp;
+		/** feature matrix */
 		float64_t* m_feature_matrix;
+		/** feature matrix sparse 1 */
 		CSparseFeatures<float64_t>* m_feature_matrix_sparse1;
+		/** feature matrix sparse 2 */
 		CSparseFeatures<float64_t>* m_feature_matrix_sparse2;
+		/** feature dims */
 		int32_t* m_feature_dims;
+		/** num positions */
 		int32_t m_num_positions;
+		/** all positions */
 		int32_t* m_all_positions;
+		/** content svm weights */
 		float64_t* m_content_svm_weights;
+		/** num svm weights */
 		int32_t m_num_svm_weights;
+		/** orf info */
 		int32_t* m_orf_info;
+		/** use orf */
 		bool m_use_orf;
+		/** mod words */
 		int32_t* m_mod_words;
+		/** plif matrix */
 		CPlifMatrix* m_plif_matrix;
 };
 }
