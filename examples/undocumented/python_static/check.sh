@@ -6,7 +6,6 @@ then
 	PYTHON=python
 fi
 
-(
 for e in *.py
 do
 	echo -n "running $e .."
@@ -18,6 +17,5 @@ do
 		status=1
 	fi
 done
-)
 
 exit $status
