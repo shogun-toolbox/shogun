@@ -1,4 +1,7 @@
 #!/bin/bash
+
+status=0
+
 for e in *.m
 do
 	echo -n "running $e .."
@@ -7,5 +10,7 @@ do
 		echo " OK"
 	else
 		echo " ERROR"
+		status=1
 	fi
 done
+exit $status
