@@ -100,7 +100,7 @@ SGMatrix<float64_t> CIsomap::apply_to_feature_matrix(CFeatures* features)
 
 	simple_features->set_feature_matrix(new_features);
 
-	return new_features;
+	return simple_features->get_feature_matrix();
 }
 	
 SGVector<float64_t> CIsomap::apply_to_feature_vector(SGVector<float64_t> vector)

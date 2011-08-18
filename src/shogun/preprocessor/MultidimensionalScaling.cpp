@@ -100,7 +100,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::apply_to_feature_matrix(CFeatures*
 	delete distance;
 
 	SG_UNREF(features);
-	return new_feature_matrix;
+	return simple_features->get_feature_matrix();
 }
 
 SGVector<float64_t> CMultidimensionalScaling::apply_to_feature_vector(SGVector<float64_t> vector)

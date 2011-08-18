@@ -76,6 +76,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 {
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	SG_REF(features);
 	ASSERT(simple_features);
 
 	// get dimensionality and number of vectors of data
@@ -180,6 +181,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,false));
 	M_matrix.destroy_matrix();
 
+	SG_UNREF(features);
 	return simple_features->get_feature_matrix();
 }
 

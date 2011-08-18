@@ -54,6 +54,7 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 {
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	SG_REF(features);
 	ASSERT(simple_features);
 
 	// get dimensionality and number of vectors of data
@@ -183,6 +184,7 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 	W_sgmatrix.destroy_matrix();
 
 	simple_features->set_feature_matrix(new_features);
+	SG_UNREF(features);
 	return simple_features->get_feature_matrix();
 }
 

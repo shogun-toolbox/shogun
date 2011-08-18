@@ -74,6 +74,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 {
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	SG_REF(features);
 	ASSERT(simple_features);
 
 	// get dimensionality and number of vectors of data
@@ -194,6 +195,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	simple_features->set_feature_matrix(find_null_space(W_sgmatrix,m_target_dim,false));
 	W_sgmatrix.destroy_matrix();
 
+	SG_UNREF(features);
 	return simple_features->get_feature_matrix();
 }
 
