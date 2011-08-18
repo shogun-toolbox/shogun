@@ -100,7 +100,7 @@ public:
 	}
 
 	/** get version parameter */
-	static inline const int32_t get_version_parameter()
+	static inline int32_t get_version_parameter()
 	{
 		return version_parameter;
 	}

@@ -59,7 +59,9 @@ TSGDataType::to_string(char* dest, size_t n) const
 	switch (m_ctype) {
 	case CT_SCALAR: strncpy(p, "", n); break;
 	case CT_VECTOR: strncpy(p, "Vector<", n); break;
+	case CT_SGVECTOR: strncpy(p, "SGVector<", n); break;
 	case CT_MATRIX: strncpy(p, "Matrix<", n); break;
+	case CT_SGMATRIX: strncpy(p, "SGMatrix<", n); break;
 	case CT_NDARRAY: strncpy(p, "N-Dimensional Array<", n); break;
 	}
 
@@ -68,7 +70,11 @@ TSGDataType::to_string(char* dest, size_t n) const
 
 	switch (m_ctype) {
 	case CT_SCALAR: break;
-	case CT_VECTOR: case CT_MATRIX: case CT_NDARRAY:
+	case CT_VECTOR:
+	case CT_SGVECTOR:
+	case CT_MATRIX:
+	case CT_SGMATRIX:
+	case CT_NDARRAY:
 		strcat(p, ">"); break;
 	}
 }
@@ -308,10 +314,10 @@ index_t TSGDataType::get_num_elements()
 	{
 		case CT_SCALAR:
 			return 1;
-		case CT_VECTOR:
+		case CT_VECTOR: case CT_SGVECTOR:
 			/* length_y contains the length for vectors */
 			return *m_length_y;
-		case CT_MATRIX:
+		case CT_MATRIX: case CT_SGMATRIX:
 			return (*m_length_y)*(*m_length_x);
 		case CT_NDARRAY:
 			SG_SNOTIMPLEMENTED;

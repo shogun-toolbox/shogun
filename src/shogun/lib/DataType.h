@@ -58,7 +58,7 @@ template<class T> class SGVector
 		}
 
 		/** free vector */
-		void free_vector()
+		virtual void free_vector()
 		{
 			if (do_free)
 				SG_FREE(vector);
@@ -69,7 +69,7 @@ template<class T> class SGVector
 		}
 
 		/** destroy vector */
-		void destroy_vector()
+		virtual void destroy_vector()
 		{
 			do_free=true;
 			free_vector();
@@ -105,7 +105,7 @@ template<class T> class SGVector
 //			SGVector<T>(len, free_vec), cache(c), idx(i)
 //		{
 //		}
-// 
+//
 // 		/** free vector */
 //		virtual void free_vector()
 //		{
@@ -153,7 +153,7 @@ template<class T> class SGMatrix
 			num_cols(orig.num_cols), do_free(orig.do_free) { }
 
 		/** free matrix */
-		void free_matrix()
+		virtual void free_matrix()
 		{
 			if (do_free)
 				SG_FREE(matrix);
@@ -165,7 +165,7 @@ template<class T> class SGMatrix
 		}
 
 		/** destroy matrix */
-		void destroy_matrix()
+		virtual void destroy_matrix()
 		{
 			do_free=true;
 			free_matrix();
@@ -459,7 +459,9 @@ template <class T> class SGSparseMatrix
 enum EContainerType
 {
 	CT_SCALAR,
+	CT_SGVECTOR,
 	CT_VECTOR,
+	CT_SGMATRIX,
 	CT_MATRIX,
 	CT_NDARRAY
 };
