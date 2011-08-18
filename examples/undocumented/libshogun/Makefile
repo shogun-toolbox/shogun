@@ -1,5 +1,5 @@
 LIB_PATH=/usr/lib
-INC_PATH=/usr/include
+INC_PATH=/usr/include /usr/include/json /usr/include/libxml2
 
 INCLUDES=
 LIBS=-lshogun -lblas
