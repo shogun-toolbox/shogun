@@ -153,7 +153,7 @@ template<class T> class SGMatrix
 			num_cols(orig.num_cols), do_free(orig.do_free) { }
 
 		/** free matrix */
-		void free_matrix()
+		virtual void free_matrix()
 		{
 			if (do_free)
 				SG_FREE(matrix);
@@ -165,7 +165,7 @@ template<class T> class SGMatrix
 		}
 
 		/** destroy matrix */
-		void destroy_matrix()
+		virtual void destroy_matrix()
 		{
 			do_free=true;
 			free_matrix();
