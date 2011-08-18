@@ -65,7 +65,7 @@ class CGUIClassifier : public CSGObject
 		 * @param rows
 		 * @param cols
 		 * @param bias
-		 * @param btows
+		 * @param brows
 		 * @param bcols
 		 * @param idx
 		 */

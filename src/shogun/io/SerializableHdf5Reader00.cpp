@@ -89,6 +89,7 @@ SerializableHdf5Reader00::read_cont_begin_wrapped(
 		case CT_MATRIX: case CT_SGMATRIX:
 			*len_read_x = m->dims[0]; *len_read_y = m->dims[1];
 			break;
+		default: return false;
 		}
 
 		return true;
@@ -119,6 +120,7 @@ SerializableHdf5Reader00::read_cont_begin_wrapped(
 									  len_read_y))
 			return false;
 		break;
+	default: return false;
 	}
 
 	return true;
@@ -386,6 +388,7 @@ SerializableHdf5Reader00::read_type_begin_wrapped(
 		if (type->m_stype == ST_STRING)
 			m->vltype = SG_MALLOC(hvl_t, m->dims[0] *m->dims[1]);
 		break;
+	default: return false;
 	}
 
 	return true;

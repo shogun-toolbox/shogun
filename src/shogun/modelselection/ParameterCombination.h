@@ -50,7 +50,7 @@ public:
 
 	/** Prints a representation of the current node
 	 *
-	 * @param prefix_num number of '\t' signs that will be prefixed for every output.
+	 * @param prefix_num number of tabs that will be prefixed for every output.
 	 * At each recursion level, one is added.
 	 */
 	void print_tree(int prefix_num=0) const;

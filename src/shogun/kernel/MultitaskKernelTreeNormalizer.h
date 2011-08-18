@@ -348,9 +348,13 @@ public:
 
 protected:
 
+	/** root */
 	CNode* root;
+	/** name 2 id */
 	std::map<std::string, int32_t> name2id;
+	/** nodes */
 	std::vector<CNode*> nodes;
+	/** task histogram */
 	std::map<int32_t, float64_t> task_histogram;
 
 };

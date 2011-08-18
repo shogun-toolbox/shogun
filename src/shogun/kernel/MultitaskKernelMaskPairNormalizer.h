@@ -36,9 +36,8 @@ public:
 	}
 
 	/** default constructor
-	 *
-	 * @param task_lhs task vector with containing task_id for each example for left hand side
-	 * @param task_rhs task vector with containing task_id for each example for right hand side
+	 * @param task_vector_
+	 * @param active_pairs_
 	 */
 	CMultitaskKernelMaskPairNormalizer(std::vector<int32_t> task_vector_,
 									   std::vector<std::pair<int32_t, int32_t> > active_pairs_) :

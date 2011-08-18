@@ -34,7 +34,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		CSpectrumRBFKernel(void);
 
 		/** constructor
-		 * @Param size
+		 * @param size
 		 * @param AA_matrix
 		 * @param degree
 		 * @param width
@@ -131,9 +131,9 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
-		/* register the parameters */
+		/** register the parameters */
 		virtual void register_param();
-		/* register the alphabet */
+		/** register the alphabet */
 		void register_alphabet();
 
 

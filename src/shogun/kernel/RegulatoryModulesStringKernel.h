@@ -131,7 +131,9 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		CSimpleFeatures<uint16_t>* motif_positions_rhs;
 	
 		/** the length of matrix of motif positions -- for serialization purposes*/
-		int32_t alen, blen;
+		int32_t alen;
+		/** the length of matrix of motif positions -- for serialization purposes*/
+		int32_t blen;
 
 		/** scaling weights in window */
 		float64_t* position_weights;
