@@ -2,13 +2,14 @@ LIB_PATH=/usr/lib
 INC_PATH=/usr/include
 
 INCLUDES=
-LIBS=-lshogun -lblas -llapack
+LIBS=
+LIBS_ADD=-lshogun -lblas
 
 LINKFLAGS=
 CXXFLAGS=-O3 -g
 
 LIBRARY_PATH=LD_LIBRARY_PATH
-LINKFLAGS+=$(LIBS) -L$(LIB_PATH) 
+LINKFLAGS+=$(LIBS) $(LIBS_ADD) -L$(LIB_PATH) 
 CXXFLAGS+=-I$(INC_PATH) $(INCLUDES)
 CC=c++
 
