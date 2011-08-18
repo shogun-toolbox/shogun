@@ -85,8 +85,8 @@ SerializableHdf5Reader00::read_cont_begin_wrapped(
 			SG_ERROR("read_cont_begin_wrapped(): Implementation error"
 					 " during writing Hdf5File (0)!");
 			return false;
-		case CT_VECTOR: *len_read_y = m->dims[0]; break;
-		case CT_MATRIX:
+		case CT_VECTOR: case CT_SGVECTOR: *len_read_y = m->dims[0]; break;
+		case CT_MATRIX: case CT_SGMATRIX:
 			*len_read_x = m->dims[0]; *len_read_y = m->dims[1];
 			break;
 		}
@@ -109,12 +109,12 @@ SerializableHdf5Reader00::read_cont_begin_wrapped(
 		SG_ERROR("read_cont_begin_wrapped(): Implementation error"
 				 " during writing Hdf5File (1)!");
 		return false;
-	case CT_MATRIX:
+	case CT_MATRIX: case CT_SGMATRIX:
 		if (!m_file->attr_read_scalar(TYPE_INDEX, STR_LENGTH_X,
 									  len_read_x))
 			return false;
 		/* break;  */
-	case CT_VECTOR:
+	case CT_VECTOR: case CT_SGVECTOR:
 		if (!m_file->attr_read_scalar(TYPE_INDEX, STR_LENGTH_Y,
 									  len_read_y))
 			return false;
@@ -374,13 +374,13 @@ SerializableHdf5Reader00::read_type_begin_wrapped(
 		if (m->rank != 0) return false;
 		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOC(hvl_t, 1);
 		break;
-	case CT_VECTOR:
+	case CT_VECTOR: case CT_SGVECTOR:
 		if (H5Sget_simple_extent_type(m->dspace) != H5S_NULL
 			&& m->rank != 1) return false;
 		if (type->m_stype == ST_STRING)
 			m->vltype = SG_MALLOC(hvl_t, m->dims[0]);
 		break;
-	case CT_MATRIX:
+	case CT_MATRIX: case CT_SGMATRIX:
 		if (H5Sget_simple_extent_type(m->dspace) != H5S_NULL
 			&& m->rank != 2) return false;
 		if (type->m_stype == ST_STRING)

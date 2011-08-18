@@ -204,7 +204,7 @@ CSerializableJsonFile::write_cont_begin_wrapped(
 {
 	push_object(json_object_new_array());
 
-	for (index_t i=0; i<len_real_x && type->m_ctype == CT_MATRIX; i++)
+	for (index_t i=0; i<len_real_x && (type->m_ctype==CT_MATRIX || type->m_ctype==CT_SGMATRIX); i++)
 		json_object_array_add(m_stack_stream.back(),
 							  json_object_new_array());
 
@@ -332,7 +332,7 @@ CSerializableJsonFile::write_item_end_wrapped(
 	json_object* array = m_stack_stream.get_element(
 		m_stack_stream.get_num_elements() - 2);
 
-	if (type->m_ctype == CT_MATRIX)
+	if (type->m_ctype==CT_MATRIX || type->m_ctype==CT_SGMATRIX)
 		array = json_object_array_get_idx(array, x);
 
 	json_object_array_put_idx(array, y, m_stack_stream.back());

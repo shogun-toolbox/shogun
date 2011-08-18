@@ -111,10 +111,10 @@ SerializableXmlReader00::read_cont_begin_wrapped(
 	case CT_NDARRAY:
 		SG_NOTIMPLEMENTED;
 	case CT_SCALAR: break;
-	case CT_VECTOR:
+	case CT_VECTOR: case CT_SGVECTOR:
 		*len_read_y = xmlChildElementCount(m);
 		break;
-	case CT_MATRIX:
+	case CT_MATRIX: case CT_SGMATRIX:
 		*len_read_x = xmlChildElementCount(m);
 
 		for (xmlNode* cur=m->children; cur != NULL; cur=cur->next) {
@@ -139,8 +139,11 @@ SerializableXmlReader00::read_cont_end_wrapped(
 {
 	if (len_read_y > 0) m_file->pop_node();
 
-	if (type->m_ctype == CT_MATRIX && len_read_y *len_read_x > 0)
-		m_file->pop_node();
+	if (type->m_ctype==CT_MATRIX || type->m_ctype==CT_SGMATRIX)
+	{
+		if (len_read_y*len_read_x>0)
+			m_file->pop_node();
+	}
 
 	return true;
 }
@@ -256,14 +259,15 @@ SerializableXmlReader00::read_item_begin_wrapped(
 	case CT_NDARRAY:
 		SG_NOTIMPLEMENTED;
 	case CT_SCALAR: break;
-	case CT_VECTOR:
+	case CT_VECTOR: case CT_SGVECTOR:
 		if (y == 0) {
 			if (!m_file->join_node(BAD_CAST STR_ITEM)) return false;
 			return true;
 		}
 		break;
-	case CT_MATRIX:
-		if (type->m_ctype == CT_MATRIX && y == 0) {
+	case CT_MATRIX: case CT_SGMATRIX:
+		if (y==0)
+		{
 			if (x != 0) { m_file->pop_node(); m_file->pop_node(); }
 
 			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%"PRIi32, x);
