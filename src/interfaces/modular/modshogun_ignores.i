@@ -28,3 +28,4 @@
 %ignore SSKFeatures;
 %ignore SSKDoubleFeature;
 %ignore quadratic_program;
+%ignore __STDC_FORMAT_MACROS;
