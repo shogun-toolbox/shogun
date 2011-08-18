@@ -172,12 +172,12 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
 				 "during writing AsciiFile!");
 		return false;
-	case CT_VECTOR:
+	case CT_VECTOR: case CT_SGVECTOR:
 		if (fprintf(m_fstream, "%"PRIi32" %c", len_real_y,
 					CHAR_CONT_BEGIN) <= 0)
 			return false;
 		break;
-	case CT_MATRIX:
+	case CT_MATRIX: case CT_SGMATRIX:
 		if (fprintf(m_fstream, "%"PRIi32" %"PRIi32" %c",
 					len_real_y, len_real_x, CHAR_CONT_BEGIN) <= 0)
 			return false;

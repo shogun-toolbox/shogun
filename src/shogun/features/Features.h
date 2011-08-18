@@ -261,7 +261,7 @@ class CFeatures : public CSGObject
 		 * @param idx index to convert
 		 * @return converted index
 		 */
-		inline const index_t subset_idx_conversion(index_t idx) const
+		inline index_t subset_idx_conversion(index_t idx) const
 		{
 			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
 		}
