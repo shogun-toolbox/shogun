@@ -558,10 +558,20 @@ private:
 	T integer[sz];
 };
 
-/** convenience typedefs */
+/**@name convenience typedefs */
+//@{
+
+/// 192 bit integer constructed out of 3 64bit uint64_t's
 typedef CDynInt<uint64_t,3> uint192_t;
-typedef CDynInt<uint64_t,3> uint256_t;
-typedef CDynInt<uint64_t,3> uint512_t;
-typedef CDynInt<uint64_t,3> uint1024_t;
+
+/// 256 bit integer constructed out of 4 64bit uint64_t's
+typedef CDynInt<uint64_t,4> uint256_t;
+
+/// 512 bit integer constructed out of 8 64bit uint64_t's
+typedef CDynInt<uint64_t,8> uint512_t;
+
+/// 1024 bit integer constructed out of 16 64bit uint64_t's
+typedef CDynInt<uint64_t,16> uint1024_t;
+//@}
 }
 #endif // __DYNINT_H__
