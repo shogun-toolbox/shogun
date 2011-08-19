@@ -38,6 +38,9 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 
 all: $(TARGETS)
 
+print_targets:
+	@echo $(TARGETS)
+
 clean:
 	rm -f $(TARGETS)
 

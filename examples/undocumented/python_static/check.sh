@@ -25,5 +25,10 @@ do
 	fi
 done
 
-test -f error.log && ( cat error.log ; exit 1 )
+if test -f error.log 
+then
+	cat error.log
+	exit 1
+fi
+
 exit 0
