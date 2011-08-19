@@ -17,8 +17,6 @@
 
 namespace shogun
 {
-extern SGIO* sg_io;
-
 template <class T> class CDynamicArray;
 template <class T> class CDynamicObjectArray;
 
@@ -128,11 +126,9 @@ template <class T> class DynArray
 		 */
 		inline T get_element_safe(int32_t index) const
 		{
-			SGIO* io = sg_io;
-
 			if (index>=get_num_elements())
 			{
-				SG_ERROR("array index out of bounds (%d >= %d)\n",
+				SG_SERROR("array index out of bounds (%d >= %d)\n",
 						 index, get_num_elements());
 			}
 			return array[index];
