@@ -25,25 +25,45 @@
 using namespace shogun;
 
 CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_)
-: CSimplePreprocessor<float64_t>(), num_dim(0), initialized(false),
-	do_whitening(do_whitening_), m_mode(mode_), thresh(thresh_)
+: CDimensionReductionPreprocessor(), num_dim(0), m_initialized(false),
+	m_whitening(do_whitening_), m_mode(mode_), thresh(thresh_)
+{
+	init();
+}
+
+void CPCA::init()
 {
 	m_transformation_matrix = SGMatrix<float64_t>(NULL,0,0,true);
 	m_mean_vector = SGVector<float64_t>(NULL,0,true);
 	m_eigenvalues_vector = SGVector<float64_t>(NULL,0,true);
-	init();
+
+
+	m_parameters->add(&m_transformation_matrix,
+					"transformation matrix", "Transformation matrix (Eigenvectors of covariance matrix).");
+	m_parameters->add(&m_mean_vector,
+					"mean vector", "Mean Vector.");
+	m_parameters->add(&m_eigenvalues_vector,
+					"eigenvalues vector", "Vector with Eigenvalues.");
+	m_parameters->add(&m_initialized,
+			"initalized", "True when initialized.");
+	m_parameters->add(&m_whitening,
+			"whitening", "Whether data shall be whitened.");
+	m_parameters->add((machine_int_t*) &m_mode, "mode",
+			"PCA Mode.");
+	m_parameters->add(&thresh,
+			"thresh", "Cutoff threshold.");
 }
 
 CPCA::~CPCA()
 {
-	m_transformation_matrix.free_matrix();
-	m_mean_vector.free_vector();
-	m_eigenvalues_vector.free_vector();
+	m_transformation_matrix.destroy_matrix();
+	m_mean_vector.destroy_vector();
+	m_eigenvalues_vector.destroy_vector();
 }
 
 bool CPCA::init(CFeatures* features)
 {
-	if (!initialized)
+	if (!m_initialized)
 	{
 		// loop varibles
 		int32_t i,j,k;
@@ -67,21 +87,15 @@ bool CPCA::init(CFeatures* features)
 		}
 
 		//divide
-		for (j=0; j<num_features; j++)
-			m_mean_vector.vector[j] /= num_vectors;
-
-		SG_DONE();
-		SG_DEBUG("Computing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0);
+		for (i=0; i<num_features; i++)
+			m_mean_vector.vector[i] /= num_vectors;
 
 		float64_t* cov = SG_CALLOC(float64_t, num_features*num_features);
 
-		float64_t* sub_mean= SG_MALLOC(float64_t, num_features);
+		float64_t* sub_mean = SG_MALLOC(float64_t, num_features);
 
 		for (i=0; i<num_vectors; i++)
 		{
-			if (!(i % (num_vectors/10+1)))
-				SG_PROGRESS(i, 0, num_vectors);
-
             		for (k=0; k<num_features; k++)
                 		sub_mean[k]=feature_matrix.matrix[i*num_features+k]-m_mean_vector.vector[k];
 
@@ -92,9 +106,7 @@ bool CPCA::init(CFeatures* features)
 			           cov, num_features);
 		}
 
-        	SG_FREE(sub_mean);
-
-		SG_DONE();
+		SG_FREE(sub_mean);
 
 		for (i=0; i<num_features; i++)
 		{
@@ -110,8 +122,8 @@ bool CPCA::init(CFeatures* features)
 
 		if (m_mode == FIXED_NUMBER)
 		{
-			ASSERT(thresh <= num_features);
-			num_dim = thresh;
+			ASSERT(m_target_dim <= num_features);
+			num_dim = m_target_dim;
 		}
 		if (m_mode == VARIANCE_EXPLAINED)
 		{
@@ -119,7 +131,7 @@ bool CPCA::init(CFeatures* features)
 			for (i=0; i<num_features; i++)
 				eig_sum += m_eigenvalues_vector.vector[i];
 			
-			float64_t com_sum = 0;		
+			float64_t com_sum = 0;
 			for (i=num_features-1; i>-1; i--)
 			{
 				num_dim++;
@@ -142,24 +154,23 @@ bool CPCA::init(CFeatures* features)
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
 		
 		m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
-		num_old_dim=num_features;
+		num_old_dim = num_features;
 
-		SG_PRINT("num_dim=%d", num_dim);
 		int32_t offs=0;
 		for (i=num_features-num_dim; i<num_features; i++)
 		{
 			for (k=0; k<num_features; k++)
-				if (do_whitening)
+				if (m_whitening)
 					m_transformation_matrix.matrix[offs+k*num_dim] =
 						cov[num_features*i+k]/sqrt(m_eigenvalues_vector.vector[i]);
 				else
-					m_transformation_matrix.matrix[offs+k*num_dim] = 
+					m_transformation_matrix.matrix[offs+k*num_dim] =
 						cov[num_features*i+k];
 			offs++;
 		}
 
 		SG_FREE(cov);
-		initialized = true;
+		m_initialized = true;
 		return true;
 	}
 
@@ -168,13 +179,14 @@ bool CPCA::init(CFeatures* features)
 
 void CPCA::cleanup()
 {
-	m_transformation_matrix.free_matrix();
-	m_mean_vector.free_vector();
-	m_eigenvalues_vector.free_vector();
+	m_transformation_matrix.destroy_matrix();
+	m_mean_vector.destroy_vector();
+	m_eigenvalues_vector.destroy_vector();
 }
 
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 {
+	ASSERT(m_initialized);
 	SGMatrix<float64_t> m = ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix();
 	int32_t num_vectors = m.num_cols;
 	int32_t num_features = m.num_rows;
@@ -235,41 +247,17 @@ SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 
 SGMatrix<float64_t> CPCA::get_transformation_matrix()
 {
-	return SGMatrix<float64_t>(m_transformation_matrix.matrix,
-	                           m_transformation_matrix.num_rows,
-	                           m_transformation_matrix.num_cols,
-	                           false);
+	return m_transformation_matrix;
 }
 
 SGVector<float64_t> CPCA::get_eigenvalues()
 {
-	return SGVector<float64_t>(m_eigenvalues_vector.vector,
-	                           m_eigenvalues_vector.vlen,
-	                           false);
+	return m_eigenvalues_vector;
 }
 
 SGVector<float64_t> CPCA::get_mean()
 {
-	return SGVector<float64_t>(m_mean_vector.vector,
-	                           m_mean_vector.vlen,
-	                           false);
+	return m_mean_vector;
 }
 
-void CPCA::init()
-{
-	m_parameters->add(&m_transformation_matrix,
-					"transformation matrix", "Transformation matrix (Eigenvectors of covariance matrix).");
-	m_parameters->add(&m_mean_vector,
-					"mean vector", "Mean Vector.");
-	m_parameters->add(&m_eigenvalues_vector,
-					"eigenvalues vector", "Vector with Eigenvalues.");
-	m_parameters->add(&initialized,
-			"initalized", "True when initialized.");
-	m_parameters->add(&do_whitening,
-			"do_whitening", "Whether data shall be whitened.");
-	m_parameters->add((machine_int_t*) &m_mode, "mode",
-			"PCA Mode.");
-	m_parameters->add(&thresh,
-			"thresh", "Cutoff threshold.");
-}
 #endif /* HAVE_LAPACK */

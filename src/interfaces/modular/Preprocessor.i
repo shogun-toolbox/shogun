@@ -11,14 +11,14 @@
 /* Remove C Prefix */
 %rename(Preprocessor) CPreprocessor;
 %rename(SparsePreprocessor) CSparsePreprocessor;
-%rename(PCA) CPCA;
-%rename(KernelPCACut) CKernelPCACut;
 %rename(NormOne) CNormOne;
 %rename(LogPlusOne) CLogPlusOne;
 %rename(PruneVarSubMean) CPruneVarSubMean;
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 
 %rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
+%rename(PCA) CPCA;
+%rename(KernelPCA) CKernelPCA;
 %rename(MultidimensionalScaling) CMultidimensionalScaling;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 %rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
@@ -65,14 +65,14 @@ namespace shogun
     %template(DecompressCharString) CDecompressString<char>;
 }
 %include <shogun/preprocessor/SparsePreprocessor.h>
-%include <shogun/preprocessor/PCA.h>
-%include <shogun/preprocessor/KernelPCACut.h>
 %include <shogun/preprocessor/NormOne.h>
 %include <shogun/preprocessor/LogPlusOne.h>
 %include <shogun/preprocessor/PruneVarSubMean.h>
 %include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 
 %include <shogun/preprocessor/DimensionReductionPreprocessor.h>
+%include <shogun/preprocessor/PCA.h>
+%include <shogun/preprocessor/KernelPCA.h>
 %include <shogun/preprocessor/MultidimensionalScaling.h>
 %include <shogun/preprocessor/LocallyLinearEmbedding.h>
 %include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>

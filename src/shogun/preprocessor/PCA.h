@@ -10,14 +10,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology
  */
 
-#ifndef _CPCA__H__
-#define _CPCA__H__
+#ifndef PCA_H_
+#define PCA_H_
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/config.h>
 #include <stdio.h>
-
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
 
@@ -42,7 +41,7 @@ enum EPCAMode
  * covariance matrix is of size num_feat*num_feat. Note that vectors don't have
  * to have zero mean as it is substracted.
  */
-class CPCA: public CSimplePreprocessor<float64_t>
+class CPCA: public CDimensionReductionPreprocessor
 {
 	public:
 	
@@ -51,7 +50,7 @@ class CPCA: public CSimplePreprocessor<float64_t>
 		 * @param type of cutoff
 		 * @param thresh threshold
 		 */
-		CPCA(bool do_whitening=false, EPCAMode mode=THRESHOLD, float64_t thresh=1e-6);
+		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6);
 
 		/** destructor */
 		virtual ~CPCA();
@@ -107,18 +106,15 @@ class CPCA: public CSimplePreprocessor<float64_t>
 		int32_t num_dim;
 		/** num old dim */
 		int32_t num_old_dim;
-
 		/** mean vector */
 		SGVector<float64_t> m_mean_vector;
 		/** eigenvalues vector */
 		SGVector<float64_t> m_eigenvalues_vector;
-
 		/** initialized */
-		bool initialized;
-
-		/** do whitening */
-		bool do_whitening;
-		/** Cutoff type */
+		bool m_initialized;
+		/** whitening */
+		bool m_whitening;
+		/** PCA mode */
 		EPCAMode m_mode;
 		/** thresh */
 		float64_t thresh;
