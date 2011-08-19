@@ -24,6 +24,7 @@ namespace shogun
 {
 class CSGInterface;
 
+/** gui structure */
 class CGUIStructure : public CSGObject
 {
 	public:

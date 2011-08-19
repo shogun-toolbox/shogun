@@ -85,6 +85,9 @@ public:
 	 */
 	void set_max_num_mkliters(int32_t maxnum);
 
+	/** set mkl norm
+	 * @param norm
+	 */
 	virtual void set_mkl_norm(float64_t norm);
 
 	

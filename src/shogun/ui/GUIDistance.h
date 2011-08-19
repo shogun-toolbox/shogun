@@ -21,6 +21,7 @@ namespace shogun
 {
 class CSGInterface;
 
+/** gui distance */
 class CGUIDistance : public CSGObject
 {
  public:

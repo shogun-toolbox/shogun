@@ -23,6 +23,7 @@ template<class T> class CCache;
 
 typedef int32_t index_t;
 
+/** shogun vector */
 template<class T> class SGVector
 {
 	public:

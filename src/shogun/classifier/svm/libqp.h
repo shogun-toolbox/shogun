@@ -36,9 +36,13 @@ namespace shogun
 
 /* QP solver return value */
 typedef struct {
-  uint32_t nIter;       /* number of iterations */ 
-  float64_t QP;            /* primal objective value */ 
-  float64_t QD;            /* dual objective value */  
+  /** number of iterations */
+  uint32_t nIter;
+  /** primal objective value */
+  float64_t QP;
+  /** dual objective value */
+  float64_t QD;
+  /** exit flag */
   int8_t exitflag;      /* -1 ... not enough memory 
                             0 ... nIter >= MaxIter 
                             1 ... QP - QD <= TolRel*ABS(QP)

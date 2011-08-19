@@ -21,6 +21,7 @@ namespace shogun
 {
 class CSGInterface;
 
+/** gui estimate */
 class CGUIPluginEstimate : public CSGObject
 {
 

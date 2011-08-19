@@ -79,7 +79,10 @@ class CGMNPSVM : public CMultiClassSVM
 		 */
 		// is the basic untransformed alpha, needed for MKL
 		float64_t* m_basealphas;
-		index_t m_basealphas_y, m_basealphas_x;
+		/** base alphas y */
+		index_t m_basealphas_y;
+		/** base alphas x */
+		index_t m_basealphas_x;
 };
 }
 #endif

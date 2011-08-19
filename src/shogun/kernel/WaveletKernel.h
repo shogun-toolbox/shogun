@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-/*
+/** the class WaveletKernel
  *
  * It is defined as
  * \f[
@@ -25,7 +25,8 @@ namespace shogun
  * \f]
  * Where h(x) is the mother wavelet function
  * h({\bf x}=cos(1.75*x)\cdot exp(\frac{(-x^2){2})
- * */
+ * 
+ */
 class CWaveletKernel: public CDotKernel
 {
 	public:

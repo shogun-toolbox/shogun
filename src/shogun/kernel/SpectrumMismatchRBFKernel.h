@@ -36,6 +36,7 @@ struct joint_list_struct
 	unsigned int mismatch;
 } ;
 
+/** spectrum mismatch rbf kernel */
 class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 {
 	public:
@@ -199,10 +200,10 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
-		/* register the parameters
+		/** register the parameters
 		 */
 		virtual void register_params();
-		/* register the alphabet
+		/** register the alphabet
 		 */
 		void register_alphabet();
 
@@ -216,7 +217,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
 		float64_t* AA_matrix;
-		/*length of the AA_matrix -- for registration*/
+		/** length of the AA_matrix -- for registration */
 		int32_t AA_matrix_length;
 		/** width of Gaussian*/
 		float64_t width;

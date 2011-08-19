@@ -96,7 +96,6 @@ class CGUIClassifier : public CSGObject
 		 * @param bias
 		 * @param brows
 		 * @param bcols
-		 * @param idx
 		 */
 		bool get_linear(
 			float64_t* &weights, int32_t& rows, int32_t& cols,

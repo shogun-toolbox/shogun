@@ -110,7 +110,9 @@ private:
 	void init();
 
 public:
+	/** keys */
 	SGParamInfo* m_key;
+	/** values */
 	SGParamInfo* m_value;
 
 };

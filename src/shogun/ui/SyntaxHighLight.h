@@ -1,3 +1,4 @@
+/** syntax highlight */
 class CSyntaxHighLight
 {
 	public:
