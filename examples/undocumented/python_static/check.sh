@@ -26,3 +26,4 @@ do
 done
 
 test -f error.log && ( cat error.log ; exit 1 )
+exit 0
