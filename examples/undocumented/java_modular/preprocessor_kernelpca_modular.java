@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-public class preprocessor_kernelpcacut_modular {
+public class preprocessor_kernelpca_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
@@ -16,7 +16,7 @@ public class preprocessor_kernelpcacut_modular {
 
 		GaussianKernel kernel = new GaussianKernel(features, features, width);
 		
-		KernelPCACut preprocessor = new KernelPCACut(kernel, threshold);
+		KernelPCA preprocessor = new KernelPCA(kernel);
 		preprocessor.init(features);
 		preprocessor.apply_to_feature_matrix(features);
 
