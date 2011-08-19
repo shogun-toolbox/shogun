@@ -15,6 +15,7 @@
 #include <shogun/mathematics/arpack.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclidianDistance.h>
@@ -132,28 +133,28 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 
 	// get distance matrix
 	SGMatrix<float64_t> D_matrix = distance->get_distance_matrix();
-
-	// get D^2 matrix
-	float64_t* Ds_matrix = SG_MALLOC(float64_t, N*N);
-	for (i=0;i<N;i++)
-		for (j=0;j<N;j++)
-			Ds_matrix[i*N+j] = CMath::sq(D_matrix.matrix[i*N+j]);
-
-	// centering matrix
-	float64_t* H_matrix = SG_MALLOC(float64_t, N*N);
-	for (i=0;i<N;i++)
-		for (j=0;j<N;j++)
-			H_matrix[i*N+j] = (i==j) ? 1.0-1.0/N : -1.0/N;
-
-	// compute -1/2 H D^2 H (result in Ds_matrix)
-	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,
-			N,N,N,1.0,H_matrix,N,Ds_matrix,N,0.0,D_matrix.matrix,N);
-	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,
-			N,N,N,-0.5,D_matrix.matrix,N,H_matrix,N,0.0,Ds_matrix,N);
-
-	// cleanup
-	SG_FREE(D_matrix.matrix);
-	SG_FREE(H_matrix);
+	
+	// double center distance_matrix
+	float64_t dsq;
+	for (i=0; i<N; i++)
+	{
+		for (j=i; j<N; j++)
+		{
+			dsq = CMath::sq(D_matrix.matrix[i*N+j]);
+			D_matrix.matrix[i*N+j] = dsq;
+			D_matrix.matrix[j*N+i] = dsq;
+		}
+	}
+	CMath::center_matrix(D_matrix.matrix,N,N);
+	for (i=0; i<N; i++)
+	{
+		D_matrix.matrix[i*N+i] *= -0.5;
+		for (j=i+1; j<N; j++)
+		{
+			D_matrix.matrix[i*N+j] *= -0.5;
+			D_matrix.matrix[j*N+i] *= -0.5;
+		}
+	}
 
 	// feature matrix representing given distance
 	float64_t* replace_feature_matrix = SG_MALLOC(float64_t, N*m_target_dim);
@@ -164,12 +165,11 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 	// using ARPACK
 	float64_t* eigenvalues_vector = SG_MALLOC(float64_t, m_target_dim);
 	// solve eigenproblem with ARPACK (faster)
-	arpack_dsaupd(Ds_matrix, NULL, N, m_target_dim, "LM", 1, false, 0.0,
+	arpack_dsaupd(D_matrix.matrix, NULL, N, m_target_dim, "LM", 1, false, 0.0,
 	              eigenvalues_vector, replace_feature_matrix,
 	              eigenproblem_status);
 	// check for failure
 	ASSERT(eigenproblem_status == 0);
-
 	// reverse eigenvectors order
 	float64_t tmp;
 	for (j=0; j<N; j++)
@@ -206,7 +206,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 	float64_t* eigenvalues_vector = SG_MALLOC(float64_t, N);
 	float64_t* eigenvectors = SG_MALLOC(float64_t, m_target_dim*N);
 	// solve eigenproblem with LAPACK
-	wrap_dsyevr('V','U',N,Ds_matrix,N,N-m_target_dim+1,N,eigenvalues_vector,eigenvectors,&eigenproblem_status);
+	wrap_dsyevr('V','U',N,D_matrix.matrix,N,N-m_target_dim+1,N,eigenvalues_vector,eigenvectors,&eigenproblem_status);
 	// check for failure
 	ASSERT(eigenproblem_status==0);
 	
@@ -242,9 +242,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 			break;
 		}
 	}	
-	
-	// cleanup
-	SG_FREE(Ds_matrix);
+	D_matrix.destroy_matrix();	
 
 	return SGMatrix<float64_t>(replace_feature_matrix,m_target_dim,N);
 }
