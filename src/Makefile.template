@@ -212,7 +212,7 @@ install-r_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/Meta
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(RDIR)/sg/libs
-	install -m644 $(CONFIGPATH)/../examples/documented/r/*.R $(CONFIGPATH)/../examples/documented/r/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
+	install -m644 $(CONFIGPATH)/../examples/documented/r_static/*.R $(CONFIGPATH)/../examples/documented/r_static/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
 	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB)
 
 install-elwms_static: $(TEMPLATE_TARGET)
@@ -241,7 +241,7 @@ ifneq ($(R_TARGET),)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/R
 	rm -f $(DESTDIR)$(RDIR)/elwms/libs/$(TEMPLATE_TARGET)
 	cd $(DESTDIR)$(RDIR)/elwms/libs && ln -s $(RRELPATH)/$(TEMPLATE_TARGET) 
-	install -m644 $(CONFIGPATH)/../examples/documented/r/*.R $(CONFIGPATH)/../examples/documented/r/graphical/*.R \
+	install -m644 $(CONFIGPATH)/../examples/documented/r_static/*.R $(CONFIGPATH)/../examples/documented/r_static/graphical/*.R \
 		$(DESTDIR)$(RDIR)/elwms/demo
 	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) elwms $(EXT_LIB)
 endif
