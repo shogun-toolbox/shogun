@@ -1,19 +1,26 @@
 #!/bin/bash
 
-status=0
+rm -f error.log
 
 export LUA_PATH=../../../src/interfaces/lua_modular/?.lua\;?.lua
 export LUA_CPATH=../../../src/interfaces/lua_modular/?.so
 
-for i in *.lua
+for e in *.lua
 do
-	echo -n $i
-	if lua $i >/dev/null 2>&1
+	echo -n $e
+	if lua $e >/dev/null 2>&1
 	then
 		echo " OK"
 	else
-		echo " FAIL"
-		status=1
+		echo " ERROR"
+		echo "================================================================================" >>error.log
+		echo " error in $e ">>error.log
+		echo "================================================================================" >>error.log
+		lua "$e" >>error.log 2>&1
+		echo "================================================================================" >>error.log
+		echo >>error.log
+		echo >>error.log
 	fi
 done
-exit $status
+
+test -f error.log && ( cat error.log ; exit 1 )

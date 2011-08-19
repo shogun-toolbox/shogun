@@ -1,5 +1,6 @@
 #!/bin/bash
-status=0
+
+rm -f error.log
 
 if [ -z "${PYTHON}" ]
 then
@@ -14,8 +15,14 @@ do
 		echo " OK"
 	else
 		echo " ERROR"
-		status=1
+		echo "================================================================================" >>error.log
+		echo " error in $e ">>error.log
+		echo "================================================================================" >>error.log
+		${PYTHON} "$e" >>error.log 2>&1
+		echo "================================================================================" >>error.log
+		echo >>error.log
+		echo >>error.log
 	fi
 done
 
-exit $status
+test -f error.log && ( cat error.log ; exit 1 )

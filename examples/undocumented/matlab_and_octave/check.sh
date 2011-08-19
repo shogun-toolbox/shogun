@@ -2,7 +2,7 @@
 
 MATLAB="$1"
 
-status=0
+rm -f error.log
 
 for e in *.m
 do
@@ -15,7 +15,7 @@ do
 			echo " OK"
 		else
 			echo " ERROR"
-			status=1
+			cat "$e" | matlab -nojvm -nodesktop -nodisplay >>error.log
 		fi
 	else
 		if octave "$e" >/dev/null 2>&1
@@ -23,8 +23,15 @@ do
 			echo " OK"
 		else
 			echo " ERROR"
-			status=1
+			echo "================================================================================" >>error.log
+			echo " error in $e ">>error.log
+			echo "================================================================================" >>error.log
+			octave "$e" >>error.log 2>&1
+			echo "================================================================================" >>error.log
+			echo >>error.log
+			echo >>error.log
 		fi
 	fi
 done
-exit $status
+
+test -f error.log && ( cat error.log ; exit 1 )
