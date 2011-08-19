@@ -47,7 +47,7 @@ struct D_THREAD_PARAM
 	float64_t* q_matrix;
 	float64_t* W_matrix;
 #ifndef WIN32
-	pthread_mutex_t* W_matrix_mutex;
+	pthread_spinlock_t* W_matrix_spinlock;
 #endif
 };
 #endif
@@ -120,9 +120,9 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
 #ifndef WIN32
-	pthread_mutex_t W_matrix_mutex;
+	pthread_spinlock_t W_matrix_spinlock;
 	pthread_attr_t attr;
-	pthread_mutex_init(&W_matrix_mutex, NULL);
+	pthread_spin_init(&W_matrix_spinlock, NULL);
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
@@ -147,12 +147,12 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 		parameters[t].w_sum_vector = w_sum_vector + dp*t;
 		parameters[t].q_matrix = q_matrix + (m_k*m_k)*t;
 		parameters[t].W_matrix = W_matrix;
-		parameters[t].W_matrix_mutex = &W_matrix_mutex;
+		parameters[t].W_matrix_spinlock = &W_matrix_spinlock;
 		pthread_create(&threads[t], &attr, run_hessianestimation_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
 		pthread_join(threads[t], NULL);
-	pthread_mutex_destroy(&W_matrix_mutex);
+	pthread_spin_destroy(&W_matrix_spinlock);
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
@@ -228,7 +228,7 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 	float64_t* q_matrix = parameters->q_matrix;
 	float64_t* W_matrix = parameters->W_matrix;
 #ifndef WIN32
-	pthread_mutex_t* W_matrix_mutex = parameters->W_matrix_mutex;
+	pthread_spinlock_t* W_matrix_spinlock = parameters->W_matrix_spinlock;
 #endif
 
 	int i,j,k,l;
@@ -320,7 +320,7 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 		                Pii,m_k,
 		            0.0,q_matrix,m_k);
 #ifndef WIN32
-		pthread_mutex_lock(W_matrix_mutex);
+		pthread_spin_lock(W_matrix_spinlock);
 #endif
 		for (j=0; j<m_k; j++)
 		{
@@ -328,7 +328,7 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] += q_matrix[j*m_k+k];
 		}
 #ifndef WIN32
-		pthread_mutex_unlock(W_matrix_mutex);
+		pthread_spin_unlock(W_matrix_spinlock);
 #endif
 	}
 	return NULL;

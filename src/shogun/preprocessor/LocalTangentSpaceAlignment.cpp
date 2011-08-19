@@ -12,6 +12,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/lib/Time.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
@@ -43,7 +44,7 @@ struct D_THREAD_PARAM
 	float64_t* q_matrix;
 	float64_t* W_matrix;
 #ifndef WIN32
-	pthread_mutex_t* W_matrix_mutex;
+	pthread_spinlock_t* W_matrix_spinlock;
 #endif
 };
 #endif
@@ -84,6 +85,8 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
+	SG_UNREF(distance->parallel);
+	distance->parallel = this->parallel;
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance);
 
 	// init W (weight) matrix
@@ -110,9 +113,9 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
 #ifndef WIN32
-	pthread_mutex_t W_matrix_mutex;
+	pthread_spinlock_t W_matrix_spinlock;
 	pthread_attr_t attr;
-	pthread_mutex_init(&W_matrix_mutex, NULL);
+	pthread_spin_init(&W_matrix_spinlock, NULL);
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
@@ -133,12 +136,12 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 		parameters[t].s_values_vector = s_values_vector + dim*t;
 		parameters[t].q_matrix = q_matrix + (m_k*m_k)*t;
 		parameters[t].W_matrix = W_matrix;
-		parameters[t].W_matrix_mutex = &W_matrix_mutex;
+		parameters[t].W_matrix_spinlock = &W_matrix_spinlock;
 		pthread_create(&threads[t], &attr, run_ltsa_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
 		pthread_join(threads[t], NULL);
-	pthread_mutex_destroy(&W_matrix_mutex);
+	pthread_spin_destroy(&W_matrix_spinlock);
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
@@ -203,7 +206,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 	float64_t* q_matrix = parameters->q_matrix;
 	float64_t* W_matrix = parameters->W_matrix;
 #ifndef WIN32
-	pthread_mutex_t* W_matrix_mutex = parameters->W_matrix_mutex;
+	pthread_spinlock_t* W_matrix_spinlock = parameters->W_matrix_spinlock;
 #endif
 
 	int i,j,k;
@@ -250,7 +253,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 			for (k=0; k<m_k; k++)
 				G_matrix[(j+1)*m_k+k] = local_feature_matrix[k*dim+j];
 		}
-	
+
 		// compute GG'
 		cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,
 		            m_k,m_k,1+m_target_dim,
@@ -260,16 +263,17 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 		
 		// W[neighbors of i, neighbors of i] = I - GG'
 #ifndef WIN32
-		pthread_mutex_lock(W_matrix_mutex);
+		pthread_spin_lock(W_matrix_spinlock);
 #endif
 		for (j=0; j<m_k; j++)
 		{
 			W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[j*N+i]] += 1.0;
+
 			for (k=0; k<m_k; k++)
 				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] -= q_matrix[j*m_k+k];
 		}
 #ifndef WIN32
-		pthread_mutex_unlock(W_matrix_mutex);
+		pthread_spin_unlock(W_matrix_spinlock);
 #endif
 	}
 	return NULL;

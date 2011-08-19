@@ -33,7 +33,7 @@ class CDistance;
  * CLocallyLinearEmbedding (LAPACK or ARPACK if available).
  *
  * The hessian estimation step is parallel and neighborhood determination 
- * is not as in CLocallyLinearEmbedding.
+ * too as in CLocallyLinearEmbedding.
  *
  * Be sure k value is set with at least 
  * 1+[target dim]+1/2 [target_dim]*[1 + target dim], e.g.
