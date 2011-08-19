@@ -3,10 +3,10 @@
 rm -f error.log
 
 MAKEOPTS=""
-test -n "$LIBRARY_PATH" && MAKEOPTS="LIBRARY_PATH=${LIBRARY_PATH} ${MAKEOPTS}"
-test -n "$LIB_PATH" && MAKEOPTS="LIB_PATH=${LIB_PATH} ${MAKEOPTS}"
-test -n "$INC_PATH" && MAKEOPTS="INC_PATH=${INC_PATH} ${MAKEOPTS}"
-test -n "$LIBS" && MAKEOPTS="LIBS=${LIBS} ${MAKEOPTS}"
+test -n "$LIBRARY_PATH" && MAKEOPTS="LIBRARY_PATH=\"${LIBRARY_PATH}\" ${MAKEOPTS}"
+test -n "$LIB_PATH" && MAKEOPTS="LIB_PATH=\"${LIB_PATH}\" ${MAKEOPTS}"
+test -n "$INC_PATH" && MAKEOPTS="INC_PATH=\"${INC_PATH}\" ${MAKEOPTS}"
+test -n "$LIBS" && MAKEOPTS="LIBS=\"${LIBS}\" ${MAKEOPTS}"
 
 for e in `make print_targets`
 do
