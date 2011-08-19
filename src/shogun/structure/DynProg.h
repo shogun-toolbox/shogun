@@ -145,25 +145,19 @@ public:
 	
 	/** set a id
 	 *
-	 * @param a new a id (identity?)
-	 * @param M dimension M of matrix a
-	 * @param N dimension N of matrix a
+	 * @param a new a id
 	 */
 	void set_a_id(SGMatrix<int32_t> a);
 	
 	/** set a transition matrix
 	 *
 	 * @param a_trans transition matrix a
-	 * @param num_trans number of transitions
-	 * @param N dimension N of matrix a
 	 */
 	void set_a_trans_matrix(SGMatrix<float64_t> a_trans);
 
 	/** init mod words array
 	 *
 	 * @param p_mod_words_array new mod words array
-	 * @param num_elem number of array elements
-	 * @param num_columns number of columns
 	 */
 	void init_mod_words_array(SGMatrix<int32_t> p_mod_words_array);
 
@@ -177,8 +171,6 @@ public:
 	/** set best path seq
 	 *
 	 * @param seq signal features
-	 * @param dims dimensions
-	 * @param ndims number of dimensions
 	 */
 	void set_observation_matrix(SGNDArray<float64_t> seq);
 
@@ -198,15 +190,12 @@ public:
 	 *  between zero and one
 	 *
 	 * @param seg_path seg path
-	 * @param rows rows
-	 * @param cols cols
 	 */
 	void set_content_type_array(SGMatrix<float64_t> seg_path);
 
 	/** set best path pos
 	 *
-	 * @param pos the position
-	 * @param seq_len length of sequence
+	 * @param pos the position vector
 	 */
 	void set_pos(SGVector<int32_t> pos);
 
@@ -214,15 +203,12 @@ public:
 	 * only for compute_nbest_paths
 	 *
 	 * @param orf_info the orf info
-	 * @param m dimension m
-	 * @param n dimension n
 	 */
 	void set_orf_info(SGMatrix<int32_t> orf_info);
 
 	/** set best path genesstr
 	 *
 	 * @param genestr gene string
-	 * @param genestr_len length of gene string
 	 */
 	void set_gene_string(SGVector<char> genestr);
 
@@ -230,16 +216,12 @@ public:
 	/** set best path dict weights
 	 *
 	 * @param dictionary_weights dictionary weights
-	 * @param dict_len length of dictionary weights
-	 * @param n dimension n
 	 */
 	void set_dict_weights(SGMatrix<float64_t> dictionary_weights);
 
 	/** set best path segment loss
 	 *
 	 * @param segment_loss segment loss
-	 * @param num_segment_id1 number of segment id1
-	 * @param num_segment_id2 number of segment id2
 	 */
 	void best_path_set_segment_loss(SGMatrix<float64_t> segment_loss);
 

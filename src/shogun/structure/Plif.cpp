@@ -100,7 +100,7 @@ void CPlif::init_penalty_struct_cache()
 void CPlif::set_plif_name(char *p_name)
 {
 	SG_FREE(name);
-	name=SG_MALLOC(char, strlen(p_name)+1);
+	name=SG_MALLOC(char, strlen(p_name)+3);
 	strcpy(name,p_name) ;
 }
 

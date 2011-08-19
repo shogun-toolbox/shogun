@@ -18,12 +18,18 @@
 namespace shogun
 {
 
+/** Ways to transform inputs */
 enum ETransformType
 {
+	/// Linear
 	T_LINEAR,
+	/// Logarithmic
 	T_LOG,
+	/// Logarithmic (log(1+x))
 	T_LOG_PLUS1,
+	/// Logarithmic (log(3+x))
 	T_LOG_PLUS3,
+	/// Linear (3+x)
 	T_LINEAR_PLUS3
 };
 
