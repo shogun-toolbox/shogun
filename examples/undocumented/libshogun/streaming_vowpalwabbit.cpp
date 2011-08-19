@@ -43,4 +43,6 @@ int main()
 	SG_UNREF(vw);
 
 	exit_shogun();
+
+	return 0;
 }

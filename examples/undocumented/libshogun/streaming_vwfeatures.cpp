@@ -61,4 +61,6 @@ int main()
 	SG_UNREF(sgd);
 
 	exit_shogun();
+
+	return 0;
 }

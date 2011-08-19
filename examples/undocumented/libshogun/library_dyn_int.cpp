@@ -117,4 +117,6 @@ int main()
 	}
 
 	exit_shogun();
+
+	return 0;
 }
