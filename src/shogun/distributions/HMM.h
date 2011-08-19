@@ -67,12 +67,18 @@ typedef T_STATES* P_STATES ;
 
 //@}
 
+/** Training type */
 enum BaumWelchViterbiType
 {
+	/// standard baum welch
 	BW_NORMAL,
+	/// baum welch only for specified transitions
 	BW_TRANS,
+	/// baum welch only for defined transitions/observations
 	BW_DEFINED,
+	/// standard viterbi
 	VIT_NORMAL,
+	/// viterbi only for defined transitions/observations
 	VIT_DEFINED
 };
 
