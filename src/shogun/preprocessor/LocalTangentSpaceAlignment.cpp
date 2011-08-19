@@ -115,7 +115,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 #ifndef WIN32
 	pthread_spinlock_t W_matrix_spinlock;
 	pthread_attr_t attr;
-	pthread_spin_init(&W_matrix_spinlock, NULL);
+	pthread_spin_init(&W_matrix_spinlock, 0);
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
