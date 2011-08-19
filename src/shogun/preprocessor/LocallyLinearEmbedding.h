@@ -30,8 +30,8 @@ class CDistance;
  * Retrieved from:
  * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7319&rep=rep1&type=pdf
  *
- * The process of finding nearest neighbors involves Fibonacci Heap 
- * and Euclidian distance. Note: it is still not parallel.
+ * The process of finding nearest neighbors is parallel and 
+ * involves Fibonacci Heap and Euclidian distance.
  *
  * Linear reconstruction step runs in parallel for objects and 
  * involves LAPACK routine DPOSV for solving a system of linear equations.
@@ -118,6 +118,11 @@ protected:
 
 	/** init */
 	void init();
+
+	/** runs neighborhood determination thread
+	 * @param p thread params
+	 */
+	static void* run_neighborhood_thread(void* p);
 
 	/** runs linear reconstruction thread
 	 * @param p thread params

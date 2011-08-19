@@ -42,6 +42,18 @@ struct D_THREAD_PARAM
 	float64_t* id_vector;
 	float64_t* W_matrix;
 };
+
+struct D_NEIGHBORHOOD_THREAD_PARAM
+{
+	int32_t idx_start;
+	int32_t idx_step;
+	int32_t idx_stop;
+	int32_t N;
+	int32_t m_k;
+	CFibonacciHeap* heap;
+	const float64_t* distance_matrix;
+	int32_t* neighborhood_matrix;
+};
 #endif
 
 CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
@@ -90,6 +102,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
+	SG_UNREF(distance->parallel);
+	distance->parallel = this->parallel;
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance);
 	delete distance;
 
@@ -335,21 +349,85 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 
 SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* distance)
 {
-	int32_t i,j;
+	int32_t t;
 	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
 	int32_t N = distance->get_num_vec_lhs();
 	// init matrix and heap to be used
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
-	float64_t tmp;
-	CFibonacciHeap* heap = new CFibonacciHeap(N);
+#ifndef WIN32
+	int32_t num_threads = parallel->get_num_threads();
+	ASSERT(num_threads>0);
+	D_NEIGHBORHOOD_THREAD_PARAM* parameters = SG_MALLOC(D_NEIGHBORHOOD_THREAD_PARAM, num_threads);
+	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
+	pthread_attr_t attr;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+#else
+	int32_t num_threads = 1;
+#endif
+	CFibonacciHeap** heaps = SG_MALLOC(CFibonacciHeap*, num_threads);
+	for (t=0; t<num_threads; t++)
+		heaps[t] = new CFibonacciHeap(N);
 
-	// construct neighborhood matrix (contains idxs of neighbors for
-	// i-th object in i-th column)
-	for (i=0; i<N; i++)
+#ifndef WIN32
+	for (t=0; t<num_threads; t++)
+	{
+		parameters[t].idx_start = t;
+		parameters[t].idx_step = num_threads;
+		parameters[t].idx_stop = N;
+		parameters[t].m_k = m_k;
+		parameters[t].N = N;
+		parameters[t].heap = heaps[t];
+		parameters[t].neighborhood_matrix = neighborhood_matrix;
+		parameters[t].distance_matrix = distance_matrix.matrix;
+		pthread_create(&threads[t], &attr, run_neighborhood_thread, (void*)&parameters[t]);
+	}
+	for (t=0; t<num_threads; t++)
+		pthread_join(threads[t], NULL);
+	pthread_attr_destroy(&attr);
+	SG_FREE(threads);
+	SG_FREE(parameters);
+#else
+	D_NEIGHBORHOOD_THREAD_PARAM single_thread_param;
+	single_thread_param.idx_start = 0;
+	single_thread_param.idx_step = 1;
+	single_thread_param.idx_stop = N;
+	single_thread_param.m_k = m_k;
+	single_thread_param.N = N;
+	single_thread_param.heap = heaps[0]
+	single_thread_param.neighborhood_matrix = neighborhood_matrix;
+	single_thread_param.distance_matrix = distance_matrix;
+	run_neighborhood_thread((void*)&single_thread_param);
+#endif
+
+	for (t=0; t<num_threads; t++)
+		delete heaps[t];
+	SG_FREE(heaps);
+	distance_matrix.destroy_matrix();
+
+	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
+}
+
+
+void* CLocallyLinearEmbedding::run_neighborhood_thread(void* p)
+{
+	D_NEIGHBORHOOD_THREAD_PARAM* parameters = (D_NEIGHBORHOOD_THREAD_PARAM*)p;
+	int32_t idx_start = parameters->idx_start;
+	int32_t idx_step = parameters->idx_step;
+	int32_t idx_stop = parameters->idx_stop;
+	int32_t N = parameters->N;
+	int32_t m_k = parameters->m_k;
+	CFibonacciHeap* heap = parameters->heap;
+	const float64_t* distance_matrix = parameters->distance_matrix;
+	int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
+
+	int32_t i,j;
+	float64_t tmp;
+	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{
 		for (j=0; j<N; j++)
 		{
-			heap->insert(j,distance_matrix.matrix[i*N+j]);
+			heap->insert(j,distance_matrix[i*N+j]);
 		}
 
 		heap->extract_min(tmp);
@@ -360,11 +438,6 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* di
 		heap->clear();
 	}
 
-	// cleanup
-	delete heap;
-	distance_matrix.destroy_matrix();
-
-	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
+	return NULL;
 }
-
 #endif /* HAVE_LAPACK */
