@@ -10,7 +10,7 @@ test -n "$LIBS" && LIBS="LIBS=${LIBS}"
 for e in `make print_targets | grep -v ^make`
 do
 	echo -n "running $e .."
-	if make "$e" $LIBRARY_PATH $LIB_PATH $INC_PATH $LIBS >/dev/null 2>&1 && "./$e" >/dev/null 2>&1
+	if make "$e" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" >/dev/null 2>&1 && "./$e" >/dev/null 2>&1
 	then
 		echo " OK"
 	else
@@ -19,7 +19,7 @@ do
 		echo "error in make $e $LIBRARY_PATH $LIB_PATH $INC_PATH $LIBS" >>error.log
 		echo "error in ./$e" >>error.log 2>&1
 		echo "================================================================================" >>error.log
-		make "$e" $LIBRARY_PATH $LIB_PATH $INC_PATH $LIBS >>error.log 2>&1 && "./$e" >>error.log
+		make "$e" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" >>error.log 2>&1 && "./$e" >>error.log
 		echo "================================================================================" >>error.log
 		echo >>error.log
 		echo >>error.log
