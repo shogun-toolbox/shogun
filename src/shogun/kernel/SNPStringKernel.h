@@ -81,27 +81,44 @@ class CSNPStringKernel: public CStringKernel<char>
 		{
 			return K_POLYMATCH;
 		}
-
+		
+		/** set the base string for minor aleles 
+		 *
+		 * @param str minor freq. string
+		 */
 		void set_minor_base_string(const char* str)
 		{
 			m_str_min=strdup(str);
 		}
 
+		/** set the base string for major aleles 
+		 *
+		 * @param str major freq. string
+		 */
 		void set_major_base_string(const char* str)
 		{
 			m_str_maj=strdup(str);
 		}
 
+		/** get the base string for minor aleles 
+		 *
+		 * @return minor freq. string
+		 */
 		char* get_minor_base_string()
 		{
 			return m_str_min;
 		}
 
+		/** get the base string for major aleles 
+		 *
+		 * @return major freq. string
+		 */
 		char* get_major_base_string()
 		{
 			return m_str_maj;
 		}
 
+		/** compute the minor / major alele base strings */
 		void obtain_base_strings();
 
 		/** return the kernel's name
@@ -109,6 +126,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		 * @return name PolyMatchString
 		 */
 		virtual const char* get_name() const { return "SNPStringKernel"; }
+
 		/* register the parameters
 		 */
 		virtual void register_params();
