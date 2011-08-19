@@ -128,22 +128,18 @@ public:
 	/** set vector p
 	 *
 	 * @param p new vector p
-	 * @param N size of vector p
 	 */
 	void set_p_vector(SGVector<float64_t> p);
 
 	/** set vector q
 	 *
 	 * @param q new vector q
-	 * @param N size of vector q
 	 */
 	void set_q_vector(SGVector<float64_t> q);
 	
 	/** set matrix a
 	 *
 	 * @param a new matrix a
-	 * @param M dimension M of matrix a
-	 * @param N dimension N of matrix a
 	 */
 	void set_a(SGMatrix<float64_t> a);
 	
