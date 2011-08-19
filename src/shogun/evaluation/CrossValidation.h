@@ -41,6 +41,7 @@ typedef struct
 	/** conf int alpha */
 	float64_t conf_int_alpha;
 
+	/** print result */
 	void print_result()
 	{
 		if (has_conf_int)

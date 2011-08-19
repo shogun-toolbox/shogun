@@ -103,6 +103,11 @@ protected:
 	/** filename */
 	char* m_filename;
 
+	/** init
+	 * @param fstream
+	 * @param task
+	 * @param filename
+	 */
 	virtual void init(FILE* fstream, char task, const char* filename);
 
 	/* ************************************************************ */

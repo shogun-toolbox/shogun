@@ -121,7 +121,9 @@ class CGUIFeatures : public CSGObject
 		/** set convert(ed) features for target */
 		bool set_convert_features(CFeatures* features, char* target);
 
-		/* convert features from one class/type to another */
+		/** convert features from one class/type to another
+		 * @param src
+		 */
 		CSparseFeatures<float64_t>* convert_simple_real_to_sparse_real(
 			CSimpleFeatures<float64_t>* src);
 		/** converst simple char to string char
