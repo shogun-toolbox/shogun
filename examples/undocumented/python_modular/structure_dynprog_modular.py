@@ -154,17 +154,17 @@ def structure_dynprog_modular(fname):
 
 	dyn.set_plif_matrices(pm);
 
-	dyn.compute_nbest_paths(features.shape[2], use_orf, 1,True,False)
+	#dyn.compute_nbest_paths(features.shape[2], use_orf, 1,True,False)
 
-	# fetch results
-	states = dyn.get_states()
-	#print states
-	scores = dyn.get_scores()
-	#print scores
-	positions = dyn.get_positions()
-	#print positions
+	## fetch results
+	#states = dyn.get_states()
+	##print states
+	#scores = dyn.get_scores()
+	##print scores
+	#positions = dyn.get_positions()
+	##print positions
 
-	return states, scores, positions
+	#return states, scores, positions
 
 if __name__ == '__main__':
 	print "Structure"

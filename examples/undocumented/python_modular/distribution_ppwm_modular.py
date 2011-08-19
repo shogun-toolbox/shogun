@@ -37,8 +37,8 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 	ppwm.compute_w(L)
 	w=ppwm.get_w()
 	#print w
-	from pylab import *
-	figure(1)
+	#from pylab import *
+	#figure(1)
 	#pcolor(exp(w))
 	#pcolor(w)
 	#colorbar()
