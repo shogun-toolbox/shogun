@@ -1,4 +1,5 @@
 import numpy
+numpy.random.seed(40)
 tt = numpy.genfromtxt('../../../../data/toy/swissroll_color.dat',unpack=True).T
 X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
 N = X.shape[1]
@@ -25,7 +26,7 @@ preprocs.append((cisomap,"Isomap with k=%d" % cisomap.get_k()))
 
 lisomap = Isomap()
 lisomap.set_landmark(True)
-lisomap.set_landmark_number(500)
+lisomap.set_landmark_number(20)
 lisomap.set_k(9)
 preprocs.append((lisomap,"Landmark Isomap with k=%d, %d landmarks" % (lisomap.get_k(),lisomap.get_landmark_number())))
 
@@ -56,7 +57,7 @@ plt.subplots_adjust(hspace=0.4)
 from shogun.Features import RealFeatures
 
 for (i, (preproc, label)) in enumerate(preprocs):
-	X = numpy.genfromtxt('../../../../../data/toy/swissroll.dat',unpack=True).T
+	X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
 	features = RealFeatures(X)
 	preproc.set_target_dim(2)
 	new_feats = preproc.apply_to_feature_matrix(features)
