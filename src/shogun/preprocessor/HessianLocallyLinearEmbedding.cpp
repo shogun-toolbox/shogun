@@ -18,7 +18,7 @@
 #include <shogun/distance/EuclidianDistance.h>
 #include <shogun/lib/Signal.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -46,8 +46,8 @@ struct D_THREAD_PARAM
 	float64_t* w_sum_vector;
 	float64_t* q_matrix;
 	float64_t* W_matrix;
-#ifndef WIN32
-	pthread_spinlock_t* W_matrix_spinlock;
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_T* W_matrix_lock;
 #endif
 };
 #endif
@@ -96,7 +96,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	// init W (weight) matrix
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 	
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	// allocate threads and params
@@ -119,10 +119,10 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
-#ifndef WIN32
-	pthread_spinlock_t W_matrix_spinlock;
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_T W_matrix_lock;
 	pthread_attr_t attr;
-	pthread_spin_init(&W_matrix_spinlock, 0);
+	PTHREAD_LOCK_INIT(W_matrix_lock);
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
@@ -147,12 +147,12 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 		parameters[t].w_sum_vector = w_sum_vector + dp*t;
 		parameters[t].q_matrix = q_matrix + (m_k*m_k)*t;
 		parameters[t].W_matrix = W_matrix;
-		parameters[t].W_matrix_spinlock = &W_matrix_spinlock;
+		parameters[t].W_matrix_lock = &W_matrix_lock;
 		pthread_create(&threads[t], &attr, run_hessianestimation_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
 		pthread_join(threads[t], NULL);
-	pthread_spin_destroy(&W_matrix_spinlock);
+	PTHREAD_LOCK_DESTROY(W_matrix_lock);
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
@@ -176,7 +176,6 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	single_thread_param.w_sum_vector = w_sum_vector;
 	single_thread_param.q_matrix = q_matrix;
 	single_thread_param.W_matrix = W_matrix;
-	single_thread_param.W_matrix_mutex = &W_matrix_mutex;
 	run_hessianestimation_thread((void*)&single_thread_param);
 #endif
 
@@ -227,8 +226,8 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 	float64_t* w_sum_vector = parameters->w_sum_vector;
 	float64_t* q_matrix = parameters->q_matrix;
 	float64_t* W_matrix = parameters->W_matrix;
-#ifndef WIN32
-	pthread_spinlock_t* W_matrix_spinlock = parameters->W_matrix_spinlock;
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_T* W_matrix_lock = parameters->W_matrix_lock;
 #endif
 
 	int i,j,k,l;
@@ -319,16 +318,16 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 		            1.0,Pii,m_k,
 		                Pii,m_k,
 		            0.0,q_matrix,m_k);
-#ifndef WIN32
-		pthread_spin_lock(W_matrix_spinlock);
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK(W_matrix_lock);
 #endif
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
 				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] += q_matrix[j*m_k+k];
 		}
-#ifndef WIN32
-		pthread_spin_unlock(W_matrix_spinlock);
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(W_matrix_lock);
 #endif
 	}
 	return NULL;
