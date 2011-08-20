@@ -1,30 +1,39 @@
 #!/bin/bash
+
+rm -f error.log
+
 if [ -z "${MONO}" ]
 then
 	MONOC=gmcs
 	MONO=mono
 fi
 
-args=$#
-if [ $args -gt 1 ]; then
-echo "Usage: ./check.sh   check all examples.
-        ./check.sh name.cs  check one example."
-exit 0
-fi
-
 export LD_LIBRARY_PATH=../../../src/shogun:../../../src/interfaces/csharp_modular
 
-if [ $args -eq 0 ]; then
-	for filename in $(ls *.cs | sed 's/Load.cs//')
-  do
-	  ${MONOC} $filename ../../../src/interfaces/csharp_modular/*.cs Load.cs
-   echo "running ${filename%.cs}.exe .."
-   ${MONO} ${filename%.cs}.exe >/dev/null
-  done
+for e in $(ls *.cs | grep -v Load.cs )
+do
+	echo -n "running $e .."
+	if ${MONOC} $e ../../../src/interfaces/csharp_modular/*.cs Load.cs >/dev/null 2>&1 && \
+		${MONO} ${e%.cs}.exe >/dev/null 2>&1
+	then
+		echo " OK"
+	else
+		echo " ERROR"
+		echo "================================================================================" >>error.log
+		echo " error in $e ">>error.log
+		echo "================================================================================" >>error.log
+		${MONOC} $e ../../../src/interfaces/csharp_modular/*.cs Load.cs >>error.log 2>&1
+		${MONO} ${e%.cs}.exe >>error.log 2>&1
+		echo "================================================================================" >>error.log
+		echo >>error.log
+		echo >>error.log
+	fi
+done
+
+if test -f error.log 
+then
+	cat error.log
+	exit 1
 fi
 
-if [ $args -eq 1 ]; then
-  arg=("$@")
-  ${MONOC} ${arg[0]} ../../../src/interfaces/csharp_modular/*.cs Load.cs
-  ${MONO} ${arg[0]%.cs}.exe >/dev/null
-fi
+exit 0
