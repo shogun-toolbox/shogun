@@ -20,7 +20,7 @@
 #include <shogun/distance/EuclidianDistance.h>
 #include <shogun/lib/Signal.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -110,7 +110,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// init W (weight) matrix
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	// allocate threads
@@ -130,7 +130,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	for (t=0; t<num_threads; t++)
 	{
 		parameters[t].idx_start = t;
@@ -354,7 +354,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* di
 	int32_t N = distance->get_num_vec_lhs();
 	// init matrix and heap to be used
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	D_NEIGHBORHOOD_THREAD_PARAM* parameters = SG_MALLOC(D_NEIGHBORHOOD_THREAD_PARAM, num_threads);
@@ -369,7 +369,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* di
 	for (t=0; t<num_threads; t++)
 		heaps[t] = new CFibonacciHeap(N);
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	for (t=0; t<num_threads; t++)
 	{
 		parameters[t].idx_start = t;
