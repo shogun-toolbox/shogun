@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 parameter_list=[[10, 1, 2.1, 2.0]]
 
@@ -66,57 +65,67 @@ def serialization_svmlight_modular(num, dist, width, C)
 	trainlab=concatenate((-ones(num), ones(num)));
 	testlab=concatenate((-ones(num), ones(num)));
 
-	feats_train=RealFeatures(traindata_real);
-	feats_test=RealFeatures(testdata_real);
-	kernel=GaussianKernel(feats_train, feats_train, width);
+# *** 	feats_train=RealFeatures(traindata_real);
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(traindata_real);
+# *** 	feats_test=RealFeatures(testdata_real);
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(testdata_real);
+# *** 	kernel=GaussianKernel(feats_train, feats_train, width);
+	kernel=Modshogun::GaussianKernel.new
+	kernel.set_features(feats_train, feats_train, width);
 	#kernel.io.set_loglevel(MSG_DEBUG)
 
-	labels=Labels(trainlab);
+# *** 	labels=Labels(trainlab);
+	labels=Modshogun::Labels.new
+	labels.set_features(trainlab);
 
-	svm=SVMLight(C, kernel, labels)
+# *** 	svm=SVMLight(C, kernel, labels)
+	svm=Modshogun::SVMLight.new
+	svm.set_features(C, kernel, labels)
 	svm.train()
 	#svm.io.set_loglevel(MSG_DEBUG)
 
 	##################################################
 
-	#print "labels:"
-	#print pickle.dumps(labels)
+	#	puts "labels:"
+	#	puts pickle.dumps(labels)
 	#
-	#print "features"
-	#print pickle.dumps(feats_train)
+	#	puts "features"
+	#	puts pickle.dumps(feats_train)
 	#
-	#print "kernel"
-	#print pickle.dumps(kernel)
+	#	puts "kernel"
+	#	puts pickle.dumps(kernel)
 	#
-	#print "svm"
-	#print pickle.dumps(svm)
+	#	puts "svm"
+	#	puts pickle.dumps(svm)
 	#
-	#print "#################################"
+	#	puts "#################################"
 
 	fn = "serialized_svm.bz2"
-	#print "serializing SVM to file", fn
+	#	puts "serializing SVM to file", fn
 
 	save(fn, svm)
 
-	#print "#################################"
+	#	puts "#################################"
 
-	#print "unserializing SVM"
+	#	puts "unserializing SVM"
 	svm2 = load(fn)
 
 
-	#print "#################################"
-	#print "comparing training"
+	#	puts "#################################"
+	#	puts "comparing training"
 
 	svm2.train()
 
-	#print "objective before serialization:", svm.get_objective()
-	#print "objective after serialization:", svm2.get_objective()
+	#	puts "objective before serialization:", svm.get_objective()
+	#	puts "objective after serialization:", svm2.get_objective()
 	return svm, svm.get_objective(), svm2, svm2.get_objective()
 
 
 end
 if __FILE__ == $0
-	print 'Serialization SVMLight'
+	puts 'Serialization SVMLight'
 	serialization_svmlight_modular(*parameter_list[0])
 
 end

@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 data = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -23,7 +22,7 @@ def preprocessor_hessianlocallylinearembedding_modular(data,k)
 
 end
 if __FILE__ == $0
-	print 'HessianLocallyLinearEmbedding'
+	puts 'HessianLocallyLinearEmbedding'
 	preprocessor_hessianlocallylinearembedding_modular(*parameter_list[0])
 
 

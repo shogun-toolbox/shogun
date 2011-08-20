@@ -1,20 +1,27 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
-data=LoadMatrix.load_cubes('../data/fm_train_cube.dat')
+# *** data=LoadMatrix.load_cubes('../data/fm_train_cube.dat')
+data=Modshogun::LoadMatrix.new
+data.set_features.load_cubes('../data/fm_train_cube.dat')
 
 parameter_list=[[data, 1, 64, 1e-5, 2, 0, False, 5], [data, 3, 6, 1e-1, 1, 0, False, 2]]
 
 def distribution_hmm_modular(fm_cube, N, M, pseudo, order, gap, reverse, num_examples)
 
-	charfeat=StringCharFeatures(CUBE)
+# *** 	charfeat=StringCharFeatures(CUBE)
+	charfeat=Modshogun::StringCharFeatures.new
+	charfeat.set_features(CUBE)
 	charfeat.set_features(fm_cube)
-	feats=StringWordFeatures(charfeat.get_alphabet())
+# *** 	feats=StringWordFeatures(charfeat.get_alphabet())
+	feats=Modshogun::StringWordFeatures.new
+	feats.set_features(charfeat.get_alphabet())
 	feats.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
-	hmm=HMM(feats, N, M, pseudo)
+# *** 	hmm=HMM(feats, N, M, pseudo)
+	hmm=Modshogun::HMM.new
+	hmm.set_features(feats, N, M, pseudo)
 	hmm.train()
 	hmm.baum_welch_viterbi_train(BW_NORMAL)
 
@@ -43,7 +50,7 @@ end
 ###########################################################################
 
 if __FILE__ == $0
-	print 'HMM'
+	puts 'HMM'
 	distribution_hmm_modular(*parameter_list[0])
 
 end

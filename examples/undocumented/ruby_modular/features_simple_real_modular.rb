@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 # create dense matrices A,B,C
@@ -15,14 +14,16 @@ def features_simple_real_modular(A=matrix)
 
 end
 # ... of type Real, LongInt and Byte
-    a=RealFeatures(A)
+# ***     a=RealFeatures(A)
+    a=Modshogun::RealFeatures.new
+    a.set_features(A)
 
-# print some statistics about a
-#print a.get_num_vectors()
-#print a.get_num_features()
+#	puts some statistics about a
+#	puts a.get_num_vectors()
+#	puts a.get_num_features()
 
 # get first feature vector and set it
-#print a.get_feature_vector(0)
+#	puts a.get_feature_vector(0)
     a.set_feature_vector(array([1,4,0,0,0,9], dtype=float64), 0)
 
 # get matrix
@@ -33,7 +34,7 @@ end
 
 
 if __FILE__ == $0
-    print 'simple_real'
+	puts 'simple_real'
     features_simple_real_modular(*parameter_list[0])
 
 end

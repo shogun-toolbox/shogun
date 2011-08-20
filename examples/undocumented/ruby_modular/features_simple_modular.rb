@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 # create dense matrices A,B,C
@@ -15,9 +14,15 @@ parameter_list = [[matrixA,matrixB,matrixC]]
 
 def features_simple_modular(A=matrixA,B=matrixB,C=matrixC)
 
-    a=RealFeatures(A)
-    b=LongIntFeatures(B)
-    c=ByteFeatures(C)
+# ***     a=RealFeatures(A)
+    a=Modshogun::RealFeatures.new
+    a.set_features(A)
+# ***     b=LongIntFeatures(B)
+    b=Modshogun::LongIntFeatures.new
+    b.set_features(B)
+# ***     c=ByteFeatures(C)
+    c=Modshogun::ByteFeatures.new
+    c.set_features(C)
     
 
 end
@@ -26,7 +31,7 @@ end
 #feat2 = f.WordFeatures(N.zeros((10,5),N.uint16))
 
 
-# print some statistics about a
+#	puts some statistics about a
 
 # get first feature vector and set it
 
@@ -45,7 +50,7 @@ end
     return a_out,b_out,c_out,a,b,c
 
 if __FILE__ == $0
-    print 'simple'
+	puts 'simple'
     features_simple_modular(*parameter_list[0])
 
 end

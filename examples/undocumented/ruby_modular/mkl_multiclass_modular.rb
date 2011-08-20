@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 lm = LoadMatrix()
 fm_train_real = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -62,7 +61,7 @@ def mkl_multiclass_modular(fm_train_real, fm_test_real, label_train_multiclass,
 
 end
 if __name__ == '__main__':
-	print 'mkl_multiclass'
+	puts 'mkl_multiclass'
 	mkl_multiclass_modular(*parameter_list[0])
 
 end

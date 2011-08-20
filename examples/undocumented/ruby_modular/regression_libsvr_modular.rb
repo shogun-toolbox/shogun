@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -17,13 +16,23 @@ def regression_libsvr_modular(fm_train=traindat,fm_test=testdat,label_train=labe
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
 
 
-	feats_train=RealFeatures(fm_train)
-	feats_test=RealFeatures(fm_test)
+# *** 	feats_train=RealFeatures(fm_train)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train)
+# *** 	feats_test=RealFeatures(fm_test)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test)
 
-	kernel=GaussianKernel(feats_train, feats_train, width)
-	labels=Labels(label_train)
+# *** 	kernel=GaussianKernel(feats_train, feats_train, width)
+	kernel=Modshogun::GaussianKernel.new
+	kernel.set_features(feats_train, feats_train, width)
+# *** 	labels=Labels(label_train)
+	labels=Modshogun::Labels.new
+	labels.set_features(label_train)
 
-	svr=LibSVR(C, epsilon, kernel, labels)
+# *** 	svr=LibSVR(C, epsilon, kernel, labels)
+	svr=Modshogun::LibSVR.new
+	svr.set_features(C, epsilon, kernel, labels)
 	svr.set_tube_epsilon(tube_epsilon)
 	svr.train()
 
@@ -36,7 +45,7 @@ def regression_libsvr_modular(fm_train=traindat,fm_test=testdat,label_train=labe
 
 end
 if __FILE__ == $0
-	print 'LibSVR'
+	puts 'LibSVR'
 	regression_libsvr_modular(*parameter_list[0])
 
 end

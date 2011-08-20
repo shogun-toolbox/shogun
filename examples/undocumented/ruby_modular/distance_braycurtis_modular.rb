@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -13,10 +12,16 @@ def distance_braycurtis_modular(fm_train_real=traindat,fm_test_real=testdat)
 
 
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
 
-	distance=BrayCurtisDistance(feats_train, feats_train)
+# *** 	distance=BrayCurtisDistance(feats_train, feats_train)
+	distance=Modshogun::BrayCurtisDistance.new
+	distance.set_features(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)
@@ -27,7 +32,7 @@ def distance_braycurtis_modular(fm_train_real=traindat,fm_test_real=testdat)
 
 end
 if __FILE__ == $0
-	print 'BrayCurtisDistance'
+	puts 'BrayCurtisDistance'
 	distance_braycurtis_modular(*parameter_list[0])
 
 

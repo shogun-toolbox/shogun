@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindna = LoadMatrix.load_dna('../data/fm_train_dna.dat')
@@ -11,9 +10,13 @@ parameter_list = [[traindna,3],[traindna,4]]
 def distribution_ppwm_modular(fm_dna=traindna, order=3)
 
 
-	charfeat=StringCharFeatures(DNA)
+# *** 	charfeat=StringCharFeatures(DNA)
+	charfeat=Modshogun::StringCharFeatures.new
+	charfeat.set_features(DNA)
 	charfeat.set_features(fm_dna)
-	feats=StringByteFeatures(charfeat.get_alphabet())
+# *** 	feats=StringByteFeatures(charfeat.get_alphabet())
+	feats=Modshogun::StringByteFeatures.new
+	feats.set_features(charfeat.get_alphabet())
 	feats.obtain_from_char(charfeat, order-1, order, 0, False)
 
 	L=20
@@ -21,7 +24,9 @@ def distribution_ppwm_modular(fm_dna=traindna, order=3)
 	sigma = 1;
 	mu = 4
 
-	ppwm=PositionalPWM()
+# *** 	ppwm=PositionalPWM()
+	ppwm=Modshogun::PositionalPWM.new
+	ppwm.set_features()
 	ppwm.set_sigma(sigma)
 	ppwm.set_mean(mu)
 	pwm=array([[0.0, 0.5, 0.1, 1.0],
@@ -33,10 +38,10 @@ def distribution_ppwm_modular(fm_dna=traindna, order=3)
 
 
 	ppwm.set_pwm(log(pwm))
-	#print ppwm.get_pwm()
+	#	puts ppwm.get_pwm()
 	ppwm.compute_w(L)
 	w=ppwm.get_w()
-	#print w
+	#	puts w
 	figure(1)
 	#pcolor(exp(w))
 	#pcolor(w)
@@ -48,7 +53,9 @@ def distribution_ppwm_modular(fm_dna=traindna, order=3)
 	#pcolor(exp(u))
 	#show()
 
-	#ppwm=PositionalPWM(feats)
+# *** 	#ppwm=PositionalPWM(feats)
+	#ppwm=Modshogun::PositionalPWM.new
+	#ppwm.set_features(feats)
 	#ppwm.train()
 
 	#out_likelihood = histo.get_log_likelihood()
@@ -61,7 +68,7 @@ end
 ###########################################################################
 
 if __FILE__ == $0
-	print 'PositionalPWM'
+	puts 'PositionalPWM'
 	distribution_ppwm_modular(*parameter_list[0])
 
 end

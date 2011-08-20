@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -12,12 +11,20 @@ parameter_list = [[traindat,testdat,label_traindat,1.,1000,1],[traindat,testdat,
 
 def classifier_perceptron_modular(fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,learn_rate=1.,max_iter=1000,num_threads=1)
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
 
-	labels=Labels(label_train_twoclass)
+# *** 	labels=Labels(label_train_twoclass)
+	labels=Modshogun::Labels.new
+	labels.set_features(label_train_twoclass)
 
-	perceptron=Perceptron(feats_train, labels)
+# *** 	perceptron=Perceptron(feats_train, labels)
+	perceptron=Modshogun::Perceptron.new
+	perceptron.set_features(feats_train, labels)
 	perceptron.set_learn_rate(learn_rate)
 	perceptron.set_max_iter(max_iter)
 	# only guaranteed to converge for separable data
@@ -30,7 +37,7 @@ def classifier_perceptron_modular(fm_train_real=traindat,fm_test_real=testdat,la
 
 end
 if __FILE__ == $0
-	print 'Perceptron'
+	puts 'Perceptron'
 	classifier_perceptron_modular(*parameter_list[0])
 
 end

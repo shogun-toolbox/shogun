@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -13,14 +12,24 @@ parameter_list = [[traindat,testdat,label_traindat,1,1e-5],[traindat,testdat,lab
 def classifier_mpdsvm_modular(fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,C=1,epsilon=1e-5)
 
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
 	width=2.1
-	kernel=GaussianKernel(feats_train, feats_train, width)
+# *** 	kernel=GaussianKernel(feats_train, feats_train, width)
+	kernel=Modshogun::GaussianKernel.new
+	kernel.set_features(feats_train, feats_train, width)
 
-	labels=Labels(label_train_twoclass)
+# *** 	labels=Labels(label_train_twoclass)
+	labels=Modshogun::Labels.new
+	labels.set_features(label_train_twoclass)
 
-	svm=MPDSVM(C, kernel, labels)
+# *** 	svm=MPDSVM(C, kernel, labels)
+	svm=Modshogun::MPDSVM.new
+	svm.set_features(C, kernel, labels)
 	svm.set_epsilon(epsilon)
 	svm.train()
 
@@ -32,7 +41,7 @@ def classifier_mpdsvm_modular(fm_train_real=traindat,fm_test_real=testdat,label_
 
 end
 if __FILE__ == $0
-	print 'MPDSVM'
+	puts 'MPDSVM'
 	classifier_mpdsvm_modular(*parameter_list[0])
 
 end

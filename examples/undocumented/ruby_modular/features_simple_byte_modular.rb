@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 import numpy
 
@@ -14,28 +13,30 @@ def features_simple_byte_modular(A)
 
 	# create dense features a
 	# ... of type Byte
-	a=ByteFeatures(A)
+# *** 	a=ByteFeatures(A)
+	a=Modshogun::ByteFeatures.new
+	a.set_features(A)
 
-	# print some statistics about a
-	#print a.get_num_vectors()
-	#print a.get_num_features()
+	#	puts some statistics about a
+	#	puts a.get_num_vectors()
+	#	puts a.get_num_features()
 
 	# get first feature vector and set it
-	#print a.get_feature_vector(0)
+	#	puts a.get_feature_vector(0)
 	a.set_feature_vector(numpy.array([1,4,0,0,0,9], dtype=numpy.uint8), 0)
 
 	# get matrix
 	a_out = a.get_feature_matrix()
 
-	#print type(a_out), a_out.dtype
-	#print a_out 
+	#	puts type(a_out), a_out.dtype
+	#	puts a_out 
 	assert(numpy.all(a_out==A))
 	return a_out,a
 
 
 end
 if __FILE__ == $0
-	print 'ByteFeatures'
+	puts 'ByteFeatures'
 	features_simple_byte_modular(*parameter_list[0])
 
 end

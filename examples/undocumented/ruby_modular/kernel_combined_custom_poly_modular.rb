@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -12,38 +11,42 @@ parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_train
 
 def kernel_combined_custom_poly_modular(fm_train_real = traindat,fm_test_real = testdat,fm_label_twoclass=label_traindat)
    
-    kernel = CombinedKernel()
-    feats_train = CombinedFeatures()
+    kernel = Modshogun::CombinedKernel.new
+    feats_train = Modshogun::CombinedFeatures.new
     
-    tfeats = RealFeatures(fm_train_real)
-    tkernel = PolyKernel(10,3)
+    tfeats = Modshogun::RealFeatures.new
+    tfeats.set_feature_matrix(fm_train_real)
+    tkernel = Modshogun::PolyKernel.new(10,3)
     tkernel.init(tfeats, tfeats)
-    K = tkernel.get_kernel_matrix()
-    kernel.append_kernel(CustomKernel(K))
+    k = tkernel.get_kernel_matrix()
+    kernel.append_kernel(Modshogun::CustomKernel.new(k))
         
-    subkfeats_train = RealFeatures(fm_train_real)
+    subkfeats_train = Modshogun::RealFeatures.new
+    subkfeats_train.set_feature_matrix(fm_train_real)
     feats_train.append_feature_obj(subkfeats_train)
-    subkernel = PolyKernel(10,2)
+    subkernel = Modshogun::PolyKernel.new(10,2)
     kernel.append_kernel(subkernel)
 
     kernel.init(feats_train, feats_train)
     
-    labels = Labels(fm_label_twoclass)
-    svm = LibSVM(1.0, kernel, labels)
+    labels = Modshogun::Labels.new(fm_label_twoclass)
+    svm = Modshogun::LibSVM.new(1.0, kernel, labels)
     svm.train()
 
-    kernel = CombinedKernel()
-    feats_pred = CombinedFeatures()
+    kernel = Modshogun::CombinedKernel.new
+    feats_pred = Modshogun::CombinedFeatures.new
 
-    pfeats = RealFeatures(fm_test_real)
-    tkernel = PolyKernel(10,3)
+    pfeats = Modshogun::RealFeatures.new
+    pfeats.set_feature_matrix(fm_test_real)
+    tkernel = Modsogun::PolyKernel.new(10,3)
     tkernel.init(tfeats, pfeats)
-    K = tkernel.get_kernel_matrix()
-    kernel.append_kernel(CustomKernel(K))
+    k = tkernel.get_kernel_matrix()
+    kernel.append_kernel(Modshogun::CustomKernel.new(k))
 
-    subkfeats_test = RealFeatures(fm_test_real)
+    subkfeats_test = Modshogun::RealFeatures.new
+    subkfeats_test.set_feature_matrix(fm_test_real)
     feats_pred.append_feature_obj(subkfeats_test)
-    subkernel = PolyKernel(10, 2)
+    subkernel = Modshogun::PolyKernel.new(10, 2)
     kernel.append_kernel(subkernel)
     kernel.init(feats_train, feats_pred)
 
@@ -51,10 +54,9 @@ def kernel_combined_custom_poly_modular(fm_train_real = traindat,fm_test_real = 
     svm.apply()
     km_train=kernel.get_kernel_matrix()
     return km_train,kernel
-
-
 end
-if __FILE__ == $0
-    kernel_combined_custom_poly_modular(*parameter_list[0])
 
+if __FILE__ == $0
+    puts 'Combined Custom Poly Modular'
+    pp kernel_combined_custom_poly_modular(*parameter_list[0])
 end
