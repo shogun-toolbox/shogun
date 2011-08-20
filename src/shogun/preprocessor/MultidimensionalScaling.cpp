@@ -19,7 +19,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclidianDistance.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -122,16 +122,18 @@ SGMatrix<float64_t> CMultidimensionalScaling::apply_to_feature_matrix(CFeatures*
 
 	// compute embedding according to m_landmark value
 	SGMatrix<float64_t> new_feature_matrix;
+	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
 	if (m_landmark)
-		new_feature_matrix = landmark_embedding(distance->get_distance_matrix());
+		new_feature_matrix = landmark_embedding(distance_matrix);
 	else
-		new_feature_matrix = classic_embedding(distance->get_distance_matrix());
-		
+		new_feature_matrix = classic_embedding(distance_matrix);
+
 	simple_features->set_feature_matrix(new_feature_matrix);
 
 	// delete used distance
 	distance->parallel = distance_parallel;
 	delete distance;
+	distance_matrix.destroy_matrix();
 
 	// unreference features
 	SG_UNREF(features);
@@ -295,12 +297,21 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 
 	// get landmarks embedding
 	SGMatrix<float64_t> lmk_dist_sgmatrix(lmk_dist_matrix,lmk_N,lmk_N);
+	// compute mean vector of squared distances
+	float64_t* mean_sq_dist_vector = SG_CALLOC(float64_t, lmk_N);
+	for (i=0; i<lmk_N; i++)
+	{
+		for (j=0; j<lmk_N; j++)
+			mean_sq_dist_vector[i] += CMath::sq(lmk_dist_matrix[i*lmk_N+j]);
+
+		mean_sq_dist_vector[i] /= lmk_N;
+	}	
 	SGMatrix<float64_t> lmk_feature_matrix = classic_embedding(lmk_dist_sgmatrix);
 
+	lmk_dist_sgmatrix.destroy_matrix();
+
 	// construct new feature matrix
-	float64_t* new_feature_matrix = SG_MALLOC(float64_t, m_target_dim*total_N);
-	for (i=0; i<m_target_dim*total_N; i++)
-		new_feature_matrix[i] = 0.0;
+	float64_t* new_feature_matrix = SG_CALLOC(float64_t, m_target_dim*total_N);
 
 	// fill new feature matrix with embedded landmarks
 	for (i=0; i<lmk_N; i++)
@@ -318,16 +329,6 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 			lmk_feature_matrix.matrix[i*m_target_dim+j] /= m_eigenvalues.vector[j];
 	}
 
-	// compute mean vector of squared distances
-	float64_t* mean_sq_dist_vector = SG_CALLOC(float64_t, lmk_N);
-	for (i=0; i<lmk_N; i++)
-	{
-		for (j=0; j<lmk_N; j++)
-			mean_sq_dist_vector[i] += CMath::sq(lmk_dist_matrix[i*lmk_N+j]);
-
-		mean_sq_dist_vector[i] /= lmk_N;
-	}
-	lmk_dist_sgmatrix.destroy_matrix();
 
 	// set to_process els true if should be processed
 	bool* to_process = SG_MALLOC(bool, total_N);
@@ -337,7 +338,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 		to_process[lmk_idxs.vector[j]] = false;
 
 	// get embedding for non-landmark vectors
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	// allocate threads and it's parameters

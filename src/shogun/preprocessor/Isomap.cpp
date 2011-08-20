@@ -18,7 +18,7 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/lib/Signal.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -168,7 +168,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	delete heap;
 	D_matrix.destroy_matrix();
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 
 	// Parallel Dijkstra with Fibonacci Heap 
 	int32_t num_threads = parallel->get_num_threads();
@@ -192,7 +192,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	// init matrix to store shortest distances
 	float64_t* shortest_D = SG_MALLOC(float64_t,N*N);
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
