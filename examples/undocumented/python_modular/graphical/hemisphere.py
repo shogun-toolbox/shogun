@@ -1,6 +1,6 @@
 import numpy
-tt = numpy.genfromtxt('../../../../../data/toy/hemisphere_color.dat',unpack=True).T
-X = numpy.genfromtxt('../../../../../data/toy/hemisphere.dat',unpack=True).T
+tt = numpy.genfromtxt('../../../../data/toy/hemisphere_color.dat',unpack=True).T
+X = numpy.genfromtxt('../../../../data/toy/hemisphere.dat',unpack=True).T
 N = X.shape[1]
 preprocs = []
 
@@ -56,7 +56,7 @@ plt.subplots_adjust(hspace=0.4)
 from shogun.Features import RealFeatures
 
 for (i, (preproc, label)) in enumerate(preprocs):
-	X = numpy.genfromtxt('../../../../../data/toy/hemisphere.dat',unpack=True).T
+	X = numpy.genfromtxt('../../../../data/toy/hemisphere.dat',unpack=True).T
 	features = RealFeatures(X)
 	preproc.set_target_dim(2)
 	new_feats = preproc.apply_to_feature_matrix(features)

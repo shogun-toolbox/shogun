@@ -1,6 +1,6 @@
 import numpy
-tt = numpy.genfromtxt('../../../../../data/toy/swissroll_color.dat',unpack=True).T
-X = numpy.genfromtxt('../../../../../data/toy/swissroll.dat',unpack=True).T
+tt = numpy.genfromtxt('../../../../data/toy/swissroll_color.dat',unpack=True).T
+X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
 N = X.shape[1]
 preprocs = []
 
