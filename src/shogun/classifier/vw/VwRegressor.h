@@ -102,7 +102,6 @@ public:
 	 */
 	virtual const char* get_name() const { return "VwRegressor"; }
 
-private:
 	/**
 	 * Initialize weight vectors
 	 *

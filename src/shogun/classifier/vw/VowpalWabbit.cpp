@@ -40,16 +40,41 @@ CVowpalWabbit::~CVowpalWabbit()
 	SG_UNREF(learner);
 }
 
+void CVowpalWabbit::reinitialize_weights()
+{
+	if (reg->weight_vectors)
+	{
+		if (reg->weight_vectors[0])
+			SG_FREE(reg->weight_vectors[0]);
+		SG_FREE(reg->weight_vectors);
+	}
+
+	reg->init(env);
+	w = reg->weight_vectors[0];
+}
+
 void CVowpalWabbit::set_adaptive(bool adaptive_learning)
 {
 	if (adaptive_learning)
 	{
 		env->adaptive = true;
-		env->stride = 2;
+		env->set_stride(2);
 		env->power_t = 0.;
+		reinitialize_weights();
 	}
 	else
 		env->adaptive = false;
+}
+
+void CVowpalWabbit::set_exact_adaptive_norm(bool exact_adaptive)
+{
+	if (exact_adaptive)
+	{
+		set_adaptive(true);
+		env->exact_adaptive_norm = true;
+	}
+	else
+		env->exact_adaptive_norm = false;
 }
 
 void CVowpalWabbit::load_regressor(char* file_name)
@@ -70,9 +95,14 @@ void CVowpalWabbit::add_quadratic_pair(char* pair)
 	env->pairs.push_back(pair);
 }
 
-bool CVowpalWabbit::train_machine(CStreamingVwFeatures* feat)
+bool CVowpalWabbit::train_machine(CFeatures* feat)
 {
-	ASSERT(features);
+	ASSERT(features || feat);
+	if (feat && (features != (CStreamingVwFeatures*) feat))
+	{
+		SG_UNREF(features);
+		init((CStreamingVwFeatures*) feat);
+	}
 
 	set_learner();
 
@@ -158,8 +188,19 @@ float32_t CVowpalWabbit::predict_and_finalize(VwExample* ex)
 	{
 		ex->loss = reg->get_loss(ex->final_prediction, ex->ld->label) * ex->ld->weight;
 		float64_t update = 0.;
-		update = (env->eta)/pow(t, env->power_t) * ex->ld->weight;
-		ex->eta_round = reg->get_update(ex->final_prediction, ex->ld->label, update, ex->total_sum_feat_sq);
+		if (env->adaptive && env->exact_adaptive_norm)
+		{
+			float32_t sum_abs_x = 0.;
+			float32_t exact_norm = compute_exact_norm(ex, sum_abs_x);
+			update = (env->eta * exact_norm)/sum_abs_x;
+			env->update_sum += update;
+			ex->eta_round = reg->get_update(ex->final_prediction, ex->ld->label, update, exact_norm);
+		}
+		else
+		{
+			update = (env->eta)/pow(t, env->power_t) * ex->ld->weight;
+			ex->eta_round = reg->get_update(ex->final_prediction, ex->ld->label, update, ex->total_sum_feat_sq);
+		}
 		env->update_sum += update;
 	}
 
@@ -267,3 +308,57 @@ void CVowpalWabbit::print_update(VwExample* &ex)
 		  ex->final_prediction,
 		  (long unsigned int)ex->num_features);
 }
+
+float32_t CVowpalWabbit::compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x)
+{
+	// We must traverse the features in _precisely_ the same order as during training.
+	size_t thread_mask = env->thread_mask;
+	size_t thread_num = 0;
+
+	float32_t g = reg->loss->get_square_grad(ex->final_prediction, ex->ld->label) * ex->ld->weight;
+	if (g == 0) return 0.;
+
+	float32_t xGx = 0.;
+
+	float32_t* weights = reg->weight_vectors[thread_num];
+	for (size_t* i = ex->indices.begin; i != ex->indices.end; i++)
+	{
+		for (VwFeature* f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
+		{
+			float32_t* w_vec = &weights[f->weight_index & thread_mask];
+			float32_t t = f->x * CMath::invsqrt(w_vec[1] + g * f->x * f->x);
+			xGx += t * f->x;
+			sum_abs_x += fabsf(f->x);
+		}
+	}
+
+	for (int32_t k = 0; k < env->pairs.get_num_elements(); k++)
+	{
+		char* i = env->pairs.get_element(k);
+
+		v_array<VwFeature> temp = ex->atomics[(int32_t)(i[0])];
+		temp.begin = ex->atomics[(int32_t)(i[0])].begin;
+		temp.end = ex->atomics[(int32_t)(i[0])].end;
+		for (; temp.begin != temp.end; temp.begin++)
+			xGx += compute_exact_norm_quad(weights, *temp.begin, ex->atomics[(int32_t)(i[1])], thread_mask, g, sum_abs_x);
+	}
+
+	return xGx;
+}
+
+float32_t CVowpalWabbit::compute_exact_norm_quad(float32_t* weights, VwFeature& page_feature, v_array<VwFeature> &offer_features,
+						 size_t mask, float32_t g, float32_t& sum_abs_x)
+{
+		size_t halfhash = quadratic_constant * page_feature.weight_index;
+		float32_t xGx = 0.;
+		float32_t update2 = g * page_feature.x * page_feature.x;
+		for (VwFeature* elem = offer_features.begin; elem != offer_features.end; elem++)
+		{
+				float32_t* w_vec = &weights[(halfhash + elem->weight_index) & mask];
+				float32_t t = elem->x * CMath::invsqrt(w_vec[1] + update2 * elem->x * elem->x);
+				xGx += t * elem->x;
+				sum_abs_x += fabsf(elem->x);
+		}
+		return xGx;
+}
+
