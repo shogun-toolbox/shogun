@@ -1,36 +1,41 @@
 #!/bin/bash
+
+rm -f error.log
+
 if [ -z "${JAVA}" ]
 then
 	JAVAC=javac
 	JAVA=java
 fi
 
-args=$#
-if [ $args -gt 1 ]; then
-echo "Usage: ./check.sh   check all examples.
-        ./check.sh name.java  check one example."
-exit 0
-fi
-
 export CLASSPATH=/usr/share/java/jblas.jar:../../../src/interfaces/java_modular/shogun.jar:.
 export LD_LIBRARY_PATH=../../../src/shogun:../../../src/interfaces/java_modular
 
-if [ $args -eq 0 ]; then
-  ${JAVAC} Load.java
-  ${JAVAC} $(ls *.java | sed 's/Load.java//')
+${JAVAC} Load.java
 
-  for filename in *.class
-  do
-   [ "$filename" = "Load.class" ] && continue
-   echo "running ${filename%.class} .."
-   ${JAVA} ${filename%.class} >/dev/null
-  done
+for e in $(ls *.java | grep -v Load.java)
+do
+	echo -n "running $e .."
+	if ${JAVAC} $e >/dev/null 2>&1 && ${JAVA} ${e%.java} >/dev/null 2>&1
+	then
+		echo " OK"
+	else
+		echo " ERROR"
+		echo "================================================================================" >>error.log
+		echo " error in $e ">>error.log
+		echo "================================================================================" >>error.log
+		${JAVAC} $e >>error.log 2>&1
+		${JAVA} ${e%.java} >>error.log 2>&1
+		echo "================================================================================" >>error.log
+		echo >>error.log
+		echo >>error.log
+	fi
+done
+
+if test -f error.log 
+then
+	cat error.log
+	exit 1
 fi
 
-if [ $args -eq 1 ]; then
-  arg=("$@")
-  ${JAVAC} Load.java
-  ${JAVAC} ${arg[0]}
-  ${JAVA} ${arg[0]%.java} >/dev/null
-fi
-
+exit 0
