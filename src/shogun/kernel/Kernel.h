@@ -113,6 +113,7 @@ enum EKernelType
 	K_BESSEL = 460,
 };
 
+/** kernel property */
 enum EKernelProperty
 {
 	KP_NONE = 0,

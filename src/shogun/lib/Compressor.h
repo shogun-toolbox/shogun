@@ -22,6 +22,7 @@
 
 namespace shogun
 {
+	/** compression type */
 	enum E_COMPRESSION_TYPE
 	{
 		UNCOMPRESSED,

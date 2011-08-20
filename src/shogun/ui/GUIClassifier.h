@@ -20,6 +20,7 @@ namespace shogun
 {
 class CSGInterface;
 
+/** gui classifier */
 class CGUIClassifier : public CSGObject
 {
 	public:

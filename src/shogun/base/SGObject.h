@@ -62,6 +62,7 @@ class CSerializableFile;
  * End of macros for registering parameters/model selection parameters
  ******************************************************************************/
 
+/** model selection availability */
 enum EModelSelectionAvailability {
 	MS_NOT_AVAILABLE=0, MS_AVAILABLE
 };

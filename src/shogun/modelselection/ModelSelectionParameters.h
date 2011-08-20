@@ -19,6 +19,7 @@ namespace shogun
 
 class CParameterCombination;
 
+/** type of range */
 enum ERangeType
 {
 	R_LINEAR, R_EXP, R_LOG

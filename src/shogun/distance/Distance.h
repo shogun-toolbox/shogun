@@ -29,6 +29,7 @@ class CFeatures;
 enum EFeatureType;
 enum EFeatureClass;
 
+/** type of distance */
 enum EDistanceType
 {
 	D_UNKNOWN = 0,

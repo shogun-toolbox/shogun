@@ -32,6 +32,7 @@ namespace shogun
  */
 enum IFType
 {
+	/// undefined
 	UNDEFINED,
 
 	///simple scalar/string types
@@ -86,16 +87,24 @@ enum IFType
 	ATTR_STRUCT
 };
 
+/** objective enumerate */
 enum E_WHICH_OBJ
 {
+	/// svm primal task
 	SVM_PRIMAL,
+	/// svm dual task
 	SVM_DUAL,
+	/// mkl primal task
 	MKL_PRIMAL,
+	/// mkl dual task
 	MKL_DUAL,
+	/// mkl relative duality gap
 	MKL_RELATIVE_DUALITY_GAP,
+	/// mkl absolute duality gap
 	MKL_ABSOLUTE_DUALITY_GAP
 };
 
+/** shogun interface */
 class CSGInterface : public CSGObject
 {
 	public:
@@ -1111,6 +1120,7 @@ class CSGInterface : public CSGObject
 		char* m_legacy_strptr;
 };
 
+/** sg interface ptr typedef */
 typedef bool (CSGInterface::*CSGInterfacePtr)();
 
 typedef struct {

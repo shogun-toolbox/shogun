@@ -20,11 +20,16 @@ namespace shogun
 /** the class WaveletKernel
  *
  * It is defined as
+ *
  * \f[
  * k({\bf x},({\bf x'})= \prod_{i=0}^{l}h(\frac{(x-c)}{a})\cdot h(\frac{(x'-c)}{a})
  * \f]
- * Where h(x) is the mother wavelet function
+ *
+ * Where \f$h(x)\f$ is the mother wavelet function
+ *
+ * \f[
  * h({\bf x}=cos(1.75*x)\cdot exp(\frac{(-x^2){2})
+ * \f]
  * 
  */
 class CWaveletKernel: public CDotKernel

@@ -21,6 +21,7 @@
 namespace shogun
 {
 
+/** WD kernel type */
 enum EWDKernType
 {
 	E_WD=0,

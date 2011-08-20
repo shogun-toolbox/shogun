@@ -16,6 +16,10 @@
 namespace shogun {
 	class CSGObject;
 
+	/** new shogun serializable
+	 * @param serializable_name
+	 * @param generic
+	 */
 	CSGObject* new_sgserializable(const char* sgserializable_name,
 										EPrimitiveType generic);
 }

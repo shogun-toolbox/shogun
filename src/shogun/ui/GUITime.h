@@ -19,6 +19,7 @@ namespace shogun
 {
 class CSGInterface;
 
+/** gui time */
 class CGUITime : public CSGObject
 {
 	public:

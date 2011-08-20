@@ -13,6 +13,7 @@
 
 namespace shogun
 {
+	/// type of regressor
 	enum ERegressionType
 	{
 		RT_NONE = 0,

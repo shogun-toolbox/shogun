@@ -18,6 +18,7 @@ namespace shogun
 {
 class CSGInterface;
 
+/** gui math */
 class CGUIMath : public CSGObject
 {
 	public:

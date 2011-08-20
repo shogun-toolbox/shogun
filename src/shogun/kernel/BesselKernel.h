@@ -25,9 +25,9 @@ class CDistance;
  * k(x, y) = \frac{J_{v}( \| x-y \|/\tau)}{ \| x-y \| ^ {-nv} }
  * \f]
  * Where:
- * 		J_{v} is the Bessel funcion with order v,
- * 		\tau is the kernel width, and
- * 		n is the kernel degree.
+ * 		\f$J_{v}\f$ is the Bessel funcion with order \f$v\f$,
+ * 		\f$\tau\f$ is the kernel width, and
+ * 		\f$n\f$ is the kernel degree.
  * */
 class CBesselKernel: public CDistanceKernel
 {

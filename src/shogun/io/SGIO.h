@@ -28,6 +28,7 @@
 namespace shogun
 {
 	class SGIO;
+	/** shogun IO */
 	extern SGIO* sg_io;
 }
 
