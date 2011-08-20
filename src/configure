@@ -115,11 +115,7 @@ _libshogun=yes
 _python=auto
 _octave=auto
 _r=auto
-_java=no
-_csharp=no
-_ruby=no
 _ruby_narray=auto
-_lua=no
 #static interfaces
 _cmdline_static=auto
 _python_static=auto
@@ -495,6 +491,78 @@ check_python()
 	fi
 }
 
+test_jblas()
+{
+	echocheck "Jblas"
+cat > $TMPJAVA << EOF
+import org.jblas.DoubleMatrix;
+
+public class configure {
+    public static void main(String[] args) {
+        DoubleMatrix a = DoubleMatrix.rand(3,3);
+        DoubleMatrix b = DoubleMatrix.rand(3,3);
+
+        DoubleMatrix c = a.add(b);
+    }
+}
+EOF
+
+	if javac $TMPJAVA >/dev/null 2>&1
+	then
+		echores "yes"
+		HAVE_JBLAS='#define HAVE_JBLAS 1'
+		DEFINES="$DEFINES -DHAVE_JBLAS"
+	else
+		
+		if javac -cp /usr/share/java/jblas.jar $TMPJAVA >/dev/null 2>&1
+		then
+			echores "yes"
+			HAVE_JBLAS='#define HAVE_JBLAS 1'
+			DEFINES="$DEFINES -DHAVE_JBLAS"
+			CLASSPATH="$CLASSPATH:/usr/share/java/jblas.jar"
+		else
+			echores "no"
+		fi
+	fi
+}
+
+test_ujmp()
+{
+	echocheck "UJMP"
+cat > $TMPJAVA << EOF
+import org.ujmp.core.Matrix;
+import org.ujmp.core.matrix.DenseMatrix;
+
+public class configure {
+    public static void main(String[] args) {
+        Matrix a = DenseMatrix.factory.rand(3, 3);
+        Matrix b = DenseMatrix.factory.rand(3, 3);
+
+        Matrix c = a.plus(b);
+        System.out.println(c);
+    }
+}
+EOF
+
+	if javac $TMPJAVA >/dev/null 2>&1
+	then
+		echores "yes"
+		HAVE_UJMP='#define HAVE_UJMP 1'
+		DEFINES="$DEFINES -DHAVE_UJMP"
+	else
+		if javac -cp /usr/share/java/ujmp.jar $TMPJAVA >/dev/null 2>&1
+		then
+			echores "yes"
+			HAVE_UJMP='#define HAVE_UJMP 1'
+			DEFINES="$DEFINES -DHAVE_UJMP"
+			CLASSPATH="$CLASSPATH:/usr/share/java/ujmp.jar"
+		else
+			echores "no"
+		fi
+	fi
+}
+
+
 test_java()
 {
 	if test "$_libshogun" = no
@@ -546,7 +614,9 @@ EOF
 			if ant -version >/dev/null 2>&1
 			then
 				echores "`ant -version | cut -f 4 -d ' '`"
-				_java=yes
+				_java_modular=yes
+				test_jblas
+				test_ujmp
 			else
 				echores "ant not detected"
 			fi
@@ -555,87 +625,6 @@ EOF
 		fi
 	else
 		echores "not detected"
-	fi
-}
-
-test_jblas()
-{
-	if test "$_java" = no
-	then
-		return
-	fi
-
-	echocheck "Jblas"
-cat > $TMPJAVA << EOF
-import org.jblas.DoubleMatrix;
-
-public class configure {
-    public static void main(String[] args) {
-        DoubleMatrix a = DoubleMatrix.rand(3,3);
-        DoubleMatrix b = DoubleMatrix.rand(3,3);
-
-        DoubleMatrix c = a.add(b);
-    }
-}
-EOF
-
-	if javac $TMPJAVA >/dev/null 2>&1
-	then
-		echores "yes"
-		HAVE_JBLAS='#define HAVE_JBLAS 1'
-		DEFINES="$DEFINES -DHAVE_JBLAS"
-	else
-		
-		if javac -cp /usr/share/java/jblas.jar $TMPJAVA >/dev/null 2>&1
-		then
-			echores "yes"
-			HAVE_JBLAS='#define HAVE_JBLAS 1'
-			DEFINES="$DEFINES -DHAVE_JBLAS"
-			CLASSPATH="$CLASSPATH:/usr/share/java/jblas.jar"
-		else
-			echores "no"
-		fi
-	fi
-}
-
-test_ujmp()
-{
-	if test "$_java" = no
-	then
-		return
-	fi
-
-	echocheck "UJMP"
-cat > $TMPJAVA << EOF
-import org.ujmp.core.Matrix;
-import org.ujmp.core.matrix.DenseMatrix;
-
-public class configure {
-    public static void main(String[] args) {
-        Matrix a = DenseMatrix.factory.rand(3, 3);
-        Matrix b = DenseMatrix.factory.rand(3, 3);
-
-        Matrix c = a.plus(b);
-        System.out.println(c);
-    }
-}
-EOF
-
-	if javac $TMPJAVA >/dev/null 2>&1
-	then
-		echores "yes"
-		HAVE_UJMP='#define HAVE_UJMP 1'
-		DEFINES="$DEFINES -DHAVE_UJMP"
-	else
-		if javac -cp /usr/share/java/ujmp.jar $TMPJAVA >/dev/null 2>&1
-		then
-			echores "yes"
-			HAVE_UJMP='#define HAVE_UJMP 1'
-			DEFINES="$DEFINES -DHAVE_UJMP"
-			CLASSPATH="$CLASSPATH:/usr/share/java/ujmp.jar"
-		else
-			echores "no"
-		fi
 	fi
 }
 
@@ -659,9 +648,15 @@ test_csharp()
 		INCLUDES_CSHARP=
 		LINKFLAGS_CSHARP="--shared"
 
-		_csharp=yes
+		_csharp_modular=yes
 	else
-		echores "not detected"
+		if test "$_csharp_modular" = yes
+		then
+			die "csharp/csharp development files missing"
+		else
+			echores "not detected"
+			_csharp_modular=no
+		fi
 	fi
 }
 
@@ -701,18 +696,25 @@ EOF
 			PRE_LIB_SWIG_RUBY_MODULAR=
 			EXT_LIB_SWIG_RUBY_MODULAR=.so
 			SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
-			_ruby=yes
+			_ruby_modular=yes
+			test_ruby_narray
 		else
 			echores "no"
 		fi
 	else
-		echores "not detected"
+		if test "$_ruby_modular" = yes
+		then
+			die "ruby/ruby development files missing"
+		else
+			echores "not detected"
+			_ruby_modular=no
+		fi
 	fi
 }
 
 test_ruby_narray()
 {
-	if test "$_ruby" = yes
+	if test "$_ruby_modular" = yes
 	then
 cat >$TMPRUBY << EOF
 require 'narray'
@@ -790,11 +792,16 @@ test_lua()
 			LINKFLAGS_LUA="-llua${LV} --shared"
 			INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
 		fi
-
 		echores "${LUAVER}"
-		_lua=yes
+		_lua_modular=yes
 	else
-		echores "not detected"
+		if test "$_lua_modular" = yes
+		then
+			die "lua/lua development files missing"
+		else
+			echores "not detected"
+			_lua_modular=no
+		fi
 	fi
 }
 
@@ -3571,19 +3578,19 @@ test_modular()
 			JAVA_MODULAR_TARGET=java_modular
 		fi
 
-		if test "$_csharp" = yes && test "$_csharp_modular" != no
+		if test "$_csharp_modular" != no
 		then
 			PARTS="$PARTS csharp_modular"
 			CSHARP_MODULAR_TARGET=csharp_modular
 		fi
 
-		if test "$_ruby" = yes && test "$_ruby_modular" != no
+		if test "$_ruby_modular" != no
 		then
 			PARTS="$PARTS ruby_modular"
 			RUBY_MODULAR_TARGET=ruby_modular
 		fi
 
-		if test "$_lua" = yes && test "$_lua_modular" != no
+		if test "$_lua_modular" != no
 		then
 			PARTS="$PARTS lua_modular"
 			LUA_MODULAR_TARGET=lua_modular
@@ -4672,11 +4679,8 @@ test_r
 test_matlab
 test_elwms
 test_java
-test_jblas
-test_ujmp
 test_csharp
 test_ruby
-test_ruby_narray
 test_lua
 test_modular
 test_static_linking
