@@ -59,7 +59,7 @@ struct TRIANGULATION_THREAD_PARAM
 
 CMultidimensionalScaling::CMultidimensionalScaling() : CDimensionReductionPreprocessor()
 {
-	m_eigenvalues = SGVector<float64_t>(NULL,0,true);
+	m_eigenvalues = SGVector<float64_t>(NULL,0,false);
 	init();
 }
 

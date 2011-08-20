@@ -103,9 +103,7 @@ public:
 	 */
 	SGVector<float64_t> get_eigenvalues() const
 	{
-		SGVector<float64_t> eigs(m_eigenvalues);
-		eigs.do_free=false;
-		return eigs;
+		return m_eigenvalues;
 	}
 
 	/** set number of landmarks⋅
