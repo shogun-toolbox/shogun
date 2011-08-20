@@ -15,11 +15,9 @@
 #include <shogun/mathematics/arpack.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclidianDistance.h>
-#include <shogun/lib/Signal.h>
 
 #ifndef WIN32
 #include <pthread.h>
@@ -28,7 +26,7 @@
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct D_THREAD_PARAM
+struct TRIANGULATION_THREAD_PARAM
 {
 	/// idx of loop start
 	int32_t idx_start;
@@ -49,7 +47,7 @@ struct D_THREAD_PARAM
 	/// new feature matrix to write
 	float64_t* new_feature_matrix;
 	/// const distance matrix
-	const float64_t* dist_matrix;
+	const float64_t* distance_matrix;
 	/// const mean squared distances
 	const float64_t* mean_sq_dist_vector;
 	/// idxs of landmark examples
@@ -74,6 +72,15 @@ void CMultidimensionalScaling::init()
 	m_parameters->add(&m_landmark_number, "landmark number", "the number of landmarks for approximation");
 }
 
+bool CMultidimensionalScaling::init(CFeatures* features)
+{
+	return true;
+}
+
+void CMultidimensionalScaling::cleanup()
+{
+}
+
 CMultidimensionalScaling::~CMultidimensionalScaling()
 {
 	m_eigenvalues.destroy_vector();
@@ -82,37 +89,51 @@ CMultidimensionalScaling::~CMultidimensionalScaling()
 CSimpleFeatures<float64_t>* CMultidimensionalScaling::apply_to_distance(CDistance* distance)
 {
 	ASSERT(distance);
+	// reference distance for not being delete while applying
 	SG_REF(distance);
 
-	SGMatrix<float64_t> new_feature_matrix;
+	// compute feature_matrix by landmark or classic embedding of distance matrix
+	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
+	SGMatrix<float64_t> feature_matrix;
 	if (m_landmark)
-		new_feature_matrix = landmark_embedding(distance);
+		feature_matrix = landmark_embedding(distance_matrix);
 	else
-		new_feature_matrix = classic_embedding(distance);
+		feature_matrix = classic_embedding(distance_matrix);
+	
+	distance_matrix.destroy_matrix();
+	CSimpleFeatures<float64_t>* features =
+			new CSimpleFeatures<float64_t>(feature_matrix);
 
-	CSimpleFeatures<float64_t>* new_features =
-			new CSimpleFeatures<float64_t>(new_feature_matrix);
-
+	// unreference distance after embedding
 	SG_UNREF(distance);
-	return new_features;
+	return features;
 }
 
 SGMatrix<float64_t> CMultidimensionalScaling::apply_to_feature_matrix(CFeatures* features)
 {
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	// reference features for not being deleted while applying
 	SG_REF(features);
+	// create new euclidean distance 
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
+	// set distance parallel with this' one
+	Parallel* distance_parallel = distance->parallel;
+	distance->parallel = this->parallel;
 
+	// compute embedding according to m_landmark value
 	SGMatrix<float64_t> new_feature_matrix;
 	if (m_landmark)
-		new_feature_matrix = landmark_embedding(distance);
+		new_feature_matrix = landmark_embedding(distance->get_distance_matrix());
 	else
-		new_feature_matrix = classic_embedding(distance);
+		new_feature_matrix = classic_embedding(distance->get_distance_matrix());
 		
 	simple_features->set_feature_matrix(new_feature_matrix);
 
+	// delete used distance
+	distance->parallel = distance_parallel;
 	delete distance;
 
+	// unreference features
 	SG_UNREF(features);
 	return simple_features->get_feature_matrix();
 }
@@ -123,16 +144,13 @@ SGVector<float64_t> CMultidimensionalScaling::apply_to_feature_vector(SGVector<f
 	return vector;
 }
 
-SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* distance)
+SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64_t> distance_matrix)
 {
-	ASSERT(distance->get_num_vec_lhs()==distance->get_num_vec_rhs());
-	int32_t N = distance->get_num_vec_lhs();
+	ASSERT(distance_matrix.num_cols==distance_matrix.num_rows);
+	int32_t N = distance_matrix.num_cols;
 
 	// loop variables
 	int32_t i,j;
-
-	// get distance matrix
-	SGMatrix<float64_t> D_matrix = distance->get_distance_matrix();
 	
 	// double center distance_matrix
 	float64_t dsq;
@@ -140,19 +158,19 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 	{
 		for (j=i; j<N; j++)
 		{
-			dsq = CMath::sq(D_matrix.matrix[i*N+j]);
-			D_matrix.matrix[i*N+j] = dsq;
-			D_matrix.matrix[j*N+i] = dsq;
+			dsq = CMath::sq(distance_matrix.matrix[i*N+j]);
+			distance_matrix.matrix[i*N+j] = dsq;
+			distance_matrix.matrix[j*N+i] = dsq;
 		}
 	}
-	CMath::center_matrix(D_matrix.matrix,N,N);
+	CMath::center_matrix(distance_matrix.matrix,N,N);
 	for (i=0; i<N; i++)
 	{
-		D_matrix.matrix[i*N+i] *= -0.5;
+		distance_matrix.matrix[i*N+i] *= -0.5;
 		for (j=i+1; j<N; j++)
 		{
-			D_matrix.matrix[i*N+j] *= -0.5;
-			D_matrix.matrix[j*N+i] *= -0.5;
+			distance_matrix.matrix[i*N+j] *= -0.5;
+			distance_matrix.matrix[j*N+i] *= -0.5;
 		}
 	}
 
@@ -165,7 +183,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 	// using ARPACK
 	float64_t* eigenvalues_vector = SG_MALLOC(float64_t, m_target_dim);
 	// solve eigenproblem with ARPACK (faster)
-	arpack_dsaupd(D_matrix.matrix, NULL, N, m_target_dim, "LM", 1, false, 0.0,
+	arpack_dsaupd(distance_matrix.matrix, NULL, N, m_target_dim, "LM", 1, false, 0.0,
 	              eigenvalues_vector, replace_feature_matrix,
 	              eigenproblem_status);
 	// check for failure
@@ -206,13 +224,14 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 	float64_t* eigenvalues_vector = SG_MALLOC(float64_t, N);
 	float64_t* eigenvectors = SG_MALLOC(float64_t, m_target_dim*N);
 	// solve eigenproblem with LAPACK
-	wrap_dsyevr('V','U',N,D_matrix.matrix,N,N-m_target_dim+1,N,eigenvalues_vector,eigenvectors,&eigenproblem_status);
+	wrap_dsyevr('V','U',N,distance_matrix.matrix,N,N-m_target_dim+1,N,eigenvalues_vector,eigenvectors,&eigenproblem_status);
 	// check for failure
 	ASSERT(eigenproblem_status==0);
 	
 	// set eigenvalues vector
 	m_eigenvalues.destroy_vector();
 	m_eigenvalues = SGVector<float64_t>(m_target_dim);
+	m_eigenvalues.do_free = false;
 
 	// fill eigenvalues vector in backwards order
 	for (i=0; i<m_target_dim; i++)
@@ -241,17 +260,17 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(CDistance* dista
 			           i, m_eigenvalues.vlen-1);
 			break;
 		}
-	}	
-	D_matrix.destroy_matrix();	
-
+	}
+	
 	return SGMatrix<float64_t>(replace_feature_matrix,m_target_dim,N);
 }
 
-SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* distance)
+SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float64_t> distance_matrix)
 {
-	int32_t i,j,t;
+	ASSERT(distance_matrix.num_cols==distance_matrix.num_rows);
 	int32_t lmk_N = m_landmark_number;
-	int32_t total_N = distance->get_num_vec_lhs();
+	int32_t i,j,t;
+	int32_t total_N = distance_matrix.num_cols;
 	if (lmk_N<3)
 	{
 		SG_ERROR("Number of landmarks (%d) should be greater than 3 for proper triangulation.\n", 
@@ -263,8 +282,6 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 		         lmk_N, total_N);
 	}
 	
-	// get distance matrix
-	SGMatrix<float64_t> dist_matrix = distance->get_distance_matrix();
 	// get landmark indexes with random permutation
 	SGVector<int32_t> lmk_idxs = shuffle(lmk_N,total_N);
 	// compute distances between landmarks
@@ -273,15 +290,12 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 	{
 		for (j=0; j<lmk_N; j++)
 			lmk_dist_matrix[i*lmk_N+j] =
-				dist_matrix.matrix[lmk_idxs.vector[i]*total_N+lmk_idxs.vector[j]];
+				distance_matrix.matrix[lmk_idxs.vector[i]*total_N+lmk_idxs.vector[j]];
 	}
 
-	// custom distance between landmarks
-	CDistance* lmk_distance =
-		new CCustomDistance(lmk_dist_matrix, lmk_N, lmk_N);
-
 	// get landmarks embedding
-	SGMatrix<float64_t> lmk_feature_matrix = classic_embedding(lmk_distance);
+	SGMatrix<float64_t> lmk_dist_sgmatrix(lmk_dist_matrix,lmk_N,lmk_N);
+	SGMatrix<float64_t> lmk_feature_matrix = classic_embedding(lmk_dist_sgmatrix);
 
 	// construct new feature matrix
 	float64_t* new_feature_matrix = SG_MALLOC(float64_t, m_target_dim*total_N);
@@ -295,8 +309,6 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 			new_feature_matrix[lmk_idxs.vector[i]*m_target_dim+j] =
 				lmk_feature_matrix.matrix[i*m_target_dim+j];
 	}
-	// remove lmk features and lmk distance
-	delete lmk_distance;
 
 	// get exactly defined pseudoinverse of landmarks feature matrix
 	ASSERT(m_eigenvalues.vector && m_eigenvalues.vlen == m_target_dim);
@@ -315,7 +327,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 
 		mean_sq_dist_vector[i] /= lmk_N;
 	}
-	SG_FREE(lmk_dist_matrix);
+	lmk_dist_sgmatrix.destroy_matrix();
 
 	// set to_process els true if should be processed
 	bool* to_process = SG_MALLOC(bool, total_N);
@@ -330,7 +342,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 	ASSERT(num_threads>0);
 	// allocate threads and it's parameters
 	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
-	D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM, num_threads);
+	TRIANGULATION_THREAD_PARAM* parameters = SG_MALLOC(TRIANGULATION_THREAD_PARAM, num_threads);
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
@@ -345,7 +357,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 		parameters[t].total_N = total_N;
 		parameters[t].m_target_dim = m_target_dim;
 		parameters[t].current_dist_to_lmks = current_dist_to_lmks+t*lmk_N;
-		parameters[t].dist_matrix = dist_matrix.matrix;
+		parameters[t].distance_matrix = distance_matrix.matrix;
 		parameters[t].mean_sq_dist_vector = mean_sq_dist_vector;
 		parameters[t].lmk_idxs = lmk_idxs.vector;
 		parameters[t].lmk_feature_matrix = lmk_feature_matrix.matrix;
@@ -362,7 +374,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 #else
 	// run single 'thread'
 	float64_t* current_dist_to_lmks = SG_MALLOC(float64_t, lmk_N);
-	D_THREAD_PARAM single_thread_param;
+	TRIANGULATION_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = 0;
 	single_thread_param.idx_stop = total_N;
 	single_thread_param.idx_step = 1;
@@ -370,7 +382,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 	single_thread_param.total_N = total_N;
 	single_thread_param.m_target_dim = m_target_dim;
 	single_thread_param.current_dist_to_lmks = current_dist_to_lmks;
-	single_thread_param.dist_matrix = dist_matrix.matrix;
+	single_thread_param.distance_matrix = distance_matrix.matrix;
 	single_thread_param.mean_sq_dist_vector = mean_sq_dist_vector;
 	single_thread_param.lmk_idxs = lmk_idxs.vector;
 	single_thread_param.lmk_feature_matrix = lmk_feature_matrix.matrix;
@@ -383,7 +395,6 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 	SG_FREE(current_dist_to_lmks);
 	lmk_idxs.destroy_vector();
 	SG_FREE(mean_sq_dist_vector);
-	dist_matrix.destroy_matrix();
 	SG_FREE(to_process);
 	lmk_idxs.destroy_vector();
 
@@ -392,12 +403,12 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(CDistance* dist
 
 void* CMultidimensionalScaling::run_triangulation_thread(void* p)
 {
-	D_THREAD_PARAM* parameters = (D_THREAD_PARAM*)p;
+	TRIANGULATION_THREAD_PARAM* parameters = (TRIANGULATION_THREAD_PARAM*)p;
 	int32_t idx_start = parameters->idx_start;
 	int32_t idx_step = parameters->idx_step;
 	int32_t idx_stop = parameters->idx_stop;
 	const int32_t* lmk_idxs = parameters->lmk_idxs;
-	const float64_t* dist_matrix = parameters->dist_matrix;
+	const float64_t* distance_matrix = parameters->distance_matrix;
 	const float64_t* mean_sq_dist_vector = parameters->mean_sq_dist_vector;
 	float64_t* current_dist_to_lmks = parameters->current_dist_to_lmks;
 	int32_t m_target_dim = parameters->m_target_dim;
@@ -418,7 +429,7 @@ void* CMultidimensionalScaling::run_triangulation_thread(void* p)
 		for (k=0; k<lmk_N; k++)
 		{
 			current_dist_to_lmks[k] =
-				CMath::sq(dist_matrix[i*total_N+lmk_idxs[k]]) -
+				CMath::sq(distance_matrix[i*total_N+lmk_idxs[k]]) -
 				mean_sq_dist_vector[k];
 		}
 		// compute embedding

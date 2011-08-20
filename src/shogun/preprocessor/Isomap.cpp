@@ -27,27 +27,29 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /* struct storing thread params
  */
-struct D_THREAD_PARAM
+struct DIJKSTRA_THREAD_PARAM
 {
-	// heap to be used
+	/// fibonacci heap to be used
 	CFibonacciHeap* heap;
-	// const matrix storing edges lengths
+	/// const matrix storing edges lengths (ith column
+	/// contains lengths from ith object)
 	const float64_t* edges_matrix;
-	// const matrix storing edges idxs
+	/// const matrix storing edges idxs (ith column
+	/// contains indexes of end-point vertices)
 	const int32_t* edges_idx_matrix;
-	// matrix to store shortest paths
+	/// matrix to store shortest paths
 	float64_t* shortest_D;
-	// idx of threads start
-	int32_t idx_start;
-	// idx of thread stop
-	int32_t idx_stop;
-	// idx of thread step
-	int32_t idx_step;
-	// k param
+	/// starting index of loop
+	int32_t i_start;
+	/// stopping index of loop
+	int32_t i_stop;
+	/// step for loop
+	int32_t i_step;
+	/// k param
 	int32_t m_k;
-	// (s)olution bool array
+	/// (s)olution bool array
 	bool* s;
-	// (f)rontier bool array
+	/// (f)rontier bool array
 	bool* f;
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
@@ -70,13 +72,19 @@ CIsomap::~CIsomap()
 
 CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)
 {
-	CDistance* geodesic_distance = isomap_distance(distance);
+	ASSERT(distance);
+	SG_REF(distance);
+	SGMatrix<float64_t> geodesic_distance_matrix = isomap_distance(distance->get_distance_matrix());
+	// compute embedding for geodesic distance
+	SGMatrix<float64_t> new_feature_matrix;
+	if (m_landmark)
+		new_feature_matrix = CMultidimensionalScaling::landmark_embedding(geodesic_distance_matrix);
+	else
+		new_feature_matrix = CMultidimensionalScaling::classic_embedding(geodesic_distance_matrix);
 
-	CSimpleFeatures<float64_t>* new_features = CMultidimensionalScaling::apply_to_distance(geodesic_distance);
-
-	delete geodesic_distance;
-
-	return new_features;
+	geodesic_distance_matrix.destroy_matrix();
+	SG_UNREF(distance);
+	return new CSimpleFeatures<float64_t>(new_feature_matrix);
 }
 
 
@@ -84,22 +92,29 @@ SGMatrix<float64_t> CIsomap::apply_to_feature_matrix(CFeatures* features)
 {
 	CSimpleFeatures<float64_t>* simple_features =
 		(CSimpleFeatures<float64_t>*) features;
+	SG_REF(features);
 	CDistance* euclidian_distance = new CEuclidianDistance();
 	euclidian_distance->init(simple_features,simple_features);
-	CDistance* geodesic_distance = isomap_distance(euclidian_distance);
+
+	Parallel* distance_parallel = euclidian_distance->parallel;
+	euclidian_distance->parallel = this->parallel;
+	
+	SGMatrix<float64_t> geodesic_distance_matrix = isomap_distance(euclidian_distance->get_distance_matrix());
 
 	SGMatrix<float64_t> new_features;
 
 	if (m_landmark) 
-		new_features = CMultidimensionalScaling::landmark_embedding(geodesic_distance);
+		new_features = CMultidimensionalScaling::landmark_embedding(geodesic_distance_matrix);
 	else
-		new_features = CMultidimensionalScaling::classic_embedding(geodesic_distance);
+		new_features = CMultidimensionalScaling::classic_embedding(geodesic_distance_matrix);
 
-	delete geodesic_distance;
+	geodesic_distance_matrix.destroy_matrix();
+	euclidian_distance->parallel = distance_parallel;
 	delete euclidian_distance;
 
 	simple_features->set_feature_matrix(new_features);
 
+	SG_UNREF(features);
 	return simple_features->get_feature_matrix();
 }
 	
@@ -109,11 +124,10 @@ SGVector<float64_t> CIsomap::apply_to_feature_vector(SGVector<float64_t> vector)
 	return vector;
 }
 	
-CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
+SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 {
 	int32_t N,t,i,j;
 	float64_t tmp;
-	SGMatrix<float64_t> D_matrix=distance->get_distance_matrix();
 	N = D_matrix.num_cols;
 	if (D_matrix.num_cols!=D_matrix.num_rows)
 	{
@@ -161,7 +175,7 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	ASSERT(num_threads>0);
 	// allocate threads and thread parameters
 	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
-	D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM, num_threads);
+	DIJKSTRA_THREAD_PARAM* parameters = SG_MALLOC(DIJKSTRA_THREAD_PARAM, num_threads);
 	// allocate heaps
 	CFibonacciHeap** heaps = SG_MALLOC(CFibonacciHeap*, num_threads);
 	for (t=0; t<num_threads; t++)
@@ -185,9 +199,9 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 	for (t=0; t<num_threads; t++)
 	{
-		parameters[t].idx_start = t;
-		parameters[t].idx_stop = N;
-		parameters[t].idx_step = num_threads;
+		parameters[t].i_start = t;
+		parameters[t].i_stop = N;
+		parameters[t].i_step = num_threads;
 		parameters[t].heap = heaps[t];
 		parameters[t].edges_matrix = edges_matrix;
 		parameters[t].edges_idx_matrix = edges_idx_matrix;
@@ -207,9 +221,9 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	SG_FREE(threads);
 #else
 	D_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = 0;
-	single_thread_param.idx_stop = N;
-	single_thread_param.idx_step = 1;
+	single_thread_param.i_start = 0;
+	single_thread_param.i_stop = N;
+	single_thread_param.i_step = 1;
 	single_thread_param.m_k = m_k;
 	single_thread_param.heap = new CFibonacciHeap(N);
 	single_thread_param.edges_matrix = edges_matrix;
@@ -227,21 +241,17 @@ CCustomDistance* CIsomap::isomap_distance(CDistance* distance)
 	SG_FREE(s);
 	SG_FREE(f);
 
-	CCustomDistance* geodesic_distance = new CCustomDistance(shortest_D,N,N);
-
-	// should be removed if custom distance doesn't copy the matrix
-	SG_FREE(shortest_D);
-
-	return geodesic_distance;
+	return SGMatrix<float64_t>(shortest_D,N,N);
 }
 
 void* CIsomap::run_dijkstra_thread(void *p)
-{	
-	D_THREAD_PARAM* parameters = (D_THREAD_PARAM*)p;
+{
+	// get parameters from p
+	DIJKSTRA_THREAD_PARAM* parameters = (DIJKSTRA_THREAD_PARAM*)p;
 	CFibonacciHeap* heap = parameters->heap;
-	int32_t idx_start = parameters->idx_start;
-	int32_t idx_stop = parameters->idx_stop;
-	int32_t idx_step = parameters->idx_step;
+	int32_t i_start = parameters->i_start;
+	int32_t i_stop = parameters->i_stop;
+	int32_t i_step = parameters->i_step;
 	bool* s = parameters->s;
 	bool* f = parameters->f;
 	const float64_t* edges_matrix = parameters->edges_matrix;
@@ -249,10 +259,13 @@ void* CIsomap::run_dijkstra_thread(void *p)
 	float64_t* shortest_D = parameters->shortest_D;
 	int32_t m_k = parameters->m_k;
 	int32_t k,j,i,min_item,w;
-	int32_t N = idx_stop;
+	int32_t N = i_stop;
+
+	// temporary vars
 	float64_t dist,tmp;
 
-	for (k=idx_start; k<idx_stop; k+=idx_step)
+	// main loop
+	for (k=i_start; k<i_stop; k+=i_step)
 	{
 		// fill s and f with false, fill shortest_D with infinity
 		for (j=0; j<N; j++)

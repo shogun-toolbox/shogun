@@ -38,6 +38,10 @@ class CDistance;
  * Shortest paths are being computed with Dijkstra's algorithm with heap
  * in parallel. Due to sparsity of the kNN graph Fibonacci Heap with
  * amortized O(1) Extract-Min operation time complexity is used.
+ *
+ * It is possible to apply preprocessor to specified distance using
+ * apply_to_distance.
+ *
  */
 class CIsomap: public CMultidimensionalScaling
 {
@@ -57,17 +61,15 @@ public:
 	 */
 	virtual void cleanup() {};
 
-	/** apply preprocessor to CDistance using
-	 * Isomap of specified type
+	/** apply preprocessor to CDistance
 	 * @param distance distance
-	 * @return new features with euclidean distance similar to geodesic
+	 * @return embedded features 
 	 */
 	virtual CSimpleFeatures<float64_t>* apply_to_distance(CDistance* distance);
 
-	/** apply preprocessor to feature matrix using 
-	 * Isomap of specified type
+	/** apply preprocessor to features
 	 * @param features 
-	 * @return new feature matrix with euclidean distance similar to geodesic
+	 * @return embedded feature matrix
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 	
@@ -111,15 +113,15 @@ protected:
 	void init();
 
 	/** run dijkstra thread
-	 * p thread params
+	 * @param p thread params
 	 */
 	static void* run_dijkstra_thread(void* p);
 
 	/** approximate geodesic distance with shortest path in kNN graph
-	 * @param distance given distance for shortest path computing
-	 * @return custom distance with approximate geodesic distance matrix
+	 * @param D_matrix distance matrix (deleted on exit)
+	 * @return approximate geodesic distance matrix
 	 */
-	CCustomDistance* isomap_distance(CDistance* distance);
+	SGMatrix<float64_t> isomap_distance(SGMatrix<float64_t> D_matrix);
 
 };
 }

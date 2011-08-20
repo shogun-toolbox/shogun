@@ -45,6 +45,11 @@ class CDistance;
  * might be inconsistent (essentially, according to zero or
  * negative eigenvalues). In this case a warning is showed.
  *
+ * It is possible to apply multidimensional scaling to any
+ * given distance using apply_to_distance_matrix method.
+ * By default euclidean distance is used (with parallel
+ * instance replaced by preprocessor's one).
+ *
  * Faster landmark approximation is parallel using pthreads.
  * As for choice of landmark number it should be at least 3 for
  * proper triangulation. For reasonable embedding accuracy greater
@@ -63,11 +68,11 @@ public:
 
 	/** empty init
 	 */
-	virtual bool init(CFeatures* features) { return true; };
+	virtual bool init(CFeatures* features);
 
-	/** empty cleanup
+	/** cleanup
 	 */
-	virtual void cleanup() {};
+	virtual void cleanup();
 
 	/** apply preprocessor to CDistance
 	 * @param distance (should be approximate euclidean for consistent result)
@@ -105,7 +110,7 @@ public:
 
 	/** set number of landmarks⋅
 	 * should be lesser than number of examples and greater than 3
-	 * for consistent embedding
+	 * for consistent embedding as triangulation is used
 	 * @param num number of landmark to be set
 	 */
 	void set_landmark_number(int32_t num)
@@ -141,25 +146,25 @@ public:
 
 protected:
 
-	/** init */
+	/** default initialization */
 	void init();
 
 	 /** classical embedding
-	 * @param distance distance
+	 * @param distance_matrix distance matrix to be used for embedding
 	 * @return new feature matrix representing given distance
 	 */
-	SGMatrix<float64_t> classic_embedding(CDistance* distance);
+	SGMatrix<float64_t> classic_embedding(SGMatrix<float64_t> distance_matrix);
 
-	 /** landmark embedding
-	 * @param distance distance
-	 * @return new feature matrix representing given distance
+	 /** landmark embedding (approximate, accuracy varies with m_landmark_num parameter)
+	 * @param distance_matrix distance matrix to be used for embedding
+	 * @return new feature matrix representing given distance matrix
 	 */
-	SGMatrix<float64_t> landmark_embedding(CDistance* distance);
+	SGMatrix<float64_t> landmark_embedding(SGMatrix<float64_t> distance_matrix);
 
 protected:
 
 	/** run triangulation thread for landmark embedding
-→→→→→→→→ * p thread parameters
+→→→→→→→→ * @param p thread parameters
 →→→→→→→→ */
 	static void* run_triangulation_thread(void* p);
 
@@ -167,13 +172,13 @@ protected:
 →→→→→→→→ * with Fisher-Yates (known as Knuth too) shuffle algorithm
 →→→→→→→→ * @param count number of indexes to be shuffled and returned
 →→→→→→→→ * @param total_count total number of indexes
-→→→→→→→→ * @return shuffled indexes for landmarks
+→→→→→→→→ * @return sorted shuffled indexes for landmarks
 →→→→→→→→ */
 	static SGVector<int32_t> shuffle(int32_t count, int32_t total_count);
 
 protected:
 
-	/** last eigenvalues */
+	/** last embedding eigenvalues */
 	SGVector<float64_t> m_eigenvalues;
 
 	/** use landmark approximation? */
