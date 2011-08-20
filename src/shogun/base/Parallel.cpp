@@ -10,6 +10,14 @@
 
 #include <shogun/base/Parallel.h>
 
+#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
+#include <unistd.h>
+#elif defined(DARWIN)
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
+
+
 using namespace shogun;
 
 Parallel::Parallel() : refcount(0), num_threads(1)
@@ -23,4 +31,17 @@ Parallel::Parallel(const Parallel& orig) : refcount(0)
 
 Parallel::~Parallel()
 {
+}
+
+int32_t Parallel::get_num_cpus() const
+{
+#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
+		return sysconf( _SC_NPROCESSORS_ONLN );
+#elif defined(DARWIN)
+		int num; /* for calling external lib */
+		size_t size=sizeof(num);
+		if (!sysctlbyname("hw.ncpu", &num, &size, NULL, 0))
+			return num;
+#endif
+		return 1;
 }

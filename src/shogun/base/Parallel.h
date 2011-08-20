@@ -15,13 +15,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 
-#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
-#include <unistd.h>
-#elif defined(DARWIN)
-#include <sys/types.h>
-#include <sys/sysctl.h>
-#endif
-
 #ifdef HAVE_PTHREAD
 #ifdef _POSIX_SPIN_LOCKS
 	#define PTHREAD_LOCK_T pthread_spinlock_t
@@ -61,18 +54,7 @@ public:
 	/** get num of cpus
 	 * @return number of CPUs
 	 */
-	inline int32_t get_num_cpus() const
-	{
-#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
-		return sysconf( _SC_NPROCESSORS_ONLN );
-#elif defined(DARWIN)
-		int num; /* for calling external lib */
-		size_t size=sizeof(num);
-		if (!sysctlbyname("hw.ncpu", &num, &size, NULL, 0))
-			return num;
-#endif
-		return 1;
-	}
+	int32_t get_num_cpus() const;
 
 	/** set number of threads
 	 * @param n number of threads 
