@@ -56,6 +56,11 @@ public:
 		/// result in feature matrix
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
+		/** apply to string features
+		 * @param features
+		 */
+		virtual CSimpleFeatures<float64_t>* apply_to_string_features(CFeatures* features);
+
 		/** get kernel */
 		CKernel* get_kernel() const
 		{

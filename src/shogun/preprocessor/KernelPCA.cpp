@@ -76,9 +76,6 @@ bool CKernelPCA::init(CFeatures* features)
 		SG_REF(features);
 		m_init_features = features;
 
-		ASSERT(features->get_feature_class()==C_SIMPLE);
-		ASSERT(features->get_feature_type()==F_DREAL);
-
 		m_kernel->init(features,features);
 		SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
 		m_kernel->cleanup();
@@ -189,4 +186,36 @@ SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vect
 	m_kernel->cleanup();
 	return result;
 }
+
+CSimpleFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* features)
+{
+	ASSERT(m_initialized);
+
+	int32_t num_vectors = features->get_num_vectors();
+	int32_t i,j,k;
+	int32_t n = m_transformation_matrix.num_cols;
+
+	m_kernel->init(features,m_init_features);
+
+	float64_t* new_feature_matrix = SG_MALLOC(float64_t, m_target_dim*num_vectors);
+
+	for (i=0; i<num_vectors; i++)
+	{
+		for (j=0; j<m_target_dim; j++)
+			new_feature_matrix[i*m_target_dim+j] = m_bias_vector.vector[j];
+
+		for (j=0; j<n; j++)
+		{
+			float64_t kij = m_kernel->kernel(i,j);
+
+			for (k=0; k<m_target_dim; k++)
+				new_feature_matrix[k+i*m_target_dim] += kij*m_transformation_matrix.matrix[(n-k-1)*n+j];
+		}
+	}
+
+	m_kernel->cleanup();
+
+	return new CSimpleFeatures<float64_t>(SGMatrix<float64_t>(new_feature_matrix,m_target_dim,num_vectors));
+}
+
 #endif
