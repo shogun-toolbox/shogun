@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -11,12 +10,20 @@ parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
 def kernel_inversemultiquadric_modular(fm_train_real=traindat,fm_test_real=testdat, shift_coef=1.0)
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
 	
-	distance=EuclidianDistance(feats_train, feats_train)
+# *** 	distance=EuclidianDistance(feats_train, feats_train)
+	distance=Modshogun::EuclidianDistance.new
+	distance.set_features(feats_train, feats_train)
 
-	kernel=InverseMultiQuadricKernel(feats_train, feats_train, shift_coef, distance)
+# *** 	kernel=InverseMultiQuadricKernel(feats_train, feats_train, shift_coef, distance)
+	kernel=Modshogun::InverseMultiQuadricKernel.new
+	kernel.set_features(feats_train, feats_train, shift_coef, distance)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
@@ -27,7 +34,7 @@ def kernel_inversemultiquadric_modular(fm_train_real=traindat,fm_test_real=testd
 
 end
 if __FILE__ == $0
-	print 'InverseMultiquadric'
+	puts 'InverseMultiquadric'
 	kernel_inversemultiquadric_modular(*parameter_list[0])
 
 end

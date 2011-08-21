@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -15,11 +14,19 @@ def classifier_liblinear_modular(fm_train_real, fm_test_real,
 
 	Math_init_random(17)
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
-	labels=Labels(label_train_twoclass)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
+# *** 	labels=Labels(label_train_twoclass)
+	labels=Modshogun::Labels.new
+	labels.set_features(label_train_twoclass)
 
-	svm=LibLinear(C, feats_train, labels)
+# *** 	svm=LibLinear(C, feats_train, labels)
+	svm=Modshogun::LibLinear.new
+	svm.set_features(C, feats_train, labels)
 	svm.set_liblinear_solver_type(L2R_L2LOSS_SVC_DUAL)
 	svm.set_epsilon(epsilon)
 	svm.set_bias_enabled(True)
@@ -35,7 +42,7 @@ def classifier_liblinear_modular(fm_train_real, fm_test_real,
 
 end
 if __FILE__ == $0
-	print 'LibLinear'
+	puts 'LibLinear'
 	classifier_liblinear_modular(*parameter_list[0])
 
 

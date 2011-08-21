@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 # create dense matrix A
@@ -11,16 +10,22 @@ parameter_list = [[matrix,3,1,2],[matrix,3,1,2]]
 
 # ... of type LongInt
 def features_string_hashed_wd_modular(A=matrix,order=3,start_order=1,hash_bits=2)
-    a=LongIntFeatures(A)
+# ***     a=LongIntFeatures(A)
+    a=Modshogun::LongIntFeatures.new
+    a.set_features(A)
     
 
     x=[array([0,1,2,3,0,1,2,3,3,2,2,1,1],dtype=uint8)]
     from_order=order
-    f=StringByteFeatures(RAWDNA)
+# ***     f=StringByteFeatures(RAWDNA)
+    f=Modshogun::StringByteFeatures.new
+    f.set_features(RAWDNA)
     #f.io.set_loglevel(MSG_DEBUG)
     f.set_features(x)
 
-    y=HashedWDFeatures(f,start_order,order,from_order,hash_bits)
+# ***     y=HashedWDFeatures(f,start_order,order,from_order,hash_bits)
+    y=Modshogun::HashedWDFeatures.new
+    y.set_features(f,start_order,order,from_order,hash_bits)
     fm=y.get_computed_dot_feature_matrix()
 
     return fm
@@ -28,7 +33,7 @@ def features_string_hashed_wd_modular(A=matrix,order=3,start_order=1,hash_bits=2
 
 end
 if __FILE__ == $0
-    print 'string_hashed_wd'
+	puts 'string_hashed_wd'
     features_string_hashed_wd_modular(*parameter_list[0])
 
 end

@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 traindat = LoadMatrix.load_dna('../data/fm_train_dna.dat')
 testdat = LoadMatrix.load_dna('../data/fm_test_dna.dat')
@@ -10,10 +9,16 @@ parameter_list=[[traindat,testdat],[traindat,testdat]]
 
 def kernel_linear_string_modular(fm_train_dna=traindat,fm_test_dna=testdat)
 
-	feats_train=StringCharFeatures(fm_train_dna, DNA)
-	feats_test=StringCharFeatures(fm_test_dna, DNA)
+# *** 	feats_train=StringCharFeatures(fm_train_dna, DNA)
+	feats_train=Modshogun::StringCharFeatures.new
+	feats_train.set_features(fm_train_dna, DNA)
+# *** 	feats_test=StringCharFeatures(fm_test_dna, DNA)
+	feats_test=Modshogun::StringCharFeatures.new
+	feats_test.set_features(fm_test_dna, DNA)
 
-	kernel=LinearStringKernel(feats_train, feats_train)
+# *** 	kernel=LinearStringKernel(feats_train, feats_train)
+	kernel=Modshogun::LinearStringKernel.new
+	kernel.set_features(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
@@ -23,7 +28,7 @@ def kernel_linear_string_modular(fm_train_dna=traindat,fm_test_dna=testdat)
 
 end
 if __FILE__ == $0
-	print 'LinearString'
+	puts 'LinearString'
  	kernel_linear_string_modular(*parameter_list[0])
 
 end

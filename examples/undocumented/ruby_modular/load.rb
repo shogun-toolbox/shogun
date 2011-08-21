@@ -55,16 +55,16 @@ module LoadMatrix
 
 
 	def load_labels(filename)
-		matrix = []
+		vector = []
 		File.open(filename) do |file|
   		file.each_line do |line|
-    		ary = []
-				line.split(" ").each{ |n| ary << n.to_f }
-    		matrix << ary
+    		vector << line.to_f
   		end
 		end
-		matrix = NArray.to_na(matrix)
-		matrix = matrix.reshape(1, matrix.total)
- end
+		vector = NArray.to_na(vector)
+    # loading vectors is not yet implemented,
+    # use a 1D array instead (for now)
+		#vector = vector.reshape(1, vector.total)
+  end
  extend self
 end

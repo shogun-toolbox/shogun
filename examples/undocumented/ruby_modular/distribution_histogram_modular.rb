@@ -1,21 +1,28 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindna = LoadMatrix.load_dna('../data/fm_train_dna.dat')
 
 parameter_list = [[traindna,3,0,False],[traindna,4,0,False]]
 
-def distribution_histogram_modular(fm_dna=traindna,order=3,gap=0,reverse=False)
+# *** def distribution_histogram_modular(fm_dna=traindna,order=3,gap=0,reverse=False)
+def distribution_histogram_modular(fm_dna=traindna,order=3,gap=0,reverse=Modshogun::False.new
+def distribution_histogram_modular(fm_dna=traindna,order=3,gap=0,reverse.set_features)
 
-	charfeat=StringCharFeatures(DNA)
+# *** 	charfeat=StringCharFeatures(DNA)
+	charfeat=Modshogun::StringCharFeatures.new
+	charfeat.set_features(DNA)
 	charfeat.set_features(fm_dna)
-	feats=StringWordFeatures(charfeat.get_alphabet())
+# *** 	feats=StringWordFeatures(charfeat.get_alphabet())
+	feats=Modshogun::StringWordFeatures.new
+	feats.set_features(charfeat.get_alphabet())
 	feats.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
-	histo=Histogram(feats)
+# *** 	histo=Histogram(feats)
+	histo=Modshogun::Histogram.new
+	histo.set_features(feats)
 	histo.train()
 
 	histo.get_histogram()
@@ -36,7 +43,7 @@ end
 ###########################################################################
 
 if __FILE__ == $0
-	print 'Histogram'
+	puts 'Histogram'
 	distribution_histogram_modular(*parameter_list[0])
 
 

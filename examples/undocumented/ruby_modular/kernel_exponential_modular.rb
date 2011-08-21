@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -11,12 +10,18 @@ parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
 def kernel_exponential_modular(fm_train_real=traindat,fm_test_real=testdat, tau_coef=1.0)
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
 
 	distance = EuclidianDistance(feats_train, feats_train)
 	
-	kernel=ExponentialKernel(feats_train, feats_train, tau_coef, distance, 10)
+# *** 	kernel=ExponentialKernel(feats_train, feats_train, tau_coef, distance, 10)
+	kernel=Modshogun::ExponentialKernel.new
+	kernel.set_features(feats_train, feats_train, tau_coef, distance, 10)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
@@ -27,7 +32,7 @@ def kernel_exponential_modular(fm_train_real=traindat,fm_test_real=testdat, tau_
 
 end
 if __FILE__ == $0
-	print 'Exponential'
+	puts 'Exponential'
 	kernel_exponential_modular(*parameter_list[0])
 
 end

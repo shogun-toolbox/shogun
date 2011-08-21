@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 # create dense matrix A
@@ -11,7 +10,9 @@ parameter_list = [[matrix]]
 
 # ... of type LongInt
 def features_simple_longint_modular(A=matrix)
-    a=LongIntFeatures(A)
+# ***     a=LongIntFeatures(A)
+    a=Modshogun::LongIntFeatures.new
+    a.set_features(A)
 
 end
 # get first feature vector and set it
@@ -26,7 +27,7 @@ end
     return a_out
 
 if __FILE__ == $0
-    print 'simple_longint'
+	puts 'simple_longint'
     features_simple_longint_modular(*parameter_list[0])
 
 end

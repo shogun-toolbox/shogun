@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 traindat = LoadMatrix.load_dna('../data/fm_train_dna.dat')
 testdat = LoadMatrix.load_dna('../data/fm_test_dna.dat')
@@ -11,23 +10,39 @@ parameter_list = [[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,
 def kernel_salzberg_word_string_modular(fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,
 
 end
-order=3,gap=0,reverse=False):
+# *** order=3,gap=0,reverse=False):
+order=3,gap=0,reverse=Modshogun::False.new
+order=3,gap=0,reverse.set_features):
 
-	charfeat=StringCharFeatures(fm_train_dna, DNA)
-	feats_train=StringWordFeatures(charfeat.get_alphabet())
+# *** 	charfeat=StringCharFeatures(fm_train_dna, DNA)
+	charfeat=Modshogun::StringCharFeatures.new
+	charfeat.set_features(fm_train_dna, DNA)
+# *** 	feats_train=StringWordFeatures(charfeat.get_alphabet())
+	feats_train=Modshogun::StringWordFeatures.new
+	feats_train.set_features(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
-	charfeat=StringCharFeatures(fm_test_dna, DNA)
-	feats_test=StringWordFeatures(charfeat.get_alphabet())
+# *** 	charfeat=StringCharFeatures(fm_test_dna, DNA)
+	charfeat=Modshogun::StringCharFeatures.new
+	charfeat.set_features(fm_test_dna, DNA)
+# *** 	feats_test=StringWordFeatures(charfeat.get_alphabet())
+	feats_test=Modshogun::StringWordFeatures.new
+	feats_test.set_features(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
-	pie=PluginEstimate()
-	labels=Labels(label_train_dna)
+# *** 	pie=PluginEstimate()
+	pie=Modshogun::PluginEstimate.new
+	pie.set_features()
+# *** 	labels=Labels(label_train_dna)
+	labels=Modshogun::Labels.new
+	labels.set_features(label_train_dna)
 	pie.set_labels(labels)
 	pie.set_features(feats_train)
 	pie.train()
 
-	kernel=SalzbergWordStringKernel(feats_train, feats_train, pie, labels)
+# *** 	kernel=SalzbergWordStringKernel(feats_train, feats_train, pie, labels)
+	kernel=Modshogun::SalzbergWordStringKernel.new
+	kernel.set_features(feats_train, feats_train, pie, labels)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)
@@ -37,7 +52,7 @@ order=3,gap=0,reverse=False):
 	return km_train,km_test,kernel
 
 if __FILE__ == $0
-	print 'PluginEstimate w/ SalzbergWord'
+	puts 'PluginEstimate w/ SalzbergWord'
 	kernel_salzberg_word_string_modular(*parameter_list[0])
 
 

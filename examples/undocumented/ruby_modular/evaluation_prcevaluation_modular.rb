@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 ground_truth = LoadMatrix.load_labels('../data/label_train_twoclass.dat')
@@ -24,7 +23,7 @@ def evaluation_prcevaluation_modular(ground_truth, predicted)
 
 end
 if __FILE__ == $0
-	print 'PRCEvaluation'
+	puts 'PRCEvaluation'
 	evaluation_prcevaluation_modular(*parameter_list[0])
 
 

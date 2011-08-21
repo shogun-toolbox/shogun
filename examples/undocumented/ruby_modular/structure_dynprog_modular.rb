@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 #!/usr/bin/env python 
 # -*- coding: utf-8 -*-
@@ -55,10 +54,12 @@ end
 def structure_dynprog_modular(fname):
 
 	data_dict = loads(gzip.GzipFile(fname).read())
-	#data_dict = loadmat('../data/DynProg_example_py.dat.mat', appendmat=False, struct_as_record=False)
+# *** 	#data_dict = loadmat('../data/DynProg_example_py.dat.mat', appendmat=False, struct_as_record=False)
+	#data_dict = loadmat('../data/DynProg_example_py.dat.mat', appendmat=Modshogun::False.new
+	#data_dict = loadmat('../data/DynProg_example_py.dat.mat', appendmat.set_features, struct_as_record=False)
 
-	#print data_dict
-	#print len(data_dict['penalty_array'][0][0][0][0].limits[0])
+	#	puts data_dict
+	#	puts len(data_dict['penalty_array'][0][0][0][0].limits[0])
 	num_plifs,num_limits = len(data_dict['penalty_array']),len(data_dict['penalty_array'][0].limits)
 	pm = PlifMatrix()
 	pm.create_plifs(num_plifs,num_limits)
@@ -163,18 +164,18 @@ def structure_dynprog_modular(fname):
 
 	# fetch results
 	states = dyn.get_states()
-	#print states
+	#	puts states
 	scores = dyn.get_scores()
-	#print scores
+	#	puts scores
 	positions = dyn.get_positions()
-	#print positions
+	#	puts positions
 
 	return states, scores, positions
 
 
 end
 if __name__ == '__main__':
-	print "Structure"
+	puts "Structure"
 	structure_dynprog_modular(*parameter_list[0])
 
 end

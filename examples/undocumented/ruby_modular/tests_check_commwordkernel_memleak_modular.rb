@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 parameter_list=[[10,7,0,0]]
 
@@ -58,10 +57,16 @@ def tests_check_commwordkernel_memleak_modular(num, order, gap, reverse)
 	num*'ACGT',num*'ACGT', num*'ACGT', num*'ACGT']
 
 	for i in xrange(10):
-		alpha=Alphabet(DNA)
-		traindat=StringCharFeatures(alpha)
+# *** 		alpha=Alphabet(DNA)
+		alpha=Modshogun::Alphabet.new
+		alpha.set_features(DNA)
+# *** 		traindat=StringCharFeatures(alpha)
+		traindat=Modshogun::StringCharFeatures.new
+		traindat.set_features(alpha)
 		traindat.set_features(POS+NEG)
-		trainudat=StringWordFeatures(traindat.get_alphabet());
+# *** 		trainudat=StringWordFeatures(traindat.get_alphabet());
+		trainudat=Modshogun::StringWordFeatures.new
+		trainudat.set_features(traindat.get_alphabet());
 		trainudat.obtain_from_char(traindat, order-1, order, gap, reverse)
 		#trainudat.io.set_loglevel(MSG_DEBUG)
 		pre = SortWordString()
@@ -84,7 +89,7 @@ def tests_check_commwordkernel_memleak_modular(num, order, gap, reverse)
 
 end
 if __FILE__ == $0
-	print 'Leak Check Comm Word Kernel'
+	puts 'Leak Check Comm Word Kernel'
 	tests_check_commwordkernel_memleak_modular(*parameter_list[0])
 
 end

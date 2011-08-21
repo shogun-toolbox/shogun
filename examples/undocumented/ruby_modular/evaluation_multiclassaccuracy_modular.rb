@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 random.seed(17)
@@ -24,7 +23,7 @@ def evaluation_multiclassaccuracy_modular(ground_truth, predicted)
 
 end
 if __FILE__ == $0
-	print 'MulticlassAccuracy'
+	puts 'MulticlassAccuracy'
 	evaluation_multiclassaccuracy_modular(*parameter_list[0])
 
 

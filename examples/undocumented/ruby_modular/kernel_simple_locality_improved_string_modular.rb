@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 traindat = LoadMatrix.load_dna('../data/fm_train_dna.dat')
 testdat = LoadMatrix.load_dna('../data/fm_test_dna.dat')
@@ -12,12 +11,18 @@ def kernel_simple_locality_improved_string_modular(fm_train_dna=traindat,fm_test
 	length=5,inner_degree=5,outer_degree=1 ):
 	
 
-	feats_train=StringCharFeatures(fm_train_dna, DNA)
+# *** 	feats_train=StringCharFeatures(fm_train_dna, DNA)
+	feats_train=Modshogun::StringCharFeatures.new
+	feats_train.set_features(fm_train_dna, DNA)
 	#feats_train.io.set_loglevel(MSG_DEBUG)
-	feats_test=StringCharFeatures(fm_test_dna, DNA)
+# *** 	feats_test=StringCharFeatures(fm_test_dna, DNA)
+	feats_test=Modshogun::StringCharFeatures.new
+	feats_test.set_features(fm_test_dna, DNA)
 
 
-	kernel=SimpleLocalityImprovedStringKernel(
+# *** 	kernel=SimpleLocalityImprovedStringKernel(
+	kernel=Modshogun::SimpleLocalityImprovedStringKernel.new
+	kernel.set_features(
 		feats_train, feats_train, length, inner_degree, outer_degree)
 
 	km_train=kernel.get_kernel_matrix()
@@ -28,7 +33,7 @@ def kernel_simple_locality_improved_string_modular(fm_train_dna=traindat,fm_test
 
 end
 if __FILE__ == $0
-	print 'SimpleLocalityImprovedString'
+	puts 'SimpleLocalityImprovedString'
 	kernel_simple_locality_improved_string_modular(*parameter_list[0])
 
 end

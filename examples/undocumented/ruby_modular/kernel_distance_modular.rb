@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = double(LoadMatrix.load_numbers('../data/fm_test_real.dat'))
@@ -10,12 +9,20 @@ parameter_list=[[traindat,testdat,1.7],[traindat,testdat,1.8]]
 
 def kernel_distance_modular(fm_train_real=traindat,fm_test_real=testdat,width=1.7)
 	
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
 	
-	distance=EuclidianDistance()
+# *** 	distance=EuclidianDistance()
+	distance=Modshogun::EuclidianDistance.new
+	distance.set_features()
 
-	kernel=DistanceKernel(feats_train, feats_test, width, distance)
+# *** 	kernel=DistanceKernel(feats_train, feats_test, width, distance)
+	kernel=Modshogun::DistanceKernel.new
+	kernel.set_features(feats_train, feats_test, width, distance)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -25,7 +32,7 @@ def kernel_distance_modular(fm_train_real=traindat,fm_test_real=testdat,width=1.
 
 end
 if __FILE__ == $0
-	print 'Distance'
+	puts 'Distance'
 	kernel_distance_modular(*parameter_list[0])
 
 end
