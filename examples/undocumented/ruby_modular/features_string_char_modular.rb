@@ -1,11 +1,9 @@
-# this was trancekoded by the awesome trancekoder
-require 'narray'
 require 'modshogun'
-require 'load'
 require 'pp'
+
 strings=['hey','guys','i','am','a','string']
 
-parameter_list=[[strings]]
+parameter_list=[strings]
 
 def features_string_char_modular(strings)
 
@@ -13,22 +11,20 @@ def features_string_char_modular(strings)
 	f=Modshogun::StringCharFeatures.new(strings, Modshogun::RAWBYTE)
 
 	#and output several stats
-	#print "max string length", f.get_max_vector_length()
-	#print "number of strings", f.get_num_vectors()
-	#print "length of first string", f.get_vector_length(0)
-	#print "string[5]", ''.join(f.get_feature_vector(5))
-	#print "strings", f.get_features()
+	#puts "max string length", f.get_max_vector_length
+	#puts "number of strings", f.get_num_vectors
+	#puts "length of first string", f.get_vector_length(0)
+	#puts "string[5]", f.get_feature_vector(5)
+	#puts "strings", f.get_features
 
 	#replace string 0
 	f.set_feature_vector(['t','e','s','t'], 0)
 
-	#print "strings", f.get_features()
-	return f.get_features(), f
-
+	return f.get_features, f
 
 end
-if __FILE__ == $0
-	print 'StringCharFeatures'
-	features_string_char_modular(*parameter_list[0])
 
+if __FILE__ == $0
+	puts 'StringCharFeatures'
+	pp features_string_char_modular(*parameter_list)
 end

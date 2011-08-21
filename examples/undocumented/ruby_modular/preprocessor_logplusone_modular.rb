@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -12,10 +11,16 @@ parameter_list = [[traindat+10,testdat+10,1.4,10],[traindat+10,testdat+10,1.5,10
 def preprocessor_logplusone_modular(fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10)
 
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
 
-	preproc=LogPlusOne()
+# *** 	preproc=LogPlusOne()
+	preproc=Modshogun::LogPlusOne.new
+	preproc.set_features()
 	preproc.init(feats_train)
 	feats_train.add_preprocessor(preproc)
 	feats_train.apply_preprocessor()
@@ -23,7 +28,9 @@ def preprocessor_logplusone_modular(fm_train_real=traindat,fm_test_real=testdat,
 	feats_test.apply_preprocessor()
 
 	
-	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
+# *** 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
+	kernel=Modshogun::Chi2Kernel.new
+	kernel.set_features(feats_train, feats_train, width, size_cache)
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -34,7 +41,7 @@ def preprocessor_logplusone_modular(fm_train_real=traindat,fm_test_real=testdat,
 
 end
 if __FILE__ == $0
-	print 'LogPlusOne'
+	puts 'LogPlusOne'
 	preprocessor_logplusone_modular(*parameter_list[0])
 
 end

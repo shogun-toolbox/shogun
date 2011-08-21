@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -11,10 +10,16 @@ parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 def kernel_linear_modular(fm_train_real=traindat,fm_test_real=testdat,scale=1.2)
 
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
 	 
-	kernel=LinearKernel()
+# *** 	kernel=LinearKernel()
+	kernel=Modshogun::LinearKernel.new
+	kernel.set_features()
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)
 
@@ -26,7 +31,7 @@ def kernel_linear_modular(fm_train_real=traindat,fm_test_real=testdat,scale=1.2)
 
 end
 if __FILE__ == $0
-	print 'Linear'
+	puts 'Linear'
 	kernel_linear_modular(*parameter_list[0])
 
 end

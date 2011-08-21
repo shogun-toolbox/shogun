@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 import numpy
 # create dense matrix A
@@ -14,37 +13,41 @@ def features_sparse_modular(A)
 	# note, will work with types other than float64 too,
 	# but requires recent scipy.sparse
 	X=csc_matrix(A)
-	#print A
+	#	puts A
 
 	# create sparse shogun features from dense matrix A
-	a=SparseRealFeatures(A)
+# *** 	a=SparseRealFeatures(A)
+	a=Modshogun::SparseRealFeatures.new
+	a.set_features(A)
 	a_out=a.get_full_feature_matrix()
-	#print a_out
+	#	puts a_out
 	assert(all(a_out==A))
-	#print a_out
+	#	puts a_out
 
 	# create sparse shogun features from sparse matrix X
 	a.set_sparse_feature_matrix(X)
 	a_out=a.get_full_feature_matrix()
-	#print a_out
+	#	puts a_out
 	assert(all(a_out==A))
 
 	# create sparse shogun features from sparse matrix X
-	a=SparseRealFeatures(X)
+# *** 	a=SparseRealFeatures(X)
+	a=Modshogun::SparseRealFeatures.new
+	a.set_features(X)
 	a_out=a.get_full_feature_matrix()
-	#print a_out
+	#	puts a_out
 	assert(all(a_out==A))
 
 	# obtain (data,row,indptr) csc arrays of sparse shogun features
 	z=csc_matrix(a.get_sparse_feature_matrix())
 	z_out=z.todense()
-	#print z_out
+	#	puts z_out
 	assert(all(z_out==A))
 
 
 end
 if __FILE__ == $0
-	print 'Sparse Features'
+	puts 'Sparse Features'
 	features_sparse_modular(*parameter_list[0])
 
 end

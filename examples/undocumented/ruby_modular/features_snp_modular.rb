@@ -1,24 +1,27 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 parameter_list=[['../data/snps.dat']]
 
 def features_snp_modular(fname)
 
-	sf=StringByteFeatures(SNP)
+# *** 	sf=StringByteFeatures(SNP)
+	sf=Modshogun::StringByteFeatures.new
+	sf.set_features(SNP)
 	sf.load_ascii_file(fname, False, SNP, SNP)
-	#print sf.get_features()
-	snps=SNPFeatures(sf)
-	#print snps.get_feature_matrix()
-	#print snps.get_minor_base_string()
-	#print snps.get_major_base_string()
+	#	puts sf.get_features()
+# *** 	snps=SNPFeatures(sf)
+	snps=Modshogun::SNPFeatures.new
+	snps.set_features(sf)
+	#	puts snps.get_feature_matrix()
+	#	puts snps.get_minor_base_string()
+	#	puts snps.get_major_base_string()
 
 
 end
 if __FILE__ == $0
-	print 'SNP Features'
+	puts 'SNP Features'
 	features_snp_modular(*parameter_list[0])
 
 end

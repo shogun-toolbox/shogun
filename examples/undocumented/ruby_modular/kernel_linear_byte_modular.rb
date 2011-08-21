@@ -2,9 +2,6 @@ require 'narray'
 require 'modshogun'
 require 'load'
 require 'pp'
-# testing 
-require 'rubygems'
-require 'pry'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_byte.dat')
 testdat = LoadMatrix.load_numbers('../data/fm_test_byte.dat')

@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -12,13 +11,23 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat
 
 def classifier_libsvmmulticlass_modular(fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,width=2.1,C=1,epsilon=1e-5)
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
-	kernel=GaussianKernel(feats_train, feats_train, width)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
+# *** 	kernel=GaussianKernel(feats_train, feats_train, width)
+	kernel=Modshogun::GaussianKernel.new
+	kernel.set_features(feats_train, feats_train, width)
 
-	labels=Labels(label_train_multiclass)
+# *** 	labels=Labels(label_train_multiclass)
+	labels=Modshogun::Labels.new
+	labels.set_features(label_train_multiclass)
 
-	svm=LibSVMMultiClass(C, kernel, labels)
+# *** 	svm=LibSVMMultiClass(C, kernel, labels)
+	svm=Modshogun::LibSVMMultiClass.new
+	svm.set_features(C, kernel, labels)
 	svm.set_epsilon(epsilon)
 	svm.train()
 
@@ -30,7 +39,7 @@ def classifier_libsvmmulticlass_modular(fm_train_real=traindat,fm_test_real=test
 
 end
 if __FILE__ == $0
-	print 'LibSVMMultiClass'	
+	puts 'LibSVMMultiClass'	
 	classifier_libsvmmulticlass_modular(*parameter_list[0])
 
 end

@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 import numpy
 
@@ -75,7 +74,7 @@ def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=tes
     
 	#####################################
 		
-	#print "obtaining DA SVM from previously trained SVM"
+	#	puts "obtaining DA SVM from previously trained SVM"
 
 	feats_train2 = StringCharFeatures(fm_train_dna, DNA)
 	feats_test2 = StringCharFeatures(fm_test_dna, DNA)
@@ -93,7 +92,7 @@ def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=tes
 
 end
 if __FILE__ == $0
-	print 'SVMLight'
+	puts 'SVMLight'
 	classifier_domainadaptationsvm_modular(*parameter_list[0])
 
 end

@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 parameter_list=[[5,1,10, 2.0, 10], [10,0.3,2, 1.0, 0.1]]
 
@@ -9,9 +8,9 @@ def check_status(status)
 	# silent...
 	assert(status)
 	#if  status:
-	#	print "OK reading/writing .h5\n"
+	#	puts "OK reading/writing .h5\n"
 	#else:
-	#	print "ERROR reading/writing .h5\n"
+	#	puts "ERROR reading/writing .h5\n"
 
 
 end
@@ -26,11 +25,17 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 					  randn(dim, num) + 3*dist), axis=1)
 	lab=concatenate((zeros(num), ones(num), 2*ones(num), 3*ones(num)))
 
-	feats=RealFeatures(data)
+# *** 	feats=RealFeatures(data)
+	feats=Modshogun::RealFeatures.new
+	feats.set_features(data)
 	#feats.io.set_loglevel(MSG_DEBUG)
-	kernel=GaussianKernel(feats, feats, width)
+# *** 	kernel=GaussianKernel(feats, feats, width)
+	kernel=Modshogun::GaussianKernel.new
+	kernel.set_features(feats, feats, width)
 
-	labels=Labels(lab)
+# *** 	labels=Labels(lab)
+	labels=Modshogun::Labels.new
+	labels.set_features(lab)
 
 	svm = GMNPSVM(C, kernel, labels)
 
@@ -59,25 +64,33 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 
 
 	fstream = SerializableHdf5File("blaah.h5", "r")
-	new_svm=GMNPSVM()
+# *** 	new_svm=GMNPSVM()
+	new_svm=Modshogun::GMNPSVM.new
+	new_svm.set_features()
 	status = new_svm.load_serializable(fstream)
 	check_status(status)
 	new_svm.train()
 
 	fstream = SerializableAsciiFile("blaah.asc", "r")
-	new_svm=GMNPSVM()
+# *** 	new_svm=GMNPSVM()
+	new_svm=Modshogun::GMNPSVM.new
+	new_svm.set_features()
 	status = new_svm.load_serializable(fstream)
 	check_status(status)
 	new_svm.train()
 
 	fstream = SerializableJsonFile("blaah.json", "r")
-	new_svm=GMNPSVM()
+# *** 	new_svm=GMNPSVM()
+	new_svm=Modshogun::GMNPSVM.new
+	new_svm.set_features()
 	status = new_svm.load_serializable(fstream)
 	check_status(status)
 	new_svm.train()
 
 	fstream = SerializableXmlFile("blaah.xml", "r")
-	new_svm=GMNPSVM()
+# *** 	new_svm=GMNPSVM()
+	new_svm=Modshogun::GMNPSVM.new
+	new_svm.set_features()
 	status = new_svm.load_serializable(fstream)
 	check_status(status)
 	new_svm.train()
@@ -92,7 +105,7 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 
 end
 if __FILE__ == $0
-	print 'Serialization SVMLight'
+	puts 'Serialization SVMLight'
 	serialization_complex_example(*parameter_list[0])
 
 end

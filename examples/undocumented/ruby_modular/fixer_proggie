@@ -1,0 +1,97 @@
+#!/usr/bin/env ruby
+
+# the awesome fixer proggie!!
+# by serialhex
+# 
+# this program fixes *most* of the fun things that are wrong with the trancekoded
+# python files in this directory.  we shall see how well this does. :)
+
+
+class Fixer
+  def initialize filename
+    @filename = filename
+    @file_lines = File.readlines(filename)
+  end
+  
+  attr_reader :filename
+  
+  def fixifikate
+    do_namespacing
+    convert_prints
+    reduce_requires
+    do_tag
+    show_final
+  end
+  
+  def do_tag
+    @file_lines[0] += "# ...and fixifikated by the awesum fixifikator\n"
+  end
+  
+  def reduce_requires
+    @file_lines.map! do |line|
+      if line =~ /require 'narray'|require 'load'/
+        line = ''
+      else
+        line
+      end
+    end
+  end
+
+  def do_namespacing
+    @file_lines.map! do |line|
+      if line =~ /=[A-Z]\w+/
+        # setting magic variables to readable ones
+        var = $`
+        match = $&
+        var_data = $'
+        # adding stuff needed
+        match[0] = '=Modshogun::'
+        # adding the ine that was changed as a comment
+        line = "\# *** #{line}" + var + match + '.new'
+        # adding next line
+        line += "\n#{var}.set_features#{var_data}"
+      else
+        line
+      end
+    end
+  end
+  
+  def convert_prints
+    @file_lines.map! do |line|
+      if line =~ /\s*print\s+/
+        line = $` + "\tputs " + $'
+      else
+        line
+      end
+    end
+  end
+  
+  def to_s
+    @file_lines.to_s
+  end
+
+  def show_final
+    puts @file_lines
+  end
+end
+
+## the goods at work
+if __FILE__ == $0
+  puts "\thihi! i'll get to werk rite away!!!\n"
+
+  files = Dir.glob '*.rb'
+  num = 0
+  files.each do |file|
+    next unless File.open(file){|f| f.readline == "# this was trancekoded by the awesome trancekoder\n"}
+    num += 1
+
+    kode = Fixer.new file
+    kode.fixifikate
+    File.open(kode.filename, 'w') do |f|
+      f << kode.to_s
+      puts f
+    end
+  end
+  puts num
+
+end

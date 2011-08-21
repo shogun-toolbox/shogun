@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 import numpy
 
@@ -35,16 +34,26 @@ def classifier_svmlight_linear_term_modular(fm_train_dna=traindna,fm_test_dna=te
                                                 C=10,epsilon=1e-5,num_threads=1):
     
     
-    feats_train=StringCharFeatures(DNA)
+# ***     feats_train=StringCharFeatures(DNA)
+    feats_train=Modshogun::StringCharFeatures.new
+    feats_train.set_features(DNA)
     feats_train.set_features(fm_train_dna)
-    feats_test=StringCharFeatures(DNA)
+# ***     feats_test=StringCharFeatures(DNA)
+    feats_test=Modshogun::StringCharFeatures.new
+    feats_test.set_features(DNA)
     feats_test.set_features(fm_test_dna)
     
-    kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
+# ***     kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
+    kernel=Modshogun::WeightedDegreeStringKernel.new
+    kernel.set_features(feats_train, feats_train, degree)
     
-    labels=Labels(label_train_dna)
+# ***     labels=Labels(label_train_dna)
+    labels=Modshogun::Labels.new
+    labels.set_features(label_train_dna)
     
-    svm=SVMLight(C, kernel, labels)
+# ***     svm=SVMLight(C, kernel, labels)
+    svm=Modshogun::SVMLight.new
+    svm.set_features(C, kernel, labels)
     svm.set_qpsize(3)
     svm.set_linear_term(-numpy.array([1,2,3,4,5,6,7,8,7,6], dtype=numpy.double));
     svm.set_epsilon(epsilon)
@@ -58,7 +67,7 @@ def classifier_svmlight_linear_term_modular(fm_train_dna=traindna,fm_test_dna=te
 
 end
 if __FILE__ == $0
-    print 'SVMLight'
+	puts 'SVMLight'
     classifier_svmlight_linear_term_modular(*parameter_list[0])
 
 end

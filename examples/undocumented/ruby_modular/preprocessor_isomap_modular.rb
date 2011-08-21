@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 data = LoadMatrix.load_numbers('../data/fm_train_real.dat')
@@ -22,7 +21,7 @@ def preprocessor_isomap_modular(data)
 
 end
 if __FILE__ == $0
-	print 'Isomap'
+	puts 'Isomap'
 	preprocessor_isomap_modular(*parameter_list[0])
 
 

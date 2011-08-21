@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
 testdat = LoadMatrix.load_numbers('../data/fm_test_real.dat')
@@ -11,14 +10,24 @@ parameter_list = [[traindat,testdat,label_traindat,3],[traindat,testdat,label_tr
 
 def classifier_knn_modular(fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat, k=3 )
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
-	distance=EuclidianDistance(feats_train, feats_train)
+# *** 	feats_train=RealFeatures(fm_train_real)
+	feats_train=Modshogun::RealFeatures.new
+	feats_train.set_features(fm_train_real)
+# *** 	feats_test=RealFeatures(fm_test_real)
+	feats_test=Modshogun::RealFeatures.new
+	feats_test.set_features(fm_test_real)
+# *** 	distance=EuclidianDistance(feats_train, feats_train)
+	distance=Modshogun::EuclidianDistance.new
+	distance.set_features(feats_train, feats_train)
 
 
-	labels=Labels(label_train_multiclass)
+# *** 	labels=Labels(label_train_multiclass)
+	labels=Modshogun::Labels.new
+	labels.set_features(label_train_multiclass)
 
-	knn=KNN(k, distance, labels)
+# *** 	knn=KNN(k, distance, labels)
+	knn=Modshogun::KNN.new
+	knn.set_features(k, distance, labels)
 	knn_train = knn.train()
 	output=knn.apply(feats_test).get_labels()
 	multiple_k=knn.classify_for_multiple_k()
@@ -27,7 +36,7 @@ def classifier_knn_modular(fm_train_real=traindat,fm_test_real=testdat,label_tra
 
 end
 if __FILE__ == $0
-	print 'KNN'
+	puts 'KNN'
 	classifier_knn_modular(*parameter_list[0])
 
 end

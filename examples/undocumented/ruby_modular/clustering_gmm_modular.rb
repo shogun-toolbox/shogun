@@ -1,12 +1,13 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 Math_init_random(5)
 
-real_gmm=GMM(2,0)
+# *** real_gmm=GMM(2,0)
+real_gmm=Modshogun::GMM.new
+real_gmm.set_features(2,0)
 
 real_gmm.set_nth_mean(array([1.0, 1.0]), 0)
 real_gmm.set_nth_mean(array([-1.0, -1.0]), 1)
@@ -29,9 +30,13 @@ def clustering_gmm_modular(fm_train=generated,n=2,min_cov=1e-9,max_iter=1000,min
 
 	Math_init_random(5)
 
-	feat_train=RealFeatures(generated)
+# *** 	feat_train=RealFeatures(generated)
+	feat_train=Modshogun::RealFeatures.new
+	feat_train.set_features(generated)
 
-	est_gmm=GMM(n, cov_type)
+# *** 	est_gmm=GMM(n, cov_type)
+	est_gmm=Modshogun::GMM.new
+	est_gmm.set_features(n, cov_type)
 	est_gmm.train(feat_train)
 	est_gmm.train_em(min_cov, max_iter, min_change)
 
@@ -40,7 +45,7 @@ def clustering_gmm_modular(fm_train=generated,n=2,min_cov=1e-9,max_iter=1000,min
 
 end
 if __FILE__ == $0
-	print 'GMM'
+	puts 'GMM'
 	clustering_gmm_modular(*parameter_list[0])
 
 

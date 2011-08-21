@@ -1,7 +1,6 @@
 # this was trancekoded by the awesome trancekoder
-require 'narray'
+# ...and fixifikated by the awesum fixifikator
 require 'modshogun'
-require 'load'
 require 'pp'
 
 N = 100
@@ -26,7 +25,7 @@ def evaluation_meansquarederror_modular(ground_truth, predicted)
 
 end
 if __FILE__ == $0
-	print 'MeanSquaredError'
+	puts 'MeanSquaredError'
 	evaluation_meansquarederror_modular(*parameter_list[0])
 
 
