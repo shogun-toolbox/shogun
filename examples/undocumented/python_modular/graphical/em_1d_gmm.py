@@ -1,5 +1,5 @@
 from pylab import figure,show,connect,hist,plot,legend
-from numpy import array, append, arange, empty
+from numpy import array, append, arange, empty, exp
 from shogun.Distribution import Gaussian, GMM
 from shogun.Features import RealFeatures
 import util
@@ -58,8 +58,8 @@ max_gen=max(max(generated))
 plot_real=empty(0)
 plot_est=empty(0)
 for i in arange(min_gen, max_gen, 0.001):
-    plot_real=append(plot_real, array([real_gmm.cluster(array([i]))[3]]))
-    plot_est=append(plot_est, array([est_gmm.cluster(array([i]))[3]]))
+    plot_real=append(plot_real, array([exp(real_gmm.cluster(array([i]))[3])]))
+    plot_est=append(plot_est, array([exp(est_gmm.cluster(array([i]))[3])]))
 real_plot=plot(arange(min_gen, max_gen, 0.001), plot_real, "b")
 est_plot=plot(arange(min_gen, max_gen, 0.001), plot_est, "r")
 real_hist=hist(generated.transpose(), bins=50, normed=True, fc="gray")
