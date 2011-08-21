@@ -21,6 +21,7 @@
 %rename(KernelPCA) CKernelPCA;
 %rename(MultidimensionalScaling) CMultidimensionalScaling;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
+%rename(KernelLocallyLinearEmbedding) CKernelLocallyLinearEmbedding;
 %rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
 %rename(LocalTangentSpaceAlignment) CLocalTangentSpaceAlignment;
 %rename(LaplacianEigenmaps) CLaplacianEigenmaps;
@@ -78,6 +79,7 @@ namespace shogun
 %include <shogun/preprocessor/KernelPCA.h>
 %include <shogun/preprocessor/MultidimensionalScaling.h>
 %include <shogun/preprocessor/LocallyLinearEmbedding.h>
+%include <shogun/preprocessor/KernelLocallyLinearEmbedding.h>
 %include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
 %include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
 %include <shogun/preprocessor/LaplacianEigenmaps.h>
