@@ -1,3 +1,7 @@
+##!/usr/bin/env python
+#"""
+#Explicit examples on how to use clustering
+#"""
 from numpy import array, append
 from shogun.Distribution import GMM
 from shogun.Library import Math_init_random

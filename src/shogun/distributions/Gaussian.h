@@ -25,10 +25,14 @@ namespace shogun
 {
 class CDotFeatures;
 
+/** Covariance type */
 enum ECovType
 {
+	/// full covariance
 	FULL,
+	/// diagonal covariance
 	DIAG,
+	/// spherical covariance
 	SPHERICAL
 };
 

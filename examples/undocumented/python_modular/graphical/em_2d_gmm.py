@@ -6,11 +6,13 @@ import util
 
 util.set_title('EM for 2d GMM example')
 
+#set the parameters
 min_cov=1e-9
 max_iter=1000
 min_change=1e-9
 cov_type=0
 
+#setup the real GMM
 real_gmm=GMM(2)
 
 real_gmm.set_nth_mean(array([1.0, 1.0]), 0)
@@ -21,16 +23,20 @@ real_gmm.set_nth_cov(array([[0.3, 0.1],[0.1, 1.0]]), 1)
 
 real_gmm.set_coef(array([0.3, 0.7]))
 
+#generate training set from real GMM
 generated=array([real_gmm.sample()])
 for i in range(199):
     generated=append(generated, array([real_gmm.sample()]), axis=0)
 
 generated=generated.transpose()
 feat_train=RealFeatures(generated)
+
+#train GMM using EM
 est_gmm=GMM(2, cov_type)
 est_gmm.train(feat_train)
 est_gmm.train_em(min_cov, max_iter, min_change)
 
+#get and print estimated means and covariances
 est_mean1=est_gmm.get_nth_mean(0)
 est_mean2=est_gmm.get_nth_mean(1)
 est_cov1=est_gmm.get_nth_cov(0)
@@ -42,6 +48,7 @@ print est_mean2
 print est_cov2
 print est_coef
 
+#plot real GMM, data and estimated GMM
 min_x_gen=min(min(generated[[0]]))-0.1
 max_x_gen=max(max(generated[[0]]))+0.1
 min_y_gen=min(min(generated[[1]]))-0.1
