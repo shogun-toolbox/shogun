@@ -60,6 +60,7 @@ else
   _svm_light=no
   _gpl=yes
 fi
+_spinlocks=auto
 _cplex=auto
 _lpsolve=no
 _glpk=auto
@@ -820,6 +821,39 @@ test_lua()
 	fi
 }
 
+test_spinlocks()
+{
+	if test "$_spinlocks" = no
+	then
+		return
+	fi
+
+cat > $TMPC << EOF
+#include <pthread.h>
+int main(void)
+{
+	volatile pthread_spinlock_t lock;
+	pthread_spin_init(&lock, 0);
+	return 0;
+}
+EOF
+
+	echocheck "Posix thread spinlock support"
+	if cc_check $pthr
+	then
+		echores "yes"
+		HAVE_PTHREAD='#define USE_SPINLOCKS 1'
+		DEFINES="$DEFINES -DUSE_SPINLOCKS"
+	else
+		if test "$_spinlocks" = yes
+		then
+			die "not supported"
+		else
+			echores "no"
+			_spinlocks=no
+		fi
+	fi
+}
 
 check_makedepend()
 {
@@ -1135,6 +1169,7 @@ Optional features:
   --enable-xml                   enable xml file support [auto]
   --enable-readline              enable readline in cmdline interface [auto]
   --enable-largefile             enable large file support (64bit file acces routines) [enabled]
+  --enable-spinlocks             enable use of spinlocks instead of mutexes [auto]
   --enable-lapack                enable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --enable-arpack                enable arpack [auto]
   --enable-cplex                 enable code using CPLEX  [auto]
@@ -1356,6 +1391,8 @@ for ac_option do
   --enable-arpack)		_arpack=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
+  --disable-spinlocks)	_spinlocks=no	;;
+  --enable-spinlocks)	_spinlocks=yes	;;
   --disable-lpsolve)	_lpsolve=no	;;
   --enable-lpsolve)		_lpsolve=yes;;
   --disable-glpk)		_glpk=no;;
@@ -3589,7 +3626,7 @@ test_modular()
 			fi
 		fi
 
-		if test "$_java" = yes && test "$_java_modular" != no
+		if test "$_java_modular" != no
 		then
 			PARTS="$PARTS java_modular"
 			JAVA_MODULAR_TARGET=java_modular
@@ -3615,7 +3652,11 @@ test_modular()
 	else
 		if test "$_octave_modular" == yes || \
 			test "$_python_modular" == yes || \
-			test "$_r_modular" == yes
+			test "$_r_modular" == yes || \
+			test "$_java_modular" == yes || \
+			test "$_lua_modular" == yes || \
+			test "$_ruby_modular" == yes || \
+			test "$_csharp_modular" == yes
 		then
 				die "swig required for modular interfaces"
 		fi
@@ -4688,6 +4729,7 @@ check_make
 check_doxygen
 determine_march_mtune
 set_opts
+test_spinlocks
 test_libshogun
 test_cmdline
 test_python
