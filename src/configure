@@ -699,12 +699,18 @@ EOF
 			_ruby_modular=yes
 			test_ruby_narray
 		else
-			echores "no"
+			if test "$_ruby_modular" = yes
+			then
+				die "ruby development files missing"
+			else
+				echores "not detected"
+				_ruby_modular=no
+			fi
 		fi
 	else
 		if test "$_ruby_modular" = yes
 		then
-			die "ruby/ruby development files missing"
+			die "ruby not found"
 		else
 			echores "not detected"
 			_ruby_modular=no
@@ -714,16 +720,14 @@ EOF
 
 test_ruby_narray()
 {
-	if test "$_ruby_modular" = yes
-	then
 cat >$TMPRUBY << EOF
 require 'narray'
 NArray[[1, 0, 0], [0, 1, 2]]
 EOF
-		echocheck "Ruby NArray"
-		if ruby $TMPRUBY >/dev/null 2>&1 
-		then
-			echores "yes"
+	echocheck "Ruby NArray"
+	if ruby $TMPRUBY >/dev/null 2>&1 
+	then
+		echores "yes"
 
 cat >$TMPC << EOF
 #include <ruby.h>
@@ -745,20 +749,31 @@ else
 	puts "#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}/narray.so" if CONFIG['rubyhdrdir']
 end
 EOF
-			LINKFLAGS_NARRAY=`ruby "$TMPRUBY" 2>/dev/null`
+		LINKFLAGS_NARRAY=`ruby "$TMPRUBY" 2>/dev/null`
 
-			echocheck "Ruby NArray Developer Files"
-			if cc_check $INCLUDES_RUBY $LINKFLAGS_RUBY $LINKFLAGS_NARRAY
-			then
-				echores "yes"
-				DEFINES="$DEFINES -DHAVE_RUBY_NARRAY"
-				HAVE_NARRAY='#define HAVE_RUBY_NARRAY 1'
-				LINKFLAGS_RUBY="$LINKFLAGS_RUBY $LINKFLAGS_NARRAY"
-			else
-				echores "no"
-			fi
+		echocheck "Ruby NArray Developer Files"
+		if cc_check $INCLUDES_RUBY $LINKFLAGS_RUBY $LINKFLAGS_NARRAY
+		then
+			echores "yes"
+			DEFINES="$DEFINES -DHAVE_RUBY_NARRAY"
+			HAVE_NARRAY='#define HAVE_RUBY_NARRAY 1'
+			LINKFLAGS_RUBY="$LINKFLAGS_RUBY $LINKFLAGS_NARRAY"
 		else
-			echores "no"
+			if test "$_ruby_modular" = yes
+			then
+				die "ruby NArray header files missing"
+			else
+				echores "not detected"
+				_ruby_modular=no
+			fi
+		fi
+	else
+		if test "$_ruby_modular" = yes
+		then
+			die "ruby NArray not found"
+		else
+			echores "not detected"
+			_ruby_modular=no
 		fi
 	fi
 }
