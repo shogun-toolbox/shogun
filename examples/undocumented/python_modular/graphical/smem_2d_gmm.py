@@ -6,6 +6,7 @@ import util
 
 util.set_title('SMEM for 2d GMM example')
 
+#set the parameters
 max_iter=100
 max_cand=5
 min_cov=1e-9
@@ -13,6 +14,7 @@ max_em_iter=1000
 min_change=1e-9
 cov_type=0
 
+#setup the real GMM
 real_gmm=GMM(3)
 
 real_gmm.set_nth_mean(array([2.0, 2.0]), 0)
@@ -25,12 +27,15 @@ real_gmm.set_nth_cov(array([[0.3, -0.2],[-0.2, 0.8]]), 2)
 
 real_gmm.set_coef(array([0.3, 0.4, 0.3]))
 
+#generate training set from real GMM
 generated=array([real_gmm.sample()])
 for i in range(199):
     generated=append(generated, array([real_gmm.sample()]), axis=0)
 
 generated=generated.transpose()
 feat_train=RealFeatures(generated)
+
+#train GMM using SMEM and print log-likelihood
 est_smem_gmm=GMM(3, cov_type)
 est_smem_gmm.train(feat_train)
 
@@ -46,6 +51,7 @@ est_smem_gmm.set_coef(array([0.3333, 0.3333, 0.3334]))
 
 print est_smem_gmm.train_smem(max_iter, max_cand, min_cov, max_em_iter, min_change)
 
+#train GMM using EM and bad initial conditions and print log-likelihood
 est_em_gmm=GMM(3, cov_type)
 est_em_gmm.train(feat_train)
 
@@ -61,6 +67,7 @@ est_em_gmm.set_coef(array([0.3333, 0.3333, 0.3334]))
 
 print est_em_gmm.train_em(min_cov, max_em_iter, min_change)
 
+#plot real GMM, data and both estimated GMMs
 min_x_gen=min(min(generated[[0]]))-0.1
 max_x_gen=max(max(generated[[0]]))+0.1
 min_y_gen=min(min(generated[[1]]))-0.1
