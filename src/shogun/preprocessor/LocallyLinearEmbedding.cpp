@@ -428,7 +428,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* di
 	single_thread_param.N = N;
 	single_thread_param.heap = heaps[0]
 	single_thread_param.neighborhood_matrix = neighborhood_matrix;
-	single_thread_param.distance_matrix = distance_matrix;
+	single_thread_param.distance_matrix = distance_matrix.matrix;
 	run_neighborhood_thread((void*)&single_thread_param);
 #endif
 
