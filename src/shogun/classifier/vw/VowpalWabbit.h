@@ -57,11 +57,25 @@ public:
 	~CVowpalWabbit();
 
 	/**
+	 * Reinitialize the weight vectors.
+	 * Call after updating env variables eg. stride.
+	 */
+	void reinitialize_weights();
+
+	/**
 	 * Set whether learning is adaptive or not
 	 *
 	 * @param adaptive_learning true if adaptive
 	 */
 	void set_adaptive(bool adaptive_learning);
+
+	/**
+	 * Set whether to use the more expensive
+	 * exact norm for adaptive learning
+	 *
+	 * @param exact_adaptive true if exact norm is required
+	 */
+	void set_exact_adaptive_norm(bool exact_adaptive);
 
 	/**
 	 * Set number of passes (only works for cached input)
@@ -101,7 +115,7 @@ public:
 	 *
 	 * @param feat StreamingVwFeatures to train using
 	 */
-	virtual bool train_machine(CStreamingVwFeatures* feat = NULL);
+	virtual bool train_machine(CFeatures* feat = NULL);
 
 	/**
 	 * Predict for an example
@@ -111,6 +125,31 @@ public:
 	 * @return prediction
 	 */
 	virtual float32_t predict_and_finalize(VwExample* ex);
+
+	/**
+	 * Computes the exact norm during adaptive learning
+	 *
+	 * @param ex example
+	 * @param sum_abs_x set by reference, sum of abs of features
+	 *
+	 * @return norm
+	 */
+	float32_t compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x);
+
+	/**
+	 * Computes the exact norm for quadratic features during adaptive learning
+	 *
+	 * @param weights weights
+	 * @param page_feature current feature
+	 * @param offer_features paired features
+	 * @param mask mask
+	 * @param g square of gradient
+	 * @param sum_abs_x sum of absolute value of features
+	 *
+	 * @return norm
+	 */
+	float32_t compute_exact_norm_quad(float32_t* weights, VwFeature& page_feature, v_array<VwFeature> &offer_features,
+					  size_t mask, float32_t g, float32_t& sum_abs_x);
 
 	/**
 	 * Get the environment

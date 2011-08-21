@@ -36,6 +36,7 @@ void CVwEnvironment::init()
 	eta_decay_rate = 1.;
 
 	adaptive = false;
+	exact_adaptive_norm = false;
 	l1_regularization = 0.;
 
 	random_weights = false;
@@ -61,6 +62,13 @@ void CVwEnvironment::init()
 
 	ignore_some = false;
 
-	index_t len= ((index_t) 1) << num_bits;
+	index_t len = ((index_t) 1) << num_bits;
+	thread_mask = (stride * (len >> thread_bits)) - 1;
+}
+
+void CVwEnvironment::set_stride(index_t new_stride)
+{
+	stride = new_stride;
+	index_t len = ((index_t) 1) << num_bits;
 	thread_mask = (stride * (len >> thread_bits)) - 1;
 }

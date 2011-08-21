@@ -98,6 +98,14 @@ public:
 	inline index_t length() { return 1 << num_bits; }
 
 	/**
+	 * Set a new stride value.
+	 * Also changes thread_mask.
+	 *
+	 * @param new_stride new value of stride
+	 */
+	void set_stride(index_t new_stride);
+
+	/**
 	 * Return the name of the object
 	 *
 	 * @return VwEnvironment
@@ -134,6 +142,8 @@ public:
 
 	/// Whether adaptive learning is used
 	bool adaptive;
+	/// Whether exact norm is used for adaptive learning
+	bool exact_adaptive_norm;
 	/// Level of L1 regularization
 	float32_t l1_regularization;
 
