@@ -18,13 +18,8 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
-#else
-#define pthread_mutex_init(x)
-#define pthread_mutex_destroy(x)
-#define pthread_mutex_lock(x)
-#define pthread_mutex_unlock(x)
 #endif
 
 /** \namespace shogun
@@ -96,10 +91,14 @@ public:
 	 */
 	inline int32_t ref()
 	{
-		pthread_mutex_lock(&m_ref_mutex);
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK(m_ref_lock);
+#endif
 		++m_refcount;
 		SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", m_refcount, this->get_name(), this);
-		pthread_mutex_unlock(&m_ref_mutex);
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(m_ref_lock);
+#endif
 		return m_refcount;
 	}
 
@@ -109,10 +108,14 @@ public:
 	 */
 	inline int32_t ref_count()
 	{
-		pthread_mutex_lock(&m_ref_mutex);
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK(m_ref_lock);
+#endif
 		int32_t count=m_refcount;
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(m_ref_lock);
+#endif
 		SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this);
-		pthread_mutex_unlock(&m_ref_mutex);
 		return count;
 	}
 
@@ -123,18 +126,24 @@ public:
 	 */
 	inline int32_t unref()
 	{
-		pthread_mutex_lock(&m_ref_mutex);
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK(m_ref_lock);
+#endif
 		if (m_refcount==0 || --m_refcount==0)
 		{
 			SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", m_refcount, this->get_name(), this);
-			pthread_mutex_unlock(&m_ref_mutex);
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(m_ref_lock);
+#endif
 			delete this;
 			return 0;
 		}
 		else
 		{
 			SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", m_refcount, this->get_name(), this);
-			pthread_mutex_unlock(&m_ref_mutex);
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(m_ref_lock);
+#endif
 			return m_refcount;
 		}
 	}
@@ -253,10 +262,10 @@ public:
 	index_t get_modsel_param_index(const char* param_name);
 
 #ifdef TRACE_MEMORY_ALLOCS
-    static void list_memory_allocs()
-    {
-        ::list_memory_allocs();
-    }
+	static void list_memory_allocs()
+	{
+		::list_memory_allocs();
+	}
 #endif
 
 protected:
@@ -342,8 +351,8 @@ private:
 
 	int32_t m_refcount;
 
-#ifndef WIN32
-	pthread_mutex_t m_ref_mutex;
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_T m_ref_lock;
 #endif
 };
 }

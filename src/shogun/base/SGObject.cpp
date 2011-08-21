@@ -104,7 +104,9 @@ CSGObject::CSGObject()
 {
 	init();
 	set_global_objects();
-	pthread_mutex_init(&m_ref_mutex, NULL);
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_INIT(m_ref_lock);
+#endif
 
 	SG_GCDEBUG("SGObject created (%p)\n", this);
 }
@@ -120,7 +122,9 @@ CSGObject::~CSGObject()
 {
 	SG_GCDEBUG("SGObject destroyed (%p)\n", this);
 
-	pthread_mutex_destroy(&m_ref_mutex);
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_DESTROY(m_ref_lock);
+#endif
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
