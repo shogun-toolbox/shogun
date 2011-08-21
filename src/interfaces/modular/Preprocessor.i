@@ -29,6 +29,9 @@
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
 
+%newobject *::apply_to_distance;
+%newobject shogun::CKernelPCA::apply_to_string_features;
+
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>
 %include <shogun/preprocessor/Preprocessor.h>
