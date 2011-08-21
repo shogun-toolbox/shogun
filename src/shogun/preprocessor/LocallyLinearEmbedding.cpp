@@ -27,38 +27,59 @@
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct D_THREAD_PARAM
+struct LINRECONSTRUCTION_THREAD_PARAM
 {
+	/// starting index of loop
 	int32_t idx_start;
+	/// end loop index
 	int32_t idx_stop;
+	/// step of loop
 	int32_t idx_step;
+	/// number of neighbors
 	int32_t m_k;
+	/// current dimension
 	int32_t dim;
+	/// number of vectors
 	int32_t N;
+	/// matrix containing indexes of neighbors of ith object in ith column
 	const int32_t* neighborhood_matrix;
+	/// old feature matrix
 	const float64_t* feature_matrix;
+	/// Z matrix containing features of neighbors
 	float64_t* z_matrix;
+	/// covariance matrix, ZZ'
 	float64_t* covariance_matrix;
+	/// vector used for solving equation 
 	float64_t* id_vector;
+	/// weight matrix
 	float64_t* W_matrix;
 };
 
-struct D_NEIGHBORHOOD_THREAD_PARAM
+struct NEIGHBORHOOD_THREAD_PARAM
 {
+	/// starting index of loop
 	int32_t idx_start;
+	/// step of loop
 	int32_t idx_step;
+	/// end index of loop
 	int32_t idx_stop;
+	/// number of vectors
 	int32_t N;
+	/// number of neighbors
 	int32_t m_k;
+	/// heap used to get nearest vector's indexes
 	CFibonacciHeap* heap;
+	/// distance matrix
 	const float64_t* distance_matrix;
+	/// matrix containing indexes of neighbors of ith object in ith column
 	int32_t* neighborhood_matrix;
 };
-#endif
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
-		CDimensionReductionPreprocessor(), m_k(3), m_posdef(true)
+		CDimensionReductionPreprocessor()
 {
+	init();
 }
 
 void CLocallyLinearEmbedding::init()
@@ -86,25 +107,36 @@ void CLocallyLinearEmbedding::cleanup()
 
 SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* features)
 {
+	ASSERT(features);
+	if (!(features->get_feature_class()==C_SIMPLE &&
+	      features->get_feature_type()==F_DREAL))
+	{
+		SG_ERROR("Given features are not of SimpleRealFeatures type.\n");
+	}
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
 	SG_REF(features);
-	ASSERT(simple_features);
 
 	// get dimensionality and number of vectors of data
 	int32_t dim = simple_features->get_num_features();
-	ASSERT(m_target_dim<=dim);
+	if (m_target_dim>dim)
+		SG_ERROR("Cannot increase dimensionality: target dimensionality is %d while given features dimensionality is %d.\n",
+		         m_target_dim, dim);
+
 	int32_t N = simple_features->get_num_vectors();
-	ASSERT(m_k<N);
+	if (m_k>=N)
+		SG_ERROR("Number of neighbors (%d) should be less than number of objects (%d).\n",
+		         m_k, N);
 
 	// loop variables
 	int32_t i,j,t;
 
 	// compute distance matrix
 	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	SG_UNREF(distance->parallel);
+	Parallel* distance_parallel = distance->parallel;
 	distance->parallel = this->parallel;
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance);
+	distance->parallel = distance_parallel;
 	delete distance;
 
 	// init W (weight) matrix
@@ -115,7 +147,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	ASSERT(num_threads>0);
 	// allocate threads
 	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
-	D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM, num_threads);
+	LINRECONSTRUCTION_THREAD_PARAM* parameters = SG_MALLOC(LINRECONSTRUCTION_THREAD_PARAM, num_threads);
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
@@ -153,7 +185,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	D_THREAD_PARAM single_thread_param;
+	LINRECONSTRUCTION_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = 0;
 	single_thread_param.idx_step = 1;
 	single_thread_param.idx_stop = N;
@@ -273,7 +305,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 
 void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 {
-	D_THREAD_PARAM* parameters = (D_THREAD_PARAM*)p;
+	LINRECONSTRUCTION_THREAD_PARAM* parameters = (LINRECONSTRUCTION_THREAD_PARAM*)p;
 	int32_t idx_start = parameters->idx_start;
 	int32_t idx_step = parameters->idx_step;
 	int32_t idx_stop = parameters->idx_stop;
@@ -357,7 +389,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* di
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
-	D_NEIGHBORHOOD_THREAD_PARAM* parameters = SG_MALLOC(D_NEIGHBORHOOD_THREAD_PARAM, num_threads);
+	NEIGHBORHOOD_THREAD_PARAM* parameters = SG_MALLOC(NEIGHBORHOOD_THREAD_PARAM, num_threads);
 	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
@@ -388,7 +420,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* di
 	SG_FREE(threads);
 	SG_FREE(parameters);
 #else
-	D_NEIGHBORHOOD_THREAD_PARAM single_thread_param;
+	NEIGHBORHOOD_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = 0;
 	single_thread_param.idx_step = 1;
 	single_thread_param.idx_stop = N;
@@ -411,7 +443,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* di
 
 void* CLocallyLinearEmbedding::run_neighborhood_thread(void* p)
 {
-	D_NEIGHBORHOOD_THREAD_PARAM* parameters = (D_NEIGHBORHOOD_THREAD_PARAM*)p;
+	NEIGHBORHOOD_THREAD_PARAM* parameters = (NEIGHBORHOOD_THREAD_PARAM*)p;
 	int32_t idx_start = parameters->idx_start;
 	int32_t idx_step = parameters->idx_step;
 	int32_t idx_stop = parameters->idx_stop;

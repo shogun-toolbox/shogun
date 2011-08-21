@@ -57,26 +57,25 @@ public:
 	virtual ~CLocallyLinearEmbedding();
 
 	/** init
-	 * @param data feature vectors for preproc
+	 * @param features
 	 */
 	virtual bool init(CFeatures* features);
 
 	/** cleanup
-	 *
 	 */
 	virtual void cleanup();
 
-	/** apply preproc to feature matrix
-	 *
+	/** apply preprocessor to features
+	 * @param features
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
-	/** apply preproc to feature vector
-	 *
+	/** apply preprocessor to feature vector, not supported for LLE
+	 * @param vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
-	/** setter for K parameter
+	/** setter for k parameter
 	 * @param k k
 	 */
 	void inline set_k(int32_t k)
@@ -84,7 +83,7 @@ public:
 		m_k = k;
 	}
 
-	/** getter for K parameter
+	/** getter for k parameter
 	 * @return k value
 	 */
 	int32_t inline get_k()
@@ -116,7 +115,7 @@ public:
 
 protected:
 
-	/** init */
+	/** default init */
 	void init();
 
 	/** runs neighborhood determination thread
@@ -133,11 +132,14 @@ protected:
 	 * @param matrix given matrix
 	 * @param dimension dimension of null space to be computed
 	 * @param force_lapack true if lapack should be used
+	 * @return null-space approximation feature matrix
 	 */
 	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension, bool force_lapack);
 
 	/** construct neighborhood matrix by distance
 	 * @param distance distance to be used
+	 * @return matrix containing indexes of neighbors of i-th object
+	 * in i-th column
 	 */
 	SGMatrix<int32_t> get_neighborhood_matrix(CDistance* distance);
 

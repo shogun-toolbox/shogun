@@ -25,28 +25,48 @@
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct D_THREAD_PARAM
+struct HESSIANESTIMATION_THREAD_PARAM
 {
+	/// starting index of loop
 	int32_t idx_start;
+	/// step of loop
 	int32_t idx_step;
+	/// end index of loop
 	int32_t idx_stop;
+	/// number of neighbors
 	int32_t m_k;
+	/// current dimensionality
 	int32_t dim;
+	///
 	int32_t N;
+	/// dp
 	int32_t dp;
+	/// target dimensionality
 	int32_t m_target_dim;
+	/// matrix containing indexes of neighbors of ith vector in ith column
 	const int32_t* neighborhood_matrix;
+	/// feature matrix 
 	const float64_t* feature_matrix;
+	/// local feature matrix contating features of neighbors
 	float64_t* local_feature_matrix;
+	/// Yi matrix
 	float64_t* Yi_matrix;
+	/// mean vector
 	float64_t* mean_vector;
+	/// singular values vector
 	float64_t* s_values_vector;
+	/// QR factorization reflectors
 	float64_t* tau;
+	/// length of reflectors vector
 	int32_t tau_len;
+	/// w sum vector
 	float64_t* w_sum_vector;
+	/// q matrix
 	float64_t* q_matrix;
+	/// weight matrix
 	float64_t* W_matrix;
 #ifdef HAVE_PTHREAD
+	/// lock used on modifying of weight matrix
 	PTHREAD_LOCK_T* W_matrix_lock;
 #endif
 };
@@ -72,6 +92,7 @@ void CHessianLocallyLinearEmbedding::cleanup()
 
 SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* features)
 {
+	ASSERT(features);
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
 	SG_REF(features);
@@ -79,9 +100,14 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 
 	// get dimensionality and number of vectors of data
 	int32_t dim = simple_features->get_num_features();
-	ASSERT(m_target_dim<=dim);
+	if (m_target_dim>dim)
+		SG_ERROR("Cannot increase dimensionality: target dimensionality is %d while given features dimensionality is %d.\n",
+		         m_target_dim, dim);
+
 	int32_t N = simple_features->get_num_vectors();
-	ASSERT(m_k<N);
+	if (m_k>=N)
+		SG_ERROR("Number of neighbors (%d) should be less than number of objects (%d).\n",
+		         m_k, N);
 
 	// loop variables
 	int32_t t;
@@ -101,7 +127,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	ASSERT(num_threads>0);
 	// allocate threads and params
 	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
-	D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM, num_threads);
+	HESSIANESTIMATION_THREAD_PARAM* parameters = SG_MALLOC(HESSIANESTIMATION_THREAD_PARAM, num_threads);
 
 #else
 	int32_t num_threads = 1;
@@ -156,7 +182,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	D_THREAD_PARAM single_thread_param;
+	HESSIANESTIMATION_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = t;
 	single_thread_param.idx_step = num_threads;
 	single_thread_param.idx_stop = N;
@@ -206,7 +232,7 @@ SGVector<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_vector(SGVe
 
 void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 {
-	D_THREAD_PARAM* parameters = (D_THREAD_PARAM*)p;
+	HESSIANESTIMATION_THREAD_PARAM* parameters = (HESSIANESTIMATION_THREAD_PARAM*)p;
 	int32_t idx_start = parameters->idx_start;
 	int32_t idx_step = parameters->idx_step;
 	int32_t idx_stop = parameters->idx_stop;

@@ -70,6 +70,15 @@ CIsomap::~CIsomap()
 {
 }
 
+bool CIsomap::init(CFeatures* features)
+{
+	return true;
+}
+
+void CIsomap::cleanup()
+{
+}
+
 CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)
 {
 	ASSERT(distance);

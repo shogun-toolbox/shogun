@@ -37,7 +37,7 @@ class CDistance;
  * The local tangent space alignment step is parallel. Neighborhood
  * determination is parallel as in CLocallyLinearEmbedding.
  *
- * This algorithm is pretty stable for variations of k parameter but
+ * This algorithm is pretty stable for variations of k parameter value but
  * be sure it is set with a consistent value (at least 3-5) for reasonable
  * results.
  */
@@ -52,29 +52,32 @@ public:
 	virtual ~CLocalTangentSpaceAlignment();
 
 	/** init
-	 * @param data feature vectors for preproc
+	 * @param features
 	 */
 	virtual bool init(CFeatures* features);
 
 	/** cleanup
-	 *
 	 */
 	virtual void cleanup();
 
-	/** apply preproc to feature matrix
-	 *
+	/** apply preprocessor to feature matrix
+	 * @param features
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
-	/** apply preproc to feature vector
-	 *
+	/** apply preprocessor to feature vector, not supported
+	 * @param vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
-	/** get name */
+	/** get name 
+	 * @return name of preprocessor
+	 */
 	virtual inline const char* get_name() const { return "LocalTangentSpaceAlignment"; };
 
-	/** get type */
+	/** get type 
+	 * @return type of preprocessor
+	 */
 	virtual inline EPreprocessorType get_type() const { return P_LOCALTANGENTSPACEALIGNMENT; };
 
 protected:

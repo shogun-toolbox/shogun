@@ -54,12 +54,13 @@ public:
 	virtual ~CIsomap();
 
 	/** empty init
+	 * @param features
 	 */
-	virtual bool init(CFeatures* features) { return true; };
+	virtual bool init(CFeatures* features);
 
 	/** empty cleanup
 	 */
-	virtual void cleanup() {};
+	virtual void cleanup();
 
 	/** apply preprocessor to CDistance
 	 * @param distance distance
@@ -109,7 +110,7 @@ protected:
 
 protected:
 
-	/** init */
+	/** default init */
 	void init();
 
 	/** run dijkstra thread

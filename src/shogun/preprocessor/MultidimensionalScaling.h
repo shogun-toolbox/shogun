@@ -67,6 +67,7 @@ public:
 	virtual ~CMultidimensionalScaling();
 
 	/** empty init
+	 * @param features
 	 */
 	virtual bool init(CFeatures* features);
 

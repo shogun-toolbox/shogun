@@ -26,24 +26,40 @@
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct D_THREAD_PARAM
+struct LTSA_THREAD_PARAM
 {
+	/// starting index of loop
 	int32_t idx_start;
+	/// step of loop
 	int32_t idx_step;
+	/// stop index of loop
 	int32_t idx_stop;
+	/// number of neighbors
 	int32_t m_k;
+	/// target dimension
 	int32_t m_target_dim;
+	/// current dimension
 	int32_t dim;
+	/// number of objects
 	int32_t N;
+	/// matrix containing indexes of ith vector's neighbors in ith column
 	const int32_t* neighborhood_matrix;
+	/// G matrix
 	float64_t* G_matrix;
+	/// mean vector
 	float64_t* mean_vector;
+	/// local feature matrix containing neighbors of vector
 	float64_t* local_feature_matrix;
+	/// feature matrix of given features instance
 	const float64_t* feature_matrix;
+	/// used to store singular values
 	float64_t* s_values_vector;
+	/// q matrix
 	float64_t* q_matrix;
+	/// weight matrix
 	float64_t* W_matrix;
 #ifdef HAVE_PTHREAD
+	/// lock used on modifying to weight matrix
 	PTHREAD_LOCK_T* W_matrix_lock;
 #endif
 };
@@ -69,16 +85,27 @@ void CLocalTangentSpaceAlignment::cleanup()
 
 SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatures* features)
 {
+	ASSERT(features);
+	if (!(features->get_feature_class()==C_SIMPLE &&
+	      features->get_feature_type()==F_DREAL))
+	{
+		SG_ERROR("Given features are not of SimpleRealFeatures type.\n");
+	}
+
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
 	SG_REF(features);
-	ASSERT(simple_features);
 
 	// get dimensionality and number of vectors of data
 	int32_t dim = simple_features->get_num_features();
-	ASSERT(m_target_dim<=dim);
+	if (m_target_dim>dim)
+		SG_ERROR("Cannot increase dimensionality: target dimensionality is %d while given features dimensionality is %d.\n",
+		         m_target_dim, dim);
+
 	int32_t N = simple_features->get_num_vectors();
-	ASSERT(m_k<N);
+	if (m_k>=N)
+		SG_ERROR("Number of neighbors (%d) should be less than number of objects (%d).\n",
+	         m_k, N);
 
 	// loop variables
 	int32_t t;
@@ -97,7 +124,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 	ASSERT(num_threads>0);
 	// allocate threads and params
 	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
-	D_THREAD_PARAM* parameters = SG_MALLOC(D_THREAD_PARAM, num_threads);
+	LTSA_THREAD_PARAM* parameters = SG_MALLOC(LTSA_THREAD_PARAM, num_threads);
 #else
 	int32_t num_threads = 1;
 #endif
@@ -145,7 +172,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_matrix(CFeatur
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	D_THREAD_PARAM single_thread_param;
+	LTSA_THREAD_PARAM single_thread_param;
 	single_thread_param.idx_start = 0;
 	single_thread_param.idx_step = 1;
 	single_thread_param.idx_stop = N;
@@ -189,7 +216,7 @@ SGVector<float64_t> CLocalTangentSpaceAlignment::apply_to_feature_vector(SGVecto
 
 void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 {
-	D_THREAD_PARAM* parameters = (D_THREAD_PARAM*)p;
+	LTSA_THREAD_PARAM* parameters = (LTSA_THREAD_PARAM*)p;
 	int32_t idx_start = parameters->idx_start;
 	int32_t idx_step = parameters->idx_step;
 	int32_t idx_stop = parameters->idx_stop;

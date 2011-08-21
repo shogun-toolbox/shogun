@@ -50,29 +50,32 @@ public:
 	virtual ~CHessianLocallyLinearEmbedding();
 
 	/** init
-	 * @param data feature vectors for preproc
+	 * @param features
 	 */
 	virtual bool init(CFeatures* features);
 
 	/** cleanup
-	 *
 	 */
 	virtual void cleanup();
 
-	/** apply preproc to feature matrix
-	 *
+	/** apply preprocessor to feature matrix
+	 * @param features
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
-	/** apply preproc to feature vector
-	 *
+	/** apply preprocessor to feature vector, not supported
+	 * @vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
-	/** get name */
+	/** get name 
+	 * @return name of the preprocessor
+	 */
 	virtual inline const char* get_name() const { return "HessianLocallyLinearEmbedding"; };
 
-	/** get type */
+	/** get type 
+	 * @return type of the preprocessor
+	 */
 	virtual inline EPreprocessorType get_type() const { return P_HESSIANLOCALLYLINEAREMBEDDING; };
 
 protected:
