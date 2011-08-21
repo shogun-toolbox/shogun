@@ -90,6 +90,14 @@ void CVowpalWabbit::set_regressor_out(char* file_name, bool is_text)
 	reg_dump_text = is_text;
 }
 
+void CVowpalWabbit::set_prediction_out(char* file_name)
+{
+	save_predictions = true;
+	prediction_fd = open(file_name, O_CREAT|O_TRUNC|O_WRONLY, 0666);
+	if (prediction_fd < 0)
+		SG_SERROR("Unable to open prediction file %s for writing!\n", file_name);
+}
+
 void CVowpalWabbit::add_quadratic_pair(char* pair)
 {
 	env->pairs.push_back(pair);
@@ -139,14 +147,7 @@ bool CVowpalWabbit::train_machine(CFeatures* feat)
 			learner->train(example, example->eta_round);
 			example->eta_round = 0.;
 
-			if (!quiet)
-			{
-				if (env->weighted_examples + example->ld->weight > dump_interval)
-				{
-					print_update(example);
-					dump_interval *= 2;
-				}
-			}
+			output_example(example);
 
 			features->release_example();
 		}
@@ -218,6 +219,8 @@ void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 	quiet = false;
 	reg_name = NULL;
 	reg_dump_text = true;
+	save_predictions = false;
+	prediction_fd = -1;
 
 	w = reg->weight_vectors[0];
 	w_dim = 1 << env->num_bits;
@@ -297,6 +300,27 @@ float32_t CVowpalWabbit::finalize_prediction(float32_t ret)
 	return ret;
 }
 
+void CVowpalWabbit::output_example(VwExample* &ex)
+{
+	if (!quiet)
+	{
+		if (env->weighted_examples + example->ld->weight > dump_interval)
+		{
+			print_update(example);
+			dump_interval *= 2;
+		}
+	}
+
+	if (save_predictions)
+	{
+		float32_t wt = 0.;
+		if (reg->weight_vectors)
+			wt = reg->weight_vectors[0][0];
+
+		output_prediction(prediction_fd, example->final_prediction, wt * example->global_weight, example->tag);
+	}
+}
+
 void CVowpalWabbit::print_update(VwExample* &ex)
 {
 	SG_SPRINT("%-10.6f %-10.6f %8lld %8.1f %8.4f %8.4f %8lu\n",
@@ -349,16 +373,45 @@ float32_t CVowpalWabbit::compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x
 float32_t CVowpalWabbit::compute_exact_norm_quad(float32_t* weights, VwFeature& page_feature, v_array<VwFeature> &offer_features,
 						 size_t mask, float32_t g, float32_t& sum_abs_x)
 {
-		size_t halfhash = quadratic_constant * page_feature.weight_index;
-		float32_t xGx = 0.;
-		float32_t update2 = g * page_feature.x * page_feature.x;
-		for (VwFeature* elem = offer_features.begin; elem != offer_features.end; elem++)
-		{
-				float32_t* w_vec = &weights[(halfhash + elem->weight_index) & mask];
-				float32_t t = elem->x * CMath::invsqrt(w_vec[1] + update2 * elem->x * elem->x);
-				xGx += t * elem->x;
-				sum_abs_x += fabsf(elem->x);
-		}
-		return xGx;
+	size_t halfhash = quadratic_constant * page_feature.weight_index;
+	float32_t xGx = 0.;
+	float32_t update2 = g * page_feature.x * page_feature.x;
+	for (VwFeature* elem = offer_features.begin; elem != offer_features.end; elem++)
+	{
+		float32_t* w_vec = &weights[(halfhash + elem->weight_index) & mask];
+		float32_t t = elem->x * CMath::invsqrt(w_vec[1] + update2 * elem->x * elem->x);
+		xGx += t * elem->x;
+		sum_abs_x += fabsf(elem->x);
+	}
+	return xGx;
 }
 
+void CVowpalWabbit::output_prediction(int32_t f, float32_t res, float32_t weight, v_array<char> tag)
+{
+	if (f >= 0)
+	{
+		char temp[30];
+		int32_t num = sprintf(temp, "%f", res);
+		ssize_t t;
+		t = write(f, temp, num);
+		if (t != num)
+			SG_SERROR("Write error!\n");
+
+		if (tag.begin != tag.end)
+		{
+			temp[0] = ' ';
+			t = write(f, temp, 1);
+			if (t != 1)
+				SG_SERROR("Write error!\n");
+
+			t = write(f, tag.begin, sizeof(char)*tag.index());
+			if (t != (ssize_t) (sizeof(char)*tag.index()))
+				SG_SERROR("Write error!\n");
+		}
+
+		temp[0] = '\n';
+		t = write(f, temp, 1);
+		if (t != 1)
+			SG_SERROR("Write error!\n");
+	}
+}
