@@ -16,9 +16,9 @@
 #include <shogun/io/SGIO.h>
 
 #ifdef HAVE_PTHREAD
-#ifdef _POSIX_SPIN_LOCKS
+#ifdef USE_SPINLOCKS
 	#define PTHREAD_LOCK_T pthread_spinlock_t
-	#define PTHREAD_LOCK_INIT(lock) pthread_spin_init(&lock, NULL)
+	#define PTHREAD_LOCK_INIT(lock) pthread_spin_init(&lock, 0)
 	#define PTHREAD_LOCK_DESTROY(lock) pthread_spin_destroy(&lock)
 	#define PTHREAD_LOCK(lock) pthread_spin_lock(lock)
 	#define PTHREAD_UNLOCK(lock) pthread_spin_unlock(lock)
