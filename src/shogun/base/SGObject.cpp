@@ -8,6 +8,7 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
@@ -104,7 +105,6 @@ CSGObject::CSGObject()
 {
 	init();
 	set_global_objects();
-	pthread_mutex_init(&m_ref_mutex, NULL);
 
 	SG_GCDEBUG("SGObject created (%p)\n", this);
 }
@@ -120,7 +120,9 @@ CSGObject::~CSGObject()
 {
 	SG_GCDEBUG("SGObject destroyed (%p)\n", this);
 
-	pthread_mutex_destroy(&m_ref_mutex);
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_DESTROY(&m_ref_lock);
+#endif
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
@@ -383,6 +385,10 @@ extern CSet<shogun::MemoryBlock>* sg_mallocs;
 #endif
 void CSGObject::init()
 {
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_INIT(&m_ref_lock);
+#endif
+
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 	{
