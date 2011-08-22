@@ -56,8 +56,6 @@ namespace shogun
 		 */
 		void close()
 		{
-			SG_FREE(filename);
-			filename=NULL;
 			buf->close_file();
 		}
 
