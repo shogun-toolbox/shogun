@@ -148,7 +148,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 #ifdef HAVE_PTHREAD
 	PTHREAD_LOCK_T W_matrix_lock;
 	pthread_attr_t attr;
-	PTHREAD_LOCK_INIT(W_matrix_lock);
+	PTHREAD_LOCK_INIT(&W_matrix_lock);
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
@@ -178,7 +178,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	}
 	for (t=0; t<num_threads; t++)
 		pthread_join(threads[t], NULL);
-	PTHREAD_LOCK_DESTROY(W_matrix_lock);
+	PTHREAD_LOCK_DESTROY(&W_matrix_lock);
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
@@ -345,7 +345,7 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 		                Pii,m_k,
 		            0.0,q_matrix,m_k);
 #ifdef HAVE_PTHREAD
-		PTHREAD_LOCK(*W_matrix_lock);
+		PTHREAD_LOCK(W_matrix_lock);
 #endif
 		for (j=0; j<m_k; j++)
 		{
@@ -353,7 +353,7 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] += q_matrix[j*m_k+k];
 		}
 #ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(*W_matrix_lock);
+		PTHREAD_UNLOCK(W_matrix_lock);
 #endif
 	}
 	return NULL;
