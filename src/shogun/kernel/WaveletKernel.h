@@ -28,7 +28,7 @@ namespace shogun
  * Where \f$h(x)\f$ is the mother wavelet function
  *
  * \f[
- * h({\bf x}=cos(1.75*x)\cdot exp(\frac{(-x^2){2})
+ * h({\bf x}=cos(1.75*x)\cdot exp(\frac{(-x^2)}{2})
  * \f]
  * 
  */
