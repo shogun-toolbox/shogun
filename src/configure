@@ -105,6 +105,7 @@ _confdir=""
 _libdir=""
 _incdir=""
 _pydir=""
+_rubydir=""
 _octdir=""
 _inc_extra=""
 _ld_extra=""
@@ -707,7 +708,7 @@ else
 end
 EOF
 			RUBY_LIBRARY_DIR=`ruby "$TMPRUBY" 2>/dev/null`
-			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir`ruby -e 'require "mkmf"; puts "ruby/" + Config::expand("$(ruby_version)") + "/" + Config::expand("$(arch)")'`
+			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir/$_rubydir/`ruby -e 'require "mkmf"; puts Config::expand("$(ruby_version)") + "/" + Config::expand("$(arch)")'`
 			test_ruby_narray
 			_ruby_modular=yes
 		else
@@ -1163,6 +1164,7 @@ Installation directories:
   --libdir=DIR                   use this prefix for object code libraries [PREFIX/lib]
   --incdir=DIR                   use this prefix for include files [PREFIX/include]
   --pydir=DIR                    use this prefix for python files [PREFIX/auto-detected]
+  --rubydir=DIR                  use this prefix for python files [PREFIX/auto-detected]
   --octdir=DIR                   use this prefix for octave files [PREFIX/auto-detected]
   --rdir=DIR                     use this prefix for r files [PREFIX/auto-detected]
 
@@ -1459,6 +1461,9 @@ for ac_option do
   --pydir=*)
     _pydir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
 	;;
+  --rubydir=*)
+    _rubydir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
+	;;
   --octdir=*)
     _octdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
@@ -1488,6 +1493,10 @@ if test -z "$_pydir" ; then
 	else
 		_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 	fi
+fi
+
+if test -z "$_rubydir" ; then
+	_rubydir="site_ruby"
 fi
 
 determine_system_name()

@@ -298,7 +298,7 @@ install-java_modular: $(TEMPLATE_TARGET)
 
 install-ruby_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(RUBY_EXTENSIONS_INSTALL_DIR)"
-	install -m755 $(TEMPLATE_TARGET) "$(RUBY_EXTENSIONS_INSTALL_DIR)"
+	install -m755 modshogun.$(EXT_LIB) "$(RUBY_EXTENSIONS_INSTALL_DIR)"
 
 install-lua_modular: $(TEMPLATE_TARGET)
 	#TODO
