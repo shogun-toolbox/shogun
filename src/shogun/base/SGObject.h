@@ -261,6 +261,22 @@ public:
 #endif
 
 protected:
+	/** creates a new TParameter instance, which contains migrated data from
+	 * the version that is provided. The provided parameter data base is used
+	 * for migration.
+	 * Migration is done FROM the data in param_base TO the provided param info
+	 * Migration is always one version step.
+	 * Method has to be implemented in subclasses, if no match is found, base
+	 * method has to be called.
+	 *
+	 * NOT IMPLEMENTED
+	 *
+	 *
+	 *
+	 * TODO better description
+	 */
+	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
+			SGParamInfo* target);
 
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
