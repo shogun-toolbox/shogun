@@ -20,6 +20,9 @@ namespace shogun
 {
 struct TParameter
 {
+	/* CSGObject has to call delete_cont */
+	friend class CSGObject;
+
 	/** explicit constructor
 	 * @param datatype datatype
 	 * @param parameter pointer to parameter
