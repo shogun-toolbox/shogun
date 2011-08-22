@@ -10,6 +10,7 @@
 
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
+#include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/MultidimensionalScaling.h>
 #include <shogun/lib/common.h>

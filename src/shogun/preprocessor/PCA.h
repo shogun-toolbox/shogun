@@ -12,9 +12,9 @@
 
 #ifndef PCA_H_
 #define PCA_H_
+#include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
-#include <shogun/lib/config.h>
 #include <stdio.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>

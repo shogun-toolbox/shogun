@@ -10,6 +10,7 @@
 
 #ifndef MULTIDIMENSIONALSCALING_H_
 #define MULTIDIMENSIONALSCALING_H_
+#include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>

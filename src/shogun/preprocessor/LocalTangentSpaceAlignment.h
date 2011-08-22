@@ -10,6 +10,7 @@
 
 #ifndef LOCALTANGENTSPACEALIGNMENT_H_
 #define LOCALTANGENTSPACEALIGNMENT_H_
+#include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/LocallyLinearEmbedding.h>
 #include <shogun/features/Features.h>

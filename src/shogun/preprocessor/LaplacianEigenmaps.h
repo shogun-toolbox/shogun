@@ -9,7 +9,8 @@
  */
 
 #ifndef LAPLACIANEIGENMAPS_H_
-#define LAPLCAIANEIGENMAPS_H_
+#define LAPLACIANEIGENMAPS_H_
+#include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
@@ -129,4 +130,4 @@ protected:
 }
 
 #endif /* HAVE_LAPACK */
-#endif /* LOCALLYLINEAREMBEDDING_H_ */
+#endif /* LAPLACIANEIGENMAPS_H_ */
