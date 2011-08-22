@@ -55,16 +55,19 @@ public:
 	/** prints all parameter values */
 	void print_param_info();
 
+	/** @return string representation, caller has to clean up */
+	char* to_string();
+
 	/** @return an identical copy */
 	SGParamInfo* duplicate() const;
 
 	/** operator for comparison, true iff all attributes are equal */
 	bool operator==(const SGParamInfo& other) const;
 
-	/** operator for comparison (by string m_name, if equal by version) */
+	/** operator for comparison (by string m_name, if equal by param_version) */
 	bool operator<(const SGParamInfo& other) const;
 
-	/** operator for comparison (by string m_name, if equal by version) */
+	/** operator for comparison (by string m_name, if equal by param_version) */
 	bool operator>(const SGParamInfo& other) const;
 
 private:
@@ -73,12 +76,17 @@ private:
 public:
 	/** name */
 	char* m_name;
+
 	/** container type */
 	EContainerType m_ctype;
+
 	/** struct type */
 	EStructType m_stype;
+
 	/** primitive type */
 	EPrimitiveType m_ptype;
+
+	int32_t m_param_version;
 };
 
 /** @brief Class to hold instances of a parameter map. Each element contains a
