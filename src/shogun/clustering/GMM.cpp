@@ -417,10 +417,10 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 
 		c2.destroy_matrix();
 
-		float64_t new_d=1;
+		float64_t new_d=0;
 		for (int i=0; i<dim_n; i++)
 		{
-			new_d*=components.vector[0]->get_d().vector[i];
+			new_d+=CMath::log(components.vector[0]->get_d().vector[i]);
 			for (int j=0; j<dim_n; j++)
 			{
 				if (i==j)
@@ -435,7 +435,7 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 				}
 			}
 		}
-		new_d=CMath::pow(new_d, 1/dim_n);
+		new_d=CMath::exp(new_d*(1./dim_n));
 		for (int i=0; i<dim_n; i++)
 		{
 			components.vector[0]->get_d().vector[i]=new_d;
@@ -447,12 +447,12 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		CMath::add(components.vector[1]->get_d().vector, alpha1, components.vector[1]->get_d().vector,
 					alpha2, components.vector[2]->get_d().vector, dim_n);
 
-		float64_t new_d=1;
+		float64_t new_d=0;
 		for (int i=0; i<dim_n; i++)
 		{
-			new_d*=components.vector[0]->get_d().vector[i];
+			new_d+=CMath::log(components.vector[0]->get_d().vector[i]);
 		}
-		new_d=CMath::pow(new_d, 1/dim_n);
+		new_d=CMath::exp(new_d*(1./dim_n));
 		for (int i=0; i<dim_n; i++)
 		{
 			components.vector[0]->get_d().vector[i]=new_d;
