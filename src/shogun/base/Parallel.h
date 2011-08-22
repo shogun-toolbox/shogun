@@ -24,7 +24,7 @@
 	#define PTHREAD_UNLOCK(lock) pthread_spin_unlock(&lock)
 #else
 	#define PTHREAD_LOCK_T pthread_mutex_t
-	#define PTHREAD_LOCK_INIT pthread_mutex_init(&lock, 0)
+	#define PTHREAD_LOCK_INIT pthread_mutex_init(&lock, NULL)
 	#define PTHREAD_LOCK_DESTROY(lock) pthread_mutex_destroy(&lock)
 	#define PTHREAD_LOCK(lock) pthread_mutex_lock(&lock)
 	#define PTHREAD_UNLOCK(lock) pthread_mutex_unlock(&lock)
