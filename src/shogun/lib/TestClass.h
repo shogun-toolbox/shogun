@@ -19,7 +19,8 @@ namespace shogun
 class CTestClass : public CSGObject
 {
 public:
-	CTestClass();
+	CTestClass() {}
+	CTestClass(int32_t number);
 	virtual ~CTestClass();
 
 	void print();
@@ -27,7 +28,12 @@ public:
 	inline virtual const char* get_name() const { return "TestClass"; }
 
 protected:
-	float64_t m_number;
+	TParameter* migrate(DynArray<TParameter*>* param_base, SGParamInfo* element);
+	void load_serializable_pre() throw (ShogunException);
+
+protected:
+	int32_t m_number;
+
 };
 
 }
