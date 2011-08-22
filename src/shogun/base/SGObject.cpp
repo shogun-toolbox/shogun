@@ -128,6 +128,61 @@ CSGObject::~CSGObject()
 	delete m_model_selection_parameters;
 }
 
+#ifdef USE_REFERENCE_COUNTING
+
+int32_t CSGObject::ref()
+{
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK(&m_ref_lock);
+#endif //HAVE_PTHREAD
+		++m_refcount;
+		int32_t count=m_refcount;
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(&m_ref_lock);
+#endif //HAVE_PTHREAD
+		SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this);
+		return m_refcount;
+}
+
+int32_t CSGObject::ref_count()
+{
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK(&m_ref_lock);
+#endif //HAVE_PTHREAD
+	int32_t count=m_refcount;
+#ifdef HAVE_PTHREAD
+	PTHREAD_UNLOCK(&m_ref_lock);
+#endif //HAVE_PTHREAD
+	SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this);
+	return count;
+}
+
+int32_t CSGObject::unref()
+{
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK(&m_ref_lock);
+#endif //HAVE_PTHREAD
+	if (m_refcount==0 || --m_refcount==0)
+	{
+		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", m_refcount, this->get_name(), this);
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(&m_ref_lock);
+#endif //HAVE_PTHREAD
+		delete this;
+		return 0;
+	}
+	else
+	{
+		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", m_refcount, this->get_name(), this);
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(&m_ref_lock);
+#endif //HAVE_PTHREAD
+		return m_refcount;
+	}
+}
+#endif //USE_REFERENCE_COUNTING
+
+
 void CSGObject::set_global_objects()
 {
 	if (!sg_io || !sg_parallel || !sg_version)

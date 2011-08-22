@@ -22,6 +22,7 @@
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif //HAVE_PTHREAD
+
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
@@ -89,65 +90,20 @@ public:
 	 *
 	 * @return reference count
 	 */
-	inline int32_t ref()
-	{
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		++m_refcount;
-		int32_t count=m_refcount;
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this);
-		return m_refcount;
-	}
+	int32_t ref();
 
 	/** display reference counter
 	 *
 	 * @return reference count
 	 */
-	inline int32_t ref_count()
-	{
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		int32_t count=m_refcount;
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this);
-		return count;
-	}
+	int32_t ref_count();
 
 	/** decrement reference counter and deallocate object if refcount is zero
 	 * before or after decrementing it
 	 *
 	 * @return reference count
 	 */
-	inline int32_t unref()
-	{
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		if (m_refcount==0 || --m_refcount==0)
-		{
-			SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", m_refcount, this->get_name(), this);
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-			delete this;
-			return 0;
-		}
-		else
-		{
-			SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", m_refcount, this->get_name(), this);
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-			return m_refcount;
-		}
-	}
+	int32_t unref();
 #endif //USE_REFERENCE_COUNTING
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
