@@ -108,7 +108,7 @@ public:
 		return m_eigenvalues;
 	}
 
-	/** set number of landmarks⋅
+	/** set number of landmarks
 	 * should be lesser than number of examples and greater than 3
 	 * for consistent embedding as triangulation is used
 	 * @param num number of landmark to be set
@@ -120,7 +120,7 @@ public:
 		m_landmark_number = num;
 	};
 	
-	/** get number of landmarks⋅
+	/** get number of landmarks
 	 * @return current number of landmarks
 	 */
 	int32_t get_landmark_number() const
