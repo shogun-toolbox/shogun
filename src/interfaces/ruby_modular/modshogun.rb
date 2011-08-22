@@ -3,7 +3,7 @@ require 'modshogun.so'
 
 # for debugging purposes...
 require 'rubygems'
-require "pry"
+# require "pry"
 
 def LoadMatrix(filename, type = :numbers)
   case type
