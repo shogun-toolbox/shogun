@@ -574,7 +574,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = ../src/libshogun/ \
+INPUT                  = ../src/shogun/ \
                          ./pages/
 
 # This tag can be used to specify the character encoding of the source files
@@ -606,8 +606,7 @@ RECURSIVE              = YES
 # excluded from the INPUT source files. This way you can easily exclude a
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
-EXCLUDE                = .svn \
-                         *modular
+EXCLUDE                = *interfaces
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or
 # directories that are symbolic links (a Unix filesystem feature) are excluded
@@ -621,10 +620,7 @@ EXCLUDE_SYMLINKS       = YES
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = */.svn/* \
-                         *_wrap.h \
-                         *ui/* \
-                         */libshogunui/*
+EXCLUDE_PATTERNS       =
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -652,6 +648,10 @@ EXAMPLE_PATTERNS       = *.cpp \
                          *.py \
                          *.R \
                          *.m \
+                         *.cs \
+                         *.java \
+                         *.lua \
+                         *.rb \
 						 *.generated \
                          LICENSE* \
                          README* \
