@@ -20,7 +20,7 @@ namespace shogun
 
 class CFeatures;
 
-/** @brief the abstract class DimensionReductionPreprocessor, a base
+/** @brief the class DimensionReductionPreprocessor, a base
  * class for preprocessors used to lower the dimensionality of given 
  * simple features (dense matrices). 
  */
@@ -29,7 +29,12 @@ class CDimensionReductionPreprocessor: public CSimplePreprocessor<float64_t>
 public:
 
 	/* constructor */
-	CDimensionReductionPreprocessor() : CSimplePreprocessor<float64_t>(), m_target_dim(1) {};
+	CDimensionReductionPreprocessor() : CSimplePreprocessor<float64_t>()
+	{
+		m_target_dim = 1;
+
+		init();
+	};
 
 	/* destructor */
 	virtual ~CDimensionReductionPreprocessor() {};
@@ -89,6 +94,19 @@ public:
 	int32_t inline get_target_dim()
 	{
 		return m_target_dim;
+	}
+
+public:
+	
+	static int32_t const AUTO_TARGET_DIM = -1;
+
+protected:
+
+	/** default init */
+	void init()
+	{
+		m_parameters->add(&m_target_dim, "target_dim",
+		                  "target dimensionality of preprocessor");
 	}
 
 protected:
