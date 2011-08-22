@@ -103,6 +103,13 @@ public:
 	void set_regressor_out(char* file_name, bool is_text = true);
 
 	/**
+	 * Set file name of prediction output
+	 *
+	 * @param file_name name of file to save predictions to
+	 */
+	void set_prediction_out(char* file_name);
+
+	/**
 	 * Add a pair of namespaces whose features should
 	 * be crossed for quadratic updates
 	 *
@@ -211,11 +218,28 @@ private:
 	virtual float32_t finalize_prediction(float32_t ret);
 
 	/**
+	 * Output example, i.e. write prediction, print update etc.
+	 *
+	 * @param ex example
+	 */
+	virtual void output_example(VwExample* &ex);
+
+	/**
 	 * Print statistics like VW
 	 *
 	 * @param ex example
 	 */
 	virtual void print_update(VwExample* &ex);
+
+	/**
+	 * Output the prediction to a file
+	 *
+	 * @param f file descriptor
+	 * @param res prediction
+	 * @param weight weight of example
+	 * @param tag tag
+	 */
+	virtual void output_prediction(int32_t f, float32_t res, float32_t weight, v_array<char> tag);
 
 	/**
 	 * Set whether to display statistics or not
@@ -241,11 +265,20 @@ private:
 	/// Whether to display statistics or not
 	bool quiet;
 
+	/// Multiplication factor for number of examples to dump after
+	float32_t dump_interval;
+
 	/// Name of file to save regressor to
 	char* reg_name;
 
 	/// Whether to save regressor as readable text or not
 	bool reg_dump_text;
+
+	/// Whether to save predictions or not
+	bool save_predictions;
+
+	/// Descriptor of prediction file
+	int32_t prediction_fd;
 };
 
 }

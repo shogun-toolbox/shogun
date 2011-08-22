@@ -71,5 +71,5 @@ void CStreamingVwFile::init()
 	env = parser->get_env();
 
 	set_parser_type(T_VW);
-	write_to_cache = true;
+	write_to_cache = false;
 }
