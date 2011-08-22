@@ -184,6 +184,7 @@ template<class T> class SGMatrix
 		bool do_free;
 };
 
+/** shogun n-dimensional array */
 template<class T> class SGNDArray
 {
     public:
@@ -207,6 +208,7 @@ template<class T> class SGNDArray
         index_t num_dims;
 };
 
+/** shogun string */
 template<class T> struct SGString
 {
 public:
@@ -494,7 +496,7 @@ enum EPrimitiveType
 };
 #endif
 
-/* Datatypes that shogun supports. */
+/** Datatypes that shogun supports. */
 struct TSGDataType
 {
 	/** container type */

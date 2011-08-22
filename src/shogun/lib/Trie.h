@@ -134,6 +134,7 @@ struct TreeParseInfo {
 
 template <class Trie> class CTrie;
 
+#define IGNORE_IN_CLASSLIST
 /** @brief Template class Trie implements a suffix trie, i.e. a tree in which all
  * suffixes up to a certain length are stored.
  *
@@ -152,7 +153,6 @@ template <class Trie> class CTrie;
  * may save a lot of memory on higher degree tries.
  *
  */
-#define IGNORE_IN_CLASSLIST
 IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 {
 	public:

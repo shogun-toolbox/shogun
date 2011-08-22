@@ -22,10 +22,14 @@
 
 namespace shogun
 {
+/** mode of pca */
 enum EPCAMode
 {
+	/** cut by threshold */
 	THRESHOLD,
+	/** variance explained */
 	VARIANCE_EXPLAINED,
+	/** keep fixed number of features */
 	FIXED_NUMBER
 };
 
@@ -47,7 +51,7 @@ class CPCA: public CDimensionReductionPreprocessor
 	
 		/** constructor
 		 * @param do_whitening do whitening
-		 * @param type of cutoff
+		 * @param mode mode of pca
 		 * @param thresh threshold
 		 */
 		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6);

@@ -20,6 +20,7 @@ namespace shogun
 {
 class CSGInterface;
 
+/** gui kernel */
 class CGUIKernel : public CSGObject
 {
  public:

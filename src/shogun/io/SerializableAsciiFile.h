@@ -30,6 +30,7 @@
 
 namespace shogun
 {
+/** serializable ascii file */
 class CSerializableAsciiFile :public CSerializableFile
 {
 	friend class SerializableAsciiReader00;

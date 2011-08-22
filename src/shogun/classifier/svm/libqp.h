@@ -34,7 +34,7 @@ namespace shogun
 #define LIBQP_MAX(A,B) ((A) < (B) ? (B) : (A))
 #define LIBQP_ABS(A) ((A) < 0 ? -(A) : (A))
 
-/* QP solver return value */
+/** QP solver return value */
 typedef struct {
   /** number of iterations */
   uint32_t nIter;
@@ -51,7 +51,7 @@ typedef struct {
                             4 ... eps-KKT conditions satisfied */
 } libqp_state_T; 
 
-/* QP solver for tasks with simplex constraints */
+/** QP solver for tasks with simplex constraints */
 libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
                   float64_t *diag_H,
                   float64_t *f,
@@ -66,7 +66,7 @@ libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
                   float64_t QP_TH,
                   void (*print_state)(libqp_state_T state));
 
-/* Generalized SMO algorithm */
+/** Generalized SMO algorithm */
 libqp_state_T libqp_gsmo_solver(const float64_t* (*get_col)(uint32_t),
             float64_t *diag_H,
             float64_t *f,

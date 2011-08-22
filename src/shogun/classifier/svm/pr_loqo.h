@@ -46,7 +46,7 @@ namespace shogun
  *                          for Quadratic Programming
  */
 
-/*
+/**
  * n   : number of primal variables
  * m   : number of constraints (typically 1)
  * h_x : dot product matrix (n.n)
@@ -73,7 +73,6 @@ namespace shogun
  * restart    : 1 if restart desired
  *
  */
-
 int32_t pr_loqo(
 	int32_t n, int32_t m, float64_t c[], float64_t h_x[], float64_t a[],
 	float64_t b[], float64_t l[], float64_t u[], float64_t primal[],

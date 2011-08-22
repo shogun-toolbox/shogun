@@ -60,6 +60,7 @@ int clapack_dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
 
 namespace shogun
 {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, 
 		double *w, int *info);
 void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, 
@@ -71,6 +72,7 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
                  double *eigenvalues, double *eigenvectors, int *info);
 void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, double *b,
                  int ldb, int il, int iu, double *eigenvalues, double *eigenvectors, int *info);
+#endif
 }
 
 // only MKL, ACML and Mac OS vector library provide a header file for the lapack routines

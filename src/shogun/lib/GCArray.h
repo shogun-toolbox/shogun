@@ -16,6 +16,7 @@
 
 namespace shogun
 {
+define IGNORE_IN_CLASSLIST
 /** @brief Template class GCArray implements a garbage collecting static array
  *
  * This array is meant to be used for Shogun Objects (CSGObject) only, as it
@@ -24,8 +25,7 @@ namespace shogun
  * elements).
  *
  * */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
+#IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 {
 	public:
 		/** default constructor  */

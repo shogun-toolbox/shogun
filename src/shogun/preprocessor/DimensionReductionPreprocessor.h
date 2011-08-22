@@ -97,7 +97,8 @@ public:
 	}
 
 public:
-	
+
+	/** const indicating target dimensionality should be determined automagically */
 	static const int32_t AUTO_TARGET_DIM = -1;
 
 protected:

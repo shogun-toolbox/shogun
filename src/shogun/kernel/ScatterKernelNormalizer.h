@@ -19,6 +19,7 @@
 
 namespace shogun
 {
+/** scatter kernel normalizer */
 class CScatterKernelNormalizer: public CKernelNormalizer
 {
 

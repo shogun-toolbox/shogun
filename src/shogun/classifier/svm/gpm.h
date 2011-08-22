@@ -30,6 +30,20 @@
 
 namespace shogun
 {
+/** gpm solver 
+ * @param Solver
+ * @param Projector
+ * @param n
+ * @param A
+ * @param b
+ * @param c
+ * @param e
+ * @param iy
+ * @param x
+ * @param tol
+ * @param ls
+ * @param proj
+ */
 int32_t gpm_solver(
 	int32_t Solver, int32_t Projector, int32_t n, float32_t *A, float64_t *b,
 	float64_t c, float64_t e, int32_t *iy, float64_t *x, float64_t tol,

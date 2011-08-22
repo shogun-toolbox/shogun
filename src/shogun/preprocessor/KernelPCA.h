@@ -34,10 +34,10 @@ public:
 		CKernelPCA();
 
 		/** constructor
-		 *
-		 * @param thresh threshold
+		 * @param k kernel to be used
 		 */
 		CKernelPCA(CKernel* k);
+
 		virtual ~CKernelPCA();
 
 		/// initialize preprocessor from features

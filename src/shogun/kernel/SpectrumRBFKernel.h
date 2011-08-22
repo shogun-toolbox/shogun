@@ -27,6 +27,7 @@
 namespace shogun
 {
 
+/** spectrum rbf kernel */
 class CSpectrumRBFKernel: public CStringKernel<char>
 {
 	public:

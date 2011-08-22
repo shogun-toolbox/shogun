@@ -26,7 +26,7 @@
 
 namespace shogun
 {
-/* Interface datatypes that shogun supports. Note that some interfaces like e.g.
+/** Interface datatypes that shogun supports. Note that some interfaces like e.g.
  * octave/matlab cannot distinguish between scalars and matrices and thus might
  * always return more complex types like matrices.
  */
@@ -213,6 +213,7 @@ class CSGInterface : public CSGObject
 		/** set Salzberg prior probs from labels */
 		bool cmd_set_prior_probs_from_labels();
 #ifdef USE_SVMLIGHT
+		/** resize kernel cache */
 		bool cmd_resize_kernel_cache();
 #endif //USE_SVMLIGHT
 
@@ -1123,6 +1124,7 @@ class CSGInterface : public CSGObject
 /** sg interface ptr typedef */
 typedef bool (CSGInterface::*CSGInterfacePtr)();
 
+/** interface method */
 typedef struct {
 	/// command
 	const char* command;

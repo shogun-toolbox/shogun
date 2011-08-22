@@ -18,6 +18,7 @@
 
 namespace shogun
 {
+/** Positional PWM */
 class CPositionalPWM : public CDistribution
 {
 	public:

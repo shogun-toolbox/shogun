@@ -65,7 +65,7 @@ public:
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 	/** apply preprocessor to feature vector, not supported
-	 * @vector
+	 * @param vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 

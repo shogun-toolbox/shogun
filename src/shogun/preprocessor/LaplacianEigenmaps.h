@@ -56,7 +56,7 @@ public:
 	virtual ~CLaplacianEigenmaps();
 
 	/** init
-	 * @param data feature vectors for preproc
+	 * @param features
 	 */
 	virtual bool init(CFeatures* features);
 
@@ -65,18 +65,18 @@ public:
 	 */
 	virtual void cleanup();
 
-	/** apply preproc to feature matrix
-	 *
+	/** apply preprocessor to feature matrix
+	 * @param features
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 	/** apply preproc to feature vector
-	 *
+	 * @param vector
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** setter for K parameter
-	 * @param k k
+	 * @param k k value
 	 */
 	void inline set_k(int32_t k)
 	{
@@ -92,7 +92,7 @@ public:
 	}
 
 	/** setter for TAU parameter
-	 * @param tau tau
+	 * @param tau tau value
 	 */
 	void inline set_tau(float64_t tau)
 	{

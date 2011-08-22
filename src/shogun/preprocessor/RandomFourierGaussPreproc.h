@@ -20,34 +20,33 @@
 #include <shogun/preprocessor/SimplePreprocessor.h>
 
 namespace shogun {
+/** @brief Preprocessor CRandomFourierGaussPreproc
+ * implements Random Fourier Features for the Gauss kernel a la Ali Rahimi and Ben Recht Nips2007
+ * after preprocessing the features using them in a linear kernel approximates a gaussian kernel
+ *
+ * approximation quality depends on dimension of feature space, NOT on number of data.
+ *
+ * effectively it requires two parameters for initialization: (A) the dimension of the input features stored in
+ * dim_input_space
+ * (B) the dimension of the output feature space
+ *
+ * in order to make it work there are two ways:
+ * (1) if you have already previously computed random fourier features which you want to use together with
+ * newly computed ones, then you have to take the random coefficients from the previous computation and provide them
+ * via void set_randomcoefficients(...) for the new computation
+ * this case is important for example if you compute separately features on training and testing data in two feature objects
+ *
+ * in this case you have to set
+ * 1a) void set_randomcoefficients(...)
+ *
+ * (2) if you compute random fourier features from scratch
+ * in this case you have to set
+ * 2a) set_kernelwidth(...)
+ * 2b) void set_dim_feature_space(const int32_t dim);
+ * 2c) set_dim_input_space(const int32_t dim);
+ * 2d) init_randomcoefficients() or apply_to_feature_matrix(...)
+ */
 class CRandomFourierGaussPreproc: public CSimplePreprocessor<float64_t> {
-	/** @brief Preprocessor CRandomFourierGaussPreproc
-	 * implements Random Fourier Features for the Gauss kernel a la Ali Rahimi and Ben Recht Nips2007
-	 * after preprocessing the features using them in a linear kernel approximates a gaussian kernel
-	 *
-	 * approximation quality depends on dimension of feature space, NOT on number of data.
-	 *
-	 * effectively it requires two parameters for initialization: (A) the dimension of the input features stored in
-	 * dim_input_space
-	 * (B) the dimension of the output feature space
-	 *
-	 * in order to make it work there are two ways:
-	 * (1) if you have already previously computed random fourier features which you want to use together with
-	 * newly computed ones, then you have to take the random coefficients from the previous computation and provide them
-	 * via void set_randomcoefficients(...) for the new computation
-	 * this case is important for example if you compute separately features on training and testing data in two feature objects
-	 *
-	 * in this case you have to set
-	 * 1a) void set_randomcoefficients(...)
-	 *
-	 * (2) if you compute random fourier features from scratch
-	 * in this case you have to set
-	 * 2a) set_kernelwidth(...)
-	 * 2b) void set_dim_feature_space(const int32_t dim);
-	 * 2c) set_dim_input_space(const int32_t dim);
-	 * 2d) init_randomcoefficients() or apply_to_feature_matrix(...)
-	 */
-
 public:
 	/** default constructor */
 	CRandomFourierGaussPreproc();

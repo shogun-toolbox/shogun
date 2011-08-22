@@ -19,6 +19,7 @@
 namespace shogun
 {
 
+/** hashset node */
 struct HashSetNode
 {
 	/** key of node */

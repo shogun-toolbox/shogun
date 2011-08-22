@@ -18,6 +18,7 @@
 
 namespace shogun
 {
+/** Parameter */
 struct TParameter
 {
 	/** explicit constructor
@@ -75,7 +76,7 @@ private:
 					const char* prefix);
 };
 
-/* Must not be an CSGObject to prevent a recursive call of
+/** Must not be an CSGObject to prevent a recursive call of
  * constructors.
  */
 class Parameter
