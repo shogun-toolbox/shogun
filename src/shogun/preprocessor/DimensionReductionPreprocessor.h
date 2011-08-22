@@ -98,7 +98,7 @@ public:
 
 public:
 	
-	static int32_t const AUTO_TARGET_DIM = -1;
+	static const int32_t AUTO_TARGET_DIM = -1;
 
 protected:
 
