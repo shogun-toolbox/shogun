@@ -48,7 +48,7 @@ void CGaussian::init()
 	{
 		case FULL:
 		case DIAG:
-			for (int i=0; i<m_d.vlen; i++)
+			for (int32_t i=0; i<m_d.vlen; i++)
 				m_constant+=CMath::log(m_d.vector[i]);
 			break;
 		case SPHERICAL:
@@ -130,7 +130,7 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 	float64_t* difference=SG_MALLOC(float64_t, m_mean.vlen);
 	memcpy(difference, point.vector, sizeof(float64_t)*m_mean.vlen);
 
-	for (int i = 0; i < m_mean.vlen; i++)
+	for (int32_t i = 0; i < m_mean.vlen; i++)
 		difference[i] -= m_mean.vector[i];
 
 	float64_t answer=m_constant;
@@ -141,19 +141,19 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 		cblas_dgemv(CblasRowMajor, CblasNoTrans, m_d.vlen, m_d.vlen,
 					1, m_u.matrix, m_d.vlen, difference, 1, 0, temp_holder, 1);
 
-		for (int i=0; i<m_d.vlen; i++)
+		for (int32_t i=0; i<m_d.vlen; i++)
 			answer+=temp_holder[i]*temp_holder[i]/m_d.vector[i];
 
 		SG_FREE(temp_holder);
 	}
 	else if (m_cov_type==DIAG)
 	{
-		for (int i=0; i<m_mean.vlen; i++)
+		for (int32_t i=0; i<m_mean.vlen; i++)
 			answer+=difference[i]*difference[i]/m_d.vector[i];
 	}
 	else
 	{
-		for (int i=0; i<m_mean.vlen; i++)
+		for (int32_t i=0; i<m_mean.vlen; i++)
 			answer+=difference[i]*difference[i]/m_d.vector[0];
 	}
 
@@ -175,7 +175,7 @@ SGMatrix<float64_t> CGaussian::get_cov()
 		float64_t* temp_holder=SG_MALLOC(float64_t, m_d.vlen*m_d.vlen);
 		float64_t* diag_holder=SG_MALLOC(float64_t, m_d.vlen*m_d.vlen);
 		memset(diag_holder, 0, sizeof(float64_t)*m_d.vlen*m_d.vlen);
-		for(int i=0; i<m_d.vlen; i++)
+		for(int32_t i=0; i<m_d.vlen; i++)
 			diag_holder[i*m_d.vlen+i]=m_d.vector[i];
 
 		cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans,
@@ -190,12 +190,12 @@ SGMatrix<float64_t> CGaussian::get_cov()
 	}
 	else if (m_cov_type==DIAG)
 	{
-		for (int i=0; i<m_d.vlen; i++)
+		for (int32_t i=0; i<m_d.vlen; i++)
 			cov[i*m_d.vlen+i]=m_d.vector[i];
 	}
 	else
 	{
-		for (int i=0; i<m_mean.vlen; i++)
+		for (int32_t i=0; i<m_mean.vlen; i++)
 			cov[i*m_mean.vlen+i]=m_d.vector[0];
 	}
 	return SGMatrix<float64_t>(cov, m_mean.vlen, m_mean.vlen, false);//fix needed
@@ -228,7 +228,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 		case DIAG:
 			m_d.vector=SG_MALLOC(float64_t, cov.num_rows);
 
-			for (int i=0; i<cov.num_rows; i++)
+			for (int32_t i=0; i<cov.num_rows; i++)
 				m_d.vector[i]=cov.matrix[i*cov.num_rows+i];
 			
 			m_d.vlen=cov.num_rows;
@@ -251,12 +251,12 @@ SGVector<float64_t> CGaussian::sample()
 	{
 		case FULL:
 		case DIAG:
-			for (int i=0; i<m_mean.vlen; i++)
+			for (int32_t i=0; i<m_mean.vlen; i++)
 				r_matrix[i*m_mean.vlen+i]=CMath::sqrt(m_d.vector[i]);
 
 			break;
 		case SPHERICAL:
-			for (int i=0; i<m_mean.vlen; i++)
+			for (int32_t i=0; i<m_mean.vlen; i++)
 				r_matrix[i*m_mean.vlen+i]=CMath::sqrt(m_d.vector[0]);
 
 			break;
@@ -264,7 +264,7 @@ SGVector<float64_t> CGaussian::sample()
 
 	float64_t* random_vec=SG_MALLOC(float64_t, m_mean.vlen);
 
-	for (int i=0; i<m_mean.vlen; i++)
+	for (int32_t i=0; i<m_mean.vlen; i++)
 		random_vec[i]=CMath::randn_double();
 
 	if (m_cov_type==FULL)
@@ -282,7 +282,7 @@ SGVector<float64_t> CGaussian::sample()
 	cblas_dgemv(CblasRowMajor, CblasNoTrans, m_mean.vlen, m_mean.vlen,
 				1, r_matrix, m_mean.vlen, random_vec, 1, 0, samp, 1);
 
-	for (int i=0; i<m_mean.vlen; i++)
+	for (int32_t i=0; i<m_mean.vlen; i++)
 		samp[i]+=m_mean.vector[i];
 
 	SG_FREE(random_vec);
