@@ -10,6 +10,7 @@
 
 #ifndef ARPACK_H_
 #define ARPACK_H_
+#include <shogun/lib/config.h>
 #ifdef HAVE_ARPACK
 #ifdef HAVE_LAPACK
 #include <cblas.h>
@@ -59,16 +60,18 @@ namespace shogun
  * @param mode shift-mode of IRLM. Possible values:
  *        - 1: regular mode
  *        - 3: shift-invert mode
- * @param pos true if matrix is positive definite (Cholesky factorization)
+ * @param pos true if matrix is positive definite (Cholesky factorization is used in
+ *        this case instead of LUP factorization))
  * @param shift shift for shift-invert (3) mode of IRLM. In this mode
  *        routine will compute eigenvalues near provided shift
+ * @param tolerance tolerance with eigenvalues should be computed (zero means machine precision)
  * @param eigenvalues array of size nev to hold computed eigenvalues
  * @param eigenvectors array of size nev*n to hold computed eigenvectors
  * @param status on output -1 if computation failed
  */
-void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, 
-                   const char* which, int mode, bool pos, double shift,
-                   double* eigenvalues, double* eigenvectors, int& status);
+void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const char* which,
+                         int mode, bool pos, double shift, double tolerance,
+                         double* eigenvalues, double* eigenvectors, int& status);
 }
 #endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */

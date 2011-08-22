@@ -260,7 +260,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
-		arpack_dsaupd(matrix.matrix,NULL,N,dimension+1,"LA",3,m_posdef,-1e-6,eigenvalues_vector,matrix.matrix,eigenproblem_status);
+		arpack_dsaeupd_wrap(matrix.matrix,NULL,N,dimension+1,"LA",3,m_posdef,-1e-6, 0.0,
+		                    eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
 	}
 	else

@@ -149,7 +149,8 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 		// using ARPACK DS{E,A}UPD
 		int eigenproblem_status = 0;
 		float64_t* eigenvalues_vector = SG_MALLOC(float64_t,m_target_dim+1);
-		arpack_dsaupd(W_matrix,D_diag_vector,N,m_target_dim+1,"LA",3,false,0.0,eigenvalues_vector,W_matrix,eigenproblem_status);
+		arpack_dsaeupd_wrap(W_matrix,D_diag_vector,N,m_target_dim+1,"LA",3,false,0.0,0.0,
+		                    eigenvalues_vector,W_matrix,eigenproblem_status);
 		ASSERT(eigenproblem_status==0);
 		SG_FREE(eigenvalues_vector);
 	#else

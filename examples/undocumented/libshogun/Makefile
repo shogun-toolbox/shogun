@@ -34,7 +34,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  mathematics_confidence_intervals \
 		  clustering_kmeans base_parameter_map \
 		  splitting_stratified_crossvalidation \
-
+		  mathematics_arpack \
 
 all: $(TARGETS)
 

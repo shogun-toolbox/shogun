@@ -22,9 +22,10 @@ using namespace shogun;
 
 namespace shogun
 {
-void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char* which, 
-                   int mode, bool pos, double shift, double* eigenvalues, 
-                   double* eigenvectors, int& status)
+
+void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const char* which, 
+                         int mode, bool pos, double shift, double tolerance, double* eigenvalues, 
+                         double* eigenvectors, int& status)
 {
 	// loop vars
 	int i,j;
@@ -48,7 +49,7 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 		bmat[0] = 'G';
 
 	// init tolerance (zero means machine precision)
-	double tol = 0.0;
+	double tol = tolerance;
 
 	// allocate array to hold residuals
 	double* resid = SG_MALLOC(double, n);
@@ -97,7 +98,7 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 		// subtract shift from main diagonal if necessary
 		if (shift!=0.0)
 		{
-			SG_SDEBUG("Subtracting shift\n");
+			SG_SDEBUG("ARPACK: Subtracting shift\n");
 			// if right hand side diagonal matrix is provided
 			if (rhs_diag)
 				// subtract I*diag(rhs_diag)
@@ -113,18 +114,19 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 		if (pos)
 		{
 			// with Cholesky
-			SG_SDEBUG("ARPACK: Using Cholesky factorization\n");
+			SG_SDEBUG("ARPACK: Using Cholesky factorization.\n");
 			clapack_dpotrf(CblasColMajor,CblasUpper,n,matrix,n);
 		}
 		else
 		{
 			// with LUP
-			SG_SDEBUG("ARPACK: Using LUP factorization\n");
+			SG_SDEBUG("ARPACK: Using LUP factorization.\n");
 			ipiv = SG_CALLOC(int, n);
 			clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 		}
 	}
 	// main computation loop
+	SG_SDEBUG("ARPACK: Starting main computation DSAUPD loop.\n");
 	do	 
 	{
 		dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
@@ -191,18 +193,18 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 	if (info<0) 
 	{
 		if ((info<=-1)&&(info>=-6))
-			SG_SWARNING("DSAUPD failed. Wrong parameter passed.");
+			SG_SWARNING("ARPACK: DSAUPD failed. Wrong parameter passed.\n");
 		else if (info==-7)
-			SG_SWARNING("DSAUPD failed. Workaround array size is not sufficient.");
+			SG_SWARNING("ARPACK: DSAUPD failed. Workaround array size is not sufficient.\n");
 		else 
-			SG_SWARNING("DSAUPD failed. Error code: %d.", info);
+			SG_SWARNING("ARPACK: DSAUPD failed. Error code: %d.\n", info);
 
 		status = -1;
 	}
 	else 
 	{
 		if (info==1)
-			SG_SWARNING("Maximum number of iterations reached.\n");
+			SG_SWARNING("ARPACK: Maximum number of iterations reached.\n");
 			
 		// allocate select for dseupd
 		int* select = SG_MALLOC(int, ncv);
@@ -217,6 +219,8 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 		// specify that eigenvectors are going to be computed too		
 		int rvec = 1;
 
+		SG_SDEBUG("APRACK: Starting DSEUPD.\n");
+
 		// call dseupd_ routine
 		dseupd_(&rvec, all_, select, d, v, &ldv, &sigma, bmat,
 		        &n, which_, &nev, &tol, resid, &ncv, v, &ldv,
@@ -225,11 +229,13 @@ void arpack_dsaupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 		// check for errors
 		if (ierr!=0)
 		{
-			SG_SWARNING("DSEUPD failed with status=%d", ierr);
+			SG_SWARNING("ARPACK: DSEUPD failed with status %d.\n", ierr);
 			status = -1;
 		}
 		else
 		{
+			SG_SDEBUG("ARPACK: Storing eigenpairs.\n");
+
 			// store eigenpairs to specified arrays
 			for (i=0; i<nev; i++)
 			{	
