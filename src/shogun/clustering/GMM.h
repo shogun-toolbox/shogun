@@ -206,7 +206,7 @@ class CGMM : public CDistribution
 		 */
 		virtual inline void set_comp(SGVector<CGaussian*> components)
 		{
-			for (int i=0; i<m_components.vlen; i++)
+			for (int32_t i=0; i<m_components.vlen; i++)
 			{
 				SG_UNREF(m_components.vector[i]);
 			}
@@ -214,7 +214,7 @@ class CGMM : public CDistribution
 			m_components.destroy_vector();
 			m_components=components;
 
-			for (int i=0; i<m_components.vlen; i++)
+			for (int32_t i=0; i<m_components.vlen; i++)
 			{
 				SG_REF(m_components.vector[i]);
 			}
