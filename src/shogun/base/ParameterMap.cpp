@@ -25,8 +25,7 @@ SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 	init();
 
 	/* copy name */
-	m_name=SG_MALLOC(char, strlen(name)+1);
-	strcpy(m_name, name);
+	m_name=strdup(name);
 
 	m_ctype=ctype;
 	m_stype=stype;
@@ -39,8 +38,7 @@ SGParamInfo::SGParamInfo(const TParameter* param, int32_t param_version)
 	init();
 
 	/* copy name */
-	m_name=SG_MALLOC(char, strlen(param->m_name)+1);
-	strcpy(m_name, param->m_name);
+	m_name=strdup(param->m_name);
 
 	TSGDataType type=param->m_datatype;
 	m_ctype=type.m_ctype;
@@ -54,22 +52,35 @@ SGParamInfo::~SGParamInfo()
 	SG_FREE(m_name);
 }
 
-void SGParamInfo::print_param_info()
+char* SGParamInfo::to_string()
 {
-	SG_SPRINT("SGParamInfo with: ");
-
-	SG_SPRINT("name=\"%s\"", m_name);
+	char* buffer=SG_MALLOC(char, 200);
+	strcpy(buffer, "SGParamInfo with: ");
+	strcat(buffer, "name=\"");
+	strcat(buffer, m_name);
+	strcat(buffer, "\", type=");
 
 	TSGDataType t(m_ctype, m_stype, m_ptype);
-	index_t buffer_length=100;
-	char* buffer=SG_MALLOC(char, buffer_length);
-	t.to_string(buffer, buffer_length);
-	SG_SPRINT(", type=%s", buffer);
-	SG_FREE(buffer);
+	index_t l=100;
+	char* b=SG_MALLOC(char, l);
+	t.to_string(b, l);
+	strcat(buffer, b);
+	SG_FREE(b);
 
-	SG_SPRINT(", param_version=%d", m_param_version);
+	b=SG_MALLOC(char, 10);
+	sprintf(b, "%d", m_param_version);
+	strcat(buffer, ", version=");
+	strcat(buffer, b);
+	SG_FREE(b);
 
-	SG_SPRINT("\n");
+	return buffer;
+}
+
+void SGParamInfo::print_param_info()
+{
+	char* s=to_string();
+	SG_SPRINT("%s\n", s);
+	SG_FREE(s);
 }
 
 SGParamInfo* SGParamInfo::duplicate() const
@@ -80,10 +91,10 @@ SGParamInfo* SGParamInfo::duplicate() const
 void SGParamInfo::init()
 {
 	m_name=NULL;
-	m_ctype=(EContainerType) 0;
-	m_stype=(EStructType) 0;
-	m_ptype=(EPrimitiveType) 0;
-	m_param_version=0;
+	m_ctype=(EContainerType) -1;
+	m_stype=(EStructType) -1;
+	m_ptype=(EPrimitiveType) -1;
+	m_param_version=-1;
 }
 
 bool SGParamInfo::operator==(const SGParamInfo& other) const
@@ -101,7 +112,6 @@ bool SGParamInfo::operator<(const SGParamInfo& other) const
 {
 	int32_t result=strcmp(m_name, other.m_name);
 
-	/* if strings are equal, sort by version */
 	if (!result)
 		return m_param_version<other.m_param_version;
 	else
@@ -111,10 +121,8 @@ bool SGParamInfo::operator<(const SGParamInfo& other) const
 bool SGParamInfo::operator>(const SGParamInfo& other) const
 {
 	int32_t result=strcmp(m_name, other.m_name);
-
-	/* if strings are equal, sort by version */
 	if (!result)
-		return m_param_version>other.m_param_version;
+			return m_param_version<other.m_param_version;
 	else
 		return result>0;
 }
