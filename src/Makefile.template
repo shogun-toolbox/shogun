@@ -297,7 +297,8 @@ install-java_modular: $(TEMPLATE_TARGET)
 	install -m755 $(SWIGLIBFILES) $(DESTDIR)$(LIBDIR)
 
 install-ruby_modular: $(TEMPLATE_TARGET)
-	#TODO
+	install -d -m755 "$(RUBY_EXTENSIONS_INSTALL_DIR)"
+	install -m755 $(TEMPLATE_TARGET) "$(RUBY_EXTENSIONS_INSTALL_DIR)"
 
 install-lua_modular: $(TEMPLATE_TARGET)
 	#TODO

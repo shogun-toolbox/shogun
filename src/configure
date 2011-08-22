@@ -697,8 +697,19 @@ EOF
 			PRE_LIB_SWIG_RUBY_MODULAR=
 			EXT_LIB_SWIG_RUBY_MODULAR=.so
 			SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
-			_ruby_modular=yes
+
+cat >$TMPRUBY << EOF
+require('mkmf')
+if RUBY_VERSION[0,3] == '1.8'
+	puts "#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
+else
+	puts "#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
+end
+EOF
+			RUBY_LIBRARY_DIR=`ruby "$TMPRUBY" 2>/dev/null`
+			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir`ruby -e 'require "mkmf"; puts "ruby/" + Config::expand("$(ruby_version)") + "/" + Config::expand("$(arch)")'`
 			test_ruby_narray
+			_ruby_modular=yes
 		else
 			if test "$_ruby_modular" = yes
 			then
@@ -742,15 +753,7 @@ int main(void)
 }
 EOF
 
-cat >$TMPRUBY << EOF
-require('mkmf')
-if RUBY_VERSION[0,3] == '1.8'
-	puts "#{Config::expand(CONFIG["archdir"])}/narray.so" if CONFIG["archdir"]
-else
-	puts "#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}/narray.so" if CONFIG['rubyhdrdir']
-end
-EOF
-		LINKFLAGS_NARRAY=`ruby "$TMPRUBY" 2>/dev/null`
+		LINKFLAGS_NARRAY="$RUBY_LIBRARY_DIR"/narray.so
 
 		echocheck "Ruby NArray Developer Files"
 		if cc_check $INCLUDES_RUBY $LINKFLAGS_RUBY $LINKFLAGS_NARRAY
@@ -771,7 +774,7 @@ EOF
 	else
 		if test "$_ruby_modular" = yes
 		then
-			die "ruby NArray not found"
+			die "ruby NArray required for ruby_modular"
 		else
 			echores "not detected"
 			_ruby_modular=no
@@ -4545,6 +4548,8 @@ PRELINKFLAGS_RUBY_MODULAR= ${PRELINKFLAGS_RUBY}
 LINKFLAGS_RUBY_MODULAR 	= ${LINKFLAGS_RUBY}
 POSTLINKFLAGS_RUBY_MODULAR= ${POSTLINKFLAGS_RUBY}
 SWIGFLAGS_RUBY_MODULAR = ${SWIGFLAGS_RUBY_MODULAR}
+RUBY_LIBRARY_DIR			= ${RUBY_LIBRARY_DIR}
+RUBY_EXTENSIONS_INSTALL_DIR	= ${RUBY_EXTENSIONS_INSTALL_DIR}
 
 PRE_LIB_SWIG_LUA_MODULAR	= ${PRE_LIB_SWIG_LUA_MODULAR}
 EXT_LIB_SWIG_LUA_MODULAR	= ${EXT_LIB_SWIG_LUA_MODULAR}
