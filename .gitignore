@@ -85,3 +85,5 @@ configure.log
 # /examples/
 /examples/documented
 /examples/missing.log
+/examples/undocumented/libshogun/*
+!/examples/undocumented/libshogun/*.cpp
