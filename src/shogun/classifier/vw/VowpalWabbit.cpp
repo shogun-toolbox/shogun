@@ -116,7 +116,6 @@ bool CVowpalWabbit::train_machine(CFeatures* feat)
 
 	VwExample* example = NULL;
 	size_t current_pass = 0;
-	float32_t dump_interval = exp(1.);
 
 	const char* header_fmt = "%-10s %-10s %8s %8s %10s %8s %8s\n";
 
@@ -217,6 +216,7 @@ void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 	SG_REF(reg);
 
 	quiet = false;
+	dump_interval = exp(1.);
 	reg_name = NULL;
 	reg_dump_text = true;
 	save_predictions = false;
@@ -300,7 +300,7 @@ float32_t CVowpalWabbit::finalize_prediction(float32_t ret)
 	return ret;
 }
 
-void CVowpalWabbit::output_example(VwExample* &ex)
+void CVowpalWabbit::output_example(VwExample* &example)
 {
 	if (!quiet)
 	{
@@ -331,6 +331,37 @@ void CVowpalWabbit::print_update(VwExample* &ex)
 		  ex->ld->label,
 		  ex->final_prediction,
 		  (long unsigned int)ex->num_features);
+}
+
+
+void CVowpalWabbit::output_prediction(int32_t f, float32_t res, float32_t weight, v_array<char> tag)
+{
+	if (f >= 0)
+	{
+		char temp[30];
+		int32_t num = sprintf(temp, "%f", res);
+		ssize_t t;
+		t = write(f, temp, num);
+		if (t != num)
+			SG_SERROR("Write error!\n");
+
+		if (tag.begin != tag.end)
+		{
+			temp[0] = ' ';
+			t = write(f, temp, 1);
+			if (t != 1)
+				SG_SERROR("Write error!\n");
+
+			t = write(f, tag.begin, sizeof(char)*tag.index());
+			if (t != (ssize_t) (sizeof(char)*tag.index()))
+				SG_SERROR("Write error!\n");
+		}
+
+		temp[0] = '\n';
+		t = write(f, temp, 1);
+		if (t != 1)
+			SG_SERROR("Write error!\n");
+	}
 }
 
 float32_t CVowpalWabbit::compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x)
@@ -384,34 +415,4 @@ float32_t CVowpalWabbit::compute_exact_norm_quad(float32_t* weights, VwFeature& 
 		sum_abs_x += fabsf(elem->x);
 	}
 	return xGx;
-}
-
-void CVowpalWabbit::output_prediction(int32_t f, float32_t res, float32_t weight, v_array<char> tag)
-{
-	if (f >= 0)
-	{
-		char temp[30];
-		int32_t num = sprintf(temp, "%f", res);
-		ssize_t t;
-		t = write(f, temp, num);
-		if (t != num)
-			SG_SERROR("Write error!\n");
-
-		if (tag.begin != tag.end)
-		{
-			temp[0] = ' ';
-			t = write(f, temp, 1);
-			if (t != 1)
-				SG_SERROR("Write error!\n");
-
-			t = write(f, tag.begin, sizeof(char)*tag.index());
-			if (t != (ssize_t) (sizeof(char)*tag.index()))
-				SG_SERROR("Write error!\n");
-		}
-
-		temp[0] = '\n';
-		t = write(f, temp, 1);
-		if (t != 1)
-			SG_SERROR("Write error!\n");
-	}
 }

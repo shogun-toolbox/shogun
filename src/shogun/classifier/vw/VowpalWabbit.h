@@ -232,6 +232,16 @@ private:
 	virtual void print_update(VwExample* &ex);
 
 	/**
+	 * Output the prediction to a file
+	 *
+	 * @param f file descriptor
+	 * @param res prediction
+	 * @param weight weight of example
+	 * @param tag tag
+	 */
+	virtual void output_prediction(int32_t f, float32_t res, float32_t weight, v_array<char> tag);
+
+	/**
 	 * Set whether to display statistics or not
 	 *
 	 * @param verbose true or false
@@ -254,6 +264,9 @@ protected:
 private:
 	/// Whether to display statistics or not
 	bool quiet;
+
+	/// Multiplication factor for number of examples to dump after
+	float32_t dump_interval;
 
 	/// Name of file to save regressor to
 	char* reg_name;
