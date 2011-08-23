@@ -1,4 +1,4 @@
-require 'shogun'
+require 'modshogun'
 require 'load'
 
 traindat = load_dna('../data/fm_train_dna.dat')
@@ -8,10 +8,10 @@ parameter_list = {{traindat,testdat,3},{traindat,testdat,20}}
 
 function kernel_weighted_degree_string_modular (fm_train_dna,fm_test_dna,degree)
 
-	feats_train=StringCharFeatures(fm_train_dna, DNA)
-	feats_test=StringCharFeatures(fm_test_dna, DNA)
+	feats_train=modshogun.StringCharFeatures(fm_train_dna, modshogun.DNA)
+	feats_test=modshogun.StringCharFeatures(fm_test_dna, modshogun.DNA)
 	
-	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
+	kernel=modshogun.WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
 	weights = {}
 	for i = degree, 1, -1 do

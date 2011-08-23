@@ -1,4 +1,4 @@
-require 'shogun'
+require 'modshogun'
 require 'load'
 
 function concatenate(...)
@@ -53,12 +53,12 @@ for i = 1, num do
 	testlab[i + num] = 1
 end
 
-feats_train=RealFeatures(traindata_real)
-feats_test=RealFeatures(testdata_real)
-kernel=GaussianKernel(feats_train, feats_train, width)
+feats_train=modshogun.RealFeatures(traindata_real)
+feats_test=modshogun.RealFeatures(testdata_real)
+kernel=modshogun.GaussianKernel(feats_train, feats_train, width)
 
-labels=Labels(trainlab)
-svm=LibSVM(C, kernel, labels)
+labels=modshogun.Labels(trainlab)
+svm=modshogun.LibSVM(C, kernel, labels)
 svm:train()
 
 kernel:init(feats_train, feats_test)

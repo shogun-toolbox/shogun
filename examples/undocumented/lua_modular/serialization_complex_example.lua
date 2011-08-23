@@ -1,4 +1,4 @@
-require 'shogun'
+require 'modshogun'
 require 'load'
 
 parameter_list={{5,1,10, 2.0, 10}, {10,0.3,2, 1.0, 0.1}}
@@ -60,55 +60,55 @@ function serialization_complex_example(num, dist, dim, C, width)
 	
 	lab=generate_lab(num)
 
-	feats=RealFeatures(data)
-	kernel=GaussianKernel(feats, feats, width)
+	feats=modshogun.RealFeatures(data)
+	kernel=modshogun.GaussianKernel(feats, feats, width)
 
-	labels=Labels(lab)
+	labels=modshogun.Labels(lab)
 
-	svm = GMNPSVM(C, kernel, labels)
+	svm = modshogun.GMNPSVM(C, kernel, labels)
 
-	feats:add_preprocessor(NormOne())
-	feats:add_preprocessor(LogPlusOne())
+	feats:add_preprocessor(modshogun.NormOne())
+	feats:add_preprocessor(modshogun.LogPlusOne())
 	feats:set_preprocessed(1)
 	svm:train(feats)
 
-	fstream = SerializableHdf5File("blaah.h5", "w")
+	fstream = modshogun.SerializableHdf5File("blaah.h5", "w")
 	status = svm:save_serializable(fstream)
 	check_status(status)
 
-	fstream = SerializableAsciiFile("blaah.asc", "w")
+	fstream = modshogun.SerializableAsciiFile("blaah.asc", "w")
 	status = svm:save_serializable(fstream)
 	check_status(status)
 
-	fstream = SerializableJsonFile("blaah.json", "w")
+	fstream = modshogun.SerializableJsonFile("blaah.json", "w")
 	status = svm:save_serializable(fstream)
 	check_status(status)
 
-	fstream = SerializableXmlFile("blaah.xml", "w")
+	fstream = modshogun.SerializableXmlFile("blaah.xml", "w")
 	status = svm:save_serializable(fstream)
 	check_status(status)
 
 
-	fstream = SerializableHdf5File("blaah.h5", "r")
-	new_svm=GMNPSVM()
+	fstream = modshogun.SerializableHdf5File("blaah.h5", "r")
+	new_svm=modshogun.GMNPSVM()
 	status = new_svm:load_serializable(fstream)
 	check_status(status)
 	new_svm:train()
 
-	fstream = SerializableAsciiFile("blaah.asc", "r")
-	new_svm=GMNPSVM()
+	fstream = modshogun.SerializableAsciiFile("blaah.asc", "r")
+	new_svm=modshogun.GMNPSVM()
 	status = new_svm:load_serializable(fstream)
 	check_status(status)
 	new_svm:train()
 
-	fstream = SerializableJsonFile("blaah.json", "r")
-	new_svm=GMNPSVM()
+	fstream = modshogun.SerializableJsonFile("blaah.json", "r")
+	new_svm=modshogun.GMNPSVM()
 	status = new_svm:load_serializable(fstream)
 	check_status(status)
 	new_svm:train()
 
-	fstream = SerializableXmlFile("blaah.xml", "r")
-	new_svm=GMNPSVM()
+	fstream = modshogun.SerializableXmlFile("blaah.xml", "r")
+	new_svm=modshogun.GMNPSVM()
 	status = new_svm:load_serializable(fstream)
 	check_status(status)
 	new_svm:train()

@@ -1,4 +1,4 @@
-require 'shogun'
+require 'modshogun'
 require 'load'
 
 strings = {'hey','guys','i','am','a','string'}
@@ -6,7 +6,7 @@ parameter_list={{strings}}
 
 function features_string_char_modular(strings)
 	for k, v in pairs(strings) do print(v) end
-	f=StringCharFeatures(strings, RAWBYTE)
+	f=modshogun.StringCharFeatures(strings, modshogun.RAWBYTE)
 
 	print("max string length " ..f:get_max_vector_length())
 	print("number of strings " .. f:get_num_vectors())
