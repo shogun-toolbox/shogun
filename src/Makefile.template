@@ -301,7 +301,8 @@ install-ruby_modular: $(TEMPLATE_TARGET)
 	install -m755 modshogun.$(EXT_LIB) "$(RUBY_EXTENSIONS_INSTALL_DIR)"
 
 install-lua_modular: $(TEMPLATE_TARGET)
-	#TODO
+	install -d -m755 "$(LUA_EXTENSIONS_INSTALL_DIR)"
+	install -m755 modshogun.$(EXT_LIB) "$(LUA_EXTENSIONS_INSTALL_DIR)"
 
 install-csharp_modular: $(TEMPLATE_TARGET)
 	#TODO

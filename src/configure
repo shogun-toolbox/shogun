@@ -795,23 +795,23 @@ test_lua()
 	then
 		LUAVER=`lua -v 2>&1 | head -n 1 | cut -f 2 -d ' ' | cut -f 1 -d '('`
 		LV=`echo $LUAVER | cut -f 1-2 -d '.'`
-		LVS=`echo $LUAVER | cut -f 1-2 -d '.' | tr -d '.'`
-		LUACONFIG=lua-config$LVS
 		EXT_IF_SWIG_LUA_MODULAR='stop'
 		PRE_LIB_SWIG_LUA_MODULAR=
 		EXT_LIB_SWIG_LUA_MODULAR=.so
 		SWIGFLAGS_LUA_MODULAR="-c++ -lua"
 
-		if $LUACONFIG --include >/dev/null 2>&1
-		then
-			LINKFLAGS_LUA="`$LUACONFIG --libs` --shared"
-			INCLUDES_LUA="`$LUACONFIG --include`"
-		else
-			LINKFLAGS_LUA="-llualib${LV} -llua${LV} --shared"
-			INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
-			LINKFLAGS_LUA="-llua${LV} --shared"
+		INCLUDES_LUA="`pkg-config --cflags-only-I lua$LV 2>/dev/null`"
+		LINKFLAGS_LUA="`pkg-config --libs lua$LV 2>/dev/null`"
+		LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua$LV --define-variable=prefix=$_prefix --variable INSTALL_CMOD`"
+
+		if test -z "$INCLUDES_LUA" ; then
 			INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
 		fi
+		if test -z "$LINKFLAGS_LUA" ; then
+			LINKFLAGS_LUA="-llua${LV}"
+		fi
+
+		LINKFLAGS_LUA="$LINKFLAGS_LUA --shared"
 		echores "${LUAVER}"
 		_lua_modular=yes
 	else
@@ -4569,6 +4569,7 @@ PRELINKFLAGS_LUA_MODULAR= ${PRELINKFLAGS_LUA}
 LINKFLAGS_LUA_MODULAR 	= ${LINKFLAGS_LUA}
 POSTLINKFLAGS_LUA_MODULAR= ${POSTLINKFLAGS_LUA}
 SWIGFLAGS_LUA_MODULAR = ${SWIGFLAGS_LUA_MODULAR}
+LUA_EXTENSIONS_INSTALL_DIR	= ${LUA_EXTENSIONS_INSTALL_DIR}
 
 CLASSPATH		= ${CLASSPATH}
 LINK			= ${LINK}
