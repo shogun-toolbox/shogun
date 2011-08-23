@@ -1,6 +1,6 @@
 2011-08-31 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 0.99.9 (libshogun 10.0, data 0.2, parameter 0)
+	* SHOGUN Release version 1.0.0 (libshogun 10.0, data 0.2, parameter 0)
 	* This release contains major enhancements, cleanups and bugfixes:
 	* Features:
 	   - Support for new languages: java, c#, ruby, lua in modular interfaces
