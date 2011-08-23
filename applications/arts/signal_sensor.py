@@ -15,7 +15,7 @@ from util import *
 from shogun.Features import StringCharFeatures, StringWordFeatures, CombinedFeatures, DNA
 from shogun.Kernel import CombinedKernel, WeightedDegreePositionStringKernel
 from shogun.Kernel import K_COMMWORDSTRING, CommWordStringKernel, IdentityKernelNormalizer
-from shogun.PreProc import SortWordString
+from shogun.Preprocessor import SortWordString
 from shogun.Classifier import SVM
 
 
@@ -72,8 +72,8 @@ class Sensor(object):
 
             pre = SortWordString()
             pre.init(wf)
-            wf.add_preproc(pre)
-            wf.apply_preproc()
+            wf.add_preprocessor(pre)
+            wf.apply_preprocessor()
             f = wf
 
             k = CommWordStringKernel(0, False)
@@ -203,7 +203,7 @@ class SignalSensor(object):
             self.kernel.init(self.svs, tf)
             sys.stderr.write("..done\n")
 
-            lab_out = self.svm.classify()
+            lab_out = self.svm.apply()
 
             # work around problem with get_labels()
             tmp_out = [lab_out.get_label(idx) for idx in range(0, lab_out.get_num_labels())]

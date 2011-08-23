@@ -17,7 +17,7 @@ from signal_sensor import SignalSensor
 from genomic import read_single_fasta
 
 arts_version = 'v0.3'
-def_file = bz2.BZ2File('ARTS.dat.bz2')
+def_file = bz2.BZ2File('data/ARTS.dat.bz2')
 
 def print_version():
     sys.stderr.write('arts ' + arts_version + '\n')
