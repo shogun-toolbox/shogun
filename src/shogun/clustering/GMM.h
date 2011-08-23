@@ -39,6 +39,7 @@ class CGMM : public CDistribution
 		 *
 		 * @param components GMM components
 		 * @param coefficients mixing coefficients
+		 * @param copy true if should be copied
 		 */
 		CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy=false);
 		virtual ~CGMM();
@@ -183,7 +184,7 @@ class CGMM : public CDistribution
 
 		/** set coefficients
 		 *
-		 * @param coeffiecients mixing coefficients
+		 * @param coefficients mixing coefficients
 		 */
 		virtual inline void set_coef(SGVector<float64_t> coefficients)
 		{

@@ -102,7 +102,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		//virtual std::vector<float64_t> get_linear_term();
 
 
-		/**
+		/*
 		 * set linear term of the QP
 		 *
 		 * @param lin the linear term

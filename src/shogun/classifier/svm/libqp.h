@@ -34,6 +34,7 @@ namespace shogun
 #define LIBQP_MAX(A,B) ((A) < (B) ? (B) : (A))
 #define LIBQP_ABS(A) ((A) < 0 ? -(A) : (A))
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** QP solver return value */
 typedef struct {
   /** number of iterations */
@@ -49,7 +50,8 @@ typedef struct {
                             2 ... QP - QD <= TolAbs
                             3 ... QP <= QP_TH
                             4 ... eps-KKT conditions satisfied */
-} libqp_state_T; 
+} libqp_state_T;
+#endif
 
 /** QP solver for tasks with simplex constraints */
 libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
