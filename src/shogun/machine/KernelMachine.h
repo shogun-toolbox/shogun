@@ -209,32 +209,20 @@ class CKernelMachine : public CMachine
 
 		/** set alphas to given values
 		 *
-		 * @param alphas array with all alphas to set
-		 * @param d number of alphas (== number of support vectors)
+		 * @param alphas float vector with all alphas to set
 		 */
-		void set_alphas(float64_t* alphas, int32_t d)
+		void set_alphas(SGVector<float64_t> alphas)
 		{
-			ASSERT(alphas);
-			ASSERT(m_alpha.vector);
-			ASSERT(d==m_svs.vlen);
-
-			for(int32_t i=0; i<d; i++)
-				m_alpha.vector[i]=alphas[i];
+			m_alpha = alphas;
 		}
 
 		/** set support vectors to given values
 		 *
-		 * @param svs array with all support vectors to set
-		 * @param d number of support vectors
+		 * @param svs integer vector with all support vectors indexes to set
 		 */
-		void set_support_vectors(int32_t* svs, int32_t d)
+		void set_support_vectors(SGVector<int32_t> svs)
 		{
-			ASSERT(m_svs.vector);
-			ASSERT(svs);
-			ASSERT(d==m_svs.vlen);
-
-			for(int32_t i=0; i<d; i++)
-				m_svs.vector[i]=svs[i];
+			m_svs = svs;
 		}
 
 		/** get all support vectors
