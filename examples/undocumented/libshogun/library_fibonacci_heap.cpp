@@ -24,7 +24,8 @@ int main(int argc, char** argv)
 			printf("Fibonacci heap goes wrong.\n");
 		}
 	}
-	
+
+	delete heap;
 	exit_shogun();
 	return 0;
 }
