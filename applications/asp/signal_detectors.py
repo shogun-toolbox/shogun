@@ -20,8 +20,7 @@ from shogun.Kernel import WeightedDegreeStringKernel
 class svm_splice_model(object):
 	def __init__(self, order, traindat, alphas, b, (window_left,offset,window_right), consensus):
 
-		f=StringCharFeatures(DNA)
-		f.set_string_features(traindat)
+		f=StringCharFeatures(traindat,DNA)
 		wd_kernel = WeightedDegreeStringKernel(f,f, int(order))
 		wd_kernel.io.set_target_to_stderr()
 
@@ -75,11 +74,10 @@ class svm_splice_model(object):
 				s=sequence[i-self.window_left:i+self.window_right+2]
 				testdat.append(s)
 
-		t=StringCharFeatures(DNA)
-		t.set_string_features(testdat)
+		t=StringCharFeatures(testdat,DNA)
 
 		self.wd_kernel.init(self.traindat, t)
-		l=self.svm.classify().get_labels()
+		l=self.svm.apply().get_labels()
 		sys.stderr.write("\n...done...\n")
 
 		k=0
