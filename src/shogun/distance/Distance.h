@@ -53,9 +53,30 @@ enum EDistanceType
 };
 
 
-/** @brief class Distance
+/** @brief Class Distance, a base class for all the distances used in
+ * the Shogun toolbox.
  *
- * All distance classes are derived from this base class. */
+ * The distance (or metric) is a function
+ * \f$ d: X \times X \to R \f$ satisfying (for all \f$ x,y,z \in X\f$) conditions below:
+ * - \f$ d(x,y) \geq 0 \f$
+ *
+ * - \f$ d(x,y) = 0\f$ if and only if \f$ x=y\f$
+ *
+ * - \f$ d(x,y) = d(y,x) \f$
+ *
+ * - \f$ d(x,y) \leq d(x,z) + d(z,y) \f$
+ *
+ * Note that the metric function have generalizations of quasimetrics,
+ * pseudometrics, semimetrics and premetrics also permitted as
+ * subclasses of the class.
+ *
+ * The simpliest example of a distance function is the euclidian
+ * distance: @see CEuclidianDistance
+ *
+ * In the means of Shogun toolbox the distance function is defined
+ * on the 'space' of CFeatures.
+ *
+ */
 class CDistance : public CSGObject
 {
 	public:
