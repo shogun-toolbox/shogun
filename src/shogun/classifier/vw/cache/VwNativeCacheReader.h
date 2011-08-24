@@ -21,12 +21,15 @@
 namespace shogun
 {
 
-/// Packed structure for efficient storage
+#ifndef DOXYGEN_SHOULD_SKIP_THIS	
+// Packed structure for efficient storage
 struct one_float
 {
-	/// The float to store
+	// The float to store
 	float32_t f;
 } __attribute__((packed));
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** @brief Class CVwNativeCacheReader reads from a cache exactly as
  * that which has been produced by VW's default cache format.

@@ -62,6 +62,16 @@ public:
 	 */
 	void reinitialize_weights();
 
+	/** 
+	 * Set whether one desires to not train and only
+	 * make passes over all examples instead.
+	 *
+	 * This is useful if one wants to create a cache file from data.
+	 * 
+	 * @param dont_train true if one doesn't want to train
+	 */
+	void set_no_training(bool dont_train) { no_training = dont_train; }
+
 	/**
 	 * Set whether learning is adaptive or not
 	 *
@@ -264,6 +274,9 @@ protected:
 private:
 	/// Whether to display statistics or not
 	bool quiet;
+
+	/// Whether we should just run over examples without training
+	bool no_training;
 
 	/// Multiplication factor for number of examples to dump after
 	float32_t dump_interval;
