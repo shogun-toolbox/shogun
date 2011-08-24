@@ -135,18 +135,22 @@ bool CVowpalWabbit::train_machine(CFeatures* feat)
 		{
 			example = features->get_example();
 
-			if (example->pass != current_pass)
+			// Check if we shouldn't train (generally used for cache creation)
+			if (!no_training)
 			{
-				env->eta *= env->eta_decay_rate;
-				current_pass = example->pass;
+				if (example->pass != current_pass)
+				{
+					env->eta *= env->eta_decay_rate;
+					current_pass = example->pass;
+				}
+
+				predict_and_finalize(example);
+
+				learner->train(example, example->eta_round);
+				example->eta_round = 0.;
+
+				output_example(example);
 			}
-
-			predict_and_finalize(example);
-
-			learner->train(example, example->eta_round);
-			example->eta_round = 0.;
-
-			output_example(example);
 
 			features->release_example();
 		}
@@ -216,6 +220,7 @@ void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 	SG_REF(reg);
 
 	quiet = false;
+	no_training = false;
 	dump_interval = exp(1.);
 	reg_name = NULL;
 	reg_dump_text = true;
