@@ -9,6 +9,7 @@
 #include <shogun/io/StreamingFileFromSimpleFeatures.h>
 #include <shogun/io/AsciiFile.h>
 #include <shogun/io/StreamingAsciiFile.h>
+#include <shogun/classifier/vw/VwParser.h>
 #include <shogun/io/StreamingVwFile.h>
 #include <shogun/io/StreamingVwCacheFile.h>
 #include <shogun/io/BinaryFile.h>

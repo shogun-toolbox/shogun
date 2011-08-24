@@ -98,6 +98,7 @@ void CStreamingVwFeatures::setup_example(VwExample* ae)
 	VwFeature temp = {1,constant_hash & env->mask};
 	ae->indices.push(constant_namespace);
 	ae->atomics[constant_namespace].push(temp);
+	ae->sum_feat_sq[constant_namespace] = 0;
 
 	if(env->stride != 1)
 	{

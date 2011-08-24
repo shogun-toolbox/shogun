@@ -61,7 +61,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	~CVwParser();
+	virtual ~CVwParser();
 
 	/**
 	 * Get the environment

@@ -72,4 +72,5 @@ void CStreamingVwFile::init()
 
 	set_parser_type(T_VW);
 	write_to_cache = false;
+	SG_REF(env);
 }

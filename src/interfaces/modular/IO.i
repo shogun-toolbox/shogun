@@ -27,6 +27,7 @@
 %rename(SerializableXmlFile) CSerializableXmlFile;
 %rename(SimpleFile) CSimpleFile;
 %rename(MemoryMappedFile) CMemoryMappedFile;
+%rename(VwParser) CVwParser;
 
 %include <shogun/io/File.h>
 %include <shogun/io/StreamingFile.h>
@@ -70,6 +71,7 @@ namespace shogun
 
 %include <shogun/io/AsciiFile.h>
 %include <shogun/io/StreamingAsciiFile.h>
+%include <shogun/classifier/vw/VwParser.h>
 %include <shogun/io/StreamingVwFile.h>
 %include <shogun/io/StreamingVwCacheFile.h>
 %include <shogun/io/BinaryFile.h>

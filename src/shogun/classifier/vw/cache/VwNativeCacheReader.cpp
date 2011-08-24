@@ -97,6 +97,8 @@ char* CVwNativeCacheReader::bufread_label(VwLabel* const ld, char* c)
 {
 	ld->label = *(float32_t*)c;
 	c += sizeof(ld->label);
+	set_minmax(ld->label);
+
 	ld->weight = *(float32_t*)c;
 	c += sizeof(ld->weight);
 	ld->initial = *(float32_t*)c;

@@ -92,6 +92,37 @@ public:
 	virtual CVwEnvironment* get_env();
 
 	/**
+	 * Update min and max labels seen in the environment
+	 *
+	 * @param label current label based on which to update
+	 */
+	virtual void set_mm(float64_t label)
+	{
+		env->min_label = CMath::min(env->min_label, label);
+		if (label != FLT_MAX)
+			env->max_label = CMath::max(env->max_label, label);
+	}
+
+	/**
+	 * A dummy function performing no operation in case training
+	 * is not to be performed.
+	 *
+	 * @param label label
+	 */
+	virtual void noop_mm(float64_t label) { }
+
+	/**
+	 * Function which is actually called to update min and max labels
+	 * Should be set to one of the functions implemented for this.
+	 *
+	 * @param label label based on which to update
+	 */
+	virtual void set_minmax(float64_t label)
+	{
+		set_mm(label);
+	}
+
+	/**
 	 * Function to read one example from the cache
 	 *
 	 * @return read example
