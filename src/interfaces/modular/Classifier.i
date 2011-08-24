@@ -109,8 +109,6 @@
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 
-enum E_VW_PARSER_TYPE { T_VW, T_SVMLIGHT, T_DENSE };
-
 #ifdef HAVE_PYTHON
 %pythoncode %{
   class SVM(CSVM):
