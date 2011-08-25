@@ -8,7 +8,7 @@
  *
  */
 
-%include "enumtypeunsafe.swg"
+%include <java/enumtypeunsafe.swg>
 
 #ifdef HAVE_JBLAS
 %pragma(java) jniclassimports=%{
