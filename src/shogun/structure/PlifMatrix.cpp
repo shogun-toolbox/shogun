@@ -116,7 +116,7 @@ void CPlifMatrix::set_plif_limits(SGMatrix<float64_t> limits)
 			lim[k] = limits.matrix[i*m_num_limits+k];
 
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_plif_limits(lim, m_num_limits);
+		m_PEN[id]->set_plif_limits(SGVector<float64_t>(lim, m_num_limits));
 	}
 	SG_FREE(lim);
 }
@@ -137,7 +137,7 @@ void CPlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
 			pen[k] = penalties.matrix[i*m_num_limits+k];
 
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_plif_penalty(pen, m_num_limits);
+		m_PEN[id]->set_plif_penalty(SGVector<float64_t>(pen, m_num_limits));
 	}
 	SG_FREE(pen);
 }

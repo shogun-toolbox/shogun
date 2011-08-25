@@ -250,16 +250,13 @@ class CPlif: public CPlifBase
 		/** set plif_limits
 		 *
 		 * @param p_limits limit
-		 * @param p_len len
 		 */
-		void set_plif_limits(float64_t *p_limits, int32_t p_len)
+		void set_plif_limits(SGVector<float64_t> p_limits)
 		{
-			if (len!=p_len)
-				SG_PRINT("len=%i p_len=%i\n", len, p_len) ;
-			ASSERT(len==p_len);
+			ASSERT(len==p_limits.vlen);
 
 			for (int32_t i=0; i<len; i++)
-				limits[i]=p_limits[i];
+				limits[i]=p_limits.vector[i];
 
 			invalidate_cache();
 			penalty_clear_derivative();
@@ -269,14 +266,13 @@ class CPlif: public CPlifBase
 		/** set plif penalty
 		 *
 		 * @param p_penalties penalties
-		 * @param p_len len
 		 */
-		void set_plif_penalty(float64_t* p_penalties, int32_t p_len)
+		void set_plif_penalty(SGVector<float64_t> p_penalties)
 		{
-			ASSERT(len==p_len);
+			ASSERT(len==p_penalties.vlen);
 
 			for (int32_t i=0; i<len; i++)
-				penalties[i]=p_penalties[i];
+				penalties[i]=p_penalties.vector[i];
 
 			invalidate_cache();
 			penalty_clear_derivative();
