@@ -4,7 +4,7 @@ rm -f error.log
 
 #export LUA_CPATH=../../../src/interfaces/lua_modular/?.so
 
-for e in *.lua
+for e in $(ls -1 *.lua | grep -v load.lua)
 do
 	echo -n $e
 	if lua $e >/dev/null 2>&1
