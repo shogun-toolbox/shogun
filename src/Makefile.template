@@ -400,6 +400,13 @@ check-examples-octave_modular:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 
+run-testsuite-lua_modular:
+	#TODO
+check-examples-lua_modular:
+	cd $(CONFIGPATH)/../examples/undocumented/lua_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
+		LUA_CPATH="$(DESTDIR)$(LUA_EXTENSIONS_INSTALL_DIR)/?.so" ./check.sh )
+
 lib/versionstring.h:    $(SVNEntries) 
 	        sh $(CONFIGPATH)/.version.sh > $@
 
