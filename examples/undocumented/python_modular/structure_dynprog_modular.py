@@ -35,10 +35,19 @@ def mapname(name):
 		return renametable[name]
 	return name
 
+# scipy compatibility class
+class mat_struct(object):
+    pass
+
 def mapped_load_global(self):
 	module = mapname(self.readline()[:-1])
 	name = mapname(self.readline()[:-1])
-	klass = self.find_class(module, name)
+
+	if name=='mat_struct':
+		klass=mat_struct
+	else:
+		klass = self.find_class(module, name)
+
 	self.append(klass)
 
 def loads(str):
