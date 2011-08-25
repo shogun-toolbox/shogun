@@ -680,7 +680,7 @@ require('mkmf')
 if RUBY_VERSION[0,3] == '1.8'
 puts "-I#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
 else
-puts "-I#{Config::expand(CONFIG['rubyhdrdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
+puts "-I#{Config::expand(CONFIG['vendorlibdir'])}/#{Config::expand(CONFIG['arch'])} -I#{Config::expand(CONFIG['archdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
 end
 EOF
 		echocheck "Ruby Developer Files"
@@ -688,9 +688,10 @@ EOF
 		then
 			echores "yes"
 			INCLUDES_RUBY=`ruby $TMPRUBY`
-			if ld -o "$TMPO" -lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` >/dev/null 2>&1
+            RUBYSO=`ruby -e 'require "mkmf"; puts Config::expand("$(RUBY_SO_NAME)")'`
+			if ld -o "$TMPO" -l$RUBYSO >/dev/null 2>&1
 			then
-				LINKFLAGS_RUBY="-lruby`ruby -v | cut -f 2 -d ' ' | cut -f 1-2 -d '.'` -fPIC -shared"
+				LINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared"
 			else
 				LINKFLAGS_RUBY="-lruby -fPIC -shared"
 			fi
@@ -704,10 +705,20 @@ require('mkmf')
 if RUBY_VERSION[0,3] == '1.8'
 	puts "#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
 else
-	puts "#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
+	puts "#{Config::expand(CONFIG['rubylibdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubylibdir']
 end
 EOF
 			RUBY_LIBRARY_DIR=`ruby "$TMPRUBY" 2>/dev/null`
+
+cat >$TMPRUBY << EOF
+require('mkmf')
+if RUBY_VERSION[0,3] == '1.8'
+	puts "#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
+else
+	puts "#{Config::expand(CONFIG['vendorlibdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['vendorlibdir']
+end
+EOF
+			RUBY_VENDOR_LIBRARY_DIR=`ruby "$TMPRUBY" 2>/dev/null`
 			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir/$_rubydir/`ruby -e 'require "mkmf"; puts Config::expand("$(ruby_version)") + "/" + Config::expand("$(arch)")'`
 			test_ruby_narray
 			_ruby_modular=yes
@@ -754,7 +765,11 @@ int main(void)
 }
 EOF
 
-		LINKFLAGS_NARRAY="$RUBY_LIBRARY_DIR"/narray.so
+		if test -f "$RUBY_LIBRARY_DIR"/narray.so ; then
+			LINKFLAGS_NARRAY="$RUBY_LIBRARY_DIR"/narray.so
+		else
+			LINKFLAGS_NARRAY="$RUBY_VENDOR_LIBRARY_DIR"/narray.so
+		fi
 
 		echocheck "Ruby NArray Developer Files"
 		if cc_check $INCLUDES_RUBY $LINKFLAGS_RUBY $LINKFLAGS_NARRAY
@@ -4726,7 +4741,7 @@ test_static_linking()
 
 		if test "$_cmdline_static" = yes
 		then
-			LINKFLAGS_CMDLINE=`echo $LINKFLAGS_CMDLINE | sed 's/-shared/static/g'`
+			LINKFLAGS_CMDLINE="$LINKFLAGS_CMDLINE ../../shogun/libshogun.a"
 		fi
 
 		if test "$_matlab_static" = yes
