@@ -24,6 +24,7 @@ else:
 	incexpr=re.compile('^\s*[%#]include ("(\S+)"|<shogun/(\S+)>)',re.MULTILINE)
 
 deps=dict();
+deps['enumtypeunsafe.swg']=[]
 deps['exception.i']=[]
 deps['stdint.i']=[]
 deps['modshogun_doxygen.i']=[]
