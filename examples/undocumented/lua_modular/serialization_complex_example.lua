@@ -1,3 +1,4 @@
+require 'os'
 require 'modshogun'
 require 'load'
 
@@ -112,6 +113,15 @@ function serialization_complex_example(num, dist, dim, C, width)
 	status = new_svm:load_serializable(fstream)
 	check_status(status)
 	new_svm:train()
+
+	os.remove("blaah.h5")
+	os.remove("blaah.asc")
+	os.remove("blaah.json")
+	os.remove("blaah.xml")
+	os.remove("blaah.h5")
+	os.remove("blaah.asc")
+	os.remove("blaah.json")
+	os.remove("blaah.xml")
 
 	return svm,new_svm
 end
