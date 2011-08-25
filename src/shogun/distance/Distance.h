@@ -66,9 +66,8 @@ enum EDistanceType
  *
  * - \f$ d(x,y) \leq d(x,z) + d(z,y) \f$
  *
- * Note that the metric function have generalizations of quasimetrics,
- * pseudometrics, semimetrics and premetrics also permitted as
- * subclasses of the class.
+ * Currently distance inherited from the CDistance class should be
+ * symmetric.
  *
  * The simpliest example of a distance function is the euclidian
  * distance: @see CEuclidianDistance
