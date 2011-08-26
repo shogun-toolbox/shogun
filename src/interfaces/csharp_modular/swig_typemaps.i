@@ -295,12 +295,12 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 		len = strlen(str);
 		max_len = shogun::CMath::max(len, max_len);
 
-		strings[i].slen = len + 1;
+		strings[i].slen = len;
 		strings[i].string = NULL;
 
 		if (len > 0) {
-			strings[i].string = SG_MALLOC(char, len + 1);
-			memcpy(strings[i].string, str, len + 1);
+			strings[i].string = SG_MALLOC(char, len);
+			memcpy(strings[i].string, str, len);
 		}
 	}
 
