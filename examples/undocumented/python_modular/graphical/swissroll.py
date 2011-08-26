@@ -46,11 +46,18 @@ le.set_k(15)
 le.set_tau(25.0)
 preprocs.append((le,"Laplacian Eigenmaps with k=%d, tau=%d" % (le.get_k(),le.get_tau())))
 
+import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure()
-swiss_roll_fig = fig.add_subplot(3,3,1,projection='3d')
+
+if matplotlib.__version__[0]=='0':
+	figure = plt.figure()
+	swiss_roll_fig = Axes3D(figure)
+else:
+	swiss_roll_fig = fig.add_subplot(3,3,1, projection='3d')
+
 swiss_roll_fig.scatter(X[0], X[1], X[2], s=10, c=tt, cmap=plt.cm.Spectral)
 plt.subplots_adjust(hspace=0.4)
 
@@ -61,7 +68,10 @@ for (i, (preproc, label)) in enumerate(preprocs):
 	features = RealFeatures(X)
 	preproc.set_target_dim(2)
 	new_feats = preproc.apply_to_feature_matrix(features)
-	preproc_subplot = fig.add_subplot(3,3,i+2)
+	if matplotlib.__version__[0]=='0':
+		preproc_subplot = fig.add_subplot(4,2,i+1)
+	else:
+		preproc_subplot = fig.add_subplot(3,3,i+2)
 	preproc_subplot.scatter(new_feats[0],new_feats[1], c=tt, cmap=plt.cm.Spectral)
 	plt.title(label)
 	print preproc.get_name(), 'done'
