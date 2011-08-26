@@ -622,13 +622,31 @@ EOF
 				test_jblas
 				test_ujmp
 			else
-				echores "ant not detected"
+				if test "$_java_modular" = yes
+				then
+					die "ant required for java interface"
+				else
+					echores "ant not detected"
+					_java_modular=no
+				fi
 			fi
 		else
-			echores "javac not detected"
+			if test "$_java_modular" = yes
+			then
+				die "javac required for java interface"
+			else
+				echores "javac not detected"
+				_java_modular=no
+			fi
 		fi
 	else
-		echores "not detected"
+		if test "$_java_modular" = yes
+		then
+			die "java missing"
+		else
+			echores "not detected"
+			_java_modular=no
+		fi
 	fi
 }
 
