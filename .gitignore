@@ -83,6 +83,8 @@ configure.log
 /src/interfaces/r_modular/*.RData
 
 # /examples/
+*.log
+*.exe
 /examples/documented
 /examples/missing.log
 /examples/undocumented/libshogun/*
