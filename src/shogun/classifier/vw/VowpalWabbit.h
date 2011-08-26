@@ -166,7 +166,7 @@ public:
 	 * @return norm
 	 */
 	float32_t compute_exact_norm_quad(float32_t* weights, VwFeature& page_feature, v_array<VwFeature> &offer_features,
-					  size_t mask, float32_t g, float32_t& sum_abs_x);
+					  vw_size_t mask, float32_t g, float32_t& sum_abs_x);
 
 	/**
 	 * Get the environment

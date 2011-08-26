@@ -83,18 +83,18 @@ void CStreamingVwFeatures::setup_example(VwExample* ae)
 	// If some namespaces should be ignored, remove them
 	if (env->ignore_some)
 	{
-		for (size_t* i = ae->indices.begin; i != ae->indices.end; i++)
+		for (vw_size_t* i = ae->indices.begin; i != ae->indices.end; i++)
 			if (env->ignore[*i])
 			{
 				ae->atomics[*i].erase();
-				memmove(i,i+1,(ae->indices.end - (i+1))*sizeof(size_t));
+				memmove(i,i+1,(ae->indices.end - (i+1))*sizeof(vw_size_t));
 				ae->indices.end--;
 				i--;
 			}
 	}
 
 	// Add constant feature
-	size_t constant_namespace = 128;
+	vw_size_t constant_namespace = 128;
 	VwFeature temp = {1,constant_hash & env->mask};
 	ae->indices.push(constant_namespace);
 	ae->atomics[constant_namespace].push(temp);
@@ -103,13 +103,13 @@ void CStreamingVwFeatures::setup_example(VwExample* ae)
 	if(env->stride != 1)
 	{
 		// Make room for per-feature information.
-		size_t stride = env->stride;
-		for (size_t* i = ae->indices.begin; i != ae->indices.end; i++)
+		vw_size_t stride = env->stride;
+		for (vw_size_t* i = ae->indices.begin; i != ae->indices.end; i++)
 			for(VwFeature* j = ae->atomics[*i].begin; j != ae->atomics[*i].end; j++)
 				j->weight_index = j->weight_index*stride;
 	}
 
-	for (size_t* i = ae->indices.begin; i != ae->indices.end; i++)
+	for (vw_size_t* i = ae->indices.begin; i != ae->indices.end; i++)
 	{
 		ae->num_features += ae->atomics[*i].end - ae->atomics[*i].begin;
 		ae->total_sum_feat_sq += ae->sum_feat_sq[*i];
@@ -202,7 +202,7 @@ float32_t CStreamingVwFeatures::dot(CStreamingDotFeatures* df)
 float32_t CStreamingVwFeatures::dense_dot(VwExample* &ex, const float32_t* vec2)
 {
 	float32_t ret = 0.;
-	for (size_t* i = ex->indices.begin; i!= ex->indices.end; i++)
+	for (vw_size_t* i = ex->indices.begin; i!= ex->indices.end; i++)
 	{
 		for (VwFeature* f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
 			ret += vec2[f->weight_index & env->thread_mask] * f->x;
@@ -227,7 +227,7 @@ float32_t CStreamingVwFeatures::dense_dot(SGSparseVector<float32_t>* vec1, const
 float32_t CStreamingVwFeatures::dense_dot_truncated(const float32_t* vec2, VwExample* &ex, float32_t gravity)
 {
 	float32_t ret = 0.;
-	for (size_t* i = ex->indices.begin; i != ex->indices.end; i++)
+	for (vw_size_t* i = ex->indices.begin; i != ex->indices.end; i++)
 	{
 		for (VwFeature* f = ex->atomics[*i].begin; f!= ex->atomics[*i].end; f++)
 		{
@@ -244,7 +244,7 @@ void CStreamingVwFeatures::add_to_dense_vec(float32_t alpha, VwExample* &ex, flo
 {
 	if (abs_val)
 	{
-		for (size_t* i = ex->indices.begin; i != ex->indices.end; i++)
+		for (vw_size_t* i = ex->indices.begin; i != ex->indices.end; i++)
 		{
 			for (VwFeature* f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
 				vec2[f->weight_index & env->thread_mask] += alpha * abs(f->x);
@@ -252,7 +252,7 @@ void CStreamingVwFeatures::add_to_dense_vec(float32_t alpha, VwExample* &ex, flo
 	}
 	else
 	{
-		for (size_t* i = ex->indices.begin; i != ex->indices.end; i++)
+		for (vw_size_t* i = ex->indices.begin; i != ex->indices.end; i++)
 		{
 			for (VwFeature* f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
 				vec2[f->weight_index & env->thread_mask] += alpha * f->x;

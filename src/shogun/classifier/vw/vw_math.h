@@ -50,8 +50,8 @@ inline float32_t real_weight(float32_t w,float32_t gravity)
  *
  * @return dot product
  */
-float32_t sd_offset_add(float32_t* weights, size_t mask, VwFeature* begin,
-			VwFeature* end, size_t offset);
+float32_t sd_offset_add(float32_t* weights, vw_size_t mask, VwFeature* begin,
+			VwFeature* end, vw_size_t offset);
 
 /**
  * Dot product of feature vector with the weight vector
@@ -68,8 +68,8 @@ float32_t sd_offset_add(float32_t* weights, size_t mask, VwFeature* begin,
  *
  * @return dot product
  */
-float32_t sd_offset_truncadd(float32_t* weights, size_t mask, VwFeature* begin,
-			     VwFeature* end, size_t offset, float32_t gravity);
+float32_t sd_offset_truncadd(float32_t* weights, vw_size_t mask, VwFeature* begin,
+			     VwFeature* end, vw_size_t offset, float32_t gravity);
 
 /**
  * Get the prediction contribution from one feature.
@@ -82,7 +82,7 @@ float32_t sd_offset_truncadd(float32_t* weights, size_t mask, VwFeature* begin,
  * @return prediction from one feature
  */
 float32_t one_pf_quad_predict(float32_t* weights, VwFeature& f,
-			      v_array<VwFeature> &cross_features, size_t mask);
+			      v_array<VwFeature> &cross_features, vw_size_t mask);
 
 /**
  * Get the prediction contribution from one feature.
@@ -99,6 +99,6 @@ float32_t one_pf_quad_predict(float32_t* weights, VwFeature& f,
  */
 float32_t one_pf_quad_predict_trunc(float32_t* weights, VwFeature& f,
 				    v_array<VwFeature> &cross_features,
-				    size_t mask, float32_t gravity);
+				    vw_size_t mask, float32_t gravity);
 }
 #endif // _VW_MATH_H__

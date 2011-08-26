@@ -51,29 +51,29 @@ void CVwRegressor::init(CVwEnvironment* env_to_use)
 
 	// For each feature, there should be 'stride' number of
 	// elements in the weight vector
-	index_t length = ((index_t) 1) << env->num_bits;
+	vw_size_t length = ((vw_size_t) 1) << env->num_bits;
 	env->thread_mask = (env->stride * (length >> env->thread_bits)) - 1;
 
 	// Only one learning thread for now
-	index_t num_threads = 1;
+	vw_size_t num_threads = 1;
 	weight_vectors = SG_MALLOC(float32_t*, num_threads);
 
-	for (index_t i = 0; i < num_threads; i++)
+	for (vw_size_t i = 0; i < num_threads; i++)
 	{
 		weight_vectors[i] = SG_CALLOC(float32_t, env->stride * length / num_threads);
 
 		if (env->random_weights)
 		{
-			for (index_t j = 0; j < length/num_threads; j++)
+			for (vw_size_t j = 0; j < length/num_threads; j++)
 				weight_vectors[i][j] = drand48() - 0.5;
 		}
 
 		if (env->initial_weight != 0.)
-			for (index_t j = 0; j < env->stride*length/num_threads; j+=env->stride)
+			for (vw_size_t j = 0; j < env->stride*length/num_threads; j+=env->stride)
 				weight_vectors[i][j] = env->initial_weight;
 
 		if (env->adaptive)
-			for (index_t j = 1; j < env->stride*length/num_threads; j+=env->stride)
+			for (vw_size_t j = 1; j < env->stride*length/num_threads; j+=env->stride)
 				weight_vectors[i][j] = 1;
 	}
 }
@@ -87,7 +87,7 @@ void CVwRegressor::dump_regressor(char* reg_name, bool as_text)
 		SG_SERROR("Can't open: %s for writing! Exiting.\n", reg_name);
 
 	const char* vw_version = env->vw_version;
-	size_t v_length = env->v_length;
+	vw_size_t v_length = env->v_length;
 
 	if (!as_text)
 	{
@@ -138,8 +138,8 @@ void CVwRegressor::dump_regressor(char* reg_name, bool as_text)
 	}
 
 	uint32_t length = 1 << env->num_bits;
-	size_t num_threads = env->num_threads();
-	size_t stride = env->stride;
+	vw_size_t num_threads = env->num_threads();
+	vw_size_t stride = env->stride;
 
 	// Write individual weights
 	for(uint32_t i = 0; i < length; i++)
@@ -174,7 +174,7 @@ void CVwRegressor::load_regressor(char* file)
 		SG_SERROR("Unable to open file for loading regressor!\n");
 
 	// Read version info
-	size_t v_length;
+	vw_size_t v_length;
 	source.read_file((char*)&v_length, sizeof(v_length));
 	char t[v_length];
 	source.read_file(t,v_length);
@@ -186,15 +186,15 @@ void CVwRegressor::load_regressor(char* file)
 	source.read_file((char*)&env->max_label, sizeof(env->max_label));
 
 	// Read num_bits, multiple sources are not supported
-	size_t local_num_bits;
+	vw_size_t local_num_bits;
 	source.read_file((char *)&local_num_bits, sizeof(local_num_bits));
 
-	if ((size_t) env->num_bits != local_num_bits)
+	if ((vw_size_t) env->num_bits != local_num_bits)
 		SG_SERROR("Wrong number of bits in regressor source!\n");
 
 	env->num_bits = local_num_bits;
 
-	size_t local_thread_bits;
+	vw_size_t local_thread_bits;
 	source.read_file((char*)&local_thread_bits, sizeof(local_thread_bits));
 
 	env->thread_bits = local_thread_bits;
@@ -219,16 +219,16 @@ void CVwRegressor::load_regressor(char* file)
 		SG_FREE(weight_vectors);
 	init(env);
 
-	size_t local_ngram;
+	vw_size_t local_ngram;
 	source.read_file((char*)&local_ngram, sizeof(local_ngram));
-	size_t local_skips;
+	vw_size_t local_skips;
 	source.read_file((char*)&local_skips, sizeof(local_skips));
 
 	env->ngram = local_ngram;
 	env->skips = local_skips;
 
 	// Read individual weights
-	size_t stride = env->stride;
+	vw_size_t stride = env->stride;
 	while (true)
 	{
 		uint32_t hash;
@@ -241,7 +241,7 @@ void CVwRegressor::load_regressor(char* file)
 		if (weight_bytes <= 0)
 			break;
 
-		size_t num_threads = env->num_threads();
+		vw_size_t num_threads = env->num_threads();
 
 		weight_vectors[hash % num_threads][(hash*stride)/num_threads]
 			= weight_vectors[hash % num_threads][(hash*stride)/num_threads] + w;

@@ -63,9 +63,9 @@ void CVwNativeCacheReader::init()
 void CVwNativeCacheReader::check_cache_metadata()
 {
 	const char* vw_version=env->vw_version;
-	size_t numbits = env->num_bits;
+	vw_size_t numbits = env->num_bits;
 
-	size_t v_length;
+	vw_size_t v_length;
 	buf.read_file((char*)&v_length, sizeof(v_length));
 	if(v_length > 29)
 		SG_SERROR("Cache version too long, cache file is probably invalid.\n");
@@ -75,18 +75,18 @@ void CVwNativeCacheReader::check_cache_metadata()
 	if (strcmp(t,vw_version) != 0)
 		SG_SERROR("Cache has possibly incompatible version!\n");
 
-	size_t cache_numbits = 0;
-	if (buf.read_file(&cache_numbits, sizeof(size_t)) < ssize_t(sizeof(size_t)))
+	vw_size_t cache_numbits = 0;
+	if (buf.read_file(&cache_numbits, sizeof(vw_size_t)) < ssize_t(sizeof(vw_size_t)))
 		return;
 
 	if (cache_numbits != numbits)
 		SG_SERROR("Bug encountered in caching! Bits used for weight in cache: %d.\n", cache_numbits);
 }
 
-char* CVwNativeCacheReader::run_len_decode(char *p, size_t& i)
+char* CVwNativeCacheReader::run_len_decode(char *p, vw_size_t& i)
 {
 	// Read an int32_t 7 bits at a time.
-	size_t count = 0;
+	vw_size_t count = 0;
 	while(*p & 128)\
 		i = i | ((*(p++) & 127) << 7*count++);
 	i = i | (*(p++) << 7*count);
@@ -107,10 +107,10 @@ char* CVwNativeCacheReader::bufread_label(VwLabel* const ld, char* c)
 	return c;
 }
 
-size_t CVwNativeCacheReader::read_cached_label(VwLabel* const ld)
+vw_size_t CVwNativeCacheReader::read_cached_label(VwLabel* const ld)
 {
 	char *c;
-	size_t total = sizeof(ld->label)+sizeof(ld->weight)+sizeof(ld->initial);
+	vw_size_t total = sizeof(ld->label)+sizeof(ld->weight)+sizeof(ld->initial);
 	if (buf.buf_read(c, total) < total)
 		return 0;
 	c = bufread_label(ld,c);
@@ -118,13 +118,13 @@ size_t CVwNativeCacheReader::read_cached_label(VwLabel* const ld)
 	return total;
 }
 
-size_t CVwNativeCacheReader::read_cached_tag(VwExample* const ae)
+vw_size_t CVwNativeCacheReader::read_cached_tag(VwExample* const ae)
 {
 	char* c;
-	size_t tag_size;
+	vw_size_t tag_size;
 	if (buf.buf_read(c, sizeof(tag_size)) < sizeof(tag_size))
 		return 0;
-	tag_size = *(size_t*)c;
+	tag_size = *(vw_size_t*)c;
 	c += sizeof(tag_size);
 
 	buf.set(c);
@@ -138,8 +138,8 @@ size_t CVwNativeCacheReader::read_cached_tag(VwExample* const ae)
 
 bool CVwNativeCacheReader::read_cached_example(VwExample* const ae)
 {
-	size_t mask =  env->mask;
-	size_t total = read_cached_label(ae->ld);
+	vw_size_t mask =  env->mask;
+	vw_size_t total = read_cached_label(ae->ld);
 	if (total == 0)
 		return false;
 	if (read_cached_tag(ae) == 0)
@@ -156,22 +156,22 @@ bool CVwNativeCacheReader::read_cached_example(VwExample* const ae)
 
 	for (; num_indices > 0; num_indices--)
 	{
-		size_t temp;
+		vw_size_t temp;
 		unsigned char index = 0;
-		temp = buf.buf_read(c, sizeof(index) + sizeof(size_t));
+		temp = buf.buf_read(c, sizeof(index) + sizeof(vw_size_t));
 
-		if (temp < sizeof(index) + sizeof(size_t))
+		if (temp < sizeof(index) + sizeof(vw_size_t))
 			SG_SERROR("Truncated example! %d < %d bytes expected.\n",
-				  temp, char_size + sizeof(size_t));
+				  temp, char_size + sizeof(vw_size_t));
 
 		index = *(unsigned char*) c;
 		c += sizeof(index);
-		ae->indices.push((size_t) index);
+		ae->indices.push((vw_size_t) index);
 
 		v_array<VwFeature>* ours = ae->atomics+index;
 		float64_t* our_sum_feat_sq = ae->sum_feat_sq+index;
-		size_t storage = *(size_t *)c;
-		c += sizeof(size_t);
+		vw_size_t storage = *(vw_size_t *)c;
+		c += sizeof(vw_size_t);
 
 		buf.set(c);
 		total += storage;
@@ -180,7 +180,7 @@ bool CVwNativeCacheReader::read_cached_example(VwExample* const ae)
 
 		char *end = c + storage;
 
-		size_t last = 0;
+		vw_size_t last = 0;
 
 		for (; c!=end; )
 		{
@@ -199,7 +199,7 @@ bool CVwNativeCacheReader::read_cached_example(VwExample* const ae)
 
 			*our_sum_feat_sq += f.x*f.x;
 
-			size_t diff = f.weight_index >> 2;
+			vw_size_t diff = f.weight_index >> 2;
 			int32_t s_diff = ZigZagDecode(diff);
 			if (s_diff < 0)
 				ae->sorted = false;

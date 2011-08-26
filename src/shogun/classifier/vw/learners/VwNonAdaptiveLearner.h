@@ -74,7 +74,7 @@ private:
 	 * @param update update
 	 */
 	void quad_update(float32_t* weights, VwFeature& page_feature,
-			 v_array<VwFeature> &offer_features, size_t mask,
+			 v_array<VwFeature> &offer_features, vw_size_t mask,
 			 float32_t update);
 };
 }

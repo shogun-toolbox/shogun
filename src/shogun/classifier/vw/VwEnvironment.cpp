@@ -62,13 +62,13 @@ void CVwEnvironment::init()
 
 	ignore_some = false;
 
-	index_t len = ((index_t) 1) << num_bits;
+	vw_size_t len = ((vw_size_t) 1) << num_bits;
 	thread_mask = (stride * (len >> thread_bits)) - 1;
 }
 
-void CVwEnvironment::set_stride(index_t new_stride)
+void CVwEnvironment::set_stride(vw_size_t new_stride)
 {
 	stride = new_stride;
-	index_t len = ((index_t) 1) << num_bits;
+	vw_size_t len = ((vw_size_t) 1) << num_bits;
 	thread_mask = (stride * (len >> thread_bits)) - 1;
 }

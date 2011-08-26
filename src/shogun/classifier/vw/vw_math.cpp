@@ -17,7 +17,7 @@
 namespace shogun
 {
 
-float32_t sd_offset_add(float32_t* weights, size_t mask, VwFeature* begin, VwFeature* end, size_t offset)
+float32_t sd_offset_add(float32_t* weights, vw_size_t mask, VwFeature* begin, VwFeature* end, vw_size_t offset)
 {
 	float32_t ret = 0.;
 	for (VwFeature* f = begin; f!= end; f++)
@@ -25,7 +25,7 @@ float32_t sd_offset_add(float32_t* weights, size_t mask, VwFeature* begin, VwFea
 	return ret;
 }
 
-float32_t sd_offset_truncadd(float32_t* weights, size_t mask, VwFeature* begin, VwFeature* end, size_t offset, float32_t gravity)
+float32_t sd_offset_truncadd(float32_t* weights, vw_size_t mask, VwFeature* begin, VwFeature* end, vw_size_t offset, float32_t gravity)
 {
 	float32_t ret = 0.;
 	for (VwFeature* f = begin; f!= end; f++)
@@ -37,17 +37,17 @@ float32_t sd_offset_truncadd(float32_t* weights, size_t mask, VwFeature* begin, 
 	return ret;
 }
 
-float32_t one_pf_quad_predict(float32_t* weights, VwFeature& f, v_array<VwFeature> &cross_features, size_t mask)
+float32_t one_pf_quad_predict(float32_t* weights, VwFeature& f, v_array<VwFeature> &cross_features, vw_size_t mask)
 {
-	size_t halfhash = quadratic_constant * f.weight_index;
+	vw_size_t halfhash = quadratic_constant * f.weight_index;
 
 	return f.x *
 		sd_offset_add(weights, mask, cross_features.begin, cross_features.end, halfhash);
 }
 
-float32_t one_pf_quad_predict_trunc(float32_t* weights, VwFeature& f, v_array<VwFeature> &cross_features, size_t mask, float32_t gravity)
+float32_t one_pf_quad_predict_trunc(float32_t* weights, VwFeature& f, v_array<VwFeature> &cross_features, vw_size_t mask, float32_t gravity)
 {
-	size_t halfhash = quadratic_constant * f.weight_index;
+	vw_size_t halfhash = quadratic_constant * f.weight_index;
 
 	return f.x *
 		sd_offset_truncadd(weights, mask, cross_features.begin, cross_features.end, halfhash, gravity);
