@@ -118,6 +118,7 @@ _python=auto
 _octave=auto
 _r=auto
 _ruby_narray=auto
+
 #static interfaces
 _cmdline_static=auto
 _python_static=auto
@@ -125,6 +126,7 @@ _octave_static=auto
 _r_static=auto
 _elwms_static=no
 _matlab_static=auto
+
 #modular interfaces
 _python_modular=auto
 _octave_modular=auto
