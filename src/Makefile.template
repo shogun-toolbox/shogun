@@ -406,6 +406,12 @@ check-examples-lua_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/lua_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		LUA_CPATH="$(DESTDIR)$(LUA_EXTENSIONS_INSTALL_DIR)/?.so" ./check.sh )
+run-testsuite-ruby_modular:
+	#TODO
+check-examples-ruby_modular:
+	cd $(CONFIGPATH)/../examples/undocumented/ruby_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
+		RUBYLIB="$(DESTDIR)$(RUBY_EXTENSIONS_INSTALL_DIR)" ./check.sh )
 
 lib/versionstring.h:    $(SVNEntries) 
 	        sh $(CONFIGPATH)/.version.sh > $@

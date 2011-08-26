@@ -4,11 +4,11 @@ rm -f error.log
 
 if test -z "$1"
 then
-	for e in *.rb;
+	for e in $(ls -1 *.rb | grep -v ruby)
 	do
 		echo -n $e
 
-		if ruby -I../../../src/interfaces/ruby_modular $e >/dev/null 2>&1
+		if ruby $e >/dev/null 2>&1
 		then
 			echo " OK"
 		else
@@ -16,14 +16,14 @@ then
 			echo "================================================================================" >>error.log
 			echo " error in $e ">>error.log
 			echo "================================================================================" >>error.log
-			ruby -I../../../src/interfaces/ruby_modular "$e" >>error.log 2>&1
+			ruby "$e" >>error.log 2>&1
 			echo "================================================================================" >>error.log
 			echo >>error.log
 			echo >>error.log
 		fi
 	done
 else
-	ruby -I../../../src/interfaces/ruby_modular $1
+	ruby $1
 fi
 
 if test -f error.log 
