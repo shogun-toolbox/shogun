@@ -161,9 +161,10 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 		float64_t* rhs = SG_CALLOC(float64_t,N*N);
 		// fill rhs with diag (for safety reasons zeros will be replaced with 1e-3)
 		for (i=0; i<N; i++)
-			rhs[i*N+i] = D_diag_vector[i]!=0 ? D_diag_vector[i] : 1e-3;
+			rhs[i*N+i] = D_diag_vector[i];
 		wrap_dsygvx(1,'V','U',N,W_matrix,N,rhs,N,1,m_target_dim+2,eigenvalues_vector,W_matrix,&eigenproblem_status);
-		ASSERT(eigenproblem_status==0);
+		if (eigenproblem_status)
+			SG_ERROR("DSYGVX failed with code: %d.\n",eigenproblem_status);
 		SG_FREE(rhs);
 		SG_FREE(eigenvalues_vector);
 	#endif /* HAVE_ARPACK */
