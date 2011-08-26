@@ -378,8 +378,17 @@ check-examples-python_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+
+run-testsuite-java_modular:
+	#TODO
 check-examples-java_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/java_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
+
+run-testsuite-csharp_modular:
+	#TODO
+check-examples-csharp_modular:
+	cd $(CONFIGPATH)/../examples/undocumented/csharp_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
 
 run-testsuite-r_modular:
@@ -406,6 +415,7 @@ check-examples-lua_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/lua_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		LUA_CPATH="$(DESTDIR)$(LUA_EXTENSIONS_INSTALL_DIR)/?.so" ./check.sh )
+
 run-testsuite-ruby_modular:
 	#TODO
 check-examples-ruby_modular:
