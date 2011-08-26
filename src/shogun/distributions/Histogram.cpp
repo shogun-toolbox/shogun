@@ -20,13 +20,13 @@ using namespace shogun;
 CHistogram::CHistogram()
 : CDistribution()
 {
-	hist=SG_MALLOC(float64_t, 1<<16);
+	hist=SG_CALLOC(float64_t, 1<<16);
 }
 
 CHistogram::CHistogram(CStringFeatures<uint16_t> *f)
 : CDistribution()
 {
-	hist=SG_MALLOC(float64_t, 1<<16);
+	hist=SG_CALLOC(float64_t, 1<<16);
 	features=f;
 }
 
@@ -159,6 +159,6 @@ bool CHistogram::set_histogram(SGVector<float64_t> histogram)
 
 SGVector<float64_t> CHistogram::get_histogram()
 {
-	return SGVector<float64_t>(hist,get_num_model_parameters());
+	return SGVector<float64_t>(hist,get_num_model_parameters(),false);
 }
 
