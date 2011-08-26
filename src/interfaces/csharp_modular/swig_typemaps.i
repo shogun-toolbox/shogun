@@ -40,32 +40,34 @@
 %typemap(out) shogun::SGVector<SGTYPE> {
 
 	int32_t i;
-	CTYPE *res;
+	char *res;
 	int len = $1.vlen;
 
-	res = SG_MALLOC(CTYPE, len + 1);
-	res[0] = len;
+	res = SG_MALLOC(char, sizeof(CTYPE) * len + sizeof(int32_t));
+	((int_32_t*)res)[0] = len;
+
+	CTYPE * dst = (CTYPE *)(res + sizeof(int32_t));
 
 	for (i = 0; i < len; i++) {
-		res[i + 1] = (CTYPE) $1.vector[i];
+		dst[i ] = (CTYPE) $1.vector[i];
 	}
 
 	$1.free_vector();
 
-	$result = res;
+	$result = (CTYPE *)res;
 }
 
 %typemap(csin) shogun::SGVector<SGTYPE> "$csinput.Length, $csinput"
 %typemap(csout) shogun::SGVector<SGTYPE> {
 		IntPtr ptr = $imcall;$excode
-		CSHARPTYPE[] size = new CSHARPTYPE[1];
+		int[] size = new int[1];
 		Marshal.Copy(ptr, size, 0, 1);
 
-		int len = (int)size[0];
+		int len = size[0];
 
 		CSHARPTYPE[] ret = new CSHARPTYPE[len];
 
-		Marshal.Copy(new IntPtr(ptr.ToInt32() + Marshal.SizeOf(typeof(CSHARPTYPE))), ret, 0, len);
+		Marshal.Copy(new IntPtr(ptr.ToInt32() + Marshal.SizeOf(typeof(int))), ret, 0, len);
 		return ret;
 }
 %enddef
@@ -120,34 +122,36 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 	int32_t rows = $1.num_rows;
 	int32_t cols = $1.num_cols;
 	int32_t len = rows * cols;
-	CTYPE *res;
+	char *res;
 
-	res = SG_MALLOC(CTYPE, len + 2);
-	res[0] = rows;
-	res[1] = cols;
+	res = SG_MALLOC(char, sizeof(CTYPE) * len + 2 * sizeof(int32_t));
+	((int32_t*) res)[0] = rows;
+	((int32_t*) res)[1] = cols;
+
+	CTYPE *dst = (CTYPE *)(res + 2 * sizeof(int32_t));
 
 	for (i = 0; i < len; i++) {
-		res[i + 2] = (CTYPE) $1.matrix[i];
+		dst[i] = (CTYPE) $1.matrix[i];
 	}
 
 	$1.free_matrix();
 
-	$result = res;
+	$result = (CTYPE *)res;
 }
 
 %typemap(csin) shogun::SGMatrix<SGTYPE> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
 %typemap(csout) shogun::SGMatrix<SGTYPE> {
 	IntPtr ptr = $imcall;$excode
-	CSHARPTYPE[] ranks = new CSHARPTYPE[2];
+	int[] ranks = new int[2];
 	Marshal.Copy(ptr, ranks, 0, 2);
 
-	int rows = (int)ranks[0];
-	int cols = (int)ranks[1];
+	int rows = ranks[0];
+	int cols = ranks[1];
 	int len = rows * cols;
 
 	CSHARPTYPE[] ret = new CSHARPTYPE[len];
 
-	Marshal.Copy(new IntPtr(ptr.ToInt32() + 2 * Marshal.SizeOf(typeof(CSHARPTYPE))), ret, 0, len);
+	Marshal.Copy(new IntPtr(ptr.ToInt32() + 2 * Marshal.SizeOf(typeof(int))), ret, 0, len);
 
 	CSHARPTYPE[,] result = new CSHARPTYPE[rows, cols];
 	for (int i = 0; i < rows; i++) {
