@@ -358,14 +358,14 @@ void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, dou
                eigenvectors,n,ifail,info);
 #else
 	int lwork = -1;
-	double* work = SG_MALLOC(double, 1);
+	double work1 = 0;
 	int* iwork = SG_MALLOC(int, 5*n);
 	DSYGVX(&itype,&jobz,&I,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
                &il,&iu,&abstol,&m,eigenvalues,eigenvectors,
-               &n,work,&lwork,iwork,ifail,info);
-	SG_FREE(work);
-	lwork = (int)work[0];
-	work = SG_MALLOC(double, lwork);
+               &n,&work1,&lwork,iwork,ifail,info);
+	lwork = (int)work1;
+	SG_SPRINT("DSYGVX lwork=%d",lwork);
+	double* work = SG_MALLOC(double, lwork);
 	DSYGVX(&itype,&jobz,&I,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
                &il,&iu,&abstol,&m,eigenvalues,eigenvectors,
                &n,work,&lwork,iwork,ifail,info);
