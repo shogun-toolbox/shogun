@@ -23,6 +23,15 @@ namespace shogun
 /** @brief Gaussian Mixture Model interface.
  *
  * Takes input of number of Gaussians to fit and a covariance type to use.
+ * Parameter estimation is done using either the Expectation-Maximization or
+ * Split-Merge Expectation-Maximization algorithms. To estimate the GMM
+ * parameters, the train(...) method has to be run to set the training data
+ * and then either train_em(...) or train_smem(...) to do the actual
+ * estimation.
+ * The EM algorithm is described here:
+ * http://en.wikipedia.org/wiki/Expectation-maximization_algorithm
+ * The SMEM algorithm is described here:
+ * http://mlg.eng.cam.ac.uk/zoubin/papers/uedanc.pdf
  */
 class CGMM : public CDistribution
 {
