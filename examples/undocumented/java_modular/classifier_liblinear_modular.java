@@ -13,8 +13,8 @@ public class classifier_liblinear_modular {
 		double epsilon = 1e-3;
 
 		org.shogun.Math.init_random(17);
-		DoubleMatrix traindata_real = Load.load_numbers(".../data/fm_train_real.dat");
-		DoubleMatrix testdata_real = Load.load_numbers("../data/toy/fm_test_real.dat");
+		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
+		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
 
 		DoubleMatrix trainlab = Load.load_labels("../data/label_train_twoclass.dat");
 

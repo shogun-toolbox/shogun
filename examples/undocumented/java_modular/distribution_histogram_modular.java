@@ -10,17 +10,11 @@ public class distribution_histogram_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public ArrayList parameter_list = new ArrayList(2);
-	public distribution_histogram_modular() {
-
-		parameter_list.add(Arrays.asList(new Integer(3), new Integer(0)));
-		parameter_list.add(Arrays.asList(new Integer(4), new Integer(0)));
-	}
-	static ArrayList run(List para) {
+	public static void main(String argv[]) {
 		boolean reverse = false;
 		modshogun.init_shogun_with_defaults();
-		int order = ((Integer)para.get(0)).intValue();
-		int gap = ((Integer)para.get(1)).intValue();
+		int order = 3;
+		int gap = 4;
 
 		String[] fm_train_dna = Load.load_dna("../data/fm_train_dna.dat");
 
@@ -31,23 +25,15 @@ public class distribution_histogram_modular {
 		Histogram histo = new Histogram(feats);
 		histo.train();
 
-		histo.get_histogram();
+		DoubleMatrix histogram = histo.get_histogram();
 
-		int  num_examples = feats.get_num_vectors();
-		int num_param = histo.get_num_model_parameters();
+		System.out.println(histogram);
+		//int  num_examples = feats.get_num_vectors();
+		//int num_param = histo.get_num_model_parameters();
 
-		DoubleMatrix out_likelihood = histo.get_log_likelihood();
-		double out_sample = histo.get_log_likelihood_sample();
+		//DoubleMatrix out_likelihood = histo.get_log_likelihood();
+		//double out_sample = histo.get_log_likelihood_sample();
 
-		ArrayList result = new ArrayList();
-		result.add(histo);
-		result.add(out_sample);
-		result.add(out_likelihood);
 		modshogun.exit_shogun();
-		return result;
-	}
-	public static void main(String argv[]) {
-		distribution_histogram_modular x = new distribution_histogram_modular();
-		run((List)x.parameter_list.get(0));
 	}
 }

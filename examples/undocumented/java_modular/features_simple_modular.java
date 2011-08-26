@@ -15,7 +15,7 @@ public class features_simple_modular {
 		ArrayList<DoubleMatrix> result = new ArrayList<DoubleMatrix>(4);
 
 		DoubleMatrix inputRealMatrix = Load.load_numbers("../data/fm_train_real.dat");
-		RealFeatures realFeatures = new RealFeatures(inputRealMatrix);	
+		RealFeatures realFeatures = new RealFeatures(inputRealMatrix);
 		DoubleMatrix outputRealMatrix = realFeatures.get_feature_matrix();
 
 		result.add(inputRealMatrix);
@@ -24,13 +24,6 @@ public class features_simple_modular {
 		DoubleMatrix inputByteMatrix = Load.load_numbers("../data/fm_train_byte.dat");
 		ByteFeatures byteFeatures = new ByteFeatures(inputByteMatrix);
 		DoubleMatrix outputByteMatrix = byteFeatures.get_feature_matrix();
-
-		result.add(inputByteMatrix);
-		result.add(outputByteMatrix);
-
-		DoubleMatrix inputLongMatrix = Load.load_numbers("../data/fm_train_byte.dat");
-		LongFeatures byteFeatures = new LongFeatures(inputLongMatrix);
-		DoubleMatrix outputLongMatrix = longFeatures.get_feature_matrix();
 
 		result.add(inputByteMatrix);
 		result.add(outputByteMatrix);
