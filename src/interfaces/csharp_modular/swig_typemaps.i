@@ -44,7 +44,7 @@
 	int len = $1.vlen;
 
 	res = SG_MALLOC(char, sizeof(CTYPE) * len + sizeof(int32_t));
-	((int_32_t*)res)[0] = len;
+	((int32_t*)res)[0] = len;
 
 	CTYPE * dst = (CTYPE *)(res + sizeof(int32_t));
 
