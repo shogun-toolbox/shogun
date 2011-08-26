@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/init.h>
+#include <shogun/lib/config.h>
 #include <shogun/mathematics/arpack.h>
 
 using namespace shogun;
@@ -17,6 +18,7 @@ int main(int argc, char** argv)
 {
 	init_shogun();
 
+#ifdef HAVE_ARPACK
 	int N = 100;
 	int nev = 2;
 
@@ -46,6 +48,7 @@ int main(int argc, char** argv)
 	delete[] eigenvalues;
 	delete[] eigenvectors;
 	delete[] matrix;
+#endif // HAVE_ARPACK
 
 	exit_shogun();
 	return 0;
