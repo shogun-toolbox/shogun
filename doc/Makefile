@@ -1,6 +1,7 @@
 .PHONY: doc clean distclean
 EXAMPLE_FILES = $(shell find ../examples -name '*.py' -o -name '*.m' -o -name\
-				'*.R' -type f | grep -v svn)
+				'*.R' -o -name '*.cs' -o -name '*.java' -o -name '*.lua' -o \
+				-name '*.rb' -type f)
 UNDOCUMENTED_EXAMPLE_DIRS = $(shell find ../examples/undocumented -type d | \
 							grep -v svn)
 DOCUMENTED_EXAMPLE_DIRS = $(patsubst ../examples/undocumented%,../examples/documented%,\
@@ -15,14 +16,10 @@ pages/Configure.generated:	../src/configure
 doc_cn: examples_cn
 	doxygen Doxyfile_cn
 
-$(DOCUMENTED_EXAMPLE_DIRS): $(UNDOCUMENTED_EXAMPLES)
+examples: $(UNDOCUMENTED_EXAMPLE_DIRS) $(EXAMPLE_FILES)
 	$(MAKE) -C ../examples
-
-examples: $(DOCUMENTED_EXAMPLE_DIRS) $(EXAMPLE_FILES)
 	echo $(DOCUMENTED_EXAMPLE_DIRS)
 	python ./insert_examples.py pages/
-
-examples_cn: $(DOCUMENTED_EXAMPLE_DIRS) $(EXAMPLE_FILES)
 	python ./insert_examples_cn.py pages_cn/
 
 distclean: clean
