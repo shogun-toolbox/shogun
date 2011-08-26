@@ -102,8 +102,7 @@ public:
 	 */
 	void use_alphabet(EAlphabet alpha)
 	{
-		if (alphabet)
-			SG_UNREF(alphabet);
+		SG_UNREF(alphabet);
 
 		alphabet=new CAlphabet(alpha);
 		SG_REF(alphabet);
@@ -118,8 +117,7 @@ public:
 	 */
 	void use_alphabet(CAlphabet* alpha)
 	{
-		if (alphabet)
-			SG_UNREF(alphabet);
+		SG_UNREF(alphabet);
 
 		alphabet=new CAlphabet(alpha);
 		SG_REF(alphabet);
