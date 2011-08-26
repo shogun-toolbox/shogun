@@ -115,7 +115,7 @@ bool CVowpalWabbit::train_machine(CFeatures* feat)
 	set_learner();
 
 	VwExample* example = NULL;
-	size_t current_pass = 0;
+	vw_size_t current_pass = 0;
 
 	const char* header_fmt = "%-10s %-10s %8s %8s %10s %8s %8s\n";
 
@@ -163,7 +163,7 @@ bool CVowpalWabbit::train_machine(CFeatures* feat)
 	if (env->l1_regularization > 0.)
 	{
 		uint32_t length = 1 << env->num_bits;
-		size_t stride = env->stride;
+		vw_size_t stride = env->stride;
 		float32_t gravity = env->l1_regularization * env->update_sum;
 		for (uint32_t i = 0; i < length; i++)
 			reg->weight_vectors[0][stride*i] = real_weight(reg->weight_vectors[0][stride*i], gravity);
@@ -243,12 +243,12 @@ void CVowpalWabbit::set_learner()
 
 float32_t CVowpalWabbit::inline_l1_predict(VwExample* &ex)
 {
-	size_t thread_num = 0;
+	vw_size_t thread_num = 0;
 
 	float32_t prediction = ex->ld->get_initial();
 
 	float32_t* weights = reg->weight_vectors[thread_num];
-	size_t thread_mask = env->thread_mask;
+	vw_size_t thread_mask = env->thread_mask;
 
 	prediction += features->dense_dot_truncated(weights, ex, env->l1_regularization * env->update_sum);
 
@@ -270,11 +270,11 @@ float32_t CVowpalWabbit::inline_l1_predict(VwExample* &ex)
 
 float32_t CVowpalWabbit::inline_predict(VwExample* &ex)
 {
-	size_t thread_num = 0;
+	vw_size_t thread_num = 0;
 	float32_t prediction = ex->ld->initial;
 
 	float32_t* weights = reg->weight_vectors[thread_num];
-	size_t thread_mask = env->thread_mask;
+	vw_size_t thread_mask = env->thread_mask;
 	prediction += features->dense_dot(weights, 0);
 
 	for (int32_t k = 0; k < env->pairs.get_num_elements(); k++)
@@ -372,8 +372,8 @@ void CVowpalWabbit::output_prediction(int32_t f, float32_t res, float32_t weight
 float32_t CVowpalWabbit::compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x)
 {
 	// We must traverse the features in _precisely_ the same order as during training.
-	size_t thread_mask = env->thread_mask;
-	size_t thread_num = 0;
+	vw_size_t thread_mask = env->thread_mask;
+	vw_size_t thread_num = 0;
 
 	float32_t g = reg->loss->get_square_grad(ex->final_prediction, ex->ld->label) * ex->ld->weight;
 	if (g == 0) return 0.;
@@ -381,7 +381,7 @@ float32_t CVowpalWabbit::compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x
 	float32_t xGx = 0.;
 
 	float32_t* weights = reg->weight_vectors[thread_num];
-	for (size_t* i = ex->indices.begin; i != ex->indices.end; i++)
+	for (vw_size_t* i = ex->indices.begin; i != ex->indices.end; i++)
 	{
 		for (VwFeature* f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
 		{
@@ -407,9 +407,9 @@ float32_t CVowpalWabbit::compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x
 }
 
 float32_t CVowpalWabbit::compute_exact_norm_quad(float32_t* weights, VwFeature& page_feature, v_array<VwFeature> &offer_features,
-						 size_t mask, float32_t g, float32_t& sum_abs_x)
+						 vw_size_t mask, float32_t g, float32_t& sum_abs_x)
 {
-	size_t halfhash = quadratic_constant * page_feature.weight_index;
+	vw_size_t halfhash = quadratic_constant * page_feature.weight_index;
 	float32_t xGx = 0.;
 	float32_t update2 = g * page_feature.x * page_feature.x;
 	for (VwFeature* elem = offer_features.begin; elem != offer_features.end; elem++)

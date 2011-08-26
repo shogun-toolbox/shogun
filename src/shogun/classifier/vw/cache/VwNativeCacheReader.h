@@ -105,7 +105,7 @@ private:
 	 *
 	 * @return new pointer position
 	 */
-	char* run_len_decode(char *p, size_t& i);
+	char* run_len_decode(char *p, vw_size_t& i);
 
 	/**
 	 * Decode a signed int32_t from an encoded unsigned form
@@ -136,7 +136,7 @@ private:
 	 *
 	 * @return number of bytes read
 	 */
-	size_t read_cached_label(VwLabel* const ld);
+	vw_size_t read_cached_label(VwLabel* const ld);
 
 	/**
 	 * Read the tag of an example from the cache
@@ -145,7 +145,7 @@ private:
 	 *
 	 * @return number of bytes read
 	 */
-	size_t read_cached_tag(VwExample* const ae);
+	vw_size_t read_cached_tag(VwExample* const ae);
 
 
 protected:
@@ -154,10 +154,10 @@ protected:
 
 private:
 	// Used while parsing
-	const size_t int_size;
-	const size_t char_size;
-	size_t neg_1;
-	size_t general;
+	const vw_size_t int_size;
+	const vw_size_t char_size;
+	vw_size_t neg_1;
+	vw_size_t general;
 };
 
 }

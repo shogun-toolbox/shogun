@@ -93,7 +93,7 @@ int32_t CVwParser::read_features(CIOBuffer* buf, VwExample*& ae)
 		set_minmax(ae->ld->label);
 	}
 
-	size_t mask = env->mask;
+	vw_size_t mask = env->mask;
 
 	/* Now parse the individual channels, i.e., namespaces */
 	for (substring* i = feature_start; i != channels.end; i++)
@@ -106,12 +106,12 @@ int32_t CVwParser::read_features(CIOBuffer* buf, VwExample*& ae)
 
 		/* Set default scale value for channel */
 		float32_t channel_v = 1.;
-		size_t channel_hash;
+		vw_size_t channel_hash;
 
 		/* Index by which to refer to the namespace */
-		size_t index = 0;
+		vw_size_t index = 0;
 		bool new_index = false;
-		size_t feature_offset = 0;
+		vw_size_t feature_offset = 0;
 
 		if (channel.start[0] != ' ')
 		{
@@ -150,7 +150,7 @@ int32_t CVwParser::read_features(CIOBuffer* buf, VwExample*& ae)
 			v *= channel_v;
 
 			/* Hash feature */
-			size_t word_hash = (hasher(name[0], channel_hash)) & mask;
+			vw_size_t word_hash = (hasher(name[0], channel_hash)) & mask;
 			VwFeature f = {v,word_hash};
 			ae->sum_feat_sq[index] += v*v;
 			ae->atomics[index].push(f);
@@ -178,7 +178,7 @@ int32_t CVwParser::read_svmlight_features(CIOBuffer* buf, VwExample*& ae)
 	/* Mark begin and end of example in the buffer */
 	substring example_string = {line, line + num_chars};
 
-	size_t mask = env->mask;
+	vw_size_t mask = env->mask;
 	tokenize(' ', example_string, words);
 
 	ae->ld->label = float_of_substring(words[0]);
@@ -188,8 +188,8 @@ int32_t CVwParser::read_svmlight_features(CIOBuffer* buf, VwExample*& ae)
 
 	substring* feature_start = &words[1];
 
-	size_t index = (unsigned char)' ';	// Any default namespace is ok
-	size_t channel_hash = 0;
+	vw_size_t index = (unsigned char)' ';	// Any default namespace is ok
+	vw_size_t channel_hash = 0;
 	ae->sum_feat_sq[index] = 0;
 	ae->indices.push(index);
 	/* Now parse the individual features */
@@ -198,7 +198,7 @@ int32_t CVwParser::read_svmlight_features(CIOBuffer* buf, VwExample*& ae)
 		float32_t v;
 		feature_value(*i, name, v);
 
-		size_t word_hash = (hasher(name[0], channel_hash)) & mask;
+		vw_size_t word_hash = (hasher(name[0], channel_hash)) & mask;
 		VwFeature f = {v,word_hash};
 		ae->sum_feat_sq[index] += v*v;
 		ae->atomics[index].push(f);
@@ -220,7 +220,7 @@ int32_t CVwParser::read_dense_features(CIOBuffer* buf, VwExample*& ae)
 	// Mark begin and end of example in the buffer
 	substring example_string = {line, line + num_chars};
 
-	size_t mask = env->mask;
+	vw_size_t mask = env->mask;
 	tokenize(' ', example_string, words);
 
 	ae->ld->label = float_of_substring(words[0]);
@@ -230,7 +230,7 @@ int32_t CVwParser::read_dense_features(CIOBuffer* buf, VwExample*& ae)
 
 	substring* feature_start = &words[1];
 
-	size_t index = (unsigned char)' ';
+	vw_size_t index = (unsigned char)' ';
 
 	ae->sum_feat_sq[index] = 0;
 	ae->indices.push(index);
@@ -239,7 +239,7 @@ int32_t CVwParser::read_dense_features(CIOBuffer* buf, VwExample*& ae)
 	for (substring* i = feature_start; i != words.end; i++)
 	{
 		float32_t v = float_of_substring(*i);
-		size_t word_hash = j & mask;
+		vw_size_t word_hash = j & mask;
 		VwFeature f = {v,word_hash};
 		ae->sum_feat_sq[index] += v*v;
 		ae->atomics[index].push(f);

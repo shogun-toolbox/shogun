@@ -456,7 +456,7 @@ protected:
 	CInputParser<VwExample> parser;
 
 	/// Number of examples processed at a point of time
-	size_t example_count;
+	vw_size_t example_count;
 
 	/// The current example's label.
 	float64_t current_label;

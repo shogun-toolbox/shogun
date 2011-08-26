@@ -78,8 +78,8 @@ private:
 	 * @param ctr counter (unused)
 	 */
 	void quad_update(float32_t* weights, VwFeature& page_feature,
-			 v_array<VwFeature> &offer_features, size_t mask,
-			 float32_t update, float32_t g, VwExample* ex, size_t& ctr);
+			 v_array<VwFeature> &offer_features, vw_size_t mask,
+			 float32_t update, float32_t g, VwExample* ex, vw_size_t& ctr);
 };
 }
 

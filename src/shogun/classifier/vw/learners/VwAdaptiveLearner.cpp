@@ -36,14 +36,14 @@ void CVwAdaptiveLearner::train(VwExample* &ex, float32_t update)
 	if (fabs(update) == 0.)
 		return;
 
-	size_t thread_num = 0;
+	vw_size_t thread_num = 0;
 
-	size_t thread_mask = env->thread_mask;
+	vw_size_t thread_mask = env->thread_mask;
 	float32_t* weights = reg->weight_vectors[thread_num];
 
 	float32_t g = reg->loss->get_square_grad(ex->final_prediction, ex->ld->label) * ex->ld->weight;
-	size_t ctr = 0;
-	for (size_t* i = ex->indices.begin; i != ex->indices.end; i++)
+	vw_size_t ctr = 0;
+	for (vw_size_t* i = ex->indices.begin; i != ex->indices.end; i++)
 	{
 		for (VwFeature *f = ex->atomics[*i].begin; f != ex->atomics[*i].end; f++)
 		{
@@ -67,10 +67,10 @@ void CVwAdaptiveLearner::train(VwExample* &ex, float32_t update)
 }
 
 void CVwAdaptiveLearner::quad_update(float32_t* weights, VwFeature& page_feature,
-				     v_array<VwFeature> &offer_features, size_t mask,
-				     float32_t update, float32_t g, VwExample* ex, size_t& ctr)
+				     v_array<VwFeature> &offer_features, vw_size_t mask,
+				     float32_t update, float32_t g, VwExample* ex, vw_size_t& ctr)
 {
-	size_t halfhash = quadratic_constant * page_feature.weight_index;
+	vw_size_t halfhash = quadratic_constant * page_feature.weight_index;
 	update *= page_feature.x;
 	float32_t update2 = g * page_feature.x * page_feature.x;
 
