@@ -86,24 +86,6 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		/** clean up kernel */
 		virtual void cleanup();
 
-		/** get degree 
-		 *
-		 * @return degree of the kernel
-		 */
-		int32_t get_degree() const
-		{
-			return degree;
-		}
-
-		/** get the number of mismatches that are allowed
-		 *
-		 * @return number of mismatches
-		 */
-		int32_t get_max_mismatch() const
-		{
-			return max_mismatch;
-		}
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type 
@@ -127,7 +109,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		 *
 		 * @return maximum mismatch
 		 */
-		inline int32_t get_max_mismatch() { return max_mismatch; }
+		inline int32_t get_max_mismatch() const { return max_mismatch; }
 
 		/** set degree
 		 *
@@ -140,7 +122,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		 *
 		 * @return degree
 		 */
-		inline int32_t get_degree() { return degree; }
+		inline int32_t get_degree() const { return degree; }
 
 		/** set AA matrix
 		 * @param AA_matrix_

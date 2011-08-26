@@ -108,25 +108,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			return type;
 		}
 
-		/** get degree of WD kernel
-		 *
-		 * @return degree of the kernel
-		 */
-		int32_t get_degree() const
-		{
-			return degree;
-		}
-
-		/** get the number of mismatches that are allowed in WD kernel
-		 * computation
-		 *
-		 * @return number of mismatches
-		 */
-		int32_t get_max_mismatch() const
-		{
-			return max_mismatch;
-		}
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type WEIGHTEDDEGREE
@@ -552,7 +533,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @return maximum mismatch
 		 */
-		inline int32_t get_max_mismatch() { return max_mismatch; }
+		inline int32_t get_max_mismatch() const { return max_mismatch; }
 
 		/** set degree
 		 *
@@ -565,7 +546,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @return degree
 		 */
-		inline int32_t get_degree() { return degree; }
+		inline int32_t get_degree() const { return degree; }
 
 		/** set if block computation shall be performed
 		 *
