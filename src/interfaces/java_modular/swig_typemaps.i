@@ -110,7 +110,7 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 {
 	int32_t rows = 1;
 	int32_t cols = $1.vlen;
-	JNITYPE arr[cols];
+	JNITYPE* arr = SG_MALLOC(JNITYPE,cols);
 	jobject res;
 	int32_t i;
 
@@ -132,8 +132,8 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 	for (i = 0; i < cols; i++) {
 		arr[i] = (JNITYPE)$1.vector[i];
 	}
-
-    $1.free_vector();
+        
+        $1.free_vector();
 
 	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, cols, arr);
 
@@ -244,7 +244,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 {
 	int32_t rows = 1;
 	int32_t cols = $1.vlen;
-	JNITYPE arr[cols];
+	JNITYPE* arr = SG_MALLOC(JNITYPE,cols);
 	jobject res;
 	int32_t i;
 	
@@ -361,7 +361,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 	int32_t rows = $1.num_rows;
 	int32_t cols = $1.num_cols;
 	int64_t len = int64_t(rows) * cols;
-	JNITYPE arr[len];
+	JNITYPE* arr = SG_MALLOC(JNITYPE, len);
 	jobject res;
 
 	jclass cls;
@@ -477,7 +477,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 	int32_t rows = $1.num_rows;
 	int32_t cols = $1.num_cols;
 	int32_t len = rows * cols;
-	JNITYPE arr[len];
+	JNITYPE* arr = SG_MALLOC(float64_t,len);
 	jobject res;
 	int32_t i;
 	
