@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/init.h>
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
@@ -45,6 +46,7 @@ int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
+#ifdef HAVE_LAPACK
 	int32_t num_subsets=5;
 	int32_t num_features=11;
 
@@ -96,7 +98,7 @@ int main(int argc, char **argv)
 	/* clean up */
 	SG_UNREF(best_combination);
 	SG_UNREF(grid_search);
-
+#endif // HAVE_LAPACK
 	exit_shogun();
 
 	return 0;
