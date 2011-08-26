@@ -231,5 +231,6 @@ CStreamingFile::CStreamingFile(char* fname, char rw) : CSGObject()
 
 CStreamingFile::~CStreamingFile()
 {
+	SG_FREE(filename);
 	SG_UNREF(buf);
 }

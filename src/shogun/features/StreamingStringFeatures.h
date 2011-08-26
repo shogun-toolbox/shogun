@@ -69,7 +69,7 @@ public:
 	~CStreamingStringFeatures()
 	{
 		parser.end_parser();
-		SG_FREE(current_string);
+		SG_UNREF(alphabet);
 	}
 
 	/** 
@@ -102,6 +102,9 @@ public:
 	 */
 	void use_alphabet(EAlphabet alpha)
 	{
+		if (alphabet)
+			SG_UNREF(alphabet);
+
 		alphabet=new CAlphabet(alpha);
 		SG_REF(alphabet);
 		num_symbols=alphabet->get_num_symbols();
@@ -115,6 +118,9 @@ public:
 	 */
 	void use_alphabet(CAlphabet* alpha)
 	{
+		if (alphabet)
+			SG_UNREF(alphabet);
+
 		alphabet=new CAlphabet(alpha);
 		SG_REF(alphabet);
 		num_symbols=alphabet->get_num_symbols();
@@ -375,7 +381,7 @@ void CStreamingStringFeatures<T>::init()
 {
 	working_file=NULL;
 	alphabet=new CAlphabet();
-	
+
 	current_string=NULL;
 	current_length=-1;
 	current_sgstring.string=current_string;
@@ -391,6 +397,8 @@ void CStreamingStringFeatures<T>::init(CStreamingFile* file,
 	has_labels=is_labelled;
 	working_file=file;
 	parser.init(file, is_labelled, size);
+	parser.set_free_vector_after_release(false);
+	parser.set_free_vectors_on_destruct(false);
 }
 	
 template <class T>
