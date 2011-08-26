@@ -10,7 +10,11 @@ fi
 
 export LD_LIBRARY_PATH=../../../src/shogun:../../../src/interfaces/csharp_modular
 
-for e in $(ls *.cs | grep -v Load.cs )
+FILES=$@
+
+test -z "$FILES" && FILES=$(ls *.cs | grep -v Load.cs )
+
+for e in $FILES
 do
 	echo -n "running $e .."
 	if ${MONOC} $e ../../../src/interfaces/csharp_modular/*.cs Load.cs >/dev/null 2>&1 && \
@@ -22,7 +26,7 @@ do
 		echo "================================================================================" >>error.log
 		echo " error in $e ">>error.log
 		echo "================================================================================" >>error.log
-		${MONOC} $e ../../../src/interfaces/csharp_modular/*.cs Load.cs >>error.log 2>&1
+		${MONOC} $e ../../../src/interfaces/csharp_modular/*.cs Load.cs >>error.log 2>&1 && \
 		${MONO} ${e%.cs}.exe >>error.log 2>&1
 		echo "================================================================================" >>error.log
 		echo >>error.log
