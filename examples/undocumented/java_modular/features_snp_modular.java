@@ -10,25 +10,13 @@ public class features_snp_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public static String fname = new String();
-	public features_snp_modular() {
-		fname = "../data/snps.dat";
-	}
-	static ArrayList run(String filename) {
-		filename = fname;
+	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
+		String filename = "../data/snps.dat";
 		StringByteFeatures sf = new StringByteFeatures(SNP);
-		sf.load_ascii_file(fname, false, SNP, SNP);
+		sf.load_ascii_file(filename, false, SNP, SNP);
 		SNPFeatures snps = new SNPFeatures(sf);
 
-		ArrayList result = new ArrayList();
-		result.add(snps);
-
 		modshogun.exit_shogun();
-		return result;
-	}
-	public static void main(String argv[]) {
-		features_snp_modular x = new features_snp_modular();
-		run(x.fname);
 	}
 }

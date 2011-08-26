@@ -10,14 +10,9 @@ public class clustering_hierarchical_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public int[] parameter_list = new int[2];
-	public clustering_hierarchical_modular() {
-		parameter_list[0] = 3;
-		parameter_list[1] = 4;
-	}
-	static ArrayList run(int para) {
+	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
-		int merges = para;
+		int merges = 3;
 
 		DoubleMatrix fm_train = Load.load_numbers("../data/fm_train_real.dat");
 
@@ -30,15 +25,6 @@ public class clustering_hierarchical_modular {
 		DoubleMatrix out_distance = hierarchical.get_merge_distances();
 		DoubleMatrix out_cluster = hierarchical.get_cluster_pairs();
 
-		ArrayList result = new ArrayList();
-		result.add(hierarchical);
-		result.add(out_distance);
-		result.add(out_cluster);
 		modshogun.exit_shogun();
-		return result;
-	}
-	public static void main(String argv[]) {
-		clustering_hierarchical_modular x = new clustering_hierarchical_modular();
-		run(x.parameter_list[0]);
 	}
 }

@@ -10,18 +10,12 @@ public class classifier_svmlight_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public ArrayList parameter_list = new ArrayList(2);
-	public classifier_svmlight_modular() {
-
-		parameter_list.add(Arrays.asList(new Double(1.1), new Double(1e-5), new Integer(1)));
-		parameter_list.add(Arrays.asList(new Double(1.2), new Double(1e-5), new Integer(1)));
-	}
-	static ArrayList run(List para) {
+	public static void main(String argv[]) {
 		int degree = 20;
 		modshogun.init_shogun_with_defaults();
-		double C = ((Double)para.get(0)).doubleValue();
-		double epsilon = ((Double)para.get(1)).doubleValue();
-		int num_threads = ((Integer)para.get(2)).intValue();
+		double C = 1.1;
+		double epsilon = 1e-5;
+		int num_threads = 1;
 
 		String[] fm_train_dna = Load.load_dna("../data/fm_train_dna.dat");
 		String[] fm_test_dna = Load.load_dna("../data/fm_test_dna.dat");
@@ -40,13 +34,6 @@ public class classifier_svmlight_modular {
 		kernel.init(feats_train, feats_test);
 		svm.apply().get_labels();
 
-		ArrayList result = new ArrayList();
-		result.add(kernel);
 		modshogun.exit_shogun();
-		return result;
-	}
-	public static void main(String argv[]) {
-		classifier_svmlight_modular x = new classifier_svmlight_modular();
-		run((List)x.parameter_list.get(0));
 	}
 }

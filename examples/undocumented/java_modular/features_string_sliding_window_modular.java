@@ -10,16 +10,12 @@ public class features_string_sliding_window_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public static String[] strings = null;
-	public features_string_sliding_window_modular() {
-		strings = new String[] {"AAAAAAAAAACCCCCCCCCCGGGGGGGGGGTTTTTTTTTT"};
-	}
-	static ArrayList run(String[] strs ) {
+	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
-		StringCharFeatures f = new StringCharFeatures(strs, DNA);
+		String[] strings = new String[] {"AAAAAAAAAACCCCCCCCCCGGGGGGGGGGTTTTTTTTTT"};
+		StringCharFeatures f = new StringCharFeatures(strings, DNA);
 		f.obtain_by_sliding_window(5,1);
 
-		f.set_features(strs);
 		DynamicIntArray positions = new DynamicIntArray();
 		positions.append_element(0);
 		positions.append_element(6);
@@ -28,14 +24,6 @@ public class features_string_sliding_window_modular {
 
 		//f.obtain_by_position_list(8,positions);
 
-		ArrayList result = new ArrayList();
-		result.add(f);
-
 		modshogun.exit_shogun();
-		return result;
-	}
-	public static void main(String argv[]) {
-		features_string_sliding_window_modular x = new features_string_sliding_window_modular();
-		run(x.strings);
 	}
 }

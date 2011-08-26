@@ -9,19 +9,13 @@ public class classifier_svmlight_linear_term_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
-
-	public ArrayList parameter_list = new ArrayList(2);
-	public classifier_svmlight_linear_term_modular() {
-
-		parameter_list.add(Arrays.asList(new Double(0.9), new Double(1e-3), new Integer(1)));
-		parameter_list.add(Arrays.asList(new Double(2.3), new Double(1e-5), new Integer(4)));
-	}
-	static DoubleMatrix run(List para) {
+	
+	public static void main(String argv[]) {
 		int degree = 20;
 		modshogun.init_shogun_with_defaults();
-		double C = ((Double)para.get(0)).doubleValue();
-		double epsilon = ((Double)para.get(1)).doubleValue();
-		int num_threads = ((Integer)para.get(2)).intValue();
+		double C = 0.9;
+		double epsilon = 1e-3;
+		int num_threads = 1;
 
 		String[] fm_train_dna = {"CGCACGTACGTAGCTCGAT",
 		      "CGACGTAGTCGTAGTCGTA",
@@ -59,13 +53,8 @@ public class classifier_svmlight_linear_term_modular {
 		svm.train();
 
 		kernel.init(feats_train, feats_test);
-		DoubleMatrix out = svm.apply().get_labels();
+		svm.apply().get_labels();
 
 		modshogun.exit_shogun();
-		return out;
-	}
-	public static void main(String argv[]) {
-		classifier_svmlight_linear_term_modular x = new classifier_svmlight_linear_term_modular();
-		run((List)x.parameter_list.get(0));
 	}
 }

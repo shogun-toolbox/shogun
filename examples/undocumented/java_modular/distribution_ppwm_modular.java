@@ -10,17 +10,11 @@ public class distribution_ppwm_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public ArrayList parameter_list = new ArrayList(2);
-	public distribution_ppwm_modular() {
-
-		parameter_list.add(Arrays.asList(new Integer(3), new Integer(0)));
-		parameter_list.add(Arrays.asList(new Integer(4), new Integer(0)));
-	}
-	static void run(List para) {
+	public static void main(String argv[]) {
 		boolean reverse = false;
 		modshogun.init_shogun_with_defaults();
-		int order = ((Integer)para.get(0)).intValue();
-		int gap = ((Integer)para.get(1)).intValue();
+		int order = 3;
+		int gap = 4;
 
 		String[] fm_train_dna = Load.load_dna("../data/fm_train_dna.dat");
 
@@ -39,9 +33,5 @@ public class distribution_ppwm_modular {
 		ppwm.compute_w(20);
 		DoubleMatrix w = ppwm.get_w();
 		modshogun.exit_shogun();
-	}
-	public static void main(String argv[]) {
-		distribution_ppwm_modular x = new distribution_ppwm_modular();
-		run((List)x.parameter_list.get(0));
 	}
 }

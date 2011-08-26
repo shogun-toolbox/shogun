@@ -10,17 +10,11 @@ public class distribution_linearhmm_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public ArrayList parameter_list = new ArrayList(2);
-	public distribution_linearhmm_modular() {
-
-		parameter_list.add(Arrays.asList(new Integer(3), new Integer(0)));
-		parameter_list.add(Arrays.asList(new Integer(4), new Integer(0)));
-	}
-	static ArrayList run(List para) {
+	public static void main(String argv[]) {
 		boolean reverse = false;
 		modshogun.init_shogun_with_defaults();
-		int order = ((Integer)para.get(0)).intValue();
-		int gap = ((Integer)para.get(1)).intValue();
+		int order = 3;
+		int gap = 4;
 
 		String[] fm_train_dna = Load.load_dna("../data/fm_train_dna.dat");
 
@@ -43,15 +37,6 @@ public class distribution_linearhmm_modular {
 		DoubleMatrix out_likelihood = hmm.get_log_likelihood();
 		double out_sample = hmm.get_log_likelihood_sample();
 
-		ArrayList result = new ArrayList();
-		result.add(hmm);
-		result.add(out_sample);
-		result.add(out_likelihood);
 		modshogun.exit_shogun();
-		return result;
-	}
-	public static void main(String argv[]) {
-		distribution_linearhmm_modular x = new distribution_linearhmm_modular();
-		run((List)x.parameter_list.get(0));
 	}
 }

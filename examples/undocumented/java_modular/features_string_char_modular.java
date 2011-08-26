@@ -10,24 +10,12 @@ public class features_string_char_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public static String[] strings = null;
-	public features_string_char_modular() {
-		strings = new String[] { "hey","guys","i","am","a","string"};
-	}
-	static ArrayList run(String[] strs) {
+	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
+		String[] strings = new String[] { "hey","guys","i","am","a","string"};
 		StringCharFeatures f = new StringCharFeatures(strings, RAWBYTE);
 		f.set_feature_vector(new DoubleMatrix(new double[][] {{'t','e','s','t'}}), 0);
-
-		ArrayList result = new ArrayList();
-		result.add(f.get_features());
-		result.add(f);
-
+		
 		modshogun.exit_shogun();
-		return result;
-	}
-	public static void main(String argv[]) {
-		features_string_char_modular x = new features_string_char_modular();
-		run(x.strings);
 	}
 }

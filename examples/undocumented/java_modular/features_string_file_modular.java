@@ -10,27 +10,15 @@ public class features_string_file_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public static String fname = new String();
-	public features_string_file_modular() {
-		fname = "features_string_char_modular.java";
-	}
-	static ArrayList run(String filename) {
+	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
+		String fname = "features_string_char_modular.java";
 		StringCharFeatures f = new StringCharFeatures(RAWBYTE);
 		f.load_from_directory(".");
 
 		AsciiFile fil = new AsciiFile(fname);
 		f.load(fil);
 
-		ArrayList result = new ArrayList();
-		result.add(f.get_features());
-		result.add(f);
-
 		modshogun.exit_shogun();
-		return result;
-	}
-	public static void main(String argv[]) {
-		features_string_file_modular x = new features_string_file_modular();
-		run(x.fname);
 	}
 }
