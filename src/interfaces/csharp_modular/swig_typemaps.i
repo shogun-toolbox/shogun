@@ -67,7 +67,7 @@
 
 		CSHARPTYPE[] ret = new CSHARPTYPE[len];
 
-		Marshal.Copy(new IntPtr(ptr.ToInt32() + Marshal.SizeOf(typeof(int))), ret, 0, len);
+		Marshal.Copy(new IntPtr(ptr.ToInt64() + Marshal.SizeOf(typeof(int))), ret, 0, len);
 		return ret;
 }
 %enddef
@@ -151,7 +151,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 	CSHARPTYPE[] ret = new CSHARPTYPE[len];
 
-	Marshal.Copy(new IntPtr(ptr.ToInt32() + 2 * Marshal.SizeOf(typeof(int))), ret, 0, len);
+	Marshal.Copy(new IntPtr(ptr.ToInt64() + 2 * Marshal.SizeOf(typeof(int))), ret, 0, len);
 
 	CSHARPTYPE[,] result = new CSHARPTYPE[rows, cols];
 	for (int i = 0; i < rows; i++) {
@@ -252,7 +252,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 
 	CSHARPTYPE[] ret = new CSHARPTYPE[len];
 
-	Marshal.Copy(new IntPtr(ptr.ToInt32() + 2 * Marshal.SizeOf(typeof(CSHARPTYPE))), ret, 0, len);
+	Marshal.Copy(new IntPtr(ptr.ToInt64() + 2 * Marshal.SizeOf(typeof(CSHARPTYPE))), ret, 0, len);
 
 	CSHARPTYPE[,] result = new CSHARPTYPE[rows, cols];
 	for (int i = 0; i < rows; i++) {
