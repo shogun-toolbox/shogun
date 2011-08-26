@@ -62,16 +62,16 @@ void CVwNativeCacheWriter::init()
 void CVwNativeCacheWriter::write_header()
 {
 	const char* vw_version = env->vw_version;
-	size_t numbits = env->num_bits;
-	size_t v_length = 4;
+	vw_size_t numbits = env->num_bits;
+	vw_size_t v_length = 4;
 
 	// Version and numbits info
-	buf.write_file(&v_length, sizeof(size_t));
+	buf.write_file(&v_length, sizeof(vw_size_t));
 	buf.write_file(vw_version,v_length);
-	buf.write_file(&numbits, sizeof(size_t));
+	buf.write_file(&numbits, sizeof(vw_size_t));
 }
 
-char* CVwNativeCacheWriter::run_len_encode(char *p, size_t i)
+char* CVwNativeCacheWriter::run_len_encode(char *p, vw_size_t i)
 {
 	while (i >= 128)
 	{
@@ -106,9 +106,9 @@ void CVwNativeCacheWriter::cache_tag(v_array<char> tag)
 	// Store the size of the tag and the tag itself
 	char *c;
 
-	buf.buf_write(c, sizeof(size_t)+tag.index());
-	*(size_t*)c = tag.index();
-	c += sizeof(size_t);
+	buf.buf_write(c, sizeof(vw_size_t)+tag.index());
+	*(vw_size_t*)c = tag.index();
+	c += sizeof(vw_size_t);
 	memcpy(c, tag.begin, tag.index());
 	c += tag.index();
 
@@ -127,25 +127,25 @@ void CVwNativeCacheWriter::output_byte(unsigned char s)
 void CVwNativeCacheWriter::output_features(unsigned char index, VwFeature* begin, VwFeature* end)
 {
 	char* c;
-	size_t storage = (end-begin) * int_size;
+	vw_size_t storage = (end-begin) * int_size;
 	for (VwFeature* i = begin; i != end; i++)
 		if (i->x != 1. && i->x != -1.)
 			storage+=sizeof(float32_t);
 
-	buf.buf_write(c, sizeof(index) + storage + sizeof(size_t));
+	buf.buf_write(c, sizeof(index) + storage + sizeof(vw_size_t));
 	*(unsigned char*)c = index;
 	c += sizeof(index);
 
 	char *storage_size_loc = c;
-	c += sizeof(size_t);
+	c += sizeof(vw_size_t);
 
-	size_t last = 0;
+	vw_size_t last = 0;
 
 	// Store the differences in hashed feature indices
 	for (VwFeature* i = begin; i != end; i++)
 	{
 		int32_t s_diff = (i->weight_index - last);
-		size_t diff = ZigZagEncode(s_diff) << 2;
+		vw_size_t diff = ZigZagEncode(s_diff) << 2;
 		last = i->weight_index;
 
 		if (i->x == 1.)
@@ -160,7 +160,7 @@ void CVwNativeCacheWriter::output_features(unsigned char index, VwFeature* begin
 		}
 	}
 	buf.set(c);
-	*(size_t*)storage_size_loc = c - storage_size_loc - sizeof(size_t);
+	*(vw_size_t*)storage_size_loc = c - storage_size_loc - sizeof(vw_size_t);
 }
 
 void CVwNativeCacheWriter::cache_example(VwExample* &ex)
@@ -168,7 +168,7 @@ void CVwNativeCacheWriter::cache_example(VwExample* &ex)
 	cache_label(ex->ld);
 	cache_tag(ex->tag);
 	output_byte(ex->indices.index());
-	for (size_t* b = ex->indices.begin; b != ex->indices.end; b++)
+	for (vw_size_t* b = ex->indices.begin; b != ex->indices.end; b++)
 		output_features(*b, ex->atomics[*b].begin,ex->atomics[*b].end);
 }
 

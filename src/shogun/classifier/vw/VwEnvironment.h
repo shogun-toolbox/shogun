@@ -20,6 +20,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
+#include <shogun/classifier/vw/vw_constants.h>
 
 namespace shogun
 {
@@ -53,25 +54,25 @@ public:
 	 * Set number of bits used for the weight vector
 	 * @param bits number of bits
 	 */
-	inline void set_num_bits(index_t bits) { num_bits = bits; }
+	inline void set_num_bits(vw_size_t bits) { num_bits = bits; }
 
 	/**
 	 * Return number of bits used for weight vector
 	 * @return number of bits
 	 */
-	inline index_t get_num_bits() { return num_bits; }
+	inline vw_size_t get_num_bits() { return num_bits; }
 
 	/**
 	 * Set mask used while accessing features
 	 * @param m mask
 	 */
-	inline void set_mask(index_t m) { mask = m; }
+	inline void set_mask(vw_size_t m) { mask = m; }
 
 	/**
 	 * Return the mask used
 	 * @return mask
 	 */
-	inline index_t get_mask() { return mask; }
+	inline vw_size_t get_mask() { return mask; }
 
 	/**
 	 * Return minimum label encountered
@@ -89,13 +90,13 @@ public:
 	 * Return number of threads used for learning
 	 * @return number of threads
 	 */
-	inline index_t num_threads() { return 1 << thread_bits; }
+	inline vw_size_t num_threads() { return 1 << thread_bits; }
 
 	/**
 	 * Return length of weight vector
 	 * @return length of weight vector
 	 */
-	inline index_t length() { return 1 << num_bits; }
+	inline vw_size_t length() { return 1 << num_bits; }
 
 	/**
 	 * Set a new stride value.
@@ -103,7 +104,7 @@ public:
 	 *
 	 * @param new_stride new value of stride
 	 */
-	void set_stride(index_t new_stride);
+	void set_stride(vw_size_t new_stride);
 
 	/**
 	 * Return the name of the object
@@ -120,15 +121,15 @@ private:
 
 public:
 	/// log_2 of the number of features
-	index_t num_bits;
+	vw_size_t num_bits;
 	/// log_2 of the number of threads
-	index_t thread_bits;
+	vw_size_t thread_bits;
 	/// Mask used for hashing
-	index_t mask;
+	vw_size_t mask;
 	/// Mask used by regressor for learning
-	index_t thread_mask;
+	vw_size_t thread_mask;
 	/// Number of elements in weight vector per feature
-	index_t stride;
+	vw_size_t stride;
 
 	/// Smallest label seen
 	float64_t min_label;
@@ -171,18 +172,18 @@ public:
 	/// Weighted labels
 	float64_t weighted_labels;
 	/// Total number of features
-	index_t total_features;
+	vw_size_t total_features;
 	/// Sum of losses
 	float64_t sum_loss;
 	/// Number of passes complete
-	index_t passes_complete;
+	vw_size_t passes_complete;
 	/// Number of passes
-	index_t num_passes;
+	vw_size_t num_passes;
 
 	/// ngrams to generate
-	size_t ngram;
+	vw_size_t ngram;
 	/// Skips in ngrams
-	size_t skips;
+	vw_size_t skips;
 
 	/// Whether some namespaces are ignored
 	bool ignore_some;
@@ -195,7 +196,7 @@ public:
 	/// VW version
 	const char* vw_version;
 	/// Length of version string
-	size_t v_length;
+	vw_size_t v_length;
 };
 
 }

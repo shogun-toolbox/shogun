@@ -85,7 +85,7 @@ private:
 	 *
 	 * @return ptr to compressed data
 	 */
-	char* run_len_encode(char *p, size_t i);
+	char* run_len_encode(char *p, vw_size_t i);
 
 	/**
 	 * Encode a signed int32_t into an unsigned representation
@@ -147,11 +147,11 @@ protected:
 
 private:
 	/// Used for encoding/decoding -1
-	size_t neg_1;
+	vw_size_t neg_1;
 	/// Used for encoding/decoding other numbers
-	size_t general;
+	vw_size_t general;
 	/// int size for encoding/decoding
-	size_t int_size;
+	vw_size_t int_size;
 };
 
 }

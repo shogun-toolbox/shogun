@@ -18,6 +18,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
+#include <shogun/classifier/vw/vw_constants.h>
 #include <shogun/classifier/vw/vw_label.h>
 
 namespace shogun
@@ -78,14 +79,14 @@ public:
 	/// Tag
 	v_array<char> tag;
 	/// Array of namespaces
-	v_array<size_t> indices;
+	v_array<vw_size_t> indices;
 	/// Array of features
 	v_array<VwFeature> atomics[256];
 
 	/// Number of features
-	size_t num_features;
+	vw_size_t num_features;
 	/// Pass
-	size_t pass;
+	vw_size_t pass;
 	/// Final prediction
 	float32_t final_prediction;
 	/// Loss
@@ -103,7 +104,7 @@ public:
 	float32_t total_sum_feat_sq;
 
 	/// Example counter
-	size_t example_counter;
+	vw_size_t example_counter;
 	/// Whether features are sorted by weight index
 	bool sorted;
 };
