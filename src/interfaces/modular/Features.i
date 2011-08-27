@@ -72,6 +72,24 @@ namespace shogun
     %template(StringLongRealFeatures) CStringFeatures<floatmax_t>;
 }
 
+/* Templated Class StreamingStringFeatures */
+%include <shogun/features/StreamingStringFeatures.h>
+namespace shogun
+{
+    %template(StreamingStringBoolFeatures) CStreamingStringFeatures<bool>;
+    %template(StreamingStringCharFeatures) CStreamingStringFeatures<char>;
+    %template(StreamingStringByteFeatures) CStreamingStringFeatures<uint8_t>;
+    %template(StreamingStringShortFeatures) CStreamingStringFeatures<int16_t>;
+    %template(StreamingStringWordFeatures) CStreamingStringFeatures<uint16_t>;
+    %template(StreamingStringIntFeatures) CStreamingStringFeatures<int32_t>;
+    %template(StreamingStringUIntFeatures) CStreamingStringFeatures<uint32_t>;
+    %template(StreamingStringLongFeatures) CStreamingStringFeatures<int64_t>;
+    %template(StreamingStringUlongFeatures) CStreamingStringFeatures<uint64_t>;
+    %template(StreamingStringShortRealFeatures) CStreamingStringFeatures<float32_t>;
+    %template(StreamingStringRealFeatures) CStreamingStringFeatures<float64_t>;
+    %template(StreamingStringLongRealFeatures) CStreamingStringFeatures<floatmax_t>;
+}
+
 /* Templated Class StringFileFeatures */
 %include <shogun/features/StringFileFeatures.h>
 namespace shogun
