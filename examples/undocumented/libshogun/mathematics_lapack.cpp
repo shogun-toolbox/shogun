@@ -38,12 +38,16 @@ int main(int argc, char** argv)
 	for (int i=0; i<N; i++)
 	{
 		for (int j=0; j<N; j++)
-			matrix[i*N+j] = i*i+j*j;
+			matrix[i*N+j] = (i-j)/(i+j+1);
+		matrix[i*N+i] += 10;
 	}	
 	status = 0;
 	wrap_dsygvx(1,'V','U',N,matrix,N,matrix,N,1,3,eigenvalues,eigenvectors,&status);
 	if (status!=0)
+	{
+		printf("DSYGVX failed with code %d\n",status);
 		return -1;
+	}
 	delete[] eigenvectors;
 
 
@@ -53,7 +57,10 @@ int main(int argc, char** argv)
 	wrap_dgeqrf(N,N,matrix,N,tau,&status);
 	wrap_dorgqr(N,N,N,matrix,N,tau,&status);
 	if (status!=0)
+	{
+		printf("DGEQRF/DORGQR failed with code %d\n",status);
 		return -1;
+	}
 	delete[] tau;
 
 
@@ -66,7 +73,10 @@ int main(int argc, char** argv)
 	status = 0;
 	wrap_dgesvd('A','A',N,N,matrix,N,s,U,N,Vt,N,&status);
 	if (status!=0)
+	{
+		printf("DGESVD failed with code %d\n",status);
 		return -1;
+	}
 	delete[] s;
 	delete[] U;
 	delete[] Vt;
@@ -81,7 +91,10 @@ int main(int argc, char** argv)
 	status = 0;
 	wrap_dsyev('V','U',N,matrix,N,eigenvalues,&status);
 	if (status!=0)
+	{
+		printf("DSYEV failed with code %d\n",status);
 		return -1;
+	}
 	delete[] eigenvalues;
 	delete[] matrix;
 

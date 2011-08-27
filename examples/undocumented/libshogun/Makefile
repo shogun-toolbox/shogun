@@ -37,6 +37,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  mathematics_arpack \
 		  library_fibonacci_heap \
 		  library_hashset \
+		  mathematics_lapack \
 
 all: $(TARGETS)
 
