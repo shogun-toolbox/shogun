@@ -12,11 +12,11 @@ public class features_string_word_modular {
 
 	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
-		//String[] strings = new String[] { "hey", "guys", "string"};
-		//StringCharFeatures cf = new StringCharFeatures(strings, RAWBYTE);
-		//StringWordFeatures wf = new StringWordFeatures(RAWBYTE);
-		//wf.obtain_from_char(cf, 0, 2, 0, false);
-		//wf.set_feature_vector(new DoubleMatrix(new double[][] {{1,2,3,4,5}}), 0);
+		String[] strings = new String[] { "hey", "guys", "string"};
+		StringCharFeatures cf = new StringCharFeatures(strings, RAWBYTE);
+		StringWordFeatures wf = new StringWordFeatures(RAWBYTE);
+		wf.obtain_from_char(cf, 0, 2, 0, false);
+		wf.set_feature_vector(new DoubleMatrix(new double[][] {{1,2,3,4,5}}), 0);
 
 		modshogun.exit_shogun();
 	}

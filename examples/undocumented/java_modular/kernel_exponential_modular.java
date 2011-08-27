@@ -10,14 +10,9 @@ public class kernel_exponential_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public ArrayList parameter_list = new ArrayList(2); 
-	public kernel_exponential_modular() {
-		parameter_list.add(Arrays.asList(new Double(1.0)));
-		parameter_list.add(Arrays.asList(new Double(5.0)));
-	}
-	public Object run(List para) {
+	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
-		double tau_coef = ((Double)para.get(0)).doubleValue();
+		double tau_coef = 5.0;
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
 		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
@@ -33,16 +28,6 @@ public class kernel_exponential_modular {
 		kernel.init(feats_train, feats_test);
 		DoubleMatrix km_test=kernel.get_kernel_matrix();
 
-		ArrayList result = new ArrayList();
-		result.add(km_train);
-		result.add(km_test);
-		result.add(kernel);
-
 		modshogun.exit_shogun();
-		return (Object)result;
-	}
-	public static void main(String argv[]) {
-		kernel_exponential_modular x = new kernel_exponential_modular();
-		x.run((List)x.parameter_list.get(0));
 	}
 }

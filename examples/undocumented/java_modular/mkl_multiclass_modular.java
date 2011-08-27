@@ -45,15 +45,10 @@ public class mkl_multiclass_modular {
 		feats_train.append_feature_obj(subkfeats3_train);
 		feats_test.append_feature_obj(subkfeats3_test);
 		kernel.append_kernel(subkernel3);
-		
 
 		kernel.init(feats_train, feats_train);
 
-		System.out.println(trainlab);
-
 		Labels labels = new Labels(trainlab);
-
-		System.out.println(labels.get_labels());
 
 		MKLMultiClass mkl = new MKLMultiClass(C, kernel, labels);
 		mkl.set_epsilon(epsilon);
@@ -62,8 +57,8 @@ public class mkl_multiclass_modular {
 
 		mkl.train();
 
-		//kernel.init(feats_train, feats_test);
-		//DoubleMatrix out =  mkl.apply().get_labels();
+		kernel.init(feats_train, feats_test);
+		DoubleMatrix out =  mkl.apply().get_labels();
 
 		modshogun.exit_shogun();
 	}

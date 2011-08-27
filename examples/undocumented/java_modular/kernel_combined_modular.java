@@ -10,15 +10,10 @@ public class kernel_combined_modular {
 		System.loadLibrary("modshogun");
 	}
 
-	public ArrayList parameter_list = new ArrayList(2); 
-	public kernel_combined_modular() {
-		parameter_list.add(Arrays.asList(new Integer(2), new Integer(10)));
-		parameter_list.add(Arrays.asList(new Integer(5), new Integer(10)));
-	}
-	public Object run(List para) {
+	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
-		int cardinality = ((Integer)para.get(0)).intValue();
-		int size_cache = ((Integer)para.get(1)).intValue();
+		int cardinality = 2;
+		int cache = 10;
 
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
 		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
@@ -32,7 +27,7 @@ public class kernel_combined_modular {
 		CombinedFeatures feats_train = new CombinedFeatures();
 		CombinedFeatures feats_test = new CombinedFeatures();
 
-		GaussianKernel subkernel = new GaussianKernel(10, 1.1);
+		GaussianKernel subkernel = new GaussianKernel(cache, 1.1);
 		feats_train.append_feature_obj(subfeats_train);
 		feats_test.append_feature_obj(subfeats_test);
 		kernel.append_kernel(subkernel);
@@ -57,16 +52,6 @@ public class kernel_combined_modular {
 		kernel.init(feats_train, feats_test);
 		DoubleMatrix km_test=kernel.get_kernel_matrix();
 
-		ArrayList result = new ArrayList();
-		result.add(km_train);
-		result.add(km_test);
-		result.add(kernel);
-
 		modshogun.exit_shogun();
-		return (Object)result;
-	}
-	public static void main(String argv[]) {
-		kernel_combined_modular x = new kernel_combined_modular();
-		x.run((List)x.parameter_list.get(0));
 	}
 }
