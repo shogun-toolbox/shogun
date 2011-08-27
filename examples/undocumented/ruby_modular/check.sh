@@ -4,7 +4,7 @@ rm -f error.log
 
 if test -z "$1"
 then
-	for e in $(ls -1 *.rb | grep -v ruby)
+	for e in $(ls -1 *.rb | grep -v ruby | grep -v shogun_helpers)
 	do
 		echo -n $e
 
