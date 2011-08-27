@@ -15,7 +15,7 @@ public class kernel_top_modular {
 		modshogun.init_shogun_with_defaults();
 		boolean reverse = false;
 		int N = 1;
-		int M = 512;
+		int M = 64;
 		double pseudo = 1e-5;
 		int order = 3;
 		int gap = 0;
@@ -24,8 +24,8 @@ public class kernel_top_modular {
 		String[] fm_test_dna = Load.load_dna("../data/fm_test_dna.dat");
 		DoubleMatrix label_train_dna = Load.load_labels("../data/label_train_dna.dat");
 
-		ArrayList fm_hmm_pos_builder = new ArrayList();
-		ArrayList fm_hmm_neg_builder = new ArrayList();
+		List fm_hmm_pos_builder = new ArrayList();
+		List fm_hmm_neg_builder = new ArrayList();
 		for(int i = 0; i < label_train_dna.getColumns(); i++) {
 			if (label_train_dna.get(i) == 1)
 				fm_hmm_pos_builder.add(fm_train_dna[i]);
@@ -40,7 +40,7 @@ public class kernel_top_modular {
 		for (int i = 0; i < pos_size; i++)
 			fm_hmm_pos[i] = (String)fm_hmm_pos_builder.get(i);
 		for (int i = 0; i < neg_size; i++)
-			fm_hmm_pos[i] = (String)fm_hmm_neg_builder.get(i);
+			fm_hmm_neg[i] = (String)fm_hmm_neg_builder.get(i);
 
 		StringCharFeatures charfeat = new StringCharFeatures(fm_hmm_pos, DNA);
 		StringWordFeatures hmm_pos_train = new StringWordFeatures(charfeat.get_alphabet());
@@ -55,7 +55,7 @@ public class kernel_top_modular {
 
 		HMM neg = new HMM(hmm_neg_train, N, M, pseudo);
 		neg.baum_welch_viterbi_train(BW_NORMAL);
-
+		
 		charfeat = new StringCharFeatures(fm_train_dna, DNA);
 		StringWordFeatures wordfeats_train = new StringWordFeatures(charfeat.get_alphabet());
 		wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
@@ -66,6 +66,8 @@ public class kernel_top_modular {
 
 		pos.set_observations(wordfeats_train);
 		neg.set_observations(wordfeats_train);
+
+
 		TOPFeatures feats_train = new TOPFeatures(10, pos, neg, false, false);
 		PolyKernel kernel = new PolyKernel(feats_train, feats_train, 1, true);
 		DoubleMatrix km_train = kernel.get_kernel_matrix();

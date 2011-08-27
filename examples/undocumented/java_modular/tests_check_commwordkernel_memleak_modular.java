@@ -24,10 +24,10 @@ public class tests_check_commwordkernel_memleak_modular {
 		for (int i = 0; i < 60; i++) {
 			POS[i] = repeat("ACGT", 10);		
 		}
-		for (int i = 61; i < 82; i++) {
+		for (int i = 60; i < 82; i++) {
 			POS[i] = repeat("TTGT", 10);		
 		}
-		for (int i = 83; i < 141; i++) {
+		for (int i = 82; i < 141; i++) {
 			POS[i] = repeat("ACGT", 10);		
 		}
 
@@ -35,10 +35,10 @@ public class tests_check_commwordkernel_memleak_modular {
 		for (int i = 0; i < 60; i++) {
 			NEG[i] = repeat("ACGT", 10);		
 		}
-		for (int i = 61; i < 82; i++) {
+		for (int i = 60; i < 82; i++) {
 			NEG[i] = repeat("TTGT", 10);		
 		}
-		for (int i = 83; i < 141; i++) {
+		for (int i = 82; i < 141; i++) {
 			NEG[i] = repeat("ACGT", 10);		
 		}
 

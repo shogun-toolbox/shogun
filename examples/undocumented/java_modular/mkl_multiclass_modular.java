@@ -22,28 +22,38 @@ public class mkl_multiclass_modular {
 		CombinedFeatures feats_train = new CombinedFeatures();
 		CombinedFeatures feats_test = new CombinedFeatures();
 
-		RealFeatures subkfeats_train = new RealFeatures(traindata_real);
-		RealFeatures subkfeats_test = new RealFeatures(testdata_real);
+		RealFeatures subkfeats1_train = new RealFeatures(traindata_real);
+		RealFeatures subkfeats1_test = new RealFeatures(testdata_real);
 		
 		GaussianKernel subkernel = new GaussianKernel(10, width);
-		feats_train.append_feature_obj(subkfeats_train);
-		feats_test.append_feature_obj(subkfeats_test);
+		feats_train.append_feature_obj(subkfeats1_train);
+		feats_test.append_feature_obj(subkfeats1_test);
 		kernel.append_kernel(subkernel);
 
+		RealFeatures subkfeats2_train = new RealFeatures(traindata_real);
+		RealFeatures subkfeats2_test = new RealFeatures(testdata_real);
+		
 		LinearKernel subkernel2 = new LinearKernel();
-		feats_train.append_feature_obj(subkfeats_train);
-		feats_test.append_feature_obj(subkfeats_test);
+		feats_train.append_feature_obj(subkfeats2_train);
+		feats_test.append_feature_obj(subkfeats2_test);
 		kernel.append_kernel(subkernel2);
 
+		RealFeatures subkfeats3_train = new RealFeatures(traindata_real);
+		RealFeatures subkfeats3_test = new RealFeatures(testdata_real);
+		
 		PolyKernel subkernel3 = new PolyKernel(10, 2);
-		feats_train.append_feature_obj(subkfeats_train);
-		feats_test.append_feature_obj(subkfeats_test);
+		feats_train.append_feature_obj(subkfeats3_train);
+		feats_test.append_feature_obj(subkfeats3_test);
 		kernel.append_kernel(subkernel3);
 		
 
 		kernel.init(feats_train, feats_train);
 
+		System.out.println(trainlab);
+
 		Labels labels = new Labels(trainlab);
+
+		System.out.println(labels.get_labels());
 
 		MKLMultiClass mkl = new MKLMultiClass(C, kernel, labels);
 		mkl.set_epsilon(epsilon);
@@ -52,8 +62,8 @@ public class mkl_multiclass_modular {
 
 		mkl.train();
 
-		kernel.init(feats_train, feats_test);
-		DoubleMatrix out =  mkl.apply().get_labels();
+		//kernel.init(feats_train, feats_test);
+		//DoubleMatrix out =  mkl.apply().get_labels();
 
 		modshogun.exit_shogun();
 	}
