@@ -26,5 +26,5 @@ end
 
 if __FILE__ == $0 then
 	puts 'Gaussian'
-	kernel_gaussian_modular(traindat, testdat, 1.3)
+	kernel_gaussian_modular(*parameter_list[0])
 end
