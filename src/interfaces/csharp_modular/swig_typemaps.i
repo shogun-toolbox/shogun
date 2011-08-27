@@ -58,7 +58,7 @@
 }
 
 %typemap(csin) shogun::SGVector<SGTYPE> "$csinput.Length, $csinput"
-%typemap(csout) shogun::SGVector<SGTYPE> {
+%typemap(csout, excode=SWIGEXCODE) shogun::SGVector<SGTYPE> {
 		IntPtr ptr = $imcall;$excode
 		int[] size = new int[1];
 		Marshal.Copy(ptr, size, 0, 1);
@@ -140,7 +140,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 }
 
 %typemap(csin) shogun::SGMatrix<SGTYPE> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
-%typemap(csout) shogun::SGMatrix<SGTYPE> {
+%typemap(csout, excode=SWIGEXCODE) shogun::SGMatrix<SGTYPE> {
 	IntPtr ptr = $imcall;$excode
 	int[] ranks = new int[2];
 	Marshal.Copy(ptr, ranks, 0, 2);
@@ -241,7 +241,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 }
 
 %typemap(csin) shogun::SGStringList<SGTYPE> "$csinput.GetLength(0), $csinput.GetLength(1), $csinput"
-%typemap(csout) shogun::SGStringList<SGTYPE> {
+%typemap(csout, excode=SWIGEXCODE) shogun::SGStringList<SGTYPE> {
 	IntPtr ptr = $imcall;$excode
 	CSHARPTYPE[] ranks = new CSHARPTYPE[2];
 	Marshal.Copy(ptr, ranks, 0, 2);
@@ -333,7 +333,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 }
 
 %typemap(csin) shogun::SGStringList<char> "$csinput.Length, $csinput"
-%typemap(csout) shogun::SGStringList<char> {
+%typemap(csout, excode=SWIGEXCODE) shogun::SGStringList<char> {
 	IntPtr ptr = $imcall;$excode
 	
 	IntPtr[] ranks = new IntPtr[1];
