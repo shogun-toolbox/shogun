@@ -128,7 +128,7 @@ public:
 
 		if (current_vector)
 		{
-			for (int32_t i=0; i<current_num_features; i++)
+			for (int32_t i=0; i<current_length; i++)
 				if (current_vector[i].feat_index==index)
 					ret += current_vector[i].entry;
 		}
@@ -148,7 +148,7 @@ public:
 	 *
 	 * Examples must be labelled, otherwise an error occurs.
 	 *
-	 * @return The label as a float32_t.
+	 * @return The label as a float64_t.
 	 */
 	virtual float64_t get_label();
 
@@ -343,10 +343,10 @@ public:
 	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len)
 	{
 		ASSERT(vec2);
-		if (vec2_len < current_num_features+1)
+		if (vec2_len < current_num_features)
 		{
 			SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
-				 vec2_len, current_num_features+1);
+				 vec2_len, current_num_features);
 		}
 
 		float64_t result=0;
@@ -370,10 +370,10 @@ public:
 	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len)
 	{
 		ASSERT(vec2);
-		if (vec2_len < current_num_features+1)
+		if (vec2_len < current_num_features)
 		{
 			SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
-				 vec2_len, current_num_features+1);
+				 vec2_len, current_num_features);
 		}
 
 		float32_t result=0;
@@ -398,10 +398,10 @@ public:
 	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false)
 	{
 		ASSERT(vec2);
-		if (vec2_len < current_num_features+1)
+		if (vec2_len < current_num_features)
 		{
 			SG_ERROR("dimension of vec (=%d) does not match number of features (=%d)\n",
-				 vec2_len, current_num_features+1);
+				 vec2_len, current_num_features);
 		}
 
 		SGSparseVectorEntry<T>* sv=current_vector;
@@ -434,10 +434,10 @@ public:
 	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val=false)
 	{
 		ASSERT(vec2);
-		if (vec2_len < current_num_features+1)
+		if (vec2_len < current_num_features)
 		{
 			SG_ERROR("dimension of vec (=%d) does not match number of features (=%d)\n",
-				 vec2_len, current_num_features+1);
+				 vec2_len, current_num_features);
 		}
 
 		SGSparseVectorEntry<T>* sv=current_vector;
@@ -711,7 +711,7 @@ bool CStreamingSparseFeatures<T>::get_next_example()
 	for (int32_t i=0; i<current_length; i++)
 	{
 		if (current_vector[i].feat_index > current_num_features)
-			current_num_features = current_vector[i].feat_index;
+			current_num_features = current_vector[i].feat_index+1;
 	}
 
 	current_vec_index++;
