@@ -66,7 +66,7 @@ public:
 	 * 
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	~CStreamingStringFeatures()
+	virtual ~CStreamingStringFeatures()
 	{
 		parser.end_parser();
 		SG_UNREF(alphabet);

@@ -4,6 +4,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/StreamingFeatures.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/features/StreamingStringFeatures.h>
 #include <shogun/features/StringFileFeatures.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StreamingDotFeatures.h>
