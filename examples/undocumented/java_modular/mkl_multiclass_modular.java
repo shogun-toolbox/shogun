@@ -16,7 +16,7 @@ public class mkl_multiclass_modular {
 		DoubleMatrix traindata_real = Load.load_numbers("../data/fm_train_real.dat");
 		DoubleMatrix testdata_real = Load.load_numbers("../data/fm_test_real.dat");
 
-		DoubleMatrix trainlab = Load.load_labels("../data/label_train_twoclass.dat");
+		DoubleMatrix trainlab = Load.load_labels("../data/label_train_multiclass.dat");
 
 		CombinedKernel kernel = new CombinedKernel();
 		CombinedFeatures feats_train = new CombinedFeatures();
