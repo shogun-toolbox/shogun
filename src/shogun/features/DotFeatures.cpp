@@ -14,7 +14,7 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -83,7 +83,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 
 	CSignal::clear_cancel();
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	if (num_threads < 2)
 	{
 #endif
@@ -99,7 +99,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		params.bias=b;
 		params.progress=false; //true;
 		dense_dot_range_helper((void*) &params);
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	}
 	else
 	{
@@ -161,7 +161,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 
 	CSignal::clear_cancel();
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	if (num_threads < 2)
 	{
 #endif
@@ -177,7 +177,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 		params.bias=b;
 		params.progress=false; //true;
 		dense_dot_range_helper((void*) &params);
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	}
 	else
 	{

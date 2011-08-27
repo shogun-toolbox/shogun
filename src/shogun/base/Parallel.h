@@ -61,7 +61,7 @@ public:
 	 */
 	inline void set_num_threads(int32_t n)
 	{
-#ifdef WIN32
+#ifndef HAVE_PTHREAD
 		ASSERT(n==1);
 #endif
 		num_threads=n;

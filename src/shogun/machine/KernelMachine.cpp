@@ -150,7 +150,7 @@ CLabels* CKernelMachine::apply()
 				params.verbose=true;
 				apply_helper((void*) &params);
 			}
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 			else
 			{
 				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);

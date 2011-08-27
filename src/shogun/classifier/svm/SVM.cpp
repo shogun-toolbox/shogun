@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 

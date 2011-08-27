@@ -29,7 +29,7 @@
 
 #include <assert.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -121,13 +121,13 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	SG_DEBUG("initializing background\n");
 	double background[20]; // profile
 	background[0]=0.0799912015849807; //A
-  background[1]=0.0484482507611578;//R
-  background[2]=0.044293531582512;//N
-  background[3]=0.0578891399707563;//D
-  background[4]=0.0171846021407367;//C
-  background[5]=0.0380578923048682;//Q
-  background[6]=0.0638169929675978;//E
-  background[7]=0.0760659374742852;//G
+	background[1]=0.0484482507611578;//R
+	background[2]=0.044293531582512;//N
+	background[3]=0.0578891399707563;//D
+	background[4]=0.0171846021407367;//C
+	background[5]=0.0380578923048682;//Q
+	background[6]=0.0638169929675978;//E
+	background[7]=0.0760659374742852;//G
 	background[8]=0.0223465499452473;//H
 	background[9]=0.0550905793661343;//I
 	background[10]=0.0866897071203864;//L
@@ -151,7 +151,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	
 	SG_DEBUG("Reading profiles from %s\n", filename);
 	std::string line;
-  while (!fin.eof())
+	while (!fin.eof())
 	{ 
 		std::getline(fin, line);
 

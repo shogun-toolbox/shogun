@@ -30,7 +30,7 @@ extern "C" {
 
 #include <shogun/base/Parallel.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -399,7 +399,7 @@ void CSVRLight::update_linear_component(
 						lin[j]+=kernel->compute_optimized(regression_fix_index(docs[j]));
 					}
 				}
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 				else
 				{
 					int32_t num_elem = 0 ;

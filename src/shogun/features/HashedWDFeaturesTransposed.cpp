@@ -13,7 +13,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -213,7 +213,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	if (dim != w_dim)
 		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim);
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	if (num_threads < 2)
 	{
 #endif
@@ -229,7 +229,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		params.progress=false; //true;
 		params.index=index;
 		dense_dot_range_helper((void*) &params);
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	}
 	else
 	{
@@ -297,7 +297,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	if (dim != w_dim)
 		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim);
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	if (num_threads < 2)
 	{
 #endif
@@ -313,7 +313,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		params.progress=false; //true;
 		params.index=index;
 		dense_dot_range_helper((void*) &params);
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	}
 	else
 	{

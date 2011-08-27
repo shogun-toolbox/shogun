@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <math.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -355,13 +355,13 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 // Fills cache for the rows in key
 void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 {
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	if (parallel->get_num_threads()<2)
 	{
 #endif
 		for(int32_t i=0;i<num_rows;i++)
 			cache_kernel_row(rows[i]);
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	}
 	else
 	{

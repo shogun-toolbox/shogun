@@ -42,7 +42,7 @@
 
 #include <shogun/base/Parallel.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -1043,7 +1043,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 												   chosen, active2dnum, key, a, lin, c,
 												   varnum, totdoc, aicache, qp) ;
 	}
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	else
 	{
 		register int32_t ki,kj,i,j;
@@ -1452,7 +1452,7 @@ void CSVMLight::update_linear_component(
 						lin[j]+=kernel->compute_optimized(docs[j]);
 					}
 				}
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 				else
 				{
 					int32_t num_elem = 0 ;
@@ -1626,7 +1626,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 		for (int32_t i=0; i<num; i++)
 			kernel->compute_by_subkernel(i,&W[i*num_kernels]);
 	}
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 	else
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
@@ -2134,7 +2134,7 @@ void CSVMLight::reactivate_inactive_examples(
 				  params.end=totdoc;
 				  reactivate_inactive_examples_linadd_helper((void*) &params);
 			  }
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 			  else
 			  {
 				  pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
@@ -2266,7 +2266,7 @@ void CSVMLight::reactivate_inactive_examples(
 					  lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 			  }
 		  }
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 		  else
 		  {
 			  //find number of the changed ones
