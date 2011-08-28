@@ -280,16 +280,18 @@ private:
 
 	/// Multiplication factor for number of examples to dump after
 	float32_t dump_interval;
+	/// Sum of loss since last printed update
+	float32_t sum_loss_since_last_dump;
+	/// Number of weighted examples in previous dump
+	float64_t old_weighted_examples;
 
 	/// Name of file to save regressor to
 	char* reg_name;
-
 	/// Whether to save regressor as readable text or not
 	bool reg_dump_text;
 
 	/// Whether to save predictions or not
 	bool save_predictions;
-
 	/// Descriptor of prediction file
 	int32_t prediction_fd;
 };
