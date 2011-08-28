@@ -1,3 +1,5 @@
+.PHONY: ChangeLog
+
 ifneq (.config,$(wildcard .config))
 all:
 #runconfigurehunkstart
@@ -103,9 +105,4 @@ linecount:
 	@(cat `find ./ -type f -name '*.cpp' -o -name '*.c' -o -name '*.h'`; cat `find ./modular -type f -o -name '*.i'`)  | grep -vc '^ *$$'
 
 ChangeLog:
-	@if [ -n "`which svn2cl`" ]; then \
-		svn2cl --group-by-day --authors=.authors 2>/dev/null; \
-	else \
-		echo "Need svn2cl (from subversion-tools) to update ChangeLog!"; \
-		exit 1; \
-	fi
+	git log --name-status --graph >$@
