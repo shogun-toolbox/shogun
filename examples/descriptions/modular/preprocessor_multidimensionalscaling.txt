@@ -1,0 +1,7 @@
+In this example toy data is being processed using the multidimensional
+scaling as described on p.261 (Section 12.1) of
+
+Borg, I., & Groenen, P. J. F. (2005).
+Modern multidimensional scaling: Theory and applications. Springer.
+
+Before processing the landmark approximation is disabled.

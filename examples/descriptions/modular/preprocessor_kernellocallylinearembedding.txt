@@ -1,0 +1,7 @@
+In this example toy data is being processed using kernel extension
+of the Locally Linear Embedding (LLE) algorithm as described in
+
+Kayo, O. (2006). Locally linear embedding algorithm. Extensions and applications. October.
+Retrieved from: http://herkules.oulu.fi/isbn9514280415/isbn9514280415.pd
+
+Linear kernel is used as kernel of the extension.
