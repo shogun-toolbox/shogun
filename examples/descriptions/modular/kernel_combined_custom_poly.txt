@@ -1,0 +1,1 @@
+In this example the combined kernel of custom kernel and poly kernel is being computed for toy data.

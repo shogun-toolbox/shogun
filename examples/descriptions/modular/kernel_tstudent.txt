@@ -1,0 +1,1 @@
+In this example the t-Student's kernel is being computed for toy data.

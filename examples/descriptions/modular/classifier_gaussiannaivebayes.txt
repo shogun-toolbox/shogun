@@ -1,0 +1,2 @@
+In this example the Gaussian Naive Bayes algorithm used to classify
+toy data
