@@ -15,7 +15,7 @@ ${JAVAC} Load.java
 
 FILES=$@
 
-test -z "$FILES" && FILES=$(ls *.java | grep -v Load.cs )
+test -z "$FILES" && FILES=$(ls *.java | grep -v Load.java )
 
 for e in $FILES
 do
