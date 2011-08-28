@@ -18,10 +18,27 @@
 
 namespace shogun
 {
-/** @brief This class implements streaming features with dense feature vectors.
+/** @brief This class implements streaming features with sparse feature vectors.
+ * The vector is represented as an SGSparseVector<T>. Each entry is of type
+ * SGSparseVectorEntry<T> with members `feat_index' and `entry'.
+ *
+ * This class expects the input from the StreamingFile object to be zero-based,
+ * i.e., a feature entered as 1:6.5 would have feat_index=0 and entry=6.5.
  *
  * The current example is stored as a combination of current_vector
  * and current_label.
+ * current_num_features stores the highest dimensionality of examples encountered
+ * upto the point of the function call.
+ * For example, if the first example is '1:6.5 7:10.0', then current_num_features
+ * would be 7 after the first function call.
+ *
+ * Since the dimensionality of the feature space is not immediately known initially,
+ * current_num_features may increase as more examples are processed and larger
+ * dimensions are seen.
+ * For this purpose, `expand_if_required()' is provided which when called with a
+ * dynamically allocated float or double array and the length, reallocates that
+ * array to the new dimensionality (if necessary), setting the newer dimensions
+ * to zero, and updates the length parameter to equal the new length of the array.
  */
 template <class T> class CStreamingSparseFeatures : public CStreamingDotFeatures
 {
@@ -595,7 +612,7 @@ private:
 	 * Initializes members to null values.
 	 * current_length is set to -1.
 	 */
-	void init();
+	virtual void init();
 
 	/**
 	 * Calls init, and also initializes the parser with the given args.
@@ -604,7 +621,7 @@ private:
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size);
 
 protected:
 	/// The parser object, which reads from input and returns parsed example objects.
