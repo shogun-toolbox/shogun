@@ -84,7 +84,6 @@
 \arg \b train_regression \verbatim sg('train_regression') \endverbatim
 \arg \b train_clustering \verbatim sg('train_clustering') \endverbatim
 \arg \b svm_train \verbatim sg('svm_train', [classifier-specific parameters]) \endverbatim
-\arg \b svm_test \verbatim sg('svm_test') \endverbatim
 \arg \b svm_qpsize \verbatim sg('svm_qpsize', size) \endverbatim
 \arg \b svm_max_qpsize \verbatim sg('svm_max_qpsize', size) \endverbatim
 \arg \b svm_bufsize \verbatim sg('svm_bufsize', size) \endverbatim
@@ -94,6 +93,7 @@
 \arg \b svm_nu \verbatim sg('svm_nu', nu) \endverbatim
 \arg \b mkl_parameters \verbatim sg('mkl_parameters', weight_epsilon, C_MKL [, mkl_norm ]) \endverbatim
 \arg \b elasticnet_lambda \verbatim sg('elasticnet_lambda', ent_lambda) \endverbatim
+\arg \b mkl_block_norm \verbatim sg('mkl_block_norm', mkl_block_norm) \endverbatim
 \arg \b svm_max_train_time \verbatim sg('svm_max_train_time', max_train_time) \endverbatim
 \arg \b use_shrinking \verbatim sg('use_shrinking', enable_shrinking) \endverbatim
 \arg \b use_batch_computation \verbatim sg('use_batch_computation', enable_batch_computation) \endverbatim
@@ -121,9 +121,7 @@
 \arg \b pseudo \verbatim sg('pseudo', pseudo) \endverbatim
 \arg \b load_defs \verbatim sg('load_defs', filename, init) \endverbatim
 \arg \b hmm_classify \verbatim [result]=sg('hmm_classify') \endverbatim
-\arg \b hmm_test \verbatim sg('hmm_test', output name[, ROC filename[, neglinear[, poslinear]]]) \endverbatim
 \arg \b one_class_linear_hmm_classify \verbatim [result]=sg('one_class_linear_hmm_classify') \endverbatim
-\arg \b one_class_hmm_test \verbatim sg('one_class_hmm_test', output name[, ROC filename[, linear]]) \endverbatim
 \arg \b one_class_hmm_classify \verbatim [result]=sg('one_class_hmm_classify') \endverbatim
 \arg \b one_class_hmm_classify_example \verbatim [result]=sg('one_class_hmm_classify_example', feature_vector_index) \endverbatim
 \arg \b hmm_classify_example \verbatim [result]=sg('hmm_classify_example', feature_vector_index) \endverbatim
@@ -150,7 +148,6 @@
 \arg \b set_feature_matrix_sparse \verbatim sg('set_feature_matrix_sparse', sp1, sp2) \endverbatim
 \arg \b new_plugin_estimator \verbatim sg('new_plugin_estimator', pos_pseudo, neg_pseudo) \endverbatim
 \arg \b train_estimator \verbatim sg('train_estimator') \endverbatim
-\arg \b test_estimator \verbatim sg('test_estimator') \endverbatim
 \arg \b plugin_estimate_classify_example \verbatim [result]=sg('plugin_estimate_classify_example', feature_vector_index) \endverbatim
 \arg \b plugin_estimate_classify \verbatim [result]=sg('plugin_estimate_classify') \endverbatim
 \arg \b set_plugin_estimate \verbatim sg('set_plugin_estimate', emission_probs, model_sizes) \endverbatim

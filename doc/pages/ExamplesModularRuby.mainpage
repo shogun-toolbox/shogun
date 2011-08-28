@@ -1,0 +1,45 @@
+/*! \page ruby_modular_examples Examples for Ruby Modular Interface
+
+This page lists ready to run shogun examples for the Ruby Modular interface.
+
+\li \subpage ruby_modular_classifier_examples 
+\li \subpage ruby_modular_features_examples 
+\li \subpage ruby_modular_kernel_examples 
+\li \subpage ruby_modular_minimal_examples 
+\li \subpage ruby_modular_shogun_examples 
+
+To run the examples issue
+\verbatim
+ruby name_of_example.rb
+\endverbatim
+
+\section ruby_modular_classifier_examples Classifier
+
+
+\li <b>../examples/documented/ruby_modular/classifier_libsvm_minimal_modular.rb</b>
+\verbinclude classifier_libsvm_minimal_modular.rb
+
+\section ruby_modular_features_examples Features
+
+
+\li <b>../examples/documented/ruby_modular/features_string_char_modular.rb</b>
+\verbinclude features_string_char_modular.rb
+
+\section ruby_modular_kernel_examples Kernel
+
+
+\li <b>../examples/documented/ruby_modular/kernel_gaussian_modular.rb</b>
+\verbinclude kernel_gaussian_modular.rb
+
+\section ruby_modular_minimal_examples Minimal
+
+
+\li <b>../examples/documented/ruby_modular/minimal_test.rb</b>
+\verbinclude minimal_test.rb
+
+\section ruby_modular_shogun_examples Shogun
+
+
+\li <b>../examples/documented/ruby_modular/shogun_helpers.rb</b>
+\verbinclude shogun_helpers.rb
+*/

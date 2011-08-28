@@ -45,7 +45,7 @@ name_of_example
 '''
 		),
 
-		'python': ('Python静态接口', 'ExamplesStaticPython.mainpage',
+		'python_static': ('Python静态接口', 'ExamplesStaticPython.mainpage',
 		'''\n要运行这些例子只需要
 \\verbatim
 python name_of_example.py
@@ -53,7 +53,7 @@ python name_of_example.py
 '''
 		),
 
-		'octave': ('Matlab(tm)和Octave静态接口', 'ExamplesStaticOctave.mainpage',
+		'octave_static': ('Matlab(tm)和Octave静态接口', 'ExamplesStaticOctave.mainpage',
 		'''\n要运行这些例子只需要
 \\verbatim
 octave name_of_example.m
@@ -81,7 +81,7 @@ LD_LIBRARY_PATH=path/to/libshogun:path/to/libshogunui
 
 		'''),
 
-		'r' : ('R静态接口', 'ExamplesStaticR.mainpage',
+		'r_static' : ('R静态接口', 'ExamplesStaticR.mainpage',
 		'''\n要运行这些例子只需要
 \\verbatim
 R -f name_of_example.R
@@ -115,7 +115,7 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \\endverbatim
 		'''),
 
-		'cmdline' :('命令行静态接口', 'ExamplesStaticCmdline.mainpage',
+		'cmdline_static' :('命令行静态接口', 'ExamplesStaticCmdline.mainpage',
 		'''\n要运行这些例子只需要
 \\verbatim
 shogun name_of_example.sg

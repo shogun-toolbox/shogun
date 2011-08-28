@@ -43,7 +43,7 @@ name_of_example
 '''
 		),
 
-		'python': ('Static Python', 'ExamplesStaticPython.mainpage',
+		'python_static': ('Static Python', 'ExamplesStaticPython.mainpage',
 		'''\nTo run the examples issue
 \\verbatim
 python name_of_example.py
@@ -51,7 +51,7 @@ python name_of_example.py
 '''
 		),
 
-		'octave': ('Static Matlab(tm) and Octave', 'ExamplesStaticOctave.mainpage',
+		'octave_static': ('Static Matlab(tm) and Octave', 'ExamplesStaticOctave.mainpage',
 		'''\nTo run the examples issue
 \\verbatim
 octave name_of_example.m
@@ -80,7 +80,7 @@ LD_LIBRARY_PATH=path/to/libshogun:path/to/libshogunui
 before starting matlab.
 		'''),
 
-		'r' : ('Static R', 'ExamplesStaticR.mainpage',
+		'r_static' : ('Static R', 'ExamplesStaticR.mainpage',
 		'''\nTo run the examples issue
 \\verbatim
 R -f name_of_example.R
@@ -114,15 +114,50 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \\endverbatim
 		'''),
 
-		'cmdline' :('Static Command Line', 'ExamplesStaticCmdline.mainpage',
+		'cmdline_static' :('Static Command Line', 'ExamplesStaticCmdline.mainpage',
 		'''\nTo run the examples issue
 \\verbatim
 shogun name_of_example.sg
 \\endverbatim
 		'''
-			)}
+		),
 
-valid_endings=['.py', '.m', '.R', '.sg', '.cpp']
+		'lua_modular' : ('Lua Modular', 'ExamplesModularLua.mainpage',
+		'''\nTo run the examples issue
+\\verbatim
+lua name_of_example.lua
+\\endverbatim
+'''
+		),
+
+		'ruby_modular' : ('Ruby Modular', 'ExamplesModularRuby.mainpage',
+		'''\nTo run the examples issue
+\\verbatim
+ruby name_of_example.rb
+\\endverbatim
+'''
+		),
+
+		'csharp_modular' : ('C# Modular', 'ExamplesModularCSharp.mainpage',
+		'''\nTo run the examples issue
+\\verbatim
+gmcs path/to/shogun/interfaces/csharp_modular/*.cs name_of_example.cs
+LD_LIBRARY_PATH=path/to/libshogun:path/to/shogun/interfaces/csharp_modular mono name_of_example.exe
+\\endverbatim
+'''
+		),
+
+		'java_modular' : ('Java Modular', 'ExamplesModularJava.mainpage',
+		'''\nTo run the examples issue
+\\verbatim
+javac -jar path/to/modshogun.jar name_of_example.java
+java -jar path/to/modshogun.jar name_of_example
+\\endverbatim
+'''
+		),
+		}
+
+valid_endings=['.py', '.m', '.R', '.sg', '.cpp', '.lua', '.rb', '.cs', '.java']
 
 import os
 import os.path
@@ -140,6 +175,9 @@ for d in directories.keys():
 	header='/*! \page ' + d + '_examples Examples for ' + directories[d][0] + ' Interface\n\n'
 	header+='This page lists ready to run shogun examples for the ' + directories[d][0] + ' interface.\n\n'
 	for f in files:
+		if f.find('_') == -1:
+			continue
+
 		prefix=f[0:f.find('_')]
 		suffix=f[f.rfind('.'):]
 		#print prefix

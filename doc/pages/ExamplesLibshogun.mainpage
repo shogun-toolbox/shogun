@@ -2,10 +2,20 @@
 
 This page lists ready to run shogun examples for the C++ libshogun interface.
 
+\li \subpage libshogun_base_examples 
 \li \subpage libshogun_basic_examples 
 \li \subpage libshogun_classifier_examples 
+\li \subpage libshogun_clustering_examples 
+\li \subpage libshogun_features_examples 
 \li \subpage libshogun_kernel_examples 
 \li \subpage libshogun_library_examples 
+\li \subpage libshogun_mathematics_examples 
+\li \subpage libshogun_modelselection_examples 
+\li \subpage libshogun_parameter_examples 
+\li \subpage libshogun_preproc_examples 
+\li \subpage libshogun_serialization_examples 
+\li \subpage libshogun_splitting_examples 
+\li \subpage libshogun_streaming_examples 
 
 To run the examples you will need to manually compile them via
 \verbatim
@@ -26,6 +36,12 @@ respectively if the libraries are in nonstandard locations (such that they canno
 LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \endverbatim
 		
+\section libshogun_base_examples Base
+
+
+\li <b>../examples/documented/libshogun/base_parameter_map.cpp</b>
+\verbinclude base_parameter_map.cpp
+
 \section libshogun_basic_examples Basic
 
 
@@ -44,6 +60,33 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/classifier_mklmulticlass.cpp</b>
 \verbinclude classifier_mklmulticlass.cpp
 
+\section libshogun_clustering_examples Clustering
+
+
+\li <b>../examples/documented/libshogun/clustering_kmeans.cpp</b>
+\verbinclude clustering_kmeans.cpp
+
+\section libshogun_features_examples Features
+
+
+\li <b>../examples/documented/libshogun/features_copy_subset_simple_features.cpp</b>
+\verbinclude features_copy_subset_simple_features.cpp
+
+\li <b>../examples/documented/libshogun/features_copy_subset_sparse_features.cpp</b>
+\verbinclude features_copy_subset_sparse_features.cpp
+
+\li <b>../examples/documented/libshogun/features_copy_subset_string_features.cpp</b>
+\verbinclude features_copy_subset_string_features.cpp
+
+\li <b>../examples/documented/libshogun/features_subset_labels.cpp</b>
+\verbinclude features_subset_labels.cpp
+
+\li <b>../examples/documented/libshogun/features_subset_simple_features.cpp</b>
+\verbinclude features_subset_simple_features.cpp
+
+\li <b>../examples/documented/libshogun/features_subset_sparse_features.cpp</b>
+\verbinclude features_subset_sparse_features.cpp
+
 \section libshogun_kernel_examples Kernel
 
 
@@ -59,12 +102,105 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/library_dyn_int.cpp</b>
 \verbinclude library_dyn_int.cpp
 
+\li <b>../examples/documented/libshogun/library_fibonacci_heap.cpp</b>
+\verbinclude library_fibonacci_heap.cpp
+
 \li <b>../examples/documented/libshogun/library_gc_array.cpp</b>
 \verbinclude library_gc_array.cpp
 
 \li <b>../examples/documented/libshogun/library_hash.cpp</b>
 \verbinclude library_hash.cpp
 
+\li <b>../examples/documented/libshogun/library_hashset.cpp</b>
+\verbinclude library_hashset.cpp
+
 \li <b>../examples/documented/libshogun/library_indirect_object.cpp</b>
 \verbinclude library_indirect_object.cpp
+
+\section libshogun_mathematics_examples Mathematics
+
+
+\li <b>../examples/documented/libshogun/mathematics_arpack.cpp</b>
+\verbinclude mathematics_arpack.cpp
+
+\li <b>../examples/documented/libshogun/mathematics_confidence_intervals.cpp</b>
+\verbinclude mathematics_confidence_intervals.cpp
+
+\li <b>../examples/documented/libshogun/mathematics_lapack.cpp</b>
+\verbinclude mathematics_lapack.cpp
+
+\section libshogun_modelselection_examples Modelselection
+
+
+\li <b>../examples/documented/libshogun/modelselection_apply_parameter_tree.cpp</b>
+\verbinclude modelselection_apply_parameter_tree.cpp
+
+\li <b>../examples/documented/libshogun/modelselection_grid_search_kernel.cpp</b>
+\verbinclude modelselection_grid_search_kernel.cpp
+
+\li <b>../examples/documented/libshogun/modelselection_grid_search_linear.cpp</b>
+\verbinclude modelselection_grid_search_linear.cpp
+
+\li <b>../examples/documented/libshogun/modelselection_grid_search_string_kernel.cpp</b>
+\verbinclude modelselection_grid_search_string_kernel.cpp
+
+\li <b>../examples/documented/libshogun/modelselection_model_selection_parameters_test.cpp</b>
+\verbinclude modelselection_model_selection_parameters_test.cpp
+
+\li <b>../examples/documented/libshogun/modelselection_parameter_combination_test.cpp</b>
+\verbinclude modelselection_parameter_combination_test.cpp
+
+\li <b>../examples/documented/libshogun/modelselection_parameter_tree.cpp</b>
+\verbinclude modelselection_parameter_tree.cpp
+
+\section libshogun_parameter_examples Parameter
+
+
+\li <b>../examples/documented/libshogun/parameter_iterate_float64.cpp</b>
+\verbinclude parameter_iterate_float64.cpp
+
+\li <b>../examples/documented/libshogun/parameter_iterate_sgobject.cpp</b>
+\verbinclude parameter_iterate_sgobject.cpp
+
+\li <b>../examples/documented/libshogun/parameter_modsel_parameters.cpp</b>
+\verbinclude parameter_modsel_parameters.cpp
+
+\li <b>../examples/documented/libshogun/parameter_set_from_parameters.cpp</b>
+\verbinclude parameter_set_from_parameters.cpp
+
+\section libshogun_preproc_examples Preproc
+
+
+\li <b>../examples/documented/libshogun/preproc_randomfouriergauss.cpp</b>
+\verbinclude preproc_randomfouriergauss.cpp
+
+\section libshogun_serialization_examples Serialization
+
+
+\li <b>../examples/documented/libshogun/serialization_vector_matrix.cpp</b>
+\verbinclude serialization_vector_matrix.cpp
+
+\section libshogun_splitting_examples Splitting
+
+
+\li <b>../examples/documented/libshogun/splitting_stratified_crossvalidation.cpp</b>
+\verbinclude splitting_stratified_crossvalidation.cpp
+
+\section libshogun_streaming_examples Streaming
+
+
+\li <b>../examples/documented/libshogun/streaming_from_simple.cpp</b>
+\verbinclude streaming_from_simple.cpp
+
+\li <b>../examples/documented/libshogun/streaming_onlinesvmsgd.cpp</b>
+\verbinclude streaming_onlinesvmsgd.cpp
+
+\li <b>../examples/documented/libshogun/streaming_stringfeatures.cpp</b>
+\verbinclude streaming_stringfeatures.cpp
+
+\li <b>../examples/documented/libshogun/streaming_vowpalwabbit.cpp</b>
+\verbinclude streaming_vowpalwabbit.cpp
+
+\li <b>../examples/documented/libshogun/streaming_vwfeatures.cpp</b>
+\verbinclude streaming_vwfeatures.cpp
 */

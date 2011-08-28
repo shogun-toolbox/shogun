@@ -1,0 +1,106 @@
+/*! \page csharp_modular_examples Examples for C# Modular Interface
+
+This page lists ready to run shogun examples for the C# Modular interface.
+
+\li \subpage csharp_modular_classifier_examples 
+\li \subpage csharp_modular_distance_examples 
+\li \subpage csharp_modular_evaluation_examples 
+\li \subpage csharp_modular_features_examples 
+\li \subpage csharp_modular_kernel_examples 
+\li \subpage csharp_modular_minimal_examples 
+\li \subpage csharp_modular_preprocessor_examples 
+\li \subpage csharp_modular_regression_examples 
+
+To run the examples issue
+\verbatim
+gmcs path/to/shogun/interfaces/csharp_modular/*.cs name_of_example.cs
+LD_LIBRARY_PATH=path/to/libshogun:path/to/shogun/interfaces/csharp_modular mono name_of_example.exe
+\endverbatim
+
+\section csharp_modular_classifier_examples Classifier
+
+
+\li <b>../examples/documented/csharp_modular/classifier_averaged_perceptron_modular.cs</b>
+\verbinclude classifier_averaged_perceptron_modular.cs
+
+\li <b>../examples/documented/csharp_modular/classifier_libsvm_minimal_modular.cs</b>
+\verbinclude classifier_libsvm_minimal_modular.cs
+
+\section csharp_modular_distance_examples Distance
+
+
+\li <b>../examples/documented/csharp_modular/distance_braycurtis_modular.cs</b>
+\verbinclude distance_braycurtis_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_canberra_modular.cs</b>
+\verbinclude distance_canberra_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_chebyshew_modular.cs</b>
+\verbinclude distance_chebyshew_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_chisquare_modular.cs</b>
+\verbinclude distance_chisquare_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_cosine_modular.cs</b>
+\verbinclude distance_cosine_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_geodesic_modular.cs</b>
+\verbinclude distance_geodesic_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_jensen_modular.cs</b>
+\verbinclude distance_jensen_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_minkowski_modular.cs</b>
+\verbinclude distance_minkowski_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_normsquared_modular.cs</b>
+\verbinclude distance_normsquared_modular.cs
+
+\li <b>../examples/documented/csharp_modular/distance_tanimoto_modular.cs</b>
+\verbinclude distance_tanimoto_modular.cs
+
+\section csharp_modular_evaluation_examples Evaluation
+
+
+\li <b>../examples/documented/csharp_modular/evaluation_contingencytableevaluation_modular.cs</b>
+\verbinclude evaluation_contingencytableevaluation_modular.cs
+
+\section csharp_modular_features_examples Features
+
+
+\li <b>../examples/documented/csharp_modular/features_simple_real_modular.cs</b>
+\verbinclude features_simple_real_modular.cs
+
+\li <b>../examples/documented/csharp_modular/features_string_char_modular.cs</b>
+\verbinclude features_string_char_modular.cs
+
+\section csharp_modular_kernel_examples Kernel
+
+
+\li <b>../examples/documented/csharp_modular/kernel_gaussian_modular.cs</b>
+\verbinclude kernel_gaussian_modular.cs
+
+\li <b>../examples/documented/csharp_modular/kernel_linear_word_modular.cs</b>
+\verbinclude kernel_linear_word_modular.cs
+
+\li <b>../examples/documented/csharp_modular/kernel_weighted_degree_string_modular.cs</b>
+\verbinclude kernel_weighted_degree_string_modular.cs
+
+\section csharp_modular_minimal_examples Minimal
+
+
+\li <b>../examples/documented/csharp_modular/minimal_test.cs</b>
+\verbinclude minimal_test.cs
+
+\section csharp_modular_preprocessor_examples Preprocessor
+
+
+\li <b>../examples/documented/csharp_modular/preprocessor_isomap_modular.cs</b>
+\verbinclude preprocessor_isomap_modular.cs
+
+\section csharp_modular_regression_examples Regression
+
+
+\li <b>../examples/documented/csharp_modular/regression_krr_modular.cs</b>
+\verbinclude regression_krr_modular.cs
+*/

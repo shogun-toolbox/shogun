@@ -1,18 +1,18 @@
-/*! \page octave_examples Examples for Static Matlab(tm) and Octave Interface
+/*! \page octave_static_examples Examples for Static Matlab(tm) and Octave Interface
 
 This page lists ready to run shogun examples for the Static Matlab(tm) and Octave interface.
 
-\li \subpage octave_classifier_examples 
-\li \subpage octave_clustering_examples 
-\li \subpage octave_distance_examples 
-\li \subpage octave_distribution_examples 
-\li \subpage octave_features_examples 
-\li \subpage octave_kernel_examples 
-\li \subpage octave_misc_examples 
-\li \subpage octave_mkl_examples 
-\li \subpage octave_preproc_examples 
-\li \subpage octave_regression_examples 
-\li \subpage octave_structure_examples 
+\li \subpage octave_static_classifier_examples 
+\li \subpage octave_static_clustering_examples 
+\li \subpage octave_static_distance_examples 
+\li \subpage octave_static_distribution_examples 
+\li \subpage octave_static_features_examples 
+\li \subpage octave_static_kernel_examples 
+\li \subpage octave_static_misc_examples 
+\li \subpage octave_static_mkl_examples 
+\li \subpage octave_static_preproc_examples 
+\li \subpage octave_static_regression_examples 
+\li \subpage octave_static_structure_examples 
 
 To run the examples issue
 \verbatim
@@ -41,315 +41,315 @@ LD_LIBRARY_PATH=path/to/libshogun:path/to/libshogunui
 \endverbatim
 before starting matlab.
 		
-\section octave_classifier_examples Classifier
+\section octave_static_classifier_examples Classifier
 
 
-\li <b>../examples/documented/octave/classifier_gmnpsvm.m</b>
+\li <b>../examples/documented/octave_static/classifier_gmnpsvm.m</b>
 \verbinclude classifier_gmnpsvm.m
 
-\li <b>../examples/documented/octave/classifier_gpbtsvm.m</b>
+\li <b>../examples/documented/octave_static/classifier_gpbtsvm.m</b>
 \verbinclude classifier_gpbtsvm.m
 
-\li <b>../examples/documented/octave/classifier_knn.m</b>
+\li <b>../examples/documented/octave_static/classifier_knn.m</b>
 \verbinclude classifier_knn.m
 
-\li <b>../examples/documented/octave/classifier_lda.m</b>
+\li <b>../examples/documented/octave_static/classifier_lda.m</b>
 \verbinclude classifier_lda.m
 
-\li <b>../examples/documented/octave/classifier_liblinear.m</b>
+\li <b>../examples/documented/octave_static/classifier_liblinear.m</b>
 \verbinclude classifier_liblinear.m
 
-\li <b>../examples/documented/octave/classifier_liblinear_objective.m</b>
+\li <b>../examples/documented/octave_static/classifier_liblinear_objective.m</b>
 \verbinclude classifier_liblinear_objective.m
 
-\li <b>../examples/documented/octave/classifier_libsvm.m</b>
+\li <b>../examples/documented/octave_static/classifier_libsvm.m</b>
 \verbinclude classifier_libsvm.m
 
-\li <b>../examples/documented/octave/classifier_libsvmmulticlass.m</b>
+\li <b>../examples/documented/octave_static/classifier_libsvmmulticlass.m</b>
 \verbinclude classifier_libsvmmulticlass.m
 
-\li <b>../examples/documented/octave/classifier_libsvmoneclass.m</b>
+\li <b>../examples/documented/octave_static/classifier_libsvmoneclass.m</b>
 \verbinclude classifier_libsvmoneclass.m
 
-\li <b>../examples/documented/octave/classifier_lpboost.m</b>
+\li <b>../examples/documented/octave_static/classifier_lpboost.m</b>
 \verbinclude classifier_lpboost.m
 
-\li <b>../examples/documented/octave/classifier_lpm.m</b>
+\li <b>../examples/documented/octave_static/classifier_lpm.m</b>
 \verbinclude classifier_lpm.m
 
-\li <b>../examples/documented/octave/classifier_mpdsvm.m</b>
+\li <b>../examples/documented/octave_static/classifier_mpdsvm.m</b>
 \verbinclude classifier_mpdsvm.m
 
-\li <b>../examples/documented/octave/classifier_perceptron.m</b>
+\li <b>../examples/documented/octave_static/classifier_perceptron.m</b>
 \verbinclude classifier_perceptron.m
 
-\li <b>../examples/documented/octave/classifier_subgradientsvm.m</b>
+\li <b>../examples/documented/octave_static/classifier_subgradientsvm.m</b>
 \verbinclude classifier_subgradientsvm.m
 
-\li <b>../examples/documented/octave/classifier_svmlight.m</b>
+\li <b>../examples/documented/octave_static/classifier_svmlight.m</b>
 \verbinclude classifier_svmlight.m
 
-\li <b>../examples/documented/octave/classifier_svmlight_wdkernel.m</b>
+\li <b>../examples/documented/octave_static/classifier_svmlight_wdkernel.m</b>
 \verbinclude classifier_svmlight_wdkernel.m
 
-\li <b>../examples/documented/octave/classifier_svmlight_wds_batch.m</b>
+\li <b>../examples/documented/octave_static/classifier_svmlight_wds_batch.m</b>
 \verbinclude classifier_svmlight_wds_batch.m
 
-\li <b>../examples/documented/octave/classifier_svmlin.m</b>
+\li <b>../examples/documented/octave_static/classifier_svmlin.m</b>
 \verbinclude classifier_svmlin.m
 
-\li <b>../examples/documented/octave/classifier_svmocas.m</b>
+\li <b>../examples/documented/octave_static/classifier_svmocas.m</b>
 \verbinclude classifier_svmocas.m
 
-\li <b>../examples/documented/octave/classifier_svmocas_objective.m</b>
+\li <b>../examples/documented/octave_static/classifier_svmocas_objective.m</b>
 \verbinclude classifier_svmocas_objective.m
 
-\li <b>../examples/documented/octave/classifier_svmsgd.m</b>
+\li <b>../examples/documented/octave_static/classifier_svmsgd.m</b>
 \verbinclude classifier_svmsgd.m
 
-\li <b>../examples/documented/octave/classifier_svmsgd_objective.m</b>
+\li <b>../examples/documented/octave_static/classifier_svmsgd_objective.m</b>
 \verbinclude classifier_svmsgd_objective.m
 
-\section octave_clustering_examples Clustering
+\section octave_static_clustering_examples Clustering
 
 
-\li <b>../examples/documented/octave/clustering_hierarchical.m</b>
+\li <b>../examples/documented/octave_static/clustering_hierarchical.m</b>
 \verbinclude clustering_hierarchical.m
 
-\li <b>../examples/documented/octave/clustering_kmeans.m</b>
+\li <b>../examples/documented/octave_static/clustering_kmeans.m</b>
 \verbinclude clustering_kmeans.m
 
-\section octave_distance_examples Distance
+\section octave_static_distance_examples Distance
 
 
-\li <b>../examples/documented/octave/distance_braycurtis.m</b>
+\li <b>../examples/documented/octave_static/distance_braycurtis.m</b>
 \verbinclude distance_braycurtis.m
 
-\li <b>../examples/documented/octave/distance_canberra.m</b>
+\li <b>../examples/documented/octave_static/distance_canberra.m</b>
 \verbinclude distance_canberra.m
 
-\li <b>../examples/documented/octave/distance_canberraword.m</b>
+\li <b>../examples/documented/octave_static/distance_canberraword.m</b>
 \verbinclude distance_canberraword.m
 
-\li <b>../examples/documented/octave/distance_chebyshew.m</b>
+\li <b>../examples/documented/octave_static/distance_chebyshew.m</b>
 \verbinclude distance_chebyshew.m
 
-\li <b>../examples/documented/octave/distance_chisquare.m</b>
+\li <b>../examples/documented/octave_static/distance_chisquare.m</b>
 \verbinclude distance_chisquare.m
 
-\li <b>../examples/documented/octave/distance_cosine.m</b>
+\li <b>../examples/documented/octave_static/distance_cosine.m</b>
 \verbinclude distance_cosine.m
 
-\li <b>../examples/documented/octave/distance_euclidian.m</b>
+\li <b>../examples/documented/octave_static/distance_euclidian.m</b>
 \verbinclude distance_euclidian.m
 
-\li <b>../examples/documented/octave/distance_geodesic.m</b>
+\li <b>../examples/documented/octave_static/distance_geodesic.m</b>
 \verbinclude distance_geodesic.m
 
-\li <b>../examples/documented/octave/distance_hammingword.m</b>
+\li <b>../examples/documented/octave_static/distance_hammingword.m</b>
 \verbinclude distance_hammingword.m
 
-\li <b>../examples/documented/octave/distance_jensen.m</b>
+\li <b>../examples/documented/octave_static/distance_jensen.m</b>
 \verbinclude distance_jensen.m
 
-\li <b>../examples/documented/octave/distance_manhatten.m</b>
+\li <b>../examples/documented/octave_static/distance_manhatten.m</b>
 \verbinclude distance_manhatten.m
 
-\li <b>../examples/documented/octave/distance_manhattenword.m</b>
+\li <b>../examples/documented/octave_static/distance_manhattenword.m</b>
 \verbinclude distance_manhattenword.m
 
-\li <b>../examples/documented/octave/distance_minkowski.m</b>
+\li <b>../examples/documented/octave_static/distance_minkowski.m</b>
 \verbinclude distance_minkowski.m
 
-\li <b>../examples/documented/octave/distance_tanimoto.m</b>
+\li <b>../examples/documented/octave_static/distance_tanimoto.m</b>
 \verbinclude distance_tanimoto.m
 
-\section octave_distribution_examples Distribution
+\section octave_static_distribution_examples Distribution
 
 
-\li <b>../examples/documented/octave/distribution_histogram.m</b>
+\li <b>../examples/documented/octave_static/distribution_histogram.m</b>
 \verbinclude distribution_histogram.m
 
-\li <b>../examples/documented/octave/distribution_hmm.m</b>
+\li <b>../examples/documented/octave_static/distribution_hmm.m</b>
 \verbinclude distribution_hmm.m
 
-\li <b>../examples/documented/octave/distribution_linearhmm.m</b>
+\li <b>../examples/documented/octave_static/distribution_linearhmm.m</b>
 \verbinclude distribution_linearhmm.m
 
-\li <b>../examples/documented/octave/distribution_markovchain.m</b>
+\li <b>../examples/documented/octave_static/distribution_markovchain.m</b>
 \verbinclude distribution_markovchain.m
 
-\section octave_features_examples Features
+\section octave_static_features_examples Features
 
 
-\li <b>../examples/documented/octave/features_dot_polynomial.m</b>
+\li <b>../examples/documented/octave_static/features_dot_polynomial.m</b>
 \verbinclude features_dot_polynomial.m
 
-\li <b>../examples/documented/octave/features_dot_wdfeatures.m</b>
+\li <b>../examples/documented/octave_static/features_dot_wdfeatures.m</b>
 \verbinclude features_dot_wdfeatures.m
 
-\li <b>../examples/documented/octave/features_dot_weightedspec.m</b>
+\li <b>../examples/documented/octave_static/features_dot_weightedspec.m</b>
 \verbinclude features_dot_weightedspec.m
 
-\li <b>../examples/documented/octave/features_string.m</b>
+\li <b>../examples/documented/octave_static/features_string.m</b>
 \verbinclude features_string.m
 
-\section octave_kernel_examples Kernel
+\section octave_static_kernel_examples Kernel
 
 
-\li <b>../examples/documented/octave/kernel_chi2.m</b>
+\li <b>../examples/documented/octave_static/kernel_chi2.m</b>
 \verbinclude kernel_chi2.m
 
-\li <b>../examples/documented/octave/kernel_combined.m</b>
+\li <b>../examples/documented/octave_static/kernel_combined.m</b>
 \verbinclude kernel_combined.m
 
-\li <b>../examples/documented/octave/kernel_commulongstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_commulongstring.m</b>
 \verbinclude kernel_commulongstring.m
 
-\li <b>../examples/documented/octave/kernel_commwordstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_commwordstring.m</b>
 \verbinclude kernel_commwordstring.m
 
-\li <b>../examples/documented/octave/kernel_const.m</b>
+\li <b>../examples/documented/octave_static/kernel_const.m</b>
 \verbinclude kernel_const.m
 
-\li <b>../examples/documented/octave/kernel_custom.m</b>
+\li <b>../examples/documented/octave_static/kernel_custom.m</b>
 \verbinclude kernel_custom.m
 
-\li <b>../examples/documented/octave/kernel_diag.m</b>
+\li <b>../examples/documented/octave_static/kernel_diag.m</b>
 \verbinclude kernel_diag.m
 
-\li <b>../examples/documented/octave/kernel_distance.m</b>
+\li <b>../examples/documented/octave_static/kernel_distance.m</b>
 \verbinclude kernel_distance.m
 
-\li <b>../examples/documented/octave/kernel_fixeddegreestring.m</b>
+\li <b>../examples/documented/octave_static/kernel_fixeddegreestring.m</b>
 \verbinclude kernel_fixeddegreestring.m
 
-\li <b>../examples/documented/octave/kernel_gaussian.m</b>
+\li <b>../examples/documented/octave_static/kernel_gaussian.m</b>
 \verbinclude kernel_gaussian.m
 
-\li <b>../examples/documented/octave/kernel_gaussianshift.m</b>
+\li <b>../examples/documented/octave_static/kernel_gaussianshift.m</b>
 \verbinclude kernel_gaussianshift.m
 
-\li <b>../examples/documented/octave/kernel_histogramword.m</b>
+\li <b>../examples/documented/octave_static/kernel_histogramword.m</b>
 \verbinclude kernel_histogramword.m
 
-\li <b>../examples/documented/octave/kernel_lik.m</b>
+\li <b>../examples/documented/octave_static/kernel_lik.m</b>
 \verbinclude kernel_lik.m
 
-\li <b>../examples/documented/octave/kernel_linear.m</b>
+\li <b>../examples/documented/octave_static/kernel_linear.m</b>
 \verbinclude kernel_linear.m
 
-\li <b>../examples/documented/octave/kernel_linearbyte.m</b>
+\li <b>../examples/documented/octave_static/kernel_linearbyte.m</b>
 \verbinclude kernel_linearbyte.m
 
-\li <b>../examples/documented/octave/kernel_linearstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_linearstring.m</b>
 \verbinclude kernel_linearstring.m
 
-\li <b>../examples/documented/octave/kernel_linearword.m</b>
+\li <b>../examples/documented/octave_static/kernel_linearword.m</b>
 \verbinclude kernel_linearword.m
 
-\li <b>../examples/documented/octave/kernel_localalignmentstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_localalignmentstring.m</b>
 \verbinclude kernel_localalignmentstring.m
 
-\li <b>../examples/documented/octave/kernel_localityimprovedstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_localityimprovedstring.m</b>
 \verbinclude kernel_localityimprovedstring.m
 
-\li <b>../examples/documented/octave/kernel_oligostring.m</b>
+\li <b>../examples/documented/octave_static/kernel_oligostring.m</b>
 \verbinclude kernel_oligostring.m
 
-\li <b>../examples/documented/octave/kernel_poly.m</b>
+\li <b>../examples/documented/octave_static/kernel_poly.m</b>
 \verbinclude kernel_poly.m
 
-\li <b>../examples/documented/octave/kernel_polymatchstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_polymatchstring.m</b>
 \verbinclude kernel_polymatchstring.m
 
-\li <b>../examples/documented/octave/kernel_polymatchword.m</b>
+\li <b>../examples/documented/octave_static/kernel_polymatchword.m</b>
 \verbinclude kernel_polymatchword.m
 
-\li <b>../examples/documented/octave/kernel_sigmoid.m</b>
+\li <b>../examples/documented/octave_static/kernel_sigmoid.m</b>
 \verbinclude kernel_sigmoid.m
 
-\li <b>../examples/documented/octave/kernel_simplelocalityimprovedstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_simplelocalityimprovedstring.m</b>
 \verbinclude kernel_simplelocalityimprovedstring.m
 
-\li <b>../examples/documented/octave/kernel_sparsegaussian.m</b>
+\li <b>../examples/documented/octave_static/kernel_sparsegaussian.m</b>
 \verbinclude kernel_sparsegaussian.m
 
-\li <b>../examples/documented/octave/kernel_sparselinear.m</b>
+\li <b>../examples/documented/octave_static/kernel_sparselinear.m</b>
 \verbinclude kernel_sparselinear.m
 
-\li <b>../examples/documented/octave/kernel_sparsepoly.m</b>
+\li <b>../examples/documented/octave_static/kernel_sparsepoly.m</b>
 \verbinclude kernel_sparsepoly.m
 
-\li <b>../examples/documented/octave/kernel_spectrum.m</b>
+\li <b>../examples/documented/octave_static/kernel_spectrum.m</b>
 \verbinclude kernel_spectrum.m
 
-\li <b>../examples/documented/octave/kernel_weighted_spec.m</b>
+\li <b>../examples/documented/octave_static/kernel_weighted_spec.m</b>
 \verbinclude kernel_weighted_spec.m
 
-\li <b>../examples/documented/octave/kernel_weightedcommwordstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_weightedcommwordstring.m</b>
 \verbinclude kernel_weightedcommwordstring.m
 
-\li <b>../examples/documented/octave/kernel_weighteddegreepositionstring.m</b>
+\li <b>../examples/documented/octave_static/kernel_weighteddegreepositionstring.m</b>
 \verbinclude kernel_weighteddegreepositionstring.m
 
-\li <b>../examples/documented/octave/kernel_weighteddegreestring.m</b>
+\li <b>../examples/documented/octave_static/kernel_weighteddegreestring.m</b>
 \verbinclude kernel_weighteddegreestring.m
 
-\section octave_misc_examples Misc
+\section octave_static_misc_examples Misc
 
 
-\li <b>../examples/documented/octave/misc_pr_loqo.m</b>
+\li <b>../examples/documented/octave_static/misc_pr_loqo.m</b>
 \verbinclude misc_pr_loqo.m
 
-\section octave_mkl_examples Mkl
+\section octave_static_mkl_examples Mkl
 
 
-\li <b>../examples/documented/octave/mkl_classify_christmas_star.m</b>
+\li <b>../examples/documented/octave_static/mkl_classify_christmas_star.m</b>
 \verbinclude mkl_classify_christmas_star.m
 
-\li <b>../examples/documented/octave/mkl_multiclass.m</b>
+\li <b>../examples/documented/octave_static/mkl_multiclass.m</b>
 \verbinclude mkl_multiclass.m
 
-\li <b>../examples/documented/octave/mkl_regression_3sine_waves.m</b>
+\li <b>../examples/documented/octave_static/mkl_regression_3sine_waves.m</b>
 \verbinclude mkl_regression_3sine_waves.m
 
-\li <b>../examples/documented/octave/mkl_regression_sine.m</b>
+\li <b>../examples/documented/octave_static/mkl_regression_sine.m</b>
 \verbinclude mkl_regression_sine.m
 
-\section octave_preproc_examples Preproc
+\section octave_static_preproc_examples Preproc
 
 
-\li <b>../examples/documented/octave/preproc_logplusone.m</b>
+\li <b>../examples/documented/octave_static/preproc_logplusone.m</b>
 \verbinclude preproc_logplusone.m
 
-\li <b>../examples/documented/octave/preproc_normone.m</b>
+\li <b>../examples/documented/octave_static/preproc_normone.m</b>
 \verbinclude preproc_normone.m
 
-\li <b>../examples/documented/octave/preproc_prunevarsubmean.m</b>
+\li <b>../examples/documented/octave_static/preproc_prunevarsubmean.m</b>
 \verbinclude preproc_prunevarsubmean.m
 
-\li <b>../examples/documented/octave/preproc_sortulongstring.m</b>
+\li <b>../examples/documented/octave_static/preproc_sortulongstring.m</b>
 \verbinclude preproc_sortulongstring.m
 
-\li <b>../examples/documented/octave/preproc_sortwordstring.m</b>
+\li <b>../examples/documented/octave_static/preproc_sortwordstring.m</b>
 \verbinclude preproc_sortwordstring.m
 
-\section octave_regression_examples Regression
+\section octave_static_regression_examples Regression
 
 
-\li <b>../examples/documented/octave/regression_krr.m</b>
+\li <b>../examples/documented/octave_static/regression_krr.m</b>
 \verbinclude regression_krr.m
 
-\li <b>../examples/documented/octave/regression_libsvr.m</b>
+\li <b>../examples/documented/octave_static/regression_libsvr.m</b>
 \verbinclude regression_libsvr.m
 
-\li <b>../examples/documented/octave/regression_svrlight.m</b>
+\li <b>../examples/documented/octave_static/regression_svrlight.m</b>
 \verbinclude regression_svrlight.m
 
-\section octave_structure_examples Structure
+\section octave_static_structure_examples Structure
 
 
-\li <b>../examples/documented/octave/structure_dynprog.m</b>
+\li <b>../examples/documented/octave_static/structure_dynprog.m</b>
 \verbinclude structure_dynprog.m
 */

@@ -6,13 +6,16 @@
 \li \subpage python_modular_clustering_examples 
 \li \subpage python_modular_distance_examples 
 \li \subpage python_modular_distribution_examples 
+\li \subpage python_modular_evaluation_examples 
 \li \subpage python_modular_features_examples 
-\li \subpage python_modular_hashed_examples 
 \li \subpage python_modular_kernel_examples 
+\li \subpage python_modular_library_examples 
 \li \subpage python_modular_mkl_examples 
-\li \subpage python_modular_preproc_examples 
+\li \subpage python_modular_modelselection_examples 
+\li \subpage python_modular_preprocessor_examples 
 \li \subpage python_modular_regression_examples 
 \li \subpage python_modular_serialization_examples 
+\li \subpage python_modular_streaming_examples 
 \li \subpage python_modular_structure_examples 
 \li \subpage python_modular_tests_examples 
 
@@ -24,11 +27,17 @@ python name_of_example.py
 \section python_modular_classifier_examples Classifier
 
 
+\li <b>../examples/documented/python_modular/classifier_averaged_perceptron_modular.py</b>
+\verbinclude classifier_averaged_perceptron_modular.py
+
 \li <b>../examples/documented/python_modular/classifier_custom_kernel_modular.py</b>
 \verbinclude classifier_custom_kernel_modular.py
 
 \li <b>../examples/documented/python_modular/classifier_domainadaptationsvm_modular.py</b>
 \verbinclude classifier_domainadaptationsvm_modular.py
+
+\li <b>../examples/documented/python_modular/classifier_gaussiannaivebayes_modular.py</b>
+\verbinclude classifier_gaussiannaivebayes_modular.py
 
 \li <b>../examples/documented/python_modular/classifier_gmnpsvm_modular.py</b>
 \verbinclude classifier_gmnpsvm_modular.py
@@ -89,6 +98,9 @@ python name_of_example.py
 
 \section python_modular_clustering_examples Clustering
 
+
+\li <b>../examples/documented/python_modular/clustering_gmm_modular.py</b>
+\verbinclude clustering_gmm_modular.py
 
 \li <b>../examples/documented/python_modular/clustering_hierarchical_modular.py</b>
 \verbinclude clustering_hierarchical_modular.py
@@ -156,8 +168,29 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/distribution_hmm_modular.py</b>
 \verbinclude distribution_hmm_modular.py
 
-\li <b>../examples/documented/python_modular/distribution_linear_hmm_modular.py</b>
-\verbinclude distribution_linear_hmm_modular.py
+\li <b>../examples/documented/python_modular/distribution_linearhmm_modular.py</b>
+\verbinclude distribution_linearhmm_modular.py
+
+\li <b>../examples/documented/python_modular/distribution_ppwm_modular.py</b>
+\verbinclude distribution_ppwm_modular.py
+
+\section python_modular_evaluation_examples Evaluation
+
+
+\li <b>../examples/documented/python_modular/evaluation_contingencytableevaluation_modular.py</b>
+\verbinclude evaluation_contingencytableevaluation_modular.py
+
+\li <b>../examples/documented/python_modular/evaluation_meansquarederror_modular.py</b>
+\verbinclude evaluation_meansquarederror_modular.py
+
+\li <b>../examples/documented/python_modular/evaluation_multiclassaccuracy_modular.py</b>
+\verbinclude evaluation_multiclassaccuracy_modular.py
+
+\li <b>../examples/documented/python_modular/evaluation_prcevaluation_modular.py</b>
+\verbinclude evaluation_prcevaluation_modular.py
+
+\li <b>../examples/documented/python_modular/evaluation_rocevaluation_modular.py</b>
+\verbinclude evaluation_rocevaluation_modular.py
 
 \section python_modular_features_examples Features
 
@@ -198,6 +231,9 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/features_string_file_modular.py</b>
 \verbinclude features_string_file_modular.py
 
+\li <b>../examples/documented/python_modular/features_string_hashed_wd_modular.py</b>
+\verbinclude features_string_hashed_wd_modular.py
+
 \li <b>../examples/documented/python_modular/features_string_sliding_window_modular.py</b>
 \verbinclude features_string_sliding_window_modular.py
 
@@ -207,20 +243,23 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/features_string_word_modular.py</b>
 \verbinclude features_string_word_modular.py
 
-\section python_modular_hashed_examples Hashed
-
-
-\li <b>../examples/documented/python_modular/hashed_wd_features_modular.py</b>
-\verbinclude hashed_wd_features_modular.py
-
 \section python_modular_kernel_examples Kernel
 
+
+\li <b>../examples/documented/python_modular/kernel_anova_modular.py</b>
+\verbinclude kernel_anova_modular.py
 
 \li <b>../examples/documented/python_modular/kernel_auc_modular.py</b>
 \verbinclude kernel_auc_modular.py
 
+\li <b>../examples/documented/python_modular/kernel_cauchy_modular.py</b>
+\verbinclude kernel_cauchy_modular.py
+
 \li <b>../examples/documented/python_modular/kernel_chi2_modular.py</b>
 \verbinclude kernel_chi2_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_circular_modular.py</b>
+\verbinclude kernel_circular_modular.py
 
 \li <b>../examples/documented/python_modular/kernel_combined_custom_poly_modular.py</b>
 \verbinclude kernel_combined_custom_poly_modular.py
@@ -246,6 +285,12 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/kernel_distance_modular.py</b>
 \verbinclude kernel_distance_modular.py
 
+\li <b>../examples/documented/python_modular/kernel_distantsegments_modular.py</b>
+\verbinclude kernel_distantsegments_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_exponential_modular.py</b>
+\verbinclude kernel_exponential_modular.py
+
 \li <b>../examples/documented/python_modular/kernel_fisher_modular.py</b>
 \verbinclude kernel_fisher_modular.py
 
@@ -260,6 +305,9 @@ python name_of_example.py
 
 \li <b>../examples/documented/python_modular/kernel_histogram_word_string_modular.py</b>
 \verbinclude kernel_histogram_word_string_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_inversemultiquadric_modular.py</b>
+\verbinclude kernel_inversemultiquadric_modular.py
 
 \li <b>../examples/documented/python_modular/kernel_io_modular.py</b>
 \verbinclude kernel_io_modular.py
@@ -282,8 +330,14 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/kernel_locality_improved_string_modular.py</b>
 \verbinclude kernel_locality_improved_string_modular.py
 
+\li <b>../examples/documented/python_modular/kernel_log_modular.py</b>
+\verbinclude kernel_log_modular.py
+
 \li <b>../examples/documented/python_modular/kernel_match_word_string_modular.py</b>
 \verbinclude kernel_match_word_string_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_multiquadric_modular.py</b>
+\verbinclude kernel_multiquadric_modular.py
 
 \li <b>../examples/documented/python_modular/kernel_oligo_string_modular.py</b>
 \verbinclude kernel_oligo_string_modular.py
@@ -296,6 +350,12 @@ python name_of_example.py
 
 \li <b>../examples/documented/python_modular/kernel_poly_modular.py</b>
 \verbinclude kernel_poly_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_power_modular.py</b>
+\verbinclude kernel_power_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_rationalquadratic_modular.py</b>
+\verbinclude kernel_rationalquadratic_modular.py
 
 \li <b>../examples/documented/python_modular/kernel_salzberg_word_string_modular.py</b>
 \verbinclude kernel_salzberg_word_string_modular.py
@@ -315,8 +375,23 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/kernel_sparse_poly_modular.py</b>
 \verbinclude kernel_sparse_poly_modular.py
 
+\li <b>../examples/documented/python_modular/kernel_spherical_modular.py</b>
+\verbinclude kernel_spherical_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_spline_modular.py</b>
+\verbinclude kernel_spline_modular.py
+
 \li <b>../examples/documented/python_modular/kernel_top_modular.py</b>
 \verbinclude kernel_top_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_tstudent_modular.py</b>
+\verbinclude kernel_tstudent_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_wave_modular.py</b>
+\verbinclude kernel_wave_modular.py
+
+\li <b>../examples/documented/python_modular/kernel_wavelet_modular.py</b>
+\verbinclude kernel_wavelet_modular.py
 
 \li <b>../examples/documented/python_modular/kernel_weighted_comm_word_string_modular.py</b>
 \verbinclude kernel_weighted_comm_word_string_modular.py
@@ -327,6 +402,12 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/kernel_weighted_degree_string_modular.py</b>
 \verbinclude kernel_weighted_degree_string_modular.py
 
+\section python_modular_library_examples Library
+
+
+\li <b>../examples/documented/python_modular/library_fisher2x3_modular.py</b>
+\verbinclude library_fisher2x3_modular.py
+
 \section python_modular_mkl_examples Mkl
 
 
@@ -336,23 +417,62 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/mkl_multiclass_modular.py</b>
 \verbinclude mkl_multiclass_modular.py
 
-\section python_modular_preproc_examples Preproc
+\section python_modular_modelselection_examples Modelselection
 
 
-\li <b>../examples/documented/python_modular/preproc_logplusone_modular.py</b>
-\verbinclude preproc_logplusone_modular.py
+\li <b>../examples/documented/python_modular/modelselection_grid_search_linear_modular.py</b>
+\verbinclude modelselection_grid_search_linear_modular.py
 
-\li <b>../examples/documented/python_modular/preproc_normone_modular.py</b>
-\verbinclude preproc_normone_modular.py
+\li <b>../examples/documented/python_modular/modelselection_parameter_tree_modular.py</b>
+\verbinclude modelselection_parameter_tree_modular.py
 
-\li <b>../examples/documented/python_modular/preproc_prunevarsubmean_modular.py</b>
-\verbinclude preproc_prunevarsubmean_modular.py
+\section python_modular_preprocessor_examples Preprocessor
 
-\li <b>../examples/documented/python_modular/preproc_sortulongstring_modular.py</b>
-\verbinclude preproc_sortulongstring_modular.py
 
-\li <b>../examples/documented/python_modular/preproc_sortwordstring_modular.py</b>
-\verbinclude preproc_sortwordstring_modular.py
+\li <b>../examples/documented/python_modular/preprocessor_hessianlocallylinearembedding_modular.py</b>
+\verbinclude preprocessor_hessianlocallylinearembedding_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_isomap_modular.py</b>
+\verbinclude preprocessor_isomap_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_kernellocallylinearembedding_modular.py</b>
+\verbinclude preprocessor_kernellocallylinearembedding_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_kernelpca_modular.py</b>
+\verbinclude preprocessor_kernelpca_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_laplacianeigenmaps_modular.py</b>
+\verbinclude preprocessor_laplacianeigenmaps_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_locallylinearembedding_modular.py</b>
+\verbinclude preprocessor_locallylinearembedding_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_localtangentspacealignment_modular.py</b>
+\verbinclude preprocessor_localtangentspacealignment_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_logplusone_modular.py</b>
+\verbinclude preprocessor_logplusone_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_multidimensionalscaling_modular.py</b>
+\verbinclude preprocessor_multidimensionalscaling_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_normone_modular.py</b>
+\verbinclude preprocessor_normone_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_pca_modular.py</b>
+\verbinclude preprocessor_pca_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_prunevarsubmean_modular.py</b>
+\verbinclude preprocessor_prunevarsubmean_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_randomfouriergausspreproc_modular.py</b>
+\verbinclude preprocessor_randomfouriergausspreproc_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_sortulongstring_modular.py</b>
+\verbinclude preprocessor_sortulongstring_modular.py
+
+\li <b>../examples/documented/python_modular/preprocessor_sortwordstring_modular.py</b>
+\verbinclude preprocessor_sortwordstring_modular.py
 
 \section python_modular_regression_examples Regression
 
@@ -369,8 +489,23 @@ python name_of_example.py
 \section python_modular_serialization_examples Serialization
 
 
+\li <b>../examples/documented/python_modular/serialization_complex_example.py</b>
+\verbinclude serialization_complex_example.py
+
+\li <b>../examples/documented/python_modular/serialization_matrix_modular.py</b>
+\verbinclude serialization_matrix_modular.py
+
 \li <b>../examples/documented/python_modular/serialization_svmlight_modular.py</b>
 \verbinclude serialization_svmlight_modular.py
+
+\section python_modular_streaming_examples Streaming
+
+
+\li <b>../examples/documented/python_modular/streaming_vw_createcache_modular.py</b>
+\verbinclude streaming_vw_createcache_modular.py
+
+\li <b>../examples/documented/python_modular/streaming_vw_modular.py</b>
+\verbinclude streaming_vw_modular.py
 
 \section python_modular_structure_examples Structure
 

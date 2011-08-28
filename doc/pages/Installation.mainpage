@@ -17,14 +17,14 @@ libshogun-dev         - for C++ developers building extensions using
 shogun-csharp-modular - for the modular csharp interface
 shogun-lua-modular    - for the modular lua interface
 shogun-java-modular   - for the modular java interface
-shogun-octave         - for the static octave interface
+shogun-octave-static  - for the static octave interface
 shogun-octave-modular - for the modular octave interface
-shogun-python         - for the static python interface
+shogun-python-static  - for the static python interface
 shogun-python-modular - for the modular python interface
-shogun-r              - for the r interface
-shogun-ruby           - for the ruby interface
-shogun-cmdline        - for the command-line interface.
-shogun-elwms          - for the eierlegende wollmilchsau interface
+shogun-r-static       - for the static r interface
+shogun-ruby-modular   - for the modular ruby interface
+shogun-cmdline-static - for the static command-line interface.
+shogun-elwms-static   - for the static eierlegende wollmilchsau interface
                         (one interface to r/python/octave allowing
 						to run commands in non-native languages)
 shogun-doc            - for the documentation

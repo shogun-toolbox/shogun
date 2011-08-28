@@ -156,11 +156,11 @@ name_of_example
 \li <b>../examples/documented/octave_modular/kernel_combined_modular.m</b>
 \verbinclude kernel_combined_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_commulongstring_modular.m</b>
-\verbinclude kernel_commulongstring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_comm_ulong_string_modular.m</b>
+\verbinclude kernel_comm_ulong_string_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_commwordstring_modular.m</b>
-\verbinclude kernel_commwordstring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_comm_word_string_modular.m</b>
+\verbinclude kernel_comm_word_string_modular.m
 
 \li <b>../examples/documented/octave_modular/kernel_const_modular.m</b>
 \verbinclude kernel_const_modular.m
@@ -174,32 +174,32 @@ name_of_example
 \li <b>../examples/documented/octave_modular/kernel_distance_modular.m</b>
 \verbinclude kernel_distance_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_fixeddegreestring_modular.m</b>
-\verbinclude kernel_fixeddegreestring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_fixed_degree_string_modular.m</b>
+\verbinclude kernel_fixed_degree_string_modular.m
 
 \li <b>../examples/documented/octave_modular/kernel_gaussian_modular.m</b>
 \verbinclude kernel_gaussian_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_gaussianshift_modular.m</b>
-\verbinclude kernel_gaussianshift_modular.m
+\li <b>../examples/documented/octave_modular/kernel_gaussian_shift_modular.m</b>
+\verbinclude kernel_gaussian_shift_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_histogram_modular.m</b>
-\verbinclude kernel_histogram_modular.m
+\li <b>../examples/documented/octave_modular/kernel_histogramword_modular.m</b>
+\verbinclude kernel_histogramword_modular.m
+
+\li <b>../examples/documented/octave_modular/kernel_linear_byte_modular.m</b>
+\verbinclude kernel_linear_byte_modular.m
 
 \li <b>../examples/documented/octave_modular/kernel_linear_modular.m</b>
 \verbinclude kernel_linear_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_linearbyte_modular.m</b>
-\verbinclude kernel_linearbyte_modular.m
+\li <b>../examples/documented/octave_modular/kernel_linear_string_modular.m</b>
+\verbinclude kernel_linear_string_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_linearstring_modular.m</b>
-\verbinclude kernel_linearstring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_linear_word_modular.m</b>
+\verbinclude kernel_linear_word_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_linearword_modular.m</b>
-\verbinclude kernel_linearword_modular.m
-
-\li <b>../examples/documented/octave_modular/kernel_localalignmentstring_modular.m</b>
-\verbinclude kernel_localalignmentstring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_local_alignment_string_modular.m</b>
+\verbinclude kernel_local_alignment_string_modular.m
 
 \li <b>../examples/documented/octave_modular/kernel_localityimprovedstring_modular.m</b>
 \verbinclude kernel_localityimprovedstring_modular.m
@@ -207,8 +207,11 @@ name_of_example
 \li <b>../examples/documented/octave_modular/kernel_matchwordstring_modular.m</b>
 \verbinclude kernel_matchwordstring_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_oligostring_modular.m</b>
-\verbinclude kernel_oligostring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_oligo_string_modular.m</b>
+\verbinclude kernel_oligo_string_modular.m
+
+\li <b>../examples/documented/octave_modular/kernel_poly_match_word_string.m</b>
+\verbinclude kernel_poly_match_word_string.m
 
 \li <b>../examples/documented/octave_modular/kernel_poly_modular.m</b>
 \verbinclude kernel_poly_modular.m
@@ -216,14 +219,11 @@ name_of_example
 \li <b>../examples/documented/octave_modular/kernel_polymatchstring_modular.m</b>
 \verbinclude kernel_polymatchstring_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_polymatchwordstring_modular.m</b>
-\verbinclude kernel_polymatchwordstring_modular.m
-
 \li <b>../examples/documented/octave_modular/kernel_sigmoid_modular.m</b>
 \verbinclude kernel_sigmoid_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_simplelocalityimprovedstring_modular.m</b>
-\verbinclude kernel_simplelocalityimprovedstring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_simple_locality_improved_string_modular.m</b>
+\verbinclude kernel_simple_locality_improved_string_modular.m
 
 \li <b>../examples/documented/octave_modular/kernel_sparsegaussian_modular.m</b>
 \verbinclude kernel_sparsegaussian_modular.m
@@ -237,11 +237,11 @@ name_of_example
 \li <b>../examples/documented/octave_modular/kernel_top_modular.m</b>
 \verbinclude kernel_top_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_weightedcommwordstring_modular.m</b>
-\verbinclude kernel_weightedcommwordstring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_weighted_comm_word_string_modular.m</b>
+\verbinclude kernel_weighted_comm_word_string_modular.m
 
-\li <b>../examples/documented/octave_modular/kernel_weighteddegreepositionstring_modular.m</b>
-\verbinclude kernel_weighteddegreepositionstring_modular.m
+\li <b>../examples/documented/octave_modular/kernel_weighted_degree_position_string_modular.m</b>
+\verbinclude kernel_weighted_degree_position_string_modular.m
 
 \li <b>../examples/documented/octave_modular/kernel_weighteddegreestring_modular.m</b>
 \verbinclude kernel_weighteddegreestring_modular.m
@@ -254,12 +254,6 @@ name_of_example
 
 \section octave_modular_preproc_examples Preproc
 
-
-\li <b>../examples/documented/octave_modular/preproc_commulongstring_modular.m</b>
-\verbinclude preproc_commulongstring_modular.m
-
-\li <b>../examples/documented/octave_modular/preproc_commwordstring_modular.m</b>
-\verbinclude preproc_commwordstring_modular.m
 
 \li <b>../examples/documented/octave_modular/preproc_logplusone_modular.m</b>
 \verbinclude preproc_logplusone_modular.m
