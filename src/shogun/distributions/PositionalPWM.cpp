@@ -100,6 +100,8 @@ float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len
 
 void CPositionalPWM::compute_w(int32_t num_pos)
 {
+	ASSERT(m_pwm && m_pwm_rows && m_pwm_cols);
+
 	m_w_rows=CMath::pow(m_pwm_rows, m_pwm_cols);
 	m_w_cols=num_pos;
 
