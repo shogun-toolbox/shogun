@@ -1,0 +1,3 @@
+In this example PRC (Precision-Recall curve) is being computed
+for the pair of ground truth toy labels and random labels.
+PRC curve (as matrix) and auPRC (area under PRC) is returned.

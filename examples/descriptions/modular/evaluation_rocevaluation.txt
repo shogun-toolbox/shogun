@@ -1,0 +1,3 @@
+In this example ROC (Receiver Operator Characteristic) is being computed
+for the pair of ground truth toy labels and random labels.
+ROC curve (as matrix) and auROC (area under ROC) is returned.
