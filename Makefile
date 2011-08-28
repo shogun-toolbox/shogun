@@ -21,17 +21,17 @@
 #
 # The following additional options may be set
 #
-# DEBIAN=yes   						-> use debian naming scheme shogun_0.1.1+svn1337.orig.tar.gz
+# DEBIAN=yes   						-> use debian naming scheme shogun_0.1.1+git2f0a2c8.orig.tar.gz
 # SVMLIGHT=no						-> remove svm light
 # COMPRESS=cruncher					-> use cruncher (bz2/gz etc as file compressor)
-# SNAPSHOT=yes						-> use svn snapshot naming scheme
+# SNAPSHOT=yes						-> use git snapshot naming scheme
 # MAINVERSION=0.2.0					-> main version
-# EXTRAVERSION=+svn20061202			-> extra version string
+# EXTRAVERSION=+git2f0a2c8			-> extra version string
 # RELEASENAME=shogun-3.0.0+extra	-> use different releasename, here shogun-3.0.0+extra
 #
 # * For example to use gzip instead of bzip2 and to append an extra version
 # string.
-#       make release COMPRESS=gzip EXTRAVERSION=+svn20061202
+#       make release COMPRESS=gzip EXTRAVERSION=+git2f0a2c8
 #
 # * To create a debian snapshot package
 #
@@ -48,7 +48,7 @@ DATAMAINVERSION := $(shell awk '/Release/{print $$11;exit}' src/NEWS | tr -d '(,
 DATAEXTRAVERSION :=
 DATARELEASENAME := shogun-data-$(DATAMAINVERSION)$(DATAEXTRAVERSION)
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
-SVNVERSION := $(shell svn info 2>/dev/null | grep Revision: | cut -d ' ' -f 2)
+GITVERSION := $(shell git show --pretty='format:%h'|head -1)
 LOGFILE := 'prepare-release.log'
 
 stop:
@@ -73,18 +73,18 @@ COMPRESS := gzip
 SVMLIGHT := no
 RELEASENAME := shogun_$(MAINVERSION)
 ifeq ($(SNAPSHOT),yes)
-RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
+RELEASENAME := $(RELEASENAME)+git$(GITVERSION)
 endif
 RELEASENAME := $(RELEASENAME).orig
 else
 ifeq ($(SNAPSHOT),yes)
-RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
+RELEASENAME := $(RELEASENAME)+git$(GITVERSION)
 endif
 all: doc release matlab python octave
 endif
 
 
-.PHONY: all release package-from-release update-webpage svn-ignores clean distclean embed-main-version
+.PHONY: all release package-from-release update-webpage clean distclean embed-main-version
 
 DATADESTDIR := ../$(DATARELEASENAME)
 DESTDIR := ../$(RELEASENAME)
@@ -98,16 +98,16 @@ sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
 prepare-release:
 	@if [ -f $(LOGFILE) ]; then rm -f $(LOGFILE); fi
-	svn update | tee --append $(LOGFILE)
+	git pull github master | tee --append $(LOGFILE)
 	#update changelog
-	svn stat | tee --append $(LOGFILE)
+	git status -v | tee --append $(LOGFILE)
 	@echo | tee --append $(LOGFILE)
-	@echo "Please check output of 'svn stat'." | tee --append $(LOGFILE)
+	@echo "Please check output of 'git status'." | tee --append $(LOGFILE)
 	@echo "Press ENTER to continue or Ctrl-C to abort." | tee --append $(LOGFILE)
 	@read foobar
-	(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; svn ci -m "updated changelog") | tee --append $(LOGFILE)
+	(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; git commit -m "updated changelog") | tee --append $(LOGFILE)
 	#build for all interfaces and update doc
-	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	git clean -dfx
 	( cd src && ./configure ) | tee --append $(LOGFILE)
 	+$(MAKE) -C src | tee --append $(LOGFILE)
 	+$(MAKE) -C src install DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
@@ -192,9 +192,6 @@ $(DESTDIR)/src/libshogun/lib/versionstring.h: src/libshogun/lib/versionstring.h
 	# remove top level makefile from distribution
 	rm -f $(DESTDIR)/src/.authors
 	cp -f src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/
-
-svn-ignores: .svn_ignores
-	find . -name .svn -prune -o -type d -exec svn propset svn:ignore -F .svn_ignores {} \;
 
 clean:
 	rm -rf $(DESTDIR)
