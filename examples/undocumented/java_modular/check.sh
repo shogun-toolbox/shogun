@@ -13,7 +13,11 @@ export LD_LIBRARY_PATH=../../../src/shogun:../../../src/interfaces/java_modular
 
 ${JAVAC} Load.java
 
-for e in $(ls *.java | grep -v Load.java)
+FILES=$@
+
+test -z "$FILES" && FILES=$(ls *.java | grep -v Load.cs )
+
+for e in $FILES
 do
 	echo -n "running $e .."
 	if ${JAVAC} $e >/dev/null 2>&1 && ${JAVA} ${e%.java} >/dev/null 2>&1

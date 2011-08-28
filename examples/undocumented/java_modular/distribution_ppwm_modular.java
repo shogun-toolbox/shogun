@@ -1,5 +1,6 @@
 import org.shogun.*;
 import org.jblas.*;
+import static org.jblas.MatrixFunctions.logi;
 import static org.shogun.EAlphabet.DNA;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class distribution_ppwm_modular {
 							{0.0, 0.5, 0.5, 0.0},
 							{1.0, 0.0, 0.4, 0.0},
 							{0.0, 0.0, 0.0, 0.0}});
-		//ppwm.set_pwm(DoubleMatrix.log(pwm));
+		ppwm.set_pwm(logi(pwm));
 		ppwm.compute_w(20);
 		DoubleMatrix w = ppwm.get_w();
 		modshogun.exit_shogun();
