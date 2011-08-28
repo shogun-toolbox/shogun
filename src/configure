@@ -134,7 +134,7 @@ _java_modular=auto
 _ruby_modular=auto
 _lua_modular=auto
 _r_modular=no
-_csharp_modular=no
+_csharp_modular=auto
 _optimization=yes
 
 test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
