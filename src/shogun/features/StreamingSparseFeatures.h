@@ -208,11 +208,11 @@ public:
 	inline virtual void expand_if_required(float32_t*& vec, int32_t &len)
 	{
 		int32_t dim = get_dim_feature_space();
-		if (dim+1 > len)
+		if (dim > len)
 		{
-			vec = SG_REALLOC(float32_t, vec, dim+1);
-			memset(&vec[len], 0, (dim+1-len) * sizeof(float32_t));
-			len = dim+1;
+			vec = SG_REALLOC(float32_t, vec, dim);
+			memset(&vec[len], 0, (dim-len) * sizeof(float32_t));
+			len = dim;
 		}
 	}
 
@@ -227,11 +227,11 @@ public:
 	inline virtual void expand_if_required(float64_t*& vec, int32_t &len)
 	{
 		int32_t dim = get_dim_feature_space();
-		if (dim+1 > len)
+		if (dim > len)
 		{
-			vec = SG_REALLOC(float64_t, vec, dim+1);
-			memset(&vec[len], 0, (dim+1-len) * sizeof(float64_t));
-			len = dim+1;
+			vec = SG_REALLOC(float64_t, vec, dim);
+			memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
+			len = dim;
 		}
 	}
 
@@ -487,6 +487,8 @@ public:
 
 	/**
 	 * Ensure features of the current vector are in ascending order.
+	 * It modifies the current_vector in-place, though a temporary
+	 * vector is created and later freed.
 	 */
 	void sort_features()
 	{
@@ -511,15 +513,17 @@ public:
 		for (int32_t i=0; i<len; i++)
 			sf_new[i]=sf_orig[orig_idx[i]];
 
-		current_vector=sf_new;
-
 		// sanity check
 		for (int32_t i=0; i<len-1; i++)
 			ASSERT(sf_new[i].feat_index<sf_new[i+1].feat_index);
 
+		// Copy new vector back to original
+		for (int32_t i=0; i<len; i++)
+			sf_orig[i]=sf_new[i];
+
 		SG_FREE(orig_idx);
 		SG_FREE(feat_idx);
-		SG_FREE(sf_orig);
+		SG_FREE(sf_new);
 	}
 
 	/**
@@ -603,10 +607,6 @@ private:
 	void init(CStreamingFile *file, bool is_labelled, int32_t size);
 
 protected:
-
-	/// feature weighting in combined dot features
-	float32_t combined_weight;
-
 	/// The parser object, which reads from input and returns parsed example objects.
 	CInputParser< SGSparseVectorEntry<T> > parser;
 
@@ -707,15 +707,18 @@ bool CStreamingSparseFeatures<T>::get_next_example()
 						   current_length,
 						   current_label);
 
+	if (!ret_value)
+		return false;
+
 	// Update number of features based on highest index
 	for (int32_t i=0; i<current_length; i++)
 	{
 		if (current_vector[i].feat_index > current_num_features)
 			current_num_features = current_vector[i].feat_index+1;
 	}
-
 	current_vec_index++;
-	return ret_value;
+
+	return true;
 }
 
 template <class T>
