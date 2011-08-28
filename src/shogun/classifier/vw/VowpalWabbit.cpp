@@ -222,6 +222,7 @@ void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 	quiet = false;
 	no_training = false;
 	dump_interval = exp(1.);
+	sum_loss_since_last_dump = 0.;
 	reg_name = NULL;
 	reg_dump_text = true;
 	save_predictions = false;
@@ -309,6 +310,7 @@ void CVowpalWabbit::output_example(VwExample* &example)
 {
 	if (!quiet)
 	{
+		sum_loss_since_last_dump += example->loss;
 		if (env->weighted_examples + example->ld->weight > dump_interval)
 		{
 			print_update(example);
@@ -328,14 +330,16 @@ void CVowpalWabbit::output_example(VwExample* &example)
 
 void CVowpalWabbit::print_update(VwExample* &ex)
 {
-	SG_SPRINT("%-10.6f %-10.6f %8lld %8.1f %8.4f %8.4f %8lu\n",
-		  env->sum_loss/env->weighted_examples,
-		  0.0,
-		  env->example_number,
-		  env->weighted_examples,
+	SG_SPRINT("%-10.6f %-10.6f %8lld %8.1f   %8.4f %8.4f %8lu\n",
+		  (env->sum_loss + ex->loss)/(env->weighted_examples + ex->ld->weight),
+		  sum_loss_since_last_dump/(env->weighted_examples + ex->ld->weight - old_weighted_examples),
+		  env->example_number + 1,
+		  env->weighted_examples + ex->ld->weight,
 		  ex->ld->label,
 		  ex->final_prediction,
 		  (long unsigned int)ex->num_features);
+	sum_loss_since_last_dump = 0.0;
+	old_weighted_examples = env->weighted_examples + ex->ld->weight;
 }
 
 
