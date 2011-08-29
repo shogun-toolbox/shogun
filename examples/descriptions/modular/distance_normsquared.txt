@@ -1,0 +1,1 @@
+In this example an squared euclidian distance is being computed for toy data.

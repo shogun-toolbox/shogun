@@ -1,0 +1,1 @@
+In this example serialization of SVM (Support Vector Machine) is shown

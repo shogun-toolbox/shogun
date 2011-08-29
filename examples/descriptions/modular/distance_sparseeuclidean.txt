@@ -1,0 +1,1 @@
+In this example a sparse euclidean distance is computed for sparse toy data.
