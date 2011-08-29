@@ -195,7 +195,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			const char *str = StringValuePtr(arr);
 			max_len = shogun::CMath::max(len, max_len);
 
-			strings[i].slen = len + 1;
+			strings[i].slen = len;
 			strings[i].string = NULL;
 			
 			if (len > 0) {
