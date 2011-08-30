@@ -4,9 +4,9 @@ lm=LoadMatrix()
 
 N = 100
 
-NArray.srand(17)
-ground_truth = NArray.float(N).randomn
-predicted = NArray.float(N).randomn
+random.seed(17)
+ground_truth = random.randn(N)
+predicted = random.randn(N)
 
 parameter_list = [[ground_truth,predicted]]
 
@@ -14,10 +14,10 @@ def evaluation_meansquarederror_modular(ground_truth, predicted):
 	from shogun.Features import Labels
 	from shogun.Evaluation import MeanSquaredError
 
-	ground_truth_labels = Modshogun::Labels.new(ground_truth)
-	predicted_labels = Modshogun::Labels.new(predicted)
+	ground_truth_labels = Labels(ground_truth)
+	predicted_labels = Labels(predicted)
 	
-	evaluator = Modshogun::MeanSquaredError.new
+	evaluator = MeanSquaredError()
 	mse = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	return mse
