@@ -24,7 +24,7 @@ def classifier_averaged_perceptron_modular (fm_train_real=traindat,fm_test_real=
 
 	perceptron.set_features(feats_test)
 	out_labels = perceptron.apply().get_labels()
-	print out_labels
+	#print out_labels
 	return perceptron, out_labels
 
 if __name__=='__main__':

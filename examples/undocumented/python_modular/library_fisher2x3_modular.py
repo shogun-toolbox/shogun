@@ -2,8 +2,8 @@ from numpy import *
 from shogun.Mathematics import *
 
 x=array([[20.0,15,15],[10,20,20]])
-y=array([[21,21,18],[19,19,22]])
-z=array([[15,27,18],[32,5,23]])
+y=array([[21.0,21,18],[19,19,22]])
+z=array([[15.0,27,18],[32,5,23]])
 
 
 parameter_list = [[x,concatenate((x,y,z),1)],[y,concatenate((y,y,x),1)]]
