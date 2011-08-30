@@ -380,19 +380,26 @@ void
 CBinaryFile::read_header(TSGDataType* dest)
 {
 	ASSERT(file);
+	ASSERT(dest);
+
+	if (fseek(file, 0L, SEEK_SET)!=0)
+		SG_ERROR("Error seeking file '%s' to the beginning.\n", filename);
 
 	char fourcc[4];
 	uint16_t endian=0;
 
-	if (!((fread(&fourcc, sizeof(char), 4, file)==4) &&
-			(fread(&endian, sizeof(uint16_t), 1, file)== 1) &&
-			(fread(&dest->m_ctype, sizeof(dest->m_ctype), 1, file)== 1)
-		  && (fread(&dest->m_ptype, sizeof(dest->m_ptype), 1, file)== 1)
-			))
-		SG_ERROR("Error reading header\n");
+	if (fread(&fourcc, sizeof(char), 4, file)!=4)
+		SG_ERROR("Error reading fourcc header in file '%s'\n", filename);
+
+	if (fread(&endian, sizeof(uint16_t), 1, file)!=1)
+		SG_ERROR("Error reading endian header in file '%s'\n", filename);
+
+	if ((fread(&dest->m_ctype, sizeof(dest->m_ctype), 1, file)!=1) ||
+			(fread(&dest->m_ptype, sizeof(dest->m_ptype), 1, file)!=1))
+		SG_ERROR("Error reading datatype header in file '%s'\n", filename);
 
 	if (strncmp(fourcc, "SG01", 4))
-		SG_ERROR("Header mismatch, expected SG01\n");
+		SG_ERROR("Header mismatch, expected SG01 in file '%s'\n", filename);
 }
 
 void
