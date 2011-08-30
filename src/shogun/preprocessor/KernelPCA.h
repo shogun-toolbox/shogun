@@ -26,7 +26,7 @@ class CKernel;
 
 /** @brief Preprocessor KernelPCA performs kernel principal component analysis
  *
- * Schölkopf, B., Smola, A. J., & Muller, K. R. (1999). 
+ * Schoelkopf, B., Smola, A. J., & Mueller, K. R. (1999). 
  * Kernel Principal Component Analysis. 
  * Advances in kernel methods support vector learning, 1327(3), 327-352. MIT Press. 
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.8744
