@@ -8,7 +8,9 @@
 # Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
 #
 
-def modelselection_parameter_tree_modular():
+parameter_list=[[None]]
+
+def modelselection_parameter_tree_modular(dummy):
 	from shogun.ModelSelection import ParameterCombination
 	from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
 	from shogun.ModelSelection import DynamicParameterCombinationArray
@@ -65,17 +67,17 @@ def modelselection_parameter_tree_modular():
 	param_ds_kernel_theta.build_values(1, 2, R_EXP)
 	param_ds_kernel.append_child(param_ds_kernel_theta)
 
-	root.print_tree()
+#	root.print_tree()
 	combinations=root.get_combinations()
-	for i in range(combinations.get_num_elements()):
-		combinations.get_element(i).print_tree()
+#	for i in range(combinations.get_num_elements()):
+#		combinations.get_element(i).print_tree()
 
 	return
 
 
 if __name__=='__main__':
-	print 'ParameterTree'
-	modelselection_parameter_tree_modular()
+	print 'ModelSelection ParameterTree'
+	modelselection_parameter_tree_modular(*parameter_list[0])
 
 
 

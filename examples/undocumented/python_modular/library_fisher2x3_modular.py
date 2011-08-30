@@ -6,7 +6,7 @@ y=array([[21.0,21,18],[19,19,22]])
 z=array([[15.0,27,18],[32,5,23]])
 
 
-parameter_list = [[x,concatenate((x,y,z),1)],[y,concatenate((y,y,x),1)]]
+parameter_list = [[x,concatenate((x,y,z),1)]]
 
 def library_fisher2x3_modular(table, tables):
 	pval=Math_fishers_exact_test_for_2x3_table(table)

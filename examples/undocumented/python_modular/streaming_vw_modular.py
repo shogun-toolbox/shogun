@@ -3,7 +3,9 @@ from modshogun import T_SVMLIGHT
 from modshogun import StreamingVwFeatures
 from modshogun import VowpalWabbit
 
-def run_vw():
+parameter_list=[[None]]
+
+def streaming_vw_modular(dummy):
     """Runs the VW algorithm on a toy dataset in SVMLight format."""
 
     # Open the input file as a StreamingVwFile
@@ -22,5 +24,7 @@ def run_vw():
     # Train
     vw.train()
 
+    return vw
+
 if __name__ == "__main__":
-    run_vw()
+    streaming_vw_modular(*parameter_list[0]))

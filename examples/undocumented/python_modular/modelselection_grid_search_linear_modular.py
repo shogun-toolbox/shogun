@@ -20,7 +20,7 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 
 parameter_list = [[traindat,label_traindat]]
 
-def modelselection_grid_search_simple(traindat=traindat, label_traindat=label_traindat):
+def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=label_traindat):
 	from shogun.Evaluation import CrossValidation, CrossValidationResult
 	from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
 	from shogun.Evaluation import StratifiedCrossValidationSplitting
@@ -63,19 +63,19 @@ def modelselection_grid_search_simple(traindat=traindat, label_traindat=label_tr
 		cross_validation)
 
 	# perform model selection with selected methods
-	print "performing model selection of"
-	param_tree_root.print_tree()
+	#print "performing model selection of"
+	#param_tree_root.print_tree()
 	best_parameters=model_selection.select_model()
 
 	# print best parameters
-	print "best parameters:"
+	#print "best parameters:"
 	best_parameters.print_tree()
 
 	# apply them and print result
 	best_parameters.apply_to_machine(classifier)
 	result=cross_validation.evaluate()
-	result.print_result()
+	#result.print_result()
 
 if __name__=='__main__':
-	print 'GridSearchSimple'
+	print 'ModelSelection GridSearchLinear'
 	modelselection_grid_search_simple(*parameter_list[0])
