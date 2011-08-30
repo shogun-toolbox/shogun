@@ -354,14 +354,14 @@ svm.train();
 \endverbatim
 
 To apply the SVM to unseen test data, we simply need to pass a feature object to the 
-SVM's classify method, which returns a shogun Label object (note that we could alternatively
-initialize the kernel object with the train and test data manually and then call classify
+SVM's apply method, which returns a shogun Label object (note that we could alternatively
+initialize the kernel object with the train and test data manually and then call apply
 without arguments, which is done in some of the other example scripts).
 If we would like to analyze the outputs directly in python/octave, we can obtain the vector 
 of outputs in native python/octave representation via get_labels(). 
 
 \verbatim
-output = svm.classify(feats_test);
+output = svm.apply(feats_test);
 output_vector = output.get_labels();
 \endverbatim
 

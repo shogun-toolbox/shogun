@@ -92,9 +92,9 @@ int main(int argc, char** argv)
     CLibSVM* svm = new CLibSVM(10, kernel, labels);
     svm->train();
 
-    // classify on training examples
+    // apply to training examples
     for (int32_t i=0; i<3; i++)
-        SG_SPRINT("output[%d]=%f\n", i, svm->classify_example(i));
+        SG_SPRINT("output[%d]=%f\n", i, svm->apply(i));
 
     // free up memory
     SG_UNREF(svm);
@@ -306,8 +306,8 @@ also call SG_UNREF(obj) when done with the object. This makes the swig wrapped i
 automagically take care of object destruction.
 
 If a class function returns a new object this has to be stated in the corresponding swig
-.i file for cleanup to work, e.g. if classify() returns a new CLabels then the .i file
-should contain %newobject CClassifier::classify();
+.i file for cleanup to work, e.g. if apply() returns a new CLabels then the .i file
+should contain %newobject CClassifier::apply();
  
 NAMING CONVENTIONS:
 
