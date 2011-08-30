@@ -162,7 +162,10 @@ class CKernelMachine : public CMachine
 		 */
 		inline float64_t get_alpha(int32_t idx)
 		{
-			ASSERT(m_alpha.vector && idx<m_svs.vlen);
+			if (!m_alpha.vector)
+				SG_ERROR("No alphas set\n");
+			if (idx>=m_alpha.vlen)
+				SG_ERROR("Alphas index (%d) out of range (%d)\n", idx, m_svs.vlen);
 			return m_alpha.vector[idx];
 		}
 
@@ -190,7 +193,7 @@ class CKernelMachine : public CMachine
 		 */
 		inline bool set_alpha(int32_t idx, float64_t val)
 		{
-			if (m_alpha.vector && idx<m_svs.vlen)
+			if (m_alpha.vector && idx<m_alpha.vlen)
 				m_alpha.vector[idx]=val;
 			else
 				return false;
@@ -267,24 +270,19 @@ class CKernelMachine : public CMachine
 		 */
 		inline bool create_new_model(int32_t num)
 		{
-			SG_FREE(m_alpha.vector);
-			SG_FREE(m_svs.vector);
+			m_alpha.destroy_vector();
+			m_svs.destroy_vector();
 
 			m_bias=0;
-			m_svs.vlen=num;
 
 			if (num>0)
 			{
-				m_alpha.vector= SG_MALLOC(float64_t, num);
-				m_svs.vector= SG_MALLOC(int32_t, num);
+				m_alpha= SGVector<float64_t>(num);
+				m_svs= SGVector<int32_t>(num);
 				return (m_alpha.vector!=NULL && m_svs.vector!=NULL);
 			}
 			else
-			{
-				m_alpha.vector= NULL;
-				m_svs.vector=NULL;
 				return true;
-			}
 		}
 
 		/** initialise kernel optimisation
