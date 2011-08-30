@@ -45,7 +45,7 @@ void CDistanceMachine::init()
 	set_store_model_features(true);
 
 	distance=NULL;
-	m_parameters->add((CSGObject**) distance, "distance", "Distance to use");
+	m_parameters->add((CSGObject**)&distance, "distance", "Distance to use");
 }
 
 void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t idx_a2,int32_t idx_b)
