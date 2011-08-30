@@ -7,9 +7,9 @@ try:
     from Kernel import GaussianKernel
     from Classifier import GMNPSVM
 except ImportError:
-    from shogun.Features import RealFeatures, Labels
-    from shogun.Kernel import GaussianKernel
-    from shogun.Classifier import GMNPSVM
+    from modshogun import RealFeatures, Labels
+    from modshogun import GaussianKernel
+    from modshogun import GMNPSVM
 
 import numpy as np
 import gzip as gz
@@ -81,7 +81,7 @@ class Ai:
     def load_classifier(self): self.read_svm()
 
     def classify(self, matrix):
-        cl = self.svm.classify(
+        cl = self.svm.apply(
             RealFeatures(
                 np.reshape(matrix, newshape=(com.FEATURE_DIM, 1),
                            order='F')
@@ -92,7 +92,7 @@ class Ai:
 
     def get_test_error(self):
         self.svm.io.enable_progress()
-        l = self.svm.classify(RealFeatures(self.x_test)).get_labels()
+        l = self.svm.apply(RealFeatures(self.x_test)).get_labels()
         self.svm.io.disable_progress()
 
         return 1.0 - np.mean(l == self.y_test)
