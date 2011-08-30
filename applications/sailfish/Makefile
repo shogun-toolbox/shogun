@@ -1,5 +1,5 @@
-CXXFLAGS=-O9 -g -I./include
-LINKFLAGS=-lshogun -lgfortran
+CXXFLAGS=-O9 -g $(INCLUDES)
+LINKFLAGS=-lshogun
 TARGETS = sailfish
 
 all: $(TARGETS)

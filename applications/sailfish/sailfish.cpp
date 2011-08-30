@@ -1,19 +1,21 @@
 #include <shogun/base/init.h>
 #include <shogun/features/Alphabet.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/Mathematics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynInt.h>
 #include <shogun/lib/IndirectObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
-#include <shogun/lib/io.h>
 #include <shogun/lib/BitString.h>
-#include <shogun/lib/MemoryMappedFile.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/io/MemoryMappedFile.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <ctype.h>
 #include <unistd.h>
+
+using namespace shogun;
 
 void print_message(FILE* target, const char* str)
 {
