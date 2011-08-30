@@ -2,8 +2,8 @@ require 'narray'
 require 'modshogun.so'
 
 # for debugging purposes...
-require 'rubygems'
-# require "pry"
+#require 'rubygems'
+#require "pry"
 
 def LoadMatrix(filename, type = :numbers)
   case type
@@ -34,6 +34,7 @@ module LoadMatrix
   end
 
   def load_dna(filename)
+    puts 'loading dna'
     matrix=[]
     File.open(filename) do |file|
       file.each_line do |line|
@@ -73,6 +74,16 @@ end
 def randn mean = 0.0, std_dev = 1.0
   Modshogun::Math.normal_random mean.to_f, std_dev.to_f
 end
+
+# some stuff added to the Modshogun:: namespace
+
+Modshogun::Math.class_eval do
+  def rand
+    # do something later
+  end
+end
+
+
 
 Numeric.class_eval do
   def sign
