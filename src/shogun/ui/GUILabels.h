@@ -20,7 +20,7 @@ namespace shogun
 {
 class CSGInterface;
 
-/** gui labels */
+/** @brief UI labels */
 class CGUILabels : public CSGObject
 {
 	public:

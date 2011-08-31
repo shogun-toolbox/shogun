@@ -21,7 +21,7 @@ namespace shogun
 {
 class CSGInterface;
 
-/** gui HMM */
+/** @brief UI HMM (Hidden Markov Model) */
 class CGUIHMM : public CSGObject
 {
 	public:

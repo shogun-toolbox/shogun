@@ -1408,6 +1408,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			return result;
 		}
 
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for sparse features */
 		struct sparse_feature_iterator
 		{
@@ -1424,6 +1425,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 						sv.features, sv.vec_index, sv.num_feat_entries, index);
 			}
 		};
+		#endif
 
 		/** iterate over the non-zero features
 		 *

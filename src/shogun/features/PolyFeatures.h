@@ -147,6 +147,7 @@ class CPolyFeatures : public CDotFeatures
 		 */
 		void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val);
 
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct poly_feature_iterator
 		{
@@ -163,6 +164,7 @@ class CPolyFeatures : public CDotFeatures
 			int32_t index;
 
 		};
+		#endif
 
 		/** iterate over the non-zero features
 		 *

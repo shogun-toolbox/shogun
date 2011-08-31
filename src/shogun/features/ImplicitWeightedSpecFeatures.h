@@ -157,6 +157,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 */
 		bool set_weights(float64_t* w, int32_t d);
 
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct wspec_feature_iterator
 		{
@@ -180,6 +181,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 			float64_t alpha;
 			//@}
 		};
+		#endif 
 
 		/** iterate over the non-zero features
 		 *

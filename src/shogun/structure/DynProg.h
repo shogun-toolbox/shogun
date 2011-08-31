@@ -52,6 +52,7 @@ typedef uint8_t T_STATES ;
 #endif
 typedef T_STATES* P_STATES ;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** @brief segment loss */
 struct segment_loss_struct
 {
@@ -66,6 +67,7 @@ struct segment_loss_struct
     /** length of segmend ID */
     int32_t *length_segment_id ;
 };
+#endif
 
 /** @brief Dynamic Programming Class.
  *

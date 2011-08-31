@@ -8,7 +8,7 @@
 namespace shogun
 {
 
-/** weighted degree RBF kernel */
+/** @brief weighted degree RBF kernel */
 class CWeightedDegreeRBFKernel: public CDotKernel
 {
 	public:

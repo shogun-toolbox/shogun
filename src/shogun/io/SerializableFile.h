@@ -20,11 +20,11 @@ namespace shogun
 {
 	class CSGObject;
 
-/** serializable file */
+/** @brief serializable file */
 class CSerializableFile :public CSGObject
 {
 public:
-	/** serializable reader */
+	/** @brief serializable reader */
 	struct TSerializableReader :public CSGObject {
 
 		/* ******************************************************** */

@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-/** the class WaveletKernel
+/** @brief the class WaveletKernel
  *
  * It is defined as
  *

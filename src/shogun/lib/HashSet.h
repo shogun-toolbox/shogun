@@ -19,6 +19,7 @@
 namespace shogun
 {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** hashset node */
 struct HashSetNode
 {
@@ -34,6 +35,7 @@ struct HashSetNode
 	/** pointer to right sibling */
 	HashSetNode *right;
 };
+#endif
 
 /** @brief the class HashSet, a set based on the hash-table.
  * w: http://en.wikipedia.org/wiki/Hash_table

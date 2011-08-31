@@ -24,11 +24,13 @@ REPLACE definitions THIS
 REPLACE template_definitions THIS
 
 typedef CSGObject* (*new_sgserializable_t)(EPrimitiveType generic);
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 typedef struct
 {
 	const char* m_class_name;
 	new_sgserializable_t m_new_sgserializable;
 } class_list_entry_t;
+#endif
 
 static class_list_entry_t class_list[] = {
 REPLACE struct THIS

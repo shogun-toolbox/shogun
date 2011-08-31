@@ -168,6 +168,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 			return normalization_const;
 		}
 
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct hashed_wd_transposed_feature_iterator
 		{
@@ -184,6 +185,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 			int32_t index;
 
 		};
+		#endif
 
 		/** iterate over the non-zero features
 		 *

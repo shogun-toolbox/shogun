@@ -88,6 +88,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct explicit_spec_feature_iterator
 		{
@@ -104,6 +105,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 			int32_t index;
 
 		};
+		#endif
 
 		/** iterate over the non-zero features
 		 *

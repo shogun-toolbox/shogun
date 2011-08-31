@@ -103,6 +103,7 @@ public:
 		return degree*vlen;
 	}
 
+	#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	/** iterator for weighted spectrum features */
 	struct hashed_wd_feature_iterator
 	{
@@ -119,6 +120,7 @@ public:
 		int32_t index;
 
 	};
+	#endif
 
 	/** iterate over the non-zero features
 	 *

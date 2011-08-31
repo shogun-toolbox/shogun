@@ -23,7 +23,7 @@ namespace shogun
 
 class CDistance;
 
-/** @brief ANOVA kernel
+/** @brief ANOVA (ANalysis Of VAriances) kernel
  *
  * Formally described as
  *

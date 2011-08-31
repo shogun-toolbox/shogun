@@ -121,6 +121,7 @@ class CSparsePolyFeatures : public CDotFeatures
 			return sizeof(float64_t);
 		}
 
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct sparse_poly_feature_iterator
 		{
@@ -135,8 +136,8 @@ class CSparsePolyFeatures : public CDotFeatures
 
 			/** feature index */
 			int32_t index;
-
 		};
+		#endif
 
 		/** iterate over the non-zero features
 		 *

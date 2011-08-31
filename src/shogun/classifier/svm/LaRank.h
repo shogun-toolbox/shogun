@@ -302,8 +302,8 @@ namespace shogun
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 
-	/**
-	 * MACHINE: the main thing, which is trained.
+	/** @brief the LaRank multiclass SVM machine
+	 *
 	 */
 	class CLaRank:  public CMultiClassSVM
 	{

@@ -104,7 +104,7 @@ enum E_WHICH_OBJ
 	MKL_ABSOLUTE_DUALITY_GAP
 };
 
-/** shogun interface */
+/** @brief shogun interface */
 class CSGInterface : public CSGObject
 {
 	public:
@@ -1124,6 +1124,7 @@ class CSGInterface : public CSGObject
 /** sg interface ptr typedef */
 typedef bool (CSGInterface::*CSGInterfacePtr)();
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** interface method */
 typedef struct {
 	/// command
@@ -1136,5 +1137,6 @@ typedef struct {
 	const char* usage_suffix;
 } CSGInterfaceMethod;
 }
+#endif
 
 #endif // __SGINTERFACE__H_

@@ -32,7 +32,7 @@ namespace shogun
 {
 class CSGInterface;
 
-/** gui features */
+/** @brief UI features */
 class CGUIFeatures : public CSGObject
 {
 	/** feature type */

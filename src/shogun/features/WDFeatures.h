@@ -98,6 +98,7 @@ class CWDFeatures : public CDotFeatures
 			return degree*vlen;
 		}
 
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct wd_feature_iterator
 		{
@@ -124,6 +125,7 @@ class CWDFeatures : public CDotFeatures
 			int32_t o;
 			//@}
 		};
+		#endif
 
 		/** iterate over the non-zero features
 		 *

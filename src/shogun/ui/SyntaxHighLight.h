@@ -1,4 +1,4 @@
-/** syntax highlight */
+/** @brief the syntax highlight */
 class CSyntaxHighLight
 {
 	public:

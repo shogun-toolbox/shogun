@@ -25,6 +25,7 @@
 namespace shogun
 {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** joint list struct */
 struct joint_list_struct
 {
@@ -34,9 +35,10 @@ struct joint_list_struct
 	unsigned int index;
 	/** mismatch */
 	unsigned int mismatch;
-} ;
+};
+#endif
 
-/** spectrum mismatch rbf kernel */
+/** @brief spectrum mismatch rbf kernel */
 class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 {
 	public:

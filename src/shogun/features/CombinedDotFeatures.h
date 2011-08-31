@@ -161,6 +161,7 @@ class CCombinedDotFeatures : public CDotFeatures
 			return sizeof(float64_t);
 		}
 
+		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for combined dotfeatures */
 		struct combined_feature_iterator
 		{
@@ -173,6 +174,7 @@ class CCombinedDotFeatures : public CDotFeatures
 			/** the index of the vector over whose components to iterate over */
 			int32_t vector_index;
 		};
+		#endif
 
 		/** iterate over the non-zero features
 		 *

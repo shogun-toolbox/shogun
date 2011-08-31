@@ -122,6 +122,7 @@ enum EKernelProperty
 	KP_BATCHEVALUATION = 4  // Kernels that can on the fly generate normals in linadd and more quickly/memory efficient process batches instead of single examples
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** kernel thread parameters */
 template <class T> struct K_THREAD_PARAM
 {
@@ -146,6 +147,7 @@ template <class T> struct K_THREAD_PARAM
 	/** output progress */
 	bool verbose;
 };
+#endif
 
 class CSVM;
 

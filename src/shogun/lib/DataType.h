@@ -24,7 +24,7 @@ template<class T> class CCache;
 /** index */
 typedef int32_t index_t;
 
-/** shogun vector */
+/** @brief shogun vector */
 template<class T> class SGVector
 {
 	public:
@@ -132,6 +132,7 @@ template<class T> class SGVector
 //		CCache<T>* cache;
 //};
 
+/** @brief shogun matrix */
 template<class T> class SGMatrix
 {
 	public:
@@ -184,7 +185,7 @@ template<class T> class SGMatrix
 		bool do_free;
 };
 
-/** shogun n-dimensional array */
+/** @brief shogun n-dimensional array */
 template<class T> class SGNDArray
 {
     public:
@@ -208,7 +209,7 @@ template<class T> class SGNDArray
         index_t num_dims;
 };
 
-/** shogun string */
+/** @brief shogun string */
 template<class T> struct SGString
 {
 public:
@@ -261,7 +262,7 @@ public:
 	bool do_free;
 };
 
-/** template class SGStringList */
+/** @brief template class SGStringList */
 template <class T> struct SGStringList
 {
 public:
@@ -321,7 +322,7 @@ public:
 	bool do_free;
 };
 
-/** template class SGSparseVectorEntry */
+/** @brief template class SGSparseVectorEntry */
 template <class T> struct SGSparseVectorEntry
 {
 	/** feature index  */
@@ -330,7 +331,7 @@ template <class T> struct SGSparseVectorEntry
 	T entry;
 };
 
-/** template class SGSparseVector */
+/** @brief template class SGSparseVector */
 template <class T> struct SGSparseVector
 {
 public:
@@ -389,7 +390,7 @@ public:
 	bool do_free;
 };
 
-/** template class SGSparseMatrix */
+/** @brief template class SGSparseMatrix */
 template <class T> class SGSparseMatrix
 {
 	public:
@@ -496,7 +497,7 @@ enum EPrimitiveType
 };
 #endif
 
-/** Datatypes that shogun supports. */
+/** @brief Datatypes that shogun supports. */
 struct TSGDataType
 {
 	/** container type */

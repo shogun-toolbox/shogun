@@ -14,7 +14,7 @@
 
 namespace shogun
 {
-/** serializable ascii reader 00 */
+/** @brief Serializable ascii reader */
 class SerializableAsciiReader00
 	: public CSerializableFile::TSerializableReader {
 	

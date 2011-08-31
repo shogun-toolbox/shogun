@@ -18,7 +18,7 @@
 namespace shogun
 {
 class CDistance;
-/** the class Bessel kernel
+/** @brief the class Bessel kernel
  *
  * It is defined as
  * \f[

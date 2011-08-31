@@ -882,6 +882,7 @@ public:
 	 */
 	virtual inline void save(CFile* saver);
 
+	#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	/** iterator for simple features */
 	struct simple_feature_iterator
 	{
@@ -897,6 +898,7 @@ public:
 		/** feature index */
 		int32_t index;
 	};
+	#endif
 
 	/** iterate over the non-zero features
 	 *
