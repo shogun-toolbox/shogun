@@ -17,15 +17,12 @@ def _evaluate (indata):
 		return False
 
 	feats=util.get_features(indata, 'distance_')
-	print feats['train'].get_num_vectors()
 	dfun=eval(indata['distance_name'])
 	distance=dfun(feats['train'], feats['train'])
 
 	cfun=eval(indata['clustering_name'])
 	clustering=cfun(first_arg, distance)
 	clustering.train()
-
-	print clustering.get_k()
 
 	if indata.has_key('clustering_radi'):
 		radi=max(abs(clustering.get_radiuses()-indata['clustering_radi']))
