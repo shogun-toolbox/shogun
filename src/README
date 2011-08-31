@@ -30,8 +30,8 @@ each feature object allowing for on-the-fly pre-processing.
 
 INTERFACES
 
-SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave and
-Python.
+SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave, 
+Java, C#, Ruby, Lua and Python.
 
 PLATFORMS
 
