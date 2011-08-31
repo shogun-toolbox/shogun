@@ -68,7 +68,7 @@ SGMatrix<float64_t> CLogPlusOne::apply_to_feature_matrix(CFeatures* features)
 	{
 		for (int32_t j=0; j<feature_matrix.num_rows; j++)
 			feature_matrix.matrix[i*feature_matrix.num_rows+j] =
-					CMath::log(feature_matrix.matrix[i*feature_matrix.num_rows+j]);
+					CMath::log(feature_matrix.matrix[i*feature_matrix.num_rows+j]+1.0);
 	}
 	return feature_matrix;
 }
