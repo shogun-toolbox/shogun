@@ -247,10 +247,9 @@ public:
 	// best_path result retrieval functions
 	/** best path get scores
 	 *
-	 * @param scores scores
-	 * @param n dimension n
+	 * @return scores scores
 	 */
-	void get_scores(float64_t **scores, int32_t *n);
+	SGVector<float64_t> get_scores();
 
 	/** best path get states
 	 *
@@ -260,11 +259,9 @@ public:
 
 	/** best path get positions
 	 *
-	 * @param positions positions
-	 * @param m dimension m
-	 * @param n dimension n
+	 * @return positions positions
 	 */
-	void get_positions(int32_t **positions, int32_t *m, int32_t *n);
+	SGMatrix<int32_t> get_positions();
 
 
 	/** run the viterbi algorithm to compute the n best viterbi paths

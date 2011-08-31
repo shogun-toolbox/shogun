@@ -6765,17 +6765,11 @@ bool CSGInterface::cmd_best_path_trans()
 				h->compute_nbest_paths(feat_dims[2], use_orf, 2,false,false);
 	}
 
-	float64_t* p_prob;
-	int32_t n_prob;
-	h->get_scores(&p_prob, &n_prob);
+	SGVector<float64_t> p_prob=h->get_scores();
 
-	int32_t* my_path;
 	SGMatrix<int32_t> states=h->get_states();
 
-	int32_t* my_pos;
-	int32_t n_pos;
-	int32_t m_pos;
-	h->get_positions(&my_pos, &n_pos, &m_pos);
+	SGMatrix<int32_t> my_pos=h->get_positions();
 
 	// transcribe result
 	float64_t* d_my_path= SG_MALLOC(float64_t, (nbest+nother)*M);
@@ -6786,13 +6780,13 @@ bool CSGInterface::cmd_best_path_trans()
 		for (int32_t i=0; i<M; i++)
 		{
 			d_my_path[i*(nbest+nother)+k] = states.matrix[i+k*M] ;
-			d_my_pos[i*(nbest+nother)+k] = my_pos[i+k*M] ;
+			d_my_pos[i*(nbest+nother)+k] = my_pos.matrix[i+k*M] ;
 		}
 	}
-	free(states.matrix);
-	free(my_pos);
+	SG_FREE(states.matrix);
+	SG_FREE(my_pos.matrix);
 
-	set_vector(p_prob,nbest+nother);
+	set_vector(p_prob.vector,nbest+nother);
 	set_vector(d_my_path, (nbest+nother)*M);
 	set_vector(d_my_pos, (nbest+nother)*M);
 
