@@ -1,3 +1,27 @@
+* commit d4ef7b537a28c11eb48ff56636d1d421c98ff47b
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Sep 1 00:58:12 2011 +0200
+| 
+|     updated changelog
+| 
+| M	src/ChangeLog
+|  
+* commit 13d738f9453e301676c1ad5a82b0747ae288a0db
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 1 02:14:04 2011 +0400
+| 
+|     Updated data
+| 
+| M	data
+|  
+* commit 3210c3f1ba04e3d295b6ffbad3c76f0023b29d45
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 1 02:12:00 2011 +0400
+| 
+|     Updated data
+| 
+| M	data
+|  
 * commit de6f67984c2e776f97df049f5f8f3dbc9e0168f2
 | Author: Sergey Lisitsyn <blackburn91@gmail.com>
 | Date:   Thu Sep 1 02:03:20 2011 +0400
