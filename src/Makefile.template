@@ -7,7 +7,7 @@
 SRCDIR = .
 
 ifeq (../.config,$(wildcard ../.config))
-CONFIGPATH = ./
+CONFIGPATH = ../
 all: build
 include ../.config
 ifeq (../.config-local,$(wildcard ../.config-local))

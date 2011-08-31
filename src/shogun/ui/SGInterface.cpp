@@ -6770,9 +6770,7 @@ bool CSGInterface::cmd_best_path_trans()
 	h->get_scores(&p_prob, &n_prob);
 
 	int32_t* my_path;
-	int32_t n_path;
-	int32_t m_path;
-	h->get_states(&my_path, &n_path, &m_path);
+	SGMatrix<int32_t> states=h->get_states();
 
 	int32_t* my_pos;
 	int32_t n_pos;
@@ -6787,11 +6785,11 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 		for (int32_t i=0; i<M; i++)
 		{
-			d_my_path[i*(nbest+nother)+k] = my_path[i+k*M] ;
+			d_my_path[i*(nbest+nother)+k] = states.matrix[i+k*M] ;
 			d_my_pos[i*(nbest+nother)+k] = my_pos[i+k*M] ;
 		}
 	}
-	free(my_path);
+	free(states.matrix);
 	free(my_pos);
 
 	set_vector(p_prob,nbest+nother);

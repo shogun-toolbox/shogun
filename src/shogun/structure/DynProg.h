@@ -254,11 +254,9 @@ public:
 
 	/** best path get states
 	 *
-	 * @param states states
-	 * @param m dimension m
-	 * @param n dimension n
+	 * @return states states
 	 */
-	void get_states(int32_t **states, int32_t *m, int32_t *n);
+	SGMatrix<int32_t> get_states();
 
 	/** best path get positions
 	 *

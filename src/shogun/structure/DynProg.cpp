@@ -850,19 +850,14 @@ void CDynProg::get_scores(float64_t **scores, int32_t *m)
    memcpy(*scores,m_scores.get_array(), sizeof(float64_t)*(*m));
 }
 
-void CDynProg::get_states(int32_t **states, int32_t *m, int32_t *n) 
+SGMatrix<int32_t> CDynProg::get_states()
 {
-   ASSERT(states && m && n);
+	SGMatrix<int32_t> states(m_states.get_dim1(), m_states.get_dim2());
 
-	*m=m_states.get_dim1() ;
-	*n=m_states.get_dim2() ;
+	int32_t sz = sizeof(int32_t)*( m_states.get_dim1() * m_states.get_dim2() );
+	memcpy(states.matrix ,m_states.get_array(),sz);
 
-
-   *states = SG_MALLOC(int32_t, (*m) * (*n));
-   ASSERT(*states);
-
-   int32_t sz = sizeof(int32_t)*( (*m) * (*n) );
-   memcpy(*states,m_states.get_array(),sz);
+	return states;
 }
 
 void CDynProg::get_positions(int32_t **positions, int32_t *m, int32_t *n)
