@@ -219,7 +219,7 @@ void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 	SG_REF(env);
 	SG_REF(reg);
 
-	quiet = false;
+	quiet = true;
 	no_training = false;
 	dump_interval = exp(1.);
 	sum_loss_since_last_dump = 0.;
@@ -372,6 +372,12 @@ void CVowpalWabbit::output_prediction(int32_t f, float32_t res, float32_t weight
 			SG_SERROR("Write error!\n");
 	}
 }
+
+void CVowpalWabbit::set_verbose(bool verbose)
+{
+	quiet=verbose==false;
+}
+
 
 float32_t CVowpalWabbit::compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x)
 {

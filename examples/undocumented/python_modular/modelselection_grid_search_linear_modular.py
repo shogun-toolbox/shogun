@@ -69,7 +69,7 @@ def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=
 
 	# print best parameters
 	#print "best parameters:"
-	best_parameters.print_tree()
+	#best_parameters.print_tree()
 
 	# apply them and print result
 	best_parameters.apply_to_machine(classifier)
@@ -78,4 +78,4 @@ def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=
 
 if __name__=='__main__':
 	print 'ModelSelection GridSearchLinear'
-	modelselection_grid_search_simple(*parameter_list[0])
+	modelselection_grid_search_linear_modular(*parameter_list[0])
