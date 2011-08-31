@@ -156,7 +156,7 @@ def _evaluate_pie (indata, prefix):
 	km_test=max(abs(
 		indata[prefix+'matrix_test']-kernel.get_kernel_matrix()).flat)
 	classified=max(abs(
-		pie.classify().get_labels()-indata['classifier_classified']))
+		pie.apply().get_labels()-indata['classifier_classified']))
 
 	return util.check_accuracy(indata[prefix+'accuracy'],
 		km_train=km_train, km_test=km_test, classified=classified)

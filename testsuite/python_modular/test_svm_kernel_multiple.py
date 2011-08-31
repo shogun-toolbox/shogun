@@ -37,7 +37,7 @@ for i in xrange(3):
 	svm.train()
 
 	kernel.init(feats_train, feats_test)
-	print svm.classify().get_labels()
+	print svm.apply().get_labels()
 
 	#kernel.remove_lhs_and_rhs()
 
