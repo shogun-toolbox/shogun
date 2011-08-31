@@ -94,7 +94,7 @@ grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_S
 sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/libshogun/kernel/Kernel.cpp $(DESTDIR)/src/libshogun/kernel/Kernel.h ; \
 sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
-# We assume that a release is always created from a SVN working copy.
+# We assume that a release is always created from a git clone.
 
 prepare-release:
 	@if [ -f $(LOGFILE) ]; then rm -f $(LOGFILE); fi
