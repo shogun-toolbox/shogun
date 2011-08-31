@@ -88,10 +88,10 @@ endif
 
 DATADESTDIR := ../$(DATARELEASENAME)
 DESTDIR := ../$(RELEASENAME)
-REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/libshogun/classifier/svm/SVM_light.* $(DESTDIR)/src/libshogun/classifier/svm/Optimizer.* $(DESTDIR)/src/libshogun/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
+REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/shogun/classifier/svm/SVM_light.* $(DESTDIR)/src/shogun/classifier/svm/Optimizer.* $(DESTDIR)/src/shogun/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
 rm -f $(DESTDIR)/testsuite/data/classifier/SVMLight* $(DESTDIR)/testsuite/data/regression/SVRLight*	; \
 grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_SVMLIGHT/,/\#endif \/\/USE_SVMLIGHT/c \\' ; \
-sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/libshogun/kernel/Kernel.cpp $(DESTDIR)/src/libshogun/kernel/Kernel.h ; \
+sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/shogun/kernel/Kernel.cpp $(DESTDIR)/src/shogun/kernel/Kernel.h ; \
 sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
 # We assume that a release is always created from a git clone.
@@ -106,7 +106,7 @@ prepare-release:
 	@echo "Please check output of 'git status'." | tee --append $(LOGFILE)
 	@echo "Press ENTER to continue or Ctrl-C to abort." | tee --append $(LOGFILE)
 	@read foobar
-	(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; git commit -m "updated changelog") | tee --append $(LOGFILE)
+	(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; git commit -m "updated changelog" ChangeLog ) | tee --append $(LOGFILE)
 	#build for all interfaces and update doc
 	git clean -dfx
 	( cd src && ./configure ) | tee --append $(LOGFILE)
@@ -115,9 +115,9 @@ prepare-release:
 	+$(MAKE) -C src doc DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
 	-$(MAKE) -C src tests DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
 	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
-	(cd doc; git commit -m "updated reference documentation") | tee --append $(LOGFILE)
+	(cd doc; git commit -m "updated reference documentation" . ) | tee --append $(LOGFILE)
 
-release: src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/versionstring.h
+release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
@@ -128,7 +128,7 @@ data-release:
 	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
 	$(COMPRESS) -9 $(DATADESTDIR).tar
 
-embed-main-version: src/libshogun/lib/versionstring.h
+embed-main-version: src/shogun/lib/versionstring.h
 	sed -i 's/VERSION_RELEASE "git/VERSION_RELEASE "v$(MAINVERSION)/' src/shogun/lib/versionstring.h
 	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
 
@@ -137,12 +137,12 @@ git-tag-release: embed-main-version
 	-cd .. && rm -rf shogun-releases/shogun_$(MAINVERSION)
 	# create shogun X.Y branch and put in versionstring
 	git checkout -b $(VERSIONBASE)
-	git add src/libshogun/lib/versionstring.h
+	git add src/shogun/lib/versionstring.h
 	sed -i "s| lib/versionstring.h||" src/Makefile
 	git commit -m "Tagging shogun_$(MAINVERSION) release"
 	git tag shogun_$(MAINVERSION)
 	# copying thing sover to shogun-releases dir
-	cp src/libshogun/lib/versionstring.h ../shogun-releases/shogun_$(MAINVERSION)/src/libshogun/lib/versionstring.h
+	cp src/shogun/lib/versionstring.h ../shogun-releases/shogun_$(MAINVERSION)/src/shogun/lib/versionstring.h
 	cp src/Makefile ../shogun-releases/shogun_$(MAINVERSION)/src/Makefile
 
 package-from-release:
@@ -185,18 +185,18 @@ update-webpage:
 
 	cd ../../website && $(MAKE)
 
-src/libshogun/lib/versionstring.h:
+src/shogun/lib/versionstring.h:
 	rm -f src/ChangeLog
 	$(MAKE) -C src ChangeLog
-	$(MAKE) -C src/libshogun lib/versionstring.h
+	$(MAKE) -C src/shogun lib/versionstring.h
 
-$(DESTDIR)/src/libshogun/lib/versionstring.h: src/libshogun/lib/versionstring.h
+$(DESTDIR)/src/shogun/lib/versionstring.h: src/shogun/lib/versionstring.h
 	rm -rf $(DESTDIR)
 	git checkout-index --prefix=$(DESTDIR) -a
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
-	cp -f src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/
+	cp -f src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/
 
 clean:
 	rm -rf $(DESTDIR)
