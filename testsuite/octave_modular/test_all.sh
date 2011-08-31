@@ -3,10 +3,15 @@
 DATAPATH='../data'
 
 function test_all () {
-	dir=${1}
-	echo "*** Testing in ${dir}"
+	datapath=${1}
+
+	if echo "$datapath" | grep -q '\.\./data/tests'
+	then
+		continue
+	fi
+	echo "*** Testing in ${datapath}"
 	sleep 1
-	for file in ${dir}; do
+	for file in ${datapath}; do
 		echo -n "${file}"
 		echo -n -e "\t\t"
 
