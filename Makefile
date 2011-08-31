@@ -3,8 +3,8 @@
 # * To make a release (and tag it) run
 #
 #       make prepare-release
-#       make svn-tag-release  
-#       (cd releases/shogun_X.Y.Z ; make release ; make update-webpage)
+#       make git-tag-release  
+#       (cd shogun-releases/shogun_X.Y.Z ; make release ; make update-webpage)
 #
 # * To create a debian .orig.tar.gz run
 #
@@ -44,7 +44,7 @@ COMPRESS := bzip2
 MAINVERSION := $(shell awk '/Release/{print $$5;exit}' src/NEWS)
 VERSIONBASE := $(shell echo $(MAINVERSION) | cut -f 1-2 -d '.')
 EXTRAVERSION := 
-DATAMAINVERSION := $(shell awk '/Release/{print $$11;exit}' src/NEWS | tr -d '(,)' )
+DATAMAINVERSION := $(shell awk '/Release/{print $$9;exit}' src/NEWS | tr -d '(,)' )
 DATAEXTRAVERSION :=
 DATARELEASENAME := shogun-data-$(DATAMAINVERSION)$(DATAEXTRAVERSION)
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
@@ -98,7 +98,8 @@ sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
 prepare-release:
 	@if [ -f $(LOGFILE) ]; then rm -f $(LOGFILE); fi
-	git pull github master | tee --append $(LOGFILE)
+	git pull --rebase github master | tee --append $(LOGFILE)
+	git submodule update | tee --append $(LOGFILE)
 	#update changelog
 	git status -v | tee --append $(LOGFILE)
 	@echo | tee --append $(LOGFILE)
@@ -112,9 +113,9 @@ prepare-release:
 	+$(MAKE) -C src | tee --append $(LOGFILE)
 	+$(MAKE) -C src install DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
 	+$(MAKE) -C src doc DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
-	+$(MAKE) -C src tests DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
+	-$(MAKE) -C src tests DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
 	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
-	(cd doc; svn ci -m "updated reference documentation") | tee --append $(LOGFILE)
+	(cd doc; git commit -m "updated reference documentation") | tee --append $(LOGFILE)
 
 release: src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
@@ -122,24 +123,27 @@ release: src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/versions
 	$(COMPRESS) -9 $(DESTDIR).tar
 
 data-release:
-	svn export ../data $(DATADESTDIR)
+	cd data && git checkout-index --prefix=$(DATADESTDIR) -a
 	tar -c -f $(DATADESTDIR).tar -C .. $(DATARELEASENAME)
 	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
 	$(COMPRESS) -9 $(DATADESTDIR).tar
 
 embed-main-version: src/libshogun/lib/versionstring.h
-	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/libshogun/lib/versionstring.h
+	sed -i 's/VERSION_RELEASE "git/VERSION_RELEASE "v$(MAINVERSION)/' src/shogun/lib/versionstring.h
 	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
 
-svn-tag-release: embed-main-version
-	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
-	#-cd .. && svn --force rm releases/shogun_$(MAINVERSION)
-	#-cd .. && svn commit releases -m "clean old tag"
-	svn cp https://svn.tuebingen.mpg.de:/shogun/trunk ../releases/shogun_$(MAINVERSION)
-	cp src/libshogun/lib/versionstring.h ../releases/shogun_$(MAINVERSION)/src/libshogun/lib/versionstring.h
-	sed -i "s| lib/versionstring.h||" ../releases/shogun_$(MAINVERSION)/src/Makefile
-	cd ../releases && svn add shogun_$(MAINVERSION)/src/libshogun/lib/versionstring.h
-	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release" shogun_$(MAINVERSION)
+git-tag-release: embed-main-version
+	git commit -a -m "Preparing for new Release shogun_$(MAINVERSION)"
+	-cd .. && rm -rf shogun-releases/shogun_$(MAINVERSION)
+	# create shogun X.Y branch and put in versionstring
+	git checkout -b $(VERSIONBASE)
+	git add src/libshogun/lib/versionstring.h
+	sed -i "s| lib/versionstring.h||" src/Makefile
+	git commit -m "Tagging shogun_$(MAINVERSION) release"
+	git tag shogun_$(MAINVERSION)
+	# copying thing sover to shogun-releases dir
+	cp src/libshogun/lib/versionstring.h ../shogun-releases/shogun_$(MAINVERSION)/src/libshogun/lib/versionstring.h
+	cp src/Makefile ../shogun-releases/shogun_$(MAINVERSION)/src/Makefile
 
 package-from-release:
 	rm -rf $(DESTDIR)
@@ -167,15 +171,16 @@ update-webpage:
 	$(MAKE) -C examples
 	rm -rf doc/html
 	$(MAKE) -C doc
-	ssh km rm -f "/var/www/shogun-toolbox.org/doc/*.*"
-	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/ -xjvf -
-	ssh km find /var/www/shogun-toolbox.org/doc/ -type f -exec chmod 644 \{\} "\;"
-	ssh km find /var/www/shogun-toolbox.org/doc/ -type d -exec chmod 755 \{\} "\;"
-	$(MAKE) -C doc doc_cn
-	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc_cn/ -xjvf -
-	ssh km find /var/www/shogun-toolbox.org/doc_cn/ -type f -exec chmod 644 \{\} "\;"
-	ssh km find /var/www/shogun-toolbox.org/doc_cn/ -type d -exec chmod 755 \{\} "\;"
-	ssh km ./bin/shogun_doc_install.sh
+	ssh km rm -f "/var/www/shogun-toolbox.org/doc/*/$(MAINVERSION)/*.*"
+	ssh km mkdir -p "/var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION)"
+	ssh km mkdir -p "/var/www/shogun-toolbox.org/doc/en/$(MAINVERSION)"
+	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION)/ -xjvf -
+	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION)/ -xjvf -
+	ssh km find /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -type f -exec chmod 644 \{\} "\;"
+	ssh km find /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -type d -exec chmod 755 \{\} "\;"
+	ssh km find /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION) -type f -exec chmod 644 \{\} "\;"
+	ssh km find /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION) -type d -exec chmod 755 \{\} "\;"
+	ssh km ./bin/shogun_doc_install.sh $(MAINVERSION)
 	rm -rf doc/html*
 
 	cd ../../website && $(MAKE)
@@ -187,11 +192,10 @@ src/libshogun/lib/versionstring.h:
 
 $(DESTDIR)/src/libshogun/lib/versionstring.h: src/libshogun/lib/versionstring.h
 	rm -rf $(DESTDIR)
-	svn export . $(DESTDIR)
+	git checkout-index --prefix=$(DESTDIR) -a
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
-	rm -f $(DESTDIR)/src/.authors
 	cp -f src/libshogun/lib/versionstring.h $(DESTDIR)/src/libshogun/lib/
 
 clean:
