@@ -52,17 +52,19 @@ def accuracy(output, labels_test):
 
 def calcroc(output, LTE):
     """The area under the receiver operating characteristic curve"""
-    pm=PerformanceMeasures(Labels(numpy.array(LTE)), Labels(numpy.array(output)))
+    pm=ROCEvaluation()
+    pm.evaluate(Labels(numpy.array(output)), Labels(numpy.array(LTE)))
 
     auROC=pm.get_auROC()
-    return auROC ;
+    return auROC
 
 def calcprc(output, LTE):
     """The area under the precision recall curve"""
-    pm=PerformanceMeasures(Labels(numpy.array(LTE)), Labels(numpy.array(output)))
+    pm=PRCEvaluation()
+    pm.evaluate(Labels(numpy.array(output)), Labels(numpy.array(LTE)))
 
     auPRC=pm.get_auPRC()
-    return auPRC ;
+    return auPRC
 
 
 def calcperf(output, LTE, perflist):
