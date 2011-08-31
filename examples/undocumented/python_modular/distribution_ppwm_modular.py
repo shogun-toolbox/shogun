@@ -54,7 +54,7 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 
 	#out_likelihood = histo.get_log_likelihood()
 	#out_sample = histo.get_log_likelihood_sample()
-	return ppwm,w,u
+	return w,u
 ###########################################################################
 # call functions
 ###########################################################################

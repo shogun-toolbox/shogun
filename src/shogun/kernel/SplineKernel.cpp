@@ -18,11 +18,11 @@
 
 using namespace shogun;
 
-CSplineKernel::CSplineKernel(void)
+CSplineKernel::CSplineKernel() : CDotKernel()
 {
 }
 
-CSplineKernel::CSplineKernel(CDotFeatures* l, CDotFeatures* r)
+CSplineKernel::CSplineKernel(CDotFeatures* l, CDotFeatures* r) : CDotKernel()
 {
 	init(l,r);
 }
@@ -34,6 +34,12 @@ CSplineKernel::~CSplineKernel()
 
 bool CSplineKernel::init(CFeatures* l, CFeatures* r)
 {
+	ASSERT(l->get_feature_type()==F_DREAL);
+	ASSERT(l->get_feature_type()==r->get_feature_type());
+
+	ASSERT(l->get_feature_class()==C_SIMPLE);
+	ASSERT(l->get_feature_class()==r->get_feature_class());
+
 	CDotKernel::init(l,r);
 	return init_normalizer();
 }
@@ -48,8 +54,8 @@ float64_t CSplineKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float32_t* avec = ((CSimpleFeatures<float32_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	float32_t* bvec = ((CSimpleFeatures<float32_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	float64_t* avec = ((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+	float64_t* bvec = ((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen == blen);
 
 	float64_t result = 0;
@@ -59,8 +65,8 @@ float64_t CSplineKernel::compute(int32_t idx_a, int32_t idx_b)
 		result += 1 + x*y + x*y*min - ((x+y)/2)*min*min + min*min*min/3;
 	}
 
-	((CSimpleFeatures<float32_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

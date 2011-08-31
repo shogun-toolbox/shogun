@@ -70,7 +70,7 @@ class CSplineKernel: public CDotKernel
 		 *
 		 * @return name Spline
 		 */
-		virtual const char* get_name() const { return "Spline"; }
+		virtual const char* get_name() const { return "SplineKernel"; }
 
 	protected:
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);

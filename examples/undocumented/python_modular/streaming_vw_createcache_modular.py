@@ -38,7 +38,7 @@ def streaming_vw_createcache_modular(fname):
 	features = StreamingVwFeatures(input_file, True, 1024);
 	vw = VowpalWabbit(features)
 	vw.train()
-	return vw
+	#return vw
 
 if __name__ == "__main__":
 	streaming_vw_createcache_modular(*parameter_list[0])
