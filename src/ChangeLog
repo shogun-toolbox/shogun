@@ -1,3 +1,812 @@
+* commit de6f67984c2e776f97df049f5f8f3dbc9e0168f2
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 1 02:03:20 2011 +0400
+| 
+|     Removed junk from clustering tester
+| 
+| M	testsuite/python_modular/clustering.py
+|  
+* commit 3d25031e1606f86d353de72e3c3b43b083af7ab2
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 1 02:02:25 2011 +0400
+| 
+|     Fixes for LogPlusOne preprocessor
+| 
+| M	src/shogun/preprocessor/LogPlusOne.cpp
+|  
+* commit 99966f1ce50b6417ff2a65d6519a14f8ad62f9c9
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 23:58:29 2011 +0200
+| 
+|     improve release script again
+| 
+| M	Makefile
+|  
+* commit 67b6b842a12d84a7e7494dc5a36af12292aa1669
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 1 01:38:07 2011 +0400
+| 
+|     Updated data
+| 
+| M	data
+|  
+* commit f6512c764b6933bff9bd30a8109a26e72b256249
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 1 01:37:52 2011 +0400
+| 
+|     Fixes for clustering tester
+| 
+| M	testsuite/python_modular/clustering.py
+|  
+* commit 4240e558dd8303e97984aa073721daee7ca59694
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 23:23:38 2011 +0200
+| 
+|     improved release script for work with git
+| 
+| M	Makefile
+|  
+* commit ea275ed63d9b654b8a5c709a1ef01a0955d428a5
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 22:32:00 2011 +0200
+| 
+|     update data
+| 
+| M	data
+|  
+* commit 7f13b81348bdee075f0f5b6c7685541790f1b71c
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 1 00:07:57 2011 +0400
+| 
+|     Updated data
+| 
+| M	data
+|  
+* commit 16227f53436fec3868a4a52aa15207c6cdf7b7a3
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 1 00:06:32 2011 +0400
+| 
+|     Fixed preprocessor testsuite
+| 
+| M	testsuite/python_modular/preprocessor.py
+|  
+* commit a8f57f03121e621b33c45cb08337f49a3e07fcf0
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 21:27:24 2011 +0200
+| 
+|     exclude tests directory form old-tests
+| 
+| M	testsuite/octave_modular/test_all.sh
+| M	testsuite/python_static/test_all.sh
+| M	testsuite/r_modular/test_all.sh
+| M	testsuite/r_static/test_all.sh
+|  
+* commit b5f27b9ea0e4338102c8e9264457dcbfb25b75fb
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Aug 31 21:53:29 2011 +0400
+| 
+|     Transitioned copy feature matrix routine to SGMatrix
+| 
+| M	src/shogun/clustering/KMeans.cpp
+| M	src/shogun/features/SimpleFeatures.h
+|  
+* commit 419a67bc3898d0380e9ddc7267907b6e6a4dae27
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 19:19:36 2011 +0200
+| 
+|     fix a few regressions
+| 
+| M	testsuite/python_modular/kernel.py
+| M	testsuite/python_modular/test_all.sh
+| M	testsuite/python_modular/test_svm_kernel_multiple.py
+|  
+* commit fc4625c8c4bbc5439a2db6819f4de27b877cd7a1
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 18:45:45 2011 +0200
+| 
+|     further SGVectorization of dynprog
+| 
+| M	src/shogun/structure/DynProg.cpp
+| M	src/shogun/structure/DynProg.h
+| M	src/shogun/ui/SGInterface.cpp
+|  
+* commit 6823fdbe61cfcd6efc30f1351bcc114a7441bf6e
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 18:20:24 2011 +0200
+| 
+|     SGVectorize dynprog function
+| 
+| M	src/Makefile.template
+| M	src/shogun/structure/DynProg.cpp
+| M	src/shogun/structure/DynProg.h
+| M	src/shogun/ui/SGInterface.cpp
+|  
+* commit 8e2b540a63e24515f3e0440976b813cda20c55eb
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 18:13:35 2011 +0200
+| 
+|     ignore tests
+| 
+| M	testsuite/matlab_and_octave/test_all.sh
+|  
+* commit 2e4b2b5fec916629e64651821ac59dbcc25fae5f
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Aug 31 19:54:28 2011 +0400
+| 
+|     Fixed esvm at easysvm
+| 
+| M	applications/easysvm/esvm/experiment.py
+| M	applications/easysvm/esvm/utils.py
+|  
+* commit be81d77f3d965585f5bccefcdb2c79028306a0b9
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Aug 31 18:50:57 2011 +0400
+| 
+|     Updated interfaces in readme
+| 
+| M	src/README
+|  
+* commit 49d04a56c68c4e11cfed9e1187154b03392b03ad
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 14:20:01 2011 +0200
+| 
+|     rename r -> r_static etc
+| 
+| M	Makefile
+| M	src/Makefile.template
+| D	testsuite/matlab
+| A	testsuite/matlab_static
+| D	testsuite/octave
+| A	testsuite/octave_static
+| D	testsuite/python/classifier.py
+| D	testsuite/python/clustering.py
+| D	testsuite/python/distance.py
+| D	testsuite/python/distribution.py
+| D	testsuite/python/kernel.py
+| D	testsuite/python/preproc.py
+| D	testsuite/python/regression.py
+| D	testsuite/python/test_all.sh
+| D	testsuite/python/test_one.py
+| D	testsuite/python/test_svm_kernel_multiple.py
+| D	testsuite/python/util.py
+| A	testsuite/python_static/classifier.py
+| A	testsuite/python_static/clustering.py
+| A	testsuite/python_static/distance.py
+| A	testsuite/python_static/distribution.py
+| A	testsuite/python_static/kernel.py
+| A	testsuite/python_static/preproc.py
+| A	testsuite/python_static/regression.py
+| A	testsuite/python_static/test_all.sh
+| A	testsuite/python_static/test_one.py
+| A	testsuite/python_static/test_svm_kernel_multiple.py
+| A	testsuite/python_static/util.py
+| D	testsuite/r/classifier.R
+| D	testsuite/r/clustering.R
+| D	testsuite/r/distance.R
+| D	testsuite/r/distribution.R
+| D	testsuite/r/kernel.R
+| D	testsuite/r/preproc.R
+| D	testsuite/r/regression.R
+| D	testsuite/r/test_all.sh
+| D	testsuite/r/test_one.R
+| D	testsuite/r/test_one.sh
+| D	testsuite/r/util/check_accuracy.R
+| D	testsuite/r/util/convert_features_and_add_preproc.R
+| D	testsuite/r/util/fix_classifier_name_inconsistency.R
+| D	testsuite/r/util/fix_clustering_name_inconsistency.R
+| D	testsuite/r/util/fix_distance_name_inconsistency.R
+| D	testsuite/r/util/fix_kernel_name_inconsistency.R
+| D	testsuite/r/util/fix_normalizer_name_inconsistency.R
+| D	testsuite/r/util/fix_preproc_name_inconsistency.R
+| D	testsuite/r/util/fix_regression_name_inconsistency.R
+| D	testsuite/r/util/read_mfile.R
+| D	testsuite/r/util/set_distance.R
+| D	testsuite/r/util/set_features.R
+| D	testsuite/r/util/set_kernel.R
+| D	testsuite/r/util/tobool.R
+| A	testsuite/r_static/classifier.R
+| A	testsuite/r_static/clustering.R
+| A	testsuite/r_static/distance.R
+| A	testsuite/r_static/distribution.R
+| A	testsuite/r_static/kernel.R
+| A	testsuite/r_static/preproc.R
+| A	testsuite/r_static/regression.R
+| A	testsuite/r_static/test_all.sh
+| A	testsuite/r_static/test_one.R
+| A	testsuite/r_static/test_one.sh
+| A	testsuite/r_static/util/check_accuracy.R
+| A	testsuite/r_static/util/convert_features_and_add_preproc.R
+| A	testsuite/r_static/util/fix_classifier_name_inconsistency.R
+| A	testsuite/r_static/util/fix_clustering_name_inconsistency.R
+| A	testsuite/r_static/util/fix_distance_name_inconsistency.R
+| A	testsuite/r_static/util/fix_kernel_name_inconsistency.R
+| A	testsuite/r_static/util/fix_normalizer_name_inconsistency.R
+| A	testsuite/r_static/util/fix_preproc_name_inconsistency.R
+| A	testsuite/r_static/util/fix_regression_name_inconsistency.R
+| A	testsuite/r_static/util/read_mfile.R
+| A	testsuite/r_static/util/set_distance.R
+| A	testsuite/r_static/util/set_features.R
+| A	testsuite/r_static/util/set_kernel.R
+| A	testsuite/r_static/util/tobool.R
+|  
+* commit ceee77a89029284bd9ca83f121c004ef23da3d25
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Aug 31 14:34:11 2011 +0400
+| 
+|     Doc improvements
+| 
+| M	src/shogun/base/Parameter.h
+| M	src/shogun/base/class_list.cpp.templ
+| M	src/shogun/classifier/svm/CPLEXSVM.h
+| M	src/shogun/classifier/svm/LaRank.h
+| M	src/shogun/distributions/PositionalPWM.h
+| M	src/shogun/features/CombinedDotFeatures.h
+| M	src/shogun/features/ExplicitSpecFeatures.h
+| M	src/shogun/features/HashedWDFeatures.h
+| M	src/shogun/features/HashedWDFeaturesTransposed.h
+| M	src/shogun/features/ImplicitWeightedSpecFeatures.h
+| M	src/shogun/features/PolyFeatures.h
+| M	src/shogun/features/SimpleFeatures.h
+| M	src/shogun/features/SparseFeatures.h
+| M	src/shogun/features/SparsePolyFeatures.h
+| M	src/shogun/features/WDFeatures.h
+| M	src/shogun/io/SerializableAsciiFile.h
+| M	src/shogun/io/SerializableAsciiReader00.h
+| M	src/shogun/io/SerializableFile.h
+| M	src/shogun/kernel/ANOVAKernel.h
+| M	src/shogun/kernel/BesselKernel.h
+| M	src/shogun/kernel/Kernel.h
+| M	src/shogun/kernel/ScatterKernelNormalizer.h
+| M	src/shogun/kernel/SpectrumMismatchRBFKernel.h
+| M	src/shogun/kernel/SpectrumRBFKernel.h
+| M	src/shogun/kernel/WaveletKernel.h
+| M	src/shogun/kernel/WeightedDegreeRBFKernel.h
+| M	src/shogun/lib/Compressor.h
+| M	src/shogun/lib/DataType.h
+| M	src/shogun/lib/HashSet.h
+| M	src/shogun/structure/DynProg.h
+| M	src/shogun/ui/GUIClassifier.h
+| M	src/shogun/ui/GUIDistance.h
+| M	src/shogun/ui/GUIFeatures.h
+| M	src/shogun/ui/GUIHMM.h
+| M	src/shogun/ui/GUIKernel.h
+| M	src/shogun/ui/GUILabels.h
+| M	src/shogun/ui/GUIMath.h
+| M	src/shogun/ui/GUIPluginEstimate.h
+| M	src/shogun/ui/GUIPreprocessor.h
+| M	src/shogun/ui/GUIStructure.h
+| M	src/shogun/ui/GUITime.h
+| M	src/shogun/ui/SGInterface.h
+| M	src/shogun/ui/SyntaxHighLight.h
+|  
+* commit b23e6ba0638bea171c9bee88042ec48ef20be784
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 11:30:38 2011 +0200
+| 
+|     require new test data
+| 
+| M	data
+|  
+* commit 52fb28d425f5ae6ebb4d4357a2c69dea945b5ccb
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 11:24:58 2011 +0200
+| 
+|     fixed a number of .rb scripts and removed broken non-trivial to fix ones
+| 
+| M	data
+| D	examples/undocumented/ruby_modular/classifier_custom_kernel_modular.rb
+| M	examples/undocumented/ruby_modular/classifier_libsvm_minimal_modular.rb
+| M	examples/undocumented/ruby_modular/clustering_hierarchical_modular.rb
+| M	examples/undocumented/ruby_modular/distance_braycurtis_modular.rb
+| M	examples/undocumented/ruby_modular/distance_canberra_modular.rb
+| M	examples/undocumented/ruby_modular/distribution_histogram_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_anova_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_cauchy_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_chi2_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_circular_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_combined_custom_poly_modular.rb
+| M	examples/undocumented/ruby_modular/load.rb
+| M	examples/undocumented/ruby_modular/preprocessor_hessianlocallylinearembedding_modular.rb
+| M	examples/undocumented/ruby_modular/regression_krr_modular.rb
+| M	examples/undocumented/ruby_modular/regression_libsvr_modular.rb
+| D	examples/undocumented/ruby_modular/shogun_helpers.rb
+| D	src/interfaces/ruby_modular/modshogun.rb
+|  
+* commit e3c14a41d3cbc180b55c368e89539376ed1e291b
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 10:49:17 2011 +0200
+| 
+|     require new test data
+| 
+| M	data
+|  
+* commit 3deadd256739833965ba4eb1bed16ad4307521d2
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 10:46:19 2011 +0200
+| 
+|     all generated tests work upon generator.py/tester.py now
+| 
+| M	examples/undocumented/python_modular/distribution_ppwm_modular.py
+| M	examples/undocumented/python_modular/streaming_vw_createcache_modular.py
+| M	examples/undocumented/python_modular/streaming_vw_modular.py
+| M	src/shogun/kernel/SplineKernel.cpp
+| M	src/shogun/kernel/SplineKernel.h
+|  
+* commit b17aeae601a26bcdd5f0461f07a688b24a2aa396
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 10:06:51 2011 +0200
+| 
+|     fix remaining examples
+| 
+| M	examples/undocumented/python_modular/modelselection_grid_search_linear_modular.py
+| M	examples/undocumented/python_modular/streaming_vw_createcache_modular.py
+| M	src/shogun/classifier/vw/VowpalWabbit.cpp
+|  
+* commit ffb7c5454ddb8e98e27bf1481773a91d93ac444d
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 01:50:55 2011 +0200
+| 
+|     fix examples
+| 
+| M	examples/undocumented/python_modular/library_fisher2x3_modular.py
+| M	examples/undocumented/python_modular/modelselection_grid_search_linear_modular.py
+| M	examples/undocumented/python_modular/modelselection_parameter_tree_modular.py
+| M	examples/undocumented/python_modular/streaming_vw_modular.py
+|  
+* commit 9305ba3cdc32e6ff76ad9e2ea9e1c45a0add6110
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Aug 31 03:48:34 2011 +0400
+| 
+|     Removed output from python modular examples
+| 
+| M	examples/undocumented/python_modular/classifier_averaged_perceptron_modular.py
+| M	examples/undocumented/python_modular/kernel_anova_modular.py
+| M	examples/undocumented/python_modular/library_fisher2x3_modular.py
+|  
+* commit aff7c0d2a255fb5fdbd57e690fc20c64819dcbb2
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Aug 31 01:21:09 2011 +0200
+| 
+|     remove o umlaut
+| 
+| M	src/shogun/preprocessor/KernelPCA.h
+|  
+* commit af951c1ed512fea97a06d62474d2f661464d5eb7
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Aug 31 01:27:21 2011 +0400
+| 
+|     Added modelselection examples' description
+| 
+| A	examples/descriptions/modular/modelselection_grid_search_linear.txt
+| A	examples/descriptions/modular/modelselection_parameter_tree.txt
+|  
+* commit 21b24b384daf15a45b1976a39b7a9f3de18ea147
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Aug 31 01:00:16 2011 +0400
+| 
+|     Fixed segmentation fault error emerged with DistanceMachine serialization
+| 
+| M	src/shogun/machine/DistanceMachine.cpp
+|  
+* commit 9580eb84cff8f1b3d9eff2cd80d9ab0796e5058e
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Aug 30 23:54:57 2011 +0400
+| 
+|     Restore wrong modified python modular examples
+| 
+| M	examples/undocumented/python_modular/classifier_domainadaptationsvm_modular.py
+| M	examples/undocumented/python_modular/evaluation_meansquarederror_modular.py
+| M	examples/undocumented/python_modular/mkl_multiclass_modular.py
+|  
+* commit 03ee3f898edb46fe63ce2e78c44bc3b548d06ec0
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Aug 30 20:57:58 2011 +0200
+| 
+|     mention apply() instead of classify() in tutorial and README
+| 
+| M	doc/pages/ModularTutorial.mainpage
+| M	src/README.developer
+|    
+*   commit c52988db9b364c990338fcd0cf81fa03dbc74d72
+|\  Merge: faf1d9c a42f60d
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Tue Aug 30 11:28:51 2011 -0700
+| | 
+| |     Merge pull request #320 from serialhex/master
+| |     
+| |     Many more ruby examples
+| |   
+| * commit a42f60d3dcc679ef77bd7a2b47e29996edfacf29
+| | Author: Justin Patera <serialhex@gmail.com>
+| | Date:   Mon Aug 29 21:52:12 2011 -0400
+| | 
+| |     commenting out pry from modshogun.rb
+| | 
+| | M	src/interfaces/ruby_modular/modshogun.rb
+| |   
+| * commit 8ae0fc8b3970cef24e3ed42e168b7d8419fd5824
+| | Author: Justin Patera <serialhex@gmail.com>
+| | Date:   Mon Aug 29 21:41:09 2011 -0400
+| | 
+| |     yes, more examples... i'm just an examplin kind of guy...
+| | 
+| | M	examples/undocumented/ruby_modular/distribution_histogram_modular.rb
+| | A	examples/undocumented/ruby_modular/preprocessor_hessianlocallylinearembedding_modular.rb
+| | A	examples/undocumented/ruby_modular/regression_krr_modular.rb
+| |   
+| * commit 7b44f43f6d6c94dd0aff109f63c828c1090d105f
+| | Author: Justin Patera <serialhex@gmail.com>
+| | Date:   Mon Aug 29 00:04:33 2011 -0400
+| | 
+| |     one last example
+| | 
+| | A	examples/undocumented/ruby_modular/regression_libsvr_modular.rb
+| |   
+| * commit 7cdb14c8a59796baf69282d05fb77622d04aa103
+| | Author: Justin Patera <serialhex@gmail.com>
+| | Date:   Sun Aug 28 22:45:18 2011 -0400
+| | 
+| |     adding more files
+| | 
+| | M	examples/undocumented/python_modular/evaluation_meansquarederror_modular.py
+| | M	examples/undocumented/python_modular/mkl_multiclass_modular.py
+| | A	examples/undocumented/ruby_modular/features_read_svmlight_format_modular.rb
+| | A	examples/undocumented/ruby_modular/kernel_anova_modular.rb
+| | A	examples/undocumented/ruby_modular/kernel_cauchy_modular.rb
+| | A	examples/undocumented/ruby_modular/kernel_chi2_modular.rb
+| | A	examples/undocumented/ruby_modular/kernel_circular_modular.rb
+| | A	examples/undocumented/ruby_modular/kernel_combined_custom_poly_modular.rb
+| | A	examples/undocumented/ruby_modular/modelselection_parameter_tree_modular.rb
+| |   
+| * commit 8eab810645a88f1100a667be29c5bb1a1723e592
+| | Author: Justin Patera <serialhex@gmail.com>
+| | Date:   Sun Aug 28 20:46:34 2011 -0400
+| | 
+| |     fixing up some of the examples, having problems with distribution_histogram_modular.rb
+| | 
+| | M	examples/undocumented/python_modular/classifier_domainadaptationsvm_modular.py
+| | A	examples/undocumented/ruby_modular/classifier_custom_kernel_modular.rb
+| | A	examples/undocumented/ruby_modular/clustering_hierarchical_modular.rb
+| | A	examples/undocumented/ruby_modular/distance_braycurtis_modular.rb
+| | A	examples/undocumented/ruby_modular/distance_canberra_modular.rb
+| | A	examples/undocumented/ruby_modular/distribution_histogram_modular.rb
+| | M	src/interfaces/ruby_modular/modshogun.rb
+| |   
+| * commit 0788c0ae100430fc0559c8183578503adff67586
+|/  Author: Justin Patera <serialhex@gmail.com>
+|   Date:   Sun Aug 21 21:39:09 2011 -0400
+|   
+|       removed the fun proggies i used to help convert the python examples to ruby
+|   
+|   D	examples/undocumented/ruby_modular/fixer_proggie
+|  
+* commit faf1d9c043fa8795a3809aa4e038d60c7bdf0e18
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Aug 30 18:04:37 2011 +0200
+| 
+|     add makefile for vw
+| 
+| A	applications/vw/Makefile
+|  
+* commit 5a85eb531b87f545f65842287b3662d79c980cec
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Aug 30 17:56:45 2011 +0200
+| 
+|     fix sailfish application
+| 
+| M	applications/sailfish/Makefile
+| M	applications/sailfish/sailfish.cpp
+|  
+* commit f0b3121f0a35f5f30b6ae7f7140df9701409cdab
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Aug 30 17:45:25 2011 +0200
+| 
+|     fix ocr example and data for new shogun
+| 
+| M	applications/ocr/Ai.py
+| M	applications/ocr/data/ocr.svm.gz
+|  
+* commit 312e97b4b59f22eedb88bb5b4b5ab48a1271ec31
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Aug 30 17:44:25 2011 +0200
+| 
+|     Fix a bug in kernel machine introduced in SGVector transition
+|     
+|     m_alpha has its own length and should be set and used independently from
+|     m_svs otherwise serialization fails
+| 
+| M	src/shogun/machine/KernelMachine.h
+|  
+* commit 4ecaa34b98e23ef0b9c0e239b85bfb12470df1bb
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Aug 30 17:43:38 2011 +0200
+| 
+|     remove obsolete multiboost
+| 
+| D	applications/multiboost/Makefile
+| D	applications/multiboost/multiboost.cpp
+|  
+* commit 6f9f13976ed0178823f3d91283f2257e76a9c17f
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Aug 30 09:25:23 2011 +0200
+| 
+|     improve error output in binary file
+| 
+| M	src/shogun/io/BinaryFile.cpp
+|  
+* commit dc68e4f2dbd1405e21435ad730b9b667c315c198
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Aug 30 09:24:57 2011 +0200
+| 
+|     fix two more 'problematic' ruby examples
+| 
+| A	examples/undocumented/ruby_modular/features_io_modular.rb
+| A	examples/undocumented/ruby_modular/kernel_auc_modular.rb
+|  
+* commit a4d19caa3230bfeb3ec3ee93875dcdef3eac9204
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Aug 29 23:46:19 2011 +0400
+| 
+|     Added few examples descriptions
+| 
+| A	examples/descriptions/modular/distance_normsquared.txt
+| A	examples/descriptions/modular/distance_sparseeuclidean.txt
+| A	examples/descriptions/modular/distribution_ppwm.txt
+| M	examples/descriptions/modular/preprocessor_localtangentspacealignment.txt
+| A	examples/descriptions/modular/serialization_complex_example.txt
+| A	examples/descriptions/modular/serialization_matrix.txt
+|  
+* commit fc63be5f32b4dcc8179d24bd18b023d7242ad9e0
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Aug 29 18:00:08 2011 +0200
+| 
+|     mention daniel in contributions
+| 
+| M	src/CONTRIBUTIONS
+|  
+* commit ace079df6a31a8e87cddb2ef186aa0144c45f762
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Aug 29 17:49:13 2011 +0200
+| 
+|     add further c# examples
+| 
+| A	examples/undocumented/csharp_modular/distance_euclidian_modular.cs
+| A	examples/undocumented/csharp_modular/distance_manhattenword_modular.cs
+| A	examples/undocumented/csharp_modular/distribution_linearhmm_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_anova_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_cauchy_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_chi2_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_circular_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_const_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_diag_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_distance_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_inversemultiquadric_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_io_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_linear_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_log_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_poly_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_rationalquadratic_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_salzberg_word_string_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_sigmoid_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_spherical_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_spline_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_tstudent_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_wave_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_wavelet_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_locallylinearembedding_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_multidimensionalscaling_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_normone_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_prubevarsubmean_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_randomfouriergausspreproc_modular.cs
+|  
+* commit 50aac3eb2dd5adaeee591d74c15a640248122742
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Aug 29 06:02:21 2011 +0200
+| 
+|     don't use len+1 for the string but len
+| 
+| M	src/interfaces/ruby_modular/swig_typemaps.i
+|  
+* commit fb4ddae8cdfc1b0fb59338302e5378985d80fd2d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Aug 29 02:58:35 2011 +0400
+| 
+|     Kernel examples doc
+| 
+| M	examples/descriptions/modular/classifier_averaged_perceptron.txt
+| M	examples/descriptions/modular/classifier_gaussiannaivebayes.txt
+| A	examples/descriptions/modular/kernel_anova.txt
+| A	examples/descriptions/modular/kernel_cauchy.txt
+| A	examples/descriptions/modular/kernel_circular.txt
+| A	examples/descriptions/modular/kernel_combined_custom_poly.txt
+| A	examples/descriptions/modular/kernel_distantsegments.txt
+| A	examples/descriptions/modular/kernel_exponential.txt
+| A	examples/descriptions/modular/kernel_inversemultiquadric.txt
+| A	examples/descriptions/modular/kernel_log.txt
+| A	examples/descriptions/modular/kernel_match_word_string.txt
+| A	examples/descriptions/modular/kernel_multiquadric.txt
+| A	examples/descriptions/modular/kernel_poly_match_string.txt
+| A	examples/descriptions/modular/kernel_power.txt
+| A	examples/descriptions/modular/kernel_rationalquadratic.txt
+| A	examples/descriptions/modular/kernel_spherical.txt
+| A	examples/descriptions/modular/kernel_spline.txt
+| A	examples/descriptions/modular/kernel_tstudent.txt
+| A	examples/descriptions/modular/kernel_wave.txt
+| A	examples/descriptions/modular/kernel_wavelet.txt
+|  
+* commit 28ce82a1deada606807ad2342ab1d9b36f87797b
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Aug 29 02:36:58 2011 +0400
+| 
+|     More doc for examples
+| 
+| A	examples/descriptions/modular/classifier_gaussiannaivebayes.txt
+| A	examples/descriptions/modular/evaluation_contingencytableevaluation.txt
+| A	examples/descriptions/modular/evaluation_meansquarederror.txt
+| A	examples/descriptions/modular/evaluation_multiclassaccuracy.txt
+| A	examples/descriptions/modular/evaluation_prcevaluation.txt
+| A	examples/descriptions/modular/evaluation_rocevaluation.txt
+|  
+* commit 2b3ca25d1e693fe493df25f01f4120717cb65d9d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Aug 29 02:24:17 2011 +0400
+| 
+|     Remove Matrix/VectorTest from java modular examples
+| 
+| D	examples/undocumented/java_modular/MatrixTest.java
+| D	examples/undocumented/java_modular/VectorTest.java
+|  
+* commit 68985779f02d9d2d7593d797c1bbd40be12676bc
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Aug 28 23:52:15 2011 +0200
+| 
+|     Documentation / Release adjustments for shogun 1.0.0
+|     
+|     - add put-online target to makefile
+|     - fix install documentation
+|     - include new lua/java/ruby/csharp examples in doc
+|     - rename dirs and symlinks to x -> x_static
+| 
+| M	doc/Doxyfile
+| M	doc/Doxyfile_cn
+| M	doc/Makefile
+| M	doc/insert_examples.py
+| M	doc/insert_examples_cn.py
+| M	doc/pages/Examples.mainpage
+| M	doc/pages/ExamplesLibshogun.mainpage
+| A	doc/pages/ExamplesModularCSharp.mainpage
+| A	doc/pages/ExamplesModularJava.mainpage
+| A	doc/pages/ExamplesModularLua.mainpage
+| M	doc/pages/ExamplesModularPython.mainpage
+| A	doc/pages/ExamplesModularRuby.mainpage
+| M	doc/pages/ExamplesStaticCmdline.mainpage
+| M	doc/pages/ExamplesStaticOctave.mainpage
+| M	doc/pages/ExamplesStaticPython.mainpage
+| M	doc/pages/ExamplesStaticR.mainpage
+| M	doc/pages/Installation.mainpage
+| M	doc/pages/StaticCommandLineInterface.mainpage
+| M	doc/pages/StaticOctaveInterface.mainpage
+| M	doc/pages/StaticPythonInterface.mainpage
+| M	doc/pages/StaticRInterface.mainpage
+| M	doc/pages_cn/ExamplesLibshogun.mainpage
+| M	doc/pages_cn/ExamplesModularOctave.mainpage
+| M	doc/pages_cn/ExamplesModularPython.mainpage
+| M	doc/pages_cn/ExamplesModularR.mainpage
+| M	doc/pages_cn/ExamplesStaticCmdline.mainpage
+| M	doc/pages_cn/ExamplesStaticOctave.mainpage
+| M	doc/pages_cn/ExamplesStaticPython.mainpage
+| M	doc/pages_cn/ExamplesStaticR.mainpage
+| M	examples/Makefile
+| D	examples/documented/matlab
+| A	examples/documented/matlab_static
+| D	examples/documented/octave
+| A	examples/documented/octave_static
+| M	examples/generate_documented.sh
+|  
+* commit 76ed3570c57089757ba81145fdb02cba4cdcfe0e
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Aug 29 01:46:33 2011 +0400
+| 
+|     Preproc -> preprocessor naming transition for modular examples
+| 
+| D	examples/undocumented/octave_modular/preproc_logplusone_modular.m
+| D	examples/undocumented/octave_modular/preproc_normone_modular.m
+| D	examples/undocumented/octave_modular/preproc_prunevarsubmean_modular.m
+| A	examples/undocumented/octave_modular/preprocessor_logplusone_modular.m
+| A	examples/undocumented/octave_modular/preprocessor_normone_modular.m
+| A	examples/undocumented/octave_modular/preprocessor_prunevarsubmean_modular.m
+| D	examples/undocumented/r_modular/preproc_logplusone_modular.R
+| D	examples/undocumented/r_modular/preproc_normone_modular.R
+| D	examples/undocumented/r_modular/preproc_prunevarsubmean_modular.R
+| A	examples/undocumented/r_modular/preprocessor_logplusone_modular.R
+| A	examples/undocumented/r_modular/preprocessor_normone_modular.R
+| A	examples/undocumented/r_modular/preprocessor_prunevarsubmean_modular.R
+|  
+* commit a1263800324e8987945ab4c13aaf9c0d46cc776e
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Aug 29 01:30:53 2011 +0400
+| 
+|     Renamed wrong called laplacian eigenmaps example description
+| 
+| D	examples/descriptions/modular/preprocessor_laplacianeigemaps.txt
+| A	examples/descriptions/modular/preprocessor_laplacianeigenmaps.txt
+|  
+* commit 4887ddc5c73970ed15192b97629cc152557e3a4f
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Aug 29 01:27:50 2011 +0400
+| 
+|     Added reference for kPCA
+| 
+| M	src/shogun/preprocessor/KernelPCA.h
+|  
+* commit f949f36c8d298375a41ed13b2419994510f03824
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Aug 29 01:27:04 2011 +0400
+| 
+|     Example doc updates
+| 
+| A	examples/descriptions/modular/classifier_averaged_perceptron.txt
+| D	examples/descriptions/modular/preproc_logplusone.txt
+| D	examples/descriptions/modular/preproc_normone.txt
+| D	examples/descriptions/modular/preproc_prunevarsubmean.txt
+| D	examples/descriptions/modular/preproc_sortulongstring.txt
+| D	examples/descriptions/modular/preproc_sortwordstring.txt
+| A	examples/descriptions/modular/preprocessor_hessianlocallylinearembedding.txt
+| A	examples/descriptions/modular/preprocessor_isomap.txt
+| A	examples/descriptions/modular/preprocessor_kernellocallylinearembedding.txt
+| A	examples/descriptions/modular/preprocessor_kernelpca.txt
+| A	examples/descriptions/modular/preprocessor_laplacianeigemaps.txt
+| A	examples/descriptions/modular/preprocessor_locallylinearembedding.txt
+| A	examples/descriptions/modular/preprocessor_localtangentspacealignment.txt
+| A	examples/descriptions/modular/preprocessor_logplusone.txt
+| A	examples/descriptions/modular/preprocessor_multidimensionalscaling.txt
+| A	examples/descriptions/modular/preprocessor_normone.txt
+| A	examples/descriptions/modular/preprocessor_pca.txt
+| A	examples/descriptions/modular/preprocessor_prunevarsubmean.txt
+| A	examples/descriptions/modular/preprocessor_randomfouriergausspreproc.txt
+| A	examples/descriptions/modular/preprocessor_sortulongstring.txt
+| A	examples/descriptions/modular/preprocessor_sortwordstring.txt
+|  
+* commit b2d77a9bd46ab4a0c5b02f64652bc8a08147286d
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Aug 28 22:07:20 2011 +0200
+| 
+|     remove example
+| 
+| D	examples/kernel_distance.py
+|  
+* commit eb4008813c6dd1e47fc2ca62d59c6c96131c2d80
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Aug 28 22:07:09 2011 +0200
+| 
+|     some progress on make release magic
+| 
+| M	Makefile
+|  
+* commit da0f5b452c1d48c4c0d601d57440c54e08cc787b
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Aug 28 21:59:12 2011 +0200
+| 
+|     generate changelog based on git history
+| 
+| M	src/Makefile
+|  
+* commit 95f5e1ea7479a3386cd4774a9590f5a70bd1e30f
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Aug 28 21:58:25 2011 +0200
+| 
+|     enable csharp autodetection in configure
+| 
+| M	src/configure
+|  
+* commit 931e9139c51d0228f00319ddce0b7489cd2e45b8
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Aug 28 21:58:00 2011 +0200
+| 
+|     generate changelog based on git history
+| 
+| M	src/ChangeLog
+|    
 *   commit 2f0a2c86e4af6ea4aca223ebbe40e4d4023fdd8a
 |\  Merge: 973318c 1b08079
 | | Author: Soeren Sonnenburg <sonne@debian.org>
