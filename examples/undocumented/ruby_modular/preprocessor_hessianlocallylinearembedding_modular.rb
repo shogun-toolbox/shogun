@@ -1,5 +1,6 @@
 require 'modshogun'
 require 'pp'
+require 'load'
 
 data = LoadMatrix.load_numbers('../data/fm_train_real.dat')
 
