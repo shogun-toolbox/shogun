@@ -4,9 +4,16 @@ DATAPATH='../data'
 
 function test_all () {
 	datapath="$1"
+
+	if echo "$datapath" | grep -q '\.\./data/tests'
+	then
+		continue
+	fi
+
 	echo "*** Testing in $datapath"
 	sleep 1
 	for file in $datapath; do
+
 		echo -n "$file"
 		echo -n -e "\t\t"
 
