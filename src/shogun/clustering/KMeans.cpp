@@ -200,7 +200,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 		ASSERT(mus_start);
 
 		/// set rhs to mus_start
-		rhs_mus->copy_feature_matrix(mus_start,dimensions,k);
+		rhs_mus->copy_feature_matrix(SGMatrix<float64_t>(mus_start,dimensions,k));
 		float64_t* p_dists=dists;
 
 		for(int32_t idx=0;idx<XSize;idx++,p_dists+=k)
@@ -292,7 +292,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 		}
 #endif
 		///update rhs
-		rhs_mus->copy_feature_matrix(mus.matrix,dimensions,k);
+		rhs_mus->copy_feature_matrix(mus);
 
 		for (i=0; i<XSize; i++)
 		{

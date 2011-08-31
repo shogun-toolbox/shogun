@@ -75,8 +75,9 @@ public:
 	CSimpleFeatures(const CSimpleFeatures & orig) :
 			CDotFeatures(orig)
 	{
-		copy_feature_matrix(orig.feature_matrix, orig.num_features,
-				orig.num_vectors);
+		copy_feature_matrix(SGMatrix<ST>(orig.feature_matrix,
+		                                 orig.num_features,
+		                                 orig.num_vectors));
 		initialize_cache();
 		m_subset=orig.m_subset->duplicate();
 	}
@@ -554,21 +555,20 @@ public:
 	 * not possible with subset
 	 *
 	 * @param src feature matrix to copy
-	 * @param num_feat number of features in matrix
-	 * @param num_vec number of vectors in matrix
 	 */
-	virtual void copy_feature_matrix(ST* src, int32_t num_feat,
-			int32_t num_vec)
+	virtual void copy_feature_matrix(SGMatrix<ST> src)
 	{
 		if (m_subset)
 			SG_ERROR("A subset is set, cannot call copy_feature_matrix\n");
 
 		free_feature_matrix();
+		int32_t num_feat = src.num_rows;
+		int32_t num_vec = src.num_cols;
 		feature_matrix = SG_MALLOC(ST, ((int64_t) num_feat) * num_vec);
-		feature_matrix_num_features=num_feat;
+		feature_matrix_num_features = num_feat;
 		feature_matrix_num_vectors = num_vec;
 
-		memcpy(feature_matrix, src,
+		memcpy(feature_matrix, src.matrix,
 				(sizeof(ST) * ((int64_t) num_feat) * num_vec));
 
 		num_features = num_feat;
