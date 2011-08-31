@@ -17,9 +17,9 @@ def _evaluate (indata):
 	kfun=eval(indata[prefix+'name']+'Kernel')
 	kargs=util.get_args(indata, prefix)
 
-	prefix='preproc_'
+	prefix='preprocessor_'
 	pargs=util.get_args(indata, prefix)
-	feats=util.add_preproc(indata[prefix+'name'], feats, *pargs)
+	feats=util.add_preprocessor(indata[prefix+'name'], feats, *pargs)
 
 	prefix='kernel_'
 	kernel=kfun(feats['train'], feats['train'], *kargs)
