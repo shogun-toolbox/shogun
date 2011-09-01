@@ -4,7 +4,7 @@
 #
 #       make prepare-release
 #       make git-tag-release  
-#       (cd shogun-releases/shogun_X.Y.Z ; make release ; make update-webpage)
+#       (cd ../shogun-releases/shogun_X.Y.Z ; make release ; make update-webpage)
 #
 # * To create a debian .orig.tar.gz run
 #
@@ -123,7 +123,7 @@ release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.
 	$(COMPRESS) -9 $(DESTDIR).tar
 
 data-release:
-	cd data && git checkout-index --prefix=$(DATADESTDIR) -a
+	cd data && git checkout-index --prefix=../../$(DATARELEASENAME)/ -a
 	tar -c -f $(DATADESTDIR).tar -C .. $(DATARELEASENAME)
 	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
 	$(COMPRESS) -9 $(DATADESTDIR).tar
@@ -136,12 +136,13 @@ git-tag-release: embed-main-version
 	git commit -a -m "Preparing for new Release shogun_$(MAINVERSION)"
 	-cd .. && rm -rf shogun-releases/shogun_$(MAINVERSION)
 	# create shogun X.Y branch and put in versionstring
-	git checkout -b $(VERSIONBASE)
-	git add src/shogun/lib/versionstring.h
+	git checkout -b shogun_$(VERSIONBASE)
+	git add -f src/shogun/lib/versionstring.h
 	sed -i "s| lib/versionstring.h||" src/Makefile
-	git commit -m "Tagging shogun_$(MAINVERSION) release"
+	git commit -a -m "Tagging shogun_$(MAINVERSION) release"
 	git tag shogun_$(MAINVERSION)
 	# copying thing sover to shogun-releases dir
+	git checkout-index --prefix=../shogun-releases/shogun_$(MAINVERSION) -a
 	cp src/shogun/lib/versionstring.h ../shogun-releases/shogun_$(MAINVERSION)/src/shogun/lib/versionstring.h
 	cp src/Makefile ../shogun-releases/shogun_$(MAINVERSION)/src/Makefile
 
@@ -192,7 +193,8 @@ src/shogun/lib/versionstring.h:
 
 $(DESTDIR)/src/shogun/lib/versionstring.h: src/shogun/lib/versionstring.h
 	rm -rf $(DESTDIR)
-	git checkout-index --prefix=$(DESTDIR) -a
+	git checkout-index --prefix=$(DESTDIR)/ -a
+	cp -a . $(DESTDIR)
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
