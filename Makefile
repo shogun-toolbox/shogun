@@ -4,7 +4,9 @@
 #
 #       make prepare-release
 #       make git-tag-release  
-#       (cd ../shogun-releases/shogun_X.Y.Z ; make release ; make update-webpage)
+#       make release
+#       make data-release
+#       make update-webpage
 #
 # * To create a debian .orig.tar.gz run
 #
@@ -17,6 +19,10 @@
 # * To sign/md5sum the created tarballs and copy them to the webpage
 #
 #       make update-webpage
+#
+# * To make a release from inside a tarball
+#
+#       make package-from-release
 #
 #
 # The following additional options may be set
@@ -86,7 +92,7 @@ endif
 
 .PHONY: all release package-from-release update-webpage clean distclean embed-main-version
 
-DATADESTDIR := ../$(DATARELEASENAME)
+DATADESTDIR := ../shogun-releases/$(DATARELEASENAME)
 DESTDIR := ../$(RELEASENAME)
 REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/shogun/classifier/svm/SVM_light.* $(DESTDIR)/src/shogun/classifier/svm/Optimizer.* $(DESTDIR)/src/shogun/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
 rm -f $(DESTDIR)/testsuite/data/classifier/SVMLight* $(DESTDIR)/testsuite/data/regression/SVRLight*	; \
@@ -118,13 +124,18 @@ prepare-release:
 	(cd doc; git commit -m "updated reference documentation" . ) | tee --append $(LOGFILE)
 
 release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
+	rm -rf ../shogun-releases/shogun_$(MAINVERSION)
+	# copy things over to shogun-releases dir
+	git checkout-index --prefix=../shogun-releases/shogun_$(MAINVERSION)/ -a
+	cp src/shogun/lib/versionstring.h ../shogun-releases/shogun_$(MAINVERSION)/src/shogun/lib/versionstring.h
+	cp src/Makefile ../shogun-releases/shogun_$(MAINVERSION)/src/Makefile
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
 data-release:
-	cd data && git checkout-index --prefix=../../$(DATARELEASENAME)/ -a
-	tar -c -f $(DATADESTDIR).tar -C .. $(DATARELEASENAME)
+	cd data && git checkout-index --prefix=../$(DATADESTDIR)/ -a
+	tar -c -f $(DATARELEASENAME).tar -C ../shogun-releases $(DATARELEASENAME)
 	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
 	$(COMPRESS) -9 $(DATADESTDIR).tar
 
@@ -134,17 +145,12 @@ embed-main-version: src/shogun/lib/versionstring.h
 
 git-tag-release: embed-main-version
 	git commit -a -m "Preparing for new Release shogun_$(MAINVERSION)"
-	-cd .. && rm -rf shogun-releases/shogun_$(MAINVERSION)
 	# create shogun X.Y branch and put in versionstring
 	git checkout -b shogun_$(VERSIONBASE)
 	git add -f src/shogun/lib/versionstring.h
 	sed -i "s| lib/versionstring.h||" src/Makefile
 	git commit -a -m "Tagging shogun_$(MAINVERSION) release"
 	git tag shogun_$(MAINVERSION)
-	# copying thing sover to shogun-releases dir
-	git checkout-index --prefix=../shogun-releases/shogun_$(MAINVERSION) -a
-	cp src/shogun/lib/versionstring.h ../shogun-releases/shogun_$(MAINVERSION)/src/shogun/lib/versionstring.h
-	cp src/Makefile ../shogun-releases/shogun_$(MAINVERSION)/src/Makefile
 
 package-from-release:
 	rm -rf $(DESTDIR)
