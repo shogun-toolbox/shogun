@@ -16,6 +16,8 @@
 namespace shogun
 {
 
+struct TParameter;
+
 /** @brief Class that holds informations about a certain parameter of an
  * CSGObject. Contains name, type, etc.
  * This is used for mapping types that have changed in different versions of
@@ -35,9 +37,17 @@ public:
 	 * @param ctype container type of parameter
 	 * @param stype struct type of parameter
 	 * @param ptype primitive type of parameter
+	 * @param param_version version of parameter
 	 */
 	SGParamInfo(const char* name, EContainerType ctype, EStructType stype,
-			EPrimitiveType ptype);
+			EPrimitiveType ptype, int32_t param_version);
+
+	/** constructor to create from a TParameter instance
+	 *
+	 * @param param TParameter instance to use
+	 * @param param_version version of parameter
+	 */
+	SGParamInfo(const TParameter* param, int32_t param_version);
 
 	/** destructor */
 	virtual ~SGParamInfo();
@@ -45,16 +55,19 @@ public:
 	/** prints all parameter values */
 	void print_param_info();
 
+	/** @return string representation, caller has to clean up */
+	char* to_string();
+
 	/** @return an identical copy */
 	SGParamInfo* duplicate() const;
 
 	/** operator for comparison, true iff all attributes are equal */
 	bool operator==(const SGParamInfo& other) const;
 
-	/** operator for comparison (by string m_name) */
+	/** operator for comparison (by string m_name, if equal by param_version) */
 	bool operator<(const SGParamInfo& other) const;
 
-	/** operator for comparison (by string m_name) */
+	/** operator for comparison (by string m_name, if equal by param_version) */
 	bool operator>(const SGParamInfo& other) const;
 
 private:
@@ -63,12 +76,17 @@ private:
 public:
 	/** name */
 	char* m_name;
+
 	/** container type */
 	EContainerType m_ctype;
+
 	/** struct type */
 	EStructType m_stype;
+
 	/** primitive type */
 	EPrimitiveType m_ptype;
+
+	int32_t m_param_version;
 };
 
 /** @brief Class to hold instances of a parameter map. Each element contains a

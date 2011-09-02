@@ -1632,137 +1632,148 @@ TParameter::delete_cont(void)
 	}
 
 	if (*(void**) data_start != NULL) {
-		index_t old_length = *m_datatype.m_length_y;
+		index_t old_length;
 		switch (m_datatype.m_ctype) {
 		case CT_NDARRAY:
 			SG_SNOTIMPLEMENTED;
 		case CT_MATRIX: case CT_SGMATRIX:
-			old_length *= *m_datatype.m_length_x; break;
-		case CT_SCALAR: case CT_VECTOR: case CT_SGVECTOR: break;
+			old_length=(*m_datatype.m_length_x)*(*m_datatype.m_length_x);
+			break;
+		case CT_VECTOR: case CT_SGVECTOR:
+			old_length=*m_datatype.m_length_y;
+			break;
+		case CT_SCALAR:
+			old_length=1;
+			break;
 		}
 
-
-		switch (m_datatype.m_stype) {
-		case ST_NONE:
-			switch (m_datatype.m_ptype) {
-			case PT_BOOL:
-				SG_FREE(*(bool**) data_start); break;
-			case PT_CHAR:
-				SG_FREE(*(char**) data_start); break;
-			case PT_INT8:
-				SG_FREE(*(int8_t**) data_start); break;
-			case PT_UINT8:
-				SG_FREE(*(uint8_t**) data_start); break;
-			case PT_INT16:
-				SG_FREE(*(int16_t**) data_start); break;
-			case PT_UINT16:
-				SG_FREE(*(uint16_t**) data_start); break;
-			case PT_INT32:
-				SG_FREE(*(int32_t**) data_start); break;
-			case PT_UINT32:
-				SG_FREE(*(uint32_t**) data_start); break;
-			case PT_INT64:
-				SG_FREE(*(int64_t**) data_start); break;
-			case PT_UINT64:
-				SG_FREE(*(uint64_t**) data_start); break;
-			case PT_FLOAT32:
-				SG_FREE(*(float32_t**) data_start); break;
-			case PT_FLOAT64:
-				SG_FREE(*(float64_t**) data_start); break;
-			case PT_FLOATMAX:
-				SG_FREE(*(floatmax_t**) data_start); break;
-			case PT_SGOBJECT:
-				CSGObject** buf =
-					*(CSGObject***) data_start;
-				for (index_t i=0; i<old_length; i++)
-					if (buf[i] != NULL) SG_UNREF(buf[i]);
-				delete buf;
+		/* only delete in case of non scalar value or scalar sgobject
+		 * single scalar variables are on stack and therefore may not be
+		 * deleted */
+		if (m_datatype.m_ctype!=CT_SCALAR || m_datatype.m_ptype==PT_SGOBJECT)
+		{
+			switch (m_datatype.m_stype) {
+			case ST_NONE:
+				switch (m_datatype.m_ptype) {
+				case PT_BOOL:
+					SG_FREE(*(bool**) data_start); break;
+				case PT_CHAR:
+					SG_FREE(*(char**) data_start); break;
+				case PT_INT8:
+					SG_FREE(*(int8_t**) data_start); break;
+				case PT_UINT8:
+					SG_FREE(*(uint8_t**) data_start); break;
+				case PT_INT16:
+					SG_FREE(*(int16_t**) data_start); break;
+				case PT_UINT16:
+					SG_FREE(*(uint16_t**) data_start); break;
+				case PT_INT32:
+					SG_FREE(*(int32_t**) data_start); break;
+				case PT_UINT32:
+					SG_FREE(*(uint32_t**) data_start); break;
+				case PT_INT64:
+					SG_FREE(*(int64_t**) data_start); break;
+				case PT_UINT64:
+					SG_FREE(*(uint64_t**) data_start); break;
+				case PT_FLOAT32:
+					SG_FREE(*(float32_t**) data_start); break;
+				case PT_FLOAT64:
+					SG_FREE(*(float64_t**) data_start); break;
+				case PT_FLOATMAX:
+					SG_FREE(*(floatmax_t**) data_start); break;
+				case PT_SGOBJECT:
+					CSGObject** buf =
+						*(CSGObject***) data_start;
+					for (index_t i=0; i<old_length; i++)
+						if (buf[i] != NULL) SG_UNREF(buf[i]);
+					delete buf;
+					break;
+				}
 				break;
-			}
-			break;
-		case ST_STRING:
-			for (index_t i=0; i<old_length; i++) {
-				SGString<char>* buf = (SGString<char>*) (*(char**)
-						data_start + i *m_datatype.sizeof_stype());
-				if (buf->slen > 0) SG_FREE(buf->string);
-			}
+			case ST_STRING:
+				for (index_t i=0; i<old_length; i++) {
+					SGString<char>* buf = (SGString<char>*) (*(char**)
+							data_start + i *m_datatype.sizeof_stype());
+					if (buf->slen > 0) SG_FREE(buf->string);
+				}
 
-			switch (m_datatype.m_ptype) {
-			case PT_BOOL:
-				SG_FREE(*(SGString<bool>**) data_start); break;
-			case PT_CHAR:
-				SG_FREE(*(SGString<char>**) data_start); break;
-			case PT_INT8:
-				SG_FREE(*(SGString<int8_t>**) data_start); break;
-			case PT_UINT8:
-				SG_FREE(*(SGString<uint8_t>**) data_start); break;
-			case PT_INT16:
-				SG_FREE(*(SGString<int16_t>**) data_start); break;
-			case PT_UINT16:
-				SG_FREE(*(SGString<uint16_t>**) data_start); break;
-			case PT_INT32:
-				SG_FREE(*(SGString<int32_t>**) data_start); break;
-			case PT_UINT32:
-				SG_FREE(*(SGString<uint32_t>**) data_start); break;
-			case PT_INT64:
-				SG_FREE(*(SGString<int64_t>**) data_start); break;
-			case PT_UINT64:
-				SG_FREE(*(SGString<uint64_t>**) data_start); break;
-			case PT_FLOAT32:
-				SG_FREE(*(SGString<float32_t>**) data_start); break;
-			case PT_FLOAT64:
-				SG_FREE(*(SGString<float64_t>**) data_start); break;
-			case PT_FLOATMAX:
-				SG_FREE(*(SGString<floatmax_t>**) data_start); break;
-			case PT_SGOBJECT:
-				SG_SERROR("TParameter::delete_cont(): Implementation "
-						 "error: Could not delete "
-						 "String<SGSerializable*>");
+				switch (m_datatype.m_ptype) {
+				case PT_BOOL:
+					SG_FREE(*(SGString<bool>**) data_start); break;
+				case PT_CHAR:
+					SG_FREE(*(SGString<char>**) data_start); break;
+				case PT_INT8:
+					SG_FREE(*(SGString<int8_t>**) data_start); break;
+				case PT_UINT8:
+					SG_FREE(*(SGString<uint8_t>**) data_start); break;
+				case PT_INT16:
+					SG_FREE(*(SGString<int16_t>**) data_start); break;
+				case PT_UINT16:
+					SG_FREE(*(SGString<uint16_t>**) data_start); break;
+				case PT_INT32:
+					SG_FREE(*(SGString<int32_t>**) data_start); break;
+				case PT_UINT32:
+					SG_FREE(*(SGString<uint32_t>**) data_start); break;
+				case PT_INT64:
+					SG_FREE(*(SGString<int64_t>**) data_start); break;
+				case PT_UINT64:
+					SG_FREE(*(SGString<uint64_t>**) data_start); break;
+				case PT_FLOAT32:
+					SG_FREE(*(SGString<float32_t>**) data_start); break;
+				case PT_FLOAT64:
+					SG_FREE(*(SGString<float64_t>**) data_start); break;
+				case PT_FLOATMAX:
+					SG_FREE(*(SGString<floatmax_t>**) data_start); break;
+				case PT_SGOBJECT:
+					SG_SERROR("TParameter::delete_cont(): Implementation "
+							 "error: Could not delete "
+							 "String<SGSerializable*>");
+					break;
+				}
 				break;
-			}
-			break;
-		case ST_SPARSE:
-			for (index_t i=0; i<old_length; i++) {
-				SGSparseVector<char>* buf = (SGSparseVector<char>*) (*(char**)
-						data_start + i *m_datatype.sizeof_stype());
-				if (buf->num_feat_entries > 0) SG_FREE(buf->features);
-			}
+			case ST_SPARSE:
+				for (index_t i=0; i<old_length; i++) {
+					SGSparseVector<char>* buf = (SGSparseVector<char>*) (*(char**)
+							data_start + i *m_datatype.sizeof_stype());
+					if (buf->num_feat_entries > 0) SG_FREE(buf->features);
+				}
 
-			switch (m_datatype.m_ptype) {
-			case PT_BOOL:
-				SG_FREE(*(SGSparseVector<bool>**) data_start); break;
-			case PT_CHAR:
-				SG_FREE(*(SGSparseVector<char>**) data_start); break;
-			case PT_INT8:
-				SG_FREE(*(SGSparseVector<int8_t>**) data_start); break;
-			case PT_UINT8:
-				SG_FREE(*(SGSparseVector<uint8_t>**) data_start); break;
-			case PT_INT16:
-				SG_FREE(*(SGSparseVector<int16_t>**) data_start); break;
-			case PT_UINT16:
-				SG_FREE(*(SGSparseVector<uint16_t>**) data_start); break;
-			case PT_INT32:
-				SG_FREE(*(SGSparseVector<int32_t>**) data_start); break;
-			case PT_UINT32:
-				SG_FREE(*(SGSparseVector<uint32_t>**) data_start); break;
-			case PT_INT64:
-				SG_FREE(*(SGSparseVector<int64_t>**) data_start); break;
-			case PT_UINT64:
-				SG_FREE(*(SGSparseVector<uint64_t>**) data_start); break;
-			case PT_FLOAT32:
-				SG_FREE(*(SGSparseVector<float32_t>**) data_start); break;
-			case PT_FLOAT64:
-				SG_FREE(*(SGSparseVector<float64_t>**) data_start); break;
-			case PT_FLOATMAX:
-				SG_FREE(*(SGSparseVector<floatmax_t>**) data_start); break;
-			case PT_SGOBJECT:
-				SG_SERROR("TParameter::delete_cont(): Implementation "
-						 "error: Could not delete "
-						 "Sparse<SGSerializable*>");
+				switch (m_datatype.m_ptype) {
+				case PT_BOOL:
+					SG_FREE(*(SGSparseVector<bool>**) data_start); break;
+				case PT_CHAR:
+					SG_FREE(*(SGSparseVector<char>**) data_start); break;
+				case PT_INT8:
+					SG_FREE(*(SGSparseVector<int8_t>**) data_start); break;
+				case PT_UINT8:
+					SG_FREE(*(SGSparseVector<uint8_t>**) data_start); break;
+				case PT_INT16:
+					SG_FREE(*(SGSparseVector<int16_t>**) data_start); break;
+				case PT_UINT16:
+					SG_FREE(*(SGSparseVector<uint16_t>**) data_start); break;
+				case PT_INT32:
+					SG_FREE(*(SGSparseVector<int32_t>**) data_start); break;
+				case PT_UINT32:
+					SG_FREE(*(SGSparseVector<uint32_t>**) data_start); break;
+				case PT_INT64:
+					SG_FREE(*(SGSparseVector<int64_t>**) data_start); break;
+				case PT_UINT64:
+					SG_FREE(*(SGSparseVector<uint64_t>**) data_start); break;
+				case PT_FLOAT32:
+					SG_FREE(*(SGSparseVector<float32_t>**) data_start); break;
+				case PT_FLOAT64:
+					SG_FREE(*(SGSparseVector<float64_t>**) data_start); break;
+				case PT_FLOATMAX:
+					SG_FREE(*(SGSparseVector<floatmax_t>**) data_start); break;
+				case PT_SGOBJECT:
+					SG_SERROR("TParameter::delete_cont(): Implementation "
+							 "error: Could not delete "
+							 "Sparse<SGSerializable*>");
+					break;
+				}
 				break;
-			}
-			break;
-		} /* switch (m_datatype.m_stype)  */
+			} /* switch (m_datatype.m_stype)  */
+		} /* ctype != CT_SCALAR */
 	} /* if (*(void**) data_start != NULL)  */
 
 	*(void**) data_start = NULL;
@@ -2383,6 +2394,23 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 		return false;
 
 	return true;
+}
+
+bool TParameter::operator==(const TParameter& other) const
+{
+	bool result=true;
+	result&=!strcmp(m_name, other.m_name);
+	return result;
+}
+
+bool TParameter::operator<(const TParameter& other) const
+{
+	return strcmp(m_name, other.m_name)<0;
+}
+
+bool TParameter::operator>(const TParameter& other) const
+{
+	return strcmp(m_name, other.m_name)>0;
 }
 
 Parameter::Parameter(void)

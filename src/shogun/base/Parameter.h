@@ -21,6 +21,9 @@ namespace shogun
 /** @brief parameter struct */
 struct TParameter
 {
+	/* CSGObject has to call delete_cont */
+	friend class CSGObject;
+
 	/** explicit constructor
 	 * @param datatype datatype
 	 * @param parameter pointer to parameter
@@ -58,6 +61,16 @@ struct TParameter
 	char* m_name;
 	/** description of parameter */
 	char* m_description;
+
+public:
+	/** operator for comparison, (by string m_name) */
+	bool operator==(const TParameter& other) const;
+
+	/** operator for comparison (by string m_name) */
+	bool operator<(const TParameter& other) const;
+
+	/** operator for comparison (by string m_name) */
+	bool operator>(const TParameter& other) const;
 
 private:
 	char* new_prefix(const char* s1, const char* s2);

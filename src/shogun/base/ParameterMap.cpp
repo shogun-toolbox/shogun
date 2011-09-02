@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/ParameterMap.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -19,17 +20,31 @@ SGParamInfo::SGParamInfo()
 }
 
 SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
-		EStructType stype, EPrimitiveType ptype)
+		EStructType stype, EPrimitiveType ptype, int32_t param_version)
 {
 	init();
 
 	/* copy name */
-	m_name=SG_MALLOC(char, strlen(name)+1);
-	strcpy(m_name, name);
+	m_name=strdup(name);
 
 	m_ctype=ctype;
 	m_stype=stype;
 	m_ptype=ptype;
+	m_param_version=param_version;
+}
+
+SGParamInfo::SGParamInfo(const TParameter* param, int32_t param_version)
+{
+	init();
+
+	/* copy name */
+	m_name=strdup(param->m_name);
+
+	TSGDataType type=param->m_datatype;
+	m_ctype=type.m_ctype;
+	m_stype=type.m_stype;
+	m_ptype=type.m_ptype;
+	m_param_version=param_version;
 }
 
 SGParamInfo::~SGParamInfo()
@@ -37,33 +52,49 @@ SGParamInfo::~SGParamInfo()
 	SG_FREE(m_name);
 }
 
-void SGParamInfo::print_param_info()
+char* SGParamInfo::to_string()
 {
-	SG_SPRINT("SGParamInfo with: ");
-
-	SG_SPRINT("name=\"%s\"", m_name);
+	char* buffer=SG_MALLOC(char, 200);
+	strcpy(buffer, "SGParamInfo with: ");
+	strcat(buffer, "name=\"");
+	strcat(buffer, m_name);
+	strcat(buffer, "\", type=");
 
 	TSGDataType t(m_ctype, m_stype, m_ptype);
-	index_t buffer_length=100;
-	char* buffer=SG_MALLOC(char, buffer_length);
-	t.to_string(buffer, buffer_length);
-	SG_SPRINT(", type=%s", buffer);
-	SG_FREE(buffer);
+	index_t l=100;
+	char* b=SG_MALLOC(char, l);
+	t.to_string(b, l);
+	strcat(buffer, b);
+	SG_FREE(b);
 
-	SG_SPRINT("\n");
+	b=SG_MALLOC(char, 10);
+	sprintf(b, "%d", m_param_version);
+	strcat(buffer, ", version=");
+	strcat(buffer, b);
+	SG_FREE(b);
+
+	return buffer;
+}
+
+void SGParamInfo::print_param_info()
+{
+	char* s=to_string();
+	SG_SPRINT("%s\n", s);
+	SG_FREE(s);
 }
 
 SGParamInfo* SGParamInfo::duplicate() const
 {
-	return new SGParamInfo(m_name, m_ctype, m_stype, m_ptype);
+	return new SGParamInfo(m_name, m_ctype, m_stype, m_ptype, m_param_version);
 }
 
 void SGParamInfo::init()
 {
 	m_name=NULL;
-	m_ctype=(EContainerType) 0;
-	m_stype=(EStructType) 0;
-	m_ptype=(EPrimitiveType) 0;
+	m_ctype=(EContainerType) -1;
+	m_stype=(EStructType) -1;
+	m_ptype=(EPrimitiveType) -1;
+	m_param_version=-1;
 }
 
 bool SGParamInfo::operator==(const SGParamInfo& other) const
@@ -73,17 +104,27 @@ bool SGParamInfo::operator==(const SGParamInfo& other) const
 	result&=m_ctype==other.m_ctype;
 	result&=m_stype==other.m_stype;
 	result&=m_ptype==other.m_ptype;
+	result&=m_param_version==other.m_param_version;
 	return result;
 }
 
 bool SGParamInfo::operator<(const SGParamInfo& other) const
 {
-	return strcmp(m_name, other.m_name)<0;
+	int32_t result=strcmp(m_name, other.m_name);
+
+	if (!result)
+		return m_param_version<other.m_param_version;
+	else
+		return result<0;
 }
 
 bool SGParamInfo::operator>(const SGParamInfo& other) const
 {
-	return strcmp(m_name, other.m_name)>0;
+	int32_t result=strcmp(m_name, other.m_name);
+	if (!result)
+			return m_param_version<other.m_param_version;
+	else
+		return result>0;
 }
 
 ParameterMapElement::ParameterMapElement()
