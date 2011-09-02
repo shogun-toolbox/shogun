@@ -1,5 +1,6 @@
 require 'narray'
 require 'modshogun'
+require 'shogun_helpers'
 require 'load'
 require 'pp'
 

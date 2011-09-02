@@ -1,4 +1,5 @@
 require 'modshogun'
+require 'shogun_helpers'
 require 'narray'
 require 'pp'
 x = Modshogun::RealFeatures.new
