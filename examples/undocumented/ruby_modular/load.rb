@@ -1,5 +1,5 @@
 require 'narray'
-require 'modshogun.so'
+require 'modshogun'
 
 # for debugging purposes...
 #require 'rubygems'
@@ -153,15 +153,21 @@ def gen_pos_ones_vec num
   return ary
 end
 
-# some label generating method
-def gen_labels_vec num
-  num=num/2
+def gen_neg_ones_vec num
   ary = []
   num.times do
-    ary << 1
+    ary << -1
   end
+  return ary
+end
+
+def gen_ones_vec num
+  ary = []
   num.times do
     ary << -1
+  end
+  num.times do
+    ary << 1
   end
   return ary
 end
@@ -170,8 +176,8 @@ end
 # randn - dist, randn + dist
 def gen_rand_ary num, dist=0
   ary = [[],[]]
-  ary.each do |p|
-    p << ary_fill( dist ) + ary_fill( -dist )
+  ary.map! do |p|
+    p << ary_fill( num, dist ) + ary_fill( num, -dist )
     p.flatten!
   end
   return ary

@@ -1,5 +1,5 @@
 require 'modshogun'
-require 'shogun_helpers'
+require 'load'
 require 'narray'
 
 @num = 1000
