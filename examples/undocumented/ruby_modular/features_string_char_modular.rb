@@ -1,4 +1,5 @@
 require 'modshogun'
+require 'shogun_helpers'
 require 'pp'
 
 strings=['hey','guys','i','am','a','string']

@@ -1,6 +1,7 @@
 # this was trancekoded by the awesome trancekoder
 # ...and fixifikated by the awesum fixifikator
 require 'modshogun'
+require 'shogun_helpers'
 require 'pp'
 require 'load'
 

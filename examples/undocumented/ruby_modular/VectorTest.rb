@@ -1,4 +1,5 @@
 require 'modshogun'
+require 'shogun_helpers'
 require 'narray'
 x = Modshogun::Labels.new
 y = [1, 3, 5, 7]
