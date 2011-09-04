@@ -115,7 +115,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	float64_t* l_plo_rhs=plo_rhs;
 	float64_t* l_ld_mean_lhs=ld_mean_lhs;
 	float64_t* l_ld_mean_rhs=ld_mean_rhs;
-
+	
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)
 	{
@@ -227,7 +227,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		float64_t  result=0 ;
 		for (int32_t j=0; j<alen; j++)
 		{
-			int32_t a_idx = compute_index(j, avec[j]) ;
+			int32_t a_idx = compute_index(j, avec[j]);
 			result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
 			result -= estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 		}
@@ -235,7 +235,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 		// precompute posterior-log-odds
 		plo_lhs[i] = estimate->posterior_log_odds_obsolete(avec, alen)-mean[0] ;
-		l->free_feature_vector(avec, alen, free_avec);
+		l->free_feature_vector(avec, i, free_avec);
 	} ;
 
 	if (ld_mean_lhs!=ld_mean_rhs)
@@ -260,7 +260,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 			// precompute posterior-log-odds
 			plo_rhs[i] = estimate->posterior_log_odds_obsolete(avec, alen)-mean[0] ;
-			r->free_feature_vector(avec, alen, free_avec);
+			r->free_feature_vector(avec, i, free_avec);
 		} ;
 	} ;
 
