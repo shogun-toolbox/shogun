@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _CPREPROCESSOR__H__
-#define _CPREPROCESSOR__H__
+#ifndef PREPROCESSOR_H_
+#define PREPROCESSOR_H_
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
@@ -21,12 +21,14 @@ namespace shogun
 {
 
 class CFeatures;
-
 enum EFeatureType;
-
 enum EFeatureClass;
 
-/** enumeration of possible preprocessor types */
+/** enumeration of possible preprocessor types
+ * used by Shogun UI
+ *
+ * Note to developer: any new preprocessor should be added here.
+ */
 enum EPreprocessorType
 {
 	P_UNKNOWN=0,
@@ -55,50 +57,47 @@ enum EPreprocessorType
 	P_KERNELLOCALLYLINEAREMBEDDING=230
 };
 
-class CFeatures;
-
 /** @brief Class Preprocessor defines a preprocessor interface.
  *
- * Preprocessors are transformation functions that don't change the domain of
+ * Preprocessors are transformation functions that doesn't change the domain of
  * the input features.  These functions can be applied in-place if the input
  * features fit in memory or can be applied on-the-fly when (depending on
  * features) a feature caching strategy is applied. However, if the individual
  * features are in \f$\bf{R}\f$ they have to stay in \f$\bf{R}\f$ although the
- * dimensionality of the feature vectors is allowed change.
+ * dimensionality of the feature vectors is allowed to be changed.
  *
  * As preprocessors might need a certain initialization they may expect that
  * the init() function is called before anything else. The actual preprocessing
  * is feature type dependent and thus coordinated in the sub-classes, cf. e.g.
- * CSimplePreprocessor .
+ * CSimplePreprocessor.
  */
 class CPreprocessor : public CSGObject
 {
 public:
-	/** constructor
-	 */
-	CPreprocessor();
+	/** constructor */
+	CPreprocessor() : CSGObject()
+	{
+	};
 
-	/** destructor
-	 */
-	virtual ~CPreprocessor();
+	/** destructor */
+	virtual ~CPreprocessor()
+	{
+	}
 
-	/// initialize preprocessor from features
-	virtual bool init(CFeatures* f)=0;
+	/** initialize preprocessor with features */
+	virtual bool init(CFeatures* features)=0;
 
-	/// cleanup
+	/** clean-up. should be called (if necessary) after processing */
 	virtual void cleanup()=0;
 	
-	/** return feature type with which objects derived 
-	from CPreprocessor can deal */
+	/** @return type of objects preprocessor can deal with */
 	virtual EFeatureType get_feature_type()=0;
 
-	/** return feature class
-	    like Sparse,Simple,...
-	*/
+	/** @return class of features preprocessor deals with */
 	virtual EFeatureClass get_feature_class()=0;
 
-	/// return a type of preprocessor
+	/* @return the actual type of the preprocessor */
 	virtual EPreprocessorType get_type() const=0;
 };
 }
-#endif // _CPREPROCESSOR__H__
+#endif // PREPROCESSOR_H_
