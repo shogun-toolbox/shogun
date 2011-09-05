@@ -19,10 +19,11 @@ namespace shogun
 
 class CLabels;
 
-/** @brief the class MeanSquaredError
- * used to compute error of regression model.
+/** @brief Class MeanSquaredError
+ * used to compute an error of regression model.
  *
- * Formally, for labels \f$ L,R, |L|=|R|\f$ mean squared error is estimated as
+ * Formally, for real labels \f$ L,R, |L|=|R|\f$ mean squared 
+ * error (MSE) is estimated as
  *
  * \f[
  * 		\frac{1}{|L|} \sum_{i=1}^{|L|} (L_i - R_i)^2

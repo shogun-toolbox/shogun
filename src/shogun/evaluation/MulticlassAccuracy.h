@@ -22,7 +22,8 @@ class CLabels;
 /** @brief The class MulticlassAccuracy
  * used to compute accuracy of multiclass classification.
  *
- * Formally, for labels \f$L,R, |L|=|R|\f$ accuracy is estimated as
+ * Formally, for multiclass labels \f$L,R, |L|=|R|\f$ multiclass 
+ * accuracy is estimated as
  *
  * \f[
  * 		\frac{\sum_{i=1}^{|L|} [L_i=R_i]}{|L|}
@@ -48,7 +49,7 @@ public:
 
 	inline EEvaluationDirection get_evaluation_direction()
 	{
-		return ED_MINIMIZE;
+		return ED_MAXIMIZE;
 	}
 
 	/** get name */

@@ -18,10 +18,8 @@ namespace shogun
 
 class CLabels;
 
-/** @brief The class PRCEvalution
- * used to evaluate PRC (Precision Recall Curve)
- * graph of binary classifier. This class also has an capability
- * of calculating auPRC (area under PRC).
+/** @brief Class PRCEvaluation used to evaluate PRC 
+ * (Precision Recall Curve) and an area under PRC curve (auPRC).
  *
  */
 class CPRCEvaluation: public CBinaryClassEvaluation

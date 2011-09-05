@@ -19,20 +19,18 @@ namespace shogun
 
 class CLabels;
 
-/** enum which is used to define whether an evaluation criterium has to be
- * minimised or maximised */
+/** enum which used to define whether an evaluation measure has to be
+ * minimized or maximized */
 enum EEvaluationDirection
 {
 	ED_MINIMIZE, ED_MAXIMIZE
 };
 
-/** @brief The class Evaluation
- * a main class for other classes
+/** @brief Class Evaluation, a base class for other classes
  * used to evaluate labels, e.g. accuracy of classification or
  * mean squared error of regression.
  *
- * This class provides only interface for evaluation with
- * no proposed implementation.
+ * This class provides only interface for evaluation measures.
  *
  */
 class CEvaluation: public CSGObject
@@ -51,7 +49,7 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
 
-	/** @return whether criterium has to be maximised or minimised */
+	/** @return whether criterium has to be maximized or minimized */
 	virtual EEvaluationDirection get_evaluation_direction()=0;
 };
 

@@ -18,12 +18,11 @@ namespace shogun
 
 class CLabels;
 
-/** @brief The class ROCEvalution
- * used to evaluate ROC (Receiver Operator Characteristic)
- * graph of binary classifier. This class also has an capability
- * of calculating auROC (area under ROC).
+/** @brief Class ROCEvalution used to evaluate ROC 
+ * (Receiver Operator Characteristic) and an area
+ * under ROC curve (auROC).
  *
- * Implementation is based on the efficient ROC algorithm described in
+ * Implementation is based on the efficient ROC algorithm as described in
  *
  * Fawcett, Tom (2004) ROC Graphs:
  * Notes and Practical Considerations for Researchers; Machine Learning, 2004
