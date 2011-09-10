@@ -14,6 +14,7 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/FibonacciHeap.h>
 #include <shogun/lib/common.h>
+#include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
@@ -51,14 +52,40 @@ struct LK_RECONSTRUCTION_THREAD_PARAM
 
 struct K_NEIGHBORHOOD_THREAD_PARAM
 {
+	/// starting index of loop
 	int32_t idx_start;
+	/// step of loop
 	int32_t idx_step;
+	/// end index of loop
 	int32_t idx_stop;
+	/// number of vectors
 	int32_t N;
+	/// number of neighbors
 	int32_t m_k;
+	/// fibonacci heaps
 	CFibonacciHeap* heap;
+	/// kernel matrix
 	const float64_t* kernel_matrix;
+	/// matrix containing neighbors indexes
 	int32_t* neighborhood_matrix;
+};
+
+struct SPARSEDOT_THREAD_PARAM
+{
+	/// starting index of loop
+	int32_t idx_start;
+	/// step of loop
+	int32_t idx_step;
+	/// end index of loop
+	int32_t idx_stop;
+	/// number of vectors
+	int32_t N;
+	/// weight matrix
+	const float64_t* W_matrix;
+	/// result matrix
+	float64_t* M_matrix;
+	/// non zero indexes dynamic array
+	DynArray<int32_t>** nz_idxs;
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
@@ -179,20 +206,72 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	SG_FREE(local_gram_matrix);
 
 	// W=I-W
+	// W=I-W
+	for (i=0; i<N*N; i++)
+	{
+		W_matrix[i] *= -1.0;
+	}
 	for (i=0; i<N; i++)
 	{
-		for (j=0; j<N; j++)
-			W_matrix[j*N+i] = (i==j) ? 1.0-W_matrix[j*N+i] : -W_matrix[j*N+i];
+		W_matrix[i*N+i] = 1.0;
 	}
 
 	// compute M=(W-I)'*(W-I)
+	DynArray<int32_t>** nz_idxs = SG_MALLOC(DynArray<int32_t>*,N);
+	for (i=0; i<N; i++)
+	{
+		nz_idxs[i] = new DynArray<int32_t>(m_k,false);
+		for (j=0; j<N; j++)
+		{
+			if (W_matrix[i*N+j]!=0.0)
+				nz_idxs[i]->push_back(j);
+		}
+	}
 	SGMatrix<float64_t> M_matrix(N,N);
-	cblas_dgemm(CblasColMajor,CblasTrans, CblasNoTrans,
-	            N,N,N,
-	            1.0,W_matrix,N,
-	            W_matrix,N,
-	            0.0,M_matrix.matrix,N);
-
+#ifdef HAVE_PTHREAD
+	// allocate threads
+	threads = SG_MALLOC(pthread_t, num_threads);
+	SPARSEDOT_THREAD_PARAM* parameters_ = SG_MALLOC(SPARSEDOT_THREAD_PARAM, num_threads);
+	pthread_attr_t attr_;
+	pthread_attr_init(&attr_);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+	
+	for (t=0; t<num_threads; t++)
+	{
+		parameters_[t].idx_start = t;
+		parameters_[t].idx_step = num_threads;
+		parameters_[t].idx_stop = N;
+		parameters_[t].N = N;
+		parameters_[t].W_matrix = W_matrix;
+		parameters_[t].M_matrix = M_matrix.matrix;
+		parameters_[t].nz_idxs = nz_idxs;
+		pthread_create(&threads[t], &attr_, run_sparsedot_thread, (void*)&parameters_[t]);
+	}
+	for (t=0; t<num_threads; t++)
+		pthread_join(threads[t], NULL);
+	pthread_attr_destroy(&attr_);
+	SG_FREE(parameters_);
+	SG_FREE(threads);
+#else
+	SPARSEDOT_THREAD_PARAM single_thread_param;
+	single_thread_param.idx_start = 0;
+	single_thread_param.idx_step = 1;
+	single_thread_param.idx_stop = N;
+	single_thread_param.N = N;
+	single_thread_param.W_matrix = W_matrix;
+	single_thread_param.M_matrix = M_matrix.matrix;
+	single_thread_param.nz_idxs = nz_idxs;
+	run_sparsedot_thread((void*)single_thread_param);
+#endif
+	for (i=0; i<N; i++)
+	{
+		delete nz_idxs[i];
+		for (j=0; j<i; j++)
+		{
+			M_matrix.matrix[i*N+j] = M_matrix.matrix[j*N+i];
+		}
+	}
+	SG_FREE(nz_idxs);
 	SG_FREE(W_matrix);
 
 	SGMatrix<float64_t> nullspace = find_null_space(M_matrix,m_target_dim,false);
@@ -335,7 +414,6 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 
 	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
 }
-
 
 void* CKernelLocallyLinearEmbedding::run_neighborhood_thread(void* p)
 {
