@@ -1432,7 +1432,7 @@ for ac_option do
   --enable-lapack)		_lapack=yes	;;
   --disable-arpack)		_arpack=no	;;
   --enable-arpack)		_arpack=yes	;;
-  --disable--superlu)		_superlu=no	;;
+  --disable-superlu)		_superlu=no	;;
   --enable-superlu)		_superlu=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
