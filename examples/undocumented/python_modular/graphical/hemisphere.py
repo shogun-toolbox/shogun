@@ -51,11 +51,11 @@ from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure()
 
-if matplotlib.__version__[0]=='0':
+try:
+	swiss_roll_fig = fig.add_subplot(3,3,1,projection='3d')
+except:
 	figure = plt.figure()
 	swiss_roll_fig = Axes3D(figure)
-else:
-	swiss_roll_fig = fig.add_subplot(3,3,1,projection='3d')
 
 swiss_roll_fig.scatter(X[0], X[1], X[2], s=10, c=tt, cmap=plt.cm.Spectral)
 plt.subplots_adjust(hspace=0.4)
@@ -72,6 +72,8 @@ for (i, (preproc, label)) in enumerate(preprocs):
 	else:
 		preproc_subplot = fig.add_subplot(3,3,i+2)
 	preproc_subplot.scatter(new_feats[0],new_feats[1], c=tt, cmap=plt.cm.Spectral)
+	plt.axis('tight')
+	plt.xticks([]), plt.yticks([])
 	plt.title(label)
 	print preproc.get_name(), 'done'
 	
