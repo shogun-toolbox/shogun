@@ -129,6 +129,11 @@ protected:
 	 */
 	static void* run_linearreconstruction_thread(void* p);
 
+	/** runs sparse matrix-matrix multiplication thread
+	 * @param p thread params
+	 */
+	static void* run_sparsedot_thread(void* p);
+
 	/** find null space of given matrix 
 	 * @param matrix given matrix
 	 * @param dimension dimension of null space to be computed
