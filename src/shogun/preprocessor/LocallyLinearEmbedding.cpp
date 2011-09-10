@@ -15,8 +15,7 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/FibonacciHeap.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/Time.h>
-#include <list>
+#include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclidianDistance.h>
