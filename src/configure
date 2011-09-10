@@ -87,6 +87,7 @@ _largefile=yes
 _doxygen=auto
 _swig=auto
 _lapack=auto
+_superlu=auto
 _arpack=auto
 _bigstates=yes
 _hmmcache=yes
@@ -1212,6 +1213,7 @@ Optional features:
   --enable-spinlocks             enable use of spinlocks instead of mutexes [auto]
   --enable-lapack                enable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --enable-arpack                enable arpack [auto]
+  --enable-superlu               enable SuperLU [auto]
   --enable-cplex                 enable code using CPLEX  [auto]
   --enable-lpsolve               enable code using lpsolve  [auto]
   --enable-glpk                  enable code using GLPK [auto]
@@ -1235,6 +1237,7 @@ Optional features:
   --disable-largefile            disable large file support (64bit file acces routines) [enabled]
   --disable-lapack               disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-arpack               disable arpack [auto]
+  --disable-superlu              disable superlu [auto]
   --disable-cplex                disable code using CPLEX  [auto]
   --disable-lpsolve              disable code using lpsolve  [auto]
   --disable-glpk                 disable code using GLPK [auto]
@@ -1429,6 +1432,8 @@ for ac_option do
   --enable-lapack)		_lapack=yes	;;
   --disable-arpack)		_arpack=no	;;
   --enable-arpack)		_arpack=yes	;;
+  --disable--superlu)		_superlu=no	;;
+  --enable-superlu)		_superlu=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
   --disable-spinlocks)	_spinlocks=no	;;
@@ -3151,6 +3156,34 @@ EOF
 				fi
 			fi
 	  fi
+
+
+		if test "$_superlu" = yes || test "$_superlu" = auto
+		then
+cat > $TMPC << EOF
+#include <superlu/slu_ddefs.h>
+int main(int argc, char **argv)
+{
+	SuperMatrix A;
+	return 0;
+}
+EOF
+		echocheck "SuperLU support"
+		if cxx_check -lsuperlu
+		then
+			echores "yes"
+			HAVE_ARPACK='#define HAVE_SUPERLU 1'
+			DEFINES="$DEFINES -DHAVE_SUPERLU"
+			POSTLINKFLAGS="$POSTLINKFLAGS -lsuperlu"
+		else
+			if test "$_superlu" = yes
+			then
+				die "superlu not found"
+			else
+				echores "no"
+			fi
+		fi
+	fi
 
 		if test "$_arpack" = yes || test "$_arpack" = auto
 		then
