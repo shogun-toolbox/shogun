@@ -237,11 +237,11 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
   /* Each array stores two successive columns of the (nX+1)x(nY+1) table used in dynamic programming */
   cl = nY+1;           /* each column stores the positions in the aaY sequence, plus a position at zero */
 
-  logM=SG_MALLOC(int32_t, 2*cl);
-  logX=SG_MALLOC(int32_t, 2*cl);
-  logY=SG_MALLOC(int32_t, 2*cl);
-  logX2=SG_MALLOC(int32_t, 2*cl);
-  logY2=SG_MALLOC(int32_t, 2*cl);
+  logM=SG_CALLOC(int32_t, 2*cl);
+  logX=SG_CALLOC(int32_t, 2*cl);
+  logY=SG_CALLOC(int32_t, 2*cl);
+  logX2=SG_CALLOC(int32_t, 2*cl);
+  logY2=SG_CALLOC(int32_t, 2*cl);
 
   /************************************************/
   /* First iteration : initialization of column 0 */
@@ -412,7 +412,7 @@ void CLocalAlignmentStringKernel::init()
 	m_opening = 10;
 	m_extension = 2;
 
-	scaled_blosum=SG_MALLOC(int32_t, sizeof(blosum));
+	scaled_blosum=SG_CALLOC(int32_t, sizeof(blosum));
 	init_logsum();
 
 	m_parameters->add(&initialized, "initialized", "if kernel is initalized");
