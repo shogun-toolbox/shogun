@@ -196,6 +196,9 @@ ever use tabs for indentations
   {
   }
 
+- avoid the use of inline functions where possible (little to zero performance
+		impact). nowadays compilers automagically inline code when beneficial
+		and within the same linking process
 
 - breaking long lines and strings
 	limit yourselves to 80 columns
