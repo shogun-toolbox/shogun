@@ -196,6 +196,52 @@ void CLabels::save(CFile* writer)
 	SG_RESET_LOCALE;
 }
 
+bool CLabels::set_label(int32_t idx, float64_t label)
+{
+	int32_t real_num=subset_idx_conversion(idx);
+	if (labels.vector && real_num<get_num_labels())
+	{
+		labels.vector[real_num]=label;
+		return true;
+	}
+	else 
+		return false;
+}
+
+bool CLabels::set_int_label(int32_t idx, int32_t label)
+{ 
+	int32_t real_num=subset_idx_conversion(idx);
+	if (labels.vector && real_num<get_num_labels())
+	{
+		labels.vector[real_num]= (float64_t) label;
+		return true;
+	}
+	else 
+		return false;
+}
+
+float64_t CLabels::get_label(int32_t idx)
+{
+	int32_t real_num=subset_idx_conversion(idx);
+	ASSERT(labels.vector && idx<get_num_labels());
+	return labels.vector[real_num];
+}
+
+int32_t CLabels::get_int_label(int32_t idx)
+{
+	int32_t real_num=subset_idx_conversion(idx);
+	ASSERT(labels.vector && idx<get_num_labels());
+	if (labels.vector[real_num] != float64_t((int32_t(labels.vector[real_num]))))
+		SG_ERROR("label[%d]=%g is not an integer\n", labels.vector[real_num]);
+
+	return int32_t(labels.vector[real_num]);
+}
+
+int32_t CLabels::get_num_labels()
+{
+	return m_subset ? m_subset->get_size() : labels.vlen;
+}
+
 void CLabels::set_subset(CSubset* subset)
 {
 	SG_UNREF(m_subset);
@@ -206,4 +252,9 @@ void CLabels::set_subset(CSubset* subset)
 void CLabels::remove_subset()
 {
 	set_subset(NULL);
+}
+
+index_t CLabels::subset_idx_conversion(index_t idx) const
+{
+	return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
 }

@@ -29,7 +29,7 @@ class CWDFeatures : public CDotFeatures
 {
 	public:
 		/** defualt constructor  */
-		CWDFeatures(void);
+		CWDFeatures();
 
 		/** constructor
 		 *
@@ -52,10 +52,7 @@ class CWDFeatures : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		inline virtual int32_t get_dim_feature_space() const
-		{
-			return w_dim;
-		}
+		virtual int32_t get_dim_feature_space() const;
 
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices
@@ -82,21 +79,15 @@ class CWDFeatures : public CDotFeatures
 		 * @param vec2_len length of real valued vector
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num which vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
-		{
-			int32_t vlen=-1;
-			bool free_vec;
-			uint8_t* vec=strings->get_feature_vector(num, vlen, free_vec);
-			strings->free_feature_vector(vec, num, free_vec);
-			return degree*vlen;
-		}
+		virtual int32_t get_nnz_features_for_vector(int32_t num);
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
@@ -167,39 +158,24 @@ class CWDFeatures : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type()
-		{
-			return F_UNKNOWN;
-		}
+		virtual EFeatureType get_feature_type();
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class()
-		{
-			return C_WD;
-		}
+		virtual EFeatureClass get_feature_class();
 
-		inline virtual int32_t get_num_vectors() const
-		{
-			return num_strings;
-		}
+		inline virtual int32_t get_num_vectors() const;
 
-		inline virtual int32_t get_size()
-		{
-			return sizeof(float64_t);
-		}
+		inline virtual int32_t get_size();
 
 		/** set normalization constant
 		 * @param n n=0 means automagic */
 		void set_normalization_const(float64_t n=0);
 
 		/** get normalization constant */
-		inline float64_t get_normalization_const()
-		{
-			return normalization_const;
-		}
+		float64_t get_normalization_const();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "WDFeatures"; }
@@ -207,16 +183,8 @@ class CWDFeatures : public CDotFeatures
 		/** set wd weights
 		 *
 		 * @param weights new weights
-		 * @param d degree
-		 * @return if setting was successful
 		 */
-		void set_wd_weights(float64_t* weights, int32_t d)
-		{
-			ASSERT(d==degree);
-
-			for (int32_t i=0; i<degree; i++)
-				wd_weights[i]=weights[i];
-		}
+		void set_wd_weights(SGVector<float64_t> weights);
 
 		/** create wd kernel weighting heuristic */
 		void set_wd_weights();

@@ -23,72 +23,42 @@ namespace shogun
  * This is used in the CCustomKernel.*/
 class CDummyFeatures : public CFeatures
 {
-	void init(void) {
-		m_parameters->add(&num_vectors, "num_vectors",
-						  "Number of feature vectors.");
-	}
-
 	public:
 		/** default constructor  */
-		CDummyFeatures(void) {
-			init();
-
-			num_vectors = 0;
-		}
+		CDummyFeatures();
 
 		/** constructor
 		 *
 		 * @param num number of feature vectors
 		 */
-		CDummyFeatures(int32_t num) : CFeatures(0), num_vectors(num)
-		{
-			init();
-		}
+		CDummyFeatures(int32_t num);
 
 		/** copy constructor */
-		CDummyFeatures(const CDummyFeatures &orig) : CFeatures(0),
-			num_vectors(orig.num_vectors)
-		{
-			init();
-		}
+		CDummyFeatures(const CDummyFeatures &orig);
 
 		/** destructor */
-		virtual ~CDummyFeatures()
-		{
-		}
+		virtual ~CDummyFeatures();
 
 		/** get number of feature vectors */
-		virtual int32_t get_num_vectors() const
-		{
-			return num_vectors;
-		}
+		virtual int32_t get_num_vectors() const;
 
 		/** get size of features (always 1) */
-		virtual int32_t get_size()
-		{
-			return 1;
-		}
+		virtual int32_t get_size();
 
 		/** duplicate features */
-		virtual CFeatures* duplicate() const
-		{
-			return new CDummyFeatures(*this);
-		}
+		virtual CFeatures* duplicate() const;
 
 		/** get feature type (ANY) */
-		inline EFeatureType get_feature_type()
-		{
-			return F_ANY;
-		}
+		inline EFeatureType get_feature_type();
 
 		/** get feature class (ANY) */
-		inline virtual EFeatureClass get_feature_class()
-		{
-			return C_ANY;
-		}
+		inline virtual EFeatureClass get_feature_class();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "DummyFeatures"; }
+
+	private:
+		void init();
 
 	protected:
 		/** number of feature vectors */

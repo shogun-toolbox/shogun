@@ -72,6 +72,61 @@ CSNPFeatures::~CSNPFeatures()
 	SG_UNREF(strings);
 }
 
+int32_t CSNPFeatures::get_dim_feature_space() const
+{
+	return w_dim;
+}
+
+int32_t CSNPFeatures::get_nnz_features_for_vector(int32_t num)
+{
+	return w_dim/3;
+}
+
+EFeatureType CSNPFeatures::get_feature_type()
+{
+	return F_UNKNOWN;
+}
+
+EFeatureClass CSNPFeatures::get_feature_class()
+{
+	return C_WD;
+}
+
+int32_t CSNPFeatures::get_num_vectors() const
+{
+	return num_strings;
+}
+
+int32_t CSNPFeatures::get_size()
+{
+	return sizeof(float64_t);
+}
+
+float64_t CSNPFeatures::get_normalization_const()
+{
+	return normalization_const;
+}
+
+void CSNPFeatures::set_minor_base_string(const char* str)
+{
+	m_str_min=(uint8_t*) strdup(str);
+}
+
+void CSNPFeatures::set_major_base_string(const char* str)
+{
+	m_str_maj=(uint8_t*) strdup(str);
+}
+
+char* CSNPFeatures::get_minor_base_string()
+{
+	return (char*) m_str_min;
+}
+
+char* CSNPFeatures::get_major_base_string()
+{
+	return (char*) m_str_maj;
+}
+
 float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
 {
 	ASSERT(df);

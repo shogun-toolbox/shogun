@@ -196,11 +196,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * 			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual void* get_feature_iterator(int32_t vector_index);
 
 		/** iterate over the non-zero features
 		 *
@@ -212,21 +208,14 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
 		 *
 		 * @param iterator as returned by get_first_feature
 		 */
-		virtual void free_feature_iterator(void* iterator)
-		{
-			SG_NOTIMPLEMENTED;
-		}
+		virtual void free_feature_iterator(void* iterator);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "HashedWDFeaturesTransposed"; }

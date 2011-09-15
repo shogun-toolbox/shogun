@@ -124,8 +124,7 @@ using namespace shogun;
 //  return;
 //}
 
-CLBPPyrDotFeatures::CLBPPyrDotFeatures(void)
-	: CDotFeatures()
+CLBPPyrDotFeatures::CLBPPyrDotFeatures() : CDotFeatures()
 {
 	SG_UNSTABLE("CLBPPyrDotFeatures::CLBPPyrDotFeatures(void)", "\n");
 
@@ -151,6 +150,63 @@ CLBPPyrDotFeatures::CLBPPyrDotFeatures(CSimpleFeatures<uint32_t>* images, uint16
 CLBPPyrDotFeatures::~CLBPPyrDotFeatures()
 {
 	SG_UNREF(m_feat);
+}
+
+CLBPPyrDotFeatures::CLBPPyrDotFeatures(const CLBPPyrDotFeatures & orig)
+{ 
+	SG_PRINT("CLBPPyrDotFeatures:\n");
+	SG_NOTIMPLEMENTED;
+};
+
+int32_t CLBPPyrDotFeatures::get_dim_feature_space() const
+{
+	return vec_nDim;
+}
+
+int32_t CLBPPyrDotFeatures::get_nnz_features_for_vector(int32_t num)
+{
+	return vec_nDim;
+}
+
+EFeatureType CLBPPyrDotFeatures::get_feature_type()
+{
+	return F_UNKNOWN;
+}
+
+EFeatureClass CLBPPyrDotFeatures::get_feature_class()
+{
+	return C_POLY;
+}
+
+int32_t CLBPPyrDotFeatures::get_num_vectors() const
+{
+	if (m_feat)
+		return m_feat->get_num_vectors();
+	else
+		return 0;
+
+}
+
+int32_t CLBPPyrDotFeatures::get_size()
+{
+	return sizeof(float64_t);
+}
+
+void* CLBPPyrDotFeatures::get_feature_iterator(int32_t vector_index)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+bool CLBPPyrDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+void CLBPPyrDotFeatures::free_feature_iterator(void* iterator)
+{
+	SG_NOTIMPLEMENTED;
 }
 
 float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)

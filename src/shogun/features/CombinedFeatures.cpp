@@ -14,15 +14,6 @@
 
 using namespace shogun;
 
-void
-CCombinedFeatures::init(void)
-{
-	m_parameters->add(&num_vec, "num_vec",
-					  "Number of vectors.");
-	m_parameters->add((CSGObject**) &feature_list,
-					  "feature_list", "Feature list.");
-}
-
 CCombinedFeatures::CCombinedFeatures()
 : CFeatures(0)
 {
@@ -50,6 +41,20 @@ CFeatures* CCombinedFeatures::duplicate() const
 CCombinedFeatures::~CCombinedFeatures()
 {
 	SG_UNREF(feature_list);
+}
+
+int32_t CCombinedFeatures::get_size()
+{
+	CFeatures* f=(CFeatures*) feature_list
+		->get_current_element();
+	if (f)
+	{
+		int32_t s=f->get_size();
+		SG_UNREF(f)
+			return s;
+	}
+	else 
+		return 0;
 }
 
 void CCombinedFeatures::list_feature_objs()
@@ -116,4 +121,78 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 	}
 
 	return result;
+}
+
+CFeatures* CCombinedFeatures::get_first_feature_obj()
+{
+	return (CFeatures*) feature_list->get_first_element();
+}
+
+CFeatures* CCombinedFeatures::get_first_feature_obj(CListElement*& current)
+{
+	return (CFeatures*) feature_list->get_first_element(current);
+}
+
+CFeatures* CCombinedFeatures::get_next_feature_obj()
+{
+	return (CFeatures*) feature_list->get_next_element();
+}
+
+CFeatures* CCombinedFeatures::get_next_feature_obj(CListElement*& current)
+{
+	return (CFeatures*) feature_list->get_next_element(current);
+}
+
+CFeatures* CCombinedFeatures::get_last_feature_obj()
+{
+	return (CFeatures*) feature_list->get_last_element();
+}
+
+bool CCombinedFeatures::insert_feature_obj(CFeatures* obj)
+{
+	ASSERT(obj);
+	int32_t n=obj->get_num_vectors();
+
+	if (num_vec>0 && n!=num_vec)
+		SG_ERROR("Number of feature vectors does not match (expected %d, obj has %d)\n", num_vec, n);
+
+	num_vec=n;
+	return feature_list->insert_element(obj);
+}
+
+bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
+{
+	ASSERT(obj);
+	int32_t n=obj->get_num_vectors();
+
+	if (num_vec>0 && n!=num_vec)
+		SG_ERROR("Number of feature vectors does not match (expected %d, obj has %d)\n", num_vec, n);
+
+	num_vec=n;
+	return feature_list->append_element(obj);
+}
+
+bool CCombinedFeatures::delete_feature_obj()
+{
+	CFeatures* f=(CFeatures*)feature_list->delete_element();
+	if (f)
+	{
+		SG_UNREF(f);
+		return true;
+	}
+	else
+		return false;
+}
+
+int32_t CCombinedFeatures::get_num_feature_obj()
+{
+	return feature_list->get_num_elements();
+}
+
+void CCombinedFeatures::init()
+{
+	m_parameters->add(&num_vec, "num_vec",
+					  "Number of vectors.");
+	m_parameters->add((CSGObject**) &feature_list,
+					  "feature_list", "Feature list.");
 }

@@ -198,24 +198,9 @@ class CAlphabet : public CSGObject
 
 		/** get histogram
 		 *
-		 * @param h where the histogram will be stored
-		 * @param len length of histogram
+		 * @return histogram
 		 */
-		inline void get_hist(int64_t** h, int32_t* len)
-		{
-			int32_t hist_size=(1 << (sizeof(uint8_t)*8));
-			ASSERT(h && len);
-			*h= SG_MALLOC(int64_t, hist_size);
-			*len=hist_size;
-			ASSERT(*len);
-			memcpy(*h, &histogram[0], sizeof(int64_t)*hist_size);
-		}
-
-		/// get pointer to histogram
-		inline const int64_t* get_histogram()
-		{
-			return &histogram[0];
-		}
+		SGVector<int64_t> get_histogram();
 
 		/** check whether symbols in histogram are valid in alphabet
 		 * e.g. for DNA if only letters ACGT appear

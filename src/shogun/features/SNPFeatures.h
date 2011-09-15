@@ -49,10 +49,7 @@ class CSNPFeatures : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		inline virtual int32_t get_dim_feature_space() const
-		{
-			return w_dim;
-		}
+		virtual int32_t get_dim_feature_space() const;
 
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices
@@ -79,17 +76,15 @@ class CSNPFeatures : public CDotFeatures
 		 * @param vec2_len length of real valued vector
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num which vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
-		{
-			return w_dim/3;
-		}
+		virtual int32_t get_nnz_features_for_vector(int32_t num);
 
 		/** iterate over the non-zero features
 		 *
@@ -131,86 +126,56 @@ class CSNPFeatures : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type()
-		{
-			return F_UNKNOWN;
-		}
+		virtual EFeatureType get_feature_type();
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class()
-		{
-			return C_WD;
-		}
+		virtual EFeatureClass get_feature_class();
 
 		/** get number of vectors
 		 *
 		 * @return number of vectors
 		 */
-		inline virtual int32_t get_num_vectors() const
-		{
-			return num_strings;
-		}
+		virtual int32_t get_num_vectors() const;
 
 		/** get memory footprint of one feature
 		 *
 		 * @return memory footprint of one feature
 		 */
-		inline virtual int32_t get_size()
-		{
-			return sizeof(float64_t);
-		}
+		virtual int32_t get_size();
 
 		/** set normalization constant
 		 * @param n n=0 means automagic */
 		void set_normalization_const(float64_t n=0);
 
 		/** get normalization constant */
-		inline float64_t get_normalization_const()
-		{
-			return normalization_const;
-		}
+		float64_t get_normalization_const();
 
 		/** set the minor base string
 		 *
 		 * @param str base string
 		 */
-		void set_minor_base_string(const char* str)
-		{
-			m_str_min=(uint8_t*) strdup(str);
-		}
-
+		void set_minor_base_string(const char* str);
 
 		/** set the major base string
 		 *
 		 * @param str base string
 		 */
-		void set_major_base_string(const char* str)
-		{
-			m_str_maj=(uint8_t*) strdup(str);
-		}
-
+		void set_major_base_string(const char* str);
 
 		/** get the minor base string
 		 *
 		 * @return the minor base string
 		 */
-		char* get_minor_base_string()
-		{
-			return (char*) m_str_min;
-		}
-
+		char* get_minor_base_string();
 
 		/** return the major base string
 		 *
 		 * @return major base string
 		 */
-		char* get_major_base_string()
-		{
-			return (char*) m_str_maj;
-		}
+		char* get_major_base_string();
 
 		/** compute the base strings from current strings optionally taking
 		 * into account snp
@@ -220,7 +185,7 @@ class CSNPFeatures : public CDotFeatures
 		void obtain_base_strings(CSNPFeatures* snp=NULL);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SNPFeatures"; }
+		virtual const char* get_name() const { return "SNPFeatures"; }
 
 		/** compute histogram over strings
 		 */
@@ -258,7 +223,6 @@ class CSNPFeatures : public CDotFeatures
 		uint8_t* m_str_min;
 		/** allele B */
 		uint8_t* m_str_maj;
-
 };
 }
 #endif // _SNPFEATURES_H___

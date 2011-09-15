@@ -552,3 +552,20 @@ CFeatures* CHashedWDFeaturesTransposed::duplicate() const
 {
 	return new CHashedWDFeaturesTransposed(*this);
 }
+
+void* CHashedWDFeaturesTransposed::get_feature_iterator(int32_t vector_index)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+bool CHashedWDFeaturesTransposed::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+void CHashedWDFeaturesTransposed::free_feature_iterator(void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+}

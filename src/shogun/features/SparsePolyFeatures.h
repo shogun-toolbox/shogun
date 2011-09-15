@@ -45,63 +45,38 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @param orig original PolyFeature
 		 */ 
-		CSparsePolyFeatures(const CSparsePolyFeatures & orig){ 
-			SG_PRINT("CSparsePolyFeatures:\n");
-			SG_NOTIMPLEMENTED;};
+		CSparsePolyFeatures(const CSparsePolyFeatures & orig);
 
 		/** get dimensions of feature space
 		 *
 		 * @return dimensions of feature space
 		 */ 
-		inline virtual int32_t get_dim_feature_space() const
-		{
-			return m_output_dimensions;
-		}
+		inline virtual int32_t get_dim_feature_space() const;
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num index of vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
-		{
-			int32_t vlen;
-			SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(num);
-			vlen=vec.num_feat_entries;
-			m_feat->free_feature_vector(vec, num);
-			return vlen*(vlen+1)/2;
-		}
+		virtual inline int32_t get_nnz_features_for_vector(int32_t num);
 
 		/** get feature type
 		 *
 		 * @return feature type
 		 */
-		inline virtual EFeatureType get_feature_type()
-		{
-			return F_UNKNOWN;
-		}
+		inline virtual EFeatureType get_feature_type();
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class()
-		{
-			return C_POLY;
-		}
+		inline virtual EFeatureClass get_feature_class();
 
 		/** get number of vectors
 		 *
 		 * @return number of vectors
 		 */
-		inline virtual int32_t get_num_vectors() const
-		{
-			if (m_feat)
-				return m_feat->get_num_vectors();
-			else
-				return 0;
-
-		}
+		inline virtual int32_t get_num_vectors() const;
 
 		/** compute dot product between vector1 and vector2,
 		 *  appointed by their indices
@@ -116,10 +91,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return size
 		 */
-		inline virtual int32_t get_size()
-		{
-			return sizeof(float64_t);
-		}
+		inline virtual int32_t get_size();
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
@@ -148,11 +120,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * 			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual void* get_feature_iterator(int32_t vector_index);
 
 		/** iterate over the non-zero features
 		 *
@@ -164,21 +132,14 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
 		 *
 		 * @param iterator as returned by get_first_feature
 		 */
-		virtual void free_feature_iterator(void* iterator)
-		{
-			SG_NOTIMPLEMENTED;
-		}
+		void free_feature_iterator(void* iterator);
 
 		/** duplicate feature object
 		 *
@@ -239,7 +200,6 @@ class CSparsePolyFeatures : public CDotFeatures
 	private:
 		/**length of norm for each traning example*/
 		int32_t m_normalization_values_len;
-
 };
 }
 #endif // _SPARSEPOLYFEATURES__H__

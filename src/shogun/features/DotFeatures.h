@@ -42,8 +42,6 @@ namespace shogun
  */
 class CDotFeatures : public CFeatures
 {
-	void init(void);
-
 	public:
 
 		/** constructor
@@ -219,14 +217,10 @@ class CDotFeatures : public CFeatures
 		 * @param stop maximum value
 		 * @param v current value
 		 */
-		inline void display_progress(int32_t start, int32_t stop, int32_t v)
-		{
-			int32_t num_vectors=stop-start;
-			int32_t i=v-start;
+		void display_progress(int32_t start, int32_t stop, int32_t v);
 
-			if ( (i% (num_vectors/100+1))== 0)
-				SG_PROGRESS(v, 0.0, num_vectors-1);
-		}
+	private:
+		void init();
 
 	protected:
 

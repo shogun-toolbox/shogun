@@ -293,3 +293,51 @@ CFeatures* CWDFeatures::duplicate() const
 {
 	return new CWDFeatures(*this);
 }
+
+int32_t CWDFeatures::get_dim_feature_space() const
+{
+	return w_dim;
+}
+
+int32_t CWDFeatures::get_nnz_features_for_vector(int32_t num)
+{
+	int32_t vlen=-1;
+	bool free_vec;
+	uint8_t* vec=strings->get_feature_vector(num, vlen, free_vec);
+	strings->free_feature_vector(vec, num, free_vec);
+	return degree*vlen;
+}
+
+EFeatureType CWDFeatures::get_feature_type()
+{
+	return F_UNKNOWN;
+}
+
+EFeatureClass CWDFeatures::get_feature_class()
+{
+	return C_WD;
+}
+
+int32_t CWDFeatures::get_num_vectors() const
+{
+	return num_strings;
+}
+
+int32_t CWDFeatures::get_size()
+{
+	return sizeof(float64_t);
+}
+
+float64_t CWDFeatures::get_normalization_const()
+{
+	return normalization_const;
+}
+
+void CWDFeatures::set_wd_weights(SGVector<float64_t> weights)
+{
+	ASSERT(weights.vlen==degree);
+
+	for (int32_t i=0; i<degree; i++)
+		wd_weights[i]=weights.vector[i];
+}
+

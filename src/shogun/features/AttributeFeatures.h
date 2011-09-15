@@ -58,18 +58,7 @@ public:
 	 * @param attr_name attribute name
 	 * @return feature object
 	 */
-	CFeatures* get_attribute(char* attr_name)
-	{
-		int32_t idx=find_attr_index(attr_name);
-		if (idx>=0)
-		{
-			CFeatures* f=features[idx].attr_obj;
-			SG_REF(f);
-			return f;
-		}
-
-		return NULL;
-	}
+	CFeatures* get_attribute(char* attr_name);
 
 	/** return the feature object at index
 	 *
@@ -77,13 +66,7 @@ public:
 	 * @param attr_name attribute name (returned by reference)
 	 * @param attr_obj attribute object (returned by reference)
 	 */
-	inline void get_attribute_by_index(int idx, const char* &attr_name, CFeatures* &attr_obj)
-	{
-		T_ATTRIBUTE a= features.get_element_safe(idx);
-		attr_name= a.attr_name;
-		attr_obj= a.attr_obj;
-		SG_REF(a.attr_obj);
-	}
+	void get_attribute_by_index(int idx, const char* &attr_name, CFeatures* &attr_obj);
 
 	/** set the feature object for attribute name
 	 *
@@ -91,49 +74,20 @@ public:
 	 * @param attr_obj feature object to set
 	 * @return true on success
 	 */
-	inline bool set_attribute(char* attr_name, CFeatures* attr_obj)
-	{
-		int32_t idx=find_attr_index(attr_name);
-		if (idx==-1)
-			idx=features.get_num_elements();
-
-		T_ATTRIBUTE a;
-		a.attr_name=strdup(attr_name);
-		a.attr_obj=attr_obj;
-
-		SG_REF(attr_obj);
-
-		return features.set_element(a, idx);
-	}
+	bool set_attribute(char* attr_name, CFeatures* attr_obj);
 
 	/** delete the attribute matching attribute name
 	 *
 	 * @param attr_name attribute name
 	 * @return true on success
 	 */
-	inline bool del_attribute(char* attr_name)
-	{
-		int32_t idx=find_attr_index(attr_name);
-
-		if (idx>=0)
-		{
-			T_ATTRIBUTE a= features[idx];
-			SG_FREE(a.attr_name);
-			SG_UNREF(a.attr_obj);
-			return true;
-		}
-		return false;
-	}
-
+	bool del_attribute(char* attr_name);
 
 	/** get number of attributes
 	 *
 	 * @return number of attributes
 	 */
-	inline int32_t get_num_attributes()
-	{
-		return features.get_num_elements();
-	}
+	int32_t get_num_attributes();
 
 	/** @return object name */
 	inline virtual const char* get_name() const { return "AttributeFeatures"; }
@@ -184,18 +138,7 @@ protected:
 	 * @param attr_name attribute name
 	 * @return index (if found), otherwise -1
 	 */
-	inline int32_t find_attr_index(char* attr_name)
-	{
-		int32_t n=features.get_num_elements();
-		for (int32_t i=0; i<n; i++)
-		{
-			if (!strcmp(features[n].attr_name, attr_name))
-				return i;
-		}
-
-		return -1;
-	}
-
+	inline int32_t find_attr_index(char* attr_name);
 
 protected:
 	///list of attributes (sorted)

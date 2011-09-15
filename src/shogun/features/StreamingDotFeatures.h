@@ -11,8 +11,6 @@
 #define _STREAMING_DOTFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Time.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/features/StreamingFeatures.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/StreamingFile.h>
@@ -44,18 +42,9 @@ namespace shogun
 class CStreamingDotFeatures : public CStreamingFeatures
 {
 
-	virtual void init() { };
-
-	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size) { };
-
 public:
 	/** Constructor */
-	CStreamingDotFeatures()
-		: CStreamingFeatures()
-	{
-		init();
-		set_property(FP_STREAMING_DOT);
-	}
+	CStreamingDotFeatures();
 
 	/**
 	 * Constructor with input information passed.
@@ -64,12 +53,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
-		: CStreamingFeatures()
-	{
-		init(file, is_labelled, size);
-		set_property(FP_STREAMING_DOT);
-	}
+	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size);
 
 	/**
 	 * Constructor taking a CDotFeatures object and optionally,
@@ -83,13 +67,9 @@ public:
 	 * @param dot_features CDotFeatures object
 	 * @param lab labels (optional)
 	 */
-	CStreamingDotFeatures(CDotFeatures* dot_features, float64_t* lab=NULL)
-	{
-		SG_NOTIMPLEMENTED;
-		return;
-	}
+	CStreamingDotFeatures(CDotFeatures* dot_features, float64_t* lab=NULL);
 
-	virtual ~CStreamingDotFeatures() { }
+	virtual ~CStreamingDotFeatures();
 
 	/** compute dot product between vectors of two
 	 * StreamingDotFeatures objects.
@@ -123,27 +103,8 @@ public:
 	 * note that the result will be written to output[0...(num_vec-1)]
 	 * except when num_vec = 0
 	 */
-	virtual void dense_dot_range(float32_t* output, float32_t* alphas, float32_t* vec, int32_t dim, float32_t b, int32_t num_vec=0)
-	{
-		ASSERT(num_vec>=0);
-
-		int32_t counter=0;
-		start_parser();
-		while (get_next_example())
-		{
-			if (alphas)
-				output[counter]=alphas[counter]*dense_dot(vec, dim)+b;
-			else
-				output[counter]=dense_dot(vec, dim)+b;
-
-			release_example();
-
-			counter++;
-			if ((counter>=num_vec) && (num_vec>0))
-				break;
-		}
-		end_parser();
-	}
+	virtual void dense_dot_range(float32_t* output, float32_t* alphas,
+			float32_t* vec, int32_t dim, float32_t b, int32_t num_vec=0);
 
 	/** add current vector multiplied with alpha to dense vector, 'vec'
 	 *
@@ -152,7 +113,8 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val=false)=0;
+	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2,
+			int32_t vec2_len, bool abs_val=false)=0;
 
 	/**
 	 * Expand the vector passed so that it its length is equal to
@@ -162,16 +124,7 @@ public:
 	 * @param vec float32_t* vector
 	 * @param len length of the vector
 	 */
-	inline virtual void expand_if_required(float32_t*& vec, int32_t &len)
-	{
-		int32_t dim = get_dim_feature_space();
-		if (dim > len)
-		{
-			vec = SG_REALLOC(float32_t, vec, dim);
-			memset(&vec[len], 0, (dim-len) * sizeof(float32_t));
-			len = dim;
-		}
-	}
+	virtual void expand_if_required(float32_t*& vec, int32_t &len);
 
 	/**
 	 * Expand the vector passed so that it its length is equal to
@@ -181,16 +134,7 @@ public:
 	 * @param vec float64_t* vector
 	 * @param len length of the vector
 	 */
-	inline virtual void expand_if_required(float64_t*& vec, int32_t &len)
-	{
-		int32_t dim = get_dim_feature_space();
-		if (dim > len)
-		{
-			vec = SG_REALLOC(float64_t, vec, dim);
-			memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
-			len = dim;
-		}
-	}
+	virtual void expand_if_required(float64_t*& vec, int32_t &len);
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -207,11 +151,7 @@ public:
 	 * free_feature_iterator to cleanup
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
-	virtual void* get_feature_iterator()
-	{
-		SG_NOTIMPLEMENTED;
-		return NULL;
-	}
+	virtual void* get_feature_iterator();
 
 	/** get number of non-zero features in vector
 	 *
@@ -219,11 +159,7 @@ public:
 	 *
 	 * @return number of sparse features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector()
-	{
-		SG_NOTIMPLEMENTED;
-		return -1;
-	}
+	virtual int32_t get_nnz_features_for_vector();
 
 	/** iterate over the non-zero features
 	 *
@@ -235,22 +171,20 @@ public:
 	 * @param iterator as returned by get_first_feature
 	 * @return true if a new non-zero feature got returned
 	 */
-	virtual bool get_next_feature(int32_t& index, float32_t& value, void* iterator)
-	{
-		SG_NOTIMPLEMENTED;
-		return false;
-	}
+	virtual bool get_next_feature(int32_t& index, float32_t& value, void* iterator);
 
 	/** clean up iterator
 	 * call this function with the iterator returned by get_first_feature
 	 *
 	 * @param iterator as returned by get_first_feature
 	 */
-	virtual void free_feature_iterator(void* iterator)
-	{
-		SG_NOTIMPLEMENTED;
-		return;
-	}
+	virtual void free_feature_iterator(void* iterator);
+
+private:
+	virtual void init();
+
+	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size);
+
 
 
 protected:

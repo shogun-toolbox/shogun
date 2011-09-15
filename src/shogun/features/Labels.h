@@ -85,17 +85,7 @@ class CLabels : public CSGObject
 		 * @param label value of label
 		 * @return if setting was successful
 		 */
-		inline bool set_label(int32_t idx, float64_t label)
-		{
-			int32_t real_num=subset_idx_conversion(idx);
-			if (labels.vector && real_num<get_num_labels())
-			{
-				labels.vector[real_num]=label;
-				return true;
-			}
-			else 
-				return false;
-		}
+		bool set_label(int32_t idx, float64_t label);
 
 		/** set INT label
 		 *
@@ -105,17 +95,7 @@ class CLabels : public CSGObject
 		 * @param label INT value of label
 		 * @return if setting was successful
 		 */
-		inline bool set_int_label(int32_t idx, int32_t label)
-		{ 
-			int32_t real_num=subset_idx_conversion(idx);
-			if (labels.vector && real_num<get_num_labels())
-			{
-				labels.vector[real_num]= (float64_t) label;
-				return true;
-			}
-			else 
-				return false;
-		}
+		bool set_int_label(int32_t idx, int32_t label);
 
 		/** get label
 		 *
@@ -124,12 +104,7 @@ class CLabels : public CSGObject
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
-		inline float64_t get_label(int32_t idx)
-		{
-			int32_t real_num=subset_idx_conversion(idx);
-			ASSERT(labels.vector && idx<get_num_labels());
-			return labels.vector[real_num];
-		}
+		float64_t get_label(int32_t idx);
 
 		/** get INT label
 		 *
@@ -138,15 +113,7 @@ class CLabels : public CSGObject
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
-		inline int32_t get_int_label(int32_t idx)
-		{
-			int32_t real_num=subset_idx_conversion(idx);
-			ASSERT(labels.vector && idx<get_num_labels());
-			if (labels.vector[real_num] != float64_t((int32_t(labels.vector[real_num]))))
-				SG_ERROR("label[%d]=%g is not an integer\n", labels.vector[real_num]);
-
-			return int32_t(labels.vector[real_num]);
-		}
+		int32_t get_int_label(int32_t idx);
 
 		/** is two-class labeling
 		 *
@@ -218,10 +185,7 @@ class CLabels : public CSGObject
 		 *
 		 * @return number of labels
 		 */
-		inline int32_t get_num_labels()
-		{
-			return m_subset ? m_subset->get_size() : labels.vlen;
-		}
+		int32_t get_num_labels();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Labels"; }
@@ -240,10 +204,7 @@ class CLabels : public CSGObject
 		 * @param idx index to convert
 		 * @return converted index
 		 */
-		inline index_t subset_idx_conversion(index_t idx) const
-		{
-			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
-		}
+		index_t subset_idx_conversion(index_t idx) const;
 
 	private:
 		void init();

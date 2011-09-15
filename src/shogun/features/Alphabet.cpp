@@ -591,6 +591,11 @@ void CAlphabet::print_histogram()
 	}
 }
 
+SGVector<int64_t> CAlphabet::get_histogram()
+{
+	return SGVector<int64_t>(&histogram[0], 1 << (sizeof(uint8_t)*8));
+}
+
 bool CAlphabet::check_alphabet(bool print_error)
 {
 	bool result = true;
@@ -632,7 +637,9 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 
 void CAlphabet::copy_histogram(CAlphabet* a)
 {
-	memcpy(histogram, a->get_histogram(), sizeof(histogram));
+	SGVector<int64_t> h=a->get_histogram();
+	ASSERT(h.vlen == sizeof(histogram));
+	memcpy(histogram, h.vector, sizeof(histogram));
 }
 
 const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)

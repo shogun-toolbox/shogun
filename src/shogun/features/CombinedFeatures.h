@@ -30,8 +30,6 @@ class CListElement;
  */
 class CCombinedFeatures : public CFeatures
 {
-	void init(void);
-
 	public:
 		/** default constructor */
 		CCombinedFeatures();
@@ -78,19 +76,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return memory footprint of one feature
 		 */
-		virtual int32_t get_size()
-		{
-			CFeatures* f=(CFeatures*) feature_list
-				->get_current_element();
-			if (f)
-			{
-				int32_t s=f->get_size();
-				SG_UNREF(f)
-				return s;
-			}
-			else 
-				return 0;
-		}
+		virtual int32_t get_size();
 
 		/** list feature objects */
 		void list_feature_objs();
@@ -106,110 +92,65 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return first feature object
 		 */
-		inline CFeatures* get_first_feature_obj()
-		{
-			return (CFeatures*) feature_list->get_first_element();
-		}
+		CFeatures* get_first_feature_obj();
 
 		/** get first feature object
 		 *
 		 * @param current list of features
 		 * @return first feature object
 		 */
-		inline CFeatures* get_first_feature_obj(CListElement*& current)
-		{
-			return (CFeatures*) feature_list->get_first_element(current);
-		}
+		CFeatures* get_first_feature_obj(CListElement*& current);
 
 		/** get next feature object
 		 *
 		 * @return next feature object
 		 */
-		inline CFeatures* get_next_feature_obj()
-		{
-			return (CFeatures*) feature_list->get_next_element();
-		}
+		CFeatures* get_next_feature_obj();
 
 		/** get next feature object
 		 *
 		 * @param current list of features
 		 * @return next feature object
 		 */
-		inline CFeatures* get_next_feature_obj(CListElement*& current)
-		{
-			return (CFeatures*) feature_list->get_next_element(current);
-		}
+		CFeatures* get_next_feature_obj(CListElement*& current);
 
 		/** get last feature object
 		 *
 		 * @return last feature object
 		 */
-		inline CFeatures* get_last_feature_obj()
-		{
-			return (CFeatures*) feature_list->get_last_element();
-		}
+		CFeatures* get_last_feature_obj();
 
 		/** insert feature object
 		 *
 		 * @param obj feature object to insert
 		 * @return if inserting was successful
 		 */
-		inline bool insert_feature_obj(CFeatures* obj)
-		{
-			ASSERT(obj);
-			int32_t n=obj->get_num_vectors();
-
-			if (num_vec>0 && n!=num_vec)
-				SG_ERROR("Number of feature vectors does not match (expected %d, obj has %d)\n", num_vec, n);
-
-			num_vec=n;
-			return feature_list->insert_element(obj);
-		}
+		bool insert_feature_obj(CFeatures* obj);
 
 		/** append feature object
 		 *
 		 * @param obj feature object to append
 		 * @return if appending was successful
 		 */
-		inline bool append_feature_obj(CFeatures* obj)
-		{
-			ASSERT(obj);
-			int32_t n=obj->get_num_vectors();
-
-			if (num_vec>0 && n!=num_vec)
-				SG_ERROR("Number of feature vectors does not match (expected %d, obj has %d)\n", num_vec, n);
-
-			num_vec=n;
-			return feature_list->append_element(obj);
-		}
+		bool append_feature_obj(CFeatures* obj);
 
 		/** delete feature object
 		 *
 		 * @return if deleting was successful
 		 */
-		inline bool delete_feature_obj()
-		{
-			CFeatures* f=(CFeatures*)feature_list->delete_element();
-			if (f)
-			{
-				SG_UNREF(f);
-				return true;
-			}
-			else
-				return false;
-		}
+		bool delete_feature_obj();
 
 		/** get number of feature objects
 		 *
 		 * @return number of feature objects
 		 */
-		inline int32_t get_num_feature_obj()
-		{
-			return feature_list->get_num_elements();
-		}
+		int32_t get_num_feature_obj();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "CombinedFeatures"; }
+
+	private:
+		void init();
 
 	protected:
 		/** feature list */

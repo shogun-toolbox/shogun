@@ -51,6 +51,67 @@ CSparsePolyFeatures::~CSparsePolyFeatures()
 	SG_UNREF(m_feat);
 }
 
+CSparsePolyFeatures::CSparsePolyFeatures(const CSparsePolyFeatures & orig)
+{ 
+	SG_PRINT("CSparsePolyFeatures:\n");
+	SG_NOTIMPLEMENTED;
+}
+
+int32_t CSparsePolyFeatures::get_dim_feature_space() const
+{
+	return m_output_dimensions;
+}
+
+int32_t CSparsePolyFeatures::get_nnz_features_for_vector(int32_t num)
+{
+	int32_t vlen;
+	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(num);
+	vlen=vec.num_feat_entries;
+	m_feat->free_feature_vector(vec, num);
+	return vlen*(vlen+1)/2;
+}
+
+EFeatureType CSparsePolyFeatures::get_feature_type()
+{
+	return F_UNKNOWN;
+}
+
+EFeatureClass CSparsePolyFeatures::get_feature_class()
+{
+	return C_POLY;
+}
+
+int32_t CSparsePolyFeatures::get_num_vectors() const
+{
+	if (m_feat)
+		return m_feat->get_num_vectors();
+	else
+		return 0;
+
+}
+
+int32_t CSparsePolyFeatures::get_size()
+{
+	return sizeof(float64_t);
+}
+
+void* CSparsePolyFeatures::get_feature_iterator(int32_t vector_index)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+bool CSparsePolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+void CSparsePolyFeatures::free_feature_iterator(void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+}
+
 float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
 	ASSERT(df);

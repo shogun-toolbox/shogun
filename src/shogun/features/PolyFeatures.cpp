@@ -36,6 +36,7 @@ CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, b
 	register_parameters();
 }
 
+
 CPolyFeatures::~CPolyFeatures()
 {
 	SG_FREE(m_multi_index);
@@ -43,6 +44,65 @@ CPolyFeatures::~CPolyFeatures()
 	SG_FREE(m_normalization_values);
 	SG_UNREF(m_feat);
 }
+
+CPolyFeatures::CPolyFeatures(const CPolyFeatures & orig)
+{
+	SG_PRINT("CPolyFeatures:\n");
+	SG_NOTIMPLEMENTED;
+};
+
+int32_t CPolyFeatures::get_dim_feature_space() const
+{
+	return m_output_dimensions;
+}
+
+int32_t CPolyFeatures::get_nnz_features_for_vector(int32_t num)
+{
+	return m_output_dimensions;
+}
+
+EFeatureType CPolyFeatures::get_feature_type()
+{
+	return F_UNKNOWN;
+}
+
+EFeatureClass CPolyFeatures::get_feature_class()
+{
+	return C_POLY;
+}
+
+int32_t CPolyFeatures::get_num_vectors() const
+{
+	if (m_feat)
+		return m_feat->get_num_vectors();
+	else
+		return 0;
+
+}
+
+int32_t CPolyFeatures::get_size()
+{
+	return sizeof(float64_t);
+}
+
+void* CPolyFeatures::get_feature_iterator(int32_t vector_index)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+bool CPolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+void CPolyFeatures::free_feature_iterator(void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+}
+
+
 
 float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {

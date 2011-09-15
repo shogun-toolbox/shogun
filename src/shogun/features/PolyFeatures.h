@@ -26,7 +26,7 @@ class CPolyFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */
-		CPolyFeatures(void);
+		CPolyFeatures();
 
 		/** constructor
 		 *
@@ -44,59 +44,38 @@ class CPolyFeatures : public CDotFeatures
 		 *
 		 * @param orig original PolyFeature
 		 */
-		CPolyFeatures(const CPolyFeatures & orig){
-			SG_PRINT("CPolyFeatures:\n");
-			SG_NOTIMPLEMENTED;};
+		CPolyFeatures(const CPolyFeatures & orig);
 
 		/** get dimensions of feature space
 		 *
 		 * @return dimensions of feature space
 		 */
-		inline virtual int32_t get_dim_feature_space() const
-		{
-			return m_output_dimensions;
-		}
+		virtual int32_t get_dim_feature_space() const;
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num index of vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
-		{
-			return m_output_dimensions;
-		}
+		virtual int32_t get_nnz_features_for_vector(int32_t num);
 
 		/** get feature type
 		 *
 		 * @return feature type
 		 */
-		inline virtual EFeatureType get_feature_type()
-		{
-			return F_UNKNOWN;
-		}
+		virtual EFeatureType get_feature_type();
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class()
-		{
-			return C_POLY;
-		}
+		virtual EFeatureClass get_feature_class();
 
 		/** get number of vectors
 		 *
 		 * @return number of vectors
 		 */
-		inline virtual int32_t get_num_vectors() const
-		{
-			if (m_feat)
-				return m_feat->get_num_vectors();
-			else
-				return 0;
-
-		}
+		virtual int32_t get_num_vectors() const;
 
 		/** compute dot product between vector1 and vector2,
 		 *  appointed by their indices
@@ -111,10 +90,7 @@ class CPolyFeatures : public CDotFeatures
 		 *
 		 * @return size
 		 */
-		inline virtual int32_t get_size()
-		{
-			return sizeof(float64_t);
-		}
+		virtual int32_t get_size();
 
 		/** duplicate feature object
 		 *
@@ -175,11 +151,7 @@ class CPolyFeatures : public CDotFeatures
 		 * 			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual void* get_feature_iterator(int32_t vector_index);
 
 		/** iterate over the non-zero features
 		 *
@@ -191,21 +163,15 @@ class CPolyFeatures : public CDotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual bool get_next_feature(int32_t& index, float64_t& value,
+				void* iterator);
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
 		 *
 		 * @param iterator as returned by get_first_feature
 		 */
-		virtual void free_feature_iterator(void* iterator)
-		{
-			SG_NOTIMPLEMENTED;
-		}
+		virtual void free_feature_iterator(void* iterator);
 
 	protected:
 
@@ -217,7 +183,8 @@ class CPolyFeatures : public CDotFeatures
 
 		/** recursive function enumerating all multi-indices that sum
 		 *  up to the degree of the polynomial kernel */
-		void enumerate_multi_index(const int32_t feat_idx, uint16_t** index, uint16_t* exponents, const int32_t degree);
+		void enumerate_multi_index(const int32_t feat_idx, uint16_t** index,
+				uint16_t* exponents, const int32_t degree);
 		/** function calculating the multinomial coefficients for all
 		 *  multi indices */
 		void store_multinomial_coefficients();

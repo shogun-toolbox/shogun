@@ -28,7 +28,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor */
-		CExplicitSpecFeatures(void);
+		CExplicitSpecFeatures();
 
 		/** constructor
 		 *

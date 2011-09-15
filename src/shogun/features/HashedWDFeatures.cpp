@@ -250,3 +250,31 @@ CFeatures* CHashedWDFeatures::duplicate() const
 {
 	return new CHashedWDFeatures(*this);
 }
+
+
+int32_t CHashedWDFeatures::get_nnz_features_for_vector(int32_t num)
+{
+	int32_t vlen=-1;
+	bool free_vec;
+	uint8_t* vec=strings->get_feature_vector(num, vlen, free_vec);
+	strings->free_feature_vector(vec, num, free_vec);
+	return degree*vlen;
+}
+
+void* CHashedWDFeatures::get_feature_iterator(int32_t vector_index)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+bool CHashedWDFeatures::get_next_feature(int32_t& index, float64_t& value,
+		void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+void CHashedWDFeatures::free_feature_iterator(void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+}

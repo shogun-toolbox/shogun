@@ -44,8 +44,6 @@ class CListElement;
  */
 class CCombinedDotFeatures : public CDotFeatures
 {
-	void init(void);
-
 	public:
 		/** constructor */
 		CCombinedDotFeatures();
@@ -102,7 +100,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param dim length of the dense vector
 		 * @param b bias
 		 */
-		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+		virtual void dense_dot_range(float64_t* output, int32_t start,
+				int32_t stop, float64_t* alphas, float64_t* vec,
+				int32_t dim, float64_t b);
 
 		/** Compute the dot product for a subset of vectors. This function makes use of dense_dot
 		 * alphas[i] * sparse[i]^T * w + b
@@ -115,7 +115,9 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param dim length of the dense vector
 		 * @param b bias
 		 */
-		virtual void dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+		virtual void dense_dot_range_subset(int32_t* sub_index, int32_t num,
+				float64_t* output, float64_t* alphas, float64_t* vec,
+				int32_t dim, float64_t b);
 
 		/** add vector 1 multiplied with alpha to dense vector2
 		 *
@@ -125,7 +127,8 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param vec2_len length of real valued vector
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
 		/** get number of non-zero features in vector
 		 *
@@ -185,16 +188,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * 			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index)
-		{
-			combined_feature_iterator* it=SG_MALLOC(combined_feature_iterator, 1);
-
-			it->current=NULL;
-			it->f=get_first_feature_obj(it->current);
-			it->iterator=it->f->get_feature_iterator(vector_index);
-			it->vector_index=vector_index;
-			return it;
-		}
+		virtual void* get_feature_iterator(int32_t vector_index);
 
 		/** iterate over the non-zero features
 		 *
@@ -206,44 +200,14 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
-		{
-			ASSERT(iterator);
-			combined_feature_iterator* it = (combined_feature_iterator*) iterator;
-
-			while (it->f)
-			{
-				if (it->f->get_next_feature(index, value, it->iterator))
-				{
-					value*=get_combined_feature_weight();
-					return true;
-				}
-
-				it->f->free_feature_iterator(it->iterator);
-				it->f=get_next_feature_obj(it->current);
-				if (it->f)
-					it->iterator=it->f->get_feature_iterator(it->vector_index);
-				else
-					it->iterator=NULL;
-			}
-			return false;
-		}
+		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
 		 *
 		 * @param iterator as returned by get_first_feature
 		 */
-		virtual void free_feature_iterator(void* iterator)
-		{
-			if (iterator)
-			{
-				combined_feature_iterator* it = (combined_feature_iterator*) iterator;
-				if (it->iterator && it->f)
-					it->f->free_feature_iterator(it->iterator);
-				SG_FREE(it);
-			}
-		}
+		virtual void free_feature_iterator(void* iterator);
 
 		/** duplicate feature object
 		 *
@@ -258,100 +222,59 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return first feature object
 		 */
-		inline CDotFeatures* get_first_feature_obj()
-		{
-			return (CDotFeatures*) feature_list->get_first_element();
-		}
+		CDotFeatures* get_first_feature_obj();
 
 		/** get first feature object
 		 *
 		 * @param current list of features
 		 * @return first feature object
 		 */
-		inline CDotFeatures* get_first_feature_obj(CListElement*& current)
-		{
-			return (CDotFeatures*) feature_list->get_first_element(current);
-		}
+		CDotFeatures* get_first_feature_obj(CListElement*& current);
 
 		/** get next feature object
 		 *
 		 * @return next feature object
 		 */
-		inline CDotFeatures* get_next_feature_obj()
-		{
-			return (CDotFeatures*) feature_list->get_next_element();
-		}
+		CDotFeatures* get_next_feature_obj();
 
 		/** get next feature object
 		 *
 		 * @param current list of features
 		 * @return next feature object
 		 */
-		inline CDotFeatures* get_next_feature_obj(CListElement*& current)
-		{
-			return (CDotFeatures*) feature_list->get_next_element(current);
-		}
+		CDotFeatures* get_next_feature_obj(CListElement*& current);
 
 		/** get last feature object
 		 *
 		 * @return last feature object
 		 */
-		inline CDotFeatures* get_last_feature_obj()
-		{
-			return (CDotFeatures*) feature_list->get_last_element();
-		}
+		CDotFeatures* get_last_feature_obj();
 
 		/** insert feature object
 		 *
 		 * @param obj feature object to insert
 		 * @return if inserting was successful
 		 */
-		inline bool insert_feature_obj(CDotFeatures* obj)
-		{
-			ASSERT(obj);
-			bool result=feature_list->insert_element(obj);
-			update_dim_feature_space_and_num_vec();
-			return result;
-		}
+		bool insert_feature_obj(CDotFeatures* obj);
 
 		/** append feature object
 		 *
 		 * @param obj feature object to append
 		 * @return if appending was successful
 		 */
-		inline bool append_feature_obj(CDotFeatures* obj)
-		{
-			ASSERT(obj);
-			bool result=feature_list->append_element(obj);
-			update_dim_feature_space_and_num_vec();
-			return result;
-		}
+		bool append_feature_obj(CDotFeatures* obj);
 
 		/** delete feature object
 		 *
 		 * @return if deleting was successful
 		 */
-		inline bool delete_feature_obj()
-		{
-			CDotFeatures* f=(CDotFeatures*) feature_list->delete_element();
-			if (f)
-			{
-				SG_UNREF(f);
-				update_dim_feature_space_and_num_vec();
-				return true;
-			}
-			else
-				return false;
-		}
+		bool delete_feature_obj();
 
 		/** get number of feature objects
 		 *
 		 * @return number of feature objects
 		 */
-		inline int32_t get_num_feature_obj()
-		{
-			return feature_list->get_num_elements();
-		}
+		int32_t get_num_feature_obj();
 
 		/** get subfeature weights
 		 *
@@ -374,6 +297,9 @@ class CCombinedDotFeatures : public CDotFeatures
 	protected:
 		/** update total number of dimensions and vectors */
 		void update_dim_feature_space_and_num_vec();
+
+	private:
+		void init();
 
 	protected:
 		/** feature list */
