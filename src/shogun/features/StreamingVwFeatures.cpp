@@ -17,6 +17,39 @@
 
 using namespace shogun;
 
+CStreamingVwFeatures::CStreamingVwFeatures() : CStreamingDotFeatures()
+{
+	init();
+	set_read_functions();
+}
+
+CStreamingVwFeatures::CStreamingVwFeatures(CStreamingVwFile* file,
+		bool is_labelled, int32_t size)
+: CStreamingDotFeatures()
+{
+	init(file, is_labelled, size);
+	set_read_functions();
+}
+
+CStreamingVwFeatures::CStreamingVwFeatures(CStreamingVwCacheFile* file,
+		bool is_labelled, int32_t size)
+: CStreamingDotFeatures()
+{
+	init(file, is_labelled, size);
+	set_read_functions();
+}
+
+CStreamingVwFeatures::~CStreamingVwFeatures()
+{
+	parser.end_parser();
+	SG_UNREF(env);
+}
+
+CFeatures* CStreamingVwFeatures::duplicate() const
+{
+	return new CStreamingVwFeatures(*this);
+}
+
 void CStreamingVwFeatures::set_vector_reader()
 {
 	parser.set_read_vector(&CStreamingFile::get_vector);
@@ -27,7 +60,81 @@ void CStreamingVwFeatures::set_vector_and_label_reader()
 	parser.set_read_vector_and_label(&CStreamingFile::get_vector_and_label);
 }
 
-inline EFeatureType CStreamingVwFeatures::get_feature_type()
+void CStreamingVwFeatures::reset_stream()
+{
+	if (working_file->is_seekable())
+	{
+		working_file->reset_stream();
+		parser.exit_parser();
+		parser.init(working_file, has_labels, parser.get_ring_size());
+		parser.set_free_vector_after_release(false);
+		parser.start_parser();
+	}
+	else
+		SG_ERROR("The input cannot be reset! Please use 1 pass.\n");
+}
+
+CVwEnvironment* CStreamingVwFeatures::get_env()
+{
+	SG_REF(env);
+	return env;
+}
+
+void CStreamingVwFeatures::set_env(CVwEnvironment* vw_env)
+{
+	env = vw_env;
+	SG_REF(env);
+}
+
+void CStreamingVwFeatures::expand_if_required(float32_t*& vec, int32_t& len)
+{
+	int32_t dim = 1 << env->num_bits;
+	if (dim > len)
+	{
+		vec = SG_REALLOC(float32_t, vec, dim);
+		memset(&vec[len], 0, (dim-len) * sizeof(float32_t));
+		len = dim;
+	}
+}
+
+void CStreamingVwFeatures::expand_if_required(float64_t*& vec, int32_t& len)
+{
+	int32_t dim = 1 << env->num_bits;
+	if (dim > len)
+	{
+		vec = SG_REALLOC(float64_t, vec, dim);
+		memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
+		len = dim;
+	}
+}
+
+float32_t CStreamingVwFeatures::real_weight(float32_t w, float32_t gravity)
+{
+	float32_t wprime = 0;
+	if (gravity < fabsf(w))
+		wprime = CMath::sign(w)*(fabsf(w) - gravity);
+	return wprime;
+}
+
+int32_t CStreamingVwFeatures::get_nnz_features_for_vector()
+{
+	return current_length;
+}
+
+int32_t CStreamingVwFeatures::get_num_vectors() const
+{
+	if (current_example)
+		return 1;
+	else
+		return 0;
+}
+
+int32_t CStreamingVwFeatures::get_size()
+{
+	return sizeof(VwExample);
+}
+
+EFeatureType CStreamingVwFeatures::get_feature_type()
 {
 	return F_DREAL;
 }

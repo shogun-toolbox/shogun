@@ -47,12 +47,7 @@ public:
 	 * CStreamingFile::get_*_vector and get_*_vector_and_label
 	 * depending on the type T.
 	 */
-	CStreamingVwFeatures()
-		: CStreamingDotFeatures()
-	{
-		init();
-		set_read_functions();
-	}
+	CStreamingVwFeatures();
 
 	/**
 	 * Constructor taking args.
@@ -63,13 +58,7 @@ public:
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
 	CStreamingVwFeatures(CStreamingVwFile* file,
-			     bool is_labelled,
-			     int32_t size)
-		: CStreamingDotFeatures()
-	{
-		init(file, is_labelled, size);
-		set_read_functions();
-	}
+			     bool is_labelled, int32_t size);
 
 	/**
 	 * Constructor used when initialized
@@ -80,34 +69,21 @@ public:
 	 * @param size Number of example objects to be stored in the parser at a time
 	 */
 	CStreamingVwFeatures(CStreamingVwCacheFile* file,
-			     bool is_labelled,
-			     int32_t size)
-		: CStreamingDotFeatures()
-	{
-		init(file, is_labelled, size);
-		set_read_functions();
-	}
+			     bool is_labelled, int32_t size);
 
 	/**
 	 * Destructor.
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	~CStreamingVwFeatures()
-	{
-		parser.end_parser();
-		SG_UNREF(env);
-	}
+	~CStreamingVwFeatures();
 
 	/**
 	 * Duplicate this object
 	 *
 	 * @return a copy of this object
 	 */
-	CFeatures* duplicate() const
-	{
-		return new CStreamingVwFeatures(*this);
-	}
+	CFeatures* duplicate() const;
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -149,40 +125,20 @@ public:
 	 * Reset the file back to the first example.
 	 * Only works for cache files.
 	 */
-	virtual void reset_stream()
-	{
-		if (working_file->is_seekable())
-		{
-			working_file->reset_stream();
-			parser.exit_parser();
-			parser.init(working_file, has_labels, parser.get_ring_size());
-			parser.set_free_vector_after_release(false);
-			parser.start_parser();
-		}
-		else
-			SG_ERROR("The input cannot be reset! Please use 1 pass.\n");
-	}
+	virtual void reset_stream();
 
 	/**
 	 * Get the environment
 	 * @return environment
 	 */
-	virtual CVwEnvironment* get_env()
-	{
-		SG_REF(env);
-		return env;
-	}
+	virtual CVwEnvironment* get_env();
 
 	/**
 	 * Set the environment
 	 *
 	 * @param vw_env environment
 	 */
-	virtual void set_env(CVwEnvironment* vw_env)
-	{
-		env = vw_env;
-		SG_REF(env);
-	}
+	virtual void set_env(CVwEnvironment* vw_env);
 
 	/**
 	 * Instructs the parser to return the next example.
@@ -226,16 +182,7 @@ public:
 	 * @param vec float32_t* vector
 	 * @param len length of the vector
 	 */
-	inline virtual void expand_if_required(float32_t*& vec, int32_t& len)
-	{
-		int32_t dim = 1 << env->num_bits;
-		if (dim > len)
-		{
-			vec = SG_REALLOC(float32_t, vec, dim);
-			memset(&vec[len], 0, (dim-len) * sizeof(float32_t));
-			len = dim;
-		}
-	}
+	virtual void expand_if_required(float32_t*& vec, int32_t& len);
 
 	/**
 	 * Expand the vector passed so that it its length is equal to
@@ -245,16 +192,7 @@ public:
 	 * @param vec float64_t* vector
 	 * @param len length of the vector
 	 */
-	inline virtual void expand_if_required(float64_t*& vec, int32_t& len)
-	{
-		int32_t dim = 1 << env->num_bits;
-		if (dim > len)
-		{
-			vec = SG_REALLOC(float64_t, vec, dim);
-			memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
-			len = dim;
-		}
-	}
+	virtual void expand_if_required(float64_t*& vec, int32_t& len);
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -273,13 +211,7 @@ public:
 	 *
 	 * @return truncated value
 	 */
-	inline virtual float32_t real_weight(float32_t w, float32_t gravity)
-	{
-		float32_t wprime = 0;
-		if (gravity < fabsf(w))
-			wprime = CMath::sign(w)*(fabsf(w) - gravity);
-		return wprime;
-	}
+	virtual float32_t real_weight(float32_t w, float32_t gravity);
 
 	/**
 	 * Dot product taken with another StreamingDotFeatures object.
@@ -347,7 +279,8 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of example's vector should be taken
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, VwExample* &ex, float32_t* vec2, int32_t vec2_len, bool abs_val = false);
+	virtual void add_to_dense_vec(float32_t alpha, VwExample* &ex,
+			float32_t* vec2, int32_t vec2_len, bool abs_val = false);
 
 	/**
 	 * Add alpha*current_vector to another dense vector.
@@ -358,16 +291,14 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val = false);
+	virtual void add_to_dense_vec(float32_t alpha,
+			float32_t* vec2, int32_t vec2_len, bool abs_val = false);
 
 	/** get number of non-zero features in vector
 	 *
 	 * @return number of non-zero features in vector
 	 */
-	virtual inline int32_t get_nnz_features_for_vector()
-	{
-		return current_length;
-	}
+	virtual int32_t get_nnz_features_for_vector();
 
 	/**
 	 * Return the number of features in the current example.
@@ -402,20 +333,14 @@ public:
 	 *
 	 * @return 1 if current_example exists, else 0.
 	 */
-	inline virtual int32_t get_num_vectors() const
-	{
-		if (current_example)
-			return 1;
-		else
-			return 0;
-	}
+	inline virtual int32_t get_num_vectors() const;
 
 	/**
 	 * Return the size of one T object.
 	 *
 	 * @return Size of T.
 	 */
-	virtual int32_t get_size() { return sizeof(VwExample); }
+	virtual int32_t get_size();
 
 private:
 	/**

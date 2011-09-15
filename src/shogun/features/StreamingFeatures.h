@@ -69,8 +69,7 @@ public:
 	 * Default constructor with no args.
 	 * Doesn't do anything yet.
 	 */
-	CStreamingFeatures()
-		: CFeatures() { }
+	CStreamingFeatures();
 
 	/**
 	 * Constructor with input information passed.
@@ -79,8 +78,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
-		: CFeatures() { }
+	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size);
 
 	/**
 	 * Destructor
@@ -93,11 +91,7 @@ public:
 	 * The functions are implemented specific to the type in the
 	 * derived class.
 	 */
-	void set_read_functions()
-	{
-		set_vector_reader();
-		set_vector_and_label_reader();
-	}
+	void set_read_functions();
 
 	/**
 	 * The derived object must set the function which will be used
@@ -166,10 +160,7 @@ public:
 	 *
 	 * @return true if labelled, else false
 	 */
-	virtual bool get_has_labels()
-	{
-		return has_labels;
-	}
+	virtual bool get_has_labels();
 
 	/**
 	 * Whether the stream is seekable (to check if multiple epochs
@@ -181,19 +172,12 @@ public:
 	 *
 	 * @return true if seekable, else false.
 	 */
-	virtual bool is_seekable()
-	{
-		return seekable;
-	}
+	virtual bool is_seekable();
 
 	/**
 	 * Function to reset the stream (if possible).
 	 */
-	virtual void reset_stream()
-	{
-		SG_NOTIMPLEMENTED;
-		return;
-	}
+	virtual void reset_stream();
 
 protected:
 
