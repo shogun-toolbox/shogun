@@ -13,8 +13,6 @@
 #define _DOTFEATURES_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/Time.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
 
 namespace shogun

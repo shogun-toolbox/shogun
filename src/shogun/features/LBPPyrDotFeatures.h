@@ -150,7 +150,9 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param vec2_len length of vec2
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+
 	protected:
 		
 		/** lib lbp pyr get dim

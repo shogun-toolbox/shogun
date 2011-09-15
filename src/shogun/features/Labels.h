@@ -14,14 +14,12 @@
 #define _LABELS__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Subset.h>
 
 namespace shogun
 {
-
 	class CFile;
 
 /** @brief The class Labels models labels, i.e. class assignments of objects.

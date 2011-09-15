@@ -12,7 +12,6 @@
 #define _EXPLICITSPECFEATURES_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 
@@ -56,10 +55,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		inline virtual int32_t get_dim_feature_space() const
-		{
-			return spec_size;
-		}
+		virtual int32_t get_dim_feature_space() const;
 
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices
@@ -86,7 +82,8 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 * @param vec2_len length of real valued vector
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
@@ -116,11 +113,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 * 			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual void* get_feature_iterator(int32_t vector_index);
 
 		/** iterate over the non-zero features
 		 *
@@ -132,68 +125,45 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
-		{
-			SG_NOTIMPLEMENTED;
-			return NULL;
-		}
+		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
 		 *
 		 * @param iterator as returned by get_first_feature
 		 */
-		virtual void free_feature_iterator(void* iterator)
-		{
-			SG_NOTIMPLEMENTED;
-		}
+		virtual void free_feature_iterator(void* iterator);
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num which vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
-		{
-			SG_NOTIMPLEMENTED;
-			return 0;
-		}
+		virtual int32_t get_nnz_features_for_vector(int32_t num);
 
 		/** get feature type
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type()
-		{
-			return F_UNKNOWN;
-		}
+		virtual EFeatureType get_feature_type();
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class()
-		{
-			return C_SPEC;
-		}
+		virtual EFeatureClass get_feature_class();
 
 		/** get number of strings
 		 *
 		 * @return number of strings
 		 */
-		inline virtual int32_t get_num_vectors() const
-		{
-			return num_strings;
-		}
+		virtual int32_t get_num_vectors() const;
 
 		/** get size of one element
 		 *
 		 * @return size of one element
 		 */
-		inline virtual int32_t get_size()
-		{
-			return sizeof(float64_t);
-		}
+		virtual int32_t get_size();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "ExplicitSpecFeatures"; }

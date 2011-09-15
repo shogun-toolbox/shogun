@@ -53,6 +53,11 @@ CExplicitSpecFeatures::~CExplicitSpecFeatures()
 	delete_kmer_spectrum();
 }
 
+int32_t CExplicitSpecFeatures::get_dim_feature_space() const
+{
+	return spec_size;
+}
+
 float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
 	ASSERT(df);
@@ -143,4 +148,49 @@ void CExplicitSpecFeatures::delete_kmer_spectrum()
 CFeatures* CExplicitSpecFeatures::duplicate() const
 {
 	return new CExplicitSpecFeatures(*this);
+}
+
+
+
+void* CExplicitSpecFeatures::get_feature_iterator(int32_t vector_index)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+bool CExplicitSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+void CExplicitSpecFeatures::free_feature_iterator(void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+}
+
+int32_t CExplicitSpecFeatures::get_nnz_features_for_vector(int32_t num)
+{
+	SG_NOTIMPLEMENTED;
+	return 0;
+}
+
+EFeatureType CExplicitSpecFeatures::get_feature_type()
+{
+	return F_UNKNOWN;
+}
+
+EFeatureClass CExplicitSpecFeatures::get_feature_class()
+{
+	return C_SPEC;
+}
+
+int32_t CExplicitSpecFeatures::get_num_vectors() const
+{
+	return num_strings;
+}
+
+int32_t CExplicitSpecFeatures::get_size()
+{
+	return sizeof(float64_t);
 }

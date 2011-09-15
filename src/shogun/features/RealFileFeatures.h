@@ -26,7 +26,7 @@ class CRealFileFeatures: public CSimpleFeatures<float64_t>
 {
 	public:
 		/** default constructor */
-		CRealFileFeatures(void);
+		CRealFileFeatures();
 
 		/** constructor
 		 *

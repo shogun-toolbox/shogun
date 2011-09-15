@@ -11,6 +11,9 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/AttributeFeatures.h>
 
+#include <string.h>
+
+
 using namespace shogun;
 
 CAttributeFeatures::CAttributeFeatures()

@@ -12,7 +12,6 @@
 #define _CALPHABET__H__
 
 #include <shogun/base/SGObject.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 
 namespace shogun

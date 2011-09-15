@@ -245,6 +245,11 @@ CFeatures* CImplicitWeightedSpecFeatures::duplicate() const
 	return new CImplicitWeightedSpecFeatures(*this);
 }
 
+int32_t CImplicitWeightedSpecFeatures::get_dim_feature_space() const
+{
+	return spec_size;
+}
+
 void* CImplicitWeightedSpecFeatures::get_feature_iterator(int32_t vector_index)
 {
 	if (vector_index>=num_strings)
@@ -315,4 +320,24 @@ int32_t CImplicitWeightedSpecFeatures::get_nnz_features_for_vector(int32_t num)
 	for (int32_t i=1; i<=degree; i++)
 		nnz+=CMath::min(CMath::pow(alphabet_size,i), vlen);
 	return nnz;
+}
+
+EFeatureType CImplicitWeightedSpecFeatures::get_feature_type()
+{
+	return F_UNKNOWN;
+}
+
+EFeatureClass CImplicitWeightedSpecFeatures::get_feature_class()
+{
+	return C_WEIGHTEDSPEC;
+}
+
+int32_t CImplicitWeightedSpecFeatures::get_num_vectors() const
+{
+	return num_strings;
+}
+
+int32_t CImplicitWeightedSpecFeatures::get_size()
+{
+	return sizeof(float64_t);
 }

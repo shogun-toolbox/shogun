@@ -11,6 +11,7 @@
  */
 
 #include <shogun/classifier/svm/OnlineLibLinear.h>
+#include <shogun/lib/Time.h>
 
 using namespace shogun;
 

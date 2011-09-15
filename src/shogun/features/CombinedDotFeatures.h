@@ -16,7 +16,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/List.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/Features.h>
 
 namespace shogun
 {

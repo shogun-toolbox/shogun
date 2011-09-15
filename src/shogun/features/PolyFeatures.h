@@ -241,7 +241,6 @@ class CPolyFeatures : public CDotFeatures
 
 		/** Register all parameters */
 		void register_parameters();
-
 };
 }
 #endif // _POLYFEATURES__H__

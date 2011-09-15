@@ -58,10 +58,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		inline virtual int32_t get_dim_feature_space() const
-		{
-			return spec_size;
-		}
+		virtual int32_t get_dim_feature_space() const;
 
 		/** compute dot product between vector1 and vector2,
 		 * appointed by their indices
@@ -88,7 +85,8 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 * @param vec2_len length of real valued vector
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
 		/** get number of non-zero features in vector
 		 *
@@ -101,37 +99,25 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type()
-		{
-			return F_UNKNOWN;
-		}
+		virtual EFeatureType get_feature_type();
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class()
-		{
-			return C_WEIGHTEDSPEC;
-		}
+		virtual EFeatureClass get_feature_class();
 
 		/** get number of strings
 		 *
 		 * @return number of strings
 		 */
-		inline virtual int32_t get_num_vectors() const
-		{
-			return num_strings;
-		}
+		virtual int32_t get_num_vectors() const;
 
 		/** get size of one element
 		 *
 		 * @return size of one element
 		 */
-		inline virtual int32_t get_size()
-		{
-			return sizeof(float64_t);
-		}
+		virtual int32_t get_size();
 
 		/** set weighted degree weights
 		 *

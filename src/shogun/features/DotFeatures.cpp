@@ -11,6 +11,8 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
 

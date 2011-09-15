@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CRealFileFeatures::CRealFileFeatures(void)
+CRealFileFeatures::CRealFileFeatures()
 {
 	SG_UNSTABLE("CRealFileFeatures::CRealFileFeatures(void)", "\n");
 
