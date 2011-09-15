@@ -96,7 +96,7 @@ public:
 	/** @return class of features preprocessor deals with */
 	virtual EFeatureClass get_feature_class()=0;
 
-	/* @return the actual type of the preprocessor */
+	/** @return the actual type of the preprocessor */
 	virtual EPreprocessorType get_type() const=0;
 };
 }
