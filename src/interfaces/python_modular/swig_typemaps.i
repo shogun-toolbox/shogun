@@ -144,6 +144,15 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 }
 
 /* End John Hunter translation (with modifications by Bill Spotz) */
+
+int is_pyvector(PyObject* obj, int typecode)
+{
+    return (
+            (obj && PyList_Check(obj) && PyList_Size(obj)>0) ||
+            (is_array(obj) && array_dimensions(obj)==1 && array_type(obj) == typecode)
+         ) ? 1 : 0;
+}
+
 %}
 
 
@@ -151,10 +160,7 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 %define TYPEMAP_IN_SGVECTOR(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
 {
-    $1 = (
-            ($input && PyList_Check($input) && PyList_Size($input)>0) ||
-            (is_array($input) && array_dimensions($input)==1 && array_type($input) == typecode)
-         ) ? 1 : 0;
+    $1 = is_pyvector($input, typecode);
 }
 
 %typemap(in) shogun::SGVector<type>
