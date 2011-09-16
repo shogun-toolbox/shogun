@@ -14,22 +14,15 @@
 #define _SIMPLEFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/io/File.h>
-#include <shogun/preprocessor/SimplePreprocessor.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/DataType.h>
-
-#include <string.h>
 
 namespace shogun {
 template<class ST> class CStringFeatures;
 template<class ST> class CSimpleFeatures;
-template<class ST> class CSimplePreprocessor;
 template<class ST> struct SGMatrix;
 class CDotFeatures;
 
