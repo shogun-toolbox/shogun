@@ -145,6 +145,10 @@ public:
 
 protected:
 
+	/** detect dimensionality from distance matrix 
+	 * @param distance_matrix distance matrix to be used 
+	 * @return detected dimensionality 
+	 */
 	virtual int32_t detect_dim(SGMatrix<float64_t> distance_matrix)
 	{
 		SG_NOTIMPLEMENTED;
