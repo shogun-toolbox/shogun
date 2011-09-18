@@ -17,7 +17,7 @@
 #include <shogun/lib/FibonacciHeap.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/Distance.h>
 #include <shogun/lib/Signal.h>
 
 using namespace shogun;
@@ -25,14 +25,14 @@ using namespace shogun;
 CLaplacianEigenmaps::CLaplacianEigenmaps() :
 		CDimensionReductionPreprocessor()
 {
+	m_k = 3;
+	m_tau = 1.0;
+	
 	init();
 }
 
 void CLaplacianEigenmaps::init()
 {
-	m_k = 3;
-	m_tau = 1.0;
-
 	m_parameters->add(&m_k, "k", "number of neighbors");
 	m_parameters->add(&m_tau, "tau", "heat distribution coefficient");
 }
@@ -67,11 +67,11 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 	int32_t i,j;
 
 	// compute distance matrix
-	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	SGMatrix<float64_t> W_sgmatrix = distance->get_distance_matrix();
+	ASSERT(m_distance);
+	m_distance->init(simple_features,simple_features);
+	SGMatrix<float64_t> W_sgmatrix = m_distance->get_distance_matrix();
 	// shorthand
 	float64_t* W_matrix = W_sgmatrix.matrix;
-	delete distance;
 
 	// init heap to use
 	CFibonacciHeap* heap = new CFibonacciHeap(N);

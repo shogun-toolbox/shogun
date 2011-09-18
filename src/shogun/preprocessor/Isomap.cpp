@@ -56,13 +56,13 @@ struct DIJKSTRA_THREAD_PARAM
 
 CIsomap::CIsomap() : CMultidimensionalScaling()
 {
+	m_k = 3;
+	
 	init();
 }
 
 void CIsomap::init()
 {
-	m_k = 3;
-
 	m_parameters->add(&m_k, "k", "number of neighbors");
 }
 
@@ -102,27 +102,16 @@ SGMatrix<float64_t> CIsomap::apply_to_feature_matrix(CFeatures* features)
 	CSimpleFeatures<float64_t>* simple_features =
 		(CSimpleFeatures<float64_t>*) features;
 	SG_REF(features);
-	CDistance* euclidian_distance = new CEuclidianDistance();
-	euclidian_distance->init(simple_features,simple_features);
-
-	Parallel* distance_parallel = euclidian_distance->parallel;
-	euclidian_distance->parallel = this->parallel;
-	
-	SGMatrix<float64_t> geodesic_distance_matrix = isomap_distance(euclidian_distance->get_distance_matrix());
-
+	ASSERT(m_distance);
+	m_distance->init(simple_features, simple_features);
+	SGMatrix<float64_t> geodesic_distance_matrix = isomap_distance(m_distance->get_distance_matrix());
 	SGMatrix<float64_t> new_features;
-
 	if (m_landmark) 
 		new_features = CMultidimensionalScaling::landmark_embedding(geodesic_distance_matrix);
 	else
 		new_features = CMultidimensionalScaling::classic_embedding(geodesic_distance_matrix);
-
 	geodesic_distance_matrix.destroy_matrix();
-	euclidian_distance->parallel = distance_parallel;
-	delete euclidian_distance;
-
 	simple_features->set_feature_matrix(new_features);
-
 	SG_UNREF(features);
 	return simple_features->get_feature_matrix();
 }

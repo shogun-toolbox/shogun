@@ -98,18 +98,16 @@ CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding() :
 CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding(CKernel* kernel)
 {
 	init();
-	SG_REF(kernel);
-	m_kernel = kernel;
+	
+	set_kernel(kernel);
 }
 
 void CKernelLocallyLinearEmbedding::init()
 {
-	m_kernel = NULL;
 }
 
 CKernelLocallyLinearEmbedding::~CKernelLocallyLinearEmbedding()
 {
-	SG_UNREF(m_kernel);
 }
 
 bool CKernelLocallyLinearEmbedding::init(CFeatures* features)
@@ -124,7 +122,6 @@ void CKernelLocallyLinearEmbedding::cleanup()
 SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(features);
-	ASSERT(m_kernel);
 	SG_REF(features);
 
 	// get dimensionality and number of vectors of data
@@ -137,12 +134,10 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	int32_t i,j,t;
 
 	// compute kernel matrix
+	ASSERT(m_kernel);
 	m_kernel->init(features,features);
-	Parallel* kernel_parallel = m_kernel->parallel;
-	m_kernel->parallel = this->parallel;
 	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(kernel_matrix);
-	m_kernel->parallel = kernel_parallel;
 	m_kernel->cleanup();
 
 	// init W (weight) matrix
@@ -274,7 +269,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	SG_FREE(nz_idxs);
 	SG_FREE(W_matrix);
 
-	SGMatrix<float64_t> nullspace = find_null_space(M_matrix,m_target_dim,false);
+	SGMatrix<float64_t> nullspace = find_null_space(M_matrix,m_target_dim);
 
 	if ((features->get_feature_class()==C_SIMPLE) &&
 	    (features->get_feature_type()==F_DREAL))

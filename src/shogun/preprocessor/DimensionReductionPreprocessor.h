@@ -14,11 +14,15 @@
 #include <shogun/preprocessor/SimplePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/kernel/GaussianKernel.h>
 
 namespace shogun
 {
 
 class CFeatures;
+class CDistance;
+class CKernel;
 
 /** @brief the class DimensionReductionPreprocessor, a base
  * class for preprocessors used to lower the dimensionality of given 
@@ -32,12 +36,24 @@ public:
 	CDimensionReductionPreprocessor() : CSimplePreprocessor<float64_t>()
 	{
 		m_target_dim = 1;
+		m_distance = new CEuclidianDistance();
+		m_distance->parallel = this->parallel;
+		SG_REF(this->parallel);
+		m_kernel = new CGaussianKernel();
+		m_kernel->parallel = this->parallel;
+		SG_REF(this->parallel);
 
 		init();
 	};
 
 	/* destructor */
-	virtual ~CDimensionReductionPreprocessor() {};
+	virtual ~CDimensionReductionPreprocessor() 
+	{
+		delete m_distance;
+		SG_UNREF(this->parallel);
+		delete m_kernel;
+		SG_UNREF(this->parallel);
+	};
 
 	/** init
 	 * set true by default, should be defined if dimension reduction
@@ -84,16 +100,42 @@ public:
 	 */
 	void inline set_target_dim(int32_t dim)
 	{
-		ASSERT(dim>0);
+		ASSERT(dim>0 || dim==AUTO_TARGET_DIM);
 		m_target_dim = dim;
 	}
 
 	/** getter for target dimension
 	 * @return target dimension
 	 */
-	int32_t inline get_target_dim()
+	int32_t inline get_target_dim() const
 	{
 		return m_target_dim;
+	}
+
+	/** setter for distance
+	 * @param distance distance to set
+	 */
+	void inline set_distance(CDistance* distance)
+	{
+		SG_UNREF(m_distance->parallel);
+		SG_UNREF(m_distance);
+		SG_REF(distance);
+		m_distance = distance;
+		m_distance->parallel = this->parallel;
+		SG_REF(this->parallel);
+	}
+
+	/** setter for kernel
+	 * @param kernel kernel to set
+	 */
+	void inline set_kernel(CKernel* kernel)
+	{
+		SG_UNREF(m_kernel->parallel);
+		SG_UNREF(m_kernel);
+		SG_REF(kernel);
+		m_kernel = kernel;
+		m_kernel->parallel = this->parallel;
+		SG_REF(this->parallel);
 	}
 
 public:
@@ -103,17 +145,34 @@ public:
 
 protected:
 
+	virtual int32_t detect_dim(SGMatrix<float64_t> distance_matrix)
+	{
+		SG_NOTIMPLEMENTED;
+		return 0;
+	}
+
+
 	/** default init */
 	void init()
 	{
 		m_parameters->add(&m_target_dim, "target_dim",
 		                  "target dimensionality of preprocessor");
+		m_parameters->add((CSGObject**)&m_distance, "distance",
+		                  "distance to be used for embedding");
+		m_parameters->add((CSGObject**)&m_kernel, "kernel",
+		                  "kernel to be used for embedding");
 	}
 
 protected:
 
 	/** target dim of dimensionality reduction preprocessor */
 	int32_t m_target_dim;
+
+	/** distance to be used */
+	CDistance* m_distance;
+
+	/** kernel to be used */
+	CKernel* m_kernel;
 
 };
 }

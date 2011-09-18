@@ -15,7 +15,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/Distance.h>
 #include <shogun/lib/Signal.h>
 
 #ifdef HAVE_PTHREAD
@@ -116,8 +116,11 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	ASSERT(m_k>=(1+m_target_dim+dp));
 
 	// compute distance matrix
-	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance);
+	ASSERT(m_distance);
+	m_distance->init(simple_features,simple_features);
+	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
+	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance_matrix);
+	distance_matrix.destroy_matrix();
 
 	// init W (weight) matrix
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
@@ -217,7 +220,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 
 	// finally construct embedding
 	SGMatrix<float64_t> W_sgmatrix = SGMatrix<float64_t>(W_matrix,N,N);
-	simple_features->set_feature_matrix(find_null_space(W_sgmatrix,m_target_dim,false));
+	simple_features->set_feature_matrix(find_null_space(W_sgmatrix,m_target_dim));
 	W_sgmatrix.destroy_matrix();
 
 	SG_UNREF(features);

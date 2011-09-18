@@ -66,25 +66,6 @@ public:
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
-	/** setter for kernel
-	 * @param kernel
-	 */
-	void inline set_kernel(CKernel* kernel)
-	{
-		SG_UNREF(m_kernel);
-		SG_REF(kernel);
-		m_kernel = kernel;
-	};
-
-	/** getter for kernel
-	 * @return kernel
-	 */
-	CKernel* get_kernel() const
-	{
-		SG_REF(m_kernel);
-		return m_kernel;
-	};
-
 	/** get name */
 	virtual inline const char* get_name() const { return "KernelLocallyLinearEmbedding"; };
 
@@ -112,11 +93,6 @@ protected:
 	 * in i-th column
 	 */
 	SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix);
-
-protected:
-
-	/** number of neighbors */
-	CKernel* m_kernel;
 
 };
 }

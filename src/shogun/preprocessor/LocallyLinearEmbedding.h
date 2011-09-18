@@ -20,7 +20,6 @@ namespace shogun
 {
 
 class CFeatures;
-
 class CDistance;
 
 /** @brief the class LocallyLinearEmbedding used to preprocess
@@ -119,6 +118,35 @@ protected:
 	/** default init */
 	void init();
 
+	/** find null space of given matrix 
+	 * @param matrix given matrix
+	 * @param dimension dimension of null space to be computed
+	 * @param force_lapack true if lapack should be used
+	 * @return null-space approximation feature matrix
+	 */
+	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension);
+
+	/** construct neighborhood matrix by distance
+	 * @param distance_matrix distance matrix to be used
+	 * @return matrix containing indexes of neighbors of i-th object
+	 * in i-th column
+	 */
+	SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix);
+
+protected:
+
+	/** number of neighbors */
+	int32_t m_k;
+
+	/** boolean indicating if matrix should be considered as positive-definite */
+	bool m_posdef;
+
+public:
+
+	static const int32_t ADAPTIVE_K = -1;
+
+protected:
+
 	/** runs neighborhood determination thread
 	 * @param p thread params
 	 */
@@ -134,28 +162,6 @@ protected:
 	 */
 	static void* run_sparsedot_thread(void* p);
 
-	/** find null space of given matrix 
-	 * @param matrix given matrix
-	 * @param dimension dimension of null space to be computed
-	 * @param force_lapack true if lapack should be used
-	 * @return null-space approximation feature matrix
-	 */
-	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension, bool force_lapack);
-
-	/** construct neighborhood matrix by distance
-	 * @param distance distance to be used
-	 * @return matrix containing indexes of neighbors of i-th object
-	 * in i-th column
-	 */
-	SGMatrix<int32_t> get_neighborhood_matrix(CDistance* distance);
-
-protected:
-
-	/** number of neighbors */
-	int32_t m_k;
-
-	/** boolean indicating if matrix should be considered as positive-definite */
-	bool m_posdef;
 
 };
 }

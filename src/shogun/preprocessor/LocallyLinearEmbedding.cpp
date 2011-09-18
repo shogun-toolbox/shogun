@@ -9,16 +9,16 @@
  */
 
 #include <shogun/preprocessor/LocallyLinearEmbedding.h>
+#include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/FibonacciHeap.h>
-#include <shogun/lib/common.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/Distance.h>
 #include <shogun/lib/Signal.h>
 
 #ifdef HAVE_PTHREAD
@@ -98,14 +98,14 @@ struct SPARSEDOT_THREAD_PARAM
 CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 		CDimensionReductionPreprocessor()
 {
+	m_k = 3;
+	m_posdef = true;
+	
 	init();
 }
 
 void CLocallyLinearEmbedding::init()
 {
-	m_k = 3;
-	m_posdef = true;
-
 	m_parameters->add(&m_k, "k", "number of neighbors");
 	m_parameters->add(&m_posdef, "posdef", 
 	                  "indicates if matrix should be considered as positive definite");
@@ -151,12 +151,14 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	int32_t i,j,t;
 
 	// compute distance matrix
-	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	Parallel* distance_parallel = distance->parallel;
-	distance->parallel = this->parallel;
-	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance);
-	distance->parallel = distance_parallel;
-	delete distance;
+	ASSERT(m_distance);
+	m_distance->init(simple_features,simple_features);
+	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
+	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance_matrix);
+	// dimension detection
+	if (m_target_dim == AUTO_TARGET_DIM)
+		m_target_dim = detect_dim(distance_matrix);
+	distance_matrix.destroy_matrix();
 
 	// init W (weight) matrix
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
@@ -294,7 +296,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	SG_FREE(nz_idxs);
 	SG_FREE(W_matrix);
 
-	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim,false));
+	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim));
 	M_matrix.destroy_matrix();
 
 	SG_UNREF(features);
@@ -307,7 +309,7 @@ SGVector<float64_t> CLocallyLinearEmbedding::apply_to_feature_vector(SGVector<fl
 	return vector;
 }
 
-SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t> matrix, int dimension, bool force_lapack)
+SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t> matrix, int dimension)
 {
 	int i,j;
 	ASSERT(matrix.num_cols==matrix.num_rows);
@@ -320,8 +322,6 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 #ifdef HAVE_ARPACK
 	arpack = true;
 #endif
-
-	if (force_lapack) arpack = false;
 
 	float64_t* eigenvalues_vector;
 	float64_t* eigenvectors;
@@ -450,11 +450,10 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	return NULL;
 }
 
-SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* distance)
+SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix)
 {
 	int32_t t;
-	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
-	int32_t N = distance->get_num_vec_lhs();
+	int32_t N = distance_matrix.num_rows;
 	// init matrix and heap to be used
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
 #ifdef HAVE_PTHREAD
@@ -506,7 +505,6 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(CDistance* di
 	for (t=0; t<num_threads; t++)
 		delete heaps[t];
 	SG_FREE(heaps);
-	distance_matrix.destroy_matrix();
 
 	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
 }

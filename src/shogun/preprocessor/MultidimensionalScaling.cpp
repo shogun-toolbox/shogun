@@ -60,14 +60,14 @@ struct TRIANGULATION_THREAD_PARAM
 CMultidimensionalScaling::CMultidimensionalScaling() : CDimensionReductionPreprocessor()
 {
 	m_eigenvalues = SGVector<float64_t>(NULL,0,false);
+	m_landmark_number = 3;
+	m_landmark = false;
+	
 	init();
 }
 
 void CMultidimensionalScaling::init()
 {
-	m_landmark_number = 3;
-	m_landmark = false;
-
 	m_parameters->add(&m_landmark, "landmark", "indicates if landmark approximation should be used");
 	m_parameters->add(&m_landmark_number, "landmark number", "the number of landmarks for approximation");
 }
@@ -114,15 +114,12 @@ SGMatrix<float64_t> CMultidimensionalScaling::apply_to_feature_matrix(CFeatures*
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
 	// reference features for not being deleted while applying
 	SG_REF(features);
-	// create new euclidean distance 
-	CDistance* distance = new CEuclidianDistance(simple_features,simple_features);
-	// set distance parallel with this' one
-	Parallel* distance_parallel = distance->parallel;
-	distance->parallel = this->parallel;
-
+	
 	// compute embedding according to m_landmark value
 	SGMatrix<float64_t> new_feature_matrix;
-	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
+	ASSERT(m_distance);
+	m_distance->init(simple_features,simple_features);
+	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
 	if (m_landmark)
 		new_feature_matrix = landmark_embedding(distance_matrix);
 	else
@@ -130,9 +127,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::apply_to_feature_matrix(CFeatures*
 
 	simple_features->set_feature_matrix(new_feature_matrix);
 
-	// delete used distance
-	distance->parallel = distance_parallel;
-	delete distance;
+	// delete used distance matrix
 	distance_matrix.destroy_matrix();
 
 	// unreference features

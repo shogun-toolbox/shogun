@@ -163,6 +163,17 @@ protected:
 
 protected:
 
+	/** last embedding eigenvalues */
+	SGVector<float64_t> m_eigenvalues;
+
+	/** use landmark approximation? */
+	bool m_landmark;
+
+	/** number of landmarks */
+	int32_t m_landmark_number;
+
+protected:
+
 	/** run triangulation thread for landmark embedding
 →→→→→→→→ * @param p thread parameters
 →→→→→→→→ */
@@ -175,17 +186,6 @@ protected:
 →→→→→→→→ * @return sorted shuffled indexes for landmarks
 →→→→→→→→ */
 	static SGVector<int32_t> shuffle(int32_t count, int32_t total_count);
-
-protected:
-
-	/** last embedding eigenvalues */
-	SGVector<float64_t> m_eigenvalues;
-
-	/** use landmark approximation? */
-	bool m_landmark;
-
-	/** number of landmarks */
-	int32_t m_landmark_number;
 
 };
 
