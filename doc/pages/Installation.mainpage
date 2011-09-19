@@ -113,11 +113,11 @@ sudo make install
 
 where \b interface is one of the following
 
-\li python or python-modular -- for python (see http://www.python.org)
+\li python_static or python_modular -- for python (see http://www.python.org)
 
-\li octave or octave_modular -- for octave (see http://www.octave.org)
+\li octave_static or octave_modular -- for octave (see http://www.octave.org)
 
-\li r or r_modular -- for r (see http://www.r-project.org).
+\li r_static or r_modular -- for r (see http://www.r-project.org).
 
 \li java_modular -- for java (see http://www.java.com).
 
@@ -127,7 +127,9 @@ where \b interface is one of the following
 
 \li csharp_modular -- for csharp (see http://www.csharp-station.com/).
 
-\li matlab -- for matlab (see http://www.mathworks.com)
+\li matlab_static -- for matlab (see http://www.mathworks.com)
+
+\li libshogun_static -- for for regular shogun library
 
 (you don't need to compile libshogunui in case you compile a modular interface)
 

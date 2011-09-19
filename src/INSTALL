@@ -209,7 +209,7 @@ A workaround is to uncomment this in math.h:
 Also make sure you don't mix python versions (i.e. python2.5 and python2.6) on build/runtime.
 You can specify the python version as a argument to configure, e.g.: --python=python2.7
 
-./configure --interface=python
+./configure --interface=python_static
 make
 
 to test if it is working try:
@@ -218,7 +218,7 @@ PYTHONPATH=`pwd` python ../examples/documented/python/graphical/svm_classificati
 
 object oriented python/swig interface:
 ======================================
-Follow the above instructions for python. Then use fink/darwinports to install swig.
+Follow the above instructions for python. Then use homebrew/fink/darwinports to install swig.
 
 ./configure --interfaces=python-modular
 make
