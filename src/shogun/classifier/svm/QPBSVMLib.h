@@ -46,7 +46,7 @@ class CQPBSVMLib: public CSGObject
 {
 	public:
 		/** default constructor  */
-		CQPBSVMLib(void);
+		CQPBSVMLib();
 
 		/** constructor
 		 *

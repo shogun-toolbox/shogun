@@ -61,7 +61,7 @@ struct TParameter
 
 private:
 	char* new_prefix(const char* s1, const char* s2);
-	void delete_cont(void);
+	void delete_cont();
 	void new_cont(index_t new_len_y, index_t new_len_x);
 	bool new_sgserial(CSGObject** param, EPrimitiveType generic,
 					  const char* sgserializable_name,
@@ -85,9 +85,9 @@ class Parameter
 {
 public:
 	/** explicit constructor */
-	explicit Parameter(void);
+	explicit Parameter();
 	/** destructor */
-	virtual ~Parameter(void);
+	virtual ~Parameter();
 
 	/** print
 	 * @param prefix prefix
@@ -109,7 +109,7 @@ public:
 	/** getter for number of parameters
 	 * @return number of parameters
 	 */
-	inline virtual int32_t get_num_parameters(void)
+	inline virtual int32_t get_num_parameters()
 	{
 		return m_params.get_num_elements();
 	}

@@ -38,30 +38,19 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 	/** default constructor
 	 *
 	 */
-	CStringFileFeatures() : CStringFeatures<ST>(), file(NULL)
-	{
-	}
+	CStringFileFeatures();
 
 	/** constructor
 	 *
 	 * @param fname filename of the file containing line based features
 	 * @param alpha alphabet (type) to use for string features
 	 */
-	CStringFileFeatures(const char* fname, EAlphabet alpha)
-	: CStringFeatures<ST>(alpha)
-	{
-		file = new CMemoryMappedFile<ST>(fname);
-		fetch_meta_info_from_file();
-	}
+	CStringFileFeatures(const char* fname, EAlphabet alpha);
 
 	/** default destructor
 	 *
 	 */
-	virtual ~CStringFileFeatures()
-	{
-		SG_UNREF(file);
-		CStringFileFeatures<ST>::cleanup();
-	}
+	virtual ~CStringFileFeatures();
 
 	protected:
 	/** get next line from file
@@ -78,112 +67,19 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 	 *
 	 * @return line (NOT ZERO TERMINATED)
 	 */
-	ST* get_line(uint64_t& len, uint64_t& offs, int32_t& line_nr, uint64_t file_length)
-	{
-		ST* s = file->get_map();
-		for (uint64_t i=offs; i<file_length; i++)
-		{
-			ST c=s[i];
-
-			if (c == '\n')
-			{
-				ST* line=&s[offs];
-				len=i-offs;
-				offs=i+1;
-				line_nr++;
-				return line;
-			}
-			else
-			{
-				if (!CStringFeatures<ST>::alphabet->is_valid((uint8_t) c))
-				{
-					CStringFileFeatures<ST>::cleanup();
-					CStringFeatures<ST>::SG_ERROR("Invalid character (%c) in line %d\n", c, line_nr);
-				}
-			}
-		}
-
-		len=0;
-		offs=file_length;
-		return NULL;
-	}
+	ST* get_line(uint64_t& len, uint64_t& offs, int32_t& line_nr, uint64_t file_length);
 
 	/** cleanup string features */
-	virtual void cleanup()
-	{
-		CStringFeatures<ST>::num_vectors=0;
-		SG_FREE(CStringFeatures<ST>::features);
-		SG_FREE(CStringFeatures<ST>::symbol_mask_table);
-		CStringFeatures<ST>::features=NULL;
-		CStringFeatures<ST>::symbol_mask_table=NULL;
-
-		/* start with a fresh alphabet, but instead of emptying the histogram
-		 * create a new object (to leave the alphabet object alone if it is used
-		 * by others)
-		 */
-		CAlphabet* alpha=new CAlphabet(CStringFeatures<ST>::alphabet->get_alphabet());
-		SG_UNREF(CStringFeatures<ST>::alphabet);
-		CStringFeatures<ST>::alphabet=alpha;
-		SG_REF(CStringFeatures<ST>::alphabet);
-	}
+	virtual void cleanup();
 
     /** cleanup a single feature vector */
-    virtual void cleanup_feature_vector(int32_t num)
-    {
-        CStringFeatures<ST>::SG_ERROR("Cleaning single feature vector not"
-                "supported by StringFileFeatures\n");
-    }
+    virtual void cleanup_feature_vector(int32_t num);
 
 	/** obtain meta information from file
 	 * 
 	 * i.e., determine number of strings and their lengths
 	 */
-	void fetch_meta_info_from_file(int32_t granularity=1048576)
-	{
-		CStringFileFeatures<ST>::cleanup();
-		uint64_t file_size=file->get_size();
-		ASSERT(granularity>=1);
-		ASSERT(CStringFeatures<ST>::alphabet);
-
-		uint64_t buffer_size=granularity;
-		CStringFeatures<ST>::features=SG_MALLOC(SGString<ST>, buffer_size);
-
-		uint64_t offs=0;
-		uint64_t len=0;
-		CStringFeatures<ST>::max_string_length=0;
-		CStringFeatures<ST>::num_vectors=0;
-
-		while (true)
-		{
-			ST* line=get_line(len, offs, CStringFeatures<ST>::num_vectors, file_size);
-
-			if (line)
-			{
-				if (CStringFeatures<ST>::num_vectors>buffer_size)
-				{
-					CMath::resize(CStringFeatures<ST>::features, buffer_size, buffer_size+granularity);
-					buffer_size+=granularity;
-				}
-
-				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].string=line;
-				CStringFeatures<ST>::features[CStringFeatures<ST>::num_vectors-1].slen=len;
-				CStringFeatures<ST>::max_string_length=CMath::max(CStringFeatures<ST>::max_string_length, (int32_t) len);
-			}
-			else
-				break;
-		}
-
-		CStringFeatures<ST>::SG_INFO("number of strings:%d\n", CStringFeatures<ST>::num_vectors);
-		CStringFeatures<ST>::SG_INFO("maximum string length:%d\n", CStringFeatures<ST>::max_string_length);
-		CStringFeatures<ST>::SG_INFO("max_value_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_max_value_in_histogram());
-		CStringFeatures<ST>::SG_INFO("num_symbols_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_num_symbols_in_histogram());
-
-		if (!CStringFeatures<ST>::alphabet->check_alphabet_size() || !CStringFeatures<ST>::alphabet->check_alphabet())
-			CStringFileFeatures<ST>::cleanup();
-
-		CMath::resize(CStringFeatures<ST>::features, buffer_size, CStringFeatures<ST>::num_vectors);
-	}
-
+	void fetch_meta_info_from_file(int32_t granularity=1048576);
 
 	protected:
 	/** memory mapped file*/

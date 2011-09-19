@@ -465,7 +465,7 @@ class CHMM : public CDistribution
 
 	public:
 		/** default constructor  */
-		CHMM(void);
+		CHMM();
 
 		/**@name Constructor/Destructor and helper function
 		*/

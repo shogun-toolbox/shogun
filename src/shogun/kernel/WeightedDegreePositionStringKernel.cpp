@@ -1878,7 +1878,7 @@ void CWeightedDegreePositionStringKernel::cleanup_POIM2()
 	m_poim_result_len=0 ;
 }
 
-void CWeightedDegreePositionStringKernel::load_serializable_post(void) throw (ShogunException)
+void CWeightedDegreePositionStringKernel::load_serializable_post() throw (ShogunException)
 {
 	CKernel::load_serializable_post();
 

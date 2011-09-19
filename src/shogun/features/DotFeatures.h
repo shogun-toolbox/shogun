@@ -121,7 +121,8 @@ class CDotFeatures : public CFeatures
 		 * @param dim length of the dense vector
 		 * @param b bias
 		 */
-		virtual void dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+		virtual void dense_dot_range_subset(int32_t* sub_index, int32_t num,
+				float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
 
 		/** Compute the dot product for a range of vectors. This function is
 		 * called by the threads created in dense_dot_range */

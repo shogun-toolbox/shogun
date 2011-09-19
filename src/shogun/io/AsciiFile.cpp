@@ -21,9 +21,9 @@
 
 using namespace shogun;
 
-CAsciiFile::CAsciiFile(void)
+CAsciiFile::CAsciiFile()
 {
-	SG_UNSTABLE("CAsciiFile::CAsciiFile(void)", "\n");
+	SG_UNSTABLE("CAsciiFile::CAsciiFile()", "\n");
 }
 
 CAsciiFile::CAsciiFile(FILE* f, const char* name) : CFile(f, name)

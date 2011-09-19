@@ -35,11 +35,11 @@ struct HASHEDWD_THREAD_PARAM
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(void)
+CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed()
 	:CDotFeatures()
 {
 	SG_UNSTABLE(
-		"CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(void)",
+		"CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed()",
 		"\n");
 
 	strings = NULL;

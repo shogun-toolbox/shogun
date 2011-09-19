@@ -93,7 +93,7 @@ public:
 	inline void set_degree(float64_t value) { this->degree = value; }
 
 private:
-	void init(void);
+	void init();
 
 protected:
 

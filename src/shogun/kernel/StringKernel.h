@@ -79,7 +79,7 @@ template <class ST> class CStringKernel : public CKernel
 		 *
 		 *  @return name of the SGSerializable
 		 */
-		virtual const char* get_name(void) const {
+		virtual const char* get_name() const {
 			return "StringKernel"; }
 
 		/** return what type of kernel we are, e.g.

@@ -114,7 +114,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name(void) const {
+		virtual const char* get_name() const {
 			return "DiceKernelNormalizer"; }
 
     public:

@@ -24,10 +24,10 @@ IGNORE_IN_CLASSLIST class SerializableXmlReader00
 
 public:
 	explicit SerializableXmlReader00(CSerializableXmlFile* file);
-	virtual ~SerializableXmlReader00(void);
+	virtual ~SerializableXmlReader00();
 
 	/** @return object name */
-	inline virtual const char* get_name(void) const {
+	inline virtual const char* get_name() const {
 		return "SerializableXmlReader00";
 	}
 

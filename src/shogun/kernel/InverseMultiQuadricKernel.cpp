@@ -47,7 +47,7 @@ bool CInverseMultiQuadricKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void CInverseMultiQuadricKernel::load_serializable_post(void) throw (ShogunException)
+void CInverseMultiQuadricKernel::load_serializable_post() throw (ShogunException)
 {
 	CKernel::load_serializable_post();
 }

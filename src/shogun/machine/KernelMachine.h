@@ -54,7 +54,7 @@ class CKernelMachine : public CMachine
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name(void) const {
+		virtual const char* get_name() const {
 			return "KernelMachine"; }
 
 		/** set kernel

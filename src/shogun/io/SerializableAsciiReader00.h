@@ -27,10 +27,10 @@ public:
 	explicit SerializableAsciiReader00(CSerializableAsciiFile* file);
 
 	/** destructor */
-	virtual ~SerializableAsciiReader00(void);
+	virtual ~SerializableAsciiReader00();
 
 	/** @return object name */
-	inline virtual const char* get_name(void) const {
+	inline virtual const char* get_name() const {
 		return "SerializableAsciiReader00";
 	}
 

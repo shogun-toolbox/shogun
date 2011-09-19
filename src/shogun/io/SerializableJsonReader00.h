@@ -24,10 +24,10 @@ IGNORE_IN_CLASSLIST class SerializableJsonReader00
 
 public:
 	explicit SerializableJsonReader00(CSerializableJsonFile* file);
-	virtual ~SerializableJsonReader00(void);
+	virtual ~SerializableJsonReader00();
 
 	/** @return object name */
-	inline virtual const char* get_name(void) const {
+	inline virtual const char* get_name() const {
 		return "SerializableJsonReader00";
 	}
 

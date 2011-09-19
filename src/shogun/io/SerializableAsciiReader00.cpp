@@ -15,7 +15,7 @@ using namespace shogun;
 SerializableAsciiReader00::SerializableAsciiReader00(
 	CSerializableAsciiFile* file) { m_file = file; }
 
-SerializableAsciiReader00::~SerializableAsciiReader00(void) {}
+SerializableAsciiReader00::~SerializableAsciiReader00() {}
 
 bool
 SerializableAsciiReader00::read_scalar_wrapped(

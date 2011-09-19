@@ -27,7 +27,7 @@ class CWDSVMOcas : public CMachine
 {
 	public:
 		/** default constructor  */
-		CWDSVMOcas(void);
+		CWDSVMOcas();
 
 		/** constructor
 		 *

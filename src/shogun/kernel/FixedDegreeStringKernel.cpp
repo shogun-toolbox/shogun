@@ -18,13 +18,13 @@
 using namespace shogun;
 
 void
-CFixedDegreeStringKernel::init(void)
+CFixedDegreeStringKernel::init()
 {
 	m_parameters->add(&degree, "degree", "The degree.");
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
-CFixedDegreeStringKernel::CFixedDegreeStringKernel(void)
+CFixedDegreeStringKernel::CFixedDegreeStringKernel()
 : CStringKernel<char>(0), degree(0)
 {
 	init();

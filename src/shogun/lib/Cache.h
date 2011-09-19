@@ -43,9 +43,9 @@ template<class T> class CCache : public CSGObject
 
 	public:
 	 /** default constructor  */
-	CCache(void) :CSGObject()
+	CCache() :CSGObject()
 	{
-		SG_UNSTABLE("CCache::CCache(void)", "\n");
+		SG_UNSTABLE("CCache::CCache()", "\n");
 
 		cache_block=NULL;
 		lookup_table=NULL;

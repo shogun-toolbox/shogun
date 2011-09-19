@@ -35,7 +35,7 @@ class CGaussianMatchStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CGaussianMatchStringKernel(void);
+		CGaussianMatchStringKernel();
 
 		/** constructor
 		 *

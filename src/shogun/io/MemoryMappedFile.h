@@ -32,9 +32,9 @@ template <class T> class CMemoryMappedFile : public CSGObject
 {
 	public:
 		/** default constructor  */
-		CMemoryMappedFile(void) :CSGObject()
+		CMemoryMappedFile() :CSGObject()
 		{
-			SG_UNSTABLE("CMemoryMappedFile::CMemoryMappedFile(void)",
+			SG_UNSTABLE("CMemoryMappedFile::CMemoryMappedFile()",
 						"\n");
 
 			fd = 0;

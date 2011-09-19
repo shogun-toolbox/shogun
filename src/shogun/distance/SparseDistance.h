@@ -63,7 +63,7 @@ template <class ST> class CSparseDistance : public CDistance
 		 *
 		 *  @return name of the SGSerializable
 		 */
-		virtual const char* get_name(void) const {
+		virtual const char* get_name() const {
 			return "SparseDistance"; }
 
 		/** cleanup distance

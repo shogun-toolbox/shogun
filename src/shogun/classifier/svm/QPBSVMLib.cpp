@@ -64,9 +64,9 @@ using namespace shogun;
 
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
-CQPBSVMLib::CQPBSVMLib(void)
+CQPBSVMLib::CQPBSVMLib()
 {
-	SG_UNSTABLE("CQPBSVMLib::CQPBSVMLib(void)", "\n");
+	SG_UNSTABLE("CQPBSVMLib::CQPBSVMLib()", "\n");
 
 	m_H=0;
 	m_dim = 0;

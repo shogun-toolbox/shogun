@@ -140,7 +140,7 @@ Model::~Model()
 
 }
 
-CHMM::CHMM(void)
+CHMM::CHMM()
 {
 	N=0;
 	M=0;

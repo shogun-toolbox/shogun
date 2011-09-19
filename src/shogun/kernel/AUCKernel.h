@@ -32,11 +32,11 @@ namespace shogun
  */
 class CAUCKernel: public CDotKernel
 {
-	void init(void);
+	void init();
 
 	public:
 		/** default constructor  */
-		CAUCKernel(void);
+		CAUCKernel();
 
 		/** constructor
 		 *

@@ -49,7 +49,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CWeightedDegreePositionStringKernel(void);
+		CWeightedDegreePositionStringKernel();
 
 		/** constructor
 		 *
@@ -691,7 +691,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post(void) throw (ShogunException);
+		virtual void load_serializable_post() throw (ShogunException);
 
 	private:
 		/** Do basic initialisations like default settings

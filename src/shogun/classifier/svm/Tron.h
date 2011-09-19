@@ -46,9 +46,9 @@ public:
 	 *
 	 * @return something inty
 	 */
-	virtual int32_t get_nr_variable(void) = 0 ;
+	virtual int32_t get_nr_variable() = 0 ;
 
-	virtual ~function(void){}
+	virtual ~function(){}
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 

@@ -18,7 +18,7 @@ using namespace shogun;
 SerializableHdf5Reader00::SerializableHdf5Reader00(
 	CSerializableHdf5File* file) { m_file = file; }
 
-SerializableHdf5Reader00::~SerializableHdf5Reader00(void) {}
+SerializableHdf5Reader00::~SerializableHdf5Reader00() {}
 
 bool
 SerializableHdf5Reader00::read_scalar_wrapped(

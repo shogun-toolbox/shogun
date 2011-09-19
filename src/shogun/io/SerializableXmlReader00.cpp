@@ -18,7 +18,7 @@ using namespace shogun;
 SerializableXmlReader00::SerializableXmlReader00(
 	CSerializableXmlFile* file) { m_file = file; }
 
-SerializableXmlReader00::~SerializableXmlReader00(void) {}
+SerializableXmlReader00::~SerializableXmlReader00() {}
 
 bool
 SerializableXmlReader00::read_scalar_wrapped(

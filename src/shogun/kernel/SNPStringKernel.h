@@ -37,7 +37,7 @@ class CSNPStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CSNPStringKernel(void);
+		CSNPStringKernel();
 
 		/** constructor
 		 *

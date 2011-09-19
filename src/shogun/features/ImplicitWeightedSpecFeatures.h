@@ -31,7 +31,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 {
 	public:
 		/** default constructor  */
-		CImplicitWeightedSpecFeatures(void);
+		CImplicitWeightedSpecFeatures();
 
 		/** constructor
 		 *

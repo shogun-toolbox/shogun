@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CSNPStringKernel::CSNPStringKernel(void)
+CSNPStringKernel::CSNPStringKernel()
 : CStringKernel<char>(0),
   m_degree(0), m_win_len(0), m_inhomogene(false)
 {

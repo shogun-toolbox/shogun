@@ -146,7 +146,7 @@ class CGaussianKernel: public CDotKernel
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post(void) throw (ShogunException);
+		virtual void load_serializable_post() throw (ShogunException);
 
 	private:
 		/** helper function to compute quadratic terms in

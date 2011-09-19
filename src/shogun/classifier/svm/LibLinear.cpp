@@ -22,7 +22,7 @@
 
 using namespace shogun;
 
-CLibLinear::CLibLinear(void)
+CLibLinear::CLibLinear()
 : CLinearMachine()
 {
     init();

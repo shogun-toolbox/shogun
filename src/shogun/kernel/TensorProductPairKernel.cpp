@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-CTensorProductPairKernel::CTensorProductPairKernel(void)
+CTensorProductPairKernel::CTensorProductPairKernel()
 : CDotKernel(0), subkernel(NULL)
 {
 	register_params();

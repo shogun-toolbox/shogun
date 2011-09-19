@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CPolyKernel::CPolyKernel(void)
+CPolyKernel::CPolyKernel()
 : CDotKernel(0), degree(0), inhomogene(false)
 {
 	init();

@@ -13,9 +13,9 @@
 
 using namespace shogun;
 
-CExplicitSpecFeatures::CExplicitSpecFeatures(void) :CDotFeatures()
+CExplicitSpecFeatures::CExplicitSpecFeatures() :CDotFeatures()
 {
-	SG_UNSTABLE("CExplicitSpecFeatures::CExplicitSpecFeatures(void)",
+	SG_UNSTABLE("CExplicitSpecFeatures::CExplicitSpecFeatures()",
 				"\n");
 
 	use_normalization = false;

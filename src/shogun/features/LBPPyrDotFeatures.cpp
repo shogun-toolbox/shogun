@@ -126,7 +126,7 @@ using namespace shogun;
 
 CLBPPyrDotFeatures::CLBPPyrDotFeatures() : CDotFeatures()
 {
-	SG_UNSTABLE("CLBPPyrDotFeatures::CLBPPyrDotFeatures(void)", "\n");
+	SG_UNSTABLE("CLBPPyrDotFeatures::CLBPPyrDotFeatures()", "\n");
 
 	m_feat = NULL;
 

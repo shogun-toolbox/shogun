@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-CHistogramIntersectionKernel::CHistogramIntersectionKernel(void)
+CHistogramIntersectionKernel::CHistogramIntersectionKernel()
 : CDotKernel(0), beta(1.0)
 {
 	register_params();

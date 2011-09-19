@@ -33,7 +33,7 @@ class CSVMOcas : public CLinearMachine
 {
 	public:
 		/** default constructor  */
-		CSVMOcas(void);
+		CSVMOcas();
 
 		/** constructor
 		 *

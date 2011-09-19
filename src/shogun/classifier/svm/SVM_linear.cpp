@@ -115,7 +115,7 @@ void l2r_lr_fun::grad(double *w, double *g)
 		g[i] = w[i] + g[i];
 }
 
-int l2r_lr_fun::get_nr_variable(void)
+int l2r_lr_fun::get_nr_variable()
 {
 	return prob->n;
 }
@@ -243,7 +243,7 @@ void l2r_l2_svc_fun::grad(double *w, double *g)
 		g[i] = w[i] + 2*g[i];
 }
 
-int l2r_l2_svc_fun::get_nr_variable(void)
+int l2r_l2_svc_fun::get_nr_variable()
 {
 	return prob->n;
 }

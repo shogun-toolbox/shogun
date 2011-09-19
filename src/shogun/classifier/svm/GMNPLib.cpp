@@ -77,9 +77,9 @@ using namespace shogun;
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
 
-CGMNPLib::CGMNPLib(void)
+CGMNPLib::CGMNPLib()
 {
-	SG_UNSTABLE("CGMNPLib::CGMNPLib(void)", "\n");
+	SG_UNSTABLE("CGMNPLib::CGMNPLib()", "\n");
 
 	diag_H = NULL;
 	kernel_columns = NULL;

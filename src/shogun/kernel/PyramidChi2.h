@@ -29,7 +29,7 @@ class CPyramidChi2 : public CDotKernel
 {
 public:
 	/** default constructor protected to avoid its usage */ 
-	CPyramidChi2(void);
+	CPyramidChi2();
 
 	/** constructor
 	 *

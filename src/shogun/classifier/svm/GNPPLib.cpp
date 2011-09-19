@@ -30,9 +30,9 @@ using namespace shogun;
 
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
-CGNPPLib::CGNPPLib(void)
+CGNPPLib::CGNPPLib()
 {
-	SG_UNSTABLE("CGNPPLib::CGNPPLib(void)", "\n");
+	SG_UNSTABLE("CGNPPLib::CGNPPLib()", "\n");
 
 	kernel_columns = NULL;
 	cache_index = NULL;

@@ -464,10 +464,10 @@ void CSVMLight::svm_learn()
 					kernel->cache_kernel_row(i);
 		}
 	}
-    (void)compute_index(index,totdoc,index2dnum);
+    compute_index(index,totdoc,index2dnum);
     update_linear_component(docs,label,index2dnum,alpha,a,index2dnum,totdoc,
 			    lin,aicache,NULL);
-    (void)calculate_svm_model(docs,label,lin,alpha,a,c,
+    calculate_svm_model(docs,label,lin,alpha,a,c,
 			      index2dnum,index2dnum);
     for (i=0;i<totdoc;i++) {    /* copy initial alphas */
       a[i]=alpha[i];

@@ -43,7 +43,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CSpectrumMismatchRBFKernel(void);
+		CSpectrumMismatchRBFKernel();
 
 		/** constructor
 		 *

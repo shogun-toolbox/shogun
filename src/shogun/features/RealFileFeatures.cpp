@@ -19,7 +19,7 @@ using namespace shogun;
 
 CRealFileFeatures::CRealFileFeatures()
 {
-	SG_UNSTABLE("CRealFileFeatures::CRealFileFeatures(void)", "\n");
+	SG_UNSTABLE("CRealFileFeatures::CRealFileFeatures()", "\n");
 
 	working_file=NULL;
 	working_filename=strdup("");

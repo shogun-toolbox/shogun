@@ -67,7 +67,7 @@ class CGMNPLib: public CSGObject
 {
 	public:
 		/** default constructor  */
-		CGMNPLib(void);
+		CGMNPLib();
 
 		/** constructor
 		 *

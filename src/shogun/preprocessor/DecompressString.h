@@ -37,7 +37,7 @@ template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 {
 	public:
 		/** default constructor  */
-		CDecompressString(void)
+		CDecompressString()
 			: CStringPreprocessor<ST>()
 		{
 			compressor=NULL;

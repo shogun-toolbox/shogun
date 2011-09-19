@@ -20,7 +20,7 @@
 
 using namespace shogun;
 
-CSerializableJsonFile::CSerializableJsonFile(void)
+CSerializableJsonFile::CSerializableJsonFile()
 	:CSerializableFile() { init(""); }
 
 CSerializableJsonFile::CSerializableJsonFile(const char* fname, char rw)
@@ -60,7 +60,7 @@ CSerializableJsonFile::push_object(json_object* o)
 { m_stack_stream.push_back(o); json_object_get(o); }
 
 void
-CSerializableJsonFile::pop_object(void)
+CSerializableJsonFile::pop_object()
 { json_object_put(m_stack_stream.back()); m_stack_stream.pop_back(); }
 
 bool
@@ -116,7 +116,7 @@ CSerializableJsonFile::init(const char* fname)
 }
 
 void
-CSerializableJsonFile::close(void)
+CSerializableJsonFile::close()
 {
 	while (m_stack_stream.get_num_elements() > 1)
 		pop_object();
@@ -135,7 +135,7 @@ CSerializableJsonFile::close(void)
 }
 
 bool
-CSerializableJsonFile::is_opened(void)
+CSerializableJsonFile::is_opened()
 {
 	return m_stack_stream.get_num_elements() > 0;
 }

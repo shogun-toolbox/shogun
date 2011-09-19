@@ -13,11 +13,11 @@
 
 using namespace shogun;
 
-CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(void)
+CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures()
 	:CDotFeatures()
 {
 	SG_UNSTABLE("CImplicitWeightedSpecFeatures::"
-				"CImplicitWeightedSpecFeatures(void)", "\n");
+				"CImplicitWeightedSpecFeatures()", "\n");
 
 	strings = NULL;
 	normalization_factors = NULL;

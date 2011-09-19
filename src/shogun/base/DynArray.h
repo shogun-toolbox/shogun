@@ -55,7 +55,7 @@ template <class T> class DynArray
 		}
 
 		/** destructor */
-		virtual ~DynArray(void)
+		virtual ~DynArray()
 		{
 			if (use_sg_mallocs)
 				SG_FREE(array);
@@ -212,7 +212,7 @@ template <class T> class DynArray
 		/** STD VECTOR compatible. Delete array element at the end
 		 *  of array.
 		 */
-		inline void pop_back(void)
+		inline void pop_back()
 		{
 			if (get_num_elements() <= 0) return;
 			delete_element(get_num_elements()-1);
@@ -223,7 +223,7 @@ template <class T> class DynArray
 		 *
 		 * @return element at the end of array
 		 */
-		inline T back(void) const
+		inline T back() const
 		{
 			if (get_num_elements() <= 0) return get_element(0);
 			return get_element(get_num_elements()-1);
@@ -326,7 +326,7 @@ template <class T> class DynArray
 		 *
 		 * @return the array
 		 */
-		inline T* get_array(void) const
+		inline T* get_array() const
 		{
 			return array;
 		}
@@ -347,7 +347,7 @@ template <class T> class DynArray
 		}
 
 		/** clear the array (with zeros) */
-		inline void clear_array(void)
+		inline void clear_array()
 		{
 			if (last_element_idx >= 0)
 				memset(array, 0, (last_element_idx+1)*sizeof(T));

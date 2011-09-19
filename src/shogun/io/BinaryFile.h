@@ -29,7 +29,7 @@ class CBinaryFile: public CFile
 {
 public:
 	/** default constructor  */
-	CBinaryFile(void);
+	CBinaryFile();
 
 	/** constructor
 	 *

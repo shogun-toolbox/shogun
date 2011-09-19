@@ -178,7 +178,7 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerializableFile(void);
+	explicit CSerializableFile();
 
 	/** constructor
 	 *
@@ -195,13 +195,13 @@ public:
 	explicit CSerializableFile(const char* fname, char rw='r');
 
 	/** default destructor */
-	virtual ~CSerializableFile(void);
+	virtual ~CSerializableFile();
 
 	/** close */
-	virtual void close(void);
+	virtual void close();
 
 	/** is opened */
-	virtual bool is_opened(void);
+	virtual bool is_opened();
 
 	/* ************************************************************ */
 	/* Begin of public wrappers  */

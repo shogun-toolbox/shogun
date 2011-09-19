@@ -29,7 +29,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 {
 	public:
 		/** default constructor  */
-		CHashedWDFeaturesTransposed(void);
+		CHashedWDFeaturesTransposed();
 
 		/** constructor
 		 *

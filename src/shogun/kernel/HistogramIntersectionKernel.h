@@ -32,7 +32,7 @@ class CHistogramIntersectionKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */
-		CHistogramIntersectionKernel(void);
+		CHistogramIntersectionKernel();
 
 		/** constructor
 		 *

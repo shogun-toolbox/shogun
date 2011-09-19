@@ -144,7 +144,7 @@ public:
 	 *
 	 * @return number of variables
 	 */
-	int32_t get_nr_variable(void);
+	int32_t get_nr_variable();
 
 private:
 	void Xv(float64_t *v, float64_t *Xv);
@@ -193,7 +193,7 @@ public:
 	 */
 	void Hv(float64_t *s, float64_t *Hs);
 
-	int32_t get_nr_variable(void);
+	int32_t get_nr_variable();
 
 private:
 	void Xv(float64_t *v, float64_t *Xv);
@@ -215,7 +215,7 @@ public:
 	void grad(double *w, double *g);
 	void Hv(double *s, double *Hs);
 
-	int get_nr_variable(void);
+	int get_nr_variable();
 
 private:
 	void Xv(double *v, double *Xv);

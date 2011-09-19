@@ -175,7 +175,7 @@ int32_t prescan_document(char *file, int32_t *lines, int32_t *vlen, int32_t *ll)
 /******************************************************************************/
 /*** return 1 if problem is single class, 0 if two-class                    ***/
 /******************************************************************************/
-int32_t QPproblem::Check2Class(void)
+int32_t QPproblem::Check2Class()
 {
   int32_t i;
 

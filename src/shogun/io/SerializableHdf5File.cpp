@@ -33,7 +33,7 @@ CSerializableHdf5File::type_item_t::type_item_t(const char* name_)
 	name = name_;
 }
 
-CSerializableHdf5File::type_item_t::~type_item_t(void)
+CSerializableHdf5File::type_item_t::~type_item_t()
 {
 	if (dset >= 0) H5Dclose(dset);
 	if (dtype >= 0) H5Tclose(dtype);
@@ -43,11 +43,11 @@ CSerializableHdf5File::type_item_t::~type_item_t(void)
 }
 
 hid_t
-CSerializableHdf5File::sizeof_sparsetype(void) {
+CSerializableHdf5File::sizeof_sparsetype() {
 	return H5Tget_size(TYPE_INDEX) + H5Tget_size(H5T_STD_REF_OBJ);
 }
 hid_t
-CSerializableHdf5File::new_sparsetype(void)
+CSerializableHdf5File::new_sparsetype()
 {
 	hid_t result = H5Tcreate(H5T_COMPOUND, sizeof_sparsetype());
 
@@ -333,7 +333,7 @@ CSerializableHdf5File::group_open(const char* name,
 }
 
 bool
-CSerializableHdf5File::group_close(void)
+CSerializableHdf5File::group_close()
 {
 	if (H5Gclose(m_stack_h5stream.back()) < 0) return false;
 	m_stack_h5stream.pop_back();
@@ -341,7 +341,7 @@ CSerializableHdf5File::group_close(void)
 	return true;
 }
 
-CSerializableHdf5File::CSerializableHdf5File(void)
+CSerializableHdf5File::CSerializableHdf5File()
 	:CSerializableFile() { init(""); }
 
 CSerializableHdf5File::CSerializableHdf5File(const char* fname, char rw)
@@ -415,7 +415,7 @@ CSerializableHdf5File::init(const char* fname)
 }
 
 void
-CSerializableHdf5File::close(void)
+CSerializableHdf5File::close()
 {
 	while (m_stack_h5stream.get_num_elements() > 1) {
 		if (m_stack_h5stream.back() >= 0)
@@ -431,7 +431,7 @@ CSerializableHdf5File::close(void)
 }
 
 bool
-CSerializableHdf5File::is_opened(void)
+CSerializableHdf5File::is_opened()
 {
 	return m_stack_h5stream.get_num_elements() > 0;
 }

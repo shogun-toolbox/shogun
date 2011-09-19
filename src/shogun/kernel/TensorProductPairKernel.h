@@ -38,7 +38,7 @@ class CTensorProductPairKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */
-		CTensorProductPairKernel(void);
+		CTensorProductPairKernel();
 
 		/** constructor
 		 *

@@ -1576,7 +1576,7 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 	m_description = strdup(description);
 }
 
-TParameter::~TParameter(void)
+TParameter::~TParameter()
 {
 	SG_FREE(m_description);
 	SG_FREE(m_name);
@@ -1613,7 +1613,7 @@ TParameter::print(const char* prefix)
 }
 
 void
-TParameter::delete_cont(void)
+TParameter::delete_cont()
 {
 	/* In the case, ctype is a struct (not array of a basic type)
 	 * data does not start at m_parameter, since the latter may have
@@ -2385,12 +2385,12 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	return true;
 }
 
-Parameter::Parameter(void)
+Parameter::Parameter()
 {
 	SG_REF(sg_io);
 }
 
-Parameter::~Parameter(void)
+Parameter::~Parameter()
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		delete m_params.get_element(i);

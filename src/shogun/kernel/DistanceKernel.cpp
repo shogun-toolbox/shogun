@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CDistanceKernel::CDistanceKernel(void)
+CDistanceKernel::CDistanceKernel()
 : CKernel(0), distance(NULL), width(0.0)
 {
 	register_params();

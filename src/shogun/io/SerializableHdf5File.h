@@ -47,7 +47,7 @@ IGNORE_IN_CLASSLIST class CSerializableHdf5File
 
 	struct type_item_t {
 		explicit type_item_t(const char* name_);
-		~type_item_t(void);
+		~type_item_t();
 
 		int rank;
 		hsize_t dims[2];
@@ -61,8 +61,8 @@ IGNORE_IN_CLASSLIST class CSerializableHdf5File
 	DynArray<type_item_t*> m_stack_type;
 	DynArray<hid_t> m_stack_h5stream;
 
-	static hid_t sizeof_sparsetype(void);
-	static hid_t new_sparsetype(void);
+	static hid_t sizeof_sparsetype();
+	static hid_t new_sparsetype();
 	static hobj_ref_t* get_ref_sparstype(void* sparse_buf);
 	static hid_t new_sparseentrytype(EPrimitiveType ptype);
 	static hid_t ptype2hdf5(EPrimitiveType ptype);
@@ -86,7 +86,7 @@ IGNORE_IN_CLASSLIST class CSerializableHdf5File
 
 	bool group_create(const char* name, const char* prefix);
 	bool group_open(const char* name, const char* prefix);
-	bool group_close(void);
+	bool group_close();
 
 protected:
 	virtual TSerializableReader* new_reader(
@@ -147,7 +147,7 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerializableHdf5File(void);
+	explicit CSerializableHdf5File();
 
 	/** constructor
 	 *
@@ -164,8 +164,8 @@ public:
 		return "SerializableHdf5File";
 	}
 
-	virtual void close(void);
-	virtual bool is_opened(void);
+	virtual void close();
+	virtual bool is_opened();
 };
 }
 #endif /* HAVE_HDF5  */

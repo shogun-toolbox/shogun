@@ -40,7 +40,7 @@ IGNORE_IN_CLASSLIST class CSerializableJsonFile
 
 	void init(const char* fname);
 	void push_object(json_object* o);
-	void pop_object(void);
+	void pop_object();
 
 	static bool get_object_any(json_object** dest, json_object* src,
 							   const char* key);
@@ -106,7 +106,7 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerializableJsonFile(void);
+	explicit CSerializableJsonFile();
 
 	/** constructor
 	 *
@@ -123,8 +123,8 @@ public:
 		return "SerializableJsonFile";
 	}
 
-	virtual void close(void);
-	virtual bool is_opened(void);
+	virtual void close();
+	virtual bool is_opened();
 };
 }
 #endif /* HAVE_JSON  */

@@ -23,7 +23,7 @@ namespace shogun
  */
 class CGMNPSVM : public CMultiClassSVM
 {
-	void init(void);
+	void init();
 
 	public:
 		/** default constructor */

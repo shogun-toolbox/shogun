@@ -54,7 +54,7 @@ class CScatterSVM : public CMultiClassSVM
 {
 	public:
 		/** default constructor  */
-		CScatterSVM(void);
+		CScatterSVM();
 
 		/** constructor */
 		CScatterSVM(SCATTER_TYPE type);

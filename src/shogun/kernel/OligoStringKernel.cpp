@@ -21,7 +21,7 @@
 
 using namespace shogun;
 
-COligoStringKernel::COligoStringKernel(void)
+COligoStringKernel::COligoStringKernel()
   : CStringKernel<char>()
 {
 	init();

@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CSphericalKernel::CSphericalKernel(void): CKernel(0), distance(NULL)
+CSphericalKernel::CSphericalKernel(): CKernel(0), distance(NULL)
 {
 	init();
 	set_sigma(1.0);

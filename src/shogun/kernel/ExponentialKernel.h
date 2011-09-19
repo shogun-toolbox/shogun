@@ -83,7 +83,7 @@ class CExponentialKernel: public CDotKernel
 		 *
 		 * @return kernel width
 		 */
-		inline virtual float64_t get_width(void) const
+		inline virtual float64_t get_width() const
 		{
 			return m_width;
 		}
@@ -107,7 +107,7 @@ class CExponentialKernel: public CDotKernel
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post(void) throw (ShogunException);
+		virtual void load_serializable_post() throw (ShogunException);
 
 	private:
 		void init();

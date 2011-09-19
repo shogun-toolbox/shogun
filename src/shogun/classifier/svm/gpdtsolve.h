@@ -99,7 +99,7 @@ public:
    *
    * @return an int
    */
-  int32_t  Check2Class    (void);
+  int32_t  Check2Class    ();
 
   /** subproblem
    *
@@ -110,7 +110,7 @@ public:
   void Subproblem     (QPproblem &ker, int32_t len, int32_t *perm);
 
   /** PrepMP */
-  void PrepMP         (void);
+  void PrepMP         ();
 
   /** solve gpdt
    *
@@ -158,7 +158,7 @@ private:
 private:
   int32_t  Preprocess0 (int32_t *aux, int32_t *sv);
   int32_t  Preprocess1 (sKernel* KER, int32_t *aux, int32_t *sv);
-  int32_t  optimal     (void);
+  int32_t  optimal     ();
 
   bool is_zero(int32_t  i) { return (alpha[i] < DELTAsv); }
   bool is_free(int32_t  i)

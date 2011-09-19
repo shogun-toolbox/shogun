@@ -17,12 +17,12 @@
 using namespace shogun;
 
 void
-CChi2Kernel::init(void)
+CChi2Kernel::init()
 {
 	m_parameters->add(&width, "width");
 }
 
-CChi2Kernel::CChi2Kernel(void)
+CChi2Kernel::CChi2Kernel()
 : CDotKernel(0), width(0)
 {
 	init();

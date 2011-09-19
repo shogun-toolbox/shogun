@@ -32,7 +32,7 @@ class CGaussianShortRealKernel: public CDotKernel
 {
 	public:
 		/** default constructor  */
-		CGaussianShortRealKernel(void);
+		CGaussianShortRealKernel();
 
 		/** constructor
 		 *

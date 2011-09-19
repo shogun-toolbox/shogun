@@ -37,8 +37,8 @@ class CSerializableAsciiFile :public CSerializableFile
 
 	DynArray<long> m_stack_fpos;
 
-	void init(void);
-	bool ignore(void);
+	void init();
+	bool ignore();
 
 protected:
 
@@ -105,7 +105,7 @@ protected:
 #endif
 public:
 	/** default constructor */
-	explicit CSerializableAsciiFile(void);
+	explicit CSerializableAsciiFile();
 
 	/** constructor
 	 *
@@ -125,7 +125,7 @@ public:
 	virtual ~CSerializableAsciiFile();
 
 	/** @return object name */
-	inline virtual const char* get_name(void) const {
+	inline virtual const char* get_name() const {
 		return "SerializableAsciiFile";
 	}
 };

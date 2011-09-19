@@ -65,7 +65,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 *
 		 * @return number of elements
 		 */
-		inline int32_t get_num_elements(void) const
+		inline int32_t get_num_elements() const
 		{
 			return m_array.get_num_elements();
 		}
@@ -168,7 +168,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		/** STD VECTOR compatible. Delete array element at the end
 		 *  of array.
 		 */
-		inline void pop_back(void)
+		inline void pop_back()
 		{
 			CSGObject* element=(CSGObject*)m_array.back();
 			SG_UNREF(element);
@@ -181,7 +181,7 @@ template<class T>class CDynamicObjectArray :public CSGObject
 		 *
 		 * @return element at the end of array
 		 */
-		inline T* back(void) const
+		inline T* back() const
 		{
 			T* element=m_array.back();
 			CSGObject* casted=(CSGObject*)element;

@@ -33,7 +33,7 @@
 
 using namespace shogun;
 
-CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(void)
+CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel()
 	:CStringKernel<char>(0)
 {
 	init();

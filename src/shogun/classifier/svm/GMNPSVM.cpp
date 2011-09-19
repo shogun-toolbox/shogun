@@ -38,7 +38,7 @@ CGMNPSVM::~CGMNPSVM()
 }
 
 void
-CGMNPSVM::init(void)
+CGMNPSVM::init()
 {
 	m_parameters->add_matrix(&m_basealphas,
 							 &m_basealphas_y, &m_basealphas_x,

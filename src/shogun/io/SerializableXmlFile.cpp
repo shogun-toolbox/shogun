@@ -19,7 +19,7 @@
 
 using namespace shogun;
 
-CSerializableXmlFile::CSerializableXmlFile(void)
+CSerializableXmlFile::CSerializableXmlFile()
 	:CSerializableFile() { init(false); }
 
 CSerializableXmlFile::CSerializableXmlFile(const char* fname, char rw,
@@ -95,7 +95,7 @@ CSerializableXmlFile::next_node(const xmlChar* name)
 }
 
 void
-CSerializableXmlFile::pop_node(void)
+CSerializableXmlFile::pop_node()
 {
 	m_stack_stream.pop_back();
 }
@@ -139,7 +139,7 @@ CSerializableXmlFile::init(bool format)
 }
 
 void
-CSerializableXmlFile::close(void)
+CSerializableXmlFile::close()
 {
 	while (m_stack_stream.get_num_elements() > 0) pop_node();
 
@@ -157,7 +157,7 @@ CSerializableXmlFile::close(void)
 }
 
 bool
-CSerializableXmlFile::is_opened(void)
+CSerializableXmlFile::is_opened()
 {
 	return m_doc != NULL;
 }

@@ -555,9 +555,9 @@ struct TSGDataType
 	void to_string(char* dest, size_t n) const;
 
 	/** size of stype */
-	size_t sizeof_stype(void) const;
+	size_t sizeof_stype() const;
 	/** size of ptype */
-	size_t sizeof_ptype(void) const;
+	size_t sizeof_ptype() const;
 
 	/** size of sparse entry 
 	 * @param ptype

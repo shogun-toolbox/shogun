@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CHistogramWordStringKernel::CHistogramWordStringKernel(void)
+CHistogramWordStringKernel::CHistogramWordStringKernel()
 : CStringKernel<uint16_t>()
 {
 	init();

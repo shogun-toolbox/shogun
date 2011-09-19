@@ -32,7 +32,7 @@ class CGNPPLib: public CSGObject
 {
  public:
   /** default constructor  */
-  CGNPPLib(void);
+  CGNPPLib();
 
   /** constructor
    *

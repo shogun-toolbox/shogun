@@ -35,7 +35,7 @@ class CDistantSegmentsKernel: public CStringKernel<char>
 {
 public:
 	/** default constructor */
-	CDistantSegmentsKernel(void);
+	CDistantSegmentsKernel();
 
 	/** constructor
 	 *

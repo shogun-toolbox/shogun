@@ -24,10 +24,10 @@ IGNORE_IN_CLASSLIST class SerializableHdf5Reader00
 
 public:
 	explicit SerializableHdf5Reader00(CSerializableHdf5File* file);
-	virtual ~SerializableHdf5Reader00(void);
+	virtual ~SerializableHdf5Reader00();
 
 	/** @return object name */
-	inline virtual const char* get_name(void) const {
+	inline virtual const char* get_name() const {
 		return "SerializableHdf5Reader00";
 	}
 

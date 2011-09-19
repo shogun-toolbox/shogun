@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-CGaussianShortRealKernel::CGaussianShortRealKernel(void)
+CGaussianShortRealKernel::CGaussianShortRealKernel()
 : CDotKernel(0), width(0.0)
 {
 	register_params();

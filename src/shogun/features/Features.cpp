@@ -54,7 +54,7 @@ CFeatures::~CFeatures()
 }
 
 void
-CFeatures::init(void)
+CFeatures::init()
 {
 	m_parameters->add(&properties, "properties",
 					  "Feature properties.");

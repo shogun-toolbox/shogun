@@ -32,7 +32,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CSpectrumRBFKernel(void);
+		CSpectrumRBFKernel();
 
 		/** constructor
 		 * @param size

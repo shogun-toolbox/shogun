@@ -684,7 +684,6 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 		max_len=num;
 		offs=0;
 		original_num_symbols=alphabet->get_num_symbols();
-		int32_t max_val=alphabet->get_num_bits();
 		str=SG_MALLOC(ST, len);
 	}
 	else
@@ -701,7 +700,7 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 
 		if (bitremap_in_single_string)
 		{
-			if (len!=order)
+			if (len!=(uint64_t) order)
 				SG_ERROR("read in line %d not of length %d (is %d)\n", 4*i+1, order, len);
 			for (int32_t j=0; j<order; j++)
 				str[j]=(ST) alphabet->remap_to_bin((uint8_t) s[j]);
@@ -716,7 +715,7 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 
 			if (ignore_invalid)
 			{
-				for (int32_t j=0; j<len; j++)
+				for (uint64_t j=0; j<len; j++)
 				{
 					if (alphabet->is_valid((uint8_t) s[j]))
 						str[j]= (ST) s[j];
@@ -726,7 +725,7 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 			}
 			else
 			{
-				for (int32_t j=0; j<len; j++)
+				for (uint64_t j=0; j<len; j++)
 					str[j]= (ST) s[j];
 			}
 			max_len=CMath::max(max_len, (int32_t) len);
@@ -1371,7 +1370,7 @@ template<class ST> void CStringFeatures<ST>::unembed_word(ST word, uint8_t* seq,
 	uint32_t nbits= (uint32_t) alphabet->get_num_bits();
 
 	ST mask=0;
-	for (int32_t i=0; i<nbits; i++)
+	for (uint32_t i=0; i<nbits; i++)
 		mask=(mask<<1) | (ST) 1;
 
 	for (int32_t i=0; i<len; i++)
@@ -1932,6 +1931,83 @@ SAVE(set_string_list, float64_t)
 SAVE(set_longreal_string_list, floatmax_t)
 #undef SAVE
 
+template <class ST> template <class CT>
+bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start,
+		int32_t p_order, int32_t gap, bool rev)
+{
+	remove_subset();
+	ASSERT(sf);
+
+	CAlphabet* alpha=sf->get_alphabet();
+	ASSERT(alpha->get_num_symbols_in_histogram() > 0);
+
+	this->order=p_order;
+	cleanup();
+
+	num_vectors=sf->get_num_vectors();
+	ASSERT(num_vectors>0);
+	max_string_length=sf->get_max_vector_length()-start;
+	features=SG_MALLOC(SGString<ST>, num_vectors);
+
+	SG_DEBUG( "%1.0llf symbols in StringFeatures<*> %d symbols in histogram\n", sf->get_num_symbols(),
+			alpha->get_num_symbols_in_histogram());
+
+	for (int32_t i=0; i<num_vectors; i++)
+	{
+		int32_t len=-1;
+		bool vfree;
+		CT* c=sf->get_feature_vector(i, len, vfree);
+		ASSERT(!vfree); // won't work when preprocessors are attached
+
+		features[i].string=SG_MALLOC(ST, len);
+		features[i].slen=len;
+
+		ST* str=features[i].string;
+		for (int32_t j=0; j<len; j++)
+			str[j]=(ST) alpha->remap_to_bin(c[j]);
+	}
+
+	original_num_symbols=alpha->get_num_symbols();
+	int32_t max_val=alpha->get_num_bits();
+
+	SG_UNREF(alpha);
+
+	if (p_order>1)
+		num_symbols=CMath::powl((floatmax_t) 2, (floatmax_t) max_val*p_order);
+	else
+		num_symbols=original_num_symbols;
+	SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols);
+
+	if ( ((floatmax_t) num_symbols) > CMath::powl(((floatmax_t) 2),((floatmax_t) sizeof(ST)*8)) )
+	{
+		SG_ERROR( "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+		return false;
+	}
+
+	SG_DEBUG( "translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST)) ;
+	for (int32_t line=0; line<num_vectors; line++)
+	{
+		int32_t len=0;
+		bool vfree;
+		ST* fv=get_feature_vector(line, len, vfree);
+		ASSERT(!vfree); // won't work when preprocessors are attached
+
+		if (rev)
+			CAlphabet::translate_from_single_order_reversed(fv, len, start+gap, p_order+gap, max_val, gap);
+		else
+			CAlphabet::translate_from_single_order(fv, len, start+gap, p_order+gap, max_val, gap);
+
+		/* fix the length of the string -- hacky */
+		features[line].slen-=start+gap ;
+		if (features[line].slen<0)
+			features[line].slen=0 ;
+	}
+
+	compute_symbol_mask_table(max_val);
+
+	return true;
+}
+
 template class CStringFeatures<bool>;
 template class CStringFeatures<char>;
 template class CStringFeatures<int8_t>;
@@ -1945,4 +2021,12 @@ template class CStringFeatures<uint64_t>;
 template class CStringFeatures<float32_t>;
 template class CStringFeatures<float64_t>;
 template class CStringFeatures<floatmax_t>;
+
+template bool CStringFeatures<uint16_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint32_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint64_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+
+template bool CStringFeatures<uint16_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint32_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint64_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
 }

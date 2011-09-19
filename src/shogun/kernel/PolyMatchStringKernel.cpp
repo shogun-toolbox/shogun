@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CPolyMatchStringKernel::CPolyMatchStringKernel(void)
+CPolyMatchStringKernel::CPolyMatchStringKernel()
 : CStringKernel<char>()
 {
 	init();

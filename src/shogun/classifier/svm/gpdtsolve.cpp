@@ -119,10 +119,10 @@ public:
   int32_t DivideMP (int32_t *out, int32_t *in, int32_t n);
 
   /*** Itarations counter ***/
-  void Iteration(void) { nit++; }
+  void Iteration() { nit++; }
 
   /*** Cache size control ***/
-  int32_t CheckCycle(void)
+  int32_t CheckCycle()
   {
     int32_t us;
     cache_entry *pt = first_free->next;

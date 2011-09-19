@@ -34,7 +34,7 @@ class CDistanceKernel: public CKernel
 {
 	public:
 		/** default constructor  */
-		CDistanceKernel(void);
+		CDistanceKernel();
 
 		/** constructor
 		 *

@@ -29,9 +29,9 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 {
 	public:
 		/** default constructor  */
-		CGCArray(void) : CSGObject()
+		CGCArray() : CSGObject()
 		{
-			SG_UNSTABLE("CGCArray::CGCArray(void)", "\n");
+			SG_UNSTABLE("CGCArray::CGCArray()", "\n");
 
 			array = NULL;
 			size=0;

@@ -29,7 +29,7 @@ class CHashedWDFeatures: public CDotFeatures
 {
 public:
 	/** default constructor  */
-	CHashedWDFeatures(void);
+	CHashedWDFeatures();
 
 	/** constructor
 	 *

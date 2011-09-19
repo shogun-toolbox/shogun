@@ -18,13 +18,13 @@
 using namespace shogun;
 
 void
-CAUCKernel::init(void)
+CAUCKernel::init()
 {
 	m_parameters->add((CSGObject**) &subkernel, "subkernel",
 					  "The subkernel.");
 }
 
-CAUCKernel::CAUCKernel(void)
+CAUCKernel::CAUCKernel()
 : CDotKernel(0), subkernel(NULL)
 {
 	init();

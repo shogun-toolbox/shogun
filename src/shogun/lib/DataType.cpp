@@ -80,7 +80,7 @@ TSGDataType::to_string(char* dest, size_t n) const
 }
 
 size_t
-TSGDataType::sizeof_stype(void) const
+TSGDataType::sizeof_stype() const
 {
 	switch (m_stype) {
 	case ST_NONE: return sizeof_ptype();
@@ -126,7 +126,7 @@ TSGDataType::sizeof_stype(void) const
 }
 
 size_t
-TSGDataType::sizeof_ptype(void) const
+TSGDataType::sizeof_ptype() const
 {
 	switch (m_ptype) {
 	case PT_BOOL: return sizeof (bool);

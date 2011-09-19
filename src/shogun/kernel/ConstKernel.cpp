@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CConstKernel::CConstKernel(void)
+CConstKernel::CConstKernel()
 : CKernel()
 {
 	init();

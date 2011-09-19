@@ -69,7 +69,7 @@ class CGHMM : public CDistribution
 		 *
 		 * @return name of the SGSerializable
 		 */
-	virtual const char* get_name(void) const { return "GHMM"; }
+	virtual const char* get_name() const { return "GHMM"; }
 };
 }
 #endif

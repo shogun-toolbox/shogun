@@ -36,7 +36,7 @@
 
 using namespace shogun;
 
-CSpectrumRBFKernel::CSpectrumRBFKernel(void)
+CSpectrumRBFKernel::CSpectrumRBFKernel()
   : CStringKernel<char>(0)
 {
     init();

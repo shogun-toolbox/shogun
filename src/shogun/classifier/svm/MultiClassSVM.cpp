@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CMultiClassSVM::CMultiClassSVM(void)
+CMultiClassSVM::CMultiClassSVM()
 : CSVM(0), multiclass_type(ONE_VS_REST), m_num_svms(0), m_svms(NULL)
 {
 	init();

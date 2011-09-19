@@ -14,9 +14,9 @@
 
 using namespace shogun;
 
-CBinaryFile::CBinaryFile(void)
+CBinaryFile::CBinaryFile()
 {
-	SG_UNSTABLE("CBinaryFile::CBinaryFile(void)", "\n");
+	SG_UNSTABLE("CBinaryFile::CBinaryFile()", "\n");
 }
 
 CBinaryFile::CBinaryFile(FILE* f, const char* name) : CFile(f, name)

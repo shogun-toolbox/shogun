@@ -48,7 +48,7 @@ class CLibLinear : public CLinearMachine
 {
 	public:
 		/** default constructor  */
-		CLibLinear(void);
+		CLibLinear();
 
 		/** constructor
 		 *

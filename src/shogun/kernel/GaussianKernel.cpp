@@ -102,7 +102,7 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result_multiplier*exp(-result/width);
 }
 
-void CGaussianKernel::load_serializable_post(void) throw (ShogunException)
+void CGaussianKernel::load_serializable_post() throw (ShogunException)
 {
 	CKernel::load_serializable_post();
 	precompute_squared();

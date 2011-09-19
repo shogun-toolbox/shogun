@@ -18,7 +18,7 @@ using namespace shogun;
 SerializableJsonReader00::SerializableJsonReader00(
 	CSerializableJsonFile* file) { m_file = file; }
 
-SerializableJsonReader00::~SerializableJsonReader00(void) {}
+SerializableJsonReader00::~SerializableJsonReader00() {}
 
 bool
 SerializableJsonReader00::read_scalar_wrapped(

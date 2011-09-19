@@ -80,7 +80,7 @@ class CDistanceMachine : public CMachine
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name(void) const { return "DistanceMachine"; }
+		virtual const char* get_name() const { return "DistanceMachine"; }
 
 		/** Classify all rhs features using the built clusters.
 		 * Cluster index with smallest distance to to be classified element is

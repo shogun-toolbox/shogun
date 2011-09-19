@@ -30,11 +30,11 @@ namespace shogun
  */
 class CFixedDegreeStringKernel: public CStringKernel<char>
 {
-	void init(void);
+	void init();
 
 	public:
 		/** default constructor  */
-		CFixedDegreeStringKernel(void);
+		CFixedDegreeStringKernel();
 
 		/** constructor
 		 *

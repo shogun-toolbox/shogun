@@ -50,7 +50,7 @@ namespace shogun
 	{
 	public:
 		/** default constructor  */
-		CCompressor(void);
+		CCompressor();
 
 		/** default constructor
 		 *

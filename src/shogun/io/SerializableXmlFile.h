@@ -48,7 +48,7 @@ class CSerializableXmlFile
 	bool push_node(const xmlChar* name);
 	bool join_node(const xmlChar* name);
 	bool next_node(const xmlChar* name);
-	void pop_node(void);
+	void pop_node();
 
 protected:
 	virtual TSerializableReader* new_reader(
@@ -109,7 +109,7 @@ protected:
 
 public:
 	/** default constructor */
-	explicit CSerializableXmlFile(void);
+	explicit CSerializableXmlFile();
 
 	/** constructor
 	 *
@@ -128,8 +128,8 @@ public:
 		return "SerializableXmlFile";
 	}
 
-	virtual void close(void);
-	virtual bool is_opened(void);
+	virtual void close();
+	virtual bool is_opened();
 };
 }
 #endif /* HAVE_XML  */

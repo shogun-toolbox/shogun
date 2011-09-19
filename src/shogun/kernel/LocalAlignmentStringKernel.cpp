@@ -138,7 +138,7 @@ void CLocalAlignmentStringKernel::cleanup()
 /* LogSum - default log funciotion. fast, but not exact */
 /* LogSum2 - precise, but slow. Note that these two functions need different figure types  */
 
-void CLocalAlignmentStringKernel::init_logsum(void){
+void CLocalAlignmentStringKernel::init_logsum(){
   int32_t i;
   for (i = 0; i < LOGSUM_TBL; i++) 
     logsum_lookup[i] = (int32_t) (INTSCALE*

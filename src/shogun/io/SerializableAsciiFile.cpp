@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-CSerializableAsciiFile::CSerializableAsciiFile(void)
+CSerializableAsciiFile::CSerializableAsciiFile()
 	:CSerializableFile() { init(); }
 
 CSerializableAsciiFile::CSerializableAsciiFile(FILE* fstream, char rw)
@@ -29,7 +29,7 @@ CSerializableAsciiFile::CSerializableAsciiFile(
 CSerializableAsciiFile::~CSerializableAsciiFile() {}
 
 bool
-CSerializableAsciiFile::ignore(void)
+CSerializableAsciiFile::ignore()
 {
 	for (uint32_t cont_count = 0, item_count = 0,
 			 sgserial_count = 0; ;) {
@@ -76,7 +76,7 @@ CSerializableAsciiFile::new_reader(char* dest_version, size_t n)
 }
 
 void
-CSerializableAsciiFile::init(void)
+CSerializableAsciiFile::init()
 {
 	if (m_fstream == NULL) return;
 

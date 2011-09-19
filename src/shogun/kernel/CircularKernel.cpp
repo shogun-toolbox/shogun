@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CCircularKernel::CCircularKernel(void): CKernel(0), distance(NULL)
+CCircularKernel::CCircularKernel(): CKernel(0), distance(NULL)
 {
 	init();
 	set_sigma(1.0);
@@ -55,7 +55,7 @@ bool CCircularKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void CCircularKernel::load_serializable_post(void) throw (ShogunException)
+void CCircularKernel::load_serializable_post() throw (ShogunException)
 {
 	CKernel::load_serializable_post();
 }

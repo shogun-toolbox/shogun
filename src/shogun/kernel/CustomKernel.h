@@ -28,7 +28,7 @@ namespace shogun
  */
 class CCustomKernel: public CKernel
 {
-	void init(void);
+	void init();
 
 	public:
 		/** default constructor */

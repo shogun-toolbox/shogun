@@ -13,9 +13,9 @@
 
 using namespace shogun;
 
-CHashedWDFeatures::CHashedWDFeatures(void) :CDotFeatures()
+CHashedWDFeatures::CHashedWDFeatures() :CDotFeatures()
 {
-	SG_UNSTABLE("CHashedWDFeatures::CHashedWDFeatures(void)", "\n");
+	SG_UNSTABLE("CHashedWDFeatures::CHashedWDFeatures()", "\n");
 
 	strings = NULL;
 

@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-CSerializableFile::CSerializableFile(void)
+CSerializableFile::CSerializableFile()
 	:CSGObject()
 {
 	init(NULL, 0, "(file)");
@@ -65,13 +65,13 @@ CSerializableFile::init(FILE* fstream, char task, const char* filename)
 }
 
 void
-CSerializableFile::close(void)
+CSerializableFile::close()
 {
 	if (is_opened()) { fclose(m_fstream); m_fstream = NULL; }
 }
 
 bool
-CSerializableFile::is_opened(void)
+CSerializableFile::is_opened()
 {
 	return m_fstream != NULL;
 }

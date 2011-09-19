@@ -28,9 +28,9 @@ template <class T> class CSimpleFile : public CSGObject
 {
 	public:
 		/** default constructor  */
-		CSimpleFile(void) :CSGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
+		CSimpleFile() :CSGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
 		{
-			SG_UNSTABLE("CSimpleFile::CSimpleFile(void)", "\n");
+			SG_UNSTABLE("CSimpleFile::CSimpleFile()", "\n");
 
 			file=NULL;
 			filename=strdup("");

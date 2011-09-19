@@ -36,7 +36,7 @@ IGNORE_IN_CLASSLIST class CHDF5File : public CFile
 {
 public:
 	/** default constructor  */
-	CHDF5File(void);
+	CHDF5File();
 
 	/** constructor
 	 *

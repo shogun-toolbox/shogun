@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-CGaussianMatchStringKernel::CGaussianMatchStringKernel(void)
+CGaussianMatchStringKernel::CGaussianMatchStringKernel()
 : CStringKernel<char>(0), width(0.0)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());

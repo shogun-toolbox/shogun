@@ -98,7 +98,7 @@ class CDotKernel : public CKernel
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name(void) const { return "DotKernel"; }
+		virtual const char* get_name() const { return "DotKernel"; }
 
 		/** return what type of kernel we are, e.g.
 		 * Linear,Polynomial, Gaussian,...

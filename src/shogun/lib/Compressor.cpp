@@ -35,10 +35,10 @@
 
 using namespace shogun;
 
-CCompressor::CCompressor(void)
+CCompressor::CCompressor()
 	:CSGObject(), compression_type(UNCOMPRESSED)
 {
-	SG_UNSTABLE("CCompressor::CCompressor(void)", "\n");
+	SG_UNSTABLE("CCompressor::CCompressor()", "\n");
 }
 
 void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,

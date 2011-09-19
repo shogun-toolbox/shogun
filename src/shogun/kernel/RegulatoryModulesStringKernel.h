@@ -26,7 +26,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 {
 	public:
 		/** default constructor  */
-		CRegulatoryModulesStringKernel(void);
+		CRegulatoryModulesStringKernel();
 
 		/** constructor
 		 *

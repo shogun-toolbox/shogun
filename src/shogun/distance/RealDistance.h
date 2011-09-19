@@ -50,7 +50,7 @@ public:
 	 *
 	 * @return name of the SGSerializable
 	 */
-	virtual const char* get_name(void) const { return "RealDistance"; }
+	virtual const char* get_name() const { return "RealDistance"; }
 
 	/** cleanup distance
 	 *
