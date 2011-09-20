@@ -639,7 +639,13 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 void CAlphabet::copy_histogram(CAlphabet* a)
 {
 	SGVector<int64_t> h=a->get_histogram();
-	ASSERT(h.vlen == sizeof(histogram));
+
+	if (h.vlen != sizeof(histogram)/sizeof(histogram[0]))
+	{
+		SG_ERROR("Histogram has %d elements, but %d elements where expected\n",
+				h.vlen, sizeof(histogram)/sizeof(histogram[0]));
+	}
+
 	memcpy(histogram, h.vector, sizeof(histogram));
 }
 
