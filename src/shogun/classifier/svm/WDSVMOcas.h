@@ -20,8 +20,6 @@
 
 namespace shogun
 {
-template <class ST> class CStringFeatures;
-
 /** @brief class WDSVMOcas */
 class CWDSVMOcas : public CMachine
 {

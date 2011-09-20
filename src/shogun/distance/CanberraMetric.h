@@ -17,8 +17,6 @@
 
 namespace shogun
 {
-	template <class T> class CSimpleFeatures;
-
 /** @brief class CanberraMetric 
  *
  * The Canberra distance sums up the dissimilarity (ratios) between feature 

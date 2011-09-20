@@ -13,11 +13,10 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/modelselection/ParameterCombination.h>
 
 namespace shogun
 {
-
-class CParameterCombination;
 
 /** type of range */
 enum ERangeType

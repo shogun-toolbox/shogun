@@ -18,9 +18,6 @@
 
 namespace shogun
 {
-template <class T> class CDynamicArray;
-template <class ST> class CStringFeatures;
-
 /** @brief The CommUlongString kernel may be used to compute the spectrum kernel
  * from strings that have been mapped into unsigned 64bit integers.
  *

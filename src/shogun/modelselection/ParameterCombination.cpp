@@ -8,6 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/Machine.h>
