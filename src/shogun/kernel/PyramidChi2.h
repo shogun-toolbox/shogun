@@ -18,6 +18,8 @@
 
 namespace shogun
 {
+	template <class T> class CSimpleFeatures;
+
 /** @brief Pyramid Kernel over Chi2 matched histograms.
  *
  * 

@@ -21,6 +21,8 @@
 
 namespace shogun
 {
+template <class T> class SGString;
+
 /** @brief store plif arrays for all transitions in the model
  */
 class CPlifMatrix: public CSGObject

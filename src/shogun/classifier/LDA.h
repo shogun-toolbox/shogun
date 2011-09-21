@@ -21,6 +21,7 @@
 
 namespace shogun
 {
+	template <class ST> class CSimpleFeatures;
 /** @brief Class LDA implements regularized Linear Discriminant Analysis.
  *
  * LDA learns a linear classifier and requires examples to be CSimpleFeatures.
