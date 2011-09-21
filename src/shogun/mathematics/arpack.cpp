@@ -99,22 +99,29 @@ void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const
 
 	#ifdef HAVE_SUPERLU
 	char equed[1];
-	void* work;
+	void* work = NULL;
 	int lwork = 0;
 	SuperMatrix slu_A, slu_L, slu_U, slu_B, slu_X;
 	superlu_options_t options;
 	SuperLUStat_t stat;
 	mem_usage_t mem_usage;
-	int* perm_c = SG_MALLOC(int, n);
-	int* perm_r = SG_MALLOC(int, n);
-	int* etree = SG_MALLOC(int, n);
-	double* R = SG_MALLOC(double, n);
-	double* C = SG_MALLOC(double, n);
+	int *perm_c, *perm_r, *etree;
+	double *R, *C;
+	if (mode==3)
+	{
+		perm_c = intMalloc(n);
+		perm_r = intMalloc(n);
+		etree = intMalloc(n);
+		R = doubleMalloc(n);
+		C = doubleMalloc(n);
+	}
 	double ferr;
 	double berr;
 	double rcond;
 	double rpg;
 	int slu_info;
+	double* slu_Bv;
+	double* slu_Xv;
 	#endif
 
 	// shift-invert mode init
@@ -135,18 +142,21 @@ void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const
 					matrix[i*n+i] -= shift;
 		}
 		
-		#ifdef HAVE_SUPERLU
+	#ifdef HAVE_SUPERLU
 		SG_SDEBUG("SUPERLU: Constructing sparse matrix.\n");
 		int nnz = 0;
+		// get number of non-zero elements
 		for (i=0; i<n*n; i++)
 		{
 			if (matrix[i]!=0.0)
 				nnz++;
 		}
+		// allocate arrays to store sparse matrix
 		double* val = doubleMalloc(nnz);
 		int* rowind = intMalloc(nnz);
 		int* colptr = intMalloc(n+1);
 		nnz = 0;
+		// construct sparse matrix
 		for (i=0; i<n; i++)
 		{
 			colptr[i] = nnz;
@@ -161,31 +171,33 @@ void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const
 			}
 		}
 		colptr[i] = nnz;
+		// create CCS matrix 
 		dCreate_CompCol_Matrix(&slu_A,n,n,nnz,val,rowind,colptr,SLU_NC,SLU_D,SLU_GE);
 
+		// initialize options
 		set_default_options(&options);
 		options.Equil = YES;
-		options.ColPerm = MMD_AT_PLUS_A;
 		options.SymmetricMode = YES;
 		StatInit(&stat);
 
+		// factorize
 		slu_info = 0;
-		double* tmp_rhs = SG_MALLOC(double, n);
-		for (i=0; i<n; i++) tmp_rhs[i] = 20.0;
-		dCreate_Dense_Matrix(&slu_B,n,1,tmp_rhs,n,SLU_DN,SLU_D,SLU_GE);
-		dCreate_Dense_Matrix(&slu_X,n,1,tmp_rhs,n,SLU_DN,SLU_D,SLU_GE);
+		slu_Bv = doubleMalloc(n);
+		slu_Xv = doubleMalloc(n);
+		dCreate_Dense_Matrix(&slu_B,n,1,slu_Bv,n,SLU_DN,SLU_D,SLU_GE);
+		dCreate_Dense_Matrix(&slu_X,n,1,slu_Xv,n,SLU_DN,SLU_D,SLU_GE);
 		slu_B.ncol = 0;
 		SG_SDEBUG("SUPERLU: Factorizing\n");
 		dgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
 		       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond, &ferr, &berr,
-		       &mem_usage, &stat, &slu_info);
+		       &mem_usage,&stat,&slu_info);
+		slu_B.ncol = 1;
 		if (slu_info)
 		{
 			SG_SERROR("SUPERLU: Failed to factorize matrix, got %d code\n", slu_info);
 		}
-		SG_FREE(tmp_rhs);
 		options.Fact = FACTORED;
-		#else
+	#else
 		// compute factorization according to pos value
 		if (pos)
 		{
@@ -200,7 +212,7 @@ void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const
 			ipiv = SG_CALLOC(int, n);
 			clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 		}
-		#endif
+	#endif
 	}
 	// main computation loop
 	SG_SDEBUG("ARPACK: Starting main computation DSAUPD loop.\n");
@@ -225,14 +237,19 @@ void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const
 				if (!rhs_diag)
 				{
 			#ifdef HAVE_SUPERLU
-					dCreate_Dense_Matrix(&slu_B,n,1,workd+ipntr[0]-1,n,SLU_DN,SLU_D,SLU_GE);
-					dCreate_Dense_Matrix(&slu_X,n,1,workd+ipntr[1]-1,n,SLU_DN,SLU_D,SLU_GE);
+					// treat workd+ipntr(0) as B 
+					for (i=0; i<n; i++)
+						slu_Bv[i] = (workd+ipntr[0]-1)[i];
 					slu_info = 0;
+					// solve
 					dgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
 					       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond, 
 					       &ferr, &berr, &mem_usage, &stat, &slu_info);
 					if (slu_info)
 						SG_SERROR("SUPERLU: GOT %d\n", slu_info);
+					// move elements from resulting X to workd+ipntr(1) 
+					for (i=0; i<n; i++)
+						(workd+ipntr[1]-1)[i] = slu_Xv[i];
 			#else
 					for (i=0; i<n; i++)
 						(workd+ipntr[1]-1)[i] = (workd+ipntr[0]-1)[i];
@@ -248,14 +265,16 @@ void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const
 					if (ido==-1)
 					{
 			#ifdef HAVE_SUPERLU
-						dCreate_Dense_Matrix(&slu_B,n,1,workd+ipntr[0]-1,n,SLU_DN,SLU_D,SLU_GE);
-						dCreate_Dense_Matrix(&slu_X,n,1,workd+ipntr[1]-1,n,SLU_DN,SLU_D,SLU_GE);
+						for (i=0; i<n; i++)
+							slu_Bv[i] = (workd+ipntr[0]-1)[i];
 						slu_info = 0;
 						dgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
 						       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond, 
 						       &ferr, &berr, &mem_usage, &stat, &slu_info);
 						if (slu_info)
 							SG_SERROR("SUPERLU: GOT %d\n", slu_info);
+						for (i=0; i<n; i++)
+							(workd+ipntr[1]-1)[i] = slu_Xv[i];
 			#else
 						for (i=0; i<n; i++)
 							(workd+ipntr[1]-1)[i] = rhs_diag[i]*(workd+ipntr[0]-1)[i];
@@ -269,14 +288,16 @@ void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const
 					if (ido==1)
 					{
 			#ifdef HAVE_SUPERLU
-						dCreate_Dense_Matrix(&slu_B,n,1,workd+ipntr[2]-1,n,SLU_DN,SLU_D,SLU_GE);
-						dCreate_Dense_Matrix(&slu_X,n,1,workd+ipntr[1]-1,n,SLU_DN,SLU_D,SLU_GE);
+						for (i=0; i<n; i++)
+							slu_Bv[i] = (workd+ipntr[2]-1)[i];
 						slu_info = 0;
 						dgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
 						       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond, 
 						       &ferr, &berr, &mem_usage, &stat, &slu_info);
 						if (slu_info)
 							SG_SERROR("SUPERLU: GOT %d\n", slu_info);
+						for (i=0; i<n; i++)
+							(workd+ipntr[1]-1)[i] = slu_Xv[i];
 			#else
 						for (i=0; i<n; i++)
 							(workd+ipntr[1]-1)[i] = (workd+ipntr[2]-1)[i];
@@ -300,13 +321,16 @@ void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const
 	if (!pos && mode==3) SG_FREE(ipiv);
 	
 	#ifdef HAVE_SUPERLU
-	SUPERLU_FREE(perm_r);
-	SUPERLU_FREE(perm_c);
-	SUPERLU_FREE(R);
-	SUPERLU_FREE(C);
-	SUPERLU_FREE(etree);
 	if (mode==3)
 	{
+		SUPERLU_FREE(slu_Bv);
+		SUPERLU_FREE(slu_Xv);
+		SUPERLU_FREE(perm_r);
+		SUPERLU_FREE(perm_c);
+		SUPERLU_FREE(R);
+		SUPERLU_FREE(C);
+		SUPERLU_FREE(etree);
+		if (lwork!=0) SUPERLU_FREE(work);
 		Destroy_CompCol_Matrix(&slu_A);
 		StatFree(&stat);
 		Destroy_SuperMatrix_Store(&slu_B);
