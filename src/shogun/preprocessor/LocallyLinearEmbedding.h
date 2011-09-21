@@ -121,7 +121,6 @@ protected:
 	/** find null space of given matrix 
 	 * @param matrix given matrix
 	 * @param dimension dimension of null space to be computed
-	 * @param force_lapack true if lapack should be used
 	 * @return null-space approximation feature matrix
 	 */
 	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension);
@@ -143,6 +142,7 @@ protected:
 
 public:
 
+	/** adaptive k choice */
 	static const int32_t ADAPTIVE_K = -1;
 
 protected:
