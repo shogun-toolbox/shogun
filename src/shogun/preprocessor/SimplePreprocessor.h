@@ -33,7 +33,7 @@ template <class ST> class CSimplePreprocessor : public CPreprocessor
 	public:
 		/** constructor
 		 */
-		CSimplePreprocessor() : CPreprocessor() {}
+		CSimplePreprocessor();
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
@@ -45,43 +45,14 @@ template <class ST> class CSimplePreprocessor : public CPreprocessor
 		virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector)=0;
 
 		/// return that we are simple features (just fixed size matrices)
-		virtual inline EFeatureClass get_feature_class() { return C_SIMPLE; }
+		virtual EFeatureClass get_feature_class();
 		/// return feature type
-		virtual inline EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type();
 
 		/// return a type of preprocessor
-		virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; }
+		virtual EPreprocessorType get_type() const;
 
 };
 
-template<> inline EFeatureType CSimplePreprocessor<float64_t>::get_feature_type()
-{
-	return F_DREAL;
-}
-
-template<> inline EFeatureType CSimplePreprocessor<int16_t>::get_feature_type()
-{
-	return F_SHORT;
-}
-
-template<> inline EFeatureType CSimplePreprocessor<uint16_t>::get_feature_type()
-{
-	return F_WORD;
-}
-
-template<> inline EFeatureType CSimplePreprocessor<char>::get_feature_type()
-{
-	return F_CHAR;
-}
-
-template<> inline EFeatureType CSimplePreprocessor<uint8_t>::get_feature_type()
-{
-	return F_BYTE;
-}
-
-template<> inline EFeatureType CSimplePreprocessor<uint64_t>::get_feature_type()
-{
-	return F_ULONG;
-}
 }
 #endif

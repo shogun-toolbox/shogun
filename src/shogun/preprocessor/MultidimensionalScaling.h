@@ -175,16 +175,16 @@ protected:
 protected:
 
 	/** run triangulation thread for landmark embedding
-→→→→→→→→ * @param p thread parameters
-→→→→→→→→ */
+	  * @param p thread parameters
+	  */
 	static void* run_triangulation_thread(void* p);
 
 	/** subroutine used to shuffle count indexes among of total_count ones
-→→→→→→→→ * with Fisher-Yates (known as Knuth too) shuffle algorithm
-→→→→→→→→ * @param count number of indexes to be shuffled and returned
-→→→→→→→→ * @param total_count total number of indexes
-→→→→→→→→ * @return sorted shuffled indexes for landmarks
-→→→→→→→→ */
+	 * with Fisher-Yates (known as Knuth too) shuffle algorithm
+	 * @param count number of indexes to be shuffled and returned
+	 * @param total_count total number of indexes
+	 * @return sorted shuffled indexes for landmarks
+	 */
 	static SGVector<int32_t> shuffle(int32_t count, int32_t total_count);
 
 };

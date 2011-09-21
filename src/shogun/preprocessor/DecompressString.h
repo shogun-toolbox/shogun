@@ -37,104 +37,40 @@ template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 {
 	public:
 		/** default constructor  */
-		CDecompressString()
-			: CStringPreprocessor<ST>()
-		{
-			compressor=NULL;
-		}
+		CDecompressString();
 
 		/** constructor
 		 */
-		CDecompressString(E_COMPRESSION_TYPE ct)
-			: CStringPreprocessor<ST>()
-		{
-			compressor=new CCompressor(ct);
-		}
+		CDecompressString(E_COMPRESSION_TYPE ct);
 
 		/** destructor */
-		virtual ~CDecompressString()
-		{
-			delete compressor;
-		}
+		virtual ~CDecompressString();
 
 		/// initialize preprocessor from features
-		virtual bool init(CFeatures* f)
-		{
-			ASSERT(f->get_feature_class()==C_STRING);
-			return true;
-		}
+		virtual bool init(CFeatures* f);
 
 		/// cleanup
-		virtual void cleanup()
-		{
-		}
+		virtual void cleanup();
 
 		/// initialize preprocessor from file
-		bool load(FILE* f)
-		{
-			SG_SET_LOCALE_C;
-			SG_RESET_LOCALE;
-			return false;
-		}
+		bool load(FILE* f);
 
 		/// save preprocessor init-data to file
-		bool save(FILE* f)
-		{
-			SG_SET_LOCALE_C;
-			SG_RESET_LOCALE;
-			return false;
-		}
+		bool save(FILE* f);
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-		virtual bool apply_to_string_features(CFeatures* f)
-		{
-			int32_t i;
-			int32_t num_vec=((CStringFeatures<ST>*)f)->get_num_vectors();
-
-			for (i=0; i<num_vec; i++)
-			{
-				int32_t len=0;
-				bool free_vec;
-				ST* vec=((CStringFeatures<ST>*)f)->
-					get_feature_vector(i, len, free_vec);
-
-				ST* decompressed=apply_to_string(vec, len);
-				((CStringFeatures<ST>*)f)->
-					free_feature_vector(vec, i, free_vec);
-				((CStringFeatures<ST>*)f)->
-					cleanup_feature_vector(i);
-				((CStringFeatures<ST>*)f)->
-					set_feature_vector(i, decompressed, len);
-			}
-			return true;
-		}
+		virtual bool apply_to_string_features(CFeatures* f);
 
 		/// apply preproc on single feature vector
-		virtual ST* apply_to_string(ST* f, int32_t &len)
-		{
-			uint64_t compressed_size=((int32_t*) f)[0];
-			uint64_t uncompressed_size=((int32_t*) f)[1];
-
-			int32_t offs=CMath::ceil(2.0*sizeof(int32_t)/sizeof(ST));
-			ASSERT(uint64_t(len)==uint64_t(offs)+compressed_size);
-
-			len=uncompressed_size;
-			uncompressed_size*=sizeof(ST);
-			ST* vec=SG_MALLOC(ST, len);
-			compressor->decompress((uint8_t*) (&f[offs]), compressed_size,
-					(uint8_t*) vec, uncompressed_size);
-
-			ASSERT(uncompressed_size==((uint64_t) len)*sizeof(ST));
-			return vec;
-		}
+		virtual ST* apply_to_string(ST* f, int32_t &len);
 
 		/** @return object name */
 		virtual inline const char* get_name() const { return "DecompressString"; }
 
 		/// return a type of preprocessor TODO: template specification of get_type
-		virtual inline EPreprocessorType get_type() const { return P_DECOMPRESSSTRING; }
+		virtual EPreprocessorType get_type() const;
 
 	protected:
 		/** compressor used to decompress strings */

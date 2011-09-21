@@ -672,7 +672,7 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 
 	SGString<ST>* strings;
 
-	ST* str;
+	ST* str=NULL;
 	if (bitremap_in_single_string)
 	{
 		strings=SG_MALLOC(SGString<ST>, 1);
