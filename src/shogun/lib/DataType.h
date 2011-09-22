@@ -12,6 +12,8 @@
 #define __DATATYPE_H__
 
 #include <shogun/lib/common.h>
+//#include <shogun/mathematics/Math.h>
+#include <shogun/io/SGIO.h>
 
 #define PT_NOT_GENERIC	PT_SGOBJECT
 #define PT_LONGEST		floatmax_t
@@ -19,6 +21,7 @@
 namespace shogun
 {
 
+//class CMath;
 template<class T> class CCache;
 
 /** index */
@@ -59,6 +62,138 @@ template<class T> class SGVector
 			return SGVector(src.vector, src.vlen);
 		}
 
+		/** fill vector with zeros */
+		void zero()
+		{
+			if (vector && vlen)
+				set_const(0);
+		}
+
+		/** set vector to a constant */
+		void set_const(T const_elem)
+		{
+			for (index_t i=0; i<vlen; i++)
+				vector[i]=const_elem ;
+		}
+
+		void range_fill(T start=0)
+		{
+			range_fill_vector(vector, vlen, start);
+		}
+
+		void random(T min_value, T max_value)
+		{
+			random_vector(vector, vlen, min_value, max_value);
+		}
+
+		void randperm()
+		{
+			randperm(vector, vlen);
+		}
+
+		template <class VT>
+		static VT* clone_vector(const VT* vec, int32_t len)
+		{
+			VT* result = SG_MALLOC(VT, len);
+			for (int32_t i=0; i<len; i++)
+				result[i]=vec[i];
+
+			return result;
+		}
+
+		template <class VT>
+		static void fill_vector(VT* vec, int32_t len, VT value)
+		{
+			for (int32_t i=0; i<len; i++)
+				vec[i]=value;
+		}
+
+		template <class VT>
+		static void range_fill_vector(VT* vec, int32_t len, VT start=0)
+		{
+			for (int32_t i=0; i<len; i++)
+				vec[i]=i+start;
+		}
+
+		template <class VT>
+		static void random_vector(VT* vec, int32_t len, VT min_value, VT max_value)
+		{
+			//FIXME for (int32_t i=0; i<len; i++)
+			//FIXME 	vec[i]=CMath::random(min_value, max_value);
+		}
+
+		template <class VT>
+		static void randperm(VT* perm, int32_t n)
+		{
+			for (int32_t i = 0; i < n; i++)
+				perm[i] = i;
+			permute(perm,n);
+		}
+
+		template <class VT>
+		static void permute(VT* perm, int32_t n)
+		{
+			//FIXME for (int32_t i = 0; i < n; i++)
+			//FIXME 	CMath::swap(perm[random(0, n - 1)], perm[i]);
+		}
+
+		/** get vector element at index
+		 *
+		 * @param index index
+		 * @return vector element at index
+		 */
+		const T& get_element(index_t index)
+		{
+			ASSERT(vector && (index>=0) && (index<vlen));
+			return vector[index];
+		}
+
+		/** set vector element at index 'index' return false in case of trouble
+		 *
+		 * @param p_element vector element to set
+		 * @param index index
+		 * @return if setting was successful
+		 */
+		void set_element(const T& p_element, index_t index)
+		{
+			ASSERT(vector && (index>=0) && (index<vlen));
+			vector[index]=p_element;
+		}
+
+		/** resize vector
+		 *
+		 * @param n new size
+		 * @return if resizing was successful
+		 */
+		void resize_vector(int32_t n)
+		{
+			vector=SG_REALLOC(T, vector, n);
+
+			if (n > vlen)
+				memset(&vector[vlen], 0, (n-vlen)*sizeof(T));
+			vlen=n;
+		}
+
+		/** operator overload for vector read only access
+		 *
+		 * @param index dimension to access
+		 *
+		 */
+		inline const T& operator[](index_t index) const
+		{
+			return vector[index];
+		}
+
+		/** operator overload for vector r/w access
+		 *
+		 * @param index dimension to access
+		 *
+		 */
+		inline T& operator[](index_t index)
+		{
+			return vector[index];
+		}
+
 		/** free vector */
 		virtual void free_vector()
 		{
@@ -77,6 +212,21 @@ template<class T> class SGVector
 			free_vector();
 		}
 
+		/** display array size */
+		void display_size() const
+		{
+			SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen);
+		}
+
+		/** display array */
+		void display_vector() const
+		{
+			display_size();
+			for (int32_t i=0; i<vlen; i++)
+				SG_SPRINT("%10.10g,", (float64_t) vector[i]);
+			SG_SPRINT("\n");
+		}
+
 	public:
 		/** vector  */
 		T* vector;
@@ -90,20 +240,20 @@ template<class T> class SGVector
 //{
 //	public:
 //		/** default constructor */
-//		SGCachedVector(CCache<T>* c, int32_t i)
+//		SGCachedVector(CCache<T>* c, index_t i)
 //			: SGVector<T>(), cache(c), idx(i)
 //		{
 //		}
 //
 //		/** constructor for setting params */
-//		SGCachedVector(CCache<T>* c, int32_t i,
+//		SGCachedVector(CCache<T>* c, index_t i,
 //				T* v, index_t len, bool free_vec=false)
 //			: SGVector<T>(v, len, free_vec), cache(c), idx(i)
 //		{
 //		}
 //
 //		/** constructor to create new vector in memory */
-//		SGCachedVector(CCache<T>* c, int32_t i, index_t len, bool free_vec=false) :
+//		SGCachedVector(CCache<T>* c, index_t i, index_t len, bool free_vec=false) :
 //			SGVector<T>(len, free_vec), cache(c), idx(i)
 //		{
 //		}
@@ -126,7 +276,7 @@ template<class T> class SGVector
 //
 //	public:
 //		/** idx */
-//		int idx;
+//		index_t idx;
 //
 //		/** cache */
 //		CCache<T>* cache;
@@ -433,7 +583,7 @@ template <class T> class SGSparseMatrix
 		/** own matrix */
 		void own_matrix()
 		{
-			for (int32_t i=0; i<num_vectors; i++)
+			for (index_t i=0; i<num_vectors; i++)
 				sparse_matrix[i].do_free=false;
 
 			do_free=false;
@@ -448,10 +598,10 @@ template <class T> class SGSparseMatrix
 
 	public:
 	/// total number of vectors
-	int32_t num_vectors;
+	index_t num_vectors;
 
 	/// total number of features
-	int32_t num_features;
+	index_t num_features;
 
 	/// array of sparse vectors of size num_vectors
 	SGSparseVector<T>* sparse_matrix;

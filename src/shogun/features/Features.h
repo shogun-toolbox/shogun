@@ -126,13 +126,13 @@ class CFeatures : public CSGObject
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		inline void set_preprocessed(int32_t num) { preprocessed[num]=true; }
+		void set_preprocessed(int32_t num);
 
 		/** get whether specified preprocessor was already applied
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		inline bool is_preprocessed(int32_t num) { return preprocessed[num]; }
+		bool is_preprocessed(int32_t num);
 
 		/** get the number of applied preprocs
 		 *
@@ -144,7 +144,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of preprocessors
 		 */
-		inline int32_t get_num_preprocessors() const { return num_preproc; }
+		int32_t get_num_preprocessors() const;
 
 		/** clears all preprocs */
 		void clean_preprocessors();
@@ -153,7 +153,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return cache size
 		 */
-		inline int32_t get_cache_size() { return cache_size; };
+		int32_t get_cache_size();
 
 		/** get number of examples/vectors, possibly corresponding to the current subset
 		 *
@@ -171,11 +171,7 @@ class CFeatures : public CSGObject
 		 * @param num_vectors new number of vectors
 		 * @return if reshaping was successful
 		 */
-		virtual bool reshape(int32_t num_features, int32_t num_vectors)
-		{
-			SG_NOTIMPLEMENTED;
-			return false;
-		}
+		virtual bool reshape(int32_t num_features, int32_t num_vectors);
 
 		/** get memory footprint of one feature
 		 *
@@ -192,23 +188,13 @@ class CFeatures : public CSGObject
 		 *
 		 * @param loader File object via which data shall be loaded
 		 */
-		virtual void load(CFile* loader)
-		{
-			SG_SET_LOCALE_C;
-			SG_NOTIMPLEMENTED;
-			SG_RESET_LOCALE;
-		}
+		virtual void load(CFile* loader);
 
 		/** save features to file
 		 *
 		 * @param writer File object via which data shall be saved
 		 */
-		virtual void save(CFile* writer)
-		{
-			SG_SET_LOCALE_C;
-			SG_NOTIMPLEMENTED;
-			SG_RESET_LOCALE;
-		}
+		virtual void save(CFile* writer);
 
 		/** check feature compatibility
 		 *
@@ -222,25 +208,19 @@ class CFeatures : public CSGObject
 		 * @param p feature property
 		 * @return if features have given property
 		 */
-		inline bool has_property(EFeatureProperty p) { return (properties & p) != 0; }
+		bool has_property(EFeatureProperty p);
 
 		/** set property
 		 *
 		 * @param p kernel property to set
 		 */
-		inline void set_property(EFeatureProperty p)
-		{
-			properties |= p;
-		}
+		void set_property(EFeatureProperty p);
 
 		/** unset property
 		 *
 		 * @param p kernel property to unset
 		 */
-		inline void unset_property(EFeatureProperty p)
-		{
-			properties &= (properties | p) ^ p;
-		}
+		void unset_property(EFeatureProperty p);
 
 		/** setter for subset variable, deletes old one
 		 * subset_changed_post() is called afterwards
@@ -261,15 +241,12 @@ class CFeatures : public CSGObject
 		 * @param idx index to convert
 		 * @return converted index
 		 */
-		inline index_t subset_idx_conversion(index_t idx) const
-		{
-			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
-		}
+		index_t subset_idx_conversion(index_t idx) const;
 
 		/** check if has subsets
 		 * @return true if has subsets
 		 */
-		inline bool has_subset() const { return m_subset!=NULL; }
+		bool has_subset() const;
 
 		/** Creates a new CFeatures instance containing copies of the elements
 		 * which are specified by the provided indices.
@@ -280,13 +257,7 @@ class CFeatures : public CSGObject
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices)
-		{
-			SG_ERROR("copy_subset and therefore model storage of CMachine "
-					"(required for cross-validation and model-selection is ",
-					"not yet implemented for feature type %s\n", get_name());
-			return NULL;
-		}
+		CFeatures* copy_subset(SGVector<index_t> indices);
 
 	private:
 		/** feature properties */

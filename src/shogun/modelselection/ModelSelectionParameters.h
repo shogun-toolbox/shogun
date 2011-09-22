@@ -91,7 +91,8 @@ public:
 	 *
 	 * @param values value vector
 	 */
-	void set_values(SGVector<void> values);
+	template <class T>
+	void set_values(SGVector<T> values);
 
 	/** SG_PRINT's the tree of which this node is the base
 	 *
@@ -146,7 +147,8 @@ protected:
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
-	SGVector<void> m_values;
+	//FIXME void is not possible w/ SGVector<void> m_values;
+	void* m_values;
 	CDynamicObjectArray<CModelSelectionParameters>* m_child_nodes;
 	EMSParamType m_value_type;
 };

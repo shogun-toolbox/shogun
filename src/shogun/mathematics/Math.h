@@ -21,6 +21,7 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parallel.h>
+#include <shogun/lib/DataType.h>
 
 #include <math.h>
 #include <stdio.h>

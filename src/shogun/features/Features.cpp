@@ -186,6 +186,32 @@ CPreprocessor* CFeatures::del_preprocessor(int32_t num)
 	return removed_preproc;
 }
 
+void CFeatures::set_preprocessed(int32_t num)
+{
+	preprocessed[num]=true;
+}
+
+bool CFeatures::is_preprocessed(int32_t num)
+{
+	return preprocessed[num];
+}
+
+int32_t CFeatures::get_num_preprocessors() const
+{
+	return num_preproc;
+}
+
+int32_t CFeatures::get_cache_size()
+{
+	return cache_size;
+}
+
+bool CFeatures::reshape(int32_t num_features, int32_t num_vectors)
+{
+	SG_NOTIMPLEMENTED;
+	return false;
+}
+
 void CFeatures::list_feature_obj()
 {
 	SG_INFO( "%p - ", this);
@@ -283,6 +309,21 @@ void CFeatures::list_feature_obj()
 	}
 }
 
+
+void CFeatures::load(CFile* loader)
+{
+	SG_SET_LOCALE_C;
+	SG_NOTIMPLEMENTED;
+	SG_RESET_LOCALE;
+}
+
+void CFeatures::save(CFile* writer)
+{
+	SG_SET_LOCALE_C;
+	SG_NOTIMPLEMENTED;
+	SG_RESET_LOCALE;
+}
+
 bool CFeatures::check_feature_compatibility(CFeatures* f)
 {
 	bool result=false;
@@ -293,6 +334,21 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 	return result;
 }
 
+bool CFeatures::has_property(EFeatureProperty p)
+{
+	return (properties & p) != 0;
+}
+
+void CFeatures::set_property(EFeatureProperty p)
+{
+	properties |= p;
+}
+
+void CFeatures::unset_property(EFeatureProperty p)
+{
+	properties &= (properties | p) ^ p;
+}
+
 void CFeatures::set_subset(CSubset* subset)
 {
 	SG_UNREF(m_subset);
@@ -301,7 +357,25 @@ void CFeatures::set_subset(CSubset* subset)
 	subset_changed_post();
 }
 
+index_t CFeatures::subset_idx_conversion(index_t idx) const
+{
+	return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
+}
+
+bool CFeatures::has_subset() const
+{
+	return m_subset!=NULL;
+}
+
 void CFeatures::remove_subset()
 {
 	set_subset(NULL);
+}
+
+CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
+{
+	SG_ERROR("copy_subset and therefore model storage of CMachine "
+			"(required for cross-validation and model-selection is ",
+			"not yet implemented for feature type %s\n", get_name());
+	return NULL;
 }
