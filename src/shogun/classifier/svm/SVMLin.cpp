@@ -100,10 +100,9 @@ bool CSVMLin::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_feat+1; i++)
 		Weights.vec[i]*=sgn;
 
-	set_w(Weights.vec, num_feat);
+	set_w(SGVector<float64_t>(Weights.vec, num_feat));
 	set_bias(Weights.vec[num_feat]);
 
-	SG_FREE(Weights.vec);
 	SG_FREE(Data.C);
 	SG_FREE(Outputs.vec);
 	train_labels.free_vector();

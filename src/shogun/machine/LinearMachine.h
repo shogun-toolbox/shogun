@@ -83,7 +83,7 @@ class CLinearMachine : public CMachine
 		 */
 		inline SGVector<float64_t> get_w()
 		{
-			return SGVector<float64_t>(w, w_dim);
+			return SGVector<float64_t>(w, w_dim, false);
 		}
 
 		/** set w
@@ -91,12 +91,11 @@ class CLinearMachine : public CMachine
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w
 		 */
-		inline void set_w(float64_t* src_w, int32_t src_w_dim)
+		inline void set_w(SGVector<float64_t> src_w)
 		{
 			SG_FREE(w);
-			w=SG_MALLOC(float64_t, src_w_dim);
-			memcpy(w, src_w, size_t(src_w_dim)*sizeof(float64_t));
-			w_dim=src_w_dim;
+			w=src_w.vector;
+			w_dim=src_w.vlen;
 		}
 
 		/** set bias

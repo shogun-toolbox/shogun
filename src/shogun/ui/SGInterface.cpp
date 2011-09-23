@@ -4780,7 +4780,7 @@ bool CSGInterface::cmd_set_linear_classifier()
 	if (!c)
 		SG_ERROR("No Linear Classifier object available.\n");
 
-	c->set_w(w, len);
+	c->set_w(SGVector<float64_t>(w, len));
 	c->set_bias(bias);
 
 	SG_FREE(w);
