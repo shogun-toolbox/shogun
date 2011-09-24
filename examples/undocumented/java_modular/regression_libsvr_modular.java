@@ -24,8 +24,8 @@ public class regression_libsvr_modular {
 
 		Labels labels = new Labels(trainlab);
 
-		LibSVR svr = new LibSVR(C, epsilon, kernel, labels);
-		svr.set_tube_epsilon(tube_epsilon);
+		LibSVR svr = new LibSVR(C, tube_epsilon, kernel, labels);
+		svr.set_epsilon(epsilon);
 		svr.train();
 
 		kernel.init(feats_train, feats_test);

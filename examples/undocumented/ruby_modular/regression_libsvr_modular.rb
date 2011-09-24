@@ -21,8 +21,8 @@ def regression_libsvr_modular(fm_train=traindat,fm_test=testdat,label_train=labe
 	kernel=Modshogun::GaussianKernel.new(feats_train, feats_train, width)
 	labels=Modshogun::Labels.new(label_train)
 
-	svr=Modshogun::LibSVR.new(c, epsilon, kernel, labels)
-	svr.set_tube_epsilon(tube_epsilon)
+	svr=Modshogun::LibSVR.new(c, tube_epsilon, kernel, labels)
+	svr.set_epsilon(epsilon)
 	svr.train()
 
 	kernel.init(feats_train, feats_test)

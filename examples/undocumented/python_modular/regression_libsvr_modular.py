@@ -25,8 +25,8 @@ def regression_libsvr_modular (fm_train=traindat,fm_test=testdat,label_train=lab
 	kernel=GaussianKernel(feats_train, feats_train, width)
 	labels=Labels(label_train)
 
-	svr=LibSVR(C, epsilon, kernel, labels)
-	svr.set_tube_epsilon(tube_epsilon)
+	svr=LibSVR(C, tube_epsilon, kernel, labels)
+	svr.set_epsilon(epsilon)
 	svr.train()
 
 	kernel.init(feats_train, feats_test)
