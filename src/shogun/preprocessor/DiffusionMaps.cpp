@@ -13,10 +13,12 @@
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -70,7 +72,23 @@ SGMatrix<float64_t> CDiffusionMaps::apply_to_feature_matrix(CFeatures* features)
 	int32_t N = simple_features->get_num_vectors();
 
 	// loop variables
-	int32_t i,j,t;
+	int32_t i,j;
+
+	float64_t* feature_matrix = simple_features->get_feature_matrix(dim,N);
+
+	
+	float64_t features_min = feature_matrix[0];
+	float64_t features_max = feature_matrix[0];
+	for (i=0; i<dim*N; i++)
+	{
+		if (feature_matrix[i]>features_max)
+			features_max = feature_matrix[i];
+		if (feature_matrix[i]<features_min)
+			features_min = feature_matrix[i];
+	}
+
+	for (i=0; i<dim*N; i++)
+		feature_matrix[i] = (feature_matrix[i]-features_min)/features_max;
 
 	// compute distance matrix
 	ASSERT(m_kernel);
@@ -90,7 +108,7 @@ SGMatrix<float64_t> CDiffusionMaps::apply_to_feature_matrix(CFeatures* features)
 	cblas_dger(CblasColMajor,N,N,1.0,p_vector,1,p_vector,1,p_matrix,N);
 	for (i=0; i<N*N; i++)
 	{
-		kernel_matrix.matrix[i] /= CMath::pow(p_matrix[i], t);
+		kernel_matrix.matrix[i] /= CMath::pow(p_matrix[i], m_t);
 	}
 	SG_FREE(p_matrix);
 
@@ -111,19 +129,43 @@ SGMatrix<float64_t> CDiffusionMaps::apply_to_feature_matrix(CFeatures* features)
 		kernel_matrix.matrix[i] /= ppt;
 	}
 
+
 	float64_t* s_values = SG_MALLOC(float64_t, N);
 
+	float64_t* kkt_matrix = SG_MALLOC(float64_t, N*N);
+
+	CTime* time = new CTime(true);
+
+	cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
+	            N,N,N,
+	            1.0,kernel_matrix.matrix,N,
+	            kernel_matrix.matrix,N,
+	            0.0,kkt_matrix,N);
+
+	SG_PRINT("%fs passed\n",time->cur_time_diff());
+
+	delete time;
+
 	int32_t info = 0;
-	wrap_dgesvd('O','N',N,N,kernel_matrix.matrix,N,s_values,NULL,1,NULL,1,&info);
+
+
+	wrap_dsyevr('V','U',N,kkt_matrix,N,N-m_target_dim,N,s_values,kernel_matrix.matrix,&info);
 	if (info)
 		SG_ERROR("DGESVD failed with %d code", info);
-	
-	float64_t* new_feature_matrix = SG_MALLOC(float64_t, N*m_target_dim);
+
+	SG_REALLOC(float64_t, kkt_matrix, N*m_target_dim);
+
+/*
+	int32_t info = 0;
+	wrap_dgesvd('O','N',N,N,kernel_matrix.matrix,N,s_values,NULL,1,NULL,1,&info);
+*/
+
+	float64_t* new_feature_matrix = kkt_matrix;//SG_MALLOC(float64_t, N*m_target_dim);
 
 	for (i=0; i<m_target_dim; i++)
 	{
 		for (j=0; j<N; j++)
-			new_feature_matrix[j*m_target_dim+i] = kernel_matrix.matrix[(i+1)*N+j]/kernel_matrix.matrix[j];
+			new_feature_matrix[j*m_target_dim+i] = kernel_matrix.matrix[(m_target_dim-i-1)*N+j]/kernel_matrix.matrix[(m_target_dim)*N+j];
 	}
 	kernel_matrix.destroy_matrix();
 
