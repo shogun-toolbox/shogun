@@ -11,10 +11,6 @@
 #include <shogun/mathematics/arpack.h>
 #ifdef HAVE_ARPACK
 #ifdef HAVE_LAPACK
-#include <shogun/lib/config.h>
-#include <cblas.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <string.h>
 

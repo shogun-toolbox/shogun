@@ -13,8 +13,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_ARPACK
 #ifdef HAVE_LAPACK
-#include <cblas.h>
-#include <shogun/io/SGIO.h>
+#include <shogun/mathematics/lapack.h>
 
 /** external ARPACK routine DSAUPD */
 extern "C" void dsaupd_(int *ido, char *bmat, int *n, char *which,
