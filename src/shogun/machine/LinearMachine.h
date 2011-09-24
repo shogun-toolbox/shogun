@@ -89,7 +89,6 @@ class CLinearMachine : public CMachine
 		/** set w
 		 *
 		 * @param src_w new w
-		 * @param src_w_dim dimension of new w
 		 */
 		inline void set_w(SGVector<float64_t> src_w)
 		{
