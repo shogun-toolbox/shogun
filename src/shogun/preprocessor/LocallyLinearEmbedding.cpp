@@ -100,7 +100,6 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 		CDimensionReductionPreprocessor()
 {
 	m_k = 3;
-	m_posdef = true;
 	
 	init();
 }
@@ -108,12 +107,22 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 void CLocallyLinearEmbedding::init()
 {
 	m_parameters->add(&m_k, "k", "number of neighbors");
-	m_parameters->add(&m_posdef, "posdef", 
-	                  "indicates if matrix should be considered as positive definite");
 }
+
 
 CLocallyLinearEmbedding::~CLocallyLinearEmbedding()
 {
+}
+
+void CLocallyLinearEmbedding::set_k(int32_t k)
+{
+	ASSERT(k>0);
+	m_k = k;
+}
+
+int32_t CLocallyLinearEmbedding::get_k() const
+{
+	return m_k;
 }
 
 bool CLocallyLinearEmbedding::init(CFeatures* features)
@@ -331,7 +340,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
-		arpack_dsaeupd_wrap(matrix.matrix,NULL,N,dimension+1,"LA",3,m_posdef,-1e-9,0.0,
+		arpack_dsaeupd_wrap(matrix.matrix,NULL,N,dimension+1,"LA",3,true,-1e-9,0.0,
 		                    eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
 	}

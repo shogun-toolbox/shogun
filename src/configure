@@ -145,7 +145,7 @@ test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
-COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -fpredictive-commoning -mfpmath=sse -msse -msse2 -msse3 -mcmov"
+COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse"
 COMP_DEFAULT_OPTS="-Wall -O2"
 COMP_NO_OPTS="-Wall -O0"
 COMPFLAGS_C=-fPIC
