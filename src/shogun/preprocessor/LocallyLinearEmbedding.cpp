@@ -453,7 +453,6 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 
 SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix)
 {
-	CTime* time = new CTime(true);
 	int32_t t;
 	int32_t N = distance_matrix.num_rows;
 	// init matrix and heap to be used
@@ -507,9 +506,6 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 	for (t=0; t<num_threads; t++)
 		delete heaps[t];
 	SG_FREE(heaps);
-
-	SG_PRINT("NEIGHBORS TOOK %fs", time->cur_time_diff());
-	delete time;
 
 	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
 }
