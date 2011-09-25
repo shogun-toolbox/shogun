@@ -145,7 +145,7 @@ test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
-COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops"
+COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -fpredictive-commoning -mfpmath=sse -msse -msse2 -msse3 -mcmov"
 COMP_DEFAULT_OPTS="-Wall -O2"
 COMP_NO_OPTS="-Wall -O0"
 COMPFLAGS_C=-fPIC
@@ -2592,7 +2592,7 @@ if test "$_cpudetection" = no ; then
     test "$_mmxext"   != no && _mmxext=yes
     test "$_sse"      != no && _sse=yes
     test "$_sse2"     != no && _sse2=yes
-    test "$_ssse3"    != no && _ssse3=yes
+    test "$_sse3"    != no && _sse3=yes
     test "$_mtrr"     != no && _mtrr=yes
   fi
   if ppc; then
@@ -2634,7 +2634,7 @@ EOF
   extcheck $_3dnow "3dnow" "femms"
   extcheck $_sse "sse" "xorps %%xmm0, %%xmm0" || _gcc3_ext="$_gcc3_ext -mno-sse"
   extcheck $_sse2 "sse2" "xorpd %%xmm0, %%xmm0" || _gcc3_ext="$_gcc3_ext -mno-sse2"
-  extcheck $_pni "sse3" "addsubpd %%xmm0, %%xmm1" || _gcc3_ext="$_gcc3_ext -mno-sse3"
+  extcheck $_sse3 "sse3" "addsubpd %%xmm0, %%xmm1" || _gcc3_ext="$_gcc3_ext -mno-sse3"
   extcheck $_cmov     "cmov"     "cmovb %%eax,%%ebx"
 
   if test "$_gcc3_ext" != ""; then

@@ -65,23 +65,6 @@ public:
 		 */
 		virtual CSimpleFeatures<float64_t>* apply_to_string_features(CFeatures* features);
 
-		/** get kernel */
-		CKernel* get_kernel() const
-		{
-			SG_REF(m_kernel);
-			return m_kernel;
-		}
-
-		/** set kernel
-		 * @param k
-		 */
-		void set_kernel(CKernel* k)
-		{
-			SG_REF(k);
-			SG_UNREF(m_kernel);
-			m_kernel=k;
-		}
-
 		/** get transformation matrix, i.e. eigenvectors
 		 *
 		 */
@@ -123,8 +106,6 @@ public:
 		/** true when already initialized */
 		bool m_initialized;
 
-		/** kernel */
-		CKernel* m_kernel;
 };
 }
 #endif

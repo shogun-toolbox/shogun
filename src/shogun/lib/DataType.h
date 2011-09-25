@@ -324,6 +324,22 @@ template<class T> class SGMatrix
 			free_matrix();
 		}
 
+		/** operator overload for matrix read only access
+		 * @param index to access
+		 */
+		inline const T& operator[](index_t index) const
+		{
+			return matrix[index];
+		}
+
+		/** operator overload for matrix r/w access
+		 * @param index to access
+		 */
+		inline T& operator[](index_t index)
+		{
+			return matrix[index];
+		}
+
 	public:
 		/** matrix  */
 		T* matrix;

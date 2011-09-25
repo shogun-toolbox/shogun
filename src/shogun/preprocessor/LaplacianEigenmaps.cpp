@@ -177,9 +177,9 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 		for (j=0; j<N; j++)
 		{
 			#ifdef HAVE_ARPACK
-				new_features.matrix[j*m_target_dim+i] = W_matrix[j*(m_target_dim+1)+i+1];
+				new_features[j*m_target_dim+i] = W_matrix[j*(m_target_dim+1)+i+1];
 			#else
-				new_features.matrix[j*m_target_dim+i] = W_matrix[(i+1)*N+j];
+				new_features[j*m_target_dim+i] = W_matrix[(i+1)*N+j];
 			#endif
 		}
 	}

@@ -18,6 +18,7 @@
 #include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/Time.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/lib/Signal.h>
 
@@ -158,10 +159,10 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// dimension detection
 	if (m_target_dim == AUTO_TARGET_DIM)
 		m_target_dim = detect_dim(distance_matrix);
-	distance_matrix.destroy_matrix();
 
 	// init W (weight) matrix
-	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
+	float64_t* W_matrix = distance_matrix.matrix;
+	memset(W_matrix,0,sizeof(float64_t)*N*N);
 
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
@@ -290,7 +291,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 		delete nz_idxs[i];
 		for (j=0; j<i; j++)
 		{
-			M_matrix.matrix[i*N+j] = M_matrix.matrix[j*N+i];
+			M_matrix[i*N+j] = M_matrix[j*N+i];
 		}
 	}
 	SG_FREE(nz_idxs);
@@ -356,7 +357,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		for (i=0; i<dimension; i++)
 		{
 			for (j=0; j<N; j++)
-				null_space_features[j*dimension+i] = matrix.matrix[j*(dimension+1)+i+1];
+				null_space_features[j*dimension+i] = matrix[j*(dimension+1)+i+1];
 		}
 	}
 	else
