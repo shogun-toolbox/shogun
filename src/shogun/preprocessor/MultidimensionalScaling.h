@@ -103,46 +103,29 @@ public:
 	/** get last embedding eigenvectors 
 	 * @return vector with last eigenvalues
 	 */
-	SGVector<float64_t> get_eigenvalues() const
-	{
-		return m_eigenvalues;
-	}
+	SGVector<float64_t> get_eigenvalues() const;
 
 	/** set number of landmarks
 	 * should be lesser than number of examples and greater than 3
 	 * for consistent embedding as triangulation is used
 	 * @param num number of landmark to be set
 	 */
-	void set_landmark_number(int32_t num)
-	{
-		if (num<3)
-			SG_ERROR("Landmark number should be greater than 3 (%d given).", num);
-		m_landmark_number = num;
-	};
+	void set_landmark_number(int32_t num);
 	
 	/** get number of landmarks
 	 * @return current number of landmarks
 	 */
-	int32_t get_landmark_number() const
-	{
-		return m_landmark_number;
-	};
+	int32_t get_landmark_number() const;
 
 	/** setter for landmark parameter
 	 * @param landmark true if landmark embedding should be used
 	 */
-	void set_landmark(bool landmark)
-	{
-		m_landmark = landmark;
-	};
+	void set_landmark(bool landmark);
 
 	/** getter for landmark parameter
 	 * @return true if landmark embedding is used
 	 */
-	bool get_landmark() const
-	{
-		return m_landmark;
-	};
+	bool get_landmark() const;
 
 protected:
 

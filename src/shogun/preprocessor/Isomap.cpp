@@ -70,6 +70,17 @@ CIsomap::~CIsomap()
 {
 }
 
+void CIsomap::set_k(int32_t k)
+{
+	ASSERT(k>0);
+	m_k = k;
+}
+
+int32_t CIsomap::get_k() const
+{
+	return m_k;
+}
+
 bool CIsomap::init(CFeatures* features)
 {
 	return true;

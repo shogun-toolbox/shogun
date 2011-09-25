@@ -87,22 +87,14 @@ public:
 	virtual inline EPreprocessorType get_type() const { return P_ISOMAP; };
 
 	/** setter for k parameter
-	 * @param k
+	 * @param k value
 	 */
-	void inline set_k(int32_t k)
-	{
-		ASSERT(k>=1);
-		m_k = k;
-	}
+	void set_k(int32_t k);
 
 	/** getter for k parameter
 	 * @return k value
 	 */
-	int32_t inline get_k()
-	{
-		return m_k;
-	}
-
+	int32_t get_k() const;
 
 protected:
 

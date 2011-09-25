@@ -76,36 +76,14 @@ public:
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** setter for k parameter
-	 * @param k k
+	 * @param k k value
 	 */
-	void inline set_k(int32_t k)
-	{
-		m_k = k;
-	}
+	void set_k(int32_t k);
 
 	/** getter for k parameter
 	 * @return k value
 	 */
-	int32_t inline get_k()
-	{
-		return m_k;
-	}
-
-	/** setter for posdef parameter
-	 * @param posdef posdef value
-	 */
-	void inline set_posdef(bool posdef)
-	{
-		m_posdef = posdef;
-	}
-
-	/** getter for posdef parameter
-	 * @return posdef value
-	 */
-	bool inline get_posdef()
-	{
-		return m_posdef;
-	}
+	int32_t get_k() const;
 
 	/** get name */
 	virtual inline const char* get_name() const { return "LocallyLinearEmbedding"; };
@@ -137,12 +115,10 @@ protected:
 	/** number of neighbors */
 	int32_t m_k;
 
-	/** boolean indicating if matrix should be considered as positive-definite */
-	bool m_posdef;
-
 public:
 
-	/** adaptive k choice */
+	/** adaptive k choice 
+	 * NOT IMPLEMENTED */
 	static const int32_t ADAPTIVE_K = -1;
 
 protected:
@@ -161,7 +137,6 @@ protected:
 	 * @param p thread params
 	 */
 	static void* run_sparsedot_thread(void* p);
-
 
 };
 }

@@ -68,6 +68,7 @@ CMultidimensionalScaling::CMultidimensionalScaling() : CDimensionReductionPrepro
 
 void CMultidimensionalScaling::init()
 {
+	m_parameters->add(&m_eigenvalues, "eigenvalues", "eigenvalues of last embedding");
 	m_parameters->add(&m_landmark, "landmark", "indicates if landmark approximation should be used");
 	m_parameters->add(&m_landmark_number, "landmark number", "the number of landmarks for approximation");
 }
@@ -84,6 +85,34 @@ void CMultidimensionalScaling::cleanup()
 CMultidimensionalScaling::~CMultidimensionalScaling()
 {
 	m_eigenvalues.destroy_vector();
+}
+
+SGVector<float64_t> CMultidimensionalScaling::get_eigenvalues() const
+{
+	return m_eigenvalues;
+}
+
+void CMultidimensionalScaling::set_landmark_number(int32_t num)
+{
+	if (num<3)
+		SG_ERROR("Number of landmarks should be greater than 3 to make triangulation possible while %d given.",
+		         num);
+	m_landmark_number = num;
+}
+
+int32_t CMultidimensionalScaling::get_landmark_number() const
+{
+	return m_landmark_number;
+}
+
+void CMultidimensionalScaling::set_landmark(bool landmark)
+{
+	m_landmark = landmark;
+}
+
+bool CMultidimensionalScaling::get_landmark() const
+{
+	return m_landmark;
 }
 
 CSimpleFeatures<float64_t>* CMultidimensionalScaling::apply_to_distance(CDistance* distance)
