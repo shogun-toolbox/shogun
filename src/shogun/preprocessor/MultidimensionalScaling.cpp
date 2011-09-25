@@ -155,19 +155,19 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 	{
 		for (j=i; j<N; j++)
 		{
-			dsq = CMath::sq(distance_matrix.matrix[i*N+j]);
-			distance_matrix.matrix[i*N+j] = dsq;
-			distance_matrix.matrix[j*N+i] = dsq;
+			dsq = CMath::sq(distance_matrix[i*N+j]);
+			distance_matrix[i*N+j] = dsq;
+			distance_matrix[j*N+i] = dsq;
 		}
 	}
 	CMath::center_matrix(distance_matrix.matrix,N,N);
 	for (i=0; i<N; i++)
 	{
-		distance_matrix.matrix[i*N+i] *= -0.5;
+		distance_matrix[i*N+i] *= -0.5;
 		for (j=i+1; j<N; j++)
 		{
-			distance_matrix.matrix[i*N+j] *= -0.5;
-			distance_matrix.matrix[j*N+i] *= -0.5;
+			distance_matrix[i*N+j] *= -0.5;
+			distance_matrix[j*N+i] *= -0.5;
 		}
 	}
 
@@ -287,7 +287,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	{
 		for (j=0; j<lmk_N; j++)
 			lmk_dist_matrix[i*lmk_N+j] =
-				distance_matrix.matrix[lmk_idxs.vector[i]*total_N+lmk_idxs.vector[j]];
+				distance_matrix[lmk_idxs.vector[i]*total_N+lmk_idxs.vector[j]];
 	}
 
 	// get landmarks embedding
@@ -313,7 +313,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	{
 		for (j=0; j<m_target_dim; j++)
 			new_feature_matrix[lmk_idxs.vector[i]*m_target_dim+j] =
-				lmk_feature_matrix.matrix[i*m_target_dim+j];
+				lmk_feature_matrix[i*m_target_dim+j];
 	}
 
 	// get exactly defined pseudoinverse of landmarks feature matrix
@@ -321,7 +321,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	for (i=0; i<lmk_N; i++)
 	{
 		for (j=0; j<m_target_dim; j++)
-			lmk_feature_matrix.matrix[i*m_target_dim+j] /= m_eigenvalues.vector[j];
+			lmk_feature_matrix[i*m_target_dim+j] /= m_eigenvalues.vector[j];
 	}
 
 

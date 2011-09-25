@@ -329,7 +329,7 @@ template<class T> class SGMatrix
 		 */
 		inline const T& operator[](index_t index) const
 		{
-			return matrix+index;
+			return matrix[index];
 		}
 
 		/** operator overload for matrix r/w access
@@ -337,7 +337,7 @@ template<class T> class SGMatrix
 		 */
 		inline T& operator[](index_t index)
 		{
-			return matrix+index;
+			return matrix[index];
 		}
 
 	public:

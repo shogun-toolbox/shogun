@@ -18,6 +18,7 @@
 #include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/Time.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/lib/Signal.h>
 
@@ -290,7 +291,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 		delete nz_idxs[i];
 		for (j=0; j<i; j++)
 		{
-			M_matrix.matrix[i*N+j] = M_matrix.matrix[j*N+i];
+			M_matrix[i*N+j] = M_matrix[j*N+i];
 		}
 	}
 	SG_FREE(nz_idxs);
@@ -356,7 +357,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		for (i=0; i<dimension; i++)
 		{
 			for (j=0; j<N; j++)
-				null_space_features[j*dimension+i] = matrix.matrix[j*(dimension+1)+i+1];
+				null_space_features[j*dimension+i] = matrix[j*(dimension+1)+i+1];
 		}
 	}
 	else
@@ -452,6 +453,7 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 
 SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix)
 {
+	CTime* time = new CTime(true);
 	int32_t t;
 	int32_t N = distance_matrix.num_rows;
 	// init matrix and heap to be used
@@ -505,6 +507,9 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 	for (t=0; t<num_threads; t++)
 		delete heaps[t];
 	SG_FREE(heaps);
+
+	SG_PRINT("NEIGHBORS TOOK %fs", time->cur_time_diff());
+	delete time;
 
 	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
 }

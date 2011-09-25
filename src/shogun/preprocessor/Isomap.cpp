@@ -148,7 +148,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	{
 		// insert distances to heap
 		for (j=0; j<N; j++)
-			heap->insert(j,D_matrix.matrix[i*N+j]);
+			heap->insert(j,D_matrix[i*N+j]);
 
 		// extract nearest neighbor: the jth object itself
 		heap->extract_min(tmp);

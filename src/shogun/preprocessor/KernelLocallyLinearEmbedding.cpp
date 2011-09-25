@@ -264,7 +264,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 		delete nz_idxs[i];
 		for (j=0; j<i; j++)
 		{
-			M_matrix.matrix[i*N+j] = M_matrix.matrix[j*N+i];
+			M_matrix[i*N+j] = M_matrix[j*N+i];
 		}
 	}
 	SG_FREE(nz_idxs);
