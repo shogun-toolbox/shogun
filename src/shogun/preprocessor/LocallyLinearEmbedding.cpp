@@ -158,10 +158,10 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// dimension detection
 	if (m_target_dim == AUTO_TARGET_DIM)
 		m_target_dim = detect_dim(distance_matrix);
-	distance_matrix.destroy_matrix();
 
 	// init W (weight) matrix
-	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
+	float64_t* W_matrix = distance_matrix.matrix;
+	memset(W_matrix,0,sizeof(float64_t)*N*N);
 
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
