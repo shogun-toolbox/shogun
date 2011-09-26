@@ -168,6 +168,12 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	SG_FREE(local_feature_matrix);
 	SG_FREE(q_matrix);
 
+	for (int32_t i=0; i<N; i++)
+	{
+		for (int32_t j=0; j<m_k; j++)
+			W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[j*N+i]] += 1.0;
+	}
+
 	return SGMatrix<float64_t>(W_matrix,N,N);
 }
 
@@ -193,7 +199,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 	PTHREAD_LOCK_T* W_matrix_lock = parameters->W_matrix_lock;
 #endif
 
-	int i,j,k;
+	int32_t i,j,k;
 
 	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{
@@ -201,29 +207,23 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 			G_matrix[j] = 1.0/CMath::sqrt((float64_t)m_k);
 
 		// fill mean vector with zeros
-		for (j=0; j<dim; j++)
-			mean_vector[j] = 0.0;
+		memset(mean_vector,0,sizeof(float64_t)*dim);
 
 		// compute local feature matrix containing neighbors of i-th vector
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<dim; k++)
-			{
 				local_feature_matrix[j*dim+k] = feature_matrix[neighborhood_matrix[j*N+i]*dim+k];
-				mean_vector[k] += local_feature_matrix[j*dim+k];
-			}
+
+			cblas_daxpy(dim,1.0,local_feature_matrix+j*dim,1,mean_vector,1);
 		}
 
 		// compute mean
-		for (j=0; j<dim; j++)
-			mean_vector[j] /= m_k;
+		cblas_dscal(dim,1.0/m_k,mean_vector,1);
 
 		// center feature vectors by mean
 		for (j=0; j<m_k; j++)
-		{
-			for (k=0; k<dim; k++)
-				local_feature_matrix[j*dim+k] -= mean_vector[k];
-		}
+			cblas_daxpy(dim,-1.0,mean_vector,1,local_feature_matrix+j*dim,1);
 
 		int32_t info = 0;
 		// find right eigenvectors of local_feature_matrix
@@ -251,8 +251,6 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 #endif
 		for (j=0; j<m_k; j++)
 		{
-			W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[j*N+i]] += 1.0;
-
 			for (k=0; k<m_k; k++)
 				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] -= q_matrix[j*m_k+k];
 		}
