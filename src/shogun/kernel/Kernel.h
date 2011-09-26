@@ -25,8 +25,6 @@
 #include <shogun/kernel/KernelNormalizer.h>
 
 #include <vector>
-#include <set>
-#include <string>
 
 namespace shogun
 {
@@ -247,18 +245,15 @@ class CKernel : public CSGObject
 		 *
 		 * @return the jth column of the kernel matrix
 		 */
-		virtual std::vector<float64_t> get_kernel_col(int32_t j)
+		virtual SGVector<float64_t> get_kernel_col(int32_t j)
         {
 
-            std::vector<float64_t> col = std::vector<float64_t>(num_rhs);
+            SGVector<float64_t> col = SGVector<float64_t>(num_rhs);
 
             for (int32_t i=0; i!=num_rhs; i++)
-            {
                 col[i] = kernel(i,j);
-            }
 
         	return col;
-
         }
 
 
@@ -267,18 +262,14 @@ class CKernel : public CSGObject
 		 *
 		 * @return the ith row of the kernel matrix
 		 */
-		virtual std::vector<float64_t> get_kernel_row(int32_t i)
+		virtual SGVector<float64_t> get_kernel_row(int32_t i)
         {
-
-            std::vector<float64_t> row = std::vector<float64_t>(num_lhs);
+            SGVector<float64_t> row = SGVector<float64_t>(num_lhs);
 
             for (int32_t j=0; j!=num_lhs; j++)
-            {
                 row[j] = kernel(i,j);
-            }
 
         	return row;
-
         }
 
 		/** get kernel matrix real
@@ -923,8 +914,8 @@ class CKernel : public CSGObject
 
 
 #ifdef USE_SVMLIGHT
-		/**@ cache kernel evalutations to improve speed */
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+		/**@ cache kernel evalutations to improve speed */
 		struct KERNEL_CACHE {
 			/** index */
 			int32_t   *index;
