@@ -13,6 +13,8 @@
 
 #include <shogun/kernel/KernelNormalizer.h>
 #include <shogun/kernel/Kernel.h>
+#include <set>
+#include <string>
 
 namespace shogun
 {

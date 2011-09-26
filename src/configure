@@ -150,6 +150,7 @@ COMP_DEFAULT_OPTS="-Wall -O2"
 COMP_NO_OPTS="-Wall -O0"
 COMPFLAGS_C=-fPIC
 COMPFLAGS_CPP=-fPIC
+COMPFLAGS_SWIG_CPP="-fPIC -O0"
 SEDMI='sed -i'
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
@@ -411,6 +412,7 @@ EOF
 
 	if test "$_debug" = yes ; then
 		COMP_OPTS="-g $COMP_OPTS";
+		COMPFLAGS_SWIG_CPP="-g $COMPFLAGS_SWIG_CPP"
 	fi
 
 	echocheck "C Compiler flags"
@@ -4428,7 +4430,6 @@ write_dot_config()
 #enable additional warnings / -Wfloat-equal -W
 if test "$_cc_major" -ge "3" 2>/dev/null ; then
 	COMPFLAGS_C=`echo "$COMPFLAGS_C" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow/'`
-	COMPFLAGS_SWIG_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/-Wall//'`
 	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-deprecated/'`
 fi
 

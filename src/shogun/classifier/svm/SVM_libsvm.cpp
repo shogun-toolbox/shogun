@@ -51,6 +51,10 @@
 #include <string.h>
 #include <stdarg.h>
 
+#ifdef HAVE_PTHREAD
+#include <pthread.h>
+#endif
+
 namespace shogun
 {
 
@@ -212,6 +216,21 @@ public:
 	float64_t max_train_time;
 };
 
+class LibSVMKernel;
+
+// helper struct for threaded processing
+struct Q_THREAD_PARAM
+{
+	int32_t i;
+	int32_t start;
+	int32_t end;
+	Qfloat* data;
+	float64_t* y;
+	const LibSVMKernel* q;
+};
+
+extern Parallel* sg_parallel;
+
 class LibSVMKernel: public QMatrix {
 public:
 	LibSVMKernel(int32_t l, svm_node * const * x, const svm_parameter& param);
@@ -223,6 +242,94 @@ public:
 	{
 		CMath::swap(x[i],x[j]);
 		if(x_square) CMath::swap(x_square[i],x_square[j]);
+	}
+
+	static void* compute_Q_parallel_helper(void* p)
+	{
+		Q_THREAD_PARAM* params= (Q_THREAD_PARAM*) p;
+		int32_t i=params->i;
+		int32_t start=params->start;
+		int32_t end=params->end;
+		float64_t* y=params->y;
+		Qfloat* data=params->data;
+		const LibSVMKernel* q=params->q;
+
+		if (y) // two class
+		{
+			for(int32_t j=start;j<end;j++)
+				data[j] = (Qfloat) y[i]*y[j]*q->kernel_function(i,j);
+		}
+		else // one class, eps svr
+		{
+			for(int32_t j=start;j<end;j++)
+				data[j] = (Qfloat) q->kernel_function(i,j);
+		}
+
+		return NULL;
+	}
+
+	void compute_Q_parallel(Qfloat* data, float64_t* lab, int32_t i, int32_t start, int32_t len) const
+	{
+		int32_t num_threads=sg_parallel->get_num_threads();
+		if (num_threads < 2)
+		{
+			Q_THREAD_PARAM params;
+			params.i=i;
+			params.start=start;
+			params.end=len;
+			params.y=lab;
+			params.data=data;
+			params.q=this;
+			compute_Q_parallel_helper((void*) &params);
+		}
+		else
+		{
+			int32_t total_num=(len-start);
+			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+			Q_THREAD_PARAM* params = SG_MALLOC(Q_THREAD_PARAM, num_threads);
+			int32_t step= total_num/num_threads;
+
+			int32_t t;
+
+			num_threads--;
+			for (t=0; t<num_threads; t++)
+			{
+				params[t].i=i;
+				params[t].start=t*step;
+				params[t].end=(t+1)*step;
+				params[t].y=lab;
+				params[t].data=data;
+				params[t].q=this;
+
+				int code=pthread_create(&threads[t], NULL,
+						compute_Q_parallel_helper, (void*)&params[t]);
+
+				if (code != 0)
+				{
+					SG_SWARNING("Thread creation failed (thread %d of %d) "
+							"with error:'%s'\n",t, num_threads, strerror(code));
+					num_threads=t;
+					break;
+				}
+			}
+
+			params[t].i=i;
+			params[t].start=t*step;
+			params[t].end=len;
+			params[t].y=lab;
+			params[t].data=data;
+			params[t].q=this;
+			compute_Q_parallel_helper(&params[t]);
+
+			for (t=0; t<num_threads; t++)
+			{
+				if (pthread_join(threads[t], NULL) != 0)
+					SG_SWARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
+			}
+
+			SG_FREE(params);
+			SG_FREE(threads);
+		}
 	}
 
 	inline float64_t kernel_function(int32_t i, int32_t j) const
@@ -1239,12 +1346,14 @@ public:
 		int32_t start;
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
+			compute_Q_parallel(data, NULL, i, start, len);
+
 			for(int32_t j=start;j<len;j++)
 			{
 				if (y[i]==y[j])
-					data[j] = factor*(nr_class-1)*kernel_function(i,j);
+					data[j] *= (factor*(nr_class-1));
 				else
-					data[j] = -factor*kernel_function(i,j);
+					data[j] *= (-factor);
 			}
 		}
 		return data;
@@ -1614,10 +1723,8 @@ public:
 		Qfloat *data;
 		int32_t start;
 		if((start = cache->get_data(i,&data,len)) < len)
-		{
-			for(int32_t j=start;j<len;j++)
-				data[j] = (Qfloat) y[i]*y[j]*kernel_function(i,j);
-		}
+			compute_Q_parallel(data, y, i, start, len);
+
 		return data;
 	}
 
@@ -1664,10 +1771,8 @@ public:
 		Qfloat *data;
 		int32_t start;
 		if((start = cache->get_data(i,&data,len)) < len)
-		{
-			for(int32_t j=start;j<len;j++)
-				data[j] = (Qfloat) kernel_function(i,j);
-		}
+			compute_Q_parallel(data, NULL, i, start, len);
+
 		return data;
 	}
 
@@ -1730,10 +1835,7 @@ public:
 		Qfloat *data;
 		int32_t real_i = index[i];
 		if(cache->get_data(real_i,&data,l) < l)
-		{
-			for(int32_t j=0;j<l;j++)
-				data[j] = (Qfloat)kernel_function(real_i,j);
-		}
+			compute_Q_parallel(data, NULL, real_i, 0, l);
 
 		// reorder and copy
 		Qfloat *buf = buffer[next_buffer];
