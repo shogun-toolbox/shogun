@@ -228,29 +228,23 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 			Yi_matrix[j] = 1.0;
 
 		// fill mean vector with zeros
-		for (j=0; j<dim; j++)
-			mean_vector[j] = 0.0;
+		memset(mean_vector,0,sizeof(float64_t)*dim);
 
 		// compute local feature matrix containing neighbors of i-th vector
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<dim; k++)
-			{
 				local_feature_matrix[j*dim+k] = feature_matrix[neighborhood_matrix[j*N+i]*dim+k];
-				mean_vector[k] += local_feature_matrix[j*dim+k];
-			}
+
+			cblas_daxpy(dim,1.0,local_feature_matrix+j*dim,1,mean_vector,1);
 		}
 
 		// compute mean
-		for (j=0; j<dim; j++)
-			mean_vector[j] /= m_k;
+		cblas_dscal(dim,1.0/m_k,mean_vector,1);
 
 		// center feature vectors by mean
 		for (j=0; j<m_k; j++)
-		{
-			for (k=0; k<dim; k++)
-				local_feature_matrix[j*dim+k] -= mean_vector[k];
-		}
+			cblas_daxpy(dim,-1.0,mean_vector,1,local_feature_matrix+j*dim,1);
 
 		int32_t info = 0;
 		// find right eigenvectors of local_feature_matrix
