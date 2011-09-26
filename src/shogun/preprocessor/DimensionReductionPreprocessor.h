@@ -79,10 +79,20 @@ public:
 	 */
 	void set_distance(CDistance* distance);
 
+	/** getter for distance
+	 * @return distance
+	 */
+	CDistance* get_distance() const;
+
 	/** setter for kernel
 	 * @param kernel kernel to set
 	 */
 	void set_kernel(CKernel* kernel);
+
+	/** getter for kernel
+	 * @return kernel
+	 */
+	CKernel* get_kernel() const;
 
 public:
 

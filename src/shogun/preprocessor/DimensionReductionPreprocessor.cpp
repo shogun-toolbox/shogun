@@ -61,7 +61,6 @@ int32_t CDimensionReductionPreprocessor::get_target_dim() const
 
 void CDimensionReductionPreprocessor::set_distance(CDistance* distance)
 {
-	SG_UNREF(m_distance->parallel);
 	SG_UNREF(m_distance);
 	SG_REF(distance);
 	m_distance = distance;
@@ -69,14 +68,25 @@ void CDimensionReductionPreprocessor::set_distance(CDistance* distance)
 	SG_REF(this->parallel);
 }
 
+CDistance* CDimensionReductionPreprocessor::get_distance() const
+{
+	SG_REF(m_distance);
+	return m_distance;
+}
+
 void CDimensionReductionPreprocessor::set_kernel(CKernel* kernel)
 {
-	SG_UNREF(m_kernel->parallel);
 	SG_UNREF(m_kernel);
 	SG_REF(kernel);
 	m_kernel = kernel;
 	m_kernel->parallel = this->parallel;
 	SG_REF(this->parallel);
+}
+
+CKernel* CDimensionReductionPreprocessor::get_kernel() const
+{
+	SG_REF(m_kernel);
+	return m_kernel;
 }
 
 int32_t CDimensionReductionPreprocessor::detect_dim(SGMatrix<float64_t> distance_matrix)
