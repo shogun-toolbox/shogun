@@ -90,41 +90,14 @@ void CHessianLocallyLinearEmbedding::cleanup()
 {
 }
 
-SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
+                                                                            SGMatrix<int32_t> neighborhood_matrix)
 {
-	ASSERT(features);
-	// shorthand for simplefeatures
-	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
-	SG_REF(features);
-	ASSERT(simple_features);
-
-	// get dimensionality and number of vectors of data
-	int32_t dim = simple_features->get_num_features();
-	if (m_target_dim>dim)
-		SG_ERROR("Cannot increase dimensionality: target dimensionality is %d while given features dimensionality is %d.\n",
-		         m_target_dim, dim);
-
 	int32_t N = simple_features->get_num_vectors();
-	if (m_k>=N)
-		SG_ERROR("Number of neighbors (%d) should be less than number of objects (%d).\n",
-		         m_k, N);
-
-	// loop variables
-	int32_t t;
-
+	int32_t dim = simple_features->get_num_features();
 	int32_t dp = m_target_dim*(m_target_dim+1)/2;
 	ASSERT(m_k>=(1+m_target_dim+dp));
-
-	// compute distance matrix
-	ASSERT(m_distance);
-	m_distance->init(simple_features,simple_features);
-	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
-	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance_matrix);
-
-	// init W (weight) matrix
-	float64_t* W_matrix = distance_matrix.matrix;
-	memset(W_matrix,0,sizeof(float64_t)*N*N);
-	
+	int32_t t;
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -214,23 +187,10 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_matrix(CFea
 	SG_FREE(mean_vector);
 	SG_FREE(tau);
 	SG_FREE(w_sum_vector);
-	neighborhood_matrix.destroy_matrix();
 	SG_FREE(local_feature_matrix);
 	SG_FREE(q_matrix);
 
-	// finally construct embedding
-	SGMatrix<float64_t> W_sgmatrix = SGMatrix<float64_t>(W_matrix,N,N);
-	simple_features->set_feature_matrix(find_null_space(W_sgmatrix,m_target_dim));
-	W_sgmatrix.destroy_matrix();
-
-	SG_UNREF(features);
-	return simple_features->get_feature_matrix();
-}
-
-SGVector<float64_t> CHessianLocallyLinearEmbedding::apply_to_feature_vector(SGVector<float64_t> vector)
-{
-	SG_NOTIMPLEMENTED;
-	return vector;
+	return SGMatrix<float64_t>(W_matrix,N,N);
 }
 
 void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)

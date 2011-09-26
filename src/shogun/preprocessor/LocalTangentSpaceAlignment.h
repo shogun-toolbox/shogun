@@ -61,16 +61,6 @@ public:
 	 */
 	virtual void cleanup();
 
-	/** apply preprocessor to feature matrix
-	 * @param features
-	 */
-	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
-
-	/** apply preprocessor to feature vector, not supported
-	 * @param vector
-	 */
-	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
-
 	/** get name 
 	 * @return name of preprocessor
 	 */
@@ -80,6 +70,16 @@ public:
 	 * @return type of preprocessor
 	 */
 	virtual inline EPreprocessorType get_type() const { return P_LOCALTANGENTSPACEALIGNMENT; };
+
+protected:
+
+	/** construct weight matrix 
+	 * @param simple_features features to be used
+	 * @param W_matrix weight matrix
+	 * @param neighborhood_matrix matrix containing neighbor idxs
+	 */
+	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
+                                                            SGMatrix<int32_t> neighborhood_matrix);
 
 protected:
 

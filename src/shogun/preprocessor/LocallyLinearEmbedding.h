@@ -96,6 +96,14 @@ protected:
 	/** default init */
 	void init();
 
+	/** construct weight matrix 
+	 * @param simple_features features to be used
+	 * @param W_matrix weight matrix
+	 * @param neighborhood_matrix matrix containing neighbor idxs
+	 */
+	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
+                                                            SGMatrix<int32_t> neighborhood_matrix);
+
 	/** find null space of given matrix 
 	 * @param matrix given matrix
 	 * @param dimension dimension of null space to be computed

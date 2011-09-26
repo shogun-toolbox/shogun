@@ -137,6 +137,7 @@ void CLocallyLinearEmbedding::cleanup()
 SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(features);
+	// check features
 	if (!(features->get_feature_class()==C_SIMPLE &&
 	      features->get_feature_type()==F_DREAL))
 	{
@@ -146,25 +147,24 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
 	SG_REF(features);
 
-	// get dimensionality and number of vectors of data
+	// get and check dimensionality
 	int32_t dim = simple_features->get_num_features();
 	if (m_target_dim>dim)
 		SG_ERROR("Cannot increase dimensionality: target dimensionality is %d while given features dimensionality is %d.\n",
 		         m_target_dim, dim);
 
+	// get and check number of vectors
 	int32_t N = simple_features->get_num_vectors();
 	if (m_k>=N)
 		SG_ERROR("Number of neighbors (%d) should be less than number of objects (%d).\n",
 		         m_k, N);
-
-	// loop variables
-	int32_t i,j,t;
 
 	// compute distance matrix
 	ASSERT(m_distance);
 	m_distance->init(simple_features,simple_features);
 	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance_matrix);
+
 	// dimension detection
 	if (m_target_dim == AUTO_TARGET_DIM)
 		m_target_dim = detect_dim(distance_matrix);
@@ -173,6 +173,30 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	float64_t* W_matrix = distance_matrix.matrix;
 	memset(W_matrix,0,sizeof(float64_t)*N*N);
 
+	// construct weight matrix
+	SGMatrix<float64_t> weight_matrix = construct_weight_matrix(simple_features,W_matrix,neighborhood_matrix);
+	neighborhood_matrix.destroy_matrix();
+
+	// find null space of weight matrix
+	simple_features->set_feature_matrix(find_null_space(weight_matrix,m_target_dim));
+	weight_matrix.destroy_matrix();
+
+	SG_UNREF(features);
+	return simple_features->get_feature_matrix();
+}
+
+SGVector<float64_t> CLocallyLinearEmbedding::apply_to_feature_vector(SGVector<float64_t> vector)
+{
+	SG_NOTIMPLEMENTED;
+	return vector;
+}
+
+SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,
+                                                                     float64_t* W_matrix, SGMatrix<int32_t> neighborhood_matrix)
+{
+	int32_t N = simple_features->get_num_vectors();
+	int32_t dim = simple_features->get_num_features();
+	int32_t i,j,t;
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -233,7 +257,6 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 #endif
 
 	// clean
-	neighborhood_matrix.destroy_matrix();
 	SG_FREE(id_vector);
 	SG_FREE(z_matrix);
 	SG_FREE(covariance_matrix);
@@ -305,18 +328,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	}
 	SG_FREE(nz_idxs);
 	SG_FREE(W_matrix);
-
-	simple_features->set_feature_matrix(find_null_space(M_matrix,m_target_dim));
-	M_matrix.destroy_matrix();
-
-	SG_UNREF(features);
-	return simple_features->get_feature_matrix();
-}
-
-SGVector<float64_t> CLocallyLinearEmbedding::apply_to_feature_vector(SGVector<float64_t> vector)
-{
-	SG_NOTIMPLEMENTED;
-	return vector;
+	return M_matrix;
 }
 
 SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t> matrix, int dimension)
