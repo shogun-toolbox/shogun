@@ -134,20 +134,13 @@ SGMatrix<float64_t> CDiffusionMaps::apply_to_feature_matrix(CFeatures* features)
 
 	float64_t* kkt_matrix = SG_MALLOC(float64_t, N*N);
 
-	CTime* time = new CTime(true);
-
 	cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
 	            N,N,N,
 	            1.0,kernel_matrix.matrix,N,
 	            kernel_matrix.matrix,N,
 	            0.0,kkt_matrix,N);
 
-	SG_PRINT("%fs passed\n",time->cur_time_diff());
-
-	delete time;
-
 	int32_t info = 0;
-
 
 	wrap_dsyevr('V','U',N,kkt_matrix,N,N-m_target_dim,N,s_values,kernel_matrix.matrix,&info);
 	if (info)
