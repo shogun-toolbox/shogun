@@ -23,11 +23,13 @@ cisomap = Isomap()
 cisomap.set_k(9)
 preprocs.append((cisomap,"Isomap with k=%d" % cisomap.get_k()))
 
-lisomap = Isomap()
-lisomap.set_landmark(True)
-lisomap.set_landmark_number(500)
-lisomap.set_k(9)
-preprocs.append((lisomap,"Landmark Isomap with k=%d, %d landmarks" % (lisomap.get_k(),lisomap.get_landmark_number())))
+from shogun.Preprocessor import DiffusionMaps
+from shogun.Kernel import GaussianKernel
+dm = DiffusionMaps()
+dm.set_t(20)
+kernel = GaussianKernel(100,1.0)
+dm.set_kernel(kernel)
+preprocs.append((dm,"Diffusion Maps with t=%d, sigma=%f" % (dm.get_t(),kernel.get_width())))
 
 from shogun.Preprocessor import HessianLocallyLinearEmbedding
 hlle = HessianLocallyLinearEmbedding()
