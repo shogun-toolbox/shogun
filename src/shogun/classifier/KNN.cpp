@@ -147,7 +147,7 @@ CLabels* CKNN::apply()
 
 		//choose the class that got 'outputted' most often
 		int32_t out_idx=0;
-		int32_t out_max=0;
+		float64_t out_max=0;
 
 		for (j=0; j<num_classes; j++)
 		{
