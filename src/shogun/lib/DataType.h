@@ -49,6 +49,11 @@ template<class T> class SGVector
 		SGVector(const SGVector &orig)
 			: vector(orig.vector), vlen(orig.vlen), do_free(orig.do_free) { }
 
+		/** empty destructor */
+		virtual ~SGVector()
+		{
+		}
+
 		/** get vector
 		 * @param src vector to get
 		 * @param own true if should be owned
@@ -304,6 +309,11 @@ template<class T> class SGMatrix
 		SGMatrix(const SGMatrix &orig)
 			: matrix(orig.matrix), num_rows(orig.num_rows),
 			num_cols(orig.num_cols), do_free(orig.do_free) { }
+
+		/** empty destructor */
+		virtual ~SGMatrix()
+		{
+		}
 
 		/** free matrix */
 		virtual void free_matrix()
