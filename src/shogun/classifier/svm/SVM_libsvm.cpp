@@ -51,6 +51,10 @@
 #include <string.h>
 #include <stdarg.h>
 
+#ifdef HAVE_PTHREAD
+#include <pthread.h>
+#endif
+
 namespace shogun
 {
 
@@ -1593,6 +1597,19 @@ float64_t Solver_NUMC::calculate_rho()
 }
 
 
+extern Parallel* sg_parallel;
+
+// helper struct for threaded processing
+struct Q_THREAD_PARAM
+{
+	int32_t i;
+	int32_t start;
+	int32_t end;
+	Qfloat* data;
+	float64_t* y;
+	const LibSVMKernel* q;
+};
+
 //
 // Q matrices for various formulations
 //
@@ -1609,15 +1626,93 @@ public:
 			QD[i]= (Qfloat)kernel_function(i,i);
 	}
 
+	static void* compute_Q_parallel_helper(void* p)
+	{
+		Q_THREAD_PARAM* params= (Q_THREAD_PARAM*) p;
+		int32_t i=params->i;
+		int32_t start=params->start;
+		int32_t end=params->end;
+		float64_t* y=params->y;
+		Qfloat* data=params->data;
+		const LibSVMKernel* q=params->q;
+
+		for(int32_t j=start;j<end;j++)
+			data[j] = (Qfloat) y[i]*y[j]*q->kernel_function(i,j);
+
+		return NULL;
+	}
+
+	void compute_Q_parallel(Qfloat* data, int32_t i, int32_t start, int32_t len) const
+	{
+		int32_t num_threads=sg_parallel->get_num_threads();
+		if (num_threads < 2)
+		{
+			Q_THREAD_PARAM params;
+			params.i=i;
+			params.start=start;
+			params.end=len;
+			params.y=y;
+			params.data=data;
+			params.q=this;
+			compute_Q_parallel_helper((void*) &params);
+		}
+		else
+		{
+			int32_t total_num=(len-start);
+			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+			Q_THREAD_PARAM* params = SG_MALLOC(Q_THREAD_PARAM, num_threads);
+			int32_t step= total_num/num_threads;
+
+			int32_t t;
+
+			num_threads--;
+			for (t=0; t<num_threads; t++)
+			{
+				params[t].i=i;
+				params[t].start=t*step;
+				params[t].end=(t+1)*step;
+				params[t].y=y;
+				params[t].data=data;
+				params[t].q=this;
+
+				int code=pthread_create(&threads[t], NULL,
+						compute_Q_parallel_helper, (void*)&params[t]);
+
+				if (code != 0)
+				{
+					SG_SWARNING("Thread creation failed (thread %d of %d) "
+							"with error:'%s'\n",t, num_threads, strerror(code));
+					num_threads=t;
+					break;
+				}
+			}
+
+			params[t].i=i;
+			params[t].start=t*step;
+			params[t].end=len;
+			params[t].y=y;
+			params[t].data=data;
+			params[t].q=this;
+			compute_Q_parallel_helper(&params[t]);
+
+			for (t=0; t<num_threads; t++)
+			{
+				if (pthread_join(threads[t], NULL) != 0)
+					SG_SWARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
+			}
+
+			SG_FREE(params);
+			SG_FREE(threads);
+		}
+	}
+
 	Qfloat *get_Q(int32_t i, int32_t len) const
 	{
 		Qfloat *data;
 		int32_t start;
 		if((start = cache->get_data(i,&data,len)) < len)
-		{
-			for(int32_t j=start;j<len;j++)
-				data[j] = (Qfloat) y[i]*y[j]*kernel_function(i,j);
-		}
+			compute_Q_parallel(data, i, start, len);
+
 		return data;
 	}
 
