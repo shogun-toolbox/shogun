@@ -56,6 +56,7 @@ CFibonacciHeap::~CFibonacciHeap()
 			delete nodes[i];
 	}
 	SG_FREE(nodes);
+	SG_FREE(A);
 }
 
 void CFibonacciHeap::insert(int32_t index, float64_t key)
