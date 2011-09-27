@@ -20,8 +20,9 @@
 
 using namespace shogun;
 
-Parallel::Parallel() : refcount(0), num_threads(1)
+Parallel::Parallel() : refcount(0)
 {
+	num_threads=get_num_cpus();
 }
 
 Parallel::Parallel(const Parallel& orig) : refcount(0)
