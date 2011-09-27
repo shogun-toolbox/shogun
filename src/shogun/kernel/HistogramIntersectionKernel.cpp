@@ -17,20 +17,21 @@
 using namespace shogun;
 
 CHistogramIntersectionKernel::CHistogramIntersectionKernel()
-: CDotKernel(0), beta(1.0)
+: CDotKernel(0), m_beta(1.0)
 {
 	register_params();
 }
 
 CHistogramIntersectionKernel::CHistogramIntersectionKernel(int32_t size)
-: CDotKernel(size), beta(1.0)
+: CDotKernel(size), m_beta(1.0)
 {
 	register_params();
 }
 
 CHistogramIntersectionKernel::CHistogramIntersectionKernel(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t size)
-: CDotKernel(size), beta(1.0)
+	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+	float64_t beta, int32_t size)
+: CDotKernel(size), m_beta(1.0)
 {
 	init(l,r);
 	register_params();
@@ -62,7 +63,7 @@ float64_t CHistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result=0;
 
 	// checking if beta is default or not
-	if (beta == 1.0)
+	if (m_beta == 1.0)
 	{
 		// compute standard histogram intersection kernel
 		for (int32_t i=0; i<alen; i++)
@@ -72,7 +73,7 @@ float64_t CHistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
 	{
 		//compute generalized histogram intersection kernel
 		for (int32_t i=0; i<alen; i++)
-			result += CMath::min(CMath::pow(avec[i],beta), CMath::pow(bvec[i],beta));
+			result += CMath::min(CMath::pow(avec[i],m_beta), CMath::pow(bvec[i],m_beta));
 	}
 	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -82,5 +83,5 @@ float64_t CHistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CHistogramIntersectionKernel::register_params()
 {
-	m_parameters->add(&beta, "beta", "the beta parameter of the kernel");	
+	m_parameters->add(&m_beta, "beta", "the beta parameter of the kernel");	
 }

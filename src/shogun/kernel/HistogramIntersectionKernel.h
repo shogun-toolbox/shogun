@@ -44,10 +44,12 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
+		 * @param beta kernel parameter
 		 * @param size cache size
 		 */
 		CHistogramIntersectionKernel(
-			CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t size);
+			CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+			float64_t beta=1.0, int32_t size=10);
 
 		virtual ~CHistogramIntersectionKernel();
 
@@ -77,17 +79,17 @@ class CHistogramIntersectionKernel: public CDotKernel
 		/** getter for beta parameter
 		 * @return beta value
 		 */
-		inline float64_t get_beta() { return this->beta; }
+		inline float64_t get_beta() { return m_beta; }
 
 		/** setter for beta parameter
 		 *  @param value beta value
 		 */
-		inline void set_beta(float64_t value) { this->beta = value; }
+		inline void set_beta(float64_t beta) { m_beta = beta; }
 
 	protected:
 
 		/// beta parameter
-		float64_t beta;
+		float64_t m_beta;
 
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
