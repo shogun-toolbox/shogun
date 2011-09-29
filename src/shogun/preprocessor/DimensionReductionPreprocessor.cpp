@@ -50,13 +50,27 @@ EPreprocessorType CDimensionReductionPreprocessor::get_type() const { return P_D
 
 void CDimensionReductionPreprocessor::set_target_dim(int32_t dim)
 {
-	ASSERT(dim>0 || dim==AUTO_TARGET_DIM);
 	m_target_dim = dim;
 }
 
 int32_t CDimensionReductionPreprocessor::get_target_dim() const
 {
 	return m_target_dim;
+}
+
+int32_t CDimensionReductionPreprocessor::calculate_effective_target_dim(int32_t dim)
+{
+	if (m_target_dim<0)
+	{
+		if (dim+m_target_dim>1)
+		{
+			return dim+m_target_dim;
+		}
+		else
+			return -1;
+	}
+	else
+		return m_target_dim;
 }
 
 void CDimensionReductionPreprocessor::set_distance(CDistance* distance)

@@ -94,18 +94,23 @@ public:
 	 */
 	CKernel* get_kernel() const;
 
-public:
-
-	/** const indicating target dimensionality should be determined automagically */
-	static const int32_t AUTO_TARGET_DIM = -1;
-
 protected:
 
-	/** detect dimensionality from distance matrix 
+	/** detect dimensionality from distance matrix
+	 * NOT YET IMPLEMENTED
 	 * @param distance_matrix distance matrix to be used 
 	 * @return detected dimensionality 
 	 */
-	virtual int32_t detect_dim(SGMatrix<float64_t> distance_matrix);
+	int32_t detect_dim(SGMatrix<float64_t> distance_matrix);
+
+protected:
+
+	/** calculates effective target dimensionality
+	 * according to set m_target_dim
+	 * @param dim dimensionality of 
+	 * @return effective target dimensionality
+	 */
+	int32_t calculate_effective_target_dim(int32_t dim);
 
 	/** default init */
 	void init();

@@ -112,6 +112,7 @@ SGMatrix<float64_t> CIsomap::apply_to_feature_matrix(CFeatures* features)
 {
 	CSimpleFeatures<float64_t>* simple_features =
 		(CSimpleFeatures<float64_t>*) features;
+	ASSERT(m_target_dim>0);
 	SG_REF(features);
 	ASSERT(m_distance);
 	m_distance->init(simple_features, simple_features);

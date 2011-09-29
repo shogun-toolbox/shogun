@@ -55,7 +55,7 @@ enum EPreprocessorType
 	P_LOCALTANGENTSPACEALIGNMENT=210,
 	P_LAPLACIANEIGENMAPS=220,
 	P_KERNELLOCALLYLINEAREMBEDDING=230,
-	P_DIFFUSIONMAPS=240
+	P_DIFFUSIONMAPS=240,
 };
 
 /** @brief Class Preprocessor defines a preprocessor interface.

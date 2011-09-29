@@ -42,7 +42,7 @@ struct HESSIANESTIMATION_THREAD_PARAM
 	/// dp
 	int32_t dp;
 	/// target dimensionality
-	int32_t m_target_dim;
+	int32_t target_dim;
 	/// matrix containing indexes of neighbors of ith vector in ith column
 	const int32_t* neighborhood_matrix;
 	/// feature matrix 
@@ -95,8 +95,9 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 {
 	int32_t N = simple_features->get_num_vectors();
 	int32_t dim = simple_features->get_num_features();
-	int32_t dp = m_target_dim*(m_target_dim+1)/2;
-	ASSERT(m_k>=(1+m_target_dim+dp));
+	int32_t target_dim = calculate_effective_target_dim(dim);
+	int32_t dp = target_dim*(target_dim+1)/2;
+	ASSERT(m_k>=(1+target_dim+dp));
 	int32_t t;
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
@@ -112,12 +113,12 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	// init matrices to be used
 	float64_t* local_feature_matrix = SG_MALLOC(float64_t, m_k*dim*num_threads);
 	float64_t* s_values_vector = SG_MALLOC(float64_t, dim*num_threads);
-	int32_t tau_len = CMath::min((1+m_target_dim+dp), m_k);
+	int32_t tau_len = CMath::min((1+target_dim+dp), m_k);
 	float64_t* tau = SG_MALLOC(float64_t, tau_len*num_threads);
 	float64_t* mean_vector = SG_MALLOC(float64_t, dim*num_threads);
 	float64_t* q_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
 	float64_t* w_sum_vector = SG_MALLOC(float64_t, dp*num_threads);
-	float64_t* Yi_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim+dp)*num_threads);
+	float64_t* Yi_matrix = SG_MALLOC(float64_t, m_k*(1+target_dim+dp)*num_threads);
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
@@ -135,13 +136,13 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 		parameters[t].idx_stop = N;
 		parameters[t].m_k = m_k;
 		parameters[t].dim = dim;
-		parameters[t].m_target_dim = m_target_dim;
+		parameters[t].target_dim = target_dim;
 		parameters[t].N = N;
 		parameters[t].dp = dp;
 		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
 		parameters[t].feature_matrix = feature_matrix.matrix;
 		parameters[t].local_feature_matrix = local_feature_matrix + (m_k*dim)*t;
-		parameters[t].Yi_matrix = Yi_matrix + (m_k*(1+m_target_dim+dp))*t;
+		parameters[t].Yi_matrix = Yi_matrix + (m_k*(1+target_dim+dp))*t;
 		parameters[t].mean_vector = mean_vector + dim*t;
 		parameters[t].s_values_vector = s_values_vector + dim*t;
 		parameters[t].tau = tau+tau_len*t;
@@ -164,7 +165,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	single_thread_param.idx_stop = N;
 	single_thread_param.m_k = m_k;
 	single_thread_param.dim = dim;
-	single_thread_param.m_target_dim = m_target_dim;
+	single_thread_param.target_dim = target_dim;
 	single_thread_param.N = N;
 	single_thread_param.dp = dp;
 	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
@@ -203,7 +204,7 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 	int32_t dim = parameters->dim;
 	int32_t N = parameters->N;
 	int32_t dp = parameters->dp;
-	int32_t m_target_dim = parameters->m_target_dim;
+	int32_t target_dim = parameters->target_dim;
 	const int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
 	const float64_t* feature_matrix = parameters->feature_matrix;
 	float64_t* local_feature_matrix = parameters->local_feature_matrix;
@@ -253,8 +254,8 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 		                     NULL,1, NULL,1, &info);
 		ASSERT(info==0);
 
-		// Yi(0:m_k,1:1+m_target_dim) = Vh(0:m_k, 0:target_dim)
-		for (j=0; j<m_target_dim; j++)
+		// Yi(0:m_k,1:1+target_dim) = Vh(0:m_k, 0:target_dim)
+		for (j=0; j<target_dim; j++)
 		{
 			for (k=0; k<m_k; k++)
 				Yi_matrix[(j+1)*m_k+k] = local_feature_matrix[k*dim+j];
@@ -263,25 +264,25 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 		int32_t ct = 0;
 		
 		// construct 2nd order hessian approx
-		for (j=0; j<m_target_dim; j++)
+		for (j=0; j<target_dim; j++)
 		{
-			for (k=0; k<m_target_dim-j; k++)
+			for (k=0; k<target_dim-j; k++)
 			{
 				for (l=0; l<m_k; l++)
 				{
-					Yi_matrix[(ct+k+1+m_target_dim)*m_k+l] = Yi_matrix[(j+1)*m_k+l]*Yi_matrix[(j+k+1)*m_k+l];
+					Yi_matrix[(ct+k+1+target_dim)*m_k+l] = Yi_matrix[(j+1)*m_k+l]*Yi_matrix[(j+k+1)*m_k+l];
 				}
 			}
-			ct += ct + m_target_dim - j;
+			ct += ct + target_dim - j;
 		}
 	
 		// perform QR factorization
-		wrap_dgeqrf(m_k,(1+m_target_dim+dp),Yi_matrix,m_k,tau,&info);
+		wrap_dgeqrf(m_k,(1+target_dim+dp),Yi_matrix,m_k,tau,&info);
 		ASSERT(info==0);
-		wrap_dorgqr(m_k,(1+m_target_dim+dp),tau_len,Yi_matrix,m_k,tau,&info);
+		wrap_dorgqr(m_k,(1+target_dim+dp),tau_len,Yi_matrix,m_k,tau,&info);
 		ASSERT(info==0);
 		
-		float64_t* Pii = (Yi_matrix+m_k*(1+m_target_dim));
+		float64_t* Pii = (Yi_matrix+m_k*(1+target_dim));
 
 		for (j=0; j<dp; j++)
 		{

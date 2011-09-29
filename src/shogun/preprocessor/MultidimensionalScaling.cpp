@@ -172,6 +172,7 @@ SGVector<float64_t> CMultidimensionalScaling::apply_to_feature_vector(SGVector<f
 
 SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64_t> distance_matrix)
 {
+	ASSERT(m_target_dim>0);
 	ASSERT(distance_matrix.num_cols==distance_matrix.num_rows);
 	int32_t N = distance_matrix.num_cols;
 
@@ -293,6 +294,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 
 SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float64_t> distance_matrix)
 {
+	ASSERT(m_target_dim>0);
 	ASSERT(distance_matrix.num_cols==distance_matrix.num_rows);
 	int32_t lmk_N = m_landmark_number;
 	int32_t i,j,t;
