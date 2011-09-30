@@ -12,7 +12,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/mathematics/arpack.h>
+#include <shogun/mathematics/arpack_d.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/FibonacciHeap.h>
 #include <shogun/base/DynArray.h>
@@ -355,8 +355,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
-		arpack_dsaeupd_wrap(matrix.matrix,NULL,N,dimension+1,"LA",3,true,-1e-7,0.0,
-		                    eigenvalues_vector,matrix.matrix,eigenproblem_status);
+		arpack_dsxupd(matrix.matrix,NULL,N,dimension+1,"LA",3,true,-1e-7,0.0,
+		              eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
 	}
 	else

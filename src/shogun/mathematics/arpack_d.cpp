@@ -23,9 +23,9 @@ using namespace shogun;
 namespace shogun
 {
 
-void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const char* which, 
-                         int mode, bool pos, double shift, double tolerance, 
-                         double* eigenvalues, double* eigenvectors, int& status)
+void arpack_dsxupd(double* matrix, double* rhs_diag, int n, int nev, const char* which, 
+                   int mode, bool pos, double shift, double tolerance, 
+                   double* eigenvalues, double* eigenvectors, int& status)
 {
 	// loop vars
 	int i,j;

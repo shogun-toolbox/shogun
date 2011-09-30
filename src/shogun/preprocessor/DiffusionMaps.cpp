@@ -13,7 +13,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/arpack.h>
+#include <shogun/mathematics/arpack_d.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>

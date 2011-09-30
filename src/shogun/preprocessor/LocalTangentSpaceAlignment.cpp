@@ -10,7 +10,6 @@
 
 #include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
 #ifdef HAVE_LAPACK
-#include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/common.h>

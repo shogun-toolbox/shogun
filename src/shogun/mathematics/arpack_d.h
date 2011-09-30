@@ -32,10 +32,9 @@ extern "C" void dseupd_(int *rvec, char *All, int *select, double *d,
 namespace shogun
 {
 
-/** Wrapper for ARPACK's dsaupd routine for symmetrical real
- * matrices. This ARPACK routine is used to compute specified
- * number of eigenpairs (e.g. k largest eigenvalues). Underlying
- * routine involves a variant of Arnoldi process called the IRAM
+/** Wrapper for ARPACK's dsaupd/dseupd routines. These ARPACK routines 
+ * are being used to compute specified number of eigenpairs (e.g. k largest eigenvalues). 
+ * Underlying routines involve a variant of Arnoldi process called the IRAM
  * (Implicitly Restarted Arnoldi Method) reduced to IRLM 
  * (Implicitly Restarted Lanczos Method). A strategy specifying 
  * which eigenpairs to compute should be provided as parameter.
@@ -68,9 +67,9 @@ namespace shogun
  * @param eigenvectors array of size nev*n to hold computed eigenvectors
  * @param status on output -1 if computation failed
  */
-void arpack_dsaeupd_wrap(double* matrix, double* rhs_diag, int n, int nev, const char* which,
-                         int mode, bool pos, double shift, double tolerance,
-                         double* eigenvalues, double* eigenvectors, int& status);
+void arpack_dsxupd(double* matrix, double* rhs_diag, int n, int nev, const char* which,
+                   int mode, bool pos, double shift, double tolerance,
+                   double* eigenvalues, double* eigenvectors, int& status);
 }
 #endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */

@@ -12,7 +12,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/arpack.h>
+#include <shogun/mathematics/arpack_d.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
@@ -210,9 +210,8 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 	// using ARPACK
 	float64_t* eigenvalues_vector = SG_MALLOC(float64_t, m_target_dim);
 	// solve eigenproblem with ARPACK (faster)
-	arpack_dsaeupd_wrap(distance_matrix.matrix, NULL, N, m_target_dim, "LM", 1, false, 0.0, 0.0,
-	                    eigenvalues_vector, replace_feature_matrix,
-	                    eigenproblem_status);
+	arpack_dsxupd(distance_matrix.matrix,NULL,N,m_target_dim,"LM",1,false,0.0,0.0,
+	              eigenvalues_vector,replace_feature_matrix,eigenproblem_status);
 	// check for failure
 	ASSERT(eigenproblem_status == 0);
 	// reverse eigenvectors order

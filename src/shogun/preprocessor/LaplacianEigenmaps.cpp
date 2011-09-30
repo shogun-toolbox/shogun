@@ -11,7 +11,7 @@
 #include <shogun/preprocessor/LaplacianEigenmaps.h>
 #ifdef HAVE_LAPACK
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/mathematics/arpack.h>
+#include <shogun/mathematics/arpack_d.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/FibonacciHeap.h>
@@ -152,8 +152,8 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 		// using ARPACK DS{E,A}UPD
 		int eigenproblem_status = 0;
 		float64_t* eigenvalues_vector = SG_MALLOC(float64_t,target_dim+1);
-		arpack_dsaeupd_wrap(W_matrix,D_diag_vector,N,target_dim+1,"LA",3,false,-1e-9,0.0,
-		                    eigenvalues_vector,W_matrix,eigenproblem_status);
+		arpack_dsxupd(W_matrix,D_diag_vector,N,target_dim+1,"LA",3,false,-1e-9,0.0,
+		              eigenvalues_vector,W_matrix,eigenproblem_status);
 		ASSERT(eigenproblem_status==0);
 		SG_FREE(eigenvalues_vector);
 	#else
