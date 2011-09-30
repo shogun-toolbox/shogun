@@ -50,7 +50,8 @@ class CGMM : public CDistribution
 		 * @param coefficients mixing coefficients
 		 * @param copy true if should be copied
 		 */
-		CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy=false);
+		CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients,
+				bool copy=false);
 		virtual ~CGMM();
 
 		/** cleanup */
@@ -72,7 +73,8 @@ class CGMM : public CDistribution
 		 *
 		 * @return log likelihood of training data
 		 */
-		float64_t train_em(float64_t min_cov=1e-9, int32_t max_iter=1000, float64_t min_change=1e-9);
+		float64_t train_em(float64_t min_cov=1e-9, int32_t max_iter=1000,
+				float64_t min_change=1e-9);
 
 		/** learn model using SMEM
 		 *
@@ -84,7 +86,9 @@ class CGMM : public CDistribution
 		 *
 		 * @return log likelihood of training data
 		 */
-		float64_t train_smem(int32_t max_iter=100, int32_t max_cand=5, float64_t min_cov=1e-9, int32_t max_em_iter=1000, float64_t min_change=1e-9);
+		float64_t train_smem(int32_t max_iter=100, int32_t max_cand=5,
+				float64_t min_cov=1e-9, int32_t max_em_iter=1000,
+				float64_t min_change=1e-9);
 
 		/** maximum likelihood estimation
 		 *
@@ -131,10 +135,7 @@ class CGMM : public CDistribution
 		 * @param num_example which example
 		 * @return likelihood for example
 		 */
-		virtual float64_t get_likelihood_example(int32_t num_example)
-		{
-			return CMath::exp(get_log_likelihood_example(num_example));
-		}
+		virtual float64_t get_likelihood_example(int32_t num_example);
 
 		/** get nth mean
 		 *
@@ -142,22 +143,14 @@ class CGMM : public CDistribution
 		 *
 		 * @return mean
 		 */
-		virtual inline SGVector<float64_t> get_nth_mean(int32_t num)
-		{
-			ASSERT(num<m_components.vlen);
-			return m_components.vector[num]->get_mean();
-		}
+		virtual SGVector<float64_t> get_nth_mean(int32_t num);
 
 		/** set nth mean
 		 *
 		 * @param mean new mean
 		 * @param num index mean to set
 		 */
-		virtual inline void set_nth_mean(SGVector<float64_t> mean, int32_t num)
-		{
-			ASSERT(num<m_components.vlen);
-			m_components.vector[num]->set_mean(mean);
-		}
+		virtual void set_nth_mean(SGVector<float64_t> mean, int32_t num);
 
 		/** get nth covariance
 		 *
@@ -165,70 +158,38 @@ class CGMM : public CDistribution
 		 *
 		 * @return covariance
 		 */
-		virtual inline SGMatrix<float64_t> get_nth_cov(int32_t num)
-		{
-			ASSERT(num<m_components.vlen);
-			return m_components.vector[num]->get_cov();
-		}
+		virtual SGMatrix<float64_t> get_nth_cov(int32_t num);
 
 		/** set nth covariance
 		 *
 		 * @param cov new covariance
 		 * @param num index of covariance to set
 		 */
-		virtual inline void set_nth_cov(SGMatrix<float64_t> cov, int32_t num)
-		{
-			ASSERT(num<m_components.vlen);
-			m_components.vector[num]->set_cov(cov);
-		}
+		virtual void set_nth_cov(SGMatrix<float64_t> cov, int32_t num);
 
 		/** get coefficients
 		 *
 		 * @return coeffiecients
 		 */
-		virtual inline SGVector<float64_t> get_coef()
-		{
-			return m_coefficients;
-		}
+		virtual SGVector<float64_t> get_coef();
 
 		/** set coefficients
 		 *
 		 * @param coefficients mixing coefficients
 		 */
-		virtual inline void set_coef(SGVector<float64_t> coefficients)
-		{
-			m_coefficients.destroy_vector();
-			m_coefficients=coefficients;
-		}
+		virtual void set_coef(SGVector<float64_t> coefficients);
 
 		/** get components
 		 *
 		 * @return components
 		 */
-		virtual inline SGVector<CGaussian*> get_comp()
-		{
-			return m_components;
-		}
+		virtual SGVector<CGaussian*> get_comp();
 
 		/** set components
 		 *
 		 * @param components Gaussian components
 		 */
-		virtual inline void set_comp(SGVector<CGaussian*> components)
-		{
-			for (int32_t i=0; i<m_components.vlen; i++)
-			{
-				SG_UNREF(m_components.vector[i]);
-			}
-
-			m_components.destroy_vector();
-			m_components=components;
-
-			for (int32_t i=0; i<m_components.vlen; i++)
-			{
-				SG_REF(m_components.vector[i]);
-			}
-		}
+		virtual void set_comp(SGVector<CGaussian*> components);
 
 		/** sample from model
 		 *
@@ -267,7 +228,8 @@ class CGMM : public CDistribution
 		 * @param max_em_iter maximum iterations for EM
 		 * @param min_change minimum change in log likelihood
 		 */
-		void partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min_cov, int32_t max_em_iter, float64_t min_change);
+		void partial_em(int32_t comp1, int32_t comp2, int32_t comp3,
+				float64_t min_cov, int32_t max_em_iter, float64_t min_change);
 
 	protected:
 		/** Mixture components */

@@ -671,6 +671,67 @@ float64_t CGMM::get_log_likelihood_example(int32_t num_example)
 	return 1;
 }
 
+float64_t CGMM::get_likelihood_example(int32_t num_example)
+{
+	return CMath::exp(get_log_likelihood_example(num_example));
+}
+
+SGVector<float64_t> CGMM::get_nth_mean(int32_t num)
+{
+	ASSERT(num<m_components.vlen);
+	return m_components.vector[num]->get_mean();
+}
+
+void CGMM::set_nth_mean(SGVector<float64_t> mean, int32_t num)
+{
+	ASSERT(num<m_components.vlen);
+	m_components.vector[num]->set_mean(mean);
+}
+
+SGMatrix<float64_t> CGMM::get_nth_cov(int32_t num)
+{
+	ASSERT(num<m_components.vlen);
+	return m_components.vector[num]->get_cov();
+}
+
+void CGMM::set_nth_cov(SGMatrix<float64_t> cov, int32_t num)
+{
+	ASSERT(num<m_components.vlen);
+	m_components.vector[num]->set_cov(cov);
+}
+
+SGVector<float64_t> CGMM::get_coef()
+{
+	return m_coefficients;
+}
+
+void CGMM::set_coef(SGVector<float64_t> coefficients)
+{
+	m_coefficients.destroy_vector();
+	m_coefficients=coefficients;
+}
+
+SGVector<CGaussian*> CGMM::get_comp()
+{
+	return m_components;
+}
+
+void CGMM::set_comp(SGVector<CGaussian*> components)
+{
+	for (int32_t i=0; i<m_components.vlen; i++)
+	{
+		SG_UNREF(m_components.vector[i]);
+	}
+
+	m_components.destroy_vector();
+	m_components=components;
+
+	for (int32_t i=0; i<m_components.vlen; i++)
+	{
+		SG_REF(m_components.vector[i]);
+	}
+}
+
 SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 {
 	CDotFeatures* dotdata=(CDotFeatures *) features;

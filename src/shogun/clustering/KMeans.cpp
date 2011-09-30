@@ -84,6 +84,51 @@ bool CKMeans::save(FILE* dstfile)
 	return false;
 }
 
+
+void CKMeans::set_k(int32_t p_k)
+{
+	ASSERT(p_k>0);
+	this->k=p_k;
+}
+
+int32_t CKMeans::get_k()
+{
+	return k;
+}
+
+void CKMeans::set_max_iter(int32_t iter)
+{
+	ASSERT(iter>0);
+	max_iter=iter;
+}
+
+float64_t CKMeans::get_max_iter()
+{
+	return max_iter;
+}
+
+SGVector<float64_t> CKMeans::get_radiuses()
+{
+	return R;
+}
+
+SGMatrix<float64_t> CKMeans::get_cluster_centers()
+{
+	if (!R.vector)
+		return SGMatrix<float64_t>();
+
+	CSimpleFeatures<float64_t>* lhs=
+		(CSimpleFeatures<float64_t>*)distance->get_lhs();
+	SGMatrix<float64_t> centers=lhs->get_feature_matrix();
+	SG_UNREF(lhs);
+	return centers;
+}
+
+int32_t CKMeans::get_dimensions()
+{
+	return dimensions;
+}
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct thread_data
 {
