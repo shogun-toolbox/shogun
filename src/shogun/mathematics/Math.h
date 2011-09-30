@@ -390,7 +390,11 @@ class CMath : public CSGObject
 
 		static inline floatmax_t lgammal(floatmax_t x)
 		{
+#ifdef HAVE_LGAMMAL
 			return ::lgammal((long double) x);
+#else
+			return ::lgamma((double) x);
+#endif // HAVE_LGAMMAL
 		}
 
 		static inline float64_t log10(float64_t v)

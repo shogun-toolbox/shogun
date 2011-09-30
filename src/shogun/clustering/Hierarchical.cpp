@@ -51,6 +51,11 @@ CHierarchical::~CHierarchical()
 	SG_FREE(pairs);
 }
 
+EClassifierType CHierarchical::get_classifier_type()
+{
+	return CT_HIERARCHICAL;
+}
+
 bool CHierarchical::train_machine(CFeatures* data)
 {
 	ASSERT(distance);
@@ -163,6 +168,28 @@ bool CHierarchical::save(FILE* dstfile)
 	SG_RESET_LOCALE;
 	return false;
 }
+
+
+int32_t CHierarchical::get_merges()
+{
+	return merges;
+}
+
+SGVector<int32_t> CHierarchical::get_assignment()
+{
+	return SGVector<int32_t>(assignment,table_size);
+}
+
+SGVector<float64_t> CHierarchical::get_merge_distances()
+{
+	return SGVector<float64_t>(merge_distance,merges);
+}
+
+SGMatrix<int32_t> CHierarchical::get_cluster_pairs()
+{
+	return SGMatrix<int32_t>(pairs,2,merges);
+}
+
 
 void CHierarchical::store_model_features()
 {

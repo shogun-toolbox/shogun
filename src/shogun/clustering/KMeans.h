@@ -74,69 +74,43 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @param p_k new k
 		 */
-		inline void set_k(int32_t p_k)
-		{
-			ASSERT(p_k>0);
-			this->k=p_k;
-		}
+		void set_k(int32_t p_k);
 
 		/** get k
 		 *
 		 * @return the parameter k
 		 */
-		inline int32_t get_k()
-		{
-			return k;
-		}
+		int32_t get_k();
 
 		/** set maximum number of iterations
 		 *
 		 * @param iter the new maximum
 		 */
-		inline void set_max_iter(int32_t iter)
-		{
-			ASSERT(iter>0);
-			max_iter=iter;
-		}
+		void set_max_iter(int32_t iter);
 
 		/** get maximum number of iterations
 		 *
 		 * @return maximum number of iterations
 		 */
-		inline float64_t get_max_iter()
-		{
-			return max_iter;
-		}
+		float64_t get_max_iter();
 
 		/** get radiuses
 		 *
+		 * @return radiuses
 		 */
-		SGVector<float64_t> get_radiuses() { return R; }
+		SGVector<float64_t> get_radiuses();
 
 		/** get centers
 		 *
+		 * @return cluster centers or empty matrix if no radiuses are there (not trained yet)
 		 */
-		SGMatrix<float64_t> get_cluster_centers()
-		{
-			/* return empty matrix if no radiuses are there (not trained yet) */
-			if (!R.vector)
-				return SGMatrix<float64_t>();
-
-			CSimpleFeatures<float64_t>* lhs=
-				(CSimpleFeatures<float64_t>*)distance->get_lhs();
-			SGMatrix<float64_t> centers=lhs->get_feature_matrix();
-			SG_UNREF(lhs);
-			return centers;
-		}
+		SGMatrix<float64_t> get_cluster_centers();
 
 		/** get dimensions
 		 *
 		 * @return number of dimensions
 		 */
-		inline int32_t get_dimensions()
-		{
-			return dimensions;
-		}
+		int32_t get_dimensions();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KMeans"; }

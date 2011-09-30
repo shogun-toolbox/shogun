@@ -52,7 +52,7 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @return classifier type HIERARCHICAL
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_HIERARCHICAL; }
+		virtual EClassifierType get_classifier_type();
 
 		/** load distance machine from file
 		 *
@@ -82,34 +82,22 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @return merges
 		 */
-		inline int32_t get_merges()
-		{
-			return merges;
-		}
+		int32_t get_merges();
 
 		/** get assignment
 		 *
 		 */
-		SGVector<int32_t> get_assignment()
-		{
-			return SGVector<int32_t>(assignment,table_size);
-		}
+		SGVector<int32_t> get_assignment();
 
 		/** get merge distance
 		 *
 		 */
-		SGVector<float64_t> get_merge_distances()
-		{
-			return SGVector<float64_t>(merge_distance,merges);
-		}
+		SGVector<float64_t> get_merge_distances();
 
 		/** get cluster pairs
 		 *
 		 */
-		SGMatrix<int32_t> get_cluster_pairs()
-		{
-			return SGMatrix<int32_t>(pairs,2,merges);
-		}
+		SGMatrix<int32_t> get_cluster_pairs();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Hierarchical"; }
