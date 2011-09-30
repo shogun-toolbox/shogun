@@ -494,7 +494,18 @@ check_python()
 		echores "${PYVER}"
 		PYVER="`echo $PYVER | cut -f 1-2 -d '.'`"
 	else
-		echores "python not detected (required)"
+		die "python not detected (required)"
+	fi
+}
+
+check_pkg_config()
+{
+	echocheck "pkg-config"
+	if pkg-config2 --version >/dev/null 2>&1
+	then
+		echores "`pkg-config --version`"
+	else
+		die "pkg-config not detected (required)"
 	fi
 }
 
@@ -2704,7 +2715,7 @@ fi
 get_cflags()
 {
     def=$1; pkgs="${*#$def}"
-    if test -n "`which pkg-config`"; then
+    if test -n "`which pkg-config 2>/dev/null`"; then
 	for i in $pkgs; do
 	    if pkg-config --exists $i; then
 		pkg-config --cflags $i; return
@@ -2717,7 +2728,7 @@ get_cflags()
 get_lflags()
 {
     def=$1; pkgs="${*#$def}"
-    if test -n "`which pkg-config`"; then
+    if test -n "`which pkg-config 2>/dev/null`"; then
 	for i in $pkgs; do
 	    if pkg-config --exists $i; then
 		pkg-config --libs $i; return
@@ -4830,6 +4841,7 @@ detect_ldd
 detect_cc
 check_makedepend
 check_python
+check_pkg_config
 check_make
 check_doxygen
 determine_march_mtune
