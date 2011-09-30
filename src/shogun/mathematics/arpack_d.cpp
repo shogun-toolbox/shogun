@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/mathematics/arpack.h>
+#include <shogun/mathematics/arpack_d.h>
 #ifdef HAVE_ARPACK
 #ifdef HAVE_LAPACK
 #include <shogun/io/SGIO.h>
