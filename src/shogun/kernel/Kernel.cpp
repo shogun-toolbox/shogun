@@ -373,8 +373,8 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		int32_t num_threads=parallel->get_num_threads()-1;
 		int32_t num_vec=get_num_vec_lhs();
 		ASSERT(num_vec>0);
-		uint8_t* needs_computation=SG_MALLOC(uint8_t, num_vec);
-		memset(needs_computation, 0, sizeof(uint8_t)*num_vec);
+		uint8_t* needs_computation=SG_CALLOC(uint8_t, num_vec);
+
 		int32_t step=0;
 		int32_t num=0;
 		int32_t end=0;
@@ -425,7 +425,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 				int code=pthread_create(&threads[t], NULL,
 						CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]);
 
-				if (!code)
+				if (code != 0)
 				{
 					SG_WARNING("Thread creation failed (thread %d of %d) "
 							"with error:'%s'\n",t, num_threads, strerror(code));
