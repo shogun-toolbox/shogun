@@ -106,6 +106,31 @@ int clapack_dpotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 }
 #undef DPOTRF
 
+int clapack_spotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
+                   const int N, float *A, const int LDA)
+{
+	char uplo = 'U';
+	int info = 0;
+	if (Order==CblasRowMajor)
+	{//A is symmetric, we switch Uplo to get result for CblasRowMajor
+		if (Uplo==CblasUpper)
+			uplo='L';
+	}
+	else if (Uplo==CblasLower)
+	{
+		uplo='L';
+	}
+#ifdef HAVE_ACML
+	SPOTRF(uplo, N, A, LDA, &info);
+#else
+	int n=N;
+	int lda=LDA;
+	SPOTRF(&uplo, &n, A, &lda, &info);
+#endif
+	return info;
+}
+#undef SPOTRF
+
 int clapack_dpotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, double *A, const int LDA)
 {
@@ -130,6 +155,31 @@ int clapack_dpotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 	return info;
 }
 #undef DPOTRI
+
+int clapack_spotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
+                   const int N, float *A, const int LDA)
+{
+	char uplo = 'U';
+	int info = 0;
+	if (Order==CblasRowMajor)
+	{//A is symmetric, we switch Uplo to get result for CblasRowMajor
+		if (Uplo==CblasUpper)
+			uplo='L';
+	}
+	else if (Uplo==CblasLower)
+	{
+		uplo='L';
+	}
+#ifdef HAVE_ACML
+	SPOTRI(uplo, N, A, LDA, &info);
+#else
+	int n=N;
+	int lda=LDA;
+	SPOTRI(&uplo, &n, A, &lda, &info);
+#endif
+	return info;
+}
+#undef SPOTRI
 
 /* DPOSV computes the solution to a real system of linear equations
  * A * X = B,
@@ -164,6 +214,34 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 }
 #undef DPOSV
 
+int clapack_sposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
+                  const int N, const int NRHS, float *A, const int lda,
+                  float *B, const int ldb)
+{
+	char uplo = 'U';
+	int info=0;
+	if (Order==CblasRowMajor)
+	{//A is symmetric, we switch Uplo to achieve CblasColMajor
+		if (Uplo==CblasUpper)
+			uplo='L';
+	}
+	else if (Uplo==CblasLower)
+	{
+		uplo='L';
+	}
+#ifdef HAVE_ACML
+	SPOSV(uplo,N,NRHS,A,lda,B,ldb,&info);
+#else
+	int n=N;
+	int nrhs=NRHS;
+	int LDA=lda;
+	int LDB=ldb;
+	SPOSV(&uplo, &n, &nrhs, A, &LDA, B, &LDB, &info);
+#endif
+	return info;
+}
+#undef SPOSV
+
 int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
                    double *A, const int lda, int *ipiv)
 {
@@ -181,28 +259,67 @@ int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
 }
 #undef DGETRF
 
+int clapack_sgetrf(const CBLAS_ORDER Order, const int M, const int N,
+                   float *A, const int lda, int *ipiv)
+{
+	// no rowmajor?
+	int info=0;
+#ifdef HAVE_ACML
+	SGETRF(M,N,A,lda,ipiv,&info);
+#else
+	int m=M;
+	int n=N;
+	int LDA=lda;
+	SGETRF(&m,&n,A,&LDA,ipiv,&info);
+#endif
+	return info;
+}
+#undef SGETRF
+
 // order not supported (yet?)
 int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
                    const int lda, int* ipiv)
 {
 	int info=0;
-	double* work = SG_MALLOC(double, 1);
 #ifdef HAVE_ACML
 	DGETRI(N,A,lda,ipiv,&info);
 #else
+	double* work;
 	int n=N;
 	int LDA=lda;
 	int lwork = -1;
 	double work1 = 0;
 	DGETRI(&n,A,&LDA,ipiv,&work1,&lwork,&info);
 	lwork = (int) work1;
-	SG_FREE(work);
 	work = SG_MALLOC(double, lwork);
 	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
+	SG_FREE(work);
 #endif
 	return info;
 }
 #undef DGETRI
+
+int clapack_sgetri(const CBLAS_ORDER Order, const int N, float *A,
+                   const int lda, int* ipiv)
+{
+	int info=0;
+#ifdef HAVE_ACML
+	SGETRI(N,A,lda,ipiv,&info);
+#else
+	float* work;
+	int n=N;
+	int LDA=lda;
+	int lwork = -1;
+	float work1 = 0;
+	SGETRI(&n,A,&LDA,ipiv,&work1,&lwork,&info);
+	lwork = (int) work1;
+	work = SG_MALLOC(float, lwork);
+	SGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
+	SG_FREE(work);
+#endif
+	return info;
+}
+#undef SGETRI
 
 // order not supported (yet?)
 int clapack_dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
@@ -228,6 +345,29 @@ int clapack_dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
 }
 #undef DGETRS
 
+int clapack_sgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
+                   const int N, const int NRHS, float *A, const int lda, 
+                   int *ipiv, float *B, const int ldb)
+{
+	int info = 0;
+	char trans = 'N';
+	if (Transpose==CblasTrans) 
+	{
+		trans = 'T';
+	}
+#ifdef HAVE_ACML
+	SGETRS(trans,N,NRHS,A,lda,ipiv,B,ldb,info);
+#else
+	int n=N;
+	int nrhs=NRHS;
+	int LDA=lda;
+	int LDB=ldb;
+	SGETRS(&trans,&n,&nrhs,A,&LDA,ipiv,B,&LDB,&info);
+#endif
+	return info;
+}
+#undef SGETRS
+
 // order not supported (yet?)
 int clapack_dpotrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
                    const int N, const int NRHS, double *A, const int lda,
@@ -251,6 +391,29 @@ int clapack_dpotrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
 	return info;
 }
 #undef DPOTRS
+
+int clapack_spotrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+                   const int N, const int NRHS, float *A, const int lda,
+                   float *B, const int ldb)
+{
+	int info=0;
+	char uplo = 'U';
+	if (Uplo==CblasLower)
+	{
+		uplo = 'L';
+	}
+#ifdef HAVE_ACML
+	SPOTRS(uplo,N,NRHS,A,lda,B,ldb,info);
+#else
+	int n=N;
+	int nrhs=NRHS;
+	int LDA=lda;
+	int LDB=ldb;
+	SPOTRS(&uplo,&n,&nrhs,A,&LDA,B,&LDB,&info);
+#endif
+	return info;
+}
+#undef SPOTRS
 
 #endif //HAVE_ATLAS
 

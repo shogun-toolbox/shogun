@@ -59,7 +59,6 @@ int clapack_dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
                    int *ipiv, double *B, const int ldb);
 
 // single precision
-/*
 int clapack_spotrf(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, float *A, const int lda);
 int clapack_sposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
@@ -77,7 +76,6 @@ int clapack_sgetri(const CBLAS_ORDER Order, const int N, float *A,
 int clapack_sgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
                    const int N, const int NRHS, float *A, const int lda,
                    int *ipiv, float *B, const int ldb);
-*/
 #endif
 
 namespace shogun
