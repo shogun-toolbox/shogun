@@ -501,7 +501,7 @@ check_python()
 check_pkg_config()
 {
 	echocheck "pkg-config"
-	if pkg-config2 --version >/dev/null 2>&1
+	if pkg-config --version >/dev/null 2>&1
 	then
 		echores "`pkg-config --version`"
 	else
