@@ -81,21 +81,25 @@ template<class T> class SGVector
 				vector[i]=const_elem ;
 		}
 
+		/** range fill */
 		void range_fill(T start=0)
 		{
 			range_fill_vector(vector, vlen, start);
 		}
 
+		/** random */
 		void random(T min_value, T max_value)
 		{
 			random_vector(vector, vlen, min_value, max_value);
 		}
 
+		/** random permutate */
 		void randperm()
 		{
 			randperm(vector, vlen);
 		}
 
+		/** clone vector */
 		template <class VT>
 		static VT* clone_vector(const VT* vec, int32_t len)
 		{
@@ -106,6 +110,7 @@ template<class T> class SGVector
 			return result;
 		}
 
+		/** fill vector */
 		template <class VT>
 		static void fill_vector(VT* vec, int32_t len, VT value)
 		{
@@ -113,6 +118,7 @@ template<class T> class SGVector
 				vec[i]=value;
 		}
 
+		/** range fill vector */
 		template <class VT>
 		static void range_fill_vector(VT* vec, int32_t len, VT start=0)
 		{
@@ -120,6 +126,7 @@ template<class T> class SGVector
 				vec[i]=i+start;
 		}
 
+		/** random vector */
 		template <class VT>
 		static void random_vector(VT* vec, int32_t len, VT min_value, VT max_value)
 		{
@@ -127,6 +134,7 @@ template<class T> class SGVector
 			//FIXME 	vec[i]=CMath::random(min_value, max_value);
 		}
 
+		/** random permatutaion */
 		template <class VT>
 		static void randperm(VT* perm, int32_t n)
 		{
@@ -135,6 +143,7 @@ template<class T> class SGVector
 			permute(perm,n);
 		}
 
+		/** permute */
 		template <class VT>
 		static void permute(VT* perm, int32_t n)
 		{

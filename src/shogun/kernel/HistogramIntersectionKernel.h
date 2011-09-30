@@ -82,7 +82,7 @@ class CHistogramIntersectionKernel: public CDotKernel
 		inline float64_t get_beta() { return m_beta; }
 
 		/** setter for beta parameter
-		 *  @param value beta value
+		 *  @param beta beta value
 		 */
 		inline void set_beta(float64_t beta) { m_beta = beta; }
 
