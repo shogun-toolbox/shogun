@@ -2839,6 +2839,24 @@ cat > $TMPC << EOF
 #include <math.h>
 int main(int argc, char** argv)
 {
+	long double a=lgammal((long double) argc);
+	return (int) a;
+}
+EOF
+			echocheck "Math lgammal() support"
+			if cxx_check -lm
+			then
+				HAVE_LGAMMAL='#define HAVE_LGAMMAL 1'
+				DEFINES="$DEFINES -DHAVE_LGAMMAL"
+				echores "yes"
+			else
+				echores "no - resorting to lgamma()"
+			fi
+
+cat > $TMPC << EOF
+#include <math.h>
+int main(int argc, char** argv)
+{
 	long double a=sqrtl((long double) argc);
 	return (int) a;
 }
@@ -4697,6 +4715,7 @@ $HAVE_ACML
 $HAVE_MKL
 $HAVE_MVEC
 $HAVE_POWL
+$HAVE_LGAMMAL
 $HAVE_SQRTL
 $HAVE_LOG2
 $HAVE_JBLAS
