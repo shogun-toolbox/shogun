@@ -23,14 +23,20 @@ int main(int argc, char** argv)
 	int N = 100;
 
 	// square matrix
-	double* matrix = new double[N*N];
+	double* double_matrix = new double[N*N];
+	float* float_matrix = new float[N*N];
 	// for storing eigenpairs
-	double* eigenvalues = new double[N];
-	double* eigenvectors = new double[N*N];
+	double* double_eigenvalues = new double[N];
+	float* float_eigenvalues = new float[N];
+	double* double_eigenvectors = new double[N*N];
+	float* float_eigenvectors = new float[N*N];
 	// for SVD
-	double* U = new double[N*N];
-	double* s = new double[N*N];
-	double* Vt = new double[N*N];
+	double* double_U = new double[N*N];
+	double* double_s = new double[N];
+	double* double_Vt = new double[N*N];
+	float* float_U = new float[N*N];
+	float* float_s = new float[N];
+	float* float_Vt = new float[N*N];
 	// status (should be zero)
 	int status;
 
@@ -38,65 +44,77 @@ int main(int argc, char** argv)
 	for (int i=0; i<N; i++)
 	{
 		for (int j=0; j<N; j++)
-			matrix[i*N+j] = (i-j)/(i+j+1);
-		matrix[i*N+i] += 10;
+		{
+			double_matrix[i*N+j] = ((double)(i-j))/(i+j+1);
+			float_matrix[i*N+j] = ((float)(i-j))/(i+j+1);
+		}
+		double_matrix[i*N+i] += 100;
+		float_matrix[i*N+i] += 100;
 	}	
 	status = 0;
-	wrap_dsygvx(1,'V','U',N,matrix,N,matrix,N,1,3,eigenvalues,eigenvectors,&status);
+	wrap_dsygvx(1,'V','U',N,double_matrix,N,double_matrix,N,1,3,double_eigenvalues,double_eigenvectors,&status);
+	wrap_ssygvx(1,'V','U',N,float_matrix,N,float_matrix,N,1,3,float_eigenvalues,float_eigenvectors,&status);
 	if (status!=0)
 	{
-		printf("DSYGVX failed with code %d\n",status);
+		printf("DSYGVX/SSYGVX failed with code %d\n",status);
 		return -1;
 	}
-	delete[] eigenvectors;
-
+	delete[] double_eigenvectors;
+	delete[] float_eigenvectors;
 
 	// DGEQRF+DORGQR
 	status = 0;
-	double* tau = new double[N];
-	wrap_dgeqrf(N,N,matrix,N,tau,&status);
-	wrap_dorgqr(N,N,N,matrix,N,tau,&status);
+	double* double_tau = new double[N];
+	float* float_tau = new float[N];
+	wrap_dgeqrf(N,N,double_matrix,N,double_tau,&status);
+	wrap_dorgqr(N,N,N,double_matrix,N,double_tau,&status);
+	wrap_sgeqrf(N,N,float_matrix,N,float_tau,&status);
+	wrap_sorgqr(N,N,N,float_matrix,N,float_tau,&status);
 	if (status!=0)
 	{
-		printf("DGEQRF/DORGQR failed with code %d\n",status);
+		printf("DGEQRF/DORGQR/SGEQRF/SORGQR failed with code %d\n",status);
 		return -1;
 	}
-	delete[] tau;
-
+	delete[] double_tau;
+	delete[] float_tau;
 
 	// DGESVD
 	for (int i=0; i<N; i++)
 	{
 		for (int j=0; j<N; j++)
-			matrix[i*N+j] = i*i+j*j;
+		{
+			double_matrix[i*N+j] = i*i+j*j;
+			float_matrix[i*N+j] = i*i+j*j;
+		}
 	}
 	status = 0;
-	wrap_dgesvd('A','A',N,N,matrix,N,s,U,N,Vt,N,&status);
+	wrap_dgesvd('A','A',N,N,double_matrix,N,double_s,double_U,N,double_Vt,N,&status);
+	wrap_sgesvd('A','A',N,N,float_matrix,N,float_s,float_U,N,float_Vt,N,&status);
 	if (status!=0)
 	{
-		printf("DGESVD failed with code %d\n",status);
+		printf("DGESVD/SGESVD failed with code %d\n",status);
 		return -1;
 	}
-	delete[] s;
-	delete[] U;
-	delete[] Vt;
-
+	delete[] double_s;
+	delete[] double_U;
+	delete[] double_Vt;
+	delete[] float_s;
+	delete[] float_U;
+	delete[] float_Vt;
 
 	// DSYEV
-	for (int i=0; i<N; i++)
-	{
-		for (int j=0; j<N; j++)
-			matrix[i*N+j] = i*i+j*j;
-	}
 	status = 0;
-	wrap_dsyev('V','U',N,matrix,N,eigenvalues,&status);
+	wrap_dsyev('V','U',N,double_matrix,N,double_eigenvalues,&status);
+	wrap_ssyev('V','U',N,float_matrix,N,float_eigenvalues,&status);
 	if (status!=0)
 	{
-		printf("DSYEV failed with code %d\n",status);
+		printf("DSYEV/SSYEV failed with code %d\n",status);
 		return -1;
 	}
-	delete[] eigenvalues;
-	delete[] matrix;
+	delete[] double_eigenvalues;
+	delete[] float_eigenvalues;
+	delete[] double_matrix;
+	delete[] float_matrix;
 
 	#endif // HAVE_LAPACK
 
