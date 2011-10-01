@@ -13,6 +13,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/io/SGIO.h>
 #include <string.h>
+#include <shogun/mathematics/lapack.h>
 
 #ifdef HAVE_SUPERLU
 #include <superlu/slu_ddefs.h>
@@ -20,8 +21,21 @@
 
 using namespace shogun;
 
-namespace shogun
-{
+/** external ARPACK routine DSAUPD */
+extern "C" void dsaupd_(int *ido, char *bmat, int *n, char *which,
+			int *nev, double *tol, double *resid, int *ncv,
+			double *v, int *ldv, int *iparam, int *ipntr,
+			double *workd, double *workl, int *lworkl,
+			int *info);
+
+/** external ARPACK routine DSEUPD */
+extern "C" void dseupd_(int *rvec, char *All, int *select, double *d,
+			double *v, int *ldv, double *sigma, 
+			char *bmat, int *n, char *which, int *nev,
+			double *tol, double *resid, int *ncv, double *tv,
+			int *tldv, int *iparam, int *ipntr, double *workd,
+			double *workl, int *lworkl, int *ierr);
+
 
 void arpack_dsxupd(double* matrix, double* rhs_diag, int n, int nev, const char* which, 
                    int mode, bool pos, double shift, double tolerance, 
@@ -408,7 +422,5 @@ void arpack_dsxupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 	SG_FREE(workd);
 	SG_FREE(workl);
 };
-
-}
 #endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */

@@ -13,6 +13,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/io/SGIO.h>
 #include <string.h>
+#include <shogun/mathematics/lapack.h>
 
 #ifdef HAVE_SUPERLU
 #include <superlu/slu_sdefs.h>
@@ -20,8 +21,20 @@
 
 using namespace shogun;
 
-namespace shogun
-{
+/** external ARPACK routine DSAUPD */
+extern "C" void ssaupd_(int *ido, char *bmat, int *n, char *which,
+			int *nev, float *tol, float *resid, int *ncv,
+			float *v, int *ldv, int *iparam, int *ipntr,
+			float *workd, float *workl, int *lworkl,
+			int *info);
+
+/** external ARPACK routine DSEUPD */
+extern "C" void sseupd_(int *rvec, char *All, int *select, float *d,
+			float *v, int *ldv, float *sigma, 
+			char *bmat, int *n, char *which, int *nev,
+			float *tol, float *resid, int *ncv, float *tv,
+			int *tldv, int *iparam, int *ipntr, float *workd,
+			float *workl, int *lworkl, int *ierr);
 
 void arpack_ssxupd(float* matrix, float* rhs_diag, int n, int nev, const char* which, 
                    int mode, bool pos, float shift, float tolerance, 
@@ -168,7 +181,7 @@ void arpack_ssxupd(float* matrix, float* rhs_diag, int n, int nev, const char* w
 		}
 		colptr[i] = nnz;
 		// create CCS matrix 
-		sCreate_CompCol_Matrix(&slu_A,n,n,nnz,val,rowind,colptr,SLU_NC,SLU_D,SLU_GE);
+		sCreate_CompCol_Matrix(&slu_A,n,n,nnz,val,rowind,colptr,SLU_NC,SLU_S,SLU_GE);
 
 		// initialize options
 		set_default_options(&options);
@@ -180,8 +193,8 @@ void arpack_ssxupd(float* matrix, float* rhs_diag, int n, int nev, const char* w
 		slu_info = 0;
 		slu_Bv = floatMalloc(n);
 		slu_Xv = floatMalloc(n);
-		sCreate_Dense_Matrix(&slu_B,n,1,slu_Bv,n,SLU_DN,SLU_D,SLU_GE);
-		sCreate_Dense_Matrix(&slu_X,n,1,slu_Xv,n,SLU_DN,SLU_D,SLU_GE);
+		sCreate_Dense_Matrix(&slu_B,n,1,slu_Bv,n,SLU_DN,SLU_S,SLU_GE);
+		sCreate_Dense_Matrix(&slu_X,n,1,slu_Xv,n,SLU_DN,SLU_S,SLU_GE);
 		slu_B.ncol = 0;
 		SG_SDEBUG("SUPERLU: Factorizing\n");
 		sgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
@@ -408,7 +421,5 @@ void arpack_ssxupd(float* matrix, float* rhs_diag, int n, int nev, const char* w
 	SG_FREE(workd);
 	SG_FREE(workl);
 };
-
-}
 #endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */
