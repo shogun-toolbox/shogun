@@ -101,6 +101,16 @@ CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding(CKernel* kernel)
 	set_kernel(kernel);
 }
 
+const char* CKernelLocallyLinearEmbedding::get_name() const
+{
+	return "KernelLocallyLinearEmbedding";
+};
+
+EPreprocessorType CKernelLocallyLinearEmbedding::get_type() const
+{
+	return P_KERNELLOCALLYLINEAREMBEDDING;
+};
+
 void CKernelLocallyLinearEmbedding::init()
 {
 }

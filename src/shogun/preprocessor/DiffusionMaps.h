@@ -55,24 +55,18 @@ public:
 	/** setter for t parameter
 	 * @param t t value
 	 */
-	void inline set_t(float64_t t)
-	{
-		m_t = t;
-	}
+	void set_t(int32_t t);
 
 	/** getter for t parameter
 	 * @return t value
 	 */
-	int32_t inline get_t()
-	{
-		return m_t;
-	}
+	int32_t get_t() const;
 
 	/** get name */
-	virtual inline const char* get_name() const { return "DiffusionMaps"; };
+	virtual const char* get_name() const;
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_DIFFUSIONMAPS; };
+	virtual EPreprocessorType get_type() const;
 
 protected:
 
@@ -81,7 +75,7 @@ protected:
 
 protected:
 
-	/** steps */
+	/** number of steps */
 	int32_t m_t;
 
 };

@@ -59,15 +59,11 @@ public:
 	 */
 	virtual void cleanup();
 
-	/** get name 
-	 * @return name of the preprocessor
-	 */
-	virtual inline const char* get_name() const { return "HessianLocallyLinearEmbedding"; };
+	/** get name */
+	virtual const char* get_name() const;
 
-	/** get type 
-	 * @return type of the preprocessor
-	 */
-	virtual inline EPreprocessorType get_type() const { return P_HESSIANLOCALLYLINEAREMBEDDING; };
+	/** get type */
+	virtual EPreprocessorType get_type() const;
 
 protected:
 

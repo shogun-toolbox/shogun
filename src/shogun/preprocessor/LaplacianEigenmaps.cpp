@@ -13,7 +13,6 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/lib/common.h>
 #include <shogun/lib/FibonacciHeap.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
@@ -40,6 +39,37 @@ void CLaplacianEigenmaps::init()
 CLaplacianEigenmaps::~CLaplacianEigenmaps()
 {
 }
+
+void CLaplacianEigenmaps::set_k(int32_t k)
+{
+	ASSERT(k>0);
+	m_k = k;
+}
+
+int32_t CLaplacianEigenmaps::get_k() const
+{
+	return m_k;
+}
+
+void CLaplacianEigenmaps::set_tau(float64_t tau)
+{
+	m_tau = tau;
+}
+
+float64_t CLaplacianEigenmaps::get_tau() const
+{
+	return m_tau;
+}
+
+const char* CLaplacianEigenmaps::get_name() const 
+{ 
+	return "LaplacianEigenmaps";
+};
+
+EPreprocessorType CLaplacianEigenmaps::get_type() const 
+{ 
+	return P_LAPLACIANEIGENMAPS; 
+};
 
 bool CLaplacianEigenmaps::init(CFeatures* features)
 {

@@ -78,40 +78,28 @@ public:
 	/** setter for K parameter
 	 * @param k k value
 	 */
-	void inline set_k(int32_t k)
-	{
-		m_k = k;
-	}
+	void set_k(int32_t k);
 
 	/** getter for K parameter
 	 * @return k value
 	 */
-	int32_t inline get_k()
-	{
-		return m_k;
-	}
+	int32_t get_k() const;
 
 	/** setter for TAU parameter
 	 * @param tau tau value
 	 */
-	void inline set_tau(float64_t tau)
-	{
-		m_tau = tau;
-	}
+	void set_tau(float64_t tau);
 	
 	/** getter for TAU parameter
 	 * @return tau value
 	 */
-	float64_t inline get_tau()
-	{
-		return m_tau;
-	}
+	float64_t get_tau() const;
 
 	/** get name */
-	virtual inline const char* get_name() const { return "LaplacianEigenmaps"; };
+	virtual const char* get_name() const;
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_LAPLACIANEIGENMAPS; };
+	virtual EPreprocessorType get_type() const;
 
 protected:
 

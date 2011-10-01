@@ -115,6 +115,16 @@ bool CMultidimensionalScaling::get_landmark() const
 	return m_landmark;
 }
 
+const char* CMultidimensionalScaling::get_name() const 
+{
+	return "MultidimensionalScaling";
+};
+
+EPreprocessorType CMultidimensionalScaling::get_type() const 
+{
+	return P_MULTIDIMENSIONALSCALING;
+};
+
 CSimpleFeatures<float64_t>* CMultidimensionalScaling::apply_to_distance(CDistance* distance)
 {
 	ASSERT(distance);

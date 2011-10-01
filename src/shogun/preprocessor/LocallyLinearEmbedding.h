@@ -86,10 +86,10 @@ public:
 	int32_t get_k() const;
 
 	/** get name */
-	virtual inline const char* get_name() const { return "LocallyLinearEmbedding"; };
+	virtual const char* get_name() const;
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_LOCALLYLINEAREMBEDDING; };
+	virtual EPreprocessorType get_type() const;
 
 protected:
 

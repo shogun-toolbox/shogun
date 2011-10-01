@@ -89,6 +89,17 @@ void CHessianLocallyLinearEmbedding::cleanup()
 {
 }
 
+const char* CHessianLocallyLinearEmbedding::get_name() const 
+{ 
+	return "HessianLocallyLinearEmbedding";
+};
+
+EPreprocessorType CHessianLocallyLinearEmbedding::get_type() const
+{
+	return P_HESSIANLOCALLYLINEAREMBEDDING;
+};
+
+
 SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
                                                                             SGMatrix<int32_t> neighborhood_matrix)
 {

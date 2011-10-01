@@ -81,10 +81,10 @@ public:
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** get name */
-	virtual inline const char* get_name() const { return "Isomap"; };
+	const char* get_name() const;
 
 	/** get type */
-	virtual inline EPreprocessorType get_type() const { return P_ISOMAP; };
+	EPreprocessorType get_type() const;
 
 	/** setter for k parameter
 	 * @param k value

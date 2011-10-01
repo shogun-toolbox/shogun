@@ -125,6 +125,16 @@ int32_t CLocallyLinearEmbedding::get_k() const
 	return m_k;
 }
 
+const char* CLocallyLinearEmbedding::get_name() const
+{
+	return "LocallyLinearEmbedding";
+}
+
+EPreprocessorType CLocallyLinearEmbedding::get_type() const
+{
+	return P_LOCALLYLINEAREMBEDDING;
+}
+
 bool CLocallyLinearEmbedding::init(CFeatures* features)
 {
 	return true;

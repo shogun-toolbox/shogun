@@ -52,6 +52,26 @@ void CDiffusionMaps::cleanup()
 {
 }
 
+void CDiffusionMaps::set_t(int32_t t)
+{
+	m_t = t;
+}
+
+int32_t CDiffusionMaps::get_t() const
+{
+	return m_t;
+}
+
+const char* CDiffusionMaps::get_name() const
+{
+	return "DiffusionMaps";
+};
+
+EPreprocessorType CDiffusionMaps::get_type() const 
+{
+	return P_DIFFUSIONMAPS;
+};
+
 SGMatrix<float64_t> CDiffusionMaps::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(features);

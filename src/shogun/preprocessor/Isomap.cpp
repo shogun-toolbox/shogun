@@ -81,6 +81,16 @@ int32_t CIsomap::get_k() const
 	return m_k;
 }
 
+const char* CIsomap::get_name() const 
+{
+	return "Isomap";
+}
+
+EPreprocessorType CIsomap::get_type() const
+{
+	return P_ISOMAP;
+}
+
 bool CIsomap::init(CFeatures* features)
 {
 	return true;
