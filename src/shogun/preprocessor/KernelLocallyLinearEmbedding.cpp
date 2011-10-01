@@ -134,13 +134,21 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	SG_REF(features);
 
 	// get dimensionality and number of vectors of data
+	bool is_simple = ((features->get_feature_class()==C_SIMPLE) && (features->get_feature_type()==F_DREAL));
 	int32_t N = features->get_num_vectors();
+	int32_t target_dim;
+	if (is_simple)
+		target_dim = calculate_effective_target_dim(((CSimpleFeatures<float64_t>*)features)->get_num_features());
+	else
+	{
+		if (m_target_dim<=0)
+			SG_ERROR("Cannot decrease dimensionality of given features by %d.\n", -m_target_dim);
+	}
+	if (target_dim<=0)
+		SG_ERROR("Trying to decrease dimensionality to non-positive value, not possible.\n");
 	if (m_k>=N)
 		SG_ERROR("Number of neighbors (%d) should be less than number of objects (%d).\n",
 		         m_k, N);
-
-	// loop variables
-	int32_t i,j,t;
 
 	// compute kernel matrix
 	ASSERT(m_kernel);
@@ -150,9 +158,32 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	m_kernel->cleanup();
 
 	// init W (weight) matrix
-	float64_t* W_matrix = kernel_matrix.matrix;
-	memset(W_matrix,0,sizeof(float64_t)*N*N);
+	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix);
+	neighborhood_matrix.destroy_matrix();
 
+	SGMatrix<float64_t> nullspace = find_null_space(M_matrix,target_dim);
+	M_matrix.destroy_matrix();
+
+	if (is_simple)
+	{
+		((CSimpleFeatures<float64_t>*)features)->set_feature_matrix(nullspace);
+		SG_UNREF(features);
+		return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
+	}
+	else
+	{
+		SG_UNREF(features);
+		SG_WARNING("Can't set feature matrix, returning feature matrix.\n");
+		return nullspace;
+	}
+}
+
+SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix, 
+                                                                           SGMatrix<int32_t> neighborhood_matrix)
+{
+	int32_t N = kernel_matrix.num_cols;
+	// loop variables
+	int32_t i,j,t;
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -165,6 +196,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 #else
 	int32_t num_threads = 1;
 #endif 
+	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 	// init matrices and norm factor to be used
 	float64_t* local_gram_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
 	float64_t* id_vector = SG_MALLOC(float64_t, m_k*num_threads);
@@ -206,8 +238,6 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 
 	// clean
 	SG_FREE(id_vector);
-	neighborhood_matrix.destroy_matrix();
-	kernel_matrix.destroy_matrix();
 	SG_FREE(local_gram_matrix);
 
 	// W=I-W
@@ -232,7 +262,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 				nz_idxs[i]->push_back(j);
 		}
 	}
-	SGMatrix<float64_t> M_matrix(N,N);
+	SGMatrix<float64_t> M_matrix(kernel_matrix.matrix,N,N);
 #ifdef HAVE_PTHREAD
 	// allocate threads
 	threads = SG_MALLOC(pthread_t, num_threads);
@@ -278,29 +308,29 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	}
 	SG_FREE(nz_idxs);
 	SG_FREE(W_matrix);
-
-	SGMatrix<float64_t> nullspace = find_null_space(M_matrix,m_target_dim);
-
-	if ((features->get_feature_class()==C_SIMPLE) &&
-	    (features->get_feature_type()==F_DREAL))
-	{
-		((CSimpleFeatures<float64_t>*)features)->set_feature_matrix(nullspace);
-		M_matrix.destroy_matrix();
-		SG_UNREF(features);
-		return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
-	}
-	else
-	{
-		SG_UNREF(features);
-		SG_WARNING("Can't set feature matrix, returning feature matrix.\n");
-		return nullspace;
-	}
+	return M_matrix;
 }
 
 SGVector<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SG_NOTIMPLEMENTED;
 	return vector;
+}
+
+void CKernelLocallyLinearEmbedding::construct_local_gram_matrix(float64_t* local_gram_matrix,
+                                                                const float64_t* kernel_matrix, 
+                                                                const int32_t* neighborhood_matrix, 
+                                                                int32_t i, int32_t N, int32_t m_k_)
+{
+	for (int32_t j=0; j<m_k_; j++)
+	{
+		for (int32_t k=0; k<m_k_; k++)
+			local_gram_matrix[j*m_k_+k] = 
+				kernel_matrix[i*N+i] -
+				kernel_matrix[i*N+neighborhood_matrix[j*N+i]] -
+				kernel_matrix[i*N+neighborhood_matrix[k*N+i]] +
+				kernel_matrix[neighborhood_matrix[j*N+i]*N+neighborhood_matrix[k*N+i]];
+	}
 }
 
 void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
@@ -317,11 +347,14 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	float64_t* id_vector = parameters->id_vector;
 	float64_t* W_matrix = parameters->W_matrix;
 
-	int32_t i,j,k;
+	int32_t i,j;
 	float64_t norming,trace;
 
 	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{
+		// form local gram matrix
+		construct_local_gram_matrix(local_gram_matrix,kernel_matrix,neighborhood_matrix,i,N,m_k);
+		/*
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
@@ -331,6 +364,7 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 					kernel_matrix[i*N+neighborhood_matrix[k*N+i]] +
 					kernel_matrix[neighborhood_matrix[j*N+i]*N+neighborhood_matrix[k*N+i]];
 		}
+		*/
 
 		for (j=0; j<m_k; j++)
 			id_vector[j] = 1.0;
