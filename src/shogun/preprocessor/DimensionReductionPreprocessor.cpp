@@ -62,7 +62,7 @@ int32_t CDimensionReductionPreprocessor::calculate_effective_target_dim(int32_t 
 {
 	if (m_target_dim<0)
 	{
-		if (dim+m_target_dim>1)
+		if (dim+m_target_dim>0)
 		{
 			return dim+m_target_dim;
 		}
