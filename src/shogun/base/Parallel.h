@@ -59,55 +59,29 @@ public:
 	/** set number of threads
 	 * @param n number of threads 
 	 */
-	inline void set_num_threads(int32_t n)
-	{
-#ifndef HAVE_PTHREAD
-		ASSERT(n==1);
-#endif
-		num_threads=n;
-	}
+	void set_num_threads(int32_t n);
 
 	/** get number of threads 
 	 * @return number of threads
 	 */
-	inline int32_t get_num_threads() const
-	{
-		return num_threads;
-	}
+	int32_t get_num_threads() const;
 
 	/** ref
 	 * @return current ref counter
 	 */
-	inline int32_t ref()
-	{
-		++refcount;
-		return refcount;
-	}
+	int32_t ref();
 
 	/** get ref count
 	 * @return current ref counter
 	 */
-	inline int32_t ref_count() const
-	{
-		return refcount;
-	}
+	int32_t ref_count() const;
 
 	/** unref
 	 * @return current ref counter
 	 */
-	inline int32_t unref()
-	{
-		if (refcount==0 || --refcount==0)
-		{
-			delete this;
-			return 0;
-		}
-		else
-			return refcount;
-	}
+	int32_t unref();
 
 private:
-
 	/** ref counter */
 	int32_t refcount;
 

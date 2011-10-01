@@ -37,110 +37,52 @@ public:
 	virtual ~Version();
 
 	/** print version */
-	static inline void print_version()
-	{
-		SG_SPRINT("libshogun (%s/%s%d)\n\n", MACHINE, VERSION_RELEASE, version_revision);
-		SG_SPRINT("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n");
-		SG_SPRINT("Copyright (C) 1999-2011 Max Planck Society\n");
-		SG_SPRINT("Copyright (C) 2009-2011 Berlin Institute of Technology\n");
-		SG_SPRINT("Written   (W) 1999-2011 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n");
-#ifndef USE_SVMLIGHT
-		SG_SPRINT("This is free software; see the source for copying conditions.  There is NO\n");
-		SG_SPRINT("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
-#endif
-		SG_SPRINT( "( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS);
-	}
+	static void print_version();
 
 	/** get version extra */
-	static inline const char* get_version_extra()
-	{
-		return version_extra;
-	}
+	static const char* get_version_extra();
 
 	/** get version release */
-	static inline const char* get_version_release()
-	{
-		return version_release;
-	}
+	static const char* get_version_release();
 
 	/** get version revision */
-	static inline int32_t get_version_revision()
-	{
-		return version_revision;
-	}
+	static int32_t get_version_revision();
 
 	/** get version year */
-	static inline int32_t get_version_year()
-	{
-		return version_year;
-	}
+	static int32_t get_version_year();
 
 	/** get version month */
-	static inline int32_t get_version_month()
-	{
-		return version_month;
-	}
+	static int32_t get_version_month();
 
 	/** get version day */
-	static inline int32_t get_version_day()
-	{
-		return version_day;
-	}
+	static int32_t get_version_day();
 
 	/** get version hour */
-	static inline int32_t get_version_hour()
-	{
-		return version_hour;
-	}
+	static int32_t get_version_hour();
 
 	/** get version minute */
-	static inline int32_t get_version_minute()
-	{
-		return version_year;
-	}
+	static int32_t get_version_minute();
 
 	/** get version parameter */
-	static inline int32_t get_version_parameter()
-	{
-		return version_parameter;
-	}
+	static int32_t get_version_parameter();
 
 	/** get version in minutes */
-	static inline int64_t get_version_in_minutes()
-	{
-		return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
-	}
+	static int64_t get_version_in_minutes();
 
 	/** ref object 
 	 * @return ref count
 	 */
-	inline int32_t ref()
-	{
-		++refcount;
-		return refcount;
-	}
+	int32_t ref();
 
 	/** ref count
 	 * @return ref count 
 	 */
-	inline int32_t ref_count() const
-	{
-		return refcount;
-	}
+	int32_t ref_count() const;
 
 	/** unref object
 	 * @return ref count
 	 */
-	inline int32_t unref()
-	{
-		if (refcount==0 || --refcount==0)
-		{
-			delete this;
-			return 0;
-		}
-		else
-			return refcount;
-	}
+	int32_t unref();
 
 protected:
 	/** version release */
@@ -162,6 +104,7 @@ protected:
 	static const int32_t version_minute;
 	/** version parameter */
 	static const int32_t version_parameter;
+
 private:
 	int32_t refcount;
 };

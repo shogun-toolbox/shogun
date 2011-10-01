@@ -46,3 +46,38 @@ int32_t Parallel::get_num_cpus() const
 #endif
 		return 1;
 }
+
+void Parallel::set_num_threads(int32_t n)
+{
+#ifndef HAVE_PTHREAD
+	ASSERT(n==1);
+#endif
+	num_threads=n;
+}
+
+int32_t Parallel::get_num_threads() const
+{
+	return num_threads;
+}
+
+int32_t Parallel::ref()
+{
+	++refcount;
+	return refcount;
+}
+
+int32_t Parallel::ref_count() const
+{
+	return refcount;
+}
+
+int32_t Parallel::unref()
+{
+	if (refcount==0 || --refcount==0)
+	{
+		delete this;
+		return 0;
+	}
+	else
+		return refcount;
+}

@@ -185,7 +185,6 @@ namespace shogun
 /* Include Class Headers to make them visible from within the target language */
 /* Template Class DynamicArray */
 %include <shogun/lib/DynamicArray.h>
-%include <shogun/base/DynArray.h>
 namespace shogun
 {
         %template(DynamicCharArray) CDynamicArray<char>;
@@ -208,8 +207,6 @@ namespace shogun
         SERIALIZABLE_DUMMY(CDynamicArray<float32_t>);
         %template(DynamicRealArray) CDynamicArray<float64_t>;
         SERIALIZABLE_DUMMY(CDynamicArray<float64_t>);
-        %template(DynamicPlifArray) DynArray<shogun::CPlifBase*>;
-        SERIALIZABLE_DUMMY(DynArray<shogun::CPlifBase*>);
 }
 /* Template Class GCArray */
 %include <shogun/lib/GCArray.h>
