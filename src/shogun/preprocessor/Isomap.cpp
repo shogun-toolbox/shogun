@@ -202,7 +202,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 		heaps[t] = new CFibonacciHeap(N);
 
 #else
-	int32_t num_threads = 1;	
+	int32_t num_threads = 1;
 #endif	
 
 	// allocate (s)olution
@@ -251,7 +251,6 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	single_thread_param.s = s;
 	single_thread_param.f = f;
 	single_thread_param.shortest_D = shortest_D;
-	
 	run_dijkstra_thread((void*)&single_thread_param);
 	delete single_thread_param.heap;
 #endif

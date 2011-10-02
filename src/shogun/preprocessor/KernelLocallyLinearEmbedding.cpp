@@ -136,7 +136,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	// get dimensionality and number of vectors of data
 	bool is_simple = ((features->get_feature_class()==C_SIMPLE) && (features->get_feature_type()==F_DREAL));
 	int32_t N = features->get_num_vectors();
-	int32_t target_dim;
+	int32_t target_dim = 0;
 	if (is_simple)
 		target_dim = calculate_effective_target_dim(((CSimpleFeatures<float64_t>*)features)->get_num_features());
 	else
@@ -158,7 +158,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	m_kernel->cleanup();
 
 	// init W (weight) matrix
-	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix);
+	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix,target_dim);
 	neighborhood_matrix.destroy_matrix();
 
 	SGMatrix<float64_t> nullspace = find_null_space(M_matrix,target_dim);
@@ -179,7 +179,8 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 }
 
 SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix, 
-                                                                           SGMatrix<int32_t> neighborhood_matrix)
+                                                                           SGMatrix<int32_t> neighborhood_matrix,
+                                                                           int32_t target_dim)
 {
 	int32_t N = kernel_matrix.num_cols;
 	// loop variables
@@ -317,22 +318,6 @@ SGVector<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_vector(SGVec
 	return vector;
 }
 
-void CKernelLocallyLinearEmbedding::construct_local_gram_matrix(float64_t* local_gram_matrix,
-                                                                const float64_t* kernel_matrix, 
-                                                                const int32_t* neighborhood_matrix, 
-                                                                int32_t i, int32_t N, int32_t m_k_)
-{
-	for (int32_t j=0; j<m_k_; j++)
-	{
-		for (int32_t k=0; k<m_k_; k++)
-			local_gram_matrix[j*m_k_+k] = 
-				kernel_matrix[i*N+i] -
-				kernel_matrix[i*N+neighborhood_matrix[j*N+i]] -
-				kernel_matrix[i*N+neighborhood_matrix[k*N+i]] +
-				kernel_matrix[neighborhood_matrix[j*N+i]*N+neighborhood_matrix[k*N+i]];
-	}
-}
-
 void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 {
 	LK_RECONSTRUCTION_THREAD_PARAM* parameters = (LK_RECONSTRUCTION_THREAD_PARAM*)p;
@@ -347,14 +332,11 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	float64_t* id_vector = parameters->id_vector;
 	float64_t* W_matrix = parameters->W_matrix;
 
-	int32_t i,j;
+	int32_t i,j,k;
 	float64_t norming,trace;
 
 	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{
-		// form local gram matrix
-		construct_local_gram_matrix(local_gram_matrix,kernel_matrix,neighborhood_matrix,i,N,m_k);
-		/*
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
@@ -364,7 +346,6 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 					kernel_matrix[i*N+neighborhood_matrix[k*N+i]] +
 					kernel_matrix[neighborhood_matrix[j*N+i]*N+neighborhood_matrix[k*N+i]];
 		}
-		*/
 
 		for (j=0; j<m_k; j++)
 			id_vector[j] = 1.0;

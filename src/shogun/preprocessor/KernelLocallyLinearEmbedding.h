@@ -79,11 +79,8 @@ protected:
 
 	/** construct weight matrix */
 	virtual SGMatrix<float64_t> construct_weight_matrix(SGMatrix<float64_t> kernel_matrix,
-	                                                    SGMatrix<int32_t> neighborhood_matrix);
-
-	/** construct local gram matrix */
-	static void construct_local_gram_matrix(float64_t* local_gram_matrix, const float64_t* kernel_matrix,
-	                                        const int32_t* neighborhood_matrix, int32_t i, int32_t N, int32_t m_k_);
+	                                                    SGMatrix<int32_t> neighborhood_matrix,
+	                                                    int32_t target_dim);
 
 	/** runs neighborhood determination thread
 	 * @param p thread params

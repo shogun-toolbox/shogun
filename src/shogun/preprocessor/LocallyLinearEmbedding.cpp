@@ -161,7 +161,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	int32_t dim = simple_features->get_num_features();
 	int32_t target_dim = calculate_effective_target_dim(dim);
 	if (target_dim==-1)
-		SG_ERROR("Trying to decrease dimensionality to negative value, not possible.\n");
+		SG_ERROR("Trying to decrease dimensionality to non-positive value, not possible.\n");
 	if (target_dim>dim)
 		SG_ERROR("Cannot increase dimensionality: target dimensionality is %d while given features dimensionality is %d.\n",
 		         target_dim, dim);
@@ -222,7 +222,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 #else
 	int32_t num_threads = 1;
 #endif 
-	// init matrices and norm factor to be used
+	// init storages to be used
 	float64_t* z_matrix = SG_MALLOC(float64_t, m_k*dim*num_threads);
 	float64_t* covariance_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
 	float64_t* id_vector = SG_MALLOC(float64_t, m_k*num_threads);
