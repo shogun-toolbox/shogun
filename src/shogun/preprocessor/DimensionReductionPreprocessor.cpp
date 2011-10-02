@@ -1,5 +1,5 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/LinearKernel.h>
 #include <shogun/distance/EuclidianDistance.h>
 
 using namespace shogun;
@@ -11,7 +11,7 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
 	m_distance = new CEuclidianDistance();
 	m_distance->parallel = this->parallel;
 	SG_REF(this->parallel);
-	m_kernel = new CGaussianKernel();
+	m_kernel = new CLinearKernel();
 	m_kernel->parallel = this->parallel;
 	SG_REF(this->parallel);
 
