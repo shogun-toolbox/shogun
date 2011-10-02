@@ -141,11 +141,26 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 
 	for (t=0; t<num_threads; t++)
 	{
-		parameters[t] = (HESSIANESTIMATION_THREAD_PARAM){t,num_threads,N,m_k,dim,N,dp,target_dim,
-		                                                 neighborhood_matrix.matrix,feature_matrix.matrix,
-		                                                 local_feature_matrix+(m_k*dim)*t,Yi_matrix+(m_k*(1+target_dim+dp))*t,
-		                                                 mean_vector+dim*t,s_values_vector+dim*t,tau+tau_len*t,tau_len,w_sum_vector+dp*t,
-		                                                 q_matrix+(m_k*m_k)*t,W_matrix,&W_matrix_lock};
+		parameters[t].idx_start = t;
+		parameters[t].idx_step = num_threads;
+		parameters[t].idx_stop = N;
+		parameters[t].m_k = m_k;
+		parameters[t].dim = dim;
+		parameters[t].target_dim = target_dim;
+		parameters[t].N = N;
+		parameters[t].dp = dp;
+		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
+		parameters[t].feature_matrix = feature_matrix.matrix;
+		parameters[t].local_feature_matrix = local_feature_matrix + (m_k*dim)*t;
+		parameters[t].Yi_matrix = Yi_matrix + (m_k*(1+target_dim+dp))*t;
+		parameters[t].mean_vector = mean_vector + dim*t;
+		parameters[t].s_values_vector = s_values_vector + dim*t;
+		parameters[t].tau = tau+tau_len*t;
+		parameters[t].tau_len = tau_len;
+		parameters[t].w_sum_vector = w_sum_vector + dp*t;
+		parameters[t].q_matrix = q_matrix + (m_k*m_k)*t;
+		parameters[t].W_matrix = W_matrix;
+		parameters[t].W_matrix_lock = &W_matrix_lock;
 		pthread_create(&threads[t], &attr, run_hessianestimation_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -154,9 +169,26 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	HESSIANESTIMATION_THREAD_PARAM single_thread_param = {t,num_threads,N,m_k,dim,N,dp,target_dim,neighborhood_matrix.matrix,
-	                                                      feature_matrix.matrix,local_feature_matrix,Yu_matrix,mean_vector,
-	                                                      s_values_vector,tau,tau_len,w_sum_vector,q_matrix,W_matrix};
+	HESSIANESTIMATION_THREAD_PARAM single_thread_param;
+	single_thread_param.idx_start = t;
+	single_thread_param.idx_step = num_threads;
+	single_thread_param.idx_stop = N;
+	single_thread_param.m_k = m_k;
+	single_thread_param.dim = dim;
+	single_thread_param.target_dim = target_dim;
+	single_thread_param.N = N;
+	single_thread_param.dp = dp;
+	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
+	single_thread_param.feature_matrix = feature_matrix.matrix;
+	single_thread_param.local_feature_matrix = local_feature_matrix;
+	single_thread_param.Yi_matrix = Yi_matrix;
+	single_thread_param.mean_vector = mean_vector;
+	single_thread_param.s_values_vector = s_values_vector;
+	single_thread_param.tau = tau;
+	single_thread_param.tau_len = tau_len;
+	single_thread_param.w_sum_vector = w_sum_vector;
+	single_thread_param.q_matrix = q_matrix;
+	single_thread_param.W_matrix = W_matrix;
 	run_hessianestimation_thread((void*)&single_thread_param);
 #endif
 

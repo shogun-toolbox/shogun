@@ -128,10 +128,22 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 
 	for (t=0; t<num_threads; t++)
 	{
-		parameters[t] = (LTSA_THREAD_PARAM){t,num_threads,N,m_k,target_dim,dim,N,neighborhood_matrix.matrix,
-		                                    G_matrix+(m_k)*(1+target_dim)*t,mean_vector+dim*t,
-		                                    local_feature_matrix+(m_k*dim)*t,feature_matrix.matrix,
-		                                    s_values_vector+dim*t,q_matrix+(m_k*m_k)*t,W_matrix,&W_matrix_lock};
+		parameters[t].idx_start = t;
+		parameters[t].idx_step = num_threads;
+		parameters[t].idx_stop = N;
+		parameters[t].m_k = m_k;
+		parameters[t].target_dim = target_dim;
+		parameters[t].dim = dim;
+		parameters[t].N = N;
+		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
+		parameters[t].G_matrix = G_matrix + (m_k*(1+target_dim))*t;
+		parameters[t].mean_vector = mean_vector + dim*t;
+		parameters[t].local_feature_matrix = local_feature_matrix + (m_k*dim)*t;
+		parameters[t].feature_matrix = feature_matrix.matrix;
+		parameters[t].s_values_vector = s_values_vector + dim*t;
+		parameters[t].q_matrix = q_matrix + (m_k*m_k)*t;
+		parameters[t].W_matrix = W_matrix;
+		parameters[t].W_matrix_lock = &W_matrix_lock;
 		pthread_create(&threads[t], &attr, run_ltsa_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -140,9 +152,22 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	LTSA_THREAD_PARAM single_thread_param = {0,1,N,m_k,target_dim,dim,N,neighborhood_matrix.matrix,
-	                                         G_matrix,mean_vector,local_feature_matrix,feature_matrix.matrix,
-	                                         s_values_vector,q_matrix,W_matrix};
+	LTSA_THREAD_PARAM single_thread_param;
+	single_thread_param.idx_start = 0;
+	single_thread_param.idx_step = 1;
+	single_thread_param.idx_stop = N;
+	single_thread_param.m_k = m_k;
+	single_thread_param.target_dim = target_dim;
+	single_thread_param.dim = dim;
+	single_thread_param.N = N;
+	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
+	single_thread_param.G_matrix = G_matrix;
+	single_thread_param.mean_vector = mean_vector;
+	single_thread_param.local_feature_matrix = local_feature_matrix;
+	single_thread_param.feature_matrix = feature_matrix.matrix;
+	single_thread_param.s_values_vector = s_values_vector;
+	single_thread_param.q_matrix = q_matrix;
+	single_thread_param.W_matrix = W_matrix;
 	run_ltsa_thread((void*)&single_thread_param);
 #endif
 

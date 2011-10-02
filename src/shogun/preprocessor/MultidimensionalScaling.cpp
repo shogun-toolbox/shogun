@@ -30,10 +30,10 @@ struct TRIANGULATION_THREAD_PARAM
 {
 	/// idx of loop start
 	int32_t idx_start;
-	/// idx step of loop
-	int32_t idx_step;
 	/// idx of loop stop
 	int32_t idx_stop;
+	/// idx step of loop
+	int32_t idx_step;
 	/// number of landmarks
 	int32_t lmk_N;
 	/// total number of examples
@@ -386,10 +386,19 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	// run threads
 	for (t=0; t<num_threads; t++)
 	{
-		parameters[t] = (TRIANGULATION_THREAD_PARAM){t,num_threads,total_N,lmk_N,total_N,m_target_dim,
-		                                             current_dist_to_lmks+t*lmk_N,lmk_feature_matrix.matrix,
-		                                             new_feature_matrix,distance_matrix.matrix,mean_sq_dist_vector,
-		                                             lmk_idxs.vector,to_process};
+		parameters[t].idx_start = t;
+		parameters[t].idx_stop = total_N;
+		parameters[t].idx_step = num_threads;
+		parameters[t].lmk_N = lmk_N;
+		parameters[t].total_N = total_N;
+		parameters[t].m_target_dim = m_target_dim;
+		parameters[t].current_dist_to_lmks = current_dist_to_lmks+t*lmk_N;
+		parameters[t].distance_matrix = distance_matrix.matrix;
+		parameters[t].mean_sq_dist_vector = mean_sq_dist_vector;
+		parameters[t].lmk_idxs = lmk_idxs.vector;
+		parameters[t].lmk_feature_matrix = lmk_feature_matrix.matrix;
+		parameters[t].new_feature_matrix = new_feature_matrix;
+		parameters[t].to_process = to_process;
 		pthread_create(&threads[t], &attr, run_triangulation_thread, (void*)&parameters[t]);
 	}
 	// join threads
@@ -401,9 +410,20 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 #else
 	// run single 'thread'
 	float64_t* current_dist_to_lmks = SG_MALLOC(float64_t, lmk_N);
-	TRIANGULATION_THREAD_PARAM single_thread_param = {0,1,total_N,lmk_N,total_N,m_target_dim,current_dist_to_lmks,
-	                                                  lmk_feature_matrix.matrix,new_feature_matrix,distance_matrix.matrix,
-	                                                  mean_sq_dist_vector,lmk_idxs.vector,to_process};
+	TRIANGULATION_THREAD_PARAM single_thread_param;
+	single_thread_param.idx_start = 0;
+	single_thread_param.idx_stop = total_N;
+	single_thread_param.idx_step = 1;
+	single_thread_param.lmk_N = lmk_N;
+	single_thread_param.total_N = total_N;
+	single_thread_param.m_target_dim = m_target_dim;
+	single_thread_param.current_dist_to_lmks = current_dist_to_lmks;
+	single_thread_param.distance_matrix = distance_matrix.matrix;
+	single_thread_param.mean_sq_dist_vector = mean_sq_dist_vector;
+	single_thread_param.lmk_idxs = lmk_idxs.vector;
+	single_thread_param.lmk_feature_matrix = lmk_feature_matrix.matrix;
+	single_thread_param.new_feature_matrix = new_feature_matrix;
+	single_thread_param.to_process = to_process;
 	run_triangulation_thread((void*)&single_thread_param);
 #endif
 	// cleanup
