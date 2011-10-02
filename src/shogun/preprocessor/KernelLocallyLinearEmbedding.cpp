@@ -357,7 +357,7 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		
 		// regularize gram matrix
 		for (j=0; j<m_k; j++)
-			local_gram_matrix[j*m_k+j] += 1e-3*trace/m_k;
+			local_gram_matrix[j*m_k+j] += 1e-3*trace;
 
 		clapack_dposv(CblasColMajor,CblasLower,m_k,1,local_gram_matrix,m_k,id_vector,m_k);
 
