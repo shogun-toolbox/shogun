@@ -20,10 +20,8 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
 
 CDimensionReductionPreprocessor::~CDimensionReductionPreprocessor() 
 {
-	delete m_distance;
-	SG_UNREF(this->parallel);
-	delete m_kernel;
-	SG_UNREF(this->parallel);
+	SG_UNREF(m_distance);
+	SG_UNREF(m_kernel);
 }
 
 bool CDimensionReductionPreprocessor::init(CFeatures* data)
