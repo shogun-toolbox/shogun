@@ -21,6 +21,7 @@
 #include <shogun/preprocessor/LaplacianEigenmaps.h>
 #include <shogun/preprocessor/Isomap.h>
 #include <shogun/preprocessor/DiffusionMaps.h>
+#include <shogun/preprocessor/KernelLocalTangentSpaceAlignment.h>
 
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/preprocessor/DecompressString.h>

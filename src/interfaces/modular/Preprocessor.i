@@ -27,6 +27,7 @@
 %rename(LaplacianEigenmaps) CLaplacianEigenmaps;
 %rename(Isomap) CIsomap;
 %rename(DiffusionMaps) CDiffusionMaps;
+%rename(KernelLocalTangentSpaceAlignment) CKernelLocalTangentSpaceAlignment;
 
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
@@ -86,6 +87,7 @@ namespace shogun
 %include <shogun/preprocessor/LaplacianEigenmaps.h>
 %include <shogun/preprocessor/Isomap.h>
 %include <shogun/preprocessor/DiffusionMaps.h>
+%include <shogun/preprocessor/KernelLocalTangentSpaceAlignment.h>
 
 %include <shogun/preprocessor/SortUlongString.h>
 %include <shogun/preprocessor/SortWordString.h>
