@@ -33,10 +33,10 @@ struct LINRECONSTRUCTION_THREAD_PARAM
 {
 	/// starting index of loop
 	int32_t idx_start;
-	/// end loop index
-	int32_t idx_stop;
 	/// step of loop
 	int32_t idx_step;
+	/// end loop index
+	int32_t idx_stop;
 	/// number of neighbors
 	int32_t m_k;
 	/// current dimension
@@ -161,7 +161,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	int32_t dim = simple_features->get_num_features();
 	int32_t target_dim = calculate_effective_target_dim(dim);
 	if (target_dim==-1)
-		SG_ERROR("Trying to decrease dimensionality to negative value, not possible.\n");
+		SG_ERROR("Trying to decrease dimensionality to non-positive value, not possible.\n");
 	if (target_dim>dim)
 		SG_ERROR("Cannot increase dimensionality: target dimensionality is %d while given features dimensionality is %d.\n",
 		         target_dim, dim);
@@ -222,7 +222,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 #else
 	int32_t num_threads = 1;
 #endif 
-	// init matrices and norm factor to be used
+	// init storages to be used
 	float64_t* z_matrix = SG_MALLOC(float64_t, m_k*dim*num_threads);
 	float64_t* covariance_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
 	float64_t* id_vector = SG_MALLOC(float64_t, m_k*num_threads);
@@ -233,18 +233,9 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 #ifdef HAVE_PTHREAD
 	for (t=0; t<num_threads; t++)
 	{
-		parameters[t].idx_start = t;
-		parameters[t].idx_step = num_threads;
-		parameters[t].idx_stop = N;
-		parameters[t].m_k = m_k;
-		parameters[t].dim = dim;
-		parameters[t].N = N;
-		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
-		parameters[t].z_matrix = z_matrix+(m_k*dim)*t;
-		parameters[t].feature_matrix = feature_matrix.matrix;
-		parameters[t].covariance_matrix = covariance_matrix+(m_k*m_k)*t;
-		parameters[t].id_vector = id_vector+m_k*t;
-		parameters[t].W_matrix = W_matrix;
+		parameters[t] = (LINRECONSTRUCTION_THREAD_PARAM){t,num_threads,N,m_k,dim,N,neighborhood_matrix.matrix,
+		                                                 feature_matrix.matrix,z_matrix+(m_k*dim)*t,
+		                                                 covariance_matrix+(m_k*m_k)*t,id_vector+m_k*t,W_matrix};
 		pthread_create(&threads[t], &attr, run_linearreconstruction_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -253,19 +244,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	LINRECONSTRUCTION_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = 0;
-	single_thread_param.idx_step = 1;
-	single_thread_param.idx_stop = N;
-	single_thread_param.m_k = m_k;
-	single_thread_param.dim = dim;
-	single_thread_param.N = N;
-	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
-	single_thread_param.z_matrix = z_matrix;
-	single_thread_param.feature_matrix = feature_matrix.matrix;
-	single_thread_param.covariance_matrix = covariance_matrix;
-	single_thread_param.id_vector = id_vector;
-	single_thread_param.W_matrix = W_matrix;
+	LINRECONSTRUCTION_THREAD_PARAM single_thread_param = {0,1,N,m_k,dim,N,neighborhood_matrix.matrix,z_matrix,
+	                                                      feature_matrix.matrix,covariance_matrix,id_vector,W_matrix};
 	run_linearreconstruction_thread((void*)single_thread_param);
 #endif
 
@@ -276,13 +256,9 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 
 	// W=I-W
 	for (i=0; i<N*N; i++)
-	{
 		W_matrix[i] *= -1.0;
-	}
 	for (i=0; i<N; i++)
-	{
 		W_matrix[i*N+i] = 1.0;
-	}
 
 	// compute M=(W-I)'*(W-I)
 	DynArray<int32_t>** nz_idxs = SG_MALLOC(DynArray<int32_t>*,N);
@@ -306,13 +282,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	
 	for (t=0; t<num_threads; t++)
 	{
-		parameters_[t].idx_start = t;
-		parameters_[t].idx_step = num_threads;
-		parameters_[t].idx_stop = N;
-		parameters_[t].N = N;
-		parameters_[t].W_matrix = W_matrix;
-		parameters_[t].M_matrix = M_matrix.matrix;
-		parameters_[t].nz_idxs = nz_idxs;
+		parameters_[t] = (SPARSEDOT_THREAD_PARAM){t,num_threads,N,N,W_matrix,M_matrix.matrix,nz_idxs};
 		pthread_create(&threads[t], &attr_, run_sparsedot_thread, (void*)&parameters_[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -321,14 +291,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	SG_FREE(parameters_);
 	SG_FREE(threads);
 #else
-	SPARSEDOT_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = 0;
-	single_thread_param.idx_step = 1;
-	single_thread_param.idx_stop = N;
-	single_thread_param.N = N;
-	single_thread_param.W_matrix = W_matrix;
-	single_thread_param.M_matrix = M_matrix.matrix;
-	single_thread_param.nz_idxs = nz_idxs;
+	SPARSEDOT_THREAD_PARAM single_thread_param = {0,1,N,N,W_matrix,M_matrix.matrix,nz_idxs};
 	run_sparsedot_thread((void*)single_thread_param);
 #endif
 	for (i=0; i<N; i++)
@@ -509,14 +472,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 #ifdef HAVE_PTHREAD
 	for (t=0; t<num_threads; t++)
 	{
-		parameters[t].idx_start = t;
-		parameters[t].idx_step = num_threads;
-		parameters[t].idx_stop = N;
-		parameters[t].m_k = m_k;
-		parameters[t].N = N;
-		parameters[t].heap = heaps[t];
-		parameters[t].neighborhood_matrix = neighborhood_matrix;
-		parameters[t].distance_matrix = distance_matrix.matrix;
+		parameters[t] = (NEIGHBORHOOD_THREAD_PARAM){t,num_threads,N,N,m_k,heaps[t],distance_matrix.matrix,neighborhood_matrix};
 		pthread_create(&threads[t], &attr, run_neighborhood_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -525,15 +481,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 	SG_FREE(threads);
 	SG_FREE(parameters);
 #else
-	NEIGHBORHOOD_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = 0;
-	single_thread_param.idx_step = 1;
-	single_thread_param.idx_stop = N;
-	single_thread_param.m_k = m_k;
-	single_thread_param.N = N;
-	single_thread_param.heap = heaps[0]
-	single_thread_param.neighborhood_matrix = neighborhood_matrix;
-	single_thread_param.distance_matrix = distance_matrix.matrix;
+	NEIGHBORHOOD_THREAD_PARAM single_thread_param = {0,1,N,N,m_k,heaps[0],distance_matrix.matrix,neighborhood_matrix};
 	run_neighborhood_thread((void*)&single_thread_param);
 #endif
 

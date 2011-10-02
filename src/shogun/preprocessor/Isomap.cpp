@@ -202,7 +202,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 		heaps[t] = new CFibonacciHeap(N);
 
 #else
-	int32_t num_threads = 1;	
+	int32_t num_threads = 1;
 #endif	
 
 	// allocate (s)olution
@@ -219,16 +219,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 	for (t=0; t<num_threads; t++)
 	{
-		parameters[t].i_start = t;
-		parameters[t].i_stop = N;
-		parameters[t].i_step = num_threads;
-		parameters[t].heap = heaps[t];
-		parameters[t].edges_matrix = edges_matrix;
-		parameters[t].edges_idx_matrix = edges_idx_matrix;
-		parameters[t].s = s+t*N;
-		parameters[t].f = f+t*N;
-		parameters[t].m_k = m_k;
-		parameters[t].shortest_D = shortest_D;
+		parameters[t] = (DIJKSTRA_THREAD_PARAM){heaps[t],edges_matrix,edges_idx_matrix,shortest_D,t,N,num_threads,m_k,s+t*N,f+t*N};
 		pthread_create(&threads[t], &attr, CIsomap::run_dijkstra_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -240,20 +231,11 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	D_THREAD_PARAM single_thread_param;
-	single_thread_param.i_start = 0;
-	single_thread_param.i_stop = N;
-	single_thread_param.i_step = 1;
-	single_thread_param.m_k = m_k;
-	single_thread_param.heap = new CFibonacciHeap(N);
-	single_thread_param.edges_matrix = edges_matrix;
-	single_thread_param.edges_idx_matrix = edges_idx_matrix;
-	single_thread_param.s = s;
-	single_thread_param.f = f;
-	single_thread_param.shortest_D = shortest_D;
-	
+
+	DIJKSTRA_THREAD_PARAM single_thread_param = {heaps[0],edges_matrix,edges_idx_matrix,shortest_D,0,N,1,m_k,s,f};
 	run_dijkstra_thread((void*)&single_thread_param);
-	delete single_thread_param.heap;
+	delete heaps[0];
+	SG_FREE(heaps);
 #endif
 	// cleanup
 	SG_FREE(edges_matrix);
