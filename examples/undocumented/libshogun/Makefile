@@ -38,6 +38,9 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  library_fibonacci_heap \
 		  library_hashset \
 		  mathematics_lapack \
+		  preprocessor_locallylinearembedding \
+		  preprocessor_localtangentspacealignment \
+		  preprocessor_hessianlocallylinearembedding \
 
 all: $(TARGETS)
 
