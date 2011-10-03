@@ -177,6 +177,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	ASSERT(m_distance);
 	m_distance->init(simple_features,simple_features);
 	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
+	m_distance->remove_lhs_and_rhs();
 	SG_DEBUG("Calculating neighborhood matrix\n");
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance_matrix);
 

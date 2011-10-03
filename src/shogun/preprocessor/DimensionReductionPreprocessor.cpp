@@ -9,11 +9,7 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
 {
 	m_target_dim = 1;
 	m_distance = new CEuclidianDistance();
-	m_distance->parallel = this->parallel;
-	SG_REF(this->parallel);
 	m_kernel = new CLinearKernel();
-	m_kernel->parallel = this->parallel;
-	SG_REF(this->parallel);
 
 	init();
 }
@@ -76,8 +72,6 @@ void CDimensionReductionPreprocessor::set_distance(CDistance* distance)
 	SG_UNREF(m_distance);
 	SG_REF(distance);
 	m_distance = distance;
-	m_distance->parallel = this->parallel;
-	SG_REF(this->parallel);
 }
 
 CDistance* CDimensionReductionPreprocessor::get_distance() const
@@ -91,8 +85,6 @@ void CDimensionReductionPreprocessor::set_kernel(CKernel* kernel)
 	SG_UNREF(m_kernel);
 	SG_REF(kernel);
 	m_kernel = kernel;
-	m_kernel->parallel = this->parallel;
-	SG_REF(this->parallel);
 }
 
 CKernel* CDimensionReductionPreprocessor::get_kernel() const

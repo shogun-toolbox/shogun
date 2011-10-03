@@ -143,6 +143,8 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	{
 		if (m_target_dim<=0)
 			SG_ERROR("Cannot decrease dimensionality of given features by %d.\n", -m_target_dim);
+		else
+			target_dim = m_target_dim;
 	}
 	if (target_dim<=0)
 		SG_ERROR("Trying to decrease dimensionality to non-positive value, not possible.\n");

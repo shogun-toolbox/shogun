@@ -107,7 +107,8 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	int32_t dim = simple_features->get_num_features();
 	int32_t target_dim = calculate_effective_target_dim(dim);
 	int32_t dp = target_dim*(target_dim+1)/2;
-	ASSERT(m_k>=(1+target_dim+dp));
+	if (m_k<(1+target_dim+dp))
+		SG_ERROR("K parameter should have value greater than 1+target dimensionality+dp.\n");
 	int32_t t;
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
