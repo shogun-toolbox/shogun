@@ -97,7 +97,7 @@ struct SPARSEDOT_THREAD_PARAM
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
-		CDimensionReductionPreprocessor()
+		CDimensionReductionPreprocessor<float64_t>()
 {
 	m_k = 3;
 	
@@ -366,7 +366,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
-		arpack_xsxupd<float64_t>(matrix.matrix,NULL,N,dimension+1,"LA",3,true,-1e-7,0.0,
+		arpack_xsxupd<float64_t>(matrix.matrix,NULL,N,dimension+1,"LA",3,true,0.0,0.0,
 		                         eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
 	}

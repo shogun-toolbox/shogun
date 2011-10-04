@@ -46,7 +46,7 @@ class CDistance;
  * false using set_posdef.
  *
  */
-class CLocallyLinearEmbedding: public CDimensionReductionPreprocessor
+class CLocallyLinearEmbedding: public CDimensionReductionPreprocessor<float64_t>
 {
 public:
 

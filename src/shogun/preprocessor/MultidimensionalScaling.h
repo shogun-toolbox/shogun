@@ -57,7 +57,7 @@ class CDistance;
  * values (30%-50% of total examples number) is pretty good for the
  * most tasks.
  */
-class CMultidimensionalScaling: public CDimensionReductionPreprocessor
+class CMultidimensionalScaling: public CDimensionReductionPreprocessor<float64_t>
 {
 public:
 

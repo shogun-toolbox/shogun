@@ -20,7 +20,6 @@ namespace shogun
 {
 
 class CFeatures;
-
 class CDistance;
 
 /** @brief the class LaplacianEigenmaps used to preprocess
@@ -45,7 +44,7 @@ class CDistance;
  * memory usage. 
  *
  */
-class CLaplacianEigenmaps: public CDimensionReductionPreprocessor
+class CLaplacianEigenmaps: public CDimensionReductionPreprocessor<float64_t>
 {
 public:
 

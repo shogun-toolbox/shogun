@@ -26,7 +26,8 @@ class CKernel;
  * class for preprocessors used to lower the dimensionality of given 
  * simple features (dense matrices). 
  */
-class CDimensionReductionPreprocessor: public CSimplePreprocessor<float64_t>
+template <class ST>
+class CDimensionReductionPreprocessor: public CSimplePreprocessor<ST>
 {
 public:
 
@@ -51,12 +52,12 @@ public:
 	/** apply preproc to feature matrix
 	 * by default does nothing, returns given features' matrix
 	 */
-	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
+	virtual SGMatrix<ST> apply_to_feature_matrix(CFeatures* features) = 0;
 
 	/** apply preproc to feature vector
 	 * by default does nothing, returns given feature vector
 	 */
-	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+	virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector) = 0;
 
 	/** get name */
 	virtual const char* get_name() const { return "DimensionReductionPreprocessor"; };
@@ -93,15 +94,6 @@ public:
 	 * @return kernel
 	 */
 	CKernel* get_kernel() const;
-
-protected:
-
-	/** detect dimensionality from distance matrix
-	 * NOT YET IMPLEMENTED
-	 * @param distance_matrix distance matrix to be used 
-	 * @return detected dimensionality 
-	 */
-	int32_t detect_dim(SGMatrix<float64_t> distance_matrix);
 
 protected:
 

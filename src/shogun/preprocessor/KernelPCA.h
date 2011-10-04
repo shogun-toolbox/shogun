@@ -32,7 +32,7 @@ class CKernel;
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.8744
  *
  */
-class CKernelPCA: public CDimensionReductionPreprocessor
+class CKernelPCA: public CDimensionReductionPreprocessor<float64_t>
 {
 public:
 		/** default constructor

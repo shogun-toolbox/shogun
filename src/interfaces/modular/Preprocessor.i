@@ -16,7 +16,6 @@
 %rename(PruneVarSubMean) CPruneVarSubMean;
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 
-%rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(PCA) CPCA;
 %rename(KernelPCA) CKernelPCA;
 %rename(MultidimensionalScaling) CMultidimensionalScaling;
@@ -51,6 +50,13 @@ namespace shogun
     %template(SimpleCharPreprocessor) CSimplePreprocessor<char>;
 }
 
+/* Templates Class DimensionReductionPreprocessor */
+%include <shogun/preprocessor/DimensionReductionPreprocessor.h>
+namespace shogun
+{
+    %template(DimensionReductionPreprocessor) CDimensionReductionPreprocessor<float64_t>;
+}
+
 /* Templates Class StringPreprocessor*/
 %include <shogun/preprocessor/StringPreprocessor.h>
 namespace shogun
@@ -76,7 +82,6 @@ namespace shogun
 %include <shogun/preprocessor/PruneVarSubMean.h>
 %include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 
-%include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 %include <shogun/preprocessor/PCA.h>
 %include <shogun/preprocessor/KernelPCA.h>
 %include <shogun/preprocessor/MultidimensionalScaling.h>

@@ -27,7 +27,7 @@
 using namespace shogun;
 
 CDiffusionMaps::CDiffusionMaps() :
-		CDimensionReductionPreprocessor()
+		CDimensionReductionPreprocessor<float64_t>()
 {
 	m_t = 10;
 	

@@ -45,7 +45,7 @@ enum EPCAMode
  * covariance matrix is of size num_feat*num_feat. Note that vectors don't have
  * to have zero mean as it is substracted.
  */
-class CPCA: public CDimensionReductionPreprocessor
+class CPCA: public CDimensionReductionPreprocessor<float64_t>
 {
 	public:
 	

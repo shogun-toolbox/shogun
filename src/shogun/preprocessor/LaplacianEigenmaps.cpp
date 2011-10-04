@@ -22,7 +22,7 @@
 using namespace shogun;
 
 CLaplacianEigenmaps::CLaplacianEigenmaps() :
-		CDimensionReductionPreprocessor()
+		CDimensionReductionPreprocessor<float64_t>()
 {
 	m_k = 3;
 	m_tau = 1.0;

@@ -57,7 +57,7 @@ struct TRIANGULATION_THREAD_PARAM
 };
 #endif
 
-CMultidimensionalScaling::CMultidimensionalScaling() : CDimensionReductionPreprocessor()
+CMultidimensionalScaling::CMultidimensionalScaling() : CDimensionReductionPreprocessor<float64_t>()
 {
 	m_eigenvalues = SGVector<float64_t>(NULL,0,false);
 	m_landmark_number = 3;

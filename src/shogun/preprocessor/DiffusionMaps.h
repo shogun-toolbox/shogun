@@ -23,7 +23,7 @@ class CFeatures;
 class CKernel;
 
 /** @brief */
-class CDiffusionMaps: public CDimensionReductionPreprocessor
+class CDiffusionMaps: public CDimensionReductionPreprocessor<float64_t>
 {
 public:
 
