@@ -55,6 +55,8 @@ struct LINRECONSTRUCTION_THREAD_PARAM
 	float64_t* id_vector;
 	/// weight matrix
 	float64_t* W_matrix;
+	/// reconstruction regularization shift
+	float64_t m_reconstruction_shift;
 };
 
 struct NEIGHBORHOOD_THREAD_PARAM
@@ -100,6 +102,8 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 		CDimensionReductionPreprocessor<float64_t>()
 {
 	m_k = 3;
+	m_nullspace_shift = -1e-9;
+	m_reconstruction_shift = 1e-3;
 	
 	init();
 }
@@ -107,6 +111,10 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 void CLocallyLinearEmbedding::init()
 {
 	m_parameters->add(&m_k, "k", "number of neighbors");
+	m_parameters->add(&m_nullspace_shift, "nullspace_shift",
+	                  "nullspace finding regularization shift");
+	m_parameters->add(&m_reconstruction_shift, "reconstruction_shift", 
+	                  "shift used to regularize reconstruction step");
 }
 
 
@@ -123,6 +131,26 @@ void CLocallyLinearEmbedding::set_k(int32_t k)
 int32_t CLocallyLinearEmbedding::get_k() const
 {
 	return m_k;
+}
+
+void CLocallyLinearEmbedding::set_nullspace_shift(float64_t nullspace_shift)
+{
+	m_nullspace_shift = nullspace_shift;
+}
+
+float64_t CLocallyLinearEmbedding::get_nullspace_shift() const
+{
+	return m_nullspace_shift;
+}
+
+void CLocallyLinearEmbedding::set_reconstruction_shift(float64_t reconstruction_shift)
+{
+	m_reconstruction_shift = reconstruction_shift;
+}
+
+float64_t CLocallyLinearEmbedding::get_reconstruction_shift() const
+{
+	return m_reconstruction_shift;
 }
 
 const char* CLocallyLinearEmbedding::get_name() const
@@ -246,6 +274,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 		parameters[t].covariance_matrix = covariance_matrix+(m_k*m_k)*t;
 		parameters[t].id_vector = id_vector+m_k*t;
 		parameters[t].W_matrix = W_matrix;
+		parameters[t].m_reconstruction_shift = m_reconstruction_shift;
 		pthread_create(&threads[t], &attr, run_linearreconstruction_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -267,6 +296,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	single_thread_param.covariance_matrix = covariance_matrix;
 	single_thread_param.id_vector = id_vector;
 	single_thread_param.W_matrix = W_matrix;
+	single_thread_param.m_reconstruction_shift = m_reconstruction_shift;
 	run_linearreconstruction_thread((void*)single_thread_param);
 #endif
 
@@ -366,7 +396,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
-		arpack_xsxupd<float64_t>(matrix.matrix,NULL,N,dimension+1,"LA",3,true,0.0,0.0,
+		arpack_xsxupd<float64_t>(matrix.matrix,NULL,N,dimension+1,"LA",3,true,m_nullspace_shift,0.0,
 		                         eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
 	}
@@ -425,6 +455,7 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	float64_t* covariance_matrix = parameters->covariance_matrix;
 	float64_t* id_vector = parameters->id_vector;
 	float64_t* W_matrix = parameters->W_matrix;
+	float64_t m_reconstruction_shift = parameters->m_reconstruction_shift;
 
 	int32_t i,j,k;
 	float64_t norming,trace;
@@ -464,7 +495,7 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 				trace += covariance_matrix[j*m_k+j];
 
 			for (j=0; j<m_k; j++)
-				covariance_matrix[j*m_k+j] += 1e-3*trace;
+				covariance_matrix[j*m_k+j] += m_reconstruction_shift*trace;
 		}
 
 		// solve system of linear equations: covariance_matrix * X = 1
