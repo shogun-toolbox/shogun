@@ -10,7 +10,6 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/KernelLocallyLinearEmbedding.h>
 #include <shogun/kernel/LinearKernel.h>
 
@@ -33,8 +32,8 @@ int main(int argc, char** argv)
 	klle->set_target_dim(2);
 	klle->set_k(4);
 	klle->set_kernel(kernel);
-	klle->apply_to_feature_matrix(features);
 	klle->parallel->set_num_threads(4);
+	klle->apply_to_feature_matrix(features);
 	SG_UNREF(klle);
 	SG_UNREF(features);
 	exit_shogun();

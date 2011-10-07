@@ -10,7 +10,6 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
 
 using namespace shogun;

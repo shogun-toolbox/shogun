@@ -43,6 +43,10 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  preprocessor_hessianlocallylinearembedding \
 		  preprocessor_kernellocallylinearembedding \
 		  preprocessor_kernellocaltangentspacealignment \
+		  preprocessor_multidimensionalscaling \
+		  preprocessor_isomap \
+		  preprocessor_diffusionmaps \
+		  preprocessor_laplacianeigenmaps \
 
 all: $(TARGETS)
 

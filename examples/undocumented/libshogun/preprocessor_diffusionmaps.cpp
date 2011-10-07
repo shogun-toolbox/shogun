@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/preprocessor/LocallyLinearEmbedding.h>
+#include <shogun/preprocessor/DiffusionMaps.h>
 
 using namespace shogun;
 
@@ -26,12 +26,12 @@ int main(int argc, char** argv)
 
 	CSimpleFeatures<double>* features = new CSimpleFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
-	CLocallyLinearEmbedding* lle = new CLocallyLinearEmbedding();
-	lle->set_target_dim(2);
-	lle->set_k(4);
-	lle->parallel->set_num_threads(4);
-	lle->apply_to_feature_matrix(features);
-	SG_UNREF(lle);
+	CDiffusionMaps* dmaps = new CDiffusionMaps();
+	dmaps->set_target_dim(2);
+	dmaps->set_t(10);
+	dmaps->parallel->set_num_threads(4);
+	dmaps->apply_to_feature_matrix(features);
+	SG_UNREF(dmaps);
 	SG_UNREF(features);
 	exit_shogun();
 	return 0;

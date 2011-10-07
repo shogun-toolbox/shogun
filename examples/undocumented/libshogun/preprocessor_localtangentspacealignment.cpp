@@ -10,7 +10,6 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
 
 using namespace shogun;
@@ -30,8 +29,8 @@ int main(int argc, char** argv)
 	CLocalTangentSpaceAlignment* ltsa = new CLocalTangentSpaceAlignment();
 	ltsa->set_target_dim(2);
 	ltsa->set_k(4);
-	ltsa->apply_to_feature_matrix(features);
 	ltsa->parallel->set_num_threads(4);
+	ltsa->apply_to_feature_matrix(features);
 	SG_UNREF(ltsa);
 	SG_UNREF(features);
 	exit_shogun();

@@ -10,7 +10,6 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/KernelLocalTangentSpaceAlignment.h>
 #include <shogun/kernel/LinearKernel.h>
 
@@ -33,8 +32,8 @@ int main(int argc, char** argv)
 	kltsa->set_target_dim(2);
 	kltsa->set_k(4);
 	kltsa->set_kernel(kernel);
-	kltsa->apply_to_feature_matrix(features);
 	kltsa->parallel->set_num_threads(4);
+	kltsa->apply_to_feature_matrix(features);
 	SG_UNREF(kltsa);
 	SG_UNREF(features);
 	exit_shogun();
