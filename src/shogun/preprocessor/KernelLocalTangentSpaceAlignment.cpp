@@ -141,6 +141,7 @@ SGMatrix<float64_t> CKernelLocalTangentSpaceAlignment::construct_weight_matrix(S
 	SG_FREE(local_gram_matrix);
 	SG_FREE(ev_vector);
 	SG_FREE(G_matrix);
+	kernel_matrix.destroy_matrix();
 
 	for (int32_t i=0; i<N; i++)
 	{
