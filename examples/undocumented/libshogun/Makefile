@@ -41,6 +41,8 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  preprocessor_locallylinearembedding \
 		  preprocessor_localtangentspacealignment \
 		  preprocessor_hessianlocallylinearembedding \
+		  preprocessor_kernellocallylinearembedding \
+		  preprocessor_kernellocaltangentspacealignment \
 
 all: $(TARGETS)
 
