@@ -175,7 +175,8 @@ SGMatrix<float64_t> CDiffusionMaps::apply_to_feature_matrix(CFeatures* features)
 	wrap_dgesvd('O','N',N,N,kernel_matrix.matrix,N,s_values,NULL,1,NULL,1,&info);
 */
 
-	float64_t* new_feature_matrix = kkt_matrix;//SG_MALLOC(float64_t, N*target_dim);
+	SG_FREE(kkt_matrix);
+	float64_t* new_feature_matrix = SG_MALLOC(float64_t, N*target_dim);
 
 	for (i=0; i<target_dim; i++)
 	{
