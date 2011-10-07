@@ -20,9 +20,7 @@ namespace shogun
 {
 
 class CFeatures;
-
 class CDistance;
-
 
 /** @brief the class LocalTangentSpaceAlignment used to preprocess
  * data using Local Tangent Space Alignment (LTSA) algorithm as described in:
@@ -67,6 +65,7 @@ public:
 	/** get type */
 	virtual EPreprocessorType get_type() const;
 
+/// HELPER
 protected:
 
 	/** construct weight matrix 
@@ -77,6 +76,7 @@ protected:
 	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
                                                             SGMatrix<int32_t> neighborhood_matrix);
 
+/// THREAD
 protected:
 
 	/** run ltsa thread

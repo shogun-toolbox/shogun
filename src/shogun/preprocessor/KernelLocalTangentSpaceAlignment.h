@@ -56,14 +56,16 @@ public:
 	/** get type */
 	virtual EPreprocessorType get_type() const;
 
+/// HELPERS
 protected:
 
 	/** construct weight matrix 
 	 */
 	virtual SGMatrix<float64_t> construct_weight_matrix(SGMatrix<float64_t> kernel_matrix, 
-                                                            SGMatrix<int32_t> neighborhood_matrix,
+	                                                    SGMatrix<int32_t> neighborhood_matrix,
 	                                                    int32_t target_dim);
 
+/// THREADS
 protected:
 
 	/** run kernel ltsa thread

@@ -20,7 +20,6 @@ namespace shogun
 {
 
 class CFeatures;
-
 class CDistance;
 
 /** @brief the class Multidimensionalscaling is used to perform
@@ -127,6 +126,7 @@ public:
 	 */
 	bool get_landmark() const;
 
+/// HELPERS
 protected:
 
 	/** default initialization */
@@ -144,6 +144,7 @@ protected:
 	 */
 	SGMatrix<float64_t> landmark_embedding(SGMatrix<float64_t> distance_matrix);
 
+/// FIELDS
 protected:
 
 	/** last embedding eigenvalues */
@@ -155,6 +156,7 @@ protected:
 	/** number of landmarks */
 	int32_t m_landmark_number;
 
+/// STATIC
 protected:
 
 	/** run triangulation thread for landmark embedding

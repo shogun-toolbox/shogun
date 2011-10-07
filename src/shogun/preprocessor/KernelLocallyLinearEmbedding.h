@@ -21,7 +21,6 @@ namespace shogun
 {
 
 class CFeatures;
-
 class CKernel;
 
 /** @brief the class KernelLocallyLinearEmbedding used to preprocess
@@ -72,6 +71,7 @@ public:
 	/** get type */
 	virtual EPreprocessorType get_type() const;
 
+/// HELPERS
 protected:
 
 	/** default init */
@@ -82,6 +82,17 @@ protected:
 	                                                    SGMatrix<int32_t> neighborhood_matrix,
 	                                                    int32_t target_dim);
 
+	/** construct neighborhood matrix by kernel matrix
+	 * @param kernel_matrix kernel matrix to be used
+	 * @return matrix containing indexes of neighbors of i-th object
+	 * in i-th column
+	 */
+	SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix);
+
+
+/// THREADS
+protected:
+
 	/** runs neighborhood determination thread
 	 * @param p thread params
 	 */
@@ -91,13 +102,6 @@ protected:
 	 * @param p thread params
 	 */
 	static void* run_linearreconstruction_thread(void* p);
-
-	/** construct neighborhood matrix by kernel matrix
-	 * @param kernel_matrix kernel matrix to be used
-	 * @return matrix containing indexes of neighbors of i-th object
-	 * in i-th column
-	 */
-	SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix);
 
 };
 }
