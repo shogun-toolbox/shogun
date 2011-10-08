@@ -3,7 +3,10 @@
 	* SHOGUN Release version 1.1.0 (libshogun 11.0, data 0.2, parameter 0)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
-		- TODO
+	   - New dimensionality reduction algorithms:
+	     Diffusion Maps, Kernel Locally Linear Embedding,
+	     Kernel Local Tangent Space Alignment
+	   - ARPACK and SUPERLU integration 
 	* Bugfixes:
 		- TODO
 	* Cleanup and API Changes:
