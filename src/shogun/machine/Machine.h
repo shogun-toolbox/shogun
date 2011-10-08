@@ -13,7 +13,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/Features.h>
 
@@ -99,6 +98,8 @@ class CMachine : public CSGObject
 	public:
 		/** constructor */
 		CMachine();
+
+		/** destructor */
 		virtual ~CMachine();
 
 		/** train machine
@@ -110,15 +111,7 @@ class CMachine : public CSGObject
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL)
-		{
-			bool result=train_machine(data);
-
-			if (m_store_model_features)
-				store_model_features();
-
-			return result;
-		}
+		virtual bool train(CFeatures* data=NULL);
 
 		/** apply machine to the currently set features
 		 *
@@ -140,11 +133,7 @@ class CMachine : public CSGObject
 		 * @param num which example to apply machine to
 		 * @return infinite float value
 		 */
-		virtual float64_t apply(int32_t num)
-		{
-			SG_NOTIMPLEMENTED;
-			return CMath::INFTY;
-		}
+		virtual float64_t apply(int32_t num);
 
 		/** load Machine from file
 		 *
@@ -153,7 +142,7 @@ class CMachine : public CSGObject
 		 * @param srcfile file to load from
 		 * @return failure
 		 */
-		virtual bool load(FILE* srcfile) { ASSERT(srcfile); return false; }
+		virtual bool load(FILE* srcfile);
 
 		/** save Machine to file
 		 *
@@ -162,77 +151,63 @@ class CMachine : public CSGObject
 		 * @param dstfile file to save to
 		 * @return failure
 		 */
-		virtual bool save(FILE* dstfile) { ASSERT(dstfile); return false; }
+		virtual bool save(FILE* dstfile); 
 
 		/** set labels
 		 *
 		 * @param lab labels
 		 */
-		virtual inline void set_labels(CLabels* lab)
-		{
-			SG_UNREF(labels);
-			SG_REF(lab);
-			labels=lab;
-		}
+		virtual void set_labels(CLabels* lab);
 
 		/** get labels
 		 *
 		 * @return labels
 		 */
-		virtual inline CLabels* get_labels() { SG_REF(labels); return labels; }
+		virtual CLabels* get_labels();
 
 		/** get one specific label
 		 *
 		 * @param i index of label to get
 		 * @return value of label at index i
 		 */
-		virtual inline float64_t get_label(int32_t i)
-		{
-			if (!labels)
-				SG_ERROR("No Labels assigned\n");
-
-			return labels->get_label(i);
-		}
+		virtual float64_t get_label(int32_t i);
 
 		/** set maximum training time
 		 *
 		 * @param t maximimum training time
 		 */
-		inline void set_max_train_time(float64_t t) { max_train_time=t; }
+		void set_max_train_time(float64_t t);
 
 		/** get maximum training time
 		 *
 		 * @return maximum training time
 		 */
-		inline float64_t get_max_train_time() { return max_train_time; }
+		float64_t get_max_train_time();
 
 		/** get classifier type
 		 *
 		 * @return classifier type NONE
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_NONE; }
+		virtual EClassifierType get_classifier_type();
 
 		/** set solver type
 		 *
 		 * @param st solver type
 		 */
-		inline void set_solver_type(ESolverType st) { solver_type=st; }
+		void set_solver_type(ESolverType st);
 
 		/** get solver type
 		 *
 		 * @return solver
 		 */
-		inline ESolverType get_solver_type() { return solver_type; }
+		ESolverType get_solver_type();
 
 		/** Setter for store-model-features-after-training flag
 		 *
 		 * @param store_model whether model should be stored after
 		 * training
 		 */
-		virtual void set_store_model_features(bool store_model)
-		{
-			m_store_model_features=store_model;
-		}
+		virtual void set_store_model_features(bool store_model);
 
 	protected:
 		/** train machine
