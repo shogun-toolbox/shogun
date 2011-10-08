@@ -12,6 +12,7 @@
 #define GAUSSIANNAIVEBAYES_H_
 
 #include <shogun/machine/Machine.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/DotFeatures.h>
 
 namespace shogun {
