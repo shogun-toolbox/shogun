@@ -115,8 +115,8 @@ void arpack_dsxupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 	superlu_options_t options;
 	SuperLUStat_t stat;
 	mem_usage_t mem_usage;
-	int *perm_c, *perm_r, *etree;
-	double *R, *C;
+	int *perm_c=NULL, *perm_r=NULL, *etree=NULL;
+	double *R=NULL, *C=NULL;
 	if (mode==3)
 	{
 		perm_c = intMalloc(n);
@@ -130,8 +130,8 @@ void arpack_dsxupd(double* matrix, double* rhs_diag, int n, int nev, const char*
 	double rcond;
 	double rpg;
 	int slu_info;
-	double* slu_Bv;
-	double* slu_Xv;
+	double* slu_Bv=NULL;
+	double* slu_Xv=NULL;
 	#endif
 
 	// shift-invert mode init

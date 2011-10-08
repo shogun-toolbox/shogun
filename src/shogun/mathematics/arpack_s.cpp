@@ -114,8 +114,8 @@ void arpack_ssxupd(float* matrix, float* rhs_diag, int n, int nev, const char* w
 	superlu_options_t options;
 	SuperLUStat_t stat;
 	mem_usage_t mem_usage;
-	int *perm_c, *perm_r, *etree;
-	float *R, *C;
+	int *perm_c=NULL, *perm_r=NULL, *etree=NULL;
+	float *R=NULL, *C=NULL;
 	if (mode==3)
 	{
 		perm_c = intMalloc(n);
@@ -129,8 +129,8 @@ void arpack_ssxupd(float* matrix, float* rhs_diag, int n, int nev, const char* w
 	float rcond;
 	float rpg;
 	int slu_info;
-	float* slu_Bv;
-	float* slu_Xv;
+	float* slu_Bv = NULL;
+	float* slu_Xv = NULL;
 	#endif
 
 	// shift-invert mode init
