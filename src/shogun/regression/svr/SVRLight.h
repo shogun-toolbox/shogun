@@ -75,13 +75,13 @@ class CSVRLight: public CSVMLight
 		CSVRLight(float64_t C, float64_t epsilon, CKernel* k, CLabels* lab);
 
 		/** default destructor */
-		virtual ~CSVRLight() { }
+		virtual ~CSVRLight();
 
 		/** get classifier type
 		 *
 		 * @return classifier type SVRLIGHT
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_SVRLIGHT; }
+		virtual EClassifierType get_classifier_type();
 
 		/** SVR learn */
 		void   svr_learn();
@@ -201,13 +201,7 @@ class CSVRLight: public CSVMLight
 		 * @param i i
 		 * @return fix index
 		 */
-		inline int32_t regression_fix_index(int32_t i)
-		{
-			if (i>=num_vectors)
-				i=2*num_vectors-1-i;
-
-			return i;
-		}
+		int32_t regression_fix_index(int32_t i);
 
 		/** regression fix index2
 		 *
@@ -215,14 +209,8 @@ class CSVRLight: public CSVMLight
 		 * @param num_vectors number of vectors
 		 * @return fix index
 		 */
-		static inline int32_t regression_fix_index2(
-			int32_t i, int32_t num_vectors)
-		{
-			if (i>=num_vectors)
-				i=2*num_vectors-1-i;
-
-			return i;
-		}
+		static int32_t regression_fix_index2(
+			int32_t i, int32_t num_vectors);
 
 		/** compute kernel at given index
 		 *
@@ -230,12 +218,7 @@ class CSVRLight: public CSVMLight
 		 * @param j index j
 		 * @return kernel value at i,j
 		 */
-		inline virtual float64_t compute_kernel(int32_t i, int32_t j)
-		{
-			i=regression_fix_index(i);
-			j=regression_fix_index(j);
-			return kernel->kernel(i, j);
-		}
+		virtual float64_t compute_kernel(int32_t i, int32_t j);
 
 		/** train regression
 		 *

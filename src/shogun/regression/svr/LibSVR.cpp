@@ -35,6 +35,11 @@ CLibSVR::~CLibSVR()
 	SG_FREE(model);
 }
 
+EClassifierType CLibSVR::get_classifier_type()
+{
+	return CT_LIBSVR;
+}
+
 bool CLibSVR::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);

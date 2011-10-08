@@ -59,6 +59,16 @@ CSVRLight::CSVRLight()
 {
 }
 
+/** default destructor */
+CSVRLight::~CSVRLight()
+{
+}
+
+EClassifierType CSVRLight::get_classifier_type()
+{
+	return CT_SVRLIGHT;
+}
+
 bool CSVRLight::train_machine(CFeatures* data)
 {
 	//certain setup params
@@ -360,6 +370,29 @@ void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 	return NULL ;
 }
 
+int32_t CSVRLight::regression_fix_index(int32_t i)
+{
+	if (i>=num_vectors)
+		i=2*num_vectors-1-i;
+
+	return i;
+}
+
+int32_t CSVRLight::regression_fix_index2(
+		int32_t i, int32_t num_vectors)
+{
+	if (i>=num_vectors)
+		i=2*num_vectors-1-i;
+
+	return i;
+}
+
+float64_t CSVRLight::compute_kernel(int32_t i, int32_t j)
+{
+	i=regression_fix_index(i);
+	j=regression_fix_index(j);
+	return kernel->kernel(i, j);
+}
 
 void CSVRLight::update_linear_component(
 	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
