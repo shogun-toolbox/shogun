@@ -186,7 +186,6 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	}
 	// cleanup
 	delete heap;
-	D_matrix.destroy_matrix();
 
 #ifdef HAVE_PTHREAD
 
@@ -210,7 +209,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	// allocate (f)rontier
 	bool* f = SG_MALLOC(bool,N*num_threads);
 	// init matrix to store shortest distances
-	float64_t* shortest_D = SG_MALLOC(float64_t,N*N);
+	float64_t* shortest_D = D_matrix.matrix;
 
 #ifdef HAVE_PTHREAD
 

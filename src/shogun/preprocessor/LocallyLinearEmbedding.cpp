@@ -104,7 +104,11 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 	m_k = 3;
 	m_nullspace_shift = -1e-9;
 	m_reconstruction_shift = 1e-3;
-	
+#ifdef HAVE_ARPACK
+	m_use_arpack = true;
+#else
+	m_use_arpack = false;
+#endif
 	init();
 }
 
@@ -115,6 +119,8 @@ void CLocallyLinearEmbedding::init()
 	                  "nullspace finding regularization shift");
 	m_parameters->add(&m_reconstruction_shift, "reconstruction_shift", 
 	                  "shift used to regularize reconstruction step");
+	m_parameters->add(&m_use_arpack, "use_arpack",
+	                  "whether arpack is being used or not");
 }
 
 
@@ -151,6 +157,16 @@ void CLocallyLinearEmbedding::set_reconstruction_shift(float64_t reconstruction_
 float64_t CLocallyLinearEmbedding::get_reconstruction_shift() const
 {
 	return m_reconstruction_shift;
+}
+
+void CLocallyLinearEmbedding::set_use_arpack(bool use_arpack)
+{
+	m_use_arpack = use_arpack;
+}
+
+bool CLocallyLinearEmbedding::get_use_arpack() const
+{
+	return m_use_arpack;
 }
 
 const char* CLocallyLinearEmbedding::get_name() const
@@ -305,11 +321,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	SG_FREE(z_matrix);
 	SG_FREE(covariance_matrix);
 
-	// W=I-W
-	for (i=0; i<N*N; i++)
-	{
-		W_matrix[i] *= -1.0;
-	}
+	// diag(W)=1
 	for (i=0; i<N; i++)
 	{
 		W_matrix[i*N+i] = 1.0;
@@ -383,22 +395,29 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 	// get eigenvectors with ARPACK or LAPACK
 	int eigenproblem_status = 0;
 
-	bool arpack = false;
-
-#ifdef HAVE_ARPACK
-	arpack = true;
-#endif
-
-	float64_t* eigenvalues_vector;
-	float64_t* eigenvectors;
-	if (arpack)
+	float64_t* eigenvalues_vector = NULL;
+	float64_t* eigenvectors = NULL;
+	float64_t* nullspace_features = NULL;
+	if (m_use_arpack)
 	{
+		#ifndef HAVE_ARPACK
+		SG_ERROR("ARPACK is not supported in this configuration.\n");
+		#endif
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 		#ifdef HAVE_ARPACK
 		arpack_xsxupd<float64_t>(matrix.matrix,NULL,N,dimension+1,"LA",3,true,m_nullspace_shift,0.0,
 		                         eigenvalues_vector,matrix.matrix,eigenproblem_status);
 		#endif
+		if (eigenproblem_status)
+			SG_ERROR("ARPACK failed with code: %d", eigenproblem_status);
+		nullspace_features = SG_MALLOC(float64_t, N*dimension);
+		for (i=0; i<dimension; i++)
+		{
+			for (j=0; j<N; j++)
+				nullspace_features[j*dimension+i] = matrix[j*(dimension+1)+i+1];
+		}
+		SG_FREE(eigenvalues_vector);
 	}
 	else
 	{
@@ -406,38 +425,19 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::find_null_space(SGMatrix<float64_t>
 		eigenvalues_vector = SG_MALLOC(float64_t, N);
 		eigenvectors = SG_MALLOC(float64_t,(dimension+1)*N);
 		wrap_dsyevr('V','U',N,matrix.matrix,N,2,dimension+2,eigenvalues_vector,eigenvectors,&eigenproblem_status);
-	}
-
-	// check if failed
-	if (eigenproblem_status)
-		SG_ERROR("Eigenproblem failed with code: %d", eigenproblem_status);
-	
-	// allocate null space feature matrix
-	float64_t* null_space_features = SG_MALLOC(float64_t, N*dimension);
-
-	// construct embedding w.r.t to used solver (prefer ARPACK if available)
-	if (arpack) 
-	{
-		// ARPACKed eigenvectors
-		for (i=0; i<dimension; i++)
-		{
-			for (j=0; j<N; j++)
-				null_space_features[j*dimension+i] = matrix[j*(dimension+1)+i+1];
-		}
-	}
-	else
-	{
+		if (eigenproblem_status)
+			SG_ERROR("LAPACK failed with code: %d", eigenproblem_status);
+		nullspace_features = SG_MALLOC(float64_t, N*dimension);
 		// LAPACKed eigenvectors
 		for (i=0; i<dimension; i++)
 		{
 			for (j=0; j<N; j++)
-				null_space_features[j*dimension+i] = eigenvectors[i*N+j];
+				nullspace_features[j*dimension+i] = eigenvectors[i*N+j];
 		}
 		SG_FREE(eigenvectors);
+		SG_FREE(eigenvalues_vector);
 	}
-	SG_FREE(eigenvalues_vector);
-
-	return SGMatrix<float64_t>(null_space_features,dimension,N);
+	return SGMatrix<float64_t>(nullspace_features,dimension,N);
 }
 
 void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
@@ -463,17 +463,11 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{
 		// compute local feature matrix containing neighbors of i-th vector
-		for (j=0; j<m_k; j++)
-		{
-			for (k=0; k<dim; k++)
-				z_matrix[j*dim+k] = feature_matrix[neighborhood_matrix[j*N+i]*dim+k];
-		}
-
 		// center features by subtracting i-th feature column
 		for (j=0; j<m_k; j++)
 		{
-			for (k=0; k<dim; k++)
-				z_matrix[j*dim+k] -= feature_matrix[i*dim+k];
+			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[j*N+i]*dim,1,z_matrix+j*dim,1);
+			cblas_daxpy(dim,-1.0,feature_matrix+i*dim,1,z_matrix+j*dim,1);
 		}
 
 		// compute local covariance matrix
@@ -507,8 +501,7 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		for (j=0; j<m_k; j++)
 			norming += id_vector[j];
 
-		for (j=0; j<m_k; j++)
-			id_vector[j]/=norming;
+		cblas_dscal(m_k,-1.0/norming,id_vector,1);
 
 		// put weights into W matrix
 		for (j=0; j<m_k; j++)

@@ -105,6 +105,16 @@ public:
 	 */
 	float64_t get_nullspace_shift() const;
 
+	/** setter for use arpack parameter
+	 * @param use_arpack use arpack value
+	 */
+	void set_use_arpack(bool use_arpack);
+
+	/** getter for use arpack parameter
+	 * @param use_arpakc value
+	 */
+	bool get_use_arpack() const;
+
 	/** get name */
 	virtual const char* get_name() const;
 
@@ -150,6 +160,9 @@ protected:
 
 	/** regularization shift of nullspace finding step */
 	float64_t m_nullspace_shift;
+
+	/** whether use arpack or not */
+	bool m_use_arpack;
 
 	/// CONSTANTS
 public:
