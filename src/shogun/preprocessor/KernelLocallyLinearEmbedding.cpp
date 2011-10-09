@@ -243,12 +243,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMat
 	SG_FREE(id_vector);
 	SG_FREE(local_gram_matrix);
 
-	// W=I-W
-	// W=I-W
-	for (i=0; i<N*N; i++)
-	{
-		W_matrix[i] *= -1.0;
-	}
+	// diag(W) = 1
 	for (i=0; i<N; i++)
 	{
 		W_matrix[i*N+i] = 1.0;
@@ -368,8 +363,7 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		for (j=0; j<m_k; j++)
 			norming += id_vector[j];
 
-		for (j=0; j<m_k; j++)
-			id_vector[j]/=norming;
+		cblas_dscal(m_k,-1.0/norming,id_vector,1);
 
 		// put weights into W matrix
 		for (j=0; j<m_k; j++)
