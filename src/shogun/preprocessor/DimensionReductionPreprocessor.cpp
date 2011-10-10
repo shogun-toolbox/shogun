@@ -42,6 +42,7 @@ EPreprocessorType CDimensionReductionPreprocessor<ST>::get_type() const { return
 template<class ST>
 void CDimensionReductionPreprocessor<ST>::set_target_dim(int32_t dim)
 {
+	ASSERT(dim>0);
 	m_target_dim = dim;
 }
 
@@ -49,22 +50,6 @@ template<class ST>
 int32_t CDimensionReductionPreprocessor<ST>::get_target_dim() const
 {
 	return m_target_dim;
-}
-
-template<class ST>
-int32_t CDimensionReductionPreprocessor<ST>::calculate_effective_target_dim(int32_t dim)
-{
-	if (m_target_dim<0)
-	{
-		if (dim+m_target_dim>0)
-		{
-			return dim+m_target_dim;
-		}
-		else
-			return -1;
-	}
-	else
-		return m_target_dim;
 }
 
 template<class ST>

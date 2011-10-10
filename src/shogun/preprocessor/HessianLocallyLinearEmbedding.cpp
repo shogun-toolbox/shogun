@@ -80,15 +80,6 @@ CHessianLocallyLinearEmbedding::~CHessianLocallyLinearEmbedding()
 {
 }
 
-bool CHessianLocallyLinearEmbedding::init(CFeatures* features)
-{
-	return true;
-}
-
-void CHessianLocallyLinearEmbedding::cleanup()
-{
-}
-
 const char* CHessianLocallyLinearEmbedding::get_name() const 
 { 
 	return "HessianLocallyLinearEmbedding";
@@ -105,9 +96,8 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 {
 	int32_t N = simple_features->get_num_vectors();
 	int32_t dim = simple_features->get_num_features();
-	int32_t target_dim = calculate_effective_target_dim(dim);
-	int32_t dp = target_dim*(target_dim+1)/2;
-	if (m_k<(1+target_dim+dp))
+	int32_t dp = m_target_dim*(m_target_dim+1)/2;
+	if (m_k<(1+m_target_dim+dp))
 		SG_ERROR("K parameter should have value greater than 1+target dimensionality+dp.\n");
 	int32_t t;
 #ifdef HAVE_PTHREAD
@@ -124,12 +114,12 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	// init matrices to be used
 	float64_t* local_feature_matrix = SG_MALLOC(float64_t, m_k*dim*num_threads);
 	float64_t* s_values_vector = SG_MALLOC(float64_t, dim*num_threads);
-	int32_t tau_len = CMath::min((1+target_dim+dp), m_k);
+	int32_t tau_len = CMath::min((1+m_target_dim+dp), m_k);
 	float64_t* tau = SG_MALLOC(float64_t, tau_len*num_threads);
 	float64_t* mean_vector = SG_MALLOC(float64_t, dim*num_threads);
 	float64_t* q_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
 	float64_t* w_sum_vector = SG_MALLOC(float64_t, dp*num_threads);
-	float64_t* Yi_matrix = SG_MALLOC(float64_t, m_k*(1+target_dim+dp)*num_threads);
+	float64_t* Yi_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim+dp)*num_threads);
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
@@ -147,13 +137,13 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 		parameters[t].idx_stop = N;
 		parameters[t].m_k = m_k;
 		parameters[t].dim = dim;
-		parameters[t].target_dim = target_dim;
+		parameters[t].target_dim = m_target_dim;
 		parameters[t].N = N;
 		parameters[t].dp = dp;
 		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
 		parameters[t].feature_matrix = feature_matrix.matrix;
 		parameters[t].local_feature_matrix = local_feature_matrix + (m_k*dim)*t;
-		parameters[t].Yi_matrix = Yi_matrix + (m_k*(1+target_dim+dp))*t;
+		parameters[t].Yi_matrix = Yi_matrix + (m_k*(1+m_target_dim+dp))*t;
 		parameters[t].mean_vector = mean_vector + dim*t;
 		parameters[t].s_values_vector = s_values_vector + dim*t;
 		parameters[t].tau = tau+tau_len*t;
@@ -176,7 +166,7 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	single_thread_param.idx_stop = N;
 	single_thread_param.m_k = m_k;
 	single_thread_param.dim = dim;
-	single_thread_param.target_dim = target_dim;
+	single_thread_param.target_dim = m_target_dim;
 	single_thread_param.N = N;
 	single_thread_param.dp = dp;
 	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;

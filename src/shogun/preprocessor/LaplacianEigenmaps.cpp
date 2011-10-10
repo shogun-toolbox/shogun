@@ -84,17 +84,13 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 {
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
-	SG_REF(features);
 	ASSERT(simple_features);
+	SG_REF(features);
 
 	// get dimensionality and number of vectors of data
-	int32_t dim = simple_features->get_num_features();
-	int32_t target_dim = calculate_effective_target_dim(dim);
-	if (target_dim==-1)
-		SG_ERROR("Trying to decrease dimensionality to negative value, not possible.\n");
-	ASSERT(target_dim<=dim);
-	int32_t N = simple_features->get_num_vectors();
+	int32_t N = features->get_num_vectors();
 	ASSERT(m_k<N);
+	ASSERT(m_target_dim<N);
 
 	// loop variables
 	int32_t i,j;
@@ -103,6 +99,7 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 	ASSERT(m_distance);
 	m_distance->init(simple_features,simple_features);
 	SGMatrix<float64_t> W_sgmatrix = m_distance->get_distance_matrix();
+	m_distance->remove_lhs_and_rhs();
 	// shorthand
 	float64_t* W_matrix = W_sgmatrix.matrix;
 
@@ -181,8 +178,8 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 	#ifdef HAVE_ARPACK
 		// using ARPACK DS{E,A}UPD
 		int eigenproblem_status = 0;
-		float64_t* eigenvalues_vector = SG_MALLOC(float64_t,target_dim+1);
-		arpack_xsxupd<float64_t>(W_matrix,D_diag_vector,N,target_dim+1,"LA",3,false,-1e-9,0.0,
+		float64_t* eigenvalues_vector = SG_MALLOC(float64_t,m_target_dim+1);
+		arpack_xsxupd<float64_t>(W_matrix,D_diag_vector,N,m_target_dim+1,"LA",3,false,-1e-9,0.0,
 		                         eigenvalues_vector,W_matrix,eigenproblem_status);
 		ASSERT(eigenproblem_status==0);
 		SG_FREE(eigenvalues_vector);
@@ -195,7 +192,7 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 		// fill rhs with diag (for safety reasons zeros will be replaced with 1e-3)
 		for (i=0; i<N; i++)
 			rhs[i*N+i] = D_diag_vector[i];
-		wrap_dsygvx(1,'V','U',N,W_matrix,N,rhs,N,1,target_dim+2,eigenvalues_vector,W_matrix,&eigenproblem_status);
+		wrap_dsygvx(1,'V','U',N,W_matrix,N,rhs,N,1,m_target_dim+2,eigenvalues_vector,W_matrix,&eigenproblem_status);
 		if (eigenproblem_status)
 			SG_ERROR("DSYGVX failed with code: %d.\n",eigenproblem_status);
 		SG_FREE(rhs);
@@ -203,16 +200,16 @@ SGMatrix<float64_t> CLaplacianEigenmaps::apply_to_feature_matrix(CFeatures* feat
 	#endif /* HAVE_ARPACK */
 	SG_FREE(D_diag_vector);
 
-	SGMatrix<float64_t> new_features = SGMatrix<float64_t>(target_dim,N);
+	SGMatrix<float64_t> new_features = SGMatrix<float64_t>(m_target_dim,N);
 	// fill features according to used solver
-	for (i=0; i<target_dim; i++)
+	for (i=0; i<m_target_dim; i++)
 	{
 		for (j=0; j<N; j++)
 		{
 			#ifdef HAVE_ARPACK
-				new_features[j*target_dim+i] = W_matrix[j*(target_dim+1)+i+1];
+				new_features[j*m_target_dim+i] = W_matrix[j*(m_target_dim+1)+i+1];
 			#else
-				new_features[j*target_dim+i] = W_matrix[(i+1)*N+j];
+				new_features[j*m_target_dim+i] = W_matrix[(i+1)*N+j];
 			#endif
 		}
 	}

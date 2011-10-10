@@ -66,15 +66,6 @@ public:
 	/* destructor */
 	virtual ~CMultidimensionalScaling();
 
-	/** empty init
-	 * @param features
-	 */
-	virtual bool init(CFeatures* features);
-
-	/** cleanup
-	 */
-	virtual void cleanup();
-
 	/** apply preprocessor to CDistance
 	 * @param distance (should be approximate euclidean for consistent result)
 	 * @return new features with distance similar to given as much as possible

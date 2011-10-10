@@ -69,15 +69,6 @@ CKernelLocalTangentSpaceAlignment::~CKernelLocalTangentSpaceAlignment()
 {
 }
 
-bool CKernelLocalTangentSpaceAlignment::init(CFeatures* features)
-{
-	return true;
-}
-
-void CKernelLocalTangentSpaceAlignment::cleanup()
-{
-}
-
 const char* CKernelLocalTangentSpaceAlignment::get_name() const
 { 
 	return "KernelLocalTangentSpaceAlignment"; 
@@ -89,8 +80,7 @@ EPreprocessorType CKernelLocalTangentSpaceAlignment::get_type() const
 };
 
 SGMatrix<float64_t> CKernelLocalTangentSpaceAlignment::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix,
-                                                                               SGMatrix<int32_t> neighborhood_matrix,
-                                                                               int32_t target_dim)
+                                                                               SGMatrix<int32_t> neighborhood_matrix)
 {
 	int32_t N = kernel_matrix.num_cols;
 	int32_t t;
@@ -106,7 +96,7 @@ SGMatrix<float64_t> CKernelLocalTangentSpaceAlignment::construct_weight_matrix(S
 
 	// init matrices and norm factor to be used
 	float64_t* local_gram_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
-	float64_t* G_matrix = SG_MALLOC(float64_t, m_k*(1+target_dim)*num_threads);
+	float64_t* G_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim)*num_threads);
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 	float64_t* ev_vector = SG_MALLOC(float64_t, m_k*num_threads);
 
@@ -119,9 +109,9 @@ SGMatrix<float64_t> CKernelLocalTangentSpaceAlignment::construct_weight_matrix(S
 
 	for (t=0; t<num_threads; t++)
 	{
-		KLTSA_THREAD_PARAM params = {t,num_threads,N,m_k,target_dim,N,neighborhood_matrix.matrix,
+		KLTSA_THREAD_PARAM params = {t,num_threads,N,m_k,m_target_dim,N,neighborhood_matrix.matrix,
 		                            kernel_matrix.matrix,local_gram_matrix+(m_k*m_k)*t,ev_vector+m_k*t,
-		                            G_matrix+(m_k*(1+target_dim))*t,W_matrix,&W_matrix_lock};
+		                            G_matrix+(m_k*(1+m_target_dim))*t,W_matrix,&W_matrix_lock};
 		parameters[t] = params;
 		pthread_create(&threads[t], &attr, run_kltsa_thread, (void*)&parameters[t]);
 	}
@@ -131,7 +121,7 @@ SGMatrix<float64_t> CKernelLocalTangentSpaceAlignment::construct_weight_matrix(S
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	KLTSA_THREAD_PARAM single_thread_param = {0,1,N,m_k,target_dim,neighborhood_matrix.matrix,
+	KLTSA_THREAD_PARAM single_thread_param = {0,1,N,m_k,m_target_dim,neighborhood_matrix.matrix,
 	                                          kernel_matrix.matrix,local_gram_matrix,ev_vector,
 	                                          G_matrix,W_matrix};
 	run_kltsa_thread((void*)&single_thread_param);

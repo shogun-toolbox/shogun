@@ -111,20 +111,7 @@ EPreprocessorType CKernelLocallyLinearEmbedding::get_type() const
 	return P_KERNELLOCALLYLINEAREMBEDDING;
 };
 
-void CKernelLocallyLinearEmbedding::init()
-{
-}
-
 CKernelLocallyLinearEmbedding::~CKernelLocallyLinearEmbedding()
-{
-}
-
-bool CKernelLocallyLinearEmbedding::init(CFeatures* features)
-{
-	return true;
-}
-
-void CKernelLocallyLinearEmbedding::cleanup()
 {
 }
 
@@ -136,18 +123,6 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	// get dimensionality and number of vectors of data
 	bool is_simple = ((features->get_feature_class()==C_SIMPLE) && (features->get_feature_type()==F_DREAL));
 	int32_t N = features->get_num_vectors();
-	int32_t target_dim = 0;
-	if (is_simple)
-		target_dim = calculate_effective_target_dim(((CSimpleFeatures<float64_t>*)features)->get_num_features());
-	else
-	{
-		if (m_target_dim<=0)
-			SG_ERROR("Cannot decrease dimensionality of given features by %d.\n", -m_target_dim);
-		else
-			target_dim = m_target_dim;
-	}
-	if (target_dim<=0)
-		SG_ERROR("Trying to decrease dimensionality to non-positive value, not possible.\n");
 	if (m_k>=N)
 		SG_ERROR("Number of neighbors (%d) should be less than number of objects (%d).\n",
 		         m_k, N);
@@ -160,29 +135,27 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::apply_to_feature_matrix(CFeat
 	m_kernel->cleanup();
 
 	// init W (weight) matrix
-	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix,target_dim);
+	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix);
 	neighborhood_matrix.destroy_matrix();
 
-	SGMatrix<float64_t> nullspace = find_null_space(M_matrix,target_dim);
+	SGMatrix<float64_t> nullspace = find_null_space(M_matrix,m_target_dim);
 	M_matrix.destroy_matrix();
 
+	SG_UNREF(features);
 	if (is_simple)
 	{
 		((CSimpleFeatures<float64_t>*)features)->set_feature_matrix(nullspace);
-		SG_UNREF(features);
 		return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 	}
 	else
 	{
-		SG_UNREF(features);
 		SG_WARNING("Can't set feature matrix, returning feature matrix.\n");
 		return nullspace;
 	}
 }
 
 SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix, 
-                                                                           SGMatrix<int32_t> neighborhood_matrix,
-                                                                           int32_t target_dim)
+                                                                           SGMatrix<int32_t> neighborhood_matrix)
 {
 	int32_t N = kernel_matrix.num_cols;
 	// loop variables

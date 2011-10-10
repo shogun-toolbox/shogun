@@ -179,15 +179,6 @@ EPreprocessorType CLocallyLinearEmbedding::get_type() const
 	return P_LOCALLYLINEAREMBEDDING;
 }
 
-bool CLocallyLinearEmbedding::init(CFeatures* features)
-{
-	return true;
-}
-
-void CLocallyLinearEmbedding::cleanup()
-{
-}
-
 SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(features);
@@ -200,15 +191,6 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	// shorthand for simplefeatures
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
 	SG_REF(features);
-
-	// get and check dimensionality
-	int32_t dim = simple_features->get_num_features();
-	int32_t target_dim = calculate_effective_target_dim(dim);
-	if (target_dim==-1)
-		SG_ERROR("Trying to decrease dimensionality to non-positive value, not possible.\n");
-	if (target_dim>dim)
-		SG_ERROR("Cannot increase dimensionality: target dimensionality is %d while given features dimensionality is %d.\n",
-		         target_dim, dim);
 
 	// get and check number of vectors
 	int32_t N = simple_features->get_num_vectors();
@@ -236,7 +218,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	// find null space of weight matrix
 	SG_DEBUG("Finding nullspace\n");
-	simple_features->set_feature_matrix(find_null_space(weight_matrix,target_dim));
+	simple_features->set_feature_matrix(find_null_space(weight_matrix,m_target_dim));
 	weight_matrix.destroy_matrix();
 
 	SG_UNREF(features);
@@ -457,7 +439,7 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	float64_t* W_matrix = parameters->W_matrix;
 	float64_t m_reconstruction_shift = parameters->m_reconstruction_shift;
 
-	int32_t i,j,k;
+	int32_t i,j;
 	float64_t norming,trace;
 
 	for (i=idx_start; i<idx_stop; i+=idx_step)

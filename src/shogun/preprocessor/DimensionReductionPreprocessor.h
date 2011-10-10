@@ -97,13 +97,6 @@ public:
 
 protected:
 
-	/** calculates effective target dimensionality
-	 * according to set m_target_dim
-	 * @param dim dimensionality of 
-	 * @return effective target dimensionality
-	 */
-	int32_t calculate_effective_target_dim(int32_t dim);
-
 	/** default init */
 	void init();
 

@@ -73,15 +73,6 @@ void CMultidimensionalScaling::init()
 	m_parameters->add(&m_landmark_number, "landmark number", "the number of landmarks for approximation");
 }
 
-bool CMultidimensionalScaling::init(CFeatures* features)
-{
-	return true;
-}
-
-void CMultidimensionalScaling::cleanup()
-{
-}
-
 CMultidimensionalScaling::~CMultidimensionalScaling()
 {
 	m_eigenvalues.destroy_vector();
@@ -159,6 +150,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::apply_to_feature_matrix(CFeatures*
 	ASSERT(m_distance);
 	m_distance->init(simple_features,simple_features);
 	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
+	m_distance->remove_lhs_and_rhs();
 	if (m_landmark)
 		new_feature_matrix = landmark_embedding(distance_matrix);
 	else

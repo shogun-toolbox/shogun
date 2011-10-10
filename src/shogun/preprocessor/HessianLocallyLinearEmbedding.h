@@ -49,15 +49,6 @@ public:
 	/** destructor */
 	virtual ~CHessianLocallyLinearEmbedding();
 
-	/** init
-	 * @param features
-	 */
-	virtual bool init(CFeatures* features);
-
-	/** cleanup
-	 */
-	virtual void cleanup();
-
 	/** get name */
 	virtual const char* get_name() const;
 

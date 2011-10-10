@@ -41,15 +41,6 @@ public:
 	/** destructor */
 	virtual ~CKernelLocalTangentSpaceAlignment();
 
-	/** init
-	 * @param features
-	 */
-	virtual bool init(CFeatures* features);
-
-	/** cleanup
-	 */
-	virtual void cleanup();
-
 	/** get name */
 	virtual const char* get_name() const;
 
@@ -62,8 +53,7 @@ protected:
 	/** construct weight matrix 
 	 */
 	virtual SGMatrix<float64_t> construct_weight_matrix(SGMatrix<float64_t> kernel_matrix, 
-	                                                    SGMatrix<int32_t> neighborhood_matrix,
-	                                                    int32_t target_dim);
+	                                                    SGMatrix<int32_t> neighborhood_matrix);
 
 /// THREADS
 protected:

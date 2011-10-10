@@ -91,15 +91,6 @@ EPreprocessorType CIsomap::get_type() const
 	return P_ISOMAP;
 }
 
-bool CIsomap::init(CFeatures* features)
-{
-	return true;
-}
-
-void CIsomap::cleanup()
-{
-}
-
 CSimpleFeatures<float64_t>* CIsomap::apply_to_distance(CDistance* distance)
 {
 	ASSERT(distance);
@@ -127,6 +118,7 @@ SGMatrix<float64_t> CIsomap::apply_to_feature_matrix(CFeatures* features)
 	ASSERT(m_distance);
 	m_distance->init(simple_features, simple_features);
 	SGMatrix<float64_t> geodesic_distance_matrix = isomap_distance(m_distance->get_distance_matrix());
+	m_distance->remove_lhs_and_rhs();
 	SGMatrix<float64_t> new_features;
 	if (m_landmark) 
 		new_features = CMultidimensionalScaling::landmark_embedding(geodesic_distance_matrix);

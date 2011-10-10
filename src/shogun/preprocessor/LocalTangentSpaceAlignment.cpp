@@ -73,15 +73,6 @@ CLocalTangentSpaceAlignment::~CLocalTangentSpaceAlignment()
 {
 }
 
-bool CLocalTangentSpaceAlignment::init(CFeatures* features)
-{
-	return true;
-}
-
-void CLocalTangentSpaceAlignment::cleanup()
-{
-}
-
 const char* CLocalTangentSpaceAlignment::get_name() const
 { 
 	return "LocalTangentSpaceAlignment"; 
@@ -97,7 +88,6 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 {
 	int32_t N = simple_features->get_num_vectors();
 	int32_t dim = simple_features->get_num_features();
-	int32_t target_dim = calculate_effective_target_dim(dim);
 	int32_t t;
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
@@ -114,7 +104,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	float64_t* mean_vector = SG_MALLOC(float64_t, dim*num_threads);
 	float64_t* q_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
 	float64_t* s_values_vector = SG_MALLOC(float64_t, dim*num_threads);
-	float64_t* G_matrix = SG_MALLOC(float64_t, m_k*(1+target_dim)*num_threads);
+	float64_t* G_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim)*num_threads);
 	
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
@@ -132,11 +122,11 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 		parameters[t].idx_step = num_threads;
 		parameters[t].idx_stop = N;
 		parameters[t].m_k = m_k;
-		parameters[t].target_dim = target_dim;
+		parameters[t].target_dim = m_target_dim;
 		parameters[t].dim = dim;
 		parameters[t].N = N;
 		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
-		parameters[t].G_matrix = G_matrix + (m_k*(1+target_dim))*t;
+		parameters[t].G_matrix = G_matrix + (m_k*(1+m_target_dim))*t;
 		parameters[t].mean_vector = mean_vector + dim*t;
 		parameters[t].local_feature_matrix = local_feature_matrix + (m_k*dim)*t;
 		parameters[t].feature_matrix = feature_matrix.matrix;
@@ -157,7 +147,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	single_thread_param.idx_step = 1;
 	single_thread_param.idx_stop = N;
 	single_thread_param.m_k = m_k;
-	single_thread_param.target_dim = target_dim;
+	single_thread_param.target_dim = m_target_dim;
 	single_thread_param.dim = dim;
 	single_thread_param.N = N;
 	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;

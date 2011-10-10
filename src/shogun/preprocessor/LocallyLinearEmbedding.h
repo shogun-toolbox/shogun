@@ -56,15 +56,6 @@ public:
 	/** destructor */
 	virtual ~CLocallyLinearEmbedding();
 
-	/** init
-	 * @param features
-	 */
-	virtual bool init(CFeatures* features);
-
-	/** cleanup
-	 */
-	virtual void cleanup();
-
 	/** apply preprocessor to features
 	 * @param features
 	 */
@@ -96,7 +87,7 @@ public:
 	float64_t get_reconstruction_shift() const;
 
 	/** setter for nullspace shift parameter
-	 * @param reconstruction_shift reconstruction shift value
+	 * @param nullspace_shift nullsapce shift value
 	 */
 	void set_nullspace_shift(float64_t nullspace_shift);
 
@@ -111,7 +102,7 @@ public:
 	void set_use_arpack(bool use_arpack);
 
 	/** getter for use arpack parameter
-	 * @param use_arpakc value
+	 * @param use_arpack value
 	 */
 	bool get_use_arpack() const;
 

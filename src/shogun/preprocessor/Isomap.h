@@ -54,15 +54,6 @@ public:
 	/* destructor */
 	virtual ~CIsomap();
 
-	/** empty init
-	 * @param features
-	 */
-	virtual bool init(CFeatures* features);
-
-	/** empty cleanup
-	 */
-	virtual void cleanup();
-
 	/** apply preprocessor to CDistance
 	 * @param distance distance
 	 * @return embedded features 
