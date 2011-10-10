@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Sergey Lisitsyn
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef KERNELLOCALTANGENTSPACEALIGNMENT_H_
