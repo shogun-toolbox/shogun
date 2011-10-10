@@ -1,15 +1,15 @@
 #ifdef HAVE_PYTHON
-#include "../python/PythonInterface.cpp"
+#include "../python_static/PythonInterface.cpp"
 #endif
 
 #ifdef HAVE_MATLAB
-#include "../matlab/MatlabInterface.cpp"
+#include "../matlab_static/MatlabInterface.cpp"
 #endif
 
 #ifdef HAVE_OCTAVE
-#include "../octave/OctaveInterface.cpp"
+#include "../octave_static/OctaveInterface.cpp"
 #endif
 
 #ifdef HAVE_R
-#include "../r/RInterface.cpp"
+#include "../r_static/RInterface.cpp"
 #endif
