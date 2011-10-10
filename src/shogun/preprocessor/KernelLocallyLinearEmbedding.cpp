@@ -91,13 +91,11 @@ struct SPARSEDOT_THREAD_PARAM
 CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding() :
 		CLocallyLinearEmbedding()
 {
-	init();
 }
 
-CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding(CKernel* kernel)
+CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding(CKernel* kernel) :
+		CLocallyLinearEmbedding()
 {
-	init();
-	
 	set_kernel(kernel);
 }
 
