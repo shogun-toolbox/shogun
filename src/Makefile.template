@@ -297,8 +297,8 @@ install-java_modular: $(TEMPLATE_TARGET)
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/jni"
 
 install-ruby_modular: $(TEMPLATE_TARGET)
-	install -d -m755 "$(RUBY_EXTENSIONS_INSTALL_DIR)"
-	install -m755 modshogun.$(EXT_LIB) "$(RUBY_EXTENSIONS_INSTALL_DIR)"
+	install -d -m755 "$(DESTDIR)/$(RUBY_EXTENSIONS_INSTALL_DIR)"
+	install -m755 modshogun.$(EXT_LIB) "$(DESTDIR)/$(RUBY_EXTENSIONS_INSTALL_DIR)"
 
 install-lua_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)/$(LUA_EXTENSIONS_INSTALL_DIR)"
