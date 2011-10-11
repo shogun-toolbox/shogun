@@ -294,7 +294,7 @@ install-octave_modular: $(TEMPLATE_TARGET)
 install-java_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)/$(PREFIX)/share/java"
 	install -m755 shogun.jar "$(DESTDIR)/$(PREFIX)/share/java"
-	install -m755 $(SWIGLIBFILES) $(DESTDIR)$(LIBDIR)
+	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/jni"
 
 install-ruby_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(RUBY_EXTENSIONS_INSTALL_DIR)"
@@ -305,7 +305,9 @@ install-lua_modular: $(TEMPLATE_TARGET)
 	install -m755 modshogun.$(EXT_LIB) "$(DESTDIR)/$(LUA_EXTENSIONS_INSTALL_DIR)"
 
 install-csharp_modular: $(TEMPLATE_TARGET)
-	#TODO
+	install -d -m755 "$(DESTDIR)/$(LIBDIR)/cli/shogun"
+	install -m755 modshogun.dll "$(DESTDIR)/$(LIBDIR)/cli/shogun"
+	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/cli/shogun"
 
 run-testsuite: run-testsuite-template
 check-examples: check-examples-template
@@ -501,6 +503,9 @@ ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
 ifeq (java_modular,$(TEMPLATE_TARGET))
 	CLASSPATH=$(CLASSPATH) ant dist
+endif
+ifeq (csharp_modular,$(TEMPLATE_TARGET))
+	gmcs /t:library *.cs /out:modshogun.dll
 endif
 else
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)

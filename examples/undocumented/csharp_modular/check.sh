@@ -9,6 +9,10 @@ then
 fi
 
 export LD_LIBRARY_PATH=../../../src/shogun:../../../src/interfaces/csharp_modular
+export MONO_PATH=../../../src/interfaces/csharp_modular
+
+MONOFLAGS="Load.cs /lib:../../../src/interfaces/csharp_modular /r:modshogun"
+
 
 FILES=$@
 
@@ -17,7 +21,7 @@ test -z "$FILES" && FILES=$(ls *.cs | grep -v Load.cs )
 for e in $FILES
 do
 	echo -n "running $e .."
-	if ${MONOC} $e ../../../src/interfaces/csharp_modular/*.cs Load.cs >/dev/null 2>&1 && \
+	if ${MONOC} $e $MONOFLAGS >/dev/null 2>&1 && \
 		${MONO} ${e%.cs}.exe >/dev/null 2>&1
 	then
 		echo " OK"
@@ -26,7 +30,7 @@ do
 		echo "================================================================================" >>error.log
 		echo " error in $e ">>error.log
 		echo "================================================================================" >>error.log
-		${MONOC} $e ../../../src/interfaces/csharp_modular/*.cs Load.cs >>error.log 2>&1 && \
+		${MONOC} $e $MONOFLAGS >>error.log 2>&1 && \
 		${MONO} ${e%.cs}.exe >>error.log 2>&1
 		echo "================================================================================" >>error.log
 		echo >>error.log
