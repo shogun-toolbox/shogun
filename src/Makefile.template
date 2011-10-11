@@ -294,7 +294,7 @@ install-octave_modular: $(TEMPLATE_TARGET)
 install-java_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)/$(PREFIX)/share/java"
 	install -d -m755 "$(DESTDIR)$(LIBDIR)/jni"
-	install -m755 shogun.jar "$(DESTDIR)/$(PREFIX)/share/java"
+	install -m644 shogun.jar "$(DESTDIR)/$(PREFIX)/share/java"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/jni"
 
 install-ruby_modular: $(TEMPLATE_TARGET)
@@ -307,7 +307,7 @@ install-lua_modular: $(TEMPLATE_TARGET)
 
 install-csharp_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)/$(LIBDIR)/cli/shogun"
-	install -m755 modshogun.dll "$(DESTDIR)/$(LIBDIR)/cli/shogun"
+	install -m644 modshogun.dll "$(DESTDIR)/$(LIBDIR)/cli/shogun"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/cli/shogun"
 
 run-testsuite: run-testsuite-template
