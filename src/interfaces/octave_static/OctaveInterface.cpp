@@ -27,11 +27,11 @@
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
-#include "../python/PythonInterface.h"
+#include "../python_static/PythonInterface.h"
 #endif
 
 #ifdef HAVE_R
-#include "../r/RInterface.h"
+#include "../r_static/RInterface.h"
 #undef length
 #endif
 

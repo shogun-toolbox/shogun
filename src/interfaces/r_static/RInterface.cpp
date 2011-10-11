@@ -20,11 +20,11 @@ extern "C" {
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
-#include "../python/PythonInterface.h"
+#include "../python_static/PythonInterface.h"
 #endif
 
 #ifdef HAVE_OCTAVE
-#include "../octave/OctaveInterface.h"
+#include "../octave_static/OctaveInterface.h"
 #endif
 
 void r_print_message(FILE* target, const char* str)

@@ -9,11 +9,11 @@
 #include <shogun/base/init.h>
 
 #ifdef HAVE_OCTAVE
-#include "../octave/OctaveInterface.h"
+#include "../octave_static/OctaveInterface.h"
 #endif
 
 #ifdef HAVE_R
-#include "../r/RInterface.h"
+#include "../r_static/RInterface.h"
 #endif
 
 using namespace shogun;
