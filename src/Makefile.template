@@ -217,24 +217,24 @@ install-r_static: $(TEMPLATE_TARGET)
 
 install-elwms_static: $(TEMPLATE_TARGET)
 	#one .so file
-ifneq ($(CMDLINE_TARGET),)
+ifneq ($(CMDLINE_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(LIBDIR)/shogun
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)/shogun
 endif
 	#python
-ifneq ($(PYTHON_TARGET),)
+ifneq ($(PYTHON_STATIC_TARGET),)
 	rm -f $(DESTDIR)$(PYDIR)/$(TEMPLATE_TARGET) 
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	cd $(DESTDIR)$(PYDIR) && ln -s $(PRELPATH)/$(TEMPLATE_TARGET)
 endif
 	#octave
-ifneq ($(OCTAVE_TARGET),)
+ifneq ($(OCTAVE_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	rm -f $(DESTDIR)$(OCTDIR)/elwms.oct
 	cd $(DESTDIR)$(OCTDIR) && ln -s $(ORELPATH)/$(TEMPLATE_TARGET) elwms.oct
 endif
 	#r
-ifneq ($(R_TARGET),)
+ifneq ($(R_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/libs
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/Meta
@@ -301,8 +301,8 @@ install-ruby_modular: $(TEMPLATE_TARGET)
 	install -m755 modshogun.$(EXT_LIB) "$(RUBY_EXTENSIONS_INSTALL_DIR)"
 
 install-lua_modular: $(TEMPLATE_TARGET)
-	install -d -m755 "$(LUA_EXTENSIONS_INSTALL_DIR)"
-	install -m755 modshogun.$(EXT_LIB) "$(LUA_EXTENSIONS_INSTALL_DIR)"
+	install -d -m755 "$(DESTDIR)/$(LUA_EXTENSIONS_INSTALL_DIR)"
+	install -m755 modshogun.$(EXT_LIB) "$(DESTDIR)/$(LUA_EXTENSIONS_INSTALL_DIR)"
 
 install-csharp_modular: $(TEMPLATE_TARGET)
 	#TODO
