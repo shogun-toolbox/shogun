@@ -101,7 +101,9 @@ struct SPARSEDOT_THREAD_PARAM
 CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 		CDimensionReductionPreprocessor<float64_t>()
 {
-	m_k = 3;
+	m_k = 10;
+	m_max_k = 60;
+	m_auto_k = false;
 	m_nullspace_shift = -1e-9;
 	m_reconstruction_shift = 1e-3;
 #ifdef HAVE_ARPACK
@@ -114,7 +116,11 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 
 void CLocallyLinearEmbedding::init()
 {
+	m_parameters->add(&m_auto_k, "auto_k", 
+	                  "whether k should be determined automatically in range");
 	m_parameters->add(&m_k, "k", "number of neighbors");
+	m_parameters->add(&m_max_k, "max_k", 
+	                  "maximum number of neighbors used to compute optimal one");
 	m_parameters->add(&m_nullspace_shift, "nullspace_shift",
 	                  "nullspace finding regularization shift");
 	m_parameters->add(&m_reconstruction_shift, "reconstruction_shift", 
@@ -137,6 +143,27 @@ void CLocallyLinearEmbedding::set_k(int32_t k)
 int32_t CLocallyLinearEmbedding::get_k() const
 {
 	return m_k;
+}
+
+void CLocallyLinearEmbedding::set_max_k(int32_t max_k)
+{
+	ASSERT(max_k>=m_k);
+	m_max_k = max_k;
+}
+
+int32_t CLocallyLinearEmbedding::get_max_k() const
+{
+	return m_max_k;
+}
+
+void CLocallyLinearEmbedding::set_auto_k(bool auto_k)
+{
+	m_auto_k = auto_k;
+}
+
+bool CLocallyLinearEmbedding::get_auto_k() const
+{
+	return m_auto_k;
 }
 
 void CLocallyLinearEmbedding::set_nullspace_shift(float64_t nullspace_shift)
@@ -205,7 +232,16 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
 	m_distance->remove_lhs_and_rhs();
 	SG_DEBUG("Calculating neighborhood matrix\n");
-	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(distance_matrix);
+	SGMatrix<int32_t> neighborhood_matrix;
+
+	if (m_auto_k) 
+	{
+		neighborhood_matrix = get_neighborhood_matrix(distance_matrix,m_max_k);
+		m_k = estimate_k(simple_features,neighborhood_matrix);
+		SG_DEBUG("Estimated k with value of %d\n",m_k);
+	} 
+	else
+		neighborhood_matrix = get_neighborhood_matrix(distance_matrix,m_k);
 
 	// init W (weight) matrix
 	float64_t* W_matrix = distance_matrix.matrix;
@@ -223,6 +259,87 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::apply_to_feature_matrix(CFeatures* 
 
 	SG_UNREF(features);
 	return simple_features->get_feature_matrix();
+}
+
+int32_t CLocallyLinearEmbedding::estimate_k(CSimpleFeatures<float64_t>* simple_features, SGMatrix<int32_t> neighborhood_matrix)
+{
+	int32_t right = m_max_k;
+	int32_t left = m_k;
+	int32_t left_third;
+	int32_t right_third;
+	ASSERT(right>=left);
+	if (right==left) return left;
+	int32_t dim;
+	int32_t N;
+	float64_t* feature_matrix= simple_features->get_feature_matrix(dim,N);
+	float64_t* z_matrix = SG_MALLOC(float64_t,right*dim);
+	float64_t* covariance_matrix = SG_MALLOC(float64_t,right*right);
+	float64_t* resid_vector = SG_MALLOC(float64_t, right);
+	float64_t* id_vector = SG_MALLOC(float64_t, right);
+	while (right-left>2)
+	{
+		left_third = (left*2+right)/3;
+		right_third = (right*2+left)/3;
+		float64_t left_val = compute_reconstruction_error(left_third,dim,N,feature_matrix,z_matrix,
+		                                                  covariance_matrix,resid_vector,
+		                                                  id_vector,neighborhood_matrix);
+		float64_t right_val = compute_reconstruction_error(right_third,dim,N,feature_matrix,z_matrix,
+		                                                   covariance_matrix,resid_vector,
+		                                                   id_vector,neighborhood_matrix);
+		if (left_val<right_val)
+			right = right_third;
+		else 
+			left = left_third;
+	}
+	SG_FREE(z_matrix);
+	SG_FREE(covariance_matrix);
+	SG_FREE(resid_vector);
+	SG_FREE(id_vector);
+	return right;
+}
+
+float64_t CLocallyLinearEmbedding::compute_reconstruction_error(int32_t k, int dim, int N, float64_t* feature_matrix,
+                                                                float64_t* z_matrix, float64_t* covariance_matrix,
+                                                                float64_t* resid_vector, float64_t* id_vector,
+                                                                SGMatrix<int32_t> neighborhood_matrix)
+{
+	// todo parse params
+	int32_t i,j;
+	float64_t total_residual_norm = 0.0;
+	for (i=0; i<N; i+=N/20)
+	{
+		for (j=0; j<k; j++)
+		{
+			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[j*N+i]*dim,1,z_matrix+j*dim,1);   
+			cblas_daxpy(dim,-1.0,feature_matrix+i*dim,1,z_matrix+j*dim,1);
+		}
+		cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
+			    k,k,dim,
+			    1.0,z_matrix,dim,
+			    z_matrix,dim,
+			    0.0,covariance_matrix,k);
+		for (j=0; j<k; j++)
+		{
+			resid_vector[j] = 1.0;
+			id_vector[j] = 1.0;
+		}
+		if (k>dim)
+		{
+			float64_t trace = 0.0;
+			for (j=0; j<k; j++)
+				trace += covariance_matrix[j*k+j];
+			for (j=0; j<m_k; j++)
+				covariance_matrix[j*k+j] += m_reconstruction_shift*trace;
+		}
+		clapack_dposv(CblasColMajor,CblasLower,k,1,covariance_matrix,k,id_vector,k);
+		float64_t norming=0.0;
+		for (j=0; j<k; j++)
+			norming += id_vector[j];
+		cblas_dscal(k,-1.0/norming,id_vector,1);
+		cblas_dsymv(CblasColMajor,CblasLower,k,-1.0,covariance_matrix,k,id_vector,1,1.0,resid_vector,1);
+		total_residual_norm += cblas_dnrm2(k,resid_vector,1);
+	}
+	return total_residual_norm/k;
 }
 
 SGVector<float64_t> CLocallyLinearEmbedding::apply_to_feature_vector(SGVector<float64_t> vector)
@@ -492,12 +609,12 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	return NULL;
 }
 
-SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix)
+SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k)
 {
 	int32_t t;
 	int32_t N = distance_matrix.num_rows;
 	// init matrix and heap to be used
-	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
+	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -519,7 +636,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 		parameters[t].idx_start = t;
 		parameters[t].idx_step = num_threads;
 		parameters[t].idx_stop = N;
-		parameters[t].m_k = m_k;
+		parameters[t].m_k = k;
 		parameters[t].N = N;
 		parameters[t].heap = heaps[t];
 		parameters[t].neighborhood_matrix = neighborhood_matrix;
@@ -536,7 +653,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 	single_thread_param.idx_start = 0;
 	single_thread_param.idx_step = 1;
 	single_thread_param.idx_stop = N;
-	single_thread_param.m_k = m_k;
+	single_thread_param.m_k = k;
 	single_thread_param.N = N;
 	single_thread_param.heap = heaps[0]
 	single_thread_param.neighborhood_matrix = neighborhood_matrix;
@@ -548,7 +665,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 		delete heaps[t];
 	SG_FREE(heaps);
 
-	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
+	return SGMatrix<int32_t>(neighborhood_matrix,k,N);
 }
 
 void* CLocallyLinearEmbedding::run_sparsedot_thread(void* p)

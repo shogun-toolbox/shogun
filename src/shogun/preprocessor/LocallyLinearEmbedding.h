@@ -45,6 +45,10 @@ class CDistance;
  * and SUPERLU library for fast solving sparse equations stated by ARPACK 
  * is being used if available.
  *
+ * This class also have capability of selecting k automatically in 
+ * range between "k" and "max_k" in case if "auto_k" is true. This 
+ * is being done using ternary search of minima of 
+ * reconstruction error on the subset of features.
  */
 class CLocallyLinearEmbedding: public CDimensionReductionPreprocessor<float64_t>
 {
@@ -75,6 +79,26 @@ public:
 	 * @return m_k value
 	 */
 	int32_t get_k() const;
+
+	/** setter for max_k parameter
+	 * @param max_k max_k value
+	 */
+	void set_max_k(int32_t max_k);
+
+	/** getter for max_k parameter
+	 * @return m_max_k value
+	 */
+	int32_t get_max_k() const;
+
+	/** setter for auto_k parameter
+	 * @param auto_k auto_k value
+	 */
+	void set_auto_k(bool auto_k);
+
+	/** getter for auto_k parameter
+	 * @return m_auto_k value
+	 */
+	bool get_auto_k() const;
 
 	/** setter for reconstruction shift parameter
 	 * @param reconstruction_shift reconstruction shift value
@@ -118,7 +142,7 @@ protected:
 	/** default init */
 	void init();
 
-	/** construct weight matrix 
+	/** constructs weight matrix 
 	 * @param simple_features features to be used
 	 * @param W_matrix weight matrix
 	 * @param neighborhood_matrix matrix containing neighbor idxs
@@ -126,25 +150,52 @@ protected:
 	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
                                                             SGMatrix<int32_t> neighborhood_matrix);
 
-	/** find null space of given matrix 
+	/** finds null space of given matrix 
 	 * @param matrix given matrix
 	 * @param dimension dimension of null space to be computed
 	 * @return null-space approximation feature matrix
 	 */
 	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension);
 
-	/** construct neighborhood matrix by distance
+	/** constructs neighborhood matrix by distance
 	 * @param distance_matrix distance matrix to be used
-	 * @return matrix containing indexes of neighbors of i-th object
-	 * in i-th column
+	 * @param k number of neighbors
+	 * @return matrix containing indexes of neighbors of i-th vector in i-th column
 	 */
-	SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix);
+	SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
+
+	/** estimates k using ternary search 
+	 * @param simple_features simple features to use
+	 * @param neighborhood_matrix matrix containing indexes of neighbors for every vector
+	 * @return optimal k (in means of reconstruction error)
+	 */
+	int32_t estimate_k(CSimpleFeatures<float64_t>* simple_features, SGMatrix<int32_t> neighborhood_matrix);
+
+	/** computes reconstruction error using subset of given features
+	 * @param k
+	 * @param dim
+	 * @param N
+	 * @param feature_matrix
+	 * @param z_matrix
+	 * @param covariance_matrix
+	 * @param resid_vector
+	 * @param id_vector
+	 * @param neighborhood_matrix
+	 * @return residual sum
+	 */
+	float64_t compute_reconstruction_error(int32_t k, int dim, int N, float64_t* feature_matrix,
+	                                       float64_t* z_matrix, float64_t* covariance_matrix,
+	                                       float64_t* resid_vector, float64_t* id_vector,
+	                                       SGMatrix<int32_t> neighborhood_matrix);
 
 	/// FIELDS
 protected:
 
 	/** number of neighbors */
 	int32_t m_k;
+
+	/** maximum number of neighbors */
+	int32_t m_max_k;
 
 	/** regularization shift of reconstruction step */
 	float64_t m_reconstruction_shift;
@@ -155,12 +206,8 @@ protected:
 	/** whether use arpack or not */
 	bool m_use_arpack;
 
-	/// CONSTANTS
-public:
-
-	/** adaptive k choice flag
-	 * NOT IMPLEMENTED */
-	static const int32_t ADAPTIVE_K = -1;
+	/** whether use automatic k or not */
+	bool m_auto_k;
 
 	/// THREADS
 protected:
