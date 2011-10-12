@@ -147,8 +147,7 @@ protected:
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
-	//FIXME void is not possible w/ SGVector<void> m_values;
-	void* m_values;
+	SGVector<char> m_values; // dummy void type char
 	CDynamicObjectArray<CModelSelectionParameters>* m_child_nodes;
 	EMSParamType m_value_type;
 };

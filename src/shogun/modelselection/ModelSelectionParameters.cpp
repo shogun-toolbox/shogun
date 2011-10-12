@@ -66,8 +66,8 @@ CModelSelectionParameters::~CModelSelectionParameters()
 void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 {
 	/* only possible if there are no values set */
-	//FIXME void if (m_values.vector)
-	//FIXME void 	SG_ERROR("not possible to append child: there already is a range\n");
+	if (m_values.vector)
+		SG_ERROR("not possible to append child: there already is a range\n");
 
 	/* do a basic check if the add is possible */
 	if (m_sgobject)
@@ -98,7 +98,7 @@ void CModelSelectionParameters::set_values(SGVector<T> values)
 {
 	/* possibly delete old range values */
 	delete_values();
-	//FIXME void m_values=values;
+	m_values=(SGVector<char>) values;
 }
 
 void CModelSelectionParameters::build_values(float64_t min, float64_t max,
@@ -139,8 +139,8 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 				*((float64_t*)step),
 				*((float64_t*)type_base));
 
-		//FIXME void m_values.vector=(void*)values.vector;
-		//FIXME void m_values.vlen=values.vlen;
+		m_values.vector=(char*)values.vector;
+		m_values.vlen=values.vlen;
 	}
 	else if (value_type==MSPT_INT32)
 	{
@@ -151,8 +151,8 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 				*((int32_t*)step),
 				*((int32_t*)type_base));
 
-		//FIXME void m_values.vector=(void*)values.vector;
-		//FIXME void m_values.vlen=values.vlen;
+		m_values.vector=(char*)values.vector;
+		m_values.vlen=values.vlen;
 	}
 	else if (value_type==MSPT_NONE)
 	{
@@ -173,7 +173,6 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 	 * build trees of Parameter instances which each contain one value
 	 */
 
-	/* FIXME void
 	if (m_values.vector)
 	{
 		for (index_t i=0; i<m_values.vlen; ++i)
@@ -201,7 +200,7 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 		}
 
 		return result;
-	}*/
+	}
 
 
 	/* two cases here, similar
@@ -225,12 +224,10 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 			CModelSelectionParameters* current=m_child_nodes->get_element(i);
 
 			/* split children with values and children with other */
-	/* FIXME void
 			if (current->m_values.vector)
 				value_children.append_element(current);
 			else
 				non_value_children.append_element(current);
-	*/
 
 			SG_UNREF(current);
 		}
@@ -419,8 +416,7 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		}
 		else
 		{
-			/* FIXME
-			void if (m_values.vector)
+			if (m_values.vector)
 			{
 				// value node
 				SG_PRINT("%s%s with values: ", prefix, m_node_name);
@@ -443,7 +439,6 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 			}
 			else
 				SG_PRINT("root\n");
-			*/
 		}
 	}
 
@@ -452,7 +447,6 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 
 void CModelSelectionParameters::delete_values()
 {
-	/* FIXME void
 	if (m_values.vector)
 	{
 		switch (m_value_type)
@@ -470,5 +464,5 @@ void CModelSelectionParameters::delete_values()
 			SG_ERROR("Unknown type for model selection parameter!\n");
 			break;
 		}
-	}*/
+	}
 }
