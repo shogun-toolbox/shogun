@@ -1622,10 +1622,10 @@ TParameter::delete_cont()
 	switch(m_datatype.m_ctype)
 	{
 	case CT_SGVECTOR:
-		//FIXME void data_start=&(((SGVector<void>*)m_parameter)->vector);
+		data_start=&(((SGVector<char>*)m_parameter)->vector);
 		break;
 	case CT_SGMATRIX:
-		//FIXME void data_start=&(((SGMatrix<void>*)m_parameter)->matrix);
+		data_start=&(((SGMatrix<char>*)m_parameter)->matrix);
 		break;
 	default:
 		break;
@@ -1783,10 +1783,10 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 	switch(m_datatype.m_ctype)
 	{
 	case CT_SGVECTOR:
-		//FIXME void data_start=&(((SGVector<void>*)m_parameter)->vector);
+		data_start=&(((SGVector<char>*)m_parameter)->vector);
 		break;
 	case CT_SGMATRIX:
-		//FIXME void data_start=&(((SGMatrix<void>*)m_parameter)->matrix);
+		data_start=&(((SGMatrix<char>*)m_parameter)->matrix);
 		break;
 	default:
 		break;
@@ -2247,10 +2247,10 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 				switch(m_datatype.m_ctype)
 				{
 				case CT_SGVECTOR:
-					//FIXME void data_start=&(((SGVector<void>*)m_parameter)->vector);
+					data_start=&(((SGVector<char>*)m_parameter)->vector);
 					break;
 				case CT_SGMATRIX:
-					//FIXME void data_start=&(((SGMatrix<void>*)m_parameter)->matrix);
+					data_start=&(((SGMatrix<char>*)m_parameter)->matrix);
 					break;
 				default:
 					break;
@@ -2338,10 +2338,10 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 					switch(m_datatype.m_ctype)
 					{
 					case CT_SGVECTOR:
-						//FIXME void data_start=&(((SGVector<void>*)m_parameter)->vector);
+						data_start=&(((SGVector<char>*)m_parameter)->vector);
 						break;
 					case CT_SGMATRIX:
-						//FIXME void data_start=&(((SGMatrix<void>*)m_parameter)->matrix);
+						data_start=&(((SGMatrix<char>*)m_parameter)->matrix);
 						break;
 					default:
 						break;
