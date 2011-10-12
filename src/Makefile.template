@@ -217,7 +217,7 @@ install-r_static: $(TEMPLATE_TARGET)
 
 install-elwms_static: $(TEMPLATE_TARGET)
 	#one .so file
-ifneq ($(CMDLINE_STATIC_TARGET),)
+ifneq ($(ELWMS_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(LIBDIR)/shogun
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)/shogun
 endif
