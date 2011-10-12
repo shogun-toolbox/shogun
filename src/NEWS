@@ -7,10 +7,16 @@
 	     Diffusion Maps, Kernel Locally Linear Embedding,
 	     Kernel Local Tangent Space Alignment
 	   - ARPACK and SUPERLU integration 
+	   - LibSVM is now pthread-parallelized.
+	   - Create modshogun.dll for csharp.
+	   - Various new c# examples (thanks Daniel Korn).
 	* Bugfixes:
 		- TODO
 	* Cleanup and API Changes:
-		- TODO
+		- Most of the inline functions have been (re)moved to the corresponding
+		.cpp file.
+		- Libshogun is now compiled with sse support for math (if available) but
+		interfaces are now compiled with -O0 which drastically reduces compile times.
 
 2011-08-31 Soeren Sonnenburg <sonne@debian.org>
 
