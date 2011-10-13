@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011
+ * Copyright (C) 2011 Sergey Lisitsyn
  */
 
 #ifndef EMBEDDINGCONVERTER_H_
@@ -24,17 +24,23 @@ class CFeatures;
 class CDistance;
 class CKernel;
 
-/** @brief */
+/** @brief class EmbeddingConverter used to create embeddings of 
+ * features, e.g. construct dense numeric embedding of string features
+ */
 class CEmbeddingConverter: public CConverter
 {
 public:
 
-	/* constructor */
+	/** constructor */
 	CEmbeddingConverter();
 
-	/* destructor */
+	/** destructor */
 	virtual ~CEmbeddingConverter();
 
+	/** applies to the given data, returns embedding
+	 * @param features features to embed
+	 * @return embedding simple features
+	 */
 	virtual CSimpleFeatures<float64_t>* apply(CFeatures* features) = 0;
 
 	/** setter for target dimension
