@@ -259,7 +259,7 @@ install-python_modular: $(TEMPLATE_TARGET)
 	install -m644 $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PYDIR)"
 	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
-	for i in Kernel Distance Features Classifier Regression \
+	for i in Kernel Distance Features Classifier Regression Converter \
 		Features Clustering Evaluation IO Library Mathematics \
 		ModelSelection Preprocessor Structure Distribution;\
 	do \

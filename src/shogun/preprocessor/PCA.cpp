@@ -25,7 +25,7 @@
 using namespace shogun;
 
 CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_)
-: CDimensionReductionPreprocessor<float64_t>(), num_dim(0), m_initialized(false),
+: CDimensionReductionPreprocessor(), num_dim(0), m_initialized(false),
 	m_whitening(do_whitening_), m_mode(mode_), thresh(thresh_)
 {
 	init();

@@ -270,6 +270,21 @@ template<class ST> SGMatrix<ST> CSimpleFeatures<ST>::get_feature_matrix()
 	return SGMatrix<ST>(feature_matrix, num_features, num_vectors);
 }
 
+template<class ST> SGMatrix<ST> CSimpleFeatures<ST>::steal_feature_matrix()
+{
+	SGMatrix<ST> st_feature_matrix(feature_matrix, num_features, num_vectors);
+	remove_subset();
+	SG_UNREF(feature_cache);
+	clean_preprocessors();
+
+	feature_matrix = NULL;
+	feature_matrix_num_vectors = 0;
+	feature_matrix_num_features = 0;
+	num_features = 0;
+	num_vectors = 0;
+	return st_feature_matrix;
+}
+
 template<class ST> void CSimpleFeatures<ST>::set_feature_matrix(SGMatrix<ST> matrix)
 {
 	remove_subset();

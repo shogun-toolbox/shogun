@@ -13,15 +13,6 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/preprocessor/KernelPCA.h>
-#include <shogun/preprocessor/MultidimensionalScaling.h>
-#include <shogun/preprocessor/LocallyLinearEmbedding.h>
-#include <shogun/preprocessor/KernelLocallyLinearEmbedding.h>
-#include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
-#include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
-#include <shogun/preprocessor/LaplacianEigenmaps.h>
-#include <shogun/preprocessor/Isomap.h>
-#include <shogun/preprocessor/DiffusionMaps.h>
-#include <shogun/preprocessor/KernelLocalTangentSpaceAlignment.h>
 
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/preprocessor/DecompressString.h>

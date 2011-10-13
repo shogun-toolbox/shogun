@@ -206,6 +206,14 @@ public:
 	 */
 	SGMatrix<ST> get_feature_matrix();
 
+	/** steals feature matrix, i.e. returns matrix and 
+	 * forget about it
+	 * subset is ignored
+	 *
+	 * @return matrix feature matrix
+	 */
+	SGMatrix<ST> steal_feature_matrix();
+
 	/** Setter for feature matrix
 	 *
 	 * any subset is removed

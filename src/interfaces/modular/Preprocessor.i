@@ -16,22 +16,13 @@
 %rename(PruneVarSubMean) CPruneVarSubMean;
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 
+%rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(PCA) CPCA;
 %rename(KernelPCA) CKernelPCA;
-%rename(MultidimensionalScaling) CMultidimensionalScaling;
-%rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
-%rename(KernelLocallyLinearEmbedding) CKernelLocallyLinearEmbedding;
-%rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
-%rename(LocalTangentSpaceAlignment) CLocalTangentSpaceAlignment;
-%rename(LaplacianEigenmaps) CLaplacianEigenmaps;
-%rename(Isomap) CIsomap;
-%rename(DiffusionMaps) CDiffusionMaps;
-%rename(KernelLocalTangentSpaceAlignment) CKernelLocalTangentSpaceAlignment;
 
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
 
-%newobject *::apply_to_distance;
 %newobject shogun::CKernelPCA::apply_to_string_features;
 
 /* Include Class Headers to make them visible from within the target language */
@@ -52,10 +43,6 @@ namespace shogun
 
 /* Templates Class DimensionReductionPreprocessor */
 %include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-namespace shogun
-{
-    %template(DimensionReductionPreprocessor) CDimensionReductionPreprocessor<float64_t>;
-}
 
 /* Templates Class StringPreprocessor*/
 %include <shogun/preprocessor/StringPreprocessor.h>
@@ -84,15 +71,6 @@ namespace shogun
 
 %include <shogun/preprocessor/PCA.h>
 %include <shogun/preprocessor/KernelPCA.h>
-%include <shogun/preprocessor/MultidimensionalScaling.h>
-%include <shogun/preprocessor/LocallyLinearEmbedding.h>
-%include <shogun/preprocessor/KernelLocallyLinearEmbedding.h>
-%include <shogun/preprocessor/HessianLocallyLinearEmbedding.h>
-%include <shogun/preprocessor/LocalTangentSpaceAlignment.h>
-%include <shogun/preprocessor/LaplacianEigenmaps.h>
-%include <shogun/preprocessor/Isomap.h>
-%include <shogun/preprocessor/DiffusionMaps.h>
-%include <shogun/preprocessor/KernelLocalTangentSpaceAlignment.h>
 
 %include <shogun/preprocessor/SortUlongString.h>
 %include <shogun/preprocessor/SortWordString.h>
