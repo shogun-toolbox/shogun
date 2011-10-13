@@ -13,7 +13,13 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('c', C);
 sg('svm_use_bias', true);
-sg('new_classifier', 'LPM');
+
+try
+	sg('new_classifier', 'LPM');
+catch
+	return
+end_try_catch
+
 tic;
 sg('train_classifier');
 timelpm=toc

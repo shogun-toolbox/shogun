@@ -10,8 +10,8 @@ disp('LinearByte');
 sg('set_kernel', 'LINEAR', 'BYTE', size_cache);
 
 sg('set_features', 'TRAIN', fm_train_byte, 'RAWBYTE');
-km=sg('get_kernel_matrix', 'TRAIN');
-
-sg('set_features', 'TEST', fm_test_byte, 'RAWBYTE');
-km=sg('get_kernel_matrix', 'TEST');
-
+%km=sg('get_kernel_matrix', 'TRAIN');
+%
+%sg('set_features', 'TEST', fm_test_byte, 'RAWBYTE');
+%km=sg('get_kernel_matrix', 'TEST');
+%
