@@ -356,7 +356,9 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 {
 #ifdef HAVE_PTHREAD
-	if (parallel->get_num_threads()<2)
+	int32_t nthreads=parallel->get_num_threads();
+
+	if (nthreads<2)
 	{
 #endif
 		for(int32_t i=0;i<num_rows;i++)
@@ -368,9 +370,9 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		// fill up kernel cache
 		int32_t* uncached_rows = SG_MALLOC(int32_t, num_rows);
 		KERNELCACHE_ELEM** cache = SG_MALLOC(KERNELCACHE_ELEM*, num_rows);
-		pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
-		S_KTHREAD_PARAM* params = SG_MALLOC(S_KTHREAD_PARAM, parallel->get_num_threads()-1);
-		int32_t num_threads=parallel->get_num_threads()-1;
+		pthread_t* threads = SG_MALLOC(pthread_t, nthreads-1);
+		S_KTHREAD_PARAM* params = SG_MALLOC(S_KTHREAD_PARAM, nthreads-1);
+		int32_t num_threads=nthreads-1;
 		int32_t num_vec=get_num_vec_lhs();
 		ASSERT(num_vec>0);
 		uint8_t* needs_computation=SG_CALLOC(uint8_t, num_vec);
@@ -383,11 +385,11 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		for (int32_t i=0; i<num_rows; i++)
 		{
 			int32_t idx=rows[i];
-			if (kernel_cache_check(idx))
-				continue;
-
 			if (idx>=num_vec)
 				idx=2*num_vec-1-idx;
+
+			if (kernel_cache_check(idx))
+				continue;
 
 			needs_computation[idx]=1;
 			uncached_rows[num]=idx;
@@ -401,7 +403,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 
 		if (num>0)
 		{
-			step= num/parallel->get_num_threads();
+			step= num/nthreads;
 
 			if (step<1)
 			{
