@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 
+ * Copyright (C) 2011 Sergey Lisitsyn
  */
 
 #include <shogun/converter/EmbeddingConverter.h>

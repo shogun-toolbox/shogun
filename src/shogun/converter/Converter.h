@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011
+ * Copyright (C) 2011 Sergey Lisitsyn
  */
 
 #ifndef CONVERTER_H_
@@ -18,17 +18,23 @@
 namespace shogun
 {
 
-/** @brief
- *
+/** @brief class Converter used to convert data
+ * 
  */
 class CConverter : public CSGObject
 {
 public:
+	/* constructor */
 	CConverter() : CSGObject() {};
+	/* destructor */
 	virtual ~CConverter() {};
-
+	/* get name */
 	virtual const char* get_name() const { return "Converter"; }
-
+	/* applies to the given data, returning converted features 
+	 * (e.g. dense embedding of string features)
+	 * @param features features to convert
+	 * @return converted features
+	 */
 	virtual CFeatures* apply(CFeatures* features) = 0;
 };
 }
