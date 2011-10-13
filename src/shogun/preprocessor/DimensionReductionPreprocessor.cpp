@@ -1,4 +1,5 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
+#include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/distance/EuclidianDistance.h>
 
@@ -6,85 +7,107 @@ using namespace shogun;
 
 namespace shogun 
 {
-template<class ST>
-CDimensionReductionPreprocessor<ST>::CDimensionReductionPreprocessor()
-: CSimplePreprocessor<ST>()
+CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
+: CSimplePreprocessor<float64_t>()
 {
 	m_target_dim = 1;
 	m_distance = new CEuclidianDistance();
 	m_kernel = new CLinearKernel();
+	m_converter = NULL;
 
 	init();
 }
 
-template<class ST>
-CDimensionReductionPreprocessor<ST>::~CDimensionReductionPreprocessor() 
+CDimensionReductionPreprocessor::CDimensionReductionPreprocessor(CEmbeddingConverter* converter)
+: CSimplePreprocessor<float64_t>()
+{
+	SG_REF(converter);
+	m_target_dim = 1;
+	m_distance = new CEuclidianDistance();
+	m_kernel = new CLinearKernel();
+	m_converter = converter;
+
+	init();
+}
+
+CDimensionReductionPreprocessor::~CDimensionReductionPreprocessor() 
 {
 	SG_UNREF(m_distance);
 	SG_UNREF(m_kernel);
+	SG_UNREF(m_converter);
 }
 
-template <class ST>
-bool CDimensionReductionPreprocessor<ST>::init(CFeatures* data)
+SGMatrix<float64_t> CDimensionReductionPreprocessor::apply_to_feature_matrix(CFeatures* features)
+{
+	if (m_converter)
+	{
+		m_converter->set_target_dim(m_target_dim);
+		CSimpleFeatures<float64_t>* embedding = m_converter->apply(features);
+		SGMatrix<float64_t> embedding_feature_matrix = embedding->steal_feature_matrix();
+		((CSimpleFeatures<float64_t>*)features)->set_feature_matrix(embedding_feature_matrix);
+		delete embedding;
+		return embedding_feature_matrix;
+	}
+	else
+	{
+		SG_WARNING("Converter to process was not set.\n");
+		return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
+	}
+}
+
+bool CDimensionReductionPreprocessor::init(CFeatures* data)
 {
 	return true;
 }
 
-template <class ST>
-void CDimensionReductionPreprocessor<ST>::cleanup()
+void CDimensionReductionPreprocessor::cleanup()
 {
 
 }
 
-template<class ST>
-EPreprocessorType CDimensionReductionPreprocessor<ST>::get_type() const { return P_DIMENSIONREDUCTIONPREPROCESSOR; };
+EPreprocessorType CDimensionReductionPreprocessor::get_type() const { return P_DIMENSIONREDUCTIONPREPROCESSOR; };
 
-template<class ST>
-void CDimensionReductionPreprocessor<ST>::set_target_dim(int32_t dim)
+void CDimensionReductionPreprocessor::set_target_dim(int32_t dim)
 {
 	ASSERT(dim>0);
 	m_target_dim = dim;
 }
 
-template<class ST>
-int32_t CDimensionReductionPreprocessor<ST>::get_target_dim() const
+int32_t CDimensionReductionPreprocessor::get_target_dim() const
 {
 	return m_target_dim;
 }
 
-template<class ST>
-void CDimensionReductionPreprocessor<ST>::set_distance(CDistance* distance)
+void CDimensionReductionPreprocessor::set_distance(CDistance* distance)
 {
 	SG_UNREF(m_distance);
 	SG_REF(distance);
 	m_distance = distance;
 }
 
-template<class ST>
-CDistance* CDimensionReductionPreprocessor<ST>::get_distance() const
+CDistance* CDimensionReductionPreprocessor::get_distance() const
 {
 	SG_REF(m_distance);
 	return m_distance;
 }
 
-template<class ST>
-void CDimensionReductionPreprocessor<ST>::set_kernel(CKernel* kernel)
+void CDimensionReductionPreprocessor::set_kernel(CKernel* kernel)
 {
 	SG_UNREF(m_kernel);
 	SG_REF(kernel);
 	m_kernel = kernel;
 }
 
-template<class ST>
-CKernel* CDimensionReductionPreprocessor<ST>::get_kernel() const
+CKernel* CDimensionReductionPreprocessor::get_kernel() const
 {
 	SG_REF(m_kernel);
 	return m_kernel;
 }
 
-template<class ST>
-void CDimensionReductionPreprocessor<ST>::init()
+void CDimensionReductionPreprocessor::init()
 {
+	this->m_parameters->add((CSGObject**)&m_converter, "converter",
+					  "embedding converter used to apply to data");
 	this->m_parameters->add(&m_target_dim, "target_dim",
 					  "target dimensionality of preprocessor");
 	this->m_parameters->add((CSGObject**)&m_distance, "distance",
@@ -92,7 +115,4 @@ void CDimensionReductionPreprocessor<ST>::init()
 	this->m_parameters->add((CSGObject**)&m_kernel, "kernel",
 					  "kernel to be used for embedding");
 }
-
-template class CDimensionReductionPreprocessor<float32_t>;
-template class CDimensionReductionPreprocessor<float64_t>;
 }

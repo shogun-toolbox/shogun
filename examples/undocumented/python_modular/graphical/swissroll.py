@@ -3,50 +3,50 @@ numpy.random.seed(40)
 tt = numpy.genfromtxt('../../../../data/toy/swissroll_color.dat',unpack=True).T
 X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
 N = X.shape[1]
-preprocs = []
+converters = []
 
-from shogun.Preprocessor import LocallyLinearEmbedding
+from shogun.Converter import LocallyLinearEmbedding
 lle = LocallyLinearEmbedding()
 lle.set_k(9)
-preprocs.append((lle, "LLE with k=%d" % lle.get_k()))
+converters.append((lle, "LLE with k=%d" % lle.get_k()))
 
-from shogun.Preprocessor import MultidimensionalScaling
+from shogun.Converter import MultidimensionalScaling
 mds = MultidimensionalScaling()
-preprocs.append((mds, "Classic MDS"))
+converters.append((mds, "Classic MDS"))
 
 lmds = MultidimensionalScaling()
 lmds.set_landmark(True)
 lmds.set_landmark_number(20)
-preprocs.append((lmds,"Landmark MDS with %d landmarks" % lmds.get_landmark_number()))
+converters.append((lmds,"Landmark MDS with %d landmarks" % lmds.get_landmark_number()))
 
-from shogun.Preprocessor import Isomap
+from shogun.Converter import Isomap
 cisomap = Isomap()
 cisomap.set_k(9)
-preprocs.append((cisomap,"Isomap with k=%d" % cisomap.get_k()))
+converters.append((cisomap,"Isomap with k=%d" % cisomap.get_k()))
 
-from shogun.Preprocessor import DiffusionMaps
+from shogun.Converter import DiffusionMaps
 from shogun.Kernel import GaussianKernel
 dm = DiffusionMaps()
 dm.set_t(20)
 kernel = GaussianKernel(100,1.0)
 dm.set_kernel(kernel)
-preprocs.append((dm,"Diffusion Maps with t=%d, sigma=%f" % (dm.get_t(),kernel.get_width())))
+converters.append((dm,"Diffusion Maps with t=%d, sigma=%f" % (dm.get_t(),kernel.get_width())))
 
-from shogun.Preprocessor import HessianLocallyLinearEmbedding
+from shogun.Converter import HessianLocallyLinearEmbedding
 hlle = HessianLocallyLinearEmbedding()
 hlle.set_k(6)
-preprocs.append((hlle,"Hessian LLE with k=%d" % (hlle.get_k())))
+converters.append((hlle,"Hessian LLE with k=%d" % (hlle.get_k())))
 
-from shogun.Preprocessor import LocalTangentSpaceAlignment
+from shogun.Converter import LocalTangentSpaceAlignment
 ltsa = LocalTangentSpaceAlignment()
 ltsa.set_k(6)
-preprocs.append((ltsa,"LTSA with k=%d" % (ltsa.get_k())))
+converters.append((ltsa,"LTSA with k=%d" % (ltsa.get_k())))
 
-from shogun.Preprocessor import LaplacianEigenmaps
+from shogun.Converter import LaplacianEigenmaps
 le = LaplacianEigenmaps()
 le.set_k(15)
 le.set_tau(25.0)
-preprocs.append((le,"Laplacian Eigenmaps with k=%d, tau=%d" % (le.get_k(),le.get_tau())))
+converters.append((le,"Laplacian Eigenmaps with k=%d, tau=%d" % (le.get_k(),le.get_tau())))
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -54,8 +54,11 @@ from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure()
 
+new_mpl = False
+
 try:
 	swiss_roll_fig = fig.add_subplot(3,3,1, projection='3d')
+	new_mpl = True
 except:
 	figure = plt.figure()
 	swiss_roll_fig = Axes3D(figure)
@@ -65,19 +68,19 @@ plt.subplots_adjust(hspace=0.4)
 
 from shogun.Features import RealFeatures
 
-for (i, (preproc, label)) in enumerate(preprocs):
+for (i, (converter, label)) in enumerate(converters):
 	X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
 	features = RealFeatures(X)
-	preproc.set_target_dim(2)
-	new_feats = preproc.apply_to_feature_matrix(features)
-	if matplotlib.__version__[0]=='0':
-		preproc_subplot = fig.add_subplot(4,2,i+1)
+	converter.set_target_dim(2)
+	new_feats = converter.apply(features).get_feature_matrix()
+	if not new_mpl:
+		embedding_subplot = fig.add_subplot(4,2,i+1)
 	else:
-		preproc_subplot = fig.add_subplot(3,3,i+2)
-	preproc_subplot.scatter(new_feats[0],new_feats[1], c=tt, cmap=plt.cm.Spectral)
+		embedding_subplot = fig.add_subplot(3,3,i+2)
+	embedding_subplot.scatter(new_feats[0],new_feats[1], c=tt, cmap=plt.cm.Spectral)
 	plt.axis('tight')
 	plt.xticks([]), plt.yticks([])
 	plt.title(label)
-	print preproc.get_name(), 'done'
+	print converter.get_name(), 'done'
 	
 plt.show()

@@ -26,12 +26,12 @@
 
 using namespace shogun;
 
-CKernelPCA::CKernelPCA() : CDimensionReductionPreprocessor<float64_t>()
+CKernelPCA::CKernelPCA() : CDimensionReductionPreprocessor()
 {
 	init();
 }
 
-CKernelPCA::CKernelPCA(CKernel* k) : CDimensionReductionPreprocessor<float64_t>()
+CKernelPCA::CKernelPCA(CKernel* k) : CDimensionReductionPreprocessor()
 {
 	init();
 	SG_REF(k);

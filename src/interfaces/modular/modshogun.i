@@ -37,16 +37,17 @@
 %include "Library_includes.i"
 %include "Mathematics_includes.i"
 %include "ModelSelection_includes.i"
+%include "Converter_includes.i"
 %include "Preprocessor_includes.i"
 %include "Regression_includes.i"
 %include "Structure_includes.i"
-
 
 %include "SGBase.i"
 %include "IO.i"
 %include "Library.i"
 %include "Mathematics.i"
 %include "Features.i"
+%include "Converter.i"
 %include "Preprocessor.i"
 %include "Evaluation.i"
 %include "Distance.i"
@@ -57,4 +58,3 @@
 %include "Clustering.i"
 %include "ModelSelection.i"
 %include "Structure.i"
-

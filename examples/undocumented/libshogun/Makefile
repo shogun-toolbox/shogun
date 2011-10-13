@@ -38,15 +38,15 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  library_fibonacci_heap \
 		  library_hashset \
 		  mathematics_lapack \
-		  preprocessor_locallylinearembedding \
-		  preprocessor_localtangentspacealignment \
-		  preprocessor_hessianlocallylinearembedding \
-		  preprocessor_kernellocallylinearembedding \
-		  preprocessor_kernellocaltangentspacealignment \
-		  preprocessor_multidimensionalscaling \
-		  preprocessor_isomap \
-		  preprocessor_diffusionmaps \
-		  preprocessor_laplacianeigenmaps \
+		  converter_locallylinearembedding \
+		  converter_localtangentspacealignment \
+		  converter_hessianlocallylinearembedding \
+		  converter_kernellocallylinearembedding \
+		  converter_kernellocaltangentspacealignment \
+		  converter_multidimensionalscaling \
+		  converter_isomap \
+		  converter_diffusionmaps \
+		  converter_laplacianeigenmaps \
 
 all: $(TARGETS)
 

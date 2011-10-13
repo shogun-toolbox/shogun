@@ -12,6 +12,7 @@
 #define DIMENSIONREDUCTIONPREPROCESSOR_H_
 
 #include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
 
@@ -26,13 +27,15 @@ class CKernel;
  * class for preprocessors used to lower the dimensionality of given 
  * simple features (dense matrices). 
  */
-template <class ST>
-class CDimensionReductionPreprocessor: public CSimplePreprocessor<ST>
+class CDimensionReductionPreprocessor: public CSimplePreprocessor<float64_t>
 {
 public:
 
 	/* constructor */
 	CDimensionReductionPreprocessor();
+
+	/* constructor */
+	CDimensionReductionPreprocessor(CEmbeddingConverter* converter);
 
 	/* destructor */
 	virtual ~CDimensionReductionPreprocessor();
@@ -52,12 +55,15 @@ public:
 	/** apply preproc to feature matrix
 	 * by default does nothing, returns given features' matrix
 	 */
-	virtual SGMatrix<ST> apply_to_feature_matrix(CFeatures* features) = 0;
+	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 	/** apply preproc to feature vector
 	 * by default does nothing, returns given feature vector
 	 */
-	virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector) = 0;
+	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector)
+	{
+		return vector;
+	}
 
 	/** get name */
 	virtual const char* get_name() const { return "DimensionReductionPreprocessor"; };
@@ -110,6 +116,9 @@ protected:
 
 	/** kernel to be used */
 	CKernel* m_kernel;
+
+	/** embedding converter to be used */
+	CEmbeddingConverter* m_converter;
 };
 }
 
