@@ -43,7 +43,6 @@ CDotFeatures::CDotFeatures(int32_t size)
 	:CFeatures(size), combined_weight(1.0)
 {
 	init();
-	set_property(FP_DOT);
 }
 
 
@@ -460,6 +459,7 @@ void CDotFeatures::display_progress(int32_t start, int32_t stop, int32_t v)
 
 void CDotFeatures::init()
 {
+	set_property(FP_DOT);
 	m_parameters->add(&combined_weight, "combined_weight",
 					  "Feature weighting in combined dot features.");
 }
