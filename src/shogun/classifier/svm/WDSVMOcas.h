@@ -190,7 +190,7 @@ class CWDSVMOcas : public CMachine
 					offs+=w_offsets[k];
 				}
 			}
-			features->free_feature_vector(vec, len, free_vec);
+			features->free_feature_vector(vec, num, free_vec);
 			return sum/normalization_const;
 		}
 
