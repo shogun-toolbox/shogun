@@ -122,7 +122,7 @@ public:
 	void set_use_arpack(bool use_arpack);
 
 	/** getter for use arpack parameter
-	 * @param use_arpack value
+	 * @return use_arpack value
 	 */
 	bool get_use_arpack() const;
 
