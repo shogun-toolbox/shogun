@@ -763,7 +763,7 @@ float64_t CWeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	for (int32_t i=0; i<len; i++)
 		sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0)) ;
@@ -802,7 +802,7 @@ void CWeightedDegreePositionStringKernel::compute_by_tree(
 	for (int32_t i=0; i<len; i++)
 		vec[i]=alphabet->remap_to_bin(char_vec[i]);
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(char_vec, idx, free_vec);
+	((CStringFeatures<char>*) rhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	for (int32_t i=0; i<len; i++)
 	{
