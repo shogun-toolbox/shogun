@@ -140,10 +140,7 @@ template<class ST> void CStringFeatures<ST>::cleanup()
 		single_string=NULL;
 	}
 	else
-	{
-		for (int32_t i=0; i<num_vectors; i++)
-			cleanup_feature_vector(i);
-	}
+		cleanup_feature_vectors(0, num_vectors-1);
 
 	num_vectors=0;
 	SG_FREE(features);
@@ -172,6 +169,24 @@ template<class ST> void CStringFeatures<ST>::cleanup_feature_vector(int32_t num)
 		features[real_num].string=NULL;
 		features[real_num].slen=0;
 
+		determine_maximum_string_length();
+	}
+}
+
+template<class ST> void CStringFeatures<ST>::cleanup_feature_vectors(int32_t start, int32_t stop)
+{
+	if (features && get_num_vectors())
+	{
+		ASSERT(start<get_num_vectors());
+		ASSERT(stop<get_num_vectors());
+
+		for (int32_t i=start; i<=stop; i++)
+		{
+			int32_t real_num=subset_idx_conversion(i);
+			SG_FREE(features[real_num].string);
+			features[real_num].string=NULL;
+			features[real_num].slen=0;
+		}
 		determine_maximum_string_length();
 	}
 }
@@ -1398,6 +1413,7 @@ template<class ST> void CStringFeatures<ST>::determine_maximum_string_length()
 {
 	max_string_length=0;
 	index_t num_str=get_num_vectors();
+
 	for (int32_t i=0; i<num_str; i++)
 	{
 		max_string_length=CMath::max(max_string_length,
