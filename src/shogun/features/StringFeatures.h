@@ -133,7 +133,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * possible with subset
 		 *
 		 * @param start index of first vector to be cleaned
-		 * @param end last number of the vector to be cleaned
+		 * @param stop index of the last vector to be cleaned
 		 * */
 		virtual void cleanup_feature_vectors(int32_t start, int32_t stop);
 
