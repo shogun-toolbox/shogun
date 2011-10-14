@@ -31,13 +31,17 @@ class CDimensionReductionPreprocessor: public CSimplePreprocessor<float64_t>
 {
 public:
 
-	/* constructor */
+	/** default constructor */
 	CDimensionReductionPreprocessor();
 
-	/* constructor */
+	/** convenience constructor converting any embeddingconverter into a
+	 * dimensionreduction preprocessor
+	 *
+	 * @param converter embedding converter
+	 */
 	CDimensionReductionPreprocessor(CEmbeddingConverter* converter);
 
-	/* destructor */
+	/** destructor */
 	virtual ~CDimensionReductionPreprocessor();
 
 	/** init
