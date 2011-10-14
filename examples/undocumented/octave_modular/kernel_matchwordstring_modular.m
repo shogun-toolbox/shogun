@@ -7,6 +7,9 @@ fm_test_dna=load_matrix('../data/fm_test_dna.dat');
 % match_word_string
 disp('MatchWordString')
 
+order=4;
+gap=0;
+reverse=false;
 degree=3;
 scale=1.4;
 size_cache=10;

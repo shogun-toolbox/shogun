@@ -4,6 +4,11 @@ addpath('tools');
 fm_train_dna=load_matrix('../data/fm_train_dna.dat');
 fm_test_dna=load_matrix('../data/fm_test_dna.dat');
 
+order=4;
+gap=0;
+reverse=false;
+use_sign=true;
+
 % comm_word_string
 disp('CommWordString')
 
