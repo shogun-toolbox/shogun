@@ -41,7 +41,7 @@ for (i, (preproc, label)) in enumerate(preprocs):
 	features = RealFeatures(X)
 	preproc.set_target_dim(2)
 	preproc.io.set_loglevel(MSG_DEBUG)
-	new_feats = preproc.apply_to_feature_matrix(features)
+	new_feats = preproc.apply(features).get_feature_matrix()
 	if not new_mpl:
 		preproc_subplot = fig.add_subplot(1,3,i+1)
 	else:
