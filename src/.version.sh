@@ -20,13 +20,7 @@ then
 	prefix="svn_r"
 elif test -d ../../.git
 then
-	# Lets assume that we are building from something which tracks the
-	# master branch, which is known to carry git-svn information
 	branch_point=$(git merge-base master HEAD)
-	
-	# extract information about that point
-	# NB I bet there are better ways ... ;)
-	#	 if we went pure git way, git describe would have been sufficient
 	dateinfo=$(git show --pretty='format:%ai' $branch_point | head -1)
 
 	year=$(echo $dateinfo | cut -f 1 -d '-')
@@ -38,7 +32,6 @@ then
 	revision="`git show --pretty='format:%h'|head -1`"
 	revision_prefix="0x"
 	prefix="git_"
-	#revision=$(git show --pretty='format:%b' $branch_point | head -1 | sed -e 's/.*@\([0-9]*\) \S*$/\1/g')
 else
 	extra="UNKNOWN_VERSION"
 	revision=9999
