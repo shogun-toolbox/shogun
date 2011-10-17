@@ -243,6 +243,15 @@ ever use tabs for indentations
 		do_more();
 	}
 
+- one empty line between { } block, e.g.
+
+	for (int32_t i=0; i<17; i++)
+	{
+		// sth
+	}
+
+	x=1;
+
 MACROS & IFDEFS:
 
 - use macros sparingly
