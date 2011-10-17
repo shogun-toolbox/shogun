@@ -32,6 +32,7 @@ EXT_LIB_SWIG_PYTHON_MODULAR=
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454 -w312 -w325 -fvirtual"
+#-builtin -modern -modernargs
 SWIG=swig
 DOXYGEN=doxygen
 PYTHON=python
