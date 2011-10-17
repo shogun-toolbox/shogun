@@ -46,4 +46,4 @@ svm_new.load_serializable(file_new);
 file_new.close();
 result = svm_new.apply(feats_test).get_labels();
 
-result = sum(sign(result) == fm_test_labels) / columns(fm_test_labels):
+result = sum(sign(result) == fm_test_labels) / columns(fm_test_labels);
