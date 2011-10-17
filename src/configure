@@ -115,6 +115,7 @@ _ld_static=""
 _static=no
 _optimizing=""
 _interfaces=""
+_datatypes="char,uint8_t,uint16_t,uint64_t,float32_t,float64_t"
 _libshogun=yes
 _python=auto
 _octave=auto
@@ -1199,6 +1200,14 @@ Configuration:
                   octave_static
                   matlab_static
 
+  --datatypes=DATATYPE1,DATATYPE2,...
+                configure shogun to support these data types (default uint8_t,float32_t,float64_t)
+
+                can be any of
+
+                   char,bool,uint8_t,uint16_t,uint32_t,uint64_t,
+                   int8_t,int16_t,int32_t,int64_t,float32_t,float64_t,floatmax_t
+
   -h, -help, --help              display this help and exit
 
 Installation directories:
@@ -1309,6 +1318,9 @@ _cpudetection=yes
 
 for ac_option do
   case "$ac_option" in
+  --datatypes=*)
+    _datatypes=`echo $ac_option | cut -d '=' -f 2`
+    ;;
   --interfaces=*)
 	_cmdline_static=no
 	_python_static=no
@@ -2737,6 +2749,57 @@ get_lflags()
 	done
     fi
     echo $def
+}
+
+check_datatypes()
+{
+    for d in `echo $_datatypes | cut -d '=' -f 2 | tr ',' ' '`
+	do
+	  case "$d" in
+		  char)
+			  DEFINES="$DEFINES -DUSE_CHAR"
+			  ;;
+		  bool)
+			  DEFINES="$DEFINES -DUSE_BOOL"
+			  ;;
+		  uint8_t)
+			  DEFINES="$DEFINES -DUSE_UINT8"
+			  ;;
+		  uint16_t)
+			  DEFINES="$DEFINES -DUSE_UINT16"
+			  ;;
+		  uint32_t)
+			  DEFINES="$DEFINES -DUSE_UINT32"
+			  ;;
+		  uint64_t)
+			  DEFINES="$DEFINES -DUSE_UINT64"
+			  ;;
+		  int8_t)
+			  DEFINES="$DEFINES -DUSE_INT8"
+			  ;;
+		  int16_t)
+			  DEFINES="$DEFINES -DUSE_INT16"
+			  ;;
+		  int32_t)
+			  DEFINES="$DEFINES -DUSE_INT32"
+			  ;;
+		  int64_t)
+			  DEFINES="$DEFINES -DUSE_INT64"
+			  ;;
+		  float32_t)
+			  DEFINES="$DEFINES -DUSE_FLOAT32"
+			  ;;
+		  float64_t)
+			  DEFINES="$DEFINES -DUSE_FLOAT64"
+			  ;;
+		  floatmax_t)
+			  DEFINES="$DEFINES -DUSE_FLOATMAX"
+			  ;;
+		  *)
+			  die "Unknown datatype: $d"
+			  ;;
+	  esac
+	done
 }
 
 set_opts()
@@ -4787,6 +4850,8 @@ SHOGUN was configured for
 
 interface(s) $cfgopts
 
+It will support the following data types $_datatypes.
+
 type "make" now to compile
 
 EOF
@@ -4846,6 +4911,7 @@ check_pkg_config
 check_make
 check_doxygen
 determine_march_mtune
+check_datatypes
 set_opts
 test_spinlocks
 test_libshogun

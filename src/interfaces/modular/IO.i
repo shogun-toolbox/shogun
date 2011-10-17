@@ -37,36 +37,84 @@
 %include <shogun/io/StreamingFileFromSparseFeatures.h>
 namespace shogun
 {
+#ifdef USE_BOOL
     %template(StreamingFileFromSparseBoolFeatures) CStreamingFileFromSparseFeatures<bool>;
+#endif
+#ifdef USE_CHAR
     %template(StreamingFileFromSparseCharFeatures) CStreamingFileFromSparseFeatures<char>;
+#endif
+#ifdef USE_UINT8
     %template(StreamingFileFromSparseByteFeatures) CStreamingFileFromSparseFeatures<uint8_t>;
+#endif
+#ifdef USE_INT16
     %template(StreamingFileFromSparseShortFeatures) CStreamingFileFromSparseFeatures<int16_t>;
+#endif
+#ifdef USE_UINT16
     %template(StreamingFileFromSparseWordFeatures) CStreamingFileFromSparseFeatures<uint16_t>;
+#endif
+#ifdef USE_INT32
     %template(StreamingFileFromSparseIntFeatures) CStreamingFileFromSparseFeatures<int32_t>;
+#endif
+#ifdef USE_UINT32
     %template(StreamingFileFromSparseUIntFeatures) CStreamingFileFromSparseFeatures<uint32_t>;
+#endif
+#ifdef USE_INT64
     %template(StreamingFileFromSparseLongFeatures) CStreamingFileFromSparseFeatures<int64_t>;
+#endif
+#ifdef USE_UINT64
     %template(StreamingFileFromSparseUlongFeatures) CStreamingFileFromSparseFeatures<uint64_t>;
+#endif
+#ifdef USE_FLOAT32
     %template(StreamingFileFromSparseShortRealFeatures) CStreamingFileFromSparseFeatures<float32_t>;
+#endif
+#ifdef USE_FLOAT64
     %template(StreamingFileFromSparseRealFeatures) CStreamingFileFromSparseFeatures<float64_t>;
+#endif
+#ifdef USE_FLOATMAX
     %template(StreamingFileFromSparseLongRealFeatures) CStreamingFileFromSparseFeatures<floatmax_t>;
+#endif
 }
 
 /* Template Class StreamingFileFromSimpleFeatures */
 %include <shogun/io/StreamingFileFromSimpleFeatures.h>
 namespace shogun
 {
+#ifdef USE_BOOL
     %template(StreamingFileFromBoolFeatures) CStreamingFileFromSimpleFeatures<bool>;
+#endif
+#ifdef USE_CHAR
     %template(StreamingFileFromCharFeatures) CStreamingFileFromSimpleFeatures<char>;
+#endif
+#ifdef USE_UINT8
     %template(StreamingFileFromByteFeatures) CStreamingFileFromSimpleFeatures<uint8_t>;
+#endif
+#ifdef USE_INT16
     %template(StreamingFileFromShortFeatures) CStreamingFileFromSimpleFeatures<int16_t>;
+#endif
+#ifdef USE_UINT16
     %template(StreamingFileFromWordFeatures) CStreamingFileFromSimpleFeatures<uint16_t>;
+#endif
+#ifdef USE_INT32
     %template(StreamingFileFromIntFeatures) CStreamingFileFromSimpleFeatures<int32_t>;
+#endif
+#ifdef USE_UINT32
     %template(StreamingFileFromUIntFeatures) CStreamingFileFromSimpleFeatures<uint32_t>;
+#endif
+#ifdef USE_INT64
     %template(StreamingFileFromLongFeatures) CStreamingFileFromSimpleFeatures<int64_t>;
+#endif
+#ifdef USE_UINT64
     %template(StreamingFileFromUlongFeatures) CStreamingFileFromSimpleFeatures<uint64_t>;
+#endif
+#ifdef USE_FLOAT32
     %template(StreamingFileFromShortRealFeatures) CStreamingFileFromSimpleFeatures<float32_t>;
+#endif
+#ifdef USE_FLOAT64
     %template(StreamingFileFromRealFeatures) CStreamingFileFromSimpleFeatures<float64_t>;
+#endif
+#ifdef USE_FLOATMAX
     %template(StreamingFileFromLongRealFeatures) CStreamingFileFromSimpleFeatures<floatmax_t>;
+#endif
 }
 
 %include <shogun/io/AsciiFile.h>
