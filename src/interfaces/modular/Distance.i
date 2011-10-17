@@ -42,31 +42,58 @@
 %include <shogun/distance/SimpleDistance.h>
 namespace shogun
 {
-    %template(SimpleRealDistance) CSimpleDistance<float64_t>;
-    %template(SimpleWordDistance) CSimpleDistance<uint16_t>;
+#ifdef USE_CHAR
     %template(SimpleCharDistance) CSimpleDistance<char>;
+#endif
+#ifdef USE_UINT16
+    %template(SimpleWordDistance) CSimpleDistance<uint16_t>;
+#endif
+#ifdef USE_INT32
     %template(SimpleIntDistance) CSimpleDistance<int32_t>;
+#endif
+#ifdef USE_FLOAT64
+    %template(SimpleRealDistance) CSimpleDistance<float64_t>;
+#endif
+
 }
 
 /* Templates Class SparseDistance*/
 %include <shogun/distance/SparseDistance.h>
 namespace shogun
 {
-    %template(SparseRealDistance) CSparseDistance<float64_t>;
-    %template(SparseWordDistance) CSparseDistance<uint16_t>;
+#ifdef USE_CHAR
     %template(SparseCharDistance) CSparseDistance<char>;
+#endif
+#ifdef USE_UINT16
+    %template(SparseWordDistance) CSparseDistance<uint16_t>;
+#endif
+#ifdef USE_INT32
     %template(SparseIntDistance) CSparseDistance<int32_t>;
+#endif
+#ifdef USE_FLOAT64
+    %template(SparseRealDistance) CSparseDistance<float64_t>;
+#endif
 }
 
 /* Templates Class StringDistance*/
 %include <shogun/distance/StringDistance.h>
 namespace shogun
 {
-    %template(StringRealDistance) CStringDistance<float64_t>;
-    %template(StringWordDistance) CStringDistance<uint16_t>;
+#ifdef USE_CHAR
     %template(StringCharDistance) CStringDistance<char>;
+#endif
+#ifdef USE_UINT16
+    %template(StringWordDistance) CStringDistance<uint16_t>;
+#endif
+#ifdef USE_INT32
     %template(StringIntDistance) CStringDistance<int32_t>;
+#endif
+#ifdef USE_UINT64
     %template(StringUlongDistance) CStringDistance<uint64_t>;
+#endif
+#ifdef USE_FLOAT64
+    %template(StringRealDistance) CStringDistance<float64_t>;
+#endif
 }
 
 %include <shogun/distance/RealDistance.h>

@@ -96,21 +96,39 @@
 %include <shogun/kernel/SparseKernel.h>
 namespace shogun
 {
+#ifdef USE_FLOAT64
     %template(SparseRealKernel) CSparseKernel<float64_t>;
+#endif
+#ifdef USE_UINT16
     %template(SparseWordKernel) CSparseKernel<uint16_t>;
+#endif
 }
 
 /* Templated Class StringKernel */
 %include <shogun/kernel/StringKernel.h>
 namespace shogun
 {
+#ifdef USE_FLOAT64
     %template(StringRealKernel) CStringKernel<float64_t>;
+#endif
+#ifdef USE_UINT16
     %template(StringWordKernel) CStringKernel<uint16_t>;
+#endif
+#ifdef USE_CHAR
     %template(StringCharKernel) CStringKernel<char>;
+#endif
+#ifdef USE_UINT32
     %template(StringIntKernel) CStringKernel<int32_t>;
+#endif
+#ifdef USE_UINT64
     %template(StringUlongKernel) CStringKernel<uint64_t>;
+#endif
+#ifdef USE_UINT16
     %template(StringShortKernel) CStringKernel<int16_t>;
+#endif
+#ifdef USE_UINT8
     %template(StringByteKernel) CStringKernel<uint8_t>;
+#endif
 }
 
 
