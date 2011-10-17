@@ -22,15 +22,6 @@ CCrossValidation::CCrossValidation()
 	init();
 }
 
-CCrossValidation::~CCrossValidation()
-{
-	SG_UNREF(m_machine);
-	SG_UNREF(m_features);
-	SG_UNREF(m_labels);
-	SG_UNREF(m_splitting_strategy);
-	SG_UNREF(m_evaluation_criterium);
-}
-
 CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CSplittingStrategy* splitting_strategy,
 		CEvaluation* evaluation_criterium)
@@ -48,6 +39,20 @@ CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 	SG_REF(m_labels);
 	SG_REF(m_splitting_strategy);
 	SG_REF(m_evaluation_criterium);
+}
+
+CCrossValidation::~CCrossValidation()
+{
+	SG_UNREF(m_machine);
+	SG_UNREF(m_features);
+	SG_UNREF(m_labels);
+	SG_UNREF(m_splitting_strategy);
+	SG_UNREF(m_evaluation_criterium);
+}
+
+EEvaluationDirection CCrossValidation::get_evaluation_direction()
+{
+	return m_evaluation_criterium->get_evaluation_direction();
 }
 
 void CCrossValidation::init()
