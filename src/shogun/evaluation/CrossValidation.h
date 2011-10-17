@@ -28,31 +28,35 @@ class CEvaluation;
  * m_conf_int_alpha is the probability for an error, i.e. the value does not lie
  * in the confidence interval.
  */
-typedef struct
-{
-	/** mean */
-	float64_t mean;
-	/** has conf int */
-	bool has_conf_int;
-	/** conf int low */
-	float64_t conf_int_low;
-	/** conf int up */
-	float64_t conf_int_up;
-	/** conf int alpha */
-	float64_t conf_int_alpha;
 
-	/** print result */
-	void print_result()
-	{
-		if (has_conf_int)
+class CrossValidationResult
+{
+	public:
+		/** print result */
+		void print_result()
 		{
-			SG_SPRINT("[%f,%f] with alpha=%f, mean=%f\n", conf_int_low, conf_int_up,
-					conf_int_alpha, mean);
+			if (has_conf_int)
+			{
+				SG_SPRINT("[%f,%f] with alpha=%f, mean=%f\n", conf_int_low,
+						conf_int_up, conf_int_alpha, mean);
+			}
+			else
+				SG_SPRINT("%f\n", mean);
 		}
-		else
-			SG_SPRINT("%f\n", mean);
-	}
-} CrossValidationResult;
+
+	public:
+		/** mean */
+		float64_t mean;
+		/** has conf int */
+		bool has_conf_int;
+		/** conf int low */
+		float64_t conf_int_low;
+		/** conf int up */
+		float64_t conf_int_up;
+		/** conf int alpha */
+		float64_t conf_int_alpha;
+
+};
 
 /** @brief base class for cross-validation evaluation.
  * Given a learning machine, a splitting strategy, an evaluation criterium,
@@ -95,10 +99,7 @@ public:
 	virtual ~CCrossValidation();
 
 	/** @return in which direction is the best evaluation value? */
-	inline EEvaluationDirection get_evaluation_direction()
-	{
-		return m_evaluation_criterium->get_evaluation_direction();
-	}
+	EEvaluationDirection get_evaluation_direction();
 
 	/** method for evaluation. Performs cross-validation.
 	 * Is repeated m_num_runs. If this number is larger than one, a confidence
