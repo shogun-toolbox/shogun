@@ -8,7 +8,7 @@ fm_train_dna=load_matrix('../data/fm_train_dna.dat');
 fm_test_dna=load_matrix('../data/fm_test_dna.dat');
 
 % svm light
-if exist('SVMLight')
+try
 	disp('SVMLight')
 
 	feats_train=StringCharFeatures(DNA);
@@ -31,6 +31,6 @@ if exist('SVMLight')
 
 	kernel.init(feats_train, feats_test);
 	svm.apply().get_labels();
-else
+catch
 	disp('No support for SVMLight available.')
 end
