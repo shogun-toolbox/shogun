@@ -66,6 +66,15 @@ public:
 		file=NULL;
 	}
 
+	/** get the file descriptor
+	 *
+	 * @return FILE ptr
+	 */
+	FILE* get_file_descriptor()
+	{
+		return file;
+	}
+
 	/** set the path to the variable to be accessed
 	 *
 	 * only supported by some file interfaces like CHDF5File
