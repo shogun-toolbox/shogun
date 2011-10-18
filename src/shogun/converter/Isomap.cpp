@@ -85,32 +85,9 @@ const char* CIsomap::get_name() const
 	return "Isomap";
 }
 
-CSimpleFeatures<float64_t>* CIsomap::apply(CDistance* distance)
+SGMatrix<float64_t> CIsomap::process_distance_matrix(SGMatrix<float64_t> distance_matrix)
 {
-	ASSERT(distance);
-	SGMatrix<float64_t> geodesic_distance_matrix = isomap_distance(distance->get_distance_matrix());
-	// compute embedding for geodesic distance
-	SGMatrix<float64_t> new_feature_matrix;
-	if (m_landmark)
-		new_feature_matrix = CMultidimensionalScaling::landmark_embedding(geodesic_distance_matrix);
-	else
-		new_feature_matrix = CMultidimensionalScaling::classic_embedding(geodesic_distance_matrix);
-
-	geodesic_distance_matrix.destroy_matrix();
-	return new CSimpleFeatures<float64_t>(new_feature_matrix);
-}
-
-CSimpleFeatures<float64_t>* CIsomap::apply(CFeatures* features)
-{
-	SG_REF(features);
-	ASSERT(m_distance);
-	
-	m_distance->init(features, features);
-	CSimpleFeatures<float64_t>* embedding = apply(m_distance);
-	m_distance->remove_lhs_and_rhs();
-	
-	SG_UNREF(features);
-	return embedding;
+	return isomap_distance(distance_matrix);
 }
 
 SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)

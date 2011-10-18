@@ -72,7 +72,7 @@ for (i, (converter, label)) in enumerate(converters):
 	X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
 	features = RealFeatures(X)
 	converter.set_target_dim(2)
-	new_feats = converter.apply(features).get_feature_matrix()
+	new_feats = converter.embed(features).get_feature_matrix()
 	if not new_mpl:
 		embedding_subplot = fig.add_subplot(4,2,i+1)
 	else:

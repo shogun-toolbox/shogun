@@ -9,6 +9,7 @@
  */
 
 #include <shogun/converter/EmbeddingConverter.h>
+#include <shogun/features/SimpleFeatures.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/distance/EuclidianDistance.h>
 
@@ -30,6 +31,11 @@ CEmbeddingConverter::~CEmbeddingConverter()
 {
 	SG_UNREF(m_distance);
 	SG_UNREF(m_kernel);
+}
+
+CSimpleFeatures<float64_t>* CEmbeddingConverter::embed(CFeatures* features)
+{
+	return (CSimpleFeatures<float64_t>*)apply(features);
 }
 
 void CEmbeddingConverter::set_target_dim(int32_t dim)
@@ -72,10 +78,10 @@ CKernel* CEmbeddingConverter::get_kernel() const
 void CEmbeddingConverter::init()
 {
 	this->m_parameters->add(&m_target_dim, "target_dim",
-					  "target dimensionality of preprocessor");
+	                        "target dimensionality of preprocessor");
 	this->m_parameters->add((CSGObject**)&m_distance, "distance",
-					  "distance to be used for embedding");
+	                        "distance to be used for embedding");
 	this->m_parameters->add((CSGObject**)&m_kernel, "kernel",
-					  "kernel to be used for embedding");
+	                        "kernel to be used for embedding");
 }
 }

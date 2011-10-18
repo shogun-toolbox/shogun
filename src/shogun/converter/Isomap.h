@@ -52,18 +52,6 @@ public:
 	/* destructor */
 	virtual ~CIsomap();
 
-	/** apply preprocessor to CDistance
-	 * @param distance distance
-	 * @return embedded features 
-	 */
-	virtual CSimpleFeatures<float64_t>* apply(CDistance* distance);
-
-	/** apply preprocessor to features
-	 * @param features 
-	 * @return embedded feature matrix
-	 */
-	virtual CSimpleFeatures<float64_t>* apply(CFeatures* features);
-
 	/** get name */
 	const char* get_name() const;
 
@@ -77,15 +65,27 @@ public:
 	 */
 	int32_t get_k() const;
 
+/// HELPERS
+protected:
+
+	/** default init */
+	virtual void init();
+
+	/** process distance matrix (redefined in isomap, for mds does nothing)
+	 * @param distance_matrix distance matrix
+	 * @return processed distance matrix
+	 */
+	virtual SGMatrix<float64_t> process_distance_matrix(SGMatrix<float64_t> distance_matrix);
+
+
+/// FIELDS
 protected:
 
 	/** k, number of neighbors for K-Isomap */
 	int32_t m_k;
 
+/// THREADS
 protected:
-
-	/** default init */
-	void init();
 
 	/** run dijkstra thread
 	 * @param p thread params

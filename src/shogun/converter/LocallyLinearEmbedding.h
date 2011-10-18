@@ -64,7 +64,7 @@ public:
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual CSimpleFeatures<float64_t>* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features);
 
 	/** setter for k parameter
 	 * @param k k value
@@ -143,19 +143,20 @@ protected:
 	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
                                                             SGMatrix<int32_t> neighborhood_matrix);
 
-	/** finds null space of given matrix 
-	 * @param matrix given matrix
-	 * @param dimension dimension of null space to be computed
-	 * @return null-space approximation feature matrix
+	/** constructs embedding
+	 * @param features features to be used
+	 * @param matrix computed weight matrix
+	 * @param dimension dimension of embedding
+	 * @return embedding features
 	 */
-	SGMatrix<float64_t> find_null_space(SGMatrix<float64_t> matrix, int dimension);
+	virtual SGMatrix<float64_t> construct_embedding(CFeatures* features,SGMatrix<float64_t> matrix,int dimension);
 
 	/** constructs neighborhood matrix by distance
 	 * @param distance_matrix distance matrix to be used
 	 * @param k number of neighbors
 	 * @return matrix containing indexes of neighbors of i-th vector in i-th column
 	 */
-	SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
+	virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
 
 	/** estimates k using ternary search 
 	 * @param simple_features simple features to use

@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	kltsa->set_k(4);
 	kltsa->set_kernel(kernel);
 	kltsa->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = kltsa->apply(features);
+	CSimpleFeatures<double>* embedding = kltsa->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(kltsa);
 	SG_UNREF(features);

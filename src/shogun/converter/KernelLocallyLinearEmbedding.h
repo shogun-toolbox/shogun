@@ -46,7 +46,7 @@ public:
 	/** destructor */
 	virtual ~CKernelLocallyLinearEmbedding();
 
-	virtual CSimpleFeatures<float64_t>* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features);
 
 	/** get name */
 	virtual const char* get_name() const;
