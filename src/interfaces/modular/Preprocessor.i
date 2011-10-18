@@ -33,12 +33,24 @@
 %include <shogun/preprocessor/SimplePreprocessor.h>
 namespace shogun
 {
+#ifdef USE_FLOAT64
     %template(SimpleRealPreprocessor) CSimplePreprocessor<float64_t>;
+#endif
+#ifdef USE_UINT64
     %template(SimpleUlongPreprocessor) CSimplePreprocessor<uint64_t>;
+#endif
+#ifdef USE_UINT16
     %template(SimpleWordPreprocessor) CSimplePreprocessor<uint16_t>;
+#endif
+#ifdef USE_INT16
     %template(SimpleShortPreprocessor) CSimplePreprocessor<int16_t>;
+#endif
+#ifdef USE_UINT8
     %template(SimpleBytePreprocessor) CSimplePreprocessor<uint8_t>;
+#endif
+#ifdef USE_CHAR
     %template(SimpleCharPreprocessor) CSimplePreprocessor<char>;
+#endif
 }
 
 /* Templates Class DimensionReductionPreprocessor */
@@ -48,20 +60,36 @@ namespace shogun
 %include <shogun/preprocessor/StringPreprocessor.h>
 namespace shogun
 {
+#ifdef USE_UINT64
     %template(StringUlongPreprocessor) CStringPreprocessor<uint64_t>;
+#endif
+#ifdef USE_UINT16
     %template(StringWordPreprocessor) CStringPreprocessor<uint16_t>;
+#endif
+#ifdef USE_UINT8
     %template(StringBytePreprocessor) CStringPreprocessor<uint8_t>;
+#endif
+#ifdef USE_CHAR
     %template(StringCharPreprocessor) CStringPreprocessor<char>;
+#endif
 }
 
 /* Templates Class DecompressString*/
 %include <shogun/preprocessor/DecompressString.h>
 namespace shogun
 {
+#ifdef USE_UINT64
     %template(DecompressUlongString) CDecompressString<uint64_t>;
+#endif
+#ifdef USE_UINT16
     %template(DecompressWordString) CDecompressString<uint16_t>;
+#endif
+#ifdef USE_UINT8
     %template(DecompressByteString) CDecompressString<uint8_t>;
+#endif
+#ifdef USE_CHAR
     %template(DecompressCharString) CDecompressString<char>;
+#endif
 }
 %include <shogun/preprocessor/SparsePreprocessor.h>
 %include <shogun/preprocessor/NormOne.h>
