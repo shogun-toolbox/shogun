@@ -111,12 +111,12 @@ const char* CMultidimensionalScaling::get_name() const
 	return "MultidimensionalScaling";
 };
 
-CSimpleFeatures<float64_t>* CMultidimensionalScaling::apply(CDistance* distance)
+CFeatures* CMultidimensionalScaling::apply(CDistance* distance)
 {
 	ASSERT(distance);
 
 	// compute feature_matrix by landmark or classic embedding of distance matrix
-	SGMatrix<float64_t> distance_matrix = distance->get_distance_matrix();
+	SGMatrix<float64_t> distance_matrix = process_distance_matrix(distance->get_distance_matrix());
 	SGMatrix<float64_t> feature_matrix;
 	if (m_landmark)
 		feature_matrix = landmark_embedding(distance_matrix);
@@ -125,20 +125,25 @@ CSimpleFeatures<float64_t>* CMultidimensionalScaling::apply(CDistance* distance)
 	
 	distance_matrix.destroy_matrix();
 
-	return new CSimpleFeatures<float64_t>(feature_matrix);
+	return (CFeatures*)(new CSimpleFeatures<float64_t>(feature_matrix));
 }
 
-CSimpleFeatures<float64_t>* CMultidimensionalScaling::apply(CFeatures* features)
+SGMatrix<float64_t> CMultidimensionalScaling::process_distance_matrix(SGMatrix<float64_t> distance_matrix)
+{
+	return distance_matrix;
+}
+
+CFeatures* CMultidimensionalScaling::apply(CFeatures* features)
 {
 	SG_REF(features);
 	ASSERT(m_distance);
 	
 	m_distance->init(features,features);
-	CSimpleFeatures<float64_t>* embedding = apply(m_distance);
+	CFeatures* embedding = apply(m_distance);
 	m_distance->remove_lhs_and_rhs();
 	
 	SG_UNREF(features);
-	return embedding;
+	return (CFeatures*)embedding;
 }
 
 SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64_t> distance_matrix)

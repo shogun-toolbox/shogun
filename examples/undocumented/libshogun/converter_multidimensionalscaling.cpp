@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	mds->set_target_dim(2);
 	mds->set_landmark(true);
 	mds->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = mds->apply(features);
+	CSimpleFeatures<double>* embedding = mds->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(mds);
 	SG_UNREF(features);

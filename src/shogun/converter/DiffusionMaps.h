@@ -38,7 +38,7 @@ public:
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual CSimpleFeatures<float64_t>* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features);
 
 	/** setter for t parameter
 	 * @param t t value

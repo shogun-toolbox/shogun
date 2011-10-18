@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	isomap->set_landmark(true);
 	isomap->set_k(4);
 	isomap->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = isomap->apply(features);
+	CSimpleFeatures<double>* embedding = isomap->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(isomap);
 	SG_UNREF(features);

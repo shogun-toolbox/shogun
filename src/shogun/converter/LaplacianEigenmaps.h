@@ -54,7 +54,7 @@ public:
 	/** destructor */
 	virtual ~CLaplacianEigenmaps();
 
-	virtual CSimpleFeatures<float64_t>* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features);
 
 	/** setter for K parameter
 	 * @param k k value

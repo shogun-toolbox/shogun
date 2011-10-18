@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	ltsa->set_target_dim(2);
 	ltsa->set_k(4);
 	ltsa->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = ltsa->apply(features);
+	CSimpleFeatures<double>* embedding = ltsa->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(ltsa);
 	SG_UNREF(features);

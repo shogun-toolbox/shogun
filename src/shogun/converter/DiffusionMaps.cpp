@@ -54,7 +54,7 @@ const char* CDiffusionMaps::get_name() const
 	return "DiffusionMaps";
 };
 
-CSimpleFeatures<float64_t>* CDiffusionMaps::apply(CFeatures* features)
+CFeatures* CDiffusionMaps::apply(CFeatures* features)
 {
 	ASSERT(features);
 	if (!(features->get_feature_class()==C_SIMPLE &&
@@ -162,7 +162,7 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::apply(CFeatures* features)
 	kernel_matrix.destroy_matrix();
 
 	SG_UNREF(features);
-	return new CSimpleFeatures<float64_t>(new_feature_matrix);
+	return (CFeatures*)(new CSimpleFeatures<float64_t>(new_feature_matrix));
 }
 
 #endif /* HAVE_LAPACK */

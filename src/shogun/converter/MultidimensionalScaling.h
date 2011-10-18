@@ -70,14 +70,14 @@ public:
 	 * @param distance (should be approximate euclidean for consistent result)
 	 * @return new features with distance similar to given as much as possible
 	 */
-	virtual CSimpleFeatures<float64_t>* apply(CDistance* distance);
+	virtual CFeatures* apply(CDistance* distance);
 
 	/** apply preprocessor to feature matrix,
 	 * changes feature matrix to the one having target dimensionality
 	 * @param features features which feature matrix should be processed
 	 * @return new feature matrix
 	 */
-	virtual CSimpleFeatures<float64_t>* apply(CFeatures* features);
+	virtual CFeatures* apply(CFeatures* features);
 
 	/** get name */
 	const char* get_name() const;
@@ -113,7 +113,7 @@ public:
 protected:
 
 	/** default initialization */
-	void init();
+	virtual void init();
 
 	 /** classical embedding
 	 * @param distance_matrix distance matrix to be used for embedding
@@ -126,6 +126,12 @@ protected:
 	 * @return new feature matrix representing given distance matrix
 	 */
 	SGMatrix<float64_t> landmark_embedding(SGMatrix<float64_t> distance_matrix);
+
+	/** process distance matrix (redefined in isomap, for mds does nothing)
+	 * @param distance_matrix distance matrix
+	 * @return processed distance matrix
+	 */
+	virtual SGMatrix<float64_t> process_distance_matrix(SGMatrix<float64_t> distance_matrix);
 
 /// FIELDS
 protected:
@@ -143,8 +149,8 @@ protected:
 protected:
 
 	/** run triangulation thread for landmark embedding
-	  * @param p thread parameters
-	  */
+	 * @param p thread parameters
+	 */
 	static void* run_triangulation_thread(void* p);
 
 	/** subroutine used to shuffle count indexes among of total_count ones

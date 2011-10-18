@@ -66,7 +66,7 @@ const char* CLaplacianEigenmaps::get_name() const
 	return "LaplacianEigenmaps";
 };
 
-CSimpleFeatures<float64_t>* CLaplacianEigenmaps::apply(CFeatures* features)
+CFeatures* CLaplacianEigenmaps::apply(CFeatures* features)
 {
 	// shorthand for simplefeatures
 	SG_REF(features);
@@ -200,6 +200,6 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::apply(CFeatures* features)
 	W_sgmatrix.destroy_matrix();
 
 	SG_UNREF(features);
-	return new CSimpleFeatures<float64_t>(new_features);
+	return (CFeatures*)(new CSimpleFeatures<float64_t>(new_features));
 }
 #endif /* HAVE_LAPACK */

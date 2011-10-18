@@ -39,9 +39,16 @@ public:
 
 	/** applies to the given data, returns embedding
 	 * @param features features to embed
+	 * @return embedding features
+	 */
+	virtual CFeatures* apply(CFeatures* features) = 0;
+
+	/** embed given features, acts the same as apply, but returns
+	 * SimpleFeatures
+	 * @param features features to embed
 	 * @return embedding simple features
 	 */
-	virtual CSimpleFeatures<float64_t>* apply(CFeatures* features) = 0;
+	CSimpleFeatures<float64_t>* embed(CFeatures* features);
 
 	/** setter for target dimension
 	 * @param dim target dimension
