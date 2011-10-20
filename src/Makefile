@@ -27,7 +27,7 @@ all:  $(PARTDEPS) examples $(LIBSHOGUN_TARGET)
 	@echo ==== opts: $(COMPFLAGS_CPP)
 	@echo ============================================================
 	@echo 
-	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
+	$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
 	@echo 
 	@echo ============================================================
 	@echo ==== Done. Check the subdirectories for binaries.
