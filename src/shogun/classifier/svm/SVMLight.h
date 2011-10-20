@@ -38,8 +38,8 @@
 
 namespace shogun
 {
-# define VERSION       "V3.50 -- correct??"
-# define VERSION_DATE  "01.11.00 -- correct??"
+//# define VERSION       "V3.50 -- correct??"
+//# define VERSION_DATE  "01.11.00 -- correct??"
 
 # define DEF_PRECISION 1E-14
 # define MAXSHRINK 50000
