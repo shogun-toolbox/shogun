@@ -40,10 +40,13 @@
  * If not supported make sure that your development environment is
  * supporting ISO C99!
  */
+#ifdef __STDC_FORMAT_MACROS
+#include <inttypes.h>
+#else
 #define __STDC_FORMAT_MACROS 1
 #include <inttypes.h>
-
 #undef __STDC_FORMAT_MACROS
+#endif
 
 /**
  * Implementations tend to follow IEEE754
