@@ -1,9 +1,11 @@
+//import org.shogun.*;
+//import org.jblas.*;
 using System;
 
-public class kernel_log_modular {
+public class kernel_power_modular {
 	public static void Main() {
 		modshogun.init_shogun_with_defaults();
-		double degree = 2.0;
+		double degree = 1.0;
 
 		double[,] traindata_real = Load.load_numbers("../data/fm_train_real.dat");
 		double[,] testdata_real = Load.load_numbers("../data/fm_test_real.dat");
@@ -13,17 +15,17 @@ public class kernel_log_modular {
 
 		EuclidianDistance distance = new EuclidianDistance(feats_train, feats_train);
 
-		WaveKernel kernel = new WaveKernel(feats_train, feats_test, degree, distance);
+		PowerKernel kernel = new PowerKernel(feats_train, feats_test, degree, distance);
 
 		double[,] km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);
 		double[,] km_test = kernel.get_kernel_matrix();
 
 		foreach (double item in km_train)
-		      Console.Write(item);
+		    Console.Write(item);
 
 		foreach (double item in km_test)
-		      Console.Write(item);
+		    Console.Write(item);
 
 		modshogun.exit_shogun();
 	}
