@@ -120,7 +120,6 @@ _libshogun=yes
 _python=auto
 _octave=auto
 _r=auto
-_ruby_narray=auto
 
 #static interfaces
 _cmdline_static=auto
@@ -622,7 +621,19 @@ EOF
 			EXT_LIB_SWIG_JAVA_MODULAR=.so
 			mkdir -p interfaces/java_modular/org/shogun >/dev/null 2>&1
 			SWIGFLAGS_JAVA_MODULAR="-c++ -java -package org.shogun -outdir org/shogun"
-			INCLUDES_JAVA="-I$(dirname $(java configure java.home))/include"
+			java_home_dir="$(dirname $(java configure java.home))"
+			if test -d "${java_home_dir}/include"
+			then
+				INCLUDES_JAVA="-I${java_home_dir}/include"
+			elif test -d "${java_home_dir}/Headers"
+			then
+				INCLUDES_JAVA="-I${java_home_dir}/Headers"
+			else
+				if test $_java_modular = "yes"
+				then
+					die "could not find java includes"
+				fi
+			fi
 			INCLUDES_JAVA="$INCLUDES_JAVA $INCLUDES_JAVA/`uname -s | tr 'A-Z' 'a-z'`"
 
 			COMPFLAGS_CPP="$COMPFLAGS_CPP -fno-strict-aliasing"
@@ -724,7 +735,7 @@ EOF
 		then
 			echores "yes"
 			INCLUDES_RUBY=`ruby $TMPRUBY`
-            RUBYSO=`ruby -e 'require "mkmf"; puts Config::expand("$(RUBY_SO_NAME)")'`
+			RUBYSO=`ruby -e 'require "mkmf"; puts Config::expand("$(RUBY_SO_NAME)")'`
 			if ld -o "$TMPO" -l$RUBYSO >/dev/null 2>&1
 			then
 				LINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared"
@@ -757,7 +768,6 @@ EOF
 			RUBY_VENDOR_LIBRARY_DIR=`ruby "$TMPRUBY" 2>/dev/null`
 			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir/$_rubydir/`ruby -e 'require "mkmf"; puts Config::expand("$(ruby_version)") + "/" + Config::expand("$(arch)")'`
 			test_ruby_narray
-			_ruby_modular=yes
 		else
 			if test "$_ruby_modular" = yes
 			then
@@ -819,7 +829,7 @@ EOF
 			then
 				die "ruby NArray header files missing"
 			else
-				echores "not detected"
+				echores "not detected (disabling ruby interface)"
 				_ruby_modular=no
 			fi
 		fi
@@ -853,7 +863,18 @@ test_lua()
 
 		INCLUDES_LUA="`pkg-config --cflags-only-I lua$LV 2>/dev/null`"
 		LINKFLAGS_LUA="`pkg-config --libs lua$LV 2>/dev/null`"
-		LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua$LV --define-variable=prefix=$_prefix --variable INSTALL_CMOD`"
+		LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua$LV --define-variable prefix=$_prefix --variable INSTALL_CMOD`"
+
+		if test -z "$INCLUDES_LUA" ; then
+			INCLUDES_LUA="`pkg-config --cflags-only-I lua 2>/dev/null`"
+		fi
+		if test -z "$LINKFLAGS_LUA" ; then
+			LINKFLAGS_LUA="`pkg-config --libs lua 2>/dev/null`"
+		fi
+		if test -z "$LUA_EXTENSIONS_INSTALL_DIR" ; then
+			LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua --define-variable prefix=$_prefix --variable INSTALL_CMOD`"
+		fi
+
 
 		if test -z "$INCLUDES_LUA" ; then
 			INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
@@ -4136,7 +4157,10 @@ EOF
 					fi
 				fi
 				OCTAVE_TARGET="sg.oct"
-				INCLUDES_OCTAVE="$INCLUDES_OCTAVE -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
+				oct_inc_dir=`octave-config -p INCLUDEDIR`
+				oct_oct_inc_dir=`octave-config -p OCTINCLUDEDIR`
+				oct_oct_inc_dir=`echo ${oct_oct_inc_dir} | sed 's/\/octave$//'`
+				INCLUDES_OCTAVE="$INCLUDES_OCTAVE -I${oct_oct_inc_dir} -I${oct_inc_dir}"
 				COMPFLAGS_CPP_OCTAVE="$COMPFLAGS_CPP -fPIC"
 				COMPFLAGS_C_OCTAVE="$COMPFLAGS_C -fPIC"
 
