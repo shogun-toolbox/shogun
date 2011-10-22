@@ -104,7 +104,7 @@ public:
      * @param is_labelled Whether example is labelled or not (bool), optional
      * @param size Size of the buffer in number of examples
      */
-    void init(CStreamingFile* input_file, bool is_labelled, int32_t size);
+    void init(CStreamingFile* input_file, bool is_labelled = true, int32_t size = PARSER_DEFAULT_BUFFSIZE);
 
     /**
      * Test if parser is running.
@@ -384,7 +384,7 @@ template <class T>
 }
 
 template <class T>
-    void CInputParser<T>::init(CStreamingFile* input_file, bool is_labelled = true, int32_t size = PARSER_DEFAULT_BUFFSIZE)
+    void CInputParser<T>::init(CStreamingFile* input_file, bool is_labelled, int32_t size)
 {
     input_source = input_file;
 
