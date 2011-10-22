@@ -63,7 +63,7 @@ template <class T> class CSimpleFile : public CSGObject
 		 * @param num number of read elements
 		 * @return loaded target or NULL if unsuccessful
 		 */
-		T* load(T* target, int64_t& num=0)
+		T* load(T* target, int64_t& num)
 		{
 			if (status)
 			{
