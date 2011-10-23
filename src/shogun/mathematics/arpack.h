@@ -26,7 +26,7 @@ namespace shogun
  *
  * @param matrix symmetric real matrix of size n*n
  *        (will be modified if mode==3)
- * @param rhs_array if is_rhs_diag is true - array of size n representing
+ * @param rhs if is_rhs_diag is true - array of size n representing
  *        right hand side diagonal matrix, else array of size n*n representing
  *        right hand side full matrix
  *        should be NULL if non-general eigenproblem to be solved
