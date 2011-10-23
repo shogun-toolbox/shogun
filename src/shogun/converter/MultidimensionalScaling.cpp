@@ -186,8 +186,8 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 	// using ARPACK
 	float64_t* eigenvalues_vector = SG_MALLOC(float64_t, m_target_dim);
 	// solve eigenproblem with ARPACK (faster)
-	arpack_xsxupd<float64_t>(distance_matrix.matrix,NULL,N,m_target_dim,"LM",1,false,0.0,0.0,
-	                         eigenvalues_vector,replace_feature_matrix,eigenproblem_status);
+	arpack_dsxupd(distance_matrix.matrix,NULL,false,N,m_target_dim,"LM",false,1,false,0.0,0.0,
+	              eigenvalues_vector,replace_feature_matrix,eigenproblem_status);
 	// check for failure
 	ASSERT(eigenproblem_status == 0);
 	// reverse eigenvectors order

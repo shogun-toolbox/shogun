@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-/** Wrapper for ARPACK's xsaupd/xseupd routines. These ARPACK 
+/** Wrapper for ARPACK's dsaupd/dseupd routines. These ARPACK 
  * routines are being used to compute specified number of eigenpairs 
  * (e.g. k largest eigenvalues). Underlying routines involve 
  * a variant of Arnoldi process called the IRAM
@@ -26,8 +26,11 @@ namespace shogun
  *
  * @param matrix symmetric real matrix of size n*n
  *        (will be modified if mode==3)
- * @param rhs_diag array of size n representing right hand side diagonal matrix,
+ * @param rhs_array if is_rhs_diag is true - array of size n representing
+ *        right hand side diagonal matrix, else array of size n*n representing
+ *        right hand side full matrix
  *        should be NULL if non-general eigenproblem to be solved
+ * @param is_rhs_diag true if rhs is diagonal and represented by array of size N
  * @param n size of matrix
  * @param nev number of eigenpairs to compute (nev<=n)
  * @param which eigenvalue finding strategy. Possible values:
@@ -40,6 +43,7 @@ namespace shogun
  *        - "BE": half of nev from each end of the spectrum, i.e. nev%2
  *                smallest and nev%2 largest eigenvalues. If nev is odd,
  *                one more largest eigenvalue will be computed
+ * @param use_superlu if superlu should be used (works efficiently only for sparse matrices)
  * @param mode shift-mode of IRLM. Possible values:
  *        - 1: regular mode
  *        - 3: shift-invert mode
@@ -52,10 +56,10 @@ namespace shogun
  * @param eigenvectors array of size nev*n to hold computed eigenvectors
  * @param status on output -1 if computation failed
  */
-template <typename ST>
-void arpack_xsxupd(ST* matrix, ST* rhs_diag, int n, int nev, const char* which,
-                   int mode, bool pos, ST shift, ST tolerance,
-                   ST* eigenvalues, ST* eigenvectors, int& status);
+void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev, 
+                   const char* which, bool use_superlu, int mode, bool pos, 
+                   double shift, double tolerance, double* eigenvalues,
+                   double* eigenvectors, int& status);
 }
 #endif /* HAVE_LAPACK */
 #endif /* HAVE_ARPACK */
