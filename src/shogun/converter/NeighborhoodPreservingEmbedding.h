@@ -30,7 +30,10 @@ class CDistance;
  * Neighborhood preserving embedding. 
  * Tenth IEEE International Conference on Computer Vision ICCV05 Volume 1, 2, 1208-1213. Ieee.
  * Retrieved from http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=1544858
- * 
+ *
+ * This method is hardly applicable to very high-dimensional data due to 
+ * necessity to solve eigenproblem involving matrix of size (dim x dim).
+ *
  */
 class CNeighborhoodPreservingEmbedding: public CLocallyLinearEmbedding
 {
