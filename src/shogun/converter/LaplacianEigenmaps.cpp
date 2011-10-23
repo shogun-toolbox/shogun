@@ -9,8 +9,8 @@
  */
 
 #include <shogun/converter/LaplacianEigenmaps.h>
-#ifdef HAVE_LAPACK
 #include <shogun/converter/EmbeddingConverter.h>
+#ifdef HAVE_LAPACK
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/FibonacciHeap.h>
@@ -76,14 +76,21 @@ CFeatures* CLaplacianEigenmaps::apply(CFeatures* features)
 	ASSERT(m_k<N);
 	ASSERT(m_target_dim<N);
 
-	// loop variables
-	int32_t i,j;
-
 	// compute distance matrix
 	ASSERT(m_distance);
 	m_distance->init(features,features);
-	SGMatrix<float64_t> W_sgmatrix = m_distance->get_distance_matrix();
+	CSimpleFeatures<float64_t>* embedding = embed(m_distance);
 	m_distance->remove_lhs_and_rhs();
+	SG_UNREF(features);
+	return (CFeatures*)embedding;
+}
+
+CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed(CDistance* distance)
+{
+	int32_t i,j;
+	SGMatrix<float64_t> W_sgmatrix = distance->get_distance_matrix();
+	ASSERT(W_sgmatrix.num_rows==W_sgmatrix.num_cols);
+	int32_t N = W_sgmatrix.num_rows;
 	// shorthand
 	float64_t* W_matrix = W_sgmatrix.matrix;
 
@@ -199,7 +206,7 @@ CFeatures* CLaplacianEigenmaps::apply(CFeatures* features)
 	}
 	W_sgmatrix.destroy_matrix();
 
-	SG_UNREF(features);
-	return (CFeatures*)(new CSimpleFeatures<float64_t>(new_features));
+	return new CSimpleFeatures<float64_t>(new_features);
 }
+
 #endif /* HAVE_LAPACK */
