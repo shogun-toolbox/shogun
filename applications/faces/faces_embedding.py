@@ -50,11 +50,13 @@ def build_features(path):
 	return nd,md,RealFeatures(feature_matrix)
 
 path = '../../data/faces/'
-converter = DiffusionMaps
+converter = KernelLocallyLinearEmbedding
 nd,md,features = build_features(path)
 converter_instance = converter()
 converter_instance.parallel.set_num_threads(2)
-converter_instance.set_t(2)
+converter_instance.set_k(5)
+converter_instance.set_kernel(GaussianKernel(50,500000.0))
+#converter_instance.set_nullspace_shift(1e-3)
 converter_instance.set_target_dim(2)
 
 start = time.time()
@@ -82,7 +84,7 @@ for i in range(len(new_features[0])):
 	Z[Z[:,:,2]<0] = 0
 	for k in range(nd):
 		for j in range(md):
-			Z[k,j,3] = pow(sin(k*pi/nd)*sin(j*pi/md),0.3)
+			Z[k,j,3] = pow(sin(k*pi/nd)*sin(j*pi/md),0.5)
 	imagebox = OffsetImage(Z,cmap=cm.gray,zoom=0.60)
 	ab = AnnotationBbox(imagebox, (new_features[0,i],new_features[1,i]),
 						pad=0.001,frameon=False)
