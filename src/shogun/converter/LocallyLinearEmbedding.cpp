@@ -493,10 +493,10 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_embedding(CFeatures* feat
 		#endif
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
-		#ifdef HAVE_ARPACK
-		arpack_xsxupd<float64_t>(matrix.matrix,NULL,N,dimension+1,"LA",3,true,m_nullspace_shift,0.0,
-		                         eigenvalues_vector,matrix.matrix,eigenproblem_status);
-		#endif
+#ifdef HAVE_ARPACK
+		arpack_dsxupd(matrix.matrix,NULL,false,N,dimension+1,"LA",true,3,true,m_nullspace_shift,0.0,
+		              eigenvalues_vector,matrix.matrix,eigenproblem_status);
+#endif
 		if (eigenproblem_status)
 			SG_ERROR("ARPACK failed with code: %d", eigenproblem_status);
 		nullspace_features = SG_MALLOC(float64_t, N*dimension);

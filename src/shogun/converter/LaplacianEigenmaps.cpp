@@ -163,9 +163,9 @@ CFeatures* CLaplacianEigenmaps::apply(CFeatures* features)
 		// using ARPACK DS{E,A}UPD
 		int eigenproblem_status = 0;
 		float64_t* eigenvalues_vector = SG_MALLOC(float64_t,m_target_dim+1);
-		arpack_xsxupd<float64_t>(W_matrix,D_diag_vector,N,m_target_dim+1,"LA",3,false,-1e-9,0.0,
-		                         eigenvalues_vector,W_matrix,eigenproblem_status);
-		ASSERT(eigenproblem_status==0);
+		arpack_dsxupd(W_matrix,D_diag_vector,true,N,m_target_dim+1,"LA",true,3,false,-1e-9,0.0,
+		              eigenvalues_vector,W_matrix,eigenproblem_status);
+		if (eigenproblem_status!=0) SG_ERROR("DSXUPD failed with code %d\n",eigenproblem_status);
 		SG_FREE(eigenvalues_vector);
 	#else
 		// using LAPACK DSYGVX

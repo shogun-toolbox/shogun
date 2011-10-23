@@ -4,6 +4,7 @@
 #include <shogun/converter/LocallyLinearEmbedding.h>
 #include <shogun/converter/NeighborhoodPreservingEmbedding.h>
 #include <shogun/converter/LocalTangentSpaceAlignment.h>
+#include <shogun/converter/LinearLocalTangentSpaceAlignment.h>
 #include <shogun/converter/HessianLocallyLinearEmbedding.h>
 #include <shogun/converter/KernelLocallyLinearEmbedding.h>
 #include <shogun/converter/KernelLocalTangentSpaceAlignment.h>

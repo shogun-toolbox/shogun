@@ -48,6 +48,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  converter_diffusionmaps \
 		  converter_laplacianeigenmaps \
 		  converter_neighborhoodpreservingembedding \
+		  converter_linearlocaltangentspacealignment \
 
 all: $(TARGETS)
 
