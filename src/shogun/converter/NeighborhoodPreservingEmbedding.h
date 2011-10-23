@@ -23,7 +23,14 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief NeighborhoodPreservingEmbedding
+/** @brief NeighborhoodPreservingEmbedding converter used to 
+ * construct embeddings as described in:
+ * 
+ * He, X., Cai, D., Yan, S., & Zhang, H.-J. (2005). 
+ * Neighborhood preserving embedding. 
+ * Tenth IEEE International Conference on Computer Vision ICCV05 Volume 1, 2, 1208-1213. Ieee.
+ * Retrieved from http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=1544858
+ * 
  */
 class CNeighborhoodPreservingEmbedding: public CLocallyLinearEmbedding
 {
