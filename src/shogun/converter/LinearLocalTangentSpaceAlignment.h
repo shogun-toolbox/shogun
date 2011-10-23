@@ -31,6 +31,9 @@ class CDistance;
  * Neurocomputing, 70(7-9), 1547-1553. 
  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S0925231206004577
  * 
+ * This method is hardly applicable to very high-dimensional data due to 
+ * necessity to solve eigenproblem involving matrix of size (dim x dim).
+ *
  */
 class CLinearLocalTangentSpaceAlignment: public CLocalTangentSpaceAlignment
 {
