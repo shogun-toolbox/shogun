@@ -68,25 +68,10 @@ CFeatures* CDiffusionMaps::apply(CFeatures* features)
 
 	// get dimensionality and number of vectors of data
 	int32_t N = simple_features->get_num_vectors();
-	int32_t dim;
+	int32_t dim = simple_features->get_num_features();
 
 	// loop variables
 	int32_t i,j;
-
-	float64_t* feature_matrix = simple_features->get_feature_matrix(dim,N);
-
-	float64_t features_min = feature_matrix[0];
-	float64_t features_max = feature_matrix[0];
-	for (i=0; i<dim*N; i++)
-	{
-		if (feature_matrix[i]>features_max)
-			features_max = feature_matrix[i];
-		if (feature_matrix[i]<features_min)
-			features_min = feature_matrix[i];
-	}
-
-	for (i=0; i<dim*N; i++)
-		feature_matrix[i] = (feature_matrix[i]-features_min)/features_max;
 
 	// compute distance matrix
 	ASSERT(m_kernel);
