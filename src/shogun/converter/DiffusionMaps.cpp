@@ -9,11 +9,10 @@
  */
 
 #include <shogun/converter/DiffusionMaps.h>
+#include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
-#include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/arpack_d.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
@@ -57,28 +56,24 @@ const char* CDiffusionMaps::get_name() const
 CFeatures* CDiffusionMaps::apply(CFeatures* features)
 {
 	ASSERT(features);
-	if (!(features->get_feature_class()==C_SIMPLE &&
-	      features->get_feature_type()==F_DREAL))
-	{
-		SG_ERROR("Given features are not of SimpleRealFeatures type.\n");
-	}
 	// shorthand for simplefeatures
-	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
 	SG_REF(features);
-
-	// get dimensionality and number of vectors of data
-	int32_t N = simple_features->get_num_vectors();
-	int32_t dim = simple_features->get_num_features();
-
-	// loop variables
-	int32_t i,j;
-
 	// compute distance matrix
 	ASSERT(m_kernel);
-	m_kernel->init(simple_features,simple_features);
-	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
+	m_kernel->init(features,features);
+	CSimpleFeatures<float64_t>* embedding = embed_kernel(m_kernel);
 	m_kernel->cleanup();
-	
+	SG_UNREF(features);
+	return (CFeatures*)embedding;
+}
+
+CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
+{
+	int32_t i,j;
+	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
+	ASSERT(kernel_matrix.num_rows==kernel_matrix.num_cols);
+	int32_t N = kernel_matrix.num_rows;
+
 	float64_t* p_vector = SG_CALLOC(float64_t, N);
 	for (i=0; i<N; i++)
 	{
@@ -142,12 +137,10 @@ CFeatures* CDiffusionMaps::apply(CFeatures* features)
 	for (i=0; i<m_target_dim; i++)
 	{
 		for (j=0; j<N; j++)
-			new_feature_matrix[j*m_target_dim+i] = kernel_matrix.matrix[(m_target_dim-i-1)*N+j]/kernel_matrix.matrix[(m_target_dim)*N+j];
+			new_feature_matrix[j*m_target_dim+i] = kernel_matrix.matrix[(m_target_dim-i-1)*N+j];///kernel_matrix.matrix[(m_target_dim)*N+j];
 	}
 	kernel_matrix.destroy_matrix();
 
-	SG_UNREF(features);
-	return (CFeatures*)(new CSimpleFeatures<float64_t>(new_feature_matrix));
+	return new CSimpleFeatures<float64_t>(new_feature_matrix);
 }
-
 #endif /* HAVE_LAPACK */

@@ -11,10 +11,10 @@
 #ifndef DIFFUSIONMAPS_H_
 #define DIFFUSIONMAPS_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
 #include <shogun/converter/EmbeddingConverter.h>
+#ifdef HAVE_LAPACK
 #include <shogun/features/Features.h>
-#include <shogun/distance/Distance.h>
+#include <shogun/kernel/Kernel.h>
 
 namespace shogun
 {
@@ -39,6 +39,12 @@ public:
 	 * @param features
 	 */
 	virtual CFeatures* apply(CFeatures* features);
+
+	/** embed kernel
+	 * @param kernel to use for embedding
+	 * @return embedding simple features
+	 */
+	virtual CSimpleFeatures<float64_t>* embed_kernel(CKernel* kernel);
 
 	/** setter for t parameter
 	 * @param t t value
