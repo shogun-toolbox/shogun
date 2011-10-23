@@ -48,7 +48,7 @@ public:
 	 * @param features features to embed
 	 * @return embedding simple features
 	 */
-	CSimpleFeatures<float64_t>* embed(CFeatures* features);
+	virtual CSimpleFeatures<float64_t>* embed(CFeatures* features);
 
 	/** setter for target dimension
 	 * @param dim target dimension
