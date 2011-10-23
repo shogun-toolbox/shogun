@@ -23,7 +23,14 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief LinearLocalTangentSpaceAlignment
+/** @brief LinearLocalTangentSpaceAlignment converter used to 
+ * construct embeddings as described in:
+ * 
+ * Zhang, T., Yang, J., Zhao, D., & Ge, X. (2007).
+ * Linear local tangent space alignment and application to face recognition. 
+ * Neurocomputing, 70(7-9), 1547-1553. 
+ * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S0925231206004577
+ * 
  */
 class CLinearLocalTangentSpaceAlignment: public CLocalTangentSpaceAlignment
 {

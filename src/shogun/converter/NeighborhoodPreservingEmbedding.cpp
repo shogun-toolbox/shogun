@@ -11,11 +11,9 @@
 #include <shogun/converter/NeighborhoodPreservingEmbedding.h>
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
-#include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/FibonacciHeap.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Time.h>
@@ -59,16 +57,16 @@ SGMatrix<float64_t> CNeighborhoodPreservingEmbedding::construct_embedding(CFeatu
 	float64_t* evals = SG_MALLOC(float64_t, dim);
 	float64_t* evectors = SG_MALLOC(float64_t, dimension*dim);
 	int32_t info = 0;
+#ifdef HAVE_ARPACK
+	arpack_dsxupd(lhs_M,rhs_M,false,dim,dimension,"LA",false,3,true,m_nullspace_shift,0.0,
+	              evals,evectors,info);
+#else
 	wrap_dsygvx(1,'V','U',dim,lhs_M,dim,rhs_M,dim,dim-dimension+1,dim,evals,evectors,&info);
-	ASSERT(info==0);
+#endif
 	SG_FREE(lhs_M);
 	SG_FREE(rhs_M);
 	SG_FREE(evals);
-
-	for (i=0; i<dimension/2; i++)
-	{
-		cblas_dswap(dim,evectors+i*dim,1,evectors+(dimension-i-1)*dim,1);
-	}
+	if (info!=0) SG_ERROR("Failed to solve eigenproblem (%d)\n",info);
 
 	cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,N,dimension,dim,1.0,feature_matrix.matrix,dim,evectors,dim,0.0,XTM,N);
 	SG_FREE(evectors);
