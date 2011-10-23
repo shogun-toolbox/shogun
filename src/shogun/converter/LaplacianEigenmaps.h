@@ -54,7 +54,17 @@ public:
 	/** destructor */
 	virtual ~CLaplacianEigenmaps();
 
+	/** apply to features
+	 * @param features to embed
+	 * @param embedding features
+	 */
 	virtual CFeatures* apply(CFeatures* features);
+
+	/** embed distance
+	 * @param distance to use for embedding
+	 * @param embedding features
+	 */
+	virtual CSimpleFeatures<float64_t>* embed(CDistance* distance);
 
 	/** setter for K parameter
 	 * @param k k value
