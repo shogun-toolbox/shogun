@@ -38,6 +38,11 @@ public:
 	/** constructor */
 	CKernelLocalTangentSpaceAlignment();
 
+	/** constructor with kernel parameter 
+	 * @param kernel kernel to be used
+	 */
+	CKernelLocalTangentSpaceAlignment(CKernel* kernel);
+
 	/** destructor */
 	virtual ~CKernelLocalTangentSpaceAlignment();
 

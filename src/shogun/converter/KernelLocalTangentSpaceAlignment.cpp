@@ -65,6 +65,11 @@ CKernelLocalTangentSpaceAlignment::CKernelLocalTangentSpaceAlignment() :
 {
 }
 
+CKernelLocalTangentSpaceAlignment::CKernelLocalTangentSpaceAlignment(CKernel* kernel) :
+		CKernelLocallyLinearEmbedding(kernel)
+{
+}
+
 CKernelLocalTangentSpaceAlignment::~CKernelLocalTangentSpaceAlignment()
 {
 }
