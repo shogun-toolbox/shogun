@@ -31,15 +31,15 @@ extern "C" {
 
 /* Functions to extract array attributes.
  */
-bool is_array(PyObject* a) { return (a) && PyArray_Check(a); }
-int array_type(PyObject* a) { return (int) PyArray_TYPE(a); }
-int array_dimensions(PyObject* a)  { return ((PyArrayObject *)a)->nd; }
-int array_size(PyObject* a, int i) { return ((PyArrayObject *)a)->dimensions[i]; }
-bool array_is_contiguous(PyObject* a) { return PyArray_ISCONTIGUOUS(a); }
+static bool is_array(PyObject* a) { return (a) && PyArray_Check(a); }
+static int array_type(PyObject* a) { return (int) PyArray_TYPE(a); }
+static int array_dimensions(PyObject* a)  { return ((PyArrayObject *)a)->nd; }
+static int array_size(PyObject* a, int i) { return ((PyArrayObject *)a)->dimensions[i]; }
+static bool array_is_contiguous(PyObject* a) { return PyArray_ISCONTIGUOUS(a); }
 
 /* Given a PyObject, return a string describing its type.
  */
-const char* typecode_string(PyObject* py_obj) {
+static const char* typecode_string(PyObject* py_obj) {
   if (py_obj == NULL          ) return "C NULL value";
   if (PyCallable_Check(py_obj)) return "callable"    ;
   if (PyString_Check(  py_obj)) return "string"      ;
@@ -55,7 +55,7 @@ const char* typecode_string(PyObject* py_obj) {
   return "unknown type";
 }
 
-const char* typecode_string(int typecode) {
+static const char* typecode_string(int typecode) {
     const char* type_names[24] = {"bool","byte","unsigned byte","short",
         "unsigned short","int","unsigned int","long",
         "unsigned long","long long", "unsigned long long",
@@ -70,7 +70,7 @@ const char* typecode_string(int typecode) {
         return type_names[typecode];
 }
 
-void* get_copy(void* src, size_t len)
+static void* get_copy(void* src, size_t len)
 {
     void* copy=SG_MALLOC(uint8_t, len);
     memcpy(copy, src, len);
@@ -85,7 +85,7 @@ void* get_copy(void* src, size_t len)
  * If array is NULL or dimensionality or typecode does not match
  * return NULL
  */
-PyObject* make_contiguous(PyObject* ary, int* is_new_object,
+static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
                                int dims, int typecode, bool force_copy=false)
 {
     PyObject* array;
@@ -145,7 +145,7 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
 /* End John Hunter translation (with modifications by Bill Spotz) */
 
-int is_pyvector(PyObject* obj, int typecode)
+static int is_pyvector(PyObject* obj, int typecode)
 {
     return (
             (obj && PyList_Check(obj) && PyList_Size(obj)>0) ||
