@@ -572,18 +572,18 @@ public:
 
 	}
 
-
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
 		return "MultitaskKernelTreeNormalizer";
 	}
 
-
+	CMultitaskKernelTreeNormalizer* KernelNormalizerToMultitaskKernelTreeNormalizer(CKernelNormalizer* n)
+	{
+		return dynamic_cast<CMultitaskKernelTreeNormalizer*>(n);
+	}
 
 protected:
-
-
 	/** taxonomy **/
 	CTaxonomy taxonomy;
 

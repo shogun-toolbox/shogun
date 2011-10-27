@@ -377,6 +377,11 @@ class CCombinedKernel : public CKernel
 		/** precompute all sub-kernels */
 		bool precompute_subkernels();
 
+		CCombinedKernel* KernelToCombinedKernel(shogun::CKernel* n)
+		{
+			return dynamic_cast<CCombinedKernel*>(n);
+		}
+
 	protected:
 		/** compute kernel function
 		 *

@@ -262,10 +262,12 @@ public:
 		return "MultitaskKernelMaskNormalizer";
 	}
 
-
+	CMultitaskKernelMaskNormalizer* KernelNormalizerToMultitaskKernelMaskNormalizer(CKernelNormalizer* n)
+	{
+		   return dynamic_cast<CMultitaskKernelMaskNormalizer*>(n);
+	}
 
 protected:
-
 	/** list of active tasks **/
 	std::set<int32_t> active_tasks;
 

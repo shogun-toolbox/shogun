@@ -316,6 +316,11 @@ public:
 		return "MultitaskKernelPlifNormalizer";
 	}
 
+	CMultitaskKernelPlifNormalizer* KernelNormalizerToMultitaskKernelPlifNormalizer(CKernelNormalizer* n)
+	{
+		   return dynamic_cast<shogun::CMultitaskKernelPlifNormalizer*>(n);
+	}
+
 protected:
 	/** register the parameters 
 	 */
