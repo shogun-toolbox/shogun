@@ -230,6 +230,12 @@ public:
 		return "MultitaskKernelNormalizer";
 	}
 
+	inline CMultitaskKernelNormalizer* KernelNormalizerToMultitaskKernelNormalizer(CKernelNormalizer* n)
+	{
+		return dynamic_cast<CMultitaskKernelNormalizer*>(n);
+	}
+
+
 protected:
 
 	/** MxM matrix encoding similarity between tasks **/

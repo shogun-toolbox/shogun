@@ -131,39 +131,6 @@ namespace shogun
 #endif
 }
 
-
-
-/* Provide some cast functionality available to target languages */
-%inline %{
-
-/* C++-style cast */
-shogun::CMultitaskKernelNormalizer *KernelNormalizerToMultitaskKernelNormalizer(shogun::CKernelNormalizer* n) {
-   return dynamic_cast<shogun::CMultitaskKernelNormalizer*>(n);
-}
-
-shogun::CMultitaskKernelTreeNormalizer *KernelNormalizerToMultitaskKernelTreeNormalizer(shogun::CKernelNormalizer* n) {
-   return dynamic_cast<shogun::CMultitaskKernelTreeNormalizer*>(n);
-}
-
-shogun::CMultitaskKernelMaskNormalizer *KernelNormalizerToMultitaskKernelMaskNormalizer(shogun::CKernelNormalizer* n) {
-   return dynamic_cast<shogun::CMultitaskKernelMaskNormalizer*>(n);
-}
-
-shogun::CMultitaskKernelMaskPairNormalizer *KernelNormalizerToMultitaskKernelMaskPairNormalizer(shogun::CKernelNormalizer* n) {
-   return dynamic_cast<shogun::CMultitaskKernelMaskPairNormalizer*>(n);
-}
-
-shogun::CMultitaskKernelPlifNormalizer *KernelNormalizerToMultitaskKernelPlifNormalizer(shogun::CKernelNormalizer* n) {
-   return dynamic_cast<shogun::CMultitaskKernelPlifNormalizer*>(n);
-}
-
-shogun::CCombinedKernel *KernelToCombinedKernel(shogun::CKernel* n) {
-   return dynamic_cast<shogun::CCombinedKernel*>(n);
-}
-
-
-%}
-
 %include <shogun/kernel/KernelNormalizer.h>
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/ANOVAKernel.h>

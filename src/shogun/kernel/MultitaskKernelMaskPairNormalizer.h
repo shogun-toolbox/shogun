@@ -238,7 +238,10 @@ public:
 		return "MultitaskKernelMaskPairNormalizer";
 	}
 
-
+	CMultitaskKernelMaskPairNormalizer* KernelNormalizerToMultitaskKernelMaskPairNormalizer(CKernelNormalizer* n)
+	{
+		   return dynamic_cast<shogun::CMultitaskKernelMaskPairNormalizer*>(n);
+	}
 
 protected:
 
