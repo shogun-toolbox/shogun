@@ -395,7 +395,7 @@ template<class T> class SGNDArray
 };
 
 /** @brief shogun string */
-template<class T> struct SGString
+template<class T> class SGString
 {
 public:
 	/** default constructor */
@@ -517,7 +517,7 @@ template <class T> struct SGSparseVectorEntry
 };
 
 /** @brief template class SGSparseVector */
-template <class T> struct SGSparseVector
+template <class T> class SGSparseVector
 {
 public:
 	/** default constructor */

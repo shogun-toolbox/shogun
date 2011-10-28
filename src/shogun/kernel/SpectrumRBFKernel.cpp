@@ -98,26 +98,26 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 {
 
 		int32_t aa_to_index[128];//profile
-		aa_to_index['A'] = 0;
-		aa_to_index['R'] = 1;
-		aa_to_index['N'] = 2;
-		aa_to_index['D'] = 3;
-		aa_to_index['C'] = 4;
-		aa_to_index['Q'] = 5;
-		aa_to_index['E'] = 6;
-		aa_to_index['G'] = 7;
-		aa_to_index['H'] = 8;
-		aa_to_index['I'] = 9;
-		aa_to_index['L'] = 10;
-		aa_to_index['K'] = 11;
-		aa_to_index['M'] = 12;
-		aa_to_index['F'] = 13;
-		aa_to_index['P'] = 14;
-		aa_to_index['S'] = 15;
-		aa_to_index['T'] = 16;
-		aa_to_index['W'] = 17;
-		aa_to_index['Y'] = 18;
-		aa_to_index['V'] = 19;
+		aa_to_index[(uint8_t) 'A'] = 0;
+		aa_to_index[(uint8_t) 'R'] = 1;
+		aa_to_index[(uint8_t) 'N'] = 2;
+		aa_to_index[(uint8_t) 'D'] = 3;
+		aa_to_index[(uint8_t) 'C'] = 4;
+		aa_to_index[(uint8_t) 'Q'] = 5;
+		aa_to_index[(uint8_t) 'E'] = 6;
+		aa_to_index[(uint8_t) 'G'] = 7;
+		aa_to_index[(uint8_t) 'H'] = 8;
+		aa_to_index[(uint8_t) 'I'] = 9;
+		aa_to_index[(uint8_t) 'L'] = 10;
+		aa_to_index[(uint8_t) 'K'] = 11;
+		aa_to_index[(uint8_t) 'M'] = 12;
+		aa_to_index[(uint8_t) 'F'] = 13;
+		aa_to_index[(uint8_t) 'P'] = 14;
+		aa_to_index[(uint8_t) 'S'] = 15;
+		aa_to_index[(uint8_t) 'T'] = 16;
+		aa_to_index[(uint8_t) 'W'] = 17;
+		aa_to_index[(uint8_t) 'Y'] = 18;
+		aa_to_index[(uint8_t) 'V'] = 19;
 	SG_DEBUG("initializing background\n");
 	double background[20]; // profile
 	background[0]=0.0799912015849807; //A

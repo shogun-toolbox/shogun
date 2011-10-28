@@ -23,7 +23,7 @@
 namespace shogun {
 template<class ST> class CStringFeatures;
 template<class ST> class CSimpleFeatures;
-template<class ST> struct SGMatrix;
+template<class ST> class SGMatrix;
 class CDotFeatures;
 
 /** @brief The class SimpleFeatures implements dense feature matrices.

@@ -21,8 +21,6 @@ namespace shogun
 {
 
 class CFeatures;
-enum EFeatureType;
-enum EFeatureClass;
 
 /** enumeration of possible preprocessor types
  * used by Shogun UI

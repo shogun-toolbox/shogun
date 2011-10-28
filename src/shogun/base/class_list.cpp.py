@@ -108,7 +108,7 @@ def get_template_definitions(classes):
 def get_struct(classes):
 	struct=[]
 	for c in classes:
-		s='{m_class_name: "%s", m_new_sgserializable: __new_C%s},' % (c,c)
+		s='{"%s", __new_C%s},' % (c,c)
 		struct.append(s)
 	return struct
 

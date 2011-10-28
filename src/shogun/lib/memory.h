@@ -46,11 +46,11 @@ void* sg_calloc(size_t num, size_t size);
 
 /* overload new() / delete */
 void* operator new(size_t size) throw (std::bad_alloc);
-void operator delete(void *p);
+void operator delete(void *p) throw();
 
 /* overload new[] / delete[] */
-void* operator new[](size_t size);
-void operator delete[](void *p);
+void* operator new[](size_t size) throw(std::bad_alloc);
+void operator delete[](void *p) throw();
 
 
 #ifdef TRACE_MEMORY_ALLOCS

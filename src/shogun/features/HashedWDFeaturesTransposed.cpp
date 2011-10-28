@@ -97,7 +97,7 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 }
 
 CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(const CHashedWDFeaturesTransposed& orig)
-	: CDotFeatures(orig), strings(orig.strings), transposed_strings(transposed_strings),
+	: CDotFeatures(orig), strings(orig.strings), transposed_strings(orig.transposed_strings),
 	degree(orig.degree), start_degree(orig.start_degree), 
 	from_degree(orig.from_degree), m_hash_bits(orig.m_hash_bits),
 	normalization_const(orig.normalization_const)

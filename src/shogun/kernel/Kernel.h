@@ -31,8 +31,6 @@ namespace shogun
 	class CFile;
 	class CFeatures;
 	class CKernelNormalizer;
-	enum EFeatureType;
-	enum EFeatureClass;
 
 #ifdef USE_SHORTREAL_KERNELCACHE
 	/** kernel cache element */

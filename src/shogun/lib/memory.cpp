@@ -95,7 +95,7 @@ void* operator new(size_t size) throw (std::bad_alloc)
 	return p;
 }
 
-void operator delete(void *p)
+void operator delete(void *p) throw()
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
@@ -104,7 +104,7 @@ void operator delete(void *p)
 	free(p);
 }
 
-void* operator new[](size_t size)
+void* operator new[](size_t size) throw(std::bad_alloc)
 {
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
@@ -127,7 +127,7 @@ void* operator new[](size_t size)
 	return p;
 }
 
-void operator delete[](void *p)
+void operator delete[](void *p) throw()
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
