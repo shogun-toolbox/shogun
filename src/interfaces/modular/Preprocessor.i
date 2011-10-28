@@ -34,22 +34,22 @@
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(SimpleRealPreprocessor) CSimplePreprocessor<float64_t>;
+    %template(RealPreprocessor) CSimplePreprocessor<float64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(SimpleUlongPreprocessor) CSimplePreprocessor<uint64_t>;
+    %template(UlongPreprocessor) CSimplePreprocessor<uint64_t>;
 #endif
 #ifdef USE_UINT16
-    %template(SimpleWordPreprocessor) CSimplePreprocessor<uint16_t>;
+    %template(WordPreprocessor) CSimplePreprocessor<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(SimpleShortPreprocessor) CSimplePreprocessor<int16_t>;
+    %template(ShortPreprocessor) CSimplePreprocessor<int16_t>;
 #endif
 #ifdef USE_UINT8
-    %template(SimpleBytePreprocessor) CSimplePreprocessor<uint8_t>;
+    %template(BytePreprocessor) CSimplePreprocessor<uint8_t>;
 #endif
 #ifdef USE_CHAR
-    %template(SimpleCharPreprocessor) CSimplePreprocessor<char>;
+    %template(CharPreprocessor) CSimplePreprocessor<char>;
 #endif
 }
 
