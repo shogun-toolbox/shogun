@@ -60,10 +60,11 @@ protected:
 
 	/** construct neighborhood matrix by kernel matrix
 	 * @param kernel_matrix kernel matrix to be used
+	 * @param k k 
 	 * @return matrix containing indexes of neighbors of i-th object
 	 * in i-th column
 	 */
-	SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix);
+	virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix, int32_t k);
 
 
 /// THREADS

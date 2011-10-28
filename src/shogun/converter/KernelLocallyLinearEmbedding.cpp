@@ -123,7 +123,7 @@ CFeatures* CKernelLocallyLinearEmbedding::apply(CFeatures* features)
 	ASSERT(m_kernel);
 	m_kernel->init(features,features);
 	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
-	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(kernel_matrix);
+	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(kernel_matrix,m_k);
 	m_kernel->cleanup();
 
 	// init W (weight) matrix
@@ -322,12 +322,12 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	return NULL;
 }
 
-SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix)
+SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix, int32_t k)
 {
 	int32_t t;
 	int32_t N = kernel_matrix.num_cols;
 	// init matrix and heap to be used
-	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
+	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -349,7 +349,7 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 		parameters[t].idx_start = t;
 		parameters[t].idx_step = num_threads;
 		parameters[t].idx_stop = N;
-		parameters[t].m_k = m_k;
+		parameters[t].m_k = k;
 		parameters[t].N = N;
 		parameters[t].heap = heaps[t];
 		parameters[t].neighborhood_matrix = neighborhood_matrix;
@@ -366,7 +366,7 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 	single_thread_param.idx_start = 0;
 	single_thread_param.idx_step = 1;
 	single_thread_param.idx_stop = N;
-	single_thread_param.m_k = m_k;
+	single_thread_param.m_k = k;
 	single_thread_param.N = N;
 	single_thread_param.heap = heaps[0]
 	single_thread_param.neighborhood_matrix = neighborhood_matrix;
@@ -378,7 +378,7 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 		delete heaps[t];
 	SG_FREE(heaps);
 
-	return SGMatrix<int32_t>(neighborhood_matrix,m_k,N);
+	return SGMatrix<int32_t>(neighborhood_matrix,k,N);
 }
 
 void* CKernelLocallyLinearEmbedding::run_neighborhood_thread(void* p)
