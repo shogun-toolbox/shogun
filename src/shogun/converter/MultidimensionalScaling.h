@@ -70,7 +70,7 @@ public:
 	 * @param distance (should be approximate euclidean for consistent result)
 	 * @return new features with distance similar to given as much as possible
 	 */
-	virtual CSimpleFeatures<float64_t>* embed(CDistance* distance);
+	virtual CSimpleFeatures<float64_t>* embed_distance(CDistance* distance);
 
 	/** apply preprocessor to feature matrix,
 	 * changes feature matrix to the one having target dimensionality
