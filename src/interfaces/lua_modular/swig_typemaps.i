@@ -342,7 +342,7 @@ TYPEMAP_SGMATRIX(float64_t)
 	lua_newtable(L);
 
 	for (i = 0; i < num; i++) {
-		if (TYPECODE == "String[]") {
+		if (strcmp(TYPECODE, "String[]") == 0) {
 			lua_pushstring(L, (char *)str[i].string);
 			lua_rawseti(L, -2, i + 1);
 		}
