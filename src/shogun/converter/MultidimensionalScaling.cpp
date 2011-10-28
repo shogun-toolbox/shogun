@@ -111,7 +111,7 @@ const char* CMultidimensionalScaling::get_name() const
 	return "MultidimensionalScaling";
 };
 
-CSimpleFeatures<float64_t>* CMultidimensionalScaling::embed(CDistance* distance)
+CSimpleFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* distance)
 {
 	ASSERT(distance);
 
@@ -139,7 +139,7 @@ CFeatures* CMultidimensionalScaling::apply(CFeatures* features)
 	ASSERT(m_distance);
 	
 	m_distance->init(features,features);
-	CSimpleFeatures<float64_t>* embedding = embed(m_distance);
+	CSimpleFeatures<float64_t>* embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 	
 	SG_UNREF(features);
