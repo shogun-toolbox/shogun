@@ -540,7 +540,7 @@ EOF
 			DEFINES="$DEFINES -DHAVE_JBLAS"
 			CLASSPATH="$CLASSPATH:/usr/share/java/jblas.jar"
 		else
-			echores "no"
+			echores "no (examples require jblas and won't run ...)"
 		fi
 	fi
 }
@@ -1012,9 +1012,9 @@ cc_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_C $INCLUDES $COMPFLAGS_C $TMPC -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
+  echo "$COMP_C $INCLUDES $COMPFLAGS_C $TMPC -o $TMPO $LINKFLAGS $@" $POSTLINKFLAGS >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$COMP_C" $INCLUDES $COMPFLAGS_C "$TMPC" -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_C" $INCLUDES $COMPFLAGS_C "$TMPC" -o "$TMPO" $LINKFLAGS "$@" $POSTLINKFLAGS ) >> "$TMPLOG" 2>&1
   TMP="$?"
   if test -f "$TMPO"
   then
@@ -1032,9 +1032,9 @@ cxx_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_CPP $INCLUDES $COMPFLAGS_CPP $TMPC -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
+  echo "$COMP_CPP $INCLUDES $COMPFLAGS_CPP $TMPC -o $TMPO $LINKFLAGS $@" $POSTLINKFLAGS >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$COMP_CPP" $INCLUDES $COMPFLAGS_CPP "$TMPC" -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_CPP" $INCLUDES $COMPFLAGS_CPP "$TMPC" -o "$TMPO" $LINKFLAGS "$@" $POSTLINKFLAGS ) >> "$TMPLOG" 2>&1
   TMP="$?"
   if test -f "$TMPO"
   then
@@ -1052,9 +1052,9 @@ cxx_check_so() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_CPP $INCLUDES $COMPFLAGS_CPP $TMPC -o $TMPSO $LINKFLAGS $@" >> "$TMPLOG"
+  echo "$COMP_CPP $INCLUDES $COMPFLAGS_CPP $TMPC -o $TMPSO $LINKFLAGS $@" $POSTLINKFLAGS >> "$TMPLOG"
   rm -f "$TMPSO"
-  ( "$COMP_CPP" $INCLUDES $COMPFLAGS_CPP "$TMPC" -o "$TMPSO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_CPP" $INCLUDES $COMPFLAGS_CPP "$TMPC" -o "$TMPSO" $LINKFLAGS "$@" $POSTLINKFLAGS ) >> "$TMPLOG" 2>&1
   TMP="$?"
   if test -f "$TMPSO"
   then
@@ -3187,6 +3187,13 @@ int main(int argc, char** argv)
 }
 EOF
 							echocheck "Atlas support"
+							if ! darwin && test "$WORDSIZE" = 64
+							then
+								ALTERNATIVE_ATLASDIR="/usr/lib64/atlas"
+							else
+								ALTERNATIVE_ATLASDIR="/usr/lib/atlas"
+							fi
+
 							if cc_check -llapack -lcblas -llapack_atlas
 							then
 								echores "yes"
@@ -3194,6 +3201,13 @@ EOF
 								HAVE_LAPACK='#define HAVE_LAPACK 1'
 								DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
 								POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lcblas -llapack_atlas"
+							elif cc_check -L${ALTERNATIVE_ATLASDIR} -llapack -lcblas -llapack_atlas
+							then
+								echores "yes"
+								HAVE_ATLAS='#define HAVE_ATLAS 1'
+								HAVE_LAPACK='#define HAVE_LAPACK 1'
+								DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+								POSTLINKFLAGS="$POSTLINKFLAGS -L${ALTERNATIVE_ATLASDIR} -llapack -lcblas -llapack_atlas"
 							else
 								if cc_check -llapack -lcblas -latlas
 								then
@@ -3202,6 +3216,13 @@ EOF
 									HAVE_LAPACK='#define HAVE_LAPACK 1'
 									DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
 									POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lcblas -latlas"
+								elif cc_check -L${ALTERNATIVE_ATLASDIR} -llapack -lcblas -latlas
+								then
+									echores "yes"
+									HAVE_ATLAS='#define HAVE_ATLAS 1'
+									HAVE_LAPACK='#define HAVE_LAPACK 1'
+									DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+									POSTLINKFLAGS="$POSTLINKFLAGS -L${ALTERNATIVE_ATLASDIR} -llapack -lcblas -latlas"
 								else
 									echores "no"
 								fi
@@ -3466,6 +3487,13 @@ EOF
 					echores "yes"
 					USE_GLPK='#define USE_GLPK 1'
 					POSTLINKFLAGS="$POSTLINKFLAGS $GLPKLINKFLAGS"
+					DEFINES="$DEFINES -DUSE_GLPK"
+				elif cc_check -I/usr/include/glpk $GLPKLINKFLAGS
+				then
+					echores "yes"
+					USE_GLPK='#define USE_GLPK 1'
+					POSTLINKFLAGS="$POSTLINKFLAGS $GLPKLINKFLAGS"
+					INCLUDES="$INCLUDES -I/usr/include/glpk"
 					DEFINES="$DEFINES -DUSE_GLPK"
 				else
 					echores "no"
