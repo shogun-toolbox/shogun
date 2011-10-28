@@ -21,7 +21,6 @@ namespace shogun
 {
 template <class ST> class CStringFeatures;
 class CCompressor;
-enum E_COMPRESSION_TYPE;
 
 /** @brief Preprocessor that decompresses compressed strings.
  *

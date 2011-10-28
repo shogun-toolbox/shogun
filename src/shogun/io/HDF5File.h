@@ -22,8 +22,8 @@
 
 namespace shogun
 {
-template <class ST> struct SGString;
-template <class ST> struct SGSparseVector;
+template <class ST> class SGString;
+template <class ST> class SGSparseVector;
 
 /** @brief A HDF5 File access class.
  *

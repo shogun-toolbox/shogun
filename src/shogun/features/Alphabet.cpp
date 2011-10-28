@@ -307,14 +307,14 @@ void CAlphabet::init_map_table()
 			{
 				for (int32_t i=0; i<26; i++)
 				{
-					valid_chars['A'+i]=true;
-					maptable_to_bin['A'+i]=i ;
+					valid_chars[(uint8_t) 'A'+i]=true;
+					maptable_to_bin[(uint8_t) 'A'+i]=i ;
 					maptable_to_char[i]='A'+i ;
 				} ;
 				for (int32_t i=0; i<10; i++)
 				{
-					valid_chars['0'+i]=true;
-					maptable_to_bin['0'+i]=26+i ;
+					valid_chars[(uint8_t) '0'+i]=true;
+					maptable_to_bin[(uint8_t) '0'+i]=26+i ;
 					maptable_to_char[26+i]='0'+i ;
 				} ;        //Translation 012345->acde...xy0123456789
 			} ;

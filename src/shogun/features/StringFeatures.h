@@ -25,7 +25,6 @@
 namespace shogun
 {
 class CAlphabet;
-enum EAlphabet;
 template <class T> class CDynamicArray;
 class CFile;
 template <class T> class SGString;

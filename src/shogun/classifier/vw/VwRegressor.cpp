@@ -176,10 +176,14 @@ void CVwRegressor::load_regressor(char* file)
 	// Read version info
 	vw_size_t v_length;
 	source.read_file((char*)&v_length, sizeof(v_length));
-	char t[v_length];
+	char* t = SG_MALLOC(char, v_length);
 	source.read_file(t,v_length);
 	if (strcmp(t,env->vw_version) != 0)
+	{
+		SG_FREE(t);
 		SG_SERROR("Regressor source has an incompatible VW version!\n");
+	}
+	SG_FREE(t);
 
 	// Read min and max label
 	source.read_file((char*)&env->min_label, sizeof(env->min_label));

@@ -1344,8 +1344,8 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 
 		//add first row. sum[w]=1
 		int row_index = lpx_add_rows(lp_glpk, 1);
-		int ind[num_kernels+2];
-		float64_t val[num_kernels+2];
+		int* ind = SG_MALLOC(int, num_kernels+2);
+		float64_t* val = SG_MALLOC(float64_t, num_kernels+2);
 		for (int i=1; i<=num_kernels; i++)
 		{
 			ind[i] = i;
@@ -1355,6 +1355,8 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		val[num_kernels+1] = 0;
 		lpx_set_mat_row(lp_glpk, row_index, num_kernels, ind, val);
 		lpx_set_row_bnds(lp_glpk, row_index, LPX_FX, 1, 1);
+		SG_FREE(val);
+		SG_FREE(ind);
 
 		lp_initialized = true;
 
@@ -1381,8 +1383,8 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		}
 	}
 
-	int ind[num_kernels+2];
-	float64_t val[num_kernels+2];
+	int* ind=SG_MALLOC(int,num_kernels+2);
+	float64_t* val=SG_MALLOC(float64_t, num_kernels+2);
 	int row_index = lpx_add_rows(lp_glpk, 1);
 	for (int32_t i=1; i<=num_kernels; i++)
 	{
@@ -1393,6 +1395,8 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 	val[num_kernels+1] = -1;
 	lpx_set_mat_row(lp_glpk, row_index, num_kernels+1, ind, val);
 	lpx_set_row_bnds(lp_glpk, row_index, LPX_UP, 0, 0);
+	SG_FREE(ind);
+	SG_FREE(val);
 
 	//optimize
 	lpx_simplex(lp_glpk);

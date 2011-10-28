@@ -70,10 +70,14 @@ void CVwNativeCacheReader::check_cache_metadata()
 	if(v_length > 29)
 		SG_SERROR("Cache version too long, cache file is probably invalid.\n");
 
-	char t[v_length];
+	char* t=SG_MALLOC(char, v_length);
 	buf.read_file(t,v_length);
 	if (strcmp(t,vw_version) != 0)
+	{
+		SG_FREE(t);
 		SG_SERROR("Cache has possibly incompatible version!\n");
+	}
+	SG_FREE(t);
 
 	vw_size_t cache_numbits = 0;
 	if (buf.read_file(&cache_numbits, sizeof(vw_size_t)) < ssize_t(sizeof(vw_size_t)))

@@ -26,8 +26,6 @@ namespace shogun
 class CFile;
 class CMath;
 class CFeatures;
-enum EFeatureType;
-enum EFeatureClass;
 
 /** type of distance */
 enum EDistanceType

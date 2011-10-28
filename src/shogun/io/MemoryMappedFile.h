@@ -213,7 +213,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		 * file truncation. Has an effect only when file is opened with in
 		 * read/write mode 'w'
 		 */
-		inline void set_truncate_size(uint64_t* sz=0)
+		inline void set_truncate_size(uint64_t sz=0)
 		{
 			last_written_byte=sz;
 		}
