@@ -79,13 +79,13 @@ CFeatures* CLaplacianEigenmaps::apply(CFeatures* features)
 	// compute distance matrix
 	ASSERT(m_distance);
 	m_distance->init(features,features);
-	CSimpleFeatures<float64_t>* embedding = embed(m_distance);
+	CSimpleFeatures<float64_t>* embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 	SG_UNREF(features);
 	return (CFeatures*)embedding;
 }
 
-CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed(CDistance* distance)
+CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* distance)
 {
 	int32_t i,j;
 	SGMatrix<float64_t> W_sgmatrix = distance->get_distance_matrix();
