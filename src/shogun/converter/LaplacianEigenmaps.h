@@ -64,7 +64,7 @@ public:
 	 * @param distance to use for embedding
 	 * @param embedding features
 	 */
-	virtual CSimpleFeatures<float64_t>* embed(CDistance* distance);
+	virtual CSimpleFeatures<float64_t>* embed_distance(CDistance* distance);
 
 	/** setter for K parameter
 	 * @param k k value
