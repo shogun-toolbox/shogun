@@ -16,8 +16,8 @@ public class converter_isomap_modular {
 		isomap.set_target_dim(1);
 		isomap.set_k(6);
 		isomap.set_landmark(false);
-		isomap.apply(features);
-	
+		RealFeatures embedding = isomap.embed(features);
+
 		modshogun.exit_shogun();
 	}
 }

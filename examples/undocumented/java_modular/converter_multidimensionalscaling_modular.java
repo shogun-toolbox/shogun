@@ -15,9 +15,8 @@ public class converter_multidimensionalscaling_modular {
 		MultidimensionalScaling mds = new MultidimensionalScaling();
 		mds.set_target_dim(1);
 		mds.set_landmark(false);
+		mds.embed(features);
 
-		mds.apply(features);
-	
 		modshogun.exit_shogun();
 	}
 }
