@@ -592,7 +592,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 
 		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].slen);
 
-		JNITYPE arr[str[i].slen];
+		JNITYPE* arr = SG_MALLOC(JNITYPE, str[i].slen);
 		for (j = 0; j < str[i].slen; j++) {
 			arr[j] = (JNITYPE)data[j];
 		}
@@ -601,6 +601,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 		JCALL1(DeleteLocalRef, jenv, jarr);
 
 		SG_FREE(str[i].string);
+		SG_FREE(arr);
 	}
 	SG_FREE(str);
 	$result = res;
