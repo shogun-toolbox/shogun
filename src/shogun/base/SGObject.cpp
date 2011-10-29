@@ -351,17 +351,17 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	if (file_version<0)
 	{
 		SG_WARNING("%s%s::load_serializable(): File contains no parameter "
-				"version. Seems like your file is from the days before this "
-				"was introduced. Ignore warning or serialize with this version "
-				"of shogun to get rid of above and this warnings.\n",
-				prefix, get_name());
+		           "version. Seems like your file is from the days before this "
+		           "was introduced. Ignore warning or serialize with this version "
+		           "of shogun to get rid of above and this warnings.\n",
+		           prefix, get_name());
 	}
 
 	if (file_version>version->get_version_parameter())
 	{
 		SG_WARNING("%s%s::load_serializable(): parameter version of file "
-				"larger than the one of shogun. Try with a more recent version "
-				"of shogun.\n", prefix, get_name());
+		           "larger than the one of shogun. Try with a more recent version "
+		           "of shogun.\n", prefix, get_name());
 		return false;
 	}
 
@@ -375,16 +375,16 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	catch (ShogunException e)
 	{
 		SG_SWARNING("%s%s::load_serializable_post(): ShogunException: "
-				   "%s\n", prefix, get_name(),
-				   e.get_exception_string());
+		            "%s\n", prefix, get_name(),
+		            e.get_exception_string());
 		return false;
 	}
 
 	if (!m_load_post_called)
 	{
 		SG_SWARNING("%s%s::load_serializable_post(): Implementation "
-				   "error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
-				   "called!\n", prefix, get_name());
+		            "error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
+		            "called!\n", prefix, get_name());
 		return false;
 	}
 	SG_DEBUG("DONE LOADING CSGObject '%s' (%p)\n", get_name(), this);
@@ -398,7 +398,7 @@ bool CSGObject::save_parameter_version(CSerializableFile* file,
 	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
 	int32_t v=version->get_version_parameter();
 	TParameter p(&t, &v, "version_parameter",
-			"Version of parameters of this object");
+	             "Version of parameters of this object");
 	return p.save(file, prefix);
 }
 
@@ -438,6 +438,7 @@ void CSGObject::save_serializable_post() throw (ShogunException)
 #include <shogun/lib/Set.h>
 extern CSet<shogun::MemoryBlock>* sg_mallocs;
 #endif
+
 void CSGObject::init()
 {
 #ifdef HAVE_PTHREAD
@@ -455,6 +456,7 @@ void CSGObject::init()
 		}
 	}
 #endif
+
 	m_refcount = 0;
 	io = NULL;
 	parallel = NULL;
