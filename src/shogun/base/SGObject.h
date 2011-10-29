@@ -83,7 +83,7 @@ public:
 	CSGObject(const CSGObject& orig);
 
 	/** destructor */
-    virtual ~CSGObject();
+	virtual ~CSGObject();
 
 #ifdef USE_REFERENCE_COUNTING
 	/** increase reference counter
@@ -148,7 +148,7 @@ public:
 	 *  @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool save_serializable(CSerializableFile* file,
-								   const char* prefix="");
+	                               const char* prefix="");
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -160,7 +160,7 @@ public:
 	 *  @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
-								   const char* prefix="");
+	                               const char* prefix="");
 
 	/** set the io object
 	 *
@@ -219,10 +219,10 @@ public:
 	index_t get_modsel_param_index(const char* param_name);
 
 #ifdef TRACE_MEMORY_ALLOCS
-    static void list_memory_allocs()
-    {
-        ::list_memory_allocs();
-    }
+	static void list_memory_allocs()
+	{
+        	::list_memory_allocs();
+	}
 #endif
 
 protected:
@@ -300,6 +300,7 @@ public:
 	Parameter* m_model_selection_parameters;
 
 private:
+
 	EPrimitiveType m_generic;
 	bool m_load_pre_called;
 	bool m_load_post_called;
