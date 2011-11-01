@@ -1,24 +1,25 @@
 2011-12-01 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 1.1.0 (libshogun 11.0, data 0.2, parameter 0)
+	* SHOGUN Release version 1.1.0 (libshogun 11.0, data 0.3, parameter 0)
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
 	   - New dimensionality reduction algorithms:
 	     Diffusion Maps, Kernel Locally Linear Embedding,
-	     Kernel Local Tangent Space Alignment
+	     Kernel Local Tangent Space Alignment, Linear Local Tangent Space Alignment,
+	     Neighborhood Preserving embedding
 	   - ARPACK and SUPERLU integration 
 	   - Introduce the concept of Converters that can embed (arbitrary) feature
-	   types into different feature types.
+	     types into different feature types.
 	   - LibSVM is now pthread-parallelized.
 	   - Create modshogun.dll for csharp.
 	   - Various new c# examples (thanks Daniel Korn).
 	* Bugfixes:
-		- Fix octave_static and octave_modular examples.
+	   - Fix octave_static and octave_modular examples.
 	* Cleanup and API Changes:
-		- Most of the inline functions have been (re)moved to the corresponding
-		.cpp file.
-		- Libshogun is now compiled with sse support for math (if available) but
-		interfaces are now compiled with -O0 which drastically reduces compile times.
+	   - Most of the inline functions have been (re)moved to the corresponding
+	     .cpp file
+	   - Libshogun is now being compiled with sse support for math (if available) but
+	     interfaces are now being compiled with -O0 key which drastically reduces compilation time
 
 2011-08-31 Soeren Sonnenburg <sonne@debian.org>
 
