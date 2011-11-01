@@ -94,6 +94,11 @@ protected:
 	/** init */
 	void init();
 
+	/** construct embedding 
+	 * @param W_matrix W matrix to be used
+	 */
+	CSimpleFeatures<float64_t>* construct_embedding(SGMatrix<float64_t> W_matrix);
+
 protected:
 
 	/** number of neighbors */
