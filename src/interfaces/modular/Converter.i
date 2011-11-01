@@ -18,6 +18,7 @@
 %rename(KernelLocalTangentSpaceAlignment) CKernelLocalTangentSpaceAlignment;
 %rename(DiffusionMaps) CDiffusionMaps;
 %rename(LaplacianEigenmaps) CLaplacianEigenmaps;
+%rename(LocalityPreservingProjections) CLocalityPreservingProjections;
 %rename(MultidimensionalScaling) CMultidimensionalScaling;
 %rename(Isomap) CIsomap;
 
@@ -34,6 +35,7 @@
 %include <shogun/converter/KernelLocalTangentSpaceAlignment.h>
 %include <shogun/converter/DiffusionMaps.h>
 %include <shogun/converter/LaplacianEigenmaps.h>
+%include <shogun/converter/LocalityPreservingProjections.h>
 %include <shogun/converter/MultidimensionalScaling.h>
 %include <shogun/converter/Isomap.h>
 

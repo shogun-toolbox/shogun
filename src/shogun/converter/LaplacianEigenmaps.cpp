@@ -79,13 +79,13 @@ CFeatures* CLaplacianEigenmaps::apply(CFeatures* features)
 	// compute distance matrix
 	ASSERT(m_distance);
 	m_distance->init(features,features);
-	CSimpleFeatures<float64_t>* embedding = embed_distance(m_distance);
+	CSimpleFeatures<float64_t>* embedding = embed_distance(m_distance,features);
 	m_distance->remove_lhs_and_rhs();
 	SG_UNREF(features);
 	return (CFeatures*)embedding;
 }
 
-CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* distance)
+CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* distance, CFeatures* features)
 {
 	int32_t i,j;
 	SGMatrix<float64_t> W_sgmatrix = distance->get_distance_matrix();
@@ -151,13 +151,14 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* dista
 	}
 
 	// compute D
-	CSimpleFeatures<float64_t>* embedding = construct_embedding(W_sgmatrix);
+	CSimpleFeatures<float64_t>* embedding = construct_embedding(features,W_sgmatrix);
 	W_sgmatrix.destroy_matrix();
 
 	return embedding;
 }
 
-CSimpleFeatures<float64_t>* CLaplacianEigenmaps::construct_embedding(SGMatrix<float64_t> W_matrix)
+CSimpleFeatures<float64_t>* CLaplacianEigenmaps::construct_embedding(CFeatures* features,
+                                                                     SGMatrix<float64_t> W_matrix)
 {
 	int32_t i,j;
 	int32_t N = W_matrix.num_cols;
@@ -222,6 +223,7 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::construct_embedding(SGMatrix<fl
 			#endif
 		}
 	}
+	return new CSimpleFeatures<float64_t>(new_features);
 }
 
 #endif /* HAVE_LAPACK */
