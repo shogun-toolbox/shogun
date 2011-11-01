@@ -49,7 +49,8 @@ class CDistance;
  * This class also have capability of selecting k automatically in 
  * range between "k" and "max_k" in case if "auto_k" is true. This 
  * is being done using ternary search of minima of 
- * reconstruction error on the subset of features.
+ * the mean reconstruction error. The reconstruction error is 
+ * considered to have only one global minimum in this mode.
  */
 class CLocallyLinearEmbedding: public CEmbeddingConverter
 {
