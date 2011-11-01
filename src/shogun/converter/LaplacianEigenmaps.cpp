@@ -151,6 +151,17 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* dista
 	}
 
 	// compute D
+	CSimpleFeatures<float64_t>* embedding = construct_embedding(W_sgmatrix);
+	W_sgmatrix.destroy_matrix();
+
+	return embedding;
+}
+
+CSimpleFeatures<float64_t>* CLaplacianEigenmaps::construct_embedding(SGMatrix<float64_t> W_matrix)
+{
+	int32_t i,j;
+	int32_t N = W_matrix.num_cols;
+
 	float64_t* D_diag_vector = SG_CALLOC(float64_t, N);
 	for (i=0; i<N; i++)
 	{
@@ -166,29 +177,36 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* dista
 	for (i=0; i<N; i++)
 		W_matrix[i*N+i] += D_diag_vector[i];
 
-	#ifdef HAVE_ARPACK
-		// using ARPACK DS{E,A}UPD
-		int eigenproblem_status = 0;
-		float64_t* eigenvalues_vector = SG_MALLOC(float64_t,m_target_dim+1);
-		arpack_dsxupd(W_matrix,D_diag_vector,true,N,m_target_dim+1,"LA",true,3,false,-1e-9,0.0,
-		              eigenvalues_vector,W_matrix,eigenproblem_status);
-		if (eigenproblem_status!=0) SG_ERROR("DSXUPD failed with code %d\n",eigenproblem_status);
-		SG_FREE(eigenvalues_vector);
-	#else
-		// using LAPACK DSYGVX
-		// requires 2x memory because of dense rhs matrix usage
-		int eigenproblem_status = 0;
-		float64_t* eigenvalues_vector = SG_MALLOC(float64_t,N);
-		float64_t* rhs = SG_CALLOC(float64_t,N*N);
-		// fill rhs with diag (for safety reasons zeros will be replaced with 1e-3)
-		for (i=0; i<N; i++)
-			rhs[i*N+i] = D_diag_vector[i];
-		wrap_dsygvx(1,'V','U',N,W_matrix,N,rhs,N,1,m_target_dim+2,eigenvalues_vector,W_matrix,&eigenproblem_status);
-		if (eigenproblem_status)
-			SG_ERROR("DSYGVX failed with code: %d.\n",eigenproblem_status);
-		SG_FREE(rhs);
-		SG_FREE(eigenvalues_vector);
-	#endif /* HAVE_ARPACK */
+#ifdef HAVE_ARPACK
+	// using ARPACK DS{E,A}UPD
+	int eigenproblem_status = 0;
+	float64_t* eigenvalues_vector = SG_MALLOC(float64_t,m_target_dim+1);
+	arpack_dsxupd(W_matrix.matrix,D_diag_vector,true,N,m_target_dim+1,"LA",true,3,false,-1e-9,0.0,
+	              eigenvalues_vector,W_matrix.matrix,eigenproblem_status);
+
+	if (eigenproblem_status!=0) 
+		SG_ERROR("DSXUPD failed with code %d\n",eigenproblem_status);
+	
+	SG_FREE(eigenvalues_vector);
+#else /* HAVE_ARPACK */
+	// using LAPACK DSYGVX
+	// requires 2x memory because of dense rhs matrix usage
+	int eigenproblem_status = 0;
+	float64_t* eigenvalues_vector = SG_MALLOC(float64_t,N);
+	float64_t* rhs = SG_CALLOC(float64_t,N*N);
+	// fill rhs with diag (for safety reasons zeros will be replaced with 1e-3)
+	for (i=0; i<N; i++)
+		rhs[i*N+i] = D_diag_vector[i];
+
+	wrap_dsygvx(1,'V','U',N,W_matrix.matrix,N,rhs,N,1,m_target_dim+2,eigenvalues_vector,W_matrix.matrix,&eigenproblem_status);
+	
+	if (eigenproblem_status)
+		SG_ERROR("DSYGVX failed with code: %d.\n",eigenproblem_status);
+
+	SG_FREE(rhs);
+	SG_FREE(eigenvalues_vector);
+
+#endif /* HAVE_ARPACK */
 	SG_FREE(D_diag_vector);
 
 	SGMatrix<float64_t> new_features = SGMatrix<float64_t>(m_target_dim,N);
@@ -204,9 +222,6 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* dista
 			#endif
 		}
 	}
-	W_sgmatrix.destroy_matrix();
-
-	return new CSimpleFeatures<float64_t>(new_features);
 }
 
 #endif /* HAVE_LAPACK */
