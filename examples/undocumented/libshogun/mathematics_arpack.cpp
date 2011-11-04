@@ -23,47 +23,32 @@ int main(int argc, char** argv)
 	int nev = 2;
 
 	double* double_matrix = new double[N*N];
-	float* float_matrix = new float[N*N];
-
 	double* rhs_double_diag = new double[N];
-	float* rhs_float_diag = new float[N];
-
 	double* double_eigenvalues = new double[nev];
-	float* float_eigenvalues = new float[nev];
-
 	double* double_eigenvectors = new double[nev*N];
-	float* float_eigenvectors = new float[nev*N];
 
 	for (int i=0; i<N; i++)
 	{
 		rhs_double_diag[i] = 1.0;
-		rhs_float_diag[i] = 1.0;
 		for (int j=0; j<N; j++)
 		{
 			double_matrix[i*N+j] = i*i+j*j;
-			float_matrix[i*N+j] = i*i+j*j;
 		}
 	}
 
 	int status = 0;
-	arpack_xsxupd<double>(double_matrix, NULL, N, 2, "LM", 1, false, 0.0, 0.0,
-	                      double_eigenvalues, double_eigenvectors, status);
-	arpack_xsxupd<float>(float_matrix, NULL, N, 2, "LM", 1, false, 0.0, 0.0,
-	                     float_eigenvalues, float_eigenvectors, status);
+	arpack_dsxupd(double_matrix, NULL, false, N, 2, "LM", false, 1, false, 0.0, 0.0,
+	              double_eigenvalues, double_eigenvectors, status);
 	if (status!=0)
 		return -1;
 
-	arpack_xsxupd<double>(double_matrix, NULL, N, 2, "BE", 3, false, 1.0, 0.0,
-	                      double_eigenvalues, double_eigenvectors, status);
-	arpack_xsxupd<float>(float_matrix, NULL, N, 2, "BE", 3, false, 1.0, 0.0,
-	                     float_eigenvalues, float_eigenvectors, status);
+	arpack_dsxupd(double_matrix, NULL, false, N, 2, "BE", false, 3, false, 1.0, 0.0,
+	              double_eigenvalues, double_eigenvectors, status);
 	if (status!=0)
 		return -1;
 
-	arpack_xsxupd<double>(double_matrix, rhs_double_diag, N, 2, "SM", 3, false, 0.0, 0.0,
-	                      double_eigenvalues, double_eigenvectors, status);
-	arpack_xsxupd<float>(float_matrix, rhs_float_diag, N, 2, "SM", 3, false, 0.0, 0.0,
-	                     float_eigenvalues, float_eigenvectors, status);
+	arpack_dsxupd(double_matrix, rhs_double_diag, true, N, 2, "SM", false, 3, false, 0.0, 0.0,
+	              double_eigenvalues, double_eigenvectors, status);
 	if (status!=0)
 		return -1;
 
@@ -71,10 +56,6 @@ int main(int argc, char** argv)
 	delete[] double_eigenvectors;
 	delete[] double_matrix;
 	delete[] rhs_double_diag;
-	delete[] float_eigenvalues;
-	delete[] float_eigenvectors;
-	delete[] float_matrix;
-	delete[] rhs_float_diag;
 #endif // HAVE_ARPACK
 
 	exit_shogun();
