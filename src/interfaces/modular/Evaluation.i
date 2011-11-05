@@ -13,6 +13,7 @@
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
+%rename(MeanAbsoluteError) CMeanAbsoluteError;
 %rename(MeanSquaredError) CMeanSquaredError;
 %rename(ROCEvaluation) CROCEvaluation;
 %rename(PRCEvaluation) CPRCEvaluation;
@@ -34,6 +35,7 @@
 %include <shogun/evaluation/BinaryClassEvaluation.h>
 %include <shogun/evaluation/ContingencyTableEvaluation.h>
 %include <shogun/evaluation/MulticlassAccuracy.h>
+%include <shogun/evaluation/MeanAbsoluteError.h>
 %include <shogun/evaluation/MeanSquaredError.h>
 %include <shogun/evaluation/ROCEvaluation.h>
 %include <shogun/evaluation/PRCEvaluation.h>
