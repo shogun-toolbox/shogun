@@ -196,11 +196,11 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 
 	int32_t i,j,k;
 
+	for (j=0; j<m_k; j++)
+		G_matrix[j] = 1.0/CMath::sqrt((float64_t)m_k);
+
 	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{
-		for (j=0; j<m_k; j++)
-			G_matrix[j] = 1.0/CMath::sqrt((float64_t)m_k);
-
 		// fill mean vector with zeros
 		memset(mean_vector,0,sizeof(float64_t)*dim);
 
@@ -222,9 +222,8 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 
 		int32_t info = 0;
 		// find right eigenvectors of local_feature_matrix
-		wrap_dgesvd('N','O', dim,m_k,local_feature_matrix,dim,
-		                     s_values_vector,
-		                     NULL,1, NULL,1, &info);
+		wrap_dgesvd('N','O',dim,m_k,local_feature_matrix,dim,
+		            s_values_vector,NULL,1, NULL,1,&info);
 		ASSERT(info==0);
 		
 		for (j=0; j<target_dim; j++)
