@@ -163,11 +163,11 @@ void* CKernelLocalTangentSpaceAlignment::run_kltsa_thread(void* p)
 
 	int32_t i,j,k;
 
+	for (j=0; j<m_k; j++)
+		G_matrix[j] = 1.0/CMath::sqrt((float64_t)m_k);
+
 	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{
-		for (j=0; j<m_k; j++)
-			G_matrix[j] = 1.0/CMath::sqrt((float64_t)m_k);
-
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
@@ -179,11 +179,6 @@ void* CKernelLocalTangentSpaceAlignment::run_kltsa_thread(void* p)
 		int32_t info = 0; 
 		wrap_dsyevr('V','U',m_k,local_gram_matrix,m_k,m_k-target_dim+1,m_k,ev_vector,G_matrix+m_k,&info);
 		ASSERT(info==0);
-
-		for (j=0; j<target_dim/2; j++)
-		{
-			cblas_dswap(m_k,G_matrix+(j+1)*m_k,1,G_matrix+(target_dim-j)*m_k,1);
-		}
 
 		cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,
 		            m_k,m_k,1+target_dim,
