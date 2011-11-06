@@ -58,6 +58,13 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 if test "$2" = "sg" || test "$2" = "elwms"
 then
 echo "Installing static sg/elwms interface for R"
+cat >"$1/$2/NAMESPACE" <<EOF
+export( current.packages, 
+        sg,
+		)
+S3method(sg, default)
+EOF
+
 cat >"$1/$2/R/$2" <<EOF
 .packageName <- "$2"
 # The purpose of this file is to supply no functionality
@@ -126,6 +133,13 @@ EOF
 # R-MODULAR
 else
 echo "Installing modular shogun interface for R"
+
+cat >"$1/$2/NAMESPACE" <<EOF
+export( current.packages, 
+        shogun,
+		)
+S3method(shogun, default)
+EOF
 
 cat >"$1/$2/R/$2" <<EOF
 .packageName <- "$2"
