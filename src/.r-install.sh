@@ -59,9 +59,7 @@ if test "$2" = "sg" || test "$2" = "elwms"
 then
 echo "Installing static sg/elwms interface for R"
 cat >"$1/$2/NAMESPACE" <<EOF
-export( sg )
-
-S3method(sg, default)
+export(sg)
 EOF
 
 cat >"$1/$2/R/$2" <<EOF
@@ -135,8 +133,6 @@ echo "Installing modular shogun interface for R"
 
 cat >"$1/$2/NAMESPACE" <<EOF
 export( shogun )
-
-S3method(shogun, default)
 EOF
 
 cat >"$1/$2/R/$2" <<EOF
