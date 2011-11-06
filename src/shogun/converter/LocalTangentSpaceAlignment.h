@@ -39,6 +39,9 @@ class CDistance;
  * This algorithm is pretty stable for variations of k parameter value but
  * be sure it is set with a consistent value (at least 3-5) for reasonable
  * results.
+ *
+ * Please do not use multithreading whether your LAPACK is not thread-safe.
+ *
  */
 class CLocalTangentSpaceAlignment: public CLocallyLinearEmbedding
 {

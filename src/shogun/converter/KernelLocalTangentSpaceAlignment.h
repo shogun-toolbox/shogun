@@ -30,6 +30,9 @@ class CKernel;
  *
  * The local tangent space alignment step is parallel. Neighborhood
  * determination is parallel as in CLocallyLinearEmbedding.
+ *
+ * Please do not use multithreading whether your LAPACK is not thread-safe.
+ *
  */
 class CKernelLocalTangentSpaceAlignment: public CKernelLocallyLinearEmbedding
 {
