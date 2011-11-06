@@ -16,7 +16,7 @@ Date: $DATE
 Title: The SHOGUN Machine Learning Toolbox
 Author: Soeren Sonnenburg, Gunnar Raetsch
 Maintainer: Soeren Sonnenburg <sonne@debian.org>
-Depends: R (>= 2.1.0)
+Depends: R (>= 2.10.0)
 Suggests:
 Description: SHOGUN - is a new machine learning toolbox with focus on large
         scale kernel methods and especially on Support Vector Machines (SVM) with focus
@@ -46,8 +46,8 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 		Maintainer=\"sonne@debian.org\",\
 		Depends=\"R (>= $RVERSION)\"),\
 		Built = list(R=\"$RVERSION\", Platform=\"$PLATFORM\", Date=\"$DATE\", OStype=\"$OSTYPE\"),\
-		Rdepends = list(name='R', op='>=', version='2.1.0'),\
-		Rdepends2 = list(list(name='R', op='>=', version='2.1.0')),\
+		Rdepends = list(name='R', op='>=', version='2.10'),\
+		Rdepends2 = list(list(name='R', op='>=', version='2.10')),\
 		Depends = list(),\
 		Suggests = list(),\
 		Imports = list()),\
