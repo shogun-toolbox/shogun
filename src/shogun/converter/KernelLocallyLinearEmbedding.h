@@ -27,9 +27,17 @@ class CKernel;
  * data using kernel extension of Locally Linear Embedding algorithm as
  * described in
  *
- * Kayo, O. (2006). Locally linear embedding algorithm. Extensions and applications. October.
- * Retrieved from: http://herkules.oulu.fi/isbn9514280415/isbn9514280415.pdf
+ * Decoste, D. (2001). 
+ * Visualizing Mercer Kernel Feature Spaces Via Kernelized Locally-Linear Embeddings.
+ * The 8th International Conference on Neural Information Processing ICONIP2001
  *
+ * It is optimized with alignment formulation as described in 
+ * 
+ * Zhao, D. (2006). 
+ * Formulating LLE using alignment technique. 
+ * Pattern Recognition, 39(11), 2233-2235. 
+ * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S0031320306002160
+ * 
  */
 class CKernelLocallyLinearEmbedding: public CLocallyLinearEmbedding
 {

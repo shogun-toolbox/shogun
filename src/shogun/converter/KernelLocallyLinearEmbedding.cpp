@@ -68,24 +68,6 @@ struct K_NEIGHBORHOOD_THREAD_PARAM
 	/// matrix containing neighbors indexes
 	int32_t* neighborhood_matrix;
 };
-
-struct SPARSEDOT_THREAD_PARAM
-{
-	/// starting index of loop
-	int32_t idx_start;
-	/// step of loop
-	int32_t idx_step;
-	/// end index of loop
-	int32_t idx_stop;
-	/// number of vectors
-	int32_t N;
-	/// weight matrix
-	const float64_t* W_matrix;
-	/// result matrix
-	float64_t* M_matrix;
-	/// non zero indexes dynamic array
-	DynArray<int32_t>** nz_idxs;
-};
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding() :
@@ -142,7 +124,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMat
 {
 	int32_t N = kernel_matrix.num_cols;
 	// loop variables
-	int32_t i,j,t;
+	int32_t t;
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -199,70 +181,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMat
 	SG_FREE(id_vector);
 	SG_FREE(local_gram_matrix);
 
-	// diag(W) = 1
-	for (i=0; i<N; i++)
-	{
-		W_matrix[i*N+i] = 1.0;
-	}
-
-	// compute M=(W-I)'*(W-I)
-	DynArray<int32_t>** nz_idxs = SG_MALLOC(DynArray<int32_t>*,N);
-	for (i=0; i<N; i++)
-	{
-		nz_idxs[i] = new DynArray<int32_t>(m_k,false);
-		for (j=0; j<N; j++)
-		{
-			if (W_matrix[i*N+j]!=0.0)
-				nz_idxs[i]->push_back(j);
-		}
-	}
-	SGMatrix<float64_t> M_matrix(kernel_matrix.matrix,N,N);
-#ifdef HAVE_PTHREAD
-	// allocate threads
-	threads = SG_MALLOC(pthread_t, num_threads);
-	SPARSEDOT_THREAD_PARAM* parameters_ = SG_MALLOC(SPARSEDOT_THREAD_PARAM, num_threads);
-	pthread_attr_t attr_;
-	pthread_attr_init(&attr_);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	
-	for (t=0; t<num_threads; t++)
-	{
-		parameters_[t].idx_start = t;
-		parameters_[t].idx_step = num_threads;
-		parameters_[t].idx_stop = N;
-		parameters_[t].N = N;
-		parameters_[t].W_matrix = W_matrix;
-		parameters_[t].M_matrix = M_matrix.matrix;
-		parameters_[t].nz_idxs = nz_idxs;
-		pthread_create(&threads[t], &attr_, run_sparsedot_thread, (void*)&parameters_[t]);
-	}
-	for (t=0; t<num_threads; t++)
-		pthread_join(threads[t], NULL);
-	pthread_attr_destroy(&attr_);
-	SG_FREE(parameters_);
-	SG_FREE(threads);
-#else
-	SPARSEDOT_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = 0;
-	single_thread_param.idx_step = 1;
-	single_thread_param.idx_stop = N;
-	single_thread_param.N = N;
-	single_thread_param.W_matrix = W_matrix;
-	single_thread_param.M_matrix = M_matrix.matrix;
-	single_thread_param.nz_idxs = nz_idxs;
-	run_sparsedot_thread((void*)single_thread_param);
-#endif
-	for (i=0; i<N; i++)
-	{
-		delete nz_idxs[i];
-		for (j=0; j<i; j++)
-		{
-			M_matrix[i*N+j] = M_matrix[j*N+i];
-		}
-	}
-	SG_FREE(nz_idxs);
-	SG_FREE(W_matrix);
-	return M_matrix;
+	return SGMatrix<float64_t>(W_matrix,N,N);
 }
 
 void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
@@ -313,11 +232,23 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		for (j=0; j<m_k; j++)
 			norming += id_vector[j];
 
-		cblas_dscal(m_k,-1.0/norming,id_vector,1);
+		cblas_dscal(m_k,1.0/norming,id_vector,1);
+
+		memset(local_gram_matrix,0,sizeof(float64_t)*m_k*m_k);
+		cblas_dger(CblasColMajor,m_k,m_k,1.0,id_vector,1,id_vector,1,local_gram_matrix,m_k);
 
 		// put weights into W matrix
+		W_matrix[N*i+i] += 1.0;
 		for (j=0; j<m_k; j++)
-			W_matrix[N*neighborhood_matrix[j*N+i]+i]=id_vector[j];
+		{
+			W_matrix[N*i+neighborhood_matrix[j*N+i]] -= id_vector[j];
+			W_matrix[N*neighborhood_matrix[j*N+i]+i] -= id_vector[j];
+		}
+		for (j=0; j<m_k; j++)
+		{
+			for (k=0; k<m_k; k++)
+				W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[k*N+i]]+=local_gram_matrix[j*m_k+k];
+		}
 	}
 	return NULL;
 }

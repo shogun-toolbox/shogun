@@ -51,6 +51,14 @@ class CDistance;
  * is being done using ternary search of minima of 
  * the mean reconstruction error. The reconstruction error is 
  * considered to have only one global minimum in this mode.
+ *
+ * It is optimized with alignment formulation as described in 
+ * 
+ * Zhao, D. (2006). 
+ * Formulating LLE using alignment technique. 
+ * Pattern Recognition, 39(11), 2233-2235. 
+ * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S0031320306002160
+ * 
  */
 class CLocallyLinearEmbedding: public CEmbeddingConverter
 {
@@ -216,11 +224,6 @@ protected:
 	 * @param p thread params
 	 */
 	static void* run_linearreconstruction_thread(void* p);
-
-	/** runs sparse matrix-matrix multiplication thread
-	 * @param p thread params
-	 */
-	static void* run_sparsedot_thread(void* p);
 
 };
 }
