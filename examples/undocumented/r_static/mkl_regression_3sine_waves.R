@@ -95,6 +95,6 @@ for (kk in c(1:length(f))) {  #Big loop
    sg('add_kernel', 1, 'GAUSSIAN', 'REAL', cache_size, rbf_width[10])
    sg('train_classifier')
 
-   weights[kk,] <- get_subkernel_weights()
+   weights[kk,] <- sg('get_subkernel_weights')
    cat("frequency:", f[kk], " rbf-kernel-weights: ", weights[kk,], "\n")
 }
