@@ -308,7 +308,7 @@ SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 	SGVector<float64_t> v;
 
     int32_t dim=get_dim_feature_space();
-    ASSERT(num>=0 && num<=dim);
+    ASSERT(num>=0 && num<=get_num_vectors());
     ASSERT(dim>0);
 
 	v.do_free=true;
