@@ -21,6 +21,7 @@
 %newobject get_transposed();
 
 /* Remove C Prefix */
+%rename(Alphabet) CAlphabet;
 %rename(Features) CFeatures;
 %rename(StreamingFeatures) CStreamingFeatures;
 %rename(DotFeatures) CDotFeatures;
@@ -28,7 +29,6 @@
 %rename(StreamingVwFeatures) CStreamingVwFeatures;
 %rename(DummyFeatures) CDummyFeatures;
 %rename(AttributeFeatures) CAttributeFeatures;
-%rename(Alphabet) CAlphabet;
 %rename(CombinedFeatures) CCombinedFeatures;
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
 %rename(Labels) CLabels;
@@ -47,6 +47,7 @@
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/FeatureTypes.h>
+%include <shogun/features/Alphabet.h>
 %include <shogun/lib/Compressor.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
@@ -350,7 +351,6 @@ namespace shogun
 
 %include <shogun/features/DummyFeatures.h>
 %include <shogun/features/AttributeFeatures.h>
-%include <shogun/features/Alphabet.h>
 %include <shogun/features/CombinedFeatures.h>
 %include <shogun/features/CombinedDotFeatures.h>
 
