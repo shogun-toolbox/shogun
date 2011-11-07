@@ -262,6 +262,9 @@ public:
 		return "MultitaskKernelMaskNormalizer";
 	}
 
+	/** casts kernel normalizer to multitask kernel mask normalizer
+	 * @param n kernel normalizer to cast
+	 */
 	CMultitaskKernelMaskNormalizer* KernelNormalizerToMultitaskKernelMaskNormalizer(CKernelNormalizer* n)
 	{
 		   return dynamic_cast<CMultitaskKernelMaskNormalizer*>(n);

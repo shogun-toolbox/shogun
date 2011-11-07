@@ -316,6 +316,9 @@ public:
 		return "MultitaskKernelPlifNormalizer";
 	}
 
+	/** casts kernel normalizer to multitask kernel plif normalizer
+	 * @param n kernel normalizer to cast
+	 */
 	CMultitaskKernelPlifNormalizer* KernelNormalizerToMultitaskKernelPlifNormalizer(CKernelNormalizer* n)
 	{
 		   return dynamic_cast<shogun::CMultitaskKernelPlifNormalizer*>(n);
