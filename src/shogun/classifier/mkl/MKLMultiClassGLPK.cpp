@@ -9,6 +9,10 @@
  */
 
 #include <shogun/classifier/mkl/MKLMultiClassGLPK.h>
+#ifdef USE_GLPK
+#include <glpk.h>
+#endif
+
 
 using namespace shogun;
 
@@ -26,7 +30,7 @@ MKLMultiClassGLPK::~MKLMultiClassGLPK()
 #if defined(USE_GLPK)
 	if (linearproblem)
 	{
-		glp_delete_prob(linearproblem);
+		glp_delete_prob((glp_prob*) linearproblem);
 		linearproblem=NULL;
 	}
 
@@ -64,24 +68,24 @@ void MKLMultiClassGLPK::setup(const int32_t numkernels2)
 		linearproblem=glp_create_prob();
 	}
 
-	glp_set_obj_dir(linearproblem, GLP_MAX);
+	glp_set_obj_dir((glp_prob*) linearproblem, GLP_MAX);
 
-	glp_add_cols(linearproblem,1+numkernels);
+	glp_add_cols((glp_prob*) linearproblem,1+numkernels);
 
 	//set up theta
-	glp_set_col_bnds(linearproblem,1,GLP_FR,0.0,0.0);
-	glp_set_obj_coef(linearproblem,1,1.0);
+	glp_set_col_bnds((glp_prob*) linearproblem,1,GLP_FR,0.0,0.0);
+	glp_set_obj_coef((glp_prob*) linearproblem,1,1.0);
 
 	//set up betas
 	int32_t offset=2;
 	for (int32_t i=0; i<numkernels;++i)
 	{
-		glp_set_col_bnds(linearproblem,offset+i,GLP_DB,0.0,1.0);
-		glp_set_obj_coef(linearproblem,offset+i,0.0);
+		glp_set_col_bnds((glp_prob*) linearproblem,offset+i,GLP_DB,0.0,1.0);
+		glp_set_obj_coef((glp_prob*) linearproblem,offset+i,0.0);
 	}
 
 	//set sumupconstraint32_t/sum_l \beta_l=1
-	glp_add_rows(linearproblem,1);
+	glp_add_rows((glp_prob*) linearproblem,1);
 
 	int32_t*betainds(NULL);
 	betainds=SG_MALLOC(int, 1+numkernels);
@@ -99,8 +103,8 @@ void MKLMultiClassGLPK::setup(const int32_t numkernels2)
 		betacoeffs[1+i]=1;
 	}
 
-	glp_set_mat_row(linearproblem,1,numkernels, betainds,betacoeffs);
-	glp_set_row_bnds(linearproblem,1,GLP_FX,1.0,1.0);
+	glp_set_mat_row((glp_prob*) linearproblem,1,numkernels, betainds,betacoeffs);
+	glp_set_row_bnds((glp_prob*) linearproblem,1,GLP_FX,1.0,1.0);
 
 	SG_FREE(betainds);
 	betainds=NULL;
@@ -123,9 +127,9 @@ void MKLMultiClassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 	ASSERT ((int)normw2.size()==numkernels);
 	ASSERT (sumofpositivealphas>=0);
 
-	glp_add_rows(linearproblem,1);
+	glp_add_rows((glp_prob*) linearproblem,1);
 
-	int32_t curconstraint=glp_get_num_rows(linearproblem);
+	int32_t curconstraint=glp_get_num_rows((glp_prob*) linearproblem);
 
 	int32_t *betainds(NULL);
 	betainds=SG_MALLOC(int, 1+1+numkernels);
@@ -146,9 +150,9 @@ void MKLMultiClassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 	{
 		betacoeffs[2+i]=0.5*normw2[i];
 	}
-	glp_set_mat_row(linearproblem,curconstraint,1+numkernels, betainds,
+	glp_set_mat_row((glp_prob*) linearproblem,curconstraint,1+numkernels, betainds,
 			betacoeffs);
-	glp_set_row_bnds(linearproblem,curconstraint,GLP_LO,sumofpositivealphas,
+	glp_set_row_bnds((glp_prob*) linearproblem,curconstraint,GLP_LO,sumofpositivealphas,
 			sumofpositivealphas);
 
 	SG_FREE(betainds);
@@ -169,12 +173,12 @@ void MKLMultiClassGLPK::computeweights(std::vector<float64_t> & weights2)
 #if defined(USE_GLPK)
 	weights2.resize(numkernels);
 
-	glp_simplex(linearproblem,NULL);
+	glp_simplex((glp_prob*) linearproblem,NULL);
 
 	float64_t sum=0;
 	for (int32_t i=0; i< numkernels;++i)
 	{
-		weights2[i]=glp_get_col_prim(linearproblem, i+2);
+		weights2[i]=glp_get_col_prim((glp_prob*) linearproblem, i+2);
 		weights2[i]= ::std::max(0.0, ::std::min(1.0,weights2[i]));
 		sum+= weights2[i];
 	}
