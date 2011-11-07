@@ -34,13 +34,11 @@ CKernelPCA::CKernelPCA() : CDimensionReductionPreprocessor()
 CKernelPCA::CKernelPCA(CKernel* k) : CDimensionReductionPreprocessor()
 {
 	init();
-	SG_REF(k);
-	m_kernel=k;
+	set_kernel(k);
 }
 
 void CKernelPCA::init()
 {
-	m_kernel = NULL;
 	m_initialized = false;
 	m_init_features = NULL;
 	m_transformation_matrix = SGMatrix<float64_t>(NULL, 0, 0, false);
@@ -56,7 +54,6 @@ void CKernelPCA::cleanup()
 {
 	m_transformation_matrix.destroy_matrix();
 	m_bias_vector.destroy_vector();
-	if (m_kernel) SG_UNREF(m_kernel);
 	if (m_init_features) SG_UNREF(m_init_features);
 	m_initialized = false;
 }
@@ -65,7 +62,6 @@ CKernelPCA::~CKernelPCA()
 {
 	m_transformation_matrix.destroy_matrix();
 	m_bias_vector.destroy_vector();
-	if (m_kernel) SG_UNREF(m_kernel);
 	if (m_init_features) SG_UNREF(m_init_features);
 }
 
