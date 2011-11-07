@@ -578,6 +578,9 @@ public:
 		return "MultitaskKernelTreeNormalizer";
 	}
 
+	/** casts kernel normalizer to multitask kernel tree normalizer
+	 * @param n kernel normalizer to cast
+	 */
 	CMultitaskKernelTreeNormalizer* KernelNormalizerToMultitaskKernelTreeNormalizer(CKernelNormalizer* n)
 	{
 		return dynamic_cast<CMultitaskKernelTreeNormalizer*>(n);

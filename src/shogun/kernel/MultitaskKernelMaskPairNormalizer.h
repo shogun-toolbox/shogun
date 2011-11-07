@@ -239,6 +239,9 @@ public:
 		return "MultitaskKernelMaskPairNormalizer";
 	}
 
+	/** casts kernel normalizer to multitask kernel mask normalizer 
+	 * @param n kernel normalizer to cast
+	 */
 	CMultitaskKernelMaskPairNormalizer* KernelNormalizerToMultitaskKernelMaskPairNormalizer(CKernelNormalizer* n)
 	{
 		   return dynamic_cast<shogun::CMultitaskKernelMaskPairNormalizer*>(n);
