@@ -15,10 +15,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/classifier/mkl/MKLMultiClassOptimizationBase.h>
 
-#ifdef USE_GLPK
-#include <glpk.h>
-#endif
-
 namespace shogun
 {
 /** @brief MKLMultiClassGLPK is a helper class for MKLMultiClass. 
@@ -85,10 +81,8 @@ protected:
 protected:
 	/** stores the number of kernels which acts as a parameter for the LP */
 	int32_t numkernels;
-#ifdef USE_GLPK
-	/** GLPK data structure */
-	glp_prob* linearproblem;
-#endif
+	/** GLPK data structure of type glp_prob* */
+	void* linearproblem;
 };
 }
 

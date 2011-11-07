@@ -3,7 +3,7 @@ INC_PATH=/usr/include
 
 INCLUDES=
 LIBS=
-LIBS_ADD=-lshogun -lblas
+LIBS_ADD=-lshogun
 
 LINKFLAGS=
 CXXFLAGS=-O3 -g
