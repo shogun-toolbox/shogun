@@ -601,7 +601,9 @@ bool COctaveInterface::cmd_run_r()
 
 void COctaveInterface::recover_from_exception(void)
 {
+#if OCTAVE_APIVERSION < 37
   unwind_protect::run_all ();
+#endif
   can_interrupt = true;
   octave_interrupt_immediately = 0;
   octave_interrupt_state = 0;
@@ -654,7 +656,9 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 #if defined (USE_EXCEPTIONS_FOR_INTERRUPTS)
 		panic_impossible ();
 #else
+#if OCTAVE_APIVERSION < 37
 		unwind_protect::run_all ();
+#endif
 		raw_mode (0);
 		octave_restore_signal_mask ();
 #endif
@@ -728,7 +732,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 
 		if (sz>0)
 		{
-			if (results(0).is_list())
+			if (results(0).is_cs_list())
 			{
 				from_if->SG_DEBUG("Found return list of length %d\n", results(0).length());
 				results=results(0).list_value();
