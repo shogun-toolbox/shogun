@@ -368,7 +368,7 @@ class CKernel : public CSGObject
 
 			SG_DONE();
 
-			return SGMatrix<T>(result,m,n);
+			return SGMatrix<T>(result,m,n,true);
 		}
 
 
