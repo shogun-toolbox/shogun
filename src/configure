@@ -323,7 +323,7 @@ EOF
 		do
 			if cc_check
 			then
-				cc_name_tmp=$($COMP_C -v 2>&1 | tail -n 1 | cut -d ' ' -f 1)
+				cc_name_tmp=$($COMP_C -v 2>&1 | tail -n 1 | tr 'A-Z-' 'a-z ' | cut -d ' ' -f 1)
 				if test "$cc_name_tmp" = "gcc"; then
 					cc_vendor=gnu
 					cc_name=$cc_name_tmp
@@ -401,7 +401,7 @@ EOF
 		do
 			if cxx_check
 			then
-				cxx_name_tmp=$($COMP_CPP -v 2>&1 | tail -n 1 | cut -d ' ' -f 1)
+				cxx_name_tmp=$($COMP_CPP -v 2>&1 | tail -n 1 | tr 'A-Z-' 'a-z ' | cut -d ' ' -f 1)
 				if test "$cxx_name_tmp" = "gcc"; then
 					cxx_vendor=gnu
 					cxx_name=$cxx_name_tmp
@@ -2952,6 +2952,9 @@ check_hdf5()
 	then
 		_cflags="`get_cflags '' libhdf5 hdf5`"
 		_lflags="`get_lflags '-lhdf5' libhdf5 hdf5`"
+
+
+		test -z "$_lflags" || _lflags="-lhdf5"
 		cat > $TMPC << EOF
 #include <hdf5.h>
 int main(void)
@@ -3775,7 +3778,7 @@ test_modular()
 
 				if cygwin
 				then
-					POSTLINKFLAGS=$LINKFLAGS
+					POSTLINKFLAGS="$POSTLINKFLAGS $LINKFLAGS"
 				fi
 			else
 				echores "`echo $_swig_version` ... too old version 1.3.29 or later required"
@@ -4233,7 +4236,7 @@ EOF
 
 	if test "$_octave" = yes
 	then
-		OCTAVE_APIVERSION=`octave-config -p API_VERSION | tr -d 'a-z-'`
+		OCTAVE_APIVERSION=`octave-config -p API_VERSION | tr -d 'a-z-+'`
 		DEFINES_OCTAVE="$DEFINES_OCTAVE -DHAVE_OCTAVE -DOCTAVE_APIVERSION=${OCTAVE_APIVERSION}"
 
 		if test "$_octave_static" != no
