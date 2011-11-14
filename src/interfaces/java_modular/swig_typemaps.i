@@ -356,7 +356,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 
 	cols = (int32_t)JCALL2(CallIntMethod, jenv, $input, mid);
 
-	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
+	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols, true);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE>

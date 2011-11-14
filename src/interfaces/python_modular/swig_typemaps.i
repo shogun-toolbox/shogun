@@ -248,7 +248,7 @@ TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
         SWIG_fail;
 
     $1 = shogun::SGMatrix<type>((type*) PyArray_BYTES(array),
-            PyArray_DIM(array,0), PyArray_DIM(array,1));
+            PyArray_DIM(array,0), PyArray_DIM(array,1), true);
 
     ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
     Py_DECREF(array);

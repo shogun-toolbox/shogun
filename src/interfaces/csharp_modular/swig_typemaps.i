@@ -113,7 +113,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 		array[i] = (SGTYPE)$input[i];
 	}
 
-	$1 = shogun::SGMatrix<SGTYPE>(array, rows, cols);
+	$1 = shogun::SGMatrix<SGTYPE>(array, rows, cols, true);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE>

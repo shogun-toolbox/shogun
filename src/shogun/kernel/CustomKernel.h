@@ -247,8 +247,8 @@ class CCustomKernel: public CKernel
 			}
 
 			dummy_init(rows, cols);
-			// temporary bugfix, TODO with free_matrix
-			full_kernel_matrix.destroy_matrix();
+
+			full_kernel_matrix.free_matrix();
 			return true;
 		}
 

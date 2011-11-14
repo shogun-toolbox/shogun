@@ -129,7 +129,7 @@ TYPEMAP_OUT_SGVECTOR(uint16NDArray, uint16_t, uint16_t, "Word")
     m = mat_feat.oct_converter();
 
     void* copy=get_copy((void*) m.fortran_vec(), size_t(m.cols())*m.rows()*sizeof(sg_type));
-    $1 = shogun::SGMatrix<sg_type>((sg_type*) copy, m.rows(), m.cols());
+    $1 = shogun::SGMatrix<sg_type>((sg_type*) copy, m.rows(), m.cols(), true);
 }
 %typemap(freearg) shogun::SGMatrix<sg_type>
 {
