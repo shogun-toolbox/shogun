@@ -238,7 +238,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	arr = rb_ary_new2(num);
 
 	for (i = 0; i < num; i++) {
-		if (TYPECODE == "String[]") {
+		if (strcmp(TYPECODE, "String[]")==0) {
 			VALUE vec = rb_str_new2((char *)str[i].string);
 			rb_ary_push(arr, vec);
 		}
