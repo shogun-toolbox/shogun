@@ -127,7 +127,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 	else {
 		rb_raise(rb_eArgError, "Expected Arrays");
 	}
-	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
+	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols, true);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE> {

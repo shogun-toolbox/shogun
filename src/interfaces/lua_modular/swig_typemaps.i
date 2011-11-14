@@ -226,7 +226,7 @@ TYPEMAP_SGVECTOR(float64_t)
 		lua_pop(L, 1);
 	}
 	
-	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols);
+	$1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols, true);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE> {
