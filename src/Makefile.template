@@ -39,6 +39,10 @@ ifeq (libshogun.,$(findstring libshogun.,$(TEMPLATE_TARGET)))
 DEPDEPS=lib/versionstring.h
 endif
 
+ifeq (libshogun-,$(findstring libshogun-,$(TEMPLATE_TARGET)))
+DEPDEPS=lib/versionstring.h
+endif
+
 else
 
 ifeq (elwms,$(findstring elwms,$(TEMPLATE_TARGET)))
@@ -82,7 +86,7 @@ POSTLINKFLAGS += $(POSTLINKFLAGS_TEMPLATE)
 PRELINKFLAGS += $(PRELINKFLAGS_TEMPLATE)
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
-SVNEntries = $(shell find $(SRCDIR) -name entries -type f)
+GITHEAD = ../../.git/HEAD
 HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
 CPPTMPFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_CPP_TMP)")
@@ -426,7 +430,7 @@ check-examples-ruby_modular:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		RUBYLIB="$(DESTDIR)$(RUBY_EXTENSIONS_INSTALL_DIR):." ./check.sh )
 
-lib/versionstring.h:    $(SVNEntries) 
+lib/versionstring.h:    $(GITHEAD) 
 	        sh $(CONFIGPATH)/.version.sh > $@
 
 doc-libshogun:	lib/versionstring.h
