@@ -50,7 +50,6 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  converter_neighborhoodpreservingembedding \
 		  converter_linearlocaltangentspacealignment \
 		  converter_localitypreservingprojections \
-		  preprocessor_kernelpca \
 		  mkl_memleak_test \
 
 all: $(TARGETS)
