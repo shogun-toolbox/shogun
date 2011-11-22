@@ -29,6 +29,7 @@ EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB=so
 EXT_LIB_SWIG_PYTHON_MODULAR=
+EXT_LIB_SWIG_RUBY_MODULAR=so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454 -w312 -w325 -fvirtual"
@@ -707,7 +708,9 @@ EOF
 			fi
 			EXT_IF_SWIG_RUBY_MODULAR='stop'
 			PRE_LIB_SWIG_RUBY_MODULAR=
-			EXT_LIB_SWIG_RUBY_MODULAR=.so
+			if darwin ; then
+				EXT_LIB_SWIG_RUBY_MODULAR=bundle
+			fi
 			SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
 
 cat >$TMPRUBY << EOF
@@ -774,10 +777,14 @@ int main(void)
 }
 EOF
 
-		if test -f "$RUBY_LIBRARY_DIR"/narray.so ; then
-			LINKFLAGS_NARRAY="$RUBY_LIBRARY_DIR"/narray.so
+		if test -f "$RUBY_LIBRARY_DIR"/narray.${EXT_LIB_SWIG_RUBY_MODULAR} ; then
+			LINKFLAGS_NARRAY="$RUBY_LIBRARY_DIR"/narray.${EXT_LIB_SWIG_RUBY_MODULAR}
+		elif gem list narray 2>&1 | grep -q narray
+		then
+			LINKFLAGS_NARRAY="$(dirname `gem which narray`)/narray.${EXT_LIB_SWIG_RUBY_MODULAR}"
+			INCLUDES_RUBY="-I$(dirname `gem which narray`) $INCLUDES_RUBY"
 		else
-			LINKFLAGS_NARRAY="$RUBY_VENDOR_LIBRARY_DIR"/narray.so
+			LINKFLAGS_NARRAY="$RUBY_VENDOR_LIBRARY_DIR"/narray.${EXT_LIB_SWIG_RUBY_MODULAR}
 		fi
 
 		echocheck "Ruby NArray Developer Files"
