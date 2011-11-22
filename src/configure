@@ -29,7 +29,7 @@ EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB=so
 EXT_LIB_SWIG_PYTHON_MODULAR=
-EXT_LIB_SWIG_RUBY_MODULAR=so
+EXT_LIB_SWIG_RUBY_MODULAR=.so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454 -w312 -w325 -fvirtual"
@@ -702,14 +702,14 @@ EOF
 			RUBYSO=`ruby -e 'require "mkmf"; puts Config::expand("$(RUBY_SO_NAME)")'`
 			if ld -o "$TMPO" -l$RUBYSO >/dev/null 2>&1
 			then
-				LINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared"
+				LINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared -ldl"
 			else
-				LINKFLAGS_RUBY="-lruby -fPIC -shared"
+				LINKFLAGS_RUBY="-lruby -fPIC -shared -ldl"
 			fi
 			EXT_IF_SWIG_RUBY_MODULAR='stop'
 			PRE_LIB_SWIG_RUBY_MODULAR=
 			if darwin ; then
-				EXT_LIB_SWIG_RUBY_MODULAR=bundle
+				EXT_LIB_SWIG_RUBY_MODULAR=.bundle
 			fi
 			SWIGFLAGS_RUBY_MODULAR="-c++ -ruby"
 
@@ -771,29 +771,30 @@ cat >$TMPC << EOF
 
 int main(void)
 {
+	VALUE cNArray;
     volatile VALUE obj;
-    VALUE x = na_make_scalar(obj, NA_DFLOAT);
+    VALUE x = NULL; //na_make_scalar(obj, NA_DFLOAT);
     return IsNArray(x) ? 1 : 0;
 }
 EOF
 
-		if test -f "$RUBY_LIBRARY_DIR"/narray.${EXT_LIB_SWIG_RUBY_MODULAR} ; then
-			LINKFLAGS_NARRAY="$RUBY_LIBRARY_DIR"/narray.${EXT_LIB_SWIG_RUBY_MODULAR}
+		if test -f "$RUBY_LIBRARY_DIR"/narray${EXT_LIB_SWIG_RUBY_MODULAR} ; then
+			NARRAY="$RUBY_LIBRARY_DIR"/narray${EXT_LIB_SWIG_RUBY_MODULAR}
 		elif gem list narray 2>&1 | grep -q narray
 		then
-			LINKFLAGS_NARRAY="$(dirname `gem which narray`)/narray.${EXT_LIB_SWIG_RUBY_MODULAR}"
+			NARRAY="$(dirname `gem which narray`)/narray${EXT_LIB_SWIG_RUBY_MODULAR}"
 			INCLUDES_RUBY="-I$(dirname `gem which narray`) $INCLUDES_RUBY"
 		else
-			LINKFLAGS_NARRAY="$RUBY_VENDOR_LIBRARY_DIR"/narray.${EXT_LIB_SWIG_RUBY_MODULAR}
+			NARRAY="$RUBY_VENDOR_LIBRARY_DIR"/narray${EXT_LIB_SWIG_RUBY_MODULAR}
 		fi
 
 		echocheck "Ruby NArray Developer Files"
-		if cc_check $INCLUDES_RUBY $LINKFLAGS_RUBY $LINKFLAGS_NARRAY
+		if cc_check $INCLUDES_RUBY $LINKFLAGS_RUBY && test -f $NARRAY
 		then
 			echores "yes"
 			DEFINES="$DEFINES -DHAVE_RUBY_NARRAY"
 			HAVE_NARRAY='#define HAVE_RUBY_NARRAY 1'
-			LINKFLAGS_RUBY="$LINKFLAGS_RUBY $LINKFLAGS_NARRAY"
+			NARRAY_LIB="#define NARRAY_LIB \"$NARRAY\""
 		else
 			if test "$_ruby_modular" = yes
 			then
@@ -4797,7 +4798,7 @@ SWIGFLAGS_CSHARP_MODULAR	= ${SWIGFLAGS_CSHARP_MODULAR}
 
 PRE_LIB_SWIG_RUBY_MODULAR	= ${PRE_LIB_SWIG_RUBY_MODULAR}
 EXT_LIB_SWIG_RUBY_MODULAR	= ${EXT_LIB_SWIG_RUBY_MODULAR}
-EXT_IF_SWIG_RUBY_MODULAR		= ${EXT_IF_SWIG_RUBY_MODULAR}
+EXT_IF_SWIG_RUBY_MODULAR	= ${EXT_IF_SWIG_RUBY_MODULAR}
 DEFINES_RUBY_MODULAR		= ${DEFINES_RUBY}
 INCLUDES_RUBY_MODULAR		= ${INCLUDES_RUBY}
 PRELINKFLAGS_RUBY_MODULAR	= ${PRELINKFLAGS_RUBY}
@@ -4890,6 +4891,7 @@ $USE_HMMPARALLELSTRUCTURES
 $USE_HMMPARALLEL
 $USE_SVMPARALLEL
 $USE_BIGOBS
+$NARRAY_LIB
 $USE_BIGSTATES
 $USE_HMMCACHE
 $USE_KERNELCACHE
