@@ -19,8 +19,8 @@ int main(int argc, char** argv)
 
 	CMKLRegression* regressor = new CMKLRegression();
 	//CMKLClassification* regressor = new CMKLClassification();
-	regressor->set_mkl_norm(2.0);
-	//regressor->set_solver_type(ST_GLPK);
+	regressor->set_mkl_norm(1.0);
+	regressor->set_solver_type(ST_GLPK);
 	//CSVRLight* regressor = new CSVRLight();
 	//CLibSVR* regressor = new CLibSVR();
 	SG_REF(regressor);
