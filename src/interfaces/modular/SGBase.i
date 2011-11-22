@@ -76,6 +76,17 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
 %{
+#ifdef SWIGRUBY
+ extern "C" {
+  #include <narray.h>
+  #include <stdlib.h>
+  #include <stdio.h>
+ }
+ VALUE (*na_to_array_dl)(VALUE);
+ VALUE (*na_to_narray_dl)(VALUE);
+ VALUE cNArray;
+ #include <dlfcn.h>
+#endif
  /* required for python */
  #define SWIG_FILE_WITH_INIT
 
@@ -126,6 +137,18 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 #ifdef SWIGPYTHON
         import_array();
+#endif
+
+#ifdef SWIGRUBY
+        void* handle = dlopen(NARRAY_LIB, RTLD_LAZY);
+        if (!handle) {
+            fprintf(stderr, "%s\n", dlerror());
+            exit(EXIT_FAILURE);
+        }
+
+        *(void **) (&na_to_array_dl) = dlsym(handle, "na_to_array");
+        *(void **) (&na_to_narray_dl) = dlsym(handle, "na_to_narray");
+        *(void **) (&cNArray) = dlsym(handle, "cNArray");
 #endif
 %}
 
