@@ -36,6 +36,7 @@ SWIGFLAGS="-w473 -w454 -w312 -w325 -fvirtual"
 #-builtin -modern -modernargs
 SWIG=swig
 DOXYGEN=doxygen
+RUBY=ruby
 PYTHON=python
 PYVER=
 KERNELNAME=`uname`
@@ -681,9 +682,9 @@ test_ruby()
 	fi
 
 	echocheck "Ruby"
-	if ruby -v >/dev/null 2>&1
+	if $RUBY -v >/dev/null 2>&1
 	then
-		RUBYVER=`ruby -v 2>&1 | head -n 1 | cut -f 2 -d ' '`
+		RUBYVER=`$RUBY -v 2>&1 | head -n 1 | cut -f 2 -d ' '`
 		echores "${RUBYVER}"
 
 cat >$TMPRUBY << EOF
@@ -695,11 +696,11 @@ puts "-I#{Config::expand(CONFIG['vendorlibdir'])}/#{Config::expand(CONFIG['arch'
 end
 EOF
 		echocheck "Ruby Developer Files"
-		if ruby $TMPRUBY >/dev/null 2>&1 
+		if $RUBY $TMPRUBY >/dev/null 2>&1 
 		then
 			echores "yes"
-			INCLUDES_RUBY=`ruby $TMPRUBY`
-			RUBYSO=`ruby -e 'require "mkmf"; puts Config::expand("$(RUBY_SO_NAME)")'`
+			INCLUDES_RUBY=`$RUBY $TMPRUBY`
+			RUBYSO=`$RUBY -e 'require "mkmf"; puts Config::expand("$(RUBY_SO_NAME)")'`
 			if ld -o "$TMPO" -l$RUBYSO >/dev/null 2>&1
 			then
 				LINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared -ldl"
@@ -721,7 +722,7 @@ else
 	puts "#{Config::expand(CONFIG['rubylibdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubylibdir']
 end
 EOF
-			RUBY_LIBRARY_DIR=`ruby "$TMPRUBY" 2>/dev/null`
+			RUBY_LIBRARY_DIR=`$RUBY "$TMPRUBY" 2>/dev/null`
 
 cat >$TMPRUBY << EOF
 require('mkmf')
@@ -731,8 +732,8 @@ else
 	puts "#{Config::expand(CONFIG['vendorlibdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['vendorlibdir']
 end
 EOF
-			RUBY_VENDOR_LIBRARY_DIR=`ruby "$TMPRUBY" 2>/dev/null`
-			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir/$_rubydir/`ruby -e 'require "mkmf"; puts Config::expand("$(ruby_version)") + "/" + Config::expand("$(arch)")'`
+			RUBY_VENDOR_LIBRARY_DIR=`$RUBY "$TMPRUBY" 2>/dev/null`
+			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir/$_rubydir/`$RUBY -e 'require "mkmf"; puts Config::expand("$(ruby_version)") + "/" + Config::expand("$(arch)")'`
 			test_ruby_narray
 		else
 			if test "$_ruby_modular" = yes
@@ -1208,12 +1209,12 @@ Installation directories:
   --destdir=DIR                  use this as the root dir to install shogun to [/]
   --prefix=DIR                   use this prefix for installing shogun [/usr/local]
   --bindir=DIR                   use this prefix for installing shogun binary
-								 [PREFIX/bin]
+                                 [PREFIX/bin]
   --datadir=DIR                  use this prefix for installing machine independent
-								 data files (fonts, skins) [PREFIX/share/shogun]
+                                 data files (fonts, skins) [PREFIX/share/shogun]
   --mandir=DIR                   use this prefix for installing manpages [PREFIX/man]
   --confdir=DIR                  use this prefix for installing configuration files
-								 [same as datadir]
+                                 [same as datadir]
   --libdir=DIR                   use this prefix for object code libraries [PREFIX/lib]
   --incdir=DIR                   use this prefix for include files [PREFIX/include]
   --pydir=DIR                    use this prefix for python files [PREFIX/auto-detected]
@@ -1281,8 +1282,9 @@ Miscellaneous options:
   --enable-path-debug            enable viterbi path debugging [disabled]
   --enable-profile               compile profiling information into shogun [disable]
   --enable-static                build a statically linked binary (to the extend possible);
-								 set further linking options with --enable-static="-lm -lglpk"
+                                 set further linking options with --enable-static="-lm -lglpk"
   --python=python                use this python executable [python]
+  --ruby=ruby                    use this ruby executable [ruby]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
   --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
   --cflags=OPTIONS               use these C compiler options
@@ -1290,8 +1292,8 @@ Miscellaneous options:
   --ldflags=OPTIONS              use these additional linker options
   --target=PLATFORM              target platform (i386-linux, arm-linux, etc)
   --install-path=PATH            the path to a custom install program (useful if
-								 your OS uses a GNU-incompatible install utility by
-								 default and you want to point to the GNU version)
+                                 your OS uses a GNU-incompatible install utility by
+                                 default and you want to point to the GNU version)
   --includes=DIR                 include DIR when searching for includes
   --libs=DIR                     include DIR when searching for libraries on linking
 EOF
@@ -1382,6 +1384,9 @@ EOF
 		;;
 	  --python=*)
 		PYTHON=`echo $ac_option | cut -d '=' -f 2`
+		;;
+	  --ruby=*)
+		RUBY=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --cc=*)
 		CC=`echo $ac_option | cut -d '=' -f 2`
@@ -4639,6 +4644,7 @@ MAKEDEPENDOPTS	= ${MAKEDEPENDOPTS}
 SWIG 			= ${SWIG}
 SEDMI 			= ${SEDMI}
 PYTHON 			= ${PYTHON}
+RUBY 			= ${RUBY}
 PYVER 			= ${PYVER}
 DOXYGEN 		= ${DOXYGEN}
 USE_DOXYGEN 	= ${USE_DOXYGEN}

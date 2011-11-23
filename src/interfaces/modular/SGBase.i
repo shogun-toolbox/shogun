@@ -141,9 +141,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
 #ifdef SWIGRUBY
-        extern VALUE ruby_class;
         rb_require("narray");
-        cNArray = rb_const_get(ruby_class, rb_intern("NArray"));
+        cNArray = rb_const_get(rb_cObject, rb_intern("NArray"));
 
         char* error=NULL;
 
