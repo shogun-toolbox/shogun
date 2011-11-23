@@ -303,7 +303,7 @@ install-java_modular: $(TEMPLATE_TARGET)
 
 install-ruby_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)/$(RUBY_EXTENSIONS_INSTALL_DIR)"
-	install -m755 modshogun.$(EXT_LIB) "$(DESTDIR)/$(RUBY_EXTENSIONS_INSTALL_DIR)/modshogun$(EXT_LIB_SWIG_RUBY_MODULAR)"
+	install -m755 modshogun$(EXT_LIB_SWIG_RUBY_MODULAR) "$(DESTDIR)/$(RUBY_EXTENSIONS_INSTALL_DIR)/"
 
 install-lua_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)/$(LUA_EXTENSIONS_INSTALL_DIR)"
@@ -428,7 +428,7 @@ run-testsuite-ruby_modular:
 check-examples-ruby_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/ruby_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		RUBYLIB="$(DESTDIR)$(RUBY_EXTENSIONS_INSTALL_DIR):." ./check.sh )
+		RUBYLIB="$$RUBYLIB:$(DESTDIR)$(RUBY_EXTENSIONS_INSTALL_DIR):." ./check.sh )
 
 lib/versionstring.h:    $(GITHEAD) 
 	        sh $(CONFIGPATH)/.version.sh > $@

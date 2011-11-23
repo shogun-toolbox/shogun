@@ -78,6 +78,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %{
 #ifdef SWIGRUBY
  extern "C" {
+  #include <ruby.h>
   #include <narray.h>
   #include <stdlib.h>
   #include <stdio.h>
@@ -140,15 +141,50 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
 #ifdef SWIGRUBY
+        extern VALUE ruby_class;
+        rb_require("narray");
+        cNArray = rb_const_get(ruby_class, rb_intern("NArray"));
+
+        char* error=NULL;
+
         void* handle = dlopen(NARRAY_LIB, RTLD_LAZY);
         if (!handle) {
             fprintf(stderr, "%s\n", dlerror());
             exit(EXIT_FAILURE);
         }
 
+        dlerror();    /* Clear any existing error */
+
         *(void **) (&na_to_array_dl) = dlsym(handle, "na_to_array");
+        if ((error = dlerror()) != NULL)  {
+                fprintf(stderr, "na_to_array %s\n", error);
+                exit(EXIT_FAILURE);
+        }
+
+        /*if (cNArray==0)
+        {
+            void (*Init_narray)();
+            *(void **) (&Init_narray) = dlsym(handle, "Init_narray");
+            if ((error = dlerror()) != NULL)  {
+                fprintf(stderr, "Init_narray %s\n", error);
+                exit(EXIT_FAILURE);
+            }
+
+            fprintf(stderr, "initing narray\n");
+            (*Init_narray)();
+        }*/
+
         *(void **) (&na_to_narray_dl) = dlsym(handle, "na_to_narray");
-        *(void **) (&cNArray) = dlsym(handle, "cNArray");
+        if ((error = dlerror()) != NULL)  {
+                fprintf(stderr, "na_to_narray %s\n", error);
+                exit(EXIT_FAILURE);
+        }
+
+/*        cNArray = (*(VALUE*)(dlsym(handle, "cNArray")));
+        if ((error = dlerror()) != NULL)  {
+                fprintf(stderr, "cNArray %s\n", error);
+                exit(EXIT_FAILURE);
+        }*/
 #endif
 %}
 

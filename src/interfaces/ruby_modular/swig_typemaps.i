@@ -35,7 +35,7 @@
 	else {
 		if (NA_IsNArray($input)) {
 
-			VALUE v = na_to_array_dl($input);
+			VALUE v = (*na_to_array_dl)($input);
 			len = RARRAY_LEN(v);
 			array = SG_MALLOC(SGTYPE, len);
 
@@ -61,7 +61,7 @@
 
 	$1.free_vector();
 
-	$result = na_to_narray_dl(arr);
+	$result = (*na_to_narray_dl)(arr);
 }
 
 %enddef
@@ -98,7 +98,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 
 	if (rb_obj_is_kind_of($input,rb_cArray) || NA_IsNArray($input)) {
 		if (NA_IsNArray($input))	{
-			v = na_to_array_dl($input);	
+			v = (*na_to_array_dl)($input);	
 		}
 		else {
 			v = $input;		
@@ -145,7 +145,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 
 	$1.free_matrix();
 
-	$result = na_to_narray_dl(arr);
+	$result = (*na_to_narray_dl)(arr);
 }
 
 %enddef
