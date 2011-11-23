@@ -1,5 +1,6 @@
 require 'modshogun'
 require 'load'
+require 'narray'
 require 'pp'
 
 parameter_list = [[1,7],[2,8]]
@@ -14,12 +15,8 @@ def classifier_custom_kernel_modular(c=1,dim=7)
     
 	kernel=Modshogun::CustomKernel.new
 	kernel.set_full_kernel_matrix_from_full(data)
-# *** 	labels=Labels(lab)
 	labels=Modshogun::Labels.new(lab)
-#	labels.set_features(lab)
-# *** 	svm=LibSVM(c, kernel, labels)
 	svm=Modshogun::LibSVM.new(c, kernel, labels)
-#	svm.set_features(c, kernel, labels)
 	svm.train()
 	predictions =svm.apply() 
 	out=svm.apply().get_labels()
