@@ -22,13 +22,17 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief the class LocalTangentSpaceAlignment used to preprocess
- * data using Local Tangent Space Alignment (LTSA) algorithm as described in:
+/** @brief LocalTangentSpaceAlignment used to embed
+ * data using Local Tangent Space Alignment (LTSA) 
+ * algorithm as described in:
  *
  * Zhang, Z., & Zha, H. (2002). Principal Manifolds 
  * and Nonlinear Dimension Reduction via Local Tangent Space Alignment. 
  * Journal of Shanghai University English Edition, 8(4), 406-424. SIAM. 
  * Retrieved from http://arxiv.org/abs/cs/0212008
+ *
+ * Due to performance reasons on high-dimensional datasets please
+ * use KernelLocalTangentSpaceAlignment with linear kernel.
  *
  * The stated eigenproblem is solved in the same way as
  * CLocallyLinearEmbedding (LAPACK or ARPACK if available).
