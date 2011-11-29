@@ -147,230 +147,48 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
 static int is_pyvector(PyObject* obj, int typecode)
 {
-    return (
-            (obj && PyList_Check(obj) && PyList_Size(obj)>0) ||
-            (is_array(obj) && array_dimensions(obj)==1 && array_type(obj) == typecode)
+    return  ((obj && !PyList_Check(obj)) &&
+            (
+             is_array(obj) &&
+             array_dimensions(obj)==1 &&
+             array_type(obj) == typecode
+            )) ? 1 : 0;
+}
+
+static int is_pymatrix(PyObject* obj, int typecode)
+{
+    return ((obj && !PyList_Check(obj)) &&
+                (is_array(obj) &&
+                 array_dimensions(obj)==2 &&
+                 array_type(obj) == typecode
+                )) ? 1 : 0;
+}
+
+static int is_pyarray(PyObject* obj, int typecode)
+{
+    return ((obj && !PyList_Check(obj)) &&
+                (is_array(obj) &&
+                 array_type(obj) == typecode
+                )) ? 1 : 0;
+}
+
+static int is_pysparse_matrix(PyObject* obj, int typecode)
+{
+    return ( obj && PyObject_HasAttrString(obj, "indptr") &&
+            PyObject_HasAttrString(obj, "indices") &&
+            PyObject_HasAttrString(obj, "data") &&
+            PyObject_HasAttrString(obj, "shape")
          ) ? 1 : 0;
 }
 
-%}
-
-
-/* One dimensional input arrays */
-%define TYPEMAP_IN_SGVECTOR(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
+static int is_pystring_list(PyObject* obj, int typecode)
 {
-    $1 = is_pyvector($input, typecode);
-}
+    PyObject* list=(PyObject*) obj;
 
-%typemap(in) shogun::SGVector<type>
-{
-    int is_new_object;
-    PyObject* array = make_contiguous($input, &is_new_object, 1,typecode, true);
-    if (!array)
-        SWIG_fail;
-
-    $1 = shogun::SGVector<type>((type*) PyArray_BYTES(array), PyArray_DIM(array,0));
-    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
-    Py_DECREF(array);
-}
-%enddef
-
-/* Define concrete examples of the TYPEMAP_IN_SGVECTOR macros */
-TYPEMAP_IN_SGVECTOR(bool,          NPY_BOOL)
-TYPEMAP_IN_SGVECTOR(char,          NPY_STRING)
-TYPEMAP_IN_SGVECTOR(uint8_t,       NPY_UINT8)
-TYPEMAP_IN_SGVECTOR(int16_t,       NPY_INT16)
-TYPEMAP_IN_SGVECTOR(uint16_t,      NPY_UINT16)
-TYPEMAP_IN_SGVECTOR(int32_t,       NPY_INT32)
-TYPEMAP_IN_SGVECTOR(uint32_t,      NPY_UINT32)
-TYPEMAP_IN_SGVECTOR(int64_t,       NPY_INT64)
-TYPEMAP_IN_SGVECTOR(uint64_t,      NPY_UINT64)
-TYPEMAP_IN_SGVECTOR(float32_t,     NPY_FLOAT32)
-TYPEMAP_IN_SGVECTOR(float64_t,     NPY_FLOAT64)
-TYPEMAP_IN_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_IN_SGVECTOR(PyObject,      NPY_OBJECT)
-
-#undef TYPEMAP_IN_SGVECTOR
-
-/* One dimensional output arrays */
-%define TYPEMAP_OUT_SGVECTOR(type,typecode)
-%typemap(out) shogun::SGVector<type>
-{
-    npy_intp dims= (npy_intp) $1.vlen;
-    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
-
-    if (descr)
-    {
-        void* copy=get_copy($1.vector, sizeof(type)*size_t($1.vlen));
-        $result = PyArray_NewFromDescr(&PyArray_Type,
-                descr, 1, &dims, NULL, copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
-        ((PyArrayObject*) $result)->flags |= NPY_OWNDATA;
-    }
-
-    $1.free_vector();
-
-    if (!descr)
-        SWIG_fail;
-}
-%enddef
-
-/* Define concrete examples of the TYPEMAP_OUT_SGVECTOR macros */
-TYPEMAP_OUT_SGVECTOR(bool,          NPY_BOOL)
-TYPEMAP_OUT_SGVECTOR(char,          NPY_STRING)
-TYPEMAP_OUT_SGVECTOR(uint8_t,       NPY_UINT8)
-TYPEMAP_OUT_SGVECTOR(int16_t,       NPY_INT16)
-TYPEMAP_OUT_SGVECTOR(uint16_t,      NPY_UINT16)
-TYPEMAP_OUT_SGVECTOR(int32_t,       NPY_INT32)
-TYPEMAP_OUT_SGVECTOR(uint32_t,      NPY_UINT32)
-TYPEMAP_OUT_SGVECTOR(int64_t,       NPY_INT64)
-TYPEMAP_OUT_SGVECTOR(uint64_t,      NPY_UINT64)
-TYPEMAP_OUT_SGVECTOR(float32_t,     NPY_FLOAT32)
-TYPEMAP_OUT_SGVECTOR(float64_t,     NPY_FLOAT64)
-TYPEMAP_OUT_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
-
-#undef TYPEMAP_OUT_SGVECTOR
-
-/* Two dimensional input arrays */
-%define TYPEMAP_IN_SGMATRIX(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<type>
-{
-    $1 = (is_array($input) && array_dimensions($input)==2 &&
-            array_type($input) == typecode) ? 1 : 0;
-}
-
-%typemap(in) shogun::SGMatrix<type>
-{
-    int is_new_object;
-    PyObject* array = make_contiguous($input, &is_new_object, 2,typecode, true);
-    if (!array)
-        SWIG_fail;
-
-    $1 = shogun::SGMatrix<type>((type*) PyArray_BYTES(array),
-            PyArray_DIM(array,0), PyArray_DIM(array,1), true);
-
-    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
-    Py_DECREF(array);
-}
-%enddef
-
-/* Define concrete examples of the TYPEMAP_IN_SGMATRIX macros */
-TYPEMAP_IN_SGMATRIX(bool,          NPY_BOOL)
-TYPEMAP_IN_SGMATRIX(char,          NPY_STRING)
-TYPEMAP_IN_SGMATRIX(uint8_t,       NPY_UINT8)
-TYPEMAP_IN_SGMATRIX(int16_t,       NPY_INT16)
-TYPEMAP_IN_SGMATRIX(uint16_t,      NPY_UINT16)
-TYPEMAP_IN_SGMATRIX(int32_t,       NPY_INT32)
-TYPEMAP_IN_SGMATRIX(uint32_t,      NPY_UINT32)
-TYPEMAP_IN_SGMATRIX(int64_t,       NPY_INT64)
-TYPEMAP_IN_SGMATRIX(uint64_t,      NPY_UINT64)
-TYPEMAP_IN_SGMATRIX(float32_t,     NPY_FLOAT32)
-TYPEMAP_IN_SGMATRIX(float64_t,     NPY_FLOAT64)
-TYPEMAP_IN_SGMATRIX(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_IN_SGMATRIX(PyObject,      NPY_OBJECT)
-
-#undef TYPEMAP_IN_SGMATRIX
-
-/* Two dimensional output arrays */
-%define TYPEMAP_OUT_SGMATRIX(type,typecode)
-%typemap(out) shogun::SGMatrix<type>
-{
-    npy_intp dims[2]= {(npy_intp) $1.num_rows, (npy_intp) $1.num_cols };
-    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
-
-    if (descr)
-    {
-        void* copy=get_copy($1.matrix, sizeof(type)*size_t($1.num_rows)*size_t($1.num_cols));
-        $result = PyArray_NewFromDescr(&PyArray_Type,
-            descr, 2, dims, NULL, (void*) copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
-        ((PyArrayObject*) $result)->flags |= NPY_OWNDATA;
-    }
-
-    $1.free_matrix();
-
-    if (!descr)
-        SWIG_fail;
-}
-%enddef
-
-/* Define concrete examples of the TYPEMAP_OUT_SGMATRIX macros */
-TYPEMAP_OUT_SGMATRIX(bool,          NPY_BOOL)
-TYPEMAP_OUT_SGMATRIX(char,          NPY_STRING)
-TYPEMAP_OUT_SGMATRIX(uint8_t,       NPY_UINT8)
-TYPEMAP_OUT_SGMATRIX(int16_t,       NPY_INT16)
-TYPEMAP_OUT_SGMATRIX(uint16_t,      NPY_UINT16)
-TYPEMAP_OUT_SGMATRIX(int32_t,       NPY_INT32)
-TYPEMAP_OUT_SGMATRIX(uint32_t,      NPY_UINT32)
-TYPEMAP_OUT_SGMATRIX(int64_t,       NPY_INT64)
-TYPEMAP_OUT_SGMATRIX(uint64_t,      NPY_UINT64)
-TYPEMAP_OUT_SGMATRIX(float32_t,     NPY_FLOAT32)
-TYPEMAP_OUT_SGMATRIX(float64_t,     NPY_FLOAT64)
-TYPEMAP_OUT_SGMATRIX(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
-
-#undef TYPEMAP_OUT_SGMATRIX
-
-/* N-dimensional input arrays */
-%define TYPEMAP_INND(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        shogun::SGNDArray<type>
-{
-    $1 = (is_array($input)) ? 1 : 0;
-}
-
-%typemap(in) shogun::SGNDArray<type>
-{
-    int is_new_object;
-    PyObject* array = make_contiguous($input, &is_new_object, -1,typecode, true);
-    if (!array)
-        SWIG_fail;
-
-    int32_t ndim = PyArray_NDIM(array);
-    if (ndim <= 0)
-      SWIG_fail;
-
-    int32_t* temp_dims = SG_MALLOC(int32_t, ndim);
-
-    npy_intp* py_dims = PyArray_DIMS(array);
-
-    for (int32_t i=0; i<ndim; i++)
-      temp_dims[i] = py_dims[i];
-    
-    $1 = SGNDArray<type>((type*) PyArray_BYTES(array), temp_dims, ndim);
-
-    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
-    Py_DECREF(array);
-}
-%enddef
-
-/* Define concrete examples of the TYPEMAP_INND macros */
-TYPEMAP_INND(bool,          NPY_BOOL)
-TYPEMAP_INND(char,          NPY_STRING)
-TYPEMAP_INND(uint8_t,       NPY_UINT8)
-TYPEMAP_INND(int16_t,       NPY_INT16)
-TYPEMAP_INND(uint16_t,      NPY_UINT16)
-TYPEMAP_INND(int32_t,       NPY_INT32)
-TYPEMAP_INND(uint32_t,      NPY_UINT32)
-TYPEMAP_INND(int64_t,       NPY_INT64)
-TYPEMAP_INND(uint64_t,      NPY_UINT64)
-TYPEMAP_INND(float32_t,     NPY_FLOAT32)
-TYPEMAP_INND(float64_t,     NPY_FLOAT64)
-TYPEMAP_INND(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_INND(PyObject,      NPY_OBJECT)
-
-#undef TYPEMAP_INND
-
-/* input typemap for CStringFeatures */
-%define TYPEMAP_STRINGFEATURES_IN(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<type>
-{
-    PyObject* list=(PyObject*) $input;
-
-    $1=0;
+    int result=0;
     if (list && PyList_Check(list) && PyList_Size(list)>0)
     {
-        $1=1;
+        result=1;
         int32_t size=PyList_Size(list);
         for (int32_t i=0; i<size; i++)
         {
@@ -379,7 +197,7 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
             {
                 if (!PyString_Check(o))
                 {
-                    $1=0;
+                    result=0;
                     break;
                 }
             }
@@ -387,16 +205,140 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
             {
                 if (!is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
                 {
-                    $1=0;
+                    result=0;
                     break;
                 }
             }
         }
     }
+
+    return result;
 }
-%typemap(in) shogun::SGStringList<type>
+
+
+template <class type>
+static bool vector_from_numpy(SGVector<type>& sg_vec, PyObject* obj, int typecode)
 {
-    PyObject* list=(PyObject*) $input;
+    if (!is_pyvector(obj, typecode))
+    {
+        PyErr_SetString(PyExc_TypeError,"not a numpy vector of appropriate type");
+        return false;
+    }
+
+    int is_new_object;
+    PyObject* array = make_contiguous(obj, &is_new_object, 1,typecode, true);
+    if (!array)
+        return false;
+
+    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
+    type* vec = (type*) PyArray_BYTES(array);
+    int32_t vlen = PyArray_DIM(array,0);
+    Py_DECREF(array);
+
+    sg_vec=shogun::SGVector<type>(vec, vlen);
+
+    return true;
+}
+
+template <class type>
+static bool vector_to_numpy(PyObject* &obj, SGVector<type> sg_vec, int typecode)
+{
+    npy_intp dims= (npy_intp) sg_vec.vlen;
+    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
+    if (descr)
+    {
+        void* copy=get_copy(sg_vec.vector, sizeof(type)*size_t(sg_vec.vlen));
+        obj = PyArray_NewFromDescr(&PyArray_Type,
+                descr, 1, &dims, NULL, copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
+        ((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
+    }
+
+    sg_vec.free_vector();
+
+    return descr!=NULL;
+}
+
+template <class type>
+static bool matrix_from_numpy(SGMatrix<type>& sg_matrix, PyObject* obj, int typecode)
+{
+    if (!is_pymatrix(obj, typecode))
+    {
+        PyErr_SetString(PyExc_TypeError,"not a numpy matrix of appropriate type");
+        return false;
+    }
+
+    int is_new_object;
+    PyObject* array = make_contiguous(obj, &is_new_object, 2,typecode, true);
+    if (!array)
+        return false;
+
+    sg_matrix = shogun::SGMatrix<type>((type*) PyArray_BYTES(array),
+            PyArray_DIM(array,0), PyArray_DIM(array,1), true);
+
+    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
+    Py_DECREF(array);
+
+    return true;
+}
+
+template <class type>
+static bool matrix_to_numpy(PyObject* &obj, SGMatrix<type> sg_matrix, int typecode)
+{
+    npy_intp dims[2]= {(npy_intp) sg_matrix.num_rows, (npy_intp) sg_matrix.num_cols };
+    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
+    if (descr)
+    {
+        void* copy=get_copy(sg_matrix.matrix, sizeof(type)*size_t(sg_matrix.num_rows)*size_t(sg_matrix.num_cols));
+        obj = PyArray_NewFromDescr(&PyArray_Type,
+            descr, 2, dims, NULL, (void*) copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
+        ((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
+    }
+
+    sg_matrix.free_matrix();
+
+    return descr!=NULL;
+}
+
+template <class type>
+static bool array_from_numpy(SGNDArray<type>& sg_array, PyObject* obj, int typecode)
+{
+    if (!is_pyarray(obj, typecode))
+    {
+        PyErr_SetString(PyExc_TypeError,"not a nd-array");
+        return false;
+    }
+
+    int is_new_object;
+    PyObject* array = make_contiguous(obj, &is_new_object, -1,typecode, true);
+    if (!array)
+        return false;
+
+    int32_t ndim = PyArray_NDIM(array);
+    if (ndim <= 0)
+      return false;
+
+    int32_t* temp_dims = SG_MALLOC(int32_t, ndim);
+
+    npy_intp* py_dims = PyArray_DIMS(array);
+
+    for (int32_t i=0; i<ndim; i++)
+      temp_dims[i] = py_dims[i];
+    
+    sg_array = SGNDArray<type>((type*) PyArray_BYTES(array), temp_dims, ndim);
+
+    ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
+    Py_DECREF(array);
+
+    return true;
+}
+
+template <class type>
+static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int typecode)
+{
+    PyObject* list=(PyObject*) obj;
+
     /* Check if is a list */
     if (!list || PyList_Check(list) || PyList_Size(list)==0)
     {
@@ -431,7 +373,7 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
                     for (int32_t j=0; j<i; j++)
                         SG_FREE(strings[i].string);
                     SG_FREE(strings);
-                    SWIG_fail;
+                    return false;
                 }
             }
             else
@@ -441,7 +383,7 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
                     int is_new_object=0;
                     PyObject* array = make_contiguous(o, &is_new_object, 1, typecode);
                     if (!array)
-                        SWIG_fail;
+                        return false;
 
                     type* str=(type*) PyArray_BYTES(array);
                     int32_t len = PyArray_DIM(array,0);
@@ -466,46 +408,31 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
                     for (int32_t j=0; j<i; j++)
                         SG_FREE(strings[i].string);
                     SG_FREE(strings);
-                    SWIG_fail;
+                    return false;
                 }
             }
         }
+
         SGStringList<type> sl;
         sl.strings=strings;
         sl.num_strings=size;
         sl.max_string_length=max_len;
-        $1=sl;
+        sg_strings=sl;
+
+        return true;
     }
     else
     {
         PyErr_SetString(PyExc_TypeError,"not a/empty list");
-        return NULL;
+        return false;
     }
 }
-%enddef
 
-TYPEMAP_STRINGFEATURES_IN(bool,          NPY_BOOL)
-TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING)
-TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8)
-TYPEMAP_STRINGFEATURES_IN(int16_t,       NPY_INT16)
-TYPEMAP_STRINGFEATURES_IN(uint16_t,      NPY_UINT16)
-TYPEMAP_STRINGFEATURES_IN(int32_t,       NPY_INT32)
-TYPEMAP_STRINGFEATURES_IN(uint32_t,      NPY_UINT32)
-TYPEMAP_STRINGFEATURES_IN(int64_t,       NPY_INT64)
-TYPEMAP_STRINGFEATURES_IN(uint64_t,      NPY_UINT64)
-TYPEMAP_STRINGFEATURES_IN(float32_t,     NPY_FLOAT32)
-TYPEMAP_STRINGFEATURES_IN(float64_t,     NPY_FLOAT64)
-TYPEMAP_STRINGFEATURES_IN(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
-
-#undef TYPEMAP_STRINGFEATURES_IN
-
-/* output typemap for CStringFeatures */
-%define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
-%typemap(out) shogun::SGStringList<type>
+template <class type>
+static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int typecode)
 {
-    shogun::SGString<type>* str=$1.strings;
-    int32_t num=$1.num_strings;
+    shogun::SGString<type>* str=sg_strings.strings;
+    int32_t num=sg_strings.num_strings;
     PyObject* list = PyList_New(num);
 
     if (list && str)
@@ -534,48 +461,22 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
                     ((PyArrayObject*) s)->flags |= NPY_OWNDATA;
                 }
                 else
-                    SWIG_fail;
+                    return false;
             }
 
             PyList_SetItem(list, i, s);
         }
-        $result = list;
+        obj = list;
+        return true;
     }
     else
-        SWIG_fail;
-}
-%enddef
-
-TYPEMAP_STRINGFEATURES_OUT(bool,          NPY_BOOL)
-TYPEMAP_STRINGFEATURES_OUT(char,          NPY_STRING)
-TYPEMAP_STRINGFEATURES_OUT(uint8_t,       NPY_UINT8)
-TYPEMAP_STRINGFEATURES_OUT(int16_t,       NPY_INT16)
-TYPEMAP_STRINGFEATURES_OUT(uint16_t,      NPY_UINT16)
-TYPEMAP_STRINGFEATURES_OUT(int32_t,       NPY_INT32)
-TYPEMAP_STRINGFEATURES_OUT(uint32_t,      NPY_UINT32)
-TYPEMAP_STRINGFEATURES_OUT(int64_t,       NPY_INT64)
-TYPEMAP_STRINGFEATURES_OUT(uint64_t,      NPY_UINT64)
-TYPEMAP_STRINGFEATURES_OUT(float32_t,     NPY_FLOAT32)
-TYPEMAP_STRINGFEATURES_OUT(float64_t,     NPY_FLOAT64)
-TYPEMAP_STRINGFEATURES_OUT(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_STRINGFEATURES_OUT(PyObject,      NPY_OBJECT)
-#undef TYPEMAP_STRINGFEATURES_ARGOUT
-
-
-/* input typemap for Sparse Features */
-%define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGSparseMatrix<type>
-{
-    $1 = ( PyObject_HasAttrString($input, "indptr") &&
-            PyObject_HasAttrString($input, "indices") &&
-            PyObject_HasAttrString($input, "data") &&
-            PyObject_HasAttrString($input, "shape")
-         ) ? 1 : 0;
+        return false;
 }
 
-%typemap(in) shogun::SGSparseMatrix<type>
+template <class type>
+static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, int typecode)
 {
-    PyObject* o=(PyObject*) $input;
+    PyObject* o=(PyObject*) obj;
 
     /* a column compressed storage sparse matrix in python scipy
        looks like this
@@ -595,152 +496,130 @@ TYPEMAP_STRINGFEATURES_OUT(PyObject,      NPY_OBJECT)
        >>> type(A.shape)
        <type 'tuple'>
      */
-
-    if ( PyObject_HasAttrString(o, "indptr") &&
-            PyObject_HasAttrString(o, "indices") &&
-            PyObject_HasAttrString(o, "data") &&
-            PyObject_HasAttrString(o, "shape"))
-    {
-        /* fetch sparse attributes */
-        PyObject* indptr = PyObject_GetAttrString(o, "indptr");
-        PyObject* indices = PyObject_GetAttrString(o, "indices");
-        PyObject* data = PyObject_GetAttrString(o, "data");
-        PyObject* shape = PyObject_GetAttrString(o, "shape");
-
-        /* check that types are OK */
-        if ((!is_array(indptr)) || (array_dimensions(indptr)!=1) ||
-                (array_type(indptr)!=NPY_INT && array_type(indptr)!=NPY_LONG))
-        {
-            PyErr_SetString(PyExc_TypeError,"indptr array should be 1d int's");
-            return NULL;
-        }
-
-        if (!is_array(indices) || array_dimensions(indices)!=1 ||
-                (array_type(indices)!=NPY_INT && array_type(indices)!=NPY_LONG))
-        {
-            PyErr_SetString(PyExc_TypeError,"indices array should be 1d int's");
-            return NULL;
-        }
-
-        if (!is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
-        {
-            PyErr_SetString(PyExc_TypeError,"data array should be 1d and match datatype");
-            return NULL;
-        }
-
-        if (!PyTuple_Check(shape))
-        {
-            PyErr_SetString(PyExc_TypeError,"shape should be a tuple");
-            return NULL;
-        }
-
-        /* get array dimensions */
-        int32_t num_feat=PyInt_AsLong(PyTuple_GetItem(shape, 0));
-        int32_t num_vec=PyInt_AsLong(PyTuple_GetItem(shape, 1));
-
-        /* get indptr array */
-        int is_new_object_indptr=0;
-        PyObject* array_indptr = make_contiguous(indptr, &is_new_object_indptr, 1, NPY_INT32);
-        if (!array_indptr) SWIG_fail;
-        int32_t* bytes_indptr=(int32_t*) PyArray_BYTES(array_indptr);
-        int32_t len_indptr = PyArray_DIM(array_indptr,0);
-
-        /* get indices array */
-        int is_new_object_indices=0;
-        PyObject* array_indices = make_contiguous(indices, &is_new_object_indices, 1, NPY_INT32);
-        if (!array_indices) SWIG_fail;
-        int32_t* bytes_indices=(int32_t*) PyArray_BYTES(array_indices);
-        int32_t len_indices = PyArray_DIM(array_indices,0);
-
-        /* get data array */
-        int is_new_object_data=0;
-        PyObject* array_data = make_contiguous(data, &is_new_object_data, 1, typecode);
-        if (!array_data) SWIG_fail;
-        type* bytes_data=(type*) PyArray_BYTES(array_data);
-        int32_t len_data = PyArray_DIM(array_data,0);
-
-        if (len_indices!=len_data)
-            SWIG_fail;
-
-        shogun::SGSparseVector<type>* sfm = SG_MALLOC(shogun::SGSparseVector<type>, num_vec);
-
-        for (int32_t i=0; i<num_vec; i++)
-        {
-            sfm[i].vec_index = i;
-            sfm[i].num_feat_entries = 0;
-            sfm[i].features = NULL;
-        }
-
-        for (int32_t i=1; i<len_indptr; i++)
-        {
-            int32_t num = bytes_indptr[i]-bytes_indptr[i-1];
-            
-            if (num>0)
-            {
-                shogun::SGSparseVectorEntry<type>* features=SG_MALLOC(shogun::SGSparseVectorEntry<type>, num);
-
-                for (int32_t j=0; j<num; j++)
-                {
-                    features[j].feat_index=*bytes_indices;
-                    features[j].entry=*bytes_data;
-
-                    bytes_indices++;
-                    bytes_data++;
-                }
-                sfm[i-1].num_feat_entries=num;
-                sfm[i-1].features=features;
-            }
-        }
-
-        if (is_new_object_indptr)
-            Py_DECREF(array_indptr);
-        if (is_new_object_indices)
-            Py_DECREF(array_indices);
-        if (is_new_object_data)
-            Py_DECREF(array_data);
-
-        Py_DECREF(indptr);
-        Py_DECREF(indices);
-        Py_DECREF(data);
-        Py_DECREF(shape);
-
-        SGSparseMatrix<type> sm;
-        sm.sparse_matrix=sfm;
-        sm.num_features=num_feat;
-        sm.num_vectors=num_vec;
-        $1=sm;
-    }
-    else
+    if (!is_pysparse_matrix(o, typecode))
     {
         PyErr_SetString(PyExc_TypeError,"not a column compressed sparse matrix");
-        return NULL;
+        return false;
     }
+
+    /* fetch sparse attributes */
+    PyObject* indptr = PyObject_GetAttrString(o, "indptr");
+    PyObject* indices = PyObject_GetAttrString(o, "indices");
+    PyObject* data = PyObject_GetAttrString(o, "data");
+    PyObject* shape = PyObject_GetAttrString(o, "shape");
+
+    /* check that types are OK */
+    if ((!is_array(indptr)) || (array_dimensions(indptr)!=1) ||
+            (array_type(indptr)!=NPY_INT && array_type(indptr)!=NPY_LONG))
+    {
+        PyErr_SetString(PyExc_TypeError,"indptr array should be 1d int's");
+        return false;
+    }
+
+    if (!is_array(indices) || array_dimensions(indices)!=1 ||
+            (array_type(indices)!=NPY_INT && array_type(indices)!=NPY_LONG))
+    {
+        PyErr_SetString(PyExc_TypeError,"indices array should be 1d int's");
+        return false;
+    }
+
+    if (!is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
+    {
+        PyErr_SetString(PyExc_TypeError,"data array should be 1d and match datatype");
+        return false;
+    }
+
+    if (!PyTuple_Check(shape))
+    {
+        PyErr_SetString(PyExc_TypeError,"shape should be a tuple");
+        return false;
+    }
+
+    /* get array dimensions */
+    int32_t num_feat=PyInt_AsLong(PyTuple_GetItem(shape, 0));
+    int32_t num_vec=PyInt_AsLong(PyTuple_GetItem(shape, 1));
+
+    /* get indptr array */
+    int is_new_object_indptr=0;
+    PyObject* array_indptr = make_contiguous(indptr, &is_new_object_indptr, 1, NPY_INT32);
+    if (!array_indptr) return false;
+    int32_t* bytes_indptr=(int32_t*) PyArray_BYTES(array_indptr);
+    int32_t len_indptr = PyArray_DIM(array_indptr,0);
+
+    /* get indices array */
+    int is_new_object_indices=0;
+    PyObject* array_indices = make_contiguous(indices, &is_new_object_indices, 1, NPY_INT32);
+    if (!array_indices) return false;
+    int32_t* bytes_indices=(int32_t*) PyArray_BYTES(array_indices);
+    int32_t len_indices = PyArray_DIM(array_indices,0);
+
+    /* get data array */
+    int is_new_object_data=0;
+    PyObject* array_data = make_contiguous(data, &is_new_object_data, 1, typecode);
+    if (!array_data) return false;
+    type* bytes_data=(type*) PyArray_BYTES(array_data);
+    int32_t len_data = PyArray_DIM(array_data,0);
+
+    if (len_indices!=len_data)
+        return false;
+
+    shogun::SGSparseVector<type>* sfm = SG_MALLOC(shogun::SGSparseVector<type>, num_vec);
+
+    for (int32_t i=0; i<num_vec; i++)
+    {
+        sfm[i].vec_index = i;
+        sfm[i].num_feat_entries = 0;
+        sfm[i].features = NULL;
+    }
+
+    for (int32_t i=1; i<len_indptr; i++)
+    {
+        int32_t num = bytes_indptr[i]-bytes_indptr[i-1];
+        
+        if (num>0)
+        {
+            shogun::SGSparseVectorEntry<type>* features=SG_MALLOC(shogun::SGSparseVectorEntry<type>, num);
+
+            for (int32_t j=0; j<num; j++)
+            {
+                features[j].feat_index=*bytes_indices;
+                features[j].entry=*bytes_data;
+
+                bytes_indices++;
+                bytes_data++;
+            }
+            sfm[i-1].num_feat_entries=num;
+            sfm[i-1].features=features;
+        }
+    }
+
+    if (is_new_object_indptr)
+        Py_DECREF(array_indptr);
+    if (is_new_object_indices)
+        Py_DECREF(array_indices);
+    if (is_new_object_data)
+        Py_DECREF(array_data);
+
+    Py_DECREF(indptr);
+    Py_DECREF(indices);
+    Py_DECREF(data);
+    Py_DECREF(shape);
+
+    SGSparseMatrix<type> sm;
+    sm.sparse_matrix=sfm;
+    sm.num_features=num_feat;
+    sm.num_vectors=num_vec;
+    sg_matrix=sm;
+
+    return true;
 }
-%enddef
 
-TYPEMAP_SPARSEFEATURES_IN(bool,          NPY_BOOL)
-TYPEMAP_SPARSEFEATURES_IN(char,          NPY_STRING)
-TYPEMAP_SPARSEFEATURES_IN(uint8_t,       NPY_UINT8)
-TYPEMAP_SPARSEFEATURES_IN(int16_t,       NPY_INT16)
-TYPEMAP_SPARSEFEATURES_IN(uint16_t,      NPY_UINT16)
-TYPEMAP_SPARSEFEATURES_IN(int32_t,       NPY_INT32)
-TYPEMAP_SPARSEFEATURES_IN(uint32_t,      NPY_UINT32)
-TYPEMAP_SPARSEFEATURES_IN(int64_t,       NPY_INT64)
-TYPEMAP_SPARSEFEATURES_IN(uint64_t,      NPY_UINT64)
-TYPEMAP_SPARSEFEATURES_IN(float32_t,     NPY_FLOAT32)
-TYPEMAP_SPARSEFEATURES_IN(float64_t,     NPY_FLOAT64)
-TYPEMAP_SPARSEFEATURES_IN(floatmax_t,    NPY_LONGDOUBLE)
-TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
-#undef TYPEMAP_SPARSEFEATURES_IN
-
-/* output typemap for sparse features returns (data, row, ptr) */
-%define TYPEMAP_SPARSEFEATURES_OUT(type,typecode)
-%typemap(out) shogun::SGSparseMatrix<type>
-    
+template <class type>
+static bool spmatrix_to_numpy(PyObject* &obj, SGSparseMatrix<type> sg_matrix, int typecode)
 {
-    shogun::SGSparseVector<type>* sfm=$1.sparse_matrix;
-    int32_t num_feat=$1.num_features;
-    int32_t num_vec=$1.num_vectors;
+    shogun::SGSparseVector<type>* sfm=sg_matrix.sparse_matrix;
+    int32_t num_feat=sg_matrix.num_features;
+    int32_t num_vec=sg_matrix.num_vectors;
 
     int64_t nnz=0;
     for (int32_t i=0; i<num_vec; i++)
@@ -803,12 +682,254 @@ TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
             PyTuple_SetItem(tuple, 0, data_py);
             PyTuple_SetItem(tuple, 1, indices_py);
             PyTuple_SetItem(tuple, 2, indptr_py);
-            $result = tuple;
+            obj = tuple;
+            return true;
         }
         else
-            SWIG_fail;
+            return false;
     }
     else
+        return false;
+}
+
+%}
+
+
+/* One dimensional input arrays */
+%define TYPEMAP_IN_SGVECTOR(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
+{
+    $1 = is_pyvector($input, typecode);
+}
+
+%typemap(in) shogun::SGVector<type>
+{
+    if (!vector_from_numpy<type>($1, $input, typecode))
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_IN_SGVECTOR macros */
+TYPEMAP_IN_SGVECTOR(bool,          NPY_BOOL)
+TYPEMAP_IN_SGVECTOR(char,          NPY_STRING)
+TYPEMAP_IN_SGVECTOR(uint8_t,       NPY_UINT8)
+TYPEMAP_IN_SGVECTOR(int16_t,       NPY_INT16)
+TYPEMAP_IN_SGVECTOR(uint16_t,      NPY_UINT16)
+TYPEMAP_IN_SGVECTOR(int32_t,       NPY_INT32)
+TYPEMAP_IN_SGVECTOR(uint32_t,      NPY_UINT32)
+TYPEMAP_IN_SGVECTOR(int64_t,       NPY_INT64)
+TYPEMAP_IN_SGVECTOR(uint64_t,      NPY_UINT64)
+TYPEMAP_IN_SGVECTOR(float32_t,     NPY_FLOAT32)
+TYPEMAP_IN_SGVECTOR(float64_t,     NPY_FLOAT64)
+TYPEMAP_IN_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_IN_SGVECTOR(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_IN_SGVECTOR
+
+/* One dimensional output arrays */
+%define TYPEMAP_OUT_SGVECTOR(type,typecode)
+%typemap(out) shogun::SGVector<type>
+{
+    if (!vector_to_numpy($result, $1, typecode))
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_OUT_SGVECTOR macros */
+TYPEMAP_OUT_SGVECTOR(bool,          NPY_BOOL)
+TYPEMAP_OUT_SGVECTOR(char,          NPY_STRING)
+TYPEMAP_OUT_SGVECTOR(uint8_t,       NPY_UINT8)
+TYPEMAP_OUT_SGVECTOR(int16_t,       NPY_INT16)
+TYPEMAP_OUT_SGVECTOR(uint16_t,      NPY_UINT16)
+TYPEMAP_OUT_SGVECTOR(int32_t,       NPY_INT32)
+TYPEMAP_OUT_SGVECTOR(uint32_t,      NPY_UINT32)
+TYPEMAP_OUT_SGVECTOR(int64_t,       NPY_INT64)
+TYPEMAP_OUT_SGVECTOR(uint64_t,      NPY_UINT64)
+TYPEMAP_OUT_SGVECTOR(float32_t,     NPY_FLOAT32)
+TYPEMAP_OUT_SGVECTOR(float64_t,     NPY_FLOAT64)
+TYPEMAP_OUT_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_OUT_SGVECTOR
+
+/* Two dimensional input arrays */
+%define TYPEMAP_IN_SGMATRIX(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<type>
+{
+    $1 = is_pymatrix($input, typecode);
+}
+
+%typemap(in) shogun::SGMatrix<type>
+{
+    if (!matrix_from_numpy<type>($1, $input, typecode))
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_IN_SGMATRIX macros */
+TYPEMAP_IN_SGMATRIX(bool,          NPY_BOOL)
+TYPEMAP_IN_SGMATRIX(char,          NPY_STRING)
+TYPEMAP_IN_SGMATRIX(uint8_t,       NPY_UINT8)
+TYPEMAP_IN_SGMATRIX(int16_t,       NPY_INT16)
+TYPEMAP_IN_SGMATRIX(uint16_t,      NPY_UINT16)
+TYPEMAP_IN_SGMATRIX(int32_t,       NPY_INT32)
+TYPEMAP_IN_SGMATRIX(uint32_t,      NPY_UINT32)
+TYPEMAP_IN_SGMATRIX(int64_t,       NPY_INT64)
+TYPEMAP_IN_SGMATRIX(uint64_t,      NPY_UINT64)
+TYPEMAP_IN_SGMATRIX(float32_t,     NPY_FLOAT32)
+TYPEMAP_IN_SGMATRIX(float64_t,     NPY_FLOAT64)
+TYPEMAP_IN_SGMATRIX(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_IN_SGMATRIX(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_IN_SGMATRIX
+
+/* Two dimensional output arrays */
+%define TYPEMAP_OUT_SGMATRIX(type,typecode)
+%typemap(out) shogun::SGMatrix<type>
+{
+    if (!matrix_to_numpy($result, $1, typecode))
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_OUT_SGMATRIX macros */
+TYPEMAP_OUT_SGMATRIX(bool,          NPY_BOOL)
+TYPEMAP_OUT_SGMATRIX(char,          NPY_STRING)
+TYPEMAP_OUT_SGMATRIX(uint8_t,       NPY_UINT8)
+TYPEMAP_OUT_SGMATRIX(int16_t,       NPY_INT16)
+TYPEMAP_OUT_SGMATRIX(uint16_t,      NPY_UINT16)
+TYPEMAP_OUT_SGMATRIX(int32_t,       NPY_INT32)
+TYPEMAP_OUT_SGMATRIX(uint32_t,      NPY_UINT32)
+TYPEMAP_OUT_SGMATRIX(int64_t,       NPY_INT64)
+TYPEMAP_OUT_SGMATRIX(uint64_t,      NPY_UINT64)
+TYPEMAP_OUT_SGMATRIX(float32_t,     NPY_FLOAT32)
+TYPEMAP_OUT_SGMATRIX(float64_t,     NPY_FLOAT64)
+TYPEMAP_OUT_SGMATRIX(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_OUT_SGMATRIX
+
+/* N-dimensional input arrays */
+%define TYPEMAP_INND(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+        shogun::SGNDArray<type>
+{
+    $1 = is_pyarray($input, typecode);
+}
+
+%typemap(in) shogun::SGNDArray<type>
+{
+    if (! array_from_numpy<type>($1, $input, typecode))
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_INND macros */
+TYPEMAP_INND(bool,          NPY_BOOL)
+TYPEMAP_INND(char,          NPY_STRING)
+TYPEMAP_INND(uint8_t,       NPY_UINT8)
+TYPEMAP_INND(int16_t,       NPY_INT16)
+TYPEMAP_INND(uint16_t,      NPY_UINT16)
+TYPEMAP_INND(int32_t,       NPY_INT32)
+TYPEMAP_INND(uint32_t,      NPY_UINT32)
+TYPEMAP_INND(int64_t,       NPY_INT64)
+TYPEMAP_INND(uint64_t,      NPY_UINT64)
+TYPEMAP_INND(float32_t,     NPY_FLOAT32)
+TYPEMAP_INND(float64_t,     NPY_FLOAT64)
+TYPEMAP_INND(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_INND(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_INND
+
+/* input typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES_IN(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<type>
+{
+    $1 = is_pystring_list($input, typecode);
+}
+%typemap(in) shogun::SGStringList<type>
+{
+    if (! string_from_strpy<type>($1, $input, typecode))
+        SWIG_fail;
+}
+%enddef
+
+TYPEMAP_STRINGFEATURES_IN(bool,          NPY_BOOL)
+TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING)
+TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8)
+TYPEMAP_STRINGFEATURES_IN(int16_t,       NPY_INT16)
+TYPEMAP_STRINGFEATURES_IN(uint16_t,      NPY_UINT16)
+TYPEMAP_STRINGFEATURES_IN(int32_t,       NPY_INT32)
+TYPEMAP_STRINGFEATURES_IN(uint32_t,      NPY_UINT32)
+TYPEMAP_STRINGFEATURES_IN(int64_t,       NPY_INT64)
+TYPEMAP_STRINGFEATURES_IN(uint64_t,      NPY_UINT64)
+TYPEMAP_STRINGFEATURES_IN(float32_t,     NPY_FLOAT32)
+TYPEMAP_STRINGFEATURES_IN(float64_t,     NPY_FLOAT64)
+TYPEMAP_STRINGFEATURES_IN(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_STRINGFEATURES_IN
+
+/* output typemap for CStringFeatures */
+%define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
+%typemap(out) shogun::SGStringList<type>
+{
+    if (!string_to_strpy($result, $1, typecode))
+        SWIG_fail;
+}
+%enddef
+
+TYPEMAP_STRINGFEATURES_OUT(bool,          NPY_BOOL)
+TYPEMAP_STRINGFEATURES_OUT(char,          NPY_STRING)
+TYPEMAP_STRINGFEATURES_OUT(uint8_t,       NPY_UINT8)
+TYPEMAP_STRINGFEATURES_OUT(int16_t,       NPY_INT16)
+TYPEMAP_STRINGFEATURES_OUT(uint16_t,      NPY_UINT16)
+TYPEMAP_STRINGFEATURES_OUT(int32_t,       NPY_INT32)
+TYPEMAP_STRINGFEATURES_OUT(uint32_t,      NPY_UINT32)
+TYPEMAP_STRINGFEATURES_OUT(int64_t,       NPY_INT64)
+TYPEMAP_STRINGFEATURES_OUT(uint64_t,      NPY_UINT64)
+TYPEMAP_STRINGFEATURES_OUT(float32_t,     NPY_FLOAT32)
+TYPEMAP_STRINGFEATURES_OUT(float64_t,     NPY_FLOAT64)
+TYPEMAP_STRINGFEATURES_OUT(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_STRINGFEATURES_OUT(PyObject,      NPY_OBJECT)
+#undef TYPEMAP_STRINGFEATURES_ARGOUT
+
+
+/* input typemap for Sparse Features */
+%define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGSparseMatrix<type>
+{
+    $1 = is_pysparse_matrix($input, typecode);
+}
+
+%typemap(in) shogun::SGSparseMatrix<type>
+{
+    if (! spmatrix_from_numpy<type>($1, $input, typecode))
+        SWIG_fail;
+}
+%enddef
+
+TYPEMAP_SPARSEFEATURES_IN(bool,          NPY_BOOL)
+TYPEMAP_SPARSEFEATURES_IN(char,          NPY_STRING)
+TYPEMAP_SPARSEFEATURES_IN(uint8_t,       NPY_UINT8)
+TYPEMAP_SPARSEFEATURES_IN(int16_t,       NPY_INT16)
+TYPEMAP_SPARSEFEATURES_IN(uint16_t,      NPY_UINT16)
+TYPEMAP_SPARSEFEATURES_IN(int32_t,       NPY_INT32)
+TYPEMAP_SPARSEFEATURES_IN(uint32_t,      NPY_UINT32)
+TYPEMAP_SPARSEFEATURES_IN(int64_t,       NPY_INT64)
+TYPEMAP_SPARSEFEATURES_IN(uint64_t,      NPY_UINT64)
+TYPEMAP_SPARSEFEATURES_IN(float32_t,     NPY_FLOAT32)
+TYPEMAP_SPARSEFEATURES_IN(float64_t,     NPY_FLOAT64)
+TYPEMAP_SPARSEFEATURES_IN(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
+#undef TYPEMAP_SPARSEFEATURES_IN
+
+/* output typemap for sparse features returns (data, row, ptr) */
+%define TYPEMAP_SPARSEFEATURES_OUT(type,typecode)
+%typemap(out) shogun::SGSparseMatrix<type>
+    
+{
+    if (!spmatrix_to_numpy($result, $1, typecode))
         SWIG_fail;
 }
 %enddef

@@ -35,8 +35,7 @@ void* get_copy(void* src, size_t len)
 
 /* One dimensional input arrays */
 %define TYPEMAP_IN_SGVECTOR(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        shogun::SGVector<sg_type>
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<sg_type>
 {
     const octave_value m=$input;
 
@@ -109,8 +108,7 @@ TYPEMAP_OUT_SGVECTOR(uint16NDArray, uint16_t, uint16_t, "Word")
 
 /* Two dimensional input arrays */
 %define TYPEMAP_IN_SGMATRIX(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        shogun::SGMatrix<sg_type>
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<sg_type>
 {
     const octave_value m=$input;
     $1 = (m.is_matrix_type() && m.oct_type_check()) ? 1 : 0;
