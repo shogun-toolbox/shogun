@@ -30,6 +30,54 @@
 namespace shogun
 {
 #ifdef USE_BOOL
+    %template(BoolSparseVector) SGSparseVector<bool>;
+    SERIALIZABLE_DUMMY(SGSparseVector<bool>);
+#endif
+#ifdef USE_CHAR
+    %template(CharSparseVector) SGSparseVector<char>;
+    SERIALIZABLE_DUMMY(SGSparseVector<char>);
+#endif
+#ifdef USE_UINT8
+    %template(ByteSparseVector) SGSparseVector<uint8_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<uint8_t>);
+#endif
+#ifdef USE_UINT16
+    %template(WordSparseVector) SGSparseVector<uint16_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<uint16_t>);
+#endif
+#ifdef USE_INT16
+    %template(ShortSparseVector) SGSparseVector<int16_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<int16_t>);
+#endif
+#ifdef USE_INT32
+    %template(IntSparseVector)  SGSparseVector<int32_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<int32_t>);
+#endif
+#ifdef USE_UINT32
+    %template(UIntSparseVector)  SGSparseVector<uint32_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<uint32_t>);
+#endif
+#ifdef USE_INT64
+    %template(LongIntSparseVector)  SGSparseVector<int64_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<int64_t>);
+#endif
+#ifdef USE_UINT64
+    %template(ULongIntSparseVector)  SGSparseVector<uint64_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<uint64_t>);
+#endif
+#ifdef USE_FLOAT32
+    %template(ShortRealSparseVector) SGSparseVector<float32_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<float32_t>);
+#endif
+#ifdef USE_FLOAT64
+    %template(RealSparseVector) SGSparseVector<float64_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<float64_t>);
+#endif
+#ifdef USE_FLOATMAX
+    %template(LongRealSparseVector) SGSparseVector<floatmax_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<floatmax_t>);
+#endif
+#ifdef USE_BOOL
     %template(BoolSparseMatrix) SGSparseMatrix<bool>;
     SERIALIZABLE_DUMMY(SGSparseMatrix<bool>);
 #endif
