@@ -36,8 +36,8 @@
 %ignore CNode;
 %ignore CTaxonomy::get_node;
 %ignore CTaxonomy::add_node;
-%ignore CTaxonomy::intersect_root_path
-%ignore shogun::SGVector< shogun::CGaussian * >
+%ignore CTaxonomy::intersect_root_path;
+%ignore SGVector<CGaussian*>;
 
 
 %ignore CSVMLight::add_to_index;
