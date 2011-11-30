@@ -58,10 +58,17 @@ public:
 	 */
 	SGMatrix<float64_t> get_PRC();
 
+	/** get thresholds corresponding to points on the PRC graph
+	 * @return thresholds
+	 */
+	SGVector<float64_t> get_thresholds();
 protected:
 
 	/** 2-d array used to store PRC graph */
 	float64_t* m_PRC_graph;
+
+	/** vector with thresholds corresponding to points on the PRC graph */
+	float64_t* m_thresholds;
 
 	/** area under PRC graph */
 	float64_t m_auPRC;

@@ -63,10 +63,18 @@ public:
 	 */
 	SGMatrix<float64_t> get_ROC();
 
+	/** get thresholds corresponding to points on the ROC graph
+	 * @return thresholds
+	 */
+	SGVector<float64_t> get_thresholds();
+
 protected:
 
 	/** 2-d array used to store ROC graph */
 	float64_t* m_ROC_graph;
+
+	/** vector with thresholds corresponding to points on the ROC graph */
+	float64_t* m_thresholds;
 
 	/** area under ROC graph */
 	float64_t m_auROC;
