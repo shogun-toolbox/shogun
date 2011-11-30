@@ -450,7 +450,7 @@ static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int t
             else
             {
                 PyArray_Descr* descr=PyArray_DescrFromType(typecode);
-                type* data = (type*) malloc(str[i].slen*sizeof(type));
+                type* data = SG_MALLOC(type, str[i].slen);
                 if (descr && data)
                 {
                     memcpy(data, str[i].string, str[i].slen*sizeof(type));
@@ -636,9 +636,9 @@ static bool spmatrix_to_numpy(PyObject* &obj, SGSparseMatrix<type> sg_matrix, in
         PyArray_Descr* descr=PyArray_DescrFromType(NPY_INT32);
         PyArray_Descr* descr_data=PyArray_DescrFromType(typecode);
 
-        int32_t* indptr = (int32_t*) malloc((num_vec+1)*sizeof(int32_t));
-        int32_t* indices = (int32_t*) malloc(nnz*sizeof(int32_t));
-        type* data = (type*) malloc(nnz*sizeof(type));
+        int32_t* indptr = SG_MALLOC(int32_t, num_vec+1);
+        int32_t* indices = SG_MALLOC(int32_t, nnz);
+        type* data = SG_MALLOC(type, nnz);
 
         if (descr && descr_data && indptr && indices && data)
         {
@@ -690,6 +690,53 @@ static bool spmatrix_to_numpy(PyObject* &obj, SGSparseMatrix<type> sg_matrix, in
     }
     else
         return false;
+}
+
+template <class type>
+static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, int typecode)
+{
+    PyObject* tuple = PyTuple_New(2);
+    npy_intp dims = sg_vector.num_feat_entries;
+
+    if (!tuple)
+        return false;
+
+    PyObject* data_py=NULL;
+    PyObject* indices_py=NULL;
+
+    PyArray_Descr* descr=PyArray_DescrFromType(NPY_INT32);
+    PyArray_Descr* descr_data=PyArray_DescrFromType(typecode);
+
+    int32_t* indices = SG_MALLOC(int32_t, dims);
+    type* data = SG_MALLOC(type, dims);
+
+    if (!(descr && descr_data && indices && data))
+        return false;
+
+    int32_t* i_ptr=indices;
+    type* d_ptr=data;
+
+    for (int32_t j=0; j<sg_vector.num_feat_entries; j++)
+    {
+        *i_ptr=sg_vector.features[j].feat_index;
+        *d_ptr=sg_vector.features[j].entry;
+
+        i_ptr++;
+        d_ptr++;
+    }
+
+    indices_py = PyArray_NewFromDescr(&PyArray_Type,
+            descr, 1, &dims, NULL, (void*) indices, NPY_FARRAY | NPY_WRITEABLE, NULL);
+    ((PyArrayObject*) indices_py)->flags |= NPY_OWNDATA;
+
+    data_py = PyArray_NewFromDescr(&PyArray_Type,
+            descr_data, 1, &dims, NULL, (void*) data, NPY_FARRAY | NPY_WRITEABLE, NULL);
+    ((PyArrayObject*) data_py)->flags |= NPY_OWNDATA;
+
+    PyTuple_SetItem(tuple, 0, data_py);
+    PyTuple_SetItem(tuple, 1, indices_py);
+    obj = tuple;
+    return true;
 }
 
 %}
@@ -926,8 +973,13 @@ TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
 
 /* output typemap for sparse features returns (data, row, ptr) */
 %define TYPEMAP_SPARSEFEATURES_OUT(type,typecode)
+%typemap(out) shogun::SGSparseVector<type>
+{
+    if (!spvector_to_numpy($result, $1, typecode))
+        SWIG_fail;
+}
+
 %typemap(out) shogun::SGSparseMatrix<type>
-    
 {
     if (!spmatrix_to_numpy($result, $1, typecode))
         SWIG_fail;
