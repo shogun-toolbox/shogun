@@ -28,10 +28,7 @@ namespace shogun
  */
 class CNode: public CSGObject
 {
-
 public:
-
-
 	/** default constructor
 	 */
     CNode()
@@ -175,9 +172,8 @@ public:
 	 *  @param child_name name of child
 	 *  @param beta weight of child
 	 */
-	CNode* add_node(std::string parent_name, std::string child_name, float64_t beta) {
-
-
+	CNode* add_node(std::string parent_name, std::string child_name, float64_t beta)
+	{
 		if (child_name=="")	SG_ERROR("child_name empty");
 		if (parent_name=="") SG_ERROR("parent_name empty");
 
@@ -200,7 +196,6 @@ public:
 		parent->add_child(child_node);
 
 		return child_node;
-
 	}
 
 	/** translates name to id
@@ -216,7 +211,8 @@ public:
 	 *  @param node_rhs node of right hand side
 	 *  @return intersection of the two sets of ancestors
 	 */
-	std::set<CNode*> intersect_root_path(CNode* node_lhs, CNode* node_rhs) {
+	std::set<CNode*> intersect_root_path(CNode* node_lhs, CNode* node_rhs)
+	{
 
 		std::set<CNode*> root_path_lhs = node_lhs->get_path_root();
 		std::set<CNode*> root_path_rhs = node_rhs->get_path_root();
@@ -436,7 +432,6 @@ public:
 	 */
 	inline virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 	{
-
 		//lookup tasks
 		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
 		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
@@ -450,7 +445,6 @@ public:
 
 
 		return similarity;
-
 	}
 
 	/** normalize only the left hand side vector
@@ -601,7 +595,6 @@ protected:
 
 	/** MxM matrix encoding similarity between tasks **/
 	std::vector<float64_t> dependency_matrix;
-
 };
 }
 #endif
