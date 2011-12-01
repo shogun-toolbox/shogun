@@ -31,8 +31,6 @@ namespace shogun
  */
 template<class T>class CDynamicObjectArray :public CSGObject
 {
-	DynArray<T*> m_array;
-
 	public:
 		/** constructor
 		 *
@@ -280,6 +278,10 @@ template<class T>class CDynamicObjectArray :public CSGObject
 
 			return casted;
 		}
+
+    private:
+        DynArray<T*> m_array;
+
 };
 }
 #endif /* _DYNAMIC_OBJECT_ARRAY_H_  */
