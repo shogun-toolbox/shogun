@@ -230,6 +230,10 @@ public:
 		return "MultitaskKernelNormalizer";
 	}
 
+	/** convert generic kernel normalizer object into CMultitaskKernelNormalizer
+	 *
+	 * @return converted CMultitaskKernelNormalizer object
+	 */
 	inline CMultitaskKernelNormalizer* KernelNormalizerToMultitaskKernelNormalizer(CKernelNormalizer* n)
 	{
 		return dynamic_cast<CMultitaskKernelNormalizer*>(n);
