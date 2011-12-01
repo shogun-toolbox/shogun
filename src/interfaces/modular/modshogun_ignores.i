@@ -33,6 +33,23 @@
 %ignore SSKDoubleFeature;
 %ignore quadratic_program;
 %ignore __STDC_FORMAT_MACROS;
+%ignore shogun::SGSparseVector::SGSparseVector(SGSparseVectorEntry, index_t, index_t, bool);
+%ignore shogun::SGSparseVector::features;
+%ignore shogun::SGSparseVectorEntry;
+%ignore shogun::CParameter;
+%ignore shogun::CVwFeature;
+%ignore shogun::CVwExample;
+%ignore shogun::SGString;
+%ignore sparse_dot;
+%ignore dense_dot;
+%ignore add_to_dense_vec;
+%ignore dense_dot_range;
+%ignore dense_dot_range_subset;
+%ignore dense_dot_range_helper;
+%ignore get_feature_iterator;
+%ignore get_next_feature;
+%ignore free_feature_iterator;
+%ignore compute_sparse_feature_vector;
 
 %ignore free_feature_vector;
 %ignore free_sparse_feature_vector;
@@ -41,7 +58,7 @@
 %ignore shogun::CTaxonomy::add_node;
 %ignore shogun::CTaxonomy::intersect_root_path;
 %ignore shogun::SGVector<shogun::CGaussian*>;
-%ignore shogun::CGMM::CGMM(shogun::SGVector<shogun::CGaussian*>, shogun::SGVector<float64_t>, bool);
+%ignore shogun::CGMM::CGMM(SGVector<shogun::CGaussian*>, shogun::SGVector<float64_t>, bool);
 %ignore shogun::CGMM::get_comp;
 %ignore shogun::CGMM::set_comp;
 
@@ -117,8 +134,3 @@
 %ignore shogun::CSerializableFile::write_stringentry_end;
 %ignore shogun::CSerializableFile::write_type_begin;
 %ignore shogun::CSerializableFile::write_type_end;
-
-%ignore shogun::CANOVAKernel::compute_rec1;
-%ignore shogun::CANOVAKernel::compute_rec2;
-%ignore shogun::CANOVAKernel::get_cardinality;
-%ignore shogun::CANOVAKernel::set_cardinality;
