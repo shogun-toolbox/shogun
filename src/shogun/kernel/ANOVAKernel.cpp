@@ -54,22 +54,7 @@ bool CANOVAKernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CANOVAKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	int32_t alen, blen;
-	bool afree, bfree;
-
-	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen);
-
-	float64_t result1 = compute_recursive1(avec, bvec, alen);
-	//float64_t result2 = compute_recursive2(avec, bvec, alen);
-		
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-        
-	return result1;
+	return compute_rec1(idx_a, idx_b);
 }
 
 float64_t CANOVAKernel::compute_rec1(int32_t idx_a, int32_t idx_b)
