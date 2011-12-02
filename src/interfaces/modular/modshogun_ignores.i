@@ -61,12 +61,19 @@
 %ignore shogun::CGMM::CGMM(SGVector<shogun::CGaussian*>, shogun::SGVector<float64_t>, bool);
 %ignore shogun::CGMM::get_comp;
 %ignore shogun::CGMM::set_comp;
-%ignore shogun::CSimpleFeatures::CSimpleFeatures<ST>(ST*,int32_t,int32_t);
 %ignore shogun::CSimpleFeatures::vector_subset;
-%ignore shogun::CSimpleFeatures<ST>::get_feature_matrix(int32_t, int32_t);
-%ignore shogun::CSimpleFeatures<ST>::get_transposed(int32_t&, int32_t&);
-%ignore shogun::CSimpleFeatures<ST>::dense_dot(int32_t, const float64_t*, int32_t);
-%ignore shogun::CSimpleFeatures<ST>::add_to_dense_vec(float64_t, int32_t, float64_t*, int32_t, bool );
+%ignore shogun::CSimpleFeatures::get_feature_matrix(ST**, int32_t*, int32_t*);
+%ignore shogun::CSimpleFeatures::get_feature_matrix(int32_t&, int32_t&);
+%ignore shogun::CSimpleFeatures::get_transposed(int32_t&, int32_t&);
+%ignore shogun::CSimpleFeatures::dense_dot(int32_t, const float64_t*, int32_t);
+%ignore shogun::CSimpleFeatures::add_to_dense_vec(float64_t, int32_t, float64_t*, int32_t, bool );
+%ignore shogun::CSparseFeatures::CSparseFeatures(SGSparseVector<ST>*, int32_t, int32_t, bool);
+%ignore shogun::CSparseFeatures::get_full_feature_vector(int32_t, int32_t&);
+%ignore shogun::CSparseFeatures::get_sparse_feature_matrix(int32_t&, int32_t&);
+%ignore shogun::CSparseFeatures::compute_squared;
+%ignore shogun::CSparseFeatures::compute_squared_norm;
+%ignore shogun::CSparseFeatures::get_transposed(int32_t&, int32_t&);
+%ignore shogun::CSparseFeatures::clean_tsparse;
 
 
 %ignore shogun::CSVMLight::add_to_index;
