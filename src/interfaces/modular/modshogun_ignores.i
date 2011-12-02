@@ -61,6 +61,12 @@
 %ignore shogun::CGMM::CGMM(SGVector<shogun::CGaussian*>, shogun::SGVector<float64_t>, bool);
 %ignore shogun::CGMM::get_comp;
 %ignore shogun::CGMM::set_comp;
+%ignore shogun::CSimpleFeatures::CSimpleFeatures<ST>(ST*,int32_t,int32_t);
+%ignore shogun::CSimpleFeatures::vector_subset;
+%ignore shogun::CSimpleFeatures<ST>::get_feature_matrix(int32_t, int32_t);
+%ignore shogun::CSimpleFeatures<ST>::get_transposed(int32_t&, int32_t&);
+%ignore shogun::CSimpleFeatures<ST>::dense_dot(int32_t, const float64_t*, int32_t);
+%ignore shogun::CSimpleFeatures<ST>::add_to_dense_vec(float64_t, int32_t, float64_t*, int32_t, bool );
 
 
 %ignore shogun::CSVMLight::add_to_index;
