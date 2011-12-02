@@ -137,7 +137,7 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 	for (i=0; i<m_target_dim; i++)
 	{
 		for (j=0; j<N; j++)
-			new_feature_matrix[j*m_target_dim+i] = kernel_matrix.matrix[(m_target_dim-i-1)*N+j];///kernel_matrix.matrix[(m_target_dim)*N+j];
+			new_feature_matrix[j*m_target_dim+i] = kernel_matrix.matrix[(m_target_dim-i-1)*N+j]/kernel_matrix.matrix[(m_target_dim)*N+j];
 	}
 	kernel_matrix.destroy_matrix();
 
