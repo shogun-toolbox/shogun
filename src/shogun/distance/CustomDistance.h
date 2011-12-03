@@ -38,6 +38,11 @@ class CCustomDistance: public CDistance
 		 * @param d distance matrix
 		 */
 		CCustomDistance(CDistance* d);
+		
+		/** constructor 
+		 * @param distance_matrix distance matrix
+		 */
+		CCustomDistance(const SGMatrix<float64_t> distance_matrix);
 
 		/** constructor
 		 *
