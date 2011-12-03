@@ -45,6 +45,8 @@ struct LK_RECONSTRUCTION_THREAD_PARAM
 	const float64_t* kernel_matrix;
 	/// vector used for solving equation 
 	float64_t* id_vector;
+	/// reconstruction shift
+	float64_t reconstruction_shift;
 	/// weight matrix
 	float64_t* W_matrix;
 };
@@ -155,6 +157,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMat
 		parameters[t].local_gram_matrix = local_gram_matrix+(m_k*m_k)*t;
 		parameters[t].id_vector = id_vector+m_k*t;
 		parameters[t].W_matrix = W_matrix;
+		parameters[t].reconstruction_shift = m_reconstruction_shift;
 		pthread_create(&threads[t], &attr, run_linearreconstruction_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -197,6 +200,7 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	const float64_t* kernel_matrix = parameters->kernel_matrix;
 	float64_t* id_vector = parameters->id_vector;
 	float64_t* W_matrix = parameters->W_matrix;
+	float64_t reconstruction_shift = parameters->reconstruction_shift;
 
 	int32_t i,j,k;
 	float64_t norming,trace;
@@ -223,7 +227,7 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		
 		// regularize gram matrix
 		for (j=0; j<m_k; j++)
-			local_gram_matrix[j*m_k+j] += 1e-3*trace;
+			local_gram_matrix[j*m_k+j] += reconstruction_shift*trace;
 
 		clapack_dposv(CblasColMajor,CblasLower,m_k,1,local_gram_matrix,m_k,id_vector,m_k);
 
