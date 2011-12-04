@@ -231,7 +231,7 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 
 	// find null space of weight matrix
 	SG_DEBUG("Finding nullspace\n");
-	SGMatrix<float64_t> new_feature_matrix = construct_embedding(features,weight_matrix,m_target_dim);
+	SGMatrix<float64_t> new_feature_matrix = construct_embedding(weight_matrix,m_target_dim);
 	weight_matrix.destroy_matrix();
 
 	SG_UNREF(features);
@@ -394,7 +394,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	return SGMatrix<float64_t>(W_matrix,N,N);
 }
 
-SGMatrix<float64_t> CLocallyLinearEmbedding::construct_embedding(CFeatures* features,SGMatrix<float64_t> matrix,int dimension)
+SGMatrix<float64_t> CLocallyLinearEmbedding::construct_embedding(SGMatrix<float64_t> matrix,int dimension)
 {
 	int i,j;
 	ASSERT(matrix.num_cols==matrix.num_rows);
