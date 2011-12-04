@@ -106,19 +106,24 @@ CFeatures* CKernelLocallyLinearEmbedding::apply(CFeatures* features)
 	// compute kernel matrix
 	ASSERT(m_kernel);
 	m_kernel->init(features,features);
-	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
-	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(kernel_matrix,m_k);
+	CSimpleFeatures<float64_t>* embedding = embed_kernel(m_kernel);
 	m_kernel->cleanup();
+	SG_UNREF(features);
+	return (CFeatures*)embedding;
+}
 
-	// init W (weight) matrix
+CSimpleFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel* kernel)
+{
+	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
+	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(kernel_matrix,m_k);
+
 	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix);
 	neighborhood_matrix.destroy_matrix();
 
-	SGMatrix<float64_t> nullspace = construct_embedding(features,M_matrix,m_target_dim);
+	SGMatrix<float64_t> nullspace = construct_embedding(M_matrix,m_target_dim);
 	M_matrix.destroy_matrix();
 
-	SG_UNREF(features);
-	return (CFeatures*)(new CSimpleFeatures<float64_t>(nullspace));
+	return new CSimpleFeatures<float64_t>(nullspace);
 }
 
 SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix, 

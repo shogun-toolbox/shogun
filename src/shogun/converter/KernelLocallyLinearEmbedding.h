@@ -54,7 +54,13 @@ public:
 	/** destructor */
 	virtual ~CKernelLocallyLinearEmbedding();
 
+	/** apply */
 	virtual CFeatures* apply(CFeatures* features);
+
+	/** embed kernel (kernel should be inited)
+	 * @param kernel kernel to construct embed
+	 */
+	CSimpleFeatures<float64_t>* embed_kernel(CKernel* kernel);
 
 	/** get name */
 	virtual const char* get_name() const;

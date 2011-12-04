@@ -153,12 +153,11 @@ protected:
                                                             SGMatrix<int32_t> neighborhood_matrix);
 
 	/** constructs embedding
-	 * @param features features to be used
 	 * @param matrix computed weight matrix
 	 * @param dimension dimension of embedding
 	 * @return embedding features
 	 */
-	virtual SGMatrix<float64_t> construct_embedding(CFeatures* features,SGMatrix<float64_t> matrix,int dimension);
+	virtual SGMatrix<float64_t> construct_embedding(SGMatrix<float64_t> matrix,int dimension);
 
 	/** constructs neighborhood matrix by distance
 	 * @param distance_matrix distance matrix to be used
