@@ -50,12 +50,12 @@ def build_features(path):
 	return nd,md,RealFeatures(feature_matrix)
 
 path = '../../data/faces/'
-converter = KernelLocallyLinearEmbedding
+converter = DiffusionMaps
 nd,md,features = build_features(path)
 converter_instance = converter()
 converter_instance.parallel.set_num_threads(2)
-converter_instance.set_k(5)
-converter_instance.set_kernel(GaussianKernel(50,500000.0))
+converter_instance.set_t(1)
+#converter_instance.set_kernel(GaussianKernel(50,500000.0))
 #converter_instance.set_nullspace_shift(1e-3)
 converter_instance.set_target_dim(2)
 
@@ -89,7 +89,5 @@ for i in range(len(new_features[0])):
 	ab = AnnotationBbox(imagebox, (new_features[0,i],new_features[1,i]),
 						pad=0.001,frameon=False)
 	ax.add_artist(ab)
-axis('tight')
-xticks([])
-yticks([])
+axis('off')
 show()
