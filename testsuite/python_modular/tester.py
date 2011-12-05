@@ -14,14 +14,18 @@ def typecheck(a, b):
 	return type(a) == type(b)
 
 
-def compare(a, b):
+def compare(a, b, tolerance):
 	if not typecheck(a,b): return False
 
-	if type(a) == numpy.ndarray: return numpy.all(a == b)
+	if type(a) == numpy.ndarray: 
+		if tolerance:
+			return numpy.linalg.norm(a - b) < tolerance
+		else:
+			return numpy.all(a == b)
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False
 		for obj1, obj2 in zip(a,b):
-			if not compare(obj1, obj2): return False
+			if not compare(obj1, obj2, tolerance): return False
 		return True
 
 	return a == b
@@ -54,7 +58,7 @@ def compare_dbg(a, b):
 		print "b", b
 		return False
 
-def tester(tests, cmp_method):
+def tester(tests, cmp_method, tolerance):
 	for t in tests:
 		try:
 			mod, mod_name = get_test_mod(t)
@@ -74,7 +78,7 @@ def tester(tests, cmp_method):
 				b = pickle.load(file(fname))
 
 				try:
-					if cmp_method(a,b):
+					if cmp_method(a,b,tolerance):
 						print "%-60s OK" % setting_str
 					else:
 						print "%-60s ERROR" % setting_str
@@ -91,6 +95,8 @@ if __name__=='__main__':
 	op=OptionParser()
 	op.add_option("-d", "--debug", action="store_true", default=False,
 				help="detailed debug output of objects that don't match")
+	op.add_option("-t", "--tolerance", action="store", default=None,
+	              help="tolerance used to estimate accuracy")
 
 	op.set_usage("[<file1> <file2> ...]")
 	(opts, args)=op.parse_args()
@@ -99,4 +105,4 @@ if __name__=='__main__':
 	else:
 		cmp_method=compare
 	tests = setup_tests(args)
-	tester(tests, cmp_method)
+	tester(tests, cmp_method, opts.tolerance)
