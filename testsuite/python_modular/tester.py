@@ -19,7 +19,7 @@ def compare(a, b, tolerance):
 
 	if type(a) == numpy.ndarray: 
 		if tolerance:
-			return numpy.linalg.norm(a - b) < tolerance
+			return max(a - b) < tolerance
 		else:
 			return numpy.all(a == b)
 	elif type(a) in (tuple,list):
