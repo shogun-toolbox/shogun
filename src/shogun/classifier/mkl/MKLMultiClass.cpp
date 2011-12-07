@@ -215,7 +215,7 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
 	weights=SG_MALLOC(float64_t, curweights.size());
 	std::copy(curweights.begin(),curweights.end(),weights);
 
-	kernel->set_subkernel_weights(  weights, curweights.size());
+	kernel->set_subkernel_weights(SGVector<float64_t>(weights, curweights.size()));
 	SG_FREE(weights);
 	weights=NULL;
 

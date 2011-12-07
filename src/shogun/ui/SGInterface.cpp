@@ -3652,7 +3652,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 		if (dim!=1 || len!=num_subkernels)
 			SG_ERROR("All: Dimension mismatch (should be 1 x num_subkernels)\n");
 
-		kernel->set_subkernel_weights(weights, len);
+		kernel->set_subkernel_weights(SGVector<float64_t>(weights, len));
 		success=true;
 	}
 
@@ -3716,7 +3716,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 		if (dim!=1 || len!=num_subkernels)
 			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
 
-		kernel->set_subkernel_weights(weights, len);
+		kernel->set_subkernel_weights(SGVector<float64_t>(weights, len));
 		success=true;
 	}
 
@@ -3843,7 +3843,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 		if (dim!=1 || len!=num_subkernels)
 			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
 
-		kernel->set_subkernel_weights(weights, len);
+		kernel->set_subkernel_weights(SGVector<float64_t>(weights, len));
 		success=true;
 	}
 

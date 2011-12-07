@@ -151,7 +151,9 @@ CHMM::CHMM()
 CHMM::CHMM(CHMM* h)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
+#ifdef USE_HMMPARALLEL_STRUCTURES
 	SG_INFO( "hmm is using %i separate tables\n",  parallel->get_num_threads()) ;
+#endif
 
 	this->N=h->get_N();
 	this->M=h->get_M();
@@ -167,7 +169,9 @@ CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 	this->M=p_M;
 	model=NULL ;
 
+#ifdef USE_HMMPARALLEL_STRUCTURES
 	SG_INFO( "hmm is using %i separate tables\n",  parallel->get_num_threads()) ;
+#endif
 
 	status=initialize(p_model, p_PSEUDO);
 }
@@ -181,7 +185,9 @@ CHMM::CHMM(
 	this->M=p_M;
 	model=NULL ;
 
+#ifdef USE_HMMPARALLEL_STRUCTURES
 	SG_INFO( "hmm is using %i separate tables\n",  parallel->get_num_threads()) ;
+#endif
 
 	initialize(model, p_PSEUDO);
 	set_observations(obs);
@@ -354,7 +360,9 @@ CHMM::CHMM(
 CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
+#ifdef USE_HMMPARALLEL_STRUCTURES
 	SG_INFO( "hmm is using %i separate tables\n",  parallel->get_num_threads()) ;
+#endif
 
 	status=initialize(NULL, p_PSEUDO, model_file);
 }

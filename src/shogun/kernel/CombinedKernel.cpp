@@ -704,7 +704,7 @@ void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
 		{
 			int32_t num = k->get_num_subkernels() ;
 			ASSERT(i<weights.vlen);
-			k->set_subkernel_weights(&weights.vector[i],num);
+			k->set_subkernel_weights(SGVector<float64_t>(&weights.vector[i],num));
 
 			SG_UNREF(k);
 			k = get_next_kernel(current);
