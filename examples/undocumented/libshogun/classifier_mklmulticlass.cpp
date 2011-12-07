@@ -300,7 +300,7 @@ void tester()
 	SG_SPRINT("\n");
 
 	//set kernel
-	tker->set_subkernel_weights(weights, numweights);
+	tker->set_subkernel_weights(SGVector<float64_t>(weights, numweights));
 	tsvm->set_kernel(tker);
 
 	//compute classification error, check mem
