@@ -838,11 +838,13 @@ const float64_t* CKernel::get_subkernel_weights(int32_t &num_weights)
 	return &combined_kernel_weight ;
 }
 
-void CKernel::set_subkernel_weights(float64_t* weights, int32_t num_weights)
+void CKernel::set_subkernel_weights(SGVector<float64_t> weights)
 {
-	combined_kernel_weight = weights[0] ;
-	if (num_weights!=1)
+	ASSERT(weights.vector);
+	if (weights.vlen!=1)
       SG_ERROR( "number of subkernel weights should be one ...\n");
+
+	combined_kernel_weight = weights.vector[0] ;
 }
 
 bool CKernel::init_optimization_svm(CSVM * svm)
