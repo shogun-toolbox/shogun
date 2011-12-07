@@ -355,18 +355,15 @@ class CCombinedKernel : public CKernel
 
 		/** get subkernel weights (swig compatible)
 		 *
-		 * @param weights subkernel weights
-		 * @param num_weights number of weights
+		 * @return subkernel weights
 		 */
-		virtual void get_subkernel_weights(float64_t** weights, int32_t* num_weights);
+		virtual SGVector<float64_t> get_subkernel_weights();
 
 		/** set subkernel weights
 		 *
 		 * @param weights new subkernel weights
-		 * @param num_weights number of subkernel weights
 		 */
-		virtual void set_subkernel_weights(
-			float64_t* weights, int32_t num_weights);
+		virtual void set_subkernel_weights(SGVector<float64_t> weights);
 
 		/** set optimization type
 		 *

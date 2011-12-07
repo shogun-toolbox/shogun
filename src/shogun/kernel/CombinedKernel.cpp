@@ -685,19 +685,15 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 	return subkernel_weights_buffer ;
 }
 
-void CCombinedKernel::get_subkernel_weights(float64_t** weights, int32_t* num_weights)
+SGVector<float64_t> CCombinedKernel::get_subkernel_weights()
 {
 	int32_t num=0;
 	const float64_t* w=get_subkernel_weights(num);
 
-	ASSERT(num>0);
-	*num_weights=num;
-	*weights = SG_MALLOC(float64_t, num);
-	memcpy(*weights, w, num*sizeof(float64_t));
+	return SGVector<float64_t>((float64_t*) w, num);
 }
 
-void CCombinedKernel::set_subkernel_weights(
-	float64_t* weights, int32_t num_weights)
+void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
 {
 	if (append_subkernel_weights)
 	{
@@ -707,7 +703,8 @@ void CCombinedKernel::set_subkernel_weights(
 		while(k)
 		{
 			int32_t num = k->get_num_subkernels() ;
-			k->set_subkernel_weights(&weights[i],num);
+			ASSERT(i<weights.vlen);
+			k->set_subkernel_weights(&weights.vector[i],num);
 
 			SG_UNREF(k);
 			k = get_next_kernel(current);
@@ -721,7 +718,8 @@ void CCombinedKernel::set_subkernel_weights(
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
-			k->set_combined_kernel_weight(weights[i]);
+			ASSERT(i<weights.vlen);
+			k->set_combined_kernel_weight(weights.vector[i]);
 
 			SG_UNREF(k);
 			k = get_next_kernel(current);
