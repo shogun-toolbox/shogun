@@ -40,10 +40,17 @@ embedding = converter.embed_kernel(word_kernel(words[:200]))
 embedding_matrix = embedding.get_feature_matrix()
 fig = figure()
 ax = fig.add_subplot(1,1,1)
-ax.scatter(embedding_matrix[0,:],embedding_matrix[1,:],alpha=0.0)
+ax.scatter(embedding_matrix[0,:],embedding_matrix[1,:],alpha=0.4,cmap=cm.Spectral,c=embedding_matrix[0,:]*embedding_matrix[1,:])
 
-for i,word in enumerate(words[:100]):
-	text(embedding_matrix[0,i],embedding_matrix[1,i],word,fontsize=8)
+# hardcode ;)
+words_to_show = ['finishing','publishing','standing',\
+                 'shifted','insisted','tilted','blasted',\
+                 'jumble','battle','gobble']
+
+for i in xrange(0,200):
+	if words[i] in words_to_show:
+		ax.text(embedding_matrix[0,i]*1.1,1.25*embedding_matrix[1,i],words[i],fontsize=16,alpha=1.0)
+
 axis('off')
 show()
 
