@@ -1592,6 +1592,9 @@ determine_system_name()
 	   host_arch=`( uname -p ) 2>&1`
 	   case "$host_arch" in
 	   i386|sparc|ppc|alpha|arm|mips)
+		 if [ $host_arch=="Darwin" -a "`( uname -m ) 2>&1`"=="x86_64" ]; then
+			host_arch=x86_64
+		 fi
 		 ;;
 	   powerpc) # Darwin returns 'powerpc'
 		 host_arch=ppc
@@ -3998,6 +4001,13 @@ test_matlab()
 				then
 					LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -bundle -Wl,-flat_namespace -undefined suppress -Wl,-exported_symbols_list,$MATLAB_LIBDIR/mac/mexFunction.map -L$MATLAB_BINDIR/mac -lmx -lmex -lmat"
 					MATLAB_TARGET="sg.mexmac"
+				elif x86_64
+				then
+					DEFINES_MATLAB="$DEFINES_MATLAB -DMX_COMPAT_32_OFF"
+					COMPFLAGS_C_MATLAB="$COMPFLAGS_CPP_MATLAB -DMX_COMPAT_32_OFF"
+					COMPFLAGS_CPP_MATLAB="$COMPFLAGS_CPP_MATLAB -DMX_COMPAT_32_OFF"
+					LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -bundle -Wl,-flat_namespace -undefined suppress -Wl,-exported_symbols_list,$MATLAB_LIBDIR/maci64/mexFunction.map -L$MATLAB_BINDIR/maci64 -lmx -lmex -lmat"
+					MATLAB_TARGET="sg.mexmaci64"
 				elif x86
 				then
 					DEFINES_MATLAB="$DEFINES_MATLAB -DMX_COMPAT_32"
