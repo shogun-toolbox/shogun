@@ -296,22 +296,22 @@ install-octave_modular: $(TEMPLATE_TARGET)
 		>>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
 
 install-java_modular: $(TEMPLATE_TARGET)
-	install -d -m755 "$(DESTDIR)/$(PREFIX)/share/java"
+	install -d -m755 "$(DESTDIR)$(PREFIX)/share/java"
 	install -d -m755 "$(DESTDIR)$(LIBDIR)/jni"
-	install -m644 shogun.jar "$(DESTDIR)/$(PREFIX)/share/java"
+	install -m644 shogun.jar "$(DESTDIR)$(PREFIX)/share/java"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/jni"
 
 install-ruby_modular: $(TEMPLATE_TARGET)
-	install -d -m755 "$(DESTDIR)/$(RUBY_EXTENSIONS_INSTALL_DIR)"
-	install -m755 modshogun$(EXT_LIB_SWIG_RUBY_MODULAR) "$(DESTDIR)/$(RUBY_EXTENSIONS_INSTALL_DIR)/"
+	install -d -m755 "$(DESTDIR)$(RUBY_EXTENSIONS_INSTALL_DIR)"
+	install -m755 modshogun$(EXT_LIB_SWIG_RUBY_MODULAR) "$(DESTDIR)$(RUBY_EXTENSIONS_INSTALL_DIR)/"
 
 install-lua_modular: $(TEMPLATE_TARGET)
-	install -d -m755 "$(DESTDIR)/$(LUA_EXTENSIONS_INSTALL_DIR)"
-	install -m755 modshogun.$(EXT_LIB) "$(DESTDIR)/$(LUA_EXTENSIONS_INSTALL_DIR)"
+	install -d -m755 "$(DESTDIR)$(LUA_EXTENSIONS_INSTALL_DIR)"
+	install -m755 modshogun.$(EXT_LIB) "$(DESTDIR)$(LUA_EXTENSIONS_INSTALL_DIR)"
 
 install-csharp_modular: $(TEMPLATE_TARGET)
-	install -d -m755 "$(DESTDIR)/$(LIBDIR)/cli/shogun"
-	install -m644 modshogun.dll "$(DESTDIR)/$(LIBDIR)/cli/shogun"
+	install -d -m755 "$(DESTDIR)$(LIBDIR)/cli/shogun"
+	install -m644 modshogun.dll "$(DESTDIR)$(LIBDIR)/cli/shogun"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/cli/shogun"
 
 run-testsuite: run-testsuite-template

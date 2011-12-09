@@ -834,14 +834,14 @@ test_lua()
 		SWIGFLAGS_LUA_MODULAR="-c++ -lua"
 
 		INCLUDES_LUA="`pkg-config --cflags-only-I lua$LV 2>/dev/null`"
-		LINKFLAGS_LUA="`pkg-config --libs lua$LV 2>/dev/null`"
+		POSTLINKFLAGS_LUA="`pkg-config --libs lua$LV 2>/dev/null`"
 		LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua$LV --define-variable prefix=$_prefix --variable INSTALL_CMOD`"
 
 		if test -z "$INCLUDES_LUA" ; then
 			INCLUDES_LUA="`pkg-config --cflags-only-I lua 2>/dev/null`"
 		fi
-		if test -z "$LINKFLAGS_LUA" ; then
-			LINKFLAGS_LUA="`pkg-config --libs lua 2>/dev/null`"
+		if test -z "$POSTLINKFLAGS_LUA" ; then
+			POSTLINKFLAGS_LUA="`pkg-config --libs lua 2>/dev/null`"
 		fi
 		if test -z "$LUA_EXTENSIONS_INSTALL_DIR" ; then
 			LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua --define-variable prefix=$_prefix --variable INSTALL_CMOD`"
@@ -851,11 +851,11 @@ test_lua()
 		if test -z "$INCLUDES_LUA" ; then
 			INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
 		fi
-		if test -z "$LINKFLAGS_LUA" ; then
-			LINKFLAGS_LUA="-llua${LV}"
+		if test -z "$POSTLINKFLAGS_LUA" ; then
+			POSTLINKFLAGS_LUA="-llua${LV}"
 		fi
 
-		LINKFLAGS_LUA="$LINKFLAGS_LUA --shared"
+		POSTLINKFLAGS_LUA="$POSTLINKFLAGS_LUA --shared"
 		echores "${LUAVER}"
 		_lua_modular=yes
 	else
