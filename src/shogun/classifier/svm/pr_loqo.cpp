@@ -26,7 +26,7 @@
 #ifdef HAVE_LAPACK
 extern "C" {
 #ifdef HAVE_ATLAS
-#include <clapack.h>
+#include <atlas/clapack.h>
 #endif
 }
 #endif
