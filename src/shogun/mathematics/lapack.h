@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 #ifdef HAVE_ATLAS
-#include <clapack.h>
+#include <atlas/clapack.h>
 #else
 // ACML and MKL do not provide clapack_* routines
 // double precision
