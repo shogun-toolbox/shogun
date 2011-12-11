@@ -6,17 +6,18 @@
 	   - New dimensionality reduction algorithms:
 	     Diffusion Maps, Kernel Locally Linear Embedding,
 	     Kernel Local Tangent Space Alignment, Linear Local Tangent Space Alignment,
-	     Neighborhood Preserving embedding, Locality Preserving Projections
+	     Neighborhood Preserving embedding, Locality Preserving Projections.
 	   - Various performance improvements for dimensionality reduction methods (BLAS,
 	     alignment formulation of the LLE, ..)
 	   - Automatical k determination mode for Locally Linear Embedding dimension
-	     reduction method based on reconstruction error
-	   - ARPACK and SUPERLU integration 
+	     reduction method based on reconstruction error.
+	   - ARPACK and SUPERLU integration.
 	   - Introduce the concept of Converters that can embed (arbitrary) feature
 	     types into different feature types.
 	   - LibSVM is now pthread-parallelized.
 	   - Create modshogun.dll for csharp.
 	   - Various new c# examples (thanks Daniel Korn).
+	   - Dimensionality reduction examples application is introduced
 	* Bugfixes:
 	   - Octave_static and octave_modular examples fix.
 	   - Memory leak in custom kernel is now eliminated (thanks Madeleine Seeland for reporting).
@@ -24,6 +25,7 @@
 	   - DotFeatures fix for assert bug.
 	   - FibonacciHeap memory leak fix.
 	   - Fix for Java modular interface typemapping bug.
+	   - Fix for configure on Darwin-x86_64 (thanks Peter Romov for patch).
 	* Cleanup and API Changes:
 	   - Most of the inline functions have been (re)moved to the corresponding
 	     .cpp file
