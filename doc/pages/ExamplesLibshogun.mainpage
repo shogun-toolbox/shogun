@@ -6,13 +6,14 @@ This page lists ready to run shogun examples for the C++ libshogun interface.
 \li \subpage libshogun_basic_examples 
 \li \subpage libshogun_classifier_examples 
 \li \subpage libshogun_clustering_examples 
+\li \subpage libshogun_converter_examples 
 \li \subpage libshogun_features_examples 
 \li \subpage libshogun_kernel_examples 
 \li \subpage libshogun_library_examples 
 \li \subpage libshogun_mathematics_examples 
 \li \subpage libshogun_modelselection_examples 
 \li \subpage libshogun_parameter_examples 
-\li \subpage libshogun_preproc_examples 
+\li \subpage libshogun_preprocessor_examples 
 \li \subpage libshogun_serialization_examples 
 \li \subpage libshogun_splitting_examples 
 \li \subpage libshogun_streaming_examples 
@@ -65,6 +66,45 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 
 \li <b>../examples/documented/libshogun/clustering_kmeans.cpp</b>
 \verbinclude clustering_kmeans.cpp
+
+\section libshogun_converter_examples Converter
+
+
+\li <b>../examples/documented/libshogun/converter_diffusionmaps.cpp</b>
+\verbinclude converter_diffusionmaps.cpp
+
+\li <b>../examples/documented/libshogun/converter_hessianlocallylinearembedding.cpp</b>
+\verbinclude converter_hessianlocallylinearembedding.cpp
+
+\li <b>../examples/documented/libshogun/converter_isomap.cpp</b>
+\verbinclude converter_isomap.cpp
+
+\li <b>../examples/documented/libshogun/converter_kernellocallylinearembedding.cpp</b>
+\verbinclude converter_kernellocallylinearembedding.cpp
+
+\li <b>../examples/documented/libshogun/converter_kernellocaltangentspacealignment.cpp</b>
+\verbinclude converter_kernellocaltangentspacealignment.cpp
+
+\li <b>../examples/documented/libshogun/converter_laplacianeigenmaps.cpp</b>
+\verbinclude converter_laplacianeigenmaps.cpp
+
+\li <b>../examples/documented/libshogun/converter_linearlocaltangentspacealignment.cpp</b>
+\verbinclude converter_linearlocaltangentspacealignment.cpp
+
+\li <b>../examples/documented/libshogun/converter_localitypreservingprojections.cpp</b>
+\verbinclude converter_localitypreservingprojections.cpp
+
+\li <b>../examples/documented/libshogun/converter_locallylinearembedding.cpp</b>
+\verbinclude converter_locallylinearembedding.cpp
+
+\li <b>../examples/documented/libshogun/converter_localtangentspacealignment.cpp</b>
+\verbinclude converter_localtangentspacealignment.cpp
+
+\li <b>../examples/documented/libshogun/converter_multidimensionalscaling.cpp</b>
+\verbinclude converter_multidimensionalscaling.cpp
+
+\li <b>../examples/documented/libshogun/converter_neighborhoodpreservingembedding.cpp</b>
+\verbinclude converter_neighborhoodpreservingembedding.cpp
 
 \section libshogun_features_examples Features
 
@@ -168,11 +208,11 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/parameter_set_from_parameters.cpp</b>
 \verbinclude parameter_set_from_parameters.cpp
 
-\section libshogun_preproc_examples Preproc
+\section libshogun_preprocessor_examples Preprocessor
 
 
-\li <b>../examples/documented/libshogun/preproc_randomfouriergauss.cpp</b>
-\verbinclude preproc_randomfouriergauss.cpp
+\li <b>../examples/documented/libshogun/preprocessor_randomfouriergauss.cpp</b>
+\verbinclude preprocessor_randomfouriergauss.cpp
 
 \section libshogun_serialization_examples Serialization
 

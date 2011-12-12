@@ -6,7 +6,7 @@
 \li \subpage r_modular_distribution_examples 
 \li \subpage r_modular_kernel_examples 
 \li \subpage r_modular_mkl_examples 
-\li \subpage r_modular_preproc_examples 
+\li \subpage r_modular_preprocessor_examples 
 
 要运行这些例子只需要
 \verbatim
@@ -186,15 +186,15 @@ source('name_of_example.R')
 \li <b>../examples/documented/r_modular/mkl_multiclass_modular.R</b>
 \verbinclude mkl_multiclass_modular.R
 
-\section r_modular_preproc_examples Preproc
+\section r_modular_preprocessor_examples Preprocessor
 
 
-\li <b>../examples/documented/r_modular/preproc_logplusone_modular.R</b>
-\verbinclude preproc_logplusone_modular.R
+\li <b>../examples/documented/r_modular/preprocessor_logplusone_modular.R</b>
+\verbinclude preprocessor_logplusone_modular.R
 
-\li <b>../examples/documented/r_modular/preproc_normone_modular.R</b>
-\verbinclude preproc_normone_modular.R
+\li <b>../examples/documented/r_modular/preprocessor_normone_modular.R</b>
+\verbinclude preprocessor_normone_modular.R
 
-\li <b>../examples/documented/r_modular/preproc_prunevarsubmean_modular.R</b>
-\verbinclude preproc_prunevarsubmean_modular.R
+\li <b>../examples/documented/r_modular/preprocessor_prunevarsubmean_modular.R</b>
+\verbinclude preprocessor_prunevarsubmean_modular.R
 */

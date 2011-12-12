@@ -8,7 +8,7 @@ This page lists ready to run shogun examples for the Octave Modular interface.
 \li \subpage octave_modular_distribution_examples 
 \li \subpage octave_modular_kernel_examples 
 \li \subpage octave_modular_mkl_examples 
-\li \subpage octave_modular_preproc_examples 
+\li \subpage octave_modular_preprocessor_examples 
 \li \subpage octave_modular_regression_examples 
 
 To run the examples issue
@@ -62,6 +62,9 @@ name_of_example
 
 \li <b>../examples/documented/octave_modular/classifier_subgradientsvm_modular.m</b>
 \verbinclude classifier_subgradientsvm_modular.m
+
+\li <b>../examples/documented/octave_modular/classifier_svm_serialize_modular.m</b>
+\verbinclude classifier_svm_serialize_modular.m
 
 \li <b>../examples/documented/octave_modular/classifier_svmlight_modular.m</b>
 \verbinclude classifier_svmlight_modular.m
@@ -252,17 +255,17 @@ name_of_example
 \li <b>../examples/documented/octave_modular/mkl_multiclass_modular.m</b>
 \verbinclude mkl_multiclass_modular.m
 
-\section octave_modular_preproc_examples Preproc
+\section octave_modular_preprocessor_examples Preprocessor
 
 
-\li <b>../examples/documented/octave_modular/preproc_logplusone_modular.m</b>
-\verbinclude preproc_logplusone_modular.m
+\li <b>../examples/documented/octave_modular/preprocessor_logplusone_modular.m</b>
+\verbinclude preprocessor_logplusone_modular.m
 
-\li <b>../examples/documented/octave_modular/preproc_normone_modular.m</b>
-\verbinclude preproc_normone_modular.m
+\li <b>../examples/documented/octave_modular/preprocessor_normone_modular.m</b>
+\verbinclude preprocessor_normone_modular.m
 
-\li <b>../examples/documented/octave_modular/preproc_prunevarsubmean_modular.m</b>
-\verbinclude preproc_prunevarsubmean_modular.m
+\li <b>../examples/documented/octave_modular/preprocessor_prunevarsubmean_modular.m</b>
+\verbinclude preprocessor_prunevarsubmean_modular.m
 
 \section octave_modular_regression_examples Regression
 

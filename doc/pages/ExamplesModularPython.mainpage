@@ -4,6 +4,7 @@ This page lists ready to run shogun examples for the Python Modular interface.
 
 \li \subpage python_modular_classifier_examples 
 \li \subpage python_modular_clustering_examples 
+\li \subpage python_modular_converter_examples 
 \li \subpage python_modular_distance_examples 
 \li \subpage python_modular_distribution_examples 
 \li \subpage python_modular_evaluation_examples 
@@ -108,6 +109,42 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/clustering_kmeans_modular.py</b>
 \verbinclude clustering_kmeans_modular.py
 
+\section python_modular_converter_examples Converter
+
+
+\li <b>../examples/documented/python_modular/converter_diffusionmaps_modular.py</b>
+\verbinclude converter_diffusionmaps_modular.py
+
+\li <b>../examples/documented/python_modular/converter_hessianlocallylinearembedding_modular.py</b>
+\verbinclude converter_hessianlocallylinearembedding_modular.py
+
+\li <b>../examples/documented/python_modular/converter_isomap_modular.py</b>
+\verbinclude converter_isomap_modular.py
+
+\li <b>../examples/documented/python_modular/converter_kernellocallylinearembedding_modular.py</b>
+\verbinclude converter_kernellocallylinearembedding_modular.py
+
+\li <b>../examples/documented/python_modular/converter_kernellocaltangentspacealignment_modular.py</b>
+\verbinclude converter_kernellocaltangentspacealignment_modular.py
+
+\li <b>../examples/documented/python_modular/converter_laplacianeigenmaps_modular.py</b>
+\verbinclude converter_laplacianeigenmaps_modular.py
+
+\li <b>../examples/documented/python_modular/converter_linearlocaltangentspacealignment_modular.py</b>
+\verbinclude converter_linearlocaltangentspacealignment_modular.py
+
+\li <b>../examples/documented/python_modular/converter_localitypreservingprojections_modular.py</b>
+\verbinclude converter_localitypreservingprojections_modular.py
+
+\li <b>../examples/documented/python_modular/converter_locallylinearembedding_modular.py</b>
+\verbinclude converter_locallylinearembedding_modular.py
+
+\li <b>../examples/documented/python_modular/converter_localtangentspacealignment_modular.py</b>
+\verbinclude converter_localtangentspacealignment_modular.py
+
+\li <b>../examples/documented/python_modular/converter_multidimensionalscaling_modular.py</b>
+\verbinclude converter_multidimensionalscaling_modular.py
+
 \section python_modular_distance_examples Distance
 
 
@@ -191,6 +228,9 @@ python name_of_example.py
 
 \li <b>../examples/documented/python_modular/evaluation_rocevaluation_modular.py</b>
 \verbinclude evaluation_rocevaluation_modular.py
+
+\li <b>../examples/documented/python_modular/evaluation_thresholds_modular.py</b>
+\verbinclude evaluation_thresholds_modular.py
 
 \section python_modular_features_examples Features
 
@@ -408,6 +448,9 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/library_fisher2x3_modular.py</b>
 \verbinclude library_fisher2x3_modular.py
 
+\li <b>../examples/documented/python_modular/library_time.py</b>
+\verbinclude library_time.py
+
 \section python_modular_mkl_examples Mkl
 
 
@@ -429,32 +472,14 @@ python name_of_example.py
 \section python_modular_preprocessor_examples Preprocessor
 
 
-\li <b>../examples/documented/python_modular/preprocessor_hessianlocallylinearembedding_modular.py</b>
-\verbinclude preprocessor_hessianlocallylinearembedding_modular.py
-
-\li <b>../examples/documented/python_modular/preprocessor_isomap_modular.py</b>
-\verbinclude preprocessor_isomap_modular.py
-
-\li <b>../examples/documented/python_modular/preprocessor_kernellocallylinearembedding_modular.py</b>
-\verbinclude preprocessor_kernellocallylinearembedding_modular.py
+\li <b>../examples/documented/python_modular/preprocessor_dimensionreductionpreprocessor_modular.py</b>
+\verbinclude preprocessor_dimensionreductionpreprocessor_modular.py
 
 \li <b>../examples/documented/python_modular/preprocessor_kernelpca_modular.py</b>
 \verbinclude preprocessor_kernelpca_modular.py
 
-\li <b>../examples/documented/python_modular/preprocessor_laplacianeigenmaps_modular.py</b>
-\verbinclude preprocessor_laplacianeigenmaps_modular.py
-
-\li <b>../examples/documented/python_modular/preprocessor_locallylinearembedding_modular.py</b>
-\verbinclude preprocessor_locallylinearembedding_modular.py
-
-\li <b>../examples/documented/python_modular/preprocessor_localtangentspacealignment_modular.py</b>
-\verbinclude preprocessor_localtangentspacealignment_modular.py
-
 \li <b>../examples/documented/python_modular/preprocessor_logplusone_modular.py</b>
 \verbinclude preprocessor_logplusone_modular.py
-
-\li <b>../examples/documented/python_modular/preprocessor_multidimensionalscaling_modular.py</b>
-\verbinclude preprocessor_multidimensionalscaling_modular.py
 
 \li <b>../examples/documented/python_modular/preprocessor_normone_modular.py</b>
 \verbinclude preprocessor_normone_modular.py
