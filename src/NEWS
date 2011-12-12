@@ -25,7 +25,10 @@
 	   - DotFeatures fix for assert bug.
 	   - FibonacciHeap memory leak fix.
 	   - Fix for Java modular interface typemapping bug.
+	   - Fix errors uncovered by LLVM / clang++.
 	   - Fix for configure on Darwin-x86_64 (thanks Peter Romov for patch).
+	   - Improve lua / ruby detection.
+	   - Fix configure / compilation under osx and cygwin for variuos interfaces.
 	* Cleanup and API Changes:
 	   - Most of the inline functions have been (re)moved to the corresponding
 	     .cpp file
