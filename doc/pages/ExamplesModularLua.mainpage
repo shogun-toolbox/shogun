@@ -3,11 +3,11 @@
 This page lists ready to run shogun examples for the Lua Modular interface.
 
 \li \subpage lua_modular_classifier_examples 
+\li \subpage lua_modular_converter_examples 
 \li \subpage lua_modular_distance_examples 
 \li \subpage lua_modular_evaluation_examples 
 \li \subpage lua_modular_features_examples 
 \li \subpage lua_modular_kernel_examples 
-\li \subpage lua_modular_preprocessor_examples 
 \li \subpage lua_modular_regression_examples 
 \li \subpage lua_modular_serialization_examples 
 
@@ -24,6 +24,12 @@ lua name_of_example.lua
 
 \li <b>../examples/documented/lua_modular/classifier_libsvm_minimal_modular.lua</b>
 \verbinclude classifier_libsvm_minimal_modular.lua
+
+\section lua_modular_converter_examples Converter
+
+
+\li <b>../examples/documented/lua_modular/converter_isomap_modular.lua</b>
+\verbinclude converter_isomap_modular.lua
 
 \section lua_modular_distance_examples Distance
 
@@ -66,12 +72,6 @@ lua name_of_example.lua
 
 \li <b>../examples/documented/lua_modular/kernel_weighted_degree_string_modular.lua</b>
 \verbinclude kernel_weighted_degree_string_modular.lua
-
-\section lua_modular_preprocessor_examples Preprocessor
-
-
-\li <b>../examples/documented/lua_modular/preprocessor_isomap_modular.lua</b>
-\verbinclude preprocessor_isomap_modular.lua
 
 \section lua_modular_regression_examples Regression
 

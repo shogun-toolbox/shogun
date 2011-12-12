@@ -4,6 +4,7 @@ This page lists ready to run shogun examples for the Java Modular interface.
 
 \li \subpage java_modular_classifier_examples 
 \li \subpage java_modular_clustering_examples 
+\li \subpage java_modular_converter_examples 
 \li \subpage java_modular_distance_examples 
 \li \subpage java_modular_distribution_examples 
 \li \subpage java_modular_evaluation_examples 
@@ -83,6 +84,18 @@ java -jar path/to/modshogun.jar name_of_example
 
 \li <b>../examples/documented/java_modular/clustering_kmeans_modular.java</b>
 \verbinclude clustering_kmeans_modular.java
+
+\section java_modular_converter_examples Converter
+
+
+\li <b>../examples/documented/java_modular/converter_isomap_modular.java</b>
+\verbinclude converter_isomap_modular.java
+
+\li <b>../examples/documented/java_modular/converter_locallylinearembedding_modular.py</b>
+\verbinclude converter_locallylinearembedding_modular.py
+
+\li <b>../examples/documented/java_modular/converter_multidimensionalscaling_modular.java</b>
+\verbinclude converter_multidimensionalscaling_modular.java
 
 \section java_modular_distance_examples Distance
 
@@ -360,20 +373,11 @@ java -jar path/to/modshogun.jar name_of_example
 \section java_modular_preprocessor_examples Preprocessor
 
 
-\li <b>../examples/documented/java_modular/preprocessor_isomap_modular.java</b>
-\verbinclude preprocessor_isomap_modular.java
-
 \li <b>../examples/documented/java_modular/preprocessor_kernelpca_modular.java</b>
 \verbinclude preprocessor_kernelpca_modular.java
 
-\li <b>../examples/documented/java_modular/preprocessor_locallylinearembedding_modular.java</b>
-\verbinclude preprocessor_locallylinearembedding_modular.java
-
 \li <b>../examples/documented/java_modular/preprocessor_logplusone_modular.java</b>
 \verbinclude preprocessor_logplusone_modular.java
-
-\li <b>../examples/documented/java_modular/preprocessor_multidimensionalscaling_modular.java</b>
-\verbinclude preprocessor_multidimensionalscaling_modular.java
 
 \li <b>../examples/documented/java_modular/preprocessor_normone_modular.java</b>
 \verbinclude preprocessor_normone_modular.java
