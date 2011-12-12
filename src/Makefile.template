@@ -86,7 +86,7 @@ POSTLINKFLAGS += $(POSTLINKFLAGS_TEMPLATE)
 PRELINKFLAGS += $(PRELINKFLAGS_TEMPLATE)
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
-GITHEAD = ../../.git/HEAD
+GITHEAD = $(shell ls ../../.git/HEAD 2>/dev/null)
 HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
 CPPTMPFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_CPP_TMP)")
