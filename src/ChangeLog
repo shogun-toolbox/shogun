@@ -1,257 +1,3519 @@
-* commit d4ef7b537a28c11eb48ff56636d1d421c98ff47b
-| Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Thu Sep 1 00:58:12 2011 +0200
-| 
-|     updated changelog
-| 
-| M	src/ChangeLog
-|  
-* commit 13d738f9453e301676c1ad5a82b0747ae288a0db
+* commit 55984f5a1b3d2438cd8b9c4f5b1d070a9d974461
 | Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Thu Sep 1 02:14:04 2011 +0400
+| Date:   Mon Dec 12 01:01:59 2011 +0400
+| 
+|     Updated news
+| 
+| M	src/NEWS
+|  
+* commit 519e8415da7f6034c2e21af87a572335155f0e35
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Dec 10 23:17:57 2011 +0100
+| 
+|     use <atlas/clapack.h> as the include path instead of requiring
+|     /usr/include/atlas in includepath
+| 
+| M	src/configure
+| M	src/shogun/classifier/svm/pr_loqo.cpp
+| M	src/shogun/mathematics/lapack.h
+|  
+* commit dd5392763e81cdb6d238f90173f0d57d71af60a1
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Dec 10 22:42:36 2011 +0100
+| 
+|     add /usr/include/atlas to include paths
+| 
+| M	src/configure
+|    
+*   commit a9ed516b49f835b053bd92142e150bf58858ddea
+|\  Merge: e283bf5 f5e0c43
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Fri Dec 9 12:35:36 2011 -0800
+| | 
+| |     Merge pull request #331 from romovpa/master
+| |     
+| |     Configure fixed to build matlab_static on Darwin, x86_64
+| |   
+| * commit f5e0c43b665140872681ac7803c1dc9403d8cbd6
+| | Author: Peter Romov <peter@romov.ru>
+| | Date:   Fri Dec 9 15:54:48 2011 +0400
+| | 
+| |     fix configure for Darwin-x86_64, matlab_static
+| | 
+| | M	src/configure
+| |   
+* | commit e283bf5cb2a448641b9599197415ac45e8b027d8
+|/  Author: Soeren Sonnenburg <sonne@debian.org>
+|   Date:   Fri Dec 9 21:16:25 2011 +0100
+|   
+|       fix compilation for lua modular on cygwin
+|       
+|       remove double '/' on make install; compile and install with
+|       make install DESTDIR=
+|       when you are on cygwin to fix issue with special //name/
+|   
+|   M	src/Makefile.template
+|   M	src/configure
+|  
+* commit f77788a8f61b530085c1f63ef8b2c520d0a2fcd1
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Dec 8 17:00:08 2011 +0400
+| 
+|     Updated words embedding application
+| 
+| M	applications/dimreduction/words_embedding.py
+|  
+* commit 52f7c5aacd57d7b56ac21af76275cf9c0d3ade2d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Dec 8 16:42:47 2011 +0400
+| 
+|     Update data
+| 
+| M	data
+|  
+* commit 2c4ee342258a146822b2a19e33b137a210992310
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Dec 7 19:56:26 2011 +0100
+| 
+|     fix other places to work with SGVector
+| 
+| M	src/shogun/classifier/mkl/MKL.cpp
+| M	src/shogun/classifier/mkl/MKLMultiClass.cpp
+| M	src/shogun/classifier/svm/SVMLight.cpp
+| M	src/shogun/distributions/HMM.cpp
+| M	src/shogun/kernel/CombinedKernel.cpp
+| M	src/shogun/kernel/Kernel.cpp
+| M	src/shogun/kernel/Kernel.h
+| M	src/shogun/regression/svr/SVRLight.cpp
+| M	src/shogun/ui/SGInterface.cpp
+|  
+* commit 1a2c5b0bcecbf5866673424bed5e0d3abfbaecca
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Dec 7 19:56:13 2011 +0100
+| 
+|     adjust example to SGVector style
+| 
+| M	examples/undocumented/libshogun/classifier_mklmulticlass.cpp
+|  
+* commit 2b03faf05931b4fdb31319ab6f7523f7109794e2
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Dec 7 17:40:31 2011 +0100
+| 
+|     disable hmm parallel learning/structures and thus parallel hmm
+|     training/application at all.
+|     
+|     this is a temporary workaround to not see crashes and wrong results when
+|     learning
+| 
+| M	src/configure
+|  
+* commit 50fb40544a7a6436dd99c832914b43fe5e570269
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Dec 7 10:07:21 2011 +0100
+| 
+|     add get/set functions for combined kernel weights (forgotten sgvector transition)
+| 
+| M	src/shogun/kernel/CombinedKernel.cpp
+| M	src/shogun/kernel/CombinedKernel.h
+|  
+* commit 8108a74d975fb414c49cc064ee2d881d949ad1a5
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Dec 6 01:41:02 2011 +0400
+| 
+|     Added testing info for MDS into python example
+| 
+| M	examples/undocumented/python_modular/converter_multidimensionalscaling_modular.py
+|  
+* commit 51970aa0e4e96847b3455be6b80528b0c6610217
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Dec 6 01:19:50 2011 +0400
+| 
+|     Changed tolerance to max
+| 
+| M	testsuite/python_modular/tester.py
+|  
+* commit 21324b9536cbd0f81909f4d820f6f6ea4d7d043d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Dec 6 01:12:52 2011 +0400
+| 
+|     Faces application to dimreduction, added word embedding example
+| 
+| A	applications/dimreduction/faces_embedding.py
+| A	applications/dimreduction/words_embedding.py
+| D	applications/faces/faces_embedding.py
+|  
+* commit 380f6e2c04e3f05fac6d50645e545704059f8a88
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Dec 6 01:05:58 2011 +0400
+| 
+|     Added tolerance option for tester
+| 
+| M	testsuite/python_modular/tester.py
+|  
+* commit 0a365228e17850e81a4b78ddba4da83ca3976021
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Dec 5 20:28:17 2011 +0100
+| 
+|     require new data for regression tests
+| 
+| M	data
+|  
+* commit 77c55d7ca75d36c2e93daed647ba9b6f33e11f7b
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Dec 5 20:17:45 2011 +0100
+| 
+|     fix library and evaluation test
+| 
+| M	examples/undocumented/python_modular/evaluation_thresholds_modular.py
+| M	examples/undocumented/python_modular/library_time.py
+|  
+* commit d320074a44e531c726fe20b090c8d8816f8852c0
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Dec 5 01:03:09 2011 +0400
+| 
+|     Added embed kernel for the kernel LLE
+| 
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.h
+| M	src/shogun/converter/LocallyLinearEmbedding.cpp
+| M	src/shogun/converter/LocallyLinearEmbedding.h
+|  
+* commit 071884488432135323bf1f6f43f02793afbcfde2
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Dec 4 02:28:21 2011 +0400
+| 
+|     Reconstruction error setting support for the KLLE
+| 
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.cpp
+|    
+*   commit 32a69bd9c3331a03b2f45dd66500579b01a8e851
+|\  Merge: 2fedc4d a0193ba
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Dec 4 02:27:36 2011 +0400
+| | 
+| |     Merge branch 'master' of github.com:shogun-toolbox/shogun
+| |   
+| * commit a0193ba68e1e2370101f42ecde9441694ac4c0da
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Fri Dec 2 23:52:45 2011 +0100
+| | 
+| |     ignore further unuseable functions
+| | 
+| | M	src/interfaces/modular/modshogun_ignores.i
+| |   
+* | commit 2fedc4d805306343a4c6b8ac068d0923993af6f4
+|/  Author: Sergey Lisitsyn <blackburn91@gmail.com>
+|   Date:   Sun Dec 4 02:27:04 2011 +0400
+|   
+|       Added sgmatrix constructor for the CustomDistance
+|   
+|   M	src/shogun/distance/CustomDistance.cpp
+|   M	src/shogun/distance/CustomDistance.h
+|  
+* commit b2b1573ca9bce737c2d1aeb2c050d90eeed942c0
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Dec 3 00:01:06 2011 +0400
+| 
+|     Restored normalization at Difmaps
+| 
+| M	src/shogun/converter/DiffusionMaps.cpp
+|  
+* commit 825dc668e41399e1d98afccdbb5ea4d3be5744d9
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Dec 2 23:26:45 2011 +0400
+| 
+|     Added KLTSA swissroll example
+| 
+| A	examples/undocumented/python_modular/graphical/kltsa_swissroll.py
+|  
+* commit cf14be08371ae4cee6dd20654e6605cf8c133443
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Dec 2 10:37:36 2011 +0100
+| 
+|     fix documenation path in README
+| 
+| M	README
+|  
+* commit c1ee76315427bb9ca8a6670aed8e91c6e6bb0860
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Dec 2 08:34:24 2011 +0100
+| 
+|     add ignores for sparsefeatures
+| 
+| M	src/interfaces/modular/modshogun_ignores.i
+|  
+* commit b56cadaaea2189e682574a0a27edbc3efcd66cc6
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Dec 2 06:01:11 2011 +0100
+| 
+|     add ignores from simple features
+| 
+| M	src/interfaces/modular/modshogun_ignores.i
+|  
+* commit 5001443d6c32ecbb9243398438e3c3d21ca16cd7
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Dec 2 00:14:14 2011 +0100
+| 
+|     add a few ignores
+| 
+| M	src/interfaces/modular/modshogun_ignores.i
+|  
+* commit 7dedaea7497985ef2f33bbbc4e4079f156d28026
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Dec 1 23:38:05 2011 +0100
+| 
+|     document undocumented function
+| 
+| M	src/shogun/kernel/MultitaskKernelNormalizer.h
+|  
+* commit a6835e352296fc68eeb4a42c4c662cdbe18b454b
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Dec 1 23:37:32 2011 +0100
+| 
+|     just call compute_rec1 in compute()
+| 
+| M	src/shogun/kernel/ANOVAKernel.cpp
+|  
+* commit 085aa8eb591a49c6e0bfc8803cab029d8f8ff3c0
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Dec 1 08:16:41 2011 +0100
+| 
+|     move private variables to the bottom of the .h file
+| 
+| M	src/shogun/lib/DynamicObjectArray.h
+|  
+* commit 873bb8ee9a5d8e1ad6324cf6de0c782cad153db3
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Dec 1 08:15:30 2011 +0100
+| 
+|     prefix ignores with shogun:: namespace where required
+| 
+| M	src/interfaces/modular/modshogun_ignores.i
+|  
+* commit 23d1853bbec42ba2c9ed4779f3c7eff76a3a7626
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 30 20:48:51 2011 +0100
+| 
+|     fix syntax error in ignores
+| 
+| M	src/interfaces/modular/modshogun_ignores.i
+|  
+* commit 44581da3e3f4c4c6d03e9ca60442ddf527e91e12
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 30 20:24:57 2011 +0100
+| 
+|     ignore a number of irrelevant functions
+| 
+| M	src/interfaces/modular/modshogun_ignores.i
+|  
+* commit d47946c6921e220ba8a13faabbbdf07706dc74cd
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 30 20:24:36 2011 +0100
+| 
+|     define sparse feature vector template
+| 
+| M	src/interfaces/modular/Library.i
+|  
+* commit 053b23290acebac9efcefe7a2cd0d4871c013d7d
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 30 20:24:02 2011 +0100
+| 
+|     add get_sparse_feature_vector support in python typemaps
+| 
+| M	src/interfaces/python_modular/swig_typemaps.i
+|  
+* commit 176009037331eb48349edcbec33ebb564662d7c3
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 30 20:23:43 2011 +0100
+| 
+|     coding style fixes
+| 
+| M	src/shogun/kernel/MultitaskKernelTreeNormalizer.h
+|  
+* commit 646ff20e8064b6b4b03110e4edce4ff9d52fdb1e
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 30 14:04:35 2011 +0100
+| 
+|     add example for thresholds
+| 
+| A	examples/undocumented/python_modular/evaluation_thresholds_modular.py
+|  
+* commit afa485244fc7a1026707c1853b04ea161a8d837c
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 30 13:52:41 2011 +0100
+| 
+|     add option to get corresponding bias-thresholds together with PRC / ROC curve
+| 
+| M	src/shogun/evaluation/PRCEvaluation.cpp
+| M	src/shogun/evaluation/PRCEvaluation.h
+| M	src/shogun/evaluation/ROCEvaluation.cpp
+| M	src/shogun/evaluation/ROCEvaluation.h
+|  
+* commit 4bce5acff40b9703b62a0b19d655f8ac4824fabe
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Nov 29 23:14:40 2011 +0100
+| 
+|     Overhaul python typemaps
+|     
+|     - check that we don't have a list as input
+|     - refactor code to call static functions to only have minimal
+|     functionality inside the actuall typemap
+|     - re-enable boolean type by default to fix crasher
+| 
+| M	src/configure
+| M	src/interfaces/octave_modular/swig_typemaps.i
+| M	src/interfaces/python_modular/swig_typemaps.i
+|  
+* commit 6aebf7d174926da52d35a541f7471dc98bfe90c7
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Nov 29 16:06:49 2011 +0400
+| 
+|     Warn that LTSA is slower than KLTSA with linear
+| 
+| M	src/shogun/converter/LocalTangentSpaceAlignment.h
+|  
+* commit a4085ce45ef1883df373693b7a2ffb4bed840c04
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Nov 27 02:07:02 2011 +0400
+| 
+|     Updated naming, fixed makefile
+| 
+| M	examples/undocumented/libshogun/Makefile
+| D	examples/undocumented/libshogun/preproc_randomfouriergauss.cpp
+| A	examples/undocumented/libshogun/preprocessor_randomfouriergauss.cpp
+|  
+* commit 769a0647d4a2dde9348a45d714b0a6be9fa60b0c
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Nov 27 01:56:02 2011 +0400
+| 
+|     Removed mkl memleak test that is hardly requiring GLPK
+| 
+| D	examples/undocumented/libshogun/mkl_memleak_test.cpp
+|  
+* commit 3d7aff8a47aeab9ec5b7e3cb93e58eb0554a1dac
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Nov 27 01:52:52 2011 +0400
+| 
+|     Fix descriptions naming for preprocessors moved to converters before
+| 
+| A	examples/descriptions/modular/converter_hessianlocallylinearembedding.txt
+| A	examples/descriptions/modular/converter_isomap.txt
+| A	examples/descriptions/modular/converter_kernellocallylinearembedding.txt
+| A	examples/descriptions/modular/converter_laplacianeigenmaps.txt
+| A	examples/descriptions/modular/converter_locallylinearembedding.txt
+| A	examples/descriptions/modular/converter_localtangentspacealignment.txt
+| A	examples/descriptions/modular/converter_multidimensionalscaling.txt
+| D	examples/descriptions/modular/preprocessor_hessianlocallylinearembedding.txt
+| D	examples/descriptions/modular/preprocessor_isomap.txt
+| D	examples/descriptions/modular/preprocessor_kernellocallylinearembedding.txt
+| D	examples/descriptions/modular/preprocessor_laplacianeigenmaps.txt
+| D	examples/descriptions/modular/preprocessor_locallylinearembedding.txt
+| D	examples/descriptions/modular/preprocessor_localtangentspacealignment.txt
+| D	examples/descriptions/modular/preprocessor_multidimensionalscaling.txt
+|  
+* commit bd6dcdeb050a3b9452431df490bc7038079414ed
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 23 20:05:46 2011 +0100
+| 
+|     get ruby back to work
+|     
+|     - add configure option --ruby to be able to specify the ruby version to be used
+|     - use rb_cObject instead of ruby_class to fix undefined symbol error
+|     - beautify example
+| 
+| M	examples/undocumented/ruby_modular/check.sh
+| M	examples/undocumented/ruby_modular/classifier_custom_kernel_modular.rb
+| M	src/Makefile.template
+| M	src/configure
+| M	src/interfaces/modular/SGBase.i
+|  
+* commit ecdb955c891e8869f2a77a4aea44c84dd6f034f5
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 23 08:52:54 2011 +0100
+| 
+|     rb_require narray on modshogun module load
+| 
+| M	src/Makefile.template
+| M	src/interfaces/modular/SGBase.i
+| M	src/interfaces/ruby_modular/swig_typemaps.i
+|  
+* commit fd6b20d186cd3312265e242b7666f236c170b3c9
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Nov 22 22:45:04 2011 +0100
+| 
+|     don't link against narray.so but instead dlopen narray
+| 
+| M	src/Makefile.template
+| M	src/configure
+| M	src/interfaces/modular/SGBase.i
+| M	src/interfaces/ruby_modular/swig_typemaps.i
+|  
+* commit 21f5ad2509b6d7f46b94b4696f5637749af908da
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Nov 22 20:24:45 2011 +0100
+| 
+|     use glpk and 1 norm on this example
+| 
+| M	examples/undocumented/libshogun/mkl_memleak_test.cpp
+|  
+* commit 2d4c51cd4d9878a2a3926bea300d02f79c895f46
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Nov 22 07:57:22 2011 +0100
+| 
+|     fix mkl example
+| 
+| M	examples/undocumented/libshogun/mkl_memleak_test.cpp
+|  
+* commit 1f4a30c99f66f7cc2f470442fc6ba4272add269f
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Nov 22 07:55:42 2011 +0100
+| 
+|     Detect gem installed narray upon configure
+| 
+| M	src/Makefile.template
+| M	src/configure
+|  
+* commit 5e4eb1aff0731775deee712d4deef8fae5ad9101
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Nov 22 00:34:52 2011 +0400
+| 
+|     Removed kpca test from makefile
+| 
+| M	examples/undocumented/libshogun/Makefile
+|  
+* commit a41c477527675670c1d158b8eed6e6bce5f93ed1
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Nov 19 20:37:44 2011 +0400
+| 
+|     Added MKL memleak test
+| 
+| M	examples/undocumented/libshogun/Makefile
+| A	examples/undocumented/libshogun/mkl_memleak_test.cpp
+|  
+* commit 616090cb1a850c8a8b8290aeac6f9ad092a08774
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Nov 15 19:48:55 2011 +0100
+| 
+|     fix lib/versionstring.h creation on cygwin
+| 
+| M	src/Makefile.template
+|  
+* commit 8671be82fad2316fbae1bc4726669e2e63b7cb1e
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Nov 15 19:48:46 2011 +0100
+| 
+|     white space beautifications
+| 
+| M	src/configure
+|  
+* commit 56afbe6838285b366059cc6b0e3de9952bef5af3
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Nov 14 20:27:03 2011 +0100
+| 
+|     enable set_shifts in wds examples
+| 
+| M	examples/undocumented/java_modular/kernel_weighted_degree_position_string_modular.java
+| M	examples/undocumented/python_modular/kernel_weighted_degree_position_string_modular.py
+|  
+* commit 6c757524bcd2171cb3457c42ceb468eefa6a99b3
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Nov 14 20:25:40 2011 +0100
+| 
+|     use strcmp for string comparison in ruby typemaps
+| 
+| M	src/interfaces/ruby_modular/swig_typemaps.i
+|  
+* commit 0ef36802332f701d82d3476868dc889917673935
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Nov 14 09:01:30 2011 +0100
+| 
+|     use free_matrix instead of destroy_matrix and adjust swig in typemaps
+| 
+| M	src/interfaces/csharp_modular/swig_typemaps.i
+| M	src/interfaces/java_modular/swig_typemaps.i
+| M	src/interfaces/lua_modular/swig_typemaps.i
+| M	src/interfaces/octave_modular/swig_typemaps.i
+| M	src/interfaces/python_modular/swig_typemaps.i
+| M	src/interfaces/ruby_modular/swig_typemaps.i
+| M	src/shogun/kernel/CustomKernel.h
+|  
+* commit 54fc1333bb5b6598ab862a90837a9c95b58a36f9
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Nov 14 00:55:26 2011 +0400
+| 
+|     Update NEWS
+| 
+| M	src/NEWS
+|  
+* commit 4b4d8c57deffbf6b9683d39e7ffb0c8dc796ff53
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Nov 12 01:39:53 2011 +0400
+| 
+|     Fixes memory leak on custom kernel creation
+| 
+| M	src/shogun/kernel/CustomKernel.h
+|  
+* commit 2478ae7b8233cb4ef7c186260bd0f3c1fadffdcc
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Nov 12 00:53:40 2011 +0400
+| 
+|     Fixed kernel get kernel matrix routine
+| 
+| M	src/shogun/kernel/Kernel.h
+|  
+* commit 2f2a895715ec5b20079323f282d7730e011d5242
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Nov 11 20:57:50 2011 +0100
+| 
+|     Fix compilation under cygwin and for octave 3.4.x
+| 
+| M	src/configure
+| M	src/interfaces/octave_static/OctaveInterface.cpp
+|  
+* commit 64569cdd8e2e11fe4731c9ef09253205259dc6e9
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Nov 10 22:13:02 2011 +0100
+| 
+|     fix example failures under osx / vector lib detection
+| 
+| M	src/configure
+|  
+* commit 3a03eb03ee2b8e82ab773605cb1d40876d398bc9
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Nov 8 01:02:31 2011 +0400
+| 
+|     Fix kernel handling in kernel pca
+| 
+| M	src/shogun/preprocessor/KernelPCA.cpp
+|  
+* commit ac2ec88746afe12d5f5378409c707b478fd9750b
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Nov 8 00:27:44 2011 +0400
+| 
+|     Few doc warnings removed
+| 
+| M	src/shogun/kernel/CombinedKernel.h
+| M	src/shogun/kernel/MultitaskKernelMaskNormalizer.h
+| M	src/shogun/kernel/MultitaskKernelMaskPairNormalizer.h
+| M	src/shogun/kernel/MultitaskKernelPlifNormalizer.h
+| M	src/shogun/kernel/MultitaskKernelTreeNormalizer.h
+|  
+* commit 1c046cc3dd78999e7f6bccd611cb91da3914bbdf
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Nov 7 20:00:56 2011 +0100
+| 
+|     fix dotfeatures bug, intended check is 0<=num<=get_num_vectors()
+| 
+| M	src/shogun/features/DotFeatures.cpp
+|  
+* commit 8b95bcfec0018318f7415469942b8df3de23b91d
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Nov 7 14:52:38 2011 +0100
+| 
+|     include alphabet before features to fix swig errors
+| 
+| M	src/interfaces/modular/Features.i
+|  
+* commit a0de0d63e63ed0e909017b491a5c61dab9709394
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Nov 7 14:38:43 2011 +0100
+| 
+|     no longer link examples with -lblas or the like
+|     
+|     Instead hide glpk / blas /lapack etc library calls in .cpp files (instead of having them
+|     visible in the respective .h file)
+| 
+| M	examples/undocumented/libshogun/Makefile
+| M	src/shogun/classifier/mkl/MKLMultiClassGLPK.cpp
+| M	src/shogun/classifier/mkl/MKLMultiClassGLPK.h
+|  
+* commit ef9224f4bd9cb8168c5775e13a1671076cc468a1
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Nov 6 21:38:06 2011 +0100
+| 
+|     export only sg / shogun and fix r example
+| 
+| M	examples/undocumented/r_static/mkl_regression_3sine_waves.R
+| M	src/.r-install.sh
+|  
+* commit 5d580e05e3e1f0595718f701c7aed626bd76d376
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Nov 7 00:29:06 2011 +0400
+| 
+|     Optimized LLEs using reformulation with alignment
+| 
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.h
+| M	src/shogun/converter/LocallyLinearEmbedding.cpp
+| M	src/shogun/converter/LocallyLinearEmbedding.h
+|  
+* commit a7bec529cfd4d794bdf6c4a48aedb0587f8e3914
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Nov 6 21:25:03 2011 +0100
+| 
+|     add forgotten newline in r install
+| 
+| M	src/.r-install.sh
+|  
+* commit 9b3d028947bfaf13a723b9a0464b4ba8d01491f7
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Nov 6 21:05:36 2011 +0100
+| 
+|     add a NAMESPACE file for R
+| 
+| M	src/.r-install.sh
+|  
+* commit aaaaab276f35e733bc082a5b46f2657883e0d684
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Nov 6 20:48:46 2011 +0100
+| 
+|     depend on R 2.10.0 in r installation - and don't use 2.10.0 but 2.10 in
+|     Rdepends2 to hopefully fix an issue with R 2.14.0's library() function.
+| 
+| M	src/.r-install.sh
+|  
+* commit 7708783c0af980b237f9af832b2ae704c0fd93ed
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Nov 6 17:12:56 2011 +0400
+| 
+|     Added warning to not use parallel LTSA with old LAPACK
+| 
+| M	src/shogun/converter/KernelLocalTangentSpaceAlignment.h
+| M	src/shogun/converter/LocalTangentSpaceAlignment.h
+|  
+* commit 54afa01d38d3f72adfe7e5faa59bee84fe5f0465
+| Author: Heiko Strathmann <heiko.strathmann@gmail.com>
+| Date:   Sat Nov 5 22:01:38 2011 +0000
+| 
+|     temporary added include to compile again
+|     (string include was recently removed out of Kernel.h)
+| 
+| M	src/shogun/kernel/MultitaskKernelMaskPairNormalizer.h
+|  
+* commit 857311c912456537894daed16c758556c699797c
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Nov 5 19:58:51 2011 +0100
+| 
+|     introduce MeanAbsoluteError
+| 
+| M	src/interfaces/modular/Evaluation.i
+| M	src/interfaces/modular/Evaluation_includes.i
+| A	src/shogun/evaluation/MeanAbsoluteError.cpp
+| A	src/shogun/evaluation/MeanAbsoluteError.h
+|  
+* commit 59c976aaa35ebcbc7ea046cc040e10516e11c11a
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Nov 5 19:43:51 2011 +0400
+| 
+|     Added LPP python modular example
+| 
+| A	examples/undocumented/python_modular/converter_localitypreservingprojections_modular.py
+|  
+* commit 52802826574a1c445acdbd30b391ca999c8066ac
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Nov 5 19:42:15 2011 +0400
+| 
+|     Optimized KLTSA
+| 
+| M	src/shogun/converter/KernelLocalTangentSpaceAlignment.cpp
+|  
+* commit dafece048c28b8784988b3a475c084c733973760
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Nov 5 19:41:46 2011 +0400
+| 
+|     Optimized LTSA
+| 
+| M	src/shogun/converter/LocalTangentSpaceAlignment.cpp
+|  
+* commit 4b6f385d38b5746bdb003946f27f9473529483c0
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Nov 5 19:39:40 2011 +0400
+| 
+|     Removed float lapack wrappers
+| 
+| M	examples/undocumented/libshogun/mathematics_lapack.cpp
+| M	src/shogun/mathematics/lapack.cpp
+| M	src/shogun/mathematics/lapack.h
+|  
+* commit 38b34fd0858e51d05a1de25bea9254f8281c7b88
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Nov 4 23:06:56 2011 +0400
+| 
+|     fixed arpack libshogun test
+| 
+| M	examples/undocumented/libshogun/mathematics_arpack.cpp
+|  
+* commit 66fe740cd342b2d25a866799ef6de0fb79ac7e53
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Nov 4 19:46:37 2011 +0100
+| 
+|     fix configure for octave
+| 
+| M	src/configure
+|  
+* commit 06d09de8dfebab945d6969f777bc06d23833b0c6
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Nov 2 20:52:13 2011 +0100
+| 
+|     beautify configure and hopefully fix a number of race conditions
+| 
+| M	src/configure
+|  
+* commit 20d50631af929406a2323bc4c7927ca4ff04f8db
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Nov 2 01:36:19 2011 +0400
+| 
+|     Introduced LPP (Locality Preserving Projections) converter
+| 
+| M	examples/undocumented/libshogun/Makefile
+| A	examples/undocumented/libshogun/converter_localitypreservingprojections.cpp
+| M	src/interfaces/modular/Converter.i
+| M	src/interfaces/modular/Converter_includes.i
+| M	src/shogun/converter/LaplacianEigenmaps.cpp
+| M	src/shogun/converter/LaplacianEigenmaps.h
+| A	src/shogun/converter/LocalityPreservingProjections.cpp
+| A	src/shogun/converter/LocalityPreservingProjections.h
+|  
+* commit 456d8c8fef8dd304e6527a734a1fe4d00d9ef7a9
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Nov 2 00:07:20 2011 +0400
+| 
+|     Extracted embedding construction algorithms into subroutine
+| 
+| M	src/shogun/converter/LaplacianEigenmaps.cpp
+| M	src/shogun/converter/LaplacianEigenmaps.h
+|  
+* commit 13b6c8d095aac08c881d46186b2ec0d2e85ab09b
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Nov 1 23:26:51 2011 +0400
+| 
+|     Updated NEWS
+| 
+| M	src/NEWS
+|  
+* commit 09429bf868419ea90a178c4f0770de9ecca3853c
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Nov 1 20:52:31 2011 +0400
+| 
+|     Mention disadvantage of auto k for locally linear embedding
+| 
+| M	src/shogun/converter/LocallyLinearEmbedding.h
+|  
+* commit 5ced67a815b79a88d9e5a096b482309377b6f4cf
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 30 00:52:46 2011 +0400
+| 
+|     Fixed spacings at SGObject
+| 
+| M	src/shogun/base/SGObject.cpp
+| M	src/shogun/base/SGObject.h
+|  
+* commit e9c8ecd48b75581ca8648f38016ab82d3cff79a1
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Oct 29 00:30:16 2011 +0200
+| 
+|     fix an error in the lua typemaps (checking for the typecode without using strcmp)
+| 
+| M	src/interfaces/lua_modular/swig_typemaps.i
+|  
+* commit 082decd826617176ed4c7f15589976944ec2cb6f
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Oct 28 23:50:51 2011 +0200
+| 
+|     fix various compiler warnings and errors occurring with clang++
+| 
+| M	src/shogun/base/class_list.cpp.py
+| M	src/shogun/base/class_list.cpp.templ
+| M	src/shogun/classifier/mkl/MKL.cpp
+| M	src/shogun/classifier/vw/VwRegressor.cpp
+| M	src/shogun/classifier/vw/cache/VwNativeCacheReader.cpp
+| M	src/shogun/distance/Distance.h
+| M	src/shogun/features/Alphabet.cpp
+| M	src/shogun/features/DotFeatures.cpp
+| M	src/shogun/features/Features.h
+| M	src/shogun/features/HashedWDFeaturesTransposed.cpp
+| M	src/shogun/features/SimpleFeatures.h
+| M	src/shogun/features/StringFeatures.h
+| M	src/shogun/io/File.h
+| M	src/shogun/io/HDF5File.h
+| M	src/shogun/io/MemoryMappedFile.h
+| M	src/shogun/kernel/Kernel.h
+| M	src/shogun/kernel/SpectrumRBFKernel.cpp
+| M	src/shogun/lib/DataType.h
+| M	src/shogun/lib/memory.cpp
+| M	src/shogun/lib/memory.h
+| M	src/shogun/preprocessor/DecompressString.h
+| M	src/shogun/preprocessor/Preprocessor.h
+|  
+* commit f167cccd2141e240aaa0a3cbbf1a271427959b86
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Oct 28 23:49:52 2011 +0200
+| 
+|     fix java modular typemap to not use  foo x[y] but foo* x= ...
+| 
+| M	src/interfaces/java_modular/swig_typemaps.i
+|  
+* commit b11825e3041208de9bb1b9011ffc9ee8bbbd2541
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Oct 28 23:49:18 2011 +0200
+| 
+|     by convention name SimpleRealPreprocessor just RealPreprocessor etc
+| 
+| M	src/interfaces/modular/Preprocessor.i
+|  
+* commit c69feace127f5f74aca978fb87c4341eca6d1729
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 29 01:01:30 2011 +0400
+| 
+|     Matched KLLE and LLE neighborhood methods
+| 
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.h
+|  
+* commit 0d22945c226a23f51efb76cfbae423010002e855
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 29 00:47:35 2011 +0400
+| 
+|     Fixed wrong embed method of Laplacian Eigenmaps
+| 
+| M	src/shogun/converter/LaplacianEigenmaps.cpp
+| M	src/shogun/converter/LaplacianEigenmaps.h
+|  
+* commit 0a18485a0315ada5d9f3369eb5d064cd159e7f50
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 29 00:38:08 2011 +0400
+| 
+|     Fixed multidimensional scaling apply method naming
+| 
+| M	src/shogun/converter/MultidimensionalScaling.cpp
+| M	src/shogun/converter/MultidimensionalScaling.h
+|  
+* commit 2c3a9a33b3f38d54fd0907ecfbf4e0b2389a54fe
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 29 00:34:35 2011 +0400
+| 
+|     Improved java converter examples
+| 
+| M	examples/undocumented/java_modular/converter_isomap_modular.java
+| M	examples/undocumented/java_modular/converter_locallylinearembedding_modular.py
+| M	examples/undocumented/java_modular/converter_multidimensionalscaling_modular.java
+|  
+* commit 99adde9013a2b5fc12c9b181045220a23593c09a
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Oct 28 17:59:30 2011 +0200
+| 
+|     Improve configure
+|     
+|     - detect glpk, atlas on rpm based distributions in /usr/lib*/atlas
+|     - print a warning when jblas is not found that examples won't work
+| 
+| M	src/configure
+|  
+* commit 890ea7901b49a5e21ee04568946665c5798ee9ae
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Oct 27 20:38:00 2011 +0200
+| 
+|     move the %inline parts of the code doing dynamic casts back into the
+|     respective classes
+| 
+| M	src/interfaces/modular/Kernel.i
+| M	src/shogun/kernel/CombinedKernel.h
+| M	src/shogun/kernel/MultitaskKernelMaskNormalizer.h
+| M	src/shogun/kernel/MultitaskKernelMaskPairNormalizer.h
+| M	src/shogun/kernel/MultitaskKernelNormalizer.h
+| M	src/shogun/kernel/MultitaskKernelPlifNormalizer.h
+| M	src/shogun/kernel/MultitaskKernelTreeNormalizer.h
+|  
+* commit 4e28d277ba4d9a31f421e4d31208c648905f017d
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Oct 26 22:10:55 2011 +0200
+| 
+|     use static functions for helpers
+| 
+| M	src/interfaces/python_modular/swig_typemaps.i
+|  
+* commit 7e2eef2fac2f4e6e96343bd603ff02f85801a788
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Oct 26 23:51:42 2011 +0400
+| 
+|     Added kernel constructor for KLTSA
+| 
+| M	src/shogun/converter/KernelLocalTangentSpaceAlignment.cpp
+| M	src/shogun/converter/KernelLocalTangentSpaceAlignment.h
+|  
+* commit 28568767116be70d8249a231ea37783dd60bddb3
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 24 02:26:18 2011 +0400
+| 
+|     Improved faces dimreduction application
+| 
+| M	applications/faces/faces_embedding.py
+|  
+* commit 4bd8b18a6d8fdf76d3c02e62e10a864fe2d4ab73
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 24 02:03:55 2011 +0400
+| 
+|     Added embed kernel to DiffusionMaps
+| 
+| M	src/shogun/converter/DiffusionMaps.cpp
+| M	src/shogun/converter/DiffusionMaps.h
+|  
+* commit ae5401a1f8c84d5f1e412ba41544a789aad64b1f
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 24 02:03:31 2011 +0400
+| 
+|     Added embed to distance to LaplacianEigenmaps
+| 
+| M	src/shogun/converter/LaplacianEigenmaps.cpp
+| M	src/shogun/converter/LaplacianEigenmaps.h
+|  
+* commit 4e3ea174bc20c73032d3b2c7d59a2303c805791c
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 24 02:03:05 2011 +0400
+| 
+|     Changed apply to distance to embed to distance
+| 
+| M	src/shogun/converter/MultidimensionalScaling.cpp
+| M	src/shogun/converter/MultidimensionalScaling.h
+|  
+* commit 678d405faa7168589deaa09f5645960031173152
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 24 02:02:45 2011 +0400
+| 
+|     Made EmbeddingConverter embed method virtual
+| 
+| M	src/shogun/converter/EmbeddingConverter.h
+|  
+* commit 6eb1c3ae6ce26ed79f4f3ca3aaf69f7af2d5c60e
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 24 02:02:23 2011 +0400
+| 
+|     Fixed arpack wrapper doc
+| 
+| M	src/shogun/mathematics/arpack.h
+|  
+* commit 89c91c4382165995da5d67b43921cebccbce3d87
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Oct 23 01:48:42 2011 +0200
+| 
+|     fix compiler errors occurring with clang
+| 
+| M	src/shogun/io/InputParser.h
+| M	src/shogun/io/SimpleFile.h
+|  
+* commit bf0bf4886d0bdab057d0f972f20f943025bae42c
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 23 21:35:45 2011 +0400
+| 
+|     Added warning of LLTSA and NPE are hardly applicable to very high-dimensional data
+| 
+| M	src/shogun/converter/LinearLocalTangentSpaceAlignment.h
+| M	src/shogun/converter/NeighborhoodPreservingEmbedding.h
+|  
+* commit e7b34f1003c87dc04dc374082e54252e40fd9758
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 23 21:23:04 2011 +0400
+| 
+|     Removed normalization from DiffusionMaps
+| 
+| M	src/shogun/converter/DiffusionMaps.cpp
+|  
+* commit f236e25acd21da713fd110a3c18699566da7cc7b
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 23 21:20:07 2011 +0400
+| 
+|     Added faces dimreduction and clustering application
+| 
+| A	applications/faces/faces_embedding.py
+|  
+* commit 0358e2ed260c33da494a81dcba1a414c87fc96d9
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 23 19:56:05 2011 +0400
 | 
 |     Updated data
 | 
 | M	data
 |  
-* commit 3210c3f1ba04e3d295b6ffbad3c76f0023b29d45
+* commit 1ca6b6016ffd9a59d76f94e65e9f0639dbf9a10b
 | Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Thu Sep 1 02:12:00 2011 +0400
+| Date:   Sun Oct 23 19:27:54 2011 +0400
 | 
-|     Updated data
+|     Added references to LLTSA and NPE, updated NPE impl
 | 
-| M	data
+| M	src/shogun/converter/LinearLocalTangentSpaceAlignment.h
+| M	src/shogun/converter/NeighborhoodPreservingEmbedding.cpp
+| M	src/shogun/converter/NeighborhoodPreservingEmbedding.h
 |  
-* commit de6f67984c2e776f97df049f5f8f3dbc9e0168f2
+* commit e74284b2fac23748850cbea6204f3ffd50832e59
 | Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Thu Sep 1 02:03:20 2011 +0400
+| Date:   Sun Oct 23 18:59:56 2011 +0400
 | 
-|     Removed junk from clustering tester
+|     Improved arpack wrapper, introduced LLTSA
 | 
-| M	testsuite/python_modular/clustering.py
+| M	examples/undocumented/libshogun/Makefile
+| A	examples/undocumented/libshogun/converter_linearlocaltangentspacealignment.cpp
+| A	examples/undocumented/python_modular/converter_linearlocaltangentspacealignment_modular.py
+| M	src/interfaces/modular/Converter.i
+| M	src/interfaces/modular/Converter_includes.i
+| M	src/shogun/converter/LaplacianEigenmaps.cpp
+| A	src/shogun/converter/LinearLocalTangentSpaceAlignment.cpp
+| A	src/shogun/converter/LinearLocalTangentSpaceAlignment.h
+| M	src/shogun/converter/LocallyLinearEmbedding.cpp
+| M	src/shogun/converter/MultidimensionalScaling.cpp
+| M	src/shogun/mathematics/arpack.cpp
+| M	src/shogun/mathematics/arpack.h
+| D	src/shogun/mathematics/arpack_d.cpp
+| D	src/shogun/mathematics/arpack_d.h
+| D	src/shogun/mathematics/arpack_s.cpp
+| D	src/shogun/mathematics/arpack_s.h
 |  
-* commit 3d25031e1606f86d353de72e3c3b43b083af7ab2
-| Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Thu Sep 1 02:02:25 2011 +0400
-| 
-|     Fixes for LogPlusOne preprocessor
-| 
-| M	src/shogun/preprocessor/LogPlusOne.cpp
-|  
-* commit 99966f1ce50b6417ff2a65d6519a14f8ad62f9c9
+* commit 2b57730baac2f12076a987988b8c336c2c9b1ae9
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 23:58:29 2011 +0200
+| Date:   Fri Oct 21 05:38:42 2011 +0200
 | 
-|     improve release script again
+|     Fix various configure problems under macosx
 | 
-| M	Makefile
+| M	src/configure
 |  
-* commit 67b6b842a12d84a7e7494dc5a36af12292aa1669
-| Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Thu Sep 1 01:38:07 2011 +0400
-| 
-|     Updated data
-| 
-| M	data
-|  
-* commit f6512c764b6933bff9bd30a8109a26e72b256249
-| Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Thu Sep 1 01:37:52 2011 +0400
-| 
-|     Fixes for clustering tester
-| 
-| M	testsuite/python_modular/clustering.py
-|  
-* commit 4240e558dd8303e97984aa073721daee7ca59694
+* commit 1454167d62a90d7650c88b59f6fc1ec0204e70cf
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 23:23:38 2011 +0200
+| Date:   Fri Oct 21 00:54:21 2011 +0200
 | 
-|     improved release script for work with git
+|     attempt to fix compile warnings under osx
 | 
-| M	Makefile
+| M	src/shogun/classifier/svm/SVMLight.h
+| M	src/shogun/lib/common.h
 |  
-* commit ea275ed63d9b654b8a5c709a1ef01a0955d428a5
+* commit d4c45e838db4fe554f2c44f38b9da0c9aa52a6c9
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 22:32:00 2011 +0200
+| Date:   Fri Oct 21 00:53:03 2011 +0200
 | 
-|     update data
+|     compile interfaces in parallel again
 | 
-| M	data
+| M	src/Makefile
 |  
-* commit 7f13b81348bdee075f0f5b6c7685541790f1b71c
-| Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Thu Sep 1 00:07:57 2011 +0400
-| 
-|     Updated data
-| 
-| M	data
-|  
-* commit 16227f53436fec3868a4a52aa15207c6cdf7b7a3
-| Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Thu Sep 1 00:06:32 2011 +0400
-| 
-|     Fixed preprocessor testsuite
-| 
-| M	testsuite/python_modular/preprocessor.py
-|  
-* commit a8f57f03121e621b33c45cb08337f49a3e07fcf0
+* commit 25eb1e762126c6b3982a3073bfc663fa0162e784
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 21:27:24 2011 +0200
+| Date:   Thu Oct 20 04:16:39 2011 +0200
 | 
-|     exclude tests directory form old-tests
+|     Add many more c# examples - thanks Daniel Korn for the port
 | 
-| M	testsuite/octave_modular/test_all.sh
-| M	testsuite/python_static/test_all.sh
-| M	testsuite/r_modular/test_all.sh
-| M	testsuite/r_static/test_all.sh
+| A	examples/undocumented/csharp_modular/classifier_mpdsvm_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_perceptron_modular.cs
+| A	examples/undocumented/csharp_modular/clustering_hierarchical_modular.cs
+| A	examples/undocumented/csharp_modular/clustering_kmeans_modular.cs
+| M	examples/undocumented/csharp_modular/distance_braycurtis_modular.cs
+| A	examples/undocumented/csharp_modular/distance_hammingword_modular.cs
+| A	examples/undocumented/csharp_modular/distribution_histogram_modular.cs
+| A	examples/undocumented/csharp_modular/distribution_hmm_modular.cs
+| M	examples/undocumented/csharp_modular/features_snp_modular.cs
+| A	examples/undocumented/csharp_modular/features_string_sliding_window_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_auc_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_combined_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_comm_ulong_string_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_fixed_degree_string_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_local_alignment_string_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_locality_improved_string_modular.cs
+| M	examples/undocumented/csharp_modular/kernel_log_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_match_word_string_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_multiquadric_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_oligo_string_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_poly_match_string_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_poly_match_word_string_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_power_modular.cs
+| A	examples/undocumented/csharp_modular/kernel_weighted_comm_word_string_modular.cs
+| A	examples/undocumented/csharp_modular/mkl_binclass_modular.cs
+| A	examples/undocumented/csharp_modular/mkl_multiclass_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_kernelpca_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_logplusone_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_pca_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_sortulongstring_modular.cs
+| A	examples/undocumented/csharp_modular/preprocessor_sortwordstring_modular.cs
+| A	examples/undocumented/csharp_modular/regression_libsvr_modular.cs
+| A	examples/undocumented/csharp_modular/regression_svrlight_modular.cs
 |  
-* commit b5f27b9ea0e4338102c8e9264457dcbfb25b75fb
+* commit 99027e8aa0c8ca1cafeaa74776936f2c14918e5f
 | Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Wed Aug 31 21:53:29 2011 +0400
+| Date:   Tue Oct 18 13:21:09 2011 +0400
 | 
-|     Transitioned copy feature matrix routine to SGMatrix
+|     Introduced NeighborhoodPreservingEmbedding (NPE)
 | 
-| M	src/shogun/clustering/KMeans.cpp
+| M	examples/undocumented/libshogun/Makefile
+| A	examples/undocumented/libshogun/converter_neighborhoodpreservingembedding.cpp
+| M	src/interfaces/modular/Converter.i
+| M	src/interfaces/modular/Converter_includes.i
+| A	src/shogun/converter/NeighborhoodPreservingEmbedding.cpp
+| A	src/shogun/converter/NeighborhoodPreservingEmbedding.h
+|  
+* commit ea9ad9aa1ec80fc91760d4ae05ff36e620b1e807
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Oct 18 12:20:23 2011 +0400
+| 
+|     Added embed method to EmbeddingConverter, adapt structure
+| 
+| M	examples/undocumented/libshogun/converter_diffusionmaps.cpp
+| M	examples/undocumented/libshogun/converter_hessianlocallylinearembedding.cpp
+| M	examples/undocumented/libshogun/converter_isomap.cpp
+| M	examples/undocumented/libshogun/converter_kernellocallylinearembedding.cpp
+| M	examples/undocumented/libshogun/converter_kernellocaltangentspacealignment.cpp
+| M	examples/undocumented/libshogun/converter_laplacianeigenmaps.cpp
+| M	examples/undocumented/libshogun/converter_locallylinearembedding.cpp
+| M	examples/undocumented/libshogun/converter_localtangentspacealignment.cpp
+| M	examples/undocumented/libshogun/converter_multidimensionalscaling.cpp
+| M	examples/undocumented/python_modular/graphical/lle_auto_k.py
+| M	examples/undocumented/python_modular/graphical/swissroll.py
+| M	src/shogun/converter/DiffusionMaps.cpp
+| M	src/shogun/converter/DiffusionMaps.h
+| M	src/shogun/converter/EmbeddingConverter.cpp
+| M	src/shogun/converter/EmbeddingConverter.h
+| M	src/shogun/converter/Isomap.cpp
+| M	src/shogun/converter/Isomap.h
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/converter/KernelLocallyLinearEmbedding.h
+| M	src/shogun/converter/LaplacianEigenmaps.cpp
+| M	src/shogun/converter/LaplacianEigenmaps.h
+| M	src/shogun/converter/LocallyLinearEmbedding.cpp
+| M	src/shogun/converter/LocallyLinearEmbedding.h
+| M	src/shogun/converter/MultidimensionalScaling.cpp
+| M	src/shogun/converter/MultidimensionalScaling.h
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+|  
+* commit 115a78d3cce0f224155a4f577a6d5a1b2dfbeff5
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Oct 18 12:18:42 2011 +0400
+| 
+|     Added checking for enabled types to preprocessor modular interfaces
+| 
+| M	src/interfaces/modular/Preprocessor.i
+|  
+* commit db8a1a4c21ba1af481f6d75d13acf393532a198f
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Oct 18 09:24:30 2011 +0200
+| 
+|     add int32_t and int64_t to default data types
+| 
+| M	src/configure
+|  
+* commit 58f986e2398960b7b7dce936185d465ca745b505
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 23:41:35 2011 +0200
+| 
+|     build shogun's interfaces by default only for a limited set of data types
+|     
+|     namely char,uint8_t,uint16_t,uint64_t,float32_t,float64_t
+| 
+| M	src/configure
+| M	src/interfaces/modular/Distance.i
+| M	src/interfaces/modular/Features.i
+| M	src/interfaces/modular/IO.i
+| M	src/interfaces/modular/Kernel.i
+| M	src/interfaces/modular/Library.i
+|  
+* commit 06a4899b75c6efea7b9985abab9c58b340357796
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 23:40:40 2011 +0200
+| 
+|     fix typo : -> ;
+| 
+| M	examples/undocumented/octave_modular/classifier_svm_serialize_modular.m
+|  
+* commit d651da19c45911d93dacecdeed51c1ccc12f9000
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 22:21:50 2011 +0200
+| 
+|     add example for svm serialization and octave.
+|     
+|     thanks Michael Herrmann for the contribution
+| 
+| A	examples/undocumented/octave_modular/classifier_svm_serialize_modular.m
+|  
+* commit 6f2007f644b4d82a89a53526249ae477637d3f9b
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 22:06:11 2011 +0200
+| 
+|     add a get_file_descriptor() function to File
+| 
+| M	src/shogun/io/File.h
+|  
+* commit cb90e0d14ac47197bf85f7db935054cdd4d5c99f
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 19:02:42 2011 +0200
+| 
+|     uninline code in CrossValidation.h
+| 
+| M	src/shogun/evaluation/CrossValidation.cpp
+| M	src/shogun/evaluation/CrossValidation.h
+|  
+* commit 002b7bb2f4629e2f6437dcbf66faf6cf39fda32e
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 16:15:38 2011 +0200
+| 
+|     remove comments
+| 
+| M	src/.version.sh
+|  
+* commit 72d1bdeb46bf0c63c9d59c940930f2dba1bb6111
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 15:44:15 2011 +0200
+| 
+|     mention how to obtain data
+| 
+| M	src/README.data
+|  
+* commit b68cab2e594401392e169ffb31af138a1c693acc
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 15:27:52 2011 +0200
+| 
+|     mention the most active GSoC authors in AUTHORS
+| 
+| M	src/AUTHORS
+|  
+* commit 42e3e94531fad4b3a48d1ab5be4afc6a78393ad5
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 15:13:49 2011 +0200
+| 
+|     add comment on how to use swig's 2.0.4 native python interface
+| 
+| M	src/configure
+|  
+* commit 3656dd7c341eaa14f9f8839b11b9c5b3cb956105
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 13:34:08 2011 +0200
+| 
+|     add comment about newlines to coding conventions
+| 
+| M	src/README.developer
+|  
+* commit 00fd1c4ebd390fc10d9c7897e07337c6a177b884
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 17 12:29:47 2011 +0200
+| 
+|     fix svmlight based modular examples to use try/catch
+| 
+| M	examples/undocumented/octave_modular/classifier_svmlight_modular.m
+| M	examples/undocumented/octave_modular/regression_svrlight_modular.m
+|  
+* commit db0d2a40ce4dd22144969640aeea4492907f9433
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 15 12:47:06 2011 +0400
+| 
+|     Fixed lle_auto_k python graphical example
+| 
+| M	examples/undocumented/python_modular/graphical/lle_auto_k.py
+|  
+* commit bcb796774d5b846a83a52a10ebdf33357d07304d
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Oct 14 13:21:04 2011 +0200
+| 
+|     update news
+| 
+| M	src/NEWS
+|  
+* commit 8097efee90686e71c90c885527ef84cd0c24280a
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Oct 14 09:53:04 2011 +0200
+| 
+|     fix octave examples
+| 
+| M	examples/undocumented/octave_modular/kernel_comm_word_string_modular.m
+| M	examples/undocumented/octave_modular/kernel_matchwordstring_modular.m
+|  
+* commit 85b2e687b312ca5a0cbaf413ee2603055825a0f6
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Oct 14 09:39:16 2011 +0200
+| 
+|     fix documentation
+| 
+| M	src/shogun/converter/Converter.h
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+|  
+* commit 87344b733a02c01cb00359a32e34796d29986ee6
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Oct 14 03:08:32 2011 +0400
+| 
+|     Fixed LLE doc
+| 
+| M	src/shogun/converter/LocallyLinearEmbedding.h
+|  
+* commit 5cec6855af1417a7ef4ddb414a429a7a36cf5e55
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Oct 14 02:57:09 2011 +0400
+| 
+|     Updated lua isomap example
+| 
+| A	examples/undocumented/lua_modular/converter_isomap_modular.lua
+| D	examples/undocumented/lua_modular/preprocessor_isomap_modular.lua
+|  
+* commit 573e955f49d761a7338fbc4a3bbac617f8b1b307
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Oct 14 02:55:46 2011 +0400
+| 
+|     Removed Converter.i junk from python_modular
+| 
+| D	src/interfaces/python_modular/Converter.i
+|  
+* commit 6e41476c43f5391d0467e9c52a06c2c7f4e1adbe
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Oct 14 02:54:19 2011 +0400
+| 
+|     Improved converters doc
+| 
+| M	src/shogun/converter/Converter.h
+| M	src/shogun/converter/EmbeddingConverter.cpp
+| M	src/shogun/converter/EmbeddingConverter.h
+|  
+* commit 864758fcd30a2d730cb483dd25f2c6cab9b83d8e
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Oct 14 02:47:26 2011 +0400
+| 
+|     Removed junk from the last commit
+| 
+| D	examples/undocumented/python_modular/serialized_svm.bz2
+| D	examples/undocumented/python_modular/vw_cache.dat.cache
+|  
+* commit 04b6de912a2a970e32276cb984b3e98bece8106d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Oct 14 02:30:32 2011 +0400
+| 
+|     Introduced converters module, moved DR preprocessors to it, fixed examples, updated other classes according to changes
+| 
+| A	examples/undocumented/csharp_modular/converter_isomap_modular.cs
+| A	examples/undocumented/csharp_modular/converter_locallylinearembedding_modular.cs
+| A	examples/undocumented/csharp_modular/converter_multidimensionalscaling_modular.cs
+| D	examples/undocumented/csharp_modular/preprocessor_isomap_modular.cs
+| D	examples/undocumented/csharp_modular/preprocessor_locallylinearembedding_modular.cs
+| D	examples/undocumented/csharp_modular/preprocessor_multidimensionalscaling_modular.cs
+| A	examples/undocumented/java_modular/converter_isomap_modular.java
+| A	examples/undocumented/java_modular/converter_locallylinearembedding_modular.py
+| A	examples/undocumented/java_modular/converter_multidimensionalscaling_modular.java
+| D	examples/undocumented/java_modular/preprocessor_isomap_modular.java
+| D	examples/undocumented/java_modular/preprocessor_locallylinearembedding_modular.java
+| D	examples/undocumented/java_modular/preprocessor_multidimensionalscaling_modular.java
+| M	examples/undocumented/libshogun/Makefile
+| A	examples/undocumented/libshogun/converter_diffusionmaps.cpp
+| A	examples/undocumented/libshogun/converter_hessianlocallylinearembedding.cpp
+| A	examples/undocumented/libshogun/converter_isomap.cpp
+| A	examples/undocumented/libshogun/converter_kernellocallylinearembedding.cpp
+| A	examples/undocumented/libshogun/converter_kernellocaltangentspacealignment.cpp
+| A	examples/undocumented/libshogun/converter_laplacianeigenmaps.cpp
+| A	examples/undocumented/libshogun/converter_locallylinearembedding.cpp
+| A	examples/undocumented/libshogun/converter_localtangentspacealignment.cpp
+| A	examples/undocumented/libshogun/converter_multidimensionalscaling.cpp
+| D	examples/undocumented/libshogun/preprocessor_diffusionmaps.cpp
+| D	examples/undocumented/libshogun/preprocessor_hessianlocallylinearembedding.cpp
+| D	examples/undocumented/libshogun/preprocessor_isomap.cpp
+| D	examples/undocumented/libshogun/preprocessor_kernellocallylinearembedding.cpp
+| D	examples/undocumented/libshogun/preprocessor_kernellocaltangentspacealignment.cpp
+| D	examples/undocumented/libshogun/preprocessor_laplacianeigenmaps.cpp
+| D	examples/undocumented/libshogun/preprocessor_locallylinearembedding.cpp
+| D	examples/undocumented/libshogun/preprocessor_localtangentspacealignment.cpp
+| D	examples/undocumented/libshogun/preprocessor_multidimensionalscaling.cpp
+| A	examples/undocumented/python_modular/converter_diffusionmaps_modular.py
+| A	examples/undocumented/python_modular/converter_hessianlocallylinearembedding_modular.py
+| A	examples/undocumented/python_modular/converter_isomap_modular.py
+| A	examples/undocumented/python_modular/converter_kernellocallylinearembedding_modular.py
+| A	examples/undocumented/python_modular/converter_kernellocaltangentspacealignment_modular.py
+| A	examples/undocumented/python_modular/converter_laplacianeigenmaps_modular.py
+| A	examples/undocumented/python_modular/converter_locallylinearembedding_modular.py
+| A	examples/undocumented/python_modular/converter_localtangentspacealignment_modular.py
+| A	examples/undocumented/python_modular/converter_multidimensionalscaling_modular.py
+| D	examples/undocumented/python_modular/graphical/hemisphere.py
+| M	examples/undocumented/python_modular/graphical/swissroll.py
+| D	examples/undocumented/python_modular/preprocessor_diffusionmaps_modular.py
+| A	examples/undocumented/python_modular/preprocessor_dimensionreductionpreprocessor_modular.py
+| D	examples/undocumented/python_modular/preprocessor_hessianlocallylinearembedding_modular.py
+| D	examples/undocumented/python_modular/preprocessor_isomap_modular.py
+| D	examples/undocumented/python_modular/preprocessor_kernellocallylinearembedding_modular.py
+| D	examples/undocumented/python_modular/preprocessor_kernellocaltangentspacealignment_modular.py
+| D	examples/undocumented/python_modular/preprocessor_laplacianeigenmaps_modular.py
+| D	examples/undocumented/python_modular/preprocessor_locallylinearembedding_modular.py
+| D	examples/undocumented/python_modular/preprocessor_localtangentspacealignment_modular.py
+| D	examples/undocumented/python_modular/preprocessor_multidimensionalscaling_modular.py
+| A	examples/undocumented/python_modular/serialized_svm.bz2
+| A	examples/undocumented/python_modular/vw_cache.dat.cache
+| A	examples/undocumented/ruby_modular/converter_hessianlocallylinearembedding_modular.rb
+| D	examples/undocumented/ruby_modular/preprocessor_hessianlocallylinearembedding_modular.rb
+| M	src/Makefile.template
+| A	src/interfaces/modular/Converter.i
+| A	src/interfaces/modular/Converter_includes.i
+| M	src/interfaces/modular/Preprocessor.i
+| M	src/interfaces/modular/Preprocessor_includes.i
+| M	src/interfaces/modular/modshogun.i
+| A	src/interfaces/python_modular/Converter.i
+| A	src/shogun/converter/Converter.h
+| A	src/shogun/converter/DiffusionMaps.cpp
+| A	src/shogun/converter/DiffusionMaps.h
+| A	src/shogun/converter/EmbeddingConverter.cpp
+| A	src/shogun/converter/EmbeddingConverter.h
+| A	src/shogun/converter/HessianLocallyLinearEmbedding.cpp
+| A	src/shogun/converter/HessianLocallyLinearEmbedding.h
+| A	src/shogun/converter/Isomap.cpp
+| A	src/shogun/converter/Isomap.h
+| A	src/shogun/converter/KernelLocalTangentSpaceAlignment.cpp
+| A	src/shogun/converter/KernelLocalTangentSpaceAlignment.h
+| A	src/shogun/converter/KernelLocallyLinearEmbedding.cpp
+| A	src/shogun/converter/KernelLocallyLinearEmbedding.h
+| A	src/shogun/converter/LaplacianEigenmaps.cpp
+| A	src/shogun/converter/LaplacianEigenmaps.h
+| A	src/shogun/converter/LocalTangentSpaceAlignment.cpp
+| A	src/shogun/converter/LocalTangentSpaceAlignment.h
+| A	src/shogun/converter/LocallyLinearEmbedding.cpp
+| A	src/shogun/converter/LocallyLinearEmbedding.h
+| A	src/shogun/converter/MultidimensionalScaling.cpp
+| A	src/shogun/converter/MultidimensionalScaling.h
+| M	src/shogun/features/SimpleFeatures.cpp
+| M	src/shogun/features/SimpleFeatures.h
+| D	src/shogun/preprocessor/DiffusionMaps.cpp
+| D	src/shogun/preprocessor/DiffusionMaps.h
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+| D	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| D	src/shogun/preprocessor/HessianLocallyLinearEmbedding.h
+| D	src/shogun/preprocessor/Isomap.cpp
+| D	src/shogun/preprocessor/Isomap.h
+| D	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.cpp
+| D	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.h
+| D	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| D	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/KernelPCA.cpp
+| M	src/shogun/preprocessor/KernelPCA.h
+| D	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+| D	src/shogun/preprocessor/LaplacianEigenmaps.h
+| D	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| D	src/shogun/preprocessor/LocalTangentSpaceAlignment.h
+| D	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| D	src/shogun/preprocessor/LocallyLinearEmbedding.h
+| D	src/shogun/preprocessor/MultidimensionalScaling.cpp
+| D	src/shogun/preprocessor/MultidimensionalScaling.h
+| M	src/shogun/preprocessor/PCA.cpp
+| M	src/shogun/preprocessor/PCA.h
+|  
+* commit 78c869446f14dc958fa368e2e2e56cf4eba555c6
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Oct 14 00:13:00 2011 +0200
+| 
+|     fix documentation of clean_feature_vectors
+| 
+| M	src/shogun/features/StringFeatures.h
+|  
+* commit 6356f267c5a42d00a3041519afee9f8b26d037e4
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Oct 13 23:34:43 2011 +0200
+| 
+|     fix static octave examples
+| 
+| M	examples/undocumented/matlab_and_octave/classifier_lpboost.m
+| M	examples/undocumented/matlab_and_octave/classifier_lpm.m
+| M	examples/undocumented/matlab_and_octave/kernel_linearbyte.m
+|  
+* commit 18a93b9c4ed78280317dce0c5b8f97f544a29861
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Oct 13 23:34:18 2011 +0200
+| 
+|     always set dot feature property on init
+| 
+| M	src/shogun/features/DotFeatures.cpp
+|  
+* commit 12a51735895c3741bbcce54e9d6117ef736590cf
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Oct 13 23:33:42 2011 +0200
+| 
+|     introduce more efficient cleanup_feature_vectors function
+| 
+| M	src/shogun/features/StringFeatures.cpp
+| M	src/shogun/features/StringFeatures.h
+|  
+* commit a6e49bb8f7b569ccf155df3b82cb16dc535f1462
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Oct 13 23:31:39 2011 +0200
+| 
+|     fix broken free_feature_vector call in wdsvmocas
+| 
+| M	src/shogun/classifier/svm/WDSVMOcas.h
+|  
+* commit 74bf29729a5ebedc27a5ce6df2b771fea2e7278f
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Oct 13 23:30:43 2011 +0200
+| 
+|     fix lhs / rhs mixup in free_feature_vector (how did this ever work?!)
+| 
+| M	src/shogun/kernel/WeightedDegreePositionStringKernel.cpp
+|  
+* commit 1d5d860297a8cabc3fe3b2a94d4936307a9ea3ab
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Oct 13 11:10:03 2011 +0200
+| 
+|     Fix a bug in cache_multiple_kernel_row that gets triggered when support vector regression is performed with svr light and multiple threads.
+| 
+| M	src/shogun/kernel/Kernel.cpp
+|  
+* commit 3e2add72db24a0f5f7392ba1df782760142e01a3
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Oct 12 23:45:48 2011 +0400
+| 
+|     Added automatic k choosing LLE example
+| 
+| A	examples/undocumented/python_modular/graphical/lle_auto_k.py
+|  
+* commit 363a4038a578fb76e682d6db4ed4ce4b25707dc4
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Oct 12 16:44:50 2011 +0200
+| 
+|     update NEWS
+| 
+| M	src/NEWS
+|  
+* commit 49c5ef74e596f861e78eb8b98b5abe4e9cda4e3b
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Oct 12 16:12:55 2011 +0200
+| 
+|     use SGVector<char> as workaround for SGVector<void>
+| 
+| M	src/shogun/features/Features.h
+| M	src/shogun/modelselection/ModelSelectionParameters.cpp
+| M	src/shogun/modelselection/ModelSelectionParameters.h
+|  
+* commit 2440e3a376abc7a491b304ef6207ae111d72d4ab
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Oct 12 15:48:14 2011 +0200
+| 
+|     use SGVector<char> instead of SGVector<void> as a workaround
+| 
+| M	src/shogun/base/Parameter.cpp
+|  
+* commit f2e51da860bdc434441feb9477908e785c6c8b73
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Oct 12 06:37:14 2011 +0200
+| 
+|     fix elwms.so install
+| 
+| M	src/Makefile.template
+|  
+* commit 1d41eeb0cf9e26692852b83e38ecbe86655315db
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Wed Oct 12 02:15:24 2011 +0400
+| 
+|     Added optimal k determination routines to LLE
+| 
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+|  
+* commit dbad0b5b45c555d41ac0e1ad41b414bb5ce8049c
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Oct 11 22:43:44 2011 +0200
+| 
+|     fix install permissions of jar / dll to be non-exec
+| 
+| M	src/Makefile.template
+|  
+* commit 8182e5c5201a673e313c1d2bbd0a924695e98b05
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Oct 11 20:56:36 2011 +0200
+| 
+|     create jni dir on make install
+| 
+| M	src/Makefile.template
+|  
+* commit 184fcc0d911350ba017b01bdd09e59e5538253e6
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Oct 11 19:21:15 2011 +0200
+| 
+|     fix ruby install dir
+| 
+| M	src/Makefile.template
+|  
+* commit 9b38b33c63f450ec4e777e2eaf45deea3b5cd116
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Oct 11 14:36:03 2011 +0200
+| 
+|     Create proper .dll's for csharp interface and add proper make install
+|     targets for java and c# installing into /usr/lib/jni /usr/lib/cil/shogun
+|     respectively
+| 
+| M	examples/undocumented/csharp_modular/check.sh
+| M	src/Makefile.template
+|  
+* commit 01b75c8ea0c3a025e4789cc5a9b6d568b7b3f62c
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Oct 11 12:25:03 2011 +0200
+| 
+|     Fix installation
+|     
+|     - Add forgotten DESTDIR prefix to lua target
+|     - Rename PYTHON_TARGET -> PYTHON_STATIC_TARGET etc
+| 
+| M	src/Makefile.template
+|  
+* commit dea9a1dee0f7da16ee4dc1818a587513e250e2b6
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Oct 11 06:37:38 2011 +0200
+| 
+|     Fix elwms include in python/octave/r interfaces
+| 
+| M	src/interfaces/octave_static/OctaveInterface.cpp
+| M	src/interfaces/python_static/PythonInterface.cpp
+| M	src/interfaces/r_static/RInterface.cpp
+|  
+* commit 5dd8dec208c54fff51f7e844b3c72be67639ecee
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Oct 11 02:04:04 2011 +0400
+| 
+|     Fixed KLLE initialization
+| 
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+|  
+* commit a92e6b460ff6bcc0725026bc3f02653072aefa44
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Oct 11 01:39:00 2011 +0400
+| 
+|     Revert "Removed wrong copyrights from preprocessors developed after GSoC"
+|     
+|     This reverts commit f6d08c2226fd1b297744a4c7379fc7f180d6d60e.
+| 
+| M	src/shogun/preprocessor/DiffusionMaps.h
+| M	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LaplacianEigenmaps.h
+|  
+* commit f6d08c2226fd1b297744a4c7379fc7f180d6d60e
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Oct 11 01:35:57 2011 +0400
+| 
+|     Removed wrong copyrights from preprocessors developed after GSoC
+| 
+| M	src/shogun/preprocessor/DiffusionMaps.h
+| M	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LaplacianEigenmaps.h
+|  
+* commit 77efd4c71fa23a5f8b64fac1714976378efc620d
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Oct 10 23:04:50 2011 +0200
+| 
+|     Fix include paths for elwms interface.
+| 
+| M	src/interfaces/elwms_static/elwms.cpp
+|  
+* commit 00b7950c89654496a13ff289d9f264f5ff717204
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Oct 11 01:12:07 2011 +0400
+| 
+|     Cleaned DR preprocessors, removed effective target dim computation
+| 
+| M	src/shogun/preprocessor/DiffusionMaps.cpp
+| M	src/shogun/preprocessor/DiffusionMaps.h
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/Isomap.cpp
+| M	src/shogun/preprocessor/Isomap.h
+| M	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.cpp
+| M	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+| M	src/shogun/preprocessor/MultidimensionalScaling.h
+|  
+* commit 85a967cd1fb02c29f08cf7d77cb8ac7bf302c845
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 9 18:33:48 2011 +0400
+| 
+|     BLASed KLLE a little
+| 
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+|  
+* commit 79758f39ad18a5891ab627af8b1a8b69abf31979
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 9 18:33:34 2011 +0400
+| 
+|     Added use_arpack option for LLE, BLASed it a little more
+| 
+| M	src/shogun/preprocessor/Isomap.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+|  
+* commit fa8405f583c50cac2c3658920f0980b329382fe8
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 9 00:02:39 2011 +0400
+| 
+|     Mention SUPERLU and KLTSA, KLLE
+| 
+| M	src/NEWS
+|  
+* commit e13b169780851d4bb5993e955986e6d332f838fe
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 9 00:00:04 2011 +0400
+| 
+|     Initialized helper arrays at arpack wrapper to avoid warnings
+| 
+| M	src/shogun/mathematics/arpack_d.cpp
+| M	src/shogun/mathematics/arpack_s.cpp
+|  
+* commit 884c74a9a1cf6ebe7685a2530c265915e2eeceab
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Oct 8 21:55:48 2011 +0200
+| 
+|     move regression .h functions to .cpp
+| 
+| M	src/shogun/regression/svr/LibSVR.cpp
+| M	src/shogun/regression/svr/LibSVR.h
+| M	src/shogun/regression/svr/SVRLight.cpp
+| M	src/shogun/regression/svr/SVRLight.h
+|  
+* commit 9b410c9c7bdbc9f9b25fc9b43b9c15298e05bc92
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Oct 8 21:46:14 2011 +0200
+| 
+|     update NEWS file for 1.1
+| 
+| M	src/NEWS
+|  
+* commit e927318ac2592071d94e8da5eaa399c332b3d965
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 8 14:34:56 2011 +0400
+| 
+|     Moved code from .h to .cpp at CMachine
+| 
+| M	src/shogun/machine/Machine.cpp
+| M	src/shogun/machine/Machine.h
+|  
+* commit 2382e0ca6850093f14000316bcabc4147ea370fc
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 8 14:34:24 2011 +0400
+| 
+|     Added necessary Math.h include to GNB
+| 
+| M	src/shogun/classifier/GaussianNaiveBayes.h
+|  
+* commit 5a4f2de1582b4ef41497269bee111250a067f5dc
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 8 02:14:46 2011 +0400
+| 
+|     Finally added missing libshogun tests for DR preprocessors (no leaks)
+| 
+| M	examples/undocumented/libshogun/Makefile
+| A	examples/undocumented/libshogun/preprocessor_diffusionmaps.cpp
+| M	examples/undocumented/libshogun/preprocessor_hessianlocallylinearembedding.cpp
+| A	examples/undocumented/libshogun/preprocessor_isomap.cpp
+| M	examples/undocumented/libshogun/preprocessor_kernellocallylinearembedding.cpp
+| M	examples/undocumented/libshogun/preprocessor_kernellocaltangentspacealignment.cpp
+| A	examples/undocumented/libshogun/preprocessor_laplacianeigenmaps.cpp
+| M	examples/undocumented/libshogun/preprocessor_locallylinearembedding.cpp
+| M	examples/undocumented/libshogun/preprocessor_localtangentspacealignment.cpp
+| A	examples/undocumented/libshogun/preprocessor_multidimensionalscaling.cpp
+|  
+* commit b86e64fc35597b53b5c23f5254e8d695472ffcd1
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 8 01:59:13 2011 +0400
+| 
+|     Added libshogun examples for KLTSA and KLLE
+| 
+| M	examples/undocumented/libshogun/Makefile
+| A	examples/undocumented/libshogun/preprocessor_kernellocallylinearembedding.cpp
+| A	examples/undocumented/libshogun/preprocessor_kernellocaltangentspacealignment.cpp
+|  
+* commit a4454cb83a42c569f1db04b1542c6f377a4ed88d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 8 01:58:02 2011 +0400
+| 
+|     Fixed memory leak at KLTSA
+| 
+| M	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.cpp
+|  
+* commit 8d47d143e327bc18e84ce37f82cb6ca3fa7c3730
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 8 01:41:46 2011 +0400
+| 
+|     Got rid of memory error at DiffusionMaps
+| 
+| M	src/shogun/preprocessor/DiffusionMaps.cpp
+|  
+* commit 5f2a5c84f636aa87b5bba374c3b1f0b437b6c3a6
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 8 01:17:28 2011 +0400
+| 
+|     Added some notes to preprocessors
+| 
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/MultidimensionalScaling.h
+|  
+* commit a0cc5518a9ccbd2870f01e7d03250ebb468d881b
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Oct 4 22:35:41 2011 +0400
+| 
+|     Introduced two shifts to customize LLE algorithm processing
+| 
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+|  
+* commit 5fab1f0d9b6aa4238c3dd4760a022df013c95bbb
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Oct 4 19:25:13 2011 +0400
+| 
+|     Made DimensionReductionPreprocessor class templated, adapted existing preprocessors to the new structure
+| 
+| M	src/interfaces/modular/Preprocessor.i
+| M	src/shogun/preprocessor/DiffusionMaps.cpp
+| M	src/shogun/preprocessor/DiffusionMaps.h
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+| M	src/shogun/preprocessor/KernelPCA.cpp
+| M	src/shogun/preprocessor/KernelPCA.h
+| M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+| M	src/shogun/preprocessor/LaplacianEigenmaps.h
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+| M	src/shogun/preprocessor/MultidimensionalScaling.h
+| M	src/shogun/preprocessor/PCA.cpp
+| M	src/shogun/preprocessor/PCA.h
+|  
+* commit c0c4231f62e491fc1f02d34444ef4d4340e887e4
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 3 04:41:47 2011 +0400
+| 
+|     Added C++ tests for LLE basic algorithms
+| 
+| M	examples/undocumented/libshogun/Makefile
+| A	examples/undocumented/libshogun/preprocessor_hessianlocallylinearembedding.cpp
+| A	examples/undocumented/libshogun/preprocessor_locallylinearembedding.cpp
+| A	examples/undocumented/libshogun/preprocessor_localtangentspacealignment.cpp
+|  
+* commit 2f5de9db6604ac8d0de6029da1f6fc73825c2b30
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 3 04:40:47 2011 +0400
+| 
+|     Various small fixes for LLE algorithms and dim reduction preprocessor base class
+| 
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+|  
+* commit 63ecfe8045739f6aad5b8a8b93bbdc6e4be471e6
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 3 02:01:48 2011 +0400
+| 
+|     Introduced kernelized LTSA
+| 
+| A	examples/undocumented/python_modular/preprocessor_kernellocaltangentspacealignment_modular.py
+| M	src/interfaces/modular/Preprocessor.i
+| M	src/interfaces/modular/Preprocessor_includes.i
+| A	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.cpp
+| A	src/shogun/preprocessor/KernelLocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/Preprocessor.h
+|  
+* commit 88eeab8a0de197f86b6f9105fbcdd39d65c31db2
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 3 01:59:48 2011 +0400
+| 
+|     Changed default kernel for DR preprocessor base class
+| 
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+|  
+* commit 61c4de949875796d369eee3872c355a8804f9d64
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Oct 3 01:59:26 2011 +0400
+| 
+|     Unified Kernel LLE and LLE regularization parameter
+| 
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+|  
+* commit 9698ed39c8a10653430825b20fd613191f546f91
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 2 22:50:21 2011 +0400
+| 
+|     Some necessary improvements from the reverted commit
+| 
+| M	src/shogun/preprocessor/Isomap.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+|  
+* commit 15ebd97e8917cb6771526c4c3b2c554836a26e47
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 2 22:37:40 2011 +0400
+| 
+|     Revert "Improved multithreading codestyle, fixes some structure"
+|     
+|     This reverts commit 51eeb3d7aeaebeb41297d6db822a073d03679e6b.
+| 
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/Isomap.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+|  
+* commit 51eeb3d7aeaebeb41297d6db822a073d03679e6b
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 2 22:14:00 2011 +0400
+| 
+|     Improved multithreading codestyle, fixes some structure
+| 
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/Isomap.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+|  
+* commit 246ccf6723429cc94b613b52f06c3bc7c6265877
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Oct 2 22:12:14 2011 +0400
+| 
+|     Fixed wrong destruction of DR preprocessor base class
+| 
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+|  
+* commit 85dadcf928260433d4b8e9c1a815d92456b897f7
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Oct 1 19:44:42 2011 +0200
+| 
+|     move inline functions from .h to .cpp
+| 
+| M	src/interfaces/modular/Library.i
+| M	src/interfaces/modular/SGBase.i
+| M	src/shogun/base/Parallel.cpp
+| M	src/shogun/base/Parallel.h
+| M	src/shogun/base/Version.cpp
+| M	src/shogun/base/Version.h
+|  
+* commit e338daa55cf4c1f8972cdcd57b4f58ad936849da
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 19:17:20 2011 +0400
+| 
+|     Fixed and improved KLLE
+| 
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+|  
+* commit b4611da37437688e142f8a7d2a84ffc5c67867c8
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 16:52:39 2011 +0400
+| 
+|     Moved code from .h to .cpp for NLDR preprocessors
+| 
+| M	src/shogun/preprocessor/DiffusionMaps.cpp
+| M	src/shogun/preprocessor/DiffusionMaps.h
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/Isomap.cpp
+| M	src/shogun/preprocessor/Isomap.h
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+| M	src/shogun/preprocessor/LaplacianEigenmaps.h
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+| M	src/shogun/preprocessor/MultidimensionalScaling.h
+|  
+* commit 7314dafbad87c832ca566b62b1ae2189f5ea882a
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 16:16:22 2011 +0400
+| 
+|     Fixed wrong effective target dimensionality threshold
+| 
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+|  
+* commit 3d5000c40af6c15a699e4a3b3329b140eb01667f
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 16:14:38 2011 +0400
+| 
+|     Added common.h include for arpack wrap impl
+| 
+| M	src/shogun/mathematics/arpack.cpp
+|  
+* commit 3f082b3c2938273e57381e8cf6a868549669aefe
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 16:02:07 2011 +0400
+| 
+|     Updated ARPACK and LAPACK libshogun examples
+| 
+| M	examples/undocumented/libshogun/mathematics_arpack.cpp
+| M	examples/undocumented/libshogun/mathematics_lapack.cpp
+|  
+* commit a945b61abe960bc54673c2fa6ee9f443e9fca43d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 16:01:37 2011 +0400
+| 
+|     Made arpack wrapper templated, updated preprocessors according to new structure
+| 
+| A	src/shogun/mathematics/arpack.cpp
+| A	src/shogun/mathematics/arpack.h
+| M	src/shogun/mathematics/arpack_d.cpp
+| M	src/shogun/mathematics/arpack_d.h
+| M	src/shogun/mathematics/arpack_s.cpp
+| M	src/shogun/mathematics/arpack_s.h
+| M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+|  
+* commit af8865a8c205f26c009fa1c36eb55ac7be17edd5
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 03:19:31 2011 +0400
+| 
+|     Added dummy doc to avoid some warnings at HistogramIntersectionKernel and DataType
+| 
+| M	src/shogun/kernel/HistogramIntersectionKernel.h
+| M	src/shogun/lib/DataType.h
+|  
+* commit 0f94ec8f886ec43448c8758df60ce421a9b54137
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 03:09:04 2011 +0400
+| 
+|     Implement clapack single precision routines wrappers
+| 
+| M	src/shogun/mathematics/lapack.cpp
+| M	src/shogun/mathematics/lapack.h
+|  
+* commit 90d5064b7823449697c4e4dde618fc6620d439d3
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Oct 1 00:58:23 2011 +0200
+| 
+|     fix multithreading error w/ svr light
+| 
+| M	src/shogun/kernel/Kernel.cpp
+|  
+* commit 57e582d88a3e62c7cff641bac22fac52c093bf74
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 02:14:20 2011 +0400
+| 
+|     Fixed wrong include at arpack double
+| 
+| M	src/shogun/mathematics/arpack_d.cpp
+|  
+* commit ea5f083bddd49ee43b74f4947f65d75f7e594e9d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Oct 1 00:08:53 2011 +0400
+| 
+|     Removed wrong include from KLLE
+| 
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+|    
+*   commit 236bb14beba9e5363fc9fe70f16c7f9147140b2b
+|\  Merge: f55f818 b6d03b7
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sat Oct 1 00:02:50 2011 +0400
+| | 
+| |     Merge branch 'master' of github.com:shogun-toolbox/shogun
+| |   
+| * commit b6d03b7bd4a04046a1de279c0168fd7c184ede83
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Fri Sep 30 21:16:43 2011 +0200
+| | 
+| |     move inline functions from .h to .cpp
+| | 
+| | M	src/shogun/clustering/GMM.cpp
+| | M	src/shogun/clustering/GMM.h
+| | M	src/shogun/clustering/Hierarchical.cpp
+| | M	src/shogun/clustering/Hierarchical.h
+| | M	src/shogun/clustering/KMeans.cpp
+| | M	src/shogun/clustering/KMeans.h
+| |   
+| * commit b18d7b5a9c7cdf592cea5d142cf6b2f184af537c
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Fri Sep 30 08:26:13 2011 +0200
+| | 
+| |     fix type pkg-config2 -> pkg-config
+| | 
+| | M	src/configure
+| |   
+| * commit 1f78185a450c778305260b5deb99b59f097e2774
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Fri Sep 30 08:24:23 2011 +0200
+| | 
+| |     require pkg-config in configure
+| | 
+| | M	src/configure
+| |   
+| * commit 7bb0e515d077487ee96132dbf2630c48233f06a3
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Fri Sep 30 08:16:23 2011 +0200
+| | 
+| |     add lgammal detection to configure
+| | 
+| | M	src/configure
+| | M	src/shogun/mathematics/Math.h
+| |   
+* | commit f55f81887638779825807d401df041836ed167cb
+|/  Author: Sergey Lisitsyn <blackburn91@gmail.com>
+|   Date:   Sat Oct 1 00:01:47 2011 +0400
+|   
+|       Added single precision LAPACK and ARPACK support, changed preprocessors according to new interface
+|   
+|   D	src/shogun/mathematics/arpack.cpp
+|   D	src/shogun/mathematics/arpack.h
+|   A	src/shogun/mathematics/arpack_d.cpp
+|   A	src/shogun/mathematics/arpack_d.h
+|   A	src/shogun/mathematics/arpack_s.cpp
+|   A	src/shogun/mathematics/arpack_s.h
+|   M	src/shogun/mathematics/lapack.cpp
+|   M	src/shogun/mathematics/lapack.h
+|   M	src/shogun/preprocessor/DiffusionMaps.cpp
+|   M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+|   M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+|   M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+|   M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+|   M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+|  
+* commit 95df0a502cdba1113153c6499cb952fa8b939c3d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Sep 30 03:25:09 2011 +0400
+| 
+|     Added support of target dimensionality reducing with negative target dimensionality, improved some issues at NLDR preprocessors
+| 
+| M	src/shogun/preprocessor/DiffusionMaps.cpp
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/Isomap.cpp
+| M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+| M	src/shogun/preprocessor/Preprocessor.h
+|  
+* commit 4889edc1bfb7b1ad81c2142264235412c337328d
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Sep 27 09:22:53 2011 +0200
+| 
+|     change API in histogram intersection kernel
+|     
+|     it can now be more conveniently inited with
+|     
+|     HistogramIntersectionKernel(f1,f2, beta, cachesz)
+| 
+| M	src/shogun/kernel/HistogramIntersectionKernel.cpp
+| M	src/shogun/kernel/HistogramIntersectionKernel.h
+|  
+* commit 42b836a76ca6846f1f212fb3fb167d087ef9fda0
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Sep 27 09:22:32 2011 +0200
+| 
+|     use all available CPUs by default
+| 
+| M	src/shogun/base/Parallel.cpp
+|  
+* commit 95c854ac7c337a69e2df47a33203cb8c57964e5e
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Sep 27 01:49:22 2011 +0400
+| 
+|     BLASed HLLE
+| 
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+|  
+* commit fda999c4fceb7ff5a9fb0f91845439581b2800d7
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Sep 27 01:02:14 2011 +0400
+| 
+|     BLASed LTSA
+| 
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+|  
+* commit 2a16c52a28e165c10a3b369a24d9085d6e65882f
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Sep 26 23:50:45 2011 +0400
+| 
+|     Updated swissroll and hemisphere graphical NLDR examples
+| 
+| M	examples/undocumented/python_modular/graphical/hemisphere.py
+| M	examples/undocumented/python_modular/graphical/swissroll.py
+|  
+* commit cf86e1b33264d3679e9838ea12ecc1585cfce0d7
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Sep 26 23:50:10 2011 +0400
+| 
+|     Removed junk ctime usage from Diffusion Maps preprocessor
+| 
+| M	src/shogun/preprocessor/DiffusionMaps.cpp
+|  
+* commit 0f76c54fd1b8f9b783f913b2a6decee0a76c3076
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Sep 26 23:49:45 2011 +0400
+| 
+|     Refactored LLE algorithms for code reuse
+| 
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.h
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+|  
+* commit 140237b64a27898db321a23a9491566da49595a4
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Sep 26 23:49:11 2011 +0400
+| 
+|     Added getters for distance and kernel at DR preprocessor
+| 
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+|  
+* commit af3211a6e2c10154b90fd399caa4f46dbabd3137
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Sep 26 23:17:22 2011 +0400
+| 
+|     Removed memory leak @ FibonacciHeap
+| 
+| M	src/shogun/lib/FibonacciHeap.cpp
+|  
+* commit 32b654e2d26856fab965a2f74872167aa08f1343
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Sep 26 17:16:59 2011 +0200
+| 
+|     add two more c# examples translated by daniel
+| 
+| A	examples/undocumented/csharp_modular/features_snp_modular.cs
+| A	examples/undocumented/csharp_modular/features_string_hashed_wd_modular.cs
+|    
+*   commit 0cadbbdb7ff2f4ecfd57f5fe0a7c852d53d53edb
+|\  Merge: f7ee9b8 70eff01
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 17:10:36 2011 +0200
+| | 
+| |     Merge branch 'master' of github.com:shogun-toolbox/shogun
+| |   
+| * commit 70eff01c15159f1f7cde0a3c610061722b174d6f
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 15:41:23 2011 +0200
+| | 
+| |     add toy example to illustrate how to use CTime
+| | 
+| | A	examples/undocumented/python_modular/library_time.py
+| |   
+| * commit 0c743b2d390c3d3949eb4954f35fbb8d2fdca4ae
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 15:24:59 2011 +0200
+| | 
+| |     parallelize all libsvm learners
+| |     
+| |     however, speedup is really only marginal.
+| | 
+| | M	src/shogun/classifier/svm/SVM_libsvm.cpp
+| |   
+| * commit df28c58dd63dc9e9eb370eae83b5de8790926874
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 14:20:05 2011 +0200
+| | 
+| |     add virtual destructors to fix compiler warning
+| | 
+| | M	src/shogun/lib/DataType.h
+| |   
+| * commit dce18b65da065ad08b440182c237e7e03447083a
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 14:19:21 2011 +0200
+| | 
+| |     fix compiler warning about downcast to int32_t
+| |     
+| |     in the end we just change the variable type to float64_t
+| | 
+| | M	src/shogun/classifier/KNN.cpp
+| |   
+| * commit 138b2e179bb04b994d14183834604ea9a7733108
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 14:05:32 2011 +0200
+| | 
+| |     include <string> to fix compile error
+| | 
+| | M	src/shogun/kernel/MultitaskKernelMaskNormalizer.h
+| |   
+| * commit 7a631af221f726a63ff27b5d9866512d4a320bb5
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 13:56:39 2011 +0200
+| | 
+| |     enable threaded parallelization for libsvm
+| | 
+| | M	src/shogun/classifier/svm/SVM_libsvm.cpp
+| |   
+| * commit 13468eb26e2c5a209d71c3987d4ef2b096e8ff04
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 13:56:18 2011 +0200
+| | 
+| |     remove std::vector usage and replace it with SGVector
+| | 
+| | M	src/shogun/kernel/Kernel.h
+| | M	src/shogun/kernel/MultitaskKernelMaskNormalizer.h
+| |   
+| * commit b1043b038d139450a0d29407686daa3499851d44
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 26 09:34:29 2011 +0200
+| | 
+| |     disable compiler optimizations for swig interface
+| | 
+| | M	src/configure
+| |     
+* |   commit f7ee9b81e0bb25ec223bd1c5d19657a520fb1244
+|\ \  Merge: e2a642d f634c62
+| |/  Author: Soeren Sonnenburg <sonne@debian.org>
+| |   Date:   Sun Sep 25 22:20:39 2011 +0200
+| |   
+| |       Merge branch 'master' of github.com:shogun-toolbox/shogun
+| |   
+| * commit f634c62f48a886b67539bd8637e6fcd648dc6f13
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Mon Sep 26 00:19:10 2011 +0400
+| | 
+| |     Removed unnecessary sse flags
+| | 
+| | M	src/configure
+| |   
+| * commit a6426c4ed5c068e494f6d4a04b57166f6734c970
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Sep 25 23:37:39 2011 +0400
+| | 
+| |     Moved set/get code from .h to .cpp for DR preprocessors
+| | 
+| | M	src/shogun/preprocessor/Isomap.cpp
+| | M	src/shogun/preprocessor/Isomap.h
+| | M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| | M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+| | M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+| | M	src/shogun/preprocessor/MultidimensionalScaling.h
+| |     
+* |   commit e2a642d6e33b4f30575df3426b01007ed3232eac
+|\ \  Merge: 5f312d4 75685b6
+| |/  Author: Soeren Sonnenburg <sonne@debian.org>
+| |   Date:   Sun Sep 25 19:54:55 2011 +0200
+| |   
+| |       Merge branch 'master' of github.com:shogun-toolbox/shogun
+| |   
+| * commit 75685b677239c01daa484e67323f219dc6b2563a
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Sep 25 19:40:24 2011 +0400
+| | 
+| |     Removed junk from LLE
+| | 
+| | M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| |   
+| * commit 16e761af932fc17af25b65db851c335bbfd511e2
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Sep 25 19:09:38 2011 +0400
+| | 
+| |     Updated [] for SGMatrix and made it used by DR preprocessors
+| | 
+| | M	src/shogun/lib/DataType.h
+| | M	src/shogun/preprocessor/Isomap.cpp
+| | M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| | M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+| | M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| | M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+| |   
+| * commit 26423550a1f8941a8f136967ee340fd0dd4afa02
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Sep 25 18:31:07 2011 +0400
+| | 
+| |     Added [] for SGMatrix
+| | 
+| | M	src/shogun/lib/DataType.h
+| |   
+| * commit d6ac38d223246afa999057c46e80f782cc69af73
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Sep 25 18:29:57 2011 +0400
+| | 
+| |     Fixed mistype at configure, changed flags
+| | 
+| | M	src/configure
+| |   
+| * commit 134f8631a9dd57a900def42797fe93ea2a0604e2
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Sep 25 15:34:15 2011 +0400
+| | 
+| |     Improved memory usage efficiency in DR preprocessor
+| | 
+| | M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| | M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| | M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| | M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| |   
+| * commit 3f81b07f4716de1b5c40f801d81a62bf071b7732
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Sep 25 13:57:24 2011 +0400
+| | 
+| |     Added MSSE{1,2,3} flags to configure
+| | 
+| | M	src/configure
+| | M	src/shogun/preprocessor/KernelPCA.h
+| |   
+| * commit 544c9206b3e5de44b56bb31c1a886f88a8a03e7e
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sun Sep 25 01:12:31 2011 +0400
+| | 
+| |     Improved performance and fixed Diffusion Maps
+| | 
+| | M	src/shogun/preprocessor/DiffusionMaps.cpp
+| |   
+| * commit 330830136032e879a447b171e5185a49e90f2bb9
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Sat Sep 24 22:45:46 2011 +0400
+| | 
+| |     Introduced DiffusionMaps dimension reduction preprocessor
+| | 
+| | A	examples/undocumented/python_modular/preprocessor_diffusionmaps_modular.py
+| | M	src/interfaces/modular/Preprocessor.i
+| | M	src/interfaces/modular/Preprocessor_includes.i
+| | A	src/shogun/preprocessor/DiffusionMaps.cpp
+| | A	src/shogun/preprocessor/DiffusionMaps.h
+| | M	src/shogun/preprocessor/Preprocessor.h
+| |   
+* | commit 5f312d43d99e897aa90969ff904097675cd3f230
+|/  Author: Soeren Sonnenburg <sonne@debian.org>
+|   Date:   Sat Sep 24 21:57:14 2011 +0200
+|   
+|       fix documentation in set_w
+|   
+|   M	src/shogun/machine/LinearMachine.h
+|  
+* commit be97a434d66387f8776e7a374c52e7f282731d3b
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sat Sep 24 19:56:36 2011 +0200
+| 
+|     fix mixup of epsilon / tube epsilon in libsvr examples
+| 
+| M	examples/undocumented/java_modular/regression_libsvr_modular.java
+| M	examples/undocumented/python_modular/regression_libsvr_modular.py
+| M	examples/undocumented/ruby_modular/regression_libsvr_modular.rb
+|  
+* commit 826ff44c8d6cd0c6f70bb4c88e89d8e0fb6a59ee
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Sep 24 21:35:53 2011 +0400
+| 
+|     Removed unnecessary includes in arpack.{cpp,h}
+| 
+| M	src/shogun/mathematics/arpack.cpp
+| M	src/shogun/mathematics/arpack.h
+|  
+* commit 0b4a6dd10705f6e22e3dccc57fe877022728605d
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Sep 24 00:23:03 2011 +0400
+| 
+|     Fixed linecount in makefile
+| 
+| M	src/Makefile
+|  
+* commit 9780d20f576a165489176d0396466a1d4ea7f1d8
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Fri Sep 23 22:17:09 2011 +0400
+| 
+|     Fixed get_w routine parameters in LinearMachine
+| 
+| M	src/shogun/classifier/svm/SVMLin.cpp
+| M	src/shogun/machine/LinearMachine.h
+| M	src/shogun/ui/SGInterface.cpp
+|  
+* commit dd4e99f31a0c899aeba63570bb482d434dd0e2cb
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Sep 22 17:34:22 2011 +0200
+| 
+|     add new .cs examples from daniel
+| 
+| A	examples/undocumented/csharp_modular/classifier_gaussiannaivebayes_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_gmnpsvm_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_gpbtsvm_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_knn_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_larank_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_lda_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_liblinear_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_libsvmmulticlass_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_libsvmoneclass_modular.cs
+| A	examples/undocumented/csharp_modular/classifier_libsvn_modular.cs
+|  
+* commit b73b2c192f24bd7531fce82ebef5e01618f04ac9
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Sep 22 17:31:44 2011 +0200
+| 
+|     add some helper functions like clear vector, fill vector etc to SGVector
+|     
+|     This unfortunately causes conflicts w/ modelselection that using
+|     SGVector<void>. Until ms is resolved to use sth else it will remain broken.
+| 
+| M	src/shogun/base/Parameter.cpp
+| M	src/shogun/features/Features.cpp
+| M	src/shogun/features/Features.h
+| M	src/shogun/lib/DataType.h
+| M	src/shogun/mathematics/Math.h
+| M	src/shogun/modelselection/ModelSelectionParameters.cpp
+| M	src/shogun/modelselection/ModelSelectionParameters.h
+|  
+* commit b879040e1ca3146eb587e81f12d6a2b800f2c925
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 22 00:21:12 2011 +0400
+| 
+|     Fixed doc in LLE
+| 
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+|  
+* commit 13a48a8e1a971f7e6525806f85ab5e83df4d23b3
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Thu Sep 22 00:20:58 2011 +0400
+| 
+|     Improved ARPACK+SUPERLU integration
+| 
+| M	src/shogun/mathematics/arpack.cpp
+|  
+* commit c738a0082419f35324e2ecd5ab142ed453d87da6
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Sep 21 21:16:11 2011 +0200
+| 
+|     Revert "remove unneeded class definitions from .h files"
+|     
+|     This reverts commit ff5f5457454e0036465ad714cc10dad2949696c9.
+| 
+| M	src/shogun/classifier/LDA.h
+| M	src/shogun/classifier/svm/WDSVMOcas.h
+| M	src/shogun/distance/CanberraMetric.h
+| M	src/shogun/distance/HammingWordDistance.h
+| M	src/shogun/distance/SparseEuclidianDistance.h
+| M	src/shogun/distributions/HMM.h
+| M	src/shogun/distributions/Histogram.h
+| M	src/shogun/kernel/AUCKernel.h
+| M	src/shogun/kernel/CommUlongStringKernel.h
+| M	src/shogun/kernel/HistogramWordStringKernel.h
+| M	src/shogun/kernel/Kernel.h
+| M	src/shogun/kernel/PyramidChi2.h
+| M	src/shogun/modelselection/ModelSelectionParameters.cpp
+| M	src/shogun/modelselection/ModelSelectionParameters.h
+| M	src/shogun/modelselection/ParameterCombination.cpp
+| M	src/shogun/structure/DynProg.h
+| M	src/shogun/structure/PlifMatrix.h
+| M	src/shogun/structure/SegmentLoss.h
+|  
+* commit 00f777798e47982a81931c084d4cef323e11d98c
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Sep 21 20:49:56 2011 +0200
+| 
+|     add forgotten .cpp files
+| 
+| A	src/shogun/preprocessor/DecompressString.cpp
+| A	src/shogun/preprocessor/DimensionReductionPreprocessor.cpp
+| A	src/shogun/preprocessor/SimplePreprocessor.cpp
+|  
+* commit b3eccafdb9b99901303bd19934cd254f4bfd1fcb
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Wed Sep 21 20:44:29 2011 +0200
+| 
+|     move implementions from .h to .cpp in preprocessors
+| 
+| M	src/shogun/features/SparseFeatures.cpp
+| M	src/shogun/features/StringFeatures.cpp
+| M	src/shogun/preprocessor/DecompressString.h
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+| M	src/shogun/preprocessor/MultidimensionalScaling.h
+| M	src/shogun/preprocessor/SimplePreprocessor.h
+|  
+* commit 8e32b0de6276a98546786dac5d6c687584ccb7c1
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Sep 20 21:11:41 2011 +0200
+| 
+|     fix wrong assertion in alphabet causing some model selection examples to fail
+| 
+| M	src/shogun/features/Alphabet.cpp
+|  
+* commit ff5f5457454e0036465ad714cc10dad2949696c9
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Tue Sep 20 21:02:03 2011 +0200
+| 
+|     remove unneeded class definitions from .h files
+| 
+| M	src/shogun/classifier/LDA.h
+| M	src/shogun/classifier/svm/WDSVMOcas.h
+| M	src/shogun/distance/CanberraMetric.h
+| M	src/shogun/distance/HammingWordDistance.h
+| M	src/shogun/distance/SparseEuclidianDistance.h
+| M	src/shogun/distributions/HMM.h
+| M	src/shogun/distributions/Histogram.h
+| M	src/shogun/kernel/AUCKernel.h
+| M	src/shogun/kernel/CommUlongStringKernel.h
+| M	src/shogun/kernel/HistogramWordStringKernel.h
+| M	src/shogun/kernel/Kernel.h
+| M	src/shogun/kernel/PyramidChi2.h
+| M	src/shogun/modelselection/ModelSelectionParameters.cpp
+| M	src/shogun/modelselection/ModelSelectionParameters.h
+| M	src/shogun/modelselection/ParameterCombination.cpp
+| M	src/shogun/structure/DynProg.h
+| M	src/shogun/structure/PlifMatrix.h
+| M	src/shogun/structure/SegmentLoss.h
+|  
+* commit 0af90765921161176a8d97b8f59d1c157095450e
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Sep 20 02:36:16 2011 +0400
+| 
+|     SUPERLU+ARPACK integration
+| 
+| M	src/shogun/mathematics/arpack.cpp
+|  
+* commit 8b3602c1f1c7eadfb9d791ec1df9f0ba1e215065
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Sep 20 02:35:58 2011 +0400
+| 
+|     Restored regularization at Laplacian Eigenmaps
+| 
+| M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+|  
+* commit a176859827623526286c83ad64fc86e3160d2c68
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Tue Sep 20 02:35:43 2011 +0400
+| 
+|     Restored regularization at LLE
+| 
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+|  
+* commit f694cb6e16fab938bbcc0cfa5c52f9e7335005ab
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Mon Sep 19 22:20:09 2011 +0200
+| 
+|     Replace void foo(void) -> void foo() and finish template .h -> .cpp
+|     transition in shogun/features/*
+| 
+| M	src/shogun/base/DynArray.h
+| M	src/shogun/base/Parameter.cpp
+| M	src/shogun/base/Parameter.h
+| M	src/shogun/classifier/svm/GMNPLib.cpp
+| M	src/shogun/classifier/svm/GMNPLib.h
+| M	src/shogun/classifier/svm/GMNPSVM.cpp
+| M	src/shogun/classifier/svm/GMNPSVM.h
+| M	src/shogun/classifier/svm/GNPPLib.cpp
+| M	src/shogun/classifier/svm/GNPPLib.h
+| M	src/shogun/classifier/svm/LibLinear.cpp
+| M	src/shogun/classifier/svm/LibLinear.h
+| M	src/shogun/classifier/svm/MultiClassSVM.cpp
+| M	src/shogun/classifier/svm/QPBSVMLib.cpp
+| M	src/shogun/classifier/svm/QPBSVMLib.h
+| M	src/shogun/classifier/svm/SVMLight.cpp
+| M	src/shogun/classifier/svm/SVMOcas.h
+| M	src/shogun/classifier/svm/SVM_linear.cpp
+| M	src/shogun/classifier/svm/SVM_linear.h
+| M	src/shogun/classifier/svm/ScatterSVM.cpp
+| M	src/shogun/classifier/svm/ScatterSVM.h
+| M	src/shogun/classifier/svm/Tron.h
+| M	src/shogun/classifier/svm/WDSVMOcas.cpp
+| M	src/shogun/classifier/svm/WDSVMOcas.h
+| M	src/shogun/classifier/svm/gpdt.cpp
+| M	src/shogun/classifier/svm/gpdtsolve.cpp
+| M	src/shogun/classifier/svm/gpdtsolve.h
+| M	src/shogun/distance/KernelDistance.h
+| M	src/shogun/distance/RealDistance.h
+| M	src/shogun/distance/SimpleDistance.h
+| M	src/shogun/distance/SparseDistance.h
+| M	src/shogun/distance/StringDistance.h
+| M	src/shogun/distributions/GHMM.h
+| M	src/shogun/distributions/HMM.cpp
+| M	src/shogun/distributions/HMM.h
+| M	src/shogun/features/Alphabet.cpp
+| M	src/shogun/features/Alphabet.h
+| M	src/shogun/features/DotFeatures.h
+| M	src/shogun/features/ExplicitSpecFeatures.cpp
+| M	src/shogun/features/Features.cpp
+| M	src/shogun/features/Features.h
+| M	src/shogun/features/HashedWDFeatures.cpp
+| M	src/shogun/features/HashedWDFeatures.h
+| M	src/shogun/features/HashedWDFeaturesTransposed.cpp
+| M	src/shogun/features/HashedWDFeaturesTransposed.h
+| M	src/shogun/features/ImplicitWeightedSpecFeatures.cpp
+| M	src/shogun/features/ImplicitWeightedSpecFeatures.h
+| M	src/shogun/features/LBPPyrDotFeatures.cpp
+| M	src/shogun/features/RealFileFeatures.cpp
+| M	src/shogun/features/SNPFeatures.cpp
+| M	src/shogun/features/SparsePolyFeatures.cpp
+| A	src/shogun/features/StreamingSimpleFeatures.cpp
+| M	src/shogun/features/StreamingSimpleFeatures.h
+| A	src/shogun/features/StreamingSparseFeatures.cpp
+| M	src/shogun/features/StreamingSparseFeatures.h
+| A	src/shogun/features/StreamingStringFeatures.cpp
+| M	src/shogun/features/StreamingStringFeatures.h
+| M	src/shogun/features/StringFeatures.cpp
+| M	src/shogun/features/StringFeatures.h
+| A	src/shogun/features/StringFileFeatures.cpp
+| M	src/shogun/features/StringFileFeatures.h
+| M	src/shogun/features/WDFeatures.cpp
+| M	src/shogun/io/AsciiFile.cpp
+| M	src/shogun/io/BinaryFile.cpp
+| M	src/shogun/io/BinaryFile.h
+| M	src/shogun/io/HDF5File.cpp
+| M	src/shogun/io/HDF5File.h
+| M	src/shogun/io/MemoryMappedFile.h
+| M	src/shogun/io/SerializableAsciiFile.cpp
+| M	src/shogun/io/SerializableAsciiFile.h
+| M	src/shogun/io/SerializableAsciiReader00.cpp
+| M	src/shogun/io/SerializableAsciiReader00.h
+| M	src/shogun/io/SerializableFile.cpp
+| M	src/shogun/io/SerializableFile.h
+| M	src/shogun/io/SerializableHdf5File.cpp
+| M	src/shogun/io/SerializableHdf5File.h
+| M	src/shogun/io/SerializableHdf5Reader00.cpp
+| M	src/shogun/io/SerializableHdf5Reader00.h
+| M	src/shogun/io/SerializableJsonFile.cpp
+| M	src/shogun/io/SerializableJsonFile.h
+| M	src/shogun/io/SerializableJsonReader00.cpp
+| M	src/shogun/io/SerializableJsonReader00.h
+| M	src/shogun/io/SerializableXmlFile.cpp
+| M	src/shogun/io/SerializableXmlFile.h
+| M	src/shogun/io/SerializableXmlReader00.cpp
+| M	src/shogun/io/SerializableXmlReader00.h
+| M	src/shogun/io/SimpleFile.h
+| M	src/shogun/kernel/AUCKernel.cpp
+| M	src/shogun/kernel/AUCKernel.h
+| M	src/shogun/kernel/Chi2Kernel.cpp
+| M	src/shogun/kernel/Chi2Kernel.h
+| M	src/shogun/kernel/CircularKernel.cpp
+| M	src/shogun/kernel/CircularKernel.h
+| M	src/shogun/kernel/ConstKernel.cpp
+| M	src/shogun/kernel/CustomKernel.cpp
+| M	src/shogun/kernel/CustomKernel.h
+| M	src/shogun/kernel/DiceKernelNormalizer.h
+| M	src/shogun/kernel/DistanceKernel.cpp
+| M	src/shogun/kernel/DistanceKernel.h
+| M	src/shogun/kernel/DistantSegmentsKernel.h
+| M	src/shogun/kernel/DotKernel.h
+| M	src/shogun/kernel/ExponentialKernel.cpp
+| M	src/shogun/kernel/ExponentialKernel.h
+| M	src/shogun/kernel/FixedDegreeStringKernel.cpp
+| M	src/shogun/kernel/FixedDegreeStringKernel.h
+| M	src/shogun/kernel/GaussianKernel.cpp
+| M	src/shogun/kernel/GaussianKernel.h
+| M	src/shogun/kernel/GaussianMatchStringKernel.cpp
+| M	src/shogun/kernel/GaussianMatchStringKernel.h
+| M	src/shogun/kernel/GaussianShiftKernel.cpp
+| M	src/shogun/kernel/GaussianShortRealKernel.cpp
+| M	src/shogun/kernel/GaussianShortRealKernel.h
+| M	src/shogun/kernel/HistogramIntersectionKernel.cpp
+| M	src/shogun/kernel/HistogramIntersectionKernel.h
+| M	src/shogun/kernel/HistogramWordStringKernel.cpp
+| M	src/shogun/kernel/InverseMultiQuadricKernel.cpp
+| M	src/shogun/kernel/InverseMultiQuadricKernel.h
+| M	src/shogun/kernel/LocalAlignmentStringKernel.cpp
+| M	src/shogun/kernel/OligoStringKernel.cpp
+| M	src/shogun/kernel/PolyKernel.cpp
+| M	src/shogun/kernel/PolyMatchStringKernel.cpp
+| M	src/shogun/kernel/PolyMatchWordStringKernel.cpp
+| M	src/shogun/kernel/PyramidChi2.cpp
+| M	src/shogun/kernel/PyramidChi2.h
+| M	src/shogun/kernel/RegulatoryModulesStringKernel.cpp
+| M	src/shogun/kernel/RegulatoryModulesStringKernel.h
+| M	src/shogun/kernel/SNPStringKernel.cpp
+| M	src/shogun/kernel/SNPStringKernel.h
+| M	src/shogun/kernel/SparseKernel.h
+| M	src/shogun/kernel/SpectrumMismatchRBFKernel.cpp
+| M	src/shogun/kernel/SpectrumMismatchRBFKernel.h
+| M	src/shogun/kernel/SpectrumRBFKernel.cpp
+| M	src/shogun/kernel/SpectrumRBFKernel.h
+| M	src/shogun/kernel/SphericalKernel.cpp
+| M	src/shogun/kernel/StringKernel.h
+| M	src/shogun/kernel/TStudentKernel.h
+| M	src/shogun/kernel/TanimotoKernelNormalizer.h
+| M	src/shogun/kernel/TensorProductPairKernel.cpp
+| M	src/shogun/kernel/TensorProductPairKernel.h
+| M	src/shogun/kernel/WeightedDegreePositionStringKernel.cpp
+| M	src/shogun/kernel/WeightedDegreePositionStringKernel.h
+| M	src/shogun/lib/BitString.h
+| M	src/shogun/lib/Cache.h
+| M	src/shogun/lib/Compressor.cpp
+| M	src/shogun/lib/Compressor.h
+| M	src/shogun/lib/DataType.cpp
+| M	src/shogun/lib/DataType.h
+| M	src/shogun/lib/DynamicObjectArray.h
+| M	src/shogun/lib/GCArray.h
+| M	src/shogun/lib/List.h
+| M	src/shogun/machine/DistanceMachine.h
+| M	src/shogun/machine/KernelMachine.h
+| M	src/shogun/preprocessor/DecompressString.h
+|    
+*   commit 8adcc9d17b6ec5c5230a916b9ad279a7a6c91b0e
+|\  Merge: 1f6bf22 486a452
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Mon Sep 19 10:58:12 2011 -0700
+| | 
+| |     Merge pull request #322 from shelhamer/install_docs
+| |     
+| |     Updated install docs w/ current interfaces names, homebrew suggestion
+| |   
+| * commit 486a452317dd864680c02a35c2ee721e11d0bf9d
+|/  Author: Evan Shelhamer <shelhamer@imaginarynumber.net>
+|   Date:   Mon Sep 19 12:03:07 2011 -0400
+|   
+|       Updated install docs w/ current interfaces names, homebrew suggestion for OSX
+|   
+|   M	doc/pages/Installation.mainpage
+|   M	src/INSTALL
+|  
+* commit 1f6bf22fdb81bb360e7221bcf61fc2ed1caadf8c
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Sep 18 14:01:07 2011 +0400
+| 
+|     Added doc for detect_dim routine
+| 
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+|  
+* commit 828a0f4dfb6ebe4b07b4b9e1a733e49aa04df155
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Sep 18 13:55:06 2011 +0400
+| 
+|     Various structure improvements for DR preprocessors
+| 
+| M	src/shogun/preprocessor/DimensionReductionPreprocessor.h
+| M	src/shogun/preprocessor/HessianLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/Isomap.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/LaplacianEigenmaps.cpp
+| M	src/shogun/preprocessor/LocalTangentSpaceAlignment.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+| M	src/shogun/preprocessor/MultidimensionalScaling.cpp
+| M	src/shogun/preprocessor/MultidimensionalScaling.h
+|  
+* commit 4e58cf6bec09eb12012f8f77ac6b76441ec8c734
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Sep 16 23:51:13 2011 +0200
+| 
+|     move all implementations from .h to .cpp for sparse featrures
+| 
+| A	src/shogun/features/SparseFeatures.cpp
+| M	src/shogun/features/SparseFeatures.h
+|  
+* commit 014a320e061acd150c1fe6b2fb781f11ee826c6f
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Sep 16 22:51:02 2011 +0200
+| 
+|     move templated function implementations from .h to .cpp
+| 
+| A	src/shogun/features/StringFeatures.cpp
+| M	src/shogun/features/StringFeatures.h
+|  
+* commit 9733645d0bd0deece1111ed8d6a3cf8fb38c784a
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Sep 16 22:01:00 2011 +0200
+| 
+|     remove a few obsolete includes and reformat code
+| 
+| M	src/shogun/features/SimpleFeatures.cpp
 | M	src/shogun/features/SimpleFeatures.h
 |  
-* commit 419a67bc3898d0380e9ddc7267907b6e6a4dae27
+* commit 84db31742e0920d6018683415ce0d13e6c6e4f6c
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 19:19:36 2011 +0200
+| Date:   Fri Sep 16 17:09:14 2011 +0200
 | 
-|     fix a few regressions
+|     move templated code from SimpleFeatures.h to SimpleFeatures.cpp
 | 
-| M	testsuite/python_modular/kernel.py
-| M	testsuite/python_modular/test_all.sh
-| M	testsuite/python_modular/test_svm_kernel_multiple.py
+| M	src/shogun/features/SimpleFeatures.cpp
+| M	src/shogun/features/SimpleFeatures.h
 |  
-* commit fc4625c8c4bbc5439a2db6819f4de27b877cd7a1
+* commit 4a8d99d97cacbdf0d522d8d284e28dfe46f00014
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 18:45:45 2011 +0200
+| Date:   Thu Sep 15 23:29:36 2011 +0200
 | 
-|     further SGVectorization of dynprog
+|     Put implementations of templated functions into .cpp files
+|     
+|     This is possible when strictly following
+|     http://www.parashift.com/c++-faq-lite/templates.html#faq-35.15
+|     
+|     i.e. we must know beforehand which types we want to support and specify
+|     them like
+|     
+|     template class Foo<int32_t>;
+|     
+|     at the end of the .cpp file. This all holds true for feature classes
+|     and should enable us to move all but definitions from .h files to
+|     .cpp's.
 | 
-| M	src/shogun/structure/DynProg.cpp
-| M	src/shogun/structure/DynProg.h
-| M	src/shogun/ui/SGInterface.cpp
+| A	src/shogun/features/SimpleFeatures.cpp
+| M	src/shogun/features/SimpleFeatures.h
 |  
-* commit 6823fdbe61cfcd6efc30f1351bcc114a7441bf6e
+* commit a49b0f6dd28b1a0738f0922565f386c195b3d494
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 18:20:24 2011 +0200
+| Date:   Thu Sep 15 23:08:33 2011 +0200
 | 
-|     SGVectorize dynprog function
+|     remove unnecessary includes from .h files
 | 
-| M	src/Makefile.template
-| M	src/shogun/structure/DynProg.cpp
-| M	src/shogun/structure/DynProg.h
-| M	src/shogun/ui/SGInterface.cpp
+| M	src/shogun/classifier/svm/OnlineLibLinear.cpp
+| M	src/shogun/distance/CustomDistance.cpp
+| M	src/shogun/features/Alphabet.h
+| M	src/shogun/features/AttributeFeatures.cpp
+| M	src/shogun/features/AttributeFeatures.h
+| M	src/shogun/features/CombinedDotFeatures.h
+| M	src/shogun/features/DotFeatures.cpp
+| M	src/shogun/features/DotFeatures.h
+| M	src/shogun/features/DummyFeatures.cpp
+| M	src/shogun/features/DummyFeatures.h
+| M	src/shogun/features/ExplicitSpecFeatures.cpp
+| M	src/shogun/features/ExplicitSpecFeatures.h
+| M	src/shogun/features/ImplicitWeightedSpecFeatures.cpp
+| M	src/shogun/features/ImplicitWeightedSpecFeatures.h
+| M	src/shogun/features/LBPPyrDotFeatures.h
+| M	src/shogun/features/Labels.h
+| M	src/shogun/features/PolyFeatures.h
+| M	src/shogun/features/RealFileFeatures.cpp
+| M	src/shogun/features/RealFileFeatures.h
 |  
-* commit 8e2b540a63e24515f3e0440976b813cda20c55eb
+* commit 4f9566fdc5a099604f1ddbf2e3702368c4f81b42
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 18:13:35 2011 +0200
+| Date:   Thu Sep 15 22:36:54 2011 +0200
 | 
-|     ignore tests
+|     start to simplify typemaps - extracting all code into functions
 | 
-| M	testsuite/matlab_and_octave/test_all.sh
+| M	src/interfaces/python_modular/swig_typemaps.i
 |  
-* commit 2e4b2b5fec916629e64651821ac59dbcc25fae5f
+* commit c834d2bda34ad2a12662b392e1986ff4c767a3e6
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Sep 15 22:35:03 2011 +0200
+| 
+|     remove remaining inline functions in features/
+| 
+| A	src/shogun/features/StreamingFeatures.cpp
+| M	src/shogun/features/StreamingFeatures.h
+| M	src/shogun/features/StreamingVwFeatures.cpp
+| M	src/shogun/features/StreamingVwFeatures.h
+|  
+* commit 8b4ce6cd5e6d0d78da73892e1f8502853a05823c
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Sep 15 22:13:15 2011 +0200
+| 
+|     remove most inline functions in features
+|     
+|     - exceptions are some single line functions
+|     - templated classes
+| 
+| M	src/shogun/features/Alphabet.cpp
+| M	src/shogun/features/Alphabet.h
+| M	src/shogun/features/AttributeFeatures.cpp
+| M	src/shogun/features/AttributeFeatures.h
+| M	src/shogun/features/CombinedDotFeatures.cpp
+| M	src/shogun/features/CombinedDotFeatures.h
+| M	src/shogun/features/CombinedFeatures.cpp
+| M	src/shogun/features/CombinedFeatures.h
+| M	src/shogun/features/DotFeatures.cpp
+| M	src/shogun/features/DotFeatures.h
+| A	src/shogun/features/DummyFeatures.cpp
+| M	src/shogun/features/DummyFeatures.h
+| M	src/shogun/features/ExplicitSpecFeatures.h
+| M	src/shogun/features/HashedWDFeatures.cpp
+| M	src/shogun/features/HashedWDFeatures.h
+| M	src/shogun/features/HashedWDFeaturesTransposed.cpp
+| M	src/shogun/features/HashedWDFeaturesTransposed.h
+| M	src/shogun/features/ImplicitWeightedSpecFeatures.cpp
+| M	src/shogun/features/ImplicitWeightedSpecFeatures.h
+| M	src/shogun/features/LBPPyrDotFeatures.cpp
+| M	src/shogun/features/LBPPyrDotFeatures.h
+| M	src/shogun/features/Labels.cpp
+| M	src/shogun/features/Labels.h
+| M	src/shogun/features/PolyFeatures.cpp
+| M	src/shogun/features/PolyFeatures.h
+| M	src/shogun/features/SNPFeatures.cpp
+| M	src/shogun/features/SNPFeatures.h
+| M	src/shogun/features/SparsePolyFeatures.cpp
+| M	src/shogun/features/SparsePolyFeatures.h
+| A	src/shogun/features/StreamingDotFeatures.cpp
+| M	src/shogun/features/StreamingDotFeatures.h
+| M	src/shogun/features/WDFeatures.cpp
+| M	src/shogun/features/WDFeatures.h
+|  
+* commit 5fee0e674fb8542918dc330a60556244c58e1a00
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Sep 15 20:04:29 2011 +0200
+| 
+|     mention that one should avoid inline functions
+| 
+| M	src/README.developer
+|  
+* commit 9c69c844443075c89ee6406f1d5de4088dc81e43
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Thu Sep 15 20:03:50 2011 +0200
+| 
+|     fix comment type to get it integrated in doxygen
+| 
+| M	src/shogun/preprocessor/Preprocessor.h
+|  
+* commit 73e9943ee34e99bf2f2f3d932bf8d62a488eddf4
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Sep 11 20:24:31 2011 +0200
+| 
+|     use axis tight to improve figure
+| 
+| M	examples/undocumented/python_modular/graphical/svm.py
+|  
+* commit b1edffbca7d091e3d51d9eaa6a11d902c40fdab5
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Sun Sep 11 20:23:53 2011 +0200
+| 
+|     use CALLOC instead of MALLOC
+| 
+| M	src/shogun/kernel/LocalAlignmentStringKernel.cpp
+|  
+* commit 5ef91ed1c9d5416877ac01feaf8099735c1f22e4
 | Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Wed Aug 31 19:54:28 2011 +0400
+| Date:   Sun Sep 11 01:28:31 2011 +0400
 | 
-|     Fixed esvm at easysvm
+|     Updated KLLE
 | 
-| M	applications/easysvm/esvm/experiment.py
-| M	applications/easysvm/esvm/utils.py
+| M	src/shogun/preprocessor/KernelLocallyLinearEmbedding.cpp
 |  
-* commit be81d77f3d965585f5bccefcdb2c79028306a0b9
+* commit 7e0438e57ff002322a0514d70b5644246b00cbaa
 | Author: Sergey Lisitsyn <blackburn91@gmail.com>
-| Date:   Wed Aug 31 18:50:57 2011 +0400
+| Date:   Sun Sep 11 01:28:19 2011 +0400
 | 
-|     Updated interfaces in readme
+|     Removed unnecessary includes
 | 
-| M	src/README
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
 |  
-* commit 49d04a56c68c4e11cfed9e1187154b03392b03ad
+* commit 613d9dc63a7786867a25eb940dec2b2b144f6f0a
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Sep 11 01:05:31 2011 +0400
+| 
+|     Improved performance of locally linear embedding
+| 
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.cpp
+| M	src/shogun/preprocessor/LocallyLinearEmbedding.h
+|  
+* commit f8944e0ff7046e284859c0ae7c3cab605aa76a1c
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Sep 11 01:03:54 2011 +0400
+| 
+|     Beautified dimreduction examples
+| 
+| M	examples/undocumented/python_modular/graphical/hemisphere.py
+| M	examples/undocumented/python_modular/graphical/swissroll.py
+|  
+* commit f34ce2ca16d14e5051cac4fbe88f267f74be7dfd
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Sep 10 17:31:31 2011 +0400
+| 
+|     Fixed typo in configure
+| 
+| M	src/configure
+|  
+* commit 41f17eae94da51f8013d4773ab86d41be225b84c
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sat Sep 10 13:18:33 2011 +0400
+| 
+|     Added SuperLU detection
+| 
+| M	src/configure
+|  
+* commit 4c09886bdb5dff7264b99a0de460c2a9d22dc353
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Sep 5 23:45:08 2011 +0400
+| 
+|     Doc improvements for evaluators
+| 
+| M	src/shogun/evaluation/BinaryClassEvaluation.h
+| M	src/shogun/evaluation/Evaluation.h
+| M	src/shogun/evaluation/MeanSquaredError.h
+| M	src/shogun/evaluation/MulticlassAccuracy.h
+| M	src/shogun/evaluation/PRCEvaluation.h
+| M	src/shogun/evaluation/ROCEvaluation.h
+|  
+* commit 7f707b1965c042d14fb597e16e728ddb7420e3ab
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Mon Sep 5 01:04:47 2011 +0400
+| 
+|     Cleaned base Preprocessor class
+| 
+| D	src/shogun/preprocessor/Preprocessor.cpp
+| M	src/shogun/preprocessor/Preprocessor.h
+|  
+* commit d744130fa8fec2f5c72cbd410b06d7dbd2b68e39
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Sep 4 14:36:57 2011 +0400
+| 
+|     Resolved HistogramWordStringKernel testsuite issue
+| 
+| M	src/shogun/kernel/HistogramWordStringKernel.cpp
+|  
+* commit 4c6174cc68085556a1b6178fecdc2d593f573746
+| Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| Date:   Sun Sep 4 00:13:11 2011 +0400
+| 
+|     Changed data symlink to toy data
+| 
+| M	examples/documented/data
+|  
+* commit fbb28f974180bf62e3b4524fa2acf575d216970b
 | Author: Soeren Sonnenburg <sonne@debian.org>
-| Date:   Wed Aug 31 14:20:01 2011 +0200
+| Date:   Fri Sep 2 20:14:26 2011 +0200
 | 
-|     rename r -> r_static etc
+|     removal of useless ruby examples
 | 
-| M	Makefile
-| M	src/Makefile.template
-| D	testsuite/matlab
-| A	testsuite/matlab_static
-| D	testsuite/octave
-| A	testsuite/octave_static
-| D	testsuite/python/classifier.py
-| D	testsuite/python/clustering.py
-| D	testsuite/python/distance.py
-| D	testsuite/python/distribution.py
-| D	testsuite/python/kernel.py
-| D	testsuite/python/preproc.py
-| D	testsuite/python/regression.py
-| D	testsuite/python/test_all.sh
-| D	testsuite/python/test_one.py
-| D	testsuite/python/test_svm_kernel_multiple.py
-| D	testsuite/python/util.py
-| A	testsuite/python_static/classifier.py
-| A	testsuite/python_static/clustering.py
-| A	testsuite/python_static/distance.py
-| A	testsuite/python_static/distribution.py
-| A	testsuite/python_static/kernel.py
-| A	testsuite/python_static/preproc.py
-| A	testsuite/python_static/regression.py
-| A	testsuite/python_static/test_all.sh
-| A	testsuite/python_static/test_one.py
-| A	testsuite/python_static/test_svm_kernel_multiple.py
-| A	testsuite/python_static/util.py
-| D	testsuite/r/classifier.R
-| D	testsuite/r/clustering.R
-| D	testsuite/r/distance.R
-| D	testsuite/r/distribution.R
-| D	testsuite/r/kernel.R
-| D	testsuite/r/preproc.R
-| D	testsuite/r/regression.R
-| D	testsuite/r/test_all.sh
-| D	testsuite/r/test_one.R
-| D	testsuite/r/test_one.sh
-| D	testsuite/r/util/check_accuracy.R
-| D	testsuite/r/util/convert_features_and_add_preproc.R
-| D	testsuite/r/util/fix_classifier_name_inconsistency.R
-| D	testsuite/r/util/fix_clustering_name_inconsistency.R
-| D	testsuite/r/util/fix_distance_name_inconsistency.R
-| D	testsuite/r/util/fix_kernel_name_inconsistency.R
-| D	testsuite/r/util/fix_normalizer_name_inconsistency.R
-| D	testsuite/r/util/fix_preproc_name_inconsistency.R
-| D	testsuite/r/util/fix_regression_name_inconsistency.R
-| D	testsuite/r/util/read_mfile.R
-| D	testsuite/r/util/set_distance.R
-| D	testsuite/r/util/set_features.R
-| D	testsuite/r/util/set_kernel.R
-| D	testsuite/r/util/tobool.R
-| A	testsuite/r_static/classifier.R
-| A	testsuite/r_static/clustering.R
-| A	testsuite/r_static/distance.R
-| A	testsuite/r_static/distribution.R
-| A	testsuite/r_static/kernel.R
-| A	testsuite/r_static/preproc.R
-| A	testsuite/r_static/regression.R
-| A	testsuite/r_static/test_all.sh
-| A	testsuite/r_static/test_one.R
-| A	testsuite/r_static/test_one.sh
-| A	testsuite/r_static/util/check_accuracy.R
-| A	testsuite/r_static/util/convert_features_and_add_preproc.R
-| A	testsuite/r_static/util/fix_classifier_name_inconsistency.R
-| A	testsuite/r_static/util/fix_clustering_name_inconsistency.R
-| A	testsuite/r_static/util/fix_distance_name_inconsistency.R
-| A	testsuite/r_static/util/fix_kernel_name_inconsistency.R
-| A	testsuite/r_static/util/fix_normalizer_name_inconsistency.R
-| A	testsuite/r_static/util/fix_preproc_name_inconsistency.R
-| A	testsuite/r_static/util/fix_regression_name_inconsistency.R
-| A	testsuite/r_static/util/read_mfile.R
-| A	testsuite/r_static/util/set_distance.R
-| A	testsuite/r_static/util/set_features.R
-| A	testsuite/r_static/util/set_kernel.R
-| A	testsuite/r_static/util/tobool.R
+| D	examples/undocumented/ruby_modular/MatrixTest.rb
+| D	examples/undocumented/ruby_modular/VectorTest.rb
+| D	examples/undocumented/ruby_modular/minimal_test.rb
+| D	examples/undocumented/ruby_modular/shogun_helpers.rb
+|  
+* commit de95a2fe4862e488f697c30a3bf3862ede59a025
+| Author: Soeren Sonnenburg <sonne@debian.org>
+| Date:   Fri Sep 2 20:13:46 2011 +0200
+| 
+|     minor ruby example polishing
+| 
+| M	examples/undocumented/ruby_modular/classifier_custom_kernel_modular.rb
+| M	examples/undocumented/ruby_modular/classifier_libsvm_minimal_modular.rb
+| M	examples/undocumented/ruby_modular/clustering_hierarchical_modular.rb
+| M	examples/undocumented/ruby_modular/distance_braycurtis_modular.rb
+| M	examples/undocumented/ruby_modular/distance_canberra_modular.rb
+| M	examples/undocumented/ruby_modular/distribution_histogram_modular.rb
+| M	examples/undocumented/ruby_modular/features_io_modular.rb
+| M	examples/undocumented/ruby_modular/features_read_svmlight_format_modular.rb
+| M	examples/undocumented/ruby_modular/features_string_char_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_anova_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_auc_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_cauchy_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_chi2_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_circular_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_combined_custom_poly_modular.rb
+| M	examples/undocumented/ruby_modular/kernel_gaussian_modular.rb
+| M	examples/undocumented/ruby_modular/load.rb
+| M	examples/undocumented/ruby_modular/modelselection_parameter_tree_modular.rb
+| M	examples/undocumented/ruby_modular/preprocessor_hessianlocallylinearembedding_modular.rb
+| M	examples/undocumented/ruby_modular/regression_krr_modular.rb
+| M	examples/undocumented/ruby_modular/regression_libsvr_modular.rb
+|    
+*   commit 93413df7e44cb66c32cb48de8a3c5a70d7ab9b75
+|\  Merge: 6bee4f4 cbe9c23
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Fri Sep 2 10:47:45 2011 -0700
+| | 
+| |     Merge pull request #321 from serialhex/master
+| |     
+| |     merging final batch of ruby examples
+| |   
+| * commit cbe9c236910345451ca7269e95c35d64ec40e25e
+| | Author: Justin Patera <serialhex@gmail.com>
+| | Date:   Wed Aug 31 08:10:40 2011 -0400
+| | 
+| |     got the rest of the examples working, modshogun.rb moved here and renamed to shogun_helpers.rb, just like the rest of the $LANG examples.  only one file giving me hell: features_io_modular.rb though it should work i get a "uninitialized constant Modshogun::HDF5File (NameError)" which means i didn't install something...
+| | 
+| | M	examples/undocumented/ruby_modular/MatrixTest.rb
+| | M	examples/undocumented/ruby_modular/VectorTest.rb
+| | A	examples/undocumented/ruby_modular/classifier_custom_kernel_modular.rb
+| | M	examples/undocumented/ruby_modular/classifier_libsvm_minimal_modular.rb
+| | M	examples/undocumented/ruby_modular/clustering_hierarchical_modular.rb
+| | M	examples/undocumented/ruby_modular/distance_braycurtis_modular.rb
+| | M	examples/undocumented/ruby_modular/distance_canberra_modular.rb
+| | M	examples/undocumented/ruby_modular/distribution_histogram_modular.rb
+| | M	examples/undocumented/ruby_modular/features_io_modular.rb
+| | M	examples/undocumented/ruby_modular/features_read_svmlight_format_modular.rb
+| | M	examples/undocumented/ruby_modular/features_string_char_modular.rb
+| | M	examples/undocumented/ruby_modular/kernel_anova_modular.rb
+| | M	examples/undocumented/ruby_modular/kernel_auc_modular.rb
+| | M	examples/undocumented/ruby_modular/kernel_cauchy_modular.rb
+| | M	examples/undocumented/ruby_modular/kernel_chi2_modular.rb
+| | M	examples/undocumented/ruby_modular/kernel_circular_modular.rb
+| | M	examples/undocumented/ruby_modular/kernel_combined_custom_poly_modular.rb
+| | M	examples/undocumented/ruby_modular/kernel_gaussian_modular.rb
+| | M	examples/undocumented/ruby_modular/minimal_test.rb
+| | M	examples/undocumented/ruby_modular/modelselection_parameter_tree_modular.rb
+| | M	examples/undocumented/ruby_modular/preprocessor_hessianlocallylinearembedding_modular.rb
+| | M	examples/undocumented/ruby_modular/regression_krr_modular.rb
+| | M	examples/undocumented/ruby_modular/regression_libsvr_modular.rb
+| | A	examples/undocumented/ruby_modular/shogun_helpers.rb
+| |   
+* | commit 6bee4f4ba32cd365a0135870796bbf9816f67828
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Fri Sep 2 08:59:11 2011 +0200
+| | 
+| |     add instructions on how to get the data
+| | 
+| | A	src/README.data
+| |   
+* | commit 74f4793e4f4c22b91a16d9dd87a33e7fa107aa88
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Thu Sep 1 20:18:12 2011 +0200
+| | 
+| |     improve release script
+| | 
+| | M	Makefile
+| |   
+* | commit 0d8f97ac684aa03837d894b0b3ea535b53158f12
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Thu Sep 1 08:56:08 2011 +0200
+| | 
+| |     fix Makefile
+| | 
+| | M	Makefile
+| |   
+* | commit 246e694f5128d50edae0100e4535477256c3c363
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Thu Sep 1 01:02:35 2011 +0200
+| | 
+| |     Preparing for new Release shogun_1.0.0
+| | 
+| | M	src/ChangeLog
+| |   
+* | commit 96711a6f878696551d5de07f4e7e94fb5a0bfd58
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Thu Sep 1 01:01:46 2011 +0200
+| | 
+| |     fixes to tag release target
+| | 
+| | M	Makefile
+| |   
+* | commit d4ef7b537a28c11eb48ff56636d1d421c98ff47b
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Thu Sep 1 00:58:12 2011 +0200
+| | 
+| |     updated changelog
+| | 
+| | M	src/ChangeLog
+| |   
+* | commit 13d738f9453e301676c1ad5a82b0747ae288a0db
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Thu Sep 1 02:14:04 2011 +0400
+| | 
+| |     Updated data
+| | 
+| | M	data
+| |   
+* | commit 3210c3f1ba04e3d295b6ffbad3c76f0023b29d45
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Thu Sep 1 02:12:00 2011 +0400
+| | 
+| |     Updated data
+| | 
+| | M	data
+| |   
+* | commit de6f67984c2e776f97df049f5f8f3dbc9e0168f2
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Thu Sep 1 02:03:20 2011 +0400
+| | 
+| |     Removed junk from clustering tester
+| | 
+| | M	testsuite/python_modular/clustering.py
+| |   
+* | commit 3d25031e1606f86d353de72e3c3b43b083af7ab2
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Thu Sep 1 02:02:25 2011 +0400
+| | 
+| |     Fixes for LogPlusOne preprocessor
+| | 
+| | M	src/shogun/preprocessor/LogPlusOne.cpp
+| |   
+* | commit 99966f1ce50b6417ff2a65d6519a14f8ad62f9c9
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Wed Aug 31 23:58:29 2011 +0200
+| | 
+| |     improve release script again
+| | 
+| | M	Makefile
+| |   
+* | commit 67b6b842a12d84a7e7494dc5a36af12292aa1669
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Thu Sep 1 01:38:07 2011 +0400
+| | 
+| |     Updated data
+| | 
+| | M	data
+| |   
+* | commit f6512c764b6933bff9bd30a8109a26e72b256249
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Thu Sep 1 01:37:52 2011 +0400
+| | 
+| |     Fixes for clustering tester
+| | 
+| | M	testsuite/python_modular/clustering.py
+| |   
+* | commit 4240e558dd8303e97984aa073721daee7ca59694
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Wed Aug 31 23:23:38 2011 +0200
+| | 
+| |     improved release script for work with git
+| | 
+| | M	Makefile
+| |   
+* | commit ea275ed63d9b654b8a5c709a1ef01a0955d428a5
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Wed Aug 31 22:32:00 2011 +0200
+| | 
+| |     update data
+| | 
+| | M	data
+| |   
+* | commit 7f13b81348bdee075f0f5b6c7685541790f1b71c
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Thu Sep 1 00:07:57 2011 +0400
+| | 
+| |     Updated data
+| | 
+| | M	data
+| |   
+* | commit 16227f53436fec3868a4a52aa15207c6cdf7b7a3
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Thu Sep 1 00:06:32 2011 +0400
+| | 
+| |     Fixed preprocessor testsuite
+| | 
+| | M	testsuite/python_modular/preprocessor.py
+| |   
+* | commit a8f57f03121e621b33c45cb08337f49a3e07fcf0
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Wed Aug 31 21:27:24 2011 +0200
+| | 
+| |     exclude tests directory form old-tests
+| | 
+| | M	testsuite/octave_modular/test_all.sh
+| | M	testsuite/python_static/test_all.sh
+| | M	testsuite/r_modular/test_all.sh
+| | M	testsuite/r_static/test_all.sh
+| |   
+* | commit b5f27b9ea0e4338102c8e9264457dcbfb25b75fb
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Wed Aug 31 21:53:29 2011 +0400
+| | 
+| |     Transitioned copy feature matrix routine to SGMatrix
+| | 
+| | M	src/shogun/clustering/KMeans.cpp
+| | M	src/shogun/features/SimpleFeatures.h
+| |   
+* | commit 419a67bc3898d0380e9ddc7267907b6e6a4dae27
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Wed Aug 31 19:19:36 2011 +0200
+| | 
+| |     fix a few regressions
+| | 
+| | M	testsuite/python_modular/kernel.py
+| | M	testsuite/python_modular/test_all.sh
+| | M	testsuite/python_modular/test_svm_kernel_multiple.py
+| |   
+* | commit fc4625c8c4bbc5439a2db6819f4de27b877cd7a1
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Wed Aug 31 18:45:45 2011 +0200
+| | 
+| |     further SGVectorization of dynprog
+| | 
+| | M	src/shogun/structure/DynProg.cpp
+| | M	src/shogun/structure/DynProg.h
+| | M	src/shogun/ui/SGInterface.cpp
+| |   
+* | commit 6823fdbe61cfcd6efc30f1351bcc114a7441bf6e
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Wed Aug 31 18:20:24 2011 +0200
+| | 
+| |     SGVectorize dynprog function
+| | 
+| | M	src/Makefile.template
+| | M	src/shogun/structure/DynProg.cpp
+| | M	src/shogun/structure/DynProg.h
+| | M	src/shogun/ui/SGInterface.cpp
+| |   
+* | commit 8e2b540a63e24515f3e0440976b813cda20c55eb
+| | Author: Soeren Sonnenburg <sonne@debian.org>
+| | Date:   Wed Aug 31 18:13:35 2011 +0200
+| | 
+| |     ignore tests
+| | 
+| | M	testsuite/matlab_and_octave/test_all.sh
+| |   
+* | commit 2e4b2b5fec916629e64651821ac59dbcc25fae5f
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Wed Aug 31 19:54:28 2011 +0400
+| | 
+| |     Fixed esvm at easysvm
+| | 
+| | M	applications/easysvm/esvm/experiment.py
+| | M	applications/easysvm/esvm/utils.py
+| |   
+* | commit be81d77f3d965585f5bccefcdb2c79028306a0b9
+| | Author: Sergey Lisitsyn <blackburn91@gmail.com>
+| | Date:   Wed Aug 31 18:50:57 2011 +0400
+| | 
+| |     Updated interfaces in readme
+| | 
+| | M	src/README
+| |   
+* | commit 49d04a56c68c4e11cfed9e1187154b03392b03ad
+|/  Author: Soeren Sonnenburg <sonne@debian.org>
+|   Date:   Wed Aug 31 14:20:01 2011 +0200
+|   
+|       rename r -> r_static etc
+|   
+|   M	Makefile
+|   M	src/Makefile.template
+|   D	testsuite/matlab
+|   A	testsuite/matlab_static
+|   D	testsuite/octave
+|   A	testsuite/octave_static
+|   D	testsuite/python/classifier.py
+|   D	testsuite/python/clustering.py
+|   D	testsuite/python/distance.py
+|   D	testsuite/python/distribution.py
+|   D	testsuite/python/kernel.py
+|   D	testsuite/python/preproc.py
+|   D	testsuite/python/regression.py
+|   D	testsuite/python/test_all.sh
+|   D	testsuite/python/test_one.py
+|   D	testsuite/python/test_svm_kernel_multiple.py
+|   D	testsuite/python/util.py
+|   A	testsuite/python_static/classifier.py
+|   A	testsuite/python_static/clustering.py
+|   A	testsuite/python_static/distance.py
+|   A	testsuite/python_static/distribution.py
+|   A	testsuite/python_static/kernel.py
+|   A	testsuite/python_static/preproc.py
+|   A	testsuite/python_static/regression.py
+|   A	testsuite/python_static/test_all.sh
+|   A	testsuite/python_static/test_one.py
+|   A	testsuite/python_static/test_svm_kernel_multiple.py
+|   A	testsuite/python_static/util.py
+|   D	testsuite/r/classifier.R
+|   D	testsuite/r/clustering.R
+|   D	testsuite/r/distance.R
+|   D	testsuite/r/distribution.R
+|   D	testsuite/r/kernel.R
+|   D	testsuite/r/preproc.R
+|   D	testsuite/r/regression.R
+|   D	testsuite/r/test_all.sh
+|   D	testsuite/r/test_one.R
+|   D	testsuite/r/test_one.sh
+|   D	testsuite/r/util/check_accuracy.R
+|   D	testsuite/r/util/convert_features_and_add_preproc.R
+|   D	testsuite/r/util/fix_classifier_name_inconsistency.R
+|   D	testsuite/r/util/fix_clustering_name_inconsistency.R
+|   D	testsuite/r/util/fix_distance_name_inconsistency.R
+|   D	testsuite/r/util/fix_kernel_name_inconsistency.R
+|   D	testsuite/r/util/fix_normalizer_name_inconsistency.R
+|   D	testsuite/r/util/fix_preproc_name_inconsistency.R
+|   D	testsuite/r/util/fix_regression_name_inconsistency.R
+|   D	testsuite/r/util/read_mfile.R
+|   D	testsuite/r/util/set_distance.R
+|   D	testsuite/r/util/set_features.R
+|   D	testsuite/r/util/set_kernel.R
+|   D	testsuite/r/util/tobool.R
+|   A	testsuite/r_static/classifier.R
+|   A	testsuite/r_static/clustering.R
+|   A	testsuite/r_static/distance.R
+|   A	testsuite/r_static/distribution.R
+|   A	testsuite/r_static/kernel.R
+|   A	testsuite/r_static/preproc.R
+|   A	testsuite/r_static/regression.R
+|   A	testsuite/r_static/test_all.sh
+|   A	testsuite/r_static/test_one.R
+|   A	testsuite/r_static/test_one.sh
+|   A	testsuite/r_static/util/check_accuracy.R
+|   A	testsuite/r_static/util/convert_features_and_add_preproc.R
+|   A	testsuite/r_static/util/fix_classifier_name_inconsistency.R
+|   A	testsuite/r_static/util/fix_clustering_name_inconsistency.R
+|   A	testsuite/r_static/util/fix_distance_name_inconsistency.R
+|   A	testsuite/r_static/util/fix_kernel_name_inconsistency.R
+|   A	testsuite/r_static/util/fix_normalizer_name_inconsistency.R
+|   A	testsuite/r_static/util/fix_preproc_name_inconsistency.R
+|   A	testsuite/r_static/util/fix_regression_name_inconsistency.R
+|   A	testsuite/r_static/util/read_mfile.R
+|   A	testsuite/r_static/util/set_distance.R
+|   A	testsuite/r_static/util/set_features.R
+|   A	testsuite/r_static/util/set_kernel.R
+|   A	testsuite/r_static/util/tobool.R
 |  
 * commit ceee77a89029284bd9ca83f121c004ef23da3d25
 | Author: Sergey Lisitsyn <blackburn91@gmail.com>
