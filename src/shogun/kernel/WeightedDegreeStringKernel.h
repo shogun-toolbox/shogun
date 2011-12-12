@@ -289,12 +289,12 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 		/** set subkernel weights
 		 *
-		 * @param weights2 weights
-		 * @param num_weights2 number of weights
+		 * @param wweights
 		 */
-		inline void set_subkernel_weights(
-			float64_t* weights2, int32_t num_weights2)
+		virtual void set_subkernel_weights(SGVector<float64_t> w)
 		{
+			float64_t* weights2=w.vector;
+			int32_t num_weights2=w.vlen;
 			int32_t num_weights = get_num_subkernels();
 			if (num_weights!=num_weights2)
 				SG_ERROR( "number of weights do not match\n");
