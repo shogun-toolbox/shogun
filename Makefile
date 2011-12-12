@@ -93,7 +93,7 @@ endif
 .PHONY: all release package-from-release update-webpage clean distclean embed-main-version
 
 DATADESTDIR := ../shogun-releases/$(DATARELEASENAME)
-DESTDIR := ../$(RELEASENAME)
+DESTDIR := ../shogun-releases/$(RELEASENAME)
 REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/shogun/classifier/svm/SVM_light.* $(DESTDIR)/src/shogun/classifier/svm/Optimizer.* $(DESTDIR)/src/shogun/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
 rm -f $(DESTDIR)/testsuite/data/classifier/SVMLight* $(DESTDIR)/testsuite/data/regression/SVRLight*	; \
 grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_SVMLIGHT/,/\#endif \/\/USE_SVMLIGHT/c \\' ; \
@@ -121,15 +121,14 @@ prepare-release:
 	+$(MAKE) -C src doc DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
 	-$(MAKE) -C src tests DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
 	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
-	(cd doc; git commit -m "updated reference documentation" . ) | tee --append $(LOGFILE)
+	git commit doc -m "updated reference documentation" | tee --append $(LOGFILE)
 
 release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
-	rm -rf ../shogun-releases/shogun_$(MAINVERSION)
+	rm -rf $(DESTDIR)
 	# copy things over to shogun-releases dir
-	git checkout-index --prefix=../shogun-releases/shogun_$(MAINVERSION)/ -a
-	cp src/shogun/lib/versionstring.h ../shogun-releases/shogun_$(MAINVERSION)/src/shogun/lib/versionstring.h
-	cp src/Makefile ../shogun-releases/shogun_$(MAINVERSION)/src/Makefile
-	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
+	git checkout-index --prefix=$(DESTDIR)/ -a
+	cp src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
+	tar -c -f $(DESTDIR).tar -C ../shogun-releases $(RELEASENAME)
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
@@ -190,7 +189,7 @@ update-webpage:
 	ssh km ./bin/shogun_doc_install.sh $(MAINVERSION)
 	rm -rf doc/html*
 
-	cd ../../website && $(MAKE)
+	cd ../shogun-publicity/website && $(MAKE)
 
 src/shogun/lib/versionstring.h:
 	rm -f src/ChangeLog
@@ -200,7 +199,6 @@ src/shogun/lib/versionstring.h:
 $(DESTDIR)/src/shogun/lib/versionstring.h: src/shogun/lib/versionstring.h
 	rm -rf $(DESTDIR)
 	git checkout-index --prefix=$(DESTDIR)/ -a
-	cp -a . $(DESTDIR)
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
