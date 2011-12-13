@@ -723,9 +723,9 @@ test_ruby()
 cat >$TMPRUBY << EOF
 require('mkmf')
 if RUBY_VERSION[0,3] == '1.8'
-puts "-I#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
+puts "-I#{RbConfig::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
 else
-puts "-I#{Config::expand(CONFIG['vendorlibdir'])}/#{Config::expand(CONFIG['arch'])} -I#{Config::expand(CONFIG['archdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
+puts "-I#{RbConfig::expand(CONFIG['vendorlibdir'])}/#{RbConfig::expand(CONFIG['arch'])} -I#{RbConfig::expand(CONFIG['archdir'])} -I#{RbConfig::expand(CONFIG['rubyhdrdir'])} -I#{RbConfig::expand(CONFIG['rubyhdrdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
 end
 EOF
 		echocheck "Ruby Developer Files"
@@ -733,7 +733,7 @@ EOF
 		then
 			echores "yes"
 			INCLUDES_RUBY=`$RUBY $TMPRUBY`
-			RUBYSO=`$RUBY -e 'require "mkmf"; puts Config::expand("$(RUBY_SO_NAME)")'`
+			RUBYSO=`$RUBY -e 'require "mkmf"; puts RbConfig::expand("$(RUBY_SO_NAME)")'`
 			if ld -o "$TMPO" -l$RUBYSO >/dev/null 2>&1
 			then
 				LINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared -ldl"
@@ -750,9 +750,9 @@ EOF
 cat >$TMPRUBY << EOF
 require('mkmf')
 if RUBY_VERSION[0,3] == '1.8'
-	puts "#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
+	puts "#{RbConfig::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
 else
-	puts "#{Config::expand(CONFIG['rubylibdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['rubylibdir']
+	puts "#{RbConfig::expand(CONFIG['rubylibdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['rubylibdir']
 end
 EOF
 			RUBY_LIBRARY_DIR=`$RUBY "$TMPRUBY" 2>/dev/null`
@@ -760,13 +760,13 @@ EOF
 cat >$TMPRUBY << EOF
 require('mkmf')
 if RUBY_VERSION[0,3] == '1.8'
-	puts "#{Config::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
+	puts "#{RbConfig::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
 else
-	puts "#{Config::expand(CONFIG['vendorlibdir'])}/#{Config::expand(CONFIG['arch'])}" if CONFIG['vendorlibdir']
+	puts "#{RbConfig::expand(CONFIG['vendorlibdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['vendorlibdir']
 end
 EOF
 			RUBY_VENDOR_LIBRARY_DIR=`$RUBY "$TMPRUBY" 2>/dev/null`
-			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir/$_rubydir/`$RUBY -e 'require "mkmf"; puts Config::expand("$(ruby_version)") + "/" + Config::expand("$(arch)")'`
+			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir/$_rubydir/`$RUBY -e 'require "mkmf"; puts RbConfig::expand("$(ruby_version)") + "/" + RbConfig::expand("$(arch)")'`
 			test_ruby_narray
 		else
 			if test "$_ruby_modular" = yes
