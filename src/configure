@@ -33,7 +33,6 @@ EXT_LIB_SWIG_RUBY_MODULAR=.so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454 -w312 -w325 -fvirtual"
-#-builtin -modern -modernargs
 SWIG=swig
 DOXYGEN=doxygen
 RUBY=ruby
@@ -290,6 +289,40 @@ head_check() {
 	else
 	  _tail() { tail -n $1 2>/dev/null ; }
 	fi
+}
+
+assert_version() {
+	name=$1
+	mode=$2
+	is_ver=$3
+	wanted_ver=$4
+	is=(`echo $is_ver| sed 's/\./ /g'`)
+	wanted=(`echo $wanted_ver | sed 's/\./ /g'`)
+
+	if test -z "$is"; then
+		die "$name did not return version information"
+	fi
+
+	i=0
+
+	while test $i -lt ${#is[*]} 2>/dev/null && test $i -lt ${#wanted[*]} 2>/dev/null ; do
+		if test ${is[i]} -lt ${wanted[i]}; then
+			if test "$mode" = yes; then
+				die "$name is outdated: version $wanted_ver required got version $is_ver."
+			fi
+
+			if test "$mode" = auto; then
+				echores "`echo $is_ver` ... too old version $wanted_ver or later required"
+			fi
+		fi
+
+		if test ${is[i]} -lt ${wanted[i]}; then
+			return 0
+		fi
+		let i++
+	done
+
+	return 0
 }
 
 detect_ldd()
@@ -3781,13 +3814,7 @@ test_modular()
 		if ${SWIG} -version >/dev/null 2>&1
 		then
 			_swig_version=`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`
-			if test -z "$_swig_version"; then
-				die "swig did not return version information"
-			fi
-			if [ `echo $_swig_version | cut -f 1 -d '.'` -ge 2 ] || \
-				[ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
-				[ `echo $_swig_version | cut -f 3 -d '.'` -ge 29 ]
-			then
+			if assert_version swig $_swig $_swig_version; then
 				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
 
 				_swig=yes
@@ -3797,13 +3824,7 @@ test_modular()
 					POSTLINKFLAGS="$POSTLINKFLAGS $LINKFLAGS"
 				fi
 			else
-				echores "`echo $_swig_version` ... too old version 1.3.29 or later required"
-				if test "$_swig" = yes ; then
-					die "swig outdated"
-				else
-					echores "no"
-					_swig='no'
-				fi
+				_swig='no'
 			fi
 		else
 			echores "no"
@@ -4363,7 +4384,7 @@ EOF
 			then
 				echores "yes"
 				_python=yes
-				SWIGFLAGS_PYTHON_MODULAR="-c++ -python"
+				SWIGFLAGS_PYTHON_MODULAR="-builtin -modern -modernargs -c++ -python"
 			else
 				# add -ldl and -lutil for some self compiled python versions as
 				# they for some reason are not automgically pulled in
@@ -4373,7 +4394,7 @@ EOF
 				then
 					echores "yes"
 					_python=yes
-					SWIGFLAGS_PYTHON_MODULAR="-c++ -python"
+					SWIGFLAGS_PYTHON_MODULAR="-builtin -modern -modernargs -c++ -python"
 				else
 					echores "no"
 					if test "$_python" = yes || test "$_python_static" = yes \
@@ -5004,7 +5025,6 @@ test_static_linking()
 		fi
 	fi
 }
-
 echo_check
 head_check
 parse_arguments $@
