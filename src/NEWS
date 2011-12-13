@@ -1,3 +1,14 @@
+2012-01-01 Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 1.2.0 (libshogun 12.0, data 0.3, parameter 0)
+	* This release contains several enhancements, cleanups and bugfixes:
+	* Features:
+		- None
+	* Bugfixes:
+		- None
+	* Cleanup and API Changes:
+		- None
+
 2011-12-01 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 1.1.0 (libshogun 11.0, data 0.3, parameter 0)
